@@ -2,82 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E0BCD35FD53
-	for <lists+netdev@lfdr.de>; Wed, 14 Apr 2021 23:32:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2755235FD57
+	for <lists+netdev@lfdr.de>; Wed, 14 Apr 2021 23:36:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233248AbhDNVcr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 14 Apr 2021 17:32:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42322 "EHLO
+        id S233482AbhDNVgh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 14 Apr 2021 17:36:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43140 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233281AbhDNVcp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 14 Apr 2021 17:32:45 -0400
-Received: from mail-ot1-x329.google.com (mail-ot1-x329.google.com [IPv6:2607:f8b0:4864:20::329])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA71CC061574
-        for <netdev@vger.kernel.org>; Wed, 14 Apr 2021 14:32:21 -0700 (PDT)
-Received: by mail-ot1-x329.google.com with SMTP id 65-20020a9d03470000b02902808b4aec6dso15974211otv.6
-        for <netdev@vger.kernel.org>; Wed, 14 Apr 2021 14:32:21 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=euc1VXuz6Kl9Wzo3v1AaAQ+aFpv1dxQuVZxDCzfR7V8=;
-        b=JwmI0w/jpjmBdjb1VRMtBpAQh6q9oNYdnbN43qBGb3xfTo+gNn9VjK07I5NP+WeztU
-         z0DXVDz/37VUYrFd8Zhx0H/TYctQcWNUJY+syw/Gw3znewjM0WzhMJZT/nLAWOcvgrI7
-         jRMXxH05K0AZSMaVm08o7ZH3iVjfiIZy133V9eU+m4tgNGZvwa61H/Gs4/X/E2YxJl46
-         2U4gab7+ES05r5PqESn+ctE53e1B7dmy3+wD0sdr/UmuhI3XkQ+F57fAklrZ3JaJRAgl
-         mI+AWsfWXSmqfAByuBE90PRDECgThxaX8dcr/bmt8RcZvl8gLZMHwDnonItFRToa8Ni4
-         R9dw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=euc1VXuz6Kl9Wzo3v1AaAQ+aFpv1dxQuVZxDCzfR7V8=;
-        b=h38OSFTPXiyg7pJewWWqHYuxhVXDlz3prxhJ3DRTiNy3sko+NbxNJXyLCmnxb6TF2j
-         upUEJ3MLmh55RTjMbjVI+zqPi62SdTGTLNCN4pWq0xE7YMwEo3fSQujaOxOCHc+ibsDW
-         +sH4ed39ffpAWNind7Yo8O8mYgPQZq0tzHkQJr4QU2lxZm5xUU31NHtkMGRF+Jkc16BE
-         F/N4132DihbysER9IHXxhG5dZHMlDqHt9InstEBarSnGTDO91wpY4gonIEtGHm3IgVGX
-         5CR9UFb6R1gmSSksD5OnUaJyTVqyNfskE6h/IYblIIXgGTZTfAsG0oC3/3eak67H0uig
-         B47A==
-X-Gm-Message-State: AOAM533JcmEgNqeMXo6CuLkfw0gPmaXNH6RyHPCg570RfmX5qhyZDW3R
-        J4NWxMrOjd4v3ASs9OHmSYF7Y/rCB+7D1q8sVzYTAq/d01w8cg==
-X-Google-Smtp-Source: ABdhPJx3eTEhI6r+bGcGJ6ntShYZh9dZ0w/YXrbR8KjTG0EoKNsmtkcOqqmWdxMlB/51W62IhAS1fvFc11IdUN5Fzh0=
-X-Received: by 2002:a05:6830:1411:: with SMTP id v17mr89302otp.87.1618435941085;
- Wed, 14 Apr 2021 14:32:21 -0700 (PDT)
+        with ESMTP id S232302AbhDNVgg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 14 Apr 2021 17:36:36 -0400
+Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 14DA1C061574;
+        Wed, 14 Apr 2021 14:36:13 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=tiw0DSloQ939N1jQWOHUVqWakm9NGqZcvctG7ish7wk=; b=NsnSuNJytEImhL0Wo1cnKZ+7p9
+        hHDLgKAJmuc/sHV7PxTbuuD4fJJ/J45u+/OMxBTS22YR7iIa+UYkqxN/gw8DmaU/dhnYxfek0WAl/
+        EbqdwP8/2gdyPo96cf2wgNpsRvCy2X2e0tY8tuXdetX5UUk2RVgLrDNfo1FCPU5d0nU+b2vDEXV+F
+        R5rW9JgGm8/SUwNGZuq+2tWKp47J0pTlUAu56KYCGGg4qlZ9MsL9iwJxxGMhITMU3iNjoYQVhtdH1
+        huQUgK3Omj03NxN1K8suu9wQDUZb56zB4+gYivQGVkqHlCi/oYqL/F+XGVdyzo4j22SCP0GWB3riv
+        tV58OZWw==;
+Received: from willy by casper.infradead.org with local (Exim 4.94 #2 (Red Hat Linux))
+        id 1lWnAy-007fMW-F1; Wed, 14 Apr 2021 21:36:00 +0000
+Date:   Wed, 14 Apr 2021 22:35:56 +0100
+From:   Matthew Wilcox <willy@infradead.org>
+To:     Jesper Dangaard Brouer <brouer@redhat.com>
+Cc:     linux-kernel@vger.kernel.org, linux-mm@kvack.org,
+        netdev@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
+        linux-arm-kernel@lists.infradead.org, linux-mips@vger.kernel.org,
+        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
+        Matteo Croce <mcroce@linux.microsoft.com>,
+        Grygorii Strashko <grygorii.strashko@ti.com>,
+        Arnd Bergmann <arnd@kernel.org>, Christoph Hellwig <hch@lst.de>
+Subject: Re: [PATCH 1/1] mm: Fix struct page layout on 32-bit systems
+Message-ID: <20210414213556.GY2531743@casper.infradead.org>
+References: <20210410205246.507048-1-willy@infradead.org>
+ <20210410205246.507048-2-willy@infradead.org>
+ <20210411114307.5087f958@carbon>
+ <20210411103318.GC2531743@casper.infradead.org>
+ <20210412011532.GG2531743@casper.infradead.org>
+ <20210414101044.19da09df@carbon>
+ <20210414115052.GS2531743@casper.infradead.org>
+ <20210414211322.3799afd4@carbon>
 MIME-Version: 1.0
-References: <20210413070848.7261-1-jonathon.reinhart@gmail.com> <20210413112339.263089fb@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20210413112339.263089fb@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-From:   Jonathon Reinhart <jonathon.reinhart@gmail.com>
-Date:   Wed, 14 Apr 2021 17:31:55 -0400
-Message-ID: <CAPFHKzdgNiwdChUnAyAt8keNwd12mkFczrLLFx7i-d6OXJ5VXw@mail.gmail.com>
-Subject: Re: [PATCH] net: Make tcp_allowed_congestion_control readonly in
- non-init netns
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Linux Netdev List <netdev@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>,
-        Christian Brauner <christian.brauner@ubuntu.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210414211322.3799afd4@carbon>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Apr 13, 2021 at 2:23 PM Jakub Kicinski <kuba@kernel.org> wrote:
->
-> On Tue, 13 Apr 2021 03:08:48 -0400 Jonathon Reinhart wrote:
-> > Fixes: 9cb8e048e5d9: ("net/ipv4/sysctl: show tcp_{allowed, available}_congestion_control in non-initial netns")
->
-> nit: no semicolon after the hash
+On Wed, Apr 14, 2021 at 09:13:22PM +0200, Jesper Dangaard Brouer wrote:
+> (If others want to reproduce).  First I could not reproduce on ARM32.
+> Then I found out that enabling CONFIG_XEN on ARCH=arm was needed to
+> cause the issue by enabling CONFIG_ARCH_DMA_ADDR_T_64BIT.
 
-Oops. scripts/checkpatch.pl didn't catch this, but it looks like patchwork did.
+hmmm ... you should be able to provoke it by enabling ARM_LPAE,
+which selects PHYS_ADDR_T_64BIT, and
 
-You indicated "nit": Shall I resubmit, or can something trivial like
-this be fixed up when committed? I'm fine either way, I just need to
-know what's expected.
+config ARCH_DMA_ADDR_T_64BIT
+        def_bool 64BIT || PHYS_ADDR_T_64BIT
 
-Also, this patch shows up in patchwork as "Not Applicable". I didn't
-see any notification about that state change, nor do I really know
-what that means. Was that due to this nit, or something else?
+>  struct page {
+>         long unsigned int          flags;                /*     0     4 */
+> 
+>         /* XXX 4 bytes hole, try to pack */
+> 
+>         union {
+>                 struct {
+>                         struct list_head lru;            /*     8     8 */
+>                         struct address_space * mapping;  /*    16     4 */
+>                         long unsigned int index;         /*    20     4 */
+>                         long unsigned int private;       /*    24     4 */
+>                 };                                       /*     8    20 */
+>                 struct {
+>                         dma_addr_t dma_addr;             /*     8     8 */
+>                 };                                       /*     8     8 */
+[...]
+>         } __attribute__((__aligned__(8)));               /*     8    24 */
+>         union {
+>                 atomic_t           _mapcount;            /*    32     4 */
+>                 unsigned int       page_type;            /*    32     4 */
+>                 unsigned int       active;               /*    32     4 */
+>                 int                units;                /*    32     4 */
+>         };                                               /*    32     4 */
+>         atomic_t                   _refcount;            /*    36     4 */
+> 
+>         /* size: 40, cachelines: 1, members: 4 */
+>         /* sum members: 36, holes: 1, sum holes: 4 */
+>         /* forced alignments: 1, forced holes: 1, sum forced holes: 4 */
+>         /* last cacheline: 40 bytes */
+> } __attribute__((__aligned__(8)));
 
-Thanks for guiding me through this.
-Jonathon
+If you also enable CONFIG_MEMCG or enough options to make
+LAST_CPUPID_NOT_IN_PAGE_FLAGS true, you'll end up with another 4-byte
+hole at the end.
