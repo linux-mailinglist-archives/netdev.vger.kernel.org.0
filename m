@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 44D0535FC39
-	for <lists+netdev@lfdr.de>; Wed, 14 Apr 2021 22:02:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F00F635FC3F
+	for <lists+netdev@lfdr.de>; Wed, 14 Apr 2021 22:03:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353609AbhDNUDE convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Wed, 14 Apr 2021 16:03:04 -0400
-Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:24702 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1353677AbhDNUCt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 14 Apr 2021 16:02:49 -0400
-Received: from pps.filterd (m0148461.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 13EJwpmd003302
-        for <netdev@vger.kernel.org>; Wed, 14 Apr 2021 13:02:27 -0700
+        id S1353741AbhDNUDd convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Wed, 14 Apr 2021 16:03:33 -0400
+Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:7008 "EHLO
+        mx0b-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1353727AbhDNUDM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 14 Apr 2021 16:03:12 -0400
+Received: from pps.filterd (m0148460.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 13EJshfN007328
+        for <netdev@vger.kernel.org>; Wed, 14 Apr 2021 13:02:50 -0700
 Received: from mail.thefacebook.com ([163.114.132.120])
-        by mx0a-00082601.pphosted.com with ESMTP id 37wv653m0u-3
+        by mx0a-00082601.pphosted.com with ESMTP id 37wv5jbns4-13
         (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-        for <netdev@vger.kernel.org>; Wed, 14 Apr 2021 13:02:27 -0700
-Received: from intmgw001.37.frc1.facebook.com (2620:10d:c085:108::4) by
- mail.thefacebook.com (2620:10d:c085:11d::6) with Microsoft SMTP Server
+        for <netdev@vger.kernel.org>; Wed, 14 Apr 2021 13:02:50 -0700
+Received: from intmgw001.37.frc1.facebook.com (2620:10d:c085:208::f) by
+ mail.thefacebook.com (2620:10d:c085:21d::5) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2176.2; Wed, 14 Apr 2021 13:02:26 -0700
+ 15.1.2176.2; Wed, 14 Apr 2021 13:02:28 -0700
 Received: by devbig012.ftw2.facebook.com (Postfix, from userid 137359)
-        id 738B72ED1A84; Wed, 14 Apr 2021 13:02:25 -0700 (PDT)
+        id 7E1772ED1A84; Wed, 14 Apr 2021 13:02:27 -0700 (PDT)
 From:   Andrii Nakryiko <andrii@kernel.org>
 To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>, <ast@fb.com>,
         <daniel@iogearbox.net>
 CC:     <andrii@kernel.org>, <kernel-team@fb.com>
-Subject: [PATCH bpf-next 15/17] selftests/bpf: add function linking selftest
-Date:   Wed, 14 Apr 2021 13:01:44 -0700
-Message-ID: <20210414200146.2663044-16-andrii@kernel.org>
+Subject: [PATCH bpf-next 16/17] selftests/bpf: add global variables linking selftest
+Date:   Wed, 14 Apr 2021 13:01:45 -0700
+Message-ID: <20210414200146.2663044-17-andrii@kernel.org>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20210414200146.2663044-1-andrii@kernel.org>
 References: <20210414200146.2663044-1-andrii@kernel.org>
@@ -38,110 +38,110 @@ MIME-Version: 1.0
 Content-Transfer-Encoding: 8BIT
 X-FB-Internal: Safe
 Content-Type: text/plain
-X-Proofpoint-ORIG-GUID: k_bAYAoztY1vr4OkY1KIcK-xyIZHCYVr
-X-Proofpoint-GUID: k_bAYAoztY1vr4OkY1KIcK-xyIZHCYVr
+X-Proofpoint-ORIG-GUID: wS6PbcfnYbY4PAdnfWPapoFLWNDyFCTZ
+X-Proofpoint-GUID: wS6PbcfnYbY4PAdnfWPapoFLWNDyFCTZ
 X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.391,18.0.761
  definitions=2021-04-14_12:2021-04-14,2021-04-14 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 lowpriorityscore=0
- phishscore=0 mlxlogscore=999 malwarescore=0 adultscore=0 bulkscore=0
- mlxscore=0 clxscore=1015 priorityscore=1501 spamscore=0 impostorscore=0
- suspectscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 mlxlogscore=999
+ bulkscore=0 spamscore=0 adultscore=0 priorityscore=1501 lowpriorityscore=0
+ malwarescore=0 mlxscore=0 clxscore=1015 phishscore=0 suspectscore=0
+ impostorscore=0 classifier=spam adjust=0 reason=mlx scancount=1
  engine=8.12.0-2104060000 definitions=main-2104140127
 X-FB-Internal: deliver
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add selftest validating various aspects of statically linking functions:
-  - no conflicts and correct resolution for name-conflicting static funcs;
-  - correct resolution of extern functions;
-  - correct handling of weak functions, both resolution itself and libbpf's
-    handling of unused weak function that "lost" (it leaves gaps in code with
-    no ELF symbols);
-  - correct handling of hidden visibility to turn global function into
-    "static" for the purpose of BPF verification.
+Add selftest validating various aspects of statically linking global
+variables:
+  - correct resolution of extern variables across .bss, .data, and .rodata
+    sections;
+  - correct handling of weak definitions;
+  - correct de-duplication of repeating special externs (.kconfig, .ksyms).
 
 Signed-off-by: Andrii Nakryiko <andrii@kernel.org>
 ---
  tools/testing/selftests/bpf/Makefile          |  3 +-
- .../selftests/bpf/prog_tests/linked_funcs.c   | 42 +++++++++++
- .../selftests/bpf/progs/linked_funcs1.c       | 73 +++++++++++++++++++
- .../selftests/bpf/progs/linked_funcs2.c       | 73 +++++++++++++++++++
- 4 files changed, 190 insertions(+), 1 deletion(-)
- create mode 100644 tools/testing/selftests/bpf/prog_tests/linked_funcs.c
- create mode 100644 tools/testing/selftests/bpf/progs/linked_funcs1.c
- create mode 100644 tools/testing/selftests/bpf/progs/linked_funcs2.c
+ .../selftests/bpf/prog_tests/linked_vars.c    | 43 +++++++++++++
+ .../selftests/bpf/progs/linked_vars1.c        | 60 ++++++++++++++++++
+ .../selftests/bpf/progs/linked_vars2.c        | 61 +++++++++++++++++++
+ 4 files changed, 166 insertions(+), 1 deletion(-)
+ create mode 100644 tools/testing/selftests/bpf/prog_tests/linked_vars.c
+ create mode 100644 tools/testing/selftests/bpf/progs/linked_vars1.c
+ create mode 100644 tools/testing/selftests/bpf/progs/linked_vars2.c
 
 diff --git a/tools/testing/selftests/bpf/Makefile b/tools/testing/selftests/bpf/Makefile
-index cfa3e91c9a49..c5d25aef1074 100644
+index c5d25aef1074..a690fd125c6d 100644
 --- a/tools/testing/selftests/bpf/Makefile
 +++ b/tools/testing/selftests/bpf/Makefile
-@@ -303,9 +303,10 @@ endef
+@@ -303,10 +303,11 @@ endef
  
  SKEL_BLACKLIST := btf__% test_pinning_invalid.c test_sk_assign.c
  
--LINKED_SKELS := test_static_linked.skel.h
-+LINKED_SKELS := test_static_linked.skel.h linked_funcs.skel.h
+-LINKED_SKELS := test_static_linked.skel.h linked_funcs.skel.h
++LINKED_SKELS := test_static_linked.skel.h linked_funcs.skel.h linked_vars.skel.h
  
  test_static_linked.skel.h-deps := test_static_linked1.o test_static_linked2.o
-+linked_funcs.skel.h-deps := linked_funcs1.o linked_funcs2.o
+ linked_funcs.skel.h-deps := linked_funcs1.o linked_funcs2.o
++linked_vars.skel.h-deps := linked_vars1.o linked_vars2.o
  
  LINKED_BPF_SRCS := $(patsubst %.o,%.c,$(foreach skel,$(LINKED_SKELS),$($(skel)-deps)))
  
-diff --git a/tools/testing/selftests/bpf/prog_tests/linked_funcs.c b/tools/testing/selftests/bpf/prog_tests/linked_funcs.c
+diff --git a/tools/testing/selftests/bpf/prog_tests/linked_vars.c b/tools/testing/selftests/bpf/prog_tests/linked_vars.c
 new file mode 100644
-index 000000000000..768166a7c534
+index 000000000000..4122ec330039
 --- /dev/null
-+++ b/tools/testing/selftests/bpf/prog_tests/linked_funcs.c
-@@ -0,0 +1,42 @@
++++ b/tools/testing/selftests/bpf/prog_tests/linked_vars.c
+@@ -0,0 +1,43 @@
 +// SPDX-License-Identifier: GPL-2.0
 +/* Copyright (c) 2021 Facebook */
 +
 +#include <test_progs.h>
 +#include <sys/syscall.h>
-+#include "linked_funcs.skel.h"
++#include "linked_vars.skel.h"
 +
-+void test_linked_funcs(void)
++void test_linked_vars(void)
 +{
 +	int err;
-+	struct linked_funcs* skel;
++	struct linked_vars* skel;
 +
-+	skel = linked_funcs__open();
++	skel = linked_vars__open();
 +	if (!ASSERT_OK_PTR(skel, "skel_open"))
 +		return;
 +
-+	skel->rodata->my_tid = syscall(SYS_gettid);
-+	skel->rodata->syscall_id = SYS_getpgid;
++	skel->bss->input_bss1 = 1000;
++	skel->bss->input_bss2 = 2000;
++	skel->bss->input_bss_weak = 3000;
 +
-+	err = linked_funcs__load(skel);
++	err = linked_vars__load(skel);
 +	if (!ASSERT_OK(err, "skel_load"))
 +		goto cleanup;
 +
-+	err = linked_funcs__attach(skel);
++	err = linked_vars__attach(skel);
 +	if (!ASSERT_OK(err, "skel_attach"))
 +		goto cleanup;
 +
 +	/* trigger */
 +	syscall(SYS_getpgid);
 +
-+	ASSERT_EQ(skel->bss->output_val1, 2000 + 2000, "output_val1");
-+	ASSERT_EQ(skel->bss->output_ctx1, SYS_getpgid, "output_ctx1");
-+	ASSERT_EQ(skel->bss->output_weak1, 42, "output_weak1");
-+
-+	ASSERT_EQ(skel->bss->output_val2, 2 * 1000 + 2 * (2 * 1000), "output_val2");
-+	ASSERT_EQ(skel->bss->output_ctx2, SYS_getpgid, "output_ctx2");
-+	/* output_weak2 should never be updated */
-+	ASSERT_EQ(skel->bss->output_weak2, 0, "output_weak2");
++	ASSERT_EQ(skel->bss->output_bss1, 1000 + 2000 + 3000, "output_bss1");
++	ASSERT_EQ(skel->bss->output_bss2, 1000 + 2000 + 3000, "output_bss2");
++	/* 10 comes from "winner" input_data_weak in first obj file */
++	ASSERT_EQ(skel->bss->output_data1, 1 + 2 + 10, "output_bss1");
++	ASSERT_EQ(skel->bss->output_data2, 1 + 2 + 10, "output_bss2");
++	/* 10 comes from "winner" input_rodata_weak in first obj file */
++	ASSERT_EQ(skel->bss->output_rodata1, 11 + 22 + 100 , "output_weak1");
++	ASSERT_EQ(skel->bss->output_rodata2, 11 + 22 + 100 , "output_weak2");
 +
 +cleanup:
-+	linked_funcs__destroy(skel);
++	linked_vars__destroy(skel);
 +}
-diff --git a/tools/testing/selftests/bpf/progs/linked_funcs1.c b/tools/testing/selftests/bpf/progs/linked_funcs1.c
+diff --git a/tools/testing/selftests/bpf/progs/linked_vars1.c b/tools/testing/selftests/bpf/progs/linked_vars1.c
 new file mode 100644
-index 000000000000..cc621d4e4d82
+index 000000000000..e3865047ed5d
 --- /dev/null
-+++ b/tools/testing/selftests/bpf/progs/linked_funcs1.c
-@@ -0,0 +1,73 @@
++++ b/tools/testing/selftests/bpf/progs/linked_vars1.c
+@@ -0,0 +1,60 @@
 +// SPDX-License-Identifier: GPL-2.0
 +/* Copyright (c) 2021 Facebook */
 +
@@ -149,78 +149,65 @@ index 000000000000..cc621d4e4d82
 +#include <bpf/bpf_helpers.h>
 +#include <bpf/bpf_tracing.h>
 +
-+/* weak and shared between two files */
-+const volatile int my_tid __weak = 0;
-+const volatile long syscall_id __weak = 0;
++extern int LINUX_KERNEL_VERSION __kconfig;
++/* this weak extern will be strict due to the other file's strong extern */
++extern bool CONFIG_BPF_SYSCALL __kconfig __weak;
++extern const void bpf_link_fops __ksym __weak;
++/* make sure special extern funcs are handled as well */
++/* extern int bpf_kfunc_call_test2(struct sock *, __u32, __u32) __ksym; */
 +
-+int output_val1 = 0;
-+int output_ctx1 = 0;
-+int output_weak1 = 0;
++/* static name conflicts are not handled by BPF skeleton well yet */
++/* static volatile int input_bss_static = 0; */
 +
-+/* same "subprog" name in all files, but it's ok because they all are static */
-+static __noinline int subprog(int x)
++int input_bss1 = 0;
++int input_data1 = 1;
++const volatile int input_rodata1 = 11;
++
++int input_bss_weak __weak = 0;
++/* these two definitions should win */
++int input_data_weak __weak = 10;
++const volatile int input_rodata_weak __weak = 100;
++
++extern int input_bss2;
++extern int input_data2;
++extern const int input_rodata2;
++
++int output_bss1 = 0;
++int output_data1 = 0;
++int output_rodata1 = 0;
++
++long output_sink1 = 0;
++
++static __noinline int get_bss_res(void)
 +{
-+	/* but different formula */
-+	return x * 1;
++	/* just make sure all the relocations work against .text as well */
++	return /*input_bss_static +*/ input_bss1 + input_bss2 + input_bss_weak;
 +}
-+
-+/* Global functions can't be void */
-+int set_output_val1(int x)
-+{
-+	output_val1 = x + subprog(x);
-+	return x;
-+}
-+
-+/* This function can't be verified as global, as it assumes raw_tp/sys_enter
-+ * context and accesses syscall id (second argument). So we mark it as
-+ * __hidden, so that libbpf will mark it as static in the final object file,
-+ * right before verifying it in the kernel.
-+ *
-+ * But we don't mark it as __hidden here, rather at extern site. __hidden is
-+ * "contaminating" visibility, so it will get propagated from either extern or
-+ * actual definition (including from the losing __weak definition).
-+ */
-+void set_output_ctx1(__u64 *ctx)
-+{
-+	output_ctx1 = ctx[1]; /* long id, same as in BPF_PROG below */
-+}
-+
-+/* this weak instance should win because it's the first one */
-+__weak int set_output_weak(int x)
-+{
-+	output_weak1 = x;
-+	return x;
-+}
-+
-+extern int set_output_val2(int x);
-+
-+/* here we'll force set_output_ctx2() to be __hidden in the final obj file */
-+__hidden extern void set_output_ctx2(__u64 *ctx);
 +
 +SEC("raw_tp/sys_enter")
-+int BPF_PROG(handler1, struct pt_regs *regs, long id)
++int BPF_PROG(handler1)
 +{
-+	if (my_tid != (u32)bpf_get_current_pid_tgid() || id != syscall_id)
-+		return 0;
++	output_bss1 = get_bss_res();
++	output_data1 = input_data1 + input_data2 + input_data_weak;
++	output_rodata1 = input_rodata1 + input_rodata2 + input_rodata_weak;
 +
-+	set_output_val2(1000);
-+	set_output_ctx2(ctx); /* ctx definition is hidden in BPF_PROG macro */
-+
-+	/* keep input value the same across both files to avoid dependency on
-+	 * handler call order; differentiate by output_weak1 vs output_weak2.
++	/* make sure we actually use above special externs, otherwise compiler
++	 * will optimize them out
 +	 */
-+	set_output_weak(42);
-+
++	output_sink1 = LINUX_KERNEL_VERSION
++		       + CONFIG_BPF_SYSCALL
++		       + (long)&bpf_link_fops;
++		       /* + (long)&bpf_kfunc_call_test2; */
 +	return 0;
 +}
 +
 +char LICENSE[] SEC("license") = "GPL";
-diff --git a/tools/testing/selftests/bpf/progs/linked_funcs2.c b/tools/testing/selftests/bpf/progs/linked_funcs2.c
+diff --git a/tools/testing/selftests/bpf/progs/linked_vars2.c b/tools/testing/selftests/bpf/progs/linked_vars2.c
 new file mode 100644
-index 000000000000..a5a935a4f748
+index 000000000000..18880b54bc29
 --- /dev/null
-+++ b/tools/testing/selftests/bpf/progs/linked_funcs2.c
-@@ -0,0 +1,73 @@
++++ b/tools/testing/selftests/bpf/progs/linked_vars2.c
+@@ -0,0 +1,61 @@
 +// SPDX-License-Identifier: GPL-2.0
 +/* Copyright (c) 2021 Facebook */
 +
@@ -228,67 +215,55 @@ index 000000000000..a5a935a4f748
 +#include <bpf/bpf_helpers.h>
 +#include <bpf/bpf_tracing.h>
 +
-+/* weak and shared between both files */
-+const volatile int my_tid __weak = 0;
-+const volatile long syscall_id __weak = 0;
++extern int LINUX_KERNEL_VERSION __kconfig;
++/* when an extern is defined as both strong and weak, resulting symbol will be strong */
++extern bool CONFIG_BPF_SYSCALL __kconfig;
++extern const void __start_BTF __ksym;
++/* make sure special extern funcs are handled as well */
++/*extern int bpf_kfunc_call_test2(struct sock *, __u32, __u32) __ksym;*/
 +
-+int output_val2 = 0;
-+int output_ctx2 = 0;
-+int output_weak2 = 0; /* should stay zero */
++/* static naming conflicts are not handled by BPF skeleton yet */
++/* static volatile int input_bss_static = 0; */
 +
-+/* same "subprog" name in all files, but it's ok because they all are static */
-+static __noinline int subprog(int x)
++int input_bss2 = 0;
++int input_data2 = 2;
++const volatile int input_rodata2 = 22;
++
++int input_bss_weak __weak = 0;
++/* these two weak variables should lose */
++int input_data_weak __weak = 20;
++const volatile int input_rodata_weak __weak = 200;
++
++extern int input_bss1;
++extern int input_data1;
++extern const int input_rodata1;
++
++int output_bss2 = 0;
++int output_data2 = 0;
++int output_rodata2 = 0;
++
++int output_sink2 = 0;
++
++static __noinline int get_data_res(void)
 +{
-+	/* but different formula */
-+	return x * 2;
++	/* just make sure all the relocations work against .text as well */
++	return input_data1 + input_data2 + input_data_weak;
 +}
-+
-+/* Global functions can't be void */
-+int set_output_val2(int x)
-+{
-+	output_val2 = 2 * x + 2 * subprog(x);
-+	return 2 * x;
-+}
-+
-+/* This function can't be verified as global, as it assumes raw_tp/sys_enter
-+ * context and accesses syscall id (second argument). So we mark it as
-+ * __hidden, so that libbpf will mark it as static in the final object file,
-+ * right before verifying it in the kernel.
-+ *
-+ * But we don't mark it as __hidden here, rather at extern site. __hidden is
-+ * "contaminating" visibility, so it will get propagated from either extern or
-+ * actual definition (including from the losing __weak definition).
-+ */
-+void set_output_ctx2(__u64 *ctx)
-+{
-+	output_ctx2 = ctx[1]; /* long id, same as in BPF_PROG below */
-+}
-+
-+/* this weak instance should lose, because it will be processed second */
-+__weak int set_output_weak(int x)
-+{
-+	output_weak2 = x;
-+	return 2 * x;
-+}
-+
-+extern int set_output_val1(int x);
-+
-+/* here we'll force set_output_ctx1() to be __hidden in the final obj file */
-+__hidden extern void set_output_ctx1(__u64 *ctx);
 +
 +SEC("raw_tp/sys_enter")
-+int BPF_PROG(handler2, struct pt_regs *regs, long id)
++int BPF_PROG(handler2)
 +{
-+	if (my_tid != (u32)bpf_get_current_pid_tgid() || id != syscall_id)
-+		return 0;
++	output_bss2 = /*input_bss_static +*/ input_bss1 + input_bss2 + input_bss_weak;
++	output_data2 = get_data_res();
++	output_rodata2 = input_rodata1 + input_rodata2 + input_rodata_weak;
 +
-+	set_output_val1(2000);
-+	set_output_ctx1(ctx); /* ctx definition is hidden in BPF_PROG macro */
-+
-+	/* keep input value the same across both files to avoid dependency on
-+	 * handler call order; differentiate by output_weak1 vs output_weak2.
++	/* make sure we actually use above special externs, otherwise compiler
++	 * will optimize them out
 +	 */
-+	set_output_weak(42);
++	output_sink2 = LINUX_KERNEL_VERSION
++		       + CONFIG_BPF_SYSCALL
++		       + (long)&__start_BTF;
++		       /*+ (long)&bpf_kfunc_call_test2;*/
 +
 +	return 0;
 +}
