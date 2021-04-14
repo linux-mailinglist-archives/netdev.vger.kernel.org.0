@@ -2,63 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9EA0935EEBC
-	for <lists+netdev@lfdr.de>; Wed, 14 Apr 2021 09:53:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3EEC235EEB5
+	for <lists+netdev@lfdr.de>; Wed, 14 Apr 2021 09:53:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349784AbhDNHr6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 14 Apr 2021 03:47:58 -0400
-Received: from void.so ([95.85.17.176]:58582 "EHLO void.so"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1349778AbhDNHr5 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 14 Apr 2021 03:47:57 -0400
-Received: from void.so (localhost [127.0.0.1])
-        by void.so (Postfix) with ESMTP id 58CA01C2AB6;
-        Wed, 14 Apr 2021 10:47:34 +0300 (MSK)
-Received: from void.so ([127.0.0.1])
-        by void.so (void.so [127.0.0.1]) (amavisd-new, port 10024) with LMTP
-        id V6iT49-b6IoV; Wed, 14 Apr 2021 10:47:34 +0300 (MSK)
-Received: from rnd (unknown [91.244.183.205])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by void.so (Postfix) with ESMTPSA id 8B3151C2A8F;
-        Wed, 14 Apr 2021 10:47:33 +0300 (MSK)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=void.so; s=mail;
-        t=1618386453; bh=cb4VP6AyHKNHm5F0FH5eV4QTaogSJPtMI+591cS63HI=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To;
-        b=HTodRisbvIoYIDTFhx9oFB+ocnQQs6z1vTBWvidc25AoqKuBsSu3ZTMIyR79+6zyY
-         /ddCgVvLJjTL2jWf12jZSnqqXIVTCslngPma6AeazS73yY44ffcLpycJnwjgvvKpL1
-         6PYybcRm+kV17/PtutmbEhSATrlgKj96CEtFDrZk=
-Date:   Wed, 14 Apr 2021 10:45:47 +0300
-From:   Pavel Balaev <mail@void.so>
+        id S1349661AbhDNHql (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 14 Apr 2021 03:46:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58182 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231140AbhDNHql (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 14 Apr 2021 03:46:41 -0400
+Received: from mail-oi1-x231.google.com (mail-oi1-x231.google.com [IPv6:2607:f8b0:4864:20::231])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B003C061574
+        for <netdev@vger.kernel.org>; Wed, 14 Apr 2021 00:46:19 -0700 (PDT)
+Received: by mail-oi1-x231.google.com with SMTP id i81so19704629oif.6
+        for <netdev@vger.kernel.org>; Wed, 14 Apr 2021 00:46:19 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=KD6ZREftw2DaKdhNdLsUqMAfzc4b5XxeyQiCkSwgfZo=;
+        b=FcG+A8cTKoutg6GuEtD/OYnYSrVccuQD+LP99yTxbtBh3nI9MheY+bTv+9N91v0d9A
+         Vgdsx/IAojiXy06DBAUTY10/dAuySIFUBJiTB9zcxgP2d45AuXW+G9JH7dPncXyRQ0Dy
+         SRkvLipR/+G/SGGK4QUYOkg98Hi2akEtVtVoMAQ2nXXH8NZqbEY2zQyRF2Jw2DJSzwow
+         LVJOMD9jqYaRuiiPrubMNYgC78sdBJi+J0XPxCJ4RApBuo0L0Urx/h98Fh3FoZjKMVVi
+         cdKWP2N+ZIpnDFuvM4JGT7+SDrNeb22xhQn4bvem8NZJjsWhn/plh12rau1lTeTsthQc
+         uYTw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=KD6ZREftw2DaKdhNdLsUqMAfzc4b5XxeyQiCkSwgfZo=;
+        b=ishnpWGSVX+81OfvtaqDotYUMZzKRMQE2vfu/eObMv8WEH4T942hjBKhpqTznecxGK
+         qgdYTxWQBKE52vyM9+B6JnUYw2dccUhtkZOK7Su0lXWx7BA6BO2OUiP87KWeo0p1dqwh
+         vpUdC4LrTJ5776RaA7TuGqyOMO1Xn4uCtoMlBVGl3+bu8a5HSTtXw/L6AHcPgG5e2hfv
+         UpRO3kVCpgTgWpcAUXJ0PTKNUcKBFOGWc4TlNitVFTwQc3pTQWFfx3Gi078EgGPM2Vdq
+         WCoeWyNB8xkijjeEemScLR8WSajNXiETnyxW8fNFadyh9Gn2H1Fz6oy2tbBs+fjjFMGu
+         GlOw==
+X-Gm-Message-State: AOAM533gR5B2P5CGw6xniQznOKmg8qsQlvd/lP7kFsi3l4tN27vUeB2G
+        MkJP7bw1uXrVcvhvW+F8815DMyQTOCGt4w==
+X-Google-Smtp-Source: ABdhPJwCFvgOH6Mmi3ywyYVp3TtS1XEWAr0Hy9Wiq3xH4XRmiU550N14CXolEPFd2BQ+oUwviK1AOA==
+X-Received: by 2002:aca:a989:: with SMTP id s131mr1456918oie.179.1618386378680;
+        Wed, 14 Apr 2021 00:46:18 -0700 (PDT)
+Received: from pear.attlocal.net ([2600:1700:271:1a80:7124:9f6b:8552:7fdf])
+        by smtp.gmail.com with ESMTPSA id w3sm2833015otg.78.2021.04.14.00.46.18
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Wed, 14 Apr 2021 00:46:18 -0700 (PDT)
+From:   Lijun Pan <lijunp213@gmail.com>
 To:     netdev@vger.kernel.org
-Cc:     christophe.jaillet@wanadoo.fr, kuba@kernel.org,
-        yoshfuji@linux-ipv6.org, dsahern@kernel.org
-Subject: Re: [PATCH v3 net-next] net: multipath routing: configurable seed
-Message-ID: <YHadq3m1bBWrPQn7@rnd>
-References: <YHWGmPmvpQAT3BcV@rnd>
- <20210413.161521.2301224176572441397.davem@davemloft.net>
+Cc:     Lijun Pan <lijunp213@gmail.com>
+Subject: [PATCH net 0/3] ibmvnic: correctly call NAPI APIs
+Date:   Wed, 14 Apr 2021 02:46:13 -0500
+Message-Id: <20210414074616.11299-1-lijunp213@gmail.com>
+X-Mailer: git-send-email 2.23.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20210413.161521.2301224176572441397.davem@davemloft.net>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Apr 13, 2021 at 04:15:21PM -0700, David Miller wrote:
-> From: Balaev Pavel <balaevpa@infotecs.ru>
-> Date: Tue, 13 Apr 2021 14:55:04 +0300
-> 
-> > @@ -222,6 +230,9 @@ struct netns_ipv4 {
-> >  #ifdef CONFIG_IP_ROUTE_MULTIPATH
-> >  	u8 sysctl_fib_multipath_use_neigh;
-> >  	u8 sysctl_fib_multipath_hash_policy;
-> > +	int sysctl_fib_multipath_hash_seed;
-> > +	struct multipath_seed_ctx __rcu *fib_multipath_hash_seed_ctx;
-> > +	spinlock_t fib_multipath_hash_seed_ctx_lock;
-> 
-> Maybe use the rtnl mutex instead of this custom spinlock?
-> 
-> Thanks.
-Thanks for advise, I will use it in next patch version.
+This series correct some misuse of NAPI APIs in the driver.
+
+Lijun Pan (3):
+  ibmvnic: avoid calling napi_disable() twice
+  ibmvnic: remove duplicate napi_schedule call in do_reset function
+  ibmvnic: remove duplicate napi_schedule call in open function
+
+ drivers/net/ethernet/ibm/ibmvnic.c | 14 ++------------
+ 1 file changed, 2 insertions(+), 12 deletions(-)
+
+-- 
+2.23.0
+
