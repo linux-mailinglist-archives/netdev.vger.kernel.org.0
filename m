@@ -2,256 +2,253 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 259AD35FE00
-	for <lists+netdev@lfdr.de>; Thu, 15 Apr 2021 00:47:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5F70D35FE0F
+	for <lists+netdev@lfdr.de>; Thu, 15 Apr 2021 00:51:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233679AbhDNWrY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 14 Apr 2021 18:47:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58502 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230168AbhDNWrX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 14 Apr 2021 18:47:23 -0400
-Received: from mail-yb1-xb34.google.com (mail-yb1-xb34.google.com [IPv6:2607:f8b0:4864:20::b34])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E435C061574;
-        Wed, 14 Apr 2021 15:47:01 -0700 (PDT)
-Received: by mail-yb1-xb34.google.com with SMTP id x8so18811969ybx.2;
-        Wed, 14 Apr 2021 15:47:01 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=iG/bzcOuz0T3mi8ygtcgigtH46bIry+8H6Amt7aVtJQ=;
-        b=vaRv3aBaIfWiBhk62+n3d1aZc+ZXgTm12tDxAuAy6iAZoodfZOJnJNySa3ZUiDvYVQ
-         g1owOLKA5ty4ZmAwftJnOfyEYpIht17lGbrtyu6KYNUrmJnRwHQkBTUKbB9NuXh0C+28
-         8pTnjykdMDHU93cznOYJk0yd1Kdwdu5tnq3pW9w4EwzZ9fhdXhNK2mEWEV4UWD4+jFBL
-         tpdNbJ7fvXyEqQ/kW1ENedl0ZK4HPol06BT/TkT1SpNUqiCzdhpcywX+z9+vrwLlqnic
-         a1Szy+M+cWyLR3qv/O6+Sj1x72d5NXebn2v+k3tKCCW5Nmp8kxGPvrqSKz2K3+YG7kZF
-         wqWQ==
+        id S236800AbhDNWwM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 14 Apr 2021 18:52:12 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:32981 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S233679AbhDNWwG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 14 Apr 2021 18:52:06 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1618440702;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=dtB6Wp5AVxplW2Z84nTCGyemptbqZUOzp8eUITEWE1E=;
+        b=cWLIng26C0iVjI00iK1+cXLsOGlmA9hfIwk9c+yJ+WV+ybBOzyqYmyyz859DaGfH81zBnv
+        zryk3p7lT1JVsewcYZ8r8YgsvSpDvktA+MPTHMPpLMjnItUbxUt+O2QQYAWsm417Eod9Qv
+        Im3xqK9+i+Qbby0PocXbdqxRnWpPBEo=
+Received: from mail-ej1-f69.google.com (mail-ej1-f69.google.com
+ [209.85.218.69]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-458-QWGPcqtnM4mTA9hGTMSzvQ-1; Wed, 14 Apr 2021 18:51:41 -0400
+X-MC-Unique: QWGPcqtnM4mTA9hGTMSzvQ-1
+Received: by mail-ej1-f69.google.com with SMTP id x21-20020a1709064bd5b029037c44cb861cso310286ejv.4
+        for <netdev@vger.kernel.org>; Wed, 14 Apr 2021 15:51:40 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=iG/bzcOuz0T3mi8ygtcgigtH46bIry+8H6Amt7aVtJQ=;
-        b=RwfzcbtOKWMj/QQCV5/SwZUg2WgdhQKklK3tAJB83xAEy/jDvOkiLYmVRBIXkYpcNl
-         Jc5i7Rvn9ExiNd0wZ2dEgzlssEOM/+ajqDtRY2tEa2wC/a7sEynhZo0oxa59IKfKzM5G
-         9OusOCkf16S9e1vhVhQRCwp9Nu7zZavN5LeSrDsxIYtZQJDwxnSMixxZou5WD4VOfOmZ
-         bFQiBuL5fIK2fGbMfqD5vcftwG2Jnxsizy62H1B8qsZRvt+ahIPnNpHgUGo1rgp35pnv
-         Y/r2aUj7JZ238ZiUcbmPt8awTcIs4FZtwZgquQUYJKet8GU+p/eV6wGwGGDI53547sy5
-         5VCg==
-X-Gm-Message-State: AOAM530CYfuMmDWFTtfGYMPdYt6fY4Rgx5bpcsF/EMnsJZu1QCHaqP5C
-        D70BfbrtN+3cWJCls1/ln2BYFy4B3Lmb0k7F5Cc=
-X-Google-Smtp-Source: ABdhPJx6TYoqBafM79DsOqCbJevqbPIunKywdkNqm7MrsgpC+QDGIFr2cC82eNVRJqGOypRI4mrn4/Mi6k+AWxaStyc=
-X-Received: by 2002:a25:9942:: with SMTP id n2mr423190ybo.230.1618440420688;
- Wed, 14 Apr 2021 15:47:00 -0700 (PDT)
-MIME-Version: 1.0
-References: <20210413121516.1467989-1-jolsa@kernel.org> <CAEf4Bzazst1rBi4=LuP6_FnPXCRYBNFEtDnK3UVBj6Eo6xFNtQ@mail.gmail.com>
- <YHbd2CmeoaiLJj7X@krava>
-In-Reply-To: <YHbd2CmeoaiLJj7X@krava>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Wed, 14 Apr 2021 15:46:49 -0700
-Message-ID: <CAEf4BzYyVj-Tjy9ZZdAU5nOtJ8_auvVobTT6pMqg8zPb9jj-Ow@mail.gmail.com>
-Subject: Re: [PATCHv2 RFC bpf-next 0/7] bpf: Add support for ftrace probe
-To:     Jiri Olsa <jolsa@redhat.com>
-Cc:     Jiri Olsa <jolsa@kernel.org>, Alexei Starovoitov <ast@kernel.org>,
+        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
+         :message-id:mime-version:content-transfer-encoding;
+        bh=dtB6Wp5AVxplW2Z84nTCGyemptbqZUOzp8eUITEWE1E=;
+        b=WpHVtktJtf+KVi9o9GJ3Hjhgnu/Mx3nCItPf9Sn7vSqbytOLpGBwtwFP3oTutxaYEg
+         7TL/lbZX98eVb59fYcqb11JBdbx+8jDCo3yikhPSS44rmq51ShBG1kTkqPsl5Xm23FJK
+         qXbj1K8/s2TowfjdRN9oRhC3U1nlR7nMyOk98o0sCUt23XoHeI7ZSZexJQd5cyLnDQLM
+         VgoY/TQPs55Ez0wAtCppWgqej6TkY1WwShVbEQo+NzjrIzpeq1Up2kbhXElUdH3wyGuI
+         VjomfU0UGsHSQpv3ayfKuCstgBVDsl0yKgPQ8omcDWtkFvdXl6cJSdSEmTIXYm6kvtuC
+         5dwA==
+X-Gm-Message-State: AOAM533Sa+i7RpNoqT5SUyRnlfxGaVmnKHSzJvd5D/hbPgQAD5kBs8Xi
+        QCPBIgTnGVvk6nzTCCfN7ju8I9SFAjNcdTP9RwuFHGnA+EmuYUX00RORsElPHI8y44g8BaTm/KP
+        Zw8zYLBkbBvzb1a0M
+X-Received: by 2002:a05:6402:270c:: with SMTP id y12mr597497edd.284.1618440699757;
+        Wed, 14 Apr 2021 15:51:39 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJz/Ha0YabHIRbKQeIodCU+bcTN5C7lPFVSR2jBVjzkZyW/0QqQvzy7nn33VIUTkoBF1km1Q8g==
+X-Received: by 2002:a05:6402:270c:: with SMTP id y12mr597457edd.284.1618440699361;
+        Wed, 14 Apr 2021 15:51:39 -0700 (PDT)
+Received: from alrua-x1.borgediget.toke.dk ([2a0c:4d80:42:443::2])
+        by smtp.gmail.com with ESMTPSA id k9sm126025eje.102.2021.04.14.15.51.38
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 14 Apr 2021 15:51:38 -0700 (PDT)
+Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
+        id 087191806B3; Thu, 15 Apr 2021 00:51:38 +0200 (CEST)
+From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Cc:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        Kumar Kartikeya Dwivedi <memxor@gmail.com>,
         Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andriin@fb.com>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Andrii Nakryiko <andrii@kernel.org>,
         Martin KaFai Lau <kafai@fb.com>,
         Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
         John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>, Daniel Xu <dxu@dxuuu.xyz>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Jesper Brouer <jbrouer@redhat.com>,
-        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>,
-        Viktor Malik <vmalik@redhat.com>
-Content-Type: text/plain; charset="UTF-8"
+        KP Singh <kpsingh@kernel.org>, Shuah Khan <shuah@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>,
+        "open list:KERNEL SELFTEST FRAMEWORK" 
+        <linux-kselftest@vger.kernel.org>
+Subject: Re: [PATCH bpf-next 3/5] libbpf: add low level TC-BPF API
+In-Reply-To: <CAEf4BzaEkzPeAXqmm5aEdQxnCkrqJTHcSu7afnV11+697KgZTQ@mail.gmail.com>
+References: <20210325120020.236504-4-memxor@gmail.com>
+ <CAEf4Bzbz9OQ_vfqyenurPV7XRVpK=zcvktwH2Dvj-9kUGL1e7w@mail.gmail.com>
+ <20210328080648.oorx2no2j6zslejk@apollo>
+ <CAEf4BzaMsixmrrgGv6Qr68Ytq8k9W+WP6m4Vdb1wDhDFBKStgw@mail.gmail.com>
+ <48b99ccc-8ef6-4ba9-00f9-d7e71ae4fb5d@iogearbox.net>
+ <20210331094400.ldznoctli6fljz64@apollo>
+ <5d59b5ee-a21e-1860-e2e5-d03f89306fd8@iogearbox.net>
+ <20210402152743.dbadpgcmrgjt4eca@apollo>
+ <CAADnVQ+wqrEnOGd8E1yp+1WTAx8ZcAx3HUjJs6ipPd0eKmOrgA@mail.gmail.com>
+ <20210402190806.nhcgappm3iocvd3d@apollo>
+ <20210403174721.vg4wle327wvossgl@ast-mbp>
+ <CAEf4Bzaeu4apgEtwS_3q1iPuURjPXMs9H43cYUtJSmjPMU5M9A@mail.gmail.com>
+ <87blar4ti7.fsf@toke.dk>
+ <CAEf4BzaOJ-WD3A13B2uCrsE2yrctAL8QtJ8TuXHLeP+tm98pbA@mail.gmail.com>
+ <874kg9m8t1.fsf@toke.dk>
+ <CAEf4BzaEkzPeAXqmm5aEdQxnCkrqJTHcSu7afnV11+697KgZTQ@mail.gmail.com>
+X-Clacks-Overhead: GNU Terry Pratchett
+Date:   Thu, 15 Apr 2021 00:51:37 +0200
+Message-ID: <87wnt4jx8m.fsf@toke.dk>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Apr 14, 2021 at 5:19 AM Jiri Olsa <jolsa@redhat.com> wrote:
->
-> On Tue, Apr 13, 2021 at 06:04:05PM -0700, Andrii Nakryiko wrote:
-> > On Tue, Apr 13, 2021 at 7:57 AM Jiri Olsa <jolsa@kernel.org> wrote:
-> > >
-> > > hi,
-> > > sending another attempt on speeding up load of multiple probes
-> > > for bpftrace and possibly other tools (first post in [1]).
-> > >
-> > > This patchset adds support to attach bpf program directly to
-> > > ftrace probe as suggested by Steven and it speeds up loading
-> > > for bpftrace commands like:
-> > >
-> > >    # bpftrace -e 'kfunc:_raw_spin* { @[probe] = count(); }'
-> > >    # bpftrace -e 'kfunc:ksys_* { @[probe] = count(); }'
-> > >
-> > > Using ftrace with single bpf program for attachment to multiple
-> > > functions is much faster than current approach, where we need to
-> > > load and attach program for each probe function.
-> > >
-> >
-> > Ok, so first of all, I think it's super important to allow fast
-> > attachment of a single BPF program to multiple kernel functions (I
-> > call it mass-attachment). I've been recently prototyping a tool
-> > (retsnoop, [0]) that allows attaching fentry/fexit to multiple
-> > functions, and not having this feature turned into lots of extra code
-> > and slow startup/teardown speeds. So we should definitely fix that.
-> >
-> > But I think the approach you've taken is not the best one, even though
-> > it's a good starting point for discussion.
-> >
-> > First, you are saying function return attachment support is missing,
-> > but is not needed so far. I actually think that without func return
-> > the whole feature is extremely limiting. Not being able to measure
-> > function latency  by tracking enter/exit events is crippling for tons
-> > of useful applications. So I think this should go with both at the
-> > same time.
-> >
-> > But guess what, we already have a good BPF infra (BPF trampoline and
-> > fexit programs) that supports func exit tracing. Additionally, it
-> > supports the ability to read input arguments *on function exit*, which
-> > is something that kretprobe doesn't support and which is often a very
-> > limiting restriction, necessitating complicated logic to trace
-> > function entry just to store input arguments. It's a killer feature
-> > and one that makes fexit so much more useful than kretprobe.
-> >
-> > The only problem is that currently we have a 1:1:1 relationship
-> > between BPF trampoline, BPF program, and kernel function. I think we
-> > should allow to have a single BPF program, using a single BPF
-> > trampoline, but being able to attach to multiple kernel functions
-> > (1:1:N). This will allow to validate BPF program once, allocate only
-> > one dedicated BPF trampoline, and then (with appropriate attach API)
-> > attach them in a batch mode.
->
-> heya,
-> I had some initial prototypes trying this way, but always ended up
-> in complicated code, that's why I turned to ftrace_ops.
->
-> let's see if it'll make any sense to you ;-)
->
-> 1) so let's say we have extra trampoline for the program (which
-> also seems a bit of waste since there will be just single record
+Andrii Nakryiko <andrii.nakryiko@gmail.com> writes:
 
-BPF trampoline does more than just calls BPF program. At the very
-least it saves input arguments for fexit program to be able to access
-it. But given it's one BPF trampoline attached to thousands of
-functions, I don't see any problem there.
+> On Wed, Apr 14, 2021 at 3:58 AM Toke H=C3=B8iland-J=C3=B8rgensen <toke@re=
+dhat.com> wrote:
+>>
+>> Andrii Nakryiko <andrii.nakryiko@gmail.com> writes:
+>>
+>> > On Tue, Apr 6, 2021 at 3:06 AM Toke H=C3=B8iland-J=C3=B8rgensen <toke@=
+redhat.com> wrote:
+>> >>
+>> >> Andrii Nakryiko <andrii.nakryiko@gmail.com> writes:
+>> >>
+>> >> > On Sat, Apr 3, 2021 at 10:47 AM Alexei Starovoitov
+>> >> > <alexei.starovoitov@gmail.com> wrote:
+>> >> >>
+>> >> >> On Sat, Apr 03, 2021 at 12:38:06AM +0530, Kumar Kartikeya Dwivedi =
+wrote:
+>> >> >> > On Sat, Apr 03, 2021 at 12:02:14AM IST, Alexei Starovoitov wrote:
+>> >> >> > > On Fri, Apr 2, 2021 at 8:27 AM Kumar Kartikeya Dwivedi <memxor=
+@gmail.com> wrote:
+>> >> >> > > > [...]
+>> >> >> > >
+>> >> >> > > All of these things are messy because of tc legacy. bpf tried =
+to follow tc style
+>> >> >> > > with cls and act distinction and it didn't quite work. cls with
+>> >> >> > > direct-action is the only
+>> >> >> > > thing that became mainstream while tc style attach wasn't real=
+ly addressed.
+>> >> >> > > There were several incidents where tc had tens of thousands of=
+ progs attached
+>> >> >> > > because of this attach/query/index weirdness described above.
+>> >> >> > > I think the only way to address this properly is to introduce =
+bpf_link style of
+>> >> >> > > attaching to tc. Such bpf_link would support ingress/egress on=
+ly.
+>> >> >> > > direction-action will be implied. There won't be any index and=
+ query
+>> >> >> > > will be obvious.
+>> >> >> >
+>> >> >> > Note that we already have bpf_link support working (without supp=
+ort for pinning
+>> >> >> > ofcourse) in a limited way. The ifindex, protocol, parent_id, pr=
+iority, handle,
+>> >> >> > chain_index tuple uniquely identifies a filter, so we stash this=
+ in the bpf_link
+>> >> >> > and are able to operate on the exact filter during release.
+>> >> >>
+>> >> >> Except they're not unique. The library can stash them, but somethi=
+ng else
+>> >> >> doing detach via iproute2 or their own netlink calls will detach t=
+he prog.
+>> >> >> This other app can attach to the same spot a different prog and now
+>> >> >> bpf_link__destroy will be detaching somebody else prog.
+>> >> >>
+>> >> >> > > So I would like to propose to take this patch set a step furth=
+er from
+>> >> >> > > what Daniel said:
+>> >> >> > > int bpf_tc_attach(prog_fd, ifindex, {INGRESS,EGRESS}):
+>> >> >> > > and make this proposed api to return FD.
+>> >> >> > > To detach from tc ingress/egress just close(fd).
+>> >> >> >
+>> >> >> > You mean adding an fd-based TC API to the kernel?
+>> >> >>
+>> >> >> yes.
+>> >> >
+>> >> > I'm totally for bpf_link-based TC attachment.
+>> >> >
+>> >> > But I think *also* having "legacy" netlink-based APIs will allow
+>> >> > applications to handle older kernels in a much nicer way without ex=
+tra
+>> >> > dependency on iproute2. We have a similar situation with kprobe, wh=
+ere
+>> >> > currently libbpf only supports "modern" fd-based attachment, but us=
+ers
+>> >> > periodically ask questions and struggle to figure out issues on old=
+er
+>> >> > kernels that don't support new APIs.
+>> >>
+>> >> +1; I am OK with adding a new bpf_link-based way to attach TC program=
+s,
+>> >> but we still need to support the netlink API in libbpf.
+>> >>
+>> >> > So I think we'd have to support legacy TC APIs, but I agree with
+>> >> > Alexei and Daniel that we should keep it to the simplest and most
+>> >> > straightforward API of supporting direction-action attachments and
+>> >> > setting up qdisc transparently (if I'm getting all the terminology
+>> >> > right, after reading Quentin's blog post). That coincidentally shou=
+ld
+>> >> > probably match how bpf_link-based TC API will look like, so all that
+>> >> > can be abstracted behind a single bpf_link__attach_tc() API as well,
+>> >> > right? That's the plan for dealing with kprobe right now, btw. Libb=
+pf
+>> >> > will detect the best available API and transparently fall back (may=
+be
+>> >> > with some warning for awareness, due to inherent downsides of legacy
+>> >> > APIs: no auto-cleanup being the most prominent one).
+>> >>
+>> >> Yup, SGTM: Expose both in the low-level API (in bpf.c), and make the
+>> >> high-level API auto-detect. That way users can also still use the
+>> >> netlink attach function if they don't want the fd-based auto-close
+>> >> behaviour of bpf_link.
+>> >
+>> > So I thought a bit more about this, and it feels like the right move
+>> > would be to expose only higher-level TC BPF API behind bpf_link. It
+>> > will keep the API complexity and amount of APIs that libbpf will have
+>> > to support to the minimum, and will keep the API itself simple:
+>> > direct-attach with the minimum amount of input arguments. By not
+>> > exposing low-level APIs we also table the whole bpf_tc_cls_attach_id
+>> > design discussion, as we now can keep as much info as needed inside
+>> > bpf_link_tc (which will embed bpf_link internally as well) to support
+>> > detachment and possibly some additional querying, if needed.
+>>
+>> But then there would be no way for the caller to explicitly select a
+>> mechanism? I.e., if I write a BPF program using this mechanism targeting
+>> a 5.12 kernel, I'll get netlink attachment, which can stick around when
+>> I do bpf_link__disconnect(). But then if the kernel gets upgraded to
+>> support bpf_link for TC programs I'll suddenly transparently get
+>> bpf_link and the attachments will go away unless I pin them. This
+>> seems... less than ideal?
+>
+> That's what we are doing with bpf_program__attach_kprobe(), though.
+> And so far I've only seen people (privately) saying how good it would
+> be to have bpf_link-based TC APIs, doesn't seem like anyone with a
+> realistic use case prefers the current APIs. So I suspect it's not
+> going to be a problem in practice. But at least I'd start there and
+> see how people are using it and if they need anything else.
 
-> in it, but sure) - this single trampoline can be easily attached
-> to multiple functions, but what about other trampolines/tools,
-> that want to trace the same function? we'd need some way for a
-> function to share/call multiple trampolines - I did not see easy
-> solution in here so I moved to another way..
+*sigh* - I really wish you would stop arbitrarily declaring your own use
+cases "realistic" and mine (implied) "unrealistic". Makes it really hard
+to have a productive discussion...
 
-The easiest would be to make the existing BPF trampoline to co-exist
-with this new multi-attach one. As to how, I don't know the code well
-enough yet to answer specifically.
+>> If we expose the low-level API I can elect to just use this if I know I
+>> want netlink behaviour, but if bpf_program__attach_tc() is the only API
+>> available it would at least need a flag to enforce one mode or the other
+>> (I can see someone wanting to enforce kernel bpf_link semantics as well,
+>> so a flag for either mode seems reasonable?).
+>
+> Sophisticated enough users can also do feature detection to know if
+> it's going to work or not.
 
->
->
-> 2) we keep the trampoline:function relationship to 1:1 and allow
-> 'mass-attachment' program to register in multiple trampolines.
-> (it needs special hlist node for each attachment, but that's ok)
->
-> the problem was that to make this fast, you don't want to attach/detach
-> program to trampolines one by one, you need to do it in batch,
-> so you can call ftrace API just once (ftrace API is another problem below)
-> and doing this in batch mode means, that you need to lock all the
-> related trampolines and not allow any change in them by another tools,
-> and that's where I couldn't find any easy solution.. you can't take
-> a lock for 100 trampolines.. and having some 'master' lock is tricky
+Sure, but that won't help if there's no API to pick the attach mode they
+want.
 
-So this generic fentry would have its own BPF trampoline. Now you need
-to attach it to 1000s of places with a single batch API call. We won't
-have to modify 100s of other BPF trampolines, if we can find a good
-way to let them co-exist.
+> There are many ways to skin this cat. I'd prioritize bpf_link-based TC
+> APIs to be added with legacy TC API as a fallback.
 
+I'm fine with adding that; I just want the functions implementing the TC
+API to also be exported so users can use those if they prefer...
 
->
-> another problem is the ftrace API.. to make it fast we either
-> need to use ftrace_ops or create fast API to ftrace's direct
-> functions.. and that was rejected last time [1]
+-Toke
 
-I don't read it as a rejection, just that ftrace infra needs to be
-improved to support. In any case, I haven't spent enough time thinking
-and digging through code, but I know that without fexit support this
-feature is useless in a lot of cases. And input argument reading in
-fexit is too good to give up at this point either.
-
->
->
-> 3) bpf has support for batch interface already, but only if ftrace
-
-It does? What is it? Last time I looked I didn't find anything like that.
-
-> is not in the way..  compile without ftrace is not an option for us,
-> so I was also thinking about some way to bypass ftrace and allow
-> any trace engine to own some function.. so whoever takes it first
-> (ftrace or bpf) can use it, the other one will see -EBUSY and once
-> the tool is done, the function is free to take
->
->
-> [1] https://lore.kernel.org/bpf/20201022104205.728dd135@gandalf.local.home/#t
->
-> >
-> > We'll probably have to abandon direct memory read for input arguments,
-> > but for these mass-attachment scenarios that's rarely needed at all.
-> > Just allowing to read input args as u64 and providing traced function
-> > IP would be enough to do a lot. BPF trampoline can just
-> > unconditionally save the first 6 arguments, similarly how we do it
-> > today for a specific BTF function, just always 6.
->
-> yes, we don't need arguments just function ip/id to tell what
-> function we just trace
->
-> >
-> > As for attachment, dedicating an entire new FD for storing functions
-> > seems like an overkill. I think BPF_LINK_CREATE is the right place to
-> > do this, providing an array of BTF IDs to identify all functions to be
-> > attached to. It's both simple and efficient.
->
-> that fd can be closed right after link is created ;-)
->
-> I used it because it seemed simpler than the array approach,
-> and also for the ftrace_location check when adding the function
-> to the object - so you know it's under ftrace - when it passed,
-> the attach will most likely pass as well - so tools is just adding
-> IDs and the objects keeps only the good ones ;-)
->
-> but that ftrace_location info can be found in user space as well,
-> so it's definitely possible to prepare 'good' BTF IDs in userspace
-> and use array
-
-right; a new FD and new concept just for this seems like an overkill
-
->
-> >
-> > We'll get to libbpf APIs and those pseudo-regexp usage a bit later, I
-> > don't think we need to discuss that at this stage yet :)
-> >
-> > So, WDYT about BPF trampoline-based generic fentry/fexit with mass-attach API?
->
-> I'll double check the ftrace graph support for ftrace_ops ;-)
->
-> let's see if we could find some solutions for the problems I
-> described above.. or most likely another better way to do this,
-> that'd be great
->
-> >
-> >   [0] https://github.com/anakryiko/retsnoop
->
-> nice tool, could it be also part of bcc?
-
-As it is right now it takes minutes to attach and then minutes to
-detach, so not a very convenient tool without batched attach. Brendan
-Gregg also hinted that he doesn't intend to allow BCC tools collection
-to grow unbounded. So for now it is in its own repo, feel free to try
-it. We'll see how it goes.
-
->
-> thanks,
-> jirka
->
-> >
-
-[...]
