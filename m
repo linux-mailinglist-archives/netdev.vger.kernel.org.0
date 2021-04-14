@@ -2,112 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 81F6235F89D
-	for <lists+netdev@lfdr.de>; Wed, 14 Apr 2021 18:08:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F149C35F8A8
+	for <lists+netdev@lfdr.de>; Wed, 14 Apr 2021 18:08:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350347AbhDNQFv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 14 Apr 2021 12:05:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55550 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231517AbhDNQFr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 14 Apr 2021 12:05:47 -0400
-Received: from mail-pj1-x102b.google.com (mail-pj1-x102b.google.com [IPv6:2607:f8b0:4864:20::102b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 63CE0C061574;
-        Wed, 14 Apr 2021 09:05:26 -0700 (PDT)
-Received: by mail-pj1-x102b.google.com with SMTP id s14so5659596pjl.5;
-        Wed, 14 Apr 2021 09:05:26 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=pNpXA6x5/nPga5oEMbCsiILe6WyaovQXAKF5BJRiD2M=;
-        b=mP4d271Dto5ywro/TIArJGuK5mX+HAWP6IcadJJ3AC3XGR6POTD+pzdrBm/z47UyB4
-         flgm125LOo86pzVNweZLwVoNXuEXFjWprJA/Tc2Id7ARn32Tj2AI3AcAdktmKah2RzCY
-         qLUqWoHftubcH04UD2WtF8spK6c49iC9OuhJsaKRjKEv2gUJSdEiZiGt5WiBntcBxahb
-         J58KnG27sCMhtVZKWIzM5zVKQ4INKtgtlFhlutEcNFjes/NVQPRjGRzlzlbJgzgk0DvY
-         GTVlzjjCstSplndbuPVRF/SPLEHQ8A6qu8MWcumX2WFlke5KaeCVP3WxEIcOAUtb7Hvk
-         n2ww==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=pNpXA6x5/nPga5oEMbCsiILe6WyaovQXAKF5BJRiD2M=;
-        b=AnHQFlHO2fEnC1MATdc1D3AQU3tDYCOFpGs0Sx8mqA3aQWn095ih0zERquDlSEHyEl
-         bDGMy0TCLG4BSHOSEk6yaMMsB146UFFmrMF28mtlp/XG9wAe52ki+2gxqVSugGjryodj
-         2VAiZTj+c2Dm72Twmg10EJs/xHf14p/C8rVuend92/6C0xtypS4uZeABKvQsyRxfXAvr
-         hTP7meIXHZJsOpYG8bzunc+aQa7jz5U3x7qVedbgrXZwPhbxIs8P/VgrMMxHybJo1Lkd
-         D+984Sm/9jiJoMGfMx4IUKUwnLneLpieINjLlYh0gax7g0VIiwrozkm5Jo3Mi6FaJvPv
-         DZ3g==
-X-Gm-Message-State: AOAM53342AWaPqa+1Lko7ww4p9jd0DgCJFzinAqP2QuMPd5CHOs6h4mY
-        yADb31rvCx287q4dmQ+9gbg=
-X-Google-Smtp-Source: ABdhPJyvoKT/IW8cSj8lS0Gu1VGt87xTvpG8KvG94RTyo7PMKxBzwqa+f0hGgLkDLu9kVkUyZ6DZSA==
-X-Received: by 2002:a17:902:c407:b029:e7:2272:d12e with SMTP id k7-20020a170902c407b02900e72272d12emr38063062plk.52.1618416325810;
-        Wed, 14 Apr 2021 09:05:25 -0700 (PDT)
-Received: from skbuf (5-12-16-165.residential.rdsnet.ro. [5.12.16.165])
-        by smtp.gmail.com with ESMTPSA id 205sm15386643pfc.201.2021.04.14.09.05.15
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 14 Apr 2021 09:05:25 -0700 (PDT)
-Date:   Wed, 14 Apr 2021 19:05:10 +0300
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Jakub Kicinski <kuba@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        Ioana Ciornei <ioana.ciornei@nxp.com>,
-        Vadym Kochan <vkochan@marvell.com>,
-        Taras Chornyi <tchornyi@marvell.com>,
-        Jiri Pirko <jiri@nvidia.com>, Ido Schimmel <idosch@nvidia.com>,
-        Grygorii Strashko <grygorii.strashko@ti.com>,
-        Ivan Vecera <ivecera@redhat.com>,
-        Roopa Prabhu <roopa@nvidia.com>,
-        Nikolay Aleksandrov <nikolay@nvidia.com>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        linux-omap@vger.kernel.org,
-        Vladimir Oltean <vladimir.oltean@nxp.com>,
-        Tobias Waldekranz <tobias@waldekranz.com>
-Subject: Re: [PATCH net-next 2/2] net: bridge: switchdev: include local flag
- in FDB notifications
-Message-ID: <20210414160510.zcif6liazjltd2cz@skbuf>
-References: <20210414151540.1808871-1-olteanv@gmail.com>
- <20210414151540.1808871-2-olteanv@gmail.com>
- <YHcRNIgI9lVs6MDj@lunn.ch>
+        id S1352590AbhDNQHI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 14 Apr 2021 12:07:08 -0400
+Received: from mail.kernel.org ([198.145.29.99]:33894 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1352587AbhDNQHF (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 14 Apr 2021 12:07:05 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id CBF9F6112F;
+        Wed, 14 Apr 2021 16:06:43 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1618416404;
+        bh=bHtZ7nxyQFALxJLyz2Lob7sOa/P681tKImWQcIl3QOI=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=exhKN5iKCIbTb9Bz0ntxlYbGh82AmLE3VIk7MkKG/0ReewpRpjQNk927DZ+KkUdOx
+         99KzTCZ89edxXMJwbnGVwAaQJz4uTEhZjYVbXc0fvlotIfY5gHchyKXpQAZGPpAEme
+         Bw5MQthZG+GnxZZl46y5b95bVy4e2IUNDHw714D05OJsEwHPDUItw04NsQD8efrxe4
+         6/EIfvk4kUGsiw4cCkvmoqzF74RR3oEPzDfk5igIbmdfvCMiYikiGA2EmX6ZB7cNHl
+         YzEfFsYlhvpheouEq3korpISK/F0sWOxyi3v0t/tQnZGp7S4riYU97DJpzVjiD2WVu
+         FqRgX0LuKDT9Q==
+From:   Mark Brown <broonie@kernel.org>
+To:     Nico Pache <npache@redhat.com>, linux-kernel@vger.kernel.org
+Cc:     Mark Brown <broonie@kernel.org>, brendanhiggins@google.com,
+        netdev@vger.kernel.org, davidgow@google.com, rafael@kernel.org,
+        mptcp@lists.linux.dev, linux-m68k@lists.linux-m68k.org,
+        geert@linux-m68k.org, tytso@mit.edu, skhan@linuxfoundation.org,
+        davem@davemloft.net, gregkh@linuxfoundation.org,
+        linux-ext4@vger.kernel.org, mathew.j.martineau@linux.intel.com
+Subject: Re: (subset) [PATCH v2 0/6] kunit: Fix formatting of KUNIT tests to meet the standard
+Date:   Wed, 14 Apr 2021 17:06:19 +0100
+Message-Id: <161841601730.20953.13768721892830917031.b4-ty@kernel.org>
+X-Mailer: git-send-email 2.20.1
+In-Reply-To: <cover.1618388989.git.npache@redhat.com>
+References: <cover.1618388989.git.npache@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YHcRNIgI9lVs6MDj@lunn.ch>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Apr 14, 2021 at 05:58:44PM +0200, Andrew Lunn wrote:
-> > Let us now add the 'is_local' bit to bridge FDB entries, and make all
-> > drivers ignore these entries by their own choice.
+On Wed, 14 Apr 2021 04:58:03 -0400, Nico Pache wrote:
+> There are few instances of KUNIT tests that are not properly defined.
+> This commit focuses on correcting these issues to match the standard
+> defined in the Documentation.
 > 
-> Hi Vladimir
+> Issues Fixed:
+>  - tests should end in KUNIT_TEST, some fixes have been applied to
+>    correct issues were KUNIT_TESTS is used or KUNIT is not mentioned.
+>  - Tests should default to KUNIT_ALL_TESTS
+>  - Tests configs tristate should have if !KUNIT_ALL_TESTS
 > 
-> This goes to the question about the missing cover letter. Why should
-> drivers get to ignore them, rather than the core? It feels like there
-> should be another patch in the series, where a driver does not
-> actually ignore them, but does something?
+> [...]
 
-Hi Andrew,
+Applied to
 
-Bridge fdb entries with the is_local flag are entries which are
-terminated locally and not forwarded. Switchdev drivers might want to be
-notified of these addresses so they can trap them (otherwise, if they
-don't program these entries to hardware, there is no guarantee that they
-will do the right thing with these entries, and they won't be, let's
-say, flooded). Of course, ideally none of the switchdev drivers should
-ignore them, but having access to the is_local bit is the bare minimum
-change that should be done in the bridge layer, before this is even
-possible.
+   https://git.kernel.org/pub/scm/linux/kernel/git/broonie/sound.git for-next
 
-These 2 changes are actually part of a larger group of changes that
-together form the "RX filtering for DSA" series. I haven't had a lot of
-success with that, so I thought a better approach would be to take it
-step by step. DSA will need to be notified of local FDB entries. For
-now, it ignores them like everybody else. This is supposed to be a
-non-functional patch series because I don't want to spam every switchdev
-maintainer with 15+ DSA RX filtering patches.
+Thanks!
+
+[1/6] kunit: ASoC: topology: adhear to KUNIT formatting standard
+      commit: b5fb388da472a69858355560d803602e0ace1006
+
+All being well this means that it will be integrated into the linux-next
+tree (usually sometime in the next 24 hours) and sent to Linus during
+the next merge window (or sooner if it is a bug fix), however if
+problems are discovered then the patch may be dropped or reverted.
+
+You may get further e-mails resulting from automated or manual testing
+and review of the tree, please engage with people reporting problems and
+send followup patches addressing any issues that are reported if needed.
+
+If any updates are required or you are submitting further changes they
+should be sent as incremental updates against current git, existing
+patches will not be replaced.
+
+Please add any relevant lists and maintainers to the CCs when replying
+to this mail.
+
+Thanks,
+Mark
