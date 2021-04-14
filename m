@@ -2,154 +2,226 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5289735FDAE
-	for <lists+netdev@lfdr.de>; Thu, 15 Apr 2021 00:18:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8289335FDB9
+	for <lists+netdev@lfdr.de>; Thu, 15 Apr 2021 00:22:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231978AbhDNWTK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 14 Apr 2021 18:19:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52324 "EHLO
+        id S232361AbhDNWXI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 14 Apr 2021 18:23:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53190 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231810AbhDNWTF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 14 Apr 2021 18:19:05 -0400
-Received: from mail-yb1-xb31.google.com (mail-yb1-xb31.google.com [IPv6:2607:f8b0:4864:20::b31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 859ABC061574;
-        Wed, 14 Apr 2021 15:18:43 -0700 (PDT)
-Received: by mail-yb1-xb31.google.com with SMTP id v72so3161203ybe.11;
-        Wed, 14 Apr 2021 15:18:43 -0700 (PDT)
+        with ESMTP id S231829AbhDNWXF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 14 Apr 2021 18:23:05 -0400
+Received: from mail-yb1-xb32.google.com (mail-yb1-xb32.google.com [IPv6:2607:f8b0:4864:20::b32])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7049FC061574;
+        Wed, 14 Apr 2021 15:22:43 -0700 (PDT)
+Received: by mail-yb1-xb32.google.com with SMTP id k73so17607726ybf.3;
+        Wed, 14 Apr 2021 15:22:43 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=wYH10MbmWkC6SLfT4Lj8aUbTLV+tTgRo3/HUb5Du50M=;
-        b=K4u4UuFmcaz4JoZ6hEXXAahwXPSKVKeLdgF+4mMUIM1h4Hs4gJ8NaecF8gmpk8RM58
-         qOaKydKW88Eyn1Vk1PQmOIXXFNFOiZPQ7RkG+lPbTSB38QsXD6Cy2aqouoQU3eL0T7rY
-         oazGP8ONdOV4GIvNcrw6nBcnRTxrnmywvbkwmUP2vJ8C7zYhbq+suUhPsT1bn58KQQhm
-         +bINRNgEqSeoODr0hPg7odF7ja+5sEgWxEo/Nvqfeb/ycUdpKMYONyfKPtff+Ap66SNI
-         SCb4EuKRnRx8+4Bf7UXHRGDFw+MPRCaGe3KOyTSdXD+YNsjFdDTxXOC+2HTQzVuuUkW6
-         VoiQ==
+         :cc:content-transfer-encoding;
+        bh=DBrFNOxaMA/7ZTSjVDCpN1Cf8EPs2BVUIE7dJq/XIFY=;
+        b=ZASmmu9cCOp0GLby5ge3ySdPHTyYlhTYWt0JOSAB6sZncJ1s1rnPPV+Mz2oZu8G3RO
+         bofdF4GlF/hbrO6Pa8d8VSjD+SX1THore3s/+xPaX2IlCEsbfN2SeVI66YR+B0U1gq5G
+         +52Qm55upbNs438HLYAax2yyCTikl2QkUb+Czg9yNGHKGFhjgxxOuBWWgbV8A76UfTED
+         SMk6If6tUFDT/uK8qBGYwQAVQWIA8NpOGqFptgfKRuCfVZ2XA6hFOlf5tCm8yWhrNmfU
+         IlE0XtimzWMa5zTqoZqYJPxhcRX2r9GSW6eGv0YG2ED5ES9mJ2zyS11Kvkk0LFn+alBr
+         F7cQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=wYH10MbmWkC6SLfT4Lj8aUbTLV+tTgRo3/HUb5Du50M=;
-        b=X6oCRlKh07UpjgAEZv8iR4cWXTrHrMHahMtvRcj9nwo/+su6MaEMvEawPUqpZ1oPtW
-         QSm39gFefEHZStcHVmd3Xfp7FyoOk/i2mOcMWzftqmthCCAZ7+xxyLK40ufFs3JQBFt8
-         oSbHneNIPqAle0K8uOUYp9tT3UAxn8um4CukoSuDbD0b4bVQcBndBfI/mSnMw3e3h42K
-         hs+N6sqxt/B3WIHjQMN48X3EyuY74yAO+CCjRP1HDYyNaoVMpnrxkouMAg5u9c+1JBMC
-         Epg/3BaqE6ecdgGfkv+ohkmQBW/5s5Sismdqsksdkacsgp3pd1+8K6t2D0yvpbSX+LXG
-         XN0g==
-X-Gm-Message-State: AOAM532rRp9bS5WGbwg0B3NEDqDMfFazXpfgqfe8wK5utOgOE01/pOme
-        61h1OxK050+DDwnVbA2UgmfWTznqMRnn8ha3nTo=
-X-Google-Smtp-Source: ABdhPJx14zKg1Wr4e/0JQl4CrjIv3oDs0T9piXSUZ9E/yIcSuyDJnXpzOAipaz35SGpEf6aqBOi6Ueq50DZjrPR0y24=
-X-Received: by 2002:a25:9942:: with SMTP id n2mr291642ybo.230.1618438722876;
- Wed, 14 Apr 2021 15:18:42 -0700 (PDT)
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=DBrFNOxaMA/7ZTSjVDCpN1Cf8EPs2BVUIE7dJq/XIFY=;
+        b=btySjORW4rvDYnJJ+ULu94FixVQDWqRGpucq1W3CNtjWgvYUsttQSxKiQUjiqiVJhi
+         osnCmwLOrDoLcC5dzFMDPSnuAwt3te+8ucs/Iryf/+E8f4zlTfMJ5nhSowx7BC1KQ/kj
+         pYClPRL7GkzZgFOpVmKpdaxNhgc3hvGF/zSjJV2KgexXvb1EbVMznOeAAvybp4nSgw9t
+         fnC7NVt8JHC/vmjrwQ0v+rYMxUV2laHu0PqAnyPrUNEtA0TbM9ZE7XKaq30P1LSeeRgK
+         Izot/nJ9gzQH4qhTUHxTQ0Xs5uDH/XWgFWGT3udrTCUuZxfCT9Je15BnnyX2D6RbJwfA
+         qn5Q==
+X-Gm-Message-State: AOAM531VMXMfKGV9hTAqFbuLd1IBxD5pyNJ8Ymzzw5Ryb+zQJFZHVpu+
+        Y3VtPe8z91YI4jqdiU4j8gRJTnkTCP4GVD7Ha/U=
+X-Google-Smtp-Source: ABdhPJxiog5q4JCineo0XCm6gpjbEOo7LKP6Kpc65ooTrU3BbGB4xCtX26vFc3CxiwdhgRLIApa7JjZICSStXX5WWzQ=
+X-Received: by 2002:a25:becd:: with SMTP id k13mr222090ybm.459.1618438962678;
+ Wed, 14 Apr 2021 15:22:42 -0700 (PDT)
 MIME-Version: 1.0
-References: <20210412162502.1417018-1-jolsa@kernel.org> <20210412162502.1417018-3-jolsa@kernel.org>
- <CAEf4Bza6OXC4aVuxVGnn-DOANuFbnuJ++=q8fFpD-f48kb7_pw@mail.gmail.com> <YHbKexxx+jyMeVnM@krava>
-In-Reply-To: <YHbKexxx+jyMeVnM@krava>
+References: <20210325120020.236504-4-memxor@gmail.com> <CAEf4Bzbz9OQ_vfqyenurPV7XRVpK=zcvktwH2Dvj-9kUGL1e7w@mail.gmail.com>
+ <20210328080648.oorx2no2j6zslejk@apollo> <CAEf4BzaMsixmrrgGv6Qr68Ytq8k9W+WP6m4Vdb1wDhDFBKStgw@mail.gmail.com>
+ <48b99ccc-8ef6-4ba9-00f9-d7e71ae4fb5d@iogearbox.net> <20210331094400.ldznoctli6fljz64@apollo>
+ <5d59b5ee-a21e-1860-e2e5-d03f89306fd8@iogearbox.net> <20210402152743.dbadpgcmrgjt4eca@apollo>
+ <CAADnVQ+wqrEnOGd8E1yp+1WTAx8ZcAx3HUjJs6ipPd0eKmOrgA@mail.gmail.com>
+ <20210402190806.nhcgappm3iocvd3d@apollo> <20210403174721.vg4wle327wvossgl@ast-mbp>
+ <CAEf4Bzaeu4apgEtwS_3q1iPuURjPXMs9H43cYUtJSmjPMU5M9A@mail.gmail.com>
+ <87blar4ti7.fsf@toke.dk> <CAEf4BzaOJ-WD3A13B2uCrsE2yrctAL8QtJ8TuXHLeP+tm98pbA@mail.gmail.com>
+ <874kg9m8t1.fsf@toke.dk>
+In-Reply-To: <874kg9m8t1.fsf@toke.dk>
 From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Wed, 14 Apr 2021 15:18:32 -0700
-Message-ID: <CAEf4Bzb4TnKXtaEiGVuOUHTuj++OMVHuNSxUraJhzj4jGkOZJg@mail.gmail.com>
-Subject: Re: [PATCHv4 bpf-next 2/5] selftests/bpf: Add re-attach test to fentry_test
-To:     Jiri Olsa <jolsa@redhat.com>
-Cc:     Jiri Olsa <jolsa@kernel.org>, Alexei Starovoitov <ast@kernel.org>,
+Date:   Wed, 14 Apr 2021 15:22:31 -0700
+Message-ID: <CAEf4BzaEkzPeAXqmm5aEdQxnCkrqJTHcSu7afnV11+697KgZTQ@mail.gmail.com>
+Subject: Re: [PATCH bpf-next 3/5] libbpf: add low level TC-BPF API
+To:     =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>
+Cc:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        Kumar Kartikeya Dwivedi <memxor@gmail.com>,
         Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andriin@fb.com>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Andrii Nakryiko <andrii@kernel.org>,
         Martin KaFai Lau <kafai@fb.com>,
         Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
         John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>,
-        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>,
-        Julia Lawall <julia.lawall@inria.fr>
+        KP Singh <kpsingh@kernel.org>, Shuah Khan <shuah@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>,
+        "open list:KERNEL SELFTEST FRAMEWORK" 
+        <linux-kselftest@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Apr 14, 2021 at 3:57 AM Jiri Olsa <jolsa@redhat.com> wrote:
+On Wed, Apr 14, 2021 at 3:58 AM Toke H=C3=B8iland-J=C3=B8rgensen <toke@redh=
+at.com> wrote:
 >
-> On Tue, Apr 13, 2021 at 02:54:10PM -0700, Andrii Nakryiko wrote:
+> Andrii Nakryiko <andrii.nakryiko@gmail.com> writes:
 >
-> SNIP
->
-> > >         __u32 duration = 0, retval;
-> > > +       struct bpf_link *link;
-> > >         __u64 *result;
-> > >
-> > > -       fentry_skel = fentry_test__open_and_load();
-> > > -       if (CHECK(!fentry_skel, "fentry_skel_load", "fentry skeleton failed\n"))
-> > > -               goto cleanup;
-> > > -
-> > >         err = fentry_test__attach(fentry_skel);
-> > > -       if (CHECK(err, "fentry_attach", "fentry attach failed: %d\n", err))
-> > > -               goto cleanup;
-> > > +       if (!ASSERT_OK(err, "fentry_attach"))
-> > > +               return err;
-> > > +
-> > > +       /* Check that already linked program can't be attached again. */
-> > > +       link = bpf_program__attach(fentry_skel->progs.test1);
-> > > +       if (!ASSERT_ERR_PTR(link, "fentry_attach_link"))
-> > > +               return -1;
-> > >
-> > >         prog_fd = bpf_program__fd(fentry_skel->progs.test1);
-> > >         err = bpf_prog_test_run(prog_fd, 1, NULL, 0,
-> > >                                 NULL, NULL, &retval, &duration);
-> > > -       CHECK(err || retval, "test_run",
-> > > -             "err %d errno %d retval %d duration %d\n",
-> > > -             err, errno, retval, duration);
-> > > +       ASSERT_OK(err || retval, "test_run");
+> > On Tue, Apr 6, 2021 at 3:06 AM Toke H=C3=B8iland-J=C3=B8rgensen <toke@r=
+edhat.com> wrote:
+> >>
+> >> Andrii Nakryiko <andrii.nakryiko@gmail.com> writes:
+> >>
+> >> > On Sat, Apr 3, 2021 at 10:47 AM Alexei Starovoitov
+> >> > <alexei.starovoitov@gmail.com> wrote:
+> >> >>
+> >> >> On Sat, Apr 03, 2021 at 12:38:06AM +0530, Kumar Kartikeya Dwivedi w=
+rote:
+> >> >> > On Sat, Apr 03, 2021 at 12:02:14AM IST, Alexei Starovoitov wrote:
+> >> >> > > On Fri, Apr 2, 2021 at 8:27 AM Kumar Kartikeya Dwivedi <memxor@=
+gmail.com> wrote:
+> >> >> > > > [...]
+> >> >> > >
+> >> >> > > All of these things are messy because of tc legacy. bpf tried t=
+o follow tc style
+> >> >> > > with cls and act distinction and it didn't quite work. cls with
+> >> >> > > direct-action is the only
+> >> >> > > thing that became mainstream while tc style attach wasn't reall=
+y addressed.
+> >> >> > > There were several incidents where tc had tens of thousands of =
+progs attached
+> >> >> > > because of this attach/query/index weirdness described above.
+> >> >> > > I think the only way to address this properly is to introduce b=
+pf_link style of
+> >> >> > > attaching to tc. Such bpf_link would support ingress/egress onl=
+y.
+> >> >> > > direction-action will be implied. There won't be any index and =
+query
+> >> >> > > will be obvious.
+> >> >> >
+> >> >> > Note that we already have bpf_link support working (without suppo=
+rt for pinning
+> >> >> > ofcourse) in a limited way. The ifindex, protocol, parent_id, pri=
+ority, handle,
+> >> >> > chain_index tuple uniquely identifies a filter, so we stash this =
+in the bpf_link
+> >> >> > and are able to operate on the exact filter during release.
+> >> >>
+> >> >> Except they're not unique. The library can stash them, but somethin=
+g else
+> >> >> doing detach via iproute2 or their own netlink calls will detach th=
+e prog.
+> >> >> This other app can attach to the same spot a different prog and now
+> >> >> bpf_link__destroy will be detaching somebody else prog.
+> >> >>
+> >> >> > > So I would like to propose to take this patch set a step furthe=
+r from
+> >> >> > > what Daniel said:
+> >> >> > > int bpf_tc_attach(prog_fd, ifindex, {INGRESS,EGRESS}):
+> >> >> > > and make this proposed api to return FD.
+> >> >> > > To detach from tc ingress/egress just close(fd).
+> >> >> >
+> >> >> > You mean adding an fd-based TC API to the kernel?
+> >> >>
+> >> >> yes.
+> >> >
+> >> > I'm totally for bpf_link-based TC attachment.
+> >> >
+> >> > But I think *also* having "legacy" netlink-based APIs will allow
+> >> > applications to handle older kernels in a much nicer way without ext=
+ra
+> >> > dependency on iproute2. We have a similar situation with kprobe, whe=
+re
+> >> > currently libbpf only supports "modern" fd-based attachment, but use=
+rs
+> >> > periodically ask questions and struggle to figure out issues on olde=
+r
+> >> > kernels that don't support new APIs.
+> >>
+> >> +1; I am OK with adding a new bpf_link-based way to attach TC programs=
+,
+> >> but we still need to support the netlink API in libbpf.
+> >>
+> >> > So I think we'd have to support legacy TC APIs, but I agree with
+> >> > Alexei and Daniel that we should keep it to the simplest and most
+> >> > straightforward API of supporting direction-action attachments and
+> >> > setting up qdisc transparently (if I'm getting all the terminology
+> >> > right, after reading Quentin's blog post). That coincidentally shoul=
+d
+> >> > probably match how bpf_link-based TC API will look like, so all that
+> >> > can be abstracted behind a single bpf_link__attach_tc() API as well,
+> >> > right? That's the plan for dealing with kprobe right now, btw. Libbp=
+f
+> >> > will detect the best available API and transparently fall back (mayb=
+e
+> >> > with some warning for awareness, due to inherent downsides of legacy
+> >> > APIs: no auto-cleanup being the most prominent one).
+> >>
+> >> Yup, SGTM: Expose both in the low-level API (in bpf.c), and make the
+> >> high-level API auto-detect. That way users can also still use the
+> >> netlink attach function if they don't want the fd-based auto-close
+> >> behaviour of bpf_link.
 > >
-> > this is quite misleading, even if will result in a correct check. Toke
-> > did this in his patch set:
-> >
-> > ASSERT_OK(err, ...);
-> > ASSERT_EQ(retval, 0, ...);
-> >
-> > It is a better and more straightforward way to validate the checks
-> > instead of relying on (err || retval) -> bool (true) -> int (1) -> !=
-> > 0 chain.
+> > So I thought a bit more about this, and it feels like the right move
+> > would be to expose only higher-level TC BPF API behind bpf_link. It
+> > will keep the API complexity and amount of APIs that libbpf will have
+> > to support to the minimum, and will keep the API itself simple:
+> > direct-attach with the minimum amount of input arguments. By not
+> > exposing low-level APIs we also table the whole bpf_tc_cls_attach_id
+> > design discussion, as we now can keep as much info as needed inside
+> > bpf_link_tc (which will embed bpf_link internally as well) to support
+> > detachment and possibly some additional querying, if needed.
 >
-> ok, makes sense
->
-> SNIP
->
-> > > +void test_fentry_test(void)
-> > > +{
-> > > +       struct fentry_test *fentry_skel = NULL;
-> > > +       int err;
-> > > +
-> > > +       fentry_skel = fentry_test__open_and_load();
-> > > +       if (!ASSERT_OK_PTR(fentry_skel, "fentry_skel_load"))
-> > > +               goto cleanup;
-> > > +
-> > > +       err = fentry_test(fentry_skel);
-> > > +       if (!ASSERT_OK(err, "fentry_first_attach"))
-> > > +               goto cleanup;
-> > > +
-> > > +       err = fentry_test(fentry_skel);
-> > > +       ASSERT_OK(err, "fentry_second_attach");
-> > > +
-> > >  cleanup:
-> > >         fentry_test__destroy(fentry_skel);
-> > >  }
-> > > diff --git a/tools/testing/selftests/bpf/test_progs.h b/tools/testing/selftests/bpf/test_progs.h
-> > > index e87c8546230e..ee7e3b45182a 100644
-> > > --- a/tools/testing/selftests/bpf/test_progs.h
-> > > +++ b/tools/testing/selftests/bpf/test_progs.h
-> > > @@ -210,7 +210,7 @@ extern int test__join_cgroup(const char *path);
-> > >  #define ASSERT_ERR_PTR(ptr, name) ({                                   \
-> > >         static int duration = 0;                                        \
-> > >         const void *___res = (ptr);                                     \
-> > > -       bool ___ok = IS_ERR(___res)                                     \
-> > > +       bool ___ok = IS_ERR(___res);                                    \
-> >
-> > heh, it probably deserves a separate patch with Fixes tag...
->
-> va bene
+> But then there would be no way for the caller to explicitly select a
+> mechanism? I.e., if I write a BPF program using this mechanism targeting
+> a 5.12 kernel, I'll get netlink attachment, which can stick around when
+> I do bpf_link__disconnect(). But then if the kernel gets upgraded to
+> support bpf_link for TC programs I'll suddenly transparently get
+> bpf_link and the attachments will go away unless I pin them. This
+> seems... less than ideal?
 
-Where would I learn some Italian if not on bpf@vger :)
+That's what we are doing with bpf_program__attach_kprobe(), though.
+And so far I've only seen people (privately) saying how good it would
+be to have bpf_link-based TC APIs, doesn't seem like anyone with a
+realistic use case prefers the current APIs. So I suspect it's not
+going to be a problem in practice. But at least I'd start there and
+see how people are using it and if they need anything else.
+
 
 >
-> jirka
+> If we expose the low-level API I can elect to just use this if I know I
+> want netlink behaviour, but if bpf_program__attach_tc() is the only API
+> available it would at least need a flag to enforce one mode or the other
+> (I can see someone wanting to enforce kernel bpf_link semantics as well,
+> so a flag for either mode seems reasonable?).
+
+Sophisticated enough users can also do feature detection to know if
+it's going to work or not. There are many ways to skin this cat. I'd
+prioritize bpf_link-based TC APIs to be added with legacy TC API as a
+fallback.
+
+>
+> -Toke
 >
