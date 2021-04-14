@@ -2,26 +2,26 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 071E935F7D7
+	by mail.lfdr.de (Postfix) with ESMTP id C64B535F7D9
 	for <lists+netdev@lfdr.de>; Wed, 14 Apr 2021 17:48:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352385AbhDNPah (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 14 Apr 2021 11:30:37 -0400
-Received: from mx2.suse.de ([195.135.220.15]:33238 "EHLO mx2.suse.de"
+        id S1352395AbhDNPaj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 14 Apr 2021 11:30:39 -0400
+Received: from mx2.suse.de ([195.135.220.15]:33262 "EHLO mx2.suse.de"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1352324AbhDNPaM (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S1352327AbhDNPaM (ORCPT <rfc822;netdev@vger.kernel.org>);
         Wed, 14 Apr 2021 11:30:12 -0400
 X-Virus-Scanned: by amavisd-new at test-mx.suse.de
 Received: from relay2.suse.de (unknown [195.135.221.27])
-        by mx2.suse.de (Postfix) with ESMTP id 226D2B03C;
+        by mx2.suse.de (Postfix) with ESMTP id 6E10CB07B;
         Wed, 14 Apr 2021 15:29:50 +0000 (UTC)
 From:   Thomas Bogendoerfer <tsbogend@alpha.franken.de>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Subject: [PATCH v2 net-next 7/9] net: korina: Add support for device tree
-Date:   Wed, 14 Apr 2021 17:29:43 +0200
-Message-Id: <20210414152946.12517-8-tsbogend@alpha.franken.de>
+Subject: [PATCH v2 net-next 8/9] net: korina: Get mdio input clock via common clock framework
+Date:   Wed, 14 Apr 2021 17:29:44 +0200
+Message-Id: <20210414152946.12517-9-tsbogend@alpha.franken.de>
 X-Mailer: git-send-email 2.29.2
 In-Reply-To: <20210414152946.12517-1-tsbogend@alpha.franken.de>
 References: <20210414152946.12517-1-tsbogend@alpha.franken.de>
@@ -31,76 +31,81 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-If there is no mac address passed via platform data try to get it via
-device tree and fall back to a random mac address, if all fail.
+With device tree clock is provided via CCF. For non device tree
+use a maximum clock value to not overclock the PHY. The non device
+tree usage will go away after platform is converted to DT.
 
 Signed-off-by: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
 ---
- drivers/net/ethernet/korina.c | 29 ++++++++++++++++++++++++++---
- 1 file changed, 26 insertions(+), 3 deletions(-)
+ drivers/net/ethernet/korina.c | 19 +++++++++++++------
+ 1 file changed, 13 insertions(+), 6 deletions(-)
 
 diff --git a/drivers/net/ethernet/korina.c b/drivers/net/ethernet/korina.c
-index 69c8baa87a6e..c4590b2c65aa 100644
+index c4590b2c65aa..df75dd5d1638 100644
 --- a/drivers/net/ethernet/korina.c
 +++ b/drivers/net/ethernet/korina.c
-@@ -42,6 +42,8 @@
- #include <linux/interrupt.h>
- #include <linux/ioport.h>
- #include <linux/in.h>
-+#include <linux/of_device.h>
-+#include <linux/of_net.h>
- #include <linux/slab.h>
- #include <linux/string.h>
- #include <linux/delay.h>
-@@ -1056,7 +1058,7 @@ static const struct net_device_ops korina_netdev_ops = {
+@@ -56,14 +56,13 @@
+ #include <linux/ethtool.h>
+ #include <linux/crc32.h>
+ #include <linux/pgtable.h>
++#include <linux/clk.h>
  
- static int korina_probe(struct platform_device *pdev)
+ #include <asm/bootinfo.h>
+ #include <asm/bitops.h>
+ #include <asm/io.h>
+ #include <asm/dma.h>
+ 
+-#include <asm/mach-rc32434/rb.h>
+-#include <asm/mach-rc32434/rc32434.h>
+ #include <asm/mach-rc32434/eth.h>
+ #include <asm/mach-rc32434/dma_v.h>
+ 
+@@ -145,10 +144,9 @@ struct korina_private {
+ 	struct work_struct restart_task;
+ 	struct net_device *dev;
+ 	struct device *dmadev;
++	int mii_clock_freq;
+ };
+ 
+-extern unsigned int idt_cpu_freq;
+-
+ static dma_addr_t korina_tx_dma(struct korina_private *lp, int idx)
  {
--	u8 *mac_addr = dev_get_platdata(&pdev->dev);
-+	const u8 *mac_addr = dev_get_platdata(&pdev->dev);
+ 	return lp->td_dma + (idx * sizeof(struct dma_desc));
+@@ -900,8 +898,8 @@ static int korina_init(struct net_device *dev)
+ 
+ 	/* Management Clock Prescaler Divisor
+ 	 * Clock independent setting */
+-	writel(((idt_cpu_freq) / MII_CLOCK + 1) & ~1,
+-			&lp->eth_regs->ethmcp);
++	writel(((lp->mii_clock_freq) / MII_CLOCK + 1) & ~1,
++	       &lp->eth_regs->ethmcp);
+ 	writel(0, &lp->eth_regs->miimcfg);
+ 
+ 	/* don't transmit until fifo contains 48b */
+@@ -1061,6 +1059,7 @@ static int korina_probe(struct platform_device *pdev)
+ 	const u8 *mac_addr = dev_get_platdata(&pdev->dev);
  	struct korina_private *lp;
  	struct net_device *dev;
++	struct clk *clk;
  	void __iomem *p;
-@@ -1069,7 +1071,15 @@ static int korina_probe(struct platform_device *pdev)
- 	SET_NETDEV_DEV(dev, &pdev->dev);
- 	lp = netdev_priv(dev);
+ 	int rc;
  
--	memcpy(dev->dev_addr, mac_addr, ETH_ALEN);
-+	if (mac_addr) {
-+		ether_addr_copy(dev->dev_addr, mac_addr);
+@@ -1081,6 +1080,14 @@ static int korina_probe(struct platform_device *pdev)
+ 			eth_hw_addr_random(dev);
+ 	}
+ 
++	clk = devm_clk_get(&pdev->dev, NULL);
++	if (!IS_ERR(clk)) {
++		clk_prepare_enable(clk);
++		lp->mii_clock_freq = clk_get_rate(clk);
 +	} else {
-+		mac_addr = of_get_mac_address(pdev->dev.of_node);
-+		if (!IS_ERR(mac_addr))
-+			ether_addr_copy(dev->dev_addr, mac_addr);
-+		else
-+			eth_hw_addr_random(dev);
++		lp->mii_clock_freq = 200000000; /* max possible input clk */
 +	}
- 
++
  	lp->rx_irq = platform_get_irq_byname(pdev, "korina_rx");
  	lp->tx_irq = platform_get_irq_byname(pdev, "korina_tx");
-@@ -1149,8 +1159,21 @@ static int korina_remove(struct platform_device *pdev)
- 	return 0;
- }
  
-+#ifdef CONFIG_OF
-+static const struct of_device_id korina_match[] = {
-+	{
-+		.compatible = "korina",
-+	},
-+	{ }
-+};
-+MODULE_DEVICE_TABLE(of, korina_match);
-+#endif
-+
- static struct platform_driver korina_driver = {
--	.driver.name = "korina",
-+	.driver = {
-+		.name = "korina",
-+		.of_match_table = of_match_ptr(korina_match),
-+	},
- 	.probe = korina_probe,
- 	.remove = korina_remove,
- };
 -- 
 2.29.2
 
