@@ -2,217 +2,149 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 96C5135F643
-	for <lists+netdev@lfdr.de>; Wed, 14 Apr 2021 16:35:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D764035F65E
+	for <lists+netdev@lfdr.de>; Wed, 14 Apr 2021 16:43:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348551AbhDNOew (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 14 Apr 2021 10:34:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35364 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232950AbhDNOew (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 14 Apr 2021 10:34:52 -0400
-Received: from mail-pg1-x52c.google.com (mail-pg1-x52c.google.com [IPv6:2607:f8b0:4864:20::52c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C1A8DC061574
-        for <netdev@vger.kernel.org>; Wed, 14 Apr 2021 07:34:30 -0700 (PDT)
-Received: by mail-pg1-x52c.google.com with SMTP id b17so14546858pgh.7
-        for <netdev@vger.kernel.org>; Wed, 14 Apr 2021 07:34:30 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=nk2RhtjnPyqGobg+rScKvkLX6MKGs5O0vMsI8TYeqGg=;
-        b=Vddt2mE9yRj3pSQwBWThSTT/KrVkBByhH4kJ8tMSXL1upIEK49LrfaHSphu8JUZFct
-         11Rdvg3A6iHAK5MmGMM5R7HzpeDZmKrqzIA8DTwoSC8DTu6azv7KtdkYPbU+j5oXyTAu
-         L4/EgkVcosi5lSBdn6tL8KF67/8R7zE0SA6YjsT3L9go6oBPzmSwccb9PIU7ide2rVM2
-         dAoc59qc8M8pDGg/oz4sAq5uMqP6G9rRSC+X3vjfztfOXf9STvbX5KL+5HXGuy887Da6
-         UD3vQHely59SPHHr52qxiT16cNWefkFumvXUGf5AdQ4W6iyzQwhCuce/ggcz4bWwgfkf
-         CMSQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=nk2RhtjnPyqGobg+rScKvkLX6MKGs5O0vMsI8TYeqGg=;
-        b=kJqVShUBTaG8E2RfGNBv4xJ3LjdZK425OxdRF56hmcLBOpyM8/yiUMjmnQ/aXvqiZI
-         bUTN/7l2XFfkM6d5P8Cfg+HcJvxnRUW3uaBHZAKNZakoPcWotOZOYu93hlKKiKztGxP0
-         Nu64Rr6tW9oVM7vaoMSL9CWcDYTKwaFZruwifnuddrZU22PkK1ijBvf2zNWJRw2t16Yg
-         BNUcLjuWQmqQrsq4B46HOiRR7uBQKt/stOf2vb3bkYjB8fVwD3jPcdVH5fhDPb/5Ql5G
-         V5M/qnpy8cYl3lNVe2T7pWVQZLKFOWvdPoOoZiW96KgvUdCuH3UbxTgUHQWpeAdE9IDX
-         MFCA==
-X-Gm-Message-State: AOAM5323UYRuuZ4HeAUCNFWFIxp0bgG2ypMeNrMPd95+B7VQnr4w0JBh
-        eKKIJpBQu1sfX/1PuOH/LQs=
-X-Google-Smtp-Source: ABdhPJzLdFOv0PXjOpnOwLbZxKRC4DDfeGL6tBE8XCg1LGN9lp3McRoGPDF9rGQH8BW8+/nGOmJXSw==
-X-Received: by 2002:a05:6a00:cd2:b029:253:5b9d:4f03 with SMTP id b18-20020a056a000cd2b02902535b9d4f03mr3120538pfv.34.1618410870264;
-        Wed, 14 Apr 2021 07:34:30 -0700 (PDT)
-Received: from localhost.localdomain (5-12-16-165.residential.rdsnet.ro. [5.12.16.165])
-        by smtp.gmail.com with ESMTPSA id ir3sm5129397pjb.42.2021.04.14.07.34.24
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 14 Apr 2021 07:34:29 -0700 (PDT)
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Jakub Kicinski <kuba@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
-Cc:     Florian Fainelli <f.fainelli@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>, Jiri Pirko <jiri@resnulli.us>,
-        Ido Schimmel <idosch@idosch.org>,
-        Roopa Prabhu <roopa@nvidia.com>,
-        Nikolay Aleksandrov <nikolay@nvidia.com>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>
-Subject: [PATCH net-next] net: bridge: propagate error code and extack from br_mc_disabled_update
-Date:   Wed, 14 Apr 2021 17:34:13 +0300
-Message-Id: <20210414143413.1786981-1-olteanv@gmail.com>
-X-Mailer: git-send-email 2.25.1
+        id S1351774AbhDNOmT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 14 Apr 2021 10:42:19 -0400
+Received: from eu-smtp-delivery-151.mimecast.com ([185.58.85.151]:32827 "EHLO
+        eu-smtp-delivery-151.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1349881AbhDNOmS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 14 Apr 2021 10:42:18 -0400
+Received: from AcuMS.aculab.com (156.67.243.121 [156.67.243.121]) (Using
+ TLS) by relay.mimecast.com with ESMTP id
+ uk-mta-186-m3nor2MZPjeBIWMoTKeI3A-1; Wed, 14 Apr 2021 15:41:53 +0100
+X-MC-Unique: m3nor2MZPjeBIWMoTKeI3A-1
+Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) by
+ AcuMS.aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) with Microsoft SMTP
+ Server (TLS) id 15.0.1497.2; Wed, 14 Apr 2021 15:41:52 +0100
+Received: from AcuMS.Aculab.com ([fe80::994c:f5c2:35d6:9b65]) by
+ AcuMS.aculab.com ([fe80::994c:f5c2:35d6:9b65%12]) with mapi id
+ 15.00.1497.012; Wed, 14 Apr 2021 15:41:52 +0100
+From:   David Laight <David.Laight@ACULAB.COM>
+To:     'Tom Talpey' <tom@talpey.com>, Jason Gunthorpe <jgg@nvidia.com>
+CC:     Haakon Bugge <haakon.bugge@oracle.com>,
+        Chuck Lever III <chuck.lever@oracle.com>,
+        Christoph Hellwig <hch@lst.de>,
+        Leon Romanovsky <leon@kernel.org>,
+        Doug Ledford <dledford@redhat.com>,
+        Leon Romanovsky <leonro@nvidia.com>,
+        Adit Ranadive <aditr@vmware.com>,
+        Anna Schumaker <anna.schumaker@netapp.com>,
+        Ariel Elior <aelior@marvell.com>,
+        Avihai Horon <avihaih@nvidia.com>,
+        Bart Van Assche <bvanassche@acm.org>,
+        Bernard Metzler <bmt@zurich.ibm.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        "Dennis Dalessandro" <dennis.dalessandro@cornelisnetworks.com>,
+        Devesh Sharma <devesh.sharma@broadcom.com>,
+        Faisal Latif <faisal.latif@intel.com>,
+        "Jack Wang" <jinpu.wang@ionos.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Bruce Fields <bfields@fieldses.org>, Jens Axboe <axboe@fb.com>,
+        Karsten Graul <kgraul@linux.ibm.com>,
+        Keith Busch <kbusch@kernel.org>, Lijun Ou <oulijun@huawei.com>,
+        CIFS <linux-cifs@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Linux NFS Mailing List <linux-nfs@vger.kernel.org>,
+        "linux-nvme@lists.infradead.org" <linux-nvme@lists.infradead.org>,
+        OFED mailing list <linux-rdma@vger.kernel.org>,
+        "linux-s390@vger.kernel.org" <linux-s390@vger.kernel.org>,
+        Max Gurtovoy <maxg@mellanox.com>,
+        Max Gurtovoy <mgurtovoy@nvidia.com>,
+        "Md. Haris Iqbal" <haris.iqbal@ionos.com>,
+        "Michael Guralnik" <michaelgur@nvidia.com>,
+        Michal Kalderon <mkalderon@marvell.com>,
+        Mike Marciniszyn <mike.marciniszyn@cornelisnetworks.com>,
+        Naresh Kumar PBS <nareshkumar.pbs@broadcom.com>,
+        Linux-Net <netdev@vger.kernel.org>,
+        "Potnuri Bharat Teja" <bharat@chelsio.com>,
+        "rds-devel@oss.oracle.com" <rds-devel@oss.oracle.com>,
+        Sagi Grimberg <sagi@grimberg.me>,
+        "samba-technical@lists.samba.org" <samba-technical@lists.samba.org>,
+        "Santosh Shilimkar" <santosh.shilimkar@oracle.com>,
+        Selvin Xavier <selvin.xavier@broadcom.com>,
+        Shiraz Saleem <shiraz.saleem@intel.com>,
+        Somnath Kotur <somnath.kotur@broadcom.com>,
+        Sriharsha Basavapatna <sriharsha.basavapatna@broadcom.com>,
+        Steve French <sfrench@samba.org>,
+        Trond Myklebust <trond.myklebust@hammerspace.com>,
+        VMware PV-Drivers <pv-drivers@vmware.com>,
+        Weihang Li <liweihang@huawei.com>,
+        Yishai Hadas <yishaih@nvidia.com>,
+        Zhu Yanjun <zyjzyj2000@gmail.com>
+Subject: RE: [PATCH rdma-next 00/10] Enable relaxed ordering for ULPs
+Thread-Topic: [PATCH rdma-next 00/10] Enable relaxed ordering for ULPs
+Thread-Index: AQHXLWixzqpV3HG00U+6H5w8s2gjs6qtuZCggAZdLuKAAAS+kA==
+Date:   Wed, 14 Apr 2021 14:41:52 +0000
+Message-ID: <c2318ee1464a4d1c8439699cb0652d12@AcuMS.aculab.com>
+References: <C2924F03-11C5-4839-A4F3-36872194EEA8@oracle.com>
+ <20210406114952.GH7405@nvidia.com>
+ <aeb7334b-edc0-78c2-4adb-92d4a994210d@talpey.com>
+ <8A5E83DF-5C08-49CE-8EE3-08DC63135735@oracle.com>
+ <4b02d1b2-be0e-0d1d-7ac3-38d32e44e77e@talpey.com>
+ <1FA38618-E245-4C53-BF49-6688CA93C660@oracle.com>
+ <7b9e7d9c-13d7-0d18-23b4-0d94409c7741@talpey.com>
+ <f71b24433f4540f0a13133111a59dab8@AcuMS.aculab.com>
+ <880A23A2-F078-42CF-BEE2-30666BCB9B5D@oracle.com>
+ <7deadc67-650c-ea15-722b-a1d77d38faba@talpey.com>
+ <20210412224843.GQ7405@nvidia.com>
+ <02593083-056e-cc62-22cf-d6bd6c9b18a8@talpey.com>
+In-Reply-To: <02593083-056e-cc62-22cf-d6bd6c9b18a8@talpey.com>
+Accept-Language: en-GB, en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-exchange-transport-fromentityheader: Hosted
+x-originating-ip: [10.202.205.107]
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Authentication-Results: relay.mimecast.com;
+        auth=pass smtp.auth=C51A453 smtp.mailfrom=david.laight@aculab.com
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: aculab.com
+Content-Language: en-US
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: base64
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Florian Fainelli <f.fainelli@gmail.com>
-
-Some Ethernet switches might only be able to support disabling multicast
-flooding globally, which is an issue for example when several bridges
-span the same physical device and request contradictory settings.
-
-Propagate the return value of br_mc_disabled_update() such that this
-limitation is transmitted correctly to user-space.
-
-Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
-Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
----
- net/bridge/br_multicast.c | 26 +++++++++++++++++++-------
- net/bridge/br_netlink.c   |  4 +++-
- net/bridge/br_private.h   |  3 ++-
- net/bridge/br_sysfs_br.c  |  8 +-------
- 4 files changed, 25 insertions(+), 16 deletions(-)
-
-diff --git a/net/bridge/br_multicast.c b/net/bridge/br_multicast.c
-index 9d265447d654..7f861a6eb348 100644
---- a/net/bridge/br_multicast.c
-+++ b/net/bridge/br_multicast.c
-@@ -1593,7 +1593,8 @@ static void br_multicast_port_group_rexmit(struct timer_list *t)
- 	spin_unlock(&br->multicast_lock);
- }
- 
--static void br_mc_disabled_update(struct net_device *dev, bool value)
-+static int br_mc_disabled_update(struct net_device *dev, bool value,
-+				 struct netlink_ext_ack *extack)
- {
- 	struct switchdev_attr attr = {
- 		.orig_dev = dev,
-@@ -1602,11 +1603,13 @@ static void br_mc_disabled_update(struct net_device *dev, bool value)
- 		.u.mc_disabled = !value,
- 	};
- 
--	switchdev_port_attr_set(dev, &attr, NULL);
-+	return switchdev_port_attr_set(dev, &attr, extack);
- }
- 
- int br_multicast_add_port(struct net_bridge_port *port)
- {
-+	int err;
-+
- 	port->multicast_router = MDB_RTR_TYPE_TEMP_QUERY;
- 	port->multicast_eht_hosts_limit = BR_MCAST_DEFAULT_EHT_HOSTS_LIMIT;
- 
-@@ -1618,8 +1621,12 @@ int br_multicast_add_port(struct net_bridge_port *port)
- 	timer_setup(&port->ip6_own_query.timer,
- 		    br_ip6_multicast_port_query_expired, 0);
- #endif
--	br_mc_disabled_update(port->dev,
--			      br_opt_get(port->br, BROPT_MULTICAST_ENABLED));
-+	err = br_mc_disabled_update(port->dev,
-+				    br_opt_get(port->br,
-+					       BROPT_MULTICAST_ENABLED),
-+				    NULL);
-+	if (err)
-+		return err;
- 
- 	port->mcast_stats = netdev_alloc_pcpu_stats(struct bridge_mcast_stats);
- 	if (!port->mcast_stats)
-@@ -3560,16 +3567,21 @@ static void br_multicast_start_querier(struct net_bridge *br,
- 	rcu_read_unlock();
- }
- 
--int br_multicast_toggle(struct net_bridge *br, unsigned long val)
-+int br_multicast_toggle(struct net_bridge *br, unsigned long val,
-+			struct netlink_ext_ack *extack)
- {
- 	struct net_bridge_port *port;
- 	bool change_snoopers = false;
-+	int err = 0;
- 
- 	spin_lock_bh(&br->multicast_lock);
- 	if (!!br_opt_get(br, BROPT_MULTICAST_ENABLED) == !!val)
- 		goto unlock;
- 
--	br_mc_disabled_update(br->dev, val);
-+	err = br_mc_disabled_update(br->dev, val, extack);
-+	if (err && err != -EOPNOTSUPP)
-+		goto unlock;
-+
- 	br_opt_toggle(br, BROPT_MULTICAST_ENABLED, !!val);
- 	if (!br_opt_get(br, BROPT_MULTICAST_ENABLED)) {
- 		change_snoopers = true;
-@@ -3607,7 +3619,7 @@ int br_multicast_toggle(struct net_bridge *br, unsigned long val)
- 			br_multicast_leave_snoopers(br);
- 	}
- 
--	return 0;
-+	return err;
- }
- 
- bool br_multicast_enabled(const struct net_device *dev)
-diff --git a/net/bridge/br_netlink.c b/net/bridge/br_netlink.c
-index f2b1343f8332..0456593aceec 100644
---- a/net/bridge/br_netlink.c
-+++ b/net/bridge/br_netlink.c
-@@ -1293,7 +1293,9 @@ static int br_changelink(struct net_device *brdev, struct nlattr *tb[],
- 	if (data[IFLA_BR_MCAST_SNOOPING]) {
- 		u8 mcast_snooping = nla_get_u8(data[IFLA_BR_MCAST_SNOOPING]);
- 
--		br_multicast_toggle(br, mcast_snooping);
-+		err = br_multicast_toggle(br, mcast_snooping, extack);
-+		if (err)
-+			return err;
- 	}
- 
- 	if (data[IFLA_BR_MCAST_QUERY_USE_IFADDR]) {
-diff --git a/net/bridge/br_private.h b/net/bridge/br_private.h
-index ecb91e13d777..947c724c26b2 100644
---- a/net/bridge/br_private.h
-+++ b/net/bridge/br_private.h
-@@ -812,7 +812,8 @@ void br_multicast_flood(struct net_bridge_mdb_entry *mdst,
- 			struct sk_buff *skb, bool local_rcv, bool local_orig);
- int br_multicast_set_router(struct net_bridge *br, unsigned long val);
- int br_multicast_set_port_router(struct net_bridge_port *p, unsigned long val);
--int br_multicast_toggle(struct net_bridge *br, unsigned long val);
-+int br_multicast_toggle(struct net_bridge *br, unsigned long val,
-+			struct netlink_ext_ack *extack);
- int br_multicast_set_querier(struct net_bridge *br, unsigned long val);
- int br_multicast_set_hash_max(struct net_bridge *br, unsigned long val);
- int br_multicast_set_igmp_version(struct net_bridge *br, unsigned long val);
-diff --git a/net/bridge/br_sysfs_br.c b/net/bridge/br_sysfs_br.c
-index 072e29840082..381467b691d5 100644
---- a/net/bridge/br_sysfs_br.c
-+++ b/net/bridge/br_sysfs_br.c
-@@ -409,17 +409,11 @@ static ssize_t multicast_snooping_show(struct device *d,
- 	return sprintf(buf, "%d\n", br_opt_get(br, BROPT_MULTICAST_ENABLED));
- }
- 
--static int toggle_multicast(struct net_bridge *br, unsigned long val,
--			    struct netlink_ext_ack *extack)
--{
--	return br_multicast_toggle(br, val);
--}
--
- static ssize_t multicast_snooping_store(struct device *d,
- 					struct device_attribute *attr,
- 					const char *buf, size_t len)
- {
--	return store_bridge_parm(d, buf, len, toggle_multicast);
-+	return store_bridge_parm(d, buf, len, br_multicast_toggle);
- }
- static DEVICE_ATTR_RW(multicast_snooping);
- 
--- 
-2.25.1
+RnJvbTogVG9tIFRhbHBleQ0KPiBTZW50OiAxNCBBcHJpbCAyMDIxIDE1OjE2DQo+IA0KPiBPbiA0
+LzEyLzIwMjEgNjo0OCBQTSwgSmFzb24gR3VudGhvcnBlIHdyb3RlOg0KPiA+IE9uIE1vbiwgQXBy
+IDEyLCAyMDIxIGF0IDA0OjIwOjQ3UE0gLTA0MDAsIFRvbSBUYWxwZXkgd3JvdGU6DQo+ID4NCj4g
+Pj4gU28gdGhlIGlzc3VlIGlzIG9ubHkgaW4gdGVzdGluZyBhbGwgdGhlIHByb3ZpZGVycyBhbmQg
+cGxhdGZvcm1zLA0KPiA+PiB0byBiZSBzdXJlIHRoaXMgbmV3IGJlaGF2aW9yIGlzbid0IHRpY2ts
+aW5nIGFueXRoaW5nIHRoYXQgd2VudA0KPiA+PiB1bm5vdGljZWQgYWxsIGFsb25nLCBiZWNhdXNl
+IG5vIFJETUEgcHJvdmlkZXIgZXZlciBpc3N1ZWQgUk8uDQo+ID4NCj4gPiBUaGUgbWx4NSBldGhl
+cm5ldCBkcml2ZXIgaGFzIHJ1biBpbiBSTyBtb2RlIGZvciBhIGxvbmcgdGltZSwgYW5kIGl0DQo+
+ID4gb3BlcmF0ZXMgaW4gYmFzaWNhbGx5IHRoZSBzYW1lIHdheSBhcyBSRE1BLiBUaGUgaXNzdWVz
+IHdpdGggSGFzd2VsbA0KPiA+IGhhdmUgYmVlbiB3b3JrZWQgb3V0IHRoZXJlIGFscmVhZHkuDQo+
+ID4NCj4gPiBUaGUgb25seSBvcGVuIHF1ZXN0aW9uIGlzIGlmIHRoZSBVTFBzIGhhdmUgZXJyb3Jz
+IGluIHRoZWlyDQo+ID4gaW1wbGVtZW50YXRpb24sIHdoaWNoIEkgZG9uJ3QgdGhpbmsgd2UgY2Fu
+IGZpbmQgb3V0IHVudGlsIHdlIGFwcGx5DQo+ID4gdGhpcyBzZXJpZXMgYW5kIHBlb3BsZSBzdGFy
+dCBydW5uaW5nIHRoZWlyIHRlc3RzIGFnZ3Jlc3NpdmVseS4NCj4gDQo+IEkgYWdyZWUgdGhhdCB0
+aGUgY29yZSBSTyBzdXBwb3J0IHNob3VsZCBnbyBpbi4gQnV0IHR1cm5pbmcgaXQgb24NCj4gYnkg
+ZGVmYXVsdCBmb3IgYSBVTFAgc2hvdWxkIGJlIHRoZSBkZWNpc2lvbiBvZiBlYWNoIFVMUCBtYWlu
+dGFpbmVyLg0KPiBJdCdzIGEgaHVnZSByaXNrIHRvIHNoaWZ0IGFsbCB0aGUgc3RvcmFnZSBkcml2
+ZXJzIG92ZXJuaWdodC4gSG93DQo+IGRvIHlvdSBwcm9wb3NlIHRvIGVuc3VyZSB0aGUgYWdncmVz
+c2l2ZSB0ZXN0aW5nIGhhcHBlbnM/DQo+IA0KPiBPbmUgdGhpbmcgdGhhdCB3b3JyaWVzIG1lIGlz
+IHRoZSBwYXRjaDAyIG9uLWJ5LWRlZmF1bHQgZm9yIHRoZSBkbWFfbGtleS4NCj4gVGhlcmUncyBu
+byB3YXkgZm9yIGEgVUxQIHRvIHByZXZlbnQgSUJfQUNDRVNTX1JFTEFYRURfT1JERVJJTkcNCj4g
+ZnJvbSBiZWluZyBzZXQgaW4gX19pYl9hbGxvY19wZCgpLg0KDQpXaGF0IGlzIGEgVUxQIGluIHRo
+aXMgY29udGV4dD8NCg0KSSd2ZSBwcmVzdW1lZCB0aGF0IHRoaXMgaXMgYWxsIGFib3V0IGdldHRp
+bmcgUENJZSB0YXJnZXRzIChpZSBjYXJkcykNCnRvIHNldCB0aGUgUk8gKHJlbGF4ZWQgb3JkZXJp
+bmcpIGJpdCBpbiBzb21lIG9mIHRoZSB3cml0ZSBUTFAgdGhleQ0KZ2VuZXJhdGUgZm9yIHdyaXRp
+bmcgdG8gaG9zdCBtZW1vcnk/DQoNClNvIHdoYXRldmVyIGRyaXZlciBpbml0aWFsaXNlcyB0aGUg
+dGFyZ2V0IG5lZWRzIHRvIGNvbmZpZ3VyZSB3aGF0ZXZlcg0KdGFyZ2V0LXNwZWNpZmljIHJlZ2lz
+dGVyIGVuYWJsZXMgdGhlIFJPIHRyYW5zZmVycyB0aGVtc2VsdmVzLg0KDQpBZnRlciB0aGF0IHRo
+ZXJlIGNvdWxkIGJlIGZsYWdzIGluIHRoZSBQQ0llIGNvbmZpZyBzcGFjZSBvZiB0aGUgdGFyZ2V0
+DQphbmQgYW55IGJyaWRnZXMgdGhhdCBjbGVhciB0aGUgUk8gZmxhZy4NCg0KVGhlcmUgY291bGQg
+YWxzbyBiZSBmbGFncyBpbiB0aGUgYnJpZGdlcyBhbmQgcm9vdCBjb21wbGV4IHRvIGlnbm9yZQ0K
+dGhlIFJPIGZsYWcgZXZlbiBpZiBpdCBpcyBzZXQuDQoNClRoZW4gdGhlIExpbnV4IGtlcm5lbCBj
+YW4gaGF2ZSBvcHRpb24ocykgdG8gdGVsbCB0aGUgZHJpdmVyIG5vdA0KdG8gZW5hYmxlIFJPIC0g
+ZXZlbiB0aG91Z2ggdGhlIGRyaXZlciBiZWxpZXZlcyBpdCBzaG91bGQgYWxsIHdvcmsuDQpUaGlz
+IGNvdWxkIGJlIGEgc2luZ2xlIGdsb2JhbCBmbGFnLCBvciBmaW4tZ3JhaW5lZCBpbiBzb21lIHdh
+eS4NCg0KU28gd2hhdCBleGFjdGx5IGlzIHRoaXMgcGF0Y2ggc2VyaWVzIGRvaW5nPw0KDQoJRGF2
+aWQNCg0KLQ0KUmVnaXN0ZXJlZCBBZGRyZXNzIExha2VzaWRlLCBCcmFtbGV5IFJvYWQsIE1vdW50
+IEZhcm0sIE1pbHRvbiBLZXluZXMsIE1LMSAxUFQsIFVLDQpSZWdpc3RyYXRpb24gTm86IDEzOTcz
+ODYgKFdhbGVzKQ0K
 
