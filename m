@@ -2,36 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 51A8A35FE52
-	for <lists+netdev@lfdr.de>; Thu, 15 Apr 2021 01:16:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8311435FE53
+	for <lists+netdev@lfdr.de>; Thu, 15 Apr 2021 01:16:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236922AbhDNXQg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 14 Apr 2021 19:16:36 -0400
-Received: from mail.kernel.org ([198.145.29.99]:48944 "EHLO mail.kernel.org"
+        id S236991AbhDNXQi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 14 Apr 2021 19:16:38 -0400
+Received: from mail.kernel.org ([198.145.29.99]:48950 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S233061AbhDNXQe (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S233751AbhDNXQe (ORCPT <rfc822;netdev@vger.kernel.org>);
         Wed, 14 Apr 2021 19:16:34 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id E8F2E611CC;
-        Wed, 14 Apr 2021 23:16:11 +0000 (UTC)
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 69F9561164;
+        Wed, 14 Apr 2021 23:16:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1618442172;
-        bh=zkggHjS2SLIru19Y3l9SQjQUyTCqTvGaIw9d87uhwCM=;
+        bh=JXJ7Phxlq5Y0V6d13IaOndGBSr0U/DH10cNw1o7t8tU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=TXZ1bTgF/FKpE9CwapIqA5LQYvw57PQrTy2YDiIOmwBNoSuLoDDI/egxDhofY5LbT
-         +X6YmoauL4VSbE8DoOfjQNv1OATItDx+2BZBf+/L671IcuAD7MH89Q6ymU0556AORJ
-         Zz7pGq31rcjSMNzeU2uS6JN3f+fKBv3qXhGiaV8cwzVQmlz+sO/ZFwQkbADEETbp8N
-         yXTfWiejOL+JJ0tARg36sVou+VkE0CBHIMo/2MhPIDicpF6ffjkmrGIsVDO1Iy2N4e
-         gCEs2D50jP6fg8hFzh1lX8ARkxun1rFbrhmUyQcU9Nx5C5/SVcsnCBPO18u2GGPrAn
-         YEpxaSh7kG4Gg==
+        b=dY1+ji1a44xN4tSpu90p9YM6GhcpSG+z2MPqiCRK0qV+wvoy7wr35KehKqClu2UGL
+         smsaSnd3u7ewQZkOVuXHmLxBMmSXCxguSwGrXV6vCnVbQvcjRAofLAlGGbkD1ZKrz1
+         l7uNvcGVN1WqC8AJCbZWCbHq7ORcFckUcXLLIZMgXNH0e/JKPWWgDcwt+UldhK5WiR
+         XCZq7EirgwSAM8qxYaKaNokQFGD0KPpjqQ0Kwq1QFMsv1dObwK0MWf4INU0b7uxn+I
+         WwqI7GCSl4X6Fb9Ck5oe5yRPAQlHE3bpwKtIQc4Q57Y5fpoRZrOD5STD8O4uiCL/4N
+         T6nNWlz8HIDNQ==
 From:   Saeed Mahameed <saeed@kernel.org>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
 Cc:     netdev@vger.kernel.org, Tariq Toukan <tariqt@nvidia.com>,
-        Aya Levin <ayal@nvidia.com>, Moshe Shemesh <moshe@nvidia.com>,
-        Roi Dayan <roid@nvidia.com>, Saeed Mahameed <saeedm@nvidia.com>
-Subject: [net 1/3] net/mlx5: Fix setting of devlink traps in switchdev mode
-Date:   Wed, 14 Apr 2021 16:16:08 -0700
-Message-Id: <20210414231610.136376-2-saeed@kernel.org>
+        Aya Levin <ayal@nvidia.com>,
+        Eran Ben Elisha <eranbe@nvidia.com>,
+        Saeed Mahameed <saeedm@nvidia.com>
+Subject: [net 2/3] net/mlx5e: Fix setting of RS FEC mode
+Date:   Wed, 14 Apr 2021 16:16:09 -0700
+Message-Id: <20210414231610.136376-3-saeed@kernel.org>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20210414231610.136376-1-saeed@kernel.org>
 References: <20210414231610.136376-1-saeed@kernel.org>
@@ -43,38 +44,63 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Aya Levin <ayal@nvidia.com>
 
-Prevent setting of devlink traps on the uplink while in switchdev mode.
-In this mode, it is the SW switch responsibility to handle both packets
-with a mismatch in destination MAC or VLAN ID. Therefore, there are no
-flow steering tables to trap undesirable packets and driver crashes upon
-setting a trap.
+Change register setting from bit number to bit mask.
 
-Fixes: 241dc159391f ("net/mlx5: Notify on trap action by blocking event")
+Fixes: b5ede32d3329 ("net/mlx5e: Add support for FEC modes based on 50G per lane links")
 Signed-off-by: Aya Levin <ayal@nvidia.com>
-Reviewed-by: Moshe Shemesh <moshe@nvidia.com>
-Reviewed-by: Roi Dayan <roid@nvidia.com>
-Reviewed-by: Tariq Toukan <tariqt@nvidia.com>
+Reviewed-by: Eran Ben Elisha <eranbe@nvidia.com>
 Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 ---
- drivers/net/ethernet/mellanox/mlx5/core/devlink.c | 5 +++++
- 1 file changed, 5 insertions(+)
+ .../net/ethernet/mellanox/mlx5/core/en/port.c | 23 ++++---------------
+ 1 file changed, 4 insertions(+), 19 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/devlink.c b/drivers/net/ethernet/mellanox/mlx5/core/devlink.c
-index d7d8a68ef23d..d0f9d3cee97d 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/devlink.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/devlink.c
-@@ -246,6 +246,11 @@ static int mlx5_devlink_trap_action_set(struct devlink *devlink,
- 	struct mlx5_devlink_trap *dl_trap;
- 	int err = 0;
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/port.c b/drivers/net/ethernet/mellanox/mlx5/core/en/port.c
+index 308fd279669e..89510cac46c2 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en/port.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en/port.c
+@@ -387,21 +387,6 @@ enum mlx5e_fec_supported_link_mode {
+ 			*_policy = MLX5_GET(pplm_reg, _buf, fec_override_admin_##link);	\
+ 	} while (0)
  
-+	if (is_mdev_switchdev_mode(dev)) {
-+		NL_SET_ERR_MSG_MOD(extack, "Devlink traps can't be set in switchdev mode");
-+		return -EOPNOTSUPP;
-+	}
-+
- 	dl_trap = mlx5_find_trap_by_id(dev, trap->id);
- 	if (!dl_trap) {
- 		mlx5_core_err(dev, "Devlink trap: Set action on invalid trap id 0x%x", trap->id);
+-#define MLX5E_FEC_OVERRIDE_ADMIN_50G_POLICY(buf, policy, write, link)			\
+-	do {										\
+-		unsigned long policy_long;						\
+-		u16 *__policy = &(policy);						\
+-		bool _write = (write);							\
+-											\
+-		policy_long = *__policy;						\
+-		if (_write && *__policy)						\
+-			*__policy = find_first_bit(&policy_long,			\
+-						   sizeof(policy_long) * BITS_PER_BYTE);\
+-		MLX5E_FEC_OVERRIDE_ADMIN_POLICY(buf, *__policy, _write, link);		\
+-		if (!_write && *__policy)						\
+-			*__policy = 1 << *__policy;					\
+-	} while (0)
+-
+ /* get/set FEC admin field for a given speed */
+ static int mlx5e_fec_admin_field(u32 *pplm, u16 *fec_policy, bool write,
+ 				 enum mlx5e_fec_supported_link_mode link_mode)
+@@ -423,16 +408,16 @@ static int mlx5e_fec_admin_field(u32 *pplm, u16 *fec_policy, bool write,
+ 		MLX5E_FEC_OVERRIDE_ADMIN_POLICY(pplm, *fec_policy, write, 100g);
+ 		break;
+ 	case MLX5E_FEC_SUPPORTED_LINK_MODE_50G_1X:
+-		MLX5E_FEC_OVERRIDE_ADMIN_50G_POLICY(pplm, *fec_policy, write, 50g_1x);
++		MLX5E_FEC_OVERRIDE_ADMIN_POLICY(pplm, *fec_policy, write, 50g_1x);
+ 		break;
+ 	case MLX5E_FEC_SUPPORTED_LINK_MODE_100G_2X:
+-		MLX5E_FEC_OVERRIDE_ADMIN_50G_POLICY(pplm, *fec_policy, write, 100g_2x);
++		MLX5E_FEC_OVERRIDE_ADMIN_POLICY(pplm, *fec_policy, write, 100g_2x);
+ 		break;
+ 	case MLX5E_FEC_SUPPORTED_LINK_MODE_200G_4X:
+-		MLX5E_FEC_OVERRIDE_ADMIN_50G_POLICY(pplm, *fec_policy, write, 200g_4x);
++		MLX5E_FEC_OVERRIDE_ADMIN_POLICY(pplm, *fec_policy, write, 200g_4x);
+ 		break;
+ 	case MLX5E_FEC_SUPPORTED_LINK_MODE_400G_8X:
+-		MLX5E_FEC_OVERRIDE_ADMIN_50G_POLICY(pplm, *fec_policy, write, 400g_8x);
++		MLX5E_FEC_OVERRIDE_ADMIN_POLICY(pplm, *fec_policy, write, 400g_8x);
+ 		break;
+ 	default:
+ 		return -EINVAL;
 -- 
 2.30.2
 
