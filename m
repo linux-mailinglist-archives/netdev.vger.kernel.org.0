@@ -2,103 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6657835F876
-	for <lists+netdev@lfdr.de>; Wed, 14 Apr 2021 18:08:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B368635F890
+	for <lists+netdev@lfdr.de>; Wed, 14 Apr 2021 18:08:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352485AbhDNPxT convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Wed, 14 Apr 2021 11:53:19 -0400
-Received: from eu-smtp-delivery-151.mimecast.com ([185.58.86.151]:29643 "EHLO
-        eu-smtp-delivery-151.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1352426AbhDNPwp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 14 Apr 2021 11:52:45 -0400
-Received: from AcuMS.aculab.com (156.67.243.121 [156.67.243.121]) (Using
- TLS) by relay.mimecast.com with ESMTP id
- uk-mta-15-m9cXnC2KMlaJybEViQCuIg-1; Wed, 14 Apr 2021 16:52:18 +0100
-X-MC-Unique: m9cXnC2KMlaJybEViQCuIg-1
-Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) by
- AcuMS.aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) with Microsoft SMTP
- Server (TLS) id 15.0.1497.2; Wed, 14 Apr 2021 16:52:16 +0100
-Received: from AcuMS.Aculab.com ([fe80::994c:f5c2:35d6:9b65]) by
- AcuMS.aculab.com ([fe80::994c:f5c2:35d6:9b65%12]) with mapi id
- 15.00.1497.012; Wed, 14 Apr 2021 16:52:16 +0100
-From:   David Laight <David.Laight@ACULAB.COM>
-To:     'Matthew Wilcox' <willy@infradead.org>,
-        Jesper Dangaard Brouer <brouer@redhat.com>
-CC:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-mm@kvack.org" <linux-mm@kvack.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>,
-        "linux-mips@vger.kernel.org" <linux-mips@vger.kernel.org>,
-        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
-        Matteo Croce <mcroce@linux.microsoft.com>,
+        id S1351283AbhDNP7i (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 14 Apr 2021 11:59:38 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:50802 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1352677AbhDNP7X (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 14 Apr 2021 11:59:23 -0400
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
+        (envelope-from <andrew@lunn.ch>)
+        id 1lWhue-00GiQJ-96; Wed, 14 Apr 2021 17:58:44 +0200
+Date:   Wed, 14 Apr 2021 17:58:44 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     Jakub Kicinski <kuba@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        Ioana Ciornei <ioana.ciornei@nxp.com>,
+        Vadym Kochan <vkochan@marvell.com>,
+        Taras Chornyi <tchornyi@marvell.com>,
+        Jiri Pirko <jiri@nvidia.com>, Ido Schimmel <idosch@nvidia.com>,
         Grygorii Strashko <grygorii.strashko@ti.com>,
-        Arnd Bergmann <arnd@kernel.org>,
-        "Christoph Hellwig" <hch@lst.de>
-Subject: RE: [PATCH 1/1] mm: Fix struct page layout on 32-bit systems
-Thread-Topic: [PATCH 1/1] mm: Fix struct page layout on 32-bit systems
-Thread-Index: AQHXMSRrwdfrgigLI0exh4xFUSZq9Kq0J1eg
-Date:   Wed, 14 Apr 2021 15:52:16 +0000
-Message-ID: <7f6cee3dcf1749fbb7b54eaf129141e7@AcuMS.aculab.com>
-References: <20210410205246.507048-1-willy@infradead.org>
- <20210410205246.507048-2-willy@infradead.org>
- <20210411114307.5087f958@carbon>
- <20210411103318.GC2531743@casper.infradead.org>
- <20210412011532.GG2531743@casper.infradead.org>
- <20210414101044.19da09df@carbon>
- <20210414115052.GS2531743@casper.infradead.org>
-In-Reply-To: <20210414115052.GS2531743@casper.infradead.org>
-Accept-Language: en-GB, en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ms-exchange-transport-fromentityheader: Hosted
-x-originating-ip: [10.202.205.107]
+        Ivan Vecera <ivecera@redhat.com>,
+        Roopa Prabhu <roopa@nvidia.com>,
+        Nikolay Aleksandrov <nikolay@nvidia.com>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        linux-omap@vger.kernel.org,
+        Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Tobias Waldekranz <tobias@waldekranz.com>
+Subject: Re: [PATCH net-next 2/2] net: bridge: switchdev: include local flag
+ in FDB notifications
+Message-ID: <YHcRNIgI9lVs6MDj@lunn.ch>
+References: <20210414151540.1808871-1-olteanv@gmail.com>
+ <20210414151540.1808871-2-olteanv@gmail.com>
 MIME-Version: 1.0
-Authentication-Results: relay.mimecast.com;
-        auth=pass smtp.auth=C51A453 smtp.mailfrom=david.laight@aculab.com
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: aculab.com
-Content-Language: en-US
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8BIT
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210414151540.1808871-2-olteanv@gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> Doing this fixes it:
-> 
-> +++ b/include/linux/types.h
-> @@ -140,7 +140,7 @@ typedef u64 blkcnt_t;
->   * so they don't care about the size of the actual bus addresses.
->   */
->  #ifdef CONFIG_ARCH_DMA_ADDR_T_64BIT
-> -typedef u64 dma_addr_t;
-> +typedef u64 __attribute__((aligned(sizeof(void *)))) dma_addr_t;
->  #else
->  typedef u32 dma_addr_t;
->  #endif
+> Let us now add the 'is_local' bit to bridge FDB entries, and make all
+> drivers ignore these entries by their own choice.
 
-I hate __packed so much I've been checking what it does!
+Hi Vladimir
 
-If you add __packed to the dma_addr_t field inside the union
-then gcc (at least) removes the pad from before it, but also
-'remembers' the alignment that is enforced by other members
-of the structure.
+This goes to the question about the missing cover letter. Why should
+drivers get to ignore them, rather than the core? It feels like there
+should be another patch in the series, where a driver does not
+actually ignore them, but does something?
 
-So you don't need the extra aligned(sizeof (void *)) since
-that is implicit.
-
-So in this case __packed probably has no side effects.
-(Unless a 32bit arch has instructions for a 64bit read
-that must not be on an 8n+4 boundary and the address is taken).
-
-It also doesn't affect 64bit - since the previous field
-forces 64bit alignment.
-
-	David
-
--
-Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
-Registration No: 1397386 (Wales)
-
+	 Andrew
