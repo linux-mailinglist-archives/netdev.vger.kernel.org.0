@@ -2,145 +2,139 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2AE0335FAE0
-	for <lists+netdev@lfdr.de>; Wed, 14 Apr 2021 20:43:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EC82035FAF1
+	for <lists+netdev@lfdr.de>; Wed, 14 Apr 2021 20:50:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234493AbhDNSkT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 14 Apr 2021 14:40:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32890 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234383AbhDNSkS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 14 Apr 2021 14:40:18 -0400
-Received: from mail-lf1-x12a.google.com (mail-lf1-x12a.google.com [IPv6:2a00:1450:4864:20::12a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA7B8C061574
-        for <netdev@vger.kernel.org>; Wed, 14 Apr 2021 11:39:56 -0700 (PDT)
-Received: by mail-lf1-x12a.google.com with SMTP id j18so34905263lfg.5
-        for <netdev@vger.kernel.org>; Wed, 14 Apr 2021 11:39:56 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=waldekranz-com.20150623.gappssmtp.com; s=20150623;
-        h=from:to:cc:subject:in-reply-to:references:date:message-id
-         :mime-version;
-        bh=5SzeLYXFwNLoeejAn+Lbkrah8+IOEnfJx2FJbq6WG9g=;
-        b=nlLz+TSUn9ACQIP/P4JdDpoazhtV2QPsF25ExAvQmfp/PXBDSiDdLJso4iCPwL/ids
-         QCWxK59ynsc8ZrjXsNCZ7XnqtJL75/27VfEB+zfp8O8uKkh8CrB3OViBKVNYeuyGaeS3
-         Vdeq2EGrghqMV5jrkH5CD5Utk4cUdYHxGlA4sjUoaYFg3j5GGYOHHXYEzaCG//pjDYMt
-         tW50QwnJa6eMESR4FC7Qz1vHYs3hMaj2ZUTymU9KoLpVpZOJuZ8WAkTBnwe9gAYuSgKl
-         rekG5GsLHHoi/sqR2HLrUbj8avLq46iqXUqAMOmDyEBTWQ12m7PTZkrIQENiFlMt02pd
-         1tJg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version;
-        bh=5SzeLYXFwNLoeejAn+Lbkrah8+IOEnfJx2FJbq6WG9g=;
-        b=qLYGc3XiAKp6bBj96L9olW15tPcs9i7KmSzTmPxs1zWaOh5bcOja8hsKHXgXQDgVOC
-         BIxMe6uqHmLt0PfHHvGAVo0V9TKXGcNS8gGcTtl6vefK2q2ILdfOL6O7aBX+iSUIK6iQ
-         Xst4yLt/q9PirhqK5pspTaJDdsbGuL45uHO3QuCqcxKjbuGlVBuMOl+dbkpw6tpBI4Ky
-         rMEoR08BRAE8MgJilYd7e4MsO/dap7QnUT3XQxrrihtfHhF3v3VmAwLAOrMJOn/OVjNX
-         GhVmidWnxx6ryJG7R573eRnE9xtUp7eHIrDjBwCtp3wIlT4Zd4pPg+KzyQR6M5lnZPEB
-         As8A==
-X-Gm-Message-State: AOAM5321VndzElkzhszgcCwoevpWN/vcCX7H14zL0FG4DW3mmK10s/fI
-        9AGDxr/oFoDc/bsWUYU/tuSaCA==
-X-Google-Smtp-Source: ABdhPJwMBDNG/ZhvSA7y+XyRE4QBxfS2c++aV2KZowE7pzQCNNJMrDbYl2QEcV1qAVc5vGvdbG6t7g==
-X-Received: by 2002:a05:6512:3187:: with SMTP id i7mr13781311lfe.340.1618425595225;
-        Wed, 14 Apr 2021 11:39:55 -0700 (PDT)
-Received: from wkz-x280 (h-90-88.A259.priv.bahnhof.se. [212.85.90.88])
-        by smtp.gmail.com with ESMTPSA id q10sm121879lfo.78.2021.04.14.11.39.53
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 14 Apr 2021 11:39:54 -0700 (PDT)
-From:   Tobias Waldekranz <tobias@waldekranz.com>
-To:     Marek Behun <marek.behun@nic.cz>
-Cc:     Vladimir Oltean <olteanv@gmail.com>,
-        Ansuel Smith <ansuelsmth@gmail.com>, netdev@vger.kernel.org,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andriin@fb.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Wei Wang <weiwan@google.com>,
-        Cong Wang <cong.wang@bytedance.com>,
-        Taehee Yoo <ap420073@gmail.com>,
-        =?utf-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn@kernel.org>,
-        zhang kai <zhangkaiheb@126.com>,
-        Weilong Chen <chenweilong@huawei.com>,
-        Roopa Prabhu <roopa@cumulusnetworks.com>,
-        Di Zhu <zhudi21@huawei.com>,
-        Francis Laniel <laniel_francis@privacyrequired.com>,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH RFC net-next 0/3] Multi-CPU DSA support
-In-Reply-To: <20210414171439.1a2e7c1a@thinkpad>
-References: <20210410133454.4768-1-ansuelsmth@gmail.com> <20210411200135.35fb5985@thinkpad> <20210411185017.3xf7kxzzq2vefpwu@skbuf> <878s5nllgs.fsf@waldekranz.com> <20210412213045.4277a598@thinkpad> <8735vvkxju.fsf@waldekranz.com> <20210412235054.73754df9@thinkpad> <87wnt7jgzk.fsf@waldekranz.com> <20210413005518.2f9b9cef@thinkpad> <87r1jfje26.fsf@waldekranz.com> <87o8ejjdu6.fsf@waldekranz.com> <20210413015450.1ae597da@thinkpad> <20210413022730.2a51c083@thinkpad> <87im4qjl87.fsf@waldekranz.com> <20210413171443.1b2b2f88@thinkpad> <87fszujbif.fsf@waldekranz.com> <20210414171439.1a2e7c1a@thinkpad>
-Date:   Wed, 14 Apr 2021 20:39:53 +0200
-Message-ID: <87blagk8w6.fsf@waldekranz.com>
+        id S1353042AbhDNSq5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 14 Apr 2021 14:46:57 -0400
+Received: from out4-smtp.messagingengine.com ([66.111.4.28]:50931 "EHLO
+        out4-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1353023AbhDNSqx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 14 Apr 2021 14:46:53 -0400
+Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
+        by mailout.nyi.internal (Postfix) with ESMTP id 797895C0051;
+        Wed, 14 Apr 2021 14:46:31 -0400 (EDT)
+Received: from mailfrontend1 ([10.202.2.162])
+  by compute4.internal (MEProxy); Wed, 14 Apr 2021 14:46:31 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=talbothome.com;
+         h=message-id:subject:from:to:cc:date:in-reply-to:references
+        :content-type:mime-version:content-transfer-encoding; s=fm2; bh=
+        3dEbTlea9Fpi/y9H7Z5NQvwVD/AaWaqpw5q1WZPMC8c=; b=b5+HPhBJATK1RUOB
+        Xmks/6ihTVlzcjJ59336L/+8mAfprCxSQQy+TbkSo8Mt1K46ucppPBHh4hYJHmqS
+        dWS2lvSDRcfR8hqdy/PBIXwtzn9Oqpg5aL5VujLlf6lHe0pHhTVFMPQ8TbYB4yXE
+        6rRfQWA2hF86dYnJ+bHsw1wlKQTlHDupF7i/6p51VB4frPKmvz4B134yuyiWXWaY
+        02iNW2y+Sm/wMJc5Cd62fzkHrEn0nmnL3zCgD2sAWQQ5G5TX6r9ZJQwdyUVZYPLB
+        O+ATS+uM36/fL6mRqfqmS3JDBmbYJ+PQc21fRpTuaAwVaV0vmqoUqNP2j+xdyblG
+        2sosMQ==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:content-transfer-encoding:content-type
+        :date:from:in-reply-to:message-id:mime-version:references
+        :subject:to:x-me-proxy:x-me-proxy:x-me-sender:x-me-sender
+        :x-sasl-enc; s=fm2; bh=3dEbTlea9Fpi/y9H7Z5NQvwVD/AaWaqpw5q1WZPMC
+        8c=; b=pbFVzXh5/l3RbQHb2rR3J2UtJYkCZqQOuPXW0s5qoAmKhlJ6vObWGycM+
+        VT+06xy52VKUpKCv+37cEj/wSLUip4cZcM8sqOzqXEeNSOePkLUjgPC07KlaA+BY
+        zrZXZJtM8jjw8fgw1Np0OQY/O/ebsmwFSY2Iii9GGMK4FHVQUSbKfU0zN4AJEUHK
+        oVlyIuM94Pre0TUNvsq3DSLEvPAre0gqyDeAmvLQg1lNPa+h0ZtflHbz0Cl0J3wB
+        8OgTuPVrx1IBpHVInLHfu/URvtXadaJIhuwL9E8E3/EdiWwVHefMtc5jRMvx4fxb
+        9tLwUS8Tm/h/RhLT/jo5MkextN6GQ==
+X-ME-Sender: <xms:hjh3YJgDGUNWXU12bAKKvPhRqZpSp114W1xzAfiheEOlbY4cdYhzfQ>
+    <xme:hjh3YHrKlQaSrJxKH6ZGOGAHpkeuS4belCIAyjUv4IA69Qb7upj3hauz0kzABuCgB
+    jDyq-HtJR61C26FHw>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduledrudeluddgudefudcutefuodetggdotefrod
+    ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfgh
+    necuuegrihhlohhuthemuceftddtnecunecujfgurhepkffuhffvffgjfhgtfggggfesth
+    ekredttderjeenucfhrhhomhepvehhrhhishcuvfgrlhgsohhtuceotghhrhhishesthgr
+    lhgsohhthhhomhgvrdgtohhmqeenucggtffrrghtthgvrhhnpeejlefffeefkeeljeehve
+    fgvdfhieegtddtleeljeekjeefvdfggffgkefgieefhfenucffohhmrghinhepphhurhhi
+    rdhsmhdpuggvsghirghnrdhnvghtnecukfhppeduvdekrddvrdehiedruddvleenucevlh
+    hushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpegthhhrihhsseht
+    rghlsghothhhohhmvgdrtghomh
+X-ME-Proxy: <xmx:hjh3YJHJ-oe7fQXz3XfSCK_XcNzihlweBmjyu8pJ6CFIHXJjEDHkFw>
+    <xmx:hjh3YBkhCvu7ylhmma0JsAyyX5UAnfeNs1audG6l5tQmxxZw6EuiBQ>
+    <xmx:hjh3YEkR4xY-SSpK5lD8Y4c32g99H3egBcoA6hOnLehOPH8y3yX8GQ>
+    <xmx:hzh3YP83KCwaI5xlKOTwx1n9-4dw3MGmWjyOljPNh-IdF9K-rS0rUA>
+Received: from CMU-974457.ANDREW.CMU.EDU (cmu-974457.andrew.cmu.edu [128.2.56.129])
+        by mail.messagingengine.com (Postfix) with ESMTPA id 787A1240065;
+        Wed, 14 Apr 2021 14:46:30 -0400 (EDT)
+Message-ID: <d29aaa8b01d1342f9c51e1c68ea3870f6e7158f8.camel@talbothome.com>
+Subject: Re: [Debian-on-mobile-maintainers] Forking on MMSD
+From:   Chris Talbot <chris@talbothome.com>
+To:     Guido =?ISO-8859-1?Q?G=FCnther?= <agx@sigxcpu.org>
+Cc:     ofono@ofono.org, netdev@vger.kernel.org,
+        debian-on-mobile-maintainers@alioth-lists.debian.net,
+        librem-5-dev@lists.community.puri.sm, 982250@bugs.debian.org,
+        985893@bugs.debian.org
+Date:   Wed, 14 Apr 2021 14:46:30 -0400
+In-Reply-To: <YHc0wV9wjT3WhfYW@bogon.m.sigxcpu.org>
+References: <051ae8ae27f5288d64ec6ef2bd9f77c06b829b52.camel@talbothome.com>
+         <634e0debea558b90af2cebfc99518071f1d630e9.camel@talbothome.com>
+         <YHc0wV9wjT3WhfYW@bogon.m.sigxcpu.org>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.38.3-1 
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Apr 14, 2021 at 17:14, Marek Behun <marek.behun@nic.cz> wrote:
-> On Tue, 13 Apr 2021 20:16:24 +0200
-> Tobias Waldekranz <tobias@waldekranz.com> wrote:
->
->> You could imagine a different mode in which the DSA driver would receive
->> the bucket allocation from the bond/team driver (which in turn could
->> come all the way from userspace). Userspace could then implement
->> whatever strategy it wants to maximize utilization, though still bound
->> by the limitations of the hardware in terms of fields considered during
->> hashing of course.
->
-> The problem is that even with the ability to change the bucket
-> configuration however we want it still can happen with non-trivial
-> probability that all (src,dst) pairs on the network will hash to one
-> bucket.
->
-> The probability of that happening is 1/(8^(n-1)) for n (src,dst) pairs.
+Hello,
 
-Yes I understand all that, hence "though still bound by the limitations
-of the hardware in terms of fields considered during hashing of course."
+On Wed, 2021-04-14 at 20:30 +0200, Guido Günther wrote:
+> Hi,
+> On Wed, Apr 14, 2021 at 02:21:04PM -0400, Chris Talbot wrote:
+> > Hello All,
+> > 
+> > In talking to the Debian Developer Mr. Federico Ceratto, since I
+> > have
+> > been unable to get a hold of the Ofono Maintainers, the best course
+> > of
+> > action for packaging mmsd into Debian is to simply fork the project
+> > and
+> > submit my version upstream for packaging in Debian. My repository
+> > is
+> > here: https://source.puri.sm/kop316/mmsd/
+> > 
+> > I am sending this so the relavent parties are aware of this, and to
+> > indicate that I no longer intend on trying to get a hold of
+> > upstream
+> > mmsd to try and submit patches.
+> > 
+> > For the Purism Employees, I am additionally asking for permission
+> > to
+> > keep hosting mmsd on https://source.puri.sm/ . I have been
+> > extremely
+> > appreciative in using it and I am happy to keep it there, but I
+> > want to
+> > be neighboorly and ask if it is okay for me to keep it there. If it
+> > is
+> > not, I completely understand and I am fine with moving it to a new
+> > host.
+> 
+> Keeping your ofono version on source.puri.sm is certainly welcome!
+> Cheers,
+>  -- Guido
+> 
+> > 
+> > If you have any questions, comments, or concern, please reach out
+> > to
+> > me.
+> > 
+> > -- 
+> > Respectfully,
+> > Chris Talbot
+> > 
+> > 
+> > _______________________________________________
+> > Debian-on-mobile-maintainers mailing list
+> > Debian-on-mobile-maintainers@alioth-lists.debian.net
+> > https://alioth-lists.debian.net/cgi-bin/mailman/listinfo/debian-on-mobile-maintainers
+> > 
+Thank you for allowing me to keep hosting it there.
 
-> On Turris Omnia the most common configuration is that the switch ports
-> are bridged.
->
-> If the user plugs only two devices into the lan ports, one would expect
-> that both devices could utilize 1 gbps each. In this case there is
-> 1/8 probability that both devices would hash to the same bucket. It is
-> quite bad if multi-CPU upload won't work for 12.5% of our customers that
-> are using our device in this way.
+Since it is now a fork, I added Mr. Ceratto, Mr. Farraris (a-wai), and
+Mr. Clayton Craft (craftyguy, a pmOS developer) as maintainers. Is
+there a wish for a Purism maintainer to be added as well? 
 
-Agreed, but it is a category error to talk in terms of expectations and
-desires here. I am pretty sure the silicon just does not have the gates
-required to do per-port steering in combination with bridging. (Except
-by using the TCAM).
+Respectfully,
+Chris Talbot
 
-> So if there is some reasonable solution how to implement multi-CPU via
-> the port vlan mask, I will try to pursue this.
-
-I hope whatever solution you come up with does not depend on the
-destination being unknown. If the current patch works for the reason I
-suspect, you will effectively limit the downstream bandwidth of all
-connected stations to 1G minus the aggregated upstream rate. Example:
-
-     .------.
- A --+ lan0 |
- B --+ lan1 |
- C --+ lan2 |
- D --+ lan3 |
-     |      |
-     + wan  |
-     '------'
-
-If you run with this series applied, in this setup, and have A,B,C each
-send a 10 kpps flow to the CPU, what is the observed rate on D?  My
-guess would be 30 kpps, as all traffic is being flooded as unknown
-unicast. This is true also for net-next at the moment. To solve that you
-have to load the CPU address in the ATU, at which point you have to
-decide between cpu0 and cpu1.
-
-In order to have two entries for the same destination, they must belong
-to different FIDs. But that FID is also used for automatic learning. So
-if all ports use their own FID, all the switched traffic will have to be
-flooded instead, since any address learned on lan0 will be invisible to
-lan1,2,3 and vice versa.
