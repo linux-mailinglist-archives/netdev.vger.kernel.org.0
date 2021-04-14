@@ -2,64 +2,68 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 61EA735FD5F
+	by mail.lfdr.de (Postfix) with ESMTP id 14E8935FD5E
 	for <lists+netdev@lfdr.de>; Wed, 14 Apr 2021 23:40:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232823AbhDNVkj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 14 Apr 2021 17:40:39 -0400
-Received: from mail.kernel.org ([198.145.29.99]:38000 "EHLO mail.kernel.org"
+        id S232411AbhDNVkg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 14 Apr 2021 17:40:36 -0400
+Received: from mail.kernel.org ([198.145.29.99]:38004 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231459AbhDNVke (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S232273AbhDNVke (ORCPT <rfc822;netdev@vger.kernel.org>);
         Wed, 14 Apr 2021 17:40:34 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id 99CA661042;
+Received: by mail.kernel.org (Postfix) with ESMTPS id A1895611AD;
         Wed, 14 Apr 2021 21:40:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1618436412;
-        bh=rwCNBS+L9z8tI/3KIueO5s85cBXj6vQlE6pLp7nfrC8=;
+        bh=RNBt112aUgHObpmqsDO/S/Ba0UwuXGJD6FEkNBfvpTo=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=Umglwz/AeLnRppDfVbTr9w6xxtbvq5MeIMqTtVAhffflDkFsWUReAQsTQEgUGv07q
-         5hUxB5ZJsYYbzoPBIzlfLUE22jk0C8xdIyOM35QIPmbnqVzajLkoU0RN/t9uV0Cvci
-         UnUXJaojGqvpSZVh+ufmMAz+yNRjU8K0YnD56P6AOju1/cdbCcuvJyVLEmDW1duTEC
-         tesbLivyBtrN9WJasTxpquqg8JtZgquStNZjqWLpLmzHzM4MZdEzR+JhdYMhLUjIFX
-         K+ymdqvZNEdI9Hd5+/xnI7/6Qp8Ma0jBTbX656TXlwVuQXj4L9Fw5QMRmA3IHtWt96
-         ZHe+6hG3XlT7Q==
+        b=V1iJFYnWpjhJfnVeP6mdyzmoWLymjO+oe9xR08t1M/eH1TldwCGbFTXX1+R5TkWUb
+         5ts5XvTN5bPhNOxGG6cVLhdQscuS10g39SvhNrXjR+ZuYA/SoMARFNU1s08iIM9way
+         i7L+akWqsqzZ3IHxKlpQdGSDbD/1YQf6o9BL28h6mNQBguTLTJtKGFMPMNSYIUKaL6
+         qVvWbpAIH5P7maKYMoIEBO8vGXlWs+Niz9Ukj3vUYW4Fx29xgIg4NWH21tPT0N+eh4
+         lZ3ydCsGPtkxH3Ir2RUkPRm2iXgpEmro2xpbuPGmTBG/KostSbQVFtN5R4HhVooKXR
+         /n0TaSPVZNDVQ==
 Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 895EA60CCF;
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 9294960CD5;
         Wed, 14 Apr 2021 21:40:12 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: pull-request: can-next 2021-04-14
+Subject: Re: [net-next] can: etas_es58x: fix null pointer dereference when
+ handling error frames
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <161843641255.17301.9436246472141295328.git-patchwork-notify@kernel.org>
+Message-Id: <161843641259.17301.17320204986142431938.git-patchwork-notify@kernel.org>
 Date:   Wed, 14 Apr 2021 21:40:12 +0000
-References: <20210414200352.2473363-1-mkl@pengutronix.de>
-In-Reply-To: <20210414200352.2473363-1-mkl@pengutronix.de>
+References: <20210414200352.2473363-2-mkl@pengutronix.de>
+In-Reply-To: <20210414200352.2473363-2-mkl@pengutronix.de>
 To:     Marc Kleine-Budde <mkl@pengutronix.de>
 Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
-        linux-can@vger.kernel.org, kernel@pengutronix.de
+        linux-can@vger.kernel.org, kernel@pengutronix.de,
+        mailhol.vincent@wanadoo.fr, arunachalam.santhanam@in.bosch.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 Hello:
 
-This pull request was applied to netdev/net-next.git (refs/heads/master):
+This patch was applied to netdev/net-next.git (refs/heads/master):
 
-On Wed, 14 Apr 2021 22:03:51 +0200 you wrote:
-> Hello Jakub, hello David,
+On Wed, 14 Apr 2021 22:03:52 +0200 you wrote:
+> From: Vincent Mailhol <mailhol.vincent@wanadoo.fr>
 > 
-> this is a pull request of a single patch for net-next/master.
+> During the handling of CAN bus errors, a CAN error SKB is allocated
+> using alloc_can_err_skb(). Even if the allocation of the SKB fails,
+> the function continues in order to do the stats handling.
 > 
-> Vincent Mailhol's patch fixes a NULL pointer dereference when handling
-> error frames in the etas_es58x driver, which has been added in the
-> previous PR.
+> All access to the can_frame pointer (cf) should be guarded by an if
+> statement:
+> 	if (cf)
 > 
 > [...]
 
 Here is the summary with links:
-  - pull-request: can-next 2021-04-14
-    https://git.kernel.org/netdev/net-next/c/3a1aa533f7f6
+  - [net-next] can: etas_es58x: fix null pointer dereference when handling error frames
+    https://git.kernel.org/netdev/net-next/c/e2b1e4b532ab
 
 You are awesome, thank you!
 --
