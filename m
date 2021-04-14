@@ -2,178 +2,142 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 51EF235F601
-	for <lists+netdev@lfdr.de>; Wed, 14 Apr 2021 16:22:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4D79335F61C
+	for <lists+netdev@lfdr.de>; Wed, 14 Apr 2021 16:25:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344300AbhDNOPa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 14 Apr 2021 10:15:30 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:26224 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S231158AbhDNOP2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 14 Apr 2021 10:15:28 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1618409706;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=4JOWJDfwxWBSnU6F6WuBZ7JaBtVqAeLmps6k0L0IgMY=;
-        b=GF/QPzK+qMvJyHjnq8FfhNxd74nCV9ODUn7R9z/cg1wkjSFCt0DtgKEYpxrPzHuYPuWmH5
-        Xs1zaBZCVFbbMCtf9NhbHm7Ia3Fb5pUZe34zTKgDVPwXV/Lc0z/cLPBbTGSgbJOP5KdlSq
-        FpjjKAOBI3oX9JqoGqZ25+vEcOhF+Qc=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-501-f5b934_WPZSsjss-1GwwtA-1; Wed, 14 Apr 2021 10:15:02 -0400
-X-MC-Unique: f5b934_WPZSsjss-1GwwtA-1
-Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id D2315107ACE4;
-        Wed, 14 Apr 2021 14:14:59 +0000 (UTC)
-Received: from localhost (ovpn-114-209.ams2.redhat.com [10.36.114.209])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 05A8319C78;
-        Wed, 14 Apr 2021 14:14:58 +0000 (UTC)
-Date:   Wed, 14 Apr 2021 15:14:57 +0100
-From:   Stefan Hajnoczi <stefanha@redhat.com>
-To:     Xie Yongji <xieyongji@bytedance.com>
-Cc:     mst@redhat.com, jasowang@redhat.com, sgarzare@redhat.com,
-        parav@nvidia.com, hch@infradead.org,
-        christian.brauner@canonical.com, rdunlap@infradead.org,
-        willy@infradead.org, viro@zeniv.linux.org.uk, axboe@kernel.dk,
-        bcrl@kvack.org, corbet@lwn.net, mika.penttila@nextfour.com,
-        dan.carpenter@oracle.com,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        kvm@vger.kernel.org, linux-fsdevel@vger.kernel.org
-Subject: Re: [PATCH v6 10/10] Documentation: Add documentation for VDUSE
-Message-ID: <YHb44R4HyLEUVSTF@stefanha-x1.localdomain>
-References: <20210331080519.172-1-xieyongji@bytedance.com>
- <20210331080519.172-11-xieyongji@bytedance.com>
+        id S233808AbhDNOYX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 14 Apr 2021 10:24:23 -0400
+Received: from p3plsmtpa12-07.prod.phx3.secureserver.net ([68.178.252.236]:52157
+        "EHLO p3plsmtpa12-07.prod.phx3.secureserver.net" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S233619AbhDNOYV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 14 Apr 2021 10:24:21 -0400
+X-Greylist: delayed 444 seconds by postgrey-1.27 at vger.kernel.org; Wed, 14 Apr 2021 10:24:21 EDT
+Received: from [192.168.0.116] ([71.184.94.153])
+        by :SMTPAUTH: with ESMTPSA
+        id WgJgl1TYe83tOWgJgl6gLC; Wed, 14 Apr 2021 07:16:32 -0700
+X-CMAE-Analysis: v=2.4 cv=ONniYQWB c=1 sm=1 tr=0 ts=6076f940
+ a=vbvdVb1zh1xTTaY8rfQfKQ==:117 a=vbvdVb1zh1xTTaY8rfQfKQ==:17
+ a=IkcTkHD0fZMA:10 a=mjHj8f7IP-_Ssy1yzXMA:9 a=QEXdDO2ut3YA:10
+X-SECURESERVER-ACCT: tom@talpey.com
+Subject: Re: [PATCH rdma-next 00/10] Enable relaxed ordering for ULPs
+To:     Jason Gunthorpe <jgg@nvidia.com>
+Cc:     Haakon Bugge <haakon.bugge@oracle.com>,
+        David Laight <David.Laight@aculab.com>,
+        Chuck Lever III <chuck.lever@oracle.com>,
+        Christoph Hellwig <hch@lst.de>,
+        Leon Romanovsky <leon@kernel.org>,
+        Doug Ledford <dledford@redhat.com>,
+        Leon Romanovsky <leonro@nvidia.com>,
+        Adit Ranadive <aditr@vmware.com>,
+        Anna Schumaker <anna.schumaker@netapp.com>,
+        Ariel Elior <aelior@marvell.com>,
+        Avihai Horon <avihaih@nvidia.com>,
+        Bart Van Assche <bvanassche@acm.org>,
+        Bernard Metzler <bmt@zurich.ibm.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Dennis Dalessandro <dennis.dalessandro@cornelisnetworks.com>,
+        Devesh Sharma <devesh.sharma@broadcom.com>,
+        Faisal Latif <faisal.latif@intel.com>,
+        Jack Wang <jinpu.wang@ionos.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Bruce Fields <bfields@fieldses.org>, Jens Axboe <axboe@fb.com>,
+        Karsten Graul <kgraul@linux.ibm.com>,
+        Keith Busch <kbusch@kernel.org>, Lijun Ou <oulijun@huawei.com>,
+        CIFS <linux-cifs@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Linux NFS Mailing List <linux-nfs@vger.kernel.org>,
+        "linux-nvme@lists.infradead.org" <linux-nvme@lists.infradead.org>,
+        OFED mailing list <linux-rdma@vger.kernel.org>,
+        "linux-s390@vger.kernel.org" <linux-s390@vger.kernel.org>,
+        Max Gurtovoy <maxg@mellanox.com>,
+        Max Gurtovoy <mgurtovoy@nvidia.com>,
+        "Md. Haris Iqbal" <haris.iqbal@ionos.com>,
+        Michael Guralnik <michaelgur@nvidia.com>,
+        Michal Kalderon <mkalderon@marvell.com>,
+        Mike Marciniszyn <mike.marciniszyn@cornelisnetworks.com>,
+        Naresh Kumar PBS <nareshkumar.pbs@broadcom.com>,
+        Linux-Net <netdev@vger.kernel.org>,
+        Potnuri Bharat Teja <bharat@chelsio.com>,
+        "rds-devel@oss.oracle.com" <rds-devel@oss.oracle.com>,
+        Sagi Grimberg <sagi@grimberg.me>,
+        "samba-technical@lists.samba.org" <samba-technical@lists.samba.org>,
+        Santosh Shilimkar <santosh.shilimkar@oracle.com>,
+        Selvin Xavier <selvin.xavier@broadcom.com>,
+        Shiraz Saleem <shiraz.saleem@intel.com>,
+        Somnath Kotur <somnath.kotur@broadcom.com>,
+        Sriharsha Basavapatna <sriharsha.basavapatna@broadcom.com>,
+        Steve French <sfrench@samba.org>,
+        Trond Myklebust <trond.myklebust@hammerspace.com>,
+        VMware PV-Drivers <pv-drivers@vmware.com>,
+        Weihang Li <liweihang@huawei.com>,
+        Yishai Hadas <yishaih@nvidia.com>,
+        Zhu Yanjun <zyjzyj2000@gmail.com>
+References: <C2924F03-11C5-4839-A4F3-36872194EEA8@oracle.com>
+ <20210406114952.GH7405@nvidia.com>
+ <aeb7334b-edc0-78c2-4adb-92d4a994210d@talpey.com>
+ <8A5E83DF-5C08-49CE-8EE3-08DC63135735@oracle.com>
+ <4b02d1b2-be0e-0d1d-7ac3-38d32e44e77e@talpey.com>
+ <1FA38618-E245-4C53-BF49-6688CA93C660@oracle.com>
+ <7b9e7d9c-13d7-0d18-23b4-0d94409c7741@talpey.com>
+ <f71b24433f4540f0a13133111a59dab8@AcuMS.aculab.com>
+ <880A23A2-F078-42CF-BEE2-30666BCB9B5D@oracle.com>
+ <7deadc67-650c-ea15-722b-a1d77d38faba@talpey.com>
+ <20210412224843.GQ7405@nvidia.com>
+From:   Tom Talpey <tom@talpey.com>
+Message-ID: <02593083-056e-cc62-22cf-d6bd6c9b18a8@talpey.com>
+Date:   Wed, 14 Apr 2021 10:16:28 -0400
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:68.0) Gecko/20100101
+ Thunderbird/68.12.1
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="+8CNRb8u7kJfIjoT"
-Content-Disposition: inline
-In-Reply-To: <20210331080519.172-11-xieyongji@bytedance.com>
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
+In-Reply-To: <20210412224843.GQ7405@nvidia.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-CMAE-Envelope: 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
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On 4/12/2021 6:48 PM, Jason Gunthorpe wrote:
+> On Mon, Apr 12, 2021 at 04:20:47PM -0400, Tom Talpey wrote:
+> 
+>> So the issue is only in testing all the providers and platforms,
+>> to be sure this new behavior isn't tickling anything that went
+>> unnoticed all along, because no RDMA provider ever issued RO.
+> 
+> The mlx5 ethernet driver has run in RO mode for a long time, and it
+> operates in basically the same way as RDMA. The issues with Haswell
+> have been worked out there already.
+> 
+> The only open question is if the ULPs have errors in their
+> implementation, which I don't think we can find out until we apply
+> this series and people start running their tests aggressively.
 
---+8CNRb8u7kJfIjoT
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+I agree that the core RO support should go in. But turning it on
+by default for a ULP should be the decision of each ULP maintainer.
+It's a huge risk to shift all the storage drivers overnight. How
+do you propose to ensure the aggressive testing happens?
 
-On Wed, Mar 31, 2021 at 04:05:19PM +0800, Xie Yongji wrote:
-> VDUSE (vDPA Device in Userspace) is a framework to support
-> implementing software-emulated vDPA devices in userspace. This
-> document is intended to clarify the VDUSE design and usage.
->=20
-> Signed-off-by: Xie Yongji <xieyongji@bytedance.com>
-> ---
->  Documentation/userspace-api/index.rst |   1 +
->  Documentation/userspace-api/vduse.rst | 212 ++++++++++++++++++++++++++++=
-++++++
->  2 files changed, 213 insertions(+)
->  create mode 100644 Documentation/userspace-api/vduse.rst
+One thing that worries me is the patch02 on-by-default for the dma_lkey.
+There's no way for a ULP to prevent IB_ACCESS_RELAXED_ORDERING
+from being set in __ib_alloc_pd().
 
-Just looking over the documentation briefly (I haven't studied the code
-yet)...
+Tom.
 
-> +How VDUSE works
-> +------------
-> +Each userspace vDPA device is created by the VDUSE_CREATE_DEV ioctl on
-> +the character device (/dev/vduse/control). Then a device file with the
-> +specified name (/dev/vduse/$NAME) will appear, which can be used to
-> +implement the userspace vDPA device's control path and data path.
-
-These steps are taken after sending the VDPA_CMD_DEV_NEW netlink
-message? (Please consider reordering the documentation to make it clear
-what the sequence of steps are.)
-
-> +	static int netlink_add_vduse(const char *name, int device_id)
-> +	{
-> +		struct nl_sock *nlsock;
-> +		struct nl_msg *msg;
-> +		int famid;
-> +
-> +		nlsock =3D nl_socket_alloc();
-> +		if (!nlsock)
-> +			return -ENOMEM;
-> +
-> +		if (genl_connect(nlsock))
-> +			goto free_sock;
-> +
-> +		famid =3D genl_ctrl_resolve(nlsock, VDPA_GENL_NAME);
-> +		if (famid < 0)
-> +			goto close_sock;
-> +
-> +		msg =3D nlmsg_alloc();
-> +		if (!msg)
-> +			goto close_sock;
-> +
-> +		if (!genlmsg_put(msg, NL_AUTO_PORT, NL_AUTO_SEQ, famid, 0, 0,
-> +		    VDPA_CMD_DEV_NEW, 0))
-> +			goto nla_put_failure;
-> +
-> +		NLA_PUT_STRING(msg, VDPA_ATTR_DEV_NAME, name);
-> +		NLA_PUT_STRING(msg, VDPA_ATTR_MGMTDEV_DEV_NAME, "vduse");
-> +		NLA_PUT_U32(msg, VDPA_ATTR_DEV_ID, device_id);
-
-What are the permission/capability requirements for VDUSE?
-
-How does VDUSE interact with namespaces?
-
-What is the meaning of VDPA_ATTR_DEV_ID? I don't see it in Linux
-v5.12-rc6 drivers/vdpa/vdpa.c:vdpa_nl_cmd_dev_add_set_doit().
-
-> +MMU-based IOMMU Driver
-> +----------------------
-> +VDUSE framework implements an MMU-based on-chip IOMMU driver to support
-> +mapping the kernel DMA buffer into the userspace iova region dynamically.
-> +This is mainly designed for virtio-vdpa case (kernel virtio drivers).
-> +
-> +The basic idea behind this driver is treating MMU (VA->PA) as IOMMU (IOV=
-A->PA).
-> +The driver will set up MMU mapping instead of IOMMU mapping for the DMA =
-transfer
-> +so that the userspace process is able to use its virtual address to acce=
-ss
-> +the DMA buffer in kernel.
-> +
-> +And to avoid security issue, a bounce-buffering mechanism is introduced =
-to
-> +prevent userspace accessing the original buffer directly which may conta=
-in other
-> +kernel data. During the mapping, unmapping, the driver will copy the dat=
-a from
-> +the original buffer to the bounce buffer and back, depending on the dire=
-ction of
-> +the transfer. And the bounce-buffer addresses will be mapped into the us=
-er address
-> +space instead of the original one.
-
-Is mmap(2) the right interface if memory is not actually shared, why not
-just use pread(2)/pwrite(2) to make the copy explicit? That way the copy
-semantics are clear. For example, don't expect to be able to busy wait
-on the memory because changes will not be visible to the other side.
-
-(I guess I'm missing something here and that mmap(2) is the right
-approach, but maybe this documentation section can be clarified.)
-
---+8CNRb8u7kJfIjoT
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEEhpWov9P5fNqsNXdanKSrs4Grc8gFAmB2+OEACgkQnKSrs4Gr
-c8jpugf+NHnGf6o2QvHFiSjjcoe0QPBmiySO4mz+2/oqmyL0YElWKcuyJJ16uxOx
-p1SCMSYhoSE4EVZ1zWXMy18X6Lc3WjfU5s4dyo1dy4qrumXxGDj8Q93Togh8UL1Q
-URNKuVbUBZp8anAt5KUXQt+fW/kw6luipS8XDrpszHN1mGVPrs8o0oORCwcD/8u9
-95gfUL+acvkfocg6F//QpNUi1/BE7F6iTTRJhZ0UG0GHaVeJ/U0D7z0NrnaZLpgP
-VPBvWxdqfOwiX3ABCVHIS18tafCmkLfadpmH0dxwZgVIC/hmE0gs96/7tDhQqZLg
-1RAejoIQX/MqVpzh3XGHjGqnDW8e6w==
-=hqt0
------END PGP SIGNATURE-----
-
---+8CNRb8u7kJfIjoT--
 
