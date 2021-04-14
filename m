@@ -2,173 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A997935EF3B
-	for <lists+netdev@lfdr.de>; Wed, 14 Apr 2021 10:24:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2745C35EF3C
+	for <lists+netdev@lfdr.de>; Wed, 14 Apr 2021 10:24:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349919AbhDNII6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 14 Apr 2021 04:08:58 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:25073 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S237927AbhDNIIr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 14 Apr 2021 04:08:47 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1618387705;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=3ncnzXsMB1Lmg3QO5E45b/0YMwJoUyHq/D8nx9QO3N8=;
-        b=hOBGMy/PSa4LVM9Z4Qby6rHTc+fhduiZSoArIgctUx1sgDq33R/cZXTb5ZwFuATLY2AdIh
-        FZ4hNMWzRUUdFg5kbKsKdOdKT6ksIE/IBHnwwjFtTjrgqlXzePOM+mgBos0vrBQBYfvAjR
-        tSwFGqvwRqrGTAj+0whXKgGlaVTogRI=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-407-MZQdkqqkOFifSQ3AEAR6RA-1; Wed, 14 Apr 2021 04:08:24 -0400
-X-MC-Unique: MZQdkqqkOFifSQ3AEAR6RA-1
-Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com [10.5.11.13])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id D202A6D4E6;
-        Wed, 14 Apr 2021 08:08:21 +0000 (UTC)
-Received: from [10.36.113.50] (ovpn-113-50.ams2.redhat.com [10.36.113.50])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id 7256214106;
-        Wed, 14 Apr 2021 08:08:09 +0000 (UTC)
-From:   "Eelco Chaudron" <echaudro@redhat.com>
-To:     "Vladimir Oltean" <olteanv@gmail.com>,
-        "Lorenzo Bianconi" <lorenzo@kernel.org>
-Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org,
-        lorenzo.bianconi@redhat.com, davem@davemloft.net, kuba@kernel.org,
-        ast@kernel.org, daniel@iogearbox.net, shayagr@amazon.com,
-        sameehj@amazon.com, john.fastabend@gmail.com, dsahern@kernel.org,
-        brouer@redhat.com, jasowang@redhat.com, alexander.duyck@gmail.com,
-        saeed@kernel.org, maciej.fijalkowski@intel.com
-Subject: Re: [PATCH v8 bpf-next 09/14] bpd: add multi-buffer support to xdp
- copy helpers
-Date:   Wed, 14 Apr 2021 10:08:05 +0200
-Message-ID: <2C9C83D0-933E-4F3E-9569-503064E06E21@redhat.com>
-In-Reply-To: <20210408210409.m76rfs65zbpo4sk7@skbuf>
-References: <cover.1617885385.git.lorenzo@kernel.org>
- <cc517a20ac0908fa070ee6ba019936a8037a6d8c.1617885385.git.lorenzo@kernel.org>
- <20210408210409.m76rfs65zbpo4sk7@skbuf>
+        id S1349893AbhDNILL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 14 Apr 2021 04:11:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34942 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1349933AbhDNIJK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 14 Apr 2021 04:09:10 -0400
+Received: from mail-oi1-x22a.google.com (mail-oi1-x22a.google.com [IPv6:2607:f8b0:4864:20::22a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8AF68C061756
+        for <netdev@vger.kernel.org>; Wed, 14 Apr 2021 01:08:49 -0700 (PDT)
+Received: by mail-oi1-x22a.google.com with SMTP id x2so19765720oiv.2
+        for <netdev@vger.kernel.org>; Wed, 14 Apr 2021 01:08:49 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=3835wDb43BRmqXpMb7dlPJQglpbtbXdC422uijyrwSQ=;
+        b=BhXTymvcDSiR4rbue+Tt7wFfk4hEXeCPI0R/OlxqAq5z3axIj/qImVpGkjoUVv8m3z
+         Ku7pytGyyTmUGKwVxAh5enryu4OgDGJjqmXGZIjXAz1pSsEjaSC50vKTyLuURuyq90iT
+         ZNr4K14ZmZlzaM7KKO2tGNL7CE+KFgLAdCXJYk/jSh65J2LFMPscO0EkDtUD7yIk3AZq
+         uyPMh3RP/xsroQlwg+ofFJQ4tbxlMkoPDblz/81A2qXqAuqatlE79e7bgT4tF8WwDD5s
+         fk8Or48+FPKCQFnNlmtf55Br+JfStUp0zNdZQe23fpyp1aZFShzRVJ7OFsfkcWbsXABF
+         Lb2w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=3835wDb43BRmqXpMb7dlPJQglpbtbXdC422uijyrwSQ=;
+        b=foofZZaOwsfLXCEGj5R2z6NPU+pm+twYWjwkoqj1bnB+kpwQVCl6zJfD1ZEFsFQbJm
+         CvsPW+kb3R28KCI6dtZ5fw68VXeOrbr4fsN8qUeZOqDoBFsl7QJ1H9Pi6QXLOYH/kznA
+         10XHVe5Bzhyv1oZlHrxvX1b7rRrnKaKN9/BCs6sJPgoSUtE2thg66BhZPR3r8OMRyRCk
+         hLlqSLzhHDVGtQLJWxVQb11pk72EvKf49AML4Ic4k7XveiphVLRoTNaGMjcQ0c8+PKvM
+         wMuocFftpu6aUrYgncCfGhZT3G346/K2nb8va9fIAqG6ZV/YVFMsQdvx6aYWmwp82cII
+         R9XA==
+X-Gm-Message-State: AOAM531jVDJp+KLwXz5OoTFjkA/p82wxiLNlJ8ksU3GhJ6TYVcEP1HKw
+        /KTd4NI3djuZVjFdaJfPzz5V+7KENWiZxg==
+X-Google-Smtp-Source: ABdhPJwmU693WkgRxK4ENMPj/eJplgxgsTHcyNJRAlCBt05nqqfirfDCdAicsggTMuL9ImJfMB9JsA==
+X-Received: by 2002:aca:f515:: with SMTP id t21mr1517923oih.72.1618387728569;
+        Wed, 14 Apr 2021 01:08:48 -0700 (PDT)
+Received: from pear.attlocal.net ([2600:1700:271:1a80:7124:9f6b:8552:7fdf])
+        by smtp.gmail.com with ESMTPSA id y6sm2190691otk.42.2021.04.14.01.08.47
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Wed, 14 Apr 2021 01:08:48 -0700 (PDT)
+From:   Lijun Pan <lijunp213@gmail.com>
+To:     netdev@vger.kernel.org
+Cc:     Lijun Pan <lijunp213@gmail.com>
+Subject: [PATCH net v2] net: core: make napi_disable more robust
+Date:   Wed, 14 Apr 2021 03:08:45 -0500
+Message-Id: <20210414080845.11426-1-lijunp213@gmail.com>
+X-Mailer: git-send-email 2.23.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"; format=flowed
 Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+There are chances that napi_disable can be called twice by NIC driver.
+This could generate deadlock. For example,
+the first napi_disable will spin until NAPI_STATE_SCHED is cleared
+by napi_complete_done, then set it again.
+When napi_disable is called the second time, it will loop infinitely
+because no dev->poll will be running to clear NAPI_STATE_SCHED.
 
+Though it is driver writer's responsibility to make sure it being
+called only once, making napi_disable more robust does not hurt, not
+to say it can prevent a buggy driver from crashing a system.
+So, we check the napi state bit to make sure that if napi is already
+disabled, we exit the call early enough to avoid spinning infinitely.
 
-On 8 Apr 2021, at 23:04, Vladimir Oltean wrote:
+Fixes: bea3348eef27 ("[NET]: Make NAPI polling independent of struct net_device objects.")
+Signed-off-by: Lijun Pan <lijunp213@gmail.com>
+---
+v2: justify that this patch makes napi_disable more robust.
 
-> On Thu, Apr 08, 2021 at 02:51:01PM +0200, Lorenzo Bianconi wrote:
->> From: Eelco Chaudron <echaudro@redhat.com>
->>
->> This patch adds support for multi-buffer for the following helpers:
->>   - bpf_xdp_output()
->>   - bpf_perf_event_output()
->>
->> Signed-off-by: Eelco Chaudron <echaudro@redhat.com>
->> Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
->> ---
->
-> Also there is a typo in the commit message: bpd -> bpf.
+ net/core/dev.c | 18 ++++++++++++++++++
+ 1 file changed, 18 insertions(+)
 
-ACK, will fix in next version.
-
->>  net/core/filter.c                             |  63 ++++++++-
->>  .../selftests/bpf/prog_tests/xdp_bpf2bpf.c    | 127 
->> ++++++++++++------
->>  .../selftests/bpf/progs/test_xdp_bpf2bpf.c    |   3 +-
->>  3 files changed, 149 insertions(+), 44 deletions(-)
->>
->> diff --git a/net/core/filter.c b/net/core/filter.c
->> index c4eb1392f88e..c00f52ab2532 100644
->> --- a/net/core/filter.c
->> +++ b/net/core/filter.c
->> @@ -4549,10 +4549,56 @@ static const struct bpf_func_proto 
->> bpf_sk_ancestor_cgroup_id_proto = {
->>  };
->>  #endif
->>
->> -static unsigned long bpf_xdp_copy(void *dst_buff, const void 
->> *src_buff,
->> +static unsigned long bpf_xdp_copy(void *dst_buff, const void *ctx,
->>  				  unsigned long off, unsigned long len)
->>  {
->> -	memcpy(dst_buff, src_buff + off, len);
->> +	struct xdp_buff *xdp = (struct xdp_buff *)ctx;
->
-> There is no need to cast a void pointer in C.
-
-I added this as the void pointer is a const. However, looking at it 
-again, we should probably change xdp_get_shared_info_from_buff() to also 
-take a const pointer, i.e.:
-
-    static inline struct xdp_shared_info *
-   -xdp_get_shared_info_from_buff(struct xdp_buff *xdp)
-   +xdp_get_shared_info_from_buff(const struct xdp_buff *xdp)
-    {
-           BUILD_BUG_ON(sizeof(struct xdp_shared_info) >
-                        sizeof(struct skb_shared_info));
-
-What do you think Lorenzo?
-
->> +	struct xdp_shared_info *xdp_sinfo;
->> +	unsigned long base_len;
->> +
->> +	if (likely(!xdp->mb)) {
->> +		memcpy(dst_buff, xdp->data + off, len);
->> +		return 0;
->> +	}
->> +
->> +	base_len = xdp->data_end - xdp->data;
->
-> Would a static inline int xdp_buff_head_len() be useful?
-
-Guess everybody is using the xdp->data_end - xdp->data, in there code. 
-But I guess we can add a static inline and change all code, but I 
-don’t think we should do it as part of this patchset. I would also 
-call it something like xdp_buff_data_len()?
-
->> +	xdp_sinfo = xdp_get_shared_info_from_buff(xdp);
->> +	do {
->> +		const void *src_buff = NULL;
->> +		unsigned long copy_len = 0;
->> +
->> +		if (off < base_len) {
->> +			src_buff = xdp->data + off;
->> +			copy_len = min(len, base_len - off);
->> +		} else {
->> +			unsigned long frag_off_total = base_len;
->> +			int i;
->> +
->> +			for (i = 0; i < xdp_sinfo->nr_frags; i++) {
->> +				skb_frag_t *frag = &xdp_sinfo->frags[i];
->> +				unsigned long frag_len, frag_off;
->> +
->> +				frag_len = xdp_get_frag_size(frag);
->> +				frag_off = off - frag_off_total;
->> +				if (frag_off < frag_len) {
->> +					src_buff = xdp_get_frag_address(frag) +
->> +						   frag_off;
->> +					copy_len = min(len,
->> +						       frag_len - frag_off);
->> +					break;
->> +				}
->> +				frag_off_total += frag_len;
->> +			}
->> +		}
->> +		if (!src_buff)
->> +			break;
->> +
->> +		memcpy(dst_buff, src_buff, copy_len);
->> +		off += copy_len;
->> +		len -= copy_len;
->> +		dst_buff += copy_len;
->> +	} while (len);
->> +
->>  	return 0;
->>  }
+diff --git a/net/core/dev.c b/net/core/dev.c
+index 1f79b9aa9a3f..fa0aa212b7bb 100644
+--- a/net/core/dev.c
++++ b/net/core/dev.c
+@@ -6830,6 +6830,24 @@ EXPORT_SYMBOL(netif_napi_add);
+ void napi_disable(struct napi_struct *n)
+ {
+ 	might_sleep();
++
++	/* make sure napi_disable() runs only once,
++	 * When napi is disabled, the state bits are like:
++	 * NAPI_STATE_SCHED (set by previous napi_disable)
++	 * NAPI_STATE_NPSVC (set by previous napi_disable)
++	 * NAPI_STATE_DISABLE (cleared by previous napi_disable)
++	 * NAPI_STATE_PREFER_BUSY_POLL (cleared by previous napi_complete_done)
++	 * NAPI_STATE_MISSED (cleared by previous napi_complete_done)
++	 */
++
++	if (napi_disable_pending(n))
++		return;
++	if (test_bit(NAPI_STATE_SCHED, &n->state) &&
++	    test_bit(NAPI_STATE_NPSVC, &n->state) &&
++	    !test_bit(NAPI_STATE_MISSED, &n->state) &&
++	    !test_bit(NAPI_STATE_PREFER_BUSY_POLL, &n->state))
++		return;
++
+ 	set_bit(NAPI_STATE_DISABLE, &n->state);
+ 
+ 	while (test_and_set_bit(NAPI_STATE_SCHED, &n->state))
+-- 
+2.23.0
 
