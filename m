@@ -2,207 +2,144 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A6FEB35FA1A
-	for <lists+netdev@lfdr.de>; Wed, 14 Apr 2021 19:54:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E66AE35FA29
+	for <lists+netdev@lfdr.de>; Wed, 14 Apr 2021 20:01:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351203AbhDNRwj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 14 Apr 2021 13:52:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50620 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236918AbhDNRwi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 14 Apr 2021 13:52:38 -0400
-Received: from mail-wm1-x336.google.com (mail-wm1-x336.google.com [IPv6:2a00:1450:4864:20::336])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A9892C061574
-        for <netdev@vger.kernel.org>; Wed, 14 Apr 2021 10:52:16 -0700 (PDT)
-Received: by mail-wm1-x336.google.com with SMTP id p19so11092511wmq.1
-        for <netdev@vger.kernel.org>; Wed, 14 Apr 2021 10:52:16 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:from:to:cc:references:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=vGmoghB+9yMteFgy2MCsH99naO8JhYjSFRs9gce09zw=;
-        b=tcOB4ou9gOvvQYoG+sTsxsouq9VuTw6SJpyLwevB6fFKyR2eOgpoQY6YqUfuSQVmLj
-         twFyisaUU0+UTasz5RGTE1/VNvfa3YgFq+FA4soextWK6uh8lNEZZziOmnyaC5xqJoch
-         dN/OHpuKRwigxAKLRpZnQSXy8HwhsKGfnYLtaUMLUKCiZuyMas+eyZXlaKizDi8soGHZ
-         U0lSmaLVRdVYtNsXeuCdd51i1oFxQ2ihfWjsaaBaL7KJD6CDsCqWSNYzF3rVNBWpQCHw
-         +L9JvP2SeFHkK72H1LYyhg9gv/3HAKqbBt3HE2lrC+TQJd8QpmkCf0v+ZBFrINV5Mhp6
-         SonA==
+        id S1351494AbhDNSAU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 14 Apr 2021 14:00:20 -0400
+Received: from mail-vs1-f53.google.com ([209.85.217.53]:37687 "EHLO
+        mail-vs1-f53.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234303AbhDNSAS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 14 Apr 2021 14:00:18 -0400
+Received: by mail-vs1-f53.google.com with SMTP id 2so10774755vsh.4;
+        Wed, 14 Apr 2021 10:59:55 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:from:to:cc:references:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=vGmoghB+9yMteFgy2MCsH99naO8JhYjSFRs9gce09zw=;
-        b=OM3Yj+U0vLJpqQoBqJ4XToO/EWQE6ujSwboF0vIzCsAFUbHmp5pdJ4VCw2AduQIDsP
-         JwrgvAYgKvA3pA89eEiZemC8dM9+DgtmYTCWK8rhKMX6Zksh/LO+l0dUd3JhSCQs6blS
-         Wl3J8PKntgvQYBRO7UHlZpWHxcI6YMgwzvJ6USvx+xu4QkK1Me7CIRF5f7VeDdFYw1Ps
-         GS8e7mY/eXf5Umj0CTZL/uNWb/hnm/C7UP/lHNrEvXNwUS/7nxt9vRoMFQe1Js1WSzzg
-         Okas8N/6l6/mETYgujVvg7oPEM+t1w5sr7vQ5MydonJpNzvoQ2UPjJH/w4iwRjC6j9KK
-         3B/Q==
-X-Gm-Message-State: AOAM532m1DKJGbkm1smE36UUs/FglRSmixSSBkwwZo35Kkf8oKZw1ElO
-        JKABnonDOhW/onAF4tSTr91Nt49R8lk=
-X-Google-Smtp-Source: ABdhPJwfbSROTkhUNcrgF6rL7dJIMNcCY1+mhSVMUX9ZRDBGlY/83GjVPSgrlcedsSlWNTN2XILLIg==
-X-Received: by 2002:a1c:7215:: with SMTP id n21mr1862175wmc.61.1618422735443;
-        Wed, 14 Apr 2021 10:52:15 -0700 (PDT)
-Received: from [192.168.1.101] ([37.166.215.213])
-        by smtp.gmail.com with ESMTPSA id 61sm140747wrm.52.2021.04.14.10.52.14
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 14 Apr 2021 10:52:15 -0700 (PDT)
-Subject: Re: A data race between fanout_demux_rollover() and __fanout_unlink()
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
-        Xie He <xie.he.0141@gmail.com>
-Cc:     "eyal.birger@gmail.com" <eyal.birger@gmail.com>,
-        "yonatanlinik@gmail.com" <yonatanlinik@gmail.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "Gong, Sishuai" <sishuai@purdue.edu>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-References: <4FE5BFAB-1988-4CA9-9B97-CEF73396B4EC@purdue.edu>
- <CAJht_EN-7OPijuS4kjqL71tfQHcg_aa9c9SZSQBmSvcNP5fFow@mail.gmail.com>
- <CA+FuTSdtdhJ+ZnGfmY3CxvPNGgPJdhV89bUfXVmkk4FszpUAVw@mail.gmail.com>
- <5958c722-7dcd-4342-291f-692a123ef931@gmail.com>
-Message-ID: <abef5079-a604-8aa1-39ba-38ae115178e7@gmail.com>
-Date:   Wed, 14 Apr 2021 19:52:13 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.8.0
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=LrQhYoofWK1qIE+Puebb8490xY7FtwOJErFPSvGIMtY=;
+        b=shBio9KXJcxBAmzKpdwcUWISMSsYL8M3tQO4z507KY7PgFMkaEswmzkin+rxfTFEUw
+         gE4FBQTec8Moz+tuk7xwCZCQ694Dh34mYn1t3vrNYsTp6XtEo/yIyTOEObyybO6aZjIV
+         +skifyO2nWsM3Z3ijX7gtDpYLtrtzg1JcaveBJzpODOGN1jTKKSRu1aEEGN4IlnfJbct
+         HDplDg8Oc8YQmB06F4JvM8/oyHSW8KbX3UCwkBx7/t2JOamu5s6mlW8VE7omAkYl9bCY
+         w1K2Og6Ug5L+vhdghyXYyoYkr0GknFN1TD18kRjMYxcz+FPdZERqV7nRsbZQvmly1iK3
+         7FQg==
+X-Gm-Message-State: AOAM531LqaKLI8iIRXD0m1UWr3iM/H2WaoPWUOy+C92HVyEXlTNx93N6
+        YjP0GApOe3SOjqCOX6O3o7/nOGUzO3Vp2eRPr8yBXqhjj/o=
+X-Google-Smtp-Source: ABdhPJyeOsV8TPzm4qfYRpIEOQxrAj6kXLid0sqN/BtkYP2cUAkLDMXrOtYnopbrTca5CncxrQqmj9wtMiDHf/+FZD8=
+X-Received: by 2002:a67:80c4:: with SMTP id b187mr29655934vsd.42.1618423195054;
+ Wed, 14 Apr 2021 10:59:55 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <5958c722-7dcd-4342-291f-692a123ef931@gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+References: <20210412132619.7896-1-aford173@gmail.com> <20210412132619.7896-2-aford173@gmail.com>
+ <CAMuHMdU5RfTGs3SCvJX9epKBLOo6o1BQMng49RjrBn+P7QOSeg@mail.gmail.com> <CAHCN7xKp1Lp+KAHwo_GobZoDKQCV9_7Yx2ZNKmTzkkShRBzm_Q@mail.gmail.com>
+In-Reply-To: <CAHCN7xKp1Lp+KAHwo_GobZoDKQCV9_7Yx2ZNKmTzkkShRBzm_Q@mail.gmail.com>
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+Date:   Wed, 14 Apr 2021 19:59:43 +0200
+Message-ID: <CAMuHMdUhwyR8F6PeE1WEtaEtEPrnm0qFtGJ1rGqTJDYSotK8PA@mail.gmail.com>
+Subject: Re: [PATCH V4 2/2] net: ethernet: ravb: Enable optional refclk
+To:     Adam Ford <aford173@gmail.com>
+Cc:     netdev <netdev@vger.kernel.org>,
+        Adam Ford-BE <aford@beaconembedded.com>,
+        Sergei Shtylyov <sergei.shtylyov@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hi Adam,
 
+On Wed, Apr 14, 2021 at 3:08 PM Adam Ford <aford173@gmail.com> wrote:
+> On Tue, Apr 13, 2021 at 2:33 AM Geert Uytterhoeven <geert@linux-m68k.org> wrote:
+> > On Mon, Apr 12, 2021 at 3:27 PM Adam Ford <aford173@gmail.com> wrote:
+> > > For devices that use a programmable clock for the AVB reference clock,
+> > > the driver may need to enable them.  Add code to find the optional clock
+> > > and enable it when available.
+> > >
+> > > Signed-off-by: Adam Ford <aford173@gmail.com>
+> > > Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+> > >
+> > > ---
+> > > V4:  Eliminate the NULL check when disabling refclk, and add a line
+> > >      to disable the refclk if there is a failure after it's been
+> > >      initialized.
+> >
+> > Thanks for the update!
+> >
+> > > --- a/drivers/net/ethernet/renesas/ravb_main.c
+> > > +++ b/drivers/net/ethernet/renesas/ravb_main.c
+> > > @@ -2148,6 +2148,13 @@ static int ravb_probe(struct platform_device *pdev)
+> > >                 goto out_release;
+> > >         }
+> > >
+> > > +       priv->refclk = devm_clk_get_optional(&pdev->dev, "refclk");
+> > > +       if (IS_ERR(priv->refclk)) {
+> > > +               error = PTR_ERR(priv->refclk);
+> > > +               goto out_release;
+> >
+> > Note that this will call clk_disable_unprepare() in case of failure, which is
+> > fine, as that function is a no-op in case of a failed clock.
+>
+> Geert,
+>
+> A bot reported that if I jump to out_release may try to free a clock
+> if some instances where priv isn't defined.
 
-On 4/14/21 6:52 PM, Eric Dumazet wrote:
-> 
-> 
-> On 4/14/21 1:27 AM, Willem de Bruijn wrote:
->> On Tue, Apr 13, 2021 at 6:55 PM Xie He <xie.he.0141@gmail.com> wrote:
->>>
->>> On Tue, Apr 13, 2021 at 1:51 PM Gong, Sishuai <sishuai@purdue.edu> wrote:
->>>>
->>>> Hi,
->>>>
->>>> We found a data race in linux-5.12-rc3 between af_packet.c functions fanout_demux_rollover() and __fanout_unlink() and we are able to reproduce it under x86.
->>>>
->>>> When the two functions are running together, __fanout_unlink() will grab a lock and modify some attribute of packet_fanout variable, but fanout_demux_rollover() may or may not see this update depending on different interleavings, as shown in below.
->>>>
->>>> Currently, we didn’t find any explicit errors due to this data race. But in fanout_demux_rollover(), we noticed that the data-racing variable is involved in the later operation, which might be a concern.
->>>>
->>>> ------------------------------------------
->>>> Execution interleaving
->>>>
->>>> Thread 1                                                        Thread 2
->>>>
->>>> __fanout_unlink()                                               fanout_demux_rollover()
->>>> spin_lock(&f->lock);
->>>>                                                                         po = pkt_sk(f->arr[idx]);
->>>>                                                                         // po is a out-of-date value
->>>> f->arr[i] = f->arr[f->num_members - 1];
->>>> spin_unlock(&f->lock);
->>>>
->>>>
->>>>
->>>> Thanks,
->>>> Sishuai
->>>
->>> CC'ing more people.
->>
->> __fanout_unlink removes a socket from the fanout group, but ensures
->> that the socket is not destroyed until after no datapath can refer to
->> it anymore, through a call to synchronize_net.
->>
-> 
-> Right, but there is a data race.
-> 
-> Compiler might implement 
-> 
-> f->arr[i] = f->arr[f->num_members - 1];
-> 
-> (And po = pkt_sk(f->arr[idx]);
-> 
-> Using one-byte-at-a-time load/stores, yes crazy, but oh well.
-> 
-> We should use READ_ONCE()/WRITE_ONCE() at very minimum,
-> and rcu_dereference()/rcu_assign_pointer() since we clearly rely on standard RCU rules.
-> 
-> 
-> 
+As priv is allocated using alloc_etherdev_mqs(), priv->refclk is
+NULL initially, but priv itself may indeed not be initialized when the first
+"goto out_release" is taken.  Sorry for missing that.
 
-I will test something like :
+> Currently, the priv->clk isn't freed either.  I have heard some
+> back-and-forth discussions in other threads on whether or not devm
+> functions auto free or not.
 
-diff --git a/net/packet/af_packet.c b/net/packet/af_packet.c
-index 118d585337d72f10cd31ec5ca7c55b508fc18baf..ba96db1880eae89febf77ba6ff943b054cd268d7 100644
---- a/net/packet/af_packet.c
-+++ b/net/packet/af_packet.c
-@@ -1359,7 +1359,7 @@ static unsigned int fanout_demux_rollover(struct packet_fanout *f,
-        struct packet_sock *po, *po_next, *po_skip = NULL;
-        unsigned int i, j, room = ROOM_NONE;
- 
--       po = pkt_sk(f->arr[idx]);
-+       po = pkt_sk(rcu_dereference(f->arr[idx]));
- 
-        if (try_self) {
-                room = packet_rcv_has_room(po, skb);
-@@ -1371,7 +1371,7 @@ static unsigned int fanout_demux_rollover(struct packet_fanout *f,
- 
-        i = j = min_t(int, po->rollover->sock, num - 1);
-        do {
--               po_next = pkt_sk(f->arr[i]);
-+               po_next = pkt_sk(rcu_dereference(f->arr[i]));
-                if (po_next != po_skip && !READ_ONCE(po_next->pressure) &&
-                    packet_rcv_has_room(po_next, skb) == ROOM_NORMAL) {
-                        if (i != j)
-@@ -1466,7 +1466,7 @@ static int packet_rcv_fanout(struct sk_buff *skb, struct net_device *dev,
-        if (fanout_has_flag(f, PACKET_FANOUT_FLAG_ROLLOVER))
-                idx = fanout_demux_rollover(f, skb, idx, true, num);
- 
--       po = pkt_sk(f->arr[idx]);
-+       po = pkt_sk(rcu_dereference(f->arr[idx]));
-        return po->prot_hook.func(skb, dev, &po->prot_hook, orig_dev);
- }
- 
-@@ -1480,7 +1480,7 @@ static void __fanout_link(struct sock *sk, struct packet_sock *po)
-        struct packet_fanout *f = po->fanout;
- 
-        spin_lock(&f->lock);
--       f->arr[f->num_members] = sk;
-+       rcu_assign_pointer(f->arr[f->num_members], sk);
-        smp_wmb();
-        f->num_members++;
-        if (f->num_members == 1)
-@@ -1495,11 +1495,14 @@ static void __fanout_unlink(struct sock *sk, struct packet_sock *po)
- 
-        spin_lock(&f->lock);
-        for (i = 0; i < f->num_members; i++) {
--               if (f->arr[i] == sk)
-+               if (rcu_dereference_protected(f->arr[i],
-+                                             lockdep_is_held(&f->lock)) == sk)
-                        break;
-        }
-        BUG_ON(i >= f->num_members);
--       f->arr[i] = f->arr[f->num_members - 1];
-+       rcu_assign_pointer(f->arr[i],
-+                          rcu_dereference_protected(f->arr[f->num_members - 1],
-+                                                    lockdep_is_held(&f->lock)));
-        f->num_members--;
-        if (f->num_members == 0)
-                __dev_remove_pack(&f->prot_hook);
-diff --git a/net/packet/internal.h b/net/packet/internal.h
-index 5f61e59ebbffaa25a8fdfe31f79211fe6a755c51..48af35b1aed2565267c0288e013e23ff51f2fcac 100644
---- a/net/packet/internal.h
-+++ b/net/packet/internal.h
-@@ -94,7 +94,7 @@ struct packet_fanout {
-        spinlock_t              lock;
-        refcount_t              sk_ref;
-        struct packet_type      prot_hook ____cacheline_aligned_in_smp;
--       struct sock             *arr[];
-+       struct sock     __rcu   *arr[];
- };
- 
- struct packet_rollover {
+The devm_clk_get_optional() will be undone automatically, so there
+is no need to handle that explicitly.
 
+> I'm fine with sending a V5 to make the free for the refclock happen
+> only when the priv has successfully initialized.  Should I also add
+
+As this patch has been applied to net-next, you''ll have to send
+a follow-up fix patch, not a v5.
+
+> one for freeing priv->clk and change all the other goto out_release
+> commands to point to this new section?
+
+No, not for priv->clk, due to devm_*().
+
+> I am thinking it would like something like:
+>
+> free_refclk:
+>     clk_disable_unprepare(priv->refclk);
+
+OK.
+
+> free_clk;
+>     clk_disable_unprepare(priv->clk);
+
+NAK, as priv->clk is not enabled in ravb_probe().
+
+> out_release:
+>     free_netdev(ndev);
+>     ....
+
+OK.
+
+Thanks!
+
+Gr{oetje,eeting}s,
+
+                        Geert
+
+-- 
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
