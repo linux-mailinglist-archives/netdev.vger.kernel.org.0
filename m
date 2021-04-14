@@ -2,28 +2,27 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 29BC935F142
-	for <lists+netdev@lfdr.de>; Wed, 14 Apr 2021 12:10:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5CF1F35F156
+	for <lists+netdev@lfdr.de>; Wed, 14 Apr 2021 12:14:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236765AbhDNKJ6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 14 Apr 2021 06:09:58 -0400
-Received: from host.78.145.23.62.rev.coltfrance.com ([62.23.145.78]:34735 "EHLO
+        id S233624AbhDNKOZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 14 Apr 2021 06:14:25 -0400
+Received: from host.78.145.23.62.rev.coltfrance.com ([62.23.145.78]:34746 "EHLO
         proxy.6wind.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1348932AbhDNKJY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 14 Apr 2021 06:09:24 -0400
-X-Greylist: delayed 511 seconds by postgrey-1.27 at vger.kernel.org; Wed, 14 Apr 2021 06:09:23 EDT
+        with ESMTP id S233551AbhDNKOW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 14 Apr 2021 06:14:22 -0400
 Received: from bretzel (unknown [10.16.0.57])
-        by proxy.6wind.com (Postfix) with ESMTPS id C64B69223F4;
-        Wed, 14 Apr 2021 12:00:30 +0200 (CEST)
+        by proxy.6wind.com (Postfix) with ESMTPS id F1FCD9223F9;
+        Wed, 14 Apr 2021 12:03:32 +0200 (CEST)
 Received: from dichtel by bretzel with local (Exim 4.92)
         (envelope-from <dichtel@6wind.com>)
-        id 1lWcJy-0003kF-Od; Wed, 14 Apr 2021 12:00:30 +0200
+        id 1lWcMu-0003qZ-Ur; Wed, 14 Apr 2021 12:03:32 +0200
 From:   Nicolas Dichtel <nicolas.dichtel@6wind.com>
-To:     davem@davemloft.net, kuba@kernel.org
+To:     davem@davemloft.net, kuba@kernel.org, dsahern@gmail.com
 Cc:     netdev@vger.kernel.org, Nicolas Dichtel <nicolas.dichtel@6wind.com>
-Subject: [PATCH net] doc: move seg6_flowlabel to seg6-sysctl.rst
-Date:   Wed, 14 Apr 2021 12:00:27 +0200
-Message-Id: <20210414100027.14313-1-nicolas.dichtel@6wind.com>
+Subject: [PATCH net] vrf: fix a comment about loopback device
+Date:   Wed, 14 Apr 2021 12:03:25 +0200
+Message-Id: <20210414100325.14705-1-nicolas.dichtel@6wind.com>
 X-Mailer: git-send-email 2.30.0
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -31,62 +30,42 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Let's have all seg6 sysctl at the same place.
+This is a leftover of the below commit.
 
-Fixes: a6dc6670cd7e ("ipv6: sr: Add documentation for seg_flowlabel sysctl")
+Fixes: 4f04256c983a ("net: vrf: Drop local rtable and rt6_info")
 Signed-off-by: Nicolas Dichtel <nicolas.dichtel@6wind.com>
 ---
- Documentation/networking/ip-sysctl.rst   | 15 ---------------
- Documentation/networking/seg6-sysctl.rst | 13 +++++++++++++
- 2 files changed, 13 insertions(+), 15 deletions(-)
+ drivers/net/vrf.c | 10 ++++------
+ 1 file changed, 4 insertions(+), 6 deletions(-)
 
-diff --git a/Documentation/networking/ip-sysctl.rst b/Documentation/networking/ip-sysctl.rst
-index c7952ac5bd2f..3feb5e565b1a 100644
---- a/Documentation/networking/ip-sysctl.rst
-+++ b/Documentation/networking/ip-sysctl.rst
-@@ -1849,21 +1849,6 @@ ip6frag_low_thresh - INTEGER
- ip6frag_time - INTEGER
- 	Time in seconds to keep an IPv6 fragment in memory.
+diff --git a/drivers/net/vrf.c b/drivers/net/vrf.c
+index cde8ffd182b0..7a02e0b6ff7c 100644
+--- a/drivers/net/vrf.c
++++ b/drivers/net/vrf.c
+@@ -471,9 +471,8 @@ static netdev_tx_t vrf_process_v6_outbound(struct sk_buff *skb,
  
--IPv6 Segment Routing:
--
--seg6_flowlabel - INTEGER
--	Controls the behaviour of computing the flowlabel of outer
--	IPv6 header in case of SR T.encaps
--
--	 == =======================================================
--	 -1  set flowlabel to zero.
--	  0  copy flowlabel from Inner packet in case of Inner IPv6
--	     (Set flowlabel to 0 in case IPv4/L2)
--	  1  Compute the flowlabel using seg6_make_flowlabel()
--	 == =======================================================
--
--	Default is 0.
--
- ``conf/default/*``:
- 	Change the interface-specific default settings.
+ 	skb_dst_drop(skb);
  
-diff --git a/Documentation/networking/seg6-sysctl.rst b/Documentation/networking/seg6-sysctl.rst
-index ec73e1445030..07c20e470baf 100644
---- a/Documentation/networking/seg6-sysctl.rst
-+++ b/Documentation/networking/seg6-sysctl.rst
-@@ -24,3 +24,16 @@ seg6_require_hmac - INTEGER
- 	* 1 - Drop SR packets without HMAC, validate SR packets with HMAC
+-	/* if dst.dev is loopback or the VRF device again this is locally
+-	 * originated traffic destined to a local address. Short circuit
+-	 * to Rx path
++	/* if dst.dev is the VRF device again this is locally originated traffic
++	 * destined to a local address. Short circuit to Rx path.
+ 	 */
+ 	if (dst->dev == dev)
+ 		return vrf_local_xmit(skb, dev, dst);
+@@ -547,9 +546,8 @@ static netdev_tx_t vrf_process_v4_outbound(struct sk_buff *skb,
  
- 	Default is 0.
-+
-+seg6_flowlabel - INTEGER
-+	Controls the behaviour of computing the flowlabel of outer
-+	IPv6 header in case of SR T.encaps
-+
-+	 == =======================================================
-+	 -1  set flowlabel to zero.
-+	  0  copy flowlabel from Inner packet in case of Inner IPv6
-+	     (Set flowlabel to 0 in case IPv4/L2)
-+	  1  Compute the flowlabel using seg6_make_flowlabel()
-+	 == =======================================================
-+
-+	Default is 0.
+ 	skb_dst_drop(skb);
+ 
+-	/* if dst.dev is loopback or the VRF device again this is locally
+-	 * originated traffic destined to a local address. Short circuit
+-	 * to Rx path
++	/* if dst.dev is the VRF device again this is locally originated traffic
++	 * destined to a local address. Short circuit to Rx path.
+ 	 */
+ 	if (rt->dst.dev == vrf_dev)
+ 		return vrf_local_xmit(skb, vrf_dev, &rt->dst);
 -- 
 2.30.0
 
