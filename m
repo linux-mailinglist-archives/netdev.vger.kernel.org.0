@@ -2,37 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5513035F04B
-	for <lists+netdev@lfdr.de>; Wed, 14 Apr 2021 11:01:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 283DA35F051
+	for <lists+netdev@lfdr.de>; Wed, 14 Apr 2021 11:01:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350419AbhDNJBS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 14 Apr 2021 05:01:18 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:52574 "EHLO
+        id S1350441AbhDNJBa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 14 Apr 2021 05:01:30 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:39048 "EHLO
         us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1350124AbhDNJAN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 14 Apr 2021 05:00:13 -0400
+        by vger.kernel.org with ESMTP id S1350240AbhDNJAO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 14 Apr 2021 05:00:14 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1618390725;
+        s=mimecast20190719; t=1618390726;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=zBzvd/Ow2mhy2uRNHAspe0Hcs9m7pozn4DLZaIWN8HE=;
-        b=Klza2MYW4qfn4eXkvlwnpn83wSLhuMxk9zBJmogIVhci56ltw2gvJ9zoHLanDQq9k7ifVF
-        k1zTYoLQWu4WjD14aUxm7BQJx85eY912dG4rDC9Qj9v4dH7TTs8t4v2xDsxzaqf42RRmBQ
-        IlhsUtiXxK1VtBrcY/qnXvczKeUT/zE=
+        bh=IL9tcO7W5w4Q5zI/RcosteAuoS46bX3sbgqpkLeCCFg=;
+        b=DMIQ261F47eHL1Iu49ezlvzu+MNe1SgLrz/h20Lt+QQRQ4VGHPrP4Y82qDsvepnrJNAwKo
+        X6ocMfVIC1mVOlP7yKxmZScTa4gQ5XbPtYHrNLpdVyxU47MQNO34OXnidohrd/3fNSupHb
+        kwUzpWhiBp69WopeAwITlJUlV5Un1BY=
 Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
  [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-345-gmp_Md04MiGYrsZUH90EhQ-1; Wed, 14 Apr 2021 04:58:43 -0400
-X-MC-Unique: gmp_Md04MiGYrsZUH90EhQ-1
+ us-mta-518-rmKrQ_-HMAKpj1cnkwnmsQ-1; Wed, 14 Apr 2021 04:58:44 -0400
+X-MC-Unique: rmKrQ_-HMAKpj1cnkwnmsQ-1
 Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com [10.5.11.15])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 41C59107ACC7;
-        Wed, 14 Apr 2021 08:58:41 +0000 (UTC)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 31C2A107ACCD;
+        Wed, 14 Apr 2021 08:58:43 +0000 (UTC)
 Received: from localhost.localdomain.com (ovpn-112-67.rdu2.redhat.com [10.10.112.67])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 66E205D76F;
-        Wed, 14 Apr 2021 08:58:39 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 6F83D5D71D;
+        Wed, 14 Apr 2021 08:58:41 +0000 (UTC)
 From:   Nico Pache <npache@redhat.com>
 To:     linux-kernel@vger.kernel.org
 Cc:     brendanhiggins@google.com, gregkh@linuxfoundation.org,
@@ -42,9 +42,9 @@ Cc:     brendanhiggins@google.com, gregkh@linuxfoundation.org,
         tytso@mit.edu, mathew.j.martineau@linux.intel.com,
         davem@davemloft.net, broonie@kernel.org, davidgow@google.com,
         skhan@linuxfoundation.org, mptcp@lists.linux.dev
-Subject: [PATCH v2 2/6] kunit: software node: adhear to KUNIT formatting standard
-Date:   Wed, 14 Apr 2021 04:58:05 -0400
-Message-Id: <ef06f65f4a622cf83cce5ba2ba5a060d2aa2e1b9.1618388989.git.npache@redhat.com>
+Subject: [PATCH v2 3/6] kunit: ext4: adhear to KUNIT formatting standard
+Date:   Wed, 14 Apr 2021 04:58:06 -0400
+Message-Id: <cbc925da29648e3c9fa6d0945331914911ab6d40.1618388989.git.npache@redhat.com>
 In-Reply-To: <cover.1618388989.git.npache@redhat.com>
 References: <cover.1618388989.git.npache@redhat.com>
 MIME-Version: 1.0
@@ -54,40 +54,50 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Change CONFIG_KUNIT_DRIVER_PE_TEST to CONFIG_DRIVER_PE_KUNIT_TEST inorder
-to adhear to the KUNIT *_KUNIT_TEST config name format.
+Drop 'S' from end of CONFIG_EXT4_KUNIT_TESTS inorder to adhear to the KUNIT
+*_KUNIT_TEST config name format.
 
-Fixes: aa811e3cecec (software node: introduce CONFIG_KUNIT_DRIVER_PE_TEST)
+Fixes: 1cbeab1b242d (ext4: add kunit test for decoding extended timestamps)
 Signed-off-by: Nico Pache <npache@redhat.com>
 ---
- drivers/base/test/Kconfig  | 2 +-
- drivers/base/test/Makefile | 2 +-
- 2 files changed, 2 insertions(+), 2 deletions(-)
+ fs/ext4/.kunitconfig | 2 +-
+ fs/ext4/Kconfig      | 2 +-
+ fs/ext4/Makefile     | 2 +-
+ 3 files changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/base/test/Kconfig b/drivers/base/test/Kconfig
-index ba225eb1b761..2f3fa31a948e 100644
---- a/drivers/base/test/Kconfig
-+++ b/drivers/base/test/Kconfig
-@@ -8,7 +8,7 @@ config TEST_ASYNC_DRIVER_PROBE
- 	  The module name will be test_async_driver_probe.ko
+diff --git a/fs/ext4/.kunitconfig b/fs/ext4/.kunitconfig
+index bf51da7cd9fc..81d4da667740 100644
+--- a/fs/ext4/.kunitconfig
++++ b/fs/ext4/.kunitconfig
+@@ -1,3 +1,3 @@
+ CONFIG_KUNIT=y
+ CONFIG_EXT4_FS=y
+-CONFIG_EXT4_KUNIT_TESTS=y
++CONFIG_EXT4_KUNIT_TEST=y
+diff --git a/fs/ext4/Kconfig b/fs/ext4/Kconfig
+index 86699c8cab28..1569d3872136 100644
+--- a/fs/ext4/Kconfig
++++ b/fs/ext4/Kconfig
+@@ -101,7 +101,7 @@ config EXT4_DEBUG
+ 	  If you select Y here, then you will be able to turn on debugging
+ 	  using dynamic debug control for mb_debug() / ext_debug() msgs.
  
- 	  If unsure say N.
--config KUNIT_DRIVER_PE_TEST
-+config DRIVER_PE_KUNIT_TEST
- 	bool "KUnit Tests for property entry API" if !KUNIT_ALL_TESTS
- 	depends on KUNIT=y
+-config EXT4_KUNIT_TESTS
++config EXT4_KUNIT_TEST
+ 	tristate "KUnit tests for ext4" if !KUNIT_ALL_TESTS
+ 	depends on EXT4_FS && KUNIT
  	default KUNIT_ALL_TESTS
-diff --git a/drivers/base/test/Makefile b/drivers/base/test/Makefile
-index 2f15fae8625f..64b2f3d744d5 100644
---- a/drivers/base/test/Makefile
-+++ b/drivers/base/test/Makefile
-@@ -1,5 +1,5 @@
- # SPDX-License-Identifier: GPL-2.0
- obj-$(CONFIG_TEST_ASYNC_DRIVER_PROBE)	+= test_async_driver_probe.o
- 
--obj-$(CONFIG_KUNIT_DRIVER_PE_TEST) += property-entry-test.o
-+obj-$(CONFIG_DRIVER_PE_KUNIT_TEST) += property-entry-test.o
- CFLAGS_REMOVE_property-entry-test.o += -fplugin-arg-structleak_plugin-byref -fplugin-arg-structleak_plugin-byref-all
+diff --git a/fs/ext4/Makefile b/fs/ext4/Makefile
+index 49e7af6cc93f..4e28e380d51b 100644
+--- a/fs/ext4/Makefile
++++ b/fs/ext4/Makefile
+@@ -15,5 +15,5 @@ ext4-y	:= balloc.o bitmap.o block_validity.o dir.o ext4_jbd2.o extents.o \
+ ext4-$(CONFIG_EXT4_FS_POSIX_ACL)	+= acl.o
+ ext4-$(CONFIG_EXT4_FS_SECURITY)		+= xattr_security.o
+ ext4-inode-test-objs			+= inode-test.o
+-obj-$(CONFIG_EXT4_KUNIT_TESTS)		+= ext4-inode-test.o
++obj-$(CONFIG_EXT4_KUNIT_TEST)		+= ext4-inode-test.o
+ ext4-$(CONFIG_FS_VERITY)		+= verity.o
 -- 
 2.30.2
 
