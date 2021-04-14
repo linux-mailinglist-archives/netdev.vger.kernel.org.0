@@ -2,72 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A903C35FCB0
-	for <lists+netdev@lfdr.de>; Wed, 14 Apr 2021 22:30:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F136035FCC7
+	for <lists+netdev@lfdr.de>; Wed, 14 Apr 2021 22:38:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244237AbhDNUaz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 14 Apr 2021 16:30:55 -0400
-Received: from mail.kernel.org ([198.145.29.99]:50550 "EHLO mail.kernel.org"
+        id S245581AbhDNUiX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 14 Apr 2021 16:38:23 -0400
+Received: from elvis.franken.de ([193.175.24.41]:50505 "EHLO elvis.franken.de"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S243606AbhDNUax (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 14 Apr 2021 16:30:53 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id 09F4661158;
-        Wed, 14 Apr 2021 20:30:31 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1618432231;
-        bh=4VlWWU3GEqpQ+16K3t4rxpIwr6vGs5Jm6GP8EGgY0lw=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=XWiy9Z8BvZrU9TmJGhnafUP+S0JjjDG/0ftC4H8FLI2jLNJ+8zpfQ+viOBv0aCWGC
-         RkBM9kq9alJJwy7Jzu9O8sMVCSfzfDbaSWdA/UwE/GO5Bo6/NYzpytgtM9zFPjR3si
-         5DzXhlKZCDI5ek6jAIPPf8MHxF5tmF1mK3jWjzX8DooAe+XZldZpG0dmNhMbPQcAYv
-         gXG4BeTsv5xQEWm8rfP0hoT1dlCz4Y3TppM8SRvKkgEOlEHbbTE5d9cZrGejzn4Rqa
-         O1+CzjTClT2OacjgcrRowDXT4jU6NgcXj3k20IF5HbKJfm1X6813SzdvrmfWVc16mj
-         SuOgxsHeoj/JA==
-Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id F128760CD2;
-        Wed, 14 Apr 2021 20:30:30 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        id S230227AbhDNUiU (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 14 Apr 2021 16:38:20 -0400
+Received: from uucp (helo=alpha)
+        by elvis.franken.de with local-bsmtp (Exim 3.36 #1)
+        id 1lWmGp-0007TK-00; Wed, 14 Apr 2021 22:37:55 +0200
+Received: by alpha.franken.de (Postfix, from userid 1000)
+        id C3C85C035A; Wed, 14 Apr 2021 22:36:56 +0200 (CEST)
+Date:   Wed, 14 Apr 2021 22:36:56 +0200
+From:   Thomas Bogendoerfer <tsbogend@alpha.franken.de>
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net-next 1/7] net: korina: Fix MDIO functions
+Message-ID: <20210414203656.GA3382@alpha.franken.de>
+References: <20210413204818.23350-1-tsbogend@alpha.franken.de>
+ <20210413204818.23350-2-tsbogend@alpha.franken.de>
+ <YHdEJGhQlAVkSwWW@lunn.ch>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: pull request (net-next): ipsec-next 2021-04-14
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <161843223098.20162.9825806188391299525.git-patchwork-notify@kernel.org>
-Date:   Wed, 14 Apr 2021 20:30:30 +0000
-References: <20210414101701.324777-1-steffen.klassert@secunet.com>
-In-Reply-To: <20210414101701.324777-1-steffen.klassert@secunet.com>
-To:     Steffen Klassert <steffen.klassert@secunet.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, herbert@gondor.apana.org.au,
-        netdev@vger.kernel.org
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YHdEJGhQlAVkSwWW@lunn.ch>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
-
-This pull request was applied to netdev/net-next.git (refs/heads/master):
-
-On Wed, 14 Apr 2021 12:16:58 +0200 you wrote:
-> Not much this time:
+On Wed, Apr 14, 2021 at 09:36:04PM +0200, Andrew Lunn wrote:
+> > +static int korina_mdio_wait(struct korina_private *lp)
+> > +{
+> > +	int timeout = 1000;
+> > +
+> > +	while ((readl(&lp->eth_regs->miimind) & 1) && timeout-- > 0)
+> > +		udelay(1);
+> > +
+> > +	if (timeout <= 0)
+> > +		return -1;
+> > +
+> > +	return 0;
 > 
-> 1) Simplification of some variable calculations in esp4 and esp6.
->    From Jiapeng Chong and Junlin Yang.
+> Using readl_poll_timeout_atomic() would be better.
+
+I'll have a look
+
 > 
-> 2) Fix a clang Wformat warning in esp6 and ah6.
->    From Arnd Bergmann.
 > 
-> [...]
+> > +}
+> > +
+> > +static int korina_mdio_read(struct net_device *dev, int phy, int reg)
+> >  {
+> >  	struct korina_private *lp = netdev_priv(dev);
+> >  	int ret;
+> >  
+> > -	mii_id = ((lp->rx_irq == 0x2c ? 1 : 0) << 8);
+> > +	if (korina_mdio_wait(lp))
+> > +		return -1;
+> 
+> This should really be -ETIMEDOUT
 
-Here is the summary with links:
-  - pull request (net-next): ipsec-next 2021-04-14
-    https://git.kernel.org/netdev/net-next/c/8c1186be3f1b
-  - [2/3] esp6: remove a duplicative condition
-    https://git.kernel.org/netdev/net-next/c/f076835a8bf2
-  - [3/3] ipv6: fix clang Wformat warning
-    https://git.kernel.org/netdev/net-next/c/6ad2dd6c14d3
+ok.
 
-You are awesome, thank you!
---
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+> >  	dev->watchdog_timeo = TX_TIMEOUT;
+> >  	netif_napi_add(dev, &lp->napi, korina_poll, NAPI_POLL_WEIGHT);
+> >  
+> > -	lp->phy_addr = (((lp->rx_irq == 0x2c? 1:0) << 8) | 0x05);
+> >  	lp->mii_if.dev = dev;
+> > -	lp->mii_if.mdio_read = mdio_read;
+> > -	lp->mii_if.mdio_write = mdio_write;
+> > -	lp->mii_if.phy_id = lp->phy_addr;
+> > +	lp->mii_if.mdio_read = korina_mdio_read;
+> > +	lp->mii_if.mdio_write = korina_mdio_write;
+> > +	lp->mii_if.phy_id = 1;
+> >  	lp->mii_if.phy_id_mask = 0x1f;
+> >  	lp->mii_if.reg_num_mask = 0x1f;
+> 
+> You could also replace all the mii code with phylib.
 
+that's on my todo.
 
+Thomas.
+
+-- 
+Crap can work. Given enough thrust pigs will fly, but it's not necessarily a
+good idea.                                                [ RFC1925, 2.3 ]
