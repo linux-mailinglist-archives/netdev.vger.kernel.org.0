@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C0E8035F6D8
-	for <lists+netdev@lfdr.de>; Wed, 14 Apr 2021 16:54:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 66E5635F6DA
+	for <lists+netdev@lfdr.de>; Wed, 14 Apr 2021 16:54:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352058AbhDNOvl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 14 Apr 2021 10:51:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38920 "EHLO
+        id S1352180AbhDNOvs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 14 Apr 2021 10:51:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38904 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351984AbhDNOuz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 14 Apr 2021 10:50:55 -0400
-Received: from mail-pf1-x436.google.com (mail-pf1-x436.google.com [IPv6:2607:f8b0:4864:20::436])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3A575C06175F;
-        Wed, 14 Apr 2021 07:50:34 -0700 (PDT)
-Received: by mail-pf1-x436.google.com with SMTP id o123so13909133pfb.4;
-        Wed, 14 Apr 2021 07:50:34 -0700 (PDT)
+        with ESMTP id S1351998AbhDNOu4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 14 Apr 2021 10:50:56 -0400
+Received: from mail-pj1-x1030.google.com (mail-pj1-x1030.google.com [IPv6:2607:f8b0:4864:20::1030])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A088C061574;
+        Wed, 14 Apr 2021 07:50:35 -0700 (PDT)
+Received: by mail-pj1-x1030.google.com with SMTP id s14so5550006pjl.5;
+        Wed, 14 Apr 2021 07:50:35 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=BJQLwkA9W/535NLWBZWmq8i7UzFGYSRLRmzJAHK8gIA=;
-        b=JeMh273MlJLiBAiimx+AK/wv4TS0pmL3eBkyQYbrrXJc1p9t/yVCYThm+LfoCsHw8b
-         qc357p2ojcjzv+t66VCGbcpGh6sP5aej3NeI2NGQBx8TWlHjcVniMXHPRLSAy02Xtfj9
-         QmnwrGOGhe4Phsl7n/ZircRPOOVmQ1TXqt4Avf0iGoJRapPIK9HXosZecvlfzBd5EhXH
-         FDzxhyyvEEVP1UJI3OfWsiOepqSyZscMd5MY4KXWWWVrmZVVEgwSl/2MiBesqnrJ8uYs
-         RB2C4rHWHp/EqEuAXdrglsAw6k/T1G14KlpgPV4Ly+ua1TDR6WZgt4jXYpCgu5UDIdgy
-         /svw==
+        bh=rEnojfxzKMIKinSbA6nTujnDRb/izr87Op+NW+5m2CE=;
+        b=o/koGepbeM26DluIG2Fi9arPS0eBN/lI4S0aDxn3Xk9LzgaVt6M7oJgL5HXo7UWY41
+         pbvQM7udAhKMXg/b1zc4VAc50+yOXH3kPlRulsY7eIuVt3ETUFqssKsQPT64CndQo7uX
+         K5kByBP3DsifozzJLYCf3UXuTBfEx+iYDrIIK070FEErgIte1KuXT3IlsUs9ovAEV2Mb
+         ro8JRMoBHlZnOio/fG9AIqPzZkHsEx9ZOMT8aYJ6FeP1dFo124kw6eCzR9iBLLydqRmw
+         SYu7YIoO8ykwu9slOG50CLRu8T5SbbBLLwkws+qpqpC5VBap8oYs4XoOX4/RBZFAhi8w
+         sQRg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=BJQLwkA9W/535NLWBZWmq8i7UzFGYSRLRmzJAHK8gIA=;
-        b=FEYN/SOC2giOO4xm1xvfNix8fGsW95KuFRZHpqN9ja/hYMGy/w5XX4enzMx1Ntu7Gc
-         HFa1AeLbJGjlT2X+Jntcbwm4TvHoGeJphARMgtQngPt+5CA+RVrFf2hOarWVlHfKRWdT
-         YSdKs2aP6BClVPTNVT2Qf0CRNPagPp8sLaaCIB+U2n+YVYtNYkvt/xU4+aoDBEXgLhQ8
-         yvrzQwiUwHBaeqrp036kEGa44qXj35VpPCXBlsUYuqzwdQ/OQmW66wKFpk5hLkT6VTig
-         ghF1gBoKa7u/55ckQuBCICM0iOHn1pFV2TtvNyltseZaoyiB8ryxWcKXhTLGZ+XHv64L
-         24VQ==
-X-Gm-Message-State: AOAM531sOes8r5o4f8Ewc2Nq64jvtmy94kZOGkLuiBkL9cvYBm20g3BK
-        agEpuyXzeKvEMVITmV4txrc=
-X-Google-Smtp-Source: ABdhPJwOhx54FmzERuqfo9qVMIzIREINFZJXuw5QLznc5Vw3o4KmCJSYx6u1IpzPG7gCSgG4YUCpkA==
-X-Received: by 2002:a63:77cf:: with SMTP id s198mr38257555pgc.252.1618411833797;
-        Wed, 14 Apr 2021 07:50:33 -0700 (PDT)
+        bh=rEnojfxzKMIKinSbA6nTujnDRb/izr87Op+NW+5m2CE=;
+        b=sBGhBn57DdW3EjU5TUCxJ0B9wPKVXSUghbtbV8fE6wR61A27LKQcuC1XRA0cI8rq5e
+         +dD5Zlpg/V7tnN02NWaWIk78xXgzav9QZ3LyBIwW2RUE0j41wUgZse+yd1luJTbO7BjE
+         NabvB7Tr2hx4WK45FYvvBC6ZxbzhzLMM7JdU+BZeGTMS32Fdy3npFb7wsbkdfhGSEQGC
+         oHG4j08iLR/1e/MQxcdFzaBKEfANlTdv/TZf9JYEpIeqSgcJLZa0g1SfCyxp2r6hbhCt
+         kvhP+e80i+dDxHA3SdkhmFd4dD16ieVm63lTw9EoKfsVO6BL6t7IinKruMHRIdvHwJ+x
+         NaUg==
+X-Gm-Message-State: AOAM532KGPWKIq+C/BTAxsNkRoEQYY8hEWXUD8u1k9D8P059JsAxPYLv
+        2j5RzMeUkEJ+yv9zYCg4SAY=
+X-Google-Smtp-Source: ABdhPJymBmW993DhTofbaszulRmUAiPb/+8poEshIM9VBunj5uilMiDDp5eNxLDJEiVrIn8kvigDbg==
+X-Received: by 2002:a17:90a:528b:: with SMTP id w11mr4092618pjh.162.1618411834737;
+        Wed, 14 Apr 2021 07:50:34 -0700 (PDT)
 Received: from ubuntu-Virtual-Machine.corp.microsoft.com ([2001:4898:80e8:35:ebad:12c1:f579:e332])
         by smtp.gmail.com with ESMTPSA id w67sm17732522pgb.87.2021.04.14.07.50.33
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 14 Apr 2021 07:50:33 -0700 (PDT)
+        Wed, 14 Apr 2021 07:50:34 -0700 (PDT)
 From:   Tianyu Lan <ltykernel@gmail.com>
 To:     kys@microsoft.com, haiyangz@microsoft.com, sthemmin@microsoft.com,
         wei.liu@kernel.org, tglx@linutronix.de, mingo@redhat.com,
@@ -63,9 +63,9 @@ Cc:     Tianyu Lan <Tianyu.Lan@microsoft.com>,
         netdev@vger.kernel.org, vkuznets@redhat.com,
         thomas.lendacky@amd.com, brijesh.singh@amd.com,
         sunilmut@microsoft.com
-Subject: [Resend RFC PATCH V2 10/12] HV/IOMMU: Add Hyper-V dma ops support
-Date:   Wed, 14 Apr 2021 10:49:43 -0400
-Message-Id: <20210414144945.3460554-11-ltykernel@gmail.com>
+Subject: [Resend RFC PATCH V2 11/12] HV/Netvsc: Add Isolation VM support for netvsc driver
+Date:   Wed, 14 Apr 2021 10:49:44 -0400
+Message-Id: <20210414144945.3460554-12-ltykernel@gmail.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20210414144945.3460554-1-ltykernel@gmail.com>
 References: <20210414144945.3460554-1-ltykernel@gmail.com>
@@ -77,237 +77,294 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Tianyu Lan <Tianyu.Lan@microsoft.com>
 
-Hyper-V Isolation VM requires bounce buffer support. To use swiotlb
-bounce buffer, add Hyper-V dma ops and use swiotlb functions in the
-map and unmap callback.
-
-Allocate bounce buffer in the Hyper-V code because bounce buffer
-needs to be accessed via extra address space(e.g, address above 39bit)
-in the AMD SEV SNP based Isolation VM.
-
-ioremap_cache() can't use in the hyperv_iommu_swiotlb_init() which
-is too early place and remap bounce buffer in the hyperv_iommu_swiotlb_
-later_init().
+In Isolation VM, all shared memory with host needs to mark visible
+to host via hvcall. vmbus_establish_gpadl() has already done it for
+netvsc rx/tx ring buffer. The page buffer used by vmbus_sendpacket_
+pagebuffer() still need to handle. Use DMA API to map/umap these
+memory during sending/receiving packet and Hyper-V DMA ops callback
+will use swiotlb fucntion to allocate bounce buffer and copy data
+from/to bounce buffer.
 
 Signed-off-by: Tianyu Lan <Tianyu.Lan@microsoft.com>
 ---
- arch/x86/kernel/pci-swiotlb.c |   3 +-
- drivers/hv/vmbus_drv.c        |   3 +
- drivers/iommu/hyperv-iommu.c  | 127 ++++++++++++++++++++++++++++++++++
- 3 files changed, 132 insertions(+), 1 deletion(-)
+ drivers/net/hyperv/hyperv_net.h   |  11 +++
+ drivers/net/hyperv/netvsc.c       | 137 ++++++++++++++++++++++++++++--
+ drivers/net/hyperv/rndis_filter.c |   3 +
+ 3 files changed, 144 insertions(+), 7 deletions(-)
 
-diff --git a/arch/x86/kernel/pci-swiotlb.c b/arch/x86/kernel/pci-swiotlb.c
-index c2cfa5e7c152..caaf68c06f24 100644
---- a/arch/x86/kernel/pci-swiotlb.c
-+++ b/arch/x86/kernel/pci-swiotlb.c
-@@ -15,6 +15,7 @@
- #include <asm/iommu_table.h>
- 
- int swiotlb __read_mostly;
-+extern int hyperv_swiotlb;
- 
- /*
-  * pci_swiotlb_detect_override - set swiotlb to 1 if necessary
-@@ -68,7 +69,7 @@ void __init pci_swiotlb_init(void)
- void __init pci_swiotlb_late_init(void)
- {
- 	/* An IOMMU turned us off. */
--	if (!swiotlb)
-+	if (!swiotlb && !hyperv_swiotlb)
- 		swiotlb_exit();
- 	else {
- 		printk(KERN_INFO "PCI-DMA: "
-diff --git a/drivers/hv/vmbus_drv.c b/drivers/hv/vmbus_drv.c
-index 10dce9f91216..0ee6ec3a5de6 100644
---- a/drivers/hv/vmbus_drv.c
-+++ b/drivers/hv/vmbus_drv.c
-@@ -23,6 +23,7 @@
- #include <linux/cpu.h>
- #include <linux/sched/task_stack.h>
- 
-+#include <linux/dma-map-ops.h>
- #include <linux/delay.h>
- #include <linux/notifier.h>
- #include <linux/ptrace.h>
-@@ -2030,6 +2031,7 @@ struct hv_device *vmbus_device_create(const guid_t *type,
- 	return child_device_obj;
- }
- 
-+static u64 vmbus_dma_mask = DMA_BIT_MASK(64);
- /*
-  * vmbus_device_register - Register the child device
-  */
-@@ -2070,6 +2072,7 @@ int vmbus_device_register(struct hv_device *child_device_obj)
- 	}
- 	hv_debug_add_dev_dir(child_device_obj);
- 
-+	child_device_obj->device.dma_mask = &vmbus_dma_mask;
- 	return 0;
- 
- err_kset_unregister:
-diff --git a/drivers/iommu/hyperv-iommu.c b/drivers/iommu/hyperv-iommu.c
-index e285a220c913..588ba847f0cc 100644
---- a/drivers/iommu/hyperv-iommu.c
-+++ b/drivers/iommu/hyperv-iommu.c
-@@ -13,19 +13,28 @@
- #include <linux/irq.h>
- #include <linux/iommu.h>
- #include <linux/module.h>
-+#include <linux/hyperv.h>
- 
-+#include <asm/io.h>
- #include <asm/apic.h>
- #include <asm/cpu.h>
- #include <asm/hw_irq.h>
- #include <asm/io_apic.h>
-+#include <asm/iommu.h>
-+#include <asm/iommu_table.h>
- #include <asm/irq_remapping.h>
- #include <asm/hypervisor.h>
- #include <asm/mshyperv.h>
-+#include <asm/swiotlb.h>
-+#include <linux/dma-map-ops.h>
-+#include <linux/dma-direct.h>
- 
- #include "irq_remapping.h"
- 
- #ifdef CONFIG_IRQ_REMAP
- 
-+int hyperv_swiotlb __read_mostly;
-+
- /*
-  * According 82093AA IO-APIC spec , IO APIC has a 24-entry Interrupt
-  * Redirection Table. Hyper-V exposes one single IO-APIC and so define
-@@ -36,6 +45,10 @@
- static cpumask_t ioapic_max_cpumask = { CPU_BITS_NONE };
- static struct irq_domain *ioapic_ir_domain;
- 
-+static unsigned long hyperv_io_tlb_start, *hyperv_io_tlb_end; 
-+static unsigned long hyperv_io_tlb_nslabs, hyperv_io_tlb_size;
-+static void *hyperv_io_tlb_remap;
-+
- static int hyperv_ir_set_affinity(struct irq_data *data,
- 		const struct cpumask *mask, bool force)
- {
-@@ -337,4 +350,118 @@ static const struct irq_domain_ops hyperv_root_ir_domain_ops = {
- 	.free = hyperv_root_irq_remapping_free,
+diff --git a/drivers/net/hyperv/hyperv_net.h b/drivers/net/hyperv/hyperv_net.h
+index 2a87cfa27ac0..d85f811238c7 100644
+--- a/drivers/net/hyperv/hyperv_net.h
++++ b/drivers/net/hyperv/hyperv_net.h
+@@ -130,6 +130,7 @@ struct hv_netvsc_packet {
+ 	u32 total_bytes;
+ 	u32 send_buf_index;
+ 	u32 total_data_buflen;
++	struct dma_range *dma_range;
  };
  
-+static dma_addr_t hyperv_map_page(struct device *dev, struct page *page,
-+				  unsigned long offset, size_t size,
-+				  enum dma_data_direction dir,
-+				  unsigned long attrs)
-+{
-+	phys_addr_t map, phys = (page_to_pfn(page) << PAGE_SHIFT) + offset;
-+
-+	if (!hv_is_isolation_supported())
-+		return phys;
-+
-+	map = swiotlb_tbl_map_single(dev, phys, size, HV_HYP_PAGE_SIZE, dir,
-+				     attrs);
-+	if (map == (phys_addr_t)DMA_MAPPING_ERROR)
-+		return DMA_MAPPING_ERROR;
-+
-+	return map;
-+}
-+
-+static void hyperv_unmap_page(struct device *dev, dma_addr_t dev_addr,
-+		size_t size, enum dma_data_direction dir, unsigned long attrs)
-+{
-+	if (!hv_is_isolation_supported())
-+		return;
-+
-+	swiotlb_tbl_unmap_single(dev, dev_addr, size, HV_HYP_PAGE_SIZE, dir,
-+				attrs);
-+}
-+
-+int __init hyperv_swiotlb_init(void)
-+{
-+	unsigned long bytes;
-+	void *vstart = 0;
-+
-+	bytes = 200 * 1024 * 1024;
-+	vstart = memblock_alloc_low(PAGE_ALIGN(bytes), PAGE_SIZE);
-+	hyperv_io_tlb_nslabs = bytes >> IO_TLB_SHIFT;
-+	hyperv_io_tlb_size = bytes;
-+
-+	if (!vstart) {
-+		pr_warn("Fail to allocate swiotlb.\n");
-+		return -ENOMEM;
-+	}
-+
-+	hyperv_io_tlb_start = virt_to_phys(vstart);
-+	if (!hyperv_io_tlb_start)
-+		panic("%s: Failed to allocate %lu bytes align=0x%lx.\n",
-+		      __func__, PAGE_ALIGN(bytes), PAGE_SIZE);
-+
-+	if (swiotlb_init_with_tbl(vstart, hyperv_io_tlb_nslabs, 1))
-+		panic("%s: Cannot allocate SWIOTLB buffer.\n", __func__);
-+
-+	swiotlb_set_max_segment(PAGE_SIZE);
-+	hyperv_io_tlb_end = hyperv_io_tlb_start + bytes;
-+	return 0;
-+}
-+
-+const struct dma_map_ops hyperv_dma_ops = {
-+	.map_page = hyperv_map_page,
-+	.unmap_page = hyperv_unmap_page,
+ #define NETVSC_HASH_KEYLEN 40
+@@ -1026,6 +1027,7 @@ struct netvsc_device {
+ 
+ 	/* Receive buffer allocated by us but manages by NetVSP */
+ 	void *recv_buf;
++	void *recv_original_buf;
+ 	u32 recv_buf_size; /* allocated bytes */
+ 	u32 recv_buf_gpadl_handle;
+ 	u32 recv_section_cnt;
+@@ -1034,6 +1036,8 @@ struct netvsc_device {
+ 
+ 	/* Send buffer allocated by us */
+ 	void *send_buf;
++	void *send_original_buf;
++	u32 send_buf_size;
+ 	u32 send_buf_gpadl_handle;
+ 	u32 send_section_cnt;
+ 	u32 send_section_size;
+@@ -1715,4 +1719,11 @@ struct rndis_message {
+ #define TRANSPORT_INFO_IPV6_TCP 0x10
+ #define TRANSPORT_INFO_IPV6_UDP 0x20
+ 
++struct dma_range {
++	dma_addr_t dma;
++	u32 mapping_size;
 +};
 +
-+int __init hyperv_swiotlb_detect(void)
++void netvsc_dma_unmap(struct hv_device *hv_dev,
++		      struct hv_netvsc_packet *packet);
+ #endif /* _HYPERV_NET_H */
+diff --git a/drivers/net/hyperv/netvsc.c b/drivers/net/hyperv/netvsc.c
+index 2353623259f3..1a5f5be4eeea 100644
+--- a/drivers/net/hyperv/netvsc.c
++++ b/drivers/net/hyperv/netvsc.c
+@@ -26,6 +26,7 @@
+ 
+ #include "hyperv_net.h"
+ #include "netvsc_trace.h"
++#include "../../hv/hyperv_vmbus.h"
+ 
+ /*
+  * Switch the data path from the synthetic interface to the VF
+@@ -119,8 +120,21 @@ static void free_netvsc_device(struct rcu_head *head)
+ 	int i;
+ 
+ 	kfree(nvdev->extension);
+-	vfree(nvdev->recv_buf);
+-	vfree(nvdev->send_buf);
++
++	if (nvdev->recv_original_buf) {
++		iounmap(nvdev->recv_buf);
++		vfree(nvdev->recv_original_buf);
++	} else {
++		vfree(nvdev->recv_buf);
++	}
++
++	if (nvdev->send_original_buf) {
++		iounmap(nvdev->send_buf);
++		vfree(nvdev->send_original_buf);
++	} else {
++		vfree(nvdev->send_buf);
++	}
++
+ 	kfree(nvdev->send_section_map);
+ 
+ 	for (i = 0; i < VRSS_CHANNEL_MAX; i++) {
+@@ -302,9 +316,12 @@ static int netvsc_init_buf(struct hv_device *device,
+ 	struct nvsp_1_message_send_receive_buffer_complete *resp;
+ 	struct net_device *ndev = hv_get_drvdata(device);
+ 	struct nvsp_message *init_packet;
++	struct vm_struct *area;
++	u64 extra_phys;
+ 	unsigned int buf_size;
++	unsigned long vaddr;
+ 	size_t map_words;
+-	int ret = 0;
++	int ret = 0, i;
+ 
+ 	/* Get receive buffer area. */
+ 	buf_size = device_info->recv_sections * device_info->recv_section_size;
+@@ -340,6 +357,27 @@ static int netvsc_init_buf(struct hv_device *device,
+ 		goto cleanup;
+ 	}
+ 
++	if (hv_isolation_type_snp()) {
++		area = get_vm_area(buf_size, VM_IOREMAP);
++		if (!area)
++			goto cleanup;
++
++		vaddr = (unsigned long)area->addr;
++		for (i = 0; i < buf_size / HV_HYP_PAGE_SIZE; i++) {
++			extra_phys = (virt_to_hvpfn(net_device->recv_buf + i * HV_HYP_PAGE_SIZE)
++				<< HV_HYP_PAGE_SHIFT) + ms_hyperv.shared_gpa_boundary;
++			ret |= ioremap_page_range(vaddr + i * HV_HYP_PAGE_SIZE,
++					   vaddr + (i + 1) * HV_HYP_PAGE_SIZE,
++					   extra_phys, PAGE_KERNEL_IO);
++		}
++
++		if (ret)
++			goto cleanup;
++
++		net_device->recv_original_buf = net_device->recv_buf;
++		net_device->recv_buf = (void *)vaddr;
++	}
++
+ 	/* Notify the NetVsp of the gpadl handle */
+ 	init_packet = &net_device->channel_init_pkt;
+ 	memset(init_packet, 0, sizeof(struct nvsp_message));
+@@ -432,6 +470,28 @@ static int netvsc_init_buf(struct hv_device *device,
+ 		goto cleanup;
+ 	}
+ 
++	if (hv_isolation_type_snp()) {
++		area = get_vm_area(buf_size, VM_IOREMAP);
++		if (!area)
++			goto cleanup;
++
++		vaddr = (unsigned long)area->addr;
++
++		for (i = 0; i < buf_size / HV_HYP_PAGE_SIZE; i++) {
++			extra_phys = (virt_to_hvpfn(net_device->send_buf + i * HV_HYP_PAGE_SIZE)
++				<< HV_HYP_PAGE_SHIFT) + ms_hyperv.shared_gpa_boundary;
++			ret |= ioremap_page_range(vaddr + i * HV_HYP_PAGE_SIZE,
++					   vaddr + (i + 1) * HV_HYP_PAGE_SIZE,
++					   extra_phys, PAGE_KERNEL_IO);
++		}
++
++		if (ret)
++			goto cleanup;
++
++		net_device->send_original_buf = net_device->send_buf;
++		net_device->send_buf = (void *)vaddr;
++	}
++
+ 	/* Notify the NetVsp of the gpadl handle */
+ 	init_packet = &net_device->channel_init_pkt;
+ 	memset(init_packet, 0, sizeof(struct nvsp_message));
+@@ -722,7 +782,7 @@ static void netvsc_send_tx_complete(struct net_device *ndev,
+ 
+ 	/* Notify the layer above us */
+ 	if (likely(skb)) {
+-		const struct hv_netvsc_packet *packet
++		struct hv_netvsc_packet *packet
+ 			= (struct hv_netvsc_packet *)skb->cb;
+ 		u32 send_index = packet->send_buf_index;
+ 		struct netvsc_stats *tx_stats;
+@@ -738,6 +798,7 @@ static void netvsc_send_tx_complete(struct net_device *ndev,
+ 		tx_stats->bytes += packet->total_bytes;
+ 		u64_stats_update_end(&tx_stats->syncp);
+ 
++		netvsc_dma_unmap(ndev_ctx->device_ctx, packet);
+ 		napi_consume_skb(skb, budget);
+ 	}
+ 
+@@ -878,6 +939,60 @@ static void netvsc_copy_to_send_buf(struct netvsc_device *net_device,
+ 		memset(dest, 0, padding);
+ }
+ 
++void netvsc_dma_unmap(struct hv_device *hv_dev,
++		      struct hv_netvsc_packet *packet)
 +{
-+	dma_ops = &hyperv_dma_ops;
++	u32 page_count = packet->cp_partial ?
++		packet->page_buf_cnt - packet->rmsg_pgcnt :
++		packet->page_buf_cnt;
++	int i;
 +
-+	if (hypervisor_is_type(X86_HYPER_MS_HYPERV)
-+	    && hv_is_isolation_supported()) {
-+		/*
-+		 * Disable generic swiotlb and allocate Hyper-v swiotlb
-+		 * in the hyperv_iommu_swiotlb_init().
-+		 */
-+		swiotlb = 0;
-+		hyperv_swiotlb = 1;
++	if (!packet->dma_range)
++		return;
 +
-+		return 1;
++	for (i = 0; i < page_count; i++)
++		dma_unmap_single(&hv_dev->device, packet->dma_range[i].dma,
++				 packet->dma_range[i].mapping_size,
++				 DMA_TO_DEVICE);
++
++	kfree(packet->dma_range);
++}
++
++int netvsc_dma_map(struct hv_device *hv_dev,
++		   struct hv_netvsc_packet *packet,
++		   struct hv_page_buffer *pb)
++{
++	u32 page_count =  packet->cp_partial ?
++		packet->page_buf_cnt - packet->rmsg_pgcnt :
++		packet->page_buf_cnt;
++	dma_addr_t dma;
++	int i;
++
++	packet->dma_range = kzalloc(sizeof(struct dma_range) * page_count,
++			      GFP_KERNEL);
++	if (!packet->dma_range)
++		return -ENOMEM;
++
++	for (i = 0; i < page_count; i++) {
++		char *src = phys_to_virt((pb[i].pfn << HV_HYP_PAGE_SHIFT)
++					 + pb[i].offset);
++		u32 len = pb[i].len;
++
++		dma = dma_map_single(&hv_dev->device, src, len,
++				     DMA_TO_DEVICE);
++		if (dma_mapping_error(&hv_dev->device, dma))
++			return -ENOMEM;
++
++		packet->dma_range[i].dma = dma;
++		packet->dma_range[i].mapping_size = len;
++		pb[i].pfn = dma >> HV_HYP_PAGE_SHIFT;
++		pb[i].offset = offset_in_hvpage(dma);
++		pb[i].len = len;
 +	}
 +
 +	return 0;
 +}
 +
-+void __init hyperv_iommu_swiotlb_init(void)
-+{
-+	hyperv_swiotlb_init();
-+}
-+
-+void __init hyperv_iommu_swiotlb_later_init(void)
-+{
-+	int ret;
-+
-+	/* Mask bounce buffer visible to host and remap extra address. */
-+	if (hv_isolation_type_snp()) {
-+		ret = hv_set_mem_host_visibility(
-+				phys_to_virt(hyperv_io_tlb_start),
-+				hyperv_io_tlb_size,
-+				VMBUS_PAGE_VISIBLE_READ_WRITE);
+ static inline int netvsc_send_pkt(
+ 	struct hv_device *device,
+ 	struct hv_netvsc_packet *packet,
+@@ -917,14 +1032,22 @@ static inline int netvsc_send_pkt(
+ 
+ 	trace_nvsp_send_pkt(ndev, out_channel, rpkt);
+ 
++	packet->dma_range = NULL;
+ 	if (packet->page_buf_cnt) {
+ 		if (packet->cp_partial)
+ 			pb += packet->rmsg_pgcnt;
+ 
++		ret = netvsc_dma_map(ndev_ctx->device_ctx, packet, pb);
 +		if (ret)
-+			panic("%s: Fail to mark Hyper-v swiotlb buffer visible to host. err=%d\n",
-+			      __func__, ret);
++			return ret;
 +
-+		hyperv_io_tlb_remap = ioremap_cache(hyperv_io_tlb_start
-+					    + ms_hyperv.shared_gpa_boundary,
-+						    hyperv_io_tlb_size);
-+		if (!hyperv_io_tlb_remap)
-+			panic("%s: Fail to remap io tlb.\n", __func__);
+ 		ret = vmbus_sendpacket_pagebuffer(out_channel,
+-						  pb, packet->page_buf_cnt,
+-						  &nvmsg, sizeof(nvmsg),
+-						  req_id);
++					  pb, packet->page_buf_cnt,
++					  &nvmsg, sizeof(nvmsg),
++					  req_id);
 +
-+		memset(hyperv_io_tlb_remap, 0x00, hyperv_io_tlb_size);
-+		swiotlb_set_bounce_remap(hyperv_io_tlb_remap);
-+	}
-+}
-+
-+IOMMU_INIT_FINISH(hyperv_swiotlb_detect,
-+		  NULL, hyperv_iommu_swiotlb_init,
-+		  hyperv_iommu_swiotlb_later_init);
-+
- #endif
++		if (ret)
++			netvsc_dma_unmap(ndev_ctx->device_ctx, packet);
+ 	} else {
+ 		ret = vmbus_sendpacket(out_channel,
+ 				       &nvmsg, sizeof(nvmsg),
+diff --git a/drivers/net/hyperv/rndis_filter.c b/drivers/net/hyperv/rndis_filter.c
+index 598713c0d5a8..b19243f5874c 100644
+--- a/drivers/net/hyperv/rndis_filter.c
++++ b/drivers/net/hyperv/rndis_filter.c
+@@ -263,6 +263,8 @@ static void rndis_filter_receive_response(struct net_device *ndev,
+ {
+ 	struct rndis_device *dev = nvdev->extension;
+ 	struct rndis_request *request = NULL;
++	struct hv_device *hv_dev = ((struct net_device_context *)
++			netdev_priv(ndev))->device_ctx;
+ 	bool found = false;
+ 	unsigned long flags;
+ 
+@@ -327,6 +329,7 @@ static void rndis_filter_receive_response(struct net_device *ndev,
+ 			}
+ 		}
+ 
++		netvsc_dma_unmap(hv_dev, &request->pkt);
+ 		complete(&request->wait_event);
+ 	} else {
+ 		netdev_err(ndev,
 -- 
 2.25.1
 
