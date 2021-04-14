@@ -2,351 +2,170 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9A7B935E9E4
-	for <lists+netdev@lfdr.de>; Wed, 14 Apr 2021 02:11:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6EEF635E9F2
+	for <lists+netdev@lfdr.de>; Wed, 14 Apr 2021 02:21:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237765AbhDNAMK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 13 Apr 2021 20:12:10 -0400
-Received: from mga17.intel.com ([192.55.52.151]:25010 "EHLO mga17.intel.com"
+        id S1348070AbhDNAVc convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Tue, 13 Apr 2021 20:21:32 -0400
+Received: from mga17.intel.com ([192.55.52.151]:25692 "EHLO mga17.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230070AbhDNAMJ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 13 Apr 2021 20:12:09 -0400
-IronPort-SDR: vwTP15XIOKiFHF+/ANqTzi7PiOuvbLtHRtT+n3MY3r4rjkUpnhQSUeJtY4qEtiOokl9SUD8zox
- v6/R9+id3q0g==
-X-IronPort-AV: E=McAfee;i="6200,9189,9953"; a="174632860"
+        id S230493AbhDNAVa (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 13 Apr 2021 20:21:30 -0400
+IronPort-SDR: nimtIaW2PQ74Z/Hm1kzyVSqpVC3vBroxw1RuLKRrDLJjK+QFk0fDyBx0G3qsClwgtUxYFMrVtK
+ uwh8wd2vAi6A==
+X-IronPort-AV: E=McAfee;i="6200,9189,9953"; a="174633928"
 X-IronPort-AV: E=Sophos;i="5.82,220,1613462400"; 
-   d="scan'208";a="174632860"
-Received: from fmsmga006.fm.intel.com ([10.253.24.20])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Apr 2021 17:11:48 -0700
-IronPort-SDR: DF2ZSG4aAHKBJH7sE7KlhMGSun+pulJxEIWIkDO2V5QhZbRN8Oume3unOAoJD4TdmcDZ4pAzNI
- aqDdY5OStS9w==
+   d="scan'208";a="174633928"
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Apr 2021 17:21:10 -0700
+IronPort-SDR: Bl5g51HxI9V5c8Jxm1sW/ntdgLKsFWPHu5EHpZERZj13To26jaFAl3peKTyX4wYLlPlDI8uewa
+ JZ1HyRpCqHUQ==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.82,220,1613462400"; 
-   d="scan'208";a="611937187"
-Received: from linux.intel.com ([10.54.29.200])
-  by fmsmga006.fm.intel.com with ESMTP; 13 Apr 2021 17:11:48 -0700
-Received: from glass.png.intel.com (glass.png.intel.com [10.158.65.59])
-        by linux.intel.com (Postfix) with ESMTP id E3F4A580842;
-        Tue, 13 Apr 2021 17:11:44 -0700 (PDT)
-From:   Wong Vee Khee <vee.khee.wong@linux.intel.com>
-To:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@st.com>,
-        Jose Abreu <joabreu@synopsys.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>
-Cc:     Voon Weifeng <weifeng.voon@intel.com>,
-        Ong Boon Leong <boon.leong.ong@intel.com>,
-        netdev@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org,
-        Richard Cochran <richardcochran@gmail.com>,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH net-next v4 1/1] net: stmmac: Add support for external trigger timestamping
-Date:   Wed, 14 Apr 2021 08:16:17 +0800
-Message-Id: <20210414001617.3490-1-vee.khee.wong@linux.intel.com>
-X-Mailer: git-send-email 2.25.1
+   d="scan'208";a="521799499"
+Received: from fmsmsx603.amr.corp.intel.com ([10.18.126.83])
+  by fmsmga001.fm.intel.com with ESMTP; 13 Apr 2021 17:21:10 -0700
+Received: from fmsmsx612.amr.corp.intel.com (10.18.126.92) by
+ fmsmsx603.amr.corp.intel.com (10.18.126.83) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2106.2; Tue, 13 Apr 2021 17:21:09 -0700
+Received: from fmsmsx612.amr.corp.intel.com (10.18.126.92) by
+ fmsmsx612.amr.corp.intel.com (10.18.126.92) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2106.2; Tue, 13 Apr 2021 17:21:09 -0700
+Received: from fmsmsx612.amr.corp.intel.com ([10.18.126.92]) by
+ fmsmsx612.amr.corp.intel.com ([10.18.126.92]) with mapi id 15.01.2106.013;
+ Tue, 13 Apr 2021 17:21:09 -0700
+From:   "Saleem, Shiraz" <shiraz.saleem@intel.com>
+To:     Parav Pandit <parav@nvidia.com>, Jason Gunthorpe <jgg@nvidia.com>
+CC:     "dledford@redhat.com" <dledford@redhat.com>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
+        "Lacombe, John S" <john.s.lacombe@intel.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "Ertman, David M" <david.m.ertman@intel.com>,
+        "Nguyen, Anthony L" <anthony.l.nguyen@intel.com>,
+        "Williams, Dan J" <dan.j.williams@intel.com>,
+        "Hefty, Sean" <sean.hefty@intel.com>,
+        "Keller, Jacob E" <jacob.e.keller@intel.com>
+Subject: RE: [PATCH v4 05/23] ice: Add devlink params support
+Thread-Topic: [PATCH v4 05/23] ice: Add devlink params support
+Thread-Index: AQHXKyglet/OMpr4HUC3+2oFUaS+kaqpm5SA///RCKCAALIhgIABT5TAgAZO+4CAAM18wIAAq1sA///kuJA=
+Date:   Wed, 14 Apr 2021 00:21:08 +0000
+Message-ID: <4d9a592fa5694de8aadc60db1376da20@intel.com>
+References: <20210406210125.241-1-shiraz.saleem@intel.com>
+ <20210406210125.241-6-shiraz.saleem@intel.com>
+ <20210407145705.GA499950@nvidia.com>
+ <e516fa3940984b0cb0134364b923fc8e@intel.com>
+ <20210407224631.GI282464@nvidia.com>
+ <c5a38fcf137e49c0af0bfa6edd3ec605@intel.com>
+ <BY5PR12MB43221FA2A6295C9CF23C798DDC709@BY5PR12MB4322.namprd12.prod.outlook.com>
+ <8a7cd11994c2447a926cf2d3e60a019c@intel.com>
+ <BY5PR12MB4322A28E6678CBB8A6544026DC4F9@BY5PR12MB4322.namprd12.prod.outlook.com>
+In-Reply-To: <BY5PR12MB4322A28E6678CBB8A6544026DC4F9@BY5PR12MB4322.namprd12.prod.outlook.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+dlp-product: dlpe-windows
+dlp-reaction: no-action
+dlp-version: 11.5.1.3
+x-originating-ip: [10.1.200.100]
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 8BIT
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Tan Tee Min <tee.min.tan@intel.com>
+> Subject: RE: [PATCH v4 05/23] ice: Add devlink params support
+> 
+> 
+> 
+> > From: Saleem, Shiraz <shiraz.saleem@intel.com>
+> > Sent: Tuesday, April 13, 2021 8:11 PM
+> [..]
+> 
+> > > > > Parav is talking about generic ways to customize the aux devices
+> > > > > created and that would seem to serve the same function as this.
+> > > >
+> > > > Is there an RFC or something posted for us to look at?
+> > > I do not have polished RFC content ready yet.
+> > > But coping the full config sequence snippet from the internal draft
+> > > (changed for ice
+> > > example) here as I like to discuss with you in this context.
+> >
+> > Thanks Parav! Some comments below.
+> >
+> > >
+> > > # (1) show auxiliary device types supported by a given devlink device.
+> > > # applies to pci pf,vf,sf. (in general at devlink instance).
+> > > $ devlink dev auxdev show pci/0000:06.00.0
+> > > pci/0000:06.00.0:
+> > >   current:
+> > >     roce eth
+> > >   new:
+> > >   supported:
+> > >     roce eth iwarp
+> > >
+> > > # (2) enable iwarp and ethernet type of aux devices and disable roce.
+> > > $ devlink dev auxdev set pci/0000:06:00.0 roce off iwarp on
+> > >
+> > > # (3) now see which aux devices will be enable on next reload.
+> > > $ devlink dev auxdev show pci/0000:06:00.0
+> > > pci/0000:06:00.0:
+> > >   current:
+> > >     roce eth
+> > >   new:
+> > >     eth iwarp
+> > >   supported:
+> > >     roce eth iwarp
+> > >
+> > > # (4) now reload the device and see which aux devices are created.
+> > > At this point driver undergoes reconfig for removal of roce and
+> > > adding
+> > iwarp.
+> > > $ devlink reload pci/0000:06:00.0
+> >
+> > I see this is modeled like devlink resource.
+> >
+> > Do we really to need a PCI driver re-init to switch the type of the
+> > auxdev hanging off the PCI dev?
+> >
+> I don't see a need to re-init the whole PCI driver. Since only aux device config is
+> changed only that piece to get reloaded.
 
-The Synopsis MAC controller supports auxiliary snapshot feature that
-allows user to store a snapshot of the system time based on an external
-event.
+But that is what mlx5 and other implementations does on reload no? i.e. a PCI driver reinit.
+I can see an ice implementation of reload morphing to similar over time to support a new config
+that requires a true reinit of PCI driver entities.
 
-This patch add supports to the above mentioned feature. Users will be
-able to triggered capturing the time snapshot from user-space using
-application such as testptp or any other applications that uses the
-PTP_EXTTS_REQUEST ioctl request.
+> 
+> > Why not just allow the setting to apply dynamically during a 'set'
+> > itself with an unplug/plug of the auxdev with correct type.
+> >
+> This suggestion came up in the internal discussion too.
+> However such task needs to synchronize with devlink reload command and also
+> with driver remove() sequence.
+> So locking wise and depending on amount of config change, it is close to what
+> reload will do.
 
-Cc: Richard Cochran <richardcochran@gmail.com>
-Signed-off-by: Tan Tee Min <tee.min.tan@intel.com>
-Co-developed-by: Wong Vee Khee <vee.khee.wong@linux.intel.com>
-Signed-off-by: Wong Vee Khee <vee.khee.wong@linux.intel.com>
----
-v3 -> v4:
-  - Group variable of same datatype together in oneline.
-  - Removed unnecessary mutex_unlock()
-  - Added mutex_destroy() on ptp_unregister().
-v2 -> v3:
-  - Flip ext_snapshot_en condition check for early return.
-v1 -> v2:
-  - Changed from pr_info() to netdev_dbg().
----
- .../net/ethernet/stmicro/stmmac/dwmac-intel.c | 10 +++++
- drivers/net/ethernet/stmicro/stmmac/hwif.h    |  5 +++
- drivers/net/ethernet/stmicro/stmmac/stmmac.h  |  3 ++
- .../ethernet/stmicro/stmmac/stmmac_hwtstamp.c | 39 ++++++++++++++++++
- .../net/ethernet/stmicro/stmmac/stmmac_main.c |  2 +
- .../net/ethernet/stmicro/stmmac/stmmac_ptp.c  | 40 ++++++++++++++++++-
- .../net/ethernet/stmicro/stmmac/stmmac_ptp.h  |  1 +
- include/linux/stmmac.h                        |  2 +
- 8 files changed, 101 insertions(+), 1 deletion(-)
+Holding this mutex across the auxiliary device unplug/plug in "set" wont cut it?
+https://elixir.bootlin.com/linux/v5.12-rc7/source/drivers/net/ethernet/mellanox/mlx5/core/main.c#L1304
 
-diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac-intel.c b/drivers/net/ethernet/stmicro/stmmac/dwmac-intel.c
-index 60566598d644..ec140fc4a0f5 100644
---- a/drivers/net/ethernet/stmicro/stmmac/dwmac-intel.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-intel.c
-@@ -296,6 +296,13 @@ static int intel_crosststamp(ktime_t *device,
- 
- 	intel_priv = priv->plat->bsp_priv;
- 
-+	/* Both internal crosstimestamping and external triggered event
-+	 * timestamping cannot be run concurrently.
-+	 */
-+	if (priv->plat->ext_snapshot_en)
-+		return -EBUSY;
-+
-+	mutex_lock(&priv->aux_ts_lock);
- 	/* Enable Internal snapshot trigger */
- 	acr_value = readl(ptpaddr + PTP_ACR);
- 	acr_value &= ~PTP_ACR_MASK;
-@@ -321,6 +328,8 @@ static int intel_crosststamp(ktime_t *device,
- 	acr_value = readl(ptpaddr + PTP_ACR);
- 	acr_value |= PTP_ACR_ATSFC;
- 	writel(acr_value, ptpaddr + PTP_ACR);
-+	/* Release the mutex */
-+	mutex_unlock(&priv->aux_ts_lock);
- 
- 	/* Trigger Internal snapshot signal
- 	 * Create a rising edge by just toggle the GPO1 to low
-@@ -520,6 +529,7 @@ static int intel_mgbe_common_data(struct pci_dev *pdev,
- 	plat->mdio_bus_data->phy_mask |= 1 << INTEL_MGBE_XPCS_ADDR;
- 
- 	plat->int_snapshot_num = AUX_SNAPSHOT1;
-+	plat->ext_snapshot_num = AUX_SNAPSHOT0;
- 
- 	plat->has_crossts = true;
- 	plat->crosststamp = intel_crosststamp;
-diff --git a/drivers/net/ethernet/stmicro/stmmac/hwif.h b/drivers/net/ethernet/stmicro/stmmac/hwif.h
-index 2b5022ef1e52..2cc91759b91f 100644
---- a/drivers/net/ethernet/stmicro/stmmac/hwif.h
-+++ b/drivers/net/ethernet/stmicro/stmmac/hwif.h
-@@ -504,6 +504,8 @@ struct stmmac_ops {
- #define stmmac_fpe_irq_status(__priv, __args...) \
- 	stmmac_do_callback(__priv, mac, fpe_irq_status, __args)
- 
-+struct stmmac_priv;
-+
- /* PTP and HW Timer helpers */
- struct stmmac_hwtimestamp {
- 	void (*config_hw_tstamping) (void __iomem *ioaddr, u32 data);
-@@ -515,6 +517,7 @@ struct stmmac_hwtimestamp {
- 			       int add_sub, int gmac4);
- 	void (*get_systime) (void __iomem *ioaddr, u64 *systime);
- 	void (*get_ptptime)(void __iomem *ioaddr, u64 *ptp_time);
-+	void (*timestamp_interrupt)(struct stmmac_priv *priv);
- };
- 
- #define stmmac_config_hw_tstamping(__priv, __args...) \
-@@ -531,6 +534,8 @@ struct stmmac_hwtimestamp {
- 	stmmac_do_void_callback(__priv, ptp, get_systime, __args)
- #define stmmac_get_ptptime(__priv, __args...) \
- 	stmmac_do_void_callback(__priv, ptp, get_ptptime, __args)
-+#define stmmac_timestamp_interrupt(__priv, __args...) \
-+	stmmac_do_void_callback(__priv, ptp, timestamp_interrupt, __args)
- 
- /* Helpers to manage the descriptors for chain and ring modes */
- struct stmmac_mode_ops {
-diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac.h b/drivers/net/ethernet/stmicro/stmmac/stmmac.h
-index b8a42260066d..b6cd43eda7ac 100644
---- a/drivers/net/ethernet/stmicro/stmmac/stmmac.h
-+++ b/drivers/net/ethernet/stmicro/stmmac/stmmac.h
-@@ -250,6 +250,9 @@ struct stmmac_priv {
- 	int use_riwt;
- 	int irq_wake;
- 	spinlock_t ptp_lock;
-+	/* Protects auxiliary snapshot registers from concurrent access. */
-+	struct mutex aux_ts_lock;
-+
- 	void __iomem *mmcaddr;
- 	void __iomem *ptpaddr;
- 	unsigned long active_vlans[BITS_TO_LONGS(VLAN_N_VID)];
-diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_hwtstamp.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_hwtstamp.c
-index 113c51bcc0b5..074e2cdfb0fa 100644
---- a/drivers/net/ethernet/stmicro/stmmac/stmmac_hwtstamp.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_hwtstamp.c
-@@ -12,8 +12,11 @@
- #include <linux/io.h>
- #include <linux/iopoll.h>
- #include <linux/delay.h>
-+#include <linux/ptp_clock_kernel.h>
- #include "common.h"
- #include "stmmac_ptp.h"
-+#include "dwmac4.h"
-+#include "stmmac.h"
- 
- static void config_hw_tstamping(void __iomem *ioaddr, u32 data)
- {
-@@ -163,6 +166,41 @@ static void get_ptptime(void __iomem *ptpaddr, u64 *ptp_time)
- 	*ptp_time = ns;
- }
- 
-+static void timestamp_interrupt(struct stmmac_priv *priv)
-+{
-+	u32 num_snapshot, ts_status, tsync_int;
-+	struct ptp_clock_event event;
-+	unsigned long flags;
-+	u64 ptp_time;
-+	int i;
-+
-+	tsync_int = readl(priv->ioaddr + GMAC_INT_STATUS) & GMAC_INT_TSIE;
-+
-+	if (!tsync_int)
-+		return;
-+
-+	/* Read timestamp status to clear interrupt from either external
-+	 * timestamp or start/end of PPS.
-+	 */
-+	ts_status = readl(priv->ioaddr + GMAC_TIMESTAMP_STATUS);
-+
-+	if (!priv->plat->ext_snapshot_en)
-+		return;
-+
-+	num_snapshot = (ts_status & GMAC_TIMESTAMP_ATSNS_MASK) >>
-+		       GMAC_TIMESTAMP_ATSNS_SHIFT;
-+
-+	for (i = 0; i < num_snapshot; i++) {
-+		spin_lock_irqsave(&priv->ptp_lock, flags);
-+		get_ptptime(priv->ptpaddr, &ptp_time);
-+		spin_unlock_irqrestore(&priv->ptp_lock, flags);
-+		event.type = PTP_CLOCK_EXTTS;
-+		event.index = 0;
-+		event.timestamp = ptp_time;
-+		ptp_clock_event(priv->ptp_clock, &event);
-+	}
-+}
-+
- const struct stmmac_hwtimestamp stmmac_ptp = {
- 	.config_hw_tstamping = config_hw_tstamping,
- 	.init_systime = init_systime,
-@@ -171,4 +209,5 @@ const struct stmmac_hwtimestamp stmmac_ptp = {
- 	.adjust_systime = adjust_systime,
- 	.get_systime = get_systime,
- 	.get_ptptime = get_ptptime,
-+	.timestamp_interrupt = timestamp_interrupt,
- };
-diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-index e3e22200a4fd..3a5ca5833ce1 100644
---- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-@@ -5687,6 +5687,8 @@ static void stmmac_common_interrupt(struct stmmac_priv *priv)
- 			else
- 				netif_carrier_off(priv->dev);
- 		}
-+
-+		stmmac_timestamp_interrupt(priv, priv);
- 	}
- }
- 
-diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_ptp.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_ptp.c
-index b164ae22e35f..4e86cdf2bc9f 100644
---- a/drivers/net/ethernet/stmicro/stmmac/stmmac_ptp.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_ptp.c
-@@ -135,7 +135,10 @@ static int stmmac_enable(struct ptp_clock_info *ptp,
- {
- 	struct stmmac_priv *priv =
- 	    container_of(ptp, struct stmmac_priv, ptp_clock_ops);
-+	void __iomem *ptpaddr = priv->ptpaddr;
-+	void __iomem *ioaddr = priv->hw->pcsr;
- 	struct stmmac_pps_cfg *cfg;
-+	u32 intr_value, acr_value;
- 	int ret = -EOPNOTSUPP;
- 	unsigned long flags;
- 
-@@ -159,6 +162,37 @@ static int stmmac_enable(struct ptp_clock_info *ptp,
- 					     priv->systime_flags);
- 		spin_unlock_irqrestore(&priv->ptp_lock, flags);
- 		break;
-+	case PTP_CLK_REQ_EXTTS:
-+		priv->plat->ext_snapshot_en = on;
-+		mutex_lock(&priv->aux_ts_lock);
-+		acr_value = readl(ptpaddr + PTP_ACR);
-+		acr_value &= ~PTP_ACR_MASK;
-+		if (on) {
-+			/* Enable External snapshot trigger */
-+			acr_value |= priv->plat->ext_snapshot_num;
-+			acr_value |= PTP_ACR_ATSFC;
-+			netdev_dbg(priv->dev, "Auxiliary Snapshot %d enabled.\n",
-+				   priv->plat->ext_snapshot_num >>
-+				   PTP_ACR_ATSEN_SHIFT);
-+			/* Enable Timestamp Interrupt */
-+			intr_value = readl(ioaddr + GMAC_INT_EN);
-+			intr_value |= GMAC_INT_TSIE;
-+			writel(intr_value, ioaddr + GMAC_INT_EN);
-+
-+		} else {
-+			netdev_dbg(priv->dev, "Auxiliary Snapshot %d disabled.\n",
-+				   priv->plat->ext_snapshot_num >>
-+				   PTP_ACR_ATSEN_SHIFT);
-+			/* Disable Timestamp Interrupt */
-+			intr_value = readl(ioaddr + GMAC_INT_EN);
-+			intr_value &= ~GMAC_INT_TSIE;
-+			writel(intr_value, ioaddr + GMAC_INT_EN);
-+		}
-+		writel(acr_value, ptpaddr + PTP_ACR);
-+		mutex_unlock(&priv->aux_ts_lock);
-+		ret = 0;
-+		break;
-+
- 	default:
- 		break;
- 	}
-@@ -202,7 +236,7 @@ static struct ptp_clock_info stmmac_ptp_clock_ops = {
- 	.name = "stmmac ptp",
- 	.max_adj = 62500000,
- 	.n_alarm = 0,
--	.n_ext_ts = 0,
-+	.n_ext_ts = 0, /* will be overwritten in stmmac_ptp_register */
- 	.n_per_out = 0, /* will be overwritten in stmmac_ptp_register */
- 	.n_pins = 0,
- 	.pps = 0,
-@@ -237,8 +271,10 @@ void stmmac_ptp_register(struct stmmac_priv *priv)
- 		stmmac_ptp_clock_ops.max_adj = priv->plat->ptp_max_adj;
- 
- 	stmmac_ptp_clock_ops.n_per_out = priv->dma_cap.pps_out_num;
-+	stmmac_ptp_clock_ops.n_ext_ts = priv->dma_cap.aux_snapshot_n;
- 
- 	spin_lock_init(&priv->ptp_lock);
-+	mutex_init(&priv->aux_ts_lock);
- 	priv->ptp_clock_ops = stmmac_ptp_clock_ops;
- 
- 	priv->ptp_clock = ptp_clock_register(&priv->ptp_clock_ops,
-@@ -264,4 +300,6 @@ void stmmac_ptp_unregister(struct stmmac_priv *priv)
- 		pr_debug("Removed PTP HW clock successfully on %s\n",
- 			 priv->dev->name);
- 	}
-+
-+	mutex_destroy(&priv->aux_ts_lock);
- }
-diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_ptp.h b/drivers/net/ethernet/stmicro/stmmac/stmmac_ptp.h
-index f88727ce4d30..53172a439810 100644
---- a/drivers/net/ethernet/stmicro/stmmac/stmmac_ptp.h
-+++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_ptp.h
-@@ -73,6 +73,7 @@
- #define	PTP_ACR_ATSEN1		BIT(5)	/* Auxiliary Snapshot 1 Enable */
- #define	PTP_ACR_ATSEN2		BIT(6)	/* Auxiliary Snapshot 2 Enable */
- #define	PTP_ACR_ATSEN3		BIT(7)	/* Auxiliary Snapshot 3 Enable */
-+#define	PTP_ACR_ATSEN_SHIFT	5	/* Auxiliary Snapshot shift */
- #define	PTP_ACR_MASK		GENMASK(7, 4)	/* Aux Snapshot Mask */
- #define	PMC_ART_VALUE0		0x01	/* PMC_ART[15:0] timer value */
- #define	PMC_ART_VALUE1		0x02	/* PMC_ART[31:16] timer value */
-diff --git a/include/linux/stmmac.h b/include/linux/stmmac.h
-index e338ef7abc00..97edb31d6310 100644
---- a/include/linux/stmmac.h
-+++ b/include/linux/stmmac.h
-@@ -238,6 +238,8 @@ struct plat_stmmacenet_data {
- 	struct pci_dev *pdev;
- 	bool has_crossts;
- 	int int_snapshot_num;
-+	int ext_snapshot_num;
-+	bool ext_snapshot_en;
- 	bool multi_msi_en;
- 	int msi_mac_vec;
- 	int msi_wol_vec;
--- 
-2.25.1
+> For example other resource config or other params setting also to take effect.
+> So to avoid defining multiple config sequence, doing as part of already existing
+> devlink reload, it brings simple sequence to user.
+> 
+> For example,
+> 1. enable/disable desired aux devices
+> 2. configure device resources
+> 3. set some device params
+> 4. do devlink reload and apply settings done in #1 to #3
+
+Sure. But a user might also just want to operate on just an auxiliary device configuration change. As in #1.
+And he ends up having everything hanging off the PF to get blown out, including potentially
+the VFs. That feels like too big a hammer.
+
+Shiraz
 
