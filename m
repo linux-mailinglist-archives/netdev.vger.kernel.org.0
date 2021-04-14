@@ -2,34 +2,34 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 53EC635FC8D
-	for <lists+netdev@lfdr.de>; Wed, 14 Apr 2021 22:24:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 36D4435FC8B
+	for <lists+netdev@lfdr.de>; Wed, 14 Apr 2021 22:24:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347782AbhDNUYn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 14 Apr 2021 16:24:43 -0400
-Received: from mail.kernel.org ([198.145.29.99]:49346 "EHLO mail.kernel.org"
+        id S1349916AbhDNUYT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 14 Apr 2021 16:24:19 -0400
+Received: from mail.kernel.org ([198.145.29.99]:49372 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1349708AbhDNUXy (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S1349734AbhDNUXy (ORCPT <rfc822;netdev@vger.kernel.org>);
         Wed, 14 Apr 2021 16:23:54 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 2B26F61220;
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 8E31561242;
         Wed, 14 Apr 2021 20:23:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1618431810;
-        bh=/OauJjZtPz0VIzbErR6up6ojm0GlVZ0ahID+de/KKmU=;
+        bh=PLbJgJeKxYQeAU8oKnryQvoRKiPwvxt4EqI3K9lOQzU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=JezXJ+hNucGxpmqXI4VZB3zc24mGLECZkLZxyAE8tp8KCoIav5zdKAwGiXpPqC8Jv
-         aEw7Muwlj1S6yaQg665mpJBDq1BwUULkhmzzu5if9CxcnxEYvzau7bj5EZSYbmJ3Rd
-         aaF8NmuyKktVHBbjI5GN80AWjNloEsNGXUqj9W4k9Pq5+VZg8+Oyp/Py/QpYzzKB6d
-         qXe6ijqdpUmZ8cC6Gv7fBbUpgYUvA30KMOH7M1Be8tY18//n2/JF4lqPbekCXNc+wz
-         zWTa0Ph97fecJpF1rVr7bjTx7aLwvH+6pMqPesqESDQDl/R0fvk/A4P5KFnyUW6o/2
-         b5vO4GJ7Q9tig==
+        b=dpEdhKcHTeaiUCDPb+tQt5xjehW8+gwPf46Xu0imAQqiP2/HzzZovHDRcl8+vUCZo
+         e3nBC8hZVajSc+OKB7S9zP5LulKfa/b+lsbaNnOCziaXcdzzynGcA2hm6K1rubLXZ0
+         qDbpx7s3RFTtQvYWTjjhROH7SLE+Uxxv2C9lj3i05cNrykb5nHUOf7mApoA+Z62ORk
+         hBADHhtDewT+CKSnFc4jVctMi7cWEDZ25Pt80cZuOFjggo86yULeptJF6vxFqebZDa
+         zV0sIZTC3/dbDcX4UewwutyQyJkcuqil1SZnegRQPRIm0YxyS1nFw6j8NvuowfqHL+
+         TmqGHHp6PARAQ==
 From:   Jakub Kicinski <kuba@kernel.org>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, andrew@lunn.ch, mkubecek@suse.cz,
         idosch@nvidia.com, Jakub Kicinski <kuba@kernel.org>
-Subject: [RFC net-next 4/6] ethtool: add interface to read standard MAC stats
-Date:   Wed, 14 Apr 2021 13:23:23 -0700
-Message-Id: <20210414202325.2225774-5-kuba@kernel.org>
+Subject: [RFC net-next 5/6] ethtool: add interface to read standard MAC Ctrl stats
+Date:   Wed, 14 Apr 2021 13:23:24 -0700
+Message-Id: <20210414202325.2225774-6-kuba@kernel.org>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20210414202325.2225774-1-kuba@kernel.org>
 References: <20210414202325.2225774-1-kuba@kernel.org>
@@ -39,307 +39,186 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Most of the MAC statistics are included in
-struct rtnl_link_stats64, but some fields
-are aggregated. Besides it's good to expose
-these clearly hardware stats separately.
+Number of devices maintains the standard-based MAC control
+counters for control frames. Add a API for those.
 
 Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 ---
- include/linux/ethtool.h              | 31 ++++++++++
- include/uapi/linux/ethtool.h         |  2 +
- include/uapi/linux/ethtool_netlink.h | 53 ++++++++++++++++
+ include/linux/ethtool.h              | 11 ++++++++++
+ include/uapi/linux/ethtool.h         |  2 ++
+ include/uapi/linux/ethtool_netlink.h | 14 ++++++++++++
  net/ethtool/netlink.h                |  1 +
- net/ethtool/stats.c                  | 90 ++++++++++++++++++++++++++++
- net/ethtool/strset.c                 |  5 ++
- 6 files changed, 182 insertions(+)
+ net/ethtool/stats.c                  | 33 ++++++++++++++++++++++++++++
+ net/ethtool/strset.c                 |  5 +++++
+ 6 files changed, 66 insertions(+)
 
 diff --git a/include/linux/ethtool.h b/include/linux/ethtool.h
-index 2d5455eedbf4..3c689a13e679 100644
+index 3c689a13e679..22bab13c5729 100644
 --- a/include/linux/ethtool.h
 +++ b/include/linux/ethtool.h
-@@ -250,6 +250,34 @@ static inline void ethtool_stats_init(u64 *stats, unsigned int n)
- 		stats[n] = ETHTOOL_STAT_NOT_SET;
- }
+@@ -285,6 +285,15 @@ struct ethtool_eth_phy_stats {
+ 	u64 SymbolErrorDuringCarrier;
+ };
  
-+/* Basic IEEE 802.3 MAC statistics (30.3.1.1.*), not otherwise exposed
++/* Basic IEEE 802.3 MAC Ctrl statistics (30.3.3.*), not otherwise exposed
 + * via a more targeted API.
 + */
-+struct ethtool_eth_mac_stats {
-+	u64 FramesTransmittedOK;
-+	u64 SingleCollisionFrames;
-+	u64 MultipleCollisionFrames;
-+	u64 FramesReceivedOK;
-+	u64 FrameCheckSequenceErrors;
-+	u64 AlignmentErrors;
-+	u64 OctetsTransmittedOK;
-+	u64 FramesWithDeferredXmissions;
-+	u64 LateCollisions;
-+	u64 FramesAbortedDueToXSColls;
-+	u64 FramesLostDueToIntMACXmitError;
-+	u64 CarrierSenseErrors;
-+	u64 OctetsReceivedOK;
-+	u64 FramesLostDueToIntMACRcvError;
-+	u64 MulticastFramesXmittedOK;
-+	u64 BroadcastFramesXmittedOK;
-+	u64 FramesWithExcessiveDeferral;
-+	u64 MulticastFramesReceivedOK;
-+	u64 BroadcastFramesReceivedOK;
-+	u64 InRangeLengthErrors;
-+	u64 OutOfRangeLengthField;
-+	u64 FrameTooLongErrors;
++struct ethtool_eth_ctrl_stats {
++	u64 MACControlFramesTransmitted;
++	u64 MACControlFramesReceived;
++	u64 UnsupportedOpcodesReceived;
 +};
 +
- /* Basic IEEE 802.3 PHY statistics (30.3.2.1.*), not otherwise exposed
-  * via a more targeted API.
-  */
-@@ -495,6 +523,7 @@ struct ethtool_module_eeprom {
-  *	specified page. Returns a negative error code or the amount of bytes
-  *	read.
-  * @get_eth_phy_stats: Query some of the IEEE 802.3 PHY statistics.
-+ * @get_eth_mac_stats: Query some of the IEEE 802.3 MAC statistics.
-  *
-  * All operations are optional (i.e. the function pointer may be set
-  * to %NULL) and callers must take this into account.  Callers must
-@@ -607,6 +636,8 @@ struct ethtool_ops {
- 					     struct netlink_ext_ack *extack);
- 	void	(*get_eth_phy_stats)(struct net_device *dev,
+ /**
+  * struct ethtool_pause_stats - statistics for IEEE 802.3x pause frames
+  * @tx_pause_frames: transmitted pause frame count. Reported to user space
+@@ -638,6 +647,8 @@ struct ethtool_ops {
  				     struct ethtool_eth_phy_stats *phy_stats);
-+	void	(*get_eth_mac_stats)(struct net_device *dev,
-+				     struct ethtool_eth_mac_stats *mac_stats);
+ 	void	(*get_eth_mac_stats)(struct net_device *dev,
+ 				     struct ethtool_eth_mac_stats *mac_stats);
++	void	(*get_eth_ctrl_stats)(struct net_device *dev,
++				      struct ethtool_eth_ctrl_stats *ctrl_stats);
  };
  
  int ethtool_check_ops(const struct ethtool_ops *ops);
 diff --git a/include/uapi/linux/ethtool.h b/include/uapi/linux/ethtool.h
-index 190ae6e03918..c227376d811a 100644
+index c227376d811a..9cb8df89d4f2 100644
 --- a/include/uapi/linux/ethtool.h
 +++ b/include/uapi/linux/ethtool.h
-@@ -671,6 +671,7 @@ enum ethtool_link_ext_substate_cable_issue {
-  * @ETH_SS_UDP_TUNNEL_TYPES: UDP tunnel types
+@@ -672,6 +672,7 @@ enum ethtool_link_ext_substate_cable_issue {
   * @ETH_SS_STATS_STD: standardized stats
   * @ETH_SS_STATS_ETH_PHY: names of IEEE 802.3 PHY statistics
-+ * @ETH_SS_STATS_ETH_MAC: names of IEEE 802.3 MAC statistics
+  * @ETH_SS_STATS_ETH_MAC: names of IEEE 802.3 MAC statistics
++ * @ETH_SS_STATS_ETH_CTRL: names of IEEE 802.3 MAC Control statistics
   *
   * @ETH_SS_COUNT: number of defined string sets
   */
-@@ -693,6 +694,7 @@ enum ethtool_stringset {
- 	ETH_SS_UDP_TUNNEL_TYPES,
+@@ -695,6 +696,7 @@ enum ethtool_stringset {
  	ETH_SS_STATS_STD,
  	ETH_SS_STATS_ETH_PHY,
-+	ETH_SS_STATS_ETH_MAC,
+ 	ETH_SS_STATS_ETH_MAC,
++	ETH_SS_STATS_ETH_CTRL,
  
  	/* add new constants above here */
  	ETH_SS_COUNT
 diff --git a/include/uapi/linux/ethtool_netlink.h b/include/uapi/linux/ethtool_netlink.h
-index e6a473a3a5f1..7ef6fbe237d9 100644
+index 7ef6fbe237d9..7c061dfc3b67 100644
 --- a/include/uapi/linux/ethtool_netlink.h
 +++ b/include/uapi/linux/ethtool_netlink.h
-@@ -698,6 +698,7 @@ enum {
- 
+@@ -699,6 +699,7 @@ enum {
  enum {
  	ETHTOOL_STATS_ETH_PHY,
-+	ETHTOOL_STATS_ETH_MAC,
+ 	ETHTOOL_STATS_ETH_MAC,
++	ETHTOOL_STATS_ETH_CTRL,
  
  	/* add new constants above here */
  	__ETHTOOL_STATS_CNT
-@@ -723,6 +724,58 @@ enum {
- 	ETHTOOL_A_STATS_ETH_PHY_MAX = (__ETHTOOL_A_STATS_ETH_PHY_CNT - 1)
+@@ -776,6 +777,19 @@ enum {
+ 	ETHTOOL_A_STATS_ETH_MAC_MAX = (__ETHTOOL_A_STATS_ETH_MAC_CNT - 1)
  };
  
 +enum {
-+	/* 30.3.1.1.2 aFramesTransmittedOK */
-+	ETHTOOL_A_STATS_ETH_MAC_2_TX_PKT = ETHTOOL_A_STATS_GRP_FIRST_ATTR,
-+	/* 30.3.1.1.3 aSingleCollisionFrames */
-+	ETHTOOL_A_STATS_ETH_MAC_3_SINGLE_COL,
-+	/* 30.3.1.1.4 aMultipleCollisionFrames */
-+	ETHTOOL_A_STATS_ETH_MAC_4_MULTI_COL,
-+	/* 30.3.1.1.5 aFramesReceivedOK */
-+	ETHTOOL_A_STATS_ETH_MAC_5_RX_PKT,
-+	/* 30.3.1.1.6 aFrameCheckSequenceErrors */
-+	ETHTOOL_A_STATS_ETH_MAC_6_FCS_ERR,
-+	/* 30.3.1.1.7 aAlignmentErrors */
-+	ETHTOOL_A_STATS_ETH_MAC_7_ALIGN_ERR,
-+	/* 30.3.1.1.8 aOctetsTransmittedOK */
-+	ETHTOOL_A_STATS_ETH_MAC_8_TX_BYTES,
-+	/* 30.3.1.1.9 aFramesWithDeferredXmissions */
-+	ETHTOOL_A_STATS_ETH_MAC_9_TX_DEFER,
-+	/* 30.3.1.1.10 aLateCollisions */
-+	ETHTOOL_A_STATS_ETH_MAC_10_LATE_COL,
-+	/* 30.3.1.1.11 aFramesAbortedDueToXSColls */
-+	ETHTOOL_A_STATS_ETH_MAC_11_XS_COL,
-+	/* 30.3.1.1.12 aFramesLostDueToIntMACXmitError */
-+	ETHTOOL_A_STATS_ETH_MAC_12_TX_INT_ERR,
-+	/* 30.3.1.1.13 aCarrierSenseErrors */
-+	ETHTOOL_A_STATS_ETH_MAC_13_CS_ERR,
-+	/* 30.3.1.1.14 aOctetsReceivedOK */
-+	ETHTOOL_A_STATS_ETH_MAC_14_RX_BYTES,
-+	/* 30.3.1.1.15 aFramesLostDueToIntMACRcvError */
-+	ETHTOOL_A_STATS_ETH_MAC_15_RX_INT_ERR,
-+
-+	/* 30.3.1.1.18 aMulticastFramesXmittedOK */
-+	ETHTOOL_A_STATS_ETH_MAC_18_TX_MCAST,
-+	/* 30.3.1.1.19 aBroadcastFramesXmittedOK */
-+	ETHTOOL_A_STATS_ETH_MAC_19_TX_BCAST,
-+	/* 30.3.1.1.20 aFramesWithExcessiveDeferral */
-+	ETHTOOL_A_STATS_ETH_MAC_20_XS_DEFER,
-+	/* 30.3.1.1.21 aMulticastFramesReceivedOK */
-+	ETHTOOL_A_STATS_ETH_MAC_21_RX_MCAST,
-+	/* 30.3.1.1.22 aBroadcastFramesReceivedOK */
-+	ETHTOOL_A_STATS_ETH_MAC_22_RX_BCAST,
-+	/* 30.3.1.1.23 aInRangeLengthErrors */
-+	ETHTOOL_A_STATS_ETH_MAC_23_IR_LEN_ERR,
-+	/* 30.3.1.1.24 aOutOfRangeLengthField */
-+	ETHTOOL_A_STATS_ETH_MAC_24_OOR_LEN,
-+	/* 30.3.1.1.25 aFrameTooLongErrors */
-+	ETHTOOL_A_STATS_ETH_MAC_25_TOO_LONG_ERR,
++	/* 30.3.3.3 aMACControlFramesTransmitted */
++	ETHTOOL_A_STATS_ETH_CTRL_3_TX = ETHTOOL_A_STATS_GRP_FIRST_ATTR,
++	/* 30.3.3.4 aMACControlFramesReceived */
++	ETHTOOL_A_STATS_ETH_CTRL_4_RX,
++	/* 30.3.3.5 aUnsupportedOpcodesReceived */
++	ETHTOOL_A_STATS_ETH_CTRL_5_RX_UNSUP,
 +
 +	/* add new constants above here */
-+	__ETHTOOL_A_STATS_ETH_MAC_CNT,
-+	ETHTOOL_A_STATS_ETH_MAC_MAX = (__ETHTOOL_A_STATS_ETH_MAC_CNT - 1)
++	__ETHTOOL_A_STATS_ETH_CTRL_CNT,
++	ETHTOOL_A_STATS_ETH_CTRL_MAX = (__ETHTOOL_A_STATS_ETH_CTRL_CNT - 1)
 +};
 +
  /* generic netlink info */
  #define ETHTOOL_GENL_NAME "ethtool"
  #define ETHTOOL_GENL_VERSION 1
 diff --git a/net/ethtool/netlink.h b/net/ethtool/netlink.h
-index 79631792313e..9c5f6ee71864 100644
+index 9c5f6ee71864..bd96eb57c07c 100644
 --- a/net/ethtool/netlink.h
 +++ b/net/ethtool/netlink.h
-@@ -403,5 +403,6 @@ int ethnl_set_fec(struct sk_buff *skb, struct genl_info *info);
- 
+@@ -404,5 +404,6 @@ int ethnl_set_fec(struct sk_buff *skb, struct genl_info *info);
  extern const char stats_std_names[__ETHTOOL_STATS_CNT][ETH_GSTRING_LEN];
  extern const char stats_eth_phy_names[__ETHTOOL_A_STATS_ETH_PHY_CNT][ETH_GSTRING_LEN];
-+extern const char stats_eth_mac_names[__ETHTOOL_A_STATS_ETH_MAC_CNT][ETH_GSTRING_LEN];
+ extern const char stats_eth_mac_names[__ETHTOOL_A_STATS_ETH_MAC_CNT][ETH_GSTRING_LEN];
++extern const char stats_eth_ctrl_names[__ETHTOOL_A_STATS_ETH_CTRL_CNT][ETH_GSTRING_LEN];
  
  #endif /* _NET_ETHTOOL_NETLINK_H */
 diff --git a/net/ethtool/stats.c b/net/ethtool/stats.c
-index 68bf6a7614fe..e0395d5c0f9d 100644
+index e0395d5c0f9d..5feb6aba26c8 100644
 --- a/net/ethtool/stats.c
 +++ b/net/ethtool/stats.c
-@@ -15,6 +15,7 @@ struct stats_req_info {
- struct stats_reply_data {
+@@ -16,6 +16,7 @@ struct stats_reply_data {
  	struct ethnl_reply_data		base;
  	struct ethtool_eth_phy_stats	phy_stats;
-+	struct ethtool_eth_mac_stats	mac_stats;
+ 	struct ethtool_eth_mac_stats	mac_stats;
++	struct ethtool_eth_ctrl_stats	ctrl_stats;
  };
  
  #define STATS_REPDATA(__reply_base) \
-@@ -22,12 +23,38 @@ struct stats_reply_data {
- 
+@@ -24,6 +25,7 @@ struct stats_reply_data {
  const char stats_std_names[__ETHTOOL_STATS_CNT][ETH_GSTRING_LEN] = {
  	[ETHTOOL_STATS_ETH_PHY]			= "eth-phy",
-+	[ETHTOOL_STATS_ETH_MAC]			= "eth-mac",
+ 	[ETHTOOL_STATS_ETH_MAC]			= "eth-mac",
++	[ETHTOOL_STATS_ETH_CTRL]		= "eth-ctrl",
  };
  
  const char stats_eth_phy_names[__ETHTOOL_A_STATS_ETH_PHY_CNT][ETH_GSTRING_LEN] = {
- 	[ETHTOOL_A_STATS_ETH_PHY_5_SYM_ERR]	= "SymbolErrorDuringCarrier",
+@@ -55,6 +57,12 @@ const char stats_eth_mac_names[__ETHTOOL_A_STATS_ETH_MAC_CNT][ETH_GSTRING_LEN] =
+ 	[ETHTOOL_A_STATS_ETH_MAC_25_TOO_LONG_ERR]	= "FrameTooLongErrors",
  };
  
-+const char stats_eth_mac_names[__ETHTOOL_A_STATS_ETH_MAC_CNT][ETH_GSTRING_LEN] = {
-+	[ETHTOOL_A_STATS_ETH_MAC_2_TX_PKT]	= "FramesTransmittedOK",
-+	[ETHTOOL_A_STATS_ETH_MAC_3_SINGLE_COL]	= "SingleCollisionFrames",
-+	[ETHTOOL_A_STATS_ETH_MAC_4_MULTI_COL]	= "MultipleCollisionFrames",
-+	[ETHTOOL_A_STATS_ETH_MAC_5_RX_PKT]	= "FramesReceivedOK",
-+	[ETHTOOL_A_STATS_ETH_MAC_6_FCS_ERR]	= "FrameCheckSequenceErrors",
-+	[ETHTOOL_A_STATS_ETH_MAC_7_ALIGN_ERR]	= "AlignmentErrors",
-+	[ETHTOOL_A_STATS_ETH_MAC_8_TX_BYTES]	= "OctetsTransmittedOK",
-+	[ETHTOOL_A_STATS_ETH_MAC_9_TX_DEFER]	= "FramesWithDeferredXmissions",
-+	[ETHTOOL_A_STATS_ETH_MAC_10_LATE_COL]	= "LateCollisions",
-+	[ETHTOOL_A_STATS_ETH_MAC_11_XS_COL]	= "FramesAbortedDueToXSColls",
-+	[ETHTOOL_A_STATS_ETH_MAC_12_TX_INT_ERR]	= "FramesLostDueToIntMACXmitError",
-+	[ETHTOOL_A_STATS_ETH_MAC_13_CS_ERR]	= "CarrierSenseErrors",
-+	[ETHTOOL_A_STATS_ETH_MAC_14_RX_BYTES]	= "OctetsReceivedOK",
-+	[ETHTOOL_A_STATS_ETH_MAC_15_RX_INT_ERR]	= "FramesLostDueToIntMACRcvError",
-+	[ETHTOOL_A_STATS_ETH_MAC_18_TX_MCAST]	= "MulticastFramesXmittedOK",
-+	[ETHTOOL_A_STATS_ETH_MAC_19_TX_BCAST]	= "BroadcastFramesXmittedOK",
-+	[ETHTOOL_A_STATS_ETH_MAC_20_XS_DEFER]	= "FramesWithExcessiveDeferral",
-+	[ETHTOOL_A_STATS_ETH_MAC_21_RX_MCAST]	= "MulticastFramesReceivedOK",
-+	[ETHTOOL_A_STATS_ETH_MAC_22_RX_BCAST]	= "BroadcastFramesReceivedOK",
-+	[ETHTOOL_A_STATS_ETH_MAC_23_IR_LEN_ERR]	= "InRangeLengthErrors",
-+	[ETHTOOL_A_STATS_ETH_MAC_24_OOR_LEN]	= "OutOfRangeLengthField",
-+	[ETHTOOL_A_STATS_ETH_MAC_25_TOO_LONG_ERR]	= "FrameTooLongErrors",
++const char stats_eth_ctrl_names[__ETHTOOL_A_STATS_ETH_CTRL_CNT][ETH_GSTRING_LEN] = {
++	[ETHTOOL_A_STATS_ETH_CTRL_3_TX]		= "MACControlFramesTransmitted",
++	[ETHTOOL_A_STATS_ETH_CTRL_4_RX]		= "MACControlFramesReceived",
++	[ETHTOOL_A_STATS_ETH_CTRL_5_RX_UNSUP]	= "UnsupportedOpcodesReceived",
 +};
 +
  const struct nla_policy ethnl_stats_get_policy[ETHTOOL_A_STATS_GROUPS + 1] = {
  	[ETHTOOL_A_STATS_HEADER]	=
  		NLA_POLICY_NESTED(ethnl_header_policy),
-@@ -70,10 +97,14 @@ static int stats_prepare_data(const struct ethnl_req_info *req_base,
- 		return ret;
+@@ -98,6 +106,7 @@ static int stats_prepare_data(const struct ethnl_req_info *req_base,
  
  	memset(&data->phy_stats, 0xff, sizeof(data->phy_stats));
-+	memset(&data->mac_stats, 0xff, sizeof(data->mac_stats));
+ 	memset(&data->mac_stats, 0xff, sizeof(data->mac_stats));
++	memset(&data->ctrl_stats, 0xff, sizeof(data->mac_stats));
  
  	if (test_bit(ETHTOOL_STATS_ETH_PHY, req_info->stat_mask) &&
  	    dev->ethtool_ops->get_eth_phy_stats)
- 		dev->ethtool_ops->get_eth_phy_stats(dev, &data->phy_stats);
-+	if (test_bit(ETHTOOL_STATS_ETH_MAC, req_info->stat_mask) &&
-+	    dev->ethtool_ops->get_eth_mac_stats)
-+		dev->ethtool_ops->get_eth_mac_stats(dev, &data->mac_stats);
+@@ -105,6 +114,9 @@ static int stats_prepare_data(const struct ethnl_req_info *req_base,
+ 	if (test_bit(ETHTOOL_STATS_ETH_MAC, req_info->stat_mask) &&
+ 	    dev->ethtool_ops->get_eth_mac_stats)
+ 		dev->ethtool_ops->get_eth_mac_stats(dev, &data->mac_stats);
++	if (test_bit(ETHTOOL_STATS_ETH_CTRL, req_info->stat_mask) &&
++	    dev->ethtool_ops->get_eth_ctrl_stats)
++		dev->ethtool_ops->get_eth_ctrl_stats(dev, &data->ctrl_stats);
  
  	ethnl_ops_complete(dev);
  	return 0;
-@@ -89,6 +120,10 @@ static int stats_reply_size(const struct ethnl_req_info *req_base,
+@@ -124,6 +136,10 @@ static int stats_reply_size(const struct ethnl_req_info *req_base,
  		len += nla_total_size(0) +
- 			sizeof(struct ethtool_eth_phy_stats) / sizeof(u64) *
+ 			sizeof(struct ethtool_eth_mac_stats) / sizeof(u64) *
  			nla_total_size_64bit(sizeof(u64));
-+	if (test_bit(ETHTOOL_STATS_ETH_MAC, req_info->stat_mask))
++	if (test_bit(ETHTOOL_STATS_ETH_CTRL, req_info->stat_mask))
 +		len += nla_total_size(0) +
-+			sizeof(struct ethtool_eth_mac_stats) / sizeof(u64) *
++			sizeof(struct ethtool_eth_ctrl_stats) / sizeof(u64) *
 +			nla_total_size_64bit(sizeof(u64));
  
  	return len;
  }
-@@ -109,6 +144,57 @@ static int stats_put_phy_stats(struct sk_buff *skb,
+@@ -195,6 +211,19 @@ static int stats_put_mac_stats(struct sk_buff *skb,
  	return 0;
  }
  
-+static int stats_put_mac_stats(struct sk_buff *skb,
-+			       const struct stats_reply_data *data)
++static int stats_put_ctrl_stats(struct sk_buff *skb,
++				const struct stats_reply_data *data)
 +{
-+	if (stat_put(skb, ETHTOOL_A_STATS_ETH_MAC_2_TX_PKT,
-+		     data->mac_stats.FramesTransmittedOK) ||
-+	    stat_put(skb, ETHTOOL_A_STATS_ETH_MAC_3_SINGLE_COL,
-+		     data->mac_stats.SingleCollisionFrames) ||
-+	    stat_put(skb, ETHTOOL_A_STATS_ETH_MAC_4_MULTI_COL,
-+		     data->mac_stats.MultipleCollisionFrames) ||
-+	    stat_put(skb, ETHTOOL_A_STATS_ETH_MAC_5_RX_PKT,
-+		     data->mac_stats.FramesReceivedOK) ||
-+	    stat_put(skb, ETHTOOL_A_STATS_ETH_MAC_6_FCS_ERR,
-+		     data->mac_stats.FrameCheckSequenceErrors) ||
-+	    stat_put(skb, ETHTOOL_A_STATS_ETH_MAC_7_ALIGN_ERR,
-+		     data->mac_stats.AlignmentErrors) ||
-+	    stat_put(skb, ETHTOOL_A_STATS_ETH_MAC_8_TX_BYTES,
-+		     data->mac_stats.OctetsTransmittedOK) ||
-+	    stat_put(skb, ETHTOOL_A_STATS_ETH_MAC_9_TX_DEFER,
-+		     data->mac_stats.FramesWithDeferredXmissions) ||
-+	    stat_put(skb, ETHTOOL_A_STATS_ETH_MAC_10_LATE_COL,
-+		     data->mac_stats.LateCollisions) ||
-+	    stat_put(skb, ETHTOOL_A_STATS_ETH_MAC_11_XS_COL,
-+		     data->mac_stats.FramesAbortedDueToXSColls) ||
-+	    stat_put(skb, ETHTOOL_A_STATS_ETH_MAC_12_TX_INT_ERR,
-+		     data->mac_stats.FramesLostDueToIntMACXmitError) ||
-+	    stat_put(skb, ETHTOOL_A_STATS_ETH_MAC_13_CS_ERR,
-+		     data->mac_stats.CarrierSenseErrors) ||
-+	    stat_put(skb, ETHTOOL_A_STATS_ETH_MAC_14_RX_BYTES,
-+		     data->mac_stats.OctetsReceivedOK) ||
-+	    stat_put(skb, ETHTOOL_A_STATS_ETH_MAC_15_RX_INT_ERR,
-+		     data->mac_stats.FramesLostDueToIntMACRcvError) ||
-+	    stat_put(skb, ETHTOOL_A_STATS_ETH_MAC_18_TX_MCAST,
-+		     data->mac_stats.MulticastFramesXmittedOK) ||
-+	    stat_put(skb, ETHTOOL_A_STATS_ETH_MAC_19_TX_BCAST,
-+		     data->mac_stats.BroadcastFramesXmittedOK) ||
-+	    stat_put(skb, ETHTOOL_A_STATS_ETH_MAC_20_XS_DEFER,
-+		     data->mac_stats.FramesWithExcessiveDeferral) ||
-+	    stat_put(skb, ETHTOOL_A_STATS_ETH_MAC_21_RX_MCAST,
-+		     data->mac_stats.MulticastFramesReceivedOK) ||
-+	    stat_put(skb, ETHTOOL_A_STATS_ETH_MAC_22_RX_BCAST,
-+		     data->mac_stats.BroadcastFramesReceivedOK) ||
-+	    stat_put(skb, ETHTOOL_A_STATS_ETH_MAC_23_IR_LEN_ERR,
-+		     data->mac_stats.InRangeLengthErrors) ||
-+	    stat_put(skb, ETHTOOL_A_STATS_ETH_MAC_24_OOR_LEN,
-+		     data->mac_stats.OutOfRangeLengthField) ||
-+	    stat_put(skb, ETHTOOL_A_STATS_ETH_MAC_25_TOO_LONG_ERR,
-+		     data->mac_stats.FrameTooLongErrors))
++	if (stat_put(skb, ETHTOOL_A_STATS_ETH_CTRL_3_TX,
++		     data->ctrl_stats.MACControlFramesTransmitted) ||
++	    stat_put(skb, ETHTOOL_A_STATS_ETH_CTRL_4_RX,
++		     data->ctrl_stats.MACControlFramesReceived) ||
++	    stat_put(skb, ETHTOOL_A_STATS_ETH_CTRL_5_RX_UNSUP,
++		     data->ctrl_stats.UnsupportedOpcodesReceived))
 +		return -EMSGSIZE;
 +	return 0;
 +}
@@ -347,29 +226,29 @@ index 68bf6a7614fe..e0395d5c0f9d 100644
  static int stats_put_stats(struct sk_buff *skb,
  			   const struct stats_reply_data *data,
  			   u32 id, u32 ss_id,
-@@ -148,6 +234,10 @@ static int stats_fill_reply(struct sk_buff *skb,
- 		ret = stats_put_stats(skb, data, ETHTOOL_STATS_ETH_PHY,
- 				      ETH_SS_STATS_ETH_PHY,
- 				      stats_put_phy_stats);
-+	if (!ret && test_bit(ETHTOOL_STATS_ETH_MAC, req_info->stat_mask))
-+		ret = stats_put_stats(skb, data, ETHTOOL_STATS_ETH_MAC,
-+				      ETH_SS_STATS_ETH_MAC,
-+				      stats_put_mac_stats);
+@@ -238,6 +267,10 @@ static int stats_fill_reply(struct sk_buff *skb,
+ 		ret = stats_put_stats(skb, data, ETHTOOL_STATS_ETH_MAC,
+ 				      ETH_SS_STATS_ETH_MAC,
+ 				      stats_put_mac_stats);
++	if (!ret && test_bit(ETHTOOL_STATS_ETH_CTRL, req_info->stat_mask))
++		ret = stats_put_stats(skb, data, ETHTOOL_STATS_ETH_CTRL,
++				      ETH_SS_STATS_ETH_CTRL,
++				      stats_put_ctrl_stats);
  
  	return ret;
  }
 diff --git a/net/ethtool/strset.c b/net/ethtool/strset.c
-index 5f3c73587ff4..a8aac7bcfcc9 100644
+index a8aac7bcfcc9..a33c603a7a02 100644
 --- a/net/ethtool/strset.c
 +++ b/net/ethtool/strset.c
-@@ -90,6 +90,11 @@ static const struct strset_info info_template[] = {
- 		.count		= __ETHTOOL_A_STATS_ETH_PHY_CNT,
- 		.strings	= stats_eth_phy_names,
+@@ -95,6 +95,11 @@ static const struct strset_info info_template[] = {
+ 		.count		= __ETHTOOL_A_STATS_ETH_MAC_CNT,
+ 		.strings	= stats_eth_mac_names,
  	},
-+	[ETH_SS_STATS_ETH_MAC] = {
++	[ETH_SS_STATS_ETH_CTRL] = {
 +		.per_dev	= false,
-+		.count		= __ETHTOOL_A_STATS_ETH_MAC_CNT,
-+		.strings	= stats_eth_mac_names,
++		.count		= __ETHTOOL_A_STATS_ETH_CTRL_CNT,
++		.strings	= stats_eth_ctrl_names,
 +	},
  };
  
