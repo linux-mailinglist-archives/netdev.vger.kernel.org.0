@@ -2,93 +2,147 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 000C735F588
-	for <lists+netdev@lfdr.de>; Wed, 14 Apr 2021 16:04:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0439035F5CE
+	for <lists+netdev@lfdr.de>; Wed, 14 Apr 2021 16:14:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349092AbhDNNuD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 14 Apr 2021 09:50:03 -0400
-Received: from bhuna.collabora.co.uk ([46.235.227.227]:45786 "EHLO
-        bhuna.collabora.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351719AbhDNNt3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 14 Apr 2021 09:49:29 -0400
-Received: from [127.0.0.1] (localhost [127.0.0.1])
-        (Authenticated sender: ezequiel)
-        with ESMTPSA id A595E1F423E5
-Message-ID: <07eb0394bb98b8b4085f9febf6bcaad79a272f80.camel@collabora.com>
-Subject: Re: [PATCH net-next 3/3] net: stmmac: Add RK3566/RK3568 SoC support
-From:   Ezequiel Garcia <ezequiel@collabora.com>
-To:     Peter Geis <pgwipeout@gmail.com>
-Cc:     Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        "open list:ARM/Rockchip SoC..." <linux-rockchip@lists.infradead.org>,
-        Jose Abreu <joabreu@synopsys.com>,
-        Heiko Stuebner <heiko@sntech.de>,
+        id S1351720AbhDNOGX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 14 Apr 2021 10:06:23 -0400
+Received: from fllv0016.ext.ti.com ([198.47.19.142]:33044 "EHLO
+        fllv0016.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1347911AbhDNOGS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 14 Apr 2021 10:06:18 -0400
+Received: from lelv0266.itg.ti.com ([10.180.67.225])
+        by fllv0016.ext.ti.com (8.15.2/8.15.2) with ESMTP id 13EE5RAB049687;
+        Wed, 14 Apr 2021 09:05:27 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1618409127;
+        bh=+lMvqu6ah1GaMcYti3LSJHHCNLxGEnObRGR6qXXpcyU=;
+        h=From:To:CC:Subject:Date;
+        b=mtkZvgXip2BqeVdC65NmKtokDPxSP7UGZ/d2HhcImqA5rR5iZwW/AjMShc3SITMXa
+         14QoSY8zDKPV7CXwuiC0ouFzO3zvfvZrrAldtUsw1tC9t58NNtkRJbFFgmxWi/FoBb
+         VXh5pHavqXiVJgwS4L41db5Nsb5FZQyYng4ZWpe8=
+Received: from DFLE109.ent.ti.com (dfle109.ent.ti.com [10.64.6.30])
+        by lelv0266.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 13EE5RUq119347
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Wed, 14 Apr 2021 09:05:27 -0500
+Received: from DFLE101.ent.ti.com (10.64.6.22) by DFLE109.ent.ti.com
+ (10.64.6.30) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2176.2; Wed, 14
+ Apr 2021 09:05:26 -0500
+Received: from fllv0040.itg.ti.com (10.64.41.20) by DFLE101.ent.ti.com
+ (10.64.6.22) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2176.2 via
+ Frontend Transport; Wed, 14 Apr 2021 09:05:26 -0500
+Received: from gsaswath-HP-ProBook-640-G5.dal.design.ti.com (ileax41-snat.itg.ti.com [10.172.224.153])
+        by fllv0040.itg.ti.com (8.15.2/8.15.2) with ESMTP id 13EE5Lu8074247;
+        Wed, 14 Apr 2021 09:05:22 -0500
+From:   Aswath Govindraju <a-govindraju@ti.com>
+CC:     <linux-kernel@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-phy@lists.infradead.org>,
+        Chandrasekar Ramakrishnan <rcsekar@samsung.com>,
+        Wolfgang Grandegger <wg@grandegger.com>,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
         "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        David Wu <david.wu@rock-chips.com>, kernel@collabora.com
-Date:   Wed, 14 Apr 2021 10:48:59 -0300
-In-Reply-To: <CAMdYzYpyD1bTN+3Zaf4nGnN-O-c0u0koiCK45fLucL0T2+69+w@mail.gmail.com>
-References: <CAMdYzYpv0dvz4X2JE4J6Qg-5D9mnkqe5RpiRC845wQpZhDKDPA@mail.gmail.com>
-         <1412-60762b80-423-d9eaa5@27901112>
-         <CAMdYzYpyD1bTN+3Zaf4nGnN-O-c0u0koiCK45fLucL0T2+69+w@mail.gmail.com>
-Organization: Collabora
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.38.2-1 
+        Rob Herring <robh+dt@kernel.org>,
+        Kishon Vijay Abraham I <kishon@ti.com>,
+        Vinod Koul <vkoul@kernel.org>, <linux-can@vger.kernel.org>,
+        <netdev@vger.kernel.org>, Vignesh Raghavendra <vigneshr@ti.com>,
+        Lokesh Vutla <lokeshvutla@ti.com>,
+        Grygorii Strashko <grygorii.strashko@ti.com>,
+        Aswath Govindraju <a-govindraju@ti.com>
+Subject: [PATCH v2 0/6] CAN TRANSCEIVER: Add support for CAN transceivers
+Date:   Wed, 14 Apr 2021 19:35:15 +0530
+Message-ID: <20210414140521.11463-1-a-govindraju@ti.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+To:     unlisted-recipients:; (no To-header on input)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 2021-04-14 at 07:03 -0400, Peter Geis wrote:
-> On Tue, Apr 13, 2021 at 7:37 PM Ezequiel Garcia <ezequiel@collabora.com> wrote:
-> > 
-> > On Tuesday, April 13, 2021 19:51 -03, Peter Geis <pgwipeout@gmail.com> wrote:
-> > 
-> > > On Tue, Apr 13, 2021 at 5:03 PM Ezequiel Garcia <ezequiel@collabora.com> wrote:
-> > > > 
-> > > > From: David Wu <david.wu@rock-chips.com>
-> > > > 
-> > > > Add constants and callback functions for the dwmac present
-> > > > on RK3566 and RK3568 SoCs. As can be seen, the base structure
-> > > > is the same, only registers and the bits in them moved slightly.
-> > > > 
-> > > > RK3568 supports two MACs, and RK3566 support just one.
-> > > 
-> > > Tested this driver on the rk3566-quartz64.
-> > > It fails to fully probe the gmac with the following error:
-> > > [    5.711127] rk_gmac-dwmac fe010000.ethernet: IRQ eth_lpi not found
-> > > [    5.714147] rk_gmac-dwmac fe010000.ethernet: no regulator found
-> > > [    5.714766] rk_gmac-dwmac fe010000.ethernet: clock input or output? (input).
-> > > [    5.715474] rk_gmac-dwmac fe010000.ethernet: TX delay(0x4f).
-> > > [    5.716058] rk_gmac-dwmac fe010000.ethernet: RX delay(0x25).
-> > > [    5.716694] rk_gmac-dwmac fe010000.ethernet: integrated PHY? (no).
-> > > [    5.718413] rk_gmac-dwmac fe010000.ethernet: clock input from PHY
-> > > [    5.724140] rk_gmac-dwmac fe010000.ethernet: init for RGMII
-> > > [    5.726802] rk_gmac-dwmac fe010000.ethernet: Version ID not available
-> > > [    5.727525] rk_gmac-dwmac fe010000.ethernet:         DWMAC1000
-> > > [    5.728064] rk_gmac-dwmac fe010000.ethernet: DMA HW capability
-> > > register supported
-> > > [    5.729026] rk_gmac-dwmac fe010000.ethernet: Normal descriptors
-> > > [    5.729624] rk_gmac-dwmac fe010000.ethernet: Ring mode enabled
-> > > [    5.731123] rk_gmac-dwmac fe010000.ethernet: Unbalanced pm_runtime_enable!
-> > > [    5.873329] libphy: stmmac: probed
-> > > [    5.905599] rk_gmac-dwmac fe010000.ethernet: Cannot register the MDIO bus
-> > > [    5.906335] rk_gmac-dwmac fe010000.ethernet: stmmac_dvr_probe: MDIO
-> > > bus (id: 1) registration failed
-> > > [    5.914338] rk_gmac-dwmac: probe of fe010000.ethernet failed with error -5
-> > > 
-> > > This is due to the lack of setting has_gmac4 = true.
-> > > 
-> > 
-> > You are probably missing a "snps,dwmac-4.20a" in your compatible string, i.e.:
-> >   compatible = "rockchip,rk3566-gmac", "snps,dwmac-4.20a";
-> 
-> Ah yes, I had disabled that because my variant took a different path.
-> Thanks!
-> 
+The following series of patches add support for CAN transceivers.
 
-Is that a Tested-by :-) ?
+TCAN1042 has a standby signal that needs to be pulled high for
+sending/receiving messages[1]. TCAN1043 has a enable signal along with
+standby signal that needs to be pulled up for sending/receiving
+messages[2], and other combinations of the two lines can be used to put the
+transceiver in different states to reduce power consumption. On boards
+like the AM654-idk and J721e-evm these signals are controlled using gpios.
 
-Thanks,
-Ezequiel
+Patch 1 rewords the comment that restricts max_link_rate attribute to have
+units of Mbps.
+
+Patch 2 adds an API for devm_of_phy_optional_get_by_index
+
+Patch 3 models the transceiver as a phy device tree node with properties
+for max bit rate supported, gpio properties for indicating gpio pin numbers
+to which standby and enable signals are connected.
+
+Patch 4 adds a generic driver to support CAN transceivers.
+
+Patches 5 & 6 add support for implementing the transceiver as a phy of
+m_can_platform driver.
+
+changes since v1:
+- Added patch 1 (in v2) that rewords the comment that restrict
+  max_link_rate attribute to have units of Mbps.
+- Added patch 2 (in v2) that adds an API for
+  devm_of_phy_optional_get_by_index
+- Patch 1 (in v1)
+  - updated MAINTAINERS file
+- Patch 2 (in v1)
+  - replaced m_can with CAN to make the driver independent of CAN driver
+  - Added prefix CAN_TRANSCEIVER for EN_PRESENT and STB_PRESENT
+  - Added new line before return statements in power_on() and power_off
+  - Added error handling patch for devm_kzalloc()
+  - used the max_link_rate attribute directly instead of dividing it by
+    1000000
+  - removed the spaces before GPIOD_OUT_LOW in devm_gpiod_get()
+  - Corrected requested value for standby-gpios to GPIOD_OUT_HIGH
+  - Updated MAINTAINERS file
+- Patch 3 (in v1)
+  - replaced minItems with maxItems
+  - Removed phy-names property as there is only one phy
+- Patch 4 (in v1)
+  - replaced dev_warn with dev_info when no transceiver is found
+  - Added struct phy * field in m_can_classdev struct
+  - moved phy_power_on and phy_power_off to m_can_open and m_can_close
+    respectively
+  - Moved the check for max_bit_rate to generice transceiver driver
+
+[1] - https://www.ti.com/lit/ds/symlink/tcan1042h.pdf
+[2] - https://www.ti.com/lit/ds/symlink/tcan1043-q1.pdf
+
+Aswath Govindraju (4):
+  phy: core: Reword the comment specifying the units of max_link_rate to
+    be Mbps
+  phy: Add API for devm_of_phy_optional_get_by_index
+  dt-bindings: phy: Add binding for TI TCAN104x CAN transceivers
+  phy: phy-can-transceiver: Add support for generic CAN transceiver
+    driver
+
+Faiz Abbas (2):
+  dt-bindings: net: can: Document transceiver implementation as phy
+  can: m_can: Add support for transceiver as phy
+
+ .../bindings/net/can/bosch,m_can.yaml         |   3 +
+ .../bindings/phy/ti,tcan104x-can.yaml         |  56 +++++++
+ MAINTAINERS                                   |   2 +
+ drivers/net/can/m_can/m_can.c                 |  18 +++
+ drivers/net/can/m_can/m_can.h                 |   2 +
+ drivers/net/can/m_can/m_can_platform.c        |  15 ++
+ drivers/phy/Kconfig                           |   9 ++
+ drivers/phy/Makefile                          |   1 +
+ drivers/phy/phy-can-transceiver.c             | 146 ++++++++++++++++++
+ drivers/phy/phy-core.c                        |  26 ++++
+ include/linux/phy/phy.h                       |   4 +-
+ 11 files changed, 281 insertions(+), 1 deletion(-)
+ create mode 100644 Documentation/devicetree/bindings/phy/ti,tcan104x-can.yaml
+ create mode 100644 drivers/phy/phy-can-transceiver.c
+
+-- 
+2.17.1
 
