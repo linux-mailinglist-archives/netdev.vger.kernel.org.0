@@ -2,199 +2,178 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D5D8835F5E5
-	for <lists+netdev@lfdr.de>; Wed, 14 Apr 2021 16:14:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 51EF235F601
+	for <lists+netdev@lfdr.de>; Wed, 14 Apr 2021 16:22:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351822AbhDNOGq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 14 Apr 2021 10:06:46 -0400
-Received: from fllv0015.ext.ti.com ([198.47.19.141]:48018 "EHLO
-        fllv0015.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351736AbhDNOGa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 14 Apr 2021 10:06:30 -0400
-Received: from lelv0266.itg.ti.com ([10.180.67.225])
-        by fllv0015.ext.ti.com (8.15.2/8.15.2) with ESMTP id 13EE5uij012092;
-        Wed, 14 Apr 2021 09:05:56 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1618409156;
-        bh=Ka1Qy+cOYe6V8+ih28qlwPxSBVP6axSVpbaQDyyCpW8=;
-        h=From:To:CC:Subject:Date:In-Reply-To:References;
-        b=Ny+VcP1QGW3QORuRtue5oaUxZ/4P4F3GZIbKhsqzvxLUjBT+YqLAKurqJQrn6eTFT
-         yhELoyDWm3JPhyCkqhBpZpZ5jhuN77TlE2epR2WxFCRSu+ZEFMYTjhThYoreEPAwR2
-         Ih1YNgvIseLF6nADGAPGjaBc5/jRDGjgLYR33aFM=
-Received: from DFLE114.ent.ti.com (dfle114.ent.ti.com [10.64.6.35])
-        by lelv0266.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 13EE5tUD119839
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Wed, 14 Apr 2021 09:05:55 -0500
-Received: from DFLE106.ent.ti.com (10.64.6.27) by DFLE114.ent.ti.com
- (10.64.6.35) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2176.2; Wed, 14
- Apr 2021 09:05:55 -0500
-Received: from fllv0040.itg.ti.com (10.64.41.20) by DFLE106.ent.ti.com
- (10.64.6.27) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2176.2 via
- Frontend Transport; Wed, 14 Apr 2021 09:05:55 -0500
-Received: from gsaswath-HP-ProBook-640-G5.dal.design.ti.com (ileax41-snat.itg.ti.com [10.172.224.153])
-        by fllv0040.itg.ti.com (8.15.2/8.15.2) with ESMTP id 13EE5LuE074247;
-        Wed, 14 Apr 2021 09:05:51 -0500
-From:   Aswath Govindraju <a-govindraju@ti.com>
-CC:     <linux-kernel@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-phy@lists.infradead.org>,
-        Chandrasekar Ramakrishnan <rcsekar@samsung.com>,
-        Wolfgang Grandegger <wg@grandegger.com>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Kishon Vijay Abraham I <kishon@ti.com>,
-        Vinod Koul <vkoul@kernel.org>, <linux-can@vger.kernel.org>,
-        <netdev@vger.kernel.org>, Vignesh Raghavendra <vigneshr@ti.com>,
-        Lokesh Vutla <lokeshvutla@ti.com>,
-        Grygorii Strashko <grygorii.strashko@ti.com>,
-        Aswath Govindraju <a-govindraju@ti.com>
-Subject: [PATCH v2 6/6] can: m_can: Add support for transceiver as phy
-Date:   Wed, 14 Apr 2021 19:35:21 +0530
-Message-ID: <20210414140521.11463-7-a-govindraju@ti.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20210414140521.11463-1-a-govindraju@ti.com>
-References: <20210414140521.11463-1-a-govindraju@ti.com>
+        id S1344300AbhDNOPa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 14 Apr 2021 10:15:30 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:26224 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S231158AbhDNOP2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 14 Apr 2021 10:15:28 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1618409706;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=4JOWJDfwxWBSnU6F6WuBZ7JaBtVqAeLmps6k0L0IgMY=;
+        b=GF/QPzK+qMvJyHjnq8FfhNxd74nCV9ODUn7R9z/cg1wkjSFCt0DtgKEYpxrPzHuYPuWmH5
+        Xs1zaBZCVFbbMCtf9NhbHm7Ia3Fb5pUZe34zTKgDVPwXV/Lc0z/cLPBbTGSgbJOP5KdlSq
+        FpjjKAOBI3oX9JqoGqZ25+vEcOhF+Qc=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-501-f5b934_WPZSsjss-1GwwtA-1; Wed, 14 Apr 2021 10:15:02 -0400
+X-MC-Unique: f5b934_WPZSsjss-1GwwtA-1
+Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id D2315107ACE4;
+        Wed, 14 Apr 2021 14:14:59 +0000 (UTC)
+Received: from localhost (ovpn-114-209.ams2.redhat.com [10.36.114.209])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 05A8319C78;
+        Wed, 14 Apr 2021 14:14:58 +0000 (UTC)
+Date:   Wed, 14 Apr 2021 15:14:57 +0100
+From:   Stefan Hajnoczi <stefanha@redhat.com>
+To:     Xie Yongji <xieyongji@bytedance.com>
+Cc:     mst@redhat.com, jasowang@redhat.com, sgarzare@redhat.com,
+        parav@nvidia.com, hch@infradead.org,
+        christian.brauner@canonical.com, rdunlap@infradead.org,
+        willy@infradead.org, viro@zeniv.linux.org.uk, axboe@kernel.dk,
+        bcrl@kvack.org, corbet@lwn.net, mika.penttila@nextfour.com,
+        dan.carpenter@oracle.com,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
+        kvm@vger.kernel.org, linux-fsdevel@vger.kernel.org
+Subject: Re: [PATCH v6 10/10] Documentation: Add documentation for VDUSE
+Message-ID: <YHb44R4HyLEUVSTF@stefanha-x1.localdomain>
+References: <20210331080519.172-1-xieyongji@bytedance.com>
+ <20210331080519.172-11-xieyongji@bytedance.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
-To:     unlisted-recipients:; (no To-header on input)
+Content-Type: multipart/signed; micalg=pgp-sha256;
+        protocol="application/pgp-signature"; boundary="+8CNRb8u7kJfIjoT"
+Content-Disposition: inline
+In-Reply-To: <20210331080519.172-11-xieyongji@bytedance.com>
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Faiz Abbas <faiz_abbas@ti.com>
 
-Add support for implementing transceiver node as phy. The max_bitrate is
-obtained by getting a phy attribute.
+--+8CNRb8u7kJfIjoT
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Signed-off-by: Faiz Abbas <faiz_abbas@ti.com>
-Signed-off-by: Aswath Govindraju <a-govindraju@ti.com>
----
- drivers/net/can/m_can/m_can.c          | 18 ++++++++++++++++++
- drivers/net/can/m_can/m_can.h          |  2 ++
- drivers/net/can/m_can/m_can_platform.c | 15 +++++++++++++++
- 3 files changed, 35 insertions(+)
+On Wed, Mar 31, 2021 at 04:05:19PM +0800, Xie Yongji wrote:
+> VDUSE (vDPA Device in Userspace) is a framework to support
+> implementing software-emulated vDPA devices in userspace. This
+> document is intended to clarify the VDUSE design and usage.
+>=20
+> Signed-off-by: Xie Yongji <xieyongji@bytedance.com>
+> ---
+>  Documentation/userspace-api/index.rst |   1 +
+>  Documentation/userspace-api/vduse.rst | 212 ++++++++++++++++++++++++++++=
+++++++
+>  2 files changed, 213 insertions(+)
+>  create mode 100644 Documentation/userspace-api/vduse.rst
 
-diff --git a/drivers/net/can/m_can/m_can.c b/drivers/net/can/m_can/m_can.c
-index 34073cd077e4..4807a1f69cc7 100644
---- a/drivers/net/can/m_can/m_can.c
-+++ b/drivers/net/can/m_can/m_can.c
-@@ -21,6 +21,7 @@
- #include <linux/iopoll.h>
- #include <linux/can/dev.h>
- #include <linux/pinctrl/consumer.h>
-+#include <linux/phy/phy.h>
- 
- #include "m_can.h"
- 
-@@ -1514,6 +1515,7 @@ static void m_can_stop(struct net_device *dev)
- static int m_can_close(struct net_device *dev)
- {
- 	struct m_can_classdev *cdev = netdev_priv(dev);
-+	int err;
- 
- 	netif_stop_queue(dev);
- 
-@@ -1536,6 +1538,14 @@ static int m_can_close(struct net_device *dev)
- 	close_candev(dev);
- 	can_led_event(dev, CAN_LED_EVENT_STOP);
- 
-+	if (cdev->transceiver) {
-+		err = phy_power_off(cdev->transceiver);
-+		if (err) {
-+			netdev_err(dev, "error powering off phy, err=%d\n", err);
-+			return err;
-+		}
-+	}
-+
- 	return 0;
- }
- 
-@@ -1720,6 +1730,14 @@ static int m_can_open(struct net_device *dev)
- 	struct m_can_classdev *cdev = netdev_priv(dev);
- 	int err;
- 
-+	if (cdev->transceiver) {
-+		err = phy_power_on(cdev->transceiver);
-+		if (err) {
-+			netdev_err(dev, "error powering on phy, err=%d\n", err);
-+			return err;
-+		}
-+	}
-+
- 	err = m_can_clk_start(cdev);
- 	if (err)
- 		return err;
-diff --git a/drivers/net/can/m_can/m_can.h b/drivers/net/can/m_can/m_can.h
-index ace071c3e58c..38cad068abad 100644
---- a/drivers/net/can/m_can/m_can.h
-+++ b/drivers/net/can/m_can/m_can.h
-@@ -28,6 +28,7 @@
- #include <linux/iopoll.h>
- #include <linux/can/dev.h>
- #include <linux/pinctrl/consumer.h>
-+#include <linux/phy/phy.h>
- 
- /* m_can lec values */
- enum m_can_lec_type {
-@@ -82,6 +83,7 @@ struct m_can_classdev {
- 	struct workqueue_struct *tx_wq;
- 	struct work_struct tx_work;
- 	struct sk_buff *tx_skb;
-+	struct phy *transceiver;
- 
- 	struct can_bittiming_const *bit_timing;
- 	struct can_bittiming_const *data_timing;
-diff --git a/drivers/net/can/m_can/m_can_platform.c b/drivers/net/can/m_can/m_can_platform.c
-index 599de0e08cd7..566ba25fb186 100644
---- a/drivers/net/can/m_can/m_can_platform.c
-+++ b/drivers/net/can/m_can/m_can_platform.c
-@@ -6,6 +6,7 @@
- // Copyright (C) 2018-19 Texas Instruments Incorporated - http://www.ti.com/
- 
- #include <linux/platform_device.h>
-+#include <linux/phy/phy.h>
- 
- #include "m_can.h"
- 
-@@ -67,6 +68,7 @@ static int m_can_plat_probe(struct platform_device *pdev)
- 	struct resource *res;
- 	void __iomem *addr;
- 	void __iomem *mram_addr;
-+	struct phy *transceiver;
- 	int irq, ret = 0;
- 
- 	mcan_class = m_can_class_allocate_dev(&pdev->dev,
-@@ -101,6 +103,18 @@ static int m_can_plat_probe(struct platform_device *pdev)
- 		goto probe_fail;
- 	}
- 
-+	transceiver = devm_of_phy_optional_get_by_index(&pdev->dev, pdev->dev.of_node, 0);
-+	if (IS_ERR(transceiver)) {
-+		ret = PTR_ERR(transceiver);
-+		dev_err(&pdev->dev, "error while getting phy, err=%d\n", ret);
-+		return ret;
-+	}
-+
-+	if (!transceiver)
-+		dev_info(&pdev->dev, "No transceiver phy found\n");
-+	else
-+		priv->cdev.can.bitrate_max = transceiver->attrs.max_link_rate;
-+
- 	priv->base = addr;
- 	priv->mram_base = mram_addr;
- 
-@@ -108,6 +122,7 @@ static int m_can_plat_probe(struct platform_device *pdev)
- 	mcan_class->pm_clock_support = 1;
- 	mcan_class->can.clock.freq = clk_get_rate(mcan_class->cclk);
- 	mcan_class->dev = &pdev->dev;
-+	mcan_class->transceiver = transceiver;
- 
- 	mcan_class->ops = &m_can_plat_ops;
- 
--- 
-2.17.1
+Just looking over the documentation briefly (I haven't studied the code
+yet)...
+
+> +How VDUSE works
+> +------------
+> +Each userspace vDPA device is created by the VDUSE_CREATE_DEV ioctl on
+> +the character device (/dev/vduse/control). Then a device file with the
+> +specified name (/dev/vduse/$NAME) will appear, which can be used to
+> +implement the userspace vDPA device's control path and data path.
+
+These steps are taken after sending the VDPA_CMD_DEV_NEW netlink
+message? (Please consider reordering the documentation to make it clear
+what the sequence of steps are.)
+
+> +	static int netlink_add_vduse(const char *name, int device_id)
+> +	{
+> +		struct nl_sock *nlsock;
+> +		struct nl_msg *msg;
+> +		int famid;
+> +
+> +		nlsock =3D nl_socket_alloc();
+> +		if (!nlsock)
+> +			return -ENOMEM;
+> +
+> +		if (genl_connect(nlsock))
+> +			goto free_sock;
+> +
+> +		famid =3D genl_ctrl_resolve(nlsock, VDPA_GENL_NAME);
+> +		if (famid < 0)
+> +			goto close_sock;
+> +
+> +		msg =3D nlmsg_alloc();
+> +		if (!msg)
+> +			goto close_sock;
+> +
+> +		if (!genlmsg_put(msg, NL_AUTO_PORT, NL_AUTO_SEQ, famid, 0, 0,
+> +		    VDPA_CMD_DEV_NEW, 0))
+> +			goto nla_put_failure;
+> +
+> +		NLA_PUT_STRING(msg, VDPA_ATTR_DEV_NAME, name);
+> +		NLA_PUT_STRING(msg, VDPA_ATTR_MGMTDEV_DEV_NAME, "vduse");
+> +		NLA_PUT_U32(msg, VDPA_ATTR_DEV_ID, device_id);
+
+What are the permission/capability requirements for VDUSE?
+
+How does VDUSE interact with namespaces?
+
+What is the meaning of VDPA_ATTR_DEV_ID? I don't see it in Linux
+v5.12-rc6 drivers/vdpa/vdpa.c:vdpa_nl_cmd_dev_add_set_doit().
+
+> +MMU-based IOMMU Driver
+> +----------------------
+> +VDUSE framework implements an MMU-based on-chip IOMMU driver to support
+> +mapping the kernel DMA buffer into the userspace iova region dynamically.
+> +This is mainly designed for virtio-vdpa case (kernel virtio drivers).
+> +
+> +The basic idea behind this driver is treating MMU (VA->PA) as IOMMU (IOV=
+A->PA).
+> +The driver will set up MMU mapping instead of IOMMU mapping for the DMA =
+transfer
+> +so that the userspace process is able to use its virtual address to acce=
+ss
+> +the DMA buffer in kernel.
+> +
+> +And to avoid security issue, a bounce-buffering mechanism is introduced =
+to
+> +prevent userspace accessing the original buffer directly which may conta=
+in other
+> +kernel data. During the mapping, unmapping, the driver will copy the dat=
+a from
+> +the original buffer to the bounce buffer and back, depending on the dire=
+ction of
+> +the transfer. And the bounce-buffer addresses will be mapped into the us=
+er address
+> +space instead of the original one.
+
+Is mmap(2) the right interface if memory is not actually shared, why not
+just use pread(2)/pwrite(2) to make the copy explicit? That way the copy
+semantics are clear. For example, don't expect to be able to busy wait
+on the memory because changes will not be visible to the other side.
+
+(I guess I'm missing something here and that mmap(2) is the right
+approach, but maybe this documentation section can be clarified.)
+
+--+8CNRb8u7kJfIjoT
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEEhpWov9P5fNqsNXdanKSrs4Grc8gFAmB2+OEACgkQnKSrs4Gr
+c8jpugf+NHnGf6o2QvHFiSjjcoe0QPBmiySO4mz+2/oqmyL0YElWKcuyJJ16uxOx
+p1SCMSYhoSE4EVZ1zWXMy18X6Lc3WjfU5s4dyo1dy4qrumXxGDj8Q93Togh8UL1Q
+URNKuVbUBZp8anAt5KUXQt+fW/kw6luipS8XDrpszHN1mGVPrs8o0oORCwcD/8u9
+95gfUL+acvkfocg6F//QpNUi1/BE7F6iTTRJhZ0UG0GHaVeJ/U0D7z0NrnaZLpgP
+VPBvWxdqfOwiX3ABCVHIS18tafCmkLfadpmH0dxwZgVIC/hmE0gs96/7tDhQqZLg
+1RAejoIQX/MqVpzh3XGHjGqnDW8e6w==
+=hqt0
+-----END PGP SIGNATURE-----
+
+--+8CNRb8u7kJfIjoT--
 
