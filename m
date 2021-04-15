@@ -2,150 +2,174 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 79F4A360289
-	for <lists+netdev@lfdr.de>; Thu, 15 Apr 2021 08:39:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id ADE4936028E
+	for <lists+netdev@lfdr.de>; Thu, 15 Apr 2021 08:41:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230118AbhDOGjm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 15 Apr 2021 02:39:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47584 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229793AbhDOGjl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 15 Apr 2021 02:39:41 -0400
-Received: from mail-pg1-x534.google.com (mail-pg1-x534.google.com [IPv6:2607:f8b0:4864:20::534])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 76644C061574
-        for <netdev@vger.kernel.org>; Wed, 14 Apr 2021 23:39:19 -0700 (PDT)
-Received: by mail-pg1-x534.google.com with SMTP id y32so16208778pga.11
-        for <netdev@vger.kernel.org>; Wed, 14 Apr 2021 23:39:19 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=ZaNczCNj/whqV92/YbB7eSVD6u1kYqbD4pRy+8DQAv4=;
-        b=Fzei49EGpMXZInk1RGlpJ38fsIDagIJhHKI0NpneXhjdmsmJlY9vQm4x7VBPuPpFHI
-         GdhaGlePAasowt5aZs+pbiJWlMNWmStAGxDlPhl+Wi3SRoKjNWXHuCNPg270jYowO06r
-         ejToP8D0vVzSJ0C70j8A6vqIbdCFWPDzt/OHjQocpPyP3IddaQFgrpiI09s63220+oWS
-         SK6MFIBAAKBFQk73gf7IRC4is6/H8NsooD1Fc5Xm4MUTIESOCgwO2519U0yjmRh721VO
-         p9yebOdb7L93LccGYovA1fxHhugss+AZYV2WrfsRhB1X7KuB5xdLwuVu63x4jqguvSJK
-         x0fQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=ZaNczCNj/whqV92/YbB7eSVD6u1kYqbD4pRy+8DQAv4=;
-        b=IabczETi41TejsKkWOjQDu1wUwqzzwltliyw1XASOsLWA2JyZAeMcB4HVPVg10BylS
-         7zpzDFY+dISfuf1O9ogvqLTlfVWkkyiuhfKT5mjPQBgTkGJ2jHAT0HIC8HgsvLtLVgWC
-         rayonGFDqsFBb+s6HI09ptZT2SCoQqGXpiai99xb7CuAeLxDigwLchZC4GuNHLbqrfYQ
-         A8RZ4ju8rT1GrDvgRE2BmLEl0WLT7SjcWBhj5VNCDE/j+y+prLTghKVsE6hV87b+Fmmi
-         DCQs8lKqQ2/86fGG5nS7RgwnecbZES1gbSvLEPslKNhSBsznERl+lautBwUv5FeMFq40
-         TlGw==
-X-Gm-Message-State: AOAM532BaYhqacyxYLotceWOlqp2J9bzET7Qbl6gNuYUxtjf7KVi4VN5
-        sLpbP9MNXqzZGNH+Doj6n+0=
-X-Google-Smtp-Source: ABdhPJzlhrwsPyPbG9Wq4W1IL9dD4TZ9oSHBJyOjLhur8ywqOFCPsCqS8NoNhlmORXLTjbuiOhiMkg==
-X-Received: by 2002:a65:5bc4:: with SMTP id o4mr2089917pgr.137.1618468759001;
-        Wed, 14 Apr 2021 23:39:19 -0700 (PDT)
-Received: from nuc.wg.ducheng.me ([202.133.196.154])
-        by smtp.gmail.com with ESMTPSA id x30sm1330359pgl.39.2021.04.14.23.39.16
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 14 Apr 2021 23:39:18 -0700 (PDT)
-From:   Du Cheng <ducheng2@gmail.com>
-To:     Jamal Hadi Salim <jhs@mojatatu.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Jiri Pirko <jiri@resnulli.us>
-Cc:     netdev@vger.kernel.org, Shuah Khan <skhan@linuxfoundation.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Du Cheng <ducheng2@gmail.com>,
-        syzbot+d50710fd0873a9c6b40c@syzkaller.appspotmail.com
-Subject: [PATCH] net: sched: tapr: remove WARN_ON() in taprio_get_start_time()
-Date:   Thu, 15 Apr 2021 14:39:14 +0800
-Message-Id: <20210415063914.66144-1-ducheng2@gmail.com>
-X-Mailer: git-send-email 2.30.2
+        id S230124AbhDOGmL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 15 Apr 2021 02:42:11 -0400
+Received: from mga05.intel.com ([192.55.52.43]:58572 "EHLO mga05.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S230372AbhDOGmK (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 15 Apr 2021 02:42:10 -0400
+IronPort-SDR: +1gAy2uETl2Mlq/KykZbbXIGDf4RtQIUXTAJym8/leXKnLmobPA9OdydulMSbRd9slpr/7VJc1
+ NIh3QXyqy1DQ==
+X-IronPort-AV: E=McAfee;i="6200,9189,9954"; a="280110684"
+X-IronPort-AV: E=Sophos;i="5.82,223,1613462400"; 
+   d="scan'208";a="280110684"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Apr 2021 23:41:45 -0700
+IronPort-SDR: NmglVgA4Adr2QDeg3s4xO+XgQmaUvm1Hw97Vg3b5rW2Gfc7EWPrje5ylCe4jjs43IrZV3lOYMU
+ D+87RHKml5WA==
+X-IronPort-AV: E=Sophos;i="5.82,223,1613462400"; 
+   d="scan'208";a="418635470"
+Received: from lingshan-mobl5.ccr.corp.intel.com (HELO [10.254.209.173]) ([10.254.209.173])
+  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Apr 2021 23:41:43 -0700
+Subject: Re: [PATCH 2/3] vDPA/ifcvf: enable Intel C5000X-PL virtio-block for
+ vDPA
+To:     Jason Wang <jasowang@redhat.com>,
+        Zhu Lingshan <lingshan.zhu@intel.com>, mst@redhat.com,
+        lulu@redhat.com, leonro@nvidia.com
+Cc:     virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
+        kvm@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20210414091832.5132-1-lingshan.zhu@intel.com>
+ <20210414091832.5132-3-lingshan.zhu@intel.com>
+ <54839b05-78d2-8edf-317c-372f0ecda024@redhat.com>
+ <1a1f9f50-dc92-ced3-759d-e600abca3138@linux.intel.com>
+ <c90a923f-7c8d-9a32-ce14-2370f85f1ba4@redhat.com>
+From:   Zhu Lingshan <lingshan.zhu@linux.intel.com>
+Message-ID: <10700088-3358-739b-5770-612ab761598c@linux.intel.com>
+Date:   Thu, 15 Apr 2021 14:41:41 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.9.0
 MIME-Version: 1.0
+In-Reply-To: <c90a923f-7c8d-9a32-ce14-2370f85f1ba4@redhat.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: 8bit
+Content-Language: en-US
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-There is a reproducible sequence from the userland that will trigger a WARN_ON()
-condition in taprio_get_start_time, which causes kernel to panic if configured
-as "panic_on_warn". Remove this WARN_ON() to prevent kernel from crashing by
-userland-initiated syscalls.
 
-Reported as bug on syzkaller:
-https://syzkaller.appspot.com/bug?extid=d50710fd0873a9c6b40c
 
-Reported-by: syzbot+d50710fd0873a9c6b40c@syzkaller.appspotmail.com
-Signed-off-by: Du Cheng <ducheng2@gmail.com>
----
-Detailed explanation:
+On 4/15/2021 2:31 PM, Jason Wang wrote:
+>
+> 在 2021/4/15 下午1:55, Zhu Lingshan 写道:
+>>
+>>
+>> On 4/15/2021 11:34 AM, Jason Wang wrote:
+>>>
+>>> 在 2021/4/14 下午5:18, Zhu Lingshan 写道:
+>>>> This commit enabled Intel FPGA SmartNIC C5000X-PL virtio-block
+>>>> for vDPA.
+>>>>
+>>>> Signed-off-by: Zhu Lingshan <lingshan.zhu@intel.com>
+>>>> ---
+>>>>   drivers/vdpa/ifcvf/ifcvf_base.h | 17 ++++++++++++++++-
+>>>>   drivers/vdpa/ifcvf/ifcvf_main.c | 10 +++++++++-
+>>>>   2 files changed, 25 insertions(+), 2 deletions(-)
+>>>>
+>>>> diff --git a/drivers/vdpa/ifcvf/ifcvf_base.h 
+>>>> b/drivers/vdpa/ifcvf/ifcvf_base.h
+>>>> index 1c04cd256fa7..8b403522bf06 100644
+>>>> --- a/drivers/vdpa/ifcvf/ifcvf_base.h
+>>>> +++ b/drivers/vdpa/ifcvf/ifcvf_base.h
+>>>> @@ -15,6 +15,7 @@
+>>>>   #include <linux/pci_regs.h>
+>>>>   #include <linux/vdpa.h>
+>>>>   #include <uapi/linux/virtio_net.h>
+>>>> +#include <uapi/linux/virtio_blk.h>
+>>>>   #include <uapi/linux/virtio_config.h>
+>>>>   #include <uapi/linux/virtio_pci.h>
+>>>>   @@ -28,7 +29,12 @@
+>>>>   #define C5000X_PL_SUBSYS_VENDOR_ID    0x8086
+>>>>   #define C5000X_PL_SUBSYS_DEVICE_ID    0x0001
+>>>>   -#define IFCVF_SUPPORTED_FEATURES \
+>>>> +#define C5000X_PL_BLK_VENDOR_ID        0x1AF4
+>>>> +#define C5000X_PL_BLK_DEVICE_ID        0x1001
+>>>> +#define C5000X_PL_BLK_SUBSYS_VENDOR_ID    0x8086
+>>>> +#define C5000X_PL_BLK_SUBSYS_DEVICE_ID    0x0002
+>>>> +
+>>>> +#define IFCVF_NET_SUPPORTED_FEATURES \
+>>>>           ((1ULL << VIRTIO_NET_F_MAC)            | \
+>>>>            (1ULL << VIRTIO_F_ANY_LAYOUT) | \
+>>>>            (1ULL << VIRTIO_F_VERSION_1)            | \
+>>>> @@ -37,6 +43,15 @@
+>>>>            (1ULL << VIRTIO_F_ACCESS_PLATFORM) | \
+>>>>            (1ULL << VIRTIO_NET_F_MRG_RXBUF))
+>>>>   +#define IFCVF_BLK_SUPPORTED_FEATURES \
+>>>> +        ((1ULL << VIRTIO_BLK_F_SIZE_MAX)        | \
+>>>> +         (1ULL << VIRTIO_BLK_F_SEG_MAX) | \
+>>>> +         (1ULL << VIRTIO_BLK_F_BLK_SIZE)        | \
+>>>> +         (1ULL << VIRTIO_BLK_F_TOPOLOGY)        | \
+>>>> +         (1ULL << VIRTIO_BLK_F_MQ)            | \
+>>>> +         (1ULL << VIRTIO_F_VERSION_1)            | \
+>>>> +         (1ULL << VIRTIO_F_ACCESS_PLATFORM))
+>>>
+>>>
+>>> I think we've discussed this sometime in the past but what's the 
+>>> reason for such whitelist consider there's already a get_features() 
+>>> implemention?
+>>>
+>>> E.g Any reason to block VIRTIO_BLK_F_WRITE_ZEROS or 
+>>> VIRTIO_F_RING_PACKED?
+>>>
+>>> Thanks
+>> The reason is some feature bits are supported in the device but not 
+>> supported by the driver, e.g, for virtio-net, mq & cq implementation 
+>> is not ready in the driver.
+>
+>
+> I understand the case of virtio-net but I wonder why we need this for 
+> block where we don't vq cvq.
+>
+> Thanks
+This is still a subset of the feature bits read from hardware, I leave 
+it here to code consistently, and indicate what we support clearly.
+Are you suggesting remove this feature bits list and just use what we 
+read from hardware?
 
-In net/sched/sched_taprio.c:999
-The condition WARN_ON(!cycle) will be triggered if cycle == 0. Value of cycle
-comes from sched->cycle_time, where sched is of type(struct sched_gate_list*).
-
-sched->cycle_time is accumulated within `parse_taprio_schedule()` during
-`taprio_init()`, in the following 2 ways:
-
-1. from nla_get_s64(tb[TCA_TAPRIO_ATTR_SCHED_CYCLE_TIME]);
-2. (if zero) from parse_sched_list(..., tb[TCA_TAPRIO_ATTR_SCHED_ENTRY_LIST], ...);
-
-note: tb is a map parsed from netlink attributes provided via sendmsg() from the userland:
-
-If both two attributes (TCA_TAPRIO_ATTR_SCHED_CYCLE_TIME,
-TCA_TAPRIO_ATTR_SCHED_ENTRY_LIST) contain 0 values or are missing, this will result
-in sched->cycle_time == 0 and hence trigger the WARN_ON(!cycle).
-
-Reliable reproducable steps:
-1. add net device team0 
-2. add team_slave_0, team_slave_1
-3. sendmsg(struct msghdr {
-	.iov = struct nlmsghdr {
-		.type = RTM_NEWQDISC,
-	}
-	struct tcmsg {
-		.tcm_ifindex = ioctl(SIOCGIFINDEX, "team0"),
-		.nlattr[] = {
-			TCA_KIND: "taprio",
-			TCA_OPTIONS: {
-				.nlattr = {
-					TCA_TAPRIO_ATTR_PRIOMAP: ...,
-					TCA_TAPRIO_ATTR_SCHED_ENTRY_LIST: {0},
-					TCA_TAPRIO_ATTR_SCHED_CLICKID: 0,
-				}
-			}
-		}
-	}
-}
-
-Callstack:
-
-parse_taprio_schedule()
-taprio_change()
-taprio_init()
-qdisc_create()
-tc_modify_qdisc()
-rtnetlink_rcv_msg()
-...
-sendmsg()
-
-These steps are extracted from syzkaller reproducer:
-https://syzkaller.appspot.com/text?tag=ReproC&x=15727cf1900000
-
- net/sched/sch_taprio.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/net/sched/sch_taprio.c b/net/sched/sch_taprio.c
-index 8287894541e3..5f2ff0f15d5c 100644
---- a/net/sched/sch_taprio.c
-+++ b/net/sched/sch_taprio.c
-@@ -996,7 +996,7 @@ static int taprio_get_start_time(struct Qdisc *sch,
- 	 * something went really wrong. In that case, we should warn about this
- 	 * inconsistent state and return error.
- 	 */
--	if (WARN_ON(!cycle))
-+	if (!cycle) {
- 		return -EFAULT;
- 
- 	/* Schedule the start time for the beginning of the next
--- 
-2.30.2
+Thansk
+>
+>
+>>
+>> Thanks!
+>>
+>>>
+>>>
+>>>> +
+>>>>   /* Only one queue pair for now. */
+>>>>   #define IFCVF_MAX_QUEUE_PAIRS    1
+>>>>   diff --git a/drivers/vdpa/ifcvf/ifcvf_main.c 
+>>>> b/drivers/vdpa/ifcvf/ifcvf_main.c
+>>>> index 99b0a6b4c227..9b6a38b798fa 100644
+>>>> --- a/drivers/vdpa/ifcvf/ifcvf_main.c
+>>>> +++ b/drivers/vdpa/ifcvf/ifcvf_main.c
+>>>> @@ -171,7 +171,11 @@ static u64 ifcvf_vdpa_get_features(struct 
+>>>> vdpa_device *vdpa_dev)
+>>>>       struct ifcvf_hw *vf = vdpa_to_vf(vdpa_dev);
+>>>>       u64 features;
+>>>>   -    features = ifcvf_get_features(vf) & IFCVF_SUPPORTED_FEATURES;
+>>>> +    if (vf->dev_type == VIRTIO_ID_NET)
+>>>> +        features = ifcvf_get_features(vf) & 
+>>>> IFCVF_NET_SUPPORTED_FEATURES;
+>>>> +
+>>>> +    if (vf->dev_type == VIRTIO_ID_BLOCK)
+>>>> +        features = ifcvf_get_features(vf) & 
+>>>> IFCVF_BLK_SUPPORTED_FEATURES;
+>>>>         return features;
+>>>>   }
+>>>> @@ -509,6 +513,10 @@ static struct pci_device_id ifcvf_pci_ids[] = {
+>>>>                C5000X_PL_DEVICE_ID,
+>>>>                C5000X_PL_SUBSYS_VENDOR_ID,
+>>>>                C5000X_PL_SUBSYS_DEVICE_ID) },
+>>>> +    { PCI_DEVICE_SUB(C5000X_PL_BLK_VENDOR_ID,
+>>>> +             C5000X_PL_BLK_DEVICE_ID,
+>>>> +             C5000X_PL_BLK_SUBSYS_VENDOR_ID,
+>>>> +             C5000X_PL_BLK_SUBSYS_DEVICE_ID) },
+>>>>         { 0 },
+>>>>   };
+>>>
+>>
+>
 
