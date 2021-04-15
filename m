@@ -2,129 +2,146 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2FF6B35FFF6
-	for <lists+netdev@lfdr.de>; Thu, 15 Apr 2021 04:25:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 01648360011
+	for <lists+netdev@lfdr.de>; Thu, 15 Apr 2021 04:38:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229761AbhDOCYG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 14 Apr 2021 22:24:06 -0400
-Received: from szxga01-in.huawei.com ([45.249.212.187]:3084 "EHLO
-        szxga01-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229646AbhDOCYA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 14 Apr 2021 22:24:00 -0400
-Received: from dggeml406-hub.china.huawei.com (unknown [172.30.72.55])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4FLNMx1xT8zWRqF;
-        Thu, 15 Apr 2021 10:19:57 +0800 (CST)
-Received: from dggpemm500005.china.huawei.com (7.185.36.74) by
- dggeml406-hub.china.huawei.com (10.3.17.50) with Microsoft SMTP Server (TLS)
- id 14.3.498.0; Thu, 15 Apr 2021 10:23:17 +0800
-Received: from [127.0.0.1] (10.69.30.204) by dggpemm500005.china.huawei.com
- (7.185.36.74) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id 15.1.2106.2; Thu, 15 Apr
- 2021 10:23:18 +0800
-Subject: Re: [PATCH net-next] skbuff: revert "skbuff: remove some unnecessary
- operation in skb_segment_list()"
-To:     Paolo Abeni <pabeni@redhat.com>, <netdev@vger.kernel.org>
-CC:     Dongseok Yi <dseok.yi@samsung.com>,
-        Willem de Bruijn <willemb@google.com>
-References: <f092ecf89336221af04310c9feac800e49d4647f.1618397249.git.pabeni@redhat.com>
-From:   Yunsheng Lin <linyunsheng@huawei.com>
-Message-ID: <cfb7af92-5a0b-059f-f598-be2c95f5419a@huawei.com>
-Date:   Thu, 15 Apr 2021 10:23:17 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:52.0) Gecko/20100101
- Thunderbird/52.2.0
+        id S229729AbhDOCiX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 14 Apr 2021 22:38:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51746 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229523AbhDOCiX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 14 Apr 2021 22:38:23 -0400
+Received: from mail-pj1-x1030.google.com (mail-pj1-x1030.google.com [IPv6:2607:f8b0:4864:20::1030])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB94DC061574;
+        Wed, 14 Apr 2021 19:37:59 -0700 (PDT)
+Received: by mail-pj1-x1030.google.com with SMTP id il9-20020a17090b1649b0290114bcb0d6c2so13567195pjb.0;
+        Wed, 14 Apr 2021 19:37:59 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=SSKwWRHR5H0FFn4v5/H3xZJiJ4EvNjSHVt8IY/5zaIw=;
+        b=Fg3bwYLpkxL+d+JoOkNVBa+CU9urcAPamvWJoOqB9MM25yoUftEGMfSZ0RDy3Xplr8
+         J6jcbwhc5urTtA55oRgFTM1VqTL45DqKpCltAW3vnGeBSsZuQL9IGm/Ytn9dzIh/ys+U
+         zMFeYkOn8CGvf59IUvovrs/LH032u2kulcjNhd4/3im+Nrm+c0WOl4pqD/cp1Z/S1BU0
+         PFfu8lO0somBwn265LR+nhIqTi8GNzZ2eAGVb8OPxKb31xcS5wtfWBRddfTsvFdcuXMW
+         SXMUmqQMfGIoH3Awqm7EScU1u5heIqW4lUDYIaeGLon3O5W1CrYfSDHLd6tr4NXxFr6u
+         zqtA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=SSKwWRHR5H0FFn4v5/H3xZJiJ4EvNjSHVt8IY/5zaIw=;
+        b=UFSSd8yhkcj5RXl/3KajV3dnQphjKkF/wTRRvGhZ4Xo620gIYS6oUgatiCDODu8HOb
+         diPw2Hl/jLD7ELcDsvIFSBicyQU3nceMjnumYw4QKrmMj+xHl9BHPGAwF8XptyPbR9Ot
+         9ooX1NwqT6sGzoLToEypzyNcgPvIgcXMKkJPQp29U5+8wcUwbOaosJe9pN2kxrCeGdxB
+         pTrqNQn+6T4tvDxg2vhvqBKT0+kw2m1GLE4INHiRSh18QIlaCgVWirvAaY6FuIrnW0D3
+         5XqpRVqxidaqo2Z0JW0hyVe5WcunhIoyqANexTU51Ck/xIv3bW6mjqy6rF71/VGvgLPD
+         L4Jw==
+X-Gm-Message-State: AOAM5302DWHg5fQ4few4sZNDSh45EpXZLotmTxfQ3DVCipin4DmaLIqI
+        pfMNsOQOQFSQdmC1NhUKHRQ=
+X-Google-Smtp-Source: ABdhPJx/0L9qwQe/38cfWmvuCvHWbw0IFv+oNW54O3S1jIK0gvDPELMjw9L85O7kFI2CWEUZ59N9AA==
+X-Received: by 2002:a17:90a:5407:: with SMTP id z7mr1324949pjh.228.1618454279498;
+        Wed, 14 Apr 2021 19:37:59 -0700 (PDT)
+Received: from Leo-laptop-t470s ([209.132.188.80])
+        by smtp.gmail.com with ESMTPSA id o4sm598253pfk.15.2021.04.14.19.37.54
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 14 Apr 2021 19:37:59 -0700 (PDT)
+Date:   Thu, 15 Apr 2021 10:37:46 +0800
+From:   Hangbin Liu <liuhangbin@gmail.com>
+To:     Martin KaFai Lau <kafai@fb.com>
+Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org,
+        Toke =?iso-8859-1?Q?H=F8iland-J=F8rgensen?= <toke@redhat.com>,
+        Jiri Benc <jbenc@redhat.com>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        Eelco Chaudron <echaudro@redhat.com>, ast@kernel.org,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Lorenzo Bianconi <lorenzo.bianconi@redhat.com>,
+        David Ahern <dsahern@gmail.com>,
+        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
+        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
+        =?iso-8859-1?Q?Bj=F6rn_T=F6pel?= <bjorn.topel@gmail.com>
+Subject: Re: [PATCHv7 bpf-next 1/4] bpf: run devmap xdp_prog on flush instead
+ of bulk enqueue
+Message-ID: <20210415023746.GR2900@Leo-laptop-t470s>
+References: <20210414122610.4037085-1-liuhangbin@gmail.com>
+ <20210414122610.4037085-2-liuhangbin@gmail.com>
+ <20210415001711.dpbt2lej75ry6v7a@kafai-mbp.dhcp.thefacebook.com>
 MIME-Version: 1.0
-In-Reply-To: <f092ecf89336221af04310c9feac800e49d4647f.1618397249.git.pabeni@redhat.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.69.30.204]
-X-ClientProxiedBy: dggeme702-chm.china.huawei.com (10.1.199.98) To
- dggpemm500005.china.huawei.com (7.185.36.74)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210415001711.dpbt2lej75ry6v7a@kafai-mbp.dhcp.thefacebook.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2021/4/14 18:48, Paolo Abeni wrote:
-> the commit 1ddc3229ad3c ("skbuff: remove some unnecessary operation
-> in skb_segment_list()") introduces an issue very similar to the
-> one already fixed by commit 53475c5dd856 ("net: fix use-after-free when
-> UDP GRO with shared fraglist").
+On Wed, Apr 14, 2021 at 05:17:11PM -0700, Martin KaFai Lau wrote:
+> >  static void bq_xmit_all(struct xdp_dev_bulk_queue *bq, u32 flags)
+> >  {
+> >  	struct net_device *dev = bq->dev;
+> > -	int sent = 0, err = 0;
+> > +	int sent = 0, drops = 0, err = 0;
+> > +	unsigned int cnt = bq->count;
+> > +	int to_send = cnt;
+> >  	int i;
+> >  
+> > -	if (unlikely(!bq->count))
+> > +	if (unlikely(!cnt))
+> >  		return;
+> >  
+> > -	for (i = 0; i < bq->count; i++) {
+> > +	for (i = 0; i < cnt; i++) {
+> >  		struct xdp_frame *xdpf = bq->q[i];
+> >  
+> >  		prefetch(xdpf);
+> >  	}
+> >  
+> > -	sent = dev->netdev_ops->ndo_xdp_xmit(dev, bq->count, bq->q, flags);
+> > +	if (bq->xdp_prog) {
+> bq->xdp_prog is used here
 > 
-> If the GSO skb goes though skb_clone() and pskb_expand_head() before
-> entering skb_segment_list(), the latter  will unshare the frag_list
-> skbs and will release the old list. With the reverted commit in place,
-> when skb_segment_list() completes, skb->next points to the just
-> released list, and later on the kernel will hit UaF.
+> > +		to_send = dev_map_bpf_prog_run(bq->xdp_prog, bq->q, cnt, dev);
+> > +		if (!to_send)
+> > +			goto out;
+> > +
+> > +		drops = cnt - to_send;
+> > +	}
+> > +
+> 
+> [ ... ]
+> 
+> >  static void bq_enqueue(struct net_device *dev, struct xdp_frame *xdpf,
+> > -		       struct net_device *dev_rx)
+> > +		       struct net_device *dev_rx, struct bpf_prog *xdp_prog)
+> >  {
+> >  	struct list_head *flush_list = this_cpu_ptr(&dev_flush_list);
+> >  	struct xdp_dev_bulk_queue *bq = this_cpu_ptr(dev->xdp_bulkq);
+> > @@ -412,18 +466,22 @@ static void bq_enqueue(struct net_device *dev, struct xdp_frame *xdpf,
+> >  	/* Ingress dev_rx will be the same for all xdp_frame's in
+> >  	 * bulk_queue, because bq stored per-CPU and must be flushed
+> >  	 * from net_device drivers NAPI func end.
+> > +	 *
+> > +	 * Do the same with xdp_prog and flush_list since these fields
+> > +	 * are only ever modified together.
+> >  	 */
+> > -	if (!bq->dev_rx)
+> > +	if (!bq->dev_rx) {
+> >  		bq->dev_rx = dev_rx;
+> > +		bq->xdp_prog = xdp_prog;
+> bp->xdp_prog is assigned here and could be used later in bq_xmit_all().
+> How is bq->xdp_prog protected? Are they all under one rcu_read_lock()?
+> It is not very obvious after taking a quick look at xdp_do_flush[_map].
+> 
+> e.g. what if the devmap elem gets deleted.
 
-In that case, is "nskb->next = list_skb" needed before jumpping to
-error when __skb_linearize() fails? As there is "nskb->next = list_skb"
-before jumpping to error handling when skb_clone() fails.
+Jesper knows better than me. From my veiw, based on the description of
+__dev_flush():
 
-The inconsistency above is the reason I sent the reverted patch:)
+On devmap tear down we ensure the flush list is empty before completing to
+ensure all flush operations have completed. When drivers update the bpf
+program they may need to ensure any flush ops are also complete.
 
-> 
-> Note that since commit e0e3070a9bc9 ("udp: properly complete L4 GRO
-> over UDP tunnel packet") the critical scenario can be reproduced also
-> receiving UDP over vxlan traffic with:
-> 
-> NIC (NETIF_F_GRO_FRAGLIST enabled) -> vxlan -> UDP sink
-> 
-> Attaching a packet socket to the NIC will cause skb_clone() and the
-> tunnel decapsulation will call pskb_expand_head().
-> 
-> Fixes: 1ddc3229ad3c ("skbuff: remove some unnecessary operation in skb_segment_list()")
-> Signed-off-by: Paolo Abeni <pabeni@redhat.com>
-> ---
->  net/core/skbuff.c | 15 ++++++++++++---
->  1 file changed, 12 insertions(+), 3 deletions(-)
-> 
-> diff --git a/net/core/skbuff.c b/net/core/skbuff.c
-> index 3ad9e8425ab2..14010c0eec48 100644
-> --- a/net/core/skbuff.c
-> +++ b/net/core/skbuff.c
-> @@ -3773,13 +3773,13 @@ struct sk_buff *skb_segment_list(struct sk_buff *skb,
->  	unsigned int tnl_hlen = skb_tnl_header_len(skb);
->  	unsigned int delta_truesize = 0;
->  	unsigned int delta_len = 0;
-> +	struct sk_buff *tail = NULL;
->  	struct sk_buff *nskb, *tmp;
->  	int err;
->  
->  	skb_push(skb, -skb_network_offset(skb) + offset);
->  
->  	skb_shinfo(skb)->frag_list = NULL;
-> -	skb->next = list_skb;
->  
->  	do {
->  		nskb = list_skb;
-> @@ -3797,8 +3797,17 @@ struct sk_buff *skb_segment_list(struct sk_buff *skb,
->  			}
->  		}
->  
-> -		if (unlikely(err))
-> +		if (!tail)
-> +			skb->next = nskb;
-> +		else
-> +			tail->next = nskb;
-> +
-> +		if (unlikely(err)) {
-> +			nskb->next = list_skb;
->  			goto err_linearize;
-> +		}
-> +
-> +		tail = nskb;
->  
->  		delta_len += nskb->len;
->  		delta_truesize += nskb->truesize;
-> @@ -3825,7 +3834,7 @@ struct sk_buff *skb_segment_list(struct sk_buff *skb,
->  
->  	skb_gso_reset(skb);
->  
-> -	skb->prev = nskb;
-> +	skb->prev = tail;
->  
->  	if (skb_needs_linearize(skb, features) &&
->  	    __skb_linearize(skb))
-> 
-
+Thanks
+Hangbin
