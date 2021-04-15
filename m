@@ -2,104 +2,121 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A9A3D3603CC
-	for <lists+netdev@lfdr.de>; Thu, 15 Apr 2021 10:00:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 24BC53603D8
+	for <lists+netdev@lfdr.de>; Thu, 15 Apr 2021 10:05:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231477AbhDOIAe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 15 Apr 2021 04:00:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37026 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230090AbhDOIAc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 15 Apr 2021 04:00:32 -0400
-Received: from mail-pl1-x632.google.com (mail-pl1-x632.google.com [IPv6:2607:f8b0:4864:20::632])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F2A5EC061574
-        for <netdev@vger.kernel.org>; Thu, 15 Apr 2021 01:00:09 -0700 (PDT)
-Received: by mail-pl1-x632.google.com with SMTP id h20so11615719plr.4
-        for <netdev@vger.kernel.org>; Thu, 15 Apr 2021 01:00:09 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=tn7BRobDa2elAneXnvWf0uE/nkrZTEhR9GgCT2DORY8=;
-        b=hAYwLvOJMDm8IlHgHl+ZhyQYvVQ1uY9i+SEIImrnmxvIZHQiTMWwPqzEyCcW60uDrR
-         Hvs7LkC5oCim1H+/N1HsnHktN/45KBv5oEts5on/Y9aM3FH3YPpFQDewA6hj+iVAJ/u7
-         wRYGpL0vhhZibQr4vYpb9fRycAD6rO79XsfWhKT9D8pxChqgscTV6pnrn9LvnsDolzXS
-         EFAJOo1WB8axt74eIb7IyQotPq2YJJv6G9hDj4VPblBb5dY6UDXtqZyA/lCa4vC1/yQU
-         gLyG4ON344LvLjRs1yucG+FweA9GvJ6YdZXnl1Fb0S9y4TF1fIrnjrEKUVsgX7vmTBml
-         wdIA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=tn7BRobDa2elAneXnvWf0uE/nkrZTEhR9GgCT2DORY8=;
-        b=JS0d4dJBKwNp4BZvYWZ7REeKORAn+FMzETR2mlU9ReEXAU5BquEVDcmjxzQR5VrP/B
-         cHSC1nss8FiCnsPo92D9DImibBfYtNkS4UiN02iGozn5J7SxRmVHYsCizlbGzwYefcFh
-         njSTg1obW5ZXrGkyIuzK1Vk5AbSPTMKQNnCDJIWBOHIGgFEdCtxdh9kikI6rFTzBBCWX
-         W58Ig/gzlbrdZC/U6g4LSqSh/H1eyFC0Iy/AK9hsaIu9NNMB2ikhuDYUXBMlJbfS6P8x
-         e5KwvHYTBzNfTSANlIhSyVFPDfTuw33oXsSV027lrGiXgtXmfKWzmK+iIL8K90Ez0Ig8
-         ezmA==
-X-Gm-Message-State: AOAM5331v5nUoPoY4Rj/fGaC3OsTWpvcLyXz+etlNQy4fhV4ZsRUg4bV
-        1XSMWX4o7UMMALqs1YIlL+k=
-X-Google-Smtp-Source: ABdhPJwPidLDHNo0CFsT3Cl01r/bQqGFa+Jl7H9NsHlyzJVEPJOyOGIQFoOgfX5hFOfpWOxhvlwvrg==
-X-Received: by 2002:a17:902:c408:b029:e7:3242:5690 with SMTP id k8-20020a170902c408b02900e732425690mr2575706plk.85.1618473609629;
-        Thu, 15 Apr 2021 01:00:09 -0700 (PDT)
-Received: from nuc.wg.ducheng.me ([202.133.196.154])
-        by smtp.gmail.com with ESMTPSA id 184sm1424387pfx.156.2021.04.15.01.00.07
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 15 Apr 2021 01:00:09 -0700 (PDT)
-From:   Du Cheng <ducheng2@gmail.com>
-To:     Jamal Hadi Salim <jhs@mojatatu.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Jiri Pirko <jiri@resnulli.us>
-Cc:     netdev@vger.kernel.org, Shuah Khan <skhan@linuxfoundation.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        eric.dumazet@gmail.com, Du Cheng <ducheng2@gmail.com>,
-        syzbot+d50710fd0873a9c6b40c@syzkaller.appspotmail.com
-Subject: [PATCH v2] net: sched: tapr: remove WARN_ON() in taprio_get_start_time
-Date:   Thu, 15 Apr 2021 15:59:53 +0800
-Message-Id: <20210415075953.83508-2-ducheng2@gmail.com>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20210415075953.83508-1-ducheng2@gmail.com>
-References: <20210415063914.66144-1-ducheng2@gmail.com>
- <20210415075953.83508-1-ducheng2@gmail.com>
+        id S231482AbhDOIFy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 15 Apr 2021 04:05:54 -0400
+Received: from conssluserg-01.nifty.com ([210.131.2.80]:56681 "EHLO
+        conssluserg-01.nifty.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230090AbhDOIFw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 15 Apr 2021 04:05:52 -0400
+X-Greylist: delayed 2136 seconds by postgrey-1.27 at vger.kernel.org; Thu, 15 Apr 2021 04:05:51 EDT
+Received: from mail-pf1-f169.google.com (mail-pf1-f169.google.com [209.85.210.169]) (authenticated)
+        by conssluserg-01.nifty.com with ESMTP id 13F856Vb022773;
+        Thu, 15 Apr 2021 17:05:06 +0900
+DKIM-Filter: OpenDKIM Filter v2.10.3 conssluserg-01.nifty.com 13F856Vb022773
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
+        s=dec2015msa; t=1618473906;
+        bh=LC1wwORrxX4s+QOHO85pxZXBS/KtIoUE4bsRAFozad4=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=da54tceNg+886hk0L1yXNqwic53kMAl/yYDA9rfAYHj0ARbrEgFju4bNK2u7DwSzr
+         0Nzz3nN74NFBD6BY3vVYIsLJyVstisa/a9wZNFo5HTfFMQNiNdQt34xs/EogI5R2pe
+         cGfTLcVB02siJoTnsZGY694SycVShDrvLKCT+fJH4c6gdApVr4yI8sDuiQRVb46uzf
+         5zxp+cpLvrquwzMBoqWdhFppX0LrOMfnMp2ux+33w21NjgtbXApne1xnDYHSASKVVS
+         d+1LtEJ5CKw8N5jVYem55TDcIAFV5Dpgqe/WelWt36GppnQoPbMUoN2vTaIcYxpiyl
+         UETUaHqyqS3pw==
+X-Nifty-SrcIP: [209.85.210.169]
+Received: by mail-pf1-f169.google.com with SMTP id p67so10591283pfp.10;
+        Thu, 15 Apr 2021 01:05:06 -0700 (PDT)
+X-Gm-Message-State: AOAM531srx0f25gk07BlcHD6re3R/c0h0vtMMO8k4EDCH91XPITvrY15
+        0r22kx+4zgJ8DL4Pd3zbcikywpxA58RKjrTsciQ=
+X-Google-Smtp-Source: ABdhPJySz/Ot0PzvuAqwezBmRSJBPOAtDPcVcBLTIDgzgzX8BI0wuMQUhTWcJdx8cpQqmQVarwqfYRNaT9Sfb7D43/8=
+X-Received: by 2002:aa7:946b:0:b029:24c:57ea:99bf with SMTP id
+ t11-20020aa7946b0000b029024c57ea99bfmr2063757pfq.63.1618473905663; Thu, 15
+ Apr 2021 01:05:05 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20210415072700.147125-1-masahiroy@kernel.org> <20210415072700.147125-2-masahiroy@kernel.org>
+ <9d33ee98-9de3-2215-0c0b-cc856cec1b69@redhat.com>
+In-Reply-To: <9d33ee98-9de3-2215-0c0b-cc856cec1b69@redhat.com>
+From:   Masahiro Yamada <masahiroy@kernel.org>
+Date:   Thu, 15 Apr 2021 17:04:28 +0900
+X-Gmail-Original-Message-ID: <CAK7LNAQupbmeEVR0njSciv0X9FD+MofeB2Xm=wprEdNaO4TQKQ@mail.gmail.com>
+Message-ID: <CAK7LNAQupbmeEVR0njSciv0X9FD+MofeB2Xm=wprEdNaO4TQKQ@mail.gmail.com>
+Subject: Re: [PATCH 2/2] tools: do not include scripts/Kbuild.include
+To:     Paolo Bonzini <pbonzini@redhat.com>
+Cc:     Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>,
+        Janosch Frank <frankja@linux.ibm.com>,
+        Christian Borntraeger <borntraeger@de.ibm.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Harish <harish@linux.ibm.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>, Martin KaFai Lau <kafai@fb.com>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Nathan Chancellor <nathan@kernel.org>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Paul Mackerras <paulus@samba.org>,
+        Shuah Khan <shuah@kernel.org>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        bpf <bpf@vger.kernel.org>,
+        clang-built-linux <clang-built-linux@googlegroups.com>,
+        kvm@vger.kernel.org,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        "open list:KERNEL SELFTEST FRAMEWORK" 
+        <linux-kselftest@vger.kernel.org>,
+        linuxppc-dev <linuxppc-dev@lists.ozlabs.org>,
+        Networking <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-There is a reproducible sequence from the userland that will trigger a WARN_ON()
-condition in taprio_get_start_time, which causes kernel to panic if configured
-as "panic_on_warn". Remove this WARN_ON() to prevent kernel from crashing by
-userland-initiated syscalls.
+On Thu, Apr 15, 2021 at 4:40 PM Paolo Bonzini <pbonzini@redhat.com> wrote:
+>
+> On 15/04/21 09:27, Masahiro Yamada wrote:
+> > Since commit d9f4ff50d2aa ("kbuild: spilt cc-option and friends to
+> > scripts/Makefile.compiler"), some kselftests fail to build.
+> >
+> > The tools/ directory opted out Kbuild, and went in a different
+> > direction. They copy any kind of files to the tools/ directory
+> > in order to do whatever they want to do in their world.
+> >
+> > tools/build/Build.include mimics scripts/Kbuild.include, but some
+> > tool Makefiles included the Kbuild one to import a feature that is
+> > missing in tools/build/Build.include:
+> >
+> >   - Commit ec04aa3ae87b ("tools/thermal: tmon: use "-fstack-protector"
+> >     only if supported") included scripts/Kbuild.include from
+> >     tools/thermal/tmon/Makefile to import the cc-option macro.
+> >
+> >   - Commit c2390f16fc5b ("selftests: kvm: fix for compilers that do
+> >     not support -no-pie") included scripts/Kbuild.include from
+> >     tools/testing/selftests/kvm/Makefile to import the try-run macro.
+> >
+> >   - Commit 9cae4ace80ef ("selftests/bpf: do not ignore clang
+> >     failures") included scripts/Kbuild.include from
+> >     tools/testing/selftests/bpf/Makefile to import the .DELETE_ON_ERROR
+> >     target.
+> >
+> >   - Commit 0695f8bca93e ("selftests/powerpc: Handle Makefile for
+> >     unrecognized option") included scripts/Kbuild.include from
+> >     tools/testing/selftests/powerpc/pmu/ebb/Makefile to import the
+> >     try-run macro.
+> >
+> > Copy what they want there, and stop including scripts/Kbuild.include
+> > from the tool Makefiles.
+>
+> I think it would make sense to add try-run, cc-option and
+> .DELETE_ON_ERROR to tools/build/Build.include?
 
-Reported as bug on syzkaller:
-https://syzkaller.appspot.com/bug?extid=d50710fd0873a9c6b40c
 
-Reported-by: syzbot+d50710fd0873a9c6b40c@syzkaller.appspotmail.com
-Signed-off-by: Du Cheng <ducheng2@gmail.com>
----
-changelog:
-v1: Discussion https://lore.kernel.org/netdev/YHfwUmFODUHx8G5W@carbon/T/
-v2: fix typo
+To be safe, I just copy-pasted what the makefiles need.
+If someone wants to refactor the tool build system, that is fine,
+but, to me, I do not see consistent rules or policy under tools/.
 
-
- net/sched/sch_taprio.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/net/sched/sch_taprio.c b/net/sched/sch_taprio.c
-index 8287894541e3..33a829c1ba9b 100644
---- a/net/sched/sch_taprio.c
-+++ b/net/sched/sch_taprio.c
-@@ -996,7 +996,7 @@ static int taprio_get_start_time(struct Qdisc *sch,
- 	 * something went really wrong. In that case, we should warn about this
- 	 * inconsistent state and return error.
- 	 */
--	if (WARN_ON(!cycle))
-+	if (!cycle)
- 		return -EFAULT;
- 
- 	/* Schedule the start time for the beginning of the next
 -- 
-2.30.2
-
+Best Regards
+Masahiro Yamada
