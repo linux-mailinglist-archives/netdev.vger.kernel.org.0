@@ -2,229 +2,200 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E2A2836149C
-	for <lists+netdev@lfdr.de>; Fri, 16 Apr 2021 00:10:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1F8893614A2
+	for <lists+netdev@lfdr.de>; Fri, 16 Apr 2021 00:11:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236573AbhDOWKv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 15 Apr 2021 18:10:51 -0400
-Received: from www62.your-server.de ([213.133.104.62]:59832 "EHLO
-        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234816AbhDOWKt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 15 Apr 2021 18:10:49 -0400
-Received: from sslproxy06.your-server.de ([78.46.172.3])
-        by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92.3)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1lXABp-000CxX-8X; Fri, 16 Apr 2021 00:10:21 +0200
-Received: from [85.7.101.30] (helo=linux.home)
-        by sslproxy06.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1lXABo-00086U-RW; Fri, 16 Apr 2021 00:10:20 +0200
-Subject: Re: [PATCH bpf-next 3/5] libbpf: add low level TC-BPF API
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Cc:     =?UTF-8?Q?Toke_H=c3=b8iland-J=c3=b8rgensen?= <toke@redhat.com>,
-        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        Kumar Kartikeya Dwivedi <memxor@gmail.com>,
-        bpf <bpf@vger.kernel.org>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>, Shuah Khan <shuah@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>,
-        "open list:KERNEL SELFTEST FRAMEWORK" 
-        <linux-kselftest@vger.kernel.org>
-References: <20210325120020.236504-4-memxor@gmail.com>
- <20210328080648.oorx2no2j6zslejk@apollo>
- <CAEf4BzaMsixmrrgGv6Qr68Ytq8k9W+WP6m4Vdb1wDhDFBKStgw@mail.gmail.com>
- <48b99ccc-8ef6-4ba9-00f9-d7e71ae4fb5d@iogearbox.net>
- <20210331094400.ldznoctli6fljz64@apollo>
- <5d59b5ee-a21e-1860-e2e5-d03f89306fd8@iogearbox.net>
- <20210402152743.dbadpgcmrgjt4eca@apollo>
- <CAADnVQ+wqrEnOGd8E1yp+1WTAx8ZcAx3HUjJs6ipPd0eKmOrgA@mail.gmail.com>
- <20210402190806.nhcgappm3iocvd3d@apollo>
- <20210403174721.vg4wle327wvossgl@ast-mbp>
- <CAEf4Bzaeu4apgEtwS_3q1iPuURjPXMs9H43cYUtJSmjPMU5M9A@mail.gmail.com>
- <87blar4ti7.fsf@toke.dk>
- <CAEf4BzaOJ-WD3A13B2uCrsE2yrctAL8QtJ8TuXHLeP+tm98pbA@mail.gmail.com>
- <874kg9m8t1.fsf@toke.dk>
- <CAEf4BzaEkzPeAXqmm5aEdQxnCkrqJTHcSu7afnV11+697KgZTQ@mail.gmail.com>
- <87wnt4jx8m.fsf@toke.dk>
- <CAEf4Bzbb0ECMjhAvD-1wpp3qJJcrpgKr_=ONN4ZQmuNUgYrH4A@mail.gmail.com>
- <4b99d6c3-0281-f539-e6dc-0b307c5a7db3@iogearbox.net>
- <CAEf4BzZtivCFfMLa5vnu6QtNL75BC4WoreS=4v1TScsfVX1jQQ@mail.gmail.com>
-From:   Daniel Borkmann <daniel@iogearbox.net>
-Message-ID: <848d7864-44f3-79a2-ad3c-80adee6aa27a@iogearbox.net>
-Date:   Fri, 16 Apr 2021 00:10:20 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
+        id S236614AbhDOWME (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 15 Apr 2021 18:12:04 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:56472 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S234961AbhDOWMC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 15 Apr 2021 18:12:02 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1618524698;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=XzNn74iOjMf0orBEew0wdrHRxZf1IxR+s28/MMfBybI=;
+        b=cYVmrpWzip2a2BRfwNbxTOzxjP73gA5u8p21w3l+3oDmbPo74+sY5JsFS4JYk/0hAaMcXo
+        H9PYKpnPJRnuvuF9dTQDCj1+ajYZgbn5rtC6WC915VFtOzJMIuz8ar0cpq2JR2YrQqBiAD
+        YWHrOUUBq005LeiEZkIThM0Wyffnn88=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-295-MnH5KCAWPgKmKbNvVij1tg-1; Thu, 15 Apr 2021 18:11:35 -0400
+X-MC-Unique: MnH5KCAWPgKmKbNvVij1tg-1
+Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id DDCE1A40C1;
+        Thu, 15 Apr 2021 22:11:30 +0000 (UTC)
+Received: from [10.10.117.73] (ovpn-117-73.rdu2.redhat.com [10.10.117.73])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id 47FCC5C290;
+        Thu, 15 Apr 2021 22:11:21 +0000 (UTC)
+Subject: Re: [Patch v4 1/3] lib: Restrict cpumask_local_spread to houskeeping
+ CPUs
+To:     Jesse Brandeburg <jesse.brandeburg@intel.com>
+Cc:     Marcelo Tosatti <mtosatti@redhat.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        "frederic@kernel.org" <frederic@kernel.org>,
+        Robin Murphy <robin.murphy@arm.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-api@vger.kernel.org" <linux-api@vger.kernel.org>,
+        "juri.lelli@redhat.com" <juri.lelli@redhat.com>,
+        "abelits@marvell.com" <abelits@marvell.com>,
+        "bhelgaas@google.com" <bhelgaas@google.com>,
+        "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>,
+        "rostedt@goodmis.org" <rostedt@goodmis.org>,
+        "mingo@kernel.org" <mingo@kernel.org>,
+        "peterz@infradead.org" <peterz@infradead.org>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "akpm@linux-foundation.org" <akpm@linux-foundation.org>,
+        "sfr@canb.auug.org.au" <sfr@canb.auug.org.au>,
+        "stephen@networkplumber.org" <stephen@networkplumber.org>,
+        "rppt@linux.vnet.ibm.com" <rppt@linux.vnet.ibm.com>,
+        "jinyuqi@huawei.com" <jinyuqi@huawei.com>,
+        "zhangshaokun@hisilicon.com" <zhangshaokun@hisilicon.com>,
+        netdev@vger.kernel.org, chris.friesen@windriver.com
+References: <20200625223443.2684-1-nitesh@redhat.com>
+ <20200625223443.2684-2-nitesh@redhat.com>
+ <3e9ce666-c9cd-391b-52b6-3471fe2be2e6@arm.com>
+ <20210127121939.GA54725@fuller.cnet> <87r1m5can2.fsf@nanos.tec.linutronix.de>
+ <20210128165903.GB38339@fuller.cnet> <87h7n0de5a.fsf@nanos.tec.linutronix.de>
+ <20210204181546.GA30113@fuller.cnet>
+ <cfa138e9-38e3-e566-8903-1d64024c917b@redhat.com>
+ <20210204190647.GA32868@fuller.cnet>
+ <d8884413-84b4-b204-85c5-810342807d21@redhat.com>
+ <87y2g26tnt.fsf@nanos.tec.linutronix.de>
+ <d0aed683-87ae-91a2-d093-de3f5d8a8251@redhat.com>
+ <7780ae60-efbd-2902-caaa-0249a1f277d9@redhat.com>
+ <07c04bc7-27f0-9c07-9f9e-2d1a450714ef@redhat.com>
+ <20210406102207.0000485c@intel.com>
+ <1a044a14-0884-eedb-5d30-28b4bec24b23@redhat.com>
+ <20210414091100.000033cf@intel.com>
+From:   Nitesh Narayan Lal <nitesh@redhat.com>
+Organization: Red Hat Inc,
+Message-ID: <54ecc470-b205-ea86-1fc3-849c5b144b3b@redhat.com>
+Date:   Thu, 15 Apr 2021 18:11:20 -0400
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.5.0
 MIME-Version: 1.0
-In-Reply-To: <CAEf4BzZtivCFfMLa5vnu6QtNL75BC4WoreS=4v1TScsfVX1jQQ@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
+In-Reply-To: <20210414091100.000033cf@intel.com>
+Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 8bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.102.4/26141/Thu Apr 15 13:13:26 2021)
+Content-Language: en-US
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 4/15/21 1:58 AM, Andrii Nakryiko wrote:
-> On Wed, Apr 14, 2021 at 4:32 PM Daniel Borkmann <daniel@iogearbox.net> wrote:
->> On 4/15/21 1:19 AM, Andrii Nakryiko wrote:
->>> On Wed, Apr 14, 2021 at 3:51 PM Toke Høiland-Jørgensen <toke@redhat.com> wrote:
->>>> Andrii Nakryiko <andrii.nakryiko@gmail.com> writes:
->>>>> On Wed, Apr 14, 2021 at 3:58 AM Toke Høiland-Jørgensen <toke@redhat.com> wrote:
->>>>>> Andrii Nakryiko <andrii.nakryiko@gmail.com> writes:
->>>>>>> On Tue, Apr 6, 2021 at 3:06 AM Toke Høiland-Jørgensen <toke@redhat.com> wrote:
->>>>>>>> Andrii Nakryiko <andrii.nakryiko@gmail.com> writes:
->>>>>>>>> On Sat, Apr 3, 2021 at 10:47 AM Alexei Starovoitov
->>>>>>>>> <alexei.starovoitov@gmail.com> wrote:
->>>>>>>>>> On Sat, Apr 03, 2021 at 12:38:06AM +0530, Kumar Kartikeya Dwivedi wrote:
->>>>>>>>>>> On Sat, Apr 03, 2021 at 12:02:14AM IST, Alexei Starovoitov wrote:
->>>>>>>>>>>> On Fri, Apr 2, 2021 at 8:27 AM Kumar Kartikeya Dwivedi <memxor@gmail.com> wrote:
->>>>>>>>>>>>> [...]
->>>>>>>>>>>>
->>>>>>>>>>>> All of these things are messy because of tc legacy. bpf tried to follow tc style
->>>>>>>>>>>> with cls and act distinction and it didn't quite work. cls with
->>>>>>>>>>>> direct-action is the only
->>>>>>>>>>>> thing that became mainstream while tc style attach wasn't really addressed.
->>>>>>>>>>>> There were several incidents where tc had tens of thousands of progs attached
->>>>>>>>>>>> because of this attach/query/index weirdness described above.
->>>>>>>>>>>> I think the only way to address this properly is to introduce bpf_link style of
->>>>>>>>>>>> attaching to tc. Such bpf_link would support ingress/egress only.
->>>>>>>>>>>> direction-action will be implied. There won't be any index and query
->>>>>>>>>>>> will be obvious.
->>>>>>>>>>>
->>>>>>>>>>> Note that we already have bpf_link support working (without support for pinning
->>>>>>>>>>> ofcourse) in a limited way. The ifindex, protocol, parent_id, priority, handle,
->>>>>>>>>>> chain_index tuple uniquely identifies a filter, so we stash this in the bpf_link
->>>>>>>>>>> and are able to operate on the exact filter during release.
->>>>>>>>>>
->>>>>>>>>> Except they're not unique. The library can stash them, but something else
->>>>>>>>>> doing detach via iproute2 or their own netlink calls will detach the prog.
->>>>>>>>>> This other app can attach to the same spot a different prog and now
->>>>>>>>>> bpf_link__destroy will be detaching somebody else prog.
->>>>>>>>>>
->>>>>>>>>>>> So I would like to propose to take this patch set a step further from
->>>>>>>>>>>> what Daniel said:
->>>>>>>>>>>> int bpf_tc_attach(prog_fd, ifindex, {INGRESS,EGRESS}):
->>>>>>>>>>>> and make this proposed api to return FD.
->>>>>>>>>>>> To detach from tc ingress/egress just close(fd).
->>>>>>>>>>>
->>>>>>>>>>> You mean adding an fd-based TC API to the kernel?
->>>>>>>>>>
->>>>>>>>>> yes.
->>>>>>>>>
->>>>>>>>> I'm totally for bpf_link-based TC attachment.
->>>>>>>>>
->>>>>>>>> But I think *also* having "legacy" netlink-based APIs will allow
->>>>>>>>> applications to handle older kernels in a much nicer way without extra
->>>>>>>>> dependency on iproute2. We have a similar situation with kprobe, where
->>>>>>>>> currently libbpf only supports "modern" fd-based attachment, but users
->>>>>>>>> periodically ask questions and struggle to figure out issues on older
->>>>>>>>> kernels that don't support new APIs.
->>>>>>>>
->>>>>>>> +1; I am OK with adding a new bpf_link-based way to attach TC programs,
->>>>>>>> but we still need to support the netlink API in libbpf.
->>>>>>>>
->>>>>>>>> So I think we'd have to support legacy TC APIs, but I agree with
->>>>>>>>> Alexei and Daniel that we should keep it to the simplest and most
->>>>>>>>> straightforward API of supporting direction-action attachments and
->>>>>>>>> setting up qdisc transparently (if I'm getting all the terminology
->>>>>>>>> right, after reading Quentin's blog post). That coincidentally should
->>>>>>>>> probably match how bpf_link-based TC API will look like, so all that
->>>>>>>>> can be abstracted behind a single bpf_link__attach_tc() API as well,
->>>>>>>>> right? That's the plan for dealing with kprobe right now, btw. Libbpf
->>>>>>>>> will detect the best available API and transparently fall back (maybe
->>>>>>>>> with some warning for awareness, due to inherent downsides of legacy
->>>>>>>>> APIs: no auto-cleanup being the most prominent one).
->>>>>>>>
->>>>>>>> Yup, SGTM: Expose both in the low-level API (in bpf.c), and make the
->>>>>>>> high-level API auto-detect. That way users can also still use the
->>>>>>>> netlink attach function if they don't want the fd-based auto-close
->>>>>>>> behaviour of bpf_link.
->>>>>>>
->>>>>>> So I thought a bit more about this, and it feels like the right move
->>>>>>> would be to expose only higher-level TC BPF API behind bpf_link. It
->>>>>>> will keep the API complexity and amount of APIs that libbpf will have
->>>>>>> to support to the minimum, and will keep the API itself simple:
->>>>>>> direct-attach with the minimum amount of input arguments. By not
->>>>>>> exposing low-level APIs we also table the whole bpf_tc_cls_attach_id
->>>>>>> design discussion, as we now can keep as much info as needed inside
->>>>>>> bpf_link_tc (which will embed bpf_link internally as well) to support
->>>>>>> detachment and possibly some additional querying, if needed.
->>>>>>
->>>>>> But then there would be no way for the caller to explicitly select a
->>>>>> mechanism? I.e., if I write a BPF program using this mechanism targeting
->>>>>> a 5.12 kernel, I'll get netlink attachment, which can stick around when
->>>>>> I do bpf_link__disconnect(). But then if the kernel gets upgraded to
->>>>>> support bpf_link for TC programs I'll suddenly transparently get
->>>>>> bpf_link and the attachments will go away unless I pin them. This
->>>>>> seems... less than ideal?
->>>>>
->>>>> That's what we are doing with bpf_program__attach_kprobe(), though.
->>>>> And so far I've only seen people (privately) saying how good it would
->>>>> be to have bpf_link-based TC APIs, doesn't seem like anyone with a
->>>>> realistic use case prefers the current APIs. So I suspect it's not
->>>>> going to be a problem in practice. But at least I'd start there and
->>>>> see how people are using it and if they need anything else.
->>>>
->>>> *sigh* - I really wish you would stop arbitrarily declaring your own use
->>>> cases "realistic" and mine (implied) "unrealistic". Makes it really hard
->>>> to have a productive discussion...
+
+On 4/14/21 12:11 PM, Jesse Brandeburg wrote:
+> Nitesh Narayan Lal wrote:
+>
+>>> The original issue as seen, was that if you rmmod/insmod a driver
+>>> *without* irqbalance running, the default irq mask is -1, which means
+>>> any CPU. The older kernels (this issue was patched in 2014) used to use
+>>> that affinity mask, but the value programmed into all the interrupt
+>>> registers "actual affinity" would end up delivering all interrupts to
+>>> CPU0,
+>> So does that mean the affinity mask for the IRQs was different wrt where
+>> the IRQs were actually delivered?
+>> Or, the affinity mask itself for the IRQs after rmmod, insmod was changed
+>> to 0 instead of -1?
+> The smp_affinity was 0xfff, and the kernel chooses which interrupt to
+> place the interrupt on, among any of the bits set.
+
+
+I think what you are referring to here is the effective affinity mask.
+From one of Thomas's commit message that you pointed me to:
+
+"The affinity mask is either the system-wide default or set by userspace,
+but the architecture can or even must reduce the mask to the effective set,
+which means that checking the affinity mask itself does not really tell
+about the actual target CPUs."
+
+I was looking into the code changes around IRQ and there has been major
+rework from Thomas in 2017. I recently tried testing the kernel just before
+those patches got merged.
+
+Specifically on top of
+05161b9cbe5:     x86/irq: Get rid of the 'first_system_vector' indirection
+                 bogosity
+
+On the box where I tested this, I was able to see the effective affinity
+being set to 0 (not SMP affinity) for several network device IRQs.
+
+and I think the reason for it is the usage of "cpumask_first_and(mask,
+cpu_online_mask)" in __assign_irq_vector().
+
+But with the latest kernel, this has been replaced and that's why I didn't
+see the effective affinity being set to only 0 for all of the device IRQs.
+
+Having said that I am still not sure if I was able to mimic what you have
+seen in the past. But it looked similar to what you were explaining.
+What do you think?
+
+
+
+>
+>  
+>> I did a quick test on top of 5.12.0-rc6 by comparing the i40e IRQ affinity
+>> mask before removing the kernel module and after doing rmmod+insmod
+>> and didn't find any difference.
+> with the patch in question removed? Sorry, I'm confused what you tried.
+
+Yeah, but I was only referring to the SMP affinity mask. Please see more
+up-to-date testing results above.
+
+>>>  and if the machine was under traffic load incoming when the
+>>> driver loaded, CPU0 would start to poll among all the different netdev
+>>> queues, all on CPU0.
 >>>
->>> Well (sigh?..), this wasn't my intention, sorry you read it this way.
->>> But we had similar discussions when I was adding bpf_link-based XDP
->>> attach APIs. And guess what, now I see that samples/bpf/whatever_xdp
->>> is switched to bpf_link-based XDP, because that makes everything
->>> simpler and more reliable. What I also know is that in production we
->>> ran into multiple issues with anything that doesn't auto-detach on
->>> process exit/crash (unless pinned explicitly, of course). And that
->>> people that are trying to use TC right now are saying how having
->>> bpf_link-based TC APIs would make everything *simpler* and *safer*. So
->>> I don't know... I understand it might be convenient in some cases to
->>> not care about a lifetime of BPF programs you are attaching, but then
->>> there are usually explicit and intentional ways to achieve at least
->>> similar behavior with safety by default.
->>
->> [...]
->>
->>   >>> There are many ways to skin this cat. I'd prioritize bpf_link-based TC
->>   >>> APIs to be added with legacy TC API as a fallback.
->>
->> I think the problem here is though that this would need to be deterministic
->> when upgrading from one kernel version to another where we don't use the
->> fallback anymore, e.g. in case of Cilium we always want to keep the progs
->> attached to allow headless updates on the agent, meaning, traffic keeps
->> flowing through the BPF datapath while in user space, our agent restarts
->> after upgrade, and atomically replaces the BPF progs once up and running
->> (we're doing this for the whole range of 4.9 to 5.x kernels that we support).
->> While we use the 'simple' api that is discussed here internally in Cilium,
->> this attach behavior would have to be consistent, so transparent fallback
->> inside libbpf on link vs non-link availability won't work (at least in our
->> case).
-> 
-> What about pinning? It's not exactly the same, but bpf_link could
-> actually pin a BPF program, if using legacy TC, and pin bpf_link, if
-> using bpf_link-based APIs. Of course before switching from iproute2 to
-> libbpf APIs you'd need to design your applications to use pinning
-> instead of relying implicitly on permanently attached BPF program.
+>>> The above then leads to the condition that the device is stuck polling
+>>> even if the affinity gets updated from user space, and the polling will
+>>> continue until traffic stops.
+>>>
 
-All the progs we load from Cilium in a K8s setting w/ Pods, we could have easily
-over 100 loaded at the same time on a node, and we template the per Pod ones, so
-the complexity of managing those pinned lifecycles from the agent and dealing with
-the semantic/fallback differences between kernels feels probably not worth the
-gain. So if there would be a libbpf tc simplified attach API, I'd for the time
-being stick to the existing aka legacy means.
+[...]
 
-Thanks,
-Daniel
+>> As we can see in the above trace the initial affinity for the IRQ 1478 was
+>> correctly set as per the default_smp_affinity mask which includes CPU 42,
+>> however, later on, it is updated with CPU3 which is returned from
+>> cpumask_local_spread().
+>>
+>>> Maybe the right thing is to fix which CPUs are passed in as the valid
+>>> mask, or make sure the kernel cross checks that what the driver asks
+>>> for is a "valid CPU"?
+>>>
+>> Sure, if we can still reproduce the problem that your patch was fixing then
+>> maybe we can consider adding a new API like cpumask_local_spread_irq in
+>> which we should consider deafult_smp_affinity mask as well before returning
+>> the CPU.
+> I'm sure I don't have a reproducer of the original problem any more, it
+> is lost somewhere 8 years ago. I'd like to be able to repro the original
+> issue, but I can't.
+>
+> Your description of the problem makes it obvious there is an issue. It
+> appears as if cpumask_local_spread() is the wrong function to use here.
+> If you have any suggestions please let me know.
+>
+> We had one other report of this problem as well (I'm not sure if it's
+> the same as your report)
+> https://lkml.org/lkml/2021/3/28/206
+> https://lists.osuosl.org/pipermail/intel-wired-lan/Week-of-Mon-20210125/023120.html
+
+
+How about we introduce a new API just for IRQ spreading,
+cpumask_local_spread_irq() and then utilize the default_smp_affinity mask
+in that before returning the CPU?
+
+Although, I think the right way to deal with this would be to fix this from
+the source that is where the CPU mask is assigned to an IRQ for the very
+first time.
+
+
+-- 
+Thanks
+Nitesh
+
