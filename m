@@ -2,37 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 837A8360925
-	for <lists+netdev@lfdr.de>; Thu, 15 Apr 2021 14:16:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 31B7436092B
+	for <lists+netdev@lfdr.de>; Thu, 15 Apr 2021 14:18:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232759AbhDOMRD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 15 Apr 2021 08:17:03 -0400
-Received: from Galois.linutronix.de ([193.142.43.55]:59698 "EHLO
-        galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230487AbhDOMRC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 15 Apr 2021 08:17:02 -0400
-From:   Kurt Kanzenbach <kurt@linutronix.de>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1618488998;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=d8i7b4mBlEgaESrmLRVp1HQxG++cCPSc6OtknPI/zOQ=;
-        b=d04iDxqa7GQot9UhuNz2kn4hnMWF+aOQkOnu3wLjrbtzODV8luCkNKR1gTdauJeXBM82+f
-        uuYboZd2ELCCXeYPDYx3m+pbQE+T4DiYTIRuJxLbdcBJXn1OQnyVZYrt7nDSktKu9p2UnR
-        U/6bczP6vW5BSQ5NoGqVQ3dok8TTzt77nfr3El2tG0kvsWS6ZGara6ZAeOfKb19aDgqKhg
-        v5ZrADtiCzwlgDzes9Rl5la1CfDfkJnUhmrje1DIIuC6ItHst5vAl/b+SHqeFhOtDFWBpg
-        NKbhOlk6q1KK0FJPG/us/GXDTuHElgKgwaSwLt5OyNJl0MDpn7+meuDjhs8+fw==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1618488998;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=d8i7b4mBlEgaESrmLRVp1HQxG++cCPSc6OtknPI/zOQ=;
-        b=tDGZPdPVTqxqRjggQ7l0XiEzA8AzTTCyVtNQyzUCLjsiseO+wFU2G5DlBjQLdzRQlDdfyr
-        g74qMKdFfkXRRTBg==
+        id S232842AbhDOMSF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 15 Apr 2021 08:18:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37850 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232694AbhDOMSE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 15 Apr 2021 08:18:04 -0400
+Received: from mail-wr1-x432.google.com (mail-wr1-x432.google.com [IPv6:2a00:1450:4864:20::432])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D0DFC061574;
+        Thu, 15 Apr 2021 05:17:41 -0700 (PDT)
+Received: by mail-wr1-x432.google.com with SMTP id c15so14152322wro.13;
+        Thu, 15 Apr 2021 05:17:41 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=ibC8KmM3ZCO6n5K5dqW3bxYX4QNUATI5N281R+s5qAA=;
+        b=oNZK03HGj+ZvH1b/HNRxfIgjoyumUjD/K+rzUToos9eqKxjiVCTL4ox6tqHYMeG4t5
+         GvPWIddjAOZDrLCdTLPmf0zNk6D3Vra4zTI246kiHjwmHYvlwsjf/tzp9tCut2jX0aN6
+         Xe2pqcjyKTP76rxzAlXfl5ic6pB0WduwKfxGSK8xq2Ywe2TOA30JEvq6iEjOCcQU4cFg
+         IdVewnWBRRg0Z7cI8l/gs+Rw/2rPe83QQJ1Z7CWKrL+K0TyhgPjdcysILnFI2ry2MwPS
+         fjTkLFEwJJ46LSm1dcQYl/J8LrwNICYt41o6jmpCQWbmP50zuHrA5dlb1uCCfMVacaFa
+         PftQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=ibC8KmM3ZCO6n5K5dqW3bxYX4QNUATI5N281R+s5qAA=;
+        b=MU/ILdKEiXggz6/7XwHznoIHdrX6SUvtRSDTqmyF3kEehoWEJXwhqVgRhXYdFSazbu
+         9c1yjcabEV9HRV9hiY5W4UqMa7WYz8VujOZ0TqisyQ9rZoPI8CQ+7sqt1+pWy1OHY5Pq
+         kP1HEwGm5Csg4V+nDJK0B2qiRs37UyHBC80WFj0fKaWfHz+WeSiXoWqqfZHDbUIp9BAu
+         PzG+4AGsFgMrCFRMNhgtzWzwh0ZJrfS1VtzEeZKSeb4Nvr/0oxc2PBPqISzwDQJ5YjAl
+         i9N1kVxQ7brgG9s+ZUbhqDj8vkaIBrGfYn+n9YF6u7M6gXjIdT8AS75MibB5s1BPboPv
+         qHUQ==
+X-Gm-Message-State: AOAM532D39xnO0DqRnT+/ky8YDMjPRMQF2q0mMnjYiG2sahAoFThar0K
+        lzj9g3DY398ztNkzwQ2kaxOVqVBpQsbjq0yfBeI=
+X-Google-Smtp-Source: ABdhPJyL0i/v8U/mac9Wzdumse0AzYWVK9JOeMiZT0OMypDSStqaiyCKYH1gvPXzdNEV/Wmn/JQyWRObKpCee9Hu9Ak=
+X-Received: by 2002:a5d:6a08:: with SMTP id m8mr3192107wru.57.1618489060038;
+ Thu, 15 Apr 2021 05:17:40 -0700 (PDT)
+MIME-Version: 1.0
+References: <20210415092145.27322-1-kurt@linutronix.de> <20210415140438.60221f21@carbon>
+In-Reply-To: <20210415140438.60221f21@carbon>
+From:   Nick Lowe <nick.lowe@gmail.com>
+Date:   Thu, 15 Apr 2021 13:17:24 +0100
+Message-ID: <CADSoG1ssygE8XgkSoWW_WKf3Q43M6JGBN0fbUrrDfLsLyEy0=w@mail.gmail.com>
+Subject: Re: [PATCH net] igb: Fix XDP with PTP enabled
 To:     Jesper Dangaard Brouer <jbrouer@redhat.com>
-Cc:     Jesse Brandeburg <jesse.brandeburg@intel.com>,
+Cc:     Kurt Kanzenbach <kurt@linutronix.de>,
+        Jesse Brandeburg <jesse.brandeburg@intel.com>,
         Tony Nguyen <anthony.l.nguyen@intel.com>,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
@@ -47,71 +67,12 @@ Cc:     Jesse Brandeburg <jesse.brandeburg@intel.com>,
         Lorenzo Bianconi <lorenzo@kernel.org>,
         Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
         Richard Cochran <richardcochran@gmail.com>
-Subject: Re: [PATCH net] igb: Fix XDP with PTP enabled
-In-Reply-To: <20210415140438.60221f21@carbon>
-References: <20210415092145.27322-1-kurt@linutronix.de> <20210415140438.60221f21@carbon>
-Date:   Thu, 15 Apr 2021 14:16:36 +0200
-Message-ID: <874kg7hhej.fsf@kurt>
-MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="=-=-=";
-        micalg=pgp-sha512; protocol="application/pgp-signature"
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---=-=-=
-Content-Type: text/plain
-Content-Transfer-Encoding: quoted-printable
-
-On Thu Apr 15 2021, Jesper Dangaard Brouer wrote:
-> On Thu, 15 Apr 2021 11:21:45 +0200
-> Kurt Kanzenbach <kurt@linutronix.de> wrote:
->
->> When using native XDP with the igb driver, the XDP frame data doesn't po=
-int to
->> the beginning of the packet. It's off by 16 bytes. Everything works as e=
-xpected
->> with XDP skb mode.
->>=20
->> Actually these 16 bytes are used to store the packet timestamps. Therefo=
-re, pull
->> the timestamp before executing any XDP operations and adjust all other c=
-ode
->> accordingly. The igc driver does it like that as well.
->>=20
->> Tested with Intel i210 card and AF_XDP sockets.
->
 > Doesn't the i210 card use the igc driver?
 > This change is for igb driver.
 
-Nope. igb is for i210 and igc is for the newer Intel i225 NICs.
-
-|01:00.0 Ethernet controller: Intel Corporation I210 Gigabit Network Connec=
-tion (rev 03)
-|[...]
-|        Kernel driver in use: igb
-|        Kernel modules: igb
-
-Thanks,
-Kurt
-
---=-=-=
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAEBCgAdFiEEooWgvezyxHPhdEojeSpbgcuY8KYFAmB4LqQACgkQeSpbgcuY
-8KaoBg//a9XcbfhzKEgjiDZBhuhZz94UXxYnGdzMDXwBYfRPHMCVS/Ck2dp93J42
-5SZtzICTcJ0j0/v9af0YbYUyMaObglMWrg2llYyCvmRbq9Q8Zb/6Av+GzjsCBHKJ
-E76Cj6KGyfdT5z4ijhFUUmqLAFECNiyjP2TVL6DZmhRs4EHI7WeA7E4aGYzuiOmM
-M/aqkaOL+wsDyZLkvPPMQGuDyWI83m+4DPfflOBwWLt422nm3trRnG0awAGkBwch
-LNkRneWaFMSQy4fgJIsa7QZcmnhFOM9Ro2suwcmZkH7gt2A5m5nL9zZqe9FxW2zG
-oHgvSJPUKWC+CTaQ2KwBsBRfPXtAGBqgkNFFjEy7Vk+VK4fKaWtX4sQ/S1U37D8Z
-LNINpIPas4b4ogLujIU9DHa57QhEjDXNMTgSzQQX4MQc1DoO2knIPf+R0HDjqEe6
-5Ppu0V70Nssz+g3iPhWdcxdqi1d0CTjxGiSfPS585ru/1SlqBV11nou9q5qxXVMw
-QaJy1aWED+VEFUoMP58XJ+scepJYZwd2jqP+qhz2OmuoF/iIRW/+kkYrHVLO0TZq
-Y7yQYQOK5E5+n9K8NYL1Kzcoo02vVb7kCEY05szXg2q4vNjOlTidgZn6BOECRsb8
-NaU2cPHMfdXDZM6/p4gNt4jcYcanp3Tp9fxkK3gaog9iEMC2tDU=
-=PbrL
------END PGP SIGNATURE-----
---=-=-=--
+The igb driver is used for the i210/i211, not igc.
