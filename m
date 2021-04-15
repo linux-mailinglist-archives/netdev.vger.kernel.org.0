@@ -2,140 +2,338 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2BB02360EDE
-	for <lists+netdev@lfdr.de>; Thu, 15 Apr 2021 17:24:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4042F360F1B
+	for <lists+netdev@lfdr.de>; Thu, 15 Apr 2021 17:38:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232759AbhDOPXM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 15 Apr 2021 11:23:12 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:27552 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S233955AbhDOPW0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 15 Apr 2021 11:22:26 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1618500122;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=MZm3sT+wl0tySXaGHL4vidpYauK3I6jNjHgWrk7zB9I=;
-        b=TFF05OKpCXFU8A+YiW0B8mV/8qxMwrcSMLuL8JjWvwqZjGcmWhMnkBwdAOPxZ+XqKlXRg3
-        Zu5RFyqLF0mcg7AmvdcImmfvlBSfAIwFPAemro893zAkiHJ3oZyFN4s4F6QbErBsZyMPsh
-        o2Ft2GZx0XJjHL3Gvw3FuOUGXNBgQvI=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-144-9RQ-p9OiM5eHucmGpBfPVw-1; Thu, 15 Apr 2021 11:22:00 -0400
-X-MC-Unique: 9RQ-p9OiM5eHucmGpBfPVw-1
-Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id CE57D79EC2;
-        Thu, 15 Apr 2021 15:21:58 +0000 (UTC)
-Received: from carbon (unknown [10.36.110.19])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id A00A76064B;
-        Thu, 15 Apr 2021 15:21:50 +0000 (UTC)
-Date:   Thu, 15 Apr 2021 17:21:48 +0200
-From:   Jesper Dangaard Brouer <brouer@redhat.com>
-To:     Daniel Borkmann <daniel@iogearbox.net>
-Cc:     Lorenzo Bianconi <lorenzo@kernel.org>, bpf@vger.kernel.org,
-        netdev@vger.kernel.org, lorenzo.bianconi@redhat.com,
-        davem@davemloft.net, kuba@kernel.org, ast@kernel.org,
-        song@kernel.org, brouer@redhat.com
-Subject: Re: [PATCH v2 bpf-next] cpumap: bulk skb using
- netif_receive_skb_list
-Message-ID: <20210415172148.4f1e2440@carbon>
-In-Reply-To: <252403c5-d3a7-03fb-24c3-0f328f8f8c70@iogearbox.net>
-References: <bb627106428ea3223610f5623142c24270f0e14e.1618330734.git.lorenzo@kernel.org>
-        <252403c5-d3a7-03fb-24c3-0f328f8f8c70@iogearbox.net>
+        id S233267AbhDOPjC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 15 Apr 2021 11:39:02 -0400
+Received: from mail.kernel.org ([198.145.29.99]:33644 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S233328AbhDOPjB (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 15 Apr 2021 11:39:01 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 2F5AB6115B;
+        Thu, 15 Apr 2021 15:38:38 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1618501118;
+        bh=ajiCW3bOWWnZTSmBCSOGub9XjKmKohmVprRSzmu8/IY=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=qbhm92yl74XIHHfzw+L1JSIcMLKV+ilBujlGZHNZtwIIZDvPL86mBvEdnvVUnIhEf
+         JJ4Q2jbi3CGClA7Qsr8KdCvBazAgBukZjL52Dz3OECdJe56wAIjeLZySxgQxSkg16C
+         ndN+j+Ww3uKMwZ5/IxhedKhLFt383uiyCVV97JUbDRrWf0ROmVjO9nQCzXTVsRpi7x
+         w8Gpl7/vU9mgVJtIcsHoNDk/JeY0iDmTThsaMYx0PiLvl8AyeGugy9pTzGhf6RoPdY
+         EEp49lck0EC8ZXMMdYO+c6idp8Z/gPO0XzJmmi6Osxsqx0dD1CYOhELSqV93j1v3U0
+         LKXIzFLw0OiCg==
+Date:   Thu, 15 Apr 2021 08:38:37 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Saeed Mahameed <saeed@kernel.org>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, andrew@lunn.ch,
+        mkubecek@suse.cz, idosch@nvidia.com
+Subject: Re: [RFC net-next 4/6] ethtool: add interface to read standard MAC
+ stats
+Message-ID: <20210415083837.6dfc0af9@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <335639a79d72cec4abb3775bc84336f8390a57b7.camel@kernel.org>
+References: <20210414202325.2225774-1-kuba@kernel.org>
+        <20210414202325.2225774-5-kuba@kernel.org>
+        <335639a79d72cec4abb3775bc84336f8390a57b7.camel@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 15 Apr 2021 17:05:36 +0200
-Daniel Borkmann <daniel@iogearbox.net> wrote:
+On Wed, 14 Apr 2021 23:12:52 -0700 Saeed Mahameed wrote:
+> On Wed, 2021-04-14 at 13:23 -0700, Jakub Kicinski wrote:
+> > Most of the MAC statistics are included in
+> > struct rtnl_link_stats64, but some fields
+> > are aggregated. Besides it's good to expose
+> > these clearly hardware stats separately.
+> >=20
+> > Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 
-> On 4/13/21 6:22 PM, Lorenzo Bianconi wrote:
-> > Rely on netif_receive_skb_list routine to send skbs converted from
-> > xdp_frames in cpu_map_kthread_run in order to improve i-cache usage.
-> > The proposed patch has been tested running xdp_redirect_cpu bpf sample
-> > available in the kernel tree that is used to redirect UDP frames from
-> > ixgbe driver to a cpumap entry and then to the networking stack.
-> > UDP frames are generated using pkt_gen.
-> > 
-> > $xdp_redirect_cpu  --cpu <cpu> --progname xdp_cpu_map0 --dev <eth>
-> > 
-> > bpf-next: ~2.2Mpps
-> > bpf-next + cpumap skb-list: ~3.15Mpps
-> > 
-> > Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
-> > ---
-> > Changes since v1:
-> > - fixed comment
-> > - rebased on top of bpf-next tree
-> > ---
-> >   kernel/bpf/cpumap.c | 11 +++++------
-> >   1 file changed, 5 insertions(+), 6 deletions(-)
-> > 
-> > diff --git a/kernel/bpf/cpumap.c b/kernel/bpf/cpumap.c
-> > index 0cf2791d5099..d89551a508b2 100644
-> > --- a/kernel/bpf/cpumap.c
-> > +++ b/kernel/bpf/cpumap.c
-> > @@ -27,7 +27,7 @@
-> >   #include <linux/capability.h>
-> >   #include <trace/events/xdp.h>
-> >   
-> > -#include <linux/netdevice.h>   /* netif_receive_skb_core */
-> > +#include <linux/netdevice.h>   /* netif_receive_skb_list */
-> >   #include <linux/etherdevice.h> /* eth_type_trans */
-> >   
-> >   /* General idea: XDP packets getting XDP redirected to another CPU,
-> > @@ -257,6 +257,7 @@ static int cpu_map_kthread_run(void *data)
-> >   		void *frames[CPUMAP_BATCH];
-> >   		void *skbs[CPUMAP_BATCH];
-> >   		int i, n, m, nframes;
-> > +		LIST_HEAD(list);
-> >   
-> >   		/* Release CPU reschedule checks */
-> >   		if (__ptr_ring_empty(rcpu->queue)) {
-> > @@ -305,7 +306,6 @@ static int cpu_map_kthread_run(void *data)
-> >   		for (i = 0; i < nframes; i++) {
-> >   			struct xdp_frame *xdpf = frames[i];
-> >   			struct sk_buff *skb = skbs[i];
-> > -			int ret;
-> >   
-> >   			skb = __xdp_build_skb_from_frame(xdpf, skb,
-> >   							 xdpf->dev_rx);
-> > @@ -314,11 +314,10 @@ static int cpu_map_kthread_run(void *data)
-> >   				continue;
-> >   			}
-> >   
-> > -			/* Inject into network stack */
-> > -			ret = netif_receive_skb_core(skb);
-> > -			if (ret == NET_RX_DROP)
-> > -				drops++;
-> > +			list_add_tail(&skb->list, &list);
-> >   		}
-> > +		netif_receive_skb_list(&list);
+> > +/* Basic IEEE 802.3 MAC statistics (30.3.1.1.*), not otherwise exposed
+> > + * via a more targeted API.
+> > + */
+> > +struct ethtool_eth_mac_stats {
+> > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0u64 FramesTransmittedOK;
+> > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0u64 SingleCollisionFrames;
+> > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0u64 MultipleCollisionFrames;
+> > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0u64 FramesReceivedOK;
+> > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0u64 FrameCheckSequenceErrors;
+> > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0u64 AlignmentErrors;
+> > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0u64 OctetsTransmittedOK;
+> > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0u64 FramesWithDeferredXmissi=
+ons;
+> > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0u64 LateCollisions;
+> > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0u64 FramesAbortedDueToXSColl=
+s;
+> > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0u64 FramesLostDueToIntMACXmi=
+tError;
+> > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0u64 CarrierSenseErrors;
+> > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0u64 OctetsReceivedOK;
+> > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0u64 FramesLostDueToIntMACRcv=
+Error;
+> > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0u64 MulticastFramesXmittedOK;
+> > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0u64 BroadcastFramesXmittedOK;
+> > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0u64 FramesWithExcessiveDefer=
+ral;
+> > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0u64 MulticastFramesReceivedO=
+K;
+> > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0u64 BroadcastFramesReceivedO=
+K;
+> > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0u64 InRangeLengthErrors;
+> > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0u64 OutOfRangeLengthField;
+> > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0u64 FrameTooLongErrors;
+> > +};
 > > +
-> >   		/* Feedback loop via tracepoint */
-> >   		trace_xdp_cpumap_kthread(rcpu->map_id, n, drops, sched, &stats);  
-> 
-> Given we stop counting drops with the netif_receive_skb_list(), we should then
-> also remove drops from trace_xdp_cpumap_kthread(), imho, as otherwise it is rather
-> misleading (as in: drops actually happening, but 0 are shown from the tracepoint).
-> Given they are not considered stable API, I would just remove those to make it clear
-> to users that they cannot rely on this counter anymore anyway.
+> > =C2=A0/* Basic IEEE 802.3 PHY statistics (30.3.2.1.*), not otherwise ex=
+posed
+> > =C2=A0 * via a more targeted API.
+> > =C2=A0 */
+> > @@ -495,6 +523,7 @@ struct ethtool_module_eeprom {
+> > =C2=A0 *=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0specified page. Returns a negativ=
+e error code or the amount of
+> > bytes
+> > =C2=A0 *=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0read.
+> > =C2=A0 * @get_eth_phy_stats: Query some of the IEEE 802.3 PHY statistic=
+s.
+> > + * @get_eth_mac_stats: Query some of the IEEE 802.3 MAC statistics.
+> > =C2=A0 *
+> > =C2=A0 * All operations are optional (i.e. the function pointer may be =
+set
+> > =C2=A0 * to %NULL) and callers must take this into account.=C2=A0 Calle=
+rs must
+> > @@ -607,6 +636,8 @@ struct ethtool_ops {
+> > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 struct netlink_ext_ack
+> > *extack);
+> > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0void=C2=A0=C2=A0=C2=A0=
+=C2=A0(*get_eth_phy_stats)(struct net_device *dev,
+> > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 st=
+ruct ethtool_eth_phy_stats
+> > *phy_stats);
+> > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0void=C2=A0=C2=A0=C2=A0=C2=A0=
+(*get_eth_mac_stats)(struct net_device *dev,
+> > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 struct e=
+thtool_eth_mac_stats
+> > *mac_stats); =20
+>=20
+> too many callbacks.. I understand the point of having explicit structs
+> per stats group, but it can be achievable with one generic ethtool
+> calback function with the help of a flexible struct:
+>=20
+> void (*get_std_stats)(struct net_device *dev, struct *std_stats)
+>=20
+>=20
+> union stats_groups {
+>     struct ethtool_eth_phy_stats eth_phy;
+>     struct ethtool_eth_mac_stats eth_mac;
+>     ...
+> }
+>=20
+> struct std_stats {
+>      u16 type;
+>      union stats_groups stats[0];
+> }
+>=20
+> where std_stats.stats is allocated dynamically according to
+> std_stats.type
+>=20
+> and driver can just access the corresponding stats according to type
+>=20
+> e.g:=20
+> std_stats.stats.eth_phy
 
-After Lorenzo's change, the 'drops' still count if kmem_cache_alloc_bulk
-cannot alloc SKBs.  I guess that will not occur very often.  But how
-can people/users debug such a case?  Maybe the MM-layer can tell us?
+Kinda expected you'd say this :) The mux make life simpler for drivers
+with a lot of layers of abstraction. Separate ops make life simpler for
+simpler drivers.
 
--- 
-Best regards,
-  Jesper Dangaard Brouer
-  MSc.CS, Principal Kernel Engineer at Red Hat
-  LinkedIn: http://www.linkedin.com/in/brouer
+Basic Ethernet driver goes from this:
 
+get_mac_stats()
+{
+	priv =3D netdev_priv()
+
+	stat->x =3D readl(priv->regs + REG_X);
+	stat->z =3D readl(priv->regs + REG_Y);
+	stat->y =3D readl(priv->regs + REG_Z);
+}
+
+to:
+
+get_std_stats()
+{
+	priv =3D netdev_priv();
+
+	switch (stats->type) {
+	case MAC:
+		stat->x =3D readl(priv->regs + REG_X);
+		stat->z =3D readl(priv->regs + REG_Y);
+		stat->y =3D readl(priv->regs + REG_Z);
+		break;
+	}
+}
+
+or likely:
+
+get_std_stats()
+{
+	priv =3D netdev_priv();
+
+	switch (stats->type) {
+	case MAC:
+		return get_mac_stats(priv..);
+	}
+}
+
+I prefer to keep the callbacks separate, there isn't that many of them.
+
+> > +static int stats_put_mac_stats(struct sk_buff *skb,
+> > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 const struct stats_reply_data *data)
+> > +{
+> > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0if (stat_put(skb, ETHTOOL_A_=
+STATS_ETH_MAC_2_TX_PKT,
+> > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 data->mac_stats.FramesTransmi=
+ttedOK) ||
+> > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 stat_put(=
+skb, ETHTOOL_A_STATS_ETH_MAC_3_SINGLE_COL,
+> > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 data->mac_stats.SingleCollisi=
+onFrames) ||
+> > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 stat_put(=
+skb, ETHTOOL_A_STATS_ETH_MAC_4_MULTI_COL,
+> > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 data->mac_stats.MultipleColli=
+sionFrames) ||
+> > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 stat_put(=
+skb, ETHTOOL_A_STATS_ETH_MAC_5_RX_PKT,
+> > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 data->mac_stats.FramesReceive=
+dOK) ||
+> > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 stat_put(=
+skb, ETHTOOL_A_STATS_ETH_MAC_6_FCS_ERR,
+> > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 data->mac_stats.FrameCheckSeq=
+uenceErrors) ||
+> > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 stat_put(=
+skb, ETHTOOL_A_STATS_ETH_MAC_7_ALIGN_ERR,
+> > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 data->mac_stats.AlignmentErro=
+rs) ||
+> > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 stat_put(=
+skb, ETHTOOL_A_STATS_ETH_MAC_8_TX_BYTES,
+> > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 data->mac_stats.OctetsTransmi=
+ttedOK) ||
+> > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 stat_put(=
+skb, ETHTOOL_A_STATS_ETH_MAC_9_TX_DEFER,
+> > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 data->mac_stats.FramesWithDef=
+erredXmissions) ||
+> > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 stat_put(=
+skb, ETHTOOL_A_STATS_ETH_MAC_10_LATE_COL,
+> > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 data->mac_stats.LateCollision=
+s) ||
+> > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 stat_put(=
+skb, ETHTOOL_A_STATS_ETH_MAC_11_XS_COL,
+> > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 data->mac_stats.FramesAborted=
+DueToXSColls) ||
+> > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 stat_put(=
+skb, ETHTOOL_A_STATS_ETH_MAC_12_TX_INT_ERR,
+> > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 data->mac_stats.FramesLostDue=
+ToIntMACXmitError) ||
+> > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 stat_put(=
+skb, ETHTOOL_A_STATS_ETH_MAC_13_CS_ERR,
+> > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 data->mac_stats.CarrierSenseE=
+rrors) ||
+> > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 stat_put(=
+skb, ETHTOOL_A_STATS_ETH_MAC_14_RX_BYTES,
+> > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 data->mac_stats.OctetsReceive=
+dOK) ||
+> > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 stat_put(=
+skb, ETHTOOL_A_STATS_ETH_MAC_15_RX_INT_ERR,
+> > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 data->mac_stats.FramesLostDue=
+ToIntMACRcvError) ||
+> > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 stat_put(=
+skb, ETHTOOL_A_STATS_ETH_MAC_18_TX_MCAST,
+> > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 data->mac_stats.MulticastFram=
+esXmittedOK) ||
+> > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 stat_put(=
+skb, ETHTOOL_A_STATS_ETH_MAC_19_TX_BCAST,
+> > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 data->mac_stats.BroadcastFram=
+esXmittedOK) ||
+> > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 stat_put(=
+skb, ETHTOOL_A_STATS_ETH_MAC_20_XS_DEFER,
+> > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 data->mac_stats.FramesWithExc=
+essiveDeferral) ||
+> > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 stat_put(=
+skb, ETHTOOL_A_STATS_ETH_MAC_21_RX_MCAST,
+> > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 data->mac_stats.MulticastFram=
+esReceivedOK) ||
+> > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 stat_put(=
+skb, ETHTOOL_A_STATS_ETH_MAC_22_RX_BCAST,
+> > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 data->mac_stats.BroadcastFram=
+esReceivedOK) ||
+> > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 stat_put(=
+skb, ETHTOOL_A_STATS_ETH_MAC_23_IR_LEN_ERR,
+> > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 data->mac_stats.InRangeLength=
+Errors) ||
+> > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 stat_put(=
+skb, ETHTOOL_A_STATS_ETH_MAC_24_OOR_LEN,
+> > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 data->mac_stats.OutOfRangeLen=
+gthField) ||
+> > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 stat_put(=
+skb, ETHTOOL_A_STATS_ETH_MAC_25_TOO_LONG_ERR,
+> > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 data->mac_stats.FrameTooLongE=
+rrors))
+> > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0=C2=A0return -EMSGSIZE; =20
+>=20
+> lots of repetition, someone might forget to add the new stat in one of
+> these places ..=20
+
+If someone forgets to add a stat to the place they are dumped?
+They will immediately realize it's not getting dumped...
+
+> best practice here is to centralize all the data structures and
+> information definitions in one place, you define the stat id, string,
+> and value offset, then a generic loop can generate the strset and fill
+> up values in the correct offset.
+>=20
+> similar implementation is already in mlx5:
+>=20
+> see pport_802_3_stats_desc:
+> https://elixir.bootlin.com/linux/latest/source/drivers/net/ethernet/mella=
+nox/mlx5/core/en_stats.c#L682
+>=20
+> the "pport_802_3_stats_desc" has a description of the strings and
+> offsets of all stats in this stats group
+> and the fill/put functions are very simple and they just iterate over
+> the array/group and fill up according to the descriptor.
+
+We can maybe save 60 lines if we generate stats_eth_mac_names=20
+in a initcall, is it really worth it? I prefer the readability=20
+/ grepability.
