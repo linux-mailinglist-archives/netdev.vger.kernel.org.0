@@ -2,65 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3E47D3613FD
-	for <lists+netdev@lfdr.de>; Thu, 15 Apr 2021 23:15:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4AD4C361410
+	for <lists+netdev@lfdr.de>; Thu, 15 Apr 2021 23:23:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235576AbhDOVP6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 15 Apr 2021 17:15:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42848 "EHLO
+        id S235883AbhDOVXt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 15 Apr 2021 17:23:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44540 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234958AbhDOVP5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 15 Apr 2021 17:15:57 -0400
-Received: from mail-pj1-x102d.google.com (mail-pj1-x102d.google.com [IPv6:2607:f8b0:4864:20::102d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 37B1CC061756
-        for <netdev@vger.kernel.org>; Thu, 15 Apr 2021 14:15:34 -0700 (PDT)
-Received: by mail-pj1-x102d.google.com with SMTP id j6-20020a17090adc86b02900cbfe6f2c96so13433776pjv.1
-        for <netdev@vger.kernel.org>; Thu, 15 Apr 2021 14:15:34 -0700 (PDT)
+        with ESMTP id S234959AbhDOVXp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 15 Apr 2021 17:23:45 -0400
+Received: from mail-pj1-x1031.google.com (mail-pj1-x1031.google.com [IPv6:2607:f8b0:4864:20::1031])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F119CC061574
+        for <netdev@vger.kernel.org>; Thu, 15 Apr 2021 14:23:21 -0700 (PDT)
+Received: by mail-pj1-x1031.google.com with SMTP id e8-20020a17090a7288b029014e51f5a6baso8129022pjg.2
+        for <netdev@vger.kernel.org>; Thu, 15 Apr 2021 14:23:21 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=networkplumber-org.20150623.gappssmtp.com; s=20150623;
         h=date:from:to:cc:subject:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=E+zzLPV6n+5kowpZE/IEJBo10o+qQ1Ks/Ky4ezSQr08=;
-        b=lBPOF7HUcnVEuaiUK1v7fYM3nLPcU8cI7Q8MC89mb0K9L4eoZWdBRTf+6kKSHke9XH
-         hLNJaim9Jw5PoXWWPIDMAOsbHLJzFzOjIcVvDVUJuIgyFqNNGZ3VDn6OFVodLDjbgRpH
-         4ZWFKMk7KvkYI6Uz/tLNGUcIXWz++rZtxdRc3P5HM56ZB4YKxtWiPCm9DGf37NNxZnb9
-         8FCkGVBTZgmhNaUdyYZVEA2ruNxoVhze7YeiZG3sWKc0BzQcHgMfGDsb49zEE4eYkuTB
-         BFGUz0rQIs81g53nIanFPkUgxMpLWh69r6/Fxapc70XQZ0XKh44DJVwGJme087pv9uw6
-         H1QA==
+        bh=2ol39MDmb57HD+IRDbZnz3tkRIQCMuTQn6jcSnc5bPg=;
+        b=SfS3IiSloic6QZRvpsnQjfaVJP7MTti/bV3UOapaMJdwcbqpQbi+eYWiH5JIVe5Rxb
+         P3KBHb6wCkJgCWAFpUpZofWOVyAD1CCcoFVe7IBz6e3SNPyPpY1Gx2yWLULuQfhPmwIf
+         RYDyrSb7dDK/Y3x7ddqyANGby9dIAwcGfKFZaxGGzVNC0S5/bdoNbc8+dZLc3QVJO/xj
+         355mcgj3SqZqf38sM+r51qcaTMqyd25BHb8TIyN7kZMwZnvGsWzY2cPRgdmjMYsm7aBq
+         yHJ3jKhUBJjPLhxlwM78KRre0oSshALAJnfVFHCYXLdI1rpqK8IkOpeYzSSfBBmuT/ro
+         Bd6w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=E+zzLPV6n+5kowpZE/IEJBo10o+qQ1Ks/Ky4ezSQr08=;
-        b=aDfRhpZKF/nFW/Lit1c0WtonK5XGOa3wprCaWPBrMeQFBXiWDaiGmawYbFQDXLsGaJ
-         SbqSwIdwvgsQjWlrYhQdgVOPaFU3E/tWMp9vHTklOYwombwWMkKWsnwKM4dadu4IkPUO
-         956bwSfbGfJrtwJUJXxxaLHkrV+/2k85gFDuC3PHnITQlopfMDgehy8D78d4CFJ4RahV
-         MpG5CMhLFwfMxrtYTeyp4hz0JrIkn8ckj4NjrKDa3qmGjjZAlA2FqrgfxWJtdYZGV972
-         MsOG1qaF3lEufzXWdjEhVwhrpPLsaS9rkavET07Usm28CWRc06b+obTmiaJGWiSwo895
-         i+mQ==
-X-Gm-Message-State: AOAM530UIIrUqip2BGw5JHhxhGsxmnTOM8mgN8nm5SO+e7IPe3QLYfLw
-        ttTciQnY/ujmO9oafPymVGXnHw==
-X-Google-Smtp-Source: ABdhPJzboDjwMtKCULcXbojj82kIWXz6OPo28zEldC+ah1zGc+8yn3plPpmZXVbNr6sOK+w2ebG2hQ==
-X-Received: by 2002:a17:90a:488a:: with SMTP id b10mr5944052pjh.2.1618521333789;
-        Thu, 15 Apr 2021 14:15:33 -0700 (PDT)
+        bh=2ol39MDmb57HD+IRDbZnz3tkRIQCMuTQn6jcSnc5bPg=;
+        b=JPtDAw27FrZk6+dADdXZ+QvVzyLyHLv0blcId2L14rl6LlJ7DdiG2KNjDFlLpU7mwl
+         lxf+dQwqgaxfFj8ArcvS4jNqBEwIN7jPtmHzgGkGrk4ZpZBdddEbJA8epWv/kOJDeMGZ
+         U+gjvt0eTVKjLP+aj9SkeZQBNxdqf74z2eMrsp5KQM/yVfQFt5cVPtLaLMGAnzPaXGOP
+         gysGO/leZejwTaLIUq+gxuwNSCHl5eKmFxSe1rGDF4N2rWEFxKoxbWJrgAtmb14UhRmK
+         wlesSngPRiI+9Gcr/ULdH2ih+aeiReZmKTG1JSgjjzsd7PWPkqQlJSNbH7xqhWoy+8FS
+         f3hg==
+X-Gm-Message-State: AOAM532GackApNudHKiMHH0AIsrUii81wuWn20+g1tVKXl6TxWYqmelp
+        Bdk9bu5EOUVNCgs+A1HiF0i7CQ==
+X-Google-Smtp-Source: ABdhPJxfZzbT+tzq4qRcJZb4c6Yb5z9oOz2XdKOg+LX46iPKdrM3p6ZRt/5rALLjHbhOfohTlzgaOQ==
+X-Received: by 2002:a17:90a:ad84:: with SMTP id s4mr5816599pjq.153.1618521801411;
+        Thu, 15 Apr 2021 14:23:21 -0700 (PDT)
 Received: from hermes.local (76-14-218-44.or.wavecable.com. [76.14.218.44])
-        by smtp.gmail.com with ESMTPSA id x1sm2905627pfj.209.2021.04.15.14.15.32
+        by smtp.gmail.com with ESMTPSA id l35sm3004836pgm.10.2021.04.15.14.23.20
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 15 Apr 2021 14:15:33 -0700 (PDT)
-Date:   Thu, 15 Apr 2021 14:15:25 -0700
+        Thu, 15 Apr 2021 14:23:21 -0700 (PDT)
+Date:   Thu, 15 Apr 2021 14:23:11 -0700
 From:   Stephen Hemminger <stephen@networkplumber.org>
-To:     Dexuan Cui <decui@microsoft.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, kys@microsoft.com,
-        haiyangz@microsoft.com, sthemmin@microsoft.com, wei.liu@kernel.org,
-        liuwe@microsoft.com, netdev@vger.kernel.org, leon@kernel.org,
-        andrew@lunn.ch, bernd@petrovitsch.priv.at, rdunlap@infradead.org,
-        shacharr@microsoft.com, linux-kernel@vger.kernel.org,
-        linux-hyperv@vger.kernel.org
-Subject: Re: [PATCH v6 net-next] net: mana: Add a driver for Microsoft Azure
- Network Adapter (MANA)
-Message-ID: <20210415141525.69c12844@hermes.local>
-In-Reply-To: <20210415054519.12944-1-decui@microsoft.com>
-References: <20210415054519.12944-1-decui@microsoft.com>
+To:     Paolo Lungaroni <paolo.lungaroni@uniroma2.it>
+Cc:     David Ahern <dsahern@kernel.org>, netdev@vger.kernel.org,
+        Jakub Kicinski <kuba@kernel.org>,
+        Stefano Salsano <stefano.salsano@uniroma2.it>,
+        Ahmed Abdelsalam <ahabdels.dev@gmail.com>,
+        Andrea Mayer <andrea.mayer@uniroma2.it>
+Subject: Re: [RFC iproute2-next v2] seg6: add counters support for SRv6
+ Behaviors
+Message-ID: <20210415142311.4e43a637@hermes.local>
+In-Reply-To: <20210415180643.3511-1-paolo.lungaroni@uniroma2.it>
+References: <20210415180643.3511-1-paolo.lungaroni@uniroma2.it>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -68,42 +67,45 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 14 Apr 2021 22:45:19 -0700
-Dexuan Cui <decui@microsoft.com> wrote:
+On Thu, 15 Apr 2021 20:06:43 +0200
+Paolo Lungaroni <paolo.lungaroni@uniroma2.it> wrote:
 
-> +static int mana_probe_port(struct mana_context *ac, int port_idx,
-> +			   struct net_device **ndev_storage)
-> +{
-> +	struct gdma_context *gc = ac->gdma_dev->gdma_context;
-> +	struct mana_port_context *apc;
-> +	struct net_device *ndev;
-> +	int err;
+> +	if (is_json_context())
+> +		open_json_object("stats64");
 > +
-> +	ndev = alloc_etherdev_mq(sizeof(struct mana_port_context),
-> +				 gc->max_num_queues);
-> +	if (!ndev)
-> +		return -ENOMEM;
+> +	if (tb[SEG6_LOCAL_CNT_PACKETS]) {
+> +		packets = rta_getattr_u64(tb[SEG6_LOCAL_CNT_PACKETS]);
+> +		if (is_json_context()) {
+> +			print_u64(PRINT_JSON, "packets", NULL, packets);
+> +		} else {
+> +			print_string(PRINT_FP, NULL, "%s ", "packets");
+> +			print_num(fp, 1, packets);
+> +		}
+> +	}
 > +
-> +	*ndev_storage = ndev;
+> +	if (tb[SEG6_LOCAL_CNT_BYTES]) {
+> +		bytes = rta_getattr_u64(tb[SEG6_LOCAL_CNT_BYTES]);
+> +		if (is_json_context()) {
+> +			print_u64(PRINT_JSON, "bytes", NULL, bytes);
+> +		} else {
+> +			print_string(PRINT_FP, NULL, "%s ", "bytes");
+> +			print_num(fp, 1, bytes);
+> +		}
+> +	}
 > +
-> +	apc = netdev_priv(ndev);
-> +	apc->ac = ac;
-> +	apc->ndev = ndev;
-> +	apc->max_queues = gc->max_num_queues;
-> +	apc->num_queues = min_t(uint, gc->max_num_queues, MANA_MAX_NUM_QUEUES);
-> +	apc->port_handle = INVALID_MANA_HANDLE;
-> +	apc->port_idx = port_idx;
+> +	if (tb[SEG6_LOCAL_CNT_ERRORS]) {
+> +		errors = rta_getattr_u64(tb[SEG6_LOCAL_CNT_ERRORS]);
+> +		if (is_json_context()) {
+> +			print_u64(PRINT_JSON, "errors", NULL, errors);
+> +		} else {
+> +			print_string(PRINT_FP, NULL, "%s ", "errors");
+> +			print_num(fp, 1, errors);
+> +		}
+> +	}
 > +
-> +	ndev->netdev_ops = &mana_devops;
-> +	ndev->ethtool_ops = &mana_ethtool_ops;
-> +	ndev->mtu = ETH_DATA_LEN;
-> +	ndev->max_mtu = ndev->mtu;
-> +	ndev->min_mtu = ndev->mtu;
-> +	ndev->needed_headroom = MANA_HEADROOM;
-> +	SET_NETDEV_DEV(ndev, gc->dev);
-> +
-> +	netif_carrier_off(ndev);
-> +
-> +	get_random_bytes(apc->hashkey, MANA_HASH_KEY_SIZE);
+> +	if (is_json_context())
+> +		close_json_object();
 
-Current practice for network drivers is to use netdev_rss_key_fill() for this.
+
+The code would be cleaner with doing if (is_json_context()) once at outer loop.
+See print_vf_stats64.
