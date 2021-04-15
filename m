@@ -2,174 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id ADE4936028E
-	for <lists+netdev@lfdr.de>; Thu, 15 Apr 2021 08:41:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EEE9B3602A0
+	for <lists+netdev@lfdr.de>; Thu, 15 Apr 2021 08:46:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230124AbhDOGmL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 15 Apr 2021 02:42:11 -0400
-Received: from mga05.intel.com ([192.55.52.43]:58572 "EHLO mga05.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230372AbhDOGmK (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 15 Apr 2021 02:42:10 -0400
-IronPort-SDR: +1gAy2uETl2Mlq/KykZbbXIGDf4RtQIUXTAJym8/leXKnLmobPA9OdydulMSbRd9slpr/7VJc1
- NIh3QXyqy1DQ==
-X-IronPort-AV: E=McAfee;i="6200,9189,9954"; a="280110684"
-X-IronPort-AV: E=Sophos;i="5.82,223,1613462400"; 
-   d="scan'208";a="280110684"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Apr 2021 23:41:45 -0700
-IronPort-SDR: NmglVgA4Adr2QDeg3s4xO+XgQmaUvm1Hw97Vg3b5rW2Gfc7EWPrje5ylCe4jjs43IrZV3lOYMU
- D+87RHKml5WA==
-X-IronPort-AV: E=Sophos;i="5.82,223,1613462400"; 
-   d="scan'208";a="418635470"
-Received: from lingshan-mobl5.ccr.corp.intel.com (HELO [10.254.209.173]) ([10.254.209.173])
-  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Apr 2021 23:41:43 -0700
-Subject: Re: [PATCH 2/3] vDPA/ifcvf: enable Intel C5000X-PL virtio-block for
- vDPA
-To:     Jason Wang <jasowang@redhat.com>,
-        Zhu Lingshan <lingshan.zhu@intel.com>, mst@redhat.com,
-        lulu@redhat.com, leonro@nvidia.com
-Cc:     virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        kvm@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20210414091832.5132-1-lingshan.zhu@intel.com>
- <20210414091832.5132-3-lingshan.zhu@intel.com>
- <54839b05-78d2-8edf-317c-372f0ecda024@redhat.com>
- <1a1f9f50-dc92-ced3-759d-e600abca3138@linux.intel.com>
- <c90a923f-7c8d-9a32-ce14-2370f85f1ba4@redhat.com>
-From:   Zhu Lingshan <lingshan.zhu@linux.intel.com>
-Message-ID: <10700088-3358-739b-5770-612ab761598c@linux.intel.com>
-Date:   Thu, 15 Apr 2021 14:41:41 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+        id S230201AbhDOGq5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 15 Apr 2021 02:46:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49150 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229503AbhDOGq4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 15 Apr 2021 02:46:56 -0400
+Received: from mail-wm1-x32e.google.com (mail-wm1-x32e.google.com [IPv6:2a00:1450:4864:20::32e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2AD7DC061574
+        for <netdev@vger.kernel.org>; Wed, 14 Apr 2021 23:46:34 -0700 (PDT)
+Received: by mail-wm1-x32e.google.com with SMTP id q123-20020a1c43810000b029012c7d852459so3473200wma.0
+        for <netdev@vger.kernel.org>; Wed, 14 Apr 2021 23:46:34 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=s+SIKKHGE0TG0a9nm+rEkhtw8QtFbNRjMHOdbd3dfP4=;
+        b=hqt+15/4ufoQLfxKFE2qTy1J2nHuTMqxScBG8LKKBGDAMI5rPP9+PA/Atdwo+kst+z
+         aUsV+cWvq43Iue+M0MOMeST5isBY+Nq9/yRZjhkUXi3z1K9Mt+vFwAsb9PW0zaj0lOwK
+         EbSDQwgZGonV40xRIvO5zecdJnI4dxMFjhEGUeik/tRdKP4Z1Syeamxp6xA3zdgJrq9r
+         AkTVmO4qpzGaSYlEqCswasWdp+9DzXugs3PLzo/T7K6CgwnmjaL91v/TPRVTjtQ3YJAu
+         4NL9y5+GL0xLeTbnjCFETcY2lnxoeuR1iRe71FzEWoiQIdyhIGmwJ17Ez7S+tE5ZY9xl
+         eyQQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=s+SIKKHGE0TG0a9nm+rEkhtw8QtFbNRjMHOdbd3dfP4=;
+        b=q9AX3iQHf+2caHybiH6yX9uMdy44+c13DHJGWhxCiYy2RMbqi+I+8TFkq+lLnigx++
+         aKDJ9hEz/tIVIPRW43O9p1FnCf5K7pfHzx+4gccXQEEEKn345qOEoeX/HpAc2eRhLcjR
+         NjPtF/1S3NBXiD1MrhPYyl5as2Pe3Rnbb3V972adUUEUspmcK88aAxejVOAnsoulNURR
+         7yiHV+4Iwtxf4zXMqyuA7lE3eaWZtmTtp8xhthJtSYhmqciA7lge0G/jv7ms8gBwo4qn
+         +pLRwgoM1j+SzSN0G0fDnRY/6RMFMUInBtkpJXeFVXuJpu9ZevY+NG/WYzgXvWfDiEuU
+         3sHw==
+X-Gm-Message-State: AOAM533zeBGw9HXUnmXJZE6K65N6XKQyuk7drWbTy+kgf2/f5rBwml3b
+        W8lHh7/5w/zAKAMQjtUb3wvb6kIKneg=
+X-Google-Smtp-Source: ABdhPJzUgnAKTs+fnAZSKOrenp+oez7HQvVBog/9mEagwFSpaFJvizro6Ad2xIN8xjI5UCbJcHws4Q==
+X-Received: by 2002:a7b:c1cf:: with SMTP id a15mr1526714wmj.168.1618469192727;
+        Wed, 14 Apr 2021 23:46:32 -0700 (PDT)
+Received: from [192.168.1.101] ([37.166.86.66])
+        by smtp.gmail.com with ESMTPSA id x25sm1327798wmj.34.2021.04.14.23.46.31
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 14 Apr 2021 23:46:32 -0700 (PDT)
+Subject: Re: [PATCH net v2] net: core: make napi_disable more robust
+To:     Jakub Kicinski <kuba@kernel.org>, Lijun Pan <lijunp213@gmail.com>
+Cc:     netdev@vger.kernel.org
+References: <20210414080845.11426-1-lijunp213@gmail.com>
+ <20210414162109.77eecf47@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+Message-ID: <5f5ea71d-c9e9-fe85-2f29-475c67174549@gmail.com>
+Date:   Thu, 15 Apr 2021 08:46:30 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
  Thunderbird/78.9.0
 MIME-Version: 1.0
-In-Reply-To: <c90a923f-7c8d-9a32-ce14-2370f85f1ba4@redhat.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <20210414162109.77eecf47@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 
 
-On 4/15/2021 2:31 PM, Jason Wang wrote:
->
-> 在 2021/4/15 下午1:55, Zhu Lingshan 写道:
+On 4/15/21 1:21 AM, Jakub Kicinski wrote:
+> On Wed, 14 Apr 2021 03:08:45 -0500 Lijun Pan wrote:
+>> There are chances that napi_disable can be called twice by NIC driver.
+>> This could generate deadlock. For example,
+>> the first napi_disable will spin until NAPI_STATE_SCHED is cleared
+>> by napi_complete_done, then set it again.
+>> When napi_disable is called the second time, it will loop infinitely
+>> because no dev->poll will be running to clear NAPI_STATE_SCHED.
 >>
->>
->> On 4/15/2021 11:34 AM, Jason Wang wrote:
->>>
->>> 在 2021/4/14 下午5:18, Zhu Lingshan 写道:
->>>> This commit enabled Intel FPGA SmartNIC C5000X-PL virtio-block
->>>> for vDPA.
->>>>
->>>> Signed-off-by: Zhu Lingshan <lingshan.zhu@intel.com>
->>>> ---
->>>>   drivers/vdpa/ifcvf/ifcvf_base.h | 17 ++++++++++++++++-
->>>>   drivers/vdpa/ifcvf/ifcvf_main.c | 10 +++++++++-
->>>>   2 files changed, 25 insertions(+), 2 deletions(-)
->>>>
->>>> diff --git a/drivers/vdpa/ifcvf/ifcvf_base.h 
->>>> b/drivers/vdpa/ifcvf/ifcvf_base.h
->>>> index 1c04cd256fa7..8b403522bf06 100644
->>>> --- a/drivers/vdpa/ifcvf/ifcvf_base.h
->>>> +++ b/drivers/vdpa/ifcvf/ifcvf_base.h
->>>> @@ -15,6 +15,7 @@
->>>>   #include <linux/pci_regs.h>
->>>>   #include <linux/vdpa.h>
->>>>   #include <uapi/linux/virtio_net.h>
->>>> +#include <uapi/linux/virtio_blk.h>
->>>>   #include <uapi/linux/virtio_config.h>
->>>>   #include <uapi/linux/virtio_pci.h>
->>>>   @@ -28,7 +29,12 @@
->>>>   #define C5000X_PL_SUBSYS_VENDOR_ID    0x8086
->>>>   #define C5000X_PL_SUBSYS_DEVICE_ID    0x0001
->>>>   -#define IFCVF_SUPPORTED_FEATURES \
->>>> +#define C5000X_PL_BLK_VENDOR_ID        0x1AF4
->>>> +#define C5000X_PL_BLK_DEVICE_ID        0x1001
->>>> +#define C5000X_PL_BLK_SUBSYS_VENDOR_ID    0x8086
->>>> +#define C5000X_PL_BLK_SUBSYS_DEVICE_ID    0x0002
->>>> +
->>>> +#define IFCVF_NET_SUPPORTED_FEATURES \
->>>>           ((1ULL << VIRTIO_NET_F_MAC)            | \
->>>>            (1ULL << VIRTIO_F_ANY_LAYOUT) | \
->>>>            (1ULL << VIRTIO_F_VERSION_1)            | \
->>>> @@ -37,6 +43,15 @@
->>>>            (1ULL << VIRTIO_F_ACCESS_PLATFORM) | \
->>>>            (1ULL << VIRTIO_NET_F_MRG_RXBUF))
->>>>   +#define IFCVF_BLK_SUPPORTED_FEATURES \
->>>> +        ((1ULL << VIRTIO_BLK_F_SIZE_MAX)        | \
->>>> +         (1ULL << VIRTIO_BLK_F_SEG_MAX) | \
->>>> +         (1ULL << VIRTIO_BLK_F_BLK_SIZE)        | \
->>>> +         (1ULL << VIRTIO_BLK_F_TOPOLOGY)        | \
->>>> +         (1ULL << VIRTIO_BLK_F_MQ)            | \
->>>> +         (1ULL << VIRTIO_F_VERSION_1)            | \
->>>> +         (1ULL << VIRTIO_F_ACCESS_PLATFORM))
->>>
->>>
->>> I think we've discussed this sometime in the past but what's the 
->>> reason for such whitelist consider there's already a get_features() 
->>> implemention?
->>>
->>> E.g Any reason to block VIRTIO_BLK_F_WRITE_ZEROS or 
->>> VIRTIO_F_RING_PACKED?
->>>
->>> Thanks
->> The reason is some feature bits are supported in the device but not 
->> supported by the driver, e.g, for virtio-net, mq & cq implementation 
->> is not ready in the driver.
->
->
-> I understand the case of virtio-net but I wonder why we need this for 
-> block where we don't vq cvq.
->
-> Thanks
-This is still a subset of the feature bits read from hardware, I leave 
-it here to code consistently, and indicate what we support clearly.
-Are you suggesting remove this feature bits list and just use what we 
-read from hardware?
+>> Though it is driver writer's responsibility to make sure it being
+>> called only once, making napi_disable more robust does not hurt, not
+>> to say it can prevent a buggy driver from crashing a system.
+>> So, we check the napi state bit to make sure that if napi is already
+>> disabled, we exit the call early enough to avoid spinning infinitely.
+> 
+> You've already been told by Eric & Dave to fix the driver instead.
+> 
+> Your check is _not_ correct - SCHED && NPSVC && !MISSED && !BUSY_POLL 
+> can well arise without disabling the NAPI.
+> 
+> But regardless, a driver bug should be relatively easy to identify with
+> task getting stuck in napi_disable(). We don't provide "protection" 
+> for taking spin locks or ref counts twice either. Unless you can show 
+> a strong use case please stop posting new versions of this patch.
+> 
 
-Thansk
->
->
->>
->> Thanks!
->>
->>>
->>>
->>>> +
->>>>   /* Only one queue pair for now. */
->>>>   #define IFCVF_MAX_QUEUE_PAIRS    1
->>>>   diff --git a/drivers/vdpa/ifcvf/ifcvf_main.c 
->>>> b/drivers/vdpa/ifcvf/ifcvf_main.c
->>>> index 99b0a6b4c227..9b6a38b798fa 100644
->>>> --- a/drivers/vdpa/ifcvf/ifcvf_main.c
->>>> +++ b/drivers/vdpa/ifcvf/ifcvf_main.c
->>>> @@ -171,7 +171,11 @@ static u64 ifcvf_vdpa_get_features(struct 
->>>> vdpa_device *vdpa_dev)
->>>>       struct ifcvf_hw *vf = vdpa_to_vf(vdpa_dev);
->>>>       u64 features;
->>>>   -    features = ifcvf_get_features(vf) & IFCVF_SUPPORTED_FEATURES;
->>>> +    if (vf->dev_type == VIRTIO_ID_NET)
->>>> +        features = ifcvf_get_features(vf) & 
->>>> IFCVF_NET_SUPPORTED_FEATURES;
->>>> +
->>>> +    if (vf->dev_type == VIRTIO_ID_BLOCK)
->>>> +        features = ifcvf_get_features(vf) & 
->>>> IFCVF_BLK_SUPPORTED_FEATURES;
->>>>         return features;
->>>>   }
->>>> @@ -509,6 +513,10 @@ static struct pci_device_id ifcvf_pci_ids[] = {
->>>>                C5000X_PL_DEVICE_ID,
->>>>                C5000X_PL_SUBSYS_VENDOR_ID,
->>>>                C5000X_PL_SUBSYS_DEVICE_ID) },
->>>> +    { PCI_DEVICE_SUB(C5000X_PL_BLK_VENDOR_ID,
->>>> +             C5000X_PL_BLK_DEVICE_ID,
->>>> +             C5000X_PL_BLK_SUBSYS_VENDOR_ID,
->>>> +             C5000X_PL_BLK_SUBSYS_DEVICE_ID) },
->>>>         { 0 },
->>>>   };
->>>
->>
->
++222
+
+I notice this v2 does not even mention which driver has the issue.
+
+I suspect an out-of-tree driver.
 
