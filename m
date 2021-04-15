@@ -2,83 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 99D2E36065D
-	for <lists+netdev@lfdr.de>; Thu, 15 Apr 2021 11:59:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0F7C5360685
+	for <lists+netdev@lfdr.de>; Thu, 15 Apr 2021 12:06:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232332AbhDOJ7c (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 15 Apr 2021 05:59:32 -0400
-Received: from mga12.intel.com ([192.55.52.136]:65315 "EHLO mga12.intel.com"
+        id S232367AbhDOKG0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 15 Apr 2021 06:06:26 -0400
+Received: from mout.gmx.net ([212.227.15.15]:57405 "EHLO mout.gmx.net"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232294AbhDOJ71 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 15 Apr 2021 05:59:27 -0400
-IronPort-SDR: JQ3u8krA8A+ayFzI4RMAF7KRbmoAaPBZCyb8UGh7yMne5eEXvmjWnTtp/EWxW1xFQJ//dxXy99
- BrFUSNzC6h1Q==
-X-IronPort-AV: E=McAfee;i="6200,9189,9954"; a="174321448"
-X-IronPort-AV: E=Sophos;i="5.82,223,1613462400"; 
-   d="scan'208";a="174321448"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Apr 2021 02:59:04 -0700
-IronPort-SDR: AptOkeCkx0s85LJH4TjZFNfA6zvizGwZ6gcGZdSPqAVxuz7Jhl2t0gjF59bMkolL3BBGabWYZy
- vOdRc4Ipknxg==
-X-IronPort-AV: E=Sophos;i="5.82,223,1613462400"; 
-   d="scan'208";a="425123484"
-Received: from unknown (HELO localhost.localdomain.bj.intel.com) ([10.240.193.73])
-  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Apr 2021 02:59:01 -0700
-From:   Zhu Lingshan <lingshan.zhu@intel.com>
-To:     jasowang@redhat.com, mst@redhat.com, lulu@redhat.com,
-        sgarzare@redhat.com
-Cc:     virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Zhu Lingshan <lingshan.zhu@intel.com>
-Subject: [PATCH V2 3/3] vDPA/ifcvf: get_config_size should return dev specific config size
-Date:   Thu, 15 Apr 2021 17:53:36 +0800
-Message-Id: <20210415095336.4792-4-lingshan.zhu@intel.com>
-X-Mailer: git-send-email 2.27.0
-In-Reply-To: <20210415095336.4792-1-lingshan.zhu@intel.com>
-References: <20210415095336.4792-1-lingshan.zhu@intel.com>
+        id S231919AbhDOKGZ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 15 Apr 2021 06:06:25 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
+        s=badeba3b8450; t=1618481132;
+        bh=+kUA0a4ZwMlKKIjn9JGeCEsofiYmSw4pSDq5hmtIq2I=;
+        h=X-UI-Sender-Class:Date:In-Reply-To:References:Subject:To:CC:From;
+        b=QuPPBRiENJoCcijPjvZcehy4ig2VOX3F66I2kOgs/vJFAbu8+rKBAGMfkS9y51vXB
+         Qn5gDOQSDEvgZWUuNQ5EEFtH81pRpUqBh0iC6+KQptIxJ/1CigUqydmPRjMQR9EMfV
+         8SSnKuex4gojzwa1SAAqkMBNtVSmJDEWCYsEXDh8=
+X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
+Received: from frank-s9 ([80.245.79.33]) by mail.gmx.net (mrgmx004
+ [212.227.17.190]) with ESMTPSA (Nemesis) id 1MQMyZ-1lBLGH0N3x-00MIeU; Thu, 15
+ Apr 2021 12:05:32 +0200
+Date:   Thu, 15 Apr 2021 12:05:26 +0200
+User-Agent: K-9 Mail for Android
+In-Reply-To: <20210415094005.2673-1-dqfext@gmail.com>
+References: <20210415094005.2673-1-dqfext@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain;
+ charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [PATCH net-next] net: ethernet: mediatek: fix typo in offload code
+To:     linux-mediatek@lists.infradead.org,
+        DENG Qingfang <dqfext@gmail.com>, Felix Fietkau <nbd@nbd.name>,
+        John Crispin <john@phrozen.org>,
+        Sean Wang <sean.wang@mediatek.com>,
+        Mark Lee <Mark-MC.Lee@mediatek.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Pablo Neira Ayuso <pablo@netfilter.org>,
+        netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org
+CC:     Alex Ryabchenko <d3adme4t@gmail.com>
+From:   Frank Wunderlich <frank-w@public-files.de>
+Message-ID: <86DA3F5B-32B2-446B-B83D-AFDC5EE6BF53@public-files.de>
+X-Provags-ID: V03:K1:PlTSyeEjvd5QpR+8/glb3oZRAAoeP/sVZ46rDI8ff51bte7qAzo
+ 0y2loCGZIEppur0KEOWHSPNx8Y9tDeluhuV/o4OqnexoiTupD728MW1s2fpWZKDBuxOvXfb
+ C/vrQFUlaGuEhSHV/Gx7EM64seFRytvCQFMaQu8S9QIUd5pDZ2TZvfgBDdmNf9K6zt1bbxJ
+ iuY9NS+J6LMaZX07t2W2A==
+X-Spam-Flag: NO
+X-UI-Out-Filterresults: notjunk:1;V03:K0:LO/CZ9QTzDI=:TYoFxZWYwdEgCCGxcK3MPf
+ i0vOKpwaIvIrvkV1M0tkhAKn7sKMGNM9MpwEM9N79U05yJ7fh7KDk6ytrZCeoTEkEeu/p9hUz
+ zFUP+jIKSB7OkeKUGdF+HJEblIFk4jZknfZtUCtVVyA77U8gL6aVsV0Fd3TsJNCNvTHAbOVFN
+ xYh1G+Je+q6EapArZY9YWSKJw+Za2MXSWZYcuqF3QJHwRm5RekNw1lSO5ihVcavLu4NNKW/hz
+ fIXKxYK/h4VaPK2ZQ7l4JwrnK70w2MtKTeOUsN1KNRZ8GBqE7Z+hKUJBUD2yzrmiSQZ9ycD5M
+ lUc/m7UGN7b4bC+Z0ODNfwdSm4f1ghEB7G0dCUffelaFN9x1mRhnFuuDoziX6hQneCKVt+CoS
+ KenOiEcQt8w44+rJ8T9DpGvszeuC8MzOHZSF5/u/WV5XSxh8L0V0xlsAw3dyWa03figFU8Js1
+ +8wSayeVS/hGr2KPxksqF/xIQ4GTg7cw7Meu9/LHvVwrMty//jzV+ItunAWrYBcqjztkqraMN
+ oSUGTlxlYSdISUd9UZdtHRr+nIfSwtQVWcwvR1bIV0TQfnWEXG9dx+enkG0u9rhwiKztKppb5
+ iNyydbFT5EqfR4Yz19WhIzukxwMZnH0aO5xrfXLO//Rz+FmeUER/hghpdGWoDxJQawi/WeJDr
+ rszR7gnOwXj0HyQTDPwgQQ8bpEr8FVf6M5suG+EtMx2XXruZkdB1grvFX4f1GmnlF1m0aHfN4
+ HmN086lOjt8gZocbSS8mB+pythc2ptrT8ZxuhyzBFubW2Tp0r2d+mgGYa4joZFhhDCu2XMfJ4
+ IK+VPsx4dukuWSeI2P8IRUxbmoBETGdiYbKG9G0ZE1rmOtmqY4zFp7HLlkNCa/YJkIa5xYDVl
+ r/XB4XLFkBupHKz0JLfMs1CgjsTXjdAhuNGupbi+nekHtj+siSV6pMdmbl+2tFs8/bWeF+blA
+ LGZsR0wHfG1hix/WzpiHNuT0Ct59EUEmq6y/hQxorW7Gv3uYFx8Gp/ej6ivoaKqjp7r5ChNCJ
+ +Sa4UKwUeYGQ91oCRcqNc4jOJsFR9KobtIqot9f3jNS7ZBwIpDu++c9fbIH+vRjdXcyN+C29D
+ pAlOnygQnwO4m6rFW26M+b60irT9wQqUF+LWYIPQ6H8fnQ0M2BDMJAjfxcR88HKfwc4cozygB
+ G6yaHjWcfuQR7Lg8CPSnnz4zCwQDsVplG8XQH+gTiuYhGtGsjWyzodKEAF/no2UMobZIYpyzf
+ 5eB6pZ2/vrYv3/I6K
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-get_config_size() should return the size based on the decected
-device type.
+Am 15=2E April 2021 11:40:05 MESZ schrieb DENG Qingfang <dqfext@gmail=2Ecom=
+>:
+>=2Ekey_offset was assigned to =2Ehead_offset instead=2E Fix the typo=2E
+>
+>Fixes: 502e84e2382d ("net: ethernet: mtk_eth_soc: add flow offloading
+>support")
+>Signed-off-by: DENG Qingfang <dqfext@gmail=2Ecom>
 
-Signed-off-by: Zhu Lingshan <lingshan.zhu@intel.com>
----
- drivers/vdpa/ifcvf/ifcvf_main.c | 18 +++++++++++++++++-
- 1 file changed, 17 insertions(+), 1 deletion(-)
+Thanks for posting the fix,but imho commit-message is not good=2E
 
-diff --git a/drivers/vdpa/ifcvf/ifcvf_main.c b/drivers/vdpa/ifcvf/ifcvf_main.c
-index cea1313b1a3f..6844c49fe1de 100644
---- a/drivers/vdpa/ifcvf/ifcvf_main.c
-+++ b/drivers/vdpa/ifcvf/ifcvf_main.c
-@@ -347,7 +347,23 @@ static u32 ifcvf_vdpa_get_vq_align(struct vdpa_device *vdpa_dev)
- 
- static size_t ifcvf_vdpa_get_config_size(struct vdpa_device *vdpa_dev)
- {
--	return sizeof(struct virtio_net_config);
-+	struct ifcvf_adapter *adapter = vdpa_to_adapter(vdpa_dev);
-+	struct ifcvf_hw *vf = vdpa_to_vf(vdpa_dev);
-+	struct pci_dev *pdev = adapter->pdev;
-+	size_t size;
-+
-+	if (vf->dev_type == VIRTIO_ID_NET)
-+		size = sizeof(struct virtio_net_config);
-+
-+	else if (vf->dev_type == VIRTIO_ID_BLOCK)
-+		size = sizeof(struct virtio_blk_config);
-+
-+	else {
-+		size = 0;
-+		IFCVF_ERR(pdev, "VIRTIO ID %u not supported\n", vf->dev_type);
-+	}
-+
-+	return size;
- }
- 
- static void ifcvf_vdpa_get_config(struct vdpa_device *vdpa_dev,
--- 
-2.27.0
+Issue were traffic problems after a while with increased ping times if flo=
+w offload is active=2E
 
+It turns out that key_offset with cookie is needed in rhashtable_params an=
+d head_offset was defined twice=2E
+regards Frank
