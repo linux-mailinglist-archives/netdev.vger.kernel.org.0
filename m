@@ -2,166 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 22796360280
-	for <lists+netdev@lfdr.de>; Thu, 15 Apr 2021 08:36:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 80719360284
+	for <lists+netdev@lfdr.de>; Thu, 15 Apr 2021 08:38:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230264AbhDOGgq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 15 Apr 2021 02:36:46 -0400
-Received: from mga05.intel.com ([192.55.52.43]:58244 "EHLO mga05.intel.com"
+        id S230095AbhDOGiY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 15 Apr 2021 02:38:24 -0400
+Received: from mail.kernel.org ([198.145.29.99]:36074 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229503AbhDOGgp (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 15 Apr 2021 02:36:45 -0400
-IronPort-SDR: Kg4+8JsQjks/NkYHpOvV9GyuDrwgAbEf2Ns/v+qOS0Oc1lIJPxuZryUJ89ny14JMfXV/Bus4AP
- w/hy+B5V3RtQ==
-X-IronPort-AV: E=McAfee;i="6200,9189,9954"; a="280110298"
-X-IronPort-AV: E=Sophos;i="5.82,223,1613462400"; 
-   d="scan'208";a="280110298"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Apr 2021 23:36:22 -0700
-IronPort-SDR: cUCFkyBP4F1zQegbRNZjRuBuYb5nTtdKHouuUdwf2fWvM3jzUJyz9Cj13j5a0BE66KmUWrq6s2
- +sqekD9u+NdQ==
-X-IronPort-AV: E=Sophos;i="5.82,223,1613462400"; 
-   d="scan'208";a="418634557"
-Received: from lingshan-mobl5.ccr.corp.intel.com (HELO [10.254.209.173]) ([10.254.209.173])
-  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Apr 2021 23:36:19 -0700
-Subject: Re: [PATCH 1/3] vDPA/ifcvf: deduce VIRTIO device ID when probe
-To:     Jason Wang <jasowang@redhat.com>,
-        Zhu Lingshan <lingshan.zhu@intel.com>, mst@redhat.com,
-        lulu@redhat.com, leonro@nvidia.com
-Cc:     virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        kvm@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20210414091832.5132-1-lingshan.zhu@intel.com>
- <20210414091832.5132-2-lingshan.zhu@intel.com>
- <85483ff1-cf98-ad05-0c53-74caa2464459@redhat.com>
- <ccf7001b-27f0-27ea-40d2-52ca3cc2386b@linux.intel.com>
- <ffd2861d-2395-de51-a227-f1ef33f74322@redhat.com>
-From:   Zhu Lingshan <lingshan.zhu@linux.intel.com>
-Message-ID: <92ef6264-4462-cbd4-5db8-6ce6b68762e0@linux.intel.com>
-Date:   Thu, 15 Apr 2021 14:36:15 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.9.0
+        id S229503AbhDOGiX (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 15 Apr 2021 02:38:23 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 9969561132;
+        Thu, 15 Apr 2021 06:38:00 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1618468681;
+        bh=t6GHDj+Y33mMXvg8uABao12Vi4kYehCtFM50zKPWZww=;
+        h=Subject:From:To:Cc:Date:In-Reply-To:References:From;
+        b=gmiwLF2kzFXyCyOBjwWSTwzLxP54RY7crMkwZuLe6NAPzoc/5EdtC1M05TUHyZURU
+         lFK3RmZ9/X2cHQxFdvgTTw91YR4M/Wnlco8FSTY+8Pe7eJndv8ydEpsrnU5DMk+LF4
+         0YN0nURzdOxEC3rxOgwO1dXYaLpBaD+StNeY8wEpKjeomGInLWFDAiT97o6qsLfBg6
+         1YpZwY8pFv9x0VgSKDoPyKd3ykv4MMysTzIeiwowBsD9uP/KXSaZCuKJKxp9Y2XuBz
+         ogm2K0dWOvTkkyeW1/wtaLt41AHlowyceCsA2C3CpfsW/igb+SpfPUqp4XXWHDTZ1I
+         9MsEFcAM9HtJA==
+Message-ID: <89cfa28751667cbebf32ec0e0ecb864fe5d570e9.camel@kernel.org>
+Subject: Re: [PATCH net-next 6/6] mlx5: implement ethtool::get_fec_stats
+From:   Saeed Mahameed <saeed@kernel.org>
+To:     Jakub Kicinski <kuba@kernel.org>, davem@davemloft.net
+Cc:     netdev@vger.kernel.org, michael.chan@broadcom.com, leon@kernel.org,
+        ecree.xilinx@gmail.com, habetsm.xilinx@gmail.com,
+        f.fainelli@gmail.com, andrew@lunn.ch, mkubecek@suse.cz,
+        ariela@nvidia.com
+Date:   Wed, 14 Apr 2021 23:37:59 -0700
+In-Reply-To: <20210414034454.1970967-7-kuba@kernel.org>
+References: <20210414034454.1970967-1-kuba@kernel.org>
+         <20210414034454.1970967-7-kuba@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.38.4 (3.38.4-1.fc33) 
 MIME-Version: 1.0
-In-Reply-To: <ffd2861d-2395-de51-a227-f1ef33f74322@redhat.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: 8bit
-Content-Language: en-US
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Tue, 2021-04-13 at 20:44 -0700, Jakub Kicinski wrote:
+> Report corrected bits.
+> 
+> Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+> ---
+>  .../ethernet/mellanox/mlx5/core/en_ethtool.c  |  9 ++++++
+>  .../ethernet/mellanox/mlx5/core/en_stats.c    | 28
+> +++++++++++++++++--
+>  
+> -#define MLX5E_READ_CTR64_BE_F(ptr, c)                  \
+> +#define MLX5E_READ_CTR64_BE_F(ptr, set, c)             \
+>         be64_to_cpu(*(__be64 *)((char *)ptr +           \
+>                 MLX5_BYTE_OFF(ppcnt_reg,                \
+> -
+>                        counter_set.eth_802_3_cntrs_grp_data_layout.c##
+> _high)))
+> +                             counter_set.set.c##_high)))
+
+squint...... looks fine :) 
+
+>  
+>  void mlx5e_stats_pause_get(struct mlx5e_priv *priv,
+>                            struct ethtool_pause_stats *pause_stats)
+> @@ -791,9 +791,11 @@ void mlx5e_stats_pause_get(struct mlx5e_priv
+> *priv,
+>  
+>         pause_stats->tx_pause_frames =
+>                 MLX5E_READ_CTR64_BE_F(ppcnt_ieee_802_3,
+> +                                    
+> eth_802_3_cntrs_grp_data_layout,
+>                                      
+> a_pause_mac_ctrl_frames_transmitted);
+>         pause_stats->rx_pause_frames =
+>                 MLX5E_READ_CTR64_BE_F(ppcnt_ieee_802_3,
+> +                                    
+> eth_802_3_cntrs_grp_data_layout,
+>                                      
+> a_pause_mac_ctrl_frames_received);
+>  }
+>  
+> @@ -1015,6 +1017,28 @@ static
+> MLX5E_DECLARE_STATS_GRP_OP_UPDATE_STATS(phy)
+>         mlx5_core_access_reg(mdev, in, sz, out, sz, MLX5_REG_PPCNT,
+> 0, 0);
+>  }
+>  
+> +void mlx5e_stats_fec_get(struct mlx5e_priv *priv,
+> +                        struct ethtool_fec_stats *fec_stats)
+> +{
+> +       u32 ppcnt_phy_statistical[MLX5_ST_SZ_DW(ppcnt_reg)];
+> +       struct mlx5_core_dev *mdev = priv->mdev;
+> +       u32 in[MLX5_ST_SZ_DW(ppcnt_reg)] = {0};
+> +       int sz = MLX5_ST_SZ_BYTES(ppcnt_reg);
+> +
+> +       if (!MLX5_CAP_PCAM_FEATURE(mdev, ppcnt_statistical_group))
+> +               return;
+> +
+> +       MLX5_SET(ppcnt_reg, in, local_port, 1);
+> +       MLX5_SET(ppcnt_reg, in, grp,
+> MLX5_PHYSICAL_LAYER_STATISTICAL_GROUP);
+> +       mlx5_core_access_reg(mdev, in, sz, ppcnt_phy_statistical,
+> +                            sz, MLX5_REG_PPCNT, 0, 0);
+> +
+
+other than that the FW might fail us here, LGTM.
+
+Acked-by: Saeed Mahameed <saeedm@nvidia.com>
 
 
-On 4/15/2021 2:30 PM, Jason Wang wrote:
->
-> 在 2021/4/15 下午1:52, Zhu Lingshan 写道:
->>
->>
->> On 4/15/2021 11:30 AM, Jason Wang wrote:
->>>
->>> 在 2021/4/14 下午5:18, Zhu Lingshan 写道:
->>>> This commit deduces VIRTIO device ID as device type when probe,
->>>> then ifcvf_vdpa_get_device_id() can simply return the ID.
->>>> ifcvf_vdpa_get_features() and ifcvf_vdpa_get_config_size()
->>>> can work properly based on the device ID.
->>>>
->>>> Signed-off-by: Zhu Lingshan <lingshan.zhu@intel.com>
->>>> ---
->>>>   drivers/vdpa/ifcvf/ifcvf_base.h |  1 +
->>>>   drivers/vdpa/ifcvf/ifcvf_main.c | 22 ++++++++++------------
->>>>   2 files changed, 11 insertions(+), 12 deletions(-)
->>>>
->>>> diff --git a/drivers/vdpa/ifcvf/ifcvf_base.h 
->>>> b/drivers/vdpa/ifcvf/ifcvf_base.h
->>>> index b2eeb16b9c2c..1c04cd256fa7 100644
->>>> --- a/drivers/vdpa/ifcvf/ifcvf_base.h
->>>> +++ b/drivers/vdpa/ifcvf/ifcvf_base.h
->>>> @@ -84,6 +84,7 @@ struct ifcvf_hw {
->>>>       u32 notify_off_multiplier;
->>>>       u64 req_features;
->>>>       u64 hw_features;
->>>> +    u32 dev_type;
->>>>       struct virtio_pci_common_cfg __iomem *common_cfg;
->>>>       void __iomem *net_cfg;
->>>>       struct vring_info vring[IFCVF_MAX_QUEUE_PAIRS * 2];
->>>> diff --git a/drivers/vdpa/ifcvf/ifcvf_main.c 
->>>> b/drivers/vdpa/ifcvf/ifcvf_main.c
->>>> index 44d7586019da..99b0a6b4c227 100644
->>>> --- a/drivers/vdpa/ifcvf/ifcvf_main.c
->>>> +++ b/drivers/vdpa/ifcvf/ifcvf_main.c
->>>> @@ -323,19 +323,9 @@ static u32 ifcvf_vdpa_get_generation(struct 
->>>> vdpa_device *vdpa_dev)
->>>>     static u32 ifcvf_vdpa_get_device_id(struct vdpa_device *vdpa_dev)
->>>>   {
->>>> -    struct ifcvf_adapter *adapter = vdpa_to_adapter(vdpa_dev);
->>>> -    struct pci_dev *pdev = adapter->pdev;
->>>> -    u32 ret = -ENODEV;
->>>> -
->>>> -    if (pdev->device < 0x1000 || pdev->device > 0x107f)
->>>> -        return ret;
->>>> -
->>>> -    if (pdev->device < 0x1040)
->>>> -        ret =  pdev->subsystem_device;
->>>> -    else
->>>> -        ret =  pdev->device -0x1040;
->>>> +    struct ifcvf_hw *vf = vdpa_to_vf(vdpa_dev);
->>>>   -    return ret;
->>>> +    return vf->dev_type;
->>>>   }
->>>>     static u32 ifcvf_vdpa_get_vendor_id(struct vdpa_device *vdpa_dev)
->>>> @@ -466,6 +456,14 @@ static int ifcvf_probe(struct pci_dev *pdev, 
->>>> const struct pci_device_id *id)
->>>>       pci_set_drvdata(pdev, adapter);
->>>>         vf = &adapter->vf;
->>>> +    if (pdev->device < 0x1000 || pdev->device > 0x107f)
->>>> +        return -EOPNOTSUPP;
->>>> +
->>>> +    if (pdev->device < 0x1040)
->>>> +        vf->dev_type =  pdev->subsystem_device;
->>>> +    else
->>>> +        vf->dev_type =  pdev->device - 0x1040;
->>>
->>>
->>> So a question here, is the device a transtional device or modern one?
->>>
->>> If it's a transitonal one, can it swtich endianess automatically or 
->>> not?
->>>
->>> Thanks
->> Hi Jason,
->>
->> This driver should drive both modern and transitional devices as we 
->> discussed before.
->> If it's a transitional one, it will act as a modern device by 
->> default, legacy mode is a fail-over path.
->
->
-> Note that legacy driver use native endian, support legacy driver 
-> requires the device to know native endian which I'm not sure your 
-> device can do that.
->
-> Thanks
-Yes, legacy requires guest native endianess, I think we don't need to 
-worry about this because our transitional device should work in modern 
-mode by
-default(legacy mode is the failover path we will never reach, 
-get_features will fail if no ACCESS_PLATFORM), we don't support legacy 
-device in vDPA.
 
-Thanks
->
->
->> For vDPA, it has to support VIRTIO_1 and ACCESS_PLATFORM, so it must 
->> in modern mode.
->> I think we don't need to worry about endianess for legacy mode.
->>
->> Thanks
->> Zhu Lingshan
->>>
->>>
->>>> +
->>>>       vf->base = pcim_iomap_table(pdev);
->>>>         adapter->pdev = pdev;
->>>
->>
->
 
