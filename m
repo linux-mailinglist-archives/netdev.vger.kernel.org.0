@@ -2,139 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id ACCDF360F3A
-	for <lists+netdev@lfdr.de>; Thu, 15 Apr 2021 17:45:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CEA33360F44
+	for <lists+netdev@lfdr.de>; Thu, 15 Apr 2021 17:46:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233369AbhDOPqH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 15 Apr 2021 11:46:07 -0400
-Received: from mail.kernel.org ([198.145.29.99]:35334 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231137AbhDOPqG (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 15 Apr 2021 11:46:06 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 719656115B;
-        Thu, 15 Apr 2021 15:45:42 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1618501542;
-        bh=5QQsnYIjpMZ3jYk9CeYd19LBwUZImwRVtvV+ycyJ3LA=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=ES/LGW1HuI+5JKHLi24K5zbuil/09aJ8i0yq8tuW/nZ3EUa+BZXi4DjRQEkkWH5rk
-         RzFBEmH3Ce2K6YPFV1iJYJCkXPOk7wQFzUzarGUW88TFev2tr7PTGXt8hBCpOwtk0B
-         CIqL1b/oP1qovEKtf5Esb6if8BOalLISdO0VU5WqGxelLkk34GWkcLr5dU8iBw/teJ
-         kSZRUaKy0RJNEpAJPHqwCQ895bcOzMHKSrHPtpCaxylsWp9tToiW82NFMzda/sTl92
-         +GDlmTV+KjRzN2a9y/MkR7gxOpPhV+2y+oZWc9T/LYHDDd0Cbt4fRvZli4I8xyQOsr
-         2/cAfs4u3HUUg==
-Date:   Thu, 15 Apr 2021 08:45:41 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Saeed Mahameed <saeed@kernel.org>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, andrew@lunn.ch,
-        mkubecek@suse.cz, idosch@nvidia.com,
-        Ariel Almog <ariela@nvidia.com>
-Subject: Re: [RFC net-next 0/6] ethtool: add uAPI for reading standard stats
-Message-ID: <20210415084541.5ce6018f@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <4425ee5839ac86270542ffa3d40cda67dc5068e1.camel@kernel.org>
-References: <20210414202325.2225774-1-kuba@kernel.org>
-        <4425ee5839ac86270542ffa3d40cda67dc5068e1.camel@kernel.org>
+        id S233772AbhDOPrQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 15 Apr 2021 11:47:16 -0400
+Received: from fllv0016.ext.ti.com ([198.47.19.142]:34742 "EHLO
+        fllv0016.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233094AbhDOPrP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 15 Apr 2021 11:47:15 -0400
+Received: from lelv0266.itg.ti.com ([10.180.67.225])
+        by fllv0016.ext.ti.com (8.15.2/8.15.2) with ESMTP id 13FFkf6H028131;
+        Thu, 15 Apr 2021 10:46:41 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1618501601;
+        bh=UYS0mmXwXHvdy44MSdxL2VsFFDNIsAIevhRgyfcwE28=;
+        h=From:To:CC:Subject:Date;
+        b=NBpPA97qt18VfRpo250ryA95pGVl3G03wxlb1a0CVu1GFZ2fkkW9XyRVuuaYNaqut
+         YJq6nI9yH7zwr4us0+ausfz0PH49GJ9c4USl7RnsNVesq1ikLRkzv+mL+p/Zg4rLsD
+         QbbhHu5QBlM+LqbQO0Z8mYyX70tke99id5zWIEg0=
+Received: from DFLE114.ent.ti.com (dfle114.ent.ti.com [10.64.6.35])
+        by lelv0266.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 13FFkf75059424
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Thu, 15 Apr 2021 10:46:41 -0500
+Received: from DFLE108.ent.ti.com (10.64.6.29) by DFLE114.ent.ti.com
+ (10.64.6.35) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2176.2; Thu, 15
+ Apr 2021 10:46:40 -0500
+Received: from lelv0327.itg.ti.com (10.180.67.183) by DFLE108.ent.ti.com
+ (10.64.6.29) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2176.2 via
+ Frontend Transport; Thu, 15 Apr 2021 10:46:40 -0500
+Received: from gsaswath-HP-ProBook-640-G5.dal.design.ti.com (ileax41-snat.itg.ti.com [10.172.224.153])
+        by lelv0327.itg.ti.com (8.15.2/8.15.2) with ESMTP id 13FFkZh9028376;
+        Thu, 15 Apr 2021 10:46:36 -0500
+From:   Aswath Govindraju <a-govindraju@ti.com>
+CC:     <linux-kernel@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-can@vger.kernel.org>, <netdev@vger.kernel.org>,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
+        Wolfgang Grandegger <wg@grandegger.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Chandrasekar Ramakrishnan <rcsekar@samsung.com>,
+        Kishon Vijay Abraham I <kishon@ti.com>,
+        Lokesh Vutla <lokeshvutla@ti.com>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        Grygorii Strashko <grygorii.strashko@ti.com>,
+        Faiz Abbas <faiz_abbas@ti.com>,
+        Aswath Govindraju <a-govindraju@ti.com>
+Subject: [PATCH v2 0/2] MCAN: Add support for implementing transceiver as a phy
+Date:   Thu, 15 Apr 2021 21:16:33 +0530
+Message-ID: <20210415154635.30094-1-a-govindraju@ti.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+To:     unlisted-recipients:; (no To-header on input)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 14 Apr 2021 22:51:39 -0700 Saeed Mahameed wrote:
-> On Wed, 2021-04-14 at 13:23 -0700, Jakub Kicinski wrote:
-> > This series adds a new ethtool command to read well defined
-> > device statistics. There is nothing clever here, just a netlink
-> > API for dumping statistics defined by standards and RFCs which
-> > today end up in ethtool -S under infinite variations of names.
-> >=20
-> > This series adds basic IEEE stats (for PHY, MAC, Ctrl frames)
-> > and RMON stats. AFAICT other RFCs only duplicate the IEEE
-> > stats.
-> >=20
-> > This series does _not_ add a netlink API to read driver-defined
-> > stats. There seems to be little to gain from moving that part
-> > to netlink.
-> >=20
-> > The netlink message format is very simple, and aims to allow
-> > adding stats and groups with no changes to user tooling (which
-> > IIUC is expected for ethtool). Stats are dumped directly
-> > into netlink with netlink attributes used as IDs. This is
-> > perhaps where the biggest question mark is. We could instead
-> > pack the stats into individual wrappers:
-> >=20
-> > =C2=A0[grp]
-> > =C2=A0=C2=A0 [stat] // nest
-> > =C2=A0=C2=A0=C2=A0=C2=A0 [id]=C2=A0=C2=A0=C2=A0 // u32
-> > =C2=A0=C2=A0=C2=A0=C2=A0 [value] // u64
-> > =C2=A0=C2=A0 [stat] // nest
-> > =C2=A0=C2=A0=C2=A0=C2=A0 [id]=C2=A0=C2=A0=C2=A0 // u32
-> > =C2=A0=C2=A0=C2=A0=C2=A0 [value] // u64
-> >=20
-> > which would increase the message size 2x but allow
-> > to ID the stats from 0, saving strset space as well as =20
->=20
-> don't you need to translate such ids to strs in userspace ?=20
-> I am not fond of upgrading userspace every time we add new stat..=20
+The following series of patches add support for implementing the
+transceiver as a phy of m_can_platform driver.
 
-No, no, the question was only whether we keep stat ids in the same
-attribute space as other group attributes (like string set ID) or
-whether they are nested somewhere deeper and have their own ID space.
+TCAN1042 has a standby signal that needs to be pulled high for
+sending/receiving messages[1]. TCAN1043 has a enable signal along with
+standby signal that needs to be pulled up for sending/receiving
+messages[2], and other combinations of the two lines can be used to put the
+transceiver in different states to reduce power consumption. On boards
+like the AM654-idk and J721e-evm these signals are controlled using gpios.
 
-I went ahead and nested them yesterday. I had to engage in a little=20
-bit of black magic for pad, but it feels more right to nest..
+These gpios are set in phy driver, and the transceiver can be put in
+different states using phy API. The phy driver is added in the series [3].
 
-static int stat_put(struct sk_buff *skb, u16 attrtype, u64 val)
-{
-	struct nlattr *nest;
-	int ret;
+This patch series is dependent on [4].
 
-	if (val =3D=3D ETHTOOL_STAT_NOT_SET)
-		return 0;
+Changes since v1:
+- Used the API devm_phy_get_optional() instead of 
+  devm_of_phy_get_optional_by_index()
 
-	/* We want to start stats attr types from 0, so we don't have a type
-	 * for pad inside ETHTOOL_A_STATS_GRP_STAT. Pad things on the outside
-	 * of ETHTOOL_A_STATS_GRP_STAT. Since we're one nest away from the
-	 * actual attr we're 4B off - nla_need_padding_for_64bit() & co.
-	 * can't be used.
-	 */
-#ifndef CONFIG_HAVE_EFFICIENT_UNALIGNED_ACCESS
-        if (!IS_ALIGNED((unsigned long)skb_tail_pointer(skb), 8))
-                if (!nla_reserve(skb, ETHTOOL_A_STATS_GRP_PAD, 0))
-			return -EMSGSIZE;
-#endif
+[1] - https://www.ti.com/lit/ds/symlink/tcan1042h.pdf
+[2] - https://www.ti.com/lit/ds/symlink/tcan1043-q1.pdf
+[3] - https://lore.kernel.org/patchwork/project/lkml/list/?series=495365
+[4] - https://lore.kernel.org/patchwork/patch/1413286/
 
-	nest =3D nla_nest_start(skb, ETHTOOL_A_STATS_GRP_STAT);
-	if (!nest)
-		return -EMSGSIZE;
+Faiz Abbas (2):
+  dt-bindings: net: can: Document transceiver implementation as phy
+  can: m_can: Add support for transceiver as phy
 
-	ret =3D nla_put_u64_64bit(skb, attrtype, val, -1 /* not used */);
-	if (ret) {
-		nla_nest_cancel(skb, nest);
-		return ret;
-	}
+ .../devicetree/bindings/net/can/bosch,m_can.yaml    |  3 +++
+ drivers/net/can/m_can/m_can.c                       | 10 ++++++++++
+ drivers/net/can/m_can/m_can.h                       |  2 ++
+ drivers/net/can/m_can/m_can_platform.c              | 13 +++++++++++++
+ 4 files changed, 28 insertions(+)
 
-	nla_nest_end(skb, nest);
-	return 0;
-}
+-- 
+2.17.1
 
-> Just throwing crazy ideas.. BTF might be a useful tool here! :))=20
->=20
-> > allow seamless adding of legacy stats to this API =20
-> which legacy stats ?=20
-
-The ones from get_ethtool_stats.
-
-> > (which are IDed from 0).
-> >=20
-> > On user space side we can re-use -S, and make it dump
-> > standard stats if --groups are defined.
-> >=20
-> > $ ethtool -S eth0 --groups eth-phy eth-mac rmon eth-ctrl =20
->=20
-> Deja-vu, I honestly remember someone in mlnx suggsting this exact
-> command a couple of years ago.. :)=20
-
-Hah! I hope it wasn't shot down as a bad idea :)
-
-Thanks a lot for the reviews!
