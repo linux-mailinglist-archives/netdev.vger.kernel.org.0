@@ -2,59 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 648E736059C
-	for <lists+netdev@lfdr.de>; Thu, 15 Apr 2021 11:26:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9E1A13605A0
+	for <lists+netdev@lfdr.de>; Thu, 15 Apr 2021 11:26:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232014AbhDOJ1A (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 15 Apr 2021 05:27:00 -0400
+        id S232034AbhDOJ1D (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 15 Apr 2021 05:27:03 -0400
 Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56256 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231880AbhDOJ05 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 15 Apr 2021 05:26:57 -0400
-Received: from mail-lf1-x12a.google.com (mail-lf1-x12a.google.com [IPv6:2a00:1450:4864:20::12a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B16FAC061756
-        for <netdev@vger.kernel.org>; Thu, 15 Apr 2021 02:26:34 -0700 (PDT)
-Received: by mail-lf1-x12a.google.com with SMTP id x19so7723030lfa.2
-        for <netdev@vger.kernel.org>; Thu, 15 Apr 2021 02:26:34 -0700 (PDT)
+        with ESMTP id S232030AbhDOJ1A (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 15 Apr 2021 05:27:00 -0400
+Received: from mail-lf1-x12c.google.com (mail-lf1-x12c.google.com [IPv6:2a00:1450:4864:20::12c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 90874C061574
+        for <netdev@vger.kernel.org>; Thu, 15 Apr 2021 02:26:35 -0700 (PDT)
+Received: by mail-lf1-x12c.google.com with SMTP id r128so11135556lff.4
+        for <netdev@vger.kernel.org>; Thu, 15 Apr 2021 02:26:35 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=waldekranz-com.20150623.gappssmtp.com; s=20150623;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:organization:content-transfer-encoding;
-        bh=L2povlKkt36e0sjHOTf5t3C3yM9joCOGYPIkRk1hnK0=;
-        b=OYDGaAdLTG9J63qvY5uEFEkzcSf6aZTyVXGHYZ81fTHIm1d3gyB8WlXWGEMjDnj19t
-         93Hcv5AOPsJLQGag8hygXZ/C29z0bp4/FnOb/2Ael4baxG5uViwS5pvJQ+jMksF+dsPZ
-         l1QWbwFRPCMGFmSWroeXeNtzPcW5KrK3TY8FNpV1LolAZIu7NbmY8gZNxItU9arLLE35
-         bAqEiu0Ofi9HniwKaCFtnZ4JDN6IYMqOPV2I0jQ+XUFU3lcPo8kYtCIi/kHidMGkQgov
-         qd72cjSv+cjpn5fzEFSyGaNpkKGaGdJvLd1SaPQnfE7ZjQcqMjB+LoyYsmg4vVfTtW9t
-         +btA==
+        bh=0ljfTFDVD4tIV4a1IL0nOfEWxK1v2gCQHcWI70dPTeE=;
+        b=CuJ/tBwqtk+wfQ5w9d2ZpLAuWtd5Q5+lG6sIvf5avCqBNrdhg/QUNROmSMuwKE/Spf
+         cAZ52TlYNDzf4K8hvxY+8evVX0fYFDak4LhmK0rNwA7uESkAJaNjBTgSHESnK8SNtzGT
+         0/LhkPhg2JyOgssvoZwVWJMvm08rOtiTsiQxhoHJDGfPkx182bRyt0u7IKMX3m73mBeu
+         qBHhwf3ELFeneUgigCaB+lchmigdjGEY5HmGFwAnmCscnjRS7TH16ANn3AE2z/dn4Y0i
+         UUP8XCDSdz9oF70EdAn8F5jBcy78Qb40XzPf1vmQFxHzvQFN+FfHpsyxQVYa4+qtJ3Pp
+         hDvg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:organization:content-transfer-encoding;
-        bh=L2povlKkt36e0sjHOTf5t3C3yM9joCOGYPIkRk1hnK0=;
-        b=Bk9c87SWCwHWoicAUi7qCCFsGpAb7a2LYnznHbMVIjNy7Ve3RnQr36+KZxTGx83fO8
-         62AfO1BiEnfqPJj4l0PsN2SOV/kTFJNhM2Ktm3lL/aSM7TxF1Khb98wDnv4EtyLxbTY7
-         VKh3yLGDoUhUuhiIrl/nLiJy78YpNelDgyyj2CMPFdtghinM8y6knjGNv/haY+Fh8tKP
-         /jA+5G2V+HygIcZsIsTJNrUdBzubD0DRtMkKUHJTywqeC+boO0AwtWPOpIMomxi3ryq1
-         BbzLYpv/3vtwhshx09AMINVtbO32OryeEF3HJhk371npCPNbnZybP/8usso/h8i1RIAR
-         zm+A==
-X-Gm-Message-State: AOAM533p06D5wiPpswuqvJX1fHB9598PlfeUV8kf5mrjV3ERTh2iWjVE
-        Ss6lLXEjYLGcq44ac43AhueY1w==
-X-Google-Smtp-Source: ABdhPJybegTcMw2fpHzRyYu7mWOTxn6oybsevQ2s+qe6bJ4u+vYjIfQoguqhl2qtevNXX9WQ29dvtA==
-X-Received: by 2002:ac2:5e2e:: with SMTP id o14mr1672942lfg.397.1618478793289;
-        Thu, 15 Apr 2021 02:26:33 -0700 (PDT)
+        bh=0ljfTFDVD4tIV4a1IL0nOfEWxK1v2gCQHcWI70dPTeE=;
+        b=FMdR+DmQfff4YzPbXoO+HOXoqgyMSV2Asrh6behYUDFAfeI/VbA8HPXDS3x0zniYLB
+         KgAOJGxcH8896uhr3jEzdQWVDBpYhp4i6pu711NImyh+3YFmPOAFQTpglh6wIU1we2ia
+         /LVYsvytfL+4JSYTHkuBlcI0kQb52a7nIiAkKg1sRybKNN5aNhIQxID4febMk2PJEYLL
+         CWYN59PltVlE4RN9zDwfgrMaiVaZ+iQgJ3AbeK4QMYNmMt0vEids7cvyfHb+Rxv4zq8g
+         sGQsYP7R7+gMSjWZJXBeaVytJlI+84YSvX1RKbYISoUZR9S83wxOJmEi0qwYU45GwYg5
+         etpg==
+X-Gm-Message-State: AOAM5334SKc9QscW0DvzZBaJ0yXaj7JQQAd02HwEmkcmJj6e1iI0uX+i
+        JK5si6BgzybwSHYmJMOox0Zidg==
+X-Google-Smtp-Source: ABdhPJzfg3sdXZG0W966CMal5s6MdHUqC2WlLwHui9n5wJrPOw/enbx3z2aY/q4kcJzMkp9nOZOjqQ==
+X-Received: by 2002:a05:6512:3091:: with SMTP id z17mr1908219lfd.84.1618478794079;
+        Thu, 15 Apr 2021 02:26:34 -0700 (PDT)
 Received: from veiron.westermo.com (static-193-12-47-89.cust.tele2.se. [193.12.47.89])
-        by smtp.gmail.com with ESMTPSA id g4sm595557lfc.102.2021.04.15.02.26.32
+        by smtp.gmail.com with ESMTPSA id g4sm595557lfc.102.2021.04.15.02.26.33
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 15 Apr 2021 02:26:32 -0700 (PDT)
+        Thu, 15 Apr 2021 02:26:33 -0700 (PDT)
 From:   Tobias Waldekranz <tobias@waldekranz.com>
 To:     davem@davemloft.net, kuba@kernel.org
 Cc:     andrew@lunn.ch, vivien.didelot@gmail.com, f.fainelli@gmail.com,
         olteanv@gmail.com, netdev@vger.kernel.org, robh+dt@kernel.org,
         devicetree@vger.kernel.org
-Subject: [PATCH v2 net-next 3/5] net: dsa: Only notify CPU ports of changes to the tag protocol
-Date:   Thu, 15 Apr 2021 11:26:08 +0200
-Message-Id: <20210415092610.953134-4-tobias@waldekranz.com>
+Subject: [PATCH v2 net-next 4/5] net: dsa: Allow default tag protocol to be overridden from DT
+Date:   Thu, 15 Apr 2021 11:26:09 +0200
+Message-Id: <20210415092610.953134-5-tobias@waldekranz.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20210415092610.953134-1-tobias@waldekranz.com>
 References: <20210415092610.953134-1-tobias@waldekranz.com>
@@ -65,61 +65,187 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Previously DSA ports were also included, on the assumption that the
-protocol used by the CPU port had to the matched throughout the entire
-tree.
+Some combinations of tag protocols and Ethernet controllers are
+incompatible, and it is hard for the driver to keep track of these.
 
-As there is not yet any consumer in need of this, drop the call.
+Therefore, allow the device tree author (typically the board vendor)
+to inform the driver of this fact by selecting an alternate protocol
+that is known to work.
 
 Signed-off-by: Tobias Waldekranz <tobias@waldekranz.com>
 ---
- net/dsa/switch.c | 25 +++++++------------------
- 1 file changed, 7 insertions(+), 18 deletions(-)
+ include/net/dsa.h |  5 +++
+ net/dsa/dsa2.c    | 95 ++++++++++++++++++++++++++++++++++++++---------
+ 2 files changed, 83 insertions(+), 17 deletions(-)
 
-diff --git a/net/dsa/switch.c b/net/dsa/switch.c
-index 32963276452f..9bf8e20ecdf3 100644
---- a/net/dsa/switch.c
-+++ b/net/dsa/switch.c
-@@ -323,15 +323,6 @@ static int dsa_switch_vlan_del(struct dsa_switch *ds,
- 	return 0;
- }
+diff --git a/include/net/dsa.h b/include/net/dsa.h
+index 1259b0f40684..2b25fe1ad5b7 100644
+--- a/include/net/dsa.h
++++ b/include/net/dsa.h
+@@ -149,6 +149,11 @@ struct dsa_switch_tree {
+ 	/* Tagging protocol operations */
+ 	const struct dsa_device_ops *tag_ops;
  
--static bool dsa_switch_tag_proto_match(struct dsa_switch *ds, int port,
--				       struct dsa_notifier_tag_proto_info *info)
--{
--	if (dsa_is_cpu_port(ds, port) || dsa_is_dsa_port(ds, port))
--		return true;
--
--	return false;
--}
--
- static int dsa_switch_change_tag_proto(struct dsa_switch *ds,
- 				       struct dsa_notifier_tag_proto_info *info)
- {
-@@ -344,16 +335,14 @@ static int dsa_switch_change_tag_proto(struct dsa_switch *ds,
- 	ASSERT_RTNL();
++	/* Default tagging protocol preferred by the switches in this
++	 * tree.
++	 */
++	enum dsa_tag_protocol default_proto;
++
+ 	/*
+ 	 * Configuration data for the platform device that owns
+ 	 * this dsa switch tree instance.
+diff --git a/net/dsa/dsa2.c b/net/dsa/dsa2.c
+index d7c22e3a1fbf..80dbf8b6bf8f 100644
+--- a/net/dsa/dsa2.c
++++ b/net/dsa/dsa2.c
+@@ -668,6 +668,35 @@ static const struct devlink_ops dsa_devlink_ops = {
+ 	.sb_occ_tc_port_bind_get	= dsa_devlink_sb_occ_tc_port_bind_get,
+ };
  
- 	for (port = 0; port < ds->num_ports; port++) {
--		if (dsa_switch_tag_proto_match(ds, port, info)) {
--			err = ds->ops->change_tag_protocol(ds, port,
--							   tag_ops->proto);
--			if (err)
--				return err;
++static int dsa_switch_setup_tag_protocol(struct dsa_switch *ds)
++{
++	const struct dsa_device_ops *tag_ops = ds->dst->tag_ops;
++	struct dsa_switch_tree *dst = ds->dst;
++	int port, err;
++
++	if (tag_ops->proto == dst->default_proto)
++		return 0;
++
++	if (!ds->ops->change_tag_protocol) {
++		dev_err(ds->dev, "Tag protocol cannot be modified\n");
++		return -EINVAL;
++	}
++
++	for (port = 0; port < ds->num_ports; port++) {
 +		if (!dsa_is_cpu_port(ds, port))
 +			continue;
- 
--			if (dsa_is_cpu_port(ds, port))
--				dsa_port_set_tag_protocol(dsa_to_port(ds, port),
--							  tag_ops);
--		}
-+		err = ds->ops->change_tag_protocol(ds, port, tag_ops->proto);
-+		if (err)
-+			return err;
 +
-+		dsa_port_set_tag_protocol(dsa_to_port(ds, port), tag_ops);
++		err = ds->ops->change_tag_protocol(ds, port, tag_ops->proto);
++		if (err) {
++			dev_err(ds->dev, "Tag protocol \"%s\" is not supported\n",
++				tag_ops->name);
++			return err;
++		}
++	}
++
++	return 0;
++}
++
+ static int dsa_switch_setup(struct dsa_switch *ds)
+ {
+ 	struct dsa_devlink_priv *dl_priv;
+@@ -718,6 +747,10 @@ static int dsa_switch_setup(struct dsa_switch *ds)
+ 	if (err < 0)
+ 		goto unregister_notifier;
+ 
++	err = dsa_switch_setup_tag_protocol(ds);
++	if (err)
++		goto teardown;
++
+ 	devlink_params_publish(ds->devlink);
+ 
+ 	if (!ds->slave_mii_bus && ds->ops->phy_read) {
+@@ -1068,34 +1101,60 @@ static enum dsa_tag_protocol dsa_get_tag_protocol(struct dsa_port *dp,
+ 	return ds->ops->get_tag_protocol(ds, dp->index, tag_protocol);
+ }
+ 
+-static int dsa_port_parse_cpu(struct dsa_port *dp, struct net_device *master)
++static int dsa_port_parse_cpu(struct dsa_port *dp, struct net_device *master,
++			      const char *user_protocol)
+ {
+ 	struct dsa_switch *ds = dp->ds;
+ 	struct dsa_switch_tree *dst = ds->dst;
+ 	const struct dsa_device_ops *tag_ops;
+-	enum dsa_tag_protocol tag_protocol;
++	enum dsa_tag_protocol default_proto;
++
++	/* Find out which protocol the switch would prefer. */
++	default_proto = dsa_get_tag_protocol(dp, master);
++	if (dst->default_proto) {
++		if (dst->default_proto != default_proto) {
++			dev_err(ds->dev,
++				"A DSA switch tree can have only one tagging protocol\n");
++			return -EINVAL;
++		}
++	} else {
++		dst->default_proto = default_proto;
++	}
++
++	/* See if the user wants to override that preference. */
++	if (user_protocol) {
++		if (ds->ops->change_tag_protocol) {
++			tag_ops = dsa_find_tagger_by_name(user_protocol);
++		} else {
++			dev_err(ds->dev, "Tag protocol cannot be modified\n");
++			return -EINVAL;
++		}
++	} else {
++		tag_ops = dsa_tag_driver_get(default_proto);
++	}
++
++	if (IS_ERR(tag_ops)) {
++		if (PTR_ERR(tag_ops) == -ENOPROTOOPT)
++			return -EPROBE_DEFER;
++
++		dev_warn(ds->dev, "No tagger for this switch\n");
++		return PTR_ERR(tag_ops);
++	}
+ 
+-	tag_protocol = dsa_get_tag_protocol(dp, master);
+ 	if (dst->tag_ops) {
+-		if (dst->tag_ops->proto != tag_protocol) {
++		if (dst->tag_ops != tag_ops) {
+ 			dev_err(ds->dev,
+ 				"A DSA switch tree can have only one tagging protocol\n");
++
++			dsa_tag_driver_put(tag_ops);
+ 			return -EINVAL;
+ 		}
++
+ 		/* In the case of multiple CPU ports per switch, the tagging
+-		 * protocol is still reference-counted only per switch tree, so
+-		 * nothing to do here.
++		 * protocol is still reference-counted only per switch tree.
+ 		 */
++		dsa_tag_driver_put(tag_ops);
+ 	} else {
+-		tag_ops = dsa_tag_driver_get(tag_protocol);
+-		if (IS_ERR(tag_ops)) {
+-			if (PTR_ERR(tag_ops) == -ENOPROTOOPT)
+-				return -EPROBE_DEFER;
+-			dev_warn(ds->dev, "No tagger for this switch\n");
+-			dp->master = NULL;
+-			return PTR_ERR(tag_ops);
+-		}
+-
+ 		dst->tag_ops = tag_ops;
  	}
  
- 	/* Now that changing the tag protocol can no longer fail, let's update
+@@ -1117,12 +1176,14 @@ static int dsa_port_parse_of(struct dsa_port *dp, struct device_node *dn)
+ 
+ 	if (ethernet) {
+ 		struct net_device *master;
++		const char *user_protocol;
+ 
+ 		master = of_find_net_device_by_node(ethernet);
+ 		if (!master)
+ 			return -EPROBE_DEFER;
+ 
+-		return dsa_port_parse_cpu(dp, master);
++		user_protocol = of_get_property(dn, "dsa,tag-protocol", NULL);
++		return dsa_port_parse_cpu(dp, master, user_protocol);
+ 	}
+ 
+ 	if (link)
+@@ -1234,7 +1295,7 @@ static int dsa_port_parse(struct dsa_port *dp, const char *name,
+ 
+ 		dev_put(master);
+ 
+-		return dsa_port_parse_cpu(dp, master);
++		return dsa_port_parse_cpu(dp, master, NULL);
+ 	}
+ 
+ 	if (!strcmp(name, "dsa"))
 -- 
 2.25.1
 
