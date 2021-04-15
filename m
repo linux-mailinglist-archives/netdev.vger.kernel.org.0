@@ -2,80 +2,118 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 650D636146F
-	for <lists+netdev@lfdr.de>; Fri, 16 Apr 2021 00:00:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DDB37361483
+	for <lists+netdev@lfdr.de>; Fri, 16 Apr 2021 00:05:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236366AbhDOWAX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 15 Apr 2021 18:00:23 -0400
-Received: from mail-oo1-f52.google.com ([209.85.161.52]:38871 "EHLO
-        mail-oo1-f52.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234777AbhDOWAX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 15 Apr 2021 18:00:23 -0400
-Received: by mail-oo1-f52.google.com with SMTP id y23-20020a4ade170000b02901e6250b3be6so3239084oot.5;
-        Thu, 15 Apr 2021 14:59:59 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=K0IEGA8eoD3PpHTJOZ22bAJrHX64vU8Ut2xJcmWS2Ug=;
-        b=NTWE2QtDhwd+oly0djXSilcT5xrVJCMDavgRndE5Qgs7IqxqE3x3DdbGAn/a9x35P2
-         5BASHxQKpLFbPBYtLZcEshr06f1oZaf6x6SUIpgcP280s/orhnec20Vhl6RZRoWcaw+u
-         fvKYEwcdlsq8BBKXkOFmbyqqQTdXJNIlzBxoGHWC7I2/Y6ZQTT5TQD5WV15sMN9o+SPY
-         ARutKqV1skt57dvUUimFKInTsUxvd8TU76LjrpkxoKN5gTAvUUO1Yw4wNvEeV7yvZtdP
-         wTd1080LIsTF78ucwGEecDwW9y8Ol77giuYJ18+shVSTIK2N86hadh9MX0Qjvv5GcoF5
-         Ltyg==
-X-Gm-Message-State: AOAM531Jb2pq8F4A962lg8sZfAbIz+rw4SzsAdxTmuw5k0A4efCtIzE9
-        6Vb439xy8M2Go1s9ERt3uw==
-X-Google-Smtp-Source: ABdhPJwb8QFOkLwSA3dsX/gssqbMFOSOZQ6boTRotK4OAm3cItOk6lFBlYf/9shany+8Kd223SSOmw==
-X-Received: by 2002:a4a:d781:: with SMTP id c1mr937783oou.44.1618523999149;
-        Thu, 15 Apr 2021 14:59:59 -0700 (PDT)
-Received: from robh.at.kernel.org (24-155-109-49.dyn.grandenetworks.net. [24.155.109.49])
-        by smtp.gmail.com with ESMTPSA id s84sm913666oie.39.2021.04.15.14.59.56
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 15 Apr 2021 14:59:57 -0700 (PDT)
-Received: (nullmailer pid 1954142 invoked by uid 1000);
-        Thu, 15 Apr 2021 21:59:55 -0000
-Date:   Thu, 15 Apr 2021 16:59:55 -0500
-From:   Rob Herring <robh@kernel.org>
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Michael Walle <michael@walle.cc>, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Frank Rowand <frowand.list@gmail.com>
-Subject: Re: [PATCH net-next 1/3] dt-bindings: net: add
- nvmem-mac-address-offset property
-Message-ID: <20210415215955.GA1937954@robh.at.kernel.org>
-References: <20210414152657.12097-1-michael@walle.cc>
- <20210414152657.12097-2-michael@walle.cc>
- <YHcNtdq+oIYcB08+@lunn.ch>
+        id S236476AbhDOWFk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 15 Apr 2021 18:05:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53636 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234735AbhDOWFj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 15 Apr 2021 18:05:39 -0400
+Received: from ozlabs.org (ozlabs.org [IPv6:2401:3900:2:1::2])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B0501C061574;
+        Thu, 15 Apr 2021 15:05:15 -0700 (PDT)
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 4FLtgV5j0vz9sW4;
+        Fri, 16 Apr 2021 08:05:10 +1000 (AEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=canb.auug.org.au;
+        s=201702; t=1618524313;
+        bh=N0kmpCXfYvJVThMK+hIA7oKPDTMnMe87Yd9++GHP6TI=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=qiyk3M/6v4coSUg+Q14EFk0ZjXI9ltV1+1gjoe1FVnKJNJdaiIXKI3AaJx+zLpdLe
+         7XVlmuTgJPa/S4BrNwWpiKuHTorG4JHKHxX9HuinebEQ6MY+6IsEB+U1BTQxpqxGfs
+         1Ze9IU3yszZ4xdBp4Zi7BeebcZ7TdzijnG/4OBfcCmAy0g8030q+klNXOKb8OrXPN1
+         YkJnKOWhI/xeKXhVSw1/MllsPIWz8q1Qbx1PXSmjHydod9ymkdCjnstNcIyvKcQRGo
+         tptboQN6Mh4iWz4M1oosa7DEt2LfZKeRb6qSE+ckmG0aTJPKCZyz1LWGmkwsuyA/MC
+         0Ng1bg9iTkyKw==
+Date:   Fri, 16 Apr 2021 08:05:08 +1000
+From:   Stephen Rothwell <sfr@canb.auug.org.au>
+To:     "Ong, Boon Leong" <boon.leong.ong@intel.com>
+Cc:     David Miller <davem@davemloft.net>,
+        Networking <netdev@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        "Linux Next Mailing List" <linux-next@vger.kernel.org>,
+        Thierry Reding <treding@nvidia.com>
+Subject: Re: linux-next: manual merge of the net-next tree with the net tree
+Message-ID: <20210416080508.25030590@canb.auug.org.au>
+In-Reply-To: <DM6PR11MB2780C0D45E70297CC5CE5423CA4D9@DM6PR11MB2780.namprd11.prod.outlook.com>
+References: <20210415121713.28af219a@canb.auug.org.au>
+        <DM6PR11MB2780C0D45E70297CC5CE5423CA4D9@DM6PR11MB2780.namprd11.prod.outlook.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YHcNtdq+oIYcB08+@lunn.ch>
+Content-Type: multipart/signed; boundary="Sig_/26TA7tHlp29Th/NRAfnKn8r";
+ protocol="application/pgp-signature"; micalg=pgp-sha256
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Apr 14, 2021 at 05:43:49PM +0200, Andrew Lunn wrote:
-> On Wed, Apr 14, 2021 at 05:26:55PM +0200, Michael Walle wrote:
-> > It is already possible to read the MAC address via a NVMEM provider. But
-> > there are boards, esp. with many ports, which only have a base MAC
-> > address stored. Thus we need to have a way to provide an offset per
-> > network device.
-> 
-> We need to see what Rob thinks of this. There was recently a patchset
-> to support swapping the byte order of the MAC address in a NVMEM. Rob
-> said the NVMEM provider should have the property, not the MAC driver.
-> This does seems more ethernet specific, so maybe it should be an
-> Ethernet property?
+--Sig_/26TA7tHlp29Th/NRAfnKn8r
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
-There was also this one[1]. I'm not totally opposed, but don't want to 
-see a never ending addition of properties to try to describe any 
-possible transformation.
+Hi all,
 
-Rob
+On Thu, 15 Apr 2021 14:00:16 +0000 "Ong, Boon Leong" <boon.leong.ong@intel.=
+com> wrote:
+>
+> I check linux-next merge fix above and spotted an additional fix needed.
+> Please see below.=20
+>=20
+> >+ /**
+> >+  * dma_recycle_rx_skbufs - recycle RX dma buffers
+> >+  * @priv: private structure
+> >+  * @queue: RX queue index
+> >+  */
+> >+ static void dma_recycle_rx_skbufs(struct stmmac_priv *priv, u32 queue)
+> >+ {
+> >+ 	struct stmmac_rx_queue *rx_q =3D &priv->rx_queue[queue];
+> >+ 	int i;
+> >+
+> >+ 	for (i =3D 0; i < priv->dma_rx_size; i++) {
+> >+ 		struct stmmac_rx_buffer *buf =3D &rx_q->buf_pool[i];
+> >+
+> >+ 		if (buf->page) {
+> >+ 			page_pool_recycle_direct(rx_q->page_pool, buf- =20
+> >>page); =20
+> >+ 			buf->page =3D NULL;
+> >+ 		}
+> >+
+> >+ 		if (priv->sph && buf->sec_page) {
+> >+ 			page_pool_recycle_direct(rx_q->page_pool, buf- =20
+> >>sec_page); =20
+> >+ 			buf->sec_page =3D NULL;
+> >+ 		}
+> >+ 	}
+> >+ } =20
+>=20
+> With https://git.kernel.org/netdev/net/c/00423969d806 that reverts
+> stmmac_reinit_rx_buffers(), then the above dma_recycle_rx_skbufs()
+> is no longer needed when net-next is sent for merge.=20
 
-[1] https://patchwork.ozlabs.org/project/devicetree-bindings/patch/20200920095724.8251-4-ansuelsmth@gmail.com/
+Thanks.  I have added removal of that (now unused) function to my merge
+resolution.
+
+--=20
+Cheers,
+Stephen Rothwell
+
+--Sig_/26TA7tHlp29Th/NRAfnKn8r
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmB4uJQACgkQAVBC80lX
+0GyAqgf5AZ531eJDllZim2FFQuyNW3MYW7Wnn4dbP9pXm0SQeUNrvk3Ccag9LS9O
+ks1aEIXe2V+HMd3G9GQvJwOMaHGx4Axytkp3f55ZERlLF1Pea4JYuo4bZpQfD4FO
+S1C9v7Dlh8LON8urt4BfUATcegFisE2k8GCkwWxI8ecWaOinuWqfOqlVic7M38fx
+DuOkymPFqJd0jP+yAIFoRUVwWtUV5nP3nwlAYNSjAJeIShjJ4u8V+Bqf8ZK/mPSx
+v214RMI540mIq317Wo+qQfWYMz+xgszwlO1jZRPsQy3OPj/+YHFMoXz0KZSh0WD8
+E7z5Eq+PrItLCy9ucDvQ/IlZxv6GYA==
+=dk52
+-----END PGP SIGNATURE-----
+
+--Sig_/26TA7tHlp29Th/NRAfnKn8r--
