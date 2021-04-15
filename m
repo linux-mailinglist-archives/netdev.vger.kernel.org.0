@@ -2,101 +2,116 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7EDB03602E4
-	for <lists+netdev@lfdr.de>; Thu, 15 Apr 2021 09:00:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D45AF3602FA
+	for <lists+netdev@lfdr.de>; Thu, 15 Apr 2021 09:10:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231260AbhDOHAi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 15 Apr 2021 03:00:38 -0400
-Received: from szxga04-in.huawei.com ([45.249.212.190]:16593 "EHLO
-        szxga04-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231217AbhDOHAf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 15 Apr 2021 03:00:35 -0400
-Received: from DGGEMS406-HUB.china.huawei.com (unknown [172.30.72.58])
-        by szxga04-in.huawei.com (SkyGuard) with ESMTP id 4FLVXc3LMpz18JTV;
-        Thu, 15 Apr 2021 14:57:52 +0800 (CST)
-Received: from [10.174.177.26] (10.174.177.26) by
- DGGEMS406-HUB.china.huawei.com (10.3.19.206) with Microsoft SMTP Server id
- 14.3.498.0; Thu, 15 Apr 2021 15:00:02 +0800
-From:   jin yiting <jinyiting@huawei.com>
-To:     Jay Vosburgh <j.vosburgh@gmail.com>,
-        Veaceslav Falico <vfalico@gmail.com>,
-        Andy Gospodarek <andy@greyhouse.net>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, <netdev@vger.kernel.org>,
-        <security@kernel.org>, <linux-kernel@vger.kernel.org>
-Subject: bonding: 3ad: update slave arr after initialize
-CC:     Xuhanbing <xuhanbing@huawei.com>,
-        "wangxiaogang (F)" <wangxiaogang3@huawei.com>
-Message-ID: <0647a502-f54c-30ad-5b5f-c94948f092c8@huawei.com>
-Date:   Thu, 15 Apr 2021 14:59:49 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.9.0
+        id S231271AbhDOHKk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 15 Apr 2021 03:10:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54320 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230118AbhDOHKh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 15 Apr 2021 03:10:37 -0400
+Received: from mail-ed1-x535.google.com (mail-ed1-x535.google.com [IPv6:2a00:1450:4864:20::535])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C065C061756
+        for <netdev@vger.kernel.org>; Thu, 15 Apr 2021 00:10:13 -0700 (PDT)
+Received: by mail-ed1-x535.google.com with SMTP id g17so26008055edm.6
+        for <netdev@vger.kernel.org>; Thu, 15 Apr 2021 00:10:13 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=tessares-net.20150623.gappssmtp.com; s=20150623;
+        h=to:cc:references:from:subject:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=cVJbiBboy1l3Ex5mXO1TqNUpkFbiSXvC2bEmtOt51do=;
+        b=o3uvJtrcuH/G7imD/Au58YPKPN98NKGlM/g+B1oDZtDbqRb1Wn4OIZOQW9jV95E0IN
+         L0Ou+PdFlVMqLSU0ZnVfigJidlWASZ8NrtRuGkxzhotKufy3ZNjQ1irtu6SlCcQGdDCq
+         LsODTEAaD1/yXJFdVQHAIsfOFBY1lpO5vLejISh+uDE9asQS2YlnXQRT9WdyK6ymdTOI
+         oBO6Cyd2+rGjIJE1SnGocRO6nb9ebp0f3a5jAb4x1jPlzdj67O0tHydByRAAXi/4mMbw
+         kzSjVbX9sFxmNwW7Zw7XQLZkJNzMfEdTi3IE/HpPn0XzKBg5HtWXLMV62G6gJW/Alkjh
+         j1zA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:to:cc:references:from:subject:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=cVJbiBboy1l3Ex5mXO1TqNUpkFbiSXvC2bEmtOt51do=;
+        b=N+qMk6IBvhiQKaUjcExEvfvTDuLqtgolZRzAgg4zD1VXe0qXXy+xeehw9GGOmj2Npn
+         S4G3CydEIX2jDteOQEJrTpDEZ0Obl9r1sOK99u3TL2UHRY1hPVWutVIIQ6Sxtt4jGmKn
+         XskU7mWumRC3BXGnCoraD7lJEx7Pek2nLK06oVYsfgVv4v8kbxx4Joe7R9w2f7Yko/VZ
+         nFJU0Wxbju4luLzULL4N7YvlXT7zD2LGnl0f7PgaH9EqAL/iYx4YSsDv/ELv85BzWQ5X
+         3Br8p1uKpFdF1aGDhSO+2Qwg8phOD+CPBr+W5gC+1msL1VCe1E8FJk2RbA7Kv+lmFu+M
+         EF5Q==
+X-Gm-Message-State: AOAM531YIeWLx2mpovhZqvwExVyCvxWOaur5O7wfWvasjgNWqE+oxGte
+        qbazPsJX4qxHtpF31ysIyhQ3Rg==
+X-Google-Smtp-Source: ABdhPJxUb5VhQZnEL91I2SJ6ZNy+oArB6BT1PUTEgTaNKWNU7cSgQhqUpHB8lUZMWvgfsQiAyskrqw==
+X-Received: by 2002:a05:6402:1255:: with SMTP id l21mr1740882edw.362.1618470611776;
+        Thu, 15 Apr 2021 00:10:11 -0700 (PDT)
+Received: from tsr-lap-08.nix.tessares.net ([2a02:578:85b0:e00:4aaf:625b:29ae:a5])
+        by smtp.gmail.com with ESMTPSA id c16sm1250634ejx.81.2021.04.15.00.10.10
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 15 Apr 2021 00:10:11 -0700 (PDT)
+To:     David Gow <davidgow@google.com>, Nico Pache <npache@redhat.com>
+Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Brendan Higgins <brendanhiggins@google.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-ext4@vger.kernel.org, Networking <netdev@vger.kernel.org>,
+        rafael@kernel.org, linux-m68k@lists.linux-m68k.org,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        Theodore Ts'o <tytso@mit.edu>,
+        mathew.j.martineau@linux.intel.com, davem@davemloft.net,
+        Mark Brown <broonie@kernel.org>,
+        Shuah Khan <skhan@linuxfoundation.org>, mptcp@lists.linux.dev
+References: <cover.1618388989.git.npache@redhat.com>
+ <0fa191715b236766ad13c5f786d8daf92a9a0cf2.1618388989.git.npache@redhat.com>
+ <e26fbcc8-ba3e-573a-523d-9c5d5f84bc46@tessares.net>
+ <CABVgOSm9Lfcu--iiFo=PNLCWCj4vkxqAqO0aZT9B2r3Kw5Fhaw@mail.gmail.com>
+From:   Matthieu Baerts <matthieu.baerts@tessares.net>
+Subject: Re: [PATCH v2 5/6] kunit: mptcp: adhear to KUNIT formatting standard
+Message-ID: <b57a1cc8-4921-6ed5-adb8-0510d1918d28@tessares.net>
+Date:   Thu, 15 Apr 2021 09:10:10 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.8.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"; format=flowed
+In-Reply-To: <CABVgOSm9Lfcu--iiFo=PNLCWCj4vkxqAqO0aZT9B2r3Kw5Fhaw@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-GB
 Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.174.177.26]
-X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
- From 71e63af579edd15ad7f7395760a19f67d9a1d7d3 Mon Sep 17 00:00:00 2001
-From: jin yiting <jinyiting@huawei.com>
-Date: Wed, 31 Mar 2021 20:38:40 +0800
-Subject: [PATCH] bonding: 3ad: update slave arr after initialize
-MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Hi David,
 
-The bond works in mode 4, and performs down/up operations on the bond
-that is normally negotiated. The probability of bond-> slave_arr is NULL
+Thank you for your very clear reply!
 
-Test commands:
-     ifconfig bond1 down
-     ifconfig bond1 up
+On 15/04/2021 08:01, David Gow wrote:
+> On Wed, Apr 14, 2021 at 5:25 PM Matthieu Baerts
+> <matthieu.baerts@tessares.net> wrote:
+>> Up to the KUnit maintainers to decide ;-)
+> 
+> To summarise my view: personally, I'd prefer things the way this patch
+> works: have everything end in _KUNIT_TEST, even if that enables a
+> couple of suites. The extra 'S' on the end isn't a huge problem if you
+> have a good reason to particularly want to keep it, though: as long as
+> you don't have something like _K_UNIT_VERIFICATION or something
+> equally silly that'd break grepping for '_KUNIT_TEST', it's fine be
+> me.
 
-The conflict occurs in the following process：
+Indeed it makes sense: we don't need to split nor to have a meta-Kconfig 
+entry. We can then remove the extra 'S' and update our tests suite:
 
-__dev_open (CPU A)
-  --bond_open
-    --queue_delayed_work(bond->wq,&bond->ad_work,0);
-    --bond_update_slave_arr
-      --bond_3ad_get_active_agg_info
+Reviewed-by: Matthieu Baerts <matthieu.baerts@tessares.net>
 
-ad_work(CPU B)
-  --bond_3ad_state_machine_handler
-    --ad_agg_selection_logic
+I see that the whole series has been marked as "Not Applicable" on 
+Netdev's patchwork:
 
-ad_work runs on cpu B. In the function ad_agg_selection_logic, all
-agg->is_active will be cleared. Before the new active aggregator is
-selected on CPU B, bond_3ad_get_active_agg_info failed on CPU A,
-bond->slave_arr will be set to NULL. The best aggregator in
-ad_agg_selection_logic has not changed, no need to update slave arr.
+https://patchwork.kernel.org/project/netdevbpf/patch/0fa191715b236766ad13c5f786d8daf92a9a0cf2.1618388989.git.npache@redhat.com/
 
-Signed-off-by: jin yiting <jinyiting@huawei.com>
----
-  drivers/net/bonding/bond_3ad.c | 6 ++++++
-  1 file changed, 6 insertions(+)
+Like patch 1/6, I can apply it in MPTCP tree and send it later to 
+net-next with other patches.
+Except if you guys prefer to apply it in KUnit tree and send it to 
+linux-next?
 
-diff --git a/drivers/net/bonding/bond_3ad.c b/drivers/net/bonding/bond_3ad.c
-index 6908822..d100079 100644
---- a/drivers/net/bonding/bond_3ad.c
-+++ b/drivers/net/bonding/bond_3ad.c
-@@ -2327,6 +2327,12 @@ void bond_3ad_state_machine_handler(struct 
-work_struct *work)
-
-             aggregator = __get_first_agg(port);
-             ad_agg_selection_logic(aggregator, &update_slave_arr);
-+           if (!update_slave_arr) {
-+               struct aggregator *active = __get_active_agg(aggregator);
-+
-+               if (active && active->is_active)
-+                   update_slave_arr = true;
-+           }
-         }
-         bond_3ad_set_carrier(bond);
-     }
+Cheers,
+Matt
 -- 
-1.7.12.4
-
-
+Tessares | Belgium | Hybrid Access Solutions
+www.tessares.net
