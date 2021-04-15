@@ -2,116 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 63FB83605D3
-	for <lists+netdev@lfdr.de>; Thu, 15 Apr 2021 11:34:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EE2BD360608
+	for <lists+netdev@lfdr.de>; Thu, 15 Apr 2021 11:40:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232181AbhDOJeF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 15 Apr 2021 05:34:05 -0400
-Received: from foss.arm.com ([217.140.110.172]:41266 "EHLO foss.arm.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231960AbhDOJeD (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 15 Apr 2021 05:34:03 -0400
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 58113106F;
-        Thu, 15 Apr 2021 02:33:40 -0700 (PDT)
-Received: from net-arm-thunderx2-02.shanghai.arm.com (net-arm-thunderx2-02.shanghai.arm.com [10.169.208.215])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id 225E33F694;
-        Thu, 15 Apr 2021 02:33:22 -0700 (PDT)
-From:   Jianlin Lv <Jianlin.Lv@arm.com>
-To:     bpf@vger.kernel.org
-Cc:     corbet@lwn.net, ast@kernel.org, daniel@iogearbox.net,
-        andrii@kernel.org, kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
-        john.fastabend@gmail.com, kpsingh@kernel.org, davem@davemloft.net,
-        kuba@kernel.org, illusionist.neo@gmail.com, linux@armlinux.org.uk,
-        zlim.lnx@gmail.com, catalin.marinas@arm.com, will@kernel.org,
-        paulburton@kernel.org, tsbogend@alpha.franken.de,
-        naveen.n.rao@linux.ibm.com, sandipan@linux.ibm.com,
-        mpe@ellerman.id.au, benh@kernel.crashing.org, paulus@samba.org,
-        luke.r.nels@gmail.com, xi.wang@gmail.com, bjorn@kernel.org,
-        paul.walmsley@sifive.com, palmer@dabbelt.com,
-        aou@eecs.berkeley.edu, iii@linux.ibm.com, hca@linux.ibm.com,
-        gor@linux.ibm.com, borntraeger@de.ibm.com, yoshfuji@linux-ipv6.org,
-        dsahern@kernel.org, tglx@linutronix.de, mingo@redhat.com,
-        bp@alien8.de, x86@kernel.org, hpa@zytor.com, udknight@gmail.com,
-        mchehab+huawei@kernel.org, dvyukov@google.com, maheshb@google.com,
-        horms@verge.net.au, nicolas.dichtel@6wind.com,
-        viro@zeniv.linux.org.uk, masahiroy@kernel.org,
-        keescook@chromium.org, quentin@isovalent.com, tklauser@distanz.ch,
-        grantseltzer@gmail.com, irogers@google.com,
-        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
+        id S232233AbhDOJkh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 15 Apr 2021 05:40:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59352 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231200AbhDOJkg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 15 Apr 2021 05:40:36 -0400
+Received: from mail-pj1-x1031.google.com (mail-pj1-x1031.google.com [IPv6:2607:f8b0:4864:20::1031])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 03365C061574;
+        Thu, 15 Apr 2021 02:40:14 -0700 (PDT)
+Received: by mail-pj1-x1031.google.com with SMTP id x21-20020a17090a5315b029012c4a622e4aso12375613pjh.2;
+        Thu, 15 Apr 2021 02:40:13 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=9R3f+tBaKWH0fO58cuLf8hfyC5v10OAnFBeJEdo2ghQ=;
+        b=EDruGia5eWDwRiWxBWtWscWwBptpi2KyFfBdRW5V2J+MzdUshVRG/GtvcSn7ohfpUX
+         bMrKayfjJ4+hwwKu1Xf9Y4rvZB/YWp8XWGsjX2G0HVeo55e89IQpSKJpy8maJHQRXkis
+         avyI2ZKMrjyiW17s796c42qtYIoASEtyJ5GS1w5dqBoSnocjgjwde5+KoXvq3xTwAU/7
+         U1RdtBQJkBu4ATbXswHdMDsUrrcIkrdlSoUBBYjisCQM62bdOqrvuMKd5136DtZIXyRh
+         z548eQhQQEnV3tMr//u56rX+Iy8PdH2dJY0GVUihRrR1foXeYeolQEZd1txhCx9ZHWpS
+         3xvA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=9R3f+tBaKWH0fO58cuLf8hfyC5v10OAnFBeJEdo2ghQ=;
+        b=SWXQyHm+mzef5fL9M1SKkQiPqhFSHeRE7hDoYBtS98NOx3wTflrKbmRXMjtVwBXrK3
+         5EVscOAinLnziyWr2+hjVNATDk0sKkMed9Mqs+hRyH+hxWMj2oydSZCPn5xpumCLUMvp
+         aFTHOwIRj+lNXZbB8z+V2AxsofgSwA6uj2vtvLEEZM+aWPvv7tt0r91+zLyDZAUcP+J1
+         47XV/POS0l48BJu27q248hs5CF4Fs+kWydCCo3GLmawzy4JHtDNtD24FHNAJTp/qRmd4
+         R5jjbDr+t1X3EaE/CM2YqywntmHzsvpqdJYla0dfQy9brUPMttNjA+7/eWD+ITeEspvW
+         5X5A==
+X-Gm-Message-State: AOAM533f20nfqSCWu4QaaEKxi/ywOXbcm8p77TBQsSuwa3B8ERwJ+dx1
+        c7FjlAZ/TW+JocteW3fAvx8=
+X-Google-Smtp-Source: ABdhPJxJ35eJvUhSAcHylNTFoLVFIlGFbKUNz2CUi/2VuSsIYW9FE/0WXaScxDI4AjHU7dmZlBEZJA==
+X-Received: by 2002:a17:90a:6c82:: with SMTP id y2mr2929579pjj.142.1618479613629;
+        Thu, 15 Apr 2021 02:40:13 -0700 (PDT)
+Received: from localhost.localdomain ([138.197.212.246])
+        by smtp.gmail.com with ESMTPSA id c4sm834754pfb.94.2021.04.15.02.40.08
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 15 Apr 2021 02:40:12 -0700 (PDT)
+From:   DENG Qingfang <dqfext@gmail.com>
+To:     Felix Fietkau <nbd@nbd.name>, John Crispin <john@phrozen.org>,
+        Sean Wang <sean.wang@mediatek.com>,
+        Mark Lee <Mark-MC.Lee@mediatek.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Pablo Neira Ayuso <pablo@netfilter.org>,
         netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-mips@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
-        linux-riscv@lists.infradead.org, linux-s390@vger.kernel.org,
-        sparclinux@vger.kernel.org, Jianlin.Lv@arm.com, iecedge@gmail.com
-Subject: [PATCH bpf-next 2/2] docs: bpf: bpf_jit_enable mode changed
-Date:   Thu, 15 Apr 2021 17:32:50 +0800
-Message-Id: <20210415093250.3391257-2-Jianlin.Lv@arm.com>
+        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org
+Cc:     Frank Wunderlich <frank-w@public-files.de>,
+        Alex Ryabchenko <d3adme4t@gmail.com>
+Subject: [PATCH net-next] net: ethernet: mediatek: fix typo in offload code
+Date:   Thu, 15 Apr 2021 17:40:05 +0800
+Message-Id: <20210415094005.2673-1-dqfext@gmail.com>
 X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20210415093250.3391257-1-Jianlin.Lv@arm.com>
-References: <20210415093250.3391257-1-Jianlin.Lv@arm.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Remove information about bpf_jit_enable=2 mode and added description for
-how to use the bpf_jit_disasm tool after get rid of =2 mode.
+.key_offset was assigned to .head_offset instead. Fix the typo.
 
-Signed-off-by: Jianlin Lv <Jianlin.Lv@arm.com>
+Fixes: 502e84e2382d ("net: ethernet: mtk_eth_soc: add flow offloading support")
+Signed-off-by: DENG Qingfang <dqfext@gmail.com>
 ---
- Documentation/admin-guide/sysctl/net.rst |  1 -
- Documentation/networking/filter.rst      | 25 ++++++------------------
- 2 files changed, 6 insertions(+), 20 deletions(-)
+ drivers/net/ethernet/mediatek/mtk_ppe_offload.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/Documentation/admin-guide/sysctl/net.rst b/Documentation/admin-guide/sysctl/net.rst
-index c941b214e0b7..a39f99deac38 100644
---- a/Documentation/admin-guide/sysctl/net.rst
-+++ b/Documentation/admin-guide/sysctl/net.rst
-@@ -86,7 +86,6 @@ Values:
+diff --git a/drivers/net/ethernet/mediatek/mtk_ppe_offload.c b/drivers/net/ethernet/mediatek/mtk_ppe_offload.c
+index 4975106fbc42..f47f319f3ae0 100644
+--- a/drivers/net/ethernet/mediatek/mtk_ppe_offload.c
++++ b/drivers/net/ethernet/mediatek/mtk_ppe_offload.c
+@@ -43,7 +43,7 @@ struct mtk_flow_entry {
  
- 	- 0 - disable the JIT (default value)
- 	- 1 - enable the JIT
--	- 2 - enable the JIT and ask the compiler to emit traces on kernel log.
- 
- bpf_jit_harden
- --------------
-diff --git a/Documentation/networking/filter.rst b/Documentation/networking/filter.rst
-index 251c6bd73d15..86954f922168 100644
---- a/Documentation/networking/filter.rst
-+++ b/Documentation/networking/filter.rst
-@@ -504,25 +504,12 @@ been previously enabled by root::
- 
-   echo 1 > /proc/sys/net/core/bpf_jit_enable
- 
--For JIT developers, doing audits etc, each compile run can output the generated
--opcode image into the kernel log via::
--
--  echo 2 > /proc/sys/net/core/bpf_jit_enable
--
--Example output from dmesg::
--
--    [ 3389.935842] flen=6 proglen=70 pass=3 image=ffffffffa0069c8f
--    [ 3389.935847] JIT code: 00000000: 55 48 89 e5 48 83 ec 60 48 89 5d f8 44 8b 4f 68
--    [ 3389.935849] JIT code: 00000010: 44 2b 4f 6c 4c 8b 87 d8 00 00 00 be 0c 00 00 00
--    [ 3389.935850] JIT code: 00000020: e8 1d 94 ff e0 3d 00 08 00 00 75 16 be 17 00 00
--    [ 3389.935851] JIT code: 00000030: 00 e8 28 94 ff e0 83 f8 01 75 07 b8 ff ff 00 00
--    [ 3389.935852] JIT code: 00000040: eb 02 31 c0 c9 c3
--
--When CONFIG_BPF_JIT_ALWAYS_ON is enabled, bpf_jit_enable is permanently set to 1 and
--setting any other value than that will return in failure. This is even the case for
--setting bpf_jit_enable to 2, since dumping the final JIT image into the kernel log
--is discouraged and introspection through bpftool (under tools/bpf/bpftool/) is the
--generally recommended approach instead.
-+When CONFIG_BPF_JIT_ALWAYS_ON is enabled, bpf_jit_enable is permanently set
-+to 1 and setting any other value than that will return in failure.
-+For debugging JITs, the introspection through bpftool (tools/bpf/bpftool/)
-+is the generally recommended approach instead. For JIT developers, doing
-+audits etc, you can insert bpf_jit_dump() and recompile the kernel to
-+output the generated opcode image into the kernel log.
- 
- In the kernel source tree under tools/bpf/, there's bpf_jit_disasm for
- generating disassembly out of the kernel log's hexdump::
+ static const struct rhashtable_params mtk_flow_ht_params = {
+ 	.head_offset = offsetof(struct mtk_flow_entry, node),
+-	.head_offset = offsetof(struct mtk_flow_entry, cookie),
++	.key_offset = offsetof(struct mtk_flow_entry, cookie),
+ 	.key_len = sizeof(unsigned long),
+ 	.automatic_shrinking = true,
+ };
 -- 
 2.25.1
 
