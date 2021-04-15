@@ -2,189 +2,138 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 84B22360F4C
-	for <lists+netdev@lfdr.de>; Thu, 15 Apr 2021 17:47:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9939B360F4F
+	for <lists+netdev@lfdr.de>; Thu, 15 Apr 2021 17:47:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233919AbhDOPr0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 15 Apr 2021 11:47:26 -0400
-Received: from fllv0016.ext.ti.com ([198.47.19.142]:34770 "EHLO
-        fllv0016.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233906AbhDOPrW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 15 Apr 2021 11:47:22 -0400
-Received: from fllv0034.itg.ti.com ([10.64.40.246])
-        by fllv0016.ext.ti.com (8.15.2/8.15.2) with ESMTP id 13FFko9t028162;
-        Thu, 15 Apr 2021 10:46:50 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1618501610;
-        bh=CdZ9oshP2falxuzkJO0kpQCliVu8gBkJaVPUci3GgOs=;
-        h=From:To:CC:Subject:Date:In-Reply-To:References;
-        b=SWgzlWD2ve+yUAROdQ/+cZuQg3lUx91opEf8DGoH9P5OBPaxHFhbEMahoC9PCJ3/C
-         L/vLTyzuA4s+u4AzPVo2ettvxodbqW0xJNSkIV+4PSRGtjYxvrs5A3a8PeXOEIc6qD
-         TPqEg+O/2y+7jjTcvXaRVCL68jx/9m9T/eqJLwzg=
-Received: from DLEE109.ent.ti.com (dlee109.ent.ti.com [157.170.170.41])
-        by fllv0034.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 13FFko10077354
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Thu, 15 Apr 2021 10:46:50 -0500
-Received: from DLEE101.ent.ti.com (157.170.170.31) by DLEE109.ent.ti.com
- (157.170.170.41) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2176.2; Thu, 15
- Apr 2021 10:46:49 -0500
-Received: from lelv0327.itg.ti.com (10.180.67.183) by DLEE101.ent.ti.com
- (157.170.170.31) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2176.2 via
- Frontend Transport; Thu, 15 Apr 2021 10:46:49 -0500
-Received: from gsaswath-HP-ProBook-640-G5.dal.design.ti.com (ileax41-snat.itg.ti.com [10.172.224.153])
-        by lelv0327.itg.ti.com (8.15.2/8.15.2) with ESMTP id 13FFkZhB028376;
-        Thu, 15 Apr 2021 10:46:45 -0500
-From:   Aswath Govindraju <a-govindraju@ti.com>
-CC:     <linux-kernel@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-can@vger.kernel.org>, <netdev@vger.kernel.org>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
-        Wolfgang Grandegger <wg@grandegger.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Chandrasekar Ramakrishnan <rcsekar@samsung.com>,
-        Kishon Vijay Abraham I <kishon@ti.com>,
-        Lokesh Vutla <lokeshvutla@ti.com>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        Grygorii Strashko <grygorii.strashko@ti.com>,
-        Faiz Abbas <faiz_abbas@ti.com>,
-        Aswath Govindraju <a-govindraju@ti.com>
-Subject: [PATCH v2 2/2] can: m_can: Add support for transceiver as phy
-Date:   Thu, 15 Apr 2021 21:16:35 +0530
-Message-ID: <20210415154635.30094-3-a-govindraju@ti.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20210415154635.30094-1-a-govindraju@ti.com>
-References: <20210415154635.30094-1-a-govindraju@ti.com>
+        id S232799AbhDOPrr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 15 Apr 2021 11:47:47 -0400
+Received: from mail-eopbgr760098.outbound.protection.outlook.com ([40.107.76.98]:14662
+        "EHLO NAM02-CY1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S233518AbhDOPrp (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 15 Apr 2021 11:47:45 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=CRyHRzz9fa/phTdL5iKRs55Hzno9hs4BgFm0WVht+7OkKc7tyPZFLWG117mPvZjC3nJFGkRG8o7+gFRNSHEv+78KOPl1T1jNpnal6jwnqJs2bKD16c0Dpq78DBH4bCDNAjK/VPesSiOsRo6Bg4P+PbP11vgLUA73Zy3hDRK/U9N7CRHYNmPqwAtqowjka06NTh4+yHyWUjeaVF9UkaH/CmINvObLdh8gijzXcvB680mFVC5HHsU3RBZxFW9HlNsyBMUglI3ngVVu++pVEKGw6GI8MpjNINVRW4rYTIW13fThNjeBT4oqo7pQVGQjVcfU2rAJ/XDK74KqfLPZhd/VmQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=j9wOH05nckNChEhVnt+i67BKp+Y/HSijFJgkdRsFaoQ=;
+ b=J/gVI9VXlTdiQspO0D2pnckWEjeAEndUmRj8jqnJzTJgEvma47QrYB7zpmv5G+qWT7Pfe7yE+Gu1q7GM0QfoA2G+2BM0YfJrPNc3kXNAV4RONryBmGHhOS9dfneBWnTxKzmC3AXauDqcUP6rS52K1sFh/Ph7WaHENFt2s8X9Gc412PMEY1HP/nbGS1Z4fhPRsTzP0MPA5+16tzmjLMDia+ruKeqnCt+Fro+2oLtci6fsC5ICskj1tQgqg0nfWXgHL7DUxu+ULyJ2YYLy6AFeyijca85hf07pbahK7U+hf0DFdo9zy817D9URJFXK0mvWa22nj/owh5H8R8GJlNkZjA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=purdue.edu; dmarc=pass action=none header.from=purdue.edu;
+ dkim=pass header.d=purdue.edu; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=purdue0.onmicrosoft.com; s=selector2-purdue0-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=j9wOH05nckNChEhVnt+i67BKp+Y/HSijFJgkdRsFaoQ=;
+ b=p/lzVq4UXAJ3Tow7J6e0+2Uxkp3rzCRQeLt1BqA3/FK+//wCTltJHzoSqV7G46qwwS68sroHYU3GILzKtslV5m1YPqSKVy1WGC1uLkMHlC/GXboln18Qs596UVYD67/SwgUQ3SljLOpw6GKPYbIvJcQL4KE/U3NJDleGR/582wU=
+Received: from CH2PR22MB2056.namprd22.prod.outlook.com (2603:10b6:610:5d::11)
+ by CH2PR22MB1878.namprd22.prod.outlook.com (2603:10b6:610:8c::21) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3999.29; Thu, 15 Apr
+ 2021 15:47:21 +0000
+Received: from CH2PR22MB2056.namprd22.prod.outlook.com
+ ([fe80::fd2f:cbcc:563b:aa4f]) by CH2PR22MB2056.namprd22.prod.outlook.com
+ ([fe80::fd2f:cbcc:563b:aa4f%5]) with mapi id 15.20.4042.016; Thu, 15 Apr 2021
+ 15:47:21 +0000
+From:   "Gong, Sishuai" <sishuai@purdue.edu>
+To:     "edumazet@google.com" <edumazet@google.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "yoshfuji@linux-ipv6.org" <yoshfuji@linux-ipv6.org>,
+        "dsahern@kernel.org" <dsahern@kernel.org>,
+        "kuba@kernel.org" <kuba@kernel.org>
+CC:     Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: [PROBLEM] a data race between tcp_set_default_congestion_control()
+ and tcp_set_congestion_control()
+Thread-Topic: [PROBLEM] a data race between
+ tcp_set_default_congestion_control() and tcp_set_congestion_control()
+Thread-Index: AQHXMg6fONH72Y/f+kCKC7WPm5facA==
+Date:   Thu, 15 Apr 2021 15:47:21 +0000
+Message-ID: <A63CB783-F5AF-419A-89B9-3755E6896D41@purdue.edu>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: google.com; dkim=none (message not signed)
+ header.d=none;google.com; dmarc=none action=none header.from=purdue.edu;
+x-originating-ip: [66.253.158.155]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: e98dc2bc-a54d-4535-c355-08d90025c210
+x-ms-traffictypediagnostic: CH2PR22MB1878:
+x-microsoft-antispam-prvs: <CH2PR22MB187861401204F3B3279B5268DF4D9@CH2PR22MB1878.namprd22.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:9508;
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: HzAZht/XyticYswA3eBy0FtXYN0W41zKZjSTwK3Kdc3EC+PheeGP+aqw1keX6Qj0/Lp8Fy26OkQrrIYH+0uwOboMEWYuBsaF6Cp6ZrzToMUF2fbkLOu0oOMIWFopOsaZYSs8U+SGIXOZLZSthpw3BObJGFJus6zz91VqtgeIE302xDNLnkYC1SASpVFn3Z1W0vgkVjVcmrZ+eb1HZYZ8ysFpVDka1gn+myVSpkJ+Th6bVnTkms13cKMkhP5Mt6gRYEbvTS+J9mNpR8omElyAJBae+L1jFyVfU8W78wrzIjaR/oN6jtpx5lbz4RscS5tKJjURPcTGB9ApsjOpTXNnJ5c3y/yiUyYdRbXJqXcVzrY9HTUmvxDPDI1iu0RKfJLhdKeDw2beCRxjnfeorpi21AUCtAY5OOJYsYM2H3Nni/gOpa9oXaSb90qJeRPjggYSciSj0TSQkMJzzfqGDOfeOdV43cPYDEU5kTzAGk7vDaLDcwdC0y2ODqckQWJc53Ncp4YiL2GqTMdGYA0Dd4cI4DHwZczoJTvHnNJ8v0EfhMx8vuAiQHFyYH5C14JGzsyz5NqNbjcagt9PU1NfwVzguVGlL8BE6KJkwQl+6wA9+1QNjNZUFSB/a+8PayEKIcVvANgCCGWVK0pqYT/gHralhnn5wgCpgbprkNFxq8fPD7A=
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CH2PR22MB2056.namprd22.prod.outlook.com;PTR:;CAT:NONE;SFS:(396003)(366004)(346002)(136003)(376002)(39860400002)(2616005)(38100700002)(86362001)(4326008)(75432002)(83380400001)(5660300002)(66476007)(186003)(66446008)(66946007)(54906003)(6486002)(122000001)(8936002)(478600001)(8676002)(26005)(6506007)(66556008)(33656002)(786003)(316002)(76116006)(64756008)(36756003)(71200400001)(110136005)(2906002)(6512007)(45980500001);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata: =?utf-8?B?RitmT0IybHBnVGRnNVN1Ly9YVnR0TFBudExTTVh0QzdzNkNFeFc1YlJWNHd6?=
+ =?utf-8?B?UC9KOXBYS3VFZ3F5MWthd0E2ZGdzMm44RGZFdzBNRTVKS2l5VHJWSDY0S3B4?=
+ =?utf-8?B?NGZkVjhnakdLa3d3dXhHclVxRXBseTFLK2czUGRhenhjTmpvV3ZNaEJWY1Vn?=
+ =?utf-8?B?SG9kTHdwQWpFY0o4NFlTdkNqUU4yejBZbDY4L3ZHTnV5bHEvdzkrNnF5V24y?=
+ =?utf-8?B?Y3hZYWVRK3JZdHF6MTF5WmR0S3Y3RmJLcXZWclIxWWhOaHVXR2VlM2MrMzBE?=
+ =?utf-8?B?TThmWTRhYll1ZmdleUpWMjBVdjhGVnFOWHlYUUc1Kzk5ZmZ0V0xFbUNEbjZ4?=
+ =?utf-8?B?VkZJQ2dTNG1IdHJSd0NZeXdUbTFaMytFT0w4UlRZdW5OVmtoRE1VVHFlOE02?=
+ =?utf-8?B?S3JkUlNPSXRNZ1Rxa1IvbGdxZUwrbDQvZ3BwWmZ5S3pHS3ptdUYxbkdHRGs4?=
+ =?utf-8?B?OXdiL3JaZ3hzaWxRTUF2Y011UVRiWVJhb2ZZcnAyRWtTK256UFduNVBObjQy?=
+ =?utf-8?B?Z0FoRStRTFFsbDNJTE9TTkIvNmU3c0pPUnBZMXFVODJOZjRGWHNkeExQNFV6?=
+ =?utf-8?B?aWhESHE4U0NjbTMzSWg3TlpCRmhSWUlZWVdJekwzbUR2d0VwSnlUaE5nTi9V?=
+ =?utf-8?B?ckF2UU9xQ0RhWURVc01LWXJwTEJPaGJJV1pWNUZ0cHUyYnZtUjEyYXhvZDFl?=
+ =?utf-8?B?Rk9pOTE1SlhMYk1HcUhSK0ZDdkdWcldwbHpCUjBvcHBlT2V2N2UzTjBTVTRy?=
+ =?utf-8?B?YmFERml2cUJIR3NPRDlkUHNqdnpyME1wdHl6OTlSTTNVeEloMWNieldUYWJG?=
+ =?utf-8?B?d1VjRHRzSEY2UUM4ODA3TjZZRTRDNmxUbCtsYlZEaGJQZitKcFNzUFNyZmVq?=
+ =?utf-8?B?OWRXbGp1dk9lSWVER3EyK2JrejdrQ3d1WWNzeUpKMUwvWUZ2bHg4UDNOTGpz?=
+ =?utf-8?B?dFNDWGtLaSs1MmV2ZGt5VXhCSWNqd1hsSzZWN05xMGgwdUMzaUs0OVMycnl0?=
+ =?utf-8?B?VVd6YTJaY1AyUkVXc3FPTXJsZi9HRDlhYW1zVldrQ0Z1TTZ3QWtoVUxyMHpO?=
+ =?utf-8?B?bGN2MGJBeHRCOXFqNzcvS3gyRlNGVUdkdlRXZndjeGw1L2g3bWgrR1FUYWxl?=
+ =?utf-8?B?WGFaWmR2S3VWQlp2NDl5Vi9EY0FPSlF1TEM1ajJnQUFyRlN0eHRqL2hCK2Ev?=
+ =?utf-8?B?WlBnK3N2RjZyeTFpM0xXRHoxa0g4YXkrYVdQR3ZMZjljODEvTzljUXVtamxO?=
+ =?utf-8?B?U2QwZE9iQW04WXdob3ZoaTdWMFdsbERTRCtyN0JKYW8wUEdBbHl1czkvRzZq?=
+ =?utf-8?B?VFRGSVNkcXE4NGVDMzVXRmFqMTB6TkxtakFMWWFYMXFvVFFCWkxhU2Z1Yk1S?=
+ =?utf-8?B?QUk0YjI3UGgxNTluM0Q1L1Zjc1cwT24xQzlKQWNpUU1hbHNNOGQ3MzUzdDFp?=
+ =?utf-8?B?NzNUT205SkpiUjlRU1pNWUR4QThlU2pOQk5xcGRFTmxtSE5xRm9TNGhmdm51?=
+ =?utf-8?B?YVF5M2llaEVFSUFGckw1THFSV2lsYXVSYm1BLzVDa2xqY2dXTVhqV3llUW5i?=
+ =?utf-8?B?L1JRbE1LS08vZHM4eGVldXBXQzQ5RmRSL3VBSlVUOFZuUWRLeURyQ1RLQ1Nv?=
+ =?utf-8?B?b0lqcERFeXBDZkcyRFVMRW1VUmVBcE03bDVoaWZja242RFp2T05naWk0NTJn?=
+ =?utf-8?B?bUFUajBxZ0RtOWNRdUowVFlpNkJ4WlFvcVNyOFBNVkJic2NwR3dyM1VVZG9I?=
+ =?utf-8?Q?6HboNXtiRlyR1d9koimIV+FpM+7OKhYMo0bkFIk?=
+x-ms-exchange-transport-forked: True
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <E9BBC204F4421444BEB98BC104BF7FC6@namprd22.prod.outlook.com>
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Type: text/plain
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
-To:     unlisted-recipients:; (no To-header on input)
+X-OriginatorOrg: purdue.edu
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: CH2PR22MB2056.namprd22.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: e98dc2bc-a54d-4535-c355-08d90025c210
+X-MS-Exchange-CrossTenant-originalarrivaltime: 15 Apr 2021 15:47:21.7601
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 4130bd39-7c53-419c-b1e5-8758d6d63f21
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: z8rNHYl5kVPdANnpn/XAU2VwgaOdAeQ0Ikoy7ySpdC/cMQ867jM9mgQd0QgeSD6WCYy/AGI5Y7QCCZViPVPWaA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH2PR22MB1878
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Faiz Abbas <faiz_abbas@ti.com>
-
-Add support for implementing transceiver node as phy. The max_bitrate is
-obtained by getting a phy attribute.
-
-Signed-off-by: Faiz Abbas <faiz_abbas@ti.com>
-Signed-off-by: Aswath Govindraju <a-govindraju@ti.com>
----
- drivers/net/can/m_can/m_can.c          | 10 ++++++++++
- drivers/net/can/m_can/m_can.h          |  2 ++
- drivers/net/can/m_can/m_can_platform.c | 13 +++++++++++++
- 3 files changed, 25 insertions(+)
-
-diff --git a/drivers/net/can/m_can/m_can.c b/drivers/net/can/m_can/m_can.c
-index 34073cd077e4..7d31250446c2 100644
---- a/drivers/net/can/m_can/m_can.c
-+++ b/drivers/net/can/m_can/m_can.c
-@@ -21,6 +21,7 @@
- #include <linux/iopoll.h>
- #include <linux/can/dev.h>
- #include <linux/pinctrl/consumer.h>
-+#include <linux/phy/phy.h>
- 
- #include "m_can.h"
- 
-@@ -1514,6 +1515,7 @@ static void m_can_stop(struct net_device *dev)
- static int m_can_close(struct net_device *dev)
- {
- 	struct m_can_classdev *cdev = netdev_priv(dev);
-+	int err;
- 
- 	netif_stop_queue(dev);
- 
-@@ -1536,6 +1538,10 @@ static int m_can_close(struct net_device *dev)
- 	close_candev(dev);
- 	can_led_event(dev, CAN_LED_EVENT_STOP);
- 
-+	err = phy_power_off(cdev->transceiver);
-+	if (err)
-+		return err;
-+
- 	return 0;
- }
- 
-@@ -1720,6 +1726,10 @@ static int m_can_open(struct net_device *dev)
- 	struct m_can_classdev *cdev = netdev_priv(dev);
- 	int err;
- 
-+	err = phy_power_on(cdev->transceiver);
-+	if (err)
-+		return err;
-+
- 	err = m_can_clk_start(cdev);
- 	if (err)
- 		return err;
-diff --git a/drivers/net/can/m_can/m_can.h b/drivers/net/can/m_can/m_can.h
-index ace071c3e58c..38cad068abad 100644
---- a/drivers/net/can/m_can/m_can.h
-+++ b/drivers/net/can/m_can/m_can.h
-@@ -28,6 +28,7 @@
- #include <linux/iopoll.h>
- #include <linux/can/dev.h>
- #include <linux/pinctrl/consumer.h>
-+#include <linux/phy/phy.h>
- 
- /* m_can lec values */
- enum m_can_lec_type {
-@@ -82,6 +83,7 @@ struct m_can_classdev {
- 	struct workqueue_struct *tx_wq;
- 	struct work_struct tx_work;
- 	struct sk_buff *tx_skb;
-+	struct phy *transceiver;
- 
- 	struct can_bittiming_const *bit_timing;
- 	struct can_bittiming_const *data_timing;
-diff --git a/drivers/net/can/m_can/m_can_platform.c b/drivers/net/can/m_can/m_can_platform.c
-index 599de0e08cd7..82d4f1a15dd7 100644
---- a/drivers/net/can/m_can/m_can_platform.c
-+++ b/drivers/net/can/m_can/m_can_platform.c
-@@ -6,6 +6,7 @@
- // Copyright (C) 2018-19 Texas Instruments Incorporated - http://www.ti.com/
- 
- #include <linux/platform_device.h>
-+#include <linux/phy/phy.h>
- 
- #include "m_can.h"
- 
-@@ -67,6 +68,7 @@ static int m_can_plat_probe(struct platform_device *pdev)
- 	struct resource *res;
- 	void __iomem *addr;
- 	void __iomem *mram_addr;
-+	struct phy *transceiver;
- 	int irq, ret = 0;
- 
- 	mcan_class = m_can_class_allocate_dev(&pdev->dev,
-@@ -101,6 +103,16 @@ static int m_can_plat_probe(struct platform_device *pdev)
- 		goto probe_fail;
- 	}
- 
-+	transceiver = devm_phy_optional_get(&pdev->dev, NULL);
-+	if (IS_ERR(transceiver)) {
-+		ret = PTR_ERR(transceiver);
-+		dev_err(&pdev->dev, "error while getting phy, err=%d\n", ret);
-+		return ret;
-+	}
-+
-+	if (transceiver)
-+		priv->cdev.can.bitrate_max = transceiver->attrs.max_link_rate;
-+
- 	priv->base = addr;
- 	priv->mram_base = mram_addr;
- 
-@@ -108,6 +120,7 @@ static int m_can_plat_probe(struct platform_device *pdev)
- 	mcan_class->pm_clock_support = 1;
- 	mcan_class->can.clock.freq = clk_get_rate(mcan_class->cclk);
- 	mcan_class->dev = &pdev->dev;
-+	mcan_class->transceiver = transceiver;
- 
- 	mcan_class->ops = &m_can_plat_ops;
- 
--- 
-2.17.1
-
+SGksDQoNCldlIGZvdW5kIGEgZGF0YSByYWNlIGJldHdlZW4gdGNwX3NldF9kZWZhdWx0X2Nvbmdl
+c3Rpb25fY29udHJvbCgpIGFuZCB0Y3Bfc2V0X2Nvbmdlc3Rpb25fY29udHJvbCgpIGluIGxpbnV4
+LTUuMTItcmMzLiANCkluIGdlbmVyYWwsIHdoZW4gdGNwX3NldF9jb25nZXN0aW9uX2NvbnRyb2wo
+KSBpcyByZWFkaW5nIGNhLT5mbGFncyB3aXRoIGEgbG9jayBncmFiYmVkLCB0Y3Bfc2V0X2RlZmF1
+bHRfY29uZ2VzdGlvbl9jb250cm9sKCkgDQptYXkgYmUgdXBkYXRpbmcgY2EtPmZsYWdzIGF0IHRo
+ZSBzYW1lIHRpbWUsIGFzIHNob3duIGJlbG93Lg0KDQpXaGVuIHRoZSB3cml0ZXIgYW5kIHJlYWRl
+ciBhcmUgcnVubmluZyBwYXJhbGxlbCwgdGNwX3NldF9jb25nZXN0aW9uX2NvbnRyb2woKeKAmXMg
+Y29udHJvbCBmbG93IA0KbWlnaHQgYmUgbm9uLWRldGVybWluaXN0aWMsIGVpdGhlciByZXR1cm5p
+bmcgYSAtRVBFUk0gb3IgY2FsbGluZyB0Y3BfcmVpbml0X2Nvbmdlc3Rpb25fY29udHJvbCgpLg0K
+DQpXZSBhbHNvIG5vdGljZSBpbiB0Y3Bfc2V0X2FsbG93ZWRfY29uZ2VzdGlvbl9jb250cm9sKCks
+IHRoZSB3cml0ZSB0byBjYS0+ZmxhZ3MgaXMgcHJvdGVjdGVkIGJ5IHRjcF9jb25nX2xpc3RfbG9j
+aywNCnNvIHdlIHdhbnQgdG8gcG9pbnQgaXQgb3V0IGluIGNhc2UgdGhlIGRhdGEgcmFjZSBpcyB1
+bmV4cGVjdGVkLg0KDQpUaHJlYWQgMQkJCQkJCQlUaHJlYWQgMg0KLy90Y3Bfc2V0X2RlZmF1bHRf
+Y29uZ2VzdGlvbl9jb250cm9sKCkJLy90Y3Bfc2V0X2Nvbmdlc3Rpb25fY29udHJvbCgpDQoJCQkJ
+CQkJCS8vIGxvY2tfc29jaygpIGdyYWJiZWQNCgkJCQkJCQkJaWYgKCEoKGNhLT5mbGFncyAmIFRD
+UF9DT05HX05PTl9SRVNUUklDVEVEKSB8fCBjYXBfbmV0X2FkbWluKSkNCgkJCQkJCQkJCWVyciA9
+IC1FUEVSTTsNCgkJCQkJCQkJZWxzZSBpZiAoIWJwZl90cnlfbW9kdWxlX2dldChjYSwgY2EtPm93
+bmVyKSkNCgkJCQkJCQkJCWVyciA9IC1FQlVTWTsNCgkJCQkJCQkJZWxzZQ0KCQkJCQkJCQkJdGNw
+X3JlaW5pdF9jb25nZXN0aW9uX2NvbnRyb2woc2ssIGNhKTsNCmNhLT5mbGFncyB8PSBUQ1BfQ09O
+R19OT05fUkVTVFJJQ1RFRDsNCgkNCg0KDQpUaGFua3MsDQpTaXNodWFpDQoNCg==
