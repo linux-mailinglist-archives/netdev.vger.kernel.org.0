@@ -2,113 +2,139 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CF8C1360F29
-	for <lists+netdev@lfdr.de>; Thu, 15 Apr 2021 17:41:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id ACCDF360F3A
+	for <lists+netdev@lfdr.de>; Thu, 15 Apr 2021 17:45:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232769AbhDOPlx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 15 Apr 2021 11:41:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54450 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232642AbhDOPlu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 15 Apr 2021 11:41:50 -0400
-Received: from mail-wr1-x42a.google.com (mail-wr1-x42a.google.com [IPv6:2a00:1450:4864:20::42a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 848ADC06175F
-        for <netdev@vger.kernel.org>; Thu, 15 Apr 2021 08:41:27 -0700 (PDT)
-Received: by mail-wr1-x42a.google.com with SMTP id s7so23652555wru.6
-        for <netdev@vger.kernel.org>; Thu, 15 Apr 2021 08:41:27 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=isovalent-com.20150623.gappssmtp.com; s=20150623;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=qzCmIc5xh7d+ubWNy7gZo3UPfbkyUvg8kMmWmppBNes=;
-        b=BEj/1/8XPncnjRfRK8mLiZ1SoZ2+BwrE+a39LxPwB/MsIFJnzBAICQLZ2jiwGGbQov
-         4zqh7un0jhEP1iNaKM1PurWOo4uOYi/n2gtxwCVm76y8egSWq0m6KnadRWC5DH8hi34C
-         K41+UsN0jCiClEebcR9kPZsL0Lx6/VJV5Li9dNkP8mG/+bW6Uxqyyarpphfbe13+sVlb
-         FizX/3RV1YXqCKanusixVoY8OxsNOXFXCWpfkOB2NeLmRvAHXodqwMYxxCYasGQZQftV
-         OsBicx1g9iYrnNMRoDBiJ4p9GtlEji++P0zPJAhhkeDvxObWb1E6q5IO+XBq+ah9VkM2
-         b8CQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=qzCmIc5xh7d+ubWNy7gZo3UPfbkyUvg8kMmWmppBNes=;
-        b=AlqKOe6R92jY9y+n1/v2T3OgylR/MQASgpo3w5YikgApr6fm0tBSCvuctMgBxI0l+J
-         jVKQMx5Q0vsfPL6C/CDXkPVOWfy+w3Jky7Rf0ZxtAUJfALK1jFqN7pWbjGNwZX6njVOh
-         EvzS9yo/6DBpbK0rl/kMBtx8xVOBf+gsWUZHSXbDh+P4QD0l4TFPgWqm681rxQnMMrKg
-         RxvGxTWjI0r9NNdFLGCsFpS3P7vyjhoykiJHzIBHfOz6Y5cOe40I3gaJk9mAZwqmLu6O
-         A+YhgMfVikcCG6ina1kff69GNOSrlkEf1CzvogqDnvvk2BiDNtflgs43GPm/3FT2MsLY
-         Rj/g==
-X-Gm-Message-State: AOAM533kg2gRu5/0ioh19TA6OJ7PfOgk6ari7wNw5tL/QwIAMxgi0YIx
-        tdOz2aDNin//yam4EU6O2/huEQ==
-X-Google-Smtp-Source: ABdhPJyLNMOWPYjLpplPAmINNkz2Fou+qVJXho8kWclmtHcejA/NRHvG9yzn7ifRTNHYBMXjICP1Nw==
-X-Received: by 2002:a05:6000:ca:: with SMTP id q10mr4272021wrx.104.1618501286182;
-        Thu, 15 Apr 2021 08:41:26 -0700 (PDT)
-Received: from [192.168.1.8] ([149.86.87.196])
-        by smtp.gmail.com with ESMTPSA id l14sm1920076wmq.4.2021.04.15.08.41.24
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 15 Apr 2021 08:41:25 -0700 (PDT)
-Subject: Re: [PATCH bpf-next 1/2] bpf: Remove bpf_jit_enable=2 debugging mode
-To:     Daniel Borkmann <daniel@iogearbox.net>,
-        Jianlin Lv <Jianlin.Lv@arm.com>, bpf@vger.kernel.org
-Cc:     corbet@lwn.net, ast@kernel.org, andrii@kernel.org, kafai@fb.com,
-        songliubraving@fb.com, yhs@fb.com, john.fastabend@gmail.com,
-        kpsingh@kernel.org, davem@davemloft.net, kuba@kernel.org,
-        illusionist.neo@gmail.com, linux@armlinux.org.uk,
-        zlim.lnx@gmail.com, catalin.marinas@arm.com, will@kernel.org,
-        paulburton@kernel.org, tsbogend@alpha.franken.de,
-        naveen.n.rao@linux.ibm.com, sandipan@linux.ibm.com,
-        mpe@ellerman.id.au, benh@kernel.crashing.org, paulus@samba.org,
-        luke.r.nels@gmail.com, xi.wang@gmail.com, bjorn@kernel.org,
-        paul.walmsley@sifive.com, palmer@dabbelt.com,
-        aou@eecs.berkeley.edu, iii@linux.ibm.com, hca@linux.ibm.com,
-        gor@linux.ibm.com, borntraeger@de.ibm.com, yoshfuji@linux-ipv6.org,
-        dsahern@kernel.org, tglx@linutronix.de, mingo@redhat.com,
-        bp@alien8.de, x86@kernel.org, hpa@zytor.com, udknight@gmail.com,
-        mchehab+huawei@kernel.org, dvyukov@google.com, maheshb@google.com,
-        horms@verge.net.au, nicolas.dichtel@6wind.com,
-        viro@zeniv.linux.org.uk, masahiroy@kernel.org,
-        keescook@chromium.org, tklauser@distanz.ch, grantseltzer@gmail.com,
-        irogers@google.com, linux-doc@vger.kernel.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-mips@vger.kernel.org,
-        linuxppc-dev@lists.ozlabs.org, linux-riscv@lists.infradead.org,
-        linux-s390@vger.kernel.org, sparclinux@vger.kernel.org,
-        iecedge@gmail.com
-References: <20210415093250.3391257-1-Jianlin.Lv@arm.com>
- <9c4a78d2-f73c-832a-e6e2-4b4daa729e07@iogearbox.net>
-From:   Quentin Monnet <quentin@isovalent.com>
-Message-ID: <d3949501-8f7d-57c4-b3fe-bcc3b24c09d8@isovalent.com>
-Date:   Thu, 15 Apr 2021 16:41:23 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.9.1
+        id S233369AbhDOPqH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 15 Apr 2021 11:46:07 -0400
+Received: from mail.kernel.org ([198.145.29.99]:35334 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S231137AbhDOPqG (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 15 Apr 2021 11:46:06 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 719656115B;
+        Thu, 15 Apr 2021 15:45:42 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1618501542;
+        bh=5QQsnYIjpMZ3jYk9CeYd19LBwUZImwRVtvV+ycyJ3LA=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=ES/LGW1HuI+5JKHLi24K5zbuil/09aJ8i0yq8tuW/nZ3EUa+BZXi4DjRQEkkWH5rk
+         RzFBEmH3Ce2K6YPFV1iJYJCkXPOk7wQFzUzarGUW88TFev2tr7PTGXt8hBCpOwtk0B
+         CIqL1b/oP1qovEKtf5Esb6if8BOalLISdO0VU5WqGxelLkk34GWkcLr5dU8iBw/teJ
+         kSZRUaKy0RJNEpAJPHqwCQ895bcOzMHKSrHPtpCaxylsWp9tToiW82NFMzda/sTl92
+         +GDlmTV+KjRzN2a9y/MkR7gxOpPhV+2y+oZWc9T/LYHDDd0Cbt4fRvZli4I8xyQOsr
+         2/cAfs4u3HUUg==
+Date:   Thu, 15 Apr 2021 08:45:41 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Saeed Mahameed <saeed@kernel.org>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, andrew@lunn.ch,
+        mkubecek@suse.cz, idosch@nvidia.com,
+        Ariel Almog <ariela@nvidia.com>
+Subject: Re: [RFC net-next 0/6] ethtool: add uAPI for reading standard stats
+Message-ID: <20210415084541.5ce6018f@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <4425ee5839ac86270542ffa3d40cda67dc5068e1.camel@kernel.org>
+References: <20210414202325.2225774-1-kuba@kernel.org>
+        <4425ee5839ac86270542ffa3d40cda67dc5068e1.camel@kernel.org>
 MIME-Version: 1.0
-In-Reply-To: <9c4a78d2-f73c-832a-e6e2-4b4daa729e07@iogearbox.net>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-GB
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-2021-04-15 16:37 UTC+0200 ~ Daniel Borkmann <daniel@iogearbox.net>
-> On 4/15/21 11:32 AM, Jianlin Lv wrote:
->> For debugging JITs, dumping the JITed image to kernel log is discouraged,
->> "bpftool prog dump jited" is much better way to examine JITed dumps.
->> This patch get rid of the code related to bpf_jit_enable=2 mode and
->> update the proc handler of bpf_jit_enable, also added auxiliary
->> information to explain how to use bpf_jit_disasm tool after this change.
->>
->> Signed-off-by: Jianlin Lv <Jianlin.Lv@arm.com>
+On Wed, 14 Apr 2021 22:51:39 -0700 Saeed Mahameed wrote:
+> On Wed, 2021-04-14 at 13:23 -0700, Jakub Kicinski wrote:
+> > This series adds a new ethtool command to read well defined
+> > device statistics. There is nothing clever here, just a netlink
+> > API for dumping statistics defined by standards and RFCs which
+> > today end up in ethtool -S under infinite variations of names.
+> >=20
+> > This series adds basic IEEE stats (for PHY, MAC, Ctrl frames)
+> > and RMON stats. AFAICT other RFCs only duplicate the IEEE
+> > stats.
+> >=20
+> > This series does _not_ add a netlink API to read driver-defined
+> > stats. There seems to be little to gain from moving that part
+> > to netlink.
+> >=20
+> > The netlink message format is very simple, and aims to allow
+> > adding stats and groups with no changes to user tooling (which
+> > IIUC is expected for ethtool). Stats are dumped directly
+> > into netlink with netlink attributes used as IDs. This is
+> > perhaps where the biggest question mark is. We could instead
+> > pack the stats into individual wrappers:
+> >=20
+> > =C2=A0[grp]
+> > =C2=A0=C2=A0 [stat] // nest
+> > =C2=A0=C2=A0=C2=A0=C2=A0 [id]=C2=A0=C2=A0=C2=A0 // u32
+> > =C2=A0=C2=A0=C2=A0=C2=A0 [value] // u64
+> > =C2=A0=C2=A0 [stat] // nest
+> > =C2=A0=C2=A0=C2=A0=C2=A0 [id]=C2=A0=C2=A0=C2=A0 // u32
+> > =C2=A0=C2=A0=C2=A0=C2=A0 [value] // u64
+> >=20
+> > which would increase the message size 2x but allow
+> > to ID the stats from 0, saving strset space as well as =20
+>=20
+> don't you need to translate such ids to strs in userspace ?=20
+> I am not fond of upgrading userspace every time we add new stat..=20
 
-Hello,
+No, no, the question was only whether we keep stat ids in the same
+attribute space as other group attributes (like string set ID) or
+whether they are nested somewhere deeper and have their own ID space.
 
-For what it's worth, I have already seen people dump the JIT image in
-kernel logs in Qemu VMs running with just a busybox, not for kernel
-development, but in a context where buiding/using bpftool was not
-possible. Maybe not a common case, but still, removing the debugging
-mode will make that impossible. Is there a particular incentive to
-remove the feature?
+I went ahead and nested them yesterday. I had to engage in a little=20
+bit of black magic for pad, but it feels more right to nest..
 
-Best regards,
-Quentin
+static int stat_put(struct sk_buff *skb, u16 attrtype, u64 val)
+{
+	struct nlattr *nest;
+	int ret;
+
+	if (val =3D=3D ETHTOOL_STAT_NOT_SET)
+		return 0;
+
+	/* We want to start stats attr types from 0, so we don't have a type
+	 * for pad inside ETHTOOL_A_STATS_GRP_STAT. Pad things on the outside
+	 * of ETHTOOL_A_STATS_GRP_STAT. Since we're one nest away from the
+	 * actual attr we're 4B off - nla_need_padding_for_64bit() & co.
+	 * can't be used.
+	 */
+#ifndef CONFIG_HAVE_EFFICIENT_UNALIGNED_ACCESS
+        if (!IS_ALIGNED((unsigned long)skb_tail_pointer(skb), 8))
+                if (!nla_reserve(skb, ETHTOOL_A_STATS_GRP_PAD, 0))
+			return -EMSGSIZE;
+#endif
+
+	nest =3D nla_nest_start(skb, ETHTOOL_A_STATS_GRP_STAT);
+	if (!nest)
+		return -EMSGSIZE;
+
+	ret =3D nla_put_u64_64bit(skb, attrtype, val, -1 /* not used */);
+	if (ret) {
+		nla_nest_cancel(skb, nest);
+		return ret;
+	}
+
+	nla_nest_end(skb, nest);
+	return 0;
+}
+
+> Just throwing crazy ideas.. BTF might be a useful tool here! :))=20
+>=20
+> > allow seamless adding of legacy stats to this API =20
+> which legacy stats ?=20
+
+The ones from get_ethtool_stats.
+
+> > (which are IDed from 0).
+> >=20
+> > On user space side we can re-use -S, and make it dump
+> > standard stats if --groups are defined.
+> >=20
+> > $ ethtool -S eth0 --groups eth-phy eth-mac rmon eth-ctrl =20
+>=20
+> Deja-vu, I honestly remember someone in mlnx suggsting this exact
+> command a couple of years ago.. :)=20
+
+Hah! I hope it wasn't shot down as a bad idea :)
+
+Thanks a lot for the reviews!
