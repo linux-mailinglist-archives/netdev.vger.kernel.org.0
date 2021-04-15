@@ -2,212 +2,144 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CFB1A3611CF
-	for <lists+netdev@lfdr.de>; Thu, 15 Apr 2021 20:14:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C27C83611F4
+	for <lists+netdev@lfdr.de>; Thu, 15 Apr 2021 20:18:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234531AbhDOSOn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 15 Apr 2021 14:14:43 -0400
-Received: from mail-bn7nam10on2119.outbound.protection.outlook.com ([40.107.92.119]:54113
-        "EHLO NAM10-BN7-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S234208AbhDOSOg (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 15 Apr 2021 14:14:36 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=cfg79Hq/awHnHeBcWNi1C6PWkVF/XVCRfYqbPZe+UaOUt8A2bsB+XxySHcjTT2iKKnua+7/qb3jRR/z8/dCQW6rAGtrc84XQ12v6RWbqWEXOh66A8m/HX0vqdZ0PZfN1HUVBRaLiqc1bLjF/rW6wJ8vM88J9rj5mQwPrHgFB4lNv9FkYQE8SS+8qK6Bdpn/wEyP5JZgkMTbam0LjxoiKMxzA2iApXlHorHsju5zJ244JQm5qQ6ppz/DQmABA9DMKS23KWaFqkukSz8a+vUuNXVrZ9nLiEM0LExevWSoBrSkYrYoadzpswfkd7875R8If7+OF5IaVm3zvJ+qfJ4kdSA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=m7uWJ0hKdGysFzQrVKkeUtKc6fROhl+kUkFCUIueZp4=;
- b=c4kM4tTMauEFl+s6MIWK82Qw6Zi0czd6xzK0NNDGQPtHl8qGocaCycuBYcrVJTmIvFips4uEYY199hjdPH7QGa5IykVnDS+1fBTtjfPShvVNluNffu4odbOaR/WX6sDhcaiOCXeEeg0DA8nqbI8fTVdL5VenonhFX/Tmep4QXzerZPbUyEJeorhlz9WeLhhZ85x+3ybYFJZTvSukCcizkULMOhPPfhyw68q2muVIuvyGAOX8SgSgul0SJRjQgIKGMsU7bpEUVNN7euqIhW3Kn7QSczQExcVRi2OYfoAJnuDINCrRqPcQBTS6vxHZlYTfd2cGqkk4cOv2wemTUyBTLw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=microsoft.com; dmarc=pass action=none
- header.from=microsoft.com; dkim=pass header.d=microsoft.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=m7uWJ0hKdGysFzQrVKkeUtKc6fROhl+kUkFCUIueZp4=;
- b=GEBn08DGHM8I5ndwOybvPZT/H8oDFob2n7czGERYxyDlxqRpdquGqBGvtv9A1EH54oyWd2yNPvJ0YvrD+NUObCMl/itocLjZBajodhd2MBmB8uNDG+lAzpj8490DL4+c6yzfmz3DVDJ7b5u6uj/l3LozgAj8hner9Rjany2q7K4=
-Received: from MW2PR2101MB0892.namprd21.prod.outlook.com
- (2603:10b6:302:10::24) by MWHPR21MB0845.namprd21.prod.outlook.com
- (2603:10b6:300:77::11) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4065.2; Thu, 15 Apr
- 2021 18:14:09 +0000
-Received: from MW2PR2101MB0892.namprd21.prod.outlook.com
- ([fe80::5548:cbd8:43cd:aa3d]) by MW2PR2101MB0892.namprd21.prod.outlook.com
- ([fe80::5548:cbd8:43cd:aa3d%6]) with mapi id 15.20.4065.008; Thu, 15 Apr 2021
- 18:14:09 +0000
-From:   Dexuan Cui <decui@microsoft.com>
-To:     Jakub Kicinski <kuba@kernel.org>
-CC:     "davem@davemloft.net" <davem@davemloft.net>,
-        KY Srinivasan <kys@microsoft.com>,
-        Haiyang Zhang <haiyangz@microsoft.com>,
-        Stephen Hemminger <sthemmin@microsoft.com>,
-        "wei.liu@kernel.org" <wei.liu@kernel.org>,
-        Wei Liu <liuwe@microsoft.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "leon@kernel.org" <leon@kernel.org>,
-        "andrew@lunn.ch" <andrew@lunn.ch>,
-        "bernd@petrovitsch.priv.at" <bernd@petrovitsch.priv.at>,
-        "rdunlap@infradead.org" <rdunlap@infradead.org>,
-        Shachar Raindel <shacharr@microsoft.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>
-Subject: RE: [PATCH v6 net-next] net: mana: Add a driver for Microsoft Azure
- Network Adapter (MANA)
-Thread-Topic: [PATCH v6 net-next] net: mana: Add a driver for Microsoft Azure
- Network Adapter (MANA)
-Thread-Index: AQHXMh74qz+n6heTS0m4o7oyoLHpzqq13bxw
-Date:   Thu, 15 Apr 2021 18:14:09 +0000
-Message-ID: <MW2PR2101MB0892BA3116E2C3C82BEA3D25BF4D9@MW2PR2101MB0892.namprd21.prod.outlook.com>
-References: <20210415054519.12944-1-decui@microsoft.com>
- <20210415104417.6269cd9a@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20210415104417.6269cd9a@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-msip_labels: MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_ActionId=a84e3b9c-d716-432f-93c3-d4d9fd2c027e;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_ContentBits=0;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Enabled=true;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Method=Standard;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Name=Internal;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SetDate=2021-04-15T17:58:49Z;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SiteId=72f988bf-86f1-41af-91ab-2d7cd011db47;
-authentication-results: kernel.org; dkim=none (message not signed)
- header.d=none;kernel.org; dmarc=none action=none header.from=microsoft.com;
-x-originating-ip: [2601:600:8b00:6b90:d56c:64b4:268d:aceb]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: f301c475-d941-480a-820f-08d9003a43d7
-x-ms-traffictypediagnostic: MWHPR21MB0845:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <MWHPR21MB0845C1A964EBFFA6642F7C66BF4D9@MWHPR21MB0845.namprd21.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:7219;
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: jJPS/0pNFOq5xxT4n7sZEA9E7ZUwagPQS6J8gpeHkOE/zNs6wkr1buMNTVq57T+R6nCtM3Cl9n+TaDDJlKummFR5cvbBGEW4ilZYTFS2+U8ZAl/jbCG8ixy2eP+reWBpqySlf+2L+C5owKP60CoBEeH7K1ef1GmCJ+twc9J3OrEr3KNsSO1foD3IVWVswEfQVehD5G2uGYoLydQH68aLoYLk8nJENZJmZcFoJxkmhwfhPlgUbn7QZ9gEmglDkPILvk8jOkS+s0R19x3hK3nMgA71E+0PR2wTUjPvbOKf0ExYdvX7WNS9rUyu5LHQoBW6tEXz3RUcxiAuabyOGHTwkW4bPh8kPg0mxe6ppPfrzk38VZ28Fd8vUN0Mm8L8xXsqOdRZwea1hKNqyEgpUUDa1Dwor36KvglhrXJmk8lzsJfLx1bGfGrOKfQrcHzEy6w1VJCr/PIIcSiFvceqKNiwza4arJmBxcwEHI0NsBAsemHezHJSq44JKTsoHmEa9LZgjZXbUV3TaoS4aeQgnf3nWY3eAxUD6K1+0z2xAXMG+dLeZEzZVYm23COo1QVefksRykwJyyLYdr/WWS2XQcR31eUrR9CIWtJYjDjUOeVLMiM=
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MW2PR2101MB0892.namprd21.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(376002)(396003)(136003)(366004)(346002)(39860400002)(47530400004)(4326008)(33656002)(5660300002)(55016002)(7416002)(54906003)(38100700002)(52536014)(76116006)(186003)(71200400001)(122000001)(2906002)(316002)(7696005)(9686003)(66946007)(66446008)(66556008)(6916009)(64756008)(478600001)(82960400001)(10290500003)(82950400001)(8676002)(8990500004)(6506007)(8936002)(66476007)(86362001);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata: =?us-ascii?Q?tR06L2hpThiTfXXOOZMVp7vOKL9ZVnYKSQ+tphmiMm6wqBewbUlTmA+N044m?=
- =?us-ascii?Q?JMqWtLMcQyY5JDNJMJI1hHedHr8fwZpDsl8iJ64JoOXfvxxJ2EoLJjIQtouJ?=
- =?us-ascii?Q?s2cl5IxgNAQYHvPFDtAbMwMpBmCEsbXpWKblNjwNC0LxZvddQ9DAtln/1bwu?=
- =?us-ascii?Q?1oMZpeEcOnh3Fe4fUHLgY4wnltRZ9DZPEm1T0tJt2ZziQOygbAsqHJvMp+13?=
- =?us-ascii?Q?+V5gnLQLU02JGm0p0NdkBeCOBeecULhMm6F4O7Lejaf6GdK+QhXXX5CRYXfA?=
- =?us-ascii?Q?ICR+GPk3Hl86ntJPC929MORhEIfI/3eJQEs4DtVFSFdsg1JwKKutUgRWH/bc?=
- =?us-ascii?Q?/tstSGwGX3N6jIIywnhToC1RQM7CwoQ5l5rM4QVMLVB0SLPWG9rEYcFDZBV1?=
- =?us-ascii?Q?pW8X/1eKe9mav6mdATeFXKdaGYfHKtoDRahEVdDyEiyFp0JympeSUFZhQ7SV?=
- =?us-ascii?Q?C1fy1hbuDetkmfwnRuuIMwQApoHBGGpBckFbnlHFnTrQb8oGf29N3TC0+Ctg?=
- =?us-ascii?Q?0qMGHlAnG5dRquJOPrrqkUtMCUDTtAjD22GXkzmGvoR5ftwXBqUXQ+uhSZf0?=
- =?us-ascii?Q?C5Lgqv078kiog9aM7D81blipmdrWID/BI+gL1fg5CHA3m9h3Ii0ysEQhejuz?=
- =?us-ascii?Q?agFPsr3Niw+/Su+ZcdivE2JlZpBB66KaeNrJBbr6rC3Vi41pT+rmyoMEtW32?=
- =?us-ascii?Q?8bAuaXkmbfkZ+UWcBj9CTYwAhCRiISnJURTEF8Gpho+D1sv80bCdNo7TdM7D?=
- =?us-ascii?Q?kd7Zf8SkElSgfP2Y9080MVBbkwwLm0nc3zPOYvU7vH7Nsw04AOYHSfmKZor7?=
- =?us-ascii?Q?6kIoiPOlsL9lpS8sDL87X4W/aEMKa0Xia+89ML6eOq0jKrqyJFxSm/RTpr/j?=
- =?us-ascii?Q?zNAIrKhTFKGmYNC+dpWUwglQwOH5MXGt0dzkA5T9vEJVX+vMSSlC0O8Ns168?=
- =?us-ascii?Q?c10vNQwdb+vLyMwlfdHsoAf9Ip+B+e17ECNCK8D8sIpyo9pPXBQHN9xAsZGF?=
- =?us-ascii?Q?nF3XKECx4vi3xzWxEzx9vngDSHDR0AAt1LjYMZRzBPlv+w6NBcd0gCXA3WcN?=
- =?us-ascii?Q?4AlGCX3tNNXnemefgxhcJTikhIouTf2WGd4awBj4Clo+Om2sVzi/9CaBnjH2?=
- =?us-ascii?Q?CC7v11rNKF0B1+KBZsvn3NmBgpkmu+iGg3ZfPZaJk6Vr5hQOmGyldacev7xe?=
- =?us-ascii?Q?Mc49weNs2HLqxHdvTyR5KLwGafYz13HMVRg0CE+A5XFE+3IPeQqaEHCe1zlJ?=
- =?us-ascii?Q?MJerxMsioMXwF4pCuQ1ooNw4TV0vLnyF9oSsjRnJAAxxOEom3jugccS1Nzpm?=
- =?us-ascii?Q?F3ra+hSlRfKzR9JP1Q2UvMZpsXkaSgfuBJ09UPlI21Y1VQD01NbUsYvFCttc?=
- =?us-ascii?Q?uy21PxITB1kVWPbdLIQtYJiguZBT?=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+        id S233923AbhDOSS7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 15 Apr 2021 14:18:59 -0400
+Received: from mail.kernel.org ([198.145.29.99]:39212 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S233052AbhDOSS6 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 15 Apr 2021 14:18:58 -0400
+Received: from gandalf.local.home (cpe-66-24-58-225.stny.res.rr.com [66.24.58.225])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 8BB0B610EA;
+        Thu, 15 Apr 2021 18:18:32 +0000 (UTC)
+Date:   Thu, 15 Apr 2021 14:18:31 -0400
+From:   Steven Rostedt <rostedt@goodmis.org>
+To:     Jiri Olsa <jolsa@redhat.com>
+Cc:     Andrii Nakryiko <andrii.nakryiko@gmail.com>,
+        Jiri Olsa <jolsa@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andriin@fb.com>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>, Daniel Xu <dxu@dxuuu.xyz>,
+        Jesper Brouer <jbrouer@redhat.com>,
+        Toke =?UTF-8?B?SMO4aWxhbmQtSsO4cmdlbnNlbg==?= <toke@redhat.com>,
+        Viktor Malik <vmalik@redhat.com>
+Subject: Re: [PATCHv2 RFC bpf-next 0/7] bpf: Add support for ftrace probe
+Message-ID: <20210415141831.7b8fbe72@gandalf.local.home>
+In-Reply-To: <YHh6YeOPh0HIlb3e@krava>
+References: <20210413121516.1467989-1-jolsa@kernel.org>
+        <CAEf4Bzazst1rBi4=LuP6_FnPXCRYBNFEtDnK3UVBj6Eo6xFNtQ@mail.gmail.com>
+        <YHbd2CmeoaiLJj7X@krava>
+        <CAEf4BzYyVj-Tjy9ZZdAU5nOtJ8_auvVobTT6pMqg8zPb9jj-Ow@mail.gmail.com>
+        <20210415111002.324b6bfa@gandalf.local.home>
+        <YHh6YeOPh0HIlb3e@krava>
+X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-X-OriginatorOrg: microsoft.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: MW2PR2101MB0892.namprd21.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: f301c475-d941-480a-820f-08d9003a43d7
-X-MS-Exchange-CrossTenant-originalarrivaltime: 15 Apr 2021 18:14:09.4666
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 72f988bf-86f1-41af-91ab-2d7cd011db47
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: 1X3kySp73XoueUmRIOvU+YSvUTP8xPa/OFB7eOFTi6NqaTOOvOmQYpIXADqkeTJWDa0C7ZpIrxnioUrfo2R3Xw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MWHPR21MB0845
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> From: Jakub Kicinski <kuba@kernel.org>
-> Sent: Thursday, April 15, 2021 10:44 AM
->  ...
-> On Wed, 14 Apr 2021 22:45:19 -0700 Dexuan Cui wrote:
-> > +	buf =3D dma_alloc_coherent(gmi->dev, length, &dma_handle,
-> > +				 GFP_KERNEL | __GFP_ZERO);
->=20
-> No need for GFP_ZERO, dma_alloc_coherent() zeroes the memory these days.
+On Thu, 15 Apr 2021 19:39:45 +0200
+Jiri Olsa <jolsa@redhat.com> wrote:
 
-Yes, indeed. Will remove __GFP_ZERO.
+> > I don't know how the BPF code does it, but if you are tracing the exit
+> > of a function, I'm assuming that you hijack the return pointer and replace
+> > it with a call to a trampoline that has access to the arguments. To do  
+> 
+> hi,
+> it's bit different, the trampoline makes use of the fact that the
+> call to trampoline is at the very begining of the function and, so
+> it can call the origin function with 'call function + 5' instr.
+> 
+> so in nutshell the trampoline does:
+> 
+>   call entry_progs
+>   call original_func+5
 
->=20
-> > +static int mana_gd_register_irq(struct gdma_queue *queue,
-> > +				const struct gdma_queue_spec *spec)
-> > ...
-> > +	struct gdma_irq_context *gic;
-> > +
-> > +	struct gdma_context *gc;
->=20
-> Why the empty line?
+How does the above handle functions that have parameters on the stack?
 
-No good reason. Will remove this line. I'll check the whole patch
-for similar issues.
+>   call exit_progs
+> 
+> you can check this in arch/x86/net/bpf_jit_comp.c in moe detail:
+> 
+>  * The assembly code when eth_type_trans is called from trampoline:
+>  *
+>  * push rbp
+>  * mov rbp, rsp
+>  * sub rsp, 24                     // space for skb, dev, return value
+>  * push rbx                        // temp regs to pass start time
+>  * mov qword ptr [rbp - 24], rdi   // save skb pointer to stack
+>  * mov qword ptr [rbp - 16], rsi   // save dev pointer to stack
+>  * call __bpf_prog_enter           // rcu_read_lock and preempt_disable
+>  * mov rbx, rax                    // remember start time if bpf stats are enabled
+>  * lea rdi, [rbp - 24]             // R1==ctx of bpf prog
+>  * call addr_of_jited_FENTRY_prog  // bpf prog can access skb and dev
+> 
+> entry program called ^^^
+> 
+>  * movabsq rdi, 64bit_addr_of_struct_bpf_prog  // unused if bpf stats are off
+>  * mov rsi, rbx                    // prog start time
+>  * call __bpf_prog_exit            // rcu_read_unlock, preempt_enable and stats math
+>  * mov rdi, qword ptr [rbp - 24]   // restore skb pointer from stack
+>  * mov rsi, qword ptr [rbp - 16]   // restore dev pointer from stack
+>  * call eth_type_trans+5           // execute body of eth_type_trans
+> 
+> original function called ^^^
 
->=20
-> > +	queue =3D kzalloc(sizeof(*queue), GFP_KERNEL);
-> > +	if (!queue)
-> > +		return -ENOMEM;
-> > +
-> > +	gmi =3D &queue->mem_info;
-> > +	err =3D mana_gd_alloc_memory(gc, spec->queue_size, gmi);
-> > +	if (err)
-> > +		return err;
->=20
-> Leaks the memory from 'queue'?
+This would need to be limited to only functions that do not have any
+parameters on the stack.
 
-Sorry. This should be a bug I introduced when moving arouond some code.
+> 
+>  * mov qword ptr [rbp - 8], rax    // save return value
+>  * call __bpf_prog_enter           // rcu_read_lock and preempt_disable
+>  * mov rbx, rax                    // remember start time in bpf stats are enabled
+>  * lea rdi, [rbp - 24]             // R1==ctx of bpf prog
+>  * call addr_of_jited_FEXIT_prog   // bpf prog can access skb, dev, return value
+> 
+> exit program called ^^^
+> 
+>  * movabsq rdi, 64bit_addr_of_struct_bpf_prog  // unused if bpf stats are off
+>  * mov rsi, rbx                    // prog start time
+>  * call __bpf_prog_exit            // rcu_read_unlock, preempt_enable and stats math
+>  * mov rax, qword ptr [rbp - 8]    // restore eth_type_trans's return value
+>  * pop rbx
+>  * leave
+>  * add rsp, 8                      // skip eth_type_trans's frame
+>  * ret                             // return to its caller
+> 
+> > this you need a shadow stack to save the real return as well as the
+> > parameters of the function. This is something that I have patches that do
+> > similar things with function graph.
+> > 
+> > If you want this feature, lets work together and make this work for both
+> > BPF and ftrace.  
+> 
+> it's been some time I saw a graph tracer, is there a way to make it
+> access input arguments and make it available through ftrace_ops
+> interface?
 
-> Same code in mana_gd_create_mana_eq(), ...wq_cq(), etc.
+I have patches that could easily make it do so. And should probably get
+them out again. The function graph tracer has a shadow stack, and my
+patches allow you to store data on it for use with the exiting of the
+program.
 
-Will fix all of them, and check for the code similar issues.
+My last release of that code is here:
 
-> > +int mana_do_attach(struct net_device *ndev, enum mana_attach_caller
-> caller)
-> > +{
-> > +	struct mana_port_context *apc =3D netdev_priv(ndev);
-> > +	struct gdma_dev *gd =3D apc->ac->gdma_dev;
-> > +	u32 max_txq, max_rxq, max_queues;
-> > +	int port_idx =3D apc->port_idx;
-> > +	u32 num_indirect_entries;
-> > +	int err;
-> > +
-> > +	if (caller =3D=3D MANA_OPEN)
-> > +		goto start_open;
-> > +
-> > +	err =3D mana_init_port_context(apc);
-> > +	if (err)
-> > +		return err;
-> > +
-> > +	err =3D mana_query_vport_cfg(apc, port_idx, &max_txq, &max_rxq,
-> > +				   &num_indirect_entries);
-> > +	if (err) {
-> > +		netdev_err(ndev, "Failed to query info for vPort 0\n");
-> > +		goto reset_apc;
-> > +	}
-> > +
-> > +	max_queues =3D min_t(u32, max_txq, max_rxq);
-> > +	if (apc->max_queues > max_queues)
-> > +		apc->max_queues =3D max_queues;
-> > +
-> > +	if (apc->num_queues > apc->max_queues)
-> > +		apc->num_queues =3D apc->max_queues;
-> > +
-> > +	memcpy(ndev->dev_addr, apc->mac_addr, ETH_ALEN);
-> > +
-> > +	if (caller =3D=3D MANA_PROBE)
-> > +		return 0;
-> > +
-> > +start_open:
->=20
-> Why keep this as a single function, there is no overlap between what's
-> done for OPEN and PROBE, it seems.
->=20
-> Similarly detach should probably be split into clearly distinct parts.
+  https://lore.kernel.org/lkml/20190525031633.811342628@goodmis.org/
 
-Will improve the code. Thanks for the suggestion!
+It allows you to "reserve data" to pass from the caller to the return, and
+that could hold the arguments. See patch 15 of that series.
 
-Thanks,
-Dexuan
+
+-- Steve
+
