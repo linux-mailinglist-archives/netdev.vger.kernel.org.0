@@ -2,109 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A281E3613EE
-	for <lists+netdev@lfdr.de>; Thu, 15 Apr 2021 23:12:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3E47D3613FD
+	for <lists+netdev@lfdr.de>; Thu, 15 Apr 2021 23:15:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235806AbhDOVMY convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Thu, 15 Apr 2021 17:12:24 -0400
-Received: from eu-smtp-delivery-151.mimecast.com ([185.58.86.151]:60993 "EHLO
-        eu-smtp-delivery-151.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S234439AbhDOVMX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 15 Apr 2021 17:12:23 -0400
-Received: from AcuMS.aculab.com (156.67.243.121 [156.67.243.121]) (Using
- TLS) by relay.mimecast.com with ESMTP id
- uk-mta-157-edG-rOXuODirktZxzgM_1A-1; Thu, 15 Apr 2021 22:11:57 +0100
-X-MC-Unique: edG-rOXuODirktZxzgM_1A-1
-Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) by
- AcuMS.aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) with Microsoft SMTP
- Server (TLS) id 15.0.1497.2; Thu, 15 Apr 2021 22:11:56 +0100
-Received: from AcuMS.Aculab.com ([fe80::994c:f5c2:35d6:9b65]) by
- AcuMS.aculab.com ([fe80::994c:f5c2:35d6:9b65%12]) with mapi id
- 15.00.1497.012; Thu, 15 Apr 2021 22:11:56 +0100
-From:   David Laight <David.Laight@ACULAB.COM>
-To:     'Matthew Wilcox' <willy@infradead.org>,
-        Jesper Dangaard Brouer <brouer@redhat.com>
-CC:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-mm@kvack.org" <linux-mm@kvack.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>,
-        "linux-mips@vger.kernel.org" <linux-mips@vger.kernel.org>,
-        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
-        Matteo Croce <mcroce@linux.microsoft.com>,
-        Grygorii Strashko <grygorii.strashko@ti.com>,
-        Arnd Bergmann <arnd@kernel.org>,
-        "Christoph Hellwig" <hch@lst.de>
-Subject: RE: [PATCH 1/1] mm: Fix struct page layout on 32-bit systems
-Thread-Topic: [PATCH 1/1] mm: Fix struct page layout on 32-bit systems
-Thread-Index: AQHXMXYmwdfrgigLI0exh4xFUSZq9Kq0jZ3ggAFYFFmAAC15oA==
-Date:   Thu, 15 Apr 2021 21:11:56 +0000
-Message-ID: <5179a01a462f43d6951a65de2a299070@AcuMS.aculab.com>
-References: <20210410205246.507048-2-willy@infradead.org>
- <20210411114307.5087f958@carbon>
- <20210411103318.GC2531743@casper.infradead.org>
- <20210412011532.GG2531743@casper.infradead.org>
- <20210414101044.19da09df@carbon>
- <20210414115052.GS2531743@casper.infradead.org>
- <20210414211322.3799afd4@carbon>
- <20210414213556.GY2531743@casper.infradead.org>
- <a50c3156fe8943ef964db4345344862f@AcuMS.aculab.com>
- <20210415200832.32796445@carbon>
- <20210415182155.GD2531743@casper.infradead.org>
-In-Reply-To: <20210415182155.GD2531743@casper.infradead.org>
-Accept-Language: en-GB, en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ms-exchange-transport-fromentityheader: Hosted
-x-originating-ip: [10.202.205.107]
+        id S235576AbhDOVP6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 15 Apr 2021 17:15:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42848 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234958AbhDOVP5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 15 Apr 2021 17:15:57 -0400
+Received: from mail-pj1-x102d.google.com (mail-pj1-x102d.google.com [IPv6:2607:f8b0:4864:20::102d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 37B1CC061756
+        for <netdev@vger.kernel.org>; Thu, 15 Apr 2021 14:15:34 -0700 (PDT)
+Received: by mail-pj1-x102d.google.com with SMTP id j6-20020a17090adc86b02900cbfe6f2c96so13433776pjv.1
+        for <netdev@vger.kernel.org>; Thu, 15 Apr 2021 14:15:34 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=networkplumber-org.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=E+zzLPV6n+5kowpZE/IEJBo10o+qQ1Ks/Ky4ezSQr08=;
+        b=lBPOF7HUcnVEuaiUK1v7fYM3nLPcU8cI7Q8MC89mb0K9L4eoZWdBRTf+6kKSHke9XH
+         hLNJaim9Jw5PoXWWPIDMAOsbHLJzFzOjIcVvDVUJuIgyFqNNGZ3VDn6OFVodLDjbgRpH
+         4ZWFKMk7KvkYI6Uz/tLNGUcIXWz++rZtxdRc3P5HM56ZB4YKxtWiPCm9DGf37NNxZnb9
+         8FCkGVBTZgmhNaUdyYZVEA2ruNxoVhze7YeiZG3sWKc0BzQcHgMfGDsb49zEE4eYkuTB
+         BFGUz0rQIs81g53nIanFPkUgxMpLWh69r6/Fxapc70XQZ0XKh44DJVwGJme087pv9uw6
+         H1QA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=E+zzLPV6n+5kowpZE/IEJBo10o+qQ1Ks/Ky4ezSQr08=;
+        b=aDfRhpZKF/nFW/Lit1c0WtonK5XGOa3wprCaWPBrMeQFBXiWDaiGmawYbFQDXLsGaJ
+         SbqSwIdwvgsQjWlrYhQdgVOPaFU3E/tWMp9vHTklOYwombwWMkKWsnwKM4dadu4IkPUO
+         956bwSfbGfJrtwJUJXxxaLHkrV+/2k85gFDuC3PHnITQlopfMDgehy8D78d4CFJ4RahV
+         MpG5CMhLFwfMxrtYTeyp4hz0JrIkn8ckj4NjrKDa3qmGjjZAlA2FqrgfxWJtdYZGV972
+         MsOG1qaF3lEufzXWdjEhVwhrpPLsaS9rkavET07Usm28CWRc06b+obTmiaJGWiSwo895
+         i+mQ==
+X-Gm-Message-State: AOAM530UIIrUqip2BGw5JHhxhGsxmnTOM8mgN8nm5SO+e7IPe3QLYfLw
+        ttTciQnY/ujmO9oafPymVGXnHw==
+X-Google-Smtp-Source: ABdhPJzboDjwMtKCULcXbojj82kIWXz6OPo28zEldC+ah1zGc+8yn3plPpmZXVbNr6sOK+w2ebG2hQ==
+X-Received: by 2002:a17:90a:488a:: with SMTP id b10mr5944052pjh.2.1618521333789;
+        Thu, 15 Apr 2021 14:15:33 -0700 (PDT)
+Received: from hermes.local (76-14-218-44.or.wavecable.com. [76.14.218.44])
+        by smtp.gmail.com with ESMTPSA id x1sm2905627pfj.209.2021.04.15.14.15.32
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 15 Apr 2021 14:15:33 -0700 (PDT)
+Date:   Thu, 15 Apr 2021 14:15:25 -0700
+From:   Stephen Hemminger <stephen@networkplumber.org>
+To:     Dexuan Cui <decui@microsoft.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, kys@microsoft.com,
+        haiyangz@microsoft.com, sthemmin@microsoft.com, wei.liu@kernel.org,
+        liuwe@microsoft.com, netdev@vger.kernel.org, leon@kernel.org,
+        andrew@lunn.ch, bernd@petrovitsch.priv.at, rdunlap@infradead.org,
+        shacharr@microsoft.com, linux-kernel@vger.kernel.org,
+        linux-hyperv@vger.kernel.org
+Subject: Re: [PATCH v6 net-next] net: mana: Add a driver for Microsoft Azure
+ Network Adapter (MANA)
+Message-ID: <20210415141525.69c12844@hermes.local>
+In-Reply-To: <20210415054519.12944-1-decui@microsoft.com>
+References: <20210415054519.12944-1-decui@microsoft.com>
 MIME-Version: 1.0
-Authentication-Results: relay.mimecast.com;
-        auth=pass smtp.auth=C51A453 smtp.mailfrom=david.laight@aculab.com
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: aculab.com
-Content-Language: en-US
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8BIT
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Matthew Wilcox <willy@infradead.org>
-> Sent: 15 April 2021 19:22
-> 
-> On Thu, Apr 15, 2021 at 08:08:32PM +0200, Jesper Dangaard Brouer wrote:
-> > +static inline
-> > +dma_addr_t page_pool_dma_addr_read(dma_addr_t dma_addr)
-> > +{
-> > +	/* Workaround for storing 64-bit DMA-addr on 32-bit machines in struct
-> > +	 * page.  The page->dma_addr share area with page->compound_head which
-> > +	 * use bit zero to mark compound pages. This is okay, as DMA-addr are
-> > +	 * aligned pointers which have bit zero cleared.
-> > +	 *
-> > +	 * In the 32-bit case, page->compound_head is 32-bit.  Thus, when
-> > +	 * dma_addr_t is 64-bit it will be located in top 32-bit.  Solve by
-> > +	 * swapping dma_addr 32-bit segments.
-> > +	 */
-> > +#ifdef CONFIG_ARCH_DMA_ADDR_T_64BIT
-> 
-> #if defined(CONFIG_ARCH_DMA_ADDR_T_64BIT) && defined(__BIG_ENDIAN)
-> otherwise you'll create the problem on ARM that you're avoiding on PPC ...
-> 
-> I think you want to delete the word '_read' from this function name because
-> you're using it for both read and write.
+On Wed, 14 Apr 2021 22:45:19 -0700
+Dexuan Cui <decui@microsoft.com> wrote:
 
-I think I'd use explicit dma_addr_hi and dma_addr_lo and
-separate read/write functions just to make absolutely sure
-nothing picks up the swapped value.
+> +static int mana_probe_port(struct mana_context *ac, int port_idx,
+> +			   struct net_device **ndev_storage)
+> +{
+> +	struct gdma_context *gc = ac->gdma_dev->gdma_context;
+> +	struct mana_port_context *apc;
+> +	struct net_device *ndev;
+> +	int err;
+> +
+> +	ndev = alloc_etherdev_mq(sizeof(struct mana_port_context),
+> +				 gc->max_num_queues);
+> +	if (!ndev)
+> +		return -ENOMEM;
+> +
+> +	*ndev_storage = ndev;
+> +
+> +	apc = netdev_priv(ndev);
+> +	apc->ac = ac;
+> +	apc->ndev = ndev;
+> +	apc->max_queues = gc->max_num_queues;
+> +	apc->num_queues = min_t(uint, gc->max_num_queues, MANA_MAX_NUM_QUEUES);
+> +	apc->port_handle = INVALID_MANA_HANDLE;
+> +	apc->port_idx = port_idx;
+> +
+> +	ndev->netdev_ops = &mana_devops;
+> +	ndev->ethtool_ops = &mana_ethtool_ops;
+> +	ndev->mtu = ETH_DATA_LEN;
+> +	ndev->max_mtu = ndev->mtu;
+> +	ndev->min_mtu = ndev->mtu;
+> +	ndev->needed_headroom = MANA_HEADROOM;
+> +	SET_NETDEV_DEV(ndev, gc->dev);
+> +
+> +	netif_carrier_off(ndev);
+> +
+> +	get_random_bytes(apc->hashkey, MANA_HASH_KEY_SIZE);
 
-Isn't it possible to move the field down one long?
-This might require an explicit zero - but this is not a common
-code path - the extra write will be noise.
-
-	David
-
--
-Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
-Registration No: 1397386 (Wales)
-
+Current practice for network drivers is to use netdev_rss_key_fill() for this.
