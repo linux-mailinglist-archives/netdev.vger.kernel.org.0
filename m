@@ -2,99 +2,116 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4A751360535
-	for <lists+netdev@lfdr.de>; Thu, 15 Apr 2021 11:04:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 223B3360539
+	for <lists+netdev@lfdr.de>; Thu, 15 Apr 2021 11:05:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232019AbhDOJEr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 15 Apr 2021 05:04:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51298 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232017AbhDOJEp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 15 Apr 2021 05:04:45 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 762B3C061574
-        for <netdev@vger.kernel.org>; Thu, 15 Apr 2021 02:04:22 -0700 (PDT)
-Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <mkl@pengutronix.de>)
-        id 1lWxv5-000169-KF; Thu, 15 Apr 2021 11:04:15 +0200
-Received: from pengutronix.de (unknown [IPv6:2a03:f580:87bc:d400:983:856d:54dc:ee1c])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (Client did not present a certificate)
-        (Authenticated sender: mkl-all@blackshift.org)
-        by smtp.blackshift.org (Postfix) with ESMTPSA id B209860F2DC;
-        Thu, 15 Apr 2021 09:04:12 +0000 (UTC)
-Date:   Thu, 15 Apr 2021 11:04:12 +0200
-From:   Marc Kleine-Budde <mkl@pengutronix.de>
-To:     Colin King <colin.king@canonical.com>
-Cc:     Wolfgang Grandegger <wg@grandegger.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Vincent Mailhol <mailhol.vincent@wanadoo.fr>,
-        Arunachalam Santhanam <arunachalam.santhanam@in.bosch.com>,
-        linux-can@vger.kernel.org, netdev@vger.kernel.org,
-        kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH][next] can: etas_es58x: Fix missing null check on netdev
- pointer
-Message-ID: <20210415090412.q3k4tmsp3rdfj54t@pengutronix.de>
-References: <20210415084723.1807935-1-colin.king@canonical.com>
+        id S232110AbhDOJFp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 15 Apr 2021 05:05:45 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:28443 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S232100AbhDOJFn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 15 Apr 2021 05:05:43 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1618477520;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=OzvjiFIzYZkBsqCDMlTdrOnRQkd+YTOFRqgYIvls9tY=;
+        b=fFd3c37bP+BWcU0aJCTiNx6s3JrvAQpvKaPDcOwoH/0coUqOPGXrgCoIZkUQFNf3NqJ7uM
+        cbMq+virOGipEOCutOapwe7GcgzlTuuz6ZJHfvVq20PtYvR6FJxP2YUOb9bFppWcC3vtih
+        Oh7lcBhV3voVSBYWFCVKnNejj7zyj4g=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-234-3fh0e0aYPsqfmelJdH-0Dw-1; Thu, 15 Apr 2021 05:05:16 -0400
+X-MC-Unique: 3fh0e0aYPsqfmelJdH-0Dw-1
+Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id C3B056D59B;
+        Thu, 15 Apr 2021 09:05:13 +0000 (UTC)
+Received: from wangxiaodeMacBook-Air.local (ovpn-12-61.pek2.redhat.com [10.72.12.61])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id DEDAE610FE;
+        Thu, 15 Apr 2021 09:04:59 +0000 (UTC)
+Subject: Re: [PATCH v6 10/10] Documentation: Add documentation for VDUSE
+From:   Jason Wang <jasowang@redhat.com>
+To:     Stefan Hajnoczi <stefanha@redhat.com>,
+        Yongji Xie <xieyongji@bytedance.com>
+Cc:     "Michael S. Tsirkin" <mst@redhat.com>,
+        Stefano Garzarella <sgarzare@redhat.com>,
+        Parav Pandit <parav@nvidia.com>,
+        Christoph Hellwig <hch@infradead.org>,
+        Christian Brauner <christian.brauner@canonical.com>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        Matthew Wilcox <willy@infradead.org>, viro@zeniv.linux.org.uk,
+        Jens Axboe <axboe@kernel.dk>, bcrl@kvack.org,
+        Jonathan Corbet <corbet@lwn.net>,
+        =?UTF-8?Q?Mika_Penttil=c3=a4?= <mika.penttila@nextfour.com>,
+        Dan Carpenter <dan.carpenter@oracle.com>,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
+        kvm@vger.kernel.org, linux-fsdevel@vger.kernel.org
+References: <20210331080519.172-1-xieyongji@bytedance.com>
+ <20210331080519.172-11-xieyongji@bytedance.com>
+ <YHb44R4HyLEUVSTF@stefanha-x1.localdomain>
+ <CACycT3uNR+nZY5gY0UhPkeOyi7Za6XkX4b=hasuDcgqdc7fqfg@mail.gmail.com>
+ <YHfo8pc7dIO9lNc3@stefanha-x1.localdomain>
+ <80b31814-9e41-3153-7efb-c0c2fab44feb@redhat.com>
+Message-ID: <02c19c22-13ea-ea97-d99b-71edfee0b703@redhat.com>
+Date:   Thu, 15 Apr 2021 17:04:58 +0800
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
+ Gecko/20100101 Thunderbird/78.9.1
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="szmpbpc75mtqb4hx"
-Content-Disposition: inline
-In-Reply-To: <20210415084723.1807935-1-colin.king@canonical.com>
-X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
-X-SA-Exim-Mail-From: mkl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
+In-Reply-To: <80b31814-9e41-3153-7efb-c0c2fab44feb@redhat.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 
---szmpbpc75mtqb4hx
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+在 2021/4/15 下午4:36, Jason Wang 写道:
+>>>
+>> Please state this explicitly at the start of the document. Existing
+>> interfaces like FUSE are designed to avoid trusting userspace.
+>
+>
+> There're some subtle difference here. VDUSE present a device to kernel 
+> which means IOMMU is probably the only thing to prevent a malicous 
+> device.
+>
+>
+>> Therefore
+>> people might think the same is the case here. It's critical that people
+>> are aware of this before deploying VDUSE with virtio-vdpa.
+>>
+>> We should probably pause here and think about whether it's possible to
+>> avoid trusting userspace. Even if it takes some effort and costs some
+>> performance it would probably be worthwhile.
+>
+>
+> Since the bounce buffer is used the only attack surface is the 
+> coherent area, if we want to enforce stronger isolation we need to use 
+> shadow virtqueue (which is proposed in earlier version by me) in this 
+> case. But I'm not sure it's worth to do that.
 
-On 15.04.2021 09:47:23, Colin King wrote:
-> From: Colin Ian King <colin.king@canonical.com>
->=20
-> There is an assignment to *netdev that is can potentially be null but the
-> null check is checking netdev and not *netdev as intended. Fix this by
-> adding in the missing * operator.
->=20
-> Addresses-Coverity: ("Dereference before null check")
-> Fixes: 8537257874e9 ("can: etas_es58x: add core support for ETAS ES58X CA=
-N USB interfaces")
-> Signed-off-by: Colin Ian King <colin.king@canonical.com>
 
-Looks good. Applied to linux-can-next/testing.
 
-Tnx,
-Marc
+So this reminds me the discussion in the end of last year. We need to 
+make sure we don't suffer from the same issues for VDUSE at least
 
---=20
-Pengutronix e.K.                 | Marc Kleine-Budde           |
-Embedded Linux                   | https://www.pengutronix.de  |
-Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
-Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
+https://yhbt.net/lore/all/c3629a27-3590-1d9f-211b-c0b7be152b32@redhat.com/T/#mc6b6e2343cbeffca68ca7a97e0f473aaa871c95b
 
---szmpbpc75mtqb4hx
-Content-Type: application/pgp-signature; name="signature.asc"
+Or we can solve it at virtio level, e.g remember the dma address instead 
+of depending on the addr in the descriptor ring
 
------BEGIN PGP SIGNATURE-----
+Thanks
 
-iQEzBAABCgAdFiEEK3kIWJt9yTYMP3ehqclaivrt76kFAmB4AYgACgkQqclaivrt
-76lQ5gf+MVDfgP/lHzpBKIj8U4d1CJ+Hb2cUtI+HcxDsNqc08ZCbsoiWhze1E0df
-W4Hv7r7oN5RtUpsmM5hF8NV1jwjR3/buD6AIaTTMYWLOLm0QU+o/W2uKydBy1M9y
-ythlIG/6MN132kMeNLk7iHfXzT4jHCrVouq1kNVGZBwch+ljGCYw+1LJ5WwCutvh
-PP04dZZF/9EmYX10mWgmor6bMcD5tCPGd4P54sYsGuN6KV0pZiCWK2H2xqpi8sPW
-K3yWIPUnrI3RGqwmwAq/0v+JHi2rpipNvEUKz6+t326FhQcE6vy6oQ71pfcHM3Vk
-FN2fr4XDZLDEqPIe3Sl90lCNwKWhBA==
-=NznM
------END PGP SIGNATURE-----
 
---szmpbpc75mtqb4hx--
+>
+>
+>>
+>> Is the security situation different with vhost-vdpa? In that case it
+>> seems more likely that the host kernel doesn't need to trust the
+>> userspace VDUSE device.
+
