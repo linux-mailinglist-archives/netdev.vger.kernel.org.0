@@ -2,26 +2,26 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5D2A8360A22
-	for <lists+netdev@lfdr.de>; Thu, 15 Apr 2021 15:08:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 65C75360A20
+	for <lists+netdev@lfdr.de>; Thu, 15 Apr 2021 15:08:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233242AbhDONIp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 15 Apr 2021 09:08:45 -0400
+        id S233191AbhDONIg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 15 Apr 2021 09:08:36 -0400
 Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48894 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233216AbhDONId (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 15 Apr 2021 09:08:33 -0400
+        with ESMTP id S233169AbhDONIZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 15 Apr 2021 09:08:25 -0400
 Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 71EA0C061574
-        for <netdev@vger.kernel.org>; Thu, 15 Apr 2021 06:08:10 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 783EFC06138C
+        for <netdev@vger.kernel.org>; Thu, 15 Apr 2021 06:08:02 -0700 (PDT)
 Received: from dude.hi.pengutronix.de ([2001:67c:670:100:1d::7])
         by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <ore@pengutronix.de>)
-        id 1lX1ig-0006KX-Ub; Thu, 15 Apr 2021 15:07:42 +0200
+        id 1lX1ig-0006Kd-Ua; Thu, 15 Apr 2021 15:07:42 +0200
 Received: from ore by dude.hi.pengutronix.de with local (Exim 4.92)
         (envelope-from <ore@pengutronix.de>)
-        id 1lX1if-0005MF-Ph; Thu, 15 Apr 2021 15:07:41 +0200
+        id 1lX1if-0005N1-RN; Thu, 15 Apr 2021 15:07:41 +0200
 From:   Oleksij Rempel <o.rempel@pengutronix.de>
 To:     Shawn Guo <shawnguo@kernel.org>,
         Sascha Hauer <s.hauer@pengutronix.de>,
@@ -36,9 +36,9 @@ Cc:     Oleksij Rempel <o.rempel@pengutronix.de>, kernel@pengutronix.de,
         David Jander <david@protonic.nl>,
         Russell King <linux@armlinux.org.uk>,
         Philippe Schenker <philippe.schenker@toradex.com>
-Subject: [PATCH v2 5/7] net: fec: make use of generic NET_SELFTESTS library
-Date:   Thu, 15 Apr 2021 15:07:36 +0200
-Message-Id: <20210415130738.19603-6-o.rempel@pengutronix.de>
+Subject: [PATCH v2 6/7] net: ag71xx: make use of generic NET_SELFTESTS library
+Date:   Thu, 15 Apr 2021 15:07:37 +0200
+Message-Id: <20210415130738.19603-7-o.rempel@pengutronix.de>
 X-Mailer: git-send-email 2.29.2
 In-Reply-To: <20210415130738.19603-1-o.rempel@pengutronix.de>
 References: <20210415130738.19603-1-o.rempel@pengutronix.de>
@@ -52,65 +52,84 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-With this patch FEC on iMX will able to run generic net selftests
+With this patch the ag71xx on Atheros AR9331 will able to run generic net
+selftests.
 
 Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
 ---
- drivers/net/ethernet/freescale/Kconfig    | 1 +
- drivers/net/ethernet/freescale/fec_main.c | 7 +++++++
- 2 files changed, 8 insertions(+)
+ drivers/net/ethernet/atheros/Kconfig  |  1 +
+ drivers/net/ethernet/atheros/ag71xx.c | 20 ++++++++++++++++----
+ 2 files changed, 17 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/net/ethernet/freescale/Kconfig b/drivers/net/ethernet/freescale/Kconfig
-index 3f9175bdce77..3d937b4650b2 100644
---- a/drivers/net/ethernet/freescale/Kconfig
-+++ b/drivers/net/ethernet/freescale/Kconfig
-@@ -26,6 +26,7 @@ config FEC
- 		   ARCH_MXC || SOC_IMX28 || COMPILE_TEST)
- 	default ARCH_MXC || SOC_IMX28 if ARM
- 	select CRC32
+diff --git a/drivers/net/ethernet/atheros/Kconfig b/drivers/net/ethernet/atheros/Kconfig
+index fb803bf92ded..6842b74b0696 100644
+--- a/drivers/net/ethernet/atheros/Kconfig
++++ b/drivers/net/ethernet/atheros/Kconfig
+@@ -20,6 +20,7 @@ if NET_VENDOR_ATHEROS
+ config AG71XX
+ 	tristate "Atheros AR7XXX/AR9XXX built-in ethernet mac support"
+ 	depends on ATH79
 +	select NET_SELFTESTS
- 	select PHYLIB
- 	imply PTP_1588_CLOCK
+ 	select PHYLINK
  	help
-diff --git a/drivers/net/ethernet/freescale/fec_main.c b/drivers/net/ethernet/freescale/fec_main.c
-index 70aea9c274fe..d51b2eb1de71 100644
---- a/drivers/net/ethernet/freescale/fec_main.c
-+++ b/drivers/net/ethernet/freescale/fec_main.c
-@@ -38,6 +38,7 @@
- #include <linux/in.h>
- #include <linux/ip.h>
- #include <net/ip.h>
+ 	  If you wish to compile a kernel for AR7XXX/91XXX and enable
+diff --git a/drivers/net/ethernet/atheros/ag71xx.c b/drivers/net/ethernet/atheros/ag71xx.c
+index 7352f98123c7..eb067ce978ae 100644
+--- a/drivers/net/ethernet/atheros/ag71xx.c
++++ b/drivers/net/ethernet/atheros/ag71xx.c
+@@ -37,6 +37,7 @@
+ #include <linux/reset.h>
+ #include <linux/clk.h>
+ #include <linux/io.h>
 +#include <net/selftests.h>
- #include <net/tso.h>
- #include <linux/tcp.h>
- #include <linux/udp.h>
-@@ -2481,6 +2482,9 @@ static void fec_enet_get_strings(struct net_device *netdev,
+ 
+ /* For our NAPI weight bigger does *NOT* mean better - it means more
+  * D-cache misses and lots more wasted cycles than we'll ever
+@@ -497,12 +498,17 @@ static int ag71xx_ethtool_set_pauseparam(struct net_device *ndev,
+ static void ag71xx_ethtool_get_strings(struct net_device *netdev, u32 sset,
+ 				       u8 *data)
+ {
+-	if (sset == ETH_SS_STATS) {
+-		int i;
++	int i;
+ 
++	switch (sset) {
++	case ETH_SS_STATS:
+ 		for (i = 0; i < ARRAY_SIZE(ag71xx_statistics); i++)
  			memcpy(data + i * ETH_GSTRING_LEN,
- 				fec_stats[i].name, ETH_GSTRING_LEN);
- 		break;
+ 			       ag71xx_statistics[i].name, ETH_GSTRING_LEN);
++		break;
 +	case ETH_SS_TEST:
 +		net_selftest_get_strings(data);
 +		break;
  	}
  }
  
-@@ -2489,6 +2493,8 @@ static int fec_enet_get_sset_count(struct net_device *dev, int sset)
- 	switch (sset) {
- 	case ETH_SS_STATS:
- 		return ARRAY_SIZE(fec_stats);
+@@ -519,9 +525,14 @@ static void ag71xx_ethtool_get_stats(struct net_device *ndev,
+ 
+ static int ag71xx_ethtool_get_sset_count(struct net_device *ndev, int sset)
+ {
+-	if (sset == ETH_SS_STATS)
++	switch (sset) {
++	case ETH_SS_STATS:
+ 		return ARRAY_SIZE(ag71xx_statistics);
+-	return -EOPNOTSUPP;
 +	case ETH_SS_TEST:
 +		return net_selftest_get_count();
- 	default:
- 		return -EOPNOTSUPP;
- 	}
-@@ -2740,6 +2746,7 @@ static const struct ethtool_ops fec_enet_ethtool_ops = {
- 	.set_wol		= fec_enet_set_wol,
- 	.get_link_ksettings	= phy_ethtool_get_link_ksettings,
- 	.set_link_ksettings	= phy_ethtool_set_link_ksettings,
-+	.self_test		= net_selftest,
++	default:
++		return -EOPNOTSUPP;
++	}
+ }
+ 
+ static const struct ethtool_ops ag71xx_ethtool_ops = {
+@@ -536,6 +547,7 @@ static const struct ethtool_ops ag71xx_ethtool_ops = {
+ 	.get_strings			= ag71xx_ethtool_get_strings,
+ 	.get_ethtool_stats		= ag71xx_ethtool_get_stats,
+ 	.get_sset_count			= ag71xx_ethtool_get_sset_count,
++	.self_test			= net_selftest,
  };
  
- static int fec_enet_ioctl(struct net_device *ndev, struct ifreq *rq, int cmd)
+ static int ag71xx_mdio_wait_busy(struct ag71xx *ag)
 -- 
 2.29.2
 
