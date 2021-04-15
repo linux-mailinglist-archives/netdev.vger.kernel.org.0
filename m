@@ -2,98 +2,137 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 52A1D36059F
-	for <lists+netdev@lfdr.de>; Thu, 15 Apr 2021 11:26:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 392843605B0
+	for <lists+netdev@lfdr.de>; Thu, 15 Apr 2021 11:29:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232089AbhDOJ1D (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 15 Apr 2021 05:27:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56252 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232017AbhDOJ07 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 15 Apr 2021 05:26:59 -0400
-Received: from mail-lj1-x236.google.com (mail-lj1-x236.google.com [IPv6:2a00:1450:4864:20::236])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3AAD5C061761
-        for <netdev@vger.kernel.org>; Thu, 15 Apr 2021 02:26:36 -0700 (PDT)
-Received: by mail-lj1-x236.google.com with SMTP id a36so15485384ljq.8
-        for <netdev@vger.kernel.org>; Thu, 15 Apr 2021 02:26:36 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=waldekranz-com.20150623.gappssmtp.com; s=20150623;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:organization:content-transfer-encoding;
-        bh=JYXtByocNzdUyie9ZCRPrngMjOeMLMOYohNBttdV3IE=;
-        b=OtDalePQGPrcfmDLkkqJhNqNXLxO2CYFGmmSq6en2xvvXDWwaqDJqUrVW974yeKWg3
-         fODGiAhXfd+ZG8gAmMjdkYL7EoSQf8EVsmk30byuJNQuutWFgXlLtXipLqD8lTSVFLwt
-         mGk3uGvM2VitVm9U0GOWJY+G4CNbaIzPSptWZ8sFdtS+KWeF/Rvk4b8grhz/hYEtkGyg
-         ITzeK+30+zcwqNtXmx47G12D/6J/Zye79QSOhHuBF8QGo6918pbfcV63uo6odUrh5lOP
-         Vs5CnXRXFJnkgBx2MPveGyLonAzlIqtFcQ+ZDQBBz2R9yMGParVR01PqZbJmcCqW9Svm
-         JBhw==
+        id S231840AbhDOJ3v (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 15 Apr 2021 05:29:51 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:47537 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S231697AbhDOJ3t (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 15 Apr 2021 05:29:49 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1618478965;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=2kU6pnkx8ahC9lrMW5Fx29wiRnsU7XdlivJV5ohDfks=;
+        b=YjfyZ7n1H5C4IY6yLO0TBpkah1oLJ8kbTaQMJan3SvaShIKotze01EyXBCMmDgyv3yncO3
+        cou1WZ5V+0fuvuvED1ICimxbMsIJnJYVQnhiKfaWeIowO3goy9ZLtC/bF2mGf+v5QM05H9
+        03hYzns2AtA/RGCOGedLZ0xN35x4GeU=
+Received: from mail-ed1-f71.google.com (mail-ed1-f71.google.com
+ [209.85.208.71]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-47-X71LUVRTPcaP8zf7-A3RMg-1; Thu, 15 Apr 2021 05:29:23 -0400
+X-MC-Unique: X71LUVRTPcaP8zf7-A3RMg-1
+Received: by mail-ed1-f71.google.com with SMTP id co5-20020a0564020c05b02903825bcdad12so4847772edb.0
+        for <netdev@vger.kernel.org>; Thu, 15 Apr 2021 02:29:23 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:organization:content-transfer-encoding;
-        bh=JYXtByocNzdUyie9ZCRPrngMjOeMLMOYohNBttdV3IE=;
-        b=UVLBDr528PjeBeyad4wCEs849rUbmDqX48cbDYTHDIqTFpVQ2QvRkyCbHH52A/8END
-         cfFFj8slt3uLc/yC1CnWrbb65O6vSAfv3nrNRM6x9B6nRYZDuGs4dvG9j8J6Ry15M1YJ
-         R/n14gAkq9TsoFX+o6faAoZcADOQbk/tzrQtORv5uxPze5NgI9CIzp5lWlQGCX2CECUr
-         tUpDhRTYfga4UzucbIOxmc633JIXRj7msjlsHhxcBPZgu0FH75xBpvcyZ4OWQj4mqyZp
-         R2oKzvL+r/DsA6IdqBNPA3Cd+WzewiEGL1ErLKrrO9Z91pWI4CnMcRHQKOkA6Gy4j5t2
-         tB1A==
-X-Gm-Message-State: AOAM533WX1936c8mJ17yHMjg7pmV8M6ViheRsGKOENrAsNG98Idvpw2c
-        D14qwvJ1zkFVFLRFj7BrSPSjog==
-X-Google-Smtp-Source: ABdhPJxBOc6E58NSwqXtquKlHZ9YkZfofkDdaScflkGBDsw7xpwNHi1/Vw0erwIUz4vVfOLt2/VTKw==
-X-Received: by 2002:a2e:320c:: with SMTP id y12mr1271942ljy.360.1618478794795;
-        Thu, 15 Apr 2021 02:26:34 -0700 (PDT)
-Received: from veiron.westermo.com (static-193-12-47-89.cust.tele2.se. [193.12.47.89])
-        by smtp.gmail.com with ESMTPSA id g4sm595557lfc.102.2021.04.15.02.26.34
+        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
+         :message-id:mime-version;
+        bh=2kU6pnkx8ahC9lrMW5Fx29wiRnsU7XdlivJV5ohDfks=;
+        b=VmoczmK6lRdlACepMoMSJBFGLIDssF1nmhpK6D0PoL0FJF7OYKqiSSwPPpP9AlMAAc
+         wRfNx2eVftPFjpvpk5yJq1HUmQ0lE0aZ+VBpbxfPUeoRcqm2fChS6HWL+UkFBVj1Xjmn
+         5/UtWglzqpNQkKWVNvVSSRFpiNS+1wnuhNR5TZiCrz9sOkjOOZ0PsxOZyPPO/XQENSwZ
+         MyE9oHv6oINcIRKe4/h1uA3QZU2ao4ANeg150qGhfovAEm7UMpnWw7CsvhNOOZbAJ8JF
+         pQsbH8JHHlyUpNliejJL5oSfdpwmskA36N9PM+QcuLJ5BCKtKvMZHR93vPGHqRGn4c9I
+         mmBQ==
+X-Gm-Message-State: AOAM5300j2eBYyzAZq4JzHoHsR67cU90y+VFn0tayuvwdNfb8xV26IvQ
+        GbdJtP5R9U/FwI5bcGjK1jpg/Uy8ePqnaVxg8qVGwQvPoPl0l7LL51E8dHZpI4RRHFgDXfIDyhy
+        SR6dzNMqzvTZ5HRE6
+X-Received: by 2002:a05:6402:5153:: with SMTP id n19mr3043729edd.173.1618478961829;
+        Thu, 15 Apr 2021 02:29:21 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJwN1YONbgCaDAZ7dB148jhXZY0vOhSLRfPeDL37+0RZfGd1KDG48fS8Qo4Vek+pOtpWNjw9uQ==
+X-Received: by 2002:a05:6402:5153:: with SMTP id n19mr3043699edd.173.1618478961521;
+        Thu, 15 Apr 2021 02:29:21 -0700 (PDT)
+Received: from alrua-x1.borgediget.toke.dk ([2a0c:4d80:42:443::2])
+        by smtp.gmail.com with ESMTPSA id k8sm1937480edr.75.2021.04.15.02.29.20
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 15 Apr 2021 02:26:34 -0700 (PDT)
-From:   Tobias Waldekranz <tobias@waldekranz.com>
-To:     davem@davemloft.net, kuba@kernel.org
-Cc:     andrew@lunn.ch, vivien.didelot@gmail.com, f.fainelli@gmail.com,
-        olteanv@gmail.com, netdev@vger.kernel.org, robh+dt@kernel.org,
-        devicetree@vger.kernel.org
-Subject: [PATCH v2 net-next 5/5] dt-bindings: net: dsa: Document dsa,tag-protocol property
-Date:   Thu, 15 Apr 2021 11:26:10 +0200
-Message-Id: <20210415092610.953134-6-tobias@waldekranz.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20210415092610.953134-1-tobias@waldekranz.com>
-References: <20210415092610.953134-1-tobias@waldekranz.com>
+        Thu, 15 Apr 2021 02:29:21 -0700 (PDT)
+Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
+        id 47FBC1806B3; Thu, 15 Apr 2021 11:29:20 +0200 (CEST)
+From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
+To:     Hangbin Liu <liuhangbin@gmail.com>, Martin KaFai Lau <kafai@fb.com>
+Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org,
+        Jiri Benc <jbenc@redhat.com>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        Eelco Chaudron <echaudro@redhat.com>, ast@kernel.org,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Lorenzo Bianconi <lorenzo.bianconi@redhat.com>,
+        David Ahern <dsahern@gmail.com>,
+        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
+        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
+        =?utf-8?B?QmrDtnJuIFQ=?= =?utf-8?B?w7ZwZWw=?= 
+        <bjorn.topel@gmail.com>
+Subject: Re: [PATCHv7 bpf-next 2/4] xdp: extend xdp_redirect_map with
+ broadcast support
+In-Reply-To: <20210415022127.GQ2900@Leo-laptop-t470s>
+References: <20210414122610.4037085-1-liuhangbin@gmail.com>
+ <20210414122610.4037085-3-liuhangbin@gmail.com>
+ <20210415002350.247ni4rqjwzguu4j@kafai-mbp.dhcp.thefacebook.com>
+ <20210415022127.GQ2900@Leo-laptop-t470s>
+X-Clacks-Overhead: GNU Terry Pratchett
+Date:   Thu, 15 Apr 2021 11:29:20 +0200
+Message-ID: <87lf9jkia7.fsf@toke.dk>
 MIME-Version: 1.0
-Organization: Westermo
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The 'dsa,tag-protocol' is used to force a switch tree to use a
-particular tag protocol, typically because the Ethernet controller
-that it is connected to is not compatible with the default one.
+Hangbin Liu <liuhangbin@gmail.com> writes:
 
-Signed-off-by: Tobias Waldekranz <tobias@waldekranz.com>
----
- Documentation/devicetree/bindings/net/dsa/dsa.yaml | 9 +++++++++
- 1 file changed, 9 insertions(+)
+> On Wed, Apr 14, 2021 at 05:23:50PM -0700, Martin KaFai Lau wrote:
+>> On Wed, Apr 14, 2021 at 08:26:08PM +0800, Hangbin Liu wrote:
+>> [ ... ]
+>> 
+>> > +static __always_inline int __bpf_xdp_redirect_map(struct bpf_map *map, u32 ifindex,
+>> > +						  u64 flags, u64 flag_mask,
+>> >  						  void *lookup_elem(struct bpf_map *map, u32 key))
+>> >  {
+>> >  	struct bpf_redirect_info *ri = this_cpu_ptr(&bpf_redirect_info);
+>> >  
+>> >  	/* Lower bits of the flags are used as return code on lookup failure */
+>> > -	if (unlikely(flags > XDP_TX))
+>> > +	if (unlikely(flags & ~(BPF_F_ACTION_MASK | flag_mask)))
+>> >  		return XDP_ABORTED;
+>> >  
+>> >  	ri->tgt_value = lookup_elem(map, ifindex);
+>> > -	if (unlikely(!ri->tgt_value)) {
+>> > +	if (unlikely(!ri->tgt_value) && !(flags & BPF_F_BROADCAST)) {
+>> >  		/* If the lookup fails we want to clear out the state in the
+>> >  		 * redirect_info struct completely, so that if an eBPF program
+>> >  		 * performs multiple lookups, the last one always takes
+>> > @@ -1482,13 +1484,21 @@ static __always_inline int __bpf_xdp_redirect_map(struct bpf_map *map, u32 ifind
+>> >  		 */
+>> >  		ri->map_id = INT_MAX; /* Valid map id idr range: [1,INT_MAX[ */
+>> >  		ri->map_type = BPF_MAP_TYPE_UNSPEC;
+>> > -		return flags;
+>> > +		return flags & BPF_F_ACTION_MASK;
+>> >  	}
+>> >  
+>> >  	ri->tgt_index = ifindex;
+>> >  	ri->map_id = map->id;
+>> >  	ri->map_type = map->map_type;
+>> >  
+>> > +	if (flags & BPF_F_BROADCAST) {
+>> > +		WRITE_ONCE(ri->map, map);
+>> Why only WRITE_ONCE on ri->map?  Is it needed?
+>
+> I think this is make sure the map pointer assigned to ri->map safely.
+> which starts from commit f6069b9aa993 ("bpf: fix redirect to map under tail
+> calls")
 
-diff --git a/Documentation/devicetree/bindings/net/dsa/dsa.yaml b/Documentation/devicetree/bindings/net/dsa/dsa.yaml
-index 8a3494db4d8d..c4dec0654c6a 100644
---- a/Documentation/devicetree/bindings/net/dsa/dsa.yaml
-+++ b/Documentation/devicetree/bindings/net/dsa/dsa.yaml
-@@ -70,6 +70,15 @@ patternProperties:
-               device is what the switch port is connected to
-             $ref: /schemas/types.yaml#/definitions/phandle
- 
-+          dsa,tag-protocol:
-+            description:
-+              Instead of the default, the switch will use this tag protocol if
-+              possible. Useful when a device supports multiple protcols and
-+              the default is incompatible with the Ethernet device.
-+            enum:
-+              - dsa
-+              - edsa
-+
-           phy-handle: true
- 
-           phy-mode: true
--- 
-2.25.1
+The reason WRITE_ONCE() is only on the map field is because that's the
+one that could be changed by a remote CPU (in bpf_clear_redirect_map())
+- everything else is only accessed on the local CPU.
+
+As for whether it's strictly needed from a memory model PoV, I'm not
+actually sure (and should we be using smp_{store_release,load_acquire}()
+instead?); I view it mostly as an annotation to make it clear that the
+map field is 'special' in this respect...
+
+-Toke
 
