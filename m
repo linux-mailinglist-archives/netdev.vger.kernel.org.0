@@ -2,161 +2,128 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3C82E3603E5
-	for <lists+netdev@lfdr.de>; Thu, 15 Apr 2021 10:08:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4A3A43603F5
+	for <lists+netdev@lfdr.de>; Thu, 15 Apr 2021 10:12:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231567AbhDOIIR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 15 Apr 2021 04:08:17 -0400
-Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:34986 "EHLO
-        mx0b-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S230090AbhDOIIO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 15 Apr 2021 04:08:14 -0400
-Received: from pps.filterd (m0098417.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 13F84B5A132058;
-        Thu, 15 Apr 2021 04:06:53 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=subject : to : cc :
- references : from : message-id : date : in-reply-to : content-type :
- content-transfer-encoding : mime-version; s=pp1;
- bh=qlxWFtVavXCd/lHzWzSrLnEFhrdIu+gCNQ7cSdIefOE=;
- b=bOZgsQih45h3B+5N6i127n5q0Bt37CffaF1qGurNTvPvvbtRdw6NurRtE3OBov4NbcWg
- No9e2XWo0lZoaTXFPJLkYMS+iJw5+7FwmFQz2q8RarOroiGvm+bUcxOVDV/AnaA+MxhS
- Isrt/JCoG3ub6c6U220wf85bvx7TZTnQVeuWW+FiUz8yqabHlxLadVz8066EFBSQlWbw
- vhWgdkLMxV3wb2XlCl4kuaR3grtYSouRI4Xb9/6NhyjxS9q1MuCx2HKutg3FhtSa4R09
- 0U3LYPk/nE0mP8BmWUvLE/a89G1+KCBjYsy1Xl7c+Lr4i5VpdZqVmy0F+06cpG2qGm8Y Gg== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 37x46utmt3-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 15 Apr 2021 04:06:53 -0400
-Received: from m0098417.ppops.net (m0098417.ppops.net [127.0.0.1])
-        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 13F84VnS133994;
-        Thu, 15 Apr 2021 04:06:52 -0400
-Received: from ppma04fra.de.ibm.com (6a.4a.5195.ip4.static.sl-reverse.com [149.81.74.106])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 37x46utmru-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 15 Apr 2021 04:06:52 -0400
-Received: from pps.filterd (ppma04fra.de.ibm.com [127.0.0.1])
-        by ppma04fra.de.ibm.com (8.16.0.43/8.16.0.43) with SMTP id 13F85EEK011874;
-        Thu, 15 Apr 2021 08:06:50 GMT
-Received: from b06cxnps4075.portsmouth.uk.ibm.com (d06relay12.portsmouth.uk.ibm.com [9.149.109.197])
-        by ppma04fra.de.ibm.com with ESMTP id 37u3n8a0dx-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 15 Apr 2021 08:06:50 +0000
-Received: from d06av25.portsmouth.uk.ibm.com (d06av25.portsmouth.uk.ibm.com [9.149.105.61])
-        by b06cxnps4075.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 13F86lP066322744
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Thu, 15 Apr 2021 08:06:47 GMT
-Received: from d06av25.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 73F1011C050;
-        Thu, 15 Apr 2021 08:06:47 +0000 (GMT)
-Received: from d06av25.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id BA81411C064;
-        Thu, 15 Apr 2021 08:06:45 +0000 (GMT)
-Received: from oc7455500831.ibm.com (unknown [9.171.63.231])
-        by d06av25.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Thu, 15 Apr 2021 08:06:45 +0000 (GMT)
-Subject: Re: [PATCH 2/2] tools: do not include scripts/Kbuild.include
-To:     Masahiro Yamada <masahiroy@kernel.org>,
-        linux-kbuild@vger.kernel.org
-Cc:     Janosch Frank <frankja@linux.ibm.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Harish <harish@linux.ibm.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>, Martin KaFai Lau <kafai@fb.com>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Paul Mackerras <paulus@samba.org>,
-        Shuah Khan <shuah@kernel.org>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        bpf@vger.kernel.org, clang-built-linux@googlegroups.com,
-        kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-kselftest@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
-        netdev@vger.kernel.org
-References: <20210415072700.147125-1-masahiroy@kernel.org>
- <20210415072700.147125-2-masahiroy@kernel.org>
-From:   Christian Borntraeger <borntraeger@de.ibm.com>
-Message-ID: <eb623ea6-a2f4-9692-ff3d-cb9f9b9ea15f@de.ibm.com>
-Date:   Thu, 15 Apr 2021 10:06:45 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.9.0
-In-Reply-To: <20210415072700.147125-2-masahiroy@kernel.org>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: -YMTQ38-A9pZbmNZPcHayMt5HbaIwtug
-X-Proofpoint-ORIG-GUID: FIconhLodZz_0nArX8fkTBP6UY0y2BNs
-Content-Transfer-Encoding: 7bit
-X-Proofpoint-UnRewURL: 0 URL was un-rewritten
+        id S231582AbhDOINI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 15 Apr 2021 04:13:08 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:47557 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S230090AbhDOINF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 15 Apr 2021 04:13:05 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1618474362;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=Uok685ar2aRiyh2dl0JSULm/jJ/D8RgjO+Fo8IDWGJU=;
+        b=LWDL6pJCYGt7X3/SemiiguvJ6Kl/Fn6RYoSKTFldwo8l7roFw1RWmcd+8DFwQ3uR3Y1GEZ
+        it/vB3YM5OW7KPQCwa1FjJ23czDHVGNOuGXJ7W0GSWqOrbBdv/yd9ba/QfE6YhPShWrGtL
+        vEWrk1tTsHiFqph86gC9rF1Gcx/IeMw=
+Received: from mail-ej1-f71.google.com (mail-ej1-f71.google.com
+ [209.85.218.71]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-459-FClzL6ZwPM-xmgVTnpp-Gw-1; Thu, 15 Apr 2021 04:12:40 -0400
+X-MC-Unique: FClzL6ZwPM-xmgVTnpp-Gw-1
+Received: by mail-ej1-f71.google.com with SMTP id p25-20020a1709061419b0290378364a6464so645249ejc.15
+        for <netdev@vger.kernel.org>; Thu, 15 Apr 2021 01:12:39 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=Uok685ar2aRiyh2dl0JSULm/jJ/D8RgjO+Fo8IDWGJU=;
+        b=TV3pIRlysKtXSq5Bc3uaFuRYlLvvJGTE3A9+/XG77BUIGIbPBlBvgw4ak26tm0EgvO
+         23sZSi8YVOWPP5W2ZZbj3v2TDh/p2BCJ2WMo+dm8NgUCBXahijcgEGuPpHiZBrGmHQiN
+         aX3PbVdxhRKWbPgBwi5t+AnHiIdrVzzh+IskO6Qp72JpaMzgOT+hfOuSZGuA4DsFE7J/
+         HMkCRORRy+YOR03ifyLazZdEObnFsmKv2xMzENK7KAKelCBS2fj2oOo7gBWh5AaED+BW
+         xw77budvKgn+hqKbUz1mLAsxHZREXak2MrYxPH71wbQ6zgQVppNo/FkggYdeRIWnTB/5
+         SuNA==
+X-Gm-Message-State: AOAM5327S5fsC8HAHzRSAYzydc+hgPhi3L+IP23+l6crp2ceVdhs7Eqs
+        y2DraoSt01wmemrqjtpAVxn+JeuDOIazhKKp/o+Uh60TUoR1qu/3GS1mPTzhRfIIu/oCQXXQHAa
+        bk07ZFDyv9xjbKuCk
+X-Received: by 2002:a17:906:d110:: with SMTP id b16mr2182974ejz.146.1618474358961;
+        Thu, 15 Apr 2021 01:12:38 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJy/ODVdHnATxPBtkndhJ7egTCylTFfXw5aTQ3MS4uE7R4xjYS19p1A2QjPyN6E/lbnVqiSGRg==
+X-Received: by 2002:a17:906:d110:: with SMTP id b16mr2182957ejz.146.1618474358784;
+        Thu, 15 Apr 2021 01:12:38 -0700 (PDT)
+Received: from steredhat (host-79-34-249-199.business.telecomitalia.it. [79.34.249.199])
+        by smtp.gmail.com with ESMTPSA id w13sm911888edx.80.2021.04.15.01.12.37
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 15 Apr 2021 01:12:38 -0700 (PDT)
+Date:   Thu, 15 Apr 2021 10:12:36 +0200
+From:   Stefano Garzarella <sgarzare@redhat.com>
+To:     Zhu Lingshan <lingshan.zhu@intel.com>
+Cc:     jasowang@redhat.com, mst@redhat.com, lulu@redhat.com,
+        leonro@nvidia.com, virtualization@lists.linux-foundation.org,
+        netdev@vger.kernel.org, kvm@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 3/3] vDPA/ifcvf: get_config_size should return dev
+ specific config size
+Message-ID: <20210415081236.anbssqtsyjnmiaby@steredhat>
+References: <20210414091832.5132-1-lingshan.zhu@intel.com>
+ <20210414091832.5132-4-lingshan.zhu@intel.com>
 MIME-Version: 1.0
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.391,18.0.761
- definitions=2021-04-15_03:2021-04-15,2021-04-15 signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 clxscore=1011
- priorityscore=1501 malwarescore=0 lowpriorityscore=0 bulkscore=0
- adultscore=0 suspectscore=0 impostorscore=0 mlxscore=0 spamscore=0
- phishscore=0 mlxlogscore=999 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.12.0-2104060000 definitions=main-2104150053
+Content-Type: text/plain; charset=us-ascii; format=flowed
+Content-Disposition: inline
+In-Reply-To: <20210414091832.5132-4-lingshan.zhu@intel.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Wed, Apr 14, 2021 at 05:18:32PM +0800, Zhu Lingshan wrote:
+>get_config_size() should return the size based on the decected
+>device type.
+>
+>Signed-off-by: Zhu Lingshan <lingshan.zhu@intel.com>
+>---
+> drivers/vdpa/ifcvf/ifcvf_main.c | 11 ++++++++++-
+> 1 file changed, 10 insertions(+), 1 deletion(-)
+>
+>diff --git a/drivers/vdpa/ifcvf/ifcvf_main.c b/drivers/vdpa/ifcvf/ifcvf_main.c
+>index 9b6a38b798fa..b48b9789b69e 100644
+>--- a/drivers/vdpa/ifcvf/ifcvf_main.c
+>+++ b/drivers/vdpa/ifcvf/ifcvf_main.c
+>@@ -347,7 +347,16 @@ static u32 ifcvf_vdpa_get_vq_align(struct vdpa_device *vdpa_dev)
+>
+> static size_t ifcvf_vdpa_get_config_size(struct vdpa_device *vdpa_dev)
+> {
+>-	return sizeof(struct virtio_net_config);
+>+	struct ifcvf_hw *vf = vdpa_to_vf(vdpa_dev);
+>+	size_t size;
+>+
+>+	if (vf->dev_type == VIRTIO_ID_NET)
+>+		size = sizeof(struct virtio_net_config);
+>+
+>+	if (vf->dev_type == VIRTIO_ID_BLOCK)
+>+		size = sizeof(struct virtio_blk_config);
+>+
+>+	return size;
 
-On 15.04.21 09:27, Masahiro Yamada wrote:
-> Since commit d9f4ff50d2aa ("kbuild: spilt cc-option and friends to
-> scripts/Makefile.compiler"), some kselftests fail to build.
-> 
-> The tools/ directory opted out Kbuild, and went in a different
-> direction. They copy any kind of files to the tools/ directory
-> in order to do whatever they want to do in their world.
-> 
-> tools/build/Build.include mimics scripts/Kbuild.include, but some
-> tool Makefiles included the Kbuild one to import a feature that is
-> missing in tools/build/Build.include:
-> 
->   - Commit ec04aa3ae87b ("tools/thermal: tmon: use "-fstack-protector"
->     only if supported") included scripts/Kbuild.include from
->     tools/thermal/tmon/Makefile to import the cc-option macro.
-> 
->   - Commit c2390f16fc5b ("selftests: kvm: fix for compilers that do
->     not support -no-pie") included scripts/Kbuild.include from
->     tools/testing/selftests/kvm/Makefile to import the try-run macro.
-> 
->   - Commit 9cae4ace80ef ("selftests/bpf: do not ignore clang
->     failures") included scripts/Kbuild.include from
->     tools/testing/selftests/bpf/Makefile to import the .DELETE_ON_ERROR
->     target.
-> 
->   - Commit 0695f8bca93e ("selftests/powerpc: Handle Makefile for
->     unrecognized option") included scripts/Kbuild.include from
->     tools/testing/selftests/powerpc/pmu/ebb/Makefile to import the
->     try-run macro.
-> 
-> Copy what they want there, and stop including scripts/Kbuild.include
-> from the tool Makefiles.
-> 
-> Link: https://lore.kernel.org/lkml/86dadf33-70f7-a5ac-cb8c-64966d2f45a1@linux.ibm.com/
-> Fixes: d9f4ff50d2aa ("kbuild: spilt cc-option and friends to scripts/Makefile.compiler")
-> Reported-by: Janosch Frank <frankja@linux.ibm.com>
-> Reported-by: Christian Borntraeger <borntraeger@de.ibm.com>
-> Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
+I'm not familiar with the ifcvf details, but can it happen that the 
+device is not block or net?
 
-When applying this on top of d9f4ff50d2aa ("kbuild: spilt cc-option and friends to scripts/Makefile.compiler")
+Should we set `size` to 0 by default to handle this case or are we sure 
+it's one of the two?
 
-I still do get
+Maybe we should add a comment or a warning message in this case, to 
+prevent some analysis tool or compiler from worrying that `size` might 
+be uninitialized.
 
-# ==== Test Assertion Failure ====
-#   lib/kvm_util.c:142: vm->fd >= 0
-#   pid=315635 tid=315635 - Invalid argument
-#      1	0x0000000001002f4b: vm_open at kvm_util.c:142
-#      2	 (inlined by) vm_create at kvm_util.c:258
-#      3	0x00000000010015ef: test_add_max_memory_regions at set_memory_region_test.c:351
-#      4	 (inlined by) main at set_memory_region_test.c:397
-#      5	0x000003ff971abb89: ?? ??:0
-#      6	0x00000000010017ad: .annobin_abi_note.c.hot at crt1.o:?
-#   KVM_CREATE_VM ioctl failed, rc: -1 errno: 22
-not ok 7 selftests: kvm: set_memory_region_test # exit=254
+I was thinking something like this:
 
-and the testcase compilation does not pickup the pgste option.
+	switch(vf->dev_type) {
+	case VIRTIO_ID_NET:
+		size = sizeof(struct virtio_net_config);
+		break;
+	case VIRTIO_ID_BLOCK:
+		size = sizeof(struct virtio_blk_config);
+		break;
+	default:
+		/* or WARN(1, "") if dev_warn() not apply */
+		dev_warn(... , "virtio ID [0x%x] not supported\n")
+		size = 0;
+
+	}
+
+Thanks,
+Stefano
+
