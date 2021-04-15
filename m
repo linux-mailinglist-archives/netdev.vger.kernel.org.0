@@ -2,113 +2,136 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 83D3F36087C
-	for <lists+netdev@lfdr.de>; Thu, 15 Apr 2021 13:47:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2CE523608AF
+	for <lists+netdev@lfdr.de>; Thu, 15 Apr 2021 13:59:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232676AbhDOLrq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 15 Apr 2021 07:47:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59156 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232670AbhDOLro (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 15 Apr 2021 07:47:44 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D693AC061574
-        for <netdev@vger.kernel.org>; Thu, 15 Apr 2021 04:47:21 -0700 (PDT)
-Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <mkl@pengutronix.de>)
-        id 1lX0So-0005kK-1U; Thu, 15 Apr 2021 13:47:14 +0200
-Received: from pengutronix.de (unknown [IPv6:2a03:f580:87bc:d400:983:856d:54dc:ee1c])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (Client did not present a certificate)
-        (Authenticated sender: mkl-all@blackshift.org)
-        by smtp.blackshift.org (Postfix) with ESMTPSA id 78A1E60F64A;
-        Thu, 15 Apr 2021 11:47:12 +0000 (UTC)
-Date:   Thu, 15 Apr 2021 13:47:11 +0200
-From:   Marc Kleine-Budde <mkl@pengutronix.de>
-To:     Vincent MAILHOL <mailhol.vincent@wanadoo.fr>
-Cc:     Colin King <colin.king@canonical.com>,
-        Wolfgang Grandegger <wg@grandegger.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Arunachalam Santhanam <arunachalam.santhanam@in.bosch.com>,
-        linux-can <linux-can@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>, kernel-janitors@vger.kernel.org,
-        open list <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH][next] can: etas_es58x: Fix missing null check on netdev
- pointer
-Message-ID: <20210415114711.fqxj2j744fmqw6pb@pengutronix.de>
-References: <20210415084723.1807935-1-colin.king@canonical.com>
- <20210415090412.q3k4tmsp3rdfj54t@pengutronix.de>
- <CAMZ6RqJvN10Qf7rg-Z1aD82kJGPqueqgr+t88=yoJH93m+OuGw@mail.gmail.com>
+        id S231590AbhDOL7Z convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Thu, 15 Apr 2021 07:59:25 -0400
+Received: from szxga03-in.huawei.com ([45.249.212.189]:3403 "EHLO
+        szxga03-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229943AbhDOL7W (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 15 Apr 2021 07:59:22 -0400
+Received: from dggeml405-hub.china.huawei.com (unknown [172.30.72.55])
+        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4FLd8f3vW2z5p8M;
+        Thu, 15 Apr 2021 19:56:02 +0800 (CST)
+Received: from dggpeml500023.china.huawei.com (7.185.36.114) by
+ dggeml405-hub.china.huawei.com (10.3.17.49) with Microsoft SMTP Server (TLS)
+ id 14.3.498.0; Thu, 15 Apr 2021 19:58:56 +0800
+Received: from dggeme752-chm.china.huawei.com (10.3.19.98) by
+ dggpeml500023.china.huawei.com (7.185.36.114) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id
+ 15.1.2106.2; Thu, 15 Apr 2021 19:58:56 +0800
+Received: from dggeme752-chm.china.huawei.com ([10.6.80.76]) by
+ dggeme752-chm.china.huawei.com ([10.6.80.76]) with mapi id 15.01.2106.013;
+ Thu, 15 Apr 2021 19:58:56 +0800
+From:   liaichun <liaichun@huawei.com>
+To:     Jay Vosburgh <jay.vosburgh@canonical.com>
+CC:     "davem@davemloft.net" <davem@davemloft.net>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "vfalico@gmail.com" <vfalico@gmail.com>,
+        "andy@greyhouse.net" <andy@greyhouse.net>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "Chenxiang (EulerOS)" <rose.chen@huawei.com>,
+        moyufeng <moyufeng@huawei.com>
+Subject: RE: [PATCH net v2]bonding: check port and aggregator when select
+Thread-Topic: [PATCH net v2]bonding: check port and aggregator when select
+Thread-Index: Adcx7J0pZHbK4XZeTGWj9hrX18nUBQ==
+Date:   Thu, 15 Apr 2021 11:58:56 +0000
+Message-ID: <21ccf68d3303441c9d268dba0bb2fd3c@huawei.com>
+Accept-Language: en-US
+Content-Language: zh-CN
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [10.136.112.224]
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 8BIT
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="t7rubfvizd7wa7y7"
-Content-Disposition: inline
-In-Reply-To: <CAMZ6RqJvN10Qf7rg-Z1aD82kJGPqueqgr+t88=yoJH93m+OuGw@mail.gmail.com>
-X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
-X-SA-Exim-Mail-From: mkl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 
---t7rubfvizd7wa7y7
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-
-On 15.04.2021 20:42:36, Vincent MAILHOL wrote:
-> On Thu. 15 Apr 2021 at 18:04, Marc Kleine-Budde <mkl@pengutronix.de> wrot=
-e:
-> > On 15.04.2021 09:47:23, Colin King wrote:
-> > > From: Colin Ian King <colin.king@canonical.com>
+> > Aichun Li <liaichun@huawei.com> wrote:
+> >
+> > >When the network service is repeatedly restarted in 802.3ad, there is
+> > >a low  probability that oops occurs.
+> > >Test commands:systemctl restart network
 > > >
-> > > There is an assignment to *netdev that is can potentially be null but=
- the
->                                            ^^
-> Typo: that is can -> that can
+> > >1.crash: __enable_port():port->slave is NULL
+> > [...]
+> > >     PC: ffff000000e2fcd0  [ad_agg_selection_logic+328]
+> > [...]
+> > >2.I also have another call stack, same as in another person's post:
+> > >https://lore.kernel.org/netdev/52630cba-cc60-a024-8dd0-8319e5245044@ huawei.com
+> >
+> > 	What hardware platform are you using here?
+> >
+> > 	moyufeng <moyufeng@huawei.com> appears to be using the same platform,
+> > and I've not had any success so far with the provided script to
+> > reproduce the issue.  I'm using an x86_64 system, however, so I wonder
+> > if perhaps this platform needs a barrier somewhere that x86 does not,
+> > or there's something different in the timing of the device driver close logic.
+> 	Yes, I'm using an arm64 system.
+>     And i'm different from moyufeng. I'm a physical machine, and he's a virtual
+> machine.
 
-Fixed.
+I'm sorry, I haven't heard from you in a while. I was wondering if you've reproduced this question?
 
-> > > null check is checking netdev and not *netdev as intended. Fix this by
-> > > adding in the missing * operator.
+> >
+> > >Signed-off-by: Aichun Li <liaichun@huawei.com>
+> > >---
+> > > drivers/net/bonding/bond_3ad.c | 3 ++-
+> > > 1 file changed, 2 insertions(+), 1 deletion(-)
 > > >
-> > > Addresses-Coverity: ("Dereference before null check")
-> > > Fixes: 8537257874e9 ("can: etas_es58x: add core support for ETAS ES58=
-X CAN USB interfaces")
-> > > Signed-off-by: Colin Ian King <colin.king@canonical.com>
->=20
-> Acked-by: Vincent Mailhol <mailhol.vincent@wanadoo.fr>
+> > >diff --git a/drivers/net/bonding/bond_3ad.c
+> > >b/drivers/net/bonding/bond_3ad.c index aa001b16765a..9c8894631bdd
+> > >100644
+> > >--- a/drivers/net/bonding/bond_3ad.c
+> > >+++ b/drivers/net/bonding/bond_3ad.c
+> > >@@ -183,7 +183,7 @@ static inline void __enable_port(struct port
+> > >*port) {
+> > > 	struct slave *slave = port->slave;
+> > >
+> > >-	if ((slave->link == BOND_LINK_UP) && bond_slave_is_up(slave))
+> > >+	if (slave && (slave->link == BOND_LINK_UP) &&
+> > >+bond_slave_is_up(slave))
+> > > 		bond_set_slave_active_flags(slave, BOND_SLAVE_NOTIFY_LATER); }
+> >
+> > 	This change seems like a band aid to cover the real problem.
+> > The caller of __enable_port is ad_agg_selection_logic, and it
+> > shouldn't be possible for port->slave to be NULL when assigned to an
+> aggregator.
+> >
+> > >@@ -1516,6 +1516,7 @@ static void ad_port_selection_logic(struct port
+> > *port, bool *update_slave_arr)
+> > > 				  port->actor_port_number,
+> > > 				  port->aggregator->aggregator_identifier);
+> > > 		} else {
+> > >+			port->aggregator = &(SLAVE_AD_INFO(slave)->aggregator);
+> > > 			slave_err(bond->dev, port->slave->dev,
+> > > 				  "Port %d did not find a suitable aggregator\n",
+> > > 				  port->actor_port_number);
+> >
+> > 	This change isn't correct; it's assigning the port to a more or less
+> > random aggregator.  This would eliminate the panic, but isn't doing the right
+> thing.
+> > At this point in the code, the selection logic has failed to find an
+> > aggregator that matches, and also failed to find a free aggregator.
+> >
+> > 	I do need to fix up the failure handling here when it hits the "did
+> > not find a suitable agg" case; the code here is simply wrong, and has
+> > been wrong since the beginning.  I'll hack the driver to induce this
+> > situation rather than reproducing whatever problem is making it unable
+> > to find a suitable aggregator.
+> 
+>     Thank you for your reply and look forward to your solution.
+> >
+> > 	-J
+> >
+> > ---
+> > 	-Jay Vosburgh, jay.vosburgh@canonical.com
+> 
+> ---
+> 	-Aichun Li <liaichun@huawei.com>
 
-Added to the patch.
-
-Tnx,
-Marc
-
---=20
-Pengutronix e.K.                 | Marc Kleine-Budde           |
-Embedded Linux                   | https://www.pengutronix.de  |
-Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
-Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
-
---t7rubfvizd7wa7y7
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEK3kIWJt9yTYMP3ehqclaivrt76kFAmB4J70ACgkQqclaivrt
-76kHtAgAr2VHjyVKYe8lsy62ZU9S+BhaUtOfaHJF8shAcpOeiyBIJyAaxExUjGri
-xEmOffCtfWmRmuk3sWLczgQ5690LfMZIGCz2n5zJZ2wjxUywNnWFCKY60pWKhYly
-kR2GVviWErqSq5V2ibkj7qCgQCtMAPsQinJx4YbSmw37xVFaluCZfDobiznLs0Xk
-ZLgpCXK4kzXrI0ZpoVJ4Lpc4lz7eF/l9z62oUlAxBGx0b2lIe4ogRPIzKG7gGci8
-CZY+aWMUGOVNkdcO2gm/9bPH9Ot58QAS1Y1D0FPX4lxRgKr7TRtT7QQl3gof/9ik
-LaFtRQ7qWKpbaVTLiOgg0Mu9bbfJpg==
-=qXQD
------END PGP SIGNATURE-----
-
---t7rubfvizd7wa7y7--
