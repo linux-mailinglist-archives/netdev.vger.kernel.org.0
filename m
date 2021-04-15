@@ -2,269 +2,553 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 45284361160
-	for <lists+netdev@lfdr.de>; Thu, 15 Apr 2021 19:47:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A472F361187
+	for <lists+netdev@lfdr.de>; Thu, 15 Apr 2021 19:56:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234525AbhDORrg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 15 Apr 2021 13:47:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53850 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234469AbhDORrc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 15 Apr 2021 13:47:32 -0400
-Received: from mail-qk1-x72b.google.com (mail-qk1-x72b.google.com [IPv6:2607:f8b0:4864:20::72b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F89CC061574;
-        Thu, 15 Apr 2021 10:47:09 -0700 (PDT)
-Received: by mail-qk1-x72b.google.com with SMTP id o17so17600778qkl.13;
-        Thu, 15 Apr 2021 10:47:09 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:subject:date:message-id:in-reply-to:references:mime-version
-         :content-transfer-encoding;
-        bh=uvNOfoTuzB56ceqkmKY+oWGvxVel5zO/sDE0EqYhDjY=;
-        b=R+pmEA1Hy+rIJ/KnSufJ9+sStWSjYP9+CzYroyzU3lLCpETEaa1K0y+sTZfFkXviJe
-         vt3ZPOVt9gXZoFePBP5sS+rq3BiYjr6XQ2ysjtK960CCYD0hd0FFUUYFp7GSKT5lg50j
-         YUji9g2vQxZ6qOe6kvxbuAIRWlnkTS/kXi0D198g+DkZfhr9R61G4oJhuLF7OI9PWLPE
-         zfqKoCaBFrrjMw72k1s7mXKQRKYR2v4IlMtnISi4Jbf8D5WjdxZNzX4UhL5w+TtLcCki
-         XUZmbQgySmUE47CT9YcrxyOQ942bus5XrvnUnR54qRPDvWvl1yWp/BBP9PP+u6Sm+es9
-         69cQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=uvNOfoTuzB56ceqkmKY+oWGvxVel5zO/sDE0EqYhDjY=;
-        b=iIDxkNg4S8qjcVJtkfNsbUsB+Ijcl1a4+83w7fzaeRphBHw4hmArYIA4HoyAtPQokv
-         6GcU6AOW+aTmOOdHWWFM5omScO8C+h3z+gSY11cEMRHfO1cY8NZ3vVcQCC5cF2m+omUS
-         NC9IgZl0UOCrQkihcviqeNEky0iFDeWpGlIasANL7Heo4307631W/ipNyPzDjpgAi1si
-         h1ZoNgx0hd45sc/fyj9+ML8OPUzeLzLzcOyjaG4f+sYUhlAw3wClN5luKlmzxngWtqVd
-         H22B4rtM8p+i5UB/SgKRrl8KeCTBNBC9E7YQkEwgivOepQiKB02pXWSw1caW5c+EqhJM
-         M3Vw==
-X-Gm-Message-State: AOAM531RFm3hxGO9g84zMqzlC8oqwgWBBFOZz7iFCQTwz1vRbZayAOIm
-        HJqmLmO3FpQ6xbCwiCl5l9c=
-X-Google-Smtp-Source: ABdhPJz0lQwGmc8J/JtVKCRlIuXLS1zpW74V9oV8175TOJ+QzzfdRHzDhdpsfRg8cU8N1oFGRYtTnQ==
-X-Received: by 2002:a05:620a:4096:: with SMTP id f22mr4626222qko.76.1618508828643;
-        Thu, 15 Apr 2021 10:47:08 -0700 (PDT)
-Received: from localhost.localdomain ([179.218.4.27])
-        by smtp.gmail.com with ESMTPSA id a4sm2186800qta.19.2021.04.15.10.47.04
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 15 Apr 2021 10:47:08 -0700 (PDT)
-From:   Pedro Tammela <pctammela@gmail.com>
-X-Google-Original-From: Pedro Tammela <pctammela@mojatatu.com>
-To:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>, Shuah Khan <shuah@kernel.org>,
-        Pedro Tammela <pctammela@mojatatu.com>,
-        David Verbeiren <david.verbeiren@tessares.net>,
-        Matthieu Baerts <matthieu.baerts@tessares.net>,
-        netdev@vger.kernel.org, bpf@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-kselftest@vger.kernel.org
-Subject: [PATCH bpf-next v4 3/3] bpf: selftests: update array map tests for per-cpu batched ops
-Date:   Thu, 15 Apr 2021 14:46:19 -0300
-Message-Id: <20210415174619.51229-4-pctammela@mojatatu.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20210415174619.51229-1-pctammela@mojatatu.com>
-References: <20210415174619.51229-1-pctammela@mojatatu.com>
+        id S233134AbhDOR5P (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 15 Apr 2021 13:57:15 -0400
+Received: from smtp.uniroma2.it ([160.80.6.16]:49063 "EHLO smtp.uniroma2.it"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S233052AbhDOR5N (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 15 Apr 2021 13:57:13 -0400
+Received: from localhost.localdomain ([160.80.103.126])
+        by smtp-2015.uniroma2.it (8.14.4/8.14.4/Debian-8) with ESMTP id 13FHuRmN006997
+        (version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
+        Thu, 15 Apr 2021 19:56:27 +0200
+From:   Andrea Mayer <andrea.mayer@uniroma2.it>
+To:     "David S. Miller" <davem@davemloft.net>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        David Ahern <dsahern@kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org
+Cc:     Stefano Salsano <stefano.salsano@uniroma2.it>,
+        Paolo Lungaroni <paolo.lungaroni@uniroma2.it>,
+        Ahmed Abdelsalam <ahabdels.dev@gmail.com>,
+        Andrea Mayer <andrea.mayer@uniroma2.it>
+Subject: [RFC net-next v2] seg6: add counters support for SRv6 Behaviors
+Date:   Thu, 15 Apr 2021 19:56:05 +0200
+Message-Id: <20210415175605.21946-1-andrea.mayer@uniroma2.it>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
+X-Virus-Scanned: clamav-milter 0.100.0 at smtp-2015
+X-Virus-Status: Clean
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Follows the same logic as the hashtable tests.
+This patch provides counters for SRv6 Behaviors as defined in [1],
+section 6. For each SRv6 Behavior instance, counters defined in [1] are:
 
-Signed-off-by: Pedro Tammela <pctammela@mojatatu.com>
+ - the total number of packets that have been correctly processed;
+ - the total amount of traffic in bytes of all packets that have been
+   correctly processed;
+
+In addition, this patch introduces a new counter that counts the number of
+packets that have NOT been properly processed (i.e. errors) by an SRv6
+Behavior instance.
+
+Counters are not only interesting for network monitoring purposes (i.e.
+counting the number of packets processed by a given behavior) but they also
+provide a simple tool for checking whether a behavior instance is working
+as we expect or not.
+Counters can be useful for troubleshooting misconfigured SRv6 networks.
+Indeed, an SRv6 Behavior can silently drop packets for very different
+reasons (i.e. wrong SID configuration, interfaces set with SID addresses,
+etc) without any notification/message to the user.
+
+Due to the nature of SRv6 networks, diagnostic tools such as ping and
+traceroute may be ineffective: paths used for reaching a given router can
+be totally different from the ones followed by probe packets. In addition,
+paths are often asymmetrical and this makes it even more difficult to keep
+up with the journey of the packets and to understand which behaviors are
+actually processing our traffic.
+
+When counters are enabled on an SRv6 Behavior instance, it is possible to
+verify if packets are actually processed by such behavior and what is the
+outcome of the processing. Therefore, the counters for SRv6 Behaviors offer
+an non-invasive observability point which can be leveraged for both traffic
+monitoring and troubleshooting purposes.
+
+[1] https://www.rfc-editor.org/rfc/rfc8986.html#name-counters
+
+Troubleshooting using SRv6 Behavior counters
+--------------------------------------------
+
+Let's make a brief example to see how helpful counters can be for SRv6
+networks. Let's consider a node where an SRv6 End Behavior receives an SRv6
+packet whose Segment Left (SL) is equal to 0. In this case, the End
+Behavior (which accepts only packets with SL >= 1) discards the packet and
+increases the error counter.
+This information can be leveraged by the network operator for
+troubleshooting. Indeed, the error counter is telling the user that the
+packet:
+
+  (i) arrived at the node;
+ (ii) the packet has been taken into account by the SRv6 End behavior;
+(iii) but an error has occurred during the processing.
+
+The error (iii) could be caused by different reasons, such as wrong route
+settings on the node or due to an invalid SID List carried by the SRv6
+packet. Anyway, the error counter is used to exclude that the packet did
+not arrive at the node or it has not been processed by the behavior at
+all.
+
+Turning on/off counters for SRv6 Behaviors
+------------------------------------------
+
+Each SRv6 Behavior instance can be configured, at the time of its creation,
+to make use of counters.
+This is done through iproute2 which allows the user to create an SRv6
+Behavior instance specifying the optional "count" attribute as shown in the
+following example:
+
+ $ ip -6 route add 2001:db8::1 encap seg6local action End count dev eth0
+
+per-behavior counters can be shown by adding "-s" to the iproute2 command
+line, i.e.:
+
+ $ ip -s -6 route show 2001:db8::1
+ 2001:db8::1 encap seg6local action End packets 0 bytes 0 errors 0 dev eth0
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Impact of counters for SRv6 Behaviors on performance
+====================================================
+
+To determine the performance impact due to the introduction of counters in
+the SRv6 Behavior subsystem, we have carried out extensive tests.
+
+We chose to test the throughput achieved by the SRv6 End.DX2 Behavior
+because, among all the other behaviors implemented so far, it reaches the
+highest throughput which is around 1.5 Mpps (per core at 2.4 GHz on a
+Xeon(R) CPU E5-2630 v3) on kernel 5.12-rc2 using packets of size ~ 100
+bytes.
+
+Three different tests were conducted in order to evaluate the overall
+throughput of the SRv6 End.DX2 Behavior in the following scenarios:
+
+ 1) vanilla kernel (without the SRv6 Behavior counters patch) and a single
+    instance of an SRv6 End.DX2 Behavior;
+ 2) patched kernel with SRv6 Behavior counters and a single instance of
+    an SRv6 End.DX2 Behavior with counters turned off;
+ 3) patched kernel with SRv6 Behavior counters and a single instance of
+    SRv6 End.DX2 Behavior with counters turned on.
+
+All tests were performed on a testbed deployed on the CloudLab facilities
+[2], a flexible infrastructure dedicated to scientific research on the
+future of Cloud Computing.
+
+Results of tests are shown in the following table:
+
+Scenario (1): average 1504764,81 pps (~1504,76 kpps); std. dev 3956,82 pps
+Scenario (2): average 1501469,78 pps (~1501,47 kpps); std. dev 2979,85 pps
+Scenario (3): average 1501315,13 pps (~1501,32 kpps); std. dev 2956,00 pps
+
+As can be observed, throughputs achieved in scenarios (2),(3) did not
+suffer any observable degradation compared to scenario (1).
+
+Comments, suggestions and improvements are very welcome!
+
+Thanks,
+Andrea
+
+v2:
+ - improve comments;
+
+ - guarantee alignment of 64 bit values, thanks to Jakub Kicinski;
+
+ - pass counters within netlink attributes rather than passing a whole
+   single structure. This is to address compatibility issues that might
+   arise from having different versions of kernel/iproute2.
+   Thanks to David Ahern for bringing attention to this.
+
+ - include cover letter in the commit message, thanks to David Ahern.
+
+[2] https://www.cloudlab.us
+
+Signed-off-by: Andrea Mayer <andrea.mayer@uniroma2.it>
 ---
- .../bpf/map_tests/array_map_batch_ops.c       | 104 +++++++++++++-----
- 1 file changed, 75 insertions(+), 29 deletions(-)
+ include/uapi/linux/seg6_local.h |  30 +++++
+ net/ipv6/seg6_local.c           | 198 +++++++++++++++++++++++++++++++-
+ 2 files changed, 226 insertions(+), 2 deletions(-)
 
-diff --git a/tools/testing/selftests/bpf/map_tests/array_map_batch_ops.c b/tools/testing/selftests/bpf/map_tests/array_map_batch_ops.c
-index e42ea1195d18..f4d870da7684 100644
---- a/tools/testing/selftests/bpf/map_tests/array_map_batch_ops.c
-+++ b/tools/testing/selftests/bpf/map_tests/array_map_batch_ops.c
-@@ -9,10 +9,13 @@
+diff --git a/include/uapi/linux/seg6_local.h b/include/uapi/linux/seg6_local.h
+index 3b39ef1dbb46..5ae3ace84de0 100644
+--- a/include/uapi/linux/seg6_local.h
++++ b/include/uapi/linux/seg6_local.h
+@@ -27,6 +27,7 @@ enum {
+ 	SEG6_LOCAL_OIF,
+ 	SEG6_LOCAL_BPF,
+ 	SEG6_LOCAL_VRFTABLE,
++	SEG6_LOCAL_COUNTERS,
+ 	__SEG6_LOCAL_MAX,
+ };
+ #define SEG6_LOCAL_MAX (__SEG6_LOCAL_MAX - 1)
+@@ -78,4 +79,33 @@ enum {
  
- #include <test_maps.h>
+ #define SEG6_LOCAL_BPF_PROG_MAX (__SEG6_LOCAL_BPF_PROG_MAX - 1)
  
-+static int nr_cpus;
++/* SRv6 Behavior counters are encoded as netlink attributes guaranteeing the
++ * correct alignment.
++ * Each counter is identified by a different attribute type (i.e.
++ * SEG6_LOCAL_CNT_PACKETS).
++ *
++ * - SEG6_LOCAL_CNT_PACKETS: identifies a counter that counts the number of
++ *   packets that have been CORRECTLY processed by an SRv6 Behavior instance
++ *   (i.e., packets that generate errors or are dropped are NOT counted).
++ *
++ * - SEG6_LOCAL_CNT_BYTES: identifies a counter that counts the total amount
++ *   of traffic in bytes of all packets that have been CORRECTLY processed by
++ *   an SRv6 Behavior instance (i.e., packets that generate errors or are
++ *   dropped are NOT counted).
++ *
++ * - SEG6_LOCAL_CNT_ERRORS: identifies a counter that counts the number of
++ *   packets that have NOT been properly processed by an SRv6 Behavior instance
++ *   (i.e., packets that generate errors or are dropped).
++ */
++enum {
++	SEG6_LOCAL_CNT_UNSPEC,
++	SEG6_LOCAL_CNT_PAD,		/* pad for 64 bits values */
++	SEG6_LOCAL_CNT_PACKETS,
++	SEG6_LOCAL_CNT_BYTES,
++	SEG6_LOCAL_CNT_ERRORS,
++	__SEG6_LOCAL_CNT_MAX,
++};
 +
- static void map_batch_update(int map_fd, __u32 max_entries, int *keys,
--			     int *values)
-+			     __s64 *values, bool is_pcpu)
- {
--	int i, err;
-+	int i, j, err;
-+	int cpu_offset = 0;
- 	DECLARE_LIBBPF_OPTS(bpf_map_batch_opts, opts,
- 		.elem_flags = 0,
- 		.flags = 0,
-@@ -20,22 +23,41 @@ static void map_batch_update(int map_fd, __u32 max_entries, int *keys,
++#define SEG6_LOCAL_CNT_MAX (__SEG6_LOCAL_CNT_MAX - 1)
++
+ #endif
+diff --git a/net/ipv6/seg6_local.c b/net/ipv6/seg6_local.c
+index bd7140885e60..3e627cf9ce2a 100644
+--- a/net/ipv6/seg6_local.c
++++ b/net/ipv6/seg6_local.c
+@@ -93,6 +93,35 @@ struct seg6_end_dt_info {
+ 	int hdrlen;
+ };
  
- 	for (i = 0; i < max_entries; i++) {
- 		keys[i] = i;
--		values[i] = i + 1;
-+		if (is_pcpu) {
-+			cpu_offset = i * nr_cpus;
-+			for (j = 0; j < nr_cpus; j++)
-+				(values + cpu_offset)[j] = i + 1 + j;
-+		} else {
-+			values[i] = i + 1;
-+		}
- 	}
++struct pcpu_seg6_local_counters {
++	u64_stats_t packets;
++	u64_stats_t bytes;
++	u64_stats_t errors;
++
++	struct u64_stats_sync syncp;
++};
++
++/* This struct groups all the SRv6 Behavior counters supported so far.
++ *
++ * put_nla_counters() makes use of this data structure to collect all counter
++ * values after the per-CPU counter evaluation has been performed.
++ * Finally, each counter value (in seg6_local_counters) is stored in the
++ * corresponding netlink attribute and sent to user space.
++ *
++ * NB: we don't want to expose this structure to user space!
++ */
++struct seg6_local_counters {
++	__u64 packets;
++	__u64 bytes;
++	__u64 errors;
++};
++
++#define seg6_local_alloc_pcpu_counters(__gfp)				\
++	__netdev_alloc_pcpu_stats(struct pcpu_seg6_local_counters,	\
++				  ((__gfp) | __GFP_ZERO))
++
++#define SEG6_F_LOCAL_COUNTERS	SEG6_F_ATTR(SEG6_LOCAL_COUNTERS)
++
+ struct seg6_local_lwt {
+ 	int action;
+ 	struct ipv6_sr_hdr *srh;
+@@ -105,6 +134,7 @@ struct seg6_local_lwt {
+ #ifdef CONFIG_NET_L3_MASTER_DEV
+ 	struct seg6_end_dt_info dt_info;
+ #endif
++	struct pcpu_seg6_local_counters __percpu *pcpu_counters;
  
- 	err = bpf_map_update_batch(map_fd, keys, values, &max_entries, &opts);
- 	CHECK(err, "bpf_map_update_batch()", "error:%s\n", strerror(errno));
+ 	int headroom;
+ 	struct seg6_action_desc *desc;
+@@ -878,36 +908,43 @@ static struct seg6_action_desc seg6_action_table[] = {
+ 	{
+ 		.action		= SEG6_LOCAL_ACTION_END,
+ 		.attrs		= 0,
++		.optattrs	= SEG6_F_LOCAL_COUNTERS,
+ 		.input		= input_action_end,
+ 	},
+ 	{
+ 		.action		= SEG6_LOCAL_ACTION_END_X,
+ 		.attrs		= SEG6_F_ATTR(SEG6_LOCAL_NH6),
++		.optattrs	= SEG6_F_LOCAL_COUNTERS,
+ 		.input		= input_action_end_x,
+ 	},
+ 	{
+ 		.action		= SEG6_LOCAL_ACTION_END_T,
+ 		.attrs		= SEG6_F_ATTR(SEG6_LOCAL_TABLE),
++		.optattrs	= SEG6_F_LOCAL_COUNTERS,
+ 		.input		= input_action_end_t,
+ 	},
+ 	{
+ 		.action		= SEG6_LOCAL_ACTION_END_DX2,
+ 		.attrs		= SEG6_F_ATTR(SEG6_LOCAL_OIF),
++		.optattrs	= SEG6_F_LOCAL_COUNTERS,
+ 		.input		= input_action_end_dx2,
+ 	},
+ 	{
+ 		.action		= SEG6_LOCAL_ACTION_END_DX6,
+ 		.attrs		= SEG6_F_ATTR(SEG6_LOCAL_NH6),
++		.optattrs	= SEG6_F_LOCAL_COUNTERS,
+ 		.input		= input_action_end_dx6,
+ 	},
+ 	{
+ 		.action		= SEG6_LOCAL_ACTION_END_DX4,
+ 		.attrs		= SEG6_F_ATTR(SEG6_LOCAL_NH4),
++		.optattrs	= SEG6_F_LOCAL_COUNTERS,
+ 		.input		= input_action_end_dx4,
+ 	},
+ 	{
+ 		.action		= SEG6_LOCAL_ACTION_END_DT4,
+ 		.attrs		= SEG6_F_ATTR(SEG6_LOCAL_VRFTABLE),
++		.optattrs	= SEG6_F_LOCAL_COUNTERS,
+ #ifdef CONFIG_NET_L3_MASTER_DEV
+ 		.input		= input_action_end_dt4,
+ 		.slwt_ops	= {
+@@ -919,30 +956,35 @@ static struct seg6_action_desc seg6_action_table[] = {
+ 		.action		= SEG6_LOCAL_ACTION_END_DT6,
+ #ifdef CONFIG_NET_L3_MASTER_DEV
+ 		.attrs		= 0,
+-		.optattrs	= SEG6_F_ATTR(SEG6_LOCAL_TABLE) |
++		.optattrs	= SEG6_F_LOCAL_COUNTERS		|
++				  SEG6_F_ATTR(SEG6_LOCAL_TABLE) |
+ 				  SEG6_F_ATTR(SEG6_LOCAL_VRFTABLE),
+ 		.slwt_ops	= {
+ 					.build_state = seg6_end_dt6_build,
+ 				  },
+ #else
+ 		.attrs		= SEG6_F_ATTR(SEG6_LOCAL_TABLE),
++		.optattrs	= SEG6_F_LOCAL_COUNTERS,
+ #endif
+ 		.input		= input_action_end_dt6,
+ 	},
+ 	{
+ 		.action		= SEG6_LOCAL_ACTION_END_B6,
+ 		.attrs		= SEG6_F_ATTR(SEG6_LOCAL_SRH),
++		.optattrs	= SEG6_F_LOCAL_COUNTERS,
+ 		.input		= input_action_end_b6,
+ 	},
+ 	{
+ 		.action		= SEG6_LOCAL_ACTION_END_B6_ENCAP,
+ 		.attrs		= SEG6_F_ATTR(SEG6_LOCAL_SRH),
++		.optattrs	= SEG6_F_LOCAL_COUNTERS,
+ 		.input		= input_action_end_b6_encap,
+ 		.static_headroom	= sizeof(struct ipv6hdr),
+ 	},
+ 	{
+ 		.action		= SEG6_LOCAL_ACTION_END_BPF,
+ 		.attrs		= SEG6_F_ATTR(SEG6_LOCAL_BPF),
++		.optattrs	= SEG6_F_LOCAL_COUNTERS,
+ 		.input		= input_action_end_bpf,
+ 	},
+ 
+@@ -963,11 +1005,36 @@ static struct seg6_action_desc *__get_action_desc(int action)
+ 	return NULL;
  }
  
--static void map_batch_verify(int *visited, __u32 max_entries,
--			     int *keys, int *values)
-+static void map_batch_verify(int *visited, __u32 max_entries, int *keys,
-+			     __s64 *values, bool is_pcpu)
++static bool seg6_lwtunnel_counters_enabled(struct seg6_local_lwt *slwt)
++{
++	return slwt->parsed_optattrs & SEG6_F_LOCAL_COUNTERS;
++}
++
++static void seg6_local_update_counters(struct seg6_local_lwt *slwt,
++				       unsigned int len, int err)
++{
++	struct pcpu_seg6_local_counters *pcounters;
++
++	pcounters = this_cpu_ptr(slwt->pcpu_counters);
++	u64_stats_update_begin(&pcounters->syncp);
++
++	if (likely(!err)) {
++		u64_stats_inc(&pcounters->packets);
++		u64_stats_add(&pcounters->bytes, len);
++	} else {
++		u64_stats_inc(&pcounters->errors);
++	}
++
++	u64_stats_update_end(&pcounters->syncp);
++}
++
+ static int seg6_local_input(struct sk_buff *skb)
  {
--	int i;
-+	int i, j;
-+	int cpu_offset = 0;
+ 	struct dst_entry *orig_dst = skb_dst(skb);
+ 	struct seg6_action_desc *desc;
+ 	struct seg6_local_lwt *slwt;
++	unsigned int len = skb->len;
++	int rc;
  
- 	memset(visited, 0, max_entries * sizeof(*visited));
- 	for (i = 0; i < max_entries; i++) {
--		CHECK(keys[i] + 1 != values[i], "key/value checking",
--		      "error: i %d key %d value %d\n", i, keys[i], values[i]);
-+		if (is_pcpu) {
-+			cpu_offset = i * nr_cpus;
-+			for (j = 0; j < nr_cpus; j++) {
-+				__s64 value = (values + cpu_offset)[j];
-+				CHECK(keys[i] + j + 1 != value,
-+				      "key/value checking",
-+				      "error: i %d j %d key %d value %lld\n", i,
-+				      j, keys[i], value);
-+			}
-+		} else {
-+			CHECK(keys[i] + 1 != values[i], "key/value checking",
-+			      "error: i %d key %d value %lld\n", i, keys[i],
-+			      values[i]);
-+		}
- 		visited[i] = 1;
- 	}
- 	for (i = 0; i < max_entries; i++) {
-@@ -44,19 +66,21 @@ static void map_batch_verify(int *visited, __u32 max_entries,
- 	}
+ 	if (skb->protocol != htons(ETH_P_IPV6)) {
+ 		kfree_skb(skb);
+@@ -977,7 +1044,14 @@ static int seg6_local_input(struct sk_buff *skb)
+ 	slwt = seg6_local_lwtunnel(orig_dst->lwtstate);
+ 	desc = slwt->desc;
+ 
+-	return desc->input(skb, slwt);
++	rc = desc->input(skb, slwt);
++
++	if (!seg6_lwtunnel_counters_enabled(slwt))
++		return rc;
++
++	seg6_local_update_counters(slwt, len, rc);
++
++	return rc;
  }
  
--void test_array_map_batch_ops(void)
-+static void __test_map_lookup_and_update_batch(bool is_pcpu)
- {
- 	struct bpf_create_map_attr xattr = {
- 		.name = "array_map",
--		.map_type = BPF_MAP_TYPE_ARRAY,
-+		.map_type = is_pcpu ? BPF_MAP_TYPE_PERCPU_ARRAY :
-+				      BPF_MAP_TYPE_ARRAY,
- 		.key_size = sizeof(int),
--		.value_size = sizeof(int),
-+		.value_size = sizeof(__s64),
- 	};
--	int map_fd, *keys, *values, *visited;
-+	int map_fd, *keys, *visited;
- 	__u32 count, total, total_success;
- 	const __u32 max_entries = 10;
- 	__u64 batch = 0;
--	int err, step;
-+	int err, step, value_size;
-+	void *values;
- 	DECLARE_LIBBPF_OPTS(bpf_map_batch_opts, opts,
- 		.elem_flags = 0,
- 		.flags = 0,
-@@ -67,22 +91,23 @@ void test_array_map_batch_ops(void)
- 	CHECK(map_fd == -1,
- 	      "bpf_create_map_xattr()", "error:%s\n", strerror(errno));
+ static const struct nla_policy seg6_local_policy[SEG6_LOCAL_MAX + 1] = {
+@@ -992,6 +1066,7 @@ static const struct nla_policy seg6_local_policy[SEG6_LOCAL_MAX + 1] = {
+ 	[SEG6_LOCAL_IIF]	= { .type = NLA_U32 },
+ 	[SEG6_LOCAL_OIF]	= { .type = NLA_U32 },
+ 	[SEG6_LOCAL_BPF]	= { .type = NLA_NESTED },
++	[SEG6_LOCAL_COUNTERS]	= { .type = NLA_NESTED },
+ };
  
--	keys = malloc(max_entries * sizeof(int));
--	values = malloc(max_entries * sizeof(int));
--	visited = malloc(max_entries * sizeof(int));
-+	value_size = sizeof(__s64);
-+	if (is_pcpu)
-+		value_size *= nr_cpus;
-+
-+	keys = calloc(max_entries, sizeof(*keys));
-+	values = calloc(max_entries, value_size);
-+	visited = calloc(max_entries, sizeof(*visited));
- 	CHECK(!keys || !values || !visited, "malloc()", "error:%s\n",
- 	      strerror(errno));
- 
--	/* populate elements to the map */
--	map_batch_update(map_fd, max_entries, keys, values);
--
- 	/* test 1: lookup in a loop with various steps. */
- 	total_success = 0;
- 	for (step = 1; step < max_entries; step++) {
--		map_batch_update(map_fd, max_entries, keys, values);
--		map_batch_verify(visited, max_entries, keys, values);
-+		map_batch_update(map_fd, max_entries, keys, values, is_pcpu);
-+		map_batch_verify(visited, max_entries, keys, values, is_pcpu);
- 		memset(keys, 0, max_entries * sizeof(*keys));
--		memset(values, 0, max_entries * sizeof(*values));
-+		memset(values, 0, max_entries * value_size);
- 		batch = 0;
- 		total = 0;
- 		/* iteratively lookup/delete elements with 'step'
-@@ -91,10 +116,10 @@ void test_array_map_batch_ops(void)
- 		count = step;
- 		while (true) {
- 			err = bpf_map_lookup_batch(map_fd,
--						total ? &batch : NULL, &batch,
--						keys + total,
--						values + total,
--						&count, &opts);
-+						   total ? &batch : NULL,
-+						   &batch, keys + total,
-+						   values + total * value_size,
-+						   &count, &opts);
- 
- 			CHECK((err && errno != ENOENT), "lookup with steps",
- 			      "error: %s\n", strerror(errno));
-@@ -108,7 +133,7 @@ void test_array_map_batch_ops(void)
- 		CHECK(total != max_entries, "lookup with steps",
- 		      "total = %u, max_entries = %u\n", total, max_entries);
- 
--		map_batch_verify(visited, max_entries, keys, values);
-+		map_batch_verify(visited, max_entries, keys, values, is_pcpu);
- 
- 		total_success++;
- 	}
-@@ -116,9 +141,30 @@ void test_array_map_batch_ops(void)
- 	CHECK(total_success == 0, "check total_success",
- 	      "unexpected failure\n");
- 
--	printf("%s:PASS\n", __func__);
--
- 	free(keys);
- 	free(values);
- 	free(visited);
+ static int parse_nla_srh(struct nlattr **attrs, struct seg6_local_lwt *slwt)
+@@ -1296,6 +1371,112 @@ static void destroy_attr_bpf(struct seg6_local_lwt *slwt)
+ 		bpf_prog_put(slwt->bpf.prog);
  }
+ 
++static const struct
++nla_policy seg6_local_counters_policy[SEG6_LOCAL_CNT_MAX + 1] = {
++	[SEG6_LOCAL_CNT_PACKETS]	= { .type = NLA_U64 },
++	[SEG6_LOCAL_CNT_BYTES]		= { .type = NLA_U64 },
++	[SEG6_LOCAL_CNT_ERRORS]		= { .type = NLA_U64 },
++};
 +
-+static void array_map_batch_ops(void)
++static int parse_nla_counters(struct nlattr **attrs,
++			      struct seg6_local_lwt *slwt)
 +{
-+	__test_map_lookup_and_update_batch(false);
-+	printf("test_%s:PASS\n", __func__);
++	struct pcpu_seg6_local_counters __percpu *pcounters;
++	struct nlattr *tb[SEG6_LOCAL_CNT_MAX + 1];
++	int ret;
++
++	ret = nla_parse_nested_deprecated(tb, SEG6_LOCAL_CNT_MAX,
++					  attrs[SEG6_LOCAL_COUNTERS],
++					  seg6_local_counters_policy, NULL);
++	if (ret < 0)
++		return ret;
++
++	/* basic support for SRv6 Behavior counters requires at least:
++	 * packets, bytes and errors.
++	 */
++	if (!tb[SEG6_LOCAL_CNT_PACKETS] || !tb[SEG6_LOCAL_CNT_BYTES] ||
++	    !tb[SEG6_LOCAL_CNT_ERRORS])
++		return -EINVAL;
++
++	/* counters are always zero initialized */
++	pcounters = seg6_local_alloc_pcpu_counters(GFP_KERNEL);
++	if (!pcounters)
++		return -ENOMEM;
++
++	slwt->pcpu_counters = pcounters;
++
++	return 0;
 +}
 +
-+static void array_percpu_map_batch_ops(void)
++static int seg6_local_fill_nla_counters(struct sk_buff *skb,
++					struct seg6_local_counters *counters)
 +{
-+	__test_map_lookup_and_update_batch(true);
-+	printf("test_%s:PASS\n", __func__);
++	if (nla_put_u64_64bit(skb, SEG6_LOCAL_CNT_PACKETS, counters->packets,
++			      SEG6_LOCAL_CNT_PAD))
++		return -EMSGSIZE;
++
++	if (nla_put_u64_64bit(skb, SEG6_LOCAL_CNT_BYTES, counters->bytes,
++			      SEG6_LOCAL_CNT_PAD))
++		return -EMSGSIZE;
++
++	if (nla_put_u64_64bit(skb, SEG6_LOCAL_CNT_ERRORS, counters->errors,
++			      SEG6_LOCAL_CNT_PAD))
++		return -EMSGSIZE;
++
++	return 0;
 +}
 +
-+void test_array_map_batch_ops(void)
++static int put_nla_counters(struct sk_buff *skb, struct seg6_local_lwt *slwt)
 +{
-+	nr_cpus = libbpf_num_possible_cpus();
++	struct seg6_local_counters counters = { 0, 0, 0 };
++	struct nlattr *nest;
++	int rc, i;
 +
-+	CHECK(nr_cpus < 0, "nr_cpus checking",
-+	      "error: get possible cpus failed");
++	nest = nla_nest_start(skb, SEG6_LOCAL_COUNTERS);
++	if (!nest)
++		return -EMSGSIZE;
 +
-+	array_map_batch_ops();
-+	array_percpu_map_batch_ops();
++	for_each_possible_cpu(i) {
++		struct pcpu_seg6_local_counters *pcounters;
++		u64 packets, bytes, errors;
++		unsigned int start;
++
++		pcounters = per_cpu_ptr(slwt->pcpu_counters, i);
++		do {
++			start = u64_stats_fetch_begin_irq(&pcounters->syncp);
++
++			packets = u64_stats_read(&pcounters->packets);
++			bytes = u64_stats_read(&pcounters->bytes);
++			errors = u64_stats_read(&pcounters->errors);
++
++		} while (u64_stats_fetch_retry_irq(&pcounters->syncp, start));
++
++		counters.packets += packets;
++		counters.bytes += bytes;
++		counters.errors += errors;
++	}
++
++	rc = seg6_local_fill_nla_counters(skb, &counters);
++	if (rc < 0) {
++		nla_nest_cancel(skb, nest);
++		return rc;
++	}
++
++	return nla_nest_end(skb, nest);
 +}
++
++static int cmp_nla_counters(struct seg6_local_lwt *a, struct seg6_local_lwt *b)
++{
++	/* a and b are equals if both have pcpu_counters set or not */
++	return (!!((unsigned long)a->pcpu_counters)) ^
++		(!!((unsigned long)b->pcpu_counters));
++}
++
++static void destroy_attr_counters(struct seg6_local_lwt *slwt)
++{
++	free_percpu(slwt->pcpu_counters);
++}
++
+ struct seg6_action_param {
+ 	int (*parse)(struct nlattr **attrs, struct seg6_local_lwt *slwt);
+ 	int (*put)(struct sk_buff *skb, struct seg6_local_lwt *slwt);
+@@ -1343,6 +1524,10 @@ static struct seg6_action_param seg6_action_params[SEG6_LOCAL_MAX + 1] = {
+ 				    .put = put_nla_vrftable,
+ 				    .cmp = cmp_nla_vrftable },
+ 
++	[SEG6_LOCAL_COUNTERS]	= { .parse = parse_nla_counters,
++				    .put = put_nla_counters,
++				    .cmp = cmp_nla_counters,
++				    .destroy = destroy_attr_counters },
+ };
+ 
+ /* call the destroy() callback (if available) for each set attribute in
+@@ -1645,6 +1830,15 @@ static int seg6_local_get_encap_size(struct lwtunnel_state *lwt)
+ 	if (attrs & SEG6_F_ATTR(SEG6_LOCAL_VRFTABLE))
+ 		nlsize += nla_total_size(4);
+ 
++	if (attrs & SEG6_F_LOCAL_COUNTERS)
++		nlsize += nla_total_size(0) + /* nest SEG6_LOCAL_COUNTERS */
++			  /* SEG6_LOCAL_CNT_PACKETS */
++			  nla_total_size_64bit(sizeof(__u64)) +
++			  /* SEG6_LOCAL_CNT_BYTES */
++			  nla_total_size_64bit(sizeof(__u64)) +
++			  /* SEG6_LOCAL_CNT_ERRORS */
++			  nla_total_size_64bit(sizeof(__u64));
++
+ 	return nlsize;
+ }
+ 
 -- 
-2.25.1
+2.20.1
 
