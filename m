@@ -2,711 +2,220 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 99C37360B19
-	for <lists+netdev@lfdr.de>; Thu, 15 Apr 2021 15:54:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AD1A3360B3F
+	for <lists+netdev@lfdr.de>; Thu, 15 Apr 2021 16:00:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233245AbhDONyb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 15 Apr 2021 09:54:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59074 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233295AbhDONy2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 15 Apr 2021 09:54:28 -0400
-Received: from mail-pj1-x1030.google.com (mail-pj1-x1030.google.com [IPv6:2607:f8b0:4864:20::1030])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B873BC061574;
-        Thu, 15 Apr 2021 06:54:03 -0700 (PDT)
-Received: by mail-pj1-x1030.google.com with SMTP id x21-20020a17090a5315b029012c4a622e4aso12737639pjh.2;
-        Thu, 15 Apr 2021 06:54:03 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=f3MRIfVB0zUb1nSB5hrA8iVJeuPtcHA3sQ5iBliFwCY=;
-        b=b31AQyv3YOKK3dTI3ziXEzdF+ASgzHlUujtxrux/THTYGGSfBMjtEQiaurbINp8NN+
-         7X00d4UVaExPDEAzDNKh0bI9/THO+KXuBudwLryrMD4BQJitbaZ46RXJLOY0P7r7GSt7
-         vNT+FJvKEva8loBQWeMfm2496rnefua7b34qhrGdjKgm9r6zK7sn22pfVii0lMURpL56
-         sYfyJ30ITzaZrnE54c8rVSNNxNYbGhW0pHVFdOThT+Xlrwtl3BiYcioq6JhdPittYPxK
-         WfLnTEK0KRFKvvm7eewqWS/V8JScDNMtVNNDxKpLP2EHOeEGsF2960UDCwVQrAXW3yNy
-         s13Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=f3MRIfVB0zUb1nSB5hrA8iVJeuPtcHA3sQ5iBliFwCY=;
-        b=gyWdlkePQ7JOyn7yhoKD1APh0+BRiEHpYDyvukqTNwc2MKZgUtB21unKDQgjlygSuo
-         jgWmxnmxkyzZ+tY/sTOP3LH4CS5f/lyr+2XiZAhxIxfVSb/UpOniXKpCNB7vz/LAhpQa
-         HAuC25jh8kkDsY6UB+DFnOC0BgBZx3bQyUv4wYb1ra8+IvTdKsyiqRJ7rwVjxjfU1IBy
-         6v+QYJNb/cso89J17lKG/63+aQYEwb4LCwMgsu0I/kwlIokh9DOnK24sKLWd9Zy1OvSH
-         igB2s0JMNQn0GGgP0utLMdgibnwK801jNkCWYSE8nH3ny+RV3/TDjQcSl1WCVTjddVRP
-         mbCg==
-X-Gm-Message-State: AOAM532MJIw2QVOHJJS5q0lcv5dRW6FUo5Zuw73vNqWE5HEVGsFnJVZi
-        3d+SZs6I2IYIz5QXX/mF2HCprmQQWpU=
-X-Google-Smtp-Source: ABdhPJxCkLu0E5XWTMe1AnFGDHBH/2ZZgixErE04EDYkKpROhYcwXFkCPjc8vAqTV4liArR2rEbgYQ==
-X-Received: by 2002:a17:90a:4a8f:: with SMTP id f15mr4153776pjh.19.1618494842935;
-        Thu, 15 Apr 2021 06:54:02 -0700 (PDT)
-Received: from Leo-laptop-t470s.redhat.com ([209.132.188.80])
-        by smtp.gmail.com with ESMTPSA id h16sm2324868pfo.191.2021.04.15.06.53.56
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 15 Apr 2021 06:54:02 -0700 (PDT)
-From:   Hangbin Liu <liuhangbin@gmail.com>
-To:     bpf@vger.kernel.org
-Cc:     netdev@vger.kernel.org,
-        =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
-        Jiri Benc <jbenc@redhat.com>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        Eelco Chaudron <echaudro@redhat.com>, ast@kernel.org,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Lorenzo Bianconi <lorenzo.bianconi@redhat.com>,
-        David Ahern <dsahern@gmail.com>,
-        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
-        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
-        =?UTF-8?q?Bj=C3=B6rn=20T=C3=B6pel?= <bjorn.topel@gmail.com>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Hangbin Liu <liuhangbin@gmail.com>
-Subject: [PATCHv8 bpf-next 4/4] selftests/bpf: add xdp_redirect_multi test
-Date:   Thu, 15 Apr 2021 21:53:20 +0800
-Message-Id: <20210415135320.4084595-5-liuhangbin@gmail.com>
-X-Mailer: git-send-email 2.26.3
-In-Reply-To: <20210415135320.4084595-1-liuhangbin@gmail.com>
-References: <20210415135320.4084595-1-liuhangbin@gmail.com>
+        id S233311AbhDOOAt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 15 Apr 2021 10:00:49 -0400
+Received: from mga02.intel.com ([134.134.136.20]:32287 "EHLO mga02.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S232004AbhDOOAs (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 15 Apr 2021 10:00:48 -0400
+IronPort-SDR: 3e/S5CX5EXoTTFnqwojpm691OMUFqAjIFovtPjKEHD+qe6NzSRWeWHEg6DvGQDOmpM/4cafBKk
+ +YHIOawfELEg==
+X-IronPort-AV: E=McAfee;i="6200,9189,9955"; a="181979342"
+X-IronPort-AV: E=Sophos;i="5.82,225,1613462400"; 
+   d="scan'208";a="181979342"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Apr 2021 07:00:18 -0700
+IronPort-SDR: qvQyKxfOvlpcXB61A6Pst1RpEScS4jY3K9YdgMuar+AkFsi4WrpEMi8JaCWvM5/hw1Q/KsMNdc
+ T2PN25yx3ubg==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.82,225,1613462400"; 
+   d="scan'208";a="418750792"
+Received: from fmsmsx604.amr.corp.intel.com ([10.18.126.84])
+  by fmsmga008.fm.intel.com with ESMTP; 15 Apr 2021 07:00:18 -0700
+Received: from fmsmsx609.amr.corp.intel.com (10.18.126.89) by
+ fmsmsx604.amr.corp.intel.com (10.18.126.84) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2106.2; Thu, 15 Apr 2021 07:00:17 -0700
+Received: from fmsedg602.ED.cps.intel.com (10.1.192.136) by
+ fmsmsx609.amr.corp.intel.com (10.18.126.89) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2106.2
+ via Frontend Transport; Thu, 15 Apr 2021 07:00:17 -0700
+Received: from NAM12-DM6-obe.outbound.protection.outlook.com (104.47.59.177)
+ by edgegateway.intel.com (192.55.55.71) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2106.2; Thu, 15 Apr 2021 07:00:17 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=Q9k6Jg6nnuy0Mo0GTWQW0akV8hhwsCFMeW9KzXUmU2sZkU7t/uxRfDgcLlZAaMcRaZZ7HU+VPHbbiVcmK97Hw+4Ht/GT8pNsTOS9liyHNnrglA8Qs6zT/JMxP6hQxXc5sxaCzxYuwc3nliiIvGRlVK4cvueDlbt2ooJgDmdIPQM5+X8jrxJKBA549RlmNmG/kE1yzVNZq5Rw6oKwcXeLZ5YXw0UNJ+zKHXBFcK0Q29kp0C/kRyFzgXHKDO+1/Kw5Rnwh3/kSQnp7Fo5YT60qNP1JMMkC3nOeIlTmSmKtVRfBJqlXwNVkYidXwXcCFnqF3YxUFo+3vdiLCUwTmgxlBA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=aNyyXaD93Smp9goQxReRPj5PGkvSFzVQk7F7ZG+issM=;
+ b=jRc6I4xg6hDtOrMJwDyjDSQ2XPfDxuQ/L2vkbs0plO7eu/wUpltg+aQlz5gaI3/8OibWW8NjeSK8hL0QwBB0ljyWYciHeB01uF/GXgFwVC1Xz8YrVzlxug5MY40BQB2A0fd6uAMDTATlO8Zwhzbhspo1jo+w45jkiHQMDpB26jsJT1Iqn4Ftek/FySvw2FK3iwy51yybyoz8RwOYnXB3Oim5kV75TKGVszal62bDC7RQpzFlGiFuqbJOFj8V1r9Kpnn8KmCi0mr5572coL5heTCbZegWNY2K+yXHpa2AgTzqVjX/3xgllbYC3BunElU37EwhCZWi0WJ8oo5nf3BqDw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=intel.onmicrosoft.com;
+ s=selector2-intel-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=aNyyXaD93Smp9goQxReRPj5PGkvSFzVQk7F7ZG+issM=;
+ b=FWGx9bo+RS8ZzneWHklGJYom/oFaOpegVN0YUkqVb8wmn7UBShtVG+KgIhwPpiJJMsIrbiW7xQzeuXUpfrUHzpKDqOAl4nAkawspbbjXmrhPuePmUA9nCSPmeC06phNmunB0BCDPzhRUPrNTTs9L02O2cpKyut/V3KJYL5jSIVM=
+Received: from DM6PR11MB2780.namprd11.prod.outlook.com (2603:10b6:5:c8::19) by
+ DM6PR11MB3082.namprd11.prod.outlook.com (2603:10b6:5:6b::19) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.4020.18; Thu, 15 Apr 2021 14:00:16 +0000
+Received: from DM6PR11MB2780.namprd11.prod.outlook.com
+ ([fe80::dcb3:eed0:98d1:c864]) by DM6PR11MB2780.namprd11.prod.outlook.com
+ ([fe80::dcb3:eed0:98d1:c864%7]) with mapi id 15.20.4020.024; Thu, 15 Apr 2021
+ 14:00:16 +0000
+From:   "Ong, Boon Leong" <boon.leong.ong@intel.com>
+To:     Stephen Rothwell <sfr@canb.auug.org.au>,
+        David Miller <davem@davemloft.net>,
+        Networking <netdev@vger.kernel.org>
+CC:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        "Linux Next Mailing List" <linux-next@vger.kernel.org>,
+        Thierry Reding <treding@nvidia.com>
+Subject: RE: linux-next: manual merge of the net-next tree with the net tree
+Thread-Topic: linux-next: manual merge of the net-next tree with the net tree
+Thread-Index: AQHXMZ186TF2W0t9ZUeEw4jlxfyX4qq1muKA
+Date:   Thu, 15 Apr 2021 14:00:16 +0000
+Message-ID: <DM6PR11MB2780C0D45E70297CC5CE5423CA4D9@DM6PR11MB2780.namprd11.prod.outlook.com>
+References: <20210415121713.28af219a@canb.auug.org.au>
+In-Reply-To: <20210415121713.28af219a@canb.auug.org.au>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+dlp-product: dlpe-windows
+dlp-version: 11.5.1.3
+dlp-reaction: no-action
+authentication-results: canb.auug.org.au; dkim=none (message not signed)
+ header.d=none;canb.auug.org.au; dmarc=none action=none header.from=intel.com;
+x-originating-ip: [42.189.179.55]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 31338fb4-fbfd-4a89-3792-08d90016cc2c
+x-ms-traffictypediagnostic: DM6PR11MB3082:
+x-microsoft-antispam-prvs: <DM6PR11MB308261E154FBBC001CD6EA74CA4D9@DM6PR11MB3082.namprd11.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:7219;
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: DC2xjN1oZ6xY508UynfBrRUu9WWFSYxh6h7pRjPptcOeTZakYdaKFM2MiP7c1QS+fWUl54I/R2TJRfPIEzoGUUrwxJRmvkrAB3+PkyUCtaL0KPHkpBIRRY5gb10xWBxnLCHn6iDDey5Gv3LjrjrV0BNoiUu5qF/V9O8FsruHhgwk8skkhJKiZ5+tA6yIP+w3UhrCMloZ+1AeJd4G6asy1ynBiBZk8wghP3dHD2B7uDxU8IV4g+ooIdHaQzVc32ku1hTCY23s9DJAiUK/ljOl2IkO/illfLYFCHOjanKFUJYln5vwRf3DBVNuKb9FLuFckaFH9X1Q9OUBNmClmGSuIpIMubCRqW3in84KjFFWlHCoO/OJ61S46C22nkRVR00simp9uVD4m53FpVSLd9nqyphx7uInTX31cy6vM4upsTFxcjkqvQH+vgrHUCix9FovhRxxAabkKH1koDZOpBObMYfppExLJ1DZAs8UrzfK4HWGyCkeOrcEprW7v9TaFy0tFQL5kbkJ5wwRDxmNLCYvxLeFt/ojXpoUoeUq/PCzSZxBb7ixn320aAFhYD4vb43P+I96Kie4MANbQsDIviA3WXA5nj42tsbUptw4Bfy2JtaQZd8hjSBD4LX0RJEcFlJHK0+j8HJ+DCgpBDxeIX6zY1lmF+R+rKsWoTfTPZHpHI/sD+Nwfxu14+bZiZtlKn5X
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM6PR11MB2780.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(346002)(366004)(39860400002)(396003)(136003)(376002)(4326008)(6506007)(966005)(9686003)(66476007)(66556008)(64756008)(66446008)(316002)(186003)(8676002)(76116006)(66946007)(86362001)(5660300002)(55016002)(26005)(478600001)(7696005)(8936002)(54906003)(52536014)(2906002)(122000001)(33656002)(38100700002)(71200400001)(110136005);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata: =?us-ascii?Q?R1um6+1aUIxrJqD3qD0Lk2QR/BORu9rSaeGCpmFZ7btdUNJpyhkauR6cAvOz?=
+ =?us-ascii?Q?eOOfN4d7PDhL8Frsx2RvPykD3bjWsfgJzn/vHfjyjNVBtsBKvMVcMsd5G3B+?=
+ =?us-ascii?Q?ExGfabvXM6/RH0SfJa+D31FTxMD3kJKxkFmGMCR3aradv9v6kDIGxX3kdzs0?=
+ =?us-ascii?Q?OgQTaZmGCSfx6u5bFtT5tIndZGXLv9AiKQW4szj2ZFme7bSzEnC9QWgbw6YC?=
+ =?us-ascii?Q?WkyhNs8I64W15ByiTXSRSwpvqkzoylgptYDLFGx4gpAcoE7yhctZUt18RV6d?=
+ =?us-ascii?Q?QXaJoyrbFKucOkGdHomgEjIkSJS2UbfV/HElnqJEBo/av0Kh3nu5bJqKo4JL?=
+ =?us-ascii?Q?eiKXDpL96TTxiKV+bFeAnWOxKffiiX8KgOcrCtHBqjY/uQnxWlE0jfBCNjIX?=
+ =?us-ascii?Q?jqYJPn423KXH3NSQscE6VGDBtmVufY8GILZJ0fsSEFJjir3BsvAXzAos45QF?=
+ =?us-ascii?Q?JQwjGrPclfHvUklvKkbJR2h/aPk26DDvTwbyQ0R+rZ//McO4guzEk/y9dsOb?=
+ =?us-ascii?Q?xQ1QJRWnN7hrbyBm4TW/Zzqwf4du9kJpR7AHCGFTAFWF0ZSck5fF8B3I2zzw?=
+ =?us-ascii?Q?fqg4BcSt8mBpTuKYBfqNsr7eWDFq88yV9iuW/8W3UUZ8B/lbT6Ml2SYQkxTp?=
+ =?us-ascii?Q?Y6OAtHhRlX7xBHEe9boPDU1kDKLga1he5MT5rfjJMQSMQ1TrhCyY8RNIJiqJ?=
+ =?us-ascii?Q?MmhNWJYIZmbsVO1wbqxInBIN2ZNV1cgoCzxkJZIr1CHEa57wbgpYhH3A55qz?=
+ =?us-ascii?Q?3amOanbnjpCQLm/0r9OUN8EWAU0EL1pv9iHqn3uDPoOZ6e2u6Y1rx8PDUZUK?=
+ =?us-ascii?Q?rREmuBVHFnzXfHOjvW73QJPihDpC2B5NfqM6hrIw1wcmO6qNrUj+m9xjVjr/?=
+ =?us-ascii?Q?AfsQNaf8FxvPY19cLRov7uui5i75ZhxwsceZ3bJoXZWvZs82/nkfMSwMJtWv?=
+ =?us-ascii?Q?QFqQ9nHevvME//umlAxi84rluE2A+TrisQEGUcRqFeEl7C74lHtBUqBRSbHg?=
+ =?us-ascii?Q?qJwsA+YmbPC0+o4Uf+D6tVUbKLfRjlWHDLv+cpiYJZg1bhmXj7UmnP4GPj5l?=
+ =?us-ascii?Q?xMcCDLbMq2Acm+qJDdaj491u5kUJTEmt48W/GOrd62r6iX1jVpcRnYYmzBmf?=
+ =?us-ascii?Q?7cRdKOYiDJqacrFsRP/NRnuQQr/4pfxeeaW0V88hnio4466W5df3793CWh3e?=
+ =?us-ascii?Q?5K5mYY044og1ShuO6Eql8pLV5g8WBPhEtv2udS2e0qiQE5gnhIOLlQZtDfIB?=
+ =?us-ascii?Q?P4D91htbvNot1fb7y33oFuint5CiOT0ABtJkAOquLyTGeY6AUE2PrPahTmHe?=
+ =?us-ascii?Q?Jt8mqQEcB+3+vF6sXEF9L0pK?=
+x-ms-exchange-transport-forked: True
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: DM6PR11MB2780.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 31338fb4-fbfd-4a89-3792-08d90016cc2c
+X-MS-Exchange-CrossTenant-originalarrivaltime: 15 Apr 2021 14:00:16.2677
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: dLNwmf6z2f5nchAq1yRAiYesxI1+RrOtR2mAMGepcelcBVNhucjYdKqkxvi0Y0oaYgwlYMf7xsN1x5IWxYP4n6djANxzI6jF9+JXtdINLE8=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR11MB3082
+X-OriginatorOrg: intel.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add a bpf selftest for new helper xdp_redirect_map_multi(). In this
-test there are 3 forward groups and 1 exclude group. The test will
-redirect each interface's packets to all the interfaces in the forward
-group, and exclude the interface in exclude map.
+>Hi all,
+>
+>Today's linux-next merge of the net-next tree got a conflict in:
+>
+>  drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
+>
+>between commit:
+>
+>  00423969d806 ("Revert "net: stmmac: re-init rx buffers when mac resume
+>back"")
+>
+>from the net tree and commits:
+>
+>  bba2556efad6 ("net: stmmac: Enable RX via AF_XDP zero-copy")
+>  de0b90e52a11 ("net: stmmac: rearrange RX and TX desc init into per-queue
+>basis")
+>
+>from the net-next tree.
+>
+>I fixed it up (see below) and can carry the fix as necessary. This
+>is now fixed as far as linux-next is concerned, but any non trivial
+>conflicts should be mentioned to your upstream maintainer when your tree
+>is submitted for merging.  You may also want to consider cooperating
+>with the maintainer of the conflicting tree to minimise any particularly
+>complex conflicts.
 
-Two maps (DEVMAP, DEVMAP_HASH) and two xdp modes (generic, drive) will
-be tested. XDP egress program will also be tested by setting pkt src MAC
-to egress interface's MAC address.
+I check linux-next merge fix above and spotted an additional fix needed.
+Please see below.=20
 
-For more test details, you can find it in the test script. Here is
-the test result.
-]# ./test_xdp_redirect_multi.sh
-Pass: xdpgeneric arp ns1-2
-Pass: xdpgeneric arp ns1-3
-Pass: xdpgeneric arp ns1-4
-Pass: xdpgeneric ping ns1-2
-Pass: xdpgeneric ping ns1-3
-Pass: xdpgeneric ping ns1-4
-Pass: xdpgeneric ping6 ns1-2
-Pass: xdpgeneric ping6 ns1-1 number
-Pass: xdpgeneric ping6 ns1-2 number
-Pass: xdpdrv arp ns1-2
-Pass: xdpdrv arp ns1-3
-Pass: xdpdrv arp ns1-4
-Pass: xdpdrv ping ns1-2
-Pass: xdpdrv ping ns1-3
-Pass: xdpdrv ping ns1-4
-Pass: xdpdrv ping6 ns1-2
-Pass: xdpdrv ping6 ns1-1 number
-Pass: xdpdrv ping6 ns1-2 number
-Pass: xdpegress mac ns1-2
-Pass: xdpegress mac ns1-3
-Pass: xdpegress mac ns1-4
-Summary: PASS 21, FAIL 0
 
-Acked-by: Toke Høiland-Jørgensen <toke@redhat.com>
-Signed-off-by: Hangbin Liu <liuhangbin@gmail.com>
+>+ /**
+>+  * dma_recycle_rx_skbufs - recycle RX dma buffers
+>+  * @priv: private structure
+>+  * @queue: RX queue index
+>+  */
+>+ static void dma_recycle_rx_skbufs(struct stmmac_priv *priv, u32 queue)
+>+ {
+>+ 	struct stmmac_rx_queue *rx_q =3D &priv->rx_queue[queue];
+>+ 	int i;
+>+
+>+ 	for (i =3D 0; i < priv->dma_rx_size; i++) {
+>+ 		struct stmmac_rx_buffer *buf =3D &rx_q->buf_pool[i];
+>+
+>+ 		if (buf->page) {
+>+ 			page_pool_recycle_direct(rx_q->page_pool, buf-
+>>page);
+>+ 			buf->page =3D NULL;
+>+ 		}
+>+
+>+ 		if (priv->sph && buf->sec_page) {
+>+ 			page_pool_recycle_direct(rx_q->page_pool, buf-
+>>sec_page);
+>+ 			buf->sec_page =3D NULL;
+>+ 		}
+>+ 	}
+>+ }
 
----
-v2: add a IPv6 test to validates that single redirect still works
-after multicast redirect.
----
- tools/testing/selftests/bpf/Makefile          |   3 +-
- .../bpf/progs/xdp_redirect_multi_kern.c       |  99 ++++++++
- .../selftests/bpf/test_xdp_redirect_multi.sh  | 205 +++++++++++++++
- .../selftests/bpf/xdp_redirect_multi.c        | 236 ++++++++++++++++++
- 4 files changed, 542 insertions(+), 1 deletion(-)
- create mode 100644 tools/testing/selftests/bpf/progs/xdp_redirect_multi_kern.c
- create mode 100755 tools/testing/selftests/bpf/test_xdp_redirect_multi.sh
- create mode 100644 tools/testing/selftests/bpf/xdp_redirect_multi.c
+With https://git.kernel.org/netdev/net/c/00423969d806 that reverts
+stmmac_reinit_rx_buffers(), then the above dma_recycle_rx_skbufs()
+is no longer needed when net-next is sent for merge. =20
 
-diff --git a/tools/testing/selftests/bpf/Makefile b/tools/testing/selftests/bpf/Makefile
-index 6448c626498f..0c08b662a64e 100644
---- a/tools/testing/selftests/bpf/Makefile
-+++ b/tools/testing/selftests/bpf/Makefile
-@@ -49,6 +49,7 @@ TEST_FILES = xsk_prereqs.sh \
- # Order correspond to 'make run_tests' order
- TEST_PROGS := test_kmod.sh \
- 	test_xdp_redirect.sh \
-+	test_xdp_redirect_multi.sh \
- 	test_xdp_meta.sh \
- 	test_xdp_veth.sh \
- 	test_offload.py \
-@@ -79,7 +80,7 @@ TEST_PROGS_EXTENDED := with_addr.sh \
- TEST_GEN_PROGS_EXTENDED = test_sock_addr test_skb_cgroup_id_user \
- 	flow_dissector_load test_flow_dissector test_tcp_check_syncookie_user \
- 	test_lirc_mode2_user xdping test_cpp runqslower bench bpf_testmod.ko \
--	xdpxceiver
-+	xdpxceiver xdp_redirect_multi
- 
- TEST_CUSTOM_PROGS = $(OUTPUT)/urandom_read
- 
-diff --git a/tools/testing/selftests/bpf/progs/xdp_redirect_multi_kern.c b/tools/testing/selftests/bpf/progs/xdp_redirect_multi_kern.c
-new file mode 100644
-index 000000000000..099bf444acab
---- /dev/null
-+++ b/tools/testing/selftests/bpf/progs/xdp_redirect_multi_kern.c
-@@ -0,0 +1,99 @@
-+// SPDX-License-Identifier: GPL-2.0
-+#define KBUILD_MODNAME "foo"
-+#include <string.h>
-+#include <linux/in.h>
-+#include <linux/if_ether.h>
-+#include <linux/if_packet.h>
-+#include <linux/ip.h>
-+#include <linux/ipv6.h>
-+
-+#include <linux/bpf.h>
-+#include <bpf/bpf_helpers.h>
-+#include <bpf/bpf_endian.h>
-+
-+/* It would be easier to use a key:if_index, value:if_index map, but it
-+ * will need a very large entries as the if_index number may get very large,
-+ * this would affect the performace. So the DEVMAP here is just for testing.
-+ */
-+struct {
-+	__uint(type, BPF_MAP_TYPE_DEVMAP);
-+	__uint(key_size, sizeof(int));
-+	__uint(value_size, sizeof(int));
-+	__uint(max_entries, 1024);
-+} map_v4 SEC(".maps");
-+
-+struct {
-+	__uint(type, BPF_MAP_TYPE_DEVMAP_HASH);
-+	__uint(key_size, sizeof(int));
-+	__uint(value_size, sizeof(int));
-+	__uint(max_entries, 128);
-+} map_all SEC(".maps");
-+
-+struct {
-+	__uint(type, BPF_MAP_TYPE_DEVMAP_HASH);
-+	__uint(key_size, sizeof(int));
-+	__uint(value_size, sizeof(struct bpf_devmap_val));
-+	__uint(max_entries, 128);
-+} map_egress SEC(".maps");
-+
-+/* map to store egress interfaces mac addresses */
-+struct {
-+	__uint(type, BPF_MAP_TYPE_HASH);
-+	__type(key, __u32);
-+	__type(value, __be64);
-+	__uint(max_entries, 128);
-+} mac_map SEC(".maps");
-+
-+SEC("xdp_redirect_map_multi")
-+int xdp_redirect_map_multi_prog(struct xdp_md *ctx)
-+{
-+	void *data_end = (void *)(long)ctx->data_end;
-+	void *data = (void *)(long)ctx->data;
-+	int if_index = ctx->ingress_ifindex;
-+	struct ethhdr *eth = data;
-+	__u16 h_proto;
-+	__u64 nh_off;
-+
-+	nh_off = sizeof(*eth);
-+	if (data + nh_off > data_end)
-+		return XDP_DROP;
-+
-+	h_proto = eth->h_proto;
-+
-+	if (h_proto == bpf_htons(ETH_P_IP))
-+		return bpf_redirect_map(&map_v4, 0, BPF_F_REDIR_MASK);
-+	else if (h_proto == bpf_htons(ETH_P_IPV6))
-+		return bpf_redirect_map(&map_all, if_index, 0);
-+	else
-+		return bpf_redirect_map(&map_all, 0, BPF_F_REDIR_MASK);
-+}
-+
-+/* The following 2 progs are for 2nd devmap prog testing */
-+SEC("xdp_redirect_map_ingress")
-+int xdp_redirect_map_all_prog(struct xdp_md *ctx)
-+{
-+	return bpf_redirect_map(&map_egress, 0, BPF_F_REDIR_MASK);
-+}
-+
-+SEC("xdp_devmap/map_prog")
-+int xdp_devmap_prog(struct xdp_md *ctx)
-+{
-+	void *data_end = (void *)(long)ctx->data_end;
-+	void *data = (void *)(long)ctx->data;
-+	__u32 key = ctx->egress_ifindex;
-+	struct ethhdr *eth = data;
-+	__u64 nh_off;
-+	__be64 *mac;
-+
-+	nh_off = sizeof(*eth);
-+	if (data + nh_off > data_end)
-+		return XDP_DROP;
-+
-+	mac = bpf_map_lookup_elem(&mac_map, &key);
-+	if (mac)
-+		__builtin_memcpy(eth->h_source, mac, ETH_ALEN);
-+
-+	return XDP_PASS;
-+}
-+
-+char _license[] SEC("license") = "GPL";
-diff --git a/tools/testing/selftests/bpf/test_xdp_redirect_multi.sh b/tools/testing/selftests/bpf/test_xdp_redirect_multi.sh
-new file mode 100755
-index 000000000000..414f331823d2
---- /dev/null
-+++ b/tools/testing/selftests/bpf/test_xdp_redirect_multi.sh
-@@ -0,0 +1,205 @@
-+#!/bin/bash
-+# SPDX-License-Identifier: GPL-2.0
-+#
-+# Test topology:
-+#     - - - - - - - - - - - - - - - - - - - - - - - - -
-+#    | veth1         veth2         veth3         veth4 |  ... init net
-+#     - -| - - - - - - | - - - - - - | - - - - - - | - -
-+#    ---------     ---------     ---------     ---------
-+#    | veth0 |     | veth0 |     | veth0 |     | veth0 |  ...
-+#    ---------     ---------     ---------     ---------
-+#       ns1           ns2           ns3           ns4
-+#
-+# Forward maps:
-+#     map_all has interfaces: veth1, veth2, veth3, veth4, ... (All traffic except IPv4)
-+#     map_v4 has interfaces: veth1, veth3, veth4, ... (For IPv4 traffic only)
-+#     map_egress has all interfaces and redirect all pkts
-+# Map type:
-+#     map_v4 use DEVMAP, others use DEVMAP_HASH
-+#
-+# Test modules:
-+# XDP modes: generic, native, native + egress_prog
-+#
-+# Test cases:
-+#     ARP:
-+#        ns1 -> gw: ns2, ns3, ns4 should receive the arp request
-+#     IPv4:
-+#        ping test: ns1 -> ns2 (block), ns1 -> ns3 (pass), ns1 -> ns4 (pass)
-+#     IPv6:
-+#        ping test: ns1 -> ns2 (block), echo requests will be redirect back
-+#     egress_prog:
-+#        all src mac should be egress interface's mac
-+#
-+
-+
-+# netns numbers
-+NUM=4
-+IFACES=""
-+DRV_MODE="xdpgeneric xdpdrv xdpegress"
-+PASS=0
-+FAIL=0
-+
-+test_pass()
-+{
-+	echo "Pass: $@"
-+	PASS=$((PASS + 1))
-+}
-+
-+test_fail()
-+{
-+	echo "fail: $@"
-+	FAIL=$((FAIL + 1))
-+}
-+
-+clean_up()
-+{
-+	for i in $(seq $NUM); do
-+		ip link del veth$i 2> /dev/null
-+		ip netns del ns$i 2> /dev/null
-+	done
-+}
-+
-+# Kselftest framework requirement - SKIP code is 4.
-+check_env()
-+{
-+	ip link set dev lo xdpgeneric off &>/dev/null
-+	if [ $? -ne 0 ];then
-+		echo "selftests: [SKIP] Could not run test without the ip xdpgeneric support"
-+		exit 4
-+	fi
-+
-+	which tcpdump &>/dev/null
-+	if [ $? -ne 0 ];then
-+		echo "selftests: [SKIP] Could not run test without tcpdump"
-+		exit 4
-+	fi
-+}
-+
-+setup_ns()
-+{
-+	local mode=$1
-+	IFACES=""
-+
-+	if [ "$mode" = "xdpegress" ]; then
-+		mode="xdpdrv"
-+	fi
-+
-+	for i in $(seq $NUM); do
-+	        ip netns add ns$i
-+	        ip link add veth$i type veth peer name veth0 netns ns$i
-+		ip link set veth$i up
-+		ip -n ns$i link set veth0 up
-+
-+		ip -n ns$i addr add 192.0.2.$i/24 dev veth0
-+		ip -n ns$i addr add 2001:db8::$i/64 dev veth0
-+		ip -n ns$i link set veth0 $mode obj \
-+			xdp_dummy.o sec xdp_dummy &> /dev/null || \
-+			{ test_fail "Unable to load dummy xdp" && exit 1; }
-+		IFACES="$IFACES veth$i"
-+		veth_mac[$i]=$(ip link show veth$i | awk '/link\/ether/ {print $2}')
-+	done
-+}
-+
-+do_egress_tests()
-+{
-+	local mode=$1
-+
-+	# mac test
-+	ip netns exec ns2 tcpdump -e -i veth0 -nn -l -e &> mac_ns1-2_${mode}.log &
-+	ip netns exec ns3 tcpdump -e -i veth0 -nn -l -e &> mac_ns1-3_${mode}.log &
-+	ip netns exec ns4 tcpdump -e -i veth0 -nn -l -e &> mac_ns1-4_${mode}.log &
-+	ip netns exec ns1 ping 192.0.2.254 -c 4 &> /dev/null
-+	sleep 2
-+	pkill -9 tcpdump
-+
-+	# mac check
-+	grep -q "${veth_mac[2]} > ff:ff:ff:ff:ff:ff" mac_ns1-2_${mode}.log && \
-+	       test_pass "$mode mac ns1-2" || test_fail "$mode mac ns1-2"
-+	grep -q "${veth_mac[3]} > ff:ff:ff:ff:ff:ff" mac_ns1-3_${mode}.log && \
-+		test_pass "$mode mac ns1-3" || test_fail "$mode mac ns1-3"
-+	grep -q "${veth_mac[4]} > ff:ff:ff:ff:ff:ff" mac_ns1-4_${mode}.log && \
-+		test_pass "$mode mac ns1-4" || test_fail "$mode mac ns1-4"
-+}
-+
-+do_ping_tests()
-+{
-+	local mode=$1
-+
-+	# arp test
-+	ip netns exec ns2 tcpdump -i veth0 -nn -l -e &> arp_ns1-2_${mode}.log &
-+	ip netns exec ns3 tcpdump -i veth0 -nn -l -e &> arp_ns1-3_${mode}.log &
-+	ip netns exec ns4 tcpdump -i veth0 -nn -l -e &> arp_ns1-4_${mode}.log &
-+	ip netns exec ns1 ping 192.0.2.254 -c 4 &> /dev/null
-+	sleep 2
-+	pkill -9 tcpdump
-+	grep -q "Request who-has 192.0.2.254 tell 192.0.2.1" arp_ns1-2_${mode}.log && \
-+		test_pass "$mode arp ns1-2" || test_fail "$mode arp ns1-2"
-+	grep -q "Request who-has 192.0.2.254 tell 192.0.2.1" arp_ns1-3_${mode}.log && \
-+		test_pass "$mode arp ns1-3" || test_fail "$mode arp ns1-3"
-+	grep -q "Request who-has 192.0.2.254 tell 192.0.2.1" arp_ns1-4_${mode}.log && \
-+		test_pass "$mode arp ns1-4" || test_fail "$mode arp ns1-4"
-+
-+	# ping test
-+	ip netns exec ns1 ping 192.0.2.2 -c 4 &> /dev/null && \
-+		test_fail "$mode ping ns1-2" || test_pass "$mode ping ns1-2"
-+	ip netns exec ns1 ping 192.0.2.3 -c 4 &> /dev/null && \
-+		test_pass "$mode ping ns1-3" || test_fail "$mode ping ns1-3"
-+	ip netns exec ns1 ping 192.0.2.4 -c 4 &> /dev/null && \
-+		test_pass "$mode ping ns1-4" || test_fail "$mode ping ns1-4"
-+
-+	# ping6 test: echo request should be redirect back to itself, not others
-+	ip netns exec ns1 ip neigh add 2001:db8::2 dev veth0 lladdr 00:00:00:00:00:02
-+	ip netns exec ns1 tcpdump -i veth0 -nn -l &> ping6_ns1_${mode}.log &
-+	ip netns exec ns2 tcpdump -i veth0 -nn -l &> ping6_ns2_${mode}.log &
-+	sleep 2
-+	ip netns exec ns1 ping6 2001:db8::2 -c 2 &> /dev/null && \
-+		test_fail "$mode ping6 ns1-2" || test_pass "$mode ping6 ns1-2"
-+	sleep 2
-+	pkill -9 tcpdump
-+	ns1_echo_num=$(grep "ICMP6, echo request" ping6_ns1_${mode}.log | wc -l)
-+	[ $ns1_echo_num -eq 4 ] && test_pass "$mode ping6 ns1-1 number" || \
-+		test_fail "$mode ping6 ns1-1 number"
-+	ns2_echo_num=$(grep "ICMP6, echo request" ping6_ns2_${mode}.log | wc -l)
-+	[ $ns2_echo_num -eq 0 ] && test_pass "$mode ping6 ns1-2 number" || \
-+		test_fail "$mode ping6 ns1-2 number"
-+}
-+
-+do_tests()
-+{
-+	local mode=$1
-+	local drv_p
-+
-+	case ${mode} in
-+		xdpdrv)  drv_p="-N";;
-+		xdpegress) drv_p="-X";;
-+		xdpgeneric) drv_p="-S";;
-+	esac
-+
-+	./xdp_redirect_multi $drv_p $IFACES &> xdp_redirect_${mode}.log &
-+	xdp_pid=$!
-+	sleep 10
-+
-+	if [ "$mode" = "xdpegress" ]; then
-+		do_egress_tests $mode
-+	else
-+		do_ping_tests $mode
-+	fi
-+
-+	kill $xdp_pid
-+}
-+
-+trap clean_up 0 2 3 6 9
-+
-+check_env
-+rm -f xdp_redirect_*.log arp_ns*.log ping6_ns*.log mac_ns*.log
-+
-+for mode in ${DRV_MODE}; do
-+	setup_ns $mode
-+	do_tests $mode
-+	sleep 10
-+	clean_up
-+	sleep 5
-+done
-+
-+echo "Summary: PASS $PASS, FAIL $FAIL"
-+[ $FAIL -eq 0 ] && exit 0 || exit 1
-diff --git a/tools/testing/selftests/bpf/xdp_redirect_multi.c b/tools/testing/selftests/bpf/xdp_redirect_multi.c
-new file mode 100644
-index 000000000000..6a282dde90bd
---- /dev/null
-+++ b/tools/testing/selftests/bpf/xdp_redirect_multi.c
-@@ -0,0 +1,236 @@
-+// SPDX-License-Identifier: GPL-2.0
-+#include <linux/bpf.h>
-+#include <linux/if_link.h>
-+#include <assert.h>
-+#include <errno.h>
-+#include <signal.h>
-+#include <stdio.h>
-+#include <stdlib.h>
-+#include <string.h>
-+#include <net/if.h>
-+#include <unistd.h>
-+#include <libgen.h>
-+#include <sys/resource.h>
-+#include <sys/ioctl.h>
-+#include <sys/types.h>
-+#include <sys/socket.h>
-+#include <netinet/in.h>
-+
-+#include "bpf_util.h"
-+#include <bpf/bpf.h>
-+#include <bpf/libbpf.h>
-+
-+#define MAX_IFACE_NUM 32
-+#define MAX_INDEX_NUM 1024
-+
-+static __u32 xdp_flags = XDP_FLAGS_UPDATE_IF_NOEXIST;
-+static int ifaces[MAX_IFACE_NUM] = {};
-+
-+static void int_exit(int sig)
-+{
-+	__u32 prog_id = 0;
-+	int i;
-+
-+	for (i = 0; ifaces[i] > 0; i++) {
-+		if (bpf_get_link_xdp_id(ifaces[i], &prog_id, xdp_flags)) {
-+			printf("bpf_get_link_xdp_id failed\n");
-+			exit(1);
-+		}
-+		if (prog_id)
-+			bpf_set_link_xdp_fd(ifaces[i], -1, xdp_flags);
-+	}
-+
-+	exit(0);
-+}
-+
-+static int get_mac_addr(unsigned int ifindex, void *mac_addr)
-+{
-+	char ifname[IF_NAMESIZE];
-+	struct ifreq ifr;
-+	int fd, ret = -1;
-+
-+	fd = socket(AF_INET, SOCK_DGRAM, 0);
-+	if (fd < 0)
-+		return ret;
-+
-+	if (!if_indextoname(ifindex, ifname))
-+		goto err_out;
-+
-+	strcpy(ifr.ifr_name, ifname);
-+
-+	if (ioctl(fd, SIOCGIFHWADDR, &ifr) != 0)
-+		goto err_out;
-+
-+	memcpy(mac_addr, ifr.ifr_hwaddr.sa_data, 6 * sizeof(char));
-+	ret = 0;
-+
-+err_out:
-+	close(fd);
-+	return ret;
-+}
-+
-+static void usage(const char *prog)
-+{
-+	fprintf(stderr,
-+		"usage: %s [OPTS] <IFNAME|IFINDEX> <IFNAME|IFINDEX> ...\n"
-+		"OPTS:\n"
-+		"    -S    use skb-mode\n"
-+		"    -N    enforce native mode\n"
-+		"    -F    force loading prog\n"
-+		"    -X    load xdp program on egress\n",
-+		prog);
-+}
-+
-+int main(int argc, char **argv)
-+{
-+	int prog_fd, group_all, group_v4, mac_map;
-+	struct bpf_program *ingress_prog, *egress_prog;
-+	struct bpf_prog_load_attr prog_load_attr = {
-+		.prog_type = BPF_PROG_TYPE_UNSPEC,
-+	};
-+	int i, ret, opt, egress_prog_fd = 0;
-+	struct bpf_devmap_val devmap_val;
-+	bool attach_egress_prog = false;
-+	unsigned char mac_addr[6];
-+	char ifname[IF_NAMESIZE];
-+	struct bpf_object *obj;
-+	unsigned int ifindex;
-+	char filename[256];
-+
-+	while ((opt = getopt(argc, argv, "SNFX")) != -1) {
-+		switch (opt) {
-+		case 'S':
-+			xdp_flags |= XDP_FLAGS_SKB_MODE;
-+			break;
-+		case 'N':
-+			/* default, set below */
-+			break;
-+		case 'F':
-+			xdp_flags &= ~XDP_FLAGS_UPDATE_IF_NOEXIST;
-+			break;
-+		case 'X':
-+			attach_egress_prog = true;
-+			break;
-+		default:
-+			usage(basename(argv[0]));
-+			return 1;
-+		}
-+	}
-+
-+	if (!(xdp_flags & XDP_FLAGS_SKB_MODE)) {
-+		xdp_flags |= XDP_FLAGS_DRV_MODE;
-+	} else if (attach_egress_prog) {
-+		printf("Load xdp program on egress with SKB mode not supported yet\n");
-+		goto err_out;
-+	}
-+
-+	if (optind == argc) {
-+		printf("usage: %s <IFNAME|IFINDEX> <IFNAME|IFINDEX> ...\n", argv[0]);
-+		goto err_out;
-+	}
-+
-+	printf("Get interfaces");
-+	for (i = 0; i < MAX_IFACE_NUM && argv[optind + i]; i++) {
-+		ifaces[i] = if_nametoindex(argv[optind + i]);
-+		if (!ifaces[i])
-+			ifaces[i] = strtoul(argv[optind + i], NULL, 0);
-+		if (!if_indextoname(ifaces[i], ifname)) {
-+			perror("Invalid interface name or i");
-+			goto err_out;
-+		}
-+		if (ifaces[i] > MAX_INDEX_NUM) {
-+			printf("Interface index to large\n");
-+			goto err_out;
-+		}
-+		printf(" %d", ifaces[i]);
-+	}
-+	printf("\n");
-+
-+	snprintf(filename, sizeof(filename), "%s_kern.o", argv[0]);
-+	prog_load_attr.file = filename;
-+
-+	if (bpf_prog_load_xattr(&prog_load_attr, &obj, &prog_fd))
-+		goto err_out;
-+
-+	if (attach_egress_prog)
-+		group_all = bpf_object__find_map_fd_by_name(obj, "map_egress");
-+	else
-+		group_all = bpf_object__find_map_fd_by_name(obj, "map_all");
-+	group_v4 = bpf_object__find_map_fd_by_name(obj, "map_v4");
-+	mac_map = bpf_object__find_map_fd_by_name(obj, "mac_map");
-+
-+	if (group_all < 0 || group_v4 < 0 || mac_map < 0) {
-+		printf("bpf_object__find_map_fd_by_name failed\n");
-+		goto err_out;
-+	}
-+
-+	if (attach_egress_prog) {
-+		/* Find ingress/egress prog for 2nd xdp prog */
-+		ingress_prog = bpf_object__find_program_by_name(obj, "xdp_redirect_map_all_prog");
-+		egress_prog = bpf_object__find_program_by_name(obj, "xdp_devmap_prog");
-+		if (!ingress_prog || !egress_prog) {
-+			printf("finding ingress/egress_prog in obj file failed\n");
-+			goto err_out;
-+		}
-+		prog_fd = bpf_program__fd(ingress_prog);
-+		egress_prog_fd = bpf_program__fd(egress_prog);
-+		if (prog_fd < 0 || egress_prog_fd < 0) {
-+			printf("find egress_prog fd failed\n");
-+			goto err_out;
-+		}
-+	}
-+
-+	signal(SIGINT, int_exit);
-+	signal(SIGTERM, int_exit);
-+
-+	/* Init forward multicast groups and exclude group */
-+	for (i = 0; ifaces[i] > 0; i++) {
-+		ifindex = ifaces[i];
-+
-+		if (attach_egress_prog) {
-+			ret = get_mac_addr(ifindex, mac_addr);
-+			if (ret < 0) {
-+				printf("get interface %d mac failed\n", ifindex);
-+				goto err_out;
-+			}
-+			ret = bpf_map_update_elem(mac_map, &ifindex, mac_addr, 0);
-+			if (ret) {
-+				perror("bpf_update_elem mac_map failed\n");
-+				goto err_out;
-+			}
-+		}
-+
-+		/* Add all the interfaces to group all */
-+		devmap_val.ifindex = ifindex;
-+		devmap_val.bpf_prog.fd = egress_prog_fd;
-+		ret = bpf_map_update_elem(group_all, &ifindex, &devmap_val, 0);
-+		if (ret) {
-+			perror("bpf_map_update_elem");
-+			goto err_out;
-+		}
-+
-+		/* For testing: skip adding the 2nd interfaces to group v4 */
-+		if (i != 1) {
-+			ret = bpf_map_update_elem(group_v4, &ifindex, &ifindex, 0);
-+			if (ret) {
-+				perror("bpf_map_update_elem");
-+				goto err_out;
-+			}
-+		}
-+
-+		/* bind prog_fd to each interface */
-+		ret = bpf_set_link_xdp_fd(ifindex, prog_fd, xdp_flags);
-+		if (ret) {
-+			printf("Set xdp fd failed on %d\n", ifindex);
-+			goto err_out;
-+		}
-+	}
-+
-+	/* sleep some time for testing */
-+	sleep(999);
-+
-+	return 0;
-+
-+err_out:
-+	return 1;
-+}
--- 
-2.26.3
+
+> -/**
+> - * stmmac_reinit_rx_buffers - reinit the RX descriptor buffer.
+> - * @priv: driver private structure
+> - * Description: this function is called to re-allocate a receive buffer,=
+ perform
+> - * the DMA mapping and init the descriptor.
+> - */
+> -static void stmmac_reinit_rx_buffers(struct stmmac_priv *priv)
+> -{
+> -	u32 rx_count =3D priv->plat->rx_queues_to_use;
+> -	u32 queue;
+> -
+> -	for (queue =3D 0; queue < rx_count; queue++) {
+> -		struct stmmac_rx_queue *rx_q =3D &priv->rx_queue[queue];
+> -
+> -		if (rx_q->xsk_pool)
+> -			dma_free_rx_xskbufs(priv, queue);
+
+dma_recycle_rx_skbufs() is only called here.=20
+
+
 
