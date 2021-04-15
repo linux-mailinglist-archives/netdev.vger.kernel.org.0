@@ -2,148 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 539BF360086
-	for <lists+netdev@lfdr.de>; Thu, 15 Apr 2021 05:34:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2263036008B
+	for <lists+netdev@lfdr.de>; Thu, 15 Apr 2021 05:35:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229764AbhDODfM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 14 Apr 2021 23:35:12 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:57194 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S229475AbhDODfL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 14 Apr 2021 23:35:11 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1618457688;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=5RUei5yo3a+NRHkJr+JjC5QOk4NX0VQ98MyFYxpFYQQ=;
-        b=fn0ATztC8nSWmLEPOSlV7p3FVovFrYL6Y1RDb1w3Dq3f+MLCTBQNWmQiEUnjC2NVPICJqP
-        GL35qUnlL5gRZ3j92QQW0K3zcA+Yn7g6pjEXvNrRkOU6rgRDKLdceeIkHuVBNe1mmHOirr
-        Ep07AtHj/RBbgZgBQQDGl2Hpwj9rXXY=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-429-yheEFGkTNwWNrW0mXdH1EA-1; Wed, 14 Apr 2021 23:34:45 -0400
-X-MC-Unique: yheEFGkTNwWNrW0mXdH1EA-1
-Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com [10.5.11.15])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 9135A189C448;
-        Thu, 15 Apr 2021 03:34:43 +0000 (UTC)
-Received: from wangxiaodeMacBook-Air.local (ovpn-13-220.pek2.redhat.com [10.72.13.220])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id AE57A5D71F;
-        Thu, 15 Apr 2021 03:34:36 +0000 (UTC)
-Subject: Re: [PATCH 2/3] vDPA/ifcvf: enable Intel C5000X-PL virtio-block for
- vDPA
-To:     Zhu Lingshan <lingshan.zhu@intel.com>, mst@redhat.com,
-        lulu@redhat.com, leonro@nvidia.com
-Cc:     virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        kvm@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20210414091832.5132-1-lingshan.zhu@intel.com>
- <20210414091832.5132-3-lingshan.zhu@intel.com>
-From:   Jason Wang <jasowang@redhat.com>
-Message-ID: <54839b05-78d2-8edf-317c-372f0ecda024@redhat.com>
-Date:   Thu, 15 Apr 2021 11:34:34 +0800
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
- Gecko/20100101 Thunderbird/78.9.1
+        id S229808AbhDODgJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 14 Apr 2021 23:36:09 -0400
+Received: from szxga05-in.huawei.com ([45.249.212.191]:16465 "EHLO
+        szxga05-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229784AbhDODgI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 14 Apr 2021 23:36:08 -0400
+Received: from DGGEMS409-HUB.china.huawei.com (unknown [172.30.72.58])
+        by szxga05-in.huawei.com (SkyGuard) with ESMTP id 4FLQ0l3cMLzwS3r;
+        Thu, 15 Apr 2021 11:33:27 +0800 (CST)
+Received: from DESKTOP-9883QJJ.china.huawei.com (10.136.114.155) by
+ DGGEMS409-HUB.china.huawei.com (10.3.19.209) with Microsoft SMTP Server id
+ 14.3.498.0; Thu, 15 Apr 2021 11:35:34 +0800
+From:   zhudi <zhudi21@huawei.com>
+To:     <davem@davemloft.net>, <kuba@kernel.org>
+CC:     <netdev@vger.kernel.org>, <zhudi21@huawei.com>,
+        <rose.chen@huawei.com>
+Subject: [PATCH] net: fix a data race when get vlan device
+Date:   Thu, 15 Apr 2021 11:35:27 +0800
+Message-ID: <20210415033527.26877-1-zhudi21@huawei.com>
+X-Mailer: git-send-email 2.27.0
 MIME-Version: 1.0
-In-Reply-To: <20210414091832.5132-3-lingshan.zhu@intel.com>
-Content-Type: text/plain; charset=gbk; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.136.114.155]
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+From: Di Zhu <zhudi21@huawei.com>
 
-ÔÚ 2021/4/14 ÏÂÎç5:18, Zhu Lingshan Ð´µÀ:
-> This commit enabled Intel FPGA SmartNIC C5000X-PL virtio-block
-> for vDPA.
->
-> Signed-off-by: Zhu Lingshan <lingshan.zhu@intel.com>
-> ---
->   drivers/vdpa/ifcvf/ifcvf_base.h | 17 ++++++++++++++++-
->   drivers/vdpa/ifcvf/ifcvf_main.c | 10 +++++++++-
->   2 files changed, 25 insertions(+), 2 deletions(-)
->
-> diff --git a/drivers/vdpa/ifcvf/ifcvf_base.h b/drivers/vdpa/ifcvf/ifcvf_base.h
-> index 1c04cd256fa7..8b403522bf06 100644
-> --- a/drivers/vdpa/ifcvf/ifcvf_base.h
-> +++ b/drivers/vdpa/ifcvf/ifcvf_base.h
-> @@ -15,6 +15,7 @@
->   #include <linux/pci_regs.h>
->   #include <linux/vdpa.h>
->   #include <uapi/linux/virtio_net.h>
-> +#include <uapi/linux/virtio_blk.h>
->   #include <uapi/linux/virtio_config.h>
->   #include <uapi/linux/virtio_pci.h>
->   
-> @@ -28,7 +29,12 @@
->   #define C5000X_PL_SUBSYS_VENDOR_ID	0x8086
->   #define C5000X_PL_SUBSYS_DEVICE_ID	0x0001
->   
-> -#define IFCVF_SUPPORTED_FEATURES \
-> +#define C5000X_PL_BLK_VENDOR_ID		0x1AF4
-> +#define C5000X_PL_BLK_DEVICE_ID		0x1001
-> +#define C5000X_PL_BLK_SUBSYS_VENDOR_ID	0x8086
-> +#define C5000X_PL_BLK_SUBSYS_DEVICE_ID	0x0002
-> +
-> +#define IFCVF_NET_SUPPORTED_FEATURES \
->   		((1ULL << VIRTIO_NET_F_MAC)			| \
->   		 (1ULL << VIRTIO_F_ANY_LAYOUT)			| \
->   		 (1ULL << VIRTIO_F_VERSION_1)			| \
-> @@ -37,6 +43,15 @@
->   		 (1ULL << VIRTIO_F_ACCESS_PLATFORM)		| \
->   		 (1ULL << VIRTIO_NET_F_MRG_RXBUF))
->   
-> +#define IFCVF_BLK_SUPPORTED_FEATURES \
-> +		((1ULL << VIRTIO_BLK_F_SIZE_MAX)		| \
-> +		 (1ULL << VIRTIO_BLK_F_SEG_MAX)			| \
-> +		 (1ULL << VIRTIO_BLK_F_BLK_SIZE)		| \
-> +		 (1ULL << VIRTIO_BLK_F_TOPOLOGY)		| \
-> +		 (1ULL << VIRTIO_BLK_F_MQ)			| \
-> +		 (1ULL << VIRTIO_F_VERSION_1)			| \
-> +		 (1ULL << VIRTIO_F_ACCESS_PLATFORM))
+We encountered a crash: in the packet receiving process, we got an
+illegal VLAN device address, but the VLAN device address saved in vmcore
+is correct. After checking the code, we found a possible data
+competition:
+CPU 0:                             CPU 1:
+    (RCU read lock)                  (RTNL lock)
+    vlan_do_receive()		       register_vlan_dev()
+      vlan_find_dev()
 
+        ->__vlan_group_get_device()	 ->vlan_group_prealloc_vid()
 
-I think we've discussed this sometime in the past but what's the reason 
-for such whitelist consider there's already a get_features() implemention?
+In vlan_group_prealloc_vid(), We need to make sure that kzalloc is
+executed before assigning a value to vlan devices array, otherwise we
+may get a wrong address from the hardware cache on another cpu.
 
-E.g Any reason to block VIRTIO_BLK_F_WRITE_ZEROS or VIRTIO_F_RING_PACKED?
+So fix it by adding memory barrier instruction to ensure the order
+of memory operations.
 
-Thanks
+Signed-off-by: Di Zhu <zhudi21@huawei.com>
+---
+ net/8021q/vlan.c | 2 ++
+ net/8021q/vlan.h | 3 +++
+ 2 files changed, 5 insertions(+)
 
-
-> +
->   /* Only one queue pair for now. */
->   #define IFCVF_MAX_QUEUE_PAIRS	1
->   
-> diff --git a/drivers/vdpa/ifcvf/ifcvf_main.c b/drivers/vdpa/ifcvf/ifcvf_main.c
-> index 99b0a6b4c227..9b6a38b798fa 100644
-> --- a/drivers/vdpa/ifcvf/ifcvf_main.c
-> +++ b/drivers/vdpa/ifcvf/ifcvf_main.c
-> @@ -171,7 +171,11 @@ static u64 ifcvf_vdpa_get_features(struct vdpa_device *vdpa_dev)
->   	struct ifcvf_hw *vf = vdpa_to_vf(vdpa_dev);
->   	u64 features;
->   
-> -	features = ifcvf_get_features(vf) & IFCVF_SUPPORTED_FEATURES;
-> +	if (vf->dev_type == VIRTIO_ID_NET)
-> +		features = ifcvf_get_features(vf) & IFCVF_NET_SUPPORTED_FEATURES;
-> +
-> +	if (vf->dev_type == VIRTIO_ID_BLOCK)
-> +		features = ifcvf_get_features(vf) & IFCVF_BLK_SUPPORTED_FEATURES;
->   
->   	return features;
->   }
-> @@ -509,6 +513,10 @@ static struct pci_device_id ifcvf_pci_ids[] = {
->   			 C5000X_PL_DEVICE_ID,
->   			 C5000X_PL_SUBSYS_VENDOR_ID,
->   			 C5000X_PL_SUBSYS_DEVICE_ID) },
-> +	{ PCI_DEVICE_SUB(C5000X_PL_BLK_VENDOR_ID,
-> +			 C5000X_PL_BLK_DEVICE_ID,
-> +			 C5000X_PL_BLK_SUBSYS_VENDOR_ID,
-> +			 C5000X_PL_BLK_SUBSYS_DEVICE_ID) },
->   
->   	{ 0 },
->   };
+diff --git a/net/8021q/vlan.c b/net/8021q/vlan.c
+index 8b644113715e..4f541e05cd3f 100644
+--- a/net/8021q/vlan.c
++++ b/net/8021q/vlan.c
+@@ -71,6 +71,8 @@ static int vlan_group_prealloc_vid(struct vlan_group *vg,
+ 	if (array == NULL)
+ 		return -ENOBUFS;
+ 
++	smp_wmb();
++
+ 	vg->vlan_devices_arrays[pidx][vidx] = array;
+ 	return 0;
+ }
+diff --git a/net/8021q/vlan.h b/net/8021q/vlan.h
+index 953405362795..7408fda084d3 100644
+--- a/net/8021q/vlan.h
++++ b/net/8021q/vlan.h
+@@ -57,6 +57,9 @@ static inline struct net_device *__vlan_group_get_device(struct vlan_group *vg,
+ 
+ 	array = vg->vlan_devices_arrays[pidx]
+ 				       [vlan_id / VLAN_GROUP_ARRAY_PART_LEN];
++
++	smp_rmb();
++
+ 	return array ? array[vlan_id % VLAN_GROUP_ARRAY_PART_LEN] : NULL;
+ }
+ 
+-- 
+2.23.0
 
