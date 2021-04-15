@@ -2,166 +2,229 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0973036057C
-	for <lists+netdev@lfdr.de>; Thu, 15 Apr 2021 11:20:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 11FD736057F
+	for <lists+netdev@lfdr.de>; Thu, 15 Apr 2021 11:21:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231200AbhDOJUi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 15 Apr 2021 05:20:38 -0400
-Received: from mail-il1-f200.google.com ([209.85.166.200]:56008 "EHLO
-        mail-il1-f200.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229761AbhDOJUh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 15 Apr 2021 05:20:37 -0400
-Received: by mail-il1-f200.google.com with SMTP id v1-20020a92d2410000b02901533f3ed5dbso3589340ilg.22
-        for <netdev@vger.kernel.org>; Thu, 15 Apr 2021 02:20:15 -0700 (PDT)
+        id S231388AbhDOJVY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 15 Apr 2021 05:21:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55012 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230005AbhDOJVX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 15 Apr 2021 05:21:23 -0400
+Received: from mail-lf1-x136.google.com (mail-lf1-x136.google.com [IPv6:2a00:1450:4864:20::136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5618EC061574
+        for <netdev@vger.kernel.org>; Thu, 15 Apr 2021 02:21:00 -0700 (PDT)
+Received: by mail-lf1-x136.google.com with SMTP id j18so38166016lfg.5
+        for <netdev@vger.kernel.org>; Thu, 15 Apr 2021 02:21:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=waldekranz-com.20150623.gappssmtp.com; s=20150623;
+        h=from:to:cc:subject:in-reply-to:references:date:message-id
+         :mime-version;
+        bh=5kreNoPgnSvaqhwhgaGwS2WH9f506d6RC1qhZP+lFyQ=;
+        b=UptM/Ka4BzZ4sms7NJCcQeM0nFxDwIPtbL6gp6Xq7nNOn4l8/nnXDEJNlXIgVEDfW5
+         96YvLkOa9XPLd0ji+XkMTzlhxySwQq+u79LgezPYwYo35xIUkOz+BaMy9jSr9nk+LLDr
+         2c0vhTEtyDBHrdJQCHvJMlLyqb/AzhM1/LpWnDD7gHpcXpUJaoD4RlzXYeyECI8u+3qN
+         VuqP4Ye9/zXgZJiAmgXUijnxaZTcTPz8w4mLyZTS4UrSla3Sm9BH1yjV9JOcCdo44My+
+         2/7w5Up9DAuofmAzXDoySe6od5CiWqTQKn+mkqRXdjEf5GsRaNznyvSTXJ+9KGBMIo8n
+         cDow==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=TKWxKlxzNvpkHVwpq2ENPdqKLi0cVgaRRb7P7JYoqUE=;
-        b=MciwlGWvVHZeQA01mhXTbmbKN3TUx3ygTuuheKN1osasmxMI54F/R0HdGXP+PLA6aj
-         XCKQ4+g3J3HyccaLmSAVV5B4GKRKE98tXcLOmzzNi+5OPXn9DprwSzb02IhGPogVCsdO
-         hc+513uglntzjvL7AQhqn1HGJ+Dq0a5bpxCNWAzawjuDpGqybZ6sAF8GMOIlrYn+6Uft
-         x1s8AkAQfvK/dn6a5kDF8uFAqa0KSLSwLrBLcI5qhvOeRVNyMZykmzA5E9YefUQb81Jp
-         685CPE7MTJ8ddZ2dbBg57n7TlweuhOWuN8Esc2WQJ7kpzSilrvhIbCTfYTYtBpwXE/kF
-         BBfw==
-X-Gm-Message-State: AOAM530FvtfcNI5luvcbg496BaxMy7fZWYvVYIEAPc9r9MotyMeK/zrw
-        8ylB091Ni3Ji+t/r5fUQrUmDhoicfs360gfnu/J5DcLYxrqr
-X-Google-Smtp-Source: ABdhPJxq6orZYNnkZxH1VeQZa1M+8mZNmke50bqtwk7DdZ9QLFhbsiazhuSTimW1RIMtU+mT8d1H1edxH7tJu4Dr0appJLyoc/40
+        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
+         :message-id:mime-version;
+        bh=5kreNoPgnSvaqhwhgaGwS2WH9f506d6RC1qhZP+lFyQ=;
+        b=OZob5nEObIrRwDohNvdWgXnktB1kASZ8dMaSekTSIcS4TlJ2ZCOFMDMYXwPGJ+i3U4
+         QIowX9sVZyvxbbfQ3nwQ+PhGpixk83HKjeY8JX4puJSz7nahPE25pa7hIyMek6NlCEoR
+         i6ra0AgMSgrvgUbgcEx5n//OHsdABqs2WiCEiGwkCDx9lVhct/3sBOAi8DQrQenlNiQw
+         KSq1lxbcNgHP72NKdozSmxd/ngr/2w2fnQMFCVPhdwI+LwCYS8Njj9rrpqqdRpmYXTvJ
+         IbUGHEjVWIAzKgV1szxa8ZWDLuj9qU5rliMRpegV5aKnwVfvxTXgVKeypb/Ieb2cCUzZ
+         fwXg==
+X-Gm-Message-State: AOAM532MKYm0mnCnc/JZz00jg74Au0SdZerIda4aBcLEYi5i3Iis5A2z
+        fEoJHpNW+OIUmM3BCI10r5hG+Q==
+X-Google-Smtp-Source: ABdhPJy0PoISlkKHaQkfGyJmreIsn+rwGJGaSyQAbl9UMQ4Gly5YKBS3uknTb5xjd3uSkiF0jReK0g==
+X-Received: by 2002:ac2:5e64:: with SMTP id a4mr1959442lfr.655.1618478458779;
+        Thu, 15 Apr 2021 02:20:58 -0700 (PDT)
+Received: from wkz-x280 (static-193-12-47-89.cust.tele2.se. [193.12.47.89])
+        by smtp.gmail.com with ESMTPSA id i6sm593739lfu.41.2021.04.15.02.20.57
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 15 Apr 2021 02:20:58 -0700 (PDT)
+From:   Tobias Waldekranz <tobias@waldekranz.com>
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     Marek Behun <marek.behun@nic.cz>,
+        Ansuel Smith <ansuelsmth@gmail.com>, netdev@vger.kernel.org,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andriin@fb.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Wei Wang <weiwan@google.com>,
+        Cong Wang <cong.wang@bytedance.com>,
+        Taehee Yoo <ap420073@gmail.com>,
+        =?utf-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn@kernel.org>,
+        zhang kai <zhangkaiheb@126.com>,
+        Weilong Chen <chenweilong@huawei.com>,
+        Roopa Prabhu <roopa@cumulusnetworks.com>,
+        Di Zhu <zhudi21@huawei.com>,
+        Francis Laniel <laniel_francis@privacyrequired.com>,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH RFC net-next 0/3] Multi-CPU DSA support
+In-Reply-To: <20210414233948.cqohy42edoicwk46@skbuf>
+References: <20210413005518.2f9b9cef@thinkpad> <87r1jfje26.fsf@waldekranz.com> <87o8ejjdu6.fsf@waldekranz.com> <20210413015450.1ae597da@thinkpad> <20210413022730.2a51c083@thinkpad> <87im4qjl87.fsf@waldekranz.com> <20210413171443.1b2b2f88@thinkpad> <87fszujbif.fsf@waldekranz.com> <20210414171439.1a2e7c1a@thinkpad> <87blagk8w6.fsf@waldekranz.com> <20210414233948.cqohy42edoicwk46@skbuf>
+Date:   Thu, 15 Apr 2021 11:20:57 +0200
+Message-ID: <878s5jkio6.fsf@waldekranz.com>
 MIME-Version: 1.0
-X-Received: by 2002:a92:d712:: with SMTP id m18mr2093767iln.127.1618478414709;
- Thu, 15 Apr 2021 02:20:14 -0700 (PDT)
-Date:   Thu, 15 Apr 2021 02:20:14 -0700
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000fc4bc305bfff5e42@google.com>
-Subject: [syzbot] INFO: trying to register non-static key in nfc_llcp_sock_unlink
-From:   syzbot <syzbot+0b2182efb62fe1a7e162@syzkaller.appspotmail.com>
-To:     davem@davemloft.net, kuba@kernel.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+On Thu, Apr 15, 2021 at 02:39, Vladimir Oltean <olteanv@gmail.com> wrote:
+> On Wed, Apr 14, 2021 at 08:39:53PM +0200, Tobias Waldekranz wrote:
+>> In order to have two entries for the same destination, they must belong
+>> to different FIDs. But that FID is also used for automatic learning. So
+>> if all ports use their own FID, all the switched traffic will have to be
+>> flooded instead, since any address learned on lan0 will be invisible to
+>> lan1,2,3 and vice versa.
+>
+> Can you explain a bit more what do you mean when you say that the FID
+> for the CPU port is also used for automatic learning? Since when does
+> mv88e6xxx learn frames sent by tag_dsa.c?
 
-syzbot found the following issue on:
+I was thinking about the incoming traffic on the LAN ports, not the CPU
+port. We are still exclusively sending FROM_CPUs from tag_dsa.c, nothing
+has changed there.
 
-HEAD commit:    50987bec Merge tag 'trace-v5.12-rc7' of git://git.kernel.o..
-git tree:       upstream
-console output: https://syzkaller.appspot.com/x/log.txt?x=14d2cab1d00000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=b5591c832f889fd9
-dashboard link: https://syzkaller.appspot.com/bug?extid=0b2182efb62fe1a7e162
+> The way Ocelot switches work, and this is also the mechanism that I plan
+> to build on top of, is explained in include/soc/mscc/ocelot.h (copied
+> here for your convenience):
+>
+> /* Port Group IDs (PGID) are masks of destination ports.
+>  *
+>  * For L2 forwarding, the switch performs 3 lookups in the PGID table for each
+>  * frame, and forwards the frame to the ports that are present in the logical
+>  * AND of all 3 PGIDs.
+>  *
+>  * These PGID lookups are:
+>  * - In one of PGID[0-63]: for the destination masks. There are 2 paths by
+>  *   which the switch selects a destination PGID:
+>  *     - The {DMAC, VID} is present in the MAC table. In that case, the
+>  *       destination PGID is given by the DEST_IDX field of the MAC table entry
+>  *       that matched.
+>  *     - The {DMAC, VID} is not present in the MAC table (it is unknown). The
+>  *       frame is disseminated as being either unicast, multicast or broadcast,
+>  *       and according to that, the destination PGID is chosen as being the
+>  *       value contained by ANA_FLOODING_FLD_UNICAST,
+>  *       ANA_FLOODING_FLD_MULTICAST or ANA_FLOODING_FLD_BROADCAST.
+>  *   The destination PGID can be an unicast set: the first PGIDs, 0 to
+>  *   ocelot->num_phys_ports - 1, or a multicast set: the PGIDs from
+>  *   ocelot->num_phys_ports to 63. By convention, a unicast PGID corresponds to
+>  *   a physical port and has a single bit set in the destination ports mask:
+>  *   that corresponding to the port number itself. In contrast, a multicast
+>  *   PGID will have potentially more than one single bit set in the destination
+>  *   ports mask.
+>  * - In one of PGID[64-79]: for the aggregation mask. The switch classifier
+>  *   dissects each frame and generates a 4-bit Link Aggregation Code which is
+>  *   used for this second PGID table lookup. The goal of link aggregation is to
+>  *   hash multiple flows within the same LAG on to different destination ports.
+>  *   The first lookup will result in a PGID with all the LAG members present in
+>  *   the destination ports mask, and the second lookup, by Link Aggregation
+>  *   Code, will ensure that each flow gets forwarded only to a single port out
+>  *   of that mask (there are no duplicates).
+>  * - In one of PGID[80-90]: for the source mask. The third time, the PGID table
+>  *   is indexed with the ingress port (plus 80). These PGIDs answer the
+>  *   question "is port i allowed to forward traffic to port j?" If yes, then
+>  *   BIT(j) of PGID 80+i will be found set. The third PGID lookup can be used
+>  *   to enforce the L2 forwarding matrix imposed by e.g. a Linux bridge.
+>  */
+>
+> /* Reserve some destination PGIDs at the end of the range:
+>  * PGID_BLACKHOLE: used for not forwarding the frames
+>  * PGID_CPU: used for whitelisting certain MAC addresses, such as the addresses
+>  *           of the switch port net devices, towards the CPU port module.
+>  * PGID_UC: the flooding destinations for unknown unicast traffic.
+>  * PGID_MC: the flooding destinations for non-IP multicast traffic.
+>  * PGID_MCIPV4: the flooding destinations for IPv4 multicast traffic.
+>  * PGID_MCIPV6: the flooding destinations for IPv6 multicast traffic.
+>  * PGID_BC: the flooding destinations for broadcast traffic.
+>  */
+>
+> Basically the frame is forwarded towards:
+>
+> PGID_DST[MAC table -> destination] & PGID_AGGR[aggregation code] & PGID_SRC[source port]
+>
+> This is also how we set up LAGs in ocelot_set_aggr_pgids: as far as
+> PGID_DST is concerned, all traffic towards a LAG is 'sort of multicast'
+> (even for unicast traffic), in the sense that the destination port mask
+> is all ones for the physical ports in that LAG. We then reduce the
+> destination port mask through PGID_AGGR, in the sense that every
+> aggregation code (of which there can be 16) has a single bit set,
+> corresponding to either one of the physical ports in the LAG. So every
+> packet does indeed see no more than one destination port in the end.
 
-Unfortunately, I don't have any reproducer for this issue yet.
+This is all very similar to how mv88e6xxx works. The only minor
+difference is that the MAC table is wide enough to include the vector
+directly. Unicast entries mapped to LAGs are then handled as a special
+case for some reason, most likely having to do with supporting
+cross-chip configurations correctly I think.
 
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+0b2182efb62fe1a7e162@syzkaller.appspotmail.com
+> For multiple CPU ports with static assignment to user ports, it would be
+> sufficient, given the Ocelot architecture, to install a single 'multicast'
+> entry per address in the MAC table, with a DEST_IDX having two bits set,
+> one for each CPU port. Then, we would let the third lookup (PGID_SRC,
+> equivalent to the Marvell's port VLANs, AFAIU) enforce the bounding box
+> for every packet such that it goes to one CPU port or to another.
 
-INFO: trying to register non-static key.
-The code is fine but needs lockdep annotation, or maybe
-you didn't initialize this object before use?
-turning off the locking correctness validator.
-CPU: 3 PID: 10363 Comm: syz-executor.3 Not tainted 5.12.0-rc7-syzkaller #0
-Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.14.0-2 04/01/2014
-Call Trace:
- __dump_stack lib/dump_stack.c:79 [inline]
- dump_stack+0x141/0x1d7 lib/dump_stack.c:120
- assign_lock_key kernel/locking/lockdep.c:936 [inline]
- register_lock_class+0x1077/0x1180 kernel/locking/lockdep.c:1248
- __lock_acquire+0x106/0x54c0 kernel/locking/lockdep.c:4780
- lock_acquire kernel/locking/lockdep.c:5511 [inline]
- lock_acquire+0x1ab/0x740 kernel/locking/lockdep.c:5476
- __raw_write_lock include/linux/rwlock_api_smp.h:210 [inline]
- _raw_write_lock+0x2a/0x40 kernel/locking/spinlock.c:295
- nfc_llcp_sock_unlink+0x1d/0x1c0 net/nfc/llcp_core.c:32
- llcp_sock_release+0x286/0x580 net/nfc/llcp_sock.c:640
- __sock_release+0xcd/0x280 net/socket.c:599
- sock_close+0x18/0x20 net/socket.c:1258
- __fput+0x288/0x920 fs/file_table.c:280
- task_work_run+0xdd/0x1a0 kernel/task_work.c:140
- exit_task_work include/linux/task_work.h:30 [inline]
- do_exit+0xbfc/0x2a60 kernel/exit.c:825
- do_group_exit+0x125/0x310 kernel/exit.c:922
- get_signal+0x47f/0x2150 kernel/signal.c:2781
- arch_do_signal_or_restart+0x2a8/0x1eb0 arch/x86/kernel/signal.c:789
- handle_signal_work kernel/entry/common.c:147 [inline]
- exit_to_user_mode_loop kernel/entry/common.c:171 [inline]
- exit_to_user_mode_prepare+0x148/0x250 kernel/entry/common.c:208
- __syscall_exit_to_user_mode_work kernel/entry/common.c:290 [inline]
- syscall_exit_to_user_mode+0x19/0x60 kernel/entry/common.c:301
- entry_SYSCALL_64_after_hwframe+0x44/0xae
-RIP: 0033:0x466459
-Code: Unable to access opcode bytes at RIP 0x46642f.
-RSP: 002b:00007fddc86a8218 EFLAGS: 00000246
- ORIG_RAX: 00000000000000ca
-RAX: fffffffffffffe00 RBX: 000000000056bf68 RCX: 0000000000466459
-RDX: 0000000000000000 RSI: 0000000000000080 RDI: 000000000056bf68
-RBP: 000000000056bf60 R08: 0000000000000000 R09: 0000000000000000
-R10: 0000000000000000 R11: 0000000000000246 R12: 000000000056bf6c
-R13: 00007fff5b1ed3ff R14: 00007fddc86a8300 R15: 0000000000022000
-------------[ cut here ]------------
-refcount_t: underflow; use-after-free.
-WARNING: CPU: 3 PID: 10363 at lib/refcount.c:28 refcount_warn_saturate+0x1d1/0x1e0 lib/refcount.c:28
-Modules linked in:
+Yeah I also considered this approach. Basically you create a broadcast
+LAG and then rely on the third component in your expression (or port
+based VLANs on mv88e6xxx) above to avoid duplicates?
 
-CPU: 3 PID: 10363 Comm: syz-executor.3 Not tainted 5.12.0-rc7-syzkaller #0
-Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.14.0-2 04/01/2014
-RIP: 0010:refcount_warn_saturate+0x1d1/0x1e0 lib/refcount.c:28
-Code: e9 db fe ff ff 48 89 df e8 4c c7 ed fd e9 8a fe ff ff e8 22 98 aa fd 48 c7 c7 c0 47 c1 89 c6 05 c4 30 e8 09 01 e8 14 a5 f9 04 <0f> 0b e9 af fe ff ff 0f 1f 84 00 00 00 00 00 41 56 41 55 41 54 55
-RSP: 0000:ffffc90000f77958 EFLAGS: 00010282
-RAX: 0000000000000000 RBX: 0000000000000000 RCX: 0000000000000000
-RDX: ffff888025e5a200 RSI: ffffffff815b8155 RDI: fffff520001eef1d
-RBP: 0000000000000003 R08: 0000000000000000 R09: 0000000000000000
-R10: ffffffff815b0ebe R11: 0000000000000000 R12: 0000000000000000
-R13: ffff888044a19018 R14: ffff888044a19000 R15: ffff888022a6d330
-FS:  0000000000000000(0000) GS:ffff88802ca00000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 00007f69397f80d8 CR3: 000000000bc8e000 CR4: 0000000000150ef0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-Call Trace:
- __refcount_sub_and_test include/linux/refcount.h:283 [inline]
- __refcount_dec_and_test include/linux/refcount.h:315 [inline]
- refcount_dec_and_test include/linux/refcount.h:333 [inline]
- kref_put include/linux/kref.h:64 [inline]
- nfc_llcp_local_put net/nfc/llcp_core.c:183 [inline]
- nfc_llcp_local_put+0x1ab/0x200 net/nfc/llcp_core.c:178
- llcp_sock_destruct+0x81/0x150 net/nfc/llcp_sock.c:950
- __sk_destruct+0x4b/0x900 net/core/sock.c:1795
- sk_destruct+0xbd/0xe0 net/core/sock.c:1839
- __sk_free+0xef/0x3d0 net/core/sock.c:1850
- sk_free+0x78/0xa0 net/core/sock.c:1861
- sock_put include/net/sock.h:1807 [inline]
- llcp_sock_release+0x3c9/0x580 net/nfc/llcp_sock.c:644
- __sock_release+0xcd/0x280 net/socket.c:599
- sock_close+0x18/0x20 net/socket.c:1258
- __fput+0x288/0x920 fs/file_table.c:280
- task_work_run+0xdd/0x1a0 kernel/task_work.c:140
- exit_task_work include/linux/task_work.h:30 [inline]
- do_exit+0xbfc/0x2a60 kernel/exit.c:825
- do_group_exit+0x125/0x310 kernel/exit.c:922
- get_signal+0x47f/0x2150 kernel/signal.c:2781
- arch_do_signal_or_restart+0x2a8/0x1eb0 arch/x86/kernel/signal.c:789
- handle_signal_work kernel/entry/common.c:147 [inline]
- exit_to_user_mode_loop kernel/entry/common.c:171 [inline]
- exit_to_user_mode_prepare+0x148/0x250 kernel/entry/common.c:208
- __syscall_exit_to_user_mode_work kernel/entry/common.c:290 [inline]
- syscall_exit_to_user_mode+0x19/0x60 kernel/entry/common.c:301
- entry_SYSCALL_64_after_hwframe+0x44/0xae
-RIP: 0033:0x466459
-Code: Unable to access opcode bytes at RIP 0x46642f.
-RSP: 002b:00007fddc86a8218 EFLAGS: 00000246 ORIG_RAX: 00000000000000ca
-RAX: fffffffffffffe00 RBX: 000000000056bf68 RCX: 0000000000466459
-RDX: 0000000000000000 RSI: 0000000000000080 RDI: 000000000056bf68
-RBP: 000000000056bf60 R08: 0000000000000000 R09: 0000000000000000
-R10: 0000000000000000 R11: 0000000000000246 R12: 000000000056bf6c
-R13: 00007fff5b1ed3ff R14: 00007fddc86a8300 R15: 0000000000022000
+I dismissed it because I thought that it would break down once you need
+to support multiple chips, as the LAGs are managed separately in the
+PVT. But I now realize that the PVT is indexed based on the FORWARD tag,
+which contains the _source_ information. So that might work for
+mv88e6xxx as well!
 
+Marek, what do you think? If this works, it would be great if we could
+also allow the hash based approach since that would work better in cases
+where you have many flows coming in on a single port that you would like
+to spread over multiple cores.
 
----
-This report is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
+> This, however, has implications upon the DSA API. In my current attempts
+> for the 'RX filtering in DSA' series, host addresses are reference-counted
+> by DSA, and passed on to the driver through .port_fdb_add and .port_mdb_add
+> calls, where the "port" parameter is the CPU port. Which CPU port? Yes.
+> It is clear now that DSA should take its hands off of these addresses,
+> and we should define a new API for .port_host_uc_add and .port_host_mc_add,
+> which is per user port. If the driver doesn't have anything better to do
+> or it doesn't support multiple CPU ports for whatever reason, it can go
+> ahead and implement .port_host_uc_add(ds, port) as
+> .port_fdb_add(ds, dsa_to_port(ds, port)->cpu_dp->index). But it also has
+> the option of doing smarter tricks like adding a TCAM trapping entry
+> (unknown to tc, why would it be exposed to tc?) or doing this 'multicast'
+> MAC table entry thing. But it must also manage potentially duplicate
+> entries all by itself. For example, DSA will call .port_host_uc_add at
+> probe time with the MAC address of every port. Then, the bridge will
+> also notify of static FDB entries, and at least some of those have the
+> same MAC address as the port itself. Then, the bridge will be deleted,
+> and the expectation is that the driver is smart enough to not remove the
+> entry for the port, because that's still needed for standalone traffic
+> termination.
+>
+> It won't be ideal from a driver writer's perspective, but it will be
+> flexible.
 
-syzbot will keep track of this issue. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+Yeah I think it is the right approach. We could also supply a default
+implementation to handle the default single-CPU-port-case to make it
+easier.
+
+> I've started already to send some patches for RX filtering, little by
+> little. Don't get your hopes up, it's been almost a year since I started
+> working on them with no end in sight, so one thing that's clear is that
+> nothing spectacular is going to happen at least until the upcoming merge
+> window closes. It also has some dependencies it seems, like for example
+> the fact that br_fdb_replay and br_mdb_replay are still far from perfect,
+> and the refcounting is still impossible to do without leaks. I have yet
+> another non-trivial and insufficiently tested patch series for that,
+> which I've been delaying due to the need to work on some other stuff.
