@@ -2,101 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A53E43604D8
-	for <lists+netdev@lfdr.de>; Thu, 15 Apr 2021 10:49:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1434936050C
+	for <lists+netdev@lfdr.de>; Thu, 15 Apr 2021 10:55:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231880AbhDOIuC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 15 Apr 2021 04:50:02 -0400
-Received: from out30-56.freemail.mail.aliyun.com ([115.124.30.56]:53137 "EHLO
-        out30-56.freemail.mail.aliyun.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S231512AbhDOIuB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 15 Apr 2021 04:50:01 -0400
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R441e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=alimailimapcm10staff010182156082;MF=jiapeng.chong@linux.alibaba.com;NM=1;PH=DS;RN=9;SR=0;TI=SMTPD_---0UVdfbcR_1618476570;
-Received: from j63c13417.sqa.eu95.tbsite.net(mailfrom:jiapeng.chong@linux.alibaba.com fp:SMTPD_---0UVdfbcR_1618476570)
-          by smtp.aliyun-inc.com(127.0.0.1);
-          Thu, 15 Apr 2021 16:49:37 +0800
-From:   Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
-To:     marcel@holtmann.org
-Cc:     johan.hedberg@gmail.com, luiz.dentz@gmail.com, davem@davemloft.net,
-        kuba@kernel.org, linux-bluetooth@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
-Subject: [PATCH] Bluetooth: 6lowpan: remove unused function
-Date:   Thu, 15 Apr 2021 16:49:28 +0800
-Message-Id: <1618476568-117243-1-git-send-email-jiapeng.chong@linux.alibaba.com>
-X-Mailer: git-send-email 1.8.3.1
+        id S231843AbhDOI4H (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 15 Apr 2021 04:56:07 -0400
+Received: from youngberry.canonical.com ([91.189.89.112]:38759 "EHLO
+        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231143AbhDOI4G (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 15 Apr 2021 04:56:06 -0400
+Received: from 1.general.cking.uk.vpn ([10.172.193.212] helo=localhost)
+        by youngberry.canonical.com with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
+        (Exim 4.86_2)
+        (envelope-from <colin.king@canonical.com>)
+        id 1lWxmi-00016L-Fb; Thu, 15 Apr 2021 08:55:36 +0000
+From:   Colin King <colin.king@canonical.com>
+To:     Wolfgang Grandegger <wg@grandegger.com>,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Vincent Mailhol <mailhol.vincent@wanadoo.fr>,
+        Arunachalam Santhanam <arunachalam.santhanam@in.bosch.com>,
+        linux-can@vger.kernel.org, netdev@vger.kernel.org
+Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH][next] can: etas_es58x: Fix potential null pointer dereference on pointer cf
+Date:   Thu, 15 Apr 2021 09:55:35 +0100
+Message-Id: <20210415085535.1808272-1-colin.king@canonical.com>
+X-Mailer: git-send-email 2.30.2
+MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Fix the following clang warning:
+From: Colin Ian King <colin.king@canonical.com>
 
-net/bluetooth/6lowpan.c:913:20: warning: unused function 'bdaddr_type'
-[-Wunused-function].
+The pointer cf is being null checked earlier in the code, however the
+update of the rx_bytes statistics is dereferencing cf without null
+checking cf.  Fix this by moving the statement into the following code
+block that has a null cf check.
 
-net/bluetooth/6lowpan.c:106:35: warning: unused function
-'peer_lookup_ba' [-Wunused-function].
-
-Reported-by: Abaci Robot <abaci@linux.alibaba.com>
-Signed-off-by: Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
+Addresses-Coverity: ("Dereference after null check")
+Fixes: 8537257874e9 ("can: etas_es58x: add core support for ETAS ES58X CAN USB interfaces")
+Signed-off-by: Colin Ian King <colin.king@canonical.com>
 ---
- net/bluetooth/6lowpan.c | 36 ------------------------------------
- 1 file changed, 36 deletions(-)
+ drivers/net/can/usb/etas_es58x/es58x_core.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/net/bluetooth/6lowpan.c b/net/bluetooth/6lowpan.c
-index cff4944..49c2612 100644
---- a/net/bluetooth/6lowpan.c
-+++ b/net/bluetooth/6lowpan.c
-@@ -103,34 +103,6 @@ static inline bool peer_del(struct lowpan_btle_dev *dev,
- 	return false;
- }
+diff --git a/drivers/net/can/usb/etas_es58x/es58x_core.c b/drivers/net/can/usb/etas_es58x/es58x_core.c
+index 7222b3b6ca46..5198e1d6b6ad 100644
+--- a/drivers/net/can/usb/etas_es58x/es58x_core.c
++++ b/drivers/net/can/usb/etas_es58x/es58x_core.c
+@@ -856,9 +856,10 @@ int es58x_rx_err_msg(struct net_device *netdev, enum es58x_err error,
+ 	 * consistency.
+ 	 */
+ 	netdev->stats.rx_packets++;
+-	netdev->stats.rx_bytes += cf->can_dlc;
  
--static inline struct lowpan_peer *peer_lookup_ba(struct lowpan_btle_dev *dev,
--						 bdaddr_t *ba, __u8 type)
--{
--	struct lowpan_peer *peer;
--
--	BT_DBG("peers %d addr %pMR type %d", atomic_read(&dev->peer_count),
--	       ba, type);
--
--	rcu_read_lock();
--
--	list_for_each_entry_rcu(peer, &dev->peers, list) {
--		BT_DBG("dst addr %pMR dst type %d",
--		       &peer->chan->dst, peer->chan->dst_type);
--
--		if (bacmp(&peer->chan->dst, ba))
--			continue;
--
--		if (type == peer->chan->dst_type) {
--			rcu_read_unlock();
--			return peer;
--		}
--	}
--
--	rcu_read_unlock();
--
--	return NULL;
--}
--
- static inline struct lowpan_peer *
- __peer_lookup_chan(struct lowpan_btle_dev *dev, struct l2cap_chan *chan)
- {
-@@ -910,14 +882,6 @@ static long chan_get_sndtimeo_cb(struct l2cap_chan *chan)
- 	.set_shutdown		= l2cap_chan_no_set_shutdown,
- };
- 
--static inline __u8 bdaddr_type(__u8 type)
--{
--	if (type == ADDR_LE_DEV_PUBLIC)
--		return BDADDR_LE_PUBLIC;
--	else
--		return BDADDR_LE_RANDOM;
--}
--
- static int bt_6lowpan_connect(bdaddr_t *addr, u8 dst_type)
- {
- 	struct l2cap_chan *chan;
+ 	if (cf) {
++		netdev->stats.rx_bytes += cf->can_dlc;
++
+ 		if (cf->data[1])
+ 			cf->can_id |= CAN_ERR_CRTL;
+ 		if (cf->data[2] || cf->data[3]) {
 -- 
-1.8.3.1
+2.30.2
 
