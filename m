@@ -2,40 +2,40 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CEA33360F44
-	for <lists+netdev@lfdr.de>; Thu, 15 Apr 2021 17:46:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1F69A360F48
+	for <lists+netdev@lfdr.de>; Thu, 15 Apr 2021 17:47:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233772AbhDOPrQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 15 Apr 2021 11:47:16 -0400
-Received: from fllv0016.ext.ti.com ([198.47.19.142]:34742 "EHLO
+        id S233852AbhDOPrS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 15 Apr 2021 11:47:18 -0400
+Received: from fllv0016.ext.ti.com ([198.47.19.142]:34758 "EHLO
         fllv0016.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233094AbhDOPrP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 15 Apr 2021 11:47:15 -0400
-Received: from lelv0266.itg.ti.com ([10.180.67.225])
-        by fllv0016.ext.ti.com (8.15.2/8.15.2) with ESMTP id 13FFkf6H028131;
-        Thu, 15 Apr 2021 10:46:41 -0500
+        with ESMTP id S233810AbhDOPrR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 15 Apr 2021 11:47:17 -0400
+Received: from fllv0035.itg.ti.com ([10.64.41.0])
+        by fllv0016.ext.ti.com (8.15.2/8.15.2) with ESMTP id 13FFkji1028146;
+        Thu, 15 Apr 2021 10:46:45 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1618501601;
-        bh=UYS0mmXwXHvdy44MSdxL2VsFFDNIsAIevhRgyfcwE28=;
-        h=From:To:CC:Subject:Date;
-        b=NBpPA97qt18VfRpo250ryA95pGVl3G03wxlb1a0CVu1GFZ2fkkW9XyRVuuaYNaqut
-         YJq6nI9yH7zwr4us0+ausfz0PH49GJ9c4USl7RnsNVesq1ikLRkzv+mL+p/Zg4rLsD
-         QbbhHu5QBlM+LqbQO0Z8mYyX70tke99id5zWIEg0=
-Received: from DFLE114.ent.ti.com (dfle114.ent.ti.com [10.64.6.35])
-        by lelv0266.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 13FFkf75059424
+        s=ti-com-17Q1; t=1618501605;
+        bh=BC7NZaFwou0Qy/69BHgGrbZVOjCGaSW7Bk5Vk/gujgA=;
+        h=From:To:CC:Subject:Date:In-Reply-To:References;
+        b=conHI8rz9WVW5GUX/gC0p5JCIDS2nWZ+CRX1fl/aB/0WdhH9iUBTflwxd+81PVluR
+         Zc70SEWF9VVw5LCDjr/eHm3jt+VPub8Af67CR1CZHIqA5bJQDoPRXVfds95E11B+y4
+         GIoTH22QlQ9EYzx6qi+ryp7Ad31RyarAhJUIbISE=
+Received: from DLEE114.ent.ti.com (dlee114.ent.ti.com [157.170.170.25])
+        by fllv0035.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 13FFkj23082180
         (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Thu, 15 Apr 2021 10:46:41 -0500
-Received: from DFLE108.ent.ti.com (10.64.6.29) by DFLE114.ent.ti.com
- (10.64.6.35) with Microsoft SMTP Server (version=TLS1_2,
+        Thu, 15 Apr 2021 10:46:45 -0500
+Received: from DLEE113.ent.ti.com (157.170.170.24) by DLEE114.ent.ti.com
+ (157.170.170.25) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2176.2; Thu, 15
- Apr 2021 10:46:40 -0500
-Received: from lelv0327.itg.ti.com (10.180.67.183) by DFLE108.ent.ti.com
- (10.64.6.29) with Microsoft SMTP Server (version=TLS1_2,
+ Apr 2021 10:46:45 -0500
+Received: from lelv0327.itg.ti.com (10.180.67.183) by DLEE113.ent.ti.com
+ (157.170.170.24) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2176.2 via
- Frontend Transport; Thu, 15 Apr 2021 10:46:40 -0500
+ Frontend Transport; Thu, 15 Apr 2021 10:46:44 -0500
 Received: from gsaswath-HP-ProBook-640-G5.dal.design.ti.com (ileax41-snat.itg.ti.com [10.172.224.153])
-        by lelv0327.itg.ti.com (8.15.2/8.15.2) with ESMTP id 13FFkZh9028376;
-        Thu, 15 Apr 2021 10:46:36 -0500
+        by lelv0327.itg.ti.com (8.15.2/8.15.2) with ESMTP id 13FFkZhA028376;
+        Thu, 15 Apr 2021 10:46:40 -0500
 From:   Aswath Govindraju <a-govindraju@ti.com>
 CC:     <linux-kernel@vger.kernel.org>, <devicetree@vger.kernel.org>,
         <linux-can@vger.kernel.org>, <netdev@vger.kernel.org>,
@@ -51,10 +51,12 @@ CC:     <linux-kernel@vger.kernel.org>, <devicetree@vger.kernel.org>,
         Grygorii Strashko <grygorii.strashko@ti.com>,
         Faiz Abbas <faiz_abbas@ti.com>,
         Aswath Govindraju <a-govindraju@ti.com>
-Subject: [PATCH v2 0/2] MCAN: Add support for implementing transceiver as a phy
-Date:   Thu, 15 Apr 2021 21:16:33 +0530
-Message-ID: <20210415154635.30094-1-a-govindraju@ti.com>
+Subject: [PATCH v2 1/2] dt-bindings: net: can: Document transceiver implementation as phy
+Date:   Thu, 15 Apr 2021 21:16:34 +0530
+Message-ID: <20210415154635.30094-2-a-govindraju@ti.com>
 X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20210415154635.30094-1-a-govindraju@ti.com>
+References: <20210415154635.30094-1-a-govindraju@ti.com>
 MIME-Version: 1.0
 Content-Type: text/plain
 X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
@@ -63,40 +65,36 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The following series of patches add support for implementing the
-transceiver as a phy of m_can_platform driver.
+From: Faiz Abbas <faiz_abbas@ti.com>
 
-TCAN1042 has a standby signal that needs to be pulled high for
-sending/receiving messages[1]. TCAN1043 has a enable signal along with
-standby signal that needs to be pulled up for sending/receiving
-messages[2], and other combinations of the two lines can be used to put the
-transceiver in different states to reduce power consumption. On boards
-like the AM654-idk and J721e-evm these signals are controlled using gpios.
+Some transceivers need a configuration step (for example, pulling the
+standby or enable lines) for them to start sending messages. The
+transceiver can be implemented as a phy with the configuration done in the
+phy driver. The bit rate limitation can the be obtained by the driver using
+the phy node.
 
-These gpios are set in phy driver, and the transceiver can be put in
-different states using phy API. The phy driver is added in the series [3].
+Document the above implementation in the bosch mcan bindings
 
-This patch series is dependent on [4].
+Signed-off-by: Faiz Abbas <faiz_abbas@ti.com>
+Signed-off-by: Aswath Govindraju <a-govindraju@ti.com>
+---
+ Documentation/devicetree/bindings/net/can/bosch,m_can.yaml | 3 +++
+ 1 file changed, 3 insertions(+)
 
-Changes since v1:
-- Used the API devm_phy_get_optional() instead of 
-  devm_of_phy_get_optional_by_index()
-
-[1] - https://www.ti.com/lit/ds/symlink/tcan1042h.pdf
-[2] - https://www.ti.com/lit/ds/symlink/tcan1043-q1.pdf
-[3] - https://lore.kernel.org/patchwork/project/lkml/list/?series=495365
-[4] - https://lore.kernel.org/patchwork/patch/1413286/
-
-Faiz Abbas (2):
-  dt-bindings: net: can: Document transceiver implementation as phy
-  can: m_can: Add support for transceiver as phy
-
- .../devicetree/bindings/net/can/bosch,m_can.yaml    |  3 +++
- drivers/net/can/m_can/m_can.c                       | 10 ++++++++++
- drivers/net/can/m_can/m_can.h                       |  2 ++
- drivers/net/can/m_can/m_can_platform.c              | 13 +++++++++++++
- 4 files changed, 28 insertions(+)
-
+diff --git a/Documentation/devicetree/bindings/net/can/bosch,m_can.yaml b/Documentation/devicetree/bindings/net/can/bosch,m_can.yaml
+index 798fa5fb7bb2..25f74db46bae 100644
+--- a/Documentation/devicetree/bindings/net/can/bosch,m_can.yaml
++++ b/Documentation/devicetree/bindings/net/can/bosch,m_can.yaml
+@@ -109,6 +109,9 @@ properties:
+   can-transceiver:
+     $ref: can-transceiver.yaml#
+ 
++  phys:
++    maxItems: 1
++
+ required:
+   - compatible
+   - reg
 -- 
 2.17.1
 
