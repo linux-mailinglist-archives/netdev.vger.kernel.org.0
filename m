@@ -2,120 +2,149 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 585AB361312
-	for <lists+netdev@lfdr.de>; Thu, 15 Apr 2021 21:48:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 12572361339
+	for <lists+netdev@lfdr.de>; Thu, 15 Apr 2021 21:58:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234716AbhDOTsV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 15 Apr 2021 15:48:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51986 "EHLO
+        id S234654AbhDOT6f (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 15 Apr 2021 15:58:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54260 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234735AbhDOTsT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 15 Apr 2021 15:48:19 -0400
-Received: from mail-wm1-x32a.google.com (mail-wm1-x32a.google.com [IPv6:2a00:1450:4864:20::32a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E3F48C061574
-        for <netdev@vger.kernel.org>; Thu, 15 Apr 2021 12:47:54 -0700 (PDT)
-Received: by mail-wm1-x32a.google.com with SMTP id u5-20020a7bcb050000b029010e9316b9d5so12992335wmj.2
-        for <netdev@vger.kernel.org>; Thu, 15 Apr 2021 12:47:54 -0700 (PDT)
+        with ESMTP id S235146AbhDOT6e (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 15 Apr 2021 15:58:34 -0400
+Received: from mail-pl1-x630.google.com (mail-pl1-x630.google.com [IPv6:2607:f8b0:4864:20::630])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 55899C061760
+        for <netdev@vger.kernel.org>; Thu, 15 Apr 2021 12:58:10 -0700 (PDT)
+Received: by mail-pl1-x630.google.com with SMTP id e2so8386952plh.8
+        for <netdev@vger.kernel.org>; Thu, 15 Apr 2021 12:58:10 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:from:to:cc:references:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=k+McgmescnZgoGuw6PgrxQnj+P7vhXsg/nETOZTexA8=;
-        b=r9yes0LogIOCjIdykmWLWHJn51p49VjAMJc9QwZhU5W4FknGNDXFKNyhONlDDUF7rn
-         QaXOvZ0mMckqDT94Qj8Kn895AYhzp+zXosTovOouq0xnUcFYyv2VWzK75okSn5owJTpG
-         TFDPypIwmlhvHGL59SN6lezH3L1Guic+0tp2UMB2id9UxT3FJmswlO09VQZGTaBvWLaT
-         OZHN5djX0K736n0Bkm5SfFWjmuVULsJIcAQKfFh9X9s0YfF6Fj4B7HFbjySmWJDrpDYY
-         hfl914MVQIDcrGE9yp5VBZJowSsCmJGxMnSIl9lWeGST8cK0OYidurD15ylxW49LnR4W
-         oSXg==
+        d=chromium.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=sXhSKr29wpd6a6qt/mh96odcNcbPE2aK/Q6BgI+4t6E=;
+        b=XK3D3dRhy2wdHg/aLihejMVK1Jpk1OaBdYzJasCCqg0zFBlARjGV0nVO9m5LE5hDBx
+         15tN0CoyPl0n4NfcgPD9Vm5bQmJIpMtYXqYr26Rcl0+RpjAK/dvrP4vV2aNKJtW99SaE
+         jauyFE7jIvcYQhahEsj4A+rQJTL2nVQ8nq0NM=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:from:to:cc:references:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=k+McgmescnZgoGuw6PgrxQnj+P7vhXsg/nETOZTexA8=;
-        b=HtSp3EgNTKyxKrB2BR6xH5SXUId2AJGBYNZ8yqiT0GRiTfxq2b59Vk6+fyp/cFbi0y
-         EGsktUI8f1BAAU0wOTHwVEv/ffjFrMwFRuy2XdeD99fbYvnDQFZQPMGZ2b0bRTSsXFK2
-         pX8f1esnL5b/NHHmOYu1xSSxUUO4b+HnhSWCfApXBQAdYbapJyE5DR+xg6GC86d3OUpE
-         W0WaZTdrS4jYJCYmCsp1VQBaN9O0Q27hPbc3in5aUo2ZcPvSkVwy8/eFya0vU04V+lpz
-         hgn4ZfyWfLglQQjfMdTzwn/M9f98k9Q0km58VdEnvQ34OIEH1phJQQ4lUHXWNoRK05wU
-         2a+A==
-X-Gm-Message-State: AOAM5302QnOBt44ZxExPmArEe2hE8eNyxrrG8KPfGQx75FKMBYI7VUS9
-        k6yDRxWxcUWjIaRv/oqU8OyZzmHvMDS9qA==
-X-Google-Smtp-Source: ABdhPJzqJbxtBu3HVKjuqifrE+yLaVTv7WXqv65BJ3GJjlnFYs+tFXOpgHjSp60yAm6BPSiu+BDdEQ==
-X-Received: by 2002:a1c:b743:: with SMTP id h64mr3926596wmf.35.1618516073333;
-        Thu, 15 Apr 2021 12:47:53 -0700 (PDT)
-Received: from ?IPv6:2003:ea:8f38:4600:a8a1:99e1:b713:6999? (p200300ea8f384600a8a199e1b7136999.dip0.t-ipconnect.de. [2003:ea:8f38:4600:a8a1:99e1:b713:6999])
-        by smtp.googlemail.com with ESMTPSA id y15sm5516493wrh.8.2021.04.15.12.47.50
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 15 Apr 2021 12:47:53 -0700 (PDT)
-Subject: Re: [PATCH net-next] r8169: keep pause settings on interface down/up
- cycle
-From:   Heiner Kallweit <hkallweit1@gmail.com>
-To:     Jakub Kicinski <kuba@kernel.org>,
-        David Miller <davem@davemloft.net>,
-        Realtek linux nic maintainers <nic_swsd@realtek.com>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-References: <30b248d6-8078-75ed-b1ad-4b1b6f17fcd5@gmail.com>
-Message-ID: <b581025f-4bd8-7c85-a3eb-e557046d1da2@gmail.com>
-Date:   Thu, 15 Apr 2021 21:47:47 +0200
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.9.1
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=sXhSKr29wpd6a6qt/mh96odcNcbPE2aK/Q6BgI+4t6E=;
+        b=tvHUiDXex+SBVSqJDnQXFxINzgQi6ESO/93cNQW0nJwOhOWFkuZ9qdUeiNnlYGlQ2o
+         CUlfQnbmDDW5hNtaa5XizlivGYqP2ZpKwv8Ot58tNV6j0i0ekHKso7pf+3+DnGBq2r4k
+         36U+cqLca6Ci16K1rDpLDtSMEP/b/Yv+21reRP9+YxGwQpRLvGZOrfzLarm5kBIf2RXd
+         wm3gj6FSyKXKT4WffuIdxhSCr+D2CFvWj3vncn5gucHrKyV23Z40DYQrUvvUiw0iW++V
+         iGfthKTMr3kWFb6uQdDHgFVjgoViWv/TKVwoHayvCsmxiTPp+4LYGyER4v7jfo1R9K7T
+         FhHA==
+X-Gm-Message-State: AOAM530nYlRaUPpL8rujGKybSOyZ4Bsck0YxPcFKJAzQXh8NjagYIN+w
+        Lah4xTGJMFWW64aSGSjepGrF5A==
+X-Google-Smtp-Source: ABdhPJwcUdlJJtXYWk8IbTEMfWRkjKZmaPrvDax7npIZsC0vXr9zpHNelJm+tfVS3fQY6P4lxEBpJQ==
+X-Received: by 2002:a17:902:9b97:b029:eb:7a1b:5b88 with SMTP id y23-20020a1709029b97b02900eb7a1b5b88mr4516835plp.77.1618516690371;
+        Thu, 15 Apr 2021 12:58:10 -0700 (PDT)
+Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
+        by smtp.gmail.com with ESMTPSA id k15sm2936028pfi.0.2021.04.15.12.58.09
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 15 Apr 2021 12:58:09 -0700 (PDT)
+Date:   Thu, 15 Apr 2021 12:58:07 -0700
+From:   Kees Cook <keescook@chromium.org>
+To:     "Gustavo A. R. Silva" <gustavoars@kernel.org>
+Cc:     linux-kernel@vger.kernel.org, Kalle Valo <kvalo@codeaurora.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-hardening@vger.kernel.org
+Subject: Re: [PATCH v3 2/2] wl3501_cs: Fix out-of-bounds warnings in
+ wl3501_mgmt_join
+Message-ID: <202104151257.DC4DA20@keescook>
+References: <cover.1618442265.git.gustavoars@kernel.org>
+ <1fbaf516da763b50edac47d792a9145aa4482e29.1618442265.git.gustavoars@kernel.org>
 MIME-Version: 1.0
-In-Reply-To: <30b248d6-8078-75ed-b1ad-4b1b6f17fcd5@gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1fbaf516da763b50edac47d792a9145aa4482e29.1618442265.git.gustavoars@kernel.org>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 15.04.2021 20:59, Heiner Kallweit wrote:
-> Currently, if the user changes the pause settings, the default settings
-> will be restored after an interface down/up cycle, and also when
-> resuming from suspend. This doesn't seem to provide the best user
-> experience. Change this to keep user settings, and just ensure that in
-> jumbo mode pause is disabled. 
-> Small drawback: When switching back mtu from jumbo to non-jumbo then
-> pause remains disabled (but user can enable it using ethtool).
-> I think that's a not too common scenario and acceptable.
+On Wed, Apr 14, 2021 at 06:45:15PM -0500, Gustavo A. R. Silva wrote:
+> Fix the following out-of-bounds warnings by adding a new structure
+> wl3501_req instead of duplicating the same members in structure
+> wl3501_join_req and wl3501_scan_confirm:
 > 
-> Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
-> ---
->  drivers/net/ethernet/realtek/r8169_main.c | 14 +++++++++-----
->  1 file changed, 9 insertions(+), 5 deletions(-)
+> arch/x86/include/asm/string_32.h:182:25: warning: '__builtin_memcpy' offset [39, 108] from the object at 'sig' is out of the bounds of referenced subobject 'beacon_period' with type 'short unsigned int' at offset 36 [-Warray-bounds]
+> arch/x86/include/asm/string_32.h:182:25: warning: '__builtin_memcpy' offset [25, 95] from the object at 'sig' is out of the bounds of referenced subobject 'beacon_period' with type 'short unsigned int' at offset 22 [-Warray-bounds]
 > 
-> diff --git a/drivers/net/ethernet/realtek/r8169_main.c b/drivers/net/ethernet/realtek/r8169_main.c
-> index 7d02bab1c..2c89cde7d 100644
-> --- a/drivers/net/ethernet/realtek/r8169_main.c
-> +++ b/drivers/net/ethernet/realtek/r8169_main.c
-> @@ -2388,11 +2388,13 @@ static void rtl_jumbo_config(struct rtl8169_private *tp)
->  		pcie_set_readrq(tp->pci_dev, readrq);
->  
->  	/* Chip doesn't support pause in jumbo mode */
-> -	linkmode_mod_bit(ETHTOOL_LINK_MODE_Pause_BIT,
-> -			 tp->phydev->advertising, !jumbo);
-> -	linkmode_mod_bit(ETHTOOL_LINK_MODE_Asym_Pause_BIT,
-> -			 tp->phydev->advertising, !jumbo);
-> -	phy_start_aneg(tp->phydev);
-> +	if (jumbo) {
-> +		linkmode_clear_bit(ETHTOOL_LINK_MODE_Pause_BIT,
-> +				   tp->phydev->advertising);
-> +		linkmode_clear_bit(ETHTOOL_LINK_MODE_Asym_Pause_BIT,
-> +				   tp->phydev->advertising);
-> +		phy_start_aneg(tp->phydev);
-> +	}
->  }
->  
->  DECLARE_RTL_COND(rtl_chipcmd_cond)
-> @@ -5107,6 +5109,8 @@ static int r8169_mdio_register(struct rtl8169_private *tp)
->  
->  	tp->phydev->mac_managed_pm = 1;
->  
-> +	phy_support_asym_pause(tp->phydev);
-> +
->  	/* PHY will be woken up in rtl_open() */
->  	phy_suspend(tp->phydev);
->  
+> Refactor the code, accordingly:
 > 
+> $ pahole -C wl3501_req drivers/net/wireless/wl3501_cs.o
+> struct wl3501_req {
+>         u16                        beacon_period;        /*     0     2 */
+>         u16                        dtim_period;          /*     2     2 */
+>         u16                        cap_info;             /*     4     2 */
+>         u8                         bss_type;             /*     6     1 */
+>         u8                         bssid[6];             /*     7     6 */
+>         struct iw_mgmt_essid_pset  ssid;                 /*    13    34 */
+>         struct iw_mgmt_ds_pset     ds_pset;              /*    47     3 */
+>         struct iw_mgmt_cf_pset     cf_pset;              /*    50     8 */
+>         struct iw_mgmt_ibss_pset   ibss_pset;            /*    58     4 */
+>         struct iw_mgmt_data_rset   bss_basic_rset;       /*    62    10 */
+> 
+>         /* size: 72, cachelines: 2, members: 10 */
+>         /* last cacheline: 8 bytes */
+> };
+> 
+> $ pahole -C wl3501_join_req drivers/net/wireless/wl3501_cs.o
+> struct wl3501_join_req {
+>         u16                        next_blk;             /*     0     2 */
+>         u8                         sig_id;               /*     2     1 */
+>         u8                         reserved;             /*     3     1 */
+>         struct iw_mgmt_data_rset   operational_rset;     /*     4    10 */
+>         u16                        reserved2;            /*    14     2 */
+>         u16                        timeout;              /*    16     2 */
+>         u16                        probe_delay;          /*    18     2 */
+>         u8                         timestamp[8];         /*    20     8 */
+>         u8                         local_time[8];        /*    28     8 */
+>         struct wl3501_req          req;                  /*    36    72 */
+> 
+>         /* size: 108, cachelines: 2, members: 10 */
+>         /* last cacheline: 44 bytes */
+> };
+> 
+> $ pahole -C wl3501_scan_confirm drivers/net/wireless/wl3501_cs.o
+> struct wl3501_scan_confirm {
+>         u16                        next_blk;             /*     0     2 */
+>         u8                         sig_id;               /*     2     1 */
+>         u8                         reserved;             /*     3     1 */
+>         u16                        status;               /*     4     2 */
+>         char                       timestamp[8];         /*     6     8 */
+>         char                       localtime[8];         /*    14     8 */
+>         struct wl3501_req          req;                  /*    22    72 */
+>         /* --- cacheline 1 boundary (64 bytes) was 30 bytes ago --- */
+>         u8                         rssi;                 /*    94     1 */
+> 
+>         /* size: 96, cachelines: 2, members: 8 */
+>         /* padding: 1 */
+>         /* last cacheline: 32 bytes */
+> };
+> 
+> The problem is that the original code is trying to copy data into a
+> bunch of struct members adjacent to each other in a single call to
+> memcpy(). Now that a new struct wl3501_req enclosing all those adjacent
+> members is introduced, memcpy() doesn't overrun the length of
+> &sig.beacon_period and &this->bss_set[i].beacon_period, because the
+> address of the new struct object _req_ is used as the destination,
+> instead.
+> 
+> This helps with the ongoing efforts to globally enable -Warray-bounds
+> and get us closer to being able to tighten the FORTIFY_SOURCE routines
+> on memcpy().
+> 
+> Link: https://github.com/KSPP/linux/issues/109
+> Reported-by: kernel test robot <lkp@intel.com>
+> Signed-off-by: Gustavo A. R. Silva <gustavoars@kernel.org>
 
-Just see, this patch will apply only once net is merged into net-next.
+Awesome! Thank you for this solution.
+
+Reviewed-by: Kees Cook <keescook@chromium.org>
+
+-- 
+Kees Cook
