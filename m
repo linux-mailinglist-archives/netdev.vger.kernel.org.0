@@ -2,63 +2,48 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 497DF360199
-	for <lists+netdev@lfdr.de>; Thu, 15 Apr 2021 07:28:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 356753601B2
+	for <lists+netdev@lfdr.de>; Thu, 15 Apr 2021 07:42:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229933AbhDOF2x (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 15 Apr 2021 01:28:53 -0400
-Received: from inva020.nxp.com ([92.121.34.13]:54012 "EHLO inva020.nxp.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229793AbhDOF2w (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 15 Apr 2021 01:28:52 -0400
-Received: from inva020.nxp.com (localhost [127.0.0.1])
-        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id DA7C81A3028;
-        Thu, 15 Apr 2021 07:28:28 +0200 (CEST)
-Received: from invc005.ap-rdc01.nxp.com (invc005.ap-rdc01.nxp.com [165.114.16.14])
-        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id 92FDE1A1506;
-        Thu, 15 Apr 2021 07:28:26 +0200 (CEST)
-Received: from localhost.localdomain (mega.ap.freescale.net [10.192.208.232])
-        by invc005.ap-rdc01.nxp.com (Postfix) with ESMTP id 5406F402A6;
-        Thu, 15 Apr 2021 07:28:23 +0200 (CEST)
-From:   Yangbo Lu <yangbo.lu@nxp.com>
-To:     netdev@vger.kernel.org
-Cc:     Yangbo Lu <yangbo.lu@nxp.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: [net-next] enetc: convert to schedule_work()
-Date:   Thu, 15 Apr 2021 13:34:55 +0800
-Message-Id: <20210415053455.10029-1-yangbo.lu@nxp.com>
-X-Mailer: git-send-email 2.17.1
-X-Virus-Scanned: ClamAV using ClamSMTP
+        id S230289AbhDOFkZ convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Thu, 15 Apr 2021 01:40:25 -0400
+Received: from vsrv57620.customer.xenway.de ([95.129.54.190]:57956 "EHLO
+        vsrv57620.customer.xenway.de" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S230296AbhDOFkY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 15 Apr 2021 01:40:24 -0400
+X-Greylist: delayed 1125 seconds by postgrey-1.27 at vger.kernel.org; Thu, 15 Apr 2021 01:40:24 EDT
+Received: from [193.56.28.106] (unknown [193.56.28.106])
+        by vsrv57620.customer.xenway.de (Postfix) with ESMTPA id DE931309148;
+        Thu, 15 Apr 2021 07:15:11 +0200 (CEST)
+Date:   Wed, 14 Apr 2021 22:15:51 -0700
+Mime-version: 1.0
+Subject: Compliments
+From:   Christopher Quinlan QC <cqukesq@gmail.com>
+To:     Undisclosed-Recipients:;
+Message-Id: <20210414221551.GAVTSILYKHGINW@gmail.com>
+Reply-To: cqukesq@gmail.com
+Content-type: text/plain; charset="ISO-8859-1"; format=flowed
+Content-transfer-encoding: 8BIT
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Convert system_wq queue_work() to schedule_work() which is
-a wrapper around it, since the former is a rare construct.
+My name is Christopher Quinlan QC I am a solicitor at law / investment adviser to your late relative. Your late relative left behind Cash deposit in capital and investment security account along with properties, I will like to discuss with you regarding making this claim since he is related to you going by the lineage, surname and country of origin.
 
-Fixes: 7294380c5211 ("enetc: support PTP Sync packet one-step timestamping")
-Signed-off-by: Yangbo Lu <yangbo.lu@nxp.com>
----
- drivers/net/ethernet/freescale/enetc/enetc.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Please get back to me on my private email cqukesq6@gmail.com for further details.
 
-diff --git a/drivers/net/ethernet/freescale/enetc/enetc.c b/drivers/net/ethernet/freescale/enetc/enetc.c
-index 4a0adb0b8bd7..9a726085841d 100644
---- a/drivers/net/ethernet/freescale/enetc/enetc.c
-+++ b/drivers/net/ethernet/freescale/enetc/enetc.c
-@@ -552,7 +552,7 @@ static bool enetc_clean_tx_ring(struct enetc_bdr *tx_ring, int napi_budget)
- 				 * timestamping packet. And send one skb in
- 				 * tx_skbs queue if has.
- 				 */
--				queue_work(system_wq, &priv->tx_onestep_tstamp);
-+				schedule_work(&priv->tx_onestep_tstamp);
- 			} else if (unlikely(do_twostep_tstamp)) {
- 				enetc_tstamp_tx(skb, tstamp);
- 				do_twostep_tstamp = false;
+To facilitate the process of this transaction, urgently forward to me
+Your full names,
+Telephone and fax numbers,
+Address,
+Age,
+Marital status,
+Occupation
 
-base-commit: 3a1aa533f7f676aad68f8dbbbba10b9502903770
--- 
-2.25.1
+I will be expecting to hear from you.
+
+Regards
+
+Christopher Quinlan QC
+Private email cqukesq6@gmail.com
 
