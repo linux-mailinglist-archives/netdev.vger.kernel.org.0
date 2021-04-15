@@ -2,156 +2,136 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3EFCD3613C4
-	for <lists+netdev@lfdr.de>; Thu, 15 Apr 2021 22:58:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 85A183613D0
+	for <lists+netdev@lfdr.de>; Thu, 15 Apr 2021 23:00:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235433AbhDOU6x (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 15 Apr 2021 16:58:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39144 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234863AbhDOU6w (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 15 Apr 2021 16:58:52 -0400
-Received: from mail-qv1-xf34.google.com (mail-qv1-xf34.google.com [IPv6:2607:f8b0:4864:20::f34])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8219AC061574
-        for <netdev@vger.kernel.org>; Thu, 15 Apr 2021 13:58:28 -0700 (PDT)
-Received: by mail-qv1-xf34.google.com with SMTP id i9so12247241qvo.3
-        for <netdev@vger.kernel.org>; Thu, 15 Apr 2021 13:58:28 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=broadcom.com; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=32hxFidSX1dE4zf+sdFnqUzgGIeMVfwul6eUgcOK9B4=;
-        b=HdlKvnDjAgJNxKURch/xNoZ4KzUaIHTzuWp7igA6QwHYmfO/DywGGOxQDpxYaujhq8
-         NdtwveT9HaRB60moEyDZKJJ7WdctLrLouWnSr4Chz7Q9D+kPXKkTV43ftZXBLlQ/7Rpk
-         p2rQxr99SAZu41hCJFjGjz0pzvv3+4OWWYt2o=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=32hxFidSX1dE4zf+sdFnqUzgGIeMVfwul6eUgcOK9B4=;
-        b=W+UN/N/pmH+Hm1mCEVeCKVmD77rgndjsSrBarn/3U6PUASkIzoXtDeW8KTfJ43a7jI
-         rkvfrJQ2alothPJuwaFZ+DlQljueMmOn4oO3ZogANTFVGjXFlLPQz1Hry6Y0GSQwJa9L
-         /ZFHyMN/f/WCLadQt7Al4fjlVUXEx2p7ba7s0dk7aCcYxnNfB8cRxc43/vzcPZsoAzfn
-         xxtZUVJimRG9hj6M9z2PTaoiwpl+c+snO1Ka8CYqyC2eOFZqO9Tg19nkhDkeOia6LUKj
-         +W5gOQVWFLKdDM6qMDeIG46JR76t3z01j27uXtRfcL59UofVjY1D08P7iXU5DG45zF4V
-         8g+g==
-X-Gm-Message-State: AOAM532/ozI0dnIgd954UcSD2feFoReJEmGutcx4g7PBq/b7IyVkIS+U
-        wx4wf8LUlDfEyVQAPOZm0VRQtMWkfiTGKi3Yd0ncS1QXrIbyDQ==
-X-Google-Smtp-Source: ABdhPJxnixFw6F/o45myYblBSfapTCnzcwnHKlOdsRSDgPKEzQwKH+eKU7W0qFuu/Fwts3mVmCljlZx/LB0Gz9U7c2M=
-X-Received: by 2002:a0c:e24e:: with SMTP id x14mr5378764qvl.33.1618520307513;
- Thu, 15 Apr 2021 13:58:27 -0700 (PDT)
+        id S235582AbhDOVAg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 15 Apr 2021 17:00:36 -0400
+Received: from mail.kernel.org ([198.145.29.99]:41888 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S235539AbhDOVAe (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 15 Apr 2021 17:00:34 -0400
+Received: from gandalf.local.home (cpe-66-24-58-225.stny.res.rr.com [66.24.58.225])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id C635460FDC;
+        Thu, 15 Apr 2021 21:00:09 +0000 (UTC)
+Date:   Thu, 15 Apr 2021 17:00:07 -0400
+From:   Steven Rostedt <rostedt@goodmis.org>
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Cc:     Jiri Olsa <jolsa@redhat.com>, Jiri Olsa <jolsa@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andriin@fb.com>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>, Daniel Xu <dxu@dxuuu.xyz>,
+        Jesper Brouer <jbrouer@redhat.com>,
+        Toke =?UTF-8?B?SMO4?= =?UTF-8?B?aWxhbmQtSsO4cmdlbnNlbg==?= 
+        <toke@redhat.com>, Viktor Malik <vmalik@redhat.com>,
+        Masami Hiramatsu <mhiramat@kernel.org>
+Subject: Re: [PATCHv2 RFC bpf-next 0/7] bpf: Add support for ftrace probe
+Message-ID: <20210415170007.31420132@gandalf.local.home>
+In-Reply-To: <CAEf4BzY=yBZH2Aad1hNcqCt51u0+SmNdkD6NfJRVMzF7DsvG+A@mail.gmail.com>
+References: <20210413121516.1467989-1-jolsa@kernel.org>
+        <CAEf4Bzazst1rBi4=LuP6_FnPXCRYBNFEtDnK3UVBj6Eo6xFNtQ@mail.gmail.com>
+        <YHbd2CmeoaiLJj7X@krava>
+        <CAEf4BzYyVj-Tjy9ZZdAU5nOtJ8_auvVobTT6pMqg8zPb9jj-Ow@mail.gmail.com>
+        <20210415111002.324b6bfa@gandalf.local.home>
+        <CAEf4BzY=yBZH2Aad1hNcqCt51u0+SmNdkD6NfJRVMzF7DsvG+A@mail.gmail.com>
+X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-References: <20210414034454.1970967-1-kuba@kernel.org> <20210414034454.1970967-5-kuba@kernel.org>
-In-Reply-To: <20210414034454.1970967-5-kuba@kernel.org>
-From:   Michael Chan <michael.chan@broadcom.com>
-Date:   Thu, 15 Apr 2021 13:58:16 -0700
-Message-ID: <CACKFLikmBGZ+vY2XAhmJjWzbAGN+tPiW_RM+OPREps0rY5L2zw@mail.gmail.com>
-Subject: Re: [PATCH net-next 4/6] bnxt: implement ethtool::get_fec_stats
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     David Miller <davem@davemloft.net>,
-        Netdev <netdev@vger.kernel.org>,
-        Saeed Mahameed <saeedm@nvidia.com>,
-        Leon Romanovsky <leon@kernel.org>, ecree.xilinx@gmail.com,
-        habetsm.xilinx@gmail.com, Florian Fainelli <f.fainelli@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>, mkubecek@suse.cz,
-        ariela@nvidia.com
-Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256;
-        boundary="00000000000004d17505c0092066"
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---00000000000004d17505c0092066
-Content-Type: text/plain; charset="UTF-8"
 
-On Tue, Apr 13, 2021 at 8:45 PM Jakub Kicinski <kuba@kernel.org> wrote:
->
-> Report corrected bits.
->
-> Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+[
+  Added Masami, as I didn't realize he wasn't on Cc. He's the maintainer of
+  kretprobes.
 
-Reviewed-by: Michael Chan <michael.chan@broadcom.com>
+  Masami, you may want to use lore.kernel.org to read the history of this
+  thread.
+]
 
-Thanks.
+On Thu, 15 Apr 2021 13:45:06 -0700
+Andrii Nakryiko <andrii.nakryiko@gmail.com> wrote:
 
---00000000000004d17505c0092066
-Content-Type: application/pkcs7-signature; name="smime.p7s"
-Content-Transfer-Encoding: base64
-Content-Disposition: attachment; filename="smime.p7s"
-Content-Description: S/MIME Cryptographic Signature
+> > I don't know how the BPF code does it, but if you are tracing the exit
+> > of a function, I'm assuming that you hijack the return pointer and replace
+> > it with a call to a trampoline that has access to the arguments. To do  
+> 
+> As Jiri replied, BPF trampoline doesn't do it the same way as
+> kretprobe does it. Which gives the fexit BPF program another critical
+> advantage over kretprobe -- we know traced function's entry IP in both
+> entry and exit cases, which allows us to generically correlate them.
+> 
+> I've tried to figure out how to get that entry IP from kretprobe and
+> couldn't find any way. Do you know if it's possible at all or it's a
+> fundamental limitation of the way kretprobe is implemented (through
+> hijacking return address)?
 
-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
-xV4Em+0wQoEIR2kPG6yiZNtUK0tNCaZejYU/Mf/bzdKSwud3pLgHV8ls83y2OU/ha9xgJMLpRswv
-xucFCxMsPmk0yoVmpbr92kIpLm+TomNZsL++LcDRa2ECAwEAAaOCAdowggHWMA4GA1UdDwEB/wQE
-AwIFoDCBowYIKwYBBQUHAQEEgZYwgZMwTgYIKwYBBQUHMAKGQmh0dHA6Ly9zZWN1cmUuZ2xvYmFs
-c2lnbi5jb20vY2FjZXJ0L2dzZ2NjcjNwZXJzb25hbHNpZ24yY2EyMDIwLmNydDBBBggrBgEFBQcw
-AYY1aHR0cDovL29jc3AuZ2xvYmFsc2lnbi5jb20vZ3NnY2NyM3BlcnNvbmFsc2lnbjJjYTIwMjAw
-TQYDVR0gBEYwRDBCBgorBgEEAaAyASgKMDQwMgYIKwYBBQUHAgEWJmh0dHBzOi8vd3d3Lmdsb2Jh
-bHNpZ24uY29tL3JlcG9zaXRvcnkvMAkGA1UdEwQCMAAwSQYDVR0fBEIwQDA+oDygOoY4aHR0cDov
-L2NybC5nbG9iYWxzaWduLmNvbS9nc2djY3IzcGVyc29uYWxzaWduMmNhMjAyMC5jcmwwJAYDVR0R
-BB0wG4EZbWljaGFlbC5jaGFuQGJyb2FkY29tLmNvbTATBgNVHSUEDDAKBggrBgEFBQcDBDAfBgNV
-HSMEGDAWgBSWM9HmWBdbNHWKgVZk1b5I3qGPzzAdBgNVHQ4EFgQUz2bMvqtXpXM0u3vAvRkalz60
-CjswDQYJKoZIhvcNAQELBQADggEBAGUgeqqI/q2pkETeLr6oS7nnm1bkeNmtnJ2bnybNO/RdrbPj
-DHVSiDCCrWr6xrc+q6OiZDKm0Ieq6BN+Wfr8h5mCkZMUdJikI85WcQTRk6EEF2lzIiaULmFD7U15
-FSWQptLx+kiu63idTII4r3k/7+dJ5AhLRr4WCoXEme2GZkfSbYC3fEL46tb1w7w+25OEFCv1MtDZ
-1CHkODrS2JGwDQxXKmyF64MhJiOutWHmqoGmLJVz1jnDvClsYtgT4zcNtoqKtjpWDYAefncWDPIQ
-DauX1eWVM+KepL7zoSNzVbTipc65WuZFLR8ngOwkpknqvS9n/nKd885m23oIocC+GA4xggJtMIIC
-aQIBATBrMFsxCzAJBgNVBAYTAkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52LXNhMTEwLwYDVQQD
-EyhHbG9iYWxTaWduIEdDQyBSMyBQZXJzb25hbFNpZ24gMiBDQSAyMDIwAgwQeU+Y6hbenPzRMJsw
-DQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEIBAVZMC5aggTkGm6hITzTbHIUJf4Uv8y
-3iu9Ne+EOCTnMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIxMDQx
-NTIwNTgyN1owaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZIAWUDBAEWMAsGCWCG
-SAFlAwQBAjAKBggqhkiG9w0DBzALBgkqhkiG9w0BAQowCwYJKoZIhvcNAQEHMAsGCWCGSAFlAwQC
-ATANBgkqhkiG9w0BAQEFAASCAQAWmsOqJGJItU16dpiGQ++cEq45JdPSDCyIsGQniwNhe5ZOwtMo
-mxm0bMf9XyjmNKtaOPRO6AtG1HAEpOGH4ueZONO8SlHicG/aFmsYeCdntksAeYTjGHau2oLOZ/xO
-GT0qtyARVbrdcW2Yzs4gDyN7QEFwASjv7dT/xOf2Cp3M0EahYACDrF348DVkflGp/np8XKb9E6WA
-E/xvL3uBEliHjlB94KY2NqaE7Dkw/wq4ZJb+UmNMJTl6+TxM877+H23U+av6v2P5TKQbW+jPs6kF
-OJDXHiJgzSTJUp2lVNXf5EenXUQSJpMU/c3Ixcbi9JWEjWw141Luselu/xnALcDD
---00000000000004d17505c0092066--
+The function graph tracer has the entry IP on exit, today. That's how we
+can trace and show this:
+
+ # cd /sys/kernel/tracing
+ # echo 1 > echo 1 > options/funcgraph-tail
+ # echo function_graph > current_tracer
+ # cat trace
+# tracer: function_graph
+#
+# CPU  DURATION                  FUNCTION CALLS
+# |     |   |                     |   |   |   |
+ 7)   1.358 us    |  rcu_idle_exit();
+ 7)   0.169 us    |  sched_idle_set_state();
+ 7)               |  cpuidle_reflect() {
+ 7)               |    menu_reflect() {
+ 7)   0.170 us    |      tick_nohz_idle_got_tick();
+ 7)   0.585 us    |    } /* menu_reflect */
+ 7)   1.115 us    |  } /* cpuidle_reflect */
+
+That's how we can show the tail function that's called. I'm sure kreprobes
+could do the same thing.
+
+The patch series I shared with Jiri, was work to allow kretprobes to be
+built on top of the function graph tracer.
+
+https://lore.kernel.org/lkml/20190525031633.811342628@goodmis.org/
+
+The feature missing from that series, and why I didn't push it (as I had
+ran out of time to work on it), was that kreprobes wants the full regs
+stack as well. And since kretprobes was the main client of this work, that
+I decided to work on this at another time. But like everything else, I got
+distracted by other work, and didn't realize it has been almost 2 years
+since looking at it :-p
+
+Anyway, IIRC, Masami wasn't sure that the full regs was ever needed for the
+return (who cares about the registers on return, except for the return
+value?)
+
+But this code could easily save the parameters as well.
+
+> 
+> > this you need a shadow stack to save the real return as well as the
+> > parameters of the function. This is something that I have patches that do
+> > similar things with function graph.
+> >
+> > If you want this feature, lets work together and make this work for both
+> > BPF and ftrace.  
+> 
+> Absolutely, ultimately for users it doesn't matter what specific
+> mechanism is used under the cover. It just seemed like BPF trampoline
+> has all the useful tracing features (entry IP and input arguments in
+> fexit) already and is just mostly missing a quick batch attach API. If
+> we can get the same from ftrace, all the better.
+
+Let me pull these patches out again, and see what we can do. Since then,
+I've added the code that lets function tracer save parameters and the
+stack, and function graph can use that as well.
+
+
+-- Steve
