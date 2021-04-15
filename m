@@ -2,129 +2,142 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 27FDD360AFE
-	for <lists+netdev@lfdr.de>; Thu, 15 Apr 2021 15:48:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 848CC360B13
+	for <lists+netdev@lfdr.de>; Thu, 15 Apr 2021 15:53:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233194AbhDONtQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 15 Apr 2021 09:49:16 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:28774 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S233234AbhDONtI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 15 Apr 2021 09:49:08 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1618494525;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=QwQaOKgb78JkHs6ad6W1DSo80pvudYA+6ShjnGRvp3I=;
-        b=hA8EwXySYbWglOJaesyraxkJamd8LH/Rw1zUkykC/S7i28pe6kGsgRlIffgB8f6OA2AR5y
-        1/ZQLSxObrVZ2n4FZUjL6t7F++zkq4r0N2XSXgwzOoM/0GxmIrrkViUVjQLXYblG4VOj5R
-        dMIoxQYmZvF5I8SrDHJ+LFfZUukzHyg=
-Received: from mail-ed1-f71.google.com (mail-ed1-f71.google.com
- [209.85.208.71]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-189-HiO_eUeUM3-0xWVqGDYl3A-1; Thu, 15 Apr 2021 09:48:43 -0400
-X-MC-Unique: HiO_eUeUM3-0xWVqGDYl3A-1
-Received: by mail-ed1-f71.google.com with SMTP id ay2-20020a0564022022b02903824b52f2d8so5231862edb.22
-        for <netdev@vger.kernel.org>; Thu, 15 Apr 2021 06:48:43 -0700 (PDT)
+        id S233168AbhDONyC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 15 Apr 2021 09:54:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58960 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233059AbhDONyA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 15 Apr 2021 09:54:00 -0400
+Received: from mail-pl1-x62b.google.com (mail-pl1-x62b.google.com [IPv6:2607:f8b0:4864:20::62b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 039BAC061574;
+        Thu, 15 Apr 2021 06:53:37 -0700 (PDT)
+Received: by mail-pl1-x62b.google.com with SMTP id p16so8136252plf.12;
+        Thu, 15 Apr 2021 06:53:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=wJRegN5GQuH5b9gAz36NB95gQyRO3U7EOZr5gw35MIw=;
+        b=MR/LD/TvTdYKM8tDwNz85uYaYZOZLlXxKWr5piX7M+jSs3YtW5BS3oybQSLGom7bxh
+         ttRFntHyUDJHoHFM2KKJc3XfSGUT5FPLcQ6JZwtPF3aHSxSe6nWNakY+t5YjJZMfh3YM
+         IiVg44tTq6wNyKUYCrHPnRuEpUF94ME30Z6cUC8nheUSgf85pT4SCQm8imXvDfPxmDvR
+         kXQPRzWKVcuk83zPtiXS06ww4NUH+2O7WIPVvZqeOWvI3KlPt8X8mzLNwGEPGj6Lbi4s
+         xXCjAEzIQ53Gnwhx+yRQ/ahKBXsOfV68SNmbK3Yd6tWzF169nrLNI/2QQAsqmjBsUp5H
+         zHRQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=QwQaOKgb78JkHs6ad6W1DSo80pvudYA+6ShjnGRvp3I=;
-        b=ORoHfiwGmhBdqXRDOijzi40Y166bm8b1BxXGnCOSgW1IaluimJ1A6i6OqeUdwPggKY
-         2yqEB7KFfsKTDuhZL+WCLCDWhpsHOOimixh8e4HdnnWSY3RlEs8tidNuuEQ6WhtA1jac
-         FxOytx2LR3OwsbprN7wqu4x4iuPGjS/pgA3Cv+exMlO9hn7MLCpuvkc2405pLs+PeYFS
-         FyJKF2VdPEjkX7vHzrKOY/8Pn/917xnwkTmo5kDgzL2oOb1sTy/3QdBM9epiVf1898b1
-         n2HUuuRmbJqEO7sAmmN2pOAxfP6pAqvMxOecmrzozmXMky8LcMu11W0Bltqq4LOOYmia
-         JrHw==
-X-Gm-Message-State: AOAM531jo/q0k+JsgsR0vwwiSaLRb92LOFxuyxNPoRiw/4jpHEb1pW6m
-        lKA0GqmEZUWhR4oOrMQk4iiIGZoJMS+x/g6cowZjof8bg2N7Ki+roNNSvaCzG+KmkvvPk+Vpt6Z
-        QdTcJxCiUdBmrTxF/
-X-Received: by 2002:a05:6402:270e:: with SMTP id y14mr4333834edd.283.1618494522352;
-        Thu, 15 Apr 2021 06:48:42 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJxOtgD4WdYc2KT9f0JKG73xwBG/uagcBhRoEFoQdUeQykyoHKeWJx+aqlCXoC29Ap77HRT5+Q==
-X-Received: by 2002:a05:6402:270e:: with SMTP id y14mr4333823edd.283.1618494522219;
-        Thu, 15 Apr 2021 06:48:42 -0700 (PDT)
-Received: from steredhat (host-79-34-249-199.business.telecomitalia.it. [79.34.249.199])
-        by smtp.gmail.com with ESMTPSA id df8sm2608432edb.4.2021.04.15.06.48.40
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=wJRegN5GQuH5b9gAz36NB95gQyRO3U7EOZr5gw35MIw=;
+        b=BjvBqKWwNCLVUA/idjGS0K8OwapMibu+s90UePFfrNzZblxS5JW2dfz1VK4oqDMama
+         /jvqqIEgrF/dA0a5k44kIiYKTw0k4xthjSdp2fTWOdxXuunADti9NFm/ZsFmKTFuPNIl
+         aBSwnpr8YgKuBUkwHa8R3Vtq5k3YePmgJgBPwJTNkCFUeOjuehUwdwl1cDxCCFnTjl5e
+         6qCIrDQmHblUx2dx2b+U5KB3Ls4dZtMp/ds5cy7X07S4S6v4viHJHScfnHawNNfgUV71
+         q68hty947g+mykwcdu8lNYhCDYkRIHobsqv2FAKUeor0k8emAQFGxIX/+MA8oABd0iJL
+         FYog==
+X-Gm-Message-State: AOAM533XIsR0aNFqOIA4IumPa2vWVztFZgDCfS1fi6PSOjb+Fa/5E9B3
+        7DlhymZQgTk4aScjlQCIWyuYn0IIThc=
+X-Google-Smtp-Source: ABdhPJxu4OlVrgIOw/QyM7bnbGcZT+IvNaZ/B0kOfmir6YJ3wNWceJhBIPenshyywCmMyb/2uYFVIA==
+X-Received: by 2002:a17:90a:17a3:: with SMTP id q32mr4100552pja.224.1618494816267;
+        Thu, 15 Apr 2021 06:53:36 -0700 (PDT)
+Received: from Leo-laptop-t470s.redhat.com ([209.132.188.80])
+        by smtp.gmail.com with ESMTPSA id h16sm2324868pfo.191.2021.04.15.06.53.29
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 15 Apr 2021 06:48:41 -0700 (PDT)
-Date:   Thu, 15 Apr 2021 15:48:38 +0200
-From:   Stefano Garzarella <sgarzare@redhat.com>
-To:     Zhu Lingshan <lingshan.zhu@intel.com>
-Cc:     jasowang@redhat.com, mst@redhat.com, lulu@redhat.com,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        kvm@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH V2 3/3] vDPA/ifcvf: get_config_size should return dev
- specific config size
-Message-ID: <20210415134838.3hn33estolycag4p@steredhat>
-References: <20210415095336.4792-1-lingshan.zhu@intel.com>
- <20210415095336.4792-4-lingshan.zhu@intel.com>
+        Thu, 15 Apr 2021 06:53:35 -0700 (PDT)
+From:   Hangbin Liu <liuhangbin@gmail.com>
+To:     bpf@vger.kernel.org
+Cc:     netdev@vger.kernel.org,
+        =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
+        Jiri Benc <jbenc@redhat.com>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        Eelco Chaudron <echaudro@redhat.com>, ast@kernel.org,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Lorenzo Bianconi <lorenzo.bianconi@redhat.com>,
+        David Ahern <dsahern@gmail.com>,
+        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
+        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
+        =?UTF-8?q?Bj=C3=B6rn=20T=C3=B6pel?= <bjorn.topel@gmail.com>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Hangbin Liu <liuhangbin@gmail.com>
+Subject: [PATCHv8 bpf-next 0/4] xdp: extend xdp_redirect_map with broadcast support
+Date:   Thu, 15 Apr 2021 21:53:16 +0800
+Message-Id: <20210415135320.4084595-1-liuhangbin@gmail.com>
+X-Mailer: git-send-email 2.26.3
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii; format=flowed
-Content-Disposition: inline
-In-Reply-To: <20210415095336.4792-4-lingshan.zhu@intel.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Apr 15, 2021 at 05:53:36PM +0800, Zhu Lingshan wrote:
->get_config_size() should return the size based on the decected
->device type.
->
->Signed-off-by: Zhu Lingshan <lingshan.zhu@intel.com>
->---
-> drivers/vdpa/ifcvf/ifcvf_main.c | 18 +++++++++++++++++-
-> 1 file changed, 17 insertions(+), 1 deletion(-)
->
->diff --git a/drivers/vdpa/ifcvf/ifcvf_main.c b/drivers/vdpa/ifcvf/ifcvf_main.c
->index cea1313b1a3f..6844c49fe1de 100644
->--- a/drivers/vdpa/ifcvf/ifcvf_main.c
->+++ b/drivers/vdpa/ifcvf/ifcvf_main.c
->@@ -347,7 +347,23 @@ static u32 ifcvf_vdpa_get_vq_align(struct vdpa_device *vdpa_dev)
->
-> static size_t ifcvf_vdpa_get_config_size(struct vdpa_device *vdpa_dev)
-> {
->-	return sizeof(struct virtio_net_config);
->+	struct ifcvf_adapter *adapter = vdpa_to_adapter(vdpa_dev);
->+	struct ifcvf_hw *vf = vdpa_to_vf(vdpa_dev);
->+	struct pci_dev *pdev = adapter->pdev;
->+	size_t size;
->+
->+	if (vf->dev_type == VIRTIO_ID_NET)
->+		size = sizeof(struct virtio_net_config);
->+
->+	else if (vf->dev_type == VIRTIO_ID_BLOCK)
->+		size = sizeof(struct virtio_blk_config);
->+
->+	else {
->+		size = 0;
->+		IFCVF_ERR(pdev, "VIRTIO ID %u not supported\n", vf->dev_type);
->+	}
+Hi,
 
-I slightly prefer the switch, but I don't have a strong opinion.
+This patchset is a new implementation for XDP multicast support based
+on my previous 2 maps implementation[1]. The reason is that Daniel think
+the exclude map implementation is missing proper bond support in XDP
+context. And there is a plan to add native XDP bonding support. Adding a
+exclude map in the helper also increase the complex of verifier and has
+draw back of performace.
 
-However, if we want to use if/else, we should follow 
-`Documentation/process/coding-style.rst` line 166:
-     Note that the closing brace is empty on a line of its own, **except** in
-     the cases where it is followed by a continuation of the same statement,
-     ie a ``while`` in a do-statement or an ``else`` in an if-statement, like
+The new implementation just add two new flags BPF_F_BROADCAST and
+BPF_F_EXCLUDE_INGRESS to extend xdp_redirect_map for broadcast support.
 
-also `scripts/checkpatch.pl --strict` complains:
+With BPF_F_BROADCAST the packet will be broadcasted to all the interfaces
+in the map. with BPF_F_EXCLUDE_INGRESS the ingress interface will be
+excluded when do broadcasting.
 
-     CHECK: braces {} should be used on all arms of this statement
-     #209: FILE: drivers/vdpa/ifcvf/ifcvf_main.c:355:
-     +	if (vf->dev_type == VIRTIO_ID_NET)
-     [...]
-     +	else if (vf->dev_type == VIRTIO_ID_BLOCK)
-     [...]
-     +	else {
-     [...]
+The patchv7 link is here[2].
 
-     CHECK: Unbalanced braces around else statement
-     #215: FILE: drivers/vdpa/ifcvf/ifcvf_main.c:361:
-     +	else {
+[1] https://lore.kernel.org/bpf/20210223125809.1376577-1-liuhangbin@gmail.com
+[2] https://lore.kernel.org/bpf/20210414122610.4037085-1-liuhangbin@gmail.com
 
-Thanks,
-Stefano
+v8: use hlist_for_each_entry_rcu() when looping the devmap hash ojbs
+v7: No need to free xdpf in dev_map_enqueue_clone() if xdpf_clone failed.
+v6: Fix a skb leak in the error path for generic XDP
+v5: Just walk the map directly to get interfaces as get_next_key() of devmap
+    hash may restart looping from the first key if the device get removed.
+    After update the performace has improved 10% compired with v4.
+v4: Fix flags never cleared issue in patch 02. Update selftest to cover this.
+v3: Rebase the code based on latest bpf-next
+v2: fix flag renaming issue in patch 02
+
+Hangbin Liu (3):
+  xdp: extend xdp_redirect_map with broadcast support
+  sample/bpf: add xdp_redirect_map_multi for redirect_map broadcast test
+  selftests/bpf: add xdp_redirect_multi test
+
+Jesper Dangaard Brouer (1):
+  bpf: run devmap xdp_prog on flush instead of bulk enqueue
+
+ include/linux/bpf.h                           |  20 ++
+ include/linux/filter.h                        |  18 +-
+ include/net/xdp.h                             |   1 +
+ include/uapi/linux/bpf.h                      |  17 +-
+ kernel/bpf/cpumap.c                           |   3 +-
+ kernel/bpf/devmap.c                           | 304 +++++++++++++++---
+ net/core/filter.c                             |  33 +-
+ net/core/xdp.c                                |  29 ++
+ net/xdp/xskmap.c                              |   3 +-
+ samples/bpf/Makefile                          |   3 +
+ samples/bpf/xdp_redirect_map_multi_kern.c     |  87 +++++
+ samples/bpf/xdp_redirect_map_multi_user.c     | 302 +++++++++++++++++
+ tools/include/uapi/linux/bpf.h                |  17 +-
+ tools/testing/selftests/bpf/Makefile          |   3 +-
+ .../bpf/progs/xdp_redirect_multi_kern.c       |  99 ++++++
+ .../selftests/bpf/test_xdp_redirect_multi.sh  | 205 ++++++++++++
+ .../selftests/bpf/xdp_redirect_multi.c        | 236 ++++++++++++++
+ 17 files changed, 1316 insertions(+), 64 deletions(-)
+ create mode 100644 samples/bpf/xdp_redirect_map_multi_kern.c
+ create mode 100644 samples/bpf/xdp_redirect_map_multi_user.c
+ create mode 100644 tools/testing/selftests/bpf/progs/xdp_redirect_multi_kern.c
+ create mode 100755 tools/testing/selftests/bpf/test_xdp_redirect_multi.sh
+ create mode 100644 tools/testing/selftests/bpf/xdp_redirect_multi.c
+
+-- 
+2.26.3
 
