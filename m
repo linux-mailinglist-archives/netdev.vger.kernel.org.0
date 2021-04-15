@@ -2,114 +2,166 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C9C2D360BE6
-	for <lists+netdev@lfdr.de>; Thu, 15 Apr 2021 16:34:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 09A7C360BFB
+	for <lists+netdev@lfdr.de>; Thu, 15 Apr 2021 16:38:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233473AbhDOOfT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 15 Apr 2021 10:35:19 -0400
-Received: from userp2120.oracle.com ([156.151.31.85]:53338 "EHLO
-        userp2120.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232642AbhDOOfS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 15 Apr 2021 10:35:18 -0400
-Received: from pps.filterd (userp2120.oracle.com [127.0.0.1])
-        by userp2120.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 13FEJGow079587;
-        Thu, 15 Apr 2021 14:34:27 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
- : subject : message-id : references : mime-version : content-type :
- in-reply-to; s=corp-2020-01-29;
- bh=CkWzQJq9qTXR/COElw+2nWhJygfpMk390eJBQixVWfk=;
- b=ejz+nbayBZTs6/DWzcb2fO1Kvs0JJdKB0ekXoRwFa/oZ1l9yX0+xBBvYQajdgJSvMhKd
- Oia8VCc8V3J5lm+bV5mVTfyR0Y72jbfULD1kwT1ef1o33YvCwz/A290iOJ0lc67tAyhA
- tOIks3zfDzb0frBB5IBkg346uvRAl/ApqRlwg0UBwwznpEYkqqjkC6ZJqgiEzgsaOaup
- 6/w0sinwaZmUxA3o1/8TiJQIaZir86RloKC3BGH0vH1KrzmEppWvbpz7n8KvGFAnQBhj
- yG6/kq9P+FQOjmdJfOUNWLucK2x0uZmsNxok+NKFqDG/Vbhbzbm5ojeV1aSE3e+qHgQW 7w== 
-Received: from userp3030.oracle.com (userp3030.oracle.com [156.151.31.80])
-        by userp2120.oracle.com with ESMTP id 37u4nnp29h-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Thu, 15 Apr 2021 14:34:27 +0000
-Received: from pps.filterd (userp3030.oracle.com [127.0.0.1])
-        by userp3030.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 13FEGXDo130989;
-        Thu, 15 Apr 2021 14:34:26 GMT
-Received: from userv0121.oracle.com (userv0121.oracle.com [156.151.31.72])
-        by userp3030.oracle.com with ESMTP id 37uny13ksw-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Thu, 15 Apr 2021 14:34:26 +0000
-Received: from abhmp0017.oracle.com (abhmp0017.oracle.com [141.146.116.23])
-        by userv0121.oracle.com (8.14.4/8.13.8) with ESMTP id 13FEYJUM018811;
-        Thu, 15 Apr 2021 14:34:23 GMT
-Received: from kadam (/102.36.221.92)
-        by default (Oracle Beehive Gateway v4.0)
-        with ESMTP ; Thu, 15 Apr 2021 07:34:18 -0700
-Date:   Thu, 15 Apr 2021 17:34:09 +0300
-From:   Dan Carpenter <dan.carpenter@oracle.com>
-To:     Colin King <colin.king@canonical.com>
-Cc:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Jose Abreu <joabreu@synopsys.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        netdev@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org,
-        kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH][next] net: stmmac: replace redundant comparison with true
-Message-ID: <20210415143409.GC6021@kadam>
-References: <20210415083757.1807538-1-colin.king@canonical.com>
+        id S233522AbhDOOi1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 15 Apr 2021 10:38:27 -0400
+Received: from www62.your-server.de ([213.133.104.62]:41750 "EHLO
+        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233363AbhDOOiV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 15 Apr 2021 10:38:21 -0400
+Received: from sslproxy03.your-server.de ([88.198.220.132])
+        by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92.3)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1lX37j-000708-Ga; Thu, 15 Apr 2021 16:37:39 +0200
+Received: from [85.7.101.30] (helo=pc-6.home)
+        by sslproxy03.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1lX37i-000EJ3-8n; Thu, 15 Apr 2021 16:37:38 +0200
+Subject: Re: [PATCH bpf-next 1/2] bpf: Remove bpf_jit_enable=2 debugging mode
+To:     Jianlin Lv <Jianlin.Lv@arm.com>, bpf@vger.kernel.org
+Cc:     corbet@lwn.net, ast@kernel.org, andrii@kernel.org, kafai@fb.com,
+        songliubraving@fb.com, yhs@fb.com, john.fastabend@gmail.com,
+        kpsingh@kernel.org, davem@davemloft.net, kuba@kernel.org,
+        illusionist.neo@gmail.com, linux@armlinux.org.uk,
+        zlim.lnx@gmail.com, catalin.marinas@arm.com, will@kernel.org,
+        paulburton@kernel.org, tsbogend@alpha.franken.de,
+        naveen.n.rao@linux.ibm.com, sandipan@linux.ibm.com,
+        mpe@ellerman.id.au, benh@kernel.crashing.org, paulus@samba.org,
+        luke.r.nels@gmail.com, xi.wang@gmail.com, bjorn@kernel.org,
+        paul.walmsley@sifive.com, palmer@dabbelt.com,
+        aou@eecs.berkeley.edu, iii@linux.ibm.com, hca@linux.ibm.com,
+        gor@linux.ibm.com, borntraeger@de.ibm.com, yoshfuji@linux-ipv6.org,
+        dsahern@kernel.org, tglx@linutronix.de, mingo@redhat.com,
+        bp@alien8.de, x86@kernel.org, hpa@zytor.com, udknight@gmail.com,
+        mchehab+huawei@kernel.org, dvyukov@google.com, maheshb@google.com,
+        horms@verge.net.au, nicolas.dichtel@6wind.com,
+        viro@zeniv.linux.org.uk, masahiroy@kernel.org,
+        keescook@chromium.org, quentin@isovalent.com, tklauser@distanz.ch,
+        grantseltzer@gmail.com, irogers@google.com,
+        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-mips@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
+        linux-riscv@lists.infradead.org, linux-s390@vger.kernel.org,
+        sparclinux@vger.kernel.org, iecedge@gmail.com
+References: <20210415093250.3391257-1-Jianlin.Lv@arm.com>
+From:   Daniel Borkmann <daniel@iogearbox.net>
+Message-ID: <9c4a78d2-f73c-832a-e6e2-4b4daa729e07@iogearbox.net>
+Date:   Thu, 15 Apr 2021 16:37:36 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210415083757.1807538-1-colin.king@canonical.com>
-User-Agent: Mutt/1.9.4 (2018-02-28)
-X-Proofpoint-IMR: 1
-X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=9955 signatures=668683
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 mlxscore=0 bulkscore=0 malwarescore=0
- spamscore=0 adultscore=0 phishscore=0 mlxlogscore=999 suspectscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2104060000
- definitions=main-2104150096
-X-Proofpoint-ORIG-GUID: 54ZOchoRvgCtTE-6YcFYiYJqRlTKUTmH
-X-Proofpoint-GUID: 54ZOchoRvgCtTE-6YcFYiYJqRlTKUTmH
-X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=9955 signatures=668683
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 adultscore=0 malwarescore=0
- phishscore=0 suspectscore=0 mlxlogscore=999 priorityscore=1501
- clxscore=1011 lowpriorityscore=0 spamscore=0 impostorscore=0 bulkscore=0
- mlxscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2104060000 definitions=main-2104150096
+In-Reply-To: <20210415093250.3391257-1-Jianlin.Lv@arm.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.102.4/26141/Thu Apr 15 13:13:26 2021)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Apr 15, 2021 at 09:37:57AM +0100, Colin King wrote:
-> From: Colin Ian King <colin.king@canonical.com>
+On 4/15/21 11:32 AM, Jianlin Lv wrote:
+> For debugging JITs, dumping the JITed image to kernel log is discouraged,
+> "bpftool prog dump jited" is much better way to examine JITed dumps.
+> This patch get rid of the code related to bpf_jit_enable=2 mode and
+> update the proc handler of bpf_jit_enable, also added auxiliary
+> information to explain how to use bpf_jit_disasm tool after this change.
 > 
-> The comparison of the u32 variable queue with <= zero is always true
-> since an unsigned can never be negative. Replace the conditional
-> check with the boolean true to simplify the code.  The while loop
-> will terminate because of the zero check on queue before queue is
-> decremented.
+> Signed-off-by: Jianlin Lv <Jianlin.Lv@arm.com>
+[...]
+> diff --git a/arch/x86/net/bpf_jit_comp32.c b/arch/x86/net/bpf_jit_comp32.c
+> index 0a7a2870f111..8d36b4658076 100644
+> --- a/arch/x86/net/bpf_jit_comp32.c
+> +++ b/arch/x86/net/bpf_jit_comp32.c
+> @@ -2566,9 +2566,6 @@ struct bpf_prog *bpf_int_jit_compile(struct bpf_prog *prog)
+>   		cond_resched();
+>   	}
+>   
+> -	if (bpf_jit_enable > 1)
+> -		bpf_jit_dump(prog->len, proglen, pass + 1, image);
+> -
+>   	if (image) {
+>   		bpf_jit_binary_lock_ro(header);
+>   		prog->bpf_func = (void *)image;
+> diff --git a/net/core/sysctl_net_core.c b/net/core/sysctl_net_core.c
+> index c8496c1142c9..990b1720c7a4 100644
+> --- a/net/core/sysctl_net_core.c
+> +++ b/net/core/sysctl_net_core.c
+> @@ -273,16 +273,8 @@ static int proc_dointvec_minmax_bpf_enable(struct ctl_table *table, int write,
+>   
+>   	tmp.data = &jit_enable;
+>   	ret = proc_dointvec_minmax(&tmp, write, buffer, lenp, ppos);
+> -	if (write && !ret) {
+> -		if (jit_enable < 2 ||
+> -		    (jit_enable == 2 && bpf_dump_raw_ok(current_cred()))) {
+> -			*(int *)table->data = jit_enable;
+> -			if (jit_enable == 2)
+> -				pr_warn("bpf_jit_enable = 2 was set! NEVER use this in production, only for JIT debugging!\n");
+> -		} else {
+> -			ret = -EPERM;
+> -		}
+> -	}
+> +	if (write && !ret)
+> +		*(int *)table->data = jit_enable;
+>   	return ret;
+>   }
+>   
+> @@ -389,7 +381,7 @@ static struct ctl_table net_core_table[] = {
+>   		.extra2		= SYSCTL_ONE,
+>   # else
+>   		.extra1		= SYSCTL_ZERO,
+> -		.extra2		= &two,
+> +		.extra2		= SYSCTL_ONE,
+>   # endif
+>   	},
+>   # ifdef CONFIG_HAVE_EBPF_JIT
+> diff --git a/tools/bpf/bpf_jit_disasm.c b/tools/bpf/bpf_jit_disasm.c
+> index c8ae95804728..efa4b17ae016 100644
+> --- a/tools/bpf/bpf_jit_disasm.c
+> +++ b/tools/bpf/bpf_jit_disasm.c
+> @@ -7,7 +7,7 @@
+>    *
+>    * To get the disassembly of the JIT code, do the following:
+>    *
+> - *  1) `echo 2 > /proc/sys/net/core/bpf_jit_enable`
+> + *  1) Insert bpf_jit_dump() and recompile the kernel to output JITed image into log
+
+Hmm, if we remove bpf_jit_dump(), the next drive-by cleanup patch will be thrown
+at bpf@vger stating that bpf_jit_dump() has no in-tree users and should be removed.
+Maybe we should be removing bpf_jit_disasm.c along with it as well as bpf_jit_dump()
+itself ... I guess if it's ever needed in those rare occasions for JIT debugging we
+can resurrect it from old kernels just locally. But yeah, bpftool's jit dump should
+suffice for vast majority of use cases.
+
+There was a recent set for ppc32 jit which was merged into ppc tree which will create
+a merge conflict with this one [0]. So we would need a rebase and take it maybe during
+merge win once the ppc32 landed..
+
+   [0] https://lore.kernel.org/bpf/cover.1616430991.git.christophe.leroy@csgroup.eu/
+
+>    *  2) Load a BPF filter (e.g. `tcpdump -p -n -s 0 -i eth1 host 192.168.20.0/24`)
+>    *  3) Run e.g. `bpf_jit_disasm -o` to read out the last JIT code
+>    *
+> diff --git a/tools/bpf/bpftool/feature.c b/tools/bpf/bpftool/feature.c
+> index 40a88df275f9..98c7eec2923f 100644
+> --- a/tools/bpf/bpftool/feature.c
+> +++ b/tools/bpf/bpftool/feature.c
+> @@ -203,9 +203,6 @@ static void probe_jit_enable(void)
+>   		case 1:
+>   			printf("JIT compiler is enabled\n");
+>   			break;
+> -		case 2:
+> -			printf("JIT compiler is enabled with debugging traces in kernel logs\n");
+> -			break;
+
+This would still need to be there for older kernels ...
+
+>   		case -1:
+>   			printf("Unable to retrieve JIT-compiler status\n");
+>   			break;
 > 
-> Addresses-Coverity: ("Unsigned compared against 0")
-> Signed-off-by: Colin Ian King <colin.king@canonical.com>
-> ---
->  drivers/net/ethernet/stmicro/stmmac/stmmac_main.c | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
-> 
-> diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-> index e3e22200a4fd..6e5b4c4b375c 100644
-> --- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-> +++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-> @@ -1673,7 +1673,7 @@ static void stmmac_reinit_rx_buffers(struct stmmac_priv *priv)
->  	return;
->  
->  err_reinit_rx_buffers:
-> -	while (queue >= 0) {
-
-This is an off by one from what the original developer was intending
-because we're freeing the most recent queue that wasn't allocated.
-In other words, we're freeing everything that we need to plus *one
-more thing that we don't need to*.  But it's harmless in this case:
-
-The better fix would be to make queue an int type and do:
-
-	while (--queue >= 0)
-		dma_free_rx_skbufs(priv, queue);
 
