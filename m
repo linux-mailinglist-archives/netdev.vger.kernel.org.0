@@ -2,83 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 02ABF35FFDC
-	for <lists+netdev@lfdr.de>; Thu, 15 Apr 2021 04:08:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4FFF935FFE2
+	for <lists+netdev@lfdr.de>; Thu, 15 Apr 2021 04:13:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229677AbhDOCJB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 14 Apr 2021 22:09:01 -0400
-Received: from mga01.intel.com ([192.55.52.88]:40919 "EHLO mga01.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229449AbhDOCJA (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 14 Apr 2021 22:09:00 -0400
-IronPort-SDR: P6S8/D9WBuFEfR7UptKM45H4v+xT8Op96187DTb5eJCVVrhpN1S8vbnSByaeh5vkVsOoSNhgX7
- r2VRf6jj/gfA==
-X-IronPort-AV: E=McAfee;i="6200,9189,9954"; a="215274768"
-X-IronPort-AV: E=Sophos;i="5.82,223,1613462400"; 
-   d="scan'208";a="215274768"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Apr 2021 19:08:38 -0700
-IronPort-SDR: 7lii/VjEuWHAT3RP9346JTNZO8RSGOm7hnPYTpW67DFX3TYpIMnFs76RVGwA9n0rp9EIoupYif
- Gu5a8LDWGMsA==
-X-IronPort-AV: E=Sophos;i="5.82,223,1613462400"; 
-   d="scan'208";a="383875358"
-Received: from jbrandeb-mobl4.amr.corp.intel.com (HELO localhost) ([10.209.19.126])
-  by orsmga006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Apr 2021 19:08:37 -0700
-Date:   Wed, 14 Apr 2021 19:08:37 -0700
-From:   Jesse Brandeburg <jesse.brandeburg@intel.com>
-To:     Jason Xing <kerneljasonxing@gmail.com>
-Cc:     anthony.l.nguyen@intel.com, David Miller <davem@davemloft.net>,
-        kuba@kernel.org, ast@kernel.org, daniel@iogearbox.net,
-        hawk@kernel.org, john.fastabend@gmail.com, andrii@kernel.org,
-        kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
-        kpsingh@kernel.org, netdev <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>, bpf@vger.kernel.org,
-        Jason Xing <xingwanli@kuaishou.com>,
-        Shujin Li <lishujin@kuaishou.com>,
-        intel-wired-lan@lists.osuosl.org
-Subject: Re: [PATCH net v2] i40e: fix the panic when running bpf in xdpdrv
- mode
-Message-ID: <20210414190837.0000085a@intel.com>
-In-Reply-To: <CAL+tcoBVhD1SfMYAFVn0HxZ3ig88pxtiLoha9d6Z+62yq8bWBA@mail.gmail.com>
-References: <20210412065759.2907-1-kerneljasonxing@gmail.com>
-        <20210413025011.1251-1-kerneljasonxing@gmail.com>
-        <20210413091812.0000383d@intel.com>
-        <CAL+tcoBVhD1SfMYAFVn0HxZ3ig88pxtiLoha9d6Z+62yq8bWBA@mail.gmail.com>
-X-Mailer: Claws Mail 3.12.0 (GTK+ 2.24.28; i686-w64-mingw32)
+        id S229620AbhDOCNn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 14 Apr 2021 22:13:43 -0400
+Received: from szxga08-in.huawei.com ([45.249.212.255]:3336 "EHLO
+        szxga08-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229449AbhDOCNn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 14 Apr 2021 22:13:43 -0400
+Received: from DGGEML404-HUB.china.huawei.com (unknown [172.30.72.57])
+        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4FLN836Bp3z14GFs;
+        Thu, 15 Apr 2021 10:09:39 +0800 (CST)
+Received: from dggpemm500006.china.huawei.com (7.185.36.236) by
+ DGGEML404-HUB.china.huawei.com (10.3.17.39) with Microsoft SMTP Server (TLS)
+ id 14.3.498.0; Thu, 15 Apr 2021 10:13:18 +0800
+Received: from [127.0.0.1] (10.69.26.252) by dggpemm500006.china.huawei.com
+ (7.185.36.236) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id 15.1.2106.2; Thu, 15 Apr
+ 2021 10:13:18 +0800
+Subject: Re: [PATCH net-next 1/2] net: hns3: PF add support for pushing link
+ status to VFs
+To:     Jakub Kicinski <kuba@kernel.org>
+CC:     <davem@davemloft.net>, <netdev@vger.kernel.org>,
+        <salil.mehta@huawei.com>, <yisen.zhuang@huawei.com>,
+        <huangdaode@huawei.com>, <linuxarm@openeuler.org>,
+        <linuxarm@huawei.com>, Guangbin Huang <huangguangbin2@huawei.com>
+References: <1618294621-41356-1-git-send-email-tanhuazhong@huawei.com>
+ <1618294621-41356-2-git-send-email-tanhuazhong@huawei.com>
+ <20210413101826.103b25fc@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <2dac0fe0-cdcb-a3c5-0c72-7873857824fd@huawei.com>
+ <20210414094230.64caf43e@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <ab9a508c-29f0-1ff5-bb95-fbae4a859d6b@huawei.com>
+ <20210414185355.4080a93f@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+From:   Huazhong Tan <tanhuazhong@huawei.com>
+Message-ID: <d9981f41-a0b3-4907-1fd0-14f0ae5bf421@huawei.com>
+Date:   Thu, 15 Apr 2021 10:13:18 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.5.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+In-Reply-To: <20210414185355.4080a93f@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Content-Type: text/plain; charset="utf-8"; format=flowed
 Content-Transfer-Encoding: 7bit
+Content-Language: en-US
+X-Originating-IP: [10.69.26.252]
+X-ClientProxiedBy: dggeme710-chm.china.huawei.com (10.1.199.106) To
+ dggpemm500006.china.huawei.com (7.185.36.236)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Jason Xing wrote:
 
-> On Wed, Apr 14, 2021 at 12:27 AM Jesse Brandeburg
-> <jesse.brandeburg@intel.com> wrote:
-> >
-> > kerneljasonxing@gmail.com wrote:
-> >
-> > > From: Jason Xing <xingwanli@kuaishou.com>
-> >
-> > Hi Jason,
-> >
-> > Sorry, I missed this on the first time: Added intel-wired-lan,
-> > please include on any future submissions for Intel drivers.
-> > get-maintainers script might help here?
-> >
-> 
-> Probably I got this wrong in the last email. Did you mean that I should add
-> intel-wired-lan in the title not the cc list? It seems I should put
-> this together on
-> the next submission like this:
-> 
-> [Intel-wired-lan] [PATCH net v4]
+On 2021/4/15 9:53, Jakub Kicinski wrote:
+> On Thu, 15 Apr 2021 09:11:03 +0800 Huazhong Tan wrote:
+>>>> They are in different contexts. here will be called to
+>>>> update the link status of all VFs when the underlying
+>>>> link status is changed, while the below one is called
+>>>> when the admin set up the specific VF link status.
+>>> I see.
+>> So this error will be printed twice only if these two cases
+>> happen at the same, do you mean to add some keyword to
+>> distinguish them?
+> No, it's fine but please repost - looks like the patches were
+> removed from patchwork already.
 
-Your v3 submittal was correct. My intent was to make sure
-intel-wired-lan was in CC:
 
-If Kuba or Dave wants us to take the fix in via intel-wired-lan trees,
-then we can do that, or they can apply it directly. I'll ack it on the
-v3.
+Will resend it, thanks.
+
+
+> .
 
