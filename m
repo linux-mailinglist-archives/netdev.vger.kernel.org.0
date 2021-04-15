@@ -2,193 +2,235 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4FCAF36037E
-	for <lists+netdev@lfdr.de>; Thu, 15 Apr 2021 09:38:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EA7D3360390
+	for <lists+netdev@lfdr.de>; Thu, 15 Apr 2021 09:40:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231526AbhDOHjK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 15 Apr 2021 03:39:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60580 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231441AbhDOHjE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 15 Apr 2021 03:39:04 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8366AC061756
-        for <netdev@vger.kernel.org>; Thu, 15 Apr 2021 00:38:41 -0700 (PDT)
-Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <mkl@pengutronix.de>)
-        id 1lWwZu-0008LU-1Y; Thu, 15 Apr 2021 09:38:18 +0200
-Received: from pengutronix.de (unknown [IPv6:2a03:f580:87bc:d400:983:856d:54dc:ee1c])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (Client did not present a certificate)
-        (Authenticated sender: mkl-all@blackshift.org)
-        by smtp.blackshift.org (Postfix) with ESMTPSA id F2D1860F1FE;
-        Thu, 15 Apr 2021 07:38:10 +0000 (UTC)
-Date:   Thu, 15 Apr 2021 09:38:10 +0200
-From:   Marc Kleine-Budde <mkl@pengutronix.de>
-To:     Aswath Govindraju <a-govindraju@ti.com>
-Cc:     linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-phy@lists.infradead.org,
-        Chandrasekar Ramakrishnan <rcsekar@samsung.com>,
-        Wolfgang Grandegger <wg@grandegger.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Kishon Vijay Abraham I <kishon@ti.com>,
-        Vinod Koul <vkoul@kernel.org>, linux-can@vger.kernel.org,
-        netdev@vger.kernel.org, Vignesh Raghavendra <vigneshr@ti.com>,
-        Lokesh Vutla <lokeshvutla@ti.com>,
-        Grygorii Strashko <grygorii.strashko@ti.com>
-Subject: Re: [PATCH v2 3/6] dt-bindings: phy: Add binding for TI TCAN104x CAN
- transceivers
-Message-ID: <20210415073810.nwoi2hx57hdg4ima@pengutronix.de>
-References: <20210414140521.11463-1-a-govindraju@ti.com>
- <20210414140521.11463-4-a-govindraju@ti.com>
- <20210414153303.yig6bguue3g25yhg@pengutronix.de>
- <9a9a3b8b-f345-faae-b9bc-3961518e3d29@ti.com>
+        id S231511AbhDOHky (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 15 Apr 2021 03:40:54 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:54745 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S231479AbhDOHkv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 15 Apr 2021 03:40:51 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1618472427;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=FABcKglbZyz1XUUkdOXQm+i1lKqkxdPYz82VDd7EHCc=;
+        b=E3G/7HUOPVaw66wibjCv1WbFy3oUvSIpPjdbGVrER+fIgFMdIxriPAasDdqOJb3Du7jE5/
+        8icemMvkBVKtvzcUgWfSf5p0AYDR8EnlAcwKTSR9fkI0otf1KZhfu/GmUwNat6SdsaObDG
+        QEEPJBI/t4Qt+enrR9V/8M5X7ycLMYk=
+Received: from mail-ed1-f69.google.com (mail-ed1-f69.google.com
+ [209.85.208.69]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-386-f0Nko7GlMdqf9171VlyI8A-1; Thu, 15 Apr 2021 03:40:25 -0400
+X-MC-Unique: f0Nko7GlMdqf9171VlyI8A-1
+Received: by mail-ed1-f69.google.com with SMTP id v5-20020a0564023485b029037ff13253bcso4711082edc.3
+        for <netdev@vger.kernel.org>; Thu, 15 Apr 2021 00:40:25 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=FABcKglbZyz1XUUkdOXQm+i1lKqkxdPYz82VDd7EHCc=;
+        b=TpMDZK5jNI55EVJHUy9fkBuVR5lhU8E1CAurbqmvTFl8qws0I4FLEb/Y80CrN3DVd+
+         TEDjXMMi7okGs8RbrmqUfjGe4122OCTmxcR5/QYiei+dSt4/ZMXhkmeelcwH2R4ZxfGl
+         qGQS9IW282ssQwlHtIJxfWrMXuTa/NhazmK5pRJO8dhKby90nTxdljmk9SxLGbQj0b+p
+         qbl891nqJGagq/dA5ZkKlszJIhE2W5wqN5euwOuo20jCEPHlOOexyFJRnYU+E7sfRIfi
+         /3vDubbF3SslJ8d7o3tkr3ixpXRZggg2kL8uXQzwN+48df5/XJ7gzf6Wa0R+nzB4+tGs
+         ia5A==
+X-Gm-Message-State: AOAM530dYQi8+TnUj++/FXcBm/D6AfZyZxkrW4NIKxdUnFa6NakhyA9X
+        gDA6XG7wHG/JY7cTIM6KJ1IhhrNMVFv9+rJVh3g3ITdE5zMJdO3cIlRCq+uipssXxoAzb55Vg/M
+        2V67o0Aje7WzfHni39HsMPZyjKXVY1NUCs9uJUqZdXzRiulsKOJd3SJnmQr41PmxR39oZ
+X-Received: by 2002:a17:906:80d6:: with SMTP id a22mr2018550ejx.277.1618472424156;
+        Thu, 15 Apr 2021 00:40:24 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJx0fuohm6puHv0F4pqjM8Oe2og4+AYVZWqbQ2+dlsXsdUigyAKX+u4GzMQpiq69iOvQF1X+Kw==
+X-Received: by 2002:a17:906:80d6:: with SMTP id a22mr2018508ejx.277.1618472423854;
+        Thu, 15 Apr 2021 00:40:23 -0700 (PDT)
+Received: from [192.168.10.118] ([93.56.169.140])
+        by smtp.gmail.com with ESMTPSA id d18sm1701897edv.1.2021.04.15.00.40.22
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 15 Apr 2021 00:40:23 -0700 (PDT)
+Subject: Re: [PATCH 2/2] tools: do not include scripts/Kbuild.include
+To:     Masahiro Yamada <masahiroy@kernel.org>,
+        linux-kbuild@vger.kernel.org
+Cc:     Janosch Frank <frankja@linux.ibm.com>,
+        Christian Borntraeger <borntraeger@de.ibm.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Harish <harish@linux.ibm.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>, Martin KaFai Lau <kafai@fb.com>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Nathan Chancellor <nathan@kernel.org>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Paul Mackerras <paulus@samba.org>,
+        Shuah Khan <shuah@kernel.org>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        bpf@vger.kernel.org, clang-built-linux@googlegroups.com,
+        kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-kselftest@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
+        netdev@vger.kernel.org
+References: <20210415072700.147125-1-masahiroy@kernel.org>
+ <20210415072700.147125-2-masahiroy@kernel.org>
+From:   Paolo Bonzini <pbonzini@redhat.com>
+Message-ID: <9d33ee98-9de3-2215-0c0b-cc856cec1b69@redhat.com>
+Date:   Thu, 15 Apr 2021 09:40:20 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.7.0
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="x47mptupwgm4a7j3"
-Content-Disposition: inline
-In-Reply-To: <9a9a3b8b-f345-faae-b9bc-3961518e3d29@ti.com>
-X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
-X-SA-Exim-Mail-From: mkl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
+In-Reply-To: <20210415072700.147125-2-masahiroy@kernel.org>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On 15/04/21 09:27, Masahiro Yamada wrote:
+> Since commit d9f4ff50d2aa ("kbuild: spilt cc-option and friends to
+> scripts/Makefile.compiler"), some kselftests fail to build.
+> 
+> The tools/ directory opted out Kbuild, and went in a different
+> direction. They copy any kind of files to the tools/ directory
+> in order to do whatever they want to do in their world.
+> 
+> tools/build/Build.include mimics scripts/Kbuild.include, but some
+> tool Makefiles included the Kbuild one to import a feature that is
+> missing in tools/build/Build.include:
+> 
+>   - Commit ec04aa3ae87b ("tools/thermal: tmon: use "-fstack-protector"
+>     only if supported") included scripts/Kbuild.include from
+>     tools/thermal/tmon/Makefile to import the cc-option macro.
+> 
+>   - Commit c2390f16fc5b ("selftests: kvm: fix for compilers that do
+>     not support -no-pie") included scripts/Kbuild.include from
+>     tools/testing/selftests/kvm/Makefile to import the try-run macro.
+> 
+>   - Commit 9cae4ace80ef ("selftests/bpf: do not ignore clang
+>     failures") included scripts/Kbuild.include from
+>     tools/testing/selftests/bpf/Makefile to import the .DELETE_ON_ERROR
+>     target.
+> 
+>   - Commit 0695f8bca93e ("selftests/powerpc: Handle Makefile for
+>     unrecognized option") included scripts/Kbuild.include from
+>     tools/testing/selftests/powerpc/pmu/ebb/Makefile to import the
+>     try-run macro.
+> 
+> Copy what they want there, and stop including scripts/Kbuild.include
+> from the tool Makefiles.
 
---x47mptupwgm4a7j3
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+I think it would make sense to add try-run, cc-option and 
+.DELETE_ON_ERROR to tools/build/Build.include?
 
-On 15.04.2021 11:57:20, Aswath Govindraju wrote:
-> Hi Marc,
->=20
-> On 14/04/21 9:03 pm, Marc Kleine-Budde wrote:
-> > On 14.04.2021 19:35:18, Aswath Govindraju wrote:
-> >> Add binding documentation for TI TCAN104x CAN transceivers.
-> >>
-> >> Signed-off-by: Aswath Govindraju <a-govindraju@ti.com>
-> >> ---
-> >>  .../bindings/phy/ti,tcan104x-can.yaml         | 56 +++++++++++++++++++
-> >>  MAINTAINERS                                   |  1 +
-> >>  2 files changed, 57 insertions(+)
-> >>  create mode 100644 Documentation/devicetree/bindings/phy/ti,tcan104x-=
-can.yaml
-> >>
-> >> diff --git a/Documentation/devicetree/bindings/phy/ti,tcan104x-can.yam=
-l b/Documentation/devicetree/bindings/phy/ti,tcan104x-can.yaml
-> >> new file mode 100644
-> >> index 000000000000..4abfc30a97d0
-> >> --- /dev/null
-> >> +++ b/Documentation/devicetree/bindings/phy/ti,tcan104x-can.yaml
-> >> @@ -0,0 +1,56 @@
-> >> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-> >> +%YAML 1.2
-> >> +---
-> >> +$id: "http://devicetree.org/schemas/phy/ti,tcan104x-can.yaml#"
-> >> +$schema: "http://devicetree.org/meta-schemas/core.yaml#"
-> >> +
-> >> +title: TCAN104x CAN TRANSCEIVER PHY
-> >> +
-> >> +maintainers:
-> >> +  - Aswath Govindraju <a-govindraju@ti.com>
+Paolo
 
-Can you create a maintainers entry for this file with your address?
+> Link: https://lore.kernel.org/lkml/86dadf33-70f7-a5ac-cb8c-64966d2f45a1@linux.ibm.com/
+> Fixes: d9f4ff50d2aa ("kbuild: spilt cc-option and friends to scripts/Makefile.compiler")
+> Reported-by: Janosch Frank <frankja@linux.ibm.com>
+> Reported-by: Christian Borntraeger <borntraeger@de.ibm.com>
+> Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
+> ---
+> 
+>   tools/testing/selftests/bpf/Makefile          |  3 ++-
+>   tools/testing/selftests/kvm/Makefile          | 12 +++++++++++-
+>   .../selftests/powerpc/pmu/ebb/Makefile        | 11 ++++++++++-
+>   tools/thermal/tmon/Makefile                   | 19 +++++++++++++++++--
+>   4 files changed, 40 insertions(+), 5 deletions(-)
+> 
+> diff --git a/tools/testing/selftests/bpf/Makefile b/tools/testing/selftests/bpf/Makefile
+> index 044bfdcf5b74..d872b9f41543 100644
+> --- a/tools/testing/selftests/bpf/Makefile
+> +++ b/tools/testing/selftests/bpf/Makefile
+> @@ -1,5 +1,4 @@
+>   # SPDX-License-Identifier: GPL-2.0
+> -include ../../../../scripts/Kbuild.include
+>   include ../../../scripts/Makefile.arch
+>   include ../../../scripts/Makefile.include
+>   
+> @@ -476,3 +475,5 @@ EXTRA_CLEAN := $(TEST_CUSTOM_PROGS) $(SCRATCH_DIR) $(HOST_SCRATCH_DIR)	\
+>   	prog_tests/tests.h map_tests/tests.h verifier/tests.h		\
+>   	feature								\
+>   	$(addprefix $(OUTPUT)/,*.o *.skel.h no_alu32 bpf_gcc bpf_testmod.ko)
+> +
+> +.DELETE_ON_ERROR:
+> diff --git a/tools/testing/selftests/kvm/Makefile b/tools/testing/selftests/kvm/Makefile
+> index a6d61f451f88..8b45bc417d83 100644
+> --- a/tools/testing/selftests/kvm/Makefile
+> +++ b/tools/testing/selftests/kvm/Makefile
+> @@ -1,5 +1,15 @@
+>   # SPDX-License-Identifier: GPL-2.0-only
+> -include ../../../../scripts/Kbuild.include
+> +
+> +TMPOUT = .tmp_$$$$
+> +
+> +try-run = $(shell set -e;		\
+> +	TMP=$(TMPOUT)/tmp;		\
+> +	mkdir -p $(TMPOUT);		\
+> +	trap "rm -rf $(TMPOUT)" EXIT;	\
+> +	if ($(1)) >/dev/null 2>&1;	\
+> +	then echo "$(2)";		\
+> +	else echo "$(3)";		\
+> +	fi)
+>   
+>   all:
+>   
+> diff --git a/tools/testing/selftests/powerpc/pmu/ebb/Makefile b/tools/testing/selftests/powerpc/pmu/ebb/Makefile
+> index af3df79d8163..d5d3e869df93 100644
+> --- a/tools/testing/selftests/powerpc/pmu/ebb/Makefile
+> +++ b/tools/testing/selftests/powerpc/pmu/ebb/Makefile
+> @@ -1,5 +1,4 @@
+>   # SPDX-License-Identifier: GPL-2.0
+> -include ../../../../../../scripts/Kbuild.include
+>   
+>   noarg:
+>   	$(MAKE) -C ../../
+> @@ -8,6 +7,16 @@ noarg:
+>   CFLAGS += -m64
+>   
+>   TMPOUT = $(OUTPUT)/TMPDIR/
+> +
+> +try-run = $(shell set -e;		\
+> +	TMP=$(TMPOUT)/tmp;		\
+> +	mkdir -p $(TMPOUT);		\
+> +	trap "rm -rf $(TMPOUT)" EXIT;	\
+> +	if ($(1)) >/dev/null 2>&1;	\
+> +	then echo "$(2)";		\
+> +	else echo "$(3)";		\
+> +	fi)
+> +
+>   # Toolchains may build PIE by default which breaks the assembly
+>   no-pie-option := $(call try-run, echo 'int main() { return 0; }' | \
+>           $(CC) -Werror $(KBUILD_CPPFLAGS) $(CC_OPTION_CFLAGS) -no-pie -x c - -o "$$TMP", -no-pie)
+> diff --git a/tools/thermal/tmon/Makefile b/tools/thermal/tmon/Makefile
+> index 59e417ec3e13..92a683e4866c 100644
+> --- a/tools/thermal/tmon/Makefile
+> +++ b/tools/thermal/tmon/Makefile
+> @@ -1,6 +1,21 @@
+>   # SPDX-License-Identifier: GPL-2.0
+> -# We need this for the "cc-option" macro.
+> -include ../../../scripts/Kbuild.include
+> +
+> +TMPOUT = .tmp_$$$$
+> +
+> +try-run = $(shell set -e;		\
+> +	TMP=$(TMPOUT)/tmp;		\
+> +	mkdir -p $(TMPOUT);		\
+> +	trap "rm -rf $(TMPOUT)" EXIT;	\
+> +	if ($(1)) >/dev/null 2>&1;	\
+> +	then echo "$(2)";		\
+> +	else echo "$(3)";		\
+> +	fi)
+> +
+> +__cc-option = $(call try-run,\
+> +	$(1) -Werror $(2) $(3) -c -x c /dev/null -o "$$TMP",$(3),$(4))
+> +
+> +cc-option = $(call __cc-option, $(CC),\
+> +	$(KBUILD_CPPFLAGS) $(KBUILD_CFLAGS),$(1),$(2))
+>   
+>   VERSION = 1.0
+>   
+> 
 
-> >> +
-> >> +properties:
-> >> +  $nodename:
-> >> +    pattern: "^tcan104x-phy"
-> >> +
-> >> +  compatible:
-> >> +    enum:
-> >> +      - ti,tcan1042
-> >> +      - ti,tcan1043
-> >=20
-> > Can you ensure that the 1042 has only the standby gpio and the 1043 has=
- both?
-> >=20
->=20
-> In the driver, it is the way the flags have been set for ti,tcan1042 and
-> ti,tcan1043.
-
-I was wondering if we would enforce in the DT the 1042 has exactly one
-the standby GPIO and the 1043 has exactly the standby and the enable
-GPIO.
-
-On the other hand the HW might have pulled one or the other pin high or
-low and only one of the pins is connected to a GPIO.
-
-> >> +
-> >> +  '#phy-cells':
-> >> +    const: 0
-> >> +
-> >> +  standby-gpios:
-> >> +    description:
-> >> +      gpio node to toggle standby signal on transceiver
-> >> +    maxItems: 1
-> >> +
-> >> +  enable-gpios:
-> >> +    description:
-> >> +      gpio node to toggle enable signal on transceiver
-> >> +    maxItems: 1
-> >> +
-> >> +  max-bitrate:
-> >> +    $ref: /schemas/types.yaml#/definitions/uint32
-> >> +    description:
-> >> +      max bit rate supported in bps
-> >> +    minimum: 1
-> >> +
-> >> +required:
-> >> +  - compatible
-> >> +  - '#phy-cells'
-> >> +
-> >> +additionalProperties: false
-> >> +
-> >> +examples:
-> >> +  - |
-> >> +    #include <dt-bindings/gpio/gpio.h>
-> >> +
-> >> +    transceiver1: tcan104x-phy {
-> >> +      compatible =3D "ti,tcan1043";
-> >> +      #phy-cells =3D <0>;
-> >> +      max-bitrate =3D <5000000>;
-> >> +      standby-gpios =3D <&wakeup_gpio1 16 GPIO_ACTIVE_LOW>;
-> >> +      enable-gpios =3D <&main_gpio1 67 GPIO_ACTIVE_LOW>;
-> >=20
-> > AFAICS the enable gpio is active high.
-> >=20
->=20
-> I will correct this in the respin.
-
-Marc
-
---=20
-Pengutronix e.K.                 | Marc Kleine-Budde           |
-Embedded Linux                   | https://www.pengutronix.de  |
-Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
-Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
-
---x47mptupwgm4a7j3
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEK3kIWJt9yTYMP3ehqclaivrt76kFAmB37V8ACgkQqclaivrt
-76ng1gf/aCWi7jDI36fG5Q2jCFj5WHSssB52808LYtj6jR8zi7zjgjHCoCK7MhXW
-tBV3CtNonx5NvHo99xFZgdVyJGlBeairCMWf9yfxW48sJzke6S0+WZ+qhWEE7mTG
-ae8a5lcQ14qMT0ls/xHdBA4pQ2JGvd1s3/H3EIaMo2HPIA3rYycVaIGYd2eNlFAj
-EbFN6mU8xyk9mxfIVlaBsPGqAFFCy3aS1vKpT4IKmo5iUIK1qWnVigrCIPU9Zch6
-CRT0l5b0o9WsmkFe+oZpxGdDh+FO/bZNI2viH9avUhmx7uqwqb2sP2sljdR2CVtz
-j/9UhbSLDsxIKZHyaXZnknZ+W7KBNg==
-=ZTv2
------END PGP SIGNATURE-----
-
---x47mptupwgm4a7j3--
