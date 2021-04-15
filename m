@@ -2,37 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 52DE436065A
-	for <lists+netdev@lfdr.de>; Thu, 15 Apr 2021 11:59:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 99D2E36065D
+	for <lists+netdev@lfdr.de>; Thu, 15 Apr 2021 11:59:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232298AbhDOJ71 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 15 Apr 2021 05:59:27 -0400
+        id S232332AbhDOJ7c (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 15 Apr 2021 05:59:32 -0400
 Received: from mga12.intel.com ([192.55.52.136]:65315 "EHLO mga12.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232236AbhDOJ7Y (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 15 Apr 2021 05:59:24 -0400
-IronPort-SDR: aDVZPW7/K896FggHVS9g7ra/9LkdDpho6/j8vMaKLa40wxxCXPHZBitmXMXUyMoTqEHhWJrdG7
- BGrX1C9LTAOw==
-X-IronPort-AV: E=McAfee;i="6200,9189,9954"; a="174321441"
+        id S232294AbhDOJ71 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 15 Apr 2021 05:59:27 -0400
+IronPort-SDR: JQ3u8krA8A+ayFzI4RMAF7KRbmoAaPBZCyb8UGh7yMne5eEXvmjWnTtp/EWxW1xFQJ//dxXy99
+ BrFUSNzC6h1Q==
+X-IronPort-AV: E=McAfee;i="6200,9189,9954"; a="174321448"
 X-IronPort-AV: E=Sophos;i="5.82,223,1613462400"; 
-   d="scan'208";a="174321441"
+   d="scan'208";a="174321448"
 Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Apr 2021 02:59:01 -0700
-IronPort-SDR: xfgMCm55iX6pNYnWFtkbXlDYrEv2OZmqGlclKC+Q9D15EzYjY2PMoYS7l8lANjtkhMUbT5MWkW
- 2TSTDqs5EzFQ==
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Apr 2021 02:59:04 -0700
+IronPort-SDR: AptOkeCkx0s85LJH4TjZFNfA6zvizGwZ6gcGZdSPqAVxuz7Jhl2t0gjF59bMkolL3BBGabWYZy
+ vOdRc4Ipknxg==
 X-IronPort-AV: E=Sophos;i="5.82,223,1613462400"; 
-   d="scan'208";a="425123466"
+   d="scan'208";a="425123484"
 Received: from unknown (HELO localhost.localdomain.bj.intel.com) ([10.240.193.73])
-  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Apr 2021 02:58:59 -0700
+  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Apr 2021 02:59:01 -0700
 From:   Zhu Lingshan <lingshan.zhu@intel.com>
 To:     jasowang@redhat.com, mst@redhat.com, lulu@redhat.com,
         sgarzare@redhat.com
 Cc:     virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
         kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
         Zhu Lingshan <lingshan.zhu@intel.com>
-Subject: [PATCH V2 2/3] vDPA/ifcvf: enable Intel C5000X-PL virtio-block for vDPA
-Date:   Thu, 15 Apr 2021 17:53:35 +0800
-Message-Id: <20210415095336.4792-3-lingshan.zhu@intel.com>
+Subject: [PATCH V2 3/3] vDPA/ifcvf: get_config_size should return dev specific config size
+Date:   Thu, 15 Apr 2021 17:53:36 +0800
+Message-Id: <20210415095336.4792-4-lingshan.zhu@intel.com>
 X-Mailer: git-send-email 2.27.0
 In-Reply-To: <20210415095336.4792-1-lingshan.zhu@intel.com>
 References: <20210415095336.4792-1-lingshan.zhu@intel.com>
@@ -42,69 +42,43 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This commit enabled Intel FPGA SmartNIC C5000X-PL virtio-block
-for vDPA.
+get_config_size() should return the size based on the decected
+device type.
 
 Signed-off-by: Zhu Lingshan <lingshan.zhu@intel.com>
 ---
- drivers/vdpa/ifcvf/ifcvf_base.h |  8 +++++++-
- drivers/vdpa/ifcvf/ifcvf_main.c | 10 +++++++++-
- 2 files changed, 16 insertions(+), 2 deletions(-)
+ drivers/vdpa/ifcvf/ifcvf_main.c | 18 +++++++++++++++++-
+ 1 file changed, 17 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/vdpa/ifcvf/ifcvf_base.h b/drivers/vdpa/ifcvf/ifcvf_base.h
-index 1c04cd256fa7..0111bfdeb342 100644
---- a/drivers/vdpa/ifcvf/ifcvf_base.h
-+++ b/drivers/vdpa/ifcvf/ifcvf_base.h
-@@ -15,6 +15,7 @@
- #include <linux/pci_regs.h>
- #include <linux/vdpa.h>
- #include <uapi/linux/virtio_net.h>
-+#include <uapi/linux/virtio_blk.h>
- #include <uapi/linux/virtio_config.h>
- #include <uapi/linux/virtio_pci.h>
- 
-@@ -28,7 +29,12 @@
- #define C5000X_PL_SUBSYS_VENDOR_ID	0x8086
- #define C5000X_PL_SUBSYS_DEVICE_ID	0x0001
- 
--#define IFCVF_SUPPORTED_FEATURES \
-+#define C5000X_PL_BLK_VENDOR_ID		0x1AF4
-+#define C5000X_PL_BLK_DEVICE_ID		0x1001
-+#define C5000X_PL_BLK_SUBSYS_VENDOR_ID	0x8086
-+#define C5000X_PL_BLK_SUBSYS_DEVICE_ID	0x0002
-+
-+#define IFCVF_NET_SUPPORTED_FEATURES \
- 		((1ULL << VIRTIO_NET_F_MAC)			| \
- 		 (1ULL << VIRTIO_F_ANY_LAYOUT)			| \
- 		 (1ULL << VIRTIO_F_VERSION_1)			| \
 diff --git a/drivers/vdpa/ifcvf/ifcvf_main.c b/drivers/vdpa/ifcvf/ifcvf_main.c
-index 469a9b5737b7..cea1313b1a3f 100644
+index cea1313b1a3f..6844c49fe1de 100644
 --- a/drivers/vdpa/ifcvf/ifcvf_main.c
 +++ b/drivers/vdpa/ifcvf/ifcvf_main.c
-@@ -171,7 +171,11 @@ static u64 ifcvf_vdpa_get_features(struct vdpa_device *vdpa_dev)
- 	struct ifcvf_hw *vf = vdpa_to_vf(vdpa_dev);
- 	u64 features;
+@@ -347,7 +347,23 @@ static u32 ifcvf_vdpa_get_vq_align(struct vdpa_device *vdpa_dev)
  
--	features = ifcvf_get_features(vf) & IFCVF_SUPPORTED_FEATURES;
-+	if (vf->dev_type == VIRTIO_ID_NET)
-+		features = ifcvf_get_features(vf) & IFCVF_NET_SUPPORTED_FEATURES;
+ static size_t ifcvf_vdpa_get_config_size(struct vdpa_device *vdpa_dev)
+ {
+-	return sizeof(struct virtio_net_config);
++	struct ifcvf_adapter *adapter = vdpa_to_adapter(vdpa_dev);
++	struct ifcvf_hw *vf = vdpa_to_vf(vdpa_dev);
++	struct pci_dev *pdev = adapter->pdev;
++	size_t size;
 +
-+	if (vf->dev_type == VIRTIO_ID_BLOCK)
-+		features = ifcvf_get_features(vf);
- 
- 	return features;
++	if (vf->dev_type == VIRTIO_ID_NET)
++		size = sizeof(struct virtio_net_config);
++
++	else if (vf->dev_type == VIRTIO_ID_BLOCK)
++		size = sizeof(struct virtio_blk_config);
++
++	else {
++		size = 0;
++		IFCVF_ERR(pdev, "VIRTIO ID %u not supported\n", vf->dev_type);
++	}
++
++	return size;
  }
-@@ -517,6 +521,10 @@ static struct pci_device_id ifcvf_pci_ids[] = {
- 			 C5000X_PL_DEVICE_ID,
- 			 C5000X_PL_SUBSYS_VENDOR_ID,
- 			 C5000X_PL_SUBSYS_DEVICE_ID) },
-+	{ PCI_DEVICE_SUB(C5000X_PL_BLK_VENDOR_ID,
-+			 C5000X_PL_BLK_DEVICE_ID,
-+			 C5000X_PL_BLK_SUBSYS_VENDOR_ID,
-+			 C5000X_PL_BLK_SUBSYS_DEVICE_ID) },
  
- 	{ 0 },
- };
+ static void ifcvf_vdpa_get_config(struct vdpa_device *vdpa_dev,
 -- 
 2.27.0
 
