@@ -2,149 +2,128 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 12572361339
-	for <lists+netdev@lfdr.de>; Thu, 15 Apr 2021 21:58:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2E8EB36133B
+	for <lists+netdev@lfdr.de>; Thu, 15 Apr 2021 21:58:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234654AbhDOT6f (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 15 Apr 2021 15:58:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54260 "EHLO
+        id S235190AbhDOT7P (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 15 Apr 2021 15:59:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54408 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235146AbhDOT6e (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 15 Apr 2021 15:58:34 -0400
-Received: from mail-pl1-x630.google.com (mail-pl1-x630.google.com [IPv6:2607:f8b0:4864:20::630])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 55899C061760
-        for <netdev@vger.kernel.org>; Thu, 15 Apr 2021 12:58:10 -0700 (PDT)
-Received: by mail-pl1-x630.google.com with SMTP id e2so8386952plh.8
-        for <netdev@vger.kernel.org>; Thu, 15 Apr 2021 12:58:10 -0700 (PDT)
+        with ESMTP id S235142AbhDOT7O (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 15 Apr 2021 15:59:14 -0400
+Received: from mail-pf1-x429.google.com (mail-pf1-x429.google.com [IPv6:2607:f8b0:4864:20::429])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 94946C061574;
+        Thu, 15 Apr 2021 12:58:51 -0700 (PDT)
+Received: by mail-pf1-x429.google.com with SMTP id o123so16796803pfb.4;
+        Thu, 15 Apr 2021 12:58:51 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=sXhSKr29wpd6a6qt/mh96odcNcbPE2aK/Q6BgI+4t6E=;
-        b=XK3D3dRhy2wdHg/aLihejMVK1Jpk1OaBdYzJasCCqg0zFBlARjGV0nVO9m5LE5hDBx
-         15tN0CoyPl0n4NfcgPD9Vm5bQmJIpMtYXqYr26Rcl0+RpjAK/dvrP4vV2aNKJtW99SaE
-         jauyFE7jIvcYQhahEsj4A+rQJTL2nVQ8nq0NM=
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=SbETF7lohgkuXHBXWamB8mVWkNu7c8UJtl6zbFx2I9c=;
+        b=R3ni5C03p6m8q7hoxznqE+yua1HR7cUIHBCNjEm8eZgO4+slnNMqvvL/AP7zO0B8g0
+         SExvUYTMtiWp/+5BhpslCB7P2tA460H6dZbw7LjzH/1F+7fLh0MgT2i910+snKn1MsSW
+         YOl/zlmQh/DUc79JnVnhM7cFFxnyfnQWircBRClxEnfKSlxzE1vK07zWhq7lALqoE+UT
+         kPz7FfVfNSzcgHvjqUrADoqYsowS40pQ7YFe3I4j/KT7bUmlmLcB9wgM1qEX3GG864qM
+         vUoqLpfEWCbZFrm/EEjblnmiHPnw1GbyMChuwvUxU2tlrgqJyqJyBQYkUIfL86bOpkk/
+         iYVg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=sXhSKr29wpd6a6qt/mh96odcNcbPE2aK/Q6BgI+4t6E=;
-        b=tvHUiDXex+SBVSqJDnQXFxINzgQi6ESO/93cNQW0nJwOhOWFkuZ9qdUeiNnlYGlQ2o
-         CUlfQnbmDDW5hNtaa5XizlivGYqP2ZpKwv8Ot58tNV6j0i0ekHKso7pf+3+DnGBq2r4k
-         36U+cqLca6Ci16K1rDpLDtSMEP/b/Yv+21reRP9+YxGwQpRLvGZOrfzLarm5kBIf2RXd
-         wm3gj6FSyKXKT4WffuIdxhSCr+D2CFvWj3vncn5gucHrKyV23Z40DYQrUvvUiw0iW++V
-         iGfthKTMr3kWFb6uQdDHgFVjgoViWv/TKVwoHayvCsmxiTPp+4LYGyER4v7jfo1R9K7T
-         FhHA==
-X-Gm-Message-State: AOAM530nYlRaUPpL8rujGKybSOyZ4Bsck0YxPcFKJAzQXh8NjagYIN+w
-        Lah4xTGJMFWW64aSGSjepGrF5A==
-X-Google-Smtp-Source: ABdhPJwcUdlJJtXYWk8IbTEMfWRkjKZmaPrvDax7npIZsC0vXr9zpHNelJm+tfVS3fQY6P4lxEBpJQ==
-X-Received: by 2002:a17:902:9b97:b029:eb:7a1b:5b88 with SMTP id y23-20020a1709029b97b02900eb7a1b5b88mr4516835plp.77.1618516690371;
-        Thu, 15 Apr 2021 12:58:10 -0700 (PDT)
-Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
-        by smtp.gmail.com with ESMTPSA id k15sm2936028pfi.0.2021.04.15.12.58.09
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 15 Apr 2021 12:58:09 -0700 (PDT)
-Date:   Thu, 15 Apr 2021 12:58:07 -0700
-From:   Kees Cook <keescook@chromium.org>
-To:     "Gustavo A. R. Silva" <gustavoars@kernel.org>
-Cc:     linux-kernel@vger.kernel.org, Kalle Valo <kvalo@codeaurora.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-hardening@vger.kernel.org
-Subject: Re: [PATCH v3 2/2] wl3501_cs: Fix out-of-bounds warnings in
- wl3501_mgmt_join
-Message-ID: <202104151257.DC4DA20@keescook>
-References: <cover.1618442265.git.gustavoars@kernel.org>
- <1fbaf516da763b50edac47d792a9145aa4482e29.1618442265.git.gustavoars@kernel.org>
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=SbETF7lohgkuXHBXWamB8mVWkNu7c8UJtl6zbFx2I9c=;
+        b=IunKEqGddWDO7EBWegZ0jwWiixcXH6+95HocmSwxh6EAr8tl9co+26KjG3vNmqzaPq
+         qI7CqQ7A3a9NI/JfOrlIUYY6+Y4E3ujIrAkiLG6BIKxWtpJE7P9QD5H+jQf7jymzjWkS
+         3onZy4MoFK+RNPkbab4I+mGCLoi4TulhuftJtuK/WeV4xT/MNUdnF3Bpa0SGbLrf5V86
+         1oX9aR55dQvRX9dhLd2oivDM+CpEvGshLTNE1ZD2N7DXUv1/Y3hQdH8mt4TDLpXVRpC8
+         VUOVHBZxWEI0WDpY4uud03Z68DkbuEuuuKei7NmSe1Kp+TR1rcR9yzFE+uKZzO676kao
+         Nj7g==
+X-Gm-Message-State: AOAM532AlAUZ7L5oPU9kuH3xT9/qg+HUAQ6ghRJam7WB2IVfDm8Sed+H
+        HA1xJfSWWd1aLtmwZZEoYaw=
+X-Google-Smtp-Source: ABdhPJzimemp+4lxqQc2C0WO26adQcOf+OO8m5CVuaR0BCU6cuTx7Ies7+CTkH7l3votAP6W/ThFfw==
+X-Received: by 2002:a05:6a00:be2:b029:258:834c:cdc9 with SMTP id x34-20020a056a000be2b0290258834ccdc9mr2857919pfu.54.1618516731054;
+        Thu, 15 Apr 2021 12:58:51 -0700 (PDT)
+Received: from [10.230.29.202] ([192.19.223.252])
+        by smtp.gmail.com with ESMTPSA id u7sm3210496pjx.8.2021.04.15.12.58.48
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 15 Apr 2021 12:58:50 -0700 (PDT)
+Subject: Re: [PATCH v2 2/7] net: phy: micrel: KSZ8081 & KSZ9031: add loopback
+ support
+To:     Oleksij Rempel <o.rempel@pengutronix.de>,
+        Shawn Guo <shawnguo@kernel.org>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Fugang Duan <fugang.duan@nxp.com>
+Cc:     kernel@pengutronix.de, netdev@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-imx@nxp.com, Fabio Estevam <festevam@gmail.com>,
+        David Jander <david@protonic.nl>,
+        Russell King <linux@armlinux.org.uk>,
+        Philippe Schenker <philippe.schenker@toradex.com>
+References: <20210415130738.19603-1-o.rempel@pengutronix.de>
+ <20210415130738.19603-3-o.rempel@pengutronix.de>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+Message-ID: <2bf45888-98e5-7c3c-1732-05d685d59d54@gmail.com>
+Date:   Thu, 15 Apr 2021 12:58:48 -0700
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Firefox/78.0 Thunderbird/78.9.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1fbaf516da763b50edac47d792a9145aa4482e29.1618442265.git.gustavoars@kernel.org>
+In-Reply-To: <20210415130738.19603-3-o.rempel@pengutronix.de>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Apr 14, 2021 at 06:45:15PM -0500, Gustavo A. R. Silva wrote:
-> Fix the following out-of-bounds warnings by adding a new structure
-> wl3501_req instead of duplicating the same members in structure
-> wl3501_join_req and wl3501_scan_confirm:
-> 
-> arch/x86/include/asm/string_32.h:182:25: warning: '__builtin_memcpy' offset [39, 108] from the object at 'sig' is out of the bounds of referenced subobject 'beacon_period' with type 'short unsigned int' at offset 36 [-Warray-bounds]
-> arch/x86/include/asm/string_32.h:182:25: warning: '__builtin_memcpy' offset [25, 95] from the object at 'sig' is out of the bounds of referenced subobject 'beacon_period' with type 'short unsigned int' at offset 22 [-Warray-bounds]
-> 
-> Refactor the code, accordingly:
-> 
-> $ pahole -C wl3501_req drivers/net/wireless/wl3501_cs.o
-> struct wl3501_req {
->         u16                        beacon_period;        /*     0     2 */
->         u16                        dtim_period;          /*     2     2 */
->         u16                        cap_info;             /*     4     2 */
->         u8                         bss_type;             /*     6     1 */
->         u8                         bssid[6];             /*     7     6 */
->         struct iw_mgmt_essid_pset  ssid;                 /*    13    34 */
->         struct iw_mgmt_ds_pset     ds_pset;              /*    47     3 */
->         struct iw_mgmt_cf_pset     cf_pset;              /*    50     8 */
->         struct iw_mgmt_ibss_pset   ibss_pset;            /*    58     4 */
->         struct iw_mgmt_data_rset   bss_basic_rset;       /*    62    10 */
-> 
->         /* size: 72, cachelines: 2, members: 10 */
->         /* last cacheline: 8 bytes */
-> };
-> 
-> $ pahole -C wl3501_join_req drivers/net/wireless/wl3501_cs.o
-> struct wl3501_join_req {
->         u16                        next_blk;             /*     0     2 */
->         u8                         sig_id;               /*     2     1 */
->         u8                         reserved;             /*     3     1 */
->         struct iw_mgmt_data_rset   operational_rset;     /*     4    10 */
->         u16                        reserved2;            /*    14     2 */
->         u16                        timeout;              /*    16     2 */
->         u16                        probe_delay;          /*    18     2 */
->         u8                         timestamp[8];         /*    20     8 */
->         u8                         local_time[8];        /*    28     8 */
->         struct wl3501_req          req;                  /*    36    72 */
-> 
->         /* size: 108, cachelines: 2, members: 10 */
->         /* last cacheline: 44 bytes */
-> };
-> 
-> $ pahole -C wl3501_scan_confirm drivers/net/wireless/wl3501_cs.o
-> struct wl3501_scan_confirm {
->         u16                        next_blk;             /*     0     2 */
->         u8                         sig_id;               /*     2     1 */
->         u8                         reserved;             /*     3     1 */
->         u16                        status;               /*     4     2 */
->         char                       timestamp[8];         /*     6     8 */
->         char                       localtime[8];         /*    14     8 */
->         struct wl3501_req          req;                  /*    22    72 */
->         /* --- cacheline 1 boundary (64 bytes) was 30 bytes ago --- */
->         u8                         rssi;                 /*    94     1 */
-> 
->         /* size: 96, cachelines: 2, members: 8 */
->         /* padding: 1 */
->         /* last cacheline: 32 bytes */
-> };
-> 
-> The problem is that the original code is trying to copy data into a
-> bunch of struct members adjacent to each other in a single call to
-> memcpy(). Now that a new struct wl3501_req enclosing all those adjacent
-> members is introduced, memcpy() doesn't overrun the length of
-> &sig.beacon_period and &this->bss_set[i].beacon_period, because the
-> address of the new struct object _req_ is used as the destination,
-> instead.
-> 
-> This helps with the ongoing efforts to globally enable -Warray-bounds
-> and get us closer to being able to tighten the FORTIFY_SOURCE routines
-> on memcpy().
-> 
-> Link: https://github.com/KSPP/linux/issues/109
-> Reported-by: kernel test robot <lkp@intel.com>
-> Signed-off-by: Gustavo A. R. Silva <gustavoars@kernel.org>
 
-Awesome! Thank you for this solution.
 
-Reviewed-by: Kees Cook <keescook@chromium.org>
+On 4/15/2021 6:07 AM, Oleksij Rempel wrote:
+> PHY loopback is needed for the ethernet controller self test support.
+> This PHY was tested with the generic net sefltest in combination with
+> FEC ethernet controller and SJA1105 switch.
+> 
+> Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
+> ---
+>  drivers/net/phy/micrel.c | 2 ++
+>  1 file changed, 2 insertions(+)
+> 
+> diff --git a/drivers/net/phy/micrel.c b/drivers/net/phy/micrel.c
+> index a14a00328fa3..26066b1e02e5 100644
+> --- a/drivers/net/phy/micrel.c
+> +++ b/drivers/net/phy/micrel.c
+> @@ -1311,6 +1311,7 @@ static struct phy_driver ksphy_driver[] = {
+>  	.get_stats	= kszphy_get_stats,
+>  	.suspend	= kszphy_suspend,
+>  	.resume		= kszphy_resume,
+> +	.set_loopback	= genphy_loopback,
+
+The generic loopback is really generic and is defined by the 802.3
+standard, we should just mandate that drivers implement a custom
+loopback if the generic one cannot work. I would change the PHY library
+to do something like this:
+
+if (phydev->drv->set_loopback)
+	ret = phydev->drv->set_loopback(phydev, ...)
+else
+	ret = genphy_loopback(phydev, ...)
+
+This would enable many more drivers than that we currently have today.
+
+>  }, {
+>  	.phy_id		= PHY_ID_KSZ8061,
+>  	.name		= "Micrel KSZ8061",
+> @@ -1356,6 +1357,7 @@ static struct phy_driver ksphy_driver[] = {
+>  	.get_stats	= kszphy_get_stats,
+>  	.suspend	= genphy_suspend,
+>  	.resume		= kszphy_resume,
+> +	.set_loopback	= genphy_loopback,
+>  }, {
+>  	.phy_id		= PHY_ID_LAN8814,
+>  	.phy_id_mask	= MICREL_PHY_ID_MASK,
+> 
 
 -- 
-Kees Cook
+Florian
