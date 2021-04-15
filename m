@@ -2,96 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3AE9135FED3
-	for <lists+netdev@lfdr.de>; Thu, 15 Apr 2021 02:24:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7509C35FEBA
+	for <lists+netdev@lfdr.de>; Thu, 15 Apr 2021 02:03:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231417AbhDOAYl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 14 Apr 2021 20:24:41 -0400
-Received: from gateway22.websitewelcome.com ([192.185.47.125]:48035 "EHLO
-        gateway22.websitewelcome.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S229926AbhDOAYk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 14 Apr 2021 20:24:40 -0400
-X-Greylist: delayed 1403 seconds by postgrey-1.27 at vger.kernel.org; Wed, 14 Apr 2021 20:24:40 EDT
-Received: from cm11.websitewelcome.com (cm11.websitewelcome.com [100.42.49.5])
-        by gateway22.websitewelcome.com (Postfix) with ESMTP id 979DDFF97
-        for <netdev@vger.kernel.org>; Wed, 14 Apr 2021 19:00:53 -0500 (CDT)
-Received: from gator4166.hostgator.com ([108.167.133.22])
-        by cmsmtp with SMTP
-        id WpRFlhb6UPkftWpRFl0rCN; Wed, 14 Apr 2021 19:00:53 -0500
-X-Authority-Reason: nr=8
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=embeddedor.com; s=default; h=Content-Transfer-Encoding:Content-Type:
-        In-Reply-To:MIME-Version:Date:Message-ID:From:References:Cc:To:Subject:Sender
-        :Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
-        Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
-        List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=uQWSJpEDStKyMPkezWD8yO/86/YEs02AMX0F1l0RKbc=; b=f8crfTXNvmmt7lwYVGK+zqY3fL
-        k3fA6vID4H3ijXbasgIqQJz7S36UR9CqNM9IHiZq9rZiQ6M0WGTo1J0fth70NOhuADTEZumXmOHPE
-        n/ldNl85y5ZV0XMwGv8gPyr+ZSESK3sEokFoyA0H/iOiMzcHduVe0f7iWhHKYIsAPURcV28aeTdik
-        1iUNkW/2vu1gyp97tQvg9lLCYijn9dPcJGma9nfqqZBgtf3LPppLiooEBM+74uVpzvWajbnmaIhJF
-        lqN2O5brYp6RMNcZhQOHTXeAhqb8vjJHKyzlEiJ7gXgzLVpg+CdzUWm1W5l+p3vWRBN8NndIN1mqZ
-        32opyyTw==;
-Received: from 187-162-31-110.static.axtel.net ([187.162.31.110]:37926 helo=[192.168.15.8])
-        by gator4166.hostgator.com with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
-        (Exim 4.94)
-        (envelope-from <gustavo@embeddedor.com>)
-        id 1lWpRC-0043fC-6L; Wed, 14 Apr 2021 19:00:50 -0500
-Subject: Re: [PATCH v2 0/2][next] wl3501_cs: Fix out-of-bounds warnings
-To:     Kalle Valo <kvalo@codeaurora.org>
-Cc:     "Gustavo A. R. Silva" <gustavoars@kernel.org>,
-        linux-kernel@vger.kernel.org,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-hardening@vger.kernel.org, Kees Cook <keescook@chromium.org>
-References: <cover.1617226663.git.gustavoars@kernel.org>
- <9e0972ef-4d42-3896-d92b-01113c445775@embeddedor.com>
- <87eefdl5p2.fsf@codeaurora.org>
-From:   "Gustavo A. R. Silva" <gustavo@embeddedor.com>
-Message-ID: <1cf06338-76da-5109-4099-2db79c31e6bb@embeddedor.com>
-Date:   Wed, 14 Apr 2021 19:00:57 -0500
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.7.1
+        id S230512AbhDOADg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 14 Apr 2021 20:03:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46732 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230308AbhDOADf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 14 Apr 2021 20:03:35 -0400
+Received: from mail-yb1-xb32.google.com (mail-yb1-xb32.google.com [IPv6:2607:f8b0:4864:20::b32])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E229CC061574;
+        Wed, 14 Apr 2021 17:03:11 -0700 (PDT)
+Received: by mail-yb1-xb32.google.com with SMTP id p3so3467515ybk.0;
+        Wed, 14 Apr 2021 17:03:11 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=8KXU4sRXR90gaVbh329XNuKBTk28xufevci9teckJjc=;
+        b=H0cQHG0RdOXyVmWfIy14AZBjpZjrwC+4/EMeVZxQHqsR3HRTm5CB0W5OP2HBXWDh+6
+         oUkpIz+kEwoOlFvyMc8XsgCWVIKgD4XwKYdainmbFBPkvbMm73+AM5NvZuK+WAG4HX6f
+         YlQzXKSQuj0lxM9dv6KTYWfxPRJ38tslS1sXHrP6pynqq0ttfkVd1LFjfAi2aYgMRIaH
+         gVs9Dd+4giHPY9sV2bXNk+Xih93jcw9OYa0iygss7R0UiYOZE6I4dQ+JE/Zg6+1fpEGs
+         Ik99bdhIvMnnEdcpxmwX6yxeDmD9jDeKXaHYZkOqHmm+8wJgCn21JyntvX5n6w2CST5Q
+         Px6w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=8KXU4sRXR90gaVbh329XNuKBTk28xufevci9teckJjc=;
+        b=Lucxfn2jkASDGq+DlW3tU7Ohwfk2EhduydlSnROxIZwiDFlnFqTc5RmODhalEXtSxU
+         BOvaQtfpnMde9anQdVvQ9PflRdwhGc6TflyYvmTxZYK4dgpR04VU44yISgkOr+9on2aq
+         BW0tfj081BsNwKFgotHKhTmWHjDrHHGR99gay1EW1EYM4H5PJ73bl2SkGSlnGspu7YAo
+         D+PwdYzRkRCG0MgWCfGf+CUWMb83jSlJ9mkfOS7eartuOHLS8zCjKwSPlL/ExBmCjXvJ
+         bTCKuexx46MkM98vDDakkzbmN03aSVF1/jwxR+1IbWXzC4/1WL7esJuFLj6GuMmElaje
+         V0fw==
+X-Gm-Message-State: AOAM531vnJecbVJj/vnSBD0xlTrhar9tSoIdv7DKh9gKGiu+gXtZbymO
+        eKXu6az2KtKEoGfFxAxnC+hv/nqCgAS8dxaJ4o4=
+X-Google-Smtp-Source: ABdhPJylOOkDeMO9j3vMleRi9vg9u4aYQ8GJZZNc/Nh0ICvEuSSRTJvZGE+HBlyn/BLT+qcZWE/tAuXo6hQEQS5IG8c=
+X-Received: by 2002:a25:5b55:: with SMTP id p82mr773235ybb.510.1618444991240;
+ Wed, 14 Apr 2021 17:03:11 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <87eefdl5p2.fsf@codeaurora.org>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
-X-AntiAbuse: Primary Hostname - gator4166.hostgator.com
-X-AntiAbuse: Original Domain - vger.kernel.org
-X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
-X-AntiAbuse: Sender Address Domain - embeddedor.com
-X-BWhitelist: no
-X-Source-IP: 187.162.31.110
-X-Source-L: No
-X-Exim-ID: 1lWpRC-0043fC-6L
-X-Source: 
-X-Source-Args: 
-X-Source-Dir: 
-X-Source-Sender: 187-162-31-110.static.axtel.net ([192.168.15.8]) [187.162.31.110]:37926
-X-Source-Auth: gustavo@embeddedor.com
-X-Email-Count: 7
-X-Source-Cap: Z3V6aWRpbmU7Z3V6aWRpbmU7Z2F0b3I0MTY2Lmhvc3RnYXRvci5jb20=
-X-Local-Domain: yes
+References: <20210414200146.2663044-1-andrii@kernel.org> <20210414200146.2663044-14-andrii@kernel.org>
+ <00d978e4cf484fecb907a7035201c975@AcuMS.aculab.com>
+In-Reply-To: <00d978e4cf484fecb907a7035201c975@AcuMS.aculab.com>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Wed, 14 Apr 2021 17:03:00 -0700
+Message-ID: <CAEf4BzaM8dh6KvTu3TN2vRdpPVWdgWTd5uEF+z05cKQJMCJ3Ag@mail.gmail.com>
+Subject: Re: [PATCH bpf-next 13/17] selftests/bpf: use -O0 instead of -Og in
+ selftests builds
+To:     David Laight <David.Laight@aculab.com>
+Cc:     Andrii Nakryiko <andrii@kernel.org>,
+        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "ast@fb.com" <ast@fb.com>,
+        "daniel@iogearbox.net" <daniel@iogearbox.net>,
+        "kernel-team@fb.com" <kernel-team@fb.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Wed, Apr 14, 2021 at 3:15 PM David Laight <David.Laight@aculab.com> wrote:
+>
+> From: Andrii Nakryiko
+> > Sent: 14 April 2021 21:02
+> >
+> > While -Og is designed to work well with debugger, it's still inferior to -O0
+> > in terms of debuggability experience. It will cause some variables to still be
+> > inlined, it will also prevent single-stepping some statements and otherwise
+> > interfere with debugging experience. So switch to -O0 which turns off any
+> > optimization and provides the best debugging experience.
+>
+> Surely the selftests need to use the normal compiler options
+> so the compiler is generating the same type of code.
+> Otherwise you are likely to miss out some instructions completely.
+>
 
+I don't know, it's not like I'm trying to validate that GCC is
+generating a valid assembly. And there is almost nothing in libbpf and
+selftests that relies on delicate timing, so I don't think we should
+worry about changing timing characteristics. And there is nothing
+performance-critical in libbpf logic itself either, for the most part.
+So I don't see much harm in running selftests in debug mode.
 
-On 4/14/21 01:51, Kalle Valo wrote:
-> "Gustavo A. R. Silva" <gustavo@embeddedor.com> writes:
-> 
->> Friendly ping: could somebody give us some feedback or take
->> this series, please?
-> 
-> First patch 2 comment needs to be resolved.
+> For normal code I actually prefer using -O2 when dubugging.
+> If/when you need to look at the generated code you can see
+> the wood for the trees, with -O0 the code is typically
+> full of memory read/write to/from the stack.
 
-Done:
+Whenever I try debugging anything in selftest+libbpf+bpftool, if any
+of those components are built with -O2, it makes it almost impossible
+to figure anything out in debugger. So I always go back and force all
+of them to -O0. So that's what this patch is doing, so that I and
+others don't have to go through this every single time we need to
+debug something.
 
-https://lore.kernel.org/lkml/cover.1618442265.git.gustavoars@kernel.org/
-
-Thanks
---
-Gustavo
+>
+> About the only annoying thing is tail-calls.
+> They can get confusing.
+>
+>         David
+>
+> -
+> Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
+> Registration No: 1397386 (Wales)
+>
