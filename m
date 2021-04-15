@@ -2,338 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4042F360F1B
-	for <lists+netdev@lfdr.de>; Thu, 15 Apr 2021 17:38:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CF8C1360F29
+	for <lists+netdev@lfdr.de>; Thu, 15 Apr 2021 17:41:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233267AbhDOPjC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 15 Apr 2021 11:39:02 -0400
-Received: from mail.kernel.org ([198.145.29.99]:33644 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S233328AbhDOPjB (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 15 Apr 2021 11:39:01 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 2F5AB6115B;
-        Thu, 15 Apr 2021 15:38:38 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1618501118;
-        bh=ajiCW3bOWWnZTSmBCSOGub9XjKmKohmVprRSzmu8/IY=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=qbhm92yl74XIHHfzw+L1JSIcMLKV+ilBujlGZHNZtwIIZDvPL86mBvEdnvVUnIhEf
-         JJ4Q2jbi3CGClA7Qsr8KdCvBazAgBukZjL52Dz3OECdJe56wAIjeLZySxgQxSkg16C
-         ndN+j+Ww3uKMwZ5/IxhedKhLFt383uiyCVV97JUbDRrWf0ROmVjO9nQCzXTVsRpi7x
-         w8Gpl7/vU9mgVJtIcsHoNDk/JeY0iDmTThsaMYx0PiLvl8AyeGugy9pTzGhf6RoPdY
-         EEp49lck0EC8ZXMMdYO+c6idp8Z/gPO0XzJmmi6Osxsqx0dD1CYOhELSqV93j1v3U0
-         LKXIzFLw0OiCg==
-Date:   Thu, 15 Apr 2021 08:38:37 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Saeed Mahameed <saeed@kernel.org>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, andrew@lunn.ch,
-        mkubecek@suse.cz, idosch@nvidia.com
-Subject: Re: [RFC net-next 4/6] ethtool: add interface to read standard MAC
- stats
-Message-ID: <20210415083837.6dfc0af9@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <335639a79d72cec4abb3775bc84336f8390a57b7.camel@kernel.org>
-References: <20210414202325.2225774-1-kuba@kernel.org>
-        <20210414202325.2225774-5-kuba@kernel.org>
-        <335639a79d72cec4abb3775bc84336f8390a57b7.camel@kernel.org>
+        id S232769AbhDOPlx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 15 Apr 2021 11:41:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54450 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232642AbhDOPlu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 15 Apr 2021 11:41:50 -0400
+Received: from mail-wr1-x42a.google.com (mail-wr1-x42a.google.com [IPv6:2a00:1450:4864:20::42a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 848ADC06175F
+        for <netdev@vger.kernel.org>; Thu, 15 Apr 2021 08:41:27 -0700 (PDT)
+Received: by mail-wr1-x42a.google.com with SMTP id s7so23652555wru.6
+        for <netdev@vger.kernel.org>; Thu, 15 Apr 2021 08:41:27 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=isovalent-com.20150623.gappssmtp.com; s=20150623;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=qzCmIc5xh7d+ubWNy7gZo3UPfbkyUvg8kMmWmppBNes=;
+        b=BEj/1/8XPncnjRfRK8mLiZ1SoZ2+BwrE+a39LxPwB/MsIFJnzBAICQLZ2jiwGGbQov
+         4zqh7un0jhEP1iNaKM1PurWOo4uOYi/n2gtxwCVm76y8egSWq0m6KnadRWC5DH8hi34C
+         K41+UsN0jCiClEebcR9kPZsL0Lx6/VJV5Li9dNkP8mG/+bW6Uxqyyarpphfbe13+sVlb
+         FizX/3RV1YXqCKanusixVoY8OxsNOXFXCWpfkOB2NeLmRvAHXodqwMYxxCYasGQZQftV
+         OsBicx1g9iYrnNMRoDBiJ4p9GtlEji++P0zPJAhhkeDvxObWb1E6q5IO+XBq+ah9VkM2
+         b8CQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=qzCmIc5xh7d+ubWNy7gZo3UPfbkyUvg8kMmWmppBNes=;
+        b=AlqKOe6R92jY9y+n1/v2T3OgylR/MQASgpo3w5YikgApr6fm0tBSCvuctMgBxI0l+J
+         jVKQMx5Q0vsfPL6C/CDXkPVOWfy+w3Jky7Rf0ZxtAUJfALK1jFqN7pWbjGNwZX6njVOh
+         EvzS9yo/6DBpbK0rl/kMBtx8xVOBf+gsWUZHSXbDh+P4QD0l4TFPgWqm681rxQnMMrKg
+         RxvGxTWjI0r9NNdFLGCsFpS3P7vyjhoykiJHzIBHfOz6Y5cOe40I3gaJk9mAZwqmLu6O
+         A+YhgMfVikcCG6ina1kff69GNOSrlkEf1CzvogqDnvvk2BiDNtflgs43GPm/3FT2MsLY
+         Rj/g==
+X-Gm-Message-State: AOAM533kg2gRu5/0ioh19TA6OJ7PfOgk6ari7wNw5tL/QwIAMxgi0YIx
+        tdOz2aDNin//yam4EU6O2/huEQ==
+X-Google-Smtp-Source: ABdhPJyLNMOWPYjLpplPAmINNkz2Fou+qVJXho8kWclmtHcejA/NRHvG9yzn7ifRTNHYBMXjICP1Nw==
+X-Received: by 2002:a05:6000:ca:: with SMTP id q10mr4272021wrx.104.1618501286182;
+        Thu, 15 Apr 2021 08:41:26 -0700 (PDT)
+Received: from [192.168.1.8] ([149.86.87.196])
+        by smtp.gmail.com with ESMTPSA id l14sm1920076wmq.4.2021.04.15.08.41.24
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 15 Apr 2021 08:41:25 -0700 (PDT)
+Subject: Re: [PATCH bpf-next 1/2] bpf: Remove bpf_jit_enable=2 debugging mode
+To:     Daniel Borkmann <daniel@iogearbox.net>,
+        Jianlin Lv <Jianlin.Lv@arm.com>, bpf@vger.kernel.org
+Cc:     corbet@lwn.net, ast@kernel.org, andrii@kernel.org, kafai@fb.com,
+        songliubraving@fb.com, yhs@fb.com, john.fastabend@gmail.com,
+        kpsingh@kernel.org, davem@davemloft.net, kuba@kernel.org,
+        illusionist.neo@gmail.com, linux@armlinux.org.uk,
+        zlim.lnx@gmail.com, catalin.marinas@arm.com, will@kernel.org,
+        paulburton@kernel.org, tsbogend@alpha.franken.de,
+        naveen.n.rao@linux.ibm.com, sandipan@linux.ibm.com,
+        mpe@ellerman.id.au, benh@kernel.crashing.org, paulus@samba.org,
+        luke.r.nels@gmail.com, xi.wang@gmail.com, bjorn@kernel.org,
+        paul.walmsley@sifive.com, palmer@dabbelt.com,
+        aou@eecs.berkeley.edu, iii@linux.ibm.com, hca@linux.ibm.com,
+        gor@linux.ibm.com, borntraeger@de.ibm.com, yoshfuji@linux-ipv6.org,
+        dsahern@kernel.org, tglx@linutronix.de, mingo@redhat.com,
+        bp@alien8.de, x86@kernel.org, hpa@zytor.com, udknight@gmail.com,
+        mchehab+huawei@kernel.org, dvyukov@google.com, maheshb@google.com,
+        horms@verge.net.au, nicolas.dichtel@6wind.com,
+        viro@zeniv.linux.org.uk, masahiroy@kernel.org,
+        keescook@chromium.org, tklauser@distanz.ch, grantseltzer@gmail.com,
+        irogers@google.com, linux-doc@vger.kernel.org,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-mips@vger.kernel.org,
+        linuxppc-dev@lists.ozlabs.org, linux-riscv@lists.infradead.org,
+        linux-s390@vger.kernel.org, sparclinux@vger.kernel.org,
+        iecedge@gmail.com
+References: <20210415093250.3391257-1-Jianlin.Lv@arm.com>
+ <9c4a78d2-f73c-832a-e6e2-4b4daa729e07@iogearbox.net>
+From:   Quentin Monnet <quentin@isovalent.com>
+Message-ID: <d3949501-8f7d-57c4-b3fe-bcc3b24c09d8@isovalent.com>
+Date:   Thu, 15 Apr 2021 16:41:23 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.9.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <9c4a78d2-f73c-832a-e6e2-4b4daa729e07@iogearbox.net>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-GB
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 14 Apr 2021 23:12:52 -0700 Saeed Mahameed wrote:
-> On Wed, 2021-04-14 at 13:23 -0700, Jakub Kicinski wrote:
-> > Most of the MAC statistics are included in
-> > struct rtnl_link_stats64, but some fields
-> > are aggregated. Besides it's good to expose
-> > these clearly hardware stats separately.
-> >=20
-> > Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+2021-04-15 16:37 UTC+0200 ~ Daniel Borkmann <daniel@iogearbox.net>
+> On 4/15/21 11:32 AM, Jianlin Lv wrote:
+>> For debugging JITs, dumping the JITed image to kernel log is discouraged,
+>> "bpftool prog dump jited" is much better way to examine JITed dumps.
+>> This patch get rid of the code related to bpf_jit_enable=2 mode and
+>> update the proc handler of bpf_jit_enable, also added auxiliary
+>> information to explain how to use bpf_jit_disasm tool after this change.
+>>
+>> Signed-off-by: Jianlin Lv <Jianlin.Lv@arm.com>
 
-> > +/* Basic IEEE 802.3 MAC statistics (30.3.1.1.*), not otherwise exposed
-> > + * via a more targeted API.
-> > + */
-> > +struct ethtool_eth_mac_stats {
-> > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0u64 FramesTransmittedOK;
-> > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0u64 SingleCollisionFrames;
-> > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0u64 MultipleCollisionFrames;
-> > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0u64 FramesReceivedOK;
-> > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0u64 FrameCheckSequenceErrors;
-> > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0u64 AlignmentErrors;
-> > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0u64 OctetsTransmittedOK;
-> > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0u64 FramesWithDeferredXmissi=
-ons;
-> > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0u64 LateCollisions;
-> > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0u64 FramesAbortedDueToXSColl=
-s;
-> > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0u64 FramesLostDueToIntMACXmi=
-tError;
-> > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0u64 CarrierSenseErrors;
-> > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0u64 OctetsReceivedOK;
-> > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0u64 FramesLostDueToIntMACRcv=
-Error;
-> > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0u64 MulticastFramesXmittedOK;
-> > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0u64 BroadcastFramesXmittedOK;
-> > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0u64 FramesWithExcessiveDefer=
-ral;
-> > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0u64 MulticastFramesReceivedO=
-K;
-> > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0u64 BroadcastFramesReceivedO=
-K;
-> > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0u64 InRangeLengthErrors;
-> > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0u64 OutOfRangeLengthField;
-> > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0u64 FrameTooLongErrors;
-> > +};
-> > +
-> > =C2=A0/* Basic IEEE 802.3 PHY statistics (30.3.2.1.*), not otherwise ex=
-posed
-> > =C2=A0 * via a more targeted API.
-> > =C2=A0 */
-> > @@ -495,6 +523,7 @@ struct ethtool_module_eeprom {
-> > =C2=A0 *=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0specified page. Returns a negativ=
-e error code or the amount of
-> > bytes
-> > =C2=A0 *=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0read.
-> > =C2=A0 * @get_eth_phy_stats: Query some of the IEEE 802.3 PHY statistic=
-s.
-> > + * @get_eth_mac_stats: Query some of the IEEE 802.3 MAC statistics.
-> > =C2=A0 *
-> > =C2=A0 * All operations are optional (i.e. the function pointer may be =
-set
-> > =C2=A0 * to %NULL) and callers must take this into account.=C2=A0 Calle=
-rs must
-> > @@ -607,6 +636,8 @@ struct ethtool_ops {
-> > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 struct netlink_ext_ack
-> > *extack);
-> > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0void=C2=A0=C2=A0=C2=A0=
-=C2=A0(*get_eth_phy_stats)(struct net_device *dev,
-> > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 st=
-ruct ethtool_eth_phy_stats
-> > *phy_stats);
-> > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0void=C2=A0=C2=A0=C2=A0=C2=A0=
-(*get_eth_mac_stats)(struct net_device *dev,
-> > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 struct e=
-thtool_eth_mac_stats
-> > *mac_stats); =20
->=20
-> too many callbacks.. I understand the point of having explicit structs
-> per stats group, but it can be achievable with one generic ethtool
-> calback function with the help of a flexible struct:
->=20
-> void (*get_std_stats)(struct net_device *dev, struct *std_stats)
->=20
->=20
-> union stats_groups {
->     struct ethtool_eth_phy_stats eth_phy;
->     struct ethtool_eth_mac_stats eth_mac;
->     ...
-> }
->=20
-> struct std_stats {
->      u16 type;
->      union stats_groups stats[0];
-> }
->=20
-> where std_stats.stats is allocated dynamically according to
-> std_stats.type
->=20
-> and driver can just access the corresponding stats according to type
->=20
-> e.g:=20
-> std_stats.stats.eth_phy
+Hello,
 
-Kinda expected you'd say this :) The mux make life simpler for drivers
-with a lot of layers of abstraction. Separate ops make life simpler for
-simpler drivers.
+For what it's worth, I have already seen people dump the JIT image in
+kernel logs in Qemu VMs running with just a busybox, not for kernel
+development, but in a context where buiding/using bpftool was not
+possible. Maybe not a common case, but still, removing the debugging
+mode will make that impossible. Is there a particular incentive to
+remove the feature?
 
-Basic Ethernet driver goes from this:
-
-get_mac_stats()
-{
-	priv =3D netdev_priv()
-
-	stat->x =3D readl(priv->regs + REG_X);
-	stat->z =3D readl(priv->regs + REG_Y);
-	stat->y =3D readl(priv->regs + REG_Z);
-}
-
-to:
-
-get_std_stats()
-{
-	priv =3D netdev_priv();
-
-	switch (stats->type) {
-	case MAC:
-		stat->x =3D readl(priv->regs + REG_X);
-		stat->z =3D readl(priv->regs + REG_Y);
-		stat->y =3D readl(priv->regs + REG_Z);
-		break;
-	}
-}
-
-or likely:
-
-get_std_stats()
-{
-	priv =3D netdev_priv();
-
-	switch (stats->type) {
-	case MAC:
-		return get_mac_stats(priv..);
-	}
-}
-
-I prefer to keep the callbacks separate, there isn't that many of them.
-
-> > +static int stats_put_mac_stats(struct sk_buff *skb,
-> > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 const struct stats_reply_data *data)
-> > +{
-> > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0if (stat_put(skb, ETHTOOL_A_=
-STATS_ETH_MAC_2_TX_PKT,
-> > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 data->mac_stats.FramesTransmi=
-ttedOK) ||
-> > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 stat_put(=
-skb, ETHTOOL_A_STATS_ETH_MAC_3_SINGLE_COL,
-> > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 data->mac_stats.SingleCollisi=
-onFrames) ||
-> > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 stat_put(=
-skb, ETHTOOL_A_STATS_ETH_MAC_4_MULTI_COL,
-> > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 data->mac_stats.MultipleColli=
-sionFrames) ||
-> > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 stat_put(=
-skb, ETHTOOL_A_STATS_ETH_MAC_5_RX_PKT,
-> > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 data->mac_stats.FramesReceive=
-dOK) ||
-> > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 stat_put(=
-skb, ETHTOOL_A_STATS_ETH_MAC_6_FCS_ERR,
-> > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 data->mac_stats.FrameCheckSeq=
-uenceErrors) ||
-> > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 stat_put(=
-skb, ETHTOOL_A_STATS_ETH_MAC_7_ALIGN_ERR,
-> > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 data->mac_stats.AlignmentErro=
-rs) ||
-> > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 stat_put(=
-skb, ETHTOOL_A_STATS_ETH_MAC_8_TX_BYTES,
-> > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 data->mac_stats.OctetsTransmi=
-ttedOK) ||
-> > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 stat_put(=
-skb, ETHTOOL_A_STATS_ETH_MAC_9_TX_DEFER,
-> > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 data->mac_stats.FramesWithDef=
-erredXmissions) ||
-> > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 stat_put(=
-skb, ETHTOOL_A_STATS_ETH_MAC_10_LATE_COL,
-> > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 data->mac_stats.LateCollision=
-s) ||
-> > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 stat_put(=
-skb, ETHTOOL_A_STATS_ETH_MAC_11_XS_COL,
-> > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 data->mac_stats.FramesAborted=
-DueToXSColls) ||
-> > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 stat_put(=
-skb, ETHTOOL_A_STATS_ETH_MAC_12_TX_INT_ERR,
-> > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 data->mac_stats.FramesLostDue=
-ToIntMACXmitError) ||
-> > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 stat_put(=
-skb, ETHTOOL_A_STATS_ETH_MAC_13_CS_ERR,
-> > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 data->mac_stats.CarrierSenseE=
-rrors) ||
-> > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 stat_put(=
-skb, ETHTOOL_A_STATS_ETH_MAC_14_RX_BYTES,
-> > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 data->mac_stats.OctetsReceive=
-dOK) ||
-> > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 stat_put(=
-skb, ETHTOOL_A_STATS_ETH_MAC_15_RX_INT_ERR,
-> > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 data->mac_stats.FramesLostDue=
-ToIntMACRcvError) ||
-> > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 stat_put(=
-skb, ETHTOOL_A_STATS_ETH_MAC_18_TX_MCAST,
-> > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 data->mac_stats.MulticastFram=
-esXmittedOK) ||
-> > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 stat_put(=
-skb, ETHTOOL_A_STATS_ETH_MAC_19_TX_BCAST,
-> > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 data->mac_stats.BroadcastFram=
-esXmittedOK) ||
-> > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 stat_put(=
-skb, ETHTOOL_A_STATS_ETH_MAC_20_XS_DEFER,
-> > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 data->mac_stats.FramesWithExc=
-essiveDeferral) ||
-> > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 stat_put(=
-skb, ETHTOOL_A_STATS_ETH_MAC_21_RX_MCAST,
-> > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 data->mac_stats.MulticastFram=
-esReceivedOK) ||
-> > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 stat_put(=
-skb, ETHTOOL_A_STATS_ETH_MAC_22_RX_BCAST,
-> > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 data->mac_stats.BroadcastFram=
-esReceivedOK) ||
-> > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 stat_put(=
-skb, ETHTOOL_A_STATS_ETH_MAC_23_IR_LEN_ERR,
-> > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 data->mac_stats.InRangeLength=
-Errors) ||
-> > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 stat_put(=
-skb, ETHTOOL_A_STATS_ETH_MAC_24_OOR_LEN,
-> > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 data->mac_stats.OutOfRangeLen=
-gthField) ||
-> > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 stat_put(=
-skb, ETHTOOL_A_STATS_ETH_MAC_25_TOO_LONG_ERR,
-> > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 data->mac_stats.FrameTooLongE=
-rrors))
-> > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A0=C2=A0=C2=A0=C2=A0return -EMSGSIZE; =20
->=20
-> lots of repetition, someone might forget to add the new stat in one of
-> these places ..=20
-
-If someone forgets to add a stat to the place they are dumped?
-They will immediately realize it's not getting dumped...
-
-> best practice here is to centralize all the data structures and
-> information definitions in one place, you define the stat id, string,
-> and value offset, then a generic loop can generate the strset and fill
-> up values in the correct offset.
->=20
-> similar implementation is already in mlx5:
->=20
-> see pport_802_3_stats_desc:
-> https://elixir.bootlin.com/linux/latest/source/drivers/net/ethernet/mella=
-nox/mlx5/core/en_stats.c#L682
->=20
-> the "pport_802_3_stats_desc" has a description of the strings and
-> offsets of all stats in this stats group
-> and the fill/put functions are very simple and they just iterate over
-> the array/group and fill up according to the descriptor.
-
-We can maybe save 60 lines if we generate stats_eth_mac_names=20
-in a initcall, is it really worth it? I prefer the readability=20
-/ grepability.
+Best regards,
+Quentin
