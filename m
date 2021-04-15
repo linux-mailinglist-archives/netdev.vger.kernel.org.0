@@ -2,105 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F0301360F55
-	for <lists+netdev@lfdr.de>; Thu, 15 Apr 2021 17:48:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 609D1360F6A
+	for <lists+netdev@lfdr.de>; Thu, 15 Apr 2021 17:51:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233694AbhDOPsZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 15 Apr 2021 11:48:25 -0400
-Received: from fllv0016.ext.ti.com ([198.47.19.142]:35036 "EHLO
-        fllv0016.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233330AbhDOPsY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 15 Apr 2021 11:48:24 -0400
-Received: from lelv0265.itg.ti.com ([10.180.67.224])
-        by fllv0016.ext.ti.com (8.15.2/8.15.2) with ESMTP id 13FFlpL0028482;
-        Thu, 15 Apr 2021 10:47:51 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1618501671;
-        bh=uiHPH94tE4sIxoTIhjL8lKWiz49jYbtUss22vgnacZU=;
-        h=Subject:CC:References:From:Date:In-Reply-To;
-        b=eq0H2pxoQWFYaqm9B/JzGiBnJOx0DF8elBRyPAmjU2X4zb03AnWoTO7SWkwPqiKM/
-         0FRZXhDCD3VIVOcOfBsOvRF8ryigttBQenPgbdsiEfFHsnJyndNjrsZ201gBk6kqzN
-         3RJlJdlDP8A1eypvOq5+2B3R1BlWOiArX2tmyl1M=
-Received: from DLEE109.ent.ti.com (dlee109.ent.ti.com [157.170.170.41])
-        by lelv0265.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 13FFlpI0091560
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Thu, 15 Apr 2021 10:47:51 -0500
-Received: from DLEE103.ent.ti.com (157.170.170.33) by DLEE109.ent.ti.com
- (157.170.170.41) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2176.2; Thu, 15
- Apr 2021 10:47:51 -0500
-Received: from fllv0039.itg.ti.com (10.64.41.19) by DLEE103.ent.ti.com
- (157.170.170.33) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2176.2 via
- Frontend Transport; Thu, 15 Apr 2021 10:47:51 -0500
-Received: from [172.24.145.148] (ileax41-snat.itg.ti.com [10.172.224.153])
-        by fllv0039.itg.ti.com (8.15.2/8.15.2) with ESMTP id 13FFlkM9088230;
-        Thu, 15 Apr 2021 10:47:47 -0500
-Subject: Re: [PATCH 0/2] MCAN: Add support for implementing transceiver as a
- phy
-CC:     <linux-kernel@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-can@vger.kernel.org>, <netdev@vger.kernel.org>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
-        Wolfgang Grandegger <wg@grandegger.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Chandrasekar Ramakrishnan <rcsekar@samsung.com>,
-        Kishon Vijay Abraham I <kishon@ti.com>,
-        Lokesh Vutla <lokeshvutla@ti.com>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        Grygorii Strashko <grygorii.strashko@ti.com>
-References: <20210415150629.5417-1-a-govindraju@ti.com>
-From:   Aswath Govindraju <a-govindraju@ti.com>
-Message-ID: <3b669b65-9e68-7148-90fb-7ad28e9a93cc@ti.com>
-Date:   Thu, 15 Apr 2021 21:17:46 +0530
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+        id S233595AbhDOPv6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 15 Apr 2021 11:51:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56726 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232769AbhDOPv6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 15 Apr 2021 11:51:58 -0400
+Received: from mail-pl1-x62c.google.com (mail-pl1-x62c.google.com [IPv6:2607:f8b0:4864:20::62c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB60BC061574;
+        Thu, 15 Apr 2021 08:51:33 -0700 (PDT)
+Received: by mail-pl1-x62c.google.com with SMTP id j7so12306672plx.2;
+        Thu, 15 Apr 2021 08:51:33 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=ZUkhDwjg9YvHrlde+pw0+QfaYkfI1Vi/cJAvb3EsHfM=;
+        b=kMCCYwMthkw5pulcRfBV1kanqTcDkHORCJ3VuxY8teVwQojdC9JiyyJL6Rduz35Bn8
+         StfmqYgJ9zYkgEVGCH/ZG6C8aGn/ZyoKBaS1JbafYT1XzoYakRND6uBWX1PtftS+EYR6
+         QX5SX8VgfHelas5+i+xjY0KWx+UVG1FXdR06yJxt7RldNIoNAJYKp3DGlvM70D7SMOm5
+         UHgVpzzTUg+YitOydXMTWbG+Jo+pdUxgGRprQjwoPdOqQ6RzTGyqbWqdeATMuaRCoIbb
+         SxF+4LKY3Ttc51nE4jB5mIpz67zraSHwXve4UoGk4YUIjhBb1FcE0So692RmeMBgZgip
+         UNaA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=ZUkhDwjg9YvHrlde+pw0+QfaYkfI1Vi/cJAvb3EsHfM=;
+        b=OtQxbT+1q9dWi5TMkt8u/knbVbR2ogBcNVYvbQU4l+doZfdibuDJFzL/TRP1c5njS8
+         aHZ1GCNIMMq7NcPWnblsSt1e886mULkvNm0Iov+EL5V7UoMe66YtD0p2o5dgy+ExbREA
+         kmlc/pz0TO3IPJ4yR7L5vNFR7tr8W3Ww7Eq63Uyr5B+fzzgm/PUMdK2OLYW7W/RJ/PNl
+         Y+CixFMFJ6QVmg32KPmI6PBvZCxPT3FgBIG9rG5Y4mjMZY+6OD0VUOrfQ3Q7zSpksKz7
+         x4Do1wfZQlDe2cwaBHSjk8z3J2rjTEQm6z/rktY0Q/wdfdUNoe9skbaWw3fqgFFNl3Pw
+         bIPQ==
+X-Gm-Message-State: AOAM532PBvYlKjE65ibFr65bdptI3F02fqgVFtf5fQIfi0tG8vBD6jvP
+        Dc2I5cGxDB6l7HNaJY7JI0p+KxrJSJBlEjZLo9HGDqh8wVE=
+X-Google-Smtp-Source: ABdhPJx+/LRnzrkm0MUE3ufbwmi6tTEjrITCOPLICIUq2YHnIEfsg1biXqtpSdIEebDLd2hml5fI/GXg+6bkyWe/XwU=
+X-Received: by 2002:a17:90a:e298:: with SMTP id d24mr4694555pjz.56.1618501893507;
+ Thu, 15 Apr 2021 08:51:33 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <20210415150629.5417-1-a-govindraju@ti.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
-To:     unlisted-recipients:; (no To-header on input)
+References: <20210401042635.19768-1-xiyou.wangcong@gmail.com>
+ <20210402192823.bqwgipmky3xsucs5@ast-mbp> <CAM_iQpUfv7c19zFN1Y5-cSUiVwpk0bmtBMSxZoELgDOFCQ=qAw@mail.gmail.com>
+ <20210402234500.by3wigegeluy5w7j@ast-mbp> <CAM_iQpWf2aYbY=tKejb=nx7LWBLo1woTp-n4wOLhkUuDCz8u-Q@mail.gmail.com>
+ <20210412230151.763nqvaadrrg77kd@ast-mbp.dhcp.thefacebook.com>
+ <CAM_iQpWePmmpr0RKqCrQ=NPiGrq2Tx9OU9y3e4CTzFjvh5t47w@mail.gmail.com> <CAADnVQLsmULxJYq9rHS4xyg=VAUeexJTh35vTWTVgjeqwX4D6g@mail.gmail.com>
+In-Reply-To: <CAADnVQLsmULxJYq9rHS4xyg=VAUeexJTh35vTWTVgjeqwX4D6g@mail.gmail.com>
+From:   Cong Wang <xiyou.wangcong@gmail.com>
+Date:   Thu, 15 Apr 2021 08:51:22 -0700
+Message-ID: <CAM_iQpVc=0YtKLdEZNPDjA5H84UH50pZ4uFjQ1h=qO-+eUJn-Q@mail.gmail.com>
+Subject: Re: [RFC Patch bpf-next] bpf: introduce bpf timer
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>, duanxiongchun@bytedance.com,
+        Dongdong Wang <wangdongdong.6@bytedance.com>,
+        Muchun Song <songmuchun@bytedance.com>,
+        Cong Wang <cong.wang@bytedance.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi all,
+On Wed, Apr 14, 2021 at 9:25 PM Alexei Starovoitov
+<alexei.starovoitov@gmail.com> wrote:
+>
+> As I said earlier:
+> "
+> If prog refers such hmap as above during prog free the kernel does
+> for_each_map_elem {if (elem->opaque) del_timer().}
+> "
 
-On 15/04/21 8:36 pm, Aswath Govindraju wrote:
-> The following series of patches add support for implementing the
-> transceiver as a phy of m_can_platform driver.
-> 
-> TCAN1042 has a standby signal that needs to be pulled high for
-> sending/receiving messages[1]. TCAN1043 has a enable signal along with
-> standby signal that needs to be pulled up for sending/receiving
-> messages[2], and other combinations of the two lines can be used to put the
-> transceiver in different states to reduce power consumption. On boards
-> like the AM654-idk and J721e-evm these signals are controlled using gpios.
-> 
-> These gpios are set in phy driver, and the transceiver can be put in
-> different states using phy API. The phy driver is added in the series [3].
-> 
-> [1] - https://www.ti.com/lit/ds/symlink/tcan1042h.pdf
-> [2] - https://www.ti.com/lit/ds/symlink/tcan1043-q1.pdf
-> [3] - https://lore.kernel.org/patchwork/project/lkml/list/?series=495365
-> 
+This goes back to our previous discussion. Forcing timer deletions on
+prog exit is not what we want. The whole point of using a map is to
+extend the lifetime of a timer, that is, as long as the map exists, the
+timers within it could be still running too.
 
-Posted v2 for this series.
-
-Thanks,
-Aswath
-
-> Faiz Abbas (2):
->   dt-bindings: net: can: Document transceiver implementation as phy
->   can: m_can: Add support for transceiver as phy
-> 
->  .../devicetree/bindings/net/can/bosch,m_can.yaml    |  3 +++
->  drivers/net/can/m_can/m_can.c                       | 10 ++++++++++
->  drivers/net/can/m_can/m_can.h                       |  2 ++
->  drivers/net/can/m_can/m_can_platform.c              | 13 +++++++++++++
->  4 files changed, 28 insertions(+)
-> 
-
+Thanks.
