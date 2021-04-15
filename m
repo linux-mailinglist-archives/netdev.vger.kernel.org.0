@@ -2,40 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 92AC43608E1
-	for <lists+netdev@lfdr.de>; Thu, 15 Apr 2021 14:04:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 837A8360925
+	for <lists+netdev@lfdr.de>; Thu, 15 Apr 2021 14:16:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232662AbhDOMFQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 15 Apr 2021 08:05:16 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:27738 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S232276AbhDOMFP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 15 Apr 2021 08:05:15 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1618488292;
+        id S232759AbhDOMRD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 15 Apr 2021 08:17:03 -0400
+Received: from Galois.linutronix.de ([193.142.43.55]:59698 "EHLO
+        galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230487AbhDOMRC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 15 Apr 2021 08:17:02 -0400
+From:   Kurt Kanzenbach <kurt@linutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1618488998;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=KnDmEC1PEXguYIGj0CwznxutAgI3StoFIDa8gakyiAE=;
-        b=LrixZqNobu6wJisPQGhyMKsqA/Z34IUtHD8qb7OUixIWN1NL/d/8lkfMRLlfELVwQ+EHxb
-        +JS8pX06ts/WB3ntxarN66ECWAL3dTJNYhaKWcv5SEs5UXVOhGvkBBbpQwFfPjG0zaCF9K
-        YCdaNAIJn5QOzfM4sUZlxnd8PZDyxlE=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-21-z0_8Q-5rPguF2E4pbTNTyA-1; Thu, 15 Apr 2021 08:04:47 -0400
-X-MC-Unique: z0_8Q-5rPguF2E4pbTNTyA-1
-Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 8755679EC5;
-        Thu, 15 Apr 2021 12:04:45 +0000 (UTC)
-Received: from carbon (unknown [10.36.110.19])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 4A5602C01E;
-        Thu, 15 Apr 2021 12:04:41 +0000 (UTC)
-Date:   Thu, 15 Apr 2021 14:04:38 +0200
-From:   Jesper Dangaard Brouer <jbrouer@redhat.com>
-To:     Kurt Kanzenbach <kurt@linutronix.de>
+        bh=d8i7b4mBlEgaESrmLRVp1HQxG++cCPSc6OtknPI/zOQ=;
+        b=d04iDxqa7GQot9UhuNz2kn4hnMWF+aOQkOnu3wLjrbtzODV8luCkNKR1gTdauJeXBM82+f
+        uuYboZd2ELCCXeYPDYx3m+pbQE+T4DiYTIRuJxLbdcBJXn1OQnyVZYrt7nDSktKu9p2UnR
+        U/6bczP6vW5BSQ5NoGqVQ3dok8TTzt77nfr3El2tG0kvsWS6ZGara6ZAeOfKb19aDgqKhg
+        v5ZrADtiCzwlgDzes9Rl5la1CfDfkJnUhmrje1DIIuC6ItHst5vAl/b+SHqeFhOtDFWBpg
+        NKbhOlk6q1KK0FJPG/us/GXDTuHElgKgwaSwLt5OyNJl0MDpn7+meuDjhs8+fw==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1618488998;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=d8i7b4mBlEgaESrmLRVp1HQxG++cCPSc6OtknPI/zOQ=;
+        b=tDGZPdPVTqxqRjggQ7l0XiEzA8AzTTCyVtNQyzUCLjsiseO+wFU2G5DlBjQLdzRQlDdfyr
+        g74qMKdFfkXRRTBg==
+To:     Jesper Dangaard Brouer <jbrouer@redhat.com>
 Cc:     Jesse Brandeburg <jesse.brandeburg@intel.com>,
         Tony Nguyen <anthony.l.nguyen@intel.com>,
         "David S. Miller" <davem@davemloft.net>,
@@ -52,48 +48,70 @@ Cc:     Jesse Brandeburg <jesse.brandeburg@intel.com>,
         Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
         Richard Cochran <richardcochran@gmail.com>
 Subject: Re: [PATCH net] igb: Fix XDP with PTP enabled
-Message-ID: <20210415140438.60221f21@carbon>
-In-Reply-To: <20210415092145.27322-1-kurt@linutronix.de>
-References: <20210415092145.27322-1-kurt@linutronix.de>
-Organization: Red Hat Inc.
+In-Reply-To: <20210415140438.60221f21@carbon>
+References: <20210415092145.27322-1-kurt@linutronix.de> <20210415140438.60221f21@carbon>
+Date:   Thu, 15 Apr 2021 14:16:36 +0200
+Message-ID: <874kg7hhej.fsf@kurt>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
+Content-Type: multipart/signed; boundary="=-=-=";
+        micalg=pgp-sha512; protocol="application/pgp-signature"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 15 Apr 2021 11:21:45 +0200
-Kurt Kanzenbach <kurt@linutronix.de> wrote:
+--=-=-=
+Content-Type: text/plain
+Content-Transfer-Encoding: quoted-printable
 
-> When using native XDP with the igb driver, the XDP frame data doesn't point to
-> the beginning of the packet. It's off by 16 bytes. Everything works as expected
-> with XDP skb mode.
-> 
-> Actually these 16 bytes are used to store the packet timestamps. Therefore, pull
-> the timestamp before executing any XDP operations and adjust all other code
-> accordingly. The igc driver does it like that as well.
-> 
-> Tested with Intel i210 card and AF_XDP sockets.
+On Thu Apr 15 2021, Jesper Dangaard Brouer wrote:
+> On Thu, 15 Apr 2021 11:21:45 +0200
+> Kurt Kanzenbach <kurt@linutronix.de> wrote:
+>
+>> When using native XDP with the igb driver, the XDP frame data doesn't po=
+int to
+>> the beginning of the packet. It's off by 16 bytes. Everything works as e=
+xpected
+>> with XDP skb mode.
+>>=20
+>> Actually these 16 bytes are used to store the packet timestamps. Therefo=
+re, pull
+>> the timestamp before executing any XDP operations and adjust all other c=
+ode
+>> accordingly. The igc driver does it like that as well.
+>>=20
+>> Tested with Intel i210 card and AF_XDP sockets.
+>
+> Doesn't the i210 card use the igc driver?
+> This change is for igb driver.
 
-Doesn't the i210 card use the igc driver?
-This change is for igb driver.
+Nope. igb is for i210 and igc is for the newer Intel i225 NICs.
 
+|01:00.0 Ethernet controller: Intel Corporation I210 Gigabit Network Connec=
+tion (rev 03)
+|[...]
+|        Kernel driver in use: igb
+|        Kernel modules: igb
 
-> Fixes: 9cbc948b5a20 ("igb: add XDP support")
-> Signed-off-by: Kurt Kanzenbach <kurt@linutronix.de>
-> ---
-[...]
-> 
-> drivers/net/ethernet/intel/igb/igb.h      |  3 +-
->  drivers/net/ethernet/intel/igb/igb_main.c | 46 ++++++++++++-----------
->  drivers/net/ethernet/intel/igb/igb_ptp.c  | 21 ++++-------
->  3 files changed, 33 insertions(+), 37 deletions(-)
+Thanks,
+Kurt
 
--- 
-Best regards,
-  Jesper Dangaard Brouer
-  MSc.CS, Principal Kernel Engineer at Red Hat
-  LinkedIn: http://www.linkedin.com/in/brouer
+--=-=-=
+Content-Type: application/pgp-signature; name="signature.asc"
 
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAEBCgAdFiEEooWgvezyxHPhdEojeSpbgcuY8KYFAmB4LqQACgkQeSpbgcuY
+8KaoBg//a9XcbfhzKEgjiDZBhuhZz94UXxYnGdzMDXwBYfRPHMCVS/Ck2dp93J42
+5SZtzICTcJ0j0/v9af0YbYUyMaObglMWrg2llYyCvmRbq9Q8Zb/6Av+GzjsCBHKJ
+E76Cj6KGyfdT5z4ijhFUUmqLAFECNiyjP2TVL6DZmhRs4EHI7WeA7E4aGYzuiOmM
+M/aqkaOL+wsDyZLkvPPMQGuDyWI83m+4DPfflOBwWLt422nm3trRnG0awAGkBwch
+LNkRneWaFMSQy4fgJIsa7QZcmnhFOM9Ro2suwcmZkH7gt2A5m5nL9zZqe9FxW2zG
+oHgvSJPUKWC+CTaQ2KwBsBRfPXtAGBqgkNFFjEy7Vk+VK4fKaWtX4sQ/S1U37D8Z
+LNINpIPas4b4ogLujIU9DHa57QhEjDXNMTgSzQQX4MQc1DoO2knIPf+R0HDjqEe6
+5Ppu0V70Nssz+g3iPhWdcxdqi1d0CTjxGiSfPS585ru/1SlqBV11nou9q5qxXVMw
+QaJy1aWED+VEFUoMP58XJ+scepJYZwd2jqP+qhz2OmuoF/iIRW/+kkYrHVLO0TZq
+Y7yQYQOK5E5+n9K8NYL1Kzcoo02vVb7kCEY05szXg2q4vNjOlTidgZn6BOECRsb8
+NaU2cPHMfdXDZM6/p4gNt4jcYcanp3Tp9fxkK3gaog9iEMC2tDU=
+=PbrL
+-----END PGP SIGNATURE-----
+--=-=-=--
