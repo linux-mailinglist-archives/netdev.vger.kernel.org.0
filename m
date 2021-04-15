@@ -2,291 +2,187 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 98C9B360327
-	for <lists+netdev@lfdr.de>; Thu, 15 Apr 2021 09:19:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 52D2A360333
+	for <lists+netdev@lfdr.de>; Thu, 15 Apr 2021 09:23:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231286AbhDOHTt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 15 Apr 2021 03:19:49 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:50309 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S231215AbhDOHTs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 15 Apr 2021 03:19:48 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1618471165;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=tjSbWtMUHOjatpUQwwbliYhoZNKm3fTz4tmeEVLucoA=;
-        b=d13gihYRq2G3FSa9moB48oLhJhxJtU0R8SR7lvlC3K9o9HOV5BFTxaxr5BoPpqrCGfo71G
-        dCebvLUzl61YiVgk/QZUPdqf3Km1Z1c8CUcED0pZJckHunLNaAuzvrfCUPndDDjY/KeKnZ
-        mKFKz3eF+q5z6YsgrfsNuZX9OUoc3f0=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-58-FVziLpT9PViQY8C3dTqHgg-1; Thu, 15 Apr 2021 03:19:21 -0400
-X-MC-Unique: FVziLpT9PViQY8C3dTqHgg-1
-Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com [10.5.11.13])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id D28DB10054F6;
-        Thu, 15 Apr 2021 07:19:19 +0000 (UTC)
-Received: from localhost (ovpn-114-209.ams2.redhat.com [10.36.114.209])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id A60F56E50A;
-        Thu, 15 Apr 2021 07:19:15 +0000 (UTC)
-Date:   Thu, 15 Apr 2021 08:19:14 +0100
-From:   Stefan Hajnoczi <stefanha@redhat.com>
-To:     Yongji Xie <xieyongji@bytedance.com>
-Cc:     "Michael S. Tsirkin" <mst@redhat.com>,
-        Jason Wang <jasowang@redhat.com>,
-        Stefano Garzarella <sgarzare@redhat.com>,
-        Parav Pandit <parav@nvidia.com>,
-        Christoph Hellwig <hch@infradead.org>,
-        Christian Brauner <christian.brauner@canonical.com>,
-        Randy Dunlap <rdunlap@infradead.org>,
-        Matthew Wilcox <willy@infradead.org>, viro@zeniv.linux.org.uk,
-        Jens Axboe <axboe@kernel.dk>, bcrl@kvack.org,
-        Jonathan Corbet <corbet@lwn.net>,
-        Mika =?iso-8859-1?Q?Penttil=E4?= <mika.penttila@nextfour.com>,
-        Dan Carpenter <dan.carpenter@oracle.com>,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        kvm@vger.kernel.org, linux-fsdevel@vger.kernel.org
-Subject: Re: Re: [PATCH v6 10/10] Documentation: Add documentation for VDUSE
-Message-ID: <YHfo8pc7dIO9lNc3@stefanha-x1.localdomain>
-References: <20210331080519.172-1-xieyongji@bytedance.com>
- <20210331080519.172-11-xieyongji@bytedance.com>
- <YHb44R4HyLEUVSTF@stefanha-x1.localdomain>
- <CACycT3uNR+nZY5gY0UhPkeOyi7Za6XkX4b=hasuDcgqdc7fqfg@mail.gmail.com>
+        id S231304AbhDOHXb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 15 Apr 2021 03:23:31 -0400
+Received: from mga11.intel.com ([192.55.52.93]:64107 "EHLO mga11.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S230090AbhDOHX3 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 15 Apr 2021 03:23:29 -0400
+IronPort-SDR: x9f/I2kF0yY4Oy/NPOEFbo7WaAQDdT5pL1BLxvG9Z8obDdsFUirJTQZ85hu+sh/JcVPZnjFeLX
+ BKf9AjyDz31Q==
+X-IronPort-AV: E=McAfee;i="6200,9189,9954"; a="191615578"
+X-IronPort-AV: E=Sophos;i="5.82,223,1613462400"; 
+   d="scan'208";a="191615578"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Apr 2021 00:23:06 -0700
+IronPort-SDR: 1q08mUOndKXeFVGEi7/bOhotozuY47EgUD72MhZuLu5RDOeGhDdtBhcxSMZ9fWE5Vm7NIwhUH8
+ i5dM4tQLKOcA==
+X-IronPort-AV: E=Sophos;i="5.82,223,1613462400"; 
+   d="scan'208";a="418647778"
+Received: from lingshan-mobl5.ccr.corp.intel.com (HELO [10.254.209.173]) ([10.254.209.173])
+  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Apr 2021 00:23:03 -0700
+Subject: Re: [PATCH 1/3] vDPA/ifcvf: deduce VIRTIO device ID when probe
+To:     Jason Wang <jasowang@redhat.com>,
+        Zhu Lingshan <lingshan.zhu@intel.com>, mst@redhat.com,
+        lulu@redhat.com, leonro@nvidia.com
+Cc:     virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
+        kvm@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20210414091832.5132-1-lingshan.zhu@intel.com>
+ <20210414091832.5132-2-lingshan.zhu@intel.com>
+ <85483ff1-cf98-ad05-0c53-74caa2464459@redhat.com>
+ <ccf7001b-27f0-27ea-40d2-52ca3cc2386b@linux.intel.com>
+ <ffd2861d-2395-de51-a227-f1ef33f74322@redhat.com>
+ <92ef6264-4462-cbd4-5db8-6ce6b68762e0@linux.intel.com>
+ <d3c7ea9f-1849-f890-f647-6caf764a7542@redhat.com>
+From:   Zhu Lingshan <lingshan.zhu@linux.intel.com>
+Message-ID: <e2e5de78-9b6f-32cf-5955-ed930365d79f@linux.intel.com>
+Date:   Thu, 15 Apr 2021 15:23:01 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.9.0
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="82FzIIg1Jb5ofXMG"
-Content-Disposition: inline
-In-Reply-To: <CACycT3uNR+nZY5gY0UhPkeOyi7Za6XkX4b=hasuDcgqdc7fqfg@mail.gmail.com>
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
+In-Reply-To: <d3c7ea9f-1849-f890-f647-6caf764a7542@redhat.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 8bit
+Content-Language: en-US
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 
---82FzIIg1Jb5ofXMG
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
 
-On Thu, Apr 15, 2021 at 01:38:37PM +0800, Yongji Xie wrote:
-> On Wed, Apr 14, 2021 at 10:15 PM Stefan Hajnoczi <stefanha@redhat.com> wr=
-ote:
-> >
-> > On Wed, Mar 31, 2021 at 04:05:19PM +0800, Xie Yongji wrote:
-> > > VDUSE (vDPA Device in Userspace) is a framework to support
-> > > implementing software-emulated vDPA devices in userspace. This
-> > > document is intended to clarify the VDUSE design and usage.
-> > >
-> > > Signed-off-by: Xie Yongji <xieyongji@bytedance.com>
-> > > ---
-> > >  Documentation/userspace-api/index.rst |   1 +
-> > >  Documentation/userspace-api/vduse.rst | 212 ++++++++++++++++++++++++=
-++++++++++
-> > >  2 files changed, 213 insertions(+)
-> > >  create mode 100644 Documentation/userspace-api/vduse.rst
-> >
-> > Just looking over the documentation briefly (I haven't studied the code
-> > yet)...
-> >
->=20
-> Thank you!
->=20
-> > > +How VDUSE works
-> > > +------------
-> > > +Each userspace vDPA device is created by the VDUSE_CREATE_DEV ioctl =
-on
-> > > +the character device (/dev/vduse/control). Then a device file with t=
-he
-> > > +specified name (/dev/vduse/$NAME) will appear, which can be used to
-> > > +implement the userspace vDPA device's control path and data path.
-> >
-> > These steps are taken after sending the VDPA_CMD_DEV_NEW netlink
-> > message? (Please consider reordering the documentation to make it clear
-> > what the sequence of steps are.)
-> >
->=20
-> No, VDUSE devices should be created before sending the
-> VDPA_CMD_DEV_NEW netlink messages which might produce I/Os to VDUSE.
+On 4/15/2021 3:16 PM, Jason Wang wrote:
+>
+> 在 2021/4/15 下午2:36, Zhu Lingshan 写道:
+>>
+>>
+>> On 4/15/2021 2:30 PM, Jason Wang wrote:
+>>>
+>>> 在 2021/4/15 下午1:52, Zhu Lingshan 写道:
+>>>>
+>>>>
+>>>> On 4/15/2021 11:30 AM, Jason Wang wrote:
+>>>>>
+>>>>> 在 2021/4/14 下午5:18, Zhu Lingshan 写道:
+>>>>>> This commit deduces VIRTIO device ID as device type when probe,
+>>>>>> then ifcvf_vdpa_get_device_id() can simply return the ID.
+>>>>>> ifcvf_vdpa_get_features() and ifcvf_vdpa_get_config_size()
+>>>>>> can work properly based on the device ID.
+>>>>>>
+>>>>>> Signed-off-by: Zhu Lingshan <lingshan.zhu@intel.com>
+>>>>>> ---
+>>>>>>   drivers/vdpa/ifcvf/ifcvf_base.h |  1 +
+>>>>>>   drivers/vdpa/ifcvf/ifcvf_main.c | 22 ++++++++++------------
+>>>>>>   2 files changed, 11 insertions(+), 12 deletions(-)
+>>>>>>
+>>>>>> diff --git a/drivers/vdpa/ifcvf/ifcvf_base.h 
+>>>>>> b/drivers/vdpa/ifcvf/ifcvf_base.h
+>>>>>> index b2eeb16b9c2c..1c04cd256fa7 100644
+>>>>>> --- a/drivers/vdpa/ifcvf/ifcvf_base.h
+>>>>>> +++ b/drivers/vdpa/ifcvf/ifcvf_base.h
+>>>>>> @@ -84,6 +84,7 @@ struct ifcvf_hw {
+>>>>>>       u32 notify_off_multiplier;
+>>>>>>       u64 req_features;
+>>>>>>       u64 hw_features;
+>>>>>> +    u32 dev_type;
+>>>>>>       struct virtio_pci_common_cfg __iomem *common_cfg;
+>>>>>>       void __iomem *net_cfg;
+>>>>>>       struct vring_info vring[IFCVF_MAX_QUEUE_PAIRS * 2];
+>>>>>> diff --git a/drivers/vdpa/ifcvf/ifcvf_main.c 
+>>>>>> b/drivers/vdpa/ifcvf/ifcvf_main.c
+>>>>>> index 44d7586019da..99b0a6b4c227 100644
+>>>>>> --- a/drivers/vdpa/ifcvf/ifcvf_main.c
+>>>>>> +++ b/drivers/vdpa/ifcvf/ifcvf_main.c
+>>>>>> @@ -323,19 +323,9 @@ static u32 ifcvf_vdpa_get_generation(struct 
+>>>>>> vdpa_device *vdpa_dev)
+>>>>>>     static u32 ifcvf_vdpa_get_device_id(struct vdpa_device 
+>>>>>> *vdpa_dev)
+>>>>>>   {
+>>>>>> -    struct ifcvf_adapter *adapter = vdpa_to_adapter(vdpa_dev);
+>>>>>> -    struct pci_dev *pdev = adapter->pdev;
+>>>>>> -    u32 ret = -ENODEV;
+>>>>>> -
+>>>>>> -    if (pdev->device < 0x1000 || pdev->device > 0x107f)
+>>>>>> -        return ret;
+>>>>>> -
+>>>>>> -    if (pdev->device < 0x1040)
+>>>>>> -        ret =  pdev->subsystem_device;
+>>>>>> -    else
+>>>>>> -        ret =  pdev->device-0x1040;
+>>>>>> +    struct ifcvf_hw *vf = vdpa_to_vf(vdpa_dev);
+>>>>>>   -    return ret;
+>>>>>> +    return vf->dev_type;
+>>>>>>   }
+>>>>>>     static u32 ifcvf_vdpa_get_vendor_id(struct vdpa_device 
+>>>>>> *vdpa_dev)
+>>>>>> @@ -466,6 +456,14 @@ static int ifcvf_probe(struct pci_dev *pdev, 
+>>>>>> const struct pci_device_id *id)
+>>>>>>       pci_set_drvdata(pdev, adapter);
+>>>>>>         vf = &adapter->vf;
+>>>>>> +    if (pdev->device < 0x1000 || pdev->device > 0x107f)
+>>>>>> +        return -EOPNOTSUPP;
+>>>>>> +
+>>>>>> +    if (pdev->device < 0x1040)
+>>>>>> +        vf->dev_type =  pdev->subsystem_device;
+>>>>>> +    else
+>>>>>> +        vf->dev_type =  pdev->device - 0x1040;
+>>>>>
+>>>>>
+>>>>> So a question here, is the device a transtional device or modern one?
+>>>>>
+>>>>> If it's a transitonal one, can it swtich endianess automatically 
+>>>>> or not?
+>>>>>
+>>>>> Thanks
+>>>> Hi Jason,
+>>>>
+>>>> This driver should drive both modern and transitional devices as we 
+>>>> discussed before.
+>>>> If it's a transitional one, it will act as a modern device by 
+>>>> default, legacy mode is a fail-over path.
+>>>
+>>>
+>>> Note that legacy driver use native endian, support legacy driver 
+>>> requires the device to know native endian which I'm not sure your 
+>>> device can do that.
+>>>
+>>> Thanks
+>> Yes, legacy requires guest native endianess, I think we don't need to 
+>> worry about this because our transitional device should work in 
+>> modern mode by
+>> default(legacy mode is the failover path we will never reach, 
+>> get_features will fail if no ACCESS_PLATFORM), we don't support 
+>> legacy device in vDPA.
+>>
+>> Thanks
+>
+>
+> Ok, so I think it's better to add a comment here.
+sure, will add a comment in V2
 
-I see. Please include an overview of the steps before going into detail.
-Something like:
-
-  VDUSE devices are started as follows:
-
-  1. Create a new VDUSE instance with ioctl(VDUSE_CREATE_DEV) on
-     /dev/vduse/control.
-
-  2. Begin processing VDUSE messages from /dev/vduse/$NAME. The first
-     messages will arrive while attaching the VDUSE instance to vDPA.
-
-  3. Send the VDPA_CMD_DEV_NEW netlink message to attach the VDUSE
-     instance to vDPA.
-
-  VDUSE devices are stopped as follows:
-
-  ...
-
-> > > +     static int netlink_add_vduse(const char *name, int device_id)
-> > > +     {
-> > > +             struct nl_sock *nlsock;
-> > > +             struct nl_msg *msg;
-> > > +             int famid;
-> > > +
-> > > +             nlsock =3D nl_socket_alloc();
-> > > +             if (!nlsock)
-> > > +                     return -ENOMEM;
-> > > +
-> > > +             if (genl_connect(nlsock))
-> > > +                     goto free_sock;
-> > > +
-> > > +             famid =3D genl_ctrl_resolve(nlsock, VDPA_GENL_NAME);
-> > > +             if (famid < 0)
-> > > +                     goto close_sock;
-> > > +
-> > > +             msg =3D nlmsg_alloc();
-> > > +             if (!msg)
-> > > +                     goto close_sock;
-> > > +
-> > > +             if (!genlmsg_put(msg, NL_AUTO_PORT, NL_AUTO_SEQ, famid,=
- 0, 0,
-> > > +                 VDPA_CMD_DEV_NEW, 0))
-> > > +                     goto nla_put_failure;
-> > > +
-> > > +             NLA_PUT_STRING(msg, VDPA_ATTR_DEV_NAME, name);
-> > > +             NLA_PUT_STRING(msg, VDPA_ATTR_MGMTDEV_DEV_NAME, "vduse"=
-);
-> > > +             NLA_PUT_U32(msg, VDPA_ATTR_DEV_ID, device_id);
-> >
-> > What are the permission/capability requirements for VDUSE?
-> >
->=20
-> Now I think we need privileged permission (root user). Because
-> userspace daemon is able to access avail vring, used vring, descriptor
-> table in kernel driver directly.
-
-Please state this explicitly at the start of the document. Existing
-interfaces like FUSE are designed to avoid trusting userspace. Therefore
-people might think the same is the case here. It's critical that people
-are aware of this before deploying VDUSE with virtio-vdpa.
-
-We should probably pause here and think about whether it's possible to
-avoid trusting userspace. Even if it takes some effort and costs some
-performance it would probably be worthwhile.
-
-Is the security situation different with vhost-vdpa? In that case it
-seems more likely that the host kernel doesn't need to trust the
-userspace VDUSE device.
-
-Regarding privileges in general: userspace VDUSE processes shouldn't
-need to run as root. The VDUSE device lifecycle will require privileges
-to attach vhost-vdpa and virtio-vdpa devices, but the actual userspace
-process that emulates the device should be able to run unprivileged.
-Emulated devices are an attack surface and even if you are comfortable
-with running them as root in your specific use case, it will be an issue
-as soon as other people want to use VDUSE and could give VDUSE a
-reputation for poor security.
-
-> > How does VDUSE interact with namespaces?
-> >
->=20
-> Not sure I get your point here. Do you mean how the emulated vDPA
-> device interact with namespaces? This should work like hardware vDPA
-> devices do. VDUSE daemon can reside outside the namespace of a
-> container which uses the vDPA device.
-
-Can VDUSE devices run inside containers? Are /dev/vduse/$NAME and vDPA
-device names global?
-
-> > What is the meaning of VDPA_ATTR_DEV_ID? I don't see it in Linux
-> > v5.12-rc6 drivers/vdpa/vdpa.c:vdpa_nl_cmd_dev_add_set_doit().
-> >
->=20
-> It means the device id (e.g. VIRTIO_ID_BLOCK) of the vDPA device and
-> can be found in include/uapi/linux/vdpa.h.
-
-VDPA_ATTR_DEV_ID is only used by VDPA_CMD_DEV_GET in Linux v5.12-rc6,
-not by VDPA_CMD_DEV_NEW.
-
-The example in this document uses VDPA_ATTR_DEV_ID with
-VDPA_CMD_DEV_NEW. Is the example outdated?
-
->=20
-> > > +MMU-based IOMMU Driver
-> > > +----------------------
-> > > +VDUSE framework implements an MMU-based on-chip IOMMU driver to supp=
-ort
-> > > +mapping the kernel DMA buffer into the userspace iova region dynamic=
-ally.
-> > > +This is mainly designed for virtio-vdpa case (kernel virtio drivers).
-> > > +
-> > > +The basic idea behind this driver is treating MMU (VA->PA) as IOMMU =
-(IOVA->PA).
-> > > +The driver will set up MMU mapping instead of IOMMU mapping for the =
-DMA transfer
-> > > +so that the userspace process is able to use its virtual address to =
-access
-> > > +the DMA buffer in kernel.
-> > > +
-> > > +And to avoid security issue, a bounce-buffering mechanism is introdu=
-ced to
-> > > +prevent userspace accessing the original buffer directly which may c=
-ontain other
-> > > +kernel data. During the mapping, unmapping, the driver will copy the=
- data from
-> > > +the original buffer to the bounce buffer and back, depending on the =
-direction of
-> > > +the transfer. And the bounce-buffer addresses will be mapped into th=
-e user address
-> > > +space instead of the original one.
-> >
-> > Is mmap(2) the right interface if memory is not actually shared, why not
-> > just use pread(2)/pwrite(2) to make the copy explicit? That way the copy
-> > semantics are clear. For example, don't expect to be able to busy wait
-> > on the memory because changes will not be visible to the other side.
-> >
-> > (I guess I'm missing something here and that mmap(2) is the right
-> > approach, but maybe this documentation section can be clarified.)
->=20
-> It's for performance considerations on the one hand. We might need to
-> call pread(2)/pwrite(2) multiple times for each request.
-
-Userspace can keep page-sized pread() buffers around to avoid additional
-syscalls during a request.
-
-mmap() access does reduce the number of syscalls, but it also introduces
-page faults (effectively doing the page-sized pread() I mentioned
-above).
-
-It's not obvious to me that there is a fundamental difference between
-the two approaches in terms of performance.
-
-> On the other
-> hand, we can handle the virtqueue in a unified way for both vhost-vdpa
-> case and virtio-vdpa case. Otherwise, userspace daemon needs to know
-> which iova ranges need to be accessed with pread(2)/pwrite(2). And in
-> the future, we might be able to avoid bouncing in some cases.
-
-Ah, I see. So bounce buffers are not used for vhost-vdpa?
-
-Stefan
-
---82FzIIg1Jb5ofXMG
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEEhpWov9P5fNqsNXdanKSrs4Grc8gFAmB36PIACgkQnKSrs4Gr
-c8jkQAf+KcYFh/gqlyxAo6TVpRadXWszhkqQFKsiSMi0sOEUhpG/XGg2mTz7obUZ
-Z8BqHZxx6numt71fr/uq33E2zNU3sYvQGFwBiC9F02FpXcHcF5TChEber0x0bsCr
-RMvsmDK0FZyPGiFpoxkfiJMAtzQrTgwo1tGfV5AxR7tMeP8b5u6kf6Q3sZCO5/v1
-yaTujoi0t1hdmIluCm4cNAaJL/sL5QYe1snJvh2Dajktko7Rs6d9xZ0hOQWbFJH3
-z54f67yXGRYWozMwa5TTEgWNswAC2F3f1WInrcolgZoTu7XlfOlLZ6ZdVoxso/ti
-4tAZ1a3Ma7anA3jhAbyQZhPvoljh+A==
-=DcLW
------END PGP SIGNATURE-----
-
---82FzIIg1Jb5ofXMG--
+Thanks
+>
+> Thanks
+>
+>
+>>>
+>>>
+>>>> For vDPA, it has to support VIRTIO_1 and ACCESS_PLATFORM, so it 
+>>>> must in modern mode.
+>>>> I think we don't need to worry about endianess for legacy mode.
+>>>>
+>>>> Thanks
+>>>> Zhu Lingshan
+>>>>>
+>>>>>
+>>>>>> +
+>>>>>>       vf->base = pcim_iomap_table(pdev);
+>>>>>>         adapter->pdev = pdev;
+>>>>>
+>>>>
+>>>
+>>
+>
 
