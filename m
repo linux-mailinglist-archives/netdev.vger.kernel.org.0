@@ -2,109 +2,76 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B2B58360E82
-	for <lists+netdev@lfdr.de>; Thu, 15 Apr 2021 17:16:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DFCB3360ED9
+	for <lists+netdev@lfdr.de>; Thu, 15 Apr 2021 17:22:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234615AbhDOPQS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 15 Apr 2021 11:16:18 -0400
-Received: from fllv0016.ext.ti.com ([198.47.19.142]:53894 "EHLO
-        fllv0016.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236550AbhDOPPD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 15 Apr 2021 11:15:03 -0400
-Received: from fllv0034.itg.ti.com ([10.64.40.246])
-        by fllv0016.ext.ti.com (8.15.2/8.15.2) with ESMTP id 13FFEUCn013190;
-        Thu, 15 Apr 2021 10:14:30 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1618499670;
-        bh=+qBC1tnl5YMK3m60rKOq4hj1XFlwy6Q4817612NjXgE=;
-        h=Subject:CC:References:From:Date:In-Reply-To;
-        b=yfp2Ont4ALWQWjciYZ1YSZtvmOAulxg5cb/16pbUSzbGHThWmXB8x4vP0Um2MAn7N
-         x6Qc+dcMcdXltpENliCMx6/3tTikjIlxhhfC8lcSs7JVsGj4p0b3qdVkgcBRTo/ebf
-         Rz2L8jKNlffRGiKGr0T6Lk7QvTrGgaxO7Bsf+dok=
-Received: from DFLE107.ent.ti.com (dfle107.ent.ti.com [10.64.6.28])
-        by fllv0034.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 13FFEUTk017045
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Thu, 15 Apr 2021 10:14:30 -0500
-Received: from DFLE109.ent.ti.com (10.64.6.30) by DFLE107.ent.ti.com
- (10.64.6.28) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2176.2; Thu, 15
- Apr 2021 10:14:29 -0500
-Received: from lelv0327.itg.ti.com (10.180.67.183) by DFLE109.ent.ti.com
- (10.64.6.30) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2176.2 via
- Frontend Transport; Thu, 15 Apr 2021 10:14:29 -0500
-Received: from [172.24.145.148] (ileax41-snat.itg.ti.com [10.172.224.153])
-        by lelv0327.itg.ti.com (8.15.2/8.15.2) with ESMTP id 13FFEPBM088778;
-        Thu, 15 Apr 2021 10:14:26 -0500
-Subject: Re: [PATCH 0/2] MCAN: Add support for implementing transceiver as a
- phy
-CC:     <linux-kernel@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-can@vger.kernel.org>, <netdev@vger.kernel.org>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
-        Wolfgang Grandegger <wg@grandegger.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Chandrasekar Ramakrishnan <rcsekar@samsung.com>,
-        Kishon Vijay Abraham I <kishon@ti.com>,
-        Lokesh Vutla <lokeshvutla@ti.com>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        Grygorii Strashko <grygorii.strashko@ti.com>
-References: <20210415150629.5417-1-a-govindraju@ti.com>
-From:   Aswath Govindraju <a-govindraju@ti.com>
-Message-ID: <1fc33525-d879-f8b2-60e5-58c64b66b938@ti.com>
-Date:   Thu, 15 Apr 2021 20:44:24 +0530
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+        id S233533AbhDOPWm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 15 Apr 2021 11:22:42 -0400
+Received: from mail.kernel.org ([198.145.29.99]:58616 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S234259AbhDOPWJ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 15 Apr 2021 11:22:09 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id C8D206115B;
+        Thu, 15 Apr 2021 15:21:45 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1618500106;
+        bh=i9Nen5FIXDDX8NjLMoZ0nmj/bsF1Nsyy0XJWQ9jdqX4=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=dR5ubz6xlg2BkJhz+zVNmc8Pllg76FlgQB3eREo96UbNtzgulPJEujuHiLFH8t8S6
+         oW4B9XQ7wPvwdJY2IrXK7H9qGzIF8Jw+cmZ2qFvURtO4Bx7owq/yaLPIDDUCH41vCv
+         I5J2znK4sueRy6MdTubk3y8U7yWE1tfykRrdmHz5uBA5PMOwJ+EqxVW1At81PxrjYJ
+         kefvx7r55hh9hIg6Dzz/i0dzcd5quBWm/SwvMColyifQvLFap49d6n/ohzKsoLqeLm
+         ONJVyQMYUZKrUtNg+xs7BgDYEnG47PRVFKW34bNYdUEzYNpMTJWLJJO//WTYxSigqx
+         fUtZbPsyGebNw==
+Date:   Thu, 15 Apr 2021 08:21:44 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Saeed Mahameed <saeed@kernel.org>
+Cc:     davem@davemloft.net, netdev@vger.kernel.org,
+        michael.chan@broadcom.com, leon@kernel.org, ecree.xilinx@gmail.com,
+        habetsm.xilinx@gmail.com, f.fainelli@gmail.com, andrew@lunn.ch,
+        mkubecek@suse.cz, ariela@nvidia.com, corbet@lwn.net,
+        linux-doc@vger.kernel.org
+Subject: Re: [PATCH net-next 3/6] ethtool: add FEC statistics
+Message-ID: <20210415082144.260cf3ce@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <723b2858c61898df02e57bb2aaa4c4b4b3c30c50.camel@kernel.org>
+References: <20210414034454.1970967-1-kuba@kernel.org>
+        <20210414034454.1970967-4-kuba@kernel.org>
+        <723b2858c61898df02e57bb2aaa4c4b4b3c30c50.camel@kernel.org>
 MIME-Version: 1.0
-In-Reply-To: <20210415150629.5417-1-a-govindraju@ti.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
-To:     unlisted-recipients:; (no To-header on input)
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi all,
+On Wed, 14 Apr 2021 23:25:43 -0700 Saeed Mahameed wrote:
+> On Tue, 2021-04-13 at 20:44 -0700, Jakub Kicinski wrote:
+> > ethtool_link_ksettings *);
+> > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0void=C2=A0=C2=A0=C2=A0=C2=A0=
+(*get_fec_stats)(struct net_device *dev,
+> > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 struct ethtool_fec_stats *fec_st=
+ats); =20
+>=20
+> why void ? some drivers need to access the FW and it could be an old
+> FW/device where the fec stats are not supported.
 
-On 15/04/21 8:36 pm, Aswath Govindraju wrote:
-> The following series of patches add support for implementing the
-> transceiver as a phy of m_can_platform driver.
-> 
-> TCAN1042 has a standby signal that needs to be pulled high for
-> sending/receiving messages[1]. TCAN1043 has a enable signal along with
-> standby signal that needs to be pulled up for sending/receiving
-> messages[2], and other combinations of the two lines can be used to put the
-> transceiver in different states to reduce power consumption. On boards
-> like the AM654-idk and J721e-evm these signals are controlled using gpios.
-> 
-> These gpios are set in phy driver, and the transceiver can be put in
-> different states using phy API. The phy driver is added in the series [3].
-> 
-> [1] - https://www.ti.com/lit/ds/symlink/tcan1042h.pdf
-> [2] - https://www.ti.com/lit/ds/symlink/tcan1043-q1.pdf
-> [3] - https://lore.kernel.org/patchwork/project/lkml/list/?series=495365
-> 
+When stats are not supported just returning is fine. Stats are
+initialized to -1, core will not dump them into the netlink message=20
+if driver didn't assign anything.
 
-Please ignore this series. I will post a respin using
-devm_phy_get_optional instead of devm_of_phy_get_optional_by_index()
-based on the comments below[1]. Sorry for the noise.
+> and sometimes e.g. in mlx5 case FW can fail for FW related businesses
+> :)..
 
-[1] - https://lore.kernel.org/patchwork/patch/1413931/
+Can do. I was wondering if the entity reading the stats (from user
+space) can do anything useful with the error, and didn't really come=20
+up with anything other than printing an error. Which the kernel can=20
+do as well. OTOH if there are multiple stats to read and one of them
+fails its probably better to return partial results than fail=20
+the entire op. Therefore I went for no error - if something fails -=20
+the stats will be missing.
 
-Thanks,
-Aswath
-
-> Faiz Abbas (2):
->   dt-bindings: net: can: Document transceiver implementation as phy
->   can: m_can: Add support for transceiver as phy
-> 
->  .../devicetree/bindings/net/can/bosch,m_can.yaml    |  3 +++
->  drivers/net/can/m_can/m_can.c                       | 10 ++++++++++
->  drivers/net/can/m_can/m_can.h                       |  2 ++
->  drivers/net/can/m_can/m_can_platform.c              | 13 +++++++++++++
->  4 files changed, 28 insertions(+)
-> 
-
+Does that make any sense? Or do you think errors are rare enough that
+it's okay if they are fatal? (with the caveat that -EOPNOTSUPP should
+be ignored).
