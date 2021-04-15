@@ -2,82 +2,131 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CDD0E360062
-	for <lists+netdev@lfdr.de>; Thu, 15 Apr 2021 05:24:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F1909360083
+	for <lists+netdev@lfdr.de>; Thu, 15 Apr 2021 05:31:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230106AbhDODYj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 14 Apr 2021 23:24:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33556 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229911AbhDODYj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 14 Apr 2021 23:24:39 -0400
-Received: from mail-ot1-x335.google.com (mail-ot1-x335.google.com [IPv6:2607:f8b0:4864:20::335])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 779F7C061574
-        for <netdev@vger.kernel.org>; Wed, 14 Apr 2021 20:24:15 -0700 (PDT)
-Received: by mail-ot1-x335.google.com with SMTP id w31-20020a9d36220000b02901f2cbfc9743so21353539otb.7
-        for <netdev@vger.kernel.org>; Wed, 14 Apr 2021 20:24:15 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=d2HEmPut3FRTMN01XADXKPtUGd4De47HChWhWiI7IS4=;
-        b=qkgp323gNpWusk4USnvIUD03PyZoWAo3rlBQOl/0uMLaYDoIkLHbnM/Fo492VC1KVH
-         Ud9BSRpUNLyUB0HOoN/l/R8iV7QH2/1ZsZvNtSmaXfda3qeMsEcaBvxkbUDh0unjDOU6
-         O4Fmvgjyu4lSAi0ur+Se4g22Knff40Tpen5a3BXJtK7K4DfaMyUSlqJfS57RUdVMDPZp
-         vHuFjkBujhty5dLwr+kTXM1mQiqci1TlbPpne66je3eDiZjjZ74asI7oMPDwkI7NehfX
-         iTMbbHhSDtosuAl7oDWO1hhQQYlkT391rII+TYgvsVTOykixmXfBkH42ue2Q9aMCDuYt
-         f4Ww==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=d2HEmPut3FRTMN01XADXKPtUGd4De47HChWhWiI7IS4=;
-        b=IA1707nk+vsCje88Mh427Uz5HM7TzXXdbFou1eXPnU1j8dToad8xqpxF9zQ9X+EbY+
-         9syqNI57JUjtHSt4fj8pW+DjfuufOhBKD9JtK6yl5NaA0Orqkq2Hv1Mr+IfmhMZZ1hAH
-         BSKUGQH6Z7EovXhqdprf3nqipw5rPReULHv/NADSPSQY/w80G0iyYfytOcRyMIgeqSMa
-         oc9a3vETyV6Yvidhrx6pqn6qKBf2fz+sgOqnzKOGcM4I+g1iBJ2l1OgvcyBVMv/8BZMS
-         OJbdT6qJfJQFAA7c03drZchu3eUYO0w643M0BMm0V/OqODkD3Nt+FPxltGy3pPLAMDOY
-         BLoQ==
-X-Gm-Message-State: AOAM533hSDBDSXQSNOJFaZyVGnlyNtM9I+XwdGPZgLrrkhuXe1P54OyU
-        baPgkHIDwt/a/wxT/hVhZ3A=
-X-Google-Smtp-Source: ABdhPJw57pL6shIGH5iuuvHGvqo1FFmi7ewDHnGYM0rgQ9a4fd1V36Q52zh34j5XqetB/bn/k47oAw==
-X-Received: by 2002:a9d:1788:: with SMTP id j8mr1034586otj.9.1618457054953;
-        Wed, 14 Apr 2021 20:24:14 -0700 (PDT)
-Received: from Davids-MacBook-Pro.local ([8.45.42.70])
-        by smtp.googlemail.com with ESMTPSA id w2sm332747oov.23.2021.04.14.20.24.13
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 14 Apr 2021 20:24:14 -0700 (PDT)
-Subject: Re: [PATCH v3 net-next] net: multipath routing: configurable seed
-To:     Pavel Balaev <mail@void.so>, netdev@vger.kernel.org
-Cc:     christophe.jaillet@wanadoo.fr, davem@davemloft.net,
-        kuba@kernel.org, yoshfuji@linux-ipv6.org, dsahern@kernel.org
-References: <YHWGmPmvpQAT3BcV@rnd>
- <08aba836-162e-b5d3-7a93-0488489be798@gmail.com> <YHaa0pRCTKFbEhA2@rnd>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <bcf3a5d5-bfbd-d8d3-05e9-ad506e6a689e@gmail.com>
-Date:   Wed, 14 Apr 2021 20:24:11 -0700
+        id S230054AbhDODbR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 14 Apr 2021 23:31:17 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:60533 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S229981AbhDODbP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 14 Apr 2021 23:31:15 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1618457452;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=HlNNiI/3x3aTaVCgbYG1oVjUjq53goSd1bVD/8PXIMk=;
+        b=DPmHjH8ZUaqi82xwbrgmIBAadc6LXmCcim/ey61+mwVGrPwChLW7UeJovF5qRwhhKMkiqf
+        f3s/71PAzFNW54vzJ0sKyQfBgSQ8wXm3axSuziEWU/tEb+QPq7ME3JYtGNq+u/gfQtrJip
+        qtsKnPkV167k6qev3bY64PMSjrsvjzQ=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-157-wQ4K-NJSPnOVQhvEvIBkPQ-1; Wed, 14 Apr 2021 23:30:49 -0400
+X-MC-Unique: wQ4K-NJSPnOVQhvEvIBkPQ-1
+Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 08E81107ACE4;
+        Thu, 15 Apr 2021 03:30:48 +0000 (UTC)
+Received: from wangxiaodeMacBook-Air.local (ovpn-13-220.pek2.redhat.com [10.72.13.220])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 9D418610A8;
+        Thu, 15 Apr 2021 03:30:43 +0000 (UTC)
+Subject: Re: [PATCH 1/3] vDPA/ifcvf: deduce VIRTIO device ID when probe
+To:     Zhu Lingshan <lingshan.zhu@intel.com>, mst@redhat.com,
+        lulu@redhat.com, leonro@nvidia.com
+Cc:     virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
+        kvm@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20210414091832.5132-1-lingshan.zhu@intel.com>
+ <20210414091832.5132-2-lingshan.zhu@intel.com>
+From:   Jason Wang <jasowang@redhat.com>
+Message-ID: <85483ff1-cf98-ad05-0c53-74caa2464459@redhat.com>
+Date:   Thu, 15 Apr 2021 11:30:41 +0800
 User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
  Gecko/20100101 Thunderbird/78.9.1
 MIME-Version: 1.0
-In-Reply-To: <YHaa0pRCTKFbEhA2@rnd>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+In-Reply-To: <20210414091832.5132-2-lingshan.zhu@intel.com>
+Content-Type: text/plain; charset=gbk; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 4/14/21 12:33 AM, Pavel Balaev wrote:
->>
->> This should work the same for IPv6.
-> I wanted to add IPv6 support after IPv4 will be approved,
-> anyway no problem, will add IPv6 in next version 
->> And please add test cases under tools/testing/selftests/net.
-> This feature cannot be tested whithin one host instance, becasue the same seed
-> will be used by default for all netns, so results will be the same
-> anyway, should I use QEMU for this tests?
->  
-> 
 
-why not make the seed per namespace?
+ÔÚ 2021/4/14 ÏÂÎç5:18, Zhu Lingshan Ð´µÀ:
+> This commit deduces VIRTIO device ID as device type when probe,
+> then ifcvf_vdpa_get_device_id() can simply return the ID.
+> ifcvf_vdpa_get_features() and ifcvf_vdpa_get_config_size()
+> can work properly based on the device ID.
+>
+> Signed-off-by: Zhu Lingshan <lingshan.zhu@intel.com>
+> ---
+>   drivers/vdpa/ifcvf/ifcvf_base.h |  1 +
+>   drivers/vdpa/ifcvf/ifcvf_main.c | 22 ++++++++++------------
+>   2 files changed, 11 insertions(+), 12 deletions(-)
+>
+> diff --git a/drivers/vdpa/ifcvf/ifcvf_base.h b/drivers/vdpa/ifcvf/ifcvf_base.h
+> index b2eeb16b9c2c..1c04cd256fa7 100644
+> --- a/drivers/vdpa/ifcvf/ifcvf_base.h
+> +++ b/drivers/vdpa/ifcvf/ifcvf_base.h
+> @@ -84,6 +84,7 @@ struct ifcvf_hw {
+>   	u32 notify_off_multiplier;
+>   	u64 req_features;
+>   	u64 hw_features;
+> +	u32 dev_type;
+>   	struct virtio_pci_common_cfg __iomem *common_cfg;
+>   	void __iomem *net_cfg;
+>   	struct vring_info vring[IFCVF_MAX_QUEUE_PAIRS * 2];
+> diff --git a/drivers/vdpa/ifcvf/ifcvf_main.c b/drivers/vdpa/ifcvf/ifcvf_main.c
+> index 44d7586019da..99b0a6b4c227 100644
+> --- a/drivers/vdpa/ifcvf/ifcvf_main.c
+> +++ b/drivers/vdpa/ifcvf/ifcvf_main.c
+> @@ -323,19 +323,9 @@ static u32 ifcvf_vdpa_get_generation(struct vdpa_device *vdpa_dev)
+>   
+>   static u32 ifcvf_vdpa_get_device_id(struct vdpa_device *vdpa_dev)
+>   {
+> -	struct ifcvf_adapter *adapter = vdpa_to_adapter(vdpa_dev);
+> -	struct pci_dev *pdev = adapter->pdev;
+> -	u32 ret = -ENODEV;
+> -
+> -	if (pdev->device < 0x1000 || pdev->device > 0x107f)
+> -		return ret;
+> -
+> -	if (pdev->device < 0x1040)
+> -		ret =  pdev->subsystem_device;
+> -	else
+> -		ret =  pdev->device - 0x1040;
+> +	struct ifcvf_hw *vf = vdpa_to_vf(vdpa_dev);
+>   
+> -	return ret;
+> +	return vf->dev_type;
+>   }
+>   
+>   static u32 ifcvf_vdpa_get_vendor_id(struct vdpa_device *vdpa_dev)
+> @@ -466,6 +456,14 @@ static int ifcvf_probe(struct pci_dev *pdev, const struct pci_device_id *id)
+>   	pci_set_drvdata(pdev, adapter);
+>   
+>   	vf = &adapter->vf;
+> +	if (pdev->device < 0x1000 || pdev->device > 0x107f)
+> +		return -EOPNOTSUPP;
+> +
+> +	if (pdev->device < 0x1040)
+> +		vf->dev_type =  pdev->subsystem_device;
+> +	else
+> +		vf->dev_type =  pdev->device - 0x1040;
+
+
+So a question here, is the device a transtional device or modern one?
+
+If it's a transitonal one, can it swtich endianess automatically or not?
+
+Thanks
+
+
+> +
+>   	vf->base = pcim_iomap_table(pdev);
+>   
+>   	adapter->pdev = pdev;
+
