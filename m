@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B8E4D3603CB
-	for <lists+netdev@lfdr.de>; Thu, 15 Apr 2021 10:00:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A9A3D3603CC
+	for <lists+netdev@lfdr.de>; Thu, 15 Apr 2021 10:00:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231423AbhDOIAY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 15 Apr 2021 04:00:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36988 "EHLO
+        id S231477AbhDOIAe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 15 Apr 2021 04:00:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37026 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230090AbhDOIAX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 15 Apr 2021 04:00:23 -0400
-Received: from mail-pf1-x42e.google.com (mail-pf1-x42e.google.com [IPv6:2607:f8b0:4864:20::42e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F3460C061574
-        for <netdev@vger.kernel.org>; Thu, 15 Apr 2021 01:00:00 -0700 (PDT)
-Received: by mail-pf1-x42e.google.com with SMTP id p67so10582277pfp.10
-        for <netdev@vger.kernel.org>; Thu, 15 Apr 2021 01:00:00 -0700 (PDT)
+        with ESMTP id S230090AbhDOIAc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 15 Apr 2021 04:00:32 -0400
+Received: from mail-pl1-x632.google.com (mail-pl1-x632.google.com [IPv6:2607:f8b0:4864:20::632])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F2A5EC061574
+        for <netdev@vger.kernel.org>; Thu, 15 Apr 2021 01:00:09 -0700 (PDT)
+Received: by mail-pl1-x632.google.com with SMTP id h20so11615719plr.4
+        for <netdev@vger.kernel.org>; Thu, 15 Apr 2021 01:00:09 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=7lUrl78FZWgL/B+JdFUwj8s8u2OB2mAhQiecoNfWZKI=;
-        b=qHtJrEWGz4PRtii5kmrudJyiCizuEZA74LfUAnbrCANTBCPW3HNRcM2ZzDY2cHVRUK
-         c2cPdFzROG1+UWApX6cJwQHm87fa2TArRaCpGZmGihVdK/1py13FhxRdkvtqfMw9LPIC
-         vqxBzTEEO7Nn7wCNrNidHDrPg6r1n+2TnFjNkhP2ClEfizcUCcpjj/n4KBJ0U8XCuOJ1
-         9GA/gXZ9xRZAE5KTRkjPpetpiC6NbQ1obkwOIgykgSaJBekiwiAdwcGH9GWNbI9WcfhV
-         lBhCAYiNrXt6D6qmMFItXRd5CIKGZimiCp5gg7OLqmb/idu1qwmI5tbRGxrnwhWEUhQ6
-         Nv2Q==
+        bh=tn7BRobDa2elAneXnvWf0uE/nkrZTEhR9GgCT2DORY8=;
+        b=hAYwLvOJMDm8IlHgHl+ZhyQYvVQ1uY9i+SEIImrnmxvIZHQiTMWwPqzEyCcW60uDrR
+         Hvs7LkC5oCim1H+/N1HsnHktN/45KBv5oEts5on/Y9aM3FH3YPpFQDewA6hj+iVAJ/u7
+         wRYGpL0vhhZibQr4vYpb9fRycAD6rO79XsfWhKT9D8pxChqgscTV6pnrn9LvnsDolzXS
+         EFAJOo1WB8axt74eIb7IyQotPq2YJJv6G9hDj4VPblBb5dY6UDXtqZyA/lCa4vC1/yQU
+         gLyG4ON344LvLjRs1yucG+FweA9GvJ6YdZXnl1Fb0S9y4TF1fIrnjrEKUVsgX7vmTBml
+         wdIA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=7lUrl78FZWgL/B+JdFUwj8s8u2OB2mAhQiecoNfWZKI=;
-        b=f9WhKJt4yUrq24i5wj2z7ckd3JrqQpq4Z+5PSziPqYejIJz4Zhsa/Q4VGD2Keuz4UY
-         FPUMm0iWfahdaedYSF3LnjT3LRXobhJPvp7aFdpu6qjNviKJGxiGRjpsLcoOHi0I1Ifi
-         T+UDz/FAlrFX/c2ijCqbhnfK/vE4WwzIVmLtAcRdR3P7GYykVT9DBz2wUghBYolMe1nJ
-         mH/6q0EXyFnSzmd6T4LJNFnXhJm4uB+sIvdEusk16AUiqq1KPEwLPF/kJPJUfRMYjkHZ
-         BDmCNRj7+b0NEaQldUOqcG2z2Zpk84lep0OovcHVK167YKLvMeNE107Fc9aCOWXKQE//
-         U54A==
-X-Gm-Message-State: AOAM5323w6ub0yVKvLwmFcY34modMGzR1UeZzT188W+cyq/mj97fC8yr
-        IMGF0pkdMTFpO3TVA8eg6h0=
-X-Google-Smtp-Source: ABdhPJzuLASIWPjtUrKHOMeRVYzVZMDX8I1D6SZsIKH7zWnL3pusFrKyA6pntamsSELEPNBpbL72RA==
-X-Received: by 2002:a62:3892:0:b029:250:4fac:7e30 with SMTP id f140-20020a6238920000b02902504fac7e30mr2034532pfa.81.1618473600399;
-        Thu, 15 Apr 2021 01:00:00 -0700 (PDT)
+        bh=tn7BRobDa2elAneXnvWf0uE/nkrZTEhR9GgCT2DORY8=;
+        b=JS0d4dJBKwNp4BZvYWZ7REeKORAn+FMzETR2mlU9ReEXAU5BquEVDcmjxzQR5VrP/B
+         cHSC1nss8FiCnsPo92D9DImibBfYtNkS4UiN02iGozn5J7SxRmVHYsCizlbGzwYefcFh
+         njSTg1obW5ZXrGkyIuzK1Vk5AbSPTMKQNnCDJIWBOHIGgFEdCtxdh9kikI6rFTzBBCWX
+         W58Ig/gzlbrdZC/U6g4LSqSh/H1eyFC0Iy/AK9hsaIu9NNMB2ikhuDYUXBMlJbfS6P8x
+         e5KwvHYTBzNfTSANlIhSyVFPDfTuw33oXsSV027lrGiXgtXmfKWzmK+iIL8K90Ez0Ig8
+         ezmA==
+X-Gm-Message-State: AOAM5331v5nUoPoY4Rj/fGaC3OsTWpvcLyXz+etlNQy4fhV4ZsRUg4bV
+        1XSMWX4o7UMMALqs1YIlL+k=
+X-Google-Smtp-Source: ABdhPJwPidLDHNo0CFsT3Cl01r/bQqGFa+Jl7H9NsHlyzJVEPJOyOGIQFoOgfX5hFOfpWOxhvlwvrg==
+X-Received: by 2002:a17:902:c408:b029:e7:3242:5690 with SMTP id k8-20020a170902c408b02900e732425690mr2575706plk.85.1618473609629;
+        Thu, 15 Apr 2021 01:00:09 -0700 (PDT)
 Received: from nuc.wg.ducheng.me ([202.133.196.154])
-        by smtp.gmail.com with ESMTPSA id 184sm1424387pfx.156.2021.04.15.00.59.58
+        by smtp.gmail.com with ESMTPSA id 184sm1424387pfx.156.2021.04.15.01.00.07
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 15 Apr 2021 01:00:00 -0700 (PDT)
+        Thu, 15 Apr 2021 01:00:09 -0700 (PDT)
 From:   Du Cheng <ducheng2@gmail.com>
 To:     Jamal Hadi Salim <jhs@mojatatu.com>,
         Cong Wang <xiyou.wangcong@gmail.com>,
@@ -55,12 +55,13 @@ Cc:     netdev@vger.kernel.org, Shuah Khan <skhan@linuxfoundation.org>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         eric.dumazet@gmail.com, Du Cheng <ducheng2@gmail.com>,
         syzbot+d50710fd0873a9c6b40c@syzkaller.appspotmail.com
-Subject: [PATCH v2] net: sched: tapr: remove WARN_ON() in taprio_get_start_time()
-Date:   Thu, 15 Apr 2021 15:59:52 +0800
-Message-Id: <20210415075953.83508-1-ducheng2@gmail.com>
+Subject: [PATCH v2] net: sched: tapr: remove WARN_ON() in taprio_get_start_time
+Date:   Thu, 15 Apr 2021 15:59:53 +0800
+Message-Id: <20210415075953.83508-2-ducheng2@gmail.com>
 X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20210415063914.66144-1-ducheng2@gmail.com>
+In-Reply-To: <20210415075953.83508-1-ducheng2@gmail.com>
 References: <20210415063914.66144-1-ducheng2@gmail.com>
+ <20210415075953.83508-1-ducheng2@gmail.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
@@ -78,65 +79,16 @@ https://syzkaller.appspot.com/bug?extid=d50710fd0873a9c6b40c
 Reported-by: syzbot+d50710fd0873a9c6b40c@syzkaller.appspotmail.com
 Signed-off-by: Du Cheng <ducheng2@gmail.com>
 ---
-Detailed explanation:
+changelog:
+v1: Discussion https://lore.kernel.org/netdev/YHfwUmFODUHx8G5W@carbon/T/
+v2: fix typo
 
-In net/sched/sched_taprio.c:999
-The condition WARN_ON(!cycle) will be triggered if cycle == 0. Value of cycle
-comes from sched->cycle_time, where sched is of type(struct sched_gate_list*).
-
-sched->cycle_time is accumulated within `parse_taprio_schedule()` during
-`taprio_init()`, in the following 2 ways:
-
-1. from nla_get_s64(tb[TCA_TAPRIO_ATTR_SCHED_CYCLE_TIME]);
-2. (if zero) from parse_sched_list(..., tb[TCA_TAPRIO_ATTR_SCHED_ENTRY_LIST], ...);
-
-note: tb is a map parsed from netlink attributes provided via sendmsg() from the userland:
-
-If both two attributes (TCA_TAPRIO_ATTR_SCHED_CYCLE_TIME,
-TCA_TAPRIO_ATTR_SCHED_ENTRY_LIST) contain 0 values or are missing, this will result
-in sched->cycle_time == 0 and hence trigger the WARN_ON(!cycle).
-
-Reliable reproducable steps:
-1. add net device team0 
-2. add team_slave_0, team_slave_1
-3. sendmsg(struct msghdr {
-	.iov = struct nlmsghdr {
-		.type = RTM_NEWQDISC,
-	}
-	struct tcmsg {
-		.tcm_ifindex = ioctl(SIOCGIFINDEX, "team0"),
-		.nlattr[] = {
-			TCA_KIND: "taprio",
-			TCA_OPTIONS: {
-				.nlattr = {
-					TCA_TAPRIO_ATTR_PRIOMAP: ...,
-					TCA_TAPRIO_ATTR_SCHED_ENTRY_LIST: {0},
-					TCA_TAPRIO_ATTR_SCHED_CLICKID: 0,
-				}
-			}
-		}
-	}
-}
-
-Callstack:
-
-parse_taprio_schedule()
-taprio_change()
-taprio_init()
-qdisc_create()
-tc_modify_qdisc()
-rtnetlink_rcv_msg()
-...
-sendmsg()
-
-These steps are extracted from syzkaller reproducer:
-https://syzkaller.appspot.com/text?tag=ReproC&x=15727cf1900000
 
  net/sched/sch_taprio.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/net/sched/sch_taprio.c b/net/sched/sch_taprio.c
-index 8287894541e3..5f2ff0f15d5c 100644
+index 8287894541e3..33a829c1ba9b 100644
 --- a/net/sched/sch_taprio.c
 +++ b/net/sched/sch_taprio.c
 @@ -996,7 +996,7 @@ static int taprio_get_start_time(struct Qdisc *sch,
