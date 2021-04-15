@@ -2,163 +2,161 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id ED27136025D
-	for <lists+netdev@lfdr.de>; Thu, 15 Apr 2021 08:27:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 928EF36026A
+	for <lists+netdev@lfdr.de>; Thu, 15 Apr 2021 08:31:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230290AbhDOG2N (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 15 Apr 2021 02:28:13 -0400
-Received: from fllv0016.ext.ti.com ([198.47.19.142]:57810 "EHLO
-        fllv0016.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229503AbhDOG2M (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 15 Apr 2021 02:28:12 -0400
-Received: from lelv0266.itg.ti.com ([10.180.67.225])
-        by fllv0016.ext.ti.com (8.15.2/8.15.2) with ESMTP id 13F6RSRu056407;
-        Thu, 15 Apr 2021 01:27:28 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1618468048;
-        bh=T1VGJWaSnZe1FPW2m57oyGHqhnqnwLtMvN8UhVow6dY=;
-        h=Subject:To:CC:References:From:Date:In-Reply-To;
-        b=MgHlXsbXunc6B2jYzadb2+EQoQATkCj3eHcocRLODnfT0Mw4aX1II+ZWHdKY3TPQw
-         +3/wW85M+pIGnHlb/ynLl7Wfx7/QlPX19e3YCSqCOUXc/dhGBtAppo7igRU0oH+5Ta
-         K9N3o0Y12VdSwsu2mzWCZL8KB8r3ZVT3wGGCPOIA=
-Received: from DLEE114.ent.ti.com (dlee114.ent.ti.com [157.170.170.25])
-        by lelv0266.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 13F6RSod078266
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Thu, 15 Apr 2021 01:27:28 -0500
-Received: from DLEE101.ent.ti.com (157.170.170.31) by DLEE114.ent.ti.com
- (157.170.170.25) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2176.2; Thu, 15
- Apr 2021 01:27:28 -0500
-Received: from lelv0327.itg.ti.com (10.180.67.183) by DLEE101.ent.ti.com
- (157.170.170.31) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2176.2 via
- Frontend Transport; Thu, 15 Apr 2021 01:27:28 -0500
-Received: from [172.24.145.148] (ileax41-snat.itg.ti.com [10.172.224.153])
-        by lelv0327.itg.ti.com (8.15.2/8.15.2) with ESMTP id 13F6RL2o127491;
-        Thu, 15 Apr 2021 01:27:22 -0500
-Subject: Re: [PATCH v2 3/6] dt-bindings: phy: Add binding for TI TCAN104x CAN
- transceivers
-To:     Marc Kleine-Budde <mkl@pengutronix.de>
-CC:     <linux-kernel@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-phy@lists.infradead.org>,
-        Chandrasekar Ramakrishnan <rcsekar@samsung.com>,
-        Wolfgang Grandegger <wg@grandegger.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Kishon Vijay Abraham I <kishon@ti.com>,
-        Vinod Koul <vkoul@kernel.org>, <linux-can@vger.kernel.org>,
-        <netdev@vger.kernel.org>, Vignesh Raghavendra <vigneshr@ti.com>,
-        Lokesh Vutla <lokeshvutla@ti.com>,
-        Grygorii Strashko <grygorii.strashko@ti.com>
-References: <20210414140521.11463-1-a-govindraju@ti.com>
- <20210414140521.11463-4-a-govindraju@ti.com>
- <20210414153303.yig6bguue3g25yhg@pengutronix.de>
-From:   Aswath Govindraju <a-govindraju@ti.com>
-Message-ID: <9a9a3b8b-f345-faae-b9bc-3961518e3d29@ti.com>
-Date:   Thu, 15 Apr 2021 11:57:20 +0530
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+        id S229503AbhDOGbV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 15 Apr 2021 02:31:21 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:30122 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S229731AbhDOGbU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 15 Apr 2021 02:31:20 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1618468257;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=5s82uP8bq8dgb0cLJfpozOWx/f1TAjgt4f2klLLOJS4=;
+        b=dSENeglCyNkgRuY1WTbTa3gdCrGjuWLdbK+oTL57CktBmq8RPnd2g4oIO59WCtTHnM+SXJ
+        z3UP4aEHZwwnj4AM54dDKKE9uGozyCwCtOIWLjkdfVvUWfDh4FWF5QOM7L3zkZxHKUlFhK
+        HHs74awupoqwJ7RaABmjjrLS+qAD5CE=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-581-LjC3GfYoPIyzhDQTFgw6Tg-1; Thu, 15 Apr 2021 02:30:53 -0400
+X-MC-Unique: LjC3GfYoPIyzhDQTFgw6Tg-1
+Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 4C8835212;
+        Thu, 15 Apr 2021 06:30:52 +0000 (UTC)
+Received: from wangxiaodeMacBook-Air.local (ovpn-12-61.pek2.redhat.com [10.72.12.61])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id A4CCE2B3C5;
+        Thu, 15 Apr 2021 06:30:43 +0000 (UTC)
+Subject: Re: [PATCH 1/3] vDPA/ifcvf: deduce VIRTIO device ID when probe
+To:     Zhu Lingshan <lingshan.zhu@linux.intel.com>,
+        Zhu Lingshan <lingshan.zhu@intel.com>, mst@redhat.com,
+        lulu@redhat.com, leonro@nvidia.com
+Cc:     virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
+        kvm@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20210414091832.5132-1-lingshan.zhu@intel.com>
+ <20210414091832.5132-2-lingshan.zhu@intel.com>
+ <85483ff1-cf98-ad05-0c53-74caa2464459@redhat.com>
+ <ccf7001b-27f0-27ea-40d2-52ca3cc2386b@linux.intel.com>
+From:   Jason Wang <jasowang@redhat.com>
+Message-ID: <ffd2861d-2395-de51-a227-f1ef33f74322@redhat.com>
+Date:   Thu, 15 Apr 2021 14:30:42 +0800
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
+ Gecko/20100101 Thunderbird/78.9.1
 MIME-Version: 1.0
-In-Reply-To: <20210414153303.yig6bguue3g25yhg@pengutronix.de>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+In-Reply-To: <ccf7001b-27f0-27ea-40d2-52ca3cc2386b@linux.intel.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Marc,
 
-On 14/04/21 9:03 pm, Marc Kleine-Budde wrote:
-> On 14.04.2021 19:35:18, Aswath Govindraju wrote:
->> Add binding documentation for TI TCAN104x CAN transceivers.
+在 2021/4/15 下午1:52, Zhu Lingshan 写道:
+>
+>
+> On 4/15/2021 11:30 AM, Jason Wang wrote:
 >>
->> Signed-off-by: Aswath Govindraju <a-govindraju@ti.com>
->> ---
->>  .../bindings/phy/ti,tcan104x-can.yaml         | 56 +++++++++++++++++++
->>  MAINTAINERS                                   |  1 +
->>  2 files changed, 57 insertions(+)
->>  create mode 100644 Documentation/devicetree/bindings/phy/ti,tcan104x-can.yaml
+>> 在 2021/4/14 下午5:18, Zhu Lingshan 写道:
+>>> This commit deduces VIRTIO device ID as device type when probe,
+>>> then ifcvf_vdpa_get_device_id() can simply return the ID.
+>>> ifcvf_vdpa_get_features() and ifcvf_vdpa_get_config_size()
+>>> can work properly based on the device ID.
+>>>
+>>> Signed-off-by: Zhu Lingshan <lingshan.zhu@intel.com>
+>>> ---
+>>>   drivers/vdpa/ifcvf/ifcvf_base.h |  1 +
+>>>   drivers/vdpa/ifcvf/ifcvf_main.c | 22 ++++++++++------------
+>>>   2 files changed, 11 insertions(+), 12 deletions(-)
+>>>
+>>> diff --git a/drivers/vdpa/ifcvf/ifcvf_base.h 
+>>> b/drivers/vdpa/ifcvf/ifcvf_base.h
+>>> index b2eeb16b9c2c..1c04cd256fa7 100644
+>>> --- a/drivers/vdpa/ifcvf/ifcvf_base.h
+>>> +++ b/drivers/vdpa/ifcvf/ifcvf_base.h
+>>> @@ -84,6 +84,7 @@ struct ifcvf_hw {
+>>>       u32 notify_off_multiplier;
+>>>       u64 req_features;
+>>>       u64 hw_features;
+>>> +    u32 dev_type;
+>>>       struct virtio_pci_common_cfg __iomem *common_cfg;
+>>>       void __iomem *net_cfg;
+>>>       struct vring_info vring[IFCVF_MAX_QUEUE_PAIRS * 2];
+>>> diff --git a/drivers/vdpa/ifcvf/ifcvf_main.c 
+>>> b/drivers/vdpa/ifcvf/ifcvf_main.c
+>>> index 44d7586019da..99b0a6b4c227 100644
+>>> --- a/drivers/vdpa/ifcvf/ifcvf_main.c
+>>> +++ b/drivers/vdpa/ifcvf/ifcvf_main.c
+>>> @@ -323,19 +323,9 @@ static u32 ifcvf_vdpa_get_generation(struct 
+>>> vdpa_device *vdpa_dev)
+>>>     static u32 ifcvf_vdpa_get_device_id(struct vdpa_device *vdpa_dev)
+>>>   {
+>>> -    struct ifcvf_adapter *adapter = vdpa_to_adapter(vdpa_dev);
+>>> -    struct pci_dev *pdev = adapter->pdev;
+>>> -    u32 ret = -ENODEV;
+>>> -
+>>> -    if (pdev->device < 0x1000 || pdev->device > 0x107f)
+>>> -        return ret;
+>>> -
+>>> -    if (pdev->device < 0x1040)
+>>> -        ret =  pdev->subsystem_device;
+>>> -    else
+>>> -        ret =  pdev->device -0x1040;
+>>> +    struct ifcvf_hw *vf = vdpa_to_vf(vdpa_dev);
+>>>   -    return ret;
+>>> +    return vf->dev_type;
+>>>   }
+>>>     static u32 ifcvf_vdpa_get_vendor_id(struct vdpa_device *vdpa_dev)
+>>> @@ -466,6 +456,14 @@ static int ifcvf_probe(struct pci_dev *pdev, 
+>>> const struct pci_device_id *id)
+>>>       pci_set_drvdata(pdev, adapter);
+>>>         vf = &adapter->vf;
+>>> +    if (pdev->device < 0x1000 || pdev->device > 0x107f)
+>>> +        return -EOPNOTSUPP;
+>>> +
+>>> +    if (pdev->device < 0x1040)
+>>> +        vf->dev_type =  pdev->subsystem_device;
+>>> +    else
+>>> +        vf->dev_type =  pdev->device - 0x1040;
 >>
->> diff --git a/Documentation/devicetree/bindings/phy/ti,tcan104x-can.yaml b/Documentation/devicetree/bindings/phy/ti,tcan104x-can.yaml
->> new file mode 100644
->> index 000000000000..4abfc30a97d0
->> --- /dev/null
->> +++ b/Documentation/devicetree/bindings/phy/ti,tcan104x-can.yaml
->> @@ -0,0 +1,56 @@
->> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
->> +%YAML 1.2
->> +---
->> +$id: "http://devicetree.org/schemas/phy/ti,tcan104x-can.yaml#"
->> +$schema: "http://devicetree.org/meta-schemas/core.yaml#"
->> +
->> +title: TCAN104x CAN TRANSCEIVER PHY
->> +
->> +maintainers:
->> +  - Aswath Govindraju <a-govindraju@ti.com>
->> +
->> +properties:
->> +  $nodename:
->> +    pattern: "^tcan104x-phy"
->> +
->> +  compatible:
->> +    enum:
->> +      - ti,tcan1042
->> +      - ti,tcan1043
-> 
-> Can you ensure that the 1042 has only the standby gpio and the 1043 has both?
-> 
+>>
+>> So a question here, is the device a transtional device or modern one?
+>>
+>> If it's a transitonal one, can it swtich endianess automatically or not?
+>>
+>> Thanks
+> Hi Jason,
+>
+> This driver should drive both modern and transitional devices as we 
+> discussed before.
+> If it's a transitional one, it will act as a modern device by default, 
+> legacy mode is a fail-over path.
 
-In the driver, it is the way the flags have been set for ti,tcan1042 and
-ti,tcan1043.
 
->> +
->> +  '#phy-cells':
->> +    const: 0
->> +
->> +  standby-gpios:
->> +    description:
->> +      gpio node to toggle standby signal on transceiver
->> +    maxItems: 1
->> +
->> +  enable-gpios:
->> +    description:
->> +      gpio node to toggle enable signal on transceiver
->> +    maxItems: 1
->> +
->> +  max-bitrate:
->> +    $ref: /schemas/types.yaml#/definitions/uint32
->> +    description:
->> +      max bit rate supported in bps
->> +    minimum: 1
->> +
->> +required:
->> +  - compatible
->> +  - '#phy-cells'
->> +
->> +additionalProperties: false
->> +
->> +examples:
->> +  - |
->> +    #include <dt-bindings/gpio/gpio.h>
->> +
->> +    transceiver1: tcan104x-phy {
->> +      compatible = "ti,tcan1043";
->> +      #phy-cells = <0>;
->> +      max-bitrate = <5000000>;
->> +      standby-gpios = <&wakeup_gpio1 16 GPIO_ACTIVE_LOW>;
->> +      enable-gpios = <&main_gpio1 67 GPIO_ACTIVE_LOW>;
-> 
-> AFAICS the enable gpio is active high.
-> 
+Note that legacy driver use native endian, support legacy driver 
+requires the device to know native endian which I'm not sure your device 
+can do that.
 
-I will correct this in the respin.
+Thanks
 
-Thanks,
-Aswath
 
-> Marc
-> 
+> For vDPA, it has to support VIRTIO_1 and ACCESS_PLATFORM, so it must 
+> in modern mode.
+> I think we don't need to worry about endianess for legacy mode.
+>
+> Thanks
+> Zhu Lingshan
+>>
+>>
+>>> +
+>>>       vf->base = pcim_iomap_table(pdev);
+>>>         adapter->pdev = pdev;
+>>
+>
 
