@@ -2,263 +2,205 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E266836138E
-	for <lists+netdev@lfdr.de>; Thu, 15 Apr 2021 22:35:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8269F3613AF
+	for <lists+netdev@lfdr.de>; Thu, 15 Apr 2021 22:45:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235176AbhDOUgT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 15 Apr 2021 16:36:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34148 "EHLO
+        id S234989AbhDOUpn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 15 Apr 2021 16:45:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36240 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234894AbhDOUgS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 15 Apr 2021 16:36:18 -0400
-Received: from mail-yb1-xb2d.google.com (mail-yb1-xb2d.google.com [IPv6:2607:f8b0:4864:20::b2d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0674FC061574;
-        Thu, 15 Apr 2021 13:35:54 -0700 (PDT)
-Received: by mail-yb1-xb2d.google.com with SMTP id v72so6893398ybe.11;
-        Thu, 15 Apr 2021 13:35:54 -0700 (PDT)
+        with ESMTP id S234668AbhDOUpn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 15 Apr 2021 16:45:43 -0400
+Received: from mail-yb1-xb32.google.com (mail-yb1-xb32.google.com [IPv6:2607:f8b0:4864:20::b32])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6153DC061574;
+        Thu, 15 Apr 2021 13:45:18 -0700 (PDT)
+Received: by mail-yb1-xb32.google.com with SMTP id p3so7002281ybk.0;
+        Thu, 15 Apr 2021 13:45:18 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=Beg3Gx3LsLmbkpTm4ZfTRdcR9LPJsrn/BvQEGJl7wOE=;
-        b=RaHW/XBDAYR+au3FvYrrd49n/ctyt933e05EQKkobuj3UYO42RAHABTRk9HKtlkNKl
-         WMHvhse74RJrS+Yccu169FducX+73ma5mkqyMTXXBUrQv0yu3fqm8LZNXvS8OEf6GYUQ
-         xQtFIE+CVOGBLFZwGgT6vTV1/++QdeIkeFVrPrXGQqe9aoDkyg6gH8GGGT8XfsuJ78JC
-         Fimj269ESIVulmmGZVXdMgYalg5uuR/sjfUGbUt0nycDxf3hENxmtRzOqBsWnFc/oTym
-         6OAmL0VqWcKR0yf42JxYdVERAYA1zHbTBBAoTEDKXMFmLjti7O2OwfaoH1yTQzIg8p7Z
-         6aDg==
+        bh=adz9UvuviWrBM9o1jkC+ykOt4rkNk9aXVQRYxt11Bp8=;
+        b=M0K6+SgQ045X4XVjE4dSInxh/1Y4mMlWP5XwQ1Y2aEOSKWd0sgsDFsWz1AU3zM49ou
+         v1puR9O4y6NS9erk0TjkeHALtRsxBN3ce/037s3vSdW6YWXJ0UQp7wB8xn7w1yViRi1c
+         J5M4BhyM8i82cPviExR+WI0onsbwd5SS0XRq8pc1EZQMd4hU+4X6/ihH+RjQMUDK+ghq
+         0aalfVcEMKufeKskkmpLKG7/QMgibFgINf95fDfRG4JKQRvQoxvEmSSJ2md3sDPY/gzf
+         /Me/qylGT7GNU0Z0aXigykgPRUSda0z9jv98jraiZqXTRLF2GM9ySpV012oGy1VqjlX5
+         w2Fg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=Beg3Gx3LsLmbkpTm4ZfTRdcR9LPJsrn/BvQEGJl7wOE=;
-        b=AL/BCNCSUoHrcUt1D2nK6/gqlE5gkfRiGXBkq/uqaSFa3Evxgo+sZevU44yTYK/97/
-         Na/UCRTOWHe4Gge/kTdJWNvoxzgupRsiMuOzcYhD/yGWju4UGSEDYkvZr/27vJQV63/E
-         b5Yx7X5JKlSNKS4krwKgYJqEfZpnObFnrApfRyRn4756j0BxScsZKigWWEYN9C7g44Ld
-         +6+um0xZwhJkr7ZWqVvmEM2Dd78kNg1lloSFiZmcwXZ2hmxmur32Z2UgfVC4lHCIvfyy
-         Yl27Yn+hPLkTB0vxDf4Mg4M67ioo2s7BLzFVrJng0YgOlR4u1+K0kcHQfvXhLnAQsw1P
-         XTfw==
-X-Gm-Message-State: AOAM530kr6TgUKWN2lQK3ozU/FjOSBsew/cV+a7fkQkXsqs7l/fuGboS
-        YgIwVOJZF35bLGA7z7KcQ2sqfTPo3/auKUgvRsYExJV/
-X-Google-Smtp-Source: ABdhPJxkI5nPdlM6VeX2nqgaf8VpT2FbVy/2LQtHaAZVJfAoOAxbh1BF5YKv3P13ffWvLBOMJaDOwRHO5HqIX3F6vRc=
-X-Received: by 2002:a25:dc46:: with SMTP id y67mr7213937ybe.27.1618518954164;
- Thu, 15 Apr 2021 13:35:54 -0700 (PDT)
+        bh=adz9UvuviWrBM9o1jkC+ykOt4rkNk9aXVQRYxt11Bp8=;
+        b=JYOvmcwCmD6UYfN2FIIxsiGvGFLYf42xTBN1vR7VE0bK+q03R/9ijoFtKhsbLqcPBM
+         Ot2Vf46nUJwBU7lN307EmrOYHWAqDy0XEP2u+bzyXb00sQ+/aT6ld9dIGh9LyRtixekv
+         Z10C2jhtDIfzUKtQRbEYz5jLsUpZF2fF9Pg0F29Fz9D0KC83vaf2ai7HphXQruxn3BHt
+         Sa2s62uAGLxSffRq/7aRuG+xCyiOrLYDGXIFga1H030CBYEQZJDJZlkwNxZFs/UlT67D
+         B4MpCFm+IuebdfrQo0SqPd9hRpXiqjxCg73X5YwFf+pAs+EThDCouGvOGxbFavSnsOni
+         /yKw==
+X-Gm-Message-State: AOAM530Sc1XElC16I5OC5YmV+T+FqDN3BDmw6S3olNxBtsZNWIZQ+sq8
+        SxI6c3SSjpJ6k67Uwx6Bgssf5zRRoKnCKQg3Pl8=
+X-Google-Smtp-Source: ABdhPJykJJixY3ITtHFbBxIVcwg8MQ5MBTllZdbtxbKPrdzrBYKQ5Yu4dCrMw3ur1kkqzEAlHE/u6vBvBBvNLsOFp/0=
+X-Received: by 2002:a25:5b55:: with SMTP id p82mr7151528ybb.510.1618519517668;
+ Thu, 15 Apr 2021 13:45:17 -0700 (PDT)
 MIME-Version: 1.0
-References: <20210414200146.2663044-1-andrii@kernel.org> <20210414200146.2663044-13-andrii@kernel.org>
- <f3f3bcc5-be1a-6d11-0c6e-081fc30367c4@fb.com> <CAEf4BzZnyij-B39H_=RahUV2=RzNHTHt4Bdrw2sPY9eraW4p7A@mail.gmail.com>
- <20210415020138.2dbcflpxq2zwu6b2@ast-mbp>
-In-Reply-To: <20210415020138.2dbcflpxq2zwu6b2@ast-mbp>
+References: <20210413121516.1467989-1-jolsa@kernel.org> <CAEf4Bzazst1rBi4=LuP6_FnPXCRYBNFEtDnK3UVBj6Eo6xFNtQ@mail.gmail.com>
+ <YHbd2CmeoaiLJj7X@krava> <CAEf4BzYyVj-Tjy9ZZdAU5nOtJ8_auvVobTT6pMqg8zPb9jj-Ow@mail.gmail.com>
+ <20210415111002.324b6bfa@gandalf.local.home>
+In-Reply-To: <20210415111002.324b6bfa@gandalf.local.home>
 From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Thu, 15 Apr 2021 13:35:43 -0700
-Message-ID: <CAEf4BzZXLi8Z=4fy5TpH-po-d__7eg6PrgBJWk_3epmT-n3SMA@mail.gmail.com>
-Subject: Re: [PATCH bpf-next 12/17] libbpf: support extern resolution for
- BTF-defined maps in .maps section
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     Alexei Starovoitov <ast@fb.com>,
-        Andrii Nakryiko <andrii@kernel.org>, bpf <bpf@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>,
+Date:   Thu, 15 Apr 2021 13:45:06 -0700
+Message-ID: <CAEf4BzY=yBZH2Aad1hNcqCt51u0+SmNdkD6NfJRVMzF7DsvG+A@mail.gmail.com>
+Subject: Re: [PATCHv2 RFC bpf-next 0/7] bpf: Add support for ftrace probe
+To:     Steven Rostedt <rostedt@goodmis.org>
+Cc:     Jiri Olsa <jolsa@redhat.com>, Jiri Olsa <jolsa@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
-        Kernel Team <kernel-team@fb.com>
+        Andrii Nakryiko <andriin@fb.com>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>, Daniel Xu <dxu@dxuuu.xyz>,
+        Jesper Brouer <jbrouer@redhat.com>,
+        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>,
+        Viktor Malik <vmalik@redhat.com>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Apr 14, 2021 at 7:01 PM Alexei Starovoitov
-<alexei.starovoitov@gmail.com> wrote:
+On Thu, Apr 15, 2021 at 8:10 AM Steven Rostedt <rostedt@goodmis.org> wrote:
 >
-> On Wed, Apr 14, 2021 at 04:48:25PM -0700, Andrii Nakryiko wrote:
-> > On Wed, Apr 14, 2021 at 3:00 PM Alexei Starovoitov <ast@fb.com> wrote:
+> On Wed, 14 Apr 2021 15:46:49 -0700
+> Andrii Nakryiko <andrii.nakryiko@gmail.com> wrote:
+>
+> > On Wed, Apr 14, 2021 at 5:19 AM Jiri Olsa <jolsa@redhat.com> wrote:
 > > >
-> > > On 4/14/21 1:01 PM, Andrii Nakryiko wrote:
-> > > > Add extra logic to handle map externs (only BTF-defined maps are supported for
-> > > > linking). Re-use the map parsing logic used during bpf_object__open(). Map
-> > > > externs are currently restricted to always and only specify map type, key
-> > > > type and/or size, and value type and/or size. Nothing extra is allowed. If any
-> > > > of those attributes are mismatched between extern and actual map definition,
-> > > > linker will report an error.
+> > > On Tue, Apr 13, 2021 at 06:04:05PM -0700, Andrii Nakryiko wrote:
+> > > > On Tue, Apr 13, 2021 at 7:57 AM Jiri Olsa <jolsa@kernel.org> wrote:
+> > > > >
+> > > > > hi,
+> > > > > sending another attempt on speeding up load of multiple probes
+> > > > > for bpftrace and possibly other tools (first post in [1]).
+> > > > >
+> > > > > This patchset adds support to attach bpf program directly to
+> > > > > ftrace probe as suggested by Steven and it speeds up loading
+> > > > > for bpftrace commands like:
+> > > > >
+> > > > >    # bpftrace -e 'kfunc:_raw_spin* { @[probe] = count(); }'
+> > > > >    # bpftrace -e 'kfunc:ksys_* { @[probe] = count(); }'
+> > > > >
+> > > > > Using ftrace with single bpf program for attachment to multiple
+> > > > > functions is much faster than current approach, where we need to
+> > > > > load and attach program for each probe function.
+> > > > >
+> > > >
+> > > > Ok, so first of all, I think it's super important to allow fast
+> > > > attachment of a single BPF program to multiple kernel functions (I
+> > > > call it mass-attachment). I've been recently prototyping a tool
+> > > > (retsnoop, [0]) that allows attaching fentry/fexit to multiple
+> > > > functions, and not having this feature turned into lots of extra code
+> > > > and slow startup/teardown speeds. So we should definitely fix that.
+> > > >
+> > > > But I think the approach you've taken is not the best one, even though
+> > > > it's a good starting point for discussion.
+> > > >
+> > > > First, you are saying function return attachment support is missing,
+> > > > but is not needed so far. I actually think that without func return
+> > > > the whole feature is extremely limiting. Not being able to measure
+> > > > function latency  by tracking enter/exit events is crippling for tons
+> > > > of useful applications. So I think this should go with both at the
+> > > > same time.
+> > > >
+> > > > But guess what, we already have a good BPF infra (BPF trampoline and
+> > > > fexit programs) that supports func exit tracing. Additionally, it
+> > > > supports the ability to read input arguments *on function exit*, which
+> > > > is something that kretprobe doesn't support and which is often a very
+> > > > limiting restriction, necessitating complicated logic to trace
+> > > > function entry just to store input arguments. It's a killer feature
+> > > > and one that makes fexit so much more useful than kretprobe.
+> > > >
+> > > > The only problem is that currently we have a 1:1:1 relationship
+> > > > between BPF trampoline, BPF program, and kernel function. I think we
+> > > > should allow to have a single BPF program, using a single BPF
+> > > > trampoline, but being able to attach to multiple kernel functions
+> > > > (1:1:N). This will allow to validate BPF program once, allocate only
+> > > > one dedicated BPF trampoline, and then (with appropriate attach API)
+> > > > attach them in a batch mode.
 > > >
-> > > I don't get the motivation for this.
-> > > It seems cumbersome to force users to do:
-> > > +extern struct {
-> > > +       __uint(type, BPF_MAP_TYPE_HASH);
-> > > +       __type(key, key_type);
-> > > +       __type(value, value_type);
-> > > +       /* no max_entries on extern map definitions */
-> > > +} map1 SEC(".maps");
+> > > heya,
+> > > I had some initial prototypes trying this way, but always ended up
+> > > in complicated code, that's why I turned to ftrace_ops.
+> > >
+> > > let's see if it'll make any sense to you ;-)
+> > >
+> > > 1) so let's say we have extra trampoline for the program (which
+> > > also seems a bit of waste since there will be just single record
 > >
-> > The intent was to simulate what you'd have in a language with
-> > generics. E.g., if you were declaring extern for a map in C++:
-> >
-> > extern std::map<key_type, value_type> my_map;
+> > BPF trampoline does more than just calls BPF program. At the very
+> > least it saves input arguments for fexit program to be able to access
+> > it. But given it's one BPF trampoline attached to thousands of
+> > functions, I don't see any problem there.
 >
-> right, because C++ will mangle types into names.
-> When llvm bpf backend will support C++ front-end it will do the mangling too.
-> I think BPF is ready for C++, but it's a separate discussion, of course.
+> Note, there's a whole infrastructure that does similar things in ftrace.
+> I wrote the direct call to jump to individual trampolines, because ftrace
+> was too generic. The only way at the time to get to the arguments was via
+> the ftrace_regs_caller, which did a full save of regs, because this was
+> what kprobes needed, and was too expensive for BPF.
 >
-> > > but there is only one such full map definition.
-> > > Can all externs to be:
-> > > extern struct {} map1 SEC(".maps");
-> >
-> > I can certainly modify logic to allow this. But for variables and
-> > funcs we want to enforce type information, right? So I'm not sure why
-> > you think it's bad for maps.
+> I now regret writing the direct callers, and instead should have just done
+> what I did afterward, which was to make ftrace default to a light weight
+> trampoline that only saves enough for getting access to the arguments of
+> the function. And have BPF use that. But I was under the impression that
+> BPF needed fast access to a single function, and it would not become a
+> generic trampoline for multiple functions, because that was the argument
+> used to not enhance ftrace.
 >
-> I'm not saying it's bad.
-> Traditional linker only deals with names, since we're in C domain, so far,
-> I figured it's an option, but more below.
-> C++ is good analogy too.
+> Today, ftrace by dafault (on x86) implements a generic way to get the
+> arguments, and just the arguments which is exactly what BPF would need for
+> multiple functions. And yes, you even have access to the return code if you
+> want to "hijack" it. And since it was originally for a individual functions
+> (and not a batch), I created the direct caller for BPF. But the direct
+> caller will not be enhanced for multiple functions, as that's not its
+> purpose. If you want a trampoline to be called back to multiple functions,
+> then use the infrastructure that was designed for that. Which is what Jiri
+> had proposed here.
 >
-> > So if it's just a multi-file application and you don't care which file
-> > declares that map, you can do a single __weak definition in a header
-> > and forget about it.
-> >
-> > But imagine a BPF library, maintained separately from some BPF
-> > application that is using it. And imagine that for some reason that
-> > BPF library wants/needs to "export" its map directly. In such case,
-> > I'd imagine BPF library author to provide a header with pre-defined
-> > correct extern definition of that map.
+> And because the direct caller can mess with the return code, it breaks
+> function graph tracing. As a temporary work around, we just made function
+> graph ignore any function that has a direct caller attached to it.
 >
-> I'm mainly looking at patch 17 and thinking how that copy paste can be avoided.
-> In C and C++ world the user would do:
-> defs.h:
->   struct S {
->     ...
->   };
->   extern struct S s;
-> file.c:
->   #include "defs.h"
->   struct S s;
-> and it would work, but afaics it won't work for BPF C in patch 17.
+> If you want batch processing of BPF programs, you need to first fix the
+> function graph tracing issue, and allow both BPF attached callers and
+> function graph to work on the same functions.
+>
+> I don't know how the BPF code does it, but if you are tracing the exit
+> of a function, I'm assuming that you hijack the return pointer and replace
+> it with a call to a trampoline that has access to the arguments. To do
 
-Yes, you are right, there is no clean way to avoid defining extern and
-full map definition. Which is the case for functions and variables,
-except those type signatures tend to be shorter. E.g., if you had
+As Jiri replied, BPF trampoline doesn't do it the same way as
+kretprobe does it. Which gives the fexit BPF program another critical
+advantage over kretprobe -- we know traced function's entry IP in both
+entry and exit cases, which allows us to generically correlate them.
 
-void my_func(int arg) { ... }
+I've tried to figure out how to get that entry IP from kretprobe and
+couldn't find any way. Do you know if it's possible at all or it's a
+fundamental limitation of the way kretprobe is implemented (through
+hijacking return address)?
 
-you'd still have to duplicate it as at least:
+> this you need a shadow stack to save the real return as well as the
+> parameters of the function. This is something that I have patches that do
+> similar things with function graph.
+>
+> If you want this feature, lets work together and make this work for both
+> BPF and ftrace.
 
-extern void my_func(int);
-
-I don't think you can use typedef for this either.
-
-> If the user does:
-> defs.h:
->   struct my_map {
->           __uint(type, BPF_MAP_TYPE_HASH);
->           __type(key, struct my_key);
->           __type(value, struct my_value);
->           __uint(max_entries, 16);
->   };
->   extern struct my_map map1 SEC(".maps");
-> file.c:
->   #include "defs.h"
->   struct my_map map1;  // do we need SEC here too? probably not?
-
-yeah, we do, all map "variables" are designated with .maps section,
-otherwise they'll be treated as just a normal global variable (there
-is no way to distinguish two, generally speaking).
+Absolutely, ultimately for users it doesn't matter what specific
+mechanism is used under the cover. It just seemed like BPF trampoline
+has all the useful tracing features (entry IP and input arguments in
+fexit) already and is just mostly missing a quick batch attach API. If
+we can get the same from ftrace, all the better.
 
 >
-> It won't work for another_filer.c since max_entries are not allowed?
-> Why, btw?
-
-So the idea was that for consumers of extern map definition map type
-and key/value info was the only thing they should care about and
-linker should enforce (at least that's how I thought about this and
-what I think the typical use case would be). E.g., caring about exact
-max_entries, or numa_node, or pinning, or map_flags, etc, shouldn't be
-the concern of the consumer of the map.
-
->
-> So how the user suppose to do this? With __weak in .h ?
-> But if that's the only reasonable choice whe bother supporting extern in the linker?
->
-> > I originally wanted to let users define which attributes matter and
-> > enforce them (as I mention in the commit description), but that
-> > requires some more work on merging BTF. Now that I'm done with all the
-> > rest logic, I guess I can go and address that as well.
->
-> I think that would be overkill. It won't match neither C style nor C++.
-> Let's pick one.
-
-So I still think we might want to implement it down the road, but
-let's stick to something simpler for now. See below.
-
->
-> > So see above about __weak. As for the BPF library providers, that felt
-> > unavoidable (and actually desirable), because that's what they would
-> > do with extern func and extern vars anyways.
->
-> As far as supporting __weak for map defs, I think __weak in one file.c
-> should be weak for all attributes. Another_file.c should be able
-> to define the same map name without __weak and different types, value/type
-> sizes. Because why not? Sort-of C++ style of override.
-
-That's a significant deviation from semantics of weak variables and
-functions, but I can see how it's useful. E.g., we can have some
-potentially compiled out big map definition, but a __weak fallback to
-a small, but compatible one.
-
->
-> > so forcing to type+key+value is to make sure that currently all
-> > externs (if there are many) are exactly the same. Because as soon as I
-> > allow some to specify max_entries and some don't,
->
-> I don't get why max_entries is special.
-> They can be overridden in typical skeleton usage. After open and before load.
-> So max_entries is a default value in map init. Whether it's part of
-> extern or not why should that matter?
-
-This is just a source code-level contract. You can override any
-attribute of the map at runtime from user-space code. You can even
-replace one map with an entirely different map (using
-bpf_map__reuse_fd()). You can change type, etc, etc. The goal here is
-to not prevent the abuse (I don't think it's possible at linking
-stage, but at least BPF verifier will stop from something totally
-stupid), rather for a typical case to make sure that there is no
-accidental mismatch at the C code level.
-
->
-> > Maybe nothing, just there is no single right answer (except the
-> > aspirational implementation I explained above). I'm open to
-> > discussion, btw, not claiming my way is the best way.
->
-> I'm not suggesting that extern struct {} my_map; is the right answer either.
-> Mainly looking into how user code will look like and trying to
-> make it look the most similar to how C, C++ code traditionally looks.
-> BPF C is reduced and extended C at the same time.
-> BPF C++ will be similar. Certain features will be supported right away,
-> some others will take time.
-> I'm looking at BTF as a language independent concept.
-> Both C and C++ will rely on it.
->
-> To summarize if max_entries can be supported and ingored in extern
-> when the definition has a different value then it's probably good to enforce
-> that the rest of map fields are the same. Then my .h/.c example above will work.
-> In case of __weak probably all map fields can change.
-> It can be seen as a weak definition of the whole map. Not just weak of the variable.
-> It's a default for everything that can be overridden.
-> While non-weak can override max_entries only.
-
-How about we start in the most restrictive way first. Each extern
-would need to specify all the attributes that should match the map
-definition. That includes max_entries. That way the typedef struct {
-... } my_map_t re-use will work right out of the box. Later, if we see
-this is not sufficient, we can start relaxing the rules. Ultimately
-what I proposed above with selective extern attributes enforcement
-would allow to cover any scenario. Granted it's special compared to C
-linking style, but given the __weak map definition proposal above also
-deviates significantly, we can just treat maps specially, but in a
-"makes sense" way.
-
->
-> btw for signed progs I'm thinking to allow override of max_entries only,
-> since this attribute doesn't affect safety, correctness, behavior.
-> Meaning max_entries will and will not be part of a signature at the same time.
-> In other words it's necessary to support existing bcc/libbpf-tools.
-> If we go with 'allow max_entries in extern' that would match that behavior.
-
-Ok, unless I misunderstood, allowing and checking all map attributes
-as a starting point should work, right?
+> -- Steve
