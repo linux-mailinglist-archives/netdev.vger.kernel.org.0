@@ -2,93 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8988F360420
-	for <lists+netdev@lfdr.de>; Thu, 15 Apr 2021 10:19:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 23C08360431
+	for <lists+netdev@lfdr.de>; Thu, 15 Apr 2021 10:22:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231645AbhDOIUT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 15 Apr 2021 04:20:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41350 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231215AbhDOIUS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 15 Apr 2021 04:20:18 -0400
-Received: from mail-pf1-x429.google.com (mail-pf1-x429.google.com [IPv6:2607:f8b0:4864:20::429])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 272F5C061574;
-        Thu, 15 Apr 2021 01:19:56 -0700 (PDT)
-Received: by mail-pf1-x429.google.com with SMTP id g16so2268651pfq.5;
-        Thu, 15 Apr 2021 01:19:56 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=55qzNVVtKjr2EGfMAcgdM/oHJ/MI5Oe+cwdS/Ji0ZVI=;
-        b=j1tVlhHWeqCzmIWXEopfN2gvVhO87Jr/RyNB0t/arTH8+bg7DKBr+fI040TTp9S9dB
-         /NzzFMy3hbY/ewwcaITstDzoy52Wgs4wGuQ5U5o4uPJowRFrrEnSMnP8N2Qb3i5zZjXQ
-         sCqSMpYbitygg49aIHDhasd3Pi72eqGwhTPoAnW1qgSzqZW7XWXrv/4JCx9LSDXMvhzf
-         znL5/rmGU9y1+OFti8QmL1ryMuD9so/V9sqtlzAaVReyqpoDpbqtdZOG7VIAMj0ZL4w4
-         Kv0HXVb9dekpbqJdlNhLG+oY2Owt4l/wcViRbNFuH7o1uikboz9/tlwvLhkf0FLxKmmz
-         xTZw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=55qzNVVtKjr2EGfMAcgdM/oHJ/MI5Oe+cwdS/Ji0ZVI=;
-        b=JGoz6Crs1qH1AMfpCkqkeQx9IylV5HCIC98ReJTHTGltQGyFP5Y1gGyJVhbjubCG3n
-         wCbX29hjzJ/lRZ/7EgmXo77JFmr8DQC34JfmxNPUoKpvIs/6LPf6zGwYSSzOw0/v3P1Z
-         8EbcPgcEIZNJHCGnHlGU2SE5LgJ3zdWNbhY2sFPK4WK0MMQkMw7npwH96UUltcIm3NXo
-         k8Wwo0t9T5lAT6w56VgU8S339iO5pOgCBndcfJEvhPeoG5aycyuReXp7TxZudPBliuL5
-         DsIA3n1u23riz1tBje3sP2wSgSp86dKG4yjZLUtniFi+5xy2Zueh6rDpcXMaxiAIqy82
-         /sfw==
-X-Gm-Message-State: AOAM532hy3Pztf/EZCK9am1Mdz5y8WJNLiX0wI0xYmolz8gYTC/PRF6V
-        SFX+sd8qh7zejvuctXTJT9AfqeWyOsh60dyQ
-X-Google-Smtp-Source: ABdhPJwWGtaQnufAXInm7v66wKabfVJG17NJUFp65axa03YX5DYY821+MSztj4RCKZDgwDB8o2T9wQ==
-X-Received: by 2002:a63:470f:: with SMTP id u15mr2378163pga.199.1618474795726;
-        Thu, 15 Apr 2021 01:19:55 -0700 (PDT)
-Received: from ?IPv6:2404:f801:0:6:8000::a31c? ([2404:f801:9000:1a:efeb::a31c])
-        by smtp.gmail.com with ESMTPSA id h21sm1732615pgi.60.2021.04.15.01.19.46
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 15 Apr 2021 01:19:55 -0700 (PDT)
-Subject: Re: [Resend RFC PATCH V2 04/12] HV: Add Write/Read MSR registers via
- ghcb
-To:     Christoph Hellwig <hch@lst.de>
-Cc:     kys@microsoft.com, haiyangz@microsoft.com, sthemmin@microsoft.com,
-        wei.liu@kernel.org, tglx@linutronix.de, mingo@redhat.com,
-        bp@alien8.de, x86@kernel.org, hpa@zytor.com, arnd@arndb.de,
-        akpm@linux-foundation.org, gregkh@linuxfoundation.org,
-        konrad.wilk@oracle.com, m.szyprowski@samsung.com,
-        robin.murphy@arm.com, joro@8bytes.org, will@kernel.org,
-        davem@davemloft.net, kuba@kernel.org, jejb@linux.ibm.com,
-        martin.petersen@oracle.com, Tianyu Lan <Tianyu.Lan@microsoft.com>,
-        iommu@lists.linux-foundation.org, linux-arch@vger.kernel.org,
-        linux-hyperv@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-mm@kvack.org, linux-scsi@vger.kernel.org,
-        netdev@vger.kernel.org, vkuznets@redhat.com,
-        thomas.lendacky@amd.com, brijesh.singh@amd.com,
-        sunilmut@microsoft.com
-References: <20210414144945.3460554-1-ltykernel@gmail.com>
- <20210414144945.3460554-5-ltykernel@gmail.com>
- <20210414154141.GB32045@lst.de>
-From:   Tianyu Lan <ltykernel@gmail.com>
-Message-ID: <d35e6ab5-cb25-61aa-e36e-7e4bcb241964@gmail.com>
-Date:   Thu, 15 Apr 2021 16:19:45 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.9.1
+        id S231300AbhDOIW7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 15 Apr 2021 04:22:59 -0400
+Received: from void.so ([95.85.17.176]:41074 "EHLO void.so"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S231215AbhDOIW6 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 15 Apr 2021 04:22:58 -0400
+Received: from void.so (localhost [127.0.0.1])
+        by void.so (Postfix) with ESMTP id F09992ADF5A
+        for <netdev@vger.kernel.org>; Thu, 15 Apr 2021 11:22:34 +0300 (MSK)
+Received: from void.so ([127.0.0.1])
+        by void.so (void.so [127.0.0.1]) (amavisd-new, port 10024) with LMTP
+        id gYpjUW4-Ke1I for <netdev@vger.kernel.org>;
+        Thu, 15 Apr 2021 11:22:34 +0300 (MSK)
+Received: from rnd (unknown [91.244.183.205])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by void.so (Postfix) with ESMTPSA id 476742ADF59
+        for <netdev@vger.kernel.org>; Thu, 15 Apr 2021 11:22:34 +0300 (MSK)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=void.so; s=mail;
+        t=1618474954; bh=GdHPtaW1+JirtHfDXN+g3afLnhc1ndHodz+XJCt+1+c=;
+        h=Date:From:To:Subject:References:In-Reply-To;
+        b=PwwcLG9IVxAqv8UrfXZgBUlyD/m2cgz5B+rnxC98EQH2VEcVbvojODFEotmbM70+H
+         quxUHN0FUn+jHHwtazSO7Yjt05vXG7uDa+SSGC1V60AWVnmk/SFESndttverTalBmU
+         BTgbL3TMd7pVorfL37xQcSOrnf7U+ZrKwQoPrlfU=
+Date:   Thu, 15 Apr 2021 11:20:46 +0300
+From:   Pavel Balaev <mail@void.so>
+To:     netdev@vger.kernel.org
+Subject: Re: [PATCH v3 net-next] net: multipath routing: configurable seed
+Message-ID: <YHf3XtDOhDfUppSS@rnd>
+References: <YHWGmPmvpQAT3BcV@rnd>
+ <08aba836-162e-b5d3-7a93-0488489be798@gmail.com>
+ <YHaa0pRCTKFbEhA2@rnd>
+ <bcf3a5d5-bfbd-d8d3-05e9-ad506e6a689e@gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <20210414154141.GB32045@lst.de>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <bcf3a5d5-bfbd-d8d3-05e9-ad506e6a689e@gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 4/14/2021 11:41 PM, Christoph Hellwig wrote:
->> +EXPORT_SYMBOL_GPL(hv_ghcb_msr_write);
+On Wed, Apr 14, 2021 at 08:24:11PM -0700, David Ahern wrote:
+> On 4/14/21 12:33 AM, Pavel Balaev wrote:
+> >>
+> >> This should work the same for IPv6.
+> > I wanted to add IPv6 support after IPv4 will be approved,
+> > anyway no problem, will add IPv6 in next version 
+> >> And please add test cases under tools/testing/selftests/net.
+> > This feature cannot be tested whithin one host instance, becasue the same seed
+> > will be used by default for all netns, so results will be the same
+> > anyway, should I use QEMU for this tests?
+> >  
+> > 
 > 
-> Just curious, who is going to use all these exports?  These seems like
-> extremely low-level functionality.  Isn't there a way to build a more
-> useful higher level API?
->
+> why not make the seed per namespace?
+In patch seed is maked per namespace. I mean that I cannot check default
+behaviour whitin one host: sysctl net.ipv4.fib_multipath_hash_seed=random.
+In this case system random seed will be used (same for all netns,
+as it was before my patch).
 
-Yes, will remove it.
+We can only test two cases:
 
+netns0: net.ipv4.fib_multipath_hash_seed=${SEED_0}
+netns1: net.ipv4.fib_multipath_hash_seed=${SEED_1}
+
+flows direction will not be the same.
+
+netns0: net.ipv4.fib_multipath_hash_seed=${SEED_0}
+netns1: net.ipv4.fib_multipath_hash_seed=${SEED_0}
+
+flows direction will be the same.
+
+Is this enough?
