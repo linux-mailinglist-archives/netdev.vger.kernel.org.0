@@ -2,52 +2,62 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 24BC53603D8
-	for <lists+netdev@lfdr.de>; Thu, 15 Apr 2021 10:05:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3C82E3603E5
+	for <lists+netdev@lfdr.de>; Thu, 15 Apr 2021 10:08:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231482AbhDOIFy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 15 Apr 2021 04:05:54 -0400
-Received: from conssluserg-01.nifty.com ([210.131.2.80]:56681 "EHLO
-        conssluserg-01.nifty.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230090AbhDOIFw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 15 Apr 2021 04:05:52 -0400
-X-Greylist: delayed 2136 seconds by postgrey-1.27 at vger.kernel.org; Thu, 15 Apr 2021 04:05:51 EDT
-Received: from mail-pf1-f169.google.com (mail-pf1-f169.google.com [209.85.210.169]) (authenticated)
-        by conssluserg-01.nifty.com with ESMTP id 13F856Vb022773;
-        Thu, 15 Apr 2021 17:05:06 +0900
-DKIM-Filter: OpenDKIM Filter v2.10.3 conssluserg-01.nifty.com 13F856Vb022773
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
-        s=dec2015msa; t=1618473906;
-        bh=LC1wwORrxX4s+QOHO85pxZXBS/KtIoUE4bsRAFozad4=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=da54tceNg+886hk0L1yXNqwic53kMAl/yYDA9rfAYHj0ARbrEgFju4bNK2u7DwSzr
-         0Nzz3nN74NFBD6BY3vVYIsLJyVstisa/a9wZNFo5HTfFMQNiNdQt34xs/EogI5R2pe
-         cGfTLcVB02siJoTnsZGY694SycVShDrvLKCT+fJH4c6gdApVr4yI8sDuiQRVb46uzf
-         5zxp+cpLvrquwzMBoqWdhFppX0LrOMfnMp2ux+33w21NjgtbXApne1xnDYHSASKVVS
-         d+1LtEJ5CKw8N5jVYem55TDcIAFV5Dpgqe/WelWt36GppnQoPbMUoN2vTaIcYxpiyl
-         UETUaHqyqS3pw==
-X-Nifty-SrcIP: [209.85.210.169]
-Received: by mail-pf1-f169.google.com with SMTP id p67so10591283pfp.10;
-        Thu, 15 Apr 2021 01:05:06 -0700 (PDT)
-X-Gm-Message-State: AOAM531srx0f25gk07BlcHD6re3R/c0h0vtMMO8k4EDCH91XPITvrY15
-        0r22kx+4zgJ8DL4Pd3zbcikywpxA58RKjrTsciQ=
-X-Google-Smtp-Source: ABdhPJySz/Ot0PzvuAqwezBmRSJBPOAtDPcVcBLTIDgzgzX8BI0wuMQUhTWcJdx8cpQqmQVarwqfYRNaT9Sfb7D43/8=
-X-Received: by 2002:aa7:946b:0:b029:24c:57ea:99bf with SMTP id
- t11-20020aa7946b0000b029024c57ea99bfmr2063757pfq.63.1618473905663; Thu, 15
- Apr 2021 01:05:05 -0700 (PDT)
-MIME-Version: 1.0
-References: <20210415072700.147125-1-masahiroy@kernel.org> <20210415072700.147125-2-masahiroy@kernel.org>
- <9d33ee98-9de3-2215-0c0b-cc856cec1b69@redhat.com>
-In-Reply-To: <9d33ee98-9de3-2215-0c0b-cc856cec1b69@redhat.com>
-From:   Masahiro Yamada <masahiroy@kernel.org>
-Date:   Thu, 15 Apr 2021 17:04:28 +0900
-X-Gmail-Original-Message-ID: <CAK7LNAQupbmeEVR0njSciv0X9FD+MofeB2Xm=wprEdNaO4TQKQ@mail.gmail.com>
-Message-ID: <CAK7LNAQupbmeEVR0njSciv0X9FD+MofeB2Xm=wprEdNaO4TQKQ@mail.gmail.com>
+        id S231567AbhDOIIR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 15 Apr 2021 04:08:17 -0400
+Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:34986 "EHLO
+        mx0b-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S230090AbhDOIIO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 15 Apr 2021 04:08:14 -0400
+Received: from pps.filterd (m0098417.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 13F84B5A132058;
+        Thu, 15 Apr 2021 04:06:53 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=subject : to : cc :
+ references : from : message-id : date : in-reply-to : content-type :
+ content-transfer-encoding : mime-version; s=pp1;
+ bh=qlxWFtVavXCd/lHzWzSrLnEFhrdIu+gCNQ7cSdIefOE=;
+ b=bOZgsQih45h3B+5N6i127n5q0Bt37CffaF1qGurNTvPvvbtRdw6NurRtE3OBov4NbcWg
+ No9e2XWo0lZoaTXFPJLkYMS+iJw5+7FwmFQz2q8RarOroiGvm+bUcxOVDV/AnaA+MxhS
+ Isrt/JCoG3ub6c6U220wf85bvx7TZTnQVeuWW+FiUz8yqabHlxLadVz8066EFBSQlWbw
+ vhWgdkLMxV3wb2XlCl4kuaR3grtYSouRI4Xb9/6NhyjxS9q1MuCx2HKutg3FhtSa4R09
+ 0U3LYPk/nE0mP8BmWUvLE/a89G1+KCBjYsy1Xl7c+Lr4i5VpdZqVmy0F+06cpG2qGm8Y Gg== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 37x46utmt3-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 15 Apr 2021 04:06:53 -0400
+Received: from m0098417.ppops.net (m0098417.ppops.net [127.0.0.1])
+        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 13F84VnS133994;
+        Thu, 15 Apr 2021 04:06:52 -0400
+Received: from ppma04fra.de.ibm.com (6a.4a.5195.ip4.static.sl-reverse.com [149.81.74.106])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 37x46utmru-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 15 Apr 2021 04:06:52 -0400
+Received: from pps.filterd (ppma04fra.de.ibm.com [127.0.0.1])
+        by ppma04fra.de.ibm.com (8.16.0.43/8.16.0.43) with SMTP id 13F85EEK011874;
+        Thu, 15 Apr 2021 08:06:50 GMT
+Received: from b06cxnps4075.portsmouth.uk.ibm.com (d06relay12.portsmouth.uk.ibm.com [9.149.109.197])
+        by ppma04fra.de.ibm.com with ESMTP id 37u3n8a0dx-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 15 Apr 2021 08:06:50 +0000
+Received: from d06av25.portsmouth.uk.ibm.com (d06av25.portsmouth.uk.ibm.com [9.149.105.61])
+        by b06cxnps4075.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 13F86lP066322744
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Thu, 15 Apr 2021 08:06:47 GMT
+Received: from d06av25.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 73F1011C050;
+        Thu, 15 Apr 2021 08:06:47 +0000 (GMT)
+Received: from d06av25.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id BA81411C064;
+        Thu, 15 Apr 2021 08:06:45 +0000 (GMT)
+Received: from oc7455500831.ibm.com (unknown [9.171.63.231])
+        by d06av25.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+        Thu, 15 Apr 2021 08:06:45 +0000 (GMT)
 Subject: Re: [PATCH 2/2] tools: do not include scripts/Kbuild.include
-To:     Paolo Bonzini <pbonzini@redhat.com>
-Cc:     Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>,
-        Janosch Frank <frankja@linux.ibm.com>,
-        Christian Borntraeger <borntraeger@de.ibm.com>,
+To:     Masahiro Yamada <masahiroy@kernel.org>,
+        linux-kbuild@vger.kernel.org
+Cc:     Janosch Frank <frankja@linux.ibm.com>,
         Alexei Starovoitov <ast@kernel.org>,
         Andrii Nakryiko <andrii@kernel.org>,
         Benjamin Herrenschmidt <benh@kernel.crashing.org>,
@@ -58,65 +68,95 @@ Cc:     Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>,
         Michael Ellerman <mpe@ellerman.id.au>,
         Nathan Chancellor <nathan@kernel.org>,
         Nick Desaulniers <ndesaulniers@google.com>,
+        Paolo Bonzini <pbonzini@redhat.com>,
         Paul Mackerras <paulus@samba.org>,
         Shuah Khan <shuah@kernel.org>,
         Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        bpf <bpf@vger.kernel.org>,
-        clang-built-linux <clang-built-linux@googlegroups.com>,
-        kvm@vger.kernel.org,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        "open list:KERNEL SELFTEST FRAMEWORK" 
-        <linux-kselftest@vger.kernel.org>,
-        linuxppc-dev <linuxppc-dev@lists.ozlabs.org>,
-        Networking <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+        bpf@vger.kernel.org, clang-built-linux@googlegroups.com,
+        kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-kselftest@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
+        netdev@vger.kernel.org
+References: <20210415072700.147125-1-masahiroy@kernel.org>
+ <20210415072700.147125-2-masahiroy@kernel.org>
+From:   Christian Borntraeger <borntraeger@de.ibm.com>
+Message-ID: <eb623ea6-a2f4-9692-ff3d-cb9f9b9ea15f@de.ibm.com>
+Date:   Thu, 15 Apr 2021 10:06:45 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.9.0
+In-Reply-To: <20210415072700.147125-2-masahiroy@kernel.org>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: -YMTQ38-A9pZbmNZPcHayMt5HbaIwtug
+X-Proofpoint-ORIG-GUID: FIconhLodZz_0nArX8fkTBP6UY0y2BNs
+Content-Transfer-Encoding: 7bit
+X-Proofpoint-UnRewURL: 0 URL was un-rewritten
+MIME-Version: 1.0
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.391,18.0.761
+ definitions=2021-04-15_03:2021-04-15,2021-04-15 signatures=0
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 clxscore=1011
+ priorityscore=1501 malwarescore=0 lowpriorityscore=0 bulkscore=0
+ adultscore=0 suspectscore=0 impostorscore=0 mlxscore=0 spamscore=0
+ phishscore=0 mlxlogscore=999 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.12.0-2104060000 definitions=main-2104150053
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Apr 15, 2021 at 4:40 PM Paolo Bonzini <pbonzini@redhat.com> wrote:
->
-> On 15/04/21 09:27, Masahiro Yamada wrote:
-> > Since commit d9f4ff50d2aa ("kbuild: spilt cc-option and friends to
-> > scripts/Makefile.compiler"), some kselftests fail to build.
-> >
-> > The tools/ directory opted out Kbuild, and went in a different
-> > direction. They copy any kind of files to the tools/ directory
-> > in order to do whatever they want to do in their world.
-> >
-> > tools/build/Build.include mimics scripts/Kbuild.include, but some
-> > tool Makefiles included the Kbuild one to import a feature that is
-> > missing in tools/build/Build.include:
-> >
-> >   - Commit ec04aa3ae87b ("tools/thermal: tmon: use "-fstack-protector"
-> >     only if supported") included scripts/Kbuild.include from
-> >     tools/thermal/tmon/Makefile to import the cc-option macro.
-> >
-> >   - Commit c2390f16fc5b ("selftests: kvm: fix for compilers that do
-> >     not support -no-pie") included scripts/Kbuild.include from
-> >     tools/testing/selftests/kvm/Makefile to import the try-run macro.
-> >
-> >   - Commit 9cae4ace80ef ("selftests/bpf: do not ignore clang
-> >     failures") included scripts/Kbuild.include from
-> >     tools/testing/selftests/bpf/Makefile to import the .DELETE_ON_ERROR
-> >     target.
-> >
-> >   - Commit 0695f8bca93e ("selftests/powerpc: Handle Makefile for
-> >     unrecognized option") included scripts/Kbuild.include from
-> >     tools/testing/selftests/powerpc/pmu/ebb/Makefile to import the
-> >     try-run macro.
-> >
-> > Copy what they want there, and stop including scripts/Kbuild.include
-> > from the tool Makefiles.
->
-> I think it would make sense to add try-run, cc-option and
-> .DELETE_ON_ERROR to tools/build/Build.include?
 
+On 15.04.21 09:27, Masahiro Yamada wrote:
+> Since commit d9f4ff50d2aa ("kbuild: spilt cc-option and friends to
+> scripts/Makefile.compiler"), some kselftests fail to build.
+> 
+> The tools/ directory opted out Kbuild, and went in a different
+> direction. They copy any kind of files to the tools/ directory
+> in order to do whatever they want to do in their world.
+> 
+> tools/build/Build.include mimics scripts/Kbuild.include, but some
+> tool Makefiles included the Kbuild one to import a feature that is
+> missing in tools/build/Build.include:
+> 
+>   - Commit ec04aa3ae87b ("tools/thermal: tmon: use "-fstack-protector"
+>     only if supported") included scripts/Kbuild.include from
+>     tools/thermal/tmon/Makefile to import the cc-option macro.
+> 
+>   - Commit c2390f16fc5b ("selftests: kvm: fix for compilers that do
+>     not support -no-pie") included scripts/Kbuild.include from
+>     tools/testing/selftests/kvm/Makefile to import the try-run macro.
+> 
+>   - Commit 9cae4ace80ef ("selftests/bpf: do not ignore clang
+>     failures") included scripts/Kbuild.include from
+>     tools/testing/selftests/bpf/Makefile to import the .DELETE_ON_ERROR
+>     target.
+> 
+>   - Commit 0695f8bca93e ("selftests/powerpc: Handle Makefile for
+>     unrecognized option") included scripts/Kbuild.include from
+>     tools/testing/selftests/powerpc/pmu/ebb/Makefile to import the
+>     try-run macro.
+> 
+> Copy what they want there, and stop including scripts/Kbuild.include
+> from the tool Makefiles.
+> 
+> Link: https://lore.kernel.org/lkml/86dadf33-70f7-a5ac-cb8c-64966d2f45a1@linux.ibm.com/
+> Fixes: d9f4ff50d2aa ("kbuild: spilt cc-option and friends to scripts/Makefile.compiler")
+> Reported-by: Janosch Frank <frankja@linux.ibm.com>
+> Reported-by: Christian Borntraeger <borntraeger@de.ibm.com>
+> Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
 
-To be safe, I just copy-pasted what the makefiles need.
-If someone wants to refactor the tool build system, that is fine,
-but, to me, I do not see consistent rules or policy under tools/.
+When applying this on top of d9f4ff50d2aa ("kbuild: spilt cc-option and friends to scripts/Makefile.compiler")
 
--- 
-Best Regards
-Masahiro Yamada
+I still do get
+
+# ==== Test Assertion Failure ====
+#   lib/kvm_util.c:142: vm->fd >= 0
+#   pid=315635 tid=315635 - Invalid argument
+#      1	0x0000000001002f4b: vm_open at kvm_util.c:142
+#      2	 (inlined by) vm_create at kvm_util.c:258
+#      3	0x00000000010015ef: test_add_max_memory_regions at set_memory_region_test.c:351
+#      4	 (inlined by) main at set_memory_region_test.c:397
+#      5	0x000003ff971abb89: ?? ??:0
+#      6	0x00000000010017ad: .annobin_abi_note.c.hot at crt1.o:?
+#   KVM_CREATE_VM ioctl failed, rc: -1 errno: 22
+not ok 7 selftests: kvm: set_memory_region_test # exit=254
+
+and the testcase compilation does not pickup the pgste option.
