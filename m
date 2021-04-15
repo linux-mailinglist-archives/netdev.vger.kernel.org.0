@@ -2,95 +2,121 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C328136112D
-	for <lists+netdev@lfdr.de>; Thu, 15 Apr 2021 19:37:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 862A8361135
+	for <lists+netdev@lfdr.de>; Thu, 15 Apr 2021 19:38:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234307AbhDORh0 convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Thu, 15 Apr 2021 13:37:26 -0400
-Received: from mga07.intel.com ([134.134.136.100]:35993 "EHLO mga07.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S233395AbhDORhZ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 15 Apr 2021 13:37:25 -0400
-IronPort-SDR: 24hzNGKPSUApnUIpu7ndlPXngMIlbT+nC1rfbI++33xu1XMUGpFOWa8022WFOSxwNTHKQMsiNe
- OzC9xz0IfO3g==
-X-IronPort-AV: E=McAfee;i="6200,9189,9955"; a="258863673"
-X-IronPort-AV: E=Sophos;i="5.82,225,1613462400"; 
-   d="scan'208";a="258863673"
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Apr 2021 10:37:01 -0700
-IronPort-SDR: BJaKfhRNnoZIE/kaBy6Cra+5zZfmPztxfd8aSURWHyKdZZQJgSrob2/LPo92YV3122nKI78AWn
- NWy2xRBS0YLw==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.82,225,1613462400"; 
-   d="scan'208";a="399646801"
-Received: from fmsmsx602.amr.corp.intel.com ([10.18.126.82])
-  by orsmga002.jf.intel.com with ESMTP; 15 Apr 2021 10:37:00 -0700
-Received: from fmsmsx611.amr.corp.intel.com (10.18.126.91) by
- fmsmsx602.amr.corp.intel.com (10.18.126.82) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2106.2; Thu, 15 Apr 2021 10:37:00 -0700
-Received: from fmsmsx612.amr.corp.intel.com (10.18.126.92) by
- fmsmsx611.amr.corp.intel.com (10.18.126.91) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2106.2; Thu, 15 Apr 2021 10:36:59 -0700
-Received: from fmsmsx612.amr.corp.intel.com ([10.18.126.92]) by
- fmsmsx612.amr.corp.intel.com ([10.18.126.92]) with mapi id 15.01.2106.013;
- Thu, 15 Apr 2021 10:36:59 -0700
-From:   "Saleem, Shiraz" <shiraz.saleem@intel.com>
-To:     Jason Gunthorpe <jgg@nvidia.com>
-CC:     "dledford@redhat.com" <dledford@redhat.com>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "Ertman, David M" <david.m.ertman@intel.com>,
-        "Nguyen, Anthony L" <anthony.l.nguyen@intel.com>,
-        "Williams, Dan J" <dan.j.williams@intel.com>,
-        "Hefty, Sean" <sean.hefty@intel.com>,
-        "Lacombe, John S" <john.s.lacombe@intel.com>
-Subject: RE: [PATCH v4 01/23] iidc: Introduce iidc.h
-Thread-Topic: [PATCH v4 01/23] iidc: Introduce iidc.h
-Thread-Index: AQHXKygiEMWtUC1Uo0mj4KR4ZXyZX6qpqNQA///J7iCAAKscAIABP3oQgAYu4wCAAadCQA==
-Date:   Thu, 15 Apr 2021 17:36:59 +0000
-Message-ID: <dff8229e5092447cb3d16fecd14e0fb8@intel.com>
-References: <20210406210125.241-1-shiraz.saleem@intel.com>
- <20210406210125.241-2-shiraz.saleem@intel.com>
- <20210407154430.GA502757@nvidia.com>
- <1e61169b83ac458aa9357298ecfab846@intel.com>
- <20210407224324.GH282464@nvidia.com>
- <2339b8bb35b74aabbb708fcd1a6ab40f@intel.com>
- <20210412161214.GA1115060@nvidia.com>
-In-Reply-To: <20210412161214.GA1115060@nvidia.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-dlp-product: dlpe-windows
-dlp-reaction: no-action
-dlp-version: 11.5.1.3
-x-originating-ip: [10.1.200.100]
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 8BIT
+        id S234428AbhDORiY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 15 Apr 2021 13:38:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51856 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233395AbhDORiY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 15 Apr 2021 13:38:24 -0400
+Received: from mail-pf1-x432.google.com (mail-pf1-x432.google.com [IPv6:2607:f8b0:4864:20::432])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8CA38C061574
+        for <netdev@vger.kernel.org>; Thu, 15 Apr 2021 10:38:00 -0700 (PDT)
+Received: by mail-pf1-x432.google.com with SMTP id i190so16527932pfc.12
+        for <netdev@vger.kernel.org>; Thu, 15 Apr 2021 10:38:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=A+x0EU4BTEonaGnIhnl1qOCN28fEaN5Zv4Usct7ILtU=;
+        b=DFoEmQQ1h0gkzWLFHb2ZpOf7WaqMtvEiY0Jl3bTUp8iXF7/tf3Q8VtoNYzNcTvOQom
+         uK8Np0pvcM53vBxMlk4lHDROulPD/plKlgS/kwo+RBpEdg0nJ0fOggf/6qKx9E3sWRRB
+         JBXUo4N8lMXnL+M0gq29gxtktTDfiyRw0gqAwZfNB+xVq/9pEzaRph9pQmqNIHGvhhQc
+         StEArV63W4VbuD7M+idxjXJTqjSL+LibZUUTotAFKHu5QzvuO0Y1HGDDHMmTdU8wCkAP
+         OsVt6AixuanNIr6rZYkIUOyRioz3xmHbprBooq0hao4FJbYwHaRc5coiDIO+TYQap8Nw
+         hdOA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=A+x0EU4BTEonaGnIhnl1qOCN28fEaN5Zv4Usct7ILtU=;
+        b=gOQR9vKgp2+875ge/+h6ZP67NiJJFoZ4bmD5Bz3DWce6WMAyRZWD3r2M8aFvuraEoL
+         neX5Ka+wn22wphbW/uocfWAuV0+c2NnG4ry1HNFcf6dM4GJ7KB1JhVo/W4PwG1FzsdcI
+         A8GxgIDeF9fZGsDBN+2z93y043ctpnNc26dLu20EZTeG+My2Xn4DLvpytotgZWb+ugSC
+         SFGKRIHeq1OVKsIVuPfxM6d3ExtRBZchlUIYAGXpOGZpDBLqHebpIsrBZ9mlwBsI5F8s
+         YlwVdf2JxzneVUTidWyDCIdzUPiDXH802q/BpSAB6m2NqqXLH9zxMwkNcb48lfvjQSjh
+         niZg==
+X-Gm-Message-State: AOAM532A3k0FYpjVkWMiAnbXbGYUBw2ZbY+ZEcpAS+GBaJKuQ2cw3bko
+        zdHwCwdvXjF64G1jspEjsnQ=
+X-Google-Smtp-Source: ABdhPJy9R7er3KwA/V8lNPdLD1/hLssYbsJLkCYoT0FWChgKpW5vMB6ZYaShJdGpTmmQJM6pBE+ylw==
+X-Received: by 2002:aa7:824e:0:b029:20a:3a1:eeda with SMTP id e14-20020aa7824e0000b029020a03a1eedamr4099110pfn.71.1618508280154;
+        Thu, 15 Apr 2021 10:38:00 -0700 (PDT)
+Received: from edumazet1.svl.corp.google.com ([2620:15c:2c4:201:9374:6e64:669f:465e])
+        by smtp.gmail.com with ESMTPSA id b14sm2670444pft.211.2021.04.15.10.37.59
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 15 Apr 2021 10:37:59 -0700 (PDT)
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+To:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev <netdev@vger.kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        Soheil Hassas Yeganeh <soheil@google.com>
+Subject: [PATCH net-next] scm: optimize put_cmsg()
+Date:   Thu, 15 Apr 2021 10:37:53 -0700
+Message-Id: <20210415173753.3404237-1-eric.dumazet@gmail.com>
+X-Mailer: git-send-email 2.31.1.368.gbe11c130af-goog
 MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> Subject: Re: [PATCH v4 01/23] iidc: Introduce iidc.h
-> 
-> On Mon, Apr 12, 2021 at 02:50:43PM +0000, Saleem, Shiraz wrote:
-> 
+From: Eric Dumazet <edumazet@google.com>
 
-[....]
+Calling two copy_to_user() for very small regions has very high overhead.
 
-> > There is a near-term Intel ethernet VF driver which will use IIDC to
-> > provide RDMA in the VF, and implement some of these .ops callbacks.
-> > There is also intent to move i40e to IIDC.
-> 
-> "near-term" We are now on year three of Intel talking about this driver!
-> 
-> Get the bulk of the thing merged and deal with the rest in followup patches.
+Switch to inlined unsafe_put_user() to save one stac/clac sequence,
+and avoid copy_to_user().
 
-We will submit with symbols exported from ice and direct calls from irdma.
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+Cc: Soheil Hassas Yeganeh <soheil@google.com>
+---
+ net/core/scm.c | 21 ++++++++++++++-------
+ 1 file changed, 14 insertions(+), 7 deletions(-)
 
-Shiraz
+diff --git a/net/core/scm.c b/net/core/scm.c
+index 8156d4fb8a3966122fdfcfd0ebc9e5520aa7b67c..bd96c922041d22a2f3b7ee73e4b3183316f9b616 100644
+--- a/net/core/scm.c
++++ b/net/core/scm.c
+@@ -228,14 +228,16 @@ int put_cmsg(struct msghdr * msg, int level, int type, int len, void *data)
+ 
+ 	if (msg->msg_control_is_user) {
+ 		struct cmsghdr __user *cm = msg->msg_control_user;
+-		struct cmsghdr cmhdr;
+ 
+-		cmhdr.cmsg_level = level;
+-		cmhdr.cmsg_type = type;
+-		cmhdr.cmsg_len = cmlen;
+-		if (copy_to_user(cm, &cmhdr, sizeof cmhdr) ||
+-		    copy_to_user(CMSG_USER_DATA(cm), data, cmlen - sizeof(*cm)))
+-			return -EFAULT;
++		if (!user_write_access_begin(cm, cmlen))
++			goto efault;
++
++		unsafe_put_user(len, &cm->cmsg_len, efault_end);
++		unsafe_put_user(level, &cm->cmsg_level, efault_end);
++		unsafe_put_user(type, &cm->cmsg_type, efault_end);
++		unsafe_copy_to_user(CMSG_USER_DATA(cm), data,
++				    cmlen - sizeof(*cm), efault_end);
++		user_write_access_end();
+ 	} else {
+ 		struct cmsghdr *cm = msg->msg_control;
+ 
+@@ -249,6 +251,11 @@ int put_cmsg(struct msghdr * msg, int level, int type, int len, void *data)
+ 	msg->msg_control += cmlen;
+ 	msg->msg_controllen -= cmlen;
+ 	return 0;
++
++efault_end:
++	user_write_access_end();
++efault:
++	return -EFAULT;
+ }
+ EXPORT_SYMBOL(put_cmsg);
+ 
+-- 
+2.31.1.368.gbe11c130af-goog
+
