@@ -2,116 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 223B3360539
-	for <lists+netdev@lfdr.de>; Thu, 15 Apr 2021 11:05:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C656C360551
+	for <lists+netdev@lfdr.de>; Thu, 15 Apr 2021 11:11:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232110AbhDOJFp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 15 Apr 2021 05:05:45 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:28443 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S232100AbhDOJFn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 15 Apr 2021 05:05:43 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1618477520;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=OzvjiFIzYZkBsqCDMlTdrOnRQkd+YTOFRqgYIvls9tY=;
-        b=fFd3c37bP+BWcU0aJCTiNx6s3JrvAQpvKaPDcOwoH/0coUqOPGXrgCoIZkUQFNf3NqJ7uM
-        cbMq+virOGipEOCutOapwe7GcgzlTuuz6ZJHfvVq20PtYvR6FJxP2YUOb9bFppWcC3vtih
-        Oh7lcBhV3voVSBYWFCVKnNejj7zyj4g=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-234-3fh0e0aYPsqfmelJdH-0Dw-1; Thu, 15 Apr 2021 05:05:16 -0400
-X-MC-Unique: 3fh0e0aYPsqfmelJdH-0Dw-1
-Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id C3B056D59B;
-        Thu, 15 Apr 2021 09:05:13 +0000 (UTC)
-Received: from wangxiaodeMacBook-Air.local (ovpn-12-61.pek2.redhat.com [10.72.12.61])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id DEDAE610FE;
-        Thu, 15 Apr 2021 09:04:59 +0000 (UTC)
-Subject: Re: [PATCH v6 10/10] Documentation: Add documentation for VDUSE
-From:   Jason Wang <jasowang@redhat.com>
-To:     Stefan Hajnoczi <stefanha@redhat.com>,
-        Yongji Xie <xieyongji@bytedance.com>
-Cc:     "Michael S. Tsirkin" <mst@redhat.com>,
-        Stefano Garzarella <sgarzare@redhat.com>,
-        Parav Pandit <parav@nvidia.com>,
-        Christoph Hellwig <hch@infradead.org>,
-        Christian Brauner <christian.brauner@canonical.com>,
-        Randy Dunlap <rdunlap@infradead.org>,
-        Matthew Wilcox <willy@infradead.org>, viro@zeniv.linux.org.uk,
-        Jens Axboe <axboe@kernel.dk>, bcrl@kvack.org,
-        Jonathan Corbet <corbet@lwn.net>,
-        =?UTF-8?Q?Mika_Penttil=c3=a4?= <mika.penttila@nextfour.com>,
-        Dan Carpenter <dan.carpenter@oracle.com>,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        kvm@vger.kernel.org, linux-fsdevel@vger.kernel.org
-References: <20210331080519.172-1-xieyongji@bytedance.com>
- <20210331080519.172-11-xieyongji@bytedance.com>
- <YHb44R4HyLEUVSTF@stefanha-x1.localdomain>
- <CACycT3uNR+nZY5gY0UhPkeOyi7Za6XkX4b=hasuDcgqdc7fqfg@mail.gmail.com>
- <YHfo8pc7dIO9lNc3@stefanha-x1.localdomain>
- <80b31814-9e41-3153-7efb-c0c2fab44feb@redhat.com>
-Message-ID: <02c19c22-13ea-ea97-d99b-71edfee0b703@redhat.com>
-Date:   Thu, 15 Apr 2021 17:04:58 +0800
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
- Gecko/20100101 Thunderbird/78.9.1
+        id S231687AbhDOJLY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 15 Apr 2021 05:11:24 -0400
+Received: from honk.sigxcpu.org ([24.134.29.49]:60382 "EHLO honk.sigxcpu.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229494AbhDOJLY (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 15 Apr 2021 05:11:24 -0400
+Received: from localhost (localhost [127.0.0.1])
+        by honk.sigxcpu.org (Postfix) with ESMTP id E4307FB03;
+        Thu, 15 Apr 2021 11:10:59 +0200 (CEST)
+X-Virus-Scanned: Debian amavisd-new at honk.sigxcpu.org
+Received: from honk.sigxcpu.org ([127.0.0.1])
+        by localhost (honk.sigxcpu.org [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id 6JjsF-OgtLbd; Thu, 15 Apr 2021 11:10:58 +0200 (CEST)
+Date:   Thu, 15 Apr 2021 11:10:57 +0200
+From:   Guido =?iso-8859-1?Q?G=FCnther?= <agx@sigxcpu.org>
+To:     Chris Talbot <chris@talbothome.com>
+Cc:     ofono@ofono.org, netdev@vger.kernel.org,
+        debian-on-mobile-maintainers@alioth-lists.debian.net,
+        librem-5-dev@lists.community.puri.sm, 982250@bugs.debian.org,
+        985893@bugs.debian.org
+Subject: Re: [Debian-on-mobile-maintainers] Forking on MMSD
+Message-ID: <YHgDIeSPFNm6YWC+@bogon.m.sigxcpu.org>
+References: <051ae8ae27f5288d64ec6ef2bd9f77c06b829b52.camel@talbothome.com>
+ <634e0debea558b90af2cebfc99518071f1d630e9.camel@talbothome.com>
+ <YHc0wV9wjT3WhfYW@bogon.m.sigxcpu.org>
+ <d29aaa8b01d1342f9c51e1c68ea3870f6e7158f8.camel@talbothome.com>
 MIME-Version: 1.0
-In-Reply-To: <80b31814-9e41-3153-7efb-c0c2fab44feb@redhat.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
+In-Reply-To: <d29aaa8b01d1342f9c51e1c68ea3870f6e7158f8.camel@talbothome.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hi Chris,
+On Wed, Apr 14, 2021 at 02:46:30PM -0400, Chris Talbot wrote:
+> Hello,
+> 
+> On Wed, 2021-04-14 at 20:30 +0200, Guido Günther wrote:
+> > Hi,
+> > On Wed, Apr 14, 2021 at 02:21:04PM -0400, Chris Talbot wrote:
+> > > Hello All,
+> > > 
+> > > In talking to the Debian Developer Mr. Federico Ceratto, since I
+> > > have
+> > > been unable to get a hold of the Ofono Maintainers, the best course
+> > > of
+> > > action for packaging mmsd into Debian is to simply fork the project
+> > > and
+> > > submit my version upstream for packaging in Debian. My repository
+> > > is
+> > > here: https://source.puri.sm/kop316/mmsd/
+> > > 
+> > > I am sending this so the relavent parties are aware of this, and to
+> > > indicate that I no longer intend on trying to get a hold of
+> > > upstream
+> > > mmsd to try and submit patches.
+> > > 
+> > > For the Purism Employees, I am additionally asking for permission
+> > > to
+> > > keep hosting mmsd on https://source.puri.sm/ . I have been
+> > > extremely
+> > > appreciative in using it and I am happy to keep it there, but I
+> > > want to
+> > > be neighboorly and ask if it is okay for me to keep it there. If it
+> > > is
+> > > not, I completely understand and I am fine with moving it to a new
+> > > host.
+> > 
+> > Keeping your ofono version on source.puri.sm is certainly welcome!
+> > Cheers,
+> >  -- Guido
+> > 
+> > > 
+> > > If you have any questions, comments, or concern, please reach out
+> > > to
+> > > me.
+> > > 
+> > > -- 
+> > > Respectfully,
+> > > Chris Talbot
+> > > 
+> > > 
+> > > _______________________________________________
+> > > Debian-on-mobile-maintainers mailing list
+> > > Debian-on-mobile-maintainers@alioth-lists.debian.net
+> > > https://alioth-lists.debian.net/cgi-bin/mailman/listinfo/debian-on-mobile-maintainers
+> > > 
+> Thank you for allowing me to keep hosting it there.
 
-åœ¨ 2021/4/15 ä¸‹åˆ4:36, Jason Wang å†™é“:
->>>
->> Please state this explicitly at the start of the document. Existing
->> interfaces like FUSE are designed to avoid trusting userspace.
->
->
-> There're some subtle difference here. VDUSE present a device to kernel 
-> which means IOMMU is probably the only thing to prevent a malicous 
-> device.
->
->
->> Therefore
->> people might think the same is the case here. It's critical that people
->> are aware of this before deploying VDUSE with virtio-vdpa.
->>
->> We should probably pause here and think about whether it's possible to
->> avoid trusting userspace. Even if it takes some effort and costs some
->> performance it would probably be worthwhile.
->
->
-> Since the bounce buffer is used the only attack surface is the 
-> coherent area, if we want to enforce stronger isolation we need to use 
-> shadow virtqueue (which is proposed in earlier version by me) in this 
-> case. But I'm not sure it's worth to do that.
+Great. If you really want to maintain a fork i'd consider renaming to
+make that obvious (e.g. mm-mmsd) to avoid confusion within distros.
+
+> Since it is now a fork, I added Mr. Ceratto, Mr. Farraris (a-wai), and
+> Mr. Clayton Craft (craftyguy, a pmOS developer) as maintainers. Is
+> there a wish for a Purism maintainer to be added as well?
+I think sadiq and devrtz were the ones most involved so far but i think
+working via MRs is fine since that allows to establish a workflow.
+
+Cheers,
+ -- Guido
 
 
-
-So this reminds me the discussion in the end of last year. We need to 
-make sure we don't suffer from the same issues for VDUSE at least
-
-https://yhbt.net/lore/all/c3629a27-3590-1d9f-211b-c0b7be152b32@redhat.com/T/#mc6b6e2343cbeffca68ca7a97e0f473aaa871c95b
-
-Or we can solve it at virtio level, e.g remember the dma address instead 
-of depending on the addr in the descriptor ring
-
-Thanks
-
-
->
->
->>
->> Is the security situation different with vhost-vdpa? In that case it
->> seems more likely that the host kernel doesn't need to trust the
->> userspace VDUSE device.
-
+> Respectfully,
+> Chris Talbot
+> 
