@@ -2,118 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 325F2360DEF
-	for <lists+netdev@lfdr.de>; Thu, 15 Apr 2021 17:07:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 72446360E0B
+	for <lists+netdev@lfdr.de>; Thu, 15 Apr 2021 17:10:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234293AbhDOPHT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 15 Apr 2021 11:07:19 -0400
-Received: from www62.your-server.de ([213.133.104.62]:48184 "EHLO
-        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233673AbhDOPGB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 15 Apr 2021 11:06:01 -0400
-Received: from sslproxy06.your-server.de ([78.46.172.3])
-        by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92.3)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1lX3Yn-00097Y-J1; Thu, 15 Apr 2021 17:05:37 +0200
-Received: from [85.7.101.30] (helo=pc-6.home)
-        by sslproxy06.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1lX3Yn-0006uU-Cf; Thu, 15 Apr 2021 17:05:37 +0200
-Subject: Re: [PATCH v2 bpf-next] cpumap: bulk skb using netif_receive_skb_list
-To:     Lorenzo Bianconi <lorenzo@kernel.org>, bpf@vger.kernel.org
-Cc:     netdev@vger.kernel.org, lorenzo.bianconi@redhat.com,
-        davem@davemloft.net, kuba@kernel.org, ast@kernel.org,
-        brouer@redhat.com, song@kernel.org
-References: <bb627106428ea3223610f5623142c24270f0e14e.1618330734.git.lorenzo@kernel.org>
-From:   Daniel Borkmann <daniel@iogearbox.net>
-Message-ID: <252403c5-d3a7-03fb-24c3-0f328f8f8c70@iogearbox.net>
-Date:   Thu, 15 Apr 2021 17:05:36 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
+        id S234887AbhDOPIs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 15 Apr 2021 11:08:48 -0400
+Received: from fllv0015.ext.ti.com ([198.47.19.141]:39960 "EHLO
+        fllv0015.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234191AbhDOPHJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 15 Apr 2021 11:07:09 -0400
+Received: from lelv0265.itg.ti.com ([10.180.67.224])
+        by fllv0015.ext.ti.com (8.15.2/8.15.2) with ESMTP id 13FF6YCX105243;
+        Thu, 15 Apr 2021 10:06:34 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1618499194;
+        bh=TddhIByRHAUrc3d1UoVU5WLxRPZpc3YiP4ZJ9S8Yb/Y=;
+        h=From:To:CC:Subject:Date;
+        b=kJ1VUrHtST2QiXzK076lqZsCv7stGm2GSfvtrtZjeD+LoExJW5mKQh6JOitfn99KY
+         NyZNVNMYCvSGWNBXYXpj5W7B/sSLSOrVmGXYVNsRIxBr2GfT/YA/3fZohK6fWq6CxQ
+         ImTJSLvAXwl2tavaj/D64ZDQtiLRKK19xAx56E1I=
+Received: from DFLE112.ent.ti.com (dfle112.ent.ti.com [10.64.6.33])
+        by lelv0265.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 13FF6YeI018218
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Thu, 15 Apr 2021 10:06:34 -0500
+Received: from DFLE104.ent.ti.com (10.64.6.25) by DFLE112.ent.ti.com
+ (10.64.6.33) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2176.2; Thu, 15
+ Apr 2021 10:06:34 -0500
+Received: from fllv0039.itg.ti.com (10.64.41.19) by DFLE104.ent.ti.com
+ (10.64.6.25) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2176.2 via
+ Frontend Transport; Thu, 15 Apr 2021 10:06:34 -0500
+Received: from gsaswath-HP-ProBook-640-G5.dal.design.ti.com (ileax41-snat.itg.ti.com [10.172.224.153])
+        by fllv0039.itg.ti.com (8.15.2/8.15.2) with ESMTP id 13FF6TGH129989;
+        Thu, 15 Apr 2021 10:06:30 -0500
+From:   Aswath Govindraju <a-govindraju@ti.com>
+CC:     <linux-kernel@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-can@vger.kernel.org>, <netdev@vger.kernel.org>,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
+        Wolfgang Grandegger <wg@grandegger.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Chandrasekar Ramakrishnan <rcsekar@samsung.com>,
+        Kishon Vijay Abraham I <kishon@ti.com>,
+        Lokesh Vutla <lokeshvutla@ti.com>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        Grygorii Strashko <grygorii.strashko@ti.com>,
+        Aswath Govindraju <a-govindraju@ti.com>
+Subject: [PATCH 0/2] MCAN: Add support for implementing transceiver as a phy
+Date:   Thu, 15 Apr 2021 20:36:27 +0530
+Message-ID: <20210415150629.5417-1-a-govindraju@ti.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-In-Reply-To: <bb627106428ea3223610f5623142c24270f0e14e.1618330734.git.lorenzo@kernel.org>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.102.4/26141/Thu Apr 15 13:13:26 2021)
+Content-Type: text/plain
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+To:     unlisted-recipients:; (no To-header on input)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 4/13/21 6:22 PM, Lorenzo Bianconi wrote:
-> Rely on netif_receive_skb_list routine to send skbs converted from
-> xdp_frames in cpu_map_kthread_run in order to improve i-cache usage.
-> The proposed patch has been tested running xdp_redirect_cpu bpf sample
-> available in the kernel tree that is used to redirect UDP frames from
-> ixgbe driver to a cpumap entry and then to the networking stack.
-> UDP frames are generated using pkt_gen.
-> 
-> $xdp_redirect_cpu  --cpu <cpu> --progname xdp_cpu_map0 --dev <eth>
-> 
-> bpf-next: ~2.2Mpps
-> bpf-next + cpumap skb-list: ~3.15Mpps
-> 
-> Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
-> ---
-> Changes since v1:
-> - fixed comment
-> - rebased on top of bpf-next tree
-> ---
->   kernel/bpf/cpumap.c | 11 +++++------
->   1 file changed, 5 insertions(+), 6 deletions(-)
-> 
-> diff --git a/kernel/bpf/cpumap.c b/kernel/bpf/cpumap.c
-> index 0cf2791d5099..d89551a508b2 100644
-> --- a/kernel/bpf/cpumap.c
-> +++ b/kernel/bpf/cpumap.c
-> @@ -27,7 +27,7 @@
->   #include <linux/capability.h>
->   #include <trace/events/xdp.h>
->   
-> -#include <linux/netdevice.h>   /* netif_receive_skb_core */
-> +#include <linux/netdevice.h>   /* netif_receive_skb_list */
->   #include <linux/etherdevice.h> /* eth_type_trans */
->   
->   /* General idea: XDP packets getting XDP redirected to another CPU,
-> @@ -257,6 +257,7 @@ static int cpu_map_kthread_run(void *data)
->   		void *frames[CPUMAP_BATCH];
->   		void *skbs[CPUMAP_BATCH];
->   		int i, n, m, nframes;
-> +		LIST_HEAD(list);
->   
->   		/* Release CPU reschedule checks */
->   		if (__ptr_ring_empty(rcpu->queue)) {
-> @@ -305,7 +306,6 @@ static int cpu_map_kthread_run(void *data)
->   		for (i = 0; i < nframes; i++) {
->   			struct xdp_frame *xdpf = frames[i];
->   			struct sk_buff *skb = skbs[i];
-> -			int ret;
->   
->   			skb = __xdp_build_skb_from_frame(xdpf, skb,
->   							 xdpf->dev_rx);
-> @@ -314,11 +314,10 @@ static int cpu_map_kthread_run(void *data)
->   				continue;
->   			}
->   
-> -			/* Inject into network stack */
-> -			ret = netif_receive_skb_core(skb);
-> -			if (ret == NET_RX_DROP)
-> -				drops++;
-> +			list_add_tail(&skb->list, &list);
->   		}
-> +		netif_receive_skb_list(&list);
-> +
->   		/* Feedback loop via tracepoint */
->   		trace_xdp_cpumap_kthread(rcpu->map_id, n, drops, sched, &stats);
+The following series of patches add support for implementing the
+transceiver as a phy of m_can_platform driver.
 
-Given we stop counting drops with the netif_receive_skb_list(), we should then
-also remove drops from trace_xdp_cpumap_kthread(), imho, as otherwise it is rather
-misleading (as in: drops actually happening, but 0 are shown from the tracepoint).
-Given they are not considered stable API, I would just remove those to make it clear
-to users that they cannot rely on this counter anymore anyway.
+TCAN1042 has a standby signal that needs to be pulled high for
+sending/receiving messages[1]. TCAN1043 has a enable signal along with
+standby signal that needs to be pulled up for sending/receiving
+messages[2], and other combinations of the two lines can be used to put the
+transceiver in different states to reduce power consumption. On boards
+like the AM654-idk and J721e-evm these signals are controlled using gpios.
 
-Thanks,
-Daniel
+These gpios are set in phy driver, and the transceiver can be put in
+different states using phy API. The phy driver is added in the series [3].
+
+[1] - https://www.ti.com/lit/ds/symlink/tcan1042h.pdf
+[2] - https://www.ti.com/lit/ds/symlink/tcan1043-q1.pdf
+[3] - https://lore.kernel.org/patchwork/project/lkml/list/?series=495365
+
+Faiz Abbas (2):
+  dt-bindings: net: can: Document transceiver implementation as phy
+  can: m_can: Add support for transceiver as phy
+
+ .../devicetree/bindings/net/can/bosch,m_can.yaml    |  3 +++
+ drivers/net/can/m_can/m_can.c                       | 10 ++++++++++
+ drivers/net/can/m_can/m_can.h                       |  2 ++
+ drivers/net/can/m_can/m_can_platform.c              | 13 +++++++++++++
+ 4 files changed, 28 insertions(+)
+
+-- 
+2.17.1
+
