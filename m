@@ -2,165 +2,234 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7889B3611A3
-	for <lists+netdev@lfdr.de>; Thu, 15 Apr 2021 20:03:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5B2693611AE
+	for <lists+netdev@lfdr.de>; Thu, 15 Apr 2021 20:07:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234511AbhDOSDN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 15 Apr 2021 14:03:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57296 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233551AbhDOSDM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 15 Apr 2021 14:03:12 -0400
-Received: from mail-wr1-x432.google.com (mail-wr1-x432.google.com [IPv6:2a00:1450:4864:20::432])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 26876C061574
-        for <netdev@vger.kernel.org>; Thu, 15 Apr 2021 11:02:49 -0700 (PDT)
-Received: by mail-wr1-x432.google.com with SMTP id j5so23223859wrn.4
-        for <netdev@vger.kernel.org>; Thu, 15 Apr 2021 11:02:49 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=NYIOGdLOaf4FVLHeWERAY9WfDOunEwso7/Lsl/mvqgI=;
-        b=gss37SGJsIKUcFkQy1rQDwgyTbDFqoFpoUecECa6J5q+f8GNsHUTJA7d5jPdLhfyNQ
-         MqS31hgWXSriv/4DQ/ZnBZcYFXm+ozJi710dz4pLzaH8Wn5EWv1gltc7vylbWQuRPUg1
-         e3rk2xw61N94hyzRfCL79FpssWRgbrE8iI2jgvnSMpB1gu3T01WmmpHiww995IbghwQY
-         Al2Yw3OE076e3/VqdPSEc9xsbcBT1WqAeqH6vVHIvv/P5LNYRg86q9hLdzF+jEWC3Xg5
-         nrpyZn0i3oqEJfIy3z0m7PQc81UwGlcV1KvUPWJx8vfQfEIKwmvGoer8UQvjcbgVL0PB
-         aU1w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=NYIOGdLOaf4FVLHeWERAY9WfDOunEwso7/Lsl/mvqgI=;
-        b=f/xjB7H73ZR29hxW1wp/e1iNNTUxm8kiMIdm/5E4Gr5mKsJHHrmUEEPBwZBeSZsY8r
-         ryH7kvxsaoEWZJU7KEzZ9ASVIZch94EntKfolQq2iYkazAnRzsQZeHtrZerocNZg/v/u
-         m5qNLJ8Mwg1ixq7vh84ccWJIXgTc/oO650CY4/dqHiwo7MBFJWZHAV/lXS9vYT+ZW/sz
-         T2s/uJcsM8rnoKkHWcFa4YDw1Al5D2k/FIdB4/N25AB3I2aD9y8dUltQYl65ylL1V/Zk
-         i2WIYxJNmHR3/rj9VDKMTMcjvSZ/2uMGMRiZrCKZGRXHhi2tWn3m24A+crzRPDB2sce+
-         xa3w==
-X-Gm-Message-State: AOAM5302u3yxX5ic8i1soKneQN4hP9sbVm18F3NnGB/OneLM2F43shLO
-        5kHdxy7cf/zkaOC+BDq3thvGZZSH5AU=
-X-Google-Smtp-Source: ABdhPJy+Sc0KZskCbRLLSaHbepI9sW87rH0vBKS1h0mqOtlfXaXmxPylllLDAaasSotgu0Z7mksa7w==
-X-Received: by 2002:adf:f302:: with SMTP id i2mr4672049wro.423.1618509767961;
-        Thu, 15 Apr 2021 11:02:47 -0700 (PDT)
-Received: from [192.168.1.101] ([37.173.146.249])
-        by smtp.gmail.com with ESMTPSA id m2sm3725989wmq.6.2021.04.15.11.02.46
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 15 Apr 2021 11:02:47 -0700 (PDT)
-Subject: Re: [PATCH v2] net: sched: tapr: remove WARN_ON() in
- taprio_get_start_time()
-To:     Du Cheng <ducheng2@gmail.com>, Jamal Hadi Salim <jhs@mojatatu.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Jiri Pirko <jiri@resnulli.us>
-Cc:     netdev@vger.kernel.org, Shuah Khan <skhan@linuxfoundation.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        eric.dumazet@gmail.com,
-        syzbot+d50710fd0873a9c6b40c@syzkaller.appspotmail.com
-References: <20210415063914.66144-1-ducheng2@gmail.com>
- <20210415075953.83508-1-ducheng2@gmail.com>
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-Message-ID: <a4b17cd6-6f00-f760-dbda-f83ff63cae22@gmail.com>
-Date:   Thu, 15 Apr 2021 20:02:45 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.9.0
+        id S233916AbhDOSHf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 15 Apr 2021 14:07:35 -0400
+Received: from smtp.uniroma2.it ([160.80.6.16]:49318 "EHLO smtp.uniroma2.it"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S232759AbhDOSHb (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 15 Apr 2021 14:07:31 -0400
+Received: from localhost.localdomain ([160.80.103.126])
+        by smtp-2015.uniroma2.it (8.14.4/8.14.4/Debian-8) with ESMTP id 13FI719r007240
+        (version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
+        Thu, 15 Apr 2021 20:07:01 +0200
+From:   Paolo Lungaroni <paolo.lungaroni@uniroma2.it>
+To:     David Ahern <dsahern@kernel.org>, netdev@vger.kernel.org
+Cc:     Jakub Kicinski <kuba@kernel.org>,
+        Stefano Salsano <stefano.salsano@uniroma2.it>,
+        Ahmed Abdelsalam <ahabdels.dev@gmail.com>,
+        Andrea Mayer <andrea.mayer@uniroma2.it>,
+        Paolo Lungaroni <paolo.lungaroni@uniroma2.it>
+Subject: [RFC iproute2-next v2] seg6: add counters support for SRv6 Behaviors
+Date:   Thu, 15 Apr 2021 20:06:43 +0200
+Message-Id: <20210415180643.3511-1-paolo.lungaroni@uniroma2.it>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-In-Reply-To: <20210415075953.83508-1-ducheng2@gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+X-Virus-Scanned: clamav-milter 0.100.0 at smtp-2015
+X-Virus-Status: Clean
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+We introduce the "count" optional attribute for supporting counters in SRv6
+Behaviors as defined in [1], section 6. For each SRv6 Behavior instance,
+counters defined in [1] are:
 
+ - the total number of packets that have been correctly processed;
+ - the total amount of traffic in bytes of all packets that have been
+   correctly processed;
 
-On 4/15/21 9:59 AM, Du Cheng wrote:
-> There is a reproducible sequence from the userland that will trigger a WARN_ON()
-> condition in taprio_get_start_time, which causes kernel to panic if configured
-> as "panic_on_warn". Remove this WARN_ON() to prevent kernel from crashing by
-> userland-initiated syscalls.
-> 
-> Reported as bug on syzkaller:
-> https://syzkaller.appspot.com/bug?extid=d50710fd0873a9c6b40c
-> 
-> Reported-by: syzbot+d50710fd0873a9c6b40c@syzkaller.appspotmail.com
-> Signed-off-by: Du Cheng <ducheng2@gmail.com>
-> ---
-> Detailed explanation:
-> 
-> In net/sched/sched_taprio.c:999
-> The condition WARN_ON(!cycle) will be triggered if cycle == 0. Value of cycle
-> comes from sched->cycle_time, where sched is of type(struct sched_gate_list*).
-> 
-> sched->cycle_time is accumulated within `parse_taprio_schedule()` during
-> `taprio_init()`, in the following 2 ways:
-> 
-> 1. from nla_get_s64(tb[TCA_TAPRIO_ATTR_SCHED_CYCLE_TIME]);
-> 2. (if zero) from parse_sched_list(..., tb[TCA_TAPRIO_ATTR_SCHED_ENTRY_LIST], ...);
-> 
-> note: tb is a map parsed from netlink attributes provided via sendmsg() from the userland:
-> 
-> If both two attributes (TCA_TAPRIO_ATTR_SCHED_CYCLE_TIME,
-> TCA_TAPRIO_ATTR_SCHED_ENTRY_LIST) contain 0 values or are missing, this will result
-> in sched->cycle_time == 0 and hence trigger the WARN_ON(!cycle).
-> 
-> Reliable reproducable steps:
-> 1. add net device team0 
-> 2. add team_slave_0, team_slave_1
-> 3. sendmsg(struct msghdr {
-> 	.iov = struct nlmsghdr {
-> 		.type = RTM_NEWQDISC,
-> 	}
-> 	struct tcmsg {
-> 		.tcm_ifindex = ioctl(SIOCGIFINDEX, "team0"),
-> 		.nlattr[] = {
-> 			TCA_KIND: "taprio",
-> 			TCA_OPTIONS: {
-> 				.nlattr = {
-> 					TCA_TAPRIO_ATTR_PRIOMAP: ...,
-> 					TCA_TAPRIO_ATTR_SCHED_ENTRY_LIST: {0},
-> 					TCA_TAPRIO_ATTR_SCHED_CLICKID: 0,
-> 				}
-> 			}
-> 		}
-> 	}
-> }
-> 
-> Callstack:
-> 
-> parse_taprio_schedule()
-> taprio_change()
-> taprio_init()
-> qdisc_create()
-> tc_modify_qdisc()
-> rtnetlink_rcv_msg()
-> ...
-> sendmsg()
-> 
-> These steps are extracted from syzkaller reproducer:
-> https://syzkaller.appspot.com/text?tag=ReproC&x=15727cf1900000
-> 
->  net/sched/sch_taprio.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/net/sched/sch_taprio.c b/net/sched/sch_taprio.c
-> index 8287894541e3..5f2ff0f15d5c 100644
-> --- a/net/sched/sch_taprio.c
-> +++ b/net/sched/sch_taprio.c
-> @@ -996,7 +996,7 @@ static int taprio_get_start_time(struct Qdisc *sch,
->  	 * something went really wrong. In that case, we should warn about this
->  	 * inconsistent state and return error.
->  	 */
-> -	if (WARN_ON(!cycle))
-> +	if (!cycle)
->  		return -EFAULT;
->  
->  	/* Schedule the start time for the beginning of the next
-> 
+In addition, we introduce a new counter that counts the number of packets
+that have NOT been properly processed (i.e. errors) by an SRv6 Behavior
+instance.
 
+Each SRv6 Behavior instance can be configured, at the time of its creation,
+to make use of counters specifing the "count" attribute as follows:
 
-NACK
+ $ ip -6 route add 2001:db8::1 encap seg6local action End count dev eth0
 
-I already gave feedback in v1 why this fix is not correct.
+per-behavior counters can be shown by adding "-s" to the iproute2 command
+line, i.e.:
+
+ $ ip -s -6 route show 2001:db8::1
+ 2001:db8::1 encap seg6local action End packets 0 bytes 0 errors 0 dev eth0
+
+[1] https://www.rfc-editor.org/rfc/rfc8986.html#name-counters
+
+Signed-off-by: Andrea Mayer <andrea.mayer@uniroma2.it>
+Signed-off-by: Paolo Lungaroni <paolo.lungaroni@uniroma2.it>
+---
+ include/uapi/linux/seg6_local.h | 30 +++++++++++++
+ ip/iproute_lwtunnel.c           | 80 ++++++++++++++++++++++++++++++++-
+ 2 files changed, 109 insertions(+), 1 deletion(-)
+
+diff --git a/include/uapi/linux/seg6_local.h b/include/uapi/linux/seg6_local.h
+index bb5c8ddf..85955514 100644
+--- a/include/uapi/linux/seg6_local.h
++++ b/include/uapi/linux/seg6_local.h
+@@ -27,6 +27,7 @@ enum {
+ 	SEG6_LOCAL_OIF,
+ 	SEG6_LOCAL_BPF,
+ 	SEG6_LOCAL_VRFTABLE,
++	SEG6_LOCAL_COUNTERS,
+ 	__SEG6_LOCAL_MAX,
+ };
+ #define SEG6_LOCAL_MAX (__SEG6_LOCAL_MAX - 1)
+@@ -78,4 +79,33 @@ enum {
+ 
+ #define SEG6_LOCAL_BPF_PROG_MAX (__SEG6_LOCAL_BPF_PROG_MAX - 1)
+ 
++/* SRv6 Behavior counters are encoded as netlink attributes guaranteeing the
++ * correct alignment.
++ * Each counter is identified by a different attribute type (i.e.
++ * SEG6_LOCAL_CNT_PACKETS).
++ *
++ * - SEG6_LOCAL_CNT_PACKETS: identifies a counter that counts the number of
++ *   packets that have been CORRECTLY processed by an SRv6 Behavior instance
++ *   (i.e., packets that generate errors or are dropped are NOT counted).
++ *
++ * - SEG6_LOCAL_CNT_BYTES: identifies a counter that counts the total amount
++ *   of traffic in bytes of all packets that have been CORRECTLY processed by
++ *   an SRv6 Behavior instance (i.e., packets that generate errors or are
++ *   dropped are NOT counted).
++ *
++ * - SEG6_LOCAL_CNT_ERRORS: identifies a counter that counts the number of
++ *   packets that have NOT been properly processed by an SRv6 Behavior instance
++ *   (i.e., packets that generate errors or are dropped).
++ */
++enum {
++	SEG6_LOCAL_CNT_UNSPEC,
++	SEG6_LOCAL_CNT_PAD,		/* pad for 64 bits values */
++	SEG6_LOCAL_CNT_PACKETS,
++	SEG6_LOCAL_CNT_BYTES,
++	SEG6_LOCAL_CNT_ERRORS,
++	__SEG6_LOCAL_CNT_MAX,
++};
++
++#define SEG6_LOCAL_CNT_MAX (__SEG6_LOCAL_CNT_MAX - 1)
++
+ #endif
+diff --git a/ip/iproute_lwtunnel.c b/ip/iproute_lwtunnel.c
+index 566fc7ea..6edffd9e 100644
+--- a/ip/iproute_lwtunnel.c
++++ b/ip/iproute_lwtunnel.c
+@@ -266,6 +266,50 @@ static void print_encap_bpf_prog(FILE *fp, struct rtattr *encap,
+ 	}
+ }
+ 
++static void print_seg6_local_counters(FILE *fp, struct rtattr *encap)
++{
++	__u64 packets = 0, bytes = 0, errors = 0;
++	struct rtattr *tb[SEG6_LOCAL_CNT_MAX + 1];
++
++	parse_rtattr_nested(tb, SEG6_LOCAL_CNT_MAX, encap);
++
++	if (is_json_context())
++		open_json_object("stats64");
++
++	if (tb[SEG6_LOCAL_CNT_PACKETS]) {
++		packets = rta_getattr_u64(tb[SEG6_LOCAL_CNT_PACKETS]);
++		if (is_json_context()) {
++			print_u64(PRINT_JSON, "packets", NULL, packets);
++		} else {
++			print_string(PRINT_FP, NULL, "%s ", "packets");
++			print_num(fp, 1, packets);
++		}
++	}
++
++	if (tb[SEG6_LOCAL_CNT_BYTES]) {
++		bytes = rta_getattr_u64(tb[SEG6_LOCAL_CNT_BYTES]);
++		if (is_json_context()) {
++			print_u64(PRINT_JSON, "bytes", NULL, bytes);
++		} else {
++			print_string(PRINT_FP, NULL, "%s ", "bytes");
++			print_num(fp, 1, bytes);
++		}
++	}
++
++	if (tb[SEG6_LOCAL_CNT_ERRORS]) {
++		errors = rta_getattr_u64(tb[SEG6_LOCAL_CNT_ERRORS]);
++		if (is_json_context()) {
++			print_u64(PRINT_JSON, "errors", NULL, errors);
++		} else {
++			print_string(PRINT_FP, NULL, "%s ", "errors");
++			print_num(fp, 1, errors);
++		}
++	}
++
++	if (is_json_context())
++		close_json_object();
++}
++
+ static void print_encap_seg6local(FILE *fp, struct rtattr *encap)
+ {
+ 	struct rtattr *tb[SEG6_LOCAL_MAX + 1];
+@@ -325,6 +369,9 @@ static void print_encap_seg6local(FILE *fp, struct rtattr *encap)
+ 
+ 	if (tb[SEG6_LOCAL_BPF])
+ 		print_encap_bpf_prog(fp, tb[SEG6_LOCAL_BPF], "endpoint");
++
++	if (tb[SEG6_LOCAL_COUNTERS] && show_stats)
++		print_seg6_local_counters(fp, tb[SEG6_LOCAL_COUNTERS]);
+ }
+ 
+ static void print_encap_mpls(FILE *fp, struct rtattr *encap)
+@@ -862,13 +909,39 @@ static int lwt_parse_bpf(struct rtattr *rta, size_t len,
+ 	return 0;
+ }
+ 
++/* for the moment, counters are always initialized to zero by the kernel; so we
++ * do not expect to parse any argument here.
++ */
++static int seg6local_fill_counters(struct rtattr *rta, size_t len, int attr)
++{
++	struct rtattr *nest;
++	int ret;
++
++	nest = rta_nest(rta, len, attr);
++
++	ret = rta_addattr64(rta, len, SEG6_LOCAL_CNT_PACKETS, 0);
++	if (ret < 0)
++		return ret;
++
++	ret = rta_addattr64(rta, len, SEG6_LOCAL_CNT_BYTES, 0);
++	if (ret < 0)
++		return ret;
++
++	ret = rta_addattr64(rta, len, SEG6_LOCAL_CNT_ERRORS, 0);
++	if (ret < 0)
++		return ret;
++
++	rta_nest_end(rta, nest);
++	return 0;
++}
++
+ static int parse_encap_seg6local(struct rtattr *rta, size_t len, int *argcp,
+ 				 char ***argvp)
+ {
+ 	int segs_ok = 0, hmac_ok = 0, table_ok = 0, vrftable_ok = 0;
++	int action_ok = 0, srh_ok = 0, bpf_ok = 0, counters_ok = 0;
+ 	int nh4_ok = 0, nh6_ok = 0, iif_ok = 0, oif_ok = 0;
+ 	__u32 action = 0, table, vrftable, iif, oif;
+-	int action_ok = 0, srh_ok = 0, bpf_ok = 0;
+ 	struct ipv6_sr_hdr *srh;
+ 	char **argv = *argvp;
+ 	int argc = *argcp;
+@@ -932,6 +1005,11 @@ static int parse_encap_seg6local(struct rtattr *rta, size_t len, int *argcp,
+ 			if (!oif)
+ 				exit(nodev(*argv));
+ 			ret = rta_addattr32(rta, len, SEG6_LOCAL_OIF, oif);
++		} else if (strcmp(*argv, "count") == 0) {
++			if (counters_ok++)
++				duparg2("count", *argv);
++			ret = seg6local_fill_counters(rta, len,
++						      SEG6_LOCAL_COUNTERS);
+ 		} else if (strcmp(*argv, "srh") == 0) {
+ 			NEXT_ARG();
+ 			if (srh_ok++)
+-- 
+2.20.1
 
