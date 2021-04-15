@@ -2,110 +2,152 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7509C35FEBA
-	for <lists+netdev@lfdr.de>; Thu, 15 Apr 2021 02:03:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7BAF235FEC1
+	for <lists+netdev@lfdr.de>; Thu, 15 Apr 2021 02:16:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230512AbhDOADg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 14 Apr 2021 20:03:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46732 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230308AbhDOADf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 14 Apr 2021 20:03:35 -0400
-Received: from mail-yb1-xb32.google.com (mail-yb1-xb32.google.com [IPv6:2607:f8b0:4864:20::b32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E229CC061574;
-        Wed, 14 Apr 2021 17:03:11 -0700 (PDT)
-Received: by mail-yb1-xb32.google.com with SMTP id p3so3467515ybk.0;
-        Wed, 14 Apr 2021 17:03:11 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=8KXU4sRXR90gaVbh329XNuKBTk28xufevci9teckJjc=;
-        b=H0cQHG0RdOXyVmWfIy14AZBjpZjrwC+4/EMeVZxQHqsR3HRTm5CB0W5OP2HBXWDh+6
-         oUkpIz+kEwoOlFvyMc8XsgCWVIKgD4XwKYdainmbFBPkvbMm73+AM5NvZuK+WAG4HX6f
-         YlQzXKSQuj0lxM9dv6KTYWfxPRJ38tslS1sXHrP6pynqq0ttfkVd1LFjfAi2aYgMRIaH
-         gVs9Dd+4giHPY9sV2bXNk+Xih93jcw9OYa0iygss7R0UiYOZE6I4dQ+JE/Zg6+1fpEGs
-         Ik99bdhIvMnnEdcpxmwX6yxeDmD9jDeKXaHYZkOqHmm+8wJgCn21JyntvX5n6w2CST5Q
-         Px6w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=8KXU4sRXR90gaVbh329XNuKBTk28xufevci9teckJjc=;
-        b=Lucxfn2jkASDGq+DlW3tU7Ohwfk2EhduydlSnROxIZwiDFlnFqTc5RmODhalEXtSxU
-         BOvaQtfpnMde9anQdVvQ9PflRdwhGc6TflyYvmTxZYK4dgpR04VU44yISgkOr+9on2aq
-         BW0tfj081BsNwKFgotHKhTmWHjDrHHGR99gay1EW1EYM4H5PJ73bl2SkGSlnGspu7YAo
-         D+PwdYzRkRCG0MgWCfGf+CUWMb83jSlJ9mkfOS7eartuOHLS8zCjKwSPlL/ExBmCjXvJ
-         bTCKuexx46MkM98vDDakkzbmN03aSVF1/jwxR+1IbWXzC4/1WL7esJuFLj6GuMmElaje
-         V0fw==
-X-Gm-Message-State: AOAM531vnJecbVJj/vnSBD0xlTrhar9tSoIdv7DKh9gKGiu+gXtZbymO
-        eKXu6az2KtKEoGfFxAxnC+hv/nqCgAS8dxaJ4o4=
-X-Google-Smtp-Source: ABdhPJylOOkDeMO9j3vMleRi9vg9u4aYQ8GJZZNc/Nh0ICvEuSSRTJvZGE+HBlyn/BLT+qcZWE/tAuXo6hQEQS5IG8c=
-X-Received: by 2002:a25:5b55:: with SMTP id p82mr773235ybb.510.1618444991240;
- Wed, 14 Apr 2021 17:03:11 -0700 (PDT)
-MIME-Version: 1.0
-References: <20210414200146.2663044-1-andrii@kernel.org> <20210414200146.2663044-14-andrii@kernel.org>
- <00d978e4cf484fecb907a7035201c975@AcuMS.aculab.com>
-In-Reply-To: <00d978e4cf484fecb907a7035201c975@AcuMS.aculab.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Wed, 14 Apr 2021 17:03:00 -0700
-Message-ID: <CAEf4BzaM8dh6KvTu3TN2vRdpPVWdgWTd5uEF+z05cKQJMCJ3Ag@mail.gmail.com>
-Subject: Re: [PATCH bpf-next 13/17] selftests/bpf: use -O0 instead of -Og in
- selftests builds
-To:     David Laight <David.Laight@aculab.com>
-Cc:     Andrii Nakryiko <andrii@kernel.org>,
-        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "ast@fb.com" <ast@fb.com>,
-        "daniel@iogearbox.net" <daniel@iogearbox.net>,
-        "kernel-team@fb.com" <kernel-team@fb.com>
+        id S231231AbhDOAMt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 14 Apr 2021 20:12:49 -0400
+Received: from out5-smtp.messagingengine.com ([66.111.4.29]:46177 "EHLO
+        out5-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S229889AbhDOAMs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 14 Apr 2021 20:12:48 -0400
+Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
+        by mailout.nyi.internal (Postfix) with ESMTP id E78665C012F;
+        Wed, 14 Apr 2021 20:12:25 -0400 (EDT)
+Received: from mailfrontend2 ([10.202.2.163])
+  by compute4.internal (MEProxy); Wed, 14 Apr 2021 20:12:25 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=talbothome.com;
+         h=message-id:subject:from:to:cc:date:in-reply-to:references
+        :content-type:mime-version:content-transfer-encoding; s=fm2; bh=
+        vCNx4A6yZ2nFYr+/iSAE2unNH1yQCaYi3B5zUjWAn9U=; b=4KA2UGiPc6cFPCoU
+        GhdPHHBVyiZmbS5GDYAHp4Kcxo2oW+ktokviE2ia4Gr4PvD0Kdx97Af1yKRotS03
+        aGDK7fWu7Pz5BlpRDNNlgHGv7vXcLReTtijfZ4bvIwsVbKM2+5jnhfPIQpyXkO+n
+        IJgYrYX1/IKaftwqpYbGLnTkbSPR6FsEAnidqsIK+ukiahiTTWrHFcy0hf+QZcaT
+        6iTgz83NTLMUaJBA7iLZnUgGUbpv/Fxfei2+tlA/qWSzWnjhgt6xwnwPswa+Lpyu
+        7HVvm06qy1I91e3Lo3TIEqgmVatffdVetg4wgGzhDrUjcG5BWHTKPXv2beUV73JE
+        VFZWdA==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:content-transfer-encoding:content-type
+        :date:from:in-reply-to:message-id:mime-version:references
+        :subject:to:x-me-proxy:x-me-proxy:x-me-sender:x-me-sender
+        :x-sasl-enc; s=fm2; bh=vCNx4A6yZ2nFYr+/iSAE2unNH1yQCaYi3B5zUjWAn
+        9U=; b=iGu15CEStb1bTemlDVmIETXSx0Pvb7gQQiVxs+Ei5wha/aRGTCTTw5Ruh
+        bpB+bXo71/M0NQpEbba56/iyFHLGV0rkSGuFwizR37HYNkqnjxPKe/cfwhE8oqvm
+        yCZRtlIR3FbLzKHs3IdiJTp9DRK05KwENf7tNGwlc9TYVfjlzwI/uttFLuVDcjEG
+        0wgZK8fYxystsgiwGNOLzg+WUm2l4+1qoFQS9KJtMKLiTARxjbag+Pa9wlSxsi84
+        jT2hUB5/rjxgiGwLhc+DczbjJrop8EonXQMGNPlApchWOnIRS5IKQTk4jMtxvK3Y
+        wgCyUMNPndyJx+1e4mOwsnSMm01fg==
+X-ME-Sender: <xms:6IR3YFnVWQxkR_9_JJJfJqWLuNExti3JgUulKe18gve-IwR8hQHQFQ>
+    <xme:6IR3YA3p7xusOy4plpnYvRh9Y9VX3pa56Q0uHzcS0uzfFsfpQZC717K3lU-RiLJjq
+    Y2ZnYrgVGT1-9d8fA>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduledrudelvddgvdelucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
+    cujfgurhepkffuhffvffgjfhgtfggggfesthekredttderjeenucfhrhhomhepvehhrhhi
+    shcuvfgrlhgsohhtuceotghhrhhishesthgrlhgsohhthhhomhgvrdgtohhmqeenucggtf
+    frrghtthgvrhhnpeffhffhvdfgheejffegveeilefffeegheefhedtvefgfeeuteeuffdv
+    jeekudegteenucfkphepjedvrdelhedrvdegfedrudehieenucevlhhushhtvghrufhiii
+    gvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpegthhhrihhssehtrghlsghothhhohhm
+    vgdrtghomh
+X-ME-Proxy: <xmx:6IR3YLpA5IXC9Gtaqlyw78eLtYGlfRqBqGuLYG3u20qF1bajaCmNyg>
+    <xmx:6IR3YFkXslB7rkD_m2HrJC3-K9F74YDa4PKkgTKUhgrF3IrUb8I3Gg>
+    <xmx:6IR3YD2rHU1NVzdm5Jn1TvJTrDj8DYwUQLWw44dOBp8aNS-FrfE61Q>
+    <xmx:6YR3YD85HrLwLELIjCf5be-ZmqPxzIn0MhgecDaNVhv7Uilo3voQQg>
+Received: from SpaceballstheLaptop.talbothome.com (unknown [72.95.243.156])
+        by mail.messagingengine.com (Postfix) with ESMTPA id 51743108005C;
+        Wed, 14 Apr 2021 20:12:23 -0400 (EDT)
+Message-ID: <0acefd2501e228328147911c7ba878b2fcd0cf3b.camel@talbothome.com>
+Subject: Re: Bug#985893: Forking on MMSD
+From:   Chris Talbot <chris@talbothome.com>
+To:     Wookey <wookey@wookware.org>,
+        Marius Gripsgard <marius@ubports.com>, 985893@bugs.debian.org
+Cc:     ofono@ofono.org, netdev@vger.kernel.org,
+        debian-on-mobile-maintainers@alioth-lists.debian.net,
+        librem-5-dev@lists.community.puri.sm, 982250@bugs.debian.org
+Date:   Wed, 14 Apr 2021 20:12:21 -0400
+In-Reply-To: <20210414220948.GL11215@mail.wookware.org>
+References: <051ae8ae27f5288d64ec6ef2bd9f77c06b829b52.camel@talbothome.com>
+         <634e0debea558b90af2cebfc99518071f1d630e9.camel@talbothome.com>
+         <d01f59bbfdc3c8d5d33fa7fca12ec5e8fe74b837.camel@talbothome.com>
+         <9acefe05-29ab-4cb9-8fef-982eb9deb79a@ubports.com>
+         <20210414220948.GL11215@mail.wookware.org>
 Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.38.3-1 
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Apr 14, 2021 at 3:15 PM David Laight <David.Laight@aculab.com> wrote:
->
-> From: Andrii Nakryiko
-> > Sent: 14 April 2021 21:02
-> >
-> > While -Og is designed to work well with debugger, it's still inferior to -O0
-> > in terms of debuggability experience. It will cause some variables to still be
-> > inlined, it will also prevent single-stepping some statements and otherwise
-> > interfere with debugging experience. So switch to -O0 which turns off any
-> > optimization and provides the best debugging experience.
->
-> Surely the selftests need to use the normal compiler options
-> so the compiler is generating the same type of code.
-> Otherwise you are likely to miss out some instructions completely.
->
+Hello!
 
-I don't know, it's not like I'm trying to validate that GCC is
-generating a valid assembly. And there is almost nothing in libbpf and
-selftests that relies on delicate timing, so I don't think we should
-worry about changing timing characteristics. And there is nothing
-performance-critical in libbpf logic itself either, for the most part.
-So I don't see much harm in running selftests in debug mode.
+On Wed, 2021-04-14 at 23:09 +0100, Wookey wrote:
+> On 2021-04-14 18:39 +0000, Marius Gripsgard wrote:
+> 
+> > I would really like to avoid a fork, it's not worth doing dual
+> > work. Did you ping ofono devs at irc?  Also have you sent upstream
+> > patches? If a fork is the way you want to go, you will need to
+> > rename it as the existing packages need to follow upstream, we
+> > can't
+> > just rip an existing packages away from upstream.
+> 
+> Debian can package mmsd with whatever set of patches it sees fit. If
+> the end result is ChrisT's version, with Modem Manager support, then
+> I
+> think that's reasonable. mmsd is not currently packaged in debian so
+> I
+> don't think a rename is required. Ultimately it's up to maintainers
+> to
+> choose which upstream is most appropriate. There used to be only one,
+> but increasingly one gets a choice of varying degrees of active
+> maintenance. (This can be a huge pain making life quite awkward for
+> maintainers, and I find Debian is the only org trying to unify a
+> diverse set of versions where a load of people have scratched their
+> own itch and then just left it like that.)
+> 
 
-> For normal code I actually prefer using -O2 when dubugging.
-> If/when you need to look at the generated code you can see
-> the wood for the trees, with -O0 the code is typically
-> full of memory read/write to/from the stack.
+At this point, fork of mmsd should still work with ofono. I have not
+disturbed anything ofono related, and have made several improvements to
+the core that should benefit ofono too.
 
-Whenever I try debugging anything in selftest+libbpf+bpftool, if any
-of those components are built with -O2, it makes it almost impossible
-to figure anything out in debugger. So I always go back and force all
-of them to -O0. So that's what this patch is doing, so that I and
-others don't have to go through this every single time we need to
-debug something.
+I would in addition welcome someone from ofono to work with me! I would
+rather mmsd work with both stacks (as we all benefit from that). The
+Mobian and PostmarketOS developers have welcomed me, and I am happy to
+work with you all too. I joined the UBports matrix channel and
+introduced myself (in addition to asking how you all contact the ofono
+folks), you are free to reach out to me.
 
->
-> About the only annoying thing is tail-calls.
-> They can get confusing.
->
->         David
->
-> -
-> Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
-> Registration No: 1397386 (Wales)
->
+> Ultimately we want the best functionality for our users, and if the
+> old upstream has been inactive for years then using this new,
+> maintained version of mmsd may well be the best course. Efforts
+> should
+> continue to either give Chris access to the original repo or
+> officially declare it 'under new management' so that there is a
+> canonical place for the codebase, but in the meantime it's OK for
+> debian to have a big patch.
+> 
+
+I admittedly do not know who to contact for repo access? I asked on the
+Kernelnewbies IRC/Mailing list (as I am a bit of a kernel newbie), but
+I did not hear anything back.
+
+I am not trying to start a fork because I want to, and if you look at
+Ofono's ML history, you can see that I have tried a lot to work with
+upstream. I am starting a fork because I feel this is the only way I
+can really move forward in getting MMS working. Without MMS,
+unfortunately the Pinephone I have is little more than a toy with me,
+and I put a lot of work into getting MMS working on the Modem Manager
+stack.
+
+> Versioning could be tricky in some situations, but SFACT the ofono
+> mmsd is just 0.0 so the debian version can be 0.0.something and
+> remain
+> compatible with a shift back to that repo at some point.
+> 
+> Wookey
+
+Thank you!
+
+Respectfully,
+Chris Talbot
+
