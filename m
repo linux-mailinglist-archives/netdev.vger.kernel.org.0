@@ -2,79 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 71867360FD9
-	for <lists+netdev@lfdr.de>; Thu, 15 Apr 2021 18:07:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7E9D0360FEB
+	for <lists+netdev@lfdr.de>; Thu, 15 Apr 2021 18:12:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234071AbhDOQIE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 15 Apr 2021 12:08:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60388 "EHLO
+        id S233869AbhDOQMb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 15 Apr 2021 12:12:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33142 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233772AbhDOQID (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 15 Apr 2021 12:08:03 -0400
-Received: from mail-pl1-x62b.google.com (mail-pl1-x62b.google.com [IPv6:2607:f8b0:4864:20::62b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 833EEC061574;
-        Thu, 15 Apr 2021 09:07:40 -0700 (PDT)
-Received: by mail-pl1-x62b.google.com with SMTP id z22so7207608plo.3;
-        Thu, 15 Apr 2021 09:07:40 -0700 (PDT)
+        with ESMTP id S231726AbhDOQMa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 15 Apr 2021 12:12:30 -0400
+Received: from mail-pf1-x432.google.com (mail-pf1-x432.google.com [IPv6:2607:f8b0:4864:20::432])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D1229C061574;
+        Thu, 15 Apr 2021 09:12:07 -0700 (PDT)
+Received: by mail-pf1-x432.google.com with SMTP id m11so16370993pfc.11;
+        Thu, 15 Apr 2021 09:12:07 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=PVJw4038PgUmxGcieIbiJS2zotfnoqq1wvHFzGjgM0w=;
-        b=jnOs+huCcoazzZ4svfGsQIw3+lWgfkINtTakGNirUOEAiTjPf2QqVTD15FYv6vXKES
-         7EbUxQp1hyK8SY3Yvqm713MyjUs0TouxcWx/gYiRIalLqioSh/TyraIVgJAI5CtBWfvU
-         AnB+Q1R1yRhEWc3hSwcS7bMoeyeeB/ECfF2A/rhjN0nl363M5dMuBCwHKz/uDjKkYSfu
-         GDvpajNJedQAtob9avxJnowAa2pZ3K9iJZYwMNuzDOu1o3Ex6E0NCh3QhAhqHS0OgRcM
-         FTFR3MOBhF17H/1T2nQ/GFX9tyRLhlp05IuNmPjKFJ6bjRSzfTqmafwwKd966t3pzxJF
-         ar5g==
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=bn/FEKI0DUcK5gkZn0WmOvf0JUUXiN80J83XcZr+ujk=;
+        b=oOryQzR8VKrd/DGXx1BLcg3o4LZfWGsbKTLCDevZUMPa/eoEfnyeoOj10CSj6Orq7g
+         Hoz7O94Dsf8HW0ZvqizYs59gA60XmvhdhIQi/Do9TKcOmBc2e7SBL1Xg6KmDppX88JvH
+         LG1/H+XDcRPMJdIV4yadeBdksBDW7CiJIMJ77Cqq5W+d2iqlLrwJOQmHMxhWxNG4QggQ
+         hVUsap79lIM2/UB7g+58N9EawerM73hZKTnnDYJpKxUY6wmAp66nUZUacWRh0Uv1rgh3
+         rv7K0/TfLrl4V1VWw/kLzvkQGaP/kDiTSxGJeN0uaoF2KYkmaTsA+mC4dx2Eg9B4jnPW
+         QKxg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=PVJw4038PgUmxGcieIbiJS2zotfnoqq1wvHFzGjgM0w=;
-        b=JH5GewQZYbjNoorv7jBCcP8q6Lk122zMu734eq+shE78A8GImU1mN6d7sbg8iB2Z/N
-         XYCkDizCYEgHoXJIEFeTEs6McEozFIrRWfXpLCR23FBzw4FGNx8BzqmcKnv9h99MQWku
-         YbbIOdJb+Vk3nfR2hu+t7Ug3/GhZDxVisbTUM9ReJZbz1jcNzn+8YR5kKJjPA5XzoB/c
-         HVEKkPWJcyGKcVn6zkyuoNxwu/bS3yxPAweuNSmgQh9vtYhSMPHbGK3L+YmGPJ6j0w43
-         9xfIdlIDwYoEtjzyp0L5HXfK7+aFR2wA1Htoj1k/xir1Ci6ZfyNGNrUGq2dfaO06Z1H+
-         ATkw==
-X-Gm-Message-State: AOAM532+9YYGvLWEPAHvsnDAeIudQjy3DCZ7l2DPawNhLgGhSe5lT29M
-        ref7zpNZcWznsVZTx5r8hhc=
-X-Google-Smtp-Source: ABdhPJxgIQCRPI6NGcThHQo+DmiL4gFtzKT48engDAqiP/S4Yeb6lLDowbSM5cSu+3OxuXrJ5mBj6g==
-X-Received: by 2002:a17:902:8c92:b029:e8:fa73:ad22 with SMTP id t18-20020a1709028c92b02900e8fa73ad22mr4464291plo.66.1618502860137;
-        Thu, 15 Apr 2021 09:07:40 -0700 (PDT)
-Received: from skbuf (5-12-16-165.residential.rdsnet.ro. [5.12.16.165])
-        by smtp.gmail.com with ESMTPSA id k13sm2918012pji.14.2021.04.15.09.07.34
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 15 Apr 2021 09:07:39 -0700 (PDT)
-Date:   Thu, 15 Apr 2021 19:07:29 +0300
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Tobias Waldekranz <tobias@waldekranz.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, andrew@lunn.ch,
-        vivien.didelot@gmail.com, f.fainelli@gmail.com,
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=bn/FEKI0DUcK5gkZn0WmOvf0JUUXiN80J83XcZr+ujk=;
+        b=jtT6SAqbnAAAD5FqKjrUsi6NrpaUSA7Qm7ai1NWd3JH9d0kEA2kgrFXBP9zxIuAMq6
+         GrLt9VdGtIo8sqartRQtYuj5MNI4L0JN5ki++2XfX7B4A+rW4ID4LbFkYtloqBwWasQf
+         JlaXmTRLBlRmeeYBgN+MxlmjOgGvb794hq+iR4/F0aaYhif8hcDD1lhuAAkqevY87/WW
+         iYVdK8W6EEOD7/GdVoyfOixLL/0GJ5RK1yUwJ7vdUDghpn02fIySBXe0MM8hz35jy8z4
+         Zn6OrnMRIRh2mgDahfnVJ1vX+vxHpNHCRp57ulbJDhgAa8ZTqRniiZo1sseN+bdLTagG
+         b9Zg==
+X-Gm-Message-State: AOAM533DNsrLH4sisvOGlvyFYLN2uF6nk7Jb+eGhTf5PYrdRNaEhZMAr
+        3qscZO3DTTEE9ZUnDOHaPVPIZEsqg0I=
+X-Google-Smtp-Source: ABdhPJwGrQ5hvRYo21bFnDFFBPZu++M38/fB/VpYR9CzwRR8Pd0EHk6mw0VY/hEoLCby8bhep1RuAw==
+X-Received: by 2002:a63:dc49:: with SMTP id f9mr4059346pgj.361.1618503126938;
+        Thu, 15 Apr 2021 09:12:06 -0700 (PDT)
+Received: from [10.230.29.202] ([192.19.223.252])
+        by smtp.gmail.com with ESMTPSA id m11sm3083469pgs.4.2021.04.15.09.12.04
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 15 Apr 2021 09:12:06 -0700 (PDT)
+Subject: Re: [PATCH v2 net-next 1/5] net: dsa: mv88e6xxx: Mark chips with
+ undocumented EDSA tag support
+To:     Tobias Waldekranz <tobias@waldekranz.com>, davem@davemloft.net,
+        kuba@kernel.org
+Cc:     andrew@lunn.ch, vivien.didelot@gmail.com, olteanv@gmail.com,
         netdev@vger.kernel.org, robh+dt@kernel.org,
         devicetree@vger.kernel.org
-Subject: Re: [PATCH v2 net-next 3/5] net: dsa: Only notify CPU ports of
- changes to the tag protocol
-Message-ID: <20210415160729.ilaalnejzvcxfifz@skbuf>
 References: <20210415092610.953134-1-tobias@waldekranz.com>
- <20210415092610.953134-4-tobias@waldekranz.com>
+ <20210415092610.953134-2-tobias@waldekranz.com>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+Message-ID: <81d2b72d-7d77-c668-9102-c0d19be54d74@gmail.com>
+Date:   Thu, 15 Apr 2021 09:12:03 -0700
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Firefox/78.0 Thunderbird/78.9.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210415092610.953134-4-tobias@waldekranz.com>
+In-Reply-To: <20210415092610.953134-2-tobias@waldekranz.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Apr 15, 2021 at 11:26:08AM +0200, Tobias Waldekranz wrote:
-> Previously DSA ports were also included, on the assumption that the
-> protocol used by the CPU port had to the matched throughout the entire
-> tree.
+
+
+On 4/15/2021 2:26 AM, Tobias Waldekranz wrote:
+> All devices are capable of using regular DSA tags. Support for
+> Ethertyped DSA tags sort into three categories:
 > 
-> As there is not yet any consumer in need of this, drop the call.
+> 1. No support. Older chips fall into this category.
+> 
+> 2. Full support. Datasheet explicitly supports configuring the CPU
+>    port to receive FORWARDs with a DSA tag.
+> 
+> 3. Undocumented support. Datasheet lists the configuration from
+>    category 2 as "reserved for future use", but does empirically
+>    behave like a category 2 device.
+> 
+> So, instead of listing the one true protocol that should be used by a
+> particular chip, specify the level of support for EDSA (support for
+> regular DSA is implicit on all chips). As before, we use EDSA for all
+> chips that fully supports it.
+> 
+> In upcoming changes, we will use this information to support
+> dynamically changing the tag protocol.
 > 
 > Signed-off-by: Tobias Waldekranz <tobias@waldekranz.com>
-> ---
 
-Reviewed-by: Vladimir Oltean <olteanv@gmail.com>
+Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+-- 
+Florian
