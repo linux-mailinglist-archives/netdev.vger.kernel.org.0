@@ -2,121 +2,187 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 862A8361135
-	for <lists+netdev@lfdr.de>; Thu, 15 Apr 2021 19:38:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0746C361139
+	for <lists+netdev@lfdr.de>; Thu, 15 Apr 2021 19:40:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234428AbhDORiY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 15 Apr 2021 13:38:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51856 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233395AbhDORiY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 15 Apr 2021 13:38:24 -0400
-Received: from mail-pf1-x432.google.com (mail-pf1-x432.google.com [IPv6:2607:f8b0:4864:20::432])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8CA38C061574
-        for <netdev@vger.kernel.org>; Thu, 15 Apr 2021 10:38:00 -0700 (PDT)
-Received: by mail-pf1-x432.google.com with SMTP id i190so16527932pfc.12
-        for <netdev@vger.kernel.org>; Thu, 15 Apr 2021 10:38:00 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=A+x0EU4BTEonaGnIhnl1qOCN28fEaN5Zv4Usct7ILtU=;
-        b=DFoEmQQ1h0gkzWLFHb2ZpOf7WaqMtvEiY0Jl3bTUp8iXF7/tf3Q8VtoNYzNcTvOQom
-         uK8Np0pvcM53vBxMlk4lHDROulPD/plKlgS/kwo+RBpEdg0nJ0fOggf/6qKx9E3sWRRB
-         JBXUo4N8lMXnL+M0gq29gxtktTDfiyRw0gqAwZfNB+xVq/9pEzaRph9pQmqNIHGvhhQc
-         StEArV63W4VbuD7M+idxjXJTqjSL+LibZUUTotAFKHu5QzvuO0Y1HGDDHMmTdU8wCkAP
-         OsVt6AixuanNIr6rZYkIUOyRioz3xmHbprBooq0hao4FJbYwHaRc5coiDIO+TYQap8Nw
-         hdOA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=A+x0EU4BTEonaGnIhnl1qOCN28fEaN5Zv4Usct7ILtU=;
-        b=gOQR9vKgp2+875ge/+h6ZP67NiJJFoZ4bmD5Bz3DWce6WMAyRZWD3r2M8aFvuraEoL
-         neX5Ka+wn22wphbW/uocfWAuV0+c2NnG4ry1HNFcf6dM4GJ7KB1JhVo/W4PwG1FzsdcI
-         A8GxgIDeF9fZGsDBN+2z93y043ctpnNc26dLu20EZTeG+My2Xn4DLvpytotgZWb+ugSC
-         SFGKRIHeq1OVKsIVuPfxM6d3ExtRBZchlUIYAGXpOGZpDBLqHebpIsrBZ9mlwBsI5F8s
-         YlwVdf2JxzneVUTidWyDCIdzUPiDXH802q/BpSAB6m2NqqXLH9zxMwkNcb48lfvjQSjh
-         niZg==
-X-Gm-Message-State: AOAM532A3k0FYpjVkWMiAnbXbGYUBw2ZbY+ZEcpAS+GBaJKuQ2cw3bko
-        zdHwCwdvXjF64G1jspEjsnQ=
-X-Google-Smtp-Source: ABdhPJy9R7er3KwA/V8lNPdLD1/hLssYbsJLkCYoT0FWChgKpW5vMB6ZYaShJdGpTmmQJM6pBE+ylw==
-X-Received: by 2002:aa7:824e:0:b029:20a:3a1:eeda with SMTP id e14-20020aa7824e0000b029020a03a1eedamr4099110pfn.71.1618508280154;
-        Thu, 15 Apr 2021 10:38:00 -0700 (PDT)
-Received: from edumazet1.svl.corp.google.com ([2620:15c:2c4:201:9374:6e64:669f:465e])
-        by smtp.gmail.com with ESMTPSA id b14sm2670444pft.211.2021.04.15.10.37.59
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 15 Apr 2021 10:37:59 -0700 (PDT)
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-To:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev <netdev@vger.kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Eric Dumazet <eric.dumazet@gmail.com>,
-        Soheil Hassas Yeganeh <soheil@google.com>
-Subject: [PATCH net-next] scm: optimize put_cmsg()
-Date:   Thu, 15 Apr 2021 10:37:53 -0700
-Message-Id: <20210415173753.3404237-1-eric.dumazet@gmail.com>
-X-Mailer: git-send-email 2.31.1.368.gbe11c130af-goog
+        id S233666AbhDORk1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 15 Apr 2021 13:40:27 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:49822 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S233134AbhDORkZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 15 Apr 2021 13:40:25 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1618508401;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=dzuv3SBSi4iO5f26UgF+PEOzT+2ZbdIBuiAhr8Fbb64=;
+        b=Jpq0Slok3vJvWP+Roh14L144Z22ICmr0rFBt56xc7zw1W1Z6daBFoRG43NJ/qu7KKVlEJV
+        Z/oO/u2fZN5CyiaNbGuT9sD5XLwZyGPajSI1A0xwKE2SiX+icS+r7MKXVH9YV7AHJxlcGq
+        jh3SuEuHH8vJgfbSKAEsM1UK+AMb2bw=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-171-9zcSYSRSMRKyITT3P2HwOQ-1; Thu, 15 Apr 2021 13:39:59 -0400
+X-MC-Unique: 9zcSYSRSMRKyITT3P2HwOQ-1
+Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 21D1381433D;
+        Thu, 15 Apr 2021 17:39:57 +0000 (UTC)
+Received: from krava (unknown [10.40.196.6])
+        by smtp.corp.redhat.com (Postfix) with SMTP id 3F00B5C3FD;
+        Thu, 15 Apr 2021 17:39:45 +0000 (UTC)
+Date:   Thu, 15 Apr 2021 19:39:45 +0200
+From:   Jiri Olsa <jolsa@redhat.com>
+To:     Steven Rostedt <rostedt@goodmis.org>
+Cc:     Andrii Nakryiko <andrii.nakryiko@gmail.com>,
+        Jiri Olsa <jolsa@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andriin@fb.com>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>, Daniel Xu <dxu@dxuuu.xyz>,
+        Jesper Brouer <jbrouer@redhat.com>,
+        Toke =?iso-8859-1?Q?H=F8iland-J=F8rgensen?= <toke@redhat.com>,
+        Viktor Malik <vmalik@redhat.com>
+Subject: Re: [PATCHv2 RFC bpf-next 0/7] bpf: Add support for ftrace probe
+Message-ID: <YHh6YeOPh0HIlb3e@krava>
+References: <20210413121516.1467989-1-jolsa@kernel.org>
+ <CAEf4Bzazst1rBi4=LuP6_FnPXCRYBNFEtDnK3UVBj6Eo6xFNtQ@mail.gmail.com>
+ <YHbd2CmeoaiLJj7X@krava>
+ <CAEf4BzYyVj-Tjy9ZZdAU5nOtJ8_auvVobTT6pMqg8zPb9jj-Ow@mail.gmail.com>
+ <20210415111002.324b6bfa@gandalf.local.home>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210415111002.324b6bfa@gandalf.local.home>
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Eric Dumazet <edumazet@google.com>
+On Thu, Apr 15, 2021 at 11:10:02AM -0400, Steven Rostedt wrote:
 
-Calling two copy_to_user() for very small regions has very high overhead.
+SNIP
 
-Switch to inlined unsafe_put_user() to save one stac/clac sequence,
-and avoid copy_to_user().
+> > > heya,
+> > > I had some initial prototypes trying this way, but always ended up
+> > > in complicated code, that's why I turned to ftrace_ops.
+> > >
+> > > let's see if it'll make any sense to you ;-)
+> > >
+> > > 1) so let's say we have extra trampoline for the program (which
+> > > also seems a bit of waste since there will be just single record  
+> > 
+> > BPF trampoline does more than just calls BPF program. At the very
+> > least it saves input arguments for fexit program to be able to access
+> > it. But given it's one BPF trampoline attached to thousands of
+> > functions, I don't see any problem there.
+> 
+> Note, there's a whole infrastructure that does similar things in ftrace.
+> I wrote the direct call to jump to individual trampolines, because ftrace
+> was too generic. The only way at the time to get to the arguments was via
+> the ftrace_regs_caller, which did a full save of regs, because this was
+> what kprobes needed, and was too expensive for BPF.
+> 
+> I now regret writing the direct callers, and instead should have just done
+> what I did afterward, which was to make ftrace default to a light weight
+> trampoline that only saves enough for getting access to the arguments of
+> the function. And have BPF use that. But I was under the impression that
+> BPF needed fast access to a single function, and it would not become a
+> generic trampoline for multiple functions, because that was the argument
+> used to not enhance ftrace.
+> 
+> Today, ftrace by dafault (on x86) implements a generic way to get the
+> arguments, and just the arguments which is exactly what BPF would need for
+> multiple functions. And yes, you even have access to the return code if you
+> want to "hijack" it. And since it was originally for a individual functions
+> (and not a batch), I created the direct caller for BPF. But the direct
+> caller will not be enhanced for multiple functions, as that's not its
+> purpose. If you want a trampoline to be called back to multiple functions,
+> then use the infrastructure that was designed for that. Which is what Jiri
+> had proposed here.
+> 
+> And because the direct caller can mess with the return code, it breaks
+> function graph tracing. As a temporary work around, we just made function
+> graph ignore any function that has a direct caller attached to it.
+> 
+> If you want batch processing of BPF programs, you need to first fix the
+> function graph tracing issue, and allow both BPF attached callers and
+> function graph to work on the same functions.
+> 
+> I don't know how the BPF code does it, but if you are tracing the exit
+> of a function, I'm assuming that you hijack the return pointer and replace
+> it with a call to a trampoline that has access to the arguments. To do
 
-Signed-off-by: Eric Dumazet <edumazet@google.com>
-Cc: Soheil Hassas Yeganeh <soheil@google.com>
----
- net/core/scm.c | 21 ++++++++++++++-------
- 1 file changed, 14 insertions(+), 7 deletions(-)
+hi,
+it's bit different, the trampoline makes use of the fact that the
+call to trampoline is at the very begining of the function and, so
+it can call the origin function with 'call function + 5' instr.
 
-diff --git a/net/core/scm.c b/net/core/scm.c
-index 8156d4fb8a3966122fdfcfd0ebc9e5520aa7b67c..bd96c922041d22a2f3b7ee73e4b3183316f9b616 100644
---- a/net/core/scm.c
-+++ b/net/core/scm.c
-@@ -228,14 +228,16 @@ int put_cmsg(struct msghdr * msg, int level, int type, int len, void *data)
- 
- 	if (msg->msg_control_is_user) {
- 		struct cmsghdr __user *cm = msg->msg_control_user;
--		struct cmsghdr cmhdr;
- 
--		cmhdr.cmsg_level = level;
--		cmhdr.cmsg_type = type;
--		cmhdr.cmsg_len = cmlen;
--		if (copy_to_user(cm, &cmhdr, sizeof cmhdr) ||
--		    copy_to_user(CMSG_USER_DATA(cm), data, cmlen - sizeof(*cm)))
--			return -EFAULT;
-+		if (!user_write_access_begin(cm, cmlen))
-+			goto efault;
-+
-+		unsafe_put_user(len, &cm->cmsg_len, efault_end);
-+		unsafe_put_user(level, &cm->cmsg_level, efault_end);
-+		unsafe_put_user(type, &cm->cmsg_type, efault_end);
-+		unsafe_copy_to_user(CMSG_USER_DATA(cm), data,
-+				    cmlen - sizeof(*cm), efault_end);
-+		user_write_access_end();
- 	} else {
- 		struct cmsghdr *cm = msg->msg_control;
- 
-@@ -249,6 +251,11 @@ int put_cmsg(struct msghdr * msg, int level, int type, int len, void *data)
- 	msg->msg_control += cmlen;
- 	msg->msg_controllen -= cmlen;
- 	return 0;
-+
-+efault_end:
-+	user_write_access_end();
-+efault:
-+	return -EFAULT;
- }
- EXPORT_SYMBOL(put_cmsg);
- 
--- 
-2.31.1.368.gbe11c130af-goog
+so in nutshell the trampoline does:
+
+  call entry_progs
+  call original_func+5
+  call exit_progs
+
+you can check this in arch/x86/net/bpf_jit_comp.c in moe detail:
+
+ * The assembly code when eth_type_trans is called from trampoline:
+ *
+ * push rbp
+ * mov rbp, rsp
+ * sub rsp, 24                     // space for skb, dev, return value
+ * push rbx                        // temp regs to pass start time
+ * mov qword ptr [rbp - 24], rdi   // save skb pointer to stack
+ * mov qword ptr [rbp - 16], rsi   // save dev pointer to stack
+ * call __bpf_prog_enter           // rcu_read_lock and preempt_disable
+ * mov rbx, rax                    // remember start time if bpf stats are enabled
+ * lea rdi, [rbp - 24]             // R1==ctx of bpf prog
+ * call addr_of_jited_FENTRY_prog  // bpf prog can access skb and dev
+
+entry program called ^^^
+
+ * movabsq rdi, 64bit_addr_of_struct_bpf_prog  // unused if bpf stats are off
+ * mov rsi, rbx                    // prog start time
+ * call __bpf_prog_exit            // rcu_read_unlock, preempt_enable and stats math
+ * mov rdi, qword ptr [rbp - 24]   // restore skb pointer from stack
+ * mov rsi, qword ptr [rbp - 16]   // restore dev pointer from stack
+ * call eth_type_trans+5           // execute body of eth_type_trans
+
+original function called ^^^
+
+ * mov qword ptr [rbp - 8], rax    // save return value
+ * call __bpf_prog_enter           // rcu_read_lock and preempt_disable
+ * mov rbx, rax                    // remember start time in bpf stats are enabled
+ * lea rdi, [rbp - 24]             // R1==ctx of bpf prog
+ * call addr_of_jited_FEXIT_prog   // bpf prog can access skb, dev, return value
+
+exit program called ^^^
+
+ * movabsq rdi, 64bit_addr_of_struct_bpf_prog  // unused if bpf stats are off
+ * mov rsi, rbx                    // prog start time
+ * call __bpf_prog_exit            // rcu_read_unlock, preempt_enable and stats math
+ * mov rax, qword ptr [rbp - 8]    // restore eth_type_trans's return value
+ * pop rbx
+ * leave
+ * add rsp, 8                      // skip eth_type_trans's frame
+ * ret                             // return to its caller
+
+> this you need a shadow stack to save the real return as well as the
+> parameters of the function. This is something that I have patches that do
+> similar things with function graph.
+> 
+> If you want this feature, lets work together and make this work for both
+> BPF and ftrace.
+
+it's been some time I saw a graph tracer, is there a way to make it
+access input arguments and make it available through ftrace_ops
+interface?
+
+thanks,
+jirka
 
