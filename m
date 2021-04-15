@@ -2,38 +2,39 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 40B8236022E
-	for <lists+netdev@lfdr.de>; Thu, 15 Apr 2021 08:12:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CC76F360252
+	for <lists+netdev@lfdr.de>; Thu, 15 Apr 2021 08:25:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230407AbhDOGNR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 15 Apr 2021 02:13:17 -0400
-Received: from mail.kernel.org ([198.145.29.99]:58794 "EHLO mail.kernel.org"
+        id S230359AbhDOG0H (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 15 Apr 2021 02:26:07 -0400
+Received: from mail.kernel.org ([198.145.29.99]:60842 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230164AbhDOGNQ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 15 Apr 2021 02:13:16 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 509176145A;
-        Thu, 15 Apr 2021 06:12:53 +0000 (UTC)
+        id S229731AbhDOG0H (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 15 Apr 2021 02:26:07 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id C312C60231;
+        Thu, 15 Apr 2021 06:25:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1618467173;
-        bh=AZlanW3lUwPXxa4bTPC1+oW23q5o/MYz5N9MpvSRcPM=;
+        s=k20201202; t=1618467944;
+        bh=u6Zbi9B9esvESnvVaCVhd8dbXhNBWXXPVerlvWC5DkM=;
         h=Subject:From:To:Cc:Date:In-Reply-To:References:From;
-        b=Eo3n8VwCumi3rn/DBT7gBnjzyvzZiTSJngH1/UHYftZevIv5+dQl4CAtIRAExZ8wB
-         0QZwY7LoueMBVoJAkxEWyasWwBxciL6Nao8v4iuvrpW+dViuWhCmFgtOvChicWQWov
-         z6cxkUJtPb8AxN5jsgl2s/0CcA8hPnv/iwcmm5Hu5DEwwFxjABc8o6ZHtg3cAqk7aI
-         xY4Gam6u9HoMwKChqu1Il4mSI9b0TZwljJ/Tx59wQNJ0sKOuvAxFxRBo0tXU7g/LW6
-         nCN3p+JsC/TbR38mbEetB9YvfkjFjxWDcjQ6i2WPkV1UZH4tLAuNqqsHAe5C0j4dNF
-         hnomoW0JL/XaA==
-Message-ID: <335639a79d72cec4abb3775bc84336f8390a57b7.camel@kernel.org>
-Subject: Re: [RFC net-next 4/6] ethtool: add interface to read standard MAC
- stats
+        b=QZ1A/yEGGX2P2VrhXdEp5ToU/KBUIvJ/ERRoD282g3Bw+RaKxPQk+WoWtR285oxsA
+         +arohWu9RUkY9VwFORFeiwieESuW+8DwEdIWY/a7BHRUfi+IU9JYghOi0fOTJ+X2Fe
+         hCpufg6UyUF5YXpJo/j4psx9roec1Yd9a6AP6IX7ejWwhslLvmklylzZOHl8dFED//
+         nCrj6XNpje5eczPAawNJgzxBh+Gff2HoS/2kQi8xQC6EMcTEKQgpmoKX3kCJ/emSZm
+         1KWjAjkOIbs11uzTr+JclFbnnkG5K8drAWj2ZgQRsRoLtI1qb/SYhn+sBzIrUfjPxI
+         iAuHsU3o3yl7w==
+Message-ID: <723b2858c61898df02e57bb2aaa4c4b4b3c30c50.camel@kernel.org>
+Subject: Re: [PATCH net-next 3/6] ethtool: add FEC statistics
 From:   Saeed Mahameed <saeed@kernel.org>
-To:     Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
-Cc:     davem@davemloft.net, andrew@lunn.ch, mkubecek@suse.cz,
-        idosch@nvidia.com
-Date:   Wed, 14 Apr 2021 23:12:52 -0700
-In-Reply-To: <20210414202325.2225774-5-kuba@kernel.org>
-References: <20210414202325.2225774-1-kuba@kernel.org>
-         <20210414202325.2225774-5-kuba@kernel.org>
+To:     Jakub Kicinski <kuba@kernel.org>, davem@davemloft.net
+Cc:     netdev@vger.kernel.org, michael.chan@broadcom.com, leon@kernel.org,
+        ecree.xilinx@gmail.com, habetsm.xilinx@gmail.com,
+        f.fainelli@gmail.com, andrew@lunn.ch, mkubecek@suse.cz,
+        ariela@nvidia.com, corbet@lwn.net, linux-doc@vger.kernel.org
+Date:   Wed, 14 Apr 2021 23:25:43 -0700
+In-Reply-To: <20210414034454.1970967-4-kuba@kernel.org>
+References: <20210414034454.1970967-1-kuba@kernel.org>
+         <20210414034454.1970967-4-kuba@kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 User-Agent: Evolution 3.38.4 (3.38.4-1.fc33) 
 MIME-Version: 1.0
@@ -42,430 +43,14 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 2021-04-14 at 13:23 -0700, Jakub Kicinski wrote:
-> Most of the MAC statistics are included in
-> struct rtnl_link_stats64, but some fields
-> are aggregated. Besides it's good to expose
-> these clearly hardware stats separately.
-> 
-> Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-> ---
->  include/linux/ethtool.h              | 31 ++++++++++
->  include/uapi/linux/ethtool.h         |  2 +
->  include/uapi/linux/ethtool_netlink.h | 53 ++++++++++++++++
->  net/ethtool/netlink.h                |  1 +
->  net/ethtool/stats.c                  | 90 ++++++++++++++++++++++++++++
->  net/ethtool/strset.c                 |  5 ++
->  6 files changed, 182 insertions(+)
-> 
-> diff --git a/include/linux/ethtool.h b/include/linux/ethtool.h
-> index 2d5455eedbf4..3c689a13e679 100644
-> --- a/include/linux/ethtool.h
-> +++ b/include/linux/ethtool.h
-> @@ -250,6 +250,34 @@ static inline void ethtool_stats_init(u64 *stats,
-> unsigned int n)
->                 stats[n] = ETHTOOL_STAT_NOT_SET;
->  }
->  
-> +/* Basic IEEE 802.3 MAC statistics (30.3.1.1.*), not otherwise exposed
-> + * via a more targeted API.
-> + */
-> +struct ethtool_eth_mac_stats {
-> +       u64 FramesTransmittedOK;
-> +       u64 SingleCollisionFrames;
-> +       u64 MultipleCollisionFrames;
-> +       u64 FramesReceivedOK;
-> +       u64 FrameCheckSequenceErrors;
-> +       u64 AlignmentErrors;
-> +       u64 OctetsTransmittedOK;
-> +       u64 FramesWithDeferredXmissions;
-> +       u64 LateCollisions;
-> +       u64 FramesAbortedDueToXSColls;
-> +       u64 FramesLostDueToIntMACXmitError;
-> +       u64 CarrierSenseErrors;
-> +       u64 OctetsReceivedOK;
-> +       u64 FramesLostDueToIntMACRcvError;
-> +       u64 MulticastFramesXmittedOK;
-> +       u64 BroadcastFramesXmittedOK;
-> +       u64 FramesWithExcessiveDeferral;
-> +       u64 MulticastFramesReceivedOK;
-> +       u64 BroadcastFramesReceivedOK;
-> +       u64 InRangeLengthErrors;
-> +       u64 OutOfRangeLengthField;
-> +       u64 FrameTooLongErrors;
-> +};
-> +
->  /* Basic IEEE 802.3 PHY statistics (30.3.2.1.*), not otherwise exposed
->   * via a more targeted API.
->   */
-> @@ -495,6 +523,7 @@ struct ethtool_module_eeprom {
->   *     specified page. Returns a negative error code or the amount of
-> bytes
->   *     read.
->   * @get_eth_phy_stats: Query some of the IEEE 802.3 PHY statistics.
-> + * @get_eth_mac_stats: Query some of the IEEE 802.3 MAC statistics.
->   *
->   * All operations are optional (i.e. the function pointer may be set
->   * to %NULL) and callers must take this into account.  Callers must
-> @@ -607,6 +636,8 @@ struct ethtool_ops {
->                                              struct netlink_ext_ack
-> *extack);
->         void    (*get_eth_phy_stats)(struct net_device *dev,
->                                      struct ethtool_eth_phy_stats
-> *phy_stats);
-> +       void    (*get_eth_mac_stats)(struct net_device *dev,
-> +                                    struct ethtool_eth_mac_stats
-> *mac_stats);
+On Tue, 2021-04-13 at 20:44 -0700, Jakub Kicinski wrote:
+> ethtool_link_ksettings *);
+> +       void    (*get_fec_stats)(struct net_device *dev,
+> +                                struct ethtool_fec_stats
+> *fec_stats);
 
-too many callbacks.. I understand the point of having explicit structs
-per stats group, but it can be achievable with one generic ethtool
-calback function with the help of a flexible struct:
-
-void (*get_std_stats)(struct net_device *dev, struct *std_stats)
-
-
-union stats_groups {
-    struct ethtool_eth_phy_stats eth_phy;
-    struct ethtool_eth_mac_stats eth_mac;
-    ...
-}
-
-struct std_stats {
-     u16 type;
-     union stats_groups stats[0];
-}
-
-where std_stats.stats is allocated dynamically according to
-std_stats.type
-
-and driver can just access the corresponding stats according to type
-
-e.g: 
-std_stats.stats.eth_phy
-
->  };
->  
->  int ethtool_check_ops(const struct ethtool_ops *ops);
-> diff --git a/include/uapi/linux/ethtool.h
-> b/include/uapi/linux/ethtool.h
-> index 190ae6e03918..c227376d811a 100644
-> --- a/include/uapi/linux/ethtool.h
-> +++ b/include/uapi/linux/ethtool.h
-> @@ -671,6 +671,7 @@ enum ethtool_link_ext_substate_cable_issue {
->   * @ETH_SS_UDP_TUNNEL_TYPES: UDP tunnel types
->   * @ETH_SS_STATS_STD: standardized stats
->   * @ETH_SS_STATS_ETH_PHY: names of IEEE 802.3 PHY statistics
-> + * @ETH_SS_STATS_ETH_MAC: names of IEEE 802.3 MAC statistics
->   *
->   * @ETH_SS_COUNT: number of defined string sets
->   */
-> @@ -693,6 +694,7 @@ enum ethtool_stringset {
->         ETH_SS_UDP_TUNNEL_TYPES,
->         ETH_SS_STATS_STD,
->         ETH_SS_STATS_ETH_PHY,
-> +       ETH_SS_STATS_ETH_MAC,
->  
->         /* add new constants above here */
->         ETH_SS_COUNT
-> diff --git a/include/uapi/linux/ethtool_netlink.h
-> b/include/uapi/linux/ethtool_netlink.h
-> index e6a473a3a5f1..7ef6fbe237d9 100644
-> --- a/include/uapi/linux/ethtool_netlink.h
-> +++ b/include/uapi/linux/ethtool_netlink.h
-> @@ -698,6 +698,7 @@ enum {
->  
->  enum {
->         ETHTOOL_STATS_ETH_PHY,
-> +       ETHTOOL_STATS_ETH_MAC,
->  
->         /* add new constants above here */
->         __ETHTOOL_STATS_CNT
-> @@ -723,6 +724,58 @@ enum {
->         ETHTOOL_A_STATS_ETH_PHY_MAX = (__ETHTOOL_A_STATS_ETH_PHY_CNT -
-> 1)
->  };
->  
-> +enum {
-> +       /* 30.3.1.1.2 aFramesTransmittedOK */
-> +       ETHTOOL_A_STATS_ETH_MAC_2_TX_PKT =
-> ETHTOOL_A_STATS_GRP_FIRST_ATTR,
-> +       /* 30.3.1.1.3 aSingleCollisionFrames */
-> +       ETHTOOL_A_STATS_ETH_MAC_3_SINGLE_COL,
-> +       /* 30.3.1.1.4 aMultipleCollisionFrames */
-> +       ETHTOOL_A_STATS_ETH_MAC_4_MULTI_COL,
-> +       /* 30.3.1.1.5 aFramesReceivedOK */
-> +       ETHTOOL_A_STATS_ETH_MAC_5_RX_PKT,
-> +       /* 30.3.1.1.6 aFrameCheckSequenceErrors */
-> +       ETHTOOL_A_STATS_ETH_MAC_6_FCS_ERR,
-> +       /* 30.3.1.1.7 aAlignmentErrors */
-> +       ETHTOOL_A_STATS_ETH_MAC_7_ALIGN_ERR,
-> +       /* 30.3.1.1.8 aOctetsTransmittedOK */
-> +       ETHTOOL_A_STATS_ETH_MAC_8_TX_BYTES,
-> +       /* 30.3.1.1.9 aFramesWithDeferredXmissions */
-> +       ETHTOOL_A_STATS_ETH_MAC_9_TX_DEFER,
-> +       /* 30.3.1.1.10 aLateCollisions */
-> +       ETHTOOL_A_STATS_ETH_MAC_10_LATE_COL,
-> +       /* 30.3.1.1.11 aFramesAbortedDueToXSColls */
-> +       ETHTOOL_A_STATS_ETH_MAC_11_XS_COL,
-> +       /* 30.3.1.1.12 aFramesLostDueToIntMACXmitError */
-> +       ETHTOOL_A_STATS_ETH_MAC_12_TX_INT_ERR,
-> +       /* 30.3.1.1.13 aCarrierSenseErrors */
-> +       ETHTOOL_A_STATS_ETH_MAC_13_CS_ERR,
-> +       /* 30.3.1.1.14 aOctetsReceivedOK */
-> +       ETHTOOL_A_STATS_ETH_MAC_14_RX_BYTES,
-> +       /* 30.3.1.1.15 aFramesLostDueToIntMACRcvError */
-> +       ETHTOOL_A_STATS_ETH_MAC_15_RX_INT_ERR,
-> +
-> +       /* 30.3.1.1.18 aMulticastFramesXmittedOK */
-> +       ETHTOOL_A_STATS_ETH_MAC_18_TX_MCAST,
-> +       /* 30.3.1.1.19 aBroadcastFramesXmittedOK */
-> +       ETHTOOL_A_STATS_ETH_MAC_19_TX_BCAST,
-> +       /* 30.3.1.1.20 aFramesWithExcessiveDeferral */
-> +       ETHTOOL_A_STATS_ETH_MAC_20_XS_DEFER,
-> +       /* 30.3.1.1.21 aMulticastFramesReceivedOK */
-> +       ETHTOOL_A_STATS_ETH_MAC_21_RX_MCAST,
-> +       /* 30.3.1.1.22 aBroadcastFramesReceivedOK */
-> +       ETHTOOL_A_STATS_ETH_MAC_22_RX_BCAST,
-> +       /* 30.3.1.1.23 aInRangeLengthErrors */
-> +       ETHTOOL_A_STATS_ETH_MAC_23_IR_LEN_ERR,
-> +       /* 30.3.1.1.24 aOutOfRangeLengthField */
-> +       ETHTOOL_A_STATS_ETH_MAC_24_OOR_LEN,
-> +       /* 30.3.1.1.25 aFrameTooLongErrors */
-> +       ETHTOOL_A_STATS_ETH_MAC_25_TOO_LONG_ERR,
-> +
-> +       /* add new constants above here */
-> +       __ETHTOOL_A_STATS_ETH_MAC_CNT,
-> +       ETHTOOL_A_STATS_ETH_MAC_MAX = (__ETHTOOL_A_STATS_ETH_MAC_CNT -
-> 1)
-> +};
-> +
->  /* generic netlink info */
->  #define ETHTOOL_GENL_NAME "ethtool"
->  #define ETHTOOL_GENL_VERSION 1
-> diff --git a/net/ethtool/netlink.h b/net/ethtool/netlink.h
-> index 79631792313e..9c5f6ee71864 100644
-> --- a/net/ethtool/netlink.h
-> +++ b/net/ethtool/netlink.h
-> @@ -403,5 +403,6 @@ int ethnl_set_fec(struct sk_buff *skb, struct
-> genl_info *info);
->  
->  extern const char
-> stats_std_names[__ETHTOOL_STATS_CNT][ETH_GSTRING_LEN];
->  extern const char
-> stats_eth_phy_names[__ETHTOOL_A_STATS_ETH_PHY_CNT][ETH_GSTRING_LEN];
-> +extern const char
-> stats_eth_mac_names[__ETHTOOL_A_STATS_ETH_MAC_CNT][ETH_GSTRING_LEN];
->  
->  #endif /* _NET_ETHTOOL_NETLINK_H */
-> diff --git a/net/ethtool/stats.c b/net/ethtool/stats.c
-> index 68bf6a7614fe..e0395d5c0f9d 100644
-> --- a/net/ethtool/stats.c
-> +++ b/net/ethtool/stats.c
-> @@ -15,6 +15,7 @@ struct stats_req_info {
->  struct stats_reply_data {
->         struct ethnl_reply_data         base;
->         struct ethtool_eth_phy_stats    phy_stats;
-> +       struct ethtool_eth_mac_stats    mac_stats;
->  };
->  
->  #define STATS_REPDATA(__reply_base) \
-> @@ -22,12 +23,38 @@ struct stats_reply_data {
->  
->  const char stats_std_names[__ETHTOOL_STATS_CNT][ETH_GSTRING_LEN] = {
->         [ETHTOOL_STATS_ETH_PHY]                 = "eth-phy",
-> +       [ETHTOOL_STATS_ETH_MAC]                 = "eth-mac",
->  };
->  
->  const char
-> stats_eth_phy_names[__ETHTOOL_A_STATS_ETH_PHY_CNT][ETH_GSTRING_LEN] = {
->         [ETHTOOL_A_STATS_ETH_PHY_5_SYM_ERR]     =
-> "SymbolErrorDuringCarrier",
->  };
->  
-> +const char
-> stats_eth_mac_names[__ETHTOOL_A_STATS_ETH_MAC_CNT][ETH_GSTRING_LEN] = {
-> +       [ETHTOOL_A_STATS_ETH_MAC_2_TX_PKT]      =
-> "FramesTransmittedOK",
-> +       [ETHTOOL_A_STATS_ETH_MAC_3_SINGLE_COL]  =
-> "SingleCollisionFrames",
-> +       [ETHTOOL_A_STATS_ETH_MAC_4_MULTI_COL]   =
-> "MultipleCollisionFrames",
-> +       [ETHTOOL_A_STATS_ETH_MAC_5_RX_PKT]      = "FramesReceivedOK",
-> +       [ETHTOOL_A_STATS_ETH_MAC_6_FCS_ERR]     =
-> "FrameCheckSequenceErrors",
-> +       [ETHTOOL_A_STATS_ETH_MAC_7_ALIGN_ERR]   = "AlignmentErrors",
-> +       [ETHTOOL_A_STATS_ETH_MAC_8_TX_BYTES]    =
-> "OctetsTransmittedOK",
-> +       [ETHTOOL_A_STATS_ETH_MAC_9_TX_DEFER]    =
-> "FramesWithDeferredXmissions",
-> +       [ETHTOOL_A_STATS_ETH_MAC_10_LATE_COL]   = "LateCollisions",
-> +       [ETHTOOL_A_STATS_ETH_MAC_11_XS_COL]     =
-> "FramesAbortedDueToXSColls",
-> +       [ETHTOOL_A_STATS_ETH_MAC_12_TX_INT_ERR] =
-> "FramesLostDueToIntMACXmitError",
-> +       [ETHTOOL_A_STATS_ETH_MAC_13_CS_ERR]     = "CarrierSenseErrors",
-> +       [ETHTOOL_A_STATS_ETH_MAC_14_RX_BYTES]   = "OctetsReceivedOK",
-> +       [ETHTOOL_A_STATS_ETH_MAC_15_RX_INT_ERR] =
-> "FramesLostDueToIntMACRcvError",
-> +       [ETHTOOL_A_STATS_ETH_MAC_18_TX_MCAST]   =
-> "MulticastFramesXmittedOK",
-> +       [ETHTOOL_A_STATS_ETH_MAC_19_TX_BCAST]   =
-> "BroadcastFramesXmittedOK",
-> +       [ETHTOOL_A_STATS_ETH_MAC_20_XS_DEFER]   =
-> "FramesWithExcessiveDeferral",
-> +       [ETHTOOL_A_STATS_ETH_MAC_21_RX_MCAST]   =
-> "MulticastFramesReceivedOK",
-> +       [ETHTOOL_A_STATS_ETH_MAC_22_RX_BCAST]   =
-> "BroadcastFramesReceivedOK",
-> +       [ETHTOOL_A_STATS_ETH_MAC_23_IR_LEN_ERR] =
-> "InRangeLengthErrors",
-> +       [ETHTOOL_A_STATS_ETH_MAC_24_OOR_LEN]    =
-> "OutOfRangeLengthField",
-> +       [ETHTOOL_A_STATS_ETH_MAC_25_TOO_LONG_ERR]       =
-> "FrameTooLongErrors",
-> +};
-> +
->  const struct nla_policy ethnl_stats_get_policy[ETHTOOL_A_STATS_GROUPS
-> + 1] = {
->         [ETHTOOL_A_STATS_HEADER]        =
->                 NLA_POLICY_NESTED(ethnl_header_policy),
-> @@ -70,10 +97,14 @@ static int stats_prepare_data(const struct
-> ethnl_req_info *req_base,
->                 return ret;
->  
->         memset(&data->phy_stats, 0xff, sizeof(data->phy_stats));
-> +       memset(&data->mac_stats, 0xff, sizeof(data->mac_stats));
->  
->         if (test_bit(ETHTOOL_STATS_ETH_PHY, req_info->stat_mask) &&
->             dev->ethtool_ops->get_eth_phy_stats)
->                 dev->ethtool_ops->get_eth_phy_stats(dev, &data-
-> >phy_stats);
-> +       if (test_bit(ETHTOOL_STATS_ETH_MAC, req_info->stat_mask) &&
-> +           dev->ethtool_ops->get_eth_mac_stats)
-> +               dev->ethtool_ops->get_eth_mac_stats(dev, &data-
-> >mac_stats);
->  
->         ethnl_ops_complete(dev);
->         return 0;
-> @@ -89,6 +120,10 @@ static int stats_reply_size(const struct
-> ethnl_req_info *req_base,
->                 len += nla_total_size(0) +
->                         sizeof(struct ethtool_eth_phy_stats) /
-> sizeof(u64) *
->                         nla_total_size_64bit(sizeof(u64));
-> +       if (test_bit(ETHTOOL_STATS_ETH_MAC, req_info->stat_mask))
-> +               len += nla_total_size(0) +
-> +                       sizeof(struct ethtool_eth_mac_stats) /
-> sizeof(u64) *
-> +                       nla_total_size_64bit(sizeof(u64));
->  
->         return len;
->  }
-> @@ -109,6 +144,57 @@ static int stats_put_phy_stats(struct sk_buff
-> *skb,
->         return 0;
->  }
->  
-> +static int stats_put_mac_stats(struct sk_buff *skb,
-> +                              const struct stats_reply_data *data)
-> +{
-> +       if (stat_put(skb, ETHTOOL_A_STATS_ETH_MAC_2_TX_PKT,
-> +                    data->mac_stats.FramesTransmittedOK) ||
-> +           stat_put(skb, ETHTOOL_A_STATS_ETH_MAC_3_SINGLE_COL,
-> +                    data->mac_stats.SingleCollisionFrames) ||
-> +           stat_put(skb, ETHTOOL_A_STATS_ETH_MAC_4_MULTI_COL,
-> +                    data->mac_stats.MultipleCollisionFrames) ||
-> +           stat_put(skb, ETHTOOL_A_STATS_ETH_MAC_5_RX_PKT,
-> +                    data->mac_stats.FramesReceivedOK) ||
-> +           stat_put(skb, ETHTOOL_A_STATS_ETH_MAC_6_FCS_ERR,
-> +                    data->mac_stats.FrameCheckSequenceErrors) ||
-> +           stat_put(skb, ETHTOOL_A_STATS_ETH_MAC_7_ALIGN_ERR,
-> +                    data->mac_stats.AlignmentErrors) ||
-> +           stat_put(skb, ETHTOOL_A_STATS_ETH_MAC_8_TX_BYTES,
-> +                    data->mac_stats.OctetsTransmittedOK) ||
-> +           stat_put(skb, ETHTOOL_A_STATS_ETH_MAC_9_TX_DEFER,
-> +                    data->mac_stats.FramesWithDeferredXmissions) ||
-> +           stat_put(skb, ETHTOOL_A_STATS_ETH_MAC_10_LATE_COL,
-> +                    data->mac_stats.LateCollisions) ||
-> +           stat_put(skb, ETHTOOL_A_STATS_ETH_MAC_11_XS_COL,
-> +                    data->mac_stats.FramesAbortedDueToXSColls) ||
-> +           stat_put(skb, ETHTOOL_A_STATS_ETH_MAC_12_TX_INT_ERR,
-> +                    data->mac_stats.FramesLostDueToIntMACXmitError) ||
-> +           stat_put(skb, ETHTOOL_A_STATS_ETH_MAC_13_CS_ERR,
-> +                    data->mac_stats.CarrierSenseErrors) ||
-> +           stat_put(skb, ETHTOOL_A_STATS_ETH_MAC_14_RX_BYTES,
-> +                    data->mac_stats.OctetsReceivedOK) ||
-> +           stat_put(skb, ETHTOOL_A_STATS_ETH_MAC_15_RX_INT_ERR,
-> +                    data->mac_stats.FramesLostDueToIntMACRcvError) ||
-> +           stat_put(skb, ETHTOOL_A_STATS_ETH_MAC_18_TX_MCAST,
-> +                    data->mac_stats.MulticastFramesXmittedOK) ||
-> +           stat_put(skb, ETHTOOL_A_STATS_ETH_MAC_19_TX_BCAST,
-> +                    data->mac_stats.BroadcastFramesXmittedOK) ||
-> +           stat_put(skb, ETHTOOL_A_STATS_ETH_MAC_20_XS_DEFER,
-> +                    data->mac_stats.FramesWithExcessiveDeferral) ||
-> +           stat_put(skb, ETHTOOL_A_STATS_ETH_MAC_21_RX_MCAST,
-> +                    data->mac_stats.MulticastFramesReceivedOK) ||
-> +           stat_put(skb, ETHTOOL_A_STATS_ETH_MAC_22_RX_BCAST,
-> +                    data->mac_stats.BroadcastFramesReceivedOK) ||
-> +           stat_put(skb, ETHTOOL_A_STATS_ETH_MAC_23_IR_LEN_ERR,
-> +                    data->mac_stats.InRangeLengthErrors) ||
-> +           stat_put(skb, ETHTOOL_A_STATS_ETH_MAC_24_OOR_LEN,
-> +                    data->mac_stats.OutOfRangeLengthField) ||
-> +           stat_put(skb, ETHTOOL_A_STATS_ETH_MAC_25_TOO_LONG_ERR,
-> +                    data->mac_stats.FrameTooLongErrors))
-> +               return -EMSGSIZE;
-
-lots of repetition, someone might forget to add the new stat in one of
-these places .. 
-
-best practice here is to centralize all the data structures and
-information definitions in one place, you define the stat id, string,
-and value offset, then a generic loop can generate the strset and fill
-up values in the correct offset.
-
-similar implementation is already in mlx5:
-
-see pport_802_3_stats_desc:
-https://elixir.bootlin.com/linux/latest/source/drivers/net/ethernet/mellanox/mlx5/core/en_stats.c#L682
-
-the "pport_802_3_stats_desc" has a description of the strings and
-offsets of all stats in this stats group
-and the fill/put functions are very simple and they just iterate over
-the array/group and fill up according to the descriptor.
-
-> +       return 0;
-> +}
-> +
->  static int stats_put_stats(struct sk_buff *skb,
->                            const struct stats_reply_data *data,
->                            u32 id, u32 ss_id,
-> @@ -148,6 +234,10 @@ static int stats_fill_reply(struct sk_buff *skb,
->                 ret = stats_put_stats(skb, data, ETHTOOL_STATS_ETH_PHY,
->                                       ETH_SS_STATS_ETH_PHY,
->                                       stats_put_phy_stats);
-> +       if (!ret && test_bit(ETHTOOL_STATS_ETH_MAC, req_info-
-> >stat_mask))
-> +               ret = stats_put_stats(skb, data, ETHTOOL_STATS_ETH_MAC,
-> +                                     ETH_SS_STATS_ETH_MAC,
-> +                                     stats_put_mac_stats);
->  
->         return ret;
->  }
-> diff --git a/net/ethtool/strset.c b/net/ethtool/strset.c
-> index 5f3c73587ff4..a8aac7bcfcc9 100644
-> --- a/net/ethtool/strset.c
-> +++ b/net/ethtool/strset.c
-> @@ -90,6 +90,11 @@ static const struct strset_info info_template[] = {
->                 .count          = __ETHTOOL_A_STATS_ETH_PHY_CNT,
->                 .strings        = stats_eth_phy_names,
->         },
-> +       [ETH_SS_STATS_ETH_MAC] = {
-> +               .per_dev        = false,
-> +               .count          = __ETHTOOL_A_STATS_ETH_MAC_CNT,
-> +               .strings        = stats_eth_mac_names,
-> +       },
->  };
->  
->  struct strset_req_info {
-
+why void ? some drivers need to access the FW and it could be an old
+FW/device where the fec stats are not supported.
+and sometimes e.g. in mlx5 case FW can fail for FW related businesses
+:)..
 
