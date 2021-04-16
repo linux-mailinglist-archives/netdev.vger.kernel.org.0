@@ -2,50 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9D2D53623C8
-	for <lists+netdev@lfdr.de>; Fri, 16 Apr 2021 17:22:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A96223623CF
+	for <lists+netdev@lfdr.de>; Fri, 16 Apr 2021 17:22:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343541AbhDPPVy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 16 Apr 2021 11:21:54 -0400
-Received: from new2-smtp.messagingengine.com ([66.111.4.224]:48687 "EHLO
+        id S1343614AbhDPPWj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 16 Apr 2021 11:22:39 -0400
+Received: from new2-smtp.messagingengine.com ([66.111.4.224]:35221 "EHLO
         new2-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S245502AbhDPPU0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 16 Apr 2021 11:20:26 -0400
+        by vger.kernel.org with ESMTP id S245427AbhDPPWh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 16 Apr 2021 11:22:37 -0400
 Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-        by mailnew.nyi.internal (Postfix) with ESMTP id 951815807AD;
-        Fri, 16 Apr 2021 11:19:59 -0400 (EDT)
+        by mailnew.nyi.internal (Postfix) with ESMTP id 641075807C3;
+        Fri, 16 Apr 2021 11:22:12 -0400 (EDT)
 Received: from mailfrontend2 ([10.202.2.163])
-  by compute3.internal (MEProxy); Fri, 16 Apr 2021 11:19:59 -0400
+  by compute3.internal (MEProxy); Fri, 16 Apr 2021 11:22:12 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
         messagingengine.com; h=cc:content-type:date:from:in-reply-to
         :message-id:mime-version:references:subject:to:x-me-proxy
-        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm2; bh=toiCW1
-        I5/vRVU8T5TulYjoFeHwpLgWzOP/S3J2c6LmE=; b=YXgqGzWJUKCwXGCK5nWt9A
-        lbpnmt7cpv4UYbbOZjZhDY/z1nk9UIVDFSMxcJP2cy4OctdVBPqEy89keDsEuRjm
-        Kv5DSApYLROY+PkOOIVc2YVVEdvSaaSlgkXxq3vUCiNLlxDX3vmZQeDc4oLTI2JG
-        XdD2PP2JNlQmhDdtJZ58CZzFb3p87SOaOch4EjdLpTzcisPLzYJJ8irwcuQHI7tM
-        GtWd1GxXPoyLnkezi+Kqu3KOg42p9TeG/6b/Jvs0AxNgkbSMoACCczSXVk0nT8b9
-        duR/r29t80lJrT9HZ6lZd9bb20ESOAzCeVJkF3KOfle4hvSrs3aUk3nKeZuJhEFw
+        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm2; bh=pYMXCX
+        UB4NrEObMaHNGViuQ/g33HrPafLO6bqyrl1js=; b=eEwlnK3ahM/w8V66CZrDiU
+        rHP3k/7/FzxygyY9TiKPbHUtWF59MNvtMZYXHG3NdKJSYO9wTRacx27/+eg1yhCC
+        i+YcUg3ShfUAMVJchXh4XxrKdzyCzeu9AMAjCGO/8AhoSic09Sw/LIjhwUvWt5oz
+        zHlfNlGjwZAeCKPgjBo2ILESWUUVn5HYRkpzPgGWzsff0nngnJUsdFItPl70535D
+        j9+hj5ATM+UPImOckBrBYFb8Nxct8ojl7iBQ55WEW4WmU20wdY9SHSnDIPm1I0ar
+        fYS4bTAsuhcvcyFkqgHV20YXhOA4/xi0ItU5bBUVyyyXB005YKuMsT24mJ2X6j/Q
         ==
-X-ME-Sender: <xms:Hqt5YKPRB9jgJv_wDUxZihQnRKQnkLvXXKe_ub_I8cg7drGtr1GzYw>
-    <xme:Hqt5YNSfiDsorQ4GBk-711wd6DMJMvNhJL_ILS1KFAkh3k6UUr2ssBL4yyfZTMpnP
-    6YRN_SLrw4ZKEw>
+X-ME-Sender: <xms:o6t5YNwDXiRTnAyaP-nZY4mlfo70WMXkeYXdOKPTwe0Tnw8c9zfO2A>
+    <xme:o6t5YNRoRZInK9FaQBqhH8PPaJbnp312Wcb8dejIPl9sCBV3T7G2GZRtGTicOetsu
+    zuX-Sz_oQzYyTg>
 X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduledrudelhedgkeelucetufdoteggodetrfdotf
     fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
     uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
     cujfgurhepfffhvffukfhfgggtuggjsehttdertddttddvnecuhfhrohhmpefkughoucfu
     tghhihhmmhgvlhcuoehiughoshgthhesihguohhstghhrdhorhhgqeenucggtffrrghtth
-    gvrhhnpedtffekkeefudffveegueejffejhfetgfeuuefgvedtieehudeuueekhfduheel
-    teenucfkphepkeegrddvvdelrdduheefrddukeejnecuvehluhhsthgvrhfuihiivgeptd
-    enucfrrghrrghmpehmrghilhhfrhhomhepihguohhstghhsehiughoshgthhdrohhrgh
-X-ME-Proxy: <xmx:Hqt5YAY4ySPESyKjgS48oBddtrvPywjHLADjUijabN25o3ga8yzn_A>
-    <xmx:Hqt5YC02XJBgitmiiNM5_ybe4KPzkOCpPiILXwun9hO4WmDNaB_6Jw>
-    <xmx:Hqt5YIWH6XtivkLr2tx1J1PGszR34Jm2S96HEKlJH9IdQqzNxiJC9A>
-    <xmx:H6t5YAcHPyvklCu-Mh_9lO6E89aqCmdmV8zzR1ZAJfyEq1Nx8owK_g>
+    gvrhhnpefgvefgveeuudeuffeiffehieffgfejleevtdetueetueffkeevgffgtddugfek
+    veenucffohhmrghinhepkhgvrhhnvghlrdhorhhgnecukfhppeekgedrvddvledrudehfe
+    drudekjeenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhm
+    pehiughoshgthhesihguohhstghhrdhorhhg
+X-ME-Proxy: <xmx:o6t5YHVyjBZ_MUPMTOv1Mua1R6b0PWDw4r1nM0laGjRXoz2yW4dIPg>
+    <xmx:o6t5YPhFYQdm9JxkJAIUCjt9c_xpSBTU4Cs7GOjCylQqaSkBsKA2pA>
+    <xmx:o6t5YPBeK1aVbiEsghlWDhOCHF_6lkMHXm37-FDNVQsV7aCocmm0Dg>
+    <xmx:pKt5YL3sZ5u1Ne2ndurWiXHbxYyDn3-lZ_C1wksJhJ7KEQ5Ev0s_CA>
 Received: from localhost (igld-84-229-153-187.inter.net.il [84.229.153.187])
-        by mail.messagingengine.com (Postfix) with ESMTPA id D6C6D1080067;
-        Fri, 16 Apr 2021 11:19:57 -0400 (EDT)
-Date:   Fri, 16 Apr 2021 18:19:53 +0300
+        by mail.messagingengine.com (Postfix) with ESMTPA id 89AA71080063;
+        Fri, 16 Apr 2021 11:22:10 -0400 (EDT)
+Date:   Fri, 16 Apr 2021 18:22:08 +0300
 From:   Ido Schimmel <idosch@idosch.org>
 To:     Vladimir Oltean <olteanv@gmail.com>
 Cc:     Jakub Kicinski <kuba@kernel.org>,
@@ -64,30 +65,66 @@ Cc:     Jakub Kicinski <kuba@kernel.org>,
         Vignesh Raghavendra <vigneshr@ti.com>,
         Linus Walleij <linus.walleij@linaro.org>,
         linux-omap@vger.kernel.org,
-        Tobias Waldekranz <tobias@waldekranz.com>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>
-Subject: Re: [PATCH resend net-next 1/2] net: bridge: switchdev: refactor
- br_switchdev_fdb_notify
-Message-ID: <YHmrGWUv4cHvP800@shredder.lan>
+        Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Tobias Waldekranz <tobias@waldekranz.com>
+Subject: Re: [PATCH resend net-next 2/2] net: bridge: switchdev: include
+ local flag in FDB notifications
+Message-ID: <YHmroFOPM3Hl/5uP@shredder.lan>
 References: <20210414165256.1837753-1-olteanv@gmail.com>
- <20210414165256.1837753-2-olteanv@gmail.com>
+ <20210414165256.1837753-3-olteanv@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20210414165256.1837753-2-olteanv@gmail.com>
+In-Reply-To: <20210414165256.1837753-3-olteanv@gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Apr 14, 2021 at 07:52:55PM +0300, Vladimir Oltean wrote:
-> From: Tobias Waldekranz <tobias@waldekranz.com>
+On Wed, Apr 14, 2021 at 07:52:56PM +0300, Vladimir Oltean wrote:
+> From: Vladimir Oltean <vladimir.oltean@nxp.com>
 > 
-> Instead of having to add more and more arguments to
-> br_switchdev_fdb_call_notifiers, get rid of it and build the info
-> struct directly in br_switchdev_fdb_notify.
+> As explained in bugfix commit 6ab4c3117aec ("net: bridge: don't notify
+> switchdev for local FDB addresses") as well as in this discussion:
+> https://lore.kernel.org/netdev/20210117193009.io3nungdwuzmo5f7@skbuf/
 > 
+> the switchdev notifiers for FDB entries managed to have a zero-day bug,
+> which was that drivers would not know what to do with local FDB entries,
+> because they were not told that they are local. The bug fix was to
+> simply not notify them of those addresses.
+> 
+> Let us now add the 'is_local' bit to bridge FDB entries, and make all
+> drivers ignore these entries by their own choice.
+> 
+> Co-developed-by: Tobias Waldekranz <tobias@waldekranz.com>
 > Signed-off-by: Tobias Waldekranz <tobias@waldekranz.com>
-> Reviewed-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 > Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 
 Reviewed-by: Ido Schimmel <idosch@nvidia.com>
+
+One comment below
+
+> diff --git a/net/bridge/br_switchdev.c b/net/bridge/br_switchdev.c
+> index c390f84adea2..a5e601e41cb9 100644
+> --- a/net/bridge/br_switchdev.c
+> +++ b/net/bridge/br_switchdev.c
+> @@ -114,13 +114,12 @@ br_switchdev_fdb_notify(const struct net_bridge_fdb_entry *fdb, int type)
+>  		.addr = fdb->key.addr.addr,
+>  		.vid = fdb->key.vlan_id,
+>  		.added_by_user = test_bit(BR_FDB_ADDED_BY_USER, &fdb->flags),
+> +		.is_local = test_bit(BR_FDB_LOCAL, &fdb->flags),
+>  		.offloaded = test_bit(BR_FDB_OFFLOADED, &fdb->flags),
+>  	};
+>  
+>  	if (!fdb->dst)
+>  		return;
+
+Do you plan to eventually remove this check so that entries pointing to
+the bridge device itself will be notified? For example:
+
+# bridge fdb add 00:01:02:03:04:05 dev br0 self local
+
+> -	if (test_bit(BR_FDB_LOCAL, &fdb->flags))
+> -		return;
+>  
+>  	switch (type) {
+>  	case RTM_DELNEIGH:
