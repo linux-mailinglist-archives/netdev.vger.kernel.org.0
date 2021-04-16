@@ -2,179 +2,128 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 806D9362373
-	for <lists+netdev@lfdr.de>; Fri, 16 Apr 2021 17:04:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DE6AB362397
+	for <lists+netdev@lfdr.de>; Fri, 16 Apr 2021 17:16:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245644AbhDPPDl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 16 Apr 2021 11:03:41 -0400
-Received: from mail.kernel.org ([198.145.29.99]:39802 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S245542AbhDPPDf (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 16 Apr 2021 11:03:35 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 5558C6115B;
-        Fri, 16 Apr 2021 15:03:07 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1618585391;
-        bh=86L27VqL5JYvSkRC73dm4+m1ITEjr+NCf8nSCM+wR1M=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=T7HrHOHZ3WrC44vwjDsKTnm3363YJYqZO/682HTI+yJqDRxvI0tcd6XsBl1SjgMKA
-         Kk6SaUrq4KBnDxiSKNJ0uDxYHk7MVNMyNR/xn1liG+k1mlTyR6DqSXbuU4yQDXpWja
-         3bJ7y30RAFkcIM50SY10qEea70ARrqRZhQ23xhL9ig9695/IeqzwAMIAfdMIdQJyiH
-         8Jquhro1Yd4aRBdZ+kiGcKSfJh4uRQuNm0+cfo9Hp6q+fMFjqdO2HYJppargqNG0dQ
-         u1sI4DMFK/JGoNFwP95ocvwNqhZloSGrVCRP82mNzWi3QBYVxzUvi2acgNPxuQ3ttl
-         894JhNVXaWJ4Q==
-Date:   Sat, 17 Apr 2021 00:03:04 +0900
-From:   Masami Hiramatsu <mhiramat@kernel.org>
-To:     Steven Rostedt <rostedt@goodmis.org>
-Cc:     Andrii Nakryiko <andrii.nakryiko@gmail.com>,
-        Jiri Olsa <jolsa@redhat.com>, Jiri Olsa <jolsa@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andriin@fb.com>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>, Daniel Xu <dxu@dxuuu.xyz>,
-        Jesper Brouer <jbrouer@redhat.com>,
-        Toke =?UTF-8?B?SMO4?= =?UTF-8?B?aWxhbmQtSsO4cmdlbnNlbg==?= 
-        <toke@redhat.com>, Viktor Malik <vmalik@redhat.com>,
-        Masami Hiramatsu <mhiramat@kernel.org>
-Subject: Re: [PATCHv2 RFC bpf-next 0/7] bpf: Add support for ftrace probe
-Message-Id: <20210417000304.fc987dc00d706e7551b29c04@kernel.org>
-In-Reply-To: <20210415170007.31420132@gandalf.local.home>
-References: <20210413121516.1467989-1-jolsa@kernel.org>
-        <CAEf4Bzazst1rBi4=LuP6_FnPXCRYBNFEtDnK3UVBj6Eo6xFNtQ@mail.gmail.com>
-        <YHbd2CmeoaiLJj7X@krava>
-        <CAEf4BzYyVj-Tjy9ZZdAU5nOtJ8_auvVobTT6pMqg8zPb9jj-Ow@mail.gmail.com>
-        <20210415111002.324b6bfa@gandalf.local.home>
-        <CAEf4BzY=yBZH2Aad1hNcqCt51u0+SmNdkD6NfJRVMzF7DsvG+A@mail.gmail.com>
-        <20210415170007.31420132@gandalf.local.home>
-X-Mailer: Sylpheed 3.7.0 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
-Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+        id S245435AbhDPPNo convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Fri, 16 Apr 2021 11:13:44 -0400
+Received: from us-smtp-delivery-44.mimecast.com ([207.211.30.44]:26386 "EHLO
+        us-smtp-delivery-44.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S244955AbhDPPN0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 16 Apr 2021 11:13:26 -0400
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-137-aMx0w6q8NOSY-8kv_mW_dQ-1; Fri, 16 Apr 2021 11:11:52 -0400
+X-MC-Unique: aMx0w6q8NOSY-8kv_mW_dQ-1
+Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id AD06C85EE8B;
+        Fri, 16 Apr 2021 15:11:50 +0000 (UTC)
+Received: from hog.localdomain (unknown [10.40.192.89])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id CFECE196E3;
+        Fri, 16 Apr 2021 15:11:48 +0000 (UTC)
+From:   Sabrina Dubroca <sd@queasysnail.net>
+To:     netdev@vger.kernel.org
+Cc:     steffen.klassert@secunet.com, Sabrina Dubroca <sd@queasysnail.net>,
+        Juri Lelli <jlelli@redhat.com>, Xiumei Mu <xmu@redhat.com>,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Subject: [PATCH ipsec-next] xfrm: ipcomp: remove unnecessary get_cpu()
+Date:   Fri, 16 Apr 2021 17:11:46 +0200
+Message-Id: <2bc5f05b0c50082cf0f5c817ae7c9f660848f146.1618394396.git.sd@queasysnail.net>
+MIME-Version: 1.0
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: queasysnail.net
+Content-Transfer-Encoding: 8BIT
+Content-Type: text/plain; charset=WINDOWS-1252
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+While testing ipcomp on a realtime kernel, Xiumei reported a "sleeping
+in atomic" bug, caused by a memory allocation while preemption is
+disabled (ipcomp_decompress -> alloc_page -> ... get_page_from_freelist).
 
-On Thu, 15 Apr 2021 17:00:07 -0400
-Steven Rostedt <rostedt@goodmis.org> wrote:
+As Sebastian noted [1], this get_cpu() isn't actually needed, since
+ipcomp_decompress() is called in napi context anyway, so BH is already
+disabled.
 
-> 
-> [
->   Added Masami, as I didn't realize he wasn't on Cc. He's the maintainer of
->   kretprobes.
-> 
->   Masami, you may want to use lore.kernel.org to read the history of this
->   thread.
-> ]
-> 
-> On Thu, 15 Apr 2021 13:45:06 -0700
-> Andrii Nakryiko <andrii.nakryiko@gmail.com> wrote:
-> 
-> > > I don't know how the BPF code does it, but if you are tracing the exit
-> > > of a function, I'm assuming that you hijack the return pointer and replace
-> > > it with a call to a trampoline that has access to the arguments. To do  
-> > 
-> > As Jiri replied, BPF trampoline doesn't do it the same way as
-> > kretprobe does it. Which gives the fexit BPF program another critical
-> > advantage over kretprobe -- we know traced function's entry IP in both
-> > entry and exit cases, which allows us to generically correlate them.
-> > 
-> > I've tried to figure out how to get that entry IP from kretprobe and
-> > couldn't find any way. Do you know if it's possible at all or it's a
-> > fundamental limitation of the way kretprobe is implemented (through
-> > hijacking return address)?
+This patch replaces get_cpu + per_cpu_ptr with this_cpu_ptr, then
+simplifies the error returns, since there isn't any common operation
+left.
 
-Inside the kretprobe handler, you can get the entry IP from kretprobe as below;
+[1] https://lore.kernel.org/lkml/20190820082810.ixkmi56fp7u7eyn2@linutronix.de/
 
-static int my_kretprobe_handler(struct kretprobe_instance *ri, struct pt_regs *regs)
-{
-	struct kretprobe *rp = get_kretprobe(ri);
-	unsigned long entry = (unsigned long)rp->kp.addr;
-	unsigned long retaddr = (unsigned long)ri->ret_addr;
-	...
-}
+Cc: Juri Lelli <jlelli@redhat.com>
+Reported-by: Xiumei Mu <xmu@redhat.com>
+Suggested-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Signed-off-by: Sabrina Dubroca <sd@queasysnail.net>
+---
+ net/xfrm/xfrm_ipcomp.c | 25 ++++++++-----------------
+ 1 file changed, 8 insertions(+), 17 deletions(-)
 
-It is ensured that rp != NULL in the handler.
-
-> 
-> The function graph tracer has the entry IP on exit, today. That's how we
-> can trace and show this:
-> 
->  # cd /sys/kernel/tracing
->  # echo 1 > echo 1 > options/funcgraph-tail
->  # echo function_graph > current_tracer
->  # cat trace
-> # tracer: function_graph
-> #
-> # CPU  DURATION                  FUNCTION CALLS
-> # |     |   |                     |   |   |   |
->  7)   1.358 us    |  rcu_idle_exit();
->  7)   0.169 us    |  sched_idle_set_state();
->  7)               |  cpuidle_reflect() {
->  7)               |    menu_reflect() {
->  7)   0.170 us    |      tick_nohz_idle_got_tick();
->  7)   0.585 us    |    } /* menu_reflect */
->  7)   1.115 us    |  } /* cpuidle_reflect */
-> 
-> That's how we can show the tail function that's called. I'm sure kreprobes
-> could do the same thing.
-
-Yes, I have to update the document how to do that (and maybe introduce 2 functions
-to wrap the entry/retaddr code)
-
-> 
-> The patch series I shared with Jiri, was work to allow kretprobes to be
-> built on top of the function graph tracer.
-> 
-> https://lore.kernel.org/lkml/20190525031633.811342628@goodmis.org/
-> 
-> The feature missing from that series, and why I didn't push it (as I had
-> ran out of time to work on it), was that kreprobes wants the full regs
-> stack as well. And since kretprobes was the main client of this work, that
-> I decided to work on this at another time. But like everything else, I got
-> distracted by other work, and didn't realize it has been almost 2 years
-> since looking at it :-p
-> 
-> Anyway, IIRC, Masami wasn't sure that the full regs was ever needed for the
-> return (who cares about the registers on return, except for the return
-> value?)
-
-I think kretprobe and ftrace are for a bit different usage. kretprobe can be
-used for something like debugger. In that case, accessing full regs stack
-will be more preferrable. (BTW, what the not "full regs" means? Does that
-save partial registers?)
-
-
-Thank you,
-
-> But this code could easily save the parameters as well.
-> 
-> > 
-> > > this you need a shadow stack to save the real return as well as the
-> > > parameters of the function. This is something that I have patches that do
-> > > similar things with function graph.
-> > >
-> > > If you want this feature, lets work together and make this work for both
-> > > BPF and ftrace.  
-> > 
-> > Absolutely, ultimately for users it doesn't matter what specific
-> > mechanism is used under the cover. It just seemed like BPF trampoline
-> > has all the useful tracing features (entry IP and input arguments in
-> > fexit) already and is just mostly missing a quick batch attach API. If
-> > we can get the same from ftrace, all the better.
-> 
-> Let me pull these patches out again, and see what we can do. Since then,
-> I've added the code that lets function tracer save parameters and the
-> stack, and function graph can use that as well.
-> 
-> 
-> -- Steve
-
-
+diff --git a/net/xfrm/xfrm_ipcomp.c b/net/xfrm/xfrm_ipcomp.c
+index 4d422447aadc..2e8afe078d61 100644
+--- a/net/xfrm/xfrm_ipcomp.c
++++ b/net/xfrm/xfrm_ipcomp.c
+@@ -41,19 +41,16 @@ static int ipcomp_decompress(struct xfrm_state *x, struct sk_buff *skb)
+ 	const int plen = skb->len;
+ 	int dlen = IPCOMP_SCRATCH_SIZE;
+ 	const u8 *start = skb->data;
+-	const int cpu = get_cpu();
+-	u8 *scratch = *per_cpu_ptr(ipcomp_scratches, cpu);
+-	struct crypto_comp *tfm = *per_cpu_ptr(ipcd->tfms, cpu);
++	u8 *scratch = *this_cpu_ptr(ipcomp_scratches);
++	struct crypto_comp *tfm = *this_cpu_ptr(ipcd->tfms);
+ 	int err = crypto_comp_decompress(tfm, start, plen, scratch, &dlen);
+ 	int len;
+ 
+ 	if (err)
+-		goto out;
++		return err;
+ 
+-	if (dlen < (plen + sizeof(struct ip_comp_hdr))) {
+-		err = -EINVAL;
+-		goto out;
+-	}
++	if (dlen < (plen + sizeof(struct ip_comp_hdr)))
++		return -EINVAL;
+ 
+ 	len = dlen - plen;
+ 	if (len > skb_tailroom(skb))
+@@ -68,16 +65,14 @@ static int ipcomp_decompress(struct xfrm_state *x, struct sk_buff *skb)
+ 		skb_frag_t *frag;
+ 		struct page *page;
+ 
+-		err = -EMSGSIZE;
+ 		if (WARN_ON(skb_shinfo(skb)->nr_frags >= MAX_SKB_FRAGS))
+-			goto out;
++			return -EMSGSIZE;
+ 
+ 		frag = skb_shinfo(skb)->frags + skb_shinfo(skb)->nr_frags;
+ 		page = alloc_page(GFP_ATOMIC);
+ 
+-		err = -ENOMEM;
+ 		if (!page)
+-			goto out;
++			return -ENOMEM;
+ 
+ 		__skb_frag_set_page(frag, page);
+ 
+@@ -96,11 +91,7 @@ static int ipcomp_decompress(struct xfrm_state *x, struct sk_buff *skb)
+ 		skb_shinfo(skb)->nr_frags++;
+ 	}
+ 
+-	err = 0;
+-
+-out:
+-	put_cpu();
+-	return err;
++	return 0;
+ }
+ 
+ int ipcomp_input(struct xfrm_state *x, struct sk_buff *skb)
 -- 
-Masami Hiramatsu <mhiramat@kernel.org>
+2.31.1
+
