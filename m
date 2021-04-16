@@ -2,132 +2,642 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3B5863618F4
-	for <lists+netdev@lfdr.de>; Fri, 16 Apr 2021 06:36:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 26CA236195A
+	for <lists+netdev@lfdr.de>; Fri, 16 Apr 2021 07:36:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238076AbhDPEfn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 16 Apr 2021 00:35:43 -0400
-Received: from mail-il1-f199.google.com ([209.85.166.199]:55896 "EHLO
-        mail-il1-f199.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234735AbhDPEfk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 16 Apr 2021 00:35:40 -0400
-Received: by mail-il1-f199.google.com with SMTP id v1-20020a92d2410000b02901533f3ed5dbso5800885ilg.22
-        for <netdev@vger.kernel.org>; Thu, 15 Apr 2021 21:35:16 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=vQTgohi03z5tK7Cg1hw3ZJisST4UH/MCqTpc+mpUM3w=;
-        b=HguC/piEXPg7ZRVjkB78yfdk7kHdNkbrCutO1hOf45ARzBYHzc2EBmxR8G+tF1V1xu
-         dqWNm3l8KjFZxdQ2xyI79gKllv1r8bgnUN1LnznRPGXC27lokltrCuna+tP+od6IKwrU
-         C7AHW6Peg5z4JpnKJYUUWPSRihSOWVdLlYXTmc+2MlNTdAXh9A057XrBUwezTpiwifQG
-         24CKsI23kCyXNzSt79cnMprX/88rErrmRb9LdAP3ZT5QuQdBaL4Fq858ts6YN9aBGObr
-         rkI/dJBC/e2J/pHblpwwjsYjcsGM8MYa0xkDAPs3Jg0wA1OAezM+OrEuqYH/bGIRTqna
-         BSYw==
-X-Gm-Message-State: AOAM531CZ3Nm62IbSMwfjHLS82G9N3tpX99QXe7EI4caWMc2vWO8eirp
-        P8kSBVFjyGAZk1dUnP21OZV3ZvT1b7djpni+cc0LYT6Czz13
-X-Google-Smtp-Source: ABdhPJw1usrwJxPJNZPdyxUalJuLF2O2KN2oetB1VB36jzdNFtg6/b+WSHV39d4QGIjC1xLB7NXq3r61gkbTcUaBrhhTb6j06Uy0
+        id S236793AbhDPFgN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 16 Apr 2021 01:36:13 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:33420 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S230250AbhDPFgM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 16 Apr 2021 01:36:12 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1618551348;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=Ag1lOLmcjXCe9XGzKNkGooSjTqiIJEKBeGKV03ZLRck=;
+        b=fEnIwUF5yR1lmeLya7Sw7vC/Ii1OyPPVQHqgfhfSPM6yEuzFpKAq6FHXy3avI6TmpFPWzd
+        1n8ktoVuBD+j+qmi+PAPA9xkyBekrcU7PSd6rkOZs1G/mZrTn9FsfKvKqEYmp1PKyeAEjs
+        kw8scwCqQ6fBSndqCRngGfx60qFSemI=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-156-WQMZlX6mP4aA50btHNG0Zw-1; Fri, 16 Apr 2021 01:35:46 -0400
+X-MC-Unique: WQMZlX6mP4aA50btHNG0Zw-1
+Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 3CE5E107ACC7;
+        Fri, 16 Apr 2021 05:35:44 +0000 (UTC)
+Received: from wangxiaodeMacBook-Air.local (ovpn-13-9.pek2.redhat.com [10.72.13.9])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 986DA60BE5;
+        Fri, 16 Apr 2021 05:35:34 +0000 (UTC)
+Subject: Re: [PATCH net-next v4 09/10] virtio-net: xsk zero copy xmit
+ implement wakeup and xmit
+To:     Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+Cc:     "Michael S. Tsirkin" <mst@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn@kernel.org>,
+        Magnus Karlsson <magnus.karlsson@intel.com>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        virtualization@lists.linux-foundation.org, bpf@vger.kernel.org,
+        "dust.li" <dust.li@linux.alibaba.com>, netdev@vger.kernel.org
+References: <1618482470.2631352-3-xuanzhuo@linux.alibaba.com>
+From:   Jason Wang <jasowang@redhat.com>
+Message-ID: <95556bf6-9f78-670e-0f36-1de1e955c7ae@redhat.com>
+Date:   Fri, 16 Apr 2021 13:35:33 +0800
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
+ Gecko/20100101 Thunderbird/78.9.1
 MIME-Version: 1.0
-X-Received: by 2002:a5e:8419:: with SMTP id h25mr1970510ioj.43.1618547715699;
- Thu, 15 Apr 2021 21:35:15 -0700 (PDT)
-Date:   Thu, 15 Apr 2021 21:35:15 -0700
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000a5772005c00f8101@google.com>
-Subject: [syzbot] WARNING in ctx_sched_in
-From:   syzbot <syzbot+50d41b514809f6f4f326@syzkaller.appspotmail.com>
-To:     acme@kernel.org, alexander.shishkin@linux.intel.com,
-        andrii@kernel.org, ast@kernel.org, bpf@vger.kernel.org,
-        daniel@iogearbox.net, john.fastabend@gmail.com, jolsa@redhat.com,
-        kafai@fb.com, kpsingh@kernel.org, linux-kernel@vger.kernel.org,
-        mark.rutland@arm.com, mingo@redhat.com, namhyung@kernel.org,
-        netdev@vger.kernel.org, peterz@infradead.org,
-        songliubraving@fb.com, syzkaller-bugs@googlegroups.com, yhs@fb.com
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <1618482470.2631352-3-xuanzhuo@linux.alibaba.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
 
-syzbot found the following issue on:
+在 2021/4/15 下午6:27, Xuan Zhuo 写道:
+> On Wed, 14 Apr 2021 13:46:45 +0800, Jason Wang <jasowang@redhat.com> wrote:
+>> 在 2021/4/13 上午11:15, Xuan Zhuo 写道:
+>>> This patch implements the core part of xsk zerocopy xmit.
+>>>
+>>> When the user calls sendto to consume the data in the xsk tx queue,
+>>> virtnet_xsk_wakeup() will be called.
+>>>
+>>> In wakeup, it will try to send a part of the data directly. There are
+>>> two purposes for this realization:
+>>>
+>>> 1. Send part of the data quickly to reduce the transmission delay of the
+>>>      first packet.
+>>> 2. Trigger tx interrupt, start napi to consume xsk tx data.
+>>>
+>>> All sent xsk packets share the virtio-net header of xsk_hdr. If xsk
+>>> needs to support csum and other functions later, consider assigning xsk
+>>> hdr separately for each sent packet.
+>>>
+>>> There are now three situations in free_old_xmit(): skb, xdp frame, xsk
+>>> desc.  Based on the last two bit of ptr returned by virtqueue_get_buf():
+>>>       00 is skb by default.
+>>>       01 represents the packet sent by xdp
+>>>       10 is the packet sent by xsk
+>>>
+>>> If the xmit work of xsk has not been completed, but the ring is full,
+>>> napi must first exit and wait for the ring to be available, so
+>>> need_wakeup() is set. If free_old_xmit() is called first by start_xmit(),
+>>> we can quickly wake up napi to execute xsk xmit task.
+>>>
+>>> When recycling, we need to count the number of bytes sent, so put xsk
+>>> desc->len into the ptr pointer. Because ptr does not point to meaningful
+>>> objects in xsk.
+>>>
+>>> Signed-off-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+>>> Reviewed-by: Dust Li <dust.li@linux.alibaba.com>
+>>> ---
+>>>    drivers/net/virtio_net.c | 296 ++++++++++++++++++++++++++++++++++++++-
+>>>    1 file changed, 292 insertions(+), 4 deletions(-)
+>>>
+>>> diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
+>>> index 8242a9e9f17d..c441d6bf1510 100644
+>>> --- a/drivers/net/virtio_net.c
+>>> +++ b/drivers/net/virtio_net.c
+>>> @@ -46,6 +46,11 @@ module_param(napi_tx, bool, 0644);
+>>>    #define VIRTIO_XDP_REDIR	BIT(1)
+>>>
+>>>    #define VIRTIO_XDP_FLAG	BIT(0)
+>>> +#define VIRTIO_XSK_FLAG	BIT(1)
+>>> +
+>>> +#define VIRTIO_XSK_PTR_SHIFT       4
+>>> +
+>>> +static struct virtio_net_hdr_mrg_rxbuf xsk_hdr;
+>>>
+>>>    /* RX packet size EWMA. The average packet size is used to determine the packet
+>>>     * buffer size when refilling RX rings. As the entire RX ring may be refilled
+>>> @@ -138,6 +143,12 @@ struct send_queue {
+>>>    	struct {
+>>>    		/* xsk pool */
+>>>    		struct xsk_buff_pool __rcu *pool;
+>>> +
+>>> +		/* save the desc for next xmit, when xmit fail. */
+>>> +		struct xdp_desc last_desc;
+>>
+>> As replied in the pervious version this looks tricky. I think we need to
+>> make sure to reserve some slots as skb path did.
+>>
+>> This looks exactly like what stmmac did which alos shares XDP and skb
+>> for the same ring.
+>>
+>>
+>>> +
+>>> +		/* xsk wait for tx inter or softirq */
+>>> +		bool need_wakeup;
+>>>    	} xsk;
+>>>    };
+>>>
+>>> @@ -255,6 +266,15 @@ struct padded_vnet_hdr {
+>>>    	char padding[4];
+>>>    };
+>>>
+>>> +static int virtnet_xsk_run(struct send_queue *sq, struct xsk_buff_pool *pool,
+>>> +			   int budget, bool in_napi);
+>>> +static void virtnet_xsk_complete(struct send_queue *sq, u32 num);
+>>> +
+>>> +static bool is_skb_ptr(void *ptr)
+>>> +{
+>>> +	return !((unsigned long)ptr & (VIRTIO_XDP_FLAG | VIRTIO_XSK_FLAG));
+>>> +}
+>>> +
+>>>    static bool is_xdp_frame(void *ptr)
+>>>    {
+>>>    	return (unsigned long)ptr & VIRTIO_XDP_FLAG;
+>>> @@ -265,6 +285,19 @@ static void *xdp_to_ptr(struct xdp_frame *ptr)
+>>>    	return (void *)((unsigned long)ptr | VIRTIO_XDP_FLAG);
+>>>    }
+>>>
+>>> +static void *xsk_to_ptr(struct xdp_desc *desc)
+>>> +{
+>>> +	/* save the desc len to ptr */
+>>> +	u64 p = desc->len << VIRTIO_XSK_PTR_SHIFT;
+>>> +
+>>> +	return (void *)((unsigned long)p | VIRTIO_XSK_FLAG);
+>>> +}
+>>> +
+>>> +static void ptr_to_xsk(void *ptr, struct xdp_desc *desc)
+>>> +{
+>>> +	desc->len = ((unsigned long)ptr) >> VIRTIO_XSK_PTR_SHIFT;
+>>> +}
+>>> +
+>>>    static struct xdp_frame *ptr_to_xdp(void *ptr)
+>>>    {
+>>>    	return (struct xdp_frame *)((unsigned long)ptr & ~VIRTIO_XDP_FLAG);
+>>> @@ -273,25 +306,35 @@ static struct xdp_frame *ptr_to_xdp(void *ptr)
+>>>    static void __free_old_xmit(struct send_queue *sq, bool in_napi,
+>>>    			    struct virtnet_sq_stats *stats)
+>>>    {
+>>> +	unsigned int xsknum = 0;
+>>>    	unsigned int len;
+>>>    	void *ptr;
+>>>
+>>>    	while ((ptr = virtqueue_get_buf(sq->vq, &len)) != NULL) {
+>>> -		if (likely(!is_xdp_frame(ptr))) {
+>>> +		if (is_skb_ptr(ptr)) {
+>>>    			struct sk_buff *skb = ptr;
+>>>
+>>>    			pr_debug("Sent skb %p\n", skb);
+>>>
+>>>    			stats->bytes += skb->len;
+>>>    			napi_consume_skb(skb, in_napi);
+>>> -		} else {
+>>> +		} else if (is_xdp_frame(ptr)) {
+>>>    			struct xdp_frame *frame = ptr_to_xdp(ptr);
+>>>
+>>>    			stats->bytes += frame->len;
+>>>    			xdp_return_frame(frame);
+>>> +		} else {
+>>> +			struct xdp_desc desc;
+>>> +
+>>> +			ptr_to_xsk(ptr, &desc);
+>>> +			stats->bytes += desc.len;
+>>> +			++xsknum;
+>>>    		}
+>>>    		stats->packets++;
+>>>    	}
+>>> +
+>>> +	if (xsknum)
+>>> +		virtnet_xsk_complete(sq, xsknum);
+>>>    }
+>>>
+>>>    /* Converting between virtqueue no. and kernel tx/rx queue no.
+>>> @@ -1529,6 +1572,19 @@ static int virtnet_open(struct net_device *dev)
+>>>    	return 0;
+>>>    }
+>>>
+>>> +static int virtnet_poll_xsk(struct send_queue *sq, int budget)
+>>> +{
+>>> +	struct xsk_buff_pool *pool;
+>>> +	int work_done = 0;
+>>> +
+>>> +	rcu_read_lock();
+>>> +	pool = rcu_dereference(sq->xsk.pool);
+>>> +	if (pool)
+>>> +		work_done = virtnet_xsk_run(sq, pool, budget, true);
+>>> +	rcu_read_unlock();
+>>> +	return work_done;
+>>> +}
+>>> +
+>>>    static int virtnet_poll_tx(struct napi_struct *napi, int budget)
+>>>    {
+>>>    	struct send_queue *sq = container_of(napi, struct send_queue, napi);
+>>> @@ -1545,6 +1601,7 @@ static int virtnet_poll_tx(struct napi_struct *napi, int budget)
+>>>
+>>>    	txq = netdev_get_tx_queue(vi->dev, index);
+>>>    	__netif_tx_lock(txq, raw_smp_processor_id());
+>>> +	work_done += virtnet_poll_xsk(sq, budget);
+>>>    	free_old_xmit(sq, true);
+>>>    	__netif_tx_unlock(txq);
+>>>
+>>> @@ -2535,6 +2592,234 @@ static int virtnet_xdp_set(struct net_device *dev, struct bpf_prog *prog,
+>>>    	return err;
+>>>    }
+>>>
+>>> +static void virtnet_xsk_check_queue(struct send_queue *sq)
+>>> +{
+>>> +	struct virtnet_info *vi = sq->vq->vdev->priv;
+>>> +	struct net_device *dev = vi->dev;
+>>> +	int qnum = sq - vi->sq;
+>>> +
+>>> +	/* If this sq is not the exclusive queue of the current cpu,
+>>> +	 * then it may be called by start_xmit, so check it running out
+>>> +	 * of space.
+>>> +	 *
+>>
+>> I think it's better to move this check after is_xdp_raw_buffer_queue().
+> Sorry, do not understand.
 
-HEAD commit:    79c338ab riscv: keep interrupts disabled for BREAKPOINT ex..
-git tree:       git://git.kernel.org/pub/scm/linux/kernel/git/riscv/linux.git fixes
-console output: https://syzkaller.appspot.com/x/log.txt?x=10fb93f9d00000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=f8af20e245283c9a
-dashboard link: https://syzkaller.appspot.com/bug?extid=50d41b514809f6f4f326
-userspace arch: riscv64
 
-Unfortunately, I don't have any reproducer for this issue yet.
-
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+50d41b514809f6f4f326@syzkaller.appspotmail.com
-
-------------[ cut here ]------------
-WARNING: CPU: 1 PID: 4475 at kernel/events/core.c:3752 ctx_sched_in+0x12e/0x3ee kernel/events/core.c:3752
-Modules linked in:
-CPU: 1 PID: 4475 Comm: syz-executor.1 Not tainted 5.12.0-rc6-syzkaller-00183-g79c338ab575e #0
-Hardware name: riscv-virtio,qemu (DT)
-epc : ctx_sched_in+0x12e/0x3ee kernel/events/core.c:3752
- ra : ctx_sched_in+0x12e/0x3ee kernel/events/core.c:3752
-epc : ffffffe000279fe8 ra : ffffffe000279fe8 sp : ffffffe009e17680
- gp : ffffffe004588ad0 tp : ffffffe006398000 t0 : 0000000000000000
- t1 : 0000000000000001 t2 : 00000000000f4240 s0 : ffffffe009e176f0
- s1 : ffffffe0077edc00 a0 : ffffffe067d79118 a1 : 00000000000f0000
- a2 : 0000000000000002 a3 : ffffffe000279fe8 a4 : ffffffe006399000
- a5 : 0000000040000000 a6 : 0000000000f00000 a7 : ffffffe000280cc8
- s2 : 0000000000000007 s3 : ffffffe0077edd40 s4 : ffffffe006398000
- s5 : 0000000000000002 s6 : ffffffe00458c0d0 s7 : ffffffe067d78f70
- s8 : 0000000000000007 s9 : ffffffe067d79118 s10: ffffffe0077edc00
- s11: ffffffe0077edc08 t3 : e189d98bb4bfb900 t4 : ffffffc4042c47b2
- t5 : ffffffc4042c47ba t6 : 0000000000040000
-status: 0000000000000100 badaddr: 0000000000000000 cause: 0000000000000003
-Call Trace:
-[<ffffffe000279fe8>] ctx_sched_in+0x12e/0x3ee kernel/events/core.c:3752
-[<ffffffe00027a2e0>] perf_event_sched_in+0x38/0x74 kernel/events/core.c:2680
-[<ffffffe000280da2>] perf_event_context_sched_in kernel/events/core.c:3817 [inline]
-[<ffffffe000280da2>] __perf_event_task_sched_in+0x4ea/0x680 kernel/events/core.c:3860
-[<ffffffe0000850f8>] perf_event_task_sched_in include/linux/perf_event.h:1210 [inline]
-[<ffffffe0000850f8>] finish_task_switch.isra.0+0x284/0x318 kernel/sched/core.c:4189
-[<ffffffe002a94308>] context_switch kernel/sched/core.c:4325 [inline]
-[<ffffffe002a94308>] __schedule+0x484/0xe8c kernel/sched/core.c:5073
-[<ffffffe002a95102>] preempt_schedule_notrace+0x9c/0x19a kernel/sched/core.c:5312
-[<ffffffe0000cd54a>] rcu_read_unlock_sched_notrace include/linux/rcupdate.h:794 [inline]
-[<ffffffe0000cd54a>] trace_lock_acquire+0xf0/0x20e include/trace/events/lock.h:13
-[<ffffffe0000d3c0e>] lock_acquire+0x28/0x5a kernel/locking/lockdep.c:5481
-[<ffffffe0003b20ee>] rcu_lock_acquire include/linux/rcupdate.h:267 [inline]
-[<ffffffe0003b20ee>] rcu_read_lock include/linux/rcupdate.h:656 [inline]
-[<ffffffe0003b20ee>] percpu_ref_put_many.constprop.0+0x38/0x148 include/linux/percpu-refcount.h:317
-[<ffffffe0003baa56>] percpu_ref_put include/linux/percpu-refcount.h:338 [inline]
-[<ffffffe0003baa56>] obj_cgroup_put include/linux/memcontrol.h:713 [inline]
-[<ffffffe0003baa56>] memcg_slab_free_hook mm/slab.h:372 [inline]
-[<ffffffe0003baa56>] memcg_slab_free_hook mm/slab.h:336 [inline]
-[<ffffffe0003baa56>] do_slab_free mm/slub.c:3117 [inline]
-[<ffffffe0003baa56>] ___cache_free+0x2bc/0x3dc mm/slub.c:3168
-[<ffffffe0003be26c>] qlink_free mm/kasan/quarantine.c:146 [inline]
-[<ffffffe0003be26c>] qlist_free_all+0x56/0xac mm/kasan/quarantine.c:165
-[<ffffffe0003be774>] kasan_quarantine_reduce+0x14c/0x1c8 mm/kasan/quarantine.c:272
-[<ffffffe0003bc3f8>] __kasan_slab_alloc+0x60/0x62 mm/kasan/common.c:437
-[<ffffffe0003b8f10>] kasan_slab_alloc include/linux/kasan.h:223 [inline]
-[<ffffffe0003b8f10>] slab_post_alloc_hook mm/slab.h:516 [inline]
-[<ffffffe0003b8f10>] slab_alloc_node mm/slub.c:2907 [inline]
-[<ffffffe0003b8f10>] slab_alloc mm/slub.c:2915 [inline]
-[<ffffffe0003b8f10>] kmem_cache_alloc+0x168/0x3ca mm/slub.c:2920
-[<ffffffe0001aaee2>] kmem_cache_zalloc include/linux/slab.h:674 [inline]
-[<ffffffe0001aaee2>] taskstats_tgid_alloc kernel/taskstats.c:561 [inline]
-[<ffffffe0001aaee2>] taskstats_exit+0x3ce/0x5fe kernel/taskstats.c:600
-[<ffffffe000031bfc>] do_exit+0x3b2/0x1846 kernel/exit.c:810
-[<ffffffe00003319a>] do_group_exit+0xa0/0x198 kernel/exit.c:922
-[<ffffffe00004c558>] get_signal+0x31e/0x14ba kernel/signal.c:2781
-[<ffffffe000007e06>] do_signal arch/riscv/kernel/signal.c:271 [inline]
-[<ffffffe000007e06>] do_notify_resume+0xa8/0x930 arch/riscv/kernel/signal.c:317
-[<ffffffe000005586>] ret_from_exception+0x0/0x14
+So what I meant is:
 
 
----
-This report is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
+/* If it is a raw buffer queue, ... */
+     if (is_xdp_raw_buffer_queue())
 
-syzbot will keep track of this issue. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+/* if it is not the exclusive queue */
+     if (sq->vq->num_free ...)
+
+
+>>
+>>> +	 * And if it is a raw buffer queue, it does not check whether the status
+>>> +	 * of the queue is stopped when sending. So there is no need to check
+>>> +	 * the situation of the raw buffer queue.
+>>> +	 */
+>>> +	if (is_xdp_raw_buffer_queue(vi, qnum))
+>>> +		return;
+>>> +
+>>> +	/* Stop the queue to avoid getting packets that we are
+>>> +	 * then unable to transmit. Then wait the tx interrupt.
+>>> +	 */
+>>> +	if (sq->vq->num_free < 2 + MAX_SKB_FRAGS)
+>>> +		netif_stop_subqueue(dev, qnum);
+>>
+>> Is there any way to stop xsk TX here?
+>
+> xsk tx is driven by tx napi, so stop has no meaning.
+
+
+So NAPI can be stopped.
+
+
+>
+>
+>>
+>>> +}
+>>> +
+>>> +static void virtnet_xsk_complete(struct send_queue *sq, u32 num)
+>>> +{
+>>> +	struct xsk_buff_pool *pool;
+>>> +
+>>> +	rcu_read_lock();
+>>> +
+>>> +	pool = rcu_dereference(sq->xsk.pool);
+>>> +	if (!pool) {
+>>> +		rcu_read_unlock();
+>>> +		return;
+>>> +	}
+>>> +	xsk_tx_completed(pool, num);
+>>> +	rcu_read_unlock();
+>>> +
+>>> +	if (sq->xsk.need_wakeup) {
+>>> +		sq->xsk.need_wakeup = false;
+>>> +		virtqueue_napi_schedule(&sq->napi, sq->vq);
+>>> +	}
+>>> +}
+>>> +
+>>> +static int virtnet_xsk_xmit(struct send_queue *sq, struct xsk_buff_pool *pool,
+>>> +			    struct xdp_desc *desc)
+>>> +{
+>>> +	struct virtnet_info *vi;
+>>> +	u32 offset, n, len;
+>>> +	struct page *page;
+>>> +	void *data;
+>>> +	u64 addr;
+>>> +	int err;
+>>> +
+>>> +	vi = sq->vq->vdev->priv;
+>>> +	addr = desc->addr;
+>>> +
+>>> +	data = xsk_buff_raw_get_data(pool, addr);
+>>> +	offset = offset_in_page(data);
+>>> +
+>>> +	/* xsk unaligned mode, desc may use two pages */
+>>> +	if (desc->len > PAGE_SIZE - offset)
+>>> +		n = 3;
+>>> +	else
+>>> +		n = 2;
+>>> +
+>>> +	sg_init_table(sq->sg, n);
+>>> +	sg_set_buf(sq->sg, &xsk_hdr, vi->hdr_len);
+>>> +
+>>> +	/* handle for xsk first page */
+>>> +	len = min_t(int, desc->len, PAGE_SIZE - offset);
+>>> +	page = xsk_buff_xdp_get_page(pool, addr);
+>>> +	sg_set_page(sq->sg + 1, page, len, offset);
+>>> +
+>>> +	/* xsk unaligned mode, handle for the second page */
+>>> +	if (len < desc->len) {
+>>> +		page = xsk_buff_xdp_get_page(pool, addr + len);
+>>> +		len = min_t(int, desc->len - len, PAGE_SIZE);
+>>> +		sg_set_page(sq->sg + 2, page, len, 0);
+>>> +	}
+>>> +
+>>> +	err = virtqueue_add_outbuf(sq->vq, sq->sg, n, xsk_to_ptr(desc),
+>>> +				   GFP_ATOMIC);
+>>> +	if (unlikely(err))
+>>> +		sq->xsk.last_desc = *desc;
+>>> +
+>>> +	return err;
+>>> +}
+>>> +
+>>> +static int virtnet_xsk_xmit_batch(struct send_queue *sq,
+>>> +				  struct xsk_buff_pool *pool,
+>>> +				  unsigned int budget,
+>>> +				  bool in_napi, int *done,
+>>> +				  struct virtnet_sq_stats *stats)
+>>> +{
+>>> +	struct xdp_desc desc;
+>>> +	int err, packet = 0;
+>>> +	int ret = -EAGAIN;
+>>> +
+>>> +	if (sq->xsk.last_desc.addr) {
+>>> +		if (sq->vq->num_free < 2 + MAX_SKB_FRAGS)
+>>> +			return -EBUSY;
+>>> +
+>>> +		err = virtnet_xsk_xmit(sq, pool, &sq->xsk.last_desc);
+>>> +		if (unlikely(err))
+>>> +			return -EBUSY;
+>>> +
+>>> +		++packet;
+>>> +		--budget;
+>>> +		sq->xsk.last_desc.addr = 0;
+>>
+>> So I think we don't need to do this since we try always to reserve 2 +
+>> MAX_SKB_FRAGS, then it means we get -EIO/-ENOMEM which is bascially a
+>> broken device or dma map.
+>>
+> Does it mean that when there are enough slots, virtqueue_add_outbuf() returns
+> failure -EIO/-ENOMEM, which means that the network card is no longer working.
+
+
+Or it could be a bug of the driver. And you don't need to check num_free 
+before if you always try to reserve sufficient slots.
+
+
+>
+> I originally thought that an error was returned, but it may work normally next
+> time. It should be my fault.
+>
+> Thank you very much, I learned it. I will delete the related code.
+>
+>>> +	}
+>>> +
+>>> +	while (budget-- > 0) {
+>>> +		if (sq->vq->num_free < 2 + MAX_SKB_FRAGS) {
+>>> +			ret = -EBUSY;
+>>> +			break;
+>>> +		}
+>>> +
+>>> +		if (!xsk_tx_peek_desc(pool, &desc)) {
+>>> +			/* done */
+>>> +			ret = 0;
+>>> +			break;
+>>> +		}
+>>> +
+>>> +		err = virtnet_xsk_xmit(sq, pool, &desc);
+>>> +		if (unlikely(err)) {
+>>> +			ret = -EBUSY;
+>>
+>> Since the function will be called by NAPI I think we to report the
+>> number of packets that is transmitted as well.
+>
+> A 'desc' points to a packet, so only one packet is sent by virtnet_xsk_xmit().
+> I have this information in the following variable "packet" statistics. Finally,
+> use the parameter "done" to pass to the upper layer.
+
+
+I meant you did:
+
+virtnet_poll_tx()
+     work_done += virtnet_poll_xsk()
+     virtnet_xsk_run()
+         virtnet_xsk_xmit_batch()
+
+If there's no suffcieint slot you still need to return the number of 
+packet that has been sent.
+
+
+
+>
+>>
+>>> +			break;
+>>> +		}
+>>> +
+>>> +		++packet;
+>>> +	}
+>>> +
+>>> +	if (packet) {
+>>> +		if (virtqueue_kick_prepare(sq->vq) && virtqueue_notify(sq->vq))
+>>> +			++stats->kicks;
+>>> +
+>>> +		*done = packet;
+>>> +		stats->xdp_tx += packet;
+>>> +
+>>> +		xsk_tx_release(pool);
+>>> +	}
+>>> +
+>>> +	return ret;
+>>> +}
+>>> +
+>>> +static int virtnet_xsk_run(struct send_queue *sq, struct xsk_buff_pool *pool,
+>>> +			   int budget, bool in_napi)
+>>> +{
+>>> +	struct virtnet_sq_stats stats = {};
+>>> +	int done = 0;
+>>> +	int err;
+>>> +
+>>> +	sq->xsk.need_wakeup = false;
+>>> +	__free_old_xmit(sq, in_napi, &stats);
+>>> +
+>>> +	/* return err:
+>>> +	 * -EAGAIN: done == budget
+>>> +	 * -EBUSY:  done < budget
+>>> +	 *  0    :  done < budget
+>>> +	 */
+>>> +	err = virtnet_xsk_xmit_batch(sq, pool, budget, in_napi, &done, &stats);
+>>> +	if (err == -EBUSY) {
+>>> +		__free_old_xmit(sq, in_napi, &stats);
+>>> +
+>>> +		/* If the space is enough, let napi run again. */
+>>> +		if (sq->vq->num_free >= 2 + MAX_SKB_FRAGS)
+>>> +			done = budget;
+>>
+>> Why you need to run NAPI isntead of a netif_tx_wake()?
+>
+> When virtnet_xsk_run() is called by virtnet_xsk_wakeup(), the return value is
+> not concerned.
+>
+> virtnet_xsk_run() is already in napi when it is called by poll_tx(), so if there
+> are more slots, I try to return "budget" and let napi call poll_tx() again
+
+
+Well, my question is why you don't need to wakeup the qdisc in this 
+case. Note that the queue could be shared with ndo_start_xmit().
+
+
+>
+>>
+>>> +		else
+>>> +			sq->xsk.need_wakeup = true;
+>>
+>> So done is 0, is this intended?
+>
+> When err == 0, it indicates that the xsk queue has been exhausted. At this time,
+> done < budget, return done directly, and napi can be stopped.
+>
+> When err == -EAGAIN, it indicates that the budget amount of patch has been sent,
+> and done should be returned to the upper layer. Wait for napi to call poll_tx()
+> again
+
+
+So the code is only for -EBUSY if I read the code correctly. And in this 
+case you return 0.
+
+
+>
+> In both cases, done is directly returned to the upper layer without special
+> processing.
+>
+>>
+>>> +	}
+>>> +
+>>> +	virtnet_xsk_check_queue(sq);
+>>> +
+>>> +	u64_stats_update_begin(&sq->stats.syncp);
+>>> +	sq->stats.packets += stats.packets;
+>>> +	sq->stats.bytes += stats.bytes;
+>>> +	sq->stats.kicks += stats.kicks;
+>>> +	sq->stats.xdp_tx += stats.xdp_tx;
+>>> +	u64_stats_update_end(&sq->stats.syncp);
+>>> +
+>>> +	return done;
+>>> +}
+>>> +
+>>> +static int virtnet_xsk_wakeup(struct net_device *dev, u32 qid, u32 flag)
+>>> +{
+>>> +	struct virtnet_info *vi = netdev_priv(dev);
+>>> +	struct xsk_buff_pool *pool;
+>>> +	struct netdev_queue *txq;
+>>> +	struct send_queue *sq;
+>>> +
+>>> +	if (!netif_running(dev))
+>>> +		return -ENETDOWN;
+>>> +
+>>> +	if (qid >= vi->curr_queue_pairs)
+>>> +		return -EINVAL;
+>>> +
+>>> +	sq = &vi->sq[qid];
+>>> +
+>>> +	rcu_read_lock();
+>>> +
+>>> +	pool = rcu_dereference(sq->xsk.pool);
+>>> +	if (!pool)
+>>> +		goto end;
+>>> +
+>>> +	if (napi_if_scheduled_mark_missed(&sq->napi))
+>>> +		goto end;
+>>> +
+>>> +	txq = netdev_get_tx_queue(dev, qid);
+>>> +
+>>> +	__netif_tx_lock_bh(txq);
+>>> +
+>>> +	/* Send part of the packet directly to reduce the delay in sending the
+>>> +	 * packet, and this can actively trigger the tx interrupts.
+>>> +	 *
+>>> +	 * If no packet is sent out, the ring of the device is full. In this
+>>> +	 * case, we will still get a tx interrupt response. Then we will deal
+>>> +	 * with the subsequent packet sending work.
+>>
+>> So stmmac schedule NAPI here, do you have perf numbers for this improvement?
+>
+> virtnet_xsk_wakeup() is called by sendto(). The purpose is to start consuming
+> the data in the xsk tx queue. The purpose here is to make napi run.
+>
+> When napi is not running, I try to send a certain amount of data:
+> 1. Reduce the delay of the first packet
+> 2. Trigger hardware to generate tx interrupt
+
+
+I dont' see the code the trigger hardware interrupt and I don't believe 
+virtio can do this.
+
+So the point is we need
+
+1) schedule NAPI when napi_if_scheduled_mark_missed() returns false
+2) introduce this optimization on top with perf numbers
+
+Thanks
+
+>
+> Thanks.
+>
+>> Thanks
+>>
+>>
+>>> +	 */
+>>> +	virtnet_xsk_run(sq, pool, napi_weight, false);
+>>> +
+>>> +	__netif_tx_unlock_bh(txq);
+>>> +
+>>> +end:
+>>> +	rcu_read_unlock();
+>>> +	return 0;
+>>> +}
+>>> +
+>>>    static int virtnet_xsk_pool_enable(struct net_device *dev,
+>>>    				   struct xsk_buff_pool *pool,
+>>>    				   u16 qid)
+>>> @@ -2559,6 +2844,8 @@ static int virtnet_xsk_pool_enable(struct net_device *dev,
+>>>    		return -EPERM;
+>>>
+>>>    	rcu_read_lock();
+>>> +	memset(&sq->xsk, 0, sizeof(sq->xsk));
+>>> +
+>>>    	/* Here is already protected by rtnl_lock, so rcu_assign_pointer is
+>>>    	 * safe.
+>>>    	 */
+>>> @@ -2658,6 +2945,7 @@ static const struct net_device_ops virtnet_netdev = {
+>>>    	.ndo_vlan_rx_kill_vid = virtnet_vlan_rx_kill_vid,
+>>>    	.ndo_bpf		= virtnet_xdp,
+>>>    	.ndo_xdp_xmit		= virtnet_xdp_xmit,
+>>> +	.ndo_xsk_wakeup         = virtnet_xsk_wakeup,
+>>>    	.ndo_features_check	= passthru_features_check,
+>>>    	.ndo_get_phys_port_name	= virtnet_get_phys_port_name,
+>>>    	.ndo_set_features	= virtnet_set_features,
+>>> @@ -2761,9 +3049,9 @@ static void free_unused_bufs(struct virtnet_info *vi)
+>>>    	for (i = 0; i < vi->max_queue_pairs; i++) {
+>>>    		struct virtqueue *vq = vi->sq[i].vq;
+>>>    		while ((buf = virtqueue_detach_unused_buf(vq)) != NULL) {
+>>> -			if (!is_xdp_frame(buf))
+>>> +			if (is_skb_ptr(buf))
+>>>    				dev_kfree_skb(buf);
+>>> -			else
+>>> +			else if (is_xdp_frame(buf))
+>>>    				xdp_return_frame(ptr_to_xdp(buf));
+>>>    		}
+>>>    	}
+
