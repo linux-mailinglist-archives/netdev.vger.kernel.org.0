@@ -2,26 +2,26 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DDBD6362B2B
-	for <lists+netdev@lfdr.de>; Sat, 17 Apr 2021 00:40:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 629FC362B2C
+	for <lists+netdev@lfdr.de>; Sat, 17 Apr 2021 00:40:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234867AbhDPWjA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 16 Apr 2021 18:39:00 -0400
-Received: from mga01.intel.com ([192.55.52.88]:38339 "EHLO mga01.intel.com"
+        id S234901AbhDPWjB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 16 Apr 2021 18:39:01 -0400
+Received: from mga01.intel.com ([192.55.52.88]:38335 "EHLO mga01.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S234654AbhDPWiu (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S234662AbhDPWiu (ORCPT <rfc822;netdev@vger.kernel.org>);
         Fri, 16 Apr 2021 18:38:50 -0400
-IronPort-SDR: p/ogEMuRH47kJQRfXBrasjP34cG9cstdXzKRndSZaflyZWnDxVVwBNXAHtysllZE7orkSDC6Kh
- VUbUGpEFcwGg==
-X-IronPort-AV: E=McAfee;i="6200,9189,9956"; a="215670606"
+IronPort-SDR: hRrT1AO0MU9GT9lcQmqENITQ8lDhehrVQeofFQT6yA1n4clRciPiUTlhl7uItBsnVIidepGtSp
+ uunoP+zbgfrg==
+X-IronPort-AV: E=McAfee;i="6200,9189,9956"; a="215670608"
 X-IronPort-AV: E=Sophos;i="5.82,228,1613462400"; 
-   d="scan'208";a="215670606"
+   d="scan'208";a="215670608"
 Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Apr 2021 15:38:17 -0700
-IronPort-SDR: cCiJlEMvAC3f2Vu03CHI5SvgNxgnrS14pJYYPOHUXGG8G+bxhjrtmtAtAXHHCVe2W45XrloeYr
- 1J2VMVp4eSJA==
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Apr 2021 15:38:18 -0700
+IronPort-SDR: iK46AJkt+uktLkoYzbNQ2QEMzq970civ8oEgr+lwd5VQw8QmsjypUUPY/2TQ9tbsDyyhdTNKRV
+ czEBJW3GKbJw==
 X-IronPort-AV: E=Sophos;i="5.82,228,1613462400"; 
-   d="scan'208";a="462107392"
+   d="scan'208";a="462107394"
 Received: from mjmartin-desk2.amr.corp.intel.com (HELO mjmartin-desk2.intel.com) ([10.209.43.70])
   by orsmga001-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Apr 2021 15:38:17 -0700
 From:   Mat Martineau <mathew.j.martineau@linux.intel.com>
@@ -30,9 +30,9 @@ Cc:     Geliang Tang <geliangtang@gmail.com>, davem@davemloft.net,
         kuba@kernel.org, matthieu.baerts@tessares.net,
         mptcp@lists.linux.dev, Paolo Abeni <pabeni@redhat.com>,
         Mat Martineau <mathew.j.martineau@linux.intel.com>
-Subject: [PATCH net-next 4/8] mptcp: add tracepoint in mptcp_subflow_get_send
-Date:   Fri, 16 Apr 2021 15:38:04 -0700
-Message-Id: <20210416223808.298842-5-mathew.j.martineau@linux.intel.com>
+Subject: [PATCH net-next 5/8] mptcp: add tracepoint in get_mapping_status
+Date:   Fri, 16 Apr 2021 15:38:05 -0700
+Message-Id: <20210416223808.298842-6-mathew.j.martineau@linux.intel.com>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20210416223808.298842-1-mathew.j.martineau@linux.intel.com>
 References: <20210416223808.298842-1-mathew.j.martineau@linux.intel.com>
@@ -44,131 +44,105 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Geliang Tang <geliangtang@gmail.com>
 
-This patch added a tracepoint in the packet scheduler function
-mptcp_subflow_get_send().
+This patch added a tracepoint in the mapping status function
+get_mapping_status() to dump every mpext field.
 
 Suggested-by: Paolo Abeni <pabeni@redhat.com>
 Acked-by: Paolo Abeni <pabeni@redhat.com>
 Signed-off-by: Geliang Tang <geliangtang@gmail.com>
 Signed-off-by: Mat Martineau <mathew.j.martineau@linux.intel.com>
 ---
- MAINTAINERS                  |  1 +
- include/trace/events/mptcp.h | 60 ++++++++++++++++++++++++++++++++++++
- net/mptcp/protocol.c         |  8 ++---
- 3 files changed, 65 insertions(+), 4 deletions(-)
- create mode 100644 include/trace/events/mptcp.h
+ include/trace/events/mptcp.h | 52 ++++++++++++++++++++++++++++++++++++
+ net/mptcp/subflow.c          |  6 ++---
+ 2 files changed, 55 insertions(+), 3 deletions(-)
 
-diff --git a/MAINTAINERS b/MAINTAINERS
-index 795b9941c151..0f82854cc430 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -12546,6 +12546,7 @@ W:	https://github.com/multipath-tcp/mptcp_net-next/wiki
- B:	https://github.com/multipath-tcp/mptcp_net-next/issues
- F:	Documentation/networking/mptcp-sysctl.rst
- F:	include/net/mptcp.h
-+F:	include/trace/events/mptcp.h
- F:	include/uapi/linux/mptcp.h
- F:	net/mptcp/
- F:	tools/testing/selftests/net/mptcp/
 diff --git a/include/trace/events/mptcp.h b/include/trace/events/mptcp.h
-new file mode 100644
-index 000000000000..b1617a0162da
---- /dev/null
+index b1617a0162da..ec20350d82eb 100644
+--- a/include/trace/events/mptcp.h
 +++ b/include/trace/events/mptcp.h
-@@ -0,0 +1,60 @@
-+/* SPDX-License-Identifier: GPL-2.0 */
-+#undef TRACE_SYSTEM
-+#define TRACE_SYSTEM mptcp
+@@ -54,6 +54,58 @@ TRACE_EVENT(mptcp_subflow_get_send,
+ 		  __entry->backup, __entry->ratio)
+ );
+ 
++DECLARE_EVENT_CLASS(mptcp_dump_mpext,
 +
-+#if !defined(_TRACE_MPTCP_H) || defined(TRACE_HEADER_MULTI_READ)
-+#define _TRACE_MPTCP_H
++	TP_PROTO(struct mptcp_ext *mpext),
 +
-+#include <linux/tracepoint.h>
-+
-+TRACE_EVENT(mptcp_subflow_get_send,
-+
-+	TP_PROTO(struct mptcp_subflow_context *subflow),
-+
-+	TP_ARGS(subflow),
++	TP_ARGS(mpext),
 +
 +	TP_STRUCT__entry(
-+		__field(bool, active)
-+		__field(bool, free)
-+		__field(u32, snd_wnd)
-+		__field(u32, pace)
-+		__field(u8, backup)
-+		__field(u64, ratio)
++		__field(u64, data_ack)
++		__field(u64, data_seq)
++		__field(u32, subflow_seq)
++		__field(u16, data_len)
++		__field(u8, use_map)
++		__field(u8, dsn64)
++		__field(u8, data_fin)
++		__field(u8, use_ack)
++		__field(u8, ack64)
++		__field(u8, mpc_map)
++		__field(u8, frozen)
++		__field(u8, reset_transient)
++		__field(u8, reset_reason)
 +	),
 +
 +	TP_fast_assign(
-+		struct sock *ssk;
-+
-+		__entry->active = mptcp_subflow_active(subflow);
-+		__entry->backup = subflow->backup;
-+
-+		if (subflow->tcp_sock && sk_fullsock(subflow->tcp_sock))
-+			__entry->free = sk_stream_memory_free(subflow->tcp_sock);
-+		else
-+			__entry->free = 0;
-+
-+		ssk = mptcp_subflow_tcp_sock(subflow);
-+		if (ssk && sk_fullsock(ssk)) {
-+			__entry->snd_wnd = tcp_sk(ssk)->snd_wnd;
-+			__entry->pace = ssk->sk_pacing_rate;
-+		} else {
-+			__entry->snd_wnd = 0;
-+			__entry->pace = 0;
-+		}
-+
-+		if (ssk && sk_fullsock(ssk) && __entry->pace)
-+			__entry->ratio = div_u64((u64)ssk->sk_wmem_queued << 32, __entry->pace);
-+		else
-+			__entry->ratio = 0;
++		__entry->data_ack = mpext->ack64 ? mpext->data_ack : mpext->data_ack32;
++		__entry->data_seq = mpext->data_seq;
++		__entry->subflow_seq = mpext->subflow_seq;
++		__entry->data_len = mpext->data_len;
++		__entry->use_map = mpext->use_map;
++		__entry->dsn64 = mpext->dsn64;
++		__entry->data_fin = mpext->data_fin;
++		__entry->use_ack = mpext->use_ack;
++		__entry->ack64 = mpext->ack64;
++		__entry->mpc_map = mpext->mpc_map;
++		__entry->frozen = mpext->frozen;
++		__entry->reset_transient = mpext->reset_transient;
++		__entry->reset_reason = mpext->reset_reason;
 +	),
 +
-+	TP_printk("active=%d free=%d snd_wnd=%u pace=%u backup=%u ratio=%llu",
-+		  __entry->active, __entry->free,
-+		  __entry->snd_wnd, __entry->pace,
-+		  __entry->backup, __entry->ratio)
++	TP_printk("data_ack=%llu data_seq=%llu subflow_seq=%u data_len=%u use_map=%u dsn64=%u data_fin=%u use_ack=%u ack64=%u mpc_map=%u frozen=%u reset_transient=%u reset_reason=%u",
++		  __entry->data_ack, __entry->data_seq,
++		  __entry->subflow_seq, __entry->data_len,
++		  __entry->use_map, __entry->dsn64,
++		  __entry->data_fin, __entry->use_ack,
++		  __entry->ack64, __entry->mpc_map,
++		  __entry->frozen, __entry->reset_transient,
++		  __entry->reset_reason)
 +);
 +
-+#endif /* _TRACE_MPTCP_H */
++DEFINE_EVENT(mptcp_dump_mpext, get_mapping_status,
++	TP_PROTO(struct mptcp_ext *mpext),
++	TP_ARGS(mpext));
 +
-+/* This part must be outside protection */
-+#include <trace/define_trace.h>
-diff --git a/net/mptcp/protocol.c b/net/mptcp/protocol.c
-index 5a05c6ca943c..e26ea143754d 100644
---- a/net/mptcp/protocol.c
-+++ b/net/mptcp/protocol.c
-@@ -25,6 +25,9 @@
+ #endif /* _TRACE_MPTCP_H */
+ 
+ /* This part must be outside protection */
+diff --git a/net/mptcp/subflow.c b/net/mptcp/subflow.c
+index c3da84576b3c..d8a2a55ae916 100644
+--- a/net/mptcp/subflow.c
++++ b/net/mptcp/subflow.c
+@@ -25,6 +25,8 @@
  #include "protocol.h"
  #include "mib.h"
  
-+#define CREATE_TRACE_POINTS
 +#include <trace/events/mptcp.h>
 +
- #if IS_ENABLED(CONFIG_MPTCP_IPV6)
- struct mptcp6_sock {
- 	struct mptcp_sock msk;
-@@ -1410,6 +1413,7 @@ static struct sock *mptcp_subflow_get_send(struct mptcp_sock *msk)
- 		send_info[i].ratio = -1;
- 	}
- 	mptcp_for_each_subflow(msk, subflow) {
-+		trace_mptcp_subflow_get_send(subflow);
- 		ssk =  mptcp_subflow_tcp_sock(subflow);
- 		if (!mptcp_subflow_active(subflow))
- 			continue;
-@@ -1430,10 +1434,6 @@ static struct sock *mptcp_subflow_get_send(struct mptcp_sock *msk)
- 		}
+ static void mptcp_subflow_ops_undo_override(struct sock *ssk);
+ 
+ static void SUBFLOW_REQ_INC_STATS(struct request_sock *req,
+@@ -862,9 +864,7 @@ static enum mapping_status get_mapping_status(struct sock *ssk,
+ 		goto validate_seq;
  	}
  
--	pr_debug("msk=%p nr_active=%d ssk=%p:%lld backup=%p:%lld",
--		 msk, nr_active, send_info[0].ssk, send_info[0].ratio,
--		 send_info[1].ssk, send_info[1].ratio);
--
- 	/* pick the best backup if no other subflow is active */
- 	if (!nr_active)
- 		send_info[0].ssk = send_info[1].ssk;
+-	pr_debug("seq=%llu is64=%d ssn=%u data_len=%u data_fin=%d",
+-		 mpext->data_seq, mpext->dsn64, mpext->subflow_seq,
+-		 mpext->data_len, mpext->data_fin);
++	trace_get_mapping_status(mpext);
+ 
+ 	data_len = mpext->data_len;
+ 	if (data_len == 0) {
 -- 
 2.31.1
 
