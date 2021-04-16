@@ -2,101 +2,159 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B1DE1361836
-	for <lists+netdev@lfdr.de>; Fri, 16 Apr 2021 05:27:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DC8D1361851
+	for <lists+netdev@lfdr.de>; Fri, 16 Apr 2021 05:47:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236774AbhDPD2E (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 15 Apr 2021 23:28:04 -0400
-Received: from szxga08-in.huawei.com ([45.249.212.255]:3338 "EHLO
-        szxga08-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234886AbhDPD2E (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 15 Apr 2021 23:28:04 -0400
-Received: from DGGEML404-HUB.china.huawei.com (unknown [172.30.72.54])
-        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4FM1lJ4Vytz14G2p;
-        Fri, 16 Apr 2021 11:23:56 +0800 (CST)
-Received: from dggpemm500008.china.huawei.com (7.185.36.136) by
- DGGEML404-HUB.china.huawei.com (10.3.17.39) with Microsoft SMTP Server (TLS)
- id 14.3.498.0; Fri, 16 Apr 2021 11:27:36 +0800
-Received: from dggpemm500021.china.huawei.com (7.185.36.109) by
- dggpemm500008.china.huawei.com (7.185.36.136) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2106.2; Fri, 16 Apr 2021 11:27:36 +0800
-Received: from dggpemm500021.china.huawei.com ([7.185.36.109]) by
- dggpemm500021.china.huawei.com ([7.185.36.109]) with mapi id 15.01.2106.013;
- Fri, 16 Apr 2021 11:27:36 +0800
-From:   "zhudi (J)" <zhudi21@huawei.com>
-To:     linyunsheng <linyunsheng@huawei.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "kuba@kernel.org" <kuba@kernel.org>
-CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "Chenxiang (EulerOS)" <rose.chen@huawei.com>
-Subject: Re: [PATCH] net: fix a data race when get vlan device
-Thread-Topic: [PATCH] net: fix a data race when get vlan device
-Thread-Index: AdcycE64geMzb77xZE+VRIGaf0XN1g==
-Date:   Fri, 16 Apr 2021 03:27:36 +0000
-Message-ID: <b03d1c13bc0147ad87e06b3dfe602213@huawei.com>
-Accept-Language: zh-CN, en-US
-Content-Language: zh-CN
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [10.136.114.155]
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+        id S238213AbhDPDr1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 15 Apr 2021 23:47:27 -0400
+Received: from gate.crashing.org ([63.228.1.57]:56655 "EHLO gate.crashing.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S234662AbhDPDrZ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 15 Apr 2021 23:47:25 -0400
+Received: from ip6-localhost (localhost.localdomain [127.0.0.1])
+        by gate.crashing.org (8.14.1/8.14.1) with ESMTP id 13G3Onft032125;
+        Thu, 15 Apr 2021 22:24:50 -0500
+Message-ID: <730d603b12e590c56770309b4df2bd668f7afbe3.camel@kernel.crashing.org>
+Subject: Re: [PATCH net-next v4 2/2] of: net: fix of_get_mac_addr_nvmem()
+ for non-platform devices
+From:   Benjamin Herrenschmidt <benh@kernel.crashing.org>
+To:     Michael Walle <michael@walle.cc>, ath9k-devel@qca.qualcomm.com,
+        UNGLinuxDriver@microchip.com, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
+        netdev@vger.kernel.org, linux-mediatek@lists.infradead.org,
+        linux-renesas-soc@vger.kernel.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-amlogic@lists.infradead.org, linux-oxnas@groups.io,
+        linux-omap@vger.kernel.org, linux-wireless@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-staging@lists.linux.dev
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Gregory Clement <gregory.clement@bootlin.com>,
+        Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Paul Mackerras <paulus@samba.org>,
+        Andreas Larsson <andreas@gaisler.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Maxime Ripard <mripard@kernel.org>,
+        Chen-Yu Tsai <wens@csie.org>,
+        Jernej Skrabec <jernej.skrabec@siol.net>,
+        Joyce Ooi <joyce.ooi@intel.com>,
+        Chris Snook <chris.snook@gmail.com>,
+        =?UTF-8?Q?Rafa=C5=82_Mi=C5=82ecki?= <rafal@milecki.pl>,
+        bcm-kernel-feedback-list@broadcom.com,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Nicolas Ferre <nicolas.ferre@microchip.com>,
+        Claudiu Beznea <claudiu.beznea@microchip.com>,
+        Sunil Goutham <sgoutham@marvell.com>,
+        Fugang Duan <fugang.duan@nxp.com>,
+        Madalin Bucur <madalin.bucur@nxp.com>,
+        Pantelis Antoniou <pantelis.antoniou@gmail.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Li Yang <leoyang.li@nxp.com>,
+        Yisen Zhuang <yisen.zhuang@huawei.com>,
+        Salil Mehta <salil.mehta@huawei.com>,
+        Hauke Mehrtens <hauke@hauke-m.de>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        Vadym Kochan <vkochan@marvell.com>,
+        Taras Chornyi <tchornyi@marvell.com>,
+        Mirko Lindner <mlindner@marvell.com>,
+        Stephen Hemminger <stephen@networkplumber.org>,
+        Felix Fietkau <nbd@nbd.name>, John Crispin <john@phrozen.org>,
+        Sean Wang <sean.wang@mediatek.com>,
+        Mark Lee <Mark-MC.Lee@mediatek.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Bryan Whitehead <bryan.whitehead@microchip.com>,
+        Vladimir Zapolskiy <vz@mleia.com>,
+        Sergei Shtylyov <sergei.shtylyov@gmail.com>,
+        Byungho An <bh74.an@samsung.com>,
+        Kunihiko Hayashi <hayashi.kunihiko@socionext.com>,
+        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@st.com>,
+        Jose Abreu <joabreu@synopsys.com>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Shawn Guo <shawnguo@kernel.org>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        Fabio Estevam <festevam@gmail.com>,
+        NXP Linux Team <linux-imx@nxp.com>,
+        Kevin Hilman <khilman@baylibre.com>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        Jerome Brunet <jbrunet@baylibre.com>,
+        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
+        Vinod Koul <vkoul@kernel.org>,
+        Nobuhiro Iwamatsu <nobuhiro1.iwamatsu@toshiba.co.jp>,
+        Grygorii Strashko <grygorii.strashko@ti.com>,
+        Wingman Kwok <w-kwok2@ti.com>,
+        Murali Karicheri <m-karicheri2@ti.com>,
+        Michal Simek <michal.simek@xilinx.com>,
+        Radhey Shyam Pandey <radhey.shyam.pandey@xilinx.com>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        Lorenzo Bianconi <lorenzo.bianconi83@gmail.com>,
+        Ryder Lee <ryder.lee@mediatek.com>,
+        Stanislaw Gruszka <stf_xl@wp.pl>,
+        Helmut Schaa <helmut.schaa@googlemail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Frank Rowand <frowand.list@gmail.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        =?ISO-8859-1?Q?J=E9r=F4me?= Pouiller <jerome.pouiller@silabs.com>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>
+Date:   Fri, 16 Apr 2021 13:24:49 +1000
+In-Reply-To: <20210412174718.17382-3-michael@walle.cc>
+References: <20210412174718.17382-1-michael@walle.cc>
+         <20210412174718.17382-3-michael@walle.cc>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.36.4-0ubuntu1 
 MIME-Version: 1.0
-X-CFilter-Loop: Reflected
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-PiBkZXBlbmRlbmN5T24gMjAyMS80LzE1IDExOjM1LCB6aHVkaSB3cm90ZToNCj4gPiBGcm9tOiBE
-aSBaaHUgPHpodWRpMjFAaHVhd2VpLmNvbT4NCj4gPg0KPiA+IFdlIGVuY291bnRlcmVkIGEgY3Jh
-c2g6IGluIHRoZSBwYWNrZXQgcmVjZWl2aW5nIHByb2Nlc3MsIHdlIGdvdCBhbg0KPiA+IGlsbGVn
-YWwgVkxBTiBkZXZpY2UgYWRkcmVzcywgYnV0IHRoZSBWTEFOIGRldmljZSBhZGRyZXNzIHNhdmVk
-IGluDQo+ID4gdm1jb3JlIGlzIGNvcnJlY3QuIEFmdGVyIGNoZWNraW5nIHRoZSBjb2RlLCB3ZSBm
-b3VuZCBhIHBvc3NpYmxlIGRhdGENCj4gPiBjb21wZXRpdGlvbjoNCj4gPiBDUFUgMDogICAgICAg
-ICAgICAgICAgICAgICAgICAgICAgIENQVSAxOg0KPiA+ICAgICAoUkNVIHJlYWQgbG9jaykgICAg
-ICAgICAgICAgICAgICAoUlROTCBsb2NrKQ0KPiA+ICAgICB2bGFuX2RvX3JlY2VpdmUoKQkJICAg
-ICAgIHJlZ2lzdGVyX3ZsYW5fZGV2KCkNCj4gPiAgICAgICB2bGFuX2ZpbmRfZGV2KCkNCj4gPg0K
-PiA+ICAgICAgICAgLT5fX3ZsYW5fZ3JvdXBfZ2V0X2RldmljZSgpCSAtPnZsYW5fZ3JvdXBfcHJl
-YWxsb2NfdmlkKCkNCj4gPg0KPiA+IEluIHZsYW5fZ3JvdXBfcHJlYWxsb2NfdmlkKCksIFdlIG5l
-ZWQgdG8gbWFrZSBzdXJlIHRoYXQga3phbGxvYyBpcw0KPiA+IGV4ZWN1dGVkIGJlZm9yZSBhc3Np
-Z25pbmcgYSB2YWx1ZSB0byB2bGFuIGRldmljZXMgYXJyYXksIG90aGVyd2lzZSB3ZQ0KPiANCj4g
-QXMgbXkgdW5kZXJzdGFuZGluZywgdGhlcmUgaXMgYSBkZXBlbmRlbmN5IGJldHdlZW4gY2FsbGlu
-ZyBremFsbG9jKCkgYW5kDQo+IGFzc2lnbmluZyB0aGUgYWRkcmVzcyhyZXR1cm5lZCBmcm9tIGt6
-YWxsb2MoKSkgdG8gdmctPnZsYW5fZGV2aWNlc19hcnJheXMsDQo+IENQVSBhbmQgY29tcGlsZXIg
-Y2FuIHNlZSB0aGUgZGVwZW5kZW5jeSwgd2h5IGNhbid0IGl0IGhhbmRsaW5nIHRoZQ0KPiBkZXBl
-bmRlbmN5IGJlZm9yZSBhZGRpbmcgdGhlIHNtcF93bWIoKT8NCj4gDQo+IFNlZSBDT05UUk9MIERF
-UEVOREVOQ0lFUyBzZWN0aW9uIGluIERvY3VtZW50YXRpb24vbWVtb3J5LQ0KPiBiYXJyaWVycy50
-eHQ6DQo+IA0KPiBIb3dldmVyLCBzdG9yZXMgYXJlIG5vdCBzcGVjdWxhdGVkLiAgVGhpcyBtZWFu
-cyB0aGF0IG9yZGVyaW5nIC1pcy0gcHJvdmlkZWQNCj4gZm9yIGxvYWQtc3RvcmUgY29udHJvbCBk
-ZXBlbmRlbmNpZXMsIGFzIGluIHRoZSBmb2xsb3dpbmcgZXhhbXBsZToNCj4gDQo+ICAgICAgICAg
-cSA9IFJFQURfT05DRShhKTsNCj4gICAgICAgICBpZiAocSkgew0KPiAgICAgICAgICAgICAgICAg
-V1JJVEVfT05DRShiLCAxKTsNCj4gICAgICAgICB9DQo+IA0KDQogTWF5YmUgSSBkaWRuJ3QgbWFr
-ZSBpdCBjbGVhci4gIFRoaXMgbWVtb3J5IGlzb2xhdGlvbiBpcyB0byBlbnN1cmUgdGhlIG9yZGVy
-IG9mDQogbWVtc2V0KG9iamVjdCwgMCwgc2l6ZSkgaW4ga3phbGxvYygpIG9wZXJhdGlvbnMgYW5k
-IHRoZSBzdWJzZXF1ZW50IGFycmF5IGFzc2lnbm1lbnQgc3RhdGVtZW50cy4NCg0Ka3phbGxvYygp
-DQogICAgLT5tZW1zZXQob2JqZWN0LCAwLCBzaXplKQ0KDQpzbXBfd21iKCkNCg0KdmctPnZsYW5f
-ZGV2aWNlc19hcnJheXNbcGlkeF1bdmlkeF0gPSBhcnJheTsNCg0KQmVjYXVzZSBfX3ZsYW5fZ3Jv
-dXBfZ2V0X2RldmljZSgpIGZ1bmN0aW9uIGRlcGVuZHMgb24gdGhpcyBvcmRlcg0KDQo+IA0KPiAN
-Cj4gPiBtYXkgZ2V0IGEgd3JvbmcgYWRkcmVzcyBmcm9tIHRoZSBoYXJkd2FyZSBjYWNoZSBvbiBh
-bm90aGVyIGNwdS4NCj4gPg0KPiA+IFNvIGZpeCBpdCBieSBhZGRpbmcgbWVtb3J5IGJhcnJpZXIg
-aW5zdHJ1Y3Rpb24gdG8gZW5zdXJlIHRoZSBvcmRlciBvZg0KPiA+IG1lbW9yeSBvcGVyYXRpb25z
-Lg0KPiA+DQo+ID4gU2lnbmVkLW9mZi1ieTogRGkgWmh1IDx6aHVkaTIxQGh1YXdlaS5jb20+DQo+
-ID4gLS0tDQo+ID4gIG5ldC84MDIxcS92bGFuLmMgfCAyICsrDQo+ID4gIG5ldC84MDIxcS92bGFu
-LmggfCAzICsrKw0KPiA+ICAyIGZpbGVzIGNoYW5nZWQsIDUgaW5zZXJ0aW9ucygrKQ0KPiA+DQo+
-ID4gZGlmZiAtLWdpdCBhL25ldC84MDIxcS92bGFuLmMgYi9uZXQvODAyMXEvdmxhbi5jIGluZGV4
-DQo+ID4gOGI2NDQxMTM3MTVlLi40ZjU0MWUwNWNkM2YgMTAwNjQ0DQo+ID4gLS0tIGEvbmV0Lzgw
-MjFxL3ZsYW4uYw0KPiA+ICsrKyBiL25ldC84MDIxcS92bGFuLmMNCj4gPiBAQCAtNzEsNiArNzEs
-OCBAQCBzdGF0aWMgaW50IHZsYW5fZ3JvdXBfcHJlYWxsb2NfdmlkKHN0cnVjdCB2bGFuX2dyb3Vw
-DQo+ICp2ZywNCj4gPiAgCWlmIChhcnJheSA9PSBOVUxMKQ0KPiA+ICAJCXJldHVybiAtRU5PQlVG
-UzsNCj4gPg0KPiA+ICsJc21wX3dtYigpOw0KPiA+ICsNCj4gPiAgCXZnLT52bGFuX2RldmljZXNf
-YXJyYXlzW3BpZHhdW3ZpZHhdID0gYXJyYXk7DQo+ID4gIAlyZXR1cm4gMDsNCj4gPiAgfQ0KPiA+
-IGRpZmYgLS1naXQgYS9uZXQvODAyMXEvdmxhbi5oIGIvbmV0LzgwMjFxL3ZsYW4uaCBpbmRleA0K
-PiA+IDk1MzQwNTM2Mjc5NS4uNzQwOGZkYTA4NGQzIDEwMDY0NA0KPiA+IC0tLSBhL25ldC84MDIx
-cS92bGFuLmgNCj4gPiArKysgYi9uZXQvODAyMXEvdmxhbi5oDQo+ID4gQEAgLTU3LDYgKzU3LDkg
-QEAgc3RhdGljIGlubGluZSBzdHJ1Y3QgbmV0X2RldmljZQ0KPiA+ICpfX3ZsYW5fZ3JvdXBfZ2V0
-X2RldmljZShzdHJ1Y3Qgdmxhbl9ncm91cCAqdmcsDQo+ID4NCj4gPiAgCWFycmF5ID0gdmctPnZs
-YW5fZGV2aWNlc19hcnJheXNbcGlkeF0NCj4gPiAgCQkJCSAgICAgICBbdmxhbl9pZCAvDQo+IFZM
-QU5fR1JPVVBfQVJSQVlfUEFSVF9MRU5dOw0KPiA+ICsNCj4gPiArCXNtcF9ybWIoKTsNCj4gPiAr
-DQo+ID4gIAlyZXR1cm4gYXJyYXkgPyBhcnJheVt2bGFuX2lkICUgVkxBTl9HUk9VUF9BUlJBWV9Q
-QVJUX0xFTl0gOg0KPiBOVUxMOyAgfQ0KPiA+DQo+ID4NCg0K
+On Mon, 2021-04-12 at 19:47 +0200, Michael Walle wrote:
+> 
+>  /**
+>   * of_get_phy_mode - Get phy mode for given device_node
+> @@ -59,15 +60,39 @@ static int of_get_mac_addr(struct device_node *np, const char *name, u8 *addr)
+>  static int of_get_mac_addr_nvmem(struct device_node *np, u8 *addr)
+>  {
+>         struct platform_device *pdev = of_find_device_by_node(np);
+> +       struct nvmem_cell *cell;
+> +       const void *mac;
+> +       size_t len;
+>         int ret;
+>  
+> -       if (!pdev)
+> -               return -ENODEV;
+> +       /* Try lookup by device first, there might be a nvmem_cell_lookup
+> +        * associated with a given device.
+> +        */
+> +       if (pdev) {
+> +               ret = nvmem_get_mac_address(&pdev->dev, addr);
+> +               put_device(&pdev->dev);
+> +               return ret;
+> +       }
+> +
+
+This smells like the wrong band aid :)
+
+Any struct device can contain an OF node pointer these days.
+
+This seems all backwards. I think we are dealing with bad evolution.
+
+We need to do a lookup for the device because we get passed an of_node.
+We should just get passed a device here... or rather stop calling
+of_get_mac_addr() from all those drivers and instead call
+eth_platform_get_mac_address() which in turns calls of_get_mac_addr().
+
+Then the nvmem stuff gets put in eth_platform_get_mac_address().
+
+of_get_mac_addr() becomes a low-level thingy that most drivers don't
+care about.
+
+Cheers,
+Ben.
+
+
