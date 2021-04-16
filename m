@@ -2,213 +2,182 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BA7B6361967
-	for <lists+netdev@lfdr.de>; Fri, 16 Apr 2021 07:41:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 67E09361996
+	for <lists+netdev@lfdr.de>; Fri, 16 Apr 2021 08:01:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238397AbhDPFk1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 16 Apr 2021 01:40:27 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:32289 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S231666AbhDPFk0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 16 Apr 2021 01:40:26 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1618551601;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=iXR+AvjVGuda7dQOFocgVCv8J9VhytFo6/uOxLJAmq8=;
-        b=bHuiAapDUJBk0jCKIETWeFO3bvYefceLHqJHFNYnE1E9wvN90wEAGihHXH065OkfolM3rz
-        VC74UB9gY/ETSZ1Ujl5pwSqvEPEgKCDBaf1R+ny0pgKFKNVaY0opCbGsa/TuTKBeXUaNn/
-        G67A5mCgggO/94KROTOOIoLR5S5a514=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-257-lHWnn7OmOVy-u-w2jP_QdQ-1; Fri, 16 Apr 2021 01:40:00 -0400
-X-MC-Unique: lHWnn7OmOVy-u-w2jP_QdQ-1
-Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 6821F107ACC7;
-        Fri, 16 Apr 2021 05:39:57 +0000 (UTC)
-Received: from wangxiaodeMacBook-Air.local (ovpn-13-9.pek2.redhat.com [10.72.13.9])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 7EAD25D9C0;
-        Fri, 16 Apr 2021 05:39:47 +0000 (UTC)
-Subject: Re: [PATCH v6 10/10] Documentation: Add documentation for VDUSE
-To:     Yongji Xie <xieyongji@bytedance.com>
-Cc:     Stefan Hajnoczi <stefanha@redhat.com>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        Stefano Garzarella <sgarzare@redhat.com>,
-        Parav Pandit <parav@nvidia.com>,
-        Christoph Hellwig <hch@infradead.org>,
-        Christian Brauner <christian.brauner@canonical.com>,
-        Randy Dunlap <rdunlap@infradead.org>,
-        Matthew Wilcox <willy@infradead.org>, viro@zeniv.linux.org.uk,
-        Jens Axboe <axboe@kernel.dk>, bcrl@kvack.org,
-        Jonathan Corbet <corbet@lwn.net>,
-        =?UTF-8?Q?Mika_Penttil=c3=a4?= <mika.penttila@nextfour.com>,
-        Dan Carpenter <dan.carpenter@oracle.com>,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        kvm@vger.kernel.org, linux-fsdevel@vger.kernel.org
-References: <20210331080519.172-1-xieyongji@bytedance.com>
- <20210331080519.172-11-xieyongji@bytedance.com>
- <YHb44R4HyLEUVSTF@stefanha-x1.localdomain>
- <CACycT3uNR+nZY5gY0UhPkeOyi7Za6XkX4b=hasuDcgqdc7fqfg@mail.gmail.com>
- <YHfo8pc7dIO9lNc3@stefanha-x1.localdomain>
- <80b31814-9e41-3153-7efb-c0c2fab44feb@redhat.com>
- <YHhP4i+yXgA2KkVJ@stefanha-x1.localdomain>
- <31aa139a-dd4e-ba8a-c671-a2a1c69c1ffc@redhat.com>
- <CACycT3u_qAE=D_ezLPU9SpXPMACErmpqpH5pMg0TZAb3CZVGdg@mail.gmail.com>
-From:   Jason Wang <jasowang@redhat.com>
-Message-ID: <fab615ce-5e13-a3b3-3715-a4203b4ab010@redhat.com>
-Date:   Fri, 16 Apr 2021 13:39:45 +0800
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
- Gecko/20100101 Thunderbird/78.9.1
-MIME-Version: 1.0
-In-Reply-To: <CACycT3u_qAE=D_ezLPU9SpXPMACErmpqpH5pMg0TZAb3CZVGdg@mail.gmail.com>
+        id S238903AbhDPF5b (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 16 Apr 2021 01:57:31 -0400
+Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:39152 "EHLO
+        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S237974AbhDPF53 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 16 Apr 2021 01:57:29 -0400
+Received: from pps.filterd (m0098414.ppops.net [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 13G5Y9CV094409;
+        Fri, 16 Apr 2021 01:56:28 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=subject : from : to : cc
+ : references : message-id : date : in-reply-to : content-type :
+ content-transfer-encoding : mime-version; s=pp1;
+ bh=mD4JHx4ue4R4SWQTfzp86VvxTxtf2D6eHtp4kBqDp2U=;
+ b=K+wZXvqyggiXIVUk43dPMcgg0X1uPV7RmiOlOI2xX7OrAEvYzClF9znpPcf4HWx8C+mk
+ QjtPQoVTBN7/jW5PvtKEf0HP2ABacMhpSDBkvMeBR74z+PBVTUWFA+gWCdv2Ilx1RWFI
+ 6U9IJH8N0NpAFx63mpM/EA5+cC5w9XAIBxBHTX0CdIi0HHtmGUD5uNqW24gbH5T+jhZv
+ 26m6AxGvR0l0M5cMvbIk5jtSdkhvrfWavBHPPLdmn7VL1QL0dQrGy6hhMkfJafBHNHJd
+ Trk95btM0l1Luij2mpU1s8SFwkl9/Vrc0+RVqAZ5oakKsCLr0E5vJCwkyOMKQIO1jZdk 5w== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com with ESMTP id 37xvte9u90-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Fri, 16 Apr 2021 01:56:28 -0400
+Received: from m0098414.ppops.net (m0098414.ppops.net [127.0.0.1])
+        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 13G5ZFNE096365;
+        Fri, 16 Apr 2021 01:56:28 -0400
+Received: from ppma02fra.de.ibm.com (47.49.7a9f.ip4.static.sl-reverse.com [159.122.73.71])
+        by mx0b-001b2d01.pphosted.com with ESMTP id 37xvte9u8b-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Fri, 16 Apr 2021 01:56:27 -0400
+Received: from pps.filterd (ppma02fra.de.ibm.com [127.0.0.1])
+        by ppma02fra.de.ibm.com (8.16.0.43/8.16.0.43) with SMTP id 13G5rttD011621;
+        Fri, 16 Apr 2021 05:56:25 GMT
+Received: from b06avi18878370.portsmouth.uk.ibm.com (b06avi18878370.portsmouth.uk.ibm.com [9.149.26.194])
+        by ppma02fra.de.ibm.com with ESMTP id 37u3n8j9qc-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Fri, 16 Apr 2021 05:56:25 +0000
+Received: from b06wcsmtp001.portsmouth.uk.ibm.com (b06wcsmtp001.portsmouth.uk.ibm.com [9.149.105.160])
+        by b06avi18878370.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 13G5u0UG37618172
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Fri, 16 Apr 2021 05:56:00 GMT
+Received: from b06wcsmtp001.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 80067A405B;
+        Fri, 16 Apr 2021 05:56:22 +0000 (GMT)
+Received: from b06wcsmtp001.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 3D2F1A4054;
+        Fri, 16 Apr 2021 05:56:19 +0000 (GMT)
+Received: from oc7455500831.ibm.com (unknown [9.171.64.24])
+        by b06wcsmtp001.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+        Fri, 16 Apr 2021 05:56:19 +0000 (GMT)
+Subject: Re: [PATCH 2/2] tools: do not include scripts/Kbuild.include
+From:   Christian Borntraeger <borntraeger@de.ibm.com>
+To:     Masahiro Yamada <masahiroy@kernel.org>,
+        linux-kbuild@vger.kernel.org
+Cc:     Janosch Frank <frankja@linux.ibm.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Harish <harish@linux.ibm.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>, Martin KaFai Lau <kafai@fb.com>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Nathan Chancellor <nathan@kernel.org>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Paul Mackerras <paulus@samba.org>,
+        Shuah Khan <shuah@kernel.org>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        bpf@vger.kernel.org, clang-built-linux@googlegroups.com,
+        kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-kselftest@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
+        netdev@vger.kernel.org
+References: <20210415072700.147125-1-masahiroy@kernel.org>
+ <20210415072700.147125-2-masahiroy@kernel.org>
+ <eb623ea6-a2f4-9692-ff3d-cb9f9b9ea15f@de.ibm.com>
+Message-ID: <0eeed665-a105-917b-e7fb-8dafe2ae9d94@de.ibm.com>
+Date:   Fri, 16 Apr 2021 07:56:18 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.9.0
+In-Reply-To: <eb623ea6-a2f4-9692-ff3d-cb9f9b9ea15f@de.ibm.com>
 Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: 9iL9uw5JSj46ABaUJ5-OgKR5h6DlkRk1
+X-Proofpoint-ORIG-GUID: TiW04LfuFfbrVJq-d80Jlu1KQqPml71C
 Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
+X-Proofpoint-UnRewURL: 0 URL was un-rewritten
+MIME-Version: 1.0
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.391,18.0.761
+ definitions=2021-04-15_11:2021-04-15,2021-04-15 signatures=0
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 malwarescore=0
+ impostorscore=0 mlxscore=0 phishscore=0 bulkscore=0 lowpriorityscore=0
+ mlxlogscore=999 priorityscore=1501 clxscore=1015 spamscore=0 adultscore=0
+ suspectscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2104060000 definitions=main-2104160042
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 
-在 2021/4/16 上午11:19, Yongji Xie 写道:
-> On Fri, Apr 16, 2021 at 10:24 AM Jason Wang <jasowang@redhat.com> wrote:
+On 15.04.21 10:06, Christian Borntraeger wrote:
+> 
+> On 15.04.21 09:27, Masahiro Yamada wrote:
+>> Since commit d9f4ff50d2aa ("kbuild: spilt cc-option and friends to
+>> scripts/Makefile.compiler"), some kselftests fail to build.
 >>
->> 在 2021/4/15 下午10:38, Stefan Hajnoczi 写道:
->>> On Thu, Apr 15, 2021 at 04:36:35PM +0800, Jason Wang wrote:
->>>> 在 2021/4/15 下午3:19, Stefan Hajnoczi 写道:
->>>>> On Thu, Apr 15, 2021 at 01:38:37PM +0800, Yongji Xie wrote:
->>>>>> On Wed, Apr 14, 2021 at 10:15 PM Stefan Hajnoczi <stefanha@redhat.com> wrote:
->>>>>>> On Wed, Mar 31, 2021 at 04:05:19PM +0800, Xie Yongji wrote:
->>>>>>>> VDUSE (vDPA Device in Userspace) is a framework to support
->>>>>>>> implementing software-emulated vDPA devices in userspace. This
->>>>>>>> document is intended to clarify the VDUSE design and usage.
->>>>>>>>
->>>>>>>> Signed-off-by: Xie Yongji <xieyongji@bytedance.com>
->>>>>>>> ---
->>>>>>>>     Documentation/userspace-api/index.rst |   1 +
->>>>>>>>     Documentation/userspace-api/vduse.rst | 212 ++++++++++++++++++++++++++++++++++
->>>>>>>>     2 files changed, 213 insertions(+)
->>>>>>>>     create mode 100644 Documentation/userspace-api/vduse.rst
->>>>>>> Just looking over the documentation briefly (I haven't studied the code
->>>>>>> yet)...
->>>>>>>
->>>>>> Thank you!
->>>>>>
->>>>>>>> +How VDUSE works
->>>>>>>> +------------
->>>>>>>> +Each userspace vDPA device is created by the VDUSE_CREATE_DEV ioctl on
->>>>>>>> +the character device (/dev/vduse/control). Then a device file with the
->>>>>>>> +specified name (/dev/vduse/$NAME) will appear, which can be used to
->>>>>>>> +implement the userspace vDPA device's control path and data path.
->>>>>>> These steps are taken after sending the VDPA_CMD_DEV_NEW netlink
->>>>>>> message? (Please consider reordering the documentation to make it clear
->>>>>>> what the sequence of steps are.)
->>>>>>>
->>>>>> No, VDUSE devices should be created before sending the
->>>>>> VDPA_CMD_DEV_NEW netlink messages which might produce I/Os to VDUSE.
->>>>> I see. Please include an overview of the steps before going into detail.
->>>>> Something like:
->>>>>
->>>>>      VDUSE devices are started as follows:
->>>>>
->>>>>      1. Create a new VDUSE instance with ioctl(VDUSE_CREATE_DEV) on
->>>>>         /dev/vduse/control.
->>>>>
->>>>>      2. Begin processing VDUSE messages from /dev/vduse/$NAME. The first
->>>>>         messages will arrive while attaching the VDUSE instance to vDPA.
->>>>>
->>>>>      3. Send the VDPA_CMD_DEV_NEW netlink message to attach the VDUSE
->>>>>         instance to vDPA.
->>>>>
->>>>>      VDUSE devices are stopped as follows:
->>>>>
->>>>>      ...
->>>>>
->>>>>>>> +     static int netlink_add_vduse(const char *name, int device_id)
->>>>>>>> +     {
->>>>>>>> +             struct nl_sock *nlsock;
->>>>>>>> +             struct nl_msg *msg;
->>>>>>>> +             int famid;
->>>>>>>> +
->>>>>>>> +             nlsock = nl_socket_alloc();
->>>>>>>> +             if (!nlsock)
->>>>>>>> +                     return -ENOMEM;
->>>>>>>> +
->>>>>>>> +             if (genl_connect(nlsock))
->>>>>>>> +                     goto free_sock;
->>>>>>>> +
->>>>>>>> +             famid = genl_ctrl_resolve(nlsock, VDPA_GENL_NAME);
->>>>>>>> +             if (famid < 0)
->>>>>>>> +                     goto close_sock;
->>>>>>>> +
->>>>>>>> +             msg = nlmsg_alloc();
->>>>>>>> +             if (!msg)
->>>>>>>> +                     goto close_sock;
->>>>>>>> +
->>>>>>>> +             if (!genlmsg_put(msg, NL_AUTO_PORT, NL_AUTO_SEQ, famid, 0, 0,
->>>>>>>> +                 VDPA_CMD_DEV_NEW, 0))
->>>>>>>> +                     goto nla_put_failure;
->>>>>>>> +
->>>>>>>> +             NLA_PUT_STRING(msg, VDPA_ATTR_DEV_NAME, name);
->>>>>>>> +             NLA_PUT_STRING(msg, VDPA_ATTR_MGMTDEV_DEV_NAME, "vduse");
->>>>>>>> +             NLA_PUT_U32(msg, VDPA_ATTR_DEV_ID, device_id);
->>>>>>> What are the permission/capability requirements for VDUSE?
->>>>>>>
->>>>>> Now I think we need privileged permission (root user). Because
->>>>>> userspace daemon is able to access avail vring, used vring, descriptor
->>>>>> table in kernel driver directly.
->>>>> Please state this explicitly at the start of the document. Existing
->>>>> interfaces like FUSE are designed to avoid trusting userspace.
->>>> There're some subtle difference here. VDUSE present a device to kernel which
->>>> means IOMMU is probably the only thing to prevent a malicous device.
->>>>
->>>>
->>>>> Therefore
->>>>> people might think the same is the case here. It's critical that people
->>>>> are aware of this before deploying VDUSE with virtio-vdpa.
->>>>>
->>>>> We should probably pause here and think about whether it's possible to
->>>>> avoid trusting userspace. Even if it takes some effort and costs some
->>>>> performance it would probably be worthwhile.
->>>> Since the bounce buffer is used the only attack surface is the coherent
->>>> area, if we want to enforce stronger isolation we need to use shadow
->>>> virtqueue (which is proposed in earlier version by me) in this case. But I'm
->>>> not sure it's worth to do that.
->>> The security situation needs to be clear before merging this feature.
+>> The tools/ directory opted out Kbuild, and went in a different
+>> direction. They copy any kind of files to the tools/ directory
+>> in order to do whatever they want to do in their world.
 >>
->> +1
+>> tools/build/Build.include mimics scripts/Kbuild.include, but some
+>> tool Makefiles included the Kbuild one to import a feature that is
+>> missing in tools/build/Build.include:
 >>
+>>   - Commit ec04aa3ae87b ("tools/thermal: tmon: use "-fstack-protector"
+>>     only if supported") included scripts/Kbuild.include from
+>>     tools/thermal/tmon/Makefile to import the cc-option macro.
 >>
->>> I think the IOMMU and vring can be made secure. What is more concerning
->>> is the kernel code that runs on top: VIRTIO device drivers, network
->>> stack, file systems, etc. They trust devices to an extent.
->>>
->>> Since virtio-vdpa is a big reason for doing VDUSE in the first place I
->>> don't think it makes sense to disable virtio-vdpa with VDUSE. A solution
->>> is needed.
+>>   - Commit c2390f16fc5b ("selftests: kvm: fix for compilers that do
+>>     not support -no-pie") included scripts/Kbuild.include from
+>>     tools/testing/selftests/kvm/Makefile to import the try-run macro.
 >>
->> Yes, so the case of VDUSE is something similar to the case of e.g SEV.
+>>   - Commit 9cae4ace80ef ("selftests/bpf: do not ignore clang
+>>     failures") included scripts/Kbuild.include from
+>>     tools/testing/selftests/bpf/Makefile to import the .DELETE_ON_ERROR
+>>     target.
 >>
->> Both cases won't trust device and use some kind of software IOTLB.
+>>   - Commit 0695f8bca93e ("selftests/powerpc: Handle Makefile for
+>>     unrecognized option") included scripts/Kbuild.include from
+>>     tools/testing/selftests/powerpc/pmu/ebb/Makefile to import the
+>>     try-run macro.
 >>
->> That means we need to protect at both IOTLB and virtio drivers.
+>> Copy what they want there, and stop including scripts/Kbuild.include
+>> from the tool Makefiles.
 >>
->> Let me post patches for virtio first.
->>
-> Looking forward your patches.
->
-> Thanks.
-> Yongji
->
+>> Link: https://lore.kernel.org/lkml/86dadf33-70f7-a5ac-cb8c-64966d2f45a1@linux.ibm.com/
+>> Fixes: d9f4ff50d2aa ("kbuild: spilt cc-option and friends to scripts/Makefile.compiler")
+>> Reported-by: Janosch Frank <frankja@linux.ibm.com>
+>> Reported-by: Christian Borntraeger <borntraeger@de.ibm.com>
+>> Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
+> 
+> When applying this on top of d9f4ff50d2aa ("kbuild: spilt cc-option and friends to scripts/Makefile.compiler")
+> 
+> I still do get
+> 
+> # ==== Test Assertion Failure ====
+> #   lib/kvm_util.c:142: vm->fd >= 0
+> #   pid=315635 tid=315635 - Invalid argument
+> #      1    0x0000000001002f4b: vm_open at kvm_util.c:142
+> #      2     (inlined by) vm_create at kvm_util.c:258
+> #      3    0x00000000010015ef: test_add_max_memory_regions at set_memory_region_test.c:351
+> #      4     (inlined by) main at set_memory_region_test.c:397
+> #      5    0x000003ff971abb89: ?? ??:0
+> #      6    0x00000000010017ad: .annobin_abi_note.c.hot at crt1.o:?
+> #   KVM_CREATE_VM ioctl failed, rc: -1 errno: 22
+> not ok 7 selftests: kvm: set_memory_region_test # exit=254
+> 
+> and the testcase compilation does not pickup the pgste option.
 
-Fortuantely, packed ring has already did this since the descriptor talbe 
-is expected to be re-wrote by the device. I just need to conver the 
-split ring.
 
-Thanks
+What does work is the following:
+diff --git a/tools/testing/selftests/kvm/Makefile b/tools/testing/selftests/kvm/Makefile
+index a6d61f451f88..d9c6d9c2069e 100644
+--- a/tools/testing/selftests/kvm/Makefile
++++ b/tools/testing/selftests/kvm/Makefile
+@@ -1,5 +1,6 @@
+  # SPDX-License-Identifier: GPL-2.0-only
+  include ../../../../scripts/Kbuild.include
++include ../../../../scripts/Makefile.compiler
+  
+  all:
+  
 
+as it does pickup the linker option handling.
 
 
