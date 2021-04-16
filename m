@@ -2,122 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E41863628A5
-	for <lists+netdev@lfdr.de>; Fri, 16 Apr 2021 21:29:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B03A63628AC
+	for <lists+netdev@lfdr.de>; Fri, 16 Apr 2021 21:31:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235667AbhDPT3v (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 16 Apr 2021 15:29:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54356 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231510AbhDPT3u (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 16 Apr 2021 15:29:50 -0400
-Received: from Chamillionaire.breakpoint.cc (Chamillionaire.breakpoint.cc [IPv6:2a0a:51c0:0:12e:520::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B9047C061574
-        for <netdev@vger.kernel.org>; Fri, 16 Apr 2021 12:29:23 -0700 (PDT)
-Received: from fw by Chamillionaire.breakpoint.cc with local (Exim 4.92)
-        (envelope-from <fw@breakpoint.cc>)
-        id 1lXU9X-00058I-G4; Fri, 16 Apr 2021 21:29:19 +0200
-From:   Florian Westphal <fw@strlen.de>
-To:     <netdev@vger.kernel.org>
-Cc:     Florian Westphal <fw@strlen.de>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Xin Long <lucien.xin@gmail.com>,
-        Johannes Berg <johannes.berg@intel.com>,
-        Sean Tranchetti <stranche@codeaurora.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Pablo Neira Ayuso <pablo@netfilter.org>
-Subject: [PATCH net] netlink: don't call ->netlink_bind with table lock held
-Date:   Fri, 16 Apr 2021 21:29:13 +0200
-Message-Id: <20210416192913.6139-1-fw@strlen.de>
-X-Mailer: git-send-email 2.26.3
+        id S243471AbhDPTcG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 16 Apr 2021 15:32:06 -0400
+Received: from mail.kernel.org ([198.145.29.99]:34688 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S231510AbhDPTcE (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 16 Apr 2021 15:32:04 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 123CE611AB;
+        Fri, 16 Apr 2021 19:31:38 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1618601499;
+        bh=8LNu5JOmFuLKWCjhg6+ayA0INbjk1fmtkW1OrPWr+Os=;
+        h=Date:From:To:Cc:Subject:From;
+        b=vIgrnyPgyyP3Dnnu1GZGQWUmQ3qTzbLx+61BK6VWmsBilTmeF6jbPUrq4UC85nAL9
+         kTYW/2xQzfnnf3dP5iw/r8oaxsFNPmV1eowFR53qnELNza9h6548PMCpTCSS2BM5pS
+         ImM2wrKFBC+07nATJOUFURB8cdcsoavq+gMGHJBnWisb1V7YDvcR/T/S8Fbpxeosvo
+         gv5HAW1KJomao7bPzxZBqaTmLxphzMgO3MiGG/a2Uir4WzQnnnS7smG+tq4FBKMyUz
+         48D1gRIr2gnCOBLKJi/bqHhjmsZI514jYNc7bRb40nuTIf699NUp1ppYX3aoZBE5vo
+         CDDqefV2OD2zA==
+Date:   Fri, 16 Apr 2021 14:31:51 -0500
+From:   "Gustavo A. R. Silva" <gustavoars@kernel.org>
+To:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
+        linux-hardening@vger.kernel.org
+Subject: [PATCH][next] flow_dissector: Fix out-of-bounds warning in
+ __skb_flow_bpf_to_target()
+Message-ID: <20210416193151.GA591935@embeddedor>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When I added support to allow generic netlink multicast groups to be
-restricted to subscribers with CAP_NET_ADMIN I was unaware that a
-genl_bind implementation already existed in the past.
+Fix the following out-of-bounds warning:
 
-It was reverted due to ABBA deadlock:
+net/core/flow_dissector.c:835:3: warning: 'memcpy' offset [33, 48] from the object at 'flow_keys' is out of the bounds of referenced subobject 'ipv6_src' with type '__u32[4]' {aka 'unsigned int[4]'} at offset 16 [-Warray-bounds]
 
-1. ->netlink_bind gets called with the table lock held.
-2. genetlink bind callback is invoked, it grabs the genl lock.
+The problem is that the original code is trying to copy data into a
+couple of struct members adjacent to each other in a single call to
+memcpy().  So, the compiler legitimately complains about it. As these
+are just a couple of members, fix this by copying each one of them in
+separate calls to memcpy(). 
 
-But when a new genl subsystem is (un)registered, these two locks are
-taken in reverse order.
+This helps with the ongoing efforts to globally enable -Warray-bounds
+and get us closer to being able to tighten the FORTIFY_SOURCE routines
+on memcpy().
 
-One solution would be to revert again and add a comment in genl
-referring 1e82a62fec613, "genetlink: remove genl_bind").
-
-This would need a second change in mptcp to not expose the raw token
-value anymore, e.g.  by hashing the token with a secret key so userspace
-can still associate subflow events with the correct mptcp connection.
-
-However, Paolo Abeni reminded me to double-check why the netlink table is
-locked in the first place.
-
-I can't find one.  netlink_bind() is already called without this lock
-when userspace joins a group via NETLINK_ADD_MEMBERSHIP setsockopt.
-Same holds for the netlink_unbind operation.
-
-Digging through the history, commit f773608026ee1
-("netlink: access nlk groups safely in netlink bind and getname")
-expanded the lock scope.
-
-commit 3a20773beeeeade ("net: netlink: cap max groups which will be considered in netlink_bind()")
-... removed the nlk->ngroups access that the lock scope
-extension was all about.
-
-Reduce the lock scope again and always call ->netlink_bind without
-the table lock.
-
-The Fixes tag should be vs. the patch mentioned in the link below,
-but that one got squash-merged into the patch that came earlier in the
-series.
-
-Fixes: 4d54cc32112d8d ("mptcp: avoid lock_fast usage in accept path")
-Link: https://lore.kernel.org/mptcp/20210213000001.379332-8-mathew.j.martineau@linux.intel.com/T/#u
-Cc: Cong Wang <xiyou.wangcong@gmail.com>
-Cc: Xin Long <lucien.xin@gmail.com>
-Cc: Johannes Berg <johannes.berg@intel.com>
-Cc: Sean Tranchetti <stranche@codeaurora.org>
-Cc: Paolo Abeni <pabeni@redhat.com>
-Cc: Pablo Neira Ayuso <pablo@netfilter.org>
-Signed-off-by: Florian Westphal <fw@strlen.de>
+Link: https://github.com/KSPP/linux/issues/109
+Reported-by: kernel test robot <lkp@intel.com>
+Signed-off-by: Gustavo A. R. Silva <gustavoars@kernel.org>
 ---
- net/netlink/af_netlink.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ net/core/flow_dissector.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
-diff --git a/net/netlink/af_netlink.c b/net/netlink/af_netlink.c
-index dd488938447f..3a62f97acf39 100644
---- a/net/netlink/af_netlink.c
-+++ b/net/netlink/af_netlink.c
-@@ -1019,7 +1019,6 @@ static int netlink_bind(struct socket *sock, struct sockaddr *addr,
- 			return -EINVAL;
+diff --git a/net/core/flow_dissector.c b/net/core/flow_dissector.c
+index 5985029e43d4..3ed7c98a98e1 100644
+--- a/net/core/flow_dissector.c
++++ b/net/core/flow_dissector.c
+@@ -832,8 +832,10 @@ static void __skb_flow_bpf_to_target(const struct bpf_flow_keys *flow_keys,
+ 		key_addrs = skb_flow_dissector_target(flow_dissector,
+ 						      FLOW_DISSECTOR_KEY_IPV6_ADDRS,
+ 						      target_container);
+-		memcpy(&key_addrs->v6addrs, &flow_keys->ipv6_src,
+-		       sizeof(key_addrs->v6addrs));
++		memcpy(&key_addrs->v6addrs.src, &flow_keys->ipv6_src,
++		       sizeof(key_addrs->v6addrs.src));
++		memcpy(&key_addrs->v6addrs.dst, &flow_keys->ipv6_dst,
++		       sizeof(key_addrs->v6addrs.dst));
+ 		key_control->addr_type = FLOW_DISSECTOR_KEY_IPV6_ADDRS;
  	}
  
--	netlink_lock_table();
- 	if (nlk->netlink_bind && groups) {
- 		int group;
- 
-@@ -1031,13 +1030,14 @@ static int netlink_bind(struct socket *sock, struct sockaddr *addr,
- 			if (!err)
- 				continue;
- 			netlink_undo_bind(group, groups, sk);
--			goto unlock;
-+			return err;
- 		}
- 	}
- 
- 	/* No need for barriers here as we return to user-space without
- 	 * using any of the bound attributes.
- 	 */
-+	netlink_lock_table();
- 	if (!bound) {
- 		err = nladdr->nl_pid ?
- 			netlink_insert(sk, nladdr->nl_pid) :
 -- 
-2.26.3
+2.27.0
 
