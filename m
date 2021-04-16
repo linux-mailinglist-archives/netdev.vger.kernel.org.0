@@ -2,178 +2,77 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3F698361FF7
-	for <lists+netdev@lfdr.de>; Fri, 16 Apr 2021 14:36:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 185C2361FD8
+	for <lists+netdev@lfdr.de>; Fri, 16 Apr 2021 14:31:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240412AbhDPMhL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 16 Apr 2021 08:37:11 -0400
-Received: from esa4.mentor.iphmx.com ([68.232.137.252]:23833 "EHLO
-        esa4.mentor.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234291AbhDPMhL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 16 Apr 2021 08:37:11 -0400
-X-Greylist: delayed 429 seconds by postgrey-1.27 at vger.kernel.org; Fri, 16 Apr 2021 08:37:11 EDT
-IronPort-SDR: e9GkB2LSg42EMCd1kdeRk+2OSjCoUe5GsyQZBAQ5XkIUqrkAJToMBPI7yEI/qE4dyHzWeCt6+g
- cmLRCjOuJ7XhGJa4n0QXdXJpvy6AbCoDJZa1+UjGJIR2JVEGsyRdtl6qHWNROtQUApN+4F3s9j
- YneNiGurQfChba7d9LTQ6UaRq8iafMmJQit93y7mpH3KtS8fOT8B0HQspaOPy4IZnTWoVAaQRo
- qdQj7d4vGUcnouzprgtce3rS/bHTcn1sBkVoGidndUZ6MvMuLqZJalJwfCWUGX9AGgAOYZPUvp
- Da8=
-X-IronPort-AV: E=Sophos;i="5.82,226,1613462400"; 
-   d="scan'208";a="60353924"
-Received: from orw-gwy-01-in.mentorg.com ([192.94.38.165])
-  by esa4.mentor.iphmx.com with ESMTP; 16 Apr 2021 04:29:36 -0800
-IronPort-SDR: d2iIqDALa0Os4eoCS0VnlG+7cYKuRH+PifJw9Pc+faxPRfnkquiZgJC18MkrxdcPl54Z8CMC0Y
- YiEN+eCbQjt211Fb/rxPITSQH+BZ9JZUaWviA3U9Tq38yUKqvfjsQ8jZzGPI8tANKE4pB5mSS8
- irEjIdMn86gRC9dtcBok4diUqvXTTcU3HWkfPsLnbI8iWwAzfozggAmBgtzDyOnax2belFGjWR
- mfA/TzuX5zoL6hLC0F6QUPimkoTkesqyyCECH9rWqMRIMf1VpeuqXOPY8Kj1ijBnk6ZaR/FMuK
- tj4=
-From:   "Schmid, Carsten" <Carsten_Schmid@mentor.com>
-To:     Wei Wang <weiwan@google.com>, David Ahern <dsahern@gmail.com>
-CC:     "davem@davemloft.net" <davem@davemloft.net>,
-        "kuznet@ms2.inr.ac.ru" <kuznet@ms2.inr.ac.ru>,
-        "yoshfuji@linux-ipv6.org" <yoshfuji@linux-ipv6.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: AW: Possible race in ipv4 routing
-Thread-Topic: Possible race in ipv4 routing
-Thread-Index: AQHW+HuHMoSYvNmKnk6NEqzC2dwO+6pDbs2AgAA3HYCAcIIIQIADXQvg
-Date:   Fri, 16 Apr 2021 12:29:30 +0000
-Message-ID: <72398cbfaf6a4f92b33cc0c36c55ffda@SVR-IES-MBX-03.mgc.mentorg.com>
-References: <d4de6829f9fa4fa0b6622a330bda025d@SVR-IES-MBX-03.mgc.mentorg.com>
- <b0f27756-1d9f-3562-844c-85c85c20fc6c@gmail.com>
- <CAEA6p_BoPxQ+paem9rWshGtZHDiBGH60gNFgfpu8bmU9QVRh5g@mail.gmail.com> 
-Accept-Language: de-DE, en-IE, en-US
-Content-Language: de-DE
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ms-exchange-transport-fromentityheader: Hosted
-x-originating-ip: [137.202.0.90]
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-MIME-Version: 1.0
+        id S243429AbhDPMbM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 16 Apr 2021 08:31:12 -0400
+Received: from inva020.nxp.com ([92.121.34.13]:56852 "EHLO inva020.nxp.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S240918AbhDPMbJ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 16 Apr 2021 08:31:09 -0400
+Received: from inva020.nxp.com (localhost [127.0.0.1])
+        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id 5E3EB1A3AAE;
+        Fri, 16 Apr 2021 14:30:43 +0200 (CEST)
+Received: from invc005.ap-rdc01.nxp.com (invc005.ap-rdc01.nxp.com [165.114.16.14])
+        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id 3DACB1A01AA;
+        Fri, 16 Apr 2021 14:30:37 +0200 (CEST)
+Received: from localhost.localdomain (mega.ap.freescale.net [10.192.208.232])
+        by invc005.ap-rdc01.nxp.com (Postfix) with ESMTP id 14267402C1;
+        Fri, 16 Apr 2021 14:30:28 +0200 (CEST)
+From:   Yangbo Lu <yangbo.lu@nxp.com>
+To:     netdev@vger.kernel.org
+Cc:     Yangbo Lu <yangbo.lu@nxp.com>,
+        Richard Cochran <richardcochran@gmail.com>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Kurt Kanzenbach <kurt@linutronix.de>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        UNGLinuxDriver@microchip.com, linux-doc@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [net-next 0/3] Support ocelot PTP Sync one-step timestamping
+Date:   Fri, 16 Apr 2021 20:36:52 +0800
+Message-Id: <20210416123655.42783-1-yangbo.lu@nxp.com>
+X-Mailer: git-send-email 2.17.1
+X-Virus-Scanned: ClamAV using ClamSMTP
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-SGkgYWdhaW4sDQoNCj4gPiA+ID4gb24ga2VybmVsIDQuMTQoLjE0NykgaSBoYXZlIHNlZW4gc29t
-ZXRoaW5nIHdlaXJkLiBUaGUgc3RhY2sgdHJhY2U6DQo+ID4gPiA+DQo+ID4gPiA+IFs2NTA2NC40
-NTc5MjBdIEJVRzogdW5hYmxlIHRvIGhhbmRsZSBrZXJuZWwgTlVMTCBwb2ludGVyIGRlcmVmZXJl
-bmNlDQo+ID4gYXQgMDAwMDAwMDAwMDAwMDYwNA0KPiA+ID4gPiBbNjUwNjQuNDY2Njc3XSBJUDog
-aXBfcm91dGVfb3V0cHV0X2tleV9oYXNoX3JjdSsweDc1NS8weDg1MA0KDQpJIGhhdmUgYW5vdGhl
-ciBjcmFzaCB3aXRoIGEgdmVyeSBkaWZmZXJlbnQgc3RhY2ssIGJ1dCBhbHNvIGVuZGluZyB1cCBp
-bg0KcnRfaXNfZXhwaXJlZCBidXQgdGhpcyB0aW1lIGZyb20gYW4gaW50ZXJydXB0IGNvbnRleHQ6
-DQpbMTQzMzAuNzY0NjE2XSBCVUc6IHVuYWJsZSB0byBoYW5kbGUga2VybmVsIE5VTEwgcG9pbnRl
-ciBkZXJlZmVyZW5jZSBhdCAwMDAwMDAwMDAwMDAwNjA4DQpbMTQzMzAuNzczMzgyXSBJUDogaXB2
-NF9kc3RfY2hlY2srMHgxYy8weDQwDQpbMTQzMzAuNzc3NzYxXSBQR0QgMCBQNEQgMA0KWzE0MzMw
-Ljc4MDU4Nl0gT29wczogMDAwMCBbIzFdIFBSRUVNUFQgU01QIE5PUFRJDQpbMTQzMzAuNzg1NDUx
-XSBNb2R1bGVzIGxpbmtlZCBpbjogYmNtZGhkKE8pIHNxdWFzaGZzIHpsaWJfaW5mbGF0ZSB4el9k
-ZWMgZWJ0X2lwNiBlYnRfaXAgZWJ0YWJsZV9maWx0ZXIgZWJ0YWJsZXMgdmV0aCBsem8gbHpvX2Nv
-bXByZXNzIGx6b19kZWNvbXByZXNzIGFoNCB4ZnJtNF9tb2RlX3RyYW5zcG9ydCBubHNfaXNvODg1
-OV8xIG5sc19jcDg1MCB2ZmF0IGZhdCBjZnFfaW9zY2hlZCBzZF9tb2QgeGZybV91c2VyIHhmcm1f
-YWxnbyB0bnRmcyhQTykgdGV4ZmF0KFBPKSB1c2Jfc3RvcmFnZSBjbHNfdTMyIHNjaF9odGIgaW50
-ZWxfdGZtX2dvdmVybm9yIGVjcnlwdGZzIHNuZF9zb2NfYXBsX21ndV9odSBpbnRlbF9pcHU0X3Bz
-eXMgaW50ZWxfeGhjaV91c2Jfcm9sZV9zd2l0Y2ggZHdjMyByb2xlcyBpbnRlbF9pcHU0X3BzeXNf
-Y3NzbGliIHVkY19jb3JlIGFkdjcyOHggY29yZXRlbXAgaW50ZWxfaXB1NF9pc3lzIHZpZGVvYnVm
-Ml9kbWFfY29udGlnIGkyY19pODAxIHZpZGVvYnVmMl9tZW1vcHMgc25kX3NvY19za2wgaXB1NF9h
-Y3BpIGludGVsX2lwdTRfaXN5c19jc3NsaWIgc2R3X2NubCB2aWRlb2J1ZjJfdjRsMiBzbmRfc29j
-X2FjcGlfaW50ZWxfbWF0Y2ggdmlkZW9idWYyX2NvcmUgc25kX3NvY19hY3BpIHNuZF9zb2NfY29y
-ZSBzYmlfYXBsIHNuZF9jb21wcmVzcyBzbmRfc29jX3NrbF9pcGMgc2R3X2J1cyBjcmM4IHNuZF9z
-b2Nfc3N0X2lwYyBzbmRfc29jX3NzdF9kc3Agc25kX2hkYV9leHRfY29yZSBpbnRlbF9pcHU0X21t
-dSBzbmRfaGRhX2NvcmUgYWhjaSBzbmRfcGNtIHhoY2lfcGNpIHhoY2lfaGNkIGxpYmFoY2kgc25k
-X3RpbWVyDQpbMTQzMzAuODY1MDU2XSAgY2ZnODAyMTEgc25kIGxpYmF0YSBzb3VuZGNvcmUgaW50
-ZWxfaXB1NCB1c2Jjb3JlIG1laV9tZSByZmtpbGwgZHdjM19wY2kgdXNiX2NvbW1vbiBzY3NpX21v
-ZCBpb3ZhIG1laSBuZnNkIGF1dGhfcnBjZ3NzIGxvY2tkIGdyYWNlIHN1bnJwYyB6cmFtIHpzbWFs
-bG9jIGxvb3AgZnVzZSA4MDIxcSBicmlkZ2Ugc3RwIGxsYyBpbmFwNTYwdChPKSBpOTE1IHZpZGVv
-IGJhY2tsaWdodCBpbnRlbF9ndHQgaTJjX2FsZ29fYml0IGlnYl9hdmIoTykgZHJtX2ttc19oZWxw
-ZXIgZHJtIHB0cCBwcHNfY29yZSBod21vbiBzcGlfcHhhMnh4X3BsYXRmb3JtIGZpcm13YXJlX2Ns
-YXNzIFtsYXN0IHVubG9hZGVkOiBiY21kaGRdDQpbMTQzMzAuOTAwMzU4XSBDUFU6IDAgUElEOiAy
-NTEgQ29tbTogNjMxMF9pbzAzIFRhaW50ZWQ6IFAgICAgIFUgICAgIE8gICAgNC4xNC4xOTgtYXBs
-ICMxDQpbMTQzMzAuOTA5MTA1XSB0YXNrOiBmZmZmOTNmZDc3YmQ0YjAwIHRhc2suc3RhY2s6IGZm
-ZmY5YTBlYzA1MzgwMDANClsxNDMzMC45MTU3MTJdIFJJUDogMDAxMDppcHY0X2RzdF9jaGVjaysw
-eDFjLzB4NDANClsxNDMzMC45MjA2NzFdIFJTUDogMDAxODpmZmZmOTNmZDdmYzAzY2EwIEVGTEFH
-UzogMDAwMTAyMDINClsxNDMzMC45MjY1MDRdIFJBWDogMDAwMDAwMDAwMDAwMDAwMCBSQlg6IGZm
-ZmY5M2ZkNmIwZGVmMDAgUkNYOiAwMDAwMDAwMDAwMDAwMDAxDQpbMTQzMzAuOTM0NDc0XSBSRFg6
-IDAwMDAwMDAwMDAwMDAwMDQgUlNJOiAwMDAwMDAwMDAwMDAwMDAwIFJESTogZmZmZjkzZmJhNzNi
-MWUwMA0KWzE0MzMwLjk0MjQ0NF0gUkJQOiBmZmZmOTNmZDdmYzAzY2EwIFIwODogMDAwMDAwMDA3
-OTA0NDkwMCBSMDk6IDAwMDAwMDAwMDAwMDViYTANClsxNDMzMC45NTA0MTRdIFIxMDogNjNjNzMw
-YTAzN2M3MzBhMCBSMTE6IDAwMDAwMDAwMDAwMDAwMDEgUjEyOiBmZmZmOTNmZDJiNjM0ZDgwDQpb
-MTQzMzAuOTU4MzgxXSBSMTM6IGZmZmZmZmZmYTI2YWM4MDAgUjE0OiBmZmZmOTNmZDc2YzA4MDAw
-IFIxNTogMDAwMDAwMDAwMDAwMDAwOA0KWzE0MzMwLjk2NjM1Ml0gRlM6ICAwMDAwN2YxYjM3ZmZm
-NzAwKDAwMDApIEdTOmZmZmY5M2ZkN2ZjMDAwMDAoMDAwMCkga25sR1M6MDAwMDAwMDAwMDAwMDAw
-MA0KWzE0MzMwLjk3NTM5MV0gQ1M6ICAwMDEwIERTOiAwMDAwIEVTOiAwMDAwIENSMDogMDAwMDAw
-MDA4MDA1MDAzMw0KWzE0MzMwLjk4MTgwN10gQ1IyOiAwMDAwMDAwMDAwMDAwNjA4IENSMzogMDAw
-MDAwMDFmNjg4NDAwMCBDUjQ6IDAwMDAwMDAwMDAzNDA2YjANClsxNDMzMC45ODk3NzddIENhbGwg
-VHJhY2U6DQpbMTQzMzAuOTkyNTA1XSAgPElSUT4NClsxNDMzMC45OTQ3NTBdICB0Y3BfdjRfZWFy
-bHlfZGVtdXgrMHhmMS8weDE1MA0KWzE0MzMwLjk5OTMyNl0gIGlwX3Jjdl9maW5pc2grMHgxNTIv
-MHgzNzANClsxNDMzMS4wMDM1MDldICBpcF9yY3YrMHgyNWQvMHgzNzANClsxNDMzMS4wMDcwMDRd
-ICA/IGlwX2xvY2FsX2RlbGl2ZXJfZmluaXNoKzB4MjEwLzB4MjEwDQpbMTQzMzEuMDEyMzU2XSAg
-X19uZXRpZl9yZWNlaXZlX3NrYl9jb3JlKzB4MjAyLzB4OGQwDQpbMTQzMzEuMDE3NjA5XSAgX19u
-ZXRpZl9yZWNlaXZlX3NrYisweDEzLzB4NjANClsxNDMzMS4wMjIxODFdICBuZXRpZl9yZWNlaXZl
-X3NrYl9pbnRlcm5hbCsweDNiLzB4MTEwDQpbMTQzMzEuMDI3NTIxXSAgbmFwaV9ncm9fcmVjZWl2
-ZSsweGU5LzB4MTEwDQpbMTQzMzEuMDMxOTEwXSAgaWdiX3BvbGwrMHg2YTQvMHgxMzAwIFtpZ2Jf
-YXZiXQ0KWzE0MzMxLjAzNjY4Ml0gIG5ldF9yeF9hY3Rpb24rMHhkYi8weDMyMA0KWzE0MzMxLjA0
-MDc3MV0gIF9fZG9fc29mdGlycSsweGQwLzB4MzA4DQpbMTQzMzEuMDQ0NzY1XSAgaXJxX2V4aXQr
-MHhiYS8weGMwDQpbMTQzMzEuMDQ4MjY4XSAgZG9fSVJRKzB4ODEvMHhkMA0KWzE0MzMxLjA1MTU3
-Ml0gIGNvbW1vbl9pbnRlcnJ1cHQrMHg4ZC8weDhkDQpbMTQzMzEuMDU1ODUzXSAgPC9JUlE+DQpb
-MTQzMzEuMDU4MTg2XSBSSVA6IDAwMTA6dW5peF93cml0ZV9zcGFjZSsweDEvMHhhMA0KWzE0MzMx
-LjA2MzI0M10gUlNQOiAwMDE4OmZmZmY5YTBlYzA1M2JhYjAgRUZMQUdTOiAwMDAwMDIxMiBPUklH
-X1JBWDogZmZmZmZmZmZmZmZmZmY0ZA0KWzE0MzMxLjA3MTcwMl0gUkFYOiBmZmZmZmZmZmExZjVl
-ZDgwIFJCWDogZmZmZjkzZmI4NzgzMjgwMCBSQ1g6IGZmZmY5M2ZiODc4MzIwYzgNClsxNDMzMS4w
-Nzk2NzNdIFJEWDogMDAwMDAwMDAwMDAwMDAwMCBSU0k6IDAwMDAwMDAwMDAwMDAyNDYgUkRJOiBm
-ZmZmOTNmYjg3ODMyODAwDQpbMTQzMzEuMDg3NjQ0XSBSQlA6IGZmZmY5YTBlYzA1M2JhYzggUjA4
-OiBmZmZmOWEwZWMwNTNjMDAwIFIwOTogZmZmZjkzZmQyNzg3ZWEzMQ0KWzE0MzMxLjA5NTYxNV0g
-UjEwOiBmZmZmOWEwZWMwNTNiY2Y4IFIxMTogMDAwMDAwMDAwMDAwMDAwMCBSMTI6IGZmZmY5M2Zk
-NGE0YWEzMDANClsxNDMzMS4xMDM1ODddIFIxMzogZmZmZjkzZmI4NzgzMjBjOCBSMTQ6IDAwMDAw
-MDAwMDAwMDAwNDEgUjE1OiAwMDAwMDAwMDAwMDAwMDAwDQpbMTQzMzEuMTExNTYyXSAgPyB1bml4
-X3NlcXBhY2tldF9zZW5kbXNnKzB4NTAvMHg1MA0KWzE0MzMxLjExNjYyNF0gID8gc29ja193ZnJl
-ZSsweDM5LzB4NjANClsxNDMzMS4xMjA1MTZdICB1bml4X2Rlc3RydWN0X3NjbSsweDdlLzB4YTAN
-ClsxNDMzMS4xMjQ4OTddICBza2JfcmVsZWFzZV9oZWFkX3N0YXRlKzB4NWIvMHhiMA0KWzE0MzMx
-LjEyOTc2MF0gIHNrYl9yZWxlYXNlX2FsbCsweGQvMHgzMA0KWzE0MzMxLjEzMzg0N10gIGNvbnN1
-bWVfc2tiKzB4MmIvMHhiMA0KWzE0MzMxLjEzNzY0M10gIHVuaXhfc3RyZWFtX3JlYWRfZ2VuZXJp
-YysweDdlMC8weDhkMA0KWzE0MzMxLjE0MjkwMF0gID8gaW1wb3J0X2lvdmVjKzB4M2EvMHhlMA0K
-WzE0MzMxLjE0Njk4N10gIHVuaXhfc3RyZWFtX3JlY3Ztc2crMHg0Yy8weDcwDQpbMTQzMzEuMTUx
-NTYyXSAgPyB1bml4X3N0YXRlX2RvdWJsZV91bmxvY2srMHgzMC8weDMwDQpbMTQzMzEuMTU2ODE2
-XSAgc29ja19yZWN2bXNnKzB4M2IvMHg1MA0KWzE0MzMxLjE2MDcxMF0gIF9fX3N5c19yZWN2bXNn
-KzB4ZDQvMHgxODANClsxNDMzMS4xNjQ4OTldICA/IGt0aW1lX2dldCsweDNlLzB4YTANClsxNDMz
-MS4xNjg2OTRdICA/IGNsb2NrZXZlbnRzX3Byb2dyYW1fbWluX2RlbHRhKzB4NTMvMHgxMDANClsx
-NDMzMS4xNzQ1MzBdICA/IGNsb2NrZXZlbnRzX3Byb2dyYW1fZXZlbnQrMHhlZS8weDExMA0KWzE0
-MzMxLjE3OTk3OF0gID8gdGlja19wcm9ncmFtX2V2ZW50KzB4M2YvMHg3MA0KWzE0MzMxLjE4NDY1
-MF0gID8gX19mZ2V0KzB4NzEvMHhhMA0KWzE0MzMxLjE4ODE1N10gIF9fc3lzX3JlY3Ztc2crMHg0
-Yy8weDkwDQpbMTQzMzEuMTkyMTQ3XSAgPyBfX3N5c19yZWN2bXNnKzB4NGMvMHg5MA0KWzE0MzMx
-LjE5NjMzNF0gIFN5U19yZWN2bXNnKzB4OS8weDEwDQpbMTQzMzEuMjAwMDMzXSAgZG9fc3lzY2Fs
-bF82NCsweDc5LzB4MzUwDQpbMTQzMzEuMjA0MTIwXSAgPyBzY2hlZHVsZSsweDJlLzB4OTANClsx
-NDMzMS4yMDc4MThdICA/IGV4aXRfdG9fdXNlcm1vZGVfbG9vcCsweDVhLzB4OTANClsxNDMzMS4y
-MTI3NzJdICBlbnRyeV9TWVNDQUxMXzY0X2FmdGVyX2h3ZnJhbWUrMHg0MS8weGE2DQpbMTQzMzEu
-MjE4NDEzXSBSSVA6IDAwMzM6MHg3ZjFiNDM5YTg3NjcNClsxNDMzMS4yMjI0MDFdIFJTUDogMDAy
-YjowMDAwN2YxYjM3ZmZkYjgwIEVGTEFHUzogMDAwMDAyOTMgT1JJR19SQVg6IDAwMDAwMDAwMDAw
-MDAwMmYNClsxNDMzMS4yMzA4NTddIFJBWDogZmZmZmZmZmZmZmZmZmZkYSBSQlg6IDAwMDAwMDAw
-MDAwMDAwYmUgUkNYOiAwMDAwN2YxYjQzOWE4NzY3DQpbMTQzMzEuMjM4ODI3XSBSRFg6IDAwMDAw
-MDAwMDAwMDAwMDAgUlNJOiAwMDAwN2YxYjM3ZmZkYmYwIFJESTogMDAwMDAwMDAwMDAwMDBiZQ0K
-WzE0MzMxLjI0Njc5Nl0gUkJQOiAwMDAwN2YxYjM3ZmZkYmYwIFIwODogMDAwMDAwMDAwMDAwMDAw
-MCBSMDk6IDAwMDAwMDAwMDAwMDAwMDANClsxNDMzMS4yNTQ3NjZdIFIxMDogMDAwMDAwMDAwMDAw
-MDA3NiBSMTE6IDAwMDAwMDAwMDAwMDAyOTMgUjEyOiAwMDAwMDAwMDAwMDAwMDAwDQpbMTQzMzEu
-MjYyNzM1XSBSMTM6IDAwMDA3ZjFiMzdmZmY1YzAgUjE0OiAwMDAwN2YxYjM4MTVkNDcwIFIxNTog
-MDAwMDAwMDIwMDAwMDAwMQ0KWzE0MzMxLjI3MDcwNV0gQ29kZTogMGYgMWYgNDQgMDAgMDAgNjYg
-MmUgMGYgMWYgODQgMDAgMDAgMDAgMDAgMDAgNjYgODMgN2YgNjQgZmYgNTUgNDggODkgZTUgNzUg
-MjMgNDggOGIgMDcgNDggOGIgOTAgOTggMDQgMDAgMDAgMzEgYzAgNDggODUgZDIgNzQgMTAgPDhi
-PiA5MiAwNCAwNiAwMCAwMCAzOSA5NyBhMCAwMCAwMCAwMCA0OCAwZiA0NCBjNyA1ZCBjMyAzMSBj
-MCA1ZA0KWzE0MzMxLjI5MTgzMV0gUklQOiBpcHY0X2RzdF9jaGVjaysweDFjLzB4NDAgUlNQOiBm
-ZmZmOTNmZDdmYzAzY2EwDQpbMTQzMzEuMjk4NDQ0XSBDUjI6IDAwMDAwMDAwMDAwMDA2MDgNCg0K
-SU5ESVJFQ1RfQ0FMTEFCTEVfU0NPUEUgc3RydWN0IGRzdF9lbnRyeSAqaXB2NF9kc3RfY2hlY2so
-c3RydWN0IGRzdF9lbnRyeSAqZHN0LA0KIHUzMiBjb29raWUpDQp7DQpzdHJ1Y3QgcnRhYmxlICpy
-dCA9IChzdHJ1Y3QgcnRhYmxlICopIGRzdDsNCg0KLyogQWxsIElQVjQgZHN0cyBhcmUgY3JlYXRl
-ZCB3aXRoIC0+b2Jzb2xldGUgc2V0IHRvIHRoZSB2YWx1ZQ0KICogRFNUX09CU09MRVRFX0ZPUkNF
-X0NISyB3aGljaCBmb3JjZXMgdmFsaWRhdGlvbiBjYWxscyBkb3duDQogKiBpbnRvIHRoaXMgZnVu
-Y3Rpb24gYWx3YXlzLg0KICoNCiAqIFdoZW4gYSBQTVRVL3JlZGlyZWN0IGluZm9ybWF0aW9uIHVw
-ZGF0ZSBpbnZhbGlkYXRlcyBhIHJvdXRlLA0KICogdGhpcyBpcyBpbmRpY2F0ZWQgYnkgc2V0dGlu
-ZyBvYnNvbGV0ZSB0byBEU1RfT0JTT0xFVEVfS0lMTCBvcg0KICogRFNUX09CU09MRVRFX0RFQUQu
-DQogKi8NCmlmIChkc3QtPm9ic29sZXRlICE9IERTVF9PQlNPTEVURV9GT1JDRV9DSEsgfHwgcnRf
-aXNfZXhwaXJlZChydCkpDQpyZXR1cm4gTlVMTDsNCnJldHVybiBkc3Q7DQp9DQpFWFBPUlRfSU5E
-SVJFQ1RfQ0FMTEFCTEUoaXB2NF9kc3RfY2hlY2spOw0KDQpzdGF0aWMgaW5saW5lIGJvb2wgcnRf
-aXNfZXhwaXJlZChjb25zdCBzdHJ1Y3QgcnRhYmxlICpydGgpDQp7DQpyZXR1cm4gKGRldl9uZXQo
-cnRoLT5kc3QuZGV2KSA9PSBOVUxMKSB8fA0KICAgKHJ0aC0+cnRfZ2VuaWQgIT0gcnRfZ2VuaWRf
-aXB2NChkZXZfbmV0KHJ0aC0+ZHN0LmRldikpKTsgPC0tLSBjcmFzaGVzIGhlcmUNCg0KQW55IGlk
-ZWFzPw0KVGhpcyBkYW1uIHNtZWxscyBsaWtlIGFuIFVBRiBkdWUgdG8gYSByYWNlLg0KDQpVbmZv
-cnR1bmF0ZWx5IGkgZG9uJ3QgaGF2ZSB0aGUgY29yZWR1bXAuIE9ubHkgdGhlIHN0YWNrLg0KQnV0
-IG5vIHJlcHJvZHVjZXIgeWV0Lg0KDQpCZXN0IHJlZ2FyZHMNCkNhcnN0ZW4NCi0tLS0tLS0tLS0t
-LS0tLS0tDQpNZW50b3IgR3JhcGhpY3MgKERldXRzY2hsYW5kKSBHbWJILCBBcm51bGZzdHJhc3Nl
-IDIwMSwgODA2MzQgTcO8bmNoZW4gUmVnaXN0ZXJnZXJpY2h0IE3DvG5jaGVuIEhSQiAxMDY5NTUs
-IEdlc2Now6RmdHNmw7xocmVyOiBUaG9tYXMgSGV1cnVuZywgRnJhbmsgVGjDvHJhdWYNCg==
+This patch-set is to support ocelot PTP Sync one-step timestamping.
+Actually before that, this patch-set cleans up and optimizes the
+DSA slave tx timestamp request handling process.
+
+Yangbo Lu (3):
+  net: dsa: optimize tx timestamp request handling
+  net: mscc: ocelot: convert to ocelot_port_txtstamp_request()
+  net: mscc: ocelot: support PTP Sync one-step timestamping
+
+ Documentation/networking/timestamping.rst     |  7 +-
+ .../net/dsa/hirschmann/hellcreek_hwtstamp.c   | 20 +++--
+ .../net/dsa/hirschmann/hellcreek_hwtstamp.h   |  2 +-
+ drivers/net/dsa/mv88e6xxx/hwtstamp.c          | 21 +++--
+ drivers/net/dsa/mv88e6xxx/hwtstamp.h          |  6 +-
+ drivers/net/dsa/ocelot/felix.c                | 15 ++--
+ drivers/net/dsa/sja1105/sja1105_ptp.c         |  6 +-
+ drivers/net/dsa/sja1105/sja1105_ptp.h         |  2 +-
+ drivers/net/ethernet/mscc/ocelot.c            | 81 ++++++++++++++++++-
+ drivers/net/ethernet/mscc/ocelot_net.c        | 19 ++---
+ include/net/dsa.h                             |  2 +-
+ include/soc/mscc/ocelot.h                     |  6 +-
+ net/dsa/slave.c                               | 20 ++---
+ net/dsa/tag_ocelot.c                          | 25 +-----
+ net/dsa/tag_ocelot_8021q.c                    | 39 +++------
+ 15 files changed, 158 insertions(+), 113 deletions(-)
+
+
+base-commit: 392c36e5be1dee19ffce8c8ba8f07f90f5aa3f7c
+-- 
+2.25.1
+
