@@ -2,324 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9EAD4362192
-	for <lists+netdev@lfdr.de>; Fri, 16 Apr 2021 15:59:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 08FD83621DC
+	for <lists+netdev@lfdr.de>; Fri, 16 Apr 2021 16:14:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235803AbhDPOAK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 16 Apr 2021 10:00:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36704 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235796AbhDPOAK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 16 Apr 2021 10:00:10 -0400
-Received: from Chamillionaire.breakpoint.cc (Chamillionaire.breakpoint.cc [IPv6:2a0a:51c0:0:12e:520::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D858C061574
-        for <netdev@vger.kernel.org>; Fri, 16 Apr 2021 06:59:45 -0700 (PDT)
-Received: from fw by Chamillionaire.breakpoint.cc with local (Exim 4.92)
-        (envelope-from <fw@breakpoint.cc>)
-        id 1lXP0Y-0003Rh-PB; Fri, 16 Apr 2021 15:59:42 +0200
-From:   Florian Westphal <fw@strlen.de>
-To:     <netdev@vger.kernel.org>
-Cc:     <mptcp@lists.linux.dev>, dsahern@gmail.com,
-        stephen@networkplumber.org, Florian Westphal <fw@strlen.de>
-Subject: [PATCH iproute2] mptcp: add support for event monitoring
-Date:   Fri, 16 Apr 2021 15:59:30 +0200
-Message-Id: <20210416135930.9480-1-fw@strlen.de>
-X-Mailer: git-send-email 2.26.3
+        id S243509AbhDPOLI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 16 Apr 2021 10:11:08 -0400
+Received: from mail.kernel.org ([198.145.29.99]:53592 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S235553AbhDPOLH (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 16 Apr 2021 10:11:07 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id B3E8E611C2;
+        Fri, 16 Apr 2021 14:10:42 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1618582242;
+        bh=1s9sCrJo44Veolfwl+MwQWl66gowBJVDh4jCcMWmw20=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=bWtljR/0v+ciclhWmYZDIUGhhvFJ3qQ7nO0uU82MghhOsGFdSMyacApx9Rv+nHL6X
+         W5cY5QnPwP6g7dxd13lON+NP7T3wxEgswnDncwfQXbUpDa1noe9/ic1qeaxTeqr1An
+         xJUGxVeiTwbDQol4BcT+uJeJ/K8GtjgPzMatA+QGLBn8/pwaCrhafWYek6SKXGeGJX
+         JrnAkRBsacpGTrsZXVT6wqIi5rnqa1PtXSpagwrGhkYyDEvybabUi7RBZVXZcudA+H
+         4dZgdBI6yZkxxw1SMBUj5RKBCe9Uqk2xt0sX7dm9fywiRJ0wfW8Bx5Y3FStVzaPeVS
+         VyQ7HbK3kn2jA==
+Received: by mail-wm1-f46.google.com with SMTP id n10-20020a05600c4f8ab0290130f0d3cba3so2452761wmq.1;
+        Fri, 16 Apr 2021 07:10:42 -0700 (PDT)
+X-Gm-Message-State: AOAM5311rO2I/o6Ind6RThkqpjvCAbINqe/V2ca2Zxn0e895bpA76IE+
+        pQhj8cZzVF3wdYjF0bFkNNhn6QVSWsiGrmNBMrQ=
+X-Google-Smtp-Source: ABdhPJwer78kcpt2KUTk7pLNWv4YpxxYqG4ncdMLFchwkUndSOMZjtA8z9tZUxzlPor4R9hASXWQZTamma1KWyeXMwk=
+X-Received: by 2002:a7b:c14a:: with SMTP id z10mr8250595wmi.75.1618582241293;
+ Fri, 16 Apr 2021 07:10:41 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20210409185105.188284-3-willy@infradead.org> <202104100656.N7EVvkNZ-lkp@intel.com>
+ <20210410024313.GX2531743@casper.infradead.org> <20210410082158.79ad09a6@carbon>
+ <CAC_iWjLXZ6-hhvmvee6r4R_N64u-hrnLqE_CSS1nQk+YaMQQnA@mail.gmail.com> <ab9f1a6c-4099-2b59-457d-fcc45d2396f4@ti.com>
+In-Reply-To: <ab9f1a6c-4099-2b59-457d-fcc45d2396f4@ti.com>
+From:   Arnd Bergmann <arnd@kernel.org>
+Date:   Fri, 16 Apr 2021 16:10:37 +0200
+X-Gmail-Original-Message-ID: <CAK8P3a1+Dpu3ef+VYA+owTVGoGqfK6APbYbLSH1_ZKT0aMYQCw@mail.gmail.com>
+Message-ID: <CAK8P3a1+Dpu3ef+VYA+owTVGoGqfK6APbYbLSH1_ZKT0aMYQCw@mail.gmail.com>
+Subject: Re: Bogus struct page layout on 32-bit
+To:     Grygorii Strashko <grygorii.strashko@ti.com>
+Cc:     Ilias Apalodimas <ilias.apalodimas@linaro.org>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        Christoph Hellwig <hch@lst.de>,
+        Matthew Wilcox <willy@infradead.org>,
+        kernel test robot <lkp@intel.com>,
+        Linux-MM <linux-mm@kvack.org>, kbuild-all@lists.01.org,
+        clang-built-linux@googlegroups.com,
+        open list <linux-kernel@vger.kernel.org>,
+        linux-fsdevel@vger.kernel.org,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        Paul Mackerras <paulus@samba.org>,
+        linuxppc-dev@lists.ozlabs.org,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Matteo Croce <mcroce@linux.microsoft.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This adds iproute2 support for mptcp event monitoring, e.g. creation,
-establishment, address announcements from the peer, subflow establishment
-and so on.
+On Fri, Apr 16, 2021 at 11:27 AM 'Grygorii Strashko' via Clang Built
+Linux <clang-built-linux@googlegroups.com> wrote:
+> On 10/04/2021 11:52, Ilias Apalodimas wrote:
+> > +CC Grygorii for the cpsw part as Ivan's email is not valid anymore
+> The TI platforms am3/4/5 (cpsw) and Keystone 2 (netcp) can do only 32bit DMA even in case of LPAE (dma-ranges are used).
+> Originally, as I remember, CONFIG_ARCH_DMA_ADDR_T_64BIT has not been selected for the LPAE case
+> on TI platforms and the fact that it became set is the result of multi-paltform/allXXXconfig/DMA
+> optimizations and unification.
+> (just checked - not set in 4.14)
+>
+> Probable commit 4965a68780c5 ("arch: define the ARCH_DMA_ADDR_T_64BIT config symbol in lib/Kconfig").
 
-While the kernel-generated events are primarily aimed at mptcpd (e.g. for
-subflow management), this is also useful for debugging.
+I completely missed this change in the past, and I don't really agree
+with it either.
 
-This adds print support for the existing events.
+Most 32-bit Arm platforms are in fact limited to 32-bit DMA, even when they have
+MMIO or RAM areas above the 4GB boundary that require LPAE.
 
-Sample output of 'ip mptcp monitor':
-[       CREATED] token=83f3a692 remid=0 locid=0 saddr4=10.0.1.2 daddr4=10.0.1.1 sport=58710 dport=10011
-[   ESTABLISHED] token=83f3a692 remid=0 locid=0 saddr4=10.0.1.2 daddr4=10.0.1.1 sport=58710 dport=10011
-[SF_ESTABLISHED] token=83f3a692 remid=0 locid=1 saddr4=10.0.2.2 daddr4=10.0.1.1 sport=40195 dport=10011 backup=0
-[        CLOSED] token=83f3a692
+> The TI drivers have been updated, finally to accept ARCH_DMA_ADDR_T_64BIT=y by using
+> things like (__force u32) for example.
+>
+> Honestly, I've done sanity check of CPSW with LPAE=y (ARCH_DMA_ADDR_T_64BIT=y) very long time ago.
 
-Signed-off-by: Florian Westphal <fw@strlen.de>
----
- include/libgenl.h          |   1 +
- include/uapi/linux/mptcp.h |   2 +
- ip/ipmptcp.c               | 113 +++++++++++++++++++++++++++++++++++++
- lib/libgenl.c              |  66 ++++++++++++++++++++++
- man/man8/ip-mptcp.8        |   8 +++
- 5 files changed, 190 insertions(+)
+This is of course a good idea, drivers should work with any
+combination of 32-bit
+or 64-bit phys_addr_t and dma_addr_t.
 
-diff --git a/include/libgenl.h b/include/libgenl.h
-index 656493a2c3c4..97281cc1103f 100644
---- a/include/libgenl.h
-+++ b/include/libgenl.h
-@@ -21,6 +21,7 @@ struct {								\
- 	},								\
- }
- 
-+int genl_add_mcast_grp(struct rtnl_handle *grth, __u16 genl_family, const char *group);
- int genl_resolve_family(struct rtnl_handle *grth, const char *family);
- int genl_init_handle(struct rtnl_handle *grth, const char *family,
- 		     int *genl_family);
-diff --git a/include/uapi/linux/mptcp.h b/include/uapi/linux/mptcp.h
-index c3e40165ad4b..d7d47802bc98 100644
---- a/include/uapi/linux/mptcp.h
-+++ b/include/uapi/linux/mptcp.h
-@@ -174,6 +174,8 @@ enum mptcp_event_attr {
- 	MPTCP_ATTR_FLAGS,	/* u16 */
- 	MPTCP_ATTR_TIMEOUT,	/* u32 */
- 	MPTCP_ATTR_IF_IDX,	/* s32 */
-+	MPTCP_ATTR_RESET_REASON,/* u32 */
-+	MPTCP_ATTR_RESET_FLAGS, /* u32 */
- 
- 	__MPTCP_ATTR_AFTER_LAST
- };
-diff --git a/ip/ipmptcp.c b/ip/ipmptcp.c
-index e1ffafb3c658..fa8481069124 100644
---- a/ip/ipmptcp.c
-+++ b/ip/ipmptcp.c
-@@ -23,6 +23,7 @@ static void usage(void)
- 		"	ip mptcp endpoint flush\n"
- 		"	ip mptcp limits set [ subflows NR ] [ add_addr_accepted NR ]\n"
- 		"	ip mptcp limits show\n"
-+		"	ip mptcp monitor\n"
- 		"FLAG-LIST := [ FLAG-LIST ] FLAG\n"
- 		"FLAG  := [ signal | subflow | backup ]\n");
- 
-@@ -385,6 +386,110 @@ static int mptcp_limit_get_set(int argc, char **argv, int cmd)
- 	return 0;
- }
- 
-+static const char * const event_to_str[] = {
-+	[MPTCP_EVENT_CREATED] = "CREATED",
-+	[MPTCP_EVENT_ESTABLISHED] = "ESTABLISHED",
-+	[MPTCP_EVENT_CLOSED] = "CLOSED",
-+	[MPTCP_EVENT_ANNOUNCED] = "ANNOUNCED",
-+	[MPTCP_EVENT_REMOVED] = "REMOVED",
-+	[MPTCP_EVENT_SUB_ESTABLISHED] = "SF_ESTABLISHED",
-+	[MPTCP_EVENT_SUB_CLOSED] = "SF_CLOSED",
-+	[MPTCP_EVENT_SUB_PRIORITY] = "SF_PRIO",
-+};
-+
-+static void print_addr(const char *key, int af, struct rtattr *value)
-+{
-+	void *data = RTA_DATA(value);
-+	char str[INET6_ADDRSTRLEN];
-+
-+	if (inet_ntop(af, data, str, sizeof(str)))
-+		printf(" %s=%s", key, str);
-+}
-+
-+static int mptcp_monitor_msg(struct rtnl_ctrl_data *ctrl,
-+			     struct nlmsghdr *n, void *arg)
-+{
-+	const struct genlmsghdr *ghdr = NLMSG_DATA(n);
-+	struct rtattr *tb[MPTCP_ATTR_MAX + 1];
-+	int len = n->nlmsg_len;
-+
-+	len -= NLMSG_LENGTH(GENL_HDRLEN);
-+	if (len < 0)
-+		return -1;
-+
-+	if (n->nlmsg_type != genl_family)
-+		return 0;
-+
-+	if (timestamp)
-+		print_timestamp(stdout);
-+
-+	if (ghdr->cmd >= ARRAY_SIZE(event_to_str)) {
-+		printf("[UNKNOWN %u]\n", ghdr->cmd);
-+		goto out;
-+	}
-+
-+	if (event_to_str[ghdr->cmd] == NULL) {
-+		printf("[UNKNOWN %u]\n", ghdr->cmd);
-+		goto out;
-+	}
-+
-+	printf("[%14s]", event_to_str[ghdr->cmd]);
-+
-+	parse_rtattr(tb, MPTCP_ATTR_MAX, (void *) ghdr + GENL_HDRLEN, len);
-+
-+	printf(" token=%08x", rta_getattr_u32(tb[MPTCP_ATTR_TOKEN]));
-+
-+	if (tb[MPTCP_ATTR_REM_ID])
-+		printf(" remid=%u", rta_getattr_u8(tb[MPTCP_ATTR_REM_ID]));
-+	if (tb[MPTCP_ATTR_LOC_ID])
-+		printf(" locid=%u", rta_getattr_u8(tb[MPTCP_ATTR_LOC_ID]));
-+
-+	if (tb[MPTCP_ATTR_SADDR4])
-+		print_addr("saddr4", AF_INET, tb[MPTCP_ATTR_SADDR4]);
-+	if (tb[MPTCP_ATTR_DADDR4])
-+		print_addr("daddr4", AF_INET, tb[MPTCP_ATTR_DADDR4]);
-+	if (tb[MPTCP_ATTR_SADDR6])
-+		print_addr("saddr6", AF_INET6, tb[MPTCP_ATTR_SADDR6]);
-+	if (tb[MPTCP_ATTR_DADDR6])
-+		print_addr("daddr6", AF_INET6, tb[MPTCP_ATTR_DADDR6]);
-+	if (tb[MPTCP_ATTR_SPORT])
-+		printf(" sport=%u", rta_getattr_be16(tb[MPTCP_ATTR_SPORT]));
-+	if (tb[MPTCP_ATTR_DPORT])
-+		printf(" dport=%u", rta_getattr_be16(tb[MPTCP_ATTR_DPORT]));
-+	if (tb[MPTCP_ATTR_BACKUP])
-+		printf(" backup=%d", rta_getattr_u8(tb[MPTCP_ATTR_BACKUP]));
-+	if (tb[MPTCP_ATTR_ERROR])
-+		printf(" error=%d", rta_getattr_u8(tb[MPTCP_ATTR_ERROR]));
-+	if (tb[MPTCP_ATTR_FLAGS])
-+		printf(" flags=%x", rta_getattr_u16(tb[MPTCP_ATTR_FLAGS]));
-+	if (tb[MPTCP_ATTR_TIMEOUT])
-+		printf(" timeout=%u", rta_getattr_u32(tb[MPTCP_ATTR_TIMEOUT]));
-+	if (tb[MPTCP_ATTR_IF_IDX])
-+		printf(" ifindex=%d", rta_getattr_s32(tb[MPTCP_ATTR_IF_IDX]));
-+	if (tb[MPTCP_ATTR_RESET_REASON])
-+		printf(" reset_reason=%u", rta_getattr_u32(tb[MPTCP_ATTR_RESET_REASON]));
-+	if (tb[MPTCP_ATTR_RESET_FLAGS])
-+		printf(" reset_flags=0x%x", rta_getattr_u32(tb[MPTCP_ATTR_RESET_FLAGS]));
-+
-+	puts("");
-+out:
-+	fflush(stdout);
-+	return 0;
-+}
-+
-+static int mptcp_monitor(void)
-+{
-+	if (genl_add_mcast_grp(&genl_rth, genl_family, MPTCP_PM_EV_GRP_NAME) < 0) {
-+		perror("can't subscribe to mptcp events");
-+		return 1;
-+	}
-+
-+	if (rtnl_listen(&genl_rth, mptcp_monitor_msg, stdout) < 0)
-+		return 2;
-+
-+	return 0;
-+}
-+
- int do_mptcp(int argc, char **argv)
- {
- 	if (argc == 0)
-@@ -429,6 +534,14 @@ int do_mptcp(int argc, char **argv)
- 						   MPTCP_PM_CMD_GET_LIMITS);
- 	}
- 
-+	if (matches(*argv, "monitor") == 0) {
-+		NEXT_ARG_FWD();
-+		if (argc == 0)
-+			return mptcp_monitor();
-+
-+		goto unknown;
-+	}
-+
- unknown:
- 	fprintf(stderr, "Command \"%s\" is unknown, try \"ip mptcp help\".\n",
- 		*argv);
-diff --git a/lib/libgenl.c b/lib/libgenl.c
-index f2ce698fc711..4c51d47af46b 100644
---- a/lib/libgenl.c
-+++ b/lib/libgenl.c
-@@ -67,6 +67,72 @@ int genl_resolve_family(struct rtnl_handle *grth, const char *family)
- 	return fnum;
- }
- 
-+static int genl_parse_grps(struct rtattr *attr, const char *name, unsigned int *id)
-+{
-+	const struct rtattr *pos;
-+
-+	rtattr_for_each_nested(pos, attr) {
-+		struct rtattr *tb[CTRL_ATTR_MCAST_GRP_MAX + 1];
-+
-+		parse_rtattr_nested(tb, CTRL_ATTR_MCAST_GRP_MAX, pos);
-+
-+		if (tb[CTRL_ATTR_MCAST_GRP_NAME] && tb[CTRL_ATTR_MCAST_GRP_ID]) {
-+			if (strcmp(name, rta_getattr_str(tb[CTRL_ATTR_MCAST_GRP_NAME])) == 0) {
-+				*id = rta_getattr_u32(tb[CTRL_ATTR_MCAST_GRP_ID]);
-+				return 0;
-+			}
-+		}
-+	}
-+
-+	return -1;
-+}
-+
-+int genl_add_mcast_grp(struct rtnl_handle *grth, __u16 fnum, const char *group)
-+{
-+	GENL_REQUEST(req, 1024, GENL_ID_CTRL, 0, 0, CTRL_CMD_GETFAMILY,
-+		     NLM_F_REQUEST);
-+	struct rtattr *tb[CTRL_ATTR_MAX + 1];
-+	struct nlmsghdr *answer = NULL;
-+	struct genlmsghdr *ghdr;
-+	struct rtattr *attrs;
-+	int len, ret = -1;
-+	unsigned int id;
-+
-+	addattr16(&req.n, sizeof(req), CTRL_ATTR_FAMILY_ID, fnum);
-+
-+	if (rtnl_talk(grth, &req.n, &answer) < 0) {
-+		fprintf(stderr, "Error talking to the kernel\n");
-+		return -2;
-+	}
-+
-+	ghdr = NLMSG_DATA(answer);
-+	len = answer->nlmsg_len;
-+
-+	if (answer->nlmsg_type != GENL_ID_CTRL)
-+		goto err_free;
-+
-+	len -= NLMSG_LENGTH(GENL_HDRLEN);
-+	if (len < 0)
-+		goto err_free;
-+
-+	attrs = (struct rtattr *) ((char *) ghdr + GENL_HDRLEN);
-+	parse_rtattr(tb, CTRL_ATTR_MAX, attrs, len);
-+
-+	if (tb[CTRL_ATTR_MCAST_GROUPS] == NULL) {
-+		fprintf(stderr, "Missing mcast groups TLV\n");
-+		goto err_free;
-+	}
-+
-+	if (genl_parse_grps(tb[CTRL_ATTR_MCAST_GROUPS], group, &id) < 0)
-+		goto err_free;
-+
-+	ret = rtnl_add_nl_group(grth, id);
-+
-+err_free:
-+	free(answer);
-+	return ret;
-+}
-+
- int genl_init_handle(struct rtnl_handle *grth, const char *family,
- 		     int *genl_family)
- {
-diff --git a/man/man8/ip-mptcp.8 b/man/man8/ip-mptcp.8
-index ef8409ea4a24..b02cf03e757d 100644
---- a/man/man8/ip-mptcp.8
-+++ b/man/man8/ip-mptcp.8
-@@ -65,6 +65,9 @@ ip-mptcp \- MPTCP path manager configuration
- .ti -8
- .BR "ip mptcp limits show"
- 
-+.ti -8
-+.BR "ip mptcp monitor"
-+
- .SH DESCRIPTION
- 
- MPTCP is a transport protocol built on top of TCP that allows TCP
-@@ -137,5 +140,10 @@ each accepted ADD_ADDR option, respecting the
- .IR SUBFLOW_NR
- limit.
- 
-+.sp
-+.PP
-+.B monitor
-+displays creation and deletion of MPTCP connections as well as addition or removal of remote addresses and subflows.
-+
- .SH AUTHOR
- Original Manpage by Paolo Abeni <pabeni@redhat.com>
--- 
-2.26.3
-
+        Arnd
