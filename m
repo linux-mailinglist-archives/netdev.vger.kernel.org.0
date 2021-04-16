@@ -2,119 +2,120 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0985636178C
-	for <lists+netdev@lfdr.de>; Fri, 16 Apr 2021 04:27:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6A06E36178E
+	for <lists+netdev@lfdr.de>; Fri, 16 Apr 2021 04:28:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238217AbhDPC12 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 15 Apr 2021 22:27:28 -0400
-Received: from szxga08-in.huawei.com ([45.249.212.255]:3337 "EHLO
-        szxga08-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236917AbhDPC10 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 15 Apr 2021 22:27:26 -0400
-Received: from dggeml405-hub.china.huawei.com (unknown [172.30.72.54])
-        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4FM0PN1Mm2z14Gt6;
-        Fri, 16 Apr 2021 10:23:20 +0800 (CST)
-Received: from dggpemm500005.china.huawei.com (7.185.36.74) by
- dggeml405-hub.china.huawei.com (10.3.17.49) with Microsoft SMTP Server (TLS)
- id 14.3.498.0; Fri, 16 Apr 2021 10:27:00 +0800
-Received: from [127.0.0.1] (10.69.30.204) by dggpemm500005.china.huawei.com
- (7.185.36.74) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id 15.1.2106.2; Fri, 16 Apr
- 2021 10:27:00 +0800
-Subject: Re: [PATCH] net: fix a data race when get vlan device
-To:     zhudi <zhudi21@huawei.com>, <davem@davemloft.net>,
-        <kuba@kernel.org>
-CC:     <netdev@vger.kernel.org>, <rose.chen@huawei.com>
-References: <20210415033527.26877-1-zhudi21@huawei.com>
-From:   Yunsheng Lin <linyunsheng@huawei.com>
-Message-ID: <5b62ff55-73a4-e10a-89da-b98216c5599b@huawei.com>
-Date:   Fri, 16 Apr 2021 10:26:59 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:52.0) Gecko/20100101
- Thunderbird/52.2.0
+        id S238229AbhDPC2T (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 15 Apr 2021 22:28:19 -0400
+Received: from mail.kernel.org ([198.145.29.99]:53588 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S237220AbhDPC2T (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 15 Apr 2021 22:28:19 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id DA40C61184;
+        Fri, 16 Apr 2021 02:27:54 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1618540075;
+        bh=5WAee4cNPjAJZSbsJc/b+XafzM4AeDE0ZqlQRyfi+m4=;
+        h=From:To:Cc:Subject:Date:From;
+        b=TI2xuGzGyDnCGdBwx9ljUFfYDKQEybrOglfBpX8g15Q8wR8XTrSofC0LB4MT3FOwU
+         +ELbmn2dk5+uiQ/JYshnxom8Dmi1SSQgPUVG5G2m2GUyMgJTT5h/+nyu5sFq1/DUEF
+         rk2aCUSviiFK0YPs99L/EBfBk5hXas9KLgsiyZrvDWHf1wysPpHCECFoylR4rP7FY1
+         v+qCX3IF93W36U6KOluNXfbxiFOeY58zrUBJ/dr6bzbjN9nOz5rFJu7Ukm2IY7Ltkr
+         ahWKgSmyhJGhLj/PVQiJQCCRkC5fJ261+yYFjbXXRqYP2zz7Mu6Vy2biBlGHKlOU0t
+         Nk0BgNTisGYfg==
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     netdev@vger.kernel.org
+Cc:     davem@davemloft.net, andrew@lunn.ch, mkubecek@suse.cz,
+        idosch@nvidia.com, saeedm@nvidia.com, michael.chan@broadcom.com,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH net-next 0/9] ethtool: add uAPI for reading standard stats
+Date:   Thu, 15 Apr 2021 19:27:43 -0700
+Message-Id: <20210416022752.2814621-1-kuba@kernel.org>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-In-Reply-To: <20210415033527.26877-1-zhudi21@huawei.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.69.30.204]
-X-ClientProxiedBy: dggeme704-chm.china.huawei.com (10.1.199.100) To
- dggpemm500005.china.huawei.com (7.185.36.74)
-X-CFilter-Loop: Reflected
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-dependencyOn 2021/4/15 11:35, zhudi wrote:
-> From: Di Zhu <zhudi21@huawei.com>
-> 
-> We encountered a crash: in the packet receiving process, we got an
-> illegal VLAN device address, but the VLAN device address saved in vmcore
-> is correct. After checking the code, we found a possible data
-> competition:
-> CPU 0:                             CPU 1:
->     (RCU read lock)                  (RTNL lock)
->     vlan_do_receive()		       register_vlan_dev()
->       vlan_find_dev()
-> 
->         ->__vlan_group_get_device()	 ->vlan_group_prealloc_vid()
-> 
-> In vlan_group_prealloc_vid(), We need to make sure that kzalloc is
-> executed before assigning a value to vlan devices array, otherwise we
+Continuing the effort of providing a unified access method
+to standard stats, and explicitly tying the definitions to
+the standards this series adds an API for general stats
+which do no fit into more targeted control APIs.
 
-As my understanding, there is a dependency between calling kzalloc() and
-assigning the address(returned from kzalloc()) to vg->vlan_devices_arrays,
-CPU and compiler can see the dependency, why can't it handling the
-dependency before adding the smp_wmb()?
+There is nothing clever here, just a netlink API for dumping
+statistics defined by standards and RFCs which today end up
+in ethtool -S under infinite variations of names.
 
-See CONTROL DEPENDENCIES section in Documentation/memory-barriers.txt:
+This series adds basic IEEE stats (for PHY, MAC, Ctrl frames)
+and RMON stats. AFAICT other RFCs only duplicate the IEEE
+stats.
 
-However, stores are not speculated.  This means that ordering -is- provided
-for load-store control dependencies, as in the following example:
+This series does _not_ add a netlink API to read driver-defined
+stats. There seems to be little to gain from moving that part
+to netlink.
 
-        q = READ_ONCE(a);
-        if (q) {
-                WRITE_ONCE(b, 1);
-        }
+The netlink message format is very simple, and aims to allow
+adding stats and groups with no changes to user tooling (which
+IIUC is expected for ethtool).
 
+On user space side we can re-use -S, and make it dump
+standard stats if --groups are defined.
 
+$ ethtool -S eth0 --groups eth-phy eth-mac eth-ctrl rmon
+Stats for eth0:
+eth-phy-SymbolErrorDuringCarrier: 0
+eth-mac-FramesTransmittedOK: 0
+eth-mac-FrameTooLongErrors: 0
+eth-ctrl-MACControlFramesTransmitted: 0
+eth-ctrl-MACControlFramesReceived: 1
+eth-ctrl-UnsupportedOpcodesReceived: 0
+rmon-etherStatsUndersizePkts: 0
+rmon-etherStatsJabbers: 0
+rmon-rx-etherStatsPkts64Octets: 1
+rmon-rx-etherStatsPkts128to255Octets: 0
+rmon-rx-etherStatsPkts1024toMaxOctets: 1
+rmon-tx-etherStatsPkts64Octets: 1
+rmon-tx-etherStatsPkts128to255Octets: 0
+rmon-tx-etherStatsPkts1024toMaxOctets: 1
 
-> may get a wrong address from the hardware cache on another cpu.
-> 
-> So fix it by adding memory barrier instruction to ensure the order
-> of memory operations.
-> 
-> Signed-off-by: Di Zhu <zhudi21@huawei.com>
-> ---
->  net/8021q/vlan.c | 2 ++
->  net/8021q/vlan.h | 3 +++
->  2 files changed, 5 insertions(+)
-> 
-> diff --git a/net/8021q/vlan.c b/net/8021q/vlan.c
-> index 8b644113715e..4f541e05cd3f 100644
-> --- a/net/8021q/vlan.c
-> +++ b/net/8021q/vlan.c
-> @@ -71,6 +71,8 @@ static int vlan_group_prealloc_vid(struct vlan_group *vg,
->  	if (array == NULL)
->  		return -ENOBUFS;
->  
-> +	smp_wmb();
-> +
->  	vg->vlan_devices_arrays[pidx][vidx] = array;
->  	return 0;
->  }
-> diff --git a/net/8021q/vlan.h b/net/8021q/vlan.h
-> index 953405362795..7408fda084d3 100644
-> --- a/net/8021q/vlan.h
-> +++ b/net/8021q/vlan.h
-> @@ -57,6 +57,9 @@ static inline struct net_device *__vlan_group_get_device(struct vlan_group *vg,
->  
->  	array = vg->vlan_devices_arrays[pidx]
->  				       [vlan_id / VLAN_GROUP_ARRAY_PART_LEN];
-> +
-> +	smp_rmb();
-> +
->  	return array ? array[vlan_id % VLAN_GROUP_ARRAY_PART_LEN] : NULL;
->  }
->  
-> 
+v1:
+
+Driver support for mlxsw, mlx5 and bnxt included.
+
+Compared to the RFC I went ahead with wrapping the stats into
+a 1:1 nest. Now IDs of stats can start from 0, at a cost of
+slightly "careful" u64 alignment handling.
+
+Jakub Kicinski (9):
+  docs: networking: extend the statistics documentation
+  docs: ethtool: document standard statistics
+  ethtool: add a new command for reading standard stats
+  ethtool: add interface to read standard MAC stats
+  ethtool: add interface to read standard MAC Ctrl stats
+  ethtool: add interface to read RMON stats
+  mlxsw: implement ethtool standard stats
+  bnxt: implement ethtool standard stats
+  mlx5: implement ethtool standard stats
+
+ Documentation/networking/ethtool-netlink.rst  |  74 ++++
+ Documentation/networking/statistics.rst       |  44 +-
+ .../net/ethernet/broadcom/bnxt/bnxt_ethtool.c | 125 ++++++
+ .../ethernet/mellanox/mlx5/core/en_ethtool.c  |  37 ++
+ .../ethernet/mellanox/mlx5/core/en_stats.c    | 142 +++++-
+ .../ethernet/mellanox/mlx5/core/en_stats.h    |  10 +
+ .../mellanox/mlxsw/spectrum_ethtool.c         | 129 ++++++
+ include/linux/ethtool.h                       |  95 ++++
+ include/uapi/linux/ethtool.h                  |  10 +
+ include/uapi/linux/ethtool_netlink.h          | 137 ++++++
+ net/ethtool/Makefile                          |   2 +-
+ net/ethtool/netlink.c                         |  10 +
+ net/ethtool/netlink.h                         |   8 +
+ net/ethtool/stats.c                           | 410 ++++++++++++++++++
+ net/ethtool/strset.c                          |  25 ++
+ 15 files changed, 1248 insertions(+), 10 deletions(-)
+ create mode 100644 net/ethtool/stats.c
+
+-- 
+2.30.2
 
