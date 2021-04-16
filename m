@@ -2,152 +2,122 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2B4CC3623E9
-	for <lists+netdev@lfdr.de>; Fri, 16 Apr 2021 17:29:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1C0B23623EF
+	for <lists+netdev@lfdr.de>; Fri, 16 Apr 2021 17:30:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343651AbhDPP3w (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 16 Apr 2021 11:29:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57316 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243009AbhDPP3s (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 16 Apr 2021 11:29:48 -0400
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CCCF8C06175F;
-        Fri, 16 Apr 2021 08:29:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=1toLz+6Q9HQNcw3MQRhWkEtoAVrOWnWFJOtvRcLCOTo=; b=AfDcl5h/43wjmPGPvOHoHHxUtH
-        VUrHqD3LImr52YJgVp8v99CpXw49O+3ABZxg5dh2xjPUhMw9cBqhZ/eHIxjqVBmWAJ5j2VFJliPqP
-        BQOm1fzjrGaws2wsSyby1unfkL+/Wxc1aXKKpQCeRlWZhNlLgNueCFlXNMIQiSGoqCfvjgZ9Is6GB
-        hFY2A2C7bLXBzhULxoFqzdLwiH6FLDnAub0LrzdQzZam5myqe1duHZgtATotK/lfgrQQkIZGYhNry
-        QenDpI12d1AnF7t8sVRmpZ4hU7p/p1rPmDOPveX4AC6sl4F0D+bQ9ZY+9PGK+tPLJDf+e8Y0+WANo
-        iep2axvg==;
-Received: from willy by casper.infradead.org with local (Exim 4.94 #2 (Red Hat Linux))
-        id 1lXQNv-00A7Ug-LK; Fri, 16 Apr 2021 15:28:22 +0000
-Date:   Fri, 16 Apr 2021 16:27:55 +0100
-From:   Matthew Wilcox <willy@infradead.org>
-To:     Jesper Dangaard Brouer <brouer@redhat.com>
-Cc:     David Laight <David.Laight@aculab.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-mm@kvack.org" <linux-mm@kvack.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>,
-        "linux-mips@vger.kernel.org" <linux-mips@vger.kernel.org>,
-        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
-        Matteo Croce <mcroce@linux.microsoft.com>,
-        Grygorii Strashko <grygorii.strashko@ti.com>,
-        Arnd Bergmann <arnd@kernel.org>, Christoph Hellwig <hch@lst.de>
-Subject: Re: [PATCH 1/1] mm: Fix struct page layout on 32-bit systems
-Message-ID: <20210416152755.GL2531743@casper.infradead.org>
-References: <20210410205246.507048-2-willy@infradead.org>
- <20210411114307.5087f958@carbon>
- <20210411103318.GC2531743@casper.infradead.org>
- <20210412011532.GG2531743@casper.infradead.org>
- <20210414101044.19da09df@carbon>
- <20210414115052.GS2531743@casper.infradead.org>
- <20210414211322.3799afd4@carbon>
- <20210414213556.GY2531743@casper.infradead.org>
- <a50c3156fe8943ef964db4345344862f@AcuMS.aculab.com>
- <20210415200832.32796445@carbon>
+        id S1343680AbhDPPaN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 16 Apr 2021 11:30:13 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:31389 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1343665AbhDPPaK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 16 Apr 2021 11:30:10 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1618586985;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=/fY6tH910Gj68UulmclLZyMHebVkIaSbNLEKphOx3ns=;
+        b=AV9RV12s6YoMCi5yL2p6nUY1xchSxD6z2lRkvgsLimgwJAoBwsmrBfSfc/TDiJzt+2ab0x
+        vjhz7dek3mzEr+b+P0imqeOLlHZLL69WBi69rRQlP0Wjnfy2YOyI7z6E3os0apEhbSBEqC
+        F6+xf/rEiEJ0w6xm8c8XgKO12z2rses=
+Received: from mail-ej1-f70.google.com (mail-ej1-f70.google.com
+ [209.85.218.70]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-597-dAEZ8Z6kN9OFQR0qlC_I6w-1; Fri, 16 Apr 2021 11:29:41 -0400
+X-MC-Unique: dAEZ8Z6kN9OFQR0qlC_I6w-1
+Received: by mail-ej1-f70.google.com with SMTP id c18-20020a17090603d2b029037c77ad778eso2139222eja.1
+        for <netdev@vger.kernel.org>; Fri, 16 Apr 2021 08:29:41 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
+         :message-id:mime-version:content-transfer-encoding;
+        bh=/fY6tH910Gj68UulmclLZyMHebVkIaSbNLEKphOx3ns=;
+        b=AqWtkzFToEnekFJ/6lL0cWy4KpgRJAZQOjj9VXu+E5mkUiJCWGHF9sqj9mJe2Vk5im
+         LBCGHSlpEyNU3h3dmiaD4rYN9XiViKFLlL6PBYmSMBKLOxv4KmXnGu1KM1MXENiyz8kf
+         Tp7zQuUM+4Vygj+J8oZfcQ3J5JiJlFDL26DQTZxzqlGTspOuu0uFCKynZpWUgUORDyMT
+         gNHoTxrbAv20f2GpOx8xfQQfAGDhxymkb/9p3+H+3nYXbDUbL/158rOTUycA+4pI3SIs
+         /EpLuND42hOgGR5Z9gazR/ui9Ua87wboINBBqloYF8iiOspixcTSPoLxALWeuxDz6l6Z
+         byxQ==
+X-Gm-Message-State: AOAM530tK34JoezWRRNQpoK8JyB7L5RmpUr9BlFsHotSN/oC0JAxwFb4
+        Z8X93+4vFcsoFtAJmKU0zH/EdwY/ZV8ztw7b8vlGFuKMqJEUhh19+lXVNKhb5HGTrBbnEonfcyX
+        q6gYexHgCajV44DBY
+X-Received: by 2002:a17:906:98c1:: with SMTP id zd1mr8877887ejb.447.1618586980068;
+        Fri, 16 Apr 2021 08:29:40 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJwSLT565+usWHKQNUVyqqR8zbITBTxKBQnRXeBHp/ieQEbb/tjF/BkDib2r28T1N4L/4stqNg==
+X-Received: by 2002:a17:906:98c1:: with SMTP id zd1mr8877855ejb.447.1618586979651;
+        Fri, 16 Apr 2021 08:29:39 -0700 (PDT)
+Received: from alrua-x1.borgediget.toke.dk ([2a0c:4d80:42:443::2])
+        by smtp.gmail.com with ESMTPSA id b8sm5940522edu.41.2021.04.16.08.29.38
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 16 Apr 2021 08:29:38 -0700 (PDT)
+Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
+        id 952411806B2; Fri, 16 Apr 2021 17:29:37 +0200 (CEST)
+From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
+To:     Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Toshiaki Makita <toshiaki.makita1@gmail.com>,
+        Lorenzo Bianconi <lorenzo@kernel.org>
+Subject: Re: [PATCH net-next 2/4] veth: allow enabling NAPI even without XDP
+In-Reply-To: <d9b5f599380d32a28026d5a758cc46edf2ba23d8.camel@redhat.com>
+References: <cover.1617965243.git.pabeni@redhat.com>
+ <dbc26ec87852a112126c83ae546f367841ec554d.1617965243.git.pabeni@redhat.com>
+ <87v98vtsgg.fsf@toke.dk>
+ <d9b5f599380d32a28026d5a758cc46edf2ba23d8.camel@redhat.com>
+X-Clacks-Overhead: GNU Terry Pratchett
+Date:   Fri, 16 Apr 2021 17:29:37 +0200
+Message-ID: <87blaegsda.fsf@toke.dk>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210415200832.32796445@carbon>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Apr 15, 2021 at 08:08:32PM +0200, Jesper Dangaard Brouer wrote:
-> See below patch.  Where I swap32 the dma address to satisfy
-> page->compound having bit zero cleared. (It is the simplest fix I could
-> come up with).
+Paolo Abeni <pabeni@redhat.com> writes:
 
-I think this is slightly simpler, and as a bonus code that assumes the
-old layout won't compile.
+> On Fri, 2021-04-09 at 16:58 +0200, Toke H=C3=B8iland-J=C3=B8rgensen wrote:
+>> Paolo Abeni <pabeni@redhat.com> writes:
+>>=20
+>> > Currently the veth device has the GRO feature bit set, even if
+>> > no GRO aggregation is possible with the default configuration,
+>> > as the veth device does not hook into the GRO engine.
+>> >=20
+>> > Flipping the GRO feature bit from user-space is a no-op, unless
+>> > XDP is enabled. In such scenario GRO could actually take place, but
+>> > TSO is forced to off on the peer device.
+>> >=20
+>> > This change allow user-space to really control the GRO feature, with
+>> > no need for an XDP program.
+>> >=20
+>> > The GRO feature bit is now cleared by default - so that there are no
+>> > user-visible behavior changes with the default configuration.
+>> >=20
+>> > When the GRO bit is set, the per-queue NAPI instances are initialized
+>> > and registered. On xmit, when napi instances are available, we try
+>> > to use them.
+>>=20
+>> Am I mistaken in thinking that this also makes XDP redirect into a veth
+>> work without having to load an XDP program on the peer device? That's
+>> been a long-outstanding thing we've been meaning to fix, so that would
+>> be awesome! :)
+>
+> I have not experimented that, and I admit gross ignorance WRT this
+> argument, but AFAICS the needed bits to get XDP redirect working on
+> veth are the ptr_ring initialization and the napi instance available.
+>
+> With this patch both are in place when GRO is enabled, so I guess XPD
+> redirect should work, too (modulo bugs for untested scenario).
 
-diff --git a/include/linux/mm_types.h b/include/linux/mm_types.h
-index 6613b26a8894..5aacc1c10a45 100644
---- a/include/linux/mm_types.h
-+++ b/include/linux/mm_types.h
-@@ -97,10 +97,10 @@ struct page {
- 		};
- 		struct {	/* page_pool used by netstack */
- 			/**
--			 * @dma_addr: might require a 64-bit value even on
-+			 * @dma_addr: might require a 64-bit value on
- 			 * 32-bit architectures.
- 			 */
--			dma_addr_t dma_addr;
-+			unsigned long dma_addr[2];
- 		};
- 		struct {	/* slab, slob and slub */
- 			union {
-diff --git a/include/net/page_pool.h b/include/net/page_pool.h
-index b5b195305346..db7c7020746a 100644
---- a/include/net/page_pool.h
-+++ b/include/net/page_pool.h
-@@ -198,7 +198,17 @@ static inline void page_pool_recycle_direct(struct page_pool *pool,
- 
- static inline dma_addr_t page_pool_get_dma_addr(struct page *page)
- {
--	return page->dma_addr;
-+	dma_addr_t ret = page->dma_addr[0];
-+	if (sizeof(dma_addr_t) > sizeof(unsigned long))
-+		ret |= (dma_addr_t)page->dma_addr[1] << 32;
-+	return ret;
-+}
-+
-+static inline void page_pool_set_dma_addr(struct page *page, dma_addr_t addr)
-+{
-+	page->dma_addr[0] = addr;
-+	if (sizeof(dma_addr_t) > sizeof(unsigned long))
-+		page->dma_addr[1] = addr >> 32;
- }
- 
- static inline bool is_page_pool_compiled_in(void)
-diff --git a/net/core/page_pool.c b/net/core/page_pool.c
-index ad8b0707af04..f014fd8c19a6 100644
---- a/net/core/page_pool.c
-+++ b/net/core/page_pool.c
-@@ -174,8 +174,10 @@ static void page_pool_dma_sync_for_device(struct page_pool *pool,
- 					  struct page *page,
- 					  unsigned int dma_sync_size)
- {
-+	dma_addr_t dma_addr = page_pool_get_dma_addr(page);
-+
- 	dma_sync_size = min(dma_sync_size, pool->p.max_len);
--	dma_sync_single_range_for_device(pool->p.dev, page->dma_addr,
-+	dma_sync_single_range_for_device(pool->p.dev, dma_addr,
- 					 pool->p.offset, dma_sync_size,
- 					 pool->p.dma_dir);
- }
-@@ -226,7 +228,7 @@ static struct page *__page_pool_alloc_pages_slow(struct page_pool *pool,
- 		put_page(page);
- 		return NULL;
- 	}
--	page->dma_addr = dma;
-+	page_pool_set_dma_addr(page, dma);
- 
- 	if (pool->p.flags & PP_FLAG_DMA_SYNC_DEV)
- 		page_pool_dma_sync_for_device(pool, page, pool->p.max_len);
-@@ -294,13 +296,13 @@ void page_pool_release_page(struct page_pool *pool, struct page *page)
- 		 */
- 		goto skip_dma_unmap;
- 
--	dma = page->dma_addr;
-+	dma = page_pool_get_dma_addr(page);
- 
--	/* When page is unmapped, it cannot be returned our pool */
-+	/* When page is unmapped, it cannot be returned to our pool */
- 	dma_unmap_page_attrs(pool->p.dev, dma,
- 			     PAGE_SIZE << pool->p.order, pool->p.dma_dir,
- 			     DMA_ATTR_SKIP_CPU_SYNC);
--	page->dma_addr = 0;
-+	page_pool_set_dma_addr(page, 0);
- skip_dma_unmap:
- 	/* This may be the last page returned, releasing the pool, so
- 	 * it is not safe to reference pool afterwards.
+OK, finally got around to testing this; it doesn't quite work with just
+your patch, because veth_xdp_xmit() still checks for rq->xdp_prog
+instead of rq->napi. Fixing this indeed enabled veth to be an
+XDP_REDIRECT target without an XDP program loaded on the peer. So yay!
+I'll send a followup fixing that check.
+
+So with this we seem to have some nice improvements in both
+functionality and performance when GRO is turned on; so any reason why
+we shouldn't just flip the default to on?
+
+-Toke
+
