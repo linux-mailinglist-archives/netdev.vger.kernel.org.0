@@ -2,88 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BBB78361E2A
-	for <lists+netdev@lfdr.de>; Fri, 16 Apr 2021 12:44:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2232D361E64
+	for <lists+netdev@lfdr.de>; Fri, 16 Apr 2021 13:06:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241808AbhDPKot (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 16 Apr 2021 06:44:49 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:55802 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S240748AbhDPKos (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 16 Apr 2021 06:44:48 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1618569862;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=FFoO2JXibmen5m2q4F6Dm2vU1noYh/fkGf0uESyKfZs=;
-        b=hL+rLGDmaCvPqgXt4g4QH+2oxjX5q9mYYBCOwk+vhmNKozs5gn6x5yn/mm8n7KOhyHKEn3
-        dzmgXhoNAGODFpBDNtsfl2AoIPnv9Qy3oRahwoReIFnfTRABobueKsCiz5y8Asd/kltzYH
-        vp2TD5mSMOYgzs1gZS7yPEbK9Ahij5c=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-592-W1cml6eCNPq441_6VabwXg-1; Fri, 16 Apr 2021 06:44:20 -0400
-X-MC-Unique: W1cml6eCNPq441_6VabwXg-1
-Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 913CE8018A7;
-        Fri, 16 Apr 2021 10:44:19 +0000 (UTC)
-Received: from steredhat.redhat.com (ovpn-114-50.ams2.redhat.com [10.36.114.50])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id AA71F2B3CC;
-        Fri, 16 Apr 2021 10:44:17 +0000 (UTC)
-From:   Stefano Garzarella <sgarzare@redhat.com>
-To:     netdev@vger.kernel.org
-Cc:     linux-kernel@vger.kernel.org,
-        "David S. Miller" <davem@davemloft.net>,
-        Vishnu Dasa <vdasa@vmware.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jorgen Hansen <jhansen@vmware.com>
-Subject: [PATCH net] vsock/vmci: log once the failed queue pair allocation
-Date:   Fri, 16 Apr 2021 12:44:16 +0200
-Message-Id: <20210416104416.88997-1-sgarzare@redhat.com>
+        id S240748AbhDPLGi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 16 Apr 2021 07:06:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54328 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S235120AbhDPLGh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 16 Apr 2021 07:06:37 -0400
+Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 087F9C061574;
+        Fri, 16 Apr 2021 04:06:13 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=q8yzRZdY2wah1G/yCTkxWNbB0jFfZUvqQ3uEjV6WRbg=; b=hh9zQfxDvG2X4xo9Vk3zOGv+gZ
+        QKntKgbYQxOmJbb/qwMrADTgbL8yz3oUhd3HEVZJgrY81Z+RWvtUKKoC8013lyugG2k8O7umfbJam
+        gAhDbhGAPve6oN0MKZsJdwlfW5fC1MWvd6G5LMajXM5TqmIFfFtrkgHcaAZHgvXMnGtFGhwT/4HmK
+        CsjhiBL3nsVtLo7E7Dvy9fj8xomDDJge0rOCzwzXKycyeIlDt/8ml1XDq6Qx+KbmBhQ5d1+BhQ6W5
+        Piq3UrI2NLCuHxk3SVM4ryUk+gw6UwwBM7IiZJ4NrS7iOhjfU6YhJB+tUEtO+rntTBicYBF62ikeR
+        Oi9OJ1dA==;
+Received: from willy by casper.infradead.org with local (Exim 4.94 #2 (Red Hat Linux))
+        id 1lXMIL-009rDn-92; Fri, 16 Apr 2021 11:06:01 +0000
+Date:   Fri, 16 Apr 2021 12:05:53 +0100
+From:   Matthew Wilcox <willy@infradead.org>
+To:     David Laight <David.Laight@aculab.com>
+Cc:     Jesper Dangaard Brouer <brouer@redhat.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-mm@kvack.org" <linux-mm@kvack.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>,
+        "linux-mips@vger.kernel.org" <linux-mips@vger.kernel.org>,
+        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
+        Matteo Croce <mcroce@linux.microsoft.com>,
+        Grygorii Strashko <grygorii.strashko@ti.com>,
+        Arnd Bergmann <arnd@kernel.org>, Christoph Hellwig <hch@lst.de>
+Subject: Re: [PATCH 1/1] mm: Fix struct page layout on 32-bit systems
+Message-ID: <20210416110553.GH2531743@casper.infradead.org>
+References: <20210414101044.19da09df@carbon>
+ <20210414115052.GS2531743@casper.infradead.org>
+ <20210414211322.3799afd4@carbon>
+ <20210414213556.GY2531743@casper.infradead.org>
+ <a50c3156fe8943ef964db4345344862f@AcuMS.aculab.com>
+ <20210415200832.32796445@carbon>
+ <20210415182155.GD2531743@casper.infradead.org>
+ <5179a01a462f43d6951a65de2a299070@AcuMS.aculab.com>
+ <20210415222211.GG2531743@casper.infradead.org>
+ <f51e1aa98cb94880a236d58c75c20994@AcuMS.aculab.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <f51e1aa98cb94880a236d58c75c20994@AcuMS.aculab.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-VMCI feature is not supported in conjunction with the vSphere Fault
-Tolerance (FT) feature.
+On Fri, Apr 16, 2021 at 07:32:35AM +0000, David Laight wrote:
+> From: Matthew Wilcox <willy@infradead.org>
+> > Sent: 15 April 2021 23:22
+> > 
+> > On Thu, Apr 15, 2021 at 09:11:56PM +0000, David Laight wrote:
+> > > Isn't it possible to move the field down one long?
+> > > This might require an explicit zero - but this is not a common
+> > > code path - the extra write will be noise.
+> > 
+> > Then it overlaps page->mapping.  See emails passim.
+> 
+> The rules on overlaps make be wonder if every 'long'
+> should be in its own union.
 
-VMware Tools can repeatedly try to create a vsock connection. If FT is
-enabled the kernel logs is flooded with the following messages:
+That was what we used to have.  It was worse.
 
-    qp_alloc_hypercall result = -20
-    Could not attach to queue pair with -20
+> The comments would need to say when each field is used.
+> It would, at least, make these errors less common.
+> 
+> That doesn't solve the 64bit dma_addr though.
+> 
+> Actually rather that word-swapping dma_addr on 32bit BE
+> could you swap over the two fields it overlays with.
+> That might look messy in the .h, but it doesn't require
+> an accessor function to do the swap - easily missed.
 
-"qp_alloc_hypercall result = -20" was hidden by commit e8266c4c3307
-("VMCI: Stop log spew when qp allocation isn't possible"), but "Could
-not attach to queue pair with -20" is still there flooding the log.
-
-Since the error message can be useful in some cases, print it only once.
-
-Fixes: d021c344051a ("VSOCK: Introduce VM Sockets")
-Signed-off-by: Stefano Garzarella <sgarzare@redhat.com>
----
- net/vmw_vsock/vmci_transport.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
-
-diff --git a/net/vmw_vsock/vmci_transport.c b/net/vmw_vsock/vmci_transport.c
-index 8b65323207db..1c9ecb18b8e6 100644
---- a/net/vmw_vsock/vmci_transport.c
-+++ b/net/vmw_vsock/vmci_transport.c
-@@ -568,8 +568,7 @@ vmci_transport_queue_pair_alloc(struct vmci_qp **qpair,
- 			       peer, flags, VMCI_NO_PRIVILEGE_FLAGS);
- out:
- 	if (err < 0) {
--		pr_err("Could not attach to queue pair with %d\n",
--		       err);
-+		pr_err_once("Could not attach to queue pair with %d\n", err);
- 		err = vmci_transport_error_to_vsock_error(err);
- 	}
- 
--- 
-2.30.2
-
+No.
