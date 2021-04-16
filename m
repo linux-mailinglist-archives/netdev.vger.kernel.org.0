@@ -2,171 +2,182 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F354E3619E2
-	for <lists+netdev@lfdr.de>; Fri, 16 Apr 2021 08:39:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4D62F361A1F
+	for <lists+netdev@lfdr.de>; Fri, 16 Apr 2021 08:56:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239104AbhDPGfh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 16 Apr 2021 02:35:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50882 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239085AbhDPGff (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 16 Apr 2021 02:35:35 -0400
-Received: from mail-qt1-x832.google.com (mail-qt1-x832.google.com [IPv6:2607:f8b0:4864:20::832])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 36031C061756
-        for <netdev@vger.kernel.org>; Thu, 15 Apr 2021 23:35:11 -0700 (PDT)
-Received: by mail-qt1-x832.google.com with SMTP id h7so20115578qtx.3
-        for <netdev@vger.kernel.org>; Thu, 15 Apr 2021 23:35:11 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=wzYhl/kLkuf2zoQjIh+L1Ak/Vs4OYCeoB4+BeUIpZMg=;
-        b=qqDG00BKayubR3jZRy9vUxctP7f1/6Xs7Mwn4Moa8MAym9s/UNJEKSo66v40rBPeUN
-         qITQPjAFEySnqz1RKICORLFChzXx2UTf04WtilTLxtr2vzjkB9GDKNLUdicMSKF6zno6
-         OJka/p6I/0ihC0PgqoNKeCLBr50Yry196xMgvDNTOQ4aKuLABftfK4Y9b4qgW1DTVUNP
-         F1DmLNL9OOF9aVLvOTcUbPMHXpJTj/BZ2jXECiJIVLdKxMV3DZFcQxI+wswhCGiHWYWm
-         QG4a0F/Lpqlv4THHfjYVEhKxJbzq+Fw037SLDUx9KFLuY7FtDJOjCBCG8xt5XxzEuQEB
-         /XlQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=wzYhl/kLkuf2zoQjIh+L1Ak/Vs4OYCeoB4+BeUIpZMg=;
-        b=hgV3Bm809hD7RH/6SVLhdCqBQvW76zgQQhMP9uD1DRit0u2PMTWksFrK1arN09PJws
-         QqubAiWALfbnceNvhcTa7yT/Ye2U1HBGyAa3lK9SfT/7lcWhegZ5N0F8S5PyWbRR+q4t
-         H+KKqp11mhNQ7OmoPbH9I2v+hPioXw000hie4HvSd/LA+gOA9WFQcSbfD/MfnvR9mLZQ
-         iRIkUKg2Jb+4yGRqIHg7ohzHiRPPdZCQ60dWV5kgaw3cUY/F0aSjEHEomiKMHYf+XV3J
-         Hyf8o9hgiGZ+MTgyy4bWpHo3tZRWJw3OBwInluQ3GrL8r5UfQ/Sqn7KdEL8m7i4S/uoc
-         brLQ==
-X-Gm-Message-State: AOAM533QEhNcQu1CLVDCZ4HbcJ9FFbONyJFu0QOmaZydEjKNUbf4s6VB
-        eix8AGdoX/v9WeqdFrCwN02j39kLSfAY2ywc/Fdr0w==
-X-Google-Smtp-Source: ABdhPJyVx5xNy340fC0rFmYlCpPhUw7Mv8ysgS6HKbvdOl+hgrJk5iuXZPEemctGgyvCc9EsOjXG4Oh7+2H+KJJHuJc=
-X-Received: by 2002:ac8:768c:: with SMTP id g12mr6482816qtr.67.1618554910039;
- Thu, 15 Apr 2021 23:35:10 -0700 (PDT)
-MIME-Version: 1.0
-References: <000000000000a5772005c00f8101@google.com>
-In-Reply-To: <000000000000a5772005c00f8101@google.com>
-From:   Dmitry Vyukov <dvyukov@google.com>
-Date:   Fri, 16 Apr 2021 08:34:58 +0200
-Message-ID: <CACT4Y+ZZZu94pTz-WZXDLDA7-R+quErC1uYgkRJ8gnUCq2OJ2w@mail.gmail.com>
-Subject: Re: [syzbot] WARNING in ctx_sched_in
-To:     syzbot <syzbot+50d41b514809f6f4f326@syzkaller.appspotmail.com>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Albert Ou <aou@eecs.berkeley.edu>,
-        linux-riscv <linux-riscv@lists.infradead.org>
-Cc:     Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        andrii@kernel.org, Alexei Starovoitov <ast@kernel.org>,
-        bpf <bpf@vger.kernel.org>,
+        id S238802AbhDPG4e (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 16 Apr 2021 02:56:34 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:36875 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S231193AbhDPG4e (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 16 Apr 2021 02:56:34 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1618556169;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=9zKGmOBl5s2voXBRRJzrAfe9LNA8/Ea0W/gGIHB5lVM=;
+        b=Q9W1Yzu7HGMGWhQ0NIlea2AAxGix8IGyELartX1dBBmbJ+5nzEWL860iKISPUd227aJVO9
+        n4xnSMz/2l5WovJ7g7MpYXwxaCxRqCxA9Vrhih3fsBRwjSG1nSvMQVmqovlC9J+9SVr5HB
+        NM7Nra+QsfFAImH+pZUPQKlfWkYaplI=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-512-_kvajnzhMbef5Yart1B8YQ-1; Fri, 16 Apr 2021 02:56:07 -0400
+X-MC-Unique: _kvajnzhMbef5Yart1B8YQ-1
+Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com [10.5.11.13])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id AC57F1854E20;
+        Fri, 16 Apr 2021 06:56:05 +0000 (UTC)
+Received: from krava (unknown [10.40.193.247])
+        by smtp.corp.redhat.com (Postfix) with SMTP id 1B5EA6F98C;
+        Fri, 16 Apr 2021 06:55:58 +0000 (UTC)
+Date:   Fri, 16 Apr 2021 08:55:57 +0200
+From:   Jiri Olsa <jolsa@redhat.com>
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     Jiri Olsa <jolsa@kernel.org>, Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andriin@fb.com>,
+        Network Development <netdev@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>, Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
         John Fastabend <john.fastabend@gmail.com>,
-        Jiri Olsa <jolsa@redhat.com>, Martin KaFai Lau <kafai@fb.com>,
-        kpsingh@kernel.org, LKML <linux-kernel@vger.kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Ingo Molnar <mingo@redhat.com>,
-        Namhyung Kim <namhyung@kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Song Liu <songliubraving@fb.com>,
-        syzkaller-bugs <syzkaller-bugs@googlegroups.com>,
-        Yonghong Song <yhs@fb.com>
-Content-Type: text/plain; charset="UTF-8"
+        KP Singh <kpsingh@chromium.org>,
+        Toke =?iso-8859-1?Q?H=F8iland-J=F8rgensen?= <toke@redhat.com>,
+        Julia Lawall <julia.lawall@inria.fr>
+Subject: Re: [PATCHv5 bpf-next 0/7] bpf: Tracing and lsm programs re-attach
+Message-ID: <YHk0/QgLQagZMQpf@krava>
+References: <20210414195147.1624932-1-jolsa@kernel.org>
+ <CAADnVQK9+Rj8CCC0JZaQaovWqeJKWoAQihOU3eMjf94mk9e+xA@mail.gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAADnVQK9+Rj8CCC0JZaQaovWqeJKWoAQihOU3eMjf94mk9e+xA@mail.gmail.com>
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Apr 16, 2021 at 6:35 AM syzbot
-<syzbot+50d41b514809f6f4f326@syzkaller.appspotmail.com> wrote:
->
-> Hello,
->
-> syzbot found the following issue on:
->
-> HEAD commit:    79c338ab riscv: keep interrupts disabled for BREAKPOINT ex..
-> git tree:       git://git.kernel.org/pub/scm/linux/kernel/git/riscv/linux.git fixes
-> console output: https://syzkaller.appspot.com/x/log.txt?x=10fb93f9d00000
-> kernel config:  https://syzkaller.appspot.com/x/.config?x=f8af20e245283c9a
-> dashboard link: https://syzkaller.appspot.com/bug?extid=50d41b514809f6f4f326
-> userspace arch: riscv64
->
-> Unfortunately, I don't have any reproducer for this issue yet.
->
-> IMPORTANT: if you fix the issue, please add the following tag to the commit:
-> Reported-by: syzbot+50d41b514809f6f4f326@syzkaller.appspotmail.com
+On Thu, Apr 15, 2021 at 04:45:24PM -0700, Alexei Starovoitov wrote:
+> On Wed, Apr 14, 2021 at 12:52 PM Jiri Olsa <jolsa@kernel.org> wrote:
+> >
+> > hi,
+> > while adding test for pinning the module while there's
+> > trampoline attach to it, I noticed that we don't allow
+> > link detach and following re-attach for trampolines.
+> > Adding that for tracing and lsm programs.
+> >
+> > You need to have patch [1] from bpf tree for test module
+> > attach test to pass.
+> >
+> > v5 changes:
+> >   - fixed missing hlist_del_init change
+> >   - fixed several ASSERT calls
+> >   - added extra patch for missing ';'
+> >   - added ASSERT macros to lsm test
+> >   - added acks
+> 
+> It doesn't work:
 
-+riscv maintainers as this happens only on riscv64
+hi,
+I got the same warning when running test without the
+patch [1] I mentioned:
+  861de02e5f3f bpf: Take module reference for trampoline in module
 
-> ------------[ cut here ]------------
-> WARNING: CPU: 1 PID: 4475 at kernel/events/core.c:3752 ctx_sched_in+0x12e/0x3ee kernel/events/core.c:3752
-> Modules linked in:
-> CPU: 1 PID: 4475 Comm: syz-executor.1 Not tainted 5.12.0-rc6-syzkaller-00183-g79c338ab575e #0
-> Hardware name: riscv-virtio,qemu (DT)
-> epc : ctx_sched_in+0x12e/0x3ee kernel/events/core.c:3752
->  ra : ctx_sched_in+0x12e/0x3ee kernel/events/core.c:3752
-> epc : ffffffe000279fe8 ra : ffffffe000279fe8 sp : ffffffe009e17680
->  gp : ffffffe004588ad0 tp : ffffffe006398000 t0 : 0000000000000000
->  t1 : 0000000000000001 t2 : 00000000000f4240 s0 : ffffffe009e176f0
->  s1 : ffffffe0077edc00 a0 : ffffffe067d79118 a1 : 00000000000f0000
->  a2 : 0000000000000002 a3 : ffffffe000279fe8 a4 : ffffffe006399000
->  a5 : 0000000040000000 a6 : 0000000000f00000 a7 : ffffffe000280cc8
->  s2 : 0000000000000007 s3 : ffffffe0077edd40 s4 : ffffffe006398000
->  s5 : 0000000000000002 s6 : ffffffe00458c0d0 s7 : ffffffe067d78f70
->  s8 : 0000000000000007 s9 : ffffffe067d79118 s10: ffffffe0077edc00
->  s11: ffffffe0077edc08 t3 : e189d98bb4bfb900 t4 : ffffffc4042c47b2
->  t5 : ffffffc4042c47ba t6 : 0000000000040000
-> status: 0000000000000100 badaddr: 0000000000000000 cause: 0000000000000003
-> Call Trace:
-> [<ffffffe000279fe8>] ctx_sched_in+0x12e/0x3ee kernel/events/core.c:3752
-> [<ffffffe00027a2e0>] perf_event_sched_in+0x38/0x74 kernel/events/core.c:2680
-> [<ffffffe000280da2>] perf_event_context_sched_in kernel/events/core.c:3817 [inline]
-> [<ffffffe000280da2>] __perf_event_task_sched_in+0x4ea/0x680 kernel/events/core.c:3860
-> [<ffffffe0000850f8>] perf_event_task_sched_in include/linux/perf_event.h:1210 [inline]
-> [<ffffffe0000850f8>] finish_task_switch.isra.0+0x284/0x318 kernel/sched/core.c:4189
-> [<ffffffe002a94308>] context_switch kernel/sched/core.c:4325 [inline]
-> [<ffffffe002a94308>] __schedule+0x484/0xe8c kernel/sched/core.c:5073
-> [<ffffffe002a95102>] preempt_schedule_notrace+0x9c/0x19a kernel/sched/core.c:5312
-> [<ffffffe0000cd54a>] rcu_read_unlock_sched_notrace include/linux/rcupdate.h:794 [inline]
-> [<ffffffe0000cd54a>] trace_lock_acquire+0xf0/0x20e include/trace/events/lock.h:13
-> [<ffffffe0000d3c0e>] lock_acquire+0x28/0x5a kernel/locking/lockdep.c:5481
-> [<ffffffe0003b20ee>] rcu_lock_acquire include/linux/rcupdate.h:267 [inline]
-> [<ffffffe0003b20ee>] rcu_read_lock include/linux/rcupdate.h:656 [inline]
-> [<ffffffe0003b20ee>] percpu_ref_put_many.constprop.0+0x38/0x148 include/linux/percpu-refcount.h:317
-> [<ffffffe0003baa56>] percpu_ref_put include/linux/percpu-refcount.h:338 [inline]
-> [<ffffffe0003baa56>] obj_cgroup_put include/linux/memcontrol.h:713 [inline]
-> [<ffffffe0003baa56>] memcg_slab_free_hook mm/slab.h:372 [inline]
-> [<ffffffe0003baa56>] memcg_slab_free_hook mm/slab.h:336 [inline]
-> [<ffffffe0003baa56>] do_slab_free mm/slub.c:3117 [inline]
-> [<ffffffe0003baa56>] ___cache_free+0x2bc/0x3dc mm/slub.c:3168
-> [<ffffffe0003be26c>] qlink_free mm/kasan/quarantine.c:146 [inline]
-> [<ffffffe0003be26c>] qlist_free_all+0x56/0xac mm/kasan/quarantine.c:165
-> [<ffffffe0003be774>] kasan_quarantine_reduce+0x14c/0x1c8 mm/kasan/quarantine.c:272
-> [<ffffffe0003bc3f8>] __kasan_slab_alloc+0x60/0x62 mm/kasan/common.c:437
-> [<ffffffe0003b8f10>] kasan_slab_alloc include/linux/kasan.h:223 [inline]
-> [<ffffffe0003b8f10>] slab_post_alloc_hook mm/slab.h:516 [inline]
-> [<ffffffe0003b8f10>] slab_alloc_node mm/slub.c:2907 [inline]
-> [<ffffffe0003b8f10>] slab_alloc mm/slub.c:2915 [inline]
-> [<ffffffe0003b8f10>] kmem_cache_alloc+0x168/0x3ca mm/slub.c:2920
-> [<ffffffe0001aaee2>] kmem_cache_zalloc include/linux/slab.h:674 [inline]
-> [<ffffffe0001aaee2>] taskstats_tgid_alloc kernel/taskstats.c:561 [inline]
-> [<ffffffe0001aaee2>] taskstats_exit+0x3ce/0x5fe kernel/taskstats.c:600
-> [<ffffffe000031bfc>] do_exit+0x3b2/0x1846 kernel/exit.c:810
-> [<ffffffe00003319a>] do_group_exit+0xa0/0x198 kernel/exit.c:922
-> [<ffffffe00004c558>] get_signal+0x31e/0x14ba kernel/signal.c:2781
-> [<ffffffe000007e06>] do_signal arch/riscv/kernel/signal.c:271 [inline]
-> [<ffffffe000007e06>] do_notify_resume+0xa8/0x930 arch/riscv/kernel/signal.c:317
-> [<ffffffe000005586>] ret_from_exception+0x0/0x14
->
->
-> ---
-> This report is generated by a bot. It may contain errors.
-> See https://goo.gl/tpsmEJ for more information about syzbot.
-> syzbot engineers can be reached at syzkaller@googlegroups.com.
->
-> syzbot will keep track of this issue. See:
-> https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
->
-> --
-> You received this message because you are subscribed to the Google Groups "syzkaller-bugs" group.
-> To unsubscribe from this group and stop receiving emails from it, send an email to syzkaller-bugs+unsubscribe@googlegroups.com.
-> To view this discussion on the web visit https://groups.google.com/d/msgid/syzkaller-bugs/000000000000a5772005c00f8101%40google.com.
+I still don't see it in bpf-next/master
+
+jirka
+
+> [   52.763254] ------------[ cut here ]------------
+> [   52.763767] WARNING: CPU: 2 PID: 1967 at kernel/bpf/syscall.c:2518
+> bpf_tracing_link_release+0x34/0x40
+> [   52.764666] Modules linked in: bpf_preload [last unloaded: bpf_testmod]
+> [   52.765310] CPU: 2 PID: 1967 Comm: test_progs Tainted: G
+> O      5.12.0-rc4-01652-gf03a9b92b5f3 #3293
+> [   52.766279] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996),
+> BIOS 1.11.0-2.el7 04/01/2014
+> [   52.767128] RIP: 0010:bpf_tracing_link_release+0x34/0x40
+> [   52.767653] Code: 8b 77 48 48 8b 7f 18 e8 ea 67 02 00 85 c0 75 1a
+> 48 8b 7b 48 e8 ad 60 02 00 48 8b 7b 50 48 85 ff 74 06 5b e9 6e ff ff
+> ff 5b c3 <0f> 0b eb e2 0f 1f 84 00 00 00 00 00 0f 1f 44 00 00 55 48 89
+> fd 8b
+> [   52.769444] RSP: 0018:ffffc900001bfe98 EFLAGS: 00010286
+> [   52.769957] RAX: 00000000ffffffed RBX: ffff88810218e420 RCX: 0000000000000000
+> [   52.770642] RDX: ffff888105e89f80 RSI: ffffffff8118e539 RDI: ffff88811cafec10
+> [   52.771338] RBP: ffff88810218e420 R08: 0000000000000270 R09: 00000000000003cb
+> [   52.772041] R10: ffff8881002a1090 R11: ffff888237d2aaf0 R12: ffff888101951030
+> [   52.772729] R13: ffff888100226f20 R14: ffff88810629f180 R15: ffff888105e89f80
+> [   52.773419] FS:  00007f82c7b93700(0000) GS:ffff888237d00000(0000)
+> knlGS:0000000000000000
+> [   52.774213] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+> [   52.774784] CR2: 00007f82c7ba1000 CR3: 0000000105cfc006 CR4: 00000000003706e0
+> [   52.775494] DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+> [   52.776199] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+> [   52.776887] Call Trace:
+> [   52.777143]  bpf_link_free+0x25/0x40
+> [   52.777525]  bpf_link_release+0x11/0x20
+> [   52.777924]  __fput+0x9f/0x240
+> [   52.778234]  task_work_run+0x63/0xb0
+> [   52.778588]  exit_to_user_mode_prepare+0x132/0x140
+> [   52.779064]  syscall_exit_to_user_mode+0x1d/0x40
+> [   52.779519]  entry_SYSCALL_64_after_hwframe+0x44/0xae
+> [   52.780026] RIP: 0033:0x7f82c6f3815d
+> [   52.780384] Code: c2 20 00 00 75 10 b8 03 00 00 00 0f 05 48 3d 01
+> f0 ff ff 73 31 c3 48 83 ec 08 e8 ee fb ff ff 48 89 04 24 b8 03 00 00
+> 00 0f 05 <48> 8b 3c 24 48 89 c2 e8 37 fc ff ff 48 89 d0 48 83 c4 08 48
+> 3d 01
+> test_module_attach:FAIL:delete_module unexpected success: 0
+> libbpf: prog 'handle_fexit': failed to attach: No such file or directory
+> test_module_attach:FAIL:attach_fexit unexpected error: -2
+> #68 module_attach:FAIL
+> 
+> and another in:
+> ./test_progs -t module
+> [  156.660834] ------------[ cut here ]------------
+> [  156.661414] WARNING: CPU: 3 PID: 2511 at kernel/trace/ftrace.c:6321
+> ftrace_module_enable+0x33a/0x370
+> [  156.662445] Modules linked in: bpf_testmod(O+) bpf_preload [last
+> unloaded: bpf_testmod]
+> [  156.663325] CPU: 3 PID: 2511 Comm: test_progs Tainted: G        W
+> O      5.12.0-rc4-01652-gf03a9b92b5f3 #3293
+> [  156.664369] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996),
+> BIOS 1.11.0-2.el7 04/01/2014
+> [  156.665265] RIP: 0010:ftrace_module_enable+0x33a/0x370
+> [  156.665890] Code: 00 00 74 9d 48 0d 00 00 00 10 48 89 45 08 e9 db
+> fe ff ff 8b 8b 98 01 00 00 48 01 ca 48 39 d0 0f 83 2c fd ff ff e9 66
+> fd ff ff <0f> 0b e9 bd fe ff ff 0f 0b e9 b6 fe ff ff 48 83 78 10 00 0f
+> 85 dd
+> [  156.667822] RSP: 0018:ffffc900001c7d50 EFLAGS: 00010206
+> [  156.668354] RAX: 0000000000000000 RBX: ffffffffa001c380 RCX: 0000000000005000
+> [  156.669079] RDX: 0000000000031045 RSI: ffffffffa0019080 RDI: 0000000000000000
+> [  156.669793] RBP: ffff888104bd9020 R08: ffffffff83174f00 R09: 0000000000000000
+> [  156.670529] R10: 0000000000000001 R11: ffffffffa0019080 R12: ffff88810092e480
+> [  156.671368] R13: 61c8864680b583eb R14: 0000000000000002 R15: 0000000000000000
+> [  156.672135] FS:  00007f198becc700(0000) GS:ffff888237d80000(0000)
+> knlGS:0000000000000000
+> [  156.672973] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+> [  156.673625] CR2: 00000000006a14f0 CR3: 00000001169be003 CR4: 00000000003706e0
+> [  156.674411] DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+> [  156.675209] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+> [  156.675959] Call Trace:
+> [  156.676209]  load_module+0x1f71/0x27d0
+> [  156.676623]  ? __do_sys_finit_module+0x8f/0xc0
+> [  156.677084]  __do_sys_finit_module+0x8f/0xc0
+> [  156.677525]  do_syscall_64+0x2d/0x40
+> [  156.677932]  entry_SYSCALL_64_after_hwframe+0x44/0xae
+> [  156.678465] RIP: 0033:0x7f198afa37f9
+> [  156.678837] Code: 00 f3 c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 40
+> 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24
+> 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 8b 0d 57 76 2b 00 f7 d8 64 89
+> 01 48
+> [  156.680812] RSP: 002b:00007ffc428756d8 EFLAGS: 00000202 ORIG_RAX:
+> 0000000000000139
+> [  156.681614] RAX: ffffffffffffffda RBX: 0000000000000004 RCX: 00007f198afa37f9
+> [  156.682344] RDX: 0000000000000000 RSI: 00000000006a14f7 RDI: 0000000000000004
+> [  156.683111] RBP: 00007ffc428758b8 R08: 00007f198becc700 R09: 00007ffc428758b8
+> [  156.683842] R10: 00007f198becc700 R11: 0000000000000202 R12: 000000000040bce0
+> [  156.684590] R13: 00007ffc428758b0 R14: 0000000000000000 R15: 0000000000000000
+> [  156.685335] ---[ end trace 7086b04742183c35 ]---
+> #58 ksyms_module:OK
+> 
+
