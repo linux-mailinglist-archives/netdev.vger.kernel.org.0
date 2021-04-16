@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D67C7362934
-	for <lists+netdev@lfdr.de>; Fri, 16 Apr 2021 22:25:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C4C20362936
+	for <lists+netdev@lfdr.de>; Fri, 16 Apr 2021 22:25:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245594AbhDPUYm convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Fri, 16 Apr 2021 16:24:42 -0400
-Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:27372 "EHLO
+        id S245512AbhDPUYr convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Fri, 16 Apr 2021 16:24:47 -0400
+Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:13836 "EHLO
         mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S245537AbhDPUYj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 16 Apr 2021 16:24:39 -0400
-Received: from pps.filterd (m0148461.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 13GKJ7jE020359
-        for <netdev@vger.kernel.org>; Fri, 16 Apr 2021 13:24:14 -0700
+        by vger.kernel.org with ESMTP id S245537AbhDPUYq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 16 Apr 2021 16:24:46 -0400
+Received: from pps.filterd (m0109334.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 13GKI2ur001990
+        for <netdev@vger.kernel.org>; Fri, 16 Apr 2021 13:24:21 -0700
 Received: from mail.thefacebook.com ([163.114.132.120])
-        by mx0a-00082601.pphosted.com with ESMTP id 37y6tykqjg-1
+        by mx0a-00082601.pphosted.com with ESMTP id 37ydj4sjde-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-        for <netdev@vger.kernel.org>; Fri, 16 Apr 2021 13:24:14 -0700
-Received: from intmgw002.25.frc3.facebook.com (2620:10d:c085:208::f) by
- mail.thefacebook.com (2620:10d:c085:11d::6) with Microsoft SMTP Server
+        for <netdev@vger.kernel.org>; Fri, 16 Apr 2021 13:24:21 -0700
+Received: from intmgw001.38.frc1.facebook.com (2620:10d:c085:108::8) by
+ mail.thefacebook.com (2620:10d:c085:11d::4) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2176.2; Fri, 16 Apr 2021 13:24:14 -0700
+ 15.1.2176.2; Fri, 16 Apr 2021 13:24:20 -0700
 Received: by devbig012.ftw2.facebook.com (Postfix, from userid 137359)
-        id 561942ED4EE0; Fri, 16 Apr 2021 13:24:13 -0700 (PDT)
+        id 614C72ED4EE0; Fri, 16 Apr 2021 13:24:15 -0700 (PDT)
 From:   Andrii Nakryiko <andrii@kernel.org>
 To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>, <ast@fb.com>,
         <daniel@iogearbox.net>
 CC:     <andrii@kernel.org>, <kernel-team@fb.com>
-Subject: [PATCH v2 bpf-next 04/17] libbpf: mark BPF subprogs with hidden visibility as static for BPF verifier
-Date:   Fri, 16 Apr 2021 13:23:51 -0700
-Message-ID: <20210416202404.3443623-5-andrii@kernel.org>
+Subject: [PATCH v2 bpf-next 05/17] libbpf: allow gaps in BPF program sections to support overriden weak functions
+Date:   Fri, 16 Apr 2021 13:23:52 -0700
+Message-ID: <20210416202404.3443623-6-andrii@kernel.org>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20210416202404.3443623-1-andrii@kernel.org>
 References: <20210416202404.3443623-1-andrii@kernel.org>
@@ -38,177 +38,172 @@ MIME-Version: 1.0
 Content-Transfer-Encoding: 8BIT
 X-FB-Internal: Safe
 Content-Type: text/plain
-X-Proofpoint-ORIG-GUID: WCVF87ATJs2FKu2FCQ2CiDwZQvzGyZIi
-X-Proofpoint-GUID: WCVF87ATJs2FKu2FCQ2CiDwZQvzGyZIi
+X-Proofpoint-GUID: pSBwNTwDJnvLBcecNmbzUr-zpPnl2ljm
+X-Proofpoint-ORIG-GUID: pSBwNTwDJnvLBcecNmbzUr-zpPnl2ljm
 X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.391,18.0.761
  definitions=2021-04-16_09:2021-04-16,2021-04-16 signatures=0
 X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 clxscore=1015
- priorityscore=1501 malwarescore=0 bulkscore=0 adultscore=0
- lowpriorityscore=0 mlxlogscore=999 mlxscore=0 phishscore=0 suspectscore=0
- impostorscore=0 spamscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.12.0-2104060000 definitions=main-2104160143
+ suspectscore=0 phishscore=0 lowpriorityscore=0 impostorscore=0 bulkscore=0
+ spamscore=0 priorityscore=1501 malwarescore=0 mlxscore=0 adultscore=0
+ mlxlogscore=999 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2104060000 definitions=main-2104160143
 X-FB-Internal: deliver
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Define __hidden helper macro in bpf_helpers.h, which is a short-hand for
-__attribute__((visibility("hidden"))). Add libbpf support to mark BPF
-subprograms marked with __hidden as static in BTF information to enforce BPF
-verifier's static function validation algorithm, which takes more information
-(caller's context) into account during a subprogram validation.
+Currently libbpf is very strict about parsing BPF program isnstruction
+sections. No gaps are allowed between sequential BPF programs within a given
+ELF section. Libbpf enforced that by keeping track of the next section offset
+that should start a new BPF (sub)program and cross-checks that by searching for
+a corresponding STT_FUNC ELF symbol.
+
+But this is too restrictive once we allow to have weak BPF programs and link
+together two or more BPF object files. In such case, some weak BPF programs
+might be "overriden" by either non-weak BPF program with the same name and
+signature, or even by another weak BPF program that just happened to be linked
+first. That, in turn, leaves BPF instructions of the "lost" BPF (sub)program
+intact, but there is no corresponding ELF symbol, because no one is going to
+be referencing it.
+
+Libbpf already correctly handles such cases in the sense that it won't append
+such dead code to actual BPF programs loaded into kernel. So the only change
+that needs to be done is to relax the logic of parsing BPF instruction
+sections. Instead of assuming next BPF (sub)program section offset, iterate
+available STT_FUNC ELF symbols to discover all available BPF subprograms and
+programs.
 
 Signed-off-by: Andrii Nakryiko <andrii@kernel.org>
 ---
- tools/lib/bpf/bpf_helpers.h     |  8 ++++++
- tools/lib/bpf/btf.c             |  5 ----
- tools/lib/bpf/libbpf.c          | 45 ++++++++++++++++++++++++++++++++-
- tools/lib/bpf/libbpf_internal.h |  6 +++++
- 4 files changed, 58 insertions(+), 6 deletions(-)
+ tools/lib/bpf/libbpf.c | 56 ++++++++++++++++--------------------------
+ 1 file changed, 21 insertions(+), 35 deletions(-)
 
-diff --git a/tools/lib/bpf/bpf_helpers.h b/tools/lib/bpf/bpf_helpers.h
-index 75c7581b304c..9720dc0b4605 100644
---- a/tools/lib/bpf/bpf_helpers.h
-+++ b/tools/lib/bpf/bpf_helpers.h
-@@ -47,6 +47,14 @@
- #define __weak __attribute__((weak))
- #endif
- 
-+/*
-+ * Use __hidden attribute to mark a non-static BPF subprogram effectively
-+ * static for BPF verifier's verification algorithm purposes, allowing more
-+ * extensive and permissive BPF verification process, taking into account
-+ * subprogram's caller context.
-+ */
-+#define __hidden __attribute__((visibility("hidden")))
-+
- /* When utilizing vmlinux.h with BPF CO-RE, user BPF programs can't include
-  * any system-level headers (such as stddef.h, linux/version.h, etc), and
-  * commonly-used macros like NULL and KERNEL_VERSION aren't available through
-diff --git a/tools/lib/bpf/btf.c b/tools/lib/bpf/btf.c
-index d30e67e7e1e5..d57e13a13798 100644
---- a/tools/lib/bpf/btf.c
-+++ b/tools/lib/bpf/btf.c
-@@ -1605,11 +1605,6 @@ static void *btf_add_type_mem(struct btf *btf, size_t add_sz)
- 			      btf->hdr->type_len, UINT_MAX, add_sz);
- }
- 
--static __u32 btf_type_info(int kind, int vlen, int kflag)
--{
--	return (kflag << 31) | (kind << 24) | vlen;
--}
--
- static void btf_type_inc_vlen(struct btf_type *t)
- {
- 	t->info = btf_type_info(btf_kind(t), btf_vlen(t) + 1, btf_kflag(t));
 diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
-index 9cc2d45b0080..ce5558d0a61b 100644
+index ce5558d0a61b..a0e6d6bc47f3 100644
 --- a/tools/lib/bpf/libbpf.c
 +++ b/tools/lib/bpf/libbpf.c
-@@ -71,6 +71,7 @@
- static struct bpf_map *bpf_object__add_map(struct bpf_object *obj);
- static const struct btf_type *
- skip_mods_and_typedefs(const struct btf *btf, __u32 id, __u32 *res_id);
-+static bool prog_is_subprog(const struct bpf_object *obj, const struct bpf_program *prog);
+@@ -502,8 +502,6 @@ static Elf_Scn *elf_sec_by_name(const struct bpf_object *obj, const char *name);
+ static int elf_sec_hdr(const struct bpf_object *obj, Elf_Scn *scn, GElf_Shdr *hdr);
+ static const char *elf_sec_name(const struct bpf_object *obj, Elf_Scn *scn);
+ static Elf_Data *elf_sec_data(const struct bpf_object *obj, Elf_Scn *scn);
+-static int elf_sym_by_sec_off(const struct bpf_object *obj, size_t sec_idx,
+-			      size_t off, __u32 sym_type, GElf_Sym *sym);
  
- static int __base_pr(enum libbpf_print_level level, const char *format,
- 		     va_list args)
-@@ -274,6 +275,7 @@ struct bpf_program {
- 	bpf_program_clear_priv_t clear_priv;
+ void bpf_program__unload(struct bpf_program *prog)
+ {
+@@ -644,10 +642,12 @@ static int
+ bpf_object__add_programs(struct bpf_object *obj, Elf_Data *sec_data,
+ 			 const char *sec_name, int sec_idx)
+ {
++	Elf_Data *symbols = obj->efile.symbols;
+ 	struct bpf_program *prog, *progs;
+ 	void *data = sec_data->d_buf;
+ 	size_t sec_sz = sec_data->d_size, sec_off, prog_sz;
+-	int nr_progs, err;
++	size_t n = symbols->d_size / sizeof(GElf_Sym);
++	int nr_progs, err, i;
+ 	const char *name;
+ 	GElf_Sym sym;
  
- 	bool load;
-+	bool mark_btf_static;
- 	enum bpf_prog_type type;
- 	enum bpf_attach_type expected_attach_type;
- 	int prog_ifindex;
-@@ -698,6 +700,15 @@ bpf_object__add_programs(struct bpf_object *obj, Elf_Data *sec_data,
- 		if (err)
- 			return err;
+@@ -655,14 +655,16 @@ bpf_object__add_programs(struct bpf_object *obj, Elf_Data *sec_data,
+ 	nr_progs = obj->nr_programs;
+ 	sec_off = 0;
  
-+		/* if function is a global/weak symbol, but has hidden
-+		 * visibility (or any non-default one), mark its BTF FUNC as
-+		 * static to enable more permissive BPF verification mode with
-+		 * more outside context available to BPF verifier
-+		 */
-+		if (GELF_ST_BIND(sym.st_info) != STB_LOCAL
-+		    && GELF_ST_VISIBILITY(sym.st_other) != STV_DEFAULT)
-+			prog->mark_btf_static = true;
-+
+-	while (sec_off < sec_sz) {
+-		if (elf_sym_by_sec_off(obj, sec_idx, sec_off, STT_FUNC, &sym)) {
+-			pr_warn("sec '%s': failed to find program symbol at offset %zu\n",
+-				sec_name, sec_off);
+-			return -LIBBPF_ERRNO__FORMAT;
+-		}
++	for (i = 0; i < n; i++) {
++		if (!gelf_getsym(symbols, i, &sym))
++			continue;
++		if (sym.st_shndx != sec_idx)
++			continue;
++		if (GELF_ST_TYPE(sym.st_info) != STT_FUNC)
++			continue;
+ 
+ 		prog_sz = sym.st_size;
++		sec_off = sym.st_value;
+ 
+ 		name = elf_sym_str(obj, sym.st_name);
+ 		if (!name) {
+@@ -711,8 +713,6 @@ bpf_object__add_programs(struct bpf_object *obj, Elf_Data *sec_data,
+ 
  		nr_progs++;
  		obj->nr_programs = nr_progs;
- 
-@@ -2618,7 +2629,7 @@ static int bpf_object__sanitize_and_load_btf(struct bpf_object *obj)
- {
- 	struct btf *kern_btf = obj->btf;
- 	bool btf_mandatory, sanitize;
--	int err = 0;
-+	int i, err = 0;
- 
- 	if (!obj->btf)
- 		return 0;
-@@ -2632,6 +2643,38 @@ static int bpf_object__sanitize_and_load_btf(struct bpf_object *obj)
- 		return 0;
+-
+-		sec_off += prog_sz;
  	}
  
-+	/* Even though some subprogs are global/weak, user might prefer more
-+	 * permissive BPF verification process that BPF verifier performs for
-+	 * static functions, taking into account more context from the caller
-+	 * functions. In such case, they need to mark such subprogs with
-+	 * __attribute__((visibility("hidden"))) and libbpf will adjust
-+	 * corresponding FUNC BTF type to be marked as static and trigger more
-+	 * involved BPF verification process.
-+	 */
-+	for (i = 0; i < obj->nr_programs; i++) {
-+		struct bpf_program *prog = &obj->programs[i];
-+		struct btf_type *t;
-+		const char *name;
-+		int j, n;
+ 	return 0;
+@@ -2825,26 +2825,6 @@ static Elf_Data *elf_sec_data(const struct bpf_object *obj, Elf_Scn *scn)
+ 	return data;
+ }
+ 
+-static int elf_sym_by_sec_off(const struct bpf_object *obj, size_t sec_idx,
+-			      size_t off, __u32 sym_type, GElf_Sym *sym)
+-{
+-	Elf_Data *symbols = obj->efile.symbols;
+-	size_t n = symbols->d_size / sizeof(GElf_Sym);
+-	int i;
+-
+-	for (i = 0; i < n; i++) {
+-		if (!gelf_getsym(symbols, i, sym))
+-			continue;
+-		if (sym->st_shndx != sec_idx || sym->st_value != off)
+-			continue;
+-		if (GELF_ST_TYPE(sym->st_info) != sym_type)
+-			continue;
+-		return 0;
+-	}
+-
+-	return -ENOENT;
+-}
+-
+ static bool is_sec_name_dwarf(const char *name)
+ {
+ 	/* approximation, but the actual list is too long */
+@@ -3723,11 +3703,16 @@ bpf_object__collect_prog_relos(struct bpf_object *obj, GElf_Shdr *shdr, Elf_Data
+ 	int err, i, nrels;
+ 	const char *sym_name;
+ 	__u32 insn_idx;
++	Elf_Scn *scn;
++	Elf_Data *scn_data;
+ 	GElf_Sym sym;
+ 	GElf_Rel rel;
+ 
++	scn = elf_sec_by_idx(obj, sec_idx);
++	scn_data = elf_sec_data(obj, scn);
 +
-+		if (!prog->mark_btf_static || !prog_is_subprog(obj, prog))
+ 	relo_sec_name = elf_sec_str(obj, shdr->sh_name);
+-	sec_name = elf_sec_name(obj, elf_sec_by_idx(obj, sec_idx));
++	sec_name = elf_sec_name(obj, scn);
+ 	if (!relo_sec_name || !sec_name)
+ 		return -EINVAL;
+ 
+@@ -3745,7 +3730,8 @@ bpf_object__collect_prog_relos(struct bpf_object *obj, GElf_Shdr *shdr, Elf_Data
+ 				relo_sec_name, (size_t)GELF_R_SYM(rel.r_info), i);
+ 			return -LIBBPF_ERRNO__FORMAT;
+ 		}
+-		if (rel.r_offset % BPF_INSN_SZ) {
++
++		if (rel.r_offset % BPF_INSN_SZ || rel.r_offset >= scn_data->d_size) {
+ 			pr_warn("sec '%s': invalid offset 0x%zx for relo #%d\n",
+ 				relo_sec_name, (size_t)GELF_R_SYM(rel.r_info), i);
+ 			return -LIBBPF_ERRNO__FORMAT;
+@@ -3769,9 +3755,9 @@ bpf_object__collect_prog_relos(struct bpf_object *obj, GElf_Shdr *shdr, Elf_Data
+ 
+ 		prog = find_prog_by_sec_insn(obj, sec_idx, insn_idx);
+ 		if (!prog) {
+-			pr_warn("sec '%s': relo #%d: program not found in section '%s' for insn #%u\n",
++			pr_debug("sec '%s': relo #%d: couldn't find program in section '%s' for insn #%u, probably overridden weak function, skipping...\n",
+ 				relo_sec_name, i, sec_name, insn_idx);
+-			return -LIBBPF_ERRNO__RELOC;
 +			continue;
-+
-+		n = btf__get_nr_types(obj->btf);
-+		for (j = 1; j <= n; j++) {
-+			t = btf_type_by_id(obj->btf, j);
-+			if (!btf_is_func(t) || btf_func_linkage(t) != BTF_FUNC_GLOBAL)
-+				continue;
-+
-+			name = btf__str_by_offset(obj->btf, t->name_off);
-+			if (strcmp(name, prog->name) != 0)
-+				continue;
-+
-+			t->info = btf_type_info(BTF_KIND_FUNC, BTF_FUNC_STATIC, 0);
-+			break;
-+		}
-+	}
-+
- 	sanitize = btf_needs_sanitization(obj);
- 	if (sanitize) {
- 		const void *raw_data;
-diff --git a/tools/lib/bpf/libbpf_internal.h b/tools/lib/bpf/libbpf_internal.h
-index 6017902c687e..92b7eae10c6d 100644
---- a/tools/lib/bpf/libbpf_internal.h
-+++ b/tools/lib/bpf/libbpf_internal.h
-@@ -19,6 +19,7 @@
- #pragma GCC poison reallocarray
+ 		}
  
- #include "libbpf.h"
-+#include "btf.h"
- 
- #ifndef EM_BPF
- #define EM_BPF 247
-@@ -132,6 +133,11 @@ struct btf_type;
- 
- struct btf_type *btf_type_by_id(struct btf *btf, __u32 type_id);
- 
-+static inline __u32 btf_type_info(int kind, int vlen, int kflag)
-+{
-+	return (kflag << 31) | (kind << 24) | vlen;
-+}
-+
- void *libbpf_add_mem(void **data, size_t *cap_cnt, size_t elem_sz,
- 		     size_t cur_cnt, size_t max_cnt, size_t add_cnt);
- int libbpf_ensure_mem(void **data, size_t *cap_cnt, size_t elem_sz, size_t need_cnt);
+ 		relos = libbpf_reallocarray(prog->reloc_desc,
 -- 
 2.30.2
 
