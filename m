@@ -2,88 +2,149 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9CB5E361844
-	for <lists+netdev@lfdr.de>; Fri, 16 Apr 2021 05:40:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CCA53361872
+	for <lists+netdev@lfdr.de>; Fri, 16 Apr 2021 05:56:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238093AbhDPDko (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 15 Apr 2021 23:40:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41226 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234816AbhDPDkl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 15 Apr 2021 23:40:41 -0400
-Received: from mail-pl1-x644.google.com (mail-pl1-x644.google.com [IPv6:2607:f8b0:4864:20::644])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E560C061574;
-        Thu, 15 Apr 2021 20:40:16 -0700 (PDT)
-Received: by mail-pl1-x644.google.com with SMTP id z22so8119285plo.3;
-        Thu, 15 Apr 2021 20:40:16 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id;
-        bh=oUo2JF9IqQjyidp0K1ig13iO9lu64qKuODrfboUEIYg=;
-        b=NKerWLiU/PngmgzC+YgS5OEkEywnl5gAo6qr0GOYcup3sJNuOIm+oUZf+6zf4CBk2I
-         AJg7NWZ0YTUpx4AZNzIe/ylxvmuGF3uAwb+by30KES9wv9q6g3K3iZyvxzOBik8CBqV6
-         7TtwYps3GkGEjsHCTsWPVZSMJG2ceu7K7olcBLQS+bMYanZABsQa9qt7z0F07vxuoUw/
-         ZreQ6eQtbqpwBGCYdJ75s1QF5ZhykxN0TADTsryfvkvPt3R3INSGKAGEtXFDi5ikpfOn
-         f2dR+781Sjb69/G8TmLzJf/Z3B7EK+woBDv2NEw0G7XJQUODCvDqo6gXXVnhwK8t1Z1f
-         gKJg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=oUo2JF9IqQjyidp0K1ig13iO9lu64qKuODrfboUEIYg=;
-        b=RTdnd4NGYJOckMUS4sDywfLS76LbPy0Sz4ZbVgXVR3zupobXtsyj1z8/v75pQF2t+L
-         Dmu9+1kxoNVUx4c6FbjY3BqaQXKHOJC2kx6YsVuN0RG0drCdOKlxRG7qREX2bhIdZ9+V
-         Do0NUyUCMsYL3Gedlul7B6t7rlYOgFKAS+MyMaaGtLypdLYHnQNpkXfhmogWxxqi3mSS
-         XzegBZI+SfNLcoO1j9QI/53lstiajtnPQyU8RTraBu9Vq5rFRtAaZ2Dx4uWBr4O2qlvE
-         oj1qPcQ3JukqnB1opthQdN0QX2PzhxN++kjYUoWAV+EBux/LEZxGzBYitBQVqgJeDsVg
-         DVzQ==
-X-Gm-Message-State: AOAM531/TyDJQA/jw/MgQkyncnFYnc6yFvUXgET/sxjumAY+8J4J8Fdu
-        B4yZKPYu+1GfPK4VGliOwhKUNByBLoFxmJ+vtR8=
-X-Google-Smtp-Source: ABdhPJzjXiGOtKd9NQalcbApfIT9Bc4vfqr02DsuG2Rw/zNfNIG5Ke8lQmouwjZoVFYWjgyZzKddWg==
-X-Received: by 2002:a17:902:c404:b029:ea:f0a9:6060 with SMTP id k4-20020a170902c404b02900eaf0a96060mr7297686plk.9.1618544416311;
-        Thu, 15 Apr 2021 20:40:16 -0700 (PDT)
-Received: from mi-OptiPlex-7060.mioffice.cn ([43.224.245.180])
-        by smtp.gmail.com with ESMTPSA id r26sm3473902pfq.17.2021.04.15.20.40.14
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 15 Apr 2021 20:40:15 -0700 (PDT)
-From:   zhuguangqing83@gmail.com
-To:     Alex Elder <elder@kernel.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Guangqing Zhu <zhuguangqing83@gmail.com>
-Subject: [PATCH] drivers: ipa: Fix missing IRQF_ONESHOT as only threaded handler
-Date:   Fri, 16 Apr 2021 11:40:07 +0800
-Message-Id: <20210416034007.31222-1-zhuguangqing83@gmail.com>
-X-Mailer: git-send-email 2.17.1
+        id S238359AbhDPD4k (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 15 Apr 2021 23:56:40 -0400
+Received: from szxga01-in.huawei.com ([45.249.212.187]:3087 "EHLO
+        szxga01-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234659AbhDPD4j (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 15 Apr 2021 23:56:39 -0400
+Received: from dggeml405-hub.china.huawei.com (unknown [172.30.72.54])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4FM2NH4H6YzWWTJ;
+        Fri, 16 Apr 2021 11:52:31 +0800 (CST)
+Received: from dggpemm500005.china.huawei.com (7.185.36.74) by
+ dggeml405-hub.china.huawei.com (10.3.17.49) with Microsoft SMTP Server (TLS)
+ id 14.3.498.0; Fri, 16 Apr 2021 11:56:12 +0800
+Received: from [127.0.0.1] (10.69.30.204) by dggpemm500005.china.huawei.com
+ (7.185.36.74) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id 15.1.2106.2; Fri, 16 Apr
+ 2021 11:56:12 +0800
+Subject: Re: [PATCH] net: fix a data race when get vlan device
+To:     "zhudi (J)" <zhudi21@huawei.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "kuba@kernel.org" <kuba@kernel.org>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "Chenxiang (EulerOS)" <rose.chen@huawei.com>
+References: <b03d1c13bc0147ad87e06b3dfe602213@huawei.com>
+From:   Yunsheng Lin <linyunsheng@huawei.com>
+Message-ID: <160faa16-322b-cd65-9c12-a3cfe0f02e11@huawei.com>
+Date:   Fri, 16 Apr 2021 11:56:11 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:52.0) Gecko/20100101
+ Thunderbird/52.2.0
+MIME-Version: 1.0
+In-Reply-To: <b03d1c13bc0147ad87e06b3dfe602213@huawei.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.69.30.204]
+X-ClientProxiedBy: dggeme720-chm.china.huawei.com (10.1.199.116) To
+ dggpemm500005.china.huawei.com (7.185.36.74)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Guangqing Zhu <zhuguangqing83@gmail.com>
+On 2021/4/16 11:27, zhudi (J) wrote:
+>> dependencyOn 2021/4/15 11:35, zhudi wrote:
+>>> From: Di Zhu <zhudi21@huawei.com>
+>>>
+>>> We encountered a crash: in the packet receiving process, we got an
+>>> illegal VLAN device address, but the VLAN device address saved in
+>>> vmcore is correct. After checking the code, we found a possible data
+>>> competition:
+>>> CPU 0:                             CPU 1:
+>>>     (RCU read lock)                  (RTNL lock)
+>>>     vlan_do_receive()		       register_vlan_dev()
+>>>       vlan_find_dev()
+>>>
+>>>         ->__vlan_group_get_device()	 ->vlan_group_prealloc_vid()
+>>>
+>>> In vlan_group_prealloc_vid(), We need to make sure that kzalloc is
+>>> executed before assigning a value to vlan devices array, otherwise we
+>>
+>> As my understanding, there is a dependency between calling kzalloc() and
+>> assigning the address(returned from kzalloc()) to vg->vlan_devices_arrays,
+>> CPU and compiler can see the dependency, why can't it handling the
+>> dependency before adding the smp_wmb()?
+>>
+>> See CONTROL DEPENDENCIES section in Documentation/memory-
+>> barriers.txt:
+>>
+>> However, stores are not speculated.  This means that ordering -is- provided
+>> for load-store control dependencies, as in the following example:
+>>
+>>         q = READ_ONCE(a);
+>>         if (q) {
+>>                 WRITE_ONCE(b, 1);
+>>         }
+>>
+> 
+>  Maybe I didn't make it clear.  This memory isolation is to ensure the order of
+>  memset(object, 0, size) in kzalloc() operations and the subsequent array assignment statements.
+> 
+> kzalloc()
+>     ->memset(object, 0, size)
+> 
+> smp_wmb()
+> 
+> vg->vlan_devices_arrays[pidx][vidx] = array;
+> 
+> Because __vlan_group_get_device() function depends on this order
 
-Coccinelle noticed:
-drivers/net/ipa/ipa_smp2p.c:186:7-27: ERROR: Threaded IRQ with no primary
-handler requested without IRQF_ONESHOT
+Thanks for clarify, it would be good to mention this in the
+commit log too.
 
-Signed-off-by: Guangqing Zhu <zhuguangqing83@gmail.com>
----
- drivers/net/ipa/ipa_smp2p.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+Also, __vlan_group_get_device() is used in the data path, it would
+be to avoid the barrier op too. Maybe using rcu to avoid the barrier
+if the __vlan_group_get_device() is already protected by rcu_lock.
 
-diff --git a/drivers/net/ipa/ipa_smp2p.c b/drivers/net/ipa/ipa_smp2p.c
-index a5f7a79a1923..74e04427a711 100644
---- a/drivers/net/ipa/ipa_smp2p.c
-+++ b/drivers/net/ipa/ipa_smp2p.c
-@@ -183,7 +183,8 @@ static int ipa_smp2p_irq_init(struct ipa_smp2p *smp2p, const char *name,
- 	}
- 	irq = ret;
- 
--	ret = request_threaded_irq(irq, NULL, handler, 0, name, smp2p);
-+	ret = request_threaded_irq(irq, NULL, handler, IRQF_ONESHOT,
-+				   name, smp2p);
- 	if (ret) {
- 		dev_err(dev, "error %d requesting \"%s\" IRQ\n", ret, name);
- 		return ret;
--- 
-2.17.1
+
+> 
+>>
+>>
+>>> may get a wrong address from the hardware cache on another cpu.
+>>>
+>>> So fix it by adding memory barrier instruction to ensure the order of
+>>> memory operations.
+>>>
+>>> Signed-off-by: Di Zhu <zhudi21@huawei.com>
+>>> ---
+>>>  net/8021q/vlan.c | 2 ++
+>>>  net/8021q/vlan.h | 3 +++
+>>>  2 files changed, 5 insertions(+)
+>>>
+>>> diff --git a/net/8021q/vlan.c b/net/8021q/vlan.c index
+>>> 8b644113715e..4f541e05cd3f 100644
+>>> --- a/net/8021q/vlan.c
+>>> +++ b/net/8021q/vlan.c
+>>> @@ -71,6 +71,8 @@ static int vlan_group_prealloc_vid(struct vlan_group
+>> *vg,
+>>>  	if (array == NULL)
+>>>  		return -ENOBUFS;
+>>>
+>>> +	smp_wmb();
+>>> +
+>>>  	vg->vlan_devices_arrays[pidx][vidx] = array;
+>>>  	return 0;
+>>>  }
+>>> diff --git a/net/8021q/vlan.h b/net/8021q/vlan.h index
+>>> 953405362795..7408fda084d3 100644
+>>> --- a/net/8021q/vlan.h
+>>> +++ b/net/8021q/vlan.h
+>>> @@ -57,6 +57,9 @@ static inline struct net_device
+>>> *__vlan_group_get_device(struct vlan_group *vg,
+>>>
+>>>  	array = vg->vlan_devices_arrays[pidx]
+>>>  				       [vlan_id /
+>> VLAN_GROUP_ARRAY_PART_LEN];
+>>> +
+>>> +	smp_rmb();
+>>> +
+>>>  	return array ? array[vlan_id % VLAN_GROUP_ARRAY_PART_LEN] :
+>> NULL;  }
+>>>
+>>>
+> 
 
