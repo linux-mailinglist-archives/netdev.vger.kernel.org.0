@@ -2,69 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 50252362B9D
-	for <lists+netdev@lfdr.de>; Sat, 17 Apr 2021 00:50:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DFE77362BAB
+	for <lists+netdev@lfdr.de>; Sat, 17 Apr 2021 01:00:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234209AbhDPWug (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 16 Apr 2021 18:50:36 -0400
-Received: from mail.kernel.org ([198.145.29.99]:53930 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230432AbhDPWuf (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 16 Apr 2021 18:50:35 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id CA915610CD;
-        Fri, 16 Apr 2021 22:50:09 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1618613409;
-        bh=oGA9b/am8idc6a70H66OfjahSEfuNXtc71twJLWqEoU=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=rMxYcIZ9epReTZQ0jv7W+2r4hrVv7TEmvFUVkjObh6qiZmQ3an5poTGH2hctzL2Xu
-         zWnFir0SotCCmkpizpiyrj2g/4uvgmDfWbq3nT2/92EKUGwEpcmzYv1n9d8ivbskmI
-         aXtUDb/ZL6Ca3pns06ieDMZjLnAgr2n9nRjYltArpixUgKNQ45Joj5UOvDnZWfFYz3
-         iHXCnyR7LmygpAU8pikWApaSuwnDTs5w03qA+qlC8bHloas+CvcCcikZ8T0zhP6w7g
-         z+14r8XQMsrJwQJtajWDcENiMZqxbWA6iGa1kyYnadc+ZC6GVvie644gPrwuB6j8iR
-         oq7fiEVPbYifA==
-Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id C055D60CD4;
-        Fri, 16 Apr 2021 22:50:09 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        id S233916AbhDPXBI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 16 Apr 2021 19:01:08 -0400
+Received: from www62.your-server.de ([213.133.104.62]:59320 "EHLO
+        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229719AbhDPXBG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 16 Apr 2021 19:01:06 -0400
+Received: from sslproxy02.your-server.de ([78.47.166.47])
+        by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92.3)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1lXXRz-0009P5-4b; Sat, 17 Apr 2021 01:00:35 +0200
+Received: from [85.7.101.30] (helo=linux.home)
+        by sslproxy02.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1lXXRy-000GvA-PR; Sat, 17 Apr 2021 01:00:34 +0200
+Subject: Re: [PATCH v8 bpf-next 00/14] mvneta: introduce XDP multi-buffer
+ support
+To:     Lorenzo Bianconi <lorenzo.bianconi@redhat.com>,
+        Magnus Karlsson <magnus.karlsson@gmail.com>
+Cc:     Lorenzo Bianconi <lorenzo@kernel.org>, bpf <bpf@vger.kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>, shayagr@amazon.com,
+        sameehj@amazon.com, John Fastabend <john.fastabend@gmail.com>,
+        David Ahern <dsahern@kernel.org>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        Eelco Chaudron <echaudro@redhat.com>,
+        Jason Wang <jasowang@redhat.com>,
+        Alexander Duyck <alexander.duyck@gmail.com>,
+        Saeed Mahameed <saeed@kernel.org>,
+        "Fijalkowski, Maciej" <maciej.fijalkowski@intel.com>,
+        Tirthendu <tirthendu.sarkar@intel.com>
+References: <cover.1617885385.git.lorenzo@kernel.org>
+ <CAJ8uoz1MOYLzyy7xXq_fmpKDEakxSomzfM76Szjr5gWsqHc9jQ@mail.gmail.com>
+ <YHoBtldcPyKNFKPv@lore-desk>
+From:   Daniel Borkmann <daniel@iogearbox.net>
+Message-ID: <daeb8a26-44fa-d76e-dd8e-bd4ca62ef868@iogearbox.net>
+Date:   Sat, 17 Apr 2021 01:00:34 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next] veth: check for NAPI instead of xdp_prog before xmit
- of XDP frame
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <161861340978.29090.2271798719941906376.git-patchwork-notify@kernel.org>
-Date:   Fri, 16 Apr 2021 22:50:09 +0000
-References: <20210416154745.238804-1-toke@redhat.com>
-In-Reply-To: <20210416154745.238804-1-toke@redhat.com>
-To:     =?utf-8?b?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2VuIDx0b2tlQHJlZGhhdC5jb20+?=@ci.codeaurora.org
-Cc:     davem@davemloft.net, kuba@kernel.org, ast@kernel.org,
-        daniel@iogearbox.net, hawk@kernel.org, john.fastabend@gmail.com,
-        pabeni@redhat.com, netdev@vger.kernel.org, bpf@vger.kernel.org
+In-Reply-To: <YHoBtldcPyKNFKPv@lore-desk>
+Content-Type: text/plain; charset=windows-1252; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.102.4/26142/Fri Apr 16 13:14:04 2021)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
-
-This patch was applied to netdev/net-next.git (refs/heads/master):
-
-On Fri, 16 Apr 2021 17:47:45 +0200 you wrote:
-> The recent patch that tied enabling of veth NAPI to the GRO flag also has
-> the nice side effect that a veth device can be the target of an
-> XDP_REDIRECT without an XDP program needing to be loaded on the peer
-> device. However, the patch adding this extra NAPI mode didn't actually
-> change the check in veth_xdp_xmit() to also look at the new NAPI pointer,
-> so let's fix that.
+On 4/16/21 11:29 PM, Lorenzo Bianconi wrote:
+>>
+>> Took your patches for a test run with the AF_XDP sample xdpsock on an
+>> i40e card and the throughput degradation is between 2 to 6% depending
+>> on the setup and microbenchmark within xdpsock that is executed. And
+>> this is without sending any multi frame packets. Just single frame
+>> ones. Tirtha made changes to the i40e driver to support this new
+>> interface so that is being included in the measurements.
 > 
-> [...]
+> thx for working on it. Assuming the fragmented part is only initialized/accessed
+> if mb is set (so for multi frame packets), I would not expect any throughput
+> degradation in the single frame scenario. Can you please share the i40e
+> support added by Tirtha?
 
-Here is the summary with links:
-  - [net-next] veth: check for NAPI instead of xdp_prog before xmit of XDP frame
-    https://git.kernel.org/netdev/net-next/c/0e672f306a28
+Thanks Tirtha & Magnus for adding and testing mb support for i40e, and sharing those
+data points; a degradation between 2-6% when mb is not used would definitely not be
+acceptable. Would be great to root-cause and debug this further with Lorenzo, there
+really should be close to /zero/ additional overhead to avoid regressing existing
+performance sensitive workloads like load balancers, etc once they upgrade their
+kernels/drivers.
 
-You are awesome, thank you!
---
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+>> What performance do you see with the mvneta card? How much are we
+>> willing to pay for this feature when it is not being used or can we in
+>> some way selectively turn it on only when needed?
+> 
+> IIRC I did not get sensible throughput degradation on mvneta but I will re-run
+> the tests running an updated bpf-next tree.
 
+But compared to i40e, mvneta is also only 1-2.5 Gbps so potentially less visible,
+right [0]? Either way, it's definitely good to get more data points from benchmarking
+given this was lacking before for higher speed NICs in particular.
 
+Thanks everyone,
+Daniel
+
+   [0] https://doc.dpdk.org/guides/nics/mvneta.html
