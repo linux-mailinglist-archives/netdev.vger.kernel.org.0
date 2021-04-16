@@ -2,65 +2,48 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C35823625D4
-	for <lists+netdev@lfdr.de>; Fri, 16 Apr 2021 18:40:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 64B693625FB
+	for <lists+netdev@lfdr.de>; Fri, 16 Apr 2021 18:48:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236178AbhDPQkn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 16 Apr 2021 12:40:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45094 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234323AbhDPQkm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 16 Apr 2021 12:40:42 -0400
-Received: from mail-pg1-x531.google.com (mail-pg1-x531.google.com [IPv6:2607:f8b0:4864:20::531])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4837DC061756
-        for <netdev@vger.kernel.org>; Fri, 16 Apr 2021 09:40:16 -0700 (PDT)
-Received: by mail-pg1-x531.google.com with SMTP id q10so19566763pgj.2
-        for <netdev@vger.kernel.org>; Fri, 16 Apr 2021 09:40:16 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=networkplumber-org.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=qBMbrSOywNmfduS/OTT3MgG5hkK1w/tlntAgfLJqoII=;
-        b=t7nKMlwt2xNTb0VB5O3hJidsskXOoEd+BB1LiY/DkvohgS/mG4I49FoWx/KDPdrsGs
-         NEnjD0k2IrRndhYGwjPO0ocv4l/PR1WwYdaMupvBLARIkFqL0UCJe2To5TjDODgJr/fd
-         Yfkygig4e4EfeFD8E6T0mDauYZ0nFZEjOFvTwY0Ok8NYTeuH1eL7gyZ3K6W+xv8xqgdi
-         n8UaXKXQ7O0VXJJ3876gSSPZ5wa6mxYE4oUjkiTQUpof5BPnGPUgwf/TRoksXbSGUOJ5
-         i9KSSj50mxWvXyHPBoEWdq5yqASbmihRN4lluaTWLLYRzvaNVGECmMuBdss7TCJG+O3R
-         P9pg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=qBMbrSOywNmfduS/OTT3MgG5hkK1w/tlntAgfLJqoII=;
-        b=JFqiArlk8WE9B8I5Ia4SpEAu9y3HX5SuqGfsND6Hr3RlkfYVYerV4eHmpAUNSIMv8y
-         pU0wbuPxCStTax2IK2AJJPO8O1SNGwdZD51WXcobzmT+xK/yROKbGmnOO2q97FPvkCuF
-         JecK6tluUdto+0vcmgFllls4pmzgxGE9Y6bU1z8QBnMGHTwSMHkTGu0CdXMrnADfqqyD
-         iHEQY+suCfSZwrepReDN+oBJ6eKRJVO+VYK+zohdcV2psXRi3FpzKx0slPkEI2EtddHp
-         +YALr81Psi9mYdWZpFcJpRgJ199Oz8GRHlOh5hfc1QogCMZ7Lg4LRMUVZuVpc4upTdOY
-         7bqA==
-X-Gm-Message-State: AOAM530+k2lO4imiTWWtqq8X4i+uLWtKW77pm8cGzVopcGloRz9NwRaD
-        Hn0vLcxLl3t+urR6z/hVMVJjeg==
-X-Google-Smtp-Source: ABdhPJwOxcBV/K+3tCZDrbPAFySF7Z1daXqBFUfpr1wER35W5490o1xjQaiUOIp0pkRXCU7DADaBLw==
-X-Received: by 2002:a62:b412:0:b029:21f:6b06:7bdd with SMTP id h18-20020a62b4120000b029021f6b067bddmr8656780pfn.51.1618591215753;
-        Fri, 16 Apr 2021 09:40:15 -0700 (PDT)
-Received: from hermes.local (76-14-218-44.or.wavecable.com. [76.14.218.44])
-        by smtp.gmail.com with ESMTPSA id k21sm5164664pfi.28.2021.04.16.09.40.14
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 16 Apr 2021 09:40:15 -0700 (PDT)
-Date:   Fri, 16 Apr 2021 09:40:06 -0700
-From:   Stephen Hemminger <stephen@networkplumber.org>
-To:     Dexuan Cui <decui@microsoft.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, kys@microsoft.com,
-        haiyangz@microsoft.com, sthemmin@microsoft.com, wei.liu@kernel.org,
-        liuwe@microsoft.com, netdev@vger.kernel.org, leon@kernel.org,
-        andrew@lunn.ch, bernd@petrovitsch.priv.at, rdunlap@infradead.org,
-        shacharr@microsoft.com, linux-kernel@vger.kernel.org,
-        linux-hyperv@vger.kernel.org
-Subject: Re: [PATCH v7 net-next] net: mana: Add a driver for Microsoft Azure
- Network Adapter (MANA)
-Message-ID: <20210416094006.70661f47@hermes.local>
-In-Reply-To: <20210416060705.21998-1-decui@microsoft.com>
-References: <20210416060705.21998-1-decui@microsoft.com>
+        id S236466AbhDPQtD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 16 Apr 2021 12:49:03 -0400
+Received: from mail.kernel.org ([198.145.29.99]:48404 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S235437AbhDPQtC (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 16 Apr 2021 12:49:02 -0400
+Received: from gandalf.local.home (cpe-66-24-58-225.stny.res.rr.com [66.24.58.225])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 58E016117A;
+        Fri, 16 Apr 2021 16:48:36 +0000 (UTC)
+Date:   Fri, 16 Apr 2021 12:48:34 -0400
+From:   Steven Rostedt <rostedt@goodmis.org>
+To:     Masami Hiramatsu <mhiramat@kernel.org>
+Cc:     Andrii Nakryiko <andrii.nakryiko@gmail.com>,
+        Jiri Olsa <jolsa@redhat.com>, Jiri Olsa <jolsa@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andriin@fb.com>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>, Daniel Xu <dxu@dxuuu.xyz>,
+        Jesper Brouer <jbrouer@redhat.com>,
+        Toke =?UTF-8?B?SMO4?= =?UTF-8?B?aWxhbmQtSsO4cmdlbnNlbg==?= 
+        <toke@redhat.com>, Viktor Malik <vmalik@redhat.com>
+Subject: Re: [PATCHv2 RFC bpf-next 0/7] bpf: Add support for ftrace probe
+Message-ID: <20210416124834.05862233@gandalf.local.home>
+In-Reply-To: <20210417000304.fc987dc00d706e7551b29c04@kernel.org>
+References: <20210413121516.1467989-1-jolsa@kernel.org>
+        <CAEf4Bzazst1rBi4=LuP6_FnPXCRYBNFEtDnK3UVBj6Eo6xFNtQ@mail.gmail.com>
+        <YHbd2CmeoaiLJj7X@krava>
+        <CAEf4BzYyVj-Tjy9ZZdAU5nOtJ8_auvVobTT6pMqg8zPb9jj-Ow@mail.gmail.com>
+        <20210415111002.324b6bfa@gandalf.local.home>
+        <CAEf4BzY=yBZH2Aad1hNcqCt51u0+SmNdkD6NfJRVMzF7DsvG+A@mail.gmail.com>
+        <20210415170007.31420132@gandalf.local.home>
+        <20210417000304.fc987dc00d706e7551b29c04@kernel.org>
+X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -68,44 +51,32 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 15 Apr 2021 23:07:05 -0700
-Dexuan Cui <decui@microsoft.com> wrote:
+On Sat, 17 Apr 2021 00:03:04 +0900
+Masami Hiramatsu <mhiramat@kernel.org> wrote:
 
-> diff --git a/drivers/net/hyperv/netvsc_drv.c b/drivers/net/hyperv/netvsc_drv.c
-> index 7349a70af083..f682a5572d84 100644
-> --- a/drivers/net/hyperv/netvsc_drv.c
-> +++ b/drivers/net/hyperv/netvsc_drv.c
-> @@ -2297,6 +2297,7 @@ static struct net_device *get_netvsc_byslot(const struct net_device *vf_netdev)
->  {
->  	struct device *parent = vf_netdev->dev.parent;
->  	struct net_device_context *ndev_ctx;
-> +	struct net_device *ndev;
->  	struct pci_dev *pdev;
->  	u32 serial;
->  
-> @@ -2319,8 +2320,17 @@ static struct net_device *get_netvsc_byslot(const struct net_device *vf_netdev)
->  		if (!ndev_ctx->vf_alloc)
->  			continue;
->  
-> -		if (ndev_ctx->vf_serial == serial)
-> -			return hv_get_drvdata(ndev_ctx->device_ctx);
-> +		if (ndev_ctx->vf_serial != serial)
-> +			continue;
-> +
-> +		ndev = hv_get_drvdata(ndev_ctx->device_ctx);
-> +		if (ndev->addr_len != vf_netdev->addr_len ||
-> +		    memcmp(ndev->perm_addr, vf_netdev->perm_addr,
-> +			   ndev->addr_len) != 0)
-> +			continue;
-> +
-> +		return ndev;
-> +
->  	}
->  
->  	netdev_notice(vf_netdev,
+> > Anyway, IIRC, Masami wasn't sure that the full regs was ever needed for the
+> > return (who cares about the registers on return, except for the return
+> > value?)  
+> 
+> I think kretprobe and ftrace are for a bit different usage. kretprobe can be
+> used for something like debugger. In that case, accessing full regs stack
+> will be more preferrable. (BTW, what the not "full regs" means? Does that
+> save partial registers?)
 
+When the REGS flag is not set in the ftrace_ops (where kprobes uses the
+REGS flags), the regs parameter is not a full set of regs, but holds just
+enough to get access to the parameters. This just happened to be what was
+saved in the mcount/fentry trampoline, anyway, because tracing the start of
+the program, you had to save the arguments before calling the trace code,
+otherwise you would corrupt the parameters of the function being traced.
 
-This probably should be a separate patch.
-I think it is trying to address the case of VF discovery in Hyper-V/Azure where the reported
-VF from Hypervisor is bogus or confused.
+I just tweaked it so that by default, the ftrace callbacks now have access
+to the saved regs (call ftrace_regs, to not let a callback get confused and
+think it has full regs when it does not).
 
+Now for the exit of a function, what does having the full pt_regs give you?
+Besides the information to get the return value, the rest of the regs are
+pretty much meaningless. Is there any example that someone wants access to
+the regs at the end of a function besides getting the return value?
+
+-- Steve
