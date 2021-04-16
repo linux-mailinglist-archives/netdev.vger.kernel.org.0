@@ -2,89 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2232D361E64
-	for <lists+netdev@lfdr.de>; Fri, 16 Apr 2021 13:06:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id ED38F361EF8
+	for <lists+netdev@lfdr.de>; Fri, 16 Apr 2021 13:43:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240748AbhDPLGi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 16 Apr 2021 07:06:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54328 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235120AbhDPLGh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 16 Apr 2021 07:06:37 -0400
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 087F9C061574;
-        Fri, 16 Apr 2021 04:06:13 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=q8yzRZdY2wah1G/yCTkxWNbB0jFfZUvqQ3uEjV6WRbg=; b=hh9zQfxDvG2X4xo9Vk3zOGv+gZ
-        QKntKgbYQxOmJbb/qwMrADTgbL8yz3oUhd3HEVZJgrY81Z+RWvtUKKoC8013lyugG2k8O7umfbJam
-        gAhDbhGAPve6oN0MKZsJdwlfW5fC1MWvd6G5LMajXM5TqmIFfFtrkgHcaAZHgvXMnGtFGhwT/4HmK
-        CsjhiBL3nsVtLo7E7Dvy9fj8xomDDJge0rOCzwzXKycyeIlDt/8ml1XDq6Qx+KbmBhQ5d1+BhQ6W5
-        Piq3UrI2NLCuHxk3SVM4ryUk+gw6UwwBM7IiZJ4NrS7iOhjfU6YhJB+tUEtO+rntTBicYBF62ikeR
-        Oi9OJ1dA==;
-Received: from willy by casper.infradead.org with local (Exim 4.94 #2 (Red Hat Linux))
-        id 1lXMIL-009rDn-92; Fri, 16 Apr 2021 11:06:01 +0000
-Date:   Fri, 16 Apr 2021 12:05:53 +0100
-From:   Matthew Wilcox <willy@infradead.org>
-To:     David Laight <David.Laight@aculab.com>
-Cc:     Jesper Dangaard Brouer <brouer@redhat.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-mm@kvack.org" <linux-mm@kvack.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>,
-        "linux-mips@vger.kernel.org" <linux-mips@vger.kernel.org>,
-        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
-        Matteo Croce <mcroce@linux.microsoft.com>,
+        id S242940AbhDPLn3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 16 Apr 2021 07:43:29 -0400
+Received: from fllv0015.ext.ti.com ([198.47.19.141]:49018 "EHLO
+        fllv0015.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S239752AbhDPLn0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 16 Apr 2021 07:43:26 -0400
+Received: from lelv0266.itg.ti.com ([10.180.67.225])
+        by fllv0015.ext.ti.com (8.15.2/8.15.2) with ESMTP id 13GBgobh110280;
+        Fri, 16 Apr 2021 06:42:50 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1618573370;
+        bh=ZVAgQtDnk7KKbKuoslQnNhFeEDKu1buoX1TrtK9eU6o=;
+        h=From:To:CC:Subject:Date;
+        b=AOjPqfFvB59pmSNP7nB8AS4byi8T0WE88vm+TIFdng3kw7yW8j/NE1x2hCrDmDHrT
+         tXNbKYqKz9xhkqhaotBziHmQOtl9DgY0xRfcupoLgIH94CR1iUETaAGNlcBH7KTdbO
+         ZSNUJjs0vNswbvhtt/mw44nHcpFHwQIh4ymTFs1k=
+Received: from DLEE113.ent.ti.com (dlee113.ent.ti.com [157.170.170.24])
+        by lelv0266.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 13GBgon3094454
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Fri, 16 Apr 2021 06:42:50 -0500
+Received: from DLEE114.ent.ti.com (157.170.170.25) by DLEE113.ent.ti.com
+ (157.170.170.24) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2176.2; Fri, 16
+ Apr 2021 06:42:50 -0500
+Received: from lelv0326.itg.ti.com (10.180.67.84) by DLEE114.ent.ti.com
+ (157.170.170.25) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2176.2 via
+ Frontend Transport; Fri, 16 Apr 2021 06:42:50 -0500
+Received: from gsaswath-HP-ProBook-640-G5.dal.design.ti.com (ileax41-snat.itg.ti.com [10.172.224.153])
+        by lelv0326.itg.ti.com (8.15.2/8.15.2) with ESMTP id 13GBgj3C039401;
+        Fri, 16 Apr 2021 06:42:46 -0500
+From:   Aswath Govindraju <a-govindraju@ti.com>
+CC:     <linux-kernel@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-can@vger.kernel.org>, <netdev@vger.kernel.org>,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
+        Wolfgang Grandegger <wg@grandegger.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Chandrasekar Ramakrishnan <rcsekar@samsung.com>,
+        Kishon Vijay Abraham I <kishon@ti.com>,
+        Lokesh Vutla <lokeshvutla@ti.com>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
         Grygorii Strashko <grygorii.strashko@ti.com>,
-        Arnd Bergmann <arnd@kernel.org>, Christoph Hellwig <hch@lst.de>
-Subject: Re: [PATCH 1/1] mm: Fix struct page layout on 32-bit systems
-Message-ID: <20210416110553.GH2531743@casper.infradead.org>
-References: <20210414101044.19da09df@carbon>
- <20210414115052.GS2531743@casper.infradead.org>
- <20210414211322.3799afd4@carbon>
- <20210414213556.GY2531743@casper.infradead.org>
- <a50c3156fe8943ef964db4345344862f@AcuMS.aculab.com>
- <20210415200832.32796445@carbon>
- <20210415182155.GD2531743@casper.infradead.org>
- <5179a01a462f43d6951a65de2a299070@AcuMS.aculab.com>
- <20210415222211.GG2531743@casper.infradead.org>
- <f51e1aa98cb94880a236d58c75c20994@AcuMS.aculab.com>
+        Faiz Abbas <faiz_abbas@ti.com>,
+        Aswath Govindraju <a-govindraju@ti.com>
+Subject: [PATCH v3 0/2] MCAN: Add support for implementing transceiver as a phy
+Date:   Fri, 16 Apr 2021 17:12:43 +0530
+Message-ID: <20210416114245.24829-1-a-govindraju@ti.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <f51e1aa98cb94880a236d58c75c20994@AcuMS.aculab.com>
+Content-Type: text/plain
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+To:     unlisted-recipients:; (no To-header on input)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Apr 16, 2021 at 07:32:35AM +0000, David Laight wrote:
-> From: Matthew Wilcox <willy@infradead.org>
-> > Sent: 15 April 2021 23:22
-> > 
-> > On Thu, Apr 15, 2021 at 09:11:56PM +0000, David Laight wrote:
-> > > Isn't it possible to move the field down one long?
-> > > This might require an explicit zero - but this is not a common
-> > > code path - the extra write will be noise.
-> > 
-> > Then it overlaps page->mapping.  See emails passim.
-> 
-> The rules on overlaps make be wonder if every 'long'
-> should be in its own union.
+The following series of patches add support for implementing the
+transceiver as a phy of m_can_platform driver.
 
-That was what we used to have.  It was worse.
+TCAN1042 has a standby signal that needs to be pulled high for
+sending/receiving messages[1]. TCAN1043 has a enable signal along with
+standby signal that needs to be pulled up for sending/receiving
+messages[2], and other combinations of the two lines can be used to put the
+transceiver in different states to reduce power consumption. On boards
+like the AM654-idk and J721e-evm these signals are controlled using gpios.
 
-> The comments would need to say when each field is used.
-> It would, at least, make these errors less common.
-> 
-> That doesn't solve the 64bit dma_addr though.
-> 
-> Actually rather that word-swapping dma_addr on 32bit BE
-> could you swap over the two fields it overlays with.
-> That might look messy in the .h, but it doesn't require
-> an accessor function to do the swap - easily missed.
+These gpios are set in phy driver, and the transceiver can be put in
+different states using phy API. The phy driver is added in the series [3].
 
-No.
+This patch series is dependent on [4].
+
+changes since v2:
+- changed dev_err to dev_err_probe in patch 2
+- used mcan_class instead of priv to assign max bit rate
+- Picked up  Rob Herring's acked-by for patch 1
+
+changes since v1:
+- Used the API devm_phy_get_optional() instead of 
+  devm_of_phy_get_optional_by_index()
+
+[1] - https://www.ti.com/lit/ds/symlink/tcan1042h.pdf
+[2] - https://www.ti.com/lit/ds/symlink/tcan1043-q1.pdf
+[3] - https://lore.kernel.org/patchwork/project/lkml/list/?series=495511
+[4] - https://lore.kernel.org/patchwork/patch/1413286/
+
+Faiz Abbas (2):
+  dt-bindings: net: can: Document transceiver implementation as phy
+  can: m_can: Add support for transceiver as phy
+
+ .../devicetree/bindings/net/can/bosch,m_can.yaml    |  3 +++
+ drivers/net/can/m_can/m_can.c                       | 10 ++++++++++
+ drivers/net/can/m_can/m_can.h                       |  2 ++
+ drivers/net/can/m_can/m_can_platform.c              | 13 +++++++++++++
+ 4 files changed, 28 insertions(+)
+
+-- 
+2.17.1
+
