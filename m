@@ -2,106 +2,153 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6D714362923
-	for <lists+netdev@lfdr.de>; Fri, 16 Apr 2021 22:16:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 37DC336292C
+	for <lists+netdev@lfdr.de>; Fri, 16 Apr 2021 22:24:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245419AbhDPUQy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 16 Apr 2021 16:16:54 -0400
-Received: from gateway32.websitewelcome.com ([192.185.145.108]:16956 "EHLO
-        gateway32.websitewelcome.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S244908AbhDPUQx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 16 Apr 2021 16:16:53 -0400
-Received: from cm16.websitewelcome.com (cm16.websitewelcome.com [100.42.49.19])
-        by gateway32.websitewelcome.com (Postfix) with ESMTP id 14EC89C2BF
-        for <netdev@vger.kernel.org>; Fri, 16 Apr 2021 15:16:25 -0500 (CDT)
-Received: from gator4166.hostgator.com ([108.167.133.22])
-        by cmsmtp with SMTP
-        id XUt7lMeaAb8LyXUt7lSdYa; Fri, 16 Apr 2021 15:16:25 -0500
-X-Authority-Reason: nr=8
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=embeddedor.com; s=default; h=Content-Transfer-Encoding:Content-Type:
-        In-Reply-To:MIME-Version:Date:Message-ID:From:References:Cc:To:Subject:Sender
-        :Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
-        Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
-        List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=mk2pez5sUEyFBM3Ffood7KCNM41oWHQx1y7+7W8SBlg=; b=B5smeeutWe6rbwzeBVjvOdUySq
-        pPuBrwtisxQGGRLSsYX8WcLGIQYALNDD+JZVAkaxGem8QP6PFKutPqhjKsU5o1+BMmfIpY7d2o15G
-        htpEXtaN0bgj2JtGMtceVHiPkJZ8zDhlZbNXGwOk8/Tmbn0b+xP6YtRY/lNq0Cjr9YK0elI8Rscm3
-        JJC+/wmXddah84TfmvOBkpSKdB+o+nz1SSFzMIbn0rqJrgBvZ3Yw+2PjSCBNNKfXL511lrb8PSk+E
-        UGBc/6scBtJ2sMCKwXzziqMjOGUx4LHXkQ6tEoYyTIsG9GhFkxWJsgYEETB1iuOVlJLmL8hm9ZI4m
-        qTpgNS8g==;
-Received: from 187-162-31-110.static.axtel.net ([187.162.31.110]:55580 helo=[192.168.15.8])
-        by gator4166.hostgator.com with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
-        (Exim 4.94)
-        (envelope-from <gustavo@embeddedor.com>)
-        id 1lXUt2-003AWq-R3; Fri, 16 Apr 2021 15:16:20 -0500
-Subject: Re: [PATCH][next] sctp: Fix out-of-bounds warning in
- sctp_process_asconf_param()
-To:     Kees Cook <keescook@chromium.org>,
-        "Gustavo A. R. Silva" <gustavoars@kernel.org>
-Cc:     Vlad Yasevich <vyasevich@gmail.com>,
-        Neil Horman <nhorman@tuxdriver.com>,
-        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, linux-sctp@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-hardening@vger.kernel.org
-References: <20210416191236.GA589296@embeddedor>
- <202104161249.D889C975D9@keescook>
-From:   "Gustavo A. R. Silva" <gustavo@embeddedor.com>
-Message-ID: <d9c17b72-51e8-8572-e905-c850b0bb9294@embeddedor.com>
-Date:   Fri, 16 Apr 2021 15:16:29 -0500
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.7.1
+        id S245151AbhDPUYg convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Fri, 16 Apr 2021 16:24:36 -0400
+Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:19528 "EHLO
+        mx0b-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S244549AbhDPUYe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 16 Apr 2021 16:24:34 -0400
+Received: from pps.filterd (m0148460.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 13GKIuCY026836
+        for <netdev@vger.kernel.org>; Fri, 16 Apr 2021 13:24:09 -0700
+Received: from mail.thefacebook.com ([163.114.132.120])
+        by mx0a-00082601.pphosted.com with ESMTP id 37yb5e2dgn-2
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
+        for <netdev@vger.kernel.org>; Fri, 16 Apr 2021 13:24:08 -0700
+Received: from intmgw001.05.ash9.facebook.com (2620:10d:c085:108::4) by
+ mail.thefacebook.com (2620:10d:c085:21d::6) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2176.2; Fri, 16 Apr 2021 13:24:06 -0700
+Received: by devbig012.ftw2.facebook.com (Postfix, from userid 137359)
+        id 308832ED4EE0; Fri, 16 Apr 2021 13:24:05 -0700 (PDT)
+From:   Andrii Nakryiko <andrii@kernel.org>
+To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>, <ast@fb.com>,
+        <daniel@iogearbox.net>
+CC:     <andrii@kernel.org>, <kernel-team@fb.com>
+Subject: [PATCH v2 bpf-next 00/17] BPF static linker: support externs
+Date:   Fri, 16 Apr 2021 13:23:47 -0700
+Message-ID: <20210416202404.3443623-1-andrii@kernel.org>
+X-Mailer: git-send-email 2.30.2
+X-FB-Internal: Safe
+Content-Type: text/plain
+X-Proofpoint-GUID: gmhZ-6SBWcyYOwtYgubj7pkJd1B7MbGb
+X-Proofpoint-ORIG-GUID: gmhZ-6SBWcyYOwtYgubj7pkJd1B7MbGb
+Content-Transfer-Encoding: 8BIT
+X-Proofpoint-UnRewURL: 0 URL was un-rewritten
 MIME-Version: 1.0
-In-Reply-To: <202104161249.D889C975D9@keescook>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
-X-AntiAbuse: Primary Hostname - gator4166.hostgator.com
-X-AntiAbuse: Original Domain - vger.kernel.org
-X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
-X-AntiAbuse: Sender Address Domain - embeddedor.com
-X-BWhitelist: no
-X-Source-IP: 187.162.31.110
-X-Source-L: No
-X-Exim-ID: 1lXUt2-003AWq-R3
-X-Source: 
-X-Source-Args: 
-X-Source-Dir: 
-X-Source-Sender: 187-162-31-110.static.axtel.net ([192.168.15.8]) [187.162.31.110]:55580
-X-Source-Auth: gustavo@embeddedor.com
-X-Email-Count: 9
-X-Source-Cap: Z3V6aWRpbmU7Z3V6aWRpbmU7Z2F0b3I0MTY2Lmhvc3RnYXRvci5jb20=
-X-Local-Domain: yes
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.391,18.0.761
+ definitions=2021-04-16_09:2021-04-16,2021-04-16 signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 bulkscore=0 adultscore=0
+ mlxlogscore=999 spamscore=0 clxscore=1015 malwarescore=0
+ priorityscore=1501 lowpriorityscore=0 impostorscore=0 phishscore=0
+ suspectscore=0 mlxscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2104060000 definitions=main-2104160143
+X-FB-Internal: deliver
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Add BPF static linker support for extern resolution of global variables,
+functions, and BTF-defined maps.
 
+This patch set consists of 4 parts:
+  - few patches are extending bpftool to simplify working with BTF dump;
+  - libbpf object loading logic is extended to support __hidden functions and
+    overriden (unused) __weak functions; also BTF-defined map parsing logic is
+    refactored to be re-used by linker;
+  - the crux of the patch set is BPF static linker logic extension to perform
+    extern resolution for three categories: global variables, BPF
+    sub-programs, BTF-defined maps;
+  - a set of selftests that validate that all the combinations of
+    extern/weak/__hidden are working as expected.
 
-On 4/16/21 14:53, Kees Cook wrote:
-> On Fri, Apr 16, 2021 at 02:12:36PM -0500, Gustavo A. R. Silva wrote:
->> Fix the following out-of-bounds warning:
->>
->> net/sctp/sm_make_chunk.c:3150:4: warning: 'memcpy' offset [17, 28] from the object at 'addr' is out of the bounds of referenced subobject 'v4' with type 'struct sockaddr_in' at offset 0 [-Warray-bounds]
->>
->> This helps with the ongoing efforts to globally enable -Warray-bounds
->> and get us closer to being able to tighten the FORTIFY_SOURCE routines
->> on memcpy().
->>
->> Link: https://github.com/KSPP/linux/issues/109
->> Reported-by: kernel test robot <lkp@intel.com>
->> Signed-off-by: Gustavo A. R. Silva <gustavoars@kernel.org>
-> 
-> Yup!
+See respective patches for more details.
 
-:)
+One aspect hasn't been addressed yet and is going to be resolved in the next
+patch set, but is worth mentioning. With BPF static linking of multiple .o
+files, dealing with static everything becomes more problematic for BPF
+skeleton and in general for any by name look up APIs. This is due to static
+entities are allowed to have non-unique name. Historically this was never
+a problem due to BPF programs were always confined to a single C file. That
+changes now and needs to be addressed. The thinking so far is for BPF static
+linker to prepend filename to each static variable and static map (which is
+currently not supported by libbpf, btw), so that they can be unambiguously
+resolved by (mostly) unique name. Mostly, because even filenames can be
+duplicated, but that should be rare and easy to address by wiser choice of
+filenames by users. Fortunately, static BPF subprograms don't suffer from this
+issues, as they are not independent entities and are neither exposed in BPF
+skeleton, nor is lookup-able by any of libbpf APIs (and there is little reason
+to do that anyways).
 
-> Reviewed-by: Kees Cook <keescook@chromium.org>
+This and few other things will be the topic of the next set of patches.
 
-Thanks, Kees.
+Some tests rely on Clang fix ([0]), so need latest Clang built from main.
 
---
-Gustavo
+  [0] https://reviews.llvm.org/D100362
+
+v1->v2:
+  - make map externs support full attribute list, adjust linked_maps selftest
+    to demonstrate that typedef works now (though no shared header file was
+    added to simplicity sake) (Alexei);
+  - remove commented out parts from selftests and fix few minor code style
+    issues;
+  - special __weak map definition semantics not yet implemented and will be
+    addressed in a follow up.
+
+Andrii Nakryiko (17):
+  bpftool: support dumping BTF VAR's "extern" linkage
+  bpftool: dump more info about DATASEC members
+  libbpf: suppress compiler warning when using SEC() macro with externs
+  libbpf: mark BPF subprogs with hidden visibility as static for BPF
+    verifier
+  libbpf: allow gaps in BPF program sections to support overriden weak
+    functions
+  libbpf: refactor BTF map definition parsing
+  libbpf: factor out symtab and relos sanity checks
+  libbpf: make few internal helpers available outside of libbpf.c
+  libbpf: extend sanity checking ELF symbols with externs validation
+  libbpf: tighten BTF type ID rewriting with error checking
+  libbpf: add linker extern resolution support for functions and global
+    variables
+  libbpf: support extern resolution for BTF-defined maps in .maps
+    section
+  selftests/bpf: use -O0 instead of -Og in selftests builds
+  selftests/bpf: omit skeleton generation for multi-linked BPF object
+    files
+  selftests/bpf: add function linking selftest
+  selftests/bpf: add global variables linking selftest
+  sleftests/bpf: add map linking selftest
+
+ tools/bpf/bpftool/btf.c                       |   30 +-
+ tools/lib/bpf/bpf_helpers.h                   |   19 +-
+ tools/lib/bpf/btf.c                           |    5 -
+ tools/lib/bpf/libbpf.c                        |  370 +++--
+ tools/lib/bpf/libbpf_internal.h               |   45 +
+ tools/lib/bpf/linker.c                        | 1261 ++++++++++++++---
+ tools/testing/selftests/bpf/Makefile          |   18 +-
+ .../selftests/bpf/prog_tests/linked_funcs.c   |   42 +
+ .../selftests/bpf/prog_tests/linked_maps.c    |   30 +
+ .../selftests/bpf/prog_tests/linked_vars.c    |   43 +
+ .../selftests/bpf/progs/linked_funcs1.c       |   73 +
+ .../selftests/bpf/progs/linked_funcs2.c       |   73 +
+ .../selftests/bpf/progs/linked_maps1.c        |   82 ++
+ .../selftests/bpf/progs/linked_maps2.c        |   76 +
+ .../selftests/bpf/progs/linked_vars1.c        |   54 +
+ .../selftests/bpf/progs/linked_vars2.c        |   55 +
+ 16 files changed, 1922 insertions(+), 354 deletions(-)
+ create mode 100644 tools/testing/selftests/bpf/prog_tests/linked_funcs.c
+ create mode 100644 tools/testing/selftests/bpf/prog_tests/linked_maps.c
+ create mode 100644 tools/testing/selftests/bpf/prog_tests/linked_vars.c
+ create mode 100644 tools/testing/selftests/bpf/progs/linked_funcs1.c
+ create mode 100644 tools/testing/selftests/bpf/progs/linked_funcs2.c
+ create mode 100644 tools/testing/selftests/bpf/progs/linked_maps1.c
+ create mode 100644 tools/testing/selftests/bpf/progs/linked_maps2.c
+ create mode 100644 tools/testing/selftests/bpf/progs/linked_vars1.c
+ create mode 100644 tools/testing/selftests/bpf/progs/linked_vars2.c
+
+-- 
+2.30.2
+
