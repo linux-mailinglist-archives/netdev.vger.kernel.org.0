@@ -2,19 +2,19 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F0214361B22
-	for <lists+netdev@lfdr.de>; Fri, 16 Apr 2021 10:06:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 78BE6361B1A
+	for <lists+netdev@lfdr.de>; Fri, 16 Apr 2021 10:06:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240036AbhDPIGs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 16 Apr 2021 04:06:48 -0400
-Received: from rtits2.realtek.com ([211.75.126.72]:60532 "EHLO
+        id S239417AbhDPIGl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 16 Apr 2021 04:06:41 -0400
+Received: from rtits2.realtek.com ([211.75.126.72]:60531 "EHLO
         rtits2.realtek.com.tw" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239068AbhDPIGg (ORCPT
+        with ESMTP id S235027AbhDPIGg (ORCPT
         <rfc822;netdev@vger.kernel.org>); Fri, 16 Apr 2021 04:06:36 -0400
 Authenticated-By: 
-X-SpamFilter-By: ArmorX SpamTrap 5.73 with qID 13G866Sm8023557, This message is accepted by code: ctloc85258
+X-SpamFilter-By: ArmorX SpamTrap 5.73 with qID 13G866Sk8023557, This message is accepted by code: ctloc85258
 Received: from mail.realtek.com (rtexh36502.realtek.com.tw[172.21.6.25])
-        by rtits2.realtek.com.tw (8.15.2/2.71/5.88) with ESMTPS id 13G866Sm8023557
+        by rtits2.realtek.com.tw (8.15.2/2.71/5.88) with ESMTPS id 13G866Sk8023557
         (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
         Fri, 16 Apr 2021 16:06:06 +0800
 Received: from RTEXMBS04.realtek.com.tw (172.21.6.97) by
@@ -24,15 +24,15 @@ Received: from RTEXMBS04.realtek.com.tw (172.21.6.97) by
 Received: from fc32.localdomain (172.21.177.102) by RTEXMBS04.realtek.com.tw
  (172.21.6.97) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2106.2; Fri, 16 Apr
- 2021 16:06:03 +0800
+ 2021 16:06:04 +0800
 From:   Hayes Wang <hayeswang@realtek.com>
 To:     <kuba@kernel.org>, <davem@davemloft.net>
 CC:     <netdev@vger.kernel.org>, <nic_swsd@realtek.com>,
         <linux-kernel@vger.kernel.org>, <linux-usb@vger.kernel.org>,
         Hayes Wang <hayeswang@realtek.com>
-Subject: [PATCH net-next 2/6] r8152: adjust rtl8152_check_firmware function
-Date:   Fri, 16 Apr 2021 16:04:33 +0800
-Message-ID: <1394712342-15778-352-Taiwan-albertk@realtek.com>
+Subject: [PATCH net-next 3/6] r8152: add help function to change mtu
+Date:   Fri, 16 Apr 2021 16:04:34 +0800
+Message-ID: <1394712342-15778-353-Taiwan-albertk@realtek.com>
 X-Mailer: Microsoft Office Outlook 11
 In-Reply-To: <1394712342-15778-350-Taiwan-albertk@realtek.com>
 References: <1394712342-15778-350-Taiwan-albertk@realtek.com>
@@ -58,7 +58,7 @@ X-KSE-AntiSpam-Info: Version: 5.9.20.0
 X-KSE-AntiSpam-Info: Envelope from: hayeswang@realtek.com
 X-KSE-AntiSpam-Info: LuaCore: 442 442 b985cb57763b61d2a20abb585d5d4cc10c315b09
 X-KSE-AntiSpam-Info: {Tracking_from_domain_doesnt_match_to}
-X-KSE-AntiSpam-Info: 127.0.0.199:7.1.2;realtek.com:7.1.1;d41d8cd98f00b204e9800998ecf8427e.com:7.1.1
+X-KSE-AntiSpam-Info: realtek.com:7.1.1;127.0.0.199:7.1.2;d41d8cd98f00b204e9800998ecf8427e.com:7.1.1
 X-KSE-AntiSpam-Info: {Track_Chinese_Simplified, headers_charset}
 X-KSE-AntiSpam-Info: Rate: 0
 X-KSE-AntiSpam-Info: Status: not_detected
@@ -84,7 +84,7 @@ X-KSE-AntiSpam-Info: Version: 5.9.20.0
 X-KSE-AntiSpam-Info: Envelope from: hayeswang@realtek.com
 X-KSE-AntiSpam-Info: LuaCore: 442 442 b985cb57763b61d2a20abb585d5d4cc10c315b09
 X-KSE-AntiSpam-Info: {Tracking_from_domain_doesnt_match_to}
-X-KSE-AntiSpam-Info: 127.0.0.199:7.1.2;d41d8cd98f00b204e9800998ecf8427e.com:7.1.1;realtek.com:7.1.1
+X-KSE-AntiSpam-Info: realtek.com:7.1.1;127.0.0.199:7.1.2;d41d8cd98f00b204e9800998ecf8427e.com:7.1.1
 X-KSE-AntiSpam-Info: {Track_Chinese_Simplified, headers_charset}
 X-KSE-AntiSpam-Info: Rate: 0
 X-KSE-AntiSpam-Info: Status: not_detected
@@ -98,152 +98,157 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Use bits operations to record and check the firmware.
+The different chips may have different requests when changing mtu.
+Therefore, add a new help function of rtl_ops to change mtu. Besides,
+reset the tx/rx after changing mtu.
+
+Additionally, add mtu_to_size() and size_to_mtu() macros to simplify
+the code.
 
 Signed-off-by: Hayes Wang <hayeswang@realtek.com>
 ---
- drivers/net/usb/r8152.c | 51 +++++++++++++++++++++++------------------
- 1 file changed, 29 insertions(+), 22 deletions(-)
+ drivers/net/usb/r8152.c | 53 ++++++++++++++++++++++++-----------------
+ 1 file changed, 31 insertions(+), 22 deletions(-)
 
 diff --git a/drivers/net/usb/r8152.c b/drivers/net/usb/r8152.c
-index 10db48f4ed77..28c9b4dc1a60 100644
+index 28c9b4dc1a60..3f465242a4f0 100644
 --- a/drivers/net/usb/r8152.c
 +++ b/drivers/net/usb/r8152.c
-@@ -874,6 +874,14 @@ struct fw_header {
- 	struct fw_block blocks[];
- } __packed;
+@@ -657,15 +657,13 @@ enum rtl_register_content {
  
-+enum rtl8152_fw_flags {
-+	FW_FLAGS_USB = 0,
-+	FW_FLAGS_PLA,
-+	FW_FLAGS_START,
-+	FW_FLAGS_STOP,
-+	FW_FLAGS_NC,
-+};
-+
- /**
-  * struct fw_mac - a firmware block used by RTL_FW_PLA and RTL_FW_USB.
-  *	The layout of the firmware block is:
-@@ -3800,10 +3808,7 @@ static long rtl8152_check_firmware(struct r8152 *tp, struct rtl_fw *rtl_fw)
+ #define INTR_LINK		0x0004
+ 
+-#define RTL8153_MAX_PACKET	9216 /* 9K */
+-#define RTL8153_MAX_MTU		(RTL8153_MAX_PACKET - VLAN_ETH_HLEN - \
+-				 ETH_FCS_LEN)
+ #define RTL8152_RMS		(VLAN_ETH_FRAME_LEN + ETH_FCS_LEN)
+ #define RTL8153_RMS		RTL8153_MAX_PACKET
+ #define RTL8152_TX_TIMEOUT	(5 * HZ)
+ #define RTL8152_NAPI_WEIGHT	64
+-#define rx_reserved_size(x)	((x) + VLAN_ETH_HLEN + ETH_FCS_LEN + \
+-				 sizeof(struct rx_desc) + RX_ALIGN)
++#define mtu_to_size(m)		((m) + VLAN_ETH_HLEN + ETH_FCS_LEN)
++#define size_to_mtu(s)		((s) - VLAN_ETH_HLEN - ETH_FCS_LEN)
++#define rx_reserved_size(x)	(mtu_to_size(x) + sizeof(struct rx_desc) + RX_ALIGN)
+ 
+ /* rtl8152 flags */
+ enum rtl8152_flags {
+@@ -795,6 +793,7 @@ struct r8152 {
+ 		bool (*in_nway)(struct r8152 *tp);
+ 		void (*hw_phy_cfg)(struct r8152 *tp);
+ 		void (*autosuspend_en)(struct r8152 *tp, bool enable);
++		void (*change_mtu)(struct r8152 *tp);
+ 	} rtl_ops;
+ 
+ 	struct ups_info {
+@@ -1021,8 +1020,7 @@ enum tx_csum_stat {
+ static const int multicast_filter_limit = 32;
+ static unsigned int agg_buf_sz = 16384;
+ 
+-#define RTL_LIMITED_TSO_SIZE	(agg_buf_sz - sizeof(struct tx_desc) - \
+-				 VLAN_ETH_HLEN - ETH_FCS_LEN)
++#define RTL_LIMITED_TSO_SIZE	(size_to_mtu(agg_buf_sz) - sizeof(struct tx_desc))
+ 
+ static
+ int get_registers(struct r8152 *tp, u16 value, u16 index, u16 size, void *data)
+@@ -2632,10 +2630,7 @@ static void rtl8152_nic_reset(struct r8152 *tp)
+ 
+ static void set_tx_qlen(struct r8152 *tp)
  {
- 	const struct firmware *fw = rtl_fw->fw;
- 	struct fw_header *fw_hdr = (struct fw_header *)fw->data;
--	struct fw_mac *pla = NULL, *usb = NULL;
--	struct fw_phy_patch_key *start = NULL;
--	struct fw_phy_nc *phy_nc = NULL;
--	struct fw_block *stop = NULL;
-+	unsigned long fw_flags = 0;
- 	long ret = -EFAULT;
- 	int i;
- 
-@@ -3832,50 +3837,52 @@ static long rtl8152_check_firmware(struct r8152 *tp, struct rtl_fw *rtl_fw)
- 				goto fail;
- 			goto fw_end;
- 		case RTL_FW_PLA:
--			if (pla) {
-+			if (test_bit(FW_FLAGS_PLA, &fw_flags)) {
- 				dev_err(&tp->intf->dev,
- 					"multiple PLA firmware encountered");
- 				goto fail;
- 			}
- 
--			pla = (struct fw_mac *)block;
--			if (!rtl8152_is_fw_mac_ok(tp, pla)) {
-+			if (!rtl8152_is_fw_mac_ok(tp, (struct fw_mac *)block)) {
- 				dev_err(&tp->intf->dev,
- 					"check PLA firmware failed\n");
- 				goto fail;
- 			}
-+			__set_bit(FW_FLAGS_PLA, &fw_flags);
- 			break;
- 		case RTL_FW_USB:
--			if (usb) {
-+			if (test_bit(FW_FLAGS_USB, &fw_flags)) {
- 				dev_err(&tp->intf->dev,
- 					"multiple USB firmware encountered");
- 				goto fail;
- 			}
- 
--			usb = (struct fw_mac *)block;
--			if (!rtl8152_is_fw_mac_ok(tp, usb)) {
-+			if (!rtl8152_is_fw_mac_ok(tp, (struct fw_mac *)block)) {
- 				dev_err(&tp->intf->dev,
- 					"check USB firmware failed\n");
- 				goto fail;
- 			}
-+			__set_bit(FW_FLAGS_USB, &fw_flags);
- 			break;
- 		case RTL_FW_PHY_START:
--			if (start || phy_nc || stop) {
-+			if (test_bit(FW_FLAGS_START, &fw_flags) ||
-+			    test_bit(FW_FLAGS_NC, &fw_flags) ||
-+			    test_bit(FW_FLAGS_STOP, &fw_flags)) {
- 				dev_err(&tp->intf->dev,
- 					"check PHY_START fail\n");
- 				goto fail;
- 			}
- 
--			if (__le32_to_cpu(block->length) != sizeof(*start)) {
-+			if (__le32_to_cpu(block->length) != sizeof(struct fw_phy_patch_key)) {
- 				dev_err(&tp->intf->dev,
- 					"Invalid length for PHY_START\n");
- 				goto fail;
- 			}
+-	struct net_device *netdev = tp->netdev;
 -
--			start = (struct fw_phy_patch_key *)block;
-+			__set_bit(FW_FLAGS_START, &fw_flags);
- 			break;
- 		case RTL_FW_PHY_STOP:
--			if (stop || !start) {
-+			if (test_bit(FW_FLAGS_STOP, &fw_flags) ||
-+			    !test_bit(FW_FLAGS_START, &fw_flags)) {
- 				dev_err(&tp->intf->dev,
- 					"Check PHY_STOP fail\n");
- 				goto fail;
-@@ -3886,28 +3893,28 @@ static long rtl8152_check_firmware(struct r8152 *tp, struct rtl_fw *rtl_fw)
- 					"Invalid length for PHY_STOP\n");
- 				goto fail;
- 			}
+-	tp->tx_qlen = agg_buf_sz / (netdev->mtu + VLAN_ETH_HLEN + ETH_FCS_LEN +
+-				    sizeof(struct tx_desc));
++	tp->tx_qlen = agg_buf_sz / (mtu_to_size(tp->netdev->mtu) + sizeof(struct tx_desc));
+ }
+ 
+ static inline u8 rtl8152_get_speed(struct r8152 *tp)
+@@ -4724,6 +4719,12 @@ static void r8153b_hw_phy_cfg(struct r8152 *tp)
+ 	set_bit(PHY_RESET, &tp->flags);
+ }
+ 
++static void rtl8153_change_mtu(struct r8152 *tp)
++{
++	ocp_write_word(tp, MCU_TYPE_PLA, PLA_RMS, mtu_to_size(tp->netdev->mtu));
++	ocp_write_byte(tp, MCU_TYPE_PLA, PLA_MTPS, MTPS_JUMBO);
++}
++
+ static void r8153_first_init(struct r8152 *tp)
+ {
+ 	u32 ocp_data;
+@@ -4756,9 +4757,7 @@ static void r8153_first_init(struct r8152 *tp)
+ 
+ 	rtl_rx_vlan_en(tp, tp->netdev->features & NETIF_F_HW_VLAN_CTAG_RX);
+ 
+-	ocp_data = tp->netdev->mtu + VLAN_ETH_HLEN + ETH_FCS_LEN;
+-	ocp_write_word(tp, MCU_TYPE_PLA, PLA_RMS, ocp_data);
+-	ocp_write_byte(tp, MCU_TYPE_PLA, PLA_MTPS, MTPS_JUMBO);
++	rtl8153_change_mtu(tp);
+ 
+ 	ocp_data = ocp_read_word(tp, MCU_TYPE_PLA, PLA_TCR0);
+ 	ocp_data |= TCR0_AUTO_FIFO;
+@@ -4793,8 +4792,7 @@ static void r8153_enter_oob(struct r8152 *tp)
+ 
+ 	wait_oob_link_list_ready(tp);
+ 
+-	ocp_data = tp->netdev->mtu + VLAN_ETH_HLEN + ETH_FCS_LEN;
+-	ocp_write_word(tp, MCU_TYPE_PLA, PLA_RMS, ocp_data);
++	ocp_write_word(tp, MCU_TYPE_PLA, PLA_RMS, mtu_to_size(tp->netdev->mtu));
+ 
+ 	switch (tp->version) {
+ 	case RTL_VER_03:
+@@ -6494,12 +6492,21 @@ static int rtl8152_change_mtu(struct net_device *dev, int new_mtu)
+ 	dev->mtu = new_mtu;
+ 
+ 	if (netif_running(dev)) {
+-		u32 rms = new_mtu + VLAN_ETH_HLEN + ETH_FCS_LEN;
 -
--			stop = block;
-+			__set_bit(FW_FLAGS_STOP, &fw_flags);
- 			break;
- 		case RTL_FW_PHY_NC:
--			if (!start || stop) {
-+			if (!test_bit(FW_FLAGS_START, &fw_flags) ||
-+			    test_bit(FW_FLAGS_STOP, &fw_flags)) {
- 				dev_err(&tp->intf->dev,
- 					"check PHY_NC fail\n");
- 				goto fail;
- 			}
+-		ocp_write_word(tp, MCU_TYPE_PLA, PLA_RMS, rms);
++		if (tp->rtl_ops.change_mtu)
++			tp->rtl_ops.change_mtu(tp);
  
--			if (phy_nc) {
-+			if (test_bit(FW_FLAGS_NC, &fw_flags)) {
- 				dev_err(&tp->intf->dev,
- 					"multiple PHY NC encountered\n");
- 				goto fail;
- 			}
- 
--			phy_nc = (struct fw_phy_nc *)block;
--			if (!rtl8152_is_fw_phy_nc_ok(tp, phy_nc)) {
-+			if (!rtl8152_is_fw_phy_nc_ok(tp, (struct fw_phy_nc *)block)) {
- 				dev_err(&tp->intf->dev,
- 					"check PHY NC firmware failed\n");
- 				goto fail;
- 			}
-+			__set_bit(FW_FLAGS_NC, &fw_flags);
- 
- 			break;
- 		default:
-@@ -3921,7 +3928,7 @@ static long rtl8152_check_firmware(struct r8152 *tp, struct rtl_fw *rtl_fw)
+-		if (netif_carrier_ok(dev))
+-			r8153_set_rx_early_size(tp);
++		if (netif_carrier_ok(dev)) {
++			netif_stop_queue(dev);
++			napi_disable(&tp->napi);
++			tasklet_disable(&tp->tx_tl);
++			tp->rtl_ops.disable(tp);
++			tp->rtl_ops.enable(tp);
++			rtl_start_rx(tp);
++			tasklet_enable(&tp->tx_tl);
++			napi_enable(&tp->napi);
++			rtl8152_set_rx_mode(dev);
++			netif_wake_queue(dev);
++		}
  	}
  
- fw_end:
--	if ((phy_nc || start) && !stop) {
-+	if (test_bit(FW_FLAGS_START, &fw_flags) && !test_bit(FW_FLAGS_STOP, &fw_flags)) {
- 		dev_err(&tp->intf->dev, "without PHY_STOP\n");
- 		goto fail;
+ 	mutex_unlock(&tp->control);
+@@ -6588,6 +6595,7 @@ static int rtl_ops_init(struct r8152 *tp)
+ 		ops->in_nway		= rtl8153_in_nway;
+ 		ops->hw_phy_cfg		= r8153_hw_phy_cfg;
+ 		ops->autosuspend_en	= rtl8153_runtime_enable;
++		ops->change_mtu		= rtl8153_change_mtu;
+ 		if (tp->udev->speed < USB_SPEED_SUPER)
+ 			tp->rx_buf_sz	= 16 * 1024;
+ 		else
+@@ -6609,6 +6617,7 @@ static int rtl_ops_init(struct r8152 *tp)
+ 		ops->in_nway		= rtl8153_in_nway;
+ 		ops->hw_phy_cfg		= r8153b_hw_phy_cfg;
+ 		ops->autosuspend_en	= rtl8153b_runtime_enable;
++		ops->change_mtu		= rtl8153_change_mtu;
+ 		tp->rx_buf_sz		= 32 * 1024;
+ 		tp->eee_en		= true;
+ 		tp->eee_adv		= MDIO_EEE_1000T | MDIO_EEE_100TX;
+@@ -6829,7 +6838,7 @@ static int rtl8152_probe(struct usb_interface *intf,
+ 		netdev->max_mtu = ETH_DATA_LEN;
+ 		break;
+ 	default:
+-		netdev->max_mtu = RTL8153_MAX_MTU;
++		netdev->max_mtu = size_to_mtu(9 * 1024);
+ 		break;
  	}
+ 
 -- 
 2.26.3
 
