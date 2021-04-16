@@ -2,125 +2,120 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DB2223626A0
-	for <lists+netdev@lfdr.de>; Fri, 16 Apr 2021 19:21:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9B2FE3626B7
+	for <lists+netdev@lfdr.de>; Fri, 16 Apr 2021 19:27:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241163AbhDPRVt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 16 Apr 2021 13:21:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54194 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233606AbhDPRVt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 16 Apr 2021 13:21:49 -0400
-Received: from mail-pg1-x52b.google.com (mail-pg1-x52b.google.com [IPv6:2607:f8b0:4864:20::52b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 59EC8C061574
-        for <netdev@vger.kernel.org>; Fri, 16 Apr 2021 10:21:24 -0700 (PDT)
-Received: by mail-pg1-x52b.google.com with SMTP id j7so10225314pgi.3
-        for <netdev@vger.kernel.org>; Fri, 16 Apr 2021 10:21:24 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=UIPBO/xQbzXPnO2JRZkqE+hgnG7Axje4TkUXNbu82bU=;
-        b=PpF4dDfdq+UXcU8LHYVBU/70yvwZtU5K5OG48tJHGRuxkwcVX0SyY9UkFxHyCSx9OI
-         xrgmoWhIDE0xcTDifORJDiBgDSrhgWDoZSTazfgcRU3XAnN1ztxLdjIsfBOI/tXm46WB
-         XqeLMdl/X7V0Cs3V0APp7uc/HbXn2i3TBdkxZse4ZJN9ylqZ9i3iBrgLLhWtSf7d8mO3
-         XpTj+BY6OCckuo8bBceEXNhD1yelrME8QNfccxeoOHSXrjtlL+pI/DB4aA9qY8CE1006
-         SP+FWsYR/VTEbd63QJjKlLpSOmheVXhuWL3HtVRhUCxlK8ujBq+uP24B/gzAKMfgAF0+
-         yFlA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=UIPBO/xQbzXPnO2JRZkqE+hgnG7Axje4TkUXNbu82bU=;
-        b=aZlPopgEPikjtk/Umq8orXWZgwJqWIRkJwZXIHx89fI+P0Ahq/ZEH8cTLQVpkdD1CM
-         u7+kGchqWC0/8cr4POR35+8w2yT+i20VUhU8UH1Nxi58OpQ9/jmJ1FAXI9TuMmUrJtln
-         P1xnS+5haxWi7uvrPOU9RDN4hga2B8xIgD2RX0YmfpaEN9w7UKz87Zm/ebSmXAFL3pjL
-         oqmox4q06sNHaSjE/eEDCjExSwqh4NS5sY65jSgDIsos93XW/o85j2CFAswQW6U+7L4H
-         KlsDAGkcDHuUymdnWKg2t4Vb4nNwTJ7AjcEs8SfSr9tcxOI47nXiII8/GXerzZ0A8gF0
-         efkg==
-X-Gm-Message-State: AOAM531/29VAgBcNSF3BHxeJg6ynTRSthoCLDRYOlTZbK9SvYqM6qk1a
-        eMnloCIUIJQC2Y6G8PiGmhw1WfXt1ZJHCTcTbNo=
-X-Google-Smtp-Source: ABdhPJwXKqLNtofA1cs/QlNEC4MzicsZRIvfyUrNDikF6OjHttjtOwJdYr748Cv95Esnb59d3EXXjR5becmfAXXoy2M=
-X-Received: by 2002:aa7:90d3:0:b029:241:21a1:6ffb with SMTP id
- k19-20020aa790d30000b029024121a16ffbmr8632928pfk.43.1618593683597; Fri, 16
- Apr 2021 10:21:23 -0700 (PDT)
-MIME-Version: 1.0
-References: <20210415141724.17471-1-sishuai@purdue.edu>
-In-Reply-To: <20210415141724.17471-1-sishuai@purdue.edu>
-From:   Cong Wang <xiyou.wangcong@gmail.com>
-Date:   Fri, 16 Apr 2021 10:21:12 -0700
-Message-ID: <CAM_iQpUqMOTAwfrXoY5a4tCTdCk05OEFc4sZDjKr-wzoew5kaA@mail.gmail.com>
-Subject: Re: [PATCH v2] net: fix a concurrency bug in l2tp_tunnel_register()
-To:     Sishuai Gong <sishuai@purdue.edu>
-Cc:     David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, tparkin@katalix.com,
-        Matthias Schiffer <mschiffer@universe-factory.net>,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>
+        id S241863AbhDPR1Y (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 16 Apr 2021 13:27:24 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:58684 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S235935AbhDPR1V (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 16 Apr 2021 13:27:21 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1618594016;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=jST+c6JvcilFW3RUQaV4kF2IbtPXcWWGuH6bp9G+J2U=;
+        b=YTXjVMOnA7Mm68ga2pRRrFKg3UWgGVuzMMMKw4ZLXI6kfUd3cchLLtI6IHb6L8un+p/flY
+        eUzeCiyCnZyEFYauDDV61ZmdAUJCbIFGdif9PL7axSt9TtxMu7SsZWPoDYrbLOaBqW61M1
+        RhvLp1OHigPZWfj7Osg0Kil2/u0a0ZA=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-333-7XBOMTXGOhW4R3MyIWzzqQ-1; Fri, 16 Apr 2021 13:26:52 -0400
+X-MC-Unique: 7XBOMTXGOhW4R3MyIWzzqQ-1
+Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com [10.5.11.22])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 884D287A83B;
+        Fri, 16 Apr 2021 17:26:51 +0000 (UTC)
+Received: from ovpn-114-195.ams2.redhat.com (ovpn-114-195.ams2.redhat.com [10.36.114.195])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 03FDA10023B5;
+        Fri, 16 Apr 2021 17:26:46 +0000 (UTC)
+Message-ID: <9111f5868bac3d3d4de52263f6df8da051cdfcf9.camel@redhat.com>
+Subject: Re: [PATCH net-next 2/4] veth: allow enabling NAPI even without XDP
+From:   Paolo Abeni <pabeni@redhat.com>
+To:     Toke =?ISO-8859-1?Q?H=F8iland-J=F8rgensen?= <toke@redhat.com>,
+        netdev@vger.kernel.org
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Toshiaki Makita <toshiaki.makita1@gmail.com>,
+        Lorenzo Bianconi <lorenzo@kernel.org>
+Date:   Fri, 16 Apr 2021 19:26:45 +0200
+In-Reply-To: <87blaegsda.fsf@toke.dk>
+References: <cover.1617965243.git.pabeni@redhat.com>
+         <dbc26ec87852a112126c83ae546f367841ec554d.1617965243.git.pabeni@redhat.com>
+         <87v98vtsgg.fsf@toke.dk>
+         <d9b5f599380d32a28026d5a758cc46edf2ba23d8.camel@redhat.com>
+         <87blaegsda.fsf@toke.dk>
 Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.36.5 (3.36.5-2.fc32) 
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Apr 15, 2021 at 7:18 AM Sishuai Gong <sishuai@purdue.edu> wrote:
-> diff --git a/net/l2tp/l2tp_core.c b/net/l2tp/l2tp_core.c
-> index 203890e378cb..879f1264ec3c 100644
-> --- a/net/l2tp/l2tp_core.c
-> +++ b/net/l2tp/l2tp_core.c
-> @@ -1478,6 +1478,9 @@ int l2tp_tunnel_register(struct l2tp_tunnel *tunnel, struct net *net,
->         tunnel->l2tp_net = net;
->         pn = l2tp_pernet(net);
->
-> +       sk = sock->sk;
-> +       tunnel->sock = sk;
-> +
->         spin_lock_bh(&pn->l2tp_tunnel_list_lock);
->         list_for_each_entry(tunnel_walk, &pn->l2tp_tunnel_list, list) {
->                 if (tunnel_walk->tunnel_id == tunnel->tunnel_id) {
-> @@ -1490,9 +1493,7 @@ int l2tp_tunnel_register(struct l2tp_tunnel *tunnel, struct net *net,
->         list_add_rcu(&tunnel->list, &pn->l2tp_tunnel_list);
->         spin_unlock_bh(&pn->l2tp_tunnel_list_lock);
->
-> -       sk = sock->sk;
->         sock_hold(sk);
-> -       tunnel->sock = sk;
+On Fri, 2021-04-16 at 17:29 +0200, Toke Høiland-Jørgensen wrote:
+> Paolo Abeni <pabeni@redhat.com> writes:
+> 
+> > On Fri, 2021-04-09 at 16:58 +0200, Toke Høiland-Jørgensen wrote:
+> > > Paolo Abeni <pabeni@redhat.com> writes:
+> > > 
+> > > > Currently the veth device has the GRO feature bit set, even if
+> > > > no GRO aggregation is possible with the default configuration,
+> > > > as the veth device does not hook into the GRO engine.
+> > > > 
+> > > > Flipping the GRO feature bit from user-space is a no-op, unless
+> > > > XDP is enabled. In such scenario GRO could actually take place, but
+> > > > TSO is forced to off on the peer device.
+> > > > 
+> > > > This change allow user-space to really control the GRO feature, with
+> > > > no need for an XDP program.
+> > > > 
+> > > > The GRO feature bit is now cleared by default - so that there are no
+> > > > user-visible behavior changes with the default configuration.
+> > > > 
+> > > > When the GRO bit is set, the per-queue NAPI instances are initialized
+> > > > and registered. On xmit, when napi instances are available, we try
+> > > > to use them.
+> > > 
+> > > Am I mistaken in thinking that this also makes XDP redirect into a veth
+> > > work without having to load an XDP program on the peer device? That's
+> > > been a long-outstanding thing we've been meaning to fix, so that would
+> > > be awesome! :)
+> > 
+> > I have not experimented that, and I admit gross ignorance WRT this
+> > argument, but AFAICS the needed bits to get XDP redirect working on
+> > veth are the ptr_ring initialization and the napi instance available.
+> > 
+> > With this patch both are in place when GRO is enabled, so I guess XPD
+> > redirect should work, too (modulo bugs for untested scenario).
+> 
+> OK, finally got around to testing this; it doesn't quite work with just
+> your patch, because veth_xdp_xmit() still checks for rq->xdp_prog
+> instead of rq->napi. Fixing this indeed enabled veth to be an
+> XDP_REDIRECT target without an XDP program loaded on the peer. So yay!
+> I'll send a followup fixing that check.
 
-I think you have to hold this refcnt before making tunnel->sock visible
-to others.
+Thank you for double checking!
 
-Why not just move this together and simply release the refcnt on error
-path?
+> So with this we seem to have some nice improvements in both
+> functionality and performance when GRO is turned on; so any reason why
+> we shouldn't just flip the default to on?
 
-diff --git a/net/l2tp/l2tp_core.c b/net/l2tp/l2tp_core.c
-index 203890e378cb..8eb805ee18d4 100644
---- a/net/l2tp/l2tp_core.c
-+++ b/net/l2tp/l2tp_core.c
-@@ -1478,11 +1478,15 @@ int l2tp_tunnel_register(struct l2tp_tunnel
-*tunnel, struct net *net,
-        tunnel->l2tp_net = net;
-        pn = l2tp_pernet(net);
+Uhmmm... patch 3/4 should avoid the GRO overhead for most cases where
+we can't leverage the aggregation benefit, but I'm not 110% sure that
+enabling GRO by default will not cause performance regressions in some
+scenarios.
 
-+       sk = sock->sk;
-+       sock_hold(sk);
-+       tunnel->sock = sk;
-+
-        spin_lock_bh(&pn->l2tp_tunnel_list_lock);
-        list_for_each_entry(tunnel_walk, &pn->l2tp_tunnel_list, list) {
-                if (tunnel_walk->tunnel_id == tunnel->tunnel_id) {
-                        spin_unlock_bh(&pn->l2tp_tunnel_list_lock);
--
-+                       sock_put(sk);
-                        ret = -EEXIST;
-                        goto err_sock;
-                }
-@@ -1490,10 +1494,6 @@ int l2tp_tunnel_register(struct l2tp_tunnel
-*tunnel, struct net *net,
-        list_add_rcu(&tunnel->list, &pn->l2tp_tunnel_list);
-        spin_unlock_bh(&pn->l2tp_tunnel_list_lock);
+It this proves to be always a win we can still change the default
+later, I think.
 
--       sk = sock->sk;
--       sock_hold(sk);
--       tunnel->sock = sk;
--
-        if (tunnel->encap == L2TP_ENCAPTYPE_UDP) {
-                struct udp_tunnel_sock_cfg udp_cfg = {
-                        .sk_user_data = tunnel,
+Cheers,
+
+Paolo
+
+
