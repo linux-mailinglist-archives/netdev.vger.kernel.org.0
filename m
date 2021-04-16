@@ -2,96 +2,63 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AEB5836273C
-	for <lists+netdev@lfdr.de>; Fri, 16 Apr 2021 19:53:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C88E1362747
+	for <lists+netdev@lfdr.de>; Fri, 16 Apr 2021 19:57:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243934AbhDPRxe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 16 Apr 2021 13:53:34 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:50770 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S243916AbhDPRxd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 16 Apr 2021 13:53:33 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1618595588;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=Q8wN6Vz7h1mTgh45gac0QdkeBJiXZJoOcn6X1iVFLj8=;
-        b=fINs5JQGXUu4XuJNhD89y+0ieg5TrSP6H3/qAU1hmopX1Ri2efFLq5IBKfCi7j2ajlm42z
-        C4xzw/wrUecyyiVa5+tcaktl/SUT2zmfQytIRCAxmW/uC6QL97X2E4lHm4XZOrEfd7YNJU
-        eTtNrqcHIxf1EDW0HKlfuDxSIRm5yXM=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-30-Nl8FxM20ODWQnGUgtomTMw-1; Fri, 16 Apr 2021 13:53:06 -0400
-X-MC-Unique: Nl8FxM20ODWQnGUgtomTMw-1
-Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id F1145100A67C;
-        Fri, 16 Apr 2021 17:53:04 +0000 (UTC)
-Received: from ovpn-114-195.ams2.redhat.com (ovpn-114-195.ams2.redhat.com [10.36.114.195])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id A9EC259479;
-        Fri, 16 Apr 2021 17:52:59 +0000 (UTC)
-Message-ID: <b2c333ce0d3d32719f1813dee11b243654b5a2f8.camel@redhat.com>
-Subject: Re: [PATCH net-next] veth: check for NAPI instead of xdp_prog
- before xmit of XDP frame
-From:   Paolo Abeni <pabeni@redhat.com>
-To:     Toke =?ISO-8859-1?Q?H=F8iland-J=F8rgensen?= <toke@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>
-Cc:     Jakub Kicinski <kuba@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        netdev@vger.kernel.org, bpf@vger.kernel.org
-Date:   Fri, 16 Apr 2021 19:52:58 +0200
-In-Reply-To: <20210416154745.238804-1-toke@redhat.com>
-References: <20210416154745.238804-1-toke@redhat.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.36.5 (3.36.5-2.fc32) 
+        id S243997AbhDPR6B (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 16 Apr 2021 13:58:01 -0400
+Received: from mail.kernel.org ([198.145.29.99]:34726 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S236242AbhDPR6B (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 16 Apr 2021 13:58:01 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id D9ABD611AB;
+        Fri, 16 Apr 2021 17:57:35 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1618595856;
+        bh=pLllX/ftZ98gDGCucqoexhXesAQdKxp7bgDkdCXVwHA=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=uOnWk4W2lyP6cCmiVwb6rxIaGWOZ+FOIdkDShZtEalTj24ZH8x49c79fmeTHtH3yp
+         GDu2smEZ+KWnUSuH3eWE5TQeCRu1y3fUxRg1t9n55ttDMu8YbIjew6TwZIfeOvZCh8
+         Q6Mu61OcaliUWwhwCPrLev0Z8+9sEh0f5FRmFoQBJLI5zL3e1j5rFjV4AMFk8851H4
+         bJUZnPS0uYbHExAxVRV94dt/o0d3torYtSQWcwNfp0c9H2knzbmwqrSK5afKMTH5pv
+         fawdC1mk0Epn+/kTMUczghfVIqaNu1GE5raZo+J+7XIynmjydzmVVp6sq8uv57EC/B
+         5krJeyrHvvfgA==
+Date:   Fri, 16 Apr 2021 10:57:34 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Eric Dumazet <eric.dumazet@gmail.com>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        netdev <netdev@vger.kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Soheil Hassas Yeganeh <soheil@google.com>
+Subject: Re: [PATCH net-next] scm: optimize put_cmsg()
+Message-ID: <20210416105735.073466b3@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20210415173753.3404237-1-eric.dumazet@gmail.com>
+References: <20210415173753.3404237-1-eric.dumazet@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 2021-04-16 at 17:47 +0200, Toke Høiland-Jørgensen wrote:
-> The recent patch that tied enabling of veth NAPI to the GRO flag also has
-> the nice side effect that a veth device can be the target of an
-> XDP_REDIRECT without an XDP program needing to be loaded on the peer
-> device. However, the patch adding this extra NAPI mode didn't actually
-> change the check in veth_xdp_xmit() to also look at the new NAPI pointer,
-> so let's fix that.
+On Thu, 15 Apr 2021 10:37:53 -0700 Eric Dumazet wrote:
+> From: Eric Dumazet <edumazet@google.com>
 > 
-> Fixes: 6788fa154546 ("veth: allow enabling NAPI even without XDP")
-> Signed-off-by: Toke Høiland-Jørgensen <toke@redhat.com>
-> ---
->  drivers/net/veth.c | 7 +++----
->  1 file changed, 3 insertions(+), 4 deletions(-)
+> Calling two copy_to_user() for very small regions has very high overhead.
 > 
-> diff --git a/drivers/net/veth.c b/drivers/net/veth.c
-> index 15b2e3923c47..bdb7ce3cb054 100644
-> --- a/drivers/net/veth.c
-> +++ b/drivers/net/veth.c
-> @@ -486,11 +486,10 @@ static int veth_xdp_xmit(struct net_device *dev, int n,
->  
->  	rcv_priv = netdev_priv(rcv);
->  	rq = &rcv_priv->rq[veth_select_rxq(rcv)];
-> -	/* Non-NULL xdp_prog ensures that xdp_ring is initialized on receive
-> -	 * side. This means an XDP program is loaded on the peer and the peer
-> -	 * device is up.
-> +	/* The napi pointer is set if NAPI is enabled, which ensures that
-> +	 * xdp_ring is initialized on receive side and the peer device is up.
->  	 */
-> -	if (!rcu_access_pointer(rq->xdp_prog))
-> +	if (!rcu_access_pointer(rq->napi))
->  		goto out;
->  
->  	max_len = rcv->mtu + rcv->hard_header_len + VLAN_HLEN;
+> Switch to inlined unsafe_put_user() to save one stac/clac sequence,
+> and avoid copy_to_user().
+> 
+> Signed-off-by: Eric Dumazet <edumazet@google.com>
+> Cc: Soheil Hassas Yeganeh <soheil@google.com>
 
-Acked-by: Paolo Abeni <pabeni@redhat.com>
+Hi Eric!
 
-Thanks for the quick turn-around!
+This appears to break boot on my systems.
 
+IDK how exactly, looks like systemd gets stuck waiting for nondescript
+services to start in initramfs. I have lots of debug enabled and didn't
+spot anything of note in kernel logs.
+
+I'll try to poke at this more, but LMK if you have any ideas. The
+commit looks "obviously correct" :S
