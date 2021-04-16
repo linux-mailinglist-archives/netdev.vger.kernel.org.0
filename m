@@ -2,110 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E331C362BEB
-	for <lists+netdev@lfdr.de>; Sat, 17 Apr 2021 01:30:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 522C4362BEC
+	for <lists+netdev@lfdr.de>; Sat, 17 Apr 2021 01:32:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234712AbhDPXbS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 16 Apr 2021 19:31:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50730 "EHLO
+        id S234761AbhDPXcP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 16 Apr 2021 19:32:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50938 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229719AbhDPXbR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 16 Apr 2021 19:31:17 -0400
-Received: from mail-pj1-x102d.google.com (mail-pj1-x102d.google.com [IPv6:2607:f8b0:4864:20::102d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5958BC061574
-        for <netdev@vger.kernel.org>; Fri, 16 Apr 2021 16:30:52 -0700 (PDT)
-Received: by mail-pj1-x102d.google.com with SMTP id z22-20020a17090a0156b029014d4056663fso15434320pje.0
-        for <netdev@vger.kernel.org>; Fri, 16 Apr 2021 16:30:52 -0700 (PDT)
+        with ESMTP id S231363AbhDPXcP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 16 Apr 2021 19:32:15 -0400
+Received: from mail-pj1-x1029.google.com (mail-pj1-x1029.google.com [IPv6:2607:f8b0:4864:20::1029])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E40C6C061574
+        for <netdev@vger.kernel.org>; Fri, 16 Apr 2021 16:31:49 -0700 (PDT)
+Received: by mail-pj1-x1029.google.com with SMTP id ot17-20020a17090b3b51b0290109c9ac3c34so17212008pjb.4
+        for <netdev@vger.kernel.org>; Fri, 16 Apr 2021 16:31:49 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=KL9elqXodDr0udWoBpJkxsclxcB1V/7V0mK2vTYFkKg=;
-        b=TxehKJeRkdxMRR022A5VlhX9vbQUBrbEoh35u9fPYh0NA11rQmlJpdBLgr9X1RZURc
-         aUBpAKfyz+SM+dRevprZzCtRaVHrS0VlueU1L0zVYfMj/w3YnuxhGvCiXOQYt+aaqT8o
-         qtMTkAgx92Gvww/SX00QpbsQDtXZCaOPLdmZ5SSdRg4iUQ/Gyk5M1irX/+iGsJduKAmx
-         p281wPYoeblj9VxCS7kOdYJEqAWGeJ0vXlWS4bBv9X+VkhBTwVRhg8sOzTogRMuH7cNB
-         ezg/JWHz74Ip8ut0Av5dB/6E/OTIYpGOHTRa5Ixv0baAjSzytL0RSAFCz817ipA/gVF3
-         7Qug==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=l48M/QMDspJnBcNTzRjP/JwL4bGGo5kI26PkRqH0ytY=;
+        b=vW+++J1IE+KtMrtN0XwzJT/e4H7s3RDQlxT+Ce9smLSv6qGjBnFb6/VB1gDweTBmj3
+         ISiCwVYKAEyqIJ764MhniYOeichkw5vepx8Rrd1BBKuKbfPgLkTN9Wfs78D+o4/kU3C5
+         Cm4SjcuN7dei3VyncmU/jdG2WgFsvtRLl4U4vmDomC2qYMQVJco874RiVM/u9wc8DD2P
+         mVASV/b64wF9Ydpmbdts1gqPulilhAWSnX5fAKisiIWCmcUKWADm9cWLH+IXLro6tfoH
+         X4akNDJB+EKiHkoOp/TPzqAmmFD69a6Oxy43RIM6aeyrpk4zedqIxy29KtWaUdyh7ouY
+         1CEQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=KL9elqXodDr0udWoBpJkxsclxcB1V/7V0mK2vTYFkKg=;
-        b=K21W+NFiXsNsKYxcmQf/K29S5gkFlb8Ol3TvWsHht1QkqGRy8SNvGW9dCmwzwjgeWU
-         sgwDQwODdy0RKUpAbZC6STyy77M93iMmMw1gFzU/t5IGzMK6nxQtECq2/fsrfsVByPAF
-         tSuiUcOuRBudqvQg5MNoMJTUa7872y0M7sYY0eccBu+bd5Fp2VenQQFoniIJ0Qw0WX9W
-         gq4SzSL7lAZHq5KtWP49XGss/5Emypsb5PU9KnyoEYl+Bz2uaQx08c8FIYq2uFfW7rRq
-         lHuFYBYtcXXoHMs1Jc+5sulYI7VOYs4EWZXrRgQYSJp7TASf5ZlCk4Y0ISwDQoqb+R/V
-         R9sQ==
-X-Gm-Message-State: AOAM533HpIjLxCUUQOGo42MX49UcjGH/jytlqngaP5m9bTa07n6b2mMs
-        x4zxtwkB89hpZE4W3GTCtLk=
-X-Google-Smtp-Source: ABdhPJyJr11puVNcGKCDunxKO1ECwif9HuVTgFwrPkdlRTwQxj7RvHN9dJSW5L8+0JXmlwTkEr5YJA==
-X-Received: by 2002:a17:90a:c982:: with SMTP id w2mr12581135pjt.35.1618615851925;
-        Fri, 16 Apr 2021 16:30:51 -0700 (PDT)
-Received: from nuc.wg.ducheng.me ([202.133.196.154])
-        by smtp.gmail.com with ESMTPSA id o127sm5858489pfd.147.2021.04.16.16.30.49
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=l48M/QMDspJnBcNTzRjP/JwL4bGGo5kI26PkRqH0ytY=;
+        b=ajDMFueXf2SzilguWDIF4TDBIjI0Un+e7aaQ6f8ZH/dne5jbaPWfEhK0gk+PcTC+8E
+         ILVxVjHQ0AQI4NkqybRpdlp+Owp++x1VhGnIQrA1YCiJjte8Nlr5NY4Z0ZnsnRlW+EG7
+         U1aVRQqui+5vczDRcvPtqYWsIgiY7xe7A2oaAuDdB/fsn31nEJpVVas14md7MkkjNHX6
+         jcdCBIBng0G54exKmlQdwce8EH4l7o5+uqE0EMTnngXpnHYSGT0bp2WuoCx0Ti0YrKlA
+         EOLCEZjXH91BNHfi+jNKMRssAuPFSDvjkYAuMRZY/VdkX6AbYt1y2jkcC0BU3LUrrqu8
+         qDug==
+X-Gm-Message-State: AOAM5322qR0DJ6sX5KTK5MdjB0zz9TyyOvkd4O/UCFJEsv+WadJ/KF0r
+        AY6AGYgTbpkKgXAtXwGUt4I=
+X-Google-Smtp-Source: ABdhPJwLllf7nQxJY2ejoxyuynWywhPB66eRUIrb9NgtSO4nCWYvw9OWHAA2Nqz+D3ySP1umbg98EA==
+X-Received: by 2002:a17:902:9345:b029:e7:4853:ff5f with SMTP id g5-20020a1709029345b02900e74853ff5fmr11892076plp.74.1618615909536;
+        Fri, 16 Apr 2021 16:31:49 -0700 (PDT)
+Received: from nuc ([202.133.196.154])
+        by smtp.gmail.com with ESMTPSA id m3sm1309790pfh.155.2021.04.16.16.31.47
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 16 Apr 2021 16:30:51 -0700 (PDT)
+        Fri, 16 Apr 2021 16:31:49 -0700 (PDT)
+Date:   Sat, 17 Apr 2021 07:31:45 +0800
 From:   Du Cheng <ducheng2@gmail.com>
-To:     Jamal Hadi Salim <jhs@mojatatu.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Jiri Pirko <jiri@resnulli.us>
-Cc:     netdev@vger.kernel.org, Shuah Khan <skhan@linuxfoundation.org>,
+To:     Cong Wang <xiyou.wangcong@gmail.com>
+Cc:     Jamal Hadi Salim <jhs@mojatatu.com>, Jiri Pirko <jiri@resnulli.us>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        Shuah Khan <skhan@linuxfoundation.org>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        eric.dumazet@gmail.com, Du Cheng <ducheng2@gmail.com>,
+        Eric Dumazet <eric.dumazet@gmail.com>,
         syzbot+d50710fd0873a9c6b40c@syzkaller.appspotmail.com
-Subject: [PATCH v4] net: sched: tapr: prevent cycle_time == 0 in parse_taprio_schedule
-Date:   Sat, 17 Apr 2021 07:30:46 +0800
-Message-Id: <20210416233046.12399-1-ducheng2@gmail.com>
-X-Mailer: git-send-email 2.30.2
+Subject: Re: [PATCH v3] net: sched: tapr: prevent cycle_time == 0 in
+ parse_taprio_schedule
+Message-ID: <YHoeYVPhsgLZ6gA1@nuc>
+References: <20210415231742.12952-1-ducheng2@gmail.com>
+ <CAM_iQpWs3Z55=y0-=PJT6xZMv+Hw9JGPLFXmbr+35+70DAYsOQ@mail.gmail.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <CAM_iQpWs3Z55=y0-=PJT6xZMv+Hw9JGPLFXmbr+35+70DAYsOQ@mail.gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-There is a reproducible sequence from the userland that will trigger a WARN_ON()
-condition in taprio_get_start_time, which causes kernel to panic if configured
-as "panic_on_warn". Catch this condition in parse_taprio_schedule to
-prevent this condition.
+Le Fri, Apr 16, 2021 at 10:14:52AM -0700, Cong Wang a écrit :
+> On Thu, Apr 15, 2021 at 4:17 PM Du Cheng <ducheng2@gmail.com> wrote:
+> > diff --git a/net/sched/sch_taprio.c b/net/sched/sch_taprio.c
+> > index 8287894541e3..abd6b176383c 100644
+> > --- a/net/sched/sch_taprio.c
+> > +++ b/net/sched/sch_taprio.c
+> > @@ -901,6 +901,10 @@ static int parse_taprio_schedule(struct taprio_sched *q, struct nlattr **tb,
+> >
+> >                 list_for_each_entry(entry, &new->entries, list)
+> >                         cycle = ktime_add_ns(cycle, entry->interval);
+> > +
+> > +               if (!cycle)
+> > +                       return -EINVAL;
+> 
+> Just a nit: please add an extack to explain why we return EINVAL here.
+> 
+> Thanks.
 
-Reported as bug on syzkaller:
-https://syzkaller.appspot.com/bug?extid=d50710fd0873a9c6b40c
+Hi Cong,
 
-Reported-by: syzbot+d50710fd0873a9c6b40c@syzkaller.appspotmail.com
-Signed-off-by: Du Cheng <ducheng2@gmail.com>
----
-changelog
-v1: Discussion https://lore.kernel.org/netdev/YHfwUmFODUHx8G5W@carbon/T/
+Thanks!
 
-v2: fix typo https://lore.kernel.org/netdev/20210415075953.83508-2-ducheng2@gmail.com/T/
+I added extack and submitted v4. Please help me review.
 
-v3: catch the condition in parse_taprio_schedule instead
-https://lore.kernel.org/netdev/CAM_iQpWs3Z55=y0-=PJT6xZMv+Hw9JGPLFXmbr+35+70DAYsOQ@mail.gmail.com/T/
-
-v4: add extack
-
- net/sched/sch_taprio.c | 6 ++++++
- 1 file changed, 6 insertions(+)
-
-diff --git a/net/sched/sch_taprio.c b/net/sched/sch_taprio.c
-index 8287894541e3..909c798b7403 100644
---- a/net/sched/sch_taprio.c
-+++ b/net/sched/sch_taprio.c
-@@ -901,6 +901,12 @@ static int parse_taprio_schedule(struct taprio_sched *q, struct nlattr **tb,
- 
- 		list_for_each_entry(entry, &new->entries, list)
- 			cycle = ktime_add_ns(cycle, entry->interval);
-+
-+		if (!cycle) {
-+			NL_SET_ERR_MSG(extack, "'cycle_time' can never be 0");
-+			return -EINVAL;
-+		}
-+
- 		new->cycle_time = cycle;
- 	}
- 
--- 
-2.30.2
-
+Regards,
+Du Cheng
