@@ -2,92 +2,166 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 08FD83621DC
-	for <lists+netdev@lfdr.de>; Fri, 16 Apr 2021 16:14:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7982D3621F4
+	for <lists+netdev@lfdr.de>; Fri, 16 Apr 2021 16:16:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243509AbhDPOLI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 16 Apr 2021 10:11:08 -0400
-Received: from mail.kernel.org ([198.145.29.99]:53592 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S235553AbhDPOLH (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 16 Apr 2021 10:11:07 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id B3E8E611C2;
-        Fri, 16 Apr 2021 14:10:42 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1618582242;
-        bh=1s9sCrJo44Veolfwl+MwQWl66gowBJVDh4jCcMWmw20=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=bWtljR/0v+ciclhWmYZDIUGhhvFJ3qQ7nO0uU82MghhOsGFdSMyacApx9Rv+nHL6X
-         W5cY5QnPwP6g7dxd13lON+NP7T3wxEgswnDncwfQXbUpDa1noe9/ic1qeaxTeqr1An
-         xJUGxVeiTwbDQol4BcT+uJeJ/K8GtjgPzMatA+QGLBn8/pwaCrhafWYek6SKXGeGJX
-         JrnAkRBsacpGTrsZXVT6wqIi5rnqa1PtXSpagwrGhkYyDEvybabUi7RBZVXZcudA+H
-         4dZgdBI6yZkxxw1SMBUj5RKBCe9Uqk2xt0sX7dm9fywiRJ0wfW8Bx5Y3FStVzaPeVS
-         VyQ7HbK3kn2jA==
-Received: by mail-wm1-f46.google.com with SMTP id n10-20020a05600c4f8ab0290130f0d3cba3so2452761wmq.1;
-        Fri, 16 Apr 2021 07:10:42 -0700 (PDT)
-X-Gm-Message-State: AOAM5311rO2I/o6Ind6RThkqpjvCAbINqe/V2ca2Zxn0e895bpA76IE+
-        pQhj8cZzVF3wdYjF0bFkNNhn6QVSWsiGrmNBMrQ=
-X-Google-Smtp-Source: ABdhPJwer78kcpt2KUTk7pLNWv4YpxxYqG4ncdMLFchwkUndSOMZjtA8z9tZUxzlPor4R9hASXWQZTamma1KWyeXMwk=
-X-Received: by 2002:a7b:c14a:: with SMTP id z10mr8250595wmi.75.1618582241293;
- Fri, 16 Apr 2021 07:10:41 -0700 (PDT)
-MIME-Version: 1.0
-References: <20210409185105.188284-3-willy@infradead.org> <202104100656.N7EVvkNZ-lkp@intel.com>
- <20210410024313.GX2531743@casper.infradead.org> <20210410082158.79ad09a6@carbon>
- <CAC_iWjLXZ6-hhvmvee6r4R_N64u-hrnLqE_CSS1nQk+YaMQQnA@mail.gmail.com> <ab9f1a6c-4099-2b59-457d-fcc45d2396f4@ti.com>
-In-Reply-To: <ab9f1a6c-4099-2b59-457d-fcc45d2396f4@ti.com>
-From:   Arnd Bergmann <arnd@kernel.org>
-Date:   Fri, 16 Apr 2021 16:10:37 +0200
-X-Gmail-Original-Message-ID: <CAK8P3a1+Dpu3ef+VYA+owTVGoGqfK6APbYbLSH1_ZKT0aMYQCw@mail.gmail.com>
-Message-ID: <CAK8P3a1+Dpu3ef+VYA+owTVGoGqfK6APbYbLSH1_ZKT0aMYQCw@mail.gmail.com>
-Subject: Re: Bogus struct page layout on 32-bit
-To:     Grygorii Strashko <grygorii.strashko@ti.com>
-Cc:     Ilias Apalodimas <ilias.apalodimas@linaro.org>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        Christoph Hellwig <hch@lst.de>,
-        Matthew Wilcox <willy@infradead.org>,
-        kernel test robot <lkp@intel.com>,
-        Linux-MM <linux-mm@kvack.org>, kbuild-all@lists.01.org,
-        clang-built-linux@googlegroups.com,
-        open list <linux-kernel@vger.kernel.org>,
-        linux-fsdevel@vger.kernel.org,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        Paul Mackerras <paulus@samba.org>,
-        linuxppc-dev@lists.ozlabs.org,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Matteo Croce <mcroce@linux.microsoft.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+        id S244490AbhDPOQn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 16 Apr 2021 10:16:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40434 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S235928AbhDPOQm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 16 Apr 2021 10:16:42 -0400
+Received: from mail-pl1-x62b.google.com (mail-pl1-x62b.google.com [IPv6:2607:f8b0:4864:20::62b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 70DD5C061574
+        for <netdev@vger.kernel.org>; Fri, 16 Apr 2021 07:16:18 -0700 (PDT)
+Received: by mail-pl1-x62b.google.com with SMTP id u7so12240613plr.6
+        for <netdev@vger.kernel.org>; Fri, 16 Apr 2021 07:16:18 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id;
+        bh=7gMrKgGVITOj4mPMWCs2xYSh5YM48I4HyRKXIedFq8c=;
+        b=lf0dlNMaQc/b4u834UshwnzoTnmG9hvzFf5dOk1yuZ6sRxM/+1c8LDx+/raCKcYmEb
+         9SLQigbgs7Hs1B0ujRX1+bKWPzbhy3CvCdnh+oU9VPnA5sGL5FmzLFP957EIdoQKpPfT
+         kdtxJj+Pwp74zUxnSzdHyi1+/FM4h+CqQlVrPGFhTZLEEHXFrpP775/Z8AG4mTwFAnOk
+         xYUmSrc4L7Qaf/XwTfyTw0zTvcSd0vsKhS8W7NEH7CuA8J6eJxh0mt/R9HEk/B80zejB
+         giOQhWL4znvToatO/ZAPX3PbU2BTdAkOJJVd0hTM4h9LLT/0QJrUVhbKzySALYVfyfp3
+         yseA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=7gMrKgGVITOj4mPMWCs2xYSh5YM48I4HyRKXIedFq8c=;
+        b=GfosWb1lV0m2ESeUeYvIDZ+wnbRYd6zOUPP8aoFJbeZYPddX4ASFii6WVwtdRcVidf
+         JfHbNXKY2YUH30H9cTLf/Z8e2ps9MYDDWpxbt0sOkddw7jCPEli4Xjb1KZXJJNRm6IpV
+         whj3ZIU/MO9X49TRqY1VibgzEvEK9ZVBNfFktZAo4DahKNGOLBOLc1axTFcJNJblJ4fX
+         4oa9+Icdhdtu/N50AL9u6fGi3NZ/RyQ0r4j4TmLzAk4duzi6G8bncw1ruhabpQASk809
+         uHnvXoQ7ahGsAqMG17ukEzhwrGxLjrB+I4pgxKaUwJko1XL7ZJsF5HUicHxlFlUKgD3t
+         JjNA==
+X-Gm-Message-State: AOAM533xfrwXd8r1wjrOQNTknBxFbHj9yR0EBGyWMGC32H+zxMXLUW6l
+        cv+JBVCWwkEZ+FDfvcyAsII=
+X-Google-Smtp-Source: ABdhPJyEY5Lh5TgwIDrdhJHw/fd3babC9q0CelJUTqOqukXroSqbUAx2fuzHGM4s2ALclOYN7gG90A==
+X-Received: by 2002:a17:90a:ff02:: with SMTP id ce2mr10045242pjb.217.1618582577956;
+        Fri, 16 Apr 2021 07:16:17 -0700 (PDT)
+Received: from localhost.localdomain ([49.173.165.50])
+        by smtp.gmail.com with ESMTPSA id ms9sm6257938pjb.32.2021.04.16.07.16.15
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 16 Apr 2021 07:16:17 -0700 (PDT)
+From:   Taehee Yoo <ap420073@gmail.com>
+To:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
+        dsahern@kernel.org, yoshfuji@linux-ipv6.org, edumazet@google.com
+Cc:     ap420073@gmail.com
+Subject: [PATCH net-next] mld: fix suspicious RCU usage in __ipv6_dev_mc_dec()
+Date:   Fri, 16 Apr 2021 14:16:06 +0000
+Message-Id: <20210416141606.24029-1-ap420073@gmail.com>
+X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Apr 16, 2021 at 11:27 AM 'Grygorii Strashko' via Clang Built
-Linux <clang-built-linux@googlegroups.com> wrote:
-> On 10/04/2021 11:52, Ilias Apalodimas wrote:
-> > +CC Grygorii for the cpsw part as Ivan's email is not valid anymore
-> The TI platforms am3/4/5 (cpsw) and Keystone 2 (netcp) can do only 32bit DMA even in case of LPAE (dma-ranges are used).
-> Originally, as I remember, CONFIG_ARCH_DMA_ADDR_T_64BIT has not been selected for the LPAE case
-> on TI platforms and the fact that it became set is the result of multi-paltform/allXXXconfig/DMA
-> optimizations and unification.
-> (just checked - not set in 4.14)
->
-> Probable commit 4965a68780c5 ("arch: define the ARCH_DMA_ADDR_T_64BIT config symbol in lib/Kconfig").
+__ipv6_dev_mc_dec() internally uses sleepable functions so that caller
+must not acquire atomic locks. But caller, which is addrconf_verify_rtnl()
+acquires rcu_read_lock_bh().
+So this warning occurs in the __ipv6_dev_mc_dec().
 
-I completely missed this change in the past, and I don't really agree
-with it either.
+Test commands:
+    ip netns add A
+    ip link add veth0 type veth peer name veth1
+    ip link set veth1 netns A
+    ip link set veth0 up
+    ip netns exec A ip link set veth1 up
+    ip a a 2001:db8::1/64 dev veth0 valid_lft 2 preferred_lft 1
 
-Most 32-bit Arm platforms are in fact limited to 32-bit DMA, even when they have
-MMIO or RAM areas above the 4GB boundary that require LPAE.
+Splat looks like:
+============================
+WARNING: suspicious RCU usage
+5.12.0-rc6+ #515 Not tainted
+-----------------------------
+kernel/sched/core.c:8294 Illegal context switch in RCU-bh read-side
+critical section!
 
-> The TI drivers have been updated, finally to accept ARCH_DMA_ADDR_T_64BIT=y by using
-> things like (__force u32) for example.
->
-> Honestly, I've done sanity check of CPSW with LPAE=y (ARCH_DMA_ADDR_T_64BIT=y) very long time ago.
+other info that might help us debug this:
 
-This is of course a good idea, drivers should work with any
-combination of 32-bit
-or 64-bit phys_addr_t and dma_addr_t.
+rcu_scheduler_active = 2, debug_locks = 1
+4 locks held by kworker/4:0/1997:
+ #0: ffff88810bd72d48 ((wq_completion)ipv6_addrconf){+.+.}-{0:0}, at:
+process_one_work+0x761/0x1440
+ #1: ffff888105c8fe00 ((addr_chk_work).work){+.+.}-{0:0}, at:
+process_one_work+0x795/0x1440
+ #2: ffffffffb9279fb0 (rtnl_mutex){+.+.}-{3:3}, at:
+addrconf_verify_work+0xa/0x20
+ #3: ffffffffb8e30860 (rcu_read_lock_bh){....}-{1:2}, at:
+addrconf_verify_rtnl+0x23/0xc60
 
-        Arnd
+stack backtrace:
+CPU: 4 PID: 1997 Comm: kworker/4:0 Not tainted 5.12.0-rc6+ #515
+Workqueue: ipv6_addrconf addrconf_verify_work
+Call Trace:
+ dump_stack+0xa4/0xe5
+ ___might_sleep+0x27d/0x2b0
+ __mutex_lock+0xc8/0x13f0
+ ? lock_downgrade+0x690/0x690
+ ? __ipv6_dev_mc_dec+0x49/0x2a0
+ ? mark_held_locks+0xb7/0x120
+ ? mutex_lock_io_nested+0x1270/0x1270
+ ? lockdep_hardirqs_on_prepare+0x12c/0x3e0
+ ? _raw_spin_unlock_irqrestore+0x47/0x50
+ ? trace_hardirqs_on+0x41/0x120
+ ? __wake_up_common_lock+0xc9/0x100
+ ? __wake_up_common+0x620/0x620
+ ? memset+0x1f/0x40
+ ? netlink_broadcast_filtered+0x2c4/0xa70
+ ? __ipv6_dev_mc_dec+0x49/0x2a0
+ __ipv6_dev_mc_dec+0x49/0x2a0
+ ? netlink_broadcast_filtered+0x2f6/0xa70
+ addrconf_leave_solict.part.64+0xad/0xf0
+ ? addrconf_join_solict.part.63+0xf0/0xf0
+ ? nlmsg_notify+0x63/0x1b0
+ __ipv6_ifa_notify+0x22c/0x9c0
+ ? inet6_fill_ifaddr+0xbe0/0xbe0
+ ? lockdep_hardirqs_on_prepare+0x12c/0x3e0
+ ? __local_bh_enable_ip+0xa5/0xf0
+ ? ipv6_del_addr+0x347/0x870
+ ipv6_del_addr+0x3b1/0x870
+ ? addrconf_ifdown+0xfe0/0xfe0
+ ? rcu_read_lock_any_held.part.27+0x20/0x20
+ addrconf_verify_rtnl+0x8a9/0xc60
+ addrconf_verify_work+0xf/0x20
+ process_one_work+0x84c/0x1440
+
+In order to avoid this problem, it uses rcu_read_unlock_bh() for
+a short time. RCU is used for avoiding freeing
+ifp(struct *inet6_ifaddr) while ifp is being used. But this will
+not be released even if rcu_read_unlock_bh() is used.
+Because before rcu_read_unlock_bh(), it uses in6_ifa_hold(ifp).
+So this is safe.
+
+Fixes: 63ed8de4be81 ("mld: add mc_lock for protecting per-interface mld data")
+Suggested-by: Eric Dumazet <edumazet@google.com>
+Reported-by: Eric Dumazet <edumazet@google.com>
+Signed-off-by: Taehee Yoo <ap420073@gmail.com>
+---
+
+Target banch is "net-next" although it has a fix tag because
+the commit 63ed8de4be81
+("mld: add mc_lock for protecting per-interface mld data") is not yet
+merged to net branch. So, the target branch is net-next.
+
+ net/ipv6/addrconf.c | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/net/ipv6/addrconf.c b/net/ipv6/addrconf.c
+index dbb5bb9269bb..b0ef65eb9bd2 100644
+--- a/net/ipv6/addrconf.c
++++ b/net/ipv6/addrconf.c
+@@ -4485,7 +4485,9 @@ static void addrconf_verify_rtnl(void)
+ 			    age >= ifp->valid_lft) {
+ 				spin_unlock(&ifp->lock);
+ 				in6_ifa_hold(ifp);
++				rcu_read_unlock_bh();
+ 				ipv6_del_addr(ifp);
++				rcu_read_lock_bh();
+ 				goto restart;
+ 			} else if (ifp->prefered_lft == INFINITY_LIFE_TIME) {
+ 				spin_unlock(&ifp->lock);
+-- 
+2.17.1
+
