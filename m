@@ -2,99 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 97A80361C04
-	for <lists+netdev@lfdr.de>; Fri, 16 Apr 2021 11:00:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3A8EE361C13
+	for <lists+netdev@lfdr.de>; Fri, 16 Apr 2021 11:00:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240686AbhDPIoS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 16 Apr 2021 04:44:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51074 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240677AbhDPIoM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 16 Apr 2021 04:44:12 -0400
-Received: from mail-ej1-x629.google.com (mail-ej1-x629.google.com [IPv6:2a00:1450:4864:20::629])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A798C061756
-        for <netdev@vger.kernel.org>; Fri, 16 Apr 2021 01:43:46 -0700 (PDT)
-Received: by mail-ej1-x629.google.com with SMTP id r12so41001522ejr.5
-        for <netdev@vger.kernel.org>; Fri, 16 Apr 2021 01:43:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance-com.20150623.gappssmtp.com; s=20150623;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=nZ1FRFDIzSslp5WYUYeFlBBX17UdTlQXsbemICRU/2o=;
-        b=HGO0MkBeb0UC7k2w60QVBM3EzdZA53hwbNbcWebu6p3EccSPj820VKps1IS4byzXq6
-         xA2MnyEh1zjCw+XTc5F9zWXbYoLk/gjvkDQmr9d5ZP6yFuwKvTydRmlnwEa9Y3hkqPwA
-         NHOiGxh6+st5GLGHOcpv8Au12nhxiuhd2HiyNR6vHUj99pxm4XvoLoJO8aVPPCop+0Rh
-         2UbuWeZSIyrNRsrXPqcYJ5kyBrbPcF6xwi5/A8lvf+LBWXOxVPqWDFIxPApRLCoUYGPl
-         Y6Cz3YCV8KnibnoBYd1x1JrM2swSDGOBXw+w8YmnKtBXAzJ2ug8E77jA8/g9++bJfxtp
-         f5bw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=nZ1FRFDIzSslp5WYUYeFlBBX17UdTlQXsbemICRU/2o=;
-        b=BjXcXXLqLCsc/TxWrrhEf9Aq8mLv2rgP4rQ/bvQkNWYiowSb6/ZuIZHDJIJ8vjeiki
-         BoNY1oYT6yCOSrJH9ptc8TipCoCsITUIik0ofubT2b30optKBE+/N5geH2lAe9cfSBAz
-         J7bvbqsUqXbZgBIPyJrx4ydCINKyzNjY7PXgerILCNblUvTJXrR5N5K6BSi2BLVHR2sI
-         QtkMFDCu2DQEwctQm6TnJtGjd+Y73tPYpkuusTWdRypyvlLYaOEdJ/tn8YnWMmQcj9Ub
-         amhwCcVYCyzOc0ETFTjIiDoUe8rv7plqbEIfptwg1zY9lcN/3EpSPOxeDPnicGsGhcmh
-         VW/g==
-X-Gm-Message-State: AOAM5319L5FckWEHo4sjyzchHKHQ7UUFHDr7/3C31ZAsaTZ+3HY3CgnU
-        d8K2iQUztMKBVVRAZ/P+nYMurLS8nsa2xVo5VxJR
-X-Google-Smtp-Source: ABdhPJyTB7M62F5DqcvOAaZa4vtrH6KUgmABAXyYOE0j8gboTWamM5DbXwOo84AucNDw/Hl83Q09aRyPqqKg7UNh2Uo=
-X-Received: by 2002:a17:906:3945:: with SMTP id g5mr7159342eje.427.1618562625328;
- Fri, 16 Apr 2021 01:43:45 -0700 (PDT)
+        id S240783AbhDPIrZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 16 Apr 2021 04:47:25 -0400
+Received: from mail.kernel.org ([198.145.29.99]:38444 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S240762AbhDPIrY (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 16 Apr 2021 04:47:24 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 263586115B;
+        Fri, 16 Apr 2021 08:47:00 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1618562820;
+        bh=vCr7NobGfgufbqpcRwx5p9dip3kCxkFPMkIA2Pgnrd0=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=ROwvHwXG8Au6Dof8pq66CXiNL1m1C09AxUIdzf/RkTAyGcn04OpPYJJafX1Jlm1cq
+         BNg1vChmPjmtyg3sJ9YgE0X0mk6p0t0vHyWj8jWui0M/T5CqxXsFVYmCCe32bOrh3I
+         MOO0Oa1zE/BNrkisNumPhByzk2WEb2NWrr+lp9lhwRaM/HxkQ04gpY7B1kcAmX5zPB
+         oVAH4+I11umPeYLr74PHUddwn/DcT/YxuXK/+TUielBh18k9BMQW+Cz7kt2CywfJ6m
+         Xt5dINDKvsG/8d7Oubqk6WSNLlvHCEbftEMbOccj18ml+KG0MG1Gx6/sH8lR48CbCm
+         FisBxumZT8JKw==
+Received: by mail-ej1-f54.google.com with SMTP id u21so40996659ejo.13;
+        Fri, 16 Apr 2021 01:47:00 -0700 (PDT)
+X-Gm-Message-State: AOAM533Qirbd/MY/RiZCA3q+AKRVkm89N4ZPE+FSVSp0pkAoKfcYFOcu
+        raQnwOc3fN5M45jtpy7f/D+W5wURJOGKlLKda6w=
+X-Google-Smtp-Source: ABdhPJzFgkNv5MPUkwGgoa4DQg+JXP1ANTSzjRHgw0M4TEzkdf3yLy2iKwLcLbZb+t3leAFkv4AaYe+3pjow9RGdSyA=
+X-Received: by 2002:a17:906:c284:: with SMTP id r4mr7300148ejz.454.1618562818724;
+ Fri, 16 Apr 2021 01:46:58 -0700 (PDT)
 MIME-Version: 1.0
-References: <20210331080519.172-1-xieyongji@bytedance.com> <20210331080519.172-10-xieyongji@bytedance.com>
- <87a54b5e-626d-7e04-93f4-f59eddff9947@redhat.com>
-In-Reply-To: <87a54b5e-626d-7e04-93f4-f59eddff9947@redhat.com>
-From:   Yongji Xie <xieyongji@bytedance.com>
-Date:   Fri, 16 Apr 2021 16:43:33 +0800
-Message-ID: <CACycT3vn6PaYGjjd2Uq5ot_YCbyvMzoeU8V_KgGN+cTFx7pg-Q@mail.gmail.com>
-Subject: Re: Re: [PATCH v6 09/10] vduse: Introduce VDUSE - vDPA Device in Userspace
-To:     Jason Wang <jasowang@redhat.com>
-Cc:     "Michael S. Tsirkin" <mst@redhat.com>,
-        Stefan Hajnoczi <stefanha@redhat.com>,
-        Stefano Garzarella <sgarzare@redhat.com>,
-        Parav Pandit <parav@nvidia.com>,
-        Christoph Hellwig <hch@infradead.org>,
-        Christian Brauner <christian.brauner@canonical.com>,
-        Randy Dunlap <rdunlap@infradead.org>,
-        Matthew Wilcox <willy@infradead.org>, viro@zeniv.linux.org.uk,
-        Jens Axboe <axboe@kernel.dk>, bcrl@kvack.org,
-        Jonathan Corbet <corbet@lwn.net>,
-        =?UTF-8?Q?Mika_Penttil=C3=A4?= <mika.penttila@nextfour.com>,
-        Dan Carpenter <dan.carpenter@oracle.com>,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        kvm@vger.kernel.org, linux-fsdevel@vger.kernel.org
+References: <20210416034007.31222-1-zhuguangqing83@gmail.com>
+In-Reply-To: <20210416034007.31222-1-zhuguangqing83@gmail.com>
+From:   Krzysztof Kozlowski <krzk@kernel.org>
+Date:   Fri, 16 Apr 2021 10:46:46 +0200
+X-Gmail-Original-Message-ID: <CAJKOXPcG6v1wpiNVgeOkooN-8e+WP-pYcNfc48w9sMLqp-VFvg@mail.gmail.com>
+Message-ID: <CAJKOXPcG6v1wpiNVgeOkooN-8e+WP-pYcNfc48w9sMLqp-VFvg@mail.gmail.com>
+Subject: Re: [PATCH] drivers: ipa: Fix missing IRQF_ONESHOT as only threaded handler
+To:     zhuguangqing83@gmail.com
+Cc:     Alex Elder <elder@kernel.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Apr 16, 2021 at 11:24 AM Jason Wang <jasowang@redhat.com> wrote:
+On Fri, 16 Apr 2021 at 06:26, <zhuguangqing83@gmail.com> wrote:
 >
+> From: Guangqing Zhu <zhuguangqing83@gmail.com>
 >
-> =E5=9C=A8 2021/3/31 =E4=B8=8B=E5=8D=884:05, Xie Yongji =E5=86=99=E9=81=93=
-:
-> > +     }
-> > +     case VDUSE_INJECT_VQ_IRQ:
-> > +             ret =3D -EINVAL;
-> > +             if (arg >=3D dev->vq_num)
-> > +                     break;
-> > +
-> > +             ret =3D 0;
-> > +             queue_work(vduse_irq_wq, &dev->vqs[arg].inject);
-> > +             break;
+> Coccinelle noticed:
+> drivers/net/ipa/ipa_smp2p.c:186:7-27: ERROR: Threaded IRQ with no primary
+> handler requested without IRQF_ONESHOT
 >
->
-> One additional note:
->
-> Please use array_index_nospec() for all vqs[idx] access where idx is
-> under the control of userspace to avoid potential spectre exploitation.
->
+> Signed-off-by: Guangqing Zhu <zhuguangqing83@gmail.com>
+> ---
+>  drivers/net/ipa/ipa_smp2p.c | 3 ++-
+>  1 file changed, 2 insertions(+), 1 deletion(-)
 
-OK, I see.
+Did you test it? There are several patches like this all over the tree
+so it looks like "let's fix everything from Coccinelle" because you
+ignored at least in some of the cases that the handler is not the
+default primary one. I am not saying that the change is bad, but
+rather it looks automated and needs more consideration.
 
-Thanks,
-Yongji
+Best regards,
+Krzysztof
+Best regards,
+Krzysztof
