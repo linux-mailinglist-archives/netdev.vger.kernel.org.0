@@ -2,113 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5AF3A361F0D
-	for <lists+netdev@lfdr.de>; Fri, 16 Apr 2021 13:46:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B8EE6361F13
+	for <lists+netdev@lfdr.de>; Fri, 16 Apr 2021 13:48:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239096AbhDPLpp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 16 Apr 2021 07:45:45 -0400
-Received: from fllv0016.ext.ti.com ([198.47.19.142]:54500 "EHLO
-        fllv0016.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229706AbhDPLpo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 16 Apr 2021 07:45:44 -0400
-Received: from fllv0034.itg.ti.com ([10.64.40.246])
-        by fllv0016.ext.ti.com (8.15.2/8.15.2) with ESMTP id 13GBjA7Q112858;
-        Fri, 16 Apr 2021 06:45:10 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1618573510;
-        bh=LQzKzUALcHK7bf23nielNUyEdHtTqb3reVqwKHmjS60=;
-        h=Subject:CC:References:From:Date:In-Reply-To;
-        b=wKWu8/zh4nW9GmATPJPPnF/1xfuI5rN3BE+Tv7pCr3pgg1uXxP/Mu4f2PQD4oLdg0
-         MUcVn2hRcf+Ek7zkEvXJYe85BWmI8/Slfq/6CPEDRi9FDfYuLoGh+qiERq7hEjwaRc
-         jPSdET8Rgu6/15ZuP7w8y9CpksgLA8EIlBNu+nzw=
-Received: from DLEE100.ent.ti.com (dlee100.ent.ti.com [157.170.170.30])
-        by fllv0034.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 13GBjAUH101300
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Fri, 16 Apr 2021 06:45:10 -0500
-Received: from DLEE107.ent.ti.com (157.170.170.37) by DLEE100.ent.ti.com
- (157.170.170.30) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2176.2; Fri, 16
- Apr 2021 06:45:10 -0500
-Received: from fllv0040.itg.ti.com (10.64.41.20) by DLEE107.ent.ti.com
- (157.170.170.37) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2176.2 via
- Frontend Transport; Fri, 16 Apr 2021 06:45:10 -0500
-Received: from [172.24.145.148] (ileax41-snat.itg.ti.com [10.172.224.153])
-        by fllv0040.itg.ti.com (8.15.2/8.15.2) with ESMTP id 13GBj5EX096321;
-        Fri, 16 Apr 2021 06:45:06 -0500
-Subject: Re: [PATCH v2 0/2] MCAN: Add support for implementing transceiver as
- a phy
-CC:     <linux-kernel@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-can@vger.kernel.org>, <netdev@vger.kernel.org>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
-        Wolfgang Grandegger <wg@grandegger.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Chandrasekar Ramakrishnan <rcsekar@samsung.com>,
-        Kishon Vijay Abraham I <kishon@ti.com>,
-        Lokesh Vutla <lokeshvutla@ti.com>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        Grygorii Strashko <grygorii.strashko@ti.com>,
-        Faiz Abbas <faiz_abbas@ti.com>
-References: <20210415154635.30094-1-a-govindraju@ti.com>
-From:   Aswath Govindraju <a-govindraju@ti.com>
-Message-ID: <2743eef1-6e20-28e5-769a-26ae8eb15dd6@ti.com>
-Date:   Fri, 16 Apr 2021 17:15:04 +0530
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+        id S242085AbhDPLrH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 16 Apr 2021 07:47:07 -0400
+Received: from mail.kernel.org ([198.145.29.99]:47862 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S240473AbhDPLrG (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 16 Apr 2021 07:47:06 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id B2C5F610FC;
+        Fri, 16 Apr 2021 11:46:40 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1618573601;
+        bh=Ls818vfdmxh0kbfURMXnvoqBE1G/Wvr1I49oaH5MzL4=;
+        h=Date:From:To:cc:Subject:In-Reply-To:References:From;
+        b=a0Tm1bdyIVwIXoc3ibleEqxd0G1OHGA2pQQn86dnNgUOVrybfv/1yLhbX9W3P8QbR
+         Q1WGmpVM/p0ql57EWh9v+sJNS25Cb9oSHq1qnbgMPl4ZYfd5OYLF/oJFf92rBpJnPq
+         2GXEaui3D0PNFarim7GbtiMwDbQVdVrrxhRHFZYU5VJOmdp3blq0/pcFE80Ypsz4cs
+         hIgpJB3EDPKWSXIUqotdQhz+cpExtOyW8dIC342fj2DmnCcqMG8AvWs3EQC0erq/id
+         m1+3mJ2lTQc/2xI9uonPfq9nE/7MSwparvJHb7t0Os52SJP8H6dhRIptQnNsbeejgb
+         kcwY1Oy1yqtJQ==
+Date:   Fri, 16 Apr 2021 13:46:37 +0200 (CEST)
+From:   Jiri Kosina <jikos@kernel.org>
+To:     Juergen Gross <jgross@suse.com>
+cc:     Yunsheng Lin <linyunsheng@huawei.com>,
+        Hillf Danton <hdanton@sina.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net v3] net: sched: fix packet stuck problem for lockless
+ qdisc
+In-Reply-To: <70dc383f-6a10-a16b-3972-060cdd8ec2d4@suse.com>
+Message-ID: <nycvar.YFH.7.76.2104161344340.18270@cbobk.fhfr.pm>
+References: <1616641991-14847-1-git-send-email-linyunsheng@huawei.com> <20210409090909.1767-1-hdanton@sina.com> <20210412032111.1887-1-hdanton@sina.com> <20210412072856.2046-1-hdanton@sina.com> <20210413022129.2203-1-hdanton@sina.com> <20210413032620.2259-1-hdanton@sina.com>
+ <20210413071241.2325-1-hdanton@sina.com> <20210413083352.2424-1-hdanton@sina.com> <1cd37014-4b2a-b82c-0cfc-6beffb8d36de@huawei.com> <70dc383f-6a10-a16b-3972-060cdd8ec2d4@suse.com>
+User-Agent: Alpine 2.21 (LSU 202 2017-01-01)
 MIME-Version: 1.0
-In-Reply-To: <20210415154635.30094-1-a-govindraju@ti.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
-To:     unlisted-recipients:; (no To-header on input)
+Content-Type: text/plain; charset=US-ASCII
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi all,
+On Tue, 13 Apr 2021, Juergen Gross wrote:
 
-On 15/04/21 9:16 pm, Aswath Govindraju wrote:
-> The following series of patches add support for implementing the
-> transceiver as a phy of m_can_platform driver.
+> > what Jiri said about "I am still planning to have Yunsheng Lin's
+> > (CCing) fix [1] tested in the coming days." is that Juergen has
+> > done the test and provide a "Tested-by" tag.
 > 
-> TCAN1042 has a standby signal that needs to be pulled high for
-> sending/receiving messages[1]. TCAN1043 has a enable signal along with
-> standby signal that needs to be pulled up for sending/receiving
-> messages[2], and other combinations of the two lines can be used to put the
-> transceiver in different states to reduce power consumption. On boards
-> like the AM654-idk and J721e-evm these signals are controlled using gpios.
-> 
-> These gpios are set in phy driver, and the transceiver can be put in
-> different states using phy API. The phy driver is added in the series [3].
-> 
-> This patch series is dependent on [4].
-> 
-> Changes since v1:
-> - Used the API devm_phy_get_optional() instead of 
->   devm_of_phy_get_optional_by_index()
-> 
-> [1] - https://www.ti.com/lit/ds/symlink/tcan1042h.pdf
-> [2] - https://www.ti.com/lit/ds/symlink/tcan1043-q1.pdf
-> [3] - https://lore.kernel.org/patchwork/project/lkml/list/?series=495365
-> [4] - https://lore.kernel.org/patchwork/patch/1413286/
-> 
+> Correct. And I did this after Jiri asking me to do so.
 
-Posted v3 for this series.
+Exactly, Juergen's setup is the one where this issue is being reproduced 
+reliably for us, and Juergen verified that your patch fixes that issue.
 
-Thanks,
-Aswath
+Seeing that you now also addressed the STATE_DEACTIVATED issue (which we 
+don't have reproducer for though), I think your series should be good to 
+go if the STATE_DEACTIVATED fix has been verified independently.
 
-> Faiz Abbas (2):
->   dt-bindings: net: can: Document transceiver implementation as phy
->   can: m_can: Add support for transceiver as phy
-> 
->  .../devicetree/bindings/net/can/bosch,m_can.yaml    |  3 +++
->  drivers/net/can/m_can/m_can.c                       | 10 ++++++++++
->  drivers/net/can/m_can/m_can.h                       |  2 ++
->  drivers/net/can/m_can/m_can_platform.c              | 13 +++++++++++++
->  4 files changed, 28 insertions(+)
-> 
+Thanks!
+
+-- 
+Jiri Kosina
+SUSE Labs
 
