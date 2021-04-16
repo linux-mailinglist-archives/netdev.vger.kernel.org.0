@@ -2,76 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D4D64362866
-	for <lists+netdev@lfdr.de>; Fri, 16 Apr 2021 21:12:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DE0F1362889
+	for <lists+netdev@lfdr.de>; Fri, 16 Apr 2021 21:21:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242586AbhDPTM4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 16 Apr 2021 15:12:56 -0400
-Received: from mail.kernel.org ([198.145.29.99]:57526 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S235122AbhDPTMu (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 16 Apr 2021 15:12:50 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id ABDD9611AF;
-        Fri, 16 Apr 2021 19:12:23 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1618600344;
-        bh=Rv2GvndnTmtUHMieNY3HvaWYmPwe9OWiXSUMXa7ltaY=;
-        h=Date:From:To:Cc:Subject:From;
-        b=psiL2cihVJWqJ4zI5xobZjykYKFmtbnwtlrYmaHfG8/g4dldrS/LkmyLKKU2dfQGM
-         6KoAD9m8etWHXBpXX1LPFVxX5lVGCtrovBRqt9UhYbyRydVvoKrxjtQvmm0NoYY+wm
-         I5O/E/2k7mZN258GuHAmNBpmWUTOh/kQhzfqoJmfOP8IShhGB1hDBcaWJka3aVyAox
-         +ChlnOQVPN5cjCMhxPKfJ43y2xY4pqaf1a58pHlgKGTM7c8cyyZC+35PxCUzNozLoA
-         iv9BppMsqbKmvtgZBqbQZmB618iwMIWgBvLCFCNcVf8ElsonHwYwxt9un33zmmHNs9
-         b2jR1Gf+2yP7A==
-Date:   Fri, 16 Apr 2021 14:12:36 -0500
-From:   "Gustavo A. R. Silva" <gustavoars@kernel.org>
-To:     Vlad Yasevich <vyasevich@gmail.com>,
-        Neil Horman <nhorman@tuxdriver.com>,
-        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     linux-sctp@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
-        linux-hardening@vger.kernel.org
-Subject: [PATCH][next] sctp: Fix out-of-bounds warning in
- sctp_process_asconf_param()
-Message-ID: <20210416191236.GA589296@embeddedor>
+        id S242701AbhDPTVq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 16 Apr 2021 15:21:46 -0400
+Received: from out2-smtp.messagingengine.com ([66.111.4.26]:59021 "EHLO
+        out2-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S239770AbhDPTVo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 16 Apr 2021 15:21:44 -0400
+Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
+        by mailout.nyi.internal (Postfix) with ESMTP id C1A385C01FA;
+        Fri, 16 Apr 2021 15:21:18 -0400 (EDT)
+Received: from mailfrontend1 ([10.202.2.162])
+  by compute3.internal (MEProxy); Fri, 16 Apr 2021 15:21:18 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:content-type:date:from:in-reply-to
+        :message-id:mime-version:references:subject:to:x-me-proxy
+        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm2; bh=hkuUGq
+        h9yWA89x/h1qAfVGkW6sekiVlt/+V74/O8dKM=; b=N/u8ATg6im9EYVGjvc3Hcq
+        vkQwfJFx3B0Jc8318uEtqYV6YtkjRIiG5f37pKMnpn+4z/S70JDXR7UNEJjMfiye
+        tch+h+mEsy266hrnAnaAfH9Aft0PAl1MpbpX+lawLSuroYONKQ42mhhliV9LD+Uo
+        dVH/Z7/zXjlV5Yiy6BsC4XTe1V6JkLdvrrgjHRk6QKTGDI8zbDvrUxEI0CyiynHh
+        JQ/IlK6DDhs9lcTQlGXq1jfukljSpLcV9m7umaeUmCE3SguOJKEApdNqFBijOoiN
+        k0PBN6IRUoWqDGZEl782zRrS1Z5a/FrN/E3HJexaEgMqtvqZkiKAgkU/qBAGmN0w
+        ==
+X-ME-Sender: <xms:reN5YE3ja89kyFERV5eYLNFUeDTbyEUTADykDiFJP0vqM_V2MtG1Rw>
+    <xme:reN5YPERGdhp25OjzbJmX23lXeADUvLP768W1vTMGSAUd_AxDgdrVQ1QwrfGh_noQ
+    4zVV_RWrImlXmQ>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduledrudelhedgudeflecutefuodetggdotefrod
+    ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfgh
+    necuuegrihhlohhuthemuceftddtnecunecujfgurhepfffhvffukfhfgggtuggjsehttd
+    ortddttddvnecuhfhrohhmpefkughoucfutghhihhmmhgvlhcuoehiughoshgthhesihgu
+    ohhstghhrdhorhhgqeenucggtffrrghtthgvrhhnpefgjeevhfdvgeeiudekteduveegue
+    ejfefffeefteekkeeuueehjeduledtjeeuudenucfkphepkeegrddvvdelrdduheefrddu
+    keejnecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomhepih
+    guohhstghhsehiughoshgthhdrohhrgh
+X-ME-Proxy: <xmx:reN5YM6BVwikuoughMdfFQMHZef7snZC2GihxMBG-Ocb4hd3eAfyoA>
+    <xmx:reN5YN3ErL4DdsZJChClAN6qULpmXTdfn-FVMfERHNSf89HxSFOQ0g>
+    <xmx:reN5YHEkbsZE8YLhqTQ7w4bNulJ9WFjBFGQSZR4T0ylmnLBKB5MNRQ>
+    <xmx:ruN5YLinSf9ATrA3OrQwpOhUVwTsToBPipd9HeQtYd1rXQAATwPC0Q>
+Received: from localhost (igld-84-229-153-187.inter.net.il [84.229.153.187])
+        by mail.messagingengine.com (Postfix) with ESMTPA id ACAD2240057;
+        Fri, 16 Apr 2021 15:21:16 -0400 (EDT)
+Date:   Fri, 16 Apr 2021 22:21:12 +0300
+From:   Ido Schimmel <idosch@idosch.org>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, andrew@lunn.ch,
+        mkubecek@suse.cz, idosch@nvidia.com, saeedm@nvidia.com,
+        michael.chan@broadcom.com
+Subject: Re: [PATCH net-next 7/9] mlxsw: implement ethtool standard stats
+Message-ID: <YHnjqCozQWYAXNmG@shredder.lan>
+References: <20210416022752.2814621-1-kuba@kernel.org>
+ <20210416022752.2814621-8-kuba@kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
+In-Reply-To: <20210416022752.2814621-8-kuba@kernel.org>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Fix the following out-of-bounds warning:
+On Thu, Apr 15, 2021 at 07:27:50PM -0700, Jakub Kicinski wrote:
+> mlxsw has nicely grouped stats, add support for standard uAPI.
+> I'm guessing the register access part. Compile tested only.
 
-net/sctp/sm_make_chunk.c:3150:4: warning: 'memcpy' offset [17, 28] from the object at 'addr' is out of the bounds of referenced subobject 'v4' with type 'struct sockaddr_in' at offset 0 [-Warray-bounds]
+Jakub, wanted to let you know that it seems to be working. I'll review
+the patches tomorrow/Sunday, as it's already late here. Thanks!
 
-This helps with the ongoing efforts to globally enable -Warray-bounds
-and get us closer to being able to tighten the FORTIFY_SOURCE routines
-on memcpy().
-
-Link: https://github.com/KSPP/linux/issues/109
-Reported-by: kernel test robot <lkp@intel.com>
-Signed-off-by: Gustavo A. R. Silva <gustavoars@kernel.org>
----
- net/sctp/sm_make_chunk.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/net/sctp/sm_make_chunk.c b/net/sctp/sm_make_chunk.c
-index 54e6a708d06e..5f9a7c028274 100644
---- a/net/sctp/sm_make_chunk.c
-+++ b/net/sctp/sm_make_chunk.c
-@@ -3147,7 +3147,7 @@ static __be16 sctp_process_asconf_param(struct sctp_association *asoc,
- 		 * primary.
- 		 */
- 		if (af->is_any(&addr))
--			memcpy(&addr.v4, sctp_source(asconf), sizeof(addr));
-+			memcpy(&addr, sctp_source(asconf), sizeof(addr));
- 
- 		if (security_sctp_bind_connect(asoc->ep->base.sk,
- 					       SCTP_PARAM_SET_PRIMARY,
--- 
-2.27.0
-
+$ ./ethtool -S swp13 --groups eth-phy eth-mac rmon
+Standard stats for swp13:
+eth-phy-SymbolErrorDuringCarrier: 0
+eth-mac-FramesTransmittedOK: 8
+eth-mac-FramesReceivedOK: 8
+eth-mac-FrameCheckSequenceErrors: 0
+eth-mac-AlignmentErrors: 0
+eth-mac-OctetsTransmittedOK: 928
+eth-mac-OctetsReceivedOK: 848
+eth-mac-MulticastFramesXmittedOK: 8
+eth-mac-BroadcastFramesXmittedOK: 0
+eth-mac-MulticastFramesReceivedOK: 8
+eth-mac-BroadcastFramesReceivedOK: 0
+eth-mac-InRangeLengthErrors: 0
+eth-mac-OutOfRangeLengthField: 0
+eth-mac-FrameTooLongErrors: 0
+rmon-etherStatsUndersizePkts: 0
+rmon-etherStatsOversizePkts: 0
+rmon-etherStatsFragments: 0
+rmon-rx-etherStatsPkts64Octets: 0
+rmon-rx-etherStatsPkts65to127Octets: 6
+rmon-rx-etherStatsPkts128to255Octets: 2
+rmon-rx-etherStatsPkts256to511Octets: 0
+rmon-rx-etherStatsPkts512to1023Octets: 0
+rmon-rx-etherStatsPkts1024to1518Octets: 0
+rmon-rx-etherStatsPkts1519to2047Octets: 0
+rmon-rx-etherStatsPkts2048to4095Octets: 0
+rmon-rx-etherStatsPkts4096to8191Octets: 0
+rmon-rx-etherStatsPkts8192to10239Octets: 0
