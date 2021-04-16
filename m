@@ -2,145 +2,233 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D3C1636208B
-	for <lists+netdev@lfdr.de>; Fri, 16 Apr 2021 15:09:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 002093620AE
+	for <lists+netdev@lfdr.de>; Fri, 16 Apr 2021 15:17:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243489AbhDPNJX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 16 Apr 2021 09:09:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53570 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243437AbhDPNJU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 16 Apr 2021 09:09:20 -0400
-Received: from mail-io1-xd2c.google.com (mail-io1-xd2c.google.com [IPv6:2607:f8b0:4864:20::d2c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C6468C061760
-        for <netdev@vger.kernel.org>; Fri, 16 Apr 2021 06:08:55 -0700 (PDT)
-Received: by mail-io1-xd2c.google.com with SMTP id k25so27623070iob.6
-        for <netdev@vger.kernel.org>; Fri, 16 Apr 2021 06:08:55 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=uIsY7rTiA+VYMrCL0Fk+IRPmeXg2RKOGnKhn6jk88kE=;
-        b=tFyHUHgdMoZuhKobVdbX2vg8qAX7TnojQWkhHz9Ak0pCsoCpXT12YGpXihZIDn6cHY
-         76bIRnoSoxcU9vlHDlv5LO540YctIM9vnF6ehSra3UAiJmV5/oMtoxD+vAeJFwUi8A76
-         SieIzgCha1dTrT/oBzi2Vn86SFQY/icxVndiVcjkFmrhOwtNSxX0pLZsM+BRHFjZFutl
-         32e4NvSs9rrSOSTP1eM5EFP32EMV3WDZybHcWen/vCsFxcDqF050TA1b86DwzrFjkRBQ
-         SEzn9j6xvzV+k0hKCinhT9DGl33HAOY7VAQY7jHee5JnmEkKYsuA/hLHRs9H3bFv/eTf
-         MylA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=uIsY7rTiA+VYMrCL0Fk+IRPmeXg2RKOGnKhn6jk88kE=;
-        b=ai/YEDA3bL7uh6Mmq4TabQP65xfv2MY05+CT+MDijYNyekp8L6v0pg4gtKjQ0nlDyw
-         kNpFYo+qLImhxRFdZ6mku+6ndS8l37nPQOjNgnGcAfuXxD8hEVKbV4nNMKrbn1nJavjJ
-         cKcFl8QWPJiK/fMA2o+3f4jxGenE/pCaW/g15zMMQhd5tgi6vaOeXaC+Ha/xDbl2W4MG
-         IUqnZFRPcjmAERyno+srwBzruw8U2sXXjfk2wrAl+aZ9ATCEKJ16M0FEPG+AROtl287w
-         8fTUBg2IieHRO3sNxK7clOnQv7hgiqFL7OCOQyDLIhiENpAFN6gm7CWO0JlOUCCn1lyb
-         0fpg==
-X-Gm-Message-State: AOAM532rGgL24YNNTZ2EdQTrvM5nOXHpwwli6Pu+EG6AEY1id0FI5Zas
-        SOW85eko5uZsdHRoy34Yuftqgg==
-X-Google-Smtp-Source: ABdhPJyO/6DXTD88pvOp8rSOlXVJJ35Xta+9suI4ouLqEEhZDpNAUjVHC5RN3PwkZ+QI33qsrrtoOw==
-X-Received: by 2002:a6b:7601:: with SMTP id g1mr2792815iom.37.1618578535272;
-        Fri, 16 Apr 2021 06:08:55 -0700 (PDT)
-Received: from presto.localdomain (c-73-185-129-58.hsd1.mn.comcast.net. [73.185.129.58])
-        by smtp.gmail.com with ESMTPSA id e6sm2713535ilr.81.2021.04.16.06.08.54
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 16 Apr 2021 06:08:55 -0700 (PDT)
-From:   Alex Elder <elder@linaro.org>
-To:     davem@davemloft.net, kuba@kernel.org
-Cc:     bjorn.andersson@linaro.org, agross@kernel.org, robh+dt@kernel.org,
-        elder@kernel.org, linux-arm-msm@vger.kernel.org,
-        netdev@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH net-next 2/2] net: ipa: optionally define firmware name via DT
-Date:   Fri, 16 Apr 2021 08:08:50 -0500
-Message-Id: <20210416130850.1970247-3-elder@linaro.org>
-X-Mailer: git-send-email 2.27.0
-In-Reply-To: <20210416130850.1970247-1-elder@linaro.org>
-References: <20210416130850.1970247-1-elder@linaro.org>
+        id S243720AbhDPNRe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 16 Apr 2021 09:17:34 -0400
+Received: from esa.microchip.iphmx.com ([68.232.153.233]:38085 "EHLO
+        esa.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S243487AbhDPNRc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 16 Apr 2021 09:17:32 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1618579027; x=1650115027;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=VQWAf+sSaiPxZM4ON97z8nMb61u8our8U0qMomJbIUg=;
+  b=Iy2D6gteFTUEi+dCAa14jCBvjZ05g5NZ3SDpJfXi/oOSGoPaO8ZOJokL
+   C18u8PfIN0p+x8zQEZ99BEI/pOk5R7IHxv5OCBq2GVfqweLFevpwdMlfs
+   KV6L9mnXeQTGHACXWw5evLLyg7UhC1l3bC1LipTlnB1lYoQjR+0Qs6iOb
+   /UGsFxNI7lXK6Cg+ev+6xWBKJgT09olyx5JmmGyIUFkH0YC2PFDEzcZ0O
+   WW/Vk3sDPDu3q/sEHzNZGYKu+XzUP+GoReK7U00N5iKFKa5Qaou1c3Ib7
+   74tCP7N16O8lpQHP/8mIYCKJGfCs+ArOX1Cdm0GSFSHRam6F0WLgrKfHU
+   g==;
+IronPort-SDR: FFvNxn2kaBgHSquqrNfy/GyPMw+SbKeKDdBlwsdtJ+1qpTz37nkjpQhp4E6w/VOeb7PXHm8P34
+ 9vb+YwtztC1tP++Wq8BeViQ9eY6PN8c2dtNO25wg8Va+IPjW4xLRKzjJKw9y1ptxYDJdbzVCzk
+ S0GU2GQrAqIJCeLKFzWLGTSVptwXOp0ASUym6Kw8EsBU96aU4B5ID4NlemSCp99Zt0Rzc54x20
+ hm01T4sZaUkKGIssm8MZYXPxDR4fNeJv5/Ex06O6h/MTthHPye53w4/ceLdfo1Lm3pebE0E1hX
+ LnM=
+X-IronPort-AV: E=Sophos;i="5.82,226,1613458800"; 
+   d="scan'208";a="117306735"
+Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
+  by esa3.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 16 Apr 2021 06:17:06 -0700
+Received: from chn-vm-ex04.mchp-main.com (10.10.85.152) by
+ chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2176.2; Fri, 16 Apr 2021 06:17:06 -0700
+Received: from mchp-dev-shegelun.microchip.com (10.10.115.15) by
+ chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server id
+ 15.1.2176.2 via Frontend Transport; Fri, 16 Apr 2021 06:17:03 -0700
+From:   Steen Hegelund <steen.hegelund@microchip.com>
+To:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+CC:     Steen Hegelund <steen.hegelund@microchip.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Russell King <linux@armlinux.org.uk>,
+        "Microchip Linux Driver Support" <UNGLinuxDriver@microchip.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Madalin Bucur <madalin.bucur@oss.nxp.com>,
+        Mark Einon <mark.einon@gmail.com>,
+        Masahiro Yamada <masahiroy@kernel.org>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        "Simon Horman" <simon.horman@netronome.com>,
+        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>
+Subject: [PATCH net-next 00/10] Adding the Sparx5 Switch Driver
+Date:   Fri, 16 Apr 2021 15:16:47 +0200
+Message-ID: <20210416131657.3151464-1-steen.hegelund@microchip.com>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-IPA initialization includes loading some firmware.  This step is
-done either by the modem or by the AP under Trust Zone.  If the
-AP loads firmware, the name of the firmware file is currently
-hard-coded ("ipa_fws.mdt").
+This series provides the Microchip Sparx5 Switch Driver
 
-Add the ability to specify the relative path of the firmware file to
-use in a property in the Device Tree IPA node.  If the property is
-not found (or if any other error occurs attempting to get it), fall
-back to using a default relative path.
+The Sparx5 Carrier Ethernet and Industrial switch family delivers 64
+Ethernet ports and up to 200 Gbps of switching bandwidth.
 
-Use the "old" fixed name as the default.  Rename the symbol that
-represents this default to emphasize its purpose.
+It provides a rich set of Ethernet switching features such as hierarchical
+QoS, hardware-based OAM  and service activation testing, protection
+switching, IEEE 1588, and Synchronous Ethernet.
 
-Signed-off-by: Alex Elder <elder@linaro.org>
----
- drivers/net/ipa/ipa_main.c | 23 +++++++++++++++--------
- 1 file changed, 15 insertions(+), 8 deletions(-)
+Using provider bridging (Q-in-Q) and MPLS/MPLS-TP technology, it delivers
+MEF CE
+2.0 Ethernet virtual connections (EVCs) and features advanced TCAM
+  classification in both ingress and egress.
 
-diff --git a/drivers/net/ipa/ipa_main.c b/drivers/net/ipa/ipa_main.c
-index aad915e2ce523..9915603ed10ba 100644
---- a/drivers/net/ipa/ipa_main.c
-+++ b/drivers/net/ipa/ipa_main.c
-@@ -67,7 +67,7 @@
-  */
- 
- /* The name of the GSI firmware file relative to /lib/firmware */
--#define IPA_FWS_PATH		"ipa_fws.mdt"
-+#define IPA_FW_PATH_DEFAULT	"ipa_fws.mdt"
- #define IPA_PAS_ID		15
- 
- /* Shift of 19.2 MHz timestamp to achieve lower resolution timestamps */
-@@ -517,6 +517,7 @@ static int ipa_firmware_load(struct device *dev)
- 	struct device_node *node;
- 	struct resource res;
- 	phys_addr_t phys;
-+	const char *path;
- 	ssize_t size;
- 	void *virt;
- 	int ret;
-@@ -534,9 +535,17 @@ static int ipa_firmware_load(struct device *dev)
- 		return ret;
- 	}
- 
--	ret = request_firmware(&fw, IPA_FWS_PATH, dev);
-+	/* Use name from DTB if specified; use default for *any* error */
-+	ret = of_property_read_string(dev->of_node, "firmware-name", &path);
- 	if (ret) {
--		dev_err(dev, "error %d requesting \"%s\"\n", ret, IPA_FWS_PATH);
-+		dev_dbg(dev, "error %d getting \"firmware-name\" resource\n",
-+			ret);
-+		path = IPA_FW_PATH_DEFAULT;
-+	}
-+
-+	ret = request_firmware(&fw, path, dev);
-+	if (ret) {
-+		dev_err(dev, "error %d requesting \"%s\"\n", ret, path);
- 		return ret;
- 	}
- 
-@@ -549,13 +558,11 @@ static int ipa_firmware_load(struct device *dev)
- 		goto out_release_firmware;
- 	}
- 
--	ret = qcom_mdt_load(dev, fw, IPA_FWS_PATH, IPA_PAS_ID,
--			    virt, phys, size, NULL);
-+	ret = qcom_mdt_load(dev, fw, path, IPA_PAS_ID, virt, phys, size, NULL);
- 	if (ret)
--		dev_err(dev, "error %d loading \"%s\"\n", ret, IPA_FWS_PATH);
-+		dev_err(dev, "error %d loading \"%s\"\n", ret, path);
- 	else if ((ret = qcom_scm_pas_auth_and_reset(IPA_PAS_ID)))
--		dev_err(dev, "error %d authenticating \"%s\"\n", ret,
--			IPA_FWS_PATH);
-+		dev_err(dev, "error %d authenticating \"%s\"\n", ret, path);
- 
- 	memunmap(virt);
- out_release_firmware:
+Per-EVC features include advanced L3-aware classification, a rich set of
+statistics, OAM for end-to-end performance monitoring, and dual-rate
+policing and shaping.
+
+Time sensitive networking (TSN) is supported through a comprehensive set of
+features including frame preemption, cut-through, frame replication and
+elimination for reliability, enhanced scheduling: credit-based shaping,
+time-aware shaping, cyclic queuing, and forwarding, and per-stream policing
+and filtering.
+
+Together with IEEE 1588 and IEEE 802.1AS support, this guarantees
+low-latency deterministic networking for Fronthaul, Carrier, and Industrial
+Ethernet.
+
+The Sparx5 switch family consists of following SKUs:
+
+- VSC7546 Sparx5-64 up to 64 Gbps of bandwidth with the following primary
+  port configurations:
+  - 6 *10G
+  - 16 * 2.5G + 2 * 10G
+  - 24 * 1G + 4 * 10G
+
+- VSC7549 Sparx5-90 up to 90 Gbps of bandwidth with the following primary
+  port configurations:
+  - 9 * 10G
+  - 16 * 2.5G + 4 * 10G
+  - 48 * 1G + 4 * 10G
+
+- VSC7552 Sparx5-128 up to 128 Gbps of bandwidth with the following primary
+  port configurations:
+  - 12 * 10G
+  - 16 * 2.5G + 8 * 10G
+  - 48 * 1G + 8 * 10G
+
+- VSC7556 Sparx5-160 up to 160 Gbps of bandwidth with the following primary
+  port configurations:
+  - 16 * 10G
+  - 10 * 10G + 2 * 25G
+  - 16 * 2.5G + 10 * 10G
+  - 48 * 1G + 10 * 10G
+
+- VSC7558 Sparx5-200 up to 200 Gbps of bandwidth with the following primary
+  port configurations:
+  - 20 * 10G
+  - 8 * 25G
+
+In addition, the device supports one 10/100/1000/2500/5000 Mbps
+SGMII/SerDes node processor interface (NPI) Ethernet port.
+
+The Sparx5 support is developed on the PCB134 and PCB135 evaluation boards.
+
+- PCB134 main networking features:
+  - 12x SFP+ front 10G module slots (connected to Sparx5 through SFI).
+  - 8x SFP28 front 25G module slots (connected to Sparx5 through SFI high
+    speed).
+  - Optional, one additional 10/100/1000BASE-T (RJ45) Ethernet port
+    (on-board VSC8211 PHY connected to Sparx5 through SGMII).
+
+- PCB135 main networking features:
+  - 48x1G (10/100/1000M) RJ45 front ports using 12xVSC8514 QuadPHY’s each
+    connected to VSC7558 through QSGMII.
+  - 4x10G (1G/2.5G/5G/10G) RJ45 front ports using the AQR407 10G QuadPHY
+    each port connects to VSC7558 through SFI.
+  - 4x SFP28 25G module slots on back connected to VSC7558 through SFI high
+    speed.
+  - Optional, one additional 1G (10/100/1000M) RJ45 port using an on-board
+    VSC8211 PHY, which can be connected to VSC7558 NPI port through SGMII
+    using a loopback add-on PCB)
+
+This series provides support for:
+  - SFPs and DAC cables via PHYLINK with a number of 5G, 10G and 25G
+    devices and media types.
+  - Port module configuration for 10M to 25G speeds with SGMII, QSGMII,
+    1000BASEX, 2500BASEX and 10GBASER as appropriate for these modes.
+  - SerDes configuration via the Sparx5 SerDes driver (see below).
+  - Host mode providing register based injection and extraction.
+  - Switch mode providing MAC/VLAN table learning and Layer2 switching
+    offloaded to the Sparx5 switch.
+  - STP state, VLAN support, host/bridge port mode, Forwarding DB, and
+    configuration and statistics via ethtool.
+
+More support will be added at a later stage.
+
+The Sparx5 Chip Register Model can be browsed at this location:
+https://github.com/microchip-ung/sparx-5_reginfo
+and the datasheet is available here:
+https://ww1.microchip.com/downloads/en/DeviceDoc/SparX-5_Family_L2L3_Enterprise_10G_Ethernet_Switches_Datasheet_00003822B.pdf
+
+The series depends on the following series currently on their way
+into the kernel:
+
+- Sparx5 SerDes Driver
+  Link: https://lore.kernel.org/r/20210218161451.3489955-1-steen.hegelund@microchip.com/
+
+- Sparx5 Reset Driver
+  Link: https://lore.kernel.org/r/20210416084054.2922327-1-steen.hegelund@microchip.com/
+
+Steen Hegelund (10):
+  dt-bindings: net: sparx5: Add sparx5-switch bindings
+  net: sparx5: add the basic sparx5 driver
+  net: sparx5: add hostmode with phylink support
+  net: sparx5: add port module support
+  net: sparx5: add mactable support
+  net: sparx5: add vlan support
+  net: sparx5: add switching support
+  net: sparx5: add calendar bandwidth allocation support
+  net: sparx5: add ethtool configuration and statistics support
+  arm64: dts: sparx5: Add the Sparx5 switch node
+
+ .../bindings/net/microchip,sparx5-switch.yaml |  227 +
+ arch/arm64/boot/dts/microchip/sparx5.dtsi     |   94 +-
+ .../dts/microchip/sparx5_pcb134_board.dtsi    |  481 +-
+ .../dts/microchip/sparx5_pcb135_board.dtsi    |  621 ++-
+ drivers/net/ethernet/microchip/Kconfig        |    2 +
+ drivers/net/ethernet/microchip/Makefile       |    2 +
+ drivers/net/ethernet/microchip/sparx5/Kconfig |    9 +
+ .../net/ethernet/microchip/sparx5/Makefile    |   10 +
+ .../microchip/sparx5/sparx5_calendar.c        |  596 +++
+ .../microchip/sparx5/sparx5_ethtool.c         |  999 ++++
+ .../microchip/sparx5/sparx5_mactable.c        |  500 ++
+ .../ethernet/microchip/sparx5/sparx5_main.c   |  867 ++++
+ .../ethernet/microchip/sparx5/sparx5_main.h   |  363 ++
+ .../microchip/sparx5/sparx5_main_regs.h       | 4402 +++++++++++++++++
+ .../ethernet/microchip/sparx5/sparx5_netdev.c |  247 +
+ .../ethernet/microchip/sparx5/sparx5_packet.c |  292 ++
+ .../microchip/sparx5/sparx5_phylink.c         |  195 +
+ .../ethernet/microchip/sparx5/sparx5_port.c   | 1129 +++++
+ .../ethernet/microchip/sparx5/sparx5_port.h   |   98 +
+ .../microchip/sparx5/sparx5_switchdev.c       |  508 ++
+ .../ethernet/microchip/sparx5/sparx5_vlan.c   |  224 +
+ 21 files changed, 11782 insertions(+), 84 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/net/microchip,sparx5-switch.yaml
+ create mode 100644 drivers/net/ethernet/microchip/sparx5/Kconfig
+ create mode 100644 drivers/net/ethernet/microchip/sparx5/Makefile
+ create mode 100644 drivers/net/ethernet/microchip/sparx5/sparx5_calendar.c
+ create mode 100644 drivers/net/ethernet/microchip/sparx5/sparx5_ethtool.c
+ create mode 100644 drivers/net/ethernet/microchip/sparx5/sparx5_mactable.c
+ create mode 100644 drivers/net/ethernet/microchip/sparx5/sparx5_main.c
+ create mode 100644 drivers/net/ethernet/microchip/sparx5/sparx5_main.h
+ create mode 100644 drivers/net/ethernet/microchip/sparx5/sparx5_main_regs.h
+ create mode 100644 drivers/net/ethernet/microchip/sparx5/sparx5_netdev.c
+ create mode 100644 drivers/net/ethernet/microchip/sparx5/sparx5_packet.c
+ create mode 100644 drivers/net/ethernet/microchip/sparx5/sparx5_phylink.c
+ create mode 100644 drivers/net/ethernet/microchip/sparx5/sparx5_port.c
+ create mode 100644 drivers/net/ethernet/microchip/sparx5/sparx5_port.h
+ create mode 100644 drivers/net/ethernet/microchip/sparx5/sparx5_switchdev.c
+ create mode 100644 drivers/net/ethernet/microchip/sparx5/sparx5_vlan.c
+
 -- 
-2.27.0
+2.31.1
 
