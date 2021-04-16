@@ -2,130 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 52DBF36280F
+	by mail.lfdr.de (Postfix) with ESMTP id A043D362810
 	for <lists+netdev@lfdr.de>; Fri, 16 Apr 2021 20:54:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236141AbhDPSzG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 16 Apr 2021 14:55:06 -0400
-Received: from mail.kernel.org ([198.145.29.99]:54366 "EHLO mail.kernel.org"
+        id S236282AbhDPSzI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 16 Apr 2021 14:55:08 -0400
+Received: from mail.kernel.org ([198.145.29.99]:54378 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S234948AbhDPSzE (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S235801AbhDPSzE (ORCPT <rfc822;netdev@vger.kernel.org>);
         Fri, 16 Apr 2021 14:55:04 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 794846137D;
-        Fri, 16 Apr 2021 18:54:38 +0000 (UTC)
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 564BB613BB;
+        Fri, 16 Apr 2021 18:54:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1618599279;
-        bh=fjL5TelqY7CJesmYHj4ZZcFMAhcX9s/O8x2KgVUVq48=;
-        h=From:To:Cc:Subject:Date:From;
-        b=hQghVbOwpfWP949Tl/l2MSu10fWHi5wdxGPb0kyYKFIr+p31wOeJTI5+mTLQxoIoo
-         MueoODvQS6188q/WLtCJ3e1+VN4P9kWOpb9v1C3SJn0PcIo51M/C1vKfqorKvwsTIK
-         pG+M+ieHzJS6cXbG+gM9iVcLNfoh6XgMQtafo64XtrC6xsXW9MWPFwoIaRQiOCgZFC
-         nRyUBc9bw+vMfu5RauvHRG1/I8/8k5DdWot27Zqq/3mMfcklOAQ0m8j0H92cq6lAEp
-         qS/k4TPQ4tGuzgf/M8PjqKrZC9yw1mDBhdrKT6eZsr+Bslk4X6yoAwMyU8xjARyUfE
-         lmpP9txLaeMxQ==
+        bh=iapv7FcEvcSOr8mKPGIUxRXmV+kmZSdMbNExURsdE/o=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=ThrMS3Y3Hwk3Y39qXjRvNiM5natsINAJiJGsFBwaD7k+bnyyImj5RUrkoU/oOztYj
+         78utBhYo/UQAkpBJvTcgD4BkRcF4PR2tuUf9qlWjf6IYkidnbARw1V8lcwikDfyzzV
+         vDHkAXKvBtDcMEMzD7M9TGmt+3LwmYLRxWWq2TuZTWvTEL0+qhJzLYUAVsUrNKaef+
+         NFykodtClmIDIgI39Whq/iARFv00VJRF2apc419GC4Y/gV7cs9AQBe4h4MV4da5hah
+         U510aoclRCV784Y9b+v2Rb3RQ8uRg3FpJuUe2HrKh2yiIP+R7xv/q3hJpVwDwBb5VL
+         wqbuO9sTBEFwg==
 From:   Saeed Mahameed <saeed@kernel.org>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
 Cc:     Tariq Toukan <tariqt@nvidia.com>, netdev@vger.kernel.org,
         Saeed Mahameed <saeedm@nvidia.com>
-Subject: [pull request][net-next 00/14] mlx5 updates 2021-04-16
-Date:   Fri, 16 Apr 2021 11:54:16 -0700
-Message-Id: <20210416185430.62584-1-saeed@kernel.org>
+Subject: [net-next 01/14] net/mlx5e: Remove non-essential TLS SQ state bit
+Date:   Fri, 16 Apr 2021 11:54:17 -0700
+Message-Id: <20210416185430.62584-2-saeed@kernel.org>
 X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20210416185430.62584-1-saeed@kernel.org>
+References: <20210416185430.62584-1-saeed@kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Saeed Mahameed <saeedm@nvidia.com>
+From: Tariq Toukan <tariqt@nvidia.com>
 
-Hi Dave, Jakub,
+Maintaining an SQ state bit to indicate TLS support
+has no real need, a simple and fast test [1] for the SKB is
+almost equally good.
 
-This series provides some updates to mlx5e driver.
-For more information please see tag log below.
+[1] !skb->sk || !tls_is_sk_tx_device_offloaded(skb->sk)
 
-Please pull and let me know if there is any problem.
-
-Thanks,
-Saeed.
-
+Signed-off-by: Tariq Toukan <tariqt@nvidia.com>
+Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 ---
-The following changes since commit 392c36e5be1dee19ffce8c8ba8f07f90f5aa3f7c:
+ drivers/net/ethernet/mellanox/mlx5/core/en.h              | 1 -
+ .../net/ethernet/mellanox/mlx5/core/en_accel/en_accel.h   | 8 +++-----
+ drivers/net/ethernet/mellanox/mlx5/core/en_main.c         | 2 --
+ 3 files changed, 3 insertions(+), 8 deletions(-)
 
-  Merge branch 'ehtool-fec-stats' (2021-04-15 17:08:30 -0700)
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en.h b/drivers/net/ethernet/mellanox/mlx5/core/en.h
+index e1c51eabe8fe..cb4e7aaa4f8a 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en.h
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en.h
+@@ -325,7 +325,6 @@ enum {
+ 	MLX5E_SQ_STATE_RECOVERING,
+ 	MLX5E_SQ_STATE_IPSEC,
+ 	MLX5E_SQ_STATE_AM,
+-	MLX5E_SQ_STATE_TLS,
+ 	MLX5E_SQ_STATE_VLAN_NEED_L2_INLINE,
+ 	MLX5E_SQ_STATE_PENDING_XSK_TX,
+ };
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/en_accel.h b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/en_accel.h
+index cc0efac7b812..cc2851ecd512 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/en_accel.h
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/en_accel.h
+@@ -123,11 +123,9 @@ static inline bool mlx5e_accel_tx_begin(struct net_device *dev,
+ 		mlx5e_udp_gso_handle_tx_skb(skb);
+ 
+ #ifdef CONFIG_MLX5_EN_TLS
+-	if (test_bit(MLX5E_SQ_STATE_TLS, &sq->state)) {
+-		/* May send SKBs and WQEs. */
+-		if (unlikely(!mlx5e_tls_handle_tx_skb(dev, sq, skb, &state->tls)))
+-			return false;
+-	}
++	/* May send SKBs and WQEs. */
++	if (unlikely(!mlx5e_tls_handle_tx_skb(dev, sq, skb, &state->tls)))
++		return false;
+ #endif
+ 
+ #ifdef CONFIG_MLX5_EN_IPSEC
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
+index 6847e7b909a5..64d6c0fd92bf 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
+@@ -1134,8 +1134,6 @@ static int mlx5e_alloc_txqsq(struct mlx5e_channel *c,
+ 		set_bit(MLX5E_SQ_STATE_VLAN_NEED_L2_INLINE, &sq->state);
+ 	if (MLX5_IPSEC_DEV(c->priv->mdev))
+ 		set_bit(MLX5E_SQ_STATE_IPSEC, &sq->state);
+-	if (mlx5_accel_is_tls_device(c->priv->mdev))
+-		set_bit(MLX5E_SQ_STATE_TLS, &sq->state);
+ 	if (param->is_mpw)
+ 		set_bit(MLX5E_SQ_STATE_MPWQE, &sq->state);
+ 	sq->stop_room = param->stop_room;
+-- 
+2.30.2
 
-are available in the Git repository at:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/saeed/linux.git tags/mlx5-updates-2021-04-16
-
-for you to fetch changes up to 95742c1cc59d0a6aa2ca9e75bd21f2a8721f5129:
-
-  net/mlx5: Enhance diagnostics info for TX/RX reporters (2021-04-16 11:48:34 -0700)
-
-----------------------------------------------------------------
-mlx5-updates-2021-04-16
-
-This patchset introduces updates to mlx5e netdev driver.
-
-1) Tariq refactors TLS offloads and adds resiliency against RX resync
-   failures
-
-2) Maxim reduces code duplications by unifying channels reset flow
-   regardless if channels are closed or open
-
-3) Aya Enhances TX/RX health reporters diagnostics to expose the
-   internal clock time-stamping format
-
-4) Moshe adds support for ethtool extended link state, to show the reason
-   for link down
-
-----------------------------------------------------------------
-Aya Levin (2):
-      net/mlx5: Add helper to initialize 1PPS
-      net/mlx5: Enhance diagnostics info for TX/RX reporters
-
-Maor Dickman (1):
-      net/mlx5: Allocate FC bulk structs with kvzalloc() instead of kzalloc()
-
-Maxim Mikityanskiy (4):
-      net/mlx5e: Allow mlx5e_safe_switch_channels to work with channels closed
-      net/mlx5e: Use mlx5e_safe_switch_channels when channels are closed
-      net/mlx5e: Refactor on-the-fly configuration changes
-      net/mlx5e: Cleanup safe switch channels API by passing params
-
-Moshe Tal (2):
-      net/mlx5: Add register layout to support extended link state
-      net/mlx5e: Add ethtool extended link state
-
-Tariq Toukan (5):
-      net/mlx5e: Remove non-essential TLS SQ state bit
-      net/mlx5e: Cleanup unused function parameter
-      net/mlx5e: TX, Inline TLS skb check
-      net/mlx5e: TX, Inline function mlx5e_tls_handle_tx_wqe()
-      net/mlx5e: kTLS, Add resiliency to RX resync failures
-
- drivers/net/ethernet/mellanox/mlx5/core/en.h       |  13 +-
- .../net/ethernet/mellanox/mlx5/core/en/params.c    |   3 +
- .../net/ethernet/mellanox/mlx5/core/en/params.h    |   1 +
- drivers/net/ethernet/mellanox/mlx5/core/en/ptp.c   |   3 +
- .../ethernet/mellanox/mlx5/core/en/reporter_rx.c   |   6 +
- .../ethernet/mellanox/mlx5/core/en/reporter_tx.c   |   6 +
- .../mellanox/mlx5/core/en_accel/en_accel.h         |   7 +-
- .../ethernet/mellanox/mlx5/core/en_accel/ktls.h    |  11 +
- .../ethernet/mellanox/mlx5/core/en_accel/ktls_rx.c | 129 ++++++--
- .../mellanox/mlx5/core/en_accel/ktls_txrx.h        |  20 ++
- .../mellanox/mlx5/core/en_accel/tls_rxtx.c         |   9 -
- .../mellanox/mlx5/core/en_accel/tls_rxtx.h         |  14 +-
- drivers/net/ethernet/mellanox/mlx5/core/en_dcbnl.c |  34 +--
- .../net/ethernet/mellanox/mlx5/core/en_ethtool.c   | 338 ++++++++++++++-------
- drivers/net/ethernet/mellanox/mlx5/core/en_main.c  | 250 +++++++--------
- drivers/net/ethernet/mellanox/mlx5/core/en_stats.c |   3 +
- drivers/net/ethernet/mellanox/mlx5/core/en_stats.h |   2 +
- drivers/net/ethernet/mellanox/mlx5/core/en_txrx.c  |   5 +
- .../net/ethernet/mellanox/mlx5/core/fs_counters.c  |  16 +-
- .../net/ethernet/mellanox/mlx5/core/ipoib/ipoib.c  |  19 +-
- .../net/ethernet/mellanox/mlx5/core/lib/clock.c    |  25 +-
- include/linux/mlx5/driver.h                        |   1 +
- include/linux/mlx5/mlx5_ifc.h                      |  50 +++
- 23 files changed, 621 insertions(+), 344 deletions(-)
