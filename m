@@ -2,200 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BC7CC361AA1
-	for <lists+netdev@lfdr.de>; Fri, 16 Apr 2021 09:40:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 60984361AA9
+	for <lists+netdev@lfdr.de>; Fri, 16 Apr 2021 09:40:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239567AbhDPHao (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 16 Apr 2021 03:30:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34764 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231666AbhDPHam (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 16 Apr 2021 03:30:42 -0400
-Received: from ssl.serverraum.org (ssl.serverraum.org [IPv6:2a01:4f8:151:8464::1:2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 11F0BC061574;
-        Fri, 16 Apr 2021 00:30:18 -0700 (PDT)
-Received: from ssl.serverraum.org (web.serverraum.org [172.16.0.2])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ssl.serverraum.org (Postfix) with ESMTPSA id 49EE022172;
-        Fri, 16 Apr 2021 09:29:59 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
-        t=1618558211;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=PbMduC+y8U2TnYB1yFy6DIbM598uMx2+jq28dZXHweQ=;
-        b=EUtjzMP9GqVLqpUQjKAWkwn0o1sw8EWtxSv8YMRSVD0469vqt05Io1/SVJgobjz7HB/r6y
-        Vjk/Jn7gR9cbQkm/qxqSnOY+yQWCWcha3iHS/TQBkEhMmvcdPKJxGg9UyvHCIIkZANcb/g
-        63rLgVagJ+mEmiydqQVNecyvEgF/m50=
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII;
- format=flowed
-Content-Transfer-Encoding: 7bit
-Date:   Fri, 16 Apr 2021 09:29:59 +0200
-From:   Michael Walle <michael@walle.cc>
-To:     Benjamin Herrenschmidt <benh@kernel.crashing.org>
-Cc:     ath9k-devel@qca.qualcomm.com, UNGLinuxDriver@microchip.com,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linuxppc-dev@lists.ozlabs.org, netdev@vger.kernel.org,
-        linux-mediatek@lists.infradead.org,
-        linux-renesas-soc@vger.kernel.org,
-        linux-stm32@st-md-mailman.stormreply.com,
-        linux-amlogic@lists.infradead.org, linux-oxnas@groups.io,
-        linux-omap@vger.kernel.org, linux-wireless@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-staging@lists.linux.dev,
-        Andrew Lunn <andrew@lunn.ch>,
-        Gregory Clement <gregory.clement@bootlin.com>,
-        Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Paul Mackerras <paulus@samba.org>,
-        Andreas Larsson <andreas@gaisler.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Maxime Ripard <mripard@kernel.org>,
-        Chen-Yu Tsai <wens@csie.org>,
-        Jernej Skrabec <jernej.skrabec@siol.net>,
-        Joyce Ooi <joyce.ooi@intel.com>,
-        Chris Snook <chris.snook@gmail.com>,
-        =?UTF-8?Q?Rafa=C5=82_Mi=C5=82ecki?= <rafal@milecki.pl>,
-        bcm-kernel-feedback-list@broadcom.com,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Nicolas Ferre <nicolas.ferre@microchip.com>,
-        Claudiu Beznea <claudiu.beznea@microchip.com>,
-        Sunil Goutham <sgoutham@marvell.com>,
-        Fugang Duan <fugang.duan@nxp.com>,
-        Madalin Bucur <madalin.bucur@nxp.com>,
-        Pantelis Antoniou <pantelis.antoniou@gmail.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Li Yang <leoyang.li@nxp.com>,
-        Yisen Zhuang <yisen.zhuang@huawei.com>,
-        Salil Mehta <salil.mehta@huawei.com>,
-        Hauke Mehrtens <hauke@hauke-m.de>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        Vadym Kochan <vkochan@marvell.com>,
-        Taras Chornyi <tchornyi@marvell.com>,
-        Mirko Lindner <mlindner@marvell.com>,
-        Stephen Hemminger <stephen@networkplumber.org>,
-        Felix Fietkau <nbd@nbd.name>, John Crispin <john@phrozen.org>,
-        Sean Wang <sean.wang@mediatek.com>,
-        Mark Lee <Mark-MC.Lee@mediatek.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Bryan Whitehead <bryan.whitehead@microchip.com>,
-        Vladimir Zapolskiy <vz@mleia.com>,
-        Sergei Shtylyov <sergei.shtylyov@gmail.com>,
-        Byungho An <bh74.an@samsung.com>,
-        Kunihiko Hayashi <hayashi.kunihiko@socionext.com>,
-        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@st.com>,
-        Jose Abreu <joabreu@synopsys.com>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Fabio Estevam <festevam@gmail.com>,
-        NXP Linux Team <linux-imx@nxp.com>,
-        Kevin Hilman <khilman@baylibre.com>,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        Jerome Brunet <jbrunet@baylibre.com>,
-        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
-        Vinod Koul <vkoul@kernel.org>,
-        Nobuhiro Iwamatsu <nobuhiro1.iwamatsu@toshiba.co.jp>,
+        id S239641AbhDPHdH convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Fri, 16 Apr 2021 03:33:07 -0400
+Received: from eu-smtp-delivery-151.mimecast.com ([185.58.85.151]:33716 "EHLO
+        eu-smtp-delivery-151.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S239527AbhDPHdE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 16 Apr 2021 03:33:04 -0400
+Received: from AcuMS.aculab.com (156.67.243.121 [156.67.243.121]) (Using
+ TLS) by relay.mimecast.com with ESMTP id
+ uk-mta-212-Pz1ohOP9MbWLWc7zHXrlbA-1; Fri, 16 Apr 2021 08:32:36 +0100
+X-MC-Unique: Pz1ohOP9MbWLWc7zHXrlbA-1
+Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) by
+ AcuMS.aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) with Microsoft SMTP
+ Server (TLS) id 15.0.1497.2; Fri, 16 Apr 2021 08:32:35 +0100
+Received: from AcuMS.Aculab.com ([fe80::994c:f5c2:35d6:9b65]) by
+ AcuMS.aculab.com ([fe80::994c:f5c2:35d6:9b65%12]) with mapi id
+ 15.00.1497.012; Fri, 16 Apr 2021 08:32:35 +0100
+From:   David Laight <David.Laight@ACULAB.COM>
+To:     'Matthew Wilcox' <willy@infradead.org>
+CC:     Jesper Dangaard Brouer <brouer@redhat.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-mm@kvack.org" <linux-mm@kvack.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>,
+        "linux-mips@vger.kernel.org" <linux-mips@vger.kernel.org>,
+        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
+        Matteo Croce <mcroce@linux.microsoft.com>,
         Grygorii Strashko <grygorii.strashko@ti.com>,
-        Wingman Kwok <w-kwok2@ti.com>,
-        Murali Karicheri <m-karicheri2@ti.com>,
-        Michal Simek <michal.simek@xilinx.com>,
-        Radhey Shyam Pandey <radhey.shyam.pandey@xilinx.com>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        Lorenzo Bianconi <lorenzo.bianconi83@gmail.com>,
-        Ryder Lee <ryder.lee@mediatek.com>,
-        Stanislaw Gruszka <stf_xl@wp.pl>,
-        Helmut Schaa <helmut.schaa@googlemail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Frank Rowand <frowand.list@gmail.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        =?UTF-8?Q?J=C3=A9r=C3=B4me?= =?UTF-8?Q?_Pouiller?= 
-        <jerome.pouiller@silabs.com>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>
-Subject: Re: [PATCH net-next v4 2/2] of: net: fix of_get_mac_addr_nvmem() for
- non-platform devices
-In-Reply-To: <730d603b12e590c56770309b4df2bd668f7afbe3.camel@kernel.crashing.org>
-References: <20210412174718.17382-1-michael@walle.cc>
- <20210412174718.17382-3-michael@walle.cc>
- <730d603b12e590c56770309b4df2bd668f7afbe3.camel@kernel.crashing.org>
-User-Agent: Roundcube Webmail/1.4.11
-Message-ID: <8157eba9317609294da80472622deb28@walle.cc>
-X-Sender: michael@walle.cc
+        Arnd Bergmann <arnd@kernel.org>,
+        "Christoph Hellwig" <hch@lst.de>
+Subject: RE: [PATCH 1/1] mm: Fix struct page layout on 32-bit systems
+Thread-Topic: [PATCH 1/1] mm: Fix struct page layout on 32-bit systems
+Thread-Index: AQHXMXYmwdfrgigLI0exh4xFUSZq9Kq0jZ3ggAFYFFmAAC15oIAABLSAgACoXgA=
+Date:   Fri, 16 Apr 2021 07:32:35 +0000
+Message-ID: <f51e1aa98cb94880a236d58c75c20994@AcuMS.aculab.com>
+References: <20210411103318.GC2531743@casper.infradead.org>
+ <20210412011532.GG2531743@casper.infradead.org>
+ <20210414101044.19da09df@carbon>
+ <20210414115052.GS2531743@casper.infradead.org>
+ <20210414211322.3799afd4@carbon>
+ <20210414213556.GY2531743@casper.infradead.org>
+ <a50c3156fe8943ef964db4345344862f@AcuMS.aculab.com>
+ <20210415200832.32796445@carbon>
+ <20210415182155.GD2531743@casper.infradead.org>
+ <5179a01a462f43d6951a65de2a299070@AcuMS.aculab.com>
+ <20210415222211.GG2531743@casper.infradead.org>
+In-Reply-To: <20210415222211.GG2531743@casper.infradead.org>
+Accept-Language: en-GB, en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-exchange-transport-fromentityheader: Hosted
+x-originating-ip: [10.202.205.107]
+MIME-Version: 1.0
+Authentication-Results: relay.mimecast.com;
+        auth=pass smtp.auth=C51A453 smtp.mailfrom=david.laight@aculab.com
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: aculab.com
+Content-Language: en-US
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8BIT
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Am 2021-04-16 05:24, schrieb Benjamin Herrenschmidt:
-> On Mon, 2021-04-12 at 19:47 +0200, Michael Walle wrote:
->> 
->>  /**
->>   * of_get_phy_mode - Get phy mode for given device_node
->> @@ -59,15 +60,39 @@ static int of_get_mac_addr(struct device_node *np, 
->> const char *name, u8 *addr)
->>  static int of_get_mac_addr_nvmem(struct device_node *np, u8 *addr)
->>  {
->>         struct platform_device *pdev = of_find_device_by_node(np);
->> +       struct nvmem_cell *cell;
->> +       const void *mac;
->> +       size_t len;
->>         int ret;
->> 
->> -       if (!pdev)
->> -               return -ENODEV;
->> +       /* Try lookup by device first, there might be a 
->> nvmem_cell_lookup
->> +        * associated with a given device.
->> +        */
->> +       if (pdev) {
->> +               ret = nvmem_get_mac_address(&pdev->dev, addr);
->> +               put_device(&pdev->dev);
->> +               return ret;
->> +       }
->> +
+From: Matthew Wilcox <willy@infradead.org>
+> Sent: 15 April 2021 23:22
 > 
-> This smells like the wrong band aid :)
+> On Thu, Apr 15, 2021 at 09:11:56PM +0000, David Laight wrote:
+> > Isn't it possible to move the field down one long?
+> > This might require an explicit zero - but this is not a common
+> > code path - the extra write will be noise.
 > 
-> Any struct device can contain an OF node pointer these days.
+> Then it overlaps page->mapping.  See emails passim.
 
-But not all nodes might have an associated device, see DSA for example.
-And as the name suggests of_get_mac_address() operates on a node. So
-if a driver calls of_get_mac_address() it should work on the node. What
-is wrong IMHO, is that the ethernet drivers where the corresponding 
-board
-has a nvmem_cell_lookup registered is calling of_get_mac_address(node).
-It should rather call eth_get_mac_address(dev) in the first place.
+The rules on overlaps make be wonder if every 'long'
+should be in its own union.
+The comments would need to say when each field is used.
+It would, at least, make these errors less common.
 
-One would need to figure out if there is an actual device (with an
-assiciated of_node), then call eth_get_mac_address(dev) and if there
-isn't a device call of_get_mac_address(node).
+That doesn't solve the 64bit dma_addr though.
 
-But I don't know if that is easy to figure out. Well, one could start
-with just the device where nvmem_cell_lookup is used. Then we could
-drop the workaround above.
+Actually rather that word-swapping dma_addr on 32bit BE
+could you swap over the two fields it overlays with.
+That might look messy in the .h, but it doesn't require
+an accessor function to do the swap - easily missed.
 
-> This seems all backwards. I think we are dealing with bad evolution.
-> 
-> We need to do a lookup for the device because we get passed an of_node.
-> We should just get passed a device here... or rather stop calling
-> of_get_mac_addr() from all those drivers and instead call
-> eth_platform_get_mac_address() which in turns calls of_get_mac_addr().
-> 
-> Then the nvmem stuff gets put in eth_platform_get_mac_address().
-> 
-> of_get_mac_addr() becomes a low-level thingy that most drivers don't
-> care about.
+	David
 
-The NVMEM thing is just another (optional) way how the MAC address
-is fetched from the device tree. Thus, if the drivers have the
-of_get_mac_address() call they should automatically get the NVMEM
-method, too.
+-
+Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
+Registration No: 1397386 (Wales)
 
--michael
