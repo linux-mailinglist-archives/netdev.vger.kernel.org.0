@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4D81C362949
+	by mail.lfdr.de (Postfix) with ESMTP id 01165362948
 	for <lists+netdev@lfdr.de>; Fri, 16 Apr 2021 22:25:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343745AbhDPUZQ convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Fri, 16 Apr 2021 16:25:16 -0400
-Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:37008 "EHLO
+        id S1343643AbhDPUZO convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Fri, 16 Apr 2021 16:25:14 -0400
+Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:50046 "EHLO
         mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1343676AbhDPUZG (ORCPT
+        by vger.kernel.org with ESMTP id S1343672AbhDPUZG (ORCPT
         <rfc822;netdev@vger.kernel.org>); Fri, 16 Apr 2021 16:25:06 -0400
-Received: from pps.filterd (m0044010.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 13GKLVKM021279
+Received: from pps.filterd (m0044012.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 13GKKCG6021851
         for <netdev@vger.kernel.org>; Fri, 16 Apr 2021 13:24:41 -0700
-Received: from maileast.thefacebook.com ([163.114.130.16])
-        by mx0a-00082601.pphosted.com with ESMTP id 37yb9y2drc-5
+Received: from mail.thefacebook.com ([163.114.132.120])
+        by mx0a-00082601.pphosted.com with ESMTP id 37yb5j2f9f-2
         (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
         for <netdev@vger.kernel.org>; Fri, 16 Apr 2021 13:24:41 -0700
-Received: from intmgw001.05.ash7.facebook.com (2620:10d:c0a8:1b::d) by
- mail.thefacebook.com (2620:10d:c0a8:83::7) with Microsoft SMTP Server
+Received: from intmgw001.37.frc1.facebook.com (2620:10d:c085:108::4) by
+ mail.thefacebook.com (2620:10d:c085:21d::4) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2176.2; Fri, 16 Apr 2021 13:24:30 -0700
+ 15.1.2176.2; Fri, 16 Apr 2021 13:24:40 -0700
 Received: by devbig012.ftw2.facebook.com (Postfix, from userid 137359)
-        id 9F2F62ED4EE0; Fri, 16 Apr 2021 13:24:29 -0700 (PDT)
+        id AA5242ED4EE0; Fri, 16 Apr 2021 13:24:31 -0700 (PDT)
 From:   Andrii Nakryiko <andrii@kernel.org>
 To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>, <ast@fb.com>,
         <daniel@iogearbox.net>
 CC:     <andrii@kernel.org>, <kernel-team@fb.com>
-Subject: [PATCH v2 bpf-next 12/17] libbpf: support extern resolution for BTF-defined maps in .maps section
-Date:   Fri, 16 Apr 2021 13:23:59 -0700
-Message-ID: <20210416202404.3443623-13-andrii@kernel.org>
+Subject: [PATCH v2 bpf-next 13/17] selftests/bpf: use -O0 instead of -Og in selftests builds
+Date:   Fri, 16 Apr 2021 13:24:00 -0700
+Message-ID: <20210416202404.3443623-14-andrii@kernel.org>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20210416202404.3443623-1-andrii@kernel.org>
 References: <20210416202404.3443623-1-andrii@kernel.org>
@@ -38,202 +38,71 @@ MIME-Version: 1.0
 Content-Transfer-Encoding: 8BIT
 X-FB-Internal: Safe
 Content-Type: text/plain
-X-Proofpoint-ORIG-GUID: UbtRQisicjjpNm1FzSpVYtj1AZ9LD8NH
-X-Proofpoint-GUID: UbtRQisicjjpNm1FzSpVYtj1AZ9LD8NH
+X-Proofpoint-GUID: tQzdE8W-0Ex8juM5RuNG0eW1eCkXdvTw
+X-Proofpoint-ORIG-GUID: tQzdE8W-0Ex8juM5RuNG0eW1eCkXdvTw
 X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.391,18.0.761
  definitions=2021-04-16_09:2021-04-16,2021-04-16 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 malwarescore=0
- spamscore=0 priorityscore=1501 phishscore=0 adultscore=0
- lowpriorityscore=0 bulkscore=0 mlxscore=0 suspectscore=0 impostorscore=0
- mlxlogscore=999 clxscore=1015 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.12.0-2104060000 definitions=main-2104160143
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 clxscore=1015
+ phishscore=0 priorityscore=1501 mlxlogscore=999 spamscore=0 bulkscore=0
+ lowpriorityscore=0 impostorscore=0 adultscore=0 suspectscore=0 mlxscore=0
+ malwarescore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2104060000 definitions=main-2104160143
 X-FB-Internal: deliver
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add extra logic to handle map externs (only BTF-defined maps are supported for
-linking). Re-use the map parsing logic used during bpf_object__open(). Map
-externs are currently restricted to always match complete map definition. So
-all the specified attributes will be compared (down to pining, map_flags,
-numa_node, etc). In the future this restriction might be relaxed with no
-backwards compatibility issues. If any attribute is mismatched between extern
-and actual map definition, linker will report an error, pointing out which one
-mismatches.
-
-The original intent was to allow for extern to specify attributes that matters
-(to user) to enforce. E.g., if you specify just key information and omit
-value, then any value fits. Similarly, it should have been possible to enforce
-map_flags, pinning, and any other possible map attribute. Unfortunately, that
-means that multiple externs can be only partially overlapping with each other,
-which means linker would need to combine their type definitions to end up with
-the most restrictive and fullest map definition. This requires an extra amount
-of BTF manipulation which at this time was deemed unnecessary and would
-require further extending generic BTF writer APIs. So that is left for future
-follow ups, if there will be demand for that. But the idea seems intresting
-and useful, so I want to document it here.
-
-Weak definitions are also supported, but are pretty strict as well, just
-like externs: all weak map definitions have to match exactly. In the follow up
-patches this most probably will be relaxed, with __weak map definitions being
-able to differ between each other (with non-weak definition always winning, of
-course).
+While -Og is designed to work well with debugger, it's still inferior to -O0
+in terms of debuggability experience. It will cause some variables to still be
+inlined, it will also prevent single-stepping some statements and otherwise
+interfere with debugging experience. So switch to -O0 which turns off any
+optimization and provides the best debugging experience.
 
 Signed-off-by: Andrii Nakryiko <andrii@kernel.org>
 ---
- tools/lib/bpf/linker.c | 132 +++++++++++++++++++++++++++++++++++++++++
- 1 file changed, 132 insertions(+)
+ tools/testing/selftests/bpf/Makefile | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
-diff --git a/tools/lib/bpf/linker.c b/tools/lib/bpf/linker.c
-index 67d2d06e3cb6..84d444427b65 100644
---- a/tools/lib/bpf/linker.c
-+++ b/tools/lib/bpf/linker.c
-@@ -1463,6 +1463,134 @@ static bool glob_sym_btf_matches(const char *sym_name, bool exact,
- 	}
- }
+diff --git a/tools/testing/selftests/bpf/Makefile b/tools/testing/selftests/bpf/Makefile
+index c45ae13b88a0..4ff4dc3710cd 100644
+--- a/tools/testing/selftests/bpf/Makefile
++++ b/tools/testing/selftests/bpf/Makefile
+@@ -21,7 +21,7 @@ endif
  
-+static bool map_defs_match(const char *sym_name,
-+			   const struct btf *main_btf,
-+			   const struct btf_map_def *main_def,
-+			   const struct btf_map_def *main_inner_def,
-+			   const struct btf *extra_btf,
-+			   const struct btf_map_def *extra_def,
-+			   const struct btf_map_def *extra_inner_def)
-+{
-+	const char *reason;
-+
-+	if (main_def->map_type != extra_def->map_type) {
-+		reason = "type";
-+		goto mismatch;
-+	}
-+
-+	/* check key type/size match */
-+	if (main_def->key_size != extra_def->key_size) {
-+		reason = "key_size";
-+		goto mismatch;
-+	}
-+	if (!!main_def->key_type_id != !!extra_def->key_type_id) {
-+		reason = "key type";
-+		goto mismatch;
-+	}
-+	if ((main_def->parts & MAP_DEF_KEY_TYPE)
-+	     && !glob_sym_btf_matches(sym_name, true /*exact*/,
-+				      main_btf, main_def->key_type_id,
-+				      extra_btf, extra_def->key_type_id)) {
-+		reason = "key type";
-+		goto mismatch;
-+	}
-+
-+	/* validate value type/size match */
-+	if (main_def->value_size != extra_def->value_size) {
-+		reason = "value_size";
-+		goto mismatch;
-+	}
-+	if (!!main_def->value_type_id != !!extra_def->value_type_id) {
-+		reason = "value type";
-+		goto mismatch;
-+	}
-+	if ((main_def->parts & MAP_DEF_VALUE_TYPE)
-+	     && !glob_sym_btf_matches(sym_name, true /*exact*/,
-+				      main_btf, main_def->value_type_id,
-+				      extra_btf, extra_def->value_type_id)) {
-+		reason = "key type";
-+		goto mismatch;
-+	}
-+
-+	if (main_def->max_entries != extra_def->max_entries) {
-+		reason = "max_entries";
-+		goto mismatch;
-+	}
-+	if (main_def->map_flags != extra_def->map_flags) {
-+		reason = "map_flags";
-+		goto mismatch;
-+	}
-+	if (main_def->numa_node != extra_def->numa_node) {
-+		reason = "numa_node";
-+		goto mismatch;
-+	}
-+	if (main_def->pinning != extra_def->pinning) {
-+		reason = "pinning";
-+		goto mismatch;
-+	}
-+
-+	if ((main_def->parts & MAP_DEF_INNER_MAP) != (extra_def->parts & MAP_DEF_INNER_MAP)) {
-+		reason = "inner map";
-+		goto mismatch;
-+	}
-+
-+	if (main_def->parts & MAP_DEF_INNER_MAP) {
-+		char inner_map_name[128];
-+
-+		snprintf(inner_map_name, sizeof(inner_map_name), "%s.inner", sym_name);
-+
-+		return map_defs_match(inner_map_name,
-+				      main_btf, main_inner_def, NULL,
-+				      extra_btf, extra_inner_def, NULL);
-+	}
-+
-+	return true;
-+
-+mismatch:
-+	pr_warn("global '%s': map %s mismatch\n", sym_name, reason);
-+	return false;
-+}
-+
-+static bool glob_map_defs_match(const char *sym_name,
-+				struct bpf_linker *linker, struct glob_sym *glob_sym,
-+				struct src_obj *obj, Elf64_Sym *sym, int btf_id)
-+{
-+	struct btf_map_def dst_def = {}, dst_inner_def = {};
-+	struct btf_map_def src_def = {}, src_inner_def = {};
-+	const struct btf_type *t;
-+	int err;
-+
-+	t = btf__type_by_id(obj->btf, btf_id);
-+	if (!btf_is_var(t)) {
-+		pr_warn("global '%s': invalid map definition type [%d]\n", sym_name, btf_id);
-+		return false;
-+	}
-+	t = skip_mods_and_typedefs(obj->btf, t->type, NULL);
-+
-+	err = parse_btf_map_def(sym_name, obj->btf, t, true /*strict*/, &src_def, &src_inner_def);
-+	if (err) {
-+		pr_warn("global '%s': invalid map definition\n", sym_name);
-+		return false;
-+	}
-+
-+	/* re-parse existing map definition */
-+	t = btf__type_by_id(linker->btf, glob_sym->btf_id);
-+	t = skip_mods_and_typedefs(linker->btf, t->type, NULL);
-+	err = parse_btf_map_def(sym_name, linker->btf, t, true /*strict*/, &dst_def, &dst_inner_def);
-+	if (err) {
-+		/* this should not happen, because we already validated it */
-+		pr_warn("global '%s': invalid dst map definition\n", sym_name);
-+		return false;
-+	}
-+
-+	/* Currently extern map definition has to be complete and match
-+	 * concrete map definition exactly. This restriction might be lifted
-+	 * in the future.
-+	 */
-+	return map_defs_match(sym_name, linker->btf, &dst_def, &dst_inner_def,
-+			      obj->btf, &src_def, &src_inner_def);
-+}
-+
- static bool glob_syms_match(const char *sym_name,
- 			    struct bpf_linker *linker, struct glob_sym *glob_sym,
- 			    struct src_obj *obj, Elf64_Sym *sym, size_t sym_idx, int btf_id)
-@@ -1484,6 +1612,10 @@ static bool glob_syms_match(const char *sym_name,
- 		return false;
- 	}
+ BPF_GCC		?= $(shell command -v bpf-gcc;)
+ SAN_CFLAGS	?=
+-CFLAGS += -g -Og -rdynamic -Wall $(GENFLAGS) $(SAN_CFLAGS)		\
++CFLAGS += -g -O0 -rdynamic -Wall $(GENFLAGS) $(SAN_CFLAGS)		\
+ 	  -I$(CURDIR) -I$(INCLUDE_DIR) -I$(GENDIR) -I$(LIBDIR)		\
+ 	  -I$(TOOLSINCDIR) -I$(APIDIR) -I$(OUTPUT)			\
+ 	  -Dbpf_prog_load=bpf_prog_test_load				\
+@@ -206,7 +206,7 @@ $(DEFAULT_BPFTOOL): $(wildcard $(BPFTOOLDIR)/*.[ch] $(BPFTOOLDIR)/Makefile)    \
+ 		    $(HOST_BPFOBJ) | $(HOST_BUILD_DIR)/bpftool
+ 	$(Q)$(MAKE) $(submake_extras)  -C $(BPFTOOLDIR)			       \
+ 		    CC=$(HOSTCC) LD=$(HOSTLD)				       \
+-		    EXTRA_CFLAGS='-g -Og'				       \
++		    EXTRA_CFLAGS='-g -O0'				       \
+ 		    OUTPUT=$(HOST_BUILD_DIR)/bpftool/			       \
+ 		    prefix= DESTDIR=$(HOST_SCRATCH_DIR)/ install
  
-+	/* deal with .maps definitions specially */
-+	if (glob_sym->sec_id && strcmp(linker->secs[glob_sym->sec_id].sec_name, MAPS_ELF_SEC) == 0)
-+		return glob_map_defs_match(sym_name, linker, glob_sym, obj, sym, btf_id);
-+
- 	if (!glob_sym_btf_matches(sym_name, true /*exact*/,
- 				  linker->btf, glob_sym->btf_id, obj->btf, btf_id))
- 		return false;
+@@ -224,7 +224,7 @@ $(BPFOBJ): $(wildcard $(BPFDIR)/*.[ch] $(BPFDIR)/Makefile)		       \
+ 	   ../../../include/uapi/linux/bpf.h                                   \
+ 	   | $(INCLUDE_DIR) $(BUILD_DIR)/libbpf
+ 	$(Q)$(MAKE) $(submake_extras) -C $(BPFDIR) OUTPUT=$(BUILD_DIR)/libbpf/ \
+-		    EXTRA_CFLAGS='-g -Og'					       \
++		    EXTRA_CFLAGS='-g -O0'				       \
+ 		    DESTDIR=$(SCRATCH_DIR) prefix= all install_headers
+ 
+ ifneq ($(BPFOBJ),$(HOST_BPFOBJ))
+@@ -232,7 +232,7 @@ $(HOST_BPFOBJ): $(wildcard $(BPFDIR)/*.[ch] $(BPFDIR)/Makefile)                \
+ 	   ../../../include/uapi/linux/bpf.h                                   \
+ 	   | $(INCLUDE_DIR) $(HOST_BUILD_DIR)/libbpf
+ 	$(Q)$(MAKE) $(submake_extras) -C $(BPFDIR)                             \
+-		    EXTRA_CFLAGS='-g -Og'					       \
++		    EXTRA_CFLAGS='-g -O0'				       \
+ 		    OUTPUT=$(HOST_BUILD_DIR)/libbpf/ CC=$(HOSTCC) LD=$(HOSTLD) \
+ 		    DESTDIR=$(HOST_SCRATCH_DIR)/ prefix= all install_headers
+ endif
 -- 
 2.30.2
 
