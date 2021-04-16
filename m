@@ -2,113 +2,146 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 36B35362795
-	for <lists+netdev@lfdr.de>; Fri, 16 Apr 2021 20:19:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D65E9362797
+	for <lists+netdev@lfdr.de>; Fri, 16 Apr 2021 20:19:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244624AbhDPSTe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 16 Apr 2021 14:19:34 -0400
-Received: from pop31.abv.bg ([194.153.145.221]:53764 "EHLO pop31.abv.bg"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S236112AbhDPSTe (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 16 Apr 2021 14:19:34 -0400
-X-Greylist: delayed 315 seconds by postgrey-1.27 at vger.kernel.org; Fri, 16 Apr 2021 14:19:33 EDT
-Received: from smtp.abv.bg (localhost [127.0.0.1])
-        by pop31.abv.bg (Postfix) with ESMTP id 6B2ED1805913;
-        Fri, 16 Apr 2021 21:13:44 +0300 (EEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=abv.bg; s=smtp-out;
-        t=1618596824; bh=DFyGWRt2O/n2LfjlOnW/zpPJa0sAE+09jDo5uiYtOLU=;
-        h=From:Subject:Date:Cc:To:From;
-        b=B8qYhrcvPKG7LzA1pPv4Y3CDPe8q0m9e4trDm9TOJiqlB+HVEewZ3l5SxTQkARi/N
-         dDrSHRjDpFQ2ccCshXjbKo7ucc3146tpfhciL3mIDFBur8D9NA/JrE7MhIGmHPe8Ua
-         S2npeyDoFgSrOkHy1sDMiVTl0RnUE+oQ1IRbJGY4=
-X-HELO: [192.168.192.3]
-Authentication-Results: smtp.abv.bg; auth=pass (plain) smtp.auth=gvalkov@abv.bg
-Received: from 212-39-89-202.ip.btc-net.bg (HELO [192.168.192.3]) (212.39.89.202)
- by smtp.abv.bg (qpsmtpd/0.96) with ESMTPSA (ECDHE-RSA-AES256-GCM-SHA384 encrypted); Fri, 16 Apr 2021 21:13:44 +0300
-From:   Georgi Valkov <gvalkov@abv.bg>
-Content-Type: text/plain;
-        charset=us-ascii
+        id S244640AbhDPSUP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 16 Apr 2021 14:20:15 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:47347 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S236112AbhDPSUP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 16 Apr 2021 14:20:15 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1618597189;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=8Rg473Jfl5bMjFNj4KOIAigsUlJm5lacZtqrbLYBKso=;
+        b=N7SLWjejz+gP1cIi18c5NFkyiI0JM/tE51R0XoyFYUNEQTeLI6JezkqZMpOF093T2hbaav
+        O7caRIFv3POCkmj2GezQW98aq/MPrUAwoy3XM89B8FnWunG/Q4A22LSSrwf0oDOwaDOOzw
+        3yBQyTfWm+eswpw1Bg6CczgMk3xC/R0=
+Received: from mail-ed1-f69.google.com (mail-ed1-f69.google.com
+ [209.85.208.69]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-360-eecSMXTlNMyJS7ZVjbECTg-1; Fri, 16 Apr 2021 14:19:45 -0400
+X-MC-Unique: eecSMXTlNMyJS7ZVjbECTg-1
+Received: by mail-ed1-f69.google.com with SMTP id co5-20020a0564020c05b02903825bcdad12so7414677edb.0
+        for <netdev@vger.kernel.org>; Fri, 16 Apr 2021 11:19:45 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
+         :message-id:mime-version:content-transfer-encoding;
+        bh=8Rg473Jfl5bMjFNj4KOIAigsUlJm5lacZtqrbLYBKso=;
+        b=NH1IgI0Q/RMdtu6HYsmb1TkimUPZ/+XSVbSD72fiQnF80Yt1I/POmPRIB7HSPXvFGr
+         PkOTa3wMyBxPt4pGCGZ3vq4T/obJexe/bo4aCHaCuPJWldtJQrLMNNwGpWt5YZFyMeYF
+         A7LQE9P5hGT2VrDjwn3lxYQvbKeg1bUsm5120AVxODQxTHhTzM+s/WFTdXDXjV6iBUho
+         LEB1DGpY0ugRYCbR/aOVMBHafpw2FH+uhYkLW9ASBfo3vuhhIrrnAyy/cgQtmSclt+Nb
+         eCBBlHMS21QqNqTiuG6/ukxLYSru1Ztb5566li62G3qe5nZ2+a8tU13+SL6SGdoqfBRa
+         q/7Q==
+X-Gm-Message-State: AOAM5315bUTMUClRv2sSnlOSkC3B1O175rghB4/RxO4DA+9SDyafkezP
+        ctH++rHO+dV8e+eiYaUkCtbn/s+ZcrVUF+LTkdyZLd6lFxfoF0ZJIYNC0Uy2VcmN+cmCzMAEUjX
+        vp6kYDx2R/RlcJTUZ
+X-Received: by 2002:a17:906:170f:: with SMTP id c15mr9547722eje.358.1618597184338;
+        Fri, 16 Apr 2021 11:19:44 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJzl/Lz5LA8GVyt2djw8aha/cB27VbHUh3F5vpjhGqGtM21ZiSze9dzOrb2SdJ/Ydg8Tj4gBSA==
+X-Received: by 2002:a17:906:170f:: with SMTP id c15mr9547693eje.358.1618597183905;
+        Fri, 16 Apr 2021 11:19:43 -0700 (PDT)
+Received: from alrua-x1.borgediget.toke.dk ([2a0c:4d80:42:443::2])
+        by smtp.gmail.com with ESMTPSA id h15sm4789940ejs.72.2021.04.16.11.19.43
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 16 Apr 2021 11:19:43 -0700 (PDT)
+Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
+        id 76E161806B2; Fri, 16 Apr 2021 20:19:42 +0200 (CEST)
+From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
+To:     Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Toshiaki Makita <toshiaki.makita1@gmail.com>,
+        Lorenzo Bianconi <lorenzo@kernel.org>
+Subject: Re: [PATCH net-next 2/4] veth: allow enabling NAPI even without XDP
+In-Reply-To: <9111f5868bac3d3d4de52263f6df8da051cdfcf9.camel@redhat.com>
+References: <cover.1617965243.git.pabeni@redhat.com>
+ <dbc26ec87852a112126c83ae546f367841ec554d.1617965243.git.pabeni@redhat.com>
+ <87v98vtsgg.fsf@toke.dk>
+ <d9b5f599380d32a28026d5a758cc46edf2ba23d8.camel@redhat.com>
+ <87blaegsda.fsf@toke.dk>
+ <9111f5868bac3d3d4de52263f6df8da051cdfcf9.camel@redhat.com>
+X-Clacks-Overhead: GNU Terry Pratchett
+Date:   Fri, 16 Apr 2021 20:19:42 +0200
+Message-ID: <871rbagkht.fsf@toke.dk>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: quoted-printable
-Mime-Version: 1.0 (Mac OS X Mail 14.0 \(3654.60.0.2.21\))
-Subject: usbnet: ipheth: fix EOVERFLOW in ipheth_rcvbulk_callback
-Message-Id: <833FE09E-2542-4F3F-87D6-DD03084C0FD5@abv.bg>
-Date:   Fri, 16 Apr 2021 21:13:40 +0300
-Cc:     oneukum@suse.com, matti.vuorela@bitfactor.fi
-To:     corsac@corsac.net, netdev@vger.kernel.org,
-        linux-usb@vger.kernel.org
-X-Mailer: Apple Mail (2.3654.60.0.2.21)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Dear Linux kernel team,
+Paolo Abeni <pabeni@redhat.com> writes:
 
-Please accept the following important fix from me:
-https://github.com/httpstorm/linux-kernel/tree/ipheth-fix-RX-EOVERFLOW
+> On Fri, 2021-04-16 at 17:29 +0200, Toke H=C3=B8iland-J=C3=B8rgensen wrote:
+>> Paolo Abeni <pabeni@redhat.com> writes:
+>>=20
+>> > On Fri, 2021-04-09 at 16:58 +0200, Toke H=C3=B8iland-J=C3=B8rgensen wr=
+ote:
+>> > > Paolo Abeni <pabeni@redhat.com> writes:
+>> > >=20
+>> > > > Currently the veth device has the GRO feature bit set, even if
+>> > > > no GRO aggregation is possible with the default configuration,
+>> > > > as the veth device does not hook into the GRO engine.
+>> > > >=20
+>> > > > Flipping the GRO feature bit from user-space is a no-op, unless
+>> > > > XDP is enabled. In such scenario GRO could actually take place, but
+>> > > > TSO is forced to off on the peer device.
+>> > > >=20
+>> > > > This change allow user-space to really control the GRO feature, wi=
+th
+>> > > > no need for an XDP program.
+>> > > >=20
+>> > > > The GRO feature bit is now cleared by default - so that there are =
+no
+>> > > > user-visible behavior changes with the default configuration.
+>> > > >=20
+>> > > > When the GRO bit is set, the per-queue NAPI instances are initiali=
+zed
+>> > > > and registered. On xmit, when napi instances are available, we try
+>> > > > to use them.
+>> > >=20
+>> > > Am I mistaken in thinking that this also makes XDP redirect into a v=
+eth
+>> > > work without having to load an XDP program on the peer device? That's
+>> > > been a long-outstanding thing we've been meaning to fix, so that wou=
+ld
+>> > > be awesome! :)
+>> >=20
+>> > I have not experimented that, and I admit gross ignorance WRT this
+>> > argument, but AFAICS the needed bits to get XDP redirect working on
+>> > veth are the ptr_ring initialization and the napi instance available.
+>> >=20
+>> > With this patch both are in place when GRO is enabled, so I guess XPD
+>> > redirect should work, too (modulo bugs for untested scenario).
+>>=20
+>> OK, finally got around to testing this; it doesn't quite work with just
+>> your patch, because veth_xdp_xmit() still checks for rq->xdp_prog
+>> instead of rq->napi. Fixing this indeed enabled veth to be an
+>> XDP_REDIRECT target without an XDP program loaded on the peer. So yay!
+>> I'll send a followup fixing that check.
+>
+> Thank you for double checking!
+>
+>> So with this we seem to have some nice improvements in both
+>> functionality and performance when GRO is turned on; so any reason why
+>> we shouldn't just flip the default to on?
+>
+> Uhmmm... patch 3/4 should avoid the GRO overhead for most cases where
+> we can't leverage the aggregation benefit, but I'm not 110% sure that
+> enabling GRO by default will not cause performance regressions in some
+> scenarios.
+>
+> It this proves to be always a win we can still change the default
+> later, I think.
 
-While commit f33d9e2b48a34e1558b67a473a1fc1d6e793f93c
-is required for iOS 14, only the TX buffers should be reduced
-to 1514 bytes. RX buffers should remain at 1516 bytes, because
-their size is reduced later by IPHETH_IP_ALIGN (2 bytes).
+Alright, sure, let's hold off on that and revisit once this has had some
+more testing :)
 
-
-=46rom dd109ded2b526636fff438d33433ab64ffd21583 Mon Sep 17 00:00:00 2001
-From: Georgi Valkov <gvalkov@abv.bg>
-Date: Fri, 16 Apr 2021 20:44:36 +0300
-Subject: [PATCH] usbnet: ipheth: fix EOVERFLOW in =
-ipheth_rcvbulk_callback
-
-When rx_buf is allocated we need to account for IPHETH_IP_ALIGN,
-which reduces the usable size by 2 bytes. Otherwise we have 1512
-bytes usable instead of 1514, and if we receive more than 1512
-bytes, ipheth_rcvbulk_callback is called with status -EOVERFLOW,
-after which the driver malfunctiones and all communication stops.
-
-Fixes: ipheth 2-1:4.2: ipheth_rcvbulk_callback: urb status: -75
-
-Signed-off-by: Georgi Valkov <gvalkov@abv.bg>
----
- drivers/net/usb/ipheth.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
-
-diff --git a/drivers/net/usb/ipheth.c b/drivers/net/usb/ipheth.c
-index 207e59e74935..06d9f19ca142 100644
---- a/drivers/net/usb/ipheth.c
-+++ b/drivers/net/usb/ipheth.c
-@@ -121,7 +121,7 @@ static int ipheth_alloc_urbs(struct ipheth_device =
-*iphone)
- 	if (tx_buf =3D=3D NULL)
- 		goto free_rx_urb;
-=20
--	rx_buf =3D usb_alloc_coherent(iphone->udev, IPHETH_BUF_SIZE,
-+	rx_buf =3D usb_alloc_coherent(iphone->udev, IPHETH_BUF_SIZE + =
-IPHETH_IP_ALIGN,
- 				    GFP_KERNEL, &rx_urb->transfer_dma);
- 	if (rx_buf =3D=3D NULL)
- 		goto free_tx_buf;
-@@ -146,7 +146,7 @@ static int ipheth_alloc_urbs(struct ipheth_device =
-*iphone)
-=20
- static void ipheth_free_urbs(struct ipheth_device *iphone)
- {
--	usb_free_coherent(iphone->udev, IPHETH_BUF_SIZE, iphone->rx_buf,
-+	usb_free_coherent(iphone->udev, IPHETH_BUF_SIZE + =
-IPHETH_IP_ALIGN, iphone->rx_buf,
- 			  iphone->rx_urb->transfer_dma);
- 	usb_free_coherent(iphone->udev, IPHETH_BUF_SIZE, iphone->tx_buf,
- 			  iphone->tx_urb->transfer_dma);
-@@ -317,7 +317,7 @@ static int ipheth_rx_submit(struct ipheth_device =
-*dev, gfp_t mem_flags)
-=20
- 	usb_fill_bulk_urb(dev->rx_urb, udev,
- 			  usb_rcvbulkpipe(udev, dev->bulk_in),
--			  dev->rx_buf, IPHETH_BUF_SIZE,
-+			  dev->rx_buf, IPHETH_BUF_SIZE + =
-IPHETH_IP_ALIGN,
- 			  ipheth_rcvbulk_callback,
- 			  dev);
- 	dev->rx_urb->transfer_flags |=3D URB_NO_TRANSFER_DMA_MAP;
---=20
-2.31.1
-
+-Toke
 
