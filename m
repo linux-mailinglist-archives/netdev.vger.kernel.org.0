@@ -2,128 +2,244 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DE6AB362397
-	for <lists+netdev@lfdr.de>; Fri, 16 Apr 2021 17:16:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BE8583623C3
+	for <lists+netdev@lfdr.de>; Fri, 16 Apr 2021 17:22:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245435AbhDPPNo convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Fri, 16 Apr 2021 11:13:44 -0400
-Received: from us-smtp-delivery-44.mimecast.com ([207.211.30.44]:26386 "EHLO
-        us-smtp-delivery-44.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S244955AbhDPPN0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 16 Apr 2021 11:13:26 -0400
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-137-aMx0w6q8NOSY-8kv_mW_dQ-1; Fri, 16 Apr 2021 11:11:52 -0400
-X-MC-Unique: aMx0w6q8NOSY-8kv_mW_dQ-1
-Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id AD06C85EE8B;
-        Fri, 16 Apr 2021 15:11:50 +0000 (UTC)
-Received: from hog.localdomain (unknown [10.40.192.89])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id CFECE196E3;
-        Fri, 16 Apr 2021 15:11:48 +0000 (UTC)
-From:   Sabrina Dubroca <sd@queasysnail.net>
-To:     netdev@vger.kernel.org
-Cc:     steffen.klassert@secunet.com, Sabrina Dubroca <sd@queasysnail.net>,
-        Juri Lelli <jlelli@redhat.com>, Xiumei Mu <xmu@redhat.com>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Subject: [PATCH ipsec-next] xfrm: ipcomp: remove unnecessary get_cpu()
-Date:   Fri, 16 Apr 2021 17:11:46 +0200
-Message-Id: <2bc5f05b0c50082cf0f5c817ae7c9f660848f146.1618394396.git.sd@queasysnail.net>
+        id S244655AbhDPPVw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 16 Apr 2021 11:21:52 -0400
+Received: from mail.kernel.org ([198.145.29.99]:45386 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S240740AbhDPPUS (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 16 Apr 2021 11:20:18 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 126B76124B;
+        Fri, 16 Apr 2021 15:19:53 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1618586393;
+        bh=pSsgz6SFE9awjWhpCd9doKdNFULnoUddJE0eDHwlPEw=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=UxAqG9OtRb+QQxIjEDiDCQjDyuQCAA2d4ZFOE0N0q01hfecceetNP30Wn2cpoOVE9
+         WzIl3RlQROaX8eslzhr1HB02OC63p5qRAgAuwInnYgmiv5fbcBC9TWTmYo232GGxlq
+         zl187zQg298hyuS7vBp9IbYu6DRnXQnCKamPIPA4bmh5K0mikLKCBT6to2dCP1x8ty
+         zZx9ADxRCSv4iMzbDba1VKhTd/WRazgU+F/ual3PjLXwH8R3NcS540TNXA2d3csxLQ
+         52sEoFTMSZBaj5Io5xR7NND2H/FGQQX/xOraxhVAgnOADPCX7A2gJRiZJ6UQi8EIca
+         qbHUW/1etaTZw==
+Received: by mail-qv1-f50.google.com with SMTP id dp18so8964626qvb.5;
+        Fri, 16 Apr 2021 08:19:53 -0700 (PDT)
+X-Gm-Message-State: AOAM532l1zBWHnAq4t2Jj5dnVbng16I/pUevkfmsOrp4a9gX2OyAZlsE
+        nsvKvN+kzewR/ABkKCT91eKm6uDkXmC8UEFLuQ==
+X-Google-Smtp-Source: ABdhPJwFV5j0PpR0OOvbKTHrtQGM0/UHlnjLPz7IjIHFauq3IAwfsuj1+lSbzphYfDXiggRtdMYLzMTYnQvOIyCHQj8=
+X-Received: by 2002:ad4:5a07:: with SMTP id ei7mr8951384qvb.50.1618586391992;
+ Fri, 16 Apr 2021 08:19:51 -0700 (PDT)
 MIME-Version: 1.0
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: queasysnail.net
-Content-Transfer-Encoding: 8BIT
-Content-Type: text/plain; charset=WINDOWS-1252
+References: <20210412174718.17382-1-michael@walle.cc> <20210412174718.17382-3-michael@walle.cc>
+ <730d603b12e590c56770309b4df2bd668f7afbe3.camel@kernel.crashing.org> <8157eba9317609294da80472622deb28@walle.cc>
+In-Reply-To: <8157eba9317609294da80472622deb28@walle.cc>
+From:   Rob Herring <robh+dt@kernel.org>
+Date:   Fri, 16 Apr 2021 10:19:40 -0500
+X-Gmail-Original-Message-ID: <CAL_JsqLrx6nFZrKiEtm2a1vDvQGG+FkpGtJCG2osM8hhGo3P=Q@mail.gmail.com>
+Message-ID: <CAL_JsqLrx6nFZrKiEtm2a1vDvQGG+FkpGtJCG2osM8hhGo3P=Q@mail.gmail.com>
+Subject: Re: [PATCH net-next v4 2/2] of: net: fix of_get_mac_addr_nvmem() for
+ non-platform devices
+To:     Michael Walle <michael@walle.cc>
+Cc:     Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        QCA ath9k Development <ath9k-devel@qca.qualcomm.com>,
+        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
+        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        linuxppc-dev <linuxppc-dev@lists.ozlabs.org>,
+        netdev <netdev@vger.kernel.org>,
+        "moderated list:ARM/Mediatek SoC support" 
+        <linux-mediatek@lists.infradead.org>,
+        "open list:MEDIA DRIVERS FOR RENESAS - FCP" 
+        <linux-renesas-soc@vger.kernel.org>,
+        "moderated list:ARM/STM32 ARCHITECTURE" 
+        <linux-stm32@st-md-mailman.stormreply.com>,
+        "open list:ARM/Amlogic Meson..." <linux-amlogic@lists.infradead.org>,
+        linux-oxnas@groups.io, linux-omap <linux-omap@vger.kernel.org>,
+        linux-wireless <linux-wireless@vger.kernel.org>,
+        devicetree@vger.kernel.org, linux-staging@lists.linux.dev,
+        Andrew Lunn <andrew@lunn.ch>,
+        Gregory Clement <gregory.clement@bootlin.com>,
+        Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Paul Mackerras <paulus@samba.org>,
+        Andreas Larsson <andreas@gaisler.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Maxime Ripard <mripard@kernel.org>,
+        Chen-Yu Tsai <wens@csie.org>,
+        Jernej Skrabec <jernej.skrabec@siol.net>,
+        Joyce Ooi <joyce.ooi@intel.com>,
+        Chris Snook <chris.snook@gmail.com>,
+        =?UTF-8?B?UmFmYcWCIE1pxYJlY2tp?= <rafal@milecki.pl>,
+        "maintainer:BROADCOM BCM7XXX ARM ARCHITECTURE" 
+        <bcm-kernel-feedback-list@broadcom.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Nicolas Ferre <nicolas.ferre@microchip.com>,
+        Claudiu Beznea <claudiu.beznea@microchip.com>,
+        Sunil Goutham <sgoutham@marvell.com>,
+        Fugang Duan <fugang.duan@nxp.com>,
+        Madalin Bucur <madalin.bucur@nxp.com>,
+        Pantelis Antoniou <pantelis.antoniou@gmail.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Li Yang <leoyang.li@nxp.com>,
+        Yisen Zhuang <yisen.zhuang@huawei.com>,
+        Salil Mehta <salil.mehta@huawei.com>,
+        Hauke Mehrtens <hauke@hauke-m.de>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        Vadym Kochan <vkochan@marvell.com>,
+        Taras Chornyi <tchornyi@marvell.com>,
+        Mirko Lindner <mlindner@marvell.com>,
+        Stephen Hemminger <stephen@networkplumber.org>,
+        Felix Fietkau <nbd@nbd.name>, John Crispin <john@phrozen.org>,
+        Sean Wang <sean.wang@mediatek.com>,
+        Mark Lee <Mark-MC.Lee@mediatek.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Bryan Whitehead <bryan.whitehead@microchip.com>,
+        Vladimir Zapolskiy <vz@mleia.com>,
+        Sergei Shtylyov <sergei.shtylyov@gmail.com>,
+        Byungho An <bh74.an@samsung.com>,
+        Kunihiko Hayashi <hayashi.kunihiko@socionext.com>,
+        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@st.com>,
+        Jose Abreu <joabreu@synopsys.com>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Shawn Guo <shawnguo@kernel.org>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        Fabio Estevam <festevam@gmail.com>,
+        NXP Linux Team <linux-imx@nxp.com>,
+        Kevin Hilman <khilman@baylibre.com>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        Jerome Brunet <jbrunet@baylibre.com>,
+        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
+        Vinod Koul <vkoul@kernel.org>,
+        Nobuhiro Iwamatsu <nobuhiro1.iwamatsu@toshiba.co.jp>,
+        Grygorii Strashko <grygorii.strashko@ti.com>,
+        Wingman Kwok <w-kwok2@ti.com>,
+        Murali Karicheri <m-karicheri2@ti.com>,
+        Michal Simek <michal.simek@xilinx.com>,
+        Radhey Shyam Pandey <radhey.shyam.pandey@xilinx.com>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        Lorenzo Bianconi <lorenzo.bianconi83@gmail.com>,
+        Ryder Lee <ryder.lee@mediatek.com>,
+        Stanislaw Gruszka <stf_xl@wp.pl>,
+        Helmut Schaa <helmut.schaa@googlemail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Frank Rowand <frowand.list@gmail.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        =?UTF-8?B?SsOpcsO0bWUgUG91aWxsZXI=?= <jerome.pouiller@silabs.com>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-While testing ipcomp on a realtime kernel, Xiumei reported a "sleeping
-in atomic" bug, caused by a memory allocation while preemption is
-disabled (ipcomp_decompress -> alloc_page -> ... get_page_from_freelist).
+On Fri, Apr 16, 2021 at 2:30 AM Michael Walle <michael@walle.cc> wrote:
+>
+> Am 2021-04-16 05:24, schrieb Benjamin Herrenschmidt:
+> > On Mon, 2021-04-12 at 19:47 +0200, Michael Walle wrote:
+> >>
+> >>  /**
+> >>   * of_get_phy_mode - Get phy mode for given device_node
+> >> @@ -59,15 +60,39 @@ static int of_get_mac_addr(struct device_node *np,
+> >> const char *name, u8 *addr)
+> >>  static int of_get_mac_addr_nvmem(struct device_node *np, u8 *addr)
+> >>  {
+> >>         struct platform_device *pdev = of_find_device_by_node(np);
+> >> +       struct nvmem_cell *cell;
+> >> +       const void *mac;
+> >> +       size_t len;
+> >>         int ret;
+> >>
+> >> -       if (!pdev)
+> >> -               return -ENODEV;
+> >> +       /* Try lookup by device first, there might be a
+> >> nvmem_cell_lookup
+> >> +        * associated with a given device.
+> >> +        */
+> >> +       if (pdev) {
+> >> +               ret = nvmem_get_mac_address(&pdev->dev, addr);
+> >> +               put_device(&pdev->dev);
+> >> +               return ret;
+> >> +       }
+> >> +
+> >
+> > This smells like the wrong band aid :)
+> >
+> > Any struct device can contain an OF node pointer these days.
+>
+> But not all nodes might have an associated device, see DSA for example.
 
-As Sebastian noted [1], this get_cpu() isn't actually needed, since
-ipcomp_decompress() is called in napi context anyway, so BH is already
-disabled.
+I believe what Ben is saying and what I said earlier is going from dev
+-> OF node is right and OF node -> dev is wrong. If you only have an
+OF node, then use an of_* function.
 
-This patch replaces get_cpu + per_cpu_ptr with this_cpu_ptr, then
-simplifies the error returns, since there isn't any common operation
-left.
+> And as the name suggests of_get_mac_address() operates on a node. So
+> if a driver calls of_get_mac_address() it should work on the node. What
+> is wrong IMHO, is that the ethernet drivers where the corresponding
+> board
+> has a nvmem_cell_lookup registered is calling of_get_mac_address(node).
+> It should rather call eth_get_mac_address(dev) in the first place.
+>
+> One would need to figure out if there is an actual device (with an
+> assiciated of_node), then call eth_get_mac_address(dev) and if there
+> isn't a device call of_get_mac_address(node).
 
-[1] https://lore.kernel.org/lkml/20190820082810.ixkmi56fp7u7eyn2@linutronix.de/
+Yes, I think we're all in agreement.
 
-Cc: Juri Lelli <jlelli@redhat.com>
-Reported-by: Xiumei Mu <xmu@redhat.com>
-Suggested-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Signed-off-by: Sabrina Dubroca <sd@queasysnail.net>
----
- net/xfrm/xfrm_ipcomp.c | 25 ++++++++-----------------
- 1 file changed, 8 insertions(+), 17 deletions(-)
+> But I don't know if that is easy to figure out. Well, one could start
+> with just the device where nvmem_cell_lookup is used. Then we could
+> drop the workaround above.
 
-diff --git a/net/xfrm/xfrm_ipcomp.c b/net/xfrm/xfrm_ipcomp.c
-index 4d422447aadc..2e8afe078d61 100644
---- a/net/xfrm/xfrm_ipcomp.c
-+++ b/net/xfrm/xfrm_ipcomp.c
-@@ -41,19 +41,16 @@ static int ipcomp_decompress(struct xfrm_state *x, struct sk_buff *skb)
- 	const int plen = skb->len;
- 	int dlen = IPCOMP_SCRATCH_SIZE;
- 	const u8 *start = skb->data;
--	const int cpu = get_cpu();
--	u8 *scratch = *per_cpu_ptr(ipcomp_scratches, cpu);
--	struct crypto_comp *tfm = *per_cpu_ptr(ipcd->tfms, cpu);
-+	u8 *scratch = *this_cpu_ptr(ipcomp_scratches);
-+	struct crypto_comp *tfm = *this_cpu_ptr(ipcd->tfms);
- 	int err = crypto_comp_decompress(tfm, start, plen, scratch, &dlen);
- 	int len;
- 
- 	if (err)
--		goto out;
-+		return err;
- 
--	if (dlen < (plen + sizeof(struct ip_comp_hdr))) {
--		err = -EINVAL;
--		goto out;
--	}
-+	if (dlen < (plen + sizeof(struct ip_comp_hdr)))
-+		return -EINVAL;
- 
- 	len = dlen - plen;
- 	if (len > skb_tailroom(skb))
-@@ -68,16 +65,14 @@ static int ipcomp_decompress(struct xfrm_state *x, struct sk_buff *skb)
- 		skb_frag_t *frag;
- 		struct page *page;
- 
--		err = -EMSGSIZE;
- 		if (WARN_ON(skb_shinfo(skb)->nr_frags >= MAX_SKB_FRAGS))
--			goto out;
-+			return -EMSGSIZE;
- 
- 		frag = skb_shinfo(skb)->frags + skb_shinfo(skb)->nr_frags;
- 		page = alloc_page(GFP_ATOMIC);
- 
--		err = -ENOMEM;
- 		if (!page)
--			goto out;
-+			return -ENOMEM;
- 
- 		__skb_frag_set_page(frag, page);
- 
-@@ -96,11 +91,7 @@ static int ipcomp_decompress(struct xfrm_state *x, struct sk_buff *skb)
- 		skb_shinfo(skb)->nr_frags++;
- 	}
- 
--	err = 0;
--
--out:
--	put_cpu();
--	return err;
-+	return 0;
- }
- 
- int ipcomp_input(struct xfrm_state *x, struct sk_buff *skb)
--- 
-2.31.1
+Start with the ones just passing dev.of_node directly:
 
+$ git grep 'of_get_mac_address(.*of_node)'
+drivers/net/ethernet/aeroflex/greth.c:          addr =
+of_get_mac_address(ofdev->dev.of_node);
+drivers/net/ethernet/altera/altera_tse_main.c:  macaddr =
+of_get_mac_address(pdev->dev.of_node);
+drivers/net/ethernet/arc/emac_main.c:   mac_addr =
+of_get_mac_address(dev->of_node);
+drivers/net/ethernet/broadcom/bgmac-bcma.c:             mac =
+of_get_mac_address(bgmac->dev->of_node);
+drivers/net/ethernet/cavium/octeon/octeon_mgmt.c:       mac =
+of_get_mac_address(pdev->dev.of_node);
+drivers/net/ethernet/ethoc.c:           mac =
+of_get_mac_address(pdev->dev.of_node);
+drivers/net/ethernet/ezchip/nps_enet.c: mac_addr =
+of_get_mac_address(dev->of_node);
+drivers/net/ethernet/freescale/fs_enet/fs_enet-main.c:  mac_addr =
+of_get_mac_address(ofdev->dev.of_node);
+drivers/net/ethernet/marvell/pxa168_eth.c:              mac_addr =
+of_get_mac_address(pdev->dev.of_node);
+drivers/net/ethernet/marvell/sky2.c:    iap =
+of_get_mac_address(hw->pdev->dev.of_node);
+drivers/net/ethernet/mediatek/mtk_eth_soc.c:    mac_addr =
+of_get_mac_address(mac->of_node);
+drivers/net/ethernet/microchip/lan743x_main.c:  mac_addr =
+of_get_mac_address(pdev->dev.of_node);
+drivers/net/ethernet/qualcomm/qca_spi.c:        mac =
+of_get_mac_address(spi->dev.of_node);
+drivers/net/ethernet/qualcomm/qca_uart.c:       mac =
+of_get_mac_address(serdev->dev.of_node);
+drivers/net/ethernet/wiznet/w5100-spi.c:        const void *mac =
+of_get_mac_address(spi->dev.of_node);
+drivers/net/ethernet/xilinx/xilinx_axienet_main.c:      mac_addr =
+of_get_mac_address(pdev->dev.of_node);
+drivers/net/ethernet/xilinx/xilinx_emaclite.c:  mac_address =
+of_get_mac_address(ofdev->dev.of_node);
+drivers/net/wireless/ralink/rt2x00/rt2x00dev.c: mac_addr =
+of_get_mac_address(rt2x00dev->dev->of_node);
+drivers/staging/octeon/ethernet.c:              mac =
+of_get_mac_address(priv->of_node);
+drivers/staging/wfx/main.c:             macaddr =
+of_get_mac_address(wdev->dev->of_node);
+net/ethernet/eth.c:             addr = of_get_mac_address(dev->of_node);
+
+Then this will find most of the rest:
+git grep -W 'of_get_mac_address([a-z]*)'| grep -E '(node|np)'
+
+Rob
