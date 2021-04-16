@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DA4B0362811
-	for <lists+netdev@lfdr.de>; Fri, 16 Apr 2021 20:55:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E2F8C362812
+	for <lists+netdev@lfdr.de>; Fri, 16 Apr 2021 20:55:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236450AbhDPSzK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 16 Apr 2021 14:55:10 -0400
-Received: from mail.kernel.org ([198.145.29.99]:54384 "EHLO mail.kernel.org"
+        id S236512AbhDPSzL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 16 Apr 2021 14:55:11 -0400
+Received: from mail.kernel.org ([198.145.29.99]:54394 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S235944AbhDPSzF (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 16 Apr 2021 14:55:05 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 29864613C1;
+        id S236052AbhDPSzG (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 16 Apr 2021 14:55:06 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id F00F6613C7;
         Fri, 16 Apr 2021 18:54:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1618599280;
-        bh=aZyP5isp+KOUA8KNShIUZ5D9DRHVfOL44iQfJDbihlQ=;
+        s=k20201202; t=1618599281;
+        bh=omPJzVMNN83sZlslp3lQQqnp/NMUDWajs72aaxylq4A=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=JVhCt2hjExPqRbGa1O0UeZrHnY1c2iVlMtrCl4RV6GLrYRRuYidPpuhfedta1fIHL
-         wrJRqB6wLGm77XxTSd5PWXtY+U0kvjbs8EDP5HMG7e0djqTTm8E1LtDPNtC+2pauPh
-         IBgtT5T1fo4/K/i9Cg8ZcKtvgsTc5Bzd/3P3UU6IrjqFDEjUZuw6gUACdaOYfx/JUr
-         Ykm72LJXa44qrIaUwqxjWLWlVF1aOBPoC7l8MEbTPo2TrJv8BwvaaENJzZRzYrTTON
-         yXjQ0Jy2tDPrisbd9XFinVSNBFiDrn8jrAieHgX9AooQ/FfAQstjbAZmNF8/fqEc4/
-         IqSQ3rzuPvTmg==
+        b=e3mUI542m1wfXMnwdihXv0Omx77X4wdQ1qtXv1VSFfKenKdhZNkFGU+HDol5+IrV7
+         Y6p/HLeTubqbyTUwv169jVM7PrDUQdiL3OBbHnvwNeZFsZ2nRtwHIszcxdFIjHw0ia
+         Z809V4oAXn++RCv2Y8gYEtVTx8A4eotjTcVGjAJlJCqo0H5DDlv3Vn7E1ofnZV4KLB
+         kMJrC6OBHLAW4/LV1mBKvx8fQ3y9WKn+gn9x+8sJMamQXGKjLJXiFB0IkaHzKyLaZa
+         z5tXU/yMYK7U/s4y/HLv9/G6fEUoo8WvHiMJiq92ZXX8DirVLZ8egtHyUOdxPYoKs/
+         fE7ophyBDWjHA==
 From:   Saeed Mahameed <saeed@kernel.org>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
 Cc:     Tariq Toukan <tariqt@nvidia.com>, netdev@vger.kernel.org,
         Saeed Mahameed <saeedm@nvidia.com>
-Subject: [net-next 02/14] net/mlx5e: Cleanup unused function parameter
-Date:   Fri, 16 Apr 2021 11:54:18 -0700
-Message-Id: <20210416185430.62584-3-saeed@kernel.org>
+Subject: [net-next 03/14] net/mlx5e: TX, Inline TLS skb check
+Date:   Fri, 16 Apr 2021 11:54:19 -0700
+Message-Id: <20210416185430.62584-4-saeed@kernel.org>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20210416185430.62584-1-saeed@kernel.org>
 References: <20210416185430.62584-1-saeed@kernel.org>
@@ -42,37 +42,67 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Tariq Toukan <tariqt@nvidia.com>
 
-Socket parameter is not used in accel_rule_init(), remove it.
+When TLS is supported and enabled, every transmitted packet is tested
+to identify if TLS offload is required.
+
+Take the early-return condition into an inline function, to save
+the overhead of a function call for non-TLS packets.
 
 Signed-off-by: Tariq Toukan <tariqt@nvidia.com>
 Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 ---
- drivers/net/ethernet/mellanox/mlx5/core/en_accel/ktls_rx.c | 5 ++---
- 1 file changed, 2 insertions(+), 3 deletions(-)
+ drivers/net/ethernet/mellanox/mlx5/core/en_accel/en_accel.h | 5 +++--
+ drivers/net/ethernet/mellanox/mlx5/core/en_accel/tls_rxtx.c | 3 ---
+ drivers/net/ethernet/mellanox/mlx5/core/en_accel/tls_rxtx.h | 6 ++++++
+ 3 files changed, 9 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ktls_rx.c b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ktls_rx.c
-index 8c0f78c09215..76fd4b230003 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ktls_rx.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ktls_rx.c
-@@ -119,8 +119,7 @@ static void accel_rule_handle_work(struct work_struct *work)
- 	complete(&priv_rx->add_ctx);
- }
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/en_accel.h b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/en_accel.h
+index cc2851ecd512..043c86c52798 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/en_accel.h
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/en_accel.h
+@@ -124,8 +124,9 @@ static inline bool mlx5e_accel_tx_begin(struct net_device *dev,
  
--static void accel_rule_init(struct accel_rule *rule, struct mlx5e_priv *priv,
--			    struct sock *sk)
-+static void accel_rule_init(struct accel_rule *rule, struct mlx5e_priv *priv)
- {
- 	INIT_WORK(&rule->work, accel_rule_handle_work);
- 	rule->priv = priv;
-@@ -618,7 +617,7 @@ int mlx5e_ktls_add_rx(struct net_device *netdev, struct sock *sk,
+ #ifdef CONFIG_MLX5_EN_TLS
+ 	/* May send SKBs and WQEs. */
+-	if (unlikely(!mlx5e_tls_handle_tx_skb(dev, sq, skb, &state->tls)))
+-		return false;
++	if (mlx5e_tls_skb_offloaded(skb))
++		if (unlikely(!mlx5e_tls_handle_tx_skb(dev, sq, skb, &state->tls)))
++			return false;
+ #endif
  
- 	init_completion(&priv_rx->add_ctx);
+ #ifdef CONFIG_MLX5_EN_IPSEC
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/tls_rxtx.c b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/tls_rxtx.c
+index 2b51d3222ca1..97cbea7ed048 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/tls_rxtx.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/tls_rxtx.c
+@@ -263,9 +263,6 @@ bool mlx5e_tls_handle_tx_skb(struct net_device *netdev, struct mlx5e_txqsq *sq,
+ 	int datalen;
+ 	u32 skb_seq;
  
--	accel_rule_init(&priv_rx->rule, priv, sk);
-+	accel_rule_init(&priv_rx->rule, priv);
- 	resync = &priv_rx->resync;
- 	resync_init(resync, priv);
- 	tls_offload_ctx_rx(tls_ctx)->resync_async = &resync->core;
+-	if (!skb->sk || !tls_is_sk_tx_device_offloaded(skb->sk))
+-		return true;
+-
+ 	datalen = skb->len - (skb_transport_offset(skb) + tcp_hdrlen(skb));
+ 	if (!datalen)
+ 		return true;
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/tls_rxtx.h b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/tls_rxtx.h
+index 9923132c9440..5c3443200fd6 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/tls_rxtx.h
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/tls_rxtx.h
+@@ -47,6 +47,12 @@ u16 mlx5e_tls_get_stop_room(struct mlx5_core_dev *mdev, struct mlx5e_params *par
+ 
+ bool mlx5e_tls_handle_tx_skb(struct net_device *netdev, struct mlx5e_txqsq *sq,
+ 			     struct sk_buff *skb, struct mlx5e_accel_tx_tls_state *state);
++
++static inline bool mlx5e_tls_skb_offloaded(struct sk_buff *skb)
++{
++	return skb->sk && tls_is_sk_tx_device_offloaded(skb->sk);
++}
++
+ void mlx5e_tls_handle_tx_wqe(struct mlx5e_txqsq *sq, struct mlx5_wqe_ctrl_seg *cseg,
+ 			     struct mlx5e_accel_tx_tls_state *state);
+ 
 -- 
 2.30.2
 
