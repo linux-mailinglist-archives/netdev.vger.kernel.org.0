@@ -2,75 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 281F1362B36
-	for <lists+netdev@lfdr.de>; Sat, 17 Apr 2021 00:40:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 85A6B362B90
+	for <lists+netdev@lfdr.de>; Sat, 17 Apr 2021 00:45:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234989AbhDPWkm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 16 Apr 2021 18:40:42 -0400
-Received: from mail.kernel.org ([198.145.29.99]:50472 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230489AbhDPWkg (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 16 Apr 2021 18:40:36 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id EDE5C613B0;
-        Fri, 16 Apr 2021 22:40:10 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1618612811;
-        bh=iouLfYlxjaIJk3q65ISTxssJ+dEjZO8R/ICpAgY3eic=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=oxowdO8SQNn1pgVMcQFpfO2nyZwxMnk+XYov/t9tpEbbwco6HmyN+mMLtmNtuzyDq
-         8QBtdc2Zl6dR7Gf0agH8pPf+uHY2BS1I1rOOmZT0zXRL1wN4kqibYOsK6fAkj/NgFT
-         FbJmWn0ZyJtbKp6TwAoRqkixH46pUc+VhbamRtX85Al8Oqri+LwOVZo/Hmi7FMOoJi
-         E1uioyc/n8Yr+YBxZKqvOLXGJV4s3ottsi4cQPYCBBtZjpzTd2FbOxk4RF97j2r10l
-         vJ4Fhv4cocknvWifV6zltX9gIc0sXvQSc6wIaB67EXuyEX1+2xlc/c93te9DqwVnBi
-         MM05GnIuAIoCQ==
-Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id E022260CD6;
-        Fri, 16 Apr 2021 22:40:10 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        id S234816AbhDPWpI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 16 Apr 2021 18:45:08 -0400
+Received: from linux.microsoft.com ([13.77.154.182]:40444 "EHLO
+        linux.microsoft.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234404AbhDPWpH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 16 Apr 2021 18:45:07 -0400
+Received: from mail-pl1-f174.google.com (mail-pl1-f174.google.com [209.85.214.174])
+        by linux.microsoft.com (Postfix) with ESMTPSA id 76F3720B83D9;
+        Fri, 16 Apr 2021 15:44:42 -0700 (PDT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 76F3720B83D9
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
+        s=default; t=1618613082;
+        bh=DcAhC6Pj0o6cQMeLdEBYtLThJCE+7vRtA3+eSuXbF38=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=cM48Vu8GfY5PqjWuS6NErTqFuDG5RM/9oXR9vQfvKihX/5LfHXpatACVBIv0OCSNC
+         jk9e6/kA6xcbsUdiSwWgwWlTxKrAgfj9uXSTdZhlnSIYdvGwvIMaAd7PHkL3TqttqY
+         sG4sRqPw+QBkbh+bBTPtG3G33yN34ha1zkS1FcB0=
+Received: by mail-pl1-f174.google.com with SMTP id m18so12523862plc.13;
+        Fri, 16 Apr 2021 15:44:42 -0700 (PDT)
+X-Gm-Message-State: AOAM532+X8dwlLJ6H+6XsrQOTb1Lc2lR7iLmP6qp5kC+AP2ScUxVScLq
+        ECVS6XJ0OH91AxYO8mKF2HM3fP738Gv8+bEqAdw=
+X-Google-Smtp-Source: ABdhPJw6rB9a6Y6v5jK8I3KJxZFk+syWBHSe63IsrjyZbhtSyB0LIQUZ1KNrgegZRT+HhYQn0Bc6/5XuZdgw8yOJx6A=
+X-Received: by 2002:a17:903:3106:b029:e9:15e8:250e with SMTP id
+ w6-20020a1709033106b02900e915e8250emr11878892plc.33.1618613082001; Fri, 16
+ Apr 2021 15:44:42 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH V2 net-next] net: mvpp2: Add parsing support for different
- IPv4 IHL values
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <161861281091.23739.14287826762066877912.git-patchwork-notify@kernel.org>
-Date:   Fri, 16 Apr 2021 22:40:10 +0000
-References: <1618560917-31548-1-git-send-email-stefanc@marvell.com>
-In-Reply-To: <1618560917-31548-1-git-send-email-stefanc@marvell.com>
-To:     Stefan Chulski <stefanc@marvell.com>
-Cc:     netdev@vger.kernel.org, thomas.petazzoni@bootlin.com,
-        davem@davemloft.net, nadavh@marvell.com, ymarkman@marvell.com,
-        linux-kernel@vger.kernel.org, kuba@kernel.org,
-        linux@armlinux.org.uk, mw@semihalf.com, andrew@lunn.ch,
-        rmk+kernel@armlinux.org.uk, atenart@kernel.org, lironh@marvell.com,
-        danat@marvell.com
+References: <20210412003802.51613-1-mcroce@linux.microsoft.com> <75045c087db24b6e87b7ed14aa5a721c@AcuMS.aculab.com>
+In-Reply-To: <75045c087db24b6e87b7ed14aa5a721c@AcuMS.aculab.com>
+From:   Matteo Croce <mcroce@linux.microsoft.com>
+Date:   Sat, 17 Apr 2021 00:44:06 +0200
+X-Gmail-Original-Message-ID: <CAFnufp12=8pDo-GP6BwH72YiH5C9GXOY8Me=xsFo7=+hvfujaQ@mail.gmail.com>
+Message-ID: <CAFnufp12=8pDo-GP6BwH72YiH5C9GXOY8Me=xsFo7=+hvfujaQ@mail.gmail.com>
+Subject: Re: [PATCH net-next v2 0/3] introduce skb_for_each_frag()
+To:     David Laight <David.Laight@aculab.com>
+Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Julia Lawall <julia.lawall@inria.fr>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+On Tue, Apr 13, 2021 at 9:53 AM David Laight <David.Laight@aculab.com> wrote:
+>
+> From: Matteo Croce
+> > Sent: 12 April 2021 01:38
+> >
+> > Introduce skb_for_each_frag, an helper macro to iterate over the SKB frags.
+>
+> The real question is why, the change is:
+>
+> -       for (i = 0; i < skb_shinfo(skb)->nr_frags; i++) {
+> +       skb_for_each_frag(skb, i) {
+>
+> The existing code isn't complicated or obscure and 'does what it
+> says on the tin'.
+> The 'helper' requires you go and look up its definition to see
+> what it is really doing.
+>
+> Unless you have a cunning plan to change the definition
+> there is zero point.
+>
+> A more interesting change would be something that generated:
+>         unsigned int nr_frags = skb_shinfo(skb)->nr_frags;
+>         for (i = 0; i < nr_frags; i++) {
+> since that will run faster for most loops.
+> But that is ~impossible to do since you can't declare
+> variables inside the (...) that are scoped to the loop.
+>
 
-This patch was applied to netdev/net-next.git (refs/heads/master):
+I don't know how to do it with C90.
+It would be nice to have a switch to just allow declaration of
+variables inside the (...) instead of enabling the full C99 language
+which, as Linus said[1], allows the insane mixing of variables and
+code.
 
-On Fri, 16 Apr 2021 11:15:17 +0300 you wrote:
-> From: Stefan Chulski <stefanc@marvell.com>
-> 
-> Add parser entries for different IPv4 IHL values.
-> Each entry will set the L4 header offset according to the IPv4 IHL field.
-> L3 header offset will set during the parsing of the IPv4 protocol.
-> 
-> Because of missed parser support for IP header length > 20, RX IPv4 checksum HW offload fails
-> and skb->ip_summed set to CHECKSUM_NONE(checksum done by Network stack).
-> This patch adds RX IPv4 checksum HW offload capability for frames with IP header length > 20.
-> 
-> [...]
-
-Here is the summary with links:
-  - [V2,net-next] net: mvpp2: Add parsing support for different IPv4 IHL values
-    https://git.kernel.org/netdev/net-next/c/4ad29b1a484e
-
-You are awesome, thank you!
---
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+[1] https://lore.kernel.org/lkml/CA+55aFzs=DuYibWYMUFiU_R1aJHAr-8hpQhWLew8R5q4nCDraQ@mail.gmail.com/
+-- 
+per aspera ad upstream
