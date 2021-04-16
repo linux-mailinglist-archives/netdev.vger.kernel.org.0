@@ -2,208 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 13886361720
-	for <lists+netdev@lfdr.de>; Fri, 16 Apr 2021 03:17:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E073A361740
+	for <lists+netdev@lfdr.de>; Fri, 16 Apr 2021 03:54:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237802AbhDPBRG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 15 Apr 2021 21:17:06 -0400
-Received: from szxga05-in.huawei.com ([45.249.212.191]:17002 "EHLO
-        szxga05-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236214AbhDPBRB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 15 Apr 2021 21:17:01 -0400
-Received: from DGGEMS404-HUB.china.huawei.com (unknown [172.30.72.60])
-        by szxga05-in.huawei.com (SkyGuard) with ESMTP id 4FLyrz6vtrzPr0F;
-        Fri, 16 Apr 2021 09:13:39 +0800 (CST)
-Received: from localhost.localdomain (10.69.192.56) by
- DGGEMS404-HUB.china.huawei.com (10.3.19.204) with Microsoft SMTP Server id
- 14.3.498.0; Fri, 16 Apr 2021 09:16:30 +0800
-From:   Yunsheng Lin <linyunsheng@huawei.com>
-To:     <davem@davemloft.net>, <kuba@kernel.org>
-CC:     <olteanv@gmail.com>, <ast@kernel.org>, <daniel@iogearbox.net>,
-        <andriin@fb.com>, <edumazet@google.com>, <weiwan@google.com>,
-        <cong.wang@bytedance.com>, <ap420073@gmail.com>,
-        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linuxarm@openeuler.org>, <mkl@pengutronix.de>,
-        <linux-can@vger.kernel.org>, <jhs@mojatatu.com>,
-        <xiyou.wangcong@gmail.com>, <jiri@resnulli.us>,
-        <andrii@kernel.org>, <kafai@fb.com>, <songliubraving@fb.com>,
-        <yhs@fb.com>, <john.fastabend@gmail.com>, <kpsingh@kernel.org>,
-        <bpf@vger.kernel.org>, <jonas.bonn@netrounds.com>,
-        <pabeni@redhat.com>, <mzhivich@akamai.com>, <johunt@akamai.com>,
-        <albcamus@gmail.com>, <kehuan.feng@gmail.com>,
-        <a.fatoum@pengutronix.de>, <atenart@kernel.org>,
-        <alexander.duyck@gmail.com>, <hdanton@sina.com>, <jgross@suse.com>,
-        <JKosina@suse.com>
-Subject: [PATCH net v4 2/2] net: sched: fix endless tx action reschedule during deactivation
-Date:   Fri, 16 Apr 2021 09:16:49 +0800
-Message-ID: <1618535809-11952-3-git-send-email-linyunsheng@huawei.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1618535809-11952-1-git-send-email-linyunsheng@huawei.com>
-References: <1618535809-11952-1-git-send-email-linyunsheng@huawei.com>
+        id S237946AbhDPByn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 15 Apr 2021 21:54:43 -0400
+Received: from szxga06-in.huawei.com ([45.249.212.32]:16927 "EHLO
+        szxga06-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S235043AbhDPBym (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 15 Apr 2021 21:54:42 -0400
+Received: from DGGEMS412-HUB.china.huawei.com (unknown [172.30.72.58])
+        by szxga06-in.huawei.com (SkyGuard) with ESMTP id 4FLzjh0lxCzkkW7;
+        Fri, 16 Apr 2021 09:52:24 +0800 (CST)
+Received: from huawei.com (10.175.112.154) by DGGEMS412-HUB.china.huawei.com
+ (10.3.19.212) with Microsoft SMTP Server id 14.3.498.0; Fri, 16 Apr 2021
+ 09:54:07 +0800
+From:   jinyiting <jinyiting@huawei.com>
+To:     <j.vosburgh@gmail.com>, <vfalico@gmail.com>, <andy@greyhouse.net>,
+        <davem@davemloft.net>, <kuba@kernel.org>, <netdev@vger.kernel.org>,
+        <security@kernel.org>, <linux-kernel@vger.kernel.org>
+CC:     <xuhanbing@huawei.com>, <wangxiaogang3@huawei.com>
+Subject: [PATCH] bonding: 3ad: update slave arr after initialize
+Date:   Fri, 16 Apr 2021 09:53:02 +0800
+Message-ID: <1618537982-454-1-git-send-email-jinyiting@huawei.com>
+X-Mailer: git-send-email 1.7.12.4
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.69.192.56]
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.175.112.154]
 X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Currently qdisc_run() checks the STATE_DEACTIVATED of lockless
-qdisc before calling __qdisc_run(), which ultimately clear the
-STATE_MISSED when all the skb is dequeued. If STATE_DEACTIVATED
-is set before clearing STATE_MISSED, there may be endless
-rescheduling of net_tx_action() at the end of qdisc_run_end(),
-see below:
+From: jin yiting <jinyiting@huawei.com>
 
-CPU0(net_tx_atcion)  CPU1(__dev_xmit_skb)  CPU2(dev_deactivate)
-          .                   .                     .
-          .            set STATE_MISSED             .
-          .           __netif_schedule()            .
-          .                   .           set STATE_DEACTIVATED
-          .                   .                qdisc_reset()
-          .                   .                     .
-          .<---------------   .              synchronize_net()
-clear __QDISC_STATE_SCHED  |  .                     .
-          .                |  .                     .
-          .                |  .                     .
-          .                |  .           --------->.
-          .                |  .          |          .
-  test STATE_DEACTIVATED   |  .          | some_qdisc_is_busy()
-__qdisc_run() *not* called |  .          |-----return *true*
-          .                |  .                     .
-   test STATE_MISS         |  .                     .
- __netif_schedule()--------|  .                     .
-          .                   .                     .
-          .                   .                     .
+The bond works in mode 4, and performs down/up operations on the bond
+that is normally negotiated. The probability of bond-> slave_arr is NULL
 
-__qdisc_run() is not called by net_tx_atcion() in CPU0 because
-CPU2 has set STATE_DEACTIVATED flag during dev_deactivate(), and
-STATE_MISSED is only cleared in __qdisc_run(), __netif_schedule
-is called endlessly at the end of qdisc_run_end(), causing endless
-tx action rescheduling problem.
+Test commands:
+    ifconfig bond1 down
+    ifconfig bond1 up
 
-qdisc_run() called by net_tx_action() runs in the softirq context,
-which should has the same semantic as the qdisc_run() called by
-__dev_xmit_skb() protected by rcu_read_lock_bh(). And there is a
-synchronize_net() between STATE_DEACTIVATED flag being set and
-qdisc_reset()/some_qdisc_is_busy in dev_deactivate(), we can safely
-bail out for the deactived lockless qdisc in net_tx_action(), and
-qdisc_reset() will reset all skb not dequeued yet.
+The conflict occurs in the following process：
 
-So add the rcu_read_lock() explicitly to protect the qdisc_run()
-and do the STATE_DEACTIVATED checking in net_tx_action() before
-calling qdisc_run_begin(). Another option is to do the checking in
-the qdisc_run_end(), but it will add unnecessary overhead for
-non-tx_action case, because __dev_queue_xmit() will not see qdisc
-with STATE_DEACTIVATED after synchronize_net(), the qdisc with
-STATE_DEACTIVATED can only be seen by net_tx_action() because of
-__netif_schedule().
+__dev_open (CPU A)
+ --bond_open
+   --queue_delayed_work(bond->wq,&bond->ad_work,0);
+   --bond_update_slave_arr
+     --bond_3ad_get_active_agg_info
 
-The STATE_DEACTIVATED checking in qdisc_run() is to avoid race
-between net_tx_action() and qdisc_reset(), see:
-commit d518d2ed8640 ("net/sched: fix race between deactivation
-and dequeue for NOLOCK qdisc"). As the bailout added above for
-deactived lockless qdisc in net_tx_action() provides better
-protection for the race without calling qdisc_run() at all, so
-remove the STATE_DEACTIVATED checking in qdisc_run().
+ad_work(CPU B)
+ --bond_3ad_state_machine_handler
+   --ad_agg_selection_logic
 
-After qdisc_reset(), there is no skb in qdisc to be dequeued, so
-clear the STATE_MISSED in dev_reset_queue() too.
+ad_work runs on cpu B. In the function ad_agg_selection_logic, all
+agg->is_active will be cleared. Before the new active aggregator is
+selected on CPU B, bond_3ad_get_active_agg_info failed on CPU A,
+bond->slave_arr will be set to NULL. The best aggregator in
+ad_agg_selection_logic has not changed, no need to update slave arr.
 
-Fixes: 6b3ba9146fe6 ("net: sched: allow qdiscs to handle locking")
-Signed-off-by: Yunsheng Lin <linyunsheng@huawei.com>
+Signed-off-by: jin yiting <jinyiting@huawei.com>
 ---
- include/net/pkt_sched.h |  7 +------
- net/core/dev.c          | 26 ++++++++++++++++++++++----
- net/sched/sch_generic.c |  4 +++-
- 3 files changed, 26 insertions(+), 11 deletions(-)
+ drivers/net/bonding/bond_3ad.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
 
-diff --git a/include/net/pkt_sched.h b/include/net/pkt_sched.h
-index f5c1bee..6d7b12c 100644
---- a/include/net/pkt_sched.h
-+++ b/include/net/pkt_sched.h
-@@ -128,12 +128,7 @@ void __qdisc_run(struct Qdisc *q);
- static inline void qdisc_run(struct Qdisc *q)
- {
- 	if (qdisc_run_begin(q)) {
--		/* NOLOCK qdisc must check 'state' under the qdisc seqlock
--		 * to avoid racing with dev_qdisc_reset()
--		 */
--		if (!(q->flags & TCQ_F_NOLOCK) ||
--		    likely(!test_bit(__QDISC_STATE_DEACTIVATED, &q->state)))
--			__qdisc_run(q);
-+		__qdisc_run(q);
- 		qdisc_run_end(q);
- 	}
- }
-diff --git a/net/core/dev.c b/net/core/dev.c
-index be941ed..47cefcc 100644
---- a/net/core/dev.c
-+++ b/net/core/dev.c
-@@ -4958,25 +4958,43 @@ static __latent_entropy void net_tx_action(struct softirq_action *h)
- 		sd->output_queue_tailp = &sd->output_queue;
- 		local_irq_enable();
+diff --git a/drivers/net/bonding/bond_3ad.c b/drivers/net/bonding/bond_3ad.c
+index 6908822..d100079 100644
+--- a/drivers/net/bonding/bond_3ad.c
++++ b/drivers/net/bonding/bond_3ad.c
+@@ -2327,6 +2327,12 @@ void bond_3ad_state_machine_handler(struct work_struct *work)
  
-+		rcu_read_lock();
+ 			aggregator = __get_first_agg(port);
+ 			ad_agg_selection_logic(aggregator, &update_slave_arr);
++			if (!update_slave_arr) {
++				struct aggregator *active = __get_active_agg(aggregator);
 +
- 		while (head) {
- 			struct Qdisc *q = head;
- 			spinlock_t *root_lock = NULL;
- 
- 			head = head->next_sched;
- 
--			if (!(q->flags & TCQ_F_NOLOCK)) {
--				root_lock = qdisc_lock(q);
--				spin_lock(root_lock);
--			}
- 			/* We need to make sure head->next_sched is read
- 			 * before clearing __QDISC_STATE_SCHED
- 			 */
- 			smp_mb__before_atomic();
-+
-+			if (!(q->flags & TCQ_F_NOLOCK)) {
-+				root_lock = qdisc_lock(q);
-+				spin_lock(root_lock);
-+			} else if (unlikely(test_bit(__QDISC_STATE_DEACTIVATED,
-+						     &q->state))) {
-+				/* There is a synchronize_net() between
-+				 * STATE_DEACTIVATED flag being set and
-+				 * qdisc_reset()/some_qdisc_is_busy() in
-+				 * dev_deactivate(), so we can safely bail out
-+				 * early here to avoid data race between
-+				 * qdisc_deactivate() and some_qdisc_is_busy()
-+				 * for lockless qdisc.
-+				 */
-+				clear_bit(__QDISC_STATE_SCHED, &q->state);
-+				continue;
++				if (active && active->is_active)
++					update_slave_arr = true;
 +			}
-+
- 			clear_bit(__QDISC_STATE_SCHED, &q->state);
- 			qdisc_run(q);
- 			if (root_lock)
- 				spin_unlock(root_lock);
  		}
-+
-+		rcu_read_unlock();
+ 		bond_3ad_set_carrier(bond);
  	}
- 
- 	xfrm_dev_backlog(sd);
-diff --git a/net/sched/sch_generic.c b/net/sched/sch_generic.c
-index 9bc73ea..c32ac5b 100644
---- a/net/sched/sch_generic.c
-+++ b/net/sched/sch_generic.c
-@@ -1170,8 +1170,10 @@ static void dev_reset_queue(struct net_device *dev,
- 	qdisc_reset(qdisc);
- 
- 	spin_unlock_bh(qdisc_lock(qdisc));
--	if (nolock)
-+	if (nolock) {
-+		clear_bit(__QDISC_STATE_MISSED, &qdisc->state);
- 		spin_unlock_bh(&qdisc->seqlock);
-+	}
- }
- 
- static bool some_qdisc_is_busy(struct net_device *dev)
 -- 
-2.7.4
+1.7.12.4
 
