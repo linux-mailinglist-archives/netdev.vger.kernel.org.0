@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 622E9361796
+	by mail.lfdr.de (Postfix) with ESMTP id AE374361797
 	for <lists+netdev@lfdr.de>; Fri, 16 Apr 2021 04:28:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238321AbhDPC2b (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 15 Apr 2021 22:28:31 -0400
-Received: from mail.kernel.org ([198.145.29.99]:53744 "EHLO mail.kernel.org"
+        id S238255AbhDPC2c (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 15 Apr 2021 22:28:32 -0400
+Received: from mail.kernel.org ([198.145.29.99]:53746 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S238264AbhDPC2X (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S238273AbhDPC2X (ORCPT <rfc822;netdev@vger.kernel.org>);
         Thu, 15 Apr 2021 22:28:23 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id A6F1F61222;
-        Fri, 16 Apr 2021 02:27:58 +0000 (UTC)
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 358D1613A9;
+        Fri, 16 Apr 2021 02:27:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1618540079;
-        bh=M2y9pgwA2bI+StQMzj6UK+guWgAGe+fzstd8Xy8p9gA=;
+        bh=DBgSdS/7qOS901XCFHQcgBrx7flqpvdDh6vG7gusX4A=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=HR4Td5DPWEplYFZyyW21+lP+6/KxqkhHYafgE6Ta4LAAMl3E9GUaeecOyFoXK26Fh
-         QjLF4wHvSp5mC9Ir26AV3XUe2Qne82DZu8AJs3paWmN3v1cpXF+Tb2OClRC7p8Wc3B
-         0Bdr0GuLzsbVSMShm9B3u3VxEm3kelzVMr3btteRaUnCXDao9RRSD0qaFeBj+qoLv0
-         E3vqO61uMZKK3SFNyOyS7L9/1dZlh1MYfhLXidjUraZj5xcekxtS/inPbv0a2owB3d
-         pH/r+hgLUdho/fXBSuoONbKdLrPnFy9PAiI31NNfRXVtvq6yUsX/ZPOwlYEMt7JeJR
-         mYM6w8loNiXWQ==
+        b=CkV7uOkH3xRoweCY/x/xcfZaDxEkeqYIRDNuF5Wp8j7SwJL6rZhAMkWHKTGzFNJ6K
+         6VmOioLuy61s0yk0bnNiU+YNC898ej7dxlS+fU2uN1iOfP6xUYR1Y7jzE+eZVXKYTU
+         62gyObmklOo8jdCEBZQ3uOcm9HEirBsS0U1Sncb298vsRXprdMn8e7w+YIL6v19U3C
+         OVxEAcRiDWEoy9gz3BI3QiFfk7vOvGK2Y//MIcjgiFR48RjhrbHHKGJJRHn7lVc6CE
+         pbWF4VcIe3EeQ3YuyJhvk0FKzHKWIKblqgTg1TiGlzJenArh98m/Uql6bdnGP+cUqx
+         BxHkLw93HblFQ==
 From:   Jakub Kicinski <kuba@kernel.org>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, andrew@lunn.ch, mkubecek@suse.cz,
         idosch@nvidia.com, saeedm@nvidia.com, michael.chan@broadcom.com,
         Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH net-next 8/9] bnxt: implement ethtool standard stats
-Date:   Thu, 15 Apr 2021 19:27:51 -0700
-Message-Id: <20210416022752.2814621-9-kuba@kernel.org>
+Subject: [PATCH net-next 9/9] mlx5: implement ethtool standard stats
+Date:   Thu, 15 Apr 2021 19:27:52 -0700
+Message-Id: <20210416022752.2814621-10-kuba@kernel.org>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20210416022752.2814621-1-kuba@kernel.org>
 References: <20210416022752.2814621-1-kuba@kernel.org>
@@ -40,70 +40,188 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Most of the names seem to strongly correlate with names from
-the standard and RFC. Whether ..+good_frames are indeed Frames..OK
-I'm the least sure of.
+Add support for PHY/MAC/Ctrl/RMON stats.
 
 Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 ---
- .../net/ethernet/broadcom/bnxt/bnxt_ethtool.c | 125 ++++++++++++++++++
- 1 file changed, 125 insertions(+)
+ .../ethernet/mellanox/mlx5/core/en_ethtool.c  |  37 +++++
+ .../ethernet/mellanox/mlx5/core/en_stats.c    | 142 +++++++++++++++++-
+ .../ethernet/mellanox/mlx5/core/en_stats.h    |  10 ++
+ 3 files changed, 182 insertions(+), 7 deletions(-)
 
-diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c b/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c
-index 7b90357daba1..832252313b18 100644
---- a/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c
-+++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c
-@@ -3990,6 +3990,127 @@ void bnxt_ethtool_init(struct bnxt *bp)
- 	mutex_unlock(&bp->hwrm_cmd_lock);
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_ethtool.c b/drivers/net/ethernet/mellanox/mlx5/core/en_ethtool.c
+index f17690cbeeea..c3375c68c577 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en_ethtool.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en_ethtool.c
+@@ -2176,6 +2176,39 @@ int mlx5e_set_rxnfc(struct net_device *dev, struct ethtool_rxnfc *cmd)
+ 	return mlx5e_ethtool_set_rxnfc(dev, cmd);
  }
  
-+static void bnxt_get_eth_phy_stats(struct net_device *dev,
-+				   struct ethtool_eth_phy_stats *phy_stats)
++static void mlx5e_get_eth_phy_stats(struct net_device *netdev,
++				    struct ethtool_eth_phy_stats *phy_stats)
 +{
-+	struct bnxt *bp = netdev_priv(dev);
-+	u64 *rx;
++	struct mlx5e_priv *priv = netdev_priv(netdev);
 +
-+	if (BNXT_VF(bp) || !(bp->flags & BNXT_FLAG_PORT_STATS_EXT))
++	mlx5e_stats_eth_phy_get(priv, phy_stats);
++}
++
++static void mlx5e_get_eth_mac_stats(struct net_device *netdev,
++				    struct ethtool_eth_mac_stats *mac_stats)
++{
++	struct mlx5e_priv *priv = netdev_priv(netdev);
++
++	mlx5e_stats_eth_mac_get(priv, mac_stats);
++}
++
++static void mlx5e_get_eth_ctrl_stats(struct net_device *netdev,
++				     struct ethtool_eth_ctrl_stats *ctrl_stats)
++{
++	struct mlx5e_priv *priv = netdev_priv(netdev);
++
++	mlx5e_stats_eth_ctrl_get(priv, ctrl_stats);
++}
++
++static void mlx5e_get_rmon_stats(struct net_device *netdev,
++				 struct ethtool_rmon_stats *rmon_stats,
++				 const struct ethtool_rmon_hist_range **ranges)
++{
++	struct mlx5e_priv *priv = netdev_priv(netdev);
++
++	mlx5e_stats_rmon_get(priv, rmon_stats, ranges);
++}
++
+ const struct ethtool_ops mlx5e_ethtool_ops = {
+ 	.supported_coalesce_params = ETHTOOL_COALESCE_USECS |
+ 				     ETHTOOL_COALESCE_MAX_FRAMES |
+@@ -2220,4 +2253,8 @@ const struct ethtool_ops mlx5e_ethtool_ops = {
+ 	.get_fec_stats     = mlx5e_get_fec_stats,
+ 	.get_fecparam      = mlx5e_get_fecparam,
+ 	.set_fecparam      = mlx5e_set_fecparam,
++	.get_eth_phy_stats = mlx5e_get_eth_phy_stats,
++	.get_eth_mac_stats = mlx5e_get_eth_mac_stats,
++	.get_eth_ctrl_stats = mlx5e_get_eth_ctrl_stats,
++	.get_rmon_stats    = mlx5e_get_rmon_stats,
+ };
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_stats.c b/drivers/net/ethernet/mellanox/mlx5/core/en_stats.c
+index 353513bd0d5e..f4db99cae64c 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en_stats.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en_stats.c
+@@ -773,21 +773,29 @@ static MLX5E_DECLARE_STATS_GRP_OP_UPDATE_STATS(802_3)
+ 		MLX5_BYTE_OFF(ppcnt_reg,		\
+ 			      counter_set.set.c##_high)))
+ 
+-void mlx5e_stats_pause_get(struct mlx5e_priv *priv,
+-			   struct ethtool_pause_stats *pause_stats)
++static int mlx5e_stats_get_ieee(struct mlx5_core_dev *mdev,
++				u32 *ppcnt_ieee_802_3)
+ {
+-	u32 ppcnt_ieee_802_3[MLX5_ST_SZ_DW(ppcnt_reg)];
+-	struct mlx5_core_dev *mdev = priv->mdev;
+ 	u32 in[MLX5_ST_SZ_DW(ppcnt_reg)] = {};
+ 	int sz = MLX5_ST_SZ_BYTES(ppcnt_reg);
+ 
+ 	if (!MLX5_BASIC_PPCNT_SUPPORTED(mdev))
+-		return;
++		return -EOPNOTSUPP;
+ 
+ 	MLX5_SET(ppcnt_reg, in, local_port, 1);
+ 	MLX5_SET(ppcnt_reg, in, grp, MLX5_IEEE_802_3_COUNTERS_GROUP);
+-	mlx5_core_access_reg(mdev, in, sz, ppcnt_ieee_802_3,
+-			     sz, MLX5_REG_PPCNT, 0, 0);
++	return mlx5_core_access_reg(mdev, in, sz, ppcnt_ieee_802_3,
++				    sz, MLX5_REG_PPCNT, 0, 0);
++}
++
++void mlx5e_stats_pause_get(struct mlx5e_priv *priv,
++			   struct ethtool_pause_stats *pause_stats)
++{
++	u32 ppcnt_ieee_802_3[MLX5_ST_SZ_DW(ppcnt_reg)];
++	struct mlx5_core_dev *mdev = priv->mdev;
++
++	if (mlx5e_stats_get_ieee(mdev, ppcnt_ieee_802_3))
++		return;
+ 
+ 	pause_stats->tx_pause_frames =
+ 		MLX5E_READ_CTR64_BE_F(ppcnt_ieee_802_3,
+@@ -799,6 +807,73 @@ void mlx5e_stats_pause_get(struct mlx5e_priv *priv,
+ 				      a_pause_mac_ctrl_frames_received);
+ }
+ 
++void mlx5e_stats_eth_phy_get(struct mlx5e_priv *priv,
++			     struct ethtool_eth_phy_stats *phy_stats)
++{
++	u32 ppcnt_ieee_802_3[MLX5_ST_SZ_DW(ppcnt_reg)];
++	struct mlx5_core_dev *mdev = priv->mdev;
++
++	if (mlx5e_stats_get_ieee(mdev, ppcnt_ieee_802_3))
 +		return;
 +
-+	rx = bp->rx_port_stats_ext.sw_stats;
 +	phy_stats->SymbolErrorDuringCarrier =
-+		*(rx + BNXT_RX_STATS_EXT_OFFSET(rx_pcs_symbol_err));
++		MLX5E_READ_CTR64_BE_F(ppcnt_ieee_802_3,
++				      eth_802_3_cntrs_grp_data_layout,
++				      a_symbol_error_during_carrier);
 +}
 +
-+static void bnxt_get_eth_mac_stats(struct net_device *dev,
-+				   struct ethtool_eth_mac_stats *mac_stats)
++void mlx5e_stats_eth_mac_get(struct mlx5e_priv *priv,
++			     struct ethtool_eth_mac_stats *mac_stats)
 +{
-+	struct bnxt *bp = netdev_priv(dev);
-+	u64 *rx, *tx;
++	u32 ppcnt_ieee_802_3[MLX5_ST_SZ_DW(ppcnt_reg)];
++	struct mlx5_core_dev *mdev = priv->mdev;
 +
-+	if (BNXT_VF(bp) || !(bp->flags & BNXT_FLAG_PORT_STATS))
++	if (mlx5e_stats_get_ieee(mdev, ppcnt_ieee_802_3))
 +		return;
 +
-+	rx = bp->port_stats.sw_stats;
-+	tx = bp->port_stats.sw_stats + BNXT_TX_PORT_STATS_BYTE_OFFSET / 8;
++#define RD(name)							\
++	MLX5E_READ_CTR64_BE_F(ppcnt_ieee_802_3,				\
++			      eth_802_3_cntrs_grp_data_layout,		\
++			      name)
 +
-+	mac_stats->FramesReceivedOK =
-+		BNXT_GET_RX_PORT_STATS64(rx, rx_good_frames);
-+	mac_stats->FramesTransmittedOK =
-+		BNXT_GET_TX_PORT_STATS64(tx, tx_good_frames);
++	mac_stats->FramesTransmittedOK	= RD(a_frames_transmitted_ok);
++	mac_stats->FramesReceivedOK	= RD(a_frames_received_ok);
++	mac_stats->FrameCheckSequenceErrors = RD(a_frame_check_sequence_errors);
++	mac_stats->OctetsTransmittedOK	= RD(a_octets_transmitted_ok);
++	mac_stats->OctetsReceivedOK	= RD(a_octets_received_ok);
++	mac_stats->MulticastFramesXmittedOK = RD(a_multicast_frames_xmitted_ok);
++	mac_stats->BroadcastFramesXmittedOK = RD(a_broadcast_frames_xmitted_ok);
++	mac_stats->MulticastFramesReceivedOK = RD(a_multicast_frames_received_ok);
++	mac_stats->BroadcastFramesReceivedOK = RD(a_broadcast_frames_received_ok);
++	mac_stats->InRangeLengthErrors	= RD(a_in_range_length_errors);
++	mac_stats->OutOfRangeLengthField = RD(a_out_of_range_length_field);
++	mac_stats->FrameTooLongErrors	= RD(a_frame_too_long_errors);
++#undef RD
 +}
 +
-+static void bnxt_get_eth_ctrl_stats(struct net_device *dev,
-+				    struct ethtool_eth_ctrl_stats *ctrl_stats)
++void mlx5e_stats_eth_ctrl_get(struct mlx5e_priv *priv,
++			      struct ethtool_eth_ctrl_stats *ctrl_stats)
 +{
-+	struct bnxt *bp = netdev_priv(dev);
-+	u64 *rx;
++	u32 ppcnt_ieee_802_3[MLX5_ST_SZ_DW(ppcnt_reg)];
++	struct mlx5_core_dev *mdev = priv->mdev;
 +
-+	if (BNXT_VF(bp) || !(bp->flags & BNXT_FLAG_PORT_STATS))
++	if (mlx5e_stats_get_ieee(mdev, ppcnt_ieee_802_3))
 +		return;
 +
-+	rx = bp->port_stats.sw_stats;
++	ctrl_stats->MACControlFramesTransmitted =
++		MLX5E_READ_CTR64_BE_F(ppcnt_ieee_802_3,
++				      eth_802_3_cntrs_grp_data_layout,
++				      a_mac_control_frames_transmitted);
 +	ctrl_stats->MACControlFramesReceived =
-+		BNXT_GET_RX_PORT_STATS64(rx, rx_ctrl_frames);
++		MLX5E_READ_CTR64_BE_F(ppcnt_ieee_802_3,
++				      eth_802_3_cntrs_grp_data_layout,
++				      a_mac_control_frames_received);
++	ctrl_stats->UnsupportedOpcodesReceived =
++		MLX5E_READ_CTR64_BE_F(ppcnt_ieee_802_3,
++				      eth_802_3_cntrs_grp_data_layout,
++				      a_unsupported_opcodes_received);
 +}
 +
-+static const struct ethtool_rmon_hist_range bnxt_rmon_ranges[] = {
+ #define PPORT_2863_OFF(c) \
+ 	MLX5_BYTE_OFF(ppcnt_reg, \
+ 		      counter_set.eth_2863_cntrs_grp_data_layout.c##_high)
+@@ -910,6 +985,59 @@ static MLX5E_DECLARE_STATS_GRP_OP_UPDATE_STATS(2819)
+ 	mlx5_core_access_reg(mdev, in, sz, out, sz, MLX5_REG_PPCNT, 0, 0);
+ }
+ 
++static const struct ethtool_rmon_hist_range mlx5e_rmon_ranges[] = {
 +	{    0,    64 },
 +	{   65,   127 },
 +	{  128,   255 },
@@ -112,84 +230,74 @@ index 7b90357daba1..832252313b18 100644
 +	{ 1024,  1518 },
 +	{ 1519,  2047 },
 +	{ 2048,  4095 },
-+	{ 4096,  9216 },
-+	{ 9217, 16383 },
++	{ 4096,  8191 },
++	{ 8192, 10239 },
 +	{}
 +};
 +
-+static void bnxt_get_rmon_stats(struct net_device *dev,
-+				struct ethtool_rmon_stats *rmon_stats,
-+				const struct ethtool_rmon_hist_range **ranges)
++void mlx5e_stats_rmon_get(struct mlx5e_priv *priv,
++			  struct ethtool_rmon_stats *rmon,
++			  const struct ethtool_rmon_hist_range **ranges)
 +{
-+	struct bnxt *bp = netdev_priv(dev);
-+	u64 *rx, *tx;
++	u32 ppcnt_RFC_2819_counters[MLX5_ST_SZ_DW(ppcnt_reg)];
++	struct mlx5_core_dev *mdev = priv->mdev;
++	u32 in[MLX5_ST_SZ_DW(ppcnt_reg)] = {0};
++	int sz = MLX5_ST_SZ_BYTES(ppcnt_reg);
 +
-+	if (BNXT_VF(bp) || !(bp->flags & BNXT_FLAG_PORT_STATS))
++	MLX5_SET(ppcnt_reg, in, local_port, 1);
++	MLX5_SET(ppcnt_reg, in, grp, MLX5_RFC_2819_COUNTERS_GROUP);
++	if (mlx5_core_access_reg(mdev, in, sz, ppcnt_RFC_2819_counters,
++				 sz, MLX5_REG_PPCNT, 0, 0))
 +		return;
 +
-+	rx = bp->port_stats.sw_stats;
-+	tx = bp->port_stats.sw_stats + BNXT_TX_PORT_STATS_BYTE_OFFSET / 8;
++#define RD(name)						\
++	MLX5E_READ_CTR64_BE_F(ppcnt_RFC_2819_counters,		\
++			      eth_2819_cntrs_grp_data_layout,	\
++			      name)
 +
-+	rmon_stats->jabbers =
-+		BNXT_GET_RX_PORT_STATS64(rx, rx_jbr_frames);
-+	rmon_stats->oversize_pkts =
-+		BNXT_GET_RX_PORT_STATS64(rx, rx_ovrsz_frames);
-+	rmon_stats->undersize_pkts =
-+		BNXT_GET_RX_PORT_STATS64(rx, rx_undrsz_frames);
++	rmon->undersize_pkts	= RD(ether_stats_undersize_pkts);
++	rmon->fragments		= RD(ether_stats_fragments);
++	rmon->jabbers		= RD(ether_stats_jabbers);
 +
-+	rmon_stats->hist[0] = BNXT_GET_RX_PORT_STATS64(rx, rx_64b_frames);
-+	rmon_stats->hist[1] = BNXT_GET_RX_PORT_STATS64(rx, rx_65b_127b_frames);
-+	rmon_stats->hist[2] = BNXT_GET_RX_PORT_STATS64(rx, rx_128b_255b_frames);
-+	rmon_stats->hist[3] = BNXT_GET_RX_PORT_STATS64(rx, rx_256b_511b_frames);
-+	rmon_stats->hist[4] =
-+		BNXT_GET_RX_PORT_STATS64(rx, rx_512b_1023b_frames);
-+	rmon_stats->hist[5] =
-+		BNXT_GET_RX_PORT_STATS64(rx, rx_1024b_1518b_frames);
-+	rmon_stats->hist[6] =
-+		BNXT_GET_RX_PORT_STATS64(rx, rx_1519b_2047b_frames);
-+	rmon_stats->hist[7] =
-+		BNXT_GET_RX_PORT_STATS64(rx, rx_2048b_4095b_frames);
-+	rmon_stats->hist[8] =
-+		BNXT_GET_RX_PORT_STATS64(rx, rx_4096b_9216b_frames);
-+	rmon_stats->hist[9] =
-+		BNXT_GET_RX_PORT_STATS64(rx, rx_9217b_16383b_frames);
++	rmon->hist[0]		= RD(ether_stats_pkts64octets);
++	rmon->hist[1]		= RD(ether_stats_pkts65to127octets);
++	rmon->hist[2]		= RD(ether_stats_pkts128to255octets);
++	rmon->hist[3]		= RD(ether_stats_pkts256to511octets);
++	rmon->hist[4]		= RD(ether_stats_pkts512to1023octets);
++	rmon->hist[5]		= RD(ether_stats_pkts1024to1518octets);
++	rmon->hist[6]		= RD(ether_stats_pkts1519to2047octets);
++	rmon->hist[7]		= RD(ether_stats_pkts2048to4095octets);
++	rmon->hist[8]		= RD(ether_stats_pkts4096to8191octets);
++	rmon->hist[9]		= RD(ether_stats_pkts8192to10239octets);
++#undef RD
 +
-+	rmon_stats->hist_tx[0] =
-+		BNXT_GET_TX_PORT_STATS64(tx, tx_64b_frames);
-+	rmon_stats->hist_tx[1] =
-+		BNXT_GET_TX_PORT_STATS64(tx, tx_65b_127b_frames);
-+	rmon_stats->hist_tx[2] =
-+		BNXT_GET_TX_PORT_STATS64(tx, tx_128b_255b_frames);
-+	rmon_stats->hist_tx[3] =
-+		BNXT_GET_TX_PORT_STATS64(tx, tx_256b_511b_frames);
-+	rmon_stats->hist_tx[4] =
-+		BNXT_GET_TX_PORT_STATS64(tx, tx_512b_1023b_frames);
-+	rmon_stats->hist_tx[5] =
-+		BNXT_GET_TX_PORT_STATS64(tx, tx_1024b_1518b_frames);
-+	rmon_stats->hist_tx[6] =
-+		BNXT_GET_TX_PORT_STATS64(tx, tx_1519b_2047b_frames);
-+	rmon_stats->hist_tx[7] =
-+		BNXT_GET_TX_PORT_STATS64(tx, tx_2048b_4095b_frames);
-+	rmon_stats->hist_tx[8] =
-+		BNXT_GET_TX_PORT_STATS64(tx, tx_4096b_9216b_frames);
-+	rmon_stats->hist_tx[9] =
-+		BNXT_GET_TX_PORT_STATS64(tx, tx_9217b_16383b_frames);
-+
-+	*ranges = bnxt_rmon_ranges;
++	*ranges = mlx5e_rmon_ranges;
 +}
 +
- void bnxt_ethtool_free(struct bnxt *bp)
- {
- 	kfree(bp->test_info);
-@@ -4049,4 +4170,8 @@ const struct ethtool_ops bnxt_ethtool_ops = {
- 	.set_dump		= bnxt_set_dump,
- 	.get_dump_flag		= bnxt_get_dump_flag,
- 	.get_dump_data		= bnxt_get_dump_data,
-+	.get_eth_phy_stats	= bnxt_get_eth_phy_stats,
-+	.get_eth_mac_stats	= bnxt_get_eth_mac_stats,
-+	.get_eth_ctrl_stats	= bnxt_get_eth_ctrl_stats,
-+	.get_rmon_stats		= bnxt_get_rmon_stats,
- };
+ #define PPORT_PHY_STATISTICAL_OFF(c) \
+ 	MLX5_BYTE_OFF(ppcnt_reg, \
+ 		      counter_set.phys_layer_statistical_cntrs.c##_high)
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_stats.h b/drivers/net/ethernet/mellanox/mlx5/core/en_stats.h
+index 3f0789e51eed..5b80a173e71c 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en_stats.h
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en_stats.h
+@@ -117,6 +117,16 @@ void mlx5e_stats_pause_get(struct mlx5e_priv *priv,
+ void mlx5e_stats_fec_get(struct mlx5e_priv *priv,
+ 			 struct ethtool_fec_stats *fec_stats);
+ 
++void mlx5e_stats_eth_phy_get(struct mlx5e_priv *priv,
++			     struct ethtool_eth_phy_stats *phy_stats);
++void mlx5e_stats_eth_mac_get(struct mlx5e_priv *priv,
++			     struct ethtool_eth_mac_stats *mac_stats);
++void mlx5e_stats_eth_ctrl_get(struct mlx5e_priv *priv,
++			      struct ethtool_eth_ctrl_stats *ctrl_stats);
++void mlx5e_stats_rmon_get(struct mlx5e_priv *priv,
++			  struct ethtool_rmon_stats *rmon,
++			  const struct ethtool_rmon_hist_range **ranges);
++
+ /* Concrete NIC Stats */
+ 
+ struct mlx5e_sw_stats {
 -- 
 2.30.2
 
