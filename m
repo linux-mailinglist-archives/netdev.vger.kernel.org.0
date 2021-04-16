@@ -2,113 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B20F836277E
-	for <lists+netdev@lfdr.de>; Fri, 16 Apr 2021 20:08:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 36B35362795
+	for <lists+netdev@lfdr.de>; Fri, 16 Apr 2021 20:19:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236085AbhDPSJQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 16 Apr 2021 14:09:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36412 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244363AbhDPSJN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 16 Apr 2021 14:09:13 -0400
-Received: from mail-pl1-x634.google.com (mail-pl1-x634.google.com [IPv6:2607:f8b0:4864:20::634])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A35D5C061756
-        for <netdev@vger.kernel.org>; Fri, 16 Apr 2021 11:08:45 -0700 (PDT)
-Received: by mail-pl1-x634.google.com with SMTP id p16so10450500plf.12
-        for <netdev@vger.kernel.org>; Fri, 16 Apr 2021 11:08:45 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=networkplumber-org.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=8sHr1KWLYr6hUO2+6Muh8EPhx1F9Tk8jR0NrChU25Qw=;
-        b=sbEXaiiHsn3/aSCb6k95Aihy0B3zcE8x0t+7bwBKOEWSw41rec5+GbSmBF+x3vx1W+
-         22CrjlXWaHoiS4q4DLqsFhuLaMUxCI3s9iBTVJrsCbwKIf1jvEyvfo4/39HSO6Y1OPTB
-         kXinE7pzB/pIxaVPpuS0hN65eM5JWBoeW4iK9wAbCviURxQayXdM5s3G6C9jPXR+9Acx
-         +o6dG5dzwQXaOa1dKA8eJiQdhjPU72dHDgNDwH3pZDK9ftzIT9m1LtOSPG6j0w8yAMhh
-         CDFTk6TA6U4C4YF7DnVHigczZ2qBFNr7Eyzdn5xKNYwVBPCAvlaRhZM1pMRZDhD2f3GK
-         cZHw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=8sHr1KWLYr6hUO2+6Muh8EPhx1F9Tk8jR0NrChU25Qw=;
-        b=J1m3tENMu0dfh84wRjGmbI6891JBfxCaBYlprpNOmPZvJ/RhDQzfFwRPEFb7Lv8qqx
-         wBBcFJn+9gY35akrFuE8zIKHR1PKTwp4CvjRPu4vSC84kaM2Dp93pL4x4s5hIu0N0BfJ
-         UWs3yb7Tfe8MDq0hK7IhWpR7te9RH6TK7tV7csxoQCWdax3VPJQe1K3wRsdj4FQJjxGV
-         TkZ+s3Vwk05+gg+nBZElBpgDXKUsR+KuloB0UXY8lng1AuG4DWFqBzgaDKo2TJeP39Gg
-         IDEjLxpOoQWRaZ0ADY1QsKwfTChfoL6qyjG4PkcHxBZrVO9LDzP7LRktKwVkYZw/ZBEQ
-         iAEA==
-X-Gm-Message-State: AOAM532d4GhM+Y38dPnM9+F8EpXlyCUxg8MdYxdsgwpXIFasLNLgqiVE
-        6LlrUlSwdU0Z7gp7uqCVF9Fg0Q==
-X-Google-Smtp-Source: ABdhPJyR0UqNjrwgaE5FPswaP50mdYiX9Xg7XwWgE+Ls0+GtsSCX9wkO/QEQHFbjOXib9i6gAOaJRg==
-X-Received: by 2002:a17:90a:528b:: with SMTP id w11mr11115174pjh.162.1618596525196;
-        Fri, 16 Apr 2021 11:08:45 -0700 (PDT)
-Received: from hermes.local (76-14-218-44.or.wavecable.com. [76.14.218.44])
-        by smtp.gmail.com with ESMTPSA id x29sm2543765pga.70.2021.04.16.11.08.44
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 16 Apr 2021 11:08:44 -0700 (PDT)
-Date:   Fri, 16 Apr 2021 11:08:36 -0700
-From:   Stephen Hemminger <stephen@networkplumber.org>
-To:     Dexuan Cui <decui@microsoft.com>
-Cc:     Haiyang Zhang <haiyangz@microsoft.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        KY Srinivasan <kys@microsoft.com>,
-        Stephen Hemminger <sthemmin@microsoft.com>,
-        "wei.liu@kernel.org" <wei.liu@kernel.org>,
-        Wei Liu <liuwe@microsoft.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "leon@kernel.org" <leon@kernel.org>,
-        "andrew@lunn.ch" <andrew@lunn.ch>,
-        "bernd@petrovitsch.priv.at" <bernd@petrovitsch.priv.at>,
-        "rdunlap@infradead.org" <rdunlap@infradead.org>,
-        Shachar Raindel <shacharr@microsoft.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>
-Subject: Re: [PATCH v7 net-next] net: mana: Add a driver for Microsoft Azure
- Network Adapter (MANA)
-Message-ID: <20210416110836.67a4a88e@hermes.local>
-In-Reply-To: <MW2PR2101MB0892EE955B75C2442E266DB9BF4C9@MW2PR2101MB0892.namprd21.prod.outlook.com>
-References: <20210416060705.21998-1-decui@microsoft.com>
-        <20210416094006.70661f47@hermes.local>
-        <MN2PR21MB12957D66D4DB4B3B7BAEFCA5CA4C9@MN2PR21MB1295.namprd21.prod.outlook.com>
-        <MW2PR2101MB0892EE955B75C2442E266DB9BF4C9@MW2PR2101MB0892.namprd21.prod.outlook.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+        id S244624AbhDPSTe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 16 Apr 2021 14:19:34 -0400
+Received: from pop31.abv.bg ([194.153.145.221]:53764 "EHLO pop31.abv.bg"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S236112AbhDPSTe (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 16 Apr 2021 14:19:34 -0400
+X-Greylist: delayed 315 seconds by postgrey-1.27 at vger.kernel.org; Fri, 16 Apr 2021 14:19:33 EDT
+Received: from smtp.abv.bg (localhost [127.0.0.1])
+        by pop31.abv.bg (Postfix) with ESMTP id 6B2ED1805913;
+        Fri, 16 Apr 2021 21:13:44 +0300 (EEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=abv.bg; s=smtp-out;
+        t=1618596824; bh=DFyGWRt2O/n2LfjlOnW/zpPJa0sAE+09jDo5uiYtOLU=;
+        h=From:Subject:Date:Cc:To:From;
+        b=B8qYhrcvPKG7LzA1pPv4Y3CDPe8q0m9e4trDm9TOJiqlB+HVEewZ3l5SxTQkARi/N
+         dDrSHRjDpFQ2ccCshXjbKo7ucc3146tpfhciL3mIDFBur8D9NA/JrE7MhIGmHPe8Ua
+         S2npeyDoFgSrOkHy1sDMiVTl0RnUE+oQ1IRbJGY4=
+X-HELO: [192.168.192.3]
+Authentication-Results: smtp.abv.bg; auth=pass (plain) smtp.auth=gvalkov@abv.bg
+Received: from 212-39-89-202.ip.btc-net.bg (HELO [192.168.192.3]) (212.39.89.202)
+ by smtp.abv.bg (qpsmtpd/0.96) with ESMTPSA (ECDHE-RSA-AES256-GCM-SHA384 encrypted); Fri, 16 Apr 2021 21:13:44 +0300
+From:   Georgi Valkov <gvalkov@abv.bg>
+Content-Type: text/plain;
+        charset=us-ascii
+Content-Transfer-Encoding: quoted-printable
+Mime-Version: 1.0 (Mac OS X Mail 14.0 \(3654.60.0.2.21\))
+Subject: usbnet: ipheth: fix EOVERFLOW in ipheth_rcvbulk_callback
+Message-Id: <833FE09E-2542-4F3F-87D6-DD03084C0FD5@abv.bg>
+Date:   Fri, 16 Apr 2021 21:13:40 +0300
+Cc:     oneukum@suse.com, matti.vuorela@bitfactor.fi
+To:     corsac@corsac.net, netdev@vger.kernel.org,
+        linux-usb@vger.kernel.org
+X-Mailer: Apple Mail (2.3654.60.0.2.21)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 16 Apr 2021 17:58:45 +0000
-Dexuan Cui <decui@microsoft.com> wrote:
+Dear Linux kernel team,
 
-> > >
-> > > This probably should be a separate patch.
-> > > I think it is trying to address the case of VF discovery in Hyper-V/Azure where
-> > > the reported
-> > > VF from Hypervisor is bogus or confused.  
-> > 
-> > This is for the Multi vPorts feature of MANA driver, which allows one VF to
-> > create multiple vPorts (NICs). They have the same PCI device and same VF
-> > serial number, but different MACs.
-> > 
-> > So we put the change in one patch to avoid distro vendors missing this
-> > change when backporting the MANA driver.
-> > 
-> > Thanks,
-> > - Haiyang  
-> 
-> The netvsc change should come together in the same patch with this VF
-> driver, otherwise the multi-vPorts functionality doesn't work properly.
-> 
-> The netvsc change should not break any other existing VF drivers, because
-> Hyper-V NIC SR-IOV implementation requires the the NetVSC network
-> interface and the VF network interface should have the same MAC address,
-> otherwise things won't work.
-> 
-> Thanks,
-> Dexuan
+Please accept the following important fix from me:
+https://github.com/httpstorm/linux-kernel/tree/ipheth-fix-RX-EOVERFLOW
 
-Distro vendors should be able to handle a patch series.
-Don't see why this could not be two patch series.
+While commit f33d9e2b48a34e1558b67a473a1fc1d6e793f93c
+is required for iOS 14, only the TX buffers should be reduced
+to 1514 bytes. RX buffers should remain at 1516 bytes, because
+their size is reduced later by IPHETH_IP_ALIGN (2 bytes).
+
+
+=46rom dd109ded2b526636fff438d33433ab64ffd21583 Mon Sep 17 00:00:00 2001
+From: Georgi Valkov <gvalkov@abv.bg>
+Date: Fri, 16 Apr 2021 20:44:36 +0300
+Subject: [PATCH] usbnet: ipheth: fix EOVERFLOW in =
+ipheth_rcvbulk_callback
+
+When rx_buf is allocated we need to account for IPHETH_IP_ALIGN,
+which reduces the usable size by 2 bytes. Otherwise we have 1512
+bytes usable instead of 1514, and if we receive more than 1512
+bytes, ipheth_rcvbulk_callback is called with status -EOVERFLOW,
+after which the driver malfunctiones and all communication stops.
+
+Fixes: ipheth 2-1:4.2: ipheth_rcvbulk_callback: urb status: -75
+
+Signed-off-by: Georgi Valkov <gvalkov@abv.bg>
+---
+ drivers/net/usb/ipheth.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/drivers/net/usb/ipheth.c b/drivers/net/usb/ipheth.c
+index 207e59e74935..06d9f19ca142 100644
+--- a/drivers/net/usb/ipheth.c
++++ b/drivers/net/usb/ipheth.c
+@@ -121,7 +121,7 @@ static int ipheth_alloc_urbs(struct ipheth_device =
+*iphone)
+ 	if (tx_buf =3D=3D NULL)
+ 		goto free_rx_urb;
+=20
+-	rx_buf =3D usb_alloc_coherent(iphone->udev, IPHETH_BUF_SIZE,
++	rx_buf =3D usb_alloc_coherent(iphone->udev, IPHETH_BUF_SIZE + =
+IPHETH_IP_ALIGN,
+ 				    GFP_KERNEL, &rx_urb->transfer_dma);
+ 	if (rx_buf =3D=3D NULL)
+ 		goto free_tx_buf;
+@@ -146,7 +146,7 @@ static int ipheth_alloc_urbs(struct ipheth_device =
+*iphone)
+=20
+ static void ipheth_free_urbs(struct ipheth_device *iphone)
+ {
+-	usb_free_coherent(iphone->udev, IPHETH_BUF_SIZE, iphone->rx_buf,
++	usb_free_coherent(iphone->udev, IPHETH_BUF_SIZE + =
+IPHETH_IP_ALIGN, iphone->rx_buf,
+ 			  iphone->rx_urb->transfer_dma);
+ 	usb_free_coherent(iphone->udev, IPHETH_BUF_SIZE, iphone->tx_buf,
+ 			  iphone->tx_urb->transfer_dma);
+@@ -317,7 +317,7 @@ static int ipheth_rx_submit(struct ipheth_device =
+*dev, gfp_t mem_flags)
+=20
+ 	usb_fill_bulk_urb(dev->rx_urb, udev,
+ 			  usb_rcvbulkpipe(udev, dev->bulk_in),
+-			  dev->rx_buf, IPHETH_BUF_SIZE,
++			  dev->rx_buf, IPHETH_BUF_SIZE + =
+IPHETH_IP_ALIGN,
+ 			  ipheth_rcvbulk_callback,
+ 			  dev);
+ 	dev->rx_urb->transfer_flags |=3D URB_NO_TRANSFER_DMA_MAP;
+--=20
+2.31.1
+
+
