@@ -2,100 +2,120 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AB83F3631E0
-	for <lists+netdev@lfdr.de>; Sat, 17 Apr 2021 20:55:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 39DA03631F1
+	for <lists+netdev@lfdr.de>; Sat, 17 Apr 2021 21:15:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236807AbhDQSyP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 17 Apr 2021 14:54:15 -0400
-Received: from out1-smtp.messagingengine.com ([66.111.4.25]:43223 "EHLO
-        out1-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S230064AbhDQSyO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 17 Apr 2021 14:54:14 -0400
-Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-        by mailout.nyi.internal (Postfix) with ESMTP id DD2FC5C032F;
-        Sat, 17 Apr 2021 14:53:47 -0400 (EDT)
-Received: from mailfrontend2 ([10.202.2.163])
-  by compute3.internal (MEProxy); Sat, 17 Apr 2021 14:53:47 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:content-type:date:from:in-reply-to
-        :message-id:mime-version:references:subject:to:x-me-proxy
-        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm2; bh=0f6Co2
-        TBsWET5dKmcvK5GrDaBpX6MwfpWYAcHC8Za/c=; b=Crf+iXoCzC84BUd/UiXtnc
-        XmjGdknjnOzwkc8yYEJGxbieG8dfO1q3dEdBFvml11o3HMsOyZI72aUcL55q9YYH
-        Bfjv8iaP5Nhm34s1bqIO02l19Xty0L7GIqvTxkQuHYQ9LLwbtMG247tKC8Xfdn+2
-        BvEB7+O2ZyhSLcjsWUxLDe8xkIpk+p2wTZVrk7Wm1dloxQ7rNVBr6FbG7QJ+QSzq
-        guaXEAs/qcDJsnupOYGiyQ7QqKIKExz2n6t1AGEkS5Mcd7V/eybR5azKzApVPqpd
-        opivCiFLRPmTk801KKRY1EZviU3l9ImoTlUOhaPJIKUOnvS5Ki8nIp6IE7zAYlPw
-        ==
-X-ME-Sender: <xms:ui57YP0upj31w6we09pLjDEZne7i4hGkKljrJfJ0TWDyfQIVut7Xtg>
-    <xme:ui57YOFrK43aGOUX8VuvZoidyKch3R-hCW6hJd9QycN0Iy3NfZVm6Qqqr4LLO3NXB
-    0ng0_9_wmQPDrs>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduledrudeliedgvdeitdcutefuodetggdotefrod
-    ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfgh
-    necuuegrihhlohhuthemuceftddtnecunecujfgurhepfffhvffukfhfgggtuggjsehttd
-    ertddttddvnecuhfhrohhmpefkughoucfutghhihhmmhgvlhcuoehiughoshgthhesihgu
-    ohhstghhrdhorhhgqeenucggtffrrghtthgvrhhnpedtffekkeefudffveegueejffejhf
-    etgfeuuefgvedtieehudeuueekhfduheelteenucfkphepkeegrddvvdelrdduheefrddu
-    keejnecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomhepih
-    guohhstghhsehiughoshgthhdrohhrgh
-X-ME-Proxy: <xmx:ui57YP5sNadRZFXbM9d1A-xqcR2BCb12JstRDQEgQQ9OalJAuVU7BQ>
-    <xmx:ui57YE0ItzTWVUR0ddEJGe-i_R4MxxLVvwIHq0LNE4cXt1BKzWkyzg>
-    <xmx:ui57YCF7o4za4kH5wA65U1eXc4TdiyMAgGtmNDxFG8jd-iKY9iHVNw>
-    <xmx:uy57YOirWqlopZ5Zuq385LRujBe5qF4iSjvVPO2OltkZYXmYy9Qr6A>
-Received: from localhost (igld-84-229-153-187.inter.net.il [84.229.153.187])
-        by mail.messagingengine.com (Postfix) with ESMTPA id C15C01080066;
-        Sat, 17 Apr 2021 14:53:45 -0400 (EDT)
-Date:   Sat, 17 Apr 2021 21:53:40 +0300
-From:   Ido Schimmel <idosch@idosch.org>
-To:     Jakub Kicinski <kuba@kernel.org>
+        id S236949AbhDQTPs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 17 Apr 2021 15:15:48 -0400
+Received: from mail.kernel.org ([198.145.29.99]:53352 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S230064AbhDQTPs (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 17 Apr 2021 15:15:48 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 22C9761210;
+        Sat, 17 Apr 2021 19:15:21 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1618686921;
+        bh=24GHd9WWbmBz/YVUfzFJDMf/YioHrvv7V8cEu873n1M=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=j8tmS5fM55zdSBGDLd3ac4AZEAYbyR+MQ9IhjcOaYRQGiF/ausy43dF1JfbJYxN/W
+         tY40VLJGDlgCliy01B33+STFaW21vmAW36z+hRG8SSUsDClOPNhz5oihmFYiLzHPtV
+         +JzWn0obYeL+v8n22zZXnB9wVVQy9vn7vdPVqNpKKF7g6JM6PzrDmGAws5Hb9Dbtni
+         bhgsvdoG7CigxK2zhJeArCJxdEH2Ayr5v9TxWJX5jTRJke850vtKrJdM4xiwgyCQ7B
+         3HDuQvtbNGJjs84kgLeZvpk7SngEbHNie57ggDMCY91wOF03eyPDTg0Dw2weO/nwAu
+         9iblTuy7/PRQA==
+Date:   Sat, 17 Apr 2021 12:15:20 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Ido Schimmel <idosch@idosch.org>
 Cc:     netdev@vger.kernel.org, davem@davemloft.net, andrew@lunn.ch,
         mkubecek@suse.cz, idosch@nvidia.com, saeedm@nvidia.com,
         michael.chan@broadcom.com
 Subject: Re: [PATCH net-next v2 3/9] ethtool: add a new command for reading
  standard stats
-Message-ID: <YHsutM6vesbQq+Ju@shredder.lan>
+Message-ID: <20210417121520.242b0c14@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <YHsutM6vesbQq+Ju@shredder.lan>
 References: <20210416192745.2851044-1-kuba@kernel.org>
- <20210416192745.2851044-4-kuba@kernel.org>
- <YHsXnzqVDjL9Q0Bz@shredder.lan>
- <20210417105742.76bb2461@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <20210417111351.27c54b99@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <20210416192745.2851044-4-kuba@kernel.org>
+        <YHsXnzqVDjL9Q0Bz@shredder.lan>
+        <20210417105742.76bb2461@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <20210417111351.27c54b99@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <YHsutM6vesbQq+Ju@shredder.lan>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210417111351.27c54b99@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Apr 17, 2021 at 11:13:51AM -0700, Jakub Kicinski wrote:
-> On Sat, 17 Apr 2021 10:57:42 -0700 Jakub Kicinski wrote:
-> > > I tried to understand how you add new groups without user space
-> > > changes and I think this statement is not entirely accurate.
+On Sat, 17 Apr 2021 21:53:40 +0300 Ido Schimmel wrote:
+> On Sat, Apr 17, 2021 at 11:13:51AM -0700, Jakub Kicinski wrote:
+> > On Sat, 17 Apr 2021 10:57:42 -0700 Jakub Kicinski wrote:  
+> > > Um, yes and now. The only places the user space puts those names 
+> > > is the help message and man page.
 > > > 
-> > > At minimum, user space needs to know the names of these groups, but
-> > > currently there is no way to query the information, so it's added to
-> > > ethtool's help message:
+> > > Thru the magic of bitsets it doesn't actually interpret them, so
+> > > with old user space you can still query a new group, it will just 
+> > > not show up in "ethtool -h".
 > > > 
-> > > ethtool [ FLAGS ] -S|--statistics DEVNAME       Show adapter statistics       
-> > >        [ --groups [eth-phy] [eth-mac] [eth-ctrl] [rmon] ]  
+> > > Is that what you're saying?  
 > > 
-> > Um, yes and now. The only places the user space puts those names 
-> > is the help message and man page.
-> > 
-> > Thru the magic of bitsets it doesn't actually interpret them, so
-> > with old user space you can still query a new group, it will just 
-> > not show up in "ethtool -h".
-> > 
-> > Is that what you're saying?
+> > FWIW ethnl_parse_bit() -> ETHTOOL_A_BITSET_BIT_NAME
+> > User space can also use raw flags like --groups 0xf but that's perhaps
+> > too spartan for serious use.  
 > 
-> FWIW ethnl_parse_bit() -> ETHTOOL_A_BITSET_BIT_NAME
-> User space can also use raw flags like --groups 0xf but that's perhaps
-> too spartan for serious use.
+> So the kernel can work with ETHTOOL_A_BITSET_BIT_INDEX /
+> ETHTOOL_A_BITSET_BIT_NAME, but I was wondering if using ethtool binary
+> we can query the strings that the kernel will accept. I think not?
 
-So the kernel can work with ETHTOOL_A_BITSET_BIT_INDEX /
-ETHTOOL_A_BITSET_BIT_NAME, but I was wondering if using ethtool binary
-we can query the strings that the kernel will accept. I think not?
+For request user space sends the strings inside the netlink message:
 
-Anyway, I'm fine with implementing '--all-groups' via
-ETHTOOL_MSG_STRSET_GET. We can always add a new attribute later, but I
-don't see a reason to do so.
+ethtool --debug 0xff -S eth0 --groups eth-phy eth-mac
+
+sending genetlink packet (80 bytes):
+    msg length 80 ethool ETHTOOL_MSG_STATS_GET
+    ETHTOOL_MSG_STATS_GET
+        ETHTOOL_A_STATS_HEADER
+            ETHTOOL_A_HEADER_DEV_NAME = "eth0"
+        ETHTOOL_A_STATS_GROUPS
+            ETHTOOL_A_BITSET_NOMASK = true
+            ETHTOOL_A_BITSET_BITS
+                ETHTOOL_A_BITSET_BITS_BIT
+                    ETHTOOL_A_BITSET_BIT_NAME = "eth-phy"
+                ETHTOOL_A_BITSET_BITS_BIT
+                    ETHTOOL_A_BITSET_BIT_NAME = "eth-mac"
+
+Kernel will then search the bitset and respond with:
+
+netlink error: bit name not found
+
+if string is not found. So upfront enumeration is not strictly
+necessary.
+
+The only way to query what will be accepted AFAIU is to query 
+the string set via ETHTOOL_MSG_STRSET_GET. The string set is part 
+of the uAPI:
+
+const char stats_std_names[__ETHTOOL_STATS_CNT][ETH_GSTRING_LEN] = {
+	[ETHTOOL_STATS_ETH_PHY]			= "eth-phy",
+	[ETHTOOL_STATS_ETH_MAC]			= "eth-mac",
+	[ETHTOOL_STATS_ETH_CTRL]		= "eth-ctrl",
+	[ETHTOOL_STATS_RMON]			= "rmon",
+};
+
+	[ETH_SS_STATS_STD] = {
+		.per_dev	= false,
+		.count		= __ETHTOOL_STATS_CNT,
+		.strings	= stats_std_names,
+	},
+
+I believe string set must have the same number of bits as the bitset,
+so there's full equivalency. We could try to express the limits in a
+static netlink policy one day but today parameters of the bitset are
+passed in the code.
+
+> Anyway, I'm fine with implementing '--all-groups' via
+> ETHTOOL_MSG_STRSET_GET.
+
+Cool, will do!
+
+> We can always add a new attribute later, but I
+> don't see a reason to do so.
