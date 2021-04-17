@@ -2,89 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6ABA8363180
-	for <lists+netdev@lfdr.de>; Sat, 17 Apr 2021 19:31:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B75C4363183
+	for <lists+netdev@lfdr.de>; Sat, 17 Apr 2021 19:31:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236877AbhDQRbD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 17 Apr 2021 13:31:03 -0400
-Received: from mail.kernel.org ([198.145.29.99]:37124 "EHLO mail.kernel.org"
+        id S236897AbhDQRbP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 17 Apr 2021 13:31:15 -0400
+Received: from m43-7.mailgun.net ([69.72.43.7]:26366 "EHLO m43-7.mailgun.net"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S236595AbhDQRbC (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 17 Apr 2021 13:31:02 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id DFF69613C7;
-        Sat, 17 Apr 2021 17:30:35 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1618680635;
-        bh=ugaFr7ubcYoZlftrOW8+is8PkeVPg/pgdCmBuE+ol64=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=pokeBsO6dVRMBkqi8/yu+5t2S6RsKZsuEFRWuOmUllxciYCV/hKsZJPlPIFAn+dFS
-         Lhbp0UYxa+8GNR0jx5rxoIRI19RblhevJhFutJTxtVnnBXTDHcOBAJ9YrYRvhz/ZIQ
-         L0jcpMc04X7RUawJc+GPJ09O1vUXNSxv8aJIKKiK0DnoePGq/How3WpglmniU4DxaZ
-         aM3UgZ/ri2h3v7xS4jm9thXDeLzXtS9YuOOLqr9ghK8DfiZ0bXj/XZNQjjHq4NjZNU
-         iM2DFOrqUDZJrOTKy/CU0rm/zjTn1+nt9fX5AHG1CX2cZw6XqnfgnhxJ9sHCr3nBMG
-         5Yn65E7dZ6PvA==
-Received: by mail-wm1-f43.google.com with SMTP id f195-20020a1c1fcc0000b029012eb88126d7so5842261wmf.3;
-        Sat, 17 Apr 2021 10:30:35 -0700 (PDT)
-X-Gm-Message-State: AOAM532WacjqG1W1CR/OTHLlVHiB9SXyxDIDcXQQ4u9Jj1l5Fn56ekUb
-        inVDMbtPWYl46i5ow8+z+wW7B96M3y3j+fc97oA=
-X-Google-Smtp-Source: ABdhPJx5c7/qiwMYT0ir136uPjUzW1fYOXrUhmuWfobdjxZ7ZRW1mvPQs0zb5XctbTVKp2LKwzYcR2xXWnxiB9rv6sM=
-X-Received: by 2002:a7b:c14a:: with SMTP id z10mr13072983wmi.75.1618680634529;
- Sat, 17 Apr 2021 10:30:34 -0700 (PDT)
+        id S236765AbhDQRbO (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 17 Apr 2021 13:31:14 -0400
+DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
+ s=smtp; t=1618680647; h=Date: Message-Id: Cc: To: References:
+ In-Reply-To: From: Subject: Content-Transfer-Encoding: MIME-Version:
+ Content-Type: Sender; bh=WMvNqeYGR2IxnsiIderdYx5w/sakgreKo/hM8JaVRME=;
+ b=rb/USYavKZ7yjta0w1bhbgb+ETc0CYI5+xlUTtmuucHhhcPqexeqj8L0JckXeiXkJOO1Y7L/
+ KFB/qj4qMWF2LUYto5pVmxAynAp89IENhmR6IfCyDGJQbFg7eW5qHEFwQ+nc1JGBRt8meNLg
+ 2+NlgkIOAeeCoCGJStRjd890f9k=
+X-Mailgun-Sending-Ip: 69.72.43.7
+X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
+Received: from smtp.codeaurora.org
+ (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
+ smtp-out-n04.prod.us-west-2.postgun.com with SMTP id
+ 607b1b342cc44d3aea5b97b8 (version=TLS1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Sat, 17 Apr 2021 17:30:28
+ GMT
+Sender: kvalo=codeaurora.org@mg.codeaurora.org
+Received: by smtp.codeaurora.org (Postfix, from userid 1001)
+        id 375C3C433F1; Sat, 17 Apr 2021 17:30:28 +0000 (UTC)
+X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
+        aws-us-west-2-caf-mail-1.web.codeaurora.org
+X-Spam-Level: 
+X-Spam-Status: No, score=-1.0 required=2.0 tests=ALL_TRUSTED,BAYES_00,
+        MISSING_DATE,MISSING_MID,SPF_FAIL autolearn=no autolearn_force=no
+        version=3.4.0
+Received: from potku.adurom.net (88-114-240-156.elisa-laajakaista.fi [88.114.240.156])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        (Authenticated sender: kvalo)
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id DC2C9C433F1;
+        Sat, 17 Apr 2021 17:30:25 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org DC2C9C433F1
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=fail smtp.mailfrom=kvalo@codeaurora.org
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-References: <20210411103318.GC2531743@casper.infradead.org>
- <20210412011532.GG2531743@casper.infradead.org> <20210414101044.19da09df@carbon>
- <20210414115052.GS2531743@casper.infradead.org> <20210414211322.3799afd4@carbon>
- <20210414213556.GY2531743@casper.infradead.org> <a50c3156fe8943ef964db4345344862f@AcuMS.aculab.com>
- <20210415200832.32796445@carbon> <20210416152755.GL2531743@casper.infradead.org>
- <CAK8P3a2dekzohOrHpLq6yyuaoyC4UOxxucu6kX2oddeq5Jdqfg@mail.gmail.com> <20210417135642.GR2531743@casper.infradead.org>
-In-Reply-To: <20210417135642.GR2531743@casper.infradead.org>
-From:   Arnd Bergmann <arnd@kernel.org>
-Date:   Sat, 17 Apr 2021 19:30:21 +0200
-X-Gmail-Original-Message-ID: <CAK8P3a2M1fk-CAAjpLSNsobpOKKiHt_ffoKUNv3aqfie09d_PQ@mail.gmail.com>
-Message-ID: <CAK8P3a2M1fk-CAAjpLSNsobpOKKiHt_ffoKUNv3aqfie09d_PQ@mail.gmail.com>
-Subject: Re: [PATCH 1/1] mm: Fix struct page layout on 32-bit systems
-To:     Matthew Wilcox <willy@infradead.org>
-Cc:     Jesper Dangaard Brouer <brouer@redhat.com>,
-        Grygorii Strashko <grygorii.strashko@ti.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-mips@vger.kernel.org" <linux-mips@vger.kernel.org>,
-        "linux-mm@kvack.org" <linux-mm@kvack.org>,
-        David Laight <David.Laight@aculab.com>,
-        Matteo Croce <mcroce@linux.microsoft.com>,
-        "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>,
-        Christoph Hellwig <hch@lst.de>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
+Subject: Re: [PATCH] rtlwifi: rtl8188ee: remove redundant assignment of
+ variable
+ rtlpriv->btcoexist.reg_bt_sco
+From:   Kalle Valo <kvalo@codeaurora.org>
+In-Reply-To: <1617182023-110950-1-git-send-email-yang.lee@linux.alibaba.com>
+References: <1617182023-110950-1-git-send-email-yang.lee@linux.alibaba.com>
+To:     Yang Li <yang.lee@linux.alibaba.com>
+Cc:     pkshih@realtek.com, davem@davemloft.net, kuba@kernel.org,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Yang Li <yang.lee@linux.alibaba.com>
+User-Agent: pwcli/0.1.0-git (https://github.com/kvalo/pwcli/) Python/3.5.2
+Message-Id: <20210417173028.375C3C433F1@smtp.codeaurora.org>
+Date:   Sat, 17 Apr 2021 17:30:28 +0000 (UTC)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Apr 17, 2021 at 3:58 PM Matthew Wilcox <willy@infradead.org> wrote:
-> I wouldn't like to make that assumption.  I've come across IOMMUs (maybe
-> on parisc?  powerpc?) that like to encode fun information in the top
-> few bits.  So we could get it down to 52 bits, but I don't think we can
-> get all the way down to 32 bits.  Also, we need to keep the bottom bit
-> clear for PageTail, so that further constrains us.
+Yang Li <yang.lee@linux.alibaba.com> wrote:
 
-I'd be surprised to find such an IOMMU on a 32-bit machine, given that
-the main reason for using an IOMMU on these is to avoid the 32-bit
-address limit in DMA masters.
+> Assigning value "3" to "rtlpriv->btcoexist.reg_bt_sco" here, but that
+> stored value is overwritten before it can be used.
+> 
+> Coverity reports this problem as
+> CWE563: A value assigned to a variable is never used.
+> drivers/net/wireless/realtek/rtlwifi/rtl8188ee/hw.c:
+> rtl8188ee_bt_reg_init
+> 
+> Reported-by: Abaci Robot <abaci@linux.alibaba.com>
+> Signed-off-by: Yang Li <yang.lee@linux.alibaba.com>
 
-I see that parisc32 does not enable 64-bit dma_addr_t, while powerpc32
-does not support any IOMMU, so it wouldn't be either of those two.
+Patch applied to wireless-drivers-next.git, thanks.
 
-I do remember some powerpc systems that encode additional flags
-(transaction ordering, caching, ...) into the high bits of the physical
-address in the IOTLB, but not the virtual address used for looking
-them up.
+8e04a06530c6 rtlwifi: rtl8188ee: remove redundant assignment of variable rtlpriv->btcoexist.reg_bt_sco
 
-> Anyway, I like the "two unsigned longs" approach I posted yesterday,
-> but thanks for the suggestion.
+-- 
+https://patchwork.kernel.org/project/linux-wireless/patch/1617182023-110950-1-git-send-email-yang.lee@linux.alibaba.com/
 
-Ok, fair enough. As long as there are enough bits in this branch of
-'struct page', I suppose it is the safe choice.
+https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
 
-        Arnd
