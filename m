@@ -2,383 +2,127 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 41A68362FDC
-	for <lists+netdev@lfdr.de>; Sat, 17 Apr 2021 15:06:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0236C362FE1
+	for <lists+netdev@lfdr.de>; Sat, 17 Apr 2021 15:06:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236231AbhDQM1w (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 17 Apr 2021 08:27:52 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:34194 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S236058AbhDQM1w (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 17 Apr 2021 08:27:52 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1618662445;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=UcVLxACFCEQjuWdMqOIDxJbiuOAE3Voxj6exHo3cApA=;
-        b=B/OiW6JyWe9q1dhLJk9k6lyBdapG42l8+NlI/x07yjwvr1kQZPyg72wmgGRQ2ZCaUd8qit
-        c/j0u3wV78kVpIpHgQlnXE9GCHEzSnvTzVOu9WpsaawYx+tdOFAtOOUoOqqwoI2ykZcv+C
-        CFAFLdFWQenxTUlQ+Mz9PAiAs5LeLYs=
-Received: from mail-ed1-f70.google.com (mail-ed1-f70.google.com
- [209.85.208.70]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-266-u6RwPo1gPJaauyyxXpZWxA-1; Sat, 17 Apr 2021 08:27:23 -0400
-X-MC-Unique: u6RwPo1gPJaauyyxXpZWxA-1
-Received: by mail-ed1-f70.google.com with SMTP id y10-20020a50f1ca0000b0290382d654f75eso8573300edl.1
-        for <netdev@vger.kernel.org>; Sat, 17 Apr 2021 05:27:23 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version:content-transfer-encoding;
-        bh=UcVLxACFCEQjuWdMqOIDxJbiuOAE3Voxj6exHo3cApA=;
-        b=ivZU6/w84OSvSkNjgKiuKIBsTwWpm3+SWR5FEBrr+QZWLNvgNrgvNXNenl8vzmOpEL
-         ISkA6Qs4WmheR4MjCU9InHa/EVuZ1jXUTskdz+tAeRdigNkuAaschhc0IBn1kA2oJrgD
-         ROOAkO54nnW0E1BeduIN9BqOILb0G3wdARXikpWIKqnnqm9HayyWJ//Japc+e1SrdUdl
-         +ShPYCBdXBErwZHrUEXwCNF5EN2gZveaZYxhVmyphr9AE0hdYfJUhYnew6yYqG/vtSfr
-         HsxsbpT8MoMmfvtoelo0U4fBf0mUbhWXL73KRoVUyk1r/kxNm8A1q3pt7cxtkV6DWAsL
-         gN5g==
-X-Gm-Message-State: AOAM531HXppSNt3wz2OD3Wj7NCVLaO74gocYsXCmP7bCA+3/U+X8hyrL
-        L/FEXQn5cvIDB2uX1m9YWlrV+Sva/dJsNXvWJ/i++jTN6NEi1JhErr1FNmA3CEk1B26KOVojkWe
-        1Ebc4Xkq5M/wOC1Rx
-X-Received: by 2002:a17:906:3c1b:: with SMTP id h27mr13291738ejg.182.1618662441984;
-        Sat, 17 Apr 2021 05:27:21 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJyjfoQRATjunian71aZVRSW4TzCiqCl98mHdyasVNApF32CsG4rKSuGFVPKRC4EE2p5ckeJ2g==
-X-Received: by 2002:a17:906:3c1b:: with SMTP id h27mr13291706ejg.182.1618662441517;
-        Sat, 17 Apr 2021 05:27:21 -0700 (PDT)
-Received: from alrua-x1.borgediget.toke.dk ([2a0c:4d80:42:443::2])
-        by smtp.gmail.com with ESMTPSA id i2sm6259078ejv.99.2021.04.17.05.27.20
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 17 Apr 2021 05:27:20 -0700 (PDT)
-Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id B3BC6180002; Sat, 17 Apr 2021 14:27:19 +0200 (CEST)
-From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-To:     paulmck@kernel.org, Martin KaFai Lau <kafai@fb.com>
-Cc:     Jesper Dangaard Brouer <brouer@redhat.com>,
-        Hangbin Liu <liuhangbin@gmail.com>, bpf@vger.kernel.org,
-        netdev@vger.kernel.org, Jiri Benc <jbenc@redhat.com>,
-        Eelco Chaudron <echaudro@redhat.com>, ast@kernel.org,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Lorenzo Bianconi <lorenzo.bianconi@redhat.com>,
-        David Ahern <dsahern@gmail.com>,
-        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
-        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
-        =?utf-8?B?QmrDtnJuIFQ=?= =?utf-8?B?w7ZwZWw=?= 
-        <bjorn.topel@gmail.com>
-Subject: Re: [PATCHv7 bpf-next 1/4] bpf: run devmap xdp_prog on flush
- instead of bulk enqueue
-In-Reply-To: <20210417002301.GO4212@paulmck-ThinkPad-P17-Gen-1>
-References: <20210414122610.4037085-2-liuhangbin@gmail.com>
- <20210415001711.dpbt2lej75ry6v7a@kafai-mbp.dhcp.thefacebook.com>
- <20210415023746.GR2900@Leo-laptop-t470s> <87o8efkilw.fsf@toke.dk>
- <20210415173551.7ma4slcbqeyiba2r@kafai-mbp.dhcp.thefacebook.com>
- <20210415202132.7b5e8d0d@carbon> <87k0p3i957.fsf@toke.dk>
- <20210416003913.azcjk4fqxs7gag3m@kafai-mbp.dhcp.thefacebook.com>
- <20210416154523.3b1fe700@carbon>
- <20210416182252.c25akwj6zjdvo7u2@kafai-mbp.dhcp.thefacebook.com>
- <20210417002301.GO4212@paulmck-ThinkPad-P17-Gen-1>
-X-Clacks-Overhead: GNU Terry Pratchett
-Date:   Sat, 17 Apr 2021 14:27:19 +0200
-Message-ID: <87h7k5hza0.fsf@toke.dk>
+        id S236187AbhDQMeV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 17 Apr 2021 08:34:21 -0400
+Received: from szxga02-in.huawei.com ([45.249.212.188]:3947 "EHLO
+        szxga02-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S236058AbhDQMeV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 17 Apr 2021 08:34:21 -0400
+Received: from DGGEML401-HUB.china.huawei.com (unknown [172.30.72.56])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4FMsrj11vPz5qtb;
+        Sat, 17 Apr 2021 20:31:33 +0800 (CST)
+Received: from dggpemm100006.china.huawei.com (7.185.36.196) by
+ DGGEML401-HUB.china.huawei.com (10.3.17.32) with Microsoft SMTP Server (TLS)
+ id 14.3.498.0; Sat, 17 Apr 2021 20:33:52 +0800
+Received: from dggpemm500021.china.huawei.com (7.185.36.109) by
+ dggpemm100006.china.huawei.com (7.185.36.196) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2106.2; Sat, 17 Apr 2021 20:33:52 +0800
+Received: from dggpemm500021.china.huawei.com ([7.185.36.109]) by
+ dggpemm500021.china.huawei.com ([7.185.36.109]) with mapi id 15.01.2106.013;
+ Sat, 17 Apr 2021 20:33:52 +0800
+From:   "zhudi (J)" <zhudi21@huawei.com>
+To:     linyunsheng <linyunsheng@huawei.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "kuba@kernel.org" <kuba@kernel.org>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "Chenxiang (EulerOS)" <rose.chen@huawei.com>
+Subject: Re: [PATCH] net: fix a data race when get vlan device
+Thread-Topic: [PATCH] net: fix a data race when get vlan device
+Thread-Index: AdczKo0XLZypNyTMTESPQwZzqKxfqQ==
+Date:   Sat, 17 Apr 2021 12:33:51 +0000
+Message-ID: <0ba3274f12e24e519bc61f30f0b90444@huawei.com>
+Accept-Language: zh-CN, en-US
+Content-Language: zh-CN
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [10.136.114.155]
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-"Paul E. McKenney" <paulmck@kernel.org> writes:
-
-> On Fri, Apr 16, 2021 at 11:22:52AM -0700, Martin KaFai Lau wrote:
->> On Fri, Apr 16, 2021 at 03:45:23PM +0200, Jesper Dangaard Brouer wrote:
->> > On Thu, 15 Apr 2021 17:39:13 -0700
->> > Martin KaFai Lau <kafai@fb.com> wrote:
->> >=20
->> > > On Thu, Apr 15, 2021 at 10:29:40PM +0200, Toke H=C3=B8iland-J=C3=B8r=
-gensen wrote:
->> > > > Jesper Dangaard Brouer <brouer@redhat.com> writes:
->> > > >=20=20=20
->> > > > > On Thu, 15 Apr 2021 10:35:51 -0700
->> > > > > Martin KaFai Lau <kafai@fb.com> wrote:
->> > > > >=20=20
->> > > > >> On Thu, Apr 15, 2021 at 11:22:19AM +0200, Toke H=C3=B8iland-J=
-=C3=B8rgensen wrote:=20=20
->> > > > >> > Hangbin Liu <liuhangbin@gmail.com> writes:
->> > > > >> >=20=20=20=20=20
->> > > > >> > > On Wed, Apr 14, 2021 at 05:17:11PM -0700, Martin KaFai Lau =
-wrote:=20=20=20=20
->> > > > >> > >> >  static void bq_xmit_all(struct xdp_dev_bulk_queue *bq, =
-u32 flags)
->> > > > >> > >> >  {
->> > > > >> > >> >  	struct net_device *dev =3D bq->dev;
->> > > > >> > >> > -	int sent =3D 0, err =3D 0;
->> > > > >> > >> > +	int sent =3D 0, drops =3D 0, err =3D 0;
->> > > > >> > >> > +	unsigned int cnt =3D bq->count;
->> > > > >> > >> > +	int to_send =3D cnt;
->> > > > >> > >> >  	int i;
->> > > > >> > >> >=20=20
->> > > > >> > >> > -	if (unlikely(!bq->count))
->> > > > >> > >> > +	if (unlikely(!cnt))
->> > > > >> > >> >  		return;
->> > > > >> > >> >=20=20
->> > > > >> > >> > -	for (i =3D 0; i < bq->count; i++) {
->> > > > >> > >> > +	for (i =3D 0; i < cnt; i++) {
->> > > > >> > >> >  		struct xdp_frame *xdpf =3D bq->q[i];
->> > > > >> > >> >=20=20
->> > > > >> > >> >  		prefetch(xdpf);
->> > > > >> > >> >  	}
->> > > > >> > >> >=20=20
->> > > > >> > >> > -	sent =3D dev->netdev_ops->ndo_xdp_xmit(dev, bq->count,=
- bq->q, flags);
->> > > > >> > >> > +	if (bq->xdp_prog) {=20=20=20=20
->> > > > >> > >> bq->xdp_prog is used here
->> > > > >> > >>=20=20=20=20=20
->> > > > >> > >> > +		to_send =3D dev_map_bpf_prog_run(bq->xdp_prog, bq->q,=
- cnt, dev);
->> > > > >> > >> > +		if (!to_send)
->> > > > >> > >> > +			goto out;
->> > > > >> > >> > +
->> > > > >> > >> > +		drops =3D cnt - to_send;
->> > > > >> > >> > +	}
->> > > > >> > >> > +=20=20=20=20
->> > > > >> > >>=20
->> > > > >> > >> [ ... ]
->> > > > >> > >>=20=20=20=20=20
->> > > > >> > >> >  static void bq_enqueue(struct net_device *dev, struct x=
-dp_frame *xdpf,
->> > > > >> > >> > -		       struct net_device *dev_rx)
->> > > > >> > >> > +		       struct net_device *dev_rx, struct bpf_prog *xd=
-p_prog)
->> > > > >> > >> >  {
->> > > > >> > >> >  	struct list_head *flush_list =3D this_cpu_ptr(&dev_flu=
-sh_list);
->> > > > >> > >> >  	struct xdp_dev_bulk_queue *bq =3D this_cpu_ptr(dev->xd=
-p_bulkq);
->> > > > >> > >> > @@ -412,18 +466,22 @@ static void bq_enqueue(struct net_=
-device *dev, struct xdp_frame *xdpf,
->> > > > >> > >> >  	/* Ingress dev_rx will be the same for all xdp_frame's=
- in
->> > > > >> > >> >  	 * bulk_queue, because bq stored per-CPU and must be f=
-lushed
->> > > > >> > >> >  	 * from net_device drivers NAPI func end.
->> > > > >> > >> > +	 *
->> > > > >> > >> > +	 * Do the same with xdp_prog and flush_list since thes=
-e fields
->> > > > >> > >> > +	 * are only ever modified together.
->> > > > >> > >> >  	 */
->> > > > >> > >> > -	if (!bq->dev_rx)
->> > > > >> > >> > +	if (!bq->dev_rx) {
->> > > > >> > >> >  		bq->dev_rx =3D dev_rx;
->> > > > >> > >> > +		bq->xdp_prog =3D xdp_prog;=20=20=20=20
->> > > > >> > >> bp->xdp_prog is assigned here and could be used later in b=
-q_xmit_all().
->> > > > >> > >> How is bq->xdp_prog protected? Are they all under one rcu_=
-read_lock()?
->> > > > >> > >> It is not very obvious after taking a quick look at xdp_do=
-_flush[_map].
->> > > > >> > >>=20
->> > > > >> > >> e.g. what if the devmap elem gets deleted.=20=20=20=20
->> > > > >> > >
->> > > > >> > > Jesper knows better than me. From my veiw, based on the des=
-cription of
->> > > > >> > > __dev_flush():
->> > > > >> > >
->> > > > >> > > On devmap tear down we ensure the flush list is empty befor=
-e completing to
->> > > > >> > > ensure all flush operations have completed. When drivers up=
-date the bpf
->> > > > >> > > program they may need to ensure any flush ops are also comp=
-lete.=20=20=20=20
->> > > > >>
->> > > > >> AFAICT, the bq->xdp_prog is not from the dev. It is from a devm=
-ap's elem.
->> >=20
->> > The bq->xdp_prog comes form the devmap "dev" element, and it is stored
->> > in temporarily in the "bq" structure that is only valid for this
->> > softirq NAPI-cycle.  I'm slightly worried that we copied this pointer
->> > the the xdp_prog here, more below (and Q for Paul).
->> >=20
->> > > > >> >=20
->> > > > >> > Yeah, drivers call xdp_do_flush() before exiting their NAPI p=
-oll loop,
->> > > > >> > which also runs under one big rcu_read_lock(). So the storage=
- in the
->> > > > >> > bulk queue is quite temporary, it's just used for bulking to =
-increase
->> > > > >> > performance :)=20=20=20=20
->> > > > >>
->> > > > >> I am missing the one big rcu_read_lock() part.  For example, in=
- i40e_txrx.c,
->> > > > >> i40e_run_xdp() has its own rcu_read_lock/unlock().  dst->xdp_pr=
-og used to run
->> > > > >> in i40e_run_xdp() and it is fine.
->> > > > >>=20
->> > > > >> In this patch, dst->xdp_prog is run outside of i40e_run_xdp() w=
-here the
->> > > > >> rcu_read_unlock() has already done.  It is now run in xdp_do_fl=
-ush_map().
->> > > > >> or I missed the big rcu_read_lock() in i40e_napi_poll()?
->> > > > >>
->> > > > >> I do see the big rcu_read_lock() in mlx5e_napi_poll().=20=20
->> > > > >
->> > > > > I believed/assumed xdp_do_flush_map() was already protected unde=
-r an
->> > > > > rcu_read_lock.  As the devmap and cpumap, which get called via
->> > > > > __dev_flush() and __cpu_map_flush(), have multiple RCU objects t=
-hat we
->> > > > > are operating on.=20=20
->> > >
->> > > What other rcu objects it is using during flush?
->> >=20
->> > Look at code:
->> >  kernel/bpf/cpumap.c
->> >  kernel/bpf/devmap.c
->> >=20
->> > The devmap is filled with RCU code and complicated take-down steps.=20=
-=20
->> > The devmap's elements are also RCU objects and the BPF xdp_prog is
->> > embedded in this object (struct bpf_dtab_netdev).  The call_rcu
->> > function is __dev_map_entry_free().
->> >=20
->> >=20
->> > > > > Perhaps it is a bug in i40e?=20=20
->> > >
->> > > A quick look into ixgbe falls into the same bucket.
->> > > didn't look at other drivers though.
->> >=20
->> > Intel driver are very much in copy-paste mode.
->> >=20=20
->> > > > >
->> > > > > We are running in softirq in NAPI context, when xdp_do_flush_map=
-() is
->> > > > > call, which I think means that this CPU will not go-through a RC=
-U grace
->> > > > > period before we exit softirq, so in-practice it should be safe.=
-=20=20
->> > > >=20
->> > > > Yup, this seems to be correct: rcu_softirq_qs() is only called bet=
-ween
->> > > > full invocations of the softirq handler, which for networking is
->> > > > net_rx_action(), and so translates into full NAPI poll cycles.=20=
-=20
->> > >
->> > > I don't know enough to comment on the rcu/softirq part, may be someo=
-ne
->> > > can chime in.  There is also a recent napi_threaded_poll().
->> >=20
->> > CC added Paul. (link to patch[1][2] for context)
->> Updated Paul's email address.
->>=20
->> >=20
->> > > If it is the case, then some of the existing rcu_read_lock() is unne=
-cessary?
->> >=20
->> > Well, in many cases, especially depending on how kernel is compiled,
->> > that is true.  But we want to keep these, as they also document the
->> > intend of the programmer.  And allow us to make the kernel even more
->> > preempt-able in the future.
->> >=20
->> > > At least, it sounds incorrect to only make an exception here while k=
-eeping
->> > > other rcu_read_lock() as-is.
->> >=20
->> > Let me be clear:  I think you have spotted a problem, and we need to
->> > add rcu_read_lock() at least around the invocation of
->> > bpf_prog_run_xdp() or before around if-statement that call
->> > dev_map_bpf_prog_run(). (Hangbin please do this in V8).
->> >=20
->> > Thank you Martin for reviewing the code carefully enough to find this
->> > issue, that some drivers don't have a RCU-section around the full XDP
->> > code path in their NAPI-loop.
->> >=20
->> > Question to Paul.  (I will attempt to describe in generic terms what
->> > happens, but ref real-function names).
->> >=20
->> > We are running in softirq/NAPI context, the driver will call a
->> > bq_enqueue() function for every packet (if calling xdp_do_redirect) ,
->> > some driver wrap this with a rcu_read_lock/unlock() section (other have
->> > a large RCU-read section, that include the flush operation).
->> >=20
->> > In the bq_enqueue() function we have a per_cpu_ptr (that store the
->> > xdp_frame packets) that will get flushed/send in the call
->> > xdp_do_flush() (that end-up calling bq_xmit_all()).  This flush will
->> > happen before we end our softirq/NAPI context.
->> >=20
->> > The extension is that the per_cpu_ptr data structure (after this patch)
->> > store a pointer to an xdp_prog (which is a RCU object).  In the flush
->> > operation (which we will wrap with RCU-read section), we will use this
->> > xdp_prog pointer.   I can see that it is in-principle wrong to pass
->> > this-pointer between RCU-read sections, but I consider this safe as we
->> > are running under softirq/NAPI and the per_cpu_ptr is only valid in
->> > this short interval.
->> >=20
->> > I claim a grace/quiescent RCU cannot happen between these two RCU-read
->> > sections, but I might be wrong? (especially in the future or for RT).
->
-> If I am reading this correctly (ha!), a very high-level summary of the
-> code in question is something like this:
->
-> 	void foo(void)
-> 	{
-> 		local_bh_disable();
->
-> 		rcu_read_lock();
-> 		p =3D rcu_dereference(gp);
-> 		do_something_with(p);
-> 		rcu_read_unlock();
->
-> 		do_something_else();
->
-> 		rcu_read_lock();
-> 		do_some_other_thing(p);
-> 		rcu_read_unlock();
->
-> 		local_bh_enable();
-> 	}
->
-> 	void bar(struct blat *new_gp)
-> 	{
-> 		struct blat *old_gp;
->
-> 		spin_lock(my_lock);
-> 		old_gp =3D rcu_dereference_protected(gp, lock_held(my_lock));
-> 		rcu_assign_pointer(gp, new_gp);
-> 		spin_unlock(my_lock);
-> 		synchronize_rcu();
-> 		kfree(old_gp);
-> 	}
-
-Yeah, something like that (the object is freed using call_rcu() - but I
-think that's equivalent, right?). And the question is whether we need to
-extend foo() so that is has one big rcu_read_lock() that covers the
-whole lifetime of p.
-
-> I need to check up on -rt.
->
-> But first... In recent mainline kernels, the local_bh_disable() region
-> will look like one big RCU read-side critical section.  But don't try
-> this prior to v4.20!!!  In v4.19 and earlier, you would need to use
-> both synchronize_rcu() and synchronize_rcu_bh() to make this work, or,
-> for less latency, synchronize_rcu_mult(call_rcu, call_rcu_bh).
-
-OK. Variants of this code has been around since before then, but I
-honestly have no idea what it looked like back then exactly...
-
-> Except that in that case, why not just drop the inner rcu_read_unlock()
-> and rcu_read_lock() pair?  Awkward function boundaries or some such?
-
-Well if we can just treat such a local_bh_disable()/enable() pair as the
-equivalent of rcu_read_lock()/unlock() then I suppose we could just get
-rid of the inner ones. What about tools like lockdep; do they understand
-this, or are we likely to get complaints if we remove it?
-
-> Especially given that if this works on -rt, it is probably because
-> their variant of do_softirq() holds rcu_read_lock() across each
-> softirq handler invocation. They do something similar for rwlocks.
-
-Right. Guess we'll wait for your confirmation of that, then. Thanks! :)
-
--Toke
-
+PiBPbiAyMDIxLzQvMTYgMTE6MjcsIHpodWRpIChKKSB3cm90ZToNCj4gPj4gZGVwZW5kZW5jeU9u
+IDIwMjEvNC8xNSAxMTozNSwgemh1ZGkgd3JvdGU6DQo+ID4+PiBGcm9tOiBEaSBaaHUgPHpodWRp
+MjFAaHVhd2VpLmNvbT4NCj4gPj4+DQo+ID4+PiBXZSBlbmNvdW50ZXJlZCBhIGNyYXNoOiBpbiB0
+aGUgcGFja2V0IHJlY2VpdmluZyBwcm9jZXNzLCB3ZSBnb3QgYW4NCj4gPj4+IGlsbGVnYWwgVkxB
+TiBkZXZpY2UgYWRkcmVzcywgYnV0IHRoZSBWTEFOIGRldmljZSBhZGRyZXNzIHNhdmVkIGluDQo+
+ID4+PiB2bWNvcmUgaXMgY29ycmVjdC4gQWZ0ZXIgY2hlY2tpbmcgdGhlIGNvZGUsIHdlIGZvdW5k
+IGEgcG9zc2libGUgZGF0YQ0KPiA+Pj4gY29tcGV0aXRpb246DQo+ID4+PiBDUFUgMDogICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgIENQVSAxOg0KPiA+Pj4gICAgIChSQ1UgcmVhZCBsb2NrKSAg
+ICAgICAgICAgICAgICAgIChSVE5MIGxvY2spDQo+ID4+PiAgICAgdmxhbl9kb19yZWNlaXZlKCkJ
+CSAgICAgICByZWdpc3Rlcl92bGFuX2RldigpDQo+ID4+PiAgICAgICB2bGFuX2ZpbmRfZGV2KCkN
+Cj4gPj4+DQo+ID4+PiAgICAgICAgIC0+X192bGFuX2dyb3VwX2dldF9kZXZpY2UoKQkgLT52bGFu
+X2dyb3VwX3ByZWFsbG9jX3ZpZCgpDQo+ID4+Pg0KPiA+Pj4gSW4gdmxhbl9ncm91cF9wcmVhbGxv
+Y192aWQoKSwgV2UgbmVlZCB0byBtYWtlIHN1cmUgdGhhdCBremFsbG9jIGlzDQo+ID4+PiBleGVj
+dXRlZCBiZWZvcmUgYXNzaWduaW5nIGEgdmFsdWUgdG8gdmxhbiBkZXZpY2VzIGFycmF5LCBvdGhl
+cndpc2Ugd2UNCj4gPj4NCj4gPj4gQXMgbXkgdW5kZXJzdGFuZGluZywgdGhlcmUgaXMgYSBkZXBl
+bmRlbmN5IGJldHdlZW4gY2FsbGluZyBremFsbG9jKCkgYW5kDQo+ID4+IGFzc2lnbmluZyB0aGUg
+YWRkcmVzcyhyZXR1cm5lZCBmcm9tIGt6YWxsb2MoKSkgdG8gdmctPnZsYW5fZGV2aWNlc19hcnJh
+eXMsDQo+ID4+IENQVSBhbmQgY29tcGlsZXIgY2FuIHNlZSB0aGUgZGVwZW5kZW5jeSwgd2h5IGNh
+bid0IGl0IGhhbmRsaW5nIHRoZQ0KPiA+PiBkZXBlbmRlbmN5IGJlZm9yZSBhZGRpbmcgdGhlIHNt
+cF93bWIoKT8NCj4gPj4NCj4gPj4gU2VlIENPTlRST0wgREVQRU5ERU5DSUVTIHNlY3Rpb24gaW4g
+RG9jdW1lbnRhdGlvbi9tZW1vcnktDQo+ID4+IGJhcnJpZXJzLnR4dDoNCj4gPj4NCj4gPj4gSG93
+ZXZlciwgc3RvcmVzIGFyZSBub3Qgc3BlY3VsYXRlZC4gIFRoaXMgbWVhbnMgdGhhdCBvcmRlcmlu
+ZyAtaXMtDQo+IHByb3ZpZGVkDQo+ID4+IGZvciBsb2FkLXN0b3JlIGNvbnRyb2wgZGVwZW5kZW5j
+aWVzLCBhcyBpbiB0aGUgZm9sbG93aW5nIGV4YW1wbGU6DQo+ID4+DQo+ID4+ICAgICAgICAgcSA9
+IFJFQURfT05DRShhKTsNCj4gPj4gICAgICAgICBpZiAocSkgew0KPiA+PiAgICAgICAgICAgICAg
+ICAgV1JJVEVfT05DRShiLCAxKTsNCj4gPj4gICAgICAgICB9DQo+ID4+DQo+ID4NCj4gPiAgTWF5
+YmUgSSBkaWRuJ3QgbWFrZSBpdCBjbGVhci4gIFRoaXMgbWVtb3J5IGlzb2xhdGlvbiBpcyB0byBl
+bnN1cmUgdGhlIG9yZGVyDQo+IG9mDQo+ID4gIG1lbXNldChvYmplY3QsIDAsIHNpemUpIGluIGt6
+YWxsb2MoKSBvcGVyYXRpb25zIGFuZCB0aGUgc3Vic2VxdWVudCBhcnJheQ0KPiBhc3NpZ25tZW50
+IHN0YXRlbWVudHMuDQo+ID4NCj4gPiBremFsbG9jKCkNCj4gPiAgICAgLT5tZW1zZXQob2JqZWN0
+LCAwLCBzaXplKQ0KPiA+DQo+ID4gc21wX3dtYigpDQo+ID4NCj4gPiB2Zy0+dmxhbl9kZXZpY2Vz
+X2FycmF5c1twaWR4XVt2aWR4XSA9IGFycmF5Ow0KPiA+DQo+ID4gQmVjYXVzZSBfX3ZsYW5fZ3Jv
+dXBfZ2V0X2RldmljZSgpIGZ1bmN0aW9uIGRlcGVuZHMgb24gdGhpcyBvcmRlcg0KPiANCg0KPiBU
+aGFua3MgZm9yIGNsYXJpZnksIGl0IHdvdWxkIGJlIGdvb2QgdG8gbWVudGlvbiB0aGlzIGluIHRo
+ZQ0KPiBjb21taXQgbG9nIHRvby4NCg0KT0ssICBJJ2xsIGNoYW5nZSBpdC4gIFRoYW5rIHlvdSBm
+b3IgeW91ciBhZHZpY2UuDQoNCj4gDQo+IEFsc28sIF9fdmxhbl9ncm91cF9nZXRfZGV2aWNlKCkg
+aXMgdXNlZCBpbiB0aGUgZGF0YSBwYXRoLCBpdCB3b3VsZA0KPiBiZSB0byBhdm9pZCB0aGUgYmFy
+cmllciBvcCB0b28uIE1heWJlIHVzaW5nIHJjdSB0byBhdm9pZCB0aGUgYmFycmllcg0KPiBpZiB0
+aGUgX192bGFuX2dyb3VwX2dldF9kZXZpY2UoKSBpcyBhbHJlYWR5IHByb3RlY3RlZCBieSByY3Vf
+bG9jay4NCg0KVXNpbmcgdGhlIG5ldHBlcmYgY29tbWFuZCBmb3IgdGVzdGluZyBvbiB4ODYsIHRo
+ZXJlIGlzIG5vIGRpZmZlcmVuY2UgaW4gcGVyZm9ybWFuY2U6DQoNCiMgbmV0cGVyZiAtSCAxMTIu
+MTEzLjAuMTIgLWwgMjAgLXQgVENQX1NUUkVBTQ0KTUlHUkFURUQgVENQIFNUUkVBTSBURVNUIGZy
+b20gMC4wLjAuMCAoMC4wLjAuMCkgcG9ydCAwIEFGX0lORVQgdG8gMTEyLjExMy4wLjEyICgpIHBv
+cnQgMCBBRl9JTkVUDQpSZWN2ICAgU2VuZCAgICBTZW5kDQpTb2NrZXQgU29ja2V0ICBNZXNzYWdl
+ICBFbGFwc2VkDQpTaXplICAgU2l6ZSAgICBTaXplICAgICBUaW1lICAgICBUaHJvdWdocHV0DQpi
+eXRlcyAgYnl0ZXMgICBieXRlcyAgICBzZWNzLiAgICAxMF42Yml0cy9zZWMNCg0KMTMxMDcyICAx
+NjM4NCAgMTYzODQgICAgMjAuMDAgICAgOTM4Ni4wMw0KDQpBZnRlciBwYXRjaDoNCg0KICMgbmV0
+cGVyZiAtSCAxMTIuMTEzLjAuMTIgLWwgMjAgLXQgVENQX1NUUkVBTQ0KTUlHUkFURUQgVENQIFNU
+UkVBTSBURVNUIGZyb20gMC4wLjAuMCAoMC4wLjAuMCkgcG9ydCAwIEFGX0lORVQgdG8gMTEyLjEx
+My4wLjEyICgpIHBvcnQgMCBBRl9JTkVUDQpSZWN2ICAgU2VuZCAgICBTZW5kDQpTb2NrZXQgU29j
+a2V0ICBNZXNzYWdlICBFbGFwc2VkDQpTaXplICAgU2l6ZSAgICBTaXplICAgICBUaW1lICAgICBU
+aHJvdWdocHV0DQpieXRlcyAgYnl0ZXMgICBieXRlcyAgICBzZWNzLiAgICAxMF42Yml0cy9zZWMN
+Cg0KMTMxMDcyICAxNjM4NCAgMTYzODQgICAgMjAuMDAgICAgOTM4Ni40MQ0KDQpUaGUgc2FtZSBp
+cyB0cnVlIGZvciBVRFAgc3RyZWFtIHRlc3QNCg0KPiANCj4gPg0KPiA+Pg0KPiA+Pg0KPiA+Pj4g
+bWF5IGdldCBhIHdyb25nIGFkZHJlc3MgZnJvbSB0aGUgaGFyZHdhcmUgY2FjaGUgb24gYW5vdGhl
+ciBjcHUuDQo+ID4+Pg0KPiA+Pj4gU28gZml4IGl0IGJ5IGFkZGluZyBtZW1vcnkgYmFycmllciBp
+bnN0cnVjdGlvbiB0byBlbnN1cmUgdGhlIG9yZGVyIG9mDQo+ID4+PiBtZW1vcnkgb3BlcmF0aW9u
+cy4NCj4gPj4+DQo+ID4+PiBTaWduZWQtb2ZmLWJ5OiBEaSBaaHUgPHpodWRpMjFAaHVhd2VpLmNv
+bT4NCj4gPj4+IC0tLQ0KPiA+Pj4gIG5ldC84MDIxcS92bGFuLmMgfCAyICsrDQo+ID4+PiAgbmV0
+LzgwMjFxL3ZsYW4uaCB8IDMgKysrDQo+ID4+PiAgMiBmaWxlcyBjaGFuZ2VkLCA1IGluc2VydGlv
+bnMoKykNCj4gPj4+DQo+ID4+PiBkaWZmIC0tZ2l0IGEvbmV0LzgwMjFxL3ZsYW4uYyBiL25ldC84
+MDIxcS92bGFuLmMgaW5kZXgNCj4gPj4+IDhiNjQ0MTEzNzE1ZS4uNGY1NDFlMDVjZDNmIDEwMDY0
+NA0KPiA+Pj4gLS0tIGEvbmV0LzgwMjFxL3ZsYW4uYw0KPiA+Pj4gKysrIGIvbmV0LzgwMjFxL3Zs
+YW4uYw0KPiA+Pj4gQEAgLTcxLDYgKzcxLDggQEAgc3RhdGljIGludCB2bGFuX2dyb3VwX3ByZWFs
+bG9jX3ZpZChzdHJ1Y3QNCj4gdmxhbl9ncm91cA0KPiA+PiAqdmcsDQo+ID4+PiAgCWlmIChhcnJh
+eSA9PSBOVUxMKQ0KPiA+Pj4gIAkJcmV0dXJuIC1FTk9CVUZTOw0KPiA+Pj4NCj4gPj4+ICsJc21w
+X3dtYigpOw0KPiA+Pj4gKw0KPiA+Pj4gIAl2Zy0+dmxhbl9kZXZpY2VzX2FycmF5c1twaWR4XVt2
+aWR4XSA9IGFycmF5Ow0KPiA+Pj4gIAlyZXR1cm4gMDsNCj4gPj4+ICB9DQo+ID4+PiBkaWZmIC0t
+Z2l0IGEvbmV0LzgwMjFxL3ZsYW4uaCBiL25ldC84MDIxcS92bGFuLmggaW5kZXgNCj4gPj4+IDk1
+MzQwNTM2Mjc5NS4uNzQwOGZkYTA4NGQzIDEwMDY0NA0KPiA+Pj4gLS0tIGEvbmV0LzgwMjFxL3Zs
+YW4uaA0KPiA+Pj4gKysrIGIvbmV0LzgwMjFxL3ZsYW4uaA0KPiA+Pj4gQEAgLTU3LDYgKzU3LDkg
+QEAgc3RhdGljIGlubGluZSBzdHJ1Y3QgbmV0X2RldmljZQ0KPiA+Pj4gKl9fdmxhbl9ncm91cF9n
+ZXRfZGV2aWNlKHN0cnVjdCB2bGFuX2dyb3VwICp2ZywNCj4gPj4+DQo+ID4+PiAgCWFycmF5ID0g
+dmctPnZsYW5fZGV2aWNlc19hcnJheXNbcGlkeF0NCj4gPj4+ICAJCQkJICAgICAgIFt2bGFuX2lk
+IC8NCj4gPj4gVkxBTl9HUk9VUF9BUlJBWV9QQVJUX0xFTl07DQo+ID4+PiArDQo+ID4+PiArCXNt
+cF9ybWIoKTsNCj4gPj4+ICsNCj4gPj4+ICAJcmV0dXJuIGFycmF5ID8gYXJyYXlbdmxhbl9pZCAl
+IFZMQU5fR1JPVVBfQVJSQVlfUEFSVF9MRU5dIDoNCj4gPj4gTlVMTDsgIH0NCj4gPj4+DQo+ID4+
+Pg0KPiA+DQoNCg==
