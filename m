@@ -2,85 +2,68 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C8FFC3631C4
-	for <lists+netdev@lfdr.de>; Sat, 17 Apr 2021 20:09:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 60C3F3631C7
+	for <lists+netdev@lfdr.de>; Sat, 17 Apr 2021 20:14:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236894AbhDQSJM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 17 Apr 2021 14:09:12 -0400
-Received: from vps-vb.mhejs.net ([37.28.154.113]:37750 "EHLO vps-vb.mhejs.net"
+        id S236796AbhDQSOU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 17 Apr 2021 14:14:20 -0400
+Received: from mail.kernel.org ([198.145.29.99]:54474 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S236718AbhDQSIi (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 17 Apr 2021 14:08:38 -0400
-Received: from MUA
-        by vps-vb.mhejs.net with esmtps (TLS1.2:ECDHE-RSA-AES128-GCM-SHA256:128)
-        (Exim 4.93.0.4)
-        (envelope-from <mail@maciej.szmigiero.name>)
-        id 1lXpMM-000279-2d; Sat, 17 Apr 2021 20:07:58 +0200
-From:   "Maciej S. Szmigiero" <mail@maciej.szmigiero.name>
-To:     Pkshih <pkshih@realtek.com>
-Cc:     "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "johannes@sipsolutions.net" <johannes@sipsolutions.net>,
-        "kvalo@codeaurora.org" <kvalo@codeaurora.org>,
-        Larry Finger <Larry.Finger@lwfinger.net>
-References: <e2924d81-0e30-2dd0-292b-428fea199484@maciej.szmigiero.name>
- <846f6166-c570-01fc-6bbc-3e3b44e51327@maciej.szmigiero.name>
- <87r1jnohq6.fsf@codeaurora.org>
- <8e0434eb-d15f-065d-2ba7-b50c67877112@maciej.szmigiero.name>
- <a2003668-5108-27b9-95cd-9e1d5d1aa94d@lwfinger.net>
- <1617763692.9857.7.camel@realtek.com>
- <1dc7e487-b97b-8584-47f7-37f3385c7bf9@lwfinger.net>
- <15737dcf-95ac-1ce6-a681-94ff5db968e4@maciej.szmigiero.name>
- <c5556a207c5c40ac849c6a0e1919baca@realtek.com>
- <220c4fe4-c9e1-347a-8cef-cd91d31c56df@maciej.szmigiero.name>
-Subject: Re: rtlwifi/rtl8192cu AP mode broken with PS STA
-Message-ID: <cfcc2988-3f20-3588-2f76-f04d09043811@maciej.szmigiero.name>
-Date:   Sat, 17 Apr 2021 20:07:52 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.9.0
+        id S236759AbhDQSOT (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 17 Apr 2021 14:14:19 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id C892A611C2;
+        Sat, 17 Apr 2021 18:13:52 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1618683233;
+        bh=28DZOWoZnhOsBSjCaTzC1g0irrUuYNChX3IwZiaKmHE=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=dap2kghP8N1Zc2DnG3dZJDBwHKDoDPxPYQfC8P/6bQ3S9GCfXH6NgLHrzLHNoSbeL
+         ksDJ7X/uJ0/PwwKbHJMHPXtYmtG4gfIFLpTPaiYRbOyvOHVywq+LC/nIPo4hrjdg1R
+         3oaGG/a7EmRb57kFG2dp6iuZHqHm8ibUDzmNob7jvzqN71q8yLZ2fXYDB2No5sv2rM
+         RQLryvXGHvEE7StZzdw1woHXXXC7FHAKNTU5K9Hqon7H2dsaEkVzniIEYcL+Ck+aZC
+         viKEyT7FkuPwPOJgc8B8R8ysg0GDiXrYr1dok3Jv8sVfX27i/u0cS7UEUQ/HzdEGdQ
+         An8p7BV9uD1/A==
+Date:   Sat, 17 Apr 2021 11:13:51 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Ido Schimmel <idosch@idosch.org>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, andrew@lunn.ch,
+        mkubecek@suse.cz, idosch@nvidia.com, saeedm@nvidia.com,
+        michael.chan@broadcom.com
+Subject: Re: [PATCH net-next v2 3/9] ethtool: add a new command for reading
+ standard stats
+Message-ID: <20210417111351.27c54b99@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20210417105742.76bb2461@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+References: <20210416192745.2851044-1-kuba@kernel.org>
+        <20210416192745.2851044-4-kuba@kernel.org>
+        <YHsXnzqVDjL9Q0Bz@shredder.lan>
+        <20210417105742.76bb2461@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 MIME-Version: 1.0
-In-Reply-To: <220c4fe4-c9e1-347a-8cef-cd91d31c56df@maciej.szmigiero.name>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 08.04.2021 21:04, Maciej S. Szmigiero wrote:
-> On 08.04.2021 06:42, Pkshih wrote:
->>> -----Original Message-----
->>> From: Maciej S. Szmigiero [mailto:mail@maciej.szmigiero.name]
->>> Sent: Thursday, April 08, 2021 4:53 AM
->>> To: Larry Finger; Pkshih
->>> Cc: linux-wireless@vger.kernel.org; netdev@vger.kernel.org; linux-kernel@vger.kernel.org;
->>> johannes@sipsolutions.net; kvalo@codeaurora.org
->>> Subject: Re: rtlwifi/rtl8192cu AP mode broken with PS STA
->>>
-> (...)
->>>> Maceij,
->>>>
->>>> Does this patch fix the problem?
->>>
->>> The beacon seems to be updating now and STAs no longer get stuck in PS
->>> mode.
->>> Although sometimes (every 2-3 minutes with continuous 1s interval pings)
->>> there is around 5s delay in updating the transmitted beacon - don't know
->>> why, maybe the NIC hardware still has the old version in queue?
->>
->> Since USB device doesn't update every beacon, dtim_count isn't updated neither.
->> It leads STA doesn't awake properly. Please try to fix dtim_period=1 in
->> hostapd.conf, which tells STA awakes every beacon interval.
+On Sat, 17 Apr 2021 10:57:42 -0700 Jakub Kicinski wrote:
+> > I tried to understand how you add new groups without user space
+> > changes and I think this statement is not entirely accurate.
+> > 
+> > At minimum, user space needs to know the names of these groups, but
+> > currently there is no way to query the information, so it's added to
+> > ethtool's help message:
+> > 
+> > ethtool [ FLAGS ] -S|--statistics DEVNAME       Show adapter statistics       
+> >        [ --groups [eth-phy] [eth-mac] [eth-ctrl] [rmon] ]  
 > 
-> The situation is the same with dtim_period=1.
+> Um, yes and now. The only places the user space puts those names 
+> is the help message and man page.
 > 
-(...)
+> Thru the magic of bitsets it doesn't actually interpret them, so
+> with old user space you can still query a new group, it will just 
+> not show up in "ethtool -h".
+> 
+> Is that what you're saying?
 
-Ping-Ke,
-are you going to submit your set_tim() patch so at least the AP mode is
-usable with PS STAs or are you waiting for a solution to the delayed
-beacon update issue?
-
-Thanks,
-Maciej
+FWIW ethnl_parse_bit() -> ETHTOOL_A_BITSET_BIT_NAME
+User space can also use raw flags like --groups 0xf but that's perhaps
+too spartan for serious use.
