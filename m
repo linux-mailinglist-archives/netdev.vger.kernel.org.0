@@ -2,141 +2,149 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1139C362E7D
-	for <lists+netdev@lfdr.de>; Sat, 17 Apr 2021 10:14:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 09A5B362E84
+	for <lists+netdev@lfdr.de>; Sat, 17 Apr 2021 10:16:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231387AbhDQIPM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 17 Apr 2021 04:15:12 -0400
-Received: from mail.kernel.org ([198.145.29.99]:60920 "EHLO mail.kernel.org"
+        id S235797AbhDQIQ6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 17 Apr 2021 04:16:58 -0400
+Received: from pegase1.c-s.fr ([93.17.236.30]:1364 "EHLO pegase1.c-s.fr"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229631AbhDQIPK (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 17 Apr 2021 04:15:10 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id B327E611AF;
-        Sat, 17 Apr 2021 08:14:43 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1618647284;
-        bh=mRN8eaG0Oo8npctvpkMLmk2MxOCdgxIizF2xWK/7SiA=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=ilU/igG4QdEKR4zKkJAJDftgygihPkgkH3SHGigXgAEIaTWTYU95eOlAtZy/fXrvQ
-         RG3B69R37VDCRpYXyQKki7t+4GqZguBuzUXoC/6EVPpEafwZ/zMRKr0v6v/A96Gs/R
-         rKnsjYyMoGpGkYX3hrSuZx+8J7agbsT7TU8Bm13GIeqyIh6MOeyriKhiUUSqaBay80
-         s0x/NfIC4pIL3C7aiJ4zeQxPJUYE1i0MRkBMzSgiNN4vqmSODJZ5mH6oGY4gIOtn8J
-         eh8PiVhZTw34lxpwD4pqKCoet0jut4dIczRGAJd9jZA/OeW1dMWzWPyVITpWqsOiTK
-         EWjBffsnR5d8g==
-Date:   Sat, 17 Apr 2021 11:14:40 +0300
-From:   Leon Romanovsky <leon@kernel.org>
-To:     Devesh Sharma <devesh.sharma@broadcom.com>
-Cc:     Jason Gunthorpe <jgg@nvidia.com>,
-        Doug Ledford <dledford@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>,
+        id S229631AbhDQIQ4 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 17 Apr 2021 04:16:56 -0400
+Received: from localhost (mailhub1-int [192.168.12.234])
+        by localhost (Postfix) with ESMTP id 4FMmBL3B3mz9vBnD;
+        Sat, 17 Apr 2021 10:16:26 +0200 (CEST)
+X-Virus-Scanned: Debian amavisd-new at c-s.fr
+Received: from pegase1.c-s.fr ([192.168.12.234])
+        by localhost (pegase1.c-s.fr [192.168.12.234]) (amavisd-new, port 10024)
+        with ESMTP id KdXChgWPk-BP; Sat, 17 Apr 2021 10:16:26 +0200 (CEST)
+Received: from messagerie.si.c-s.fr (messagerie.si.c-s.fr [192.168.25.192])
+        by pegase1.c-s.fr (Postfix) with ESMTP id 4FMmBL21vRz9vBnC;
+        Sat, 17 Apr 2021 10:16:26 +0200 (CEST)
+Received: from localhost (localhost [127.0.0.1])
+        by messagerie.si.c-s.fr (Postfix) with ESMTP id 312848B777;
+        Sat, 17 Apr 2021 10:16:27 +0200 (CEST)
+X-Virus-Scanned: amavisd-new at c-s.fr
+Received: from messagerie.si.c-s.fr ([127.0.0.1])
+        by localhost (messagerie.si.c-s.fr [127.0.0.1]) (amavisd-new, port 10023)
+        with ESMTP id efFKgaQ79CvE; Sat, 17 Apr 2021 10:16:27 +0200 (CEST)
+Received: from [192.168.4.90] (unknown [192.168.4.90])
+        by messagerie.si.c-s.fr (Postfix) with ESMTP id 3BFFF8B75B;
+        Sat, 17 Apr 2021 10:16:24 +0200 (CEST)
+Subject: Re: [PATCH bpf-next 1/2] bpf: Remove bpf_jit_enable=2 debugging mode
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        Quentin Monnet <quentin@isovalent.com>
+Cc:     Ian Rogers <irogers@google.com>, Song Liu <songliubraving@fb.com>,
+        "open list:DOCUMENTATION" <linux-doc@vger.kernel.org>,
+        Zi Shen Lim <zlim.lnx@gmail.com>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Paul Mackerras <paulus@samba.org>,
+        Sandipan Das <sandipan@linux.ibm.com>,
+        "H. Peter Anvin" <hpa@zytor.com>, sparclinux@vger.kernel.org,
+        Shubham Bansal <illusionist.neo@gmail.com>,
+        Mahesh Bandewar <maheshb@google.com>,
+        Will Deacon <will@kernel.org>,
+        Nicolas Dichtel <nicolas.dichtel@6wind.com>,
+        linux-s390 <linux-s390@vger.kernel.org>,
+        Ilya Leoshkevich <iii@linux.ibm.com>, paulburton@kernel.org,
+        Jonathan Corbet <corbet@lwn.net>,
+        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
+        Masahiro Yamada <masahiroy@kernel.org>,
+        X86 ML <x86@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        linux-riscv <linux-riscv@lists.infradead.org>,
+        Christian Borntraeger <borntraeger@de.ibm.com>,
+        Ingo Molnar <mingo@redhat.com>,
+        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        "Naveen N . Rao" <naveen.n.rao@linux.ibm.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        linux-rdma <linux-rdma@vger.kernel.org>,
-        Michael Chan <michael.chan@broadcom.com>,
-        Naresh Kumar PBS <nareshkumar.pbs@broadcom.com>,
-        Netdev <netdev@vger.kernel.org>,
-        Selvin Xavier <selvin.xavier@broadcom.com>,
-        Somnath Kotur <somnath.kotur@broadcom.com>,
-        Sriharsha Basavapatna <sriharsha.basavapatna@broadcom.com>
-Subject: Re: [PATCH rdma-next v2 0/5] Get rid of custom made module dependency
-Message-ID: <YHqY8Led24PuLU5W@unreal>
-References: <20210401065715.565226-1-leon@kernel.org>
- <CANjDDBiuw_VNepewLAtYE58Eg2JEsvGbpxttWyjV6DYMQdY5Zw@mail.gmail.com>
- <YGhUjarXh+BEK1pW@unreal>
- <CANjDDBiC-8pL+-ma1c0n8vjMaorm-CasV_D+_8q2LGy-AYuTVg@mail.gmail.com>
- <YG7srVMi8IEjuLfF@unreal>
- <CANjDDBirjSEkcDZ4E8u4Ce_dep3PRTmo2S9-q7=dmR+MLKi_=A@mail.gmail.com>
- <YHP5WRfEKQ3n9O0s@unreal>
- <CANjDDBhpJPc6wypp2u3OC9RjYEpYmXuNozZ5fRHSmx=vLWeYNw@mail.gmail.com>
+        Tobias Klauser <tklauser@distanz.ch>,
+        linux-mips@vger.kernel.org, grantseltzer@gmail.com,
+        Xi Wang <xi.wang@gmail.com>, Albert Ou <aou@eecs.berkeley.edu>,
+        Kees Cook <keescook@chromium.org>,
+        Vasily Gorbik <gor@linux.ibm.com>,
+        Luke Nelson <luke.r.nels@gmail.com>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Heiko Carstens <hca@linux.ibm.com>,
+        ppc-dev <linuxppc-dev@lists.ozlabs.org>,
+        KP Singh <kpsingh@kernel.org>, iecedge@gmail.com,
+        Simon Horman <horms@verge.net.au>,
+        Borislav Petkov <bp@alien8.de>,
+        Alexander Viro <viro@zeniv.linux.org.uk>,
+        Yonghong Song <yhs@fb.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Dmitry Vyukov <dvyukov@google.com>, tsbogend@alpha.franken.de,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        Network Development <netdev@vger.kernel.org>,
+        David Ahern <dsahern@kernel.org>,
+        Wang YanQing <udknight@gmail.com>,
+        Martin KaFai Lau <kafai@fb.com>,
+        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn@kernel.org>,
+        Palmer Dabbelt <palmer@dabbelt.com>, bpf <bpf@vger.kernel.org>,
+        Jianlin Lv <Jianlin.Lv@arm.com>,
+        "David S. Miller" <davem@davemloft.net>
+References: <20210415093250.3391257-1-Jianlin.Lv@arm.com>
+ <9c4a78d2-f73c-832a-e6e2-4b4daa729e07@iogearbox.net>
+ <d3949501-8f7d-57c4-b3fe-bcc3b24c09d8@isovalent.com>
+ <CAADnVQJ2oHbYfgY9jqM_JMxUsoZxaNrxKSVFYfgCXuHVpDehpQ@mail.gmail.com>
+From:   Christophe Leroy <christophe.leroy@csgroup.eu>
+Message-ID: <0dea05ba-9467-0d84-4515-b8766f60318e@csgroup.eu>
+Date:   Sat, 17 Apr 2021 10:16:22 +0200
+User-Agent: Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.9.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CANjDDBhpJPc6wypp2u3OC9RjYEpYmXuNozZ5fRHSmx=vLWeYNw@mail.gmail.com>
+In-Reply-To: <CAADnVQJ2oHbYfgY9jqM_JMxUsoZxaNrxKSVFYfgCXuHVpDehpQ@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: fr
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Apr 14, 2021 at 07:15:37PM +0530, Devesh Sharma wrote:
-> On Mon, Apr 12, 2021 at 1:10 PM Leon Romanovsky <leon@kernel.org> wrote:
-> >
-> > On Thu, Apr 08, 2021 at 08:42:57PM +0530, Devesh Sharma wrote:
-> > > On Thu, Apr 8, 2021 at 5:14 PM Leon Romanovsky <leon@kernel.org> wrote:
-> > > >
-> > > > On Thu, Apr 08, 2021 at 05:06:24PM +0530, Devesh Sharma wrote:
-> > > > > On Sat, Apr 3, 2021 at 5:12 PM Leon Romanovsky <leon@kernel.org> wrote:
-> > > > > >
-> > > > > > On Sat, Apr 03, 2021 at 03:52:13PM +0530, Devesh Sharma wrote:
-> > > > > > > On Thu, Apr 1, 2021 at 12:27 PM Leon Romanovsky <leon@kernel.org> wrote:
-> > > > > > > >
-> > > > > > > > From: Leon Romanovsky <leonro@nvidia.com>
-> > > > > > > >
-> > > > > > > > Changelog:
-> > > > > > > > v2:
-> > > > > > > >  * kbuild spotted that I didn't delete all code in patch #5, so deleted
-> > > > > > > >    even more ulp_ops derefences.
-> > > > > > > > v1: https://lore.kernel.org/linux-rdma/20210329085212.257771-1-leon@kernel.org
-> > > > > > > >  * Go much deeper and removed useless ULP indirection
-> > > > > > > > v0: https://lore.kernel.org/linux-rdma/20210324142524.1135319-1-leon@kernel.org
-> > > > > > > > -----------------------------------------------------------------------
-> > > > > > > >
-> > > > > > > > The following series fixes issue spotted in [1], where bnxt_re driver
-> > > > > > > > messed with module reference counting in order to implement symbol
-> > > > > > > > dependency of bnxt_re and bnxt modules. All of this is done, when in
-> > > > > > > > upstream we have only one ULP user of that bnxt module. The simple
-> > > > > > > > declaration of exported symbol would do the trick.
-> > > > > > > >
-> > > > > > > > This series removes that custom module_get/_put, which is not supposed
-> > > > > > > > to be in the driver from the beginning and get rid of nasty indirection
-> > > > > > > > logic that isn't relevant for the upstream code.
-> > > > > > > >
-> > > > > > > > Such small changes allow us to simplify the bnxt code and my hope that
-> > > > > > > > Devesh will continue where I stopped and remove struct bnxt_ulp_ops too.
-> > > > > > > >
-> > > > > > > > Thanks
-> > > > > > > >
-> > > > > > > > [1] https://lore.kernel.org/linux-rdma/20210324142524.1135319-1-leon@kernel.org
-> > > > > > > >
-> > > > > > > > Leon Romanovsky (5):
-> > > > > > > >   RDMA/bnxt_re: Depend on bnxt ethernet driver and not blindly select it
-> > > > > > > >   RDMA/bnxt_re: Create direct symbolic link between bnxt modules
-> > > > > > > >   RDMA/bnxt_re: Get rid of custom module reference counting
-> > > > > > > >   net/bnxt: Remove useless check of non-existent ULP id
-> > > > > > > >   net/bnxt: Use direct API instead of useless indirection
-> > > > > > > >
-> > > > > > > >  drivers/infiniband/hw/bnxt_re/Kconfig         |   4 +-
-> > > > > > > >  drivers/infiniband/hw/bnxt_re/main.c          |  93 ++-----
-> > > > > > > >  drivers/net/ethernet/broadcom/bnxt/bnxt.c     |   4 +-
-> > > > > > > >  drivers/net/ethernet/broadcom/bnxt/bnxt.h     |   1 -
-> > > > > > > >  drivers/net/ethernet/broadcom/bnxt/bnxt_ulp.c | 245 +++++++-----------
-> > > > > > > >  drivers/net/ethernet/broadcom/bnxt/bnxt_ulp.h |  32 +--
-> > > > > > > >  6 files changed, 119 insertions(+), 260 deletions(-)
-> > > > > > >
-> > > > > > > Hi Leon,
-> > > > > > >
-> > > > > > > After a couple of internal discussions we reached a conclusion to
-> > > > > > > implement the Auxbus driver interface and fix the problem once and for
-> > > > > > > all.
-> > > > > >
-> > > > > > Thanks Devesh,
-> > > > > >
-> > > > > > Jason, it looks like we can proceed with this patchset, because in
-> > > > > > auxbus mode this module refcount and ULP indirection logics will be
-> > > > > > removed anyway.
-> > > > > >
-> > > > > > Thanks
-> > > > > Hi Leon,
-> > > > >
-> > > > > In my internal testing, I am seeing a crash using the 3rd patch. I am
-> > > > > spending a few cycles on debugging it. expect my input in a day or so.
-> > > >
-> > > > Can you please post the kernel crash report here?
-> > > > I don't see how function rename in patch #3 can cause to the crash.
-> > > Hey, unfortunately my kdump service config is giving me tough time on
-> > > my host. I will share if I get it.
-> >
-> > Any news here?
-> Expect something by this Friday. yesterday was a holiday in India.
 
-Any update? 
-This series is close to three weeks already and I would like to progress with it.
 
-Thanks
+Le 16/04/2021 à 01:49, Alexei Starovoitov a écrit :
+> On Thu, Apr 15, 2021 at 8:41 AM Quentin Monnet <quentin@isovalent.com> wrote:
+>>
+>> 2021-04-15 16:37 UTC+0200 ~ Daniel Borkmann <daniel@iogearbox.net>
+>>> On 4/15/21 11:32 AM, Jianlin Lv wrote:
+>>>> For debugging JITs, dumping the JITed image to kernel log is discouraged,
+>>>> "bpftool prog dump jited" is much better way to examine JITed dumps.
+>>>> This patch get rid of the code related to bpf_jit_enable=2 mode and
+>>>> update the proc handler of bpf_jit_enable, also added auxiliary
+>>>> information to explain how to use bpf_jit_disasm tool after this change.
+>>>>
+>>>> Signed-off-by: Jianlin Lv <Jianlin.Lv@arm.com>
+>>
+>> Hello,
+>>
+>> For what it's worth, I have already seen people dump the JIT image in
+>> kernel logs in Qemu VMs running with just a busybox, not for kernel
+>> development, but in a context where buiding/using bpftool was not
+>> possible.
+> 
+> If building/using bpftool is not possible then majority of selftests won't
+> be exercised. I don't think such environment is suitable for any kind
+> of bpf development. Much so for JIT debugging.
+> While bpf_jit_enable=2 is nothing but the debugging tool for JIT developers.
+> I'd rather nuke that code instead of carrying it from kernel to kernel.
+> 
+
+When I implemented JIT for PPC32, it was extremely helpfull.
+
+As far as I understand, for the time being bpftool is not usable in my environment because it 
+doesn't support cross compilation when the target's endianess differs from the building host 
+endianess, see discussion at 
+https://lore.kernel.org/bpf/21e66a09-514f-f426-b9e2-13baab0b938b@csgroup.eu/
+
+That's right that selftests can't be exercised because they don't build.
+
+The question might be candid as I didn't investigate much about the replacement of "bpf_jit_enable=2 
+debugging mode" by bpftool, how do we use bpftool exactly for that ? Especially when using the BPF 
+test module ?
+
