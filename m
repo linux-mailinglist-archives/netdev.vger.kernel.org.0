@@ -2,31 +2,31 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BE8E6363280
-	for <lists+netdev@lfdr.de>; Sat, 17 Apr 2021 23:31:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6491F363295
+	for <lists+netdev@lfdr.de>; Sun, 18 Apr 2021 00:45:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237127AbhDQV33 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 17 Apr 2021 17:29:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52768 "EHLO
+        id S237127AbhDQWqD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 17 Apr 2021 18:46:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40910 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237090AbhDQV32 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 17 Apr 2021 17:29:28 -0400
+        with ESMTP id S235439AbhDQWqD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 17 Apr 2021 18:46:03 -0400
 Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B278FC061574;
-        Sat, 17 Apr 2021 14:29:01 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0BD02C06174A;
+        Sat, 17 Apr 2021 15:45:36 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
         References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
         Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=tdMd9G9wD3dHdDB049z0mEp3bwlE87mJ0J7o89xl/iU=; b=kjCBnWRnNfJ4jh1gNX/lQqFZaV
-        PIt6sDdbkDGzgmh71GE65C7gRjevycey4DoCtbejN9tL9oy21OFCEaAalEL1tJX2o90jMIunwvzlT
-        aw6WnoUC4xKa/S6Fo+ZMatucihabyUEWmzgS2fQA3KuKU2AamMDSAvwzszyCc5I4TnWdPWLrwWCKi
-        rVT5becyLy4eWu5C3CPFKJcjpScabeN83QGn+BwxjvQCu6su18nAbnPuTOLaKIYZFme9zSXfjcKXe
-        HVFpVtf65QAh/PF06VB9QUA3eZMEV6/SGt6UIGiIg++xfTnOleyRsiTg4gP470cAho43TKpegokfh
-        QjMDTCHQ==;
+        bh=tPQBiu2Bdtxs3AC+E5Cm2VSUt8tWo9GnLe6NW3THH9A=; b=XkP7ELYUdkWzIzouAO8xPq8S7N
+        GjhLlDfD3y6VNei69ths2oEltTt7VNjkaFD3kWa5YfSrMcxcQ1iVWUb/gASCBUMnk26hTvxsGcZHP
+        LmMVlNo9qjiA2rXreK8yWQYyX7o6/OtiLfYOaaN9A6kBfQL7H7z+dojys6K1K5C4Hlo6Q1BwKfx6v
+        3VOY2eaj9oDYuG2iFBRZJwiloByx98Wd7tPgW2ms6UJEbSMnemsL/vRvgFUw9tA9idCrdgpWi2l75
+        pWbZSIdmfWoFb2mq+sdPpyKhbcnM/fMhIc2cA/kjhWA/hgymZC/OH2xGJGRDdWwwZOxlXZFOO//LW
+        H9eSAzQw==;
 Received: from willy by casper.infradead.org with local (Exim 4.94 #2 (Red Hat Linux))
-        id 1lXsUd-00BiOm-RD; Sat, 17 Apr 2021 21:28:45 +0000
-Date:   Sat, 17 Apr 2021 22:28:43 +0100
+        id 1lXtgp-00BmXi-PV; Sat, 17 Apr 2021 22:45:26 +0000
+Date:   Sat, 17 Apr 2021 23:45:23 +0100
 From:   Matthew Wilcox <willy@infradead.org>
 To:     David Laight <David.Laight@aculab.com>
 Cc:     "brouer@redhat.com" <brouer@redhat.com>,
@@ -45,39 +45,21 @@ Cc:     "brouer@redhat.com" <brouer@redhat.com>,
         <linux-snps-arc@lists.infradead.org>,
         "mhocko@kernel.org" <mhocko@kernel.org>,
         "mgorman@suse.de" <mgorman@suse.de>
-Subject: Re: [PATCH 2/2] mm: Indicate pfmemalloc pages in compound_head
-Message-ID: <20210417212843.GT2531743@casper.infradead.org>
+Subject: Re: [PATCH 1/2] mm: Fix struct page layout on 32-bit systems
+Message-ID: <20210417224523.GU2531743@casper.infradead.org>
 References: <20210416230724.2519198-1-willy@infradead.org>
- <20210416230724.2519198-3-willy@infradead.org>
- <2a531a42f23e4046833e0feb8faef0b5@AcuMS.aculab.com>
+ <20210416230724.2519198-2-willy@infradead.org>
+ <20210417024522.GP2531743@casper.infradead.org>
+ <386d009232dc42bdaf83d4cc36b13864@AcuMS.aculab.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <2a531a42f23e4046833e0feb8faef0b5@AcuMS.aculab.com>
+In-Reply-To: <386d009232dc42bdaf83d4cc36b13864@AcuMS.aculab.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Apr 17, 2021 at 09:13:45PM +0000, David Laight wrote:
-> >  		struct {	/* page_pool used by netstack */
-> > -			/**
-> > -			 * @dma_addr: might require a 64-bit value on
-> > -			 * 32-bit architectures.
-> > -			 */
-> > +			unsigned long pp_magic;
-> > +			unsigned long xmi;
-> > +			unsigned long _pp_mapping_pad;
-> >  			unsigned long dma_addr[2];
-> >  		};
-> 
-> You've deleted the comment.
+On Sat, Apr 17, 2021 at 09:18:57PM +0000, David Laight wrote:
+> Ugly as well.
 
-Yes.  It no longer added any value.  You can see dma_addr now occupies
-two words.
-
-> I also think there should be a comment that dma_addr[0]
-> must be aliased to ->index.
-
-That's not a requirement.  Moving the pfmemalloc indicator is a
-requirement so that we _can_ use index, but there's no requirement about
-how index is used.
+Thank you for expressing your opinion.  Again.
