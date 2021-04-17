@@ -2,66 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 08775362C49
-	for <lists+netdev@lfdr.de>; Sat, 17 Apr 2021 02:11:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 61513362C62
+	for <lists+netdev@lfdr.de>; Sat, 17 Apr 2021 02:20:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235165AbhDQAKf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 16 Apr 2021 20:10:35 -0400
-Received: from mail.kernel.org ([198.145.29.99]:37804 "EHLO mail.kernel.org"
+        id S235186AbhDQAUl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 16 Apr 2021 20:20:41 -0400
+Received: from mail.kernel.org ([198.145.29.99]:38920 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S234764AbhDQAKe (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 16 Apr 2021 20:10:34 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id EA2F2610A6;
-        Sat, 17 Apr 2021 00:10:08 +0000 (UTC)
+        id S231997AbhDQAUj (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 16 Apr 2021 20:20:39 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPS id D1A4A611AB;
+        Sat, 17 Apr 2021 00:20:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1618618209;
-        bh=Ok/i+k2MBRSuOHaAtLQbigyPVzfFhE82N/tLZGICACA=;
+        s=k20201202; t=1618618813;
+        bh=L49bIj6qteDwp4mP+ng7zLhqgfk44/tW5FJhGGHpkvI=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=N5Qy34BMj5BGeGx1PMauB5Pp6gacQZ84TVib+CMLZ7h69ZoqszJIRF3lFankM1t8G
-         64oWXkvI2bkwlRRWqemvrhzJhQ2wi8ER2DR1XN/Ra3O4Ym0Kp38OFYktJ2Um6RnSKA
-         /1rkCWNESfcCcGV2Lch6HdbM5VsSGsK3ZNxGbU3qf8Iff0W8wTJWgjATELod6E+j8s
-         bFbWbJ8IVm7bCcatmKFuF7t8ltbYhEAjXjGgc2vEiAR60x/zpeRrmxJ6/dVABJClPd
-         6k0SzMtg3OhC6+vTiEevP5yfUVcKkJlLpC5fMJumf4QmMftv6054c6c6z48eqOUCZ2
-         XHaE1dwBerbsg==
+        b=tDc8GkcZi+A8ZR1apURuin/ibS+ZSSK73dyhVt8YI38Bgvlu2exwuEfACzukwVObh
+         FMQmmmvX2u+fSWbRsmDpCMoPssVkGr8RtAKoeOJ30P/0sozwiEs80wEySs3e5YFWur
+         u6tX3AaLthxxGAGenEt3vK3lDM2rLmVYW/XPwZ+6aGjSi9Oi49W2sAAON/w1mR60c/
+         5ktdiZWwXJArsSmuRGNf8IomoPB5k+shMxED/1jf5K4GQkF2dzhm0edxCSAeNo6zCR
+         VG20AUdsV7iC4Zvj6J+RzIHkNzLIbYCg+aZfDGNfzc/8J1Pgo8LElfqCpW20pnJxwk
+         GD3K0osUwzrPg==
 Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id DEF3F60CD4;
-        Sat, 17 Apr 2021 00:10:08 +0000 (UTC)
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id C4FD360CD4;
+        Sat, 17 Apr 2021 00:20:13 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net] netlink: don't call ->netlink_bind with table lock held
+Subject: Re: [PATCH net-next 00/10] Fixups for XDP on NXP ENETC
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <161861820890.31087.4989302514771758966.git-patchwork-notify@kernel.org>
-Date:   Sat, 17 Apr 2021 00:10:08 +0000
-References: <20210416192913.6139-1-fw@strlen.de>
-In-Reply-To: <20210416192913.6139-1-fw@strlen.de>
-To:     Florian Westphal <fw@strlen.de>
-Cc:     netdev@vger.kernel.org, xiyou.wangcong@gmail.com,
-        lucien.xin@gmail.com, johannes.berg@intel.com,
-        stranche@codeaurora.org, pabeni@redhat.com, pablo@netfilter.org
+Message-Id: <161861881380.3813.7857023133457832186.git-patchwork-notify@kernel.org>
+Date:   Sat, 17 Apr 2021 00:20:13 +0000
+References: <20210416212225.3576792-1-olteanv@gmail.com>
+In-Reply-To: <20210416212225.3576792-1-olteanv@gmail.com>
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     kuba@kernel.org, davem@davemloft.net, netdev@vger.kernel.org,
+        po.liu@nxp.com, claudiu.manoil@nxp.com,
+        alexandru.marginean@nxp.com, yangbo.lu@nxp.com, toke@redhat.com,
+        vladimir.oltean@nxp.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 Hello:
 
-This patch was applied to netdev/net.git (refs/heads/master):
+This series was applied to netdev/net-next.git (refs/heads/master):
 
-On Fri, 16 Apr 2021 21:29:13 +0200 you wrote:
-> When I added support to allow generic netlink multicast groups to be
-> restricted to subscribers with CAP_NET_ADMIN I was unaware that a
-> genl_bind implementation already existed in the past.
+On Sat, 17 Apr 2021 00:22:15 +0300 you wrote:
+> From: Vladimir Oltean <vladimir.oltean@nxp.com>
 > 
-> It was reverted due to ABBA deadlock:
-> 
-> 1. ->netlink_bind gets called with the table lock held.
-> 2. genetlink bind callback is invoked, it grabs the genl lock.
+> After some more XDP testing on the NXP LS1028A, this is a set of 10 bug
+> fixes, simplifications and tweaks, ranging from addressing Toke's feedback
+> (the network stack can run concurrently with XDP on the same TX rings)
+> to fixing some OOM conditions seen under TX congestion.
 > 
 > [...]
 
 Here is the summary with links:
-  - [net] netlink: don't call ->netlink_bind with table lock held
-    https://git.kernel.org/netdev/net/c/f2764bd4f6a8
+  - [net-next,01/10] net: enetc: remove redundant clearing of skb/xdp_frame pointer in TX conf path
+    https://git.kernel.org/netdev/net-next/c/e9e49ae88ec8
+  - [net-next,02/10] net: enetc: rename the buffer reuse helpers
+    https://git.kernel.org/netdev/net-next/c/6b04830d5e0d
+  - [net-next,03/10] net: enetc: recycle buffers for frames with RX errors
+    https://git.kernel.org/netdev/net-next/c/672f9a21989e
+  - [net-next,04/10] net: enetc: stop XDP NAPI processing when build_skb() fails
+    https://git.kernel.org/netdev/net-next/c/8f50d8bb3f1c
+  - [net-next,05/10] net: enetc: remove unneeded xdp_do_flush_map()
+    https://git.kernel.org/netdev/net-next/c/a6369fe6e07d
+  - [net-next,06/10] net: enetc: increase TX ring size
+    https://git.kernel.org/netdev/net-next/c/ee3e875f10fc
+  - [net-next,07/10] net: enetc: use dedicated TX rings for XDP
+    https://git.kernel.org/netdev/net-next/c/7eab503b11ee
+  - [net-next,08/10] net: enetc: handle the invalid XDP action the same way as XDP_DROP
+    https://git.kernel.org/netdev/net-next/c/975acc833c9f
+  - [net-next,09/10] net: enetc: fix buffer leaks with XDP_TX enqueue rejections
+    https://git.kernel.org/netdev/net-next/c/92ff9a6e578d
+  - [net-next,10/10] net: enetc: apply the MDIO workaround for XDP_REDIRECT too
+    https://git.kernel.org/netdev/net-next/c/24e393097171
 
 You are awesome, thank you!
 --
