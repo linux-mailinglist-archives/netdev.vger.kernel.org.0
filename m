@@ -2,27 +2,27 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8AF12362EBA
-	for <lists+netdev@lfdr.de>; Sat, 17 Apr 2021 11:05:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C4139362EC8
+	for <lists+netdev@lfdr.de>; Sat, 17 Apr 2021 11:11:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235859AbhDQJF6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 17 Apr 2021 05:05:58 -0400
-Received: from mail.kernel.org ([198.145.29.99]:37132 "EHLO mail.kernel.org"
+        id S235860AbhDQJLR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 17 Apr 2021 05:11:17 -0400
+Received: from mail.kernel.org ([198.145.29.99]:37858 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229870AbhDQJF5 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 17 Apr 2021 05:05:57 -0400
+        id S229870AbhDQJLQ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 17 Apr 2021 05:11:16 -0400
 Received: from disco-boy.misterjones.org (disco-boy.misterjones.org [51.254.78.96])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 89C0061152;
-        Sat, 17 Apr 2021 09:05:31 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 7EEEA611ED;
+        Sat, 17 Apr 2021 09:10:50 +0000 (UTC)
 Received: from 78.163-31-62.static.virginmediabusiness.co.uk ([62.31.163.78] helo=wait-a-minute.misterjones.org)
         by disco-boy.misterjones.org with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
         (Exim 4.94)
         (envelope-from <maz@kernel.org>)
-        id 1lXgtN-00814k-E1; Sat, 17 Apr 2021 10:05:29 +0100
-Date:   Sat, 17 Apr 2021 10:05:28 +0100
-Message-ID: <87wnt1s2lj.wl-maz@kernel.org>
+        id 1lXgyW-00819a-7X; Sat, 17 Apr 2021 10:10:48 +0100
+Date:   Sat, 17 Apr 2021 10:10:47 +0100
+Message-ID: <87v98ls2co.wl-maz@kernel.org>
 From:   Marc Zyngier <maz@kernel.org>
 To:     Zenghui Yu <yuzenghui@huawei.com>
 Cc:     <netdev@vger.kernel.org>, <yangbo.lu@nxp.com>,
@@ -36,11 +36,11 @@ Cc:     <netdev@vger.kernel.org>, <yangbo.lu@nxp.com>,
         <linux-kernel@vger.kernel.org>, <kernel-team@android.com>,
         <kvmarm@lists.cs.columbia.edu>,
         <linux-arm-kernel@lists.infradead.org>
-Subject: Re: [PATCH v19 7/7] ptp: arm/arm64: Enable ptp_kvm for arm/arm64
-In-Reply-To: <d85fc46b-2076-ee0b-ac73-f7a3f393d87f@huawei.com>
+Subject: Re: [PATCH v19 6/7] KVM: arm64: Add support for the KVM PTP service
+In-Reply-To: <5aadf0b4-b9e5-8521-db60-52a0f319cf28@huawei.com>
 References: <20210330145430.996981-1-maz@kernel.org>
-        <20210330145430.996981-8-maz@kernel.org>
-        <d85fc46b-2076-ee0b-ac73-f7a3f393d87f@huawei.com>
+        <20210330145430.996981-7-maz@kernel.org>
+        <5aadf0b4-b9e5-8521-db60-52a0f319cf28@huawei.com>
 User-Agent: Wanderlust/2.15.9 (Almost Unreal) SEMI-EPG/1.14.7 (Harue)
  FLIM-LB/1.14.9 (=?UTF-8?B?R29qxY0=?=) APEL-LB/10.8 EasyPG/1.0.0 Emacs/27.1
  (x86_64-pc-linux-gnu) MULE/6.0 (HANACHIRUSATO)
@@ -54,32 +54,27 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, 17 Apr 2021 09:42:37 +0100,
+On Sat, 17 Apr 2021 09:59:39 +0100,
 Zenghui Yu <yuzenghui@huawei.com> wrote:
 > 
 > On 2021/3/30 22:54, Marc Zyngier wrote:
-> > +int kvm_arch_ptp_init(void)
-> > +{
-> > +	int ret;
+> > +PTP_KVM support for arm/arm64
+> > +=============================
 > > +
-> > +	ret = kvm_arm_hyp_service_available(ARM_SMCCC_KVM_FUNC_PTP);
-> > +	if (ret <= 0)
+> > +PTP_KVM is used for high precision time sync between host and guests.
+> > +It relies on transferring the wall clock and counter value from the
+> > +host to the guest using a KVM-specific hypercall.
+> > +
+> > +* ARM_SMCCC_HYP_KVM_PTP_FUNC_ID: 0x86000001
 > 
-> kvm_arm_hyp_service_available() returns boolean. Maybe write as ?
-> 
-> 	bool ret;
-> 
-> 	ret = kvm_arm_hyp_service_available();
-> 	if (!ret)
-> 		return -ENODEV;
+> Per include/linux/arm-smccc.h, this should be
+> ARM_SMCCC_VENDOR_HYP_KVM_PTP_FUNC_ID.
 
-Fixed in 300bb1fe7671, as previously reported by Dan Carpenter in [1].
+Well spotted. Care to send a patch on top of my kvm-arm64/ptp branch?
 
 Thanks,
 
 	M.
-
-https://lore.kernel.org/r/20210331043704.GG2065@kadam
 
 -- 
 Without deviation from the norm, progress is not possible.
