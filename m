@@ -2,97 +2,131 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1003F36307D
-	for <lists+netdev@lfdr.de>; Sat, 17 Apr 2021 15:57:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 643CA3630B0
+	for <lists+netdev@lfdr.de>; Sat, 17 Apr 2021 16:37:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236495AbhDQN5y (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 17 Apr 2021 09:57:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40674 "EHLO
+        id S236600AbhDQOhM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 17 Apr 2021 10:37:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49164 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236058AbhDQN5x (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 17 Apr 2021 09:57:53 -0400
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5156AC061574;
-        Sat, 17 Apr 2021 06:57:27 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=xqgFJlR+jU3BMFPCC8NQxTzbFxfigD7vTUNnUGq4vIY=; b=SZN1IHMPzUuDEQpeH8U5/v7rff
-        H6wrF1LIVDWRSRtlMXzSRwuAre+050GPjLA2iogcsGTXqqfEDGxaC4rXfUbOM25eg0E50CHt5+SJL
-        1DjWYV0FM+08rQ1DpvQpoRCUX1YJJPp0dedZYxJ9aY2NaXbG+K3aifWyE0y411QrrJCRsyswU33Sa
-        YbZV2+Q8TcIZK7v5N7lFZg8nXNefltcXpFfCGcJzW2rxXoRzVgIZbtuchtRjCKjJct4ZvMbIHXCjN
-        otbSGYMAGgTgXFZOZWNCv3haV2wRKBJOwIRzHCU6S+6H0uqypx9YY5LVvS6Yy/6PQ424wGJ7CYdGm
-        5eCR6yHQ==;
-Received: from willy by casper.infradead.org with local (Exim 4.94 #2 (Red Hat Linux))
-        id 1lXlRC-00BJyr-Q7; Sat, 17 Apr 2021 13:56:47 +0000
-Date:   Sat, 17 Apr 2021 14:56:42 +0100
-From:   Matthew Wilcox <willy@infradead.org>
-To:     Arnd Bergmann <arnd@kernel.org>
-Cc:     Jesper Dangaard Brouer <brouer@redhat.com>,
-        Grygorii Strashko <grygorii.strashko@ti.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-mips@vger.kernel.org" <linux-mips@vger.kernel.org>,
-        "linux-mm@kvack.org" <linux-mm@kvack.org>,
-        David Laight <David.Laight@aculab.com>,
-        Matteo Croce <mcroce@linux.microsoft.com>,
-        "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>,
-        Christoph Hellwig <hch@lst.de>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>
-Subject: Re: [PATCH 1/1] mm: Fix struct page layout on 32-bit systems
-Message-ID: <20210417135642.GR2531743@casper.infradead.org>
-References: <20210411103318.GC2531743@casper.infradead.org>
- <20210412011532.GG2531743@casper.infradead.org>
- <20210414101044.19da09df@carbon>
- <20210414115052.GS2531743@casper.infradead.org>
- <20210414211322.3799afd4@carbon>
- <20210414213556.GY2531743@casper.infradead.org>
- <a50c3156fe8943ef964db4345344862f@AcuMS.aculab.com>
- <20210415200832.32796445@carbon>
- <20210416152755.GL2531743@casper.infradead.org>
- <CAK8P3a2dekzohOrHpLq6yyuaoyC4UOxxucu6kX2oddeq5Jdqfg@mail.gmail.com>
+        with ESMTP id S236554AbhDQOhK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 17 Apr 2021 10:37:10 -0400
+Received: from mail-pl1-x62b.google.com (mail-pl1-x62b.google.com [IPv6:2607:f8b0:4864:20::62b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 79416C061574;
+        Sat, 17 Apr 2021 07:36:43 -0700 (PDT)
+Received: by mail-pl1-x62b.google.com with SMTP id m18so13236058plc.13;
+        Sat, 17 Apr 2021 07:36:43 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=/kw48fkssdZXlVDsx7NGmtleBhQ9NSDPTPGixktiQdM=;
+        b=kbn/V9eldSaxbfPMrV2fmifUXxBNjwOIrkfHmU8e+Si9TkkQVQjXI8uYLWaSPAZwRo
+         1RTO0k2bd2EFZ9054nI0mXxXUgrWheMEmccd0psExdtKNsdJKew8zkrmnB6M/uK2IFG3
+         +8SLG4dURSmO3HR24ZYEQui8OTRDGYgcuxFxO++J4GyiMyUqcMziocMSFpmZuc+DIg+h
+         TWESKOwo1eBAcup5AWMBBqa6aFju8xbcSMtSFNDWTnIvxkuqAQNVprqRwA/WV++/P2sO
+         FFZc0Vc/plEra/fBCihyjRIWdYg4CBo+2sGOnWArV/6+wzsZDwmTb1TcjiUt31SRhtd8
+         x6zw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=/kw48fkssdZXlVDsx7NGmtleBhQ9NSDPTPGixktiQdM=;
+        b=CBjN4vHZfGP/UnxFqCPYwVSQPYNgJ3ZHDGn3yzW9zbSdk0SzduGu4QDEqtyathZASD
+         aXHgfoDvPR5UzaVKLvknaUCDpnBfHecgbrIfNTPrazPk9xcvHwqkX7UBuGxbmI5nAUKF
+         0C51ZI28ypPn2ejGRZOGEsBqEJVwb0OLluIlE2nLUvFqHik8qeFubn7E4BYNAr3PtBDL
+         8pH5cIIy4+JpoPDV7fuq/02vcSjHft2GJN8DEqmvFLPo3Ol5v5oJLzd5rxu9oAZz47OC
+         LqLqCyo9J1pth3SyEgSocka6ptkjCorZ1nT6gbeEShNUgXdRHEoZewYS8wM4iE4iLBGg
+         7TxQ==
+X-Gm-Message-State: AOAM532pd3gPk72oSfWoK42oxsSzSq+XsFNjOPBK6ZkUPFRv0XMMF7Af
+        f7QKHgTLwjyLj5l1DaOfYyg=
+X-Google-Smtp-Source: ABdhPJw3TYknm+JB6Tat+9RjbPNRYJT+BgAJrEiU3BfxXYpFMyzn8/NTxE6EugqvOB37Wb3ATiVYMg==
+X-Received: by 2002:a17:90b:3008:: with SMTP id hg8mr10374604pjb.115.1618670202985;
+        Sat, 17 Apr 2021 07:36:42 -0700 (PDT)
+Received: from ast-mbp ([2620:10d:c090:400::5:e902])
+        by smtp.gmail.com with ESMTPSA id r1sm9236468pjo.26.2021.04.17.07.36.40
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 17 Apr 2021 07:36:41 -0700 (PDT)
+Date:   Sat, 17 Apr 2021 07:36:39 -0700
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+To:     Al Viro <viro@zeniv.linux.org.uk>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>, Kernel Team <kernel-team@fb.com>
+Subject: Re: [PATCH bpf-next 11/15] bpf: Add bpf_sys_close() helper.
+Message-ID: <20210417143639.kq3nafzlsridtbb6@ast-mbp>
+References: <20210417033224.8063-1-alexei.starovoitov@gmail.com>
+ <20210417033224.8063-12-alexei.starovoitov@gmail.com>
+ <YHpZGeOcermVlQVF@zeniv-ca.linux.org.uk>
+ <CAADnVQL9tmHtRCue5Og0kBz=dAsUoFyMoOF61JM7yJhPAH8V8Q@mail.gmail.com>
+ <YHpeTKV2Y+sjuzbD@zeniv-ca.linux.org.uk>
+ <CAADnVQLOZ7QL61_XPCSmxDfZ0OHX_pBOmpEWLjSUwqhLm_10Jw@mail.gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <CAK8P3a2dekzohOrHpLq6yyuaoyC4UOxxucu6kX2oddeq5Jdqfg@mail.gmail.com>
+In-Reply-To: <CAADnVQLOZ7QL61_XPCSmxDfZ0OHX_pBOmpEWLjSUwqhLm_10Jw@mail.gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Apr 17, 2021 at 12:31:37PM +0200, Arnd Bergmann wrote:
-> On Fri, Apr 16, 2021 at 5:27 PM Matthew Wilcox <willy@infradead.org> wrote:
-> > diff --git a/include/net/page_pool.h b/include/net/page_pool.h
-> > index b5b195305346..db7c7020746a 100644
-> > --- a/include/net/page_pool.h
-> > +++ b/include/net/page_pool.h
-> > @@ -198,7 +198,17 @@ static inline void page_pool_recycle_direct(struct page_pool *pool,
+On Fri, Apr 16, 2021 at 10:01:43PM -0700, Alexei Starovoitov wrote:
+> On Fri, Apr 16, 2021 at 9:04 PM Al Viro <viro@zeniv.linux.org.uk> wrote:
 > >
-> >  static inline dma_addr_t page_pool_get_dma_addr(struct page *page)
-> >  {
-> > -       return page->dma_addr;
-> > +       dma_addr_t ret = page->dma_addr[0];
-> > +       if (sizeof(dma_addr_t) > sizeof(unsigned long))
-> > +               ret |= (dma_addr_t)page->dma_addr[1] << 32;
-> > +       return ret;
-> > +}
+> > On Fri, Apr 16, 2021 at 08:46:05PM -0700, Alexei Starovoitov wrote:
+> > > On Fri, Apr 16, 2021 at 8:42 PM Al Viro <viro@zeniv.linux.org.uk> wrote:
+> > > >
+> > > > On Fri, Apr 16, 2021 at 08:32:20PM -0700, Alexei Starovoitov wrote:
+> > > > > From: Alexei Starovoitov <ast@kernel.org>
+> > > > >
+> > > > > Add bpf_sys_close() helper to be used by the syscall/loader program to close
+> > > > > intermediate FDs and other cleanup.
+> > > >
+> > > > Conditional NAK.  In a lot of contexts close_fd() is very much unsafe.
+> > > > In particular, anything that might call it between fdget() and fdput()
+> > > > is Right Fucking Out(tm).
+> > > > In which contexts can that thing be executed?
+> > >
+> > > user context only.
+> > > It's not for all of bpf _obviously_.
+> >
+> > Let me restate the question: what call chains could lead to bpf_sys_close()?
 > 
-> Have you considered using a PFN type address here? I suspect you
-> can prove that shifting the DMA address by PAGE_BITS would
-> make it fit into an 'unsigned long' on all 32-bit architectures with
-> 64-bit dma_addr_t. This requires that page->dma_addr to be
-> page aligned, as well as fit into 44 bits. I recently went through the
-> maximum address space per architecture to define a
-> MAX_POSSIBLE_PHYSMEM_BITS, and none of them have more than
-> 40 here, presumably the same is true for dma address space.
+> Already answered. User context only. It's all safe.
 
-I wouldn't like to make that assumption.  I've come across IOMMUs (maybe
-on parisc?  powerpc?) that like to encode fun information in the top
-few bits.  So we could get it down to 52 bits, but I don't think we can
-get all the way down to 32 bits.  Also, we need to keep the bottom bit
-clear for PageTail, so that further constrains us.
+Not only sys_close is safe to call. Literally all syscalls are safe to call.
+The current allowlist contains two syscalls. It may get extended as use cases come up.
 
-Anyway, I like the "two unsigned longs" approach I posted yesterday,
-but thanks for the suggestion.
+The following two codes are equivalent:
+1.
+bpf_prog.c:
+  SEC("syscall")
+  int bpf_prog(struct args *ctx)
+  {
+    bpf_sys_close(1);
+    bpf_sys_close(2);
+    bpf_sys_close(3);
+    return 0;
+  }
+main.c:
+  int main(int ac, char **av)
+  {
+    bpf_prog_load_and_run("bpf_prog.o");
+  }
+
+2.
+main.c:
+  int main(int ac, char **av)
+  {
+    close(1);
+    close(2);
+    close(3);
+  }
+
+The kernel will perform the same work with FDs. The same locks are held
+and the same execution conditions are in both cases. The LSM hooks,
+fsnotify, etc will be called the same way.
+It's no different if new syscall was introduced "sys_foo(int num)" that
+would do { return close_fd(num); }.
+It would opearate in the same user context.
