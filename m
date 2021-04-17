@@ -2,44 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 61513362C62
+	by mail.lfdr.de (Postfix) with ESMTP id E2FB2362C63
 	for <lists+netdev@lfdr.de>; Sat, 17 Apr 2021 02:20:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235186AbhDQAUl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 16 Apr 2021 20:20:41 -0400
-Received: from mail.kernel.org ([198.145.29.99]:38920 "EHLO mail.kernel.org"
+        id S235137AbhDQAUo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 16 Apr 2021 20:20:44 -0400
+Received: from mail.kernel.org ([198.145.29.99]:38924 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231997AbhDQAUj (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S235010AbhDQAUj (ORCPT <rfc822;netdev@vger.kernel.org>);
         Fri, 16 Apr 2021 20:20:39 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id D1A4A611AB;
+Received: by mail.kernel.org (Postfix) with ESMTPS id DD2946115B;
         Sat, 17 Apr 2021 00:20:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1618618813;
-        bh=L49bIj6qteDwp4mP+ng7zLhqgfk44/tW5FJhGGHpkvI=;
+        bh=Q69n5b50QGBfz7wkoWYqyolXH9DGqJK9VR+VvdeXtss=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=tDc8GkcZi+A8ZR1apURuin/ibS+ZSSK73dyhVt8YI38Bgvlu2exwuEfACzukwVObh
-         FMQmmmvX2u+fSWbRsmDpCMoPssVkGr8RtAKoeOJ30P/0sozwiEs80wEySs3e5YFWur
-         u6tX3AaLthxxGAGenEt3vK3lDM2rLmVYW/XPwZ+6aGjSi9Oi49W2sAAON/w1mR60c/
-         5ktdiZWwXJArsSmuRGNf8IomoPB5k+shMxED/1jf5K4GQkF2dzhm0edxCSAeNo6zCR
-         VG20AUdsV7iC4Zvj6J+RzIHkNzLIbYCg+aZfDGNfzc/8J1Pgo8LElfqCpW20pnJxwk
-         GD3K0osUwzrPg==
+        b=ahfFcyWDXStmVjGpti1yEv/6xP7N7hw9OL8NCiFpgL6WBkMjW1OdeThEv/RU8DPdf
+         wiBj3DEV5OMpYLJlZrS6XeEIzTTnygdmrn5F9P2nf8xs08hNTLfyOfqqNlb1jwURC4
+         v3/5Soo5khZ+Lu+1G4qBTqe0iQ0nXR1lBbcMPmE9c2hkrElgjgplyKrn/kakhS/qfa
+         /AYEpw3JwfiZXVyikjl3YGazblMsTnnflRRFfk5hdDnrAYiDqoLjqHnJrshCkK0wsJ
+         hD8fi/WKroPTZqgS6y74Xn2kTPLUHWTh6eTOe49Zfsmlisf5awSCc1vc3iDx6kUPFk
+         Q0nsPl8ni0y0Q==
 Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id C4FD360CD4;
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id CD65560A15;
         Sat, 17 Apr 2021 00:20:13 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next 00/10] Fixups for XDP on NXP ENETC
+Subject: Re: [PATCH net-next 0/6][pull request] 1GbE Intel Wired LAN Driver
+ Updates 2021-04-16
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <161861881380.3813.7857023133457832186.git-patchwork-notify@kernel.org>
+Message-Id: <161861881383.3813.17257033588191776171.git-patchwork-notify@kernel.org>
 Date:   Sat, 17 Apr 2021 00:20:13 +0000
-References: <20210416212225.3576792-1-olteanv@gmail.com>
-In-Reply-To: <20210416212225.3576792-1-olteanv@gmail.com>
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     kuba@kernel.org, davem@davemloft.net, netdev@vger.kernel.org,
-        po.liu@nxp.com, claudiu.manoil@nxp.com,
-        alexandru.marginean@nxp.com, yangbo.lu@nxp.com, toke@redhat.com,
-        vladimir.oltean@nxp.com
+References: <20210416204500.2012073-1-anthony.l.nguyen@intel.com>
+In-Reply-To: <20210416204500.2012073-1-anthony.l.nguyen@intel.com>
+To:     Tony Nguyen <anthony.l.nguyen@intel.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
+        sassmann@redhat.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
@@ -48,37 +47,31 @@ Hello:
 
 This series was applied to netdev/net-next.git (refs/heads/master):
 
-On Sat, 17 Apr 2021 00:22:15 +0300 you wrote:
-> From: Vladimir Oltean <vladimir.oltean@nxp.com>
+On Fri, 16 Apr 2021 13:44:54 -0700 you wrote:
+> This series contains updates to igb and igc drivers.
 > 
-> After some more XDP testing on the NXP LS1028A, this is a set of 10 bug
-> fixes, simplifications and tweaks, ranging from addressing Toke's feedback
-> (the network stack can run concurrently with XDP on the same TX rings)
-> to fixing some OOM conditions seen under TX congestion.
+> Ederson adjusts Tx buffer distributions in Qav mode to improve
+> TSN-aware traffic for igb. He also enable PPS support and auxiliary PHC
+> functions for igc.
+> 
+> Grzegorz checks that the MTA register was properly written and
+> retries if not for igb.
 > 
 > [...]
 
 Here is the summary with links:
-  - [net-next,01/10] net: enetc: remove redundant clearing of skb/xdp_frame pointer in TX conf path
-    https://git.kernel.org/netdev/net-next/c/e9e49ae88ec8
-  - [net-next,02/10] net: enetc: rename the buffer reuse helpers
-    https://git.kernel.org/netdev/net-next/c/6b04830d5e0d
-  - [net-next,03/10] net: enetc: recycle buffers for frames with RX errors
-    https://git.kernel.org/netdev/net-next/c/672f9a21989e
-  - [net-next,04/10] net: enetc: stop XDP NAPI processing when build_skb() fails
-    https://git.kernel.org/netdev/net-next/c/8f50d8bb3f1c
-  - [net-next,05/10] net: enetc: remove unneeded xdp_do_flush_map()
-    https://git.kernel.org/netdev/net-next/c/a6369fe6e07d
-  - [net-next,06/10] net: enetc: increase TX ring size
-    https://git.kernel.org/netdev/net-next/c/ee3e875f10fc
-  - [net-next,07/10] net: enetc: use dedicated TX rings for XDP
-    https://git.kernel.org/netdev/net-next/c/7eab503b11ee
-  - [net-next,08/10] net: enetc: handle the invalid XDP action the same way as XDP_DROP
-    https://git.kernel.org/netdev/net-next/c/975acc833c9f
-  - [net-next,09/10] net: enetc: fix buffer leaks with XDP_TX enqueue rejections
-    https://git.kernel.org/netdev/net-next/c/92ff9a6e578d
-  - [net-next,10/10] net: enetc: apply the MDIO workaround for XDP_REDIRECT too
-    https://git.kernel.org/netdev/net-next/c/24e393097171
+  - [net-next,1/6] igb: Redistribute memory for transmit packet buffers when in Qav mode
+    https://git.kernel.org/netdev/net-next/c/26b67f5a1e06
+  - [net-next,2/6] igb: Add double-check MTA_REGISTER for i210 and i211
+    https://git.kernel.org/netdev/net-next/c/1d3cb90cb010
+  - [net-next,3/6] igc: Enable internal i225 PPS
+    https://git.kernel.org/netdev/net-next/c/64433e5bf40a
+  - [net-next,4/6] igc: enable auxiliary PHC functions for the i225
+    https://git.kernel.org/netdev/net-next/c/87938851b6ef
+  - [net-next,5/6] igc: Fix overwrites return value
+    https://git.kernel.org/netdev/net-next/c/b3d4f405620a
+  - [net-next,6/6] igc: Expose LPI counters
+    https://git.kernel.org/netdev/net-next/c/1feaf60ff260
 
 You are awesome, thank you!
 --
