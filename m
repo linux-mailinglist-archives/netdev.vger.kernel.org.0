@@ -2,93 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 292C0363028
-	for <lists+netdev@lfdr.de>; Sat, 17 Apr 2021 15:08:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 03552363040
+	for <lists+netdev@lfdr.de>; Sat, 17 Apr 2021 15:23:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236058AbhDQNJE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 17 Apr 2021 09:09:04 -0400
-Received: from eu-smtp-delivery-151.mimecast.com ([185.58.85.151]:39622 "EHLO
-        eu-smtp-delivery-151.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S236354AbhDQNJB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 17 Apr 2021 09:09:01 -0400
-Received: from AcuMS.aculab.com (156.67.243.121 [156.67.243.121]) (Using
- TLS) by relay.mimecast.com with ESMTP id
- uk-mta-40-NxhZsd9HMzmFc3zLPSZr6w-1; Sat, 17 Apr 2021 14:08:31 +0100
-X-MC-Unique: NxhZsd9HMzmFc3zLPSZr6w-1
-Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) by
- AcuMS.aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) with Microsoft SMTP
- Server (TLS) id 15.0.1497.2; Sat, 17 Apr 2021 14:08:30 +0100
-Received: from AcuMS.Aculab.com ([fe80::994c:f5c2:35d6:9b65]) by
- AcuMS.aculab.com ([fe80::994c:f5c2:35d6:9b65%12]) with mapi id
- 15.00.1497.015; Sat, 17 Apr 2021 14:08:30 +0100
-From:   David Laight <David.Laight@ACULAB.COM>
-To:     'Grygorii Strashko' <grygorii.strashko@ti.com>,
-        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        Christoph Hellwig <hch@lst.de>
-CC:     Matthew Wilcox <willy@infradead.org>,
-        kernel test robot <lkp@intel.com>,
-        Linux-MM <linux-mm@kvack.org>,
-        "kbuild-all@lists.01.org" <kbuild-all@lists.01.org>,
-        "clang-built-linux@googlegroups.com" 
-        <clang-built-linux@googlegroups.com>,
-        open list <linux-kernel@vger.kernel.org>,
-        "linux-fsdevel@vger.kernel.org" <linux-fsdevel@vger.kernel.org>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        Paul Mackerras <paulus@samba.org>,
-        "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        id S236464AbhDQNYO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 17 Apr 2021 09:24:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33314 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S236313AbhDQNYN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 17 Apr 2021 09:24:13 -0400
+Received: from mail-io1-xd2d.google.com (mail-io1-xd2d.google.com [IPv6:2607:f8b0:4864:20::d2d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 05DF5C061574;
+        Sat, 17 Apr 2021 06:23:46 -0700 (PDT)
+Received: by mail-io1-xd2d.google.com with SMTP id f15so21647476iob.5;
+        Sat, 17 Apr 2021 06:23:45 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=R0yqZql1vKkxThXF3GXg2OlgKCVAh2PdzD5jZt7wsq4=;
+        b=fIeYTmsrYBi4Jr0kbAS6isiYz0oBI9TzHRhNlr+mjdAMckX3UfJorwWdcMfklKXNe5
+         TpU5JvoUCmY9/qKJ9CBGCflC7kjWeA0jRHph4rodcbJT2nfFE0yQjPjoO+xrUO0aceQu
+         Q7EAqmmt+tBGMBvZlZ47wFkPdbXfYy2qISzN3yyGvYAvPPkp8aQmHTR+HB50dq4zD3Xb
+         pzidpofY51yH7wwHTD/kYiV2c6oIVB/C27D8Sn4Z9uL+op+g6PZl1NiM4OaMve/6rzRc
+         RQ8n0CBvChQMQNlTAifFAwk9kDSuTuq3cunD6RSdsRK3Lfpr5Hl3ucHM8bRSYo2v2WKT
+         Gx5A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=R0yqZql1vKkxThXF3GXg2OlgKCVAh2PdzD5jZt7wsq4=;
+        b=MTMaZs3fw44CoIo7gQcC/YZwpDIcPAaFLVew7Sad4U6LhuHiFnDlkrZ/iM9inHE4R7
+         XzJUP5gejz6Jzl+UNCSfHDckpxQQBHiTS8I1UVSktZPwaiOwGFkrEH0EKoJslMArVvt+
+         EBy0/lE6u4tZmcYPmRNAP9olklTLiCm3JdgiEFLX3fN4shM4V4FDyH7N96UTPOgsgvio
+         7soC0BN+wEOt5+Z7uVuCMtokN+IS50sW0Iu+KyqOKwO+PhWyxLYrUZJyQcHtAY0Ax56v
+         BiEIN4pkTQocoTJcjWnJHYLdeNqg+o3tOpLnCKz2tTuty1fvKQNzGxEXwHpPZJBnUWK+
+         WcEg==
+X-Gm-Message-State: AOAM532j+6BixkQOOBkd4bh0fT7WkSkYwjXw+Q1mWdI2Du30N036VIAG
+        3OAzm+z1F/m2hnF9IE/EgKd6AuVUCpHkAw==
+X-Google-Smtp-Source: ABdhPJyi/F3ASPZBK4nvb6CbGDWNsUg83cjk8DtdA9WOg40MWvuMfVxwLjQL1Tw5PyqBkTPdoBrDwQ==
+X-Received: by 2002:a02:c912:: with SMTP id t18mr8390142jao.100.1618665824897;
+        Sat, 17 Apr 2021 06:23:44 -0700 (PDT)
+Received: from aford-IdeaCentre-A730.lan ([2601:448:8400:9e8:fad6:9931:94b:38ee])
+        by smtp.gmail.com with ESMTPSA id f4sm2523723ioh.41.2021.04.17.06.23.43
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 17 Apr 2021 06:23:44 -0700 (PDT)
+From:   Adam Ford <aford173@gmail.com>
+To:     netdev@vger.kernel.org
+Cc:     aford@beaconembedded.com, geert@linux-m68k.org,
+        Adam Ford <aford173@gmail.com>,
+        Sergei Shtylyov <sergei.shtylyov@gmail.com>,
         "David S. Miller" <davem@davemloft.net>,
-        Matteo Croce <mcroce@linux.microsoft.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: RE: Bogus struct page layout on 32-bit
-Thread-Topic: Bogus struct page layout on 32-bit
-Thread-Index: AQHXMqLVEv6dx6LXIEqsc09GLT7Ydaq4r3RA
-Date:   Sat, 17 Apr 2021 13:08:30 +0000
-Message-ID: <e8247c8d079d45928990031870db7a9e@AcuMS.aculab.com>
-References: <20210409185105.188284-3-willy@infradead.org>
- <202104100656.N7EVvkNZ-lkp@intel.com>
- <20210410024313.GX2531743@casper.infradead.org>
- <20210410082158.79ad09a6@carbon>
- <CAC_iWjLXZ6-hhvmvee6r4R_N64u-hrnLqE_CSS1nQk+YaMQQnA@mail.gmail.com>
- <ab9f1a6c-4099-2b59-457d-fcc45d2396f4@ti.com>
-In-Reply-To: <ab9f1a6c-4099-2b59-457d-fcc45d2396f4@ti.com>
-Accept-Language: en-GB, en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ms-exchange-transport-fromentityheader: Hosted
-x-originating-ip: [10.202.205.107]
+        Jakub Kicinski <kuba@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
+        linux-renesas-soc@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] net: ethernet: ravb: Fix release of refclk
+Date:   Sat, 17 Apr 2021 08:23:29 -0500
+Message-Id: <20210417132329.6886-1-aford173@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Authentication-Results: relay.mimecast.com;
-        auth=pass smtp.auth=C51A453 smtp.mailfrom=david.laight@aculab.com
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: aculab.com
-Content-Language: en-US
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: base64
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-RnJvbTogR3J5Z29yaWkgU3RyYXNoa28NCj4gU2VudDogMTYgQXByaWwgMjAyMSAxMDoyNw0KLi4u
-DQo+IFNyeSwgZm9yIGRlbGF5ZWQgcmVwbHkuDQo+IA0KPiBUaGUgVEkgcGxhdGZvcm1zIGFtMy80
-LzUgKGNwc3cpIGFuZCBLZXlzdG9uZSAyIChuZXRjcCkgY2FuIGRvIG9ubHkgMzJiaXQgRE1BIGV2
-ZW4gaW4gY2FzZSBvZiBMUEFFDQo+IChkbWEtcmFuZ2VzIGFyZSB1c2VkKS4NCj4gT3JpZ2luYWxs
-eSwgYXMgSSByZW1lbWJlciwgQ09ORklHX0FSQ0hfRE1BX0FERFJfVF82NEJJVCBoYXMgbm90IGJl
-ZW4gc2VsZWN0ZWQgZm9yIHRoZSBMUEFFIGNhc2UNCj4gb24gVEkgcGxhdGZvcm1zIGFuZCB0aGUg
-ZmFjdCB0aGF0IGl0IGJlY2FtZSBzZXQgaXMgdGhlIHJlc3VsdCBvZiBtdWx0aS1wYWx0Zm9ybS9h
-bGxYWFhjb25maWcvRE1BDQo+IG9wdGltaXphdGlvbnMgYW5kIHVuaWZpY2F0aW9uLg0KPiAoanVz
-dCBjaGVja2VkIC0gbm90IHNldCBpbiA0LjE0KQ0KPiANCj4gUHJvYmFibGUgY29tbWl0IDQ5NjVh
-Njg3ODBjNSAoImFyY2g6IGRlZmluZSB0aGUgQVJDSF9ETUFfQUREUl9UXzY0QklUIGNvbmZpZyBz
-eW1ib2wgaW4gbGliL0tjb25maWciKS4NCj4gDQo+IFRoZSBUSSBkcml2ZXJzIGhhdmUgYmVlbiB1
-cGRhdGVkLCBmaW5hbGx5IHRvIGFjY2VwdCBBUkNIX0RNQV9BRERSX1RfNjRCSVQ9eSBieSB1c2lu
-ZyB0aGluZ3MgbGlrZQ0KPiAoX19mb3JjZSB1MzIpDQo+IGZvciBleGFtcGxlLg0KDQpIbW1tIHVz
-aW5nIChfX2ZvcmNlIHUzMikgaXMgcHJvYmFibHkgd3JvbmcuDQpJZiBhbiBhZGRyZXNzICtsZW5n
-dGggPj0gMioqMzIgY2FuIGdldCBwYXNzZWQgdGhlbiB0aGUgSU8gcmVxdWVzdA0KbmVlZHMgdG8g
-YmUgZXJyb3JlZCAob3IgYSBib3VuY2UgYnVmZmVyIHVzZWQpLg0KDQpPdGhlcndpc2UgeW91IGNh
-biBnZXQgcGFydGljdWxhcmx5IGhvcnJpZCBjb3JydXB0aW9ucy4NCg0KCURhdmlkDQoNCi0NClJl
-Z2lzdGVyZWQgQWRkcmVzcyBMYWtlc2lkZSwgQnJhbWxleSBSb2FkLCBNb3VudCBGYXJtLCBNaWx0
-b24gS2V5bmVzLCBNSzEgMVBULCBVSw0KUmVnaXN0cmF0aW9uIE5vOiAxMzk3Mzg2IChXYWxlcykN
-Cg==
+The call to clk_disable_unprepare() can happen before priv is
+initialized. This means moving clk_disable_unprepare out of
+out_release into a new label.
+
+Fixes: 8ef7adc6beb2("net: ethernet: ravb: Enable optional refclk")
+Signed-off-by: Adam Ford <aford173@gmail.com>
+
+diff --git a/drivers/net/ethernet/renesas/ravb_main.c b/drivers/net/ethernet/renesas/ravb_main.c
+index 8c84c40ab9a0..64a545c98ff2 100644
+--- a/drivers/net/ethernet/renesas/ravb_main.c
++++ b/drivers/net/ethernet/renesas/ravb_main.c
+@@ -2173,7 +2173,7 @@ static int ravb_probe(struct platform_device *pdev)
+ 	/* Set GTI value */
+ 	error = ravb_set_gti(ndev);
+ 	if (error)
+-		goto out_release;
++		goto out_unprepare_refclk;
+ 
+ 	/* Request GTI loading */
+ 	ravb_modify(ndev, GCCR, GCCR_LTI, GCCR_LTI);
+@@ -2192,7 +2192,7 @@ static int ravb_probe(struct platform_device *pdev)
+ 			"Cannot allocate desc base address table (size %d bytes)\n",
+ 			priv->desc_bat_size);
+ 		error = -ENOMEM;
+-		goto out_release;
++		goto out_unprepare_refclk;
+ 	}
+ 	for (q = RAVB_BE; q < DBAT_ENTRY_NUM; q++)
+ 		priv->desc_bat[q].die_dt = DT_EOS;
+@@ -2252,8 +2252,9 @@ static int ravb_probe(struct platform_device *pdev)
+ 	/* Stop PTP Clock driver */
+ 	if (chip_id != RCAR_GEN2)
+ 		ravb_ptp_stop(ndev);
+-out_release:
++out_unprepare_refclk:
+ 	clk_disable_unprepare(priv->refclk);
++out_release:
+ 	free_netdev(ndev);
+ 
+ 	pm_runtime_put(&pdev->dev);
+-- 
+2.25.1
 
