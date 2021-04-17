@@ -2,109 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 03552363040
-	for <lists+netdev@lfdr.de>; Sat, 17 Apr 2021 15:23:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A5A9A363075
+	for <lists+netdev@lfdr.de>; Sat, 17 Apr 2021 15:55:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236464AbhDQNYO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 17 Apr 2021 09:24:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33314 "EHLO
+        id S236439AbhDQNzT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 17 Apr 2021 09:55:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40100 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236313AbhDQNYN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 17 Apr 2021 09:24:13 -0400
-Received: from mail-io1-xd2d.google.com (mail-io1-xd2d.google.com [IPv6:2607:f8b0:4864:20::d2d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 05DF5C061574;
-        Sat, 17 Apr 2021 06:23:46 -0700 (PDT)
-Received: by mail-io1-xd2d.google.com with SMTP id f15so21647476iob.5;
-        Sat, 17 Apr 2021 06:23:45 -0700 (PDT)
+        with ESMTP id S230442AbhDQNzS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 17 Apr 2021 09:55:18 -0400
+Received: from mail-ed1-x532.google.com (mail-ed1-x532.google.com [IPv6:2a00:1450:4864:20::532])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 52606C061574;
+        Sat, 17 Apr 2021 06:54:52 -0700 (PDT)
+Received: by mail-ed1-x532.google.com with SMTP id i3so9824754edt.1;
+        Sat, 17 Apr 2021 06:54:52 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=R0yqZql1vKkxThXF3GXg2OlgKCVAh2PdzD5jZt7wsq4=;
-        b=fIeYTmsrYBi4Jr0kbAS6isiYz0oBI9TzHRhNlr+mjdAMckX3UfJorwWdcMfklKXNe5
-         TpU5JvoUCmY9/qKJ9CBGCflC7kjWeA0jRHph4rodcbJT2nfFE0yQjPjoO+xrUO0aceQu
-         Q7EAqmmt+tBGMBvZlZ47wFkPdbXfYy2qISzN3yyGvYAvPPkp8aQmHTR+HB50dq4zD3Xb
-         pzidpofY51yH7wwHTD/kYiV2c6oIVB/C27D8Sn4Z9uL+op+g6PZl1NiM4OaMve/6rzRc
-         RQ8n0CBvChQMQNlTAifFAwk9kDSuTuq3cunD6RSdsRK3Lfpr5Hl3ucHM8bRSYo2v2WKT
-         Gx5A==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=kwbXOEfw/hpTzD4hhTkstPphtWsfZTra37TCCCrtY84=;
+        b=sPI3XPceh+wzpsQW6flE9OtViinFEbi/tneD3luRPZoawpv9l7XAmkkdUG2ChVygdE
+         whv2VOrrWLneqFlT4ejHnVmHfHjPzCfbkT58gjCuI4CuimVgu9Sr4UXddlUCghDxO5IU
+         mTr50e8nUf1LEDJXyXT/GrEfuqIK77XI4vaRAVwR0SCii5bpGE3p+xto+o/7R/hPmHYr
+         cwAOwPYQOeadpxLa91ZVNBOtJ+H8SQ8leIzF+Ya6Do5RTNpLe0ZseUUS0rswfTH/FyRm
+         cNn8binRD3E7KCpTB1ncWGW6hRilDUbADBzG4fI5eNl5g+jz0okT8tgNZ7a12zUeCGKF
+         nelg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=R0yqZql1vKkxThXF3GXg2OlgKCVAh2PdzD5jZt7wsq4=;
-        b=MTMaZs3fw44CoIo7gQcC/YZwpDIcPAaFLVew7Sad4U6LhuHiFnDlkrZ/iM9inHE4R7
-         XzJUP5gejz6Jzl+UNCSfHDckpxQQBHiTS8I1UVSktZPwaiOwGFkrEH0EKoJslMArVvt+
-         EBy0/lE6u4tZmcYPmRNAP9olklTLiCm3JdgiEFLX3fN4shM4V4FDyH7N96UTPOgsgvio
-         7soC0BN+wEOt5+Z7uVuCMtokN+IS50sW0Iu+KyqOKwO+PhWyxLYrUZJyQcHtAY0Ax56v
-         BiEIN4pkTQocoTJcjWnJHYLdeNqg+o3tOpLnCKz2tTuty1fvKQNzGxEXwHpPZJBnUWK+
-         WcEg==
-X-Gm-Message-State: AOAM532j+6BixkQOOBkd4bh0fT7WkSkYwjXw+Q1mWdI2Du30N036VIAG
-        3OAzm+z1F/m2hnF9IE/EgKd6AuVUCpHkAw==
-X-Google-Smtp-Source: ABdhPJyi/F3ASPZBK4nvb6CbGDWNsUg83cjk8DtdA9WOg40MWvuMfVxwLjQL1Tw5PyqBkTPdoBrDwQ==
-X-Received: by 2002:a02:c912:: with SMTP id t18mr8390142jao.100.1618665824897;
-        Sat, 17 Apr 2021 06:23:44 -0700 (PDT)
-Received: from aford-IdeaCentre-A730.lan ([2601:448:8400:9e8:fad6:9931:94b:38ee])
-        by smtp.gmail.com with ESMTPSA id f4sm2523723ioh.41.2021.04.17.06.23.43
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 17 Apr 2021 06:23:44 -0700 (PDT)
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=kwbXOEfw/hpTzD4hhTkstPphtWsfZTra37TCCCrtY84=;
+        b=MZ0eajFAv2hVaB9Y4Rw0IptJbGahUo1LgPUjONr9jLL4er0wzN3G8ElMpl9CZs14bp
+         1RPkaRiUGmKnvYgqXtJZOCzp9L17QTQnnLFiljW1xuE/AJQgy1zhFzyGeRtF6C++PeuU
+         Vc0A7MDztAH6KvM7M4Nts6O6wr6LthK+DviJTYD8nzYu+JisryCt/S87/79dQbgZEBKG
+         mBffsIA58HmioJq5cWrVm2qxRHcuMOCK0aZ0GdqArUt0Yxz5Xmqhse+26E+1MIvz3Fsa
+         47TU6aKFXbWZexobTk7wTzGpnUCZgwcbTkRG9lGIyDFpSqMpJVD4pucDNv08/hnx3+VN
+         uOjg==
+X-Gm-Message-State: AOAM531KntlBVju4QB3LFH74uHhK/S3+WQLQlwTCtjVRT1GGSAujZSpy
+        7zOAocnrSkK2Mu+csncxzKvtGaT2Edl+oedkG2k=
+X-Google-Smtp-Source: ABdhPJwphSsgjfmY6bf7Zp5OmyrMvNCEsUL9E55kZxOq+KCz976opRnejwfP8hrs6KBMVnkjvAEm4KIvo1nhTS50/gM=
+X-Received: by 2002:a05:6402:382:: with SMTP id o2mr9326951edv.370.1618667690889;
+ Sat, 17 Apr 2021 06:54:50 -0700 (PDT)
+MIME-Version: 1.0
+References: <20210224115146.9131-1-aford173@gmail.com> <20210224115146.9131-5-aford173@gmail.com>
+ <CAMuHMdW3SO7LemssHrGKkV0TUVNuT4oq1EfmJ-Js79=QBvNhqQ@mail.gmail.com>
+In-Reply-To: <CAMuHMdW3SO7LemssHrGKkV0TUVNuT4oq1EfmJ-Js79=QBvNhqQ@mail.gmail.com>
 From:   Adam Ford <aford173@gmail.com>
-To:     netdev@vger.kernel.org
-Cc:     aford@beaconembedded.com, geert@linux-m68k.org,
-        Adam Ford <aford173@gmail.com>,
+Date:   Sat, 17 Apr 2021 08:54:39 -0500
+Message-ID: <CAHCN7xJrmQgC=skC7UJuzshUnf06D4nHrv1grrW8QV-+07dgKA@mail.gmail.com>
+Subject: Re: [PATCH V3 5/5] arm64: dts: renesas: beacon kits: Setup AVB refclk
+To:     Geert Uytterhoeven <geert@linux-m68k.org>
+Cc:     netdev <netdev@vger.kernel.org>,
+        Adam Ford-BE <aford@beaconembedded.com>,
         Sergei Shtylyov <sergei.shtylyov@gmail.com>,
         "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
-        linux-renesas-soc@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] net: ethernet: ravb: Fix release of refclk
-Date:   Sat, 17 Apr 2021 08:23:29 -0500
-Message-Id: <20210417132329.6886-1-aford173@gmail.com>
-X-Mailer: git-send-email 2.25.1
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        Jakub Kicinski <kuba@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Magnus Damm <magnus.damm@gmail.com>,
+        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The call to clk_disable_unprepare() can happen before priv is
-initialized. This means moving clk_disable_unprepare out of
-out_release into a new label.
+On Thu, Mar 4, 2021 at 2:04 AM Geert Uytterhoeven <geert@linux-m68k.org> wrote:
+>
+> On Wed, Feb 24, 2021 at 12:52 PM Adam Ford <aford173@gmail.com> wrote:
+> > The AVB refererence clock assumes an external clock that runs
+>
+> reference
+>
+> > automatically.  Because the Versaclock is wired to provide the
+> > AVB refclock, the device tree needs to reference it in order for the
+> > driver to start the clock.
+> >
+> > Signed-off-by: Adam Ford <aford173@gmail.com>
+>
+> Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
+> i.e. will queue in renesas-devel (with the typo fixed) once the DT
+> bindings have been accepted.
 
-Fixes: 8ef7adc6beb2("net: ethernet: ravb: Enable optional refclk")
-Signed-off-by: Adam Ford <aford173@gmail.com>
+Geert,
 
-diff --git a/drivers/net/ethernet/renesas/ravb_main.c b/drivers/net/ethernet/renesas/ravb_main.c
-index 8c84c40ab9a0..64a545c98ff2 100644
---- a/drivers/net/ethernet/renesas/ravb_main.c
-+++ b/drivers/net/ethernet/renesas/ravb_main.c
-@@ -2173,7 +2173,7 @@ static int ravb_probe(struct platform_device *pdev)
- 	/* Set GTI value */
- 	error = ravb_set_gti(ndev);
- 	if (error)
--		goto out_release;
-+		goto out_unprepare_refclk;
- 
- 	/* Request GTI loading */
- 	ravb_modify(ndev, GCCR, GCCR_LTI, GCCR_LTI);
-@@ -2192,7 +2192,7 @@ static int ravb_probe(struct platform_device *pdev)
- 			"Cannot allocate desc base address table (size %d bytes)\n",
- 			priv->desc_bat_size);
- 		error = -ENOMEM;
--		goto out_release;
-+		goto out_unprepare_refclk;
- 	}
- 	for (q = RAVB_BE; q < DBAT_ENTRY_NUM; q++)
- 		priv->desc_bat[q].die_dt = DT_EOS;
-@@ -2252,8 +2252,9 @@ static int ravb_probe(struct platform_device *pdev)
- 	/* Stop PTP Clock driver */
- 	if (chip_id != RCAR_GEN2)
- 		ravb_ptp_stop(ndev);
--out_release:
-+out_unprepare_refclk:
- 	clk_disable_unprepare(priv->refclk);
-+out_release:
- 	free_netdev(ndev);
- 
- 	pm_runtime_put(&pdev->dev);
--- 
-2.25.1
+Since the refclk update and corresponding dt-bindings are in net-next,
+are you OK applying the rest of the DT changes so they can get into
+5.13?
 
+adam
+>
+> Gr{oetje,eeting}s,
+>
+>                         Geert
+>
+> --
+> Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+>
+> In personal conversations with technical people, I call myself a hacker. But
+> when I'm talking to journalists I just say "programmer" or something like that.
+>                                 -- Linus Torvalds
