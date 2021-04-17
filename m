@@ -2,67 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 240CE362E42
-	for <lists+netdev@lfdr.de>; Sat, 17 Apr 2021 09:16:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BFE25362E4A
+	for <lists+netdev@lfdr.de>; Sat, 17 Apr 2021 09:28:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235420AbhDQHRT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 17 Apr 2021 03:17:19 -0400
-Received: from smtp11.smtpout.orange.fr ([80.12.242.133]:48397 "EHLO
-        smtp.smtpout.orange.fr" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230206AbhDQHRS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 17 Apr 2021 03:17:18 -0400
-Received: from localhost.localdomain ([86.243.172.93])
-        by mwinf5d34 with ME
-        id tjGm2400E21Fzsu03jGmVo; Sat, 17 Apr 2021 09:16:50 +0200
-X-ME-Helo: localhost.localdomain
-X-ME-Auth: Y2hyaXN0b3BoZS5qYWlsbGV0QHdhbmFkb28uZnI=
-X-ME-Date: Sat, 17 Apr 2021 09:16:50 +0200
-X-ME-IP: 86.243.172.93
-From:   Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-To:     saeedm@nvidia.com, leon@kernel.org, davem@davemloft.net,
-        kuba@kernel.org
-Cc:     netdev@vger.kernel.org, linux-rdma@vger.kernel.org,
-        linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Subject: [PATCH] net/mlx5: Use kasprintf instead of hand-writing it
-Date:   Sat, 17 Apr 2021 09:16:44 +0200
-Message-Id: <46235ec010551d2788483ce636686a61345e40ba.1618643703.git.christophe.jaillet@wanadoo.fr>
-X-Mailer: git-send-email 2.27.0
+        id S230393AbhDQH2a (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 17 Apr 2021 03:28:30 -0400
+Received: from wtarreau.pck.nerim.net ([62.212.114.60]:51799 "EHLO 1wt.eu"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229631AbhDQH2a (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 17 Apr 2021 03:28:30 -0400
+Received: (from willy@localhost)
+        by pcw.home.local (8.15.2/8.15.2/Submit) id 13H7RiqZ014175;
+        Sat, 17 Apr 2021 09:27:44 +0200
+Date:   Sat, 17 Apr 2021 09:27:44 +0200
+From:   Willy Tarreau <w@1wt.eu>
+To:     Eric Dumazet <edumazet@google.com>
+Cc:     David Ahern <dsahern@gmail.com>, Florian Westphal <fw@strlen.de>,
+        Keyu Man <kman001@ucr.edu>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "yoshfuji@linux-ipv6.org" <yoshfuji@linux-ipv6.org>,
+        "dsahern@kernel.org" <dsahern@kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Zhiyun Qian <zhiyunq@cs.ucr.edu>
+Subject: Re: PROBLEM: DoS Attack on Fragment Cache
+Message-ID: <20210417072744.GB14109@1wt.eu>
+References: <02917697-4CE2-4BBE-BF47-31F58BC89025@hxcore.ol>
+ <52098fa9-2feb-08ae-c24f-1e696076c3b9@gmail.com>
+ <CANn89iL_V0WbeA-Zr29cLSp9pCsthkX9ze4W46gx=8-UeK2qMg@mail.gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CANn89iL_V0WbeA-Zr29cLSp9pCsthkX9ze4W46gx=8-UeK2qMg@mail.gmail.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-'kasprintf()' can replace a kmalloc/strcpy/strcat sequence.
-It is less verbose and avoid the use of a magic number (64).
+On Sat, Apr 17, 2021 at 06:44:40AM +0200, Eric Dumazet wrote:
+> On Sat, Apr 17, 2021 at 2:31 AM David Ahern <dsahern@gmail.com> wrote:
+> >
+> > [ cc author of 648700f76b03b7e8149d13cc2bdb3355035258a9 ]
+> 
+> I think this has been discussed already. There is no strategy that
+> makes IP reassembly units immune to DDOS attacks.
 
-Anyway, the underlying 'alloc_workqueue()' would only keep the 24 first
-chars (i.e. sizeof(struct workqueue_struct->name) = WQ_NAME_LEN).
+For having tried to deal with this in the past as well, I agree with
+this conclusion, which is also another good example of why fragments
+should really be avoided as much as possible over hostile networks.
 
-Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
----
- drivers/net/ethernet/mellanox/mlx5/core/health.c | 4 +---
- 1 file changed, 1 insertion(+), 3 deletions(-)
+However I also found that random drops of previous entries is the
+approach which seems to offer the most statistical opportunities to
+legitimate traffic to still work under attack (albeit really poorly
+considering that any lost fragment requires retransmission of the
+whole series). In this case the chance for a packet to be successfully
+reassembled would vary proportionally to the inverse of its number of
+fragments, which reasonably limits the impact of attacks (without being
+an ultimate solution of course).
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/health.c b/drivers/net/ethernet/mellanox/mlx5/core/health.c
-index 9ff163c5bcde..a5383e701b4b 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/health.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/health.c
-@@ -802,12 +802,10 @@ int mlx5_health_init(struct mlx5_core_dev *dev)
- 	mlx5_fw_reporters_create(dev);
- 
- 	health = &dev->priv.health;
--	name = kmalloc(64, GFP_KERNEL);
-+	name = kasprintf(GFP_KERNEL, "mlx5_health%s", dev_name(dev->device));
- 	if (!name)
- 		goto out_err;
- 
--	strcpy(name, "mlx5_health");
--	strcat(name, dev_name(dev->device));
- 	health->wq = create_singlethread_workqueue(name);
- 	kfree(name);
- 	if (!health->wq)
--- 
-2.27.0
+> We added rb-tree and sysctls to let admins choose to use GB of RAM if
+> they really care.
 
+I agree that for those who care, the real solution is to make sure they
+can store all the traffic they receive during a reassembly period.
+Legitimate traffic mostly reassembles quickly so keeping 1 second of
+traffic at 10 Gbps is only 1.25 GB of RAM after all...
+
+Willy
