@@ -2,100 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 982713631C0
-	for <lists+netdev@lfdr.de>; Sat, 17 Apr 2021 20:05:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C8FFC3631C4
+	for <lists+netdev@lfdr.de>; Sat, 17 Apr 2021 20:09:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236877AbhDQSDk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 17 Apr 2021 14:03:40 -0400
-Received: from m43-7.mailgun.net ([69.72.43.7]:56526 "EHLO m43-7.mailgun.net"
+        id S236894AbhDQSJM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 17 Apr 2021 14:09:12 -0400
+Received: from vps-vb.mhejs.net ([37.28.154.113]:37750 "EHLO vps-vb.mhejs.net"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S236785AbhDQSDe (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 17 Apr 2021 14:03:34 -0400
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1618682587; h=Date: Message-Id: Cc: To: References:
- In-Reply-To: From: Subject: Content-Transfer-Encoding: MIME-Version:
- Content-Type: Sender; bh=77ncJEjRfMK0yVYGlnmMGSY/bUO7A8hdb0Dlgldpm4s=;
- b=jm6ahmR23Y83gVu5OnxT9YFyHNm7c3i37z6KiuE9cYOoCm8u/eO0QZ8C0Rns9nGIRWLCqIbB
- EgiJc5sGhLT454+ehSporeaoeGhGNF8g2+v/Lz9I5f+FBjdhFPNRQ5ub7fu8A9DMZ/+C/pnY
- +PNM7xjyA8lib8in7rJTruhvjNk=
-X-Mailgun-Sending-Ip: 69.72.43.7
-X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
-Received: from smtp.codeaurora.org
- (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
- smtp-out-n03.prod.us-west-2.postgun.com with SMTP id
- 607b22cde0e9c9a6b6cc6ed1 (version=TLS1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Sat, 17 Apr 2021 18:02:53
- GMT
-Sender: kvalo=codeaurora.org@mg.codeaurora.org
-Received: by smtp.codeaurora.org (Postfix, from userid 1001)
-        id AEB97C4338A; Sat, 17 Apr 2021 18:02:53 +0000 (UTC)
-X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
-        aws-us-west-2-caf-mail-1.web.codeaurora.org
-X-Spam-Level: 
-X-Spam-Status: No, score=-1.0 required=2.0 tests=ALL_TRUSTED,BAYES_00,
-        MISSING_DATE,MISSING_MID,SPF_FAIL,URIBL_BLOCKED autolearn=no
-        autolearn_force=no version=3.4.0
-Received: from potku.adurom.net (88-114-240-156.elisa-laajakaista.fi [88.114.240.156])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        (Authenticated sender: kvalo)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id F0C74C433D3;
-        Sat, 17 Apr 2021 18:02:49 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org F0C74C433D3
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=fail smtp.mailfrom=kvalo@codeaurora.org
-Content-Type: text/plain; charset="utf-8"
+        id S236718AbhDQSIi (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 17 Apr 2021 14:08:38 -0400
+Received: from MUA
+        by vps-vb.mhejs.net with esmtps (TLS1.2:ECDHE-RSA-AES128-GCM-SHA256:128)
+        (Exim 4.93.0.4)
+        (envelope-from <mail@maciej.szmigiero.name>)
+        id 1lXpMM-000279-2d; Sat, 17 Apr 2021 20:07:58 +0200
+From:   "Maciej S. Szmigiero" <mail@maciej.szmigiero.name>
+To:     Pkshih <pkshih@realtek.com>
+Cc:     "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "johannes@sipsolutions.net" <johannes@sipsolutions.net>,
+        "kvalo@codeaurora.org" <kvalo@codeaurora.org>,
+        Larry Finger <Larry.Finger@lwfinger.net>
+References: <e2924d81-0e30-2dd0-292b-428fea199484@maciej.szmigiero.name>
+ <846f6166-c570-01fc-6bbc-3e3b44e51327@maciej.szmigiero.name>
+ <87r1jnohq6.fsf@codeaurora.org>
+ <8e0434eb-d15f-065d-2ba7-b50c67877112@maciej.szmigiero.name>
+ <a2003668-5108-27b9-95cd-9e1d5d1aa94d@lwfinger.net>
+ <1617763692.9857.7.camel@realtek.com>
+ <1dc7e487-b97b-8584-47f7-37f3385c7bf9@lwfinger.net>
+ <15737dcf-95ac-1ce6-a681-94ff5db968e4@maciej.szmigiero.name>
+ <c5556a207c5c40ac849c6a0e1919baca@realtek.com>
+ <220c4fe4-c9e1-347a-8cef-cd91d31c56df@maciej.szmigiero.name>
+Subject: Re: rtlwifi/rtl8192cu AP mode broken with PS STA
+Message-ID: <cfcc2988-3f20-3588-2f76-f04d09043811@maciej.szmigiero.name>
+Date:   Sat, 17 Apr 2021 20:07:52 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.9.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Subject: Re: [PATCH net-next] airo: work around stack usage warning
-From:   Kalle Valo <kvalo@codeaurora.org>
-In-Reply-To: <20210323131634.2669455-1-arnd@kernel.org>
-References: <20210323131634.2669455-1-arnd@kernel.org>
-To:     Arnd Bergmann <arnd@kernel.org>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Kieran Bingham <kieran.bingham+renesas@ideasonboard.com>,
-        Lee Jones <lee.jones@linaro.org>,
-        Vaibhav Gupta <vaibhavgupta40@gmail.com>,
-        Tom Rix <trix@redhat.com>,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-User-Agent: pwcli/0.1.0-git (https://github.com/kvalo/pwcli/) Python/3.5.2
-Message-Id: <20210417180253.AEB97C4338A@smtp.codeaurora.org>
-Date:   Sat, 17 Apr 2021 18:02:53 +0000 (UTC)
+In-Reply-To: <220c4fe4-c9e1-347a-8cef-cd91d31c56df@maciej.szmigiero.name>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Arnd Bergmann <arnd@kernel.org> wrote:
-
-> From: Arnd Bergmann <arnd@arndb.de>
+On 08.04.2021 21:04, Maciej S. Szmigiero wrote:
+> On 08.04.2021 06:42, Pkshih wrote:
+>>> -----Original Message-----
+>>> From: Maciej S. Szmigiero [mailto:mail@maciej.szmigiero.name]
+>>> Sent: Thursday, April 08, 2021 4:53 AM
+>>> To: Larry Finger; Pkshih
+>>> Cc: linux-wireless@vger.kernel.org; netdev@vger.kernel.org; linux-kernel@vger.kernel.org;
+>>> johannes@sipsolutions.net; kvalo@codeaurora.org
+>>> Subject: Re: rtlwifi/rtl8192cu AP mode broken with PS STA
+>>>
+> (...)
+>>>> Maceij,
+>>>>
+>>>> Does this patch fix the problem?
+>>>
+>>> The beacon seems to be updating now and STAs no longer get stuck in PS
+>>> mode.
+>>> Although sometimes (every 2-3 minutes with continuous 1s interval pings)
+>>> there is around 5s delay in updating the transmitted beacon - don't know
+>>> why, maybe the NIC hardware still has the old version in queue?
+>>
+>> Since USB device doesn't update every beacon, dtim_count isn't updated neither.
+>> It leads STA doesn't awake properly. Please try to fix dtim_period=1 in
+>> hostapd.conf, which tells STA awakes every beacon interval.
 > 
-> gcc-11 with KASAN on 32-bit arm produces a warning about a function
-> that needs a lot of stack space:
+> The situation is the same with dtim_period=1.
 > 
-> drivers/net/wireless/cisco/airo.c: In function 'setup_card.constprop':
-> drivers/net/wireless/cisco/airo.c:3960:1: error: the frame size of 1512 bytes is larger than 1400 bytes [-Werror=frame-larger-than=]
-> 
-> Most of this is from a single large structure that could be dynamically
-> allocated or moved into the per-device structure.  However, as the callers
-> all seem to have a fairly well bounded call chain, the easiest change
-> is to pull out the part of the function that needs the large variables
-> into a separate function and mark that as noinline_for_stack. This does
-> not reduce the total stack usage, but it gets rid of the warning and
-> requires minimal changes otherwise.
-> 
-> Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+(...)
 
-Patch applied to wireless-drivers-next.git, thanks.
+Ping-Ke,
+are you going to submit your set_tim() patch so at least the AP mode is
+usable with PS STAs or are you waiting for a solution to the delayed
+beacon update issue?
 
-7909a590eba6 airo: work around stack usage warning
-
--- 
-https://patchwork.kernel.org/project/linux-wireless/patch/20210323131634.2669455-1-arnd@kernel.org/
-
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
-
+Thanks,
+Maciej
