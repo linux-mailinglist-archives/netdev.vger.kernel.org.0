@@ -2,64 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6491F363295
-	for <lists+netdev@lfdr.de>; Sun, 18 Apr 2021 00:45:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7C82B3632A9
+	for <lists+netdev@lfdr.de>; Sun, 18 Apr 2021 01:36:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237127AbhDQWqD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 17 Apr 2021 18:46:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40910 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235439AbhDQWqD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 17 Apr 2021 18:46:03 -0400
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0BD02C06174A;
-        Sat, 17 Apr 2021 15:45:36 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=tPQBiu2Bdtxs3AC+E5Cm2VSUt8tWo9GnLe6NW3THH9A=; b=XkP7ELYUdkWzIzouAO8xPq8S7N
-        GjhLlDfD3y6VNei69ths2oEltTt7VNjkaFD3kWa5YfSrMcxcQ1iVWUb/gASCBUMnk26hTvxsGcZHP
-        LmMVlNo9qjiA2rXreK8yWQYyX7o6/OtiLfYOaaN9A6kBfQL7H7z+dojys6K1K5C4Hlo6Q1BwKfx6v
-        3VOY2eaj9oDYuG2iFBRZJwiloByx98Wd7tPgW2ms6UJEbSMnemsL/vRvgFUw9tA9idCrdgpWi2l75
-        pWbZSIdmfWoFb2mq+sdPpyKhbcnM/fMhIc2cA/kjhWA/hgymZC/OH2xGJGRDdWwwZOxlXZFOO//LW
-        H9eSAzQw==;
-Received: from willy by casper.infradead.org with local (Exim 4.94 #2 (Red Hat Linux))
-        id 1lXtgp-00BmXi-PV; Sat, 17 Apr 2021 22:45:26 +0000
-Date:   Sat, 17 Apr 2021 23:45:23 +0100
-From:   Matthew Wilcox <willy@infradead.org>
-To:     David Laight <David.Laight@aculab.com>
-Cc:     "brouer@redhat.com" <brouer@redhat.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-mm@kvack.org" <linux-mm@kvack.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>,
-        "linux-mips@vger.kernel.org" <linux-mips@vger.kernel.org>,
-        "ilias.apalodimas@linaro.org" <ilias.apalodimas@linaro.org>,
-        "mcroce@linux.microsoft.com" <mcroce@linux.microsoft.com>,
-        "grygorii.strashko@ti.com" <grygorii.strashko@ti.com>,
-        "arnd@kernel.org" <arnd@kernel.org>, "hch@lst.de" <hch@lst.de>,
-        "linux-snps-arc@lists.infradead.org" 
-        <linux-snps-arc@lists.infradead.org>,
-        "mhocko@kernel.org" <mhocko@kernel.org>,
-        "mgorman@suse.de" <mgorman@suse.de>
-Subject: Re: [PATCH 1/2] mm: Fix struct page layout on 32-bit systems
-Message-ID: <20210417224523.GU2531743@casper.infradead.org>
-References: <20210416230724.2519198-1-willy@infradead.org>
- <20210416230724.2519198-2-willy@infradead.org>
- <20210417024522.GP2531743@casper.infradead.org>
- <386d009232dc42bdaf83d4cc36b13864@AcuMS.aculab.com>
+        id S231277AbhDQXhK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 17 Apr 2021 19:37:10 -0400
+Received: from smtp.uniroma2.it ([160.80.6.16]:44328 "EHLO smtp.uniroma2.it"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229865AbhDQXhJ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 17 Apr 2021 19:37:09 -0400
+Received: from webmail.uniroma2.it (webmail.uniroma2.it [160.80.1.162])
+        by smtp-2015.uniroma2.it (8.14.4/8.14.4/Debian-8) with ESMTP id 13HNaPnR009227
+        (version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
+        Sun, 18 Apr 2021 01:36:30 +0200
+Received: from [160.80.103.126] ([160.80.103.126]) by webmail.uniroma2.it
+ (Horde Framework) with HTTPS; Sun, 18 Apr 2021 01:36:22 +0200
+Date:   Sun, 18 Apr 2021 01:36:22 +0200
+Message-ID: <20210418013622.Horde.YlORJ7iYejhVF1yzgb2Eahq@webmail.uniroma2.it>
+From:   Paolo Lungaroni <paolo.lungaroni@uniroma2.it>
+To:     Stephen Hemminger <stephen@networkplumber.org>
+Cc:     David Ahern <dsahern@kernel.org>, netdev@vger.kernel.org,
+        Jakub Kicinski <kuba@kernel.org>,
+        Stefano Salsano <stefano.salsano@uniroma2.it>,
+        Ahmed Abdelsalam <ahabdels.dev@gmail.com>,
+        Andrea Mayer <andrea.mayer@uniroma2.it>,
+        Paolo Lungaroni <paolo.lungaroni@uniroma2.it>
+Subject: Re: [RFC iproute2-next v2] seg6: add counters support for SRv6
+ Behaviors
+References: <20210415180643.3511-1-paolo.lungaroni@uniroma2.it>
+ <20210415142311.4e43a637@hermes.local>
+In-Reply-To: <20210415142311.4e43a637@hermes.local>
+User-Agent: Horde Application Framework 5
+Content-Type: text/plain; charset=utf-8; format=flowed; DelSp=Yes
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <386d009232dc42bdaf83d4cc36b13864@AcuMS.aculab.com>
+X-Virus-Scanned: clamav-milter 0.100.0 at smtp-2015
+X-Virus-Status: Clean
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Apr 17, 2021 at 09:18:57PM +0000, David Laight wrote:
-> Ugly as well.
+Quoting Stephen Hemminger <stephen@networkplumber.org>:
 
-Thank you for expressing your opinion.  Again.
+> On Thu, 15 Apr 2021 20:06:43 +0200
+> Paolo Lungaroni <paolo.lungaroni@uniroma2.it> wrote:
+>
+>> +	if (is_json_context())
+>> +		open_json_object("stats64");
+>> +
+>> +	if (tb[SEG6_LOCAL_CNT_PACKETS]) {
+>> +		packets = rta_getattr_u64(tb[SEG6_LOCAL_CNT_PACKETS]);
+>> +		if (is_json_context()) {
+>> +			print_u64(PRINT_JSON, "packets", NULL, packets);
+>> +		} else {
+>> +			print_string(PRINT_FP, NULL, "%s ", "packets");
+>> +			print_num(fp, 1, packets);
+>> +		}
+>> +	}
+>> +
+>> +	if (tb[SEG6_LOCAL_CNT_BYTES]) {
+>> +		bytes = rta_getattr_u64(tb[SEG6_LOCAL_CNT_BYTES]);
+>> +		if (is_json_context()) {
+>> +			print_u64(PRINT_JSON, "bytes", NULL, bytes);
+>> +		} else {
+>> +			print_string(PRINT_FP, NULL, "%s ", "bytes");
+>> +			print_num(fp, 1, bytes);
+>> +		}
+>> +	}
+>> +
+>> +	if (tb[SEG6_LOCAL_CNT_ERRORS]) {
+>> +		errors = rta_getattr_u64(tb[SEG6_LOCAL_CNT_ERRORS]);
+>> +		if (is_json_context()) {
+>> +			print_u64(PRINT_JSON, "errors", NULL, errors);
+>> +		} else {
+>> +			print_string(PRINT_FP, NULL, "%s ", "errors");
+>> +			print_num(fp, 1, errors);
+>> +		}
+>> +	}
+>> +
+>> +	if (is_json_context())
+>> +		close_json_object();
+>
+>
+> The code would be cleaner with doing if (is_json_context()) once at  
+> outer loop.
+> See print_vf_stats64.
+
+Hi Stephen,
+
+thank you for your suggestion. We will change the code as you suggest.
+
+Paolo.
+
+
+
