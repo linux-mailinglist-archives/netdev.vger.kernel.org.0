@@ -2,78 +2,75 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0FB4136322E
-	for <lists+netdev@lfdr.de>; Sat, 17 Apr 2021 22:10:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C8590363234
+	for <lists+netdev@lfdr.de>; Sat, 17 Apr 2021 22:23:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237014AbhDQULI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 17 Apr 2021 16:11:08 -0400
-Received: from mx2.suse.de ([195.135.220.15]:41904 "EHLO mx2.suse.de"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S236491AbhDQULH (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 17 Apr 2021 16:11:07 -0400
-X-Virus-Scanned: by amavisd-new at test-mx.suse.de
-Received: from relay2.suse.de (unknown [195.135.221.27])
-        by mx2.suse.de (Postfix) with ESMTP id BB38DB306;
-        Sat, 17 Apr 2021 20:10:39 +0000 (UTC)
-Received: by lion.mk-sys.cz (Postfix, from userid 1000)
-        id 5D86A607B3; Sat, 17 Apr 2021 22:10:39 +0200 (CEST)
-Date:   Sat, 17 Apr 2021 22:10:39 +0200
-From:   Michal Kubecek <mkubecek@suse.cz>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Ido Schimmel <idosch@idosch.org>, netdev@vger.kernel.org,
-        davem@davemloft.net, andrew@lunn.ch, idosch@nvidia.com,
-        saeedm@nvidia.com, michael.chan@broadcom.com
-Subject: Re: [PATCH net-next v2 3/9] ethtool: add a new command for reading
- standard stats
-Message-ID: <20210417201039.5ypk7efz7f57mowe@lion.mk-sys.cz>
-References: <20210416192745.2851044-1-kuba@kernel.org>
- <20210416192745.2851044-4-kuba@kernel.org>
- <YHsXnzqVDjL9Q0Bz@shredder.lan>
- <20210417105742.76bb2461@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <20210417111351.27c54b99@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <YHsutM6vesbQq+Ju@shredder.lan>
- <20210417121520.242b0c14@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <20210417121808.593e221d@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        id S237017AbhDQUX0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 17 Apr 2021 16:23:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38720 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S236491AbhDQUXZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 17 Apr 2021 16:23:25 -0400
+Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E1CCBC061574;
+        Sat, 17 Apr 2021 13:22:58 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=BnSKcc0JSuohlN33+Pj8bhxKsI7DT+Owp2PFJxUm9vg=; b=OEMC9XOgR/fKU/0oPNUu/P7cCL
+        FT4t01GafWZlc1vjwl9KSjRt1IY8zFxgga7gHLRR+WCKupSKq6t9mxOaZIZufePDNN7mCVh1kH9jR
+        F0u0g7a9CwiXrlGEHglrLCjcUmY6riPVWU0Qfcwq6bjvHqJmgaIV9kM3woRxgGCelw9NDnFMhLDTu
+        ddS052/dNjJg/5EC844nFoPlje4sglQZ/dDMtCOaSHxgsq/MS3GcQFiMjlzkT3lk3nRsLRtoZo+VR
+        X2xbTp+70dqUigqbpfzkNLRorcOijpiu4WZdd3t8LIzJQrj1saQRlw3+7gG/AlVzE/uFz4w1OL3ap
+        wbKEi5/Q==;
+Received: from willy by casper.infradead.org with local (Exim 4.94 #2 (Red Hat Linux))
+        id 1lXrSi-00Belm-JF; Sat, 17 Apr 2021 20:22:44 +0000
+Date:   Sat, 17 Apr 2021 21:22:40 +0100
+From:   Matthew Wilcox <willy@infradead.org>
+To:     Ilias Apalodimas <ilias.apalodimas@linaro.org>
+Cc:     brouer@redhat.com, linux-kernel@vger.kernel.org,
+        linux-mm@kvack.org, netdev@vger.kernel.org,
+        linuxppc-dev@lists.ozlabs.org,
+        linux-arm-kernel@lists.infradead.org, linux-mips@vger.kernel.org,
+        mcroce@linux.microsoft.com, grygorii.strashko@ti.com,
+        arnd@kernel.org, hch@lst.de, linux-snps-arc@lists.infradead.org,
+        mhocko@kernel.org, mgorman@suse.de
+Subject: Re: [PATCH 1/2] mm: Fix struct page layout on 32-bit systems
+Message-ID: <20210417202240.GS2531743@casper.infradead.org>
+References: <20210416230724.2519198-1-willy@infradead.org>
+ <20210416230724.2519198-2-willy@infradead.org>
+ <20210417024522.GP2531743@casper.infradead.org>
+ <YHspptFx+T588KcG@apalos.home>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20210417121808.593e221d@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <YHspptFx+T588KcG@apalos.home>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Apr 17, 2021 at 12:18:08PM -0700, Jakub Kicinski wrote:
-> On Sat, 17 Apr 2021 12:15:20 -0700 Jakub Kicinski wrote:
-> > On Sat, 17 Apr 2021 21:53:40 +0300 Ido Schimmel wrote:
-> > > On Sat, Apr 17, 2021 at 11:13:51AM -0700, Jakub Kicinski wrote:  
-> > > > On Sat, 17 Apr 2021 10:57:42 -0700 Jakub Kicinski wrote:    
-> > > >
-> > > > FWIW ethnl_parse_bit() -> ETHTOOL_A_BITSET_BIT_NAME
-> > > > User space can also use raw flags like --groups 0xf but that's perhaps
-> > > > too spartan for serious use.    
-> > > 
-> > > So the kernel can work with ETHTOOL_A_BITSET_BIT_INDEX /
-> > > ETHTOOL_A_BITSET_BIT_NAME, but I was wondering if using ethtool binary
-> > > we can query the strings that the kernel will accept. I think not?  
+On Sat, Apr 17, 2021 at 09:32:06PM +0300, Ilias Apalodimas wrote:
+> > +static inline void page_pool_set_dma_addr(struct page *page, dma_addr_t addr)
+> > +{
+> > +	page->dma_addr[0] = addr;
+> > +	if (sizeof(dma_addr_t) > sizeof(unsigned long))
+> > +		page->dma_addr[1] = addr >> 16 >> 16;
 > 
-> Heh, I misunderstood your question. You're asking if the strings can be
-> queried from the command line.
-> 
-> No, I don't think so. We could add some form of "porcelain" command if
-> needed.
+> The 'error' that was reported will never trigger right?
+> I assume this was compiled with dma_addr_t as 32bits (so it triggered the
+> compilation error), but the if check will never allow this codepath to run.
+> If so can we add a comment explaining this, since none of us will remember why
+> in 6 months from now?
 
-We don't have such command but I think it would be useful. After all, as
-you pointed out, the request is already implemented at UAPI level so all
-we need is to make it available to user.
+That's right.  I compiled it all three ways -- 32-bit, 64-bit dma, 32-bit long
+and 64-bit.  The 32/64 bit case turn into:
 
-The syntax will be a bit tricky as some string sets are global and some
-per device. Out of
+	if (0)
+		page->dma_addr[1] = addr >> 16 >> 16;
 
-    ethtool --show-strings [devname] <setname>
-    ethtool --show-strings [devname] set <setname>
-    ethtool --show-strings <setname> [dev <devname>]
+which gets elided.  So the only case that has to work is 64-bit dma and
+32-bit long.
 
-the third seems nicest but also least consistent with the rest of
-ethtool command line syntax. So probably one of the first two.
+I can replace this with upper_32_bits().
 
-Michal
