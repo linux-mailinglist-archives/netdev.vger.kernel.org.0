@@ -2,57 +2,41 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A8C18362F64
-	for <lists+netdev@lfdr.de>; Sat, 17 Apr 2021 12:59:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DE09F362F70
+	for <lists+netdev@lfdr.de>; Sat, 17 Apr 2021 13:09:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236104AbhDQK7o convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Sat, 17 Apr 2021 06:59:44 -0400
-Received: from eu-smtp-delivery-151.mimecast.com ([185.58.86.151]:21505 "EHLO
+        id S236156AbhDQLI0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 17 Apr 2021 07:08:26 -0400
+Received: from eu-smtp-delivery-151.mimecast.com ([185.58.85.151]:60270 "EHLO
         eu-smtp-delivery-151.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S229972AbhDQK7l (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 17 Apr 2021 06:59:41 -0400
+        by vger.kernel.org with ESMTP id S231387AbhDQLIZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 17 Apr 2021 07:08:25 -0400
 Received: from AcuMS.aculab.com (156.67.243.121 [156.67.243.121]) (Using
  TLS) by relay.mimecast.com with ESMTP id
- uk-mta-153-fX_eEiD9OBC36ZMNcm5hsg-1; Sat, 17 Apr 2021 11:59:11 +0100
-X-MC-Unique: fX_eEiD9OBC36ZMNcm5hsg-1
+ uk-mta-132-1PxD-uwUOW6uWGpjQasDMA-1; Sat, 17 Apr 2021 12:07:56 +0100
+X-MC-Unique: 1PxD-uwUOW6uWGpjQasDMA-1
 Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) by
  AcuMS.aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) with Microsoft SMTP
- Server (TLS) id 15.0.1497.2; Sat, 17 Apr 2021 11:59:10 +0100
+ Server (TLS) id 15.0.1497.2; Sat, 17 Apr 2021 12:07:55 +0100
 Received: from AcuMS.Aculab.com ([fe80::994c:f5c2:35d6:9b65]) by
  AcuMS.aculab.com ([fe80::994c:f5c2:35d6:9b65%12]) with mapi id
- 15.00.1497.015; Sat, 17 Apr 2021 11:59:10 +0100
+ 15.00.1497.015; Sat, 17 Apr 2021 12:07:55 +0100
 From:   David Laight <David.Laight@ACULAB.COM>
-To:     'Matthew Wilcox' <willy@infradead.org>,
-        Jesper Dangaard Brouer <brouer@redhat.com>
-CC:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-mm@kvack.org" <linux-mm@kvack.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>,
-        "linux-mips@vger.kernel.org" <linux-mips@vger.kernel.org>,
-        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
-        Matteo Croce <mcroce@linux.microsoft.com>,
-        Grygorii Strashko <grygorii.strashko@ti.com>,
-        Arnd Bergmann <arnd@kernel.org>,
-        "Christoph Hellwig" <hch@lst.de>
-Subject: RE: [PATCH 1/1] mm: Fix struct page layout on 32-bit systems
-Thread-Topic: [PATCH 1/1] mm: Fix struct page layout on 32-bit systems
-Thread-Index: AQHXMXYmwdfrgigLI0exh4xFUSZq9Kq0jZ3ggAK59KGAAUYTcA==
-Date:   Sat, 17 Apr 2021 10:59:09 +0000
-Message-ID: <a9db4abd89624c698e86a527b93efbf6@AcuMS.aculab.com>
-References: <20210410205246.507048-2-willy@infradead.org>
- <20210411114307.5087f958@carbon>
- <20210411103318.GC2531743@casper.infradead.org>
- <20210412011532.GG2531743@casper.infradead.org>
- <20210414101044.19da09df@carbon>
- <20210414115052.GS2531743@casper.infradead.org>
- <20210414211322.3799afd4@carbon>
- <20210414213556.GY2531743@casper.infradead.org>
- <a50c3156fe8943ef964db4345344862f@AcuMS.aculab.com>
- <20210415200832.32796445@carbon>
- <20210416152755.GL2531743@casper.infradead.org>
-In-Reply-To: <20210416152755.GL2531743@casper.infradead.org>
+To:     'Matteo Croce' <mcroce@linux.microsoft.com>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Julia Lawall <julia.lawall@inria.fr>
+Subject: RE: [PATCH net-next v2 0/3] introduce skb_for_each_frag()
+Thread-Topic: [PATCH net-next v2 0/3] introduce skb_for_each_frag()
+Thread-Index: AQHXLzQg5WXC8qIcg0CtZzWZRcsCQaqyElmAgAWifgCAAN7iIA==
+Date:   Sat, 17 Apr 2021 11:07:55 +0000
+Message-ID: <3a3c006cc1c644fd8e2fe791dba5139a@AcuMS.aculab.com>
+References: <20210412003802.51613-1-mcroce@linux.microsoft.com>
+ <75045c087db24b6e87b7ed14aa5a721c@AcuMS.aculab.com>
+ <CAFnufp12=8pDo-GP6BwH72YiH5C9GXOY8Me=xsFo7=+hvfujaQ@mail.gmail.com>
+In-Reply-To: <CAFnufp12=8pDo-GP6BwH72YiH5C9GXOY8Me=xsFo7=+hvfujaQ@mail.gmail.com>
 Accept-Language: en-GB, en-US
 X-MS-Has-Attach: 
 X-MS-TNEF-Correlator: 
@@ -65,42 +49,35 @@ X-Mimecast-Spam-Score: 0
 X-Mimecast-Originator: aculab.com
 Content-Language: en-US
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8BIT
+Content-Transfer-Encoding: base64
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Matthew Wilcox
-> Sent: 16 April 2021 16:28
-> 
-> On Thu, Apr 15, 2021 at 08:08:32PM +0200, Jesper Dangaard Brouer wrote:
-> > See below patch.  Where I swap32 the dma address to satisfy
-> > page->compound having bit zero cleared. (It is the simplest fix I could
-> > come up with).
-> 
-> I think this is slightly simpler, and as a bonus code that assumes the
-> old layout won't compile.
-
-Always a good plan.
-
-...
->  static inline dma_addr_t page_pool_get_dma_addr(struct page *page)
->  {
-> -	return page->dma_addr;
-> +	dma_addr_t ret = page->dma_addr[0];
-> +	if (sizeof(dma_addr_t) > sizeof(unsigned long))
-> +		ret |= (dma_addr_t)page->dma_addr[1] << 32;
-> +	return ret;
-> +}
-
-Won't some compiler/option combinations generate an
-error for the '<< 32' when dma_addr_t is 32bit?
-
-You might need to use a (u64) cast.
-
-	David
-
--
-Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
-Registration No: 1397386 (Wales)
+RnJvbTogTWF0dGVvIENyb2NlDQo+IFNlbnQ6IDE2IEFwcmlsIDIwMjEgMjM6NDQNCi4uLg0KPiA+
+IEEgbW9yZSBpbnRlcmVzdGluZyBjaGFuZ2Ugd291bGQgYmUgc29tZXRoaW5nIHRoYXQgZ2VuZXJh
+dGVkOg0KPiA+ICAgICAgICAgdW5zaWduZWQgaW50IG5yX2ZyYWdzID0gc2tiX3NoaW5mbyhza2Ip
+LT5ucl9mcmFnczsNCj4gPiAgICAgICAgIGZvciAoaSA9IDA7IGkgPCBucl9mcmFnczsgaSsrKSB7
+DQo+ID4gc2luY2UgdGhhdCB3aWxsIHJ1biBmYXN0ZXIgZm9yIG1vc3QgbG9vcHMuDQo+ID4gQnV0
+IHRoYXQgaXMgfmltcG9zc2libGUgdG8gZG8gc2luY2UgeW91IGNhbid0IGRlY2xhcmUNCj4gPiB2
+YXJpYWJsZXMgaW5zaWRlIHRoZSAoLi4uKSB0aGF0IGFyZSBzY29wZWQgdG8gdGhlIGxvb3AuDQo+
+ID4NCj4gDQo+IEkgZG9uJ3Qga25vdyBob3cgdG8gZG8gaXQgd2l0aCBDOTAuDQo+IEl0IHdvdWxk
+IGJlIG5pY2UgdG8gaGF2ZSBhIHN3aXRjaCB0byBqdXN0IGFsbG93IGRlY2xhcmF0aW9uIG9mDQo+
+IHZhcmlhYmxlcyBpbnNpZGUgdGhlICguLi4pIGluc3RlYWQgb2YgZW5hYmxpbmcgdGhlIGZ1bGwg
+Qzk5IGxhbmd1YWdlDQo+IHdoaWNoLCBhcyBMaW51cyBzYWlkWzFdLCBhbGxvd3MgdGhlIGluc2Fu
+ZSBtaXhpbmcgb2YgdmFyaWFibGVzIGFuZA0KPiBjb2RlLg0KPiANCj4gWzFdIGh0dHBzOi8vbG9y
+ZS5rZXJuZWwub3JnL2xrbWwvQ0ErNTVhRnpzPUR1WWliV1lNVUZpVV9SMWFKSEFyLThocFFoV0xl
+dzhSNXE0bkNEcmFRQG1haWwuZ21haWwuY29tLw0KDQpRdW90aW5nIExpbnVzOg0KDQo+IEkgKmxp
+a2UqIGdldHRpbmcgd2FybmluZ3MgZm9yIGNvbmZ1c2VkIHBlb3BsZSB3aG8gc3RhcnQgaW50cm9k
+dWNpbmcNCj4gdmFyaWFibGVzIGluIHRoZSBtaWRkbGUgb2YgYmxvY2tzIG9mIGNvZGUuIFRoYXQn
+cyBub3Qgd2VsbC1jb250YWluZWQNCj4gbGlrZSB0aGUgbG9vcCB2YXJpYWJsZS4NCg0KVGhlIHJl
+YWxseSBzdHVwaWQgcGFydCBvZiBDOTkgaXMgdGhhdCBzdWNoIHZhcmlhYmxlcyBjYW4gYWxpYXMN
+Cm9uZXMgaW4gYW4gb3V0ZXIgYmxvY2suDQpBbGlhc2VkIGRlZmluaXRpb25zIGFyZSBiYWQgZW5v
+dWdoIGF0IHRoZSBiZXN0IG9mIHRpbWVzLg0KTWFrZXMgaXQgdmVyeSBlYXN5IHRvIG1pc3MgdGhl
+IGNvcnJlY3QgZGVmaW5pdGlvbiB3aGVuIHJlYWRpbmcgY29kZS4NCg0KSSBtdWNoIHByZWZlciBs
+b2NhbCB2YXJpYWJsZXMgdG8gZWl0aGVyIGZ1bmN0aW9uIHNjb3BlIG9yIGJlDQpkZWZpbmVkIGZv
+ciB2ZXJ5IGxvY2FsIHVzZSBhdCB0aGUgdG9wIG9mIGEgdmVyeSBzbWFsbCBibG9jay4NCg0KCURh
+dmlkDQoNCi0NClJlZ2lzdGVyZWQgQWRkcmVzcyBMYWtlc2lkZSwgQnJhbWxleSBSb2FkLCBNb3Vu
+dCBGYXJtLCBNaWx0b24gS2V5bmVzLCBNSzEgMVBULCBVSw0KUmVnaXN0cmF0aW9uIE5vOiAxMzk3
+Mzg2IChXYWxlcykNCg==
 
