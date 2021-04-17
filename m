@@ -2,598 +2,132 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3CDBE3631C9
-	for <lists+netdev@lfdr.de>; Sat, 17 Apr 2021 20:16:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8F3033631D0
+	for <lists+netdev@lfdr.de>; Sat, 17 Apr 2021 20:30:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236877AbhDQSQg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 17 Apr 2021 14:16:36 -0400
-Received: from out1-smtp.messagingengine.com ([66.111.4.25]:54395 "EHLO
-        out1-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S236759AbhDQSQ2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 17 Apr 2021 14:16:28 -0400
-Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-        by mailout.nyi.internal (Postfix) with ESMTP id D8C895C02E6;
-        Sat, 17 Apr 2021 14:14:45 -0400 (EDT)
-Received: from mailfrontend2 ([10.202.2.163])
-  by compute3.internal (MEProxy); Sat, 17 Apr 2021 14:14:45 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:content-type:date:from:in-reply-to
-        :message-id:mime-version:references:subject:to:x-me-proxy
-        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm2; bh=urr5kO
-        niuOe6vxSEveznXHXPYa6pkAX49TBWUDwNOmA=; b=QaMAqv3hNrnxZU5cYHdntD
-        gPLkLGaw/BUh/oWBLjw+yHr9TvxUa7WbRIgXlMpCENn15/tSAFGRCGa5a1G9AVtw
-        1BRJwYa9YNiklxCsbrV054RlFMcjg2+uyHPSGKuSAK4HFDJtV9Bwq3ZTOOMKWNzT
-        bx/qmuZ8FGccQxOL1b52RyyfGnlsHMEH4Ee5ioW1/Etp5OGBhRnZ7HvixsJgv3SI
-        yFSm4CGztOxMRQPYPRsNNHlXSt5Igy954UHJPBg4YGa6mFyqYNT5/q3oa3zdRNRn
-        TvHZ8SaRZZu7WKzq+fA7DA1suwQ9coIZnba/DgKPvLKS7FnykhrYO1w/z3pot/Sw
-        ==
-X-ME-Sender: <xms:lSV7YJZGMdUh5Bg0hv_0VPow7QSJJZ5zj9_GQ9u7NReBT-akix7Qtw>
-    <xme:lSV7YAbuo3msGNs4w1372k0nzJ-35fWSqo-R06hV7FbF8fhUMr7hsV7En4fN3SysD
-    7K_ZmaTuMUBaR4>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduledrudeliedgvdehvdcutefuodetggdotefrod
-    ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfgh
-    necuuegrihhlohhuthemuceftddtnecunecujfgurhepfffhvffukfhfgggtuggjsehttd
-    ertddttddvnecuhfhrohhmpefkughoucfutghhihhmmhgvlhcuoehiughoshgthhesihgu
-    ohhstghhrdhorhhgqeenucggtffrrghtthgvrhhnpedtffekkeefudffveegueejffejhf
-    etgfeuuefgvedtieehudeuueekhfduheelteenucfkphepkeegrddvvdelrdduheefrddu
-    keejnecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomhepih
-    guohhstghhsehiughoshgthhdrohhrgh
-X-ME-Proxy: <xmx:lSV7YL8UjqtbHsc1bqVp0kr91jXWTXy5WJqdncfR83croLBonwJjwg>
-    <xmx:lSV7YHrbGbkuzfW2kv28J3XZPt9UIBWLwsEhlhl6zzE1L2h_TOrfAg>
-    <xmx:lSV7YErT7We5PdIlxxujDyQNgZE_WJ2NeWmCrF4bEyNY7qLdt6rZMQ>
-    <xmx:lSV7YLRqGyXP1UOQPfL6_ce0iD_r_A2azvilt0BIiQ6RilXNK4cZMg>
-Received: from localhost (igld-84-229-153-187.inter.net.il [84.229.153.187])
-        by mail.messagingengine.com (Postfix) with ESMTPA id 097331080057;
-        Sat, 17 Apr 2021 14:14:44 -0400 (EDT)
-Date:   Sat, 17 Apr 2021 21:14:40 +0300
-From:   Ido Schimmel <idosch@idosch.org>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, idosch@nvidia.com, mkubecek@suse.cz
-Subject: Re: [RFC ethtool 6/6] netlink: add support for standard stats
-Message-ID: <YHslkLKkb825OUEI@shredder.lan>
-References: <20210416160252.2830567-1-kuba@kernel.org>
- <20210416160252.2830567-7-kuba@kernel.org>
+        id S236917AbhDQSaV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 17 Apr 2021 14:30:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42798 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S236785AbhDQSaU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 17 Apr 2021 14:30:20 -0400
+Received: from mail-qk1-x734.google.com (mail-qk1-x734.google.com [IPv6:2607:f8b0:4864:20::734])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8DBB1C061574;
+        Sat, 17 Apr 2021 11:29:53 -0700 (PDT)
+Received: by mail-qk1-x734.google.com with SMTP id d15so19193334qkc.9;
+        Sat, 17 Apr 2021 11:29:53 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:subject:to:cc:references:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=n55pdEuyvRot9EGscePhvs8MONc424RNPjUKuPjJvuk=;
+        b=Tl3TeJOTi7czS6J/XHJFRBhWWjaulDh8YRiXbtjYKsDQURZUtdKha+NU8ahIZ6KnWj
+         nYoQsGq/ToCX2i9NttTbVir/rqB5t5A9nSbxTnPliuZSnqEpabnOz68QIIpppzoXHVab
+         SOxKS6b5xV8YG7q+tchfWo+5AAytrI1tWrYmoDRLTRQyCe1N94br+Vr8IyDVd9nA4qz3
+         WxAtV4aNuIBLtIJ1v1Q96xwcyuiOYM/I6R1IkaigJi3DrJrZyw/kG0ke8E7Nvq0xQpvZ
+         aLkPm0KXotlGLG/Rc+YulMw7zOXa/gfBW+hP4hoKVM+DldzPHPgeTaQbQmdD06zpgUQQ
+         iVOQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:subject:to:cc:references:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=n55pdEuyvRot9EGscePhvs8MONc424RNPjUKuPjJvuk=;
+        b=GblngnwyjeYoPMXKCDN04YzV7b/X+WK/BFgm3OkCE3NKv5lya7pq5IUfRPVy5ztT8J
+         d20ufbqZgvyoV1nMG9N84N8fXugFgSSUIKMsSnet57Za07GACGq9xaYDhdC2lcGGPchj
+         u/fQASVLNi6u/xTXFxPRqSF+d4jTMVZlrVLIn+MlHW9B6DnEkcI0gLGMook2GsFJ0Afq
+         qYKJI3BGS5tuPd2M+PyoY6MyS27yZ8zEHPy2CG0ZvW/Mo/l/dVa3pdElK+kdAiIxMC8M
+         08Iy3QQE4e9Ay6sfuKd8flUzrU+yPP2cv+cm+H3SaZXAeqzdVGbFCn+lpXEBtlQ8YLEJ
+         zizg==
+X-Gm-Message-State: AOAM532wIwT5/SQdJA/7X7mOWCC3+jbYo1unAakTX6TJEuTBLnxs2TOH
+        +Cyf1Cs1eQmqbn7wP4JaPRJI7atNGGA=
+X-Google-Smtp-Source: ABdhPJw7fWkDQOkH38Di0oMGWac3KVXW3r0HtLirWNDl1SRn4stESdbRJgPBoY4F0jcnE78gHNB1cQ==
+X-Received: by 2002:a37:45c7:: with SMTP id s190mr4950487qka.111.1618684192734;
+        Sat, 17 Apr 2021 11:29:52 -0700 (PDT)
+Received: from ?IPv6:2620:10d:c0a8:1102::1844? ([2620:10d:c091:480::1:1b53])
+        by smtp.gmail.com with ESMTPSA id f185sm6614506qke.61.2021.04.17.11.29.51
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sat, 17 Apr 2021 11:29:52 -0700 (PDT)
+From:   Jes Sorensen <jes.sorensen@gmail.com>
+X-Google-Original-From: Jes Sorensen <Jes.Sorensen@gmail.com>
+Subject: Re: [PATCH RESEND][next] rtl8xxxu: Fix fall-through warnings for
+ Clang
+To:     Kees Cook <keescook@chromium.org>
+Cc:     Kalle Valo <kvalo@codeaurora.org>,
+        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-hardening@vger.kernel.org
+References: <20210305094850.GA141221@embeddedor>
+ <871rct67n2.fsf@codeaurora.org> <202103101107.BE8B6AF2@keescook>
+ <2e425bd8-2722-b8a8-3745-4a3f77771906@gmail.com>
+ <202103101141.92165AE@keescook>
+ <90baba5d-53a1-c7b1-495d-5902e9b04a72@gmail.com>
+ <202103101254.1DBEE1082@keescook>
+Message-ID: <4eb49b08-09bb-d1d2-d2bc-efcd5f7406fe@gmail.com>
+Date:   Sat, 17 Apr 2021 14:29:50 -0400
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.7.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210416160252.2830567-7-kuba@kernel.org>
+In-Reply-To: <202103101254.1DBEE1082@keescook>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Apr 16, 2021 at 09:02:52AM -0700, Jakub Kicinski wrote:
->  # ethtool -S eth0 --groups eth-phy eth-mac rmon
-> Stats for eth0:
-> eth-phy-SymbolErrorDuringCarrier: 1
-> eth-mac-FramesTransmittedOK: 1
-> eth-mac-FrameTooLongErrors: 1
-> rmon-etherStatsUndersizePkts: 1
-> rmon-etherStatsJabbers: 1
-> rmon-etherStatsPkts64Octets: 1
-> rmon-etherStatsPkts128to255Octets: 1
-> rmon-etherStatsPkts1024toMaxOctets: 0
+On 3/10/21 3:59 PM, Kees Cook wrote:
+> On Wed, Mar 10, 2021 at 02:51:24PM -0500, Jes Sorensen wrote:
+>> On 3/10/21 2:45 PM, Kees Cook wrote:
+>>> On Wed, Mar 10, 2021 at 02:31:57PM -0500, Jes Sorensen wrote:
+>>>> On 3/10/21 2:14 PM, Kees Cook wrote:
+>>>>> Hm, this conversation looks like a miscommunication, mainly? I see
+>>>>> Gustavo, as requested by many others[1], replacing the fallthrough
+>>>>> comments with the "fallthrough" statement. (This is more than just a
+>>>>> "Clang doesn't parse comments" issue.)
+>>>>>
+>>>>> This could be a tree-wide patch and not bother you, but Greg KH has
+>>>>> generally advised us to send these changes broken out. Anyway, this
+>>>>> change still needs to land, so what would be the preferred path? I think
+>>>>> Gustavo could just carry it for Linus to merge without bothering you if
+>>>>> that'd be preferred?
+>>>>
+>>>> I'll respond with the same I did last time, fallthrough is not C and
+>>>> it's ugly.
+>>>
+>>> I understand your point of view, but this is not the consensus[1] of
+>>> the community. "fallthrough" is a macro, using the GCC fallthrough
+>>> attribute, with the expectation that we can move to the C17/C18
+>>> "[[fallthrough]]" statement once it is finalized by the C standards
+>>> body.
+>>
+>> I don't know who decided on that, but I still disagree. It's an ugly and
+>> pointless change that serves little purpose. We shouldn't have allowed
+>> the ugly /* fall-through */ comments in either, but at least they didn't
+>> mess with the code. I guess when you give someone an inch, they take a mile.
+>>
+>> Last time this came up, the discussion was that clang refused to fix
+>> their brokenness and therefore this nonsense was being pushed into the
+>> kernel. It's still a pointless argument, if clang can't fix it's crap,
+>> then stop using it.
+>>
+>> As Kalle correctly pointed out, none of the previous comments to this
+>> were addressed, the patches were just reposted as fact. Not exactly a
+>> nice way to go about it either.
 > 
->  # ethtool --json -S eth0 --groups eth-phy eth-mac rmon | jq
->  [
->   {
->     "ifname": "eth0",
->     "eth-phy": {
->       "SymbolErrorDuringCarrier": 1
->     },
->     "eth-mac": {
->       "FramesTransmittedOK": 1,
->       "FrameTooLongErrors": 0
->     },
->     "rmon": {
->       "etherStatsUndersizePkts": 1,
->       "etherStatsJabbers": 0,
->       "pktsNtoM": [
->         {
->           "low": 0,
->           "high": 64,
->           "val": 1
->         },
->         {
->           "low": 128,
->           "high": 255,
->           "val": 1
->         },
->         {
->           "low": 1024,
->           "high": 0,
->           "val": 0
->         }
->       ]
->     }
->   }
->  ]
-> 
->  # ethtool --json -S eth0 --groups eth-phy eth-mac rmon | \
->      jq '.[].rmon.pktsNtoM | map(select(.low >= 128)) | map(.val) | add'
->  1
-> 
-> Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-> ---
->  Makefile.am            |   1 +
->  ethtool.8.in           |  11 ++
->  ethtool.c              |   5 +-
->  netlink/desc-ethtool.c |  39 +++++++
->  netlink/extapi.h       |   4 +
->  netlink/stats.c        | 242 +++++++++++++++++++++++++++++++++++++++++
->  6 files changed, 301 insertions(+), 1 deletion(-)
->  create mode 100644 netlink/stats.c
-> 
-> diff --git a/Makefile.am b/Makefile.am
-> index f643a24af97a..75c245653cda 100644
-> --- a/Makefile.am
-> +++ b/Makefile.am
-> @@ -36,6 +36,7 @@ ethtool_SOURCES += \
->  		  netlink/features.c netlink/privflags.c netlink/rings.c \
->  		  netlink/channels.c netlink/coalesce.c netlink/pause.c \
->  		  netlink/eee.c netlink/tsinfo.c netlink/fec.c \
-> +		  netlink/stats.c \
->  		  netlink/desc-ethtool.c netlink/desc-genlctrl.c \
->  		  netlink/desc-rtnl.c netlink/cable_test.c netlink/tunnels.c \
->  		  uapi/linux/ethtool_netlink.h \
-> diff --git a/ethtool.8.in b/ethtool.8.in
-> index ba4e245cdc61..0ca11595158a 100644
-> --- a/ethtool.8.in
-> +++ b/ethtool.8.in
-> @@ -240,6 +240,12 @@ ethtool \- query or control network driver and hardware settings
->  .HP
->  .B ethtool \-S|\-\-statistics
->  .I devname
-> +.RB [\fB--groups
-> +.RB [\fBeth\-phy\fP]
-> +.RB [\fBeth\-mac\fP]
-> +.RB [\fBeth\-ctrl\fP]
-> +.RN [\fBrmon\fP]
-> +.RB ]
->  .HP
->  .B ethtool \-\-phy\-statistics
->  .I devname
-> @@ -653,6 +659,11 @@ auto-negotiation is enabled.
->  .B \-S \-\-statistics
->  Queries the specified network device for NIC- and driver-specific
->  statistics.
-> +.RS 4
-> +.TP
-> +.B \fB--groups [\fBeth\-phy\fP] [\fBeth\-mac\fP] [\fBeth\-ctrl\fP] [\fBrmon\fP]
-> +Request standard device statistics of a specific group.
-> +.RE
->  .TP
->  .B \-\-phy\-statistics
->  Queries the specified network device for PHY specific statistics.
-> diff --git a/ethtool.c b/ethtool.c
-> index b07fd9292d77..1b5690f424c8 100644
-> --- a/ethtool.c
-> +++ b/ethtool.c
-> @@ -5760,7 +5760,10 @@ static const struct option args[] = {
->  	{
->  		.opts	= "-S|--statistics",
->  		.func	= do_gnicstats,
-> -		.help	= "Show adapter statistics"
-> +		.nlchk	= nl_gstats_chk,
-> +		.nlfunc	= nl_gstats,
-> +		.help	= "Show adapter statistics",
-> +		.xhelp	= "               [ --groups [eth-phy] [eth-mac] [eth-ctrl] [rmon] ]\n"
->  	},
->  	{
->  		.opts	= "--phy-statistics",
-> diff --git a/netlink/desc-ethtool.c b/netlink/desc-ethtool.c
-> index 9da052a5b8aa..63e91ee7ffcd 100644
-> --- a/netlink/desc-ethtool.c
-> +++ b/netlink/desc-ethtool.c
-> @@ -325,6 +325,43 @@ static const struct pretty_nla_desc __fec_desc[] = {
->  	NLATTR_DESC_U32(ETHTOOL_A_FEC_ACTIVE),
->  };
->  
-> +static const struct pretty_nla_desc __stats_grp_stat_desc[] = {
-> +	NLATTR_DESC_U64(0),  NLATTR_DESC_U64(1),  NLATTR_DESC_U64(2),
-> +	NLATTR_DESC_U64(3),  NLATTR_DESC_U64(4),  NLATTR_DESC_U64(5),
-> +	NLATTR_DESC_U64(6),  NLATTR_DESC_U64(7),  NLATTR_DESC_U64(8),
-> +	NLATTR_DESC_U64(9),  NLATTR_DESC_U64(10), NLATTR_DESC_U64(11),
-> +	NLATTR_DESC_U64(12), NLATTR_DESC_U64(13), NLATTR_DESC_U64(14),
-> +	NLATTR_DESC_U64(15), NLATTR_DESC_U64(16), NLATTR_DESC_U64(17),
-> +	NLATTR_DESC_U64(18), NLATTR_DESC_U64(19), NLATTR_DESC_U64(20),
-> +	NLATTR_DESC_U64(21), NLATTR_DESC_U64(22), NLATTR_DESC_U64(23),
-> +	NLATTR_DESC_U64(24), NLATTR_DESC_U64(25), NLATTR_DESC_U64(26),
-> +	NLATTR_DESC_U64(27), NLATTR_DESC_U64(28), NLATTR_DESC_U64(29),
-> +};
-> +
-> +static const struct pretty_nla_desc __stats_grp_hist_desc[] = {
-> +	NLATTR_DESC_U32(ETHTOOL_A_STATS_GRP_HIST_BKT_LOW),
-> +	NLATTR_DESC_U32(ETHTOOL_A_STATS_GRP_HIST_BKT_HI),
-> +	NLATTR_DESC_U64(ETHTOOL_A_STATS_GRP_HIST_VAL),
-> +};
-> +
-> +static const struct pretty_nla_desc __stats_grp_desc[] = {
-> +	NLATTR_DESC_INVALID(ETHTOOL_A_STATS_GRP_UNSPEC),
-> +	NLATTR_DESC_INVALID(ETHTOOL_A_STATS_GRP_PAD),
-> +	NLATTR_DESC_U32(ETHTOOL_A_STATS_GRP_ID),
-> +	NLATTR_DESC_U32(ETHTOOL_A_STATS_GRP_SS_ID),
-> +	NLATTR_DESC_NESTED(ETHTOOL_A_STATS_GRP_STAT, stats_grp_stat),
-> +	NLATTR_DESC_NESTED(ETHTOOL_A_STATS_GRP_HIST_RX, stats_grp_hist),
-> +	NLATTR_DESC_NESTED(ETHTOOL_A_STATS_GRP_HIST_TX, stats_grp_hist),
-> +};
-> +
-> +static const struct pretty_nla_desc __stats_desc[] = {
-> +	NLATTR_DESC_INVALID(ETHTOOL_A_STATS_UNSPEC),
-> +	NLATTR_DESC_INVALID(ETHTOOL_A_STATS_PAD),
-> +	NLATTR_DESC_NESTED(ETHTOOL_A_STATS_HEADER, header),
-> +	NLATTR_DESC_NESTED(ETHTOOL_A_STATS_GROUPS, bitset),
-> +	NLATTR_DESC_NESTED(ETHTOOL_A_STATS_GRP, stats_grp),
-> +};
-> +
->  const struct pretty_nlmsg_desc ethnl_umsg_desc[] = {
->  	NLMSG_DESC_INVALID(ETHTOOL_MSG_USER_NONE),
->  	NLMSG_DESC(ETHTOOL_MSG_STRSET_GET, strset),
-> @@ -357,6 +394,7 @@ const struct pretty_nlmsg_desc ethnl_umsg_desc[] = {
->  	NLMSG_DESC(ETHTOOL_MSG_TUNNEL_INFO_GET, tunnel_info),
->  	NLMSG_DESC(ETHTOOL_MSG_FEC_GET, fec),
->  	NLMSG_DESC(ETHTOOL_MSG_FEC_SET, fec),
-> +	NLMSG_DESC(ETHTOOL_MSG_STATS_GET, stats),
->  };
->  
->  const unsigned int ethnl_umsg_n_desc = ARRAY_SIZE(ethnl_umsg_desc);
-> @@ -394,6 +432,7 @@ const struct pretty_nlmsg_desc ethnl_kmsg_desc[] = {
->  	NLMSG_DESC(ETHTOOL_MSG_TUNNEL_INFO_GET_REPLY, tunnel_info),
->  	NLMSG_DESC(ETHTOOL_MSG_FEC_GET_REPLY, fec),
->  	NLMSG_DESC(ETHTOOL_MSG_FEC_NTF, fec),
-> +	NLMSG_DESC(ETHTOOL_MSG_STATS_GET_REPLY, stats),
->  };
->  
->  const unsigned int ethnl_kmsg_n_desc = ARRAY_SIZE(ethnl_kmsg_desc);
-> diff --git a/netlink/extapi.h b/netlink/extapi.h
-> index d6036a39e920..97113eb98ca0 100644
-> --- a/netlink/extapi.h
-> +++ b/netlink/extapi.h
-> @@ -41,6 +41,8 @@ int nl_cable_test_tdr(struct cmd_context *ctx);
->  int nl_gtunnels(struct cmd_context *ctx);
->  int nl_gfec(struct cmd_context *ctx);
->  int nl_sfec(struct cmd_context *ctx);
-> +bool nl_gstats_chk(struct cmd_context *ctx);
-> +int nl_gstats(struct cmd_context *ctx);
->  int nl_monitor(struct cmd_context *ctx);
->  
->  void nl_monitor_usage(void);
-> @@ -92,6 +94,8 @@ static inline void nl_monitor_usage(void)
->  #define nl_gtunnels		NULL
->  #define nl_gfec			NULL
->  #define nl_sfec			NULL
-> +#define nl_gstats_chk		NULL
-> +#define nl_gstats		NULL
->  
->  #endif /* ETHTOOL_ENABLE_NETLINK */
->  
-> diff --git a/netlink/stats.c b/netlink/stats.c
-> new file mode 100644
-> index 000000000000..6c0b37a9aa4a
-> --- /dev/null
-> +++ b/netlink/stats.c
-> @@ -0,0 +1,242 @@
-> +/*
-> + * stats.c - netlink implementation of stats
-> + *
-> + * Implementation of "ethtool -S <dev> <types>" and
-> + */
-> +
-> +#include <errno.h>
-> +#include <ctype.h>
-> +#include <inttypes.h>
-> +#include <string.h>
-> +#include <stdio.h>
-> +
-> +#include "../internal.h"
-> +#include "../common.h"
-> +#include "netlink.h"
-> +#include "parser.h"
-> +#include "strset.h"
-> +
-> +static int parse_rmon_hist(const struct nlattr *hist)
-> +{
-> +	const struct nlattr *tb[ETHTOOL_A_STATS_GRP_HIST_VAL + 1] = {};
-> +	DECLARE_ATTR_TB_INFO(tb);
-> +	unsigned long long val;
-> +	unsigned int low, hi;
-> +	int ret;
-> +
-> +	ret = mnl_attr_parse_nested(hist, attr_cb, &tb_info);
-> +	if (ret < 0) {
-> +		fprintf(stderr, "invalid kernel response - malformed histogram entry\n");
-> +		return 1;
-> +	}
-> +
-> +	if (!tb[ETHTOOL_A_STATS_GRP_HIST_BKT_LOW] ||
-> +	    !tb[ETHTOOL_A_STATS_GRP_HIST_BKT_HI] ||
-> +	    !tb[ETHTOOL_A_STATS_GRP_HIST_VAL]) {
-> +		fprintf(stderr, "invalid kernel response - histogram entry missing attributes\n");
-> +		return 1;
-> +	}
-> +
-> +	low = mnl_attr_get_u32(tb[ETHTOOL_A_STATS_GRP_HIST_BKT_LOW]);
-> +	hi = mnl_attr_get_u32(tb[ETHTOOL_A_STATS_GRP_HIST_BKT_HI]);
-> +	val = mnl_attr_get_u64(tb[ETHTOOL_A_STATS_GRP_HIST_VAL]);
-> +
-> +	if (!is_json_context()) {
-> +		fprintf(stdout, "rmon-%s-etherStatsPkts",
-> +			mnl_attr_get_type(hist) == ETHTOOL_A_STATS_GRP_HIST_RX ?
-> +			"rx" : "tx");
-> +
-> +		if (low && hi) {
-> +			fprintf(stdout, "%uto%uOctets: %llu\n", low, hi, val);
-> +		} else if (hi) {
-> +			fprintf(stdout, "%uOctets: %llu\n", hi, val);
-> +		} else if (low) {
-> +			fprintf(stdout, "%utoMaxOctets: %llu\n", low, val);
-> +		} else {
-> +			fprintf(stderr, "invalid kernel response - bad histogram entry bounds\n");
-> +			return 1;
-> +		}
-> +	} else {
-> +		open_json_object(NULL);
-> +		print_uint(PRINT_JSON, "low", NULL, low);
-> +		print_uint(PRINT_JSON, "high", NULL, hi);
-> +		print_u64(PRINT_JSON, "val", NULL, val);
+> Do you mean changing the commit log to re-justify these changes? I
+> guess that could be done, but based on the thread, it didn't seem to
+> be needed. The change is happening to match the coding style consensus
+> reached to give the kernel the flexibility to move from a gcc extension
+> to the final C standards committee results without having to do treewide
+> commits again (i.e. via the macro).
 
-In the non-JSON output you distinguish between Rx/Tx, but it's missing
-from the JSON output as can be seen in your example:
+No, I am questioning why Gustavo continues to push this nonsense that
+serves no purpose whatsoever. In addition he has consistently ignored
+comments and just keep reposting it. But I guess that is how it works,
+ignore feedback, repost junk, repeat.
 
-```
-       "pktsNtoM": [
-         {
-           "low": 0,
-           "high": 64,
-           "val": 1
-         },
-         {
-           "low": 128,
-           "high": 255,
-           "val": 1
-         },
-         {
-           "low": 1024,
-           "high": 0,
-           "val": 0
-         }
-       ]
-```
+Jes
 
-I see that mlxsw and mlx5 only support Rx, but it's going to be
-confusing with bnxt that supports both Rx and Tx.
-
-Made me think about the structure of these attributes. Currently you
-have:
-
-ETHTOOL_A_STATS_GRP_HIST_RX
-	ETHTOOL_A_STATS_GRP_HIST_BKT_LOW
-	ETHTOOL_A_STATS_GRP_HIST_BKT_HI
-	ETHTOOL_A_STATS_GRP_HIST_VAL
-
-ETHTOOL_A_STATS_GRP_HIST_TX
-	ETHTOOL_A_STATS_GRP_HIST_BKT_LOW
-	ETHTOOL_A_STATS_GRP_HIST_BKT_HI
-	ETHTOOL_A_STATS_GRP_HIST_VAL
-
-Did you consider:
-
-ETHTOOL_A_STATS_GRP_HIST
-	ETHTOOL_A_STATS_GRP_HIST_BKT_LOW
-	ETHTOOL_A_STATS_GRP_HIST_BKT_HI
-	ETHTOOL_A_STATS_GRP_HIST_VAL
-	ETHTOOL_A_STATS_GRP_HIST_BKT_UNITS
-	ETHTOOL_A_STATS_GRP_HIST_TYPE
-
-So you will have something like:
-
-ETHTOOL_A_STATS_GRP_HIST_BKT_UNITS_BYTES
-ETHTOOL_A_STATS_GRP_HIST_VAL_TYPE_RX_PACKETS
-ETHTOOL_A_STATS_GRP_HIST_VAL_TYPE_TX_PACKETS
-
-And it will allow you to get rid of the special casing of the RMON stuff
-below:
-
-```
-	if (id == ETHTOOL_STATS_RMON) {
-		open_json_array("pktsNtoM", "");
-
-		mnl_attr_for_each_nested(attr, grp) {
-			s = mnl_attr_get_type(attr);
-			if (s != ETHTOOL_A_STATS_GRP_HIST_RX &&
-			    s != ETHTOOL_A_STATS_GRP_HIST_TX)
-				continue;
-
-			if (parse_rmon_hist(attr))
-				goto err_close_rmon;
-		}
-		close_json_array("");
-	}
-```
-
-I don't know how many histograms we are going to have as part of RFCs,
-but at least mlxsw also supports histograms of the Tx queue depth and
-latency. Not to be exposed by this interface, but shows the importance
-of encoding the units.
-
-> +		close_json_object();
-> +	}
-> +
-> +	return 0;
-> +}
-> +
-> +static int parse_grp(struct nl_context *nlctx, const struct nlattr *grp,
-> +		     const struct stringset *std_str)
-> +{
-> +	const struct nlattr *tb[ETHTOOL_A_STATS_GRP_SS_ID + 1] = {};
-> +	DECLARE_ATTR_TB_INFO(tb);
-> +	const struct stringset *stat_str;
-> +	const struct nlattr *attr, *stat;
-> +	const char *std_name, *name;
-> +	unsigned int ss_id, id, s;
-> +	unsigned long long val;
-> +	int ret;
-> +
-> +	ret = mnl_attr_parse_nested(grp, attr_cb, &tb_info);
-> +	if (ret < 0)
-> +		return 1;
-> +
-> +	if (!tb[ETHTOOL_A_STATS_GRP_ID])
-> +		return 1;
-> +	if (!tb[ETHTOOL_A_STATS_GRP_SS_ID])
-> +		return 0;
-> +
-> +	id = mnl_attr_get_u32(tb[ETHTOOL_A_STATS_GRP_ID]);
-> +	ss_id = mnl_attr_get_u32(tb[ETHTOOL_A_STATS_GRP_SS_ID]);
-> +
-> +	stat_str = global_stringset(ss_id, nlctx->ethnl2_socket);
-> +
-> +	std_name = get_string(std_str, id);
-> +	open_json_object(std_name);
-> +
-> +	mnl_attr_for_each_nested(attr, grp) {
-> +		if (mnl_attr_get_type(attr) != ETHTOOL_A_STATS_GRP_STAT)
-> +			continue;
-> +		stat = mnl_attr_get_payload(attr);
-> +		ret = mnl_attr_validate(stat, MNL_TYPE_U64);
-> +		if (ret) {
-> +			fprintf(stderr, "invalid kernel response - bad statistic entry\n");
-> +			goto err_close_grp;
-> +		}
-> +		s = mnl_attr_get_type(stat);
-> +		name = get_string(stat_str, s);
-> +		if (!name || !name[0])
-> +			continue;
-> +
-> +		if (!is_json_context())
-> +			fprintf(stdout, "%s-%s: ", std_name, name);
-> +
-> +		val = mnl_attr_get_u64(stat);
-> +		print_u64(PRINT_ANY, name, "%llu\n", val);
-> +	}
-> +
-> +	if (id == ETHTOOL_STATS_RMON) {
-> +		open_json_array("pktsNtoM", "");
-> +
-> +		mnl_attr_for_each_nested(attr, grp) {
-> +			s = mnl_attr_get_type(attr);
-> +			if (s != ETHTOOL_A_STATS_GRP_HIST_RX &&
-> +			    s != ETHTOOL_A_STATS_GRP_HIST_TX)
-> +				continue;
-> +
-> +			if (parse_rmon_hist(attr))
-> +				goto err_close_rmon;
-> +		}
-> +		close_json_array("");
-> +	}
-> +
-> +	close_json_object();
-> +
-> +	return 0;
-> +
-> +err_close_rmon:
-> +	close_json_array("");
-> +err_close_grp:
-> +	close_json_object();
-> +	return 1;
-> +}
-> +
-> +static int stats_reply_cb(const struct nlmsghdr *nlhdr, void *data)
-> +{
-> +	const struct nlattr *tb[ETHTOOL_A_STATS_MAX + 1] = {};
-> +	DECLARE_ATTR_TB_INFO(tb);
-> +	struct nl_context *nlctx = data;
-> +	const struct stringset *std_str;
-> +	const struct nlattr *attr;
-> +	bool silent;
-> +	int err_ret;
-> +	int ret;
-> +
-> +	silent = nlctx->is_dump || nlctx->is_monitor;
-> +	err_ret = silent ? MNL_CB_OK : MNL_CB_ERROR;
-> +	ret = mnl_attr_parse(nlhdr, GENL_HDRLEN, attr_cb, &tb_info);
-> +	if (ret < 0)
-> +		return err_ret;
-> +	nlctx->devname = get_dev_name(tb[ETHTOOL_A_STATS_HEADER]);
-> +	if (!dev_ok(nlctx))
-> +		return err_ret;
-> +
-> +	ret = netlink_init_ethnl2_socket(nlctx);
-> +	if (ret < 0)
-> +		return err_ret;
-> +	std_str = global_stringset(ETH_SS_STATS_STD, nlctx->ethnl2_socket);
-> +
-> +	if (silent)
-> +		print_nl();
-> +
-> +	open_json_object(NULL);
-> +
-> +	print_string(PRINT_ANY, "ifname", "Standard stats for %s:\n",
-> +		     nlctx->devname);
-> +
-> +	mnl_attr_for_each(attr, nlhdr, GENL_HDRLEN) {
-> +		if (mnl_attr_get_type(attr) == ETHTOOL_A_STATS_GRP) {
-> +			ret = parse_grp(nlctx, attr, std_str);
-> +			if (ret)
-> +				goto err_close_dev;
-> +		}
-> +	}
-> +
-> +	close_json_object();
-> +
-> +	return MNL_CB_OK;
-> +
-> +err_close_dev:
-> +	close_json_object();
-> +	return err_ret;
-> +}
-> +
-> +static const struct bitset_parser_data stats_parser_data = {
-> +	.no_mask	= true,
-> +	.force_hex	= false,
-> +};
-> +
-> +static const struct param_parser stats_params[] = {
-> +	{
-> +		.arg		= "--groups",
-> +		.type		= ETHTOOL_A_STATS_GROUPS,
-> +		.handler	= nl_parse_bitset,
-> +		.handler_data	= &stats_parser_data,
-> +		.min_argc	= 1,
-> +	},
-> +	{}
-> +};
-> +
-> +int nl_gstats(struct cmd_context *ctx)
-> +{
-> +	struct nl_context *nlctx = ctx->nlctx;
-> +	struct nl_socket *nlsk = nlctx->ethnl_socket;
-> +	int ret;
-> +
-> +	ret = nlsock_prep_get_request(nlsk, ETHTOOL_MSG_STATS_GET,
-> +				      ETHTOOL_A_STATS_HEADER, 0);
-> +	if (ret < 0)
-> +		return ret;
-> +
-> +	nlctx->cmd = "-S";
-> +	nlctx->argp = ctx->argp;
-> +	nlctx->argc = ctx->argc;
-> +	nlctx->devname = ctx->devname;
-> +	nlsk = nlctx->ethnl_socket;
-> +
-> +	ret = nl_parser(nlctx, stats_params, NULL, PARSER_GROUP_NONE, NULL);
-> +	if (ret < 0)
-> +		return 1;
-> +
-> +	new_json_obj(ctx->json);
-> +	ret = nlsock_send_get_request(nlsk, stats_reply_cb);
-> +	delete_json_obj();
-> +	return ret;
-> +}
-> +
-> +bool nl_gstats_chk(struct cmd_context *ctx)
-> +{
-> +	return ctx->argc;
-> +}
-> -- 
-> 2.30.2
-> 
