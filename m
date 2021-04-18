@@ -2,118 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 375E83634E4
-	for <lists+netdev@lfdr.de>; Sun, 18 Apr 2021 13:43:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E1A993634E7
+	for <lists+netdev@lfdr.de>; Sun, 18 Apr 2021 13:51:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230330AbhDRLnd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 18 Apr 2021 07:43:33 -0400
-Received: from mail1.protonmail.ch ([185.70.40.18]:52070 "EHLO
-        mail1.protonmail.ch" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229574AbhDRLnb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 18 Apr 2021 07:43:31 -0400
-Date:   Sun, 18 Apr 2021 11:42:54 +0000
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=pm.me; s=protonmail;
-        t=1618746181; bh=uFGkfd6SSEGyPUyf0IwGBqQSMt0EHtgOF4jDCcrsprA=;
-        h=Date:To:From:Cc:Reply-To:Subject:From;
-        b=OCDgkUQxPBc75HEKHfPWHcuo79aNHy6390QgJujnEubklCI857H1O2zOn1BXBYAud
-         xh3SYKREtiBNzTlQwGaS1+p3pfyWSoIEa34INqo05sRCj/QPwxk249SMHpPWY2ClVC
-         E2jKvtYiYDGeLM+uNfXiKivd0Cpl5LFaa40kh4SVZTsUD2gESceyXX5+Zz4QgRsFfm
-         gCBir0x/0t9zRWDOqj+xdzHa1l4l4h0Cq31KpkbLLIxtPW0Ng8ATsRB8VvFyNmBrkz
-         J+ePLL354nJR0HFLfGvTOZjxmQslqppFPtdT7wjSVC8DD1QTp/gVxIz0zyCt85tBG7
-         nqF4hhIve8CWA==
-To:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-From:   Alexander Lobakin <alobakin@pm.me>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Andrii Nakryiko <andriin@fb.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Wei Wang <weiwan@google.com>,
-        Cong Wang <cong.wang@bytedance.com>,
-        Taehee Yoo <ap420073@gmail.com>,
-        =?utf-8?Q?Bj=C3=B6rn_T=C3=B6pel?= <bjorn@kernel.org>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        Alexander Lobakin <alobakin@pm.me>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Reply-To: Alexander Lobakin <alobakin@pm.me>
-Subject: [PATCH net] gro: fix napi_gro_frags() Fast GRO breakage due to IP alignment check
-Message-ID: <20210418114200.5839-1-alobakin@pm.me>
+        id S230225AbhDRLvj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 18 Apr 2021 07:51:39 -0400
+Received: from mail.kernel.org ([198.145.29.99]:50352 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229574AbhDRLvi (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 18 Apr 2021 07:51:38 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 12BB661207;
+        Sun, 18 Apr 2021 11:51:09 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1618746670;
+        bh=yNyR1LiE1DA8XrGTItMp716jk+EUoFMuSkUyeHkt/pU=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=QsRuLY+JhwIF5dQ4wZyzcRNYGW5r0XTP4YA0WdrQKmC11q22XBByNlzqU73zD35Es
+         X2w0LzvYUbuaVj3hWKtVrUMZ4znPVm1e+/02gzG+qJi55lZ0D7ipdhMlAOcgYUZc9P
+         cWOpzuBoep5Aap2sjq7ZfYiF8JhS51TkscHNQb0hdEKGi3C6xRcuy5mjCZKNWhypN4
+         jKaFgCppedqCp2zuBaW8lc+Kji3FZQeSUftLmEFbcDOb8zTUC66eIPETdwMrEir7wv
+         QM2Nyvv5aHBvr2/eYJob4u7Dti+R2luh/4nMq8nI3W/l3b093cId4IbB5l6A2kN6pK
+         iiN5kzFCmwTqA==
+Date:   Sun, 18 Apr 2021 14:51:07 +0300
+From:   Leon Romanovsky <leon@kernel.org>
+To:     "Saleem, Shiraz" <shiraz.saleem@intel.com>
+Cc:     Parav Pandit <parav@nvidia.com>, Jason Gunthorpe <jgg@nvidia.com>,
+        "dledford@redhat.com" <dledford@redhat.com>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
+        "Lacombe, John S" <john.s.lacombe@intel.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "Ertman, David M" <david.m.ertman@intel.com>,
+        "Nguyen, Anthony L" <anthony.l.nguyen@intel.com>,
+        "Williams, Dan J" <dan.j.williams@intel.com>,
+        "Hefty, Sean" <sean.hefty@intel.com>,
+        "Keller, Jacob E" <jacob.e.keller@intel.com>
+Subject: Re: [PATCH v4 05/23] ice: Add devlink params support
+Message-ID: <YHwdKxtIi26ZmVlL@unreal>
+References: <20210406210125.241-1-shiraz.saleem@intel.com>
+ <20210406210125.241-6-shiraz.saleem@intel.com>
+ <20210407145705.GA499950@nvidia.com>
+ <e516fa3940984b0cb0134364b923fc8e@intel.com>
+ <20210407224631.GI282464@nvidia.com>
+ <c5a38fcf137e49c0af0bfa6edd3ec605@intel.com>
+ <BY5PR12MB43221FA2A6295C9CF23C798DDC709@BY5PR12MB4322.namprd12.prod.outlook.com>
+ <8a7cd11994c2447a926cf2d3e60a019c@intel.com>
+ <BY5PR12MB4322A28E6678CBB8A6544026DC4F9@BY5PR12MB4322.namprd12.prod.outlook.com>
+ <4d9a592fa5694de8aadc60db1376da20@intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-1.2 required=10.0 tests=ALL_TRUSTED,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF shortcircuit=no
-        autolearn=disabled version=3.4.4
-X-Spam-Checker-Version: SpamAssassin 3.4.4 (2020-01-24) on
-        mailout.protonmail.ch
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <4d9a592fa5694de8aadc60db1376da20@intel.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Commit 38ec4944b593 ("gro: ensure frag0 meets IP header alignment")
-did the right thing, but missed the fact that napi_gro_frags() logics
-calls for skb_gro_reset_offset() *before* pulling Ethernet header
-to the skb linear space.
-That said, the introduced check for frag0 address being aligned to 4
-always fails for it as Ethernet header is obviously 14 bytes long,
-and in case with NET_IP_ALIGN its start is not aligned to 4.
+On Wed, Apr 14, 2021 at 12:21:08AM +0000, Saleem, Shiraz wrote:
+> > Subject: RE: [PATCH v4 05/23] ice: Add devlink params support
 
-Fix this by adding @nhoff argument to skb_gro_reset_offset() which
-tells if an IP header is placed right at the start of frag0 or not.
-This restores Fast GRO for napi_gro_frags() that became very slow
-after the mentioned commit, and preserves the introduced check to
-avoid silent unaligned accesses.
+<...>
 
-Fixes: 38ec4944b593 ("gro: ensure frag0 meets IP header alignment")
-Signed-off-by: Alexander Lobakin <alobakin@pm.me>
----
- net/core/dev.c | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+> > > Why not just allow the setting to apply dynamically during a 'set'
+> > > itself with an unplug/plug of the auxdev with correct type.
+> > >
+> > This suggestion came up in the internal discussion too.
+> > However such task needs to synchronize with devlink reload command and also
+> > with driver remove() sequence.
+> > So locking wise and depending on amount of config change, it is close to what
+> > reload will do.
+> 
+> Holding this mutex across the auxiliary device unplug/plug in "set" wont cut it?
+> https://elixir.bootlin.com/linux/v5.12-rc7/source/drivers/net/ethernet/mellanox/mlx5/core/main.c#L1304
 
-diff --git a/net/core/dev.c b/net/core/dev.c
-index 1f79b9aa9a3f..965d5f9b6fee 100644
---- a/net/core/dev.c
-+++ b/net/core/dev.c
-@@ -5914,7 +5914,7 @@ static struct list_head *gro_list_prepare(struct napi=
-_struct *napi,
- =09return head;
- }
+Like Parav said, we are working to fix it and already have one working
+solution, unfortunately it has one eyebrow raising change and we are
+trying another one.
 
--static void skb_gro_reset_offset(struct sk_buff *skb)
-+static void skb_gro_reset_offset(struct sk_buff *skb, u32 nhoff)
- {
- =09const struct skb_shared_info *pinfo =3D skb_shinfo(skb);
- =09const skb_frag_t *frag0 =3D &pinfo->frags[0];
-@@ -5925,7 +5925,7 @@ static void skb_gro_reset_offset(struct sk_buff *skb)
+You can take a look here to get sense of the scope:
+https://git.kernel.org/pub/scm/linux/kernel/git/leon/linux-rdma.git/log/?h=devlink-core
 
- =09if (!skb_headlen(skb) && pinfo->nr_frags &&
- =09    !PageHighMem(skb_frag_page(frag0)) &&
--=09    (!NET_IP_ALIGN || !(skb_frag_off(frag0) & 3))) {
-+=09    (!NET_IP_ALIGN || !((skb_frag_off(frag0) + nhoff) & 3))) {
- =09=09NAPI_GRO_CB(skb)->frag0 =3D skb_frag_address(frag0);
- =09=09NAPI_GRO_CB(skb)->frag0_len =3D min_t(unsigned int,
- =09=09=09=09=09=09    skb_frag_size(frag0),
-@@ -6143,7 +6143,7 @@ gro_result_t napi_gro_receive(struct napi_struct *nap=
-i, struct sk_buff *skb)
- =09skb_mark_napi_id(skb, napi);
- =09trace_napi_gro_receive_entry(skb);
-
--=09skb_gro_reset_offset(skb);
-+=09skb_gro_reset_offset(skb, 0);
-
- =09ret =3D napi_skb_finish(napi, skb, dev_gro_receive(napi, skb));
- =09trace_napi_gro_receive_exit(ret);
-@@ -6232,7 +6232,7 @@ static struct sk_buff *napi_frags_skb(struct napi_str=
-uct *napi)
- =09napi->skb =3D NULL;
-
- =09skb_reset_mac_header(skb);
--=09skb_gro_reset_offset(skb);
-+=09skb_gro_reset_offset(skb, hlen);
-
- =09if (unlikely(skb_gro_header_hard(skb, hlen))) {
- =09=09eth =3D skb_gro_header_slow(skb, hlen, 0);
---
-2.31.1
-
-
+Thanks
