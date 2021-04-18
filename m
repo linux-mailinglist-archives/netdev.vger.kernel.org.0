@@ -2,82 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 78D3F363518
-	for <lists+netdev@lfdr.de>; Sun, 18 Apr 2021 14:20:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 069DC36355F
+	for <lists+netdev@lfdr.de>; Sun, 18 Apr 2021 15:01:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231289AbhDRMUu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 18 Apr 2021 08:20:50 -0400
-Received: from mout.gmx.net ([212.227.17.21]:59935 "EHLO mout.gmx.net"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230096AbhDRMUt (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 18 Apr 2021 08:20:49 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
-        s=badeba3b8450; t=1618748404;
-        bh=KrJxZ3ktoX8ugMIz09NLW4gbn+NeR1J5vIHhd/Rt0b4=;
-        h=X-UI-Sender-Class:From:To:Cc:Subject:Date:In-Reply-To:References;
-        b=YLFIFghVMg8gSivY5How0d537JTJoO5HLC6PznzaBeSUc8wV7L/eFFKedHNvn6RC4
-         QhEEtsxc/KCF6jmJRZt8LW4D3P4X/sDCsSBdc3r3RUOoqnk74157UYPv0Gp0qMJA4b
-         F+QzZ+QaDxqDaPpm2X0z1CALegKte6Yjo5QMiWS8=
-X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
-Received: from [80.245.75.88] ([80.245.75.88]) by web-mail.gmx.net
- (3c-app-gmx-bap31.server.lan [172.19.172.101]) (via HTTP); Sun, 18 Apr 2021
- 14:20:04 +0200
+        id S231281AbhDRNCD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 18 Apr 2021 09:02:03 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:35819 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S230501AbhDRNCA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 18 Apr 2021 09:02:00 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1618750891;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=dqS94jid2Od8hm+8zLcsYwsBBQgtAKW7meYmwudtRQQ=;
+        b=hh9/Zl8WV7DxnYKegKYAXcL0x1UtblPtRbPJwLkP7ac+aw8mQ5f+WpwU/nKTQ4W5v4Lq0Z
+        s2EtUYrM6P2S/2bMliaUdS8jbszO7gnpSSEYOyIx+lWbqD+5HEXDYml4s5gavJtslznQcL
+        BjEjDleTutEmLXQ7a58F0EMTmRtjLLI=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-238-nf46U1pGMoirYvO_gBZcUA-1; Sun, 18 Apr 2021 09:01:24 -0400
+X-MC-Unique: nf46U1pGMoirYvO_gBZcUA-1
+Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com [10.5.11.15])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 2B80410054F6;
+        Sun, 18 Apr 2021 13:01:23 +0000 (UTC)
+Received: from localhost.localdomain (ovpn-112-53.ams2.redhat.com [10.36.112.53])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 185BD5D74B;
+        Sun, 18 Apr 2021 13:01:21 +0000 (UTC)
+From:   Andrea Claudi <aclaudi@redhat.com>
+To:     netdev@vger.kernel.org
+Cc:     stephen@networkplumber.org, dsahern@gmail.com, leon@kernel.org
+Subject: [PATCH iproute2] rdma: stat: fix return code
+Date:   Sun, 18 Apr 2021 14:56:30 +0200
+Message-Id: <9cc2c9bdb7bf7c235bf2e7a63b9e13b0cdae58c5.1618750205.git.aclaudi@redhat.com>
 MIME-Version: 1.0
-Message-ID: <trinity-a589052c-229f-4be9-aad5-779246fe2024-1618748404510@3c-app-gmx-bap31>
-From:   Frank Wunderlich <frank-w@public-files.de>
-To:     Frank Wunderlich <frank-w@public-files.de>
-Cc:     netdev@vger.kernel.org, Felix Fietkau <nbd@nbd.name>,
-        John Crispin <john@phrozen.org>,
-        Sean Wang <sean.wang@mediatek.com>,
-        Mark Lee <Mark-MC.Lee@mediatek.com>, davem@davemloft.net,
-        linux-mediatek@lists.infradead.org,
-        Matthias Brugger <matthias.bgg@gmail.com>
-Subject: Aw: [PATCH][net-next] net: mediatek: add flow offload for mt7623
-Content-Type: text/plain; charset=UTF-8
-Date:   Sun, 18 Apr 2021 14:20:04 +0200
-Importance: normal
-Sensitivity: Normal
-In-Reply-To: <20210331133437.75269-1-frank-w@public-files.de>
-References: <20210331133437.75269-1-frank-w@public-files.de>
-Content-Transfer-Encoding: quoted-printable
-X-UI-Message-Type: mail
-X-Priority: 3
-X-Provags-ID: V03:K1:cTNeHwOY6sX+aBIMeXaS00D/xbai9pT3547kt55/25/7h+ZEHmjF8qW/zxxmaUNt7v0EQ
- hDWe01YzRpJ43L3/b4ec/XgTvsqKEqrwcUnv9+yCLnp/uLNDS6H+y24+2BZ6hQtP/hlw4O7Z60Iv
- 8kRSTkh/Ya0ena95pfOgtSQvynZxqpn7187Ta6rmFdP58KkjJ0Elyb1zT45Chlt8BbyGcrSSRbOs
- WIVPSivO8WP4TQoXTEMsvz4HDyQBsULDQ9CIxbqIzY4lAVLTRI+vlx9b17z2djh/LMjiZr+VfgWJ
- lw=
-X-Spam-Flag: NO
-X-UI-Out-Filterresults: notjunk:1;V03:K0:ZqimDKHl4jk=:ULSNJzrUxiJPjPpzO0DQmj
- v2xeCkV6xxYePHFiYIObreNt3RN3POPJACBsvZvHYD0HmgLgSshRl/9Svuhys+qedSE1Cp66X
- BECkMAFeRL59ppU/P+CQk2N3V/uf5DPs9tcJY7p3enTzzo1UZYrpb2TYh3MpZOvnIIzFSHMaE
- XHLfPPDxfL/t2ptm3iBDKPraj9aERbZZkeQ3brXItBrNHdEAKCwx82Z0cLQ8Ir244Wus0LIp8
- KLc1ElAc91cD+vv7sbQnwD4BFC8xRo6M0CqEotWa7rwYchCjnMM+StwIYotDpW40C4I/PgC2p
- LAGGC5dHx5ZQKEOZBae6hO2Att+c16DqRlkjTxyPWoozA5AR7FI4IPaAfBAVgONshqJ+R0tXT
- /ZpGjab6dscqcWARB5ZTNStXTSKd992bMemY7HYeeeamwxyUdfvqQNjr7FEe3HoYBothSzN5f
- Bl916WZoB3Wm3+Wx7aPTegpVD9cFyQXFD2J/L7OH0cPBZURTKlq0JDIeBdKwlVpu8ulRhdMSt
- ciRqI98sZNeyO2p6ebAT6Mh6eITe4guduYRN/sjQTw28rCUQQ3hw5JDRjHeUo0z9oZJYB9ViO
- xApPwCUYSWLAFhJMiuvdmVTkjtv24sMoSzNWuNvID3EKvr34/Go8FmL1Rzb0vqq6/npJbxn5Q
- bGkFfQ0VXnx9+lgdv9qAWRg8gHc6DUUPruNGTFOTCznD7zHnHfRL3wtJeeEprS3pWM1njt6aM
- A/R5wCXiYYfjm/fJ9uE5XPPAv+B4sawjhkgfK1OJEWuwWgIk8w0xKZhCI56HEOXtSDQHiA1t8
- 3K//Zo17K0UCZHIICtwEJ7HBqW4Fa0b9e4CFe7U2NQXGMgVRdXvxoI3VNe/OceMAWxBaNQyIN
- 4zHsEDLZtmVVUNGLjXITGoyRDvcfr/+Y5R118RY0+QgD069ZrTclt/3ZCuOONLORYZVRyCbsh
- I712Nh+zvug==
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+libmnl defines MNL_CB_OK as 1 and MNL_CB_ERROR as -1. rdma uses these
+return codes, and stat_qp_show_parse_cb() should do the same.
 
-any comment?
+Fixes: 16ce4d23661a ("rdma: stat: initialize ret in stat_qp_show_parse_cb()")
+Reported-by: Leon Romanovsky <leon@kernel.org>
+Signed-off-by: Andrea Claudi <aclaudi@redhat.com>
+---
+ rdma/stat.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-regards Frank
+diff --git a/rdma/stat.c b/rdma/stat.c
+index 3abedae7..8edf7bf1 100644
+--- a/rdma/stat.c
++++ b/rdma/stat.c
+@@ -307,7 +307,7 @@ static int stat_qp_show_parse_cb(const struct nlmsghdr *nlh, void *data)
+ 	struct rd *rd = data;
+ 	const char *name;
+ 	uint32_t idx;
+-	int ret = 0;
++	int ret = MNL_CB_OK;
+ 
+ 	mnl_attr_parse(nlh, 0, rd_attr_cb, tb);
+ 	if (!tb[RDMA_NLDEV_ATTR_DEV_INDEX] || !tb[RDMA_NLDEV_ATTR_DEV_NAME] ||
+-- 
+2.30.2
 
-
-> Gesendet: Mittwoch, 31=2E M=C3=A4rz 2021 um 15:34 Uhr
-> Von: "Frank Wunderlich" <frank-w@public-files=2Ede>
-> Betreff: [PATCH][net-next] net: mediatek: add flow offload for mt7623
->
-> mt7623 uses offload version 2 too
->=20
-> tested on Bananapi-R2
