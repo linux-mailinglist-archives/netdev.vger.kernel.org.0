@@ -2,18 +2,18 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2824F363815
-	for <lists+netdev@lfdr.de>; Mon, 19 Apr 2021 00:20:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0420E36381D
+	for <lists+netdev@lfdr.de>; Mon, 19 Apr 2021 00:20:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236492AbhDRWU3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 18 Apr 2021 18:20:29 -0400
-Received: from mx2.suse.de ([195.135.220.15]:38236 "EHLO mx2.suse.de"
+        id S236843AbhDRWUc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 18 Apr 2021 18:20:32 -0400
+Received: from mx2.suse.de ([195.135.220.15]:38252 "EHLO mx2.suse.de"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232357AbhDRWUV (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S232742AbhDRWUV (ORCPT <rfc822;netdev@vger.kernel.org>);
         Sun, 18 Apr 2021 18:20:21 -0400
 X-Virus-Scanned: by amavisd-new at test-mx.suse.de
 Received: from relay2.suse.de (unknown [195.135.221.27])
-        by mx2.suse.de (Postfix) with ESMTP id 66789AFF2;
+        by mx2.suse.de (Postfix) with ESMTP id B8D08B123;
         Sun, 18 Apr 2021 22:19:51 +0000 (UTC)
 From:   Thomas Bogendoerfer <tsbogend@alpha.franken.de>
 To:     "David S. Miller" <davem@davemloft.net>,
@@ -21,9 +21,10 @@ To:     "David S. Miller" <davem@davemloft.net>,
         Rob Herring <robh+dt@kernel.org>, netdev@vger.kernel.org,
         devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
         linux-mips@vger.kernel.org
-Subject: [PATCH v6 net-next 01/10] net: korina: Fix MDIO functions
-Date:   Mon, 19 Apr 2021 00:19:39 +0200
-Message-Id: <20210418221949.130779-2-tsbogend@alpha.franken.de>
+Cc:     Andrew Lunn <andrew@lunn.ch>
+Subject: [PATCH v6 net-next 02/10] net: korina: Use devres functions
+Date:   Mon, 19 Apr 2021 00:19:40 +0200
+Message-Id: <20210418221949.130779-3-tsbogend@alpha.franken.de>
 X-Mailer: git-send-email 2.29.2
 In-Reply-To: <20210418221949.130779-1-tsbogend@alpha.franken.de>
 References: <20210418221949.130779-1-tsbogend@alpha.franken.de>
@@ -33,148 +34,140 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Fixed MDIO functions to work reliable and not just by accident.
+Simplify probe/remove code by using devm_ functions.
 
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
 Signed-off-by: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
 ---
- drivers/net/ethernet/Kconfig  |  1 +
- drivers/net/ethernet/korina.c | 56 +++++++++++++++++++++++------------
- 2 files changed, 38 insertions(+), 19 deletions(-)
+ drivers/net/ethernet/korina.c | 64 ++++++++++++-----------------------
+ 1 file changed, 21 insertions(+), 43 deletions(-)
 
-diff --git a/drivers/net/ethernet/Kconfig b/drivers/net/ethernet/Kconfig
-index ad04660b97b8..c059b4bd3f23 100644
---- a/drivers/net/ethernet/Kconfig
-+++ b/drivers/net/ethernet/Kconfig
-@@ -98,6 +98,7 @@ config JME
- config KORINA
- 	tristate "Korina (IDT RC32434) Ethernet support"
- 	depends on MIKROTIK_RB532
-+	select MII
- 	help
- 	  If you have a Mikrotik RouterBoard 500 or IDT RC32434
- 	  based system say Y. Otherwise say N.
 diff --git a/drivers/net/ethernet/korina.c b/drivers/net/ethernet/korina.c
-index 925161959b9b..1b7e1c75ed9e 100644
+index 1b7e1c75ed9e..b56de01f6bb8 100644
 --- a/drivers/net/ethernet/korina.c
 +++ b/drivers/net/ethernet/korina.c
-@@ -41,6 +41,7 @@
- #include <linux/types.h>
- #include <linux/interrupt.h>
- #include <linux/ioport.h>
-+#include <linux/iopoll.h>
- #include <linux/in.h>
- #include <linux/slab.h>
- #include <linux/string.h>
-@@ -137,7 +138,6 @@ struct korina_private {
- 	struct mii_if_info mii_if;
- 	struct work_struct restart_task;
+@@ -105,9 +105,9 @@ enum chain_status {
+ 
+ /* Information that need to be kept for each board. */
+ struct korina_private {
+-	struct eth_regs *eth_regs;
+-	struct dma_reg *rx_dma_regs;
+-	struct dma_reg *tx_dma_regs;
++	struct eth_regs __iomem *eth_regs;
++	struct dma_reg __iomem *rx_dma_regs;
++	struct dma_reg __iomem *tx_dma_regs;
+ 	struct dma_desc *td_ring; /* transmit descriptor ring */
+ 	struct dma_desc *rd_ring; /* receive descriptor ring  */
+ 
+@@ -1044,10 +1044,10 @@ static int korina_probe(struct platform_device *pdev)
+ 	struct korina_device *bif = platform_get_drvdata(pdev);
+ 	struct korina_private *lp;
  	struct net_device *dev;
--	int phy_addr;
- };
+-	struct resource *r;
++	void __iomem *p;
+ 	int rc;
  
- extern unsigned int idt_cpu_freq;
-@@ -292,32 +292,48 @@ static int korina_send_packet(struct sk_buff *skb, struct net_device *dev)
- 	return NETDEV_TX_OK;
+-	dev = alloc_etherdev(sizeof(struct korina_private));
++	dev = devm_alloc_etherdev(&pdev->dev, sizeof(struct korina_private));
+ 	if (!dev)
+ 		return -ENOMEM;
+ 
+@@ -1060,36 +1060,30 @@ static int korina_probe(struct platform_device *pdev)
+ 	lp->rx_irq = platform_get_irq_byname(pdev, "korina_rx");
+ 	lp->tx_irq = platform_get_irq_byname(pdev, "korina_tx");
+ 
+-	r = platform_get_resource_byname(pdev, IORESOURCE_MEM, "korina_regs");
+-	dev->base_addr = r->start;
+-	lp->eth_regs = ioremap(r->start, resource_size(r));
+-	if (!lp->eth_regs) {
++	p = devm_platform_ioremap_resource_byname(pdev, "korina_regs");
++	if (!p) {
+ 		printk(KERN_ERR DRV_NAME ": cannot remap registers\n");
+-		rc = -ENXIO;
+-		goto probe_err_out;
++		return -ENOMEM;
+ 	}
++	lp->eth_regs = p;
+ 
+-	r = platform_get_resource_byname(pdev, IORESOURCE_MEM, "korina_dma_rx");
+-	lp->rx_dma_regs = ioremap(r->start, resource_size(r));
+-	if (!lp->rx_dma_regs) {
++	p = devm_platform_ioremap_resource_byname(pdev, "korina_dma_rx");
++	if (!p) {
+ 		printk(KERN_ERR DRV_NAME ": cannot remap Rx DMA registers\n");
+-		rc = -ENXIO;
+-		goto probe_err_dma_rx;
++		return -ENOMEM;
+ 	}
++	lp->rx_dma_regs = p;
+ 
+-	r = platform_get_resource_byname(pdev, IORESOURCE_MEM, "korina_dma_tx");
+-	lp->tx_dma_regs = ioremap(r->start, resource_size(r));
+-	if (!lp->tx_dma_regs) {
++	p = devm_platform_ioremap_resource_byname(pdev, "korina_dma_tx");
++	if (!p) {
+ 		printk(KERN_ERR DRV_NAME ": cannot remap Tx DMA registers\n");
+-		rc = -ENXIO;
+-		goto probe_err_dma_tx;
++		return -ENOMEM;
+ 	}
++	lp->tx_dma_regs = p;
+ 
+ 	lp->td_ring = kmalloc(TD_RING_SIZE + RD_RING_SIZE, GFP_KERNEL);
+-	if (!lp->td_ring) {
+-		rc = -ENXIO;
+-		goto probe_err_td_ring;
+-	}
++	if (!lp->td_ring)
++		return -ENOMEM;
+ 
+ 	dma_cache_inv((unsigned long)(lp->td_ring),
+ 			TD_RING_SIZE + RD_RING_SIZE);
+@@ -1119,7 +1113,8 @@ static int korina_probe(struct platform_device *pdev)
+ 	if (rc < 0) {
+ 		printk(KERN_ERR DRV_NAME
+ 			": cannot register net device: %d\n", rc);
+-		goto probe_err_register;
++		kfree((struct dma_desc *)KSEG0ADDR(lp->td_ring));
++		return rc;
+ 	}
+ 	timer_setup(&lp->media_check_timer, korina_poll_media, 0);
+ 
+@@ -1127,20 +1122,7 @@ static int korina_probe(struct platform_device *pdev)
+ 
+ 	printk(KERN_INFO "%s: " DRV_NAME "-" DRV_VERSION " " DRV_RELDATE "\n",
+ 			dev->name);
+-out:
+ 	return rc;
+-
+-probe_err_register:
+-	kfree((struct dma_desc *)KSEG0ADDR(lp->td_ring));
+-probe_err_td_ring:
+-	iounmap(lp->tx_dma_regs);
+-probe_err_dma_tx:
+-	iounmap(lp->rx_dma_regs);
+-probe_err_dma_rx:
+-	iounmap(lp->eth_regs);
+-probe_err_out:
+-	free_netdev(dev);
+-	goto out;
  }
  
--static int mdio_read(struct net_device *dev, int mii_id, int reg)
-+static int korina_mdio_wait(struct korina_private *lp)
-+{
-+	u32 value;
-+
-+	return readl_poll_timeout_atomic(&lp->eth_regs->miimind,
-+					 value, value & ETH_MII_IND_BSY,
-+					 1, 1000);
-+}
-+
-+static int korina_mdio_read(struct net_device *dev, int phy, int reg)
- {
- 	struct korina_private *lp = netdev_priv(dev);
- 	int ret;
+ static int korina_remove(struct platform_device *pdev)
+@@ -1148,13 +1130,9 @@ static int korina_remove(struct platform_device *pdev)
+ 	struct korina_device *bif = platform_get_drvdata(pdev);
+ 	struct korina_private *lp = netdev_priv(bif->dev);
  
--	mii_id = ((lp->rx_irq == 0x2c ? 1 : 0) << 8);
-+	ret = korina_mdio_wait(lp);
-+	if (ret < 0)
-+		return ret;
+-	iounmap(lp->eth_regs);
+-	iounmap(lp->rx_dma_regs);
+-	iounmap(lp->tx_dma_regs);
+ 	kfree((struct dma_desc *)KSEG0ADDR(lp->td_ring));
  
--	writel(0, &lp->eth_regs->miimcfg);
--	writel(0, &lp->eth_regs->miimcmd);
--	writel(mii_id | reg, &lp->eth_regs->miimaddr);
--	writel(ETH_MII_CMD_SCN, &lp->eth_regs->miimcmd);
-+	writel(phy << 8 | reg, &lp->eth_regs->miimaddr);
-+	writel(1, &lp->eth_regs->miimcmd);
+ 	unregister_netdev(bif->dev);
+-	free_netdev(bif->dev);
  
--	ret = (int)(readl(&lp->eth_regs->miimrdd));
-+	ret = korina_mdio_wait(lp);
-+	if (ret < 0)
-+		return ret;
-+
-+	if (readl(&lp->eth_regs->miimind) & ETH_MII_IND_NV)
-+		return -EINVAL;
-+
-+	ret = readl(&lp->eth_regs->miimrdd);
-+	writel(0, &lp->eth_regs->miimcmd);
- 	return ret;
+ 	return 0;
  }
- 
--static void mdio_write(struct net_device *dev, int mii_id, int reg, int val)
-+static void korina_mdio_write(struct net_device *dev, int phy, int reg, int val)
- {
- 	struct korina_private *lp = netdev_priv(dev);
- 
--	mii_id = ((lp->rx_irq == 0x2c ? 1 : 0) << 8);
-+	if (korina_mdio_wait(lp))
-+		return;
- 
--	writel(0, &lp->eth_regs->miimcfg);
--	writel(1, &lp->eth_regs->miimcmd);
--	writel(mii_id | reg, &lp->eth_regs->miimaddr);
--	writel(ETH_MII_CMD_SCN, &lp->eth_regs->miimcmd);
-+	writel(0, &lp->eth_regs->miimcmd);
-+	writel(phy << 8 | reg, &lp->eth_regs->miimaddr);
- 	writel(val, &lp->eth_regs->miimwtd);
- }
- 
-@@ -643,7 +659,7 @@ static void korina_check_media(struct net_device *dev, unsigned int init_media)
- {
- 	struct korina_private *lp = netdev_priv(dev);
- 
--	mii_check_media(&lp->mii_if, 0, init_media);
-+	mii_check_media(&lp->mii_if, 1, init_media);
- 
- 	if (lp->mii_if.full_duplex)
- 		writel(readl(&lp->eth_regs->ethmac2) | ETH_MAC2_FD,
-@@ -869,12 +885,15 @@ static int korina_init(struct net_device *dev)
- 	 * Clock independent setting */
- 	writel(((idt_cpu_freq) / MII_CLOCK + 1) & ~1,
- 			&lp->eth_regs->ethmcp);
-+	writel(0, &lp->eth_regs->miimcfg);
- 
- 	/* don't transmit until fifo contains 48b */
- 	writel(48, &lp->eth_regs->ethfifott);
- 
- 	writel(ETH_MAC1_RE, &lp->eth_regs->ethmac1);
- 
-+	korina_check_media(dev, 1);
-+
- 	napi_enable(&lp->napi);
- 	netif_start_queue(dev);
- 
-@@ -1089,11 +1108,10 @@ static int korina_probe(struct platform_device *pdev)
- 	dev->watchdog_timeo = TX_TIMEOUT;
- 	netif_napi_add(dev, &lp->napi, korina_poll, NAPI_POLL_WEIGHT);
- 
--	lp->phy_addr = (((lp->rx_irq == 0x2c? 1:0) << 8) | 0x05);
- 	lp->mii_if.dev = dev;
--	lp->mii_if.mdio_read = mdio_read;
--	lp->mii_if.mdio_write = mdio_write;
--	lp->mii_if.phy_id = lp->phy_addr;
-+	lp->mii_if.mdio_read = korina_mdio_read;
-+	lp->mii_if.mdio_write = korina_mdio_write;
-+	lp->mii_if.phy_id = 1;
- 	lp->mii_if.phy_id_mask = 0x1f;
- 	lp->mii_if.reg_num_mask = 0x1f;
- 
 -- 
 2.29.2
 
