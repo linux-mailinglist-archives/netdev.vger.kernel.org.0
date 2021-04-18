@@ -2,58 +2,58 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 874CD3634F8
+	by mail.lfdr.de (Postfix) with ESMTP id D4AE33634F9
 	for <lists+netdev@lfdr.de>; Sun, 18 Apr 2021 14:03:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234593AbhDRMDm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 18 Apr 2021 08:03:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41480 "EHLO
+        id S234974AbhDRMDp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 18 Apr 2021 08:03:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41476 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231312AbhDRMDh (ORCPT
+        with ESMTP id S231338AbhDRMDh (ORCPT
         <rfc822;netdev@vger.kernel.org>); Sun, 18 Apr 2021 08:03:37 -0400
-Received: from mail-wm1-x32a.google.com (mail-wm1-x32a.google.com [IPv6:2a00:1450:4864:20::32a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 01363C06174A
+Received: from mail-wm1-x336.google.com (mail-wm1-x336.google.com [IPv6:2a00:1450:4864:20::336])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A2E9EC061760
         for <netdev@vger.kernel.org>; Sun, 18 Apr 2021 05:03:08 -0700 (PDT)
-Received: by mail-wm1-x32a.google.com with SMTP id w186so12131891wmg.3
-        for <netdev@vger.kernel.org>; Sun, 18 Apr 2021 05:03:07 -0700 (PDT)
+Received: by mail-wm1-x336.google.com with SMTP id o21-20020a1c4d150000b029012e52898006so6921447wmh.0
+        for <netdev@vger.kernel.org>; Sun, 18 Apr 2021 05:03:08 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=blackwall-org.20150623.gappssmtp.com; s=20150623;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=on3EgqSKCI//AH2PnGOSrMuXlDspgsGk19tPu2f6tWQ=;
-        b=zgiUqJG55c77cfyJVvxo5rBBUC4l5+Tbae8RDOZiijuksl4JvkgwrQyVHT4spiDkDL
-         AEIBKYeDEuWwX4wrRPQeAL7AMadIpkrDxTBxyNXNrfkp+WRDBtTXTAlUPjDsVCcCoDo6
-         1YDjNIZVeJvxMv+EyW7ltSHxoj5UDIGkwDJBkaxOVhtUQ+n1oq2+mQ0C59FDlp+ib0eM
-         Z1zqViluOpE3ZUqKJu5oU1e9TG1/SGEBLV89sXoVV6izepurOg666sPNteFRa9lzNZUy
-         MfjKApCdaUp/oJGYwQmgK73uUa7DRlZyzk4OOJCjXjYGBNgzdRVy5r+hZ0H4HdmIQAY/
-         0eEQ==
+        bh=EpHY1MbAXhUL60YiE+86B1HjUYTVmOkAbHwqH2hSAgQ=;
+        b=P+mDJEhy8rVpLdF6TRuTvH+n5zRyT9uhAAip+UN2ZVPcxFhwwK66DA5NRGd1fWz2h1
+         ahJtmC5XRkIPmbI9+Qa109XKDN9QHxXSMmpw3xU3z/VTvSirngLL3rzAjClNK0NaoCdC
+         HXuXJWpIKanq2kPcGLjRvoETycaYxbfRSFORqXIlwSpcsA/QBYI1CG8eAgkH7OwAD0x2
+         jfUp2vd9sfbJgEBxYL7GKX3m7ZKwJiVBSsfQxDAFZiTnZH5i56dzeCq7G/waLXA0+vRp
+         3peeNy0O3uJy+Qbb6nQPmN2dAQepN/jCxKrqVOIhIlg1WsPo4Dzmz59nFkWzMoJTZXjo
+         zKpw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=on3EgqSKCI//AH2PnGOSrMuXlDspgsGk19tPu2f6tWQ=;
-        b=h8MPlbj4piWA7dcNDBiwkz8lu850gKkZkhKBTlAu5YPVzXpZYp0GIwrG3y6jxGjda1
-         +OzYj+n9Dix6h8kdIuCf5ZBKpDeIRP4dcmYqOIN8SYoLzB6G5T4mDnEsnIOa/mNxJt2U
-         IzhuptxbOJOfWWSGYouuQj2fxRov4P/ot8e4txJuYyjKUqG91iFFc+DnjkykXS0KZVs1
-         3ou0c+TVYF1O/RFAYKRAAP7/T5hOBcdCIymSRDatZ+Pq8gSSmNTI0YR4e75ZA8AAYfbO
-         dC1qzOlMzhXRnHi4vwHVK3WrBVUiZyLGZsfOx/9O5dx0PuQ8WByMnzQdprz4amjufg73
-         4Mtg==
-X-Gm-Message-State: AOAM532BYBKqynJOwof5SWZK3zK8uUn5CgGNT6EsqmGNWGwg7gn9N+1E
-        UqgX6dCR+oUTFMhGVm0fw92PWl2V3z6re0ai
-X-Google-Smtp-Source: ABdhPJzKaM1k4yDyaMtCnpCpDGE+Xy6pUAYzSNOdvct7ACWWqstx3qqBLrQq+BJ6ndIWosRNunw4ZQ==
-X-Received: by 2002:a1c:bd85:: with SMTP id n127mr16725009wmf.37.1618747386393;
-        Sun, 18 Apr 2021 05:03:06 -0700 (PDT)
+        bh=EpHY1MbAXhUL60YiE+86B1HjUYTVmOkAbHwqH2hSAgQ=;
+        b=mARNM63B4Z/eYmGYsWUCaXdCpe5pz0Aw8WJEI/Wxi4vkFhMUYeEednXYYyRts72LNf
+         ABVn8ziWqO/J2ohlI0zMDfHLJn+A5HAYGRGInOorcJVW79aePKUWIrw0gga9xMXrcKqw
+         6lzzCzqHzJq2VQsRQdxh+/MrOFzP1pL+ZgZR/EEwtZyY7SQZ4EinW0ndo8FAhCYAxdXg
+         S/5SPI/EeKRSMMa/6BY8Xw/xTGttXI+pKEw6uuRCGplac3SNxTqnItHDcT6fuuB7dwL4
+         2XtiXuA39M+NrPYb21nmsTl/bZRnqd+YkA6jXcynE2fFI6V0UnCsiFrf0qjx2M9JsW8z
+         oD6w==
+X-Gm-Message-State: AOAM532M15wpVmdMO+VfHX7KCfZ6Y3netTbVIXXo6w14PPGW91vZOh/k
+        Z75RQrCLnBCnvXFRuoQMAZOtBtHMvo8UbR9B
+X-Google-Smtp-Source: ABdhPJxmh4IHvz+rq6ZvviumLM5rB+lLgH1WvASRbyX93T1uFxto1s0vv9S/foMOavEAl5dbe52tyw==
+X-Received: by 2002:a1c:c918:: with SMTP id f24mr17158729wmb.12.1618747387111;
+        Sun, 18 Apr 2021 05:03:07 -0700 (PDT)
 Received: from debil.vdiclient.nvidia.com (84-238-136-197.ip.btc-net.bg. [84.238.136.197])
-        by smtp.gmail.com with ESMTPSA id x25sm16584763wmj.34.2021.04.18.05.03.05
+        by smtp.gmail.com with ESMTPSA id x25sm16584763wmj.34.2021.04.18.05.03.06
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
         Sun, 18 Apr 2021 05:03:06 -0700 (PDT)
 From:   Nikolay Aleksandrov <razor@blackwall.org>
 To:     netdev@vger.kernel.org
 Cc:     roopa@nvidia.com, dsahern@gmail.com,
         Nikolay Aleksandrov <nikolay@nvidia.com>
-Subject: [PATCH iproute2-next 5/6] bridge: vlan: add support for the new rtm dump call
-Date:   Sun, 18 Apr 2021 15:01:36 +0300
-Message-Id: <20210418120137.2605522-6-razor@blackwall.org>
+Subject: [PATCH iproute2-next 6/6] bridge: monitor: add support for vlan monitoring
+Date:   Sun, 18 Apr 2021 15:01:37 +0300
+Message-Id: <20210418120137.2605522-7-razor@blackwall.org>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20210418120137.2605522-1-razor@blackwall.org>
 References: <20210418120137.2605522-1-razor@blackwall.org>
@@ -65,277 +65,176 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Nikolay Aleksandrov <nikolay@nvidia.com>
 
-Use the new bridge vlan rtm dump helper to dump all of the available
-vlan information when -details (-d) is used with vlan show. It is also
-capable of dumping vlan stats if -statistics (-s) is added.
-Currently this is the only interface capable of dumping per-vlan
-options. The vlan dump format is compatible with current vlan show, it
-uses the same helpers to dump vlan information. The new addition is one
-line which will contain the per-vlan options (similar to ip -d link show
-for ports). Currently only the vlan STP state is printed.
-The call uses compressed vlan format by default.
-
-Example:
-$ bridge -s -d vlan show
-port              vlan-id
-virbr1            1 PVID Egress Untagged
-                    state forwarding
+Add support for vlan activity monitoring, we display vlan notifications on
+vlan add/del/options change. The man page and help are also updated
+accordingly.
 
 Signed-off-by: Nikolay Aleksandrov <nikolay@nvidia.com>
 ---
- bridge/br_common.h   |   1 +
- bridge/vlan.c        | 147 ++++++++++++++++++++++++++++++++++++++++---
- include/libnetlink.h |   5 ++
- man/man8/bridge.8    |   7 ++-
- 4 files changed, 152 insertions(+), 8 deletions(-)
+ bridge/br_common.h |  2 +-
+ bridge/mdb.c       |  2 +-
+ bridge/monitor.c   | 19 ++++++++++++++++++-
+ bridge/vlan.c      | 15 +++++++++++++--
+ man/man8/bridge.8  |  4 ++--
+ 5 files changed, 35 insertions(+), 7 deletions(-)
 
 diff --git a/bridge/br_common.h b/bridge/br_common.h
-index 33e56452702b..43870546ff28 100644
+index 43870546ff28..b9adafd98dea 100644
 --- a/bridge/br_common.h
 +++ b/bridge/br_common.h
-@@ -12,6 +12,7 @@ int print_mdb_mon(struct nlmsghdr *n, void *arg);
+@@ -12,7 +12,7 @@ int print_mdb_mon(struct nlmsghdr *n, void *arg);
  int print_fdb(struct nlmsghdr *n, void *arg);
  void print_stp_state(__u8 state);
  int parse_stp_state(const char *arg);
-+int print_vlan_rtm(struct nlmsghdr *n, void *arg);
+-int print_vlan_rtm(struct nlmsghdr *n, void *arg);
++int print_vlan_rtm(struct nlmsghdr *n, void *arg, bool monitor);
  
  int do_fdb(int argc, char **argv);
  int do_mdb(int argc, char **argv);
+diff --git a/bridge/mdb.c b/bridge/mdb.c
+index ef89258bc5c3..b427d878677f 100644
+--- a/bridge/mdb.c
++++ b/bridge/mdb.c
+@@ -16,9 +16,9 @@
+ #include <arpa/inet.h>
+ 
+ #include "libnetlink.h"
++#include "utils.h"
+ #include "br_common.h"
+ #include "rt_names.h"
+-#include "utils.h"
+ #include "json_print.h"
+ 
+ #ifndef MDBA_RTA
+diff --git a/bridge/monitor.c b/bridge/monitor.c
+index 08439a60288a..88f52f52f084 100644
+--- a/bridge/monitor.c
++++ b/bridge/monitor.c
+@@ -31,7 +31,7 @@ static int prefix_banner;
+ 
+ static void usage(void)
+ {
+-	fprintf(stderr, "Usage: bridge monitor [file | link | fdb | mdb | all]\n");
++	fprintf(stderr, "Usage: bridge monitor [file | link | fdb | mdb | vlan | all]\n");
+ 	exit(-1);
+ }
+ 
+@@ -67,6 +67,12 @@ static int accept_msg(struct rtnl_ctrl_data *ctrl,
+ 		print_nlmsg_timestamp(fp, n);
+ 		return 0;
+ 
++	case RTM_NEWVLAN:
++	case RTM_DELVLAN:
++		if (prefix_banner)
++			fprintf(fp, "[VLAN]");
++		return print_vlan_rtm(n, arg, true);
++
+ 	default:
+ 		return 0;
+ 	}
+@@ -79,6 +85,7 @@ int do_monitor(int argc, char **argv)
+ 	int llink = 0;
+ 	int lneigh = 0;
+ 	int lmdb = 0;
++	int lvlan = 0;
+ 
+ 	rtnl_close(&rth);
+ 
+@@ -95,8 +102,12 @@ int do_monitor(int argc, char **argv)
+ 		} else if (matches(*argv, "mdb") == 0) {
+ 			lmdb = 1;
+ 			groups = 0;
++		} else if (matches(*argv, "vlan") == 0) {
++			lvlan = 1;
++			groups = 0;
+ 		} else if (strcmp(*argv, "all") == 0) {
+ 			groups = ~RTMGRP_TC;
++			lvlan = 1;
+ 			prefix_banner = 1;
+ 		} else if (matches(*argv, "help") == 0) {
+ 			usage();
+@@ -134,6 +145,12 @@ int do_monitor(int argc, char **argv)
+ 
+ 	if (rtnl_open(&rth, groups) < 0)
+ 		exit(1);
++
++	if (lvlan && rtnl_add_nl_group(&rth, RTNLGRP_BRVLAN) < 0) {
++		fprintf(stderr, "Failed to add bridge vlan group to list\n");
++		exit(1);
++	}
++
+ 	ll_init_map(&rth);
+ 
+ 	if (rtnl_listen(&rth, accept_msg, stdout) < 0)
 diff --git a/bridge/vlan.c b/bridge/vlan.c
-index 09884870df81..c681e14189b8 100644
+index c681e14189b8..9bb9e28d11bb 100644
 --- a/bridge/vlan.c
 +++ b/bridge/vlan.c
-@@ -16,6 +16,7 @@
- #include "utils.h"
- 
- static unsigned int filter_index, filter_vlan;
-+static int vlan_rtm_cur_ifidx = -1;
- 
- enum vlan_show_subject {
- 	VLAN_SHOW_VLAN,
-@@ -517,14 +518,8 @@ static void print_vlan_flags(__u16 flags)
- 	close_json_array(PRINT_JSON, NULL);
- }
- 
--static void print_one_vlan_stats(const struct bridge_vlan_xstats *vstats)
-+static void __print_one_vlan_stats(const struct bridge_vlan_xstats *vstats)
- {
--	open_json_object(NULL);
--
--	print_hu(PRINT_ANY, "vid", "%hu", vstats->vid);
--	print_vlan_flags(vstats->flags);
--	print_nl();
--
- 	print_string(PRINT_FP, NULL, "%-" __stringify(IFNAMSIZ) "s    ", "");
- 	print_lluint(PRINT_ANY, "rx_bytes", "RX: %llu bytes",
- 		     vstats->rx_bytes);
-@@ -536,6 +531,16 @@ static void print_one_vlan_stats(const struct bridge_vlan_xstats *vstats)
- 		     vstats->tx_bytes);
- 	print_lluint(PRINT_ANY, "tx_packets", " %llu packets\n",
- 		     vstats->tx_packets);
-+}
-+
-+static void print_one_vlan_stats(const struct bridge_vlan_xstats *vstats)
-+{
-+	open_json_object(NULL);
-+
-+	print_hu(PRINT_ANY, "vid", "%hu", vstats->vid);
-+	print_vlan_flags(vstats->flags);
-+	print_nl();
-+	__print_one_vlan_stats(vstats);
- 
- 	close_json_object();
- }
-@@ -616,6 +621,105 @@ static int print_vlan_stats(struct nlmsghdr *n, void *arg)
+@@ -621,7 +621,7 @@ static int print_vlan_stats(struct nlmsghdr *n, void *arg)
  	return 0;
  }
  
-+int print_vlan_rtm(struct nlmsghdr *n, void *arg)
+-int print_vlan_rtm(struct nlmsghdr *n, void *arg)
++int print_vlan_rtm(struct nlmsghdr *n, void *arg, bool monitor)
+ {
+ 	struct rtattr *vtb[BRIDGE_VLANDB_ENTRY_MAX + 1], *a;
+ 	struct br_vlan_msg *bvm = NLMSG_DATA(n);
+@@ -648,6 +648,12 @@ int print_vlan_rtm(struct nlmsghdr *n, void *arg)
+ 	if (filter_index && filter_index != bvm->ifindex)
+ 		return 0;
+ 
++	if (n->nlmsg_type == RTM_DELVLAN)
++		print_bool(PRINT_ANY, "deleted", "Deleted ", true);
++
++	if (monitor)
++		vlan_rtm_cur_ifidx = -1;
++
+ 	if (vlan_rtm_cur_ifidx == -1 || vlan_rtm_cur_ifidx != bvm->ifindex) {
+ 		if (vlan_rtm_cur_ifidx != -1)
+ 			close_vlan_port();
+@@ -720,6 +726,11 @@ int print_vlan_rtm(struct nlmsghdr *n, void *arg)
+ 	return 0;
+ }
+ 
++static int print_vlan_rtm_filter(struct nlmsghdr *n, void *arg)
 +{
-+	struct rtattr *vtb[BRIDGE_VLANDB_ENTRY_MAX + 1], *a;
-+	struct br_vlan_msg *bvm = NLMSG_DATA(n);
-+	int len = n->nlmsg_len;
-+	bool newport = false;
-+	int rem;
-+
-+	if (n->nlmsg_type != RTM_NEWVLAN && n->nlmsg_type != RTM_DELVLAN &&
-+	    n->nlmsg_type != RTM_GETVLAN) {
-+		fprintf(stderr, "Unknown vlan rtm message: %08x %08x %08x\n",
-+			n->nlmsg_len, n->nlmsg_type, n->nlmsg_flags);
-+		return 0;
-+	}
-+
-+	len -= NLMSG_LENGTH(sizeof(*bvm));
-+	if (len < 0) {
-+		fprintf(stderr, "BUG: wrong nlmsg len %d\n", len);
-+		return -1;
-+	}
-+
-+	if (bvm->family != AF_BRIDGE)
-+		return 0;
-+
-+	if (filter_index && filter_index != bvm->ifindex)
-+		return 0;
-+
-+	if (vlan_rtm_cur_ifidx == -1 || vlan_rtm_cur_ifidx != bvm->ifindex) {
-+		if (vlan_rtm_cur_ifidx != -1)
-+			close_vlan_port();
-+		open_vlan_port(bvm->ifindex, VLAN_SHOW_VLAN);
-+		vlan_rtm_cur_ifidx = bvm->ifindex;
-+		newport = true;
-+	}
-+
-+	rem = len;
-+	for (a = BRVLAN_RTA(bvm); RTA_OK(a, rem); a = RTA_NEXT(a, rem)) {
-+		struct bridge_vlan_xstats vstats;
-+		struct bridge_vlan_info *vinfo;
-+		__u32 vrange = 0;
-+		__u8 state = 0;
-+
-+		parse_rtattr_flags(vtb, BRIDGE_VLANDB_ENTRY_MAX, RTA_DATA(a),
-+				   RTA_PAYLOAD(a), NLA_F_NESTED);
-+		vinfo = RTA_DATA(vtb[BRIDGE_VLANDB_ENTRY_INFO]);
-+
-+		memset(&vstats, 0, sizeof(vstats));
-+		if (vtb[BRIDGE_VLANDB_ENTRY_RANGE])
-+			vrange = rta_getattr_u16(vtb[BRIDGE_VLANDB_ENTRY_RANGE]);
-+		else
-+			vrange = vinfo->vid;
-+
-+		if (vtb[BRIDGE_VLANDB_ENTRY_STATE])
-+			state = rta_getattr_u8(vtb[BRIDGE_VLANDB_ENTRY_STATE]);
-+
-+		if (vtb[BRIDGE_VLANDB_ENTRY_STATS]) {
-+			struct rtattr *stb[BRIDGE_VLANDB_STATS_MAX+1];
-+			struct rtattr *attr;
-+
-+			attr = vtb[BRIDGE_VLANDB_ENTRY_STATS];
-+			parse_rtattr(stb, BRIDGE_VLANDB_STATS_MAX, RTA_DATA(attr),
-+				     RTA_PAYLOAD(attr));
-+
-+			if (stb[BRIDGE_VLANDB_STATS_RX_BYTES]) {
-+				attr = stb[BRIDGE_VLANDB_STATS_RX_BYTES];
-+				vstats.rx_bytes = rta_getattr_u64(attr);
-+			}
-+			if (stb[BRIDGE_VLANDB_STATS_RX_PACKETS]) {
-+				attr = stb[BRIDGE_VLANDB_STATS_RX_PACKETS];
-+				vstats.rx_packets = rta_getattr_u64(attr);
-+			}
-+			if (stb[BRIDGE_VLANDB_STATS_TX_PACKETS]) {
-+				attr = stb[BRIDGE_VLANDB_STATS_TX_PACKETS];
-+				vstats.tx_packets = rta_getattr_u64(attr);
-+			}
-+			if (stb[BRIDGE_VLANDB_STATS_TX_BYTES]) {
-+				attr = stb[BRIDGE_VLANDB_STATS_TX_BYTES];
-+				vstats.tx_bytes = rta_getattr_u64(attr);
-+			}
-+		}
-+		open_json_object(NULL);
-+		if (!newport)
-+			print_string(PRINT_FP, NULL, "%-" __stringify(IFNAMSIZ) "s  ", "");
-+		else
-+			newport = false;
-+		print_range("vlan", vinfo->vid, vrange);
-+		print_vlan_flags(vinfo->flags);
-+		print_nl();
-+		print_string(PRINT_FP, NULL, "%-" __stringify(IFNAMSIZ) "s    ", "");
-+		print_stp_state(state);
-+		print_nl();
-+		if (show_stats)
-+			__print_one_vlan_stats(&vstats);
-+		close_json_object();
-+	}
-+
-+	return 0;
++	return print_vlan_rtm(n, arg, false);
 +}
 +
  static int vlan_show(int argc, char **argv, int subject)
  {
  	char *filter_dev = NULL;
-@@ -644,6 +748,34 @@ static int vlan_show(int argc, char **argv, int subject)
- 
- 	new_json_obj(json);
- 
-+	/* if show_details is true then use the new bridge vlan dump format */
-+	if (show_details && subject == VLAN_SHOW_VLAN) {
-+		__u32 dump_flags = show_stats ? BRIDGE_VLANDB_DUMPF_STATS : 0;
-+
-+		if (rtnl_brvlandump_req(&rth, PF_BRIDGE, dump_flags) < 0) {
-+			perror("Cannot send dump request");
-+			exit(1);
-+		}
-+
-+		if (!is_json_context()) {
-+			printf("%-" __stringify(IFNAMSIZ) "s  %-"
-+			       __stringify(VLAN_ID_LEN) "s", "port",
-+			       "vlan-id");
-+			printf("\n");
-+		}
-+
-+		ret = rtnl_dump_filter(&rth, print_vlan_rtm, &subject);
-+		if (ret < 0) {
-+			fprintf(stderr, "Dump terminated\n");
-+			exit(1);
-+		}
-+
-+		if (vlan_rtm_cur_ifidx != -1)
-+			close_vlan_port();
-+
-+		goto out;
-+	}
-+
- 	if (!show_stats) {
- 		if (rtnl_linkdump_req_filter(&rth, PF_BRIDGE,
- 					     (compress_vlans ?
-@@ -697,6 +829,7 @@ static int vlan_show(int argc, char **argv, int subject)
+@@ -764,7 +775,7 @@ static int vlan_show(int argc, char **argv, int subject)
+ 			printf("\n");
  		}
- 	}
  
-+out:
- 	delete_json_obj();
- 	fflush(stdout);
- 	return 0;
-diff --git a/include/libnetlink.h b/include/libnetlink.h
-index da96c69b9ede..6bff6bae6ddf 100644
---- a/include/libnetlink.h
-+++ b/include/libnetlink.h
-@@ -285,6 +285,11 @@ int rtnl_from_file(FILE *, rtnl_listen_filter_t handler,
- 	((struct rtattr *)(((char *)(r)) + NLMSG_ALIGN(sizeof(struct if_stats_msg))))
- #endif
- 
-+#ifndef BRVLAN_RTA
-+#define BRVLAN_RTA(r) \
-+	((struct rtattr *)(((char *)(r)) + NLMSG_ALIGN(sizeof(struct br_vlan_msg))))
-+#endif
-+
- /* User defined nlmsg_type which is used mostly for logging netlink
-  * messages from dump file */
- #define NLMSG_TSTAMP	15
+-		ret = rtnl_dump_filter(&rth, print_vlan_rtm, &subject);
++		ret = rtnl_dump_filter(&rth, print_vlan_rtm_filter, &subject);
+ 		if (ret < 0) {
+ 			fprintf(stderr, "Dump terminated\n");
+ 			exit(1);
 diff --git a/man/man8/bridge.8 b/man/man8/bridge.8
-index 90dcae73ce71..9c8ebac3c6aa 100644
+index 9c8ebac3c6aa..eec7df4383bc 100644
 --- a/man/man8/bridge.8
 +++ b/man/man8/bridge.8
-@@ -171,7 +171,7 @@ As a rule, the information is statistics or some time values.
+@@ -153,7 +153,7 @@ bridge \- show / manipulate bridge addresses and devices
+ .IR DEV " ]"
  
- .TP
- .BR "\-d" , " \-details"
--print detailed information about MDB router ports.
-+print detailed information about bridge vlan filter entries or MDB router ports.
+ .ti -8
+-.BR "bridge monitor" " [ " all " | " neigh " | " link " | " mdb " ]"
++.BR "bridge monitor" " [ " all " | " neigh " | " link " | " mdb " | " vlan " ]"
  
- .TP
- .BR "\-n" , " \-net" , " \-netns " <NETNS>
-@@ -881,6 +881,11 @@ STP BPDUs.
+ .SH OPTIONS
  
- This command displays the current VLAN filter table.
- 
-+.PP
-+With the
-+.B -details
-+option, the command becomes verbose. It displays the per-vlan options.
-+
- .PP
- With the
- .B -statistics
+@@ -911,7 +911,7 @@ command is the first in the command line and then the object list follows:
+ .I OBJECT-LIST
+ is the list of object types that we want to monitor.
+ It may contain
+-.BR link ", " fdb ", and " mdb "."
++.BR link ", " fdb ", " vlan " and " mdb "."
+ If no
+ .B file
+ argument is given,
 -- 
 2.30.2
 
