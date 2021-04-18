@@ -2,96 +2,120 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CEACC363773
-	for <lists+netdev@lfdr.de>; Sun, 18 Apr 2021 22:04:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 95D773637A1
+	for <lists+netdev@lfdr.de>; Sun, 18 Apr 2021 23:04:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232992AbhDRUE0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 18 Apr 2021 16:04:26 -0400
-Received: from mail-pl1-f177.google.com ([209.85.214.177]:40470 "EHLO
-        mail-pl1-f177.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229488AbhDRUE0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 18 Apr 2021 16:04:26 -0400
-Received: by mail-pl1-f177.google.com with SMTP id 20so12648056pll.7;
-        Sun, 18 Apr 2021 13:03:56 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=ocpvHH0OfSXrZ6ZZMO0Iq2R7HY+eWtpOHZ6cffg0O+U=;
-        b=nzbrwGdsiOVYoKUwqIJA/Dsk4TB0S7h1ScWbM557BYuJAdubV+VH/lm/MZ9ItOmKfO
-         cBk/d0LoBFwwetoMb5+Z8c1I/M3SLzROqJ8IiwqpL6ujwgKcijzwnOcaUb4S9dw8pot+
-         vTuqNAmn5YZnZ7pmC1WFWpwtrEXmt785W7UqfT+olAnztz6QICSdlT7zbtFUNLlXIY8X
-         zmzpW1Sh+GxhIzyXzdBnAcDGhhBIQpYB5cgMo1gg9AUDi5o8DjVNHo6ur8zjwndW6xkH
-         OyXsiIo4G7ROBca8DML5khdbKusCeA8DQcsSE+g5HPISPP3apTnq1nqCTZtv6za6fqXz
-         WdYQ==
-X-Gm-Message-State: AOAM531d9VPZzKW6O5PYuoT87wnum1eHxKQGuvyosDH1pQQFPyU8ccuy
-        1giidAAEI3NXd/NZGVc9CobnoWvy1WI=
-X-Google-Smtp-Source: ABdhPJwVMeZX60Cq/LEZaC2MurSw6/8c7B9QK4fEJcoFPFcW7/3smnviEnjy7bNu7xBPskHuzhoDOw==
-X-Received: by 2002:a17:90a:fb4c:: with SMTP id iq12mr20945436pjb.121.1618776235751;
-        Sun, 18 Apr 2021 13:03:55 -0700 (PDT)
-Received: from ?IPv6:2601:647:4000:d7:93db:a33:19a8:2126? ([2601:647:4000:d7:93db:a33:19a8:2126])
-        by smtp.gmail.com with ESMTPSA id k13sm12472311pji.14.2021.04.18.13.03.54
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 18 Apr 2021 13:03:54 -0700 (PDT)
-Subject: Re: [PATCH] net/mlx5: Use kasprintf instead of hand-writing it
-To:     Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        saeedm@nvidia.com, leon@kernel.org, davem@davemloft.net,
-        kuba@kernel.org
-Cc:     netdev@vger.kernel.org, linux-rdma@vger.kernel.org,
-        linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org
-References: <46235ec010551d2788483ce636686a61345e40ba.1618643703.git.christophe.jaillet@wanadoo.fr>
-From:   Bart Van Assche <bvanassche@acm.org>
-Message-ID: <131988e1-2327-99f8-95e1-778d653c36ec@acm.org>
-Date:   Sun, 18 Apr 2021 13:03:53 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.9.1
+        id S230457AbhDRVEv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 18 Apr 2021 17:04:51 -0400
+Received: from mail.netfilter.org ([217.70.188.207]:34968 "EHLO
+        mail.netfilter.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229470AbhDRVEv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 18 Apr 2021 17:04:51 -0400
+Received: from localhost.localdomain (unknown [90.77.255.23])
+        by mail.netfilter.org (Postfix) with ESMTPSA id B710263E34;
+        Sun, 18 Apr 2021 23:03:51 +0200 (CEST)
+From:   Pablo Neira Ayuso <pablo@netfilter.org>
+To:     netfilter-devel@vger.kernel.org
+Cc:     davem@davemloft.net, netdev@vger.kernel.org, kuba@kernel.org
+Subject: [PATCH net-next 00/14] Netfilter updates for net-next
+Date:   Sun, 18 Apr 2021 23:04:01 +0200
+Message-Id: <20210418210415.4719-1-pablo@netfilter.org>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-In-Reply-To: <46235ec010551d2788483ce636686a61345e40ba.1618643703.git.christophe.jaillet@wanadoo.fr>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 4/17/21 12:16 AM, Christophe JAILLET wrote:
-> 'kasprintf()' can replace a kmalloc/strcpy/strcat sequence.
-> It is less verbose and avoid the use of a magic number (64).
-> 
-> Anyway, the underlying 'alloc_workqueue()' would only keep the 24 first
-> chars (i.e. sizeof(struct workqueue_struct->name) = WQ_NAME_LEN).
-> 
-> Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-> ---
->  drivers/net/ethernet/mellanox/mlx5/core/health.c | 4 +---
->  1 file changed, 1 insertion(+), 3 deletions(-)
-> 
-> diff --git a/drivers/net/ethernet/mellanox/mlx5/core/health.c b/drivers/net/ethernet/mellanox/mlx5/core/health.c
-> index 9ff163c5bcde..a5383e701b4b 100644
-> --- a/drivers/net/ethernet/mellanox/mlx5/core/health.c
-> +++ b/drivers/net/ethernet/mellanox/mlx5/core/health.c
-> @@ -802,12 +802,10 @@ int mlx5_health_init(struct mlx5_core_dev *dev)
->  	mlx5_fw_reporters_create(dev);
->  
->  	health = &dev->priv.health;
-> -	name = kmalloc(64, GFP_KERNEL);
-> +	name = kasprintf(GFP_KERNEL, "mlx5_health%s", dev_name(dev->device));
->  	if (!name)
->  		goto out_err;
->  
-> -	strcpy(name, "mlx5_health");
-> -	strcat(name, dev_name(dev->device));
->  	health->wq = create_singlethread_workqueue(name);
->  	kfree(name);
->  	if (!health->wq)
+Hi,
 
-Instead of modifying the mlx5 driver, please change the definition of
-the create_singlethread_workqueue() such that it accept a format
-specifier and a variable number of arguments.
+The following patchset contains Netfilter updates for net-next:
 
-Thanks,
+1) Add vlan match and pop actions to the flowtable offload,
+   patches from wenxu.
 
-Bart.
+2) Reduce size of the netns_ct structure, which itself is
+   embedded in struct net Make netns_ct a read-mostly structure.
+   Patches from Florian Westphal.
 
+3) Add FLOW_OFFLOAD_XMIT_UNSPEC to skip dst check from garbage
+   collector path, as required by the tc CT action. From Roi Dayan.
 
+4) VLAN offload fixes for nftables: Allow for matching on both s-vlan
+   and c-vlan selectors. Fix match of VLAN id due to incorrect
+   byteorder. Add a new routine to properly populate flow dissector
+   ethertypes.
+
+5) Missing keys in ip{6}_route_me_harder() results in incorrect
+   routes. This includes an update for selftest infra. Patches
+   from Ido Schimmel.
+
+6) Add counter hardware offload support through FLOW_CLS_STATS.
+
+Please, pull these changes from:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/pablo/nf-next.git
+
+Thanks!
+
+----------------------------------------------------------------
+
+The following changes since commit 8ef7adc6beb2ef0bce83513dc9e4505e7b21e8c2:
+
+  net: ethernet: ravb: Enable optional refclk (2021-04-12 14:09:59 -0700)
+
+are available in the Git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/pablo/nf-next.git HEAD
+
+for you to fetch changes up to b72920f6e4a9d6607b723d69b7f412c829769c75:
+
+  netfilter: nftables: counter hardware offload support (2021-04-18 22:04:49 +0200)
+
+----------------------------------------------------------------
+Florian Westphal (5):
+      netfilter: conntrack: move autoassign warning member to net_generic data
+      netfilter: conntrack: move autoassign_helper sysctl to net_generic data
+      netfilter: conntrack: move expect counter to net_generic data
+      netfilter: conntrack: move ct counter to net_generic data
+      netfilter: conntrack: convert sysctls to u8
+
+Ido Schimmel (2):
+      netfilter: Dissect flow after packet mangling
+      selftests: fib_tests: Add test cases for interaction with mangling
+
+Pablo Neira Ayuso (4):
+      netfilter: nft_payload: fix C-VLAN offload support
+      netfilter: nftables_offload: VLAN id needs host byteorder in flow dissector
+      netfilter: nftables_offload: special ethertype handling for VLAN
+      netfilter: nftables: counter hardware offload support
+
+Roi Dayan (1):
+      netfilter: flowtable: Add FLOW_OFFLOAD_XMIT_UNSPEC xmit type
+
+wenxu (2):
+      netfilter: flowtable: add vlan match offload support
+      netfilter: flowtable: add vlan pop action offload support
+
+ include/net/netfilter/nf_conntrack.h      |   8 ++
+ include/net/netfilter/nf_flow_table.h     |   5 +-
+ include/net/netfilter/nf_tables.h         |   2 +
+ include/net/netfilter/nf_tables_offload.h |  13 ++-
+ include/net/netns/conntrack.h             |  23 ++---
+ net/ipv4/netfilter.c                      |   2 +
+ net/ipv6/netfilter.c                      |   2 +
+ net/netfilter/nf_conntrack_core.c         |  46 ++++++---
+ net/netfilter/nf_conntrack_expect.c       |  22 +++--
+ net/netfilter/nf_conntrack_helper.c       |  15 ++-
+ net/netfilter/nf_conntrack_netlink.c      |   5 +-
+ net/netfilter/nf_conntrack_proto_tcp.c    |  34 +++----
+ net/netfilter/nf_conntrack_standalone.c   |  66 +++++++------
+ net/netfilter/nf_flow_table_core.c        |   3 +
+ net/netfilter/nf_flow_table_offload.c     |  52 ++++++++++
+ net/netfilter/nf_tables_api.c             |   3 +
+ net/netfilter/nf_tables_offload.c         |  88 +++++++++++++++--
+ net/netfilter/nft_cmp.c                   |  41 +++++++-
+ net/netfilter/nft_counter.c               |  29 ++++++
+ net/netfilter/nft_payload.c               |  13 ++-
+ tools/testing/selftests/net/fib_tests.sh  | 152 +++++++++++++++++++++++++++++-
+ 21 files changed, 520 insertions(+), 104 deletions(-)
