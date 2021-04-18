@@ -2,24 +2,24 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5BB2A3637B7
+	by mail.lfdr.de (Postfix) with ESMTP id CD82A3637B8
 	for <lists+netdev@lfdr.de>; Sun, 18 Apr 2021 23:04:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236737AbhDRVFH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 18 Apr 2021 17:05:07 -0400
-Received: from mail.netfilter.org ([217.70.188.207]:34996 "EHLO
+        id S236839AbhDRVFK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 18 Apr 2021 17:05:10 -0400
+Received: from mail.netfilter.org ([217.70.188.207]:35002 "EHLO
         mail.netfilter.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232806AbhDRVE4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 18 Apr 2021 17:04:56 -0400
+        with ESMTP id S232874AbhDRVE5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 18 Apr 2021 17:04:57 -0400
 Received: from localhost.localdomain (unknown [90.77.255.23])
-        by mail.netfilter.org (Postfix) with ESMTPSA id D742763E8B;
-        Sun, 18 Apr 2021 23:03:57 +0200 (CEST)
+        by mail.netfilter.org (Postfix) with ESMTPSA id 58CF163E87;
+        Sun, 18 Apr 2021 23:03:58 +0200 (CEST)
 From:   Pablo Neira Ayuso <pablo@netfilter.org>
 To:     netfilter-devel@vger.kernel.org
 Cc:     davem@davemloft.net, netdev@vger.kernel.org, kuba@kernel.org
-Subject: [PATCH net-next 08/14] netfilter: flowtable: Add FLOW_OFFLOAD_XMIT_UNSPEC xmit type
-Date:   Sun, 18 Apr 2021 23:04:09 +0200
-Message-Id: <20210418210415.4719-9-pablo@netfilter.org>
+Subject: [PATCH net-next 09/14] netfilter: nft_payload: fix C-VLAN offload support
+Date:   Sun, 18 Apr 2021 23:04:10 +0200
+Message-Id: <20210418210415.4719-10-pablo@netfilter.org>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20210418210415.4719-1-pablo@netfilter.org>
 References: <20210418210415.4719-1-pablo@netfilter.org>
@@ -29,48 +29,52 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Roi Dayan <roid@nvidia.com>
+- add another struct flow_dissector_key_vlan for C-VLAN
+- update layer 3 dependency to allow to match on IPv4/IPv6
 
-It could be xmit type was not set and would default to FLOW_OFFLOAD_XMIT_NEIGH
-and in this type the gc expect to have a route info.
-Fix that by adding FLOW_OFFLOAD_XMIT_UNSPEC which defaults to 0.
-
-Fixes: 8b9229d15877 ("netfilter: flowtable: dst_check() from garbage collector path")
-Signed-off-by: Roi Dayan <roid@nvidia.com>
+Fixes: 89d8fd44abfb ("netfilter: nft_payload: add C-VLAN offload support")
 Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
 ---
- include/net/netfilter/nf_flow_table.h | 3 ++-
- net/netfilter/nf_flow_table_core.c    | 3 +++
- 2 files changed, 5 insertions(+), 1 deletion(-)
+ include/net/netfilter/nf_tables_offload.h | 1 +
+ net/netfilter/nft_payload.c               | 5 +++--
+ 2 files changed, 4 insertions(+), 2 deletions(-)
 
-diff --git a/include/net/netfilter/nf_flow_table.h b/include/net/netfilter/nf_flow_table.h
-index d46e422c9d10..51d8eb99764d 100644
---- a/include/net/netfilter/nf_flow_table.h
-+++ b/include/net/netfilter/nf_flow_table.h
-@@ -92,7 +92,8 @@ enum flow_offload_tuple_dir {
- #define FLOW_OFFLOAD_DIR_MAX	IP_CT_DIR_MAX
+diff --git a/include/net/netfilter/nf_tables_offload.h b/include/net/netfilter/nf_tables_offload.h
+index 1d34fe154fe0..b4d080061399 100644
+--- a/include/net/netfilter/nf_tables_offload.h
++++ b/include/net/netfilter/nf_tables_offload.h
+@@ -45,6 +45,7 @@ struct nft_flow_key {
+ 	struct flow_dissector_key_ports			tp;
+ 	struct flow_dissector_key_ip			ip;
+ 	struct flow_dissector_key_vlan			vlan;
++	struct flow_dissector_key_vlan			cvlan;
+ 	struct flow_dissector_key_eth_addrs		eth_addrs;
+ 	struct flow_dissector_key_meta			meta;
+ } __aligned(BITS_PER_LONG / 8); /* Ensure that we can do comparisons as longs. */
+diff --git a/net/netfilter/nft_payload.c b/net/netfilter/nft_payload.c
+index cb1c8c231880..a990f37e0a60 100644
+--- a/net/netfilter/nft_payload.c
++++ b/net/netfilter/nft_payload.c
+@@ -241,7 +241,7 @@ static int nft_payload_offload_ll(struct nft_offload_ctx *ctx,
+ 		if (!nft_payload_offload_mask(reg, priv->len, sizeof(__be16)))
+ 			return -EOPNOTSUPP;
  
- enum flow_offload_xmit_type {
--	FLOW_OFFLOAD_XMIT_NEIGH		= 0,
-+	FLOW_OFFLOAD_XMIT_UNSPEC	= 0,
-+	FLOW_OFFLOAD_XMIT_NEIGH,
- 	FLOW_OFFLOAD_XMIT_XFRM,
- 	FLOW_OFFLOAD_XMIT_DIRECT,
- };
-diff --git a/net/netfilter/nf_flow_table_core.c b/net/netfilter/nf_flow_table_core.c
-index 76573bae6664..39c02d1aeedf 100644
---- a/net/netfilter/nf_flow_table_core.c
-+++ b/net/netfilter/nf_flow_table_core.c
-@@ -130,6 +130,9 @@ static int flow_offload_fill_route(struct flow_offload *flow,
- 		flow_tuple->dst_cache = dst;
- 		flow_tuple->dst_cookie = flow_offload_dst_cookie(flow_tuple);
+-		NFT_OFFLOAD_MATCH(FLOW_DISSECTOR_KEY_CVLAN, vlan,
++		NFT_OFFLOAD_MATCH(FLOW_DISSECTOR_KEY_CVLAN, cvlan,
+ 				  vlan_tci, sizeof(__be16), reg);
  		break;
-+	default:
-+		WARN_ON_ONCE(1);
-+		break;
- 	}
- 	flow_tuple->xmit_type = route->tuple[dir].xmit_type;
+ 	case offsetof(struct vlan_ethhdr, h_vlan_encapsulated_proto) +
+@@ -249,8 +249,9 @@ static int nft_payload_offload_ll(struct nft_offload_ctx *ctx,
+ 		if (!nft_payload_offload_mask(reg, priv->len, sizeof(__be16)))
+ 			return -EOPNOTSUPP;
  
+-		NFT_OFFLOAD_MATCH(FLOW_DISSECTOR_KEY_CVLAN, vlan,
++		NFT_OFFLOAD_MATCH(FLOW_DISSECTOR_KEY_CVLAN, cvlan,
+ 				  vlan_tpid, sizeof(__be16), reg);
++		nft_offload_set_dependency(ctx, NFT_OFFLOAD_DEP_NETWORK);
+ 		break;
+ 	default:
+ 		return -EOPNOTSUPP;
 -- 
 2.30.2
 
