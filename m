@@ -2,64 +2,65 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C0B003636F8
-	for <lists+netdev@lfdr.de>; Sun, 18 Apr 2021 19:18:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4401F363709
+	for <lists+netdev@lfdr.de>; Sun, 18 Apr 2021 19:40:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232148AbhDRRSv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 18 Apr 2021 13:18:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52546 "EHLO
+        id S232195AbhDRRlC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 18 Apr 2021 13:41:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57292 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229783AbhDRRSv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 18 Apr 2021 13:18:51 -0400
-Received: from mail-ot1-x329.google.com (mail-ot1-x329.google.com [IPv6:2607:f8b0:4864:20::329])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC234C06174A
-        for <netdev@vger.kernel.org>; Sun, 18 Apr 2021 10:18:22 -0700 (PDT)
-Received: by mail-ot1-x329.google.com with SMTP id 5-20020a9d09050000b029029432d8d8c5so4489949otp.11
-        for <netdev@vger.kernel.org>; Sun, 18 Apr 2021 10:18:22 -0700 (PDT)
+        with ESMTP id S229783AbhDRRlB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 18 Apr 2021 13:41:01 -0400
+Received: from mail-oi1-x22a.google.com (mail-oi1-x22a.google.com [IPv6:2607:f8b0:4864:20::22a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 65214C06174A
+        for <netdev@vger.kernel.org>; Sun, 18 Apr 2021 10:40:33 -0700 (PDT)
+Received: by mail-oi1-x22a.google.com with SMTP id r186so5492816oif.8
+        for <netdev@vger.kernel.org>; Sun, 18 Apr 2021 10:40:33 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:to:cc:references:from:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=jF9fBt2nov031f6xnBGBm3xWArwyDa+sNYURniHyNmY=;
-        b=b59q34nfYRmN36FtH5k/GIPX9ePX5Qo0bGaqTPqQ87b8+HeIWTY5XqQpi3ywBgT1b9
-         J3EYYWrvK3OowlKYA0t8l7LyK43RrVbUaOhFFHdbC0QhW5N/7qU2nM2wK2jyGrgOApMB
-         ekyexPnPwhrhc0xkxE3V0TmBNghTrq38ZKP9OrxpzAk5TiSH0axvsAXl35a+Tzzoxrtj
-         jLrFaCN1HtX53PDIg8k90dSNRqMAWK5VymsHxFYAAmA+DvnHXvc67Wsyvu4g8dHwb2+c
-         djR+aK3PZKf0Rm3w1bW4HPcHT3wcgk/qsf8secDADr1+CQcTtI1llz5JC3LU0GfUCjUh
-         Jc8w==
+        bh=xnNR9E7qt8VWICLomDSoy45n/IXm/mRs/1a14UIIcdY=;
+        b=HU7gIdoLEqDGUdbPSz0noBR0aVD0cyzoIWFZ7H5CdmePAP0I/U8MpCwUIEjma/4Qhz
+         FWX2WNKV/iPrQ5CIYYP1dKW+nXDRAecAiSgzGznHpZ1VKlLsJqipJctFbKGXeIcBObpC
+         oCEuYV2SgJACcUYIWLVTpPZgcS6ug4YcTj8FMWjOGEKUYo+Y+37QKomClw6XUp4usc+s
+         WYl+P68QzkUwXX9XpbRPxcVX3AgiPHlrhvCV1IgnDHRVVCVhUW9xX1xTUxkXnQDkjAkd
+         ujGZikECmKhCs0sSPqZlsRWScWr+6icCzZUzyKhWg07BtwZQApCpTC7n9yHuEILQayre
+         1wcw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:message-id:date
          :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=jF9fBt2nov031f6xnBGBm3xWArwyDa+sNYURniHyNmY=;
-        b=l53GTMVpvPRGUiuw77gdpFcGyddQxZEBnl9BlgRqK/AZ+KF28UDITE7Us8gbL1wbIz
-         22/w+CVl1krCe63yJHYEzllxqfTPj1W4bUq1zDdspKCNK13q3hSAcDaT8+LbV58y+Md2
-         ir4QTMyZY7aRXG3ziO+z1CY0RbBtGfJclZgmKjbm10fzBfMd0oKXbXkEPMUzcwEb3oCp
-         35HlUqVOesh7ryWWq68//914BaVjpChVEg+TcZPcG+q5uZ3UJKVJ7iPD4H4sJ3e/nyTZ
-         zxaFg8x2BYTyQUSG9Z0LwYcZy1BEwmqybNMa3lxtpMskjcVuR6VVrJ0E5gRaW1kKIeOK
-         dXew==
-X-Gm-Message-State: AOAM531WEev+EF70GaOxXQlVzBsCL4rp/jLCMClkhxqhGxAs5DGhlwQa
-        NxY3MxKVwnA+TglpkGzn1jqE0sIaR1Y=
-X-Google-Smtp-Source: ABdhPJymnUo6Bq0pyGolilfwj6h3TP0bZSc402S82dqas7eiC3wODkqPOpvFTdzC8kO0YvxgB92L9g==
-X-Received: by 2002:a9d:224f:: with SMTP id o73mr7362843ota.323.1618766302236;
-        Sun, 18 Apr 2021 10:18:22 -0700 (PDT)
+        bh=xnNR9E7qt8VWICLomDSoy45n/IXm/mRs/1a14UIIcdY=;
+        b=tjZW46jDOMZoncaRkdEAS+jUTKl55c4ohSzcCkntAPNrSUitW3I6gUqmP7MH6PfCk7
+         ppIm/xYaVaI/r1ZT5XIQdug2pJaGOhXvYLVIW/GpYrul4creGYfkNLBdLhj8fi13gOhE
+         +h5gdsNgGNHm4a6k5HzryqviRfu5rjAVDkSGNI1jszaqj6TEIMTO0twD4Q8htw0kK7wK
+         VfEiKPPa/tmb8y2B3nG9MB5UAVbkad5eeNlWg1CH7nh2RwrGcFy5jaj1w/gtiatjYvTp
+         ISYgMYz6KyGhxp8tojdpRVq2r2Ce02iHk/YHxCJrRax8S27+0Ad504PBoKqNpj2aJbo+
+         Ov8Q==
+X-Gm-Message-State: AOAM530Zha/FuGNKCqmiUcEskPxEwkaEisglwhn5/UAIJMq7KAqD55zi
+        Ettghp1e7hvZ6Idh8wsYFeZS6Nh7HZI=
+X-Google-Smtp-Source: ABdhPJxvim3LD/c4+MQxZ6ATQZwMr2V3VfKizMbl3rec00Jchkye9nec1J7pkXtkt1sBujCcsKuKXA==
+X-Received: by 2002:aca:3788:: with SMTP id e130mr12902593oia.45.1618767632728;
+        Sun, 18 Apr 2021 10:40:32 -0700 (PDT)
 Received: from Davids-MacBook-Pro.local ([8.45.41.12])
-        by smtp.googlemail.com with ESMTPSA id a18sm932155oop.28.2021.04.18.10.18.21
+        by smtp.googlemail.com with ESMTPSA id h17sm2832324otj.38.2021.04.18.10.40.31
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 18 Apr 2021 10:18:21 -0700 (PDT)
-Subject: Re: [PATCH iproute2] ip: drop 2-char command assumption
-To:     Tony Ambardar <tony.ambardar@gmail.com>,
-        Stephen Hemminger <stephen@networkplumber.org>
+        Sun, 18 Apr 2021 10:40:32 -0700 (PDT)
+Subject: Re: Different behavior wrt VRF and no VRF - packet Tx
+To:     Bala Sajja <bssajja@gmail.com>
 Cc:     netdev@vger.kernel.org
-References: <20210418034958.505267-1-Tony.Ambardar@gmail.com>
+References: <CAE_QS3ccJB8GqVrJ_95P7K=NmXC0TP_NyoAiVbTqhk09JRodrA@mail.gmail.com>
+ <e73269cc-1530-5749-0b62-f30b742217e1@gmail.com>
+ <CAE_QS3fP_CysCvwtTxu=1PPRZevFwBPjFpyq6M+NtZ_CrOkZhw@mail.gmail.com>
 From:   David Ahern <dsahern@gmail.com>
-Message-ID: <9008a711-be95-caf7-5c56-dad5450e8f5c@gmail.com>
-Date:   Sun, 18 Apr 2021 10:18:18 -0700
+Message-ID: <82104ae2-b687-94fb-80b5-5cd91f5fef41@gmail.com>
+Date:   Sun, 18 Apr 2021 10:40:30 -0700
 User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
  Gecko/20100101 Thunderbird/78.9.1
 MIME-Version: 1.0
-In-Reply-To: <20210418034958.505267-1-Tony.Ambardar@gmail.com>
+In-Reply-To: <CAE_QS3fP_CysCvwtTxu=1PPRZevFwBPjFpyq6M+NtZ_CrOkZhw@mail.gmail.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -67,44 +68,9 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 4/17/21 8:49 PM, Tony Ambardar wrote:
-> The 'ip' utility hardcodes the assumption of being a 2-char command, where
-> any follow-on characters are passed as an argument:
-> 
->   $ ./ip-full help
->   Object "-full" is unknown, try "ip help".
-> 
-> This confusing behaviour isn't seen with 'tc' for example, and was added in
-> a 2005 commit without documentation. It was noticed during testing of 'ip'
-> variants built/packaged with different feature sets (e.g. w/o BPF support).
-> 
-> Drop the related code.
-> 
-> Fixes: 351efcde4e62 ("Update header files to 2.6.14")
-> Signed-off-by: Tony Ambardar <Tony.Ambardar@gmail.com>
-> ---
->  ip/ip.c | 3 ---
->  1 file changed, 3 deletions(-)
-> 
-> diff --git a/ip/ip.c b/ip/ip.c
-> index 4cf09fc3..631ce903 100644
-> --- a/ip/ip.c
-> +++ b/ip/ip.c
-> @@ -313,9 +313,6 @@ int main(int argc, char **argv)
->  
->  	rtnl_set_strict_dump(&rth);
->  
-> -	if (strlen(basename) > 2)
-> -		return do_cmd(basename+2, argc, argv);
-> -
->  	if (argc > 1)
->  		return do_cmd(argv[1], argc-1, argv+1);
->  
-> 
+On 4/15/21 8:57 PM, Bala Sajja wrote:
+>        please find the ip link show output(for ifindex) and ping and
+> its corresponding perf fib events output. OIF seems MGMT(ifindex 5)
+> always, not enslaved  interfaces ?
 
-popular change request lately. As I responded to Matteo in January:
-
-This has been around for too long to just remove it. How about adding an
-option to do_cmd that this appears to be guess based on basename? If the
-guess is wrong, fallback to the next do_cmd.
-
+that is the reason it does not work.
