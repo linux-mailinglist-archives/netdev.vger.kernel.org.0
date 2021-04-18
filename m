@@ -2,183 +2,75 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CE72A363350
-	for <lists+netdev@lfdr.de>; Sun, 18 Apr 2021 06:18:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3F4BC363390
+	for <lists+netdev@lfdr.de>; Sun, 18 Apr 2021 06:41:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230349AbhDRETL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 18 Apr 2021 00:19:11 -0400
-Received: from mail.kernel.org ([198.145.29.99]:53090 "EHLO mail.kernel.org"
+        id S232153AbhDREka (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 18 Apr 2021 00:40:30 -0400
+Received: from wtarreau.pck.nerim.net ([62.212.114.60]:51849 "EHLO 1wt.eu"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229478AbhDRETK (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 18 Apr 2021 00:19:10 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 8EE596134F;
-        Sun, 18 Apr 2021 04:18:41 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1618719522;
-        bh=X7SF1ZbRezY/jBtbqlMMKV8AexA9eMJ6pYJUjCFoXtI=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=azllFjoyCiCgqnTaY0jZUIL55AukgwNH2YMRGh9FxzCiYNfHAcUO4B8i5WG0OAZdn
-         eJ/ODmlXfDOPOOKB91Go6LtFpWBGupC6qEgQcRVCcFyOMqXSiPzVzulfIf3jEMJvpR
-         4ZhEmk3aAbcqj3mzcoEXei2Agh8jsnmYZVCbh1M5X5xAfYDfe1NcdF3OjoafFrGFd3
-         IfsKFxKLjv17PNvHQaxBSCnRK8C/AzGKGRanimiMwtNeO2ryRK0nN+emeXhLsmyvK7
-         00NkbyztG0l33rKZC05AHoHD3kp0rk5n3VmCDaTM5jZIBHFcotBJgmOzYRMjAEdyAL
-         xqqqxqz8RzHYA==
-Date:   Sun, 18 Apr 2021 07:18:38 +0300
-From:   Leon Romanovsky <leon@kernel.org>
-To:     Devesh Sharma <devesh.sharma@broadcom.com>,
-        Jason Gunthorpe <jgg@nvidia.com>
-Cc:     Doug Ledford <dledford@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        linux-rdma <linux-rdma@vger.kernel.org>,
-        Michael Chan <michael.chan@broadcom.com>,
-        Naresh Kumar PBS <nareshkumar.pbs@broadcom.com>,
-        Netdev <netdev@vger.kernel.org>,
-        Selvin Xavier <selvin.xavier@broadcom.com>,
-        Somnath Kotur <somnath.kotur@broadcom.com>,
-        Sriharsha Basavapatna <sriharsha.basavapatna@broadcom.com>
-Subject: Re: [PATCH rdma-next v2 0/5] Get rid of custom made module dependency
-Message-ID: <YHuzHuH5VByg2fyU@unreal>
-References: <20210401065715.565226-1-leon@kernel.org>
- <CANjDDBiuw_VNepewLAtYE58Eg2JEsvGbpxttWyjV6DYMQdY5Zw@mail.gmail.com>
- <YGhUjarXh+BEK1pW@unreal>
- <CANjDDBiC-8pL+-ma1c0n8vjMaorm-CasV_D+_8q2LGy-AYuTVg@mail.gmail.com>
- <YG7srVMi8IEjuLfF@unreal>
- <CANjDDBirjSEkcDZ4E8u4Ce_dep3PRTmo2S9-q7=dmR+MLKi_=A@mail.gmail.com>
- <YHP5WRfEKQ3n9O0s@unreal>
- <CANjDDBhpJPc6wypp2u3OC9RjYEpYmXuNozZ5fRHSmx=vLWeYNw@mail.gmail.com>
- <YHqY8Led24PuLU5W@unreal>
- <CANjDDBgsh9FrQOgB-uR0GGYZHcF5cnTy4Efnd3L_-T2_eWqxsg@mail.gmail.com>
+        id S229671AbhDREka (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 18 Apr 2021 00:40:30 -0400
+Received: (from willy@localhost)
+        by pcw.home.local (8.15.2/8.15.2/Submit) id 13I4dXL6019049;
+        Sun, 18 Apr 2021 06:39:33 +0200
+Date:   Sun, 18 Apr 2021 06:39:33 +0200
+From:   Willy Tarreau <w@1wt.eu>
+To:     Matt Corallo <netdev-list@mattcorallo.com>
+Cc:     Keyu Man <kman001@ucr.edu>, Eric Dumazet <edumazet@google.com>,
+        David Ahern <dsahern@gmail.com>,
+        Florian Westphal <fw@strlen.de>, davem@davemloft.net,
+        yoshfuji@linux-ipv6.org, dsahern@kernel.org,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Zhiyun Qian <zhiyunq@cs.ucr.edu>
+Subject: Re: PROBLEM: DoS Attack on Fragment Cache
+Message-ID: <20210418043933.GB18896@1wt.eu>
+References: <02917697-4CE2-4BBE-BF47-31F58BC89025@hxcore.ol>
+ <52098fa9-2feb-08ae-c24f-1e696076c3b9@gmail.com>
+ <CANn89iL_V0WbeA-Zr29cLSp9pCsthkX9ze4W46gx=8-UeK2qMg@mail.gmail.com>
+ <20210417072744.GB14109@1wt.eu>
+ <CAMqUL6bkp2Dy3AMFZeNLjE1f-sAwnuBWpXH_FSYTSh8=Ac3RKg@mail.gmail.com>
+ <20210417075030.GA14265@1wt.eu>
+ <c6467c1c-54f5-8681-6e7d-aa1d9fc2ff32@bluematt.me>
+ <CAMqUL6bAVE9p=XEnH4HdBmBfThaY3FDosqyr8yrQo6N_9+Jf3w@mail.gmail.com>
+ <78d776a9-4299-ff4e-8ca2-096ec5c02d05@bluematt.me>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <CANjDDBgsh9FrQOgB-uR0GGYZHcF5cnTy4Efnd3L_-T2_eWqxsg@mail.gmail.com>
+In-Reply-To: <78d776a9-4299-ff4e-8ca2-096ec5c02d05@bluematt.me>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Apr 18, 2021 at 12:09:16AM +0530, Devesh Sharma wrote:
-> On Sat, Apr 17, 2021 at 1:44 PM Leon Romanovsky <leon@kernel.org> wrote:
-> >
-> > On Wed, Apr 14, 2021 at 07:15:37PM +0530, Devesh Sharma wrote:
-> > > On Mon, Apr 12, 2021 at 1:10 PM Leon Romanovsky <leon@kernel.org> wrote:
-> > > >
-> > > > On Thu, Apr 08, 2021 at 08:42:57PM +0530, Devesh Sharma wrote:
-> > > > > On Thu, Apr 8, 2021 at 5:14 PM Leon Romanovsky <leon@kernel.org> wrote:
-> > > > > >
-> > > > > > On Thu, Apr 08, 2021 at 05:06:24PM +0530, Devesh Sharma wrote:
-> > > > > > > On Sat, Apr 3, 2021 at 5:12 PM Leon Romanovsky <leon@kernel.org> wrote:
-> > > > > > > >
-> > > > > > > > On Sat, Apr 03, 2021 at 03:52:13PM +0530, Devesh Sharma wrote:
-> > > > > > > > > On Thu, Apr 1, 2021 at 12:27 PM Leon Romanovsky <leon@kernel.org> wrote:
-> > > > > > > > > >
-> > > > > > > > > > From: Leon Romanovsky <leonro@nvidia.com>
-> > > > > > > > > >
-> > > > > > > > > > Changelog:
-> > > > > > > > > > v2:
-> > > > > > > > > >  * kbuild spotted that I didn't delete all code in patch #5, so deleted
-> > > > > > > > > >    even more ulp_ops derefences.
-> > > > > > > > > > v1: https://lore.kernel.org/linux-rdma/20210329085212.257771-1-leon@kernel.org
-> > > > > > > > > >  * Go much deeper and removed useless ULP indirection
-> > > > > > > > > > v0: https://lore.kernel.org/linux-rdma/20210324142524.1135319-1-leon@kernel.org
-> > > > > > > > > > -----------------------------------------------------------------------
-> > > > > > > > > >
-> > > > > > > > > > The following series fixes issue spotted in [1], where bnxt_re driver
-> > > > > > > > > > messed with module reference counting in order to implement symbol
-> > > > > > > > > > dependency of bnxt_re and bnxt modules. All of this is done, when in
-> > > > > > > > > > upstream we have only one ULP user of that bnxt module. The simple
-> > > > > > > > > > declaration of exported symbol would do the trick.
-> > > > > > > > > >
-> > > > > > > > > > This series removes that custom module_get/_put, which is not supposed
-> > > > > > > > > > to be in the driver from the beginning and get rid of nasty indirection
-> > > > > > > > > > logic that isn't relevant for the upstream code.
-> > > > > > > > > >
-> > > > > > > > > > Such small changes allow us to simplify the bnxt code and my hope that
-> > > > > > > > > > Devesh will continue where I stopped and remove struct bnxt_ulp_ops too.
-> > > > > > > > > >
-> > > > > > > > > > Thanks
-> > > > > > > > > >
-> > > > > > > > > > [1] https://lore.kernel.org/linux-rdma/20210324142524.1135319-1-leon@kernel.org
-> > > > > > > > > >
-> > > > > > > > > > Leon Romanovsky (5):
-> > > > > > > > > >   RDMA/bnxt_re: Depend on bnxt ethernet driver and not blindly select it
-> > > > > > > > > >   RDMA/bnxt_re: Create direct symbolic link between bnxt modules
-> > > > > > > > > >   RDMA/bnxt_re: Get rid of custom module reference counting
-> > > > > > > > > >   net/bnxt: Remove useless check of non-existent ULP id
-> > > > > > > > > >   net/bnxt: Use direct API instead of useless indirection
-> > > > > > > > > >
-> > > > > > > > > >  drivers/infiniband/hw/bnxt_re/Kconfig         |   4 +-
-> > > > > > > > > >  drivers/infiniband/hw/bnxt_re/main.c          |  93 ++-----
-> > > > > > > > > >  drivers/net/ethernet/broadcom/bnxt/bnxt.c     |   4 +-
-> > > > > > > > > >  drivers/net/ethernet/broadcom/bnxt/bnxt.h     |   1 -
-> > > > > > > > > >  drivers/net/ethernet/broadcom/bnxt/bnxt_ulp.c | 245 +++++++-----------
-> > > > > > > > > >  drivers/net/ethernet/broadcom/bnxt/bnxt_ulp.h |  32 +--
-> > > > > > > > > >  6 files changed, 119 insertions(+), 260 deletions(-)
-> > > > > > > > >
-> > > > > > > > > Hi Leon,
-> > > > > > > > >
-> > > > > > > > > After a couple of internal discussions we reached a conclusion to
-> > > > > > > > > implement the Auxbus driver interface and fix the problem once and for
-> > > > > > > > > all.
-> > > > > > > >
-> > > > > > > > Thanks Devesh,
-> > > > > > > >
-> > > > > > > > Jason, it looks like we can proceed with this patchset, because in
-> > > > > > > > auxbus mode this module refcount and ULP indirection logics will be
-> > > > > > > > removed anyway.
-> > > > > > > >
-> > > > > > > > Thanks
-> > > > > > > Hi Leon,
-> > > > > > >
-> > > > > > > In my internal testing, I am seeing a crash using the 3rd patch. I am
-> > > > > > > spending a few cycles on debugging it. expect my input in a day or so.
-> > > > > >
-> > > > > > Can you please post the kernel crash report here?
-> > > > > > I don't see how function rename in patch #3 can cause to the crash.
-> > > > > Hey, unfortunately my kdump service config is giving me tough time on
-> > > > > my host. I will share if I get it.
-> > > >
-> > > > Any news here?
-> > > Expect something by this Friday. yesterday was a holiday in India.
-> >
-> > Any update?
-> > This series is close to three weeks already and I would like to progress with it.
-> Hi Leon,
-> 
-> The host crash I indicated earlier is actually caused by patch 4 and
-> not by patch 3 from this series. I spent time to root cause the
-> problem and realized that patch-4 is touching quite many areas which
-> would require much intrusive testing and validation.
-> As I indicated earlier, we are implementing the PCI Aux driver
-> interface at a faster pace. While PCI Aux changes are in progress we
-> are willing to retain the existing bnxt_re and bnxt_en interface
-> untouched.
-> The problem of module referencing would be rectified with PCI aux
-> change by inheritance.
+On Sat, Apr 17, 2021 at 10:26:30PM -0400, Matt Corallo wrote:
+> Sure, there are better ways to handle the reassembly cache overflowing, but
+> that is pretty unrelated to the fact that waiting 30 full seconds for a
+> fragment to come in doesn't really make sense in today's networks (the 30
+> second delay that is used today appears to even be higher than RFC 791
+> suggested in 1981!).
 
-Sorry no, the first three patches are not controversial and better to be
-applied now. They do the right thing and they are correct.
+Not exactly actually, because you forget the TTL here. With most hosts
+sending an initial TTL around 64, after crossing 10-15 hops it's still
+around 50 so that would result in ~50 seconds by default, even according
+to the 40 years old RFC791. The 15s there was the absolute minimum. While
+I do agree that we shouldn't keep them that long nowadays, we can't go
+too low without risking to break some slow transmission stacks (SLIP/PPP
+over modems for example). In addition even cutting that in 3 will remain
+trivially DoSable.
 
-There is a little trust in your promises above after you didn't show us kernel
-panic despite our numerous requests. I also very sceptical in Broadcom ability
-to provide auxbus implementation in timely manner.
+> You get a lot more bang for your buck if you don't wait
+> around so long (or we could restructure things to kick out the oldest
+> fragments, but that is a lot more work, and probably extra indexes that just
+> aren't worth it).
 
-It is worth to mention that auxbus won't eliminate the patches #4 and #5, but
-will embed them into your auxbus conversion.
+Kicking out oldest ones is a bad approach in a system made only of
+independent elements, because it tends to result in a lot of damage once
+all of them behave similarly. I.e. if you need to kick out an old entry
+in valid traffic, it's because you do need to wait that long, and if all
+datagrams need to wait that long, then new datagrams systematically
+prevent the oldest one from being reassembled, and none gest reassembled.
+With a random approach at least your success ratio converges towards 1/e
+(i.e. 36%) which is better.
 
-Jason, please take first three patches so internal HW IB driver won't do the crazy
-module management that is totally out of scope for drivers/infiniband and not needed.
-
-Thanks
-
-> >
-> > Thanks
-> 
-> 
-> 
-> 
-> --
-> -Regards
-> Devesh
-
-
+Willy
