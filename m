@@ -2,33 +2,33 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E89593633F6
-	for <lists+netdev@lfdr.de>; Sun, 18 Apr 2021 08:10:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B0AC73633FE
+	for <lists+netdev@lfdr.de>; Sun, 18 Apr 2021 08:15:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232607AbhDRGK6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 18 Apr 2021 02:10:58 -0400
-Received: from so254-9.mailgun.net ([198.61.254.9]:63296 "EHLO
-        so254-9.mailgun.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229993AbhDRGK5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 18 Apr 2021 02:10:57 -0400
+        id S235958AbhDRGP0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 18 Apr 2021 02:15:26 -0400
+Received: from m43-7.mailgun.net ([69.72.43.7]:20201 "EHLO m43-7.mailgun.net"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S236835AbhDRGPX (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 18 Apr 2021 02:15:23 -0400
 DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1618726230; h=Date: Message-Id: Cc: To: References:
+ s=smtp; t=1618726495; h=Date: Message-Id: Cc: To: References:
  In-Reply-To: From: Subject: Content-Transfer-Encoding: MIME-Version:
- Content-Type: Sender; bh=ypVoKjPH+9m+B6mFc4YokwEv6kqniBKcP4p0b5RWi0I=;
- b=ll2HFQaRi9/BX2h/EHjLSxa75dL8NIF9BxDDYktKz38OrGefoMAPtYBC6c25Dt5B0pBbd21u
- wakDmAWFqf3NQw0C3Bu3Gmiq9ylx3JwMVK83xIFan4WD4l8BJTINvakJao9BTaxfbT6rxvr+
- 8SoxnaE7xH8JjYEal94W0/dv2vc=
-X-Mailgun-Sending-Ip: 198.61.254.9
+ Content-Type: Sender; bh=HzA+cNbw61dWFMzcRtSYDf5FMk35E+JaLg7OiVxSUSY=;
+ b=KhdSNfgn6gGFJROpSgERwJdYtMxAFPjXAYuroTK9pacRtJHB03d67yY84F6q2yi8empQpAH4
+ BB3ivX1VU92jEGas17rJP1HvuYfxdoyFQUDTPnx+WVFbElT23m4IyeZwo1S95R/cwYO0/0UA
+ CuRbpcy7dKmCLMubfGumOwACfFc=
+X-Mailgun-Sending-Ip: 69.72.43.7
 X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
 Received: from smtp.codeaurora.org
  (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
- smtp-out-n06.prod.us-east-1.postgun.com with SMTP id
- 607bcd4e853c0a2c460b612b (version=TLS1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Sun, 18 Apr 2021 06:10:22
+ smtp-out-n02.prod.us-east-1.postgun.com with SMTP id
+ 607bce592cbba88980b3d6f8 (version=TLS1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Sun, 18 Apr 2021 06:14:49
  GMT
 Sender: kvalo=codeaurora.org@mg.codeaurora.org
 Received: by smtp.codeaurora.org (Postfix, from userid 1001)
-        id AB25CC43217; Sun, 18 Apr 2021 06:10:21 +0000 (UTC)
+        id E95B9C4338A; Sun, 18 Apr 2021 06:14:48 +0000 (UTC)
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
         aws-us-west-2-caf-mail-1.web.codeaurora.org
 X-Spam-Level: 
@@ -39,59 +39,45 @@ Received: from potku.adurom.net (88-114-240-156.elisa-laajakaista.fi [88.114.240
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
         (Authenticated sender: kvalo)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id 7A0C5C433D3;
-        Sun, 18 Apr 2021 06:10:16 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 7A0C5C433D3
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id 0A061C433F1;
+        Sun, 18 Apr 2021 06:14:43 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 0A061C433F1
 Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
 Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=fail smtp.mailfrom=kvalo@codeaurora.org
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
-Subject: Re: [PATCH] brcmsmac: fix shift on 4 bit masked value
+Subject: Re: [PATCH] hostap: Fix memleak in prism2_config
 From:   Kalle Valo <kvalo@codeaurora.org>
-In-Reply-To: <20210318164513.19600-1-colin.king@canonical.com>
-References: <20210318164513.19600-1-colin.king@canonical.com>
-To:     Colin King <colin.king@canonical.com>
-Cc:     Arend van Spriel <aspriel@gmail.com>,
-        Franky Lin <franky.lin@broadcom.com>,
-        Hante Meuleman <hante.meuleman@broadcom.com>,
-        Chi-hsien Lin <chi-hsien.lin@infineon.com>,
-        Wright Feng <wright.feng@infineon.com>,
-        Chung-hsien Hsu <chung-hsien.hsu@infineon.com>,
-        "David S . Miller" <davem@davemloft.net>,
+In-Reply-To: <20210329085246.24586-1-dinghao.liu@zju.edu.cn>
+References: <20210329085246.24586-1-dinghao.liu@zju.edu.cn>
+To:     Dinghao Liu <dinghao.liu@zju.edu.cn>
+Cc:     dinghao.liu@zju.edu.cn, kjlu@umn.edu, Jouni Malinen <j@w1.fi>,
+        "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        linux-wireless@vger.kernel.org,
-        brcm80211-dev-list.pdl@broadcom.com,
-        SHA-cyfmac-dev-list@infineon.com, netdev@vger.kernel.org,
-        kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
+        Leon Romanovsky <leon@kernel.org>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
 User-Agent: pwcli/0.1.0-git (https://github.com/kvalo/pwcli/) Python/3.5.2
-Message-Id: <20210418061021.AB25CC43217@smtp.codeaurora.org>
-Date:   Sun, 18 Apr 2021 06:10:21 +0000 (UTC)
+Message-Id: <20210418061448.E95B9C4338A@smtp.codeaurora.org>
+Date:   Sun, 18 Apr 2021 06:14:48 +0000 (UTC)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Colin King <colin.king@canonical.com> wrote:
+Dinghao Liu <dinghao.liu@zju.edu.cn> wrote:
 
-> From: Colin Ian King <colin.king@canonical.com>
+> When prism2_hw_config() fails, we just return an error code
+> without any resource release, which may lead to memleak.
 > 
-> The calculation of offtune_val seems incorrect, the u16 value in
-> pi->tx_rx_cal_radio_saveregs[2] is being masked with 0xf0 and then
-> shifted 8 places right so that always ends up as a zero result. I
-> believe the intended shift was 4 bits to the right. Fix this.
-> 
-> [Note: not tested, I don't have the H/W]
-> 
-> Addresses-Coverity: ("Operands don't affect result")
-> Fixes: 5b435de0d786 ("net: wireless: add brcm80211 drivers")
-> Signed-off-by: Colin Ian King <colin.king@canonical.com>
+> Signed-off-by: Dinghao Liu <dinghao.liu@zju.edu.cn>
 
-I think this needs review from someone familiar with the hardware.
+Nobody reviewed this, so dropping the patch.
 
 Patch set to Changes Requested.
 
 -- 
-https://patchwork.kernel.org/project/linux-wireless/patch/20210318164513.19600-1-colin.king@canonical.com/
+https://patchwork.kernel.org/project/linux-wireless/patch/20210329085246.24586-1-dinghao.liu@zju.edu.cn/
 
 https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
 
