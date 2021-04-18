@@ -2,98 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 103A1363331
-	for <lists+netdev@lfdr.de>; Sun, 18 Apr 2021 04:27:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 42FA3363348
+	for <lists+netdev@lfdr.de>; Sun, 18 Apr 2021 05:51:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236811AbhDRC1A (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 17 Apr 2021 22:27:00 -0400
-Received: from mail.as397444.net ([69.59.18.99]:55974 "EHLO mail.as397444.net"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229870AbhDRC07 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 17 Apr 2021 22:26:59 -0400
-X-Greylist: delayed 3381 seconds by postgrey-1.27 at vger.kernel.org; Sat, 17 Apr 2021 22:26:59 EDT
-Received: by mail.as397444.net (Postfix) with UTF8SMTPSA id C0AC853AFB6;
-        Sun, 18 Apr 2021 02:26:30 +0000 (UTC)
-X-DKIM-Note: Keys used to sign are likely public at https://as397444.net/dkim/
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mattcorallo.com;
-        s=1618711264; t=1618712790;
-        bh=LiyJFwIT2KhGaEmbM/SHTeC/VohaZDVunDtvveghw5Y=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=Nzqv9Ftghba6IC1H0bG0ckc2Dj/6DSSNa8Sf0hUiUf9aL6V4kbZv8pCWfcwkGiqam
-         +nv00CfNdO5b+O/9pMsa2FlyvTPgkl/OZG7BxoJOIx87x0T0rW/oxhYdvxP/negWki
-         5Scc4Bzam7OddowLcRQpDmG7M0tlKt/8kKNW4ZL9KBDCp/U73bTJU8L2/WTCSTpKT6
-         OargfOcMwNGrTHi7SKjTHl7OLPqxbi+pw7fn73/Ras0v/gANEYRCJK2Xrkn6rdaheB
-         H86Fs57ZX0Gx9qRtf9NvwhvKISxVL1kL5uneH2ogDcsS3InH9O/Ob0n+DBPv1KISSV
-         HH48qxkjl9Sag==
-Message-ID: <78d776a9-4299-ff4e-8ca2-096ec5c02d05@bluematt.me>
-Date:   Sat, 17 Apr 2021 22:26:30 -0400
+        id S235958AbhDRDvp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 17 Apr 2021 23:51:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49524 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229870AbhDRDvo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 17 Apr 2021 23:51:44 -0400
+Received: from mail-pj1-x1035.google.com (mail-pj1-x1035.google.com [IPv6:2607:f8b0:4864:20::1035])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F473C06174A
+        for <netdev@vger.kernel.org>; Sat, 17 Apr 2021 20:51:17 -0700 (PDT)
+Received: by mail-pj1-x1035.google.com with SMTP id j21-20020a17090ae615b02901505b998b45so3189068pjy.0
+        for <netdev@vger.kernel.org>; Sat, 17 Apr 2021 20:51:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=9V+qyodEUQpFo+Cqbo/ekfVPsKACgVLQio5ODc4eU80=;
+        b=lSx/2MvAgyFfu9hNpf8W663s0du61H7FPQc+x/agpxJFGqw1+CspPxGijb2Es81QxI
+         5au+sWl7bmcaKmzADFZ/s5/vTwFKWzANgxeVQoXQApSMTlpk53Z0aK0VEbMk8JLyuBla
+         JtGhrRSdbe5vGRykXPrdBFdTnThUSKaDjMzdRn/btXSqT5RiCl/9K9QmHaKrGsTkosmr
+         eNBNtPWmPo36dc9ldVcvDQyvmO094DhX32nHU58Tu3vFGgJiVT0ieyBVuKpwjRnjqpFK
+         NI5ROmxqr5wDR08ddvkaNUz9heHoBYgwCQqrLkDMtmInPRlrI2jxEz0yjuTbCoWv1U19
+         PV3Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=9V+qyodEUQpFo+Cqbo/ekfVPsKACgVLQio5ODc4eU80=;
+        b=IjuBhgTa2jnFNwC1yYiQWXwf6xh3h/o1n7dx9MawaH9HdUCL2Bk0kVZuQjVpOYH8E5
+         t8fkiO4/wLUC/3wNs/2d7JjcG3SvRIfnf1fWxYb5zkCIgb73zinvfvSkKOGhR8qVr9nX
+         vnLs/RfpEGF8Cld0/9an221RwGghYb8z4IlR6YaBKsl055Hk7+9bfGErEjsWuIteWt2v
+         L0Zv5Aqb5s8tRMwd/xKpu5CTAoW/YJB3XTP2AeDvzjorplkGAq2NAuquw55nopTFZ87H
+         A7IBvZ3lTXwbnpm6jYVwWj0eneHuHdHuAwhx0kowN9tEq/NV8K43lNvPGOU9awGoFzPG
+         aZIw==
+X-Gm-Message-State: AOAM532yUfdsY8CGnctj2RmLgDQUqD5Qtn4kMZxtNQ5490/pTkiojW4K
+        Z+kK84AqunveIhxdz6ksP+I=
+X-Google-Smtp-Source: ABdhPJxWTggnXWWvwVQy4ahYpDbTffSKWf7jC9aWDduayXW2l+HbbGrjar+XqVVy+tx0Z951avLf0g==
+X-Received: by 2002:a17:90a:5d0a:: with SMTP id s10mr15010463pji.0.1618717876835;
+        Sat, 17 Apr 2021 20:51:16 -0700 (PDT)
+Received: from localhost.localdomain ([2001:470:e92d:10:35:ab17:174d:e10b])
+        by smtp.gmail.com with ESMTPSA id s40sm7974081pfw.100.2021.04.17.20.51.15
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 17 Apr 2021 20:51:16 -0700 (PDT)
+From:   Tony Ambardar <tony.ambardar@gmail.com>
+X-Google-Original-From: Tony Ambardar <Tony.Ambardar@gmail.com>
+To:     Stephen Hemminger <stephen@networkplumber.org>
+Cc:     Tony Ambardar <Tony.Ambardar@gmail.com>, netdev@vger.kernel.org
+Subject: [PATCH iproute2] ip: drop 2-char command assumption
+Date:   Sat, 17 Apr 2021 20:49:58 -0700
+Message-Id: <20210418034958.505267-1-Tony.Ambardar@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Subject: Re: PROBLEM: DoS Attack on Fragment Cache
-Content-Language: en-US
-To:     Keyu Man <kman001@ucr.edu>
-Cc:     Willy Tarreau <w@1wt.eu>, Eric Dumazet <edumazet@google.com>,
-        David Ahern <dsahern@gmail.com>,
-        Florian Westphal <fw@strlen.de>, davem@davemloft.net,
-        yoshfuji@linux-ipv6.org, dsahern@kernel.org,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Zhiyun Qian <zhiyunq@cs.ucr.edu>
-References: <02917697-4CE2-4BBE-BF47-31F58BC89025@hxcore.ol>
- <52098fa9-2feb-08ae-c24f-1e696076c3b9@gmail.com>
- <CANn89iL_V0WbeA-Zr29cLSp9pCsthkX9ze4W46gx=8-UeK2qMg@mail.gmail.com>
- <20210417072744.GB14109@1wt.eu>
- <CAMqUL6bkp2Dy3AMFZeNLjE1f-sAwnuBWpXH_FSYTSh8=Ac3RKg@mail.gmail.com>
- <20210417075030.GA14265@1wt.eu>
- <c6467c1c-54f5-8681-6e7d-aa1d9fc2ff32@bluematt.me>
- <CAMqUL6bAVE9p=XEnH4HdBmBfThaY3FDosqyr8yrQo6N_9+Jf3w@mail.gmail.com>
-From:   Matt Corallo <netdev-list@mattcorallo.com>
-In-Reply-To: <CAMqUL6bAVE9p=XEnH4HdBmBfThaY3FDosqyr8yrQo6N_9+Jf3w@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Sure, there are better ways to handle the reassembly cache overflowing, but that is pretty unrelated to the fact that 
-waiting 30 full seconds for a fragment to come in doesn't really make sense in today's networks (the 30 second delay 
-that is used today appears to even be higher than RFC 791 suggested in 1981!). You get a lot more bang for your buck if 
-you don't wait around so long (or we could restructure things to kick out the oldest fragments, but that is a lot more 
-work, and probably extra indexes that just aren't worth it).
+The 'ip' utility hardcodes the assumption of being a 2-char command, where
+any follow-on characters are passed as an argument:
 
-Matt
+  $ ./ip-full help
+  Object "-full" is unknown, try "ip help".
 
-On 4/17/21 21:38, Keyu Man wrote:
-> Willy's words make sense to me and I agree that the existing fragments
-> should be evicted when the new one comes in and the cache is full.
-> Though the attacker can still leverage this to flush the victim's
-> cache, as mentioned previously, since fragments are likely to be
-> assembled in a very short time, it would be hard to launch the
-> attack(evicting the legit fragment before it's assembled requires a
-> large packet sending rate). And this seems better than the existing
-> solution (drop all incoming fragments when full).
-> 
-> Keyu
-> 
-> On Sat, Apr 17, 2021 at 6:30 PM Matt Corallo
-> <netdev-list@mattcorallo.com> wrote:
->>
->> See-also "[PATCH] Reduce IP_FRAG_TIME fragment-reassembly timeout to 1s, from 30s" (and the two resends of it) - given
->> the size of the default cache (4MB) and the time that it takes before we flush the cache (30 seconds) you only need
->> about 1Mbps of fragments to hit this issue. While DoS attacks are concerning, its also incredibly practical (and I do)
->> hit this issue in normal non-adversarial conditions.
->>
->> Matt
->>
->> On 4/17/21 03:50, Willy Tarreau wrote:
->>> On Sat, Apr 17, 2021 at 12:42:39AM -0700, Keyu Man wrote:
->>>> How about at least allow the existing queue to finish? Currently a tiny new
->>>> fragment would potentially invalid all previous fragments by letting them
->>>> timeout without allowing the fragments to come in to finish the assembly.
->>>
->>> Because this is exactly the principle of how attacks are built: reserve
->>> resources claiming that you'll send everything so that others can't make
->>> use of the resources that are reserved to you. The best solution precisely
->>> is *not* to wait for anyone to finish, hence *not* to reserve valuable
->>> resources that are unusuable by others.
->>>
->>> Willy
->>>
+This confusing behaviour isn't seen with 'tc' for example, and was added in
+a 2005 commit without documentation. It was noticed during testing of 'ip'
+variants built/packaged with different feature sets (e.g. w/o BPF support).
+
+Drop the related code.
+
+Fixes: 351efcde4e62 ("Update header files to 2.6.14")
+Signed-off-by: Tony Ambardar <Tony.Ambardar@gmail.com>
+---
+ ip/ip.c | 3 ---
+ 1 file changed, 3 deletions(-)
+
+diff --git a/ip/ip.c b/ip/ip.c
+index 4cf09fc3..631ce903 100644
+--- a/ip/ip.c
++++ b/ip/ip.c
+@@ -313,9 +313,6 @@ int main(int argc, char **argv)
+ 
+ 	rtnl_set_strict_dump(&rth);
+ 
+-	if (strlen(basename) > 2)
+-		return do_cmd(basename+2, argc, argv);
+-
+ 	if (argc > 1)
+ 		return do_cmd(argv[1], argc-1, argv+1);
+ 
+-- 
+2.25.1
+
