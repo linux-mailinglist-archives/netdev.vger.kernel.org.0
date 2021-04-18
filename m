@@ -2,97 +2,183 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 42FA3363348
-	for <lists+netdev@lfdr.de>; Sun, 18 Apr 2021 05:51:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CE72A363350
+	for <lists+netdev@lfdr.de>; Sun, 18 Apr 2021 06:18:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235958AbhDRDvp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 17 Apr 2021 23:51:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49524 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229870AbhDRDvo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 17 Apr 2021 23:51:44 -0400
-Received: from mail-pj1-x1035.google.com (mail-pj1-x1035.google.com [IPv6:2607:f8b0:4864:20::1035])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F473C06174A
-        for <netdev@vger.kernel.org>; Sat, 17 Apr 2021 20:51:17 -0700 (PDT)
-Received: by mail-pj1-x1035.google.com with SMTP id j21-20020a17090ae615b02901505b998b45so3189068pjy.0
-        for <netdev@vger.kernel.org>; Sat, 17 Apr 2021 20:51:17 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=9V+qyodEUQpFo+Cqbo/ekfVPsKACgVLQio5ODc4eU80=;
-        b=lSx/2MvAgyFfu9hNpf8W663s0du61H7FPQc+x/agpxJFGqw1+CspPxGijb2Es81QxI
-         5au+sWl7bmcaKmzADFZ/s5/vTwFKWzANgxeVQoXQApSMTlpk53Z0aK0VEbMk8JLyuBla
-         JtGhrRSdbe5vGRykXPrdBFdTnThUSKaDjMzdRn/btXSqT5RiCl/9K9QmHaKrGsTkosmr
-         eNBNtPWmPo36dc9ldVcvDQyvmO094DhX32nHU58Tu3vFGgJiVT0ieyBVuKpwjRnjqpFK
-         NI5ROmxqr5wDR08ddvkaNUz9heHoBYgwCQqrLkDMtmInPRlrI2jxEz0yjuTbCoWv1U19
-         PV3Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=9V+qyodEUQpFo+Cqbo/ekfVPsKACgVLQio5ODc4eU80=;
-        b=IjuBhgTa2jnFNwC1yYiQWXwf6xh3h/o1n7dx9MawaH9HdUCL2Bk0kVZuQjVpOYH8E5
-         t8fkiO4/wLUC/3wNs/2d7JjcG3SvRIfnf1fWxYb5zkCIgb73zinvfvSkKOGhR8qVr9nX
-         vnLs/RfpEGF8Cld0/9an221RwGghYb8z4IlR6YaBKsl055Hk7+9bfGErEjsWuIteWt2v
-         L0Zv5Aqb5s8tRMwd/xKpu5CTAoW/YJB3XTP2AeDvzjorplkGAq2NAuquw55nopTFZ87H
-         A7IBvZ3lTXwbnpm6jYVwWj0eneHuHdHuAwhx0kowN9tEq/NV8K43lNvPGOU9awGoFzPG
-         aZIw==
-X-Gm-Message-State: AOAM532yUfdsY8CGnctj2RmLgDQUqD5Qtn4kMZxtNQ5490/pTkiojW4K
-        Z+kK84AqunveIhxdz6ksP+I=
-X-Google-Smtp-Source: ABdhPJxWTggnXWWvwVQy4ahYpDbTffSKWf7jC9aWDduayXW2l+HbbGrjar+XqVVy+tx0Z951avLf0g==
-X-Received: by 2002:a17:90a:5d0a:: with SMTP id s10mr15010463pji.0.1618717876835;
-        Sat, 17 Apr 2021 20:51:16 -0700 (PDT)
-Received: from localhost.localdomain ([2001:470:e92d:10:35:ab17:174d:e10b])
-        by smtp.gmail.com with ESMTPSA id s40sm7974081pfw.100.2021.04.17.20.51.15
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 17 Apr 2021 20:51:16 -0700 (PDT)
-From:   Tony Ambardar <tony.ambardar@gmail.com>
-X-Google-Original-From: Tony Ambardar <Tony.Ambardar@gmail.com>
-To:     Stephen Hemminger <stephen@networkplumber.org>
-Cc:     Tony Ambardar <Tony.Ambardar@gmail.com>, netdev@vger.kernel.org
-Subject: [PATCH iproute2] ip: drop 2-char command assumption
-Date:   Sat, 17 Apr 2021 20:49:58 -0700
-Message-Id: <20210418034958.505267-1-Tony.Ambardar@gmail.com>
-X-Mailer: git-send-email 2.25.1
+        id S230349AbhDRETL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 18 Apr 2021 00:19:11 -0400
+Received: from mail.kernel.org ([198.145.29.99]:53090 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229478AbhDRETK (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 18 Apr 2021 00:19:10 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 8EE596134F;
+        Sun, 18 Apr 2021 04:18:41 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1618719522;
+        bh=X7SF1ZbRezY/jBtbqlMMKV8AexA9eMJ6pYJUjCFoXtI=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=azllFjoyCiCgqnTaY0jZUIL55AukgwNH2YMRGh9FxzCiYNfHAcUO4B8i5WG0OAZdn
+         eJ/ODmlXfDOPOOKB91Go6LtFpWBGupC6qEgQcRVCcFyOMqXSiPzVzulfIf3jEMJvpR
+         4ZhEmk3aAbcqj3mzcoEXei2Agh8jsnmYZVCbh1M5X5xAfYDfe1NcdF3OjoafFrGFd3
+         IfsKFxKLjv17PNvHQaxBSCnRK8C/AzGKGRanimiMwtNeO2ryRK0nN+emeXhLsmyvK7
+         00NkbyztG0l33rKZC05AHoHD3kp0rk5n3VmCDaTM5jZIBHFcotBJgmOzYRMjAEdyAL
+         xqqqxqz8RzHYA==
+Date:   Sun, 18 Apr 2021 07:18:38 +0300
+From:   Leon Romanovsky <leon@kernel.org>
+To:     Devesh Sharma <devesh.sharma@broadcom.com>,
+        Jason Gunthorpe <jgg@nvidia.com>
+Cc:     Doug Ledford <dledford@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        linux-rdma <linux-rdma@vger.kernel.org>,
+        Michael Chan <michael.chan@broadcom.com>,
+        Naresh Kumar PBS <nareshkumar.pbs@broadcom.com>,
+        Netdev <netdev@vger.kernel.org>,
+        Selvin Xavier <selvin.xavier@broadcom.com>,
+        Somnath Kotur <somnath.kotur@broadcom.com>,
+        Sriharsha Basavapatna <sriharsha.basavapatna@broadcom.com>
+Subject: Re: [PATCH rdma-next v2 0/5] Get rid of custom made module dependency
+Message-ID: <YHuzHuH5VByg2fyU@unreal>
+References: <20210401065715.565226-1-leon@kernel.org>
+ <CANjDDBiuw_VNepewLAtYE58Eg2JEsvGbpxttWyjV6DYMQdY5Zw@mail.gmail.com>
+ <YGhUjarXh+BEK1pW@unreal>
+ <CANjDDBiC-8pL+-ma1c0n8vjMaorm-CasV_D+_8q2LGy-AYuTVg@mail.gmail.com>
+ <YG7srVMi8IEjuLfF@unreal>
+ <CANjDDBirjSEkcDZ4E8u4Ce_dep3PRTmo2S9-q7=dmR+MLKi_=A@mail.gmail.com>
+ <YHP5WRfEKQ3n9O0s@unreal>
+ <CANjDDBhpJPc6wypp2u3OC9RjYEpYmXuNozZ5fRHSmx=vLWeYNw@mail.gmail.com>
+ <YHqY8Led24PuLU5W@unreal>
+ <CANjDDBgsh9FrQOgB-uR0GGYZHcF5cnTy4Efnd3L_-T2_eWqxsg@mail.gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CANjDDBgsh9FrQOgB-uR0GGYZHcF5cnTy4Efnd3L_-T2_eWqxsg@mail.gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The 'ip' utility hardcodes the assumption of being a 2-char command, where
-any follow-on characters are passed as an argument:
+On Sun, Apr 18, 2021 at 12:09:16AM +0530, Devesh Sharma wrote:
+> On Sat, Apr 17, 2021 at 1:44 PM Leon Romanovsky <leon@kernel.org> wrote:
+> >
+> > On Wed, Apr 14, 2021 at 07:15:37PM +0530, Devesh Sharma wrote:
+> > > On Mon, Apr 12, 2021 at 1:10 PM Leon Romanovsky <leon@kernel.org> wrote:
+> > > >
+> > > > On Thu, Apr 08, 2021 at 08:42:57PM +0530, Devesh Sharma wrote:
+> > > > > On Thu, Apr 8, 2021 at 5:14 PM Leon Romanovsky <leon@kernel.org> wrote:
+> > > > > >
+> > > > > > On Thu, Apr 08, 2021 at 05:06:24PM +0530, Devesh Sharma wrote:
+> > > > > > > On Sat, Apr 3, 2021 at 5:12 PM Leon Romanovsky <leon@kernel.org> wrote:
+> > > > > > > >
+> > > > > > > > On Sat, Apr 03, 2021 at 03:52:13PM +0530, Devesh Sharma wrote:
+> > > > > > > > > On Thu, Apr 1, 2021 at 12:27 PM Leon Romanovsky <leon@kernel.org> wrote:
+> > > > > > > > > >
+> > > > > > > > > > From: Leon Romanovsky <leonro@nvidia.com>
+> > > > > > > > > >
+> > > > > > > > > > Changelog:
+> > > > > > > > > > v2:
+> > > > > > > > > >  * kbuild spotted that I didn't delete all code in patch #5, so deleted
+> > > > > > > > > >    even more ulp_ops derefences.
+> > > > > > > > > > v1: https://lore.kernel.org/linux-rdma/20210329085212.257771-1-leon@kernel.org
+> > > > > > > > > >  * Go much deeper and removed useless ULP indirection
+> > > > > > > > > > v0: https://lore.kernel.org/linux-rdma/20210324142524.1135319-1-leon@kernel.org
+> > > > > > > > > > -----------------------------------------------------------------------
+> > > > > > > > > >
+> > > > > > > > > > The following series fixes issue spotted in [1], where bnxt_re driver
+> > > > > > > > > > messed with module reference counting in order to implement symbol
+> > > > > > > > > > dependency of bnxt_re and bnxt modules. All of this is done, when in
+> > > > > > > > > > upstream we have only one ULP user of that bnxt module. The simple
+> > > > > > > > > > declaration of exported symbol would do the trick.
+> > > > > > > > > >
+> > > > > > > > > > This series removes that custom module_get/_put, which is not supposed
+> > > > > > > > > > to be in the driver from the beginning and get rid of nasty indirection
+> > > > > > > > > > logic that isn't relevant for the upstream code.
+> > > > > > > > > >
+> > > > > > > > > > Such small changes allow us to simplify the bnxt code and my hope that
+> > > > > > > > > > Devesh will continue where I stopped and remove struct bnxt_ulp_ops too.
+> > > > > > > > > >
+> > > > > > > > > > Thanks
+> > > > > > > > > >
+> > > > > > > > > > [1] https://lore.kernel.org/linux-rdma/20210324142524.1135319-1-leon@kernel.org
+> > > > > > > > > >
+> > > > > > > > > > Leon Romanovsky (5):
+> > > > > > > > > >   RDMA/bnxt_re: Depend on bnxt ethernet driver and not blindly select it
+> > > > > > > > > >   RDMA/bnxt_re: Create direct symbolic link between bnxt modules
+> > > > > > > > > >   RDMA/bnxt_re: Get rid of custom module reference counting
+> > > > > > > > > >   net/bnxt: Remove useless check of non-existent ULP id
+> > > > > > > > > >   net/bnxt: Use direct API instead of useless indirection
+> > > > > > > > > >
+> > > > > > > > > >  drivers/infiniband/hw/bnxt_re/Kconfig         |   4 +-
+> > > > > > > > > >  drivers/infiniband/hw/bnxt_re/main.c          |  93 ++-----
+> > > > > > > > > >  drivers/net/ethernet/broadcom/bnxt/bnxt.c     |   4 +-
+> > > > > > > > > >  drivers/net/ethernet/broadcom/bnxt/bnxt.h     |   1 -
+> > > > > > > > > >  drivers/net/ethernet/broadcom/bnxt/bnxt_ulp.c | 245 +++++++-----------
+> > > > > > > > > >  drivers/net/ethernet/broadcom/bnxt/bnxt_ulp.h |  32 +--
+> > > > > > > > > >  6 files changed, 119 insertions(+), 260 deletions(-)
+> > > > > > > > >
+> > > > > > > > > Hi Leon,
+> > > > > > > > >
+> > > > > > > > > After a couple of internal discussions we reached a conclusion to
+> > > > > > > > > implement the Auxbus driver interface and fix the problem once and for
+> > > > > > > > > all.
+> > > > > > > >
+> > > > > > > > Thanks Devesh,
+> > > > > > > >
+> > > > > > > > Jason, it looks like we can proceed with this patchset, because in
+> > > > > > > > auxbus mode this module refcount and ULP indirection logics will be
+> > > > > > > > removed anyway.
+> > > > > > > >
+> > > > > > > > Thanks
+> > > > > > > Hi Leon,
+> > > > > > >
+> > > > > > > In my internal testing, I am seeing a crash using the 3rd patch. I am
+> > > > > > > spending a few cycles on debugging it. expect my input in a day or so.
+> > > > > >
+> > > > > > Can you please post the kernel crash report here?
+> > > > > > I don't see how function rename in patch #3 can cause to the crash.
+> > > > > Hey, unfortunately my kdump service config is giving me tough time on
+> > > > > my host. I will share if I get it.
+> > > >
+> > > > Any news here?
+> > > Expect something by this Friday. yesterday was a holiday in India.
+> >
+> > Any update?
+> > This series is close to three weeks already and I would like to progress with it.
+> Hi Leon,
+> 
+> The host crash I indicated earlier is actually caused by patch 4 and
+> not by patch 3 from this series. I spent time to root cause the
+> problem and realized that patch-4 is touching quite many areas which
+> would require much intrusive testing and validation.
+> As I indicated earlier, we are implementing the PCI Aux driver
+> interface at a faster pace. While PCI Aux changes are in progress we
+> are willing to retain the existing bnxt_re and bnxt_en interface
+> untouched.
+> The problem of module referencing would be rectified with PCI aux
+> change by inheritance.
 
-  $ ./ip-full help
-  Object "-full" is unknown, try "ip help".
+Sorry no, the first three patches are not controversial and better to be
+applied now. They do the right thing and they are correct.
 
-This confusing behaviour isn't seen with 'tc' for example, and was added in
-a 2005 commit without documentation. It was noticed during testing of 'ip'
-variants built/packaged with different feature sets (e.g. w/o BPF support).
+There is a little trust in your promises above after you didn't show us kernel
+panic despite our numerous requests. I also very sceptical in Broadcom ability
+to provide auxbus implementation in timely manner.
 
-Drop the related code.
+It is worth to mention that auxbus won't eliminate the patches #4 and #5, but
+will embed them into your auxbus conversion.
 
-Fixes: 351efcde4e62 ("Update header files to 2.6.14")
-Signed-off-by: Tony Ambardar <Tony.Ambardar@gmail.com>
----
- ip/ip.c | 3 ---
- 1 file changed, 3 deletions(-)
+Jason, please take first three patches so internal HW IB driver won't do the crazy
+module management that is totally out of scope for drivers/infiniband and not needed.
 
-diff --git a/ip/ip.c b/ip/ip.c
-index 4cf09fc3..631ce903 100644
---- a/ip/ip.c
-+++ b/ip/ip.c
-@@ -313,9 +313,6 @@ int main(int argc, char **argv)
- 
- 	rtnl_set_strict_dump(&rth);
- 
--	if (strlen(basename) > 2)
--		return do_cmd(basename+2, argc, argv);
--
- 	if (argc > 1)
- 		return do_cmd(argv[1], argc-1, argv+1);
- 
--- 
-2.25.1
+Thanks
+
+> >
+> > Thanks
+> 
+> 
+> 
+> 
+> --
+> -Regards
+> Devesh
+
 
