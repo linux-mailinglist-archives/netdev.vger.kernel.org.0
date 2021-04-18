@@ -2,84 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E1A993634E7
-	for <lists+netdev@lfdr.de>; Sun, 18 Apr 2021 13:51:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B01E13634F2
+	for <lists+netdev@lfdr.de>; Sun, 18 Apr 2021 14:00:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230225AbhDRLvj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 18 Apr 2021 07:51:39 -0400
-Received: from mail.kernel.org ([198.145.29.99]:50352 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229574AbhDRLvi (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 18 Apr 2021 07:51:38 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 12BB661207;
-        Sun, 18 Apr 2021 11:51:09 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1618746670;
-        bh=yNyR1LiE1DA8XrGTItMp716jk+EUoFMuSkUyeHkt/pU=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=QsRuLY+JhwIF5dQ4wZyzcRNYGW5r0XTP4YA0WdrQKmC11q22XBByNlzqU73zD35Es
-         X2w0LzvYUbuaVj3hWKtVrUMZ4znPVm1e+/02gzG+qJi55lZ0D7ipdhMlAOcgYUZc9P
-         cWOpzuBoep5Aap2sjq7ZfYiF8JhS51TkscHNQb0hdEKGi3C6xRcuy5mjCZKNWhypN4
-         jKaFgCppedqCp2zuBaW8lc+Kji3FZQeSUftLmEFbcDOb8zTUC66eIPETdwMrEir7wv
-         QM2Nyvv5aHBvr2/eYJob4u7Dti+R2luh/4nMq8nI3W/l3b093cId4IbB5l6A2kN6pK
-         iiN5kzFCmwTqA==
-Date:   Sun, 18 Apr 2021 14:51:07 +0300
-From:   Leon Romanovsky <leon@kernel.org>
-To:     "Saleem, Shiraz" <shiraz.saleem@intel.com>
-Cc:     Parav Pandit <parav@nvidia.com>, Jason Gunthorpe <jgg@nvidia.com>,
-        "dledford@redhat.com" <dledford@redhat.com>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
-        "Lacombe, John S" <john.s.lacombe@intel.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "Ertman, David M" <david.m.ertman@intel.com>,
-        "Nguyen, Anthony L" <anthony.l.nguyen@intel.com>,
-        "Williams, Dan J" <dan.j.williams@intel.com>,
-        "Hefty, Sean" <sean.hefty@intel.com>,
-        "Keller, Jacob E" <jacob.e.keller@intel.com>
-Subject: Re: [PATCH v4 05/23] ice: Add devlink params support
-Message-ID: <YHwdKxtIi26ZmVlL@unreal>
-References: <20210406210125.241-1-shiraz.saleem@intel.com>
- <20210406210125.241-6-shiraz.saleem@intel.com>
- <20210407145705.GA499950@nvidia.com>
- <e516fa3940984b0cb0134364b923fc8e@intel.com>
- <20210407224631.GI282464@nvidia.com>
- <c5a38fcf137e49c0af0bfa6edd3ec605@intel.com>
- <BY5PR12MB43221FA2A6295C9CF23C798DDC709@BY5PR12MB4322.namprd12.prod.outlook.com>
- <8a7cd11994c2447a926cf2d3e60a019c@intel.com>
- <BY5PR12MB4322A28E6678CBB8A6544026DC4F9@BY5PR12MB4322.namprd12.prod.outlook.com>
- <4d9a592fa5694de8aadc60db1376da20@intel.com>
+        id S230321AbhDRMBV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 18 Apr 2021 08:01:21 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:30280 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S230096AbhDRMBV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 18 Apr 2021 08:01:21 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1618747252;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=Qi9jeiTllPHfWYc0N7m5Md2AZieWKUkaSqUaZ+AG0qk=;
+        b=PNRcvqEz13nAMdxY1Tc7AgUOZSJyYwH3ZbMo7SK5b78GWmawaybtWnI0fxod8ygUS2RW37
+        t4ycBhz8Q0icRt9UrqOvIrHCc9EThVSxi8Mb4sCtJsLgUSA2FCZQTgyYgv9PWJSQYXB1Px
+        Qs12eFePCSKkI/3F5cjMczxHYoulnHc=
+Received: from mail-wr1-f71.google.com (mail-wr1-f71.google.com
+ [209.85.221.71]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-498-xkVM4YwpOYuhVvAjiULolg-1; Sun, 18 Apr 2021 08:00:50 -0400
+X-MC-Unique: xkVM4YwpOYuhVvAjiULolg-1
+Received: by mail-wr1-f71.google.com with SMTP id j4-20020adfe5040000b0290102bb319b87so7382344wrm.23
+        for <netdev@vger.kernel.org>; Sun, 18 Apr 2021 05:00:50 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=Qi9jeiTllPHfWYc0N7m5Md2AZieWKUkaSqUaZ+AG0qk=;
+        b=QuA8TaXOMZ2bLSHhJBuSSl1g2B+88Gyslwsd33V/t2F01fmu7hcrAEPKJpbHqTsBRW
+         NVyikz2MzOk5WHHvrIVIcid+RRr1md+PKycLdFTeyXdqZeos1YsJo865GdqBlYHvTDF7
+         C1FrC0h0/Y67yzyhe2wegKdDSbLs1vZ59nhRmyGUfjT3loAr/VjcvPPVzG/V6KHY9FW8
+         LV7pn0FuJdVoBy8+8fLdg7uF1XHNNmckgLFvho+IE6IQirEAdlw2vlKaximyHJHnpfZH
+         NJX5Ey2bKb3G/WAWDg1kefoenWQvCn8rFshnKV2AvmY0Pez1K14BiHz9HBpImmQmvyCf
+         8t7Q==
+X-Gm-Message-State: AOAM5328tIpstI89BMhq28xrJV32dUOmPIe2M+CEM9kxO/S2Dowfx99y
+        9Jhky7T4Yq/gdgjYPq7peqJee82y88FDlZekF0J5LCGTWZGNhCtSiqPMdOPFBYAcP0CqeejM0Hs
+        zdi5H5sWy1r8eIVQQlq8CuDZKkwsZbOGi
+X-Received: by 2002:a1c:b342:: with SMTP id c63mr16817244wmf.162.1618747249177;
+        Sun, 18 Apr 2021 05:00:49 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJw0TQnvK+DlbSfY0wEWlm70oaQNUcWNXJbK92kTK95kQnRVns5Fgn2zNd2Rt7T4MfJJ4YCoK8KI45fXiLd8tiw=
+X-Received: by 2002:a1c:b342:: with SMTP id c63mr16817235wmf.162.1618747248980;
+ Sun, 18 Apr 2021 05:00:48 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <4d9a592fa5694de8aadc60db1376da20@intel.com>
+References: <2b6d2d8c4fdcf53baea43c9fbe9f929d99257809.1618350667.git.aclaudi@redhat.com>
+ <YHwS2pu/oSdC4qFt@unreal>
+In-Reply-To: <YHwS2pu/oSdC4qFt@unreal>
+From:   Andrea Claudi <aclaudi@redhat.com>
+Date:   Sun, 18 Apr 2021 14:00:38 +0200
+Message-ID: <CAPpH65yk95Yg7wZiNLSebNJ8=hDPff7ixNzxuXzu0yjXYu=gCA@mail.gmail.com>
+Subject: Re: [PATCH iproute2] rdma: stat: initialize ret in stat_qp_show_parse_cb()
+To:     Leon Romanovsky <leon@kernel.org>
+Cc:     linux-netdev <netdev@vger.kernel.org>,
+        Stephen Hemminger <stephen@networkplumber.org>,
+        David Ahern <dsahern@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Apr 14, 2021 at 12:21:08AM +0000, Saleem, Shiraz wrote:
-> > Subject: RE: [PATCH v4 05/23] ice: Add devlink params support
+On Sun, Apr 18, 2021 at 1:07 PM Leon Romanovsky <leon@kernel.org> wrote:
+>
+> On Wed, Apr 14, 2021 at 12:50:57AM +0200, Andrea Claudi wrote:
+> > In the unlikely case in which the mnl_attr_for_each_nested() cycle is
+> > not executed, this function return an uninitialized value.
+> >
+> > Fix this initializing ret to 0.
+> >
+> > Fixes: 5937552b42e4 ("rdma: Add "stat qp show" support")
+> > Signed-off-by: Andrea Claudi <aclaudi@redhat.com>
+> > ---
+> >  rdma/stat.c | 2 +-
+> >  1 file changed, 1 insertion(+), 1 deletion(-)
+> >
+> > diff --git a/rdma/stat.c b/rdma/stat.c
+> > index 75d45288..3abedae7 100644
+> > --- a/rdma/stat.c
+> > +++ b/rdma/stat.c
+> > @@ -307,7 +307,7 @@ static int stat_qp_show_parse_cb(const struct nlmsghdr *nlh, void *data)
+> >       struct rd *rd = data;
+> >       const char *name;
+> >       uint32_t idx;
+> > -     int ret;
+> > +     int ret = 0;
+>
+> It should be MNL_CB_OK which is 1 and not 0.
+>
+> Thanks.
+>
 
-<...>
+Hi Leon, and thanks for pointing this out.
+As this is already merged, I'll submit a fix.
 
-> > > Why not just allow the setting to apply dynamically during a 'set'
-> > > itself with an unplug/plug of the auxdev with correct type.
-> > >
-> > This suggestion came up in the internal discussion too.
-> > However such task needs to synchronize with devlink reload command and also
-> > with driver remove() sequence.
-> > So locking wise and depending on amount of config change, it is close to what
-> > reload will do.
-> 
-> Holding this mutex across the auxiliary device unplug/plug in "set" wont cut it?
-> https://elixir.bootlin.com/linux/v5.12-rc7/source/drivers/net/ethernet/mellanox/mlx5/core/main.c#L1304
+Regards,
+Andrea
 
-Like Parav said, we are working to fix it and already have one working
-solution, unfortunately it has one eyebrow raising change and we are
-trying another one.
+> >
+> >       mnl_attr_parse(nlh, 0, rd_attr_cb, tb);
+> >       if (!tb[RDMA_NLDEV_ATTR_DEV_INDEX] || !tb[RDMA_NLDEV_ATTR_DEV_NAME] ||
+> > --
+> > 2.30.2
+> >
+>
 
-You can take a look here to get sense of the scope:
-https://git.kernel.org/pub/scm/linux/kernel/git/leon/linux-rdma.git/log/?h=devlink-core
-
-Thanks
