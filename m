@@ -2,102 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B31F036376F
-	for <lists+netdev@lfdr.de>; Sun, 18 Apr 2021 22:03:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CEACC363773
+	for <lists+netdev@lfdr.de>; Sun, 18 Apr 2021 22:04:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232588AbhDRUDb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 18 Apr 2021 16:03:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59412 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229488AbhDRUDa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 18 Apr 2021 16:03:30 -0400
-Received: from mail-qv1-xf33.google.com (mail-qv1-xf33.google.com [IPv6:2607:f8b0:4864:20::f33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B3A61C06174A;
-        Sun, 18 Apr 2021 13:03:00 -0700 (PDT)
-Received: by mail-qv1-xf33.google.com with SMTP id j3so15949344qvs.1;
-        Sun, 18 Apr 2021 13:03:00 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=/3T7y9WNnZVrw+KXlkUiPbUTLLcEjroke08FHYAv/2Q=;
-        b=fEfzrkvJxLN/+ywdBMUTM28GEelq9i51jLIV6NA/MatzkDTpIb1Tban3sf7blmc3QI
-         Vg5vkgGAKI/VamhwHjfNw3LmLXBP6eeyFU7i7l61WeH5taZsvBhck6+WIZtt01/Hw9ss
-         TTozIlu45xswP/8OQSTCGNvy8eN/2WtqWmhATnlmYrSk19Sistnz6zVvpExKtnNCHdJv
-         8iGf5H4W6Ljp0EvBispPoF7fDtESEfS98Hoc/tb5oicO/EzPZTUEf1mc6dMilPqHpAHl
-         Nho0FS4AHdBrKTvcVBoaVysBrTDcR7OOxdShziAkNrLZ1cR9FXS2EKs53QD07mLO6Ivd
-         42sw==
+        id S232992AbhDRUE0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 18 Apr 2021 16:04:26 -0400
+Received: from mail-pl1-f177.google.com ([209.85.214.177]:40470 "EHLO
+        mail-pl1-f177.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229488AbhDRUE0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 18 Apr 2021 16:04:26 -0400
+Received: by mail-pl1-f177.google.com with SMTP id 20so12648056pll.7;
+        Sun, 18 Apr 2021 13:03:56 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=/3T7y9WNnZVrw+KXlkUiPbUTLLcEjroke08FHYAv/2Q=;
-        b=PrOR87+VHFAd9AI/899X+OjyFR1CJcpecjJsbAbBd9QX3t2zc4WbLY3yoOmUHEZUX+
-         IqvnRSvx1i46WYOGAy8mzRMa2VvYSFAAkcKJkzIFcJW2pSq6z+0BdcqHbmhDh4UM7usO
-         xYF2lom1bT/SXoQxQWWGf+X1QZdUu9dzBjD7H7V4MIrlZQYe5oePRD165E5Hp32KNTx/
-         Twsmj3rF+lQThlVcxMot6RvNftSAuOrAppqltGXMXgJyMlTS/RMZ9mLIu1O3y9Q5m2YY
-         17mnpF4VhfZrVmPDgg0qNrMg7sp9XUkszaqNXZxftF8uK1XSR1sBGwH3+JQh4yiQSXLB
-         Wu/g==
-X-Gm-Message-State: AOAM531AYvIRoT0rE1tYBndTqjHiB/Uo+jSiEUgGbQJb5eNPR1cXDAEu
-        zV4psSNveRHJECQfH4m/nHgiuLeB72GS7922
-X-Google-Smtp-Source: ABdhPJxY2IRQnVgLX3ZvtaGGsNI8JjroZqIaO1kZAWHrSy3chZh+nmOpIH9BtjlI1N4zshC7HCNKxg==
-X-Received: by 2002:a0c:f1cc:: with SMTP id u12mr18344532qvl.20.1618776178684;
-        Sun, 18 Apr 2021 13:02:58 -0700 (PDT)
-Received: from localhost.localdomain ([179.218.4.27])
-        by smtp.gmail.com with ESMTPSA id x18sm7906225qtj.58.2021.04.18.13.02.55
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 18 Apr 2021 13:02:58 -0700 (PDT)
-From:   Pedro Tammela <pctammela@gmail.com>
-X-Google-Original-From: Pedro Tammela <pctammela@mojatatu.com>
-To:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     Pedro Tammela <pctammela@mojatatu.com>
-Subject: [PATCH] bpf: fix errno code for unsupported batch ops
-Date:   Sun, 18 Apr 2021 17:02:49 -0300
-Message-Id: <20210418200249.174835-1-pctammela@mojatatu.com>
-X-Mailer: git-send-email 2.25.1
+        bh=ocpvHH0OfSXrZ6ZZMO0Iq2R7HY+eWtpOHZ6cffg0O+U=;
+        b=nzbrwGdsiOVYoKUwqIJA/Dsk4TB0S7h1ScWbM557BYuJAdubV+VH/lm/MZ9ItOmKfO
+         cBk/d0LoBFwwetoMb5+Z8c1I/M3SLzROqJ8IiwqpL6ujwgKcijzwnOcaUb4S9dw8pot+
+         vTuqNAmn5YZnZ7pmC1WFWpwtrEXmt785W7UqfT+olAnztz6QICSdlT7zbtFUNLlXIY8X
+         zmzpW1Sh+GxhIzyXzdBnAcDGhhBIQpYB5cgMo1gg9AUDi5o8DjVNHo6ur8zjwndW6xkH
+         OyXsiIo4G7ROBca8DML5khdbKusCeA8DQcsSE+g5HPISPP3apTnq1nqCTZtv6za6fqXz
+         WdYQ==
+X-Gm-Message-State: AOAM531d9VPZzKW6O5PYuoT87wnum1eHxKQGuvyosDH1pQQFPyU8ccuy
+        1giidAAEI3NXd/NZGVc9CobnoWvy1WI=
+X-Google-Smtp-Source: ABdhPJwVMeZX60Cq/LEZaC2MurSw6/8c7B9QK4fEJcoFPFcW7/3smnviEnjy7bNu7xBPskHuzhoDOw==
+X-Received: by 2002:a17:90a:fb4c:: with SMTP id iq12mr20945436pjb.121.1618776235751;
+        Sun, 18 Apr 2021 13:03:55 -0700 (PDT)
+Received: from ?IPv6:2601:647:4000:d7:93db:a33:19a8:2126? ([2601:647:4000:d7:93db:a33:19a8:2126])
+        by smtp.gmail.com with ESMTPSA id k13sm12472311pji.14.2021.04.18.13.03.54
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sun, 18 Apr 2021 13:03:54 -0700 (PDT)
+Subject: Re: [PATCH] net/mlx5: Use kasprintf instead of hand-writing it
+To:     Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        saeedm@nvidia.com, leon@kernel.org, davem@davemloft.net,
+        kuba@kernel.org
+Cc:     netdev@vger.kernel.org, linux-rdma@vger.kernel.org,
+        linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org
+References: <46235ec010551d2788483ce636686a61345e40ba.1618643703.git.christophe.jaillet@wanadoo.fr>
+From:   Bart Van Assche <bvanassche@acm.org>
+Message-ID: <131988e1-2327-99f8-95e1-778d653c36ec@acm.org>
+Date:   Sun, 18 Apr 2021 13:03:53 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.9.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <46235ec010551d2788483ce636686a61345e40ba.1618643703.git.christophe.jaillet@wanadoo.fr>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-ENOTSUPP is not a valid userland errno[1], which is annoying for
-userland applications that implement a fallback to iterative, report
-errors via 'strerror()' or both.
+On 4/17/21 12:16 AM, Christophe JAILLET wrote:
+> 'kasprintf()' can replace a kmalloc/strcpy/strcat sequence.
+> It is less verbose and avoid the use of a magic number (64).
+> 
+> Anyway, the underlying 'alloc_workqueue()' would only keep the 24 first
+> chars (i.e. sizeof(struct workqueue_struct->name) = WQ_NAME_LEN).
+> 
+> Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+> ---
+>  drivers/net/ethernet/mellanox/mlx5/core/health.c | 4 +---
+>  1 file changed, 1 insertion(+), 3 deletions(-)
+> 
+> diff --git a/drivers/net/ethernet/mellanox/mlx5/core/health.c b/drivers/net/ethernet/mellanox/mlx5/core/health.c
+> index 9ff163c5bcde..a5383e701b4b 100644
+> --- a/drivers/net/ethernet/mellanox/mlx5/core/health.c
+> +++ b/drivers/net/ethernet/mellanox/mlx5/core/health.c
+> @@ -802,12 +802,10 @@ int mlx5_health_init(struct mlx5_core_dev *dev)
+>  	mlx5_fw_reporters_create(dev);
+>  
+>  	health = &dev->priv.health;
+> -	name = kmalloc(64, GFP_KERNEL);
+> +	name = kasprintf(GFP_KERNEL, "mlx5_health%s", dev_name(dev->device));
+>  	if (!name)
+>  		goto out_err;
+>  
+> -	strcpy(name, "mlx5_health");
+> -	strcat(name, dev_name(dev->device));
+>  	health->wq = create_singlethread_workqueue(name);
+>  	kfree(name);
+>  	if (!health->wq)
 
-The batched ops return this errno whenever an operation
-is not implemented for kernels that implement batched ops.
+Instead of modifying the mlx5 driver, please change the definition of
+the create_singlethread_workqueue() such that it accept a format
+specifier and a variable number of arguments.
 
-In older kernels, pre batched ops, it returns EINVAL as the arguments
-are not supported in the syscall.
+Thanks,
 
-[1] https://lore.kernel.org/netdev/20200511165319.2251678-1-kuba@kernel.org/
+Bart.
 
-Signed-off-by: Pedro Tammela <pctammela@mojatatu.com>
----
- kernel/bpf/syscall.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/kernel/bpf/syscall.c b/kernel/bpf/syscall.c
-index fd495190115e..88fe19c0aeb1 100644
---- a/kernel/bpf/syscall.c
-+++ b/kernel/bpf/syscall.c
-@@ -3961,7 +3961,7 @@ static int bpf_task_fd_query(const union bpf_attr *attr,
- #define BPF_DO_BATCH(fn)			\
- 	do {					\
- 		if (!fn) {			\
--			err = -ENOTSUPP;	\
-+			err = -EOPNOTSUPP;	\
- 			goto err_put;		\
- 		}				\
- 		err = fn(map, attr, uattr);	\
--- 
-2.25.1
 
