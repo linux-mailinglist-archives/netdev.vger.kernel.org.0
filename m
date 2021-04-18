@@ -2,69 +2,66 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 74ED63635E1
-	for <lists+netdev@lfdr.de>; Sun, 18 Apr 2021 16:32:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A32193635E6
+	for <lists+netdev@lfdr.de>; Sun, 18 Apr 2021 16:36:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230283AbhDROcF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 18 Apr 2021 10:32:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45080 "EHLO
+        id S231691AbhDROgi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 18 Apr 2021 10:36:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46054 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229446AbhDROcF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 18 Apr 2021 10:32:05 -0400
-Received: from mail.as397444.net (mail.as397444.net [IPv6:2620:6e:a000:dead:beef:15:bad:f00d])
-        by lindbergh.monkeyblade.net (Postfix) with UTF8SMTPS id 6DA02C06174A;
-        Sun, 18 Apr 2021 07:31:37 -0700 (PDT)
-Received: by mail.as397444.net (Postfix) with UTF8SMTPSA id A246253E64D;
-        Sun, 18 Apr 2021 14:31:35 +0000 (UTC)
-X-DKIM-Note: Keys used to sign are likely public at https://as397444.net/dkim/
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mattcorallo.com;
-        s=1618754464; t=1618756295;
-        bh=978cxHn0Q+rZRoDQDYvCuquIb8hcItxZKjj5bKl0f4c=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=yAVcyKOuU84jqexTakohpzoax5WxSllgOTwyeO7Bb7qnxGyTZ+20FLyJIaW8+FFT8
-         eJoYBdAAM/2J/W33uyGYWfeXJAUzV9HJ1azLyT4qM5Osvz9RXLo20KtEqeEVSTmSGe
-         hikLIEnh/qyvOkm7qhpVcNKsC8+OmgbZ4OPRtuzWSkmXnzgLMQ62EK9gqflYqaaku5
-         HsrKaPGANI9WnMgS3yxkgzDWon/j/DfkUP8Q6xSARuFSS9VlrXI+FRmaXUzG7ZM5Z8
-         Yj6G/QdfyY0C/YIBknaUuM5tpCy8SCXvACmVJO89Ty5TJb42WsocodsoUXXd8kH/4e
-         PCdonkLHF/mVw==
-Message-ID: <9e2966be-d210-edf9-4f3c-5681f0d07c5f@bluematt.me>
-Date:   Sun, 18 Apr 2021 10:31:33 -0400
+        with ESMTP id S230330AbhDROgh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 18 Apr 2021 10:36:37 -0400
+Received: from mail-ot1-x32e.google.com (mail-ot1-x32e.google.com [IPv6:2607:f8b0:4864:20::32e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EFBE3C06174A
+        for <netdev@vger.kernel.org>; Sun, 18 Apr 2021 07:36:09 -0700 (PDT)
+Received: by mail-ot1-x32e.google.com with SMTP id 5-20020a9d09050000b029029432d8d8c5so4247895otp.11
+        for <netdev@vger.kernel.org>; Sun, 18 Apr 2021 07:36:09 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:from:date:message-id:subject:to:cc;
+        bh=ZZv+B7aQGA+3w8K1rGV024P+Fz4xIb0uuOOhqoU3Cus=;
+        b=fObLcZcFbCzSz2bnDIUgFF/WLEpBJKVsbmy/2pIkd7UYKAffq6ZepfVN8Ea1j5dqEr
+         EfttxiGq9me+cK7N2YVEFX8zo1n7GexpBureFhSg2m5lKw4I5xZE5K2t3UCe8JJU3JYC
+         DAFed2RSOQjgLf6AUMGk2hqAW6MhyNtNnDoliWTrj5ywcNecAk/WPgHs25S6rNa+ED7K
+         IYeG04YC7d5WLeTie+6ldybtcJOloENP90eyHNIBqqnfYfW8kNwTqv1gwb+BF96CVw2v
+         XB7OqNtvgJ4X6MZ9oBBFdrTYBy8rL4PmNzDncJjRFpCgSY+1LV14wMVzjl/u6t7T112W
+         fNZw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:from:date:message-id:subject:to:cc;
+        bh=ZZv+B7aQGA+3w8K1rGV024P+Fz4xIb0uuOOhqoU3Cus=;
+        b=P72G/O/qNnMQBP+VAa67OVe3hc0w+Y6O10PGq/UNea+9m76h1JVwcA0C02fkVjbJuG
+         CjvpMy9aojtmp/fUNNSOoSUyIAfP9eDl7uoZJqfBNjPwXjTRoLTftp1iMo0hLZJiV9Hp
+         K4Lf6nRH3nub9FlBVLaqpkMYXpAFdd3yJS1S9nQ7gDkM0V7bdbT/oA2NZLi64vnwEVy4
+         uaav+zoZY5mZ3i9i55R2VjpODVyhAzpuFw4qBVVdsJWJnms3QalTzVj5eWuyl4GUCMQc
+         gVSDBF1iHPF8zfcPqMKDjgAzUhAzzuC80ZMUZMCKTbvBu/rE/bpS7ZmhiHFHOUG2Ugc4
+         UO9Q==
+X-Gm-Message-State: AOAM5338rDmXbXdZzZOHDGhDkahRbp0HS7JoKp2VtgMEB0YNtQgMMfLJ
+        2cL/2qGahEkYwo4Tm7dReJ7/0ukRc0x7xI6r6ds=
+X-Google-Smtp-Source: ABdhPJzbJtcC2D2l+UfW9it8gjSCY4i3GKHlAZVToINDRzmHEoAn/0yEhB7EXQBgdXrbFKu/uOk+dczqA0V3jqGDQ4E=
+X-Received: by 2002:a9d:6846:: with SMTP id c6mr11721538oto.251.1618756569241;
+ Sun, 18 Apr 2021 07:36:09 -0700 (PDT)
 MIME-Version: 1.0
-Subject: Re: PROBLEM: DoS Attack on Fragment Cache
-Content-Language: en-US
-To:     Willy Tarreau <w@1wt.eu>
-Cc:     Keyu Man <kman001@ucr.edu>, Eric Dumazet <edumazet@google.com>,
-        David Ahern <dsahern@gmail.com>,
-        Florian Westphal <fw@strlen.de>, davem@davemloft.net,
-        yoshfuji@linux-ipv6.org, dsahern@kernel.org,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Zhiyun Qian <zhiyunq@cs.ucr.edu>
-References: <02917697-4CE2-4BBE-BF47-31F58BC89025@hxcore.ol>
- <52098fa9-2feb-08ae-c24f-1e696076c3b9@gmail.com>
- <CANn89iL_V0WbeA-Zr29cLSp9pCsthkX9ze4W46gx=8-UeK2qMg@mail.gmail.com>
- <20210417072744.GB14109@1wt.eu>
- <CAMqUL6bkp2Dy3AMFZeNLjE1f-sAwnuBWpXH_FSYTSh8=Ac3RKg@mail.gmail.com>
- <20210417075030.GA14265@1wt.eu>
- <c6467c1c-54f5-8681-6e7d-aa1d9fc2ff32@bluematt.me>
- <CAMqUL6bAVE9p=XEnH4HdBmBfThaY3FDosqyr8yrQo6N_9+Jf3w@mail.gmail.com>
- <78d776a9-4299-ff4e-8ca2-096ec5c02d05@bluematt.me>
- <20210418043933.GB18896@1wt.eu>
-From:   Matt Corallo <netdev-list@mattcorallo.com>
-In-Reply-To: <20210418043933.GB18896@1wt.eu>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+From:   Jonathon Reinhart <jonathon.reinhart@gmail.com>
+Date:   Sun, 18 Apr 2021 10:35:43 -0400
+Message-ID: <CAPFHKze3+Ar=OEyoLDvHa9ffwEM6xkM2A0YNN3Z3UrW10y=3XQ@mail.gmail.com>
+Subject: Re: [PATCH RESEND net-next] net: Make tcp_allowed_congestion_control
+ readonly in non-init netns
+To:     jonathon.reinhart@gmail.com
+Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Should the default, though, be so low? If someone is still using a old modem they can crank up the sysctl, it does seem 
-like such things are pretty rare these days :). Its rather trivial to, without any kind of attack, hit 1Mbps of lost 
-fragments in today's networks, at which point all fragments are dropped. After all, I submitted the patch to "scratch my 
-own itch" :).
+Hi Dave,
 
-Matt
+It looks like this patch is on "net", "net-next", and Linus' tree (as
+commit 97684f0970f6). Additionally, gregkh has queued it up for the
+5.10 and 5.11 stable trees.
 
-On 4/18/21 00:39, Willy Tarreau wrote:
-> I do agree that we shouldn't keep them that long nowadays, we can't go
-> too low without risking to break some slow transmission stacks (SLIP/PPP
-> over modems for example).
+But it still shows up in Patchwork as "Needs ACK". Is there anything I
+need to do?
+
+Thanks,
+Jonathon
