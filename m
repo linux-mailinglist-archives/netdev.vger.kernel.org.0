@@ -2,116 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 03301363693
-	for <lists+netdev@lfdr.de>; Sun, 18 Apr 2021 18:18:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5CDAE3636EE
+	for <lists+netdev@lfdr.de>; Sun, 18 Apr 2021 19:06:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232057AbhDRQSw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 18 Apr 2021 12:18:52 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:28357 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S231684AbhDRQSt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 18 Apr 2021 12:18:49 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1618762699;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=gtqF7+8hdOsOAqsZblGuMHHe5YxbPyqEJw9acCV3MPw=;
-        b=V7z/HAw/PwPtEOIkFYmwh2aKhBNuknk8An3HAoTA3tErvLcBETqC9Hq6GGfdREu5B+aS6+
-        uw4CbdFD5zh+rZYzlZHUPTCeVibTUjvbzJBgbrchdbJm/9YdZ+U0tDNHcHfFNVLZC4NBL4
-        h9WYBWUJ8A2dJVoQRyQ8tWBN18CENaw=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-394-lYJvDT76NgKpzdeP30YW3g-1; Sun, 18 Apr 2021 12:18:15 -0400
-X-MC-Unique: lYJvDT76NgKpzdeP30YW3g-1
-Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com [10.5.11.22])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id D4231817469;
-        Sun, 18 Apr 2021 16:18:13 +0000 (UTC)
-Received: from carbon (unknown [10.36.110.19])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 59DD1107D5C6;
-        Sun, 18 Apr 2021 16:18:02 +0000 (UTC)
-Date:   Sun, 18 Apr 2021 18:18:01 +0200
-From:   Jesper Dangaard Brouer <brouer@redhat.com>
-To:     Magnus Karlsson <magnus.karlsson@gmail.com>
-Cc:     Lorenzo Bianconi <lorenzo@kernel.org>, bpf <bpf@vger.kernel.org>,
-        Network Development <netdev@vger.kernel.org>,
-        lorenzo.bianconi@redhat.com,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>, shayagr@amazon.com,
-        sameehj@amazon.com, John Fastabend <john.fastabend@gmail.com>,
-        David Ahern <dsahern@kernel.org>,
-        Eelco Chaudron <echaudro@redhat.com>,
-        Jason Wang <jasowang@redhat.com>,
-        Alexander Duyck <alexander.duyck@gmail.com>,
-        Saeed Mahameed <saeed@kernel.org>,
-        "Fijalkowski, Maciej" <maciej.fijalkowski@intel.com>,
-        Tirthendu <tirthendu.sarkar@intel.com>, brouer@redhat.com
-Subject: Re: [PATCH v8 bpf-next 00/14] mvneta: introduce XDP multi-buffer
- support
-Message-ID: <20210418181801.17166935@carbon>
-In-Reply-To: <CAJ8uoz1MOYLzyy7xXq_fmpKDEakxSomzfM76Szjr5gWsqHc9jQ@mail.gmail.com>
-References: <cover.1617885385.git.lorenzo@kernel.org>
-        <CAJ8uoz1MOYLzyy7xXq_fmpKDEakxSomzfM76Szjr5gWsqHc9jQ@mail.gmail.com>
+        id S231386AbhDRRHM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 18 Apr 2021 13:07:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50044 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230028AbhDRRHM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 18 Apr 2021 13:07:12 -0400
+Received: from mail-pl1-x636.google.com (mail-pl1-x636.google.com [IPv6:2607:f8b0:4864:20::636])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 044BEC06174A
+        for <netdev@vger.kernel.org>; Sun, 18 Apr 2021 10:06:43 -0700 (PDT)
+Received: by mail-pl1-x636.google.com with SMTP id q11so3375963plx.2
+        for <netdev@vger.kernel.org>; Sun, 18 Apr 2021 10:06:43 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=Dfjqz1qNL7lj+VSz7yDIm8dV79tnTp9KJwuZmahrsl8=;
+        b=aUlVLBZf+1V4kJq2O5uWUzBlKSQESGr+9omIkuS+BEekNHmUcN7iZgk5jcK/3WGdTQ
+         ptORJMutfsbJX0mimeVqAjHwYFcEmIBr8s0sVpPHL31vE3mD16XFfDRn0/PnY0dZ+AK+
+         idhBbwLd/qtHgAaBd1C+7R2n/YLGlYkVG13/jHbxX149vCFYHsU/QQfRms0OovO5vIux
+         8nmcn/uauiDxe0+T7fR/2D/kO5AWS7t5CnAHJoBnZdG65AY6fc+6KThsWsya/qmw+eiN
+         e7XPqSrTrDvHnIBME4UWtaEvB0hRWg6z05aII5wwu0H/N8TtVaI2zaTojzhyP2uOkTzZ
+         fOdw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=Dfjqz1qNL7lj+VSz7yDIm8dV79tnTp9KJwuZmahrsl8=;
+        b=K8wcon9yyGR6aTk2xPtZdGL817/6NmLRwT01DbS2PTvqcbEmM919RmEO46f7ZeGqG5
+         PNe7hHFiFe1NOE9qO65H1ReILwi8q/Z/mhLoVRtzpsTRfezEIwxsJFSFk8GQWSTDwPRt
+         3/DsmqJpEG4v09OugSCRAuEkWOJjwkaEekYPk0G6ksg/03JIsswAiu/v42Fci7KMtFb1
+         xZq7hHW/9Lr68pySWdYiqb8ZrZyQ2v6QMRLyl8BpegJMx5lz78noCk2a6AO5HGTu3eJZ
+         4BoAj3jf4F9g56Nf08RPzz0sVhQE0VrWIBlldMf0TWlYHJv12w2NGqQt7KRhaAyxfPuh
+         vj+Q==
+X-Gm-Message-State: AOAM532fmTcqVPBjN6ekwJVT2DcsmO4BxjopHaEw6yRp1sU5XuFrp+S4
+        1K8GB180EQL4OuTZD/U5+y7x5nvrTfU=
+X-Google-Smtp-Source: ABdhPJyQID8g9YvxVT7nhKfExfTQR5S2eYdUbxNuOrMGYoG4DjLZNZoIaG7lzzHKsKCIxYXI2dFZpA==
+X-Received: by 2002:a17:90a:f992:: with SMTP id cq18mr20197566pjb.7.1618765603528;
+        Sun, 18 Apr 2021 10:06:43 -0700 (PDT)
+Received: from Davids-MacBook-Pro.local ([8.45.41.12])
+        by smtp.googlemail.com with ESMTPSA id w3sm12055684pjg.7.2021.04.18.10.06.42
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sun, 18 Apr 2021 10:06:42 -0700 (PDT)
+Subject: Re: [PATCH net-next 1/2] nexthop: Restart nexthop dump based on last
+ dumped nexthop identifier
+To:     Ido Schimmel <idosch@idosch.org>, netdev@vger.kernel.org
+Cc:     davem@davemloft.net, kuba@kernel.org, petrm@nvidia.com,
+        mlxsw@nvidia.com, Ido Schimmel <idosch@nvidia.com>
+References: <20210416155535.1694714-1-idosch@idosch.org>
+ <20210416155535.1694714-2-idosch@idosch.org>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <91838deb-c82d-444e-6a19-3926aeff87f2@gmail.com>
+Date:   Sun, 18 Apr 2021 10:06:41 -0700
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
+ Gecko/20100101 Thunderbird/78.9.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+In-Reply-To: <20210416155535.1694714-2-idosch@idosch.org>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
 Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 16 Apr 2021 16:27:18 +0200
-Magnus Karlsson <magnus.karlsson@gmail.com> wrote:
-
-> On Thu, Apr 8, 2021 at 2:51 PM Lorenzo Bianconi <lorenzo@kernel.org> wrote:
-> >
-> > This series introduce XDP multi-buffer support. The mvneta driver is
-> > the first to support these new "non-linear" xdp_{buff,frame}. Reviewers
-> > please focus on how these new types of xdp_{buff,frame} packets
-> > traverse the different layers and the layout design. It is on purpose
-> > that BPF-helpers are kept simple, as we don't want to expose the
-> > internal layout to allow later changes.
-> >
-> > For now, to keep the design simple and to maintain performance, the XDP
-> > BPF-prog (still) only have access to the first-buffer. It is left for
-> > later (another patchset) to add payload access across multiple buffers.
-> > This patchset should still allow for these future extensions. The goal
-> > is to lift the XDP MTU restriction that comes with XDP, but maintain
-> > same performance as before.
-[...]
-> >
-> > [0] https://netdevconf.info/0x14/session.html?talk-the-path-to-tcp-4k-mtu-and-rx-zerocopy
-> > [1] https://github.com/xdp-project/xdp-project/blob/master/areas/core/xdp-multi-buffer01-design.org
-> > [2] https://netdevconf.info/0x14/session.html?tutorial-add-XDP-support-to-a-NIC-driver (XDPmulti-buffers section)  
+On 4/16/21 8:55 AM, Ido Schimmel wrote:
+> From: Ido Schimmel <idosch@nvidia.com>
 > 
-> Took your patches for a test run with the AF_XDP sample xdpsock on an
-> i40e card and the throughput degradation is between 2 to 6% depending
-> on the setup and microbenchmark within xdpsock that is executed. And
-> this is without sending any multi frame packets. Just single frame
-> ones. Tirtha made changes to the i40e driver to support this new
-> interface so that is being included in the measurements.
+> Currently, a multi-part nexthop dump is restarted based on the number of
+> nexthops that have been dumped so far. This can result in a lot of
+> nexthops not being dumped when nexthops are simultaneously deleted:
+> 
+>  # ip nexthop | wc -l
+>  65536
+>  # ip nexthop flush
+>  Dump was interrupted and may be inconsistent.
+>  Flushed 36040 nexthops
+>  # ip nexthop | wc -l
+>  29496
+> 
+> Instead, restart the dump based on the nexthop identifier (fixed number)
+> of the last successfully dumped nexthop:
+> 
+>  # ip nexthop | wc -l
+>  65536
+>  # ip nexthop flush
+>  Dump was interrupted and may be inconsistent.
+>  Flushed 65536 nexthops
+>  # ip nexthop | wc -l
+>  0
+> 
+> Reported-by: Maksym Yaremchuk <maksymy@nvidia.com>
+> Tested-by: Maksym Yaremchuk <maksymy@nvidia.com>
+> Signed-off-by: Ido Schimmel <idosch@nvidia.com>
+> Reviewed-by: Petr Machata <petrm@nvidia.com>
+> ---
+>  net/ipv4/nexthop.c | 14 ++++++--------
+>  1 file changed, 6 insertions(+), 8 deletions(-)
+> 
 
-Could you please share Tirtha's i40e support patch with me?
+Reviewed-by: David Ahern <dsahern@kernel.org>
 
-I would like to reproduce these results in my testlab, in-order to
-figure out where the throughput degradation comes from.
+Any reason not to put this in -net with a Fixes tag?
 
-> What performance do you see with the mvneta card? How much are we
-> willing to pay for this feature when it is not being used or can we in
-> some way selectively turn it on only when needed?
-
-Well, as Daniel says performance wise we require close to /zero/
-additional overhead, especially as you state this happens when sending
-a single frame, which is a base case that we must not slowdown.
-
--- 
-Best regards,
-  Jesper Dangaard Brouer
-  MSc.CS, Principal Kernel Engineer at Red Hat
-  LinkedIn: http://www.linkedin.com/in/brouer
 
