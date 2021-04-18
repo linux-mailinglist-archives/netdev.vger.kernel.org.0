@@ -2,94 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D0150363451
-	for <lists+netdev@lfdr.de>; Sun, 18 Apr 2021 10:20:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C818B363452
+	for <lists+netdev@lfdr.de>; Sun, 18 Apr 2021 10:24:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229871AbhDRIUh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 18 Apr 2021 04:20:37 -0400
-Received: from out5-smtp.messagingengine.com ([66.111.4.29]:48045 "EHLO
+        id S229920AbhDRIYv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 18 Apr 2021 04:24:51 -0400
+Received: from out5-smtp.messagingengine.com ([66.111.4.29]:55091 "EHLO
         out5-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S229671AbhDRIUg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 18 Apr 2021 04:20:36 -0400
+        by vger.kernel.org with ESMTP id S229585AbhDRIYt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 18 Apr 2021 04:24:49 -0400
 Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-        by mailout.nyi.internal (Postfix) with ESMTP id D21135C06B1;
-        Sun, 18 Apr 2021 04:20:08 -0400 (EDT)
+        by mailout.nyi.internal (Postfix) with ESMTP id BD2435C0043;
+        Sun, 18 Apr 2021 04:24:21 -0400 (EDT)
 Received: from mailfrontend2 ([10.202.2.163])
-  by compute3.internal (MEProxy); Sun, 18 Apr 2021 04:20:08 -0400
+  by compute3.internal (MEProxy); Sun, 18 Apr 2021 04:24:21 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
         messagingengine.com; h=cc:content-type:date:from:in-reply-to
         :message-id:mime-version:references:subject:to:x-me-proxy
-        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm2; bh=d7X8OG
-        FVFOhDXCmZyOMBVNJkgbqgwpPEDeOT/pCuT34=; b=Dh6/1Ts7vLH5n4pGhm1xhd
-        aQ/i6HcTldn9WUZgqC4sbDS8cpKl8VWoZj3NvlgaZg1bPjxTr8alz4kvw7+3c/HB
-        //PFNCckLCK/aXm1Q5RspG0Z6r0+t3/hH7TXaY6kZwL4xbQP223ptLwl8Nu4N3wd
-        pv5VhzG5Wtl27IHcns6YoCfQ1LlACSVDCKQuGQVG2f6E9zZ7YjBg21tU2Xl6vJds
-        4T6pkmCwZ1u8qsML3FjmjmGjD+pG3DGHXdwBOQ8dXtZoOoPxwB/anUC8kjehr0O6
-        /rvVjCUa7WwLSA2QuBp5qwHojBngxirZY+3BpVKcNx1qGdf5mTugwz+VOLPTEgaw
+        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm2; bh=vKuIlh
+        l4afq2JB9nbx5/nVWHiC81ACtaB3YuuSwX3zo=; b=lOtP+CzkW25gZBktGfrDAl
+        X/qfK6Bc/gqhrdcj9TC6A2HvB6IQvbKAFy4S1p8GVODM76qYszNy4y2eIqakKiLb
+        QcF868nqI6TNRQ2C31jxJtg0B6moPNMp6yiRwRzuLgWsQ6XI+AciSe3VQlr8iPG0
+        8xMHaxTo7IJGhVECsCnvAozxqrat65fPgAQEIgo0Z97uCrFbZz8aetXQtFkrtMUg
+        U1RgAzS7th1bL6vaHin6NQ/xwuTR+DPyLwa4MWcPJaFf65uRDNbxbC4bYhZ1GYuJ
+        EHWgH2Uc9DamBGwVZOore1DxXOWYvC5VytJsTKIoEiIUsVMW0e5EomiS4C/pO7nA
         ==
-X-ME-Sender: <xms:t-t7YDTPEuM9ThqQYF7DfZF0CzdCyXBi4w76by2KrbWu7Q4ZFGUuLQ>
-    <xme:t-t7YEwNEfkxq6dCAoUAtVrjpJeyG7goCuHZ94QrsvgF55h67Zfaga9Gcsa3lB4nD
-    Zu_eBz2kCvY-vs>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduledrudelkedgfeekucetufdoteggodetrfdotf
+X-ME-Sender: <xms:tOx7YJORFhxjA5CwWNU9fOYSmzsMp7kW1kl652SgqiFV13L12j5OUg>
+    <xme:tOx7YL8p4DFqOnKovVQUox4HWQ2iyCeAAF_2dK1QLRXtcluBpXkMkZJkimnJYX1Sf
+    iL2PBTUANUx1WY>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduledrudelkedgfeelucetufdoteggodetrfdotf
     fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
     uceurghilhhouhhtmecufedttdenucenucfjughrpeffhffvuffkfhggtggujgesthdtre
     dttddtvdenucfhrhhomhepkfguohcuufgthhhimhhmvghluceoihguohhstghhsehiugho
-    shgthhdrohhrgheqnecuggftrfgrthhtvghrnheptdffkeekfeduffevgeeujeffjefhte
-    fgueeugfevtdeiheduueeukefhudehleetnecukfhppeduleefrdegjedrudeihedrvdeh
-    udenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpehiug
-    hoshgthhesihguohhstghhrdhorhhg
-X-ME-Proxy: <xmx:t-t7YI1JpX9cN09hPz5qfwjONnfVINEqLOsofYN1NKSlzRH5HWJh2g>
-    <xmx:t-t7YDBrVDLUn9iq3DWnLyTrcQ8eMPRFxabFIwBSnXLN19YHPmWtkg>
-    <xmx:t-t7YMiHwvJMAYqx7WT2b7ahA6t9knImOmjWbO74oCZMU2IYB_04YA>
-    <xmx:uOt7YEcTQIGt_1Rzzhz3qNHCwyL1WmUxFmVZ9520BfB6g2yBuTugUA>
+    shgthhdrohhrgheqnecuggftrfgrthhtvghrnhepveejtdegteevlefgtdfgueekveegje
+    duieetvdduvdetveffgfelgeegfeetgfeunecuffhomhgrihhnpehgihhthhhusgdrtgho
+    mhdpshhhohifmhgrgidrtghomhenucfkphepudelfedrgeejrdduieehrddvhedunecuve
+    hluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomhepihguohhstghh
+    sehiughoshgthhdrohhrgh
+X-ME-Proxy: <xmx:tOx7YIS4Z7ct_FPF8Iqk4j4_1G4-1nS2L6pqrcYzf1rwbcHu-_ynhw>
+    <xmx:tOx7YFuUgx2VAPW_z158n5ssa-6AhXuKm2Bpk9ai4_e3O0h5Cw5arw>
+    <xmx:tOx7YBexd7J1cct8cIT85QL5GrN1Iv4GfiyX6C4rCVvRMMhEkJCAJQ>
+    <xmx:tex7YI4AqHXIFwlIdqUede7NmJN1HeOcgM2PFcWt2fzYTG_0Day8AA>
 Received: from localhost (unknown [193.47.165.251])
-        by mail.messagingengine.com (Postfix) with ESMTPA id 3A22D1080063;
-        Sun, 18 Apr 2021 04:20:07 -0400 (EDT)
-Date:   Sun, 18 Apr 2021 11:20:04 +0300
+        by mail.messagingengine.com (Postfix) with ESMTPA id E3C041080067;
+        Sun, 18 Apr 2021 04:24:19 -0400 (EDT)
+Date:   Sun, 18 Apr 2021 11:24:17 +0300
 From:   Ido Schimmel <idosch@idosch.org>
 To:     Jakub Kicinski <kuba@kernel.org>
 Cc:     netdev@vger.kernel.org, davem@davemloft.net, andrew@lunn.ch,
         mkubecek@suse.cz, idosch@nvidia.com, saeedm@nvidia.com,
         michael.chan@broadcom.com
-Subject: Re: [PATCH net-next v2 3/9] ethtool: add a new command for reading
- standard stats
-Message-ID: <YHvrtGSbYbVm/xLK@shredder>
-References: <20210416192745.2851044-1-kuba@kernel.org>
- <20210416192745.2851044-4-kuba@kernel.org>
+Subject: Re: [PATCH net-next 0/9] ethtool: add uAPI for reading standard stats
+Message-ID: <YHvssTvheST9nE6d@shredder>
+References: <20210416022752.2814621-1-kuba@kernel.org>
+ <YHmw2tmhFGWFTzPo@shredder.lan>
+ <20210416090816.3f805b96@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20210416192745.2851044-4-kuba@kernel.org>
+In-Reply-To: <20210416090816.3f805b96@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Apr 16, 2021 at 12:27:39PM -0700, Jakub Kicinski wrote:
-> +static int stats_prepare_data(const struct ethnl_req_info *req_base,
-> +			      struct ethnl_reply_data *reply_base,
-> +			      struct genl_info *info)
-> +{
-> +	const struct stats_req_info *req_info = STATS_REQINFO(req_base);
-> +	struct stats_reply_data *data = STATS_REPDATA(reply_base);
-> +	struct net_device *dev = reply_base->dev;
-> +	int ret;
-> +
-> +	ret = ethnl_ops_begin(dev);
-> +	if (ret < 0)
-> +		return ret;
-> +
+On Fri, Apr 16, 2021 at 09:08:16AM -0700, Jakub Kicinski wrote:
+> On Fri, 16 Apr 2021 18:44:26 +0300 Ido Schimmel wrote:
+> > Given that you have now standardized these stats, do you plan to feed
+> > them into some monitoring system? 
+> 
+> Yes and no, I'm only intending to replace the internal FB ethtool
+> scraping script with these stats..
 
-Nit: A comment here would be nice. Something like:
+Cool
 
-Mark all stats as unset (see ETHTOOL_STAT_NOT_SET) to prevent them from
-being reported to user space in case driver did not set them.
+> 
+> > For example, Prometheus has an ethtool
+> > exporter [1] and now I see that support is also being added to
+> > node_exporter [2] where it really belongs. They obviously mentioned [3]
+> > the problem with lack of standardization: "There is also almost no
+> > standardization, so if you use multiple network card vendors, you have
+> > to examine the data closely to find out what is useful to you and set up
+> > your alerts and dashboards accordingly."
+> > 
+> > [1] https://github.com/Showmax/prometheus-ethtool-exporter
+> > [2] https://github.com/prometheus/node_exporter/pull/1832
+> > [3] https://tech.showmax.com/2018/11/scraping-ethtool-data-into-prometheus/
+>  
+> Wow, are you working with those projects? We should probably let them
+> know about the patches.
 
-> +	memset(&data->phy_stats, 0xff, sizeof(data->phy_stats));
-> +
-> +	if (test_bit(ETHTOOL_STATS_ETH_PHY, req_info->stat_mask) &&
-> +	    dev->ethtool_ops->get_eth_phy_stats)
-> +		dev->ethtool_ops->get_eth_phy_stats(dev, &data->phy_stats);
-> +
-> +	ethnl_ops_complete(dev);
-> +	return 0;
-> +}
+I'm mostly a user, not a contributor (wrote some exporters of my own).
+I'll drop a comment there once your patches are in net-next.
