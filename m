@@ -2,18 +2,18 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 53560363826
+	by mail.lfdr.de (Postfix) with ESMTP id CE5EA363827
 	for <lists+netdev@lfdr.de>; Mon, 19 Apr 2021 00:21:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236970AbhDRWUs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 18 Apr 2021 18:20:48 -0400
-Received: from mx2.suse.de ([195.135.220.15]:38308 "EHLO mx2.suse.de"
+        id S237155AbhDRWUu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 18 Apr 2021 18:20:50 -0400
+Received: from mx2.suse.de ([195.135.220.15]:38318 "EHLO mx2.suse.de"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S235484AbhDRWUX (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 18 Apr 2021 18:20:23 -0400
+        id S235645AbhDRWUY (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 18 Apr 2021 18:20:24 -0400
 X-Virus-Scanned: by amavisd-new at test-mx.suse.de
 Received: from relay2.suse.de (unknown [195.135.221.27])
-        by mx2.suse.de (Postfix) with ESMTP id 31F10B143;
+        by mx2.suse.de (Postfix) with ESMTP id 91C7BB153;
         Sun, 18 Apr 2021 22:19:53 +0000 (UTC)
 From:   Thomas Bogendoerfer <tsbogend@alpha.franken.de>
 To:     "David S. Miller" <davem@davemloft.net>,
@@ -21,9 +21,9 @@ To:     "David S. Miller" <davem@davemloft.net>,
         Rob Herring <robh+dt@kernel.org>, netdev@vger.kernel.org,
         devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
         linux-mips@vger.kernel.org
-Subject: [PATCH v6 net-next 06/10] net: korina: Only pass mac address via platform data
-Date:   Mon, 19 Apr 2021 00:19:44 +0200
-Message-Id: <20210418221949.130779-7-tsbogend@alpha.franken.de>
+Subject: [PATCH v6 net-next 07/10] net: korina: Add support for device tree
+Date:   Mon, 19 Apr 2021 00:19:45 +0200
+Message-Id: <20210418221949.130779-8-tsbogend@alpha.franken.de>
 X-Mailer: git-send-email 2.29.2
 In-Reply-To: <20210418221949.130779-1-tsbogend@alpha.franken.de>
 References: <20210418221949.130779-1-tsbogend@alpha.franken.de>
@@ -33,83 +33,134 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Get rid of access to struct korina_device by just passing the mac
-address via platform data and use drvdata for passing netdev to remove
-function.
+If there is no mac address passed via platform data try to get it via
+device tree and fall back to a random mac address, if all fail.
 
 Signed-off-by: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
 ---
- arch/mips/rb532/devices.c     |  5 +++--
- drivers/net/ethernet/korina.c | 11 ++++++-----
- 2 files changed, 9 insertions(+), 7 deletions(-)
+ arch/mips/rb532/devices.c     | 20 +++++---------------
+ drivers/net/ethernet/korina.c | 32 +++++++++++++++++++++++++-------
+ 2 files changed, 30 insertions(+), 22 deletions(-)
 
 diff --git a/arch/mips/rb532/devices.c b/arch/mips/rb532/devices.c
-index dd34f1b32b79..5fc3c8ee4f31 100644
+index 5fc3c8ee4f31..04684990e28e 100644
 --- a/arch/mips/rb532/devices.c
 +++ b/arch/mips/rb532/devices.c
-@@ -105,6 +105,9 @@ static struct platform_device korina_dev0 = {
- 	.name = "korina",
- 	.resource = korina_dev0_res,
- 	.num_resources = ARRAY_SIZE(korina_dev0_res),
-+	.dev = {
-+		.platform_data = &korina_dev0_data.mac,
-+	}
- };
+@@ -58,37 +58,27 @@ EXPORT_SYMBOL(get_latch_u5);
  
- static struct resource cf_slot0_res[] = {
-@@ -299,8 +302,6 @@ static int __init plat_setup_devices(void)
- 	/* set the uart clock to the current cpu frequency */
- 	rb532_uart_res[0].uartclk = idt_cpu_freq;
- 
--	dev_set_drvdata(&korina_dev0.dev, &korina_dev0_data);
--
- 	gpiod_add_lookup_table(&cf_slot0_gpio_table);
- 	return platform_add_devices(rb532_devs, ARRAY_SIZE(rb532_devs));
- }
+ static struct resource korina_dev0_res[] = {
+ 	{
+-		.name = "korina_regs",
++		.name = "emac",
+ 		.start = ETH0_BASE_ADDR,
+ 		.end = ETH0_BASE_ADDR + sizeof(struct eth_regs),
+ 		.flags = IORESOURCE_MEM,
+ 	 }, {
+-		.name = "korina_rx",
++		.name = "rx",
+ 		.start = ETH0_DMA_RX_IRQ,
+ 		.end = ETH0_DMA_RX_IRQ,
+ 		.flags = IORESOURCE_IRQ
+ 	}, {
+-		.name = "korina_tx",
++		.name = "tx",
+ 		.start = ETH0_DMA_TX_IRQ,
+ 		.end = ETH0_DMA_TX_IRQ,
+ 		.flags = IORESOURCE_IRQ
+ 	}, {
+-		.name = "korina_ovr",
+-		.start = ETH0_RX_OVR_IRQ,
+-		.end = ETH0_RX_OVR_IRQ,
+-		.flags = IORESOURCE_IRQ
+-	}, {
+-		.name = "korina_und",
+-		.start = ETH0_TX_UND_IRQ,
+-		.end = ETH0_TX_UND_IRQ,
+-		.flags = IORESOURCE_IRQ
+-	}, {
+-		.name = "korina_dma_rx",
++		.name = "dma_rx",
+ 		.start = ETH0_RX_DMA_ADDR,
+ 		.end = ETH0_RX_DMA_ADDR + DMA_CHAN_OFFSET - 1,
+ 		.flags = IORESOURCE_MEM,
+ 	 }, {
+-		.name = "korina_dma_tx",
++		.name = "dma_tx",
+ 		.start = ETH0_TX_DMA_ADDR,
+ 		.end = ETH0_TX_DMA_ADDR + DMA_CHAN_OFFSET - 1,
+ 		.flags = IORESOURCE_MEM,
 diff --git a/drivers/net/ethernet/korina.c b/drivers/net/ethernet/korina.c
-index 44fad9e924ca..d6dbbdd43d7c 100644
+index d6dbbdd43d7c..a1f53d7753ae 100644
 --- a/drivers/net/ethernet/korina.c
 +++ b/drivers/net/ethernet/korina.c
-@@ -1055,7 +1055,7 @@ static const struct net_device_ops korina_netdev_ops = {
- 
- static int korina_probe(struct platform_device *pdev)
- {
--	struct korina_device *bif = platform_get_drvdata(pdev);
-+	u8 *mac_addr = dev_get_platdata(&pdev->dev);
- 	struct korina_private *lp;
- 	struct net_device *dev;
- 	void __iomem *p;
-@@ -1068,8 +1068,7 @@ static int korina_probe(struct platform_device *pdev)
+@@ -43,6 +43,8 @@
+ #include <linux/ioport.h>
+ #include <linux/iopoll.h>
+ #include <linux/in.h>
++#include <linux/of_device.h>
++#include <linux/of_net.h>
+ #include <linux/slab.h>
+ #include <linux/string.h>
+ #include <linux/delay.h>
+@@ -1068,26 +1070,29 @@ static int korina_probe(struct platform_device *pdev)
  	SET_NETDEV_DEV(dev, &pdev->dev);
  	lp = netdev_priv(dev);
  
--	bif->dev = dev;
--	memcpy(dev->dev_addr, bif->mac, ETH_ALEN);
-+	memcpy(dev->dev_addr, mac_addr, ETH_ALEN);
+-	memcpy(dev->dev_addr, mac_addr, ETH_ALEN);
++	if (mac_addr)
++		ether_addr_copy(dev->dev_addr, mac_addr);
++	else if (of_get_mac_address(pdev->dev.of_node, dev->dev_addr) < 0)
++		eth_hw_addr_random(dev);
  
- 	lp->rx_irq = platform_get_irq_byname(pdev, "korina_rx");
- 	lp->tx_irq = platform_get_irq_byname(pdev, "korina_tx");
-@@ -1123,6 +1122,8 @@ static int korina_probe(struct platform_device *pdev)
- 	lp->mii_if.phy_id_mask = 0x1f;
- 	lp->mii_if.reg_num_mask = 0x1f;
+-	lp->rx_irq = platform_get_irq_byname(pdev, "korina_rx");
+-	lp->tx_irq = platform_get_irq_byname(pdev, "korina_tx");
++	lp->rx_irq = platform_get_irq_byname(pdev, "rx");
++	lp->tx_irq = platform_get_irq_byname(pdev, "tx");
  
-+	platform_set_drvdata(pdev, dev);
-+
- 	rc = register_netdev(dev);
- 	if (rc < 0) {
- 		printk(KERN_ERR DRV_NAME
-@@ -1140,9 +1141,9 @@ static int korina_probe(struct platform_device *pdev)
+-	p = devm_platform_ioremap_resource_byname(pdev, "korina_regs");
++	p = devm_platform_ioremap_resource_byname(pdev, "emac");
+ 	if (!p) {
+ 		printk(KERN_ERR DRV_NAME ": cannot remap registers\n");
+ 		return -ENOMEM;
+ 	}
+ 	lp->eth_regs = p;
  
- static int korina_remove(struct platform_device *pdev)
- {
--	struct korina_device *bif = platform_get_drvdata(pdev);
-+	struct net_device *dev = platform_get_drvdata(pdev);
+-	p = devm_platform_ioremap_resource_byname(pdev, "korina_dma_rx");
++	p = devm_platform_ioremap_resource_byname(pdev, "dma_rx");
+ 	if (!p) {
+ 		printk(KERN_ERR DRV_NAME ": cannot remap Rx DMA registers\n");
+ 		return -ENOMEM;
+ 	}
+ 	lp->rx_dma_regs = p;
  
--	unregister_netdev(bif->dev);
-+	unregister_netdev(dev);
- 
+-	p = devm_platform_ioremap_resource_byname(pdev, "korina_dma_tx");
++	p = devm_platform_ioremap_resource_byname(pdev, "dma_tx");
+ 	if (!p) {
+ 		printk(KERN_ERR DRV_NAME ": cannot remap Tx DMA registers\n");
+ 		return -ENOMEM;
+@@ -1148,8 +1153,21 @@ static int korina_remove(struct platform_device *pdev)
  	return 0;
  }
+ 
++#ifdef CONFIG_OF
++static const struct of_device_id korina_match[] = {
++	{
++		.compatible = "idt,3243x-emac",
++	},
++	{ }
++};
++MODULE_DEVICE_TABLE(of, korina_match);
++#endif
++
+ static struct platform_driver korina_driver = {
+-	.driver.name = "korina",
++	.driver = {
++		.name = "korina",
++		.of_match_table = of_match_ptr(korina_match),
++	},
+ 	.probe = korina_probe,
+ 	.remove = korina_remove,
+ };
 -- 
 2.29.2
 
