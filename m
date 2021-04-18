@@ -2,91 +2,116 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2270B363651
-	for <lists+netdev@lfdr.de>; Sun, 18 Apr 2021 17:11:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 03301363693
+	for <lists+netdev@lfdr.de>; Sun, 18 Apr 2021 18:18:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231807AbhDRPL4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 18 Apr 2021 11:11:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53726 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230028AbhDRPLz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 18 Apr 2021 11:11:55 -0400
-Received: from mail-pg1-x52b.google.com (mail-pg1-x52b.google.com [IPv6:2607:f8b0:4864:20::52b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 96606C06174A;
-        Sun, 18 Apr 2021 08:11:27 -0700 (PDT)
-Received: by mail-pg1-x52b.google.com with SMTP id f29so22481716pgm.8;
-        Sun, 18 Apr 2021 08:11:27 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=Ke5WSxCRkYpPrC+7A8fEoFSGxA5olwH4RC9Qt2ZzghM=;
-        b=XsnyZpqiWtpEOUWD5yebSAZ2y9whS4h8JWv1JYbmhBdLwZgdhy3Jx5+lV+sv/5gWHh
-         fo5bIa3nyrk3HXWm9bRW7hQyISQzig+FpnJqsNcH1tHtY0ekaDB7DiYOfjiDc87gQtJX
-         MUbdPpdP7H3FqQmWAUHvnsfzXgw87rMRS/IHgJBrQessOKhf9W7eozKc2gm2dSqhRV73
-         8lJ2xZK/4703y0gP8k6UfP/HdboKFYhOBbW+HrKg3g5F1KBtHQyo+RGzbUCEKMrjImQj
-         m9cCHcCItaKzurN0+BlOyifBajS9oI8bNw7Bfb2O6ZxofRQVgNCtiElSZWHfWyN8SMyZ
-         w0/g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=Ke5WSxCRkYpPrC+7A8fEoFSGxA5olwH4RC9Qt2ZzghM=;
-        b=IHtpUU1yTWBTWfsDDQhvj1PeIVIcDMEAzSLGGiatsWJ+N1kNrjukbyeE7ytEbhU2HA
-         NFGEefPjIBG1WoTb/99wp07tuSuEJtEgN/UcPWzZSoOGm1NTnzQzeOoLb4MLInQAdhOI
-         P/kKh+2Q/pCZsTQQiaWqvUBXchCl7uQA6AKEg+s5vmY85uv/3N/Gll4lbYaSOpAinCp9
-         iUnngu+H7WcMi2iUM8hxWVmh3fZct/xB0EzcO5VDYr/vyBBoC0mhxa0H3KhXNWdtQoNL
-         vDOs8TlgMWM2GnAyq/kpShjyU0HxIFVjgGWrPgENj0BJtJYgHWp78YWMQiWCcs0Uwi+b
-         +4dA==
-X-Gm-Message-State: AOAM531Tnj3MLeF1qdbbNaINQCeks3wGHersftJV0I83owiKKu3JLJSg
-        VRxkyJIRKkthmmCVZ20vlgo=
-X-Google-Smtp-Source: ABdhPJygkYIMPieMWWb7ZZyb4m4JHPlWlxAZ0A6zenFkY+LFzI+GH6YnNV1tQEwuBwKSf75EUN8vnA==
-X-Received: by 2002:a62:1a4a:0:b029:25f:3159:78ea with SMTP id a71-20020a621a4a0000b029025f315978eamr2154517pfa.41.1618758687230;
-        Sun, 18 Apr 2021 08:11:27 -0700 (PDT)
-Received: from hoboy.vegasvil.org ([2601:645:c000:35:e2d5:5eff:fea5:802f])
-        by smtp.gmail.com with ESMTPSA id n20sm5257043pjq.45.2021.04.18.08.11.25
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 18 Apr 2021 08:11:26 -0700 (PDT)
-Date:   Sun, 18 Apr 2021 08:11:24 -0700
-From:   Richard Cochran <richardcochran@gmail.com>
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     Yangbo Lu <yangbo.lu@nxp.com>, netdev@vger.kernel.org,
-        Vladimir Oltean <vladimir.oltean@nxp.com>,
-        "David S . Miller" <davem@davemloft.net>,
+        id S232057AbhDRQSw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 18 Apr 2021 12:18:52 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:28357 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S231684AbhDRQSt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 18 Apr 2021 12:18:49 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1618762699;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=gtqF7+8hdOsOAqsZblGuMHHe5YxbPyqEJw9acCV3MPw=;
+        b=V7z/HAw/PwPtEOIkFYmwh2aKhBNuknk8An3HAoTA3tErvLcBETqC9Hq6GGfdREu5B+aS6+
+        uw4CbdFD5zh+rZYzlZHUPTCeVibTUjvbzJBgbrchdbJm/9YdZ+U0tDNHcHfFNVLZC4NBL4
+        h9WYBWUJ8A2dJVoQRyQ8tWBN18CENaw=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-394-lYJvDT76NgKpzdeP30YW3g-1; Sun, 18 Apr 2021 12:18:15 -0400
+X-MC-Unique: lYJvDT76NgKpzdeP30YW3g-1
+Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com [10.5.11.22])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id D4231817469;
+        Sun, 18 Apr 2021 16:18:13 +0000 (UTC)
+Received: from carbon (unknown [10.36.110.19])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 59DD1107D5C6;
+        Sun, 18 Apr 2021 16:18:02 +0000 (UTC)
+Date:   Sun, 18 Apr 2021 18:18:01 +0200
+From:   Jesper Dangaard Brouer <brouer@redhat.com>
+To:     Magnus Karlsson <magnus.karlsson@gmail.com>
+Cc:     Lorenzo Bianconi <lorenzo@kernel.org>, bpf <bpf@vger.kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        lorenzo.bianconi@redhat.com,
+        "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Kurt Kanzenbach <kurt@linutronix.de>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        UNGLinuxDriver@microchip.com, linux-doc@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [net-next 1/3] net: dsa: optimize tx timestamp request handling
-Message-ID: <20210418151124.GC24506@hoboy.vegasvil.org>
-References: <20210416123655.42783-1-yangbo.lu@nxp.com>
- <20210416123655.42783-2-yangbo.lu@nxp.com>
- <20210418091842.slmcybvjfkvkatiq@skbuf>
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>, shayagr@amazon.com,
+        sameehj@amazon.com, John Fastabend <john.fastabend@gmail.com>,
+        David Ahern <dsahern@kernel.org>,
+        Eelco Chaudron <echaudro@redhat.com>,
+        Jason Wang <jasowang@redhat.com>,
+        Alexander Duyck <alexander.duyck@gmail.com>,
+        Saeed Mahameed <saeed@kernel.org>,
+        "Fijalkowski, Maciej" <maciej.fijalkowski@intel.com>,
+        Tirthendu <tirthendu.sarkar@intel.com>, brouer@redhat.com
+Subject: Re: [PATCH v8 bpf-next 00/14] mvneta: introduce XDP multi-buffer
+ support
+Message-ID: <20210418181801.17166935@carbon>
+In-Reply-To: <CAJ8uoz1MOYLzyy7xXq_fmpKDEakxSomzfM76Szjr5gWsqHc9jQ@mail.gmail.com>
+References: <cover.1617885385.git.lorenzo@kernel.org>
+        <CAJ8uoz1MOYLzyy7xXq_fmpKDEakxSomzfM76Szjr5gWsqHc9jQ@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210418091842.slmcybvjfkvkatiq@skbuf>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Apr 18, 2021 at 12:18:42PM +0300, Vladimir Oltean wrote:
-> 
-> How about not passing "clone" back to DSA as an argument by reference,
-> but instead require the driver to populate DSA_SKB_CB(skb)->clone if it
-> needs to do so?
-> 
-> Also, how about changing the return type to void? Returning true or
-> false makes no difference.
+On Fri, 16 Apr 2021 16:27:18 +0200
+Magnus Karlsson <magnus.karlsson@gmail.com> wrote:
 
-+1
+> On Thu, Apr 8, 2021 at 2:51 PM Lorenzo Bianconi <lorenzo@kernel.org> wrote:
+> >
+> > This series introduce XDP multi-buffer support. The mvneta driver is
+> > the first to support these new "non-linear" xdp_{buff,frame}. Reviewers
+> > please focus on how these new types of xdp_{buff,frame} packets
+> > traverse the different layers and the layout design. It is on purpose
+> > that BPF-helpers are kept simple, as we don't want to expose the
+> > internal layout to allow later changes.
+> >
+> > For now, to keep the design simple and to maintain performance, the XDP
+> > BPF-prog (still) only have access to the first-buffer. It is left for
+> > later (another patchset) to add payload access across multiple buffers.
+> > This patchset should still allow for these future extensions. The goal
+> > is to lift the XDP MTU restriction that comes with XDP, but maintain
+> > same performance as before.
+[...]
+> >
+> > [0] https://netdevconf.info/0x14/session.html?talk-the-path-to-tcp-4k-mtu-and-rx-zerocopy
+> > [1] https://github.com/xdp-project/xdp-project/blob/master/areas/core/xdp-multi-buffer01-design.org
+> > [2] https://netdevconf.info/0x14/session.html?tutorial-add-XDP-support-to-a-NIC-driver (XDPmulti-buffers section)  
+> 
+> Took your patches for a test run with the AF_XDP sample xdpsock on an
+> i40e card and the throughput degradation is between 2 to 6% depending
+> on the setup and microbenchmark within xdpsock that is executed. And
+> this is without sending any multi frame packets. Just single frame
+> ones. Tirtha made changes to the i40e driver to support this new
+> interface so that is being included in the measurements.
 
-Thanks,
-Richard
+Could you please share Tirtha's i40e support patch with me?
+
+I would like to reproduce these results in my testlab, in-order to
+figure out where the throughput degradation comes from.
+
+> What performance do you see with the mvneta card? How much are we
+> willing to pay for this feature when it is not being used or can we in
+> some way selectively turn it on only when needed?
+
+Well, as Daniel says performance wise we require close to /zero/
+additional overhead, especially as you state this happens when sending
+a single frame, which is a base case that we must not slowdown.
+
+-- 
+Best regards,
+  Jesper Dangaard Brouer
+  MSc.CS, Principal Kernel Engineer at Red Hat
+  LinkedIn: http://www.linkedin.com/in/brouer
+
