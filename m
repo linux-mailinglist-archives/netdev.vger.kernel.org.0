@@ -2,239 +2,191 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D4AE33634F9
-	for <lists+netdev@lfdr.de>; Sun, 18 Apr 2021 14:03:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8D1E53634FD
+	for <lists+netdev@lfdr.de>; Sun, 18 Apr 2021 14:05:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234974AbhDRMDp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 18 Apr 2021 08:03:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41476 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231338AbhDRMDh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 18 Apr 2021 08:03:37 -0400
-Received: from mail-wm1-x336.google.com (mail-wm1-x336.google.com [IPv6:2a00:1450:4864:20::336])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A2E9EC061760
-        for <netdev@vger.kernel.org>; Sun, 18 Apr 2021 05:03:08 -0700 (PDT)
-Received: by mail-wm1-x336.google.com with SMTP id o21-20020a1c4d150000b029012e52898006so6921447wmh.0
-        for <netdev@vger.kernel.org>; Sun, 18 Apr 2021 05:03:08 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=blackwall-org.20150623.gappssmtp.com; s=20150623;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=EpHY1MbAXhUL60YiE+86B1HjUYTVmOkAbHwqH2hSAgQ=;
-        b=P+mDJEhy8rVpLdF6TRuTvH+n5zRyT9uhAAip+UN2ZVPcxFhwwK66DA5NRGd1fWz2h1
-         ahJtmC5XRkIPmbI9+Qa109XKDN9QHxXSMmpw3xU3z/VTvSirngLL3rzAjClNK0NaoCdC
-         HXuXJWpIKanq2kPcGLjRvoETycaYxbfRSFORqXIlwSpcsA/QBYI1CG8eAgkH7OwAD0x2
-         jfUp2vd9sfbJgEBxYL7GKX3m7ZKwJiVBSsfQxDAFZiTnZH5i56dzeCq7G/waLXA0+vRp
-         3peeNy0O3uJy+Qbb6nQPmN2dAQepN/jCxKrqVOIhIlg1WsPo4Dzmz59nFkWzMoJTZXjo
-         zKpw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=EpHY1MbAXhUL60YiE+86B1HjUYTVmOkAbHwqH2hSAgQ=;
-        b=mARNM63B4Z/eYmGYsWUCaXdCpe5pz0Aw8WJEI/Wxi4vkFhMUYeEednXYYyRts72LNf
-         ABVn8ziWqO/J2ohlI0zMDfHLJn+A5HAYGRGInOorcJVW79aePKUWIrw0gga9xMXrcKqw
-         6lzzCzqHzJq2VQsRQdxh+/MrOFzP1pL+ZgZR/EEwtZyY7SQZ4EinW0ndo8FAhCYAxdXg
-         S/5SPI/EeKRSMMa/6BY8Xw/xTGttXI+pKEw6uuRCGplac3SNxTqnItHDcT6fuuB7dwL4
-         2XtiXuA39M+NrPYb21nmsTl/bZRnqd+YkA6jXcynE2fFI6V0UnCsiFrf0qjx2M9JsW8z
-         oD6w==
-X-Gm-Message-State: AOAM532M15wpVmdMO+VfHX7KCfZ6Y3netTbVIXXo6w14PPGW91vZOh/k
-        Z75RQrCLnBCnvXFRuoQMAZOtBtHMvo8UbR9B
-X-Google-Smtp-Source: ABdhPJxmh4IHvz+rq6ZvviumLM5rB+lLgH1WvASRbyX93T1uFxto1s0vv9S/foMOavEAl5dbe52tyw==
-X-Received: by 2002:a1c:c918:: with SMTP id f24mr17158729wmb.12.1618747387111;
-        Sun, 18 Apr 2021 05:03:07 -0700 (PDT)
-Received: from debil.vdiclient.nvidia.com (84-238-136-197.ip.btc-net.bg. [84.238.136.197])
-        by smtp.gmail.com with ESMTPSA id x25sm16584763wmj.34.2021.04.18.05.03.06
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 18 Apr 2021 05:03:06 -0700 (PDT)
-From:   Nikolay Aleksandrov <razor@blackwall.org>
-To:     netdev@vger.kernel.org
-Cc:     roopa@nvidia.com, dsahern@gmail.com,
-        Nikolay Aleksandrov <nikolay@nvidia.com>
-Subject: [PATCH iproute2-next 6/6] bridge: monitor: add support for vlan monitoring
-Date:   Sun, 18 Apr 2021 15:01:37 +0300
-Message-Id: <20210418120137.2605522-7-razor@blackwall.org>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20210418120137.2605522-1-razor@blackwall.org>
-References: <20210418120137.2605522-1-razor@blackwall.org>
+        id S234904AbhDRMF2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 18 Apr 2021 08:05:28 -0400
+Received: from mail-40134.protonmail.ch ([185.70.40.134]:18080 "EHLO
+        mail-40134.protonmail.ch" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230225AbhDRMF1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 18 Apr 2021 08:05:27 -0400
+Date:   Sun, 18 Apr 2021 12:04:51 +0000
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=pm.me; s=protonmail;
+        t=1618747497; bh=S6+7IL9psNB52Dh+xGxHAd9iOltPMkvweODEzTOF5hQ=;
+        h=Date:To:From:Cc:Reply-To:Subject:In-Reply-To:References:From;
+        b=KG3PBF05MIU1gCXucaCnQQGVhDVLH3fhBBNTUS1oMKAn+2aDmw/ho2Qx5Dr7wbMWh
+         N2NfBSQ9negZLZs2iVHq0T3h23lulHBS47TotCeQ3oEY3iQAF1SR4bd3fExWyb7lxk
+         +2xNWOQiwpXHIvFkKtMo11ZMlAl+KHaGRhn0CSHXJ0zHe1nOmrDVNjpSThrcMDv/iZ
+         EinJCF2a6+5qXHn8P8fhC12T3EXUtFuGGXeZB7dLzyVcB9zpN/cfYXJwsxJyat/yD0
+         Q1lSNI2YYrC5xNyRyAwtV3iR5RUDxSEn8eMSkCLudBTN8UmhAciW/EIp1HQRQ00DVG
+         Mz6WnsyEKZPOg==
+To:     Magnus Karlsson <magnus.karlsson@gmail.com>
+From:   Alexander Lobakin <alobakin@pm.me>
+Cc:     Alexander Lobakin <alobakin@pm.me>,
+        Xuan Zhuo <xuanzhuo@linux.alibaba.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        =?utf-8?Q?Bj=C3=B6rn_T=C3=B6pel?= <bjorn@kernel.org>,
+        Magnus Karlsson <magnus.karlsson@intel.com>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>
+Reply-To: Alexander Lobakin <alobakin@pm.me>
+Subject: Re: [PATCH v2 bpf-next 0/2] xsk: introduce generic almost-zerocopy xmit
+Message-ID: <20210418120431.6945-1-alobakin@pm.me>
+In-Reply-To: <CAJ8uoz27wTWU0HhfVWkcHESfAtMXT6dj=p+JW87zm-ownDF7Ww@mail.gmail.com>
+References: <CAJ8uoz2jym_AmCyMt_B32YBAEsjTNpaQF-WAJUavUe3P5_at3w@mail.gmail.com> <1618278328.0085247-1-xuanzhuo@linux.alibaba.com> <CAJ8uoz27wTWU0HhfVWkcHESfAtMXT6dj=p+JW87zm-ownDF7Ww@mail.gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-1.2 required=10.0 tests=ALL_TRUSTED,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF shortcircuit=no
+        autolearn=disabled version=3.4.4
+X-Spam-Checker-Version: SpamAssassin 3.4.4 (2020-01-24) on
+        mailout.protonmail.ch
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Nikolay Aleksandrov <nikolay@nvidia.com>
+From: Magnus Karlsson <magnus.karlsson@gmail.com>
+Date: Tue, 13 Apr 2021 09:14:02 +0200
 
-Add support for vlan activity monitoring, we display vlan notifications on
-vlan add/del/options change. The man page and help are also updated
-accordingly.
+Hi!
 
-Signed-off-by: Nikolay Aleksandrov <nikolay@nvidia.com>
----
- bridge/br_common.h |  2 +-
- bridge/mdb.c       |  2 +-
- bridge/monitor.c   | 19 ++++++++++++++++++-
- bridge/vlan.c      | 15 +++++++++++++--
- man/man8/bridge.8  |  4 ++--
- 5 files changed, 35 insertions(+), 7 deletions(-)
+I've finally done with a kinda comfy setup after moving to another
+country and can finally continue working on patches and stuff.
 
-diff --git a/bridge/br_common.h b/bridge/br_common.h
-index 43870546ff28..b9adafd98dea 100644
---- a/bridge/br_common.h
-+++ b/bridge/br_common.h
-@@ -12,7 +12,7 @@ int print_mdb_mon(struct nlmsghdr *n, void *arg);
- int print_fdb(struct nlmsghdr *n, void *arg);
- void print_stp_state(__u8 state);
- int parse_stp_state(const char *arg);
--int print_vlan_rtm(struct nlmsghdr *n, void *arg);
-+int print_vlan_rtm(struct nlmsghdr *n, void *arg, bool monitor);
- 
- int do_fdb(int argc, char **argv);
- int do_mdb(int argc, char **argv);
-diff --git a/bridge/mdb.c b/bridge/mdb.c
-index ef89258bc5c3..b427d878677f 100644
---- a/bridge/mdb.c
-+++ b/bridge/mdb.c
-@@ -16,9 +16,9 @@
- #include <arpa/inet.h>
- 
- #include "libnetlink.h"
-+#include "utils.h"
- #include "br_common.h"
- #include "rt_names.h"
--#include "utils.h"
- #include "json_print.h"
- 
- #ifndef MDBA_RTA
-diff --git a/bridge/monitor.c b/bridge/monitor.c
-index 08439a60288a..88f52f52f084 100644
---- a/bridge/monitor.c
-+++ b/bridge/monitor.c
-@@ -31,7 +31,7 @@ static int prefix_banner;
- 
- static void usage(void)
- {
--	fprintf(stderr, "Usage: bridge monitor [file | link | fdb | mdb | all]\n");
-+	fprintf(stderr, "Usage: bridge monitor [file | link | fdb | mdb | vlan | all]\n");
- 	exit(-1);
- }
- 
-@@ -67,6 +67,12 @@ static int accept_msg(struct rtnl_ctrl_data *ctrl,
- 		print_nlmsg_timestamp(fp, n);
- 		return 0;
- 
-+	case RTM_NEWVLAN:
-+	case RTM_DELVLAN:
-+		if (prefix_banner)
-+			fprintf(fp, "[VLAN]");
-+		return print_vlan_rtm(n, arg, true);
-+
- 	default:
- 		return 0;
- 	}
-@@ -79,6 +85,7 @@ int do_monitor(int argc, char **argv)
- 	int llink = 0;
- 	int lneigh = 0;
- 	int lmdb = 0;
-+	int lvlan = 0;
- 
- 	rtnl_close(&rth);
- 
-@@ -95,8 +102,12 @@ int do_monitor(int argc, char **argv)
- 		} else if (matches(*argv, "mdb") == 0) {
- 			lmdb = 1;
- 			groups = 0;
-+		} else if (matches(*argv, "vlan") == 0) {
-+			lvlan = 1;
-+			groups = 0;
- 		} else if (strcmp(*argv, "all") == 0) {
- 			groups = ~RTMGRP_TC;
-+			lvlan = 1;
- 			prefix_banner = 1;
- 		} else if (matches(*argv, "help") == 0) {
- 			usage();
-@@ -134,6 +145,12 @@ int do_monitor(int argc, char **argv)
- 
- 	if (rtnl_open(&rth, groups) < 0)
- 		exit(1);
-+
-+	if (lvlan && rtnl_add_nl_group(&rth, RTNLGRP_BRVLAN) < 0) {
-+		fprintf(stderr, "Failed to add bridge vlan group to list\n");
-+		exit(1);
-+	}
-+
- 	ll_init_map(&rth);
- 
- 	if (rtnl_listen(&rth, accept_msg, stdout) < 0)
-diff --git a/bridge/vlan.c b/bridge/vlan.c
-index c681e14189b8..9bb9e28d11bb 100644
---- a/bridge/vlan.c
-+++ b/bridge/vlan.c
-@@ -621,7 +621,7 @@ static int print_vlan_stats(struct nlmsghdr *n, void *arg)
- 	return 0;
- }
- 
--int print_vlan_rtm(struct nlmsghdr *n, void *arg)
-+int print_vlan_rtm(struct nlmsghdr *n, void *arg, bool monitor)
- {
- 	struct rtattr *vtb[BRIDGE_VLANDB_ENTRY_MAX + 1], *a;
- 	struct br_vlan_msg *bvm = NLMSG_DATA(n);
-@@ -648,6 +648,12 @@ int print_vlan_rtm(struct nlmsghdr *n, void *arg)
- 	if (filter_index && filter_index != bvm->ifindex)
- 		return 0;
- 
-+	if (n->nlmsg_type == RTM_DELVLAN)
-+		print_bool(PRINT_ANY, "deleted", "Deleted ", true);
-+
-+	if (monitor)
-+		vlan_rtm_cur_ifidx = -1;
-+
- 	if (vlan_rtm_cur_ifidx == -1 || vlan_rtm_cur_ifidx != bvm->ifindex) {
- 		if (vlan_rtm_cur_ifidx != -1)
- 			close_vlan_port();
-@@ -720,6 +726,11 @@ int print_vlan_rtm(struct nlmsghdr *n, void *arg)
- 	return 0;
- }
- 
-+static int print_vlan_rtm_filter(struct nlmsghdr *n, void *arg)
-+{
-+	return print_vlan_rtm(n, arg, false);
-+}
-+
- static int vlan_show(int argc, char **argv, int subject)
- {
- 	char *filter_dev = NULL;
-@@ -764,7 +775,7 @@ static int vlan_show(int argc, char **argv, int subject)
- 			printf("\n");
- 		}
- 
--		ret = rtnl_dump_filter(&rth, print_vlan_rtm, &subject);
-+		ret = rtnl_dump_filter(&rth, print_vlan_rtm_filter, &subject);
- 		if (ret < 0) {
- 			fprintf(stderr, "Dump terminated\n");
- 			exit(1);
-diff --git a/man/man8/bridge.8 b/man/man8/bridge.8
-index 9c8ebac3c6aa..eec7df4383bc 100644
---- a/man/man8/bridge.8
-+++ b/man/man8/bridge.8
-@@ -153,7 +153,7 @@ bridge \- show / manipulate bridge addresses and devices
- .IR DEV " ]"
- 
- .ti -8
--.BR "bridge monitor" " [ " all " | " neigh " | " link " | " mdb " ]"
-+.BR "bridge monitor" " [ " all " | " neigh " | " link " | " mdb " | " vlan " ]"
- 
- .SH OPTIONS
- 
-@@ -911,7 +911,7 @@ command is the first in the command line and then the object list follows:
- .I OBJECT-LIST
- is the list of object types that we want to monitor.
- It may contain
--.BR link ", " fdb ", and " mdb "."
-+.BR link ", " fdb ", " vlan " and " mdb "."
- If no
- .B file
- argument is given,
--- 
-2.30.2
+> On Tue, Apr 13, 2021 at 3:49 AM Xuan Zhuo <xuanzhuo@linux.alibaba.com> wr=
+ote:
+> >
+> > On Mon, 12 Apr 2021 16:13:12 +0200, Magnus Karlsson <magnus.karlsson@gm=
+ail.com> wrote:
+> > > On Wed, Mar 31, 2021 at 2:27 PM Alexander Lobakin <alobakin@pm.me> wr=
+ote:
+> > > >
+> > > > This series is based on the exceptional generic zerocopy xmit logic=
+s
+> > > > initially introduced by Xuan Zhuo. It extends it the way that it
+> > > > could cover all the sane drivers, not only the ones that are capabl=
+e
+> > > > of xmitting skbs with no linear space.
+> > > >
+> > > > The first patch is a random while-we-are-here improvement over
+> > > > full-copy path, and the second is the main course. See the individu=
+al
+> > > > commit messages for the details.
+> > > >
+> > > > The original (full-zerocopy) path is still here and still generally
+> > > > faster, but for now it seems like virtio_net will remain the only
+> > > > user of it, at least for a considerable period of time.
+> > > >
+> > > > From v1 [0]:
+> > > >  - don't add a whole SMP_CACHE_BYTES because of only two bytes
+> > > >    (NET_IP_ALIGN);
+> > > >  - switch to zerocopy if the frame is 129 bytes or longer, not 128.
+> > > >    128 still fit to kmalloc-512, while a zerocopy skb is always
+> > > >    kmalloc-1024 -> can potentially be slower on this frame size.
+> > > >
+> > > > [0] https://lore.kernel.org/netdev/20210330231528.546284-1-alobakin=
+@pm.me
+> > > >
+> > > > Alexander Lobakin (2):
+> > > >   xsk: speed-up generic full-copy xmit
+> > >
+> > > I took both your patches for a spin on my machine and for the first
+> > > one I do see a small but consistent drop in performance. I thought it
+> > > would go the other way, but it does not so let us put this one on the
+> > > shelf for now.
+
+This is kinda strange as the solution is pretty straightforward.
+But sure, if the performance dropped after this one, it should not
+be considered for taking.
+I might have a look at it later.
+
+> > > >   xsk: introduce generic almost-zerocopy xmit
+> > >
+> > > This one wreaked havoc on my machine ;-). The performance dropped wit=
+h
+> > > 75% for packets larger than 128 bytes when the new scheme kicks in.
+> > > Checking with perf top, it seems that we spend much more time
+> > > executing the sendmsg syscall. Analyzing some more:
+> > >
+> > > $ sudo bpftrace -e 'kprobe:__sys_sendto { @calls =3D @calls + 1; }
+> > > interval:s:1 {printf("calls/sec: %d\n", @calls); @calls =3D 0;}'
+> > > Attaching 2 probes...
+> > > calls/sec: 1539509 with your patch compared to
+> > >
+> > > calls/sec: 105796 without your patch
+> > >
+> > > The application spends a lot of more time trying to get the kernel to
+> > > send new packets, but the kernel replies with "have not completed the
+> > > outstanding ones, so come back later" =3D EAGAIN. Seems like the
+> > > transmission takes longer when the skbs have fragments, but I have no=
+t
+> > > examined this any further. Did you get a speed-up?
+> >
+> > Regarding this solution, I actually tested it on my mlx5 network card, =
+but the
+> > performance was severely degraded, so I did not continue this solution =
+later. I
+> > guess it might have something to do with the physical network card. We =
+can try
+> > other network cards.
+>
+> I tried it on a third card and got a 40% degradation, so let us scrap
+> this idea. It should stay optional as it is today as the (software)
+> drivers that benefit from this can turn it on explicitly.
+
+Thank you guys a lot for the testing!
+
+I think the main reason is the DMA mapping of one additional frag
+(14 bytes of MAC header, which is excessive). It can take a lot of
+CPU cycles, especially when the device is behind an IOMMU, and seems
+like memcpying is faster here.
+
+Moreover, if Xuan tested it as one of the steps towards his
+full-zerocopy and found it to be a bad idea, this should not
+go further.
+So I'm burying this.
+
+> > links: https://www.spinics.net/lists/netdev/msg710918.html
+> >
+> > Thanks.
+> >
+> > >
+> > > >  net/xdp/xsk.c | 32 ++++++++++++++++++++++----------
+> > > >  1 file changed, 22 insertions(+), 10 deletions(-)
+> > > >
+> > > > --
+> > > > Well, this is untested. I currently don't have an access to my setu=
+p
+> > > > and is bound by moving to another country, but as I don't know for
+> > > > sure at the moment when I'll get back to work on the kernel next ti=
+me,
+> > > > I found it worthy to publish this now -- if any further changes wil=
+l
+> > > > be required when I already will be out-of-sight, maybe someone coul=
+d
+> > > > carry on to make a another revision and so on (I'm still here for a=
+ny
+> > > > questions, comments, reviews and improvements till the end of this
+> > > > week).
+> > > > But this *should* work with all the sane drivers. If a particular
+> > > > one won't handle this, it's likely ill. Any tests are highly
+> > > > appreciated. Thanks!
+> > > > --
+> > > > 2.31.1
+
+Thanks,
+Al
 
