@@ -2,244 +2,126 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 13893364D43
-	for <lists+netdev@lfdr.de>; Mon, 19 Apr 2021 23:45:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2D084364D48
+	for <lists+netdev@lfdr.de>; Mon, 19 Apr 2021 23:49:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232432AbhDSVpz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 19 Apr 2021 17:45:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57868 "EHLO
+        id S231447AbhDSVtn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 19 Apr 2021 17:49:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58696 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229714AbhDSVpy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 19 Apr 2021 17:45:54 -0400
-Received: from mail-pj1-x1042.google.com (mail-pj1-x1042.google.com [IPv6:2607:f8b0:4864:20::1042])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF284C06174A;
-        Mon, 19 Apr 2021 14:45:22 -0700 (PDT)
-Received: by mail-pj1-x1042.google.com with SMTP id u14-20020a17090a1f0eb029014e38011b09so14465493pja.5;
-        Mon, 19 Apr 2021 14:45:22 -0700 (PDT)
+        with ESMTP id S229714AbhDSVtn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 19 Apr 2021 17:49:43 -0400
+Received: from mail-ej1-x630.google.com (mail-ej1-x630.google.com [IPv6:2a00:1450:4864:20::630])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 13050C06174A;
+        Mon, 19 Apr 2021 14:49:13 -0700 (PDT)
+Received: by mail-ej1-x630.google.com with SMTP id w23so39413052ejb.9;
+        Mon, 19 Apr 2021 14:49:12 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=date:from:to:cc:subject:message-id:references:mime-version
          :content-disposition:in-reply-to;
-        bh=LzxQK/CU4ynjI/E7pRzvISVtXqdE8G14j2LtNlutIas=;
-        b=MlanFccCsIRVX95txZVLCXtshbIxONx6gywsnRWGPOMupSJXFZfFLL3LbTXm9Lsuoq
-         ke8OEd5bAm3f5e5mfye0nOFeShP1GYkRgFDFKiBmbxY4RM2Nue36ZS9+Z/B44fLz4zHt
-         t3qVvZVCtat5HZtkqVZX9A+efezGTmpZF0uOjLBh7Mm2nU1cBMrBGKkT09eACFevUyBo
-         RVifCHlaFxfcNhVcv1wgoAnOgEpyPvANOUDAPrFurto3LzkYP+X8XdxTWcQFFQV61ouv
-         ZFx/L4LvWPpxerbGZBjs7P23JEIXOEmHQF1jHSBLJxkjbaawLWZLj5pF23lpKwuQ4+nE
-         QcmQ==
+        bh=JXn3Ho4kiCXgfD9yiFqXvyQpWztZ1i1zYDQa5yNiDZc=;
+        b=XYlUOBnp2/x5oRaftrKVeFxht1ldNP926XPqKRU+E/7YeckSuPEv6T0uf2FbILZTXr
+         uvNZ/gblRKnjRVPnVgid9/xKUyjsO2XlgV2l/QrokTZCoYaPcnUhIrbldHu3ereccX5z
+         cU2nvAs+a1hyZm6OiJx7iugB+2DT4tLuH2uzedIT7TowLxcEpczi+e23RKQM0QdsyNAH
+         m+CEQCqQRS0Y4AUaWBd9kxHSki3g/eoAuWk8bNSVfBstqFQbu51WOyoPuS/A7Bw2A5De
+         8vuzpFW/RXrP3Y8PclC3gCa62q65iMLNtbBvsXIazXQ+cTtK/0RMG881wSohd3FzdyBh
+         g0ZQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to;
-        bh=LzxQK/CU4ynjI/E7pRzvISVtXqdE8G14j2LtNlutIas=;
-        b=NF7hykblShYGPuRqPILbISzX/VAvB7xstM8OsmdUhhNt8ppV11/iilZ+lEoEaBdQLt
-         9PIz8DLr7qQ/GpIWuBeIz+QMQrfD1/aU77mxcLWWZsAH5RmfOJcjcASjMMdqHh2a+1/v
-         0iCmLobvyrRJ/TjpCj775fun9RwnprOvzvkE+cyEX7i0E/GILI/FrK0mLsPhS6fuWQoo
-         TjkUhJtvzViBIteWMo4CWZu/2mqoPSgDiroDyaFJUGprs5O2U3RsFEeE60hy9IBpIDek
-         cIYBfV8+pNw+PL1UXfd7G+Va74/ltizT+02PRMWsWOlv+/mEgqU8+VYIrDpDUQJb2vBK
-         AoPw==
-X-Gm-Message-State: AOAM532bQ1l6DjS4Q+sSg9/RYrbgZlWcnGIZ9cqZrUa31MUjlBP45rM8
-        izKMICfef0O299ej0VX/t0L3W0PWRnuEwQ==
-X-Google-Smtp-Source: ABdhPJxHlu8y84mVAO/23U5UXKLvF22TGu2zwelpSNcbOkE2siqEEaJYq8pQ8Gm+fAgJzSCpoHaPhA==
-X-Received: by 2002:a17:902:ed52:b029:ea:aaaf:60d6 with SMTP id y18-20020a170902ed52b02900eaaaaf60d6mr25508856plb.55.1618868722347;
-        Mon, 19 Apr 2021 14:45:22 -0700 (PDT)
-Received: from localhost ([47.9.175.189])
-        by smtp.gmail.com with ESMTPSA id gc15sm370473pjb.2.2021.04.19.14.45.21
+        bh=JXn3Ho4kiCXgfD9yiFqXvyQpWztZ1i1zYDQa5yNiDZc=;
+        b=J6WygCXQUduHm1qNQZI0Gn8hTsy6fQAgxwZa1NF9/B+abr9W6eEW9DodRSie6LPgZ9
+         7Y4sgVc9/3md+VJa+xcL6gSVKsG9LbWa6fGrEp5LDmQurjU9X7SwVksVUhwFD5kUqeaI
+         UIJCV5GsabdCzshjLYQBXKg4uJc/HKgygvXG5jtmXwv0TBWDiYkz3PoyV+HIN80Mwi4m
+         fCUS0c2i+HSg6Vhjcbcm/YS/ftIVit/+yXC7tPaRrGgO+kjsITiFwpREFe8ioqzXbVeg
+         OVOdS3F6yMIzISWF+3hWGySH58dM/xip6mPnUrtVjKose/b+6+EOH94CA+xqG7KGNc/T
+         92WA==
+X-Gm-Message-State: AOAM530Bj0zxlgo1ltc8urdCn8zFNmC0znciJV3fXc+4tjISh7Gy4ymd
+        /EoPFEOBg6aINhOiWagM60Y=
+X-Google-Smtp-Source: ABdhPJwBrVAk/GfJi5L+sXZgnSX5Ru9B38JGSNzpVli67R72dNlR9iVRpGiEX5Dsp9J/bQ8ifCbvWQ==
+X-Received: by 2002:a17:906:cc88:: with SMTP id oq8mr20169472ejb.66.1618868951554;
+        Mon, 19 Apr 2021 14:49:11 -0700 (PDT)
+Received: from skbuf (5-12-16-165.residential.rdsnet.ro. [5.12.16.165])
+        by smtp.gmail.com with ESMTPSA id i25sm11315695edr.68.2021.04.19.14.49.10
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 19 Apr 2021 14:45:22 -0700 (PDT)
-Date:   Tue, 20 Apr 2021 03:15:17 +0530
-From:   Kumar Kartikeya Dwivedi <memxor@gmail.com>
-To:     Daniel Borkmann <daniel@iogearbox.net>
-Cc:     bpf@vger.kernel.org,
-        Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
-Subject: Re: [PATCH bpf-next v2 3/4] libbpf: add low level TC-BPF API
-Message-ID: <20210419214517.bqur27tytx4onfnn@apollo>
-References: <20210419121811.117400-1-memxor@gmail.com>
- <20210419121811.117400-4-memxor@gmail.com>
- <6e8b744c-e012-c76b-b55f-7ddc8b7483db@iogearbox.net>
+        Mon, 19 Apr 2021 14:49:11 -0700 (PDT)
+Date:   Tue, 20 Apr 2021 00:49:10 +0300
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        Po Liu <po.liu@nxp.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Alex Marginean <alexandru.marginean@nxp.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Shawn Guo <shawnguo@kernel.org>,
+        linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
+        Russell King - ARM Linux admin <linux@armlinux.org.uk>,
+        Andrew Lunn <andrew@lunn.ch>, Michael Walle <michael@walle.cc>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>
+Subject: Re: [PATCH net-next 0/5] Flow control for NXP ENETC
+Message-ID: <20210419214910.hbwry2cnjn6d7crf@skbuf>
+References: <20210416234225.3715819-1-olteanv@gmail.com>
+ <20210419140442.79dd0ce0@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <6e8b744c-e012-c76b-b55f-7ddc8b7483db@iogearbox.net>
+In-Reply-To: <20210419140442.79dd0ce0@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Apr 20, 2021 at 02:30:44AM IST, Daniel Borkmann wrote:
-> On 4/19/21 2:18 PM, Kumar Kartikeya Dwivedi wrote:
-> > This adds functions that wrap the netlink API used for adding,
-> > manipulating, and removing traffic control filters. These functions
-> > operate directly on the loaded prog's fd, and return a handle to the
-> > filter using an out parameter named id.
-> >
-> > The basic featureset is covered to allow for attaching, manipulation of
-> > properties, and removal of filters. Some additional features like
-> > TCA_BPF_POLICE and TCA_RATE for tc_cls have been omitted. These can
-> > added on top later by extending the bpf_tc_cls_opts struct.
-> >
-> > Support for binding actions directly to a classifier by passing them in
-> > during filter creation has also been omitted for now. These actions have
-> > an auto clean up property because their lifetime is bound to the filter
-> > they are attached to. This can be added later, but was omitted for now
-> > as direct action mode is a better alternative to it, which is enabled by
-> > default.
-> >
-> > An API summary:
-> >
-> > bpf_tc_act_{attach, change, replace} may be used to attach, change, and
->
-> typo on bpf_tc_act_{...} ?
->
+Hi Jakub,
 
-Oops, yes. Should be bpf_tc_cls_...
+On Mon, Apr 19, 2021 at 02:04:42PM -0700, Jakub Kicinski wrote:
+> On Sat, 17 Apr 2021 02:42:20 +0300 Vladimir Oltean wrote:
+> > From: Vladimir Oltean <vladimir.oltean@nxp.com>
+> > 
+> > This patch series contains logic for enabling the lossless mode on the
+> > RX rings of the ENETC, and the PAUSE thresholds on the internal FIFO
+> > memory.
+> > 
+> > During testing it was found that, with the default FIFO configuration,
+> > a sender which isn't persuaded by our PAUSE frames and keeps sending
+> > will cause some MAC RX frame errors. To mitigate this, we need to ensure
+> > that the FIFO never runs completely full, so we need to fix up a setting
+> > that was supposed to be configured well out of reset. Unfortunately this
+> > requires the addition of a new mini-driver.
+> 
+> FWIW back in the day when I was working on more advanced devices than 
+> I deal with these days I was expecting to eventually run into this as
+> well and create some form of devlink umbrella. IMHO such "mini driver"
+> is a natural place for a devlink instance, and not the PFs/ports.
+> Is this your thinking as well? AFAICT enetc doesn't implement devlink
+> today so you start from whatever model works best without worrying
+> about backward compat.
 
-> > replace SCHED_CLS bpf classifier. The protocol field can be set as 0, in
-> > which case it is subsitituted as ETH_P_ALL by default.
->
-> Do you have an actual user that needs anything other than ETH_P_ALL? Why is it
-> even needed? Why not stick to just ETH_P_ALL?
->
-
-Mostly because it was little to no effort to expose this. Though if you feel
-strongly about it I can drop the protocol option, and just bake in ETH_P_ALL. It
-can always be added later ofcourse, if the need arises in the future.
-
-> > The behavior of the three functions is as follows:
-> >
-> > attach = create filter if it does not exist, fail otherwise
-> > change = change properties of the classifier of existing filter
-> > replace = create filter, and replace any existing filter
->
-> This touches on tc oddities quite a bit. Why do we need to expose them? Can't we
-> simplify/abstract this e.g. i) create or update instance, ii) delete instance,
-> iii) get instance ? What concrete use case do you have that you need those three
-> above?
->
-
-'change' is relevant for modifying classifier specific options, and given it's
-a lot less useful now as per the current state of this patch, I am fine with
-removing it. This is also where the distinction becomes visible to the user, so
-removing it should hide the filter/classifier separation.
-
-> > bpf_tc_cls_detach may be used to detach existing SCHED_CLS
-> > filter. The bpf_tc_cls_attach_id object filled in during attach,
-> > change, or replace must be passed in to the detach functions for them to
-> > remove the filter and its attached classififer correctly.
-> >
-> > bpf_tc_cls_get_info is a helper that can be used to obtain attributes
-> > for the filter and classififer. The opts structure may be used to
-> > choose the granularity of search, such that info for a specific filter
-> > corresponding to the same loaded bpf program can be obtained. By
-> > default, the first match is returned to the user.
-> >
-> > Examples:
-> >
-> > 	struct bpf_tc_cls_attach_id id = {};
-> > 	struct bpf_object *obj;
-> > 	struct bpf_program *p;
-> > 	int fd, r;
-> >
-> > 	obj = bpf_object_open("foo.o");
-> > 	if (IS_ERR_OR_NULL(obj))
-> > 		return PTR_ERR(obj);
-> >
-> > 	p = bpf_object__find_program_by_title(obj, "classifier");
-> > 	if (IS_ERR_OR_NULL(p))
-> > 		return PTR_ERR(p);
-> >
-> > 	if (bpf_object__load(obj) < 0)
-> > 		return -1;
-> >
-> > 	fd = bpf_program__fd(p);
-> >
-> > 	r = bpf_tc_cls_attach(fd, if_nametoindex("lo"),
-> > 			      BPF_TC_CLSACT_INGRESS,
-> > 			      NULL, &id);
-> > 	if (r < 0)
-> > 		return r;
-> >
-> > ... which is roughly equivalent to (after clsact qdisc setup):
-> >    # tc filter add dev lo ingress bpf obj foo.o sec classifier da
-> >
-> > ... as direct action mode is always enabled.
-> >
-> > If a user wishes to modify existing options on an attached classifier,
-> > bpf_tc_cls_change API may be used.
-> >
-> > Only parameters class_id can be modified, the rest are filled in to
-> > identify the correct filter. protocol can be left out if it was not
-> > chosen explicitly (defaulting to ETH_P_ALL).
-> >
-> > Example:
-> >
-> > 	/* Optional parameters necessary to select the right filter */
-> > 	DECLARE_LIBBPF_OPTS(bpf_tc_cls_opts, opts,
-> > 			    .handle = id.handle,
-> > 			    .priority = id.priority,
-> > 			    .chain_index = id.chain_index)
->
-> Why do we need chain_index as part of the basic API?
->
-
-It would be relevant when TC_ACT_GOTO_CHAIN is used. Other than that, I guess
-it's not very useful.
-
-> > 	opts.class_id = TC_H_MAKE(1UL << 16, 12);
-> > 	r = bpf_tc_cls_change(fd, if_nametoindex("lo"),
-> > 			      BPF_TC_CLSACT_INGRESS,
-> > 			      &opts, &id);
->
-> Also, I'm not sure whether the prefix should even be named  bpf_tc_cls_*() tbh,
-> yes, despite being "low level" api. I think in the context of bpf we should stop
-> regarding this as 'classifier' and 'action' objects since it's really just a
-> single entity and not separate ones. It's weird enough to explain this concept
-> to new users and if a libbpf based api could cleanly abstract it, I would be all
-> for it. I don't think we need to map 1:1 the old tc legacy even in the low level
-> api, tbh, as it feels backwards. I think the 'handle' & 'priority' bits are okay,
-> but I would remove the others.
->
-
-Ok, would dropping _cls from the name be better?
-bpf_tc_attach
-bpf_tc_replace
-bpf_tc_get_info
-bpf_tc_detach
-
-As for options, I'll drop protocol, if you feel strongly about chain_index I can
-drop that one too.
-
-> > 	if (r < 0)
-> > 		return r;
-> >
-> > 	struct bpf_tc_cls_info info = {};
-> > 	r = bpf_tc_cls_get_info(fd, if_nametoindex("lo"),
-> > 			        BPF_TC_CLSACT_INGRESS,
-> > 				&opts, &info);
-> > 	if (r < 0)
-> > 		return r;
-> >
-> > 	assert(info.class_id == TC_H_MAKE(1UL << 16, 12));
-> >
-> > This would be roughly equivalent to doing:
-> >    # tc filter change dev lo egress prio <p> handle <h> bpf obj foo.o sec \
-> >      classifier classid 1:12
->
-> Why even bother to support !da mode, what are you trying to solve with it? I
-> don't think official libbpf api should support something that doesn't scale.
->
-
-da is default now, this is yet another typo/oversight...
-
---
-Kartikeya
+Sorry, but I am not sure if I understood the central idea of what you
+were trying to transmit. What is 'a devlink instance and not the PFs'?
+I am not aware of how a single devlink instance can be exposed for a
+piece of hardware presenting itself as multiple PFs with multiple driver
+instances running asynchronously and potentially being assigned to AMP
+software execution environments (other cores running non-Linux, and most
+probably Linux is not even the privileged execution environment which
+has write access to the FIFO parameters).
+Are you suggesting that the FIFO size and partitioning characteristics
+be exposed through the devlink subsystem? Isn't that what devlink-sb is
+for? Also, that would not help with what the IERB driver is trying to
+achieve. There isn't anything we want the user to view or fiddle with,
+the reality is simply that the FIFO parameters were supposed to be
+one-size-fits-all-and-nobody-cares-about-them (the memory usage scheme
+of this NIC is smart enough to allow for that, or so I think) but
+nonetheless, the hardware defaults need to be touched up. If LS1028A was
+a new SoC today we would have probably done this from U-Boot, from the
+same logic that already passes the MAC addresses to the PFs through the
+IERB, but the ship has kind of sailed for that, bootloaders are stable,
+and 'Linux needs this feature' is not a good reason to update them.
+So this is all that I would like the IERB driver to do, notice how it's
+all writes of predefined values but no reads. For next generation SoCs
+with ENETC we'll try our best to not need an IERB driver in Linux at
+all. Another option would have been to do these fixups in the arch init
+code as a sort of erratum workaround, but I didn't find a place similar
+to arch/arm/mach-* for arm64, so I assumed that the arm64 port just
+doesn't want to go that route. So here I am with a driver for some
+memory writes.
