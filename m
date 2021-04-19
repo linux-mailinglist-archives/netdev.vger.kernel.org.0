@@ -2,169 +2,145 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9EFF836424F
-	for <lists+netdev@lfdr.de>; Mon, 19 Apr 2021 15:04:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1232D364347
+	for <lists+netdev@lfdr.de>; Mon, 19 Apr 2021 15:18:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239391AbhDSNEW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 19 Apr 2021 09:04:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55164 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232800AbhDSNEV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 19 Apr 2021 09:04:21 -0400
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8E76FC061760;
-        Mon, 19 Apr 2021 06:03:50 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=8Y0pwAVt5liDDolwhxFKvBOLg1az19k+Kyl8s6P7Mkw=; b=qh+osCLCYoBzdKk4OeJfdc7J9J
-        shl+bJI6rxfcBQSyUHfvACIIxpBednLK2EubX+7seel0bFOvQcQK+jZoQeITc+v2PI2mb2vCfurG4
-        Iz1Jx+evxKF0mxbN3hGOTdmKkw/Big46+gSRFjS7Bcm1zy1oyWgzxp5sakrTLJBWnvbYovFe8a2Tj
-        6drEwpV5y+w6FDXtd5amPm+3usP0JSTm7fxq2CdQjbgRmW6fOEF7HDFoUma/fp6LsDiBYcgbUg3lU
-        xOWtgX+S7Y2kwtviMj2NHv0xDQhr/xFfW5udlCZV7yiQvRTBIOJ4bdLWiNP47NQMfxvezra9yhVN1
-        F7lE216g==;
-Received: from willy by casper.infradead.org with local (Exim 4.94 #2 (Red Hat Linux))
-        id 1lYTXA-00DlIj-GW; Mon, 19 Apr 2021 13:02:10 +0000
-Date:   Mon, 19 Apr 2021 14:01:48 +0100
-From:   Matthew Wilcox <willy@infradead.org>
-To:     Jesper Dangaard Brouer <brouer@redhat.com>
-Cc:     Shakeel Butt <shakeelb@google.com>,
-        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
-        Matteo Croce <mcroce@linux.microsoft.com>,
-        netdev <netdev@vger.kernel.org>, Linux MM <linux-mm@kvack.org>,
-        Ayush Sawal <ayush.sawal@chelsio.com>,
-        Vinay Kumar Yadav <vinay.yadav@chelsio.com>,
-        Rohit Maheshwari <rohitm@chelsio.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        Marcin Wojtas <mw@semihalf.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Mirko Lindner <mlindner@marvell.com>,
-        Stephen Hemminger <stephen@networkplumber.org>,
-        Tariq Toukan <tariqt@nvidia.com>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Boris Pismenny <borisp@nvidia.com>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
-        Vlastimil Babka <vbabka@suse.cz>, Yu Zhao <yuzhao@google.com>,
-        Will Deacon <will@kernel.org>,
-        Michel Lespinasse <walken@google.com>,
-        Fenghua Yu <fenghua.yu@intel.com>,
-        Roman Gushchin <guro@fb.com>, Hugh Dickins <hughd@google.com>,
-        Peter Xu <peterx@redhat.com>, Jason Gunthorpe <jgg@ziepe.ca>,
-        Guoqing Jiang <guoqing.jiang@cloud.ionos.com>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
-        Alexander Lobakin <alobakin@pm.me>,
-        Cong Wang <cong.wang@bytedance.com>, wenxu <wenxu@ucloud.cn>,
-        Kevin Hao <haokexin@gmail.com>,
-        Aleksandr Nogikh <nogikh@google.com>,
-        Jakub Sitnicki <jakub@cloudflare.com>,
-        Marco Elver <elver@google.com>,
-        Willem de Bruijn <willemb@google.com>,
-        Miaohe Lin <linmiaohe@huawei.com>,
-        Yunsheng Lin <linyunsheng@huawei.com>,
-        Guillaume Nault <gnault@redhat.com>,
-        LKML <linux-kernel@vger.kernel.org>, linux-rdma@vger.kernel.org,
-        bpf <bpf@vger.kernel.org>, Eric Dumazet <edumazet@google.com>,
-        David Ahern <dsahern@gmail.com>,
-        Lorenzo Bianconi <lorenzo@kernel.org>,
-        Saeed Mahameed <saeedm@nvidia.com>,
-        Andrew Lunn <andrew@lunn.ch>, Paolo Abeni <pabeni@redhat.com>
-Subject: Re: [PATCH net-next v3 2/5] mm: add a signature in struct page
-Message-ID: <20210419130148.GA2531743@casper.infradead.org>
-References: <20210409223801.104657-1-mcroce@linux.microsoft.com>
- <20210409223801.104657-3-mcroce@linux.microsoft.com>
- <20210410154824.GZ2531743@casper.infradead.org>
- <YHHPbQm2pn2ysth0@enceladus>
- <CALvZod7UUxTavexGCzbKaK41LAW7mkfQrnDhFbjo-KvH9P6KsQ@mail.gmail.com>
- <YHHuE7g73mZNrMV4@enceladus>
- <20210414214132.74f721dd@carbon>
- <CALvZod4F8kCQQcK5_3YH=7keqkgY-97g+_OLoDCN7uNJdd61xA@mail.gmail.com>
- <20210419132204.1e07d5b9@carbon>
+        id S240711AbhDSNQc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 19 Apr 2021 09:16:32 -0400
+Received: from szxga08-in.huawei.com ([45.249.212.255]:3341 "EHLO
+        szxga08-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S240532AbhDSNOZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 19 Apr 2021 09:14:25 -0400
+Received: from DGGEML404-HUB.china.huawei.com (unknown [172.30.72.57])
+        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4FP6cH2JmTz14J2R;
+        Mon, 19 Apr 2021 21:10:07 +0800 (CST)
+Received: from dggpemm500008.china.huawei.com (7.185.36.136) by
+ DGGEML404-HUB.china.huawei.com (10.3.17.39) with Microsoft SMTP Server (TLS)
+ id 14.3.498.0; Mon, 19 Apr 2021 21:13:52 +0800
+Received: from dggpemm500021.china.huawei.com (7.185.36.109) by
+ dggpemm500008.china.huawei.com (7.185.36.136) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2176.2; Mon, 19 Apr 2021 21:13:52 +0800
+Received: from dggpemm500021.china.huawei.com ([7.185.36.109]) by
+ dggpemm500021.china.huawei.com ([7.185.36.109]) with mapi id 15.01.2176.012;
+ Mon, 19 Apr 2021 21:13:52 +0800
+From:   "zhudi (J)" <zhudi21@huawei.com>
+To:     linyunsheng <linyunsheng@huawei.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "kuba@kernel.org" <kuba@kernel.org>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "Chenxiang (EulerOS)" <rose.chen@huawei.com>
+Subject: Re: [PATCH] net: fix a data race when get vlan device
+Thread-Topic: [PATCH] net: fix a data race when get vlan device
+Thread-Index: Adc1FKRKLZypNyTMTESPQwZzqKxfqQ==
+Date:   Mon, 19 Apr 2021 13:13:51 +0000
+Message-ID: <0d7c26f933eb4a95a170f021020e722e@huawei.com>
+Accept-Language: zh-CN, en-US
+Content-Language: zh-CN
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [10.136.114.155]
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210419132204.1e07d5b9@carbon>
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Apr 19, 2021 at 01:22:04PM +0200, Jesper Dangaard Brouer wrote:
-> On Wed, 14 Apr 2021 13:09:47 -0700
-> Shakeel Butt <shakeelb@google.com> wrote:
-> 
-> > On Wed, Apr 14, 2021 at 12:42 PM Jesper Dangaard Brouer
-> > <brouer@redhat.com> wrote:
-> > >  
-> > [...]
-> > > > >
-> > > > > Can this page_pool be used for TCP RX zerocopy? If yes then PageType
-> > > > > can not be used.  
-> > > >
-> > > > Yes it can, since it's going to be used as your default allocator for
-> > > > payloads, which might end up on an SKB.  
-> > >
-> > > I'm not sure we want or should "allow" page_pool be used for TCP RX
-> > > zerocopy.
-> > > For several reasons.
-> > >
-> > > (1) This implies mapping these pages page to userspace, which AFAIK
-> > > means using page->mapping and page->index members (right?).
-> > >  
-> > 
-> > No, only page->_mapcount is used.
-> 
-> Good to know.
-> I will admit that I don't fully understand the usage of page->mapping
-> and page->index members.
-
-That's fair.  It's not well-documented, and it's complicated.
-
-For a page mapped into userspace, page->mapping is one of:
- - NULL
- - A pointer to a file's address_space
- - A pointer to an anonymous page's anon_vma
-If a page isn't mapped into userspace, you can use the space in page->mapping
-for anything you like (eg slab uses it)
-
-page->index is only used for indicating pfmemalloc today (and I want to
-move that indicator).  I think it can also be used to merge VMAs (if
-some other conditions are also true), but failing to merge VMAs isn't
-a big deal for this kind of situation.
-
-> > > (2) It feels wrong (security wise) to keep the DMA-mapping (for the
-> > > device) and also map this page into userspace.
-> > 
-> > I think this is already the case i.e pages still DMA-mapped and also
-> > mapped into userspace.
-> 
-> True, other drivers are doing the same.
-
-And the contents of this page already came from that device ... if it
-wanted to write bad data, it could already have done so.
-
-> > > (3) The page_pool is optimized for refcnt==1 case, and AFAIK TCP-RX
-> > > zerocopy will bump the refcnt, which means the page_pool will not
-> > > recycle the page when it see the elevated refcnt (it will instead
-> > > release its DMA-mapping).  
-> > 
-> > Yes this is right but the userspace might have already consumed and
-> > unmapped the page before the driver considers to recycle the page.
-> 
-> That is a good point.  So, there is a race window where it is possible
-> to gain recycling.
-> 
-> It seems my page_pool co-maintainer Ilias is interested in taking up the
-> challenge to get this working with TCP RX zerocopy.  So, lets see how
-> this is doable.
-
-You could also check page_ref_count() - page_mapcount() instead of
-just checking page_ref_count().  Assuming mapping/unmapping can't
-race with recycling?
-
+PiBPbiAyMDIxLzQvMTcgMjA6MzMsIHpodWRpIChKKSB3cm90ZToNCj4gPj4gT24gMjAyMS80LzE2
+IDExOjI3LCB6aHVkaSAoSikgd3JvdGU6DQo+ID4+Pj4gZGVwZW5kZW5jeU9uIDIwMjEvNC8xNSAx
+MTozNSwgemh1ZGkgd3JvdGU6DQo+ID4+Pj4+IEZyb206IERpIFpodSA8emh1ZGkyMUBodWF3ZWku
+Y29tPg0KPiA+Pj4+Pg0KPiA+Pj4+PiBXZSBlbmNvdW50ZXJlZCBhIGNyYXNoOiBpbiB0aGUgcGFj
+a2V0IHJlY2VpdmluZyBwcm9jZXNzLCB3ZSBnb3QgYW4NCj4gPj4+Pj4gaWxsZWdhbCBWTEFOIGRl
+dmljZSBhZGRyZXNzLCBidXQgdGhlIFZMQU4gZGV2aWNlIGFkZHJlc3Mgc2F2ZWQgaW4NCj4gPj4+
+Pj4gdm1jb3JlIGlzIGNvcnJlY3QuIEFmdGVyIGNoZWNraW5nIHRoZSBjb2RlLCB3ZSBmb3VuZCBh
+IHBvc3NpYmxlDQo+ID4+Pj4+IGRhdGENCj4gPj4+Pj4gY29tcGV0aXRpb246DQo+ID4+Pj4+IENQ
+VSAwOiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgQ1BVIDE6DQo+ID4+Pj4+ICAgICAoUkNV
+IHJlYWQgbG9jaykgICAgICAgICAgICAgICAgICAoUlROTCBsb2NrKQ0KPiA+Pj4+PiAgICAgdmxh
+bl9kb19yZWNlaXZlKCkJCSAgICAgICByZWdpc3Rlcl92bGFuX2RldigpDQo+ID4+Pj4+ICAgICAg
+IHZsYW5fZmluZF9kZXYoKQ0KPiA+Pj4+Pg0KPiA+Pj4+PiAgICAgICAgIC0+X192bGFuX2dyb3Vw
+X2dldF9kZXZpY2UoKQkgLT52bGFuX2dyb3VwX3ByZWFsbG9jX3ZpZCgpDQo+ID4+Pj4+DQo+ID4+
+Pj4+IEluIHZsYW5fZ3JvdXBfcHJlYWxsb2NfdmlkKCksIFdlIG5lZWQgdG8gbWFrZSBzdXJlIHRo
+YXQga3phbGxvYyBpcw0KPiA+Pj4+PiBleGVjdXRlZCBiZWZvcmUgYXNzaWduaW5nIGEgdmFsdWUg
+dG8gdmxhbiBkZXZpY2VzIGFycmF5LCBvdGhlcndpc2UNCj4gPj4+Pj4gd2UNCj4gPj4+Pg0KPiA+
+Pj4+IEFzIG15IHVuZGVyc3RhbmRpbmcsIHRoZXJlIGlzIGEgZGVwZW5kZW5jeSBiZXR3ZWVuIGNh
+bGxpbmcNCj4gPj4+PiBremFsbG9jKCkgYW5kIGFzc2lnbmluZyB0aGUgYWRkcmVzcyhyZXR1cm5l
+ZCBmcm9tIGt6YWxsb2MoKSkgdG8NCj4gPj4+PiB2Zy0+dmxhbl9kZXZpY2VzX2FycmF5cywgQ1BV
+IGFuZCBjb21waWxlciBjYW4gc2VlIHRoZSBkZXBlbmRlbmN5LA0KPiA+Pj4+IHdoeSBjYW4ndCBp
+dCBoYW5kbGluZyB0aGUgZGVwZW5kZW5jeSBiZWZvcmUgYWRkaW5nIHRoZSBzbXBfd21iKCk/DQo+
+ID4+Pj4NCj4gPj4+PiBTZWUgQ09OVFJPTCBERVBFTkRFTkNJRVMgc2VjdGlvbiBpbiBEb2N1bWVu
+dGF0aW9uL21lbW9yeS0NCj4gPj4+PiBiYXJyaWVycy50eHQ6DQo+ID4+Pj4NCj4gPj4+PiBIb3dl
+dmVyLCBzdG9yZXMgYXJlIG5vdCBzcGVjdWxhdGVkLiAgVGhpcyBtZWFucyB0aGF0IG9yZGVyaW5n
+IC1pcy0NCj4gPj4gcHJvdmlkZWQNCj4gPj4+PiBmb3IgbG9hZC1zdG9yZSBjb250cm9sIGRlcGVu
+ZGVuY2llcywgYXMgaW4gdGhlIGZvbGxvd2luZyBleGFtcGxlOg0KPiA+Pj4+DQo+ID4+Pj4gICAg
+ICAgICBxID0gUkVBRF9PTkNFKGEpOw0KPiA+Pj4+ICAgICAgICAgaWYgKHEpIHsNCj4gPj4+PiAg
+ICAgICAgICAgICAgICAgV1JJVEVfT05DRShiLCAxKTsNCj4gPj4+PiAgICAgICAgIH0NCj4gPj4+
+Pg0KPiA+Pj4NCj4gPj4+ICBNYXliZSBJIGRpZG4ndCBtYWtlIGl0IGNsZWFyLiAgVGhpcyBtZW1v
+cnkgaXNvbGF0aW9uIGlzIHRvIGVuc3VyZQ0KPiA+Pj4gdGhlIG9yZGVyDQo+ID4+IG9mDQo+ID4+
+PiAgbWVtc2V0KG9iamVjdCwgMCwgc2l6ZSkgaW4ga3phbGxvYygpIG9wZXJhdGlvbnMgYW5kIHRo
+ZSBzdWJzZXF1ZW50DQo+ID4+PiBhcnJheQ0KPiA+PiBhc3NpZ25tZW50IHN0YXRlbWVudHMuDQo+
+ID4+Pg0KPiA+Pj4ga3phbGxvYygpDQo+ID4+PiAgICAgLT5tZW1zZXQob2JqZWN0LCAwLCBzaXpl
+KQ0KPiA+Pj4NCj4gPj4+IHNtcF93bWIoKQ0KPiA+Pj4NCj4gPj4+IHZnLT52bGFuX2RldmljZXNf
+YXJyYXlzW3BpZHhdW3ZpZHhdID0gYXJyYXk7DQo+ID4+Pg0KPiA+Pj4gQmVjYXVzZSBfX3ZsYW5f
+Z3JvdXBfZ2V0X2RldmljZSgpIGZ1bmN0aW9uIGRlcGVuZHMgb24gdGhpcyBvcmRlcg0KPiA+Pg0K
+PiA+DQo+ID4+IFRoYW5rcyBmb3IgY2xhcmlmeSwgaXQgd291bGQgYmUgZ29vZCB0byBtZW50aW9u
+IHRoaXMgaW4gdGhlIGNvbW1pdA0KPiA+PiBsb2cgdG9vLg0KPiA+DQo+ID4gT0ssICBJJ2xsIGNo
+YW5nZSBpdC4gIFRoYW5rIHlvdSBmb3IgeW91ciBhZHZpY2UuDQo+ID4NCj4gPj4NCj4gPj4gQWxz
+bywgX192bGFuX2dyb3VwX2dldF9kZXZpY2UoKSBpcyB1c2VkIGluIHRoZSBkYXRhIHBhdGgsIGl0
+IHdvdWxkIGJlDQo+ID4+IHRvIGF2b2lkIHRoZSBiYXJyaWVyIG9wIHRvby4gTWF5YmUgdXNpbmcg
+cmN1IHRvIGF2b2lkIHRoZSBiYXJyaWVyIGlmDQo+ID4+IHRoZSBfX3ZsYW5fZ3JvdXBfZ2V0X2Rl
+dmljZSgpIGlzIGFscmVhZHkgcHJvdGVjdGVkIGJ5IHJjdV9sb2NrLg0KPiA+DQo+ID4gVXNpbmcg
+dGhlIG5ldHBlcmYgY29tbWFuZCBmb3IgdGVzdGluZyBvbiB4ODYsIHRoZXJlIGlzIG5vIGRpZmZl
+cmVuY2UgaW4NCj4gcGVyZm9ybWFuY2U6DQo+IA0KPiBUaGlzIG1heSBtYWtlIHNlbnNlIGZvciB4
+ODYgYmVjYXVzZSB4ODYgaGFzIGEgc3Ryb25nIG9yZGVyIG1lbW9yeSBtb2RlbCwNCj4gd2hpY2gg
+aGFzIHNtcF9ybWIoKSBhcyBjb21waWxlciBiYXJyaWVyLCBhcyBteSB1bmRlcnN0YW5kaW5nLg0K
+PiANCj4gSG93IGFib3V0IHRoZSB3ZWFrIG9yZGVyIG1lbW9yeSBtb2RlbCBDUFU/IHN1Y2ggYXMg
+YXJtNjQsIHdoaWNoIGhhcw0KPiBzbXBfcm1iKCkgYXMgJ2RtYicgaW5zdHJ1Y3Rpb24uDQoNClRo
+ZSB0ZXN0IHJlc3VsdCBvbiBBcm0gaXMgdGhlIHNhbWUgYXMgdGhhdCBvbiBYODYsIG5vIG1hdHRl
+ciB3aGV0aGVyIGl0IGlzIHBhdGNoZWQgb3Igbm90LA0KdGhlcmUgaXMgYmFzaWNhbGx5IG5vIGRp
+ZmZlcmVuY2UgaW4gcGVyZm9ybWFuY2UuDQoNClRoZSBzbXBfcm1iKCkgc2VtYW50aWNhbGx5IGRv
+ZXMgbm90IGVuc3VyZSB0aGUgY29tcGxldGlvbiBvZiBhbnkgb2YgdGhlDQptZW1vcnkgYWNjZXNz
+ZXMgZm9yIHdoaWNoIGl0IGVuc3VyZXMgcmVsYXRpdmUgb3JkZXIsIFNvIHRoZSBwZXJmb3JtYW5j
+ZSBpbXBhY3QNCnNob3VsZCBiZSBtaW5pbWFsDQoNCj4gQWxzbyB0aGUgY3B1IHVzYWdlIG1heSBu
+ZWVkIHRvIGJlIGxvb2tlZCBhdCBpZiBkYXRhIHJhdGUgaXMgYXQgbGluZSBzcGVlZC4NCj4gDQo+
+ID4NCj4gPiAjIG5ldHBlcmYgLUggMTEyLjExMy4wLjEyIC1sIDIwIC10IFRDUF9TVFJFQU0gTUlH
+UkFURUQgVENQIFNUUkVBTQ0KPiBURVNUDQo+ID4gZnJvbSAwLjAuMC4wICgwLjAuMC4wKSBwb3J0
+IDAgQUZfSU5FVCB0byAxMTIuMTEzLjAuMTIgKCkgcG9ydCAwIEFGX0lORVQNCj4gPiBSZWN2ICAg
+U2VuZCAgICBTZW5kDQo+ID4gU29ja2V0IFNvY2tldCAgTWVzc2FnZSAgRWxhcHNlZA0KPiA+IFNp
+emUgICBTaXplICAgIFNpemUgICAgIFRpbWUgICAgIFRocm91Z2hwdXQNCj4gPiBieXRlcyAgYnl0
+ZXMgICBieXRlcyAgICBzZWNzLiAgICAxMF42Yml0cy9zZWMNCj4gPg0KPiA+IDEzMTA3MiAgMTYz
+ODQgIDE2Mzg0ICAgIDIwLjAwICAgIDkzODYuMDMNCj4gPg0KPiA+IEFmdGVyIHBhdGNoOg0KPiA+
+DQo+ID4gICMgbmV0cGVyZiAtSCAxMTIuMTEzLjAuMTIgLWwgMjAgLXQgVENQX1NUUkVBTSBNSUdS
+QVRFRCBUQ1AgU1RSRUFNDQo+ID4gVEVTVCBmcm9tIDAuMC4wLjAgKDAuMC4wLjApIHBvcnQgMCBB
+Rl9JTkVUIHRvIDExMi4xMTMuMC4xMiAoKSBwb3J0IDAgQUZfSU5FVA0KPiA+IFJlY3YgICBTZW5k
+ICAgIFNlbmQNCj4gPiBTb2NrZXQgU29ja2V0ICBNZXNzYWdlICBFbGFwc2VkDQo+ID4gU2l6ZSAg
+IFNpemUgICAgU2l6ZSAgICAgVGltZSAgICAgVGhyb3VnaHB1dA0KPiA+IGJ5dGVzICBieXRlcyAg
+IGJ5dGVzICAgIHNlY3MuICAgIDEwXjZiaXRzL3NlYw0KPiA+DQo+ID4gMTMxMDcyICAxNjM4NCAg
+MTYzODQgICAgMjAuMDAgICAgOTM4Ni40MQ0KPiA+DQo+ID4gVGhlIHNhbWUgaXMgdHJ1ZSBmb3Ig
+VURQIHN0cmVhbSB0ZXN0DQo+ID4NCj4gPj4NCj4gPj4+DQo+ID4+Pj4NCj4gPj4+Pg0KPiA+Pj4+
+PiBtYXkgZ2V0IGEgd3JvbmcgYWRkcmVzcyBmcm9tIHRoZSBoYXJkd2FyZSBjYWNoZSBvbiBhbm90
+aGVyIGNwdS4NCj4gPj4+Pj4NCj4gPj4+Pj4gU28gZml4IGl0IGJ5IGFkZGluZyBtZW1vcnkgYmFy
+cmllciBpbnN0cnVjdGlvbiB0byBlbnN1cmUgdGhlIG9yZGVyDQo+ID4+Pj4+IG9mIG1lbW9yeSBv
+cGVyYXRpb25zLg0KPiA+Pj4+Pg0KPiA+Pj4+PiBTaWduZWQtb2ZmLWJ5OiBEaSBaaHUgPHpodWRp
+MjFAaHVhd2VpLmNvbT4NCj4gPj4+Pj4gLS0tDQo+ID4+Pj4+ICBuZXQvODAyMXEvdmxhbi5jIHwg
+MiArKw0KPiA+Pj4+PiAgbmV0LzgwMjFxL3ZsYW4uaCB8IDMgKysrDQo+ID4+Pj4+ICAyIGZpbGVz
+IGNoYW5nZWQsIDUgaW5zZXJ0aW9ucygrKQ0KPiA+Pj4+Pg0KPiA+Pj4+PiBkaWZmIC0tZ2l0IGEv
+bmV0LzgwMjFxL3ZsYW4uYyBiL25ldC84MDIxcS92bGFuLmMgaW5kZXgNCj4gPj4+Pj4gOGI2NDQx
+MTM3MTVlLi40ZjU0MWUwNWNkM2YgMTAwNjQ0DQo+ID4+Pj4+IC0tLSBhL25ldC84MDIxcS92bGFu
+LmMNCj4gPj4+Pj4gKysrIGIvbmV0LzgwMjFxL3ZsYW4uYw0KPiA+Pj4+PiBAQCAtNzEsNiArNzEs
+OCBAQCBzdGF0aWMgaW50IHZsYW5fZ3JvdXBfcHJlYWxsb2NfdmlkKHN0cnVjdA0KPiA+PiB2bGFu
+X2dyb3VwDQo+ID4+Pj4gKnZnLA0KPiA+Pj4+PiAgCWlmIChhcnJheSA9PSBOVUxMKQ0KPiA+Pj4+
+PiAgCQlyZXR1cm4gLUVOT0JVRlM7DQo+ID4+Pj4+DQo+ID4+Pj4+ICsJc21wX3dtYigpOw0KPiA+
+Pj4+PiArDQo+ID4+Pj4+ICAJdmctPnZsYW5fZGV2aWNlc19hcnJheXNbcGlkeF1bdmlkeF0gPSBh
+cnJheTsNCj4gPj4+Pj4gIAlyZXR1cm4gMDsNCj4gPj4+Pj4gIH0NCj4gPj4+Pj4gZGlmZiAtLWdp
+dCBhL25ldC84MDIxcS92bGFuLmggYi9uZXQvODAyMXEvdmxhbi5oIGluZGV4DQo+ID4+Pj4+IDk1
+MzQwNTM2Mjc5NS4uNzQwOGZkYTA4NGQzIDEwMDY0NA0KPiA+Pj4+PiAtLS0gYS9uZXQvODAyMXEv
+dmxhbi5oDQo+ID4+Pj4+ICsrKyBiL25ldC84MDIxcS92bGFuLmgNCj4gPj4+Pj4gQEAgLTU3LDYg
+KzU3LDkgQEAgc3RhdGljIGlubGluZSBzdHJ1Y3QgbmV0X2RldmljZQ0KPiA+Pj4+PiAqX192bGFu
+X2dyb3VwX2dldF9kZXZpY2Uoc3RydWN0IHZsYW5fZ3JvdXAgKnZnLA0KPiA+Pj4+Pg0KPiA+Pj4+
+PiAgCWFycmF5ID0gdmctPnZsYW5fZGV2aWNlc19hcnJheXNbcGlkeF0NCj4gPj4+Pj4gIAkJCQkg
+ICAgICAgW3ZsYW5faWQgLw0KPiA+Pj4+IFZMQU5fR1JPVVBfQVJSQVlfUEFSVF9MRU5dOw0KPiA+
+Pj4+PiArDQo+ID4+Pj4+ICsJc21wX3JtYigpOw0KPiA+Pj4+PiArDQo+ID4+Pj4+ICAJcmV0dXJu
+IGFycmF5ID8gYXJyYXlbdmxhbl9pZCAlIFZMQU5fR1JPVVBfQVJSQVlfUEFSVF9MRU5dIDoNCj4g
+Pj4+PiBOVUxMOyAgfQ0KPiA+Pj4+Pg0KPiA+Pj4+Pg0KPiA+Pj4NCj4gPg0KDQo=
