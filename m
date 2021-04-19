@@ -2,146 +2,190 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CCE12364679
-	for <lists+netdev@lfdr.de>; Mon, 19 Apr 2021 16:54:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BC9B236467F
+	for <lists+netdev@lfdr.de>; Mon, 19 Apr 2021 16:57:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234040AbhDSOyy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 19 Apr 2021 10:54:54 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:49734 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S239240AbhDSOxz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 19 Apr 2021 10:53:55 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1618844005;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=Pn3336x63l0LR8xuMuvbCKXge7xJwNvJuPpzzHWEsYA=;
-        b=XknwQHmmH9EQ5guJg4g57nJ/30s44JA9MngX4RgX3qnSfLBJRIVHwbGfaGI0rck98o4ph5
-        9c0y9n0oEd7S/l029REnctc/0GEh9yN100ec8m17Hup1mnXYIBkofKlM2ZAV21Q34FlXol
-        YOEr2kcq9W7SYstWkyaR//vS3Yqu1U0=
-Received: from mail-ej1-f72.google.com (mail-ej1-f72.google.com
- [209.85.218.72]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-149-g-8aje6DPymTSWVNodL_UA-1; Mon, 19 Apr 2021 10:53:23 -0400
-X-MC-Unique: g-8aje6DPymTSWVNodL_UA-1
-Received: by mail-ej1-f72.google.com with SMTP id z6-20020a17090665c6b02903700252d1ccso3724904ejn.10
-        for <netdev@vger.kernel.org>; Mon, 19 Apr 2021 07:53:23 -0700 (PDT)
+        id S238850AbhDSO5t (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 19 Apr 2021 10:57:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52608 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S238780AbhDSO5s (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 19 Apr 2021 10:57:48 -0400
+Received: from mail-lf1-x136.google.com (mail-lf1-x136.google.com [IPv6:2a00:1450:4864:20::136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 106C9C061761
+        for <netdev@vger.kernel.org>; Mon, 19 Apr 2021 07:57:17 -0700 (PDT)
+Received: by mail-lf1-x136.google.com with SMTP id x19so26024300lfa.2
+        for <netdev@vger.kernel.org>; Mon, 19 Apr 2021 07:57:16 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=bOY9m1eIVASQIMnSbwflGhIUTyPWYD03S/dD7MA55Qc=;
+        b=rgKpT44z5gZPH7IcDqEdCS5YbgmApA+chMspbQ+JZGvC+YpgKwQzzX5A4jzxNEjvmG
+         MLlDYm4e7iCaE5IHqjOyN/ifzjPweOwwRpEg2SJB0fXvLMt8562VpY9TMa7hc7yb2lA1
+         2PVEZpoklcaU3AfYgP9KRx34WMyKtu4e/QsEtsbYZgOl6h8Xq+0WvD0oBFTfJC4iVd4L
+         6j0H/BV7sKihqk2a+lubMh5VtlxaVk/jrOh+titVm4bmXsc3XMgR5O5X+2oCsdriqvyU
+         BMBRSMvjklWjnZ9g9t6FGjScAawV2e+WWEzp+KcGRgjhYZ/E3Qe13rckj3cpUlBiF3sb
+         St4Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version;
-        bh=Pn3336x63l0LR8xuMuvbCKXge7xJwNvJuPpzzHWEsYA=;
-        b=m5PaFP0GHzQlpRnkNlFv8SQBo13hiFgyLy5lsOy0dKtWCLDoPzkxmc9L2OjzzCkEkv
-         ca5SBC+EAbgjjDt+tul9bnsRVBF45i+xIlta4wO1UQbQAoWSXQDlNqxDEPMpNtYb0o2m
-         Kx8O3cViiSmvz73XAKasWfXqel/oISD4tFZqRErJkDS0SvQgmRpoksKpcgAc/BwZFGx6
-         kpfNZEchTQvE8RzT8rfy5NOKNJmdl5h60Nu/clXN+hopIDUWjFy3of1mCyAi1Om0GCdW
-         +csTX3ucQryyIoPEInUYUlZPryaZe3crQbKqs+bbvzS0ZGZcPAWE7npHNBanTuh+LU9i
-         EGCw==
-X-Gm-Message-State: AOAM531tiDE5AyuoWKaS7E/0Wpkxjq6jSHfF9bKGSs8OP95Xu/gwdAX5
-        i7dNoRgAN+ElWWW08dWJotKsux9eVcscnOwql0l87DUyEyFa2B8bexa8FV+1xWbxsrV9E+4whS3
-        aNA2f7T+r4SbbfYr7
-X-Received: by 2002:a05:6402:3592:: with SMTP id y18mr25635926edc.360.1618844002129;
-        Mon, 19 Apr 2021 07:53:22 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJywpLk/0lBgi0qd0BQfZDWVWRLaHKwitjNdCJSwgxQ+G+VnXMmEmGrOLYhxAFFqbBSBfzE+ng==
-X-Received: by 2002:a05:6402:3592:: with SMTP id y18mr25635884edc.360.1618844001691;
-        Mon, 19 Apr 2021 07:53:21 -0700 (PDT)
-Received: from alrua-x1.borgediget.toke.dk ([2a0c:4d80:42:443::2])
-        by smtp.gmail.com with ESMTPSA id k12sm12844689edo.50.2021.04.19.07.53.21
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 19 Apr 2021 07:53:21 -0700 (PDT)
-Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id 881CC180002; Mon, 19 Apr 2021 16:53:20 +0200 (CEST)
-From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-To:     Martin Willi <martin@strongswan.org>,
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=bOY9m1eIVASQIMnSbwflGhIUTyPWYD03S/dD7MA55Qc=;
+        b=KANHuO45d1v4B2/uOGF8hQ8EsITHXKpohcMnxvKSfhF6BPaEB19akyEprprf/I7ngw
+         5GyrXN3mGBSaQYHMGznpfARzaLFAJfzPloT8UFf2fc7rvhbii5XicRflpXdlQCMM/4rk
+         agRndnfgGDBvjJRV+wcIkt2qqHYj8CBa+09rzM9jZnBhnzD2x/0r4bvHpyWGHAP40L51
+         FYRSx5t0QvODSOjzfqcKjPf0z8saBYU1DRCU1soOC74GkuP1DTb+UBZwTLrPANMyIaP2
+         qPX6eBcKdUagw7okQGxrkbsCOuDrERb8OH26NP5PsIXMiqk0gYPdHPF8RvRP150i3NEY
+         r+Gg==
+X-Gm-Message-State: AOAM533MTBnrqPa0YAXbx2FkQL+fzb9q5KmXOnWcrP1KLrgWCL4cLFN0
+        WfGg7gmi1S+bF1gmzmmRw6bdbSUAykkG6wBzx9WrS0p/zmTVMQ==
+X-Google-Smtp-Source: ABdhPJzVe3naebLuz81mJv7oonUIqkV5Z3LAXE1HEtaRfd+15ET0ZRont6UfxMYDrQHny8LYwtQzYeplG9JZRH79Gdo=
+X-Received: by 2002:a05:6512:92e:: with SMTP id f14mr6712386lft.347.1618844235220;
+ Mon, 19 Apr 2021 07:57:15 -0700 (PDT)
+MIME-Version: 1.0
+References: <20210409223801.104657-1-mcroce@linux.microsoft.com>
+ <20210409223801.104657-3-mcroce@linux.microsoft.com> <20210410154824.GZ2531743@casper.infradead.org>
+ <YHHPbQm2pn2ysth0@enceladus> <CALvZod7UUxTavexGCzbKaK41LAW7mkfQrnDhFbjo-KvH9P6KsQ@mail.gmail.com>
+ <YHHuE7g73mZNrMV4@enceladus> <20210414214132.74f721dd@carbon>
+ <CALvZod4F8kCQQcK5_3YH=7keqkgY-97g+_OLoDCN7uNJdd61xA@mail.gmail.com> <YH0RMV7+56gVOzJe@apalos.home>
+In-Reply-To: <YH0RMV7+56gVOzJe@apalos.home>
+From:   Shakeel Butt <shakeelb@google.com>
+Date:   Mon, 19 Apr 2021 07:57:03 -0700
+Message-ID: <CALvZod7oa4q6pMUyDi4FMW4WKY7AjOZ7P2=02GoxjpwrQpA-OQ@mail.gmail.com>
+Subject: Re: [PATCH net-next v3 2/5] mm: add a signature in struct page
+To:     Ilias Apalodimas <ilias.apalodimas@linaro.org>
+Cc:     Jesper Dangaard Brouer <brouer@redhat.com>,
+        Matthew Wilcox <willy@infradead.org>,
+        Matteo Croce <mcroce@linux.microsoft.com>,
+        netdev <netdev@vger.kernel.org>, Linux MM <linux-mm@kvack.org>,
+        Ayush Sawal <ayush.sawal@chelsio.com>,
+        Vinay Kumar Yadav <vinay.yadav@chelsio.com>,
+        Rohit Maheshwari <rohitm@chelsio.com>,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        Marcin Wojtas <mw@semihalf.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Mirko Lindner <mlindner@marvell.com>,
+        Stephen Hemminger <stephen@networkplumber.org>,
+        Tariq Toukan <tariqt@nvidia.com>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
         Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>
-Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org
-Subject: Re: [PATCH net-next] net: xdp: Update pkt_type if generic XDP
- changes unicast MAC
-In-Reply-To: <20210419141559.8611-1-martin@strongswan.org>
-References: <20210419141559.8611-1-martin@strongswan.org>
-X-Clacks-Overhead: GNU Terry Pratchett
-Date:   Mon, 19 Apr 2021 16:53:20 +0200
-Message-ID: <87tuo2gwbj.fsf@toke.dk>
-MIME-Version: 1.0
-Content-Type: text/plain
+        John Fastabend <john.fastabend@gmail.com>,
+        Boris Pismenny <borisp@nvidia.com>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
+        Vlastimil Babka <vbabka@suse.cz>, Yu Zhao <yuzhao@google.com>,
+        Will Deacon <will@kernel.org>,
+        Michel Lespinasse <walken@google.com>,
+        Fenghua Yu <fenghua.yu@intel.com>,
+        Roman Gushchin <guro@fb.com>, Hugh Dickins <hughd@google.com>,
+        Peter Xu <peterx@redhat.com>, Jason Gunthorpe <jgg@ziepe.ca>,
+        Guoqing Jiang <guoqing.jiang@cloud.ionos.com>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        Alexander Lobakin <alobakin@pm.me>,
+        Cong Wang <cong.wang@bytedance.com>, wenxu <wenxu@ucloud.cn>,
+        Kevin Hao <haokexin@gmail.com>,
+        Aleksandr Nogikh <nogikh@google.com>,
+        Jakub Sitnicki <jakub@cloudflare.com>,
+        Marco Elver <elver@google.com>,
+        Willem de Bruijn <willemb@google.com>,
+        Miaohe Lin <linmiaohe@huawei.com>,
+        Yunsheng Lin <linyunsheng@huawei.com>,
+        Guillaume Nault <gnault@redhat.com>,
+        LKML <linux-kernel@vger.kernel.org>, linux-rdma@vger.kernel.org,
+        bpf <bpf@vger.kernel.org>, Eric Dumazet <edumazet@google.com>,
+        David Ahern <dsahern@gmail.com>,
+        Lorenzo Bianconi <lorenzo@kernel.org>,
+        Saeed Mahameed <saeedm@nvidia.com>,
+        Andrew Lunn <andrew@lunn.ch>, Paolo Abeni <pabeni@redhat.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Martin Willi <martin@strongswan.org> writes:
-
-> If a generic XDP program changes the destination MAC address from/to
-> multicast/broadcast, the skb->pkt_type is updated to properly handle
-> the packet when passed up the stack. When changing the MAC from/to
-> the NICs MAC, PACKET_HOST/OTHERHOST is not updated, though, making
-> the behavior different from that of native XDP.
+On Sun, Apr 18, 2021 at 10:12 PM Ilias Apalodimas
+<ilias.apalodimas@linaro.org> wrote:
 >
-> Remember the PACKET_HOST/OTHERHOST state before calling the program
-> in generic XDP, and update pkt_type accordingly if the destination
-> MAC address has changed. As eth_type_trans() assumes a default
-> pkt_type of PACKET_HOST, restore that before calling it.
+> On Wed, Apr 14, 2021 at 01:09:47PM -0700, Shakeel Butt wrote:
+> > On Wed, Apr 14, 2021 at 12:42 PM Jesper Dangaard Brouer
+> > <brouer@redhat.com> wrote:
+> > >
+> > [...]
+> > > > >
+> > > > > Can this page_pool be used for TCP RX zerocopy? If yes then PageType
+> > > > > can not be used.
+> > > >
+> > > > Yes it can, since it's going to be used as your default allocator for
+> > > > payloads, which might end up on an SKB.
+> > >
+> > > I'm not sure we want or should "allow" page_pool be used for TCP RX
+> > > zerocopy.
+> > > For several reasons.
+> > >
+> > > (1) This implies mapping these pages page to userspace, which AFAIK
+> > > means using page->mapping and page->index members (right?).
+> > >
+> >
+> > No, only page->_mapcount is used.
+> >
 >
-> The use case for this is when a XDP program wants to push received
-> packets up the stack by rewriting the MAC to the NICs MAC, for
-> example by cluster nodes sharing MAC addresses.
+> I am not sure I like leaving out TCP RX zerocopy. Since we want driver to
+> adopt the recycling mechanism we should try preserving the current
+> functionality of the network stack.
 >
-> Fixes: 297249569932 ("net: fix generic XDP to handle if eth header was mangled")
-> Signed-off-by: Martin Willi <martin@strongswan.org>
-> ---
->  net/core/dev.c | 6 +++++-
->  1 file changed, 5 insertions(+), 1 deletion(-)
+> The question is how does it work with the current drivers that already have an
+> internal page recycling mechanism.
 >
-> diff --git a/net/core/dev.c b/net/core/dev.c
-> index d9bf63dbe4fd..eed028aec6a4 100644
-> --- a/net/core/dev.c
-> +++ b/net/core/dev.c
-> @@ -4723,10 +4723,10 @@ static u32 netif_receive_generic_xdp(struct sk_buff *skb,
->  	void *orig_data, *orig_data_end, *hard_start;
->  	struct netdev_rx_queue *rxqueue;
->  	u32 metalen, act = XDP_DROP;
-> +	bool orig_bcast, orig_host;
->  	u32 mac_len, frame_sz;
->  	__be16 orig_eth_type;
->  	struct ethhdr *eth;
-> -	bool orig_bcast;
->  	int off;
->  
->  	/* Reinjected packets coming from act_mirred or similar should
-> @@ -4773,6 +4773,7 @@ static u32 netif_receive_generic_xdp(struct sk_buff *skb,
->  	orig_data_end = xdp->data_end;
->  	orig_data = xdp->data;
->  	eth = (struct ethhdr *)xdp->data;
-> +	orig_host = ether_addr_equal_64bits(eth->h_dest, skb->dev->dev_addr);
 
-ether_addr_equal_64bits() seems to assume that the addresses passed to
-it are padded to be 8 bytes long, which is not the case for eth->h_dest.
-AFAICT the only reason the _64bits variant works for multicast is that
-it happens to be only checking the top-most bit, but unless I'm missing
-something you'll have to use the boring old ether_addr_equal() here, no?
+I think the current drivers check page_ref_count(page) to decide to
+reuse (or not) the already allocated pages.
 
->  	orig_bcast = is_multicast_ether_addr_64bits(eth->h_dest);
->  	orig_eth_type = eth->h_proto;
->  
-> @@ -4800,8 +4801,11 @@ static u32 netif_receive_generic_xdp(struct sk_buff *skb,
->  	/* check if XDP changed eth hdr such SKB needs update */
->  	eth = (struct ethhdr *)xdp->data;
->  	if ((orig_eth_type != eth->h_proto) ||
-> +	    (orig_host != ether_addr_equal_64bits(eth->h_dest,
-> +						  skb->dev->dev_addr)) ||
->  	    (orig_bcast != is_multicast_ether_addr_64bits(eth->h_dest))) {
->  		__skb_push(skb, ETH_HLEN);
-> +		skb->pkt_type = PACKET_HOST;
->  		skb->protocol = eth_type_trans(skb, skb->dev);
->  	}
+Some examples from the drivers:
+drivers/net/ethernet/intel/ixgbe/ixgbe_main.c:ixgbe_can_reuse_rx_page()
+drivers/net/ethernet/intel/igb/igb_main.c:igb_can_reuse_rx_page()
+drivers/net/ethernet/mellanox/mlx5/core/en_rx.c:mlx5e_rx_cache_get()
 
-Okay, so this was a bit confusing to me at fist glance: eth_type_trans()
-will reset the type, but not back to PACKET_HOST. So this works, just a
-bit confusing :)
+> > > (2) It feels wrong (security wise) to keep the DMA-mapping (for the
+> > > device) and also map this page into userspace.
+> > >
+> >
+> > I think this is already the case i.e pages still DMA-mapped and also
+> > mapped into userspace.
+> >
+> > > (3) The page_pool is optimized for refcnt==1 case, and AFAIK TCP-RX
+> > > zerocopy will bump the refcnt, which means the page_pool will not
+> > > recycle the page when it see the elevated refcnt (it will instead
+> > > release its DMA-mapping).
+> >
+> > Yes this is right but the userspace might have already consumed and
+> > unmapped the page before the driver considers to recycle the page.
+>
+> Same question here. I'll have a closer look in a few days and make sure we are
+> not breaking anything wrt zerocopy.
+>
 
--Toke
+Pages mapped into the userspace have their refcnt elevated, so the
+page_ref_count() check by the drivers indicates to not reuse such
+pages.
 
+> >
+> > >
+> > > (4) I remember vaguely that this code path for (TCP RX zerocopy) uses
+> > > page->private for tricks.  And our patch [3/5] use page->private for
+> > > storing xdp_mem_info.
+> > >
+> > > IMHO when the SKB travel into this TCP RX zerocopy code path, we should
+> > > call page_pool_release_page() to release its DMA-mapping.
+> > >
+> >
+> > I will let TCP RX zerocopy experts respond to this but from my high
+> > level code inspection, I didn't see page->private usage.
+>
+> Shakeel are you aware of any 'easy' way I can have rx zerocopy running?
+>
+
+I would recommend tools/testing/selftests/net/tcp_mmap.c.
