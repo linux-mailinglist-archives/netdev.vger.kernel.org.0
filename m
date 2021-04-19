@@ -2,119 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 72A9F3648C7
-	for <lists+netdev@lfdr.de>; Mon, 19 Apr 2021 19:10:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 675AA3648F5
+	for <lists+netdev@lfdr.de>; Mon, 19 Apr 2021 19:20:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234056AbhDSRKs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 19 Apr 2021 13:10:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53948 "EHLO
+        id S239897AbhDSRVO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 19 Apr 2021 13:21:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56280 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230127AbhDSRKq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 19 Apr 2021 13:10:46 -0400
-Received: from mail-ot1-x32d.google.com (mail-ot1-x32d.google.com [IPv6:2607:f8b0:4864:20::32d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 67BCAC06174A
-        for <netdev@vger.kernel.org>; Mon, 19 Apr 2021 10:10:15 -0700 (PDT)
-Received: by mail-ot1-x32d.google.com with SMTP id i16-20020a9d68d00000b0290286edfdfe9eso22637787oto.3
-        for <netdev@vger.kernel.org>; Mon, 19 Apr 2021 10:10:15 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=JYbKOjVmnGQwiR58f9HBa+wgBOgZUKb/HL9ulNIoXC8=;
-        b=kfy73cPtB8olgltRl9FBw5XOKz+IWebuATGGeZiDCeWvr/mWC+wJsa7L0MPpODhJP/
-         uAz7ehfgDg0PvjfZ0fUGzjajReCKdfjGOckc7Fa/mXIf5o43V8Y1wW/VFWC42I9PWL+W
-         gE1l8cTGknHYUzp7G2YdRtFeUL4cuRIBGtXPXA52Zsbc9HFtMYC4MyNsWRSor9gumqnC
-         A+n9ZNeEOT661FWppYAHXVrte4M58eHt6OxFDeDBK43hZidz6H4o2OWc1r3UvwN0Kq4U
-         7jn952ggBbwcUUN8KduwonBC3peA6dQSdyKbcwoGTQYt6G/nYCURlaAOIvombG/Tplmz
-         lJ3A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=JYbKOjVmnGQwiR58f9HBa+wgBOgZUKb/HL9ulNIoXC8=;
-        b=UF6LFM7kHDmBpJMCBmWbXy0GEfE+owuDTS9LpTIVW0vfkczvLRJwtbSaUeycz5YorL
-         CXSzeyYmwUeIgFM44otq/wyL+Wt1eoluZMcdNj6xSWm3AgirRQYuBaP1Lr5jj8oBXeD2
-         2FeldBl3vyXS/2BdAP1A3lcSYi5P8cCDwh+JTDlrLw+lwTtiy+GEdIal/y9RjBjl6PQc
-         9zL2+2qKbi5aqNIZCDAyPOKcGXkzTe4hHa+TVgRKiVGDh3f63nvBCI7mNEoauzkXEfK4
-         QxZ5OuyLoeyUFhOjtCFZ16Tfg0N9aA9tk+2i6bAeExZKyR98kKbPKATzODhQ69E8Ucs8
-         QInw==
-X-Gm-Message-State: AOAM533S2JNrh/xv0Zp++mSohogeWXTpCSj5bpbNKpWcH0GgFpYzv6ss
-        LMhCbrIGG6XUKHhSPkdNAjc=
-X-Google-Smtp-Source: ABdhPJwpEIQ9/6HFMN19suioJPMlFQdvQHlnYNzbRZV6bHe06AEOxgrjCzudn2l/gL3L9zogjIEuWQ==
-X-Received: by 2002:a9d:7606:: with SMTP id k6mr15235598otl.223.1618852214703;
-        Mon, 19 Apr 2021 10:10:14 -0700 (PDT)
-Received: from Davids-MacBook-Pro.local ([8.45.42.15])
-        by smtp.googlemail.com with ESMTPSA id x20sm3269652oiv.35.2021.04.19.10.10.13
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 19 Apr 2021 10:10:14 -0700 (PDT)
-Subject: Re: [PATCH 2/2] neighbour: allow NUD_NOARP entries to be forced GCed
-To:     Kasper Dupont <kasperd@gczfm.28.feb.2009.kasperd.net>,
-        netdev@vger.kernel.org
-Cc:     Thadeu Lima de Souza Cascardo <cascardo@canonical.com>,
-        davem@davemloft.net, kuba@kernel.org, dsahern@kernel.org,
-        Kasper Dupont <kasperd@gjkwv.06.feb.2021.kasperd.net>
-References: <20210317185320.1561608-1-cascardo@canonical.com>
- <20210317185320.1561608-2-cascardo@canonical.com>
- <20210419164429.GA2295190@sniper.kasperd.net>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <0b502406-1a86-faec-ff46-c530145b90cf@gmail.com>
-Date:   Mon, 19 Apr 2021 10:10:12 -0700
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
- Gecko/20100101 Thunderbird/78.9.1
+        with ESMTP id S230063AbhDSRVN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 19 Apr 2021 13:21:13 -0400
+Received: from mail.as397444.net (mail.as397444.net [IPv6:2620:6e:a000:dead:beef:15:bad:f00d])
+        by lindbergh.monkeyblade.net (Postfix) with UTF8SMTPS id 4F695C06174A;
+        Mon, 19 Apr 2021 10:20:43 -0700 (PDT)
+Received: by mail.as397444.net (Postfix) with UTF8SMTPSA id 9D6CA541F74;
+        Mon, 19 Apr 2021 17:20:40 +0000 (UTC)
+X-DKIM-Note: Keys used to sign are likely public at https://as397444.net/dkim/
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mattcorallo.com;
+        s=1618851664; t=1618852841;
+        bh=FiEKzC7B1dsbH70Gn8HR+nV/qxAaawx52H3Ir599Os0=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=RZ27MFuhsSTKFsjjBBKbde/EEN8bjbei5vdIdBWUtyWEBgwknOmq2Y4l2aNRCNa56
+         V3IEu2uWnVlBjEstH3PFfu+fmnvnQzK7iHe+OYF1Lgkk9k9H+Myt79s49fcop6h9ur
+         9SVV6hRc6J5MJxN7RbAABtf4c24mc/kENRw3UV4Nz8IBhRPQTRBJJ60Sb7JkqbQ/cL
+         jSuvbCaZyzAFV9SWlmRXLNa+epoLX8sjo4P8fpBRzZK0fpWOfH1/cpbiwJJVYABL/1
+         ohTY8bRT1VkcX6Q3z6+7sG2yTkXIVhGhp7GqWl9bZnjrC8i6lbYYwlF10H3wOiAeoo
+         LFtw4hlj6B2JQ==
+Message-ID: <5fffbce3-2722-97b9-c025-1ce3da5e5467@bluematt.me>
+Date:   Mon, 19 Apr 2021 13:20:39 -0400
 MIME-Version: 1.0
-In-Reply-To: <20210419164429.GA2295190@sniper.kasperd.net>
-Content-Type: text/plain; charset=UTF-8
+Subject: Re: PROBLEM: DoS Attack on Fragment Cache
 Content-Language: en-US
+To:     Eric Dumazet <edumazet@google.com>
+Cc:     Willy Tarreau <w@1wt.eu>, Keyu Man <kman001@ucr.edu>,
+        David Ahern <dsahern@gmail.com>,
+        Florian Westphal <fw@strlen.de>,
+        David Miller <davem@davemloft.net>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        David Ahern <dsahern@kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Zhiyun Qian <zhiyunq@cs.ucr.edu>
+References: <02917697-4CE2-4BBE-BF47-31F58BC89025@hxcore.ol>
+ <52098fa9-2feb-08ae-c24f-1e696076c3b9@gmail.com>
+ <CANn89iL_V0WbeA-Zr29cLSp9pCsthkX9ze4W46gx=8-UeK2qMg@mail.gmail.com>
+ <20210417072744.GB14109@1wt.eu>
+ <CAMqUL6bkp2Dy3AMFZeNLjE1f-sAwnuBWpXH_FSYTSh8=Ac3RKg@mail.gmail.com>
+ <20210417075030.GA14265@1wt.eu>
+ <c6467c1c-54f5-8681-6e7d-aa1d9fc2ff32@bluematt.me>
+ <CAMqUL6bAVE9p=XEnH4HdBmBfThaY3FDosqyr8yrQo6N_9+Jf3w@mail.gmail.com>
+ <78d776a9-4299-ff4e-8ca2-096ec5c02d05@bluematt.me>
+ <20210418043933.GB18896@1wt.eu>
+ <9e2966be-d210-edf9-4f3c-5681f0d07c5f@bluematt.me>
+ <CANn89iKXYutm20oi-rCwch0eL1Oo9rq1W=ex6+NzvPitq_jX0Q@mail.gmail.com>
+From:   Matt Corallo <netdev-list@mattcorallo.com>
+In-Reply-To: <CANn89iKXYutm20oi-rCwch0eL1Oo9rq1W=ex6+NzvPitq_jX0Q@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 4/19/21 9:44 AM, Kasper Dupont wrote:
-> On 17/03/21 15.53, Thadeu Lima de Souza Cascardo wrote:
->> IFF_POINTOPOINT interfaces use NUD_NOARP entries for IPv6. It's possible to
->> fill up the neighbour table with enough entries that it will overflow for
->> valid connections after that.
->>
->> This behaviour is more prevalent after commit 58956317c8de ("neighbor:
->> Improve garbage collection") is applied, as it prevents removal from
->> entries that are not NUD_FAILED, unless they are more than 5s old.
->>
->> Fixes: 58956317c8de (neighbor: Improve garbage collection)
->> Reported-by: Kasper Dupont <kasperd@gjkwv.06.feb.2021.kasperd.net>
->> Signed-off-by: Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
->> ---
->>  net/core/neighbour.c | 1 +
->>  1 file changed, 1 insertion(+)
->>
->> diff --git a/net/core/neighbour.c b/net/core/neighbour.c
->> index bbc89c7ffdfd..be5ca411b149 100644
->> --- a/net/core/neighbour.c
->> +++ b/net/core/neighbour.c
->> @@ -256,6 +256,7 @@ static int neigh_forced_gc(struct neigh_table *tbl)
->>  
->>  		write_lock(&n->lock);
->>  		if ((n->nud_state == NUD_FAILED) ||
->> +		    (n->nud_state == NUD_NOARP) ||
->>  		    (tbl->is_multicast &&
->>  		     tbl->is_multicast(n->primary_key)) ||
->>  		    time_after(tref, n->updated))
->> -- 
->> 2.27.0
->>
-> 
-> Is there any update regarding this change?
-> 
-> I noticed this regression when it was used in a DoS attack on one of
-> my servers which I had upgraded from Ubuntu 18.04 to 20.04.
-> 
-> I have verified that Ubuntu 18.04 is not subject to this attack and
-> Ubuntu 20.04 is vulnerable. I have also verified that the one-line
-> change which Cascardo has provided fixes the vulnerability on Ubuntu
-> 20.04.
-> 
+Note that there are two completely separate sysctls here - the timeout on fragments, and the amount of memory available 
+for fragment reassembly. You have to multiply them together to reach the "Mbps of lost or deliberately-lost fragments 
+before we start dropping all future fragments". See the calculation in the description of the patch I mentioned above 
+for exact details, but turning the time down to 1s already gives you 32Mbps, and you can tune the memory usage 
+separately (eg 128MB, really 256 between v4 and v6, would give you 1Gbps of "lost" fragments).
 
-your testing included both patches or just this one?
+Its true, an attacker can use a lot of memory in that case, but 128MiB isn't actually something that rises to the level 
+of "trivial for an attacker to use all the memory you allowed" or "cause OOM".
 
+I only chimed in on this thread to note that this isn't just a theoretical attack concern, however - this is a 
+real-world non-attack-scenario issue that's pretty trivial to hit. Just losing 1Mbps of traffic on a modern residential 
+internet connection is pretty doable, make that flow mostly frags and suddenly your VPN drops out for 30 seconds at a 
+time just because.
 
+I agree with others here that actually solving the DoS issue isn't trivial, but making it less absurdly trivial to have 
+30 second dropouts of your VPN connection would also be a nice change.
+
+Matt
+
+On 4/19/21 05:43, Eric Dumazet wrote:
+> On Sun, Apr 18, 2021 at 4:31 PM Matt Corallo
+> <netdev-list@mattcorallo.com> wrote:
+>>
+>> Should the default, though, be so low? If someone is still using a old modem they can crank up the sysctl, it does seem
+>> like such things are pretty rare these days :). Its rather trivial to, without any kind of attack, hit 1Mbps of lost
+>> fragments in today's networks, at which point all fragments are dropped. After all, I submitted the patch to "scratch my
+>> own itch" :).
+> 
+> Again, even if you increase the values by 1000x, it is trivial for an
+> attacker to use all the memory you allowed.
+> 
+> And allowing a significant portion of memory to be eaten like that
+> might cause OOM on hosts where jobs are consuming all physical memory.
+> 
+> It is a sysctl, I changed things so that one could really reserve/use
+> 16GB of memory if she/he is desperate about frags.
+> 
+>>
+>> Matt
+>>
+>> On 4/18/21 00:39, Willy Tarreau wrote:
+>>> I do agree that we shouldn't keep them that long nowadays, we can't go
+>>> too low without risking to break some slow transmission stacks (SLIP/PPP
+>>> over modems for example).
