@@ -2,157 +2,134 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 67062363E3B
-	for <lists+netdev@lfdr.de>; Mon, 19 Apr 2021 11:07:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 39574363E41
+	for <lists+netdev@lfdr.de>; Mon, 19 Apr 2021 11:08:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238449AbhDSJIA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 19 Apr 2021 05:08:00 -0400
-Received: from mail-eopbgr80072.outbound.protection.outlook.com ([40.107.8.72]:1734
-        "EHLO EUR04-VI1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S232023AbhDSJH4 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 19 Apr 2021 05:07:56 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=cXL0Icjx65983w05GF3KRbauaC4w8RYhNZ0eQNB9CnSJrNNnfA+rc7qgozhUrVXn+kOjgiTGGaMvL2YQHgoPuyFKDzogxlBKi6aYd+bGASudnsI6nZ9kmT/TOjQ5YcDxQNiFmwT297dvGPfn/otc8lRMqwG/unJveqSxkGBGuAOXDB/jnalxuqVS91ISEzb00GNFezMBvJyhRig/A9ItpIGN0KPZEs0Z54slM8Rtd09UFFfSt9jLPjQFXPrN2CT0DgPM0mkWLLP0oDafYCfkGbAU41KTBTBGV1VPqsxJid7ujFxHPkuk+/Jfw66GsoDF5vU95Dv2U0FFdXCpCLU94Q==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=8HUvKHNom/owTJM5x3vFAK78YrrSqtcaoWP8GO86fl8=;
- b=F7uXcQwpHIZqmG8KGXwQzdPXhl+LzObW9wjrB4LRIwt6mi4LOOnahapw8OasPcJZuS+/LoDRYlM0d1tLX2mrD7nt3gc9Qlngy0DBAVLmM29157pTMNs+fk4MDXj6KItNv33obxkYnbMjbmg0NHI0tAEcFCL+BIPPmg0BgBh2sWosTC0J/FDLEKSnpEEvBZra6r6o1Ooq25W+svauKIYCzh9vxP4y7t5FI4dl9a8KQ6FrADyOGOx/Kv6mybyLQjI39pA2+Ngwj4I0SV9eBo49nCMjRxabelYPj0YtLMEf1bD9I7TRsIW2kUOE/mBuvwlLPC0jSHpqJU7m2SvaQjMZTg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=8HUvKHNom/owTJM5x3vFAK78YrrSqtcaoWP8GO86fl8=;
- b=CooFX3rvKZKZoxbrOU0f68oyroxGqdtnxdPQImjZ7WMeTQqhJ2eBZXclHEE8nzW9Y62WKvtOmcjPgp083nNDIcAQSGoGHJt7Ac7vZ4u/vyf3gxbrrHU5jsv95sxkgEqEczGbX01QCHBn6OxdBaSTv66Z9XxxRPwstz91+nVaYJo=
-Received: from AM0PR04MB6754.eurprd04.prod.outlook.com (2603:10a6:208:170::28)
- by AM0PR0402MB3331.eurprd04.prod.outlook.com (2603:10a6:208:1d::13) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4042.16; Mon, 19 Apr
- 2021 09:07:23 +0000
-Received: from AM0PR04MB6754.eurprd04.prod.outlook.com
- ([fe80::f12c:54bd:ccfc:819a]) by AM0PR04MB6754.eurprd04.prod.outlook.com
- ([fe80::f12c:54bd:ccfc:819a%7]) with mapi id 15.20.4042.024; Mon, 19 Apr 2021
- 09:07:23 +0000
-From:   Claudiu Manoil <claudiu.manoil@nxp.com>
-To:     Vladimir Oltean <olteanv@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Po Liu <po.liu@nxp.com>
-CC:     Alexandru Marginean <alexandru.marginean@nxp.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Shawn Guo <shawnguo@kernel.org>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        Russell King - ARM Linux admin <linux@armlinux.org.uk>,
-        Andrew Lunn <andrew@lunn.ch>, Michael Walle <michael@walle.cc>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>
-Subject: RE: [PATCH net-next 5/5] net: enetc: add support for flow control
-Thread-Topic: [PATCH net-next 5/5] net: enetc: add support for flow control
-Thread-Index: AQHXMxpZEYIxiwunrU26djqgH5Ni/Kq7kFUg
-Date:   Mon, 19 Apr 2021 09:07:23 +0000
-Message-ID: <AM0PR04MB6754B48B5F0C5B166783680696499@AM0PR04MB6754.eurprd04.prod.outlook.com>
-References: <20210416234225.3715819-1-olteanv@gmail.com>
- <20210416234225.3715819-6-olteanv@gmail.com>
-In-Reply-To: <20210416234225.3715819-6-olteanv@gmail.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: gmail.com; dkim=none (message not signed)
- header.d=none;gmail.com; dmarc=none action=none header.from=nxp.com;
-x-originating-ip: [188.25.217.66]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 79b64bdc-6167-42e0-d9ed-08d903128b91
-x-ms-traffictypediagnostic: AM0PR0402MB3331:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <AM0PR0402MB33318D94110080498B8FBF9196499@AM0PR0402MB3331.eurprd04.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:7219;
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: Eo7jfkSpBgxFFHfGWX+qaoICZRS6hq0FgomraVVqIemRH5ZDUwhKHLqmSbC/Uey94J6RGP+VOyXljhnuJK5TCLVYVNfpESbsbNh/ioHG9i3Bx2p1Y0VsGKXlak73DTJf5vvyEdfmDu7HZswzuEjEdhmUtirys7C3iPsBo6LGE2mTVuET5iDEpac8spzedu7IaziEn6XOrmDAhHAZkEJKVyVp1zJ0vvD3ehhGvMnMFeSKKzXlZ6Llcvc/RHERYZ/p/3Q7H6GZqgepXtScxB9SInm5Wgs1E3eO/w+Ur0Bsj9e1Ws15q5xcVd3MMZMqol33OpdWpVzdeeCeaUqGFIwSKx7sKLV+Uf0ZV60AEKP7qz8lu6jsrC/N7AC4B2LfdV3bQKMcQ2YqwV34p6w2f6KEgPHf/vaM8Gjewq0O936OWRAlyHn5fDEKsgpBQTiETCq4CNXIDm2c93iTXrPX7b8Kg4a+XMbAF4RNoHlkcWpuaOCGiaYeUPTnZ0MaUluZdp1dtIKd5DE3POrZcbjydilanwVtWCQegNfOQd65kazhR8N3O7upHdW2nPllSwfKM6X+ZlSE8dDOsiga+lhYv4ji3D5egHcl8Z3TBcCaBKU6jFY=
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM0PR04MB6754.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(136003)(39860400002)(376002)(346002)(366004)(396003)(9686003)(186003)(8676002)(7416002)(86362001)(38100700002)(66946007)(55016002)(52536014)(44832011)(2906002)(478600001)(66476007)(122000001)(7696005)(316002)(8936002)(6506007)(83380400001)(4326008)(71200400001)(26005)(76116006)(64756008)(66556008)(110136005)(66446008)(33656002)(5660300002)(6636002)(54906003);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata: =?us-ascii?Q?/0QLZsoN5bKxcWQkhAX50DOxuh5HnRxfL4NYi1O/RkjbTOFH3xkqJ02adYeV?=
- =?us-ascii?Q?+NA1PD9URAbsrDIrdGTd33HT+MdA4U4BHDN3WmSuF5qIHyMSUsRogHrnwLTT?=
- =?us-ascii?Q?ex0irY/arkQBVpWHZ188okl8kDS2Vr7diK8d+95XoC92P29kgum5vhTDhZ8m?=
- =?us-ascii?Q?pUcU6IGwF/X7PqGde0ciEx9qVc+vaPjVjHyYr9YsUWyJP4bCoeOPNi0rM2CS?=
- =?us-ascii?Q?NEwvAV6Q5myPEI9YWKJ7PWLeQt/0PZGXhpBMEjMAeEg9XL6EPDKSfJa3eVgs?=
- =?us-ascii?Q?qEgiJ+Zj+EJpWxSWKJhmZ73tupLc6KEFGJyWOnjhBS3nMAHxuKoFThptznks?=
- =?us-ascii?Q?w1oNtbTPC18WCCFVwSwSXwLphGue2Zb1CGA8f3bpPEzb9EdqgpLx5aGs66Oz?=
- =?us-ascii?Q?z7SsXKTiOdPymgtybaANlCvOqbj4sx/3vAsnfOx6rqYEmX3XD76XXqdJhCiL?=
- =?us-ascii?Q?4dG0YWonFVcMp8/ST6Xjmjw0it0TcX7iV3ZVJaPuX7H+BEnaZzLr2MjcbUvJ?=
- =?us-ascii?Q?yl+iTOGzq8++Conju8g/2kkpK73vu0t/VhlUZaQYWJw2IIxpRqlBd5m0qzeL?=
- =?us-ascii?Q?xAI/xX7AscOSlBVDOD/nqevy5gTGJW8XZlUajJHK7YBBC+YtRDHEyfIBYoYc?=
- =?us-ascii?Q?EmEiBU6AGRR72Asit76rRdzxk9wMBwLZaFXYxfNhLKXx86hu/d0FmeutaZRf?=
- =?us-ascii?Q?XUlfs9Q6slgC2LaUCk2xJHZQi3Doawa51IZkH7bWt4Qn9CFWA14wCTyJ64Lr?=
- =?us-ascii?Q?2bCDs0vmpxCKMyhoebzLLb8bm9+uHzbHo9nNmTxKy/OGHVCTOhintD7HPwXf?=
- =?us-ascii?Q?ikNHfb0kG63r9Lnsr3CfuyIJ3CVV9GTsdWMK3avDL6huOCVFTBIyiF+bnBze?=
- =?us-ascii?Q?UYlR17AY89gNoahtc2qEjNlbgOn8uQbQy72Eg8rdCfBPju0epM58d7VnhAg4?=
- =?us-ascii?Q?ra+l6ABUvW7C9+uEIzJyIlu/5GzHrl6GwUwW9SF7gCztuISdKO1j70YpzKXd?=
- =?us-ascii?Q?sZ/PjV7z3h5rVSbW0TCgt1TRmBlXA4ikxm6Ir+RDSjE4HdacTarNVmOaeWyI?=
- =?us-ascii?Q?RM6mXLCXb0oLQfvp3ev9IiO7Ff2Nx7Xa9VPSP2JVnFbMsIxOiBr9W66y9/Hc?=
- =?us-ascii?Q?15HANNx/89Nk00Rpg7QZV7/XqHRGyXHWtXoZ4RSAnr1iF+KZS4f/cKfi8h9Z?=
- =?us-ascii?Q?5vVyD7OLfgl06o94jsZcvLCJ6HgdvwrShfn/jSoI5GaeSLgofDOzBMi2ynWx?=
- =?us-ascii?Q?Z0QLwAeyeNIdd9nT19pJTSoEksPCiepWnBn4hTdXqRiGGx4Udggsf9crjorM?=
- =?us-ascii?Q?VJ6NtXZ+IrAqi0Yd6RyQEK0s?=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+        id S238514AbhDSJIj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 19 Apr 2021 05:08:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59484 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232023AbhDSJIi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 19 Apr 2021 05:08:38 -0400
+Received: from mail-ej1-x634.google.com (mail-ej1-x634.google.com [IPv6:2a00:1450:4864:20::634])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 429D8C06174A;
+        Mon, 19 Apr 2021 02:08:09 -0700 (PDT)
+Received: by mail-ej1-x634.google.com with SMTP id n2so51702635ejy.7;
+        Mon, 19 Apr 2021 02:08:09 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:subject:message-id:mime-version:content-disposition;
+        bh=E2UStkxkycqVWBM3ljmhrXF4ipVQOVwrVP4TqeB36Ro=;
+        b=XQsx3szzAGh9MuZ7Tv/cQEIGLCUAzCkYCqTrlEn8hE2XRUqAQfe5sZqXNrYbXLoTPV
+         ZgodWx/1IAX64P+87vUaT8jBFjY307P5yyVrjruPZZKNaANjVK4sI+TQAbIYhd3+RM+D
+         /Y8rEnJ1HiZxtp+w9hezbMwiup6UJli0oYzGEJi581Phg4q7pst9OGp/VoEJNT3Etc1C
+         +8QNW57GUIRg2A8NMPhVMdAevblgCn7SlDMBeCPedohl3fUPkJULkI2LL/WF667aUggl
+         4ViW26TFV2LEYId/f9PER9uBKyVzSfHd67z1+nKhsrQgu3Z7qwz1LySH3abyC7sIIgNv
+         Lo8Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:subject:message-id:mime-version
+         :content-disposition;
+        bh=E2UStkxkycqVWBM3ljmhrXF4ipVQOVwrVP4TqeB36Ro=;
+        b=Kx7Y3QvvLULaLGJjW4ljMnbKHIxKIDwKX1L+eXvMMM/DuQoa+/itopwsfqALJcuVxb
+         n1P5UgRWtNWMd2xdNa+2WfnHPgHf/GVAlcXqRrNzwb/uvvKP3C+5gSac287HBAObVHN5
+         ysVUvuvJAJS7CyxLFg/E6cv/H2atJ7Jx+v3GuNp15LJYr/r97UlFexagm6baA6M9Zet/
+         u4NM/29Px8OlWCzlN0UK0J72XlcJVX7OGod/altYid2OhQgAppZyiZZoZsDjRuqkVgEF
+         3O1eUVePwFxkzFpEnyqjtyPeClr3mPXqkGT8td1In6RRnHVmfHZZACo2DiAe4s46+x6q
+         v0Bw==
+X-Gm-Message-State: AOAM531fKJZzxweuVRjdy4SJLV4czQ1Ta6oM1OdMHVr9iwnwcvB2BLOs
+        ntDKbff/f8Xf5rHLFy3Wb4kskDMxVTjJhg==
+X-Google-Smtp-Source: ABdhPJzTRCGhZ/dWQFHMWX+wjx7g4wa0hXeIn8is11kO4hWt0yHA+8CovMFkw7KM7IN4R0tVzKmX8w==
+X-Received: by 2002:a17:906:5203:: with SMTP id g3mr20446249ejm.95.1618823287864;
+        Mon, 19 Apr 2021 02:08:07 -0700 (PDT)
+Received: from limone.gonsolo.de (ip5f5ac7f5.dynamic.kabel-deutschland.de. [95.90.199.245])
+        by smtp.gmail.com with ESMTPSA id z17sm12397983edx.36.2021.04.19.02.08.02
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 19 Apr 2021 02:08:07 -0700 (PDT)
+Date:   Mon, 19 Apr 2021 11:08:00 +0200
+From:   Gon Solo <gonsolo@gmail.com>
+To:     luciano.coelho@intel.com, kvalo@codeaurora.org,
+        davem@davemloft.net, kuba@kernel.org,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: iwlwifi: Microcode SW error
+Message-ID: <20210419090800.GA52493@limone.gonsolo.de>
 MIME-Version: 1.0
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: AM0PR04MB6754.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 79b64bdc-6167-42e0-d9ed-08d903128b91
-X-MS-Exchange-CrossTenant-originalarrivaltime: 19 Apr 2021 09:07:23.4132
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: QQxb9t8NIeYPPzrrw92L6ggnn1/+wF0r5787D4vOoHqY6cy0D5aiNtQOC/baEre/vTBtCvhJfPzp10veYeddhw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM0PR0402MB3331
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hi all!
 
+My internet was very slow and I saw the following in dmesg:
 
->-----Original Message-----
->From: Vladimir Oltean <olteanv@gmail.com>
->Sent: Saturday, April 17, 2021 2:42 AM
->To: Jakub Kicinski <kuba@kernel.org>; David S. Miller
-><davem@davemloft.net>; netdev@vger.kernel.org; Po Liu
-><po.liu@nxp.com>
->Cc: Claudiu Manoil <claudiu.manoil@nxp.com>; Alexandru Marginean
-><alexandru.marginean@nxp.com>; Rob Herring <robh+dt@kernel.org>;
->Shawn Guo <shawnguo@kernel.org>; linux-arm-kernel@lists.infradead.org;
->devicetree@vger.kernel.org; Russell King - ARM Linux admin
-><linux@armlinux.org.uk>; Andrew Lunn <andrew@lunn.ch>; Michael Walle
-><michael@walle.cc>; Vladimir Oltean <vladimir.oltean@nxp.com>
->Subject: [PATCH net-next 5/5] net: enetc: add support for flow control
->
->From: Vladimir Oltean <vladimir.oltean@nxp.com>
->
->In the ENETC receive path, a frame received by the MAC is first stored
->in a 256KB 'FIFO' memory, then transferred to DRAM when enqueuing it to
->the RX ring. The FIFO is a shared resource for all ENETC ports, but
->every port keeps track of its own memory utilization, on RX and on TX.
->
->There is a setting for RX rings through which they can either operate in
->'lossy' mode (where the lack of a free buffer causes an immediate
->discard of the frame) or in 'lossless' mode (where the lack of a free
->buffer in the ring makes the frame stay longer in the FIFO).
->
->In turn, when the memory utilization of the FIFO exceeds a certain
->margin, the MAC can be configured to emit PAUSE frames.
->
->There is enough FIFO memory to buffer up to 3 MTU-sized frames per RX
->port while not jeopardizing the other use cases (jumbo frames), and
->also not consume bytes from the port TX allocations. Also, 3 MTU-sized
->frames worth of memory is enough to ensure zero loss for 64 byte packets
->at 1G line rate.
->
->Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+[Apr19 10:50] iwlwifi 0000:02:00.0: Queue 10 is active on fifo 1 and stuck for 10000 ms. SW [40, 93] HW [40, 93] FH TRB=0x0c010a037
+[  +0,001244] iwlwifi 0000:02:00.0: Microcode SW error detected.  Restarting 0x2000000.
 
-Reviewed-by: Claudiu Manoil <claudiu.manoil@nxp.com>
+The rest of the message is at the end of this message.
+The kernel version is "Linux Limone 5.12.0-051200rc7-lowlatency" from https://kernel.ubuntu.com/~kernel-ppa/mainline.
+The relevant output of lspci is:
+02:00.0 Network controller: Intel Corporation Wireless 7260 (rev 73)
+
+I would be glad to provide additional details if somebody is interested
+to fix this bug.
+
+Regards,
+Andreas
+
+[[Apr19 10:50] iwlwifi 0000:02:00.0: Queue 10 is active on fifo 1 and stuck for 10000 ms. SW [40, 93] HW [40, 93] FH TRB=0x0c010a037
+[  +0,001244] iwlwifi 0000:02:00.0: Microcode SW error detected.  Restarting 0x2000000.
+[  +0,000160] iwlwifi 0000:02:00.0: Start IWL Error Log Dump:
+[  +0,000004] iwlwifi 0000:02:00.0: Status: 0x00000040, count: 6
+[  +0,000005] iwlwifi 0000:02:00.0: Loaded firmware version: 17.3216344376.0 7260-17.ucode
+[  +0,000005] iwlwifi 0000:02:00.0: 0x00000084 | NMI_INTERRUPT_UNKNOWN       
+[  +0,000005] iwlwifi 0000:02:00.0: 0x000002B0 | trm_hw_status0
+[  +0,000003] iwlwifi 0000:02:00.0: 0x00000000 | trm_hw_status1
+[  +0,000004] iwlwifi 0000:02:00.0: 0x00000B30 | branchlink2
+[  +0,000004] iwlwifi 0000:02:00.0: 0x000164C0 | interruptlink1
+[  +0,000003] iwlwifi 0000:02:00.0: 0x000164C0 | interruptlink2
+[  +0,000004] iwlwifi 0000:02:00.0: 0x00000000 | data1
+[  +0,000003] iwlwifi 0000:02:00.0: 0x00000080 | data2
+[  +0,000003] iwlwifi 0000:02:00.0: 0x07030000 | data3
+[  +0,000004] iwlwifi 0000:02:00.0: 0x5440EBF3 | beacon time
+[  +0,000004] iwlwifi 0000:02:00.0: 0xF0BCB49D | tsf low
+[  +0,000003] iwlwifi 0000:02:00.0: 0x00000097 | tsf hi
+[  +0,000003] iwlwifi 0000:02:00.0: 0x00000000 | time gp1
+[  +0,000004] iwlwifi 0000:02:00.0: 0x0845CB55 | time gp2
+[  +0,000003] iwlwifi 0000:02:00.0: 0x00000000 | uCode revision type
+[  +0,000004] iwlwifi 0000:02:00.0: 0x00000011 | uCode version major
+[  +0,000003] iwlwifi 0000:02:00.0: 0xBFB58538 | uCode version minor
+[  +0,000004] iwlwifi 0000:02:00.0: 0x00000144 | hw version
+[  +0,000003] iwlwifi 0000:02:00.0: 0x40489204 | board version
+[  +0,000003] iwlwifi 0000:02:00.0: 0x0000001C | hcmd
+[  +0,000004] iwlwifi 0000:02:00.0: 0x00022002 | isr0
+[  +0,000003] iwlwifi 0000:02:00.0: 0x00000000 | isr1
+[  +0,000003] iwlwifi 0000:02:00.0: 0x0000000A | isr2
+[  +0,000003] iwlwifi 0000:02:00.0: 0x0041D4C0 | isr3
+[  +0,000004] iwlwifi 0000:02:00.0: 0x00000000 | isr4
+[  +0,000003] iwlwifi 0000:02:00.0: 0x00000110 | last cmd Id
+[  +0,000003] iwlwifi 0000:02:00.0: 0x00000000 | wait_event
+[  +0,000004] iwlwifi 0000:02:00.0: 0x00000080 | l2p_control
+[  +0,000003] iwlwifi 0000:02:00.0: 0x00010020 | l2p_duration
+[  +0,000004] iwlwifi 0000:02:00.0: 0x0000003F | l2p_mhvalid
+[  +0,000003] iwlwifi 0000:02:00.0: 0x00000080 | l2p_addr_match
+[  +0,000003] iwlwifi 0000:02:00.0: 0x00000005 | lmpm_pmg_sel
+[  +0,000003] iwlwifi 0000:02:00.0: 0x15041745 | timestamp
+[  +0,000004] iwlwifi 0000:02:00.0: 0x00348098 | flow_handler
+[  +0,000066] iwlwifi 0000:02:00.0: Fseq Registers:
+[  +0,000057] iwlwifi 0000:02:00.0: 0x00000000 | FSEQ_ERROR_CODE
+[  +0,000057] iwlwifi 0000:02:00.0: 0x00000000 | FSEQ_TOP_INIT_VERSION
+[  +0,000056] iwlwifi 0000:02:00.0: 0x00000000 | FSEQ_CNVIO_INIT_VERSION
+[  +0,000056] iwlwifi 0000:02:00.0: 0x00000000 | FSEQ_OTP_VERSION
+[  +0,000071] iwlwifi 0000:02:00.0: 0x00000000 | FSEQ_TOP_CONTENT_VERSION
+[  +0,000069] iwlwifi 0000:02:00.0: 0x00000000 | FSEQ_ALIVE_TOKEN
+[  +0,000074] iwlwifi 0000:02:00.0: 0x00000000 | FSEQ_CNVI_ID
+[  +0,000074] iwlwifi 0000:02:00.0: 0x00000000 | FSEQ_CNVR_ID
+[  +0,000061] iwlwifi 0000:02:00.0: 0x00000000 | CNVI_AUX_MISC_CHIP
+[  +0,000061] iwlwifi 0000:02:00.0: 0x00000000 | CNVR_AUX_MISC_CHIP
+[  +0,000059] iwlwifi 0000:02:00.0: 0x00000000 | CNVR_SCU_SD_REGS_SD_REG_DIG_DCDC_VTRIM
+[  +0,000062] iwlwifi 0000:02:00.0: 0x00000000 | CNVR_SCU_SD_REGS_SD_REG_ACTIVE_VDIG_MIRROR
+[  +0,000073] iwlwifi 0000:02:00.0: Collecting data: trigger 2 fired.
+[  +0,000008] ieee80211 phy0: Hardware restart was requested
