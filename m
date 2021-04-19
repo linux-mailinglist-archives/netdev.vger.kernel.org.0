@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5022D364762
-	for <lists+netdev@lfdr.de>; Mon, 19 Apr 2021 17:47:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9D009364760
+	for <lists+netdev@lfdr.de>; Mon, 19 Apr 2021 17:47:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241650AbhDSPrl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 19 Apr 2021 11:47:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35420 "EHLO
+        id S240008AbhDSPrj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 19 Apr 2021 11:47:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35422 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241483AbhDSPri (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 19 Apr 2021 11:47:38 -0400
-Received: from mail-pj1-x1030.google.com (mail-pj1-x1030.google.com [IPv6:2607:f8b0:4864:20::1030])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 155DAC06174A;
+        with ESMTP id S241330AbhDSPrh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 19 Apr 2021 11:47:37 -0400
+Received: from mail-pg1-x52c.google.com (mail-pg1-x52c.google.com [IPv6:2607:f8b0:4864:20::52c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C5A6EC061761;
         Mon, 19 Apr 2021 08:47:07 -0700 (PDT)
-Received: by mail-pj1-x1030.google.com with SMTP id nk8so5025006pjb.3;
+Received: by mail-pg1-x52c.google.com with SMTP id p12so24533480pgj.10;
         Mon, 19 Apr 2021 08:47:07 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=d6IeN222L2AvMC3BWodguJL4uvfgEGERLTNiOfhrG14=;
-        b=d+KMjGdwLqY1RKsIEwvO2O/+nJyhETXl0eZQN9OgrfAQFOdo0cPkMwuPXUvA849dKX
-         Z0OA/iV0oQNKVvgQASsytNZ+0D/qE25JJIWkIfJ7kVlTwQHmjbP3jXKCfm3fDShGUuzH
-         BwMbic2WtsJxI/z4kZTSglL1GG9kr7BRGT1EajjilM5bSWuFXYYGMZmlUPP/vZlo/cQa
-         LbiBcQ/44cAnK82wqwyA8jH54x8x4Sk2g/n3vIUevFzHqrJN7yWkX1bCPOfG+Nsn3fM2
-         HSEiRieW7yA7bsKjTbnXiMySGxv8aiWYuhmg6xuTDNhQ3QoIOEVkQfWoDug3V6YnIGzO
-         YVvA==
+        bh=5bzjff+su6HXIaTpyjBroSwlupbpwpZmI0kJmdwR1sA=;
+        b=B9MXwRU5X1n4ceTorijsBBZblGJ8kcjMP43LSuW2efFbARNz7+Zvc5/SDoJ5hYkUKk
+         aruI5gIM/i/+tKcnmSNUbHsG2g78SBSuBs6lKM21q/r0eHxTL9ZjaGzWVDfiT5h+ipAF
+         QJnDmdyQ6htpSA3O8f0eSD7iYufopn+KFNDIg2gvLQPDh4TMQP7rJUSaLJO5JoQFloEm
+         Q0fh76kPDqV6Ad31pVKMMI5PpqI8e4JnyjcWPS7dBdJJD+b2GaohejF+/HJqlPS+M2wA
+         7aozd+lOFtMVviIWSSiPGlxXG/qsD6rKkGyz77O5HOk03CFUhcxKjmspZZpfa0B3VcbX
+         8Wbg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=d6IeN222L2AvMC3BWodguJL4uvfgEGERLTNiOfhrG14=;
-        b=LoararCX2bApbvYwocq6AL6m3TgHqpjxRb1Qve56YT3X2BsS1XDg/mJN/9h7pQkzj5
-         s3pWuqoefAKBKS1Mka/p/E5ZjFp9hyJZWd5KTpezXVOlkCSTJsdsI7QVtxL+8YWiilzA
-         IP6CFtWm8CVcetxx6OF5zB4L3feql9K5fFG0VpcMsh8LGpfxtqeXpHU5j73i3FMKAGC/
-         fgEmYyCMN7ucuJfZyZAj/wPOcLZAYQ+z4OHnekQzOBt4aWhvF50JEZhqBO//LCBSXxe3
-         VUoeOhs+geuHcAJM/vD24di4vAfr1en5rxKmuAgf0hVAOdglYDzZA+X7UxQH4V1Z7wJ4
-         WBNw==
-X-Gm-Message-State: AOAM532RITgLd0MDkBqWr8BrXjanrGUCnzLTXaoPWSIP8nxk7HnJ0JiK
-        I6ySvsa+iRzIVWl+lmnWabo=
-X-Google-Smtp-Source: ABdhPJyQOLYsHUKaECSVkjdiOan+lnRWKTgrZi8x0QQ9DX5p0KE3pkRZKrm4yz1se7ftVYlH6bGPag==
-X-Received: by 2002:a17:90b:4504:: with SMTP id iu4mr25401047pjb.76.1618847226695;
-        Mon, 19 Apr 2021 08:47:06 -0700 (PDT)
+        bh=5bzjff+su6HXIaTpyjBroSwlupbpwpZmI0kJmdwR1sA=;
+        b=CDRUpn0+im4a/QWb7T4A3FMAtn/R8dRLz6iOWN2Amf9X2S6y0z/fdPaii1fMJIj8Jb
+         YEMaDDM/GwRiy2XjUpQePfjDDfhRbJZbF6E14nLEQj3wO+pULXSWs43HZkI94zHpqGwS
+         OTaFTlVejN1sU4EkS/IfxU4ctzeBZOIgVGZKy26WL2n6suVkxRJzWIScQ1PlH71v3Irb
+         MSHN4ck++no2/rSwHd2JDfbuop9lAiewn1HL9WKRR9ErGvaX6J/XACS2ZbPG4rw6Sb6b
+         t6bFthLLtcT5cyOQO3x4/k0vrHgQIlJrOj8QTNLlmde0Bjh+34j+GtMPiOs7kgBAEpbd
+         0riw==
+X-Gm-Message-State: AOAM5306M92DghUpN0uSL1NgO2Mgzb8mJRsIJ7eWWRpCAB1ckZA5JZ6V
+        xMq8q/nFbcnYdZHpLm3b2mI=
+X-Google-Smtp-Source: ABdhPJy9R/pUClK4i2RW8B6XQkBUuBDnjzRtHvwyP++1eSHFoDzj6/4ku6ALOfkrnznbdlMghY4OKQ==
+X-Received: by 2002:a63:e405:: with SMTP id a5mr8785503pgi.89.1618847227364;
+        Mon, 19 Apr 2021 08:47:07 -0700 (PDT)
 Received: from z640-arch.lan ([2602:61:7344:f100::678])
         by smtp.gmail.com with ESMTPSA id u1sm15314139pjj.19.2021.04.19.08.47.06
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 19 Apr 2021 08:47:06 -0700 (PDT)
+        Mon, 19 Apr 2021 08:47:07 -0700 (PDT)
 From:   Ilya Lipnitskiy <ilya.lipnitskiy@gmail.com>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
@@ -59,57 +59,60 @@ To:     "David S. Miller" <davem@davemloft.net>,
         devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
         linux-arm-kernel@lists.infradead.org,
         linux-mediatek@lists.infradead.org
-Cc:     Ilya Lipnitskiy <ilya.lipnitskiy@gmail.com>
-Subject: [PATCH net-next v2 1/2] dt-bindings: net: mediatek: add optional GMAC labels
-Date:   Mon, 19 Apr 2021 08:46:58 -0700
-Message-Id: <20210419154659.44096-2-ilya.lipnitskiy@gmail.com>
+Cc:     Ilya Lipnitskiy <ilya.lipnitskiy@gmail.com>,
+        =?UTF-8?q?Ren=C3=A9=20van=20Dorst?= <opensource@vdorst.com>
+Subject: [PATCH net-next v2 2/2] net: ethernet: mediatek: support custom GMAC label
+Date:   Mon, 19 Apr 2021 08:46:59 -0700
+Message-Id: <20210419154659.44096-3-ilya.lipnitskiy@gmail.com>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20210419154659.44096-1-ilya.lipnitskiy@gmail.com>
 References: <20210419154659.44096-1-ilya.lipnitskiy@gmail.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Document the mediatek ethernet driver change that adds support for
-custom labels and provide an example.
+The MAC device name can now be set within DTS file instead of always
+being "ethX". This is helpful for DSA to clearly label the DSA master
+device and distinguish it from DSA slave ports.
 
+For example, some devices, such as the Ubiquiti EdgeRouter X, may have
+ports labeled ethX. Labeling the master GMAC with a different prefix
+than DSA ports helps with clarity.
+
+Suggested-by: René van Dorst <opensource@vdorst.com>
 Signed-off-by: Ilya Lipnitskiy <ilya.lipnitskiy@gmail.com>
 ---
- Documentation/devicetree/bindings/net/mediatek-net.txt | 6 ++++++
- 1 file changed, 6 insertions(+)
+ drivers/net/ethernet/mediatek/mtk_eth_soc.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/net/mediatek-net.txt b/Documentation/devicetree/bindings/net/mediatek-net.txt
-index 72d03e07cf7c..500bf9351010 100644
---- a/Documentation/devicetree/bindings/net/mediatek-net.txt
-+++ b/Documentation/devicetree/bindings/net/mediatek-net.txt
-@@ -51,6 +51,10 @@ Required properties:
- 	is equal to 0 and the MAC uses fixed-link to connect
- 	with internal switch such as MT7530.
+diff --git a/drivers/net/ethernet/mediatek/mtk_eth_soc.c b/drivers/net/ethernet/mediatek/mtk_eth_soc.c
+index 6b00c12c6c43..df3cda63a8c5 100644
+--- a/drivers/net/ethernet/mediatek/mtk_eth_soc.c
++++ b/drivers/net/ethernet/mediatek/mtk_eth_soc.c
+@@ -2845,6 +2845,7 @@ static const struct net_device_ops mtk_netdev_ops = {
  
-+Optional properties:
-+- label: overrides the default netdevice name. Useful when a custom name for the
-+	DSA master interface is desired.
-+
- Example:
+ static int mtk_add_mac(struct mtk_eth *eth, struct device_node *np)
+ {
++	const char *label = of_get_property(np, "label", NULL);
+ 	const __be32 *_id = of_get_property(np, "reg", NULL);
+ 	phy_interface_t phy_mode;
+ 	struct phylink *phylink;
+@@ -2867,9 +2868,10 @@ static int mtk_add_mac(struct mtk_eth *eth, struct device_node *np)
+ 		return -EINVAL;
+ 	}
  
- eth: ethernet@1b100000 {
-@@ -74,12 +78,14 @@ eth: ethernet@1b100000 {
- 
- 	gmac1: mac@0 {
- 		compatible = "mediatek,eth-mac";
-+		label = "gmac1";
- 		reg = <0>;
- 		phy-handle = <&phy0>;
- 	};
- 
- 	gmac2: mac@1 {
- 		compatible = "mediatek,eth-mac";
-+		label = "gmac2";
- 		reg = <1>;
- 		phy-handle = <&phy1>;
- 	};
+-	eth->netdev[id] = alloc_etherdev(sizeof(*mac));
++	eth->netdev[id] = alloc_netdev(sizeof(*mac), label ? label : "eth%d",
++				       NET_NAME_UNKNOWN, ether_setup);
+ 	if (!eth->netdev[id]) {
+-		dev_err(eth->dev, "alloc_etherdev failed\n");
++		dev_err(eth->dev, "alloc_netdev failed\n");
+ 		return -ENOMEM;
+ 	}
+ 	mac = netdev_priv(eth->netdev[id]);
 -- 
 2.31.1
 
