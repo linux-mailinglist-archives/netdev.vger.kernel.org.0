@@ -2,126 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 08583364214
-	for <lists+netdev@lfdr.de>; Mon, 19 Apr 2021 14:53:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D762636422F
+	for <lists+netdev@lfdr.de>; Mon, 19 Apr 2021 15:01:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239248AbhDSMxo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 19 Apr 2021 08:53:44 -0400
-Received: from mail2.protonmail.ch ([185.70.40.22]:59144 "EHLO
-        mail2.protonmail.ch" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239095AbhDSMxm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 19 Apr 2021 08:53:42 -0400
-Date:   Mon, 19 Apr 2021 12:53:06 +0000
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=pm.me; s=protonmail;
-        t=1618836790; bh=dPP56wqBhSWGV3YL8whhYttyE2wvgRvYvvsmV73KBL8=;
-        h=Date:To:From:Cc:Reply-To:Subject:From;
-        b=VQ66dxJg3jgoswOeS3xpbnyhVPlSx8ucuj1ksjlNOOEm1PAZ7p54Pl38zGyj0yhSC
-         weNZ1pV5AHdYHe8RGcfslkMoXPH3iTM6wcGayltsEZRL1fSUEzKnI99XR63YTX6J7f
-         KBysTMm8eenjEa+1jAYcNIz9zrJT94N3/b9iDbz/0ZpKspsum/rVG36N0LBBo05+7b
-         wXC9hL4cuuEoMBAAIQpnxOOi1A099a/6ZrPtStRk3uE9yZBXwonGggrrSyORve9uf6
-         3yNaBVTRR0j/ckeysM74vKK3D6FDOjqmgg4R9w7nWx4JgfdulIVamP2yyejE0QxEBO
-         Q+yc4k37PiHAw==
-To:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-From:   Alexander Lobakin <alobakin@pm.me>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Andrii Nakryiko <andriin@fb.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Wei Wang <weiwan@google.com>,
-        Cong Wang <cong.wang@bytedance.com>,
-        Taehee Yoo <ap420073@gmail.com>,
-        =?utf-8?Q?Bj=C3=B6rn_T=C3=B6pel?= <bjorn@kernel.org>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        Alexander Lobakin <alobakin@pm.me>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Reply-To: Alexander Lobakin <alobakin@pm.me>
-Subject: [PATCH v2 net] gro: fix napi_gro_frags() Fast GRO breakage due to IP alignment check
-Message-ID: <20210419125258.5969-1-alobakin@pm.me>
+        id S239303AbhDSNB4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 19 Apr 2021 09:01:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54528 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S238150AbhDSNBt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 19 Apr 2021 09:01:49 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 25E74C061761
+        for <netdev@vger.kernel.org>; Mon, 19 Apr 2021 06:01:17 -0700 (PDT)
+Received: from dude.hi.pengutronix.de ([2001:67c:670:100:1d::7])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ore@pengutronix.de>)
+        id 1lYTWa-0003td-VS; Mon, 19 Apr 2021 15:01:12 +0200
+Received: from ore by dude.hi.pengutronix.de with local (Exim 4.92)
+        (envelope-from <ore@pengutronix.de>)
+        id 1lYTWW-0001le-UJ; Mon, 19 Apr 2021 15:01:08 +0200
+From:   Oleksij Rempel <o.rempel@pengutronix.de>
+To:     Shawn Guo <shawnguo@kernel.org>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Fugang Duan <fugang.duan@nxp.com>
+Cc:     Oleksij Rempel <o.rempel@pengutronix.de>, kernel@pengutronix.de,
+        netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org, linux-imx@nxp.com,
+        Fabio Estevam <festevam@gmail.com>,
+        David Jander <david@protonic.nl>,
+        Russell King <linux@armlinux.org.uk>,
+        Philippe Schenker <philippe.schenker@toradex.com>
+Subject: [PATCH net-next v3 0/6] provide generic net selftest support
+Date:   Mon, 19 Apr 2021 15:01:00 +0200
+Message-Id: <20210419130106.6707-1-o.rempel@pengutronix.de>
+X-Mailer: git-send-email 2.29.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-1.2 required=10.0 tests=ALL_TRUSTED,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF shortcircuit=no
-        autolearn=disabled version=3.4.4
-X-Spam-Checker-Version: SpamAssassin 3.4.4 (2020-01-24) on
-        mailout.protonmail.ch
+Content-Transfer-Encoding: 8bit
+X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::7
+X-SA-Exim-Mail-From: ore@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Commit 38ec4944b593 ("gro: ensure frag0 meets IP header alignment")
-did the right thing, but missed the fact that napi_gro_frags() logics
-calls for skb_gro_reset_offset() *before* pulling Ethernet header
-to the skb linear space.
-That said, the introduced check for frag0 address being aligned to 4
-always fails for it as Ethernet header is obviously 14 bytes long,
-and in case with NET_IP_ALIGN its start is not aligned to 4.
+changes v3:
+- make more granular tests
+- enable loopback for all PHYs by default
+- fix allmodconfig build errors
+- poll for link status update after switching to the loopback mode
 
-Fix this by adding @nhoff argument to skb_gro_reset_offset() which
-tells if an IP header is placed right at the start of frag0 or not.
-This restores Fast GRO for napi_gro_frags() that became very slow
-after the mentioned commit, and preserves the introduced check to
-avoid silent unaligned accesses.
+changes v2:
+- make generic selftests available for all networking devices.
+- make use of net_selftest* on FEC, ag71xx and all DSA switches.
+- add loopback support on more PHYs.
 
-From v1 [0]:
- - inline tiny skb_gro_reset_offset() to let the code be optimized
-   more efficively (esp. for the !NET_IP_ALIGN case) (Eric);
- - pull in Reviewed-by from Eric.
+This patch set provides diagnostic capabilities for some iMX, ag71xx or
+any DSA based devices. For proper functionality, PHY loopback support is
+needed.
+So far there is only initial infrastructure with basic tests. 
 
-[0] https://lore.kernel.org/netdev/20210418114200.5839-1-alobakin@pm.me
+Oleksij Rempel (6):
+  net: phy: execute genphy_loopback() per default on all PHYs
+  net: phy: genphy_loopback: add link speed configuration
+  net: add generic selftest support
+  net: fec: make use of generic NET_SELFTESTS library
+  net: ag71xx: make use of generic NET_SELFTESTS library
+  net: dsa: enable selftest support for all switches by default
 
-Fixes: 38ec4944b593 ("gro: ensure frag0 meets IP header alignment")
-Reviewed-by: Eric Dumazet <edumazet@google.com>
-Signed-off-by: Alexander Lobakin <alobakin@pm.me>
----
- net/core/dev.c | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ drivers/net/ethernet/atheros/Kconfig      |   1 +
+ drivers/net/ethernet/atheros/ag71xx.c     |  20 +-
+ drivers/net/ethernet/freescale/Kconfig    |   1 +
+ drivers/net/ethernet/freescale/fec_main.c |   7 +
+ drivers/net/phy/phy.c                     |   3 +-
+ drivers/net/phy/phy_device.c              |  35 +-
+ include/linux/phy.h                       |   1 +
+ include/net/dsa.h                         |   2 +
+ include/net/selftests.h                   |  12 +
+ net/Kconfig                               |   4 +
+ net/core/Makefile                         |   1 +
+ net/core/selftests.c                      | 400 ++++++++++++++++++++++
+ net/dsa/Kconfig                           |   1 +
+ net/dsa/slave.c                           |  21 ++
+ 14 files changed, 500 insertions(+), 9 deletions(-)
+ create mode 100644 include/net/selftests.h
+ create mode 100644 net/core/selftests.c
 
-diff --git a/net/core/dev.c b/net/core/dev.c
-index 1f79b9aa9a3f..15fe36332fb8 100644
---- a/net/core/dev.c
-+++ b/net/core/dev.c
-@@ -5914,7 +5914,7 @@ static struct list_head *gro_list_prepare(struct napi=
-_struct *napi,
- =09return head;
- }
-
--static void skb_gro_reset_offset(struct sk_buff *skb)
-+static inline void skb_gro_reset_offset(struct sk_buff *skb, u32 nhoff)
- {
- =09const struct skb_shared_info *pinfo =3D skb_shinfo(skb);
- =09const skb_frag_t *frag0 =3D &pinfo->frags[0];
-@@ -5925,7 +5925,7 @@ static void skb_gro_reset_offset(struct sk_buff *skb)
-
- =09if (!skb_headlen(skb) && pinfo->nr_frags &&
- =09    !PageHighMem(skb_frag_page(frag0)) &&
--=09    (!NET_IP_ALIGN || !(skb_frag_off(frag0) & 3))) {
-+=09    (!NET_IP_ALIGN || !((skb_frag_off(frag0) + nhoff) & 3))) {
- =09=09NAPI_GRO_CB(skb)->frag0 =3D skb_frag_address(frag0);
- =09=09NAPI_GRO_CB(skb)->frag0_len =3D min_t(unsigned int,
- =09=09=09=09=09=09    skb_frag_size(frag0),
-@@ -6143,7 +6143,7 @@ gro_result_t napi_gro_receive(struct napi_struct *nap=
-i, struct sk_buff *skb)
- =09skb_mark_napi_id(skb, napi);
- =09trace_napi_gro_receive_entry(skb);
-
--=09skb_gro_reset_offset(skb);
-+=09skb_gro_reset_offset(skb, 0);
-
- =09ret =3D napi_skb_finish(napi, skb, dev_gro_receive(napi, skb));
- =09trace_napi_gro_receive_exit(ret);
-@@ -6232,7 +6232,7 @@ static struct sk_buff *napi_frags_skb(struct napi_str=
-uct *napi)
- =09napi->skb =3D NULL;
-
- =09skb_reset_mac_header(skb);
--=09skb_gro_reset_offset(skb);
-+=09skb_gro_reset_offset(skb, hlen);
-
- =09if (unlikely(skb_gro_header_hard(skb, hlen))) {
- =09=09eth =3D skb_gro_header_slow(skb, hlen, 0);
---
-2.31.1
-
+-- 
+2.29.2
 
