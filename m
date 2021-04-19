@@ -2,70 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 65A64363D1D
-	for <lists+netdev@lfdr.de>; Mon, 19 Apr 2021 10:03:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 10767363D1F
+	for <lists+netdev@lfdr.de>; Mon, 19 Apr 2021 10:06:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238048AbhDSID3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 19 Apr 2021 04:03:29 -0400
-Received: from mail-vs1-f41.google.com ([209.85.217.41]:44909 "EHLO
-        mail-vs1-f41.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229870AbhDSID0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 19 Apr 2021 04:03:26 -0400
-Received: by mail-vs1-f41.google.com with SMTP id t23so788928vso.11;
-        Mon, 19 Apr 2021 01:02:55 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=BRE7kUfgnyAkLcXnn28/l9BglZanciveXxOogGBkKYA=;
-        b=gbQqLesm1el/IA5e0SjWJjQW+nJzz0LSVH2i1Jo4EoU3EKjvEAUJbqrWkBaorJMNbj
-         uM9nYaLzds+a9QjapGruGt8+j0yaBfPN9q3h1lxbYaOSnnFDNOAS7yICZwurBCiorxhr
-         STeqJV9o8CsRudc+klsEcb3Z2nOod5QONLbsvv+v7vncAqOyJ5iCNjddNItsZRQgzPm5
-         zTN9Q1/lTyvgG1qWnOVdzhDFXQ4NFhgH4UV3mLXhMbeLiU4ytCY2N/8Oqr8MOOB9T9uh
-         X1SORJVoS7vEN9Lmg1qijjRWq0YCWUIFK/7ILH/21bz60Ejd900J3Q9rRVJ4iBbxVEAa
-         qUYA==
-X-Gm-Message-State: AOAM533dOpzSwITZRKFoFdsVsXMwJW0khWpz8ug43vRiacslFo6Ychf+
-        9JTt4An9JPbtjwTIzJfOxPNvqO7xCNr99AaD4Lk=
-X-Google-Smtp-Source: ABdhPJy7REj0RnwsC0BmC4LayU/iKxq10ifb4FvZKHMY+ozOYrogO74Rl4V4Kli3EDWHBjKXGqJivciBrwVoQCb4shA=
-X-Received: by 2002:a67:f503:: with SMTP id u3mr12324042vsn.3.1618819375153;
- Mon, 19 Apr 2021 01:02:55 -0700 (PDT)
-MIME-Version: 1.0
-References: <20210417132329.6886-1-aford173@gmail.com>
-In-Reply-To: <20210417132329.6886-1-aford173@gmail.com>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Mon, 19 Apr 2021 10:02:44 +0200
-Message-ID: <CAMuHMdXPj-p++EAkq=nUKqQB4_FM7whi8BbFm+1OG5EPF98hLg@mail.gmail.com>
-Subject: Re: [PATCH] net: ethernet: ravb: Fix release of refclk
-To:     Adam Ford <aford173@gmail.com>
-Cc:     netdev <netdev@vger.kernel.org>,
-        Adam Ford-BE <aford@beaconembedded.com>,
-        Sergei Shtylyov <sergei.shtylyov@gmail.com>,
+        id S238133AbhDSIGo convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Mon, 19 Apr 2021 04:06:44 -0400
+Received: from mail.netfilter.org ([217.70.188.207]:35960 "EHLO
+        mail.netfilter.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229848AbhDSIGn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 19 Apr 2021 04:06:43 -0400
+Received: from us.es (unknown [90.77.255.23])
+        by mail.netfilter.org (Postfix) with ESMTPSA id C36A063E49;
+        Mon, 19 Apr 2021 10:05:42 +0200 (CEST)
+Date:   Mon, 19 Apr 2021 10:06:10 +0200
+From:   Pablo Neira Ayuso <pablo@netfilter.org>
+To:     Valdis =?utf-8?Q?Kl=C4=93tnieks?= <valdis.kletnieks@vt.edu>
+Cc:     Felix Fietkau <nbd@nbd.name>,
         "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
-        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+        Christoph Hellwig <hch@infradead.org>, netdev@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: Re: drivers/net/ethernet/mediatek/mtk_ppe_offload.c - suspicious
+ code?
+Message-ID: <20210419080610.GA24040@salvia>
+References: <526789.1618794132@turing-police>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8BIT
+In-Reply-To: <526789.1618794132@turing-police>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Apr 17, 2021 at 3:23 PM Adam Ford <aford173@gmail.com> wrote:
-> The call to clk_disable_unprepare() can happen before priv is
-> initialized. This means moving clk_disable_unprepare out of
-> out_release into a new label.
->
-> Fixes: 8ef7adc6beb2("net: ethernet: ravb: Enable optional refclk")
-> Signed-off-by: Adam Ford <aford173@gmail.com>
+On Sun, Apr 18, 2021 at 09:02:12PM -0400, Valdis Klētnieks wrote:
+> While doing some code auditing for -Woverride_init, I spotted some questionable code
+> 
+> commit 502e84e2382d92654a2ecbc52cdbdb5a11cdcec7
+> Author: Felix Fietkau <nbd@nbd.name>
+> Date:   Wed Mar 24 02:30:54 2021 +0100
+> 
+>     net: ethernet: mtk_eth_soc: add flow offloading support
+> 
+> In drivers/net/ethernet/mediatek/mtk_ppe_offload.c:
+> 
+> +static const struct rhashtable_params mtk_flow_ht_params = {
+> +       .head_offset = offsetof(struct mtk_flow_entry, node),
+> +       .head_offset = offsetof(struct mtk_flow_entry, cookie),
+> +       .key_len = sizeof(unsigned long),
+> +       .automatic_shrinking = true,
+> +};
+> 
+> What's intended for head_offset here?
 
-Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
+It's a bug, there's a fix here:
 
-Gr{oetje,eeting}s,
-
-                        Geert
-
--- 
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+https://www.spinics.net/lists/netdev/msg736368.html
