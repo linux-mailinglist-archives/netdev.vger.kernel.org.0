@@ -2,74 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4BFF73645B2
-	for <lists+netdev@lfdr.de>; Mon, 19 Apr 2021 16:13:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CB2DF3645B8
+	for <lists+netdev@lfdr.de>; Mon, 19 Apr 2021 16:14:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238604AbhDSONv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 19 Apr 2021 10:13:51 -0400
-Received: from mout.kundenserver.de ([212.227.126.133]:50201 "EHLO
-        mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233383AbhDSONt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 19 Apr 2021 10:13:49 -0400
-Received: from mail-wm1-f50.google.com ([209.85.128.50]) by
- mrelayeu.kundenserver.de (mreue011 [213.165.67.97]) with ESMTPSA (Nemesis) id
- 1MRT6b-1lBCSx1Mvt-00NPDM; Mon, 19 Apr 2021 16:13:18 +0200
-Received: by mail-wm1-f50.google.com with SMTP id n4-20020a05600c4f84b029013151278decso6943455wmq.4;
-        Mon, 19 Apr 2021 07:13:18 -0700 (PDT)
-X-Gm-Message-State: AOAM533PkoFJC64mIl9CfSTKZDMtvWMu8jzFsEkLrth2iWR6p00lQRXH
-        Ejj3tvlmnBcX1O+ctQlRP8aKE6Jc0lNklqU451s=
-X-Google-Smtp-Source: ABdhPJxfWYQpgkQ73Nyeh2Cp48WIV5Does1Qg89OpygaNxV8Vc57wC3uOquK/ybb1mHpmU/fFGzqMBDByBQcWWgbLFg=
-X-Received: by 2002:a05:600c:2282:: with SMTP id 2mr22091204wmf.84.1618841597967;
- Mon, 19 Apr 2021 07:13:17 -0700 (PDT)
-MIME-Version: 1.0
-References: <20210419140152.180361-1-colin.king@canonical.com>
-In-Reply-To: <20210419140152.180361-1-colin.king@canonical.com>
-From:   Arnd Bergmann <arnd@arndb.de>
-Date:   Mon, 19 Apr 2021 16:13:01 +0200
-X-Gmail-Original-Message-ID: <CAK8P3a1X-fNo4PxZi8ZWiRrtdvF0kyB4qYEZYOe81uMgsYy2Qg@mail.gmail.com>
-Message-ID: <CAK8P3a1X-fNo4PxZi8ZWiRrtdvF0kyB4qYEZYOe81uMgsYy2Qg@mail.gmail.com>
-Subject: Re: [PATCH][next] wlcore: Fix buffer overrun by snprintf due to
- incorrect buffer size Content-Type: text/plain; charset="utf-8"
-To:     Colin King <colin.king@canonical.com>
-Cc:     Kalle Valo <kvalo@codeaurora.org>,
+        id S240682AbhDSOOk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 19 Apr 2021 10:14:40 -0400
+Received: from youngberry.canonical.com ([91.189.89.112]:33547 "EHLO
+        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S240246AbhDSOOi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 19 Apr 2021 10:14:38 -0400
+Received: from 1.general.cking.uk.vpn ([10.172.193.212] helo=localhost)
+        by youngberry.canonical.com with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
+        (Exim 4.86_2)
+        (envelope-from <colin.king@canonical.com>)
+        id 1lYUf7-00071L-Kc; Mon, 19 Apr 2021 14:14:05 +0000
+From:   Colin King <colin.king@canonical.com>
+To:     Kalle Valo <kvalo@codeaurora.org>,
         "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        linux-wireless <linux-wireless@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>,
-        kernel-janitors@vger.kernel.org,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-X-Provags-ID: V03:K1:uSD0cnDzOC2VcjN7ZBcWZ2vvNBUpCz841+gCEkLH5jqq+b3iU+Q
- tzQBON82eKbamHzODxWbZ1sNmLchNWZtXqsw4L7gcEvzN9seh5npI4GnqcWTnpru1RG0LSy
- Tqf72g24MJxZoMnKKdQKxTLVdKVe/oynydBsdv5tonKkDNri+hdm/OC6TcL4uUlHdUPr/1J
- 9qetliShfwSKOwzoUgn9A==
-X-Spam-Flag: NO
-X-UI-Out-Filterresults: notjunk:1;V03:K0:6mHPdsKEpps=:n7IMC8R//h+tZA7CzdQmjX
- IpSh7Gk1JxEJZLEbTi/9zeJdzEEbZt3NAJMEAQKZK65aW6zWPc9bs0Ed6BcbMEU9Vdoprx++D
- 94s4NLx5WPHHhvLCtLXWzL49sJtk2LcWHEHedp58P/k9E9Oi6+K73d69qNZnSLMApnYcUtarW
- YxarviejtZP6lnNjurSvm9i5ThigZfduYrG938IlvsDuCx6IT2F81Qz+P0Qvp/iDOI0q8OYis
- gKcw5SQ7N/ilG3ZuGmpuM8MSI5MaL0b39ZPwFX2otBIQooa1zudH7KR9OBGPrOj+eKthZM30T
- unjtTTGmBwZbfX9zjTgOFtyrPClycOkSSkcoVQ9TZktZT/lqyoCzT9FFIB/R1LpD4PO+4MjbC
- h7HRN1uj6QPPn7ksQX96LHlvygEoIx2JD+ZCDcXjO7+HPymxe1CEUZT2Z8hG/M37mGJVVPMQL
- 4eQOcX48DRLIIdxVM+wiQH7UFRJW7fijY6Kzrzolb1GmIJt/OnCp7TNAs8hMTrFV2mr5ztBHv
- 6x2g4fSo9/pIZfIBvss2UXJ+hkJC5UoPS903h+WWaiiHK5dxdPIqWy46ddrjiu5KHlvwYkvo7
- AErL3mqW4kNMCiNU7hVXMkt4m1vK25R+//eDhb1Ijx9xd8DJJAGak/WqKlpPL+R0PbtCxoU7i
- iuTQ=
+        Arnd Bergmann <arnd@arndb.de>, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org
+Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH][next][V2] wlcore: Fix buffer overrun by snprintf due to incorrect buffer size
+Date:   Mon, 19 Apr 2021 15:14:05 +0100
+Message-Id: <20210419141405.180582-1-colin.king@canonical.com>
+X-Mailer: git-send-email 2.30.2
+MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Apr 19, 2021 at 4:01 PM Colin King <colin.king@canonical.com> wrote:
->
-> From: Colin Ian King <colin.king@canonical.com>
->
-> The size of the buffer than can be written to is currently incorrect, it is
-> always the size of the entire buffer even though the snprintf is writing
-> as position pos into the buffer. Fix this by setting the buffer size to be
-> the number of bytes left in the buffer, namely sizeof(buf) - pos.
->
-> Addresses-Coverity: ("Out-of-bounds access")
-> Fixes: 7b0e2c4f6be3 ("wlcore: fix overlapping snprintf arguments in debugfs")
-> Signed-off-by: Colin Ian King <colin.king@canonical.com>
+From: Colin Ian King <colin.king@canonical.com>
 
-Acked-by: Arnd Bergmann <arnd@arndb.de>
+The size of the buffer than can be written to is currently incorrect, it is
+always the size of the entire buffer even though the snprintf is writing
+as position pos into the buffer. Fix this by setting the buffer size to be
+the number of bytes left in the buffer, namely sizeof(buf) - pos.
+
+Addresses-Coverity: ("Out-of-bounds access")
+Fixes: 7b0e2c4f6be3 ("wlcore: fix overlapping snprintf arguments in debugfs")
+Signed-off-by: Colin Ian King <colin.king@canonical.com>
+Reviewed-by: Arnd Bergmann <arnd@arndb.de>
+---
+
+V2: Fix patch subject
+
+---
+ drivers/net/wireless/ti/wlcore/debugfs.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/net/wireless/ti/wlcore/debugfs.h b/drivers/net/wireless/ti/wlcore/debugfs.h
+index 715edfa5f89f..a9e13e6d65c5 100644
+--- a/drivers/net/wireless/ti/wlcore/debugfs.h
++++ b/drivers/net/wireless/ti/wlcore/debugfs.h
+@@ -84,7 +84,7 @@ static ssize_t sub## _ ##name## _read(struct file *file,		\
+ 	wl1271_debugfs_update_stats(wl);				\
+ 									\
+ 	for (i = 0; i < len && pos < sizeof(buf); i++)			\
+-		pos += snprintf(buf + pos, sizeof(buf),			\
++		pos += snprintf(buf + pos, sizeof(buf) - pos,		\
+ 			 "[%d] = %d\n", i, stats->sub.name[i]);		\
+ 									\
+ 	return wl1271_format_buffer(userbuf, count, ppos, "%s", buf);	\
+-- 
+2.30.2
+
