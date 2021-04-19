@@ -2,118 +2,129 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A4E1836461B
-	for <lists+netdev@lfdr.de>; Mon, 19 Apr 2021 16:29:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D1FB636462D
+	for <lists+netdev@lfdr.de>; Mon, 19 Apr 2021 16:33:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239788AbhDSOaP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 19 Apr 2021 10:30:15 -0400
-Received: from mail.kernel.org ([198.145.29.99]:58208 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232302AbhDSOaK (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 19 Apr 2021 10:30:10 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id ABF33611CE;
-        Mon, 19 Apr 2021 14:29:36 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1618842580;
-        bh=KT3dRbNBIAI9N6Pz0JoZwsxDuyyqzklTvg3+j8AbVyM=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=QCK/t8HHzd0wpq/+cEiQoKB3oQ95/1mHnycSgoyp5cLeAbF4itBXB5M7XKTGhFTn1
-         u08B7GZ9BijuDPT0zVOpeiRQRCG/gfSNMmBELP8TfIQOZ76l9vaG5bAKRI0v5UT6d/
-         4m7O44FzVSnRBsUCmEDaCu9F1n6v+CZjY9Aj4W9Z3FeVmG9OAlQSGM8uyf15v2SuLk
-         GkdRp3Em8Kb9nsFV5Ex6Cl8TqDtA3bD1EPDBcuuu5sawgIKcUEDM5hQuUx+7sa3z1K
-         QTgYQLthPVKEPi/tUuZgb7dCNew6OamIYfweL4Gr/yZtA731cteRtWX+sIJRlB+H6r
-         6PbXwNXzYRbxg==
-Date:   Mon, 19 Apr 2021 23:29:34 +0900
-From:   Masami Hiramatsu <mhiramat@kernel.org>
-To:     Steven Rostedt <rostedt@goodmis.org>
-Cc:     Andrii Nakryiko <andrii.nakryiko@gmail.com>,
-        Jiri Olsa <jolsa@redhat.com>, Jiri Olsa <jolsa@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
+        id S240041AbhDSOde (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 19 Apr 2021 10:33:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47292 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232302AbhDSOdd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 19 Apr 2021 10:33:33 -0400
+Received: from mail-lj1-x231.google.com (mail-lj1-x231.google.com [IPv6:2a00:1450:4864:20::231])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A808C06174A;
+        Mon, 19 Apr 2021 07:33:03 -0700 (PDT)
+Received: by mail-lj1-x231.google.com with SMTP id a1so39636232ljp.2;
+        Mon, 19 Apr 2021 07:33:03 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=7tmme4pRYd93LTaqtaN5mHl4x1cZSgoWzQ2PDBJdLng=;
+        b=JR3Wf17T/Ilg5kJ8ARhsGu1audbYrS6bCxmzxtDcShkkYahcf9HJWm7lH++28bzIXj
+         StObiFHebdhHmXQ0KIwLa3mJ9Pvw4xuWh+r231y5bG2VXGwLh6euxZjYPHdKFiTq4/zd
+         LzpiHUqvf83Zbpqz+OtH/2OB062g+FVgfh/k2KYVnIFAnfF90+HoEXZNGgUYTTLauFDS
+         LnJjD0gCSkelxAOd5EmeFiz1+12xZr+Mdi7dCGTQlQiXIDEZA0uhRt+pBs0GjxUSlZHM
+         lLdAVWPUGpxN4rPrpttB6pKwtT2KXGHtYR8rcJZKrWqN2FQANdr+G0hLDNVr+7VnbqHW
+         A47w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=7tmme4pRYd93LTaqtaN5mHl4x1cZSgoWzQ2PDBJdLng=;
+        b=c2fUNabEqLMuOgr06pWa6q3rF6/OTTxX6FmTZNTbKEwZj01V5YBjNBHcsd440uNou1
+         l7/+XvaT7VCv6M0znupoeoZGmYJcWPrOSpg/toHgcpHzu1Hz2cRkOqRbPDgWaXGCTT9g
+         ITEA4QbWDpapXdcfC0okdF4DI2Hok0Qk2rxA3rKxVKepsUK+/oZjFrgWynzS07wsV/t1
+         SnMPWWotb5xHAzECK0ZrSIPoEX5Gbh3xoynSlLcOpFbz4SCE6nkSVOcukWt6soH0P00C
+         E22QNJxFt0KOLGyyO/1ETq8h6JEMk8R7l4+xpY8d8BK93uUX21yPtk0LtOiQ+hc+0Hr+
+         pATA==
+X-Gm-Message-State: AOAM532hQ/p9DNl4wsmtpf48iVWSHbOWmTtzelkPRPuCEmB4g2mOn0rn
+        FZVOxYHvPLkkh5lgLegnG6l0QIzS+rxCCZBg/+o=
+X-Google-Smtp-Source: ABdhPJztWDw4LdolZiG/tiEjxcLEoFBoUW7An7FriKYh+HvW59mBOYueLsP4J32lQjC8xxT5uBdFtuzFxB2SxKg9wkw=
+X-Received: by 2002:a2e:8356:: with SMTP id l22mr1609707ljh.204.1618842782059;
+ Mon, 19 Apr 2021 07:33:02 -0700 (PDT)
+MIME-Version: 1.0
+References: <20210418200249.174835-1-pctammela@mojatatu.com>
+ <CAADnVQLJDsnQ1YO9a_pQ-1aTJ1hNKYJXcSHypfzCare-c4HO1A@mail.gmail.com> <CAKY_9u0Ye9pt7igtxT8UR=Ro7=yNwUz2zQZDKH20NK92_LvgxA@mail.gmail.com>
+In-Reply-To: <CAKY_9u0Ye9pt7igtxT8UR=Ro7=yNwUz2zQZDKH20NK92_LvgxA@mail.gmail.com>
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Date:   Mon, 19 Apr 2021 07:32:50 -0700
+Message-ID: <CAADnVQ+KhDOZGn9jAhfWbOOTTFZB0JL1i046y5XEuMzcuQQ8oA@mail.gmail.com>
+Subject: Re: [PATCH] bpf: fix errno code for unsupported batch ops
+To:     Pedro Tammela <pctammela@gmail.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andriin@fb.com>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Andrii Nakryiko <andrii@kernel.org>,
         Martin KaFai Lau <kafai@fb.com>,
         Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
         John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>, Daniel Xu <dxu@dxuuu.xyz>,
-        Jesper Brouer <jbrouer@redhat.com>,
-        Toke =?UTF-8?B?SMO4?= =?UTF-8?B?aWxhbmQtSsO4cmdlbnNlbg==?= 
-        <toke@redhat.com>, Viktor Malik <vmalik@redhat.com>
-Subject: Re: [PATCHv2 RFC bpf-next 0/7] bpf: Add support for ftrace probe
-Message-Id: <20210419232934.4bce1d424b7cd133d20c8be4@kernel.org>
-In-Reply-To: <20210416124834.05862233@gandalf.local.home>
-References: <20210413121516.1467989-1-jolsa@kernel.org>
-        <CAEf4Bzazst1rBi4=LuP6_FnPXCRYBNFEtDnK3UVBj6Eo6xFNtQ@mail.gmail.com>
-        <YHbd2CmeoaiLJj7X@krava>
-        <CAEf4BzYyVj-Tjy9ZZdAU5nOtJ8_auvVobTT6pMqg8zPb9jj-Ow@mail.gmail.com>
-        <20210415111002.324b6bfa@gandalf.local.home>
-        <CAEf4BzY=yBZH2Aad1hNcqCt51u0+SmNdkD6NfJRVMzF7DsvG+A@mail.gmail.com>
-        <20210415170007.31420132@gandalf.local.home>
-        <20210417000304.fc987dc00d706e7551b29c04@kernel.org>
-        <20210416124834.05862233@gandalf.local.home>
-X-Mailer: Sylpheed 3.7.0 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
-Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+        KP Singh <kpsingh@kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>, LKML <linux-kernel@vger.kernel.org>,
+        Pedro Tammela <pctammela@mojatatu.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 16 Apr 2021 12:48:34 -0400
-Steven Rostedt <rostedt@goodmis.org> wrote:
+On Mon, Apr 19, 2021 at 6:52 AM Pedro Tammela <pctammela@gmail.com> wrote:
+>
+> Em dom., 18 de abr. de 2021 =C3=A0s 19:56, Alexei Starovoitov
+> <alexei.starovoitov@gmail.com> escreveu:
+> >
+> > On Sun, Apr 18, 2021 at 1:03 PM Pedro Tammela <pctammela@gmail.com> wro=
+te:
+> > >
+> > > ENOTSUPP is not a valid userland errno[1], which is annoying for
+> > > userland applications that implement a fallback to iterative, report
+> > > errors via 'strerror()' or both.
+> > >
+> > > The batched ops return this errno whenever an operation
+> > > is not implemented for kernels that implement batched ops.
+> > >
+> > > In older kernels, pre batched ops, it returns EINVAL as the arguments
+> > > are not supported in the syscall.
+> > >
+> > > [1] https://lore.kernel.org/netdev/20200511165319.2251678-1-kuba@kern=
+el.org/
+> > >
+> > > Signed-off-by: Pedro Tammela <pctammela@mojatatu.com>
+> > > ---
+> > >  kernel/bpf/syscall.c | 2 +-
+> > >  1 file changed, 1 insertion(+), 1 deletion(-)
+> > >
+> > > diff --git a/kernel/bpf/syscall.c b/kernel/bpf/syscall.c
+> > > index fd495190115e..88fe19c0aeb1 100644
+> > > --- a/kernel/bpf/syscall.c
+> > > +++ b/kernel/bpf/syscall.c
+> > > @@ -3961,7 +3961,7 @@ static int bpf_task_fd_query(const union bpf_at=
+tr *attr,
+> > >  #define BPF_DO_BATCH(fn)                       \
+> > >         do {                                    \
+> > >                 if (!fn) {                      \
+> > > -                       err =3D -ENOTSUPP;        \
+> > > +                       err =3D -EOPNOTSUPP;      \
+> >
+> > $ git grep EOPNOTSUPP kernel/bpf/|wc -l
+> > 11
+> > $ git grep ENOTSUPP kernel/bpf/|wc -l
+> > 51
+> >
+> > For new code EOPNOTSUPP is better, but I don't think changing all 51 ca=
+se
+> > is a good idea. Something might depend on it already.
+>
+> OK, makes sense.
+>
+> Perhaps, handle this errno in 'libbpf_strerror()'?
 
-> On Sat, 17 Apr 2021 00:03:04 +0900
-> Masami Hiramatsu <mhiramat@kernel.org> wrote:
-> 
-> > > Anyway, IIRC, Masami wasn't sure that the full regs was ever needed for the
-> > > return (who cares about the registers on return, except for the return
-> > > value?)  
-> > 
-> > I think kretprobe and ftrace are for a bit different usage. kretprobe can be
-> > used for something like debugger. In that case, accessing full regs stack
-> > will be more preferrable. (BTW, what the not "full regs" means? Does that
-> > save partial registers?)
-> 
-> When the REGS flag is not set in the ftrace_ops (where kprobes uses the
-> REGS flags), the regs parameter is not a full set of regs, but holds just
-> enough to get access to the parameters. This just happened to be what was
-> saved in the mcount/fentry trampoline, anyway, because tracing the start of
-> the program, you had to save the arguments before calling the trace code,
-> otherwise you would corrupt the parameters of the function being traced.
+That's a good idea.
 
-Yes, if we trace the function as a blackbox, it is correct. It should trace
-the parameter at the entry and trace result at the exit.
+> So language
+> bindings don't get lost when dealing with this errno.
 
-> I just tweaked it so that by default, the ftrace callbacks now have access
-> to the saved regs (call ftrace_regs, to not let a callback get confused and
-> think it has full regs when it does not).
-
-Ah, I got it. kretprobe allows user to set a custom region in its instance
-so that the user handler can store the parameter at entry point. Sometimes
-such "saved regs" is not enough because if the parameter passed via
-pointer, actual data can be changed.
-Anyway, for the kprobe event, that can be integrated seemlessly. But for the
-low-level kretprobe, I think if we integrate it, we should better to update
-kretprobe handler interface.
-
-> Now for the exit of a function, what does having the full pt_regs give you?
-
-It may allow user to debug kernel function if the user thinks any suspicious
-behavior does/doesn't come from the compiler issue. (I would like to recommend
-them to use kprobe for that purpose, but there is kretprobe already ...)
-
-> Besides the information to get the return value, the rest of the regs are
-> pretty much meaningless. Is there any example that someone wants access to
-> the regs at the end of a function besides getting the return value?
-
-Yes, as far as we can confident that the code is not corrupted. But, for example,
-if user would like to make sure the collee saved register (or some flags)
-is correctly saved and restored, ensuring raw register access will be helpful.
-
-(Yeah, but I know it is very rare case.)
-
-Thank you,
-
-
--- 
-Masami Hiramatsu <mhiramat@kernel.org>
+I'm not sure what you mean by "language bindings".
+In general, strerror is not that useful. The kernel aliases
+multiple conditions into the same error code. The error string
+is too generic in practice to be useful.
