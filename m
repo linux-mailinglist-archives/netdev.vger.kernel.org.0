@@ -2,85 +2,50 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 02F5F364DC1
-	for <lists+netdev@lfdr.de>; Tue, 20 Apr 2021 00:40:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1D235364DCA
+	for <lists+netdev@lfdr.de>; Tue, 20 Apr 2021 00:45:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231253AbhDSWk4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 19 Apr 2021 18:40:56 -0400
-Received: from mail.kernel.org ([198.145.29.99]:54202 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230029AbhDSWkl (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 19 Apr 2021 18:40:41 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id B1C6E613B0;
-        Mon, 19 Apr 2021 22:40:10 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1618872010;
-        bh=+MgneAzMiUbdwvs3A/8M6c8r8cUGinT0H+o0HDpl6D8=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=QQvKOP1gVBBdu34mdIQJ+hEem53aBMBkHWkj/7YTN2lhxERNXonr5S3zZWwc3tgdA
-         DSW/viG6FLTu91YylbCBMcOcj0WiXyy+7LQ6naHB7uhPWdpxd425CtoIgIk64K5RlK
-         pZk09VMOC6J/aoH2RxoivrB55E/ytycrGnnMyuy6ONSSaOo6Tixqzf1/EUTuR5i3ri
-         bRHcnVc42EwMKYjytUAW/+/zdT7zVQF3wYa0wQqn9IbZWZsZy2ejuVONuJ3e4NsBEd
-         RMmvX+3GAbNk3GwaoMSsOCbAZoqcToSRTMoX9F5Sr6h7IAd2i49fBemu2BMzpfa1Jo
-         qRTy4gSRv7axQ==
-Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id AB02660A13;
-        Mon, 19 Apr 2021 22:40:10 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next 0/5] Flow control for NXP ENETC
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <161887201069.19818.8834514668475852756.git-patchwork-notify@kernel.org>
-Date:   Mon, 19 Apr 2021 22:40:10 +0000
-References: <20210416234225.3715819-1-olteanv@gmail.com>
-In-Reply-To: <20210416234225.3715819-1-olteanv@gmail.com>
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     kuba@kernel.org, davem@davemloft.net, netdev@vger.kernel.org,
-        po.liu@nxp.com, claudiu.manoil@nxp.com,
-        alexandru.marginean@nxp.com, robh+dt@kernel.org,
-        shawnguo@kernel.org, linux-arm-kernel@lists.infradead.org,
-        devicetree@vger.kernel.org, linux@armlinux.org.uk, andrew@lunn.ch,
-        michael@walle.cc, vladimir.oltean@nxp.com
+        id S229842AbhDSWqS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 19 Apr 2021 18:46:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42738 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229683AbhDSWqR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 19 Apr 2021 18:46:17 -0400
+Received: from mail.monkeyblade.net (shards.monkeyblade.net [IPv6:2620:137:e000::1:9])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 34A83C06174A;
+        Mon, 19 Apr 2021 15:45:47 -0700 (PDT)
+Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
+        by mail.monkeyblade.net (Postfix) with ESMTPSA id 512B14F40E343;
+        Mon, 19 Apr 2021 15:45:46 -0700 (PDT)
+Date:   Mon, 19 Apr 2021 15:45:45 -0700 (PDT)
+Message-Id: <20210419.154545.1437529237095871426.davem@davemloft.net>
+To:     aford173@gmail.com
+Cc:     netdev@vger.kernel.org, aford@beaconembedded.com,
+        geert@linux-m68k.org, sergei.shtylyov@gmail.com, kuba@kernel.org,
+        andrew@lunn.ch, linux-renesas-soc@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] net: ethernet: ravb: Fix release of refclk
+From:   David Miller <davem@davemloft.net>
+In-Reply-To: <20210417132329.6886-1-aford173@gmail.com>
+References: <20210417132329.6886-1-aford173@gmail.com>
+X-Mailer: Mew version 6.8 on Emacs 27.1
+Mime-Version: 1.0
+Content-Type: Text/Plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.6.2 (mail.monkeyblade.net [0.0.0.0]); Mon, 19 Apr 2021 15:45:46 -0700 (PDT)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+From: Adam Ford <aford173@gmail.com>
+Date: Sat, 17 Apr 2021 08:23:29 -0500
 
-This series was applied to netdev/net-next.git (refs/heads/master):
-
-On Sat, 17 Apr 2021 02:42:20 +0300 you wrote:
-> From: Vladimir Oltean <vladimir.oltean@nxp.com>
+> The call to clk_disable_unprepare() can happen before priv is
+> initialized. This means moving clk_disable_unprepare out of
+> out_release into a new label.
 > 
-> This patch series contains logic for enabling the lossless mode on the
-> RX rings of the ENETC, and the PAUSE thresholds on the internal FIFO
-> memory.
-> 
-> During testing it was found that, with the default FIFO configuration,
-> a sender which isn't persuaded by our PAUSE frames and keeps sending
-> will cause some MAC RX frame errors. To mitigate this, we need to ensure
-> that the FIFO never runs completely full, so we need to fix up a setting
-> that was supposed to be configured well out of reset. Unfortunately this
-> requires the addition of a new mini-driver.
-> 
-> [...]
+> Fixes: 8ef7adc6beb2("net: ethernet: ravb: Enable optional refclk")
+> Signed-off-by: Adam Ford <aford173@gmail.com>
+Thjis does not apply cleanly, please rebbase and resubmit.
 
-Here is the summary with links:
-  - [net-next,1/5] net: enetc: create a common enetc_pf_to_port helper
-    https://git.kernel.org/netdev/net-next/c/87614b931c24
-  - [net-next,2/5] dt-bindings: net: fsl: enetc: add the IERB documentation
-    https://git.kernel.org/netdev/net-next/c/4ac7acc67f29
-  - [net-next,3/5] net: enetc: add a mini driver for the Integrated Endpoint Register Block
-    https://git.kernel.org/netdev/net-next/c/e7d48e5fbf30
-  - [net-next,4/5] arm64: dts: ls1028a: declare the Integrated Endpoint Register Block node
-    https://git.kernel.org/netdev/net-next/c/b764dc6cc1ba
-  - [net-next,5/5] net: enetc: add support for flow control
-    https://git.kernel.org/netdev/net-next/c/a8648887880f
-
-You are awesome, thank you!
---
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+Please fix the formatting of your Fixes tag while you are at it, thank you.
