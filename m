@@ -2,147 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4466A36481F
-	for <lists+netdev@lfdr.de>; Mon, 19 Apr 2021 18:22:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 08F48364857
+	for <lists+netdev@lfdr.de>; Mon, 19 Apr 2021 18:37:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233071AbhDSQWn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 19 Apr 2021 12:22:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43330 "EHLO
+        id S232690AbhDSQhj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 19 Apr 2021 12:37:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46624 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233752AbhDSQWj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 19 Apr 2021 12:22:39 -0400
-Received: from mail-lf1-x131.google.com (mail-lf1-x131.google.com [IPv6:2a00:1450:4864:20::131])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 810DEC06174A
-        for <netdev@vger.kernel.org>; Mon, 19 Apr 2021 09:22:09 -0700 (PDT)
-Received: by mail-lf1-x131.google.com with SMTP id j4so17386751lfp.0
-        for <netdev@vger.kernel.org>; Mon, 19 Apr 2021 09:22:09 -0700 (PDT)
+        with ESMTP id S230063AbhDSQhh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 19 Apr 2021 12:37:37 -0400
+Received: from mail-ed1-x52d.google.com (mail-ed1-x52d.google.com [IPv6:2a00:1450:4864:20::52d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8CA67C06174A;
+        Mon, 19 Apr 2021 09:37:06 -0700 (PDT)
+Received: by mail-ed1-x52d.google.com with SMTP id y3so5235266eds.5;
+        Mon, 19 Apr 2021 09:37:06 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=O961I/6SpeSlE/psbTVuCjUHNPMleqN4PCYNj9U2q7A=;
-        b=QyCXioim+uvs6ZsZ5HXYH8805X6eZVpFOsRXDPDu0FhkLM2j9m+7VBhsbXtQ60iw90
-         VG4CzcSNws5VKEnnaLwaE+Mla8FPUF4Ifo/aduTqVEEsqkEIHDsv7++Nb8PAs+zX9RJs
-         l4FvqPnoAc6U8fzSYX23GNIlLVFESDEdeZw4ASgibwICAnAA31uQArRchuzLd7XpCmqY
-         MplUe6zFqDWDRPswRq04ECp9Kdz+N7Fihf5+eX9D+hxKcWBqFD4iHE/tYp91Yr2laL1W
-         4GCuRoeQb17je7gyDNL69BxZQAhg2z1g3kNu32/o4rF6quRGBe/h8EnLEcbHG1UhK1rf
-         DaiQ==
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=RKVgXAX0mREX8Z0MCpmywkdwIZCixUAvYUJ20KmIUmM=;
+        b=HQe4hHu3jDM3VMM9bgAAJO7LJ1nuzE2Zlm+7CJbv/ZQT+d3t5c8GKY1wiK0P/d8sER
+         a3YCO30m7N+/NsNvJzeRpjp0sdsPecqrjP0KqkOsxjX2tdc+g14KTOmn5H7oI6l8TWyv
+         dby33R1hSpDmVfW2JNU/Im6NwYKXLANxpwarInv//7qs4r5cSz69DvJ3SF2grgW0RE5r
+         LXSAhroeOwlMllkLcfxytfjHUV38DdEsd6EJo7nb/rnkjgE7MEwm6oZkgX/dtAtnabf5
+         KaH8SR5JV2vOehwvD8JS9jtDjCMtaciFE+cMZqFSSRbiqoWoQQQkkkCP9cmggTld2IqI
+         oibQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=O961I/6SpeSlE/psbTVuCjUHNPMleqN4PCYNj9U2q7A=;
-        b=jBF5kRB7wSlktcbpt8cmB/qmcSW1pN4VhFIwWYmaeaqICnPxYBIkfjcOGrJAjC+hft
-         98Zp3hQImqdzLXcgFp39A2YJzoTCNdYVzNKIoZu7XPrlt9MIVhWHOvCOqlXTpeBfBQzl
-         DKQP3y8UI5IJr1TZhM7sz3Qjn+QTxq6J+iQ4STT136n7OKfBeEpVq+t32H+fjZsMha9K
-         HwkehyAoORnz0pRpYqPrrGSH7gJm1fDkGow3CAAesNIgKwgvXBu7bRRBz018S6Uo4Wu5
-         LB8qkuIKH9sfHE0Qu1EZNDOW2LHBqbXhel7uyh808jwDgx52scD+E/ESShxdxiPF+GbT
-         HKsA==
-X-Gm-Message-State: AOAM533J9Y/iq0bwgn67Wo5CmQGLn+9rfWNR8tWkk5K6TTbdJrTW4lSm
-        eoLw6krcqP3WoXxpGWZ2KFSa2FsY8+++SaETVzvNnA==
-X-Google-Smtp-Source: ABdhPJyPLPorxRBakMjIU9mAt+YhIT0rjnyA4Jhv/b2TF9PoyD81mokL98bTTyiEHaEb8stXptpRF/697s3tntJvUOQ=
-X-Received: by 2002:ac2:58d9:: with SMTP id u25mr3133485lfo.117.1618849327780;
- Mon, 19 Apr 2021 09:22:07 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=RKVgXAX0mREX8Z0MCpmywkdwIZCixUAvYUJ20KmIUmM=;
+        b=pj8yvU3YrArr/nAQ21nuvClngXEH5CqhMoKvlOKClc60fUnNCPjkybbo59SU2UsuxM
+         Ak2VW6CUVM7kkckuLkvPoD4RTHtEC/461tu6OW53u9WP6hk3c8X7DT5L5yC80LCkoD3P
+         Y/WRyBJFiB4UZRrX6zHkVsYWzGIfb+XPWn8+UIqG/epGpCD3WQfCtYxUYChfyV6BWssw
+         9erVNKlCC8kC1COdnqX81zZbXG6QR/boKREdUtjtYhXBfGWtD0sxtdnRHpwaTb4vAdrf
+         AhlxNlxXcNGF4k9U+q3ePTiu7meocCgZup60vRPkACM818aZqd2QJk/w2knBXeTQ6Kgl
+         c73Q==
+X-Gm-Message-State: AOAM533VgjplroIgJGn5rDxaToX9qz9fl7OsE2aKl6L+gAo/JrIsYvxh
+        mBiO+6M2mCsziafoSNwh4tI=
+X-Google-Smtp-Source: ABdhPJxlHE+uN0letZMKdjr+iTxf5YPKEy4uushblsmHr3m3aO5AO/Mjig0xXV/5WRJKl1OWM2qRQQ==
+X-Received: by 2002:a05:6402:cbb:: with SMTP id cn27mr12958654edb.222.1618850225382;
+        Mon, 19 Apr 2021 09:37:05 -0700 (PDT)
+Received: from localhost.localdomain ([185.58.55.85])
+        by smtp.gmail.com with ESMTPSA id c19sm13196792edu.20.2021.04.19.09.36.49
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 19 Apr 2021 09:37:04 -0700 (PDT)
+From:   Kurt Manucredo <fuzzybritches0@gmail.com>
+To:     trond.myklebust@hammerspace.com, anna.schumaker@netapp.com,
+        bfields@fieldses.org, chuck.lever@oracle.com, davem@davemloft.net,
+        kuba@kernel.org, skhan@linuxfoundation.org
+Cc:     Kurt Manucredo <fuzzybritches0@gmail.com>,
+        linux-nfs@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        linux-kernel-mentees@lists.linuxfoundation.org,
+        syzbot+ba2e91df8f74809417fa@syzkaller.appspotmail.com,
+        gregkh@linuxfoundation.org
+Subject: [PATCH] net: sunrpc: xprt.c: fix shift-out-of-bounds in xprt_calc_majortimeo
+Date:   Mon, 19 Apr 2021 16:36:03 +0000
+Message-Id: <20210419163603.7-1-fuzzybritches0@gmail.com>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-References: <20210409223801.104657-1-mcroce@linux.microsoft.com>
- <20210409223801.104657-3-mcroce@linux.microsoft.com> <20210410154824.GZ2531743@casper.infradead.org>
- <YHHPbQm2pn2ysth0@enceladus> <CALvZod7UUxTavexGCzbKaK41LAW7mkfQrnDhFbjo-KvH9P6KsQ@mail.gmail.com>
- <YHHuE7g73mZNrMV4@enceladus> <20210414214132.74f721dd@carbon>
- <CALvZod4F8kCQQcK5_3YH=7keqkgY-97g+_OLoDCN7uNJdd61xA@mail.gmail.com>
- <YH0RMV7+56gVOzJe@apalos.home> <CALvZod7oa4q6pMUyDi4FMW4WKY7AjOZ7P2=02GoxjpwrQpA-OQ@mail.gmail.com>
- <YH2lFYbj3d8nC+hF@apalos.home>
-In-Reply-To: <YH2lFYbj3d8nC+hF@apalos.home>
-From:   Shakeel Butt <shakeelb@google.com>
-Date:   Mon, 19 Apr 2021 09:21:55 -0700
-Message-ID: <CALvZod7oZ+7CNwSjqHs5XaLH9o_6+YYwEUeii5ETqeUwUTG6+Q@mail.gmail.com>
-Subject: Re: [PATCH net-next v3 2/5] mm: add a signature in struct page
-To:     Ilias Apalodimas <ilias.apalodimas@linaro.org>
-Cc:     Jesper Dangaard Brouer <brouer@redhat.com>,
-        Matthew Wilcox <willy@infradead.org>,
-        Matteo Croce <mcroce@linux.microsoft.com>,
-        netdev <netdev@vger.kernel.org>, Linux MM <linux-mm@kvack.org>,
-        Ayush Sawal <ayush.sawal@chelsio.com>,
-        Vinay Kumar Yadav <vinay.yadav@chelsio.com>,
-        Rohit Maheshwari <rohitm@chelsio.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        Marcin Wojtas <mw@semihalf.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Mirko Lindner <mlindner@marvell.com>,
-        Stephen Hemminger <stephen@networkplumber.org>,
-        Tariq Toukan <tariqt@nvidia.com>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Boris Pismenny <borisp@nvidia.com>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
-        Vlastimil Babka <vbabka@suse.cz>, Yu Zhao <yuzhao@google.com>,
-        Will Deacon <will@kernel.org>,
-        Michel Lespinasse <walken@google.com>,
-        Fenghua Yu <fenghua.yu@intel.com>,
-        Roman Gushchin <guro@fb.com>, Hugh Dickins <hughd@google.com>,
-        Peter Xu <peterx@redhat.com>, Jason Gunthorpe <jgg@ziepe.ca>,
-        Guoqing Jiang <guoqing.jiang@cloud.ionos.com>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
-        Alexander Lobakin <alobakin@pm.me>,
-        Cong Wang <cong.wang@bytedance.com>, wenxu <wenxu@ucloud.cn>,
-        Kevin Hao <haokexin@gmail.com>,
-        Aleksandr Nogikh <nogikh@google.com>,
-        Jakub Sitnicki <jakub@cloudflare.com>,
-        Marco Elver <elver@google.com>,
-        Willem de Bruijn <willemb@google.com>,
-        Miaohe Lin <linmiaohe@huawei.com>,
-        Yunsheng Lin <linyunsheng@huawei.com>,
-        Guillaume Nault <gnault@redhat.com>,
-        LKML <linux-kernel@vger.kernel.org>, linux-rdma@vger.kernel.org,
-        bpf <bpf@vger.kernel.org>, Eric Dumazet <edumazet@google.com>,
-        David Ahern <dsahern@gmail.com>,
-        Lorenzo Bianconi <lorenzo@kernel.org>,
-        Saeed Mahameed <saeedm@nvidia.com>,
-        Andrew Lunn <andrew@lunn.ch>, Paolo Abeni <pabeni@redhat.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Apr 19, 2021 at 8:43 AM Ilias Apalodimas
-<ilias.apalodimas@linaro.org> wrote:
->
-[...]
-> > Pages mapped into the userspace have their refcnt elevated, so the
-> > page_ref_count() check by the drivers indicates to not reuse such
-> > pages.
-> >
->
-> When tcp_zerocopy_receive() is invoked it will call tcp_zerocopy_vm_insert_batch()
-> which will end up doing a get_page().
-> What you are saying is that once the zerocopy is done though, skb_release_data()
-> won't be called, but instead put_page() will be? If that's the case then we are
-> indeed leaking DMA mappings and memory. That sounds weird though, since the
-> refcnt will be one in that case (zerocopy will do +1/-1 once it's done), so who
-> eventually frees the page?
-> If kfree_skb() (or any wrapper that calls skb_release_data()) is called
-> eventually, we'll end up properly recycling the page into our pool.
->
+Fix shift-out-of-bounds in xprt_calc_majortimeo().
 
-From what I understand (Eric, please correct me if I'm wrong) for
-simple cases there are 3 page references taken. One by the driver,
-second by skb and third by page table.
+UBSAN: shift-out-of-bounds in net/sunrpc/xprt.c:658:14
+shift exponent 536871232 is too large for 64-bit type 'long u
 
-In tcp_zerocopy_receive(), tcp_zerocopy_vm_insert_batch() gets one
-page ref through insert_page_into_pte_locked(). However before
-returning from tcp_zerocopy_receive(), the skb references are dropped
-through tcp_recv_skb(). So, whenever the user unmaps the page and
-drops the page ref only then that page can be reused by the driver.
+Reported-by: syzbot+ba2e91df8f74809417fa@syzkaller.appspotmail.com
+Signed-off-by: Kurt Manucredo <fuzzybritches0@gmail.com>
+---
+ net/sunrpc/xprt.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
-In my understanding, for zerocopy rx the skb_release_data() is called
-on the pages while they are still mapped into the userspace. So,
-skb_release_data() might not be the right place to recycle the page
-for zerocopy. The email chain at [1] has some discussion on how to
-bundle the recycling of pages with their lifetime.
+diff --git a/net/sunrpc/xprt.c b/net/sunrpc/xprt.c
+index 691ccf8049a4..07128ac3d51d 100644
+--- a/net/sunrpc/xprt.c
++++ b/net/sunrpc/xprt.c
+@@ -655,7 +655,10 @@ static unsigned long xprt_calc_majortimeo(struct rpc_rqst *req)
+ 	unsigned long majortimeo = req->rq_timeout;
+ 
+ 	if (to->to_exponential)
+-		majortimeo <<= to->to_retries;
++		if (to->to_retries >= sizeof(majortimeo) * 8)
++			majortimeo = to->to_maxval;
++		else
++			majortimeo <<= to->to_retries;
+ 	else
+ 		majortimeo += to->to_increment * to->to_retries;
+ 	if (majortimeo > to->to_maxval || majortimeo == 0)
+-- 
+2.30.2
 
-[1] https://lore.kernel.org/linux-mm/20210316013003.25271-1-arjunroy.kdev@gmail.com/
