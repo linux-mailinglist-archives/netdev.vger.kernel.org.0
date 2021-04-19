@@ -2,135 +2,76 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 622D5363E99
-	for <lists+netdev@lfdr.de>; Mon, 19 Apr 2021 11:34:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9257B363EB1
+	for <lists+netdev@lfdr.de>; Mon, 19 Apr 2021 11:38:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238582AbhDSJer (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 19 Apr 2021 05:34:47 -0400
-Received: from gw.atmark-techno.com ([13.115.124.170]:37324 "EHLO
-        gw.atmark-techno.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238556AbhDSJem (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 19 Apr 2021 05:34:42 -0400
-Received: from mail-pg1-f198.google.com (mail-pg1-f198.google.com [209.85.215.198])
-        by gw.atmark-techno.com (Postfix) with ESMTPS id 213FB804BD
-        for <netdev@vger.kernel.org>; Mon, 19 Apr 2021 18:34:09 +0900 (JST)
-Received: by mail-pg1-f198.google.com with SMTP id 17-20020a6317510000b0290207249fa354so5890606pgx.8
-        for <netdev@vger.kernel.org>; Mon, 19 Apr 2021 02:34:09 -0700 (PDT)
+        id S238625AbhDSJir (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 19 Apr 2021 05:38:47 -0400
+Received: from mail-ua1-f51.google.com ([209.85.222.51]:42665 "EHLO
+        mail-ua1-f51.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229635AbhDSJiq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 19 Apr 2021 05:38:46 -0400
+Received: by mail-ua1-f51.google.com with SMTP id 23so1394399uac.9;
+        Mon, 19 Apr 2021 02:38:16 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=f9v+Sm8mKFEbQyXi/sN2tJHr2LOa9v0CsJoz/H5l6cU=;
-        b=s7ib+DPhGUZETsb2ClWYmMgZSVpRyLltEMs8rIE4KrXDloWZv5cf4Jn5ro5mn06KXy
-         9Ziy3KuvXH5iZoMC+fQAANzsPVODIYXJjZ09uzbpgi1NAxH0OASiOOst9vwD8Qr7hvri
-         HB26uzblXAdfCDJBj4FXyh7wrmWTOiu8roHUymTAPGM1kRiJvwOXbCGGSNeyonBFbUlL
-         pSV0d3F2KOBk8fc2lYmtygQvB7htLDKEbQbq7vWkIQ6kvok2y2hfLIZrRhQZN7PKl/em
-         MTa6E28vvSyLc43sxH6iHwFlTGXCMatRorHesGHPEc5NdyVJzXEPlL1yp/I9OBv4njCV
-         4Ctw==
-X-Gm-Message-State: AOAM531lxu254FromOqnduiXJkDoOsg9vyRVcZLq4ehv7v6ebNjzYnQw
-        cDTxomXfOhxCqzRqy5qE/E+Db4rMrNvGu/+SPsbIhrF48yqewAZ4cYY4EcRomK53ChTCRjnUnme
-        eSSy2Gc0RzGy0ewNvk5oe
-X-Received: by 2002:a63:1665:: with SMTP id 37mr11208881pgw.31.1618824837068;
-        Mon, 19 Apr 2021 02:33:57 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJw3BVfHB/Iu3InVzb+YLUkuY7/BfcYMlC0sOGsbJiks+G4SQp5aPsproxuobb7vRE8Qif9k+g==
-X-Received: by 2002:a63:1665:: with SMTP id 37mr11208853pgw.31.1618824836841;
-        Mon, 19 Apr 2021 02:33:56 -0700 (PDT)
-Received: from pc-0115 (103.131.189.35.bc.googleusercontent.com. [35.189.131.103])
-        by smtp.gmail.com with ESMTPSA id x18sm10982637pjn.51.2021.04.19.02.33.56
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Mon, 19 Apr 2021 02:33:56 -0700 (PDT)
-Received: from martinet by pc-0115 with local (Exim 4.94)
-        (envelope-from <martinet@pc-0115>)
-        id 1lYQHy-002k7D-3h; Mon, 19 Apr 2021 18:33:54 +0900
-Date:   Mon, 19 Apr 2021 18:33:44 +0900
-From:   Dominique MARTINET <dominique.martinet@atmark-techno.com>
-To:     Geert Uytterhoeven <geert@linux-m68k.org>
-Cc:     "Alice Guo (OSS)" <alice.guo@oss.nxp.com>,
-        gregkh@linuxfoundation.org, rafael@kernel.org,
-        horia.geanta@nxp.com, aymen.sghaier@nxp.com,
-        herbert@gondor.apana.org.au, davem@davemloft.net, tony@atomide.com,
-        geert+renesas@glider.be, mturquette@baylibre.com, sboyd@kernel.org,
-        vkoul@kernel.org, peter.ujfalusi@gmail.com, a.hajda@samsung.com,
-        narmstrong@baylibre.com, robert.foss@linaro.org, airlied@linux.ie,
-        daniel@ffwll.ch, khilman@baylibre.com, tomba@kernel.org,
-        jyri.sarha@iki.fi, joro@8bytes.org, will@kernel.org,
-        mchehab@kernel.org, ulf.hansson@linaro.org,
-        adrian.hunter@intel.com, kishon@ti.com, kuba@kernel.org,
-        linus.walleij@linaro.org, Roy.Pledge@nxp.com, leoyang.li@nxp.com,
-        ssantosh@kernel.org, matthias.bgg@gmail.com, edubezval@gmail.com,
-        j-keerthy@ti.com, balbi@kernel.org, linux@prisktech.co.nz,
-        stern@rowland.harvard.edu, wim@linux-watchdog.org,
-        linux@roeck-us.net, linux-kernel@vger.kernel.org,
-        linux-crypto@vger.kernel.org, linux-omap@vger.kernel.org,
-        linux-renesas-soc@vger.kernel.org, linux-clk@vger.kernel.org,
-        dmaengine@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        linux-amlogic@lists.infradead.org,
-        linux-arm-kernel@lists.infradead.org,
-        iommu@lists.linux-foundation.org, linux-media@vger.kernel.org,
-        linux-mmc@vger.kernel.org, netdev@vger.kernel.org,
-        linux-phy@lists.infradead.org, linux-gpio@vger.kernel.org,
-        linuxppc-dev@lists.ozlabs.org, linux-staging@lists.linux.dev,
-        linux-mediatek@lists.infradead.org, linux-pm@vger.kernel.org,
-        linux-usb@vger.kernel.org, linux-watchdog@vger.kernel.org,
-        Arnd Bergmann <arnd@arndb.de>
-Subject: Re: [RFC v1 PATCH 3/3] driver: update all the code that use
- soc_device_match
-Message-ID: <YH1OeFy+SepIYYG0@atmark-techno.com>
-References: <20210419042722.27554-1-alice.guo@oss.nxp.com>
- <20210419042722.27554-4-alice.guo@oss.nxp.com>
- <YH0O907dfGY9jQRZ@atmark-techno.com>
- <CAMuHMdVY1SLZ0K30T2pimyrR6Mm=VoSTO=L-xxCy2Bj7_kostw@mail.gmail.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=Qz7eHg+GDhB5/+UldzTXRkP4L7o5XFBAhOrV0CebfS8=;
+        b=NpLBTFuoQnYPSKDN3QIGdnckJ9HK9IIVmGIAwvdMSN25C1/MoO3eYmQhhAyEv57ivu
+         P9bH4kIihlc0r5+JWSkjfuj/Ch5SbN2+2bZeiKQRWS9A8gWHNcZR+ekMMiBvTwWd/P7B
+         PCGwkaiQWa9MRjxkeOC4El3gRy781kkYxCnyGNEBJS0aoIJIJbHNCI75XQcl57h2goAk
+         sV51OZa5e0SRSw5RR2QwuxjDofgVZ5uvw0bt10CMBFlZzMM3X8id0Yu8b/Y1ztrr0TjA
+         VOuL6zLN5v0n3ggk6IHsNZq3anl3jFyQVQkjvxbEdUkU5C6HQmYu4cwAnkoPlVvJPbzl
+         bugQ==
+X-Gm-Message-State: AOAM531JuGkvXGb3cNIS1FWYxX4aqVeRb+Fj+0U+GNA/kqAb7hNZ1Nsv
+        oBPJB1Qy+uMbnxFdMcH0lIcwKR001cMJfuat4qw=
+X-Google-Smtp-Source: ABdhPJwd2fxrRVcezspfqpd49brhoi5lLIDhZwfeLnamGRZertBmVP+kBGQLGSvBRrowPHG+qjcTR166Fl0LF3PPrz8=
+X-Received: by 2002:a9f:3852:: with SMTP id q18mr6058483uad.58.1618825096295;
+ Mon, 19 Apr 2021 02:38:16 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <CAMuHMdVY1SLZ0K30T2pimyrR6Mm=VoSTO=L-xxCy2Bj7_kostw@mail.gmail.com>
+References: <20210224115146.9131-1-aford173@gmail.com> <20210224115146.9131-3-aford173@gmail.com>
+In-Reply-To: <20210224115146.9131-3-aford173@gmail.com>
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+Date:   Mon, 19 Apr 2021 11:38:05 +0200
+Message-ID: <CAMuHMdWozQPDTDMPtqqoHJJoshHAUCBCxWkGYEe6eV1q2xL6jw@mail.gmail.com>
+Subject: Re: [PATCH V3 3/5] arm64: dts: renesas: Add fck to etheravb-rcar-gen3
+ clock-names list
+To:     Adam Ford <aford173@gmail.com>
+Cc:     netdev <netdev@vger.kernel.org>,
+        Adam Ford-BE <aford@beaconembedded.com>,
+        Sergei Shtylyov <sergei.shtylyov@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Magnus Damm <magnus.damm@gmail.com>,
+        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Wed, Feb 24, 2021 at 12:52 PM Adam Ford <aford173@gmail.com> wrote:
+> The bindings have been updated to support two clocks, but the
+> original clock now requires the name fck.  Add a clock-names
+> list in the device tree with fck in it.
+>
+> Signed-off-by: Adam Ford <aford173@gmail.com>
+> Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
 
-Geert Uytterhoeven wrote on Mon, Apr 19, 2021 at 11:03:24AM +0200:
-> > This is going to need quite some more work to be acceptable, in my
-> > opinion, but I think it should be possible.
-> 
-> In general, this is very hard to do, IMHO. Some drivers may be used on
-> multiple platforms, some of them registering an SoC device, some of
-> them not registering an SoC device.  So there is no way to know the
-> difference between "SoC device not registered, intentionally", and
-> "SoC device not yet registered".
+queueing in renesas-devel for v5.14, with an additional update for
+the recently added r8a779a0.dtsi.
 
-Hm, good point, I was probably a bit too optimistic if there are devices
-which don't register any soc yet have drivers which want one; I don't
-see how to make the difference indeed... And that does mean we can't
-just defer all the time.
+Gr{oetje,eeting}s,
 
-> soc_device_match() should only be used as a last resort, to identify
-> systems that cannot be identified otherwise.  Typically this is used for
-> quirks, which should only be enabled on a very specific subset of
-> systems.  IMHO such systems should make sure soc_device_match()
-> is available early, by registering their SoC device early.
+                        Geert
 
-I definitely agree there, my suggestion to defer was only because I know
-of no other way to influence the ordering of drivers loading reliably
-and gave up on soc being init'd early.
-
-In this particular case the problem is that since 7d981405d0fd ("soc:
-imx8m: change to use platform driver") the soc probe tries to use the
-nvmem driver for ocotp fuses for imx8m devices, which isn't ready yet.
-So soc loading gets pushed back to the end of the list because it gets
-defered and other drivers relying on soc_device_match get confused
-because they wrongly think a device doesn't match a quirk when it
-actually does.
-
-If there is a way to ensure the nvmem driver gets loaded before the soc,
-that would also solve the problem nicely, and avoid the need to mess
-with all the ~50 drivers which use it.
-
-
-Is there a way to control in what order drivers get loaded? Something in
-the dtb perhaps?
-
-
-Thanks,
 -- 
-Dominique
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
