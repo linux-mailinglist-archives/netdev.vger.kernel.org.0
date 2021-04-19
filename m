@@ -2,109 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9B3AB364E5B
-	for <lists+netdev@lfdr.de>; Tue, 20 Apr 2021 00:59:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5778E364E6C
+	for <lists+netdev@lfdr.de>; Tue, 20 Apr 2021 01:10:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232800AbhDSW7P (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 19 Apr 2021 18:59:15 -0400
-Received: from gateway31.websitewelcome.com ([192.185.143.46]:11053 "EHLO
-        gateway31.websitewelcome.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S233317AbhDSW7E (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 19 Apr 2021 18:59:04 -0400
-Received: from cm17.websitewelcome.com (cm17.websitewelcome.com [100.42.49.20])
-        by gateway31.websitewelcome.com (Postfix) with ESMTP id 488FA5FDA7
-        for <netdev@vger.kernel.org>; Mon, 19 Apr 2021 17:58:33 -0500 (CDT)
-Received: from gator4166.hostgator.com ([108.167.133.22])
-        by cmsmtp with SMTP
-        id Ycqfl1jcdMGeEYcqflPxqC; Mon, 19 Apr 2021 17:58:33 -0500
-X-Authority-Reason: nr=8
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=embeddedor.com; s=default; h=Content-Transfer-Encoding:Content-Type:
-        In-Reply-To:MIME-Version:Date:Message-ID:From:References:Cc:To:Subject:Sender
-        :Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
-        Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
-        List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=HSwcUpoOJnXwy9FUWCUDqISxnv3zkq1DVf8wvqzFEr0=; b=BvljQjnbdpu8RmeO4AFnQNsFrG
-        NidTTAVI57LZ/J2KDjmbAu7FNej4A6OqWy0McVvbePr1On80nZDp5d6dSdFLLtoXvfqalwR/mtox5
-        vfu7kaWx0KLLVyZ/PosuE8v8JjIOtytLvU7MbVb5zSrPu91Ph1caCNssqaZp9zcJJQj2y/er+2PFS
-        hX+Y47e2dakcdxmAf8/3vpInY9DiLqH+HVOPB5utF++XyeO8IPnAuFGdjfvZAxGS8gP2O8LTQzmc1
-        kr6oXcd1YuK5Wf82wKLg29FuGD2Y5sVty7f79O2n+sZseztgxiE2hoN7uym6RNvrUTRrccEHd11ge
-        jChUgS+g==;
-Received: from 187-162-31-110.static.axtel.net ([187.162.31.110]:48156 helo=[192.168.15.8])
-        by gator4166.hostgator.com with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
-        (Exim 4.94)
-        (envelope-from <gustavo@embeddedor.com>)
-        id 1lYcqb-0044Xd-ON; Mon, 19 Apr 2021 17:58:29 -0500
-Subject: Re: [PATCH RESEND][next] rtl8xxxu: Fix fall-through warnings for
- Clang
-To:     Kalle Valo <kvalo@codeaurora.org>,
-        "Gustavo A. R. Silva" <gustavoars@kernel.org>
-Cc:     Jes Sorensen <Jes.Sorensen@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-hardening@vger.kernel.org,
-        Kees Cook <keescook@chromium.org>
-References: <20210305094850.GA141221@embeddedor>
- <20210417175201.280F9C4338A@smtp.codeaurora.org>
-From:   "Gustavo A. R. Silva" <gustavo@embeddedor.com>
-Message-ID: <0b096033-7daf-fae7-9ea9-37038b979616@embeddedor.com>
-Date:   Mon, 19 Apr 2021 17:58:42 -0500
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.7.1
+        id S230295AbhDSXKo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 19 Apr 2021 19:10:44 -0400
+Received: from mail.kernel.org ([198.145.29.99]:59226 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229723AbhDSXKj (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 19 Apr 2021 19:10:39 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPS id 411DB6135F;
+        Mon, 19 Apr 2021 23:10:09 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1618873809;
+        bh=xsCEHMiEkUY6pdh4Mocbir2/6LjGRFtrorAxhJOu+XY=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=AaF75wZ+12PFT20oUTYcp1Hc8BZK6V9SeaSaRYGA4dQrtCDMFqeInfVVjBoSnqui9
+         SaLNA3vPVWYBJoX8z3qg3Zqz/3kgFnfzRyeiUzM/HKmeq83pm9E5zNBhZK8LGIKL2g
+         C0MWHp/PAXot19CEz4iIk5JYofP05V03YAuxPYNXIxdEnkJLwvR5Px68F4+548lv7F
+         42581HRgPRWGL/s8ARi72j04TW3Vd3YBU5XEdmAbHH/sc6nqJ7HCcBF97u8f3BoTfY
+         lZA+ZQPOF6hYLNOqx4WkhA2jmL3ZF4H7MZq14WkgDr2uejFf1trNO2OD12Ciu7XjOr
+         AF7KFXD2FwHhg==
+Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 35D8F60A13;
+        Mon, 19 Apr 2021 23:10:09 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-In-Reply-To: <20210417175201.280F9C4338A@smtp.codeaurora.org>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
-X-AntiAbuse: Primary Hostname - gator4166.hostgator.com
-X-AntiAbuse: Original Domain - vger.kernel.org
-X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
-X-AntiAbuse: Sender Address Domain - embeddedor.com
-X-BWhitelist: no
-X-Source-IP: 187.162.31.110
-X-Source-L: No
-X-Exim-ID: 1lYcqb-0044Xd-ON
-X-Source: 
-X-Source-Args: 
-X-Source-Dir: 
-X-Source-Sender: 187-162-31-110.static.axtel.net ([192.168.15.8]) [187.162.31.110]:48156
-X-Source-Auth: gustavo@embeddedor.com
-X-Email-Count: 19
-X-Source-Cap: Z3V6aWRpbmU7Z3V6aWRpbmU7Z2F0b3I0MTY2Lmhvc3RnYXRvci5jb20=
-X-Local-Domain: yes
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH v2] net: fix a data race when get vlan device
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <161887380921.661.11556898241153478379.git-patchwork-notify@kernel.org>
+Date:   Mon, 19 Apr 2021 23:10:09 +0000
+References: <20210419135641.27077-1-zhudi21@huawei.com>
+In-Reply-To: <20210419135641.27077-1-zhudi21@huawei.com>
+To:     zhudi <zhudi21@huawei.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, linyunsheng@huawei.com,
+        netdev@vger.kernel.org, rose.chen@huawei.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hello:
 
+This patch was applied to netdev/net.git (refs/heads/master):
 
-On 4/17/21 12:52, Kalle Valo wrote:
-> "Gustavo A. R. Silva" <gustavoars@kernel.org> wrote:
+On Mon, 19 Apr 2021 21:56:41 +0800 you wrote:
+> From: Di Zhu <zhudi21@huawei.com>
 > 
->> In preparation to enable -Wimplicit-fallthrough for Clang, fix
->> multiple warnings by replacing /* fall through */ comments with
->> the new pseudo-keyword macro fallthrough; instead of letting the
->> code fall through to the next case.
->>
->> Notice that Clang doesn't recognize /* fall through */ comments as
->> implicit fall-through markings.
->>
->> Link: https://github.com/KSPP/linux/issues/115
->> Signed-off-by: Gustavo A. R. Silva <gustavoars@kernel.org>
+> We encountered a crash: in the packet receiving process, we got an
+> illegal VLAN device address, but the VLAN device address saved in vmcore
+> is correct. After checking the code, we found a possible data
+> competition:
+> CPU 0:                             CPU 1:
+>     (RCU read lock)                  (RTNL lock)
+>     vlan_do_receive()		       register_vlan_dev()
+>       vlan_find_dev()
 > 
-> Patch applied to wireless-drivers-next.git, thanks.
-> 
-> bf3365a856a1 rtl8xxxu: Fix fall-through warnings for Clang
+> [...]
 
-Thanks for this, Kalle.
+Here is the summary with links:
+  - [v2] net: fix a data race when get vlan device
+    https://git.kernel.org/netdev/net/c/c1102e9d49eb
 
-Could you take this series too, please?
-
-https://lore.kernel.org/lkml/cover.1618442265.git.gustavoars@kernel.org/
-
-Thanks
+You are awesome, thank you!
 --
-Gustavo
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
 
