@@ -2,80 +2,77 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BEC43364A64
-	for <lists+netdev@lfdr.de>; Mon, 19 Apr 2021 21:19:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 63516364A6E
+	for <lists+netdev@lfdr.de>; Mon, 19 Apr 2021 21:20:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241538AbhDSTUG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 19 Apr 2021 15:20:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54242 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239503AbhDSTUF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 19 Apr 2021 15:20:05 -0400
-Received: from mail-pg1-x534.google.com (mail-pg1-x534.google.com [IPv6:2607:f8b0:4864:20::534])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 96218C06174A
-        for <netdev@vger.kernel.org>; Mon, 19 Apr 2021 12:19:35 -0700 (PDT)
-Received: by mail-pg1-x534.google.com with SMTP id m12so4232353pgr.9
-        for <netdev@vger.kernel.org>; Mon, 19 Apr 2021 12:19:35 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=nFeRURNN1OfdLS0W1Y5M+rWaFeA+cTB6qaEybtCzIV0=;
-        b=n8XcJ1YH1cfykov4+H9qnifm3c+Vtt6pgu3Y0uAjQk5QuxYw6ROI8+fATHFoCsAuy+
-         j9AlnLMDRUV2wt81sQpC50Ok7qMhapdFzY03rAM6487Gx2SLHzat6G4OQ6Ih7+ksqt86
-         bc3yzl5SQCXB5YjMuMPTf7RwrJtb4DiOfHUPjMgRuJMa38Twwx19gw5eNgAij7pCGnIA
-         btco9J2u7H/8zwlg3mgolGxQtThj6YHE5lZoYR1O6NjtRi0VNnoCp4tqv3GMfIk11D3u
-         n3cEypYbVDXS9HfwiyMFSipoL22T87I+uEIEQkwFMbfGxtSzQqCx/rf4nL2XtrZZZDhc
-         5V1A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=nFeRURNN1OfdLS0W1Y5M+rWaFeA+cTB6qaEybtCzIV0=;
-        b=BXCte6c2VSkapb+tdRNMo56NJMv+2la7hYB1S5zcoSgc4lIbfz+NCS0urnAyZVW2eE
-         iS7UjaLKHLh3ji4HXHgaF91olpRHWLL6xuCcPTUexZw/rKYVpwaG6CtU/Wbo659ZK9Q2
-         RF/tLQ5+ZbG+9I2jFEJh0kkPRw4xXy/3RJ6XhegeEPjnCZMIvjB2OFVUx/DCU11xK0O+
-         pshs563c7pbecCTo3HY4LOHxD9MWy7P39l6VNSjAv1GYDmmsbJdWYegSak2PK94c6Vne
-         Q60llLXDGw/Y8kP7y1DkWgT/9b6XvvfjCqp+dr5f6pj6FuqB5NJcQ26TPxlYx2ZPxTJO
-         7HAQ==
-X-Gm-Message-State: AOAM533Aa8A/aBHpPHtMXNpus7gQG1LGmXHDcaBv3NM4PPQxMCkZdmCG
-        tTc8jF/XCCR2uK6pECZKOX7zabcCyylC4BPFPuE=
-X-Google-Smtp-Source: ABdhPJyO9uQy21Vc0uNUv1zOdH3WeSSJxWRa+SXOBmHxl5MvZS4CrtM3u/HHBMOIJWolYjMQ9egCY8sNe7P1kE9eXfc=
-X-Received: by 2002:a62:fb14:0:b029:22e:e189:c6b1 with SMTP id
- x20-20020a62fb140000b029022ee189c6b1mr21934850pfm.31.1618859975208; Mon, 19
- Apr 2021 12:19:35 -0700 (PDT)
+        id S241603AbhDSTUl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 19 Apr 2021 15:20:41 -0400
+Received: from mail.kernel.org ([198.145.29.99]:44170 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S241574AbhDSTUj (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 19 Apr 2021 15:20:39 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 9247661354;
+        Mon, 19 Apr 2021 19:20:08 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1618860009;
+        bh=QDUwo8sOndYUnQLq0RjqCgvqoLRR5L/IEVGoyO+b1cI=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=HX8+vB159BjswIyfAGWUkb9ZGy/bUNXtp5GGMk6q10/SzjDJAJUTm06n95MF80IUG
+         7NCIf7LgPTHmIdS2FqLwr52Am59daKy4bW3Vj1gjlMArn/coNKbE4efRrCAJboWmi0
+         7JZv3v3RDYIwhdphf1z9Bc93lJKqRWOzt0/j0/qe8U5WIUOpMt0H2Un2SEEn18OW0b
+         gqGX3dhxMHVop6Q3l6xUwz5F0mxBL2sNcMQT2ux6k8y37CATAtGOcNEGBQkHgB1Q42
+         vR7Fcmaca9ImufyM4HqG/kn/3zJLe8YTD1KEwPz69tWOUzBTU4syaexOaThPi/ldRb
+         Aj4fVA2rEWIPw==
+Date:   Mon, 19 Apr 2021 12:20:07 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Michal Kubecek <mkubecek@suse.cz>
+Cc:     Ido Schimmel <idosch@idosch.org>, netdev@vger.kernel.org,
+        davem@davemloft.net, andrew@lunn.ch, idosch@nvidia.com,
+        saeedm@nvidia.com, michael.chan@broadcom.com
+Subject: Re: [PATCH net-next v2 3/9] ethtool: add a new command for reading
+ standard stats
+Message-ID: <20210419122007.33d7579b@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20210417201039.5ypk7efz7f57mowe@lion.mk-sys.cz>
+References: <20210416192745.2851044-1-kuba@kernel.org>
+        <20210416192745.2851044-4-kuba@kernel.org>
+        <YHsXnzqVDjL9Q0Bz@shredder.lan>
+        <20210417105742.76bb2461@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <20210417111351.27c54b99@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <YHsutM6vesbQq+Ju@shredder.lan>
+        <20210417121520.242b0c14@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <20210417121808.593e221d@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <20210417201039.5ypk7efz7f57mowe@lion.mk-sys.cz>
 MIME-Version: 1.0
-References: <20210416233046.12399-1-ducheng2@gmail.com>
-In-Reply-To: <20210416233046.12399-1-ducheng2@gmail.com>
-From:   Cong Wang <xiyou.wangcong@gmail.com>
-Date:   Mon, 19 Apr 2021 12:19:24 -0700
-Message-ID: <CAM_iQpU-yNPQK1VBgfP9d=y80Gyh57VUrP6nxT5nKk=fF5_Stg@mail.gmail.com>
-Subject: Re: [PATCH v4] net: sched: tapr: prevent cycle_time == 0 in parse_taprio_schedule
-To:     Du Cheng <ducheng2@gmail.com>
-Cc:     Jamal Hadi Salim <jhs@mojatatu.com>, Jiri Pirko <jiri@resnulli.us>,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        Shuah Khan <skhan@linuxfoundation.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Eric Dumazet <eric.dumazet@gmail.com>,
-        syzbot+d50710fd0873a9c6b40c@syzkaller.appspotmail.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Apr 16, 2021 at 4:30 PM Du Cheng <ducheng2@gmail.com> wrote:
->
-> There is a reproducible sequence from the userland that will trigger a WARN_ON()
-> condition in taprio_get_start_time, which causes kernel to panic if configured
-> as "panic_on_warn". Catch this condition in parse_taprio_schedule to
-> prevent this condition.
->
-> Reported as bug on syzkaller:
-> https://syzkaller.appspot.com/bug?extid=d50710fd0873a9c6b40c
->
-> Reported-by: syzbot+d50710fd0873a9c6b40c@syzkaller.appspotmail.com
-> Signed-off-by: Du Cheng <ducheng2@gmail.com>
+On Sat, 17 Apr 2021 22:10:39 +0200 Michal Kubecek wrote:
+> On Sat, Apr 17, 2021 at 12:18:08PM -0700, Jakub Kicinski wrote:
+> > Heh, I misunderstood your question. You're asking if the strings can be
+> > queried from the command line.
+> > 
+> > No, I don't think so. We could add some form of "porcelain" command if
+> > needed.  
+> 
+> We don't have such command but I think it would be useful. After all, as
+> you pointed out, the request is already implemented at UAPI level so all
+> we need is to make it available to user.
+> 
+> The syntax will be a bit tricky as some string sets are global and some
+> per device. Out of
+> 
+>     ethtool --show-strings [devname] <setname>
+>     ethtool --show-strings [devname] set <setname>
+>     ethtool --show-strings <setname> [dev <devname>]
+> 
+> the third seems nicest but also least consistent with the rest of
+> ethtool command line syntax. So probably one of the first two.
 
-Acked-by: Cong Wang <cong.wang@bytedance.com>
+Hm. Tricky. Option 4 would be to add a sub-command for low-level
+requests, to break with standard requests clearly?
 
-Thanks.
+ethtool --internals get-strset set X [dev Y]
+
