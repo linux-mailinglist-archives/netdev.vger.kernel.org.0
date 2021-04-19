@@ -2,50 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1D235364DCA
-	for <lists+netdev@lfdr.de>; Tue, 20 Apr 2021 00:45:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9D1B0364DCD
+	for <lists+netdev@lfdr.de>; Tue, 20 Apr 2021 00:47:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229842AbhDSWqS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 19 Apr 2021 18:46:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42738 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229683AbhDSWqR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 19 Apr 2021 18:46:17 -0400
-Received: from mail.monkeyblade.net (shards.monkeyblade.net [IPv6:2620:137:e000::1:9])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 34A83C06174A;
-        Mon, 19 Apr 2021 15:45:47 -0700 (PDT)
-Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
-        by mail.monkeyblade.net (Postfix) with ESMTPSA id 512B14F40E343;
-        Mon, 19 Apr 2021 15:45:46 -0700 (PDT)
-Date:   Mon, 19 Apr 2021 15:45:45 -0700 (PDT)
-Message-Id: <20210419.154545.1437529237095871426.davem@davemloft.net>
-To:     aford173@gmail.com
-Cc:     netdev@vger.kernel.org, aford@beaconembedded.com,
-        geert@linux-m68k.org, sergei.shtylyov@gmail.com, kuba@kernel.org,
-        andrew@lunn.ch, linux-renesas-soc@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] net: ethernet: ravb: Fix release of refclk
-From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20210417132329.6886-1-aford173@gmail.com>
-References: <20210417132329.6886-1-aford173@gmail.com>
-X-Mailer: Mew version 6.8 on Emacs 27.1
-Mime-Version: 1.0
-Content-Type: Text/Plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.6.2 (mail.monkeyblade.net [0.0.0.0]); Mon, 19 Apr 2021 15:45:46 -0700 (PDT)
+        id S230063AbhDSWrq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 19 Apr 2021 18:47:46 -0400
+Received: from mail.kernel.org ([198.145.29.99]:54926 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229714AbhDSWro (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 19 Apr 2021 18:47:44 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id D40646108B
+        for <netdev@vger.kernel.org>; Mon, 19 Apr 2021 22:47:12 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1618872432;
+        bh=+yGM8k3N1hvfgbB3yripFKTduuYlrssXdmGk19osRPI=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=NPMap7vBwXOxgecSjXjFop4JE9S3UO5jW7FjqzFEJ5ltMt10JdaBAydG2tEfNByxA
+         yr3xvNQKjfkS/CtvQgPC4mS0QTpLG04t6OOUa4pq4LapFYwTUQioP5OSau/ZwfkMSz
+         O9zOcxofapsqUdjUijKpPGTa6QwTB6EtGT27A7F6OG0owKPNiKmn2cbBCBWMQdsO8T
+         sSDGJ99fyDSZIrd0WQtATJFgDmghKhfjqBqFt/mNDmGGdW/kb26BoJy0A2XeWzRNl1
+         Olr07cKw7Q802vZaUOe3XyyeWsKpL3/ogoYTgAd8LnpqJiYQKFWiVqEVXDqcqAgJoO
+         c99vxyKw/4NfQ==
+Received: by mail-lj1-f172.google.com with SMTP id l22so33908343ljc.9
+        for <netdev@vger.kernel.org>; Mon, 19 Apr 2021 15:47:12 -0700 (PDT)
+X-Gm-Message-State: AOAM531iWpd3BUOD32RpwqugWMyxbBbl3AKyGQGXBhnzfHF6ZfjdHrsl
+        w2/Z2RVmBcPmWF2KBO2qQN+L5/oSiuslQ44mzPXoCQ==
+X-Google-Smtp-Source: ABdhPJypBmFQJq4PLzpKb0UDiaqSFGE/v6VhrBiEwAwvXdSUSQ4riFJm9UydkC3BES/9hm6gidEPC1dMOkUrNddbWTY=
+X-Received: by 2002:a05:651c:387:: with SMTP id e7mr13082013ljp.425.1618872431155;
+ Mon, 19 Apr 2021 15:47:11 -0700 (PDT)
+MIME-Version: 1.0
+References: <20210414195147.1624932-1-jolsa@kernel.org> <20210414195147.1624932-2-jolsa@kernel.org>
+ <CAEf4BzagYcy-UxbgXGC81B=K02-wUctvUSTFDySsR6B0cJdwaA@mail.gmail.com>
+In-Reply-To: <CAEf4BzagYcy-UxbgXGC81B=K02-wUctvUSTFDySsR6B0cJdwaA@mail.gmail.com>
+From:   KP Singh <kpsingh@kernel.org>
+Date:   Tue, 20 Apr 2021 00:47:00 +0200
+X-Gmail-Original-Message-ID: <CACYkzJ5osRepe1ruPH1cr6jCsyiwa78CU=TWRN0WyNh=CX+UDA@mail.gmail.com>
+Message-ID: <CACYkzJ5osRepe1ruPH1cr6jCsyiwa78CU=TWRN0WyNh=CX+UDA@mail.gmail.com>
+Subject: Re: [PATCHv5 bpf-next 1/7] bpf: Allow trampoline re-attach for
+ tracing and lsm programs
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Cc:     Jiri Olsa <jolsa@kernel.org>, Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andriin@fb.com>,
+        kernel test robot <lkp@intel.com>,
+        Julia Lawall <julia.lawall@lip6.fr>,
+        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Julia Lawall <julia.lawall@inria.fr>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Adam Ford <aford173@gmail.com>
-Date: Sat, 17 Apr 2021 08:23:29 -0500
+On Fri, Apr 16, 2021 at 1:22 AM Andrii Nakryiko
+<andrii.nakryiko@gmail.com> wrote:
+>
+> On Wed, Apr 14, 2021 at 5:44 PM Jiri Olsa <jolsa@kernel.org> wrote:
+> >
+> > Currently we don't allow re-attaching of trampolines. Once
+> > it's detached, it can't be re-attach even when the program
+> > is still loaded.
+> >
+> > Adding the possibility to re-attach the loaded tracing and
+> > lsm programs.
+> >
+> > Fixing missing unlock with proper cleanup goto jump reported
+> > by Julia.
+> >
+> > Reported-by: kernel test robot <lkp@intel.com>
+> > Reported-by: Julia Lawall <julia.lawall@lip6.fr>
+> > Acked-by: Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com>
+> > Signed-off-by: Jiri Olsa <jolsa@kernel.org>
+> > ---
+>
+> Acked-by: Andrii Nakryiko <andrii@kernel.org>
 
-> The call to clk_disable_unprepare() can happen before priv is
-> initialized. This means moving clk_disable_unprepare out of
-> out_release into a new label.
-> 
-> Fixes: 8ef7adc6beb2("net: ethernet: ravb: Enable optional refclk")
-> Signed-off-by: Adam Ford <aford173@gmail.com>
-Thjis does not apply cleanly, please rebbase and resubmit.
+Thanks!
 
-Please fix the formatting of your Fixes tag while you are at it, thank you.
+Acked-by: KP Singh <kpsingh@kernel.org>
