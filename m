@@ -2,40 +2,40 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 56CC0364C2C
-	for <lists+netdev@lfdr.de>; Mon, 19 Apr 2021 22:49:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 95009364C4D
+	for <lists+netdev@lfdr.de>; Mon, 19 Apr 2021 22:50:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243163AbhDSUtB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 19 Apr 2021 16:49:01 -0400
-Received: from mail.kernel.org ([198.145.29.99]:55494 "EHLO mail.kernel.org"
+        id S243072AbhDSUuU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 19 Apr 2021 16:50:20 -0400
+Received: from mail.kernel.org ([198.145.29.99]:54296 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S241413AbhDSUq7 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 19 Apr 2021 16:46:59 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 7AEC6613DE;
-        Mon, 19 Apr 2021 20:45:33 +0000 (UTC)
+        id S242752AbhDSUsS (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 19 Apr 2021 16:48:18 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id F2B95613BF;
+        Mon, 19 Apr 2021 20:45:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1618865134;
-        bh=uJpH5YPPJmhUxv7AM91hsYVccL/15UaUQyMRo4BWexo=;
+        s=k20201202; t=1618865143;
+        bh=lAr+LL3W7r8HRAc6tGy0txtJ3YSbBnQglZIChxaXQb0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=rjcFsthGpv0/vCYbb8CHx/J/zErEw/0SM3KLm6Ls5yPOjxSKzvu1P7BbdgPXFC2v+
-         wpoA3GSP3SdB29AWez037VIGZbpBt+VQUDbCVQMs0ztOQOT7pyWGm8D81FsKbdRbmd
-         R29X4L8yFvIHgh/t4YZLc1hXXH4xrd2t+d05gq84zsNhLYY/CabMwdbXIqjlhawCsE
-         OiQPzT9AwFxRX0hcNSBNaAfr4CVQPA2e75r8EJFaWxSmEHn1q1+2HFATrm7yM+Ye3D
-         elVM3/NocULvp+QKfuo8HwVlyw4XbH4OmVfZpzEKZyZ/uymF6A6zruHNBckTnW1wsP
-         2o+hxCKiGDxSw==
+        b=XuzmRaUpsmUuLG7K7fALD7junQfsSDKQPbi3o1yE/GVyPz6GdktdqRr4kBitt1ZQJ
+         1hhpRZ7ovHQgpx3Q2Jjx8xCBNOcjPoVwKX6o+6k5yo7PlD+6mzo53GgnrLC2+v2/q5
+         tuo/m5FhVr2KyGK50jI+ss09KGSPlghT2rXhQNty2sbeVlCNaq2D719kJkMIZD4H+b
+         xVkpKDB3/fCfn2YWLrK7sTcsCEHGxrmwkYWBBjvBTp1ozEzaR58EJLn8OTRlHy1Ek9
+         1ZffKQCZGwNq31OEynpED46nWVqs/jz3WuCxwzTkzjFvmUl9FIy9G9IbuTKcpJlsDm
+         utArttqKgKU6Q==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     John Paul Adrian Glaubitz <glaubitz@physik.fu-berlin.de>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.19 11/12] ia64: tools: remove duplicate definition of ia64_mf() on ia64
-Date:   Mon, 19 Apr 2021 16:45:16 -0400
-Message-Id: <20210419204517.6770-11-sashal@kernel.org>
+Cc:     Phillip Potter <phil@philpotter.co.uk>,
+        Eric Dumazet <edumazet@google.com>,
+        syzbot+2e406a9ac75bb71d4b7a@syzkaller.appspotmail.com,
+        "David S . Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.14 04/11] net: geneve: check skb is large enough for IPv4/IPv6 header
+Date:   Mon, 19 Apr 2021 16:45:29 -0400
+Message-Id: <20210419204536.6924-4-sashal@kernel.org>
 X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20210419204517.6770-1-sashal@kernel.org>
-References: <20210419204517.6770-1-sashal@kernel.org>
+In-Reply-To: <20210419204536.6924-1-sashal@kernel.org>
+References: <20210419204536.6924-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -44,57 +44,50 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: John Paul Adrian Glaubitz <glaubitz@physik.fu-berlin.de>
+From: Phillip Potter <phil@philpotter.co.uk>
 
-[ Upstream commit f4bf09dc3aaa4b07cd15630f2023f68cb2668809 ]
+[ Upstream commit 6628ddfec7580882f11fdc5c194a8ea781fdadfa ]
 
-The ia64_mf() macro defined in tools/arch/ia64/include/asm/barrier.h is
-already defined in <asm/gcc_intrin.h> on ia64 which causes libbpf
-failing to build:
+Check within geneve_xmit_skb/geneve6_xmit_skb that sk_buff structure
+is large enough to include IPv4 or IPv6 header, and reject if not. The
+geneve_xmit_skb portion and overall idea was contributed by Eric Dumazet.
+Fixes a KMSAN-found uninit-value bug reported by syzbot at:
+https://syzkaller.appspot.com/bug?id=abe95dc3e3e9667fc23b8d81f29ecad95c6f106f
 
-    CC       /usr/src/linux/tools/bpf/bpftool//libbpf/staticobjs/libbpf.o
-  In file included from /usr/src/linux/tools/include/asm/barrier.h:24,
-                   from /usr/src/linux/tools/include/linux/ring_buffer.h:4,
-                   from libbpf.c:37:
-  /usr/src/linux/tools/include/asm/../../arch/ia64/include/asm/barrier.h:43: error: "ia64_mf" redefined [-Werror]
-     43 | #define ia64_mf()       asm volatile ("mf" ::: "memory")
-        |
-  In file included from /usr/include/ia64-linux-gnu/asm/intrinsics.h:20,
-                   from /usr/include/ia64-linux-gnu/asm/swab.h:11,
-                   from /usr/include/linux/swab.h:8,
-                   from /usr/include/linux/byteorder/little_endian.h:13,
-                   from /usr/include/ia64-linux-gnu/asm/byteorder.h:5,
-                   from /usr/src/linux/tools/include/uapi/linux/perf_event.h:20,
-                   from libbpf.c:36:
-  /usr/include/ia64-linux-gnu/asm/gcc_intrin.h:382: note: this is the location of the previous definition
-    382 | #define ia64_mf() __asm__ volatile ("mf" ::: "memory")
-        |
-  cc1: all warnings being treated as errors
-
-Thus, remove the definition from tools/arch/ia64/include/asm/barrier.h.
-
-Signed-off-by: John Paul Adrian Glaubitz <glaubitz@physik.fu-berlin.de>
-Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
-Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
+Suggested-by: Eric Dumazet <edumazet@google.com>
+Reported-by: syzbot+2e406a9ac75bb71d4b7a@syzkaller.appspotmail.com
+Signed-off-by: Phillip Potter <phil@philpotter.co.uk>
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- tools/arch/ia64/include/asm/barrier.h | 3 ---
- 1 file changed, 3 deletions(-)
+ drivers/net/geneve.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
 
-diff --git a/tools/arch/ia64/include/asm/barrier.h b/tools/arch/ia64/include/asm/barrier.h
-index d808ee0e77b5..90f8bbd9aede 100644
---- a/tools/arch/ia64/include/asm/barrier.h
-+++ b/tools/arch/ia64/include/asm/barrier.h
-@@ -39,9 +39,6 @@
-  * sequential memory pages only.
-  */
+diff --git a/drivers/net/geneve.c b/drivers/net/geneve.c
+index f48006c22a8a..2a9bb13ecb54 100644
+--- a/drivers/net/geneve.c
++++ b/drivers/net/geneve.c
+@@ -835,6 +835,9 @@ static int geneve_xmit_skb(struct sk_buff *skb, struct net_device *dev,
+ 	__be16 df;
+ 	int err;
  
--/* XXX From arch/ia64/include/uapi/asm/gcc_intrin.h */
--#define ia64_mf()       asm volatile ("mf" ::: "memory")
--
- #define mb()		ia64_mf()
- #define rmb()		mb()
- #define wmb()		mb()
++	if (!pskb_network_may_pull(skb, sizeof(struct iphdr)))
++		return -EINVAL;
++
+ 	sport = udp_flow_src_port(geneve->net, skb, 1, USHRT_MAX, true);
+ 	rt = geneve_get_v4_rt(skb, dev, gs4, &fl4, info,
+ 			      geneve->info.key.tp_dst, sport);
+@@ -882,6 +885,9 @@ static int geneve6_xmit_skb(struct sk_buff *skb, struct net_device *dev,
+ 	__be16 sport;
+ 	int err;
+ 
++	if (!pskb_network_may_pull(skb, sizeof(struct ipv6hdr)))
++		return -EINVAL;
++
+ 	sport = udp_flow_src_port(geneve->net, skb, 1, USHRT_MAX, true);
+ 	dst = geneve_get_v6_dst(skb, dev, gs6, &fl6, info,
+ 				geneve->info.key.tp_dst, sport);
 -- 
 2.30.2
 
