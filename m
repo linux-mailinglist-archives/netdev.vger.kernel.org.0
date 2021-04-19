@@ -2,112 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D0D8C36457A
-	for <lists+netdev@lfdr.de>; Mon, 19 Apr 2021 15:57:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DFB73364591
+	for <lists+netdev@lfdr.de>; Mon, 19 Apr 2021 16:02:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233749AbhDSN53 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 19 Apr 2021 09:57:29 -0400
-Received: from szxga06-in.huawei.com ([45.249.212.32]:17377 "EHLO
-        szxga06-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231493AbhDSN52 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 19 Apr 2021 09:57:28 -0400
-Received: from DGGEMS411-HUB.china.huawei.com (unknown [172.30.72.60])
-        by szxga06-in.huawei.com (SkyGuard) with ESMTP id 4FP7c434ndzlYv5;
-        Mon, 19 Apr 2021 21:55:00 +0800 (CST)
-Received: from DESKTOP-9883QJJ.china.huawei.com (10.136.114.155) by
- DGGEMS411-HUB.china.huawei.com (10.3.19.211) with Microsoft SMTP Server id
- 14.3.498.0; Mon, 19 Apr 2021 21:56:47 +0800
-From:   zhudi <zhudi21@huawei.com>
-To:     <davem@davemloft.net>, <kuba@kernel.org>, <linyunsheng@huawei.com>
-CC:     <netdev@vger.kernel.org>, <zhudi21@huawei.com>,
-        <rose.chen@huawei.com>
-Subject: [PATCH v2] net: fix a data race when get vlan device
-Date:   Mon, 19 Apr 2021 21:56:41 +0800
-Message-ID: <20210419135641.27077-1-zhudi21@huawei.com>
-X-Mailer: git-send-email 2.27.0
+        id S240541AbhDSOC1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 19 Apr 2021 10:02:27 -0400
+Received: from youngberry.canonical.com ([91.189.89.112]:32953 "EHLO
+        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230021AbhDSOC0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 19 Apr 2021 10:02:26 -0400
+Received: from 1.general.cking.uk.vpn ([10.172.193.212] helo=localhost)
+        by youngberry.canonical.com with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
+        (Exim 4.86_2)
+        (envelope-from <colin.king@canonical.com>)
+        id 1lYUTJ-0006Ax-1e; Mon, 19 Apr 2021 14:01:53 +0000
+From:   Colin King <colin.king@canonical.com>
+To:     Kalle Valo <kvalo@codeaurora.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Arnd Bergmann <arnd@arndb.de>, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org
+Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH][next] wlcore: Fix buffer overrun by snprintf due to incorrect buffer size Content-Type: text/plain; charset="utf-8"
+Date:   Mon, 19 Apr 2021 15:01:52 +0100
+Message-Id: <20210419140152.180361-1-colin.king@canonical.com>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.136.114.155]
-X-CFilter-Loop: Reflected
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Di Zhu <zhudi21@huawei.com>
+From: Colin Ian King <colin.king@canonical.com>
 
-We encountered a crash: in the packet receiving process, we got an
-illegal VLAN device address, but the VLAN device address saved in vmcore
-is correct. After checking the code, we found a possible data
-competition:
-CPU 0:                             CPU 1:
-    (RCU read lock)                  (RTNL lock)
-    vlan_do_receive()		       register_vlan_dev()
-      vlan_find_dev()
+The size of the buffer than can be written to is currently incorrect, it is
+always the size of the entire buffer even though the snprintf is writing
+as position pos into the buffer. Fix this by setting the buffer size to be
+the number of bytes left in the buffer, namely sizeof(buf) - pos.
 
-        ->__vlan_group_get_device()	 ->vlan_group_prealloc_vid()
-
-In vlan_group_prealloc_vid(), We need to make sure that memset()
-in kzalloc() is executed before assigning  value to vlan devices array:
-=================================
-kzalloc()
-    ->memset(object, 0, size)
-
-smp_wmb()
-
-vg->vlan_devices_arrays[pidx][vidx] = array;
-==================================
-
-Because __vlan_group_get_device() function depends on this order.
-otherwise we may get a wrong address from the hardware cache on
-another cpu.
-
-So fix it by adding memory barrier instruction to ensure the order
-of memory operations.
-
-Signed-off-by: Di Zhu <zhudi21@huawei.com>
+Addresses-Coverity: ("Out-of-bounds access")
+Fixes: 7b0e2c4f6be3 ("wlcore: fix overlapping snprintf arguments in debugfs")
+Signed-off-by: Colin Ian King <colin.king@canonical.com>
 ---
-/* v1 */
-Link: https://lore.kernel.org/netdev/0d7c26f933eb4a95a170f021020e722e@huawei.com/
+ drivers/net/wireless/ti/wlcore/debugfs.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-/* v2 */
--linyunsheng <linyunsheng@huawei.com>
-  -update commit message
--add code comments
----
- net/8021q/vlan.c | 3 +++
- net/8021q/vlan.h | 4 ++++
- 2 files changed, 7 insertions(+)
-
-diff --git a/net/8021q/vlan.c b/net/8021q/vlan.c
-index 8b644113715e..fb3d3262dc1a 100644
---- a/net/8021q/vlan.c
-+++ b/net/8021q/vlan.c
-@@ -71,6 +71,9 @@ static int vlan_group_prealloc_vid(struct vlan_group *vg,
- 	if (array == NULL)
- 		return -ENOBUFS;
- 
-+	/* paired with smp_rmb() in __vlan_group_get_device() */
-+	smp_wmb();
-+
- 	vg->vlan_devices_arrays[pidx][vidx] = array;
- 	return 0;
- }
-diff --git a/net/8021q/vlan.h b/net/8021q/vlan.h
-index 953405362795..fa3ad3d4d58c 100644
---- a/net/8021q/vlan.h
-+++ b/net/8021q/vlan.h
-@@ -57,6 +57,10 @@ static inline struct net_device *__vlan_group_get_device(struct vlan_group *vg,
- 
- 	array = vg->vlan_devices_arrays[pidx]
- 				       [vlan_id / VLAN_GROUP_ARRAY_PART_LEN];
-+
-+	/* paired with smp_wmb() in vlan_group_prealloc_vid() */
-+	smp_rmb();
-+
- 	return array ? array[vlan_id % VLAN_GROUP_ARRAY_PART_LEN] : NULL;
- }
- 
+diff --git a/drivers/net/wireless/ti/wlcore/debugfs.h b/drivers/net/wireless/ti/wlcore/debugfs.h
+index 715edfa5f89f..a9e13e6d65c5 100644
+--- a/drivers/net/wireless/ti/wlcore/debugfs.h
++++ b/drivers/net/wireless/ti/wlcore/debugfs.h
+@@ -84,7 +84,7 @@ static ssize_t sub## _ ##name## _read(struct file *file,		\
+ 	wl1271_debugfs_update_stats(wl);				\
+ 									\
+ 	for (i = 0; i < len && pos < sizeof(buf); i++)			\
+-		pos += snprintf(buf + pos, sizeof(buf),			\
++		pos += snprintf(buf + pos, sizeof(buf) - pos,		\
+ 			 "[%d] = %d\n", i, stats->sub.name[i]);		\
+ 									\
+ 	return wl1271_format_buffer(userbuf, count, ppos, "%s", buf);	\
 -- 
-2.23.0
+2.30.2
 
