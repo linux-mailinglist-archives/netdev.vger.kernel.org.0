@@ -2,166 +2,201 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 37790363E07
-	for <lists+netdev@lfdr.de>; Mon, 19 Apr 2021 10:51:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 01467363E32
+	for <lists+netdev@lfdr.de>; Mon, 19 Apr 2021 11:03:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238447AbhDSIvr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 19 Apr 2021 04:51:47 -0400
-Received: from mail-mw2nam10on2076.outbound.protection.outlook.com ([40.107.94.76]:48865
-        "EHLO NAM10-MW2-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S238494AbhDSIvo (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 19 Apr 2021 04:51:44 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Fq/8m7Vf6TNt7syif2qfZyx8xmYMyXNa2PnjL6HDYewDa4UpSvQxmYvn3H1CPMfe5zm2kHRNT2Zokqc9QmniS/wdnBOCAi+gk4UaA8T2kZB2wZEUs4ZR7ve5Nu5DGAm+WjfrcKmQqbNTUNtHepHlEETYDfqYLubGnAukNi119POukIkxojXdMKc4arCBztE5YbFAQmPY7zjJPncJlQjV4/UI4NjVkMMD/Ssgkm1BGnR/dB1GeF9s4xAZ3UeG8e/3HeWTZLJ7K+YqksBxkSF3iqQWpUQ0Iy68aHFAFnwb/YQ5iA6TFhCRIUb9wWmI/HuAnkLC4U5P1bJUg/aFkmKk6g==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=kOiEe95cP/6kZdxz/piglLl3M1LlkkpF8TNaEMi2Iv8=;
- b=Uioz1/hNVcAl9JNXNXGVVTKxIjRvMXdISnEuI+tHec3xQhzSCm2ZfBZXofF/EXQ9Z3jZ6Y+ILxXc6jG9mr31ge8IrHJwF1aWd7u4xp2yG8qVJEkEjMAMyITA061KU+nvKydz+13pT7B8abx+e9dfD+zXRVY8ePKgEXBE+8q7UQh+CmQv9j3LNWT4SsEEUfVI/tjO293kCCl93z8CGJBLwFTiA+A/uKmAbkpilNqUbgtTZPtKAm7KToRv4z28iUcYoFe/8nRPkH1y4/MDNDoQpcF0+bvwhK8TtrF2COVvkt3T7SZ54AqCeHLsZKHHDPMKa7A9lscovcGzzYNYzlNT0g==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=kOiEe95cP/6kZdxz/piglLl3M1LlkkpF8TNaEMi2Iv8=;
- b=r3J/NVMhdntB8rDmRvUykdavF3h1HMdM+uFsB3fW8sxr8dbsw2apYn6muKb4vgXQX7e3luzZSpiEbyTQQjJllUi5yYVty0nMJJocgY8rCA4+jLlYsa18O9w7LOZyclf9mrqw5A5Fxh4nJs7+Q/0ikpnzNjinuH2Mgul3rFC8vQmUyLCCvfCLPAP/Q497SVPtlw7E8q1L4Ch4TR0GOspSV1Yq3c5kvaTWxEz+hV200551f5uEFZcieAHfQDzRv8GxEkfCwKnyuF2/vsvQDCB+wrIIvyXAHe2zwZ1sJTFP0hkOCLWaYBNC/LcCn3coEz8paaRUk2k4G08tatFKprz+TA==
-Authentication-Results: waldekranz.com; dkim=none (message not signed)
- header.d=none;waldekranz.com; dmarc=none action=none header.from=nvidia.com;
-Received: from DM6PR12MB4403.namprd12.prod.outlook.com (2603:10b6:5:2ab::24)
- by DM6PR12MB4652.namprd12.prod.outlook.com (2603:10b6:5:1d6::20) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4042.19; Mon, 19 Apr
- 2021 08:51:13 +0000
-Received: from DM6PR12MB4403.namprd12.prod.outlook.com
- ([fe80::a1a4:912e:61ce:e393]) by DM6PR12MB4403.namprd12.prod.outlook.com
- ([fe80::a1a4:912e:61ce:e393%9]) with mapi id 15.20.4042.024; Mon, 19 Apr 2021
- 08:51:13 +0000
-Subject: Re: [PATCH resend net-next 2/2] net: bridge: switchdev: include local
- flag in FDB notifications
-To:     Vladimir Oltean <olteanv@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
-Cc:     Ioana Ciornei <ioana.ciornei@nxp.com>,
-        Vadym Kochan <vkochan@marvell.com>,
-        Taras Chornyi <tchornyi@marvell.com>,
-        Jiri Pirko <jiri@nvidia.com>, Ido Schimmel <idosch@nvidia.com>,
-        Grygorii Strashko <grygorii.strashko@ti.com>,
-        Ivan Vecera <ivecera@redhat.com>,
-        Roopa Prabhu <roopa@nvidia.com>, Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        linux-omap@vger.kernel.org,
-        Vladimir Oltean <vladimir.oltean@nxp.com>,
-        Tobias Waldekranz <tobias@waldekranz.com>
-References: <20210414165256.1837753-1-olteanv@gmail.com>
- <20210414165256.1837753-3-olteanv@gmail.com>
-From:   Nikolay Aleksandrov <nikolay@nvidia.com>
-Message-ID: <1b4d616e-35e3-6699-3031-66ea469d4e7f@nvidia.com>
-Date:   Mon, 19 Apr 2021 11:51:03 +0300
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.8.1
-In-Reply-To: <20210414165256.1837753-3-olteanv@gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [213.179.129.39]
-X-ClientProxiedBy: ZR0P278CA0063.CHEP278.PROD.OUTLOOK.COM
- (2603:10a6:910:21::14) To DM6PR12MB4403.namprd12.prod.outlook.com
- (2603:10b6:5:2ab::24)
+        id S238489AbhDSJEO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 19 Apr 2021 05:04:14 -0400
+Received: from mail-vs1-f42.google.com ([209.85.217.42]:45817 "EHLO
+        mail-vs1-f42.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232023AbhDSJEH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 19 Apr 2021 05:04:07 -0400
+Received: by mail-vs1-f42.google.com with SMTP id r18so11290945vso.12;
+        Mon, 19 Apr 2021 02:03:36 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=YToQwZXN38nw8LU8icFLB58IB4Z2bfPdJB1gmWWtNj8=;
+        b=A1Gpw+KFRJ5RhzhK+MGm++v8ObABj3dTeD508KFrtbc7QA6wHjlVZ2wNnWA24Wm9qH
+         ZKWLhV244NO6o89Q6GspL4KaDDCWQc/Rr0lI8uQM9BsphAET/ujIJWTHUA1h7jBEwzzW
+         gv/iCoYzQS4SvHHOcATnexFXSRoVMjraHKTV+/t85IwQkFQaED92dtBjnuALNFqwThKN
+         z8L5EyISOQt0QtbWAEW05YxhRnGFqVcyi1gd0L1BXkCfBRVhGOdz52vO39RafdkWMRmK
+         kzyLacR5FJFpb72oawG1qLHU0bX4NRH6I6iQwZyC7mGmdOg6y4SDXDXw5wjp8+K6il+R
+         G38A==
+X-Gm-Message-State: AOAM530na+Q6FqX6tSAED3u+1sIRzHBwXKGnEtFn2I1lwzoVJ8frs1J3
+        NlCcjGhqMeS3WvdliarIHFqAUxE0pVenbDkJUPc=
+X-Google-Smtp-Source: ABdhPJxHtnj/DXie9H0wxpzVZlSTyniokdUb/gsNNsMkANVtAtzr2mFBhczBYEoBurfSWsjRkBkPBhRAOOMrjVGBWsw=
+X-Received: by 2002:a67:7c8c:: with SMTP id x134mr13821818vsc.40.1618823016409;
+ Mon, 19 Apr 2021 02:03:36 -0700 (PDT)
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from [10.21.241.215] (213.179.129.39) by ZR0P278CA0063.CHEP278.PROD.OUTLOOK.COM (2603:10a6:910:21::14) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4042.16 via Frontend Transport; Mon, 19 Apr 2021 08:51:08 +0000
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: f983f0b0-fc2b-4744-9ab4-08d9031048f2
-X-MS-TrafficTypeDiagnostic: DM6PR12MB4652:
-X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <DM6PR12MB4652506D91343506975665A3DF499@DM6PR12MB4652.namprd12.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:7691;
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: oLfQKr9KyTxzvvnvDo6Ncdy8MsAsLffXoXE25BLeGEcxF2evxBENwCsDDXIuCxObYOqJ8VFFBT7lGBxEGMOt7C0gINL21AtK0p1AouejHXitfx9+iqBM7jvAi4i6+/VVFUzXNTFhc0VkC/Do/kPYU+5J7k0Ex8LmO5hIAn8d30H0wNf9/nFHjTjel3n+jzSa734OTdnTkt9AZyrFPcZrczMIoJtZkFwRKxgHD9nMFLStBgRtA7WS+F2Yc814NalE/2Rj357JQQ41mo1bQrGCWH575H6z7MWhTrcnJCNK8I2hQ+iPLKxmZ+qqvQftfW7rvhQtSg8xxXB4O4FMC52yIuQx3Pf/F05U6fRyWx3usk4tX/SQR78TYpuisbyVD+1pnxSa+DZLBo+mSEucCadRtbu5iMOQssEGWaUsh0dG2oBPDlVlZ/Uhgtqh4Btng79THPq7LY1+EbLkm6x2kgoR1RD5Uh5HrV4SLexkS2v0ijXo+NehBXkvAQKadB/sKb1cc7fGZvQXe6inQJGOmuOUJrouNOG9gEyIt3aT8JetfXslTn3QZ4hoIIJ7qAHRh1WLV4Fsk1fRsoxEwpO7srlVyEvJGl5GB1Sj4L2+jHZMIog3XNtxgpl8qD2LQFlnfwf399lohp++jorTia0MN4OpVBK2I6+cAYuMICPLG8pWwKANh+ip8/eMiuMnjxka4tgj/M94WebGgQOpmHglOCA9cOSQIAlW3OJ1rqpP6bVgXSC8TfH0fbE+G5OYWLSOgpzk3aNe9Ky/M/sxfdOhFHVuPA==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM6PR12MB4403.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(346002)(396003)(136003)(376002)(39860400002)(366004)(16576012)(316002)(66946007)(6486002)(6666004)(36756003)(2616005)(4326008)(956004)(478600001)(66556008)(8936002)(8676002)(31696002)(5660300002)(31686004)(66476007)(26005)(54906003)(2906002)(83380400001)(16526019)(86362001)(110136005)(186003)(38100700002)(53546011)(966005)(7416002)(45980500001)(43740500002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData: =?utf-8?B?cWtHWWJBcXU2SmMrc2g4NWY2c29lcXpWclZsN2tsaUt6QnN1U0NrQm9XVW4x?=
- =?utf-8?B?dEN4SGlCWkovTDByQmZGWjJtdVN5czZsL2tERm00MzJRUzREbG8xUW1Yb1kw?=
- =?utf-8?B?Q3F4Vy9EOWhKNWlYbTJPejJBNHZMUjc5SVZtaWYyZEpyemNGMzMxRmF5WDZZ?=
- =?utf-8?B?ckZDUkZHb1dvb0ZvMjh6TVJaOVVmQzBNbllKc2JmenhxbHpyTThZc2hrN1dw?=
- =?utf-8?B?bGxzakxISWZDQWpKOFhlS3hRZEZpbkY0amdpdjdGTGJHVmVaaGJWSjdZVUJ0?=
- =?utf-8?B?Z3VqM2FnVklKajZKRDFOazI2QlQvMFVWQmEzRGNzL2lHQWhYcTFiUXljSmQz?=
- =?utf-8?B?OThCbmhINFRTb3lHcmlRZFBaa2VFZkQzb3NsRERGYkFTWEFCOTlvNDZ5bC9N?=
- =?utf-8?B?ekxrOXBUaVV3WHVCQTlyQzFiNkt6VkZkeFpzOEpicCtTS2N0UEtDUm9ncHpY?=
- =?utf-8?B?aERrT1djaTlxa1V0UnJOcitGZzlob0ZPRnBBL0JuRjJSVDE3dVRKVDFEcFhl?=
- =?utf-8?B?YUdtdkZYcm5CQWtEbXcwUW94VkpabzcwdGRSOEY1TmRRVXNoR3BGNGdIaWRQ?=
- =?utf-8?B?cldEYjBRcW1IbXhoQnc0aFNoY1RzakZCKzV6M0MrZEY0amFJOW42aU9iaTlu?=
- =?utf-8?B?SXBrYUpNZ3V3eG1jVzZhcjJuTkxPS284dk5zVCt2SlVBWVkvdG1QQzdDTE52?=
- =?utf-8?B?SkZUUFdoZEJrcGw2cEYwNFNoSHoySncva3lsQmllcHBwQkV3OStIaWQyM3pm?=
- =?utf-8?B?czV0UzdkdnB5UUZZNy9OOWdKMnFzYVVhM3N6RFQyYjVqaHRaVzhDRmhZOS94?=
- =?utf-8?B?YTd1ODQzWWJVOE1hOXRlQlRFcFU4YStoNERHVVkwMjlIS2tuL2V2VnIyOEQx?=
- =?utf-8?B?MnY4MktIaGgyMUJ5eVV1S2F0SHZ1clp4aUxTbjh0UlBxaUhkbWtCU3JCVzBM?=
- =?utf-8?B?Mk1HbUhJSDJPRTNhODZVUHJpaGFlNkp5MFl2ckQ4Y0dyakpkbTNpTVVRdGlY?=
- =?utf-8?B?T1lyNG8rTTN1eVRLM29sdWJxRitQb2dPTDZzVlBodG5tTkRvME90bHVRNFFE?=
- =?utf-8?B?cDdOZWhKSzVFQzR2UkNTM0xvbE14RFAwSXlCQ1phakcvWFhGS2JGVVcyaUdz?=
- =?utf-8?B?YW1qMEppY2JweEkvdVhmdm0yNVU3bGtZelhiSlNDdGJEOHpVVG1TaHROcDFH?=
- =?utf-8?B?U29YaVoxMU81Z0t0RjJ3V0lObWl2YlRvTFlnOVJVY1ZTQXZ2Y3daeG04Ull0?=
- =?utf-8?B?Z05UTTloRHdNaE0ySHRFTWZWcUh5RklnT3hUQkRYU2NpSERrRzVZVnJxOThK?=
- =?utf-8?B?R3YveVdVN0d1QmN5a3dVNC9IOHk4Q3ZkRkp5eTZNSE9YVW9uQWoxWVFic21r?=
- =?utf-8?B?WEhUZEM5b2tVN2gyVE5WYm94N3lWVkhNandmRTljeUxJZS9INE5WOWhtQTV1?=
- =?utf-8?B?bkViMkkrTFVhT0l5UFZtMExwc0FPTnpIRU5KZlJuNWhJemNxeUk1VzFXVUZF?=
- =?utf-8?B?aHRwb25MVUxBcWkrYzFDTXhyaHZMLzNiZW8yb0NISVowYndxaVVqU3BWYVFH?=
- =?utf-8?B?eU9SS2VyTDZPa2RFeWV5VUR0a2g3dXdQNHhRNzgya1RPMHNqRGE5eFpNcm4w?=
- =?utf-8?B?YnFLV28rcUl0dUV0SXdhR0thTWhmWnRHb1lKa2pDQ2lUc3lLTGRBWVJSYWJP?=
- =?utf-8?B?S0xWWWZMaEdtcnNXWlNhaG1zU2E4REtKcENmWWlFQWFmbkhnTU5KVUhGWWN0?=
- =?utf-8?Q?xRXEk4rvm0ekQxipRKPBqQW7bYmSJkFwWoDIFdM?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: f983f0b0-fc2b-4744-9ab4-08d9031048f2
-X-MS-Exchange-CrossTenant-AuthSource: DM6PR12MB4403.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 19 Apr 2021 08:51:13.4625
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 8rllAyYOWhTFV+7unFtScZw9jocHI1eowdTsMq9NkX3JAMyOntHAZbfLT25v0kXL6gFgeqlqJwEKveYCf6eMBg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR12MB4652
+References: <20210419042722.27554-1-alice.guo@oss.nxp.com> <20210419042722.27554-4-alice.guo@oss.nxp.com>
+ <YH0O907dfGY9jQRZ@atmark-techno.com>
+In-Reply-To: <YH0O907dfGY9jQRZ@atmark-techno.com>
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+Date:   Mon, 19 Apr 2021 11:03:24 +0200
+Message-ID: <CAMuHMdVY1SLZ0K30T2pimyrR6Mm=VoSTO=L-xxCy2Bj7_kostw@mail.gmail.com>
+Subject: Re: [RFC v1 PATCH 3/3] driver: update all the code that use soc_device_match
+To:     Dominique MARTINET <dominique.martinet@atmark-techno.com>
+Cc:     "Alice Guo (OSS)" <alice.guo@oss.nxp.com>,
+        gregkh@linuxfoundation.org, rafael@kernel.org,
+        horia.geanta@nxp.com, aymen.sghaier@nxp.com,
+        herbert@gondor.apana.org.au, davem@davemloft.net, tony@atomide.com,
+        geert+renesas@glider.be, mturquette@baylibre.com, sboyd@kernel.org,
+        vkoul@kernel.org, peter.ujfalusi@gmail.com, a.hajda@samsung.com,
+        narmstrong@baylibre.com, robert.foss@linaro.org, airlied@linux.ie,
+        daniel@ffwll.ch, khilman@baylibre.com, tomba@kernel.org,
+        jyri.sarha@iki.fi, joro@8bytes.org, will@kernel.org,
+        mchehab@kernel.org, ulf.hansson@linaro.org,
+        adrian.hunter@intel.com, kishon@ti.com, kuba@kernel.org,
+        linus.walleij@linaro.org, Roy.Pledge@nxp.com, leoyang.li@nxp.com,
+        ssantosh@kernel.org, matthias.bgg@gmail.com, edubezval@gmail.com,
+        j-keerthy@ti.com, balbi@kernel.org, linux@prisktech.co.nz,
+        stern@rowland.harvard.edu, wim@linux-watchdog.org,
+        linux@roeck-us.net, linux-kernel@vger.kernel.org,
+        linux-crypto@vger.kernel.org, linux-omap@vger.kernel.org,
+        linux-renesas-soc@vger.kernel.org, linux-clk@vger.kernel.org,
+        dmaengine@vger.kernel.org, dri-devel@lists.freedesktop.org,
+        linux-amlogic@lists.infradead.org,
+        linux-arm-kernel@lists.infradead.org,
+        iommu@lists.linux-foundation.org, linux-media@vger.kernel.org,
+        linux-mmc@vger.kernel.org, netdev@vger.kernel.org,
+        linux-phy@lists.infradead.org, linux-gpio@vger.kernel.org,
+        linuxppc-dev@lists.ozlabs.org, linux-staging@lists.linux.dev,
+        linux-mediatek@lists.infradead.org, linux-pm@vger.kernel.org,
+        linux-usb@vger.kernel.org, linux-watchdog@vger.kernel.org,
+        Arnd Bergmann <arnd@arndb.de>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 14/04/2021 19:52, Vladimir Oltean wrote:
-> From: Vladimir Oltean <vladimir.oltean@nxp.com>
-> 
-> As explained in bugfix commit 6ab4c3117aec ("net: bridge: don't notify
-> switchdev for local FDB addresses") as well as in this discussion:
-> https://lore.kernel.org/netdev/20210117193009.io3nungdwuzmo5f7@skbuf/
-> 
-> the switchdev notifiers for FDB entries managed to have a zero-day bug,
-> which was that drivers would not know what to do with local FDB entries,
-> because they were not told that they are local. The bug fix was to
-> simply not notify them of those addresses.
-> 
-> Let us now add the 'is_local' bit to bridge FDB entries, and make all
-> drivers ignore these entries by their own choice.
-> 
-> Co-developed-by: Tobias Waldekranz <tobias@waldekranz.com>
-> Signed-off-by: Tobias Waldekranz <tobias@waldekranz.com>
-> Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
-> ---
->  drivers/net/ethernet/freescale/dpaa2/dpaa2-switch.c        | 4 ++--
->  drivers/net/ethernet/marvell/prestera/prestera_switchdev.c | 2 +-
->  drivers/net/ethernet/mellanox/mlxsw/spectrum_switchdev.c   | 5 +++--
->  drivers/net/ethernet/rocker/rocker_main.c                  | 4 ++--
->  drivers/net/ethernet/ti/am65-cpsw-switchdev.c              | 4 ++--
->  drivers/net/ethernet/ti/cpsw_switchdev.c                   | 4 ++--
->  include/net/switchdev.h                                    | 1 +
->  net/bridge/br_switchdev.c                                  | 3 +--
->  net/dsa/slave.c                                            | 2 +-
->  9 files changed, 15 insertions(+), 14 deletions(-)
-> 
+Hi Dominique,
 
-For the bridge change:
-Acked-by: Nikolay Aleksandrov <nikolay@nvidia.com>
+CC Arnd (soc_device_match() author)
 
+On Mon, Apr 19, 2021 at 7:03 AM Dominique MARTINET
+<dominique.martinet@atmark-techno.com> wrote:
+> Alice Guo (OSS) wrote on Mon, Apr 19, 2021 at 12:27:22PM +0800:
+> > From: Alice Guo <alice.guo@nxp.com>
+> > Update all the code that use soc_device_match
+>
+> A single patch might be difficult to accept for all components, a each
+> maintainer will probably want to have a say on their subsystem?
+>
+> I would suggest to split these for a non-RFC version; a this will really
+> need to be case-by-case handling.
+>
+> > because add support for soc_device_match returning -EPROBE_DEFER.
+>
+> (English does not parse here for me)
+>
+> I've only commented a couple of places in the code itself, but this
+> doesn't seem to add much support for errors, just sweep the problem
+> under the rug.
+>
+> > Signed-off-by: Alice Guo <alice.guo@nxp.com>
+> > ---
+> >
+> > diff --git a/drivers/bus/ti-sysc.c b/drivers/bus/ti-sysc.c
+> > index 5fae60f8c135..00c59aa217c1 100644
+> > --- a/drivers/bus/ti-sysc.c
+> > +++ b/drivers/bus/ti-sysc.c
+> > @@ -2909,7 +2909,7 @@ static int sysc_init_soc(struct sysc *ddata)
+> >       }
+> >
+> >       match = soc_device_match(sysc_soc_feat_match);
+> > -     if (!match)
+> > +     if (!match || IS_ERR(match))
+> >               return 0;
+>
+> This function handles errors, I would recommend returning the error as
+> is if soc_device_match returned one so the probe can be retried later.
 
+Depends...
+
+> > --- a/drivers/clk/renesas/r8a7795-cpg-mssr.c
+> > +++ b/drivers/clk/renesas/r8a7795-cpg-mssr.c
+> > @@ -439,6 +439,7 @@ static const unsigned int r8a7795es2_mod_nullify[] __initconst = {
+> >
+> >  static int __init r8a7795_cpg_mssr_init(struct device *dev)
+> >  {
+> > +     const struct soc_device_attribute *match;
+> >       const struct rcar_gen3_cpg_pll_config *cpg_pll_config;
+> >       u32 cpg_mode;
+> >       int error;
+> > @@ -453,7 +454,8 @@ static int __init r8a7795_cpg_mssr_init(struct device *dev)
+> >               return -EINVAL;
+> >       }
+> >
+> > -     if (soc_device_match(r8a7795es1)) {
+> > +     match = soc_device_match(r8a7795es1);
+> > +     if (!IS_ERR(match) && match) {
+>
+> Same, return the error.
+> Assuming an error means no match will just lead to hard to debug
+> problems because the driver potentially assumed the wrong device when
+> it's just not ready yet.
+
+When running on R-Car H3, there will always be a match device, as
+the SoC device is registered early.
+
+>
+> >               cpg_core_nullify_range(r8a7795_core_clks,
+> >                                      ARRAY_SIZE(r8a7795_core_clks),
+> >                                      R8A7795_CLK_S0D2, R8A7795_CLK_S0D12);
+> > [...]
+> > diff --git a/drivers/iommu/ipmmu-vmsa.c b/drivers/iommu/ipmmu-vmsa.c
+> > index eaaec0a55cc6..13a06b613379 100644
+> > --- a/drivers/iommu/ipmmu-vmsa.c
+> > +++ b/drivers/iommu/ipmmu-vmsa.c
+> > @@ -757,17 +757,20 @@ static const char * const devices_allowlist[] = {
+> >
+> >  static bool ipmmu_device_is_allowed(struct device *dev)
+> >  {
+> > +     const struct soc_device_attribute *match1, *match2;
+> >       unsigned int i;
+> >
+> >       /*
+> >        * R-Car Gen3 and RZ/G2 use the allow list to opt-in devices.
+> >        * For Other SoCs, this returns true anyway.
+> >        */
+> > -     if (!soc_device_match(soc_needs_opt_in))
+> > +     match1 = soc_device_match(soc_needs_opt_in);
+> > +     if (!IS_ERR(match1) && !match1)
+>
+> I'm not sure what you intended to do, but !match1 already means there is
+> no error so the original code is identical.
+>
+> In this case ipmmu_device_is_allowed does not allow errors so this is
+> one of the "difficult" drivers that require slightly more thinking.
+> It is only called in ipmmu_of_xlate which does return errors properly,
+> so in this case the most straightforward approach would be to make
+> ipmmu_device_is_allowed return an int and forward errors as well.
+>
+> ...
+> This is going to need quite some more work to be acceptable, in my
+> opinion, but I think it should be possible.
+
+In general, this is very hard to do, IMHO. Some drivers may be used on
+multiple platforms, some of them registering an SoC device, some of
+them not registering an SoC device.  So there is no way to know the
+difference between "SoC device not registered, intentionally", and
+"SoC device not yet registered".
+
+soc_device_match() should only be used as a last resort, to identify
+systems that cannot be identified otherwise.  Typically this is used for
+quirks, which should only be enabled on a very specific subset of
+systems.  IMHO such systems should make sure soc_device_match()
+is available early, by registering their SoC device early.
+
+Gr{oetje,eeting}s,
+
+                        Geert
+
+-- 
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
