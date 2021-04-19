@@ -2,82 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 66280364DE2
-	for <lists+netdev@lfdr.de>; Tue, 20 Apr 2021 00:55:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9B3AB364E5B
+	for <lists+netdev@lfdr.de>; Tue, 20 Apr 2021 00:59:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230295AbhDSWza (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 19 Apr 2021 18:55:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44764 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229714AbhDSWz2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 19 Apr 2021 18:55:28 -0400
-Received: from mail-lf1-x12b.google.com (mail-lf1-x12b.google.com [IPv6:2a00:1450:4864:20::12b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E785C06174A
-        for <netdev@vger.kernel.org>; Mon, 19 Apr 2021 15:54:58 -0700 (PDT)
-Received: by mail-lf1-x12b.google.com with SMTP id r128so31534511lff.4
-        for <netdev@vger.kernel.org>; Mon, 19 Apr 2021 15:54:58 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=Szi10f1gjvkxJCO6gaa+zlyiqVqLdtTWxp2/9wQh+OE=;
-        b=IGo0P01QsH2xvHDHtqG+RFeEQM3Lfnl78FhXukWQp7Qnqy0E3aBcmGBu72cQQnpxD5
-         ikzwCEAMcaV6/2Qs8HtMP3qNnHAqOj+WstJvpxeERiLvgYpYjA9jRpp2k+zWpOP8u00Q
-         alXdgq6gJtnIDpmYZ+2LghAGpJbfS/YUobvp8O+EmmKxBod3DV8c4t70IYZo/yM/5UmO
-         jmxPzpl7YKoVok2okWG6wBZ+KjUNyOSpmshPjjkDOC2WqZDSJb1Z5AlnSBSyENfVhrmh
-         biK6hat0p+py39syT8pRdRdPTs+3bHnZqF8K+43ihudwFxd5olpx1QbP0gNrjrwE0rLU
-         FI+g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=Szi10f1gjvkxJCO6gaa+zlyiqVqLdtTWxp2/9wQh+OE=;
-        b=nExfjfLsum96ewA4mLKQIfl1BAvamJkto4VUSDmvuhNsNX1QRdJU1P6YmZOdyGqkr7
-         9ApbrlejdBfwxto4MsiYv4mGp1p2brD4er+m7CMn+G8h7wUZQ6kvydUULu6N9ZT7T53j
-         d3FC9hqNAGLHfeeWd2Q2LSVaCAvXDWyoKwGQ92rFONHinG2NeHBGE0LpxdaikCDlyy15
-         hxPhymrAPJ8ln2XrP9YpvEosSNdaq19iBgsWlInHhuQOHEfT0Yf7Vdj7flvFriQtDlBh
-         kSYC/ezQthr47+POuzihc92O6Q/9EJlHgn7z15VVgmppX4WkyLSZxzWJvMy3H/SH6OF7
-         4LJw==
-X-Gm-Message-State: AOAM533wwxS36+tl93euJu55hUYTc5Uq07Xz3nCIYoTaPTnI6BDuCxwE
-        vXgRMRWzFIYFCCD1lnXItFzKIeSKl5v4z9sl3JPwZOgQgW4=
-X-Google-Smtp-Source: ABdhPJyXTOBbGGVMP9MS3w4VY3AS4Y2rcR53y0L9L3l5Onv7WEw6dJVecCC8j0K4wegnxucvrK3WEC2P+WmHh6LvuBQ=
-X-Received: by 2002:a19:c38c:: with SMTP id t134mr14161114lff.29.1618872896802;
- Mon, 19 Apr 2021 15:54:56 -0700 (PDT)
+        id S232800AbhDSW7P (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 19 Apr 2021 18:59:15 -0400
+Received: from gateway31.websitewelcome.com ([192.185.143.46]:11053 "EHLO
+        gateway31.websitewelcome.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S233317AbhDSW7E (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 19 Apr 2021 18:59:04 -0400
+Received: from cm17.websitewelcome.com (cm17.websitewelcome.com [100.42.49.20])
+        by gateway31.websitewelcome.com (Postfix) with ESMTP id 488FA5FDA7
+        for <netdev@vger.kernel.org>; Mon, 19 Apr 2021 17:58:33 -0500 (CDT)
+Received: from gator4166.hostgator.com ([108.167.133.22])
+        by cmsmtp with SMTP
+        id Ycqfl1jcdMGeEYcqflPxqC; Mon, 19 Apr 2021 17:58:33 -0500
+X-Authority-Reason: nr=8
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=embeddedor.com; s=default; h=Content-Transfer-Encoding:Content-Type:
+        In-Reply-To:MIME-Version:Date:Message-ID:From:References:Cc:To:Subject:Sender
+        :Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
+        Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
+        List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=HSwcUpoOJnXwy9FUWCUDqISxnv3zkq1DVf8wvqzFEr0=; b=BvljQjnbdpu8RmeO4AFnQNsFrG
+        NidTTAVI57LZ/J2KDjmbAu7FNej4A6OqWy0McVvbePr1On80nZDp5d6dSdFLLtoXvfqalwR/mtox5
+        vfu7kaWx0KLLVyZ/PosuE8v8JjIOtytLvU7MbVb5zSrPu91Ph1caCNssqaZp9zcJJQj2y/er+2PFS
+        hX+Y47e2dakcdxmAf8/3vpInY9DiLqH+HVOPB5utF++XyeO8IPnAuFGdjfvZAxGS8gP2O8LTQzmc1
+        kr6oXcd1YuK5Wf82wKLg29FuGD2Y5sVty7f79O2n+sZseztgxiE2hoN7uym6RNvrUTRrccEHd11ge
+        jChUgS+g==;
+Received: from 187-162-31-110.static.axtel.net ([187.162.31.110]:48156 helo=[192.168.15.8])
+        by gator4166.hostgator.com with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
+        (Exim 4.94)
+        (envelope-from <gustavo@embeddedor.com>)
+        id 1lYcqb-0044Xd-ON; Mon, 19 Apr 2021 17:58:29 -0500
+Subject: Re: [PATCH RESEND][next] rtl8xxxu: Fix fall-through warnings for
+ Clang
+To:     Kalle Valo <kvalo@codeaurora.org>,
+        "Gustavo A. R. Silva" <gustavoars@kernel.org>
+Cc:     Jes Sorensen <Jes.Sorensen@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-hardening@vger.kernel.org,
+        Kees Cook <keescook@chromium.org>
+References: <20210305094850.GA141221@embeddedor>
+ <20210417175201.280F9C4338A@smtp.codeaurora.org>
+From:   "Gustavo A. R. Silva" <gustavo@embeddedor.com>
+Message-ID: <0b096033-7daf-fae7-9ea9-37038b979616@embeddedor.com>
+Date:   Mon, 19 Apr 2021 17:58:42 -0500
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.7.1
 MIME-Version: 1.0
-References: <20210419225133.2005360-1-linus.walleij@linaro.org> <20210419225133.2005360-3-linus.walleij@linaro.org>
-In-Reply-To: <20210419225133.2005360-3-linus.walleij@linaro.org>
-From:   Linus Walleij <linus.walleij@linaro.org>
-Date:   Tue, 20 Apr 2021 00:54:45 +0200
-Message-ID: <CACRpkdaJtmaxK6nHwBw=TX-8_JgBX5V6JCCh4tyq44LcC=JH2Q@mail.gmail.com>
-Subject: Re: [PATCH 3/3] net: ethernet: ixp4xx: Use OF MDIO bus registration
-To:     netdev <netdev@vger.kernel.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     Zoltan HERPAI <wigyori@uid0.hu>, Raylynn Knight <rayknight@me.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <20210417175201.280F9C4338A@smtp.codeaurora.org>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
+X-AntiAbuse: Primary Hostname - gator4166.hostgator.com
+X-AntiAbuse: Original Domain - vger.kernel.org
+X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
+X-AntiAbuse: Sender Address Domain - embeddedor.com
+X-BWhitelist: no
+X-Source-IP: 187.162.31.110
+X-Source-L: No
+X-Exim-ID: 1lYcqb-0044Xd-ON
+X-Source: 
+X-Source-Args: 
+X-Source-Dir: 
+X-Source-Sender: 187-162-31-110.static.axtel.net ([192.168.15.8]) [187.162.31.110]:48156
+X-Source-Auth: gustavo@embeddedor.com
+X-Email-Count: 19
+X-Source-Cap: Z3V6aWRpbmU7Z3V6aWRpbmU7Z2F0b3I0MTY2Lmhvc3RnYXRvci5jb20=
+X-Local-Domain: yes
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Apr 20, 2021 at 12:51 AM Linus Walleij <linus.walleij@linaro.org> wrote:
 
-> This augments the IXP4xx to use the OF MDIO bus code when
-> registering the MDIO bus and when looking up the PHY
-> for the ethernet network device.
->
-> Cc: Zoltan HERPAI <wigyori@uid0.hu>
-> Cc: Raylynn Knight <rayknight@me.com>
-> Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
-> ---
-> ChangeLog v1->v2:
-> - New patch making use of more OF infrastructure.
 
-Realized after sending that the MDIO people wanna look at this
-too so adding them to CC, tell me if you want me to resend the
-patch.
+On 4/17/21 12:52, Kalle Valo wrote:
+> "Gustavo A. R. Silva" <gustavoars@kernel.org> wrote:
+> 
+>> In preparation to enable -Wimplicit-fallthrough for Clang, fix
+>> multiple warnings by replacing /* fall through */ comments with
+>> the new pseudo-keyword macro fallthrough; instead of letting the
+>> code fall through to the next case.
+>>
+>> Notice that Clang doesn't recognize /* fall through */ comments as
+>> implicit fall-through markings.
+>>
+>> Link: https://github.com/KSPP/linux/issues/115
+>> Signed-off-by: Gustavo A. R. Silva <gustavoars@kernel.org>
+> 
+> Patch applied to wireless-drivers-next.git, thanks.
+> 
+> bf3365a856a1 rtl8xxxu: Fix fall-through warnings for Clang
 
-Yours,
-Linus Walleij
+Thanks for this, Kalle.
+
+Could you take this series too, please?
+
+https://lore.kernel.org/lkml/cover.1618442265.git.gustavoars@kernel.org/
+
+Thanks
+--
+Gustavo
+
