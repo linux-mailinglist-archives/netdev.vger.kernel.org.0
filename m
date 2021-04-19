@@ -2,75 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1D9B8364AF1
-	for <lists+netdev@lfdr.de>; Mon, 19 Apr 2021 22:02:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CBF72364AF4
+	for <lists+netdev@lfdr.de>; Mon, 19 Apr 2021 22:03:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242037AbhDSUDK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 19 Apr 2021 16:03:10 -0400
-Received: from mail-pl1-f178.google.com ([209.85.214.178]:37560 "EHLO
-        mail-pl1-f178.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230160AbhDSUDI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 19 Apr 2021 16:03:08 -0400
-Received: by mail-pl1-f178.google.com with SMTP id h20so18379974plr.4;
-        Mon, 19 Apr 2021 13:02:37 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=uWrTUKdJjgaCGLW+RH2C2+Z+PPmsZG/+0Dq0dsG+zow=;
-        b=dWLvI6fWoGLKym/locI3WPka9Gho+I2Q6+PrnV0JApn07217ibgElOWo8oBBXoKk5l
-         a1/mBs+fgI4gu3fMIEb38XXGuZOh/xaoeFdJ/OYNcCWTr3pBmJLxmxXdMXt5vjT2YME7
-         DuOT0KEHyHmkkJaIynfOkOaN9QnMcHlkIOmC/cRBx+XerRid/iM/XoHNI4jm2n1YRcEu
-         /rDbcD3eS595C5i1nSQmDGYwc6Boanbvke50G+VX6VSIU6Mth9gV2Cs/nf9wE590jjhz
-         MNe6b2urozeMU5aBkN4IO+7TQKxRNxMCGPLUjs/d4c4rDdqDyj663swWNZPMzSaTqt5k
-         ANuw==
-X-Gm-Message-State: AOAM533MFR3YL7lRVtHru1TjTxEJuiE9wwXAtt9iR6i2aJ3nW2ucIn0E
-        Yznve0CAHNwA2wtptgTww3l7l/p1Gis=
-X-Google-Smtp-Source: ABdhPJwDuR0gpQkAv7V+r4Zvgot2L+HjIAgrHYqURMsfM+UL6bXEu18tWhk+41d18aHmRZYwGsiWTw==
-X-Received: by 2002:a17:90a:17a3:: with SMTP id q32mr862460pja.224.1618862557137;
-        Mon, 19 Apr 2021 13:02:37 -0700 (PDT)
-Received: from ?IPv6:2601:647:4000:d7:e7f5:59ce:2145:6158? ([2601:647:4000:d7:e7f5:59ce:2145:6158])
-        by smtp.gmail.com with ESMTPSA id z5sm5065159pff.191.2021.04.19.13.02.35
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 19 Apr 2021 13:02:36 -0700 (PDT)
-Subject: Re: [PATCH 1/2] workqueue: Have 'alloc_workqueue()' like macros
- accept a format specifier
-To:     Marion et Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        tj@kernel.org, jiangshanlai@gmail.com, saeedm@nvidia.com,
-        leon@kernel.org, davem@davemloft.net, kuba@kernel.org
-Cc:     netdev@vger.kernel.org, linux-rdma@vger.kernel.org,
-        linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org
-References: <cover.1618780558.git.christophe.jaillet@wanadoo.fr>
- <ae88f6c2c613d17bc1a56692cfa4f960dbc723d2.1618780558.git.christophe.jaillet@wanadoo.fr>
- <042f5fff-5faf-f3c5-0819-b8c8d766ede6@acm.org>
- <1032428026.331.1618814178946.JavaMail.www@wwinf2229>
-From:   Bart Van Assche <bvanassche@acm.org>
-Message-ID: <40c21bfe-e304-230d-b319-b98063347b8b@acm.org>
-Date:   Mon, 19 Apr 2021 13:02:34 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.9.1
+        id S238476AbhDSUD2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 19 Apr 2021 16:03:28 -0400
+Received: from mail.kernel.org ([198.145.29.99]:38644 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S230160AbhDSUDO (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 19 Apr 2021 16:03:14 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id D22AB613AC;
+        Mon, 19 Apr 2021 20:02:43 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1618862564;
+        bh=l7tbs71vNbfqZ/AP/qGjqBVLU20kb4G96/EQ/B0Bs5g=;
+        h=From:To:Cc:Subject:Date:From;
+        b=LlQMdTGZ2FJ58I0UAbrwNjooQmZt/DtfaSg+GAOcxUeCI1OTLJ8PpEikUKKNaLXEY
+         H7lCTJiqUt1BECZGNrOwxNM0H7vjTHQflbu/uwV/SKBo9wotYqsAnGp7klbCiOPAce
+         XWzVA50MPtoj+cLvcfzTg6S1ecAtNxtWYJb6pUI+Fq/ouJU04l+0ieqy5mtkLvwBVs
+         iZ1mapfoSBvv1wkeGsLZ0NyTg4lX8waydhdYgy96xqx6rPD5l5EuuMkQ9sYitItHvQ
+         i9UhWD09DZtHWemh/p9IIptuLrQt6bq5II5SEgSaPOm0/wljHXAHqVDHicD7Mj8PWH
+         F/Glhl+9Zvk0g==
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     davem@davemloft.net
+Cc:     netdev@vger.kernel.org, michael.chan@broadcom.com,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH net-next] bnxt: add more ethtool standard stats
+Date:   Mon, 19 Apr 2021 13:02:42 -0700
+Message-Id: <20210419200242.2984499-1-kuba@kernel.org>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-In-Reply-To: <1032428026.331.1618814178946.JavaMail.www@wwinf2229>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 4/18/21 11:36 PM, Marion et Christophe JAILLET wrote:
-> The list in To: is the one given by get_maintainer.pl. Usualy, I only
-> put the ML in Cc: I've run the script on the 2 patches of the serie
-> and merged the 2 lists. Everyone is in the To: of the cover letter
-> and of the 2 patches.
-> 
-> If Théo is "Tejun Heo" (  (maintainer:WORKQUEUE) ), he is already in
-> the To: line.
-Linus wants to see a "Cc: ${maintainer}" tag in patches that he receives
-from a maintainer and that modify another subsystem than the subsystem
-maintained by that maintainer.
+Michael suggest a few more stats we can expose.
 
-Thanks,
+$ ethtool -S eth0 --groups eth-mac
+Standard stats for eth0:
+eth-mac-FramesTransmittedOK: 902623288966
+eth-mac-FramesReceivedOK: 28727667047
+eth-mac-FrameCheckSequenceErrors: 1
+eth-mac-AlignmentErrors: 0
+eth-mac-OutOfRangeLengthField: 0
+$ ethtool -S eth0 | grep '\(fcs\|align\|oor\)'
+     rx_fcs_err_frames: 1
+     rx_align_err_frames: 0
+     tx_fcs_err_frames: 0
 
-Bart.
+Suggested-by: Michael Chan <michael.chan@broadcom.com>
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+---
+ drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
+
+diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c b/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c
+index 832252313b18..3b66e300c962 100644
+--- a/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c
++++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c
+@@ -4020,6 +4020,12 @@ static void bnxt_get_eth_mac_stats(struct net_device *dev,
+ 		BNXT_GET_RX_PORT_STATS64(rx, rx_good_frames);
+ 	mac_stats->FramesTransmittedOK =
+ 		BNXT_GET_TX_PORT_STATS64(tx, tx_good_frames);
++	mac_stats->FrameCheckSequenceErrors =
++		BNXT_GET_RX_PORT_STATS64(rx, rx_fcs_err_frames);
++	mac_stats->AlignmentErrors =
++		BNXT_GET_RX_PORT_STATS64(rx, rx_align_err_frames);
++	mac_stats->OutOfRangeLengthField =
++		BNXT_GET_RX_PORT_STATS64(rx, rx_oor_len_frames);
+ }
+ 
+ static void bnxt_get_eth_ctrl_stats(struct net_device *dev,
+-- 
+2.30.2
+
