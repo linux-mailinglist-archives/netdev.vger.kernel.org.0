@@ -2,181 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2905336405F
-	for <lists+netdev@lfdr.de>; Mon, 19 Apr 2021 13:22:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 47929364059
+	for <lists+netdev@lfdr.de>; Mon, 19 Apr 2021 13:21:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238290AbhDSLXB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 19 Apr 2021 07:23:01 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:41266 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S235872AbhDSLXA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 19 Apr 2021 07:23:00 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1618831351;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=vqJ+FOS6XVGlmbD09GMCCte4Tn5COUmCLJ4wF14ufSc=;
-        b=ZkGIUXUvbqZ3d5+iYXWw53U/h8W5YdtPPcO+ASzLemFeTTLOZUolGFTuXAe35rsLd1kbM4
-        PFVIPICbOPoQQwK+HRnlNYjDsZoYoDkmArYDSwW1hNF7sSBiplrbigS+RarmRY4zvGxbCO
-        MjRP5p8ZwDtBKAuVxNkKyrLRTSKU6Bs=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-237-C0_4cIrkNwOVXj_piPsSSg-1; Mon, 19 Apr 2021 07:22:28 -0400
-X-MC-Unique: C0_4cIrkNwOVXj_piPsSSg-1
-Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id B1E541006CAF;
-        Mon, 19 Apr 2021 11:22:27 +0000 (UTC)
-Received: from carbon (unknown [10.36.110.19])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id DD7B55D9CD;
-        Mon, 19 Apr 2021 11:22:05 +0000 (UTC)
-Date:   Mon, 19 Apr 2021 13:22:04 +0200
-From:   Jesper Dangaard Brouer <brouer@redhat.com>
-To:     Shakeel Butt <shakeelb@google.com>
-Cc:     Ilias Apalodimas <ilias.apalodimas@linaro.org>,
-        Matthew Wilcox <willy@infradead.org>,
-        Matteo Croce <mcroce@linux.microsoft.com>,
-        netdev <netdev@vger.kernel.org>, Linux MM <linux-mm@kvack.org>,
-        Ayush Sawal <ayush.sawal@chelsio.com>,
-        Vinay Kumar Yadav <vinay.yadav@chelsio.com>,
-        Rohit Maheshwari <rohitm@chelsio.com>,
-        "David S. Miller" <davem@davemloft.net>,
+        id S237926AbhDSLVn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 19 Apr 2021 07:21:43 -0400
+Received: from mga03.intel.com ([134.134.136.65]:61008 "EHLO mga03.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S237765AbhDSLVn (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 19 Apr 2021 07:21:43 -0400
+IronPort-SDR: KqJDVvEPYAFDtkd7dGJ+o8X4NzwjvUqrZtsGbfgv6D4UKrirR5fswb8cT/KzRX9Ft+V3k6s/Mu
+ /H4fL6sHteNQ==
+X-IronPort-AV: E=McAfee;i="6200,9189,9958"; a="195336831"
+X-IronPort-AV: E=Sophos;i="5.82,234,1613462400"; 
+   d="scan'208";a="195336831"
+Received: from fmsmga007.fm.intel.com ([10.253.24.52])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Apr 2021 04:20:56 -0700
+IronPort-SDR: gG9C6LbgTpQvO1pgi3EUWUtteiHAWMr3es6AOL9cOIY9BL44ntzJSGacgAPQMcVOriHIa6Wfu3
+ F5yC971w9myg==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.82,234,1613462400"; 
+   d="scan'208";a="390630159"
+Received: from linux.intel.com ([10.54.29.200])
+  by fmsmga007.fm.intel.com with ESMTP; 19 Apr 2021 04:20:55 -0700
+Received: from glass.png.intel.com (glass.png.intel.com [10.158.65.59])
+        by linux.intel.com (Postfix) with ESMTP id 669915808CA;
+        Mon, 19 Apr 2021 04:20:53 -0700 (PDT)
+From:   Wong Vee Khee <vee.khee.wong@linux.intel.com>
+To:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Jose Abreu <joabreu@synopsys.com>,
+        "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        Marcin Wojtas <mw@semihalf.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Mirko Lindner <mlindner@marvell.com>,
-        Stephen Hemminger <stephen@networkplumber.org>,
-        Tariq Toukan <tariqt@nvidia.com>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Boris Pismenny <borisp@nvidia.com>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
-        Vlastimil Babka <vbabka@suse.cz>, Yu Zhao <yuzhao@google.com>,
-        Will Deacon <will@kernel.org>,
-        Michel Lespinasse <walken@google.com>,
-        Fenghua Yu <fenghua.yu@intel.com>,
-        Roman Gushchin <guro@fb.com>, Hugh Dickins <hughd@google.com>,
-        Peter Xu <peterx@redhat.com>, Jason Gunthorpe <jgg@ziepe.ca>,
-        Guoqing Jiang <guoqing.jiang@cloud.ionos.com>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
-        Alexander Lobakin <alobakin@pm.me>,
-        Cong Wang <cong.wang@bytedance.com>, wenxu <wenxu@ucloud.cn>,
-        Kevin Hao <haokexin@gmail.com>,
-        Aleksandr Nogikh <nogikh@google.com>,
-        Jakub Sitnicki <jakub@cloudflare.com>,
-        Marco Elver <elver@google.com>,
-        Willem de Bruijn <willemb@google.com>,
-        Miaohe Lin <linmiaohe@huawei.com>,
-        Yunsheng Lin <linyunsheng@huawei.com>,
-        Guillaume Nault <gnault@redhat.com>,
-        LKML <linux-kernel@vger.kernel.org>, linux-rdma@vger.kernel.org,
-        bpf <bpf@vger.kernel.org>, Eric Dumazet <edumazet@google.com>,
-        David Ahern <dsahern@gmail.com>,
-        Lorenzo Bianconi <lorenzo@kernel.org>,
-        Saeed Mahameed <saeedm@nvidia.com>,
-        Andrew Lunn <andrew@lunn.ch>, Paolo Abeni <pabeni@redhat.com>,
-        brouer@redhat.com
-Subject: Re: [PATCH net-next v3 2/5] mm: add a signature in struct page
-Message-ID: <20210419132204.1e07d5b9@carbon>
-In-Reply-To: <CALvZod4F8kCQQcK5_3YH=7keqkgY-97g+_OLoDCN7uNJdd61xA@mail.gmail.com>
-References: <20210409223801.104657-1-mcroce@linux.microsoft.com>
-        <20210409223801.104657-3-mcroce@linux.microsoft.com>
-        <20210410154824.GZ2531743@casper.infradead.org>
-        <YHHPbQm2pn2ysth0@enceladus>
-        <CALvZod7UUxTavexGCzbKaK41LAW7mkfQrnDhFbjo-KvH9P6KsQ@mail.gmail.com>
-        <YHHuE7g73mZNrMV4@enceladus>
-        <20210414214132.74f721dd@carbon>
-        <CALvZod4F8kCQQcK5_3YH=7keqkgY-97g+_OLoDCN7uNJdd61xA@mail.gmail.com>
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>
+Cc:     Ong Boon Leong <boon.leong.ong@intel.com>, netdev@vger.kernel.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: [PATCH net-next 1/1] net: stmmac: fix memory leak during driver probe
+Date:   Mon, 19 Apr 2021 19:25:30 +0800
+Message-Id: <20210419112530.20395-1-vee.khee.wong@linux.intel.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 14 Apr 2021 13:09:47 -0700
-Shakeel Butt <shakeelb@google.com> wrote:
+On driver probe, kmemleak reported the following memory leak which was
+due to allocated bitmap that was not being freed in stmmac_dvr_probe().
 
-> On Wed, Apr 14, 2021 at 12:42 PM Jesper Dangaard Brouer
-> <brouer@redhat.com> wrote:
-> >  
-> [...]
-> > > >
-> > > > Can this page_pool be used for TCP RX zerocopy? If yes then PageType
-> > > > can not be used.  
-> > >
-> > > Yes it can, since it's going to be used as your default allocator for
-> > > payloads, which might end up on an SKB.  
-> >
-> > I'm not sure we want or should "allow" page_pool be used for TCP RX
-> > zerocopy.
-> > For several reasons.
-> >
-> > (1) This implies mapping these pages page to userspace, which AFAIK
-> > means using page->mapping and page->index members (right?).
-> >  
-> 
-> No, only page->_mapcount is used.
+unreferenced object 0xffff9276014b13c0 (size 8):
+  comm "systemd-udevd", pid 2143, jiffies 4294681112 (age 116.720s)
+  hex dump (first 8 bytes):
+    00 00 00 00 00 00 00 00                          ........
+  backtrace:
+    [<00000000c51e34b2>] stmmac_dvr_probe+0x1c0/0x440 [stmmac]
+    [<00000000b530eb41>] intel_eth_pci_probe.cold+0x2b/0x14e [dwmac_intel]
+    [<00000000b10f8929>] pci_device_probe+0xd2/0x150
+    [<00000000fb254c74>] really_probe+0xf8/0x410
+    [<0000000034128a59>] driver_probe_device+0x5d/0x150
+    [<00000000016104d5>] device_driver_attach+0x53/0x60
+    [<00000000cb18cd07>] __driver_attach+0x96/0x140
+    [<00000000da9ffd5c>] bus_for_each_dev+0x7a/0xc0
+    [<00000000af061a88>] bus_add_driver+0x184/0x1f0
+    [<000000008be5c1c5>] driver_register+0x6c/0xc0
+    [<0000000052b18a9e>] do_one_initcall+0x4d/0x210
+    [<00000000154d4f07>] do_init_module+0x5c/0x230
+    [<000000009b648d09>] load_module+0x2a5a/0x2d40
+    [<000000000d86b76d>] __do_sys_finit_module+0xb5/0x120
+    [<000000002b0cef95>] do_syscall_64+0x33/0x40
+    [<0000000067b45bbb>] entry_SYSCALL_64_after_hwframe+0x44/0xa9
 
-Good to know.
-I will admit that I don't fully understand the usage of page->mapping
-and page->index members.
+Fixes: bba2556efad6 ("net: stmmac: Enable RX via AF_XDP zero-copy")
+Cc: Ong Boon Leong <boon.leong.ong@intel.com>
+Signed-off-by: Wong Vee Khee <vee.khee.wong@linux.intel.com>
+---
+ drivers/net/ethernet/stmicro/stmmac/stmmac_main.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-> > (2) It feels wrong (security wise) to keep the DMA-mapping (for the
-> > device) and also map this page into userspace.
-> >  
-> 
-> I think this is already the case i.e pages still DMA-mapped and also
-> mapped into userspace.
-
-True, other drivers are doing the same.
-
-> > (3) The page_pool is optimized for refcnt==1 case, and AFAIK TCP-RX
-> > zerocopy will bump the refcnt, which means the page_pool will not
-> > recycle the page when it see the elevated refcnt (it will instead
-> > release its DMA-mapping).  
-> 
-> Yes this is right but the userspace might have already consumed and
-> unmapped the page before the driver considers to recycle the page.
-
-That is a good point.  So, there is a race window where it is possible
-to gain recycling.
-
-It seems my page_pool co-maintainer Ilias is interested in taking up the
-challenge to get this working with TCP RX zerocopy.  So, lets see how
-this is doable.
-
+diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
+index 9f396648d76f..d1ca07c846e6 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
++++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
+@@ -7035,6 +7035,7 @@ int stmmac_dvr_probe(struct device *device,
+ error_hw_init:
+ 	destroy_workqueue(priv->wq);
+ 	stmmac_bus_clks_config(priv, false);
++	bitmap_free(priv->af_xdp_zc_qps);
  
-> >
-> > (4) I remember vaguely that this code path for (TCP RX zerocopy) uses
-> > page->private for tricks.  And our patch [3/5] use page->private for
-> > storing xdp_mem_info.
-> >
-> > IMHO when the SKB travel into this TCP RX zerocopy code path, we should
-> > call page_pool_release_page() to release its DMA-mapping.
-> >  
-> 
-> I will let TCP RX zerocopy experts respond to this but from my high
-> level code inspection, I didn't see page->private usage.
-
-I trust when Eric says page->private isn't used in this code path.
-So, it might actually be possible :-)
-
-I will challenge Ilias and Matteo to pull this off. (But I know that
-both of them are busy for personal reasons, so be patient with them).
-
+ 	return ret;
+ }
+@@ -7077,6 +7078,7 @@ int stmmac_dvr_remove(struct device *dev)
+ 		stmmac_mdio_unregister(ndev);
+ 	destroy_workqueue(priv->wq);
+ 	mutex_destroy(&priv->lock);
++	bitmap_free(priv->af_xdp_zc_qps);
+ 
+ 	return 0;
+ }
 -- 
-Best regards,
-  Jesper Dangaard Brouer
-  MSc.CS, Principal Kernel Engineer at Red Hat
-  LinkedIn: http://www.linkedin.com/in/brouer
+2.25.1
 
