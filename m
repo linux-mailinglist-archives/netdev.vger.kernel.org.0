@@ -2,153 +2,169 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 987A036422D
-	for <lists+netdev@lfdr.de>; Mon, 19 Apr 2021 15:01:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9EFF836424F
+	for <lists+netdev@lfdr.de>; Mon, 19 Apr 2021 15:04:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239283AbhDSNBx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 19 Apr 2021 09:01:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54526 "EHLO
+        id S239391AbhDSNEW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 19 Apr 2021 09:04:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55164 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231942AbhDSNBt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 19 Apr 2021 09:01:49 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 25C2BC06174A
-        for <netdev@vger.kernel.org>; Mon, 19 Apr 2021 06:01:17 -0700 (PDT)
-Received: from dude.hi.pengutronix.de ([2001:67c:670:100:1d::7])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ore@pengutronix.de>)
-        id 1lYTWa-0003tk-VR; Mon, 19 Apr 2021 15:01:12 +0200
-Received: from ore by dude.hi.pengutronix.de with local (Exim 4.92)
-        (envelope-from <ore@pengutronix.de>)
-        id 1lYTWX-0001ma-4d; Mon, 19 Apr 2021 15:01:09 +0200
-From:   Oleksij Rempel <o.rempel@pengutronix.de>
-To:     Shawn Guo <shawnguo@kernel.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Fugang Duan <fugang.duan@nxp.com>
-Cc:     Oleksij Rempel <o.rempel@pengutronix.de>, kernel@pengutronix.de,
-        netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org, linux-imx@nxp.com,
-        Fabio Estevam <festevam@gmail.com>,
-        David Jander <david@protonic.nl>,
+        with ESMTP id S232800AbhDSNEV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 19 Apr 2021 09:04:21 -0400
+Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8E76FC061760;
+        Mon, 19 Apr 2021 06:03:50 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=8Y0pwAVt5liDDolwhxFKvBOLg1az19k+Kyl8s6P7Mkw=; b=qh+osCLCYoBzdKk4OeJfdc7J9J
+        shl+bJI6rxfcBQSyUHfvACIIxpBednLK2EubX+7seel0bFOvQcQK+jZoQeITc+v2PI2mb2vCfurG4
+        Iz1Jx+evxKF0mxbN3hGOTdmKkw/Big46+gSRFjS7Bcm1zy1oyWgzxp5sakrTLJBWnvbYovFe8a2Tj
+        6drEwpV5y+w6FDXtd5amPm+3usP0JSTm7fxq2CdQjbgRmW6fOEF7HDFoUma/fp6LsDiBYcgbUg3lU
+        xOWtgX+S7Y2kwtviMj2NHv0xDQhr/xFfW5udlCZV7yiQvRTBIOJ4bdLWiNP47NQMfxvezra9yhVN1
+        F7lE216g==;
+Received: from willy by casper.infradead.org with local (Exim 4.94 #2 (Red Hat Linux))
+        id 1lYTXA-00DlIj-GW; Mon, 19 Apr 2021 13:02:10 +0000
+Date:   Mon, 19 Apr 2021 14:01:48 +0100
+From:   Matthew Wilcox <willy@infradead.org>
+To:     Jesper Dangaard Brouer <brouer@redhat.com>
+Cc:     Shakeel Butt <shakeelb@google.com>,
+        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
+        Matteo Croce <mcroce@linux.microsoft.com>,
+        netdev <netdev@vger.kernel.org>, Linux MM <linux-mm@kvack.org>,
+        Ayush Sawal <ayush.sawal@chelsio.com>,
+        Vinay Kumar Yadav <vinay.yadav@chelsio.com>,
+        Rohit Maheshwari <rohitm@chelsio.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        Marcin Wojtas <mw@semihalf.com>,
         Russell King <linux@armlinux.org.uk>,
-        Philippe Schenker <philippe.schenker@toradex.com>
-Subject: [PATCH net-next v3 6/6] net: dsa: enable selftest support for all switches by default
-Date:   Mon, 19 Apr 2021 15:01:06 +0200
-Message-Id: <20210419130106.6707-7-o.rempel@pengutronix.de>
-X-Mailer: git-send-email 2.29.2
-In-Reply-To: <20210419130106.6707-1-o.rempel@pengutronix.de>
-References: <20210419130106.6707-1-o.rempel@pengutronix.de>
+        Mirko Lindner <mlindner@marvell.com>,
+        Stephen Hemminger <stephen@networkplumber.org>,
+        Tariq Toukan <tariqt@nvidia.com>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Boris Pismenny <borisp@nvidia.com>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
+        Vlastimil Babka <vbabka@suse.cz>, Yu Zhao <yuzhao@google.com>,
+        Will Deacon <will@kernel.org>,
+        Michel Lespinasse <walken@google.com>,
+        Fenghua Yu <fenghua.yu@intel.com>,
+        Roman Gushchin <guro@fb.com>, Hugh Dickins <hughd@google.com>,
+        Peter Xu <peterx@redhat.com>, Jason Gunthorpe <jgg@ziepe.ca>,
+        Guoqing Jiang <guoqing.jiang@cloud.ionos.com>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        Alexander Lobakin <alobakin@pm.me>,
+        Cong Wang <cong.wang@bytedance.com>, wenxu <wenxu@ucloud.cn>,
+        Kevin Hao <haokexin@gmail.com>,
+        Aleksandr Nogikh <nogikh@google.com>,
+        Jakub Sitnicki <jakub@cloudflare.com>,
+        Marco Elver <elver@google.com>,
+        Willem de Bruijn <willemb@google.com>,
+        Miaohe Lin <linmiaohe@huawei.com>,
+        Yunsheng Lin <linyunsheng@huawei.com>,
+        Guillaume Nault <gnault@redhat.com>,
+        LKML <linux-kernel@vger.kernel.org>, linux-rdma@vger.kernel.org,
+        bpf <bpf@vger.kernel.org>, Eric Dumazet <edumazet@google.com>,
+        David Ahern <dsahern@gmail.com>,
+        Lorenzo Bianconi <lorenzo@kernel.org>,
+        Saeed Mahameed <saeedm@nvidia.com>,
+        Andrew Lunn <andrew@lunn.ch>, Paolo Abeni <pabeni@redhat.com>
+Subject: Re: [PATCH net-next v3 2/5] mm: add a signature in struct page
+Message-ID: <20210419130148.GA2531743@casper.infradead.org>
+References: <20210409223801.104657-1-mcroce@linux.microsoft.com>
+ <20210409223801.104657-3-mcroce@linux.microsoft.com>
+ <20210410154824.GZ2531743@casper.infradead.org>
+ <YHHPbQm2pn2ysth0@enceladus>
+ <CALvZod7UUxTavexGCzbKaK41LAW7mkfQrnDhFbjo-KvH9P6KsQ@mail.gmail.com>
+ <YHHuE7g73mZNrMV4@enceladus>
+ <20210414214132.74f721dd@carbon>
+ <CALvZod4F8kCQQcK5_3YH=7keqkgY-97g+_OLoDCN7uNJdd61xA@mail.gmail.com>
+ <20210419132204.1e07d5b9@carbon>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::7
-X-SA-Exim-Mail-From: ore@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210419132204.1e07d5b9@carbon>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Most of generic selftest should be able to work with probably all ethernet
-controllers. The DSA switches are not exception, so enable it by default at
-least for DSA.
+On Mon, Apr 19, 2021 at 01:22:04PM +0200, Jesper Dangaard Brouer wrote:
+> On Wed, 14 Apr 2021 13:09:47 -0700
+> Shakeel Butt <shakeelb@google.com> wrote:
+> 
+> > On Wed, Apr 14, 2021 at 12:42 PM Jesper Dangaard Brouer
+> > <brouer@redhat.com> wrote:
+> > >  
+> > [...]
+> > > > >
+> > > > > Can this page_pool be used for TCP RX zerocopy? If yes then PageType
+> > > > > can not be used.  
+> > > >
+> > > > Yes it can, since it's going to be used as your default allocator for
+> > > > payloads, which might end up on an SKB.  
+> > >
+> > > I'm not sure we want or should "allow" page_pool be used for TCP RX
+> > > zerocopy.
+> > > For several reasons.
+> > >
+> > > (1) This implies mapping these pages page to userspace, which AFAIK
+> > > means using page->mapping and page->index members (right?).
+> > >  
+> > 
+> > No, only page->_mapcount is used.
+> 
+> Good to know.
+> I will admit that I don't fully understand the usage of page->mapping
+> and page->index members.
 
-This patch was tested with SJA1105 and AR9331.
+That's fair.  It's not well-documented, and it's complicated.
 
-Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
----
- include/net/dsa.h |  2 ++
- net/dsa/Kconfig   |  1 +
- net/dsa/slave.c   | 21 +++++++++++++++++++++
- 3 files changed, 24 insertions(+)
+For a page mapped into userspace, page->mapping is one of:
+ - NULL
+ - A pointer to a file's address_space
+ - A pointer to an anonymous page's anon_vma
+If a page isn't mapped into userspace, you can use the space in page->mapping
+for anything you like (eg slab uses it)
 
-diff --git a/include/net/dsa.h b/include/net/dsa.h
-index 57b2c49f72f4..b4f89522b545 100644
---- a/include/net/dsa.h
-+++ b/include/net/dsa.h
-@@ -577,6 +577,8 @@ struct dsa_switch_ops {
- 					 int port, uint64_t *data);
- 	void	(*get_stats64)(struct dsa_switch *ds, int port,
- 				   struct rtnl_link_stats64 *s);
-+	void	(*self_test)(struct dsa_switch *ds, int port,
-+			     struct ethtool_test *etest, u64 *data);
- 
- 	/*
- 	 * ethtool Wake-on-LAN
-diff --git a/net/dsa/Kconfig b/net/dsa/Kconfig
-index 8746b07668ae..cbc2bd643ab2 100644
---- a/net/dsa/Kconfig
-+++ b/net/dsa/Kconfig
-@@ -9,6 +9,7 @@ menuconfig NET_DSA
- 	select NET_SWITCHDEV
- 	select PHYLINK
- 	select NET_DEVLINK
-+	select NET_SELFTESTS
- 	help
- 	  Say Y if you want to enable support for the hardware switches supported
- 	  by the Distributed Switch Architecture.
-diff --git a/net/dsa/slave.c b/net/dsa/slave.c
-index 995e0e16f295..e282b422f733 100644
---- a/net/dsa/slave.c
-+++ b/net/dsa/slave.c
-@@ -15,6 +15,7 @@
- #include <linux/mdio.h>
- #include <net/rtnetlink.h>
- #include <net/pkt_cls.h>
-+#include <net/selftests.h>
- #include <net/tc_act/tc_mirred.h>
- #include <linux/if_bridge.h>
- #include <linux/if_hsr.h>
-@@ -748,7 +749,10 @@ static void dsa_slave_get_strings(struct net_device *dev,
- 		if (ds->ops->get_strings)
- 			ds->ops->get_strings(ds, dp->index, stringset,
- 					     data + 4 * len);
-+	} else if (stringset ==  ETH_SS_TEST) {
-+		net_selftest_get_strings(data);
- 	}
-+
- }
- 
- static void dsa_slave_get_ethtool_stats(struct net_device *dev,
-@@ -794,11 +798,27 @@ static int dsa_slave_get_sset_count(struct net_device *dev, int sset)
- 			count += ds->ops->get_sset_count(ds, dp->index, sset);
- 
- 		return count;
-+	} else if (sset ==  ETH_SS_TEST) {
-+		return net_selftest_get_count();
- 	}
- 
- 	return -EOPNOTSUPP;
- }
- 
-+static void dsa_slave_net_selftest(struct net_device *ndev,
-+				   struct ethtool_test *etest, u64 *buf)
-+{
-+	struct dsa_port *dp = dsa_slave_to_port(ndev);
-+	struct dsa_switch *ds = dp->ds;
-+
-+	if (ds->ops->self_test) {
-+		ds->ops->self_test(ds, dp->index, etest, buf);
-+		return;
-+	}
-+
-+	net_selftest(ndev, etest, buf);
-+}
-+
- static void dsa_slave_get_wol(struct net_device *dev, struct ethtool_wolinfo *w)
- {
- 	struct dsa_port *dp = dsa_slave_to_port(dev);
-@@ -1630,6 +1650,7 @@ static const struct ethtool_ops dsa_slave_ethtool_ops = {
- 	.get_rxnfc		= dsa_slave_get_rxnfc,
- 	.set_rxnfc		= dsa_slave_set_rxnfc,
- 	.get_ts_info		= dsa_slave_get_ts_info,
-+	.self_test		= dsa_slave_net_selftest,
- };
- 
- /* legacy way, bypassing the bridge *****************************************/
--- 
-2.29.2
+page->index is only used for indicating pfmemalloc today (and I want to
+move that indicator).  I think it can also be used to merge VMAs (if
+some other conditions are also true), but failing to merge VMAs isn't
+a big deal for this kind of situation.
+
+> > > (2) It feels wrong (security wise) to keep the DMA-mapping (for the
+> > > device) and also map this page into userspace.
+> > 
+> > I think this is already the case i.e pages still DMA-mapped and also
+> > mapped into userspace.
+> 
+> True, other drivers are doing the same.
+
+And the contents of this page already came from that device ... if it
+wanted to write bad data, it could already have done so.
+
+> > > (3) The page_pool is optimized for refcnt==1 case, and AFAIK TCP-RX
+> > > zerocopy will bump the refcnt, which means the page_pool will not
+> > > recycle the page when it see the elevated refcnt (it will instead
+> > > release its DMA-mapping).  
+> > 
+> > Yes this is right but the userspace might have already consumed and
+> > unmapped the page before the driver considers to recycle the page.
+> 
+> That is a good point.  So, there is a race window where it is possible
+> to gain recycling.
+> 
+> It seems my page_pool co-maintainer Ilias is interested in taking up the
+> challenge to get this working with TCP RX zerocopy.  So, lets see how
+> this is doable.
+
+You could also check page_ref_count() - page_mapcount() instead of
+just checking page_ref_count().  Assuming mapping/unmapping can't
+race with recycling?
 
