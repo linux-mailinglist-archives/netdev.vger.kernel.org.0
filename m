@@ -2,86 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A49D1363BA2
-	for <lists+netdev@lfdr.de>; Mon, 19 Apr 2021 08:40:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 21350363B82
+	for <lists+netdev@lfdr.de>; Mon, 19 Apr 2021 08:34:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237608AbhDSGjk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 19 Apr 2021 02:39:40 -0400
-Received: from mga12.intel.com ([192.55.52.136]:32762 "EHLO mga12.intel.com"
+        id S237471AbhDSGfP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 19 Apr 2021 02:35:15 -0400
+Received: from verein.lst.de ([213.95.11.211]:45258 "EHLO verein.lst.de"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S237214AbhDSGj3 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 19 Apr 2021 02:39:29 -0400
-IronPort-SDR: OGLaISLx6Yn2hDfCj0Yry9aDPRUQsUHLTbXWy9R/TsDFf0kHtXc8Nn655O39yK9Wh+dVhI8XQQ
- Pw9CTkGMcd/w==
-X-IronPort-AV: E=McAfee;i="6200,9189,9958"; a="174766104"
-X-IronPort-AV: E=Sophos;i="5.82,233,1613462400"; 
-   d="scan'208";a="174766104"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Apr 2021 23:39:00 -0700
-IronPort-SDR: wH9HZJ09KeG3XJL9rB96XhUZmwQUVyfP5DDpoOLbnjfZ4VZoGcBfhPofa/QOH2L+KAf+ZC0m3Z
- q4zpRNO/R7hA==
-X-IronPort-AV: E=Sophos;i="5.82,233,1613462400"; 
-   d="scan'208";a="523328560"
-Received: from unknown (HELO localhost.localdomain.bj.intel.com) ([10.240.193.73])
-  by fmsmga001-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Apr 2021 23:38:58 -0700
-From:   Zhu Lingshan <lingshan.zhu@intel.com>
-To:     jasowang@redhat.com, mst@redhat.com, lulu@redhat.com,
-        sgarzare@redhat.com
-Cc:     virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Zhu Lingshan <lingshan.zhu@intel.com>
-Subject: [PATCH V4 3/3] vDPA/ifcvf: get_config_size should return dev specific config size
-Date:   Mon, 19 Apr 2021 14:33:26 +0800
-Message-Id: <20210419063326.3748-4-lingshan.zhu@intel.com>
-X-Mailer: git-send-email 2.27.0
-In-Reply-To: <20210419063326.3748-1-lingshan.zhu@intel.com>
-References: <20210419063326.3748-1-lingshan.zhu@intel.com>
+        id S229840AbhDSGfO (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 19 Apr 2021 02:35:14 -0400
+Received: by verein.lst.de (Postfix, from userid 2407)
+        id A92C068B05; Mon, 19 Apr 2021 08:34:41 +0200 (CEST)
+Date:   Mon, 19 Apr 2021 08:34:41 +0200
+From:   Christoph Hellwig <hch@lst.de>
+To:     Matthew Wilcox <willy@infradead.org>
+Cc:     Jesper Dangaard Brouer <brouer@redhat.com>,
+        David Laight <David.Laight@aculab.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-mm@kvack.org" <linux-mm@kvack.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>,
+        "linux-mips@vger.kernel.org" <linux-mips@vger.kernel.org>,
+        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
+        Matteo Croce <mcroce@linux.microsoft.com>,
+        Grygorii Strashko <grygorii.strashko@ti.com>,
+        Arnd Bergmann <arnd@kernel.org>, Christoph Hellwig <hch@lst.de>
+Subject: Re: [PATCH 1/1] mm: Fix struct page layout on 32-bit systems
+Message-ID: <20210419063441.GA18787@lst.de>
+References: <20210411114307.5087f958@carbon> <20210411103318.GC2531743@casper.infradead.org> <20210412011532.GG2531743@casper.infradead.org> <20210414101044.19da09df@carbon> <20210414115052.GS2531743@casper.infradead.org> <20210414211322.3799afd4@carbon> <20210414213556.GY2531743@casper.infradead.org> <a50c3156fe8943ef964db4345344862f@AcuMS.aculab.com> <20210415200832.32796445@carbon> <20210416152755.GL2531743@casper.infradead.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210416152755.GL2531743@casper.infradead.org>
+User-Agent: Mutt/1.5.17 (2007-11-01)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-get_config_size() should return the size based on the decected
-device type.
+On Fri, Apr 16, 2021 at 04:27:55PM +0100, Matthew Wilcox wrote:
+> On Thu, Apr 15, 2021 at 08:08:32PM +0200, Jesper Dangaard Brouer wrote:
+> > See below patch.  Where I swap32 the dma address to satisfy
+> > page->compound having bit zero cleared. (It is the simplest fix I could
+> > come up with).
+> 
+> I think this is slightly simpler, and as a bonus code that assumes the
+> old layout won't compile.
 
-Signed-off-by: Zhu Lingshan <lingshan.zhu@intel.com>
-Reviewed-by: Stefano Garzarella <sgarzare@redhat.com>
-Acked-by: Jason Wang <jasowang@redhat.com>
----
- drivers/vdpa/ifcvf/ifcvf_main.c | 19 ++++++++++++++++++-
- 1 file changed, 18 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/vdpa/ifcvf/ifcvf_main.c b/drivers/vdpa/ifcvf/ifcvf_main.c
-index 9a4a6df91f08..e48e6b74fe2e 100644
---- a/drivers/vdpa/ifcvf/ifcvf_main.c
-+++ b/drivers/vdpa/ifcvf/ifcvf_main.c
-@@ -356,7 +356,24 @@ static u32 ifcvf_vdpa_get_vq_align(struct vdpa_device *vdpa_dev)
- 
- static size_t ifcvf_vdpa_get_config_size(struct vdpa_device *vdpa_dev)
- {
--	return sizeof(struct virtio_net_config);
-+	struct ifcvf_adapter *adapter = vdpa_to_adapter(vdpa_dev);
-+	struct ifcvf_hw *vf = vdpa_to_vf(vdpa_dev);
-+	struct pci_dev *pdev = adapter->pdev;
-+	size_t size;
-+
-+	switch (vf->dev_type) {
-+	case VIRTIO_ID_NET:
-+		size = sizeof(struct virtio_net_config);
-+		break;
-+	case VIRTIO_ID_BLOCK:
-+		size = sizeof(struct virtio_blk_config);
-+		break;
-+	default:
-+		size = 0;
-+		IFCVF_ERR(pdev, "VIRTIO ID %u not supported\n", vf->dev_type);
-+	}
-+
-+	return size;
- }
- 
- static void ifcvf_vdpa_get_config(struct vdpa_device *vdpa_dev,
--- 
-2.27.0
-
+So, why do we even do this crappy overlay of a dma address?  This just
+all seems like a giant hack.  Random subsystems should not just steal
+a few struct page fields as that just turns into the desasters like the
+one we've seen here or probably something worse next time.
