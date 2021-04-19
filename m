@@ -2,201 +2,157 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 01467363E32
-	for <lists+netdev@lfdr.de>; Mon, 19 Apr 2021 11:03:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 67062363E3B
+	for <lists+netdev@lfdr.de>; Mon, 19 Apr 2021 11:07:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238489AbhDSJEO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 19 Apr 2021 05:04:14 -0400
-Received: from mail-vs1-f42.google.com ([209.85.217.42]:45817 "EHLO
-        mail-vs1-f42.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232023AbhDSJEH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 19 Apr 2021 05:04:07 -0400
-Received: by mail-vs1-f42.google.com with SMTP id r18so11290945vso.12;
-        Mon, 19 Apr 2021 02:03:36 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=YToQwZXN38nw8LU8icFLB58IB4Z2bfPdJB1gmWWtNj8=;
-        b=A1Gpw+KFRJ5RhzhK+MGm++v8ObABj3dTeD508KFrtbc7QA6wHjlVZ2wNnWA24Wm9qH
-         ZKWLhV244NO6o89Q6GspL4KaDDCWQc/Rr0lI8uQM9BsphAET/ujIJWTHUA1h7jBEwzzW
-         gv/iCoYzQS4SvHHOcATnexFXSRoVMjraHKTV+/t85IwQkFQaED92dtBjnuALNFqwThKN
-         z8L5EyISOQt0QtbWAEW05YxhRnGFqVcyi1gd0L1BXkCfBRVhGOdz52vO39RafdkWMRmK
-         kzyLacR5FJFpb72oawG1qLHU0bX4NRH6I6iQwZyC7mGmdOg6y4SDXDXw5wjp8+K6il+R
-         G38A==
-X-Gm-Message-State: AOAM530na+Q6FqX6tSAED3u+1sIRzHBwXKGnEtFn2I1lwzoVJ8frs1J3
-        NlCcjGhqMeS3WvdliarIHFqAUxE0pVenbDkJUPc=
-X-Google-Smtp-Source: ABdhPJxHtnj/DXie9H0wxpzVZlSTyniokdUb/gsNNsMkANVtAtzr2mFBhczBYEoBurfSWsjRkBkPBhRAOOMrjVGBWsw=
-X-Received: by 2002:a67:7c8c:: with SMTP id x134mr13821818vsc.40.1618823016409;
- Mon, 19 Apr 2021 02:03:36 -0700 (PDT)
+        id S238449AbhDSJIA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 19 Apr 2021 05:08:00 -0400
+Received: from mail-eopbgr80072.outbound.protection.outlook.com ([40.107.8.72]:1734
+        "EHLO EUR04-VI1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S232023AbhDSJH4 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 19 Apr 2021 05:07:56 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=cXL0Icjx65983w05GF3KRbauaC4w8RYhNZ0eQNB9CnSJrNNnfA+rc7qgozhUrVXn+kOjgiTGGaMvL2YQHgoPuyFKDzogxlBKi6aYd+bGASudnsI6nZ9kmT/TOjQ5YcDxQNiFmwT297dvGPfn/otc8lRMqwG/unJveqSxkGBGuAOXDB/jnalxuqVS91ISEzb00GNFezMBvJyhRig/A9ItpIGN0KPZEs0Z54slM8Rtd09UFFfSt9jLPjQFXPrN2CT0DgPM0mkWLLP0oDafYCfkGbAU41KTBTBGV1VPqsxJid7ujFxHPkuk+/Jfw66GsoDF5vU95Dv2U0FFdXCpCLU94Q==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=8HUvKHNom/owTJM5x3vFAK78YrrSqtcaoWP8GO86fl8=;
+ b=F7uXcQwpHIZqmG8KGXwQzdPXhl+LzObW9wjrB4LRIwt6mi4LOOnahapw8OasPcJZuS+/LoDRYlM0d1tLX2mrD7nt3gc9Qlngy0DBAVLmM29157pTMNs+fk4MDXj6KItNv33obxkYnbMjbmg0NHI0tAEcFCL+BIPPmg0BgBh2sWosTC0J/FDLEKSnpEEvBZra6r6o1Ooq25W+svauKIYCzh9vxP4y7t5FI4dl9a8KQ6FrADyOGOx/Kv6mybyLQjI39pA2+Ngwj4I0SV9eBo49nCMjRxabelYPj0YtLMEf1bD9I7TRsIW2kUOE/mBuvwlLPC0jSHpqJU7m2SvaQjMZTg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=8HUvKHNom/owTJM5x3vFAK78YrrSqtcaoWP8GO86fl8=;
+ b=CooFX3rvKZKZoxbrOU0f68oyroxGqdtnxdPQImjZ7WMeTQqhJ2eBZXclHEE8nzW9Y62WKvtOmcjPgp083nNDIcAQSGoGHJt7Ac7vZ4u/vyf3gxbrrHU5jsv95sxkgEqEczGbX01QCHBn6OxdBaSTv66Z9XxxRPwstz91+nVaYJo=
+Received: from AM0PR04MB6754.eurprd04.prod.outlook.com (2603:10a6:208:170::28)
+ by AM0PR0402MB3331.eurprd04.prod.outlook.com (2603:10a6:208:1d::13) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4042.16; Mon, 19 Apr
+ 2021 09:07:23 +0000
+Received: from AM0PR04MB6754.eurprd04.prod.outlook.com
+ ([fe80::f12c:54bd:ccfc:819a]) by AM0PR04MB6754.eurprd04.prod.outlook.com
+ ([fe80::f12c:54bd:ccfc:819a%7]) with mapi id 15.20.4042.024; Mon, 19 Apr 2021
+ 09:07:23 +0000
+From:   Claudiu Manoil <claudiu.manoil@nxp.com>
+To:     Vladimir Oltean <olteanv@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Po Liu <po.liu@nxp.com>
+CC:     Alexandru Marginean <alexandru.marginean@nxp.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Shawn Guo <shawnguo@kernel.org>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+        Russell King - ARM Linux admin <linux@armlinux.org.uk>,
+        Andrew Lunn <andrew@lunn.ch>, Michael Walle <michael@walle.cc>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>
+Subject: RE: [PATCH net-next 5/5] net: enetc: add support for flow control
+Thread-Topic: [PATCH net-next 5/5] net: enetc: add support for flow control
+Thread-Index: AQHXMxpZEYIxiwunrU26djqgH5Ni/Kq7kFUg
+Date:   Mon, 19 Apr 2021 09:07:23 +0000
+Message-ID: <AM0PR04MB6754B48B5F0C5B166783680696499@AM0PR04MB6754.eurprd04.prod.outlook.com>
+References: <20210416234225.3715819-1-olteanv@gmail.com>
+ <20210416234225.3715819-6-olteanv@gmail.com>
+In-Reply-To: <20210416234225.3715819-6-olteanv@gmail.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: gmail.com; dkim=none (message not signed)
+ header.d=none;gmail.com; dmarc=none action=none header.from=nxp.com;
+x-originating-ip: [188.25.217.66]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 79b64bdc-6167-42e0-d9ed-08d903128b91
+x-ms-traffictypediagnostic: AM0PR0402MB3331:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <AM0PR0402MB33318D94110080498B8FBF9196499@AM0PR0402MB3331.eurprd04.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:7219;
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: Eo7jfkSpBgxFFHfGWX+qaoICZRS6hq0FgomraVVqIemRH5ZDUwhKHLqmSbC/Uey94J6RGP+VOyXljhnuJK5TCLVYVNfpESbsbNh/ioHG9i3Bx2p1Y0VsGKXlak73DTJf5vvyEdfmDu7HZswzuEjEdhmUtirys7C3iPsBo6LGE2mTVuET5iDEpac8spzedu7IaziEn6XOrmDAhHAZkEJKVyVp1zJ0vvD3ehhGvMnMFeSKKzXlZ6Llcvc/RHERYZ/p/3Q7H6GZqgepXtScxB9SInm5Wgs1E3eO/w+Ur0Bsj9e1Ws15q5xcVd3MMZMqol33OpdWpVzdeeCeaUqGFIwSKx7sKLV+Uf0ZV60AEKP7qz8lu6jsrC/N7AC4B2LfdV3bQKMcQ2YqwV34p6w2f6KEgPHf/vaM8Gjewq0O936OWRAlyHn5fDEKsgpBQTiETCq4CNXIDm2c93iTXrPX7b8Kg4a+XMbAF4RNoHlkcWpuaOCGiaYeUPTnZ0MaUluZdp1dtIKd5DE3POrZcbjydilanwVtWCQegNfOQd65kazhR8N3O7upHdW2nPllSwfKM6X+ZlSE8dDOsiga+lhYv4ji3D5egHcl8Z3TBcCaBKU6jFY=
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM0PR04MB6754.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(136003)(39860400002)(376002)(346002)(366004)(396003)(9686003)(186003)(8676002)(7416002)(86362001)(38100700002)(66946007)(55016002)(52536014)(44832011)(2906002)(478600001)(66476007)(122000001)(7696005)(316002)(8936002)(6506007)(83380400001)(4326008)(71200400001)(26005)(76116006)(64756008)(66556008)(110136005)(66446008)(33656002)(5660300002)(6636002)(54906003);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata: =?us-ascii?Q?/0QLZsoN5bKxcWQkhAX50DOxuh5HnRxfL4NYi1O/RkjbTOFH3xkqJ02adYeV?=
+ =?us-ascii?Q?+NA1PD9URAbsrDIrdGTd33HT+MdA4U4BHDN3WmSuF5qIHyMSUsRogHrnwLTT?=
+ =?us-ascii?Q?ex0irY/arkQBVpWHZ188okl8kDS2Vr7diK8d+95XoC92P29kgum5vhTDhZ8m?=
+ =?us-ascii?Q?pUcU6IGwF/X7PqGde0ciEx9qVc+vaPjVjHyYr9YsUWyJP4bCoeOPNi0rM2CS?=
+ =?us-ascii?Q?NEwvAV6Q5myPEI9YWKJ7PWLeQt/0PZGXhpBMEjMAeEg9XL6EPDKSfJa3eVgs?=
+ =?us-ascii?Q?qEgiJ+Zj+EJpWxSWKJhmZ73tupLc6KEFGJyWOnjhBS3nMAHxuKoFThptznks?=
+ =?us-ascii?Q?w1oNtbTPC18WCCFVwSwSXwLphGue2Zb1CGA8f3bpPEzb9EdqgpLx5aGs66Oz?=
+ =?us-ascii?Q?z7SsXKTiOdPymgtybaANlCvOqbj4sx/3vAsnfOx6rqYEmX3XD76XXqdJhCiL?=
+ =?us-ascii?Q?4dG0YWonFVcMp8/ST6Xjmjw0it0TcX7iV3ZVJaPuX7H+BEnaZzLr2MjcbUvJ?=
+ =?us-ascii?Q?yl+iTOGzq8++Conju8g/2kkpK73vu0t/VhlUZaQYWJw2IIxpRqlBd5m0qzeL?=
+ =?us-ascii?Q?xAI/xX7AscOSlBVDOD/nqevy5gTGJW8XZlUajJHK7YBBC+YtRDHEyfIBYoYc?=
+ =?us-ascii?Q?EmEiBU6AGRR72Asit76rRdzxk9wMBwLZaFXYxfNhLKXx86hu/d0FmeutaZRf?=
+ =?us-ascii?Q?XUlfs9Q6slgC2LaUCk2xJHZQi3Doawa51IZkH7bWt4Qn9CFWA14wCTyJ64Lr?=
+ =?us-ascii?Q?2bCDs0vmpxCKMyhoebzLLb8bm9+uHzbHo9nNmTxKy/OGHVCTOhintD7HPwXf?=
+ =?us-ascii?Q?ikNHfb0kG63r9Lnsr3CfuyIJ3CVV9GTsdWMK3avDL6huOCVFTBIyiF+bnBze?=
+ =?us-ascii?Q?UYlR17AY89gNoahtc2qEjNlbgOn8uQbQy72Eg8rdCfBPju0epM58d7VnhAg4?=
+ =?us-ascii?Q?ra+l6ABUvW7C9+uEIzJyIlu/5GzHrl6GwUwW9SF7gCztuISdKO1j70YpzKXd?=
+ =?us-ascii?Q?sZ/PjV7z3h5rVSbW0TCgt1TRmBlXA4ikxm6Ir+RDSjE4HdacTarNVmOaeWyI?=
+ =?us-ascii?Q?RM6mXLCXb0oLQfvp3ev9IiO7Ff2Nx7Xa9VPSP2JVnFbMsIxOiBr9W66y9/Hc?=
+ =?us-ascii?Q?15HANNx/89Nk00Rpg7QZV7/XqHRGyXHWtXoZ4RSAnr1iF+KZS4f/cKfi8h9Z?=
+ =?us-ascii?Q?5vVyD7OLfgl06o94jsZcvLCJ6HgdvwrShfn/jSoI5GaeSLgofDOzBMi2ynWx?=
+ =?us-ascii?Q?Z0QLwAeyeNIdd9nT19pJTSoEksPCiepWnBn4hTdXqRiGGx4Udggsf9crjorM?=
+ =?us-ascii?Q?VJ6NtXZ+IrAqi0Yd6RyQEK0s?=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-References: <20210419042722.27554-1-alice.guo@oss.nxp.com> <20210419042722.27554-4-alice.guo@oss.nxp.com>
- <YH0O907dfGY9jQRZ@atmark-techno.com>
-In-Reply-To: <YH0O907dfGY9jQRZ@atmark-techno.com>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Mon, 19 Apr 2021 11:03:24 +0200
-Message-ID: <CAMuHMdVY1SLZ0K30T2pimyrR6Mm=VoSTO=L-xxCy2Bj7_kostw@mail.gmail.com>
-Subject: Re: [RFC v1 PATCH 3/3] driver: update all the code that use soc_device_match
-To:     Dominique MARTINET <dominique.martinet@atmark-techno.com>
-Cc:     "Alice Guo (OSS)" <alice.guo@oss.nxp.com>,
-        gregkh@linuxfoundation.org, rafael@kernel.org,
-        horia.geanta@nxp.com, aymen.sghaier@nxp.com,
-        herbert@gondor.apana.org.au, davem@davemloft.net, tony@atomide.com,
-        geert+renesas@glider.be, mturquette@baylibre.com, sboyd@kernel.org,
-        vkoul@kernel.org, peter.ujfalusi@gmail.com, a.hajda@samsung.com,
-        narmstrong@baylibre.com, robert.foss@linaro.org, airlied@linux.ie,
-        daniel@ffwll.ch, khilman@baylibre.com, tomba@kernel.org,
-        jyri.sarha@iki.fi, joro@8bytes.org, will@kernel.org,
-        mchehab@kernel.org, ulf.hansson@linaro.org,
-        adrian.hunter@intel.com, kishon@ti.com, kuba@kernel.org,
-        linus.walleij@linaro.org, Roy.Pledge@nxp.com, leoyang.li@nxp.com,
-        ssantosh@kernel.org, matthias.bgg@gmail.com, edubezval@gmail.com,
-        j-keerthy@ti.com, balbi@kernel.org, linux@prisktech.co.nz,
-        stern@rowland.harvard.edu, wim@linux-watchdog.org,
-        linux@roeck-us.net, linux-kernel@vger.kernel.org,
-        linux-crypto@vger.kernel.org, linux-omap@vger.kernel.org,
-        linux-renesas-soc@vger.kernel.org, linux-clk@vger.kernel.org,
-        dmaengine@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        linux-amlogic@lists.infradead.org,
-        linux-arm-kernel@lists.infradead.org,
-        iommu@lists.linux-foundation.org, linux-media@vger.kernel.org,
-        linux-mmc@vger.kernel.org, netdev@vger.kernel.org,
-        linux-phy@lists.infradead.org, linux-gpio@vger.kernel.org,
-        linuxppc-dev@lists.ozlabs.org, linux-staging@lists.linux.dev,
-        linux-mediatek@lists.infradead.org, linux-pm@vger.kernel.org,
-        linux-usb@vger.kernel.org, linux-watchdog@vger.kernel.org,
-        Arnd Bergmann <arnd@arndb.de>
-Content-Type: text/plain; charset="UTF-8"
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: AM0PR04MB6754.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 79b64bdc-6167-42e0-d9ed-08d903128b91
+X-MS-Exchange-CrossTenant-originalarrivaltime: 19 Apr 2021 09:07:23.4132
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: QQxb9t8NIeYPPzrrw92L6ggnn1/+wF0r5787D4vOoHqY6cy0D5aiNtQOC/baEre/vTBtCvhJfPzp10veYeddhw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM0PR0402MB3331
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Dominique,
 
-CC Arnd (soc_device_match() author)
 
-On Mon, Apr 19, 2021 at 7:03 AM Dominique MARTINET
-<dominique.martinet@atmark-techno.com> wrote:
-> Alice Guo (OSS) wrote on Mon, Apr 19, 2021 at 12:27:22PM +0800:
-> > From: Alice Guo <alice.guo@nxp.com>
-> > Update all the code that use soc_device_match
+>-----Original Message-----
+>From: Vladimir Oltean <olteanv@gmail.com>
+>Sent: Saturday, April 17, 2021 2:42 AM
+>To: Jakub Kicinski <kuba@kernel.org>; David S. Miller
+><davem@davemloft.net>; netdev@vger.kernel.org; Po Liu
+><po.liu@nxp.com>
+>Cc: Claudiu Manoil <claudiu.manoil@nxp.com>; Alexandru Marginean
+><alexandru.marginean@nxp.com>; Rob Herring <robh+dt@kernel.org>;
+>Shawn Guo <shawnguo@kernel.org>; linux-arm-kernel@lists.infradead.org;
+>devicetree@vger.kernel.org; Russell King - ARM Linux admin
+><linux@armlinux.org.uk>; Andrew Lunn <andrew@lunn.ch>; Michael Walle
+><michael@walle.cc>; Vladimir Oltean <vladimir.oltean@nxp.com>
+>Subject: [PATCH net-next 5/5] net: enetc: add support for flow control
 >
-> A single patch might be difficult to accept for all components, a each
-> maintainer will probably want to have a say on their subsystem?
+>From: Vladimir Oltean <vladimir.oltean@nxp.com>
 >
-> I would suggest to split these for a non-RFC version; a this will really
-> need to be case-by-case handling.
+>In the ENETC receive path, a frame received by the MAC is first stored
+>in a 256KB 'FIFO' memory, then transferred to DRAM when enqueuing it to
+>the RX ring. The FIFO is a shared resource for all ENETC ports, but
+>every port keeps track of its own memory utilization, on RX and on TX.
 >
-> > because add support for soc_device_match returning -EPROBE_DEFER.
+>There is a setting for RX rings through which they can either operate in
+>'lossy' mode (where the lack of a free buffer causes an immediate
+>discard of the frame) or in 'lossless' mode (where the lack of a free
+>buffer in the ring makes the frame stay longer in the FIFO).
 >
-> (English does not parse here for me)
+>In turn, when the memory utilization of the FIFO exceeds a certain
+>margin, the MAC can be configured to emit PAUSE frames.
 >
-> I've only commented a couple of places in the code itself, but this
-> doesn't seem to add much support for errors, just sweep the problem
-> under the rug.
+>There is enough FIFO memory to buffer up to 3 MTU-sized frames per RX
+>port while not jeopardizing the other use cases (jumbo frames), and
+>also not consume bytes from the port TX allocations. Also, 3 MTU-sized
+>frames worth of memory is enough to ensure zero loss for 64 byte packets
+>at 1G line rate.
 >
-> > Signed-off-by: Alice Guo <alice.guo@nxp.com>
-> > ---
-> >
-> > diff --git a/drivers/bus/ti-sysc.c b/drivers/bus/ti-sysc.c
-> > index 5fae60f8c135..00c59aa217c1 100644
-> > --- a/drivers/bus/ti-sysc.c
-> > +++ b/drivers/bus/ti-sysc.c
-> > @@ -2909,7 +2909,7 @@ static int sysc_init_soc(struct sysc *ddata)
-> >       }
-> >
-> >       match = soc_device_match(sysc_soc_feat_match);
-> > -     if (!match)
-> > +     if (!match || IS_ERR(match))
-> >               return 0;
->
-> This function handles errors, I would recommend returning the error as
-> is if soc_device_match returned one so the probe can be retried later.
+>Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-Depends...
-
-> > --- a/drivers/clk/renesas/r8a7795-cpg-mssr.c
-> > +++ b/drivers/clk/renesas/r8a7795-cpg-mssr.c
-> > @@ -439,6 +439,7 @@ static const unsigned int r8a7795es2_mod_nullify[] __initconst = {
-> >
-> >  static int __init r8a7795_cpg_mssr_init(struct device *dev)
-> >  {
-> > +     const struct soc_device_attribute *match;
-> >       const struct rcar_gen3_cpg_pll_config *cpg_pll_config;
-> >       u32 cpg_mode;
-> >       int error;
-> > @@ -453,7 +454,8 @@ static int __init r8a7795_cpg_mssr_init(struct device *dev)
-> >               return -EINVAL;
-> >       }
-> >
-> > -     if (soc_device_match(r8a7795es1)) {
-> > +     match = soc_device_match(r8a7795es1);
-> > +     if (!IS_ERR(match) && match) {
->
-> Same, return the error.
-> Assuming an error means no match will just lead to hard to debug
-> problems because the driver potentially assumed the wrong device when
-> it's just not ready yet.
-
-When running on R-Car H3, there will always be a match device, as
-the SoC device is registered early.
-
->
-> >               cpg_core_nullify_range(r8a7795_core_clks,
-> >                                      ARRAY_SIZE(r8a7795_core_clks),
-> >                                      R8A7795_CLK_S0D2, R8A7795_CLK_S0D12);
-> > [...]
-> > diff --git a/drivers/iommu/ipmmu-vmsa.c b/drivers/iommu/ipmmu-vmsa.c
-> > index eaaec0a55cc6..13a06b613379 100644
-> > --- a/drivers/iommu/ipmmu-vmsa.c
-> > +++ b/drivers/iommu/ipmmu-vmsa.c
-> > @@ -757,17 +757,20 @@ static const char * const devices_allowlist[] = {
-> >
-> >  static bool ipmmu_device_is_allowed(struct device *dev)
-> >  {
-> > +     const struct soc_device_attribute *match1, *match2;
-> >       unsigned int i;
-> >
-> >       /*
-> >        * R-Car Gen3 and RZ/G2 use the allow list to opt-in devices.
-> >        * For Other SoCs, this returns true anyway.
-> >        */
-> > -     if (!soc_device_match(soc_needs_opt_in))
-> > +     match1 = soc_device_match(soc_needs_opt_in);
-> > +     if (!IS_ERR(match1) && !match1)
->
-> I'm not sure what you intended to do, but !match1 already means there is
-> no error so the original code is identical.
->
-> In this case ipmmu_device_is_allowed does not allow errors so this is
-> one of the "difficult" drivers that require slightly more thinking.
-> It is only called in ipmmu_of_xlate which does return errors properly,
-> so in this case the most straightforward approach would be to make
-> ipmmu_device_is_allowed return an int and forward errors as well.
->
-> ...
-> This is going to need quite some more work to be acceptable, in my
-> opinion, but I think it should be possible.
-
-In general, this is very hard to do, IMHO. Some drivers may be used on
-multiple platforms, some of them registering an SoC device, some of
-them not registering an SoC device.  So there is no way to know the
-difference between "SoC device not registered, intentionally", and
-"SoC device not yet registered".
-
-soc_device_match() should only be used as a last resort, to identify
-systems that cannot be identified otherwise.  Typically this is used for
-quirks, which should only be enabled on a very specific subset of
-systems.  IMHO such systems should make sure soc_device_match()
-is available early, by registering their SoC device early.
-
-Gr{oetje,eeting}s,
-
-                        Geert
-
--- 
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+Reviewed-by: Claudiu Manoil <claudiu.manoil@nxp.com>
