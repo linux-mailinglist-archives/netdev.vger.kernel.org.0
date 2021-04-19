@@ -2,182 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 38C8B363AEA
-	for <lists+netdev@lfdr.de>; Mon, 19 Apr 2021 07:12:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AB911363B1D
+	for <lists+netdev@lfdr.de>; Mon, 19 Apr 2021 07:48:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231203AbhDSFM6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 19 Apr 2021 01:12:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36112 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229473AbhDSFMz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 19 Apr 2021 01:12:55 -0400
-Received: from mail-ej1-x62c.google.com (mail-ej1-x62c.google.com [IPv6:2a00:1450:4864:20::62c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 02DF2C061761
-        for <netdev@vger.kernel.org>; Sun, 18 Apr 2021 22:12:24 -0700 (PDT)
-Received: by mail-ej1-x62c.google.com with SMTP id w23so35063600ejb.9
-        for <netdev@vger.kernel.org>; Sun, 18 Apr 2021 22:12:24 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=8ofWC35j+mTbhSxNhXaJK905wQN1NLDPBGPqQMOa3eQ=;
-        b=IrctopW6n++Uebb9it23T0FZjRjZrOUlcZCKLPSu29QZNIiTLFO6vbTVHcjm67FoxX
-         +XryZ6v1nnko8Qadw0FIa9a8U7bNDBNxOgjNi7XSRhViae4kcZDZhYqcDWBmd7Zf2t8I
-         w+rz1dqBOXDSUqJCOi2L1S5u0gQFYtt3XFmat8ud+6GGdDXPJaPHYE2FE8KpFg4Tzba/
-         Y0rkksO8F/XkcMzyoqV2nJc2yT8dMRprLgJTK2weOql8Fwr+RM0WbsvbNi/LtbE8coA5
-         MgeifV8B/ubDmAKV2xxhqdCCVOfYkDQVe+cicPvl4Z5zW+Nq/51LGZ79wC4JwaAI+WP3
-         cLVQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=8ofWC35j+mTbhSxNhXaJK905wQN1NLDPBGPqQMOa3eQ=;
-        b=VLZSISBCnUvZ688zBJudyMCaRNxCkJQCuGv+TtXqZcnKpevc7npzlWUDZBYWX12v8F
-         FY9CoQ9vKZB0LGX6xZgJdJEW1dmByQNLVXOTzlqkM4ypK4kj/RsR3EXstbMGB5r2xfls
-         9WqneteR2iCJUl1r8sjjDtG9meoZxEPYBu6XgoZpObObhbHJxFm7UhZDlvo00hdJJFoR
-         2NrtS1U4yUMOPAffFclRhMzUS+5Z/G48b4jnvgCkXAqH/Y9wcKj0HxIn7P1aLdBgY94k
-         o8dLr7TDk8S2bzBRjJmh9JTMF7h8Q0y2bfLFcailChE0/8kZgZ6bzUBsLDEki9v1o9zV
-         w1pg==
-X-Gm-Message-State: AOAM530dQftop/N3p/8VLk2fD1AGfJx4oag6H5NqGSfJK6XZpsXDydMh
-        kaoHdq1gMUqYi4zMfJtTPYxQGA==
-X-Google-Smtp-Source: ABdhPJw+oqRM110gHJFTVOQMCmNMJ31CDRgfffttfgzjSIimvIlDuXQkKo0zADVumPLs30SmZ9O6bQ==
-X-Received: by 2002:a17:906:cb11:: with SMTP id lk17mr20356893ejb.517.1618809143641;
-        Sun, 18 Apr 2021 22:12:23 -0700 (PDT)
-Received: from apalos.home (ppp-94-65-92-88.home.otenet.gr. [94.65.92.88])
-        by smtp.gmail.com with ESMTPSA id s5sm9541238ejq.52.2021.04.18.22.12.19
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 18 Apr 2021 22:12:23 -0700 (PDT)
-Date:   Mon, 19 Apr 2021 08:12:17 +0300
-From:   Ilias Apalodimas <ilias.apalodimas@linaro.org>
-To:     Shakeel Butt <shakeelb@google.com>
-Cc:     Jesper Dangaard Brouer <brouer@redhat.com>,
-        Matthew Wilcox <willy@infradead.org>,
-        Matteo Croce <mcroce@linux.microsoft.com>,
-        netdev <netdev@vger.kernel.org>, Linux MM <linux-mm@kvack.org>,
-        Ayush Sawal <ayush.sawal@chelsio.com>,
-        Vinay Kumar Yadav <vinay.yadav@chelsio.com>,
-        Rohit Maheshwari <rohitm@chelsio.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        Marcin Wojtas <mw@semihalf.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Mirko Lindner <mlindner@marvell.com>,
-        Stephen Hemminger <stephen@networkplumber.org>,
-        Tariq Toukan <tariqt@nvidia.com>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Boris Pismenny <borisp@nvidia.com>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
-        Vlastimil Babka <vbabka@suse.cz>, Yu Zhao <yuzhao@google.com>,
-        Will Deacon <will@kernel.org>,
-        Michel Lespinasse <walken@google.com>,
-        Fenghua Yu <fenghua.yu@intel.com>,
-        Roman Gushchin <guro@fb.com>, Hugh Dickins <hughd@google.com>,
-        Peter Xu <peterx@redhat.com>, Jason Gunthorpe <jgg@ziepe.ca>,
-        Guoqing Jiang <guoqing.jiang@cloud.ionos.com>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
-        Alexander Lobakin <alobakin@pm.me>,
-        Cong Wang <cong.wang@bytedance.com>, wenxu <wenxu@ucloud.cn>,
-        Kevin Hao <haokexin@gmail.com>,
-        Aleksandr Nogikh <nogikh@google.com>,
-        Jakub Sitnicki <jakub@cloudflare.com>,
-        Marco Elver <elver@google.com>,
-        Willem de Bruijn <willemb@google.com>,
-        Miaohe Lin <linmiaohe@huawei.com>,
-        Yunsheng Lin <linyunsheng@huawei.com>,
-        Guillaume Nault <gnault@redhat.com>,
-        LKML <linux-kernel@vger.kernel.org>, linux-rdma@vger.kernel.org,
-        bpf <bpf@vger.kernel.org>, Eric Dumazet <edumazet@google.com>,
-        David Ahern <dsahern@gmail.com>,
-        Lorenzo Bianconi <lorenzo@kernel.org>,
-        Saeed Mahameed <saeedm@nvidia.com>,
-        Andrew Lunn <andrew@lunn.ch>, Paolo Abeni <pabeni@redhat.com>
-Subject: Re: [PATCH net-next v3 2/5] mm: add a signature in struct page
-Message-ID: <YH0RMV7+56gVOzJe@apalos.home>
-References: <20210409223801.104657-1-mcroce@linux.microsoft.com>
- <20210409223801.104657-3-mcroce@linux.microsoft.com>
- <20210410154824.GZ2531743@casper.infradead.org>
- <YHHPbQm2pn2ysth0@enceladus>
- <CALvZod7UUxTavexGCzbKaK41LAW7mkfQrnDhFbjo-KvH9P6KsQ@mail.gmail.com>
- <YHHuE7g73mZNrMV4@enceladus>
- <20210414214132.74f721dd@carbon>
- <CALvZod4F8kCQQcK5_3YH=7keqkgY-97g+_OLoDCN7uNJdd61xA@mail.gmail.com>
+        id S232073AbhDSFsf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 19 Apr 2021 01:48:35 -0400
+Received: from out3-smtp.messagingengine.com ([66.111.4.27]:33657 "EHLO
+        out3-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S230392AbhDSFsf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 19 Apr 2021 01:48:35 -0400
+Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
+        by mailout.nyi.internal (Postfix) with ESMTP id 94D235C039E;
+        Mon, 19 Apr 2021 01:48:05 -0400 (EDT)
+Received: from mailfrontend2 ([10.202.2.163])
+  by compute3.internal (MEProxy); Mon, 19 Apr 2021 01:48:05 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:content-type:date:from:in-reply-to
+        :message-id:mime-version:references:subject:to:x-me-proxy
+        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm2; bh=j/e8a3
+        qQql0tN+k4Xa4i1asqnsgycUpoWvwOCFIwSSk=; b=eyAcjb4Yvbz8vAnxl3C21u
+        VA/IUTxU8Ntq6olGvHYf9e5hk/pK2gtub1siRav7RzO7NjCsvDpL49wjYX0qQwPQ
+        D5EZhoKYRqSZDwTgjHhAN2rdRikptTm+7Ny9Ly1AEvw5C78vwlYVPtbaacFmttx5
+        pIpGf8YKaxXSrHPYw7L5dvRMcbf6tZX8A/AIkyFJP1AUBxroQln/CqM4GfbYmp2P
+        JtaVqm6ne+yyhti5w2PGpjhCbgaRPtoPq3E3rX8IpkNPMewWRRa14mQWJtCGg8vd
+        GK9sIVfzdq6cVuzlk1f34PaMT/tkoZy9wgA5D6x+Wf1P8o5DVw8S9PC2HbnCy2gw
+        ==
+X-ME-Sender: <xms:lRl9YK6hXIqQFDNdfXxFsyBj09CZbf8ancXMu9ybTtNuhSt7MtEExQ>
+    <xme:lRl9YD5HEVtf6WchP80HQuGQMK-OU0yjlGS6IWseJ8r_e8ibQhlVn-zRCoqHmjdOT
+    ZyiNgjePI13w4M>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduledrvddtvddgudeffecutefuodetggdotefrod
+    ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfgh
+    necuuegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmd
+    enucfjughrpeffhffvuffkfhggtggujgesthdtredttddtvdenucfhrhhomhepkfguohcu
+    ufgthhhimhhmvghluceoihguohhstghhsehiughoshgthhdrohhrgheqnecuggftrfgrth
+    htvghrnheptdffkeekfeduffevgeeujeffjefhtefgueeugfevtdeiheduueeukefhudeh
+    leetnecukfhppeekgedrvddvledrudehfedrudekjeenucevlhhushhtvghrufhiiigvpe
+    dtnecurfgrrhgrmhepmhgrihhlfhhrohhmpehiughoshgthhesihguohhstghhrdhorhhg
+X-ME-Proxy: <xmx:lRl9YJdh5bS-rut3JmzpkctdSdHRZpddXW8VmwpJJgIUyfzSfDarIQ>
+    <xmx:lRl9YHKjb0lHWTi3wur23vYQ4X1Z6GLHjpZ01B-5tmD0pqadhbO2Nw>
+    <xmx:lRl9YOLHvFaIr9HVLnu3pSqNBTg4-PtxxoEc_j4pzXuskVTuGmL6ZA>
+    <xmx:lRl9YK2OJZQABpXgFPYOg0zaobVgHhCr_An1qxGlLdK7PjhAuZK1dw>
+Received: from localhost (igld-84-229-153-187.inter.net.il [84.229.153.187])
+        by mail.messagingengine.com (Postfix) with ESMTPA id C4C6E108005B;
+        Mon, 19 Apr 2021 01:48:04 -0400 (EDT)
+Date:   Mon, 19 Apr 2021 08:48:01 +0300
+From:   Ido Schimmel <idosch@idosch.org>
+To:     David Ahern <dsahern@gmail.com>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
+        petrm@nvidia.com, mlxsw@nvidia.com,
+        Ido Schimmel <idosch@nvidia.com>
+Subject: Re: [PATCH net-next 1/2] nexthop: Restart nexthop dump based on last
+ dumped nexthop identifier
+Message-ID: <YH0ZkeP1OVLeASpY@shredder.lan>
+References: <20210416155535.1694714-1-idosch@idosch.org>
+ <20210416155535.1694714-2-idosch@idosch.org>
+ <91838deb-c82d-444e-6a19-3926aeff87f2@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <CALvZod4F8kCQQcK5_3YH=7keqkgY-97g+_OLoDCN7uNJdd61xA@mail.gmail.com>
+In-Reply-To: <91838deb-c82d-444e-6a19-3926aeff87f2@gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Apr 14, 2021 at 01:09:47PM -0700, Shakeel Butt wrote:
-> On Wed, Apr 14, 2021 at 12:42 PM Jesper Dangaard Brouer
-> <brouer@redhat.com> wrote:
-> >
-> [...]
-> > > >
-> > > > Can this page_pool be used for TCP RX zerocopy? If yes then PageType
-> > > > can not be used.
-> > >
-> > > Yes it can, since it's going to be used as your default allocator for
-> > > payloads, which might end up on an SKB.
-> >
-> > I'm not sure we want or should "allow" page_pool be used for TCP RX
-> > zerocopy.
-> > For several reasons.
-> >
-> > (1) This implies mapping these pages page to userspace, which AFAIK
-> > means using page->mapping and page->index members (right?).
-> >
+On Sun, Apr 18, 2021 at 10:06:41AM -0700, David Ahern wrote:
+> On 4/16/21 8:55 AM, Ido Schimmel wrote:
+> > From: Ido Schimmel <idosch@nvidia.com>
+> > 
+> > Currently, a multi-part nexthop dump is restarted based on the number of
+> > nexthops that have been dumped so far. This can result in a lot of
+> > nexthops not being dumped when nexthops are simultaneously deleted:
+> > 
+> >  # ip nexthop | wc -l
+> >  65536
+> >  # ip nexthop flush
+> >  Dump was interrupted and may be inconsistent.
+> >  Flushed 36040 nexthops
+> >  # ip nexthop | wc -l
+> >  29496
+> > 
+> > Instead, restart the dump based on the nexthop identifier (fixed number)
+> > of the last successfully dumped nexthop:
+> > 
+> >  # ip nexthop | wc -l
+> >  65536
+> >  # ip nexthop flush
+> >  Dump was interrupted and may be inconsistent.
+> >  Flushed 65536 nexthops
+> >  # ip nexthop | wc -l
+> >  0
+> > 
+> > Reported-by: Maksym Yaremchuk <maksymy@nvidia.com>
+> > Tested-by: Maksym Yaremchuk <maksymy@nvidia.com>
+> > Signed-off-by: Ido Schimmel <idosch@nvidia.com>
+> > Reviewed-by: Petr Machata <petrm@nvidia.com>
+> > ---
+> >  net/ipv4/nexthop.c | 14 ++++++--------
+> >  1 file changed, 6 insertions(+), 8 deletions(-)
+> > 
 > 
-> No, only page->_mapcount is used.
-> 
+> Reviewed-by: David Ahern <dsahern@kernel.org>
 
-I am not sure I like leaving out TCP RX zerocopy. Since we want driver to
-adopt the recycling mechanism we should try preserving the current
-functionality of the network stack.
-
-The question is how does it work with the current drivers that already have an
-internal page recycling mechanism.
-
-> > (2) It feels wrong (security wise) to keep the DMA-mapping (for the
-> > device) and also map this page into userspace.
-> >
-> 
-> I think this is already the case i.e pages still DMA-mapped and also
-> mapped into userspace.
-> 
-> > (3) The page_pool is optimized for refcnt==1 case, and AFAIK TCP-RX
-> > zerocopy will bump the refcnt, which means the page_pool will not
-> > recycle the page when it see the elevated refcnt (it will instead
-> > release its DMA-mapping).
-> 
-> Yes this is right but the userspace might have already consumed and
-> unmapped the page before the driver considers to recycle the page.
-
-Same question here. I'll have a closer look in a few days and make sure we are
-not breaking anything wrt zerocopy.
+Thanks
 
 > 
-> >
-> > (4) I remember vaguely that this code path for (TCP RX zerocopy) uses
-> > page->private for tricks.  And our patch [3/5] use page->private for
-> > storing xdp_mem_info.
-> >
-> > IMHO when the SKB travel into this TCP RX zerocopy code path, we should
-> > call page_pool_release_page() to release its DMA-mapping.
-> >
-> 
-> I will let TCP RX zerocopy experts respond to this but from my high
-> level code inspection, I didn't see page->private usage.
+> Any reason not to put this in -net with a Fixes tag?
 
-Shakeel are you aware of any 'easy' way I can have rx zerocopy running?
+I put it in the cover letter:
 
-
-Thanks!
-/Ilias
+"Targeting at net-next since this use case never worked, the flow is
+pretty obscure and such a large number of nexthops is unlikely to be
+used in any real-world scenario."
