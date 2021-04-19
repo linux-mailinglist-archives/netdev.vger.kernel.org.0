@@ -2,96 +2,77 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id ED215363B70
-	for <lists+netdev@lfdr.de>; Mon, 19 Apr 2021 08:24:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 91096363B99
+	for <lists+netdev@lfdr.de>; Mon, 19 Apr 2021 08:38:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237463AbhDSGZH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 19 Apr 2021 02:25:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51654 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229840AbhDSGZG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 19 Apr 2021 02:25:06 -0400
-Received: from canardo.mork.no (canardo.mork.no [IPv6:2001:4641::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 38460C061760;
-        Sun, 18 Apr 2021 23:24:37 -0700 (PDT)
-Received: from miraculix.mork.no (fwa161.mork.no [192.168.9.161])
-        (authenticated bits=0)
-        by canardo.mork.no (8.15.2/8.15.2) with ESMTPSA id 13J6OA33005567
-        (version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=NO);
-        Mon, 19 Apr 2021 08:24:10 +0200
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mork.no; s=b;
-        t=1618813450; bh=E7X1Z/C7m4uTr61eYxZTSepR9nL5wv+XsO96GsmyN1o=;
-        h=From:To:Cc:Subject:References:Date:Message-ID:From;
-        b=Ik288FpI4+tP3NUif79juWd79WI9mF6EwixRHDNl9pM365SLN/2YUjFGhP517DrAq
-         iLKyA9hXRV4N1CNtUMM0qq9onUb9jv5Jpf3XyXpHfg8L0Qpk+MtZXnF0Otd1cyAcmB
-         tak3jj60+xS63bbFXtSk0SkE9+bzRGtYPXIk7s6M=
-Received: from bjorn by miraculix.mork.no with local (Exim 4.94)
-        (envelope-from <bjorn@mork.no>)
-        id 1lYNKL-000bQN-NA; Mon, 19 Apr 2021 08:24:09 +0200
-From:   =?utf-8?Q?Bj=C3=B8rn_Mork?= <bjorn@mork.no>
-To:     Ilya Lipnitskiy <ilya.lipnitskiy@gmail.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Greg Ungerer <gerg@kernel.org>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Sean Wang <sean.wang@kernel.org>, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org
-Subject: Re: [PATCH] dt-bindings: net: mediatek: support MT7621 SoC
-Organization: m
-References: <20210419034253.21322-1-ilya.lipnitskiy@gmail.com>
-Date:   Mon, 19 Apr 2021 08:24:09 +0200
-In-Reply-To: <20210419034253.21322-1-ilya.lipnitskiy@gmail.com> (Ilya
-        Lipnitskiy's message of "Sun, 18 Apr 2021 20:42:53 -0700")
-Message-ID: <878s5e94hi.fsf@miraculix.mork.no>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/27.1 (gnu/linux)
+        id S231714AbhDSGjX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 19 Apr 2021 02:39:23 -0400
+Received: from mga12.intel.com ([192.55.52.136]:32762 "EHLO mga12.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229630AbhDSGjW (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 19 Apr 2021 02:39:22 -0400
+IronPort-SDR: fithrntEnbkqI+ZMRifUZKEJ4w1Rd+MaNQK3XHISLrAcHOK0wAMP3hacVium1EG8E89W12tc9K
+ E15C8K1eYT2g==
+X-IronPort-AV: E=McAfee;i="6200,9189,9958"; a="174766091"
+X-IronPort-AV: E=Sophos;i="5.82,233,1613462400"; 
+   d="scan'208";a="174766091"
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Apr 2021 23:38:52 -0700
+IronPort-SDR: WSKcKiyUlWqe20hedjo0o9RhDUU6UeZ9trksqtiStHNusdT3iocgr7fAx25JiX0s6ycTxP+qyu
+ MLxSXq9iDVOg==
+X-IronPort-AV: E=Sophos;i="5.82,233,1613462400"; 
+   d="scan'208";a="523328521"
+Received: from unknown (HELO localhost.localdomain.bj.intel.com) ([10.240.193.73])
+  by fmsmga001-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Apr 2021 23:38:50 -0700
+From:   Zhu Lingshan <lingshan.zhu@intel.com>
+To:     jasowang@redhat.com, mst@redhat.com, lulu@redhat.com,
+        sgarzare@redhat.com
+Cc:     virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
+        kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Zhu Lingshan <lingshan.zhu@intel.com>
+Subject: [PATCH V4 0/3] vDPA/ifcvf: enables Intel C5000X-PL virtio-blk
+Date:   Mon, 19 Apr 2021 14:33:23 +0800
+Message-Id: <20210419063326.3748-1-lingshan.zhu@intel.com>
+X-Mailer: git-send-email 2.27.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-X-Virus-Scanned: clamav-milter 0.102.4 at canardo
-X-Virus-Status: Clean
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Ilya Lipnitskiy <ilya.lipnitskiy@gmail.com> writes:
+This series enabled Intel FGPA SmartNIC C5000X-PL virtio-blk for vDPA.
 
-> Add missing binding documentation for SoC support that has been in place
-> since v5.1
->
-> Fixes: 889bcbdeee57 ("net: ethernet: mediatek: support MT7621 SoC etherne=
-t hardware")
-> Cc: Bj=C3=B8rn Mork <bjorn@mork.no>
-> Signed-off-by: Ilya Lipnitskiy <ilya.lipnitskiy@gmail.com>
-> ---
->  Documentation/devicetree/bindings/net/mediatek-net.txt | 1 +
->  1 file changed, 1 insertion(+)
->
-> diff --git a/Documentation/devicetree/bindings/net/mediatek-net.txt b/Doc=
-umentation/devicetree/bindings/net/mediatek-net.txt
-> index 72d03e07cf7c..950ef6af20b1 100644
-> --- a/Documentation/devicetree/bindings/net/mediatek-net.txt
-> +++ b/Documentation/devicetree/bindings/net/mediatek-net.txt
-> @@ -10,6 +10,7 @@ Required properties:
->  - compatible: Should be
->  		"mediatek,mt2701-eth": for MT2701 SoC
->  		"mediatek,mt7623-eth", "mediatek,mt2701-eth": for MT7623 SoC
-> +		"mediatek,mt7621-eth": for MT7621 SoC
->  		"mediatek,mt7622-eth": for MT7622 SoC
->  		"mediatek,mt7629-eth": for MT7629 SoC
->  		"ralink,rt5350-eth": for Ralink Rt5350F and MT7628/88 SoC
+This series requires:
+Stefano's vdpa block patchset: https://lkml.org/lkml/2021/3/15/2113
+my patchset to enable Intel FGPA SmartNIC C5000X-PL virtio-net for vDPA:
+https://lkml.org/lkml/2021/3/17/432
 
+changes from V3:
+remove (pdev->device < 0x1000 || pdev->device > 0x107f) checks in
+probe(), because id_table already cut them off(Jason)
 
-Thanks for taking care of this!
+changes from V2:
+both get_features() and get_config_size() use switch code block
+now(Stefano)
 
-Note, however, that this compatible value is defined in
-Documentation/devicetree/bindings/net/ralink,rt2880-net.txt
+changes from V1:
+(1)add comments to explain this driver drives virtio modern devices
+and transitional devices in modern mode.(Jason)
+(2)remove IFCVF_BLK_SUPPORTED_FEATURES, use hardware feature bits
+directly(Jason)
+(3)add error handling and message in get_config_size(Stefano)
 
-I believe that file should go away. These two files are both documenting
-the same compatible property AFAICS.
+Thanks!
 
+Zhu Lingshan (3):
+  vDPA/ifcvf: deduce VIRTIO device ID when probe
+  vDPA/ifcvf: enable Intel C5000X-PL virtio-block for vDPA
+  vDPA/ifcvf: get_config_size should return dev specific config size
 
-Bj=C3=B8rn
+ drivers/vdpa/ifcvf/ifcvf_base.h |  9 ++++-
+ drivers/vdpa/ifcvf/ifcvf_main.c | 65 ++++++++++++++++++++++++++-------
+ 2 files changed, 59 insertions(+), 15 deletions(-)
+
+-- 
+2.27.0
+
