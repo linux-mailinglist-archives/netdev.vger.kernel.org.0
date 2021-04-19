@@ -2,97 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C3627364939
-	for <lists+netdev@lfdr.de>; Mon, 19 Apr 2021 19:52:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2456F36494A
+	for <lists+netdev@lfdr.de>; Mon, 19 Apr 2021 19:56:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240109AbhDSRwk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 19 Apr 2021 13:52:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34904 "EHLO
+        id S240302AbhDSR5O (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 19 Apr 2021 13:57:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35904 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238774AbhDSRwk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 19 Apr 2021 13:52:40 -0400
-Received: from cx11.kasperd.dk (cx11.kasperd.dk [IPv6:2a01:4f8:c2c:2f65::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8E34FC06174A
-        for <netdev@vger.kernel.org>; Mon, 19 Apr 2021 10:52:09 -0700 (PDT)
-Received: from [127.0.0.1] (helo=gczfm.28.feb.2009.kasperd.net)
-        by cx11.kasperd.dk with smtp (Exim 4.90_1)
-        (envelope-from <kasperd@gczfm.28.feb.2009.kasperd.net>)
-        id 1lYY46-0007dM-IL; Mon, 19 Apr 2021 19:52:06 +0200
-Date:   Mon, 19 Apr 2021 19:52:05 +0200
-From:   Kasper Dupont <kasperd@gczfm.28.feb.2009.kasperd.net>
-To:     David Ahern <dsahern@gmail.com>
-Cc:     Kasper Dupont <kasperd@gczfm.28.feb.2009.kasperd.net>,
-        netdev@vger.kernel.org,
-        Thadeu Lima de Souza Cascardo <cascardo@canonical.com>,
-        davem@davemloft.net, kuba@kernel.org, dsahern@kernel.org,
-        Kasper Dupont <kasperd@gjkwv.06.feb.2021.kasperd.net>
-Subject: Re: [PATCH 2/2] neighbour: allow NUD_NOARP entries to be forced GCed
-Message-ID: <20210419175205.GA2375672@sniper.kasperd.net>
-References: <20210317185320.1561608-1-cascardo@canonical.com>
- <20210317185320.1561608-2-cascardo@canonical.com>
- <20210419164429.GA2295190@sniper.kasperd.net>
- <0b502406-1a86-faec-ff46-c530145b90cf@gmail.com>
+        with ESMTP id S240241AbhDSR5L (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 19 Apr 2021 13:57:11 -0400
+Received: from mail-pf1-x42e.google.com (mail-pf1-x42e.google.com [IPv6:2607:f8b0:4864:20::42e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 23EE6C061763;
+        Mon, 19 Apr 2021 10:56:41 -0700 (PDT)
+Received: by mail-pf1-x42e.google.com with SMTP id g16so10413481pfq.5;
+        Mon, 19 Apr 2021 10:56:41 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=knBeKW9XWBCty1i1NBiydoVwzMYO0cMwhU2E7BjBd3Y=;
+        b=NtRwajU/nc1Bhk2tkuti0JxoXybHen2vwlon0ngdGfd8xlQFnhkAFej5fwRnMl/CJ7
+         QE3aCxwmFyT0KK9VPTE1VuZduzYSnE94EyYpi5Ktl6tQCGnCSmGuCg3hq1AWYSGE1mqm
+         MIlQpTLT27bpGRppWOysx6gFTwPSXMDhtU6fX4+N6JKzuDS8O2s4JvvF2PsjOjBiARIg
+         pRm9O0YnaLYTf9AAPTSHc1A8wE38vorLj14lS+ej6CwR4B9Dh0XkNYRtRNeSI6ReAmhn
+         gJnecmxl/AYAzpM9i0gYg2DxooabXbA0D7+E3ux2+gG1xU8YnSsf7AZ3vDKNyrrQiFvh
+         0DDA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=knBeKW9XWBCty1i1NBiydoVwzMYO0cMwhU2E7BjBd3Y=;
+        b=CSacg3GDMvQBF5ZCK+JSbNbclCOYRJaFRDq8yJuYlhM+voAaNxGwKUf2W098coL9y2
+         PMyswDpubp3h4qpdttEET/noVCFLnudncskBn6cm3NOpeRnPziLYi+hZXSebm9U82FS1
+         ypOTD3uFLe8eEXD7xhJqc/w7wRgioRnS08ZqynRu30adDlPgz/LzAamvGOH2eCrvEgiU
+         UewadQx4xiTgHnvP9w7lOM+Z9grizBnq+4sK2bXQW7zmGqMwmleekOCavVxLhwcoCjE8
+         wHE1+n/GpxRQbIzgtR/5lMvEtsCucjuVqPuPjqNhjineVVHSGEwOg0NtP1oPpoYewezF
+         9hug==
+X-Gm-Message-State: AOAM530HAB4p7Fa+92PLiKQP+gWvkN7GMjFtRnNX5gylurN0To6tyxSb
+        XX22uOuLMDT5TiiwR+W6W0K1vTvrizCT7g==
+X-Google-Smtp-Source: ABdhPJywY0KFRgCywLjxuoYABaWZHpxZ5bEMDPXGDtFTQ7thsbs/uoPORWCTgFVh9wJuoEvUOFuNSA==
+X-Received: by 2002:a65:4382:: with SMTP id m2mr12999258pgp.354.1618854999748;
+        Mon, 19 Apr 2021 10:56:39 -0700 (PDT)
+Received: from unknown.attlocal.net ([2600:1700:65a0:ab60:e9c9:f92c:88fa:755e])
+        by smtp.gmail.com with ESMTPSA id g2sm119660pju.18.2021.04.19.10.56.39
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 19 Apr 2021 10:56:39 -0700 (PDT)
+From:   Cong Wang <xiyou.wangcong@gmail.com>
+To:     netdev@vger.kernel.org
+Cc:     bpf@vger.kernel.org, jiang.wang@bytedance.com,
+        duanxiongchun@bytedance.com, wangdongdong.6@bytedance.com,
+        Cong Wang <cong.wang@bytedance.com>
+Subject: [Patch bpf-next v2 0/9] sockmap: add sockmap support to Unix datagram socket
+Date:   Mon, 19 Apr 2021 10:55:54 -0700
+Message-Id: <20210419175603.19378-1-xiyou.wangcong@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-7
-Content-Disposition: inline
-In-Reply-To: <0b502406-1a86-faec-ff46-c530145b90cf@gmail.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 19/04/21 10.10, David Ahern wrote:
-+AD4 On 4/19/21 9:44 AM, Kasper Dupont wrote:
-+AD4 +AD4 On 17/03/21 15.53, Thadeu Lima de Souza Cascardo wrote:
-+AD4 +AD4APg IFF+AF8-POINTOPOINT interfaces use NUD+AF8-NOARP entries for IPv6. It's possible to
-+AD4 +AD4APg fill up the neighbour table with enough entries that it will overflow for
-+AD4 +AD4APg valid connections after that.
-+AD4 +AD4APg
-+AD4 +AD4APg This behaviour is more prevalent after commit 58956317c8de (+ACI-neighbor:
-+AD4 +AD4APg Improve garbage collection+ACI) is applied, as it prevents removal from
-+AD4 +AD4APg entries that are not NUD+AF8-FAILED, unless they are more than 5s old.
-+AD4 +AD4APg
-+AD4 +AD4APg Fixes: 58956317c8de (neighbor: Improve garbage collection)
-+AD4 +AD4APg Reported-by: Kasper Dupont +ADw-kasperd+AEA-gjkwv.06.feb.2021.kasperd.net+AD4
-+AD4 +AD4APg Signed-off-by: Thadeu Lima de Souza Cascardo +ADw-cascardo+AEA-canonical.com+AD4
-+AD4 +AD4APg ---
-+AD4 +AD4APg  net/core/neighbour.c +AHw 1 +-
-+AD4 +AD4APg  1 file changed, 1 insertion(+-)
-+AD4 +AD4APg
-+AD4 +AD4APg diff --git a/net/core/neighbour.c b/net/core/neighbour.c
-+AD4 +AD4APg index bbc89c7ffdfd..be5ca411b149 100644
-+AD4 +AD4APg --- a/net/core/neighbour.c
-+AD4 +AD4APg +-+-+- b/net/core/neighbour.c
-+AD4 +AD4APg +AEAAQA -256,6 +-256,7 +AEAAQA static int neigh+AF8-forced+AF8-gc(struct neigh+AF8-table +ACo-tbl)
-+AD4 +AD4APg  
-+AD4 +AD4APg  		write+AF8-lock(+ACY-n-+AD4-lock)+ADs
-+AD4 +AD4APg  		if ((n-+AD4-nud+AF8-state +AD0APQ NUD+AF8-FAILED) +AHwAfA
-+AD4 +AD4APg +-		    (n-+AD4-nud+AF8-state +AD0APQ NUD+AF8-NOARP) +AHwAfA
-+AD4 +AD4APg  		    (tbl-+AD4-is+AF8-multicast +ACYAJg
-+AD4 +AD4APg  		     tbl-+AD4-is+AF8-multicast(n-+AD4-primary+AF8-key)) +AHwAfA
-+AD4 +AD4APg  		    time+AF8-after(tref, n-+AD4-updated))
-+AD4 +AD4APg -- 
-+AD4 +AD4APg 2.27.0
-+AD4 +AD4APg
-+AD4 +AD4 
-+AD4 +AD4 Is there any update regarding this change?
-+AD4 +AD4 
-+AD4 +AD4 I noticed this regression when it was used in a DoS attack on one of
-+AD4 +AD4 my servers which I had upgraded from Ubuntu 18.04 to 20.04.
-+AD4 +AD4 
-+AD4 +AD4 I have verified that Ubuntu 18.04 is not subject to this attack and
-+AD4 +AD4 Ubuntu 20.04 is vulnerable. I have also verified that the one-line
-+AD4 +AD4 change which Cascardo has provided fixes the vulnerability on Ubuntu
-+AD4 +AD4 20.04.
-+AD4 +AD4 
-+AD4 
-+AD4 your testing included both patches or just this one?
+From: Cong Wang <cong.wang@bytedance.com>
 
-I applied only this one line change on top of the kernel in Ubuntu
-20.04. The behavior I observed was that without the patch the kernel
-was vulnerable and with that patch I was unable to reproduce the
-problem.
+This is the last patchset of the original large patchset. In the
+previous patchset, a new BPF sockmap program BPF_SK_SKB_VERDICT
+was introduced and UDP began to support it too. In this patchset,
+we add BPF_SK_SKB_VERDICT support to Unix datagram socket, so that
+we can finally splice Unix datagram socket and UDP socket. Please
+check each patch description for more details.
 
-The other longer patch is for a different issue which Cascardo
-discovered while working on the one I had reported. I don't have an
-environment set up where I can reproduce the issue addressed by that
-larger patch.
+To see the big picture, the previous patchsets are available:
+https://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf-next.git/commit/?id=1e0ab70778bd86a90de438cc5e1535c115a7c396
+https://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf-next.git/commit/?id=89d69c5d0fbcabd8656459bc8b1a476d6f1efee4
+this patchset is also available:
+https://github.com/congwang/linux/tree/sockmap3
+
+---
+v2: separate out from the original large patchset
+    rebase to the latest bpf-next
+    clean up unix_read_sock()
+    export sock_map_close()
+    factor out some helpers in selftests for code reuse
+
+Cong Wang (9):
+  af_unix: implement ->read_sock() for sockmap
+  af_unix: implement ->psock_update_sk_prot()
+  af_unix: set TCP_ESTABLISHED for datagram sockets too
+  af_unix: implement unix_dgram_bpf_recvmsg()
+  sock_map: update sock type checks for AF_UNIX
+  selftests/bpf: factor out udp_socketpair()
+  selftests/bpf: factor out add_to_sockmap()
+  selftests/bpf: add a test case for unix sockmap
+  selftests/bpf: add test cases for redirection between udp and unix
+
+ MAINTAINERS                                   |   1 +
+ include/net/af_unix.h                         |  13 +
+ net/core/sock_map.c                           |   9 +
+ net/unix/Makefile                             |   1 +
+ net/unix/af_unix.c                            |  82 +++-
+ net/unix/unix_bpf.c                           |  95 +++++
+ .../selftests/bpf/prog_tests/sockmap_listen.c | 386 ++++++++++++++----
+ 7 files changed, 505 insertions(+), 82 deletions(-)
+ create mode 100644 net/unix/unix_bpf.c
+
+-- 
+2.25.1
+
