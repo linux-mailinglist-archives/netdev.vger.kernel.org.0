@@ -2,44 +2,38 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A3713364CBD
-	for <lists+netdev@lfdr.de>; Mon, 19 Apr 2021 23:04:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8D430364CEF
+	for <lists+netdev@lfdr.de>; Mon, 19 Apr 2021 23:16:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237833AbhDSVFO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 19 Apr 2021 17:05:14 -0400
-Received: from mail.kernel.org ([198.145.29.99]:35926 "EHLO mail.kernel.org"
+        id S240156AbhDSVQd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 19 Apr 2021 17:16:33 -0400
+Received: from mail.kernel.org ([198.145.29.99]:37572 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232897AbhDSVFO (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 19 Apr 2021 17:05:14 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 2B81F6101C;
-        Mon, 19 Apr 2021 21:04:43 +0000 (UTC)
+        id S229714AbhDSVQd (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 19 Apr 2021 17:16:33 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 60E2261003;
+        Mon, 19 Apr 2021 21:16:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1618866283;
-        bh=BatIuz7zrAF5lJzJJQfQ3s2F5twGFrJv0Zvadn3IGXA=;
+        s=k20201202; t=1618866962;
+        bh=gipsoq8wJorpv0DxjT0nd3/XxZuHkLBVg4vEzgXH9xI=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=rO5RfE6NHjW2IJxJzNVH2kfC5gvwmOP415hNH+GKNCkr9bK/1t+AIJrR35dgzPytC
-         lZ6IedHF/P+BhzneKPs1F70WrgvH2TETSO7B1xQ3PBdXkbBd1qfMSU9X+zqyex6HML
-         08PwBQ+AeDZmQJDjSr7/Iq+Q0Qlk0sY5mQxirVKqSpRIf3l9n6gGlWPEXoYJxRn25+
-         VAk2p41ceOFHtOqEskIWzR18ltovvpR1aI2KyhXrGTITKh32ysBtM0gF5HWoFQ3Xdy
-         O0+oyT5OcI3d/KCehOBS0/c9Sx+SiQ99PisRh+w4TTVEan3Izme0VO6fuu632j79By
-         lkz1JjAXG+QoQ==
-Date:   Mon, 19 Apr 2021 14:04:42 -0700
+        b=sBo3/wFjll1ggZ59fpw1fBR3ZuG+A4ZQJcGd6dTOPJpcBei7CyZUv+CWUIbnGDFYs
+         p61MREoity08kdUvope9YU2vTRamSSiOI+ABnbyi16nqzOvHtxl0gsvRB3MOAgKOD/
+         eSuhoTM8SBDTy+IpYyx1CbpnP28h9zAopKA6OZ4ShyvX3IZTdklvrA9UpSfGt3kom3
+         LCR1NZQ+XN1kIFrpx9tp6Z1dpKDswWOCTY8ke64OZtebd7vxM/n4PWTFvP/am4j470
+         9/DTtDmwq4nXQLrH7Nq8ULuuHNbicVKhBtkyyF7iS+k1oAXLQFFRI1igfouf4h+ZXM
+         jBXFOZLD6FXww==
+Date:   Mon, 19 Apr 2021 14:16:01 -0700
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        Po Liu <po.liu@nxp.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Alex Marginean <alexandru.marginean@nxp.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Shawn Guo <shawnguo@kernel.org>,
-        linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
-        Russell King - ARM Linux admin <linux@armlinux.org.uk>,
-        Andrew Lunn <andrew@lunn.ch>, Michael Walle <michael@walle.cc>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>
-Subject: Re: [PATCH net-next 0/5] Flow control for NXP ENETC
-Message-ID: <20210419140442.79dd0ce0@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20210416234225.3715819-1-olteanv@gmail.com>
-References: <20210416234225.3715819-1-olteanv@gmail.com>
+To:     Pablo Neira Ayuso <pablo@netfilter.org>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, john@phrozen.org,
+        nbd@nbd.name, sean.wang@mediatek.com, Mark-MC.Lee@mediatek.com,
+        dqfext@gmail.com, frank-w@public-files.de
+Subject: Re: [PATCH net-next 2/3] net: ethernet: mtk_eth_soc: missing mutex
+Message-ID: <20210419141601.531b2efd@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20210418211145.21914-3-pablo@netfilter.org>
+References: <20210418211145.21914-1-pablo@netfilter.org>
+        <20210418211145.21914-3-pablo@netfilter.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -47,24 +41,15 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, 17 Apr 2021 02:42:20 +0300 Vladimir Oltean wrote:
-> From: Vladimir Oltean <vladimir.oltean@nxp.com>
+On Sun, 18 Apr 2021 23:11:44 +0200 Pablo Neira Ayuso wrote:
+> Patch 2ed37183abb7 ("netfilter: flowtable: separate replace, destroy and
+> stats to different workqueues") splits the workqueue per event type. Add
+> a mutex to serialize updates.
 > 
-> This patch series contains logic for enabling the lossless mode on the
-> RX rings of the ENETC, and the PAUSE thresholds on the internal FIFO
-> memory.
-> 
-> During testing it was found that, with the default FIFO configuration,
-> a sender which isn't persuaded by our PAUSE frames and keeps sending
-> will cause some MAC RX frame errors. To mitigate this, we need to ensure
-> that the FIFO never runs completely full, so we need to fix up a setting
-> that was supposed to be configured well out of reset. Unfortunately this
-> requires the addition of a new mini-driver.
+> Fixes: 502e84e2382d ("net: ethernet: mtk_eth_soc: add flow offloading support")
+> Reported-by: Frank Wunderlich <frank-w@public-files.de>
+> Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
 
-FWIW back in the day when I was working on more advanced devices than 
-I deal with these days I was expecting to eventually run into this as
-well and create some form of devlink umbrella. IMHO such "mini driver"
-is a natural place for a devlink instance, and not the PFs/ports.
-Is this your thinking as well? AFAICT enetc doesn't implement devlink
-today so you start from whatever model works best without worrying
-about backward compat.
+This driver doesn't set unlocked_driver_cb, why is it expected to take
+any locks? I thought the contract is that caller should hold rtnl.
+
