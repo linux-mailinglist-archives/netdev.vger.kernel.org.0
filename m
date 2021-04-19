@@ -2,190 +2,182 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CDE3F363ADE
-	for <lists+netdev@lfdr.de>; Mon, 19 Apr 2021 07:03:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 38C8B363AEA
+	for <lists+netdev@lfdr.de>; Mon, 19 Apr 2021 07:12:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233206AbhDSFDp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 19 Apr 2021 01:03:45 -0400
-Received: from gw.atmark-techno.com ([13.115.124.170]:56596 "EHLO
-        gw.atmark-techno.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233221AbhDSFDo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 19 Apr 2021 01:03:44 -0400
-Received: from mail-vs1-f69.google.com (mail-vs1-f69.google.com [209.85.217.69])
-        by gw.atmark-techno.com (Postfix) with ESMTPS id 1C0758048C
-        for <netdev@vger.kernel.org>; Mon, 19 Apr 2021 14:03:12 +0900 (JST)
-Received: by mail-vs1-f69.google.com with SMTP id 3-20020a6717030000b029016d08542c7dso3493590vsx.14
-        for <netdev@vger.kernel.org>; Sun, 18 Apr 2021 22:03:12 -0700 (PDT)
+        id S231203AbhDSFM6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 19 Apr 2021 01:12:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36112 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229473AbhDSFMz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 19 Apr 2021 01:12:55 -0400
+Received: from mail-ej1-x62c.google.com (mail-ej1-x62c.google.com [IPv6:2a00:1450:4864:20::62c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 02DF2C061761
+        for <netdev@vger.kernel.org>; Sun, 18 Apr 2021 22:12:24 -0700 (PDT)
+Received: by mail-ej1-x62c.google.com with SMTP id w23so35063600ejb.9
+        for <netdev@vger.kernel.org>; Sun, 18 Apr 2021 22:12:24 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=8ofWC35j+mTbhSxNhXaJK905wQN1NLDPBGPqQMOa3eQ=;
+        b=IrctopW6n++Uebb9it23T0FZjRjZrOUlcZCKLPSu29QZNIiTLFO6vbTVHcjm67FoxX
+         +XryZ6v1nnko8Qadw0FIa9a8U7bNDBNxOgjNi7XSRhViae4kcZDZhYqcDWBmd7Zf2t8I
+         w+rz1dqBOXDSUqJCOi2L1S5u0gQFYtt3XFmat8ud+6GGdDXPJaPHYE2FE8KpFg4Tzba/
+         Y0rkksO8F/XkcMzyoqV2nJc2yT8dMRprLgJTK2weOql8Fwr+RM0WbsvbNi/LtbE8coA5
+         MgeifV8B/ubDmAKV2xxhqdCCVOfYkDQVe+cicPvl4Z5zW+Nq/51LGZ79wC4JwaAI+WP3
+         cLVQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to;
-        bh=bLr973ENjFZQNNz5/z+BmoCFuTDVovYaAYguOO0YOc4=;
-        b=OJUZlLLsN1pQ1YR2kErrPWcjqFqxtis1apCyKnFpgtN+zA+9SjI59tMqQCUrMVY9gf
-         ZPCFgmwxUtYiuLTCCfoHw16KQM0Y8uzbhbttBppMUZHiWZ52vgvtkmQEnHarVTjBVX5j
-         64RtLeuka+uw5qiBOE5rJPHD78JMOAm3J1LXXCuTgE6X3kDJzea0paB7YH1it16aKCi9
-         USzLTrCDK0U0PoNjmBMwE8V7iUo0d21fMpe2BQcfSnshA3W5HphqaRRKtmOSzMQ4FoVI
-         N14vsrf4LrG4LJL63xhBRr9BEMmJ2Q8SX9u9bM5jf26lTtnufDrCgOMMkclIiPiTcAw8
-         544A==
-X-Gm-Message-State: AOAM530xIb5hDU+fkiIOt5QHTWu0LELN3wlp/nxhjCOcluMdM43ma2Tb
-        Lw5lhKOY5AmflLj79eK9RzuExSJ0QAQ4Vq30eVPFc4O6egibDVj6vrYiw06ofdf0rAlvxHaHrY0
-        uQxI13zi5+gHYa2exVAqa
-X-Received: by 2002:a17:902:d645:b029:e8:ec90:d097 with SMTP id y5-20020a170902d645b02900e8ec90d097mr21074807plh.47.1618808579511;
-        Sun, 18 Apr 2021 22:02:59 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJyI1MeNQhpXnytM5xmVsw3ZCkrTxMPyrxhKroAVtmGUaPe01xpWL31HOX4hl1pxmvtORo+KDQ==
-X-Received: by 2002:a17:902:d645:b029:e8:ec90:d097 with SMTP id y5-20020a170902d645b02900e8ec90d097mr21074765plh.47.1618808579243;
-        Sun, 18 Apr 2021 22:02:59 -0700 (PDT)
-Received: from pc-0115 (103.131.189.35.bc.googleusercontent.com. [35.189.131.103])
-        by smtp.gmail.com with ESMTPSA id ga21sm2553351pjb.5.2021.04.18.22.02.58
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Sun, 18 Apr 2021 22:02:58 -0700 (PDT)
-Received: from martinet by pc-0115 with local (Exim 4.94)
-        (envelope-from <martinet@pc-0115>)
-        id 1lYM3l-0016Ra-6N; Mon, 19 Apr 2021 14:02:57 +0900
-Date:   Mon, 19 Apr 2021 14:02:47 +0900
-From:   Dominique MARTINET <dominique.martinet@atmark-techno.com>
-To:     "Alice Guo (OSS)" <alice.guo@oss.nxp.com>
-Cc:     gregkh@linuxfoundation.org, rafael@kernel.org,
-        horia.geanta@nxp.com, aymen.sghaier@nxp.com,
-        herbert@gondor.apana.org.au, davem@davemloft.net, tony@atomide.com,
-        geert+renesas@glider.be, mturquette@baylibre.com, sboyd@kernel.org,
-        vkoul@kernel.org, peter.ujfalusi@gmail.com, a.hajda@samsung.com,
-        narmstrong@baylibre.com, robert.foss@linaro.org, airlied@linux.ie,
-        daniel@ffwll.ch, khilman@baylibre.com, tomba@kernel.org,
-        jyri.sarha@iki.fi, joro@8bytes.org, will@kernel.org,
-        mchehab@kernel.org, ulf.hansson@linaro.org,
-        adrian.hunter@intel.com, kishon@ti.com, kuba@kernel.org,
-        linus.walleij@linaro.org, Roy.Pledge@nxp.com, leoyang.li@nxp.com,
-        ssantosh@kernel.org, matthias.bgg@gmail.com, edubezval@gmail.com,
-        j-keerthy@ti.com, balbi@kernel.org, linux@prisktech.co.nz,
-        stern@rowland.harvard.edu, wim@linux-watchdog.org,
-        linux@roeck-us.net, linux-kernel@vger.kernel.org,
-        linux-crypto@vger.kernel.org, linux-omap@vger.kernel.org,
-        linux-renesas-soc@vger.kernel.org, linux-clk@vger.kernel.org,
-        dmaengine@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        linux-amlogic@lists.infradead.org,
-        linux-arm-kernel@lists.infradead.org,
-        iommu@lists.linux-foundation.org, linux-media@vger.kernel.org,
-        linux-mmc@vger.kernel.org, netdev@vger.kernel.org,
-        linux-phy@lists.infradead.org, linux-gpio@vger.kernel.org,
-        linuxppc-dev@lists.ozlabs.org, linux-staging@lists.linux.dev,
-        linux-mediatek@lists.infradead.org, linux-pm@vger.kernel.org,
-        linux-usb@vger.kernel.org, linux-watchdog@vger.kernel.org
-Subject: Re: [RFC v1 PATCH 3/3] driver: update all the code that use
- soc_device_match
-Message-ID: <YH0O907dfGY9jQRZ@atmark-techno.com>
-References: <20210419042722.27554-1-alice.guo@oss.nxp.com>
- <20210419042722.27554-4-alice.guo@oss.nxp.com>
+        bh=8ofWC35j+mTbhSxNhXaJK905wQN1NLDPBGPqQMOa3eQ=;
+        b=VLZSISBCnUvZ688zBJudyMCaRNxCkJQCuGv+TtXqZcnKpevc7npzlWUDZBYWX12v8F
+         FY9CoQ9vKZB0LGX6xZgJdJEW1dmByQNLVXOTzlqkM4ypK4kj/RsR3EXstbMGB5r2xfls
+         9WqneteR2iCJUl1r8sjjDtG9meoZxEPYBu6XgoZpObObhbHJxFm7UhZDlvo00hdJJFoR
+         2NrtS1U4yUMOPAffFclRhMzUS+5Z/G48b4jnvgCkXAqH/Y9wcKj0HxIn7P1aLdBgY94k
+         o8dLr7TDk8S2bzBRjJmh9JTMF7h8Q0y2bfLFcailChE0/8kZgZ6bzUBsLDEki9v1o9zV
+         w1pg==
+X-Gm-Message-State: AOAM530dQftop/N3p/8VLk2fD1AGfJx4oag6H5NqGSfJK6XZpsXDydMh
+        kaoHdq1gMUqYi4zMfJtTPYxQGA==
+X-Google-Smtp-Source: ABdhPJw+oqRM110gHJFTVOQMCmNMJ31CDRgfffttfgzjSIimvIlDuXQkKo0zADVumPLs30SmZ9O6bQ==
+X-Received: by 2002:a17:906:cb11:: with SMTP id lk17mr20356893ejb.517.1618809143641;
+        Sun, 18 Apr 2021 22:12:23 -0700 (PDT)
+Received: from apalos.home (ppp-94-65-92-88.home.otenet.gr. [94.65.92.88])
+        by smtp.gmail.com with ESMTPSA id s5sm9541238ejq.52.2021.04.18.22.12.19
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 18 Apr 2021 22:12:23 -0700 (PDT)
+Date:   Mon, 19 Apr 2021 08:12:17 +0300
+From:   Ilias Apalodimas <ilias.apalodimas@linaro.org>
+To:     Shakeel Butt <shakeelb@google.com>
+Cc:     Jesper Dangaard Brouer <brouer@redhat.com>,
+        Matthew Wilcox <willy@infradead.org>,
+        Matteo Croce <mcroce@linux.microsoft.com>,
+        netdev <netdev@vger.kernel.org>, Linux MM <linux-mm@kvack.org>,
+        Ayush Sawal <ayush.sawal@chelsio.com>,
+        Vinay Kumar Yadav <vinay.yadav@chelsio.com>,
+        Rohit Maheshwari <rohitm@chelsio.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        Marcin Wojtas <mw@semihalf.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Mirko Lindner <mlindner@marvell.com>,
+        Stephen Hemminger <stephen@networkplumber.org>,
+        Tariq Toukan <tariqt@nvidia.com>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Boris Pismenny <borisp@nvidia.com>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
+        Vlastimil Babka <vbabka@suse.cz>, Yu Zhao <yuzhao@google.com>,
+        Will Deacon <will@kernel.org>,
+        Michel Lespinasse <walken@google.com>,
+        Fenghua Yu <fenghua.yu@intel.com>,
+        Roman Gushchin <guro@fb.com>, Hugh Dickins <hughd@google.com>,
+        Peter Xu <peterx@redhat.com>, Jason Gunthorpe <jgg@ziepe.ca>,
+        Guoqing Jiang <guoqing.jiang@cloud.ionos.com>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        Alexander Lobakin <alobakin@pm.me>,
+        Cong Wang <cong.wang@bytedance.com>, wenxu <wenxu@ucloud.cn>,
+        Kevin Hao <haokexin@gmail.com>,
+        Aleksandr Nogikh <nogikh@google.com>,
+        Jakub Sitnicki <jakub@cloudflare.com>,
+        Marco Elver <elver@google.com>,
+        Willem de Bruijn <willemb@google.com>,
+        Miaohe Lin <linmiaohe@huawei.com>,
+        Yunsheng Lin <linyunsheng@huawei.com>,
+        Guillaume Nault <gnault@redhat.com>,
+        LKML <linux-kernel@vger.kernel.org>, linux-rdma@vger.kernel.org,
+        bpf <bpf@vger.kernel.org>, Eric Dumazet <edumazet@google.com>,
+        David Ahern <dsahern@gmail.com>,
+        Lorenzo Bianconi <lorenzo@kernel.org>,
+        Saeed Mahameed <saeedm@nvidia.com>,
+        Andrew Lunn <andrew@lunn.ch>, Paolo Abeni <pabeni@redhat.com>
+Subject: Re: [PATCH net-next v3 2/5] mm: add a signature in struct page
+Message-ID: <YH0RMV7+56gVOzJe@apalos.home>
+References: <20210409223801.104657-1-mcroce@linux.microsoft.com>
+ <20210409223801.104657-3-mcroce@linux.microsoft.com>
+ <20210410154824.GZ2531743@casper.infradead.org>
+ <YHHPbQm2pn2ysth0@enceladus>
+ <CALvZod7UUxTavexGCzbKaK41LAW7mkfQrnDhFbjo-KvH9P6KsQ@mail.gmail.com>
+ <YHHuE7g73mZNrMV4@enceladus>
+ <20210414214132.74f721dd@carbon>
+ <CALvZod4F8kCQQcK5_3YH=7keqkgY-97g+_OLoDCN7uNJdd61xA@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20210419042722.27554-4-alice.guo@oss.nxp.com>
+In-Reply-To: <CALvZod4F8kCQQcK5_3YH=7keqkgY-97g+_OLoDCN7uNJdd61xA@mail.gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Alice Guo (OSS) wrote on Mon, Apr 19, 2021 at 12:27:22PM +0800:
-> From: Alice Guo <alice.guo@nxp.com>
-> 
-> Update all the code that use soc_device_match
-
-A single patch might be difficult to accept for all components, a each
-maintainer will probably want to have a say on their subsystem?
-
-I would suggest to split these for a non-RFC version; a this will really
-need to be case-by-case handling.
-
-> because add support for soc_device_match returning -EPROBE_DEFER.
-
-(English does not parse here for me)
-
-I've only commented a couple of places in the code itself, but this
-doesn't seem to add much support for errors, just sweep the problem
-under the rug.
-
-> Signed-off-by: Alice Guo <alice.guo@nxp.com>
-> ---
-> 
-> diff --git a/drivers/bus/ti-sysc.c b/drivers/bus/ti-sysc.c
-> index 5fae60f8c135..00c59aa217c1 100644
-> --- a/drivers/bus/ti-sysc.c
-> +++ b/drivers/bus/ti-sysc.c
-> @@ -2909,7 +2909,7 @@ static int sysc_init_soc(struct sysc *ddata)
->  	}
->  
->  	match = soc_device_match(sysc_soc_feat_match);
-> -	if (!match)
-> +	if (!match || IS_ERR(match))
->  		return 0;
-
-This function handles errors, I would recommend returning the error as
-is if soc_device_match returned one so the probe can be retried later.
-
->  
->  	if (match->data)
-> diff --git a/drivers/clk/renesas/r8a7795-cpg-mssr.c b/drivers/clk/renesas/r8a7795-cpg-mssr.c
-> index c32d2c678046..90a18336a4c3 100644
-> --- a/drivers/clk/renesas/r8a7795-cpg-mssr.c
-> +++ b/drivers/clk/renesas/r8a7795-cpg-mssr.c
-> @@ -439,6 +439,7 @@ static const unsigned int r8a7795es2_mod_nullify[] __initconst = {
->  
->  static int __init r8a7795_cpg_mssr_init(struct device *dev)
->  {
-> +	const struct soc_device_attribute *match;
->  	const struct rcar_gen3_cpg_pll_config *cpg_pll_config;
->  	u32 cpg_mode;
->  	int error;
-> @@ -453,7 +454,8 @@ static int __init r8a7795_cpg_mssr_init(struct device *dev)
->  		return -EINVAL;
->  	}
->  
-> -	if (soc_device_match(r8a7795es1)) {
-> +	match = soc_device_match(r8a7795es1);
-> +	if (!IS_ERR(match) && match) {
-
-Same, return the error.
-Assuming an error means no match will just lead to hard to debug
-problems because the driver potentially assumed the wrong device when
-it's just not ready yet.
-
->  		cpg_core_nullify_range(r8a7795_core_clks,
->  				       ARRAY_SIZE(r8a7795_core_clks),
->  				       R8A7795_CLK_S0D2, R8A7795_CLK_S0D12);
+On Wed, Apr 14, 2021 at 01:09:47PM -0700, Shakeel Butt wrote:
+> On Wed, Apr 14, 2021 at 12:42 PM Jesper Dangaard Brouer
+> <brouer@redhat.com> wrote:
+> >
 > [...]
-> diff --git a/drivers/iommu/ipmmu-vmsa.c b/drivers/iommu/ipmmu-vmsa.c
-> index eaaec0a55cc6..13a06b613379 100644
-> --- a/drivers/iommu/ipmmu-vmsa.c
-> +++ b/drivers/iommu/ipmmu-vmsa.c
-> @@ -757,17 +757,20 @@ static const char * const devices_allowlist[] = {
->  
->  static bool ipmmu_device_is_allowed(struct device *dev)
->  {
-> +	const struct soc_device_attribute *match1, *match2;
->  	unsigned int i;
->  
->  	/*
->  	 * R-Car Gen3 and RZ/G2 use the allow list to opt-in devices.
->  	 * For Other SoCs, this returns true anyway.
->  	 */
-> -	if (!soc_device_match(soc_needs_opt_in))
-> +	match1 = soc_device_match(soc_needs_opt_in);
-> +	if (!IS_ERR(match1) && !match1)
+> > > >
+> > > > Can this page_pool be used for TCP RX zerocopy? If yes then PageType
+> > > > can not be used.
+> > >
+> > > Yes it can, since it's going to be used as your default allocator for
+> > > payloads, which might end up on an SKB.
+> >
+> > I'm not sure we want or should "allow" page_pool be used for TCP RX
+> > zerocopy.
+> > For several reasons.
+> >
+> > (1) This implies mapping these pages page to userspace, which AFAIK
+> > means using page->mapping and page->index members (right?).
+> >
+> 
+> No, only page->_mapcount is used.
+> 
 
-I'm not sure what you intended to do, but !match1 already means there is
-no error so the original code is identical.
+I am not sure I like leaving out TCP RX zerocopy. Since we want driver to
+adopt the recycling mechanism we should try preserving the current
+functionality of the network stack.
 
-In this case ipmmu_device_is_allowed does not allow errors so this is
-one of the "difficult" drivers that require slightly more thinking.
-It is only called in ipmmu_of_xlate which does return errors properly,
-so in this case the most straightforward approach would be to make
-ipmmu_device_is_allowed return an int and forward errors as well.
+The question is how does it work with the current drivers that already have an
+internal page recycling mechanism.
+
+> > (2) It feels wrong (security wise) to keep the DMA-mapping (for the
+> > device) and also map this page into userspace.
+> >
+> 
+> I think this is already the case i.e pages still DMA-mapped and also
+> mapped into userspace.
+> 
+> > (3) The page_pool is optimized for refcnt==1 case, and AFAIK TCP-RX
+> > zerocopy will bump the refcnt, which means the page_pool will not
+> > recycle the page when it see the elevated refcnt (it will instead
+> > release its DMA-mapping).
+> 
+> Yes this is right but the userspace might have already consumed and
+> unmapped the page before the driver considers to recycle the page.
+
+Same question here. I'll have a closer look in a few days and make sure we are
+not breaking anything wrt zerocopy.
+
+> 
+> >
+> > (4) I remember vaguely that this code path for (TCP RX zerocopy) uses
+> > page->private for tricks.  And our patch [3/5] use page->private for
+> > storing xdp_mem_info.
+> >
+> > IMHO when the SKB travel into this TCP RX zerocopy code path, we should
+> > call page_pool_release_page() to release its DMA-mapping.
+> >
+> 
+> I will let TCP RX zerocopy experts respond to this but from my high
+> level code inspection, I didn't see page->private usage.
+
+Shakeel are you aware of any 'easy' way I can have rx zerocopy running?
 
 
-
-...
-This is going to need quite some more work to be acceptable, in my
-opinion, but I think it should be possible.
-
-Thanks,
--- 
-Dominique
+Thanks!
+/Ilias
