@@ -2,190 +2,209 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BC9B236467F
-	for <lists+netdev@lfdr.de>; Mon, 19 Apr 2021 16:57:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3FB34364688
+	for <lists+netdev@lfdr.de>; Mon, 19 Apr 2021 16:57:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238850AbhDSO5t (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 19 Apr 2021 10:57:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52608 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238780AbhDSO5s (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 19 Apr 2021 10:57:48 -0400
-Received: from mail-lf1-x136.google.com (mail-lf1-x136.google.com [IPv6:2a00:1450:4864:20::136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 106C9C061761
-        for <netdev@vger.kernel.org>; Mon, 19 Apr 2021 07:57:17 -0700 (PDT)
-Received: by mail-lf1-x136.google.com with SMTP id x19so26024300lfa.2
-        for <netdev@vger.kernel.org>; Mon, 19 Apr 2021 07:57:16 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=bOY9m1eIVASQIMnSbwflGhIUTyPWYD03S/dD7MA55Qc=;
-        b=rgKpT44z5gZPH7IcDqEdCS5YbgmApA+chMspbQ+JZGvC+YpgKwQzzX5A4jzxNEjvmG
-         MLlDYm4e7iCaE5IHqjOyN/ifzjPweOwwRpEg2SJB0fXvLMt8562VpY9TMa7hc7yb2lA1
-         2PVEZpoklcaU3AfYgP9KRx34WMyKtu4e/QsEtsbYZgOl6h8Xq+0WvD0oBFTfJC4iVd4L
-         6j0H/BV7sKihqk2a+lubMh5VtlxaVk/jrOh+titVm4bmXsc3XMgR5O5X+2oCsdriqvyU
-         BMBRSMvjklWjnZ9g9t6FGjScAawV2e+WWEzp+KcGRgjhYZ/E3Qe13rckj3cpUlBiF3sb
-         St4Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=bOY9m1eIVASQIMnSbwflGhIUTyPWYD03S/dD7MA55Qc=;
-        b=KANHuO45d1v4B2/uOGF8hQ8EsITHXKpohcMnxvKSfhF6BPaEB19akyEprprf/I7ngw
-         5GyrXN3mGBSaQYHMGznpfARzaLFAJfzPloT8UFf2fc7rvhbii5XicRflpXdlQCMM/4rk
-         agRndnfgGDBvjJRV+wcIkt2qqHYj8CBa+09rzM9jZnBhnzD2x/0r4bvHpyWGHAP40L51
-         FYRSx5t0QvODSOjzfqcKjPf0z8saBYU1DRCU1soOC74GkuP1DTb+UBZwTLrPANMyIaP2
-         qPX6eBcKdUagw7okQGxrkbsCOuDrERb8OH26NP5PsIXMiqk0gYPdHPF8RvRP150i3NEY
-         r+Gg==
-X-Gm-Message-State: AOAM533MTBnrqPa0YAXbx2FkQL+fzb9q5KmXOnWcrP1KLrgWCL4cLFN0
-        WfGg7gmi1S+bF1gmzmmRw6bdbSUAykkG6wBzx9WrS0p/zmTVMQ==
-X-Google-Smtp-Source: ABdhPJzVe3naebLuz81mJv7oonUIqkV5Z3LAXE1HEtaRfd+15ET0ZRont6UfxMYDrQHny8LYwtQzYeplG9JZRH79Gdo=
-X-Received: by 2002:a05:6512:92e:: with SMTP id f14mr6712386lft.347.1618844235220;
- Mon, 19 Apr 2021 07:57:15 -0700 (PDT)
+        id S239309AbhDSO55 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 19 Apr 2021 10:57:57 -0400
+Received: from mx2.suse.de ([195.135.220.15]:43910 "EHLO mx2.suse.de"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S239210AbhDSO55 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 19 Apr 2021 10:57:57 -0400
+X-Virus-Scanned: by amavisd-new at test-mx.suse.de
+Received: from relay2.suse.de (unknown [195.135.221.27])
+        by mx2.suse.de (Postfix) with ESMTP id A90C7B302;
+        Mon, 19 Apr 2021 14:57:25 +0000 (UTC)
+Received: by lion.mk-sys.cz (Postfix, from userid 1000)
+        id B617F603AA; Mon, 19 Apr 2021 16:57:24 +0200 (CEST)
+Date:   Mon, 19 Apr 2021 16:57:24 +0200
+From:   Michal Kubecek <mkubecek@suse.cz>
+To:     Yunsheng Lin <linyunsheng@huawei.com>
+Cc:     Juergen Gross <jgross@suse.com>, Jiri Kosina <jikos@kernel.org>,
+        davem@davemloft.net, kuba@kernel.org, olteanv@gmail.com,
+        ast@kernel.org, daniel@iogearbox.net, andriin@fb.com,
+        edumazet@google.com, weiwan@google.com, cong.wang@bytedance.com,
+        ap420073@gmail.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linuxarm@openeuler.org,
+        mkl@pengutronix.de, linux-can@vger.kernel.org, jhs@mojatatu.com,
+        xiyou.wangcong@gmail.com, jiri@resnulli.us, andrii@kernel.org,
+        kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
+        john.fastabend@gmail.com, kpsingh@kernel.org, bpf@vger.kernel.org,
+        jonas.bonn@netrounds.com, pabeni@redhat.com, mzhivich@akamai.com,
+        johunt@akamai.com, albcamus@gmail.com, kehuan.feng@gmail.com,
+        a.fatoum@pengutronix.de, atenart@kernel.org,
+        alexander.duyck@gmail.com
+Subject: Re: [PATCH net v3] net: sched: fix packet stuck problem for lockless
+ qdisc
+Message-ID: <20210419145724.wx6wriaxobo6uruu@lion.mk-sys.cz>
+References: <1616641991-14847-1-git-send-email-linyunsheng@huawei.com>
+ <20210418225956.a6ot6xox4eq6cvv5@lion.mk-sys.cz>
+ <a50daff3-c716-f11c-4dfa-c5c1f85a9e12@huawei.com>
 MIME-Version: 1.0
-References: <20210409223801.104657-1-mcroce@linux.microsoft.com>
- <20210409223801.104657-3-mcroce@linux.microsoft.com> <20210410154824.GZ2531743@casper.infradead.org>
- <YHHPbQm2pn2ysth0@enceladus> <CALvZod7UUxTavexGCzbKaK41LAW7mkfQrnDhFbjo-KvH9P6KsQ@mail.gmail.com>
- <YHHuE7g73mZNrMV4@enceladus> <20210414214132.74f721dd@carbon>
- <CALvZod4F8kCQQcK5_3YH=7keqkgY-97g+_OLoDCN7uNJdd61xA@mail.gmail.com> <YH0RMV7+56gVOzJe@apalos.home>
-In-Reply-To: <YH0RMV7+56gVOzJe@apalos.home>
-From:   Shakeel Butt <shakeelb@google.com>
-Date:   Mon, 19 Apr 2021 07:57:03 -0700
-Message-ID: <CALvZod7oa4q6pMUyDi4FMW4WKY7AjOZ7P2=02GoxjpwrQpA-OQ@mail.gmail.com>
-Subject: Re: [PATCH net-next v3 2/5] mm: add a signature in struct page
-To:     Ilias Apalodimas <ilias.apalodimas@linaro.org>
-Cc:     Jesper Dangaard Brouer <brouer@redhat.com>,
-        Matthew Wilcox <willy@infradead.org>,
-        Matteo Croce <mcroce@linux.microsoft.com>,
-        netdev <netdev@vger.kernel.org>, Linux MM <linux-mm@kvack.org>,
-        Ayush Sawal <ayush.sawal@chelsio.com>,
-        Vinay Kumar Yadav <vinay.yadav@chelsio.com>,
-        Rohit Maheshwari <rohitm@chelsio.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        Marcin Wojtas <mw@semihalf.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Mirko Lindner <mlindner@marvell.com>,
-        Stephen Hemminger <stephen@networkplumber.org>,
-        Tariq Toukan <tariqt@nvidia.com>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Boris Pismenny <borisp@nvidia.com>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
-        Vlastimil Babka <vbabka@suse.cz>, Yu Zhao <yuzhao@google.com>,
-        Will Deacon <will@kernel.org>,
-        Michel Lespinasse <walken@google.com>,
-        Fenghua Yu <fenghua.yu@intel.com>,
-        Roman Gushchin <guro@fb.com>, Hugh Dickins <hughd@google.com>,
-        Peter Xu <peterx@redhat.com>, Jason Gunthorpe <jgg@ziepe.ca>,
-        Guoqing Jiang <guoqing.jiang@cloud.ionos.com>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
-        Alexander Lobakin <alobakin@pm.me>,
-        Cong Wang <cong.wang@bytedance.com>, wenxu <wenxu@ucloud.cn>,
-        Kevin Hao <haokexin@gmail.com>,
-        Aleksandr Nogikh <nogikh@google.com>,
-        Jakub Sitnicki <jakub@cloudflare.com>,
-        Marco Elver <elver@google.com>,
-        Willem de Bruijn <willemb@google.com>,
-        Miaohe Lin <linmiaohe@huawei.com>,
-        Yunsheng Lin <linyunsheng@huawei.com>,
-        Guillaume Nault <gnault@redhat.com>,
-        LKML <linux-kernel@vger.kernel.org>, linux-rdma@vger.kernel.org,
-        bpf <bpf@vger.kernel.org>, Eric Dumazet <edumazet@google.com>,
-        David Ahern <dsahern@gmail.com>,
-        Lorenzo Bianconi <lorenzo@kernel.org>,
-        Saeed Mahameed <saeedm@nvidia.com>,
-        Andrew Lunn <andrew@lunn.ch>, Paolo Abeni <pabeni@redhat.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <a50daff3-c716-f11c-4dfa-c5c1f85a9e12@huawei.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Apr 18, 2021 at 10:12 PM Ilias Apalodimas
-<ilias.apalodimas@linaro.org> wrote:
->
-> On Wed, Apr 14, 2021 at 01:09:47PM -0700, Shakeel Butt wrote:
-> > On Wed, Apr 14, 2021 at 12:42 PM Jesper Dangaard Brouer
-> > <brouer@redhat.com> wrote:
-> > >
-> > [...]
-> > > > >
-> > > > > Can this page_pool be used for TCP RX zerocopy? If yes then PageType
-> > > > > can not be used.
-> > > >
-> > > > Yes it can, since it's going to be used as your default allocator for
-> > > > payloads, which might end up on an SKB.
-> > >
-> > > I'm not sure we want or should "allow" page_pool be used for TCP RX
-> > > zerocopy.
-> > > For several reasons.
-> > >
-> > > (1) This implies mapping these pages page to userspace, which AFAIK
-> > > means using page->mapping and page->index members (right?).
-> > >
-> >
-> > No, only page->_mapcount is used.
-> >
->
-> I am not sure I like leaving out TCP RX zerocopy. Since we want driver to
-> adopt the recycling mechanism we should try preserving the current
-> functionality of the network stack.
->
-> The question is how does it work with the current drivers that already have an
-> internal page recycling mechanism.
->
+On Mon, Apr 19, 2021 at 10:04:27AM +0800, Yunsheng Lin wrote:
+> > 
+> > I tried this patch o top of 5.12-rc7 with real devices. I used two
+> > machines with 10Gb/s Intel ixgbe NICs, sender has 16 CPUs (2 8-core CPUs
+> > with HT disabled) and 16 Rx/Tx queues, receiver has 48 CPUs (2 12-core
+> > CPUs with HT enabled) and 48 Rx/Tx queues. With multiple TCP streams on
+> > a saturated ethernet, the CPU consumption grows quite a lot:
+> > 
+> >     threads     unpatched 5.12-rc7    5.12-rc7 + v3   
+> >       1               25.6%               30.6%
+> >       8               73.1%              241.4%
+> >     128              132.2%             1012.0%
+> > 
+> > (The values are normalized to one core, i.e. 100% corresponds to one
+> > fully used logical CPU.) I didn't perform a full statistical evaluation
+> > but the growth is way beyond any statistical fluctuation with one
+> > exception: 8-thread test of patched kernel showed values from 155.5% to
+> > 311.4%. Closer look shows that most of the CPU time was spent in softirq
+> > and running top in parallel with the test confirms that there are
+> > multiple ksofirqd threads running at 100% CPU. I had similar problem
+> > with earlier versions of my patch (work in progress, I still need to
+> > check some corner cases and write commit message explaining the logic)
+> 
+> Great, if there is a better idea, maybe share the core idea first so
+> that we both can work on the that?
 
-I think the current drivers check page_ref_count(page) to decide to
-reuse (or not) the already allocated pages.
+I'm not sure if it's really better but to minimize the false positives
+and unnecessary calls to __netif_schedule(), I replaced q->seqlock with
+an atomic combination of a "running" flag (which corresponds to current
+seqlock being locked) and a "drainers" count (number of other threads
+going to clean up the qdisc queue). This way we could keep track of them
+and get reliable information if another thread is going to run a cleanup
+after we leave the qdisc_run() critical section (so that there is no
+need to schedule).
 
-Some examples from the drivers:
-drivers/net/ethernet/intel/ixgbe/ixgbe_main.c:ixgbe_can_reuse_rx_page()
-drivers/net/ethernet/intel/igb/igb_main.c:igb_can_reuse_rx_page()
-drivers/net/ethernet/mellanox/mlx5/core/en_rx.c:mlx5e_rx_cache_get()
+> > The biggest problem IMHO is that the loop in __qdisc_run() may finish
+> > without rescheduling not only when the qdisc queue is empty but also
+> > when the corresponding device Tx queue is stopped which devices tend to
+> > do whenever they cannot send any more packets out. Thus whenever
+> > __QDISC_STATE_NEED_RESCHEDULE is set with device queue stopped or
+> > frozen, we keep rescheduling the queue cleanup without any chance to
+> > progress or clear __QDISC_STATE_NEED_RESCHEDULE. For this to happen, all
+> > we need is another thready to fail the first spin_trylock() while device
+> > queue is stopped and qdisc queue not empty.
+> 
+> Yes, We could just return false before doing the second spin_trylock() if
+> the netdev queue corresponding qdisc is stopped, and when the netdev queue
+> is restarted, __netif_schedule() is called again, see netif_tx_wake_queue().
+> 
+> Maybe add a sch_qdisc_stopped() function and do the testting in qdisc_run_begin:
+> 
+> if (dont_retry || sch_qdisc_stopped())
+> 	return false;
+> 
+> bool sch_qdisc_stopped(struct Qdisc *q)
+> {
+> 	const struct netdev_queue *txq = q->dev_queue;
+> 
+> 	if (!netif_xmit_frozen_or_stopped(txq))
+> 		return true;
+> 
+> 	reture false;
+> }
+> 
+> At least for qdisc with TCQ_F_ONETXQUEUE flags set is doable?
 
-> > > (2) It feels wrong (security wise) to keep the DMA-mapping (for the
-> > > device) and also map this page into userspace.
-> > >
-> >
-> > I think this is already the case i.e pages still DMA-mapped and also
-> > mapped into userspace.
-> >
-> > > (3) The page_pool is optimized for refcnt==1 case, and AFAIK TCP-RX
-> > > zerocopy will bump the refcnt, which means the page_pool will not
-> > > recycle the page when it see the elevated refcnt (it will instead
-> > > release its DMA-mapping).
-> >
-> > Yes this is right but the userspace might have already consumed and
-> > unmapped the page before the driver considers to recycle the page.
->
-> Same question here. I'll have a closer look in a few days and make sure we are
-> not breaking anything wrt zerocopy.
->
+Either this or you can do the check in qdisc_run_end() - when the device
+queue is stopped or frozen, there is no need to schedule as we know it's
+going to be done when the flag is cleared again (and we cannot do
+anything until then anyway).
 
-Pages mapped into the userspace have their refcnt elevated, so the
-page_ref_count() check by the drivers indicates to not reuse such
-pages.
+> > Another part of the problem may be that to avoid the race, the logic is
+> > too pessimistic: consider e.g. (dotted lines show "barriers" where
+> > ordering is important):
+> > 
+> >     CPU A                            CPU B
+> >     spin_trylock() succeeds
+> >                                      pfifo_fast_enqueue()
+> >     ..................................................................
+> >     skb_array empty, exit loop
+> >                                      first spin_trylock() fails
+> >                                      set __QDISC_STATE_NEED_RESCHEDULE
+> >                                      second spin_trylock() fails
+> >     ..................................................................
+> >     spin_unlock()
+> >     call __netif_schedule()
+> > 
+> > When we switch the order of spin_lock() on CPU A and second
+> > spin_trylock() on CPU B (but keep setting __QDISC_STATE_NEED_RESCHEDULE
+> > before CPU A tests it), we end up scheduling a queue cleanup even if
+> > there is already one running. And either of these is quite realistic.
+> 
+> But I am not sure it is a good thing or bad thing when the above happen,
+> because it may be able to enable the tx batching?
 
-> >
-> > >
-> > > (4) I remember vaguely that this code path for (TCP RX zerocopy) uses
-> > > page->private for tricks.  And our patch [3/5] use page->private for
-> > > storing xdp_mem_info.
-> > >
-> > > IMHO when the SKB travel into this TCP RX zerocopy code path, we should
-> > > call page_pool_release_page() to release its DMA-mapping.
-> > >
-> >
-> > I will let TCP RX zerocopy experts respond to this but from my high
-> > level code inspection, I didn't see page->private usage.
->
-> Shakeel are you aware of any 'easy' way I can have rx zerocopy running?
->
+In either of the two scenarios, we call __netif_schedule() to schedule
+a cleanup which does not do anything useful. In first, the qdics queue
+is empty so that either the scheduled cleanup finds it empty or there
+will be some new packets which would have their own cleanup. In second,
+scheduling a cleanup will not prevent the other thread from doing its
+own cleanup it already started.
 
-I would recommend tools/testing/selftests/net/tcp_mmap.c.
+> >> diff --git a/net/sched/sch_generic.c b/net/sched/sch_generic.c
+> >> index 44991ea..4953430 100644
+> >> --- a/net/sched/sch_generic.c
+> >> +++ b/net/sched/sch_generic.c
+> >> @@ -640,8 +640,10 @@ static struct sk_buff *pfifo_fast_dequeue(struct Qdisc *qdisc)
+> >>  {
+> >>  	struct pfifo_fast_priv *priv = qdisc_priv(qdisc);
+> >>  	struct sk_buff *skb = NULL;
+> >> +	bool need_retry = true;
+> >>  	int band;
+> >>  
+> >> +retry:
+> >>  	for (band = 0; band < PFIFO_FAST_BANDS && !skb; band++) {
+> >>  		struct skb_array *q = band2list(priv, band);
+> >>  
+> >> @@ -652,6 +654,16 @@ static struct sk_buff *pfifo_fast_dequeue(struct Qdisc *qdisc)
+> >>  	}
+> >>  	if (likely(skb)) {
+> >>  		qdisc_update_stats_at_dequeue(qdisc, skb);
+> >> +	} else if (need_retry &&
+> >> +		   test_and_clear_bit(__QDISC_STATE_NEED_RESCHEDULE,
+> >> +				      &qdisc->state)) {
+> >> +		/* do another enqueuing after clearing the flag to
+> >> +		 * avoid calling __netif_schedule().
+> >> +		 */
+> >> +		smp_mb__after_atomic();
+> >> +		need_retry = false;
+> >> +
+> >> +		goto retry;
+> >>  	} else {
+> >>  		WRITE_ONCE(qdisc->empty, true);
+> >>  	}i
+> > 
+> > Does the retry really provide significant improvement? IIUC it only
+> > helps if all of enqueue, first spin_trylock() failure and setting the
+> > __QDISC_STATE_NEED_RESCHEDULE flag happen between us finding the
+> > skb_array empty and checking the flag. If enqueue happens before we
+> > check the array (and flag is set before the check), the retry is
+> > useless. If the flag is set after we check it, we don't catch it (no
+> > matter if the enqueue happened before or after we found skb_array
+> > empty).
+> 
+> In odrder to avoid doing the "set_bit(__QDISC_STATE_MISSED, &qdisc->state)"
+> as much as possible, the __QDISC_STATE_NEED_RESCHEDULE need to be set as
+> as much as possible, so only clear __QDISC_STATE_NEED_RESCHEDULE when the
+> queue is empty.
+
+This is what I'm worried about. We are trying to address a race
+condition which is extremely rare so we should avoid adding too much
+overhead to the normal use.
+
+> And it has about 5% performance improvement.
+
+OK then. It thought that it would do an unnecessary dequeue retry much
+more often than prevent an unnecessary __netif_schedule() but I did not
+run any special benchmark to check.
+
+Michal
