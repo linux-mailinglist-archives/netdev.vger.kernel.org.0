@@ -2,103 +2,191 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 75339364C9C
-	for <lists+netdev@lfdr.de>; Mon, 19 Apr 2021 22:55:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 31B3A364CB3
+	for <lists+netdev@lfdr.de>; Mon, 19 Apr 2021 23:00:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242602AbhDSUyE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 19 Apr 2021 16:54:04 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:43688 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S243545AbhDSUwm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 19 Apr 2021 16:52:42 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1618865532;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=vIlLaTW2HU8DsnJAEsVpsAdmhbeVPpHFEcppC+CVot4=;
-        b=FeOdIuK7DR3l/K6eZj/BgZTeKTAlaV3pFfGQn7nvQQWgsSetFF9gq1yDnN5Qla3YH7HXc/
-        AZ6CPdolSAO5xTc5QIDSoVzuLz9sNbLONAT3cTXLZpdne2fOLp5JJeY8N2bac/d1JWYf4V
-        2O9EL3VIy0PhvyUsAzNmGITNQWSbkWQ=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-161-yVwC0uY_O-WiFFu19q4LZg-1; Mon, 19 Apr 2021 16:52:10 -0400
-X-MC-Unique: yVwC0uY_O-WiFFu19q4LZg-1
-Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com [10.5.11.15])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 3B06F107ACC7;
-        Mon, 19 Apr 2021 20:51:51 +0000 (UTC)
-Received: from krava (unknown [10.40.195.124])
-        by smtp.corp.redhat.com (Postfix) with SMTP id 99F655D74B;
-        Mon, 19 Apr 2021 20:51:47 +0000 (UTC)
-Date:   Mon, 19 Apr 2021 22:51:46 +0200
-From:   Jiri Olsa <jolsa@redhat.com>
-To:     Steven Rostedt <rostedt@goodmis.org>
-Cc:     Andrii Nakryiko <andrii.nakryiko@gmail.com>,
-        Jiri Olsa <jolsa@kernel.org>,
+        id S234087AbhDSVBT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 19 Apr 2021 17:01:19 -0400
+Received: from www62.your-server.de ([213.133.104.62]:44900 "EHLO
+        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230099AbhDSVBS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 19 Apr 2021 17:01:18 -0400
+Received: from sslproxy05.your-server.de ([78.46.172.2])
+        by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92.3)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1lYb0g-0008Tu-0B; Mon, 19 Apr 2021 23:00:46 +0200
+Received: from [85.7.101.30] (helo=linux.home)
+        by sslproxy05.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1lYb0f-000NeK-MZ; Mon, 19 Apr 2021 23:00:45 +0200
+Subject: Re: [PATCH bpf-next v2 3/4] libbpf: add low level TC-BPF API
+To:     Kumar Kartikeya Dwivedi <memxor@gmail.com>, bpf@vger.kernel.org
+Cc:     =?UTF-8?Q?Toke_H=c3=b8iland-J=c3=b8rgensen?= <toke@redhat.com>,
         Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andriin@fb.com>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Andrii Nakryiko <andrii@kernel.org>,
         Martin KaFai Lau <kafai@fb.com>,
         Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
         John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>, Daniel Xu <dxu@dxuuu.xyz>,
-        Jesper Brouer <jbrouer@redhat.com>,
-        Toke =?iso-8859-1?Q?H=F8iland-J=F8rgensen?= <toke@redhat.com>,
-        Viktor Malik <vmalik@redhat.com>
-Subject: Re: [PATCHv2 RFC bpf-next 0/7] bpf: Add support for ftrace probe
-Message-ID: <YH3tYorim6orajgT@krava>
-References: <20210413121516.1467989-1-jolsa@kernel.org>
- <CAEf4Bzazst1rBi4=LuP6_FnPXCRYBNFEtDnK3UVBj6Eo6xFNtQ@mail.gmail.com>
- <YHbd2CmeoaiLJj7X@krava>
- <CAEf4BzYyVj-Tjy9ZZdAU5nOtJ8_auvVobTT6pMqg8zPb9jj-Ow@mail.gmail.com>
- <20210415111002.324b6bfa@gandalf.local.home>
- <YHh6YeOPh0HIlb3e@krava>
- <20210415141831.7b8fbe72@gandalf.local.home>
- <20210415142120.7427b4bd@gandalf.local.home>
- <YHi09yyqVEkZsn7p@krava>
- <20210415193032.34aec994@oasis.local.home>
+        KP Singh <kpsingh@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
+References: <20210419121811.117400-1-memxor@gmail.com>
+ <20210419121811.117400-4-memxor@gmail.com>
+From:   Daniel Borkmann <daniel@iogearbox.net>
+Message-ID: <6e8b744c-e012-c76b-b55f-7ddc8b7483db@iogearbox.net>
+Date:   Mon, 19 Apr 2021 23:00:44 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210415193032.34aec994@oasis.local.home>
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
+In-Reply-To: <20210419121811.117400-4-memxor@gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.102.4/26145/Mon Apr 19 13:07:08 2021)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Apr 15, 2021 at 07:30:32PM -0400, Steven Rostedt wrote:
-> On Thu, 15 Apr 2021 23:49:43 +0200
-> Jiri Olsa <jolsa@redhat.com> wrote:
+On 4/19/21 2:18 PM, Kumar Kartikeya Dwivedi wrote:
+> This adds functions that wrap the netlink API used for adding,
+> manipulating, and removing traffic control filters. These functions
+> operate directly on the loaded prog's fd, and return a handle to the
+> filter using an out parameter named id.
 > 
+> The basic featureset is covered to allow for attaching, manipulation of
+> properties, and removal of filters. Some additional features like
+> TCA_BPF_POLICE and TCA_RATE for tc_cls have been omitted. These can
+> added on top later by extending the bpf_tc_cls_opts struct.
 > 
-> > right, I quickly checked on that and it looks exactly like
-> > the thing we need
-> > 
-> > I'll try to rebase that on the current code and try to use
-> > it with the bpf ftrace probe to see how it fits
-> > 
-> > any chance you could plan on reposting it? ;-)
+> Support for binding actions directly to a classifier by passing them in
+> during filter creation has also been omitted for now. These actions have
+> an auto clean up property because their lifetime is bound to the filter
+> they are attached to. This can be added later, but was omitted for now
+> as direct action mode is a better alternative to it, which is enabled by
+> default.
 > 
-> I'm currently working on cleaning up code for the next merge window,
-> but I did go ahead and rebase it on top of my for-next branch. I didn't
-> event try to compile it, but at least it's rebased ;-)
+> An API summary:
 > 
-> git://git.kernel.org/pub/scm/linux/kernel/git/rostedt/linux-trace.git
+> bpf_tc_act_{attach, change, replace} may be used to attach, change, and
+
+typo on bpf_tc_act_{...} ?
+                ^^^
+> replace SCHED_CLS bpf classifier. The protocol field can be set as 0, in
+> which case it is subsitituted as ETH_P_ALL by default.
+
+Do you have an actual user that needs anything other than ETH_P_ALL? Why is it
+even needed? Why not stick to just ETH_P_ALL?
+
+> The behavior of the three functions is as follows:
 > 
-> Branch: ftrace/fgraph-multi
+> attach = create filter if it does not exist, fail otherwise
+> change = change properties of the classifier of existing filter
+> replace = create filter, and replace any existing filter
 
-works nicely (with small compilation fixes)
+This touches on tc oddities quite a bit. Why do we need to expose them? Can't we
+simplify/abstract this e.g. i) create or update instance, ii) delete instance,
+iii) get instance ? What concrete use case do you have that you need those three
+above?
 
-I added support to call bpf program on the function exit using fgraph_ops
-and it seems to work
+> bpf_tc_cls_detach may be used to detach existing SCHED_CLS
+> filter. The bpf_tc_cls_attach_id object filled in during attach,
+> change, or replace must be passed in to the detach functions for them to
+> remove the filter and its attached classififer correctly.
+> 
+> bpf_tc_cls_get_info is a helper that can be used to obtain attributes
+> for the filter and classififer. The opts structure may be used to
+> choose the granularity of search, such that info for a specific filter
+> corresponding to the same loaded bpf program can be obtained. By
+> default, the first match is returned to the user.
+> 
+> Examples:
+> 
+> 	struct bpf_tc_cls_attach_id id = {};
+> 	struct bpf_object *obj;
+> 	struct bpf_program *p;
+> 	int fd, r;
+> 
+> 	obj = bpf_object_open("foo.o");
+> 	if (IS_ERR_OR_NULL(obj))
+> 		return PTR_ERR(obj);
+> 
+> 	p = bpf_object__find_program_by_title(obj, "classifier");
+> 	if (IS_ERR_OR_NULL(p))
+> 		return PTR_ERR(p);
+> 
+> 	if (bpf_object__load(obj) < 0)
+> 		return -1;
+> 
+> 	fd = bpf_program__fd(p);
+> 
+> 	r = bpf_tc_cls_attach(fd, if_nametoindex("lo"),
+> 			      BPF_TC_CLSACT_INGRESS,
+> 			      NULL, &id);
+> 	if (r < 0)
+> 		return r;
+> 
+> ... which is roughly equivalent to (after clsact qdisc setup):
+>    # tc filter add dev lo ingress bpf obj foo.o sec classifier da
+> 
+> ... as direct action mode is always enabled.
+> 
+> If a user wishes to modify existing options on an attached classifier,
+> bpf_tc_cls_change API may be used.
+> 
+> Only parameters class_id can be modified, the rest are filled in to
+> identify the correct filter. protocol can be left out if it was not
+> chosen explicitly (defaulting to ETH_P_ALL).
+> 
+> Example:
+> 
+> 	/* Optional parameters necessary to select the right filter */
+> 	DECLARE_LIBBPF_OPTS(bpf_tc_cls_opts, opts,
+> 			    .handle = id.handle,
+> 			    .priority = id.priority,
+> 			    .chain_index = id.chain_index)
 
-now, it looks like the fgraph_ops entry callback does not have access
-to registers.. once we have that, we could store arguments for the exit
-callback and have all in place.. could this be added? ;-)
+Why do we need chain_index as part of the basic API?
 
-thanks,
-jirka
+> 	opts.class_id = TC_H_MAKE(1UL << 16, 12);
+> 	r = bpf_tc_cls_change(fd, if_nametoindex("lo"),
+> 			      BPF_TC_CLSACT_INGRESS,
+> 			      &opts, &id);
 
+Also, I'm not sure whether the prefix should even be named  bpf_tc_cls_*() tbh,
+yes, despite being "low level" api. I think in the context of bpf we should stop
+regarding this as 'classifier' and 'action' objects since it's really just a
+single entity and not separate ones. It's weird enough to explain this concept
+to new users and if a libbpf based api could cleanly abstract it, I would be all
+for it. I don't think we need to map 1:1 the old tc legacy even in the low level
+api, tbh, as it feels backwards. I think the 'handle' & 'priority' bits are okay,
+but I would remove the others.
+
+> 	if (r < 0)
+> 		return r;
+> 
+> 	struct bpf_tc_cls_info info = {};
+> 	r = bpf_tc_cls_get_info(fd, if_nametoindex("lo"),
+> 			        BPF_TC_CLSACT_INGRESS,
+> 				&opts, &info);
+> 	if (r < 0)
+> 		return r;
+> 
+> 	assert(info.class_id == TC_H_MAKE(1UL << 16, 12));
+> 
+> This would be roughly equivalent to doing:
+>    # tc filter change dev lo egress prio <p> handle <h> bpf obj foo.o sec \
+>      classifier classid 1:12
+
+Why even bother to support !da mode, what are you trying to solve with it? I
+don't think official libbpf api should support something that doesn't scale.
+
+> ... except a new bpf program will be loaded and replace existing one.
+> 
+> Reviewed-by: Toke Høiland-Jørgensen <toke@redhat.com>
+> Signed-off-by: Kumar Kartikeya Dwivedi <memxor@gmail.com>
