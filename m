@@ -2,85 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9D1B0364DCD
-	for <lists+netdev@lfdr.de>; Tue, 20 Apr 2021 00:47:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B7B7F364DD1
+	for <lists+netdev@lfdr.de>; Tue, 20 Apr 2021 00:50:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230063AbhDSWrq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 19 Apr 2021 18:47:46 -0400
-Received: from mail.kernel.org ([198.145.29.99]:54926 "EHLO mail.kernel.org"
+        id S230313AbhDSWul (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 19 Apr 2021 18:50:41 -0400
+Received: from mail.kernel.org ([198.145.29.99]:55252 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229714AbhDSWro (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 19 Apr 2021 18:47:44 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id D40646108B
-        for <netdev@vger.kernel.org>; Mon, 19 Apr 2021 22:47:12 +0000 (UTC)
+        id S229842AbhDSWuk (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 19 Apr 2021 18:50:40 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPS id F2CDE61354;
+        Mon, 19 Apr 2021 22:50:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1618872432;
-        bh=+yGM8k3N1hvfgbB3yripFKTduuYlrssXdmGk19osRPI=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=NPMap7vBwXOxgecSjXjFop4JE9S3UO5jW7FjqzFEJ5ltMt10JdaBAydG2tEfNByxA
-         yr3xvNQKjfkS/CtvQgPC4mS0QTpLG04t6OOUa4pq4LapFYwTUQioP5OSau/ZwfkMSz
-         O9zOcxofapsqUdjUijKpPGTa6QwTB6EtGT27A7F6OG0owKPNiKmn2cbBCBWMQdsO8T
-         sSDGJ99fyDSZIrd0WQtATJFgDmghKhfjqBqFt/mNDmGGdW/kb26BoJy0A2XeWzRNl1
-         Olr07cKw7Q802vZaUOe3XyyeWsKpL3/ogoYTgAd8LnpqJiYQKFWiVqEVXDqcqAgJoO
-         c99vxyKw/4NfQ==
-Received: by mail-lj1-f172.google.com with SMTP id l22so33908343ljc.9
-        for <netdev@vger.kernel.org>; Mon, 19 Apr 2021 15:47:12 -0700 (PDT)
-X-Gm-Message-State: AOAM531iWpd3BUOD32RpwqugWMyxbBbl3AKyGQGXBhnzfHF6ZfjdHrsl
-        w2/Z2RVmBcPmWF2KBO2qQN+L5/oSiuslQ44mzPXoCQ==
-X-Google-Smtp-Source: ABdhPJypBmFQJq4PLzpKb0UDiaqSFGE/v6VhrBiEwAwvXdSUSQ4riFJm9UydkC3BES/9hm6gidEPC1dMOkUrNddbWTY=
-X-Received: by 2002:a05:651c:387:: with SMTP id e7mr13082013ljp.425.1618872431155;
- Mon, 19 Apr 2021 15:47:11 -0700 (PDT)
+        s=k20201202; t=1618872610;
+        bh=XcdhX/zVABgqjsjuRJjpKnVHW5Mr8B9vGq63JoXUaCc=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=SSUfrhZWAfN8q8L1sndVT5OMRb6tD4Ano+U5T8L/E631pJBYnsQd56I28vkSy1qiT
+         UUYaogQMwOYTnERU4ewa+KpY+XgndK04mh6SAOafD3nvuFokUxMOqCmHc2+K7JcyKe
+         HKHuiHjUtgUJtYmdPi5owhQAzmo52ODM1ooo17R0zhnNUKdxbMXHoHebErYkhWHnWr
+         H1k3qgqhdGaqJheLT4MXjfayx02moKMb6ulhCm2elKRkFG1A1Uo7A+TzHJ3O+Y6w46
+         KUs/JkCuTlW5A2JSCM2vfnyKRXTnVkaoUUgve+4ZIe5waKrqAbe+cBsXd94HZ0ipBv
+         APx+jywz5nVMg==
+Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id ED0AF60A0B;
+        Mon, 19 Apr 2021 22:50:09 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-References: <20210414195147.1624932-1-jolsa@kernel.org> <20210414195147.1624932-2-jolsa@kernel.org>
- <CAEf4BzagYcy-UxbgXGC81B=K02-wUctvUSTFDySsR6B0cJdwaA@mail.gmail.com>
-In-Reply-To: <CAEf4BzagYcy-UxbgXGC81B=K02-wUctvUSTFDySsR6B0cJdwaA@mail.gmail.com>
-From:   KP Singh <kpsingh@kernel.org>
-Date:   Tue, 20 Apr 2021 00:47:00 +0200
-X-Gmail-Original-Message-ID: <CACYkzJ5osRepe1ruPH1cr6jCsyiwa78CU=TWRN0WyNh=CX+UDA@mail.gmail.com>
-Message-ID: <CACYkzJ5osRepe1ruPH1cr6jCsyiwa78CU=TWRN0WyNh=CX+UDA@mail.gmail.com>
-Subject: Re: [PATCHv5 bpf-next 1/7] bpf: Allow trampoline re-attach for
- tracing and lsm programs
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Cc:     Jiri Olsa <jolsa@kernel.org>, Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andriin@fb.com>,
-        kernel test robot <lkp@intel.com>,
-        Julia Lawall <julia.lawall@lip6.fr>,
-        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Julia Lawall <julia.lawall@inria.fr>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net-next 0/3] net: hns3: misc updates for -next
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <161887260996.25363.5916234572551024850.git-patchwork-notify@kernel.org>
+Date:   Mon, 19 Apr 2021 22:50:09 +0000
+References: <1618643364-64872-1-git-send-email-tanhuazhong@huawei.com>
+In-Reply-To: <1618643364-64872-1-git-send-email-tanhuazhong@huawei.com>
+To:     Huazhong Tan <tanhuazhong@huawei.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
+        salil.mehta@huawei.com, yisen.zhuang@huawei.com,
+        huangdaode@huawei.com, linuxarm@openeuler.org, linuxarm@huawei.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Apr 16, 2021 at 1:22 AM Andrii Nakryiko
-<andrii.nakryiko@gmail.com> wrote:
->
-> On Wed, Apr 14, 2021 at 5:44 PM Jiri Olsa <jolsa@kernel.org> wrote:
-> >
-> > Currently we don't allow re-attaching of trampolines. Once
-> > it's detached, it can't be re-attach even when the program
-> > is still loaded.
-> >
-> > Adding the possibility to re-attach the loaded tracing and
-> > lsm programs.
-> >
-> > Fixing missing unlock with proper cleanup goto jump reported
-> > by Julia.
-> >
-> > Reported-by: kernel test robot <lkp@intel.com>
-> > Reported-by: Julia Lawall <julia.lawall@lip6.fr>
-> > Acked-by: Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com>
-> > Signed-off-by: Jiri Olsa <jolsa@kernel.org>
-> > ---
->
-> Acked-by: Andrii Nakryiko <andrii@kernel.org>
+Hello:
 
-Thanks!
+This series was applied to netdev/net-next.git (refs/heads/master):
 
-Acked-by: KP Singh <kpsingh@kernel.org>
+On Sat, 17 Apr 2021 15:09:21 +0800 you wrote:
+> This series includes some misc updates for the HNS3 ethernet driver.
+> 
+> Huazhong Tan (3):
+>   net: hns3: remove a duplicate pf reset counting
+>   net: hns3: cleanup inappropriate spaces in struct hlcgevf_tqp_stats
+>   net: hns3: change the value of the SEPARATOR_VALUE macro in
+>     hclgevf_main.c
+> 
+> [...]
+
+Here is the summary with links:
+  - [net-next,1/3] net: hns3: remove a duplicate pf reset counting
+    https://git.kernel.org/netdev/net-next/c/1c5a2ba67989
+  - [net-next,2/3] net: hns3: cleanup inappropriate spaces in struct hlcgevf_tqp_stats
+    https://git.kernel.org/netdev/net-next/c/8ed64dbe0bdf
+  - [net-next,3/3] net: hns3: change the value of the SEPARATOR_VALUE macro in hclgevf_main.c
+    https://git.kernel.org/netdev/net-next/c/e407efdd94cd
+
+You are awesome, thank you!
+--
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
