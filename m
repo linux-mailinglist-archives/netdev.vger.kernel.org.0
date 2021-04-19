@@ -2,37 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 469A9364C1A
-	for <lists+netdev@lfdr.de>; Mon, 19 Apr 2021 22:49:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 188F6364C21
+	for <lists+netdev@lfdr.de>; Mon, 19 Apr 2021 22:49:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243140AbhDSUsg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 19 Apr 2021 16:48:36 -0400
-Received: from mail.kernel.org ([198.145.29.99]:54590 "EHLO mail.kernel.org"
+        id S243153AbhDSUsu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 19 Apr 2021 16:48:50 -0400
+Received: from mail.kernel.org ([198.145.29.99]:55298 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S242425AbhDSUqc (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 19 Apr 2021 16:46:32 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id A2259613D8;
-        Mon, 19 Apr 2021 20:45:24 +0000 (UTC)
+        id S242748AbhDSUqw (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 19 Apr 2021 16:46:52 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 7EE98613D5;
+        Mon, 19 Apr 2021 20:45:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1618865125;
-        bh=wR6pr5QdpJH085Lt23DSVtUerLrLmPTa3RzwULkpT3o=;
+        s=k20201202; t=1618865128;
+        bh=YW3vYxnGOhg3+Kycggdg534bAnAV6eoJFWmNIQVXieA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Cn4mmvFUMBCah+98Gjc5nlcnSxsSgW/H+PQJLV7yyGTdx+zXHfPi+Vyq/YNcUBbHt
-         FMIWyFwFMce8Ag8onV3IZ1SCoAQRCCd90T61qs2/P4uk3dLz9yu3OAozwTXnhDKzzj
-         TkpG/3QDZKVhsBjOZfUGg+lxMw2kiCGLarG4ikUEC0i9v+2+/6Aw4Dne/crAfZSIY1
-         dRzI2gS5m/PM1SiA/cM7ERGZmtSW1dTxOEMn617zQ0408UPNF9DxQJnleq5sR7Mtru
-         GJoKv388ra0v1DzX15ntRJiRTh/UhlW/u9l+3uY772TUIb5w+TRD26wsIZJ7vDyaRT
-         V8S/A2AwW1YyA==
+        b=K9TYCxGLIY+pqb0D1V8jokw0yBXWMpGJ5NottRjQZ+TP1MUOsLvjEXGPYZmZ/Y2aO
+         vtlWC9kud8Eo9kj9U1mg5DMyy2nymBOEDYuuFBLvQhLutFuk1InPQuIu8lAvUFGwhx
+         RAzEW+Gh2t2ksNQAiEl3M9paAVBaNI+1OtOJQ8Y0TQw70rR8rUPFEvAdtU4O1m6fuV
+         LkaLeBtVUG3d/ksLcVP4ia6zVsXoJJwumhjApKwvf5FEgu5pS40nPFCyx4lk/M7/dE
+         Bj253pCFE2UHDbrTwvK2sJPhvUCzRDa4+0U511gFkFfWTxhFK/O97Qv6OXJVfBynSB
+         rbSt7k4x3BJJw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Phillip Potter <phil@philpotter.co.uk>,
-        Eric Dumazet <edumazet@google.com>,
-        syzbot+2e406a9ac75bb71d4b7a@syzkaller.appspotmail.com,
+Cc:     Michael Brown <mbrown@fensystems.co.uk>,
+        Paul Durrant <paul@xen.org>,
         "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.19 05/12] net: geneve: check skb is large enough for IPv4/IPv6 header
-Date:   Mon, 19 Apr 2021 16:45:10 -0400
-Message-Id: <20210419204517.6770-5-sashal@kernel.org>
+        Sasha Levin <sashal@kernel.org>,
+        xen-devel@lists.xenproject.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.19 07/12] xen-netback: Check for hotplug-status existence before watching
+Date:   Mon, 19 Apr 2021 16:45:12 -0400
+Message-Id: <20210419204517.6770-7-sashal@kernel.org>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20210419204517.6770-1-sashal@kernel.org>
 References: <20210419204517.6770-1-sashal@kernel.org>
@@ -44,50 +44,64 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Phillip Potter <phil@philpotter.co.uk>
+From: Michael Brown <mbrown@fensystems.co.uk>
 
-[ Upstream commit 6628ddfec7580882f11fdc5c194a8ea781fdadfa ]
+[ Upstream commit 2afeec08ab5c86ae21952151f726bfe184f6b23d ]
 
-Check within geneve_xmit_skb/geneve6_xmit_skb that sk_buff structure
-is large enough to include IPv4 or IPv6 header, and reject if not. The
-geneve_xmit_skb portion and overall idea was contributed by Eric Dumazet.
-Fixes a KMSAN-found uninit-value bug reported by syzbot at:
-https://syzkaller.appspot.com/bug?id=abe95dc3e3e9667fc23b8d81f29ecad95c6f106f
+The logic in connect() is currently written with the assumption that
+xenbus_watch_pathfmt() will return an error for a node that does not
+exist.  This assumption is incorrect: xenstore does allow a watch to
+be registered for a nonexistent node (and will send notifications
+should the node be subsequently created).
 
-Suggested-by: Eric Dumazet <edumazet@google.com>
-Reported-by: syzbot+2e406a9ac75bb71d4b7a@syzkaller.appspotmail.com
-Signed-off-by: Phillip Potter <phil@philpotter.co.uk>
-Signed-off-by: Eric Dumazet <edumazet@google.com>
+As of commit 1f2565780 ("xen-netback: remove 'hotplug-status' once it
+has served its purpose"), this leads to a failure when a domU
+transitions into XenbusStateConnected more than once.  On the first
+domU transition into Connected state, the "hotplug-status" node will
+be deleted by the hotplug_status_changed() callback in dom0.  On the
+second or subsequent domU transition into Connected state, the
+hotplug_status_changed() callback will therefore never be invoked, and
+so the backend will remain stuck in InitWait.
+
+This failure prevents scenarios such as reloading the xen-netfront
+module within a domU, or booting a domU via iPXE.  There is
+unfortunately no way for the domU to work around this dom0 bug.
+
+Fix by explicitly checking for existence of the "hotplug-status" node,
+thereby creating the behaviour that was previously assumed to exist.
+
+Signed-off-by: Michael Brown <mbrown@fensystems.co.uk>
+Reviewed-by: Paul Durrant <paul@xen.org>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/geneve.c | 6 ++++++
- 1 file changed, 6 insertions(+)
+ drivers/net/xen-netback/xenbus.c | 12 ++++++++----
+ 1 file changed, 8 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/net/geneve.c b/drivers/net/geneve.c
-index 2e2afc824a6a..ce6fecf421f8 100644
---- a/drivers/net/geneve.c
-+++ b/drivers/net/geneve.c
-@@ -839,6 +839,9 @@ static int geneve_xmit_skb(struct sk_buff *skb, struct net_device *dev,
- 	__be16 df;
- 	int err;
+diff --git a/drivers/net/xen-netback/xenbus.c b/drivers/net/xen-netback/xenbus.c
+index 107bbd4ae825..78c56149559c 100644
+--- a/drivers/net/xen-netback/xenbus.c
++++ b/drivers/net/xen-netback/xenbus.c
+@@ -1043,11 +1043,15 @@ static void connect(struct backend_info *be)
+ 	xenvif_carrier_on(be->vif);
  
-+	if (!pskb_network_may_pull(skb, sizeof(struct iphdr)))
-+		return -EINVAL;
-+
- 	sport = udp_flow_src_port(geneve->net, skb, 1, USHRT_MAX, true);
- 	rt = geneve_get_v4_rt(skb, dev, gs4, &fl4, info,
- 			      geneve->info.key.tp_dst, sport);
-@@ -882,6 +885,9 @@ static int geneve6_xmit_skb(struct sk_buff *skb, struct net_device *dev,
- 	__be16 sport;
- 	int err;
+ 	unregister_hotplug_status_watch(be);
+-	err = xenbus_watch_pathfmt(dev, &be->hotplug_status_watch, NULL,
+-				   hotplug_status_changed,
+-				   "%s/%s", dev->nodename, "hotplug-status");
+-	if (!err)
++	if (xenbus_exists(XBT_NIL, dev->nodename, "hotplug-status")) {
++		err = xenbus_watch_pathfmt(dev, &be->hotplug_status_watch,
++					   NULL, hotplug_status_changed,
++					   "%s/%s", dev->nodename,
++					   "hotplug-status");
++		if (err)
++			goto err;
+ 		be->have_hotplug_status_watch = 1;
++	}
  
-+	if (!pskb_network_may_pull(skb, sizeof(struct ipv6hdr)))
-+		return -EINVAL;
-+
- 	sport = udp_flow_src_port(geneve->net, skb, 1, USHRT_MAX, true);
- 	dst = geneve_get_v6_dst(skb, dev, gs6, &fl6, info,
- 				geneve->info.key.tp_dst, sport);
+ 	netif_tx_wake_all_queues(be->vif->dev);
+ 
 -- 
 2.30.2
 
