@@ -2,141 +2,223 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9355B36472A
-	for <lists+netdev@lfdr.de>; Mon, 19 Apr 2021 17:29:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B21C0364748
+	for <lists+netdev@lfdr.de>; Mon, 19 Apr 2021 17:43:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241450AbhDSPaT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 19 Apr 2021 11:30:19 -0400
-Received: from mx2.suse.de ([195.135.220.15]:35170 "EHLO mx2.suse.de"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S233733AbhDSPaS (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 19 Apr 2021 11:30:18 -0400
-X-Virus-Scanned: by amavisd-new at test-mx.suse.de
-Received: from relay2.suse.de (unknown [195.135.221.27])
-        by mx2.suse.de (Postfix) with ESMTP id 69FD4AF23;
-        Mon, 19 Apr 2021 15:29:47 +0000 (UTC)
-Received: by lion.mk-sys.cz (Postfix, from userid 1000)
-        id C0ACB603AA; Mon, 19 Apr 2021 17:29:46 +0200 (CEST)
-Date:   Mon, 19 Apr 2021 17:29:46 +0200
-From:   Michal Kubecek <mkubecek@suse.cz>
-To:     Yunsheng Lin <linyunsheng@huawei.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, olteanv@gmail.com,
-        ast@kernel.org, daniel@iogearbox.net, andriin@fb.com,
-        edumazet@google.com, weiwan@google.com, cong.wang@bytedance.com,
-        ap420073@gmail.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linuxarm@openeuler.org,
-        mkl@pengutronix.de, linux-can@vger.kernel.org, jhs@mojatatu.com,
-        xiyou.wangcong@gmail.com, jiri@resnulli.us, andrii@kernel.org,
-        kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
-        john.fastabend@gmail.com, kpsingh@kernel.org, bpf@vger.kernel.org,
-        jonas.bonn@netrounds.com, pabeni@redhat.com, mzhivich@akamai.com,
-        johunt@akamai.com, albcamus@gmail.com, kehuan.feng@gmail.com,
-        a.fatoum@pengutronix.de, atenart@kernel.org,
-        alexander.duyck@gmail.com, hdanton@sina.com, jgross@suse.com,
-        JKosina@suse.com
-Subject: Re: [PATCH net v4 1/2] net: sched: fix packet stuck problem for
- lockless qdisc
-Message-ID: <20210419152946.3n7adsd355rfeoda@lion.mk-sys.cz>
-References: <1618535809-11952-1-git-send-email-linyunsheng@huawei.com>
- <1618535809-11952-2-git-send-email-linyunsheng@huawei.com>
+        id S241278AbhDSPnz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 19 Apr 2021 11:43:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34600 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S241324AbhDSPny (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 19 Apr 2021 11:43:54 -0400
+Received: from mail-ed1-x534.google.com (mail-ed1-x534.google.com [IPv6:2a00:1450:4864:20::534])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C5C52C06138A
+        for <netdev@vger.kernel.org>; Mon, 19 Apr 2021 08:43:24 -0700 (PDT)
+Received: by mail-ed1-x534.google.com with SMTP id k17so1791849edr.7
+        for <netdev@vger.kernel.org>; Mon, 19 Apr 2021 08:43:24 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=wf0QWwNwYK6Jhss3gCic3ehYYejoO/XLDc6PTFbc/rU=;
+        b=AcV8eFNybarUUIKChCGLHFNWKTXeCXUS2RwBuMjj5z9IPjcJJzr+bKeR2lL61o4jJJ
+         sRwQo3IzAcvyzF4JFtxWbtvpUxNLNtl+iUWDSbH8GdI2gQSryXkcPO2EgjqBsZxNL/Dp
+         oEVDryNxsWLjXMkNbGCx5oX+lFL+nn6Okl0BYTH1LHz5mYShDONiNnVrbqfgCiPz4xQG
+         h+xu8ewH/NOn5+DsVldXLFK4y0RknlSRIbJpnzFt+Me2/3yAJBF8qKjo7Wwfn1w/uHs6
+         mb2HggcdKRRt97ivNvwAFF9kD37O4OBBnD8HNyLoFsDdEp6+/21qeeklsXWgJzvdIn5X
+         hmRw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=wf0QWwNwYK6Jhss3gCic3ehYYejoO/XLDc6PTFbc/rU=;
+        b=DoHiv3UZz2Pvjye4kX2S7adpQChWiUAcZX6ciLchUR9uIRp944Z6JIL3RDsaysfHW+
+         +o821sShBQrlwhwt5nhAga0g+cG//5JwILAtXl05FknOU91HfZIHizIb6WUb18rTgiuI
+         3853HpieZzNQ3wMOi2o2f8if4yvu79m7hBcXUrdELauAkMyOHipduC6TPqWhqXU6ofGV
+         33CNQUxdRLH4Ya9EF1AbY3nxB8dONOtY5fq9kVzA0jrClc8AsPPeNHMIe3pDFF3zp/vX
+         2nmmp8Vcop0XLgEkPX2z779NvdRWeK4myawaHhVkX9UG0QSRbl/8CidH9OcqDnclRK+v
+         hbTA==
+X-Gm-Message-State: AOAM533wKGXvvrauU+G9AwfOGetXZLuSPiZ3aXfyNaWTNNs7U4jEQayn
+        aIillrdDrKiIdT9vnQdFZ3HefA==
+X-Google-Smtp-Source: ABdhPJwF0JLAYSLI4B5eBDz2Xkr4BA5xRzg20NOS5BQtJee0K4m+lYUS7uBNOMRCPGktz319AfgEZw==
+X-Received: by 2002:aa7:d3c6:: with SMTP id o6mr19000389edr.359.1618847003325;
+        Mon, 19 Apr 2021 08:43:23 -0700 (PDT)
+Received: from apalos.home (ppp-94-65-92-88.home.otenet.gr. [94.65.92.88])
+        by smtp.gmail.com with ESMTPSA id s11sm13468946edt.27.2021.04.19.08.43.19
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 19 Apr 2021 08:43:22 -0700 (PDT)
+Date:   Mon, 19 Apr 2021 18:43:17 +0300
+From:   Ilias Apalodimas <ilias.apalodimas@linaro.org>
+To:     Shakeel Butt <shakeelb@google.com>
+Cc:     Jesper Dangaard Brouer <brouer@redhat.com>,
+        Matthew Wilcox <willy@infradead.org>,
+        Matteo Croce <mcroce@linux.microsoft.com>,
+        netdev <netdev@vger.kernel.org>, Linux MM <linux-mm@kvack.org>,
+        Ayush Sawal <ayush.sawal@chelsio.com>,
+        Vinay Kumar Yadav <vinay.yadav@chelsio.com>,
+        Rohit Maheshwari <rohitm@chelsio.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        Marcin Wojtas <mw@semihalf.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Mirko Lindner <mlindner@marvell.com>,
+        Stephen Hemminger <stephen@networkplumber.org>,
+        Tariq Toukan <tariqt@nvidia.com>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Boris Pismenny <borisp@nvidia.com>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
+        Vlastimil Babka <vbabka@suse.cz>, Yu Zhao <yuzhao@google.com>,
+        Will Deacon <will@kernel.org>,
+        Michel Lespinasse <walken@google.com>,
+        Fenghua Yu <fenghua.yu@intel.com>,
+        Roman Gushchin <guro@fb.com>, Hugh Dickins <hughd@google.com>,
+        Peter Xu <peterx@redhat.com>, Jason Gunthorpe <jgg@ziepe.ca>,
+        Guoqing Jiang <guoqing.jiang@cloud.ionos.com>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        Alexander Lobakin <alobakin@pm.me>,
+        Cong Wang <cong.wang@bytedance.com>, wenxu <wenxu@ucloud.cn>,
+        Kevin Hao <haokexin@gmail.com>,
+        Aleksandr Nogikh <nogikh@google.com>,
+        Jakub Sitnicki <jakub@cloudflare.com>,
+        Marco Elver <elver@google.com>,
+        Willem de Bruijn <willemb@google.com>,
+        Miaohe Lin <linmiaohe@huawei.com>,
+        Yunsheng Lin <linyunsheng@huawei.com>,
+        Guillaume Nault <gnault@redhat.com>,
+        LKML <linux-kernel@vger.kernel.org>, linux-rdma@vger.kernel.org,
+        bpf <bpf@vger.kernel.org>, Eric Dumazet <edumazet@google.com>,
+        David Ahern <dsahern@gmail.com>,
+        Lorenzo Bianconi <lorenzo@kernel.org>,
+        Saeed Mahameed <saeedm@nvidia.com>,
+        Andrew Lunn <andrew@lunn.ch>, Paolo Abeni <pabeni@redhat.com>
+Subject: Re: [PATCH net-next v3 2/5] mm: add a signature in struct page
+Message-ID: <YH2lFYbj3d8nC+hF@apalos.home>
+References: <20210409223801.104657-1-mcroce@linux.microsoft.com>
+ <20210409223801.104657-3-mcroce@linux.microsoft.com>
+ <20210410154824.GZ2531743@casper.infradead.org>
+ <YHHPbQm2pn2ysth0@enceladus>
+ <CALvZod7UUxTavexGCzbKaK41LAW7mkfQrnDhFbjo-KvH9P6KsQ@mail.gmail.com>
+ <YHHuE7g73mZNrMV4@enceladus>
+ <20210414214132.74f721dd@carbon>
+ <CALvZod4F8kCQQcK5_3YH=7keqkgY-97g+_OLoDCN7uNJdd61xA@mail.gmail.com>
+ <YH0RMV7+56gVOzJe@apalos.home>
+ <CALvZod7oa4q6pMUyDi4FMW4WKY7AjOZ7P2=02GoxjpwrQpA-OQ@mail.gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <1618535809-11952-2-git-send-email-linyunsheng@huawei.com>
+In-Reply-To: <CALvZod7oa4q6pMUyDi4FMW4WKY7AjOZ7P2=02GoxjpwrQpA-OQ@mail.gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Apr 16, 2021 at 09:16:48AM +0800, Yunsheng Lin wrote:
-> Lockless qdisc has below concurrent problem:
->     cpu0                 cpu1
->      .                     .
-> q->enqueue                 .
->      .                     .
-> qdisc_run_begin()          .
->      .                     .
-> dequeue_skb()              .
->      .                     .
-> sch_direct_xmit()          .
->      .                     .
->      .                q->enqueue
->      .             qdisc_run_begin()
->      .            return and do nothing
->      .                     .
-> qdisc_run_end()            .
+Hi Shakeel,
+On Mon, Apr 19, 2021 at 07:57:03AM -0700, Shakeel Butt wrote:
+> On Sun, Apr 18, 2021 at 10:12 PM Ilias Apalodimas
+> <ilias.apalodimas@linaro.org> wrote:
+> >
+> > On Wed, Apr 14, 2021 at 01:09:47PM -0700, Shakeel Butt wrote:
+> > > On Wed, Apr 14, 2021 at 12:42 PM Jesper Dangaard Brouer
+> > > <brouer@redhat.com> wrote:
+> > > >
+> > > [...]
+> > > > > >
+> > > > > > Can this page_pool be used for TCP RX zerocopy? If yes then PageType
+> > > > > > can not be used.
+> > > > >
+> > > > > Yes it can, since it's going to be used as your default allocator for
+> > > > > payloads, which might end up on an SKB.
+> > > >
+> > > > I'm not sure we want or should "allow" page_pool be used for TCP RX
+> > > > zerocopy.
+> > > > For several reasons.
+> > > >
+> > > > (1) This implies mapping these pages page to userspace, which AFAIK
+> > > > means using page->mapping and page->index members (right?).
+> > > >
+> > >
+> > > No, only page->_mapcount is used.
+> > >
+> >
+> > I am not sure I like leaving out TCP RX zerocopy. Since we want driver to
+> > adopt the recycling mechanism we should try preserving the current
+> > functionality of the network stack.
+> >
+> > The question is how does it work with the current drivers that already have an
+> > internal page recycling mechanism.
+> >
 > 
-> cpu1 enqueue a skb without calling __qdisc_run() because cpu0
-> has not released the lock yet and spin_trylock() return false
-> for cpu1 in qdisc_run_begin(), and cpu0 do not see the skb
-> enqueued by cpu1 when calling dequeue_skb() because cpu1 may
-> enqueue the skb after cpu0 calling dequeue_skb() and before
-> cpu0 calling qdisc_run_end().
+> I think the current drivers check page_ref_count(page) to decide to
+> reuse (or not) the already allocated pages.
 > 
-> Lockless qdisc has below another concurrent problem when
-> tx_action is involved:
+> Some examples from the drivers:
+> drivers/net/ethernet/intel/ixgbe/ixgbe_main.c:ixgbe_can_reuse_rx_page()
+> drivers/net/ethernet/intel/igb/igb_main.c:igb_can_reuse_rx_page()
+> drivers/net/ethernet/mellanox/mlx5/core/en_rx.c:mlx5e_rx_cache_get()
 > 
-> cpu0(serving tx_action)     cpu1             cpu2
->           .                   .                .
->           .              q->enqueue            .
->           .            qdisc_run_begin()       .
->           .              dequeue_skb()         .
->           .                   .            q->enqueue
->           .                   .                .
->           .             sch_direct_xmit()      .
->           .                   .         qdisc_run_begin()
->           .                   .       return and do nothing
->           .                   .                .
->  clear __QDISC_STATE_SCHED    .                .
->  qdisc_run_begin()            .                .
->  return and do nothing        .                .
->           .                   .                .
->           .            qdisc_run_end()         .
-> 
-> This patch fixes the above data race by:
-> 1. Test STATE_MISSED before doing spin_trylock().
-> 2. If the first spin_trylock() return false and STATE_MISSED is
->    not set before the first spin_trylock(), Set STATE_MISSED and
->    retry another spin_trylock() in case other CPU may not see
->    STATE_MISSED after it releases the lock.
-> 3. reschedule if STATE_MISSED is set after the lock is released
->    at the end of qdisc_run_end().
-> 
-> For tx_action case, STATE_MISSED is also set when cpu1 is at the
-> end if qdisc_run_end(), so tx_action will be rescheduled again
-> to dequeue the skb enqueued by cpu2.
-> 
-> Clear STATE_MISSED before retrying a dequeuing when dequeuing
-> returns NULL in order to reduce the overhead of the above double
-> spin_trylock() and __netif_schedule() calling.
-> 
-> The performance impact of this patch, tested using pktgen and
-> dummy netdev with pfifo_fast qdisc attached:
-> 
->  threads  without+this_patch   with+this_patch      delta
->     1        2.61Mpps            2.60Mpps           -0.3%
->     2        3.97Mpps            3.82Mpps           -3.7%
->     4        5.62Mpps            5.59Mpps           -0.5%
->     8        2.78Mpps            2.77Mpps           -0.3%
->    16        2.22Mpps            2.22Mpps           -0.0%
-> 
-> Fixes: 6b3ba9146fe6 ("net: sched: allow qdiscs to handle locking")
-> Signed-off-by: Yunsheng Lin <linyunsheng@huawei.com>
-> Tested-by: Juergen Gross <jgross@suse.com>
-> ---
-> V4: Change STATE_NEED_RESCHEDULE to STATE_MISSED mirroring
->     NAPI's NAPIF_STATE_MISSED, and add Juergen's "Tested-by"
->     tag for there is only renaming and typo fixing between
->     V4 and V3.
-> V3: Fix a compile error and a few comment typo, remove the
->     __QDISC_STATE_DEACTIVATED checking, and update the
->     performance data.
-> V2: Avoid the overhead of fixing the data race as much as
->     possible.
 
-As pointed out in the discussion on v3, this patch may result in
-significantly higher CPU consumption with multiple threads competing on
-a saturated outgoing device. I missed this submission so that I haven't
-checked it yet but given the description of v3->v4 changes above, it's
-quite likely that it suffers from the same problem.
+Yes, that's how internal recycling is done in drivers. As Jesper mentioned the
+refcnt of the page is 1 for the page_pool owned pages and that's how we decide 
+what to do with the page.
 
-Michal
+> > > > (2) It feels wrong (security wise) to keep the DMA-mapping (for the
+> > > > device) and also map this page into userspace.
+> > > >
+> > >
+> > > I think this is already the case i.e pages still DMA-mapped and also
+> > > mapped into userspace.
+> > >
+> > > > (3) The page_pool is optimized for refcnt==1 case, and AFAIK TCP-RX
+> > > > zerocopy will bump the refcnt, which means the page_pool will not
+> > > > recycle the page when it see the elevated refcnt (it will instead
+> > > > release its DMA-mapping).
+> > >
+> > > Yes this is right but the userspace might have already consumed and
+> > > unmapped the page before the driver considers to recycle the page.
+> >
+> > Same question here. I'll have a closer look in a few days and make sure we are
+> > not breaking anything wrt zerocopy.
+> >
+> 
+> Pages mapped into the userspace have their refcnt elevated, so the
+> page_ref_count() check by the drivers indicates to not reuse such
+> pages.
+> 
+
+When tcp_zerocopy_receive() is invoked it will call tcp_zerocopy_vm_insert_batch() 
+which will end up doing a get_page().
+What you are saying is that once the zerocopy is done though, skb_release_data() 
+won't be called, but instead put_page() will be? If that's the case then we are 
+indeed leaking DMA mappings and memory. That sounds weird though, since the
+refcnt will be one in that case (zerocopy will do +1/-1 once it's done), so who
+eventually frees the page? 
+If kfree_skb() (or any wrapper that calls skb_release_data()) is called 
+eventually, we'll end up properly recycling the page into our pool.
+
+> > >
+> > > >
+> > > > (4) I remember vaguely that this code path for (TCP RX zerocopy) uses
+> > > > page->private for tricks.  And our patch [3/5] use page->private for
+> > > > storing xdp_mem_info.
+> > > >
+> > > > IMHO when the SKB travel into this TCP RX zerocopy code path, we should
+> > > > call page_pool_release_page() to release its DMA-mapping.
+> > > >
+> > >
+> > > I will let TCP RX zerocopy experts respond to this but from my high
+> > > level code inspection, I didn't see page->private usage.
+> >
+> > Shakeel are you aware of any 'easy' way I can have rx zerocopy running?
+> >
+> 
+> I would recommend tools/testing/selftests/net/tcp_mmap.c.
+
+Ok, thanks I'll have a look.
+
+Cheers
+/Ilias
