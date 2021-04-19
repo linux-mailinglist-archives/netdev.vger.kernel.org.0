@@ -2,98 +2,123 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BBF2F36468C
-	for <lists+netdev@lfdr.de>; Mon, 19 Apr 2021 16:58:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F16C93646AE
+	for <lists+netdev@lfdr.de>; Mon, 19 Apr 2021 17:04:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239346AbhDSO7Z (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 19 Apr 2021 10:59:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52976 "EHLO
+        id S237487AbhDSPFE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 19 Apr 2021 11:05:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54198 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238544AbhDSO7Y (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 19 Apr 2021 10:59:24 -0400
-Received: from mail-ed1-x52d.google.com (mail-ed1-x52d.google.com [IPv6:2a00:1450:4864:20::52d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C352AC06174A;
-        Mon, 19 Apr 2021 07:58:54 -0700 (PDT)
-Received: by mail-ed1-x52d.google.com with SMTP id s15so41111131edd.4;
-        Mon, 19 Apr 2021 07:58:54 -0700 (PDT)
+        with ESMTP id S231496AbhDSPEy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 19 Apr 2021 11:04:54 -0400
+Received: from mail-io1-xd2d.google.com (mail-io1-xd2d.google.com [IPv6:2607:f8b0:4864:20::d2d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F5FDC06174A;
+        Mon, 19 Apr 2021 08:04:24 -0700 (PDT)
+Received: by mail-io1-xd2d.google.com with SMTP id x16so35222715iob.1;
+        Mon, 19 Apr 2021 08:04:24 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=WlmAetOa+5HxYf4TDISXX8Ux6wlKUWMqhMG/15ITEcw=;
-        b=rj5ZewnpyD6W7aY3RDAuVO+SqM/hZvLXofs/Q0qLua1KnTiDz7qncKFueri2n8gxkq
-         yGi8DNm2qLymf707ZT8rbH8KEpHMUTjEpxwyTp+QiVIZNRdwD4LimUNybiLZNu0EUImY
-         r+15ue+FrTSD/DGhGBudKaxHLWB+nreqGSueRcgynLEUVex6+HLRGCu2Y6kLtqD5dW4V
-         wt8LouLgpxGbodrtRAB08oiHavXTrjuK+7UQ4OJ8k8+8cX67PJjKz7dVT/z0Hu9eawdB
-         TCihriwcM0nJxvjnHoxMmISUarwK+lcS/+91ZkWJN48JGdMQDc/4HhwU1svEeqAlTiye
-         Rfhw==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=sK9kJH32/DEKrA6KoYri3PZGBlZT1dWah2hqamZZ9Cc=;
+        b=s7wVo0vApXU/OM1jt4+gMA9B0M0TVD8p1XDGpgxiXAxuyzaHz2Gj1uaR28sDh9Meyq
+         M+ZPjuGWqIFb91kh+t5jJbJhqs8vxijOqlUhQ4V3TEo8yK7ZobGdz5Hr1JHP3AjtAn59
+         Re249SBEmo/8oNw//lAyJDppVQ0CHLS5EtwgWyNYZNNCIRMuCnfCXdAvTdD4zSc/vpbc
+         vTMTAbEzFLOBOQTWIt4/WlgQzt3Iahmlb6W8ItRJAayJiQUHk2q6qO7zju/SgZJ6EGFn
+         YBYjVlEXIUwLGeNoNGzxjQ0CwwpVAeSLagMmZf0XzsRv0HX/+FQoSJGxYUlm4OUkYYnA
+         TiBw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=WlmAetOa+5HxYf4TDISXX8Ux6wlKUWMqhMG/15ITEcw=;
-        b=FZiwVR9EygWpYQOSjJhm9S1dNUExQ2MSd1aKEQ0lbjCfvpDJpREjc3DLE30SXfllSL
-         +vWwdbiY/7ypwAFSgSfjDGJN5q6jODVaWEEmyrHYg6OAmKc8Cq7VvyBbiEO4xDWHS0A+
-         tR5LZTv/AQJFZpGgNLjopHAjT2pH7JrEG/cxUDGXlUcfAbHKOf+dyqyzm8jlHg/tyY4X
-         JJavZPqQpgXfTHBE8fbw+bIl4hkCkI/NXLrgpP9tWFnMYDZoq7ffh8BpdqO11lDsYe/L
-         zrUY3mwkEx5XkgGI8u2q2+HbHyNebzAYukiC+4jH0llgDP9zXYRahS+qhF7M9cbjxsqi
-         eE4Q==
-X-Gm-Message-State: AOAM531dON848FKBhphxqBXRgVzPn8+vSkDTuERRHBRsf78Toj/k/j26
-        HyO/JTKt0xKIK4U8sL6ArSk=
-X-Google-Smtp-Source: ABdhPJwDY2Exw6txlnSA9y+hQTpW93E8rqswX/sRBG4MQC5YRxy+oQ462t2AuOt8oxT9+p1KoYwZNA==
-X-Received: by 2002:aa7:c391:: with SMTP id k17mr8156426edq.153.1618844333512;
-        Mon, 19 Apr 2021 07:58:53 -0700 (PDT)
-Received: from ubuntudesktop.lan (210.53.7.51.dyn.plus.net. [51.7.53.210])
-        by smtp.gmail.com with ESMTPSA id l14sm1529578edc.0.2021.04.19.07.58.52
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 19 Apr 2021 07:58:52 -0700 (PDT)
-From:   Lee Gibson <leegib@gmail.com>
-To:     kvalo@codeaurora.org
-Cc:     imitsyanko@quantenna.com, davem@davemloft.net, kuba@kernel.org,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Lee Gibson <leegib@gmail.com>
-Subject: [PATCH v2] qtnfmac: Fix possible buffer overflow in qtnf_event_handle_external_auth
-Date:   Mon, 19 Apr 2021 15:58:42 +0100
-Message-Id: <20210419145842.345787-1-leegib@gmail.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20210317121706.389058-1-leegib@gmail.com>
-References: <20210317121706.389058-1-leegib@gmail.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=sK9kJH32/DEKrA6KoYri3PZGBlZT1dWah2hqamZZ9Cc=;
+        b=L2/BomEruN9lYVixdEFEhq0ZQGQA2sLIisIUrfphUTndu2xlRGi2jDHEQkMt62pWZm
+         cyWHCVdhhtCYCWC4BRxodLuWUgy2gsGwNQEHcK/nK/2NrGsYUCPOklvcrdNfnKqW1v5w
+         /kXiuQswFAaVYZvf0Anzelf7s+HOZSb7bWd/VKp7YyaWwoMgW+sVtmrLYn9eoBC5EanF
+         0hGlS/O0F4CI4KbdvMU3IPtxJiRLBB8DNu0O2oiY212/2NbGvdEVy14D5LzDI2wmAH9V
+         mASv5sRidOOTX2DycB2YzOGBiDa5l3tUWx/F+n/UeNTzd6R7GBBF9bRRV0t0BV2ILgYh
+         lPrA==
+X-Gm-Message-State: AOAM530spKkFxu5Cca/rbuXtOvSKZ7DyN2TJTLw6AI49O+nVeSDsblHZ
+        rrDW/yZTp4yxIwQZnRQ/1zvAdrVS3DUF70B2nes=
+X-Google-Smtp-Source: ABdhPJzEZQjUJvUvF+QDBgYHgewS1rUZVS39JXLXF5zSRaqhTgFexQhrwFdP/SIkUu/RjU+JN91KzcVrPuuY0GRWz/U=
+X-Received: by 2002:a02:a487:: with SMTP id d7mr2653012jam.84.1618844661634;
+ Mon, 19 Apr 2021 08:04:21 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20210419040352.2452-1-ilya.lipnitskiy@gmail.com>
+ <20210419040352.2452-3-ilya.lipnitskiy@gmail.com> <YH10UNuJZ5s7dfLh@lunn.ch>
+In-Reply-To: <YH10UNuJZ5s7dfLh@lunn.ch>
+From:   Ilya Lipnitskiy <ilya.lipnitskiy@gmail.com>
+Date:   Mon, 19 Apr 2021 08:04:10 -0700
+Message-ID: <CALCv0x2SSGjiqKOBhK1GT2ksjc9J--Qm3Uq-0xc3sgHvDju5-A@mail.gmail.com>
+Subject: Re: [PATCH net-next 2/2] net: ethernet: mediatek: support custom GMAC label
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>, Felix Fietkau <nbd@nbd.name>,
+        John Crispin <john@phrozen.org>,
+        Sean Wang <sean.wang@mediatek.com>,
+        Mark Lee <Mark-MC.Lee@mediatek.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Russell King <linux@armlinux.org.uk>, netdev@vger.kernel.org,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org,
+        =?UTF-8?Q?Ren=C3=A9_van_Dorst?= <opensource@vdorst.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Function qtnf_event_handle_external_auth calls memcpy without
-checking the length.
-A user could control that length and trigger a buffer overflow.
-Fix by checking the length is within the maximum allowed size.
+On Mon, Apr 19, 2021 at 5:15 AM Andrew Lunn <andrew@lunn.ch> wrote:
+>
+> On Sun, Apr 18, 2021 at 09:03:52PM -0700, Ilya Lipnitskiy wrote:
+> > The MAC device name can now be set within DTS file instead of always
+> > being "ethX". This is helpful for DSA to clearly label the DSA master
+> > device and distinguish it from DSA slave ports.
+> >
+> > For example, some devices, such as the Ubiquiti EdgeRouter X, may have
+> > ports labeled ethX. Labeling the master GMAC with a different prefix
+> > than DSA ports helps with clarity.
+> >
+> > Suggested-by: Ren=C3=A9 van Dorst <opensource@vdorst.com>
+> > Signed-off-by: Ilya Lipnitskiy <ilya.lipnitskiy@gmail.com>
+> > ---
+> >  drivers/net/ethernet/mediatek/mtk_eth_soc.c | 4 ++++
+> >  1 file changed, 4 insertions(+)
+> >
+> > diff --git a/drivers/net/ethernet/mediatek/mtk_eth_soc.c b/drivers/net/=
+ethernet/mediatek/mtk_eth_soc.c
+> > index 6b00c12c6c43..4c0ce4fb7735 100644
+> > --- a/drivers/net/ethernet/mediatek/mtk_eth_soc.c
+> > +++ b/drivers/net/ethernet/mediatek/mtk_eth_soc.c
+> > @@ -2845,6 +2845,7 @@ static const struct net_device_ops mtk_netdev_ops=
+ =3D {
+> >
+> >  static int mtk_add_mac(struct mtk_eth *eth, struct device_node *np)
+> >  {
+> > +     const char *label =3D of_get_property(np, "label", NULL);
+> >       const __be32 *_id =3D of_get_property(np, "reg", NULL);
+> >       phy_interface_t phy_mode;
+> >       struct phylink *phylink;
+> > @@ -2940,6 +2941,9 @@ static int mtk_add_mac(struct mtk_eth *eth, struc=
+t device_node *np)
+> >       else
+> >               eth->netdev[id]->max_mtu =3D MTK_MAX_RX_LENGTH_2K - MTK_R=
+X_ETH_HLEN;
+> >
+> > +     if (label)
+> > +             strscpy(eth->netdev[id]->name, label, IFNAMSIZ);
+>
+> It is better to use alloc_netdev_mqs() so you get validation the name
+> is unique.
+It doesn't look like the name validation happens until the netdev is
+registered, and it does not get registered at alloc, right?
 
-Signed-off-by: Lee Gibson <leegib@gmail.com>
----
+I do agree that it's better to use the correct name in the first place
+instead of renaming, regardless, so using alloc_netdev_mqs() seems
+like a better solution - I'll make the change.
 
-v2: use clamp_val() instead of min_t()
-
- drivers/net/wireless/quantenna/qtnfmac/event.c | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/net/wireless/quantenna/qtnfmac/event.c b/drivers/net/wireless/quantenna/qtnfmac/event.c
-index c775c177933b..8dc80574d08d 100644
---- a/drivers/net/wireless/quantenna/qtnfmac/event.c
-+++ b/drivers/net/wireless/quantenna/qtnfmac/event.c
-@@ -570,8 +570,10 @@ qtnf_event_handle_external_auth(struct qtnf_vif *vif,
- 		return 0;
- 
- 	if (ev->ssid_len) {
--		memcpy(auth.ssid.ssid, ev->ssid, ev->ssid_len);
--		auth.ssid.ssid_len = ev->ssid_len;
-+		int len = clamp_val(ev->ssid_len, 0, IEEE80211_MAX_SSID_LEN);
-+
-+		memcpy(auth.ssid.ssid, ev->ssid, len);
-+		auth.ssid.ssid_len = len;
- 	}
- 
- 	auth.key_mgmt_suite = le32_to_cpu(ev->akm_suite);
--- 
-2.25.1
-
+Ilya
