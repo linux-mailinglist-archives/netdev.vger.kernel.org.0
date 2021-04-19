@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 94072364179
-	for <lists+netdev@lfdr.de>; Mon, 19 Apr 2021 14:20:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7AFDA36417E
+	for <lists+netdev@lfdr.de>; Mon, 19 Apr 2021 14:20:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239157AbhDSMTB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 19 Apr 2021 08:19:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45062 "EHLO
+        id S239187AbhDSMTd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 19 Apr 2021 08:19:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45084 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239093AbhDSMS4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 19 Apr 2021 08:18:56 -0400
-Received: from mail-pf1-x444.google.com (mail-pf1-x444.google.com [IPv6:2607:f8b0:4864:20::444])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B8C50C061760;
-        Mon, 19 Apr 2021 05:18:26 -0700 (PDT)
-Received: by mail-pf1-x444.google.com with SMTP id g16so9760022pfq.5;
-        Mon, 19 Apr 2021 05:18:26 -0700 (PDT)
+        with ESMTP id S238780AbhDSMTB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 19 Apr 2021 08:19:01 -0400
+Received: from mail-pj1-x1043.google.com (mail-pj1-x1043.google.com [IPv6:2607:f8b0:4864:20::1043])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 43D40C061761;
+        Mon, 19 Apr 2021 05:18:30 -0700 (PDT)
+Received: by mail-pj1-x1043.google.com with SMTP id f2-20020a17090a4a82b02900c67bf8dc69so20276304pjh.1;
+        Mon, 19 Apr 2021 05:18:30 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=3kf2IR+vyr2ZS9j3pXYnVjnrecvHBRgA8KdfYqYNGqw=;
-        b=fMb8DaDUXqLYSfB7qnEBKxJnSKgbeOVt3cu+7AWXElc99KxdQPkL3Q1YZu3AXv0LYp
-         oI/mupDqDyJ/0jLd5l71aI1WomV2EmMA85mzcCwQPkbmRB38RlGc35w5FZMEG8K16Ed7
-         mrFuvP9JlfFrPUlq3MVVgtEgq+fgHyjE2dXvbndFBbB4tPoLhcKw9Hxs5Uc8SwKMsnNf
-         jKXaqBNjfHs98cENngjJKlqBfJ4/oICPCeXc+Qgtov5WWZJP4vWNQI8yOnn7PeOqcHGS
-         GLwgT3wl2MRDeTRknsx3bTe96KQl5v2qu45BQT6EdVd3Ay+twuVqIfRs5Jys3Oznrnov
-         Q0KQ==
+        bh=oYCNET7iFKziKZ1Ub0jaHIxttSr8miY2y9P2JjnTAOQ=;
+        b=JawARq9HS4xvRHh2KSALyagw3+Ji30EbZnVWlLedMLdYPqxnrj3BCTpC5F5yFcsfI1
+         4opMGLSurZNg3hFDSmYQtfmoYlwCd9OjtMeEYolh2mTYq18d79fUoBpuJpZB9Gya1mCz
+         NcTzjqpdO3M7w1GpuYUO4kG9RBAS/24D8k1bx+DUMbQJ4w1fX5ivLOnpV6UfxrtHGyFW
+         9vhW1Q6UPWfYPCv9IRfrnzlw6ZBzNoexU2Rq5KxgIQsGj6oP1AOp9YBIXX4tsFtS9B9i
+         CY7yXNXUf6luRxv+bsoYI7DXhM0gCdbIKAx5Oat4x6oqlrDXrFKRAQiHNNuYyxER/+8s
+         53Dg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=3kf2IR+vyr2ZS9j3pXYnVjnrecvHBRgA8KdfYqYNGqw=;
-        b=Hk33TujnsqIleWdsFrsxrEbaAMJUmaTQpQfsp0q4hpWR1Ibj5Ge5bqPHbQVZKmXgZ8
-         XTSKOT/HOq57gEOcjvodMW7RGheTGbl9TrlSLctaoz4IAUtOmPKdZLNa0/2xZ7twwN9A
-         OfuwNelo2C1MS0S7dsYBWe4a5OyU3GJwqsWClp/krfosaHc2ux/V6ykpH/BycC+e4sdN
-         or75HAYQXLREDmbDLra37NwUpXKo9c93SzNpiPR2JLygZFk4vOjKGkKYd5G1PonqqM/q
-         TnCzh7uXeo1xj8NL60KoN4MItEscrWlIpBAX9pAsiDj9lNQ7Ue4HUf5Y32MAS18YRYa3
-         d1KA==
-X-Gm-Message-State: AOAM530CxJyp+WEySAidluuPGMKr97hjP76Bu9o76GpUIPSh3hmD1rep
-        YDZfipmiLHQ8dIvJ3O0VbgCmugKPDWVNFQ==
-X-Google-Smtp-Source: ABdhPJyiWfAxATro6hJA85x/67mBYoJYhqS0BzEXv2Llh2hOUu6WKzBFeJ0IG/e7hYVgxZny9fpH7g==
-X-Received: by 2002:aa7:90d3:0:b029:241:21a1:6ffb with SMTP id k19-20020aa790d30000b029024121a16ffbmr19249973pfk.43.1618834706025;
-        Mon, 19 Apr 2021 05:18:26 -0700 (PDT)
+        bh=oYCNET7iFKziKZ1Ub0jaHIxttSr8miY2y9P2JjnTAOQ=;
+        b=oW8M4u8NYoF/01VoFPU9ZaDFNgYKV2NmYBJbm/2uY7eh2uVRwCAZSrP2hMkbG2qgDx
+         EMe6d58gbmLqC5aUy/xlaB87DHXaROyFv3tuyorSbAWXQU9ebT5UP65n19Wat8lvMolP
+         1b1kWsDAyqnc0klGNajpQ1EfzzM4wEEeAzUJRHfOnjr4+bVG4WxCAb/4y67t2tt7Uobz
+         teDNmqztEn+1WXZ//59W4CvHuf22PI2DvrGo1PJWbjKPDlvtKHsPN5RJ3t7HRXtJaAKu
+         aBuwlzhhWjH9RkzhG7dwb/vt7qxvfOXATfe96+MHHZiXTen6+wi+fggSmv/+ESUSSJL0
+         1yeA==
+X-Gm-Message-State: AOAM5325UtvxkLPUBclArfVFsa/QKY7GJwCajMhaU2veQSszlOeJy2+K
+        NwBXGutU+2yhBIXeIYG2pS7ZA210/NbbWw==
+X-Google-Smtp-Source: ABdhPJwhk56PV2AzNO0GFI2ckguHJlizl2e31FFRtCGxReevhkoIGzf0dz0NFTO6HpeGmI7zTWBhaQ==
+X-Received: by 2002:a17:90a:3183:: with SMTP id j3mr24132275pjb.228.1618834709290;
+        Mon, 19 Apr 2021 05:18:29 -0700 (PDT)
 Received: from localhost ([112.79.253.181])
-        by smtp.gmail.com with ESMTPSA id d17sm12137001pfn.60.2021.04.19.05.18.25
+        by smtp.gmail.com with ESMTPSA id r3sm10445994pfl.159.2021.04.19.05.18.28
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 19 Apr 2021 05:18:25 -0700 (PDT)
+        Mon, 19 Apr 2021 05:18:29 -0700 (PDT)
 From:   Kumar Kartikeya Dwivedi <memxor@gmail.com>
 To:     bpf@vger.kernel.org
 Cc:     Kumar Kartikeya Dwivedi <memxor@gmail.com>,
@@ -63,9 +63,9 @@ Cc:     Kumar Kartikeya Dwivedi <memxor@gmail.com>,
         Jesper Dangaard Brouer <hawk@kernel.org>,
         Jesper Dangaard Brouer <brouer@redhat.com>,
         linux-kernel@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH bpf-next v2 1/4] tools: pkt_cls.h: sync with kernel sources
-Date:   Mon, 19 Apr 2021 17:48:08 +0530
-Message-Id: <20210419121811.117400-2-memxor@gmail.com>
+Subject: [PATCH bpf-next v2 2/4] libbpf: add helpers for preparing netlink attributes
+Date:   Mon, 19 Apr 2021 17:48:09 +0530
+Message-Id: <20210419121811.117400-3-memxor@gmail.com>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20210419121811.117400-1-memxor@gmail.com>
 References: <20210419121811.117400-1-memxor@gmail.com>
@@ -76,284 +76,167 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Update the header file so we can use the new defines in subsequent
-patches. Also make sure they remain up to date.
+This change introduces a few helpers to wrap open coded attribute
+preparation in netlink.c.
+
+Every nested attribute's closure must happen using the helper
+nlattr_end_nested, which sets its length properly. NLA_F_NESTED is
+enforeced using nlattr_begin_nested helper. Other simple attributes
+can be added directly.
+
+The maxsz parameter corresponds to the size of the request structure
+which is being filled in, so for instance with req being:
+
+struct {
+	struct nlmsghdr nh;
+	struct tcmsg t;
+	char buf[4096];
+} req;
+
+Then, maxsz should be sizeof(req).
+
+This change also converts the open coded attribute preparation with the
+helpers. Note that the only failure the internal call to nlattr_add
+could result in the nested helper would be -EMSGSIZE, hence that is what
+we return to our caller.
 
 Reviewed-by: Toke Høiland-Jørgensen <toke@redhat.com>
 Signed-off-by: Kumar Kartikeya Dwivedi <memxor@gmail.com>
 ---
- tools/include/uapi/linux/pkt_cls.h | 174 ++++++++++++++++++++++++++++-
- tools/lib/bpf/Makefile             |   3 +
- 2 files changed, 173 insertions(+), 4 deletions(-)
+ tools/lib/bpf/netlink.c | 37 ++++++++++++++-----------------
+ tools/lib/bpf/nlattr.h  | 48 +++++++++++++++++++++++++++++++++++++++++
+ 2 files changed, 64 insertions(+), 21 deletions(-)
 
-diff --git a/tools/include/uapi/linux/pkt_cls.h b/tools/include/uapi/linux/pkt_cls.h
-index 12153771396a..025c40fef93d 100644
---- a/tools/include/uapi/linux/pkt_cls.h
-+++ b/tools/include/uapi/linux/pkt_cls.h
-@@ -16,9 +16,36 @@ enum {
- 	TCA_ACT_STATS,
- 	TCA_ACT_PAD,
- 	TCA_ACT_COOKIE,
-+	TCA_ACT_FLAGS,
-+	TCA_ACT_HW_STATS,
-+	TCA_ACT_USED_HW_STATS,
- 	__TCA_ACT_MAX
- };
+diff --git a/tools/lib/bpf/netlink.c b/tools/lib/bpf/netlink.c
+index d2cb28e9ef52..c79e30484e81 100644
+--- a/tools/lib/bpf/netlink.c
++++ b/tools/lib/bpf/netlink.c
+@@ -135,7 +135,7 @@ static int __bpf_set_link_xdp_fd_replace(int ifindex, int fd, int old_fd,
+ 					 __u32 flags)
+ {
+ 	int sock, seq = 0, ret;
+-	struct nlattr *nla, *nla_xdp;
++	struct nlattr *nla;
+ 	struct {
+ 		struct nlmsghdr  nh;
+ 		struct ifinfomsg ifinfo;
+@@ -157,36 +157,31 @@ static int __bpf_set_link_xdp_fd_replace(int ifindex, int fd, int old_fd,
+ 	req.ifinfo.ifi_index = ifindex;
  
-+#define TCA_ACT_FLAGS_NO_PERCPU_STATS 1 /* Don't use percpu allocator for
-+					 * actions stats.
-+					 */
-+
-+/* tca HW stats type
-+ * When user does not pass the attribute, he does not care.
-+ * It is the same as if he would pass the attribute with
-+ * all supported bits set.
-+ * In case no bits are set, user is not interested in getting any HW statistics.
-+ */
-+#define TCA_ACT_HW_STATS_IMMEDIATE (1 << 0) /* Means that in dump, user
-+					     * gets the current HW stats
-+					     * state from the device
-+					     * queried at the dump time.
-+					     */
-+#define TCA_ACT_HW_STATS_DELAYED (1 << 1) /* Means that in dump, user gets
-+					   * HW stats that might be out of date
-+					   * for some time, maybe couple of
-+					   * seconds. This is the case when
-+					   * driver polls stats updates
-+					   * periodically or when it gets async
-+					   * stats update from the device.
-+					   */
-+
- #define TCA_ACT_MAX __TCA_ACT_MAX
- #define TCA_OLD_COMPAT (TCA_ACT_MAX+1)
- #define TCA_ACT_MAX_PRIO 32
-@@ -63,12 +90,53 @@ enum {
- #define TC_ACT_GOTO_CHAIN __TC_ACT_EXT(2)
- #define TC_ACT_EXT_OPCODE_MAX	TC_ACT_GOTO_CHAIN
+ 	/* started nested attribute for XDP */
+-	nla = (struct nlattr *)(((char *)&req)
+-				+ NLMSG_ALIGN(req.nh.nlmsg_len));
+-	nla->nla_type = NLA_F_NESTED | IFLA_XDP;
+-	nla->nla_len = NLA_HDRLEN;
++	nla = nlattr_begin_nested(&req.nh, sizeof(req), IFLA_XDP);
++	if (!nla) {
++		ret = -EMSGSIZE;
++		goto cleanup;
++	}
  
-+/* These macros are put here for binary compatibility with userspace apps that
-+ * make use of them. For kernel code and new userspace apps, use the TCA_ID_*
-+ * versions.
-+ */
-+#define TCA_ACT_GACT 5
-+#define TCA_ACT_IPT 6
-+#define TCA_ACT_PEDIT 7
-+#define TCA_ACT_MIRRED 8
-+#define TCA_ACT_NAT 9
-+#define TCA_ACT_XT 10
-+#define TCA_ACT_SKBEDIT 11
-+#define TCA_ACT_VLAN 12
-+#define TCA_ACT_BPF 13
-+#define TCA_ACT_CONNMARK 14
-+#define TCA_ACT_SKBMOD 15
-+#define TCA_ACT_CSUM 16
-+#define TCA_ACT_TUNNEL_KEY 17
-+#define TCA_ACT_SIMP 22
-+#define TCA_ACT_IFE 25
-+#define TCA_ACT_SAMPLE 26
-+
- /* Action type identifiers*/
--enum {
--	TCA_ID_UNSPEC=0,
--	TCA_ID_POLICE=1,
-+enum tca_id {
-+	TCA_ID_UNSPEC = 0,
-+	TCA_ID_POLICE = 1,
-+	TCA_ID_GACT = TCA_ACT_GACT,
-+	TCA_ID_IPT = TCA_ACT_IPT,
-+	TCA_ID_PEDIT = TCA_ACT_PEDIT,
-+	TCA_ID_MIRRED = TCA_ACT_MIRRED,
-+	TCA_ID_NAT = TCA_ACT_NAT,
-+	TCA_ID_XT = TCA_ACT_XT,
-+	TCA_ID_SKBEDIT = TCA_ACT_SKBEDIT,
-+	TCA_ID_VLAN = TCA_ACT_VLAN,
-+	TCA_ID_BPF = TCA_ACT_BPF,
-+	TCA_ID_CONNMARK = TCA_ACT_CONNMARK,
-+	TCA_ID_SKBMOD = TCA_ACT_SKBMOD,
-+	TCA_ID_CSUM = TCA_ACT_CSUM,
-+	TCA_ID_TUNNEL_KEY = TCA_ACT_TUNNEL_KEY,
-+	TCA_ID_SIMP = TCA_ACT_SIMP,
-+	TCA_ID_IFE = TCA_ACT_IFE,
-+	TCA_ID_SAMPLE = TCA_ACT_SAMPLE,
-+	TCA_ID_CTINFO,
-+	TCA_ID_MPLS,
-+	TCA_ID_CT,
-+	TCA_ID_GATE,
- 	/* other actions go here */
--	__TCA_ID_MAX=255
-+	__TCA_ID_MAX = 255
- };
+ 	/* add XDP fd */
+-	nla_xdp = (struct nlattr *)((char *)nla + nla->nla_len);
+-	nla_xdp->nla_type = IFLA_XDP_FD;
+-	nla_xdp->nla_len = NLA_HDRLEN + sizeof(int);
+-	memcpy((char *)nla_xdp + NLA_HDRLEN, &fd, sizeof(fd));
+-	nla->nla_len += nla_xdp->nla_len;
++	ret = nlattr_add(&req.nh, sizeof(req), IFLA_XDP_FD, &fd, sizeof(fd));
++	if (ret < 0)
++		goto cleanup;
  
- #define TCA_ID_MAX __TCA_ID_MAX
-@@ -120,6 +188,10 @@ enum {
- 	TCA_POLICE_RESULT,
- 	TCA_POLICE_TM,
- 	TCA_POLICE_PAD,
-+	TCA_POLICE_RATE64,
-+	TCA_POLICE_PEAKRATE64,
-+	TCA_POLICE_PKTRATE64,
-+	TCA_POLICE_PKTBURST64,
- 	__TCA_POLICE_MAX
- #define TCA_POLICE_RESULT TCA_POLICE_RESULT
- };
-@@ -333,12 +405,19 @@ enum {
+ 	/* if user passed in any flags, add those too */
+ 	if (flags) {
+-		nla_xdp = (struct nlattr *)((char *)nla + nla->nla_len);
+-		nla_xdp->nla_type = IFLA_XDP_FLAGS;
+-		nla_xdp->nla_len = NLA_HDRLEN + sizeof(flags);
+-		memcpy((char *)nla_xdp + NLA_HDRLEN, &flags, sizeof(flags));
+-		nla->nla_len += nla_xdp->nla_len;
++		ret = nlattr_add(&req.nh, sizeof(req), IFLA_XDP_FLAGS, &flags, sizeof(flags));
++		if (ret < 0)
++			goto cleanup;
+ 	}
  
- /* Basic filter */
+ 	if (flags & XDP_FLAGS_REPLACE) {
+-		nla_xdp = (struct nlattr *)((char *)nla + nla->nla_len);
+-		nla_xdp->nla_type = IFLA_XDP_EXPECTED_FD;
+-		nla_xdp->nla_len = NLA_HDRLEN + sizeof(old_fd);
+-		memcpy((char *)nla_xdp + NLA_HDRLEN, &old_fd, sizeof(old_fd));
+-		nla->nla_len += nla_xdp->nla_len;
++		ret = nlattr_add(&req.nh, sizeof(req), IFLA_XDP_EXPECTED_FD, &flags, sizeof(flags));
++		if (ret < 0)
++			goto cleanup;
+ 	}
  
-+struct tc_basic_pcnt {
-+	__u64 rcnt;
-+	__u64 rhit;
-+};
-+
- enum {
- 	TCA_BASIC_UNSPEC,
- 	TCA_BASIC_CLASSID,
- 	TCA_BASIC_EMATCHES,
- 	TCA_BASIC_ACT,
- 	TCA_BASIC_POLICE,
-+	TCA_BASIC_PCNT,
-+	TCA_BASIC_PAD,
- 	__TCA_BASIC_MAX
- };
+-	req.nh.nlmsg_len += NLA_ALIGN(nla->nla_len);
++	nlattr_end_nested(&req.nh, nla);
  
-@@ -485,17 +564,54 @@ enum {
+ 	if (send(sock, &req, req.nh.nlmsg_len, 0) < 0) {
+ 		ret = -errno;
+diff --git a/tools/lib/bpf/nlattr.h b/tools/lib/bpf/nlattr.h
+index 6cc3ac91690f..1c94cdb6e89d 100644
+--- a/tools/lib/bpf/nlattr.h
++++ b/tools/lib/bpf/nlattr.h
+@@ -10,7 +10,10 @@
+ #define __LIBBPF_NLATTR_H
  
- 	TCA_FLOWER_IN_HW_COUNT,
+ #include <stdint.h>
++#include <string.h>
++#include <errno.h>
+ #include <linux/netlink.h>
++
+ /* avoid multiple definition of netlink features */
+ #define __LINUX_NETLINK_H
  
-+	TCA_FLOWER_KEY_PORT_SRC_MIN,	/* be16 */
-+	TCA_FLOWER_KEY_PORT_SRC_MAX,	/* be16 */
-+	TCA_FLOWER_KEY_PORT_DST_MIN,	/* be16 */
-+	TCA_FLOWER_KEY_PORT_DST_MAX,	/* be16 */
-+
-+	TCA_FLOWER_KEY_CT_STATE,	/* u16 */
-+	TCA_FLOWER_KEY_CT_STATE_MASK,	/* u16 */
-+	TCA_FLOWER_KEY_CT_ZONE,		/* u16 */
-+	TCA_FLOWER_KEY_CT_ZONE_MASK,	/* u16 */
-+	TCA_FLOWER_KEY_CT_MARK,		/* u32 */
-+	TCA_FLOWER_KEY_CT_MARK_MASK,	/* u32 */
-+	TCA_FLOWER_KEY_CT_LABELS,	/* u128 */
-+	TCA_FLOWER_KEY_CT_LABELS_MASK,	/* u128 */
-+
-+	TCA_FLOWER_KEY_MPLS_OPTS,
-+
-+	TCA_FLOWER_KEY_HASH,		/* u32 */
-+	TCA_FLOWER_KEY_HASH_MASK,	/* u32 */
-+
- 	__TCA_FLOWER_MAX,
- };
+@@ -103,4 +106,49 @@ int libbpf_nla_parse_nested(struct nlattr *tb[], int maxtype,
  
- #define TCA_FLOWER_MAX (__TCA_FLOWER_MAX - 1)
+ int libbpf_nla_dump_errormsg(struct nlmsghdr *nlh);
  
-+enum {
-+	TCA_FLOWER_KEY_CT_FLAGS_NEW = 1 << 0, /* Beginning of a new connection. */
-+	TCA_FLOWER_KEY_CT_FLAGS_ESTABLISHED = 1 << 1, /* Part of an existing connection. */
-+	TCA_FLOWER_KEY_CT_FLAGS_RELATED = 1 << 2, /* Related to an established connection. */
-+	TCA_FLOWER_KEY_CT_FLAGS_TRACKED = 1 << 3, /* Conntrack has occurred. */
-+	TCA_FLOWER_KEY_CT_FLAGS_INVALID = 1 << 4, /* Conntrack is invalid. */
-+	TCA_FLOWER_KEY_CT_FLAGS_REPLY = 1 << 5, /* Packet is in the reply direction. */
-+	__TCA_FLOWER_KEY_CT_FLAGS_MAX,
-+};
++static inline struct nlattr *nla_data(struct nlattr *nla)
++{
++	return (struct nlattr *)((char *)nla + NLA_HDRLEN);
++}
 +
- enum {
- 	TCA_FLOWER_KEY_ENC_OPTS_UNSPEC,
- 	TCA_FLOWER_KEY_ENC_OPTS_GENEVE, /* Nested
- 					 * TCA_FLOWER_KEY_ENC_OPT_GENEVE_
- 					 * attributes
- 					 */
-+	TCA_FLOWER_KEY_ENC_OPTS_VXLAN,	/* Nested
-+					 * TCA_FLOWER_KEY_ENC_OPT_VXLAN_
-+					 * attributes
-+					 */
-+	TCA_FLOWER_KEY_ENC_OPTS_ERSPAN,	/* Nested
-+					 * TCA_FLOWER_KEY_ENC_OPT_ERSPAN_
-+					 * attributes
-+					 */
- 	__TCA_FLOWER_KEY_ENC_OPTS_MAX,
- };
- 
-@@ -513,18 +629,68 @@ enum {
- #define TCA_FLOWER_KEY_ENC_OPT_GENEVE_MAX \
- 		(__TCA_FLOWER_KEY_ENC_OPT_GENEVE_MAX - 1)
- 
-+enum {
-+	TCA_FLOWER_KEY_ENC_OPT_VXLAN_UNSPEC,
-+	TCA_FLOWER_KEY_ENC_OPT_VXLAN_GBP,		/* u32 */
-+	__TCA_FLOWER_KEY_ENC_OPT_VXLAN_MAX,
-+};
++static inline struct nlattr *nh_tail(struct nlmsghdr *nh)
++{
++	return (struct nlattr *)((char *)nh + NLMSG_ALIGN(nh->nlmsg_len));
++}
 +
-+#define TCA_FLOWER_KEY_ENC_OPT_VXLAN_MAX \
-+		(__TCA_FLOWER_KEY_ENC_OPT_VXLAN_MAX - 1)
++static inline int nlattr_add(struct nlmsghdr *nh, size_t maxsz, int type,
++			     const void *data, int len)
++{
++	struct nlattr *nla;
 +
-+enum {
-+	TCA_FLOWER_KEY_ENC_OPT_ERSPAN_UNSPEC,
-+	TCA_FLOWER_KEY_ENC_OPT_ERSPAN_VER,              /* u8 */
-+	TCA_FLOWER_KEY_ENC_OPT_ERSPAN_INDEX,            /* be32 */
-+	TCA_FLOWER_KEY_ENC_OPT_ERSPAN_DIR,              /* u8 */
-+	TCA_FLOWER_KEY_ENC_OPT_ERSPAN_HWID,             /* u8 */
-+	__TCA_FLOWER_KEY_ENC_OPT_ERSPAN_MAX,
-+};
++	if (NLMSG_ALIGN(nh->nlmsg_len) + NLA_ALIGN(NLA_HDRLEN + len) > maxsz)
++		return -EMSGSIZE;
++	if ((!data && len) || (data && !len))
++		return -EINVAL;
 +
-+#define TCA_FLOWER_KEY_ENC_OPT_ERSPAN_MAX \
-+		(__TCA_FLOWER_KEY_ENC_OPT_ERSPAN_MAX - 1)
++	nla = nh_tail(nh);
++	nla->nla_type = type;
++	nla->nla_len = NLA_HDRLEN + len;
++	if (data)
++		memcpy(nla_data(nla), data, len);
++	nh->nlmsg_len = NLMSG_ALIGN(nh->nlmsg_len) + NLA_ALIGN(nla->nla_len);
++	return 0;
++}
 +
-+enum {
-+	TCA_FLOWER_KEY_MPLS_OPTS_UNSPEC,
-+	TCA_FLOWER_KEY_MPLS_OPTS_LSE,
-+	__TCA_FLOWER_KEY_MPLS_OPTS_MAX,
-+};
++static inline struct nlattr *nlattr_begin_nested(struct nlmsghdr *nh,
++						 size_t maxsz, int type)
++{
++	struct nlattr *tail;
 +
-+#define TCA_FLOWER_KEY_MPLS_OPTS_MAX (__TCA_FLOWER_KEY_MPLS_OPTS_MAX - 1)
++	tail = nh_tail(nh);
++	if (nlattr_add(nh, maxsz, type | NLA_F_NESTED, NULL, 0))
++		return NULL;
++	return tail;
++}
 +
-+enum {
-+	TCA_FLOWER_KEY_MPLS_OPT_LSE_UNSPEC,
-+	TCA_FLOWER_KEY_MPLS_OPT_LSE_DEPTH,
-+	TCA_FLOWER_KEY_MPLS_OPT_LSE_TTL,
-+	TCA_FLOWER_KEY_MPLS_OPT_LSE_BOS,
-+	TCA_FLOWER_KEY_MPLS_OPT_LSE_TC,
-+	TCA_FLOWER_KEY_MPLS_OPT_LSE_LABEL,
-+	__TCA_FLOWER_KEY_MPLS_OPT_LSE_MAX,
-+};
++static inline void nlattr_end_nested(struct nlmsghdr *nh, struct nlattr *tail)
++{
++	tail->nla_len = (char *)nh_tail(nh) - (char *)tail;
++}
 +
-+#define TCA_FLOWER_KEY_MPLS_OPT_LSE_MAX \
-+		(__TCA_FLOWER_KEY_MPLS_OPT_LSE_MAX - 1)
-+
- enum {
- 	TCA_FLOWER_KEY_FLAGS_IS_FRAGMENT = (1 << 0),
- 	TCA_FLOWER_KEY_FLAGS_FRAG_IS_FIRST = (1 << 1),
- };
- 
-+#define TCA_FLOWER_MASK_FLAGS_RANGE	(1 << 0) /* Range-based match */
-+
- /* Match-all classifier */
- 
-+struct tc_matchall_pcnt {
-+	__u64 rhit;
-+};
-+
- enum {
- 	TCA_MATCHALL_UNSPEC,
- 	TCA_MATCHALL_CLASSID,
- 	TCA_MATCHALL_ACT,
- 	TCA_MATCHALL_FLAGS,
-+	TCA_MATCHALL_PCNT,
-+	TCA_MATCHALL_PAD,
- 	__TCA_MATCHALL_MAX,
- };
- 
-diff --git a/tools/lib/bpf/Makefile b/tools/lib/bpf/Makefile
-index e43e1896cb4b..745624d91a01 100644
---- a/tools/lib/bpf/Makefile
-+++ b/tools/lib/bpf/Makefile
-@@ -152,6 +152,9 @@ $(BPF_IN_SHARED): force $(BPF_HELPER_DEFS)
- 	@(test -f ../../include/uapi/linux/if_xdp.h -a -f ../../../include/uapi/linux/if_xdp.h && ( \
- 	(diff -B ../../include/uapi/linux/if_xdp.h ../../../include/uapi/linux/if_xdp.h >/dev/null) || \
- 	echo "Warning: Kernel ABI header at 'tools/include/uapi/linux/if_xdp.h' differs from latest version at 'include/uapi/linux/if_xdp.h'" >&2 )) || true
-+	@(test -f ../../include/uapi/linux/pkt_cls.h -a -f ../../../include/uapi/linux/pkt_cls.h && ( \
-+	(diff -B ../../include/uapi/linux/pkt_cls.h ../../../include/uapi/linux/pkt_cls.h >/dev/null) || \
-+	echo "Warning: Kernel ABI header at 'tools/include/uapi/linux/pkt_cls.h' differs from latest version at 'include/uapi/linux/pkt_cls.h'" >&2 )) || true
- 	$(Q)$(MAKE) $(build)=libbpf OUTPUT=$(SHARED_OBJDIR) CFLAGS="$(CFLAGS) $(SHLIB_FLAGS)"
- 
- $(BPF_IN_STATIC): force $(BPF_HELPER_DEFS)
+ #endif /* __LIBBPF_NLATTR_H */
 -- 
 2.30.2
 
