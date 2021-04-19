@@ -2,29 +2,48 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 72D5E363ACF
-	for <lists+netdev@lfdr.de>; Mon, 19 Apr 2021 07:02:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CDE3F363ADE
+	for <lists+netdev@lfdr.de>; Mon, 19 Apr 2021 07:03:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233046AbhDSFCv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 19 Apr 2021 01:02:51 -0400
-Received: from mail.kernel.org ([198.145.29.99]:50526 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229473AbhDSFCs (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 19 Apr 2021 01:02:48 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 65BC961078;
-        Mon, 19 Apr 2021 05:02:18 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1618808539;
-        bh=srAR5o/oGq5ioibP/eXNEOXMJgehSJWXVDMJHT8j86M=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=Q2aSyWKadyluHjWWN1SwyxF3iNnBxBRV4eFwfMyHPgeuOCbx3zVu4VA/PQblKt1mX
-         LG/8Qa12wOxexoPdM1AtRUqEwffA6hhUzg5XvoNYf5i8CVaEzIb5aHKsxdmdIZ0VNh
-         EB/GtCUOovxwGQ5QiY5CwzbiGBepA6YRCHaOc9bFp2O+m0lnHel/QMKuqas1XJG+Ml
-         vece3azY0OPvilnrF9TxEM4Y2QEUh42RCB/qgDYU4n+IIRFMdKunRACTXFpDc2oJTx
-         Tw4u0mxUHQNeAMruPlzpJF4CCm1VJVvyur9NU2SbLDowYlZY9RFqgpKroyAxadDiZV
-         1t4tD3zjj0ZKQ==
-Date:   Mon, 19 Apr 2021 08:02:15 +0300
-From:   Leon Romanovsky <leon@kernel.org>
+        id S233206AbhDSFDp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 19 Apr 2021 01:03:45 -0400
+Received: from gw.atmark-techno.com ([13.115.124.170]:56596 "EHLO
+        gw.atmark-techno.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233221AbhDSFDo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 19 Apr 2021 01:03:44 -0400
+Received: from mail-vs1-f69.google.com (mail-vs1-f69.google.com [209.85.217.69])
+        by gw.atmark-techno.com (Postfix) with ESMTPS id 1C0758048C
+        for <netdev@vger.kernel.org>; Mon, 19 Apr 2021 14:03:12 +0900 (JST)
+Received: by mail-vs1-f69.google.com with SMTP id 3-20020a6717030000b029016d08542c7dso3493590vsx.14
+        for <netdev@vger.kernel.org>; Sun, 18 Apr 2021 22:03:12 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=bLr973ENjFZQNNz5/z+BmoCFuTDVovYaAYguOO0YOc4=;
+        b=OJUZlLLsN1pQ1YR2kErrPWcjqFqxtis1apCyKnFpgtN+zA+9SjI59tMqQCUrMVY9gf
+         ZPCFgmwxUtYiuLTCCfoHw16KQM0Y8uzbhbttBppMUZHiWZ52vgvtkmQEnHarVTjBVX5j
+         64RtLeuka+uw5qiBOE5rJPHD78JMOAm3J1LXXCuTgE6X3kDJzea0paB7YH1it16aKCi9
+         USzLTrCDK0U0PoNjmBMwE8V7iUo0d21fMpe2BQcfSnshA3W5HphqaRRKtmOSzMQ4FoVI
+         N14vsrf4LrG4LJL63xhBRr9BEMmJ2Q8SX9u9bM5jf26lTtnufDrCgOMMkclIiPiTcAw8
+         544A==
+X-Gm-Message-State: AOAM530xIb5hDU+fkiIOt5QHTWu0LELN3wlp/nxhjCOcluMdM43ma2Tb
+        Lw5lhKOY5AmflLj79eK9RzuExSJ0QAQ4Vq30eVPFc4O6egibDVj6vrYiw06ofdf0rAlvxHaHrY0
+        uQxI13zi5+gHYa2exVAqa
+X-Received: by 2002:a17:902:d645:b029:e8:ec90:d097 with SMTP id y5-20020a170902d645b02900e8ec90d097mr21074807plh.47.1618808579511;
+        Sun, 18 Apr 2021 22:02:59 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJyI1MeNQhpXnytM5xmVsw3ZCkrTxMPyrxhKroAVtmGUaPe01xpWL31HOX4hl1pxmvtORo+KDQ==
+X-Received: by 2002:a17:902:d645:b029:e8:ec90:d097 with SMTP id y5-20020a170902d645b02900e8ec90d097mr21074765plh.47.1618808579243;
+        Sun, 18 Apr 2021 22:02:59 -0700 (PDT)
+Received: from pc-0115 (103.131.189.35.bc.googleusercontent.com. [35.189.131.103])
+        by smtp.gmail.com with ESMTPSA id ga21sm2553351pjb.5.2021.04.18.22.02.58
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Sun, 18 Apr 2021 22:02:58 -0700 (PDT)
+Received: from martinet by pc-0115 with local (Exim 4.94)
+        (envelope-from <martinet@pc-0115>)
+        id 1lYM3l-0016Ra-6N; Mon, 19 Apr 2021 14:02:57 +0900
+Date:   Mon, 19 Apr 2021 14:02:47 +0900
+From:   Dominique MARTINET <dominique.martinet@atmark-techno.com>
 To:     "Alice Guo (OSS)" <alice.guo@oss.nxp.com>
 Cc:     gregkh@linuxfoundation.org, rafael@kernel.org,
         horia.geanta@nxp.com, aymen.sghaier@nxp.com,
@@ -54,74 +73,38 @@ Cc:     gregkh@linuxfoundation.org, rafael@kernel.org,
         linux-usb@vger.kernel.org, linux-watchdog@vger.kernel.org
 Subject: Re: [RFC v1 PATCH 3/3] driver: update all the code that use
  soc_device_match
-Message-ID: <YH0O1104YEdjY9mb@unreal>
+Message-ID: <YH0O907dfGY9jQRZ@atmark-techno.com>
 References: <20210419042722.27554-1-alice.guo@oss.nxp.com>
  <20210419042722.27554-4-alice.guo@oss.nxp.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
 In-Reply-To: <20210419042722.27554-4-alice.guo@oss.nxp.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Apr 19, 2021 at 12:27:22PM +0800, Alice Guo (OSS) wrote:
+Alice Guo (OSS) wrote on Mon, Apr 19, 2021 at 12:27:22PM +0800:
 > From: Alice Guo <alice.guo@nxp.com>
 > 
-> Update all the code that use soc_device_match because add support for
-> soc_device_match returning -EPROBE_DEFER.
-> 
+> Update all the code that use soc_device_match
+
+A single patch might be difficult to accept for all components, a each
+maintainer will probably want to have a say on their subsystem?
+
+I would suggest to split these for a non-RFC version; a this will really
+need to be case-by-case handling.
+
+> because add support for soc_device_match returning -EPROBE_DEFER.
+
+(English does not parse here for me)
+
+I've only commented a couple of places in the code itself, but this
+doesn't seem to add much support for errors, just sweep the problem
+under the rug.
+
 > Signed-off-by: Alice Guo <alice.guo@nxp.com>
 > ---
->  drivers/bus/ti-sysc.c                         |  2 +-
->  drivers/clk/renesas/r8a7795-cpg-mssr.c        |  4 +++-
->  drivers/clk/renesas/rcar-gen2-cpg.c           |  2 +-
->  drivers/clk/renesas/rcar-gen3-cpg.c           |  2 +-
->  drivers/dma/fsl-dpaa2-qdma/dpaa2-qdma.c       |  7 ++++++-
->  drivers/dma/ti/k3-psil.c                      |  3 +++
->  drivers/dma/ti/k3-udma.c                      |  2 +-
->  drivers/gpu/drm/bridge/nwl-dsi.c              |  2 +-
->  drivers/gpu/drm/meson/meson_drv.c             |  4 +++-
->  drivers/gpu/drm/omapdrm/dss/dispc.c           |  2 +-
->  drivers/gpu/drm/omapdrm/dss/dpi.c             |  4 +++-
->  drivers/gpu/drm/omapdrm/dss/dsi.c             |  3 +++
->  drivers/gpu/drm/omapdrm/dss/dss.c             |  3 +++
->  drivers/gpu/drm/omapdrm/dss/hdmi4_core.c      |  3 +++
->  drivers/gpu/drm/omapdrm/dss/venc.c            |  4 +++-
->  drivers/gpu/drm/omapdrm/omap_drv.c            |  3 +++
->  drivers/gpu/drm/rcar-du/rcar_du_crtc.c        |  4 +++-
->  drivers/gpu/drm/rcar-du/rcar_lvds.c           |  2 +-
->  drivers/gpu/drm/tidss/tidss_dispc.c           |  4 +++-
->  drivers/iommu/ipmmu-vmsa.c                    |  7 +++++--
->  drivers/media/platform/rcar-vin/rcar-core.c   |  2 +-
->  drivers/media/platform/rcar-vin/rcar-csi2.c   |  2 +-
->  drivers/media/platform/vsp1/vsp1_uif.c        |  4 +++-
->  drivers/mmc/host/renesas_sdhi_core.c          |  2 +-
->  drivers/mmc/host/renesas_sdhi_internal_dmac.c |  2 +-
->  drivers/mmc/host/sdhci-of-esdhc.c             | 21 ++++++++++++++-----
->  drivers/mmc/host/sdhci-omap.c                 |  2 +-
->  drivers/mmc/host/sdhci_am654.c                |  2 +-
->  drivers/net/ethernet/renesas/ravb_main.c      |  4 +++-
->  drivers/net/ethernet/ti/am65-cpsw-nuss.c      |  2 +-
->  drivers/net/ethernet/ti/cpsw.c                |  2 +-
->  drivers/net/ethernet/ti/cpsw_new.c            |  2 +-
->  drivers/phy/ti/phy-omap-usb2.c                |  4 +++-
->  drivers/pinctrl/renesas/core.c                |  2 +-
->  drivers/pinctrl/renesas/pfc-r8a7790.c         |  5 ++++-
->  drivers/pinctrl/renesas/pfc-r8a7794.c         |  5 ++++-
->  drivers/soc/fsl/dpio/dpio-driver.c            | 13 ++++++++----
->  drivers/soc/renesas/r8a774c0-sysc.c           |  5 ++++-
->  drivers/soc/renesas/r8a7795-sysc.c            |  2 +-
->  drivers/soc/renesas/r8a77990-sysc.c           |  5 ++++-
->  drivers/soc/ti/k3-ringacc.c                   |  2 +-
->  drivers/staging/mt7621-pci/pci-mt7621.c       |  2 +-
->  drivers/thermal/rcar_gen3_thermal.c           |  4 +++-
->  drivers/thermal/ti-soc-thermal/ti-bandgap.c   | 10 +++++++--
->  drivers/usb/gadget/udc/renesas_usb3.c         |  2 +-
->  drivers/usb/host/ehci-platform.c              |  4 +++-
->  drivers/usb/host/xhci-rcar.c                  |  2 +-
->  drivers/watchdog/renesas_wdt.c                |  2 +-
->  48 files changed, 131 insertions(+), 52 deletions(-)
 > 
 > diff --git a/drivers/bus/ti-sysc.c b/drivers/bus/ti-sysc.c
 > index 5fae60f8c135..00c59aa217c1 100644
@@ -134,6 +117,10 @@ On Mon, Apr 19, 2021 at 12:27:22PM +0800, Alice Guo (OSS) wrote:
 > -	if (!match)
 > +	if (!match || IS_ERR(match))
 >  		return 0;
+
+This function handles errors, I would recommend returning the error as
+is if soc_device_match returned one so the probe can be retried later.
+
 >  
 >  	if (match->data)
 > diff --git a/drivers/clk/renesas/r8a7795-cpg-mssr.c b/drivers/clk/renesas/r8a7795-cpg-mssr.c
@@ -156,6 +143,49 @@ On Mon, Apr 19, 2021 at 12:27:22PM +0800, Alice Guo (OSS) wrote:
 > +	match = soc_device_match(r8a7795es1);
 > +	if (!IS_ERR(match) && match) {
 
-"if (!IS_ERR_OR_NULL(match))" in all places.
+Same, return the error.
+Assuming an error means no match will just lead to hard to debug
+problems because the driver potentially assumed the wrong device when
+it's just not ready yet.
 
-Thanks
+>  		cpg_core_nullify_range(r8a7795_core_clks,
+>  				       ARRAY_SIZE(r8a7795_core_clks),
+>  				       R8A7795_CLK_S0D2, R8A7795_CLK_S0D12);
+> [...]
+> diff --git a/drivers/iommu/ipmmu-vmsa.c b/drivers/iommu/ipmmu-vmsa.c
+> index eaaec0a55cc6..13a06b613379 100644
+> --- a/drivers/iommu/ipmmu-vmsa.c
+> +++ b/drivers/iommu/ipmmu-vmsa.c
+> @@ -757,17 +757,20 @@ static const char * const devices_allowlist[] = {
+>  
+>  static bool ipmmu_device_is_allowed(struct device *dev)
+>  {
+> +	const struct soc_device_attribute *match1, *match2;
+>  	unsigned int i;
+>  
+>  	/*
+>  	 * R-Car Gen3 and RZ/G2 use the allow list to opt-in devices.
+>  	 * For Other SoCs, this returns true anyway.
+>  	 */
+> -	if (!soc_device_match(soc_needs_opt_in))
+> +	match1 = soc_device_match(soc_needs_opt_in);
+> +	if (!IS_ERR(match1) && !match1)
+
+I'm not sure what you intended to do, but !match1 already means there is
+no error so the original code is identical.
+
+In this case ipmmu_device_is_allowed does not allow errors so this is
+one of the "difficult" drivers that require slightly more thinking.
+It is only called in ipmmu_of_xlate which does return errors properly,
+so in this case the most straightforward approach would be to make
+ipmmu_device_is_allowed return an int and forward errors as well.
+
+
+
+...
+This is going to need quite some more work to be acceptable, in my
+opinion, but I think it should be possible.
+
+Thanks,
+-- 
+Dominique
