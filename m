@@ -2,108 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8C62D363EB5
-	for <lists+netdev@lfdr.de>; Mon, 19 Apr 2021 11:39:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4352C363ECA
+	for <lists+netdev@lfdr.de>; Mon, 19 Apr 2021 11:40:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238686AbhDSJjQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 19 Apr 2021 05:39:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37878 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229635AbhDSJjI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 19 Apr 2021 05:39:08 -0400
-Received: from mail-lf1-x12c.google.com (mail-lf1-x12c.google.com [IPv6:2a00:1450:4864:20::12c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 00A0AC06174A;
-        Mon, 19 Apr 2021 02:38:37 -0700 (PDT)
-Received: by mail-lf1-x12c.google.com with SMTP id z13so37875116lfd.9;
-        Mon, 19 Apr 2021 02:38:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:organization:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=qeqfISbVM2w7Pu7fUrVjLsN6tyhOhIQnaxOgyYh0Dxc=;
-        b=dP/uPUa/GvE53vERq7s0HWSJILahAfZgv7PzzcRU+ZXNB5zH8K9FDS/huhv7UJh2zv
-         E8TlO5tj2mkyfkggBLM2lygtO8y12DjjvOouY1IfJw+aeL/o6JqgSw/OD8SedN5UTZkQ
-         Ld6Zu8IEWO+iI2TBW+R2ywbxz9gwjW6gqfq/IxZMf1u8Pl50yLy49BIu20l4BSDrGetO
-         uHIuXQgEmFnPBD2GS4FoiHiqhEMFMeMygiRPgBpFKXlr3BdySTT18dkhFRjHHFVrbWXP
-         5W/Mm1VaipOzOChHuhDIvCKZWQAtvHbn9QaWBA5W5kiULcnkZRFmk+w3LPwVeEpVIL8X
-         oMrA==
+        id S238716AbhDSJjw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 19 Apr 2021 05:39:52 -0400
+Received: from mail-ua1-f48.google.com ([209.85.222.48]:42697 "EHLO
+        mail-ua1-f48.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S238616AbhDSJjv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 19 Apr 2021 05:39:51 -0400
+Received: by mail-ua1-f48.google.com with SMTP id 23so1395081uac.9;
+        Mon, 19 Apr 2021 02:39:15 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:organization
-         :message-id:date:user-agent:mime-version:in-reply-to
-         :content-language:content-transfer-encoding;
-        bh=qeqfISbVM2w7Pu7fUrVjLsN6tyhOhIQnaxOgyYh0Dxc=;
-        b=DxHex1MRPE2aAV2fo8a1HbPKQIuFHkr3Q1xHL3XIF/qd3T7HnRojzIlYbDXIUBpVqC
-         DPY3HwLgEBC274gKJ1+GEAYhYDA3ZlSobygXFYX0HiOFz/wQSaIJuOxLBU8ePHX3uJqH
-         9dp0l6zu4ZO2NTmkqCGbQAa3sX3jDH7deuHAmaoYLwPsfrH4vdd8HaYTFCxE97eN/N20
-         Id2/Ng3QutBgCVX53r/SUiVXwE1N/QlHwMSnPn8rkxJ65L0tk5grwVv/cCKkT1tvkBht
-         LSL+2cpXN9WyeOgy7DWUmqhbhuijp6uCoavLeifSuUmRqzrOZHsWtTK85MEFvgkDqJVo
-         SB1w==
-X-Gm-Message-State: AOAM5331A1lMxzh8RIsngP9OGUsjbKZdeU1bXInCjT68Bc7odMk7SnG7
-        kHlBaoMgwo51cQRZsf1cUgvf9ET4CqYtJg==
-X-Google-Smtp-Source: ABdhPJxVkWCmKvfU8TczGps6ZFnUYIUNU9kVduyFVnFuC0e4G12HzQ+w7UyAG9JCeMW5zVOjyFqmcA==
-X-Received: by 2002:a19:850b:: with SMTP id h11mr12321534lfd.342.1618825116410;
-        Mon, 19 Apr 2021 02:38:36 -0700 (PDT)
-Received: from [192.168.1.100] ([178.176.74.223])
-        by smtp.gmail.com with ESMTPSA id y8sm1827017ljk.9.2021.04.19.02.38.35
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 19 Apr 2021 02:38:36 -0700 (PDT)
-Subject: Re: [PATCH] net: ethernet: ravb: Fix release of refclk
-To:     Adam Ford <aford173@gmail.com>, netdev@vger.kernel.org
-Cc:     aford@beaconembedded.com, geert@linux-m68k.org,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
-        linux-renesas-soc@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20210417132329.6886-1-aford173@gmail.com>
-From:   Sergei Shtylyov <sergei.shtylyov@gmail.com>
-Organization: Brain-dead Software
-Message-ID: <ae2f6201-3646-4896-0246-8ae849df3a4f@gmail.com>
-Date:   Mon, 19 Apr 2021 12:38:33 +0300
-User-Agent: Mozilla/5.0 (Windows NT 6.3; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.9.1
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=JFnEYs0WaAV75WlD8zGflv32bIq/erGNiBIRw5DkFRw=;
+        b=I3ku2Fq+gWMhM8fgMSGyADTm+oOy4pCwjCLriLuJUNqlSRtsUih3jhwZL3lmjVKPPQ
+         IexUJt70xzrA7uNBxXfBKem4Oy3srFgbfdMth0xOEaUX0v3z4hXMxzXRLAFcXPXbNRYx
+         ggQ7p1aOAqFyDyk44/VS2EOWX1ABFc1A0E7PE2AvdvajBWrxJ7zry5/S+uNBqVagsNqc
+         +tJM48knnHQTW4pXRCEbQxZhq1B7sP1QXgnMppBRab/x2dbCqWb5uK9i37ehz+hR6n53
+         VstYc/e8NrN98vrdEdM0Tz2mxZ1MW/yxo86SPHYBT/TS5LjNLDp+G+Y2mmuNYOWQNd9G
+         sT4w==
+X-Gm-Message-State: AOAM533BVq04t4uGztGa48G0WXb3fWABJPvCfDEwIZNGrQw3B6FruVdO
+        mHrLva+5jgkg5EgpjnQBd68suz93wGkvXxwXTxg=
+X-Google-Smtp-Source: ABdhPJzI1nTVBxfpGOUmS3JtlCDIsY+hnRpCSOl2ldMILXr0qaqtQKXvm6kr3ejivGQNCy0qQnj6tDTua7gAjIQxFjw=
+X-Received: by 2002:ab0:6306:: with SMTP id a6mr6143891uap.2.1618825154819;
+ Mon, 19 Apr 2021 02:39:14 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <20210417132329.6886-1-aford173@gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+References: <20210224115146.9131-1-aford173@gmail.com> <20210224115146.9131-5-aford173@gmail.com>
+ <CAMuHMdW3SO7LemssHrGKkV0TUVNuT4oq1EfmJ-Js79=QBvNhqQ@mail.gmail.com> <CAHCN7xJrmQgC=skC7UJuzshUnf06D4nHrv1grrW8QV-+07dgKA@mail.gmail.com>
+In-Reply-To: <CAHCN7xJrmQgC=skC7UJuzshUnf06D4nHrv1grrW8QV-+07dgKA@mail.gmail.com>
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+Date:   Mon, 19 Apr 2021 11:39:03 +0200
+Message-ID: <CAMuHMdUb+M-BLf1OZ31S57PaUM8wnOeaoy_hkgxyjpHtAwkL0Q@mail.gmail.com>
+Subject: Re: [PATCH V3 5/5] arm64: dts: renesas: beacon kits: Setup AVB refclk
+To:     Adam Ford <aford173@gmail.com>
+Cc:     netdev <netdev@vger.kernel.org>,
+        Adam Ford-BE <aford@beaconembedded.com>,
+        Sergei Shtylyov <sergei.shtylyov@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Magnus Damm <magnus.damm@gmail.com>,
+        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello!
+Hi Adam,
 
-On 17.04.2021 16:23, Adam Ford wrote:
+On Sat, Apr 17, 2021 at 3:54 PM Adam Ford <aford173@gmail.com> wrote:
+> On Thu, Mar 4, 2021 at 2:04 AM Geert Uytterhoeven <geert@linux-m68k.org> wrote:
+> > On Wed, Feb 24, 2021 at 12:52 PM Adam Ford <aford173@gmail.com> wrote:
+> > > The AVB refererence clock assumes an external clock that runs
+> >
+> > reference
+> >
+> > > automatically.  Because the Versaclock is wired to provide the
+> > > AVB refclock, the device tree needs to reference it in order for the
+> > > driver to start the clock.
+> > >
+> > > Signed-off-by: Adam Ford <aford173@gmail.com>
+> >
+> > Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
+> > i.e. will queue in renesas-devel (with the typo fixed) once the DT
+> > bindings have been accepted.
+>
+> Geert,
+>
+> Since the refclk update and corresponding dt-bindings are in net-next,
+> are you OK applying the rest of the DT changes so they can get into
+> 5.13?
 
-> The call to clk_disable_unprepare() can happen before priv is
-> initialized.
+Queueing in renesas-devel for v5.14, as the soc deadline for v5.13
+has already passed two weeks ago.
 
-    Mhm, how's that? :-/
+Gr{oetje,eeting}s,
 
-> This means moving clk_disable_unprepare out of
-> out_release into a new label.
-> 
-> Fixes: 8ef7adc6beb2("net: ethernet: ravb: Enable optional refclk")
-> Signed-off-by: Adam Ford <aford173@gmail.com>
-> 
-> diff --git a/drivers/net/ethernet/renesas/ravb_main.c b/drivers/net/ethernet/renesas/ravb_main.c
-> index 8c84c40ab9a0..64a545c98ff2 100644
-> --- a/drivers/net/ethernet/renesas/ravb_main.c
-> +++ b/drivers/net/ethernet/renesas/ravb_main.c
-[...]
-> @@ -2252,8 +2252,9 @@ static int ravb_probe(struct platform_device *pdev)
->   	/* Stop PTP Clock driver */
->   	if (chip_id != RCAR_GEN2)
->   		ravb_ptp_stop(ndev);
-> -out_release:
-> +out_unprepare_refclk:
+                        Geert
 
-    I'd really prefer out_disable_refclk.
+-- 
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
 
->   	clk_disable_unprepare(priv->refclk);
-> +out_release:
->   	free_netdev(ndev);
->   
->   	pm_runtime_put(&pdev->dev);
-
-MBR, Sergei
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
