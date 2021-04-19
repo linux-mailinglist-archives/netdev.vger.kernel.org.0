@@ -2,150 +2,168 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B3948364126
-	for <lists+netdev@lfdr.de>; Mon, 19 Apr 2021 13:59:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E0FC9364129
+	for <lists+netdev@lfdr.de>; Mon, 19 Apr 2021 14:00:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238914AbhDSL7Y (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 19 Apr 2021 07:59:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40756 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232272AbhDSL7X (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 19 Apr 2021 07:59:23 -0400
-Received: from mail-qv1-xf36.google.com (mail-qv1-xf36.google.com [IPv6:2607:f8b0:4864:20::f36])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C1A7C06174A;
-        Mon, 19 Apr 2021 04:58:53 -0700 (PDT)
-Received: by mail-qv1-xf36.google.com with SMTP id x27so16716357qvd.2;
-        Mon, 19 Apr 2021 04:58:53 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:subject:to:cc:references:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=15zVT2UKm+VlfsojhkxZJMUdshbQNnSfP0LTzZVVl1Y=;
-        b=lAdoGVL5wDt9qKeKlTBXNXjJ32FilGVCE2lZmtvHPorG7CBWImNKQkAI+3PJHqVu+B
-         2XPff882PO3P4aF+MiU/m1Vj45905Z4D8NssoOl5CNyQjBlkJE4wK8UpYtGSH24JZWyY
-         aURG2VrVaBhbiKKSMCwWlJlIDfJir1X9qCwqizldg095+ZuCxMmwF/AUowfFWpUxxRI9
-         JcuzEwO+WeCLfa7Q6n8oXqzixhr1iX4MvgWN4HUyf+ovuvfBf9XAnXalQ+SoHo96eYtw
-         XCKmJJZ6IsEnhMTFW6so/iVNVPi6loysWnEbIKgY9WxYc27kkw4vNDQ58iw3ldXYxzkK
-         TLbA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:subject:to:cc:references:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=15zVT2UKm+VlfsojhkxZJMUdshbQNnSfP0LTzZVVl1Y=;
-        b=mWNhrDi2hxfUdlBgTwyz7J1VK5IyTI3qQE8S89J4OCclGXn1diiaVb994ZaYF8fknb
-         d0JrDXUghMAkrBQrJjzPLkAi7Q0irwYi3h07takOEqVnoxEFNd7TyNNGD+yIdzni8/g1
-         +Fw+EMxPO2t3N6lnpdMV3bJulku6sEE7L3ha4rLWNIDCaVqjAANrdTbeF14Zwjv6rMTM
-         04HeKmsz/e4L+12rVd8oFM60/GW1gdKp6WYuSFG3F/07eP65eC2hJ6t7fMl51uApdfa2
-         O4CdUuduPBTJye1bs73jh6XxLHwMJk1bgzsk8AeNMaifbSb+iaw+Ew4KHJfpkElv8w5t
-         wPyQ==
-X-Gm-Message-State: AOAM530b6fnJ+5gi+cQzzkVNm0eIDOtCmpRCh6S5YnasmnHoVfoMi9r9
-        1IWL2qdVUC/j4DmBgXIqpCdpsJE6xH8=
-X-Google-Smtp-Source: ABdhPJx0gZ9G6CRVmsp8P1cCtFJ+4RBhx9SY6MwGt2+oL7pMtgC3th0Pl9QpnEXlETUPXij9TJF42A==
-X-Received: by 2002:a05:6214:1484:: with SMTP id bn4mr20789676qvb.33.1618833532775;
-        Mon, 19 Apr 2021 04:58:52 -0700 (PDT)
-Received: from ?IPv6:2620:10d:c0a8:1102::1844? ([2620:10d:c091:480::1:1b53])
-        by smtp.gmail.com with ESMTPSA id q26sm3440298qtr.7.2021.04.19.04.58.51
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 19 Apr 2021 04:58:52 -0700 (PDT)
-From:   Jes Sorensen <jes.sorensen@gmail.com>
-X-Google-Original-From: Jes Sorensen <Jes.Sorensen@gmail.com>
-Subject: Re: [PATCH RESEND][next] rtl8xxxu: Fix fall-through warnings for
- Clang
-To:     "Gustavo A. R. Silva" <gustavo@embeddedor.com>,
-        Kees Cook <keescook@chromium.org>
-Cc:     Kalle Valo <kvalo@codeaurora.org>,
-        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-hardening@vger.kernel.org
-References: <20210305094850.GA141221@embeddedor>
- <871rct67n2.fsf@codeaurora.org> <202103101107.BE8B6AF2@keescook>
- <2e425bd8-2722-b8a8-3745-4a3f77771906@gmail.com>
- <202103101141.92165AE@keescook>
- <90baba5d-53a1-c7b1-495d-5902e9b04a72@gmail.com>
- <202103101254.1DBEE1082@keescook>
- <4eb49b08-09bb-d1d2-d2bc-efcd5f7406fe@gmail.com>
- <dc53ec8c-76e1-e487-26ae-6b34afde9ca2@embeddedor.com>
-Message-ID: <03028798-d42c-d864-8c88-94bb43da42e5@gmail.com>
-Date:   Mon, 19 Apr 2021 07:58:50 -0400
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.7.0
+        id S238990AbhDSMAH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 19 Apr 2021 08:00:07 -0400
+Received: from mail-eopbgr00076.outbound.protection.outlook.com ([40.107.0.76]:41088
+        "EHLO EUR02-AM5-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S238912AbhDSMAF (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 19 Apr 2021 08:00:05 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=JluSMxycKK5nuWOnBVZBY4Je8MHGjcGgRev7cUHyNa3QApoG2Vf04RrhHkexR53bbbPYKVn/N46tr9qI7W8aBMBJSmy6Ug5NzrA1fuK1QIQ9800x4G/s76nsAQrVuuIVWMsIuNP2Z2MBK8OdDpfAzzYqudMsyVM9YVlQgTNQfq7OdmJrr6nMbNFoxcxY20nFUNip1ZR/C5HPDXrvw/A3x0FM7JG5SsV4lB8B2RXM4osQ6Plw3wZ4TUlvAMF3V5rYIvr0aSi4fGbT4hiNDzMRROJ3K8fCJ/k/d29U6BAjr29dPzkZ5D/E28WPc0KxEzXlxNMnJqp/D1cb03tDJHlIYg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=+9I3qxrq+FZAs7YXVItzsJnGV99W9h1VLUvWsvaqQnk=;
+ b=e1QUQmsqScG5yMj9wbNuvrw5UrU+5UTO82akIf6xVlvlxCeYSyrRFNUhADoM3kgNMFsaugxX1sqWjaN8b9MYBdjdGGPkv4HYVLmOr+s+qK4OLZxr4v2Eon9gnW5MAOWprT+MfWHUHu6qSWjn3ffZvXJnf0WH9UDLz34FlNWOeFPzDLZ/9p+2t0GuGceWxTD+Of8Cga4LiS3NvRVZCYoXHhhSX5p4PB/P6boNWEn8EEJJIIvfBBZs/Ty+CspWbQeF1RkUbRKTe1vHiQOEVRG7vhDvLMU0uOa/nFifsB1BB5sxcb6wodWyFU4LW96Mw79cspcv6mbjNpdO/bDcBtJwcQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=+9I3qxrq+FZAs7YXVItzsJnGV99W9h1VLUvWsvaqQnk=;
+ b=SwqpUO2ig5vRcWGlefSZfmQiQR08D5LBcAzmVSWjNk2gsZE6ydgZBK60vOoZIbKNapsbuRSV8xKjEPWYImcCoe8rNRNQ8NP5bHOZLNaX+tL7UAiXQ/xwQZDvEyXs8VZ3t2k98VSxIOX32OamDGmfLFePAxK4d9JVdAmI0T/wAFI=
+Authentication-Results: st.com; dkim=none (message not signed)
+ header.d=none;st.com; dmarc=none action=none header.from=nxp.com;
+Received: from DB8PR04MB6795.eurprd04.prod.outlook.com (2603:10a6:10:fa::15)
+ by DB8PR04MB6795.eurprd04.prod.outlook.com (2603:10a6:10:fa::15) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4042.18; Mon, 19 Apr
+ 2021 11:59:33 +0000
+Received: from DB8PR04MB6795.eurprd04.prod.outlook.com
+ ([fe80::9598:ace0:4417:d1d5]) by DB8PR04MB6795.eurprd04.prod.outlook.com
+ ([fe80::9598:ace0:4417:d1d5%7]) with mapi id 15.20.4042.024; Mon, 19 Apr 2021
+ 11:59:33 +0000
+From:   Joakim Zhang <qiangqing.zhang@nxp.com>
+To:     peppe.cavallaro@st.com, alexandre.torgue@foss.st.com,
+        joabreu@synopsys.com, davem@davemloft.net, kuba@kernel.org,
+        mcoquelin.stm32@gmail.com, andrew@lunn.ch, f.fainelli@gmail.com
+Cc:     linux-imx@nxp.com, jonathanh@nvidia.com, treding@nvidia.com,
+        netdev@vger.kernel.org
+Subject: [RFC net-next] net: stmmac: should not modify RX descriptor when STMMAC resume
+Date:   Mon, 19 Apr 2021 19:59:21 +0800
+Message-Id: <20210419115921.19219-1-qiangqing.zhang@nxp.com>
+X-Mailer: git-send-email 2.17.1
+Content-Type: text/plain
+X-Originating-IP: [119.31.174.71]
+X-ClientProxiedBy: HK2PR02CA0173.apcprd02.prod.outlook.com
+ (2603:1096:201:1f::33) To DB8PR04MB6795.eurprd04.prod.outlook.com
+ (2603:10a6:10:fa::15)
 MIME-Version: 1.0
-In-Reply-To: <dc53ec8c-76e1-e487-26ae-6b34afde9ca2@embeddedor.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from localhost.localdomain (119.31.174.71) by HK2PR02CA0173.apcprd02.prod.outlook.com (2603:1096:201:1f::33) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4042.16 via Frontend Transport; Mon, 19 Apr 2021 11:59:29 +0000
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 3c53a8c6-0881-4709-1463-08d9032a9873
+X-MS-TrafficTypeDiagnostic: DB8PR04MB6795:
+X-MS-Exchange-Transport-Forked: True
+X-Microsoft-Antispam-PRVS: <DB8PR04MB67958C3759556E935B639FAFE6499@DB8PR04MB6795.eurprd04.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:5236;
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: /Kz85IKYxG5CXKJxq4b9iHm90smxgf+3RKBFEtrgPP1/s3Tr03m4a+EIjKQSkxlgJT2d1zMg6KjWlgz2uHGgOBC99EdfSMamcbUWfbeJHc4oI77Lwugra/cvveLKkw2THTkSESQXGYIfVyDA8qwfrjVohbz1gzK7ZEqhI3fJ9bfPo3Klw01PoYyJNd7gNxgKTiALkk8ArSVG4V2qodPM9qjn3AP3yYnFXp/TcvpEbe8Tsbk6hqI0nqAJtwp9TZKTitadVDfLrA4a7bSBHEayyuIl9lCasZACQuvJ8a64DHk3Bc9HVXbSRFYy6RHKCIIY10RXo7LO3rI+gSOp9JNYZv/4qslhFefT+RTlERG89wUgelos5nsYtPujeerV7KDM/uh32vMwjtkJNNf4QwdmDUuffYa9M77B7+V+qgmf2XBsK34//ThJAWCl7dKx0HvfcvaZTMOiREQZYtimum8ZtEbDIxVebBwUx+201lUryoEZcVNg/CwUMicGvi9Dr4zmGlkJ+oCq/ByjdsqLm4fZcQAHkvNRow9nISEqyNoIToJMIsAnbUqKk8Opk3bauc8UUCrDchC3cEeelRtan8lOo16PEMhvDXDfaOUV9H6SB6VkWMQ2aIIufaCELG2ZNthX3qT79Y0engAy8aTrEG7Bp+HBKFmzCRzxeIEA0IudMpJLAiNfQM3Q6W6/hBAQwF8F
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DB8PR04MB6795.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(39860400002)(396003)(366004)(136003)(346002)(376002)(38100700002)(1076003)(38350700002)(8676002)(956004)(36756003)(16526019)(83380400001)(7416002)(26005)(186003)(4326008)(316002)(478600001)(6512007)(2616005)(86362001)(6486002)(8936002)(6506007)(6666004)(66946007)(2906002)(66476007)(5660300002)(52116002)(66556008)(69590400013);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData: =?us-ascii?Q?2+kwc+XbJgBWhAEXoNr51SUQmBuUJTQuqSoJ7dzR3WWYE5oQlROP442U0gnO?=
+ =?us-ascii?Q?hDPvY+ZkpjAU3e1tP1lyU5H47uZFOHpLlHiuTKUWpPbhYZuBF8fclXtzZ2Zw?=
+ =?us-ascii?Q?iEBAPpO4qjaHzlX95dAf7NCaDYg9bZMlkIbOAc3v6AWpqhi21q586Wj0d238?=
+ =?us-ascii?Q?7EjrBSaSJnrgNlS8ZBIs4CW+0kWgreUsk6tAI7VyHUM+e9P4LAAqyxz/DKkO?=
+ =?us-ascii?Q?uFRfCribGmoJAc+pAjnwktBh+obxwTF/cATX21Cu22N0DdJiOJ6UPMqm/yn+?=
+ =?us-ascii?Q?SjNSbsirRbC47dIn6QJ0lRqNCh/aZsa3TdPpkQj8/LiBmD4CHuWGE7yyUTsg?=
+ =?us-ascii?Q?TIOiawj2k4ocQRFE+7yEagJ6L6rM2Qgj1b0VBOYiCZpHSBNia6mPZ/Se/5OQ?=
+ =?us-ascii?Q?urkDvKvb3VTBUl/+/xVl7XNzskz3jDXcHRBnrkKnqqAZQp+pHCoFXax+ZL6K?=
+ =?us-ascii?Q?ViWIKIvb2aypFJa5VIgLeBdkB3kG3ys9iqYuj2wo5drQwgWQFDmB1mSuwQZd?=
+ =?us-ascii?Q?Jg9ZZw6xSJO5GQsJCgQvc7pyGEuE2c7I9PYhMpE84dVZPe4DQ/OuOMyBsEzn?=
+ =?us-ascii?Q?BSNIx+daPNbDdjDkhimx38CHqnH0s+eLykFwRky4aFyM9xSdEW2y3UznPWqt?=
+ =?us-ascii?Q?7LYRft3jfWZBLPGR2zKvQ0tb9fkdtDrKlYi3pU2oAt4bURt/vrlYr8ck9t3a?=
+ =?us-ascii?Q?TVoJjVPxP+v++nD2zb17T7puud/EhTLDftpQH8GuinmCS6LC6LuqOsy7iKvV?=
+ =?us-ascii?Q?zkSZGOT/yHJil9TsElV+j/f33m/Fcoa0zkKWzHnhRLFTPj9fVQsZhKuLqmFw?=
+ =?us-ascii?Q?So4fEKIy5v0+HYYDnaHrLx7h2QWA1DMlLfH+jlLGYYusfl1gu9/bgq7YubF+?=
+ =?us-ascii?Q?nvRAOZLhEpCr081fWeV7rU1kEQRMGXz766zFJ754FZdiBkvN4Knh3ixOnYOC?=
+ =?us-ascii?Q?vnbTYK/5/Ixgmzwo4AsH9DsLa3jI+tuzU8MCObxhGLANeO/FLk0AMhQVUh/J?=
+ =?us-ascii?Q?F2Scs4+AH0DKxDT8mSO8/L3P80fcnYabSxmWx3NpUyuWlPQODklT4nc3DQGw?=
+ =?us-ascii?Q?ue5JR0qrDpYl5LgJm0cj5flKqAiFNyBwA3Qbf9Qm3vrIlqXyexZIYADPh9C8?=
+ =?us-ascii?Q?lNnGxBHuFfROES6AUHISjJYHXjHZ6r2LuXXj5qVHrOLfWtsqFdYGyCC5x0vF?=
+ =?us-ascii?Q?0SZD/lkqRAJ04R3mNMb/gzLrdqNbFqX50xWToHQwD2fh9JZD2WyKx/3c3Rbe?=
+ =?us-ascii?Q?yBkPh7Q+d+N+DQitwrQT/Srf/gL5GWsBBPlxQPeo6u4sdGw2klqjiluzJdCC?=
+ =?us-ascii?Q?62kr17mcqIwE7gAga7gjYMTk?=
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 3c53a8c6-0881-4709-1463-08d9032a9873
+X-MS-Exchange-CrossTenant-AuthSource: DB8PR04MB6795.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 19 Apr 2021 11:59:33.2317
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: ZoO0dNN5826FxWnDjL3euzB10nXaOrmkUtOIJkgWBMKSTx2D524UhKzGsEtR0TRwBHy2C/f7GC2q7/C0K0O3Jw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB8PR04MB6795
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 4/17/21 3:24 PM, Gustavo A. R. Silva wrote:
-> 
-> 
-> On 4/17/21 13:29, Jes Sorensen wrote:
->> On 3/10/21 3:59 PM, Kees Cook wrote:
->>> On Wed, Mar 10, 2021 at 02:51:24PM -0500, Jes Sorensen wrote:
->>>> On 3/10/21 2:45 PM, Kees Cook wrote:
->>>>> On Wed, Mar 10, 2021 at 02:31:57PM -0500, Jes Sorensen wrote:
->>>>>> On 3/10/21 2:14 PM, Kees Cook wrote:
->>>>>>> Hm, this conversation looks like a miscommunication, mainly? I see
->>>>>>> Gustavo, as requested by many others[1], replacing the fallthrough
->>>>>>> comments with the "fallthrough" statement. (This is more than just a
->>>>>>> "Clang doesn't parse comments" issue.)
->>>>>>>
->>>>>>> This could be a tree-wide patch and not bother you, but Greg KH has
->>>>>>> generally advised us to send these changes broken out. Anyway, this
->>>>>>> change still needs to land, so what would be the preferred path? I think
->>>>>>> Gustavo could just carry it for Linus to merge without bothering you if
->>>>>>> that'd be preferred?
->>>>>>
->>>>>> I'll respond with the same I did last time, fallthrough is not C and
->>>>>> it's ugly.
->>>>>
->>>>> I understand your point of view, but this is not the consensus[1] of
->>>>> the community. "fallthrough" is a macro, using the GCC fallthrough
->>>>> attribute, with the expectation that we can move to the C17/C18
->>>>> "[[fallthrough]]" statement once it is finalized by the C standards
->>>>> body.
->>>>
->>>> I don't know who decided on that, but I still disagree. It's an ugly and
->>>> pointless change that serves little purpose. We shouldn't have allowed
->>>> the ugly /* fall-through */ comments in either, but at least they didn't
->>>> mess with the code. I guess when you give someone an inch, they take a mile.
->>>>
->>>> Last time this came up, the discussion was that clang refused to fix
->>>> their brokenness and therefore this nonsense was being pushed into the
->>>> kernel. It's still a pointless argument, if clang can't fix it's crap,
->>>> then stop using it.
->>>>
->>>> As Kalle correctly pointed out, none of the previous comments to this
->>>> were addressed, the patches were just reposted as fact. Not exactly a
->>>> nice way to go about it either.
->>>
->>> Do you mean changing the commit log to re-justify these changes? I
->>> guess that could be done, but based on the thread, it didn't seem to
->>> be needed. The change is happening to match the coding style consensus
->>> reached to give the kernel the flexibility to move from a gcc extension
->>> to the final C standards committee results without having to do treewide
->>> commits again (i.e. via the macro).
->>
->> No, I am questioning why Gustavo continues to push this nonsense that
->> serves no purpose whatsoever. In addition he has consistently ignored
->> comments and just keep reposting it. But I guess that is how it works,
->> ignore feedback, repost junk, repeat.
-> 
-> I was asking for feedback here[1] and here[2] after people (you and Kalle)
-> commented on this patch. How is that ignoring people? And -again- why
-> people ignored my requests for feedback in this conversation? It's a mystery
-> to me, honestly.
+When system resume back, STMMAC will clear RX descriptors:
+stmmac_resume()
+	->stmmac_clear_descriptors()
+		->stmmac_clear_rx_descriptors()
+			->stmmac_init_rx_desc()
+				->dwmac4_set_rx_owner()
+				//p->des3 |= cpu_to_le32(RDES3_OWN | RDES3_BUFFER1_VALID_ADDR);
+It only assets OWN and BUF1V bits in desc3 field, doesn't clear desc0/1/2 fields.
 
-All you did was post a pointer to the fact that some other people
-couldn't be bothered speaking out against the patch, and let it go in.
-You haven't addressed any of the original concerns raised.
+Let's take a case into account, when system suspend, it is possible that
+there are packets have not received yet, so the RX descriptors are wrote
+back by DMA, e.g.
+008 [0x00000000c4310080]: 0x0 0x40 0x0 0x34010040
 
-The big mistake here was of course to allow the pointless /* fallthrough
-*/ changes to go in in the first place.
+When system resume back, after above process, it became a broken
+descriptor:
+008 [0x00000000c4310080]: 0x0 0x40 0x0 0xb5010040
 
-Jes
+The issue is that it only changes the owner of this descriptor, but do nothing
+about desc0/1/2 fields. The descriptor of STMMAC a bit special, applicaton
+prepares RX descriptors for DMA, after DMA recevie the packets, it will write
+back the descriptors, so the same field of a descriptor have different
+meanings to application and DMA. It should be a software bug there, and may
+not easy to reproduce, but there is a certain probability that it will
+occur.
+
+Commit 9c63faaa931e ("net: stmmac: re-init rx buffers when mac resume back") tried
+to re-init desc0/desc1 (buffer address fields) to fix this issue, but it
+is not a proper solution, and made regression on Jetson TX2 boards.
+
+It is unreasonable to modify RX descriptors outside of stmmac_rx_refill() function,
+where it will clear all desc0/desc1/desc2/desc3 fields together.
+
+This patch removes RX descriptors modification when STMMAC resume.
+
+Signed-off-by: Joakim Zhang <qiangqing.zhang@nxp.com>
+---
+ drivers/net/ethernet/stmicro/stmmac/stmmac_main.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
+index 9f396648d76f..b784304a22e8 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
++++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
+@@ -7186,6 +7186,8 @@ static void stmmac_reset_queues_param(struct stmmac_priv *priv)
+ 		tx_q->mss = 0;
+ 
+ 		netdev_tx_reset_queue(netdev_get_tx_queue(priv->dev, queue));
++
++		stmmac_clear_tx_descriptors(priv, queue);
+ 	}
+ }
+ 
+@@ -7250,7 +7252,6 @@ int stmmac_resume(struct device *dev)
+ 	stmmac_reset_queues_param(priv);
+ 
+ 	stmmac_free_tx_skbufs(priv);
+-	stmmac_clear_descriptors(priv);
+ 
+ 	stmmac_hw_setup(ndev, false);
+ 	stmmac_init_coalesce(priv);
+-- 
+2.17.1
+
