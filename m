@@ -2,55 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 21350363B82
-	for <lists+netdev@lfdr.de>; Mon, 19 Apr 2021 08:34:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 67EA9363B8F
+	for <lists+netdev@lfdr.de>; Mon, 19 Apr 2021 08:36:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237471AbhDSGfP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 19 Apr 2021 02:35:15 -0400
-Received: from verein.lst.de ([213.95.11.211]:45258 "EHLO verein.lst.de"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229840AbhDSGfO (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 19 Apr 2021 02:35:14 -0400
-Received: by verein.lst.de (Postfix, from userid 2407)
-        id A92C068B05; Mon, 19 Apr 2021 08:34:41 +0200 (CEST)
-Date:   Mon, 19 Apr 2021 08:34:41 +0200
-From:   Christoph Hellwig <hch@lst.de>
-To:     Matthew Wilcox <willy@infradead.org>
-Cc:     Jesper Dangaard Brouer <brouer@redhat.com>,
-        David Laight <David.Laight@aculab.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-mm@kvack.org" <linux-mm@kvack.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>,
-        "linux-mips@vger.kernel.org" <linux-mips@vger.kernel.org>,
-        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
-        Matteo Croce <mcroce@linux.microsoft.com>,
-        Grygorii Strashko <grygorii.strashko@ti.com>,
-        Arnd Bergmann <arnd@kernel.org>, Christoph Hellwig <hch@lst.de>
-Subject: Re: [PATCH 1/1] mm: Fix struct page layout on 32-bit systems
-Message-ID: <20210419063441.GA18787@lst.de>
-References: <20210411114307.5087f958@carbon> <20210411103318.GC2531743@casper.infradead.org> <20210412011532.GG2531743@casper.infradead.org> <20210414101044.19da09df@carbon> <20210414115052.GS2531743@casper.infradead.org> <20210414211322.3799afd4@carbon> <20210414213556.GY2531743@casper.infradead.org> <a50c3156fe8943ef964db4345344862f@AcuMS.aculab.com> <20210415200832.32796445@carbon> <20210416152755.GL2531743@casper.infradead.org>
+        id S237562AbhDSGgx convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Mon, 19 Apr 2021 02:36:53 -0400
+Received: from smtp01.smtpout.orange.fr ([80.12.242.123]:17046 "EHLO
+        smtp.smtpout.orange.fr" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231490AbhDSGgu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 19 Apr 2021 02:36:50 -0400
+Received: from wwinf2229 ([172.22.131.103])
+        by mwinf5d36 with ME
+        id uWcJ2400a2E01B803WcJ16; Mon, 19 Apr 2021 08:36:19 +0200
+X-ME-Helo: wwinf2229
+X-ME-Auth: Y2hyaXN0b3BoZS5qYWlsbGV0QHdhbmFkb28uZnI=
+X-ME-Date: Mon, 19 Apr 2021 08:36:19 +0200
+X-ME-IP: 86.243.172.93
+Date:   Mon, 19 Apr 2021 08:36:18 +0200 (CEST)
+From:   Marion et Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Reply-To: Marion et Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+To:     Bart Van Assche <bvanassche@acm.org>, tj@kernel.org,
+        jiangshanlai@gmail.com, saeedm@nvidia.com, leon@kernel.org,
+        davem@davemloft.net, kuba@kernel.org
+Cc:     netdev@vger.kernel.org, linux-rdma@vger.kernel.org,
+        linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org
+Message-ID: <1032428026.331.1618814178946.JavaMail.www@wwinf2229>
+In-Reply-To: <042f5fff-5faf-f3c5-0819-b8c8d766ede6@acm.org>
+References: <cover.1618780558.git.christophe.jaillet@wanadoo.fr>
+ <ae88f6c2c613d17bc1a56692cfa4f960dbc723d2.1618780558.git.christophe.jaillet@wanadoo.fr>
+ <042f5fff-5faf-f3c5-0819-b8c8d766ede6@acm.org>
+Subject: Re: [PATCH 1/2] workqueue: Have 'alloc_workqueue()' like macros
+ accept a format specifier
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210416152755.GL2531743@casper.infradead.org>
-User-Agent: Mutt/1.5.17 (2007-11-01)
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8BIT
+X-Originating-IP: [86.243.172.93]
+X-WUM-FROM: |~|
+X-WUM-TO: |~||~||~||~||~||~||~|
+X-WUM-CC: |~||~||~||~|
+X-WUM-REPLYTO: |~|
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Apr 16, 2021 at 04:27:55PM +0100, Matthew Wilcox wrote:
-> On Thu, Apr 15, 2021 at 08:08:32PM +0200, Jesper Dangaard Brouer wrote:
-> > See below patch.  Where I swap32 the dma address to satisfy
-> > page->compound having bit zero cleared. (It is the simplest fix I could
-> > come up with).
-> 
-> I think this is slightly simpler, and as a bonus code that assumes the
-> old layout won't compile.
+ 
 
-So, why do we even do this crappy overlay of a dma address?  This just
-all seems like a giant hack.  Random subsystems should not just steal
-a few struct page fields as that just turns into the desasters like the
-one we've seen here or probably something worse next time.
+> Message du 19/04/21 01:03
+> De : "Bart Van Assche" 
+> A : "Christophe JAILLET" , tj@kernel.org, jiangshanlai@gmail.com, saeedm@nvidia.com, leon@kernel.org, davem@davemloft.net, kuba@kernel.org, "Tejun Heo" 
+> Copie à : netdev@vger.kernel.org, linux-rdma@vger.kernel.org, linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org
+> Objet : Re: [PATCH 1/2] workqueue: Have 'alloc_workqueue()' like macros accept a format specifier
+> 
+> On 4/18/21 2:26 PM, Christophe JAILLET wrote:
+> > Improve 'create_workqueue', 'create_freezable_workqueue' and
+> > 'create_singlethread_workqueue' so that they accept a format
+> > specifier and a variable number of arguments.
+> > 
+> > This will put these macros more in line with 'alloc_ordered_workqueue' and
+> > the underlying 'alloc_workqueue()' function.
+> > 
+> > This will also allow further code simplification.
+> 
+> Please Cc Tejun for workqueue changes since he maintains the workqueue code.
+>
+ 
+Hi,
+
+The list in To: is the one given by get_maintainer.pl. Usualy, I only put the ML in Cc:
+I've run the script on the 2 patches of the serie and merged the 2 lists. Everyone is in the To: of the cover letter and of the 2 patches.
+
+If Théo is "Tejun Heo" (  (maintainer:WORKQUEUE) ), he is already in the To: line.
+
+CJ
+
+
+> > diff --git a/include/linux/workqueue.h b/include/linux/workqueue.h
+> > index d15a7730ee18..145e756ff315 100644
+> > --- a/include/linux/workqueue.h
+> > +++ b/include/linux/workqueue.h
+> > @@ -425,13 +425,13 @@ struct workqueue_struct *alloc_workqueue(const char *fmt,
+> > alloc_workqueue(fmt, WQ_UNBOUND | __WQ_ORDERED | \
+> > __WQ_ORDERED_EXPLICIT | (flags), 1, ##args)
+> > 
+> > -#define create_workqueue(name) \
+> > - alloc_workqueue("%s", __WQ_LEGACY | WQ_MEM_RECLAIM, 1, (name))
+> > -#define create_freezable_workqueue(name) \
+> > - alloc_workqueue("%s", __WQ_LEGACY | WQ_FREEZABLE | WQ_UNBOUND | \
+> > - WQ_MEM_RECLAIM, 1, (name))
+> > -#define create_singlethread_workqueue(name) \
+> > - alloc_ordered_workqueue("%s", __WQ_LEGACY | WQ_MEM_RECLAIM, name)
+> > +#define create_workqueue(fmt, args...) \
+> > + alloc_workqueue(fmt, __WQ_LEGACY | WQ_MEM_RECLAIM, 1, ##args)
+> > +#define create_freezable_workqueue(fmt, args...) \
+> > + alloc_workqueue(fmt, __WQ_LEGACY | WQ_FREEZABLE | WQ_UNBOUND | \
+> > + WQ_MEM_RECLAIM, 1, ##args)
+> > +#define create_singlethread_workqueue(fmt, args...) \
+> > + alloc_ordered_workqueue(fmt, __WQ_LEGACY | WQ_MEM_RECLAIM, ##args)
+> > 
+> > extern void destroy_workqueue(struct workqueue_struct *wq);
+> > 
+> > 
+> 
+>
