@@ -2,101 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9D1D63659F3
-	for <lists+netdev@lfdr.de>; Tue, 20 Apr 2021 15:25:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 306F03659FC
+	for <lists+netdev@lfdr.de>; Tue, 20 Apr 2021 15:26:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232459AbhDTNZQ convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Tue, 20 Apr 2021 09:25:16 -0400
-Received: from us-smtp-delivery-44.mimecast.com ([207.211.30.44]:22629 "EHLO
-        us-smtp-delivery-44.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S232448AbhDTNZP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 20 Apr 2021 09:25:15 -0400
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-547-X9KMndiGMfGSldWhX6i1CA-1; Tue, 20 Apr 2021 09:24:33 -0400
-X-MC-Unique: X9KMndiGMfGSldWhX6i1CA-1
-Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id EBB9352800;
-        Tue, 20 Apr 2021 13:24:31 +0000 (UTC)
-Received: from krava.cust.in.nbox.cz (unknown [10.40.196.37])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 722D219172;
-        Tue, 20 Apr 2021 13:24:29 +0000 (UTC)
-From:   Jiri Olsa <jolsa@kernel.org>
-To:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andriin@fb.com>
-Cc:     Joe Stringer <joe@cilium.io>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>
-Subject: [PATCH bpf-next] selftests/bpf: Add docs target as all dependency
-Date:   Tue, 20 Apr 2021 15:24:28 +0200
-Message-Id: <20210420132428.15710-1-jolsa@kernel.org>
+        id S232481AbhDTN1F (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 20 Apr 2021 09:27:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37480 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232427AbhDTN1C (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 20 Apr 2021 09:27:02 -0400
+Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C6F1AC06174A;
+        Tue, 20 Apr 2021 06:26:29 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=VMqaJi7cREgHvXbfYZgCh1yWGauQvsEM/bV4hsp9kpI=; b=oYIjeBNLDU0bKUDPhFNTmvYkZK
+        g53/qZBWtJ4qmFYmHlqWepJ0FmGFsoXKciINNRiOUsXrKlFjZxMU+5w86z4jSxEqdVbPnmwLQJ0I4
+        QblDiYLB0ZwNnoShTB7pzUIEqXQYgkP6X4VfyjOkT4iwAeZJ9TWj8wO0hT8FfHroUCas+dMT2M2kk
+        BJWxhpuqViQNbWdBRh3SdfIw1+tKOj6jQvkPldSdiuK85EtimYx4m7BGUuQKErPN7+RwkxAlIkcl7
+        X9j4UCHiBwcgWOXAuuLZ9tNy0AZfLZtuNUpnfVfa/yHcmS7mmP/2grQ86rdMiimTFItKK9SLzpvDe
+        sL0DA9ZA==;
+Received: from willy by casper.infradead.org with local (Exim 4.94 #2 (Red Hat Linux))
+        id 1lYqMg-00FCb5-Gr; Tue, 20 Apr 2021 13:25:08 +0000
+Date:   Tue, 20 Apr 2021 14:24:30 +0100
+From:   Matthew Wilcox <willy@infradead.org>
+To:     Mike Rapoport <rppt@kernel.org>
+Cc:     Jonathan Corbet <corbet@lwn.net>,
+        Alexey Dobriyan <adobriyan@gmail.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        Michal Hocko <mhocko@suse.com>,
+        Mike Rapoport <rppt@linux.ibm.com>, linux-doc@vger.kernel.org,
+        linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-mm@kvack.org, netdev@vger.kernel.org
+Subject: Re: [PATCH v2] docs: proc.rst: meminfo: briefly describe gaps in
+ memory accounting
+Message-ID: <20210420132430.GB3596236@casper.infradead.org>
+References: <20210420121354.1160437-1-rppt@kernel.org>
 MIME-Version: 1.0
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
-Authentication-Results: relay.mimecast.com;
-        auth=pass smtp.auth=CUSA124A263 smtp.mailfrom=jolsa@kernel.org
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: kernel.org
-Content-Transfer-Encoding: 8BIT
-Content-Type: text/plain; charset=WINDOWS-1252
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210420121354.1160437-1-rppt@kernel.org>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Currently docs target is make dependency for TEST_GEN_FILES,
-which makes tests to be rebuilt every time you run make.
+On Tue, Apr 20, 2021 at 03:13:54PM +0300, Mike Rapoport wrote:
+> Add a paragraph that explains that it may happen that the counters in
+> /proc/meminfo do not add up to the overall memory usage.
 
-Adding docs as all target dependency, so when running make
-on top of built selftests it will show just:
+... that is, the sum may be lower because memory is allocated for other
+purposes that is not reported here, right?
 
-  $ make
-  make[1]: Nothing to be done for 'docs'.
+Is it ever possible for it to be higher?  Maybe due to a race when
+sampling the counters?
 
-After cleaning docs, only docs is rebuilt:
+>  Provides information about distribution and utilization of memory.  This
+> -varies by architecture and compile options.  The following is from a
+> -16GB PIII, which has highmem enabled.  You may not have all of these fields.
+> +varies by architecture and compile options. Please note that it may happen
+> +that the memory accounted here does not add up to the overall memory usage
+> +and the difference for some workloads can be substantial. In many cases there
+> +are other means to find out additional memory using subsystem specific
+> +interfaces, for instance /proc/net/sockstat for TCP memory allocations.
 
-  $ make docs-clean
-  CLEAN    eBPF_helpers-manpage
-  CLEAN    eBPF_syscall-manpage
-  $ make
-  GEN      ...selftests/bpf/bpf-helpers.rst
-  GEN      ...selftests/bpf/bpf-helpers.7
-  GEN      ...selftests/bpf/bpf-syscall.rst
-  GEN      ...selftests/bpf/bpf-syscall.2
-  $ make
-  make[1]: Nothing to be done for 'docs'.
+How about just:
 
-Cc: Joe Stringer <joe@cilium.io>
-Fixes: a01d935b2e09 ("tools/bpf: Remove bpf-helpers from bpftool docs")
-Signed-off-by: Jiri Olsa <jolsa@kernel.org>
----
- tools/testing/selftests/bpf/Makefile | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
++varies by architecture and compile options.  The memory reported here
++may not add up to the overall memory usage and the difference for some
++workloads can be substantial. [...]
 
-diff --git a/tools/testing/selftests/bpf/Makefile b/tools/testing/selftests/bpf/Makefile
-index c45ae13b88a0..c5bcdb3d4b12 100644
---- a/tools/testing/selftests/bpf/Makefile
-+++ b/tools/testing/selftests/bpf/Makefile
-@@ -187,7 +187,6 @@ $(OUTPUT)/runqslower: $(BPFOBJ) | $(DEFAULT_BPFTOOL)
- 		    cp $(SCRATCH_DIR)/runqslower $@
- 
- $(TEST_GEN_PROGS) $(TEST_GEN_PROGS_EXTENDED): $(OUTPUT)/test_stub.o $(BPFOBJ)
--$(TEST_GEN_FILES): docs
- 
- $(OUTPUT)/test_dev_cgroup: cgroup_helpers.c
- $(OUTPUT)/test_skb_cgroup_id_user: cgroup_helpers.c
-@@ -210,6 +209,8 @@ $(DEFAULT_BPFTOOL): $(wildcard $(BPFTOOLDIR)/*.[ch] $(BPFTOOLDIR)/Makefile)    \
- 		    OUTPUT=$(HOST_BUILD_DIR)/bpftool/			       \
- 		    prefix= DESTDIR=$(HOST_SCRATCH_DIR)/ install
- 
-+all: docs
-+
- docs:
- 	$(Q)RST2MAN_OPTS="--exit-status=1" $(MAKE) $(submake_extras)	\
- 	            -f Makefile.docs					\
--- 
-2.30.2
+But I'd like to be a bit more explicit about the reason, hence my question
+above to be sure I understand.
 
+
+It's also not entirely clear which of the fields in meminfo can be
+usefully summed.  VmallocTotal is larger than MemTotal, for example.
+But I know that KernelStack is allocated through vmalloc these days,
+and I don't know whether VmallocUsed includes KernelStack or whether I
+can sum them.  Similarly, is Mlocked a subset of Unevictable?
+
+There is some attempt at explaining how these numbers fit together, but
+it's outdated, and doesn't include Mlocked, Unevictable or KernelStack
