@@ -2,123 +2,127 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2A640365628
-	for <lists+netdev@lfdr.de>; Tue, 20 Apr 2021 12:29:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CF98536562C
+	for <lists+netdev@lfdr.de>; Tue, 20 Apr 2021 12:31:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231589AbhDTKaJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 20 Apr 2021 06:30:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54520 "EHLO
+        id S231561AbhDTKbn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 20 Apr 2021 06:31:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54856 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231509AbhDTKaI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 20 Apr 2021 06:30:08 -0400
-Received: from ssl.serverraum.org (ssl.serverraum.org [IPv6:2a01:4f8:151:8464::1:2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CD260C06174A;
-        Tue, 20 Apr 2021 03:29:37 -0700 (PDT)
-Received: from mwalle01.fritz.box (unknown [IPv6:2a02:810c:c200:2e91:fa59:71ff:fe9b:b851])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-384) server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by ssl.serverraum.org (Postfix) with ESMTPSA id DA9BB22249;
-        Tue, 20 Apr 2021 12:29:35 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
-        t=1618914576;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=ZQIa58xXT6JLjPg9IEQx79FJQAMp7Fys04CwVO2aGt0=;
-        b=rTxzOt58YroOOb03KtF37s3iua2hAzUchFZll0+u38DHN3rnjol/VwIDSMWuSXcezAEyRg
-        tLXfA0DN0e0sKav1Rb+fHM6czJ5bvGNF/sU0ogusTFMG2+3Gi6y8f0wyEa8kriu1WnDsA7
-        6i4zh96cFcnocZxm+QUbd47oSsF+7jI=
-From:   Michael Walle <michael@walle.cc>
-To:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        David Bauer <mail@david-bauer.net>,
-        Michael Walle <michael@walle.cc>
-Subject: [PATCH net-next v2] net: phy: at803x: fix probe error if copper page is selected
-Date:   Tue, 20 Apr 2021 12:29:29 +0200
-Message-Id: <20210420102929.13505-1-michael@walle.cc>
-X-Mailer: git-send-email 2.20.1
+        with ESMTP id S229841AbhDTKbl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 20 Apr 2021 06:31:41 -0400
+Received: from mail-pj1-x102f.google.com (mail-pj1-x102f.google.com [IPv6:2607:f8b0:4864:20::102f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2EFDDC06174A;
+        Tue, 20 Apr 2021 03:31:09 -0700 (PDT)
+Received: by mail-pj1-x102f.google.com with SMTP id f6-20020a17090a6546b029015088cf4a1eso4376643pjs.2;
+        Tue, 20 Apr 2021 03:31:09 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=/pqYuVEVyGbD6G0F1pZ44n9k5T8+DxwsVUEl0nbUlzY=;
+        b=CLuIQV3Y8s6+hQPyfVqZjKRQSWv4edE2G80ngVVS2KepQJxuGxmHKOupqe+zlcv+r1
+         WTUqW9wKOXA35EUu+KBkJWPP+98Bb7RiW4DDgaBWi+QRVtPNirUrKWUQhkRBye50CQI6
+         6+AZj+H/Px35O1aPrUdO1np2iDLXHL0/x0rGM0CJNdvAg9C6RO8WAYmRvgZM6lJs2nTv
+         VTSRL62xUOuPRnYjN7NUG2yONGjDb6VSVbLHQxEn17usUG0SsZxTtWiaVKBijV/I71rZ
+         y7mcVkCUvNUEM+0MHtt+zotBfkZikqrQXScQUzQg/fnVJUkAji0p4HCeeR2P7qmrZXn6
+         l/lA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=/pqYuVEVyGbD6G0F1pZ44n9k5T8+DxwsVUEl0nbUlzY=;
+        b=f4GRMLD2KEsBHfgKEbpN3fuvxhoKfxv0EZoXWjBNuJHYog+dWl7Ue9lBoRbYRZ0S7y
+         rw814zR9FkvS26OSbSFGThdUavwH+gt3X+yWgioXeMlEyzcbS2CwJppUEDRxQp1IM0/R
+         hkx1F5q+MvIVmhOhVMLyj3mrMVws7YCZXz7yvJ+50TfzceP16QZFPOQsMR05dEHnu3AP
+         cppdBRfYefB9sWgAK0mCXzsqfg1/ruj0P7if40NDGSt6f2tTq+jwvSWJyGrP8epGAT0l
+         GeGA7Mw3ATAdeVEyWNX3r72SB3o+m7aChjjO4kbEMcPbydlmR+P7Meqm7nOgYn0z9XY9
+         KHzQ==
+X-Gm-Message-State: AOAM531f74UKku2aXI1i/+u+menpQgGLdb3I8Nhiz9oXtawo4UlQdmdC
+        NHE/IHRtm888JyQkGoKSlnI=
+X-Google-Smtp-Source: ABdhPJxDVxa6g+YmrGIK8MbCSiDDyPrdR0uHwCh1Sh3ieT7yQHuwN/8fXHfTghJZfe9TDmaWOHA87Q==
+X-Received: by 2002:a17:902:8347:b029:e7:4a2d:6589 with SMTP id z7-20020a1709028347b02900e74a2d6589mr28700859pln.64.1618914668673;
+        Tue, 20 Apr 2021 03:31:08 -0700 (PDT)
+Received: from skbuf (5-12-16-165.residential.rdsnet.ro. [5.12.16.165])
+        by smtp.gmail.com with ESMTPSA id g23sm16593764pfu.189.2021.04.20.03.30.56
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 20 Apr 2021 03:31:07 -0700 (PDT)
+Date:   Tue, 20 Apr 2021 13:30:51 +0300
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Xiaoliang Yang <xiaoliang.yang_1@nxp.com>
+Cc:     "davem@davemloft.net" <davem@davemloft.net>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "Arvid.Brodin@xdin.com" <Arvid.Brodin@xdin.com>,
+        "m-karicheri2@ti.com" <m-karicheri2@ti.com>,
+        "vinicius.gomes@intel.com" <vinicius.gomes@intel.com>,
+        "michael.chan@broadcom.com" <michael.chan@broadcom.com>,
+        "vishal@chelsio.com" <vishal@chelsio.com>,
+        "saeedm@mellanox.com" <saeedm@mellanox.com>,
+        "jiri@mellanox.com" <jiri@mellanox.com>,
+        "idosch@mellanox.com" <idosch@mellanox.com>,
+        "alexandre.belloni@bootlin.com" <alexandre.belloni@bootlin.com>,
+        "UNGLinuxDriver@microchip.com" <UNGLinuxDriver@microchip.com>,
+        "ivan.khoronzhuk@linaro.org" <ivan.khoronzhuk@linaro.org>,
+        "andre.guedes@linux.intel.com" <andre.guedes@linux.intel.com>,
+        "yuehaibing@huawei.com" <yuehaibing@huawei.com>,
+        "allan.nielsen@microchip.com" <allan.nielsen@microchip.com>,
+        "joergen.andreasen@microchip.com" <joergen.andreasen@microchip.com>,
+        "colin.king@canonical.com" <colin.king@canonical.com>,
+        Po Liu <po.liu@nxp.com>, Mingkai Hu <mingkai.hu@nxp.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Leo Li <leoyang.li@nxp.com>
+Subject: Re: [EXT] Re: [net-next] net: dsa: felix: disable always guard band
+ bit for TAS config
+Message-ID: <20210420103051.iikzsbf7khm27r7s@skbuf>
+References: <20210419102530.20361-1-xiaoliang.yang_1@nxp.com>
+ <20210419123825.oicleie44ms6zcve@skbuf>
+ <DB8PR04MB5785E8D0499961D6C046092AF0489@DB8PR04MB5785.eurprd04.prod.outlook.com>
+ <20210420082632.3fy4y3ftkhwrj7nm@skbuf>
+ <AM6PR04MB5782BC6E45B98FDFBFB2EB1CF0489@AM6PR04MB5782.eurprd04.prod.outlook.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <AM6PR04MB5782BC6E45B98FDFBFB2EB1CF0489@AM6PR04MB5782.eurprd04.prod.outlook.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The commit c329e5afb42f ("net: phy: at803x: select correct page on
-config init") selects the copper page during probe. This fails if the
-copper page was already selected. In this case, the value of the copper
-page (which is 1) is propagated through phy_restore_page() and is
-finally returned for at803x_probe(). Fix it, by just using the
-at803x_page_write() directly.
+On Tue, Apr 20, 2021 at 10:28:45AM +0000, Xiaoliang Yang wrote:
+> Hi Vladimir,
+> 
+> On Tue, Apr 20, 2021 at 16:27:10AM +0800, Vladimir Oltean wrote:
+> >
+> > On Tue, Apr 20, 2021 at 03:06:40AM +0000, Xiaoliang Yang wrote:
+> >> Hi Vladimir.
+> >>
+> >> On Mon, Apr 19, 2021 at 20:38PM +0800, Vladimir Oltean wrote:
+> >> >
+> >> >What is a scheduled queue? When time-aware scheduling is enabled on 
+> >> >the port, why are some queues scheduled and some not?
+> >>
+> >> The felix vsc9959 device can set SCH_TRAFFIC_QUEUES field bits to 
+> >> define which queue is scheduled. Only the set queues serves schedule 
+> >> traffic. In this driver we set all 8 queues to be scheduled in 
+> >> default, so all the traffic are schedule queues to schedule queue.
+> >
+> > I understand this, what I don't really understand is the distinction
+> > that the switch makes between 'scheduled' and 'non-scheduled'
+> > traffic.  What else does this distinction affect, apart from the
+> > guard bands added implicitly here? The tc-taprio qdisc has no notion
+> > of 'scheduled' queues, all queues are 'scheduled'. Do we ever need
+> > to set the scheduled queues mask to something other than 0xff? If
+> > so, when and why?
+> 
+> Yes, it seems only affect the guard band. If disabling always guard
+> band bit, we can use SCH_TRAFFIC_QUEUES to determine which queue is
+> non-scheduled queue. Only the non-scheduled queue traffic will reserve
+> the guard band. But tc-taprio qdisc cannot set scheduled or
+> non-scheduled queue now. Adding this feature can be discussed in
+> future. 
+> 
+> It is not reasonable to add guardband in each queue traffic in
+> default, so I disable the always guard band bit for TAS config.
 
-Also in case of an error, the regulator is not disabled and leads to a
-WARN_ON() when the probe fails. This couldn't happen before, because
-at803x_parse_dt() was the last call in at803x_probe(). It is hard to
-see, that the parse_dt() actually enables the regulator. Thus move the
-regulator_enable() to the probe function and undo it in case of an
-error.
-
-Fixes: c329e5afb42f ("net: phy: at803x: select correct page on config init")
-Signed-off-by: Michael Walle <michael@walle.cc>
----
-Changes since v1:
- - take the bus lock
-
- drivers/net/phy/at803x.c | 23 +++++++++++++++++------
- 1 file changed, 17 insertions(+), 6 deletions(-)
-
-diff --git a/drivers/net/phy/at803x.c b/drivers/net/phy/at803x.c
-index e0f56850edc5..32af52dd5aed 100644
---- a/drivers/net/phy/at803x.c
-+++ b/drivers/net/phy/at803x.c
-@@ -554,10 +554,6 @@ static int at803x_parse_dt(struct phy_device *phydev)
- 			phydev_err(phydev, "failed to get VDDIO regulator\n");
- 			return PTR_ERR(priv->vddio);
- 		}
--
--		ret = regulator_enable(priv->vddio);
--		if (ret < 0)
--			return ret;
- 	}
- 
- 	return 0;
-@@ -579,15 +575,30 @@ static int at803x_probe(struct phy_device *phydev)
- 	if (ret)
- 		return ret;
- 
-+	if (priv->vddio) {
-+		ret = regulator_enable(priv->vddio);
-+		if (ret < 0)
-+			return ret;
-+	}
-+
- 	/* Some bootloaders leave the fiber page selected.
- 	 * Switch to the copper page, as otherwise we read
- 	 * the PHY capabilities from the fiber side.
- 	 */
- 	if (at803x_match_phy_id(phydev, ATH8031_PHY_ID)) {
--		ret = phy_select_page(phydev, AT803X_PAGE_COPPER);
--		ret = phy_restore_page(phydev, AT803X_PAGE_COPPER, ret);
-+		phy_lock_mdio_bus(phydev);
-+		ret = at803x_write_page(phydev, AT803X_PAGE_COPPER);
-+		phy_unlock_mdio_bus(phydev);
-+		if (ret)
-+			goto err;
- 	}
- 
-+	return 0;
-+
-+err:
-+	if (priv->vddio)
-+		regulator_disable(priv->vddio);
-+
- 	return ret;
- }
- 
--- 
-2.20.1
-
+Ok, if true, then it makes sense to disable ALWAYS_GUARD_BAND_SCH_Q.
