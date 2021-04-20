@@ -2,176 +2,398 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E3FFE365396
-	for <lists+netdev@lfdr.de>; Tue, 20 Apr 2021 09:54:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B9FC13653AC
+	for <lists+netdev@lfdr.de>; Tue, 20 Apr 2021 10:00:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229839AbhDTHyt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 20 Apr 2021 03:54:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48530 "EHLO
+        id S229985AbhDTIA4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 20 Apr 2021 04:00:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49898 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229659AbhDTHym (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 20 Apr 2021 03:54:42 -0400
-Received: from mail-pj1-x1034.google.com (mail-pj1-x1034.google.com [IPv6:2607:f8b0:4864:20::1034])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA3A4C06174A;
-        Tue, 20 Apr 2021 00:54:09 -0700 (PDT)
-Received: by mail-pj1-x1034.google.com with SMTP id s14so14550286pjl.5;
-        Tue, 20 Apr 2021 00:54:09 -0700 (PDT)
+        with ESMTP id S229913AbhDTIAy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 20 Apr 2021 04:00:54 -0400
+Received: from mail-ej1-x62d.google.com (mail-ej1-x62d.google.com [IPv6:2a00:1450:4864:20::62d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9FBA6C061763
+        for <netdev@vger.kernel.org>; Tue, 20 Apr 2021 01:00:23 -0700 (PDT)
+Received: by mail-ej1-x62d.google.com with SMTP id x12so36094360ejc.1
+        for <netdev@vger.kernel.org>; Tue, 20 Apr 2021 01:00:23 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=sender:from:to:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=Ke/YR/P2u+Tpx4KPA57i+VGmo9ckKXtimwr72CBdflY=;
-        b=TBon4ejEdfyPf45ZQEv44fhDBiKbIyGGygqrFBMsj/lgNVefNCOh+s0hKnj36+Mr0S
-         mq9w7FcnCcHT1xMjR2Fq6SBnXy9kbMBhKvoqBElLxM36FeQm3vZzQQv/QaVO75h3AsRV
-         wgtUabWX8glAW9qLXLKzMH8W5Ib3HM4G2kjVDmg48lRWVL6s2tFuhTscnlxxThYw/+mK
-         5Ct1BMqAYPk0uJk4ob6bGQtSG3z+aSz8/tWfZyDtkOTAz60qCZy5oiyYApIQzLeYuYJR
-         UrArmW4M+i2vbSD3oG1PtVPlov2EXGoJXwu6URIQu01OowbSEplwUF8W10tiYDCwGlEC
-         IEZA==
+        d=linaro.org; s=google;
+        h=mime-version:from:date:message-id:subject:to:cc;
+        bh=7tp1mqoHVTwihyTDBSNSlok7X7xYlH8+iLFRzNdLf7g=;
+        b=mj+I67ylJFRxKnhymovlnFt3xphE/FT0tNcw8tCskAkzOVGBQL0c5my9upnKleo9nw
+         Qon52Q9uWhU6TqmBlvkNY/pupihTMRFh3QMPQ0i2TDLyM9h5XAwnT6mQQdYDtpRHpsqs
+         sNLji4Y+wiTwQ/Lu2TnjMmFBwuux0UDS62myANADdzRXjh8kB3rfclSQZnA7Nb3RjUUU
+         ivQBXem/Sk5xs4UWr1mPoCqLJzGgqDGQyldcUhUwPjcAWuzPwR8QNiaa71qvm8AsdFl3
+         JWhxAgQuULuDZy+t9HZLupNtZ0JB14XlM+ljnF/zeHkpwHt1KbJnjYz4XHJNtLzfPlvQ
+         IFYw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:sender:from:to:subject:date:message-id
-         :mime-version:content-transfer-encoding;
-        bh=Ke/YR/P2u+Tpx4KPA57i+VGmo9ckKXtimwr72CBdflY=;
-        b=bCHLABcM554I67ALuH/JhGl5/GkmaOhO9WO8x4n0w1OVRh08dByTkBfOWaKJM7vVY7
-         9zFVgLw7D+Gf3tsjMPvvznUck6cU0E1XiEpDGSArIXnY9UuWIW2ugREM6vUxAIOiYhZ+
-         +vtYnY8Yoyw3RdYgklrEzuuq1E+T0rDszAwjiIo9MTWB/2O0o2KkFJwZzyVTvQdTMJvz
-         yuxR8BDG8U1y7wB7SfxHyIyZFVlqbH4bWLDsViLCQo7U6mnDhOPqfLBhE+sYDOTMeYjj
-         lA78hbUlQa5jNHfHVdWL+L48YBeH9VQ381DblbPSkWmknqbVuvyWy9M6W8FPWV/W3HVt
-         M9jg==
-X-Gm-Message-State: AOAM530RpfjjIQaKgdaM9SsLqjaMlyTmQWRPMkA1Nm9hH1UNjcX6aTWR
-        IunnpxcLON91mvcyHGd/MCo=
-X-Google-Smtp-Source: ABdhPJwd2xuyhLHRhZypxTgCkTxEfR4+k+OuBG25+iyBAE51EkqrPoKEdm1EfKWi5yrfSH039szw0Q==
-X-Received: by 2002:a17:90a:c8:: with SMTP id v8mr3617344pjd.18.1618905249046;
-        Tue, 20 Apr 2021 00:54:09 -0700 (PDT)
-Received: from localhost (61-220-137-37.HINET-IP.hinet.net. [61.220.137.37])
-        by smtp.gmail.com with ESMTPSA id pc17sm528432pjb.19.2021.04.20.00.54.07
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 20 Apr 2021 00:54:07 -0700 (PDT)
-Sender: AceLan Kao <acelan@gmail.com>
-From:   AceLan Kao <acelan.kao@canonical.com>
-To:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Andrii Nakryiko <andriin@fb.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Wei Wang <weiwan@google.com>,
-        Cong Wang <cong.wang@bytedance.com>,
-        Taehee Yoo <ap420073@gmail.com>,
-        =?UTF-8?q?Bj=C3=B6rn=20T=C3=B6pel?= <bjorn@kernel.org>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] net: called rtnl_unlock() before runpm resumes devices
-Date:   Tue, 20 Apr 2021 15:54:05 +0800
-Message-Id: <20210420075406.64105-1-acelan.kao@canonical.com>
-X-Mailer: git-send-email 2.25.1
+        h=x-gm-message-state:mime-version:from:date:message-id:subject:to:cc;
+        bh=7tp1mqoHVTwihyTDBSNSlok7X7xYlH8+iLFRzNdLf7g=;
+        b=hLlCB7hTph+I5nbGW9PH/vQcHychXkazIho1ufNttIHn67FAG2iu85HBpU+Rsx4HZU
+         oQQi542hU4y+cgcACdROufeJGcXZ4pWKrkpVB6JkewhUAdpEileYwumgSqMpTE+Ua1dz
+         TezXi9u0Mx7JGaBUv0uVxE+OhKmHmZ7ew/KjitaWnhChCffhmcIHjN9yFUvBQZekkutA
+         XArfNxkiRqKG3XhaJt8iycORuXHd1+zirX2SaIQuNv3Hsj9GsjMxReS8it/sx515BwFu
+         raP2Amdl3trm4kE5uTAk9h/0RVCk3msY9LyDrBuF6zP3W3KO0tfgmNWs77wkPAhcjZoZ
+         g53w==
+X-Gm-Message-State: AOAM5318DrmsDOlWzLa+JgxG8YNtjxvH4bvP62gv03vtXJQJvBM1LxkA
+        j68M4n7O8Dxi0kIc46ikfT+fLk0BNQ93DIraE8QfnA==
+X-Google-Smtp-Source: ABdhPJyll9vL1qL+L7WrwQQpjO129pScys8bpDTAvnvQM24mAMYw90ZqKX6VA1Lz4TsErQxGoIHeMyPX1ug71/fT17k=
+X-Received: by 2002:a17:906:4f91:: with SMTP id o17mr26046248eju.503.1618905621934;
+ Tue, 20 Apr 2021 01:00:21 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+From:   Naresh Kamboju <naresh.kamboju@linaro.org>
+Date:   Tue, 20 Apr 2021 13:30:10 +0530
+Message-ID: <CA+G9fYtujdEqdGE_3dDpAecLMAmUfwZEm5EmPEGTNdLQgXtYYw@mail.gmail.com>
+Subject: [stable-rc 5.4] thp04: page allocation failure: order:0,
+ mode:0x400dc0(GFP_KERNEL_ACCOUNT|__GFP_ZERO), nodemask=(null)
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Sasha Levin <sashal@kernel.org>
+Cc:     linux-stable <stable@vger.kernel.org>,
+        Netdev <netdev@vger.kernel.org>, lkft-triage@lists.linaro.org,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        LTP List <ltp@lists.linux.it>, linux-mm <linux-mm@kvack.org>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Andrew Morton <akpm@linux-foundation.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: "Chia-Lin Kao (AceLan)" <acelan.kao@canonical.com>
+The following kernel crash reported on arm64 hikey device running stable-rc
+ 5.4.114-rc1 kernel and testing LTP thp04 test case.
 
-The rtnl_lock() has been called in rtnetlink_rcv_msg(), and then in
-__dev_open() it calls pm_runtime_resume() to resume devices, and in
-some devices' resume function(igb_resum,igc_resume) they calls rtnl_lock()
-again. That leads to a recursive lock.
+Reported-by: Naresh Kamboju <naresh.kamboju@linaro.org>
 
-It should leave the devices' resume function to decide if they need to
-call rtnl_lock()/rtnl_unlock(), so call rtnl_unlock() before calling
-pm_runtime_resume() and then call rtnl_lock() after it in __dev_open().
+I have tried to reproduce this crash but was not successful after
+multiple attempts.
+Could not bisect this problem because it is not reproducible.
 
-[  967.723577] INFO: task ip:6024 blocked for more than 120 seconds.
-[  967.723588]       Not tainted 5.12.0-rc3+ #1
-[  967.723592] "echo 0 > /proc/sys/kernel/hung_task_timeout_secs" disables this message.
-[  967.723594] task:ip              state:D stack:    0 pid: 6024 ppid:  5957 flags:0x00004000
-[  967.723603] Call Trace:
-[  967.723610]  __schedule+0x2de/0x890
-[  967.723623]  schedule+0x4f/0xc0
-[  967.723629]  schedule_preempt_disabled+0xe/0x10
-[  967.723636]  __mutex_lock.isra.0+0x190/0x510
-[  967.723644]  __mutex_lock_slowpath+0x13/0x20
-[  967.723651]  mutex_lock+0x32/0x40
-[  967.723657]  rtnl_lock+0x15/0x20
-[  967.723665]  igb_resume+0xee/0x1d0 [igb]
-[  967.723687]  ? pci_pm_default_resume+0x30/0x30
-[  967.723696]  igb_runtime_resume+0xe/0x10 [igb]
-[  967.723713]  pci_pm_runtime_resume+0x74/0x90
-[  967.723718]  __rpm_callback+0x53/0x1c0
-[  967.723725]  rpm_callback+0x57/0x80
-[  967.723730]  ? pci_pm_default_resume+0x30/0x30
-[  967.723735]  rpm_resume+0x547/0x760
-[  967.723740]  __pm_runtime_resume+0x52/0x80
-[  967.723745]  __dev_open+0x56/0x160
-[  967.723753]  ? _raw_spin_unlock_bh+0x1e/0x20
-[  967.723758]  __dev_change_flags+0x188/0x1e0
-[  967.723766]  dev_change_flags+0x26/0x60
-[  967.723773]  do_setlink+0x723/0x10b0
-[  967.723782]  ? __nla_validate_parse+0x5b/0xb80
-[  967.723792]  __rtnl_newlink+0x594/0xa00
-[  967.723800]  ? nla_put_ifalias+0x38/0xa0
-[  967.723807]  ? __nla_reserve+0x41/0x50
-[  967.723813]  ? __nla_reserve+0x41/0x50
-[  967.723818]  ? __kmalloc_node_track_caller+0x49b/0x4d0
-[  967.723824]  ? pskb_expand_head+0x75/0x310
-[  967.723830]  ? nla_reserve+0x28/0x30
-[  967.723835]  ? skb_free_head+0x25/0x30
-[  967.723843]  ? security_sock_rcv_skb+0x2f/0x50
-[  967.723850]  ? netlink_deliver_tap+0x3d/0x210
-[  967.723859]  ? sk_filter_trim_cap+0xc1/0x230
-[  967.723863]  ? skb_queue_tail+0x43/0x50
-[  967.723870]  ? sock_def_readable+0x4b/0x80
-[  967.723876]  ? __netlink_sendskb+0x42/0x50
-[  967.723888]  ? security_capable+0x3d/0x60
-[  967.723894]  ? __cond_resched+0x19/0x30
-[  967.723900]  ? kmem_cache_alloc_trace+0x390/0x440
-[  967.723906]  rtnl_newlink+0x49/0x70
-[  967.723913]  rtnetlink_rcv_msg+0x13c/0x370
-[  967.723920]  ? _copy_to_iter+0xa0/0x460
-[  967.723927]  ? rtnl_calcit.isra.0+0x130/0x130
-[  967.723934]  netlink_rcv_skb+0x55/0x100
-[  967.723939]  rtnetlink_rcv+0x15/0x20
-[  967.723944]  netlink_unicast+0x1a8/0x250
-[  967.723949]  netlink_sendmsg+0x233/0x460
-[  967.723954]  sock_sendmsg+0x65/0x70
-[  967.723958]  ____sys_sendmsg+0x218/0x290
-[  967.723961]  ? copy_msghdr_from_user+0x5c/0x90
-[  967.723966]  ? lru_cache_add_inactive_or_unevictable+0x27/0xb0
-[  967.723974]  ___sys_sendmsg+0x81/0xc0
-[  967.723980]  ? __mod_memcg_lruvec_state+0x22/0xe0
-[  967.723987]  ? kmem_cache_free+0x244/0x420
-[  967.723991]  ? dentry_free+0x37/0x70
-[  967.723996]  ? mntput_no_expire+0x4c/0x260
-[  967.724001]  ? __cond_resched+0x19/0x30
-[  967.724007]  ? security_file_free+0x54/0x60
-[  967.724013]  ? call_rcu+0xa4/0x250
-[  967.724021]  __sys_sendmsg+0x62/0xb0
-[  967.724026]  ? exit_to_user_mode_prepare+0x3d/0x1a0
-[  967.724032]  __x64_sys_sendmsg+0x1f/0x30
-[  967.724037]  do_syscall_64+0x38/0x90
-[  967.724044]  entry_SYSCALL_64_after_hwframe+0x44/0xae
+step to reproduce:
+-------------------------
+ - Boot 5.4.114-rc1 kernel on arm64 hikey device.
+ - run ltp cve test case
+ - cd /opt/ltp
+ - ./runltp -f cve
+ -  ./runltp -s thp04
 
-Signed-off-by: Chia-Lin Kao (AceLan) <acelan.kao@canonical.com>
----
- net/core/dev.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+Test crash log:
+--------------------
+../../../../include/tst_fuzzy_sync.h:507: TINFO: Minimum sampling period ended
+../../../../include/tst_fuzzy_sync.h:331: TINFO: loop = 1024, delay_bias = 0
+../../../../include/tst_fuzzy_sync.h:320: TINFO: start_a - start_b: {
+avg =   -43ns, avg_dev =   104ns, dev_ratio = 2.44 }
+../../../../include/tst_fuzzy_sync.h:320: TINFO: end_a - start_a  : {
+avg = 1373611ns, avg_dev = 90431ns, dev_ratio = 0.07 }
+../../../../include/tst_fuzzy_sync.h:320: TINFO: end_b - start_b  : {
+avg = 968943ns, avg_dev = 11299ns, dev_ratio = 0.01 }
+../../../../include/tst_fuzzy_sync.h:320: TINFO: end_a - end_b    : {
+avg = 404625ns, avg_dev = 80082ns, dev_ratio = 0.20 }
+../../../../include/tst_fuzzy_sync.h:320: TINFO: spins            : {
+avg = 38993  , avg_dev =  7743  , dev_ratio = 0.20 }
+[ 1303.074490] wlcore: down
+[ 1303.081180] thp04: page allocation failure: order:0,
+mode:0x400dc0(GFP_KERNEL_ACCOUNT|__GFP_ZERO), nodemask=(null)
+[ 1303.081189] Unable to handle kernel paging request at virtual
+address 0000000000001540
+[ 1303.081191] ,cpuset=/,mems_allowed=0
+[ 1303.081302] Unable to handle kernel paging request at virtual
+address 0000000000001540
+[ 1303.081313] Mem abort info:
+[ 1303.081322]   ESR = 0x96000004
+[ 1303.081331]   EC = 0x25: DABT (current EL), IL = 32 bits
+[ 1303.081340]   SET = 0, FnV = 0
+[ 1303.081348]   EA = 0, S1PTW = 0
+[ 1303.081355] Data abort info:
+[ 1303.081363]   ISV = 0, ISS = 0x00000004
+[ 1303.081371]   CM = 0, WnR = 0
+[ 1303.081393] user pgtable: 4k pages, 48-bit VAs, pgdp=0000000074f30000
+[ 1303.081402] [0000000000001540] pgd=0000000000000000
+[ 1303.081417] Internal error: Oops: 96000004 [#1] PREEMPT SMP
+[ 1303.081424] Modules linked in: algif_hash wl18xx wlcore mac80211
+cfg80211 hci_uart snd_soc_hdmi_codec btbcm snd_soc_audio_graph_card
+adv7511 snd_soc_simple_card_utils crct10dif_ce wlcore_sdio bluetooth
+cec kirin_drm drm_kms_helper dw_drm_dsi rfkill drm fuse
+[ 1303.081483] CPU: 0 PID: 210 Comm: kworker/0:2 Not tainted 5.4.114-rc1 #1
+[ 1303.081487] Hardware name: HiKey Development Board (DT)
+[ 1303.081506] Workqueue: events vmstat_shepherd
+[ 1303.081514] pstate: a0000005 (NzCv daif -PAN -UAO)
+[ 1303.081523] pc : next_online_pgdat+0x24/0x78
+[ 1303.081530] lr : next_zone+0x40/0x50
+[ 1303.081534] sp : ffff8000129f3d10
+[ 1303.081537] x29: ffff8000129f3d10 x28: ffff800011fe7000
+[ 1303.081544] x27: ffff000077af1b30 x26: ffff000077af1ae0
+[ 1303.081551] x25: 0000000000000000 x24: ffff000077b4cd38
+[ 1303.081557] x23: ffff800011fe9000 x22: ffff800011fe9920
+[ 1303.081564] x21: 0000000000000003 x20: ffff000077b531d8
+[ 1303.081570] x19: 0000000000000000 x18: 0000000000000000
+[ 1303.081577] x17: 0000000000000000 x16: 0000000000000000
+[ 1303.081583] x15: 0000000000000000 x14: 0000000000000000
+[ 1303.081589] x13: 0000000000000000 x12: 0000000000000000
+[ 1303.081596] x11: 0000000000000000 x10: 0000000000000040
+[ 1303.081603] x9 : 0000002a141f0a9e x8 : 0000000000000002
+[ 1303.081609] x7 : ffff000077b30c10 x6 : ffff800011fea000
+[ 1303.081616] x5 : ffff800011fea968 x4 : ffff000077b53226
+[ 1303.081623] x3 : 0000000000000000 x2 : 000000000000000c
+[ 1303.081629] x1 : 0000000000000004 x0 : ffff800011fea000
+[ 1303.081637] Call trace:
+[ 1303.081645]  next_online_pgdat+0x24/0x78
+[ 1303.081654]  next_zone+0x40/0x50
+[ 1303.081661]  need_update+0x7c/0xb0
+[ 1303.081667]  vmstat_shepherd+0x7c/0x100
+[ 1303.081676]  process_one_work+0x1c4/0x480
+[ 1303.081682]  worker_thread+0x54/0x430
+[ 1303.081690]  kthread+0x11c/0x150
+[ 1303.081700]  ret_from_fork+0x10/0x1c
+[ 1303.081710] Code: aa1e03e0 d503201f d2800081 9000eb20 (b9554262)
+[ 1303.081718] ---[ end trace cd32e7e2c7ee8919 ]---
+[ 1303.081820] Unable to handle kernel paging request at virtual
+address 0000000000001540
+[ 1303.081830] Mem abort info:
+[ 1303.081838]   ESR = 0x96000004
+[ 1303.081849]   EC = 0x25: DABT (current EL), IL = 32 bits
+[ 1303.081858]   SET = 0, FnV = 0
+[ 1303.081866]   EA = 0, S1PTW = 0
+[ 1303.081873] Data abort info:
+[ 1303.081881]   ISV = 0, ISS = 0x00000004
+[ 1303.081889]   CM = 0, WnR = 0
+[ 1303.081899] user pgtable: 4k pages, 48-bit VAs, pgdp=0000000001b98000
+[ 1303.081907] [0000000000001540] pgd=0000000000000000
+[ 1303.081921] Internal error: Oops: 96000004 [#2] PREEMPT SMP
+[ 1303.081926] Modules linked in: algif_hash wl18xx wlcore mac80211
+cfg80211 hci_uart snd_soc_hdmi_codec btbcm snd_soc_audio_graph_card
+adv7511 snd_soc_simple_card_utils crct10dif_ce wlcore_sdio bluetooth
+cec kirin_drm drm_kms_helper dw_drm_dsi rfkill drm fuse
+[ 1303.081967] CPU: 2 PID: 51 Comm: kworker/2:1 Tainted: G      D
+     5.4.114-rc1 #1
+[ 1303.081971] Hardware name: HiKey Development Board (DT)
+[ 1303.081982] Workqueue: mm_percpu_wq vmstat_update
+[ 1303.081989] pstate: a0000005 (NzCv daif -PAN -UAO)
+[ 1303.081997] pc : next_online_pgdat+0x24/0x78
+[ 1303.082004] lr : next_zone+0x40/0x50
+[ 1303.082007] sp : ffff8000124d3be0
+[ 1303.082012] x29: ffff8000124d3be0 x28: 0000000000000000
+[ 1303.082019] x27: 0000000000000006 x26: ffff000074e00000
+[ 1303.082026] x25: 0000000000000000 x24: ffff8000119f0218
+[ 1303.082033] x23: ffff8000119f01d8 x22: 0000000000000000
+[ 1303.082043] x21: ffff8000124d3cc0 x20: ffff8000124d3cd8
+[ 1303.082050] x19: 0000000000000000 x18: 0000000000000000
+[ 1303.082057] x17: 0000000000000000 x16: 0000000000000000
+[ 1303.082064] x15: 0000000000000000 x14: 0000000000000000
+[ 1303.082070] x13: 0000000000000000 x12: 0000000000000000
+[ 1303.082077] x11: 0000000000000000 x10: 0000000000000000
+[ 1303.082084] x9 : 0000000000000000 x8 : ffff000077bdbe20
+[ 1303.082090] x7 : ffff8000119f0218 x6 : ffff8000119f0226
+[ 1303.082097] x5 : 0000000000000000 x4 : 0000000000000000
+[ 1303.082104] x3 : ffff8000119f01d8 x2 : ffff800066144000
+[ 1303.082111] x1 : 0000000000000004 x0 : ffff800011fea000
+[ 1303.082117] Call trace:
+[ 1303.082125]  next_online_pgdat+0x24/0x78
+[ 1303.082131]  next_zone+0x40/0x50
+[ 1303.082139]  refresh_cpu_vm_stats+0xbc/0x3f8
+[ 1303.082146]  vmstat_update+0x1c/0x88
+[ 1303.082153]  process_one_work+0x1c4/0x480
+[ 1303.082158]  worker_thread+0x54/0x430
+[ 1303.082165]  kthread+0x11c/0x150
+[ 1303.082172]  ret_from_fork+0x10/0x1c
+[ 1303.082181] Code: aa1e03e0 d503201f d2800081 9000eb20 (b9554262)
+[ 1303.082187] ---[ end trace cd32e7e2c7ee891a ]---
+[ 1303.085351] SLUB: Unable to allocate memory on node -1,
+gfp=0x400cc0(GFP_KERNEL_ACCOUNT)
+[ 1303.085362]   cache: skbuff_head_cache, object size: 216, buffer
+size: 256, default order: 1, min order: 0
+[ 1303.085372]   node 0: slabs: 53, objs: 1696, free: 0
+[ 1303.085502] SLUB: Unable to allocate memory on node -1,
+gfp=0x400cc0(GFP_KERNEL_ACCOUNT)
+[ 1303.085510]   cache: skbuff_head_cache, object size: 216, buffer
+size: 256, default order: 1, min order: 0
+[ 1303.085517]   node 0: slabs: 53, objs: 1696, free: 0
+[ 1303.085618] SLUB: Unable to allocate memory on node -1,
+gfp=0x400cc0(GFP_KERNEL_ACCOUNT)
+[ 1303.085626]   cache: skbuff_head_cache, object size: 216, buffer
+size: 256, default order: 1, min order: 0
+[ 1303.085633]   node 0: slabs: 53, objs: 1696, free: 0
+[ 1303.085713] SLUB: Unable to allocate memory on node -1,
+gfp=0x400cc0(GFP_KERNEL_ACCOUNT)
+[ 1303.085721]   cache: skbuff_head_cache, object size: 216, buffer
+size: 256, default order: 1, min order: 0
+[ 1303.085728]   node 0: slabs: 53, objs: 1696, free: 0
+[ 1303.085822] SLUB: Unable to allocate memory on node -1,
+gfp=0x400cc0(GFP_KERNEL_ACCOUNT)
+[ 1303.085829]   cache: skbuff_head_cache, object size: 216, buffer
+size: 256, default order: 1, min order: 0
+[ 1303.085836]   node 0: slabs: 53, objs: 1696, free: 0
+[ 1303.085916] SLUB: Unable to allocate memory on node -1,
+gfp=0x400cc0(GFP_KERNEL_ACCOUNT)
+[ 1303.085923]   cache: skbuff_head_cache, object size: 216, buffer
+size: 256, default order: 1, min order: 0
+[ 1303.085931]   node 0: slabs: 53, objs: 1696, free: 0
+[ 1303.086023] SLUB: Unable to allocate memory on node -1,
+gfp=0x400cc0(GFP_KERNEL_ACCOUNT)
+[ 1303.086030]   cache: skbuff_head_cache, object size: 216, buffer
+size: 256, default order: 1, min order: 0
+[ 1303.086037]   node 0: slabs: 53, objs: 1696, free: 0
+[ 1303.086117] SLUB: Unable to allocate memory on node -1,
+gfp=0x400cc0(GFP_KERNEL_ACCOUNT)
+[ 1303.086124]   cache: skbuff_head_cache, object size: 216, buffer
+size: 256, default order: 1, min order: 0
+[ 1303.086131]   node 0: slabs: 53, objs: 1696, free: 0
+[ 1303.086223] SLUB: Unable to allocate memory on node -1,
+gfp=0x400cc0(GFP_KERNEL_ACCOUNT)
+[ 1303.086231]   cache: skbuff_head_cache, object size: 216, buffer
+size: 256, default order: 1, min order: 0
+[ 1303.086238]   node 0: slabs: 53, objs: 1696, free: 0
+[ 1303.086317] SLUB: Unable to allocate memory on node -1,
+gfp=0x400cc0(GFP_KERNEL_ACCOUNT)
+[ 1303.086324]   cache: skbuff_head_cache, object size: 216, buffer
+size: 256, default order: 1, min order: 0
+[ 1303.086331]   node 0: slabs: 53, objs: 1696, free: 0
+[ 1303.091806] Mem abort info:
+[ 1303.091810]   ESR = 0x96000006
+[ 1303.091815]   EC = 0x25: DABT (current EL), IL = 32 bits
+[ 1303.091819]   SET = 0, FnV = 0
+[ 1303.091823]   EA = 0, S1PTW = 0
+[ 1303.091826] Data abort info:
+[ 1303.091830]   ISV = 0, ISS = 0x00000006
+[ 1303.091834]   CM = 0, WnR = 0
+[ 1303.091840] user pgtable: 4k pages, 48-bit VAs, pgdp=000000006ab4d000
+[ 1303.091844] [0000000000001540] pgd=000000006dded003,
+pud=000000006a870003, pmd=0000000000000000
+[ 1303.091858] Internal error: Oops: 96000006 [#3] PREEMPT SMP
+[ 1303.092766] socket: no more sockets
+[ 1303.092883] socket: no more sockets
+[ 1303.092913] socket: no more sockets
+[ 1303.092942] socket: no more sockets
+[ 1303.092971] socket: no more sockets
+[ 1303.092999] socket: no more sockets
+[ 1303.093027] socket: no more sockets
+[ 1303.093056] socket: no more sockets
+[ 1303.093078] systemd-journald[246]: Failed to open system journal:
+Cannot allocate memory
+[ 1303.093085] socket: no more sockets
+[ 1303.093113] socket: no more sockets
+[ 1303.093246] systemd-journald[246]: Failed to open system journal:
+Cannot allocate memory
+[ 1303.093331] systemd-journald[246]: Failed to open system journal:
+Cannot allocate memory
+[ 1303.093488] NetworkManager invoked oom-killer: gfp_mask=0x0(),
+order=0, oom_score_adj=0
+[ 1303.093505] CPU: 4 PID: 354 Comm: NetworkManager Tainted: G      D
+         5.4.114-rc1 #1
+[ 1303.093510] Hardware name: HiKey Development Board (DT)
+[ 1303.093516] Call trace:
+[ 1303.093530]  dump_backtrace+0x0/0x178
+[ 1303.093533] systemd-journald[246]: Failed to open system journal:
+Cannot allocate memory
+[ 1303.093538]  show_stack+0x28/0x38
+[ 1303.093548]  dump_stack+0xe0/0x160
+[ 1303.093559]  dump_header+0x4c/0x1f8
+[ 1303.093568]  oom_kill_process+0x1cc/0x1d0
+[ 1303.093576]  out_of_memory+0x178/0x4f0
+[ 1303.093584]  pagefault_out_of_memory+0x8c/0x298
+[ 1303.093593]  do_page_fault+0x484/0x4c8
+[ 1303.093602]  do_translation_fault+0xb4/0xd0
+[ 1303.093609]  do_mem_abort+0x54/0xb0
+[ 1303.093616]  el0_da+0x1c/0x20
+[ 1303.093620] systemd-journald[246]: Failed to open system journal:
+Cannot allocate memory
+[ 1303.093625] Mem-Info:
+[ 1303.093648] Unable to handle kernel paging request at virtual
+address 0000000000001540
+[ 1303.093656] Mem abort info:
+[ 1303.093664]   ESR = 0x96000006
+[ 1303.093673]   EC = 0x25: DABT (current EL), IL = 32 bits
+[ 1303.093681]   SET = 0, FnV = 0
+[ 1303.093689]   EA = 0, S1PTW = 0
+[ 1303.093697] Data abort info:
+[ 1303.093705]   ISV = 0, ISS = 0x00000006
+[ 1303.093713]   CM = 0, WnR = 0
+[ 1303.093722] user pgtable: 4k pages, 48-bit VAs, pgdp=0000000072aa1000
+[ 1303.093730] [0000000000001540] pgd=0000000074f43003,
+pud=000000006f64c003, pmd=0000000000000000
+[ 1303.093776] systemd-journald[246]: Failed to open system journal:
+Cannot allocate memory
+[ 1303.093859] systemd-journald[246]: Failed to open system journal:
+Cannot allocate memory
+[ 1303.094013] systemd-journald[246]: Failed to open system journal:
+Cannot allocate memory
+[ 1303.094095] systemd-journald[246]: Failed to open system journal:
+Cannot allocate memory
+[ 1303.094248] systemd-journald[246]: Failed to open system journal:
+Cannot allocate memory
+[ 1303.100042] CPU: 1 PID: 18028 Comm: thp04 Tainted: G      D
+  5.4.114-rc1 #1
+[ 1303.103634] Modules linked in: algif_hash wl18xx wlcore mac80211
+cfg80211 hci_uart snd_soc_hdmi_codec btbcm snd_soc_audio_graph_card
+adv7511 snd_soc_simple_card_utils crct10dif_ce wlcore_sdio bluetooth
+cec kirin_drm drm_kms_helper dw_drm_dsi rfkill drm fuse
+[ 1303.111730] Hardware name: HiKey Development Board (DT)
+[ 1303.114592] CPU: 6 PID: 0 Comm: swapper/6 Tainted: G      D
+  5.4.114-rc1 #1
+[ 1303.117710] Call trace:
+[ 1303.123139] Hardware name: HiKey Development Board (DT)
+[ 1303.126270]  dump_backtrace+0x0/0x178
+[ 1303.129474] pstate: a0000085 (NzCv daIf -PAN -UAO)
+[ 1303.132417]  show_stack+0x28/0x38
+[ 1303.136341] pc : next_online_pgdat+0x24/0x78
+[ 1303.139369]  dump_stack+0xe0/0x160
+[ 1303.145953] lr : next_zone+0x40/0x50
+[ 1303.150939]  warn_alloc+0x100/0x170
+[ 1303.156632] sp : ffff80001238bd20
+[ 1303.179898]  __alloc_pages_slowpath+0xbc4/0xbf0
+[ 1303.186741] x29: ffff80001238bd20 x28: 0000000000000000
+[ 1303.192082]  __alloc_pages_nodemask+0x2ec/0x360
+[ 1303.196535] x27: 0000000000000006 x26: ffff0000389e8000
+[ 1303.201434]  alloc_pages_current+0x90/0x100
+[ 1303.205791] x25: 0000000000000000 x24: ffff8000119f0218
+[ 1303.209450]  do_huge_pmd_anonymous_page+0x3b0/0x818
+[ 1303.212830] x23: ffff8000119f01d8 x22: 0000000000000000
+[ 1303.218261]  __handle_mm_fault+0x83c/0x10a8
+[ 1303.223684] x21: ffff80001238be00 x20: ffff80001238be18
+[ 1303.229113]  handle_mm_fault+0x110/0x1f8
+[ 1303.234536] x19: 0000000000000000 x18: 0000000000000000
+[ 1303.239968]  do_page_fault+0x14c/0x4c8
+[ 1303.245390] x17: 0000000000000000 x16: 0000000000000000
+[ 1303.250821]  do_translation_fault+0xb4/0xd0
+[ 1303.256245] x15: 0000000000000000 x14: 0000000000000000
+[ 1303.261673]  do_mem_abort+0x54/0xb0
+[ 1303.267097] x13: 0000000000000000 x12: 0000000000000000
+[ 1303.272526]  el0_da+0x1c/0x20
+[ 1303.277951] x11: 0000000000000000 x10: 0000000000000000
+[ 1303.291214] Mem-Info:
+[ 1303.304193] x9 : 0000000000000000 x8 : ffff000077bdbe20
+[ 1303.304201] x7 : ffff8000119f0218 x6 : ffff8000119f0226
+[ 1303.304208] x5 : 0000000000000000 x4 : ffff8000661c0000
+[ 1303.304215] x3 : ffff800011feaff0 x2 : ffff8000661c0000
+[ 1303.317358] Unable to handle kernel paging request at virtual
+address 0000000000001540
+[ 1303.327384] x1 : 0000000000000004 x0 : ffff800011fea000
+[ 1303.327393] Call trace:
+[ 1303.327406]  next_online_pgdat+0x24/0x78
+[ 1303.327412]  next_zone+0x40/0x50
+[ 1303.327420]  refresh_cpu_vm_stats+0xbc/0x3f8
+[ 1303.327427]  quiet_vmstat+0x64/0x488
+[ 1303.327441]  tick_nohz_idle_stop_tick+0xc4/0x2f0
+[ 1303.338935] Mem abort info:
+[ 1303.349349]  do_idle+0x1e0/0x2a0
+[ 1303.349358]  cpu_startup_entry+0x30/0x90
+[ 1303.349367]  secondary_start_kernel+0x16c/0x198
+[ 1303.349380] Code: aa1e03e0 d503201f d2800081 9000eb20 (b9554262)
+[ 1303.349392] ---[ end trace cd32e7e2c7ee891b ]---
 
-diff --git a/net/core/dev.c b/net/core/dev.c
-index 1f79b9aa9a3f..427cbc80d1e5 100644
---- a/net/core/dev.c
-+++ b/net/core/dev.c
-@@ -1537,8 +1537,11 @@ static int __dev_open(struct net_device *dev, struct netlink_ext_ack *extack)
- 
- 	if (!netif_device_present(dev)) {
- 		/* may be detached because parent is runtime-suspended */
--		if (dev->dev.parent)
-+		if (dev->dev.parent) {
-+			rtnl_unlock();
- 			pm_runtime_resume(dev->dev.parent);
-+			rtnl_lock();
-+		}
- 		if (!netif_device_present(dev))
- 			return -ENODEV;
- 	}
--- 
-2.25.1
+Full test log link,
+https://qa-reports.linaro.org/lkft/linux-stable-rc-linux-5.4.y/build/v5.4.113-74-gc509b45704fd/testrun/4393633/suite/linux-log-parser/test/check-kernel-oops-2551234/log
+and
+https://lkft.validation.linaro.org/scheduler/job/2551234#L10291
 
+metadata:
+  git branch: linux-5.4.y
+  git repo: https://gitlab.com/Linaro/lkft/mirrors/stable/linux-stable-rc
+  git commit: c509b45704fd663fc59405e98d29d7f06eaae4b5
+  git describe: v5.4.113-74-gc509b45704fd
+  make_kernelversion: 5.4.114-rc1
+  kernel-config: https://builds.tuxbuild.com/1rOEzHLegEbudzQQdiifqEuFVur/config
+
+--
+Linaro LKFT
+https://lkft.linaro.org
