@@ -2,150 +2,212 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 12AC23657CD
+	by mail.lfdr.de (Postfix) with ESMTP id 8D7A83657CE
 	for <lists+netdev@lfdr.de>; Tue, 20 Apr 2021 13:44:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231749AbhDTLo7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 20 Apr 2021 07:44:59 -0400
-Received: from mx0a-0016f401.pphosted.com ([67.231.148.174]:50508 "EHLO
-        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S230491AbhDTLo5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 20 Apr 2021 07:44:57 -0400
-Received: from pps.filterd (m0045849.ppops.net [127.0.0.1])
-        by mx0a-0016f401.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 13KBebXA007594;
-        Tue, 20 Apr 2021 04:44:22 -0700
+        id S231773AbhDTLpC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 20 Apr 2021 07:45:02 -0400
+Received: from mx0b-0016f401.pphosted.com ([67.231.156.173]:49420 "EHLO
+        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S230491AbhDTLpB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 20 Apr 2021 07:45:01 -0400
+Received: from pps.filterd (m0045851.ppops.net [127.0.0.1])
+        by mx0b-0016f401.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 13KBb7XT017533;
+        Tue, 20 Apr 2021 04:44:27 -0700
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
  subject : date : message-id : in-reply-to : references : mime-version :
  content-transfer-encoding : content-type; s=pfpt0220;
- bh=1mkCPIcb/JpmKKXHAQuPOJMejhta2XzkzzasuEmNKlY=;
- b=TqTQPPsQ3ZwWBx6GhhD8ZoxbTVmhLkwMUzVd8NLGL9VLD38g8gusveIA+hb4+1YQCozz
- 4tEa4g0U43t+9uVNskvypMnyHX3TBdr3huvEDTzAqEjixdalGD+rnBFJ/UD1yf2bN5A6
- IAn2FnItLbYLijoHkPVkIWSK7WyO9mMuGUOOb1EMXtMJ+Hq4I8adp2i0r5iCcwfJ4Upp
- VQR8pYXP2aXo19mOyXmuCwijiwSKKyT6EM348K+RdDxNqbV6npkvdKeG5Bm49vxCI5+o
- ElOPyjnWOr5TfplQCJARhC9Odczi5DnGSsR0k0tHD8DhWoG++KTyaeH3lLq2zwDuMq2M yw== 
-Received: from dc5-exch02.marvell.com ([199.233.59.182])
-        by mx0a-0016f401.pphosted.com with ESMTP id 381ryvrywk-1
+ bh=PxTeWFaKBX71lVh7yTpaGoVVZxXLKb/Nr5EyNASRwMc=;
+ b=VkfIBJFBhqT6cEC5DyZ77cmAAhhgObAVm+7LBqlWddUOLNLmHHLzmFPWrPOksj9NLm3X
+ 56QTZ753z7KmGCTbvmaEPahMvIf+fpHLR9DReExrK1np/oTOb5+FMDjb6p2FfQpvI+RK
+ AO4RuI6wJOp7UJ273gmPFosGj0VguBdBAjdTUl9wc48ilZEW2kvkq5J4Xi9MN1qmhmzb
+ C6rkjP6Nbs67bE8mqwIiCfqs9z9NFbzEslTfomP/8cFzRyqVMD4xXXIw0LqT0KJ64zw+
+ klMCeWZiH73RUpKtCAOQ+1Dt3n6gyB2P8pSN5Gvp23QsvJdOwXlI0o9nnLYANUNRe2JE aQ== 
+Received: from dc5-exch01.marvell.com ([199.233.59.181])
+        by mx0b-0016f401.pphosted.com with ESMTP id 3818tvum2j-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Tue, 20 Apr 2021 04:44:22 -0700
-Received: from DC5-EXCH01.marvell.com (10.69.176.38) by DC5-EXCH02.marvell.com
- (10.69.176.39) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Tue, 20 Apr
- 2021 04:44:20 -0700
+        Tue, 20 Apr 2021 04:44:27 -0700
+Received: from DC5-EXCH01.marvell.com (10.69.176.38) by DC5-EXCH01.marvell.com
+ (10.69.176.38) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Tue, 20 Apr
+ 2021 04:44:25 -0700
 Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH01.marvell.com
  (10.69.176.38) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Tue, 20 Apr 2021 04:44:20 -0700
+ Transport; Tue, 20 Apr 2021 04:44:25 -0700
 Received: from hyd1schalla-dt.caveonetworks.com.com (unknown [10.29.8.39])
-        by maili.marvell.com (Postfix) with ESMTP id 0C3263F7040;
-        Tue, 20 Apr 2021 04:44:16 -0700 (PDT)
+        by maili.marvell.com (Postfix) with ESMTP id 47B363F703F;
+        Tue, 20 Apr 2021 04:44:22 -0700 (PDT)
 From:   Srujana Challa <schalla@marvell.com>
 To:     <netdev@vger.kernel.org>
 CC:     <davem@davemloft.net>, <kuba@kernel.org>, <sgoutham@marvell.com>,
         <lcherian@marvell.com>, <sbhatta@marvell.com>,
         <hkelam@marvell.com>, <gakula@marvell.com>, <jerinj@marvell.com>,
-        <pathreya@marvell.com>, "Srujana Challa" <schalla@marvell.com>,
-        Vidya Sagar Velumuri <vvelumuri@marvell.com>
-Subject: [PATCH 1/3] octeontx2-af: cn10k: Mailbox changes for CN10K CPT
-Date:   Tue, 20 Apr 2021 17:13:47 +0530
-Message-ID: <20210420114349.22640-2-schalla@marvell.com>
+        <pathreya@marvell.com>, "Srujana Challa" <schalla@marvell.com>
+Subject: [PATCH 2/3] octeontx2-af: cn10k: Add mailbox to configure reassembly timeout
+Date:   Tue, 20 Apr 2021 17:13:48 +0530
+Message-ID: <20210420114349.22640-3-schalla@marvell.com>
 X-Mailer: git-send-email 2.29.0
 In-Reply-To: <20210420114349.22640-1-schalla@marvell.com>
 References: <20210420114349.22640-1-schalla@marvell.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
-X-Proofpoint-ORIG-GUID: 3NsPItyXCLsecemRFIPzsbZ3aBEP_ViW
-X-Proofpoint-GUID: 3NsPItyXCLsecemRFIPzsbZ3aBEP_ViW
+X-Proofpoint-GUID: duAImxhwHh1bagDVDMYb4GXx1SA_FlK_
+X-Proofpoint-ORIG-GUID: duAImxhwHh1bagDVDMYb4GXx1SA_FlK_
 X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.391,18.0.761
  definitions=2021-04-20_02:2021-04-19,2021-04-20 signatures=0
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Adds changes to existing CPT mailbox messages to support
-CN10K CPT block. This patch also adds new register defines
-for CN10K CPT.
+CN10K CPT coprocessor includes a component named RXC which
+is responsible for reassembly of inner IP packets. RXC has
+the feature to evict oldest entries based on age/threshold.
+This patch adds a new mailbox to configure reassembly age
+or threshold.
 
-Signed-off-by: Vidya Sagar Velumuri <vvelumuri@marvell.com>
+Signed-off-by: Jerin Jacob Kollanukkaran <jerinj@marvell.com>
 Signed-off-by: Srujana Challa <schalla@marvell.com>
 ---
- .../ethernet/marvell/octeontx2/af/rvu_cpt.c   | 11 +++++++++-
- .../ethernet/marvell/octeontx2/af/rvu_reg.h   | 21 +++++++++++++++++++
- 2 files changed, 31 insertions(+), 1 deletion(-)
+ .../net/ethernet/marvell/octeontx2/af/mbox.h  | 13 ++++
+ .../ethernet/marvell/octeontx2/af/rvu_cpt.c   | 68 +++++++++++++++++--
+ 2 files changed, 74 insertions(+), 7 deletions(-)
 
+diff --git a/drivers/net/ethernet/marvell/octeontx2/af/mbox.h b/drivers/net/ethernet/marvell/octeontx2/af/mbox.h
+index 55629c66586e..84e4178e8a13 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/af/mbox.h
++++ b/drivers/net/ethernet/marvell/octeontx2/af/mbox.h
+@@ -177,6 +177,8 @@ M(CPT_LF_ALLOC,		0xA00, cpt_lf_alloc, cpt_lf_alloc_req_msg,	\
+ M(CPT_LF_FREE,		0xA01, cpt_lf_free, msg_req, msg_rsp)		\
+ M(CPT_RD_WR_REGISTER,	0xA02, cpt_rd_wr_register,  cpt_rd_wr_reg_msg,	\
+ 			       cpt_rd_wr_reg_msg)			\
++M(CPT_RXC_TIME_CFG,     0xA06, cpt_rxc_time_cfg, cpt_rxc_time_cfg_req,  \
++			       msg_rsp)                                 \
+ /* NPC mbox IDs (range 0x6000 - 0x7FFF) */				\
+ M(NPC_MCAM_ALLOC_ENTRY,	0x6000, npc_mcam_alloc_entry, npc_mcam_alloc_entry_req,\
+ 				npc_mcam_alloc_entry_rsp)		\
+@@ -1255,4 +1257,15 @@ struct cpt_lf_alloc_req_msg {
+ 	int blkaddr;
+ };
+ 
++/* Mailbox message request format to configure reassembly timeout. */
++struct cpt_rxc_time_cfg_req {
++	struct mbox_msghdr hdr;
++	int blkaddr;
++	u32 step;
++	u16 zombie_thres;
++	u16 zombie_limit;
++	u16 active_thres;
++	u16 active_limit;
++};
++
+ #endif /* MBOX_H */
 diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rvu_cpt.c b/drivers/net/ethernet/marvell/octeontx2/af/rvu_cpt.c
-index 0945c3a3b180..42c474957b69 100644
+index 42c474957b69..77bfa81a324c 100644
 --- a/drivers/net/ethernet/marvell/octeontx2/af/rvu_cpt.c
 +++ b/drivers/net/ethernet/marvell/octeontx2/af/rvu_cpt.c
-@@ -9,6 +9,10 @@
+@@ -60,6 +60,17 @@ static bool is_cpt_vf(struct rvu *rvu, u16 pcifunc)
+ 	return true;
+ }
  
- /* CPT PF device id */
- #define	PCI_DEVID_OTX2_CPT_PF	0xA0FD
-+#define	PCI_DEVID_OTX2_CPT10K_PF 0xA0F2
++static int validate_and_get_cpt_blkaddr(int req_blkaddr)
++{
++	int blkaddr;
 +
-+/* Length of initial context fetch in 128 byte words */
-+#define CPT_CTX_ILEN    2
++	blkaddr = req_blkaddr ? req_blkaddr : BLKADDR_CPT0;
++	if (blkaddr != BLKADDR_CPT0 && blkaddr != BLKADDR_CPT1)
++		return -EINVAL;
++
++	return blkaddr;
++}
++
+ int rvu_mbox_handler_cpt_lf_alloc(struct rvu *rvu,
+ 				  struct cpt_lf_alloc_req_msg *req,
+ 				  struct msg_rsp *rsp)
+@@ -70,9 +81,9 @@ int rvu_mbox_handler_cpt_lf_alloc(struct rvu *rvu,
+ 	int num_lfs, slot;
+ 	u64 val;
  
- static int get_cpt_pf_num(struct rvu *rvu)
+-	blkaddr = req->blkaddr ? req->blkaddr : BLKADDR_CPT0;
+-	if (blkaddr != BLKADDR_CPT0 && blkaddr != BLKADDR_CPT1)
+-		return -ENODEV;
++	blkaddr = validate_and_get_cpt_blkaddr(req->blkaddr);
++	if (blkaddr < 0)
++		return blkaddr;
+ 
+ 	if (req->eng_grpmsk == 0x0)
+ 		return CPT_AF_ERR_GRP_INVALID;
+@@ -170,7 +181,9 @@ static bool is_valid_offset(struct rvu *rvu, struct cpt_rd_wr_reg_msg *req)
+ 	struct rvu_block *block;
+ 	struct rvu_pfvf *pfvf;
+ 
+-	blkaddr = rvu_get_blkaddr(rvu, BLKTYPE_CPT, 0);
++	blkaddr = validate_and_get_cpt_blkaddr(req->blkaddr);
++	if (blkaddr < 0)
++		return blkaddr;
+ 
+ 	/* Registers that can be accessed from PF/VF */
+ 	if ((offset & 0xFF000) ==  CPT_AF_LFX_CTL(0) ||
+@@ -226,9 +239,9 @@ int rvu_mbox_handler_cpt_rd_wr_register(struct rvu *rvu,
  {
-@@ -21,7 +25,8 @@ static int get_cpt_pf_num(struct rvu *rvu)
- 		if (!pdev)
- 			continue;
+ 	int blkaddr;
  
--		if (pdev->device == PCI_DEVID_OTX2_CPT_PF) {
-+		if (pdev->device == PCI_DEVID_OTX2_CPT_PF ||
-+		    pdev->device == PCI_DEVID_OTX2_CPT10K_PF) {
- 			cpt_pf_num = i;
- 			put_device(&pdev->dev);
- 			break;
-@@ -103,6 +108,9 @@ int rvu_mbox_handler_cpt_lf_alloc(struct rvu *rvu,
+-	blkaddr = req->blkaddr ? req->blkaddr : BLKADDR_CPT0;
+-	if (blkaddr != BLKADDR_CPT0 && blkaddr != BLKADDR_CPT1)
+-		return -ENODEV;
++	blkaddr = validate_and_get_cpt_blkaddr(req->blkaddr);
++	if (blkaddr < 0)
++		return blkaddr;
  
- 		/* Set CPT LF group and priority */
- 		val = (u64)req->eng_grpmsk << 48 | 1;
-+		if (!is_rvu_otx2(rvu))
-+			val |= (CPT_CTX_ILEN << 17);
+ 	/* This message is accepted only if sent from CPT PF/VF */
+ 	if (!is_cpt_pf(rvu, req->hdr.pcifunc) &&
+@@ -250,6 +263,47 @@ int rvu_mbox_handler_cpt_rd_wr_register(struct rvu *rvu,
+ 	return 0;
+ }
+ 
++#define RXC_ZOMBIE_THRES  GENMASK_ULL(59, 48)
++#define RXC_ZOMBIE_LIMIT  GENMASK_ULL(43, 32)
++#define RXC_ACTIVE_THRES  GENMASK_ULL(27, 16)
++#define RXC_ACTIVE_LIMIT  GENMASK_ULL(11, 0)
++#define RXC_ACTIVE_COUNT  GENMASK_ULL(60, 48)
++#define RXC_ZOMBIE_COUNT  GENMASK_ULL(60, 48)
 +
- 		rvu_write64(rvu, blkaddr, CPT_AF_LFX_CTL(cptlf), val);
- 
- 		/* Set CPT LF NIX_PF_FUNC and SSO_PF_FUNC */
-@@ -192,6 +200,7 @@ static bool is_valid_offset(struct rvu *rvu, struct cpt_rd_wr_reg_msg *req)
- 		case CPT_AF_PF_FUNC:
- 		case CPT_AF_BLK_RST:
- 		case CPT_AF_CONSTANTS1:
-+		case CPT_AF_CTX_FLUSH_TIMER:
- 			return true;
- 		}
- 
-diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rvu_reg.h b/drivers/net/ethernet/marvell/octeontx2/af/rvu_reg.h
-index 3e401fd8ac63..ac71c0f2f960 100644
---- a/drivers/net/ethernet/marvell/octeontx2/af/rvu_reg.h
-+++ b/drivers/net/ethernet/marvell/octeontx2/af/rvu_reg.h
-@@ -494,6 +494,27 @@
- #define CPT_AF_RAS_INT_W1S              (0x47028)
- #define CPT_AF_RAS_INT_ENA_W1S          (0x47030)
- #define CPT_AF_RAS_INT_ENA_W1C          (0x47038)
-+#define CPT_AF_CTX_FLUSH_TIMER          (0x48000ull)
-+#define CPT_AF_CTX_ERR                  (0x48008ull)
-+#define CPT_AF_CTX_ENC_ID               (0x48010ull)
-+#define CPT_AF_CTX_MIS_PC		(0x49400ull)
-+#define CPT_AF_CTX_HIT_PC		(0x49408ull)
-+#define CPT_AF_CTX_AOP_PC		(0x49410ull)
-+#define CPT_AF_CTX_AOP_LATENCY_PC       (0x49418ull)
-+#define CPT_AF_CTX_IFETCH_PC            (0x49420ull)
-+#define CPT_AF_CTX_IFETCH_LATENCY_PC    (0x49428ull)
-+#define CPT_AF_CTX_FFETCH_PC            (0x49430ull)
-+#define CPT_AF_CTX_FFETCH_LATENCY_PC    (0x49438ull)
-+#define CPT_AF_CTX_WBACK_PC             (0x49440ull)
-+#define CPT_AF_CTX_WBACK_LATENCY_PC     (0x49448ull)
-+#define CPT_AF_CTX_PSH_PC               (0x49450ull)
-+#define CPT_AF_CTX_PSH_LATENCY_PC       (0x49458ull)
-+#define CPT_AF_RXC_TIME                 (0x50010ull)
-+#define CPT_AF_RXC_TIME_CFG             (0x50018ull)
-+#define CPT_AF_RXC_DFRG                 (0x50020ull)
-+#define CPT_AF_RXC_ACTIVE_STS           (0x50028ull)
-+#define CPT_AF_RXC_ZOMBIE_STS           (0x50030ull)
-+#define CPT_AF_X2PX_LINK_CFG(a)         (0x51000ull | (u64)(a) << 3)
- 
- #define AF_BAR2_ALIASX(a, b)            (0x9100000ull | (a) << 12 | (b))
- #define CPT_AF_BAR2_SEL                 0x9000000
++static void cpt_rxc_time_cfg(struct rvu *rvu, struct cpt_rxc_time_cfg_req *req,
++			     int blkaddr)
++{
++	u64 dfrg_reg;
++
++	dfrg_reg = FIELD_PREP(RXC_ZOMBIE_THRES, req->zombie_thres);
++	dfrg_reg |= FIELD_PREP(RXC_ZOMBIE_LIMIT, req->zombie_limit);
++	dfrg_reg |= FIELD_PREP(RXC_ACTIVE_THRES, req->active_thres);
++	dfrg_reg |= FIELD_PREP(RXC_ACTIVE_LIMIT, req->active_limit);
++
++	rvu_write64(rvu, blkaddr, CPT_AF_RXC_TIME_CFG, req->step);
++	rvu_write64(rvu, blkaddr, CPT_AF_RXC_DFRG, dfrg_reg);
++}
++
++int rvu_mbox_handler_cpt_rxc_time_cfg(struct rvu *rvu,
++				      struct cpt_rxc_time_cfg_req *req,
++				      struct msg_rsp *rsp)
++{
++	int blkaddr;
++
++	blkaddr = validate_and_get_cpt_blkaddr(req->blkaddr);
++	if (blkaddr < 0)
++		return blkaddr;
++
++	/* This message is accepted only if sent from CPT PF/VF */
++	if (!is_cpt_pf(rvu, req->hdr.pcifunc) &&
++	    !is_cpt_vf(rvu, req->hdr.pcifunc))
++		return CPT_AF_ERR_ACCESS_DENIED;
++
++	cpt_rxc_time_cfg(rvu, req, blkaddr);
++
++	return 0;
++}
++
+ #define INPROG_INFLIGHT(reg)    ((reg) & 0x1FF)
+ #define INPROG_GRB_PARTIAL(reg) ((reg) & BIT_ULL(31))
+ #define INPROG_GRB(reg)         (((reg) >> 32) & 0xFF)
 -- 
 2.29.0
 
