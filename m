@@ -2,157 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 84250365C5E
-	for <lists+netdev@lfdr.de>; Tue, 20 Apr 2021 17:43:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0209D365CBE
+	for <lists+netdev@lfdr.de>; Tue, 20 Apr 2021 17:58:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232976AbhDTPnP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 20 Apr 2021 11:43:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39464 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232940AbhDTPnO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 20 Apr 2021 11:43:14 -0400
-Received: from mail-oi1-x22b.google.com (mail-oi1-x22b.google.com [IPv6:2607:f8b0:4864:20::22b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E06A8C06174A
-        for <netdev@vger.kernel.org>; Tue, 20 Apr 2021 08:42:42 -0700 (PDT)
-Received: by mail-oi1-x22b.google.com with SMTP id m13so39336087oiw.13
-        for <netdev@vger.kernel.org>; Tue, 20 Apr 2021 08:42:42 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=sender:date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=Naz1DrVXxBH7tywhff0dCWs4H+8+B3WWxTeFXFlsQuE=;
-        b=SbGPqz13+mfAi7LATakrKqCDK4XrVrapAn34oVBsaSJqLoFBh3xaLGRufJZd6OxGhy
-         f2efxMaWXjn+lvbpgB3SoReNcmFh7/y0rh0f6ZNHowMDIBHzyc7m1cGRcyue0ElPLCyG
-         kebJlLhd8z++4+aE8jbHAEwbAYp+SkVGwH4Qbqy4pCsumXgsu9KxxYz04UrXs4W7AbWc
-         UZSy4sdK9phXuEMGGMIcGgCpJ7nZ1Ygt0oTQSOxCqeY41MdjtY6Fxr4TOWMhXdlq+PaM
-         EYjtW4QwV7SuBxPVw+hLEbZK3AEQMJRQ3/vmhUfblEK17GR1S0J0ai0gq/65rf4G2otr
-         Ll7w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
-         :references:mime-version:content-disposition:in-reply-to:user-agent;
-        bh=Naz1DrVXxBH7tywhff0dCWs4H+8+B3WWxTeFXFlsQuE=;
-        b=EcL3yS+4FslkT5WHjjMBOTBeXO0dNw0uiuc2C8gxVusOXJ/CYaKQ7zkPXl8Z9aVqih
-         bEM5lhHhgL01jCuBlBxeZ0Dpj7lOlRGZ5OHT8OonqIH0lZUVXoIDj9e83yhz3Q3ImhOB
-         ug+5JAAMhHhx1aHAoXXpwP66gpDpTU/NN0wgbagyvFisV2FbvBrTSN0a3iPhKOFMEAJ0
-         zLmwpdGRQOERYOhQyJuvNBhUAGClSCxuWAt687XmtiRjX20ZzH8UcvfF/bwaalTbEbyH
-         Uptxvlvkz2dpM8bFXC9ky6klqHFky013xZml/WyW8GE/hWydN2Gv/t0kabweAZ+AHgxj
-         QSAA==
-X-Gm-Message-State: AOAM531KFs0T6KUT2J1ocUi8UqySgX5bUdAn4q2lROcJqPKW39To7hew
-        TqxIBzQN/BwjdLzIycRrZIM=
-X-Google-Smtp-Source: ABdhPJy7oWbL3xBCLefOgKl1bfsBdFxw1tLrUONDmmODKjn8fx/DzBWva/SG4G6a5XsN4NkuMS1hLg==
-X-Received: by 2002:aca:916:: with SMTP id 22mr3626010oij.66.1618933362360;
-        Tue, 20 Apr 2021 08:42:42 -0700 (PDT)
-Received: from localhost ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
-        by smtp.gmail.com with ESMTPSA id a73sm2369719oib.23.2021.04.20.08.42.41
-        (version=TLS1_2 cipher=ECDHE-ECDSA-CHACHA20-POLY1305 bits=256/256);
-        Tue, 20 Apr 2021 08:42:41 -0700 (PDT)
-Sender: Guenter Roeck <groeck7@gmail.com>
-Date:   Tue, 20 Apr 2021 08:42:40 -0700
-From:   Guenter Roeck <linux@roeck-us.net>
-To:     Eric Dumazet <edumazet@google.com>
-Cc:     Eric Dumazet <eric.dumazet@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        syzbot <syzkaller@googlegroups.com>,
-        Mat Martineau <mathew.j.martineau@linux.intel.com>,
-        Xuan Zhuo <xuanzhuo@linux.alibaba.com>,
-        Jason Wang <jasowang@redhat.com>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        virtualization@lists.linux-foundation.org
-Subject: Re: [PATCH net-next] virtio-net: fix use-after-free in page_to_skb()
-Message-ID: <20210420154240.GA115350@roeck-us.net>
-References: <20210420094341.3259328-1-eric.dumazet@gmail.com>
- <c5a8aeaf-0f41-9274-b9c5-ec385b34180a@roeck-us.net>
- <CANn89iKMbUtDhU+B5dFJDABUSJJ3rnN0PWO0TDY=mRYEbNpHZw@mail.gmail.com>
+        id S232174AbhDTP7H (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 20 Apr 2021 11:59:07 -0400
+Received: from www62.your-server.de ([213.133.104.62]:41540 "EHLO
+        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232303AbhDTP7F (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 20 Apr 2021 11:59:05 -0400
+Received: from sslproxy06.your-server.de ([78.46.172.3])
+        by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92.3)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1lYslg-0006BR-Eo; Tue, 20 Apr 2021 17:58:28 +0200
+Received: from [85.7.101.30] (helo=linux.home)
+        by sslproxy06.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1lYslg-0003VA-5f; Tue, 20 Apr 2021 17:58:28 +0200
+Subject: Re: [PATCH bpf-next v4 2/3] bpf: selftests: remove percpu macros from
+ bpf_util.h
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        Pedro Tammela <pctammela@gmail.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>, Shuah Khan <shuah@kernel.org>,
+        Pedro Tammela <pctammela@mojatatu.com>,
+        David Verbeiren <david.verbeiren@tessares.net>,
+        Matthieu Baerts <matthieu.baerts@tessares.net>,
+        Network Development <netdev@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>
+References: <20210415174619.51229-1-pctammela@mojatatu.com>
+ <20210415174619.51229-3-pctammela@mojatatu.com>
+ <CAADnVQ+XtLj2vUmfazYu8-k3+bd0bJFJUTZWGRBALV1xy-vqFg@mail.gmail.com>
+From:   Daniel Borkmann <daniel@iogearbox.net>
+Message-ID: <e9c5baa2-62e1-86eb-6cde-a6ceec8f05dc@iogearbox.net>
+Date:   Tue, 20 Apr 2021 17:58:27 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CANn89iKMbUtDhU+B5dFJDABUSJJ3rnN0PWO0TDY=mRYEbNpHZw@mail.gmail.com>
-User-Agent: Mutt/1.9.4 (2018-02-28)
+In-Reply-To: <CAADnVQ+XtLj2vUmfazYu8-k3+bd0bJFJUTZWGRBALV1xy-vqFg@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.102.4/26146/Tue Apr 20 13:06:39 2021)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Apr 20, 2021 at 04:00:07PM +0200, Eric Dumazet wrote:
-> On Tue, Apr 20, 2021 at 3:48 PM Guenter Roeck <linux@roeck-us.net> wrote:
-> >
-> > On 4/20/21 2:43 AM, Eric Dumazet wrote:
+On 4/20/21 3:17 AM, Alexei Starovoitov wrote:
+> On Thu, Apr 15, 2021 at 10:47 AM Pedro Tammela <pctammela@gmail.com> wrote:
+>>
+>> Andrii suggested to remove this abstraction layer and have the percpu
+>> handling more explicit[1].
+>>
+>> This patch also updates the tests that relied on the macros.
+>>
+>> [1] https://lore.kernel.org/bpf/CAEf4BzYmj_ZPDq8Zi4dbntboJKRPU2TVopysBNrdd9foHTfLZw@mail.gmail.com/
+>>
+>> Suggested-by: Andrii Nakryiko <andrii@kernel.org>
+>> Signed-off-by: Pedro Tammela <pctammela@mojatatu.com>
+>> ---
+>>   tools/testing/selftests/bpf/bpf_util.h        |  7 --
+>>   .../bpf/map_tests/htab_map_batch_ops.c        | 87 +++++++++----------
+>>   .../selftests/bpf/prog_tests/map_init.c       |  9 +-
+>>   tools/testing/selftests/bpf/test_maps.c       | 84 +++++++++++-------
+>>   4 files changed, 96 insertions(+), 91 deletions(-)
+>>
+>> diff --git a/tools/testing/selftests/bpf/bpf_util.h b/tools/testing/selftests/bpf/bpf_util.h
+>> index a3352a64c067..105db3120ab4 100644
+>> --- a/tools/testing/selftests/bpf/bpf_util.h
+>> +++ b/tools/testing/selftests/bpf/bpf_util.h
+>> @@ -20,13 +20,6 @@ static inline unsigned int bpf_num_possible_cpus(void)
+>>          return possible_cpus;
+>>   }
+>>
+>> -#define __bpf_percpu_val_align __attribute__((__aligned__(8)))
+>> -
+>> -#define BPF_DECLARE_PERCPU(type, name)                         \
+>> -       struct { type v; /* padding */ } __bpf_percpu_val_align \
+>> -               name[bpf_num_possible_cpus()]
+>> -#define bpf_percpu(name, cpu) name[(cpu)].v
+>> -
 > 
-> > >
-> >
-> > Unfortunately that doesn't fix the problem for me. With this patch applied
-> > on top of next-20210419, I still get the same crash as before:
-> >
-> > udhcpc: sending discover^M
-> > Unable to handle kernel paging request at virtual address 0000000000000004^M
-> > udhcpc(169): Oops -1^M
-> > pc = [<0000000000000004>]  ra = [<fffffc0000b8c5b8>]  ps = 0000    Not tainted^M
-> > pc is at 0x4^M
-> > ra is at napi_gro_receive+0x68/0x150^M
-> > v0 = 0000000000000000  t0 = 0000000000000008  t1 = 0000000000000000^M
-> > t2 = 0000000000000000  t3 = 000000000000000e  t4 = 0000000000000038^M
-> > t5 = 000000000000ffff  t6 = fffffc00002f298a  t7 = fffffc0002c78000^M
-> > s0 = fffffc00010b3ca0  s1 = 0000000000000000  s2 = fffffc00011267e0^M
-> > s3 = 0000000000000000  s4 = fffffc00025f2008  s5 = fffffc00002f2940^M
-> > s6 = fffffc00025f2040^M
-> > a0 = fffffc00025f2008  a1 = fffffc00002f2940  a2 = fffffc0002ca000c^M
-> > a3 = fffffc00000250d0  a4 = 0000000effff0008  a5 = 0000000000000000^M
-> > t8 = fffffc00010b3c80  t9 = fffffc0002ca04cc  t10= 0000000000000000^M
-> > t11= 00000000000004c0  pv = fffffc0000b8bc40  at = 0000000000000000^M
-> > gp = fffffc00010f9fb8  sp = 00000000df74db09^M
-> > Disabling lock debugging due to kernel taint^M
-> > Trace:^M
-> > [<fffffc0000b8c5b8>] napi_gro_receive+0x68/0x150^M
-> > [<fffffc00009b409c>] receive_buf+0x50c/0x1b80^M
-> > [<fffffc00009b58b8>] virtnet_poll+0x1a8/0x5b0^M
-> > [<fffffc00009b58ec>] virtnet_poll+0x1dc/0x5b0^M
-> > [<fffffc0000b8d17c>] __napi_poll+0x4c/0x270^M
-> > [<fffffc0000b8d670>] net_rx_action+0x130/0x2c0^M
-> > [<fffffc0000bd6cb0>] sch_direct_xmit+0x170/0x360^M
-> > [<fffffc0000bd7000>] __qdisc_run+0x160/0x6c0^M
-> > [<fffffc0000337b64>] do_softirq+0xa4/0xd0^M
-> > [<fffffc0000337ca4>] __local_bh_enable_ip+0x114/0x120^M
-> > [<fffffc0000b89554>] __dev_queue_xmit+0x484/0xa60^M
-> > [<fffffc0000cd072c>] packet_sendmsg+0xe7c/0x1ba0^M
-> > [<fffffc0000b53338>] __sys_sendto+0xf8/0x170^M
-> > [<fffffc0000cfec18>] _raw_spin_unlock+0x18/0x30^M
-> > [<fffffc0000a9bf7c>] ehci_irq+0x2cc/0x5c0^M
-> > [<fffffc0000a71334>] usb_hcd_irq+0x34/0x50^M
-> > [<fffffc0000b521bc>] move_addr_to_kernel+0x3c/0x60^M
-> > [<fffffc0000b532e4>] __sys_sendto+0xa4/0x170^M
-> > [<fffffc0000b533d4>] sys_sendto+0x24/0x40^M
-> > [<fffffc0000cfea38>] _raw_spin_lock+0x18/0x30^M
-> > [<fffffc0000cfec18>] _raw_spin_unlock+0x18/0x30^M
-> > [<fffffc0000325298>] clipper_enable_irq+0x98/0x100^M
-> > [<fffffc0000cfec18>] _raw_spin_unlock+0x18/0x30^M
-> > [<fffffc0000311514>] entSys+0xa4/0xc0^M
-> 
-> OK, it would be nice if you could get line number from this stack trace.
-> 
+> Hmm. I wonder what Daniel has to say about it, since he
+> introduced it in commit f3515b5d0b71 ("bpf: provide a generic macro
+> for percpu values for selftests")
+> to address a class of bugs.
 
-Here you are:
+I would probably even move those into libbpf instead. ;-) The problem is that this can
+be missed easily and innocent changes would lead to corruption of the applications
+memory if there's a map lookup. Having this at least in selftest code or even in libbpf
+would document code-wise that care needs to be taken on per cpu maps. Even if we'd put
+a note under Documentation/bpf/ or such, this might get missed easily and finding such
+bugs is like looking for a needle in a haystack.. so I don't think this should be removed.
 
-napi_gro_receive (net/core/dev.c:6196)
-receive_buf (drivers/net/virtio_net.c:1150)
-virtnet_poll (drivers/net/virtio_net.c:1414 drivers/net/virtio_net.c:1519)
-clipper_srm_device_interrupt (arch/alpha/kernel/sys_dp264.c:256)
-virtnet_poll (drivers/net/virtio_net.c:1413 drivers/net/virtio_net.c:1519)
-__napi_poll (net/core/dev.c:6962)
-net_rx_action (net/core/dev.c:7029 net/core/dev.c:7116)
-__qdisc_run (net/sched/sch_generic.c:376 net/sched/sch_generic.c:384)
-do_softirq (./include/asm-generic/softirq_stack.h:10 kernel/softirq.c:460 kernel/softirq.c:447)
-__local_bh_enable_ip (kernel/softirq.c:384)
-__dev_queue_xmit (./include/linux/bottom_half.h:32 ./include/linux/rcupdate.h:746 net/core/dev.c:4272)
-packet_sendmsg (net/packet/af_packet.c:3009 net/packet/af_packet.c:3034)
-__sys_sendto (net/socket.c:654 net/socket.c:674 net/socket.c:1977)
-__d_alloc (fs/dcache.c:1744)
-packet_create (net/packet/af_packet.c:1192 net/packet/af_packet.c:3296)
-move_addr_to_kernel (./include/linux/uaccess.h:192 net/socket.c:198 net/socket.c:192)
-__sys_sendto (net/socket.c:1968)
-sys_sendto (net/socket.c:1989 net/socket.c:1985)
-sys_bind (net/socket.c:1648 net/socket.c:1646)
-entSys (arch/alpha/kernel/entry.S:477)
-
-Guenter
+Thanks,
+Daniel
