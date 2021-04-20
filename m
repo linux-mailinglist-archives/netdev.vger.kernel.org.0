@@ -2,87 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 306F03659FC
-	for <lists+netdev@lfdr.de>; Tue, 20 Apr 2021 15:26:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1FC09365A11
+	for <lists+netdev@lfdr.de>; Tue, 20 Apr 2021 15:28:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232481AbhDTN1F (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 20 Apr 2021 09:27:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37480 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232427AbhDTN1C (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 20 Apr 2021 09:27:02 -0400
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C6F1AC06174A;
-        Tue, 20 Apr 2021 06:26:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=VMqaJi7cREgHvXbfYZgCh1yWGauQvsEM/bV4hsp9kpI=; b=oYIjeBNLDU0bKUDPhFNTmvYkZK
-        g53/qZBWtJ4qmFYmHlqWepJ0FmGFsoXKciINNRiOUsXrKlFjZxMU+5w86z4jSxEqdVbPnmwLQJ0I4
-        QblDiYLB0ZwNnoShTB7pzUIEqXQYgkP6X4VfyjOkT4iwAeZJ9TWj8wO0hT8FfHroUCas+dMT2M2kk
-        BJWxhpuqViQNbWdBRh3SdfIw1+tKOj6jQvkPldSdiuK85EtimYx4m7BGUuQKErPN7+RwkxAlIkcl7
-        X9j4UCHiBwcgWOXAuuLZ9tNy0AZfLZtuNUpnfVfa/yHcmS7mmP/2grQ86rdMiimTFItKK9SLzpvDe
-        sL0DA9ZA==;
-Received: from willy by casper.infradead.org with local (Exim 4.94 #2 (Red Hat Linux))
-        id 1lYqMg-00FCb5-Gr; Tue, 20 Apr 2021 13:25:08 +0000
-Date:   Tue, 20 Apr 2021 14:24:30 +0100
-From:   Matthew Wilcox <willy@infradead.org>
-To:     Mike Rapoport <rppt@kernel.org>
-Cc:     Jonathan Corbet <corbet@lwn.net>,
-        Alexey Dobriyan <adobriyan@gmail.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Eric Dumazet <eric.dumazet@gmail.com>,
-        Michal Hocko <mhocko@suse.com>,
-        Mike Rapoport <rppt@linux.ibm.com>, linux-doc@vger.kernel.org,
-        linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-mm@kvack.org, netdev@vger.kernel.org
-Subject: Re: [PATCH v2] docs: proc.rst: meminfo: briefly describe gaps in
- memory accounting
-Message-ID: <20210420132430.GB3596236@casper.infradead.org>
-References: <20210420121354.1160437-1-rppt@kernel.org>
+        id S232586AbhDTN16 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 20 Apr 2021 09:27:58 -0400
+Received: from ssl.serverraum.org ([176.9.125.105]:32955 "EHLO
+        ssl.serverraum.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232026AbhDTN15 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 20 Apr 2021 09:27:57 -0400
+Received: from ssl.serverraum.org (web.serverraum.org [172.16.0.2])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ssl.serverraum.org (Postfix) with ESMTPSA id 4FBD422249;
+        Tue, 20 Apr 2021 15:27:24 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
+        t=1618925244;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=cqPRIy4v2i/c1w7ayO1W45KlATKGUfD4CdFjLYlm4kE=;
+        b=Li6Cd6/DW5gL1MTAQkmCrunz2p8blk2b9L2zzdexi8NYTetq9sIeaQuqUUgEexHUrNHesb
+        uii8wsgu/3oOz/+/o6JWQbFucGnDZstSqF2ogHqwPYZxYceqQF5R54h8WBHMbwSMJrqmRO
+        zzaVh/gcW6bBQvu4KxdrVS3CnMaE2x0=
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210420121354.1160437-1-rppt@kernel.org>
+Content-Type: text/plain; charset=US-ASCII;
+ format=flowed
+Content-Transfer-Encoding: 7bit
+Date:   Tue, 20 Apr 2021 15:27:24 +0200
+From:   Michael Walle <michael@walle.cc>
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     Jakub Kicinski <kuba@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        Po Liu <po.liu@nxp.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Alex Marginean <alexandru.marginean@nxp.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Shawn Guo <shawnguo@kernel.org>,
+        linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
+        Russell King - ARM Linux admin <linux@armlinux.org.uk>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>
+Subject: Re: [PATCH net-next 0/5] Flow control for NXP ENETC
+In-Reply-To: <20210416234225.3715819-1-olteanv@gmail.com>
+References: <20210416234225.3715819-1-olteanv@gmail.com>
+User-Agent: Roundcube Webmail/1.4.11
+Message-ID: <fa2347b25d25e71f891e50f6f789e421@walle.cc>
+X-Sender: michael@walle.cc
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Apr 20, 2021 at 03:13:54PM +0300, Mike Rapoport wrote:
-> Add a paragraph that explains that it may happen that the counters in
-> /proc/meminfo do not add up to the overall memory usage.
+Hi Vladimir,
 
-... that is, the sum may be lower because memory is allocated for other
-purposes that is not reported here, right?
+Am 2021-04-17 01:42, schrieb Vladimir Oltean:
+> From: Vladimir Oltean <vladimir.oltean@nxp.com>
+> 
+> This patch series contains logic for enabling the lossless mode on the
+> RX rings of the ENETC, and the PAUSE thresholds on the internal FIFO
+> memory.
+> 
+> During testing it was found that, with the default FIFO configuration,
+> a sender which isn't persuaded by our PAUSE frames and keeps sending
+> will cause some MAC RX frame errors. To mitigate this, we need to 
+> ensure
+> that the FIFO never runs completely full, so we need to fix up a 
+> setting
+> that was supposed to be configured well out of reset. Unfortunately 
+> this
+> requires the addition of a new mini-driver.
 
-Is it ever possible for it to be higher?  Maybe due to a race when
-sampling the counters?
+What happens if the mini driver is not enabled? Then the fixes aren't
+applied and bad things happen (now with the addition of flow control),
+right?
 
->  Provides information about distribution and utilization of memory.  This
-> -varies by architecture and compile options.  The following is from a
-> -16GB PIII, which has highmem enabled.  You may not have all of these fields.
-> +varies by architecture and compile options. Please note that it may happen
-> +that the memory accounted here does not add up to the overall memory usage
-> +and the difference for some workloads can be substantial. In many cases there
-> +are other means to find out additional memory using subsystem specific
-> +interfaces, for instance /proc/net/sockstat for TCP memory allocations.
+I'm asking because, if you have the arm64 defconfig its not enabled.
 
-How about just:
+shouldn't it be something like:
 
-+varies by architecture and compile options.  The memory reported here
-+may not add up to the overall memory usage and the difference for some
-+workloads can be substantial. [...]
+diff --git a/drivers/net/ethernet/freescale/enetc/Kconfig 
+b/drivers/net/ethernet/freescale/enetc/Kconfig
+index d88f60c2bb82..cdc0ff89388a 100644
+--- a/drivers/net/ethernet/freescale/enetc/Kconfig
++++ b/drivers/net/ethernet/freescale/enetc/Kconfig
+@@ -2,7 +2,7 @@
+  config FSL_ENETC
+         tristate "ENETC PF driver"
+         depends on PCI && PCI_MSI
+-       depends on FSL_ENETC_IERB || FSL_ENETC_IERB=n
++       select FSL_ENETC_IERB
+         select FSL_ENETC_MDIO
+         select PHYLINK
+         select PCS_LYNX
 
-But I'd like to be a bit more explicit about the reason, hence my question
-above to be sure I understand.
-
-
-It's also not entirely clear which of the fields in meminfo can be
-usefully summed.  VmallocTotal is larger than MemTotal, for example.
-But I know that KernelStack is allocated through vmalloc these days,
-and I don't know whether VmallocUsed includes KernelStack or whether I
-can sum them.  Similarly, is Mlocked a subset of Unevictable?
-
-There is some attempt at explaining how these numbers fit together, but
-it's outdated, and doesn't include Mlocked, Unevictable or KernelStack
+-michael
