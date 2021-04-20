@@ -2,143 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8BC023661B6
-	for <lists+netdev@lfdr.de>; Tue, 20 Apr 2021 23:42:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2232D3661CA
+	for <lists+netdev@lfdr.de>; Tue, 20 Apr 2021 23:53:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234186AbhDTVnV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 20 Apr 2021 17:43:21 -0400
-Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:21786 "EHLO
-        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S234169AbhDTVnV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 20 Apr 2021 17:43:21 -0400
-Received: from pps.filterd (m0098413.ppops.net [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 13KLYIUk190410;
-        Tue, 20 Apr 2021 17:42:27 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=content-type :
- mime-version : subject : from : in-reply-to : date : cc :
- content-transfer-encoding : message-id : references : to; s=pp1;
- bh=zoeQ6vkUw400/4294RH+pt+SzJY+sKC0woi28HS+zsY=;
- b=XuNGN8gTfvauoLudl0JDCJzffdkChgPMpvEHdz7GQ6nzU9+ZTOgvmZ1v4wi0QqdFlKFd
- ARExKQ6gEu3UzULE3ih87NeDK08TG+XClFPyc2a0qvsHuxXOORVmiyOTQdhFUm1UxLmg
- p36Idjrgr5dKlQ8jpOYUG/3iN5CCYE2tuCCPfUMQETsB7RVq9AHRMnszWj5AkQMKodF/
- qnwqpRym1U4pAYb5sOMMx0vWOUFJF1QJjBXUjZYWpFvHsGOb8UJZRYHmuuf1D7Bv90z7
- gM1K9+DDjc2NngWZe694mxroEd1mi0XnZMeCOOIuviejp2u7FinrHK+EVjiEM4DsO8yn ww== 
-Received: from ppma01wdc.us.ibm.com (fd.55.37a9.ip4.static.sl-reverse.com [169.55.85.253])
-        by mx0b-001b2d01.pphosted.com with ESMTP id 3824atv4qu-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 20 Apr 2021 17:42:27 -0400
-Received: from pps.filterd (ppma01wdc.us.ibm.com [127.0.0.1])
-        by ppma01wdc.us.ibm.com (8.16.0.43/8.16.0.43) with SMTP id 13KLX1Cr002698;
-        Tue, 20 Apr 2021 21:42:26 GMT
-Received: from b01cxnp22033.gho.pok.ibm.com (b01cxnp22033.gho.pok.ibm.com [9.57.198.23])
-        by ppma01wdc.us.ibm.com with ESMTP id 37yqa8wbe3-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 20 Apr 2021 21:42:26 +0000
-Received: from b01ledav002.gho.pok.ibm.com (b01ledav002.gho.pok.ibm.com [9.57.199.107])
-        by b01cxnp22033.gho.pok.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 13KLgPK719202520
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 20 Apr 2021 21:42:25 GMT
-Received: from b01ledav002.gho.pok.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id DC09E124058;
-        Tue, 20 Apr 2021 21:42:25 +0000 (GMT)
-Received: from b01ledav002.gho.pok.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 6205C124054;
-        Tue, 20 Apr 2021 21:42:25 +0000 (GMT)
-Received: from [9.80.196.76] (unknown [9.80.196.76])
-        by b01ledav002.gho.pok.ibm.com (Postfix) with ESMTPS;
-        Tue, 20 Apr 2021 21:42:25 +0000 (GMT)
-Content-Type: text/plain;
-        charset=us-ascii
-Mime-Version: 1.0 (Mac OS X Mail 13.4 \(3608.80.23.2.2\))
-Subject: Re: [PATCH V2 net] ibmvnic: Continue with reset if set link down
- failed
-From:   Lijun Pan <ljp@linux.vnet.ibm.com>
-In-Reply-To: <20210420213517.24171-1-drt@linux.ibm.com>
-Date:   Tue, 20 Apr 2021 16:42:24 -0500
-Cc:     David Miller <davem@davemloft.net>,
+        id S234193AbhDTVxr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 20 Apr 2021 17:53:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37102 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233992AbhDTVxn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 20 Apr 2021 17:53:43 -0400
+Received: from mail-oi1-x22a.google.com (mail-oi1-x22a.google.com [IPv6:2607:f8b0:4864:20::22a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D940C06174A
+        for <netdev@vger.kernel.org>; Tue, 20 Apr 2021 14:53:10 -0700 (PDT)
+Received: by mail-oi1-x22a.google.com with SMTP id l17so9136800oil.11
+        for <netdev@vger.kernel.org>; Tue, 20 Apr 2021 14:53:10 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=sender:date:from:to:cc:subject:message-id:mime-version
+         :content-disposition:user-agent;
+        bh=00OiHd+LRJcqptKfnQ5Z0Sf2+EdKL1vKJSY05rY22uk=;
+        b=TZAfxlR5XGQkYdpwkNnMhe2QL/sDEdnfqGivcdlGL1g5oohd/2ubYo16yLNtQTVzfC
+         owhG0BE8jcys96nXRL3BUo5nRqiCokqXpF62i2IQcxnfxL6EkGm7B6Dmo23cMxk+9jCE
+         VH2LcOLRHdL0i6XAJnASHSp7ilBNfXikRvM0ZrYGkw13YkS0Rz8BaRUMwUi8H4x8qUHW
+         A7XmRwPbP1nVeNtznfhW0KcCkkNNeiI4tiFRXAEqPYLcSSHmNHpnTzlRjau6aiihHaBN
+         MXy/Ysnq0JAehIgU+EuX8nlNfjikDWRX3Z+q94E2i27+YNXEtm5fMeO2Ha1J3ohaBosY
+         U+5A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
+         :mime-version:content-disposition:user-agent;
+        bh=00OiHd+LRJcqptKfnQ5Z0Sf2+EdKL1vKJSY05rY22uk=;
+        b=HUfjSGvsCHo6cIX1eFyVPwDuNgYysM9O4esHdl+iWlcX4gQ3F08Ci/19Rwb18DbYUb
+         019Xk7pk1v0S5faUErQoiT1rnFZ8aYdF9GNGtVNTNrarMkB1j5cGN8T2szcR7oZWMkxr
+         B1UOIaGhqfBM3ITHBJ4avdYsiRQ/hgGyKTO2gp+ko0zEKiiqECAO6044P2/oR69NysXC
+         1kSYDYjvdMfrNhcMPkUBkOfBLAzzPTcDN594KinHD9qJKlM6hxKH7JINkF1SfWIxJJ45
+         eoWoAtxUHmaMMTN65AKtcipM3eq+QiD/W6ZlCi/GxWTnzrVPVr3ieLexalVqXG3PPqQB
+         iIhw==
+X-Gm-Message-State: AOAM532q4wLU05LvW0tTHz8tHCjUOt/2HCJul6jLD4BqPWuHPs0hwoEj
+        Z9q/PLP1SjSJIrtrLxkshfw=
+X-Google-Smtp-Source: ABdhPJyyd2j0rETipbc3k7xYBw0Kf9qe4uN6kI+PjPB/SUnPb3jdbp8AKBP3V9uGyBZ6sZz2DrkzyQ==
+X-Received: by 2002:aca:db85:: with SMTP id s127mr4531007oig.142.1618955589697;
+        Tue, 20 Apr 2021 14:53:09 -0700 (PDT)
+Received: from localhost ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
+        by smtp.gmail.com with ESMTPSA id w29sm68510ott.24.2021.04.20.14.53.08
+        (version=TLS1_2 cipher=ECDHE-ECDSA-CHACHA20-POLY1305 bits=256/256);
+        Tue, 20 Apr 2021 14:53:09 -0700 (PDT)
+Sender: Guenter Roeck <groeck7@gmail.com>
+Date:   Tue, 20 Apr 2021 14:53:07 -0700
+From:   Guenter Roeck <linux@roeck-us.net>
+To:     Eric Dumazet <eric.dumazet@gmail.com>
+Cc:     "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Tom Falcon <tlfalcon@linux.ibm.com>, netdev@vger.kernel.org,
-        paulus@samba.org, Sukadev Bhattiprolu <sukadev@linux.ibm.com>,
-        linuxppc-dev@lists.ozlabs.org
-Content-Transfer-Encoding: quoted-printable
-Message-Id: <60C99F56-617D-455B-9ACF-8CE1EED64D92@linux.vnet.ibm.com>
-References: <20210420213517.24171-1-drt@linux.ibm.com>
-To:     Dany Madden <drt@linux.ibm.com>
-X-Mailer: Apple Mail (2.3608.80.23.2.2)
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: qtBITTJRaRjxuCurwKIuGWi6KPggGyxn
-X-Proofpoint-ORIG-GUID: qtBITTJRaRjxuCurwKIuGWi6KPggGyxn
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.391,18.0.761
- definitions=2021-04-20_11:2021-04-20,2021-04-20 signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxscore=0 lowpriorityscore=0
- suspectscore=0 impostorscore=0 spamscore=0 phishscore=0 bulkscore=0
- priorityscore=1501 clxscore=1011 mlxlogscore=999 malwarescore=0
- adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2104060000 definitions=main-2104200150
+        netdev <netdev@vger.kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Xuan Zhuo <xuanzhuo@linux.alibaba.com>,
+        Jason Wang <jasowang@redhat.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        virtualization@lists.linux-foundation.org
+Subject: Re: [PATCH net-next] virtio-net: restrict build_skb() use to some
+ arches
+Message-ID: <20210420215307.GA103196@roeck-us.net>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Tue, Apr 20, 2021 at 01:01:44PM -0700, Eric Dumazet wrote:
+> From: Eric Dumazet <edumazet@google.com>
+> 
+> build_skb() is supposed to be followed by
+> skb_reserve(skb, NET_IP_ALIGN), so that IP headers are word-aligned.
+> (Best practice is to reserve NET_IP_ALIGN+NET_SKB_PAD, but the NET_SKB_PAD
+> part is only a performance optimization if tunnel encaps are added.)
+> 
+> Unfortunately virtio_net has not provisioned this reserve.
+> We can only use build_skb() for arches where NET_IP_ALIGN == 0
+> 
+> We might refine this later, with enough testing.
+> 
+> Fixes: fb32856b16ad ("virtio-net: page_to_skb() use build_skb when there's sufficient tailroom")
+> Signed-off-by: Eric Dumazet <edumazet@google.com>
+> Reported-by: Guenter Roeck <linux@roeck-us.net>
+> Cc: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+> Cc: Jason Wang <jasowang@redhat.com>
+> Cc: "Michael S. Tsirkin" <mst@redhat.com>
+> Cc: virtualization@lists.linux-foundation.org
 
+Tested-by: Guenter Roeck <linux@roeck-us.net>
 
-> On Apr 20, 2021, at 4:35 PM, Dany Madden <drt@linux.ibm.com> wrote:
->=20
-> When ibmvnic gets a FATAL error message from the vnicserver, it marks
-> the Command Respond Queue (CRQ) inactive and resets the adapter. If =
-this
-> FATAL reset fails and a transmission timeout reset follows, the CRQ is
-> still inactive, ibmvnic's attempt to set link down will also fail. If
-> ibmvnic abandons the reset because of this failed set link down and =
-this
-> is the last reset in the workqueue, then this adapter will be left in =
-an
-> inoperable state.
->=20
-> Instead, make the driver ignore this link down failure and continue to
-> free and re-register CRQ so that the adapter has an opportunity to
-> recover.
+on alpha, sh4 (little endian).
 
-This v2 does not adddress the concerns mentioned in v1.
-And I think it is better to exit with error from do_reset, and schedule =
-a thorough
-do_hard_reset if the the adapter is already in unstable state.
+Thanks!
 
->=20
-> Fixes: ed651a10875f ("ibmvnic: Updated reset handling")
-> Signed-off-by: Dany Madden <drt@linux.ibm.com>
-> Reviewed-by: Rick Lindsley <ricklind@linux.ibm.com>
-> Reviewed-by: Sukadev Bhattiprolu <sukadev@linux.ibm.com>
-> ---
-> Changes in V2:
-> - Update description to clarify background for the patch
-> - Include Reviewed-by tags
-> ---
-> drivers/net/ethernet/ibm/ibmvnic.c | 6 ++++--
-> 1 file changed, 4 insertions(+), 2 deletions(-)
->=20
-> diff --git a/drivers/net/ethernet/ibm/ibmvnic.c =
-b/drivers/net/ethernet/ibm/ibmvnic.c
-> index ffb2a91750c7..4bd8c5d1a275 100644
-> --- a/drivers/net/ethernet/ibm/ibmvnic.c
-> +++ b/drivers/net/ethernet/ibm/ibmvnic.c
-> @@ -1970,8 +1970,10 @@ static int do_reset(struct ibmvnic_adapter =
-*adapter,
-> 			rtnl_unlock();
-> 			rc =3D set_link_state(adapter, =
-IBMVNIC_LOGICAL_LNK_DN);
-> 			rtnl_lock();
-> -			if (rc)
-> -				goto out;
-> +			if (rc) {
-> +				netdev_dbg(netdev,
-> +					   "Setting link down failed =
-rc=3D%d. Continue anyway\n", rc);
-> +			}
->=20
-> 			if (adapter->state =3D=3D VNIC_OPEN) {
-> 				/* When we dropped rtnl, ibmvnic_open() =
-got
-> --=20
-> 2.26.2
->=20
-
+Guenter
