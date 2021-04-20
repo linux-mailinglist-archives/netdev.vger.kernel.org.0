@@ -2,90 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 29B4B365EE2
-	for <lists+netdev@lfdr.de>; Tue, 20 Apr 2021 19:59:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 85D73365F09
+	for <lists+netdev@lfdr.de>; Tue, 20 Apr 2021 20:09:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233473AbhDTR7e (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 20 Apr 2021 13:59:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41732 "EHLO
+        id S233473AbhDTSKJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 20 Apr 2021 14:10:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44064 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231549AbhDTR7d (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 20 Apr 2021 13:59:33 -0400
-Received: from mail-ej1-x62e.google.com (mail-ej1-x62e.google.com [IPv6:2a00:1450:4864:20::62e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3470FC06174A;
-        Tue, 20 Apr 2021 10:59:00 -0700 (PDT)
-Received: by mail-ej1-x62e.google.com with SMTP id v6so58309488ejo.6;
-        Tue, 20 Apr 2021 10:59:00 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=f5aVc+Rvip+i9wMcJgMkN6n1iKUg3nhAfrxBMVSyMT4=;
-        b=vRUxfANqM5gmEe+JEi/nYpjRog+dg4T69TNipoOZUaYkZAvwQmisFgJAtp0tFTn4bc
-         nt0LT/W1FWHrlivE3I+Bs99iBJFEGeFI/2KwB3hwMI+4cr2ADax+gWvD5E0NjspkqUMY
-         0fF1FhIoP0IIXzUJO/5ppHi/6U68dF9YuzyyA+A70jMPFOAW0loNsYb/ZBGjpYCztITq
-         hH/1Xdqwswh/tTEwoT9iPrKLVvVBRtphbXq/2OjdKbdvTidWEZVprz5evxKQoQWT8koF
-         3HmKDNxTcX6Dszyunwm8hJQmycfKQb1x1JnQXvbiqJbHNg6frX4iYM0D8ppgMRBwb5EC
-         Hpig==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=f5aVc+Rvip+i9wMcJgMkN6n1iKUg3nhAfrxBMVSyMT4=;
-        b=T4rSOneaOFkeppqcf/TPQuqfMztHJ+aYcs9XvpfsNFd/Pmx0XJuwyCVVBvwzd3nY/9
-         THr2OJ2FCEHkenZLTXKbqxMenXERKetBfDCBXaQo8IC214T4ZlAAaBEnGuHFVMa/gvYH
-         EyMA2uX4LTNCrm/ElpxzN93p9FGMXcI6HSRljHmYkAif6HOvwbGzOGSAXm/7M/hSfuUx
-         0Oz+noCANzmjeOIs6/jQN+gAI5fVwzQU5PPRNz7nIizcoI7zQKgkbCoEUyZ54IOOzs7g
-         0hHJLzhfZVSFKb4lX7FVOWuCmTDvFizBpOMpL4TFlSfau1D23bPbrUXogpk5/eM9IFAc
-         53AA==
-X-Gm-Message-State: AOAM5304uiyxI8YtB2ogllnjHVKbP3bnc67fEcXsTAwwF+IMoufTA4ZU
-        EGjvDeuXVnJ0TJye3XxWe4o1/6gruQ==
-X-Google-Smtp-Source: ABdhPJzg3UQt5rHaAWRDbjaVURR4h5zvemaUui/0KjMvb56pW5ExH/QtQ/Ip8bFpXf7E2bMmRWcmIg==
-X-Received: by 2002:a17:906:c787:: with SMTP id cw7mr23033729ejb.157.1618941538855;
-        Tue, 20 Apr 2021 10:58:58 -0700 (PDT)
-Received: from localhost.localdomain ([46.53.250.121])
-        by smtp.gmail.com with ESMTPSA id z22sm13269026ejr.60.2021.04.20.10.58.57
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 20 Apr 2021 10:58:58 -0700 (PDT)
-Date:   Tue, 20 Apr 2021 20:58:56 +0300
-From:   Alexey Dobriyan <adobriyan@gmail.com>
-To:     Michal Hocko <mhocko@suse.com>
-Cc:     Matthew Wilcox <willy@infradead.org>,
-        Mike Rapoport <rppt@kernel.org>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Eric Dumazet <eric.dumazet@gmail.com>,
-        Mike Rapoport <rppt@linux.ibm.com>, linux-doc@vger.kernel.org,
-        linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-mm@kvack.org, netdev@vger.kernel.org
-Subject: Re: [PATCH v2] docs: proc.rst: meminfo: briefly describe gaps in
- memory accounting
-Message-ID: <YH8WYJU2Jk6S9YIJ@localhost.localdomain>
-References: <20210420121354.1160437-1-rppt@kernel.org>
- <20210420132430.GB3596236@casper.infradead.org>
- <YH7ds1YOAOQt8Mpf@dhcp22.suse.cz>
+        with ESMTP id S233363AbhDTSKH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 20 Apr 2021 14:10:07 -0400
+Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7091DC06138A;
+        Tue, 20 Apr 2021 11:09:35 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=casper.20170209; h=Content-Transfer-Encoding:Content-Type:
+        In-Reply-To:MIME-Version:Date:Message-ID:From:References:Cc:To:Subject:Sender
+        :Reply-To:Content-ID:Content-Description;
+        bh=XKyAAnXa+AAtAAiAcYGKXm97C3Mnk3mRV8T3Uf0k5SQ=; b=MqwtAKWqDwasGHWepcp/np9mz9
+        +q0FSAm1hURJ6otOAazoCKmGLQ0FyifDF7jEoF0zQgWjjgu5V+VwBg0rd/2l+vYhKfp6klLeAU0V1
+        /aFIOmbjtM7kSlESU6NQ2GWZnzWtnVvwlSsOcqoONokXbnzZN6tUfEuyAg93pI7SN+mA8YeImsQaU
+        HtJWngop7zFFfiqkYKKus3e31CKzTsX2Vv8xMEqRe8OPp1fLvC9ni4MluHZ14POH0mjxPlAVz6BY0
+        w9IyeUdtSV/jw/lZ/2DL119FN58W/b1GIDkECC+7o3scp8sttqaN5DdLVrx1VhtGQUVUbVs0mldrx
+        wZ2aA0nA==;
+Received: from [2601:1c0:6280:3f0::df68]
+        by casper.infradead.org with esmtpsa (Exim 4.94 #2 (Red Hat Linux))
+        id 1lYunK-00FTpS-Vl; Tue, 20 Apr 2021 18:08:34 +0000
+Subject: Re: [PATCH V2 16/16] net: iosm: infrastructure
+To:     M Chetan Kumar <m.chetan.kumar@intel.com>, netdev@vger.kernel.org,
+        linux-wireless@vger.kernel.org
+Cc:     johannes@sipsolutions.net, krishna.c.sudi@intel.com,
+        linuxwwan@intel.com
+References: <20210420161310.16189-1-m.chetan.kumar@intel.com>
+ <20210420161310.16189-17-m.chetan.kumar@intel.com>
+From:   Randy Dunlap <rdunlap@infradead.org>
+Message-ID: <26d87564-cc51-021b-9644-8dd05da3159e@infradead.org>
+Date:   Tue, 20 Apr 2021 11:08:14 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.8.0
 MIME-Version: 1.0
+In-Reply-To: <20210420161310.16189-17-m.chetan.kumar@intel.com>
 Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <YH7ds1YOAOQt8Mpf@dhcp22.suse.cz>
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Apr 20, 2021 at 03:57:07PM +0200, Michal Hocko wrote:
-> On Tue 20-04-21 14:24:30, Matthew Wilcox wrote:
-> > On Tue, Apr 20, 2021 at 03:13:54PM +0300, Mike Rapoport wrote:
-> > > Add a paragraph that explains that it may happen that the counters in
-> > > /proc/meminfo do not add up to the overall memory usage.
-> > 
-> > ... that is, the sum may be lower because memory is allocated for other
-> > purposes that is not reported here, right?
-> 
-> yes. Many direct page allocator users are not accounted in any of the
-> existing counters.
+Hi--
 
-Does virtio_balloon dereserve special mention?
+On 4/20/21 9:13 AM, M Chetan Kumar wrote:
 
-From inside VM memory borrowing looks like one giant memory leak resulting
-in support tickets (not that people who file them read internal kernel
-documentation...)
+> diff --git a/drivers/net/wwan/Kconfig b/drivers/net/wwan/Kconfig
+> new file mode 100644
+> index 000000000000..6507970653d2
+> --- /dev/null
+> +++ b/drivers/net/wwan/Kconfig
+> @@ -0,0 +1,19 @@
+> +# SPDX-License-Identifier: GPL-2.0-only
+> +#
+> +# Wireless WAN device configuration
+> +#
+> +
+> +menuconfig WWAN
+> +	bool "Wireless WAN"
+> +	depends on NET
+
+This already depends on NET since it is inside NETDEVICES which
+depends on NET.
+
+> +	help
+> +	  This section contains all Wireless WAN (WWAN) device drivers.
+> +
+> +	  If you have one of those WWAN M.2 Modules and wish to use it in Linux
+> +	  say Y here and also to the Module specific WWAN Device Driver.
+> +
+> +	  If unsure, say N.
+> +
+> +if WWAN
+> +source "drivers/net/wwan/iosm/Kconfig"
+> +endif # WWAN
+
+
+-- 
+~Randy
+
