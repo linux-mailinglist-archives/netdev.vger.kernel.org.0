@@ -2,123 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B8E9E365716
-	for <lists+netdev@lfdr.de>; Tue, 20 Apr 2021 13:05:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7EF29365719
+	for <lists+netdev@lfdr.de>; Tue, 20 Apr 2021 13:05:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231693AbhDTLFb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 20 Apr 2021 07:05:31 -0400
-Received: from perseus.uberspace.de ([95.143.172.134]:57011 "EHLO
-        perseus.uberspace.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231651AbhDTLF3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 20 Apr 2021 07:05:29 -0400
-Received: (qmail 15708 invoked from network); 20 Apr 2021 11:04:55 -0000
-Received: from localhost (HELO localhost) (127.0.0.1)
-  by perseus.uberspace.de with SMTP; 20 Apr 2021 11:04:55 -0000
-Subject: Re: [PATCH net-next v2] net: phy: at803x: fix probe error if copper
- page is selected
-To:     Michael Walle <michael@walle.cc>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-References: <20210420102929.13505-1-michael@walle.cc>
-From:   David Bauer <mail@david-bauer.net>
-Message-ID: <a0e5c38d-9a60-5b48-48bf-ff4884adebb4@david-bauer.net>
-Date:   Tue, 20 Apr 2021 13:04:53 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.9.1
+        id S231846AbhDTLFz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 20 Apr 2021 07:05:55 -0400
+Received: from mail.kernel.org ([198.145.29.99]:42064 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S231651AbhDTLFu (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 20 Apr 2021 07:05:50 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 19EDD6139A;
+        Tue, 20 Apr 2021 11:05:17 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1618916718;
+        bh=T1MBpxb+qMapIOur2MjwDyVFf1uMt6D9ZpaFBYNhquk=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=nj1hAWCDtYByOjzcxpFnpt/zvvVfCRiSuwpebQTiZZKr4JbkO/0wJa8rkeHd2i/3W
+         ifJ8JMheSOmGLH9Jh+GL8vROCfDMsWjcdtw9CyKbBCIy8PYy7/2zsa1U5nqq9GOWCR
+         CmBrQ8Nh5It+ftBIDNG4DIXKySNzpsW+mmo7te8SFQqvm+2VQQ696HFD9KWhtCaf0D
+         0RUMc2ZM/tuEYLnhIFSFBDMB3MADr2qOk4FPPp24PEm3oW///Bp1WDYWpjJwlnuq8G
+         UOIpyYthSHx/EHF1Cpocg2A96TZMiHK+6f7Wj+eDm5q9OR9VLg5pCCqQqrYNDZt9l5
+         5CJ45dXkrVMow==
+Date:   Tue, 20 Apr 2021 14:05:14 +0300
+From:   Leon Romanovsky <leon@kernel.org>
+To:     Zhu Yanjun <zyjzyj2000@gmail.com>
+Cc:     wangyunjian <wangyunjian@huawei.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>, saeedm@nvidia.com,
+        netdev <netdev@vger.kernel.org>, dingxiaoxiong@huawei.com
+Subject: Re: [PATCH net-next v2] net/mlx5e: Fix uninitialised struct field
+ moder.comps
+Message-ID: <YH61aiVsCsjhlrdW@unreal>
+References: <1618902026-16588-1-git-send-email-wangyunjian@huawei.com>
+ <CAD=hENfAZZBm3iipTAv6q9u12z8WmT7LUgXSDFEdtSf_k9_Lcw@mail.gmail.com>
+ <YH6dCCh5vgWcnzc+@unreal>
+ <CAD=hENc45EapYYj1yhyf8wzyUd_9+fbkkJYtN0h0Hefdf+1ykQ@mail.gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <20210420102929.13505-1-michael@walle.cc>
-Content-Type: text/plain; charset=utf-8
-Content-Language: de-DE
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAD=hENc45EapYYj1yhyf8wzyUd_9+fbkkJYtN0h0Hefdf+1ykQ@mail.gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+On Tue, Apr 20, 2021 at 05:28:43PM +0800, Zhu Yanjun wrote:
+> On Tue, Apr 20, 2021 at 5:21 PM Leon Romanovsky <leon@kernel.org> wrote:
+> >
+> > On Tue, Apr 20, 2021 at 03:09:03PM +0800, Zhu Yanjun wrote:
+> > > On Tue, Apr 20, 2021 at 3:01 PM wangyunjian <wangyunjian@huawei.com> wrote:
+> > > >
+> > > > From: Yunjian Wang <wangyunjian@huawei.com>
+> > > >
+> > > > The 'comps' struct field in 'moder' is not being initialized in
+> > > > mlx5e_get_def_rx_moderation() and mlx5e_get_def_tx_moderation().
+> > > > So initialize 'moder' to zero to avoid the issue.
+> >
+> > Please state that it is false alarm and this patch doesn't fix anything
+> > except broken static analyzer tool.
+> >
+> > > >
+> > > > Addresses-Coverity: ("Uninitialized scalar variable")
+> > > > Signed-off-by: Yunjian Wang <wangyunjian@huawei.com>
+> > > > ---
+> > > > v2: update mlx5e_get_def_tx_moderation() also needs fixing
+> > > > ---
+> > > >  drivers/net/ethernet/mellanox/mlx5/core/en_main.c | 4 ++--
+> > > >  1 file changed, 2 insertions(+), 2 deletions(-)
+> > > >
+> > > > diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
+> > > > index 5db63b9f3b70..17a817b7e539 100644
+> > > > --- a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
+> > > > +++ b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
+> > > > @@ -4868,7 +4868,7 @@ static bool slow_pci_heuristic(struct mlx5_core_dev *mdev)
+> > > >
+> > > >  static struct dim_cq_moder mlx5e_get_def_tx_moderation(u8 cq_period_mode)
+> > > >  {
+> > > > -       struct dim_cq_moder moder;
+> > >
+> > > > +       struct dim_cq_moder moder = {};
+> > >
+> > > If I remember correctly, some gcc compiler will report errors about this "{}".
+> >
+> > Kernel doesn't support such compilers.
+> 
+> Are you sure? Why are you so confirmative?
 
-On 4/20/21 12:29 PM, Michael Walle wrote:
-> The commit c329e5afb42f ("net: phy: at803x: select correct page on
-> config init") selects the copper page during probe. This fails if the
-> copper page was already selected. In this case, the value of the copper
-> page (which is 1) is propagated through phy_restore_page() and is
-> finally returned for at803x_probe(). Fix it, by just using the
-> at803x_page_write() directly.
+Yes, I'm sure.
 
-Ouch, i didn't spot that. Thanks for taking care.
+Please read this whole discussion, I hope that it will answer your
+question on why I'm so sure.
+https://lore.kernel.org/linux-rdma/20200730192026.110246-1-yepeilin.cs@gmail.com/
 
 > 
-> Also in case of an error, the regulator is not disabled and leads to a
-> WARN_ON() when the probe fails. This couldn't happen before, because
-> at803x_parse_dt() was the last call in at803x_probe(). It is hard to
-> see, that the parse_dt() actually enables the regulator. Thus move the
-> regulator_enable() to the probe function and undo it in case of an
-> error.
+> Zhu Yanjun
 > 
-> Fixes: c329e5afb42f ("net: phy: at803x: select correct page on config init")
-> Signed-off-by: Michael Walle <michael@walle.cc>
-
-Reviewed-by: David Bauer <mail@david-bauer.net>
-
-Best
-David
-
-> ---
-> Changes since v1:
->  - take the bus lock
-> 
->  drivers/net/phy/at803x.c | 23 +++++++++++++++++------
->  1 file changed, 17 insertions(+), 6 deletions(-)
-> 
-> diff --git a/drivers/net/phy/at803x.c b/drivers/net/phy/at803x.c
-> index e0f56850edc5..32af52dd5aed 100644
-> --- a/drivers/net/phy/at803x.c
-> +++ b/drivers/net/phy/at803x.c
-> @@ -554,10 +554,6 @@ static int at803x_parse_dt(struct phy_device *phydev)
->  			phydev_err(phydev, "failed to get VDDIO regulator\n");
->  			return PTR_ERR(priv->vddio);
->  		}
-> -
-> -		ret = regulator_enable(priv->vddio);
-> -		if (ret < 0)
-> -			return ret;
->  	}
->  
->  	return 0;
-> @@ -579,15 +575,30 @@ static int at803x_probe(struct phy_device *phydev)
->  	if (ret)
->  		return ret;
->  
-> +	if (priv->vddio) {
-> +		ret = regulator_enable(priv->vddio);
-> +		if (ret < 0)
-> +			return ret;
-> +	}
-> +
->  	/* Some bootloaders leave the fiber page selected.
->  	 * Switch to the copper page, as otherwise we read
->  	 * the PHY capabilities from the fiber side.
->  	 */
->  	if (at803x_match_phy_id(phydev, ATH8031_PHY_ID)) {
-> -		ret = phy_select_page(phydev, AT803X_PAGE_COPPER);
-> -		ret = phy_restore_page(phydev, AT803X_PAGE_COPPER, ret);
-> +		phy_lock_mdio_bus(phydev);
-> +		ret = at803x_write_page(phydev, AT803X_PAGE_COPPER);
-> +		phy_unlock_mdio_bus(phydev);
-> +		if (ret)
-> +			goto err;
->  	}
->  
-> +	return 0;
-> +
-> +err:
-> +	if (priv->vddio)
-> +		regulator_disable(priv->vddio);
-> +
->  	return ret;
->  }
->  
-> 
+> >
+> > Thanks
