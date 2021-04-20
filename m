@@ -2,140 +2,133 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 80E903651A5
-	for <lists+netdev@lfdr.de>; Tue, 20 Apr 2021 06:54:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E64443651B6
+	for <lists+netdev@lfdr.de>; Tue, 20 Apr 2021 07:04:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229645AbhDTEyu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 20 Apr 2021 00:54:50 -0400
-Received: from mga14.intel.com ([192.55.52.115]:35848 "EHLO mga14.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229507AbhDTEys (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 20 Apr 2021 00:54:48 -0400
-IronPort-SDR: w67AFBKy6kpfOeEbDp1LeXqhMhCd4OT0S6mh5Vhca3yJBi6xU+89DQqFAo9QN+L9JDnihpSgkP
- GbgCvEOiSndw==
-X-IronPort-AV: E=McAfee;i="6200,9189,9959"; a="194999330"
-X-IronPort-AV: E=Sophos;i="5.82,236,1613462400"; 
-   d="scan'208";a="194999330"
-Received: from fmsmga007.fm.intel.com ([10.253.24.52])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Apr 2021 21:54:18 -0700
-IronPort-SDR: nEMBihshE4yQfnc91H+r5M0JhwCHq4QgMAVmqFlQwCBJJUWMaoYyxpnC5or3FlRkJcVqpDMjHu
- hWq5/hyuybZw==
-X-IronPort-AV: E=Sophos;i="5.82,236,1613462400"; 
-   d="scan'208";a="390879095"
-Received: from samudral-mobl.amr.corp.intel.com (HELO [10.212.195.85]) ([10.212.195.85])
-  by fmsmga007-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Apr 2021 21:54:17 -0700
-Subject: Re: [net-next 07/15] net/mlx5: mlx5_ifc updates for flex parser
-To:     Saeed Mahameed <saeed@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, Tariq Toukan <tariqt@nvidia.com>,
-        Yevgeny Kliteynik <kliteyn@nvidia.com>,
-        Saeed Mahameed <saeedm@nvidia.com>
-References: <20210420032018.58639-1-saeed@kernel.org>
- <20210420032018.58639-8-saeed@kernel.org>
-From:   "Samudrala, Sridhar" <sridhar.samudrala@intel.com>
-Message-ID: <f21f0500-2150-9975-cfee-1629766634b8@intel.com>
-Date:   Mon, 19 Apr 2021 21:54:16 -0700
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.9.1
+        id S229710AbhDTFEm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 20 Apr 2021 01:04:42 -0400
+Received: from youngberry.canonical.com ([91.189.89.112]:56284 "EHLO
+        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229507AbhDTFEl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 20 Apr 2021 01:04:41 -0400
+Received: from [50.125.80.157] (helo=famine.localdomain)
+        by youngberry.canonical.com with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
+        (Exim 4.86_2)
+        (envelope-from <jay.vosburgh@canonical.com>)
+        id 1lYiYM-0007Pm-Tw; Tue, 20 Apr 2021 05:04:03 +0000
+Received: by famine.localdomain (Postfix, from userid 1000)
+        id F2D5D5FBBB; Mon, 19 Apr 2021 22:04:00 -0700 (PDT)
+Received: from famine (localhost [127.0.0.1])
+        by famine.localdomain (Postfix) with ESMTP id EBF5A9FC56;
+        Mon, 19 Apr 2021 22:04:00 -0700 (PDT)
+From:   Jay Vosburgh <jay.vosburgh@canonical.com>
+To:     jin yiting <jinyiting@huawei.com>
+cc:     vfalico@gmail.com, andy@greyhouse.net, davem@davemloft.net,
+        kuba@kernel.org, netdev@vger.kernel.org, security@kernel.org,
+        linux-kernel@vger.kernel.org, xuhanbing@huawei.com,
+        wangxiaogang3@huawei.com
+Subject: Re: [PATCH] bonding: 3ad: update slave arr after initialize
+In-reply-to: <1165c45f-ae7f-48c1-5c65-a879c7bf978a@huawei.com>
+References: <1618537982-454-1-git-send-email-jinyiting@huawei.com> <17733.1618547307@famine> <1165c45f-ae7f-48c1-5c65-a879c7bf978a@huawei.com>
+Comments: In-reply-to jin yiting <jinyiting@huawei.com>
+   message dated "Tue, 20 Apr 2021 11:22:41 +0800."
+X-Mailer: MH-E 8.6+git; nmh 1.6; GNU Emacs 27.0.50
 MIME-Version: 1.0
-In-Reply-To: <20210420032018.58639-8-saeed@kernel.org>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 8bit
-Content-Language: en-US
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <490.1618895040.1@famine>
+Date:   Mon, 19 Apr 2021 22:04:00 -0700
+Message-ID: <492.1618895040@famine>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 4/19/2021 8:20 PM, Saeed Mahameed wrote:
-> From: Yevgeny Kliteynik <kliteyn@nvidia.com>
+jin yiting <jinyiting@huawei.com> wrote:
+[...]
+>> 	The described issue is a race condition (in that
+>> ad_agg_selection_logic clears agg->is_active under mode_lock, but
+>> bond_open -> bond_update_slave_arr is inspecting agg->is_active outside
+>> the lock).  I don't see how the above change will reliably manage this;
+>> the real issue looks to be that bond_update_slave_arr is committing
+>> changes to the array (via bond_reset_slave_arr) based on a racy
+>> inspection of the active aggregator state while it is in flux.
+>>
+>> 	Also, the description of the issue says "The best aggregator in
+>> ad_agg_selection_logic has not changed, no need to update slave arr,"
+>> but the change above does the opposite, and will set update_slave_arr
+>> when the aggregator has not changed (update_slave_arr remains false at
+>> return of ad_agg_selection_logic).
+>>
+>> 	I believe I understand the described problem, but I don't see
+>> how the patch fixes it.  I suspect (but haven't tested) that the proper
+>> fix is to acquire mode_lock in bond_update_slave_arr while calling
+>> bond_3ad_get_active_agg_info to avoid conflict with the state machine.
+>>
+>> 	-J
+>>
+>> ---
+>> 	-Jay Vosburgh, jay.vosburgh@canonical.com
+>> .
+>>
 >
-> Added the required definitions for supporting more protocols by flex parsers
-> (GTP-U, Geneve TLV options), and for using the right flex parser that was
-> configured for this protocol.
-Are you planning to support adding flow rules to match on these protocol 
-specific fields?
-If so,  are you planning to extend tc flower OR use other interfaces?
-
-
-> Signed-off-by: Yevgeny Kliteynik <kliteyn@nvidia.com>
-> Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
-> ---
->   include/linux/mlx5/mlx5_ifc.h | 32 ++++++++++++++++++++++++++++----
->   1 file changed, 28 insertions(+), 4 deletions(-)
+>	Thank you for your reply. The last patch does have redundant
+>update slave arr.Thank you for your correction.
 >
-> diff --git a/include/linux/mlx5/mlx5_ifc.h b/include/linux/mlx5/mlx5_ifc.h
-> index f2c51d6833c6..aa6effe1dd6d 100644
-> --- a/include/linux/mlx5/mlx5_ifc.h
-> +++ b/include/linux/mlx5/mlx5_ifc.h
-> @@ -622,7 +622,19 @@ struct mlx5_ifc_fte_match_set_misc3_bits {
->   
->   	u8         geneve_tlv_option_0_data[0x20];
->   
-> -	u8         reserved_at_140[0xc0];
-> +	u8	   gtpu_teid[0x20];
-> +
-> +	u8	   gtpu_msg_type[0x8];
-> +	u8	   gtpu_msg_flags[0x8];
-> +	u8	   reserved_at_170[0x10];
-> +
-> +	u8	   gtpu_dw_2[0x20];
-> +
-> +	u8	   gtpu_first_ext_dw_0[0x20];
-> +
-> +	u8	   gtpu_dw_0[0x20];
-> +
-> +	u8	   reserved_at_1e0[0x20];
->   };
->   
->   struct mlx5_ifc_fte_match_set_misc4_bits {
-> @@ -1237,9 +1249,17 @@ enum {
->   
->   enum {
->   	MLX5_FLEX_PARSER_GENEVE_ENABLED		= 1 << 3,
-> +	MLX5_FLEX_PARSER_MPLS_OVER_GRE_ENABLED	= 1 << 4,
-> +	mlx5_FLEX_PARSER_MPLS_OVER_UDP_ENABLED	= 1 << 5,
->   	MLX5_FLEX_PARSER_VXLAN_GPE_ENABLED	= 1 << 7,
->   	MLX5_FLEX_PARSER_ICMP_V4_ENABLED	= 1 << 8,
->   	MLX5_FLEX_PARSER_ICMP_V6_ENABLED	= 1 << 9,
-> +	MLX5_FLEX_PARSER_GENEVE_TLV_OPTION_0_ENABLED = 1 << 10,
-> +	MLX5_FLEX_PARSER_GTPU_ENABLED		= 1 << 11,
-> +	MLX5_FLEX_PARSER_GTPU_DW_2_ENABLED	= 1 << 16,
-> +	MLX5_FLEX_PARSER_GTPU_FIRST_EXT_DW_0_ENABLED = 1 << 17,
-> +	MLX5_FLEX_PARSER_GTPU_DW_0_ENABLED	= 1 << 18,
-> +	MLX5_FLEX_PARSER_GTPU_TEID_ENABLED	= 1 << 19,
->   };
->   
->   enum {
-> @@ -1637,7 +1657,9 @@ struct mlx5_ifc_cmd_hca_cap_bits {
->   	u8         cqe_compression_timeout[0x10];
->   	u8         cqe_compression_max_num[0x10];
->   
-> -	u8         reserved_at_5e0[0x10];
-> +	u8         reserved_at_5e0[0x8];
-> +	u8         flex_parser_id_gtpu_dw_0[0x4];
-> +	u8         reserved_at_5ec[0x4];
->   	u8         tag_matching[0x1];
->   	u8         rndv_offload_rc[0x1];
->   	u8         rndv_offload_dc[0x1];
-> @@ -1648,7 +1670,8 @@ struct mlx5_ifc_cmd_hca_cap_bits {
->   	u8	   affiliate_nic_vport_criteria[0x8];
->   	u8	   native_port_num[0x8];
->   	u8	   num_vhca_ports[0x8];
-> -	u8	   reserved_at_618[0x6];
-> +	u8         flex_parser_id_gtpu_teid[0x4];
-> +	u8         reserved_at_61c[0x2];
->   	u8	   sw_owner_id[0x1];
->   	u8         reserved_at_61f[0x1];
->   
-> @@ -1683,7 +1706,8 @@ struct mlx5_ifc_cmd_hca_cap_bits {
->   	u8	   reserved_at_6e0[0x10];
->   	u8	   sf_base_id[0x10];
->   
-> -	u8	   reserved_at_700[0x8];
-> +	u8         flex_parser_id_gtpu_dw_2[0x4];
-> +	u8         flex_parser_id_gtpu_first_ext_dw_0[0x4];
->   	u8	   num_total_dynamic_vf_msix[0x18];
->   	u8	   reserved_at_720[0x14];
->   	u8	   dynamic_msix_table_size[0xc];
+>        As you said, holding mode_lock in bond_update_slave_arr while
+>calling bond_3ad_get_active_agg_info can avoid conflictwith the state
+>machine. I have tested this patch, with ifdown/ifup operations for bond or
+>slaves.
+>
+>        But bond_update_slave_arr is expected to hold RTNL only and NO
+>other lock. And it have WARN_ON(lockdep_is_held(&bond->mode_lock)); in
+>bond_update_slave_arr. I'm not sure that holding mode_lock in
+>bond_update_slave_arr while calling bond_3ad_get_active_agg_info is a
+>correct action.
 
+	That WARN_ON came up in discussion recently, and my opinion is
+that it's incorrect, and is trying to insure bond_update_slave_arr is
+safe for a potential sleep when allocating memory.
+
+https://lore.kernel.org/netdev/20210322123846.3024549-1-maximmi@nvidia.com/
+
+	The original authors haven't replied, so I would suggest you
+remove the WARN_ON and the surrounding CONFIG_LOCKDEP ifdefs as part of
+your patch and replace it with a call to might_sleep.
+
+	The other callers of bond_3ad_get_active_agg_info are generally
+obtaining the state in order to report it to user space, so I think it's
+safe to leave those calls not holding the mode_lock.  The race is still
+there, but the data returned to user space is a snapshot and so may
+reflect an incomplete state during a transition.  Further, having the
+inspection functions acquire the mode_lock permits user space to spam
+the lock with little effort.
+
+	-J
+
+>diff --git a/drivers/net/bonding/bond_main.c
+>b/drivers/net/bonding/bond_main.c
+>index 74cbbb2..db988e5 100644
+>--- a/drivers/net/bonding/bond_main.c
+>+++ b/drivers/net/bonding/bond_main.c
+>@@ -4406,7 +4406,9 @@ int bond_update_slave_arr(struct bonding *bond,
+>struct slave *skipslave)
+>    if (BOND_MODE(bond) == BOND_MODE_8023AD) {
+>        struct ad_info ad_info;
+>
+>+       spin_lock_bh(&bond->mode_lock);
+>        if (bond_3ad_get_active_agg_info(bond, &ad_info)) {
+>+           spin_unlock_bh(&bond->mode_lock);
+>            pr_debug("bond_3ad_get_active_agg_info failed\n");
+>            /* No active aggragator means it's not safe to use
+>             * the previous array.
+>@@ -4414,6 +4416,7 @@ int bond_update_slave_arr(struct bonding *bond,
+>struct slave *skipslave)
+>            bond_reset_slave_arr(bond);
+>            goto out;
+>        }
+>+       spin_unlock_bh(&bond->mode_lock);
+>        agg_id = ad_info.aggregator_id;
+>    }
+>    bond_for_each_slave(bond, slave, iter) {
+
+---
+	-Jay Vosburgh, jay.vosburgh@canonical.com
