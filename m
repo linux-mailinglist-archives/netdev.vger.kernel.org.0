@@ -2,108 +2,163 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B37D1366089
-	for <lists+netdev@lfdr.de>; Tue, 20 Apr 2021 22:01:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6FED33660E5
+	for <lists+netdev@lfdr.de>; Tue, 20 Apr 2021 22:29:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233747AbhDTUCW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 20 Apr 2021 16:02:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40720 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233541AbhDTUCV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 20 Apr 2021 16:02:21 -0400
-Received: from mail-pf1-x42d.google.com (mail-pf1-x42d.google.com [IPv6:2607:f8b0:4864:20::42d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CECA8C06174A
-        for <netdev@vger.kernel.org>; Tue, 20 Apr 2021 13:01:48 -0700 (PDT)
-Received: by mail-pf1-x42d.google.com with SMTP id h11so8724352pfn.0
-        for <netdev@vger.kernel.org>; Tue, 20 Apr 2021 13:01:48 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=5Du+IgrLZVk7ZDdZOmMvPOwEkpYwzoUizXPLLUwb/Xs=;
-        b=sFilqoIvdyvdUn2hWPJbGe/ooVv4/L2Dap7lINRZHOYNqZcW5XfWpNsE5bCbHWP5e7
-         WPH4qSp8X2Jv3ZYO55OcPeufO4FGq+qqnFChoXx2+Mk1P5y/kS2HsVAeD9mR0Y8Fq3nC
-         kIxV+sBhyAK3eW/6J27xvzd+yEOasxlLZE0UbJTKl0PgjlfQya6Cj6+gRhtczMWkx1LT
-         XgvI2SGlY78L2kxfBw3giaej/lLt01GXEsLmWrSwpKuc+l68vp6bsUWfYtPqnPUz+A/o
-         0cK3Q3o1jOCbYcSRjhiHBXFiYfyIbFWgS/SzLnt/rocIbszzXRSiqRZGXIS8YGIDTSFb
-         UB3w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=5Du+IgrLZVk7ZDdZOmMvPOwEkpYwzoUizXPLLUwb/Xs=;
-        b=ljAV06QdvCE4yK2UljR3UgEjGQIzrFMhMo9Y10ZqrarXYN5L64l1m7GgihZZT63dlu
-         0Al5U8vhYYY/pmd/X2zdgovtoXVLPVBDfYhOhnhZZp+LDgtP37mPetlV+ypQtBWpfJIN
-         R4vWeTjD4+rU3BxbNIhxEKZzfH7yICihag1U3R9j3IFViyVg5Q4D/LkuaP1MyzPgubzc
-         qwFZi7ZxI71C/FkwepCnMuqLSkjTIvSeZYnMdDAZuHL5WLCxGpyQZzt1IRxuVkro694U
-         +DlKcvQN01C+1vNPj7BRZg2cn2DpIB+VzW25E3t+JtqPnJQZgnAy6rrkGNXVTn87mpmh
-         ZBCw==
-X-Gm-Message-State: AOAM530XrK921PGAMz35+rMdZUDN95zfxzFPmFFS4CDrddQNF6TP6LGp
-        fAJiPYEGe1LPfI28o9m39s4=
-X-Google-Smtp-Source: ABdhPJwAprjfL6fB0YmGSq6icSibdyl0XAn+8HLS1XyldP7O8e6qmhRuYHSc0TD53nD3Mv/n4S/TRw==
-X-Received: by 2002:a17:90a:6583:: with SMTP id k3mr4578048pjj.227.1618948908347;
-        Tue, 20 Apr 2021 13:01:48 -0700 (PDT)
-Received: from edumazet1.svl.corp.google.com ([2620:15c:2c4:201:71c5:2f2b:f562:605b])
-        by smtp.gmail.com with ESMTPSA id e14sm16367605pga.14.2021.04.20.13.01.47
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 20 Apr 2021 13:01:47 -0700 (PDT)
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-To:     "David S . Miller" <davem@davemloft.net>,
+        id S233932AbhDTU3B (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 20 Apr 2021 16:29:01 -0400
+Received: from gateway34.websitewelcome.com ([192.185.148.142]:24882 "EHLO
+        gateway34.websitewelcome.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S233891AbhDTU3A (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 20 Apr 2021 16:29:00 -0400
+X-Greylist: delayed 1386 seconds by postgrey-1.27 at vger.kernel.org; Tue, 20 Apr 2021 16:29:00 EDT
+Received: from cm13.websitewelcome.com (cm13.websitewelcome.com [100.42.49.6])
+        by gateway34.websitewelcome.com (Postfix) with ESMTP id A8B851966E7
+        for <netdev@vger.kernel.org>; Tue, 20 Apr 2021 15:05:19 -0500 (CDT)
+Received: from gator4166.hostgator.com ([108.167.133.22])
+        by cmsmtp with SMTP
+        id YwcZlPWc6mJLsYwcZlmbQu; Tue, 20 Apr 2021 15:05:19 -0500
+X-Authority-Reason: nr=8
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=embeddedor.com; s=default; h=Content-Transfer-Encoding:Content-Type:
+        In-Reply-To:MIME-Version:Date:Message-ID:From:References:Cc:To:Subject:Sender
+        :Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
+        Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
+        List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=uvJy4av23Scx/8w1MGTm9f6+b9FqV28bLS31Q0G/3KY=; b=i9X9nUUm10QLC6LQcmxJTAFmLo
+        KJ9T/PVn/Tb7BHfJvSfWKKAcf+YvmJRCOdijLDNlAQoIbvvGtZTKE4qA7MiKuhq2d4NdrX1UUINa9
+        L6qUWajUVdmD6b8WpByQFTzXy3b/DDvJLNV8382lfzyxdemliI6pfU4nhjmyGQOJb51pdBk9MEk3P
+        BcuVzQmImlhIDVI1CwAI/zhbbLuNX/aU9mCzt2TByncHw462LAMklPa+9dz/GHzO0e4KNW/6DXzvo
+        dJApuUwc+OyzdnSx15nyoMsxhZMLeP0EX3s9RvRKD7fbya+RN7J79WtgypcG8MekNM8nNRaZdoOof
+        HjXGm7LA==;
+Received: from 187-162-31-110.static.axtel.net ([187.162.31.110]:48912 helo=[192.168.15.8])
+        by gator4166.hostgator.com with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
+        (Exim 4.94)
+        (envelope-from <gustavo@embeddedor.com>)
+        id 1lYwcV-002VCy-0C; Tue, 20 Apr 2021 15:05:15 -0500
+Subject: Re: [PATCH RESEND][next] ipv4: Fix fall-through warnings for Clang
+To:     "Gustavo A. R. Silva" <gustavoars@kernel.org>,
+        Steffen Klassert <steffen.klassert@secunet.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        "David S. Miller" <davem@davemloft.net>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        David Ahern <dsahern@kernel.org>,
         Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev <netdev@vger.kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Eric Dumazet <eric.dumazet@gmail.com>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Xuan Zhuo <xuanzhuo@linux.alibaba.com>,
-        Jason Wang <jasowang@redhat.com>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        virtualization@lists.linux-foundation.org
-Subject: [PATCH net-next] virtio-net: restrict build_skb() use to some arches
-Date:   Tue, 20 Apr 2021 13:01:44 -0700
-Message-Id: <20210420200144.4189597-1-eric.dumazet@gmail.com>
-X-Mailer: git-send-email 2.31.1.368.gbe11c130af-goog
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-hardening@vger.kernel.org
+References: <20210305090205.GA139036@embeddedor>
+From:   "Gustavo A. R. Silva" <gustavo@embeddedor.com>
+Message-ID: <ef931d13-896f-0b9c-bb8c-1b710b0164af@embeddedor.com>
+Date:   Tue, 20 Apr 2021 15:05:22 -0500
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.7.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <20210305090205.GA139036@embeddedor>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
+X-AntiAbuse: Primary Hostname - gator4166.hostgator.com
+X-AntiAbuse: Original Domain - vger.kernel.org
+X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
+X-AntiAbuse: Sender Address Domain - embeddedor.com
+X-BWhitelist: no
+X-Source-IP: 187.162.31.110
+X-Source-L: No
+X-Exim-ID: 1lYwcV-002VCy-0C
+X-Source: 
+X-Source-Args: 
+X-Source-Dir: 
+X-Source-Sender: 187-162-31-110.static.axtel.net ([192.168.15.8]) [187.162.31.110]:48912
+X-Source-Auth: gustavo@embeddedor.com
+X-Email-Count: 8
+X-Source-Cap: Z3V6aWRpbmU7Z3V6aWRpbmU7Z2F0b3I0MTY2Lmhvc3RnYXRvci5jb20=
+X-Local-Domain: yes
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Eric Dumazet <edumazet@google.com>
+Hi all,
 
-build_skb() is supposed to be followed by
-skb_reserve(skb, NET_IP_ALIGN), so that IP headers are word-aligned.
-(Best practice is to reserve NET_IP_ALIGN+NET_SKB_PAD, but the NET_SKB_PAD
-part is only a performance optimization if tunnel encaps are added.)
+Friendly ping: who can take this, please?
 
-Unfortunately virtio_net has not provisioned this reserve.
-We can only use build_skb() for arches where NET_IP_ALIGN == 0
+Thanks
+--
+Gustavo
 
-We might refine this later, with enough testing.
-
-Fixes: fb32856b16ad ("virtio-net: page_to_skb() use build_skb when there's sufficient tailroom")
-Signed-off-by: Eric Dumazet <edumazet@google.com>
-Reported-by: Guenter Roeck <linux@roeck-us.net>
-Cc: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
-Cc: Jason Wang <jasowang@redhat.com>
-Cc: "Michael S. Tsirkin" <mst@redhat.com>
-Cc: virtualization@lists.linux-foundation.org
----
- drivers/net/virtio_net.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
-index 2e28c04aa6351d2b4016f7d277ce104c4970069d..74d2d49264f3f3b7039be70331d4a44c53b8cc28 100644
---- a/drivers/net/virtio_net.c
-+++ b/drivers/net/virtio_net.c
-@@ -416,7 +416,7 @@ static struct sk_buff *page_to_skb(struct virtnet_info *vi,
- 
- 	shinfo_size = SKB_DATA_ALIGN(sizeof(struct skb_shared_info));
- 
--	if (len > GOOD_COPY_LEN && tailroom >= shinfo_size) {
-+	if (!NET_IP_ALIGN && len > GOOD_COPY_LEN && tailroom >= shinfo_size) {
- 		skb = build_skb(p, truesize);
- 		if (unlikely(!skb))
- 			return NULL;
--- 
-2.31.1.368.gbe11c130af-goog
-
+On 3/5/21 03:02, Gustavo A. R. Silva wrote:
+> In preparation to enable -Wimplicit-fallthrough for Clang, fix multiple
+> warnings by explicitly adding multiple break statements instead of just
+> letting the code fall through to the next case.
+> 
+> Link: https://github.com/KSPP/linux/issues/115
+> Signed-off-by: Gustavo A. R. Silva <gustavoars@kernel.org>
+> ---
+>  net/ipv4/ah4.c           | 1 +
+>  net/ipv4/esp4.c          | 1 +
+>  net/ipv4/fib_semantics.c | 1 +
+>  net/ipv4/ip_vti.c        | 1 +
+>  net/ipv4/ipcomp.c        | 1 +
+>  5 files changed, 5 insertions(+)
+> 
+> diff --git a/net/ipv4/ah4.c b/net/ipv4/ah4.c
+> index 36ed85bf2ad5..fab0958c41be 100644
+> --- a/net/ipv4/ah4.c
+> +++ b/net/ipv4/ah4.c
+> @@ -450,6 +450,7 @@ static int ah4_err(struct sk_buff *skb, u32 info)
+>  	case ICMP_DEST_UNREACH:
+>  		if (icmp_hdr(skb)->code != ICMP_FRAG_NEEDED)
+>  			return 0;
+> +		break;
+>  	case ICMP_REDIRECT:
+>  		break;
+>  	default:
+> diff --git a/net/ipv4/esp4.c b/net/ipv4/esp4.c
+> index 4b834bbf95e0..6cb3ecad04b8 100644
+> --- a/net/ipv4/esp4.c
+> +++ b/net/ipv4/esp4.c
+> @@ -982,6 +982,7 @@ static int esp4_err(struct sk_buff *skb, u32 info)
+>  	case ICMP_DEST_UNREACH:
+>  		if (icmp_hdr(skb)->code != ICMP_FRAG_NEEDED)
+>  			return 0;
+> +		break;
+>  	case ICMP_REDIRECT:
+>  		break;
+>  	default:
+> diff --git a/net/ipv4/fib_semantics.c b/net/ipv4/fib_semantics.c
+> index a632b66bc13a..4c0c33e4710d 100644
+> --- a/net/ipv4/fib_semantics.c
+> +++ b/net/ipv4/fib_semantics.c
+> @@ -1874,6 +1874,7 @@ static int call_fib_nh_notifiers(struct fib_nh *nh,
+>  		    (nh->fib_nh_flags & RTNH_F_DEAD))
+>  			return call_fib4_notifiers(dev_net(nh->fib_nh_dev),
+>  						   event_type, &info.info);
+> +		break;
+>  	default:
+>  		break;
+>  	}
+> diff --git a/net/ipv4/ip_vti.c b/net/ipv4/ip_vti.c
+> index 31c6c6d99d5e..eb560eecee08 100644
+> --- a/net/ipv4/ip_vti.c
+> +++ b/net/ipv4/ip_vti.c
+> @@ -351,6 +351,7 @@ static int vti4_err(struct sk_buff *skb, u32 info)
+>  	case ICMP_DEST_UNREACH:
+>  		if (icmp_hdr(skb)->code != ICMP_FRAG_NEEDED)
+>  			return 0;
+> +		break;
+>  	case ICMP_REDIRECT:
+>  		break;
+>  	default:
+> diff --git a/net/ipv4/ipcomp.c b/net/ipv4/ipcomp.c
+> index b42683212c65..bbb56f5e06dd 100644
+> --- a/net/ipv4/ipcomp.c
+> +++ b/net/ipv4/ipcomp.c
+> @@ -31,6 +31,7 @@ static int ipcomp4_err(struct sk_buff *skb, u32 info)
+>  	case ICMP_DEST_UNREACH:
+>  		if (icmp_hdr(skb)->code != ICMP_FRAG_NEEDED)
+>  			return 0;
+> +		break;
+>  	case ICMP_REDIRECT:
+>  		break;
+>  	default:
+> 
