@@ -2,92 +2,61 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 74C3C365818
-	for <lists+netdev@lfdr.de>; Tue, 20 Apr 2021 13:51:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C4F0536582C
+	for <lists+netdev@lfdr.de>; Tue, 20 Apr 2021 13:57:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231639AbhDTLwA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 20 Apr 2021 07:52:00 -0400
-Received: from mout.gmx.net ([212.227.15.18]:37797 "EHLO mout.gmx.net"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231196AbhDTLv7 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 20 Apr 2021 07:51:59 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
-        s=badeba3b8450; t=1618919473;
-        bh=p2HUhAGVSp8I0C+yLEVDEoUoosBgJ0yPTgkTGBzScMo=;
-        h=X-UI-Sender-Class:Date:In-Reply-To:References:Subject:Reply-to:To:
-         CC:From;
-        b=k+ZVbc26344lWiepXTHBMUspj7/UP28zKJ3udcMJt6YVTf+hqZZTzUsWbZedKSfrg
-         GuOvFJytepQbOuol9SV/yliH10wp8MuZ303elCnvOXZ4Xt+VTCfaS3PeWj8Tcn/VJ4
-         IkeRVDLRTO6lkFfGU0HhOYr/bX/mkoII1cQq28YY=
-X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
-Received: from frank-s9 ([80.245.77.151]) by mail.gmx.net (mrgmx004
- [212.227.17.190]) with ESMTPSA (Nemesis) id 1M42jK-1lYouP19n6-00024H; Tue, 20
- Apr 2021 13:51:13 +0200
-Date:   Tue, 20 Apr 2021 13:51:07 +0200
-User-Agent: K-9 Mail for Android
-In-Reply-To: <20210418211145.21914-3-pablo@netfilter.org>
-References: <20210418211145.21914-1-pablo@netfilter.org> <20210418211145.21914-3-pablo@netfilter.org>
+        id S231639AbhDTL52 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 20 Apr 2021 07:57:28 -0400
+Received: from mailout1.secunet.com ([62.96.220.44]:46664 "EHLO
+        mailout1.secunet.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230408AbhDTL51 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 20 Apr 2021 07:57:27 -0400
+Received: from cas-essen-01.secunet.de (unknown [10.53.40.201])
+        by mailout1.secunet.com (Postfix) with ESMTP id 0A72180004A;
+        Tue, 20 Apr 2021 13:56:55 +0200 (CEST)
+Received: from mbx-essen-01.secunet.de (10.53.40.197) by
+ cas-essen-01.secunet.de (10.53.40.201) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2176.2; Tue, 20 Apr 2021 13:56:54 +0200
+Received: from gauss2.secunet.de (10.182.7.193) by mbx-essen-01.secunet.de
+ (10.53.40.197) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2176.2; Tue, 20 Apr
+ 2021 13:56:54 +0200
+Received: by gauss2.secunet.de (Postfix, from userid 1000)
+        id 3F02531803A8; Tue, 20 Apr 2021 13:56:54 +0200 (CEST)
+Date:   Tue, 20 Apr 2021 13:56:54 +0200
+From:   Steffen Klassert <steffen.klassert@secunet.com>
+To:     Florian Westphal <fw@strlen.de>
+CC:     <netdev@vger.kernel.org>, <davem@davemloft.net>, <kuba@kernel.org>,
+        <herbert@gondor.apana.org.au>
+Subject: Re: [PATCH ipsec-next 0/3] xfrm: minor cleanup and synchronize_rcu
+ removal
+Message-ID: <20210420115654.GE62598@gauss3.secunet.de>
+References: <20210414161253.27586-1-fw@strlen.de>
 MIME-Version: 1.0
-Content-Type: text/plain;
- charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [PATCH net-next 2/3] net: ethernet: mtk_eth_soc: missing mutex
-Reply-to: frank-w@public-files.de
-To:     Pablo Neira Ayuso <pablo@netfilter.org>, netdev@vger.kernel.org
-CC:     davem@davemloft.net, kuba@kernel.org, john@phrozen.org,
-        nbd@nbd.name, sean.wang@mediatek.com, Mark-MC.Lee@mediatek.com,
-        dqfext@gmail.com
-From:   Frank Wunderlich <frank-w@public-files.de>
-Message-ID: <C076C591-F541-48B3-9750-8F35B4127638@public-files.de>
-X-Provags-ID: V03:K1:swgitFmc0mPP0LB6ndeGB2R62LSI549bZOivNTgx4e8uVxKkq7O
- 234ZVo4ptkHqoivgdlYmyzey9XEhl3VzTdLGb50DudNvZH7VpvwzT/20+lZcCsKjqnW9pqJ
- QvsmCCAcuiNQ+MAb0wrelsyV8uY1Sd6YCXT89Al81xsnfxGm3HDq9j1hHpVGQH5ACC0djVJ
- lrammhBnvwrtsMBfNjJmw==
-X-Spam-Flag: NO
-X-UI-Out-Filterresults: notjunk:1;V03:K0:Qip3ps5++hY=:CQPhJF0qGfSPNNkj+Aab0h
- VwcsZdIBZ3j1iLbFVFUYBR9xHU/GS57xIX7D/lxvVoTcfziwSg5i2QmMsqSW46uaktG6072/P
- VvG8hf0+dKc9aFfWa1ENi327H10EaY62ymHxeDui2GGrl7OHe5KALefKeSVVsbVZXnohljHOm
- DubEeFKUvGY3LhYrpLAZOZCrDp/LD0Z+YXlkAYWWh1KG9VX1A3S1lEhwhbUtWHfH3KDlmkzeL
- 3qh5jPXCy4Ju382dIDGTXe9jwjGaDllvK3vCoXVvY7jge7fhZIUfkEbNWBDvqWZ1HurZxpukR
- Z78LxG0l47AeQl6YUlYUCtU8Zn7UTVxg2GjVwP7zMT7Uzz4gx7IUcj13qddgx+kZ/67R9vX16
- oUchlsyD4WlxcylnWPOYdqJ8pxqAMwDzcAgw7HrmCNAicoxiW1FYsOJCVKnkx9iLXawYPt9xS
- 1/ejUaRjJqXtAvEjlBCkPWU32c7VkUgEH85awauSUHFTJK1hmmxakbD7xvvWJ8HZULgao7Lc2
- kFsGtAktQ+Ybrux0gV9LMZLADwgAPB51CreA+P2RlCfS/x4TVusyzhAx5HI0OJSOhnDcoPCO5
- hUsz78XUt3W8WFM3abRGw8Bz/rUUCDcbqwgwwUxdVTg6dEMiXrzXVXlxE+e9kj8XlYFT0NavQ
- 4laaBLMaZxL8GfBNgt0e4NDMyn0e1QIUzfnyDUP9s9pKHwasW/AvWIcYPgGABrHg6sspor1At
- HosMX3sspTw1E/EEkmjSnXrwFiqWqxOOjJfoLYbu7LlFuwzQi5D7JvtGGUwA7kTRd9epesvoH
- UscJVXnL9JVXbMfFiUx1oL/AxLxW9cuxpTQkKZmldQ85qBOPIMsTwxyO4umfq4Mr8NOOQg1KS
- ROM/gtdFOqtRa8CNJaNQaWgMGw1pkRPKfCwLN3KplAsZ0fdCJ2xTDmAqkqyEOlF6Sh/P0wYQ8
- NVb8/R4nai+ybaQP6ttBzV7ZO2OPeoQBYIVVpykq37TfIN0eWV5aPDwXyoA97K9TeEk/3ogPW
- 3AO+kD5ijptpRi9JsDe9YDlpdOt04EIqwocTAL16W3qMxa3Wmdqp9aY2ipuz8q+A1r4K8tzuh
- jQp0/cD2jgD8keXjmqdXA7Q4jGkmzLStXWgJKJY+ecldnmREya1YZPyisD8n52VG2cD6/V6dL
- gN+13hIqb7pL8cxs+yI6/sTFEaIh0qVCi/uwOJnhM7F5ESPY83WWIkDkXPzifb+EV66DwIaHh
- /9VXlkUivRIE26Vk7
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <20210414161253.27586-1-fw@strlen.de>
+X-ClientProxiedBy: cas-essen-01.secunet.de (10.53.40.201) To
+ mbx-essen-01.secunet.de (10.53.40.197)
+X-EXCLAIMER-MD-CONFIG: 2c86f778-e09b-4440-8b15-867914633a10
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Am 18=2E April 2021 23:11:44 MESZ schrieb Pablo Neira Ayuso <pablo@netfilte=
-r=2Eorg>:
->Patch 2ed37183abb7 ("netfilter: flowtable: separate replace, destroy
->and
->stats to different workqueues") splits the workqueue per event type=2E
->Add
->a mutex to serialize updates=2E
->
->Fixes: 502e84e2382d ("net: ethernet: mtk_eth_soc: add flow offloading
->support")
->Reported-by: Frank Wunderlich <frank-w@public-files=2Ede>
->Signed-off-by: Pablo Neira Ayuso <pablo@netfilter=2Eorg>
+On Wed, Apr 14, 2021 at 06:12:50PM +0200, Florian Westphal wrote:
+> First patch gets rid of SPI key from flowi struct.
+> xfrm_policy populates this but there are no consumers.
+> 
+> This is part of a different patch (not part of this) to replace
+> xfrm_decode_session internals with the flow dissector.
+> 
+> Second patch removes a synchronize_rcu/initialisation in the init path.
+> Third patch avoids a synchronize_rcu during netns destruction.
+> 
+> Florian Westphal (3):
+>   flow: remove spi key from flowi struct
+>   xfrm: remove stray synchronize_rcu from xfrm_init
+>   xfrm: avoid synchronize_rcu during netns destruction
 
-Hi Pablo,
-
-As far we tested it, the mutex does not avoid the hang=2E It looks a bit b=
-etter,but at the end it was fixed by this Patch
-
-https://patchwork=2Ekernel=2Eorg/project/linux-mediatek/patch/202104170729=
-05=2E207032-1-dqfext@gmail=2Ecom/
-
-Alex did some tests without the lock here and it still looks stable=2E So =
-it looks like it is not needed
-regards Frank
+Applied, thanks a lot Florian!
