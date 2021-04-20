@@ -2,176 +2,181 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6E33B3650D3
-	for <lists+netdev@lfdr.de>; Tue, 20 Apr 2021 05:23:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B1C853650DE
+	for <lists+netdev@lfdr.de>; Tue, 20 Apr 2021 05:28:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233752AbhDTDXV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 19 Apr 2021 23:23:21 -0400
-Received: from szxga04-in.huawei.com ([45.249.212.190]:16140 "EHLO
-        szxga04-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229566AbhDTDXU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 19 Apr 2021 23:23:20 -0400
-Received: from DGGEMS403-HUB.china.huawei.com (unknown [172.30.72.59])
-        by szxga04-in.huawei.com (SkyGuard) with ESMTP id 4FPTSh5TwJzmdTc;
-        Tue, 20 Apr 2021 11:19:48 +0800 (CST)
-Received: from [10.174.177.26] (10.174.177.26) by
- DGGEMS403-HUB.china.huawei.com (10.3.19.203) with Microsoft SMTP Server id
- 14.3.498.0; Tue, 20 Apr 2021 11:22:41 +0800
-Subject: Re: [PATCH] bonding: 3ad: update slave arr after initialize
-To:     Jay Vosburgh <jay.vosburgh@canonical.com>
-CC:     <vfalico@gmail.com>, <andy@greyhouse.net>, <davem@davemloft.net>,
-        <kuba@kernel.org>, <netdev@vger.kernel.org>, <security@kernel.org>,
-        <linux-kernel@vger.kernel.org>, <xuhanbing@huawei.com>,
-        <wangxiaogang3@huawei.com>
-References: <1618537982-454-1-git-send-email-jinyiting@huawei.com>
- <17733.1618547307@famine>
-From:   jin yiting <jinyiting@huawei.com>
-Message-ID: <1165c45f-ae7f-48c1-5c65-a879c7bf978a@huawei.com>
-Date:   Tue, 20 Apr 2021 11:22:41 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.9.0
+        id S229760AbhDTD32 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 19 Apr 2021 23:29:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47638 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229508AbhDTD3Y (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 19 Apr 2021 23:29:24 -0400
+Received: from mail-lf1-x133.google.com (mail-lf1-x133.google.com [IPv6:2a00:1450:4864:20::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 10933C06174A;
+        Mon, 19 Apr 2021 20:28:54 -0700 (PDT)
+Received: by mail-lf1-x133.google.com with SMTP id j4so19800989lfp.0;
+        Mon, 19 Apr 2021 20:28:53 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=sjA5c4MI/V/Us5khupc3zlEWJtPk9Lba1kHWIn9xqrM=;
+        b=aZSJaNW84mZRYAHIY5t88erflreGTdYjaH3FYtF1qHJPn6VWs0jryZT46tcKmPEGha
+         /og/FC8vcGojrzKljv51Y7lWbKJNsViPSNua0KzzWTeHQBaA77mtr8NCMQ4THd2QTzcC
+         W4NX+bAwjkGszUu3wkPlccw0aoYiZjMS+T4JTPsVHoVH+R4TOOISLvGTXFbJ16T+Dgur
+         kbNEKiwtz58pU2SAt4AjUcSxyUGvQb0yQueu6ghHyatn+Cc/mNZXXrnsQvXgxCwKXuNp
+         sZTyXkoz02r+DOAERoaXyqJHUX8rL4MjlDqKs+1CuVe940UruGYC9kE+b/nNTgV9xhkG
+         purg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=sjA5c4MI/V/Us5khupc3zlEWJtPk9Lba1kHWIn9xqrM=;
+        b=LgJPb5MBlEKi1REqgkAuvdlJjsp0gQpZhNPuzFcdyfII3Wkdw2WUL93Hhz5Yp/9s/z
+         Zg3K4GmkMz47pxCriTVhhLFa+EON2SMq/RUwepb7LMM7I0nyTU2HjfRMS/O5k2DUF7h6
+         dYKaMX88np5drCkQ3VCx9WuUfiml+evx0IN99nW0ssu3Vb9/aYOurM+c3WnyiX1Lyejn
+         q7uNJZm6MC/WC35f4g+0UdSpmrkh4zRUSH+bmQZU1DEIARkeRedC9zVo5cTd52D9b2Hz
+         8Lg8v95BMLJEnyFKvMm+eBXFz/WhbJ0o918UxMIpL4vwo2eI8q+SZCX0nZ1SqGGk/LrS
+         Exkw==
+X-Gm-Message-State: AOAM530Nb75ftxe060+0oeBb+vVmav6/Y7uUN3xTz1ok6Q2Z0C9FT6Bl
+        CF9Mupz/vZH60+Tz8lPd7DAow43Kjj+6XiluqSo=
+X-Google-Smtp-Source: ABdhPJxtNTC6hNyk2mAr0jYIRtC3Pnw65n4y2IU2BFaZPz0SzJ5eF0gkFi6YsfR4xYcNBc9nZPkqaJatjNPZ02gYJpQ=
+X-Received: by 2002:ac2:510d:: with SMTP id q13mr13835296lfb.75.1618889332453;
+ Mon, 19 Apr 2021 20:28:52 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <17733.1618547307@famine>
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.174.177.26]
-X-CFilter-Loop: Reflected
+References: <20210415093250.3391257-1-Jianlin.Lv@arm.com> <9c4a78d2-f73c-832a-e6e2-4b4daa729e07@iogearbox.net>
+ <d3949501-8f7d-57c4-b3fe-bcc3b24c09d8@isovalent.com> <CAADnVQJ2oHbYfgY9jqM_JMxUsoZxaNrxKSVFYfgCXuHVpDehpQ@mail.gmail.com>
+ <0dea05ba-9467-0d84-4515-b8766f60318e@csgroup.eu>
+In-Reply-To: <0dea05ba-9467-0d84-4515-b8766f60318e@csgroup.eu>
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Date:   Mon, 19 Apr 2021 20:28:41 -0700
+Message-ID: <CAADnVQ+oQT6C7Qv7P5TV-x7im54omKoCYYKtYhcnhb1Uv3LPMQ@mail.gmail.com>
+Subject: Re: [PATCH bpf-next 1/2] bpf: Remove bpf_jit_enable=2 debugging mode
+To:     Christophe Leroy <christophe.leroy@csgroup.eu>
+Cc:     Quentin Monnet <quentin@isovalent.com>,
+        Ian Rogers <irogers@google.com>,
+        Song Liu <songliubraving@fb.com>,
+        "open list:DOCUMENTATION" <linux-doc@vger.kernel.org>,
+        Zi Shen Lim <zlim.lnx@gmail.com>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Paul Mackerras <paulus@samba.org>,
+        Sandipan Das <sandipan@linux.ibm.com>,
+        "H. Peter Anvin" <hpa@zytor.com>, sparclinux@vger.kernel.org,
+        Shubham Bansal <illusionist.neo@gmail.com>,
+        Mahesh Bandewar <maheshb@google.com>,
+        Will Deacon <will@kernel.org>,
+        Nicolas Dichtel <nicolas.dichtel@6wind.com>,
+        linux-s390 <linux-s390@vger.kernel.org>,
+        Ilya Leoshkevich <iii@linux.ibm.com>, paulburton@kernel.org,
+        Jonathan Corbet <corbet@lwn.net>,
+        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
+        Masahiro Yamada <masahiroy@kernel.org>,
+        X86 ML <x86@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        linux-riscv <linux-riscv@lists.infradead.org>,
+        Christian Borntraeger <borntraeger@de.ibm.com>,
+        Ingo Molnar <mingo@redhat.com>,
+        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        "Naveen N . Rao" <naveen.n.rao@linux.ibm.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Tobias Klauser <tklauser@distanz.ch>,
+        linux-mips@vger.kernel.org, grantseltzer@gmail.com,
+        Xi Wang <xi.wang@gmail.com>, Albert Ou <aou@eecs.berkeley.edu>,
+        Kees Cook <keescook@chromium.org>,
+        Vasily Gorbik <gor@linux.ibm.com>,
+        Luke Nelson <luke.r.nels@gmail.com>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Heiko Carstens <hca@linux.ibm.com>,
+        ppc-dev <linuxppc-dev@lists.ozlabs.org>,
+        KP Singh <kpsingh@kernel.org>, iecedge@gmail.com,
+        Simon Horman <horms@verge.net.au>,
+        Borislav Petkov <bp@alien8.de>,
+        Alexander Viro <viro@zeniv.linux.org.uk>,
+        Yonghong Song <yhs@fb.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Dmitry Vyukov <dvyukov@google.com>, tsbogend@alpha.franken.de,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        Network Development <netdev@vger.kernel.org>,
+        David Ahern <dsahern@kernel.org>,
+        Wang YanQing <udknight@gmail.com>,
+        Martin KaFai Lau <kafai@fb.com>,
+        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn@kernel.org>,
+        Palmer Dabbelt <palmer@dabbelt.com>, bpf <bpf@vger.kernel.org>,
+        Jianlin Lv <Jianlin.Lv@arm.com>,
+        "David S. Miller" <davem@davemloft.net>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Sat, Apr 17, 2021 at 1:16 AM Christophe Leroy
+<christophe.leroy@csgroup.eu> wrote:
+>
+>
+>
+> Le 16/04/2021 =C3=A0 01:49, Alexei Starovoitov a =C3=A9crit :
+> > On Thu, Apr 15, 2021 at 8:41 AM Quentin Monnet <quentin@isovalent.com> =
+wrote:
+> >>
+> >> 2021-04-15 16:37 UTC+0200 ~ Daniel Borkmann <daniel@iogearbox.net>
+> >>> On 4/15/21 11:32 AM, Jianlin Lv wrote:
+> >>>> For debugging JITs, dumping the JITed image to kernel log is discour=
+aged,
+> >>>> "bpftool prog dump jited" is much better way to examine JITed dumps.
+> >>>> This patch get rid of the code related to bpf_jit_enable=3D2 mode an=
+d
+> >>>> update the proc handler of bpf_jit_enable, also added auxiliary
+> >>>> information to explain how to use bpf_jit_disasm tool after this cha=
+nge.
+> >>>>
+> >>>> Signed-off-by: Jianlin Lv <Jianlin.Lv@arm.com>
+> >>
+> >> Hello,
+> >>
+> >> For what it's worth, I have already seen people dump the JIT image in
+> >> kernel logs in Qemu VMs running with just a busybox, not for kernel
+> >> development, but in a context where buiding/using bpftool was not
+> >> possible.
+> >
+> > If building/using bpftool is not possible then majority of selftests wo=
+n't
+> > be exercised. I don't think such environment is suitable for any kind
+> > of bpf development. Much so for JIT debugging.
+> > While bpf_jit_enable=3D2 is nothing but the debugging tool for JIT deve=
+lopers.
+> > I'd rather nuke that code instead of carrying it from kernel to kernel.
+> >
+>
+> When I implemented JIT for PPC32, it was extremely helpfull.
+>
+> As far as I understand, for the time being bpftool is not usable in my en=
+vironment because it
+> doesn't support cross compilation when the target's endianess differs fro=
+m the building host
+> endianess, see discussion at
+> https://lore.kernel.org/bpf/21e66a09-514f-f426-b9e2-13baab0b938b@csgroup.=
+eu/
+>
+> That's right that selftests can't be exercised because they don't build.
+>
+> The question might be candid as I didn't investigate much about the repla=
+cement of "bpf_jit_enable=3D2
+> debugging mode" by bpftool, how do we use bpftool exactly for that ? Espe=
+cially when using the BPF
+> test module ?
 
-
-在 2021/4/16 12:28, Jay Vosburgh 写道:
-> jinyiting <jinyiting@huawei.com> wrote:
-> 
->> From: jin yiting <jinyiting@huawei.com>
->>
->> The bond works in mode 4, and performs down/up operations on the bond
->> that is normally negotiated. The probability of bond-> slave_arr is NULL
->>
->> Test commands:
->>     ifconfig bond1 down
->>     ifconfig bond1 up
->>
->> The conflict occurs in the following process：
->>
->> __dev_open (CPU A)
->> --bond_open
->>    --queue_delayed_work(bond->wq,&bond->ad_work,0);
->>    --bond_update_slave_arr
->>      --bond_3ad_get_active_agg_info
->>
->> ad_work(CPU B)
->> --bond_3ad_state_machine_handler
->>    --ad_agg_selection_logic
->>
->> ad_work runs on cpu B. In the function ad_agg_selection_logic, all
->> agg->is_active will be cleared. Before the new active aggregator is
->> selected on CPU B, bond_3ad_get_active_agg_info failed on CPU A,
->> bond->slave_arr will be set to NULL. The best aggregator in
->> ad_agg_selection_logic has not changed, no need to update slave arr.
->>
->> Signed-off-by: jin yiting <jinyiting@huawei.com>
->> ---
->> drivers/net/bonding/bond_3ad.c | 6 ++++++
->> 1 file changed, 6 insertions(+)
->>
->> diff --git a/drivers/net/bonding/bond_3ad.c b/drivers/net/bonding/bond_3ad.c
->> index 6908822..d100079 100644
->> --- a/drivers/net/bonding/bond_3ad.c
->> +++ b/drivers/net/bonding/bond_3ad.c
->> @@ -2327,6 +2327,12 @@ void bond_3ad_state_machine_handler(struct work_struct *work)
->>
->> 			aggregator = __get_first_agg(port);
->> 			ad_agg_selection_logic(aggregator, &update_slave_arr);
->> +			if (!update_slave_arr) {
->> +				struct aggregator *active = __get_active_agg(aggregator);
->> +
->> +				if (active && active->is_active)
->> +					update_slave_arr = true;
->> +			}
->> 		}
->> 		bond_3ad_set_carrier(bond);
->> 	}
-> 
-> 	The described issue is a race condition (in that
-> ad_agg_selection_logic clears agg->is_active under mode_lock, but
-> bond_open -> bond_update_slave_arr is inspecting agg->is_active outside
-> the lock).  I don't see how the above change will reliably manage this;
-> the real issue looks to be that bond_update_slave_arr is committing
-> changes to the array (via bond_reset_slave_arr) based on a racy
-> inspection of the active aggregator state while it is in flux.
-> 
-> 	Also, the description of the issue says "The best aggregator in
-> ad_agg_selection_logic has not changed, no need to update slave arr,"
-> but the change above does the opposite, and will set update_slave_arr
-> when the aggregator has not changed (update_slave_arr remains false at
-> return of ad_agg_selection_logic).
-> 
-> 	I believe I understand the described problem, but I don't see
-> how the patch fixes it.  I suspect (but haven't tested) that the proper
-> fix is to acquire mode_lock in bond_update_slave_arr while calling
-> bond_3ad_get_active_agg_info to avoid conflict with the state machine.
-> 
-> 	-J
-> 
-> ---
-> 	-Jay Vosburgh, jay.vosburgh@canonical.com
-> .
-> 
-
-	Thank you for your reply. The last patch does have redundant update 
-slave arr.Thank you for your correction.
-
-         As you said, holding mode_lock in bond_update_slave_arr while 
-calling bond_3ad_get_active_agg_info can avoid conflictwith the state 
-machine. I have tested this patch, with ifdown/ifup operations for bond 
-or slaves.
-
-         But bond_update_slave_arr is expected to hold RTNL only and NO 
-other lock. And it have WARN_ON(lockdep_is_held(&bond->mode_lock)); in 
-bond_update_slave_arr. I'm not sure that holding mode_lock in 
-bond_update_slave_arr while calling bond_3ad_get_active_agg_info is a 
-correct action.
-
-
-diff --git a/drivers/net/bonding/bond_main.c 
-b/drivers/net/bonding/bond_main.c
-index 74cbbb2..db988e5 100644
---- a/drivers/net/bonding/bond_main.c
-+++ b/drivers/net/bonding/bond_main.c
-@@ -4406,7 +4406,9 @@ int bond_update_slave_arr(struct bonding *bond, 
-struct slave *skipslave)
-     if (BOND_MODE(bond) == BOND_MODE_8023AD) {
-         struct ad_info ad_info;
-
-+       spin_lock_bh(&bond->mode_lock);
-         if (bond_3ad_get_active_agg_info(bond, &ad_info)) {
-+           spin_unlock_bh(&bond->mode_lock);
-             pr_debug("bond_3ad_get_active_agg_info failed\n");
-             /* No active aggragator means it's not safe to use
-              * the previous array.
-@@ -4414,6 +4416,7 @@ int bond_update_slave_arr(struct bonding *bond, 
-struct slave *skipslave)
-             bond_reset_slave_arr(bond);
-             goto out;
-         }
-+       spin_unlock_bh(&bond->mode_lock);
-         agg_id = ad_info.aggregator_id;
-     }
-     bond_for_each_slave(bond, slave, iter) {
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+the kernel developers can add any amount of printk and dumps to debug
+their code,
+but such debugging aid should not be part of the production kernel.
+That sysctl was two things at once: debugging tool for kernel devs and
+introspection for users.
+bpftool jit dump solves the 2nd part. It provides JIT introspection to user=
+s.
+Debugging of the kernel can be done with any amount of auxiliary code
+including calling print_hex_dump() during jiting.
