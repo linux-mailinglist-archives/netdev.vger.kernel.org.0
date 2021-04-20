@@ -2,95 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 771AC365133
-	for <lists+netdev@lfdr.de>; Tue, 20 Apr 2021 06:15:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D6D4B36517A
+	for <lists+netdev@lfdr.de>; Tue, 20 Apr 2021 06:27:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229542AbhDTEP3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 20 Apr 2021 00:15:29 -0400
-Received: from bilbo.ozlabs.org ([203.11.71.1]:34649 "EHLO ozlabs.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229507AbhDTEP2 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 20 Apr 2021 00:15:28 -0400
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 4FPVhH3s0Wz9sWQ;
-        Tue, 20 Apr 2021 14:14:54 +1000 (AEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=canb.auug.org.au;
-        s=201702; t=1618892096;
-        bh=k8eWH1sA7VLjuI++AbBGBSJj1IIJmkdbesJARKjNeak=;
-        h=Date:From:To:Cc:Subject:From;
-        b=fxNSa1l/hirfA/YKhI2SA2K8JZPUQXyKDul4uAOHGopwFCLySKKrWta1L58KY/3cA
-         91rhbBndjIQ19DJtTtYKJZ4tZcbL39KTyFRCdpZ8mgi0bjeXieOEIeVD3QaBp74E1/
-         6gDAUkPvjieDVqm380bTppA2eu17iRBpZ8T6LiBixK3O+p1Lq/jXAHRaLBXnGJf62c
-         +KmLYZuUMpIQgalEYX/QGhS9nCscz5dOJYZ6sI1SOsBCwTl0yUBxIlgGdedmW+GK9P
-         MsNufXFpfBHhiY0xmlBtlrjqIrKCgWJU1ZzBVKrOIZPJ7d7GhyLz9aJn4BNiptok0A
-         zlrA+QsBx/PXQ==
-Date:   Tue, 20 Apr 2021 14:14:52 +1000
-From:   Stephen Rothwell <sfr@canb.auug.org.au>
-To:     Steven Rostedt <rostedt@goodmis.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Networking <netdev@vger.kernel.org>
-Cc:     Florent Revest <revest@chromium.org>,
-        Ingo Molnar <mingo@kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>
-Subject: linux-next: manual merge of the ftrace tree with the bpf-next tree
-Message-ID: <20210420141452.6e6658b4@canb.auug.org.au>
+        id S229609AbhDTE1u (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 20 Apr 2021 00:27:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60210 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229516AbhDTE1t (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 20 Apr 2021 00:27:49 -0400
+Received: from mail-ot1-x335.google.com (mail-ot1-x335.google.com [IPv6:2607:f8b0:4864:20::335])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 78748C061763
+        for <netdev@vger.kernel.org>; Mon, 19 Apr 2021 21:27:17 -0700 (PDT)
+Received: by mail-ot1-x335.google.com with SMTP id c8-20020a9d78480000b0290289e9d1b7bcso20640929otm.4
+        for <netdev@vger.kernel.org>; Mon, 19 Apr 2021 21:27:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=a6ri1YBEsbxl4sCS/8ACK27mxPbtgmS0w+6VGuB6PD4=;
+        b=F737NdZhHiHZWR+h5TCxK/UBSVO1FgSc4EVLzNlW98bMTw7y0T53ZTCZZRL6yO48qT
+         MBkK14hRUP1dxQ3MYNQT+XAWjkk+c64YYuAMSqDBiAm4vTBuBGmQvi3SqNgUtmNrkC2A
+         VIeMthluKhIDoT7tqbnihgqcxHeUa8GQMY7l+xgeb4ff229nP2GeMxeJzUVyRI2QTyjG
+         XppAyoPr638vD/VdzCKqyDG79Y+Vl28LPH7H1c+1VjNZzDdBKReMYQcYcqnyRI7kxyIQ
+         YQrvDlpyt/3mE6H2NaYFUSbnDYA0Z5atrpOtIydLnVgQVKZOmSYmLiVYk3pxZ6xENOoa
+         +Yaw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=a6ri1YBEsbxl4sCS/8ACK27mxPbtgmS0w+6VGuB6PD4=;
+        b=pu4qhRZUQy4RjEAX+okvf6p/+yMBfrpCGk4h4DYrQLBcHSEtAfkCAM0MDRY4hLSzSy
+         zirzyKdEwAZgoiN4xsRlcd6kSod+xoYTygP3C+ZLFoUjANUtI62Ur3jRjpFdHbaV93Xn
+         hF2dKhehaHQleEEFkXDa69UOA6xcKD4k57mci65KkypKTJIPYRHlIEugRkL3NZHYBVeh
+         M3lDSHbHUHkbnsYp1BcuVp+csCavh7zyiNKTMo9dpHZsuo9aBwsZOAHIo5KFgC1XOXrc
+         poOyswyFxkJnM78kaWv7v9V9hmoSryQkrT+oNEvNhWXCkJp18RuhZi4ujHbTViLqVwmn
+         Fj3w==
+X-Gm-Message-State: AOAM532sdNiktEjiSj3DUw280EGpo0+0NRekubwIez5oMDgJtKEe/V4n
+        1Y8awTWxA3YSnYJhKUP3B6m/maKwYOg=
+X-Google-Smtp-Source: ABdhPJzQePJ9GUntN+GABu4o2yGyk1KSmIEOQ0QK9yV5WdOVz0PbUX3Hx4Vbeb5zN7vsWSgmwaUK7A==
+X-Received: by 2002:a9d:3a3:: with SMTP id f32mr9577381otf.205.1618892836930;
+        Mon, 19 Apr 2021 21:27:16 -0700 (PDT)
+Received: from Davids-MacBook-Pro.local ([8.45.42.15])
+        by smtp.googlemail.com with ESMTPSA id c65sm3648083oia.47.2021.04.19.21.27.15
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 19 Apr 2021 21:27:16 -0700 (PDT)
+Subject: Re: [PATCH 2/2] neighbour: allow NUD_NOARP entries to be forced GCed
+To:     Kasper Dupont <kasperd@gczfm.28.feb.2009.kasperd.net>
+Cc:     netdev@vger.kernel.org,
+        Thadeu Lima de Souza Cascardo <cascardo@canonical.com>,
+        davem@davemloft.net, kuba@kernel.org, dsahern@kernel.org,
+        Kasper Dupont <kasperd@gjkwv.06.feb.2021.kasperd.net>
+References: <20210317185320.1561608-1-cascardo@canonical.com>
+ <20210317185320.1561608-2-cascardo@canonical.com>
+ <20210419164429.GA2295190@sniper.kasperd.net>
+ <0b502406-1a86-faec-ff46-c530145b90cf@gmail.com>
+ <20210419175205.GA2375672@sniper.kasperd.net>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <71ea409d-7065-821a-f958-1736d015e4ff@gmail.com>
+Date:   Mon, 19 Apr 2021 21:27:13 -0700
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
+ Gecko/20100101 Thunderbird/78.9.1
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="Sig_/Pn4+GfZIM8NDSkabrm3_m.H";
- protocol="application/pgp-signature"; micalg=pgp-sha256
+In-Reply-To: <20210419175205.GA2375672@sniper.kasperd.net>
+Content-Type: text/plain; charset=UTF-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---Sig_/Pn4+GfZIM8NDSkabrm3_m.H
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
+On 4/19/21 10:52 AM, Kasper Dupont wrote:
+> On 19/04/21 10.10, David Ahern wrote:
+>> On 4/19/21 9:44 AM, Kasper Dupont wrote:
+>>>
+>>> Is there any update regarding this change?
+>>>
+>>> I noticed this regression when it was used in a DoS attack on one of
+>>> my servers which I had upgraded from Ubuntu 18.04 to 20.04.
+>>>
+>>> I have verified that Ubuntu 18.04 is not subject to this attack and
+>>> Ubuntu 20.04 is vulnerable. I have also verified that the one-line
+>>> change which Cascardo has provided fixes the vulnerability on Ubuntu
+>>> 20.04.
+>>>
+>>
+>> your testing included both patches or just this one?
+> 
+> I applied only this one line change on top of the kernel in Ubuntu
+> 20.04. The behavior I observed was that without the patch the kernel
+> was vulnerable and with that patch I was unable to reproduce the
+> problem.
 
-Hi all,
+This patch should be re-submitted standalone for -net
 
-Today's linux-next merge of the ftrace tree got a conflict in:
+> 
+> The other longer patch is for a different issue which Cascardo
+> discovered while working on the one I had reported. I don't have an
+> environment set up where I can reproduce the issue addressed by that
+> larger patch.
+> 
 
-  kernel/trace/bpf_trace.c
-
-between commit:
-
-  d9c9e4db186a ("bpf: Factorize bpf_trace_printk and bpf_seq_printf")
-
-from the bpf-next tree and commit:
-
-  f2cc020d7876 ("tracing: Fix various typos in comments")
-
-from the ftrace tree.
-
-I fixed it up (the former removed the comment updated by the latter) and
-can carry the fix as necessary. This is now fixed as far as linux-next
-is concerned, but any non trivial conflicts should be mentioned to your
-upstream maintainer when your tree is submitted for merging.  You may
-also want to consider cooperating with the maintainer of the conflicting
-tree to minimise any particularly complex conflicts.
-
---=20
-Cheers,
-Stephen Rothwell
-
---Sig_/Pn4+GfZIM8NDSkabrm3_m.H
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmB+VTwACgkQAVBC80lX
-0GxElQf/alTe2DZf/ChTMHfnV1VSdfcVegaoDGQ7iGSKaTFtxdVSrK/Xz2ve2OaQ
-iE0/TFXGRFzCTZKlXNTOyoUzifvsDE83BcDSoNxhJKnRxN+6Vvt/r9zGdEZ4VAVH
-lIDQsSVv0pun4QbDg4H8mzmHkHWo9h/P2X2jVMC4XDylYQsC3lqEcpkC3Y1n0tBj
-yyrqlpAQHZ+I75sX3e4+CViKUTXvgSA+D++KZv6SLPfKQWrbY6zlJTrBFSEdhOmy
-AA03BJ+zJP3wnn8WrT9QoQurTAdCCk7cc8PMCy0FOBIyGySwWPsG7/Vp/Nzhwybj
-qbmeNBt78drbzL65BwM95NoGUvTwTw==
-=wa+B
------END PGP SIGNATURE-----
-
---Sig_/Pn4+GfZIM8NDSkabrm3_m.H--
+The first patch is the one I have concerns about.
