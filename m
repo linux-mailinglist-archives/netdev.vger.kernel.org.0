@@ -2,128 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D185A366104
-	for <lists+netdev@lfdr.de>; Tue, 20 Apr 2021 22:35:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B3453366106
+	for <lists+netdev@lfdr.de>; Tue, 20 Apr 2021 22:35:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233993AbhDTUff (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 20 Apr 2021 16:35:35 -0400
-Received: from mx2.suse.de ([195.135.220.15]:59658 "EHLO mx2.suse.de"
+        id S233894AbhDTUgF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 20 Apr 2021 16:36:05 -0400
+Received: from mail.kernel.org ([198.145.29.99]:55692 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S233724AbhDTUfe (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 20 Apr 2021 16:35:34 -0400
-X-Virus-Scanned: by amavisd-new at test-mx.suse.de
-Received: from relay2.suse.de (unknown [195.135.221.27])
-        by mx2.suse.de (Postfix) with ESMTP id 26D8BB00E;
-        Tue, 20 Apr 2021 20:35:01 +0000 (UTC)
-Received: by lion.mk-sys.cz (Postfix, from userid 1000)
-        id 8F5FA60789; Tue, 20 Apr 2021 22:34:59 +0200 (CEST)
-Date:   Tue, 20 Apr 2021 22:34:59 +0200
-From:   Michal Kubecek <mkubecek@suse.cz>
-To:     Yunsheng Lin <linyunsheng@huawei.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, olteanv@gmail.com,
-        ast@kernel.org, daniel@iogearbox.net, andriin@fb.com,
-        edumazet@google.com, weiwan@google.com, cong.wang@bytedance.com,
-        ap420073@gmail.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linuxarm@openeuler.org,
-        mkl@pengutronix.de, linux-can@vger.kernel.org, jhs@mojatatu.com,
-        xiyou.wangcong@gmail.com, jiri@resnulli.us, andrii@kernel.org,
-        kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
-        john.fastabend@gmail.com, kpsingh@kernel.org, bpf@vger.kernel.org,
-        pabeni@redhat.com, mzhivich@akamai.com, johunt@akamai.com,
-        albcamus@gmail.com, kehuan.feng@gmail.com, a.fatoum@pengutronix.de,
-        atenart@kernel.org, alexander.duyck@gmail.com, hdanton@sina.com,
-        jgross@suse.com, JKosina@suse.com
-Subject: Re: [PATCH net v4 1/2] net: sched: fix packet stuck problem for
- lockless qdisc
-Message-ID: <20210420203459.h7top4zogn56oa55@lion.mk-sys.cz>
-References: <1618535809-11952-1-git-send-email-linyunsheng@huawei.com>
- <1618535809-11952-2-git-send-email-linyunsheng@huawei.com>
- <20210419152946.3n7adsd355rfeoda@lion.mk-sys.cz>
- <20210419235503.eo77f6s73a4d25oh@lion.mk-sys.cz>
+        id S233724AbhDTUgC (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 20 Apr 2021 16:36:02 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 8325F613C8;
+        Tue, 20 Apr 2021 20:35:30 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1618950930;
+        bh=eyKJXnO+WpD211dWVwb4xs0IRz+L057QB1SfEEUdwSE=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=IAQvgUip0JWBKnA+TfYagv+ve8zjA3NZyOh6ASqea+WesOiz9bfxMUOphrpVIRZMZ
+         PQX/USBw0Lrh3XSH9Z+f3Vk9F7Rj3Ea1851T55cKooVNOX0humZC1oMCUrfKsGBVgo
+         rHp4ihk1hExTWs79pJYsgGi8HTcd9uXvrkAinG/7W5Joqzp8A2qTZwXDKkxgFHxf5c
+         mAO5aA+2/AQg6jecRxes5hBWRTQY+2Kb36c7Ed5IRxogFcXIUG6yYbabnwFceCRzwv
+         JceiFpRMWjppCHaUcY4u7cm3me4EOEN8LJRY9xb+CaB8wp9ke2nEqbnivY+ha2LVwd
+         PAW8mnHHV2m7Q==
+Date:   Tue, 20 Apr 2021 13:35:29 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     dlinkin@nvidia.com
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, jiri@nvidia.com
+Subject: Re: [PATCH net-next 00/18] devlink: rate objects API
+Message-ID: <20210420133529.4904f08b@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <1618918434-25520-1-git-send-email-dlinkin@nvidia.com>
+References: <1618918434-25520-1-git-send-email-dlinkin@nvidia.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210419235503.eo77f6s73a4d25oh@lion.mk-sys.cz>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Apr 20, 2021 at 01:55:03AM +0200, Michal Kubecek wrote:
-> On Mon, Apr 19, 2021 at 05:29:46PM +0200, Michal Kubecek wrote:
-> > 
-> > As pointed out in the discussion on v3, this patch may result in
-> > significantly higher CPU consumption with multiple threads competing on
-> > a saturated outgoing device. I missed this submission so that I haven't
-> > checked it yet but given the description of v3->v4 changes above, it's
-> > quite likely that it suffers from the same problem.
+On Tue, 20 Apr 2021 14:33:36 +0300 dlinkin@nvidia.com wrote:
+> From: Dmytro Linkin <dlinkin@nvidia.com>
 > 
-> And it indeed does. However, with the additional patch from the v3
-> discussion, the numbers are approximately the same as with an unpatched
-> mainline kernel.
+> Currently kernel provides a way to change tx rate of single VF in
+> switchdev mode via tc-police action. When lots of VFs are configured
+> management of theirs rates becomes non-trivial task and some grouping
+> mechanism is required. Implementing such grouping in tc-police will bring
+> flow related limitations and unwanted complications, like:
+> - flows requires net device to be placed on
+
+Meaning they are only usable in "switchdev mode"?
+
+> - effect of limiting depends on the position of tc-police action in the
+>   pipeline
+
+Could you expand? tc-police is usually expected to be first.
+
+> - etc.
+
+Please expand.
+
+> According to that devlink is the most appropriate place.
 > 
-> As with v4, I tried this patch on top of 5.12-rc7 with real devices.
-> I used two machines with 10Gb/s Intel ixgbe NICs, sender has 16 CPUs
-> (2 8-core CPUs with HT disabled) and 16 Rx/Tx queues, receiver has
-> 48 CPUs (2 12-core CPUs with HT enabled) and 48 Rx/Tx queues.
+> This series introduces devlink API for managing tx rate of single devlink
+> port or of a group by invoking callbacks (see below) of corresponding
+> driver. Also devlink port or a group can be added to the parent group,
+> where driver responsible to handle rates of a group elements. To achieve
+> all of that new rate object is added. It can be one of the two types:
+> - leaf - represents a single devlink port; created/destroyed by the
+>   driver and bound to the devlink port. As example, some driver may
+>   create leaf rate object for every devlink port associated with VF.
+>   Since leaf have 1to1 mapping to it's devlink port, in user space it is
+>   referred as pci/<bus_addr>/<port_index>;
+> - node - represents a group of rate objects; created/deleted by request
+>   from the userspace; initially empty (no rate objects added). In
+>   userspace it is referred as pci/<bus_addr>/<node_name>, where node name
+>   can be any, except decimal number, to avoid collisions with leafs.
 > 
->   threads    5.12-rc7    5.12-rc7 + v4    5.12-rc7 + v4 + stop
->      1        25.1%          38.1%            22.9%
->      8        66.2%         277.0%            74.1%
->     16        90.1%         150.7%            91.0%
->     32       107.2%         272.6%           108.3%
->     64       116.3%         487.5%           118.1%
->    128       126.1%         946.7%           126.9%
+> devlink_ops extended with following callbacks:
+> - rate_{leaf|node}_tx_{share|max}_set
+> - rate_node_{new|del}
+> - rate_{leaf|node}_parent_set
+
+Tx is incorrect. You're setting an admission rate limiter on the port.
+
+> KAPI provides:
+> - creation/destruction of the leaf rate object associated with devlink
+>   port
+> - storing/retrieving driver specific data in rate object
 > 
-> (The values are normalized to one core, i.e. 100% corresponds to one
-> fully used logical CPU.)
+> UAPI provides:
+> - dumping all or single rate objects
+> - setting tx_{share|max} of rate object of any type
+> - creating/deleting node rate object
+> - setting/unsetting parent of any rate object
 
-I repeated the tests few more times and with more iterations and it
-seems the problem rather was that the CPU utilization numbers are not
-very stable, in particular with number of connections/threads close to
-the number of CPUs and Tx queues. Refined results (and also other tests)
-show that full 3-patch series performs similar to unpatched 5.12-rc7
-(within the margin of statistical error).
+> Add devlink rate object support for netdevsim driver.
+> To support devlink rate objects implement VF ports and eswitch mode
+> selector for netdevsim driver.
+> 
+> Issues/open questions:
+> - Does user need DEVLINK_CMD_RATE_DEL_ALL_CHILD command to clean all
+>   children of particular parent node? For example:
+>   $ devlink port func rate flush netdevsim/netdevsim10/group
 
-However, I noticed something disturbing in the results of a simple
-1-thread TCP_STREAM test (client sends data through a TCP connection to
-server using long writes, we measure the amount of data received by the
-server):
-
-  server: 172.17.1.1, port 12543
-  iterations: 20, threads: 1, test length: 30
-  test: TCP_STREAM, message size: 1048576
-  
-  1     927403548.4 B/s,  avg   927403548.4 B/s, mdev           0.0 B/s (  0.0%)
-  2    1176317172.1 B/s,  avg  1051860360.2 B/s, mdev   124456811.8 B/s ( 11.8%), confid. +/-  1581348251.3 B/s (150.3%)
-  3     927335837.8 B/s,  avg  1010352186.1 B/s, mdev   117354970.3 B/s ( 11.6%), confid. +/-   357073677.2 B/s ( 35.3%)
-  4    1176728045.1 B/s,  avg  1051946150.8 B/s, mdev   124576544.7 B/s ( 11.8%), confid. +/-   228863127.8 B/s ( 21.8%)
-  5    1176788216.3 B/s,  avg  1076914563.9 B/s, mdev   122102985.3 B/s ( 11.3%), confid. +/-   169478943.5 B/s ( 15.7%)
-  6    1158167055.1 B/s,  avg  1090456645.8 B/s, mdev   115504209.5 B/s ( 10.6%), confid. +/-   132805140.8 B/s ( 12.2%)
-  7    1176243474.4 B/s,  avg  1102711907.0 B/s, mdev   111069717.1 B/s ( 10.1%), confid. +/-   110956822.2 B/s ( 10.1%)
-  8    1176771142.8 B/s,  avg  1111969311.5 B/s, mdev   106744173.5 B/s (  9.6%), confid. +/-    95417120.0 B/s (  8.6%)
-  9    1176206364.6 B/s,  avg  1119106761.8 B/s, mdev   102644185.2 B/s (  9.2%), confid. +/-    83685200.5 B/s (  7.5%)
-  10   1175888409.4 B/s,  avg  1124784926.6 B/s, mdev    98855550.5 B/s (  8.8%), confid. +/-    74537085.1 B/s (  6.6%)
-  11   1176541407.6 B/s,  avg  1129490061.2 B/s, mdev    95422224.8 B/s (  8.4%), confid. +/-    67230249.7 B/s (  6.0%)
-  12    934185352.8 B/s,  avg  1113214668.9 B/s, mdev   106114984.5 B/s (  9.5%), confid. +/-    70420712.5 B/s (  6.3%)
-  13   1176550558.1 B/s,  avg  1118086660.3 B/s, mdev   103339448.9 B/s (  9.2%), confid. +/-    65002902.4 B/s (  5.8%)
-  14   1176521808.8 B/s,  avg  1122260599.5 B/s, mdev   100711151.3 B/s (  9.0%), confid. +/-    60333655.0 B/s (  5.4%)
-  15   1176744840.8 B/s,  avg  1125892882.3 B/s, mdev    98240838.2 B/s (  8.7%), confid. +/-    56319052.3 B/s (  5.0%)
-  16   1176593778.5 B/s,  avg  1129061688.3 B/s, mdev    95909740.8 B/s (  8.5%), confid. +/-    52771633.5 B/s (  4.7%)
-  17   1176583967.4 B/s,  avg  1131857116.5 B/s, mdev    93715582.2 B/s (  8.3%), confid. +/-    49669258.6 B/s (  4.4%)
-  18   1176853301.8 B/s,  avg  1134356904.5 B/s, mdev    91656530.2 B/s (  8.1%), confid. +/-    46905244.8 B/s (  4.1%)
-  19   1176592845.7 B/s,  avg  1136579848.8 B/s, mdev    89709043.8 B/s (  7.9%), confid. +/-    44424855.9 B/s (  3.9%)
-  20   1176608117.3 B/s,  avg  1138581262.2 B/s, mdev    87871692.6 B/s (  7.7%), confid. +/-    42193098.5 B/s (  3.7%)
-  all                     avg  1138581262.2 B/s, mdev    87871692.6 B/s (  7.7%), confid. +/-    42193098.5 B/s (  3.7%)
-
-Each line shows result of one 30 second long test and average, mean
-deviation and 99% confidence interval half width through the iterations
-so far. While 17 iteration results are essentially the wire speed minus
-TCP overhead, iterations 1, 3 and 12 are more than 20% lower. As results
-of the same test on unpatched 5.12-rc7 are much more consistent (the
-lowest iteration result through the whole test was 1175939718.3 and the
-mean deviation only 276889.1 B/s), it doesn't seeem to be just a random
-fluctuation.
-
-I'll try to find out what happens in these outstanding iterations.
-
-Michal
+Is this an RFC? There is no real user in this set.
