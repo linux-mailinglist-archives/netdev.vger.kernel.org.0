@@ -2,23 +2,23 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4F0A4365B88
+	by mail.lfdr.de (Postfix) with ESMTP id 9AEFB365B89
 	for <lists+netdev@lfdr.de>; Tue, 20 Apr 2021 16:56:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232823AbhDTO4L (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 20 Apr 2021 10:56:11 -0400
-Received: from mail-bn8nam12on2085.outbound.protection.outlook.com ([40.107.237.85]:31713
-        "EHLO NAM12-BN8-obe.outbound.protection.outlook.com"
+        id S232841AbhDTO4N (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 20 Apr 2021 10:56:13 -0400
+Received: from mail-dm6nam12on2087.outbound.protection.outlook.com ([40.107.243.87]:5857
+        "EHLO NAM12-DM6-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S232760AbhDTO4I (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 20 Apr 2021 10:56:08 -0400
+        id S232828AbhDTO4K (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 20 Apr 2021 10:56:10 -0400
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=BRDtkkZk6gNu/C1rhakStYFKFsRR+UvLmBH6GVDzBlLwhZjMWtLzUOsnWXvnej5VElVkayC2v+YxAaKcC/Nmw+KH9VJfBBCNwULXl36LD6TNqKJgq04FngolNYX30HgACzGorZr5UcrIdTsBvtp18D9mvZtfuMz2KmytIDi0g1nDtaTDGkT+9bPGnI1diNk+bCVjjzIQcNs9DtgDxFSBraun+j+Jo9Dbka4l6DZ0evys0iLHwRfvFOHVVZ87CjzWA554OjQCGE+l7gitoN6SrS1jc/HdpWYfsNmUxKkF7U17gTaFcPTPoaHdnEfcbsUbyzBfDVYbNpunTyXehESihA==
+ b=G2zTg/0DxYdv8zazgu8+77mrlDWEw0p0pxc69PONLxxF1blbC+zVzi8JKgDTQf/cJKsHMOQUE6+vrDXlV25DTVKx2vtvYPMUuH3xGPaIVrrioufW6FjJAJF8AcxrGEXo8EKy+39Hexz2Qtb8Jq8DmwMVW2qgs6dfDY5UVR7Nz3lbKFytWNYNIFBMjYlMqBopEuch9ecXIfBmssThZxqJvgnnay2A5INYesTL/HsSmacRBEG5vrLC7vf+cymJwVhJ0naiVNKYJOi1rwXh+y1b3YVXNw851w/kdM0zmjMVgxSxa9Q1ZIoh89QngWMjDVoomWDNMnGwnhT7cnyd2FMlvA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=csC1su5YlX1iT1C8QOka4bAUTb5dAzv4vCnwfZP/dAM=;
- b=VF8oNgtKpxGqzVmfrgPaK8VEwGPKmATXCJckCc0VsBzDMwiUPyL4AocRpl15zjbDKkvfIX775wo06O47vxEadgy68jPH10KCGjjr4IrmWL72YASNMTjjK4RZvjCErAldr/nJy8YU71tKGa6n96KvkvzSazUKzy1fKDGZo28QKO+gCxVxZvomIbCBv6u2KjkuLzwsYNS0kdFdmIzx1QuwTuzFopuMXx+htkGogB0KGgQ+r0OSE4LBrPelnuL/y3EEecJgNNLldzReVUHYb/S9bMbVs5eIx8ELyCn10lvl7ihA2jdGOeA41lnhjHTHXKheOtk+rnAiGxDhyRYi70vY8A==
+ bh=ubgkYEEaU7dPiJjtlBDVE/4eO1tMsEN+EOcqzqlesBQ=;
+ b=nPhYN9l6s5TBIa9A/yfmaKLSESLflF7nG8ZgtoSw9EExKJSUpns9nVZr5rKN/KdzAbV5bZpKM4Ur7QceiTO3jidGiZfDFa4LB4dhUQHiAsclxmFjDbEdOI8+39um2BkxMvE52y2BX25HTQbZnk/HOKsDBYZwzpDgeQVZItbTelqj4LkixOH/a9n3T1H1FBFcdREOIR5Z58Ci5hHjOsmozQVWAziXqsAEdADvIkrPsVmvhp3Ym86gcM4elhlFnFRQZlufmCcAAutEzQkJ8u83NTtAh9ZYTA9w189lCdB40pVQq0Ksg2QPYvmXrKS+A2ZmCK7xNfC5d6rb7QIYLr/gqQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
  216.228.112.34) smtp.rcpttodomain=davemloft.net smtp.mailfrom=nvidia.com;
  dmarc=pass (p=none sp=none pct=100) action=none header.from=nvidia.com;
@@ -26,18 +26,18 @@ ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=csC1su5YlX1iT1C8QOka4bAUTb5dAzv4vCnwfZP/dAM=;
- b=pr/Ge2lenfe9MFO8Ijh3l3ei6N197As3F+wlm76FMAMgtB1ubQe0yQLZK2Xssca7aQvHzrke7N440gwResnXPIIRzCxmphraqpbt8CSJWrXbhvBGzz3cIdXHB9NH4yXtWg40jrtCxshqs5hr/fFIJZCXIz+5bWRzvcHN98HdSwxbeOHKV1WlMt6Jh21p8NzFeT7hFf8A6g2nkBPpoYK60PmfQYE59CFnjsxyK8EbQnkoWG6+dVeG3wBSrp8F9zyTUZRijkaeaULKBAXxG5oQaFVaJS0yM/OG37Z9CbS08EqM/DQMXtUTrwpUKZ6Tkn0Mx85XGxM+dllLm/TYEcPFAw==
-Received: from BN9PR03CA0934.namprd03.prod.outlook.com (2603:10b6:408:108::9)
- by CH2PR12MB4232.namprd12.prod.outlook.com (2603:10b6:610:a4::21) with
+ bh=ubgkYEEaU7dPiJjtlBDVE/4eO1tMsEN+EOcqzqlesBQ=;
+ b=Kk02+nJVqqawDIPJp8omkFWBJ0WoNngnLpp8t8Wuq22OZvstMtvBlyaJZTYLE8qQLDOk3JLMc5JjmJN20Aue6QGEOFe78j49T1Q/YVbfeEc9DgRBm34JA0DCtP2B4y6OomWrnCTpFS71D1P7hLgOGp67boBqwq4KLUxgTkLDkoyKmfEYJWehwExEWnHLVzN6zpn5SpiY25NMj7ipjnMc3jiRX5Rlnrg5dl6k0Q3Ph/Qq0soo94yu6QTMuraGFsqh7gHk9yAr/+gpp6ZLKHdE85a7fecXjEwnb9oB1u3rAZbe8qJ2fz6f9oBLzf08vgpjq1Ez42KnX0gxja55ftimBQ==
+Received: from BN9PR12CA0009.namprd12.prod.outlook.com (2603:10b6:408:10c::32)
+ by CH0PR12MB5185.namprd12.prod.outlook.com (2603:10b6:610:b8::16) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4042.18; Tue, 20 Apr
- 2021 14:55:35 +0000
-Received: from BN8NAM11FT005.eop-nam11.prod.protection.outlook.com
- (2603:10b6:408:108:cafe::8c) by BN9PR03CA0934.outlook.office365.com
- (2603:10b6:408:108::9) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4042.18 via Frontend
- Transport; Tue, 20 Apr 2021 14:55:35 +0000
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4042.16; Tue, 20 Apr
+ 2021 14:55:37 +0000
+Received: from BN8NAM11FT040.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:408:10c:cafe::4d) by BN9PR12CA0009.outlook.office365.com
+ (2603:10b6:408:10c::32) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4065.20 via Frontend
+ Transport; Tue, 20 Apr 2021 14:55:37 +0000
 X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.112.34)
  smtp.mailfrom=nvidia.com; davemloft.net; dkim=none (message not signed)
  header.d=none;davemloft.net; dmarc=pass action=none header.from=nvidia.com;
@@ -45,22 +45,24 @@ Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
  216.228.112.34 as permitted sender) receiver=protection.outlook.com;
  client-ip=216.228.112.34; helo=mail.nvidia.com;
 Received: from mail.nvidia.com (216.228.112.34) by
- BN8NAM11FT005.mail.protection.outlook.com (10.13.176.69) with Microsoft SMTP
+ BN8NAM11FT040.mail.protection.outlook.com (10.13.177.166) with Microsoft SMTP
  Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.20.4042.16 via Frontend Transport; Tue, 20 Apr 2021 14:55:35 +0000
+ 15.20.4042.16 via Frontend Transport; Tue, 20 Apr 2021 14:55:37 +0000
 Received: from localhost.localdomain (172.20.145.6) by HQMAIL107.nvidia.com
  (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Tue, 20 Apr
- 2021 14:55:32 +0000
+ 2021 14:55:34 +0000
 From:   Petr Machata <petrm@nvidia.com>
 To:     <netdev@vger.kernel.org>
 CC:     <mlxsw@nvidia.com>, Ido Schimmel <idosch@nvidia.com>,
         "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
         Petr Machata <petrm@nvidia.com>
-Subject: [PATCH net-next 00/10] mlxsw: Refactor qdisc offload
-Date:   Tue, 20 Apr 2021 16:53:38 +0200
-Message-ID: <cover.1618928118.git.petrm@nvidia.com>
+Subject: [PATCH net-next 01/10] mlxsw: spectrum_qdisc: Drop one argument from check_params callback
+Date:   Tue, 20 Apr 2021 16:53:39 +0200
+Message-ID: <95326aede708460b3452e58f33c9eaa1f5b2b9f6.1618928118.git.petrm@nvidia.com>
 X-Mailer: git-send-email 2.26.3
+In-Reply-To: <cover.1618928118.git.petrm@nvidia.com>
+References: <cover.1618928118.git.petrm@nvidia.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
@@ -69,75 +71,98 @@ X-ClientProxiedBy: HQMAIL107.nvidia.com (172.20.187.13) To
  HQMAIL107.nvidia.com (172.20.187.13)
 X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 58578c9e-6462-4993-617f-08d9040c5a6a
-X-MS-TrafficTypeDiagnostic: CH2PR12MB4232:
-X-Microsoft-Antispam-PRVS: <CH2PR12MB4232A2F40D76A1F9B14FBD0CD6489@CH2PR12MB4232.namprd12.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:5236;
+X-MS-Office365-Filtering-Correlation-Id: 292bd5c1-8b48-41ee-d0e2-08d9040c5b94
+X-MS-TrafficTypeDiagnostic: CH0PR12MB5185:
+X-Microsoft-Antispam-PRVS: <CH0PR12MB5185C1D0C8A3DE2935A620ABD6489@CH0PR12MB5185.namprd12.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:186;
 X-MS-Exchange-SenderADCheck: 1
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: EenfVph4u1RKPSpUC6D5J/TOi9ooR/38yGDMVb97CIPSQFBdRswCvZYEZtzAg3Wbn0gnD+Ygyy1/HSErA6JXAeEVvRM4aGAnwGapIkmd9YXTpSr32WP5uDDEpQhFYKmY8aDfxcwobsPx2dTXR9nDRCJesFcx5uDBA4GWbO6ePGxB/MHhLwRyxfpJ1CB8cBjDtKrCWfTGhNRNTXTUdKY8NJ8655PnA4ssL7KDAfvJB5jM7O8I6EK8mYjhMZhRRjrtao3G6TB8VwsbmAM3antf8gLvfxOMpaZBtYzLaezS55nd3+MOiUyATsypJzolNSB05E+655Nq1buFOHyeVZdYvsWx6fxAMWFhbJg1dOqFQsod03Dv+qK9ppCmlPZ+eeGwWheC9FjV4nZ0MTDIsXS0ITUhGhx8+nKZY+b+mzEwwFn1S3elP3ERYgvqijfKLuQLeWSbR4KpW7bzRrlbRCWH7vvc42NxNgk3c/OzBwHDdleX+BKmmOKFrxKiOzJD6RIkqS02D5Oq5X7YInIZNJHOez4lAMgPG7HfZbApZ04Netglg2YIIpUlhT+qLuCf8HzRQM4sVGhBHaydWcMyMyAhhJbebUb6tKvcXveuZBMAeWlChyXEP4HXXihU3mmgcBCZDf5fH+dscOnprMIeKPyMIPTa1TzInVyqEkOkBYZwLFA=
-X-Forefront-Antispam-Report: CIP:216.228.112.34;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:schybrid03.nvidia.com;CAT:NONE;SFS:(4636009)(136003)(39860400002)(376002)(396003)(346002)(36840700001)(46966006)(107886003)(5660300002)(478600001)(2906002)(86362001)(4326008)(82310400003)(36860700001)(16526019)(186003)(26005)(36756003)(83380400001)(336012)(82740400003)(6916009)(426003)(47076005)(70206006)(70586007)(8676002)(2616005)(8936002)(36906005)(356005)(316002)(54906003)(7636003);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: R6GzPoYIRe4j1yChx/5rC3oGFlTjEg1aY5hoKdZcq/gW07IXiKcPYSqtZhir08hGXgqXl0ApBC1UTc0+7+jwPUQug45Esj1hJ79n3ShAOF6nGggj3p/gEvPVKdt9H/K4U/l3X+te63Vvu71LRnltWsbcV/T7r1s2rpSNPlW6Jm3EmzgEeWyBSR3VNLfcJRqRTYEUsCEe3rUAk7mY/Nz33+EW5KN/5j4Tt6S5zhJBXKscgiJ/yUbtKBj8eA8Zyzaf3BGPGf377f2nTZm2ZimlqwegWUJc1sSYEbXZ5JtLB9zp74j6e9U6v+rZNCtqBCEfiDqpSFcMrYDxAvWDqiTXpvTLxYQpDKbDy4nL6kBH95rN0/nJpkdR9ZGad25f8740AfUCJoa7hFG2aYGMeM5j5c2quf7tDUFCK6cLu0lM9X+dyLdAylB4hOhOVCGBVt90iXnQwrBGVKoDhOlLUjGcbvC1znN2zxmFNZAi5wl3VxqkjtIS9CFAVv94nF5yQ4q7SQEpUd20zdC/o81rM51K2/xIFj5tSKJ/Mh5R99BpDJwxlcUu49av0eqq3S10RAr64PXvdkZ5Rrpy1el+uvqX+804SsyBeTn7sOF65qt7BBY/t3OdDLoPHm7e1okjXoV7c64BWSBHsPotfcyMyZxVE0HHv/8c6JiTchF63EI6Iik=
+X-Forefront-Antispam-Report: CIP:216.228.112.34;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:schybrid03.nvidia.com;CAT:NONE;SFS:(4636009)(396003)(376002)(39860400002)(346002)(136003)(36840700001)(46966006)(16526019)(2616005)(86362001)(478600001)(107886003)(54906003)(26005)(36906005)(336012)(82740400003)(316002)(6916009)(8936002)(186003)(82310400003)(8676002)(7636003)(36756003)(4326008)(83380400001)(47076005)(356005)(2906002)(426003)(70206006)(36860700001)(5660300002)(70586007);DIR:OUT;SFP:1101;
 X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 20 Apr 2021 14:55:35.0746
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 20 Apr 2021 14:55:37.0534
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 58578c9e-6462-4993-617f-08d9040c5a6a
+X-MS-Exchange-CrossTenant-Network-Message-Id: 292bd5c1-8b48-41ee-d0e2-08d9040c5b94
 X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
 X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.112.34];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource: BN8NAM11FT005.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthSource: BN8NAM11FT040.eop-nam11.prod.protection.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Anonymous
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH2PR12MB4232
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH0PR12MB5185
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Currently, mlxsw admits for offload a suitable root qdisc, and its
-children. Thus up to two levels of hierarchy are offloaded. Often, this is
-enough: one can configure TCs with RED and TCs with a shaper, and can even
-see counters for each TC by looking at a qdisc at a sufficiently shallow
-position.
+The mlxsw_sp_qdisc argument is not used in any of the actual callbacks.
+Drop it.
 
-While simple, the system has obvious shortcomings. It is not possible to
-configure both RED and shaping on one TC. It is not possible to place a
-PRIO below root TBF, which would then be offloaded as port shaper. FIFOs
-are only offloaded at root or directly below, which is confusing to users,
-because RED and TBF of course have their own FIFO.
+Signed-off-by: Petr Machata <petrm@nvidia.com>
+Reviewed-by: Ido Schimmel <idosch@nvidia.com>
+---
+ drivers/net/ethernet/mellanox/mlxsw/spectrum_qdisc.c | 8 +-------
+ 1 file changed, 1 insertion(+), 7 deletions(-)
 
-This patchset is a step towards the end goal of allowing more comprehensive
-qdisc tree offload and cleans up the qdisc offload code.
-
-- Patches #1-#4 contain small cleanups.
-
-- Up until now, since mlxsw offloaded only a very simple qdisc
-  configurations, basically all bookkeeping was done using one container
-  for the root qdisc, and 8 containers for its children. Patches #5, #6, #8
-  and #9 gradually introduce a more dynamic structure, where parent-child
-  relationships are tracked directly at qdiscs, instead of being implicit.
-
-- This tree management assumes only one qdisc is created at a time. In FIFO
-  handlers, this condition was enforced simply by asserting RTNL lock. But
-  instead of furthering this RTNL dependence, patch #7 converts the whole
-  qdisc offload logic to a per-port mutex.
-
-- Patch #10 adds a selftest.
-
-Petr Machata (10):
-  mlxsw: spectrum_qdisc: Drop one argument from check_params callback
-  mlxsw: spectrum_qdisc: Simplify mlxsw_sp_qdisc_compare()
-  mlxsw: spectrum_qdisc: Drop an always-true condition
-  mlxsw: spectrum_qdisc: Track tclass_num as int, not u8
-  mlxsw: spectrum_qdisc: Promote backlog reduction to
-    mlxsw_sp_qdisc_destroy()
-  mlxsw: spectrum_qdisc: Track children per qdisc
-  mlxsw: spectrum_qdisc: Guard all qdisc accesses with a lock
-  mlxsw: spectrum_qdisc: Allocate child qdiscs dynamically
-  mlxsw: spectrum_qdisc: Index future FIFOs by band number
-  selftests: mlxsw: sch_red_ets: Test proper counter cleaning in ETS
-
- .../ethernet/mellanox/mlxsw/spectrum_qdisc.c  | 448 ++++++++++++------
- .../drivers/net/mlxsw/sch_red_ets.sh          |   7 +
- 2 files changed, 306 insertions(+), 149 deletions(-)
-
+diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_qdisc.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum_qdisc.c
+index baf17c0b2702..644ffc021abe 100644
+--- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_qdisc.c
++++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_qdisc.c
+@@ -29,7 +29,6 @@ struct mlxsw_sp_qdisc;
+ struct mlxsw_sp_qdisc_ops {
+ 	enum mlxsw_sp_qdisc_type type;
+ 	int (*check_params)(struct mlxsw_sp_port *mlxsw_sp_port,
+-			    struct mlxsw_sp_qdisc *mlxsw_sp_qdisc,
+ 			    void *params);
+ 	int (*replace)(struct mlxsw_sp_port *mlxsw_sp_port, u32 handle,
+ 		       struct mlxsw_sp_qdisc *mlxsw_sp_qdisc, void *params);
+@@ -198,7 +197,7 @@ mlxsw_sp_qdisc_replace(struct mlxsw_sp_port *mlxsw_sp_port, u32 handle,
+ 			goto err_hdroom_configure;
+ 	}
+ 
+-	err = ops->check_params(mlxsw_sp_port, mlxsw_sp_qdisc, params);
++	err = ops->check_params(mlxsw_sp_port, params);
+ 	if (err)
+ 		goto err_bad_param;
+ 
+@@ -434,7 +433,6 @@ mlxsw_sp_qdisc_red_destroy(struct mlxsw_sp_port *mlxsw_sp_port,
+ 
+ static int
+ mlxsw_sp_qdisc_red_check_params(struct mlxsw_sp_port *mlxsw_sp_port,
+-				struct mlxsw_sp_qdisc *mlxsw_sp_qdisc,
+ 				void *params)
+ {
+ 	struct mlxsw_sp *mlxsw_sp = mlxsw_sp_port->mlxsw_sp;
+@@ -678,7 +676,6 @@ mlxsw_sp_qdisc_tbf_rate_kbps(struct tc_tbf_qopt_offload_replace_params *p)
+ 
+ static int
+ mlxsw_sp_qdisc_tbf_check_params(struct mlxsw_sp_port *mlxsw_sp_port,
+-				struct mlxsw_sp_qdisc *mlxsw_sp_qdisc,
+ 				void *params)
+ {
+ 	struct tc_tbf_qopt_offload_replace_params *p = params;
+@@ -813,7 +810,6 @@ mlxsw_sp_qdisc_fifo_destroy(struct mlxsw_sp_port *mlxsw_sp_port,
+ 
+ static int
+ mlxsw_sp_qdisc_fifo_check_params(struct mlxsw_sp_port *mlxsw_sp_port,
+-				 struct mlxsw_sp_qdisc *mlxsw_sp_qdisc,
+ 				 void *params)
+ {
+ 	return 0;
+@@ -948,7 +944,6 @@ __mlxsw_sp_qdisc_ets_check_params(unsigned int nbands)
+ 
+ static int
+ mlxsw_sp_qdisc_prio_check_params(struct mlxsw_sp_port *mlxsw_sp_port,
+-				 struct mlxsw_sp_qdisc *mlxsw_sp_qdisc,
+ 				 void *params)
+ {
+ 	struct tc_prio_qopt_offload_params *p = params;
+@@ -1124,7 +1119,6 @@ static struct mlxsw_sp_qdisc_ops mlxsw_sp_qdisc_ops_prio = {
+ 
+ static int
+ mlxsw_sp_qdisc_ets_check_params(struct mlxsw_sp_port *mlxsw_sp_port,
+-				struct mlxsw_sp_qdisc *mlxsw_sp_qdisc,
+ 				void *params)
+ {
+ 	struct tc_ets_qopt_offload_replace_params *p = params;
 -- 
 2.26.2
 
