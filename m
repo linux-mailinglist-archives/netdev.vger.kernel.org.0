@@ -2,104 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D215C364EE6
-	for <lists+netdev@lfdr.de>; Tue, 20 Apr 2021 01:57:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9E59E364F7F
+	for <lists+netdev@lfdr.de>; Tue, 20 Apr 2021 02:31:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231145AbhDSX6G (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 19 Apr 2021 19:58:06 -0400
-Received: from smtp-fw-9102.amazon.com ([207.171.184.29]:36241 "EHLO
-        smtp-fw-9102.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229471AbhDSX6F (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 19 Apr 2021 19:58:05 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
-  t=1618876656; x=1650412656;
-  h=from:to:cc:subject:date:message-id:mime-version;
-  bh=sJXxVXx4KCMJyv3wNLapHiDM+z+uwVIJUTlM2adv4g4=;
-  b=JawrN/FYadVYZh1TnaA/Zb9VqLy/XWqX+SjfCTqB8h4rIwMxtoeB1Bbv
-   mdhQV8l5VywnV/LmcCY89M+nnJ9hGbdj8YchZih3RSjTYlOQ1hG80RtWW
-   YkntuG5PfaCRHEZ9Q9mZ3idS7mfiIBemtzRQO2lvcJZ8AiGgTpGXEoCli
-   g=;
-X-IronPort-AV: E=Sophos;i="5.82,235,1613433600"; 
-   d="scan'208";a="128968883"
-Received: from pdx4-co-svc-p1-lb2-vlan3.amazon.com (HELO email-inbound-relay-1a-67b371d8.us-east-1.amazon.com) ([10.25.36.214])
-  by smtp-border-fw-out-9102.sea19.amazon.com with ESMTP; 19 Apr 2021 23:57:35 +0000
-Received: from EX13MTAUWA001.ant.amazon.com (iad12-ws-svc-p26-lb9-vlan3.iad.amazon.com [10.40.163.38])
-        by email-inbound-relay-1a-67b371d8.us-east-1.amazon.com (Postfix) with ESMTPS id 2397FA1BCA;
-        Mon, 19 Apr 2021 23:57:32 +0000 (UTC)
-Received: from EX13D01UWA002.ant.amazon.com (10.43.160.74) by
- EX13MTAUWA001.ant.amazon.com (10.43.160.118) with Microsoft SMTP Server (TLS)
- id 15.0.1497.2; Mon, 19 Apr 2021 23:57:32 +0000
-Received: from u87e72aa3c6c25c.ant.amazon.com (10.43.161.253) by
- EX13d01UWA002.ant.amazon.com (10.43.160.74) with Microsoft SMTP Server (TLS)
- id 15.0.1497.2; Mon, 19 Apr 2021 23:57:31 +0000
-From:   Samuel Mendoza-Jonas <samjonas@amazon.com>
-To:     <bpf@vger.kernel.org>
-CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <bsingharora@gmail.com>, Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Samuel Mendoza-Jonas <samjonas@amazon.com>
-Subject: [PATCH] bpf: Fix backport of "bpf: restrict unknown scalars of mixed signed bounds for unprivileged"
-Date:   Mon, 19 Apr 2021 16:56:41 -0700
-Message-ID: <20210419235641.5442-1-samjonas@amazon.com>
-X-Mailer: git-send-email 2.17.1
+        id S230332AbhDTAbq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 19 Apr 2021 20:31:46 -0400
+Received: from mail.kernel.org ([198.145.29.99]:45336 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S230182AbhDTAbq (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 19 Apr 2021 20:31:46 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 7D847610CC;
+        Tue, 20 Apr 2021 00:31:15 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1618878675;
+        bh=wYPbiyiBEgX0K1jF4x2kI2eydyYdgOUVlYMBRVElmo8=;
+        h=From:To:Cc:Subject:Date:From;
+        b=i/uSJZzTO9rggD2apkdQBO1PoE4fj6e1ffPrvibm9mqfybGNpYf73+15Pb2eAdsQE
+         Os0mUKWq0+FFOjOYIGujlTM7t4er+WOocZIRJNiINMKzasBrCw9pMHyKEIJubmoaUI
+         L5bWmsqs2TZN+bH5GQTTzfoA6F9zS2bpCeKpxSyUCUKctYy0qjkKcl/UMaHfJmp8H2
+         lljuq3RnwtC7Gash5OgW2hTKSEWqtwMQfU7GSMS6cZIVaeyeZKX43ZXMErVEUda0Hj
+         XJiMP8qNhjdxrcO5C8t1WVlteHOaiHxseBMS6w4fzZdcLUgaSt77ELArPsZJ6g3+YZ
+         0hNGsgJmTL6ew==
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     mkubecek@suse.cz
+Cc:     netdev@vger.kernel.org, idosch@idosch.org,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH ethtool-next 0/7] ethtool: support FEC and standard stats
+Date:   Mon, 19 Apr 2021 17:31:05 -0700
+Message-Id: <20210420003112.3175038-1-kuba@kernel.org>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.43.161.253]
-X-ClientProxiedBy: EX13D46UWC003.ant.amazon.com (10.43.162.119) To
- EX13d01UWA002.ant.amazon.com (10.43.160.74)
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The 4.14 backport of 9d7eceede ("bpf: restrict unknown scalars of mixed
-signed bounds for unprivileged") adds the PTR_TO_MAP_VALUE check to the
-wrong location in adjust_ptr_min_max_vals(), most likely because 4.14
-doesn't include the commit that updates the if-statement to a
-switch-statement (aad2eeaf4 "bpf: Simplify ptr_min_max_vals adjustment").
+This series adds support for FEC requests via netlink
+and new "standard" stats.
 
-Move the check to the proper location in adjust_ptr_min_max_vals().
+Changes compared to RFC:
+ - improve commit messages
+ - fix Rx vs Tx histogram in JSON
+ - make histograms less hardcoded to RMON
+ - expand man page entry for -S a little
+ - add --all-groups (last patch)
 
-Fixes: 17efa65350c5a ("bpf: restrict unknown scalars of mixed signed bounds for unprivileged")
-Signed-off-by: Samuel Mendoza-Jonas <samjonas@amazon.com>
-Reviewed-by: Frank van der Linden <fllinden@amazon.com>
-Reviewed-by: Ethan Chen <yishache@amazon.com>
----
- kernel/bpf/verifier.c | 14 +++++++-------
- 1 file changed, 7 insertions(+), 7 deletions(-)
+Jakub Kicinski (7):
+  update UAPI header copies
+  json: improve array print API
+  netlink: add FEC support
+  netlink: fec: support displaying statistics
+  ethtool: add nlchk for redirecting to netlink
+  netlink: add support for standard stats
+  netlink: stats: add on --all-groups option
 
-diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
-index 0c3a9302be93..9e9b7c076bcb 100644
---- a/kernel/bpf/verifier.c
-+++ b/kernel/bpf/verifier.c
-@@ -2204,6 +2204,13 @@ static int adjust_ptr_min_max_vals(struct bpf_verifier_env *env,
- 				dst);
- 		return -EACCES;
- 	}
-+	if (ptr_reg->type == PTR_TO_MAP_VALUE) {
-+		if (!env->allow_ptr_leaks && !known && (smin_val < 0) != (smax_val < 0)) {
-+			verbose("R%d has unknown scalar with mixed signed bounds, pointer arithmetic with it prohibited for !root\n",
-+				off_reg == dst_reg ? dst : src);
-+			return -EACCES;
-+		}
-+	}
- 
- 	/* In case of 'scalar += pointer', dst_reg inherits pointer type and id.
- 	 * The id may be overwritten later if we create a new variable offset.
-@@ -2349,13 +2356,6 @@ static int adjust_ptr_min_max_vals(struct bpf_verifier_env *env,
- 			verbose("R%d bitwise operator %s on pointer prohibited\n",
- 				dst, bpf_alu_string[opcode >> 4]);
- 		return -EACCES;
--	case PTR_TO_MAP_VALUE:
--		if (!env->allow_ptr_leaks && !known && (smin_val < 0) != (smax_val < 0)) {
--			verbose("R%d has unknown scalar with mixed signed bounds, pointer arithmetic with it prohibited for !root\n",
--				off_reg == dst_reg ? dst : src);
--			return -EACCES;
--		}
--		/* fall-through */
- 	default:
- 		/* other operators (e.g. MUL,LSH) produce non-pointer results */
- 		if (!env->allow_ptr_leaks)
+ Makefile.am                  |   3 +-
+ ethtool.8.in                 |  23 ++-
+ ethtool.c                    |  12 +-
+ json_print.c                 |  20 +-
+ json_print.h                 |   4 +-
+ netlink/desc-ethtool.c       |  51 +++++
+ netlink/extapi.h             |  13 +-
+ netlink/fec.c                | 359 +++++++++++++++++++++++++++++++++++
+ netlink/monitor.c            |   4 +
+ netlink/netlink.c            |   9 +-
+ netlink/netlink.h            |   1 +
+ netlink/parser.c             |  17 +-
+ netlink/parser.h             |   4 +
+ netlink/stats.c              | 319 +++++++++++++++++++++++++++++++
+ uapi/linux/ethtool.h         | 111 +++++++----
+ uapi/linux/ethtool_netlink.h | 188 ++++++++++++++++++
+ uapi/linux/if_link.h         |   9 +-
+ uapi/linux/netlink.h         |   2 +-
+ uapi/linux/rtnetlink.h       |  33 +++-
+ 19 files changed, 1119 insertions(+), 63 deletions(-)
+ create mode 100644 netlink/fec.c
+ create mode 100644 netlink/stats.c
+
 -- 
-2.17.1
+2.30.2
 
