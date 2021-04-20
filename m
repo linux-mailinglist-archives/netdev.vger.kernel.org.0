@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8BEDD36604F
-	for <lists+netdev@lfdr.de>; Tue, 20 Apr 2021 21:38:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7980E366051
+	for <lists+netdev@lfdr.de>; Tue, 20 Apr 2021 21:38:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233786AbhDTTi1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 20 Apr 2021 15:38:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35444 "EHLO
+        id S233791AbhDTTi2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 20 Apr 2021 15:38:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35454 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233776AbhDTTiY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 20 Apr 2021 15:38:24 -0400
-Received: from mail-pg1-x541.google.com (mail-pg1-x541.google.com [IPv6:2607:f8b0:4864:20::541])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 479E0C06174A;
-        Tue, 20 Apr 2021 12:37:52 -0700 (PDT)
-Received: by mail-pg1-x541.google.com with SMTP id m12so6662343pgr.9;
-        Tue, 20 Apr 2021 12:37:52 -0700 (PDT)
+        with ESMTP id S233787AbhDTTi1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 20 Apr 2021 15:38:27 -0400
+Received: from mail-pg1-x542.google.com (mail-pg1-x542.google.com [IPv6:2607:f8b0:4864:20::542])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B823C06138A;
+        Tue, 20 Apr 2021 12:37:55 -0700 (PDT)
+Received: by mail-pg1-x542.google.com with SMTP id y32so27374032pga.11;
+        Tue, 20 Apr 2021 12:37:55 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=UJ49Ky4Ne+BPVSGhY/nJQ0JKnt9i7GAQhVqUgjzvGTs=;
-        b=WV+VyrZyMAGsldNYF0HsW4yqNADarjM+oFW9QW+7pVxqRplGoAsr/Nn66pozz1aVV3
-         wE/yp+p8fMIj9JSikxttFuv2nuLxmKUPUSSAr3GbgAVmn3gDZLj30E7ch1pd6SVuoEF3
-         vQiMMrL+Q2fUvsAqD6AODyfG5QYeZCvsa/58FyQB6fZM5xIdrCh0Gq3F5WeJ/yW9ffuU
-         ueXghAXDYkxTdZzG/LuH0mn6QZqwnpMYpJPTlRbCEPLmq9mnx9kZd0ZB20pomP3xkNiL
-         wX9nrIRjwpXH2+3P8zT7Aoc/kqBM0C2viE9pVuczlaPHuDzV2VdpDPp667uyadaBtfB5
-         90mA==
+        bh=ggSnWKXUJLE6iHcOs0eUWOJm8Vh5SmESAPT+YojILTs=;
+        b=ZkUENDZH0Dfzhu3yQhk2ckxI79uQ/YN8MF/ZzdjvRJYty1qkQSl+5AWbCMoeIiPYzJ
+         xa53ShKa4XGlecfYUHuXLEOXyDAead5kghszWVKO6DYH0wT0O7oSD3uudMwQhgpQ6t7x
+         YZ2JRGwGjfw9p5iURmNzh+fUNF4XZNdRY6imEjYA+jYG40Nd1QbgjqarXa4MWjJkKGr2
+         73pbGVvacPqraYGSmn9S2n4oRPUzw0NQ+9WUEDLu2Oo+oSW6S7kAJ26GHkstKIbqu4ac
+         dIaNWgM69ht4UuBWBJJQELSEvq5kMuadquT04dpQlTS4/JZI8bPeFAUFekW0v5ixeuXt
+         y6NQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=UJ49Ky4Ne+BPVSGhY/nJQ0JKnt9i7GAQhVqUgjzvGTs=;
-        b=j1NlkHZLWsTDdutXZ5Uy1ouCrbYf7rABfv2Jxr0jDuivZ7UUkYu7FdRLXmb07tvHnb
-         1lIBLRsOEhzFfn81SSsTBBVJ0E3u/jjod85c0iZzh8IbMELxwMmI8OZ81L1ujFCv5Rbo
-         wH+/i8CCq0+2Xh/G7C8AGjk3vD1rFk7Lp7t/YmnHf0/oAyxl/3QoD86K9XirvRXADMfV
-         bCsVUQ06SXcwZcLH5Gv3nYas3gdLmzLrhz3FsXirij/3WPtr5q7fre1qzex4TMSu5i0k
-         bj4iZvPxfMoG1RM80JvkasfMfYPB0HMwJhJEaB630kRNIxPf9UVmppIk825ww5sjmOHW
-         u8uw==
-X-Gm-Message-State: AOAM530FwMIyXzhnq9+k9Ei8N5LPoVMawSOQxMw+RzsBcEgVJpwFldOJ
-        GcqIAgP5iGXWE2HHqKhbCDzWFYT1KgrwvQ==
-X-Google-Smtp-Source: ABdhPJxGW2V7XFCapTpfsuY2+5ZEQOIb+/fkYfr0kTyjYEJ6cPq51VRSX2hHnNST/pGZSIIu4vv76w==
-X-Received: by 2002:a63:1425:: with SMTP id u37mr17965611pgl.227.1618947471439;
-        Tue, 20 Apr 2021 12:37:51 -0700 (PDT)
+        bh=ggSnWKXUJLE6iHcOs0eUWOJm8Vh5SmESAPT+YojILTs=;
+        b=RX7+hQuvKF9rOosO102EX/Ium9nWNE8GbbWoxsVw5Sfu4joLUTyIAJbc0Ti2M7vN/O
+         KuKrw02Wps4FRQLR6wCGBMZJgYcd3D19HqXJIJPSkCy8vVMQAxqoZpgHDFe/x+0f38Lr
+         9gyv4RR9CYrKudzcVLeP90aw7LgYmLhSCN9PO2irD+gSV97hmMz9tpJj/gpyA6FAh7KA
+         TZLo0zn6pvOGZgDSiAI856B3ujUxOiZH0RzTK6d8h7nXJM3gBH8xb4OIoGoUzw5TSKpN
+         8plZhoFfFlJ31oTT+4MFN7ncNZra4U4Tb1oC8DHrjCref9Kq4hE+aRAMrY5bp0sOFtMk
+         sOSQ==
+X-Gm-Message-State: AOAM532mBhRPGO44S0d0i1+7xNQgKtV4wCWABcXTmnqBqlEkKWNlO6kU
+        9WWud50tEFuuWlGgKcn+xiCfi7MFsEw8DA==
+X-Google-Smtp-Source: ABdhPJz1Vyx87oJ0VKjUuP7ZO7nPIrrWmgbTjs1OprdgRfIjMp9RwNjF1walaOY49VihKz2QUFy/sQ==
+X-Received: by 2002:a62:4d86:0:b029:252:c889:2dd8 with SMTP id a128-20020a624d860000b0290252c8892dd8mr27264030pfb.41.1618947474750;
+        Tue, 20 Apr 2021 12:37:54 -0700 (PDT)
 Received: from localhost ([112.79.227.195])
-        by smtp.gmail.com with ESMTPSA id w9sm6074749pfn.213.2021.04.20.12.37.50
+        by smtp.gmail.com with ESMTPSA id p22sm3063937pjg.39.2021.04.20.12.37.54
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 20 Apr 2021 12:37:51 -0700 (PDT)
+        Tue, 20 Apr 2021 12:37:54 -0700 (PDT)
 From:   Kumar Kartikeya Dwivedi <memxor@gmail.com>
 To:     bpf@vger.kernel.org
 Cc:     Kumar Kartikeya Dwivedi <memxor@gmail.com>,
@@ -62,9 +62,9 @@ Cc:     Kumar Kartikeya Dwivedi <memxor@gmail.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Jesper Dangaard Brouer <brouer@redhat.com>,
         netdev@vger.kernel.org
-Subject: [PATCH bpf-next v3 2/3] libbpf: add low level TC-BPF API
-Date:   Wed, 21 Apr 2021 01:07:39 +0530
-Message-Id: <20210420193740.124285-3-memxor@gmail.com>
+Subject: [PATCH bpf-next v3 3/3] libbpf: add selftests for TC-BPF API
+Date:   Wed, 21 Apr 2021 01:07:40 +0530
+Message-Id: <20210420193740.124285-4-memxor@gmail.com>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20210420193740.124285-1-memxor@gmail.com>
 References: <20210420193740.124285-1-memxor@gmail.com>
@@ -75,521 +75,210 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This adds functions that wrap the netlink API used for adding,
-manipulating, and removing traffic control filters. These functions
-operate directly on the loaded prog's fd, and return a handle to the
-filter using an out parameter named id.
-
-The basic featureset is covered to allow for attaching and removal of
-filters. Some additional features like TCA_BPF_POLICE and TCA_RATE for
-the API have been omitted. These can added on top later by extending the
-bpf_tc_opts struct.
-
-Support for binding actions directly to a classifier by passing them in
-during filter creation has also been omitted for now. These actions have
-an auto clean up property because their lifetime is bound to the filter
-they are attached to. This can be added later, but was omitted for now
-as direct action mode is a better alternative to it, which is enabled by
-default.
-
-An API summary:
-
-bpf_tc_attach may be used to attach, and replace SCHED_CLS bpf
-classifier. The protocol is always set as ETH_P_ALL. The replace option
-in bpf_tc_opts is used to control replacement behavior.  Attachment
-fails if filter with existing attributes already exists.
-
-bpf_tc_detach may be used to detach existing SCHED_CLS filter. The
-bpf_tc_attach_id object filled in during attach must be passed in to the
-detach functions for them to remove the filter and its attached
-classififer correctly.
-
-bpf_tc_get_info is a helper that can be used to obtain attributes
-for the filter and classififer.
-
-Examples:
-
-	struct bpf_tc_attach_id id = {};
-	struct bpf_object *obj;
-	struct bpf_program *p;
-	int fd, r;
-
-	obj = bpf_object_open("foo.o");
-	if (IS_ERR_OR_NULL(obj))
-		return PTR_ERR(obj);
-
-	p = bpf_object__find_program_by_title(obj, "classifier");
-	if (IS_ERR_OR_NULL(p))
-		return PTR_ERR(p);
-
-	if (bpf_object__load(obj) < 0)
-		return -1;
-
-	fd = bpf_program__fd(p);
-
-	r = bpf_tc_attach(fd, if_nametoindex("lo"),
-			  BPF_TC_CLSACT_INGRESS,
-			  NULL, &id);
-	if (r < 0)
-		return r;
-
-... which is roughly equivalent to:
-  # tc qdisc add dev lo clsact
-  # tc filter add dev lo ingress bpf obj foo.o sec classifier da
-
-... as direct action mode is always enabled.
-
-To replace an existing filter:
-
-	DECLARE_LIBBPF_OPTS(bpf_tc_opts, opts, .handle = id.handle,
-			    .priority = id.priority, .replace = true);
-	r = bpf_tc_attach(fd, if_nametoindex("lo"),
-			  BPF_TC_CLSACT_INGRESS,
-			  &opts, &id);
-	if (r < 0)
-		return r;
-
-To obtain info of a particular filter, the example above can be extended
-as follows:
-
-	struct bpf_tc_info info = {};
-
-	r = bpf_tc_get_info(if_nametoindex("lo"),
-			    BPF_TC_CLSACT_INGRESS,
-			    &id, &info);
-	if (r < 0)
-		return r;
-
-... where id corresponds to the bpf_tc_attach_id filled in during an
-attach operation.
+This adds some basic tests for the low level bpf_tc_* API.
 
 Reviewed-by: Toke Høiland-Jørgensen <toke@redhat.com>
 Signed-off-by: Kumar Kartikeya Dwivedi <memxor@gmail.com>
 ---
- tools/lib/bpf/libbpf.h   |  44 ++++++
- tools/lib/bpf/libbpf.map |   3 +
- tools/lib/bpf/netlink.c  | 319 ++++++++++++++++++++++++++++++++++++++-
- 3 files changed, 360 insertions(+), 6 deletions(-)
+ .../selftests/bpf/prog_tests/test_tc_bpf.c    | 169 ++++++++++++++++++
+ .../selftests/bpf/progs/test_tc_bpf_kern.c    |  12 ++
+ 2 files changed, 181 insertions(+)
+ create mode 100644 tools/testing/selftests/bpf/prog_tests/test_tc_bpf.c
+ create mode 100644 tools/testing/selftests/bpf/progs/test_tc_bpf_kern.c
 
-diff --git a/tools/lib/bpf/libbpf.h b/tools/lib/bpf/libbpf.h
-index bec4e6a6e31d..b4ed6a41ea70 100644
---- a/tools/lib/bpf/libbpf.h
-+++ b/tools/lib/bpf/libbpf.h
-@@ -16,6 +16,8 @@
- #include <stdbool.h>
- #include <sys/types.h>  // for size_t
- #include <linux/bpf.h>
-+#include <linux/pkt_sched.h>
-+#include <linux/tc_act/tc_bpf.h>
- 
- #include "libbpf_common.h"
- 
-@@ -775,6 +777,48 @@ LIBBPF_API int bpf_linker__add_file(struct bpf_linker *linker, const char *filen
- LIBBPF_API int bpf_linker__finalize(struct bpf_linker *linker);
- LIBBPF_API void bpf_linker__free(struct bpf_linker *linker);
- 
-+/* Convenience macros for the clsact attach hooks */
-+#define BPF_TC_CLSACT_INGRESS TC_H_MAKE(TC_H_CLSACT, TC_H_MIN_INGRESS)
-+#define BPF_TC_CLSACT_EGRESS TC_H_MAKE(TC_H_CLSACT, TC_H_MIN_EGRESS)
+diff --git a/tools/testing/selftests/bpf/prog_tests/test_tc_bpf.c b/tools/testing/selftests/bpf/prog_tests/test_tc_bpf.c
+new file mode 100644
+index 000000000000..563a3944553c
+--- /dev/null
++++ b/tools/testing/selftests/bpf/prog_tests/test_tc_bpf.c
+@@ -0,0 +1,169 @@
++// SPDX-License-Identifier: GPL-2.0
 +
-+struct bpf_tc_opts {
-+	size_t sz;
-+	__u32 handle;
-+	__u32 class_id;
-+	__u16 priority;
-+	bool replace;
-+	size_t :0;
-+};
-+
-+#define bpf_tc_opts__last_field replace
-+
-+/* Acts as a handle for an attached filter */
-+struct bpf_tc_attach_id {
-+	__u32 handle;
-+	__u16 priority;
-+};
-+
-+struct bpf_tc_info {
-+	struct bpf_tc_attach_id id;
-+	__u16 protocol;
-+	__u32 chain_index;
-+	__u32 prog_id;
-+	__u8 tag[BPF_TAG_SIZE];
-+	__u32 class_id;
-+	__u32 bpf_flags;
-+	__u32 bpf_flags_gen;
-+};
-+
-+/* id is out parameter that will be written to, it must not be NULL */
-+LIBBPF_API int bpf_tc_attach(int fd, __u32 ifindex, __u32 parent_id,
-+			     const struct bpf_tc_opts *opts,
-+			     struct bpf_tc_attach_id *id);
-+LIBBPF_API int bpf_tc_detach(__u32 ifindex, __u32 parent_id,
-+			     const struct bpf_tc_attach_id *id);
-+LIBBPF_API int bpf_tc_get_info(__u32 ifindex, __u32 parent_id,
-+			       const struct bpf_tc_attach_id *id,
-+			       struct bpf_tc_info *info);
-+
- #ifdef __cplusplus
- } /* extern "C" */
- #endif
-diff --git a/tools/lib/bpf/libbpf.map b/tools/lib/bpf/libbpf.map
-index b9b29baf1df8..686444fbb838 100644
---- a/tools/lib/bpf/libbpf.map
-+++ b/tools/lib/bpf/libbpf.map
-@@ -361,4 +361,7 @@ LIBBPF_0.4.0 {
- 		bpf_linker__new;
- 		bpf_map__inner_map;
- 		bpf_object__set_kversion;
-+		bpf_tc_attach;
-+		bpf_tc_detach;
-+		bpf_tc_get_info;
- } LIBBPF_0.3.0;
-diff --git a/tools/lib/bpf/netlink.c b/tools/lib/bpf/netlink.c
-index c79e30484e81..71109dcea9e4 100644
---- a/tools/lib/bpf/netlink.c
-+++ b/tools/lib/bpf/netlink.c
-@@ -4,7 +4,10 @@
- #include <stdlib.h>
- #include <memory.h>
- #include <unistd.h>
-+#include <inttypes.h>
-+#include <arpa/inet.h>
- #include <linux/bpf.h>
++#include <linux/bpf.h>
++#include <linux/err.h>
++#include <linux/limits.h>
++#include <bpf/libbpf.h>
++#include <errno.h>
++#include <stdio.h>
++#include <stdlib.h>
++#include <test_progs.h>
 +#include <linux/if_ether.h>
- #include <linux/rtnetlink.h>
- #include <sys/socket.h>
- #include <errno.h>
-@@ -344,6 +347,20 @@ int bpf_get_link_xdp_id(int ifindex, __u32 *prog_id, __u32 flags)
- 	return ret;
- }
- 
-+static int bpf_nl_get_ext(struct nlmsghdr *nh, int sock, unsigned int nl_pid,
-+			  __dump_nlmsg_t dump_link_nlmsg_p,
-+			  libbpf_dump_nlmsg_t dump_link_nlmsg, void *cookie)
++
++#define LO_IFINDEX 1
++
++static int test_tc_internal(int fd, __u32 parent_id)
 +{
-+	int seq = time(NULL);
-+
-+	nh->nlmsg_seq = seq;
-+	if (send(sock, nh, nh->nlmsg_len, 0) < 0)
-+		return -errno;
-+
-+	return bpf_netlink_recv(sock, nl_pid, seq, dump_link_nlmsg_p,
-+				dump_link_nlmsg, cookie);
-+}
-+
- int libbpf_nl_get_link(int sock, unsigned int nl_pid,
- 		       libbpf_dump_nlmsg_t dump_link_nlmsg, void *cookie)
- {
-@@ -356,12 +373,302 @@ int libbpf_nl_get_link(int sock, unsigned int nl_pid,
- 		.nlh.nlmsg_flags = NLM_F_DUMP | NLM_F_REQUEST,
- 		.ifm.ifi_family = AF_PACKET,
- 	};
--	int seq = time(NULL);
- 
--	req.nlh.nlmsg_seq = seq;
--	if (send(sock, &req, req.nlh.nlmsg_len, 0) < 0)
--		return -errno;
-+	return bpf_nl_get_ext(&req.nlh, sock, nl_pid, __dump_link_nlmsg,
-+			      dump_link_nlmsg, cookie);
-+}
- 
--	return bpf_netlink_recv(sock, nl_pid, seq, __dump_link_nlmsg,
--				dump_link_nlmsg, cookie);
-+static int tc_setup_clsact_excl(int sock, __u32 nl_pid, __u32 ifindex)
-+{
-+	int seq = 0, ret = 0;
-+	struct {
-+		struct nlmsghdr nh;
-+		struct tcmsg t;
-+		char buf[256];
-+	} req;
-+
-+	memset(&req, 0, sizeof(req));
-+	req.nh.nlmsg_len = NLMSG_LENGTH(sizeof(struct tcmsg));
-+	req.nh.nlmsg_flags =
-+		NLM_F_REQUEST | NLM_F_CREATE | NLM_F_ACK | NLM_F_EXCL;
-+	req.nh.nlmsg_type = RTM_NEWQDISC;
-+	req.nh.nlmsg_pid = 0;
-+	req.nh.nlmsg_seq = ++seq;
-+	req.t.tcm_family = AF_UNSPEC;
-+	req.t.tcm_ifindex = ifindex;
-+	req.t.tcm_parent = TC_H_CLSACT;
-+	req.t.tcm_handle = TC_H_MAKE(TC_H_CLSACT, 0);
-+
-+	ret = nlattr_add(&req.nh, sizeof(req), TCA_KIND, "clsact",
-+			 sizeof("clsact"));
-+	if (ret < 0)
-+		return ret;
-+
-+	ret = send(sock, &req.nh, req.nh.nlmsg_len, 0);
-+	if (ret < 0)
-+		return ret;
-+
-+	return bpf_netlink_recv(sock, nl_pid, seq, NULL, NULL, NULL);
-+}
-+
-+static int tc_bpf_add_fd_and_name(struct nlmsghdr *nh, size_t maxsz, int fd)
-+{
-+	struct bpf_prog_info info = {};
-+	__u32 info_len = sizeof(info);
-+	char name[256] = {};
-+	int len, ret;
-+
-+	ret = bpf_obj_get_info_by_fd(fd, &info, &info_len);
-+	if (ret < 0)
-+		return ret;
-+
-+	ret = nlattr_add(nh, maxsz, TCA_BPF_FD, &fd, sizeof(fd));
-+	if (ret < 0)
-+		return ret;
-+
-+	len = snprintf(name, sizeof(name), "%s:[%" PRIu32 "]", info.name,
-+		       info.id);
-+	if (len < 0 || len >= sizeof(name))
-+		return len < 0 ? -EINVAL : -ENAMETOOLONG;
-+
-+	return nlattr_add(nh, maxsz, TCA_BPF_NAME, name, len + 1);
-+}
-+
-+static int cls_get_info(struct nlmsghdr *nh, libbpf_dump_nlmsg_t fn,
-+			void *cookie);
-+
-+static int tc_cls_bpf_modify(int fd, int cmd, unsigned int flags, __u32 ifindex,
-+			     __u32 parent_id, const struct bpf_tc_opts *opts,
-+			     __dump_nlmsg_t fn, struct bpf_tc_attach_id *id)
-+{
-+	__u32 nl_pid = 0, protocol, priority;
++	DECLARE_LIBBPF_OPTS(bpf_tc_opts, opts, .handle = 1, .priority = 10,
++			    .class_id = TC_H_MAKE(1UL << 16, 1));
++	struct bpf_tc_attach_id id = {};
 +	struct bpf_tc_info info = {};
-+	unsigned int bpf_flags = 0;
-+	int sock, seq = 0, ret;
-+	struct nlattr *nla;
-+	struct {
-+		struct nlmsghdr nh;
-+		struct tcmsg t;
-+		char buf[256];
-+	} req;
++	int ret;
 +
-+	sock = libbpf_netlink_open(&nl_pid);
-+	if (sock < 0)
-+		return sock;
++	ret = bpf_tc_attach(fd, LO_IFINDEX, parent_id, &opts, &id);
++	if (!ASSERT_EQ(ret, 0, "bpf_tc_attach"))
++		return ret;
 +
-+	if ((parent_id == BPF_TC_CLSACT_INGRESS ||
-+	     parent_id == BPF_TC_CLSACT_EGRESS) &&
-+	    flags & NLM_F_CREATE) {
-+		ret = tc_setup_clsact_excl(sock, nl_pid, ifindex);
-+		/* Attachment can still fail if ingress qdisc is installed, and
-+		 * we're trying attach on egress as parent. Ignore in that case
-+		 * as well.
-+		 */
-+		if (ret < 0 && ret != -EEXIST)
-+			goto end;
-+	}
-+
-+	priority = OPTS_GET(opts, priority, 0);
-+	protocol = ETH_P_ALL;
-+
-+	memset(&req, 0, sizeof(req));
-+	req.nh.nlmsg_len = NLMSG_LENGTH(sizeof(struct tcmsg));
-+	req.nh.nlmsg_flags = NLM_F_REQUEST | NLM_F_ACK | flags;
-+	req.nh.nlmsg_type = cmd;
-+	req.nh.nlmsg_pid = 0;
-+	req.nh.nlmsg_seq = ++seq;
-+	req.t.tcm_family = AF_UNSPEC;
-+	req.t.tcm_handle = OPTS_GET(opts, handle, 0);
-+	req.t.tcm_parent = parent_id;
-+	req.t.tcm_ifindex = ifindex;
-+	req.t.tcm_info = TC_H_MAKE(priority << 16, htons(protocol));
-+
-+	ret = nlattr_add(&req.nh, sizeof(req), TCA_KIND, "bpf", sizeof("bpf"));
-+	if (ret < 0)
++	ret = bpf_tc_get_info(LO_IFINDEX, parent_id, &id, &info);
++	if (!ASSERT_EQ(ret, 0, "bpf_tc_get_info"))
 +		goto end;
 +
-+	nla = nlattr_begin_nested(&req.nh, sizeof(req), TCA_OPTIONS);
-+	if (!nla) {
-+		ret = -EMSGSIZE;
-+		goto end;
-+	}
-+
-+	if (OPTS_GET(opts, class_id, TC_H_UNSPEC)) {
-+		ret = nlattr_add(&req.nh, sizeof(req), TCA_BPF_CLASSID,
-+				 &opts->class_id, sizeof(opts->class_id));
-+		if (ret < 0)
-+			goto end;
-+	}
-+
-+	if (cmd != RTM_DELTFILTER) {
-+		ret = tc_bpf_add_fd_and_name(&req.nh, sizeof(req), fd);
-+		if (ret < 0)
-+			goto end;
-+
-+		/* direct action is always set */
-+		bpf_flags |= TCA_BPF_FLAG_ACT_DIRECT;
-+		ret = nlattr_add(&req.nh, sizeof(req), TCA_BPF_FLAGS,
-+				 &bpf_flags, sizeof(bpf_flags));
-+		if (ret < 0)
-+			goto end;
-+	}
-+
-+	nlattr_end_nested(&req.nh, nla);
-+
-+	ret = send(sock, &req.nh, req.nh.nlmsg_len, 0);
-+	if (ret < 0)
++	if (!ASSERT_EQ(info.id.handle, id.handle, "handle mismatch") ||
++	    !ASSERT_EQ(info.id.priority, id.priority, "priority mismatch") ||
++	    !ASSERT_EQ(info.id.handle, 1, "handle incorrect") ||
++	    !ASSERT_EQ(info.chain_index, 0, "chain_index incorrect") ||
++	    !ASSERT_EQ(info.id.priority, 10, "priority incorrect") ||
++	    !ASSERT_EQ(info.class_id, TC_H_MAKE(1UL << 16, 1),
++		       "class_id incorrect") ||
++	    !ASSERT_EQ(info.protocol, ETH_P_ALL, "protocol incorrect"))
 +		goto end;
 +
-+	ret = bpf_netlink_recv(sock, nl_pid, seq, fn, NULL, &info);
++	opts.replace = true;
++	ret = bpf_tc_attach(fd, LO_IFINDEX, parent_id, &opts, &id);
++	if (!ASSERT_EQ(ret, 0, "bpf_tc_attach in replace mode"))
++		return ret;
 +
-+	if (fn) {
-+		*id = info.id;
-+		ret = ret < 0 ? ret : 0;
-+	}
++	/* Demonstrate changing attributes */
++	opts.class_id = TC_H_MAKE(1UL << 16, 2);
++
++	ret = bpf_tc_attach(fd, LO_IFINDEX, parent_id, &opts, &id);
++	if (!ASSERT_EQ(ret, 0, "bpf_tc attach in replace mode"))
++		goto end;
++
++	ret = bpf_tc_get_info(LO_IFINDEX, parent_id, &id, &info);
++	if (!ASSERT_EQ(ret, 0, "bpf_tc_get_info"))
++		goto end;
++
++	if (!ASSERT_EQ(info.class_id, TC_H_MAKE(1UL << 16, 2),
++		       "class_id incorrect after replace"))
++		goto end;
++	if (!ASSERT_EQ(info.bpf_flags & TCA_BPF_FLAG_ACT_DIRECT, 1,
++		       "direct action mode not set"))
++		goto end;
 +
 +end:
-+	close(sock);
++	ret = bpf_tc_detach(LO_IFINDEX, parent_id, &id);
++	ASSERT_EQ(ret, 0, "detach failed");
 +	return ret;
 +}
 +
-+int bpf_tc_attach(int fd, __u32 ifindex, __u32 parent_id,
-+		  const struct bpf_tc_opts *opts,
-+		  struct bpf_tc_attach_id *id)
++int test_tc_info(int fd)
 +{
-+	if (fd < 0 || !OPTS_VALID(opts, bpf_tc_opts) || !id)
-+		return -EINVAL;
++	DECLARE_LIBBPF_OPTS(bpf_tc_opts, opts, .handle = 1, .priority = 10,
++			    .class_id = TC_H_MAKE(1UL << 16, 1));
++	struct bpf_tc_attach_id id = {}, old;
++	struct bpf_tc_info info = {};
++	int ret;
 +
-+	return tc_cls_bpf_modify(fd, RTM_NEWTFILTER,
-+				 NLM_F_ECHO | NLM_F_CREATE |
-+			         (OPTS_GET(opts, replace, false) ?
-+					NLM_F_REPLACE : NLM_F_EXCL),
-+				 ifindex, parent_id, opts, cls_get_info, id);
-+}
++	ret = bpf_tc_attach(fd, LO_IFINDEX, BPF_TC_CLSACT_INGRESS, &opts, &id);
++	if (!ASSERT_EQ(ret, 0, "bpf_tc_attach"))
++		return ret;
++	old = id;
 +
-+int bpf_tc_detach(__u32 ifindex, __u32 parent_id,
-+		  const struct bpf_tc_attach_id *id)
-+{
-+	DECLARE_LIBBPF_OPTS(bpf_tc_opts, opts, 0);
++	ret = bpf_tc_get_info(LO_IFINDEX, BPF_TC_CLSACT_INGRESS, &id, &info);
++	if (!ASSERT_EQ(ret, 0, "bpf_tc_get_info"))
++		goto end_old;
 +
-+	if (!id)
-+		return -EINVAL;
++	if (!ASSERT_EQ(info.id.handle, id.handle, "handle mismatch") ||
++	    !ASSERT_EQ(info.id.priority, id.priority, "priority mismatch") ||
++	    !ASSERT_EQ(info.id.handle, 1, "handle incorrect") ||
++	    !ASSERT_EQ(info.chain_index, 0, "chain_index incorrect") ||
++	    !ASSERT_EQ(info.id.priority, 10, "priority incorrect") ||
++	    !ASSERT_EQ(info.class_id, TC_H_MAKE(1UL << 16, 1),
++		       "class_id incorrect") ||
++	    !ASSERT_EQ(info.protocol, ETH_P_ALL, "protocol incorrect"))
++		goto end_old;
 +
-+	opts.handle = id->handle;
-+	opts.priority = id->priority;
++	/* choose a priority */
++	opts.priority = 0;
++	ret = bpf_tc_attach(fd, LO_IFINDEX, BPF_TC_CLSACT_INGRESS, &opts, &id);
++	if (!ASSERT_EQ(ret, 0, "bpf_tc_attach"))
++		goto end_old;
 +
-+	return tc_cls_bpf_modify(-1, RTM_DELTFILTER, 0, ifindex, parent_id,
-+				 &opts, NULL, NULL);
-+}
-+
-+static int __cls_get_info(void *cookie, void *msg, struct nlattr **tb)
-+{
-+	struct nlattr *tbb[TCA_BPF_MAX + 1];
-+	struct bpf_tc_info *info = cookie;
-+	struct tcmsg *t = msg;
-+
-+	if (!tb[TCA_OPTIONS])
-+		return 0;
-+
-+	libbpf_nla_parse_nested(tbb, TCA_BPF_MAX, tb[TCA_OPTIONS], NULL);
-+	if (!tbb[TCA_BPF_ID])
-+		return 0;
-+
-+	info->protocol = ntohs(TC_H_MIN(t->tcm_info));
-+	info->id.priority = TC_H_MAJ(t->tcm_info) >> 16;
-+	info->id.handle = t->tcm_handle;
-+
-+	if (tb[TCA_CHAIN])
-+		info->chain_index = libbpf_nla_getattr_u32(tb[TCA_CHAIN]);
-+	else
-+		info->chain_index = 0;
-+
-+	if (tbb[TCA_BPF_FLAGS])
-+		info->bpf_flags = libbpf_nla_getattr_u32(tbb[TCA_BPF_FLAGS]);
-+
-+	if (tbb[TCA_BPF_FLAGS_GEN])
-+		info->bpf_flags_gen =
-+			libbpf_nla_getattr_u32(tbb[TCA_BPF_FLAGS_GEN]);
-+
-+	if (tbb[TCA_BPF_ID])
-+		info->prog_id = libbpf_nla_getattr_u32(tbb[TCA_BPF_ID]);
-+
-+	if (tbb[TCA_BPF_TAG])
-+		memcpy(info->tag, libbpf_nla_getattr_str(tbb[TCA_BPF_TAG]),
-+		       sizeof(info->tag));
-+
-+	if (tbb[TCA_BPF_CLASSID])
-+		info->class_id = libbpf_nla_getattr_u32(tbb[TCA_BPF_CLASSID]);
-+
-+	return 1;
-+}
-+
-+static int cls_get_info(struct nlmsghdr *nh, libbpf_dump_nlmsg_t fn,
-+			void *cookie)
-+{
-+	struct tcmsg *t = NLMSG_DATA(nh);
-+	struct nlattr *tb[TCA_MAX + 1];
-+
-+	libbpf_nla_parse(tb, TCA_MAX,
-+			 (struct nlattr *)((char *)t + NLMSG_ALIGN(sizeof(*t))),
-+			 NLMSG_PAYLOAD(nh, sizeof(*t)), NULL);
-+	if (!tb[TCA_KIND])
-+		return -EINVAL;
-+
-+	return __cls_get_info(cookie, t, tb);
-+}
-+
-+static int tc_cls_get_info(__u32 ifindex, __u32 parent_id,
-+			   const struct bpf_tc_attach_id *id,
-+			   struct bpf_tc_info *info)
-+{
-+	__u32 nl_pid = 0, protocol;
-+	__u32 priority;
-+	int sock, ret;
-+	struct {
-+		struct nlmsghdr nh;
-+		struct tcmsg t;
-+		char buf[256];
-+	} req = {
-+		.nh.nlmsg_len = NLMSG_LENGTH(sizeof(struct tcmsg)),
-+		.nh.nlmsg_type = RTM_GETTFILTER,
-+		.nh.nlmsg_flags = NLM_F_REQUEST | NLM_F_DUMP,
-+		.t.tcm_family = AF_UNSPEC,
-+	};
-+
-+	priority = id->priority;
-+	protocol = ETH_P_ALL;
-+
-+	req.t.tcm_parent = parent_id;
-+	req.t.tcm_ifindex = ifindex;
-+	req.t.tcm_handle = id->handle;
-+	req.t.tcm_info = TC_H_MAKE(priority << 16, htons(protocol));
-+
-+	sock = libbpf_netlink_open(&nl_pid);
-+	if (sock < 0)
-+		return sock;
-+
-+	ret = nlattr_add(&req.nh, sizeof(req), TCA_KIND, "bpf", sizeof("bpf"));
-+	if (ret < 0)
++	ret = bpf_tc_get_info(LO_IFINDEX, BPF_TC_CLSACT_INGRESS, &id, &info);
++	if (!ASSERT_EQ(ret, 0, "bpf_tc_get_info"))
 +		goto end;
 +
-+	req.nh.nlmsg_seq = time(NULL);
-+
-+	ret = bpf_nl_get_ext(&req.nh, sock, nl_pid, cls_get_info, NULL, info);
-+	if (ret < 0)
++	if (!ASSERT_NEQ(id.priority, old.priority, "filter priority mismatch"))
 +		goto end;
-+	/* 1 denotes a match */
-+	ret = ret == 1 ? 0 : -ESRCH;
++	if (!ASSERT_EQ(info.id.priority, id.priority, "priority mismatch"))
++		goto end;
++
 +end:
-+	close(sock);
++	ret = bpf_tc_detach(LO_IFINDEX, BPF_TC_CLSACT_INGRESS, &id);
++	ASSERT_EQ(ret, 0, "detach failed");
++end_old:
++	ret = bpf_tc_detach(LO_IFINDEX, BPF_TC_CLSACT_INGRESS, &old);
++	ASSERT_EQ(ret, 0, "detach failed");
 +	return ret;
 +}
 +
-+int bpf_tc_get_info(__u32 ifindex, __u32 parent_id,
-+		    const struct bpf_tc_attach_id *id,
-+		    struct bpf_tc_info *info)
++void test_test_tc_bpf(void)
 +{
-+	if (!id || !info)
-+		return -EINVAL;
++	const char *file = "./test_tc_bpf_kern.o";
++	struct bpf_program *clsp;
++	struct bpf_object *obj;
++	int cls_fd, ret;
 +
-+	return tc_cls_get_info(ifindex, parent_id, id, info);
- }
++	obj = bpf_object__open(file);
++	if (!ASSERT_OK_PTR(obj, "bpf_object__open"))
++		return;
++
++	clsp = bpf_object__find_program_by_title(obj, "classifier");
++	if (!ASSERT_OK_PTR(clsp, "bpf_object__find_program_by_title"))
++		goto end;
++
++	ret = bpf_object__load(obj);
++	if (!ASSERT_EQ(ret, 0, "bpf_object__load"))
++		goto end;
++
++	cls_fd = bpf_program__fd(clsp);
++
++	system("tc qdisc del dev lo clsact");
++
++	ret = test_tc_internal(cls_fd, BPF_TC_CLSACT_INGRESS);
++	if (!ASSERT_EQ(ret, 0, "test_tc_internal INGRESS"))
++		goto end;
++
++	if (!ASSERT_EQ(system("tc qdisc del dev lo clsact"), 0,
++		       "clsact qdisc delete failed"))
++		goto end;
++
++	ret = test_tc_info(cls_fd);
++	if (!ASSERT_EQ(ret, 0, "test_tc_info"))
++		goto end;
++
++	if (!ASSERT_EQ(system("tc qdisc del dev lo clsact"), 0,
++		       "clsact qdisc delete failed"))
++		goto end;
++
++	ret = test_tc_internal(cls_fd, BPF_TC_CLSACT_EGRESS);
++	if (!ASSERT_EQ(ret, 0, "test_tc_internal EGRESS"))
++		goto end;
++
++	ASSERT_EQ(system("tc qdisc del dev lo clsact"), 0,
++		  "clsact qdisc delete failed");
++
++end:
++	bpf_object__close(obj);
++}
+diff --git a/tools/testing/selftests/bpf/progs/test_tc_bpf_kern.c b/tools/testing/selftests/bpf/progs/test_tc_bpf_kern.c
+new file mode 100644
+index 000000000000..18a3a7ed924a
+--- /dev/null
++++ b/tools/testing/selftests/bpf/progs/test_tc_bpf_kern.c
+@@ -0,0 +1,12 @@
++// SPDX-License-Identifier: GPL-2.0
++
++#include <linux/bpf.h>
++#include <bpf/bpf_helpers.h>
++
++/* Dummy prog to test TC-BPF API */
++
++SEC("classifier")
++int cls(struct __sk_buff *skb)
++{
++	return 0;
++}
 -- 
 2.30.2
 
