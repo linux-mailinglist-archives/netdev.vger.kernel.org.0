@@ -2,84 +2,140 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 019BD3651A3
-	for <lists+netdev@lfdr.de>; Tue, 20 Apr 2021 06:53:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 80E903651A5
+	for <lists+netdev@lfdr.de>; Tue, 20 Apr 2021 06:54:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229662AbhDTEyN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 20 Apr 2021 00:54:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37638 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229525AbhDTEyM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 20 Apr 2021 00:54:12 -0400
-Received: from mail-pl1-x634.google.com (mail-pl1-x634.google.com [IPv6:2607:f8b0:4864:20::634])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B5A3C06174A;
-        Mon, 19 Apr 2021 21:53:42 -0700 (PDT)
-Received: by mail-pl1-x634.google.com with SMTP id v13so5401529ple.9;
-        Mon, 19 Apr 2021 21:53:42 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=80f/iB31iHFj3JMe7YWLAFAu3yiai8iBvlOjNXOsjk0=;
-        b=AcdWNKrQ1R36sK8EdObUXzbup/WaCjWhvaBYfEdi3s5Dzm0ShIr+MvxfzTYkAqG8+z
-         waIOeiFME01HE+MLgM9ksupUO+OfVYRQl5dPAcAOX5OmAnz4ZNtEuVz0gsgDBrNPPiP+
-         dzQdazMQBSK05+AH/065mySnewwnx1Z5gWxH2lIvzj/4pq+xFvO+apir0a/tG15LLunQ
-         QsIvwc8Kt+Mnoqnx9K0OH1hzoGsXU7PV6z1s5Z8bpNtxp+dL4Gf9V9olbUFrAdZBGSqz
-         ZHPTqbBM89bMPB0W26IspNGz9YArHz7nJ68W9XmV8WM8IraL6hIlLlNRczPX5NYnqcov
-         yDVA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=80f/iB31iHFj3JMe7YWLAFAu3yiai8iBvlOjNXOsjk0=;
-        b=nNlTgk03s3Gp7KCUWNUQumTiQDVni2yoUeYAgZ3u8W/+pfcRuHPG6DQercqpgYi/ty
-         e25JRofxBtK65vP+dkz4kr1FAfzn37QnZkdDH7/sH0FvYyglQgSj5C2h8h2wJPNW9PtM
-         0HLXumwyIz20ed6HCe2apqUIBF8vWz9nxh7slExlyDG4SlnY9203w4b3/YbW478PB1Cw
-         uokxPs3ysJhtjPAqTh/2zRZgIzXKY9mtjTH11zArxuK5mgtiDsJkOb4JnF+yNNUjjN5x
-         JgN4Dz+8zxUEq+mS+0JVLC+9ZCFTs3eodpayyHMXbq4ulFnKjJoqyIJmWY+dvskW7u/U
-         pbQg==
-X-Gm-Message-State: AOAM5326AMst7zZzcCywB5prjWuPooJr5jNMXpjR7nznqYgQf24i3m7P
-        2KdmcVhCbwsUFix8gbTZhJA=
-X-Google-Smtp-Source: ABdhPJymGcRMTwiJF8Dxqv9mtzC4tHS1squKA6novLwIEj9wwGw+6+0FVBRwQykVLMlqilwfxDw41Q==
-X-Received: by 2002:a17:90a:b00b:: with SMTP id x11mr2897846pjq.67.1618894421389;
-        Mon, 19 Apr 2021 21:53:41 -0700 (PDT)
-Received: from localhost (121-45-173-48.tpgi.com.au. [121.45.173.48])
-        by smtp.gmail.com with ESMTPSA id o9sm15082251pfh.217.2021.04.19.21.53.39
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 19 Apr 2021 21:53:40 -0700 (PDT)
-Date:   Tue, 20 Apr 2021 14:53:37 +1000
-From:   Balbir Singh <bsingharora@gmail.com>
-To:     Samuel Mendoza-Jonas <samjonas@amazon.com>
-Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>
-Subject: Re: [PATCH] bpf: Fix backport of "bpf: restrict unknown scalars of
- mixed signed bounds for unprivileged"
-Message-ID: <20210420045337.GF8178@balbir-desktop>
-References: <20210419235641.5442-1-samjonas@amazon.com>
+        id S229645AbhDTEyu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 20 Apr 2021 00:54:50 -0400
+Received: from mga14.intel.com ([192.55.52.115]:35848 "EHLO mga14.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229507AbhDTEys (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 20 Apr 2021 00:54:48 -0400
+IronPort-SDR: w67AFBKy6kpfOeEbDp1LeXqhMhCd4OT0S6mh5Vhca3yJBi6xU+89DQqFAo9QN+L9JDnihpSgkP
+ GbgCvEOiSndw==
+X-IronPort-AV: E=McAfee;i="6200,9189,9959"; a="194999330"
+X-IronPort-AV: E=Sophos;i="5.82,236,1613462400"; 
+   d="scan'208";a="194999330"
+Received: from fmsmga007.fm.intel.com ([10.253.24.52])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Apr 2021 21:54:18 -0700
+IronPort-SDR: nEMBihshE4yQfnc91H+r5M0JhwCHq4QgMAVmqFlQwCBJJUWMaoYyxpnC5or3FlRkJcVqpDMjHu
+ hWq5/hyuybZw==
+X-IronPort-AV: E=Sophos;i="5.82,236,1613462400"; 
+   d="scan'208";a="390879095"
+Received: from samudral-mobl.amr.corp.intel.com (HELO [10.212.195.85]) ([10.212.195.85])
+  by fmsmga007-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Apr 2021 21:54:17 -0700
+Subject: Re: [net-next 07/15] net/mlx5: mlx5_ifc updates for flex parser
+To:     Saeed Mahameed <saeed@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev@vger.kernel.org, Tariq Toukan <tariqt@nvidia.com>,
+        Yevgeny Kliteynik <kliteyn@nvidia.com>,
+        Saeed Mahameed <saeedm@nvidia.com>
+References: <20210420032018.58639-1-saeed@kernel.org>
+ <20210420032018.58639-8-saeed@kernel.org>
+From:   "Samudrala, Sridhar" <sridhar.samudrala@intel.com>
+Message-ID: <f21f0500-2150-9975-cfee-1629766634b8@intel.com>
+Date:   Mon, 19 Apr 2021 21:54:16 -0700
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.9.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210419235641.5442-1-samjonas@amazon.com>
+In-Reply-To: <20210420032018.58639-8-saeed@kernel.org>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 8bit
+Content-Language: en-US
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Apr 19, 2021 at 04:56:41PM -0700, Samuel Mendoza-Jonas wrote:
-> The 4.14 backport of 9d7eceede ("bpf: restrict unknown scalars of mixed
-> signed bounds for unprivileged") adds the PTR_TO_MAP_VALUE check to the
-> wrong location in adjust_ptr_min_max_vals(), most likely because 4.14
-> doesn't include the commit that updates the if-statement to a
-> switch-statement (aad2eeaf4 "bpf: Simplify ptr_min_max_vals adjustment").
-> 
-> Move the check to the proper location in adjust_ptr_min_max_vals().
-> 
-> Fixes: 17efa65350c5a ("bpf: restrict unknown scalars of mixed signed bounds for unprivileged")
-> Signed-off-by: Samuel Mendoza-Jonas <samjonas@amazon.com>
-> Reviewed-by: Frank van der Linden <fllinden@amazon.com>
-> Reviewed-by: Ethan Chen <yishache@amazon.com>
+On 4/19/2021 8:20 PM, Saeed Mahameed wrote:
+> From: Yevgeny Kliteynik <kliteyn@nvidia.com>
+>
+> Added the required definitions for supporting more protocols by flex parsers
+> (GTP-U, Geneve TLV options), and for using the right flex parser that was
+> configured for this protocol.
+Are you planning to support adding flow rules to match on these protocol 
+specific fields?
+If so,  are you planning to extend tc flower OR use other interfaces?
+
+
+> Signed-off-by: Yevgeny Kliteynik <kliteyn@nvidia.com>
+> Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 > ---
+>   include/linux/mlx5/mlx5_ifc.h | 32 ++++++++++++++++++++++++++++----
+>   1 file changed, 28 insertions(+), 4 deletions(-)
+>
+> diff --git a/include/linux/mlx5/mlx5_ifc.h b/include/linux/mlx5/mlx5_ifc.h
+> index f2c51d6833c6..aa6effe1dd6d 100644
+> --- a/include/linux/mlx5/mlx5_ifc.h
+> +++ b/include/linux/mlx5/mlx5_ifc.h
+> @@ -622,7 +622,19 @@ struct mlx5_ifc_fte_match_set_misc3_bits {
+>   
+>   	u8         geneve_tlv_option_0_data[0x20];
+>   
+> -	u8         reserved_at_140[0xc0];
+> +	u8	   gtpu_teid[0x20];
+> +
+> +	u8	   gtpu_msg_type[0x8];
+> +	u8	   gtpu_msg_flags[0x8];
+> +	u8	   reserved_at_170[0x10];
+> +
+> +	u8	   gtpu_dw_2[0x20];
+> +
+> +	u8	   gtpu_first_ext_dw_0[0x20];
+> +
+> +	u8	   gtpu_dw_0[0x20];
+> +
+> +	u8	   reserved_at_1e0[0x20];
+>   };
+>   
+>   struct mlx5_ifc_fte_match_set_misc4_bits {
+> @@ -1237,9 +1249,17 @@ enum {
+>   
+>   enum {
+>   	MLX5_FLEX_PARSER_GENEVE_ENABLED		= 1 << 3,
+> +	MLX5_FLEX_PARSER_MPLS_OVER_GRE_ENABLED	= 1 << 4,
+> +	mlx5_FLEX_PARSER_MPLS_OVER_UDP_ENABLED	= 1 << 5,
+>   	MLX5_FLEX_PARSER_VXLAN_GPE_ENABLED	= 1 << 7,
+>   	MLX5_FLEX_PARSER_ICMP_V4_ENABLED	= 1 << 8,
+>   	MLX5_FLEX_PARSER_ICMP_V6_ENABLED	= 1 << 9,
+> +	MLX5_FLEX_PARSER_GENEVE_TLV_OPTION_0_ENABLED = 1 << 10,
+> +	MLX5_FLEX_PARSER_GTPU_ENABLED		= 1 << 11,
+> +	MLX5_FLEX_PARSER_GTPU_DW_2_ENABLED	= 1 << 16,
+> +	MLX5_FLEX_PARSER_GTPU_FIRST_EXT_DW_0_ENABLED = 1 << 17,
+> +	MLX5_FLEX_PARSER_GTPU_DW_0_ENABLED	= 1 << 18,
+> +	MLX5_FLEX_PARSER_GTPU_TEID_ENABLED	= 1 << 19,
+>   };
+>   
+>   enum {
+> @@ -1637,7 +1657,9 @@ struct mlx5_ifc_cmd_hca_cap_bits {
+>   	u8         cqe_compression_timeout[0x10];
+>   	u8         cqe_compression_max_num[0x10];
+>   
+> -	u8         reserved_at_5e0[0x10];
+> +	u8         reserved_at_5e0[0x8];
+> +	u8         flex_parser_id_gtpu_dw_0[0x4];
+> +	u8         reserved_at_5ec[0x4];
+>   	u8         tag_matching[0x1];
+>   	u8         rndv_offload_rc[0x1];
+>   	u8         rndv_offload_dc[0x1];
+> @@ -1648,7 +1670,8 @@ struct mlx5_ifc_cmd_hca_cap_bits {
+>   	u8	   affiliate_nic_vport_criteria[0x8];
+>   	u8	   native_port_num[0x8];
+>   	u8	   num_vhca_ports[0x8];
+> -	u8	   reserved_at_618[0x6];
+> +	u8         flex_parser_id_gtpu_teid[0x4];
+> +	u8         reserved_at_61c[0x2];
+>   	u8	   sw_owner_id[0x1];
+>   	u8         reserved_at_61f[0x1];
+>   
+> @@ -1683,7 +1706,8 @@ struct mlx5_ifc_cmd_hca_cap_bits {
+>   	u8	   reserved_at_6e0[0x10];
+>   	u8	   sf_base_id[0x10];
+>   
+> -	u8	   reserved_at_700[0x8];
+> +	u8         flex_parser_id_gtpu_dw_2[0x4];
+> +	u8         flex_parser_id_gtpu_first_ext_dw_0[0x4];
+>   	u8	   num_total_dynamic_vf_msix[0x18];
+>   	u8	   reserved_at_720[0x14];
+>   	u8	   dynamic_msix_table_size[0xc];
 
-Thanks for catching it :)
-
-Reviewed-by: Balbir Singh <bsingharora@gmail.com>
