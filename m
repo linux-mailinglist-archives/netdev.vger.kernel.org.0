@@ -2,98 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C89D9365FD1
-	for <lists+netdev@lfdr.de>; Tue, 20 Apr 2021 20:53:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D0D9F365FF0
+	for <lists+netdev@lfdr.de>; Tue, 20 Apr 2021 21:00:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233708AbhDTSyN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 20 Apr 2021 14:54:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53888 "EHLO
+        id S233693AbhDTTBS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 20 Apr 2021 15:01:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55554 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233691AbhDTSx7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 20 Apr 2021 14:53:59 -0400
-Received: from mail-wr1-x436.google.com (mail-wr1-x436.google.com [IPv6:2a00:1450:4864:20::436])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 04756C06138A
-        for <netdev@vger.kernel.org>; Tue, 20 Apr 2021 11:53:27 -0700 (PDT)
-Received: by mail-wr1-x436.google.com with SMTP id m9so26014039wrx.3
-        for <netdev@vger.kernel.org>; Tue, 20 Apr 2021 11:53:26 -0700 (PDT)
+        with ESMTP id S233624AbhDTTBR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 20 Apr 2021 15:01:17 -0400
+Received: from mail-wm1-x32d.google.com (mail-wm1-x32d.google.com [IPv6:2a00:1450:4864:20::32d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4580DC06174A
+        for <netdev@vger.kernel.org>; Tue, 20 Apr 2021 12:00:45 -0700 (PDT)
+Received: by mail-wm1-x32d.google.com with SMTP id n127so9035264wmb.5
+        for <netdev@vger.kernel.org>; Tue, 20 Apr 2021 12:00:45 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=waldekranz-com.20150623.gappssmtp.com; s=20150623;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:organization:content-transfer-encoding;
-        bh=ebyPwcdrPNJZ8NlIZPrB4jWl+zySFB+YPdDAxVIYV/A=;
-        b=aSyR7WC+sW0cdvczodryOKG9/LngPw+7ooQh+Z/ZitRwLNknbczJRZZh1pVhjlAtoD
-         vAuLH5k2rV3aJ8L/0uS7MsvjwoEVoglM0eh5BRj7H4SjzDcapmtZT16UCpkqVjPXXOWS
-         bAQi6holwQIzCxjj3TfigMdFpRr6gyBE5vXYF0Kgjo3mRBg05fTDP73hTOY5PEJAgkXS
-         8uanRKR7WIGcPukqEQdufh3TqCU3jJSalfcKMIKJCT97ly7PN1qCvKpFmyGfitUbe+I2
-         lezFzLm/0wfqZ4ypBaZFxu0jvVTBJoyiFz28rwx8jBITF0wC7H/POU71LSSMwEe2OWBb
-         98mQ==
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id;
+        bh=JAvXww5KpPllCzIfU9TOhaX3UQasePrevleotlPtQ6g=;
+        b=ruJhKboeBg2f03bDwwN0vJBvcFBmmu2w59bdryD2vsmfptH6UCjuQmLpVGsiyrVeSh
+         CFET9LChxniLW5JiQ9M1idMINVQniuWtyI3I4NEvA99Qq+lX+SX6wbq3kptj6DSPVb4k
+         +w6ujtAEPZkakJAK69pmu7kILsjncgMF+mjCYCt1dhRFygPUTgHdPexCmA8XGbILD59A
+         1Lsl3rgNvA61f5r5UtrfZYMYtKHg9FPSh2Z2mxDEIDoL7T+NKu7o1Gv1cX4DguV7tTsz
+         Tu2T1vFoVl9yMiORGQzi/7+i7U1CdXPtpSEn2zkryUbJO0mdhZO9KV10aGsuW8oPAGmb
+         XBEw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:organization:content-transfer-encoding;
-        bh=ebyPwcdrPNJZ8NlIZPrB4jWl+zySFB+YPdDAxVIYV/A=;
-        b=QIWIYep/a1U8s2eKq4PeUo6U7RWBeyuH9hJNPlgmBFH0aBfBk3K03dOx9D0q5JWG5s
-         7HXfoGiF8GyS5ejdf+VtG1zwlkOlosBGCAgSLwXt0qH7HNBeDrq9OAMfZsHG1RRoVLCF
-         pDg3RQFm5gByfXv8NuEeRQv1jZ9VZXFRJF/xU02FwtaPYyaRWTSe5dS4RYxdcSyNI85w
-         g8Yq4JCYiKKDYm0iNs0R0qb9HLI2UrEo6S4XRSNFjzjZsBWvpdGSGv4V+14gGH5psZIb
-         LZ0gH1kUeLOikYVT0EyplpcmcKwFlfj5+2+85iEhKnpK7Z0J0E5LBzhH3HSf8Tp1aSaE
-         rveA==
-X-Gm-Message-State: AOAM531nu8xWwa1BC3Oa5RMbj3QdqprnUTbenp03egAR3XqZ1MS429OW
-        v4mMU3OQJ1CROMpOGFowHrHExw==
-X-Google-Smtp-Source: ABdhPJzZWLpyDMfLjVsPnnpXEwimN8gu3yG1xx9ftWalQYNb/W3R8Epva41nLZHvd2tJJIyGtiYs+g==
-X-Received: by 2002:adf:e707:: with SMTP id c7mr22409856wrm.391.1618944805800;
-        Tue, 20 Apr 2021 11:53:25 -0700 (PDT)
-Received: from veiron.westermo.com (static-193-12-47-89.cust.tele2.se. [193.12.47.89])
-        by smtp.gmail.com with ESMTPSA id f7sm25897402wrp.48.2021.04.20.11.53.24
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 20 Apr 2021 11:53:25 -0700 (PDT)
-From:   Tobias Waldekranz <tobias@waldekranz.com>
-To:     davem@davemloft.net, kuba@kernel.org
-Cc:     andrew@lunn.ch, vivien.didelot@gmail.com, f.fainelli@gmail.com,
-        olteanv@gmail.com, netdev@vger.kernel.org, robh+dt@kernel.org,
-        devicetree@vger.kernel.org
-Subject: [PATCH v3 net-next 5/5] dt-bindings: net: dsa: Document dsa-tag-protocol property
-Date:   Tue, 20 Apr 2021 20:53:11 +0200
-Message-Id: <20210420185311.899183-6-tobias@waldekranz.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20210420185311.899183-1-tobias@waldekranz.com>
-References: <20210420185311.899183-1-tobias@waldekranz.com>
-MIME-Version: 1.0
-Organization: Westermo
-Content-Transfer-Encoding: 8bit
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=JAvXww5KpPllCzIfU9TOhaX3UQasePrevleotlPtQ6g=;
+        b=clQORlM67epxs3IRGcQcFptRvd1ntSB6o/UwCvvTk/J+Tsy8bk+0DGHSk1JaS0t/Da
+         hnX8iQDFAUHY8FaCtipwqB4pl351+SecO3vuRFFDPuPwDwZYuZUDIOEnEAW1rmU1B1BO
+         kyCGiQ5AMHkeERC4v47si1EqgKmNIKUs5nmfsblybx5jzZAMuMKMTRS7ZjBLhjgB0lkw
+         /WMyZ/gtKBsNv4UqMr4YIyLc3lQTr5knvCzvHXzfm9k+l9IOI7WSgiFJ4kviTFAn9qQk
+         qtVi5u09ZN0MBZIRE9mhjwDTUoTxmmtUZz86UU7Vc1AfeEux6AYgk/reYCzatN2dtE+N
+         E3zQ==
+X-Gm-Message-State: AOAM532oUVrG4qA/fl3oMnSAD0zydzlLb20lOfOx1gCUMsbfH/v+M1wB
+        qS/8cVV/XUEjQM3pOGIQjJi86w==
+X-Google-Smtp-Source: ABdhPJxBW9i1SYzET+kKO3ABZj+zmDFwK4cFDK8y4+BuWt/vDXS2al2U2+VCcyGOABY6AilKQR0e5Q==
+X-Received: by 2002:a1c:e006:: with SMTP id x6mr5962928wmg.40.1618945243918;
+        Tue, 20 Apr 2021 12:00:43 -0700 (PDT)
+Received: from localhost.localdomain ([2a01:e0a:82c:5f0:c0c4:7b2:36d2:4bec])
+        by smtp.gmail.com with ESMTPSA id h5sm3942491wmq.23.2021.04.20.12.00.42
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Tue, 20 Apr 2021 12:00:43 -0700 (PDT)
+From:   Loic Poulain <loic.poulain@linaro.org>
+To:     kuba@kernel.org, davem@davemloft.net
+Cc:     netdev@vger.kernel.org, Loic Poulain <loic.poulain@linaro.org>
+Subject: [PATCH net-next] net: wwan: Fix bit ops double shift
+Date:   Tue, 20 Apr 2021 21:09:57 +0200
+Message-Id: <1618945797-11091-1-git-send-email-loic.poulain@linaro.org>
+X-Mailer: git-send-email 2.7.4
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The 'dsa-tag-protocol' is used to force a switch tree to use a
-particular tag protocol, typically because the Ethernet controller
-that it is connected to is not compatible with the default one.
+bit operation helpers such as test_bit, clear_bit, etc take bit
+position as parameter and not value. Current usage causes double
+shift => BIT(BIT(0)). Fix that in wwan_core and mhi_wwan_ctrl.
 
-Signed-off-by: Tobias Waldekranz <tobias@waldekranz.com>
+Fixes: 9a44c1cc6388 ("net: Add a WWAN subsystem")
+Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
+Signed-off-by: Loic Poulain <loic.poulain@linaro.org>
 ---
- Documentation/devicetree/bindings/net/dsa/dsa.yaml | 9 +++++++++
- 1 file changed, 9 insertions(+)
+ drivers/net/wwan/mhi_wwan_ctrl.c | 8 +++++---
+ drivers/net/wwan/wwan_core.c     | 2 +-
+ 2 files changed, 6 insertions(+), 4 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/net/dsa/dsa.yaml b/Documentation/devicetree/bindings/net/dsa/dsa.yaml
-index 8a3494db4d8d..16aa192c118e 100644
---- a/Documentation/devicetree/bindings/net/dsa/dsa.yaml
-+++ b/Documentation/devicetree/bindings/net/dsa/dsa.yaml
-@@ -70,6 +70,15 @@ patternProperties:
-               device is what the switch port is connected to
-             $ref: /schemas/types.yaml#/definitions/phandle
+diff --git a/drivers/net/wwan/mhi_wwan_ctrl.c b/drivers/net/wwan/mhi_wwan_ctrl.c
+index 1fc2376..1bc6b69 100644
+--- a/drivers/net/wwan/mhi_wwan_ctrl.c
++++ b/drivers/net/wwan/mhi_wwan_ctrl.c
+@@ -7,9 +7,11 @@
+ #include <linux/wwan.h>
  
-+          dsa-tag-protocol:
-+            description:
-+              Instead of the default, the switch will use this tag protocol if
-+              possible. Useful when a device supports multiple protcols and
-+              the default is incompatible with the Ethernet device.
-+            enum:
-+              - dsa
-+              - edsa
-+
-           phy-handle: true
+ /* MHI wwan flags */
+-#define MHI_WWAN_DL_CAP		BIT(0)
+-#define MHI_WWAN_UL_CAP		BIT(1)
+-#define MHI_WWAN_RX_REFILL	BIT(2)
++enum mhi_wwan_flags {
++	MHI_WWAN_DL_CAP,
++	MHI_WWAN_UL_CAP,
++	MHI_WWAN_RX_REFILL,
++};
  
-           phy-mode: true
+ #define MHI_WWAN_MAX_MTU	0x8000
+ 
+diff --git a/drivers/net/wwan/wwan_core.c b/drivers/net/wwan/wwan_core.c
+index b618b79..5be5e1e 100644
+--- a/drivers/net/wwan/wwan_core.c
++++ b/drivers/net/wwan/wwan_core.c
+@@ -26,7 +26,7 @@ static int wwan_major;
+ #define to_wwan_port(d) container_of(d, struct wwan_port, dev)
+ 
+ /* WWAN port flags */
+-#define WWAN_PORT_TX_OFF	BIT(0)
++#define WWAN_PORT_TX_OFF	0
+ 
+ /**
+  * struct wwan_device - The structure that defines a WWAN device
 -- 
-2.25.1
+2.7.4
 
