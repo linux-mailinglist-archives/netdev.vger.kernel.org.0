@@ -2,176 +2,201 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 85721365198
-	for <lists+netdev@lfdr.de>; Tue, 20 Apr 2021 06:47:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A91673651A0
+	for <lists+netdev@lfdr.de>; Tue, 20 Apr 2021 06:51:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229874AbhDTErd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 20 Apr 2021 00:47:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36190 "EHLO
+        id S229659AbhDTEwW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 20 Apr 2021 00:52:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37240 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229825AbhDTErc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 20 Apr 2021 00:47:32 -0400
-Received: from mail-oi1-x233.google.com (mail-oi1-x233.google.com [IPv6:2607:f8b0:4864:20::233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E6223C06174A
-        for <netdev@vger.kernel.org>; Mon, 19 Apr 2021 21:46:57 -0700 (PDT)
-Received: by mail-oi1-x233.google.com with SMTP id i81so37786570oif.6
-        for <netdev@vger.kernel.org>; Mon, 19 Apr 2021 21:46:57 -0700 (PDT)
+        with ESMTP id S229563AbhDTEwW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 20 Apr 2021 00:52:22 -0400
+Received: from mail-yb1-xb2f.google.com (mail-yb1-xb2f.google.com [IPv6:2607:f8b0:4864:20::b2f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3803CC06174A;
+        Mon, 19 Apr 2021 21:51:51 -0700 (PDT)
+Received: by mail-yb1-xb2f.google.com with SMTP id c195so41480580ybf.9;
+        Mon, 19 Apr 2021 21:51:51 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=sender:date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=UO9nTuCIT9hOADKmHVu9Q6LDo50ZfH52u0q+oxEEAHc=;
-        b=j/5ZHSClavO58DdOR8CQCuVPItUEwUA4i9HSWSH2FvfvZiGzVKWn5cCZtAMeJJBNQa
-         fcvpLt3NSoj1hwt9tNcGDNPny4tGaguD40VcvKxN7SpHPe94iQCR5o3Z7/UeIOVS8m0J
-         l6QJmJ1SggSFttQsmZYTowtrpKmVMhr8k9PvsJiQ/gR01mU/kbjiS3icdp5mNLXRE0xD
-         kXWCMzWLOSOKpcJ1tzkzgXjDFSw9Z4NzZzPUNo7wkJ9KVTqaUYCyC9NQ8pGr46bk81u6
-         jACGdjOTH3LlpRHiiifXEWJixol54ep9ndNgfmM+VPbbwLpFHPRzssyZjr7ej/yHTPkB
-         jDLg==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=OVm6Q6DWFJgZYgTCjlWXe5mpJJwXK8u9Ggs+d2c5dp8=;
+        b=m8MKa5WLmJZUI2IEoPDo62XVr1psbRIgNp78NNoF+g0IShaen22e8YNPWiYIQgiudm
+         m+ZQdDem8M+02PeyV5aFCog7MtZZ3nNiqqUoeJ2/UapjdG5KMjs7vx4WHJPWN88tXhPc
+         V3cof9h2kGPcsz547d8s11BiyJJIpAY7VUAGcXzd4tTPpueXT1WYguMaR8iE0/Pb7S+F
+         cYxJxMFTIYtO0HHIjqIWu+qCfsWiI69FQLgxnVkJ3e5ZCSzWBdSBdWRgspqtouvn04zh
+         d/vfY6iDcvpyeXgymuxrQnMKNzzAuctE/1/iy+fNwGPTNVSEkOUl5c00WdpjD6njzAUS
+         b68A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
-         :references:mime-version:content-disposition:in-reply-to:user-agent;
-        bh=UO9nTuCIT9hOADKmHVu9Q6LDo50ZfH52u0q+oxEEAHc=;
-        b=lvi+zbpTPExLUK7mJcGZpRgoMW348x8t1iLFs2fq8qeEXd0pzc22SGJmegjIeyyNig
-         qOcfrtx8ElTbLZeTBB0LScXBtIbHV2vijIp6Jq4RbZOrwryg9ikjCdPl9w3e/i5zlrUe
-         /buhkMdZjvPdJzo0x4cxvZIhBS1ft0CBOGWihbbz3s2CoJUZXrUtYkOH/XWmJXRQWLkE
-         weVWl5ghBLOHdfw+Mhk95hlzFjUgxBxrzpfTM+PpEHImQCUHqiW9ExwpWJJ1sDBKvZlq
-         D8L4Btq9RmFNjjIP6oyWnO5e3RDLecg0JGZ0VyHikcD/dcnmTtv0UVA/O5pBSa1i+e7X
-         zh8A==
-X-Gm-Message-State: AOAM532Qf1AfGA7z5AMA7YcUreJ4rJxK2tVVMeSoL6noN7W2RfltrLn7
-        1Bs9mUOIiBZ85uheAb8sV4UtytIe0rY=
-X-Google-Smtp-Source: ABdhPJxADw0CenHCjbN9MQoMQ26Fd9xaAM4JGpqTObX2mFtMlTzju/EXU9GsK2Iiw6IEKPkSZB0Y6A==
-X-Received: by 2002:aca:4791:: with SMTP id u139mr1753600oia.83.1618894017330;
-        Mon, 19 Apr 2021 21:46:57 -0700 (PDT)
-Received: from localhost ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
-        by smtp.gmail.com with ESMTPSA id a73sm2098261oib.23.2021.04.19.21.46.56
-        (version=TLS1_2 cipher=ECDHE-ECDSA-CHACHA20-POLY1305 bits=256/256);
-        Mon, 19 Apr 2021 21:46:56 -0700 (PDT)
-Sender: Guenter Roeck <groeck7@gmail.com>
-Date:   Mon, 19 Apr 2021 21:46:55 -0700
-From:   Guenter Roeck <linux@roeck-us.net>
-To:     Xuan Zhuo <xuanzhuo@linux.alibaba.com>
-Cc:     netdev@vger.kernel.org, "Michael S. Tsirkin" <mst@redhat.com>,
-        Jason Wang <jasowang@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        virtualization@lists.linux-foundation.org
-Subject: Re: [net-next, v2] virtio-net: page_to_skb() use build_skb when
- there's sufficient tailroom
-Message-ID: <20210420044655.GA144160@roeck-us.net>
-References: <20210414015221.87554-1-xuanzhuo@linux.alibaba.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=OVm6Q6DWFJgZYgTCjlWXe5mpJJwXK8u9Ggs+d2c5dp8=;
+        b=Fmf/Q4eSFCzZa5e87U+6AUPK9BAo+UitZNVrO7isu21BkVwCyZfsJFVM0EvYXZgJrA
+         +8fxco6JgcFkV5JdrnqRng19cQh0wjFNuwKHBpS+5w+tf34g3wsUeEqI083qLI7JKWTy
+         i7HDvbX3YOJZO8fha7HfelT9YCC5xRjid9ao8yNa51LIyABpvXYTsToHdqPyNzPMr/7Q
+         QiW3V9/cexwVRPYDQ0/UMaXt4Q8b1aH4y+taMpQZQrb1FmkuAcXngbgHbP1k0ZyegJtc
+         09R/J2w3Gm66Id0VBoNSkQOUaexIkMam4DKJkKfDQJAldDDVlqz0CA9RrUghemWictlS
+         AbVg==
+X-Gm-Message-State: AOAM530ymSNzhbG3dQGfqkS7d0n97Pilb1FOcOzDeBJIKW7in5THplFv
+        gTWk7L9Dgwzxd2BJane+KDFT1jOABjfCstDfmx/KdMY410c=
+X-Google-Smtp-Source: ABdhPJx5uXzKQusVJtOM01CRE9d4ygyU0A2E0rJTTYBatvyb4H6gee0oSzG31OavRvd2SXPuIPuQIFNP6Sagtt+0I0k=
+X-Received: by 2002:a25:ba06:: with SMTP id t6mr14318255ybg.459.1618894310552;
+ Mon, 19 Apr 2021 21:51:50 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210414015221.87554-1-xuanzhuo@linux.alibaba.com>
-User-Agent: Mutt/1.9.4 (2018-02-28)
+References: <20210413121516.1467989-1-jolsa@kernel.org> <CAEf4Bzazst1rBi4=LuP6_FnPXCRYBNFEtDnK3UVBj6Eo6xFNtQ@mail.gmail.com>
+ <YHbd2CmeoaiLJj7X@krava> <CAEf4BzYyVj-Tjy9ZZdAU5nOtJ8_auvVobTT6pMqg8zPb9jj-Ow@mail.gmail.com>
+ <20210415111002.324b6bfa@gandalf.local.home> <CAEf4BzY=yBZH2Aad1hNcqCt51u0+SmNdkD6NfJRVMzF7DsvG+A@mail.gmail.com>
+ <20210415170007.31420132@gandalf.local.home> <20210417000304.fc987dc00d706e7551b29c04@kernel.org>
+In-Reply-To: <20210417000304.fc987dc00d706e7551b29c04@kernel.org>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Mon, 19 Apr 2021 21:51:39 -0700
+Message-ID: <CAEf4Bzb1uDwSeW-5q06748foJ5=ShEgvF7kDmiCPnv4393SSVw@mail.gmail.com>
+Subject: Re: [PATCHv2 RFC bpf-next 0/7] bpf: Add support for ftrace probe
+To:     Masami Hiramatsu <mhiramat@kernel.org>
+Cc:     Steven Rostedt <rostedt@goodmis.org>, Jiri Olsa <jolsa@redhat.com>,
+        Jiri Olsa <jolsa@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andriin@fb.com>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>, Daniel Xu <dxu@dxuuu.xyz>,
+        Jesper Brouer <jbrouer@redhat.com>,
+        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>,
+        Viktor Malik <vmalik@redhat.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Apr 14, 2021 at 09:52:21AM +0800, Xuan Zhuo wrote:
-> In page_to_skb(), if we have enough tailroom to save skb_shared_info, we
-> can use build_skb to create skb directly. No need to alloc for
-> additional space. And it can save a 'frags slot', which is very friendly
-> to GRO.
-> 
-> Here, if the payload of the received package is too small (less than
-> GOOD_COPY_LEN), we still choose to copy it directly to the space got by
-> napi_alloc_skb. So we can reuse these pages.
-> 
-> Testing Machine:
->     The four queues of the network card are bound to the cpu1.
-> 
-> Test command:
->     for ((i=0;i<5;++i)); do sockperf tp --ip 192.168.122.64 -m 1000 -t 150& done
-> 
-> The size of the udp package is 1000, so in the case of this patch, there
-> will always be enough tailroom to use build_skb. The sent udp packet
-> will be discarded because there is no port to receive it. The irqsoftd
-> of the machine is 100%, we observe the received quantity displayed by
-> sar -n DEV 1:
-> 
-> no build_skb:  956864.00 rxpck/s
-> build_skb:    1158465.00 rxpck/s
-> 
-> Signed-off-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
-> Suggested-by: Jason Wang <jasowang@redhat.com>
+On Fri, Apr 16, 2021 at 8:03 AM Masami Hiramatsu <mhiramat@kernel.org> wrote:
+>
+> Hi,
+>
+> On Thu, 15 Apr 2021 17:00:07 -0400
+> Steven Rostedt <rostedt@goodmis.org> wrote:
+>
+> >
+> > [
+> >   Added Masami, as I didn't realize he wasn't on Cc. He's the maintainer of
+> >   kretprobes.
+> >
+> >   Masami, you may want to use lore.kernel.org to read the history of this
+> >   thread.
+> > ]
+> >
+> > On Thu, 15 Apr 2021 13:45:06 -0700
+> > Andrii Nakryiko <andrii.nakryiko@gmail.com> wrote:
+> >
+> > > > I don't know how the BPF code does it, but if you are tracing the exit
+> > > > of a function, I'm assuming that you hijack the return pointer and replace
+> > > > it with a call to a trampoline that has access to the arguments. To do
+> > >
+> > > As Jiri replied, BPF trampoline doesn't do it the same way as
+> > > kretprobe does it. Which gives the fexit BPF program another critical
+> > > advantage over kretprobe -- we know traced function's entry IP in both
+> > > entry and exit cases, which allows us to generically correlate them.
+> > >
+> > > I've tried to figure out how to get that entry IP from kretprobe and
+> > > couldn't find any way. Do you know if it's possible at all or it's a
+> > > fundamental limitation of the way kretprobe is implemented (through
+> > > hijacking return address)?
+>
+> Inside the kretprobe handler, you can get the entry IP from kretprobe as below;
+>
+> static int my_kretprobe_handler(struct kretprobe_instance *ri, struct pt_regs *regs)
+> {
+>         struct kretprobe *rp = get_kretprobe(ri);
+>         unsigned long entry = (unsigned long)rp->kp.addr;
+>         unsigned long retaddr = (unsigned long)ri->ret_addr;
+>         ...
+> }
 
-Booting qemu-system-alpha with virtio-net interface instantiated results in:
+Great. In kprobe_perf_func(), which seems to be the callback that
+triggers kretprobe BPF programs, we can get that struct kretprobe
+through tk->rp. So we'll just need to figure out how to pass that into
+the BPF program in a sane way. Thanks!
 
-udhcpc: sending discover
-Unable to handle kernel paging request at virtual address 0000000000000004
-udhcpc(169): Oops -1
-pc = [<0000000000000004>]  ra = [<fffffc0000b8c588>]  ps = 0000    Not tainted
-pc is at 0x4
-ra is at napi_gro_receive+0x68/0x150
-v0 = 0000000000000000  t0 = 0000000000000008  t1 = 0000000000000000
-t2 = 0000000000000000  t3 = 000000000000000e  t4 = 0000000000000038
-t5 = 000000000000ffff  t6 = fffffc00002f220a  t7 = fffffc0002cd0000
-s0 = fffffc00010b3ca0  s1 = 0000000000000000  s2 = fffffc00011267e0
-s3 = 0000000000000000  s4 = fffffc00025f2008  s5 = fffffc00002f21c0
-s6 = fffffc00025f2040
-a0 = fffffc00025f2008  a1 = fffffc00002f21c0  a2 = fffffc0002cc800c
-a3 = fffffc00000250d0  a4 = 0000000effff0008  a5 = 0000000000000000
-t8 = fffffc00010b3c80  t9 = fffffc0002cc84cc  t10= 0000000000000000
-t11= 00000000000004c0  pv = fffffc0000b8bc10  at = 0000000000000000
-gp = fffffc00010f9fb8  sp = 00000000aefe3f8a
-Disabling lock debugging due to kernel taint
-Trace:
-[<fffffc0000b8c588>] napi_gro_receive+0x68/0x150
-[<fffffc00009b406c>] receive_buf+0x50c/0x1b80
-[<fffffc00009b5888>] virtnet_poll+0x1a8/0x5b0
-[<fffffc00009b58bc>] virtnet_poll+0x1dc/0x5b0
-[<fffffc0000b8d14c>] __napi_poll+0x4c/0x270
-[<fffffc0000b8d640>] net_rx_action+0x130/0x2c0
-[<fffffc0000bd6f00>] __qdisc_run+0x90/0x6c0
-[<fffffc0000337b64>] do_softirq+0xa4/0xd0
-[<fffffc0000337ca4>] __local_bh_enable_ip+0x114/0x120
-[<fffffc0000b89524>] __dev_queue_xmit+0x484/0xa60
-[<fffffc0000cd06fc>] packet_sendmsg+0xe7c/0x1ba0
-[<fffffc0000b53308>] __sys_sendto+0xf8/0x170
-[<fffffc0000461440>] __d_alloc+0x40/0x270
-[<fffffc0000ccdc4c>] packet_create+0x17c/0x3c0
-[<fffffc0000b5218c>] move_addr_to_kernel+0x3c/0x60
-[<fffffc0000b532b4>] __sys_sendto+0xa4/0x170
-[<fffffc0000b533a4>] sys_sendto+0x24/0x40
-[<fffffc0000b52840>] sys_bind+0x20/0x40
-[<fffffc0000311514>] entSys+0xa4/0xc0
-
-Bisect log attached.
-
-Guenter
-
----
-# bad: [50b8b1d699ac313c0a07a3c185ffb23aecab8abb] Add linux-next specific files for 20210419
-# good: [bf05bf16c76bb44ab5156223e1e58e26dfe30a88] Linux 5.12-rc8
-git bisect start 'HEAD' 'v5.12-rc8'
-# bad: [c4bb91fc07e59241cde97f913d7a2fbedc248f0d] Merge remote-tracking branch 'crypto/master'
-git bisect bad c4bb91fc07e59241cde97f913d7a2fbedc248f0d
-# good: [499f739ad70f2a58aac985dceb25ca7666da88be] Merge remote-tracking branch 'jc_docs/docs-next'
-git bisect good 499f739ad70f2a58aac985dceb25ca7666da88be
-# good: [17e1be342d46eb0b7c3df4c7e623493483080b63] bnxt_en: Treat health register value 0 as valid in bnxt_try_reover_fw().
-git bisect good 17e1be342d46eb0b7c3df4c7e623493483080b63
-# good: [cf6d6925625755029cdf4bb0d0028f0b6e713242] Merge remote-tracking branch 'rdma/for-next'
-git bisect good cf6d6925625755029cdf4bb0d0028f0b6e713242
-# good: [fb8517f4fade44fa5e42e29ca4d6e4a7ed50b512] rtw88: 8822c: add CFO tracking
-git bisect good fb8517f4fade44fa5e42e29ca4d6e4a7ed50b512
-# bad: [d168b61fb769d10306b6118ec7623d2911d45690] Merge remote-tracking branch 'gfs2/for-next'
-git bisect bad d168b61fb769d10306b6118ec7623d2911d45690
-# bad: [ee3e875f10fca68fb7478c23c75b553e56da319c] net: enetc: increase TX ring size
-git bisect bad ee3e875f10fca68fb7478c23c75b553e56da319c
-# good: [4a51b0e8a0143b0e83d51d9c58c6416c3818a9f2] r8152: support PHY firmware for RTL8156 series
-git bisect good 4a51b0e8a0143b0e83d51d9c58c6416c3818a9f2
-# bad: [03e481e88b194296defdff3600b2fcebb04bd6cf] Merge tag 'mlx5-updates-2021-04-16' of git://git.kernel.org/pub/scm/linux/kernel/git/saeed/linux
-git bisect bad 03e481e88b194296defdff3600b2fcebb04bd6cf
-# bad: [70c183759b2cece2f9ba82e63e38fa32bebc9db2] Merge branch 'gianfar-mq-polling'
-git bisect bad 70c183759b2cece2f9ba82e63e38fa32bebc9db2
-# bad: [d8604b209e9b3762280b8321162f0f64219d51c9] dt-bindings: net: qcom,ipa: add firmware-name property
-git bisect bad d8604b209e9b3762280b8321162f0f64219d51c9
-# good: [4ad29b1a484e0c58acfffdcd87172ed17f35c1dd] net: mvpp2: Add parsing support for different IPv4 IHL values
-git bisect good 4ad29b1a484e0c58acfffdcd87172ed17f35c1dd
-# good: [fa588eba632df14d296436995e6bbea0c146ae77] net: Add Qcom WWAN control driver
-git bisect good fa588eba632df14d296436995e6bbea0c146ae77
-# bad: [fb32856b16ad9d5bcd75b76a274e2c515ac7b9d7] virtio-net: page_to_skb() use build_skb when there's sufficient tailroom
-git bisect bad fb32856b16ad9d5bcd75b76a274e2c515ac7b9d7
-# first bad commit: [fb32856b16ad9d5bcd75b76a274e2c515ac7b9d7] virtio-net: page_to_skb() use build_skb when there's sufficient tailroom
+>
+> It is ensured that rp != NULL in the handler.
+>
+> >
+> > The function graph tracer has the entry IP on exit, today. That's how we
+> > can trace and show this:
+> >
+> >  # cd /sys/kernel/tracing
+> >  # echo 1 > echo 1 > options/funcgraph-tail
+> >  # echo function_graph > current_tracer
+> >  # cat trace
+> > # tracer: function_graph
+> > #
+> > # CPU  DURATION                  FUNCTION CALLS
+> > # |     |   |                     |   |   |   |
+> >  7)   1.358 us    |  rcu_idle_exit();
+> >  7)   0.169 us    |  sched_idle_set_state();
+> >  7)               |  cpuidle_reflect() {
+> >  7)               |    menu_reflect() {
+> >  7)   0.170 us    |      tick_nohz_idle_got_tick();
+> >  7)   0.585 us    |    } /* menu_reflect */
+> >  7)   1.115 us    |  } /* cpuidle_reflect */
+> >
+> > That's how we can show the tail function that's called. I'm sure kreprobes
+> > could do the same thing.
+>
+> Yes, I have to update the document how to do that (and maybe introduce 2 functions
+> to wrap the entry/retaddr code)
+>
+> >
+> > The patch series I shared with Jiri, was work to allow kretprobes to be
+> > built on top of the function graph tracer.
+> >
+> > https://lore.kernel.org/lkml/20190525031633.811342628@goodmis.org/
+> >
+> > The feature missing from that series, and why I didn't push it (as I had
+> > ran out of time to work on it), was that kreprobes wants the full regs
+> > stack as well. And since kretprobes was the main client of this work, that
+> > I decided to work on this at another time. But like everything else, I got
+> > distracted by other work, and didn't realize it has been almost 2 years
+> > since looking at it :-p
+> >
+> > Anyway, IIRC, Masami wasn't sure that the full regs was ever needed for the
+> > return (who cares about the registers on return, except for the return
+> > value?)
+>
+> I think kretprobe and ftrace are for a bit different usage. kretprobe can be
+> used for something like debugger. In that case, accessing full regs stack
+> will be more preferrable. (BTW, what the not "full regs" means? Does that
+> save partial registers?)
+>
+>
+> Thank you,
+>
+> > But this code could easily save the parameters as well.
+> >
+> > >
+> > > > this you need a shadow stack to save the real return as well as the
+> > > > parameters of the function. This is something that I have patches that do
+> > > > similar things with function graph.
+> > > >
+> > > > If you want this feature, lets work together and make this work for both
+> > > > BPF and ftrace.
+> > >
+> > > Absolutely, ultimately for users it doesn't matter what specific
+> > > mechanism is used under the cover. It just seemed like BPF trampoline
+> > > has all the useful tracing features (entry IP and input arguments in
+> > > fexit) already and is just mostly missing a quick batch attach API. If
+> > > we can get the same from ftrace, all the better.
+> >
+> > Let me pull these patches out again, and see what we can do. Since then,
+> > I've added the code that lets function tracer save parameters and the
+> > stack, and function graph can use that as well.
+> >
+> >
+> > -- Steve
+>
+>
+> --
+> Masami Hiramatsu <mhiramat@kernel.org>
