@@ -2,225 +2,123 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 316E73652B6
-	for <lists+netdev@lfdr.de>; Tue, 20 Apr 2021 09:00:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 201023652DE
+	for <lists+netdev@lfdr.de>; Tue, 20 Apr 2021 09:08:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230214AbhDTHBX convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Tue, 20 Apr 2021 03:01:23 -0400
-Received: from rtits2.realtek.com ([211.75.126.72]:49460 "EHLO
-        rtits2.realtek.com.tw" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229577AbhDTHBV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 20 Apr 2021 03:01:21 -0400
-Authenticated-By: 
-X-SpamFilter-By: ArmorX SpamTrap 5.73 with qID 13K70f862022777, This message is accepted by code: ctloc85258
-Received: from mail.realtek.com (rtexh36502.realtek.com.tw[172.21.6.25])
-        by rtits2.realtek.com.tw (8.15.2/2.71/5.88) with ESMTPS id 13K70f862022777
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Tue, 20 Apr 2021 15:00:41 +0800
-Received: from RTEXMBS04.realtek.com.tw (172.21.6.97) by
- RTEXH36502.realtek.com.tw (172.21.6.25) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2106.2; Tue, 20 Apr 2021 15:00:40 +0800
-Received: from RTEXMBS04.realtek.com.tw (172.21.6.97) by
- RTEXMBS04.realtek.com.tw (172.21.6.97) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2106.2; Tue, 20 Apr 2021 15:00:39 +0800
-Received: from RTEXMBS04.realtek.com.tw ([fe80::1d8:ba7d:61ca:bd74]) by
- RTEXMBS04.realtek.com.tw ([fe80::1d8:ba7d:61ca:bd74%5]) with mapi id
- 15.01.2106.013; Tue, 20 Apr 2021 15:00:39 +0800
-From:   Hayes Wang <hayeswang@realtek.com>
-To:     Jakub Kicinski <kuba@kernel.org>
-CC:     "davem@davemloft.net" <davem@davemloft.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        nic_swsd <nic_swsd@realtek.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-usb@vger.kernel.org" <linux-usb@vger.kernel.org>
-Subject: RE: [PATCH net-next 4/6] r8152: support new chips
-Thread-Topic: [PATCH net-next 4/6] r8152: support new chips
-Thread-Index: AQHXMpdaTtc3dnJiRE+pHF9mj571x6q3Ka6AgAXMWPA=
-Date:   Tue, 20 Apr 2021 07:00:39 +0000
-Message-ID: <0de9842749db4718b8f45a0f2fff7967@realtek.com>
-References: <1394712342-15778-350-Taiwan-albertk@realtek.com>
-        <1394712342-15778-354-Taiwan-albertk@realtek.com>
- <20210416145017.1946f013@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20210416145017.1946f013@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-Accept-Language: zh-TW, en-US
-Content-Language: zh-TW
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [172.21.177.203]
-x-kse-serverinfo: RTEXMBS04.realtek.com.tw, 9
-x-kse-antivirus-interceptor-info: scan successful
-x-kse-antivirus-info: =?us-ascii?Q?Clean,_bases:_2021/4/19_=3F=3F_11:43:00?=
-x-kse-attachment-filter-triggered-rules: Clean
-x-kse-attachment-filter-triggered-filters: Clean
-x-kse-bulkmessagesfiltering-scan-result: protection disabled
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 8BIT
+        id S230302AbhDTHIq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 20 Apr 2021 03:08:46 -0400
+Received: from mail.kernel.org ([198.145.29.99]:52068 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229843AbhDTHIo (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 20 Apr 2021 03:08:44 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 3E8B261220;
+        Tue, 20 Apr 2021 07:08:13 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1618902493;
+        bh=DOW/KsRt5H6t1Pgz46XK8iIY+rilYGODWaTzp+KKVBg=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=bGeMIcK4oyaw9PKWK4LZfywrca9QFox2DwtXtJf3Rpcw/1K0zEYwkxTvdm9Wy2p/k
+         6FGb/yaJGmnEbuwRVwyZQkwjZldF6m9tFCT+KATXFY8IrIR886CLL8liQSNzWyh2yw
+         iJSJjHp3Z+yxDM9fPgaOfcQdSbHoO+TCqiHV+U8+DlXk0kyo+sveadEsfFEWKESyT3
+         JVcLzmur1EbwKBuEBrxveDtDEWusqRL4P/EY4pV14VHKqTqzeLRn2qWiYT9IAC9QW1
+         bErddbD2N2wX+mbwamKuFEVf0NAPJ+BT3maEQ6dNvAXY5/xnZvWRUHB1OYwLit78CN
+         d989R9HQVE2fA==
+Received: by mail-wm1-f49.google.com with SMTP id y204so18099109wmg.2;
+        Tue, 20 Apr 2021 00:08:13 -0700 (PDT)
+X-Gm-Message-State: AOAM533Qqa5ol86S8ezf9zHdovf6eLUUl4dmm3NXOBrf0cc0ineN5Cby
+        jP7z2BR+9sRQYcp1k/O77a/Y1XxIZcHV6dWXzsA=
+X-Google-Smtp-Source: ABdhPJzw8YTyu5KshxUEZlu3irZnfAegvQ8VILMGpH1RGSIFiQhsKgjG1gjcqz1I3fFsHj1Q1aLjZg7NWbZtj6Nq3DE=
+X-Received: by 2002:a7b:c14a:: with SMTP id z10mr2758133wmi.75.1618902491684;
+ Tue, 20 Apr 2021 00:08:11 -0700 (PDT)
 MIME-Version: 1.0
-X-KSE-AntiSpam-Outbound-Interceptor-Info: scan successful
-X-KSE-AntiSpam-Version: 5.9.20, Database issued on: 04/20/2021 02:53:45
-X-KSE-AntiSpam-Status: KAS_STATUS_NOT_DETECTED
-X-KSE-AntiSpam-Method: none
-X-KSE-AntiSpam-Rate: 0
-X-KSE-AntiSpam-Info: Lua profiles 163215 [Apr 19 2021]
-X-KSE-AntiSpam-Info: Version: 5.9.20.0
-X-KSE-AntiSpam-Info: Envelope from: hayeswang@realtek.com
-X-KSE-AntiSpam-Info: LuaCore: 442 442 b985cb57763b61d2a20abb585d5d4cc10c315b09
-X-KSE-AntiSpam-Info: {Tracking_from_domain_doesnt_match_to}
-X-KSE-AntiSpam-Info: Rate: 0
-X-KSE-AntiSpam-Info: Status: not_detected
-X-KSE-AntiSpam-Info: Method: none
-X-KSE-AntiSpam-Info: Auth:dkim=none
-X-KSE-Antiphishing-Info: Clean
-X-KSE-Antiphishing-ScanningType: Heuristic
-X-KSE-Antiphishing-Method: None
-X-KSE-Antiphishing-Bases: 04/20/2021 02:57:00
-X-KSE-ServerInfo: RTEXH36502.realtek.com.tw, 9
-X-KSE-Antivirus-Interceptor-Info: scan successful
-X-KSE-Antivirus-Info: =?us-ascii?Q?Clean,_bases:_2021/4/20_=3F=3F_04:46:00?=
-X-KSE-Attachment-Filter-Triggered-Rules: Clean
-X-KSE-Attachment-Filter-Triggered-Filters: Clean
-X-KSE-BulkMessagesFiltering-Scan-Result: protection disabled
-X-KSE-AntiSpam-Outbound-Interceptor-Info: scan successful
-X-KSE-AntiSpam-Version: 5.9.20, Database issued on: 04/20/2021 06:45:29
-X-KSE-AntiSpam-Status: KAS_STATUS_NOT_DETECTED
-X-KSE-AntiSpam-Method: none
-X-KSE-AntiSpam-Rate: 0
-X-KSE-AntiSpam-Info: Lua profiles 163221 [Apr 20 2021]
-X-KSE-AntiSpam-Info: Version: 5.9.20.0
-X-KSE-AntiSpam-Info: Envelope from: hayeswang@realtek.com
-X-KSE-AntiSpam-Info: LuaCore: 442 442 b985cb57763b61d2a20abb585d5d4cc10c315b09
-X-KSE-AntiSpam-Info: {Tracking_from_domain_doesnt_match_to}
-X-KSE-AntiSpam-Info: d41d8cd98f00b204e9800998ecf8427e.com:7.1.1;127.0.0.199:7.1.2;realtek.com:7.1.1
-X-KSE-AntiSpam-Info: Rate: 0
-X-KSE-AntiSpam-Info: Status: not_detected
-X-KSE-AntiSpam-Info: Method: none
-X-KSE-AntiSpam-Info: Auth:dkim=none
-X-KSE-Antiphishing-Info: Clean
-X-KSE-Antiphishing-ScanningType: Heuristic
-X-KSE-Antiphishing-Method: None
-X-KSE-Antiphishing-Bases: 04/20/2021 06:47:00
+References: <20210416230724.2519198-1-willy@infradead.org> <20210416230724.2519198-2-willy@infradead.org>
+ <20210417024522.GP2531743@casper.infradead.org> <9f99b0a0-f1c1-f3b0-5f84-3a4bfc711725@synopsys.com>
+ <20210420031029.GI2531743@casper.infradead.org>
+In-Reply-To: <20210420031029.GI2531743@casper.infradead.org>
+From:   Arnd Bergmann <arnd@kernel.org>
+Date:   Tue, 20 Apr 2021 09:07:55 +0200
+X-Gmail-Original-Message-ID: <CAK8P3a0KUwf1Z0bHiUaHC2nHztevkxg5_FBSzHddNeSsBayWUA@mail.gmail.com>
+Message-ID: <CAK8P3a0KUwf1Z0bHiUaHC2nHztevkxg5_FBSzHddNeSsBayWUA@mail.gmail.com>
+Subject: Re: [PATCH 1/2] mm: Fix struct page layout on 32-bit systems
+To:     Matthew Wilcox <willy@infradead.org>
+Cc:     Vineet Gupta <Vineet.Gupta1@synopsys.com>,
+        "grygorii.strashko@ti.com" <grygorii.strashko@ti.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "ilias.apalodimas@linaro.org" <ilias.apalodimas@linaro.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-mips@vger.kernel.org" <linux-mips@vger.kernel.org>,
+        "mhocko@kernel.org" <mhocko@kernel.org>,
+        "linux-mm@kvack.org" <linux-mm@kvack.org>,
+        "mgorman@suse.de" <mgorman@suse.de>,
+        "brouer@redhat.com" <brouer@redhat.com>,
+        "mcroce@linux.microsoft.com" <mcroce@linux.microsoft.com>,
+        "linux-snps-arc@lists.infradead.org" 
+        <linux-snps-arc@lists.infradead.org>,
+        "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>,
+        "hch@lst.de" <hch@lst.de>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Jakub Kicinski <kuba@kernel.org>
-> Sent: Saturday, April 17, 2021 5:50 AM
-> > +	switch (tp->version) {
-> > +	case RTL_VER_10:
-> > +		data = ocp_reg_read(tp, 0xad40);
-> > +		data &= ~0x3ff;
-> > +		data |= BIT(7) | BIT(2);
-> > +		ocp_reg_write(tp, 0xad40, data);
-> > +
-> > +		data = ocp_reg_read(tp, 0xad4e);
-> > +		data |= BIT(4);
-> > +		ocp_reg_write(tp, 0xad4e, data);
-> > +		data = ocp_reg_read(tp, 0xad16);
-> > +		data &= ~0x3ff;
-> > +		data |= 0x6;
-> > +		ocp_reg_write(tp, 0xad16, data);
-> > +		data = ocp_reg_read(tp, 0xad32);
-> > +		data &= ~0x3f;
-> > +		data |= 6;
-> > +		ocp_reg_write(tp, 0xad32, data);
-> > +		data = ocp_reg_read(tp, 0xac08);
-> > +		data &= ~(BIT(12) | BIT(8));
-> > +		ocp_reg_write(tp, 0xac08, data);
-> > +		data = ocp_reg_read(tp, 0xac8a);
-> > +		data |= BIT(12) | BIT(13) | BIT(14);
-> > +		data &= ~BIT(15);
-> > +		ocp_reg_write(tp, 0xac8a, data);
-> > +		data = ocp_reg_read(tp, 0xad18);
-> > +		data |= BIT(10);
-> > +		ocp_reg_write(tp, 0xad18, data);
-> > +		data = ocp_reg_read(tp, 0xad1a);
-> > +		data |= 0x3ff;
-> > +		ocp_reg_write(tp, 0xad1a, data);
-> > +		data = ocp_reg_read(tp, 0xad1c);
-> > +		data |= 0x3ff;
-> > +		ocp_reg_write(tp, 0xad1c, data);
-> > +
-> > +		data = sram_read(tp, 0x80ea);
-> > +		data &= ~0xff00;
-> > +		data |= 0xc400;
-> > +		sram_write(tp, 0x80ea, data);
-> > +		data = sram_read(tp, 0x80eb);
-> > +		data &= ~0x0700;
-> > +		data |= 0x0300;
-> > +		sram_write(tp, 0x80eb, data);
-> > +		data = sram_read(tp, 0x80f8);
-> > +		data &= ~0xff00;
-> > +		data |= 0x1c00;
-> > +		sram_write(tp, 0x80f8, data);
-> > +		data = sram_read(tp, 0x80f1);
-> > +		data &= ~0xff00;
-> > +		data |= 0x3000;
-> > +		sram_write(tp, 0x80f1, data);
-
-These are the parameters of PHY.
-Some are used for speed down about power saving.
-And some are used for performance.
-
-> > +	switch (tp->version) {
-> > +	case RTL_VER_12:
-> > +		ocp_reg_write(tp, 0xbf86, 0x9000);
-> > +		data = ocp_reg_read(tp, 0xc402);
-> > +		data |= BIT(10);
-> > +		ocp_reg_write(tp, 0xc402, data);
-> > +		data &= ~BIT(10);
-> > +		ocp_reg_write(tp, 0xc402, data);
-> > +		ocp_reg_write(tp, 0xbd86, 0x1010);
-> > +		ocp_reg_write(tp, 0xbd88, 0x1010);
-> > +		data = ocp_reg_read(tp, 0xbd4e);
-> > +		data &= ~(BIT(10) | BIT(11));
-> > +		data |= BIT(11);
-> > +		ocp_reg_write(tp, 0xbd4e, data);
-> > +		data = ocp_reg_read(tp, 0xbf46);
-> > +		data &= ~0xf00;
-> > +		data |= 0x700;
-> > +		ocp_reg_write(tp, 0xbf46, data);
-
-These are used to adjust the clock of GPHY.
-It influences the linking.
-
-> > +	data = r8153_phy_status(tp, 0);
-> > +	switch (data) {
-> > +	case PHY_STAT_EXT_INIT:
-> > +		rtl8152_apply_firmware(tp, true);
-> > +
-> > +		data = ocp_reg_read(tp, 0xa466);
-> > +		data &= ~BIT(0);
-> > +		ocp_reg_write(tp, 0xa466, data);
-
-These let the PHY exit PHY_STAT_EXT_INIT state.
-
-> What are all these magic constants? :(
-
-I think it is difficult for me to make all magic values meaningful.
-The PHY setting is very complex. Only PHY engineers know
-what are the settings mean.
-
-> > @@ -6878,7 +8942,11 @@ static int rtl8152_probe(struct usb_interface
-> *intf,
-> >  	set_ethernet_addr(tp);
+On Tue, Apr 20, 2021 at 5:10 AM Matthew Wilcox <willy@infradead.org> wrote:
+>
+> On Tue, Apr 20, 2021 at 02:48:17AM +0000, Vineet Gupta wrote:
+> > > 32-bit architectures which expect 8-byte alignment for 8-byte integers
+> > > and need 64-bit DMA addresses (arc, arm, mips, ppc) had their struct
+> > > page inadvertently expanded in 2019.
 > >
-> >  	usb_set_intfdata(intf, tp);
-> > -	netif_napi_add(netdev, &tp->napi, r8152_poll, RTL8152_NAPI_WEIGHT);
-> > +
-> > +	if (tp->support_2500full)
-> > +		netif_napi_add(netdev, &tp->napi, r8152_poll, 256);
-> 
-> why 256? We have 100G+ drivers all using 64 what's special here?
-> 
-> > +	else
-> > +		netif_napi_add(netdev, &tp->napi, r8152_poll, 64);
+> > FWIW, ARC doesn't require 8 byte alignment for 8 byte integers. This is
+> > only needed for 8-byte atomics due to the requirements of LLOCKD/SCOND
+> > instructions.
+>
+> Ah, like x86?  OK, great, I'll drop your arch from the list of
+> affected.  Thanks!
 
-We test 2.5G Ethernet on some embedded platform.
-And we find 64 is not large enough, and the performance
-couldn't reach 2.5 G bits/s.
+I mistakenly assumed that i386 and m68k were the only supported
+architectures with 32-bit alignment on u64. I checked it now and found
 
-Best Regards,
-Hayes
+$ for i in /home/arnd/cross/x86_64/gcc-10.1.0-nolibc/*/bin/*-gcc ; do
+echo `echo 'int a = __alignof__(long long);' | $i -xc - -Wall -S -o- |
+grep -A1 a: | tail -n 1 | cut -f 3 -d\   `
+${i#/home/arnd/cross/x86_64/gcc-10.1.0-nolibc/*/bin/} ; done
+8 aarch64-linux-gcc
+8 alpha-linux-gcc
+4 arc-linux-gcc
+8 arm-linux-gnueabi-gcc
+8 c6x-elf-gcc
+4 csky-linux-gcc
+4 h8300-linux-gcc
+8 hppa-linux-gcc
+8 hppa64-linux-gcc
+8 i386-linux-gcc
+8 ia64-linux-gcc
+2 m68k-linux-gcc
+4 microblaze-linux-gcc
+8 mips-linux-gcc
+8 mips64-linux-gcc
+8 nds32le-linux-gcc
+4 nios2-linux-gcc
+4 or1k-linux-gcc
+8 powerpc-linux-gcc
+8 powerpc64-linux-gcc
+8 riscv32-linux-gcc
+8 riscv64-linux-gcc
+8 s390-linux-gcc
+4 sh2-linux-gcc
+4 sh4-linux-gcc
+8 sparc-linux-gcc
+8 sparc64-linux-gcc
+8 x86_64-linux-gcc
+8 xtensa-linux-gcc
 
+which means that half the 32-bit architectures do this. This may
+cause more problems when arc and/or microblaze want to support
+64-bit kernels and compat mode in the future on their latest hardware,
+as that means duplicating the x86 specific hacks we have for compat.
+
+What is alignof(u64) on 64-bit arc?
+
+      Arnd
