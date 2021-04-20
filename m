@@ -2,38 +2,38 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AF2DC365C6F
-	for <lists+netdev@lfdr.de>; Tue, 20 Apr 2021 17:44:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9CF65365C72
+	for <lists+netdev@lfdr.de>; Tue, 20 Apr 2021 17:44:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233095AbhDTPo5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 20 Apr 2021 11:44:57 -0400
-Received: from smtp-fw-6001.amazon.com ([52.95.48.154]:60957 "EHLO
-        smtp-fw-6001.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232910AbhDTPot (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 20 Apr 2021 11:44:49 -0400
+        id S233118AbhDTPpH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 20 Apr 2021 11:45:07 -0400
+Received: from smtp-fw-9103.amazon.com ([207.171.188.200]:53917 "EHLO
+        smtp-fw-9103.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233105AbhDTPpF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 20 Apr 2021 11:45:05 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
   d=amazon.co.jp; i=@amazon.co.jp; q=dns/txt;
-  s=amazon201209; t=1618933459; x=1650469459;
+  s=amazon201209; t=1618933474; x=1650469474;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=Ace2/yQjy3YabkwxzWoQwnwDO/gFnCB+2fW1JZYyE8g=;
-  b=cGnLnR4L8dqWvagb9N22orgYCCSV37L6bMRPMM6u935cxtVVC3HWTV7P
-   XpoNOAcJC1o0o6YeZdg4x1NwWN8qIsvsiW7WPpifNzEDksXnzk1bnD0ye
-   p8q1vAUyq1Ex7lF366reHpZ3R8qak80mQhRRky5/JH4w586WB99t69JcZ
-   M=;
+  bh=V8UGnFpf8bTuF7lpZY4qc80ssPB3dSUpmiMIja9fnOs=;
+  b=b5HSDK1Vzki1NebxqPcsn18iydN9eYOj6DEufBIpPiUJ3so/OQqiTAW2
+   sUthupuLKC9PuW+Az1kM6RvduxeR8xG8/Lia4wbKI+gTTArCDo8tfflpk
+   RMV7LzsydqwNx+Q57pWNb87GfCRmZI2jO0572hwTYxMCSeHOb1z73RPxI
+   s=;
 X-IronPort-AV: E=Sophos;i="5.82,237,1613433600"; 
-   d="scan'208";a="108636730"
-Received: from iad12-co-svc-p1-lb1-vlan2.amazon.com (HELO email-inbound-relay-2b-baacba05.us-west-2.amazon.com) ([10.43.8.2])
-  by smtp-border-fw-out-6001.iad6.amazon.com with ESMTP; 20 Apr 2021 15:44:17 +0000
-Received: from EX13MTAUWB001.ant.amazon.com (pdx1-ws-svc-p6-lb9-vlan2.pdx.amazon.com [10.236.137.194])
-        by email-inbound-relay-2b-baacba05.us-west-2.amazon.com (Postfix) with ESMTPS id 78D53A1C2A;
-        Tue, 20 Apr 2021 15:44:13 +0000 (UTC)
+   d="scan'208";a="927523252"
+Received: from pdx4-co-svc-p1-lb2-vlan2.amazon.com (HELO email-inbound-relay-2a-d0be17ee.us-west-2.amazon.com) ([10.25.36.210])
+  by smtp-border-fw-out-9103.sea19.amazon.com with ESMTP; 20 Apr 2021 15:44:34 +0000
+Received: from EX13MTAUWB001.ant.amazon.com (pdx1-ws-svc-p6-lb9-vlan3.pdx.amazon.com [10.236.137.198])
+        by email-inbound-relay-2a-d0be17ee.us-west-2.amazon.com (Postfix) with ESMTPS id BD747A04DA;
+        Tue, 20 Apr 2021 15:44:33 +0000 (UTC)
 Received: from EX13D04ANC001.ant.amazon.com (10.43.157.89) by
  EX13MTAUWB001.ant.amazon.com (10.43.161.207) with Microsoft SMTP Server (TLS)
- id 15.0.1497.2; Tue, 20 Apr 2021 15:44:12 +0000
+ id 15.0.1497.2; Tue, 20 Apr 2021 15:44:33 +0000
 Received: from 88665a182662.ant.amazon.com (10.43.161.41) by
  EX13D04ANC001.ant.amazon.com (10.43.157.89) with Microsoft SMTP Server (TLS)
- id 15.0.1497.2; Tue, 20 Apr 2021 15:44:07 +0000
+ id 15.0.1497.2; Tue, 20 Apr 2021 15:44:22 +0000
 From:   Kuniyuki Iwashima <kuniyu@amazon.co.jp>
 To:     "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
@@ -46,9 +46,9 @@ CC:     Benjamin Herrenschmidt <benh@amazon.com>,
         Kuniyuki Iwashima <kuniyu@amazon.co.jp>,
         Kuniyuki Iwashima <kuni1840@gmail.com>, <bpf@vger.kernel.org>,
         <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-Subject: [PATCH v3 bpf-next 05/11] tcp: Migrate TCP_ESTABLISHED/TCP_SYN_RECV sockets in accept queues.
-Date:   Wed, 21 Apr 2021 00:41:34 +0900
-Message-ID: <20210420154140.80034-6-kuniyu@amazon.co.jp>
+Subject: [PATCH v3 bpf-next 06/11] tcp: Migrate TCP_NEW_SYN_RECV requests at retransmitting SYN+ACKs.
+Date:   Wed, 21 Apr 2021 00:41:35 +0900
+Message-ID: <20210420154140.80034-7-kuniyu@amazon.co.jp>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20210420154140.80034-1-kuniyu@amazon.co.jp>
 References: <20210420154140.80034-1-kuniyu@amazon.co.jp>
@@ -62,145 +62,153 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When we call close() or shutdown() for listening sockets, each child socket
-in the accept queue are freed at inet_csk_listen_stop(). If we can get a
-new listener by reuseport_migrate_sock() and clone the request by
-reqsk_clone(), we try to add it into the new listener's accept queue by
-inet_csk_reqsk_queue_add(). If it fails, we have to call __reqsk_free() to
-call sock_put() for its listener and free the cloned request.
+As with the preceding patch, this patch changes reqsk_timer_handler() to
+call reuseport_migrate_sock() and reqsk_clone() to migrate in-flight
+requests at retransmitting SYN+ACKs. If we can select a new listener and
+clone the request, we resume setting the SYN+ACK timer for the new req. If
+we can set the timer, we call inet_ehash_insert() to unhash the old req and
+put the new req into ehash.
 
-After putting the full socket into ehash, tcp_v[46]_syn_recv_sock() sets
-NULL to ireq_opt/pktopts in struct inet_request_sock, but ipv6_opt can be
-non-NULL. So, we have to set NULL to ipv6_opt of the old request to avoid
-double free.
+The noteworthy point here is that by unhashing the old req, another CPU
+processing it may lose the "own_req" race in tcp_v[46]_syn_recv_sock() and
+drop the final ACK packet. However, the new timer will recover this
+situation.
 
-Note that we do not update req->rsk_listener and instead clone the req to
-migrate because another path may reference the original request. If we
-protected it by RCU, we would need to add rcu_read_lock() in many places.
-
-Link: https://lore.kernel.org/netdev/20201209030903.hhow5r53l6fmozjn@kafai-mbp.dhcp.thefacebook.com/
-Suggested-by: Martin KaFai Lau <kafai@fb.com>
 Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.co.jp>
 ---
- include/net/request_sock.h      |  2 ++
- net/core/request_sock.c         | 37 +++++++++++++++++++++++++++++++++
- net/ipv4/inet_connection_sock.c | 31 ++++++++++++++++++++++++++-
- 3 files changed, 69 insertions(+), 1 deletion(-)
+ net/core/request_sock.c         |  1 +
+ net/ipv4/inet_connection_sock.c | 76 +++++++++++++++++++++++++++++----
+ 2 files changed, 68 insertions(+), 9 deletions(-)
 
-diff --git a/include/net/request_sock.h b/include/net/request_sock.h
-index 29e41ff3ec93..c6d6cfd3c93b 100644
---- a/include/net/request_sock.h
-+++ b/include/net/request_sock.h
-@@ -190,6 +190,8 @@ void reqsk_queue_alloc(struct request_sock_queue *queue);
- void reqsk_fastopen_remove(struct sock *sk, struct request_sock *req,
- 			   bool reset);
- 
-+struct request_sock *reqsk_clone(struct request_sock *req, struct sock *sk);
-+
- static inline bool reqsk_queue_empty(const struct request_sock_queue *queue)
- {
- 	return READ_ONCE(queue->rskq_accept_head) == NULL;
 diff --git a/net/core/request_sock.c b/net/core/request_sock.c
-index f35c2e998406..82cf9fbe2668 100644
+index 82cf9fbe2668..08c37ecd923b 100644
 --- a/net/core/request_sock.c
 +++ b/net/core/request_sock.c
-@@ -130,3 +130,40 @@ void reqsk_fastopen_remove(struct sock *sk, struct request_sock *req,
- out:
- 	spin_unlock_bh(&fastopenq->lock);
- }
-+
-+struct request_sock *reqsk_clone(struct request_sock *req, struct sock *sk)
-+{
-+	struct sock *req_sk, *nreq_sk;
-+	struct request_sock *nreq;
-+
-+	nreq = kmem_cache_alloc(req->rsk_ops->slab, GFP_ATOMIC | __GFP_NOWARN);
-+	if (!nreq) {
-+		/* paired with refcount_inc_not_zero() in reuseport_migrate_sock() */
-+		sock_put(sk);
-+		return NULL;
-+	}
-+
-+	req_sk = req_to_sk(req);
-+	nreq_sk = req_to_sk(nreq);
-+
-+	memcpy(nreq_sk, req_sk,
-+	       offsetof(struct sock, sk_dontcopy_begin));
-+	memcpy(&nreq_sk->sk_dontcopy_end, &req_sk->sk_dontcopy_end,
-+	       req->rsk_ops->obj_size - offsetof(struct sock, sk_dontcopy_end));
-+
-+	nreq_sk->sk_tx_queue_mapping = req_sk->sk_tx_queue_mapping;
-+#ifdef CONFIG_XPS
-+	nreq_sk->sk_rx_queue_mapping = req_sk->sk_rx_queue_mapping;
-+#endif
-+	nreq_sk->sk_incoming_cpu = req_sk->sk_incoming_cpu;
-+
-+	nreq->rsk_listener = sk;
-+
-+	/* We need not acquire fastopenq->lock
-+	 * because the child socket is locked in inet_csk_listen_stop().
-+	 */
-+	if (tcp_rsk(nreq)->tfo_listener)
-+		rcu_assign_pointer(tcp_sk(nreq->sk)->fastopen_rsk, nreq);
-+
-+	return nreq;
-+}
+@@ -151,6 +151,7 @@ struct request_sock *reqsk_clone(struct request_sock *req, struct sock *sk)
+ 	memcpy(&nreq_sk->sk_dontcopy_end, &req_sk->sk_dontcopy_end,
+ 	       req->rsk_ops->obj_size - offsetof(struct sock, sk_dontcopy_end));
+ 
++	sk_node_init(&nreq_sk->sk_node);
+ 	nreq_sk->sk_tx_queue_mapping = req_sk->sk_tx_queue_mapping;
+ #ifdef CONFIG_XPS
+ 	nreq_sk->sk_rx_queue_mapping = req_sk->sk_rx_queue_mapping;
 diff --git a/net/ipv4/inet_connection_sock.c b/net/ipv4/inet_connection_sock.c
-index fa806e9167ec..851992405826 100644
+index 851992405826..dc984d1f352e 100644
 --- a/net/ipv4/inet_connection_sock.c
 +++ b/net/ipv4/inet_connection_sock.c
-@@ -695,6 +695,13 @@ int inet_rtx_syn_ack(const struct sock *parent, struct request_sock *req)
+@@ -695,10 +695,20 @@ int inet_rtx_syn_ack(const struct sock *parent, struct request_sock *req)
  }
  EXPORT_SYMBOL(inet_rtx_syn_ack);
  
-+static void reqsk_migrate_reset(struct request_sock *req)
++static void reqsk_queue_migrated(struct request_sock_queue *queue,
++				 const struct request_sock *req)
 +{
-+#if IS_ENABLED(CONFIG_IPV6)
-+	inet_rsk(req)->ipv6_opt = NULL;
-+#endif
++	if (req->num_timeout == 0)
++		atomic_inc(&queue->young);
++	atomic_inc(&queue->qlen);
 +}
 +
- /* return true if req was found in the ehash table */
- static bool reqsk_queue_unlink(struct request_sock *req)
+ static void reqsk_migrate_reset(struct request_sock *req)
  {
-@@ -1036,14 +1043,36 @@ void inet_csk_listen_stop(struct sock *sk)
- 	 * of the variants now.			--ANK
++	req->saved_syn = NULL;
++	inet_rsk(req)->ireq_opt = NULL;
+ #if IS_ENABLED(CONFIG_IPV6)
+-	inet_rsk(req)->ipv6_opt = NULL;
++	inet_rsk(req)->pktopts = NULL;
+ #endif
+ }
+ 
+@@ -741,16 +751,37 @@ EXPORT_SYMBOL(inet_csk_reqsk_queue_drop_and_put);
+ 
+ static void reqsk_timer_handler(struct timer_list *t)
+ {
+-	struct request_sock *req = from_timer(req, t, rsk_timer);
+-	struct sock *sk_listener = req->rsk_listener;
+-	struct net *net = sock_net(sk_listener);
+-	struct inet_connection_sock *icsk = inet_csk(sk_listener);
+-	struct request_sock_queue *queue = &icsk->icsk_accept_queue;
++	struct request_sock *req = from_timer(req, t, rsk_timer), *nreq = NULL, *oreq = req;
++	struct sock *sk_listener = req->rsk_listener, *nsk = NULL;
++	struct inet_connection_sock *icsk;
++	struct request_sock_queue *queue;
++	struct net *net;
+ 	int max_syn_ack_retries, qlen, expire = 0, resend = 0;
+ 
+-	if (inet_sk_state_load(sk_listener) != TCP_LISTEN)
+-		goto drop;
++	if (inet_sk_state_load(sk_listener) != TCP_LISTEN) {
++		nsk = reuseport_migrate_sock(sk_listener, req_to_sk(req), NULL);
++		if (!nsk)
++			goto drop;
++
++		nreq = reqsk_clone(req, nsk);
++		if (!nreq)
++			goto drop;
++
++		/* The new timer for the cloned req can decrease the 2
++		 * by calling inet_csk_reqsk_queue_drop_and_put(), so
++		 * hold another count to prevent use-after-free and
++		 * call reqsk_put() just before return.
++		 */
++		refcount_set(&nreq->rsk_refcnt, 2 + 1);
++		timer_setup(&nreq->rsk_timer, reqsk_timer_handler, TIMER_PINNED);
++		reqsk_queue_migrated(&inet_csk(nsk)->icsk_accept_queue, req);
++
++		req = nreq;
++		sk_listener = nsk;
++	}
+ 
++	icsk = inet_csk(sk_listener);
++	net = sock_net(sk_listener);
+ 	max_syn_ack_retries = icsk->icsk_syn_retries ? : net->ipv4.sysctl_tcp_synack_retries;
+ 	/* Normally all the openreqs are young and become mature
+ 	 * (i.e. converted to established socket) for first timeout.
+@@ -769,6 +800,7 @@ static void reqsk_timer_handler(struct timer_list *t)
+ 	 * embrions; and abort old ones without pity, if old
+ 	 * ones are about to clog our table.
  	 */
- 	while ((req = reqsk_queue_remove(queue, sk)) != NULL) {
--		struct sock *child = req->sk;
-+		struct sock *child = req->sk, *nsk;
-+		struct request_sock *nreq;
- 
- 		local_bh_disable();
- 		bh_lock_sock(child);
- 		WARN_ON(sock_owned_by_user(child));
- 		sock_hold(child);
- 
-+		nsk = reuseport_migrate_sock(sk, child, NULL);
-+		if (nsk) {
-+			nreq = reqsk_clone(req, nsk);
-+			if (nreq) {
-+				refcount_set(&nreq->rsk_refcnt, 1);
++	queue = &icsk->icsk_accept_queue;
+ 	qlen = reqsk_queue_len(queue);
+ 	if ((qlen << 1) > max(8U, READ_ONCE(sk_listener->sk_max_ack_backlog))) {
+ 		int young = reqsk_queue_len_young(queue) << 1;
+@@ -793,10 +825,36 @@ static void reqsk_timer_handler(struct timer_list *t)
+ 			atomic_dec(&queue->young);
+ 		timeo = min(TCP_TIMEOUT_INIT << req->num_timeout, TCP_RTO_MAX);
+ 		mod_timer(&req->rsk_timer, jiffies + timeo);
 +
-+				if (inet_csk_reqsk_queue_add(nsk, nreq, child)) {
-+					reqsk_migrate_reset(req);
-+				} else {
-+					reqsk_migrate_reset(nreq);
-+					__reqsk_free(nreq);
-+				}
++		if (!nreq)
++			return;
 +
-+				/* inet_csk_reqsk_queue_add() has already
-+				 * called inet_child_forget() on failure case.
-+				 */
-+				goto skip_child_forget;
-+			}
++		if (!inet_ehash_insert(req_to_sk(nreq), req_to_sk(oreq), NULL)) {
++			/* delete timer */
++			inet_csk_reqsk_queue_drop(sk_listener, nreq);
++			goto drop;
 +		}
 +
- 		inet_child_forget(sk, req, child);
-+skip_child_forget:
- 		reqsk_put(req);
- 		bh_unlock_sock(child);
- 		local_bh_enable();
++		reqsk_migrate_reset(oreq);
++		reqsk_queue_removed(&inet_csk(oreq->rsk_listener)->icsk_accept_queue, oreq);
++		reqsk_put(oreq);
++
++		reqsk_put(nreq);
+ 		return;
+ 	}
++
+ drop:
+-	inet_csk_reqsk_queue_drop_and_put(sk_listener, req);
++	/* Even if we can clone the req, we may need not retransmit any more
++	 * SYN+ACKs (nreq->num_timeout > max_syn_ack_retries, etc), or another
++	 * CPU may win the "own_req" race so that inet_ehash_insert() fails.
++	 */
++	if (nreq) {
++		reqsk_migrate_reset(nreq);
++		reqsk_queue_removed(queue, nreq);
++		__reqsk_free(nreq);
++	}
++
++	inet_csk_reqsk_queue_drop_and_put(oreq->rsk_listener, oreq);
+ }
+ 
+ static void reqsk_queue_hash_req(struct request_sock *req,
 -- 
 2.30.2
 
