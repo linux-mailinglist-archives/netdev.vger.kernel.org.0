@@ -2,240 +2,176 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 26D6136539E
-	for <lists+netdev@lfdr.de>; Tue, 20 Apr 2021 09:56:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E3FFE365396
+	for <lists+netdev@lfdr.de>; Tue, 20 Apr 2021 09:54:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229875AbhDTHzf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 20 Apr 2021 03:55:35 -0400
-Received: from mail.kernel.org ([198.145.29.99]:40680 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230188AbhDTHz3 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 20 Apr 2021 03:55:29 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 5992361008;
-        Tue, 20 Apr 2021 07:54:56 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1618905297;
-        bh=rSCmV+qhLHvP35CWKC8PL/2R16UdtRxJjyiMInS+7EY=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=budcQ/jocN92Uvy9E7W0DrVHwDoaSLGyCeX9bvN+LiXoUrqy3mbi0pHQTbeVeyLme
-         8jmC1UVx5qQL0zxQsmyraXuA/uyce8g1Fm0QpLmUZJfz9ZSJSOhu9MMztK3Wy8iXIA
-         jrOlPKfJUxppFIDSSD0AjEMqfesroMsXRBEyvedMemvxvIQu1diB9qbeOlkdHaEoF3
-         YhDy73FUqgT4OeX1/ufjKTLS0c894tb5RJXqJ4RboNHtry8flMUZGjgLTFIHpNbGny
-         cuhy9nTuTMFCktsF7nDQKd/7vpWUhRADiEmqGKL4/i/sWXe+96ZW4juw6Ng9ceTApb
-         JMb+DFptVcoQA==
-From:   =?UTF-8?q?Marek=20Beh=C3=BAn?= <kabel@kernel.org>
-To:     netdev@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        Russell King <rmk+kernel@armlinux.org.uk>, kuba@kernel.org,
-        =?UTF-8?q?Marek=20Beh=C3=BAn?= <kabel@kernel.org>
-Subject: [PATCH net-next v2 5/5] net: phy: marvell: add support for Amethyst internal PHY
-Date:   Tue, 20 Apr 2021 09:54:03 +0200
-Message-Id: <20210420075403.5845-6-kabel@kernel.org>
-X-Mailer: git-send-email 2.26.3
-In-Reply-To: <20210420075403.5845-1-kabel@kernel.org>
-References: <20210420075403.5845-1-kabel@kernel.org>
+        id S229839AbhDTHyt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 20 Apr 2021 03:54:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48530 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229659AbhDTHym (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 20 Apr 2021 03:54:42 -0400
+Received: from mail-pj1-x1034.google.com (mail-pj1-x1034.google.com [IPv6:2607:f8b0:4864:20::1034])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA3A4C06174A;
+        Tue, 20 Apr 2021 00:54:09 -0700 (PDT)
+Received: by mail-pj1-x1034.google.com with SMTP id s14so14550286pjl.5;
+        Tue, 20 Apr 2021 00:54:09 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=sender:from:to:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Ke/YR/P2u+Tpx4KPA57i+VGmo9ckKXtimwr72CBdflY=;
+        b=TBon4ejEdfyPf45ZQEv44fhDBiKbIyGGygqrFBMsj/lgNVefNCOh+s0hKnj36+Mr0S
+         mq9w7FcnCcHT1xMjR2Fq6SBnXy9kbMBhKvoqBElLxM36FeQm3vZzQQv/QaVO75h3AsRV
+         wgtUabWX8glAW9qLXLKzMH8W5Ib3HM4G2kjVDmg48lRWVL6s2tFuhTscnlxxThYw/+mK
+         5Ct1BMqAYPk0uJk4ob6bGQtSG3z+aSz8/tWfZyDtkOTAz60qCZy5oiyYApIQzLeYuYJR
+         UrArmW4M+i2vbSD3oG1PtVPlov2EXGoJXwu6URIQu01OowbSEplwUF8W10tiYDCwGlEC
+         IEZA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:sender:from:to:subject:date:message-id
+         :mime-version:content-transfer-encoding;
+        bh=Ke/YR/P2u+Tpx4KPA57i+VGmo9ckKXtimwr72CBdflY=;
+        b=bCHLABcM554I67ALuH/JhGl5/GkmaOhO9WO8x4n0w1OVRh08dByTkBfOWaKJM7vVY7
+         9zFVgLw7D+Gf3tsjMPvvznUck6cU0E1XiEpDGSArIXnY9UuWIW2ugREM6vUxAIOiYhZ+
+         +vtYnY8Yoyw3RdYgklrEzuuq1E+T0rDszAwjiIo9MTWB/2O0o2KkFJwZzyVTvQdTMJvz
+         yuxR8BDG8U1y7wB7SfxHyIyZFVlqbH4bWLDsViLCQo7U6mnDhOPqfLBhE+sYDOTMeYjj
+         lA78hbUlQa5jNHfHVdWL+L48YBeH9VQ381DblbPSkWmknqbVuvyWy9M6W8FPWV/W3HVt
+         M9jg==
+X-Gm-Message-State: AOAM530RpfjjIQaKgdaM9SsLqjaMlyTmQWRPMkA1Nm9hH1UNjcX6aTWR
+        IunnpxcLON91mvcyHGd/MCo=
+X-Google-Smtp-Source: ABdhPJwd2xuyhLHRhZypxTgCkTxEfR4+k+OuBG25+iyBAE51EkqrPoKEdm1EfKWi5yrfSH039szw0Q==
+X-Received: by 2002:a17:90a:c8:: with SMTP id v8mr3617344pjd.18.1618905249046;
+        Tue, 20 Apr 2021 00:54:09 -0700 (PDT)
+Received: from localhost (61-220-137-37.HINET-IP.hinet.net. [61.220.137.37])
+        by smtp.gmail.com with ESMTPSA id pc17sm528432pjb.19.2021.04.20.00.54.07
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 20 Apr 2021 00:54:07 -0700 (PDT)
+Sender: AceLan Kao <acelan@gmail.com>
+From:   AceLan Kao <acelan.kao@canonical.com>
+To:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Andrii Nakryiko <andriin@fb.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Wei Wang <weiwan@google.com>,
+        Cong Wang <cong.wang@bytedance.com>,
+        Taehee Yoo <ap420073@gmail.com>,
+        =?UTF-8?q?Bj=C3=B6rn=20T=C3=B6pel?= <bjorn@kernel.org>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] net: called rtnl_unlock() before runpm resumes devices
+Date:   Tue, 20 Apr 2021 15:54:05 +0800
+Message-Id: <20210420075406.64105-1-acelan.kao@canonical.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add support for Amethyst internal PHY.
+From: "Chia-Lin Kao (AceLan)" <acelan.kao@canonical.com>
 
-The only difference from Peridot is HWMON.
+The rtnl_lock() has been called in rtnetlink_rcv_msg(), and then in
+__dev_open() it calls pm_runtime_resume() to resume devices, and in
+some devices' resume function(igb_resum,igc_resume) they calls rtnl_lock()
+again. That leads to a recursive lock.
 
-Signed-off-by: Marek Behún <kabel@kernel.org>
+It should leave the devices' resume function to decide if they need to
+call rtnl_lock()/rtnl_unlock(), so call rtnl_unlock() before calling
+pm_runtime_resume() and then call rtnl_lock() after it in __dev_open().
+
+[  967.723577] INFO: task ip:6024 blocked for more than 120 seconds.
+[  967.723588]       Not tainted 5.12.0-rc3+ #1
+[  967.723592] "echo 0 > /proc/sys/kernel/hung_task_timeout_secs" disables this message.
+[  967.723594] task:ip              state:D stack:    0 pid: 6024 ppid:  5957 flags:0x00004000
+[  967.723603] Call Trace:
+[  967.723610]  __schedule+0x2de/0x890
+[  967.723623]  schedule+0x4f/0xc0
+[  967.723629]  schedule_preempt_disabled+0xe/0x10
+[  967.723636]  __mutex_lock.isra.0+0x190/0x510
+[  967.723644]  __mutex_lock_slowpath+0x13/0x20
+[  967.723651]  mutex_lock+0x32/0x40
+[  967.723657]  rtnl_lock+0x15/0x20
+[  967.723665]  igb_resume+0xee/0x1d0 [igb]
+[  967.723687]  ? pci_pm_default_resume+0x30/0x30
+[  967.723696]  igb_runtime_resume+0xe/0x10 [igb]
+[  967.723713]  pci_pm_runtime_resume+0x74/0x90
+[  967.723718]  __rpm_callback+0x53/0x1c0
+[  967.723725]  rpm_callback+0x57/0x80
+[  967.723730]  ? pci_pm_default_resume+0x30/0x30
+[  967.723735]  rpm_resume+0x547/0x760
+[  967.723740]  __pm_runtime_resume+0x52/0x80
+[  967.723745]  __dev_open+0x56/0x160
+[  967.723753]  ? _raw_spin_unlock_bh+0x1e/0x20
+[  967.723758]  __dev_change_flags+0x188/0x1e0
+[  967.723766]  dev_change_flags+0x26/0x60
+[  967.723773]  do_setlink+0x723/0x10b0
+[  967.723782]  ? __nla_validate_parse+0x5b/0xb80
+[  967.723792]  __rtnl_newlink+0x594/0xa00
+[  967.723800]  ? nla_put_ifalias+0x38/0xa0
+[  967.723807]  ? __nla_reserve+0x41/0x50
+[  967.723813]  ? __nla_reserve+0x41/0x50
+[  967.723818]  ? __kmalloc_node_track_caller+0x49b/0x4d0
+[  967.723824]  ? pskb_expand_head+0x75/0x310
+[  967.723830]  ? nla_reserve+0x28/0x30
+[  967.723835]  ? skb_free_head+0x25/0x30
+[  967.723843]  ? security_sock_rcv_skb+0x2f/0x50
+[  967.723850]  ? netlink_deliver_tap+0x3d/0x210
+[  967.723859]  ? sk_filter_trim_cap+0xc1/0x230
+[  967.723863]  ? skb_queue_tail+0x43/0x50
+[  967.723870]  ? sock_def_readable+0x4b/0x80
+[  967.723876]  ? __netlink_sendskb+0x42/0x50
+[  967.723888]  ? security_capable+0x3d/0x60
+[  967.723894]  ? __cond_resched+0x19/0x30
+[  967.723900]  ? kmem_cache_alloc_trace+0x390/0x440
+[  967.723906]  rtnl_newlink+0x49/0x70
+[  967.723913]  rtnetlink_rcv_msg+0x13c/0x370
+[  967.723920]  ? _copy_to_iter+0xa0/0x460
+[  967.723927]  ? rtnl_calcit.isra.0+0x130/0x130
+[  967.723934]  netlink_rcv_skb+0x55/0x100
+[  967.723939]  rtnetlink_rcv+0x15/0x20
+[  967.723944]  netlink_unicast+0x1a8/0x250
+[  967.723949]  netlink_sendmsg+0x233/0x460
+[  967.723954]  sock_sendmsg+0x65/0x70
+[  967.723958]  ____sys_sendmsg+0x218/0x290
+[  967.723961]  ? copy_msghdr_from_user+0x5c/0x90
+[  967.723966]  ? lru_cache_add_inactive_or_unevictable+0x27/0xb0
+[  967.723974]  ___sys_sendmsg+0x81/0xc0
+[  967.723980]  ? __mod_memcg_lruvec_state+0x22/0xe0
+[  967.723987]  ? kmem_cache_free+0x244/0x420
+[  967.723991]  ? dentry_free+0x37/0x70
+[  967.723996]  ? mntput_no_expire+0x4c/0x260
+[  967.724001]  ? __cond_resched+0x19/0x30
+[  967.724007]  ? security_file_free+0x54/0x60
+[  967.724013]  ? call_rcu+0xa4/0x250
+[  967.724021]  __sys_sendmsg+0x62/0xb0
+[  967.724026]  ? exit_to_user_mode_prepare+0x3d/0x1a0
+[  967.724032]  __x64_sys_sendmsg+0x1f/0x30
+[  967.724037]  do_syscall_64+0x38/0x90
+[  967.724044]  entry_SYSCALL_64_after_hwframe+0x44/0xae
+
+Signed-off-by: Chia-Lin Kao (AceLan) <acelan.kao@canonical.com>
 ---
- drivers/net/phy/marvell.c   | 117 +++++++++++++++++++++++++++++++++++-
- include/linux/marvell_phy.h |   1 +
- 2 files changed, 115 insertions(+), 3 deletions(-)
+ net/core/dev.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/phy/marvell.c b/drivers/net/phy/marvell.c
-index e505060d0743..1cce86b280af 100644
---- a/drivers/net/phy/marvell.c
-+++ b/drivers/net/phy/marvell.c
-@@ -118,10 +118,21 @@
- #define MII_88E6390_MISC_TEST_TEMP_SENSOR_ENABLE_ONESHOT	(0x2 << 14)
- #define MII_88E6390_MISC_TEST_TEMP_SENSOR_DISABLE		(0x3 << 14)
- #define MII_88E6390_MISC_TEST_TEMP_SENSOR_MASK			(0x3 << 14)
-+#define MII_88E6393_MISC_TEST_SAMPLES_2048	(0x0 << 11)
-+#define MII_88E6393_MISC_TEST_SAMPLES_4096	(0x1 << 11)
-+#define MII_88E6393_MISC_TEST_SAMPLES_8192	(0x2 << 11)
-+#define MII_88E6393_MISC_TEST_SAMPLES_16384	(0x3 << 11)
-+#define MII_88E6393_MISC_TEST_SAMPLES_MASK	(0x3 << 11)
-+#define MII_88E6393_MISC_TEST_RATE_2_3MS	(0x5 << 8)
-+#define MII_88E6393_MISC_TEST_RATE_6_4MS	(0x6 << 8)
-+#define MII_88E6393_MISC_TEST_RATE_11_9MS	(0x7 << 8)
-+#define MII_88E6393_MISC_TEST_RATE_MASK		(0x7 << 8)
+diff --git a/net/core/dev.c b/net/core/dev.c
+index 1f79b9aa9a3f..427cbc80d1e5 100644
+--- a/net/core/dev.c
++++ b/net/core/dev.c
+@@ -1537,8 +1537,11 @@ static int __dev_open(struct net_device *dev, struct netlink_ext_ack *extack)
  
- #define MII_88E6390_TEMP_SENSOR		0x1c
--#define MII_88E6390_TEMP_SENSOR_MASK	0xff
--#define MII_88E6390_TEMP_SENSOR_SAMPLES 10
-+#define MII_88E6393_TEMP_SENSOR_THRESHOLD_MASK	0xff00
-+#define MII_88E6393_TEMP_SENSOR_THRESHOLD_SHIFT	8
-+#define MII_88E6390_TEMP_SENSOR_MASK		0xff
-+#define MII_88E6390_TEMP_SENSOR_SAMPLES		10
- 
- #define MII_88E1318S_PHY_MSCR1_REG	16
- #define MII_88E1318S_PHY_MSCR1_PAD_ODD	BIT(6)
-@@ -2217,6 +2228,7 @@ static int marvell_vct7_cable_test_get_status(struct phy_device *phydev,
- 
- #ifdef CONFIG_HWMON
- struct marvell_hwmon_ops {
-+	int (*config)(struct phy_device *phydev);
- 	int (*get_temp)(struct phy_device *phydev, long *temp);
- 	int (*get_temp_critical)(struct phy_device *phydev, long *temp);
- 	int (*set_temp_critical)(struct phy_device *phydev, long temp);
-@@ -2391,6 +2403,65 @@ static int m88e6390_get_temp(struct phy_device *phydev, long *temp)
- 	return ret;
- }
- 
-+static int m88e6393_get_temp(struct phy_device *phydev, long *temp)
-+{
-+	int err;
-+
-+	err = m88e1510_get_temp(phydev, temp);
-+
-+	/* 88E1510 measures T + 25, while the PHY on 88E6393X switch
-+	 * T + 75, so we have to subtract another 50
-+	 */
-+	*temp -= 50000;
-+
-+	return err;
-+}
-+
-+static int m88e6393_get_temp_critical(struct phy_device *phydev, long *temp)
-+{
-+	int ret;
-+
-+	*temp = 0;
-+
-+	ret = phy_read_paged(phydev, MII_MARVELL_MISC_TEST_PAGE,
-+			     MII_88E6390_TEMP_SENSOR);
-+	if (ret < 0)
-+		return ret;
-+
-+	*temp = (((ret & MII_88E6393_TEMP_SENSOR_THRESHOLD_MASK) >>
-+		  MII_88E6393_TEMP_SENSOR_THRESHOLD_SHIFT) - 75) * 1000;
-+
-+	return 0;
-+}
-+
-+static int m88e6393_set_temp_critical(struct phy_device *phydev, long temp)
-+{
-+	temp = (temp / 1000) + 75;
-+
-+	return phy_modify_paged(phydev, MII_MARVELL_MISC_TEST_PAGE,
-+				MII_88E6390_TEMP_SENSOR,
-+				MII_88E6393_TEMP_SENSOR_THRESHOLD_MASK,
-+				temp << MII_88E6393_TEMP_SENSOR_THRESHOLD_SHIFT);
-+}
-+
-+static int m88e6393_hwmon_config(struct phy_device *phydev)
-+{
-+	int err;
-+
-+	err = m88e6393_set_temp_critical(phydev, 100000);
-+	if (err)
-+		return err;
-+
-+	return phy_modify_paged(phydev, MII_MARVELL_MISC_TEST_PAGE,
-+				MII_88E6390_MISC_TEST,
-+				MII_88E6390_MISC_TEST_TEMP_SENSOR_MASK |
-+				MII_88E6393_MISC_TEST_SAMPLES_MASK |
-+				MII_88E6393_MISC_TEST_RATE_MASK,
-+				MII_88E6390_MISC_TEST_TEMP_SENSOR_ENABLE |
-+				MII_88E6393_MISC_TEST_SAMPLES_2048 |
-+				MII_88E6393_MISC_TEST_RATE_2_3MS);
-+}
-+
- static int marvell_hwmon_read(struct device *dev, enum hwmon_sensor_types type,
- 			      u32 attr, int channel, long *temp)
- {
-@@ -2535,8 +2606,13 @@ static int marvell_hwmon_probe(struct phy_device *phydev)
- 
- 	priv->hwmon_dev = devm_hwmon_device_register_with_info(
- 		dev, priv->hwmon_name, phydev, &marvell_hwmon_chip_info, NULL);
-+	if (IS_ERR(priv->hwmon_dev))
-+		return PTR_ERR(priv->hwmon_dev);
- 
--	return PTR_ERR_OR_ZERO(priv->hwmon_dev);
-+	if (ops->config)
-+		err = ops->config(phydev);
-+
-+	return err;
- }
- 
- static const struct marvell_hwmon_ops m88e1121_hwmon_ops = {
-@@ -2554,6 +2630,14 @@ static const struct marvell_hwmon_ops m88e6390_hwmon_ops = {
- 	.get_temp = m88e6390_get_temp,
- };
- 
-+static const struct marvell_hwmon_ops m88e6393_hwmon_ops = {
-+	.config = m88e6393_hwmon_config,
-+	.get_temp = m88e6393_get_temp,
-+	.get_temp_critical = m88e6393_get_temp_critical,
-+	.set_temp_critical = m88e6393_set_temp_critical,
-+	.get_temp_alarm = m88e1510_get_temp_alarm,
-+};
-+
- #define DEF_MARVELL_HWMON_OPS(s) (&(s))
- 
- #else
-@@ -2948,6 +3032,32 @@ static struct phy_driver marvell_drivers[] = {
- 		.cable_test_tdr_start = marvell_vct5_cable_test_tdr_start,
- 		.cable_test_get_status = marvell_vct7_cable_test_get_status,
- 	},
-+	{
-+		.phy_id = MARVELL_PHY_ID_88E6393_FAMILY,
-+		.phy_id_mask = MARVELL_PHY_ID_MASK,
-+		.name = "Marvell 88E6393 Family",
-+		.driver_data = DEF_MARVELL_HWMON_OPS(m88e6393_hwmon_ops),
-+		/* PHY_GBIT_FEATURES */
-+		.flags = PHY_POLL_CABLE_TEST,
-+		.probe = marvell_probe,
-+		.config_init = marvell_config_init,
-+		.config_aneg = m88e1510_config_aneg,
-+		.read_status = marvell_read_status,
-+		.config_intr = marvell_config_intr,
-+		.handle_interrupt = marvell_handle_interrupt,
-+		.resume = genphy_resume,
-+		.suspend = genphy_suspend,
-+		.read_page = marvell_read_page,
-+		.write_page = marvell_write_page,
-+		.get_sset_count = marvell_get_sset_count,
-+		.get_strings = marvell_get_strings,
-+		.get_stats = marvell_get_stats,
-+		.get_tunable = m88e1540_get_tunable,
-+		.set_tunable = m88e1540_set_tunable,
-+		.cable_test_start = marvell_vct7_cable_test_start,
-+		.cable_test_tdr_start = marvell_vct5_cable_test_tdr_start,
-+		.cable_test_get_status = marvell_vct7_cable_test_get_status,
-+	},
- 	{
- 		.phy_id = MARVELL_PHY_ID_88E1340S,
- 		.phy_id_mask = MARVELL_PHY_ID_MASK,
-@@ -3014,6 +3124,7 @@ static struct mdio_device_id __maybe_unused marvell_tbl[] = {
- 	{ MARVELL_PHY_ID_88E3016, MARVELL_PHY_ID_MASK },
- 	{ MARVELL_PHY_ID_88E6341_FAMILY, MARVELL_PHY_ID_MASK },
- 	{ MARVELL_PHY_ID_88E6390_FAMILY, MARVELL_PHY_ID_MASK },
-+	{ MARVELL_PHY_ID_88E6393_FAMILY, MARVELL_PHY_ID_MASK },
- 	{ MARVELL_PHY_ID_88E1340S, MARVELL_PHY_ID_MASK },
- 	{ MARVELL_PHY_ID_88E1548P, MARVELL_PHY_ID_MASK },
- 	{ }
-diff --git a/include/linux/marvell_phy.h b/include/linux/marvell_phy.h
-index f61d82c53f30..acee44b9db26 100644
---- a/include/linux/marvell_phy.h
-+++ b/include/linux/marvell_phy.h
-@@ -39,6 +39,7 @@
-  */
- #define MARVELL_PHY_ID_88E6341_FAMILY	0x01410f41
- #define MARVELL_PHY_ID_88E6390_FAMILY	0x01410f90
-+#define MARVELL_PHY_ID_88E6393_FAMILY	0x002b0b9b
- 
- #define MARVELL_PHY_FAMILY_ID(id)	((id) >> 4)
- 
+ 	if (!netif_device_present(dev)) {
+ 		/* may be detached because parent is runtime-suspended */
+-		if (dev->dev.parent)
++		if (dev->dev.parent) {
++			rtnl_unlock();
+ 			pm_runtime_resume(dev->dev.parent);
++			rtnl_lock();
++		}
+ 		if (!netif_device_present(dev))
+ 			return -ENODEV;
+ 	}
 -- 
-2.26.3
+2.25.1
 
