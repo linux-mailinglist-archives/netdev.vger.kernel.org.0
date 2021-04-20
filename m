@@ -2,67 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 02281365841
-	for <lists+netdev@lfdr.de>; Tue, 20 Apr 2021 13:59:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2EDCD3658BE
+	for <lists+netdev@lfdr.de>; Tue, 20 Apr 2021 14:14:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231718AbhDTL7e (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 20 Apr 2021 07:59:34 -0400
-Received: from mailout1.secunet.com ([62.96.220.44]:46688 "EHLO
-        mailout1.secunet.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230118AbhDTL7d (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 20 Apr 2021 07:59:33 -0400
-Received: from cas-essen-01.secunet.de (unknown [10.53.40.201])
-        by mailout1.secunet.com (Postfix) with ESMTP id 4ED44800056;
-        Tue, 20 Apr 2021 13:59:01 +0200 (CEST)
-Received: from mbx-essen-01.secunet.de (10.53.40.197) by
- cas-essen-01.secunet.de (10.53.40.201) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2176.2; Tue, 20 Apr 2021 13:59:01 +0200
-Received: from gauss2.secunet.de (10.182.7.193) by mbx-essen-01.secunet.de
- (10.53.40.197) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2176.2; Tue, 20 Apr
- 2021 13:59:00 +0200
-Received: by gauss2.secunet.de (Postfix, from userid 1000)
-        id 890F531803A8; Tue, 20 Apr 2021 13:59:00 +0200 (CEST)
-Date:   Tue, 20 Apr 2021 13:59:00 +0200
-From:   Steffen Klassert <steffen.klassert@secunet.com>
-To:     Sabrina Dubroca <sd@queasysnail.net>
-CC:     <netdev@vger.kernel.org>, Jianwen Ji <jiji@redhat.com>
-Subject: Re: [PATCH ipsec] xfrm: xfrm_state_mtu should return at least 1280
- for ipv6
-Message-ID: <20210420115900.GG62598@gauss3.secunet.de>
-References: <62a73daeec236ed1346a89042050fe4b2fd06226.1618394317.git.sd@queasysnail.net>
+        id S232066AbhDTMOh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 20 Apr 2021 08:14:37 -0400
+Received: from mail.kernel.org ([198.145.29.99]:44402 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229943AbhDTMOf (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 20 Apr 2021 08:14:35 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 009ED613BF;
+        Tue, 20 Apr 2021 12:13:59 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1618920844;
+        bh=L7f/Gd26ZNsxEmOWfRaBX+6S4MgGX4ZRI+QwZTF83kY=;
+        h=From:To:Cc:Subject:Date:From;
+        b=YAOW8mxenTWUNH8njZ7HYm0J2ny0f+JeEiq6RxZXCKJGjI+h+hCrw6hnHFCVkxfyo
+         ksWQkGwoE9CjlOOgngDgRXzfMnPM6MQMHNExAG2zH/Wk8ZUmcaF4xysD3SR3/brk0A
+         CkzVrwmi28DAUUYu31KOOaU172+NDkc/0TZlkDDn7rfGln25ccfYWiDd0PdFS5xd1f
+         Yvwtsgf063Jf/FjUcD4eazthTSPEPuaCp7XPmB1QTo3rcm5xRL4vhyC7c7U2P2A8rt
+         WudBYSV0fCgJK+qO7HKPokijKRnLAbNeVOinIUHuBwK7+2LfD6K1Ir298XH0X2HNgH
+         Xo4xXeU67j7Jw==
+From:   Mike Rapoport <rppt@kernel.org>
+To:     Jonathan Corbet <corbet@lwn.net>
+Cc:     Alexey Dobriyan <adobriyan@gmail.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        Michal Hocko <mhocko@suse.com>,
+        Mike Rapoport <rppt@kernel.org>,
+        Mike Rapoport <rppt@linux.ibm.com>, linux-doc@vger.kernel.org,
+        linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-mm@kvack.org, netdev@vger.kernel.org
+Subject: [PATCH v2] docs: proc.rst: meminfo: briefly describe gaps in memory accounting
+Date:   Tue, 20 Apr 2021 15:13:54 +0300
+Message-Id: <20210420121354.1160437-1-rppt@kernel.org>
+X-Mailer: git-send-email 2.29.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <62a73daeec236ed1346a89042050fe4b2fd06226.1618394317.git.sd@queasysnail.net>
-X-ClientProxiedBy: cas-essen-02.secunet.de (10.53.40.202) To
- mbx-essen-01.secunet.de (10.53.40.197)
-X-EXCLAIMER-MD-CONFIG: 2c86f778-e09b-4440-8b15-867914633a10
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Apr 16, 2021 at 11:27:59AM +0200, Sabrina Dubroca wrote:
-> Jianwen reported that IPv6 Interoperability tests are failing in an
-> IPsec case where one of the links between the IPsec peers has an MTU
-> of 1280. The peer generates a packet larger than this MTU, the router
-> replies with a "Packet too big" message indicating an MTU of 1280.
-> When the peer tries to send another large packet, xfrm_state_mtu
-> returns 1280 - ipsec_overhead, which causes ip6_setup_cork to fail
-> with EINVAL.
-> 
-> We can fix this by forcing xfrm_state_mtu to return IPV6_MIN_MTU when
-> IPv6 is used. After going through IPsec, the packet will then be
-> fragmented to obey the actual network's PMTU, just before leaving the
-> host.
-> 
-> Currently, TFC padding is capped to PMTU - overhead to avoid
-> fragementation: after padding and encapsulation, we still fit within
-> the PMTU. That behavior is preserved in this patch.
-> 
-> Fixes: 91657eafb64b ("xfrm: take net hdr len into account for esp payload size calculation")
-> Reported-by: Jianwen Ji <jiji@redhat.com>
-> Signed-off-by: Sabrina Dubroca <sd@queasysnail.net>
+From: Mike Rapoport <rppt@linux.ibm.com>
 
-Applied, thanks Sabrina!
+Add a paragraph that explains that it may happen that the counters in
+/proc/meminfo do not add up to the overall memory usage.
+
+Signed-off-by: Mike Rapoport <rppt@linux.ibm.com>
+---
+v2:
+* Add brief changelog
+* Fix typo
+* Update example about network memory usage according to Eric's comment at
+
+https://lore.kernel.org/lkml/CANn89iKprp7WYeZy4RRO5jHykprnSCcVBc7Tk14Ui_MA9OK7Fg@mail.gmail.com
+
+v1: Link: https://lore.kernel.org/lkml/20210420085105.1156640-1-rppt@kernel.org
+
+ Documentation/filesystems/proc.rst | 10 ++++++++--
+ 1 file changed, 8 insertions(+), 2 deletions(-)
+
+diff --git a/Documentation/filesystems/proc.rst b/Documentation/filesystems/proc.rst
+index 48fbfc336ebf..8c77a491c436 100644
+--- a/Documentation/filesystems/proc.rst
++++ b/Documentation/filesystems/proc.rst
+@@ -929,8 +929,14 @@ meminfo
+ ~~~~~~~
+ 
+ Provides information about distribution and utilization of memory.  This
+-varies by architecture and compile options.  The following is from a
+-16GB PIII, which has highmem enabled.  You may not have all of these fields.
++varies by architecture and compile options. Please note that it may happen
++that the memory accounted here does not add up to the overall memory usage
++and the difference for some workloads can be substantial. In many cases there
++are other means to find out additional memory using subsystem specific
++interfaces, for instance /proc/net/sockstat for TCP memory allocations.
++
++The following is from a 16GB PIII, which has highmem enabled.
++You may not have all of these fields.
+ 
+ ::
+ 
+-- 
+2.29.2
+
