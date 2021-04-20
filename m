@@ -2,201 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A91673651A0
-	for <lists+netdev@lfdr.de>; Tue, 20 Apr 2021 06:51:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 019BD3651A3
+	for <lists+netdev@lfdr.de>; Tue, 20 Apr 2021 06:53:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229659AbhDTEwW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 20 Apr 2021 00:52:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37240 "EHLO
+        id S229662AbhDTEyN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 20 Apr 2021 00:54:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37638 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229563AbhDTEwW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 20 Apr 2021 00:52:22 -0400
-Received: from mail-yb1-xb2f.google.com (mail-yb1-xb2f.google.com [IPv6:2607:f8b0:4864:20::b2f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3803CC06174A;
-        Mon, 19 Apr 2021 21:51:51 -0700 (PDT)
-Received: by mail-yb1-xb2f.google.com with SMTP id c195so41480580ybf.9;
-        Mon, 19 Apr 2021 21:51:51 -0700 (PDT)
+        with ESMTP id S229525AbhDTEyM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 20 Apr 2021 00:54:12 -0400
+Received: from mail-pl1-x634.google.com (mail-pl1-x634.google.com [IPv6:2607:f8b0:4864:20::634])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B5A3C06174A;
+        Mon, 19 Apr 2021 21:53:42 -0700 (PDT)
+Received: by mail-pl1-x634.google.com with SMTP id v13so5401529ple.9;
+        Mon, 19 Apr 2021 21:53:42 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=OVm6Q6DWFJgZYgTCjlWXe5mpJJwXK8u9Ggs+d2c5dp8=;
-        b=m8MKa5WLmJZUI2IEoPDo62XVr1psbRIgNp78NNoF+g0IShaen22e8YNPWiYIQgiudm
-         m+ZQdDem8M+02PeyV5aFCog7MtZZ3nNiqqUoeJ2/UapjdG5KMjs7vx4WHJPWN88tXhPc
-         V3cof9h2kGPcsz547d8s11BiyJJIpAY7VUAGcXzd4tTPpueXT1WYguMaR8iE0/Pb7S+F
-         cYxJxMFTIYtO0HHIjqIWu+qCfsWiI69FQLgxnVkJ3e5ZCSzWBdSBdWRgspqtouvn04zh
-         d/vfY6iDcvpyeXgymuxrQnMKNzzAuctE/1/iy+fNwGPTNVSEkOUl5c00WdpjD6njzAUS
-         b68A==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=80f/iB31iHFj3JMe7YWLAFAu3yiai8iBvlOjNXOsjk0=;
+        b=AcdWNKrQ1R36sK8EdObUXzbup/WaCjWhvaBYfEdi3s5Dzm0ShIr+MvxfzTYkAqG8+z
+         waIOeiFME01HE+MLgM9ksupUO+OfVYRQl5dPAcAOX5OmAnz4ZNtEuVz0gsgDBrNPPiP+
+         dzQdazMQBSK05+AH/065mySnewwnx1Z5gWxH2lIvzj/4pq+xFvO+apir0a/tG15LLunQ
+         QsIvwc8Kt+Mnoqnx9K0OH1hzoGsXU7PV6z1s5Z8bpNtxp+dL4Gf9V9olbUFrAdZBGSqz
+         ZHPTqbBM89bMPB0W26IspNGz9YArHz7nJ68W9XmV8WM8IraL6hIlLlNRczPX5NYnqcov
+         yDVA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=OVm6Q6DWFJgZYgTCjlWXe5mpJJwXK8u9Ggs+d2c5dp8=;
-        b=Fmf/Q4eSFCzZa5e87U+6AUPK9BAo+UitZNVrO7isu21BkVwCyZfsJFVM0EvYXZgJrA
-         +8fxco6JgcFkV5JdrnqRng19cQh0wjFNuwKHBpS+5w+tf34g3wsUeEqI083qLI7JKWTy
-         i7HDvbX3YOJZO8fha7HfelT9YCC5xRjid9ao8yNa51LIyABpvXYTsToHdqPyNzPMr/7Q
-         QiW3V9/cexwVRPYDQ0/UMaXt4Q8b1aH4y+taMpQZQrb1FmkuAcXngbgHbP1k0ZyegJtc
-         09R/J2w3Gm66Id0VBoNSkQOUaexIkMam4DKJkKfDQJAldDDVlqz0CA9RrUghemWictlS
-         AbVg==
-X-Gm-Message-State: AOAM530ymSNzhbG3dQGfqkS7d0n97Pilb1FOcOzDeBJIKW7in5THplFv
-        gTWk7L9Dgwzxd2BJane+KDFT1jOABjfCstDfmx/KdMY410c=
-X-Google-Smtp-Source: ABdhPJx5uXzKQusVJtOM01CRE9d4ygyU0A2E0rJTTYBatvyb4H6gee0oSzG31OavRvd2SXPuIPuQIFNP6Sagtt+0I0k=
-X-Received: by 2002:a25:ba06:: with SMTP id t6mr14318255ybg.459.1618894310552;
- Mon, 19 Apr 2021 21:51:50 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=80f/iB31iHFj3JMe7YWLAFAu3yiai8iBvlOjNXOsjk0=;
+        b=nNlTgk03s3Gp7KCUWNUQumTiQDVni2yoUeYAgZ3u8W/+pfcRuHPG6DQercqpgYi/ty
+         e25JRofxBtK65vP+dkz4kr1FAfzn37QnZkdDH7/sH0FvYyglQgSj5C2h8h2wJPNW9PtM
+         0HLXumwyIz20ed6HCe2apqUIBF8vWz9nxh7slExlyDG4SlnY9203w4b3/YbW478PB1Cw
+         uokxPs3ysJhtjPAqTh/2zRZgIzXKY9mtjTH11zArxuK5mgtiDsJkOb4JnF+yNNUjjN5x
+         JgN4Dz+8zxUEq+mS+0JVLC+9ZCFTs3eodpayyHMXbq4ulFnKjJoqyIJmWY+dvskW7u/U
+         pbQg==
+X-Gm-Message-State: AOAM5326AMst7zZzcCywB5prjWuPooJr5jNMXpjR7nznqYgQf24i3m7P
+        2KdmcVhCbwsUFix8gbTZhJA=
+X-Google-Smtp-Source: ABdhPJymGcRMTwiJF8Dxqv9mtzC4tHS1squKA6novLwIEj9wwGw+6+0FVBRwQykVLMlqilwfxDw41Q==
+X-Received: by 2002:a17:90a:b00b:: with SMTP id x11mr2897846pjq.67.1618894421389;
+        Mon, 19 Apr 2021 21:53:41 -0700 (PDT)
+Received: from localhost (121-45-173-48.tpgi.com.au. [121.45.173.48])
+        by smtp.gmail.com with ESMTPSA id o9sm15082251pfh.217.2021.04.19.21.53.39
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 19 Apr 2021 21:53:40 -0700 (PDT)
+Date:   Tue, 20 Apr 2021 14:53:37 +1000
+From:   Balbir Singh <bsingharora@gmail.com>
+To:     Samuel Mendoza-Jonas <samjonas@amazon.com>
+Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>
+Subject: Re: [PATCH] bpf: Fix backport of "bpf: restrict unknown scalars of
+ mixed signed bounds for unprivileged"
+Message-ID: <20210420045337.GF8178@balbir-desktop>
+References: <20210419235641.5442-1-samjonas@amazon.com>
 MIME-Version: 1.0
-References: <20210413121516.1467989-1-jolsa@kernel.org> <CAEf4Bzazst1rBi4=LuP6_FnPXCRYBNFEtDnK3UVBj6Eo6xFNtQ@mail.gmail.com>
- <YHbd2CmeoaiLJj7X@krava> <CAEf4BzYyVj-Tjy9ZZdAU5nOtJ8_auvVobTT6pMqg8zPb9jj-Ow@mail.gmail.com>
- <20210415111002.324b6bfa@gandalf.local.home> <CAEf4BzY=yBZH2Aad1hNcqCt51u0+SmNdkD6NfJRVMzF7DsvG+A@mail.gmail.com>
- <20210415170007.31420132@gandalf.local.home> <20210417000304.fc987dc00d706e7551b29c04@kernel.org>
-In-Reply-To: <20210417000304.fc987dc00d706e7551b29c04@kernel.org>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Mon, 19 Apr 2021 21:51:39 -0700
-Message-ID: <CAEf4Bzb1uDwSeW-5q06748foJ5=ShEgvF7kDmiCPnv4393SSVw@mail.gmail.com>
-Subject: Re: [PATCHv2 RFC bpf-next 0/7] bpf: Add support for ftrace probe
-To:     Masami Hiramatsu <mhiramat@kernel.org>
-Cc:     Steven Rostedt <rostedt@goodmis.org>, Jiri Olsa <jolsa@redhat.com>,
-        Jiri Olsa <jolsa@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andriin@fb.com>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>, Daniel Xu <dxu@dxuuu.xyz>,
-        Jesper Brouer <jbrouer@redhat.com>,
-        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>,
-        Viktor Malik <vmalik@redhat.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210419235641.5442-1-samjonas@amazon.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Apr 16, 2021 at 8:03 AM Masami Hiramatsu <mhiramat@kernel.org> wrote:
->
-> Hi,
->
-> On Thu, 15 Apr 2021 17:00:07 -0400
-> Steven Rostedt <rostedt@goodmis.org> wrote:
->
-> >
-> > [
-> >   Added Masami, as I didn't realize he wasn't on Cc. He's the maintainer of
-> >   kretprobes.
-> >
-> >   Masami, you may want to use lore.kernel.org to read the history of this
-> >   thread.
-> > ]
-> >
-> > On Thu, 15 Apr 2021 13:45:06 -0700
-> > Andrii Nakryiko <andrii.nakryiko@gmail.com> wrote:
-> >
-> > > > I don't know how the BPF code does it, but if you are tracing the exit
-> > > > of a function, I'm assuming that you hijack the return pointer and replace
-> > > > it with a call to a trampoline that has access to the arguments. To do
-> > >
-> > > As Jiri replied, BPF trampoline doesn't do it the same way as
-> > > kretprobe does it. Which gives the fexit BPF program another critical
-> > > advantage over kretprobe -- we know traced function's entry IP in both
-> > > entry and exit cases, which allows us to generically correlate them.
-> > >
-> > > I've tried to figure out how to get that entry IP from kretprobe and
-> > > couldn't find any way. Do you know if it's possible at all or it's a
-> > > fundamental limitation of the way kretprobe is implemented (through
-> > > hijacking return address)?
->
-> Inside the kretprobe handler, you can get the entry IP from kretprobe as below;
->
-> static int my_kretprobe_handler(struct kretprobe_instance *ri, struct pt_regs *regs)
-> {
->         struct kretprobe *rp = get_kretprobe(ri);
->         unsigned long entry = (unsigned long)rp->kp.addr;
->         unsigned long retaddr = (unsigned long)ri->ret_addr;
->         ...
-> }
+On Mon, Apr 19, 2021 at 04:56:41PM -0700, Samuel Mendoza-Jonas wrote:
+> The 4.14 backport of 9d7eceede ("bpf: restrict unknown scalars of mixed
+> signed bounds for unprivileged") adds the PTR_TO_MAP_VALUE check to the
+> wrong location in adjust_ptr_min_max_vals(), most likely because 4.14
+> doesn't include the commit that updates the if-statement to a
+> switch-statement (aad2eeaf4 "bpf: Simplify ptr_min_max_vals adjustment").
+> 
+> Move the check to the proper location in adjust_ptr_min_max_vals().
+> 
+> Fixes: 17efa65350c5a ("bpf: restrict unknown scalars of mixed signed bounds for unprivileged")
+> Signed-off-by: Samuel Mendoza-Jonas <samjonas@amazon.com>
+> Reviewed-by: Frank van der Linden <fllinden@amazon.com>
+> Reviewed-by: Ethan Chen <yishache@amazon.com>
+> ---
 
-Great. In kprobe_perf_func(), which seems to be the callback that
-triggers kretprobe BPF programs, we can get that struct kretprobe
-through tk->rp. So we'll just need to figure out how to pass that into
-the BPF program in a sane way. Thanks!
+Thanks for catching it :)
 
->
-> It is ensured that rp != NULL in the handler.
->
-> >
-> > The function graph tracer has the entry IP on exit, today. That's how we
-> > can trace and show this:
-> >
-> >  # cd /sys/kernel/tracing
-> >  # echo 1 > echo 1 > options/funcgraph-tail
-> >  # echo function_graph > current_tracer
-> >  # cat trace
-> > # tracer: function_graph
-> > #
-> > # CPU  DURATION                  FUNCTION CALLS
-> > # |     |   |                     |   |   |   |
-> >  7)   1.358 us    |  rcu_idle_exit();
-> >  7)   0.169 us    |  sched_idle_set_state();
-> >  7)               |  cpuidle_reflect() {
-> >  7)               |    menu_reflect() {
-> >  7)   0.170 us    |      tick_nohz_idle_got_tick();
-> >  7)   0.585 us    |    } /* menu_reflect */
-> >  7)   1.115 us    |  } /* cpuidle_reflect */
-> >
-> > That's how we can show the tail function that's called. I'm sure kreprobes
-> > could do the same thing.
->
-> Yes, I have to update the document how to do that (and maybe introduce 2 functions
-> to wrap the entry/retaddr code)
->
-> >
-> > The patch series I shared with Jiri, was work to allow kretprobes to be
-> > built on top of the function graph tracer.
-> >
-> > https://lore.kernel.org/lkml/20190525031633.811342628@goodmis.org/
-> >
-> > The feature missing from that series, and why I didn't push it (as I had
-> > ran out of time to work on it), was that kreprobes wants the full regs
-> > stack as well. And since kretprobes was the main client of this work, that
-> > I decided to work on this at another time. But like everything else, I got
-> > distracted by other work, and didn't realize it has been almost 2 years
-> > since looking at it :-p
-> >
-> > Anyway, IIRC, Masami wasn't sure that the full regs was ever needed for the
-> > return (who cares about the registers on return, except for the return
-> > value?)
->
-> I think kretprobe and ftrace are for a bit different usage. kretprobe can be
-> used for something like debugger. In that case, accessing full regs stack
-> will be more preferrable. (BTW, what the not "full regs" means? Does that
-> save partial registers?)
->
->
-> Thank you,
->
-> > But this code could easily save the parameters as well.
-> >
-> > >
-> > > > this you need a shadow stack to save the real return as well as the
-> > > > parameters of the function. This is something that I have patches that do
-> > > > similar things with function graph.
-> > > >
-> > > > If you want this feature, lets work together and make this work for both
-> > > > BPF and ftrace.
-> > >
-> > > Absolutely, ultimately for users it doesn't matter what specific
-> > > mechanism is used under the cover. It just seemed like BPF trampoline
-> > > has all the useful tracing features (entry IP and input arguments in
-> > > fexit) already and is just mostly missing a quick batch attach API. If
-> > > we can get the same from ftrace, all the better.
-> >
-> > Let me pull these patches out again, and see what we can do. Since then,
-> > I've added the code that lets function tracer save parameters and the
-> > stack, and function graph can use that as well.
-> >
-> >
-> > -- Steve
->
->
-> --
-> Masami Hiramatsu <mhiramat@kernel.org>
+Reviewed-by: Balbir Singh <bsingharora@gmail.com>
