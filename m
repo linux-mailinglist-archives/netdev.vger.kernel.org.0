@@ -2,123 +2,119 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D09CD365AA6
-	for <lists+netdev@lfdr.de>; Tue, 20 Apr 2021 16:00:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4B0DA365AC1
+	for <lists+netdev@lfdr.de>; Tue, 20 Apr 2021 16:04:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232094AbhDTOA6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 20 Apr 2021 10:00:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45096 "EHLO
+        id S232526AbhDTOFT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 20 Apr 2021 10:05:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46078 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231422AbhDTOAw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 20 Apr 2021 10:00:52 -0400
-Received: from mail-yb1-xb2c.google.com (mail-yb1-xb2c.google.com [IPv6:2607:f8b0:4864:20::b2c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A712BC06174A
-        for <netdev@vger.kernel.org>; Tue, 20 Apr 2021 07:00:19 -0700 (PDT)
-Received: by mail-yb1-xb2c.google.com with SMTP id o10so43074298ybb.10
-        for <netdev@vger.kernel.org>; Tue, 20 Apr 2021 07:00:19 -0700 (PDT)
+        with ESMTP id S232419AbhDTOFR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 20 Apr 2021 10:05:17 -0400
+Received: from mail-pj1-x1029.google.com (mail-pj1-x1029.google.com [IPv6:2607:f8b0:4864:20::1029])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 66045C06138A;
+        Tue, 20 Apr 2021 07:04:46 -0700 (PDT)
+Received: by mail-pj1-x1029.google.com with SMTP id g1-20020a17090adac1b0290150d07f9402so1855625pjx.5;
+        Tue, 20 Apr 2021 07:04:46 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=CSzfteh2sFoBf+bSCj0LWyr7f8ZdKMJYmlWhAs3OR9o=;
-        b=qJt7ym1D1UWdc2HjncPaIRm04+GbyyoTnzjhmJzHF+eV8585J7Av+1o9zvgXnNIcAp
-         Lt2vkq1SYGDztBwQNXAxZLyYgcsZq/n33bLmunsqLoOBjJuvQ8/UBfNsjAf/PVDpUpyJ
-         VUznTrAA3V0k61zKDmMtXLPfwvQg8RWpjmzGTFtWzG8k90pI/g0NCuVQajncWnhh5Hl/
-         qYxbOwVF2U3CdE+pyqV42LZSLMsJ2w3P68/l2z8MHYz+bOy5WyHdT7XloHAAiXm3AHHV
-         zUay5mQFXbd9Mwjv1+TiLjDtt+Myr1+/9WjuCbH9tKQHrIMUKfCCR2C/TUoplVKOhZrC
-         KECQ==
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=GWZ9/iUv0FXDeIpnx9QoQpsz7gywyohQ1hXkns45YHk=;
+        b=ZaRkSt5KlIUTQC5awcwrSay8EjrsfYLcEGIdVI/hfGabX8AQ85CfLf8aMjKJkKmvzW
+         1om80L/5MfBcQD5KiyZrfZCZlp+ylttGuHF9xA96nGcI7Bkz1EJdbTu5HlfpMbu4X9KN
+         LyyPh0PxEuA9ckcSoX+tH/t1DBwMj63PVbUpWasTCQ0IC2t/y7XhTnsV8f83Nzkgv9ya
+         +1DMuh9o7rwi9/X4F7yMVwvGz7c6uKljqB9mrs3T2r4pEOd4c2Y8UxcOLFK7yEu8EjU0
+         wsJ8yVhz4EKieCxilWO3+flHeFTpShUfPBBIPSU5KAN7QAcANZTJA6WuGjvQA2TOLXlL
+         RR3w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=CSzfteh2sFoBf+bSCj0LWyr7f8ZdKMJYmlWhAs3OR9o=;
-        b=oBPfjj6xsoqo9DMTISdvHkHi8PbN3BhBbe2TsT+TOYMqniK7GGW+XFPMQ68ZppCadJ
-         qDISpVB73dKuV+d2JSNJFX/yQRoxuN5rPvKCF/ZY1U64lWei2M9+lCdK2lgoIJRi6DNF
-         5JfmyDM74lM71hYKzislIa1FUqOqdYRVJkiiFhPZFl4siVaFGkz6V835fy3pg2yD+n6M
-         lvkAmqcT+N+I+RPHYN09zCNyO1yMEd3DR7srb39yPC+5XcIpFQBmbDIWWlByoGQGvf4G
-         z15QfhMEABRo0AoiyJQYrHa9uXE/BuH5djB79qVBFrv2s7dBuZHqyY5wc41VdOMyRk/u
-         whmA==
-X-Gm-Message-State: AOAM530dMWOzObZIk3bztcwhjZdRAY3JOfGIu/+NsmfyTTwgIfhoKf36
-        4owbBbKkpcZcWaWe+7EC8wIwKUhWT3m1anghsbQOIA==
-X-Google-Smtp-Source: ABdhPJx3GOFLmmAuaLTJsFDWsT9R93JjbXIV4DppE/PBR5N34/rqXI40elc6SxbgHx+HWXt18K+D0PYgZqAOG5UqRV4=
-X-Received: by 2002:a25:4244:: with SMTP id p65mr24770854yba.452.1618927218716;
- Tue, 20 Apr 2021 07:00:18 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=GWZ9/iUv0FXDeIpnx9QoQpsz7gywyohQ1hXkns45YHk=;
+        b=K24R0nonKKff0mTMpn8q8jKK1ErlINDQ6ircA1wQQGXwyY5Vwp2z+YeKOd6nHWFsI1
+         KSJyFsoEZKNiNZBkhivlaHjUehRe7nH8NV6T/nDZiMRA1BSXAmvpu0ZwgyiX/ypllGKd
+         x9fz5ODcAcaEHOFp9C6aZyywx2YiyJUZUn61Wbdn/bVl9e/9eVMC8ynFOksAZBajoMt3
+         P6EDkMxWP6uqXxQ7hgC9mu/nH96yOirAoFBEK9L7MT4BRgkz/XhJYkcH3oyMbmGmo43z
+         YAtdMqNJDMj8DNVrmI7yMt3GiiZ7RQf1dPTcRhTmkLss9AtGMLdMcVb7hYaKLgyzINNA
+         8F2A==
+X-Gm-Message-State: AOAM531w7EmteUMDgxu4LdQtNT7yUJ9vf9qUeLQTtcs38KGnUvEtvKzQ
+        ZMV9RSjMpmSFcjnVaJEKdAlylp2S4DBB+Q==
+X-Google-Smtp-Source: ABdhPJxa+tOj6HMWgne03HIClGYrmW6UvTyxsScQNcsf2xFSurAAxJcynVxP2gTfZ3ds5HO10TPRfA==
+X-Received: by 2002:a17:902:f54d:b029:ec:939f:747d with SMTP id h13-20020a170902f54db02900ec939f747dmr16157951plf.84.1618927485895;
+        Tue, 20 Apr 2021 07:04:45 -0700 (PDT)
+Received: from skbuf (5-12-16-165.residential.rdsnet.ro. [5.12.16.165])
+        by smtp.gmail.com with ESMTPSA id hi5sm2600734pjb.31.2021.04.20.07.04.38
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 20 Apr 2021 07:04:45 -0700 (PDT)
+Date:   Tue, 20 Apr 2021 17:04:33 +0300
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Michael Walle <michael@walle.cc>
+Cc:     Jakub Kicinski <kuba@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        Po Liu <po.liu@nxp.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Alex Marginean <alexandru.marginean@nxp.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Shawn Guo <shawnguo@kernel.org>,
+        linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
+        Russell King - ARM Linux admin <linux@armlinux.org.uk>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>
+Subject: Re: [PATCH net-next 0/5] Flow control for NXP ENETC
+Message-ID: <20210420140433.hajuvfiz4humhhkt@skbuf>
+References: <20210416234225.3715819-1-olteanv@gmail.com>
+ <fa2347b25d25e71f891e50f6f789e421@walle.cc>
 MIME-Version: 1.0
-References: <20210420094341.3259328-1-eric.dumazet@gmail.com> <c5a8aeaf-0f41-9274-b9c5-ec385b34180a@roeck-us.net>
-In-Reply-To: <c5a8aeaf-0f41-9274-b9c5-ec385b34180a@roeck-us.net>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Tue, 20 Apr 2021 16:00:07 +0200
-Message-ID: <CANn89iKMbUtDhU+B5dFJDABUSJJ3rnN0PWO0TDY=mRYEbNpHZw@mail.gmail.com>
-Subject: Re: [PATCH net-next] virtio-net: fix use-after-free in page_to_skb()
-To:     Guenter Roeck <linux@roeck-us.net>
-Cc:     Eric Dumazet <eric.dumazet@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        syzbot <syzkaller@googlegroups.com>,
-        Mat Martineau <mathew.j.martineau@linux.intel.com>,
-        Xuan Zhuo <xuanzhuo@linux.alibaba.com>,
-        Jason Wang <jasowang@redhat.com>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        virtualization@lists.linux-foundation.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <fa2347b25d25e71f891e50f6f789e421@walle.cc>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Apr 20, 2021 at 3:48 PM Guenter Roeck <linux@roeck-us.net> wrote:
->
-> On 4/20/21 2:43 AM, Eric Dumazet wrote:
+Hi Michael,
 
-> >
->
-> Unfortunately that doesn't fix the problem for me. With this patch applied
-> on top of next-20210419, I still get the same crash as before:
->
-> udhcpc: sending discover^M
-> Unable to handle kernel paging request at virtual address 0000000000000004^M
-> udhcpc(169): Oops -1^M
-> pc = [<0000000000000004>]  ra = [<fffffc0000b8c5b8>]  ps = 0000    Not tainted^M
-> pc is at 0x4^M
-> ra is at napi_gro_receive+0x68/0x150^M
-> v0 = 0000000000000000  t0 = 0000000000000008  t1 = 0000000000000000^M
-> t2 = 0000000000000000  t3 = 000000000000000e  t4 = 0000000000000038^M
-> t5 = 000000000000ffff  t6 = fffffc00002f298a  t7 = fffffc0002c78000^M
-> s0 = fffffc00010b3ca0  s1 = 0000000000000000  s2 = fffffc00011267e0^M
-> s3 = 0000000000000000  s4 = fffffc00025f2008  s5 = fffffc00002f2940^M
-> s6 = fffffc00025f2040^M
-> a0 = fffffc00025f2008  a1 = fffffc00002f2940  a2 = fffffc0002ca000c^M
-> a3 = fffffc00000250d0  a4 = 0000000effff0008  a5 = 0000000000000000^M
-> t8 = fffffc00010b3c80  t9 = fffffc0002ca04cc  t10= 0000000000000000^M
-> t11= 00000000000004c0  pv = fffffc0000b8bc40  at = 0000000000000000^M
-> gp = fffffc00010f9fb8  sp = 00000000df74db09^M
-> Disabling lock debugging due to kernel taint^M
-> Trace:^M
-> [<fffffc0000b8c5b8>] napi_gro_receive+0x68/0x150^M
-> [<fffffc00009b409c>] receive_buf+0x50c/0x1b80^M
-> [<fffffc00009b58b8>] virtnet_poll+0x1a8/0x5b0^M
-> [<fffffc00009b58ec>] virtnet_poll+0x1dc/0x5b0^M
-> [<fffffc0000b8d17c>] __napi_poll+0x4c/0x270^M
-> [<fffffc0000b8d670>] net_rx_action+0x130/0x2c0^M
-> [<fffffc0000bd6cb0>] sch_direct_xmit+0x170/0x360^M
-> [<fffffc0000bd7000>] __qdisc_run+0x160/0x6c0^M
-> [<fffffc0000337b64>] do_softirq+0xa4/0xd0^M
-> [<fffffc0000337ca4>] __local_bh_enable_ip+0x114/0x120^M
-> [<fffffc0000b89554>] __dev_queue_xmit+0x484/0xa60^M
-> [<fffffc0000cd072c>] packet_sendmsg+0xe7c/0x1ba0^M
-> [<fffffc0000b53338>] __sys_sendto+0xf8/0x170^M
-> [<fffffc0000cfec18>] _raw_spin_unlock+0x18/0x30^M
-> [<fffffc0000a9bf7c>] ehci_irq+0x2cc/0x5c0^M
-> [<fffffc0000a71334>] usb_hcd_irq+0x34/0x50^M
-> [<fffffc0000b521bc>] move_addr_to_kernel+0x3c/0x60^M
-> [<fffffc0000b532e4>] __sys_sendto+0xa4/0x170^M
-> [<fffffc0000b533d4>] sys_sendto+0x24/0x40^M
-> [<fffffc0000cfea38>] _raw_spin_lock+0x18/0x30^M
-> [<fffffc0000cfec18>] _raw_spin_unlock+0x18/0x30^M
-> [<fffffc0000325298>] clipper_enable_irq+0x98/0x100^M
-> [<fffffc0000cfec18>] _raw_spin_unlock+0x18/0x30^M
-> [<fffffc0000311514>] entSys+0xa4/0xc0^M
+On Tue, Apr 20, 2021 at 03:27:24PM +0200, Michael Walle wrote:
+> Hi Vladimir,
+> 
+> Am 2021-04-17 01:42, schrieb Vladimir Oltean:
+> > From: Vladimir Oltean <vladimir.oltean@nxp.com>
+> > 
+> > This patch series contains logic for enabling the lossless mode on the
+> > RX rings of the ENETC, and the PAUSE thresholds on the internal FIFO
+> > memory.
+> > 
+> > During testing it was found that, with the default FIFO configuration,
+> > a sender which isn't persuaded by our PAUSE frames and keeps sending
+> > will cause some MAC RX frame errors. To mitigate this, we need to ensure
+> > that the FIFO never runs completely full, so we need to fix up a setting
+> > that was supposed to be configured well out of reset. Unfortunately this
+> > requires the addition of a new mini-driver.
+> 
+> What happens if the mini driver is not enabled? Then the fixes aren't
+> applied and bad things happen (now with the addition of flow control),
+> right?
+> 
+> I'm asking because, if you have the arm64 defconfig its not enabled.
+> 
+> shouldn't it be something like:
+> 
+> diff --git a/drivers/net/ethernet/freescale/enetc/Kconfig
+> b/drivers/net/ethernet/freescale/enetc/Kconfig
+> index d88f60c2bb82..cdc0ff89388a 100644
+> --- a/drivers/net/ethernet/freescale/enetc/Kconfig
+> +++ b/drivers/net/ethernet/freescale/enetc/Kconfig
+> @@ -2,7 +2,7 @@
+>  config FSL_ENETC
+>         tristate "ENETC PF driver"
+>         depends on PCI && PCI_MSI
+> -       depends on FSL_ENETC_IERB || FSL_ENETC_IERB=n
+> +       select FSL_ENETC_IERB
+>         select FSL_ENETC_MDIO
+>         select PHYLINK
+>         select PCS_LYNX
 
-OK, it would be nice if you could get line number from this stack trace.
-
-(scripts/decode_stacktrace.sh is your friend)
+Yes, ideally the IERB driver and the ENETC PF driver should be built in
+the same way, or the IERB driver can be built-in and the PF driver can
+be module. I don't know how to express this using Kconfig, sorry.
