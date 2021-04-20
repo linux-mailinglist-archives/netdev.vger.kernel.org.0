@@ -2,107 +2,76 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2DCC63652E2
-	for <lists+netdev@lfdr.de>; Tue, 20 Apr 2021 09:09:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 84C24365305
+	for <lists+netdev@lfdr.de>; Tue, 20 Apr 2021 09:15:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230093AbhDTHJs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 20 Apr 2021 03:09:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38734 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229793AbhDTHJp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 20 Apr 2021 03:09:45 -0400
-Received: from mail-ot1-x334.google.com (mail-ot1-x334.google.com [IPv6:2607:f8b0:4864:20::334])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9686BC06174A
-        for <netdev@vger.kernel.org>; Tue, 20 Apr 2021 00:09:14 -0700 (PDT)
-Received: by mail-ot1-x334.google.com with SMTP id c8-20020a9d78480000b0290289e9d1b7bcso20892710otm.4
-        for <netdev@vger.kernel.org>; Tue, 20 Apr 2021 00:09:14 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=/MtYGhYbPrsDDV2Iif/+Wf1gZZtS4bQJ8n6ZQa22pdE=;
-        b=Eg5Vb8yM8iURQMDQ3o87wZ5WdLVlMpwWngBScrrqFKa38WWgmzxpXIz0s9BW8h7X7Q
-         G58tTzNsPZc0S8Ip8qaDsj9N3pqp3+6BwxjAMjbWxEFs3d7yG8WctEk0Q3MI6DJMDmvJ
-         fA8Th05vPwEqc0fuYGq30B60wHtyC/n97IURvJ3xuARhQxcMeCQWinljTmHpm/3fkTfG
-         ooIGnODKdthiJYlTL/wazx49S99aM6mGJ55S8vn2jjtUhKrHk4AhdtSMcpk70+4F/ITY
-         xpRAv0CZsHq/ux2KTRX/3vRSVnjVgMsna9KxZ1eaH+DnaD11U3vtxIt84daDqNBfCMjj
-         2w2Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=/MtYGhYbPrsDDV2Iif/+Wf1gZZtS4bQJ8n6ZQa22pdE=;
-        b=hRuDOv7iBpudsEMNETXclOy0nRCRCM602XhBMKS0UHy2HfhnoljJzSeEclA8ZHo1/e
-         VWJ5GVZBBnY7oHKOysP9UC7b5kyP1VAY9a5d8vtEHk17eT2CbgOUQwDf2Nkm83rsvyyf
-         me4+KeVhR7Ekc0DGLHNPUayWJV5LKLhlegZa6K+oNwI51uaEPx4plAqsim3u4PVUNqpK
-         Vp16Tr6W9FmJlrRfpwyzmqrDsjFf/WJ1WEquG8gnqwnepezbtlGv1lxeFmti7ZxAO+Di
-         32uSPvtR5FSAxTXh6eSHmmThLFHk4PR9MNtpkiY6Pf9Ppkc/3GeHr/RnqUZyv9is7SyT
-         SD4g==
-X-Gm-Message-State: AOAM5307+hpwWIwRwLrvV9yMxZdZ1ChLma03C9Af8NxK6NcTJUyYbdmw
-        JNUm7sY9lJrp3HfcxLcp1ElazOQlHwYdIyoygIk=
-X-Google-Smtp-Source: ABdhPJwUtPct/+hlEhKbF/f3I4ZmMwZsqtOgaSnd94XRQjZcFRww/ecv09VRzsav3oC19Z8h6d+kdjvBgmFTxLnhlPE=
-X-Received: by 2002:a9d:28d:: with SMTP id 13mr18093106otl.278.1618902554105;
- Tue, 20 Apr 2021 00:09:14 -0700 (PDT)
+        id S230397AbhDTHQA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 20 Apr 2021 03:16:00 -0400
+Received: from mail.kernel.org ([198.145.29.99]:54006 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S230375AbhDTHP5 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 20 Apr 2021 03:15:57 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 05A8460FF1;
+        Tue, 20 Apr 2021 07:15:25 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1618902926;
+        bh=fvjxsgoBx7JGOSJaXoytegpfNSuCdjkRujjIoQ/GmLo=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=Au/EvSiy2VjwAs3jsJtgXlE2wnUl8vpgPUa8PDRRCTQnOLdPW9G1tL5z+IpLyZ8K8
+         zUzRxogqhqX0TUXtc0aftJJuhSb3Xkgn3kfhnKpT48B9A6nSs6cD3BRE+p4ChwY5Yb
+         3ja2PiFu25Lk0YfsNPUtYoBIIvh8si+nYUv06puk=
+Date:   Tue, 20 Apr 2021 09:15:23 +0200
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     Aditya Pakki <pakki001@umn.edu>
+Cc:     "J. Bruce Fields" <bfields@fieldses.org>,
+        Chuck Lever <chuck.lever@oracle.com>,
+        Trond Myklebust <trond.myklebust@hammerspace.com>,
+        Anna Schumaker <anna.schumaker@netapp.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Dave Wysochanski <dwysocha@redhat.com>,
+        linux-nfs@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] SUNRPC: Add a check for gss_release_msg
+Message-ID: <YH5/i7OvsjSmqADv@kroah.com>
+References: <20210407001658.2208535-1-pakki001@umn.edu>
 MIME-Version: 1.0
-References: <1618902026-16588-1-git-send-email-wangyunjian@huawei.com>
-In-Reply-To: <1618902026-16588-1-git-send-email-wangyunjian@huawei.com>
-From:   Zhu Yanjun <zyjzyj2000@gmail.com>
-Date:   Tue, 20 Apr 2021 15:09:03 +0800
-Message-ID: <CAD=hENfAZZBm3iipTAv6q9u12z8WmT7LUgXSDFEdtSf_k9_Lcw@mail.gmail.com>
-Subject: Re: [PATCH net-next v2] net/mlx5e: Fix uninitialised struct field moder.comps
-To:     wangyunjian <wangyunjian@huawei.com>
-Cc:     Jakub Kicinski <kuba@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>, saeedm@nvidia.com,
-        netdev <netdev@vger.kernel.org>, dingxiaoxiong@huawei.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210407001658.2208535-1-pakki001@umn.edu>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Apr 20, 2021 at 3:01 PM wangyunjian <wangyunjian@huawei.com> wrote:
->
-> From: Yunjian Wang <wangyunjian@huawei.com>
->
-> The 'comps' struct field in 'moder' is not being initialized in
-> mlx5e_get_def_rx_moderation() and mlx5e_get_def_tx_moderation().
-> So initialize 'moder' to zero to avoid the issue.
->
-> Addresses-Coverity: ("Uninitialized scalar variable")
-> Signed-off-by: Yunjian Wang <wangyunjian@huawei.com>
+On Tue, Apr 06, 2021 at 07:16:56PM -0500, Aditya Pakki wrote:
+> In gss_pipe_destroy_msg(), in case of error in msg, gss_release_msg
+> deletes gss_msg. The patch adds a check to avoid a potential double
+> free.
+> 
+> Signed-off-by: Aditya Pakki <pakki001@umn.edu>
 > ---
-> v2: update mlx5e_get_def_tx_moderation() also needs fixing
-> ---
->  drivers/net/ethernet/mellanox/mlx5/core/en_main.c | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
->
-> diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
-> index 5db63b9f3b70..17a817b7e539 100644
-> --- a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
-> +++ b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
-> @@ -4868,7 +4868,7 @@ static bool slow_pci_heuristic(struct mlx5_core_dev *mdev)
->
->  static struct dim_cq_moder mlx5e_get_def_tx_moderation(u8 cq_period_mode)
->  {
-> -       struct dim_cq_moder moder;
+>  net/sunrpc/auth_gss/auth_gss.c | 3 ++-
+>  1 file changed, 2 insertions(+), 1 deletion(-)
+> 
+> diff --git a/net/sunrpc/auth_gss/auth_gss.c b/net/sunrpc/auth_gss/auth_gss.c
+> index 5f42aa5fc612..eb52eebb3923 100644
+> --- a/net/sunrpc/auth_gss/auth_gss.c
+> +++ b/net/sunrpc/auth_gss/auth_gss.c
+> @@ -848,7 +848,8 @@ gss_pipe_destroy_msg(struct rpc_pipe_msg *msg)
+>  			warn_gssd();
+>  		gss_release_msg(gss_msg);
+>  	}
+> -	gss_release_msg(gss_msg);
+> +	if (gss_msg)
+> +		gss_release_msg(gss_msg);a
 
-> +       struct dim_cq_moder moder = {};
+If you look at the code, this is impossible to have happen.
 
-If I remember correctly, some gcc compiler will report errors about this "{}".
+Please stop submitting known-invalid patches.  Your professor is playing
+around with the review process in order to achieve a paper in some
+strange and bizarre way.
 
-Zhu Yanjun
+This is not ok, it is wasting our time, and we will have to report this,
+AGAIN, to your university...
 
->
->         moder.cq_period_mode = cq_period_mode;
->         moder.pkts = MLX5E_PARAMS_DEFAULT_TX_CQ_MODERATION_PKTS;
-> @@ -4881,7 +4881,7 @@ static struct dim_cq_moder mlx5e_get_def_tx_moderation(u8 cq_period_mode)
->
->  static struct dim_cq_moder mlx5e_get_def_rx_moderation(u8 cq_period_mode)
->  {
-> -       struct dim_cq_moder moder;
-> +       struct dim_cq_moder moder = {};
->
->         moder.cq_period_mode = cq_period_mode;
->         moder.pkts = MLX5E_PARAMS_DEFAULT_RX_CQ_MODERATION_PKTS;
-> --
-> 2.23.0
->
+greg k-h
