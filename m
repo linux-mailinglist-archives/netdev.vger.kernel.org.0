@@ -2,63 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 13906365E3C
-	for <lists+netdev@lfdr.de>; Tue, 20 Apr 2021 19:10:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E0670365E56
+	for <lists+netdev@lfdr.de>; Tue, 20 Apr 2021 19:16:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233294AbhDTRKm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 20 Apr 2021 13:10:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59252 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232473AbhDTRKl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 20 Apr 2021 13:10:41 -0400
-Received: from fieldses.org (fieldses.org [IPv6:2600:3c00:e000:2f7::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 176F9C06174A;
-        Tue, 20 Apr 2021 10:10:10 -0700 (PDT)
-Received: by fieldses.org (Postfix, from userid 2815)
-        id 071357274; Tue, 20 Apr 2021 13:10:09 -0400 (EDT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 fieldses.org 071357274
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fieldses.org;
-        s=default; t=1618938609;
-        bh=G1/bkGfCnN9BPCT+BTU7MH0Yx34TK2JeYk5pORVadAI=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=KXISL/jW2QvgORlWjBxAsoDlR0c7cjzlxQQCTF8hnO7vcZli+avWDUiFkhADSppri
-         yZn0yt6Q2pubbQ5DcOS71LH6AzDXbvA1WS/bK2rkwQZTHsS36e/8mipekMJVC1EutB
-         DXqZZk5ui9yYhopMKJ4eyomdzY7QRdECGcu+DJuU=
-Date:   Tue, 20 Apr 2021 13:10:08 -0400
-From:   "J. Bruce Fields" <bfields@fieldses.org>
-To:     Greg KH <gregkh@linuxfoundation.org>
-Cc:     Aditya Pakki <pakki001@umn.edu>,
-        Chuck Lever <chuck.lever@oracle.com>,
-        Trond Myklebust <trond.myklebust@hammerspace.com>,
-        Anna Schumaker <anna.schumaker@netapp.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Dave Wysochanski <dwysocha@redhat.com>,
-        linux-nfs@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] SUNRPC: Add a check for gss_release_msg
-Message-ID: <20210420171008.GB4017@fieldses.org>
-References: <20210407001658.2208535-1-pakki001@umn.edu>
- <YH5/i7OvsjSmqADv@kroah.com>
+        id S233398AbhDTRQw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 20 Apr 2021 13:16:52 -0400
+Received: from youngberry.canonical.com ([91.189.89.112]:50872 "EHLO
+        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233362AbhDTRQt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 20 Apr 2021 13:16:49 -0400
+Received: from 1.general.cking.uk.vpn ([10.172.193.212] helo=localhost)
+        by youngberry.canonical.com with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
+        (Exim 4.86_2)
+        (envelope-from <colin.king@canonical.com>)
+        id 1lYtyw-00060S-P3; Tue, 20 Apr 2021 17:16:14 +0000
+From:   Colin King <colin.king@canonical.com>
+To:     Grygorii Strashko <grygorii.strashko@ti.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        linux-omap@vger.kernel.org, netdev@vger.kernel.org
+Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] net: davinci_emac: Fix incorrect masking of tx and rx error channel
+Date:   Tue, 20 Apr 2021 18:16:14 +0100
+Message-Id: <20210420171614.385721-1-colin.king@canonical.com>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YH5/i7OvsjSmqADv@kroah.com>
-User-Agent: Mutt/1.5.21 (2010-09-15)
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Apr 20, 2021 at 09:15:23AM +0200, Greg KH wrote:
-> If you look at the code, this is impossible to have happen.
-> 
-> Please stop submitting known-invalid patches.  Your professor is playing
-> around with the review process in order to achieve a paper in some
-> strange and bizarre way.
-> 
-> This is not ok, it is wasting our time, and we will have to report this,
-> AGAIN, to your university...
+From: Colin Ian King <colin.king@canonical.com>
 
-What's the story here?
+The bit-masks used for the TXERRCH and RXERRCH (tx and rx error channels)
+are incorrect and always lead to a zero result. The mask values are
+currently the incorrect post-right shifted values, fix this by setting
+them to the currect values.
 
---b.
+(I double checked these against the TMS320TCI6482 data sheet, section
+5.30, page 127 to ensure I had the correct mask values for the TXERRCH
+and RXERRCH fields in the MACSTATUS register).
+
+Addresses-Coverity: ("Operands don't affect result")
+Fixes: a6286ee630f6 ("net: Add TI DaVinci EMAC driver")
+Signed-off-by: Colin Ian King <colin.king@canonical.com>
+---
+ drivers/net/ethernet/ti/davinci_emac.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/net/ethernet/ti/davinci_emac.c b/drivers/net/ethernet/ti/davinci_emac.c
+index 57450b174fc4..fb5eca688af9 100644
+--- a/drivers/net/ethernet/ti/davinci_emac.c
++++ b/drivers/net/ethernet/ti/davinci_emac.c
+@@ -183,11 +183,11 @@ static const char emac_version_string[] = "TI DaVinci EMAC Linux v6.1";
+ /* EMAC mac_status register */
+ #define EMAC_MACSTATUS_TXERRCODE_MASK	(0xF00000)
+ #define EMAC_MACSTATUS_TXERRCODE_SHIFT	(20)
+-#define EMAC_MACSTATUS_TXERRCH_MASK	(0x7)
++#define EMAC_MACSTATUS_TXERRCH_MASK	(0x70000)
+ #define EMAC_MACSTATUS_TXERRCH_SHIFT	(16)
+ #define EMAC_MACSTATUS_RXERRCODE_MASK	(0xF000)
+ #define EMAC_MACSTATUS_RXERRCODE_SHIFT	(12)
+-#define EMAC_MACSTATUS_RXERRCH_MASK	(0x7)
++#define EMAC_MACSTATUS_RXERRCH_MASK	(0x700)
+ #define EMAC_MACSTATUS_RXERRCH_SHIFT	(8)
+ 
+ /* EMAC RX register masks */
+-- 
+2.30.2
+
