@@ -2,176 +2,145 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AFC173654E8
-	for <lists+netdev@lfdr.de>; Tue, 20 Apr 2021 11:10:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A52783654FB
+	for <lists+netdev@lfdr.de>; Tue, 20 Apr 2021 11:11:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231365AbhDTJK5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 20 Apr 2021 05:10:57 -0400
-Received: from mail-io1-f70.google.com ([209.85.166.70]:35564 "EHLO
-        mail-io1-f70.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231357AbhDTJKx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 20 Apr 2021 05:10:53 -0400
-Received: by mail-io1-f70.google.com with SMTP id l2-20020a5e82020000b02903c2fa852f92so11875896iom.2
-        for <netdev@vger.kernel.org>; Tue, 20 Apr 2021 02:10:22 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
-         :from:to;
-        bh=cHaECdR/PzBVqswMCXkUzvIeCdFIMb9MUAccEcA9938=;
-        b=KOfMguWl5IwwNXSmO6vb3ZnMLQtryyMnRxlASxkn1WYVGHmJM1lJlkdewk8Bu0IPqu
-         xnvkzsslcJST+tll3zaOJ5dii3vY2mwVrqYDiaAHBNMDVCNDNN4NZB2V70oOk/KBtTZ4
-         WUndUXvHMFWfsYeKhWNRq66GTJWAejXzlEIjkgsa65En2r80/YW+450Wa1f10kPnAX7B
-         J0ZbvJZVNWulrRi1UZgKLQX4NHiBy5wI2UzQ3wVTcm8BaMNYZKOzPMI51wUPserTKkg8
-         o3Q5SCh4HTtVJIM9zJUKmXhknOH+ET+OqMT7W1SVVwYy6ML65Y6aTpjj6LrbZF4bMA4x
-         0q3w==
-X-Gm-Message-State: AOAM531ztZxWm4uTYiJf9t6Euha8sNr5/FNDWLIdWGbhSbkKUGEzm7X/
-        edDQErHc5ip/RObmuIesMcmu2PCdVpIyrBJYy4ZchVlshWFO
-X-Google-Smtp-Source: ABdhPJx+K570iApRg80ZCmYOdfiMH0D2QraVHcAhcwa9AL4YHw6x5uq09HzDwOdQitfJEJTSD+/AISuSvgJcbiMnCwRK2uirX2m8
+        id S231410AbhDTJLq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 20 Apr 2021 05:11:46 -0400
+Received: from mail.kernel.org ([198.145.29.99]:54352 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S230168AbhDTJLk (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 20 Apr 2021 05:11:40 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id C2578611F2;
+        Tue, 20 Apr 2021 09:11:08 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1618909868;
+        bh=DeGQ9vUDRCVhA8t5Ph+0N53DtPOXi7alQM8lRrwQwKo=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=EXaUejfPaaye7JWUCmF8GSi/RlYZhQsdmX+kLcrBeX0F1eFgr44krM1ixkRCmXqkg
+         FBkMtZZGYAFq9xBKq5dcb2BOQt+ZCJKFph809k2UHYXQ05bfNbCW2UMcbcmTQ+BSp+
+         d4wYwcs4Xh3CFODUAnQ6T/3q0QUsxZsoXx5nhwd/fpBWvKp8/59bRQmO/3zgbXcwmK
+         5ZxGXiVuroDwkEdd0DsqBUmQGVuvW3ND1+dRkLPV1j+YSFx6n/pEQ0ehheOXLBySbA
+         UArXFDspN2qbdaPSjruyfPlBf3HVvFuXT3t/kqjY8MxeeKRO9TZhjCji8FQIgiY4FO
+         xIB/CJ63eyrXQ==
+Received: by mail-lj1-f178.google.com with SMTP id z8so42658767ljm.12;
+        Tue, 20 Apr 2021 02:11:08 -0700 (PDT)
+X-Gm-Message-State: AOAM533SDLFv+8U2cQAkLeNYA2TzKm+lQzaAn+kjLb27vIbPMbniOYla
+        gWp78iF/GVMwBz/LYp5LtDI82tXsLCuw6Bud0xA=
+X-Google-Smtp-Source: ABdhPJyHjUN6C0/sUkUlP+4nedtBBPWCDMG4VnGKqPhVa1uJB5nLQGViYOHp7TNdMb76BpIs8GkQPbFl+yNnVewK4NU=
+X-Received: by 2002:a5d:6dc4:: with SMTP id d4mr20219548wrz.105.1618909856639;
+ Tue, 20 Apr 2021 02:10:56 -0700 (PDT)
 MIME-Version: 1.0
-X-Received: by 2002:a5e:8a47:: with SMTP id o7mr973626iom.57.1618909822180;
- Tue, 20 Apr 2021 02:10:22 -0700 (PDT)
-Date:   Tue, 20 Apr 2021 02:10:22 -0700
-In-Reply-To: <00000000000057102e058e722bba@google.com>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000dfe1bc05c063d0fa@google.com>
-Subject: Re: [syzbot] INFO: task hung in perf_event_free_task
-From:   syzbot <syzbot+7692cea7450c97fa2a0a@syzkaller.appspotmail.com>
-To:     acme@kernel.org, acme@redhat.com,
-        alexander.shishkin@linux.intel.com, andrii@kernel.org,
-        ast@kernel.org, bpf@vger.kernel.org, cobranza@ingcoecuador.com,
-        daniel@iogearbox.net, eranian@google.com, john.fastabend@gmail.com,
-        jolsa@redhat.com, kafai@fb.com, kpsingh@kernel.org,
-        linux-kernel@vger.kernel.org, mark.rutland@arm.com,
-        mingo@kernel.org, mingo@redhat.com, namhyung@kernel.org,
-        netdev@vger.kernel.org, peterz@infradead.org,
-        songliubraving@fb.com, syzkaller-bugs@googlegroups.com,
-        tglx@linutronix.de, torvalds@linux-foundation.org,
-        vincent.weaver@maine.edu, yhs@fb.com
+References: <20210419042722.27554-1-alice.guo@oss.nxp.com> <20210419042722.27554-4-alice.guo@oss.nxp.com>
+ <YH0O907dfGY9jQRZ@atmark-techno.com> <CAMuHMdVY1SLZ0K30T2pimyrR6Mm=VoSTO=L-xxCy2Bj7_kostw@mail.gmail.com>
+ <YH1OeFy+SepIYYG0@atmark-techno.com> <CAK8P3a1Mu2F0irDDCL-50HiHth29iYFL5b7WHZ=UX6W7zzoxAg@mail.gmail.com>
+ <YH4VdPNO9cdzc5MD@atmark-techno.com>
+In-Reply-To: <YH4VdPNO9cdzc5MD@atmark-techno.com>
+From:   Arnd Bergmann <arnd@kernel.org>
+Date:   Tue, 20 Apr 2021 11:10:40 +0200
+X-Gmail-Original-Message-ID: <CAK8P3a1tPQm1Qj2KZu2jOM=TUP0dJgP4G9eKkWfv-PZEAWEhyA@mail.gmail.com>
+Message-ID: <CAK8P3a1tPQm1Qj2KZu2jOM=TUP0dJgP4G9eKkWfv-PZEAWEhyA@mail.gmail.com>
+Subject: Re: [RFC v1 PATCH 3/3] driver: update all the code that use soc_device_match
+To:     Dominique MARTINET <dominique.martinet@atmark-techno.com>
+Cc:     Geert Uytterhoeven <geert@linux-m68k.org>,
+        "Alice Guo (OSS)" <alice.guo@oss.nxp.com>,
+        gregkh <gregkh@linuxfoundation.org>,
+        Rafael Wysocki <rafael@kernel.org>,
+        =?UTF-8?Q?Horia_Geant=C4=83?= <horia.geanta@nxp.com>,
+        aymen.sghaier@nxp.com, Herbert Xu <herbert@gondor.apana.org.au>,
+        David Miller <davem@davemloft.net>,
+        Tony Lindgren <tony@atomide.com>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Michael Turquette <mturquette@baylibre.com>,
+        Stephen Boyd <sboyd@kernel.org>, Vinod Koul <vkoul@kernel.org>,
+        peter.ujfalusi@gmail.com, Andrzej Hajda <a.hajda@samsung.com>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        Robert Foss <robert.foss@linaro.org>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Kevin Hilman <khilman@baylibre.com>, tomba@kernel.org,
+        jyri.sarha@iki.fi, Joerg Roedel <joro@8bytes.org>,
+        Will Deacon <will@kernel.org>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        Adrian Hunter <adrian.hunter@intel.com>,
+        Kishon <kishon@ti.com>, Jakub Kicinski <kuba@kernel.org>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Roy Pledge <Roy.Pledge@nxp.com>, Leo Li <leoyang.li@nxp.com>,
+        Santosh Shilimkar <ssantosh@kernel.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Eduardo Valentin <edubezval@gmail.com>,
+        Keerthy <j-keerthy@ti.com>, Felipe Balbi <balbi@kernel.org>,
+        Tony Prisk <linux@prisktech.co.nz>,
+        Alan Stern <stern@rowland.harvard.edu>,
+        Wim Van Sebroeck <wim@linux-watchdog.org>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        "open list:HARDWARE RANDOM NUMBER GENERATOR CORE" 
+        <linux-crypto@vger.kernel.org>,
+        linux-omap <linux-omap@vger.kernel.org>,
+        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
+        linux-clk <linux-clk@vger.kernel.org>, dmaengine@vger.kernel.org,
+        dri-devel <dri-devel@lists.freedesktop.org>,
+        "open list:ARM/Amlogic Meson SoC support" 
+        <linux-amlogic@lists.infradead.org>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        "open list:IOMMU DRIVERS" <iommu@lists.linux-foundation.org>,
+        Linux Media Mailing List <linux-media@vger.kernel.org>,
+        linux-mmc <linux-mmc@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>,
+        linux-phy@lists.infradead.org,
+        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
+        linuxppc-dev <linuxppc-dev@lists.ozlabs.org>,
+        linux-staging@lists.linux.dev,
+        "moderated list:ARM/Mediatek SoC..." 
+        <linux-mediatek@lists.infradead.org>,
+        Linux PM list <linux-pm@vger.kernel.org>,
+        USB list <linux-usb@vger.kernel.org>,
+        LINUXWATCHDOG <linux-watchdog@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-syzbot has found a reproducer for the following issue on:
+On Tue, Apr 20, 2021 at 1:44 AM Dominique MARTINET
+<dominique.martinet@atmark-techno.com> wrote:
+> Arnd Bergmann wrote on Mon, Apr 19, 2021 at 02:16:36PM +0200:
+> > For built-in drivers, load order depends on the initcall level and
+> > link order (how things are lined listed in the Makefile hierarchy).
+> >
+> > For loadable modules, this is up to user space in the end.
+> >
+> > Which of the drivers in this scenario are loadable modules?
+>
+> All the drivers involved in my case are built-in (nvmem, soc and final
+> soc_device_match consumer e.g. caam_jr that crashes the kernel if soc is
+> not identified properly).
 
-HEAD commit:    7af08140 Revert "gcov: clang: fix clang-11+ build"
-git tree:       upstream
-console output: https://syzkaller.appspot.com/x/log.txt?x=15416871d00000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=c0a6882014fd3d45
-dashboard link: https://syzkaller.appspot.com/bug?extid=7692cea7450c97fa2a0a
-compiler:       Debian clang version 11.0.1-2
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=145c9ffed00000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=12de31ded00000
+Ok, in that case you may have a chance to just adapt the initcall
+levels. This is somewhat fragile if someone else already relies
+on a particular order, but it's an easy one-line change to change
+a driver e.g. from module_init() or device_initcall() to arch_initcall().
 
-The issue was bisected to:
+> I frankly don't like the idea of moving nvmem/ above soc/ in
+> drivers/Makefile as a "solution" to this (especially as there is one
+> that seems to care about what soc they run on...), so I'll have a look
+> at links first, hopefully that will work out.
 
-commit 1cf8dfe8a661f0462925df943140e9f6d1ea5233
-Author: Peter Zijlstra <peterz@infradead.org>
-Date:   Sat Jul 13 09:21:25 2019 +0000
+Right, that would be way more fragile.
 
-    perf/core: Fix race between close() and fork()
+I think the main problem in this case is the caam driver that really
+should not look into the particular SoC type or even machine
+compatible string. This is something we can do as a last resort
+for compatibility with busted devicetree files, but it appears that
+this driver does it as the primary method for identifying different
+hardware revisions. I would suggest fixing the binding so that
+each SoC that includes one of these devices has a soc specific
+compatible string associated with the device that the driver can
+use as the primary way of identifying the device.
 
-bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=1523f40c600000
-final oops:     https://syzkaller.appspot.com/x/report.txt?x=1723f40c600000
-console output: https://syzkaller.appspot.com/x/log.txt?x=1323f40c600000
+We probably need to keep the old logic around for old dtb files,
+but there can at least be a comment next to that table that
+discourages people from adding more entries there.
 
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+7692cea7450c97fa2a0a@syzkaller.appspotmail.com
-Fixes: 1cf8dfe8a661 ("perf/core: Fix race between close() and fork()")
-
-INFO: task syz-executor890:6628 blocked for more than 143 seconds.
-      Not tainted 5.12.0-rc8-syzkaller #0
-"echo 0 > /proc/sys/kernel/hung_task_timeout_secs" disables this message.
-task:syz-executor890 state:D stack:25968 pid: 6628 ppid:  8391 flags:0x00004004
-Call Trace:
- context_switch kernel/sched/core.c:4322 [inline]
- __schedule+0xa4d/0xf80 kernel/sched/core.c:5073
- schedule+0x14b/0x200 kernel/sched/core.c:5152
- perf_event_free_task+0x575/0x6a0 kernel/events/core.c:12623
- copy_process+0x418f/0x57e0 kernel/fork.c:2376
- kernel_clone+0x21a/0x7d0 kernel/fork.c:2500
- __do_sys_clone kernel/fork.c:2617 [inline]
- __se_sys_clone kernel/fork.c:2601 [inline]
- __x64_sys_clone+0x236/0x2b0 kernel/fork.c:2601
- do_syscall_64+0x2d/0x70 arch/x86/entry/common.c:46
- entry_SYSCALL_64_after_hwframe+0x44/0xae
-RIP: 0033:0x44b6e9
-RSP: 002b:00007fd6c1512208 EFLAGS: 00000246 ORIG_RAX: 0000000000000038
-RAX: ffffffffffffffda RBX: 00000000004d7288 RCX: 000000000044b6e9
-RDX: 9999999999999999 RSI: 0000000000000000 RDI: 0000000022086605
-RBP: 00000000004d7280 R08: ffffffffffffffff R09: 0000000000000000
-R10: 0000000000000000 R11: 0000000000000246 R12: 00000000004d728c
-R13: 00007ffc3bab65ef R14: 00007fd6c1512300 R15: 0000000000022000
-
-Showing all locks held in the system:
-1 lock held by khungtaskd/1623:
- #0: ffffffff8cd10280 (rcu_read_lock){....}-{1:2}, at: rcu_lock_acquire+0x0/0x30 arch/x86/pci/mmconfig_64.c:151
-2 locks held by systemd-journal/4819:
-1 lock held by in:imklog/8079:
- #0: ffff8880163265f0 (&f->f_pos_lock){+.+.}-{3:3}, at: __fdget_pos+0x24e/0x2f0 fs/file.c:974
-2 locks held by syz-executor890/6495:
-
-=============================================
-
-NMI backtrace for cpu 1
-CPU: 1 PID: 1623 Comm: khungtaskd Not tainted 5.12.0-rc8-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-Call Trace:
- __dump_stack lib/dump_stack.c:79 [inline]
- dump_stack+0x202/0x31e lib/dump_stack.c:120
- nmi_cpu_backtrace+0x16c/0x190 lib/nmi_backtrace.c:105
- nmi_trigger_cpumask_backtrace+0x191/0x2f0 lib/nmi_backtrace.c:62
- trigger_all_cpu_backtrace include/linux/nmi.h:146 [inline]
- check_hung_uninterruptible_tasks kernel/hung_task.c:209 [inline]
- watchdog+0xcfb/0xd40 kernel/hung_task.c:294
- kthread+0x39a/0x3c0 kernel/kthread.c:292
- ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:294
-Sending NMI from CPU 1 to CPUs 0:
-NMI backtrace for cpu 0
-CPU: 0 PID: 6495 Comm: syz-executor890 Not tainted 5.12.0-rc8-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-RIP: 0010:orc_find arch/x86/kernel/unwind_orc.c:155 [inline]
-RIP: 0010:unwind_next_frame+0x184/0x1f90 arch/x86/kernel/unwind_orc.c:443
-Code: 89 7c 24 70 0f 84 1a 01 00 00 48 c7 c0 00 00 00 81 49 39 c4 0f 82 16 01 00 00 48 c7 c0 52 83 e0 89 49 39 c4 0f 83 06 01 00 00 <48> c7 c0 00 00 00 81 4c 89 e5 48 29 c5 48 c1 ed 08 48 c7 c0 e8 8d
-RSP: 0000:ffffc9000dd5f720 EFLAGS: 00000087
-RAX: ffffffff89e08352 RBX: ffffc9000dd5f828 RCX: ffffffff9031ab03
-RDX: ffffc9000dd5fc20 RSI: ffffffff814e6de0 RDI: 0000000000000001
-RBP: ffffc9000dd5f815 R08: 0000000000000003 R09: ffffc9000dd5f8b0
-R10: fffff52001babf08 R11: 0000000000000000 R12: ffffffff814e6ddf
-R13: ffffc9000dd5f7e0 R14: dffffc0000000000 R15: 1ffff92001babf02
-FS:  00007fd6c1512700(0000) GS:ffff8880b9c00000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 0000000000022000 CR3: 0000000034d8b000 CR4: 00000000001506f0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-Call Trace:
- arch_stack_walk+0xb2/0xe0 arch/x86/kernel/stacktrace.c:25
- stack_trace_save+0x104/0x1e0 kernel/stacktrace.c:121
- kasan_save_stack mm/kasan/common.c:38 [inline]
- kasan_set_track mm/kasan/common.c:46 [inline]
- set_alloc_info mm/kasan/common.c:427 [inline]
- __kasan_slab_alloc+0x8f/0xc0 mm/kasan/common.c:460
- kasan_slab_alloc include/linux/kasan.h:223 [inline]
- slab_post_alloc_hook mm/slab.h:516 [inline]
- slab_alloc_node mm/slub.c:2907 [inline]
- slab_alloc mm/slub.c:2915 [inline]
- kmem_cache_alloc+0x1c3/0x350 mm/slub.c:2920
- __sigqueue_alloc+0x2c2/0x490 kernel/signal.c:435
- __send_signal+0x210/0xe50 kernel/signal.c:1116
- force_sig_info_to_task+0x2a4/0x3f0 kernel/signal.c:1334
- force_sig_fault_to_task kernel/signal.c:1673 [inline]
- force_sig_fault+0x11e/0x1c0 kernel/signal.c:1680
- __bad_area_nosemaphore+0x390/0x570 arch/x86/mm/fault.c:840
- handle_page_fault arch/x86/mm/fault.c:1475 [inline]
- exc_page_fault+0xa1/0x1e0 arch/x86/mm/fault.c:1531
- asm_exc_page_fault+0x1e/0x30 arch/x86/include/asm/idtentry.h:577
-RIP: 0033:0x22000
-Code: Unable to access opcode bytes at RIP 0x21fd6.
-RSP: 002b:00007fd6c1512220 EFLAGS: 00010206
-RAX: ffffffffffffffff RBX: 00000000004d7288 RCX: ffffffffffffffbc
-RDX: 0000000000000000 RSI: 0000000000000000 RDI: 0000000020000000
-RBP: 00000000004d7280 R08: 0000000000000000 R09: 00007fd6c1512300
-R10: 00000000ffffffff R11: 0000000000000246 R12: 00000000004d728c
-R13: 00007ffc3bab65ef R14: 00007fd6c1512300 R15: 0000000000022000
-
+      Arnd
