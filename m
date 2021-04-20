@@ -2,37 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 081763650D0
+	by mail.lfdr.de (Postfix) with ESMTP id 539AB3650D1
 	for <lists+netdev@lfdr.de>; Tue, 20 Apr 2021 05:21:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234753AbhDTDV2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 19 Apr 2021 23:21:28 -0400
-Received: from mail.kernel.org ([198.145.29.99]:40646 "EHLO mail.kernel.org"
+        id S234915AbhDTDV3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 19 Apr 2021 23:21:29 -0400
+Received: from mail.kernel.org ([198.145.29.99]:40656 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S234265AbhDTDVL (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S234380AbhDTDVL (ORCPT <rfc822;netdev@vger.kernel.org>);
         Mon, 19 Apr 2021 23:21:11 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 1475E613B4;
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 93B72613AB;
         Tue, 20 Apr 2021 03:20:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1618888840;
-        bh=hxpSVyVtMyPrAyYy5AWo1Z9wtuIaPg8oSFk5ItnJHNk=;
+        bh=etugPg9Tbue29xr1oyCpGqPo4q6VfhRs4BfePpKKuVM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=hfyGN5u3WxBmMggsBOSFp39C/LVXmsY8PKD5pFN2n/gVLKQiUpojUHUaVnUEGV58/
-         /4otVi8jg9t3dvbD0e/b2lMXgatPrZo/1ZpPXlT4cvZ3jm0lLRnPVAWbs3RhxSYSYp
-         M20JSOfOlJkQay2VMOFpc4t0skyAZ/z4cGS32N4Y7tF3yh0GaiaIZc9kFSaUqywjFo
-         HITMlIp5OaYimMl/Rcxc/FiYeNs5MOipKTgokJzGF76KKJFg4L2EJfiPA734/PCFfM
-         hPVjJtXHVZVeDrktI+S2hwGDpUpieKWYeIfRD+yzu+ynHXlYNyxDTMMzcpK/g692ig
-         zA9ljWsqlwDmQ==
+        b=iZbvCdTKcmBSRP9inDipqVHBWv/haYh3UAjO3kDKQTkFodv6Yx/7FOQNNHOD6nh+N
+         iYVy8qL24o7sH7jFDhwGbGN/ruZss0D7CCsS/NT7lmloS4vUpLlLLnPagPGmZBuoL3
+         og9OMGRDyovb7UmBFpoewltSgk1LJhgGDP4kiCg12A75tvTT/2ETE7j9r2pkwsbpLm
+         n2qDvbXbBR8TdAUETZSiQKq9Ff+lGycyrKJxNrstIb0SLI9IFCe7jDfk0a4Q1X7P1Q
+         xjuLLi58dGedOQQxYiWNCadvnxQZ842DGeck7V8y0CgcfmNc8Qk2XJZdFUr95tWo4c
+         jvOYSiISOCZ4A==
 From:   Saeed Mahameed <saeed@kernel.org>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
 Cc:     netdev@vger.kernel.org, Tariq Toukan <tariqt@nvidia.com>,
         Yevgeny Kliteynik <kliteyn@nvidia.com>,
-        Erez Shitrit <erezsh@mellanox.com>,
+        Alex Vesker <valex@mellanox.com>,
         Saeed Mahameed <saeedm@nvidia.com>
-Subject: [net-next 14/15] net/mlx5: DR, Add support for force-loopback QP
-Date:   Mon, 19 Apr 2021 20:20:17 -0700
-Message-Id: <20210420032018.58639-15-saeed@kernel.org>
+Subject: [net-next 15/15] net/mlx5: DR, Add support for isolate_vl_tc QP
+Date:   Mon, 19 Apr 2021 20:20:18 -0700
+Message-Id: <20210420032018.58639-16-saeed@kernel.org>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20210420032018.58639-1-saeed@kernel.org>
 References: <20210420032018.58639-1-saeed@kernel.org>
@@ -44,198 +44,105 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Yevgeny Kliteynik <kliteyn@nvidia.com>
 
-When supported by the device, SW steering RoCE RC QP that is used to
-write/read to/from ICM will be created with force-loopback attribute.
-Such QP doesn't require GID index upon creation.
+When using SW steering, rule insertion rate depends on the RDMA RC QP
+performance used for writing to the ICM. During stress this QP is competing
+on the HW resources with all the other QPs that are used to send data.
+To protect SW steering QP's performance in such cases, we set this QP to
+use isolated VL. The VL number is reserved by FW and is not exposed to the
+driver.
+Support for this QP on isolated VL exists only when both force-loopback and
+isolate_vl_tc capabilities are set.
 
-Signed-off-by: Erez Shitrit <erezsh@mellanox.com>
+Signed-off-by: Alex Vesker <valex@mellanox.com>
 Signed-off-by: Yevgeny Kliteynik <kliteyn@nvidia.com>
 Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 ---
- .../mellanox/mlx5/core/steering/dr_cmd.c      | 36 +++++++++++++++++++
- .../mellanox/mlx5/core/steering/dr_send.c     | 34 +++++++++++++++---
- .../mellanox/mlx5/core/steering/dr_types.h    |  7 ++++
- include/linux/mlx5/mlx5_ifc.h                 |  7 ++--
- 4 files changed, 77 insertions(+), 7 deletions(-)
+ drivers/net/ethernet/mellanox/mlx5/core/steering/dr_cmd.c  | 2 ++
+ drivers/net/ethernet/mellanox/mlx5/core/steering/dr_send.c | 7 +++++++
+ .../net/ethernet/mellanox/mlx5/core/steering/dr_types.h    | 2 ++
+ include/linux/mlx5/mlx5_ifc.h                              | 4 +++-
+ 4 files changed, 14 insertions(+), 1 deletion(-)
 
 diff --git a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_cmd.c b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_cmd.c
-index 6f9d7aa9fb4c..68d898e144fb 100644
+index 68d898e144fb..5970cb8fc0c0 100644
 --- a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_cmd.c
 +++ b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_cmd.c
-@@ -85,15 +85,51 @@ int mlx5dr_cmd_query_esw_caps(struct mlx5_core_dev *mdev,
- 	return 0;
- }
+@@ -130,6 +130,8 @@ int mlx5dr_cmd_query_device(struct mlx5_core_dev *mdev,
+ 			MLX5_CAP_ROCE(mdev, fl_rc_qp_when_roce_enabled);
+ 	}
  
-+static int dr_cmd_query_nic_vport_roce_en(struct mlx5_core_dev *mdev,
-+					  u16 vport, bool *roce_en)
-+{
-+	u32 out[MLX5_ST_SZ_DW(query_nic_vport_context_out)] = {};
-+	u32 in[MLX5_ST_SZ_DW(query_nic_vport_context_in)] = {};
-+	int err;
-+
-+	MLX5_SET(query_nic_vport_context_in, in, opcode,
-+		 MLX5_CMD_OP_QUERY_NIC_VPORT_CONTEXT);
-+	MLX5_SET(query_nic_vport_context_in, in, vport_number, vport);
-+	MLX5_SET(query_nic_vport_context_in, in, other_vport, !!vport);
-+
-+	err = mlx5_cmd_exec(mdev, in, sizeof(in), out, sizeof(out));
-+	if (err)
-+		return err;
-+
-+	*roce_en = MLX5_GET(query_nic_vport_context_out, out,
-+			    nic_vport_context.roce_en);
-+	return 0;
-+}
-+
- int mlx5dr_cmd_query_device(struct mlx5_core_dev *mdev,
- 			    struct mlx5dr_cmd_caps *caps)
- {
-+	bool roce_en;
-+	int err;
-+
- 	caps->prio_tag_required	= MLX5_CAP_GEN(mdev, prio_tag_required);
- 	caps->eswitch_manager	= MLX5_CAP_GEN(mdev, eswitch_manager);
- 	caps->gvmi		= MLX5_CAP_GEN(mdev, vhca_id);
- 	caps->flex_protocols	= MLX5_CAP_GEN(mdev, flex_parser_protocols);
- 	caps->sw_format_ver	= MLX5_CAP_GEN(mdev, steering_format_version);
- 
-+	if (MLX5_CAP_GEN(mdev, roce)) {
-+		err = dr_cmd_query_nic_vport_roce_en(mdev, 0, &roce_en);
-+		if (err)
-+			return err;
-+
-+		caps->roce_caps.roce_en = roce_en;
-+		caps->roce_caps.fl_rc_qp_when_roce_disabled =
-+			MLX5_CAP_ROCE(mdev, fl_rc_qp_when_roce_disabled);
-+		caps->roce_caps.fl_rc_qp_when_roce_enabled =
-+			MLX5_CAP_ROCE(mdev, fl_rc_qp_when_roce_enabled);
-+	}
++	caps->isolate_vl_tc = MLX5_CAP_GEN(mdev, isolate_vl_tc_new);
 +
  	if (caps->flex_protocols & MLX5_FLEX_PARSER_ICMP_V4_ENABLED) {
  		caps->flex_parser_id_icmp_dw0 = MLX5_CAP_GEN(mdev, flex_parser_id_icmp_dw0);
  		caps->flex_parser_id_icmp_dw1 = MLX5_CAP_GEN(mdev, flex_parser_id_icmp_dw1);
 diff --git a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_send.c b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_send.c
-index 37377d668057..69d623bedefe 100644
+index 69d623bedefe..12cf323a5943 100644
 --- a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_send.c
 +++ b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_send.c
-@@ -32,6 +32,7 @@ struct dr_qp_rtr_attr {
- 	u8 min_rnr_timer;
- 	u8 sgid_index;
- 	u16 udp_src_port;
-+	u8 fl:1;
+@@ -46,6 +46,7 @@ struct dr_qp_init_attr {
+ 	u32 pdn;
+ 	u32 max_send_wr;
+ 	struct mlx5_uars_page *uar;
++	u8 isolate_vl_tc:1;
  };
  
- struct dr_qp_rts_attr {
-@@ -650,6 +651,7 @@ static int dr_cmd_modify_qp_init2rtr(struct mlx5_core_dev *mdev,
- 			 attr->udp_src_port);
- 
- 	MLX5_SET(qpc, qpc, primary_address_path.vhca_port_num, attr->port_num);
-+	MLX5_SET(qpc, qpc, primary_address_path.fl, attr->fl);
- 	MLX5_SET(qpc, qpc, min_rnr_nak, 1);
- 
- 	MLX5_SET(init2rtr_qp_in, in, opcode, MLX5_CMD_OP_INIT2RTR_QP);
-@@ -658,6 +660,19 @@ static int dr_cmd_modify_qp_init2rtr(struct mlx5_core_dev *mdev,
- 	return mlx5_cmd_exec_in(mdev, init2rtr_qp, in);
- }
- 
-+static bool dr_send_allow_fl(struct mlx5dr_cmd_caps *caps)
-+{
-+	/* Check whether RC RoCE QP creation with force loopback is allowed.
-+	 * There are two separate capability bits for this:
-+	 *  - force loopback when RoCE is enabled
-+	 *  - force loopback when RoCE is disabled
-+	 */
-+	return ((caps->roce_caps.roce_en &&
-+		 caps->roce_caps.fl_rc_qp_when_roce_enabled) ||
-+		(!caps->roce_caps.roce_en &&
-+		 caps->roce_caps.fl_rc_qp_when_roce_disabled));
-+}
+ static int dr_parse_cqe(struct mlx5dr_cq *dr_cq, struct mlx5_cqe64 *cqe64)
+@@ -158,6 +159,7 @@ static struct mlx5dr_qp *dr_create_rc_qp(struct mlx5_core_dev *mdev,
+ 	qpc = MLX5_ADDR_OF(create_qp_in, in, qpc);
+ 	MLX5_SET(qpc, qpc, st, MLX5_QP_ST_RC);
+ 	MLX5_SET(qpc, qpc, pm_state, MLX5_QP_PM_MIGRATED);
++	MLX5_SET(qpc, qpc, isolate_vl_tc, attr->isolate_vl_tc);
+ 	MLX5_SET(qpc, qpc, pd, attr->pdn);
+ 	MLX5_SET(qpc, qpc, uar_page, attr->uar->index);
+ 	MLX5_SET(qpc, qpc, log_page_size,
+@@ -924,6 +926,11 @@ int mlx5dr_send_ring_alloc(struct mlx5dr_domain *dmn)
+ 	init_attr.pdn = dmn->pdn;
+ 	init_attr.uar = dmn->uar;
+ 	init_attr.max_send_wr = QUEUE_SIZE;
 +
- static int dr_prepare_qp_to_rts(struct mlx5dr_domain *dmn)
- {
- 	struct mlx5dr_qp *dr_qp = dmn->send_ring->qp;
-@@ -676,17 +691,26 @@ static int dr_prepare_qp_to_rts(struct mlx5dr_domain *dmn)
- 	}
- 
- 	/* RTR */
--	ret = mlx5dr_cmd_query_gid(dmn->mdev, port, gid_index, &rtr_attr.dgid_attr);
--	if (ret)
--		return ret;
--
- 	rtr_attr.mtu		= mtu;
- 	rtr_attr.qp_num		= dr_qp->qpn;
- 	rtr_attr.min_rnr_timer	= 12;
- 	rtr_attr.port_num	= port;
--	rtr_attr.sgid_index	= gid_index;
- 	rtr_attr.udp_src_port	= dmn->info.caps.roce_min_src_udp;
- 
-+	/* If QP creation with force loopback is allowed, then there
-+	 * is no need for GID index when creating the QP.
-+	 * Otherwise we query GID attributes and use GID index.
-+	 */
-+	rtr_attr.fl = dr_send_allow_fl(&dmn->info.caps);
-+	if (!rtr_attr.fl) {
-+		ret = mlx5dr_cmd_query_gid(dmn->mdev, port, gid_index,
-+					   &rtr_attr.dgid_attr);
-+		if (ret)
-+			return ret;
++	/* Isolated VL is applicable only if force loopback is supported */
++	if (dr_send_allow_fl(&dmn->info.caps))
++		init_attr.isolate_vl_tc = dmn->info.caps.isolate_vl_tc;
 +
-+		rtr_attr.sgid_index = gid_index;
-+	}
-+
- 	ret = dr_cmd_modify_qp_init2rtr(dmn->mdev, dr_qp, &rtr_attr);
- 	if (ret) {
- 		mlx5dr_err(dmn, "Failed modify QP init2rtr\n");
+ 	spin_lock_init(&dmn->send_ring->lock);
+ 
+ 	dmn->send_ring->qp = dr_create_rc_qp(dmn->mdev, &init_attr);
 diff --git a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_types.h b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_types.h
-index 7c1ab0b6417e..8de70566f85b 100644
+index 8de70566f85b..67460c42a99b 100644
 --- a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_types.h
 +++ b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_types.h
-@@ -747,6 +747,12 @@ struct mlx5dr_cmd_vport_cap {
- 	u32 num;
- };
- 
-+struct mlx5dr_roce_cap {
-+	u8 roce_en:1;
-+	u8 fl_rc_qp_when_roce_disabled:1;
-+	u8 fl_rc_qp_when_roce_enabled:1;
-+};
-+
- struct mlx5dr_cmd_caps {
- 	u16 gvmi;
- 	u64 nic_rx_drop_address;
-@@ -783,6 +789,7 @@ struct mlx5dr_cmd_caps {
- 	struct mlx5dr_esw_caps esw_caps;
+@@ -790,6 +790,7 @@ struct mlx5dr_cmd_caps {
  	struct mlx5dr_cmd_vport_cap *vports_caps;
  	bool prio_tag_required;
-+	struct mlx5dr_roce_cap roce_caps;
+ 	struct mlx5dr_roce_cap roce_caps;
++	u8 isolate_vl_tc:1;
  };
  
  struct mlx5dr_domain_rx_tx {
+@@ -1164,6 +1165,7 @@ struct mlx5dr_cmd_qp_create_attr {
+ 	u32 sq_wqe_cnt;
+ 	u32 rq_wqe_cnt;
+ 	u32 rq_wqe_shift;
++	u8 isolate_vl_tc:1;
+ };
+ 
+ int mlx5dr_cmd_query_gid(struct mlx5_core_dev *mdev, u8 vhca_port_num,
 diff --git a/include/linux/mlx5/mlx5_ifc.h b/include/linux/mlx5/mlx5_ifc.h
-index aa6effe1dd6d..4d9569c4b96c 100644
+index 4d9569c4b96c..52b7cabcde08 100644
 --- a/include/linux/mlx5/mlx5_ifc.h
 +++ b/include/linux/mlx5/mlx5_ifc.h
-@@ -961,7 +961,9 @@ struct mlx5_ifc_roce_cap_bits {
- 	u8         roce_apm[0x1];
- 	u8         reserved_at_1[0x3];
- 	u8         sw_r_roce_src_udp_port[0x1];
--	u8         reserved_at_5[0x19];
-+	u8         fl_rc_qp_when_roce_disabled[0x1];
-+	u8         fl_rc_qp_when_roce_enabled[0x1];
-+	u8         reserved_at_7[0x17];
- 	u8	   qp_ts_format[0x2];
- 
- 	u8         reserved_at_20[0x60];
-@@ -2942,7 +2944,8 @@ struct mlx5_ifc_qpc_bits {
- 	u8         state[0x4];
- 	u8         lag_tx_port_affinity[0x4];
- 	u8         st[0x8];
--	u8         reserved_at_10[0x3];
-+	u8         reserved_at_10[0x2];
-+	u8	   isolate_vl_tc[0x1];
- 	u8         pm_state[0x2];
- 	u8         reserved_at_15[0x1];
- 	u8         req_e2e_credit_mode[0x2];
+@@ -1319,7 +1319,9 @@ struct mlx5_ifc_cmd_hca_cap_bits {
+ 	u8         log_max_srq_sz[0x8];
+ 	u8         log_max_qp_sz[0x8];
+ 	u8         event_cap[0x1];
+-	u8         reserved_at_91[0x7];
++	u8         reserved_at_91[0x2];
++	u8         isolate_vl_tc_new[0x1];
++	u8         reserved_at_94[0x4];
+ 	u8         prio_tag_required[0x1];
+ 	u8         reserved_at_99[0x2];
+ 	u8         log_max_qp[0x5];
 -- 
 2.30.2
 
