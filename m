@@ -2,147 +2,176 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EB7B7365190
-	for <lists+netdev@lfdr.de>; Tue, 20 Apr 2021 06:41:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 85721365198
+	for <lists+netdev@lfdr.de>; Tue, 20 Apr 2021 06:47:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229598AbhDTEmG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 20 Apr 2021 00:42:06 -0400
-Received: from mail-eopbgr130081.outbound.protection.outlook.com ([40.107.13.81]:64139
-        "EHLO EUR01-HE1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S229507AbhDTEmF (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 20 Apr 2021 00:42:05 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=DV4KikpvFZRf+VYR9bp9RpAj5GwNfOOzCcOw3b4zjfmiML0UETKqCwoARqqZKYDE7oqPdw+wmJrrgFWCDvm1izH9vkQEeT4RTsBTfmDUnf/hnPQcKTKrt978HAzlFhSzReHAPoRD9z1usGR24zeeF5vxl6dkVXqP10d16iPGv+JAZQ+UnwAEuUOqBYton2qTxSKaoHEfZiA1JrrmzRbiJTdoBRqTvF4LO/aySnZLNayB+B52bzRE+b5bGnIc2tGDrzvmg1ja9X1hIBUV2nJag65LQmzsKW1nZ7pIyTLv2OoP03laVGxiqBEvYB2WWIvIZV0ZZjIrkZYyPnFZFTzUZA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=+M9uySCk+KyGwiDzJ/Ztn/u5IiYgYhfjUWf156FUiik=;
- b=gX2KRP5Zeiek1927cqzEXjUHj4CmQ04h7jHn7jonhVuZG9AC71dkiRCc1Rs7s+0PzkqTXsnldZFmi5M02+GN9Fi77J6xThNOxkWDGFP1HXzmGeVfUbbMp/GkzfbKojZUtvh51kV6rxeCj3VWD8WYe+GUBG+hJnIc2kIKNJnzN1awIstkV2ejSNNk2kQcY0ExItCZFQtmoTat2gng7iJJebL4+ZcW5ODhnBRObeNkXxaAaCOnao9tKafe1BZ/sYrwl8zU1WxEHGaNW2/VAxvFTagGbMDJaQzzfJUKVnOODsbTV0GEwM6geAabqOJfzzGefLeIOYauWhfQlCJ+oHoOZA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=+M9uySCk+KyGwiDzJ/Ztn/u5IiYgYhfjUWf156FUiik=;
- b=sCz4zSrjU96ChUmvtW3LK+M6JpqKIu3Oj3vdYS9qiimRte0bAgBLXItrfJF9VQYJEUR1PUIeb9SF5HqQybcvwMXD1KGbnROAlYMYySQFVp2A+Cc7qqCp0zLbYB9Yfh5cxKntLriT4G5IWQJRWgd3rDwnpRorAKfRajo2hJXMtOs=
-Received: from AM7PR04MB6885.eurprd04.prod.outlook.com (2603:10a6:20b:10d::24)
- by AM7PR04MB6904.eurprd04.prod.outlook.com (2603:10a6:20b:106::23) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4042.19; Tue, 20 Apr
- 2021 04:41:32 +0000
-Received: from AM7PR04MB6885.eurprd04.prod.outlook.com
- ([fe80::358e:fb22:2f7c:2777]) by AM7PR04MB6885.eurprd04.prod.outlook.com
- ([fe80::358e:fb22:2f7c:2777%3]) with mapi id 15.20.4042.024; Tue, 20 Apr 2021
- 04:41:32 +0000
-From:   "Y.b. Lu" <yangbo.lu@nxp.com>
-To:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-CC:     "David S . Miller" <davem@davemloft.net>,
-        Richard Cochran <richardcochran@gmail.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        id S229874AbhDTErd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 20 Apr 2021 00:47:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36190 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229825AbhDTErc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 20 Apr 2021 00:47:32 -0400
+Received: from mail-oi1-x233.google.com (mail-oi1-x233.google.com [IPv6:2607:f8b0:4864:20::233])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E6223C06174A
+        for <netdev@vger.kernel.org>; Mon, 19 Apr 2021 21:46:57 -0700 (PDT)
+Received: by mail-oi1-x233.google.com with SMTP id i81so37786570oif.6
+        for <netdev@vger.kernel.org>; Mon, 19 Apr 2021 21:46:57 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=sender:date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=UO9nTuCIT9hOADKmHVu9Q6LDo50ZfH52u0q+oxEEAHc=;
+        b=j/5ZHSClavO58DdOR8CQCuVPItUEwUA4i9HSWSH2FvfvZiGzVKWn5cCZtAMeJJBNQa
+         fcvpLt3NSoj1hwt9tNcGDNPny4tGaguD40VcvKxN7SpHPe94iQCR5o3Z7/UeIOVS8m0J
+         l6QJmJ1SggSFttQsmZYTowtrpKmVMhr8k9PvsJiQ/gR01mU/kbjiS3icdp5mNLXRE0xD
+         kXWCMzWLOSOKpcJ1tzkzgXjDFSw9Z4NzZzPUNo7wkJ9KVTqaUYCyC9NQ8pGr46bk81u6
+         jACGdjOTH3LlpRHiiifXEWJixol54ep9ndNgfmM+VPbbwLpFHPRzssyZjr7ej/yHTPkB
+         jDLg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
+         :references:mime-version:content-disposition:in-reply-to:user-agent;
+        bh=UO9nTuCIT9hOADKmHVu9Q6LDo50ZfH52u0q+oxEEAHc=;
+        b=lvi+zbpTPExLUK7mJcGZpRgoMW348x8t1iLFs2fq8qeEXd0pzc22SGJmegjIeyyNig
+         qOcfrtx8ElTbLZeTBB0LScXBtIbHV2vijIp6Jq4RbZOrwryg9ikjCdPl9w3e/i5zlrUe
+         /buhkMdZjvPdJzo0x4cxvZIhBS1ft0CBOGWihbbz3s2CoJUZXrUtYkOH/XWmJXRQWLkE
+         weVWl5ghBLOHdfw+Mhk95hlzFjUgxBxrzpfTM+PpEHImQCUHqiW9ExwpWJJ1sDBKvZlq
+         D8L4Btq9RmFNjjIP6oyWnO5e3RDLecg0JGZ0VyHikcD/dcnmTtv0UVA/O5pBSa1i+e7X
+         zh8A==
+X-Gm-Message-State: AOAM532Qf1AfGA7z5AMA7YcUreJ4rJxK2tVVMeSoL6noN7W2RfltrLn7
+        1Bs9mUOIiBZ85uheAb8sV4UtytIe0rY=
+X-Google-Smtp-Source: ABdhPJxADw0CenHCjbN9MQoMQ26Fd9xaAM4JGpqTObX2mFtMlTzju/EXU9GsK2Iiw6IEKPkSZB0Y6A==
+X-Received: by 2002:aca:4791:: with SMTP id u139mr1753600oia.83.1618894017330;
+        Mon, 19 Apr 2021 21:46:57 -0700 (PDT)
+Received: from localhost ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
+        by smtp.gmail.com with ESMTPSA id a73sm2098261oib.23.2021.04.19.21.46.56
+        (version=TLS1_2 cipher=ECDHE-ECDSA-CHACHA20-POLY1305 bits=256/256);
+        Mon, 19 Apr 2021 21:46:56 -0700 (PDT)
+Sender: Guenter Roeck <groeck7@gmail.com>
+Date:   Mon, 19 Apr 2021 21:46:55 -0700
+From:   Guenter Roeck <linux@roeck-us.net>
+To:     Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+Cc:     netdev@vger.kernel.org, "Michael S. Tsirkin" <mst@redhat.com>,
+        Jason Wang <jasowang@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>,
-        Russell King <linux@armlinux.org.uk>
-Subject: RE: [net-next] enetc: fix locking for one-step timestamping packet
- transfer
-Thread-Topic: [net-next] enetc: fix locking for one-step timestamping packet
- transfer
-Thread-Index: AQHXMBbxUAh74ZmQ7kaFEfOTMU7Q+qq83dfA
-Date:   Tue, 20 Apr 2021 04:41:32 +0000
-Message-ID: <AM7PR04MB68858E23D828E7C24581EE3AF8489@AM7PR04MB6885.eurprd04.prod.outlook.com>
-References: <20210413034817.8924-1-yangbo.lu@nxp.com>
-In-Reply-To: <20210413034817.8924-1-yangbo.lu@nxp.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: vger.kernel.org; dkim=none (message not signed)
- header.d=none;vger.kernel.org; dmarc=none action=none header.from=nxp.com;
-x-originating-ip: [119.31.174.73]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: bece01ba-a8bf-4b89-1bb0-08d903b692b1
-x-ms-traffictypediagnostic: AM7PR04MB6904:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <AM7PR04MB6904327140E882199F825075F8489@AM7PR04MB6904.eurprd04.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:5236;
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: 5497a14iVNjhBkYHb9YkX4V9Vq8GnuJM8yEyIBI5Mz4u+Kg9eLp1JLM9ltteGD9XbwYGaO+GNmKrx2xD75+IxXV/lNpOVYn5eN7v6id6NlxikazRvxIIb4wcOnLxuySPZSoYVRWUNKeTVkjZDlTc1yoFjFjVwfg6Ri/HgqV+k4FJqtSOV9GewS3Qhah+xBfSkhTBmgRqgVnRV1mSaixV57hQL4fmT9oiJKRR60wfiQRdcXTh90RDfbZg6t3knSJYJ+/YamR8DtcYR9vk5G1oUGmVorHe8+KFei4LkRDpnHnjI/WKfedyxe4Dv2eF5Gppr1bjsr6LuPgQUPp/EMaaDuCwb1RrOrKkuskKCkIikhxsbwdgz86Nu8gTAPOLUojijd/3d7wtS0UumlAmxn0lI7no5jqQbOXsVUig/hQmo10UOn1UWUIGGAPub8FXPJj1h9bfu+et/f2DdWHdSDigYmJ9hJTGFFgf0yltARMrVNKlptHwpkMPh3urgstQoh+wQb4nX235fVgHRQXY1aoG1kQoqZXmnA+LdJ1qfnr2JEJXONxHWAgAuT7dxkyGNZmlJO0A7XnL3AB4NipMkX4y3HLSlJZ8jtERS1wf3VTs+U4=
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM7PR04MB6885.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(346002)(39860400002)(376002)(366004)(136003)(396003)(64756008)(66476007)(71200400001)(66446008)(66556008)(478600001)(5660300002)(38100700002)(66946007)(6916009)(122000001)(76116006)(7696005)(6506007)(9686003)(4326008)(8936002)(52536014)(8676002)(53546011)(2906002)(26005)(83380400001)(33656002)(86362001)(186003)(54906003)(316002)(55016002);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata: =?gb2312?B?RnBGU0dqT1hOWDJ3UzVTaXJoWjVVVmU4WjZ4b0RZT0Z4ZWExLzlmRE1PeVN6?=
- =?gb2312?B?dlM4MWV4eUpTS050bFU3WVlkMHhjR3ZqZHh6akhjaVhNNlJlMnMzbjhFdG5Z?=
- =?gb2312?B?NmFYcDNqMUVkRDV0TVFyaEkzKzFTK2h6QzAvVG5ERkRhUHFacDk3MEpsZm0w?=
- =?gb2312?B?Q0wvYkluZDJOL0xZQWI4czFPekQrSG0rakNLU0JUZ3Vla3FwUkFWZXgya2M0?=
- =?gb2312?B?bTczdktsZUhDSWZES285NHhDWnRCenZLWmtOSnRlUkZGbHl4ZzZMT2hMU1N1?=
- =?gb2312?B?UnJBZ0JRd2NjeW5JblJUcEpqajlGKzY4T0xkUlpkajhYalhiSmNCcmNWZVMv?=
- =?gb2312?B?Q1hFYmFOellkR1AvVitrWFlseHpjYzgrNnh2UVdsTWRsVVM4RGkyNTdaRVUy?=
- =?gb2312?B?VC9pWXRCbXFHMC9xMlQ1S3Q2NktpQk5HL2tKQUc0bmxRUThLRmwzdlJCREk0?=
- =?gb2312?B?bVFvZS85dTI2QkpucGdSN0huZG5LQ0ZnMHhyR0dlSERlMTBrZjFGNkxJUjRI?=
- =?gb2312?B?dmkvYzhIWVlBaFRxRVpzdVkrenk0MG0vempiRHhmSWk3VysvZUVFa0FpcVNl?=
- =?gb2312?B?LzhNWTRkVnZvOGlEL25rQ1FSZVBXQkV5UTUrTzVhTldOTzg2aDBJdi9IRUxT?=
- =?gb2312?B?c3RoNHhUKzIzZVFkWVJXZi9KMU9abzFjREMzdjgwSEtDd2g3Ylpnb3lPK0xH?=
- =?gb2312?B?RUdlRnhDVnNURVJSWDJzU1FqZGlPcUM1V3lXTnkrZ09SZFg5OGR5clBFWTY1?=
- =?gb2312?B?V3o4T254MGlzblkrTy9hcEpSczc0aDlabzdqME5JUjFxOWR3MFRFbXhTUy9D?=
- =?gb2312?B?cDYwbnNpak1iTG1LRmZXTSswWit1N0hOejk4K1l4T0NGeFRYUDNVTGFqK3Rx?=
- =?gb2312?B?Z0xWK2lmRGdkNzNuM3lRY2M4MThESnRwbitVVFc1TThqdGc3NFMwZmdHdmkx?=
- =?gb2312?B?elZ2a3BnUlNJdmVnTkU1NW5YdjcvVVhyOXNTY0EvekM0M2syVTdiZVQrSW9k?=
- =?gb2312?B?K3F5dFU5TUpUUEg1YnNZU0tJbGNUMXVUMjBVVWtRWllOZzlXaWhhNzlBTlJF?=
- =?gb2312?B?bkwrTE4zWENyMzY0RWZ4b29kWGdxSzl0Zk04eElDbEhFdTRkTkdxaEpqMXJt?=
- =?gb2312?B?djZvNkRySXF5RWJ0dzB3UHJSeFBjMDNnQVlXTUhCenplMWZkSHJ4UE9JYTV2?=
- =?gb2312?B?SkdYeGRzZkQ5K3BKbzJ1ekhtOS9IMllaSEdMdFM3SFo2R0dJTHJ6cTBra3hC?=
- =?gb2312?B?OEJQcStpamsrUXFUVlRzanc2ZGdFVzBmZyszQjZHQ0I0NXpSSy9UTTc4NTRn?=
- =?gb2312?B?Uzc4eU1tMGhveUwzOUp1Yk1tMnIwMkdIMjdWRGxNWkNMYnI2bjBLSGgxcjk5?=
- =?gb2312?B?NXBTK0djTWNKRXVWY1prSFo3NStwK2p0UTNIcnNIaVJYT2xLc1Y1V0JLRzM0?=
- =?gb2312?B?ZDZVaG5VZzdzMm11SFh4UU9kMEVIR1dPNDVGNERpOWtiVUNPOFdWUFdvQlpm?=
- =?gb2312?B?Uk1CdWE2ZFFJakIwSWxVQUFQYWpxMkd3UzdqNjQvVFN2SWowNkFzY2lqZ2c0?=
- =?gb2312?B?cWxPaWdudDhJbjdLUUU5Yk4vMzdYaTU4UklIekcxenRDbS8rNVBtdE1YTERV?=
- =?gb2312?B?bnNIT1NhUFZlSnlwQnFTSlFldldwVkdtRkxWRUwycW1xM3NKWDBnWlFnQ2ZN?=
- =?gb2312?B?RFZWNld2L21XUCtZcmlmVTdtenB5eGh6cWF0U2V1RWVXUWovOFVub0o1cDN1?=
- =?gb2312?Q?BhWKilcIv4F4sPYwUBSVIIEDQwNOrmab+L8dEYB?=
-Content-Type: text/plain; charset="gb2312"
-Content-Transfer-Encoding: base64
+        virtualization@lists.linux-foundation.org
+Subject: Re: [net-next, v2] virtio-net: page_to_skb() use build_skb when
+ there's sufficient tailroom
+Message-ID: <20210420044655.GA144160@roeck-us.net>
+References: <20210414015221.87554-1-xuanzhuo@linux.alibaba.com>
 MIME-Version: 1.0
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: AM7PR04MB6885.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: bece01ba-a8bf-4b89-1bb0-08d903b692b1
-X-MS-Exchange-CrossTenant-originalarrivaltime: 20 Apr 2021 04:41:32.8313
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: MejGVrn49HSjj5FrUZe+PXOlf4Cpqb3EFeTr7JDRjMa2WkZRPl+4vQX/pq/n9rD/Qfi5V7bfERDVfyJY9B5smQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM7PR04MB6904
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210414015221.87554-1-xuanzhuo@linux.alibaba.com>
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-SGksDQoNCkkgdGhpbmsgdGhpcyBwYXRjaCB3YXMgcmV2aWV3ZWQgYW5kIG5vIG9iamVjdGlvbiBu
-b3csIHJpZ2h0PyAoSSBzZWUgc3RhdHVzIGlzICIgQ2hhbmdlcyBSZXF1ZXN0ZWQgIi4pDQpUaGFu
-a3MuDQoNCj4gLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj4gRnJvbTogWWFuZ2JvIEx1IDx5
-YW5nYm8ubHVAbnhwLmNvbT4NCj4gU2VudDogMjAyMcTqNNTCMTPI1SAxMTo0OA0KPiBUbzogbmV0
-ZGV2QHZnZXIua2VybmVsLm9yZw0KPiBDYzogWS5iLiBMdSA8eWFuZ2JvLmx1QG54cC5jb20+OyBE
-YXZpZCBTIC4gTWlsbGVyIDxkYXZlbUBkYXZlbWxvZnQubmV0PjsNCj4gUmljaGFyZCBDb2NocmFu
-IDxyaWNoYXJkY29jaHJhbkBnbWFpbC5jb20+OyBDbGF1ZGl1IE1hbm9pbA0KPiA8Y2xhdWRpdS5t
-YW5vaWxAbnhwLmNvbT47IEpha3ViIEtpY2luc2tpIDxrdWJhQGtlcm5lbC5vcmc+OyBWbGFkaW1p
-cg0KPiBPbHRlYW4gPHZsYWRpbWlyLm9sdGVhbkBueHAuY29tPjsgUnVzc2VsbCBLaW5nIDxsaW51
-eEBhcm1saW51eC5vcmcudWs+DQo+IFN1YmplY3Q6IFtuZXQtbmV4dF0gZW5ldGM6IGZpeCBsb2Nr
-aW5nIGZvciBvbmUtc3RlcCB0aW1lc3RhbXBpbmcgcGFja2V0IHRyYW5zZmVyDQo+IA0KPiBUaGUg
-cHJldmlvdXMgcGF0Y2ggdG8gc3VwcG9ydCBQVFAgU3luYyBwYWNrZXQgb25lLXN0ZXAgdGltZXN0
-YW1waW5nDQo+IGRlc2NyaWJlZCBvbmUtc3RlcCB0aW1lc3RhbXBpbmcgcGFja2V0IGhhbmRsaW5n
-IGxvZ2ljIGFzIGJlbG93IGluIGNvbW1pdA0KPiBtZXNzYWdlOg0KPiANCj4gLSBUcmFzbWl0IHBh
-Y2tldCBpbW1lZGlhdGVseSBpZiBubyBvdGhlciBvbmUgaW4gdHJhbnNmZXIsIG9yIHF1ZXVlIHRv
-DQo+ICAgc2tiIHF1ZXVlIGlmIHRoZXJlIGlzIGFscmVhZHkgb25lIGluIHRyYW5zZmVyLg0KPiAg
-IFRoZSB0ZXN0X2FuZF9zZXRfYml0X2xvY2soKSBpcyB1c2VkIGhlcmUgdG8gbG9jayBhbmQgY2hl
-Y2sgc3RhdGUuDQo+IC0gU3RhcnQgYSB3b3JrIHdoZW4gY29tcGxldGUgdHJhbnNmZXIgb24gaGFy
-ZHdhcmUsIHRvIHJlbGVhc2UgdGhlIGJpdA0KPiAgIGxvY2sgYW5kIHRvIHNlbmQgb25lIHNrYiBp
-biBza2IgcXVldWUgaWYgaGFzLg0KPiANCj4gVGhlcmUgd2FzIG5vdCBwcm9ibGVtIG9mIHRoZSBk
-ZXNjcmlwdGlvbiwgYnV0IHRoZXJlIHdhcyBhIG1pc3Rha2UgaW4NCj4gaW1wbGVtZW50YXRpb24u
-IFRoZSBsb2NraW5nL3Rlc3RfYW5kX3NldF9iaXRfbG9jaygpIHNob3VsZCBiZSBwdXQgaW4NCj4g
-ZW5ldGNfc3RhcnRfeG1pdCgpIHdoaWNoIG1heSBiZSBjYWxsZWQgYnkgd29ya2VyLCByYXRoZXIg
-dGhhbiBpbiBlbmV0Y194bWl0KCkuDQo+IE90aGVyd2lzZSwgdGhlIHdvcmtlciBjYWxsaW5nIGVu
-ZXRjX3N0YXJ0X3htaXQoKSBhZnRlciBiaXQgbG9jayByZWxlYXNlZCBpcyBub3QNCj4gYWJsZSB0
-byBsb2NrIGFnYWluIGZvciB0cmFuc2Zlci4NCj4gDQo+IEZpeGVzOiA3Mjk0MzgwYzUyMTEgKCJl
-bmV0Yzogc3VwcG9ydCBQVFAgU3luYyBwYWNrZXQgb25lLXN0ZXANCj4gdGltZXN0YW1waW5nIikN
-Cj4gU2lnbmVkLW9mZi1ieTogWWFuZ2JvIEx1IDx5YW5nYm8ubHVAbnhwLmNvbT4NClsuLi5dDQoN
-Cg==
+On Wed, Apr 14, 2021 at 09:52:21AM +0800, Xuan Zhuo wrote:
+> In page_to_skb(), if we have enough tailroom to save skb_shared_info, we
+> can use build_skb to create skb directly. No need to alloc for
+> additional space. And it can save a 'frags slot', which is very friendly
+> to GRO.
+> 
+> Here, if the payload of the received package is too small (less than
+> GOOD_COPY_LEN), we still choose to copy it directly to the space got by
+> napi_alloc_skb. So we can reuse these pages.
+> 
+> Testing Machine:
+>     The four queues of the network card are bound to the cpu1.
+> 
+> Test command:
+>     for ((i=0;i<5;++i)); do sockperf tp --ip 192.168.122.64 -m 1000 -t 150& done
+> 
+> The size of the udp package is 1000, so in the case of this patch, there
+> will always be enough tailroom to use build_skb. The sent udp packet
+> will be discarded because there is no port to receive it. The irqsoftd
+> of the machine is 100%, we observe the received quantity displayed by
+> sar -n DEV 1:
+> 
+> no build_skb:  956864.00 rxpck/s
+> build_skb:    1158465.00 rxpck/s
+> 
+> Signed-off-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+> Suggested-by: Jason Wang <jasowang@redhat.com>
+
+Booting qemu-system-alpha with virtio-net interface instantiated results in:
+
+udhcpc: sending discover
+Unable to handle kernel paging request at virtual address 0000000000000004
+udhcpc(169): Oops -1
+pc = [<0000000000000004>]  ra = [<fffffc0000b8c588>]  ps = 0000    Not tainted
+pc is at 0x4
+ra is at napi_gro_receive+0x68/0x150
+v0 = 0000000000000000  t0 = 0000000000000008  t1 = 0000000000000000
+t2 = 0000000000000000  t3 = 000000000000000e  t4 = 0000000000000038
+t5 = 000000000000ffff  t6 = fffffc00002f220a  t7 = fffffc0002cd0000
+s0 = fffffc00010b3ca0  s1 = 0000000000000000  s2 = fffffc00011267e0
+s3 = 0000000000000000  s4 = fffffc00025f2008  s5 = fffffc00002f21c0
+s6 = fffffc00025f2040
+a0 = fffffc00025f2008  a1 = fffffc00002f21c0  a2 = fffffc0002cc800c
+a3 = fffffc00000250d0  a4 = 0000000effff0008  a5 = 0000000000000000
+t8 = fffffc00010b3c80  t9 = fffffc0002cc84cc  t10= 0000000000000000
+t11= 00000000000004c0  pv = fffffc0000b8bc10  at = 0000000000000000
+gp = fffffc00010f9fb8  sp = 00000000aefe3f8a
+Disabling lock debugging due to kernel taint
+Trace:
+[<fffffc0000b8c588>] napi_gro_receive+0x68/0x150
+[<fffffc00009b406c>] receive_buf+0x50c/0x1b80
+[<fffffc00009b5888>] virtnet_poll+0x1a8/0x5b0
+[<fffffc00009b58bc>] virtnet_poll+0x1dc/0x5b0
+[<fffffc0000b8d14c>] __napi_poll+0x4c/0x270
+[<fffffc0000b8d640>] net_rx_action+0x130/0x2c0
+[<fffffc0000bd6f00>] __qdisc_run+0x90/0x6c0
+[<fffffc0000337b64>] do_softirq+0xa4/0xd0
+[<fffffc0000337ca4>] __local_bh_enable_ip+0x114/0x120
+[<fffffc0000b89524>] __dev_queue_xmit+0x484/0xa60
+[<fffffc0000cd06fc>] packet_sendmsg+0xe7c/0x1ba0
+[<fffffc0000b53308>] __sys_sendto+0xf8/0x170
+[<fffffc0000461440>] __d_alloc+0x40/0x270
+[<fffffc0000ccdc4c>] packet_create+0x17c/0x3c0
+[<fffffc0000b5218c>] move_addr_to_kernel+0x3c/0x60
+[<fffffc0000b532b4>] __sys_sendto+0xa4/0x170
+[<fffffc0000b533a4>] sys_sendto+0x24/0x40
+[<fffffc0000b52840>] sys_bind+0x20/0x40
+[<fffffc0000311514>] entSys+0xa4/0xc0
+
+Bisect log attached.
+
+Guenter
+
+---
+# bad: [50b8b1d699ac313c0a07a3c185ffb23aecab8abb] Add linux-next specific files for 20210419
+# good: [bf05bf16c76bb44ab5156223e1e58e26dfe30a88] Linux 5.12-rc8
+git bisect start 'HEAD' 'v5.12-rc8'
+# bad: [c4bb91fc07e59241cde97f913d7a2fbedc248f0d] Merge remote-tracking branch 'crypto/master'
+git bisect bad c4bb91fc07e59241cde97f913d7a2fbedc248f0d
+# good: [499f739ad70f2a58aac985dceb25ca7666da88be] Merge remote-tracking branch 'jc_docs/docs-next'
+git bisect good 499f739ad70f2a58aac985dceb25ca7666da88be
+# good: [17e1be342d46eb0b7c3df4c7e623493483080b63] bnxt_en: Treat health register value 0 as valid in bnxt_try_reover_fw().
+git bisect good 17e1be342d46eb0b7c3df4c7e623493483080b63
+# good: [cf6d6925625755029cdf4bb0d0028f0b6e713242] Merge remote-tracking branch 'rdma/for-next'
+git bisect good cf6d6925625755029cdf4bb0d0028f0b6e713242
+# good: [fb8517f4fade44fa5e42e29ca4d6e4a7ed50b512] rtw88: 8822c: add CFO tracking
+git bisect good fb8517f4fade44fa5e42e29ca4d6e4a7ed50b512
+# bad: [d168b61fb769d10306b6118ec7623d2911d45690] Merge remote-tracking branch 'gfs2/for-next'
+git bisect bad d168b61fb769d10306b6118ec7623d2911d45690
+# bad: [ee3e875f10fca68fb7478c23c75b553e56da319c] net: enetc: increase TX ring size
+git bisect bad ee3e875f10fca68fb7478c23c75b553e56da319c
+# good: [4a51b0e8a0143b0e83d51d9c58c6416c3818a9f2] r8152: support PHY firmware for RTL8156 series
+git bisect good 4a51b0e8a0143b0e83d51d9c58c6416c3818a9f2
+# bad: [03e481e88b194296defdff3600b2fcebb04bd6cf] Merge tag 'mlx5-updates-2021-04-16' of git://git.kernel.org/pub/scm/linux/kernel/git/saeed/linux
+git bisect bad 03e481e88b194296defdff3600b2fcebb04bd6cf
+# bad: [70c183759b2cece2f9ba82e63e38fa32bebc9db2] Merge branch 'gianfar-mq-polling'
+git bisect bad 70c183759b2cece2f9ba82e63e38fa32bebc9db2
+# bad: [d8604b209e9b3762280b8321162f0f64219d51c9] dt-bindings: net: qcom,ipa: add firmware-name property
+git bisect bad d8604b209e9b3762280b8321162f0f64219d51c9
+# good: [4ad29b1a484e0c58acfffdcd87172ed17f35c1dd] net: mvpp2: Add parsing support for different IPv4 IHL values
+git bisect good 4ad29b1a484e0c58acfffdcd87172ed17f35c1dd
+# good: [fa588eba632df14d296436995e6bbea0c146ae77] net: Add Qcom WWAN control driver
+git bisect good fa588eba632df14d296436995e6bbea0c146ae77
+# bad: [fb32856b16ad9d5bcd75b76a274e2c515ac7b9d7] virtio-net: page_to_skb() use build_skb when there's sufficient tailroom
+git bisect bad fb32856b16ad9d5bcd75b76a274e2c515ac7b9d7
+# first bad commit: [fb32856b16ad9d5bcd75b76a274e2c515ac7b9d7] virtio-net: page_to_skb() use build_skb when there's sufficient tailroom
