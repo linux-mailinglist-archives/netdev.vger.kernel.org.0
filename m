@@ -2,36 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 26C5A3650C6
+	by mail.lfdr.de (Postfix) with ESMTP id A29B83650C7
 	for <lists+netdev@lfdr.de>; Tue, 20 Apr 2021 05:20:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234300AbhDTDVN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 19 Apr 2021 23:21:13 -0400
-Received: from mail.kernel.org ([198.145.29.99]:40544 "EHLO mail.kernel.org"
+        id S234434AbhDTDVP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 19 Apr 2021 23:21:15 -0400
+Received: from mail.kernel.org ([198.145.29.99]:40548 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229738AbhDTDVG (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S229744AbhDTDVG (ORCPT <rfc822;netdev@vger.kernel.org>);
         Mon, 19 Apr 2021 23:21:06 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 30D6C613AF;
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 9E282613B2;
         Tue, 20 Apr 2021 03:20:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1618888835;
-        bh=SRKMIILRpqBT9SxeNstuE32E9FhKFbQOysu0eGjqqro=;
+        bh=uWOdTBMgq4Bh2ancVM2WHxoQ91S18wYp5UT58ns/7Ak=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=BN95FldLqHriDNhrFWVKSmijTvB+W/12FtP64tCpKBaqfIe86Jg3fllnFK7P/68ad
-         noAOYc+ZeJs3Don4yWLkIYo3H6i1tWraRd3yecNhQ04eYn/TH0pQiRNGufh42vuRgd
-         5gYJ5yXuUb9dM9i47vzMfb3cAGqsCEGmUshGy5JuZZvab/8SBQKC935XjcyU413e66
-         O3eT/jo5dfne49R2RlBdRSvI6XYQZWg1po34aPI/jORQ7d6V9FrPhaCxLnnsfSNtx8
-         FkR9JOUESfGDLlg1Utk7Gu1T6AdmerNQYAoElo33TKAscQMPFdLw6Ksw0g0Hqj4XWY
-         QM77BDasH+Lcg==
+        b=rx5ldA+Hn4H4T3vta0XaqSGQwzm7U70apBeagqpatfN6R9EW/qfl2C6a4CnSc+bhN
+         M8fZs2xQ7sgq6AdKwYrDNSvtsOlcdoakz/JQRik/hje7R491OENgsvDXcJuvbSoKbY
+         gD0zybYW2FJBe8FbzyN8BR7kD79VhFy3NNsQUogaGYTfGVMCDgmFaxy/LywGnJCjlO
+         MJwsQfdLJNQxtdAfFoPl/J6og3PfdWw8dHsRN6HQRiBitRPm/3xZNp0YK8lfCkFGI0
+         /A1tuNarEoHPNGZAFmyOUyaHaG4m0wkloGMhM88L5Q+7nz+F2zpff2DY1bWH0kenf9
+         8Ve6tA7ox/LnQ==
 From:   Saeed Mahameed <saeed@kernel.org>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
 Cc:     netdev@vger.kernel.org, Tariq Toukan <tariqt@nvidia.com>,
         Yevgeny Kliteynik <kliteyn@nvidia.com>,
         Saeed Mahameed <saeedm@nvidia.com>
-Subject: [net-next 04/15] net/mlx5: DR, Rename an argument in dr_rdma_segments
-Date:   Mon, 19 Apr 2021 20:20:07 -0700
-Message-Id: <20210420032018.58639-5-saeed@kernel.org>
+Subject: [net-next 05/15] net/mlx5: DR, Fix SQ/RQ in doorbell bitmask
+Date:   Mon, 19 Apr 2021 20:20:08 -0700
+Message-Id: <20210420032018.58639-6-saeed@kernel.org>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20210420032018.58639-1-saeed@kernel.org>
 References: <20210420032018.58639-1-saeed@kernel.org>
@@ -43,49 +43,28 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Yevgeny Kliteynik <kliteyn@nvidia.com>
 
-Rename the argument to better reflect that the meaning is
-not number of records, but wheather or not we should
-ring the dorbell.
+QP doorbell size is 16 bits.
+Fixing sw steering's QP doorbel bitmask, which had 20 bits.
 
 Signed-off-by: Yevgeny Kliteynik <kliteyn@nvidia.com>
 Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 ---
- .../net/ethernet/mellanox/mlx5/core/steering/dr_send.c    | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ drivers/net/ethernet/mellanox/mlx5/core/steering/dr_send.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_send.c b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_send.c
-index c1926d927008..1f2e9fee96bc 100644
+index 1f2e9fee96bc..37377d668057 100644
 --- a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_send.c
 +++ b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_send.c
-@@ -223,7 +223,7 @@ static void dr_cmd_notify_hw(struct mlx5dr_qp *dr_qp, void *ctrl)
- 
- static void dr_rdma_segments(struct mlx5dr_qp *dr_qp, u64 remote_addr,
- 			     u32 rkey, struct dr_data_seg *data_seg,
--			     u32 opcode, int nreq)
-+			     u32 opcode, bool notify_hw)
+@@ -213,7 +213,7 @@ static void dr_destroy_qp(struct mlx5_core_dev *mdev,
+ static void dr_cmd_notify_hw(struct mlx5dr_qp *dr_qp, void *ctrl)
  {
- 	struct mlx5_wqe_raddr_seg *wq_raddr;
- 	struct mlx5_wqe_ctrl_seg *wq_ctrl;
-@@ -255,16 +255,16 @@ static void dr_rdma_segments(struct mlx5dr_qp *dr_qp, u64 remote_addr,
+ 	dma_wmb();
+-	*dr_qp->wq.sq.db = cpu_to_be32(dr_qp->sq.pc & 0xfffff);
++	*dr_qp->wq.sq.db = cpu_to_be32(dr_qp->sq.pc & 0xffff);
  
- 	dr_qp->sq.wqe_head[idx] = dr_qp->sq.pc++;
- 
--	if (nreq)
-+	if (notify_hw)
- 		dr_cmd_notify_hw(dr_qp, wq_ctrl);
- }
- 
- static void dr_post_send(struct mlx5dr_qp *dr_qp, struct postsend_info *send_info)
- {
- 	dr_rdma_segments(dr_qp, send_info->remote_addr, send_info->rkey,
--			 &send_info->write, MLX5_OPCODE_RDMA_WRITE, 0);
-+			 &send_info->write, MLX5_OPCODE_RDMA_WRITE, false);
- 	dr_rdma_segments(dr_qp, send_info->remote_addr, send_info->rkey,
--			 &send_info->read, MLX5_OPCODE_RDMA_READ, 1);
-+			 &send_info->read, MLX5_OPCODE_RDMA_READ, true);
- }
- 
- /**
+ 	/* After wmb() the hw aware of new work */
+ 	wmb();
 -- 
 2.30.2
 
