@@ -2,97 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A91CA3658D3
-	for <lists+netdev@lfdr.de>; Tue, 20 Apr 2021 14:21:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AF8163658D7
+	for <lists+netdev@lfdr.de>; Tue, 20 Apr 2021 14:25:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232025AbhDTMVv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 20 Apr 2021 08:21:51 -0400
-Received: from mail.kernel.org ([198.145.29.99]:46128 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231313AbhDTMVt (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 20 Apr 2021 08:21:49 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id DBD86613BC;
-        Tue, 20 Apr 2021 12:21:13 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1618921277;
-        bh=uP+pgn/p+9cOp/ggTRqj+9Q5FU/IEPnyZLH5hUzKUEc=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=p3ksMvQ+1TkJXRLDE0enljtghMjSN6i2qAalOGLBZ8UMZ6hpC15NuiIXmPcLJ7G4F
-         oZQ8iYxBlzHcmpKexLlAb/mrKPt/NEZOeCgTxuB8nZ6fEnYbmqeycgD8CQ0CWQTlNQ
-         08aAPvNt7Bya/w9Q6xGymYz06/UMozXTAetCy9VC1YiBB+FjIygIVdXXgVVbaE10uB
-         7TZ5HKhvKKOLfwVapO4kY/xEaf14nxB++sh8mpNZZdGZn6OlCplE1ChEK3OpRTQK8y
-         EGP5gQN1GBCpXFGeTGcNI6FWDXg6f11j3VZi8FBqScbDC6kttS6ty/UJ5fmjqP+2zE
-         gwOZe5N4nLn7g==
-Date:   Tue, 20 Apr 2021 15:21:08 +0300
-From:   Mike Rapoport <rppt@kernel.org>
-To:     Jonathan Corbet <corbet@lwn.net>
-Cc:     Alexey Dobriyan <adobriyan@gmail.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Eric Dumazet <eric.dumazet@gmail.com>,
-        Michal Hocko <mhocko@suse.com>,
-        Mike Rapoport <rppt@linux.ibm.com>, linux-doc@vger.kernel.org,
-        linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-mm@kvack.org, netdev@vger.kernel.org
-Subject: Re: [PATCH v2] docs: proc.rst: meminfo: briefly describe gaps in
- memory accounting
-Message-ID: <YH7HNHJLZyQKqmir@kernel.org>
-References: <20210420121354.1160437-1-rppt@kernel.org>
+        id S231773AbhDTMZ3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 20 Apr 2021 08:25:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51978 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231766AbhDTMZ2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 20 Apr 2021 08:25:28 -0400
+Received: from mail-wr1-x42e.google.com (mail-wr1-x42e.google.com [IPv6:2a00:1450:4864:20::42e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 028C4C06174A
+        for <netdev@vger.kernel.org>; Tue, 20 Apr 2021 05:24:57 -0700 (PDT)
+Received: by mail-wr1-x42e.google.com with SMTP id e7so28436330wrs.11
+        for <netdev@vger.kernel.org>; Tue, 20 Apr 2021 05:24:56 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=to:cc:from:subject:message-id:date:user-agent:mime-version
+         :content-language:content-transfer-encoding;
+        bh=XZYb4XL70BdbZgUD9rYYBnAI9WaI8GWwdF85rUbbLi8=;
+        b=izwJZRu/rqz8mYA2KJqPwUMEvmllufhu8RVV1tlReupJnYE+Viqrzwh86TydLcffpG
+         9Ybbx8bD2JtghFySp5e62Cc5VMeQPUzY2na23z+ngjPKSTDWa/4fpqAQGzXG/UDa79GM
+         j1Iu2s4OY0B6ozJoxq+NxOl/Wlxrm1+ANkNlUrtjuOtTqqFq8zsj0qJBLbCTlyDzNUtK
+         lUJsTHG+vSi/w5ISxDgxRVuhZ2gMxlNJ33FH1wOUNrA2WyhjYPpXwUxrKv0l3hIj5kk5
+         noEPS6CyPmyTSDh+8PdSaMO9IIeLLsVxRWmNlkaa29pEveYXBb0R/m3YeM+fm/YuItHR
+         JKqQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:to:cc:from:subject:message-id:date:user-agent
+         :mime-version:content-language:content-transfer-encoding;
+        bh=XZYb4XL70BdbZgUD9rYYBnAI9WaI8GWwdF85rUbbLi8=;
+        b=cmEUY7539XezxYFKFZc1QKTzfccAwp8ujZ3Fc47JNWUYJdCE4KIm9RppxFRxYJSnSD
+         qnxY84FX5pP/k/6djrbXuIA7uT7mD/eHLPuyQIM7v++4i1E9khPYkQ6uvdiw679Dtkfd
+         hdu4QvuR4db3DYao5j4BLnL2eNVmE3qWYbaJszxQkfazKPuYfDgYzElRxY8+OfCxLkUd
+         g21n7rz9P+URbHqUqsVAqKN6SSleo4VDADEhF3HIx4dUMJQ/iK9C+hogFSKQxGW7qROP
+         A4Orh+vfdpZJPGWb3cyGBDiXGvaMI/e+hpLUO5yAo9FXbUjo4VLPJwFAYdQbrL64svVk
+         BZBw==
+X-Gm-Message-State: AOAM533vOv3qQ45wmMRANyU+RZw6LvxGRAv8DKpr1ZADjXsag5SNOAoo
+        eUoFBUQavrPU53SdGXygyco=
+X-Google-Smtp-Source: ABdhPJwsa54KNsi+Ie3Sx07BNTYkNjq8mSvZNVnA5FvC2aD3i76qLJWHcizPnYgzSjd64mJPkOuRMw==
+X-Received: by 2002:a5d:524d:: with SMTP id k13mr21090906wrc.113.1618921495775;
+        Tue, 20 Apr 2021 05:24:55 -0700 (PDT)
+Received: from [10.108.8.69] ([149.199.80.129])
+        by smtp.gmail.com with ESMTPSA id m17sm31617034wrq.63.2021.04.20.05.24.54
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 20 Apr 2021 05:24:55 -0700 (PDT)
+To:     davem@davemloft.net, kuba@kernel.org
+Cc:     netdev@vger.kernel.org, themsley@voiceflex.com
+From:   Edward Cree <ecree.xilinx@gmail.com>
+Subject: [PATCH net 0/3] sfc: fix TXQ lookups
+Message-ID: <6b97b589-91fe-d71e-a7d0-5662a4f7a91c@gmail.com>
+Date:   Tue, 20 Apr 2021 13:24:54 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210420121354.1160437-1-rppt@kernel.org>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-GB
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Apr 20, 2021 at 03:13:54PM +0300, Mike Rapoport wrote:
-> From: Mike Rapoport <rppt@linux.ibm.com>
-> 
-> Add a paragraph that explains that it may happen that the counters in
-> /proc/meminfo do not add up to the overall memory usage.
-> 
-> Signed-off-by: Mike Rapoport <rppt@linux.ibm.com>
+The TXQ handling changes in 12804793b17c ("sfc: decouple TXQ type from label")
+ which were made as part of the support for encap offloads on EF10 caused some
+ breakage on Siena (5000- and 6000-series) NICs, which caused null-dereference
+ kernel panics.
+This series fixes those issues, and also a similarly incorrect code-path on
+ EF10 which worked by chance.
 
-Ooops, forgot to add Michal's Ack, sorry.
+Edward Cree (3):
+  sfc: farch: fix TX queue lookup in TX flush done handling
+  sfc: farch: fix TX queue lookup in TX event handling
+  sfc: ef10: fix TX queue lookup in TX event handling
 
-> ---
-> v2:
-> * Add brief changelog
-> * Fix typo
-> * Update example about network memory usage according to Eric's comment at
-> 
-> https://lore.kernel.org/lkml/CANn89iKprp7WYeZy4RRO5jHykprnSCcVBc7Tk14Ui_MA9OK7Fg@mail.gmail.com
-> 
-> v1: Link: https://lore.kernel.org/lkml/20210420085105.1156640-1-rppt@kernel.org
-> 
->  Documentation/filesystems/proc.rst | 10 ++++++++--
->  1 file changed, 8 insertions(+), 2 deletions(-)
-> 
-> diff --git a/Documentation/filesystems/proc.rst b/Documentation/filesystems/proc.rst
-> index 48fbfc336ebf..8c77a491c436 100644
-> --- a/Documentation/filesystems/proc.rst
-> +++ b/Documentation/filesystems/proc.rst
-> @@ -929,8 +929,14 @@ meminfo
->  ~~~~~~~
->  
->  Provides information about distribution and utilization of memory.  This
-> -varies by architecture and compile options.  The following is from a
-> -16GB PIII, which has highmem enabled.  You may not have all of these fields.
-> +varies by architecture and compile options. Please note that it may happen
-> +that the memory accounted here does not add up to the overall memory usage
-> +and the difference for some workloads can be substantial. In many cases there
-> +are other means to find out additional memory using subsystem specific
-> +interfaces, for instance /proc/net/sockstat for TCP memory allocations.
-> +
-> +The following is from a 16GB PIII, which has highmem enabled.
-> +You may not have all of these fields.
->  
->  ::
->  
-> -- 
-> 2.29.2
-> 
+ drivers/net/ethernet/sfc/ef10.c  |  3 +--
+ drivers/net/ethernet/sfc/farch.c | 16 ++++++++--------
+ 2 files changed, 9 insertions(+), 10 deletions(-)
 
 -- 
-Sincerely yours,
-Mike.
+1.8.3.1
