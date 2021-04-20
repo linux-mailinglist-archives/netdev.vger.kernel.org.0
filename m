@@ -2,91 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 09E93366254
-	for <lists+netdev@lfdr.de>; Wed, 21 Apr 2021 00:58:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7E106366266
+	for <lists+netdev@lfdr.de>; Wed, 21 Apr 2021 01:16:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234358AbhDTW6l (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 20 Apr 2021 18:58:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51148 "EHLO
+        id S234381AbhDTXQz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 20 Apr 2021 19:16:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55106 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233992AbhDTW6j (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 20 Apr 2021 18:58:39 -0400
-Received: from mail-yb1-xb32.google.com (mail-yb1-xb32.google.com [IPv6:2607:f8b0:4864:20::b32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 18931C06174A;
-        Tue, 20 Apr 2021 15:58:06 -0700 (PDT)
-Received: by mail-yb1-xb32.google.com with SMTP id k73so38671052ybf.3;
-        Tue, 20 Apr 2021 15:58:06 -0700 (PDT)
+        with ESMTP id S233964AbhDTXQy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 20 Apr 2021 19:16:54 -0400
+Received: from mail-ej1-x629.google.com (mail-ej1-x629.google.com [IPv6:2a00:1450:4864:20::629])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 326A2C06174A;
+        Tue, 20 Apr 2021 16:16:22 -0700 (PDT)
+Received: by mail-ej1-x629.google.com with SMTP id r12so60752291ejr.5;
+        Tue, 20 Apr 2021 16:16:22 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=RkDuC1Dr9J18+9eBYWIaxeIrmVv0oQ39iP9/w0aGwI0=;
-        b=rSTUaJOqTKQ0k3Xy2fzNitQEnGvrkz6SKoqc+Dj1La3K+ghbFAGgLGJpfltyKFP1Jk
-         Oy/u++v11zOtugul3vOguGBl+G4TGp4M/Ybatq/Se+E4x+8MNYhDzaOcrwD1eaalzc1c
-         N6Qj5oOTw5O8UAoGUv4ApJmNyB+nBRmeky2joYtneRxCo3iNVhWIEWH2Op+TDiTi8ks6
-         3fSWfRRpWyeTmRoIzsAi0oa2g5/iaVm8YkrzACOgTBaKoqeuJ083SKN/+lfvQZLN80Ey
-         geNOcKRzcX/77A8Qd8oEdPk4wwYNcVR3/yDbC463iB2lURfSdeatNlh7aQXvjtb7EfGv
-         efEg==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=5OPpZ1Zy/OjC2Shxj539LsgrLZzcMTLd2OcL5QqrLrg=;
+        b=WoQtHkFCnP9lgqJOhpdEZEEpPgVBz9iZm4EQ0ILLc6bgcg25h6Q3vf/303TqbeK+Aj
+         myyMMXKDfg65ZsJnsB2CWLNNpQyC2CuXphQU3YO9UjEzt8bMAoU0RYE0qq/hsYGDE+j0
+         oqp9/lU0OzI8ZmlP7hnJCOKQ4T4gge2Jb/ASTFjFZwbMQ0XMHT/8J5qDADKy+7aB0lJk
+         /dSgOM4+kfRHgdnO0BLKh14u00DMU4W+zJ72hlK5DzirDE1Knd+5IOfRYXhW0EsjsH3b
+         Snk872oijkQSQ4zO/MwuJ8AQE2RqZgxawZKRXKcaRZ+qXqF8zXusJ8nyGLsG2bClBoE2
+         e/vA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=RkDuC1Dr9J18+9eBYWIaxeIrmVv0oQ39iP9/w0aGwI0=;
-        b=si+HsPMzIzhViBkIYxOMzdWn+DgT0XvMzQ2S8AMORF+kVd+wgHO7RDTHCFylDWoAUr
-         gH7ZQbwNJYJ90Y77h2TypiZMgb5DTkdBDIeDdW+sOBYAa18KQfKo/n2WwKRSoPG6M+8U
-         e9o92v8/oF5qVX3/l79fheKKYywUb7J9jTY9Oqe9lCu9g2WiV/Ch7mLv7W0LrUTDMhff
-         1Cwj0zsJZKerqgCUozqBskRBMxtQ5En8T+c74n+HeoMsvvDyZ1zBZ4CRl0EAXh/fqdwH
-         glRBvYuX4AabaptsnnltHXokf+bHpP4zJ0TGZx3ixtgVZGUkojCzm+OaBpwUxm8TpSCf
-         bhJQ==
-X-Gm-Message-State: AOAM531vmIF9WtS/8KSCXWx7dWv9YwLh+zTcEtWaXG3ydr72O5/F79uz
-        qfSCHV3pKpcipgvHFEdxvslh6xAFbR1oRzcamccLipQRaQM=
-X-Google-Smtp-Source: ABdhPJymh8dGWWEF8fb1R6OHxqVVFyd4G+xnBKN4a5IoDbpIwipxiouMhJQreNaaPDnxMTP0Td+sN3fhWghHXPAl03g=
-X-Received: by 2002:a25:ba06:: with SMTP id t6mr19867701ybg.459.1618959485359;
- Tue, 20 Apr 2021 15:58:05 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=5OPpZ1Zy/OjC2Shxj539LsgrLZzcMTLd2OcL5QqrLrg=;
+        b=EG9BSqULGtShcKMrfXSU5jdbHCcHDMLhEK9SrdtQNERrKxiJB8LB/jItqfw3R5EYhz
+         7g2kXJ4Nhq7R+wjkhcV8lKMKL3ZC42luHLmsPdMy2Ul5GIeVd8MOcYqzhHZJ739SWCZd
+         3TutbGJfUrUvJDyW41oPL+UZLQCCcZX/aFlfN9JYQRQ+MdQLN5BxQZNqxWVsQ1xTuuXZ
+         deP+5qf6d/tp2H9AAOAibE+Eu81cOh+QpZ0YmOD+gLPt6y87TvqHb/rMBGTQdlp6FyJB
+         Jb5bwlQHH9vtvghsuILy7QiZZih+su5ELCE9665jgwJHrp6WTSEHv79SFn1+3c6SKj6H
+         6PVA==
+X-Gm-Message-State: AOAM530xiA2HQsxU7bKhc+9j0AhFQeWqOXw1xcYMxbDUziURlAkkq9Kc
+        XzOtUqgsnL4ViBb9mGfRjBU=
+X-Google-Smtp-Source: ABdhPJw+n6BcjZtyxbUxf07KCUNBXZuSePiLI97Egxp+CH7XqHqTM9Y1lCLFnuTA6ZTEuZph8VGF5g==
+X-Received: by 2002:a17:906:f6c1:: with SMTP id jo1mr29057085ejb.262.1618960580883;
+        Tue, 20 Apr 2021 16:16:20 -0700 (PDT)
+Received: from skbuf (5-12-16-165.residential.rdsnet.ro. [5.12.16.165])
+        by smtp.gmail.com with ESMTPSA id v4sm322725ejj.84.2021.04.20.16.16.15
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 20 Apr 2021 16:16:20 -0700 (PDT)
+Date:   Wed, 21 Apr 2021 02:16:10 +0300
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Tobias Waldekranz <tobias@waldekranz.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, andrew@lunn.ch,
+        vivien.didelot@gmail.com, f.fainelli@gmail.com,
+        netdev@vger.kernel.org, robh+dt@kernel.org,
+        devicetree@vger.kernel.org
+Subject: Re: [PATCH v3 net-next 4/5] net: dsa: Allow default tag protocol to
+ be overridden from DT
+Message-ID: <20210420231610.zrmzuse22z6nvkbq@skbuf>
+References: <20210420185311.899183-1-tobias@waldekranz.com>
+ <20210420185311.899183-5-tobias@waldekranz.com>
 MIME-Version: 1.0
-References: <20210420154140.80034-1-kuniyu@amazon.co.jp> <20210420154140.80034-12-kuniyu@amazon.co.jp>
-In-Reply-To: <20210420154140.80034-12-kuniyu@amazon.co.jp>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Tue, 20 Apr 2021 15:57:54 -0700
-Message-ID: <CAEf4BzZ_=K6Yfg5VfCXAY9mA=+xArgBbtMW+31f8dwtc7QjP5w@mail.gmail.com>
-Subject: Re: [PATCH v3 bpf-next 11/11] bpf: Test BPF_SK_REUSEPORT_SELECT_OR_MIGRATE.
-To:     Kuniyuki Iwashima <kuniyu@amazon.co.jp>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Benjamin Herrenschmidt <benh@amazon.com>,
-        Kuniyuki Iwashima <kuni1840@gmail.com>,
-        bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210420185311.899183-5-tobias@waldekranz.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Apr 20, 2021 at 8:45 AM Kuniyuki Iwashima <kuniyu@amazon.co.jp> wrote:
->
-> This patch adds a test for BPF_SK_REUSEPORT_SELECT_OR_MIGRATE and
-> removes 'static' from settimeo() in network_helpers.c.
->
-> Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.co.jp>
+On Tue, Apr 20, 2021 at 08:53:10PM +0200, Tobias Waldekranz wrote:
+> Some combinations of tag protocols and Ethernet controllers are
+> incompatible, and it is hard for the driver to keep track of these.
+> 
+> Therefore, allow the device tree author (typically the board vendor)
+> to inform the driver of this fact by selecting an alternate protocol
+> that is known to work.
+> 
+> Signed-off-by: Tobias Waldekranz <tobias@waldekranz.com>
 > ---
 
-Almost everything in prog_tests/migrate_reuseport.c should be static,
-functions and variables. Except the test_migrate_reuseport, of course.
-
-But thank you for using ASSERT_xxx()! :)
-
->  tools/testing/selftests/bpf/network_helpers.c |   2 +-
->  tools/testing/selftests/bpf/network_helpers.h |   1 +
->  .../bpf/prog_tests/migrate_reuseport.c        | 483 ++++++++++++++++++
->  .../bpf/progs/test_migrate_reuseport.c        |  51 ++
->  4 files changed, 536 insertions(+), 1 deletion(-)
->  create mode 100644 tools/testing/selftests/bpf/prog_tests/migrate_reuseport.c
->  create mode 100644 tools/testing/selftests/bpf/progs/test_migrate_reuseport.c
->
-
-[...]
+Reviewed-by: Vladimir Oltean <olteanv@gmail.com>
