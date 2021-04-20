@@ -2,73 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 42EE33651C1
-	for <lists+netdev@lfdr.de>; Tue, 20 Apr 2021 07:15:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A9ED53651FC
+	for <lists+netdev@lfdr.de>; Tue, 20 Apr 2021 07:57:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229689AbhDTFPd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 20 Apr 2021 01:15:33 -0400
-Received: from sitav-80046.hsr.ch ([152.96.80.46]:43264 "EHLO
-        mail.strongswan.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229588AbhDTFPd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 20 Apr 2021 01:15:33 -0400
-Received: from think.home (224.110.78.83.dynamic.wline.res.cust.swisscom.ch [83.78.110.224])
-        by mail.strongswan.org (Postfix) with ESMTPSA id EF823401B1;
-        Tue, 20 Apr 2021 07:15:00 +0200 (CEST)
-Message-ID: <f14da35f8cfa4b8f888dadfe4c9ebcd031d8e870.camel@strongswan.org>
-Subject: Re: [PATCH net-next] net: xdp: Update pkt_type if generic XDP
- changes unicast MAC
-From:   Martin Willi <martin@strongswan.org>
-To:     Toke =?ISO-8859-1?Q?H=F8iland-J=F8rgensen?= <toke@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>
-Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org
-Date:   Tue, 20 Apr 2021 07:15:00 +0200
-In-Reply-To: <87tuo2gwbj.fsf@toke.dk>
-References: <20210419141559.8611-1-martin@strongswan.org>
-         <87tuo2gwbj.fsf@toke.dk>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.36.4-0ubuntu1 
+        id S229949AbhDTF55 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 20 Apr 2021 01:57:57 -0400
+Received: from mail.kernel.org ([198.145.29.99]:38758 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229523AbhDTF55 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 20 Apr 2021 01:57:57 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 923CD613AB;
+        Tue, 20 Apr 2021 05:57:25 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1618898246;
+        bh=HgRtm7l8Xx3VQolaL5PH0kiPMFdrNK/V7TAZt6MT+6Q=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=DQgny5On523ruh0mv44PPfD47aTwlf0jGlMYZ33gSO+AcIHlL1ms5/e2kzkE0qrwB
+         HNmGovIMhyjjRNRzjEhlGdXnKfYpNbVPBS9/ck4WH11i+GkGiommnJF6hJNOJsKQo0
+         3N+vBdCIdgd4krGBwDmIHAWcpqszMnZuJVBQ0jL2B0Qi8OZCPb1WihatJY+H8q5zrA
+         oPFxBHsqm2wX7Z67nPBBKTphUzmbO2Gp5ksz0ktAP+7Hl5SoDa/SNsav1jmgI+c0PZ
+         TJH6TUQOr+22fmKJJCbux73MwBw41Wajd2iQ9St0+4Im98enWMqW6A6Y2AGDqlo8Pz
+         nRY3WM3WSTVJA==
+Date:   Tue, 20 Apr 2021 08:57:22 +0300
+From:   Leon Romanovsky <leon@kernel.org>
+To:     Andrea Claudi <aclaudi@redhat.com>
+Cc:     netdev@vger.kernel.org, stephen@networkplumber.org,
+        dsahern@gmail.com
+Subject: Re: [PATCH iproute2] lib: move get_task_name() from rdma
+Message-ID: <YH5tQi+JXOm8LW9V@unreal>
+References: <a41d23aa24bbe5b4acfc2465feca582c6e355e0d.1618839246.git.aclaudi@redhat.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <a41d23aa24bbe5b4acfc2465feca582c6e355e0d.1618839246.git.aclaudi@redhat.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
-
-Thanks for your comments.
-
-> >  	eth = (struct ethhdr *)xdp->data;
-> > +	orig_host = ether_addr_equal_64bits(eth->h_dest, skb->dev->dev_addr);
+On Mon, Apr 19, 2021 at 03:34:58PM +0200, Andrea Claudi wrote:
+> The function get_task_name() is used to get the name of a process from
+> its pid, and its implementation is similar to ip/iptuntap.c:pid_name().
 > 
-> ether_addr_equal_64bits() seems to assume that the addresses passed to 
-> it are padded to be 8 bytes long, which is not the case for eth->h_dest.
-> AFAICT the only reason the _64bits variant works for multicast is that
-> it happens to be only checking the top-most bit, but unless I'm missing
-> something you'll have to use the boring old ether_addr_equal() here, no?
-
-This is what eth_type_trans() uses below, so I assumed it is safe to
-use. Isn't that working on the same data?
-
-Also, the destination address in Ethernet is followed by the source
-address, so two extra bytes in the source are used as padding. These
-are then shifted out by ether_addr_equal_64bits(), no?
-
-> > +		skb->pkt_type = PACKET_HOST;
-> >  		skb->protocol = eth_type_trans(skb, skb->dev);
-> >  	}
+> Move it to lib/fs.c to use a single implementation and make it easily
+> reusable.
 > 
-> Okay, so this was a bit confusing to me at fist glance:
-> eth_type_trans() will reset the type, but not back to PACKET_HOST. So
-> this works, just a bit confusing :)
+> Signed-off-by: Andrea Claudi <aclaudi@redhat.com>
+> ---
+>  include/utils.h |  1 +
+>  ip/iptuntap.c   | 31 +------------------------------
+>  lib/fs.c        | 24 ++++++++++++++++++++++++
+>  rdma/res.c      | 24 ------------------------
+>  rdma/res.h      |  1 -
+>  5 files changed, 26 insertions(+), 55 deletions(-)
+> 
 
-Indeed. I considered changing eth_type_trans() to always reset
-pkt_type, but I didn't want to take the risk for any side effects.
-
-Thanks!
-Martin
-
+Thanks,
+Acked-by: Leon Romanovsky <leonro@nvidia.com>
