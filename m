@@ -2,72 +2,132 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4ED9A365F71
-	for <lists+netdev@lfdr.de>; Tue, 20 Apr 2021 20:34:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 26614365FC9
+	for <lists+netdev@lfdr.de>; Tue, 20 Apr 2021 20:53:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233707AbhDTSfG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 20 Apr 2021 14:35:06 -0400
-Received: from mail.kernel.org ([198.145.29.99]:59126 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S233587AbhDTSey (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 20 Apr 2021 14:34:54 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 3055361002;
-        Tue, 20 Apr 2021 18:34:22 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1618943662;
-        bh=em6cx2HBxMwbhr6KaCllMTUwubhy8v8uRwj/RBaSigs=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=a+7/zfIUj3cUkwkz8a8LdV1bB3rMoS404I/qpQ6nWScZNcmnHWVJYDsgiyHbs/yAc
-         4T/oS7l7fNHWbir/e8V3oFJ0zBgVCkrsqKHBmgqjoa0B9DW1Kvv6u/UrfEWgUcfk2w
-         qSwmoatNxQkeOC+CDgHJgHYxmIBRpcjh3j8ZA60gMvQIvbO6B2DZgipb1n+33+00JG
-         VwcWkpdoNK6olKESeBIvP208KaIEyBOaBP7PrwHkRyJV60aforGAmeV3/rWfgRKgXG
-         nwb0wp0IPHW0fT1F9y4l2HLlbUqIAoGlzlokPDGTm2lLMy9RAJjTIzPMexHYdd7bqt
-         +5Gr54GLIMtsA==
-Date:   Tue, 20 Apr 2021 11:34:20 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Hayes Wang <hayeswang@realtek.com>
-Cc:     "davem@davemloft.net" <davem@davemloft.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        nic_swsd <nic_swsd@realtek.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-usb@vger.kernel.org" <linux-usb@vger.kernel.org>
-Subject: Re: [PATCH net-next 4/6] r8152: support new chips
-Message-ID: <20210420113420.79d7c65a@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <0de9842749db4718b8f45a0f2fff7967@realtek.com>
-References: <1394712342-15778-350-Taiwan-albertk@realtek.com>
-        <1394712342-15778-354-Taiwan-albertk@realtek.com>
-        <20210416145017.1946f013@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <0de9842749db4718b8f45a0f2fff7967@realtek.com>
+        id S233510AbhDTSx6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 20 Apr 2021 14:53:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53858 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233618AbhDTSxx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 20 Apr 2021 14:53:53 -0400
+Received: from mail-wr1-x431.google.com (mail-wr1-x431.google.com [IPv6:2a00:1450:4864:20::431])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C653BC06138A
+        for <netdev@vger.kernel.org>; Tue, 20 Apr 2021 11:53:21 -0700 (PDT)
+Received: by mail-wr1-x431.google.com with SMTP id c15so29818962wro.13
+        for <netdev@vger.kernel.org>; Tue, 20 Apr 2021 11:53:21 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=waldekranz-com.20150623.gappssmtp.com; s=20150623;
+        h=from:to:cc:subject:date:message-id:mime-version:organization
+         :content-transfer-encoding;
+        bh=Yp3JrwQnttmZmyi912X2sJUn4tXEulH8Ua25YGbhlZk=;
+        b=pLSWx0GYqnKfXRWvEdRMBTKAno4HHnjiVETJhTcd0q4GddFDoApPLPfdPe/znTbxGT
+         bChMq2vMMkwlGFl0ckJoHQuKVancU10fSu5Gy5C3pEevLxz/VXkxNSVGP5u6SGwYpikT
+         qLaiiWoEUWZxeV8aPl8bsTUFabHxkKJ0g07VcVSnef1MnZncZLrEZI/TjR706+kKLjpW
+         Ak6og95DO3nja8DGp1PmBsqzYv+WscPf96Y4+g/1Q/UknhzBg9GFCc0B0shPJ9v8g5AN
+         OBhvHfEcfgqrdL91OGxeEv7dOeo33majhGABcAq9rAIyI2mpxo1zzM7dXnc/zDGUKLTc
+         mlmQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :organization:content-transfer-encoding;
+        bh=Yp3JrwQnttmZmyi912X2sJUn4tXEulH8Ua25YGbhlZk=;
+        b=Y9AGpwaKdTV0kTIVibWbEj5P+AKngHrFp63cBFkyQnJVYtSh06XkAH4vZmGkbclPvm
+         uaqIPezv+SnHCXIqSxTkU6C0OUYxu4Xun9pCbokWpyhLRpTR9wdV/g0WfKD9qJBDQdqI
+         Y2wYgL6mX972ulukStUcoaxeAZjTQ6dgGwRH58HfQdtx++DGbcuTgbN8rje4p5DcHWvl
+         +8vGpADTIzw9j1CjmGXwUeIGA6hYHSx+cJioDc7wb8yYKvUyFNA6k+T/UI8JO4xrTkrK
+         6u1fNmCeJ/y5RIEy3fd2jj4q6Qm+pe+DAlqc0XrC7cGS8gAMAEZAXCuKaks7V8cRZRv9
+         AO3Q==
+X-Gm-Message-State: AOAM533pCZ7+a8JFDZiTni3m46+ozdhxFgqI6QLWrxLice7g4XNcY4p3
+        9BI+HdMec2lezTXiHwCjjlnKoQ==
+X-Google-Smtp-Source: ABdhPJzOv3jQhyEWrh8cYOgJuO9ljGFH9omRIK+Ld0ltTc+/qZHqEMri1zzoU9BsCiAO94l2XvAg0Q==
+X-Received: by 2002:adf:f750:: with SMTP id z16mr22534815wrp.340.1618944800489;
+        Tue, 20 Apr 2021 11:53:20 -0700 (PDT)
+Received: from veiron.westermo.com (static-193-12-47-89.cust.tele2.se. [193.12.47.89])
+        by smtp.gmail.com with ESMTPSA id f7sm25897402wrp.48.2021.04.20.11.53.19
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 20 Apr 2021 11:53:19 -0700 (PDT)
+From:   Tobias Waldekranz <tobias@waldekranz.com>
+To:     davem@davemloft.net, kuba@kernel.org
+Cc:     andrew@lunn.ch, vivien.didelot@gmail.com, f.fainelli@gmail.com,
+        olteanv@gmail.com, netdev@vger.kernel.org, robh+dt@kernel.org,
+        devicetree@vger.kernel.org
+Subject: [PATCH v3 net-next 0/5] net: dsa: Allow default tag protocol to be overridden from DT
+Date:   Tue, 20 Apr 2021 20:53:06 +0200
+Message-Id: <20210420185311.899183-1-tobias@waldekranz.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Organization: Westermo
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 20 Apr 2021 07:00:39 +0000 Hayes Wang wrote:
-> > > @@ -6878,7 +8942,11 @@ static int rtl8152_probe(struct usb_interface *intf,  
-> > >  	set_ethernet_addr(tp);
-> > >
-> > >  	usb_set_intfdata(intf, tp);
-> > > -	netif_napi_add(netdev, &tp->napi, r8152_poll, RTL8152_NAPI_WEIGHT);
-> > > +
-> > > +	if (tp->support_2500full)
-> > > +		netif_napi_add(netdev, &tp->napi, r8152_poll, 256);  
-> > 
-> > why 256? We have 100G+ drivers all using 64 what's special here?
-> >   
-> > > +	else
-> > > +		netif_napi_add(netdev, &tp->napi, r8152_poll, 64);  
-> 
-> We test 2.5G Ethernet on some embedded platform.
-> And we find 64 is not large enough, and the performance
-> couldn't reach 2.5 G bits/s.
+This is a continuation of the work started in this patch:
+https://lore.kernel.org/netdev/20210323102326.3677940-1-tobias@waldekranz.com/
 
-Did you manage to identify what the cause is?
+In addition to the mv88e6xxx support to dynamically change the
+protocol, it is now possible to override the protocol from the device
+tree. This means that when a board vendor finds an incompatibility,
+they can specify a working protocol in the DT, and users will not have
+to worry about it.
 
-NAPI will keep calling your driver if the budget was exhausted, the
-only difference between 64 and 256 should be the setup cost of the
-driver's internal loop. And perhaps more frequent GRO flush - what's
-the CONFIG_HZ set to?
+Some background information:
+
+In a system using an NXP T1023 SoC connected to a 6390X switch, we
+noticed that TO_CPU frames where not reaching the CPU. This only
+happened on hardware port 8. Looking at the DSA master interface
+(dpaa-ethernet) we could see that an Rx error counter was bumped at
+the same rate. The logs indicated a parser error.
+
+It just so happens that a TO_CPU coming in on device 0, port 8, will
+result in the first two bytes of the DSA tag being one of:
+
+00 40
+00 44
+00 46
+
+My guess was that since these values looked like 802.3 length fields,
+the controller's parser would signal an error if the frame length did
+not match what was in the header.
+
+This was later confirmed using two different workarounds provided by
+Vladimir. Unfortunately these either bypass or ignore the hardware
+parser and thus robs working combinations of the ability to do RSS and
+other nifty things. It was therefore decided to go with the option of
+a DT override.
+
+v1 -> v2:
+  - Fail if the device does not support changing protocols instead of
+    falling back to the default. (Andrew)
+  - Only call change_tag_protocol on CPU ports. (Andrew/Vladimir)
+  - Only allow changing the protocol on chips that have at least
+    "undocumented" level of support for EDSA. (Andrew).
+  - List the supported protocols in the binding documentation. I opted
+    for only listing the protocols that I have tested. As more people
+    test their drivers, they can add them. (Rob)
+
+v2 -> v3:
+  - Rename "dsa,tag-protocol" -> "dsa-tag-protocol". (Rob)
+  - Some cleanups to 4/5. (Vladimir)
+  - Add a comment detailing how tree/driver agreement on the tag
+    protocol is enforced. (Vladimir).
+
+Tobias Waldekranz (5):
+  net: dsa: mv88e6xxx: Mark chips with undocumented EDSA tag support
+  net: dsa: mv88e6xxx: Allow dynamic reconfiguration of tag protocol
+  net: dsa: Only notify CPU ports of changes to the tag protocol
+  net: dsa: Allow default tag protocol to be overridden from DT
+  dt-bindings: net: dsa: Document dsa-tag-protocol property
+
+ .../devicetree/bindings/net/dsa/dsa.yaml      |   9 ++
+ drivers/net/dsa/mv88e6xxx/chip.c              |  99 +++++++++++------
+ drivers/net/dsa/mv88e6xxx/chip.h              |  21 +++-
+ include/net/dsa.h                             |   5 +
+ net/dsa/dsa2.c                                | 103 +++++++++++++++---
+ net/dsa/switch.c                              |  25 ++---
+ 6 files changed, 192 insertions(+), 70 deletions(-)
+
+-- 
+2.25.1
 
