@@ -2,220 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9FADC36506E
-	for <lists+netdev@lfdr.de>; Tue, 20 Apr 2021 04:42:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B8519365071
+	for <lists+netdev@lfdr.de>; Tue, 20 Apr 2021 04:45:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229596AbhDTCnA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 19 Apr 2021 22:43:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37556 "EHLO
+        id S229589AbhDTCpj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 19 Apr 2021 22:45:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38136 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229508AbhDTCm7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 19 Apr 2021 22:42:59 -0400
-Received: from mail-pl1-x633.google.com (mail-pl1-x633.google.com [IPv6:2607:f8b0:4864:20::633])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0DD2CC06174A;
-        Mon, 19 Apr 2021 19:42:28 -0700 (PDT)
-Received: by mail-pl1-x633.google.com with SMTP id u15so10297156plf.10;
-        Mon, 19 Apr 2021 19:42:28 -0700 (PDT)
+        with ESMTP id S229493AbhDTCpi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 19 Apr 2021 22:45:38 -0400
+Received: from mail-io1-xd34.google.com (mail-io1-xd34.google.com [IPv6:2607:f8b0:4864:20::d34])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F30FDC06174A;
+        Mon, 19 Apr 2021 19:45:07 -0700 (PDT)
+Received: by mail-io1-xd34.google.com with SMTP id a11so34889315ioo.0;
+        Mon, 19 Apr 2021 19:45:07 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=vgiP4tU1wMC+CJHD44H3YeER60YK9xQvr6oaVCV9rsk=;
-        b=QtuEPPD86//F655qiNYQxqN77KSntpKAIoqm+zg7u8dEv59YucwUoWk50Ycz9UEOIU
-         35qPSGeWHH20Wi9d7+zUVBzXypizz061qNme/S0Xq1AFJYbnck8Zm/yTzXYnPNny+Q3e
-         DwNy6oK+gTWVt35aPEaGxhrYGHrCC5VApEuxlca0RBK7WUmsPytYN7EDJ9s4quA06rYm
-         W1pHE3bFU3KqpuzgnsT2TyH6fbu+3wbPNGRh98lsVBEWkIp8bNnypiOwbtaO46qXfUPQ
-         exgB6eMBvn7+P7vk3U0K3t4idUUwL2Lve3/4NW8JSRzDswwzCJEVeLb/iz5DhfDJe0um
-         WdFw==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=6Kc1WbDSgXVF94sOsNH1trNDlACUDpdbFDZEbig89pA=;
+        b=kNAT3YzgNvaNZB0qOxA6Rl2nnRij+0GxT5xm9OyKbkef8xLre1BqFzCJnN65aR1rtM
+         56wdPz7FSRNTu39vBtx+s9TD7gtmKAGkai5F4plMFXk+sdLz+nNW851qYZ/F3etBPk1U
+         fXZ3lc1AatbD9+Aht2Pel0l+6tt5nWUFqxhGvaY8wErivLRkTWnzhrtxwi7ap+7/Vz46
+         FSszDXHBqRhJ1PaIcs1x2OampQE65supyYZuVR659CqQpqrB5syZD7B3lgEpnKsyrDRb
+         ifu03BHhiy54xNMvgGZ2B5OewxA6OIsNXt8l+BfLTzERvN82KqbvVKzw7K6I6paAiTLs
+         V+KA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=vgiP4tU1wMC+CJHD44H3YeER60YK9xQvr6oaVCV9rsk=;
-        b=mQBGkoULsnySTB2tVCgenlHiGywQFbsKkIpd+tsTMMyl91np2Hwkir537IIfd9eYbk
-         9TujV7Necnw6EBLXXIJ6Y1elR93ZHH3oCgsltM8vvO4VOUrW2XtIvzK43UfKh2xV949M
-         q4QbDMREwhoqTkjWfjm280mwtmfKbW4XPiVlVBMH0Lin6P+IeKiNAZ6dbtK/VhbU72Y6
-         kai1La/A6oM7OUQHGboJUnY/dDLI4V/F9382vKjbQ5dk/B/dhp9op2AP19X4E0BXCOrC
-         CPM4sdzAO4oh0Hv2kiERjvppVtRkAdOQXlILgXpxa23n/ZwfvAUg8/DD9mTD1bN/aOm2
-         mMRA==
-X-Gm-Message-State: AOAM531SkPA0cM/qVc5aW4hxZZmknWIUOdjzKL+rk7rICsDS+YgzmjvX
-        9H1EONCO8evyS7GUGnbFsgw=
-X-Google-Smtp-Source: ABdhPJynt95tAQkz/zKdCFlqeduCsz1O5bigcmXEvuBhGdtCg+rJ3gupItvL6kCVf0/q8AYmGmPNrA==
-X-Received: by 2002:a17:90a:b398:: with SMTP id e24mr2417117pjr.141.1618886547546;
-        Mon, 19 Apr 2021 19:42:27 -0700 (PDT)
-Received: from z640-arch.lan ([2602:61:7344:f100::678])
-        by smtp.gmail.com with ESMTPSA id 14sm13524425pfi.145.2021.04.19.19.42.26
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 19 Apr 2021 19:42:27 -0700 (PDT)
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=6Kc1WbDSgXVF94sOsNH1trNDlACUDpdbFDZEbig89pA=;
+        b=fMTQXUgfwXp9oGADPfA6SykdJKwicuobd8IVZu+57aTbkObLzirQmRkV1R+vc5498F
+         uJcTPcuGcrGbTr1q56+OnqFpFg42WhgZdc7QrQ4mxgMByA5q0q2oewNjCipB+Vgymbsw
+         lc+cG5sxWNqdklaWr6nGo89YD8I06j6BbKrq98lcXSYtzq/c6bBtss2KFt+S5txcGgmg
+         lOWwiDcgnY82LJXzvvJC3G29enIFFtd6CnsUg5nPwoX3TjrH40krZvYHEFtbBuredBUl
+         /4ronThJX0tQRoV7xApc2Fglpm3zLb724V29Z4jVmrWJxATRzebzoP3Xp01ro01df5L/
+         Liwg==
+X-Gm-Message-State: AOAM532rI8ivjY2/wT1l5hIqI2b8abi0eoWBh/SQvPza5Om4pVh37sAF
+        pIksTHzwm1td0eL89I/cnourG1TWXdyexP32fvisSsKob9/AyA==
+X-Google-Smtp-Source: ABdhPJyu3r8FHInxVHB6FMEsM++ZSS/SzxyQ0Ov3kKdZPFntmoTWDCdi5kG/Pu7kLZ/UX5r2ZH7m5Nb4ZfBgNrrPuaQ=
+X-Received: by 2002:a02:a302:: with SMTP id q2mr11251853jai.104.1618886706664;
+ Mon, 19 Apr 2021 19:45:06 -0700 (PDT)
+MIME-Version: 1.0
+References: <20210419034253.21322-1-ilya.lipnitskiy@gmail.com> <878s5e94hi.fsf@miraculix.mork.no>
+In-Reply-To: <878s5e94hi.fsf@miraculix.mork.no>
 From:   Ilya Lipnitskiy <ilya.lipnitskiy@gmail.com>
-To:     "David S. Miller" <davem@davemloft.net>,
+Date:   Mon, 19 Apr 2021 19:44:55 -0700
+Message-ID: <CALCv0x2CzL3PLw+r2f5rU_Uu04wn3kR3R-fn=kAfmksuAsjwLw@mail.gmail.com>
+Subject: Re: [PATCH] dt-bindings: net: mediatek: support MT7621 SoC
+To:     =?UTF-8?Q?Bj=C3=B8rn_Mork?= <bjorn@mork.no>
+Cc:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
         Rob Herring <robh+dt@kernel.org>,
         Matthias Brugger <matthias.bgg@gmail.com>,
-        netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        Greg Ungerer <gerg@kernel.org>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Sean Wang <sean.wang@kernel.org>, netdev@vger.kernel.org,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
         linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org
-Cc:     Ilya Lipnitskiy <ilya.lipnitskiy@gmail.com>,
-        John Crispin <john@phrozen.org>
-Subject: [PATCH] dt-bindings: net: mediatek/ralink: remove unused bindings
-Date:   Mon, 19 Apr 2021 19:42:22 -0700
-Message-Id: <20210420024222.101615-1-ilya.lipnitskiy@gmail.com>
-X-Mailer: git-send-email 2.31.1
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        linux-mediatek@lists.infradead.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Revert commit 663148e48a66 ("Documentation: DT: net: add docs for
-ralink/mediatek SoC ethernet binding")
+On Sun, Apr 18, 2021 at 11:24 PM Bj=C3=B8rn Mork <bjorn@mork.no> wrote:
+>
+> Ilya Lipnitskiy <ilya.lipnitskiy@gmail.com> writes:
+>
+> > Add missing binding documentation for SoC support that has been in plac=
+e
+> > since v5.1
+> >
+> > Fixes: 889bcbdeee57 ("net: ethernet: mediatek: support MT7621 SoC ether=
+net hardware")
+> > Cc: Bj=C3=B8rn Mork <bjorn@mork.no>
+> > Signed-off-by: Ilya Lipnitskiy <ilya.lipnitskiy@gmail.com>
+> > ---
+> >  Documentation/devicetree/bindings/net/mediatek-net.txt | 1 +
+> >  1 file changed, 1 insertion(+)
+> >
+> > diff --git a/Documentation/devicetree/bindings/net/mediatek-net.txt b/D=
+ocumentation/devicetree/bindings/net/mediatek-net.txt
+> > index 72d03e07cf7c..950ef6af20b1 100644
+> > --- a/Documentation/devicetree/bindings/net/mediatek-net.txt
+> > +++ b/Documentation/devicetree/bindings/net/mediatek-net.txt
+> > @@ -10,6 +10,7 @@ Required properties:
+> >  - compatible: Should be
+> >               "mediatek,mt2701-eth": for MT2701 SoC
+> >               "mediatek,mt7623-eth", "mediatek,mt2701-eth": for MT7623 =
+SoC
+> > +             "mediatek,mt7621-eth": for MT7621 SoC
+> >               "mediatek,mt7622-eth": for MT7622 SoC
+> >               "mediatek,mt7629-eth": for MT7629 SoC
+> >               "ralink,rt5350-eth": for Ralink Rt5350F and MT7628/88 SoC
+>
+>
+> Thanks for taking care of this!
+>
+> Note, however, that this compatible value is defined in
+> Documentation/devicetree/bindings/net/ralink,rt2880-net.txt
+>
+> I believe that file should go away. These two files are both documenting
+> the same compatible property AFAICS.
+Removed along with two others in
+https://lore.kernel.org/lkml/20210420024222.101615-1-ilya.lipnitskiy@gmail.=
+com/T/#u
 
-No in-tree drivers use the compatible strings present in these bindings,
-and some have been superseded by DSA-capable mtk_eth_soc driver, so
-remove these obsolete bindings.
-
-Cc: John Crispin <john@phrozen.org>
-Signed-off-by: Ilya Lipnitskiy <ilya.lipnitskiy@gmail.com>
----
- .../bindings/net/mediatek,mt7620-gsw.txt      | 24 --------
- .../bindings/net/ralink,rt2880-net.txt        | 59 -------------------
- .../bindings/net/ralink,rt3050-esw.txt        | 30 ----------
- 3 files changed, 113 deletions(-)
- delete mode 100644 Documentation/devicetree/bindings/net/mediatek,mt7620-gsw.txt
- delete mode 100644 Documentation/devicetree/bindings/net/ralink,rt2880-net.txt
- delete mode 100644 Documentation/devicetree/bindings/net/ralink,rt3050-esw.txt
-
-diff --git a/Documentation/devicetree/bindings/net/mediatek,mt7620-gsw.txt b/Documentation/devicetree/bindings/net/mediatek,mt7620-gsw.txt
-deleted file mode 100644
-index 358fed2fab43..000000000000
---- a/Documentation/devicetree/bindings/net/mediatek,mt7620-gsw.txt
-+++ /dev/null
-@@ -1,24 +0,0 @@
--Mediatek Gigabit Switch
--=======================
--
--The mediatek gigabit switch can be found on Mediatek SoCs (mt7620, mt7621).
--
--Required properties:
--- compatible: Should be "mediatek,mt7620-gsw" or "mediatek,mt7621-gsw"
--- reg: Address and length of the register set for the device
--- interrupts: Should contain the gigabit switches interrupt
--- resets: Should contain the gigabit switches resets
--- reset-names: Should contain the reset names "gsw"
--
--Example:
--
--gsw@10110000 {
--	compatible = "ralink,mt7620-gsw";
--	reg = <0x10110000 8000>;
--
--	resets = <&rstctrl 23>;
--	reset-names = "gsw";
--
--	interrupt-parent = <&intc>;
--	interrupts = <17>;
--};
-diff --git a/Documentation/devicetree/bindings/net/ralink,rt2880-net.txt b/Documentation/devicetree/bindings/net/ralink,rt2880-net.txt
-deleted file mode 100644
-index 9fe1a0a22e44..000000000000
---- a/Documentation/devicetree/bindings/net/ralink,rt2880-net.txt
-+++ /dev/null
-@@ -1,59 +0,0 @@
--Ralink Frame Engine Ethernet controller
--=======================================
--
--The Ralink frame engine ethernet controller can be found on Ralink and
--Mediatek SoCs (RT288x, RT3x5x, RT366x, RT388x, rt5350, mt7620, mt7621, mt76x8).
--
--Depending on the SoC, there is a number of ports connected to the CPU port
--directly and/or via a (gigabit-)switch.
--
--* Ethernet controller node
--
--Required properties:
--- compatible: Should be one of "ralink,rt2880-eth", "ralink,rt3050-eth",
--  "ralink,rt3050-eth", "ralink,rt3883-eth", "ralink,rt5350-eth",
--  "mediatek,mt7620-eth", "mediatek,mt7621-eth"
--- reg: Address and length of the register set for the device
--- interrupts: Should contain the frame engines interrupt
--- resets: Should contain the frame engines resets
--- reset-names: Should contain the reset names "fe". If a switch is present
--  "esw" is also required.
--
--
--* Ethernet port node
--
--Required properties:
--- compatible: Should be "ralink,eth-port"
--- reg: The number of the physical port
--- phy-handle: reference to the node describing the phy
--
--Example:
--
--mdio-bus {
--	...
--	phy0: ethernet-phy@0 {
--		phy-mode = "mii";
--		reg = <0>;
--	};
--};
--
--ethernet@400000 {
--	compatible = "ralink,rt2880-eth";
--	reg = <0x00400000 10000>;
--
--	#address-cells = <1>;
--	#size-cells = <0>;
--
--	resets = <&rstctrl 18>;
--	reset-names = "fe";
--
--	interrupt-parent = <&cpuintc>;
--	interrupts = <5>;
--
--	port@0 {
--		compatible = "ralink,eth-port";
--		reg = <0>;
--		phy-handle = <&phy0>;
--	};
--
--};
-diff --git a/Documentation/devicetree/bindings/net/ralink,rt3050-esw.txt b/Documentation/devicetree/bindings/net/ralink,rt3050-esw.txt
-deleted file mode 100644
-index 87e315856efa..000000000000
---- a/Documentation/devicetree/bindings/net/ralink,rt3050-esw.txt
-+++ /dev/null
-@@ -1,30 +0,0 @@
--Ralink Fast Ethernet Embedded Switch
--====================================
--
--The ralink fast ethernet embedded switch can be found on Ralink and Mediatek
--SoCs (RT3x5x, RT5350, MT76x8).
--
--Required properties:
--- compatible: Should be "ralink,rt3050-esw"
--- reg: Address and length of the register set for the device
--- interrupts: Should contain the embedded switches interrupt
--- resets: Should contain the embedded switches resets
--- reset-names: Should contain the reset names "esw"
--
--Optional properties:
--- ralink,portmap: can be used to choose if the default switch setup is
--  llllw or wllll
--- ralink,led_polarity: override the active high/low settings of the leds
--
--Example:
--
--esw@10110000 {
--	compatible = "ralink,rt3050-esw";
--	reg = <0x10110000 8000>;
--
--	resets = <&rstctrl 23>;
--	reset-names = "esw";
--
--	interrupt-parent = <&intc>;
--	interrupts = <17>;
--};
--- 
-2.31.1
-
+Ilya
