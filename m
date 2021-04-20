@@ -2,259 +2,183 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 91B17365A8C
-	for <lists+netdev@lfdr.de>; Tue, 20 Apr 2021 15:49:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 68910365A94
+	for <lists+netdev@lfdr.de>; Tue, 20 Apr 2021 15:50:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232526AbhDTNtA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 20 Apr 2021 09:49:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42500 "EHLO
+        id S232376AbhDTNub (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 20 Apr 2021 09:50:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42830 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232516AbhDTNs6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 20 Apr 2021 09:48:58 -0400
-Received: from mail-ot1-x32c.google.com (mail-ot1-x32c.google.com [IPv6:2607:f8b0:4864:20::32c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 83250C06174A
-        for <netdev@vger.kernel.org>; Tue, 20 Apr 2021 06:48:25 -0700 (PDT)
-Received: by mail-ot1-x32c.google.com with SMTP id c8-20020a9d78480000b0290289e9d1b7bcso21755082otm.4
-        for <netdev@vger.kernel.org>; Tue, 20 Apr 2021 06:48:25 -0700 (PDT)
+        with ESMTP id S232084AbhDTNu2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 20 Apr 2021 09:50:28 -0400
+Received: from mail-pf1-x430.google.com (mail-pf1-x430.google.com [IPv6:2607:f8b0:4864:20::430])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A08B8C06174A;
+        Tue, 20 Apr 2021 06:49:56 -0700 (PDT)
+Received: by mail-pf1-x430.google.com with SMTP id a12so25589446pfc.7;
+        Tue, 20 Apr 2021 06:49:56 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=sender:subject:to:cc:references:from:autocrypt:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=MKjwqXBXni2CEyEMYVZvmZlfEgOUYvrDJiO/2mGbth8=;
-        b=NUK7J+v9YEwXWDhONKp/lHgQ9+WlEGE7MRaC4GRqPKOVrg8LDLvk10+I92lBASjb5Z
-         KXwNk8tFDlwvt/c4wtCXQRCCgJYTtpfkyyzTBusYZ/GS4XsqympSShg8eQFiuFtkH7Zs
-         fMhngN/PKgVFG4c+KLFtntwTyB6qvkFKZNkRccwhVcRyP8vSoowvvaQ4V/huk8aNkVUq
-         f71v/1lsHgyMWxqtwVx3NgrFymMIKX6UsdibzoTVJssSBUQ+WU64PRZpDK0iuZ0kDbP3
-         PzcWFWkeYZnGpwtrqGifwmIawOIL3VJtncMoFLsjlf1wYx0FJ+aoyd3s+B2ug/Jn+/SZ
-         043Q==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=IIn2vPs/0fzr8nOclXG7ZQaFqgjNByGzMn1tBsyy5F0=;
+        b=APMACkG0BjslUecn9rs9WAs5/mhX0+XnLX1Qd6+rdEbWcfEpY2FNx45JamNJz9pQ5g
+         pnceFvf1Ed6dSRtq4YvO+yEn04Vo/2Y0w0pWL2M4+b2Zvk+5VuHaprlnweQ0Qy8srIqG
+         awj4JSoHbB6uqLB0x9o6M7CZ83Me5jh1m30fv6j+dAoN03Lcr4sj5aufvPMPskt0SgxO
+         /YD5HUGn5yhhjGtv/MtO2xu1K9dSogXIWc9MZsdyZUWCgd5yZRWZYcv2o4ljRrga1QIu
+         94KUW90092igGVUU2/wxVpaKLB0CezJyUK8gbHTnE8LmUCC/PxdNKchf+QrqUiTTNL25
+         9tZQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:sender:subject:to:cc:references:from:autocrypt
-         :message-id:date:user-agent:mime-version:in-reply-to
-         :content-language:content-transfer-encoding;
-        bh=MKjwqXBXni2CEyEMYVZvmZlfEgOUYvrDJiO/2mGbth8=;
-        b=pbMHtPJjg2QjW6wfwHB7IiwUBuGeEjKqOXKXXc95rwMQx3QA74RWPS1R0DVYkjYpdv
-         0Rhe/PE1wa35u5ZvcALaNOBTWrEIWZzwm37gWfWF1O225JGVpSVAEngqVd9hkGUNay9r
-         YXtY1tepZ9WU/+886Vj09GYxKBoyr7uJlF5cLxhxcGCnd08igxfncc0j/F70JZC1q68U
-         bt4++w5LxoN4VBSLbnQ1mPBy5SFlINx7Ewxj5Dkgk/yfL/nbzmNEbvyGFqfdTHgwccpU
-         w9HANoC59SKFdBaYdDIBC9llrpe2LAQfgERbmKPsOb7ZWuKdGQJp/0gGn4Av3uksAWzS
-         DtzQ==
-X-Gm-Message-State: AOAM530xbeG+1iI9614MYLv6/HjQO4L6zGEPx+hZLONt7NbX1GAY+f9z
-        Z3ZCnA3ewI3gZYZDvfMNDD7vvxeiLX0=
-X-Google-Smtp-Source: ABdhPJwbHztjq4PoXEEV+h1zKzJjSEIVpNpv1GExHTA6znCzg5NX+PbXjVIjEVFiaQUsDSiIeNC2YQ==
-X-Received: by 2002:a9d:6d10:: with SMTP id o16mr19720352otp.370.1618926504455;
-        Tue, 20 Apr 2021 06:48:24 -0700 (PDT)
-Received: from server.roeck-us.net ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
-        by smtp.gmail.com with ESMTPSA id s26sm201018otd.75.2021.04.20.06.48.22
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 20 Apr 2021 06:48:24 -0700 (PDT)
-Sender: Guenter Roeck <groeck7@gmail.com>
-Subject: Re: [PATCH net-next] virtio-net: fix use-after-free in page_to_skb()
-To:     Eric Dumazet <eric.dumazet@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev <netdev@vger.kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        syzbot <syzkaller@googlegroups.com>,
-        Mat Martineau <mathew.j.martineau@linux.intel.com>,
-        Xuan Zhuo <xuanzhuo@linux.alibaba.com>,
-        Jason Wang <jasowang@redhat.com>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        virtualization@lists.linux-foundation.org
-References: <20210420094341.3259328-1-eric.dumazet@gmail.com>
-From:   Guenter Roeck <linux@roeck-us.net>
-Autocrypt: addr=linux@roeck-us.net; keydata=
- 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
- mDW4+i+XlNFUPUYMrIKi9joBhu18ssf5i5Q=
-Message-ID: <c5a8aeaf-0f41-9274-b9c5-ec385b34180a@roeck-us.net>
-Date:   Tue, 20 Apr 2021 06:48:22 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=IIn2vPs/0fzr8nOclXG7ZQaFqgjNByGzMn1tBsyy5F0=;
+        b=mxmrBV1BmohvKKguvH4Xzrp10vh2KXntCCzVSLACfybVxPlyddeGA8btvG/oOLq+pA
+         G40DG0Ju45tkP/NWa2rbd1OOI1uXGHXN4SDQIkiqP5MzBFqwJkZF+5z9xnkjzZ+46h6w
+         hKpArcvLUH730wjNvxBvnZX/mIZAijLxNfPzeOT69pdaqjZQiogg+X4eShs3VvoG/g0u
+         vb27Jix+1OwnT/OVT/I+qeslKmxE5TJREsCNA/Xk0wF9KiBl1X7GWbpjzd6ZClDj0Swr
+         EUUovDb8cbAQfLJnpH1ShWO4Cwmp8j5tUW8JcylD/OGt7wDVUeVtB8TbXJwzwRLrhIym
+         BEJQ==
+X-Gm-Message-State: AOAM5331/4xzPzi23VRFiYEhaoReYyDkE3QiAoi0fu5xYQMSrK2J5MRH
+        f69ieOCDUAzIDuB9HPRN9VogWYw6f5flMZlMX44=
+X-Google-Smtp-Source: ABdhPJwzjD+NfvjQhNi/vKS7Rj8m7XzWmQli4PRiY1MKa/L5aRNK+HYclCdEeL4ZijTRYQpASMI4EEb8wVojJgE1Vls=
+X-Received: by 2002:a63:5b07:: with SMTP id p7mr13074517pgb.208.1618926596066;
+ Tue, 20 Apr 2021 06:49:56 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <20210420094341.3259328-1-eric.dumazet@gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+References: <cover.1617885385.git.lorenzo@kernel.org> <CAJ8uoz1MOYLzyy7xXq_fmpKDEakxSomzfM76Szjr5gWsqHc9jQ@mail.gmail.com>
+ <20210418181801.17166935@carbon> <CAJ8uoz0m8AAJFddn2LjehXtdeGS0gat7dwOLA_-_ZeOVYjBdxw@mail.gmail.com>
+ <YH0pdXXsZ7IELBn3@lore-desk>
+In-Reply-To: <YH0pdXXsZ7IELBn3@lore-desk>
+From:   Magnus Karlsson <magnus.karlsson@gmail.com>
+Date:   Tue, 20 Apr 2021 15:49:44 +0200
+Message-ID: <CAJ8uoz101VZiwuvM-bs4UdW+kFT5xjgdgUwPWHZn4ABEOkyQ-w@mail.gmail.com>
+Subject: Re: [PATCH v8 bpf-next 00/14] mvneta: introduce XDP multi-buffer support
+To:     Lorenzo Bianconi <lorenzo.bianconi@redhat.com>
+Cc:     Jesper Dangaard Brouer <brouer@redhat.com>,
+        Lorenzo Bianconi <lorenzo@kernel.org>,
+        bpf <bpf@vger.kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>, shayagr@amazon.com,
+        sameehj@amazon.com, John Fastabend <john.fastabend@gmail.com>,
+        David Ahern <dsahern@kernel.org>,
+        Eelco Chaudron <echaudro@redhat.com>,
+        Jason Wang <jasowang@redhat.com>,
+        Alexander Duyck <alexander.duyck@gmail.com>,
+        Saeed Mahameed <saeed@kernel.org>,
+        "Fijalkowski, Maciej" <maciej.fijalkowski@intel.com>,
+        Tirthendu <tirthendu.sarkar@intel.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 4/20/21 2:43 AM, Eric Dumazet wrote:
-> From: Eric Dumazet <edumazet@google.com>
-> 
-> KASAN/syzbot had 4 reports, one of them being:
-> 
-> BUG: KASAN: slab-out-of-bounds in memcpy include/linux/fortify-string.h:191 [inline]
-> BUG: KASAN: slab-out-of-bounds in page_to_skb+0x5cf/0xb70 drivers/net/virtio_net.c:480
-> Read of size 12 at addr ffff888014a5f800 by task systemd-udevd/8445
-> 
-> CPU: 0 PID: 8445 Comm: systemd-udevd Not tainted 5.12.0-rc8-next-20210419-syzkaller #0
-> Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-> Call Trace:
->  <IRQ>
->  __dump_stack lib/dump_stack.c:79 [inline]
->  dump_stack+0x141/0x1d7 lib/dump_stack.c:120
->  print_address_description.constprop.0.cold+0x5b/0x2f8 mm/kasan/report.c:233
->  __kasan_report mm/kasan/report.c:419 [inline]
->  kasan_report.cold+0x7c/0xd8 mm/kasan/report.c:436
->  check_region_inline mm/kasan/generic.c:180 [inline]
->  kasan_check_range+0x13d/0x180 mm/kasan/generic.c:186
->  memcpy+0x20/0x60 mm/kasan/shadow.c:65
->  memcpy include/linux/fortify-string.h:191 [inline]
->  page_to_skb+0x5cf/0xb70 drivers/net/virtio_net.c:480
->  receive_mergeable drivers/net/virtio_net.c:1009 [inline]
->  receive_buf+0x2bc0/0x6250 drivers/net/virtio_net.c:1119
->  virtnet_receive drivers/net/virtio_net.c:1411 [inline]
->  virtnet_poll+0x568/0x10b0 drivers/net/virtio_net.c:1516
->  __napi_poll+0xaf/0x440 net/core/dev.c:6962
->  napi_poll net/core/dev.c:7029 [inline]
->  net_rx_action+0x801/0xb40 net/core/dev.c:7116
->  __do_softirq+0x29b/0x9fe kernel/softirq.c:559
->  invoke_softirq kernel/softirq.c:433 [inline]
->  __irq_exit_rcu+0x136/0x200 kernel/softirq.c:637
->  irq_exit_rcu+0x5/0x20 kernel/softirq.c:649
->  common_interrupt+0xa4/0xd0 arch/x86/kernel/irq.c:240
-> 
-> Fixes: fb32856b16ad ("virtio-net: page_to_skb() use build_skb when there's sufficient tailroom")
-> Signed-off-by: Eric Dumazet <edumazet@google.com>
-> Reported-by: syzbot <syzkaller@googlegroups.com>
-> Reported-by: Guenter Roeck <linux@roeck-us.net>
-> Reported-by: Mat Martineau <mathew.j.martineau@linux.intel.com>
-> Cc: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
-> Cc: Jason Wang <jasowang@redhat.com>
-> Cc: "Michael S. Tsirkin" <mst@redhat.com>
-> Cc: virtualization@lists.linux-foundation.org
-> ---
->  drivers/net/virtio_net.c | 5 ++++-
->  1 file changed, 4 insertions(+), 1 deletion(-)
-> 
-> diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
-> index 8cd76037c72481200ea3e8429e9fdfec005dad85..2e28c04aa6351d2b4016f7d277ce104c4970069d 100644
-> --- a/drivers/net/virtio_net.c
-> +++ b/drivers/net/virtio_net.c
-> @@ -385,6 +385,7 @@ static struct sk_buff *page_to_skb(struct virtnet_info *vi,
->  	struct sk_buff *skb;
->  	struct virtio_net_hdr_mrg_rxbuf *hdr;
->  	unsigned int copy, hdr_len, hdr_padded_len;
-> +	struct page *page_to_free = NULL;
->  	int tailroom, shinfo_size;
->  	char *p, *hdr_p;
->  
-> @@ -445,7 +446,7 @@ static struct sk_buff *page_to_skb(struct virtnet_info *vi,
->  		if (len)
->  			skb_add_rx_frag(skb, 0, page, offset, len, truesize);
->  		else
-> -			put_page(page);
-> +			page_to_free = page;
->  		goto ok;
->  	}
->  
-> @@ -479,6 +480,8 @@ static struct sk_buff *page_to_skb(struct virtnet_info *vi,
->  		hdr = skb_vnet_hdr(skb);
->  		memcpy(hdr, hdr_p, hdr_len);
->  	}
-> +	if (page_to_free)
-> +		put_page(page_to_free);
->  
->  	if (metasize) {
->  		__skb_pull(skb, metasize);
-> 
+On Mon, Apr 19, 2021 at 8:56 AM Lorenzo Bianconi
+<lorenzo.bianconi@redhat.com> wrote:
+>
+> > On Sun, Apr 18, 2021 at 6:18 PM Jesper Dangaard Brouer
+> > <brouer@redhat.com> wrote:
+> > >
+> > > On Fri, 16 Apr 2021 16:27:18 +0200
+> > > Magnus Karlsson <magnus.karlsson@gmail.com> wrote:
+> > >
+> > > > On Thu, Apr 8, 2021 at 2:51 PM Lorenzo Bianconi <lorenzo@kernel.org> wrote:
+> > > > >
+> > > > > This series introduce XDP multi-buffer support. The mvneta driver is
+> > > > > the first to support these new "non-linear" xdp_{buff,frame}. Reviewers
+> > > > > please focus on how these new types of xdp_{buff,frame} packets
+> > > > > traverse the different layers and the layout design. It is on purpose
+> > > > > that BPF-helpers are kept simple, as we don't want to expose the
+> > > > > internal layout to allow later changes.
+> > > > >
+> > > > > For now, to keep the design simple and to maintain performance, the XDP
+> > > > > BPF-prog (still) only have access to the first-buffer. It is left for
+> > > > > later (another patchset) to add payload access across multiple buffers.
+> > > > > This patchset should still allow for these future extensions. The goal
+> > > > > is to lift the XDP MTU restriction that comes with XDP, but maintain
+> > > > > same performance as before.
+> > > [...]
+> > > > >
+> > > > > [0] https://netdevconf.info/0x14/session.html?talk-the-path-to-tcp-4k-mtu-and-rx-zerocopy
+> > > > > [1] https://github.com/xdp-project/xdp-project/blob/master/areas/core/xdp-multi-buffer01-design.org
+> > > > > [2] https://netdevconf.info/0x14/session.html?tutorial-add-XDP-support-to-a-NIC-driver (XDPmulti-buffers section)
+> > > >
+> > > > Took your patches for a test run with the AF_XDP sample xdpsock on an
+> > > > i40e card and the throughput degradation is between 2 to 6% depending
+> > > > on the setup and microbenchmark within xdpsock that is executed. And
+> > > > this is without sending any multi frame packets. Just single frame
+> > > > ones. Tirtha made changes to the i40e driver to support this new
+> > > > interface so that is being included in the measurements.
+> > >
+> > > Could you please share Tirtha's i40e support patch with me?
+> >
+> > We will post them on the list as an RFC. Tirtha also added AF_XDP
+> > multi-frame support on top of Lorenzo's patches so we will send that
+> > one out as well. Will also rerun my experiments, properly document
+> > them and send out just to be sure that I did not make any mistake.
+>
+> ack, very cool, thx
 
-Unfortunately that doesn't fix the problem for me. With this patch applied
-on top of next-20210419, I still get the same crash as before:
+I have now run a new set of experiments on a Cascade Lake server at
+2.1 GHz with turbo boost disabled. Two NICs: i40e and ice. The
+baseline is commit 5c507329000e ("libbpf: Clarify flags in ringbuf
+helpers") and Lorenzo's and Eelco's path set is their v8. First some
+runs with xdpsock (i.e. AF_XDP) in both 2-core mode (app on one core
+and the driver on another) and 1-core mode using busy_poll.
 
-udhcpc: sending discover^M
-Unable to handle kernel paging request at virtual address 0000000000000004^M
-udhcpc(169): Oops -1^M
-pc = [<0000000000000004>]  ra = [<fffffc0000b8c5b8>]  ps = 0000    Not tainted^M
-pc is at 0x4^M
-ra is at napi_gro_receive+0x68/0x150^M
-v0 = 0000000000000000  t0 = 0000000000000008  t1 = 0000000000000000^M
-t2 = 0000000000000000  t3 = 000000000000000e  t4 = 0000000000000038^M
-t5 = 000000000000ffff  t6 = fffffc00002f298a  t7 = fffffc0002c78000^M
-s0 = fffffc00010b3ca0  s1 = 0000000000000000  s2 = fffffc00011267e0^M
-s3 = 0000000000000000  s4 = fffffc00025f2008  s5 = fffffc00002f2940^M
-s6 = fffffc00025f2040^M
-a0 = fffffc00025f2008  a1 = fffffc00002f2940  a2 = fffffc0002ca000c^M
-a3 = fffffc00000250d0  a4 = 0000000effff0008  a5 = 0000000000000000^M
-t8 = fffffc00010b3c80  t9 = fffffc0002ca04cc  t10= 0000000000000000^M
-t11= 00000000000004c0  pv = fffffc0000b8bc40  at = 0000000000000000^M
-gp = fffffc00010f9fb8  sp = 00000000df74db09^M
-Disabling lock debugging due to kernel taint^M
-Trace:^M
-[<fffffc0000b8c5b8>] napi_gro_receive+0x68/0x150^M
-[<fffffc00009b409c>] receive_buf+0x50c/0x1b80^M
-[<fffffc00009b58b8>] virtnet_poll+0x1a8/0x5b0^M
-[<fffffc00009b58ec>] virtnet_poll+0x1dc/0x5b0^M
-[<fffffc0000b8d17c>] __napi_poll+0x4c/0x270^M
-[<fffffc0000b8d670>] net_rx_action+0x130/0x2c0^M
-[<fffffc0000bd6cb0>] sch_direct_xmit+0x170/0x360^M
-[<fffffc0000bd7000>] __qdisc_run+0x160/0x6c0^M
-[<fffffc0000337b64>] do_softirq+0xa4/0xd0^M
-[<fffffc0000337ca4>] __local_bh_enable_ip+0x114/0x120^M
-[<fffffc0000b89554>] __dev_queue_xmit+0x484/0xa60^M
-[<fffffc0000cd072c>] packet_sendmsg+0xe7c/0x1ba0^M
-[<fffffc0000b53338>] __sys_sendto+0xf8/0x170^M
-[<fffffc0000cfec18>] _raw_spin_unlock+0x18/0x30^M
-[<fffffc0000a9bf7c>] ehci_irq+0x2cc/0x5c0^M
-[<fffffc0000a71334>] usb_hcd_irq+0x34/0x50^M
-[<fffffc0000b521bc>] move_addr_to_kernel+0x3c/0x60^M
-[<fffffc0000b532e4>] __sys_sendto+0xa4/0x170^M
-[<fffffc0000b533d4>] sys_sendto+0x24/0x40^M
-[<fffffc0000cfea38>] _raw_spin_lock+0x18/0x30^M
-[<fffffc0000cfec18>] _raw_spin_unlock+0x18/0x30^M
-[<fffffc0000325298>] clipper_enable_irq+0x98/0x100^M
-[<fffffc0000cfec18>] _raw_spin_unlock+0x18/0x30^M
-[<fffffc0000311514>] entSys+0xa4/0xc0^M
-^M
-Code:^M
- 00000000 ^M
- 00063301 ^M
- 00000897 ^M
- 00001111 ^M
- 00001672 ^M
-^M
-Kernel panic - not syncing: Aiee, killing interrupt handler!^M
+xdpsock rxdrop throughput change with the multi-buffer patches without
+any driver changes:
+1-core i40e: -0.5 to 0%   2-cores i40e: -0.5%
+1-core ice: -2%   2-cores ice: -1 to -0.5%
 
-Guenter
+xdp_rxq_info -a XDP_DROP
+i40e: -4%   ice: +8%
+
+xdp_rxq_info -a XDP_TX
+i40e: -10%   ice: +9%
+
+The XDP results with xdp_rxq_info are just weird! I reran them three
+times, rebuilt and rebooted in between and I always get the same
+results. And I also checked that I am running on the correct NUMA node
+and so on. But I have a hard time believing them. Nearly +10% and -10%
+difference. Too much in my book. Jesper, could you please run the same
+and see what you get? The xdpsock numbers are more in the ballpark of
+what I would expect.
+
+Tirtha and I found some optimizations in the i40e
+multi-frame/multi-buffer support that we have implemented. Will test
+those next, post the results and share the code.
+
+> >
+> > Just note that I would really like for the multi-frame support to get
+> > in. I have lost count on how many people that have asked for it to be
+> > added to XDP and AF_XDP. So please check our implementation and
+> > improve it so we can get the overhead down to where we want it to be.
+>
+> sure, I will do.
+>
+> Regards,
+> Lorenzo
+>
+> >
+> > Thanks: Magnus
+> >
+> > > I would like to reproduce these results in my testlab, in-order to
+> > > figure out where the throughput degradation comes from.
+> > >
+> > > > What performance do you see with the mvneta card? How much are we
+> > > > willing to pay for this feature when it is not being used or can we in
+> > > > some way selectively turn it on only when needed?
+> > >
+> > > Well, as Daniel says performance wise we require close to /zero/
+> > > additional overhead, especially as you state this happens when sending
+> > > a single frame, which is a base case that we must not slowdown.
+> > >
+> > > --
+> > > Best regards,
+> > >   Jesper Dangaard Brouer
+> > >   MSc.CS, Principal Kernel Engineer at Red Hat
+> > >   LinkedIn: http://www.linkedin.com/in/brouer
+> > >
+> >
