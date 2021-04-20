@@ -2,109 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 55E38365943
-	for <lists+netdev@lfdr.de>; Tue, 20 Apr 2021 14:52:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AAD08365949
+	for <lists+netdev@lfdr.de>; Tue, 20 Apr 2021 14:53:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232231AbhDTMwZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 20 Apr 2021 08:52:25 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:54312 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S231766AbhDTMwY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 20 Apr 2021 08:52:24 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1618923113;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=GZw2QV10ZPoSVV/r5DXbb6EIzcgNZJBaR0TDFr3TPLw=;
-        b=QgnmqgWkmfo3y6JnA8X75Vaiy0Uxa7RaqxjRtaRhHFAPERB54XQa8Flgr5H9xb4jsuh26F
-        3w6/Yhehgj5lZwA1tAXIxjKK0w9kkGTU7MgVZA+YcNlN660nNeTzyOfr0glnoZpjZO6NBk
-        EAzffphPaoHShIL4CUxRCBtIKIg3/aU=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-509-CmDtPpsENnC57rOZn9QEDQ-1; Tue, 20 Apr 2021 08:51:49 -0400
-X-MC-Unique: CmDtPpsENnC57rOZn9QEDQ-1
-Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com [10.5.11.13])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 087EF10BFFDA;
-        Tue, 20 Apr 2021 12:51:47 +0000 (UTC)
-Received: from krava (unknown [10.40.196.37])
-        by smtp.corp.redhat.com (Postfix) with SMTP id 5E42560916;
-        Tue, 20 Apr 2021 12:51:43 +0000 (UTC)
-Date:   Tue, 20 Apr 2021 14:51:42 +0200
-From:   Jiri Olsa <jolsa@redhat.com>
-To:     Steven Rostedt <rostedt@goodmis.org>
-Cc:     Masami Hiramatsu <mhiramat@kernel.org>,
-        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
-        Jiri Olsa <jolsa@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andriin@fb.com>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>, Daniel Xu <dxu@dxuuu.xyz>,
-        Jesper Brouer <jbrouer@redhat.com>,
-        Toke =?iso-8859-1?Q?H=F8iland-J=F8rgensen?= <toke@redhat.com>,
-        Viktor Malik <vmalik@redhat.com>
-Subject: Re: [PATCHv2 RFC bpf-next 0/7] bpf: Add support for ftrace probe
-Message-ID: <YH7OXrjBIqvEZbsc@krava>
-References: <20210413121516.1467989-1-jolsa@kernel.org>
- <CAEf4Bzazst1rBi4=LuP6_FnPXCRYBNFEtDnK3UVBj6Eo6xFNtQ@mail.gmail.com>
- <YHbd2CmeoaiLJj7X@krava>
- <CAEf4BzYyVj-Tjy9ZZdAU5nOtJ8_auvVobTT6pMqg8zPb9jj-Ow@mail.gmail.com>
- <20210415111002.324b6bfa@gandalf.local.home>
- <CAEf4BzY=yBZH2Aad1hNcqCt51u0+SmNdkD6NfJRVMzF7DsvG+A@mail.gmail.com>
- <20210415170007.31420132@gandalf.local.home>
- <20210417000304.fc987dc00d706e7551b29c04@kernel.org>
- <20210416124834.05862233@gandalf.local.home>
+        id S232359AbhDTMyG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 20 Apr 2021 08:54:06 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:60074 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S232342AbhDTMyF (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 20 Apr 2021 08:54:05 -0400
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
+        (envelope-from <andrew@lunn.ch>)
+        id 1lYpsh-0007J1-Q3; Tue, 20 Apr 2021 14:53:31 +0200
+Date:   Tue, 20 Apr 2021 14:53:31 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Linus Walleij <linus.walleij@linaro.org>
+Cc:     netdev <netdev@vger.kernel.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Zoltan HERPAI <wigyori@uid0.hu>,
+        Raylynn Knight <rayknight@me.com>
+Subject: Re: [PATCH 3/3] net: ethernet: ixp4xx: Use OF MDIO bus registration
+Message-ID: <YH7Oy4F37HsTZYij@lunn.ch>
+References: <20210419225133.2005360-1-linus.walleij@linaro.org>
+ <20210419225133.2005360-3-linus.walleij@linaro.org>
+ <YH4yqLn6llQdLVax@lunn.ch>
+ <CACRpkdb8L=V+=5XVSV_viC5dLcLPWH5s9ztuESXjyRBWJOu9iA@mail.gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20210416124834.05862233@gandalf.local.home>
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
+In-Reply-To: <CACRpkdb8L=V+=5XVSV_viC5dLcLPWH5s9ztuESXjyRBWJOu9iA@mail.gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Apr 16, 2021 at 12:48:34PM -0400, Steven Rostedt wrote:
-> On Sat, 17 Apr 2021 00:03:04 +0900
-> Masami Hiramatsu <mhiramat@kernel.org> wrote:
+On Tue, Apr 20, 2021 at 10:44:16AM +0200, Linus Walleij wrote:
+> On Tue, Apr 20, 2021 at 3:47 AM Andrew Lunn <andrew@lunn.ch> wrote:
 > 
-> > > Anyway, IIRC, Masami wasn't sure that the full regs was ever needed for the
-> > > return (who cares about the registers on return, except for the return
-> > > value?)  
-> > 
-> > I think kretprobe and ftrace are for a bit different usage. kretprobe can be
-> > used for something like debugger. In that case, accessing full regs stack
-> > will be more preferrable. (BTW, what the not "full regs" means? Does that
-> > save partial registers?)
+> > > @@ -1381,25 +1382,12 @@ static struct eth_plat_info *ixp4xx_of_get_platdata(struct device *dev)
+> > >       /* NPE ID 0x00, 0x10, 0x20... */
+> > >       plat->npe = (val << 4);
+> > >
+> > > -     phy_np = of_parse_phandle(np, "phy-handle", 0);
+> > > -     if (phy_np) {
+> > > -             ret = of_property_read_u32(phy_np, "reg", &val);
+> > > -             if (ret) {
+> > > -                     dev_err(dev, "cannot find phy reg\n");
+> > > -                     return NULL;
+> > > -             }
+> > > -             of_node_put(phy_np);
+> > > -     } else {
+> > > -             dev_err(dev, "cannot find phy instance\n");
+> > > -             val = 0;
+> > > -     }
+> > > -     plat->phy = val;
+> > > -
+> >
+> > Isn't this code you just added in the previous patch?
 > 
-> When the REGS flag is not set in the ftrace_ops (where kprobes uses the
-> REGS flags), the regs parameter is not a full set of regs, but holds just
-> enough to get access to the parameters. This just happened to be what was
-> saved in the mcount/fentry trampoline, anyway, because tracing the start of
-> the program, you had to save the arguments before calling the trace code,
-> otherwise you would corrupt the parameters of the function being traced.
+> Yep. It's by the token of "one technical step per patch"
+
+I don't actually seeing it being a step, since it is actually broken
+and of_phy_get_and_connect() does pretty much everything it should do,
+which is what you replace it with.
+
+It is a long time since i converted a platform_data driver to DT. But
+i remember trying to fill in the platform_data structure from DT was
+often the wrong way to do it. They contain different data, and you
+cannot easily map one to the other. So you need to make bigger changes
+to the probe function. You have two intermingled code paths, one
+dealing with platform_data, and the other using DT.
+
+I've not looked in detail, but i guess my first step would be, cleanly
+register the MDIO bus. Second step would be to register the PHY. And
+it might need some refactoring patches just to make it easier to
+understand.
+
+> > > -     snprintf(phy_id, MII_BUS_ID_SIZE + 3, PHY_ID_FMT,
+> > > -              mdio_bus->id, plat->phy);
+> > > -     phydev = phy_connect(ndev, phy_id, &ixp4xx_adjust_link,
+> > > -                          PHY_INTERFACE_MODE_MII);
+> > > +     if (np) {
+> > > +             phydev = of_phy_get_and_connect(ndev, np, ixp4xx_adjust_link);
+> > > +     } else {
+> > > +             snprintf(phy_id, MII_BUS_ID_SIZE + 3, PHY_ID_FMT,
+> > > +                      mdio_bus->id, plat->phy);
+> >
+> > mdiobus_get_phy() and phy_connect_direct() might be better.
 > 
-> I just tweaked it so that by default, the ftrace callbacks now have access
-> to the saved regs (call ftrace_regs, to not let a callback get confused and
-> think it has full regs when it does not).
+> Do you mean for the legacy code path (else clause), or the
+> new code path with of_phy_get_and_connect() or both?
 > 
-> Now for the exit of a function, what does having the full pt_regs give you?
-> Besides the information to get the return value, the rest of the regs are
-> pretty much meaningless. Is there any example that someone wants access to
-> the regs at the end of a function besides getting the return value?
+> I tried not to change the legacy code in order to not introduce
+> regressions, so if I change that I suppose it should be a
+> separate patch.
 
-for ebpf program attached to the function exit we need the functions's
-arguments.. so original registers from time when the function was entered,
-we don't need registers state at the time function is returning
+Yes, the legacy code. You don't often see this string parsing
+method. And since you have the bus, and the index, you can directly go
+to the PHY avoiding it all. A separate patch would be better.
 
-as we discussed in another email, we could save input registers in
-fgraph_ops entry handler and load them in exit handler before calling
-ebpf program
-
-jirka
-
+   Andrew
