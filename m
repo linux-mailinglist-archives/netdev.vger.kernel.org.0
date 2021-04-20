@@ -2,21 +2,21 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 995423660EB
-	for <lists+netdev@lfdr.de>; Tue, 20 Apr 2021 22:30:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5F5AB3660BD
+	for <lists+netdev@lfdr.de>; Tue, 20 Apr 2021 22:18:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233909AbhDTUbI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 20 Apr 2021 16:31:08 -0400
-Received: from gateway23.websitewelcome.com ([192.185.49.218]:30477 "EHLO
+        id S233825AbhDTUSg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 20 Apr 2021 16:18:36 -0400
+Received: from gateway23.websitewelcome.com ([192.185.49.218]:37229 "EHLO
         gateway23.websitewelcome.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S233872AbhDTUbF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 20 Apr 2021 16:31:05 -0400
-Received: from cm14.websitewelcome.com (cm14.websitewelcome.com [100.42.49.7])
-        by gateway23.websitewelcome.com (Postfix) with ESMTP id 899ADDBD9
-        for <netdev@vger.kernel.org>; Tue, 20 Apr 2021 15:08:10 -0500 (CDT)
+        by vger.kernel.org with ESMTP id S233548AbhDTUSg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 20 Apr 2021 16:18:36 -0400
+Received: from cm12.websitewelcome.com (cm12.websitewelcome.com [100.42.49.8])
+        by gateway23.websitewelcome.com (Postfix) with ESMTP id AE902D8FE
+        for <netdev@vger.kernel.org>; Tue, 20 Apr 2021 15:17:05 -0500 (CDT)
 Received: from gator4166.hostgator.com ([108.167.133.22])
         by cmsmtp with SMTP
-        id YwfKlDy0iw11MYwfKlhwyC; Tue, 20 Apr 2021 15:08:10 -0500
+        id YwnxldpIH1cHeYwnxllcRj; Tue, 20 Apr 2021 15:17:05 -0500
 X-Authority-Reason: nr=8
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         d=embeddedor.com; s=default; h=Content-Transfer-Encoding:Content-Type:
@@ -24,33 +24,33 @@ DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         :Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
         Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
         List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=QweV4LAY1Y5ifNq4hmSERLYrcoN2XaYQxMKBb1YLCJk=; b=MoT8313qf85Zf+sLYOEs+txXr0
-        Z+Wn8c0+v6ZD38Pvt/JMVbORKxQRj9PD0kq4cFYNF5yEGEOmQ4yC/hSY1Q4NdS6Md0NYRCcNlE4/h
-        RZ2sE740v7E5WAQ8D6otGMXXFJ6YQrEld5KKf21LUZQ09j6mNl55nq3ceczR3uZ9Ow/mOEPVIA47F
-        VejjAAzqLjJIxqIXzgqdu9liEWs0rDv0rHrnStuUqsChECcLgBdhvWueeMLPmJy9YAGe9BRI0saKY
-        MRRPz0lafJ57WzUX4/9+peskvSlOh1kyybkMvcLXZ0oiFMLOHE33A3v8PIQtO+nWdqM6C0afDSiru
-        wSCE7ftQ==;
-Received: from 187-162-31-110.static.axtel.net ([187.162.31.110]:48926 helo=[192.168.15.8])
+        bh=F5p4y3pPoJpbflq7AGI1HGvEHHOc3V0/dn0FtRdvyVM=; b=uKF3fvHRTs/RZaqnTRchNI/UnV
+        +Xvq8dLa82Hu+Br0wFIxmWbnbPw21YQo64g5nNZ6vohiEN/+4e0ErqWQl+XWcisq3+sEz8U6qQ/iD
+        lcEgMUYt1gDI7I5twle7QrNcdmE3UHCO5QsPlD3pz7vJOEwYAV8ZdZt1zbmOyMVXpc6l8XzP15vmQ
+        +S26ytgri7Rd/HaMdaI8EZXGVLlbj1hU5j65z/mz+rZx4kn/fTDgDen4t0xfF63oDPRbZyxh3ljZ1
+        RsKv1TC4UC0fncNG/SX7xFwQqs4ntpJ8E1U0W+1YMUsg0JXi0cTkvsFhOCtuj57Gu/N+hi2ncAGQS
+        LRdFydJQ==;
+Received: from 187-162-31-110.static.axtel.net ([187.162.31.110]:49000 helo=[192.168.15.8])
         by gator4166.hostgator.com with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
         (Exim 4.94)
         (envelope-from <gustavo@embeddedor.com>)
-        id 1lYwfH-002aYu-00; Tue, 20 Apr 2021 15:08:07 -0500
-Subject: Re: [PATCH RESEND][next] xfrm: Fix fall-through warnings for Clang
+        id 1lYwnv-002qjo-A9; Tue, 20 Apr 2021 15:17:03 -0500
+Subject: Re: [PATCH 070/141] atm: fore200e: Fix fall-through warnings for
+ Clang
 To:     "Gustavo A. R. Silva" <gustavoars@kernel.org>,
-        Steffen Klassert <steffen.klassert@secunet.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-hardening@vger.kernel.org
-References: <20210305092319.GA139967@embeddedor>
+        Chas Williams <3chas3@gmail.com>
+Cc:     linux-atm-general@lists.sourceforge.net, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-hardening@vger.kernel.org,
+        Andrew Morton <akpm@linux-foundation.org>
+References: <cover.1605896059.git.gustavoars@kernel.org>
+ <613a064fad28ee2afbc14d9a81d4a67b3c1634f7.1605896059.git.gustavoars@kernel.org>
 From:   "Gustavo A. R. Silva" <gustavo@embeddedor.com>
-Message-ID: <fbe896ed-860d-4a92-f92b-bce83ba413ee@embeddedor.com>
-Date:   Tue, 20 Apr 2021 15:08:22 -0500
+Message-ID: <511007ca-b8d4-239e-b861-3b661035923a@embeddedor.com>
+Date:   Tue, 20 Apr 2021 15:17:19 -0500
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
  Thunderbird/78.7.1
 MIME-Version: 1.0
-In-Reply-To: <20210305092319.GA139967@embeddedor>
+In-Reply-To: <613a064fad28ee2afbc14d9a81d4a67b3c1634f7.1605896059.git.gustavoars@kernel.org>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -62,13 +62,13 @@ X-AntiAbuse: Sender Address Domain - embeddedor.com
 X-BWhitelist: no
 X-Source-IP: 187.162.31.110
 X-Source-L: No
-X-Exim-ID: 1lYwfH-002aYu-00
+X-Exim-ID: 1lYwnv-002qjo-A9
 X-Source: 
 X-Source-Args: 
 X-Source-Dir: 
-X-Source-Sender: 187-162-31-110.static.axtel.net ([192.168.15.8]) [187.162.31.110]:48926
+X-Source-Sender: 187-162-31-110.static.axtel.net ([192.168.15.8]) [187.162.31.110]:49000
 X-Source-Auth: gustavo@embeddedor.com
-X-Email-Count: 16
+X-Email-Count: 121
 X-Source-Cap: Z3V6aWRpbmU7Z3V6aWRpbmU7Z2F0b3I0MTY2Lmhvc3RnYXRvci5jb20=
 X-Local-Domain: yes
 Precedence: bulk
@@ -83,27 +83,26 @@ Thanks
 --
 Gustavo
 
-On 3/5/21 03:23, Gustavo A. R. Silva wrote:
+On 11/20/20 12:34, Gustavo A. R. Silva wrote:
 > In preparation to enable -Wimplicit-fallthrough for Clang, fix a warning
-> by explicitly adding a break statement instead of letting the code fall
-> through to the next case.
+> by explicitly adding a fallthrough pseudo-keyword.
 > 
 > Link: https://github.com/KSPP/linux/issues/115
 > Signed-off-by: Gustavo A. R. Silva <gustavoars@kernel.org>
 > ---
->  net/xfrm/xfrm_interface.c | 1 +
+>  drivers/atm/fore200e.c | 1 +
 >  1 file changed, 1 insertion(+)
 > 
-> diff --git a/net/xfrm/xfrm_interface.c b/net/xfrm/xfrm_interface.c
-> index 8831f5a9e992..41de46b5ffa9 100644
-> --- a/net/xfrm/xfrm_interface.c
-> +++ b/net/xfrm/xfrm_interface.c
-> @@ -432,6 +432,7 @@ static int xfrmi4_err(struct sk_buff *skb, u32 info)
->  	case ICMP_DEST_UNREACH:
->  		if (icmp_hdr(skb)->code != ICMP_FRAG_NEEDED)
->  			return 0;
-> +		break;
->  	case ICMP_REDIRECT:
->  		break;
->  	default:
+> diff --git a/drivers/atm/fore200e.c b/drivers/atm/fore200e.c
+> index 9a70bee84125..ba3ed1b77bc5 100644
+> --- a/drivers/atm/fore200e.c
+> +++ b/drivers/atm/fore200e.c
+> @@ -423,6 +423,7 @@ fore200e_shutdown(struct fore200e* fore200e)
+>  	/* XXX shouldn't we *start* by deregistering the device? */
+>  	atm_dev_deregister(fore200e->atm_dev);
+>  
+> +	fallthrough;
+>      case FORE200E_STATE_BLANK:
+>  	/* nothing to do for that state */
+>  	break;
 > 
