@@ -2,147 +2,176 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 539AB3650D1
-	for <lists+netdev@lfdr.de>; Tue, 20 Apr 2021 05:21:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6E33B3650D3
+	for <lists+netdev@lfdr.de>; Tue, 20 Apr 2021 05:23:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234915AbhDTDV3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 19 Apr 2021 23:21:29 -0400
-Received: from mail.kernel.org ([198.145.29.99]:40656 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S234380AbhDTDVL (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 19 Apr 2021 23:21:11 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 93B72613AB;
-        Tue, 20 Apr 2021 03:20:40 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1618888840;
-        bh=etugPg9Tbue29xr1oyCpGqPo4q6VfhRs4BfePpKKuVM=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=iZbvCdTKcmBSRP9inDipqVHBWv/haYh3UAjO3kDKQTkFodv6Yx/7FOQNNHOD6nh+N
-         iYVy8qL24o7sH7jFDhwGbGN/ruZss0D7CCsS/NT7lmloS4vUpLlLLnPagPGmZBuoL3
-         og9OMGRDyovb7UmBFpoewltSgk1LJhgGDP4kiCg12A75tvTT/2ETE7j9r2pkwsbpLm
-         n2qDvbXbBR8TdAUETZSiQKq9Ff+lGycyrKJxNrstIb0SLI9IFCe7jDfk0a4Q1X7P1Q
-         xjuLLi58dGedOQQxYiWNCadvnxQZ842DGeck7V8y0CgcfmNc8Qk2XJZdFUr95tWo4c
-         jvOYSiISOCZ4A==
-From:   Saeed Mahameed <saeed@kernel.org>
-To:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, Tariq Toukan <tariqt@nvidia.com>,
-        Yevgeny Kliteynik <kliteyn@nvidia.com>,
-        Alex Vesker <valex@mellanox.com>,
-        Saeed Mahameed <saeedm@nvidia.com>
-Subject: [net-next 15/15] net/mlx5: DR, Add support for isolate_vl_tc QP
-Date:   Mon, 19 Apr 2021 20:20:18 -0700
-Message-Id: <20210420032018.58639-16-saeed@kernel.org>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20210420032018.58639-1-saeed@kernel.org>
-References: <20210420032018.58639-1-saeed@kernel.org>
+        id S233752AbhDTDXV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 19 Apr 2021 23:23:21 -0400
+Received: from szxga04-in.huawei.com ([45.249.212.190]:16140 "EHLO
+        szxga04-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229566AbhDTDXU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 19 Apr 2021 23:23:20 -0400
+Received: from DGGEMS403-HUB.china.huawei.com (unknown [172.30.72.59])
+        by szxga04-in.huawei.com (SkyGuard) with ESMTP id 4FPTSh5TwJzmdTc;
+        Tue, 20 Apr 2021 11:19:48 +0800 (CST)
+Received: from [10.174.177.26] (10.174.177.26) by
+ DGGEMS403-HUB.china.huawei.com (10.3.19.203) with Microsoft SMTP Server id
+ 14.3.498.0; Tue, 20 Apr 2021 11:22:41 +0800
+Subject: Re: [PATCH] bonding: 3ad: update slave arr after initialize
+To:     Jay Vosburgh <jay.vosburgh@canonical.com>
+CC:     <vfalico@gmail.com>, <andy@greyhouse.net>, <davem@davemloft.net>,
+        <kuba@kernel.org>, <netdev@vger.kernel.org>, <security@kernel.org>,
+        <linux-kernel@vger.kernel.org>, <xuhanbing@huawei.com>,
+        <wangxiaogang3@huawei.com>
+References: <1618537982-454-1-git-send-email-jinyiting@huawei.com>
+ <17733.1618547307@famine>
+From:   jin yiting <jinyiting@huawei.com>
+Message-ID: <1165c45f-ae7f-48c1-5c65-a879c7bf978a@huawei.com>
+Date:   Tue, 20 Apr 2021 11:22:41 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.9.0
 MIME-Version: 1.0
+In-Reply-To: <17733.1618547307@famine>
+Content-Type: text/plain; charset="utf-8"; format=flowed
 Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.174.177.26]
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Yevgeny Kliteynik <kliteyn@nvidia.com>
 
-When using SW steering, rule insertion rate depends on the RDMA RC QP
-performance used for writing to the ICM. During stress this QP is competing
-on the HW resources with all the other QPs that are used to send data.
-To protect SW steering QP's performance in such cases, we set this QP to
-use isolated VL. The VL number is reserved by FW and is not exposed to the
-driver.
-Support for this QP on isolated VL exists only when both force-loopback and
-isolate_vl_tc capabilities are set.
 
-Signed-off-by: Alex Vesker <valex@mellanox.com>
-Signed-off-by: Yevgeny Kliteynik <kliteyn@nvidia.com>
-Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
----
- drivers/net/ethernet/mellanox/mlx5/core/steering/dr_cmd.c  | 2 ++
- drivers/net/ethernet/mellanox/mlx5/core/steering/dr_send.c | 7 +++++++
- .../net/ethernet/mellanox/mlx5/core/steering/dr_types.h    | 2 ++
- include/linux/mlx5/mlx5_ifc.h                              | 4 +++-
- 4 files changed, 14 insertions(+), 1 deletion(-)
+在 2021/4/16 12:28, Jay Vosburgh 写道:
+> jinyiting <jinyiting@huawei.com> wrote:
+> 
+>> From: jin yiting <jinyiting@huawei.com>
+>>
+>> The bond works in mode 4, and performs down/up operations on the bond
+>> that is normally negotiated. The probability of bond-> slave_arr is NULL
+>>
+>> Test commands:
+>>     ifconfig bond1 down
+>>     ifconfig bond1 up
+>>
+>> The conflict occurs in the following process：
+>>
+>> __dev_open (CPU A)
+>> --bond_open
+>>    --queue_delayed_work(bond->wq,&bond->ad_work,0);
+>>    --bond_update_slave_arr
+>>      --bond_3ad_get_active_agg_info
+>>
+>> ad_work(CPU B)
+>> --bond_3ad_state_machine_handler
+>>    --ad_agg_selection_logic
+>>
+>> ad_work runs on cpu B. In the function ad_agg_selection_logic, all
+>> agg->is_active will be cleared. Before the new active aggregator is
+>> selected on CPU B, bond_3ad_get_active_agg_info failed on CPU A,
+>> bond->slave_arr will be set to NULL. The best aggregator in
+>> ad_agg_selection_logic has not changed, no need to update slave arr.
+>>
+>> Signed-off-by: jin yiting <jinyiting@huawei.com>
+>> ---
+>> drivers/net/bonding/bond_3ad.c | 6 ++++++
+>> 1 file changed, 6 insertions(+)
+>>
+>> diff --git a/drivers/net/bonding/bond_3ad.c b/drivers/net/bonding/bond_3ad.c
+>> index 6908822..d100079 100644
+>> --- a/drivers/net/bonding/bond_3ad.c
+>> +++ b/drivers/net/bonding/bond_3ad.c
+>> @@ -2327,6 +2327,12 @@ void bond_3ad_state_machine_handler(struct work_struct *work)
+>>
+>> 			aggregator = __get_first_agg(port);
+>> 			ad_agg_selection_logic(aggregator, &update_slave_arr);
+>> +			if (!update_slave_arr) {
+>> +				struct aggregator *active = __get_active_agg(aggregator);
+>> +
+>> +				if (active && active->is_active)
+>> +					update_slave_arr = true;
+>> +			}
+>> 		}
+>> 		bond_3ad_set_carrier(bond);
+>> 	}
+> 
+> 	The described issue is a race condition (in that
+> ad_agg_selection_logic clears agg->is_active under mode_lock, but
+> bond_open -> bond_update_slave_arr is inspecting agg->is_active outside
+> the lock).  I don't see how the above change will reliably manage this;
+> the real issue looks to be that bond_update_slave_arr is committing
+> changes to the array (via bond_reset_slave_arr) based on a racy
+> inspection of the active aggregator state while it is in flux.
+> 
+> 	Also, the description of the issue says "The best aggregator in
+> ad_agg_selection_logic has not changed, no need to update slave arr,"
+> but the change above does the opposite, and will set update_slave_arr
+> when the aggregator has not changed (update_slave_arr remains false at
+> return of ad_agg_selection_logic).
+> 
+> 	I believe I understand the described problem, but I don't see
+> how the patch fixes it.  I suspect (but haven't tested) that the proper
+> fix is to acquire mode_lock in bond_update_slave_arr while calling
+> bond_3ad_get_active_agg_info to avoid conflict with the state machine.
+> 
+> 	-J
+> 
+> ---
+> 	-Jay Vosburgh, jay.vosburgh@canonical.com
+> .
+> 
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_cmd.c b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_cmd.c
-index 68d898e144fb..5970cb8fc0c0 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_cmd.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_cmd.c
-@@ -130,6 +130,8 @@ int mlx5dr_cmd_query_device(struct mlx5_core_dev *mdev,
- 			MLX5_CAP_ROCE(mdev, fl_rc_qp_when_roce_enabled);
- 	}
- 
-+	caps->isolate_vl_tc = MLX5_CAP_GEN(mdev, isolate_vl_tc_new);
-+
- 	if (caps->flex_protocols & MLX5_FLEX_PARSER_ICMP_V4_ENABLED) {
- 		caps->flex_parser_id_icmp_dw0 = MLX5_CAP_GEN(mdev, flex_parser_id_icmp_dw0);
- 		caps->flex_parser_id_icmp_dw1 = MLX5_CAP_GEN(mdev, flex_parser_id_icmp_dw1);
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_send.c b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_send.c
-index 69d623bedefe..12cf323a5943 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_send.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_send.c
-@@ -46,6 +46,7 @@ struct dr_qp_init_attr {
- 	u32 pdn;
- 	u32 max_send_wr;
- 	struct mlx5_uars_page *uar;
-+	u8 isolate_vl_tc:1;
- };
- 
- static int dr_parse_cqe(struct mlx5dr_cq *dr_cq, struct mlx5_cqe64 *cqe64)
-@@ -158,6 +159,7 @@ static struct mlx5dr_qp *dr_create_rc_qp(struct mlx5_core_dev *mdev,
- 	qpc = MLX5_ADDR_OF(create_qp_in, in, qpc);
- 	MLX5_SET(qpc, qpc, st, MLX5_QP_ST_RC);
- 	MLX5_SET(qpc, qpc, pm_state, MLX5_QP_PM_MIGRATED);
-+	MLX5_SET(qpc, qpc, isolate_vl_tc, attr->isolate_vl_tc);
- 	MLX5_SET(qpc, qpc, pd, attr->pdn);
- 	MLX5_SET(qpc, qpc, uar_page, attr->uar->index);
- 	MLX5_SET(qpc, qpc, log_page_size,
-@@ -924,6 +926,11 @@ int mlx5dr_send_ring_alloc(struct mlx5dr_domain *dmn)
- 	init_attr.pdn = dmn->pdn;
- 	init_attr.uar = dmn->uar;
- 	init_attr.max_send_wr = QUEUE_SIZE;
-+
-+	/* Isolated VL is applicable only if force loopback is supported */
-+	if (dr_send_allow_fl(&dmn->info.caps))
-+		init_attr.isolate_vl_tc = dmn->info.caps.isolate_vl_tc;
-+
- 	spin_lock_init(&dmn->send_ring->lock);
- 
- 	dmn->send_ring->qp = dr_create_rc_qp(dmn->mdev, &init_attr);
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_types.h b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_types.h
-index 8de70566f85b..67460c42a99b 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_types.h
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_types.h
-@@ -790,6 +790,7 @@ struct mlx5dr_cmd_caps {
- 	struct mlx5dr_cmd_vport_cap *vports_caps;
- 	bool prio_tag_required;
- 	struct mlx5dr_roce_cap roce_caps;
-+	u8 isolate_vl_tc:1;
- };
- 
- struct mlx5dr_domain_rx_tx {
-@@ -1164,6 +1165,7 @@ struct mlx5dr_cmd_qp_create_attr {
- 	u32 sq_wqe_cnt;
- 	u32 rq_wqe_cnt;
- 	u32 rq_wqe_shift;
-+	u8 isolate_vl_tc:1;
- };
- 
- int mlx5dr_cmd_query_gid(struct mlx5_core_dev *mdev, u8 vhca_port_num,
-diff --git a/include/linux/mlx5/mlx5_ifc.h b/include/linux/mlx5/mlx5_ifc.h
-index 4d9569c4b96c..52b7cabcde08 100644
---- a/include/linux/mlx5/mlx5_ifc.h
-+++ b/include/linux/mlx5/mlx5_ifc.h
-@@ -1319,7 +1319,9 @@ struct mlx5_ifc_cmd_hca_cap_bits {
- 	u8         log_max_srq_sz[0x8];
- 	u8         log_max_qp_sz[0x8];
- 	u8         event_cap[0x1];
--	u8         reserved_at_91[0x7];
-+	u8         reserved_at_91[0x2];
-+	u8         isolate_vl_tc_new[0x1];
-+	u8         reserved_at_94[0x4];
- 	u8         prio_tag_required[0x1];
- 	u8         reserved_at_99[0x2];
- 	u8         log_max_qp[0x5];
--- 
-2.30.2
+	Thank you for your reply. The last patch does have redundant update 
+slave arr.Thank you for your correction.
+
+         As you said, holding mode_lock in bond_update_slave_arr while 
+calling bond_3ad_get_active_agg_info can avoid conflictwith the state 
+machine. I have tested this patch, with ifdown/ifup operations for bond 
+or slaves.
+
+         But bond_update_slave_arr is expected to hold RTNL only and NO 
+other lock. And it have WARN_ON(lockdep_is_held(&bond->mode_lock)); in 
+bond_update_slave_arr. I'm not sure that holding mode_lock in 
+bond_update_slave_arr while calling bond_3ad_get_active_agg_info is a 
+correct action.
+
+
+diff --git a/drivers/net/bonding/bond_main.c 
+b/drivers/net/bonding/bond_main.c
+index 74cbbb2..db988e5 100644
+--- a/drivers/net/bonding/bond_main.c
++++ b/drivers/net/bonding/bond_main.c
+@@ -4406,7 +4406,9 @@ int bond_update_slave_arr(struct bonding *bond, 
+struct slave *skipslave)
+     if (BOND_MODE(bond) == BOND_MODE_8023AD) {
+         struct ad_info ad_info;
+
++       spin_lock_bh(&bond->mode_lock);
+         if (bond_3ad_get_active_agg_info(bond, &ad_info)) {
++           spin_unlock_bh(&bond->mode_lock);
+             pr_debug("bond_3ad_get_active_agg_info failed\n");
+             /* No active aggragator means it's not safe to use
+              * the previous array.
+@@ -4414,6 +4416,7 @@ int bond_update_slave_arr(struct bonding *bond, 
+struct slave *skipslave)
+             bond_reset_slave_arr(bond);
+             goto out;
+         }
++       spin_unlock_bh(&bond->mode_lock);
+         agg_id = ad_info.aggregator_id;
+     }
+     bond_for_each_slave(bond, slave, iter) {
+
+
+
+
+
+
+
+
+
+
+
+
+
 
