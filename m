@@ -2,106 +2,239 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D6D4B36517A
-	for <lists+netdev@lfdr.de>; Tue, 20 Apr 2021 06:27:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1E3AC36518E
+	for <lists+netdev@lfdr.de>; Tue, 20 Apr 2021 06:36:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229609AbhDTE1u (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 20 Apr 2021 00:27:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60210 "EHLO
+        id S229832AbhDTEgV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 20 Apr 2021 00:36:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33708 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229516AbhDTE1t (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 20 Apr 2021 00:27:49 -0400
-Received: from mail-ot1-x335.google.com (mail-ot1-x335.google.com [IPv6:2607:f8b0:4864:20::335])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 78748C061763
-        for <netdev@vger.kernel.org>; Mon, 19 Apr 2021 21:27:17 -0700 (PDT)
-Received: by mail-ot1-x335.google.com with SMTP id c8-20020a9d78480000b0290289e9d1b7bcso20640929otm.4
-        for <netdev@vger.kernel.org>; Mon, 19 Apr 2021 21:27:17 -0700 (PDT)
+        with ESMTP id S229830AbhDTEft (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 20 Apr 2021 00:35:49 -0400
+Received: from mail-yb1-xb2d.google.com (mail-yb1-xb2d.google.com [IPv6:2607:f8b0:4864:20::b2d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C6D12C06174A;
+        Mon, 19 Apr 2021 21:35:17 -0700 (PDT)
+Received: by mail-yb1-xb2d.google.com with SMTP id 65so41481865ybc.4;
+        Mon, 19 Apr 2021 21:35:17 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=a6ri1YBEsbxl4sCS/8ACK27mxPbtgmS0w+6VGuB6PD4=;
-        b=F737NdZhHiHZWR+h5TCxK/UBSVO1FgSc4EVLzNlW98bMTw7y0T53ZTCZZRL6yO48qT
-         MBkK14hRUP1dxQ3MYNQT+XAWjkk+c64YYuAMSqDBiAm4vTBuBGmQvi3SqNgUtmNrkC2A
-         VIeMthluKhIDoT7tqbnihgqcxHeUa8GQMY7l+xgeb4ff229nP2GeMxeJzUVyRI2QTyjG
-         XppAyoPr638vD/VdzCKqyDG79Y+Vl28LPH7H1c+1VjNZzDdBKReMYQcYcqnyRI7kxyIQ
-         YQrvDlpyt/3mE6H2NaYFUSbnDYA0Z5atrpOtIydLnVgQVKZOmSYmLiVYk3pxZ6xENOoa
-         +Yaw==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=0r16BooCpXI0OcS9w6cnAMsct+lg08FmW3QWyViKSQk=;
+        b=X5+0tlIWiyhDTAUWiGXItZjWAL7xvDeJ4NG5fIxtZiL6jAu2OYANJ8lnv6x9kgtvgH
+         kiAOZrlmG7r3tnQtGYwCRfPrdNI0r2R3ussQOzl9epN0A3A2xF8URAZS7lvjBhwLfujN
+         HqON7bYoo5dM1WDLAM5YL3lUILVnJvODIFCBpISwgHGz6lpZJGrPxEkXPZ+tVkoTjvfg
+         8GX7RksbKzN7M1kTQlYO1oCysmMRMBTXhlHvNkz7QTursDn9BM2FF1uFyUfn2TgSIdJo
+         D7t8H2i+zBwWRjPhsmyIziYpVhSZyb2DQrmoY0mWI0VaoBLCbQx89hR3sxv3JtKevcUF
+         zz4Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=a6ri1YBEsbxl4sCS/8ACK27mxPbtgmS0w+6VGuB6PD4=;
-        b=pu4qhRZUQy4RjEAX+okvf6p/+yMBfrpCGk4h4DYrQLBcHSEtAfkCAM0MDRY4hLSzSy
-         zirzyKdEwAZgoiN4xsRlcd6kSod+xoYTygP3C+ZLFoUjANUtI62Ur3jRjpFdHbaV93Xn
-         hF2dKhehaHQleEEFkXDa69UOA6xcKD4k57mci65KkypKTJIPYRHlIEugRkL3NZHYBVeh
-         M3lDSHbHUHkbnsYp1BcuVp+csCavh7zyiNKTMo9dpHZsuo9aBwsZOAHIo5KFgC1XOXrc
-         poOyswyFxkJnM78kaWv7v9V9hmoSryQkrT+oNEvNhWXCkJp18RuhZi4ujHbTViLqVwmn
-         Fj3w==
-X-Gm-Message-State: AOAM532sdNiktEjiSj3DUw280EGpo0+0NRekubwIez5oMDgJtKEe/V4n
-        1Y8awTWxA3YSnYJhKUP3B6m/maKwYOg=
-X-Google-Smtp-Source: ABdhPJzQePJ9GUntN+GABu4o2yGyk1KSmIEOQ0QK9yV5WdOVz0PbUX3Hx4Vbeb5zN7vsWSgmwaUK7A==
-X-Received: by 2002:a9d:3a3:: with SMTP id f32mr9577381otf.205.1618892836930;
-        Mon, 19 Apr 2021 21:27:16 -0700 (PDT)
-Received: from Davids-MacBook-Pro.local ([8.45.42.15])
-        by smtp.googlemail.com with ESMTPSA id c65sm3648083oia.47.2021.04.19.21.27.15
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 19 Apr 2021 21:27:16 -0700 (PDT)
-Subject: Re: [PATCH 2/2] neighbour: allow NUD_NOARP entries to be forced GCed
-To:     Kasper Dupont <kasperd@gczfm.28.feb.2009.kasperd.net>
-Cc:     netdev@vger.kernel.org,
-        Thadeu Lima de Souza Cascardo <cascardo@canonical.com>,
-        davem@davemloft.net, kuba@kernel.org, dsahern@kernel.org,
-        Kasper Dupont <kasperd@gjkwv.06.feb.2021.kasperd.net>
-References: <20210317185320.1561608-1-cascardo@canonical.com>
- <20210317185320.1561608-2-cascardo@canonical.com>
- <20210419164429.GA2295190@sniper.kasperd.net>
- <0b502406-1a86-faec-ff46-c530145b90cf@gmail.com>
- <20210419175205.GA2375672@sniper.kasperd.net>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <71ea409d-7065-821a-f958-1736d015e4ff@gmail.com>
-Date:   Mon, 19 Apr 2021 21:27:13 -0700
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
- Gecko/20100101 Thunderbird/78.9.1
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=0r16BooCpXI0OcS9w6cnAMsct+lg08FmW3QWyViKSQk=;
+        b=UFtmWhUTnuebFOYzMYUFUrA5qbs5sgnr+19kjXI7IZQyx5txENaeePA0F2wRJcI+yo
+         Pq3bNK9SiGl5g8SqsCC9RzFo0W9cJumT/21kTZJWvPuIcwY4hHfNHLWHj928RMXYpFZ0
+         HJUpK6RGLm+S6cHVG+BaWO/777tPwjyNz0O4J9KzXlMcTsqdyN88XqUZ6hMdyn0DxC2x
+         jKfnDVU0qegqlQYhanXx8fY78WlUT/Wx1XIlgCQZuyppvnN1Lz8C+Hy5GrnXe0G1wZWN
+         Tcn26bJNv71Zx/jONLsX8rLhj3ZMZFU1SB3Fg3EfDVmU0cSw+ZE1h7gloFdwVvVeLh0c
+         Sbow==
+X-Gm-Message-State: AOAM533HbIJMwZscjB/K7fAI0boauGPfIJbjuY7FBqde9AleRG0CaMLI
+        6HQtxaYgFb9tFDgg4MhAtw3lVG2dcyH2L8C0fAo=
+X-Google-Smtp-Source: ABdhPJz7KTZm5BSvzN+r3/f2jOquX75Lj6og9mD80aAtZpjcfUVlv9zrnKFb6f3P6NytANbFWmNrCfbttcJNO7QEmRU=
+X-Received: by 2002:a25:9942:: with SMTP id n2mr22571317ybo.230.1618893317102;
+ Mon, 19 Apr 2021 21:35:17 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <20210419175205.GA2375672@sniper.kasperd.net>
-Content-Type: text/plain; charset=UTF-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+References: <20210419121811.117400-1-memxor@gmail.com> <20210419121811.117400-5-memxor@gmail.com>
+In-Reply-To: <20210419121811.117400-5-memxor@gmail.com>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Mon, 19 Apr 2021 21:35:06 -0700
+Message-ID: <CAEf4BzYs-YqD04rNfTELxVRH1tOai1HeWD4h0DNaJQtAZW5oHQ@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v2 4/4] libbpf: add selftests for TC-BPF API
+To:     Kumar Kartikeya Dwivedi <memxor@gmail.com>
+Cc:     bpf <bpf@vger.kernel.org>,
+        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        open list <linux-kernel@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 4/19/21 10:52 AM, Kasper Dupont wrote:
-> On 19/04/21 10.10, David Ahern wrote:
->> On 4/19/21 9:44 AM, Kasper Dupont wrote:
->>>
->>> Is there any update regarding this change?
->>>
->>> I noticed this regression when it was used in a DoS attack on one of
->>> my servers which I had upgraded from Ubuntu 18.04 to 20.04.
->>>
->>> I have verified that Ubuntu 18.04 is not subject to this attack and
->>> Ubuntu 20.04 is vulnerable. I have also verified that the one-line
->>> change which Cascardo has provided fixes the vulnerability on Ubuntu
->>> 20.04.
->>>
->>
->> your testing included both patches or just this one?
-> 
-> I applied only this one line change on top of the kernel in Ubuntu
-> 20.04. The behavior I observed was that without the patch the kernel
-> was vulnerable and with that patch I was unable to reproduce the
-> problem.
+On Mon, Apr 19, 2021 at 5:18 AM Kumar Kartikeya Dwivedi
+<memxor@gmail.com> wrote:
+>
+> This adds some basic tests for the low level bpf_tc_cls_* API.
+>
+> Reviewed-by: Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com>
+> Signed-off-by: Kumar Kartikeya Dwivedi <memxor@gmail.com>
+> ---
+>  .../selftests/bpf/prog_tests/test_tc_bpf.c    | 112 ++++++++++++++++++
+>  .../selftests/bpf/progs/test_tc_bpf_kern.c    |  12 ++
+>  2 files changed, 124 insertions(+)
+>  create mode 100644 tools/testing/selftests/bpf/prog_tests/test_tc_bpf.c
+>  create mode 100644 tools/testing/selftests/bpf/progs/test_tc_bpf_kern.c
+>
+> diff --git a/tools/testing/selftests/bpf/prog_tests/test_tc_bpf.c b/tools=
+/testing/selftests/bpf/prog_tests/test_tc_bpf.c
+> new file mode 100644
+> index 000000000000..945f3a1a72f8
+> --- /dev/null
+> +++ b/tools/testing/selftests/bpf/prog_tests/test_tc_bpf.c
+> @@ -0,0 +1,112 @@
+> +// SPDX-License-Identifier: GPL-2.0
+> +
+> +#include <linux/bpf.h>
+> +#include <linux/err.h>
+> +#include <linux/limits.h>
+> +#include <bpf/libbpf.h>
+> +#include <errno.h>
+> +#include <stdio.h>
+> +#include <stdlib.h>
+> +#include <test_progs.h>
+> +#include <linux/if_ether.h>
+> +
+> +#define LO_IFINDEX 1
+> +
+> +static int test_tc_cls_internal(int fd, __u32 parent_id)
+> +{
+> +       DECLARE_LIBBPF_OPTS(bpf_tc_cls_opts, opts, .handle =3D 1, .priori=
+ty =3D 10,
+> +                           .class_id =3D TC_H_MAKE(1UL << 16, 1),
+> +                           .chain_index =3D 5);
+> +       struct bpf_tc_cls_attach_id id =3D {};
+> +       struct bpf_tc_cls_info info =3D {};
+> +       int ret;
+> +
+> +       ret =3D bpf_tc_cls_attach(fd, LO_IFINDEX, parent_id, &opts, &id);
+> +       if (CHECK_FAIL(ret < 0))
+> +               return ret;
+> +
+> +       ret =3D bpf_tc_cls_get_info(fd, LO_IFINDEX, parent_id, NULL, &inf=
+o);
+> +       if (CHECK_FAIL(ret < 0))
+> +               goto end;
+> +
+> +       ret =3D -1;
+> +
+> +       if (CHECK_FAIL(info.id.handle !=3D id.handle) ||
+> +           CHECK_FAIL(info.id.chain_index !=3D id.chain_index) ||
+> +           CHECK_FAIL(info.id.priority !=3D id.priority) ||
+> +           CHECK_FAIL(info.id.handle !=3D 1) ||
+> +           CHECK_FAIL(info.id.priority !=3D 10) ||
+> +           CHECK_FAIL(info.class_id !=3D TC_H_MAKE(1UL << 16, 1)) ||
+> +           CHECK_FAIL(info.id.chain_index !=3D 5))
+> +               goto end;
+> +
+> +       ret =3D bpf_tc_cls_replace(fd, LO_IFINDEX, parent_id, &opts, &id)=
+;
+> +       if (CHECK_FAIL(ret < 0))
+> +               return ret;
+> +
+> +       if (CHECK_FAIL(info.id.handle !=3D 1) ||
+> +           CHECK_FAIL(info.id.priority !=3D 10) ||
+> +           CHECK_FAIL(info.class_id !=3D TC_H_MAKE(1UL << 16, 1)))
+> +               goto end;
+> +
+> +       /* Demonstrate changing attributes */
+> +       opts.class_id =3D TC_H_MAKE(1UL << 16, 2);
+> +
+> +       ret =3D bpf_tc_cls_change(fd, LO_IFINDEX, parent_id, &opts, &info=
+.id);
+> +       if (CHECK_FAIL(ret < 0))
+> +               goto end;
+> +
+> +       ret =3D bpf_tc_cls_get_info(fd, LO_IFINDEX, parent_id, NULL, &inf=
+o);
+> +       if (CHECK_FAIL(ret < 0))
+> +               goto end;
+> +
+> +       if (CHECK_FAIL(info.class_id !=3D TC_H_MAKE(1UL << 16, 2)))
+> +               goto end;
+> +       if (CHECK_FAIL((info.bpf_flags & TCA_BPF_FLAG_ACT_DIRECT) !=3D 1)=
+)
+> +               goto end;
+> +
+> +end:
+> +       ret =3D bpf_tc_cls_detach(LO_IFINDEX, parent_id, &id);
+> +       CHECK_FAIL(ret < 0);
+> +       return ret;
+> +}
+> +
+> +void test_test_tc_bpf(void)
+> +{
+> +       const char *file =3D "./test_tc_bpf_kern.o";
+> +       struct bpf_program *clsp;
+> +       struct bpf_object *obj;
+> +       int cls_fd, ret;
+> +
+> +       obj =3D bpf_object__open(file);
+> +       if (CHECK_FAIL(IS_ERR_OR_NULL(obj)))
+> +               return;
+> +
+> +       clsp =3D bpf_object__find_program_by_title(obj, "classifier");
+> +       if (CHECK_FAIL(IS_ERR_OR_NULL(clsp)))
+> +               goto end;
+> +
+> +       ret =3D bpf_object__load(obj);
+> +       if (CHECK_FAIL(ret < 0))
+> +               goto end;
+> +
+> +       cls_fd =3D bpf_program__fd(clsp);
+> +
+> +       system("tc qdisc del dev lo clsact");
+> +
+> +       ret =3D test_tc_cls_internal(cls_fd, BPF_TC_CLSACT_INGRESS);
+> +       if (CHECK_FAIL(ret < 0))
+> +               goto end;
+> +
+> +       if (CHECK_FAIL(system("tc qdisc del dev lo clsact")))
+> +               goto end;
+> +
+> +       ret =3D test_tc_cls_internal(cls_fd, BPF_TC_CLSACT_EGRESS);
+> +       if (CHECK_FAIL(ret < 0))
+> +               goto end;
+> +
+> +       CHECK_FAIL(system("tc qdisc del dev lo clsact"));
 
-This patch should be re-submitted standalone for -net
+please don't use CHECK_FAIL. And prefer ASSERT_xxx over CHECK().
 
-> 
-> The other longer patch is for a different issue which Cascardo
-> discovered while working on the one I had reported. I don't have an
-> environment set up where I can reproduce the issue addressed by that
-> larger patch.
-> 
+> +
+> +end:
+> +       bpf_object__close(obj);
+> +}
+> diff --git a/tools/testing/selftests/bpf/progs/test_tc_bpf_kern.c b/tools=
+/testing/selftests/bpf/progs/test_tc_bpf_kern.c
+> new file mode 100644
+> index 000000000000..3dd40e21af8e
+> --- /dev/null
+> +++ b/tools/testing/selftests/bpf/progs/test_tc_bpf_kern.c
+> @@ -0,0 +1,12 @@
+> +// SPDX-License-Identifier: GPL-2.0
+> +
+> +#include <linux/bpf.h>
+> +#include <bpf/bpf_helpers.h>
+> +
+> +// Dummy prog to test TC-BPF API
 
-The first patch is the one I have concerns about.
+no C++-style comments, please (except for SPDX header, of course)
+> +
+> +SEC("classifier")
+> +int cls(struct __sk_buff *skb)
+> +{
+> +       return 0;
+> +}
+> --
+> 2.30.2
+>
