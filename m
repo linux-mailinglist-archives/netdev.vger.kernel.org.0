@@ -2,86 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4F2743650E5
-	for <lists+netdev@lfdr.de>; Tue, 20 Apr 2021 05:33:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9C50A36512C
+	for <lists+netdev@lfdr.de>; Tue, 20 Apr 2021 06:03:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229747AbhDTDds (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 19 Apr 2021 23:33:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48572 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229508AbhDTDdr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 19 Apr 2021 23:33:47 -0400
-Received: from mail-ed1-x52d.google.com (mail-ed1-x52d.google.com [IPv6:2a00:1450:4864:20::52d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 66580C06174A;
-        Mon, 19 Apr 2021 20:33:16 -0700 (PDT)
-Received: by mail-ed1-x52d.google.com with SMTP id k17so3756004edr.7;
-        Mon, 19 Apr 2021 20:33:16 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=lfSWPoNQHoy2n1intU3LcdvNNV3gtVsZpBy2B8GfaFk=;
-        b=aZUbYjCAjxOn2sQ1zudu3xjH2eve7n4UhLosKL3z5XtkdP9W6MtXSK5QpRnxIQidBo
-         VqJcudb4C9ipBzJ7djiokHvrZPuCucgfndCx5HurEqyLgmhWY0zjqifgrpEzE85NMQCG
-         7f2eV9qjWgqat+1+6mfc3xMni/cIPvENQTbsJCQbSHigRyvgnoTa5rOj5VZHkPBVFkpB
-         fFPrBFdA4ku77RGUk+c45omhWi+NfcXdA49L+1uGm229KdZWa7hXpxeQBcJyqRQOi+WP
-         2NUmk6fYIWqGVGSs9D9OAwFt0kNmPDV+R/BOHmh87ZYKRG4Q1T4+jCWofJTRtPayeZe8
-         1rYA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=lfSWPoNQHoy2n1intU3LcdvNNV3gtVsZpBy2B8GfaFk=;
-        b=ppGTdfnizllBKjtC5VGpglmdgVD9ALydAM1wl2u0Lv5sUPXwkaYRGNFDqYyjfoS/kF
-         e7VP574s3od6z50t3pzaVJmvilkyS2vLXPNVjiilQxZX1mWN93Fzswd5Gca27ZrqKguv
-         DqhTcszT9feJvTNBhsH+GHF8yML5MbKCbeTWbpUP0y5Isc/1Nzvrb0p6OD28QF8RlZr0
-         orArvKkRjz8o0CM/jO2yQKTTpJYpr4aae96HfnpkOCkVBPn9WNrOiOFAs67AARTrenAw
-         QY5YDUzp5pH4o3WM9TLrbg7O+XJACifcjcs2RT091YD12+BzYXLe7m1B9puRKsJU4JDY
-         /Q1Q==
-X-Gm-Message-State: AOAM532InPuRRHE+U8/Ib2VddlAng8mSueZtDynB+UyaUOBfgZQFS8eS
-        OTDo0cB4ixWfWKkNUSZl9+0gVGCPX/nVwDaE5gg=
-X-Google-Smtp-Source: ABdhPJzAzpucWx4ETz4/sy2d0XTjM8gyFLIRFAHt/G9Pw9nZgXyCsdewIbOaT+9q9+VwvrhA7uws6Ut8jEG29a5pazk=
-X-Received: by 2002:aa7:cc98:: with SMTP id p24mr29372685edt.187.1618889593171;
- Mon, 19 Apr 2021 20:33:13 -0700 (PDT)
+        id S229599AbhDTEDz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 20 Apr 2021 00:03:55 -0400
+Received: from bilbo.ozlabs.org ([203.11.71.1]:55427 "EHLO ozlabs.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229507AbhDTEDx (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 20 Apr 2021 00:03:53 -0400
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 4FPVQt5v9Kz9vDw;
+        Tue, 20 Apr 2021 14:03:18 +1000 (AEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=ellerman.id.au;
+        s=201909; t=1618891401;
+        bh=ykDn0c4Pei/ni8JeosESXjK9PStd/mFtGxVh8YrZKPo=;
+        h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
+        b=WAzcjt4GF5woknj0LOcFLLaZXQt4dxoP7XPsbd7Tfc1ZG1omi42FFMVoV9nSFqQho
+         Nm9HeadCpbCSiKDCzKxPEin83TkkOVRNfkkriIZRvLAzVPgdswB9tsavwJleQekRLX
+         enavKzaRFnyMjr49Bu8x4BXaAh50ERXzYbqbZnasQSQJjlRWT8GT0o8YyeWj7yNT8H
+         SAQkKiu9Z5cM3IrONxJBmovgdEC2V3CpOs3qXHVGyk37PLNqcK3YziP+GQJMOP3Um8
+         uEqVHGZl6+7aGF0tu9EUML9m1weR+PZkuPR+Wlqofl74HscYVDBxO8zGG3CBwzRoKJ
+         ca8b0iHu4Cymg==
+From:   Michael Ellerman <mpe@ellerman.id.au>
+To:     "Matthew Wilcox (Oracle)" <willy@infradead.org>, brouer@redhat.com
+Cc:     arnd@kernel.org, grygorii.strashko@ti.com, netdev@vger.kernel.org,
+        ilias.apalodimas@linaro.org, linux-kernel@vger.kernel.org,
+        "Matthew Wilcox (Oracle)" <willy@infradead.org>,
+        linux-mips@vger.kernel.org, mhocko@kernel.org, linux-mm@kvack.org,
+        mgorman@suse.de, mcroce@linux.microsoft.com,
+        linux-snps-arc@lists.infradead.org, linuxppc-dev@lists.ozlabs.org,
+        hch@lst.de, linux-arm-kernel@lists.infradead.org
+Subject: Re: [PATCH 0/2] Change struct page layout for page_pool
+In-Reply-To: <20210416230724.2519198-1-willy@infradead.org>
+References: <20210416230724.2519198-1-willy@infradead.org>
+Date:   Tue, 20 Apr 2021 14:03:18 +1000
+Message-ID: <874kg1d2m1.fsf@mpe.ellerman.id.au>
 MIME-Version: 1.0
-References: <20210417132329.6886-1-aford173@gmail.com> <20210419.154545.1437529237095871426.davem@davemloft.net>
-In-Reply-To: <20210419.154545.1437529237095871426.davem@davemloft.net>
-From:   Adam Ford <aford173@gmail.com>
-Date:   Mon, 19 Apr 2021 22:33:00 -0500
-Message-ID: <CAHCN7x+T78s+dDbVErG_wKH409cmn76B8aPioJuSJ8aApj37XQ@mail.gmail.com>
-Subject: Re: [PATCH] net: ethernet: ravb: Fix release of refclk
-To:     David Miller <davem@davemloft.net>
-Cc:     netdev <netdev@vger.kernel.org>,
-        Adam Ford-BE <aford@beaconembedded.com>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        Sergei Shtylyov <sergei.shtylyov@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
-        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Apr 19, 2021 at 5:45 PM David Miller <davem@davemloft.net> wrote:
+"Matthew Wilcox (Oracle)" <willy@infradead.org> writes:
+> The first patch here fixes two bugs on ppc32, and mips32.  It fixes one
+> bug on arc and arm32 (in certain configurations).  It probably makes
+> sense to get it in ASAP through the networking tree.  I'd like to see
+> testing on those four architectures if possible?
+
+Sorry I don't have easy access to any hardware that fits the bill. At
+some point I'll be able to go to the office and setup a machine that (I
+think) can test these paths, but I don't have an ETA on that.
+
+You and others seem to have done lots of analysis on this though, so I
+think you should merge the fixes without waiting on ppc32 testing.
+
+cheers
+
+
 >
-> From: Adam Ford <aford173@gmail.com>
-> Date: Sat, 17 Apr 2021 08:23:29 -0500
+> The second patch enables new functionality.  It is much less urgent.
+> I'd really like to see Mel & Michal's thoughts on it.
 >
-> > The call to clk_disable_unprepare() can happen before priv is
-> > initialized. This means moving clk_disable_unprepare out of
-> > out_release into a new label.
-> >
-> > Fixes: 8ef7adc6beb2("net: ethernet: ravb: Enable optional refclk")
-> > Signed-off-by: Adam Ford <aford173@gmail.com>
-> Thjis does not apply cleanly, please rebbase and resubmit.
-
-Which branch should I use as the rebase?  I used net-next because
-that's where the bug is, but I know it changes frequently.
-
+> I have only compile-tested these patches.
 >
-> Please fix the formatting of your Fixes tag while you are at it, thank you.
-
-no problem.  Sorry about that
-
-adam
+> Matthew Wilcox (Oracle) (2):
+>   mm: Fix struct page layout on 32-bit systems
+>   mm: Indicate pfmemalloc pages in compound_head
+>
+>  include/linux/mm.h       | 12 +++++++-----
+>  include/linux/mm_types.h |  9 ++++-----
+>  include/net/page_pool.h  | 12 +++++++++++-
+>  net/core/page_pool.c     | 12 +++++++-----
+>  4 files changed, 29 insertions(+), 16 deletions(-)
+>
+> -- 
+> 2.30.2
