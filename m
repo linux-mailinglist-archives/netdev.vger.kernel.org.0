@@ -2,167 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5412C3660A7
-	for <lists+netdev@lfdr.de>; Tue, 20 Apr 2021 22:12:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B37D1366089
+	for <lists+netdev@lfdr.de>; Tue, 20 Apr 2021 22:01:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233811AbhDTUMk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 20 Apr 2021 16:12:40 -0400
-Received: from mx2.unformed.ru ([91.219.49.66]:45989 "EHLO mx2.unformed.ru"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S233544AbhDTUMj (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 20 Apr 2021 16:12:39 -0400
-X-Greylist: delayed 1727 seconds by postgrey-1.27 at vger.kernel.org; Tue, 20 Apr 2021 16:12:38 EDT
-Received: from dotty.home.arpa ([10.3.14.10]:55754)
-        by filet.unformed.ru with esmtp (Exim 4.92)
-        (envelope-from <mon@unformed.ru>)
-        id 1lYwH4-00030I-0s; Tue, 20 Apr 2021 21:43:06 +0200
-Received: from [10.3.14.66] (port=52178 helo=phobos.home.arpa.)
-        by dotty.home.arpa with esmtp (Exim 4.92)
-        (envelope-from <mon@unformed.ru>)
-        id 1lYwH3-0001x3-Ua; Tue, 20 Apr 2021 21:43:05 +0200
-From:   Yury Vostrikov <mon@unformed.ru>
-Cc:     mon@unformed.ru,
-        Solarflare linux maintainers <linux-net-drivers@solarflare.com>,
-        Edward Cree <ecree@solarflare.com>,
-        Martin Habets <mhabets@solarflare.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH] net: sfc: Fix kernel panic introduced by commit 044588b96372 ("sfc: define inner/outer csum offload TXQ types")
-Date:   Tue, 20 Apr 2021 21:42:03 +0200
-Message-Id: <20210420194203.24759-1-mon@unformed.ru>
-X-Mailer: git-send-email 2.20.1
+        id S233747AbhDTUCW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 20 Apr 2021 16:02:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40720 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233541AbhDTUCV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 20 Apr 2021 16:02:21 -0400
+Received: from mail-pf1-x42d.google.com (mail-pf1-x42d.google.com [IPv6:2607:f8b0:4864:20::42d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CECA8C06174A
+        for <netdev@vger.kernel.org>; Tue, 20 Apr 2021 13:01:48 -0700 (PDT)
+Received: by mail-pf1-x42d.google.com with SMTP id h11so8724352pfn.0
+        for <netdev@vger.kernel.org>; Tue, 20 Apr 2021 13:01:48 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=5Du+IgrLZVk7ZDdZOmMvPOwEkpYwzoUizXPLLUwb/Xs=;
+        b=sFilqoIvdyvdUn2hWPJbGe/ooVv4/L2Dap7lINRZHOYNqZcW5XfWpNsE5bCbHWP5e7
+         WPH4qSp8X2Jv3ZYO55OcPeufO4FGq+qqnFChoXx2+Mk1P5y/kS2HsVAeD9mR0Y8Fq3nC
+         kIxV+sBhyAK3eW/6J27xvzd+yEOasxlLZE0UbJTKl0PgjlfQya6Cj6+gRhtczMWkx1LT
+         XgvI2SGlY78L2kxfBw3giaej/lLt01GXEsLmWrSwpKuc+l68vp6bsUWfYtPqnPUz+A/o
+         0cK3Q3o1jOCbYcSRjhiHBXFiYfyIbFWgS/SzLnt/rocIbszzXRSiqRZGXIS8YGIDTSFb
+         UB3w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=5Du+IgrLZVk7ZDdZOmMvPOwEkpYwzoUizXPLLUwb/Xs=;
+        b=ljAV06QdvCE4yK2UljR3UgEjGQIzrFMhMo9Y10ZqrarXYN5L64l1m7GgihZZT63dlu
+         0Al5U8vhYYY/pmd/X2zdgovtoXVLPVBDfYhOhnhZZp+LDgtP37mPetlV+ypQtBWpfJIN
+         R4vWeTjD4+rU3BxbNIhxEKZzfH7yICihag1U3R9j3IFViyVg5Q4D/LkuaP1MyzPgubzc
+         qwFZi7ZxI71C/FkwepCnMuqLSkjTIvSeZYnMdDAZuHL5WLCxGpyQZzt1IRxuVkro694U
+         +DlKcvQN01C+1vNPj7BRZg2cn2DpIB+VzW25E3t+JtqPnJQZgnAy6rrkGNXVTn87mpmh
+         ZBCw==
+X-Gm-Message-State: AOAM530XrK921PGAMz35+rMdZUDN95zfxzFPmFFS4CDrddQNF6TP6LGp
+        fAJiPYEGe1LPfI28o9m39s4=
+X-Google-Smtp-Source: ABdhPJwAprjfL6fB0YmGSq6icSibdyl0XAn+8HLS1XyldP7O8e6qmhRuYHSc0TD53nD3Mv/n4S/TRw==
+X-Received: by 2002:a17:90a:6583:: with SMTP id k3mr4578048pjj.227.1618948908347;
+        Tue, 20 Apr 2021 13:01:48 -0700 (PDT)
+Received: from edumazet1.svl.corp.google.com ([2620:15c:2c4:201:71c5:2f2b:f562:605b])
+        by smtp.gmail.com with ESMTPSA id e14sm16367605pga.14.2021.04.20.13.01.47
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 20 Apr 2021 13:01:47 -0700 (PDT)
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+To:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev <netdev@vger.kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Xuan Zhuo <xuanzhuo@linux.alibaba.com>,
+        Jason Wang <jasowang@redhat.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        virtualization@lists.linux-foundation.org
+Subject: [PATCH net-next] virtio-net: restrict build_skb() use to some arches
+Date:   Tue, 20 Apr 2021 13:01:44 -0700
+Message-Id: <20210420200144.4189597-1-eric.dumazet@gmail.com>
+X-Mailer: git-send-email 2.31.1.368.gbe11c130af-goog
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-To:     unlisted-recipients:; (no To-header on input)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-NIC has EFX_MAX_CHANNELS channels:
-struct efx_nic {
-	[...]
-	struct efx_channel *channel[EFX_MAX_CHANNELS];
-	[...]
-}
+From: Eric Dumazet <edumazet@google.com>
 
-Each channel has EFX_MAX_TXQ_PER_CHANNEL TX queues; There a reverse
-mapping from type to TX queue, holding at most EFX_TXQ_TYPES
-entries. This mapping is a bitset mapping because EFX_TXQ_TYPE_* is
-defined as non-overlapping bit enum:
+build_skb() is supposed to be followed by
+skb_reserve(skb, NET_IP_ALIGN), so that IP headers are word-aligned.
+(Best practice is to reserve NET_IP_ALIGN+NET_SKB_PAD, but the NET_SKB_PAD
+part is only a performance optimization if tunnel encaps are added.)
 
-struct efx_channel {
-	[...]
-	struct efx_tx_queue tx_queue[EFX_MAX_TXQ_PER_CHANNEL];
-	struct efx_tx_queue *tx_queue_by_type[EFX_TXQ_TYPES];
-	[...]
-}
+Unfortunately virtio_net has not provisioned this reserve.
+We can only use build_skb() for arches where NET_IP_ALIGN == 0
 
-Because channels and queues are enumerated in-order in
-efx_set_channels(), it is possible to get tx_queue be calling
+We might refine this later, with enough testing.
 
-efx_get_tx_queue(efx, qid / EFX_MAX_TXQ_PER_CHANNEL,
-                      qid % EFX_MAX_TXQ_PER_CHANNEL);
-
-This uses qid / EFX_MAX_TXQ_PER_CHANNEL as index inside
-efx_nic->channels[] and qid % EFX_MAX_TXQ_PER_CHANNEL as index inside
-channel->tx_queue_be_type[].
-
-Indexing into bitset mapping with modulo operation seems to oversight
-from the previous refactoring. Comments of other call sites also
-indicate that the second argument is indeed queue->label (which is an
-index into channel->tx_queue[]), not queue->type. It also looks like
-that some callers do need indexing by type, though.
-
-However, because the sizes of tx_queue[] and tx_queue_by_type[] are
-equal, and every single slot in both arrays is not equal to NULL, no
-crash occurs.
-
-commit 044588b96372 ("sfc: define inner/outer csum offload TXQ types")
-add additional TXQ_TYPE and bumps size of tx_queue_by_type to 8
-elements. Some of its members are NULL now. During interface shutdown,
-tx_queues are flushed; this, in turn, results in a callback to
-efx_farch_handle_tx_flush_done, which then tries to use
-qid % EFX_MAX_TXQ_PER_CHANNEL as queue->type, gets NULL back, and
-crashes.
-
-Address this by adding efx_get_tx_queue_by_type() and updating
-relevant callers.
-
-Signed-off-by: Yury Vostrikov <mon@unformed.ru>
+Fixes: fb32856b16ad ("virtio-net: page_to_skb() use build_skb when there's sufficient tailroom")
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+Reported-by: Guenter Roeck <linux@roeck-us.net>
+Cc: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+Cc: Jason Wang <jasowang@redhat.com>
+Cc: "Michael S. Tsirkin" <mst@redhat.com>
+Cc: virtualization@lists.linux-foundation.org
 ---
- drivers/net/ethernet/sfc/net_driver.h | 21 ++++++++++++++++++---
- drivers/net/ethernet/sfc/ptp.c        |  2 +-
- drivers/net/ethernet/sfc/tx.c         |  2 +-
- 3 files changed, 20 insertions(+), 5 deletions(-)
+ drivers/net/virtio_net.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/sfc/net_driver.h b/drivers/net/ethernet/sfc/net_driver.h
-index 9f7dfdf708cf..4ab0fe21a3a6 100644
---- a/drivers/net/ethernet/sfc/net_driver.h
-+++ b/drivers/net/ethernet/sfc/net_driver.h
-@@ -1533,18 +1533,33 @@ static inline unsigned int efx_channel_num_tx_queues(struct efx_channel *channel
- }
+diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
+index 2e28c04aa6351d2b4016f7d277ce104c4970069d..74d2d49264f3f3b7039be70331d4a44c53b8cc28 100644
+--- a/drivers/net/virtio_net.c
++++ b/drivers/net/virtio_net.c
+@@ -416,7 +416,7 @@ static struct sk_buff *page_to_skb(struct virtnet_info *vi,
  
- static inline struct efx_tx_queue *
--efx_channel_get_tx_queue(struct efx_channel *channel, unsigned int type)
-+efx_channel_get_tx_queue_by_type(struct efx_channel *channel, unsigned int type)
- {
- 	EFX_WARN_ON_ONCE_PARANOID(type >= EFX_TXQ_TYPES);
- 	return channel->tx_queue_by_type[type];
- }
+ 	shinfo_size = SKB_DATA_ALIGN(sizeof(struct skb_shared_info));
  
- static inline struct efx_tx_queue *
--efx_get_tx_queue(struct efx_nic *efx, unsigned int index, unsigned int type)
-+efx_get_tx_queue_by_type(struct efx_nic *efx, unsigned int index, unsigned int type)
- {
- 	struct efx_channel *channel = efx_get_tx_channel(efx, index);
- 
--	return efx_channel_get_tx_queue(channel, type);
-+	return efx_channel_get_tx_queue_by_type(channel, type);
-+}
-+
-+static inline struct efx_tx_queue *
-+efx_channel_get_tx_queue(struct efx_channel *channel, unsigned int label)
-+{
-+	EFX_WARN_ON_ONCE_PARANOID(label >= EFX_MAX_TXQ_PER_CHANNEL);
-+	return &channel->tx_queue[label];
-+}
-+
-+static inline struct efx_tx_queue *
-+efx_get_tx_queue(struct efx_nic *efx, unsigned int index, unsigned int label)
-+{
-+	struct efx_channel *channel = efx_get_tx_channel(efx, index);
-+
-+	return efx_channel_get_tx_queue(channel, label);
- }
- 
- /* Iterate over all TX queues belonging to a channel */
-diff --git a/drivers/net/ethernet/sfc/ptp.c b/drivers/net/ethernet/sfc/ptp.c
-index a39c5143b386..7de19d22dadc 100644
---- a/drivers/net/ethernet/sfc/ptp.c
-+++ b/drivers/net/ethernet/sfc/ptp.c
-@@ -1091,7 +1091,7 @@ static void efx_ptp_xmit_skb_queue(struct efx_nic *efx, struct sk_buff *skb)
- 	u8 type = efx_tx_csum_type_skb(skb);
- 	struct efx_tx_queue *tx_queue;
- 
--	tx_queue = efx_channel_get_tx_queue(ptp_data->channel, type);
-+	tx_queue = efx_channel_get_tx_queue_by_type(ptp_data->channel, type);
- 	if (tx_queue && tx_queue->timestamping) {
- 		efx_enqueue_skb(tx_queue, skb);
- 	} else {
-diff --git a/drivers/net/ethernet/sfc/tx.c b/drivers/net/ethernet/sfc/tx.c
-index 1665529a7271..18742db2990d 100644
---- a/drivers/net/ethernet/sfc/tx.c
-+++ b/drivers/net/ethernet/sfc/tx.c
-@@ -533,7 +533,7 @@ netdev_tx_t efx_hard_start_xmit(struct sk_buff *skb,
- 		return efx_ptp_tx(efx, skb);
- 	}
- 
--	tx_queue = efx_get_tx_queue(efx, index, type);
-+	tx_queue = efx_get_tx_queue_by_type(efx, index, type);
- 	if (WARN_ON_ONCE(!tx_queue)) {
- 		/* We don't have a TXQ of the right type.
- 		 * This should never happen, as we don't advertise offload
+-	if (len > GOOD_COPY_LEN && tailroom >= shinfo_size) {
++	if (!NET_IP_ALIGN && len > GOOD_COPY_LEN && tailroom >= shinfo_size) {
+ 		skb = build_skb(p, truesize);
+ 		if (unlikely(!skb))
+ 			return NULL;
 -- 
-2.20.1
+2.31.1.368.gbe11c130af-goog
 
