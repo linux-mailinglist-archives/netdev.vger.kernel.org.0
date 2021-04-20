@@ -2,99 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BF3D4366026
-	for <lists+netdev@lfdr.de>; Tue, 20 Apr 2021 21:25:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0D4F6366029
+	for <lists+netdev@lfdr.de>; Tue, 20 Apr 2021 21:27:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233618AbhDTT0R (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 20 Apr 2021 15:26:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32798 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233518AbhDTT0R (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 20 Apr 2021 15:26:17 -0400
-Received: from mail-pg1-x532.google.com (mail-pg1-x532.google.com [IPv6:2607:f8b0:4864:20::532])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 04728C06174A
-        for <netdev@vger.kernel.org>; Tue, 20 Apr 2021 12:25:44 -0700 (PDT)
-Received: by mail-pg1-x532.google.com with SMTP id y32so27341399pga.11
-        for <netdev@vger.kernel.org>; Tue, 20 Apr 2021 12:25:44 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=o+yU8HQJaY94GLxvKts0LQFf5vy50wfWaxHoY8NFFYI=;
-        b=Cyta8jIKlCMTSsAJ9+eDxbJSgkY8QKB9IEA8Xdsh4KW8/JVUeP5mmFqrXNlYHqUtIn
-         Xm8FRZ6Ra4w9io8nfOmWZL019AjutZ/2Zgumqd2mVnU/wFTJ3sJsJIHIKbIIVzNicyxi
-         54ag8OnGtkmAEbBZ5LG7kjr7GBTk+MURzAdeoyFt97mNcELK3jm74TidrnkXE+jQHFhD
-         yIHJLbucMhE95icHmEfBSBnak+j/WqsAfKNAAzg/v41Oj5ICdp7ItRBFNFmuj9YQmL4b
-         c11EIfLUEOIl8QTr5/0yKbZHX9FTVEIamxXIgr3yZcbGVXZVaF7rQbLLdiDXy13Z5pnN
-         LwbA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=o+yU8HQJaY94GLxvKts0LQFf5vy50wfWaxHoY8NFFYI=;
-        b=VT/U3g+gqAbQDMi3JnrZUasfxJwLFOputL9FJ/11gHlWKcHnfOTCf+z850+cycDBJh
-         wwyb9ypULEKWtf9FyA7xYbuoNs+qqpDPuUbGz16+iiZksWzPXQCRncIv+DUdbyQf4i6h
-         51iLLvvqEIwKLHoFzwU6qoI9OJWaa1mc7kNNIVZ+Rc+u85pLQRTfGmS2uw78UjQk6e3B
-         FJzwalEZrhQ174Ut2esKxSGuGX0vTxYLlyk0Uh25jiUS3c5nS7gugEDdNrOIcGfzXqDq
-         hYQ0SOxKg0rOYFYYQ4sf7w7nqJeCx+FgdPwZdzzG17sEg0gBL/kDgfdjB8ehJYK4d4oR
-         llPg==
-X-Gm-Message-State: AOAM531+rLCtdbZasCEeGZeqTULxfaL3lxPshUdTyTKLtlHO6L/oLTQ0
-        mrFqBZ+sGUlknls50Bu2NWhJ7kHqlSc7+d2Cj2c=
-X-Google-Smtp-Source: ABdhPJyxvdJ8ymwH1Qw2Pa6zQatpcr3xxM/RSTvlSN+KNR7dlou9pwaNuGgod1tyJVBTyWZgOn5RjeKkUdlwAWzk49o=
-X-Received: by 2002:a17:90a:f303:: with SMTP id ca3mr6629292pjb.145.1618946744481;
- Tue, 20 Apr 2021 12:25:44 -0700 (PDT)
+        id S233728AbhDTT1v (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 20 Apr 2021 15:27:51 -0400
+Received: from mail.kernel.org ([198.145.29.99]:50392 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S233702AbhDTT1u (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 20 Apr 2021 15:27:50 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 076A4613E0;
+        Tue, 20 Apr 2021 19:27:16 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1618946837;
+        bh=vbUd1HhsiYI8V3L0b0QYKz65hMBGEfOzc2WLKkl7gac=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=bEaKFr1Mez65tCaYH1IIrFgT9JyFo/Pl1M4Efp9oO1TdTSE8Ds1fqd26oMD7U7ct7
+         E0dxEKf3zaMKGYQNQEXHy08yuvBFx11M0FhvGHboGQ+FPfooR4EhOf5atEZu0aEh0K
+         3vWRiTMuNuV9NdhubK6osKHfDRf6ajV/wrLPhVv0OV3BNrBBCg3p75FazIZSHQLxoK
+         W4hXqk6qk0gjAImIQMN7favxfW4NtpzQH4Dz8aaFaKcBmVR11Gg9KXZTU+t4qf/byW
+         Z2mWLkg/1yT/4elBYnLNH2Ov8uFrTu5Herj8C9bfEbO8rDm7xSjl7f2NfyzM+7jsVV
+         NBtVLAfeJkJXQ==
+Date:   Tue, 20 Apr 2021 12:27:15 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Eric Dumazet <edumazet@google.com>,
+        AceLan Kao <acelan.kao@canonical.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Andrii Nakryiko <andriin@fb.com>, Wei Wang <weiwan@google.com>,
+        Cong Wang <cong.wang@bytedance.com>,
+        Taehee Yoo <ap420073@gmail.com>,
+        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn@kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH] net: called rtnl_unlock() before runpm resumes devices
+Message-ID: <20210420122715.2066b537@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <CANn89iJLSmtBNoDo8QJ6a0MzsHjdLB0Pf=cs9e4g8Y6-KuFiMQ@mail.gmail.com>
+References: <20210420075406.64105-1-acelan.kao@canonical.com>
+        <CANn89iJLSmtBNoDo8QJ6a0MzsHjdLB0Pf=cs9e4g8Y6-KuFiMQ@mail.gmail.com>
 MIME-Version: 1.0
-References: <cover.1618844973.git.dcaratti@redhat.com> <80dbe764b5ae660bba3cf6edcb045a74b0f85853.1618844973.git.dcaratti@redhat.com>
- <CAM_iQpW3SPXJWeLf3Ck4QHZxetDuYcQJDFChUje3-4By8oGfnA@mail.gmail.com> <d16e3e5ade2a01ea4404c79abcc86b7d9868f611.camel@redhat.com>
-In-Reply-To: <d16e3e5ade2a01ea4404c79abcc86b7d9868f611.camel@redhat.com>
-From:   Cong Wang <xiyou.wangcong@gmail.com>
-Date:   Tue, 20 Apr 2021 12:25:33 -0700
-Message-ID: <CAM_iQpW5aafymtCJgFgALeHJwBz9jAZA8fBV1SHxGWmHYPZV1w@mail.gmail.com>
-Subject: Re: [PATCH net 2/2] net/sched: sch_frag: fix stack OOB read while
- fragmenting IPv4 packets
-To:     Davide Caratti <dcaratti@redhat.com>
-Cc:     Jamal Hadi Salim <jhs@mojatatu.com>, Jiri Pirko <jiri@resnulli.us>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, wenxu <wenxu@ucloud.cn>,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Apr 20, 2021 at 1:59 AM Davide Caratti <dcaratti@redhat.com> wrote:
->
-> hello Cong, thanks for looking at this!
->
-> On Mon, 2021-04-19 at 11:46 -0700, Cong Wang wrote:
-> > On Mon, Apr 19, 2021 at 8:24 AM Davide Caratti <dcaratti@redhat.com> wrote:
-> > > diff --git a/net/sched/sch_frag.c b/net/sched/sch_frag.c
-> > > index e1e77d3fb6c0..8c06381391d6 100644
-> > > --- a/net/sched/sch_frag.c
-> > > +++ b/net/sched/sch_frag.c
-> > > @@ -90,16 +90,16 @@ static int sch_fragment(struct net *net, struct sk_buff *skb,
-> > >         }
-> > >
-> > >         if (skb_protocol(skb, true) == htons(ETH_P_IP)) {
-> > > -               struct dst_entry sch_frag_dst;
-> > > +               struct rtable sch_frag_rt = { 0 };
+On Tue, 20 Apr 2021 10:34:17 +0200 Eric Dumazet wrote:
+> On Tue, Apr 20, 2021 at 9:54 AM AceLan Kao <acelan.kao@canonical.com> wrote:
 > >
-> > Is setting these fields 0 sufficient here? Because normally a struct table
-> > is initialized by rt_dst_alloc() which sets several of them to non-zero,
-> > notably, rt->rt_type and rt->rt_uncached.
+> > From: "Chia-Lin Kao (AceLan)" <acelan.kao@canonical.com>
 > >
-> > Similar for the IPv6 part, which is initialized by rt6_info_init().
->
-> for what we do now in openvswitch and sch_frag, that should be
-> sufficient: a similar thing is done by br_netfilter [1], apparently for
-> the same "refragmentation" purposes. On a fedora host (running 5.10, but
-> it shouldn't be much different than current Linux), I just dumped
-> 'fake_rtable' from a bridge device:
+> > The rtnl_lock() has been called in rtnetlink_rcv_msg(), and then in
+> > __dev_open() it calls pm_runtime_resume() to resume devices, and in
+> > some devices' resume function(igb_resum,igc_resume) they calls rtnl_lock()
+> > again. That leads to a recursive lock.
+> >
+> > It should leave the devices' resume function to decide if they need to
+> > call rtnl_lock()/rtnl_unlock(), so call rtnl_unlock() before calling
+> > pm_runtime_resume() and then call rtnl_lock() after it in __dev_open().
+> >
+> >  
+> 
+> Hi Acelan
+> 
+> When was the bugg added ?
+> Please add a Fixes: tag
 
-Sounds fair. It looks like all of these cases merely use dst->dev->mtu,
-so it is overkill to pass a full dst just to satisfy some callees.
+For immediate cause probably:
 
-Anyway, your patch should be okay as a fix for -net.
+Fixes: 9474933caf21 ("igb: close/suspend race in netif_device_detach")
 
-Thanks.
+> By doing so, you give more chances for reviewers to understand why the
+> fix is not risky,
+> and help stable teams work.
+
+IMO the driver lacks internal locking. Taking rtnl from resume is just
+one example, git history shows many more places that lacked locking and
+got papered over with rtnl here.
