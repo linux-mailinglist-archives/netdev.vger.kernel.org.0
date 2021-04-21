@@ -2,108 +2,147 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6BEF036755E
-	for <lists+netdev@lfdr.de>; Thu, 22 Apr 2021 00:54:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A7BC9367570
+	for <lists+netdev@lfdr.de>; Thu, 22 Apr 2021 00:59:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343596AbhDUWxT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 21 Apr 2021 18:53:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56038 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235481AbhDUWxS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 21 Apr 2021 18:53:18 -0400
-Received: from mail-ot1-x32d.google.com (mail-ot1-x32d.google.com [IPv6:2607:f8b0:4864:20::32d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D0B57C06138A;
-        Wed, 21 Apr 2021 15:52:44 -0700 (PDT)
-Received: by mail-ot1-x32d.google.com with SMTP id 5-20020a9d09050000b029029432d8d8c5so14469683otp.11;
-        Wed, 21 Apr 2021 15:52:44 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=sender:date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=+Q3lYO1hTpL3JeJVnFbKHYgLVKq2KQUZWjQJJYj9jJM=;
-        b=U60eCJYI6LzX7UlSt8krSU6ggge2RW0Q4fVjfJuBK6S5Ik1hpq9BFAmYk7W6JNVtUm
-         iUd65hB/5tMXH+wNIfDyyBFqaRsmjOLLY+VpchG585B6IKObrYTa8+9rR1u1tD1jip2T
-         +rcunfytTqNtKPKCvOOwfNB40UGUr8E2PA88BjbavfU1b07G06x3wca9rRsA9gycR9WK
-         od0XtgycC2g1bzlAer5pE4DsiYa7pNrunhodWR8VBXC5tgxGs74uNPyreqBeZdTFvcSo
-         kt4KnyGvqY3N3Ml6WWFDZj8X/taYOgFc/STmk1HpE99fS7UQzNDW2oUjXdmmdwe+MAQU
-         B11w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
-         :references:mime-version:content-disposition:in-reply-to:user-agent;
-        bh=+Q3lYO1hTpL3JeJVnFbKHYgLVKq2KQUZWjQJJYj9jJM=;
-        b=PTZ77RRAOccVSOHAGqJmsqhbqcr/qPI1dwtnhUHmA9h3iEI/GGEcbpdjGXrs3JVwpe
-         CFoelUhWHtjPqMyFQUncbRjkoOTnTPUzSRPgMbIqsKmi24yOo5xJh9tqJY2uatxIfdnb
-         8+nAW0jrLRXnPMuyRvhJy3YX2Ga0nNK6FQUnULqfH9+DwOVDAMyvo2WGSm1epf4E6O9j
-         3bPitjTROS/IssCwtiFdVa+hFRnCLs0zam05+XItnjXXUY6D075pPFipawWOS0c95HMX
-         JJTZG3x14xgR6uLiA0vgEf3sg5k7OrE3+0L2eQVaFH+5hQi2mFRrm0W6KFRMZHCjpqqE
-         y0/w==
-X-Gm-Message-State: AOAM530YcwjKMbQ50uDFs4ZcLexgkhnN1sPYbfwUyaYYMPx65Cxbi2Xc
-        sw5JFBhyLE6OYwon3rM+vfw=
-X-Google-Smtp-Source: ABdhPJwozywGSqQF3xMLdEXGk1/u2t5WGdubCmaImSDPIJQ/cPLAZTkZQ25/VuvtQm4+NZul5sPALA==
-X-Received: by 2002:a05:6830:1584:: with SMTP id i4mr371717otr.129.1619045564152;
-        Wed, 21 Apr 2021 15:52:44 -0700 (PDT)
-Received: from localhost ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
-        by smtp.gmail.com with ESMTPSA id k8sm179101oig.6.2021.04.21.15.52.41
-        (version=TLS1_2 cipher=ECDHE-ECDSA-CHACHA20-POLY1305 bits=256/256);
-        Wed, 21 Apr 2021 15:52:42 -0700 (PDT)
-Sender: Guenter Roeck <groeck7@gmail.com>
-Date:   Wed, 21 Apr 2021 15:52:40 -0700
-From:   Guenter Roeck <linux@roeck-us.net>
-To:     Aditya Pakki <pakki001@umn.edu>
-Cc:     "J. Bruce Fields" <bfields@fieldses.org>,
-        Chuck Lever <chuck.lever@oracle.com>,
-        Trond Myklebust <trond.myklebust@hammerspace.com>,
-        Anna Schumaker <anna.schumaker@netapp.com>,
+        id S236626AbhDUXAH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 21 Apr 2021 19:00:07 -0400
+Received: from www62.your-server.de ([213.133.104.62]:44940 "EHLO
+        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232642AbhDUXAE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 21 Apr 2021 19:00:04 -0400
+Received: from sslproxy06.your-server.de ([78.46.172.3])
+        by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92.3)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1lZLof-000Dnk-AH; Thu, 22 Apr 2021 00:59:29 +0200
+Received: from [85.7.101.30] (helo=linux.home)
+        by sslproxy06.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1lZLof-000Cfz-0o; Thu, 22 Apr 2021 00:59:29 +0200
+Subject: Re: [PATCH bpf-next v3 2/3] libbpf: add low level TC-BPF API
+To:     Kumar Kartikeya Dwivedi <memxor@gmail.com>, bpf@vger.kernel.org
+Cc:     =?UTF-8?Q?Toke_H=c3=b8iland-J=c3=b8rgensen?= <toke@redhat.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Dave Wysochanski <dwysocha@redhat.com>,
-        linux-nfs@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] SUNRPC: Add a check for gss_release_msg
-Message-ID: <20210421225240.GA117423@roeck-us.net>
-References: <20210407001658.2208535-1-pakki001@umn.edu>
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        netdev@vger.kernel.org
+References: <20210420193740.124285-1-memxor@gmail.com>
+ <20210420193740.124285-3-memxor@gmail.com>
+From:   Daniel Borkmann <daniel@iogearbox.net>
+Message-ID: <9b0aab2c-9b92-0bcb-2064-f66dd39e7552@iogearbox.net>
+Date:   Thu, 22 Apr 2021 00:59:28 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210407001658.2208535-1-pakki001@umn.edu>
-User-Agent: Mutt/1.9.4 (2018-02-28)
+In-Reply-To: <20210420193740.124285-3-memxor@gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.102.4/26147/Wed Apr 21 13:06:05 2021)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Apr 06, 2021 at 07:16:56PM -0500, Aditya Pakki wrote:
-> In gss_pipe_destroy_msg(), in case of error in msg, gss_release_msg
-> deletes gss_msg. The patch adds a check to avoid a potential double
-> free.
-> 
-> Signed-off-by: Aditya Pakki <pakki001@umn.edu>
-> ---
->  net/sunrpc/auth_gss/auth_gss.c | 3 ++-
->  1 file changed, 2 insertions(+), 1 deletion(-)
-> 
-> diff --git a/net/sunrpc/auth_gss/auth_gss.c b/net/sunrpc/auth_gss/auth_gss.c
-> index 5f42aa5fc612..eb52eebb3923 100644
-> --- a/net/sunrpc/auth_gss/auth_gss.c
-> +++ b/net/sunrpc/auth_gss/auth_gss.c
-> @@ -848,7 +848,8 @@ gss_pipe_destroy_msg(struct rpc_pipe_msg *msg)
->  			warn_gssd();
->  		gss_release_msg(gss_msg);
->  	}
-> -	gss_release_msg(gss_msg);
-> +	if (gss_msg)
-> +		gss_release_msg(gss_msg);
+On 4/20/21 9:37 PM, Kumar Kartikeya Dwivedi wrote:
+[...]
+> diff --git a/tools/lib/bpf/libbpf.h b/tools/lib/bpf/libbpf.h
+> index bec4e6a6e31d..b4ed6a41ea70 100644
+> --- a/tools/lib/bpf/libbpf.h
+> +++ b/tools/lib/bpf/libbpf.h
+> @@ -16,6 +16,8 @@
+>   #include <stdbool.h>
+>   #include <sys/types.h>  // for size_t
+>   #include <linux/bpf.h>
+> +#include <linux/pkt_sched.h>
+> +#include <linux/tc_act/tc_bpf.h>
+>   
+>   #include "libbpf_common.h"
+>   
+> @@ -775,6 +777,48 @@ LIBBPF_API int bpf_linker__add_file(struct bpf_linker *linker, const char *filen
+>   LIBBPF_API int bpf_linker__finalize(struct bpf_linker *linker);
+>   LIBBPF_API void bpf_linker__free(struct bpf_linker *linker);
+>   
+> +/* Convenience macros for the clsact attach hooks */
+> +#define BPF_TC_CLSACT_INGRESS TC_H_MAKE(TC_H_CLSACT, TC_H_MIN_INGRESS)
+> +#define BPF_TC_CLSACT_EGRESS TC_H_MAKE(TC_H_CLSACT, TC_H_MIN_EGRESS)
 
-I know I am adding to the noise here, but it has to be said:
-gss_msg is assigned with
-	struct gss_upcall_msg *gss_msg = container_of(msg, struct gss_upcall_msg, msg);
-and thus never NULL.
+I would abstract those away into an enum, plus avoid having to pull in
+linux/pkt_sched.h and linux/tc_act/tc_bpf.h from main libbpf.h header.
 
-Guenter
+Just add a enum { BPF_TC_DIR_INGRESS, BPF_TC_DIR_EGRESS, } and then the
+concrete tc bits (TC_H_MAKE()) can be translated internally.
 
->  }
->  
->  static void gss_pipe_dentry_destroy(struct dentry *dir,
-> -- 
-> 2.25.1
-> 
+> +struct bpf_tc_opts {
+> +	size_t sz;
+
+Is this set anywhere?
+
+> +	__u32 handle;
+> +	__u32 class_id;
+
+I'd remove class_id from here as well given in direct-action a BPF prog can
+set it if needed.
+
+> +	__u16 priority;
+> +	bool replace;
+> +	size_t :0;
+
+What's the rationale for this padding?
+
+> +};
+> +
+> +#define bpf_tc_opts__last_field replace
+> +
+> +/* Acts as a handle for an attached filter */
+> +struct bpf_tc_attach_id {
+
+nit: maybe bpf_tc_ctx
+
+> +	__u32 handle;
+> +	__u16 priority;
+> +};
+> +
+> +struct bpf_tc_info {
+> +	struct bpf_tc_attach_id id;
+> +	__u16 protocol;
+> +	__u32 chain_index;
+> +	__u32 prog_id;
+> +	__u8 tag[BPF_TAG_SIZE];
+> +	__u32 class_id;
+> +	__u32 bpf_flags;
+> +	__u32 bpf_flags_gen;
+
+Given we do not yet have any setters e.g. for offload, etc, the one thing
+I'd see useful and crucial initially is prog_id.
+
+The protocol, chain_index, and I would also include tag should be dropped.
+Similarly class_id given my earlier statement, and flags I would extend once
+this lib API would support offloading progs.
+
+> +};
+> +
+> +/* id is out parameter that will be written to, it must not be NULL */
+> +LIBBPF_API int bpf_tc_attach(int fd, __u32 ifindex, __u32 parent_id,
+> +			     const struct bpf_tc_opts *opts,
+> +			     struct bpf_tc_attach_id *id);
+> +LIBBPF_API int bpf_tc_detach(__u32 ifindex, __u32 parent_id,
+> +			     const struct bpf_tc_attach_id *id);
+> +LIBBPF_API int bpf_tc_get_info(__u32 ifindex, __u32 parent_id,
+> +			       const struct bpf_tc_attach_id *id,
+> +			       struct bpf_tc_info *info);
+
+As per above, for parent_id I'd replace with dir enum.
+
+> +
+>   #ifdef __cplusplus
+>   } /* extern "C" */
+>   #endif
