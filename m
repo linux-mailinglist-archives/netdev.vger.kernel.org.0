@@ -2,123 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1C4F93664AE
-	for <lists+netdev@lfdr.de>; Wed, 21 Apr 2021 07:11:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7DC973664B2
+	for <lists+netdev@lfdr.de>; Wed, 21 Apr 2021 07:11:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234919AbhDUFIc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 21 Apr 2021 01:08:32 -0400
-Received: from mxout70.expurgate.net ([91.198.224.70]:56790 "EHLO
-        mxout70.expurgate.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230440AbhDUFI3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 21 Apr 2021 01:08:29 -0400
-X-Greylist: delayed 443 seconds by postgrey-1.27 at vger.kernel.org; Wed, 21 Apr 2021 01:08:28 EDT
-Received: from [127.0.0.1] (helo=localhost)
-        by relay.expurgate.net with smtp (Exim 4.92)
-        (envelope-from <ms@dev.tdt.de>)
-        id 1lZ54j-0006TL-10; Wed, 21 Apr 2021 07:06:57 +0200
-Received: from [195.243.126.94] (helo=securemail.tdt.de)
-        by relay.expurgate.net with esmtps (TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ms@dev.tdt.de>)
-        id 1lZ54i-000Lxz-50; Wed, 21 Apr 2021 07:06:56 +0200
-Received: from securemail.tdt.de (localhost [127.0.0.1])
-        by securemail.tdt.de (Postfix) with ESMTP id 7913F240041;
-        Wed, 21 Apr 2021 07:06:55 +0200 (CEST)
-Received: from mail.dev.tdt.de (unknown [10.2.4.42])
-        by securemail.tdt.de (Postfix) with ESMTP id D6726240040;
-        Wed, 21 Apr 2021 07:06:54 +0200 (CEST)
-Received: from mschiller01.dev.tdt.de (unknown [10.2.3.20])
-        by mail.dev.tdt.de (Postfix) with ESMTPSA id 833D620240;
-        Wed, 21 Apr 2021 07:06:54 +0200 (CEST)
-From:   Martin Schiller <ms@dev.tdt.de>
-To:     hauke@hauke-m.de, martin.blumenstingl@googlemail.com,
-        andrew.hendry@gmail.com, hkallweit1@gmail.com,
-        linux@armlinux.org.uk, davem@davemloft.net, kuba@kernel.org
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Martin Schiller <ms@dev.tdt.de>
-Subject: [PATCH net v2] net: phy: intel-xway: enable integrated led functions
-Date:   Wed, 21 Apr 2021 07:06:27 +0200
-Message-ID: <20210421050627.11250-1-ms@dev.tdt.de>
-X-Mailer: git-send-email 2.20.1
+        id S235126AbhDUFLD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 21 Apr 2021 01:11:03 -0400
+Received: from mail.kernel.org ([198.145.29.99]:54504 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S230440AbhDUFLC (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 21 Apr 2021 01:11:02 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 4049D6105A;
+        Wed, 21 Apr 2021 05:10:29 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1618981830;
+        bh=gDTv6Ws3dmiAvi6sW15n2JiYhMOJzINkMNlGAdGchIE=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=NMxNzSRnAAGnNumW9gSrxiCWk3sJBxRFXy+AOmTUBr4BNVY8gd+WVCqDapgGFwLmt
+         NwSm+rO0py+PkwjfQhaRZ4Gw2XAk2ombhiKsAXwiS06GLwP8kXpWPvPIHdT8U7CGVL
+         jbfNlAjMmaoWu6EETQ5Dat7jn1guk47kwOKRVGtwXPSJXYuM3dPmtPxHsycUf1544S
+         Jj+Q5MRKWqrx9vYj111SkvVE78KVv2llcQNbVVI51ZsLiFLPDsJy39KQmcK1fcC7AR
+         On4NjLtWK5qWryVFk9uIp9q2F9SL/4/Ux5FknOXDi317F1DSGyi2HP99puFc4GrRoi
+         OkVsDhQ1wmAMg==
+Date:   Wed, 21 Apr 2021 08:10:25 +0300
+From:   Leon Romanovsky <leon@kernel.org>
+To:     "J. Bruce Fields" <bfields@fieldses.org>
+Cc:     Greg KH <gregkh@linuxfoundation.org>,
+        Aditya Pakki <pakki001@umn.edu>,
+        Chuck Lever <chuck.lever@oracle.com>,
+        Trond Myklebust <trond.myklebust@hammerspace.com>,
+        Anna Schumaker <anna.schumaker@netapp.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Dave Wysochanski <dwysocha@redhat.com>,
+        linux-nfs@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] SUNRPC: Add a check for gss_release_msg
+Message-ID: <YH+zwQgBBGUJdiVK@unreal>
+References: <20210407001658.2208535-1-pakki001@umn.edu>
+ <YH5/i7OvsjSmqADv@kroah.com>
+ <20210420171008.GB4017@fieldses.org>
 MIME-Version: 1.0
-X-Spam-Status: No, score=-1.0 required=5.0 tests=ALL_TRUSTED,URIBL_BLOCKED
-        autolearn=ham autolearn_force=no version=3.4.2
-X-Spam-Checker-Version: SpamAssassin 3.4.2 (2018-09-13) on mail.dev.tdt.de
-Content-Transfer-Encoding: quoted-printable
-X-purgate-type: clean
-X-purgate-ID: 151534::1618981616-0000EC72-D3A4C568/0/0
-X-purgate: clean
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210420171008.GB4017@fieldses.org>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The Intel xway phys offer the possibility to deactivate the integrated
-led function and to control the leds manually.
-If this was set by the bootloader, it must be ensured that the
-integrated led function is enabled for all leds when loading the driver.
+On Tue, Apr 20, 2021 at 01:10:08PM -0400, J. Bruce Fields wrote:
+> On Tue, Apr 20, 2021 at 09:15:23AM +0200, Greg KH wrote:
+> > If you look at the code, this is impossible to have happen.
+> > 
+> > Please stop submitting known-invalid patches.  Your professor is playing
+> > around with the review process in order to achieve a paper in some
+> > strange and bizarre way.
+> > 
+> > This is not ok, it is wasting our time, and we will have to report this,
+> > AGAIN, to your university...
+> 
+> What's the story here?
 
-Before 6e2d85ec0559 ("net: phy: Stop with excessive soft reset") the
-LEDs were enabled by a soft-reset of the PHY (using
-genphy_soft_reset). Initialize the XWAY_MDIO_LED with it's default
-value (which is applied during a soft reset) instead of adding back
-the soft reset. This brings back the default LED configuration while
-still preventing an excessive amount of soft resets.
+Those commits are part of the following research:
+https://github.com/QiushiWu/QiushiWu.github.io/blob/main/papers/OpenSourceInsecurity.pdf
 
-Fixes: 6e2d85ec0559 ("net: phy: Stop with excessive soft reset")
-Signed-off-by: Martin Schiller <ms@dev.tdt.de>
----
+They introduce kernel bugs on purpose. Yesterday, I took a look on 4
+accepted patches from Aditya and 3 of them added various severity security
+"holes".
 
-Changes to v1:
-Added additional email recipients.
+Thanks
 
----
- drivers/net/phy/intel-xway.c | 21 +++++++++++++++++++++
- 1 file changed, 21 insertions(+)
-
-diff --git a/drivers/net/phy/intel-xway.c b/drivers/net/phy/intel-xway.c
-index 6eac50d4b42f..d453ec016168 100644
---- a/drivers/net/phy/intel-xway.c
-+++ b/drivers/net/phy/intel-xway.c
-@@ -11,6 +11,18 @@
-=20
- #define XWAY_MDIO_IMASK			0x19	/* interrupt mask */
- #define XWAY_MDIO_ISTAT			0x1A	/* interrupt status */
-+#define XWAY_MDIO_LED			0x1B	/* led control */
-+
-+/* bit 15:12 are reserved */
-+#define XWAY_MDIO_LED_LED3_EN		BIT(11)	/* Enable the integrated function=
- of LED3 */
-+#define XWAY_MDIO_LED_LED2_EN		BIT(10)	/* Enable the integrated function=
- of LED2 */
-+#define XWAY_MDIO_LED_LED1_EN		BIT(9)	/* Enable the integrated function =
-of LED1 */
-+#define XWAY_MDIO_LED_LED0_EN		BIT(8)	/* Enable the integrated function =
-of LED0 */
-+/* bit 7:4 are reserved */
-+#define XWAY_MDIO_LED_LED3_DA		BIT(3)	/* Direct Access to LED3 */
-+#define XWAY_MDIO_LED_LED2_DA		BIT(2)	/* Direct Access to LED2 */
-+#define XWAY_MDIO_LED_LED1_DA		BIT(1)	/* Direct Access to LED1 */
-+#define XWAY_MDIO_LED_LED0_DA		BIT(0)	/* Direct Access to LED0 */
-=20
- #define XWAY_MDIO_INIT_WOL		BIT(15)	/* Wake-On-LAN */
- #define XWAY_MDIO_INIT_MSRE		BIT(14)
-@@ -159,6 +171,15 @@ static int xway_gphy_config_init(struct phy_device *=
-phydev)
- 	/* Clear all pending interrupts */
- 	phy_read(phydev, XWAY_MDIO_ISTAT);
-=20
-+	/* Ensure that integrated led function is enabled for all leds */
-+	err =3D phy_write(phydev, XWAY_MDIO_LED,
-+			XWAY_MDIO_LED_LED0_EN |
-+			XWAY_MDIO_LED_LED1_EN |
-+			XWAY_MDIO_LED_LED2_EN |
-+			XWAY_MDIO_LED_LED3_EN);
-+	if (err)
-+		return err;
-+
- 	phy_write_mmd(phydev, MDIO_MMD_VEND2, XWAY_MMD_LEDCH,
- 		      XWAY_MMD_LEDCH_NACS_NONE |
- 		      XWAY_MMD_LEDCH_SBF_F02HZ |
---=20
-2.20.1
-
+> 
+> --b.
