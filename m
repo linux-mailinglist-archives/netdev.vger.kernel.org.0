@@ -2,150 +2,197 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D8E1F367057
-	for <lists+netdev@lfdr.de>; Wed, 21 Apr 2021 18:41:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E61E736706C
+	for <lists+netdev@lfdr.de>; Wed, 21 Apr 2021 18:46:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241939AbhDUQlb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 21 Apr 2021 12:41:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58742 "EHLO
+        id S244390AbhDUQqj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 21 Apr 2021 12:46:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59984 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241399AbhDUQk4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 21 Apr 2021 12:40:56 -0400
-Received: from mail-pg1-x533.google.com (mail-pg1-x533.google.com [IPv6:2607:f8b0:4864:20::533])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 76702C06174A;
-        Wed, 21 Apr 2021 09:40:21 -0700 (PDT)
-Received: by mail-pg1-x533.google.com with SMTP id d10so30403814pgf.12;
-        Wed, 21 Apr 2021 09:40:21 -0700 (PDT)
+        with ESMTP id S238199AbhDUQqa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 21 Apr 2021 12:46:30 -0400
+Received: from mail-wr1-x432.google.com (mail-wr1-x432.google.com [IPv6:2a00:1450:4864:20::432])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 377F9C06174A
+        for <netdev@vger.kernel.org>; Wed, 21 Apr 2021 09:45:56 -0700 (PDT)
+Received: by mail-wr1-x432.google.com with SMTP id h4so33006549wrt.12
+        for <netdev@vger.kernel.org>; Wed, 21 Apr 2021 09:45:56 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=CLHwhKyipeOdMEUwSlBPKOFTL7ssHwYscZIWDf/tAUo=;
-        b=D0FmzH805R9NP7K4Nkb0LBVvN9k0GaA82gGttudQT/kHCeFEWVKn75VyicvN+x6QxY
-         KI7fQgeRMmA7ByEb2nRZkDuf3ri8Nruk9910gJqNTwcSWph/CJwmmDRRPBOHRERfHsmk
-         6mdvTEtDXEoRmedkyLsZ8kiDHat3aV8/pfdK65yvH3OZKoXQHcU88yAnqDBEIg2zFQXK
-         IYqL1hzK29GY4ZjxJOkoisjseVBs8Ut9XMdT/I6QPiu2NBXGqNNSTbiT2Q3doZ4J95Ig
-         uPZ3pw931XGutzQgSJIxwqTj+TwXLiOQ0/zcv1zHQXGw0lAf7J6UC+tAUxiEogerw/78
-         0RxQ==
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=BLwYcqJ6UcNz3X6OS9ZPBF9VijP9qaPjSIQPm+2ZeF4=;
+        b=YZjDJg6WZvk0vHuhjp7OGbOTJI0KQH7YRmkk9+rQZOT0S+yR+cJm65Zawbb2hUUaes
+         YGjvEufFoS9NByC2oydxaGQ5F6lBuqvYPMdeYxr2VNOLZ8+Hg/G/dErNOZwdSj2yKNnc
+         XlGhgOX4MYupGtUDEWzcWW+pZudojlWlyuw8TR7xwbZJnqQ9QjInoI1kIpxs5FH1ndsj
+         JiBNzGvDT38dXh04BhIQr6ClbuLnPDOgwmmcR5B3K61NpQYlh3Puk0h+YAoBPZxxvQ7y
+         pa0cb0bVHvaYayLKaj1O2cVAWteJyFPcBaRocIoZhHqEpsN+3ZlDYD8xjTjWXT2iniKR
+         9d7A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=CLHwhKyipeOdMEUwSlBPKOFTL7ssHwYscZIWDf/tAUo=;
-        b=X0rvASA2afkUciRom4huG+x+jnYagxGZ9TQwuJ45AoOJjMQnpM15oP2bVd6hpzbQ67
-         4NZTScLjS/E2HJPMQRWRy41VCouYfRsVbdzkyykShdI4deDbbUcTpY7dqxtBAFHLodUJ
-         yF+RvhxHyen8IBDTY+BhSdTsode7z32sxqxcMbvymzrNlBOujpJA9i3D32BCEAkx4+yA
-         ftDdGCVYJ85sMVm4KquCQ0dKFVtIm2aoDwES6UUf15D64M2/TJBzo8mint9+DvxSxyMf
-         Pb8k7F90OkcUo0qsvHoHZG9Wo3Pq+L9z6YEutFZzhcxCW0RBYRTanKQV747I5vuuHQ85
-         j+fw==
-X-Gm-Message-State: AOAM531G19o1io/KcLmOanmWdhGxJtp88BMMiBaEU7m+0I5Ow4CSWOew
-        S3kFTsGIrNi4HNZijDnoX1I=
-X-Google-Smtp-Source: ABdhPJxR2Q27DJhcnBTiO0nrP0VQ2wX4zj5cBYj9fAOWVbtRgpBU4VesU42lybe6GmMPFmop45xceg==
-X-Received: by 2002:a17:90b:19d1:: with SMTP id nm17mr12028957pjb.218.1619023220996;
-        Wed, 21 Apr 2021 09:40:20 -0700 (PDT)
-Received: from skbuf (5-12-16-165.residential.rdsnet.ro. [5.12.16.165])
-        by smtp.gmail.com with ESMTPSA id 195sm2180413pfy.194.2021.04.21.09.40.14
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 21 Apr 2021 09:40:20 -0700 (PDT)
-Date:   Wed, 21 Apr 2021 19:40:09 +0300
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Oleksij Rempel <o.rempel@pengutronix.de>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, kernel@pengutronix.de,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Russell King <linux@armlinux.org.uk>
-Subject: Re: [PATCH net-next v1] net: dsa: fix bridge support for drivers
- without port_bridge_flags callback
-Message-ID: <20210421164009.jylcxlab2evi2gcr@skbuf>
-References: <20210421130540.12522-1-o.rempel@pengutronix.de>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=BLwYcqJ6UcNz3X6OS9ZPBF9VijP9qaPjSIQPm+2ZeF4=;
+        b=C3pIbORaKyEpbjdiNmxvbfpD+VowYh48WUjc0bUDHBaZ7LDpdX77JMuopWWfaMVC/v
+         4+OinHdggxujhd/OhtTbfzr1gf4qtVDo+HgBdbYf5rMEzFMuSTCqOVUfZxHFqqFXLYz6
+         UR2JUrbRNXtw99H4dbQL6AIoumQ02NUfZfrVbfwEsNHk/MfYmFnjuy9lisJtxifhgEEP
+         kk+S+auysSgrv/6sb0duz7sZgFnUhv2HDm7mPfT5e+O6apZJuZKq9h/AYf7GcJRrVKlC
+         sUhd88GnoG5uukO4tPG8KNQ3VIhePYE+QvXW+AJPX8wMXkFG5ChCZZF2LE4gQ90KH7RE
+         pvOw==
+X-Gm-Message-State: AOAM530VfdrGTZggnNFhsjpDWBQzlMGkqOdeqTfvL/tcDU2q6oXpJZ5u
+        chvgNcNdpSC/RpkaHIT8o9er6vmCB+TLi65L3XH44Q==
+X-Google-Smtp-Source: ABdhPJwkfmMvaQ+1LA+nhCeYuUt8FBtc52TexF/XJKjA5LC9WerIyIPZgMqnNiYQG3EULO148fjeP4yO5v2Hd+3HdZE=
+X-Received: by 2002:a05:6000:1249:: with SMTP id j9mr27716991wrx.416.1619023554782;
+ Wed, 21 Apr 2021 09:45:54 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210421130540.12522-1-o.rempel@pengutronix.de>
+References: <d7fbf3d3a2490d0a9e99945593ada243da58e0f8.1619000255.git.cdleonard@gmail.com>
+ <CADVnQynLSDQHxgMN6=mU2m58t_JKUyugmw0j6g1UDG+jLxTfAw@mail.gmail.com> <CAH56bmDBGsHOSjJpo=TseUATOh0cZqTMFyFO1sqtQmMrTPHtrA@mail.gmail.com>
+In-Reply-To: <CAH56bmDBGsHOSjJpo=TseUATOh0cZqTMFyFO1sqtQmMrTPHtrA@mail.gmail.com>
+From:   Matt Mathis <mattmathis@google.com>
+Date:   Wed, 21 Apr 2021 09:45:42 -0700
+Message-ID: <CAH56bmCp8eRqsdoMTmAmCaEnubwEy317OJKQ9UjqMvDwrkcMdQ@mail.gmail.com>
+Subject: Fwd: [RFC] tcp: Delay sending non-probes for RFC4821 mtu probing
+To:     Leonard Crestez <cdleonard@gmail.com>
+Cc:     "Cc: Willem de Bruijn" <willemb@google.com>,
+        Neal Cardwell <ncardwell@google.com>,
+        Ilya Lesokhin <ilyal@mellanox.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        David Ahern <dsahern@kernel.org>, Wei Wang <weiwan@google.com>,
+        Soheil Hassas Yeganeh <soheil@google.com>,
+        Roopa Prabhu <roopa@cumulusnetworks.com>,
+        netdev <netdev@vger.kernel.org>, linux-kernel@vger.kernel.org,
+        Yuchung Cheng <ycheng@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Apr 21, 2021 at 03:05:40PM +0200, Oleksij Rempel wrote:
-> Starting with patch:
-> a8b659e7ff75 ("net: dsa: act as passthrough for bridge port flags")
-> 
-> drivers without "port_bridge_flags" callback will fail to join the bridge.
-> Looking at the code, -EOPNOTSUPP seems to be the proper return value,
-> which makes at least microchip and atheros switches work again.
-> 
-> Fixes: a8b659e7ff75 ("net: dsa: act as passthrough for bridge port flags")
-> Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
-> ---
->  net/dsa/port.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/net/dsa/port.c b/net/dsa/port.c
-> index 01e30264b25b..6379d66a6bb3 100644
-> --- a/net/dsa/port.c
-> +++ b/net/dsa/port.c
-> @@ -550,7 +550,7 @@ int dsa_port_bridge_flags(const struct dsa_port *dp,
->  	struct dsa_switch *ds = dp->ds;
->  
->  	if (!ds->ops->port_bridge_flags)
-> -		return -EINVAL;
-> +		return -EOPNOTSUPP;
->  
->  	return ds->ops->port_bridge_flags(ds, dp->index, flags, extack);
->  }
-> -- 
-> 2.29.2
-> 
+(Resending in plain text mode)
 
-The Fixes: tag should be:
+Surely there is a way to adapt tcp_tso_should_defer(), it is trying to
+solve a similar problem.
 
-Fixes: 5961d6a12c13 ("net: dsa: inherit the actual bridge port flags at join time")
+If I were to implement PLPMTUD today, I would more deeply entwine it
+into TCP's support for TSO.  e.g. successful deferring segments
+sometimes enables TSO and sometimes enables PLPMTUD.
 
-What we return to the bridge is -EINVAL, via dsa_port_pre_bridge_flags()
-(it is a two-step calling convention thing). But dsa_port_bridge_flags()
-should never return that -EINVAL to the bridge, because the bridge
-should just stop if the "pre" call returned an error.
+But there is a deeper question:  John Heffner and I invested a huge
+amount of energy in trying to make PLPMTUD work for opportunistic
+Jumbo discovery, only to discover that we had moved the problem down
+to the device driver/nic, were it isn't so readily solvable.
 
-So the -EINVAL return value from dsa_port_bridge_flags() is just for
-callers who don't bother to call "pre".
+The driver needs to carve nic buffer memory before it can communicate
+with a switch (to either ask or measure the MTU), and once it has done
+that it needs to either re-carve the memory or run with suboptimal
+carving.  Both of these are problematic.
 
-To be honest I don't know why I wrote dsa_port_inherit_brport_flags this
-way. It might be better to just do:
+There is also a problem that many link technologies will
+non-deterministically deliver jumbo frames at greatly increased error
+rates.   This issue requires a long conversation on it's own.
 
------------------------------[cut here]-----------------------------
-diff --git a/net/dsa/port.c b/net/dsa/port.c
-index 01e30264b25b..d5e227a77fbc 100644
---- a/net/dsa/port.c
-+++ b/net/dsa/port.c
-@@ -138,8 +138,12 @@ static int dsa_port_inherit_brport_flags(struct dsa_port *dp,
- 		if (br_port_flag_is_set(brport_dev, BIT(flag)))
- 			flags.val = BIT(flag);
- 
-+		err = dsa_port_pre_bridge_flags(dp, flags, extack);
-+		if (err == -EINVAL)
-+			continue;
-+
- 		err = dsa_port_bridge_flags(dp, flags, extack);
--		if (err && err != -EOPNOTSUPP)
-+		if (err)
- 			return err;
- 	}
- 
-@@ -159,8 +163,12 @@ static void dsa_port_clear_brport_flags(struct dsa_port *dp)
- 		flags.mask = BIT(flag);
- 		flags.val = val & BIT(flag);
- 
-+		err = dsa_port_pre_bridge_flags(dp, flags, NULL);
-+		if (err == -EINVAL)
-+			continue;
-+
- 		err = dsa_port_bridge_flags(dp, flags, NULL);
--		if (err && err != -EOPNOTSUPP)
-+		if (err)
- 			dev_err(dp->ds->dev,
- 				"failed to clear bridge port flag %lu: %pe\n",
- 				flags.val, ERR_PTR(err));
------------------------------[cut here]-----------------------------
+Thanks,
+--MM--
+The best way to predict the future is to create it.  - Alan Kay
+
+We must not tolerate intolerance;
+       however our response must be carefully measured:
+            too strong would be hypocritical and risks spiraling out of control;
+            too weak risks being mistaken for tacit approval.
+
+
+On Wed, Apr 21, 2021 at 5:48 AM Neal Cardwell <ncardwell@google.com> wrote:
+>
+> On Wed, Apr 21, 2021 at 6:21 AM Leonard Crestez <cdleonard@gmail.com> wrote:
+> >
+> > According to RFC4821 Section 7.4 "Protocols MAY delay sending non-probes
+> > in order to accumulate enough data" but linux almost never does that.
+> >
+> > Linux waits for probe_size + (1 + retries) * mss_cache to be available
+> > in the send buffer and if that condition is not met it will send anyway
+> > using the current MSS. The feature can be made to work by sending very
+> > large chunks of data from userspace (for example 128k) but for small writes
+> > on fast links probes almost never happen.
+> >
+> > This patch tries to implement the "MAY" by adding an extra flag
+> > "wait_data" to icsk_mtup which is set to 1 if a probe is possible but
+> > insufficient data is available. Then data is held back in
+> > tcp_write_xmit until a probe is sent, probing conditions are no longer
+> > met, or 500ms pass.
+> >
+> > Signed-off-by: Leonard Crestez <cdleonard@gmail.com>
+> >
+> > ---
+> >  Documentation/networking/ip-sysctl.rst |  4 ++
+> >  include/net/inet_connection_sock.h     |  7 +++-
+> >  include/net/netns/ipv4.h               |  1 +
+> >  include/net/tcp.h                      |  2 +
+> >  net/ipv4/sysctl_net_ipv4.c             |  7 ++++
+> >  net/ipv4/tcp_ipv4.c                    |  1 +
+> >  net/ipv4/tcp_output.c                  | 54 ++++++++++++++++++++++++--
+> >  7 files changed, 71 insertions(+), 5 deletions(-)
+> >
+> > My tests are here: https://github.com/cdleonard/test-tcp-mtu-probing
+> >
+> > This patch makes the test pass quite reliably with
+> > ICMP_BLACKHOLE=1 TCP_MTU_PROBING=1 IPERF_WINDOW=256k IPERF_LEN=8k while
+> > before it only worked with much higher IPERF_LEN=256k
+> >
+> > In my loopback tests I also observed another issue when tcp_retries
+> > increases because of SACKReorder. This makes the original problem worse
+> > (since the retries amount factors in buffer requirement) and seems to be
+> > unrelated issue. Maybe when loss happens due to MTU shrinkage the sender
+> > sack logic is confused somehow?
+> >
+> > I know it's towards the end of the cycle but this is mostly just intended for
+> > discussion.
+>
+> Thanks for raising the question of how to trigger PMTU probes more often!
+>
+> AFAICT this approach would cause unacceptable performance impacts by
+> often injecting unnecessary 500ms delays when there is no need to do
+> so.
+>
+> If the goal is to increase the frequency of PMTU probes, which seems
+> like a valid goal, I would suggest that we rethink the Linux heuristic
+> for triggering PMTU probes in the light of the fact that the loss
+> detection mechanism is now RACK-TLP, which provides quick recovery in
+> a much wider variety of scenarios.
+>
+> After all, https://tools.ietf.org/html/rfc4821#section-7.4 says:
+>
+>    In addition, the timely loss detection algorithms in most protocols
+>    have pre-conditions that SHOULD be satisfied before sending a probe.
+>
+> And we know that the "timely loss detection algorithms" have advanced
+> since this RFC was written in 2007.
+>
+> You mention:
+> > Linux waits for probe_size + (1 + retries) * mss_cache to be available
+>
+> The code in question seems to be:
+>
+>   size_needed = probe_size + (tp->reordering + 1) * tp->mss_cache;
+>
+> How about just changing this to:
+>
+>   size_needed = probe_size + tp->mss_cache;
+>
+> The rationale would be that if that amount of data is available, then
+> the sender can send one probe and one following current-mss-size
+> packet. If the path MTU has not increased to allow the probe of size
+> probe_size to pass through the network, then the following
+> current-mss-size packet will likely pass through the network, generate
+> a SACK, and trigger a RACK fast recovery 1/4*min_rtt later, when the
+> RACK reorder timer fires.
+>
+> A secondary rationale for this heuristic would be: if the flow never
+> accumulates roughly two packets worth of data, then does the flow
+> really need a bigger packet size?
+>
+> IMHO, just reducing the size_needed seems far preferable to needlessly
+> injecting 500ms delays.
+>
+> best,
+> neal
