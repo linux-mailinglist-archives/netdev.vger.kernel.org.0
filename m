@@ -2,173 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 241D8366682
-	for <lists+netdev@lfdr.de>; Wed, 21 Apr 2021 09:54:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8AFAA366689
+	for <lists+netdev@lfdr.de>; Wed, 21 Apr 2021 09:54:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237449AbhDUHyo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 21 Apr 2021 03:54:44 -0400
-Received: from mx3.molgen.mpg.de ([141.14.17.11]:60823 "EHLO mx1.molgen.mpg.de"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S234659AbhDUHyn (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 21 Apr 2021 03:54:43 -0400
-Received: from [192.168.0.3] (ip5f5ae88d.dynamic.kabel-deutschland.de [95.90.232.141])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        (Authenticated sender: pmenzel)
-        by mx.molgen.mpg.de (Postfix) with ESMTPSA id 7B9B620647B7A;
-        Wed, 21 Apr 2021 09:54:07 +0200 (CEST)
-Subject: Re: [Intel-wired-lan] [PATCH V2 net] ice: Re-organizes reqstd/avail
- {R, T}XQ check/code for efficiency+readability
-To:     Salil Mehta <salil.mehta@huawei.com>
-Cc:     linuxarm@openeuler.org, netdev@vger.kernel.org,
-        linuxarm@huawei.com, linux-kernel@vger.kernel.org,
-        intel-wired-lan@lists.osuosl.org,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-References: <20210413224446.16612-1-salil.mehta@huawei.com>
- <7974e665-73bd-401c-f023-9da568e1dffc@molgen.mpg.de>
- <418702bdb5244eb4811a2a1a536c55c0@huawei.com>
-From:   Paul Menzel <pmenzel@molgen.mpg.de>
-Message-ID: <9335975a-ef19-863c-005a-d460eac83e03@molgen.mpg.de>
-Date:   Wed, 21 Apr 2021 09:54:07 +0200
+        id S235604AbhDUHzW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 21 Apr 2021 03:55:22 -0400
+Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:60720 "EHLO
+        mx0b-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S231463AbhDUHzV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 21 Apr 2021 03:55:21 -0400
+Received: from pps.filterd (m0127361.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 13L7YwmQ184653;
+        Wed, 21 Apr 2021 03:54:28 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=subject : to : cc :
+ references : from : message-id : date : mime-version : in-reply-to :
+ content-type : content-transfer-encoding; s=pp1;
+ bh=WOE3R1b3R7c75tHsejOc95dkQqk3TOGxsEnOEyMupvQ=;
+ b=WlqwUZO58DjQwhOl6LwuyEUnCDzZSbmCCu5fnFchJoT+PEM5FRjFq/a0WI3GTeXNJmz8
+ 4KXhzqNfAYtjr55+ZezxauSxtt9tNk4LqyJOt7FX60uSwaX5nWvySLFEfnBCXVKxTklU
+ 36YgWToclpt0zNOk6VekfvZsLhxWNxsMLKapYSqVPYChXq900quhXuJ83BxQ0b0YtMkB
+ lstuA4mXkep+Cwj/R++Lcd14ev5d8MGYttG32k3yMNCBN6xFUsAmWMUwP0qM8CryZ/We
+ CgApxJowYz9QH9yTrK+uXFL5fsbLv8/DA1I1UP4+D8zN9A2ZBcDHCAlS79cz1RPk2rjq DQ== 
+Received: from ppma04dal.us.ibm.com (7a.29.35a9.ip4.static.sl-reverse.com [169.53.41.122])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 382espa62d-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 21 Apr 2021 03:54:28 -0400
+Received: from pps.filterd (ppma04dal.us.ibm.com [127.0.0.1])
+        by ppma04dal.us.ibm.com (8.16.0.43/8.16.0.43) with SMTP id 13L7gdJi028644;
+        Wed, 21 Apr 2021 07:54:27 GMT
+Received: from b03cxnp08027.gho.boulder.ibm.com (b03cxnp08027.gho.boulder.ibm.com [9.17.130.19])
+        by ppma04dal.us.ibm.com with ESMTP id 37yqaa0edu-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 21 Apr 2021 07:54:27 +0000
+Received: from b03ledav001.gho.boulder.ibm.com (b03ledav001.gho.boulder.ibm.com [9.17.130.232])
+        by b03cxnp08027.gho.boulder.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 13L7sQnP31261332
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Wed, 21 Apr 2021 07:54:26 GMT
+Received: from b03ledav001.gho.boulder.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 4E7DB6E04C;
+        Wed, 21 Apr 2021 07:54:26 +0000 (GMT)
+Received: from b03ledav001.gho.boulder.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 3A6536E050;
+        Wed, 21 Apr 2021 07:54:24 +0000 (GMT)
+Received: from [9.160.109.21] (unknown [9.160.109.21])
+        by b03ledav001.gho.boulder.ibm.com (Postfix) with ESMTP;
+        Wed, 21 Apr 2021 07:54:23 +0000 (GMT)
+Subject: Re: [PATCH V2 net] ibmvnic: Continue with reset if set link down
+ failed
+To:     Lijun Pan <ljp@linux.vnet.ibm.com>, Dany Madden <drt@linux.ibm.com>
+Cc:     David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Tom Falcon <tlfalcon@linux.ibm.com>, netdev@vger.kernel.org,
+        paulus@samba.org, Sukadev Bhattiprolu <sukadev@linux.ibm.com>,
+        linuxppc-dev@lists.ozlabs.org
+References: <20210420213517.24171-1-drt@linux.ibm.com>
+ <60C99F56-617D-455B-9ACF-8CE1EED64D92@linux.vnet.ibm.com>
+From:   Rick Lindsley <ricklind@linux.vnet.ibm.com>
+Message-ID: <51a63be8-9b24-3f72-71d0-111959649059@linux.vnet.ibm.com>
+Date:   Wed, 21 Apr 2021 00:54:22 -0700
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.10.0
+ Thunderbird/78.9.0
 MIME-Version: 1.0
-In-Reply-To: <418702bdb5244eb4811a2a1a536c55c0@huawei.com>
+In-Reply-To: <60C99F56-617D-455B-9ACF-8CE1EED64D92@linux.vnet.ibm.com>
 Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: qoGb_kptybPMowIAmvtbiHa6dhgYhfzA
+X-Proofpoint-ORIG-GUID: qoGb_kptybPMowIAmvtbiHa6dhgYhfzA
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.391,18.0.761
+ definitions=2021-04-21_02:2021-04-21,2021-04-21 signatures=0
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxscore=0 malwarescore=0
+ impostorscore=0 bulkscore=0 adultscore=0 mlxlogscore=999 phishscore=0
+ clxscore=1011 suspectscore=0 lowpriorityscore=0 spamscore=0
+ priorityscore=1501 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2104060000 definitions=main-2104210060
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-[CC: Remove Jeff, as email is rejected]
-
-Dear Salil,
-
-
-Am 21.04.21 um 09:41 schrieb Salil Mehta:
->> From: Paul Menzel [mailto:pmenzel@molgen.mpg.de]
->> Sent: Wednesday, April 21, 2021 6:36 AM
-
-[…]
-
->> In the git commit message summary, could you please use imperative mood [1]?
+On 4/20/21 2:42 PM, Lijun Pan wrote:
 > 
-> No issues. There is always a scope of improvement.
-> 
->>> Re-organize reqstd/avail {R, T}XQ check/code for efficiency+readability
->>
->> It’s a bit long though. Maybe:
->>
->> Avoid unnecessary assignment with user specified {R,T}XQs
-> 
-> Umm..above conveys the wrong meaning as this is not what patch is doing.
-> 
-> If you see the code, in the presence of the user specified {R,T}XQs it
-> avoids fetching available {R,T}XQ count.
-> 
-> What about below?
-> 
-> "Avoid unnecessary avail_{r,t}xq assignments if user has specified Qs"
+> This v2 does not adddress the concerns mentioned in v1.
+> And I think it is better to exit with error from do_reset, and schedule a thorough
+> do_hard_reset if the the adapter is already in unstable state.
 
-Sounds good, still a little long. Maybe:
+But the point is that the testing and analysis has indicated that doing a full
+hard reset is not necessary. We are about to take the very action which will fix
+this situation, but currently do not.
 
-> Avoid unnecessary avail_{r,t}xq assignments with user specified Qs
+Please describe the advantage in deferring it further by routing it through
+do_hard_reset().  I don't see one.
 
->> Am 14.04.21 um 00:44 schrieb Salil Mehta:
->>> If user has explicitly requested the number of {R,T}XQs, then it is
->>> unnecessary to get the count of already available {R,T}XQs from the
->>> PF avail_{r,t}xqs bitmap. This value will get overridden by user specified
->>> value in any case.
->>>
->>> This patch does minor re-organization of the code for improving the flow
->>> and readabiltiy. This scope of improvement was found during the review of
->>
->> readabil*it*y
-> 
-> Thanks. Missed that earlier. My shaky fingers :(
-> 
->>> the ICE driver code.
->>>
->>> FYI, I could not test this change due to unavailability of the hardware.
->>> It would be helpful if somebody can test this patch and provide Tested-by
->>> Tag. Many thanks!
->>
->> This should go outside the commit message (below the --- for example).
-> 
-> Agreed.
-> 
->>> Fixes: 87324e747fde ("ice: Implement ethtool ops for channels")
->>
->> Did you check the behavior before is actually a bug? Or is it just for
->> the detection heuristic for commits to be applied to the stable series?
-> 
-> Right, later was the idea.
->   
->>> Cc: intel-wired-lan@lists.osuosl.org
->>> Cc: Jeff Kirsher <jeffrey.t.kirsher@intel.com>
->>> Signed-off-by: Salil Mehta <salil.mehta@huawei.com>
->>> --
->>> Change V1->V2
->>>    (*) Fixed the comments from Anthony Nguyen(Intel)
->>>        Link: https://lkml.org/lkml/2021/4/12/1997
->>> ---
->>>    drivers/net/ethernet/intel/ice/ice_lib.c | 14 ++++++++------
->>>    1 file changed, 8 insertions(+), 6 deletions(-)
->>>
->>> diff --git a/drivers/net/ethernet/intel/ice/ice_lib.c b/drivers/net/ethernet/intel/ice/ice_lib.c
->>> index d13c7fc8fb0a..d77133d6baa7 100644
->>> --- a/drivers/net/ethernet/intel/ice/ice_lib.c
->>> +++ b/drivers/net/ethernet/intel/ice/ice_lib.c
->>> @@ -161,12 +161,13 @@ static void ice_vsi_set_num_qs(struct ice_vsi *vsi, u16 vf_id)
->>>
->>>    	switch (vsi->type) {
->>>    	case ICE_VSI_PF:
->>> -		vsi->alloc_txq = min3(pf->num_lan_msix,
->>> -				      ice_get_avail_txq_count(pf),
->>> -				      (u16)num_online_cpus());
->>>    		if (vsi->req_txq) {
->>>    			vsi->alloc_txq = vsi->req_txq;
->>>    			vsi->num_txq = vsi->req_txq;
->>> +		} else {
->>> +			vsi->alloc_txq = min3(pf->num_lan_msix,
->>> +					      ice_get_avail_txq_count(pf),
->>> +					      (u16)num_online_cpus());
->>>    		}
->>
->> I am curious, did you check the compiler actually creates different
->> code, or did it notice the inefficiency by itself and optimized it already?
-> 
-> I have not looked into that detail but irrespective of what compiler generates
-> I would like to keep the code in a shape which is more efficient and more readable.
-> 
-> I do understand in certain cases we have to do tradeoff between efficiency
-> and readability but I do not see that here.
-
-I agree, as *efficiency* is mentioned several times, I assume it was 
-tested. Thank you for the clarification.
-
->>>    		pf->num_lan_tx = vsi->alloc_txq;
->>> @@ -175,12 +176,13 @@ static void ice_vsi_set_num_qs(struct ice_vsi *vsi, u16 vf_id)
->>>    		if (!test_bit(ICE_FLAG_RSS_ENA, pf->flags)) {
->>>    			vsi->alloc_rxq = 1;
->>>    		} else {
->>> -			vsi->alloc_rxq = min3(pf->num_lan_msix,
->>> -					      ice_get_avail_rxq_count(pf),
->>> -					      (u16)num_online_cpus());
->>>    			if (vsi->req_rxq) {
->>>    				vsi->alloc_rxq = vsi->req_rxq;
->>>    				vsi->num_rxq = vsi->req_rxq;
->>> +			} else {
->>> +				vsi->alloc_rxq = min3(pf->num_lan_msix,
->>> +						      ice_get_avail_rxq_count(pf),
->>> +						      (u16)num_online_cpus());
->>>    			}
->>>    		}
->>>
-
-
-Kind regards,
-
-Paul
+Rick
