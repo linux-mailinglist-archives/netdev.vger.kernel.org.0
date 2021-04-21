@@ -2,185 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BAC85366418
-	for <lists+netdev@lfdr.de>; Wed, 21 Apr 2021 05:35:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 29B6D366437
+	for <lists+netdev@lfdr.de>; Wed, 21 Apr 2021 06:01:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234734AbhDUDfj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 20 Apr 2021 23:35:39 -0400
-Received: from szxga06-in.huawei.com ([45.249.212.32]:17385 "EHLO
-        szxga06-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233874AbhDUDfi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 20 Apr 2021 23:35:38 -0400
-Received: from DGGEMS403-HUB.china.huawei.com (unknown [172.30.72.58])
-        by szxga06-in.huawei.com (SkyGuard) with ESMTP id 4FQ5jZ5GNJzlYgk;
-        Wed, 21 Apr 2021 11:33:06 +0800 (CST)
-Received: from [10.174.177.26] (10.174.177.26) by
- DGGEMS403-HUB.china.huawei.com (10.3.19.203) with Microsoft SMTP Server id
- 14.3.498.0; Wed, 21 Apr 2021 11:34:55 +0800
-Subject: Re: [PATCH] bonding: 3ad: update slave arr after initialize
-To:     Jay Vosburgh <jay.vosburgh@canonical.com>
-CC:     <vfalico@gmail.com>, <andy@greyhouse.net>, <davem@davemloft.net>,
-        <kuba@kernel.org>, <netdev@vger.kernel.org>, <security@kernel.org>,
-        <linux-kernel@vger.kernel.org>, <xuhanbing@huawei.com>,
-        <wangxiaogang3@huawei.com>
-References: <1618537982-454-1-git-send-email-jinyiting@huawei.com>
- <17733.1618547307@famine> <1165c45f-ae7f-48c1-5c65-a879c7bf978a@huawei.com>
- <492.1618895040@famine>
-From:   jin yiting <jinyiting@huawei.com>
-Message-ID: <612b5e32-ea11-428e-0c17-e2977185f045@huawei.com>
-Date:   Wed, 21 Apr 2021 11:34:55 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.9.0
+        id S234827AbhDUD64 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 20 Apr 2021 23:58:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59514 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234713AbhDUD6u (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 20 Apr 2021 23:58:50 -0400
+Received: from mail-vs1-xe32.google.com (mail-vs1-xe32.google.com [IPv6:2607:f8b0:4864:20::e32])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB4B0C06174A;
+        Tue, 20 Apr 2021 20:57:49 -0700 (PDT)
+Received: by mail-vs1-xe32.google.com with SMTP id 66so20483643vsk.9;
+        Tue, 20 Apr 2021 20:57:49 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=E8CAy2FOK5MP3YhjQcRTqJ8/XAR13yrlpgrtJ1kyYpw=;
+        b=XHhQIN1lvZ4138+FUR8wl1tywnXMlqlZa1xROykbs4jcqY0YZWfgoKQEz4WeRDxMJT
+         ebX5wqmz/mmtPqOyG8qJf680wOLzZQLMgzIOHlUam3rDdV5NOtrtO0DFVXwRoE7z7n9h
+         75+cldGA8B0vpPVZFuOdSPX/qHB0vorj7ZgPwkYkD39/OW2rF42AhKFCR2YFXIw5erwz
+         ckDAn1ZiDyMhpWeC2nb0askuCmLU5ueBDFfodc1dvgAmJ4YADLv8lyv2pkL9rGpse9UL
+         FCDyfe44aw8H1uAh/iwVaGg8ivEd7AJ82URhsYgNwG3QrYINWl8DfCXfpP43Lu4/njEN
+         cGqw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=E8CAy2FOK5MP3YhjQcRTqJ8/XAR13yrlpgrtJ1kyYpw=;
+        b=GnkVEXBITBWfXy17ZtAbPT9u9HmP6djpkiOic/e7h/GZCkqEy8DJoaAxueer3aDgpw
+         Z2fe6GsaYEBjq/Zrs/sKdyQJhZutqC7HK3LbNrF1EvagEOB/X31Jdh8NLuJYx/0AMV3C
+         mucG5VJaT+1G2bSP1qzT+C0t0iJlWLSi2UBKyblyMCCXOElqz9FshNmZKCvFQRnmY1ps
+         zEf388QKqbnI5ciQ5+Sb5+1sX+tWFNFc/+1pRnH3h/lh/4SJIF9jrKjajdbyvka5D2Yu
+         qHg14tSAm+aB+5VPG7E2xvXWn+vYoNXH9EadFSXfJVX6HbcXiEH0pb43h36pinH/AyJC
+         EBfw==
+X-Gm-Message-State: AOAM531eb6+lYfKkEEzTJVv4ik++590fyO3saeqtO0KV/d0NbWDjx8qR
+        k/e1iS23dtkj4yELH6pu/vk=
+X-Google-Smtp-Source: ABdhPJw88bup3a30wXpbOE9m1dlVtHV4iQdDEaZ5lwRKjjDFqk008wuxoqLHYrs9Pc/RmqKhSTrTTQ==
+X-Received: by 2002:a67:1e04:: with SMTP id e4mr23338871vse.52.1618977468911;
+        Tue, 20 Apr 2021 20:57:48 -0700 (PDT)
+Received: from localhost.localdomain ([87.101.93.188])
+        by smtp.gmail.com with ESMTPSA id p8sm158389vsg.26.2021.04.20.20.57.45
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 20 Apr 2021 20:57:48 -0700 (PDT)
+From:   Jarvis Jiang <jarvis.w.jiang@gmail.com>
+To:     davem@davemloft.net, kuba@kernel.org, loic.poulain@linaro.org
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Jarvis Jiang <jarvis.w.jiang@gmail.com>
+Subject: [PATCH v1] net: Qcom WWAN control driver: fix the rx_budget was eaten incorrectly
+Date:   Tue, 20 Apr 2021 20:56:16 -0700
+Message-Id: <20210421035616.14540-1-jarvis.w.jiang@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-In-Reply-To: <492.1618895040@famine>
-Content-Type: text/plain; charset="gbk"; format=flowed
 Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.174.177.26]
-X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+mhi_wwan_rx_budget_dec() should check the value of mhiwwan->rx_budget
+before the decrement, not the value after decrement.
 
+When mhiwwan->rx_budget = 1, mhi_wwan_rx_budget_dec() will always return
+false, which will cause the mhi_wwan_ctrl_refill_work() not to queue rx
+buffers to transfer ring any more, and rx will be stuck.
 
-ÔÚ 2021/4/20 13:04, Jay Vosburgh Ð´µÀ:
-> jin yiting <jinyiting@huawei.com> wrote:
-> [...]
->>> 	The described issue is a race condition (in that
->>> ad_agg_selection_logic clears agg->is_active under mode_lock, but
->>> bond_open -> bond_update_slave_arr is inspecting agg->is_active outside
->>> the lock).  I don't see how the above change will reliably manage this;
->>> the real issue looks to be that bond_update_slave_arr is committing
->>> changes to the array (via bond_reset_slave_arr) based on a racy
->>> inspection of the active aggregator state while it is in flux.
->>>
->>> 	Also, the description of the issue says "The best aggregator in
->>> ad_agg_selection_logic has not changed, no need to update slave arr,"
->>> but the change above does the opposite, and will set update_slave_arr
->>> when the aggregator has not changed (update_slave_arr remains false at
->>> return of ad_agg_selection_logic).
->>>
->>> 	I believe I understand the described problem, but I don't see
->>> how the patch fixes it.  I suspect (but haven't tested) that the proper
->>> fix is to acquire mode_lock in bond_update_slave_arr while calling
->>> bond_3ad_get_active_agg_info to avoid conflict with the state machine.
->>>
->>> 	-J
->>>
->>> ---
->>> 	-Jay Vosburgh, jay.vosburgh@canonical.com
->>> .
->>>
->>
->> 	Thank you for your reply. The last patch does have redundant
->> update slave arr.Thank you for your correction.
->>
->>         As you said, holding mode_lock in bond_update_slave_arr while
->> calling bond_3ad_get_active_agg_info can avoid conflictwith the state
->> machine. I have tested this patch, with ifdown/ifup operations for bond or
->> slaves.
->>
->>         But bond_update_slave_arr is expected to hold RTNL only and NO
->> other lock. And it have WARN_ON(lockdep_is_held(&bond->mode_lock)); in
->> bond_update_slave_arr. I'm not sure that holding mode_lock in
->> bond_update_slave_arr while calling bond_3ad_get_active_agg_info is a
->> correct action.
-> 
-> 	That WARN_ON came up in discussion recently, and my opinion is
-> that it's incorrect, and is trying to insure bond_update_slave_arr is
-> safe for a potential sleep when allocating memory.
-> 
-> https://lore.kernel.org/netdev/20210322123846.3024549-1-maximmi@nvidia.com/
-> 
-> 	The original authors haven't replied, so I would suggest you
-> remove the WARN_ON and the surrounding CONFIG_LOCKDEP ifdefs as part of
-> your patch and replace it with a call to might_sleep.
-> 
-> 	The other callers of bond_3ad_get_active_agg_info are generally
-> obtaining the state in order to report it to user space, so I think it's
-> safe to leave those calls not holding the mode_lock.  The race is still
-> there, but the data returned to user space is a snapshot and so may
-> reflect an incomplete state during a transition.  Further, having the
-> inspection functions acquire the mode_lock permits user space to spam
-> the lock with little effort.
-> 
-> 	-J
-> 
->> diff --git a/drivers/net/bonding/bond_main.c
->> b/drivers/net/bonding/bond_main.c
->> index 74cbbb2..db988e5 100644
->> --- a/drivers/net/bonding/bond_main.c
->> +++ b/drivers/net/bonding/bond_main.c
->> @@ -4406,7 +4406,9 @@ int bond_update_slave_arr(struct bonding *bond,
->> struct slave *skipslave)
->>     if (BOND_MODE(bond) == BOND_MODE_8023AD) {
->>         struct ad_info ad_info;
->>
->> +       spin_lock_bh(&bond->mode_lock);
->>         if (bond_3ad_get_active_agg_info(bond, &ad_info)) {
->> +           spin_unlock_bh(&bond->mode_lock);
->>             pr_debug("bond_3ad_get_active_agg_info failed\n");
->>             /* No active aggragator means it's not safe to use
->>              * the previous array.
->> @@ -4414,6 +4416,7 @@ int bond_update_slave_arr(struct bonding *bond,
->> struct slave *skipslave)
->>             bond_reset_slave_arr(bond);
->>             goto out;
->>         }
->> +       spin_unlock_bh(&bond->mode_lock);
->>         agg_id = ad_info.aggregator_id;
->>     }
->>     bond_for_each_slave(bond, slave, iter) {
-> 
-> ---
-> 	-Jay Vosburgh, jay.vosburgh@canonical.com
-> .
-> 
+This patch was tested with Ubuntu 20.04 X86_64 PC as host
 
-	I have remove the WARN_ON and the surrounding CONFIG_LOCKDEP ifdefs in 
-the new patch and replace it with a call to might_sleep.
+Signed-off-by: Jarvis Jiang <jarvis.w.jiang@gmail.com>
+---
+ drivers/net/wwan/mhi_wwan_ctrl.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-	And I will send a new patch again.
-
-	Thank you for your guidance.
-
-
-diff --git a/drivers/net/bonding/bond_main.c 
-b/drivers/net/bonding/bond_main.c
-index 74cbbb2..83ef62d 100644
---- a/drivers/net/bonding/bond_main.c
-+++ b/drivers/net/bonding/bond_main.c
-@@ -4391,9 +4391,7 @@ int bond_update_slave_arr(struct bonding *bond, 
-struct slave *skipslave)
-  	int agg_id = 0;
-  	int ret = 0;
-
--#ifdef CONFIG_LOCKDEP
--	WARN_ON(lockdep_is_held(&bond->mode_lock));
--#endif
-+	might_sleep();
-
-  	usable_slaves = kzalloc(struct_size(usable_slaves, arr,
-  					    bond->slave_cnt), GFP_KERNEL);
-@@ -4406,7 +4404,9 @@ int bond_update_slave_arr(struct bonding *bond, 
-struct slave *skipslave)
-  	if (BOND_MODE(bond) == BOND_MODE_8023AD) {
-  		struct ad_info ad_info;
-
-+		spin_lock_bh(&bond->mode_lock);
-  		if (bond_3ad_get_active_agg_info(bond, &ad_info)) {
-+			spin_unlock_bh(&bond->mode_lock);
-  			pr_debug("bond_3ad_get_active_agg_info failed\n");
-  			/* No active aggragator means it's not safe to use
-  			 * the previous array.
-@@ -4414,6 +4414,7 @@ int bond_update_slave_arr(struct bonding *bond, 
-struct slave *skipslave)
-  			bond_reset_slave_arr(bond);
-  			goto out;
-  		}
-+		spin_unlock_bh(&bond->mode_lock);
-  		agg_id = ad_info.aggregator_id;
-  	}
-  	bond_for_each_slave(bond, slave, iter) {
+diff --git a/drivers/net/wwan/mhi_wwan_ctrl.c b/drivers/net/wwan/mhi_wwan_ctrl.c
+index 11475ade4be5..721edf5a238f 100644
+--- a/drivers/net/wwan/mhi_wwan_ctrl.c
++++ b/drivers/net/wwan/mhi_wwan_ctrl.c
+@@ -56,12 +56,12 @@ static bool mhi_wwan_rx_budget_dec(struct mhi_wwan_dev *mhiwwan)
+ 
+ 	spin_lock(&mhiwwan->rx_lock);
+ 
+-	if (mhiwwan->rx_budget)
+-		mhiwwan->rx_budget--;
+-
+ 	if (mhiwwan->rx_budget && test_bit(MHI_WWAN_RX_REFILL, &mhiwwan->flags))
+ 		ret = true;
+ 
++	if (mhiwwan->rx_budget)
++		mhiwwan->rx_budget--;
++
+ 	spin_unlock(&mhiwwan->rx_lock);
+ 
+ 	return ret;
 -- 
+2.25.1
 
