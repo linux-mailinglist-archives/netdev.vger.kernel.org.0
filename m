@@ -2,62 +2,69 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 795A3367158
-	for <lists+netdev@lfdr.de>; Wed, 21 Apr 2021 19:30:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F1469367155
+	for <lists+netdev@lfdr.de>; Wed, 21 Apr 2021 19:30:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244742AbhDURaq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 21 Apr 2021 13:30:46 -0400
-Received: from mail.kernel.org ([198.145.29.99]:49206 "EHLO mail.kernel.org"
+        id S244671AbhDURan (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 21 Apr 2021 13:30:43 -0400
+Received: from mail.kernel.org ([198.145.29.99]:49212 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S239320AbhDURam (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S242278AbhDURam (ORCPT <rfc822;netdev@vger.kernel.org>);
         Wed, 21 Apr 2021 13:30:42 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id E44FC61459;
+Received: by mail.kernel.org (Postfix) with ESMTPS id EFEC66145B;
         Wed, 21 Apr 2021 17:30:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1619026208;
-        bh=qyLLDcGhPFeBmxu3AtwJwPJ0LplI1y7ufowgb7Go+7E=;
+        s=k20201202; t=1619026209;
+        bh=J8xoYl+0RbPoz5BZ3TkAvRepbtb0Z1k09twUtzQx6BI=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=vEEvvqUyT/pUiFoWpWyiOfXgUVxIAf3QKXb0NJ7L7aciGK0Hpy1ftJ07+j3ruw6LS
-         HsIsRoWnC3Wq+zt/AkR7weKhw5Nehu4f2KGwGV5SHK3SfT6VfvTl5e65IEgCMhSqef
-         I8fKGuNPVmPiZKqdHWT2LlXY0cp4iUg6yAsE1R6VZ2oTacVbk5lSvSHnv3q+30tbRK
-         +ScQie79wJrevC0NNyfM7a8Er6OcLNxSEn9JGYoO8jlo8AGWjqgpR5CR6N9Sf+FkcK
-         SZfza2ncUMy/H67PZ+h/xMYjn64+3Ie+j/F1zCskM4aiU7y3rbGikIdYKk8p4T16AJ
-         WzRYceiWjCVMg==
+        b=O39OhVzRiMhMW5Zi45/0ohBg9ssf911IjqOv9D77rgIAIDXfwaP5G063PRyk5Yf6X
+         WaNCJpS388idbYrtuC9BJEXrBQBBbkzHBc8qqjrY/KtZibOG54kXHT9FPEg/wf6XHw
+         szwuFmNEla30bIjpDiS3wX+6uixc8SEbEpzNVziFwzVY2ez6c59DRpv5Fbg1ABBSAw
+         EzLgqa+DmaCscALZpoMKONegBqxGOB37SonYJePCKUoUCT0a1VNjfdp5vTabCPn7Af
+         aO2RevnZnQrp/Qws3pseFfRAO66mZ1FVmnW6l89KahqlhRI+y8+AxE/huvAa5N1phx
+         FhD71J1NUhiNg==
 Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id D84C560A39;
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id E35E760A52;
         Wed, 21 Apr 2021 17:30:08 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: pull-request: wireless-drivers-2021-04-21
+Subject: Re: [PATCH net] nfp: devlink: initialize the devlink port attribute
+ "lanes"
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <161902620888.9844.8449355059297880345.git-patchwork-notify@kernel.org>
+Message-Id: <161902620892.9844.3758040141120463484.git-patchwork-notify@kernel.org>
 Date:   Wed, 21 Apr 2021 17:30:08 +0000
-References: <20210421090335.7A50CC4338A@smtp.codeaurora.org>
-In-Reply-To: <20210421090335.7A50CC4338A@smtp.codeaurora.org>
-To:     Kalle Valo <kvalo@codeaurora.org>
-Cc:     netdev@vger.kernel.org, linux-wireless@vger.kernel.org
+References: <20210421092415.13094-1-simon.horman@netronome.com>
+In-Reply-To: <20210421092415.13094-1-simon.horman@netronome.com>
+To:     Simon Horman <simon.horman@netronome.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
+        oss-drivers@netronome.com, yinjun.zhang@corigine.com,
+        louis.peens@corigine.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 Hello:
 
-This pull request was applied to netdev/net.git (refs/heads/master):
+This patch was applied to netdev/net.git (refs/heads/master):
 
-On Wed, 21 Apr 2021 09:03:35 +0000 (UTC) you wrote:
-> Hi,
+On Wed, 21 Apr 2021 11:24:15 +0200 you wrote:
+> From: Yinjun Zhang <yinjun.zhang@corigine.com>
 > 
-> here's a pull request to net tree, more info below. Please let me know if there
-> are any problems.
+> The number of lanes of devlink port should be correctly initialized
+> when registering the port, so that the input check when running
+> "devlink port split <port> count <N>" can pass.
 > 
-> Kalle
+> Fixes: a21cf0a8330b ("devlink: Add a new devlink port lanes attribute and pass to netlink")
+> Signed-off-by: Yinjun Zhang <yinjun.zhang@corigine.com>
+> Signed-off-by: Louis Peens <louis.peens@corigine.com>
+> Signed-off-by: Simon Horman <simon.horman@netronome.com>
 > 
 > [...]
 
 Here is the summary with links:
-  - pull-request: wireless-drivers-2021-04-21
-    https://git.kernel.org/netdev/net/c/542c40957c05
+  - [net] nfp: devlink: initialize the devlink port attribute "lanes"
+    https://git.kernel.org/netdev/net/c/90b669d65d99
 
 You are awesome, thank you!
 --
