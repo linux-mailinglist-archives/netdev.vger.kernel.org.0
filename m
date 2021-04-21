@@ -2,41 +2,44 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 724513662B9
-	for <lists+netdev@lfdr.de>; Wed, 21 Apr 2021 02:01:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A8C013662BC
+	for <lists+netdev@lfdr.de>; Wed, 21 Apr 2021 02:01:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234530AbhDUAAs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 20 Apr 2021 20:00:48 -0400
-Received: from mail.kernel.org ([198.145.29.99]:56896 "EHLO mail.kernel.org"
+        id S234542AbhDUAAy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 20 Apr 2021 20:00:54 -0400
+Received: from mail.kernel.org ([198.145.29.99]:56928 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S234223AbhDUAAn (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S234509AbhDUAAn (ORCPT <rfc822;netdev@vger.kernel.org>);
         Tue, 20 Apr 2021 20:00:43 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id CA56761417;
-        Wed, 21 Apr 2021 00:00:10 +0000 (UTC)
+Received: by mail.kernel.org (Postfix) with ESMTPS id 0813261423;
+        Wed, 21 Apr 2021 00:00:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1618963210;
-        bh=7KebMaxvqUVosMG1sUtctPOejw6S2PvpoPYndt3MxA0=;
+        s=k20201202; t=1618963211;
+        bh=PBeYqStowQVwignopWPr3A2fo4c5glaNTyaDJqE3uJ4=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=UsZQYUKCl44MYoi52wLH+EIuqsa+F9Wh0lClVh8bFS4UTpOs+/Lz+bnI1u5UDQKpA
-         PopsoM008qAl8AWb6WhAyVI2cVh3uo7qp9K84e122c10zOB20jiBc2VvZEU9NEP6au
-         C9F6Ud4TjAU45mlU6Ck3sJjQp+USGDv5yI+g2foyow5KneIDQLib9YB4exLviQAcax
-         6RrCQKv1mALibvDu0kCXqgoHfUAKZG6bIIFS7oX22VX/T5Bgk1ajg9xl9qa0BCC86p
-         78MiS4c41T9l/km9bvvxLNMsRwmVjDCUv4X5jE37iBLHCbxrEKQFAIkde6XXHee+Cd
-         Gv8u8AZzhgjsA==
+        b=g/I3dw5GMvAnexx7Jjad9wKhjEMvH2CmqWJAfp46w7dRawrDwekNhfNN45reU/jvo
+         xNtqyr4IGyVuta30kNQaLr+TP5zf6VCWDLlr9YGzA8FzWEeg/Z4bo/jnOR7sxgbIZr
+         bkTMbE0i36k3WUOkML3XSeGwB9T/zAfL2VROH1Ns05ucK1LkFNHH0HtGSkO2cfVjfg
+         /XiuUrgsFjYWkAVT6JTpB5/r+OJNsxbyJFL/kw0TRUj9wgiKzAECj812gzWm8aiwK1
+         3ttSibv8RFffrgPyQO5c6UaBT2XHu7DNH+u4FQNbLeLTsWYsgxoH6DOOrJiIIoaDfR
+         I7PodidSfkzcg==
 Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id C238A60A39;
-        Wed, 21 Apr 2021 00:00:10 +0000 (UTC)
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 022FD60A3C;
+        Wed, 21 Apr 2021 00:00:11 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next] net: wwan: Fix bit ops double shift
+Subject: Re: [PATCH net-next] virtio-net: restrict build_skb() use to some arches
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <161896321079.2554.14735894367515771017.git-patchwork-notify@kernel.org>
-Date:   Wed, 21 Apr 2021 00:00:10 +0000
-References: <1618945797-11091-1-git-send-email-loic.poulain@linaro.org>
-In-Reply-To: <1618945797-11091-1-git-send-email-loic.poulain@linaro.org>
-To:     Loic Poulain <loic.poulain@linaro.org>
-Cc:     kuba@kernel.org, davem@davemloft.net, netdev@vger.kernel.org
+Message-Id: <161896321100.2554.2855560777126908523.git-patchwork-notify@kernel.org>
+Date:   Wed, 21 Apr 2021 00:00:11 +0000
+References: <20210420200144.4189597-1-eric.dumazet@gmail.com>
+In-Reply-To: <20210420200144.4189597-1-eric.dumazet@gmail.com>
+To:     Eric Dumazet <eric.dumazet@gmail.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
+        edumazet@google.com, linux@roeck-us.net,
+        xuanzhuo@linux.alibaba.com, jasowang@redhat.com, mst@redhat.com,
+        virtualization@lists.linux-foundation.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
@@ -45,20 +48,19 @@ Hello:
 
 This patch was applied to netdev/net-next.git (refs/heads/master):
 
-On Tue, 20 Apr 2021 21:09:57 +0200 you wrote:
-> bit operation helpers such as test_bit, clear_bit, etc take bit
-> position as parameter and not value. Current usage causes double
-> shift => BIT(BIT(0)). Fix that in wwan_core and mhi_wwan_ctrl.
+On Tue, 20 Apr 2021 13:01:44 -0700 you wrote:
+> From: Eric Dumazet <edumazet@google.com>
 > 
-> Fixes: 9a44c1cc6388 ("net: Add a WWAN subsystem")
-> Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
-> Signed-off-by: Loic Poulain <loic.poulain@linaro.org>
+> build_skb() is supposed to be followed by
+> skb_reserve(skb, NET_IP_ALIGN), so that IP headers are word-aligned.
+> (Best practice is to reserve NET_IP_ALIGN+NET_SKB_PAD, but the NET_SKB_PAD
+> part is only a performance optimization if tunnel encaps are added.)
 > 
 > [...]
 
 Here is the summary with links:
-  - [net-next] net: wwan: Fix bit ops double shift
-    https://git.kernel.org/netdev/net-next/c/b8c55ce266de
+  - [net-next] virtio-net: restrict build_skb() use to some arches
+    https://git.kernel.org/netdev/net-next/c/f5d7872a8b8a
 
 You are awesome, thank you!
 --
