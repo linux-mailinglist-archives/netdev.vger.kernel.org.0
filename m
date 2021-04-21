@@ -2,456 +2,312 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 21E58366EA0
-	for <lists+netdev@lfdr.de>; Wed, 21 Apr 2021 16:59:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 15790366EA5
+	for <lists+netdev@lfdr.de>; Wed, 21 Apr 2021 17:00:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243730AbhDUPA1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 21 Apr 2021 11:00:27 -0400
-Received: from mail.kernel.org ([198.145.29.99]:41708 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S240091AbhDUPA1 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 21 Apr 2021 11:00:27 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id BC66761449;
-        Wed, 21 Apr 2021 14:59:51 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1619017191;
-        bh=bBsHN1sKbdzEp4pmApdqIbBqGtD1LRH4fEenRcZAwHE=;
-        h=Date:From:To:Cc:Subject:Reply-To:References:In-Reply-To:From;
-        b=G2iJue2ZS4ugyK9xloA5BrU1MiGFWeyIH9MWuBafwI7ZT1scrCxrmTurBTYiQ81DZ
-         Pnk6Z5/EE6SHyL2vPvzp8uCJwTbh0AGwP9CSabrAp6FPIRKSOuAWQtZWioKi83v1ES
-         zRANAX/m4Gsii0CsdvHM1JH5Hx1y4Ai+HRpVtFrB9+eh9VgS/bFERQI60nKJ0bSn4R
-         lpWy5HSs3fqNv/L4BrazlOx6Xq8z9YPQzZkRkqAFXXR1gxhYn/NBxqRRVEFxVKAQzN
-         cne1os9CPZ8xK7GKVmeTJWbVdjx/COdZFgrCqgIVIax6LHy6v1LfN/no+tI12u7yix
-         HoXDxf4AOz9SA==
-Received: by paulmck-ThinkPad-P17-Gen-1.home (Postfix, from userid 1000)
-        id 40F5B5C0267; Wed, 21 Apr 2021 07:59:51 -0700 (PDT)
-Date:   Wed, 21 Apr 2021 07:59:51 -0700
-From:   "Paul E. McKenney" <paulmck@kernel.org>
-To:     Toke =?iso-8859-1?Q?H=F8iland-J=F8rgensen?= <toke@redhat.com>
-Cc:     Martin KaFai Lau <kafai@fb.com>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        Hangbin Liu <liuhangbin@gmail.com>, bpf@vger.kernel.org,
-        netdev@vger.kernel.org, Jiri Benc <jbenc@redhat.com>,
-        Eelco Chaudron <echaudro@redhat.com>, ast@kernel.org,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Lorenzo Bianconi <lorenzo.bianconi@redhat.com>,
-        David Ahern <dsahern@gmail.com>,
-        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
-        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
-        =?iso-8859-1?Q?Bj=F6rn_T=F6pel?= <bjorn.topel@gmail.com>
-Subject: Re: [PATCHv7 bpf-next 1/4] bpf: run devmap xdp_prog on flush instead
- of bulk enqueue
-Message-ID: <20210421145951.GT975577@paulmck-ThinkPad-P17-Gen-1>
-Reply-To: paulmck@kernel.org
-References: <20210417002301.GO4212@paulmck-ThinkPad-P17-Gen-1>
- <87h7k5hza0.fsf@toke.dk>
- <20210419165837.GA975577@paulmck-ThinkPad-P17-Gen-1>
- <87lf9egn3o.fsf@toke.dk>
- <20210419183223.GC975577@paulmck-ThinkPad-P17-Gen-1>
- <877dkygeca.fsf@toke.dk>
- <20210419214117.GE975577@paulmck-ThinkPad-P17-Gen-1>
- <87y2ddgbsn.fsf@toke.dk>
- <20210419223143.GG975577@paulmck-ThinkPad-P17-Gen-1>
- <87wnsvhg0m.fsf@toke.dk>
+        id S243755AbhDUPBR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 21 Apr 2021 11:01:17 -0400
+Received: from mx12.kaspersky-labs.com ([91.103.66.155]:31497 "EHLO
+        mx12.kaspersky-labs.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S240091AbhDUPBQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 21 Apr 2021 11:01:16 -0400
+Received: from relay12.kaspersky-labs.com (unknown [127.0.0.10])
+        by relay12.kaspersky-labs.com (Postfix) with ESMTP id BB913767B3;
+        Wed, 21 Apr 2021 18:00:39 +0300 (MSK)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kaspersky.com;
+        s=mail202102; t=1619017239;
+        bh=sU1nne6qBUrBDxRVKCmiRB8S7dcqMKBY8PPdtB0XIvc=;
+        h=Subject:To:From:Message-ID:Date:MIME-Version:Content-Type;
+        b=tvVnvgWYLSxa1i9BDBLOeiz3ToEMgHlEVAJ7sT32Slcp0U5j7sANl7lORS7fciHGS
+         PvDD8pbM4k3N8qMvRFTqqGZyBH/I5p6gRrhWta4lN18R2/mRe6WcuKnG5+s0xvseUm
+         iMgIsLDJ/iTRFbJSjE0+lJy4TvTOsLTi9T3M65XSf6vzWarQ+T8ZTer/myogr6Naex
+         zSjQDM1wL9k9MEloYl1RNSUQithjE7BkOltLLudBrWJgbwVipM/eihYLJC82Z4ffLb
+         BEdDQ5nQosEjlM34vDVZpPDuMTlsdYf+y7av0IASWmc+psVL7h/yBtE1K06o47eW/C
+         Pw5i805jq5+dw==
+Received: from mail-hq2.kaspersky.com (unknown [91.103.66.206])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-SHA256 (128/128 bits))
+        (Client CN "mail-hq2.kaspersky.com", Issuer "Kaspersky MailRelays CA G3" (verified OK))
+        by mailhub12.kaspersky-labs.com (Postfix) with ESMTPS id 62098767D5;
+        Wed, 21 Apr 2021 18:00:39 +0300 (MSK)
+Received: from [10.16.171.77] (10.64.68.128) by hqmailmbx3.avp.ru
+ (10.64.67.243) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2176.2; Wed, 21
+ Apr 2021 18:00:38 +0300
+Subject: Re: [RFC PATCH v8 17/19] vsock_test: add SOCK_SEQPACKET tests
+To:     Stefano Garzarella <sgarzare@redhat.com>
+CC:     Stefan Hajnoczi <stefanha@redhat.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        Jason Wang <jasowang@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jorgen Hansen <jhansen@vmware.com>,
+        Colin Ian King <colin.king@canonical.com>,
+        Andra Paraschiv <andraprs@amazon.com>,
+        Norbert Slusarek <nslusarek@gmx.net>,
+        David Brazdil <dbrazdil@google.com>,
+        Alexander Popov <alex.popov@linux.com>,
+        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+        "virtualization@lists.linux-foundation.org" 
+        <virtualization@lists.linux-foundation.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "stsp2@yandex.ru" <stsp2@yandex.ru>,
+        "oxffffaa@gmail.com" <oxffffaa@gmail.com>
+References: <20210413123954.3396314-1-arseny.krasnov@kaspersky.com>
+ <20210413124701.3407363-1-arseny.krasnov@kaspersky.com>
+ <20210421093554.y45al5r7xhoo7dwh@steredhat>
+From:   Arseny Krasnov <arseny.krasnov@kaspersky.com>
+Message-ID: <83c2c9cb-b163-a6de-e00a-43c3c8def475@kaspersky.com>
+Date:   Wed, 21 Apr 2021 18:00:38 +0300
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <87wnsvhg0m.fsf@toke.dk>
+In-Reply-To: <20210421093554.y45al5r7xhoo7dwh@steredhat>
+Content-Type: text/plain; charset="windows-1252"
+Content-Transfer-Encoding: 7bit
+Content-Language: en-US
+X-Originating-IP: [10.64.68.128]
+X-ClientProxiedBy: hqmailmbx1.avp.ru (10.64.67.241) To hqmailmbx3.avp.ru
+ (10.64.67.243)
+X-KSE-ServerInfo: hqmailmbx3.avp.ru, 9
+X-KSE-AntiSpam-Interceptor-Info: scan successful
+X-KSE-AntiSpam-Version: 5.9.20, Database issued on: 04/21/2021 14:49:38
+X-KSE-AntiSpam-Status: KAS_STATUS_NOT_DETECTED
+X-KSE-AntiSpam-Method: none
+X-KSE-AntiSpam-Rate: 0
+X-KSE-AntiSpam-Info: Lua profiles 163272 [Apr 21 2021]
+X-KSE-AntiSpam-Info: Version: 5.9.20.0
+X-KSE-AntiSpam-Info: Envelope from: arseny.krasnov@kaspersky.com
+X-KSE-AntiSpam-Info: LuaCore: 442 442 b985cb57763b61d2a20abb585d5d4cc10c315b09
+X-KSE-AntiSpam-Info: {Tracking_from_domain_doesnt_match_to}
+X-KSE-AntiSpam-Info: kaspersky.com:7.1.1;d41d8cd98f00b204e9800998ecf8427e.com:7.1.1;127.0.0.199:7.1.2
+X-KSE-AntiSpam-Info: Rate: 0
+X-KSE-AntiSpam-Info: Status: not_detected
+X-KSE-AntiSpam-Info: Method: none
+X-KSE-Antiphishing-Info: Clean
+X-KSE-Antiphishing-ScanningType: Deterministic
+X-KSE-Antiphishing-Method: None
+X-KSE-Antiphishing-Bases: 04/21/2021 14:52:00
+X-KSE-AttachmentFiltering-Interceptor-Info: no applicable attachment filtering
+ rules found
+X-KSE-Antivirus-Interceptor-Info: scan successful
+X-KSE-Antivirus-Info: Clean, bases: 21.04.2021 11:31:00
+X-KSE-BulkMessagesFiltering-Scan-Result: InTheLimit
+X-KSE-AttachmentFiltering-Interceptor-Info: no applicable attachment filtering
+ rules found
+X-KSE-BulkMessagesFiltering-Scan-Result: InTheLimit
+X-KLMS-Rule-ID: 52
+X-KLMS-Message-Action: clean
+X-KLMS-AntiSpam-Status: not scanned, disabled by settings
+X-KLMS-AntiSpam-Interceptor-Info: not scanned
+X-KLMS-AntiPhishing: Clean, bases: 2021/04/21 14:24:00
+X-KLMS-AntiVirus: Kaspersky Security for Linux Mail Server, version 8.0.3.30, bases: 2021/04/21 11:31:00 #16604789
+X-KLMS-AntiVirus-Status: Clean, skipped
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Apr 21, 2021 at 04:24:41PM +0200, Toke Høiland-Jørgensen wrote:
-> "Paul E. McKenney" <paulmck@kernel.org> writes:
-> 
-> > On Tue, Apr 20, 2021 at 12:16:40AM +0200, Toke Høiland-Jørgensen wrote:
-> >> "Paul E. McKenney" <paulmck@kernel.org> writes:
-> >> 
-> >> > On Mon, Apr 19, 2021 at 11:21:41PM +0200, Toke Høiland-Jørgensen wrote:
-> >> >> "Paul E. McKenney" <paulmck@kernel.org> writes:
-> >> >> 
-> >> >> > On Mon, Apr 19, 2021 at 08:12:27PM +0200, Toke Høiland-Jørgensen wrote:
-> >> >> >> "Paul E. McKenney" <paulmck@kernel.org> writes:
-> >> >> >> 
-> >> >> >> > On Sat, Apr 17, 2021 at 02:27:19PM +0200, Toke Høiland-Jørgensen wrote:
-> >> >> >> >> "Paul E. McKenney" <paulmck@kernel.org> writes:
-> >> >> >> >> 
-> >> >> >> >> > On Fri, Apr 16, 2021 at 11:22:52AM -0700, Martin KaFai Lau wrote:
-> >> >> >> >> >> On Fri, Apr 16, 2021 at 03:45:23PM +0200, Jesper Dangaard Brouer wrote:
-> >> >> >> >> >> > On Thu, 15 Apr 2021 17:39:13 -0700
-> >> >> >> >> >> > Martin KaFai Lau <kafai@fb.com> wrote:
-> >> >> >> >> >> > 
-> >> >> >> >> >> > > On Thu, Apr 15, 2021 at 10:29:40PM +0200, Toke Høiland-Jørgensen wrote:
-> >> >> >> >> >> > > > Jesper Dangaard Brouer <brouer@redhat.com> writes:
-> >> >> >> >> >> > > >   
-> >> >> >> >> >> > > > > On Thu, 15 Apr 2021 10:35:51 -0700
-> >> >> >> >> >> > > > > Martin KaFai Lau <kafai@fb.com> wrote:
-> >> >> >> >> >> > > > >  
-> >> >> >> >> >> > > > >> On Thu, Apr 15, 2021 at 11:22:19AM +0200, Toke Høiland-Jørgensen wrote:  
-> >> >> >> >> >> > > > >> > Hangbin Liu <liuhangbin@gmail.com> writes:
-> >> >> >> >> >> > > > >> >     
-> >> >> >> >> >> > > > >> > > On Wed, Apr 14, 2021 at 05:17:11PM -0700, Martin KaFai Lau wrote:    
-> >> >> >> >> >> > > > >> > >> >  static void bq_xmit_all(struct xdp_dev_bulk_queue *bq, u32 flags)
-> >> >> >> >> >> > > > >> > >> >  {
-> >> >> >> >> >> > > > >> > >> >  	struct net_device *dev = bq->dev;
-> >> >> >> >> >> > > > >> > >> > -	int sent = 0, err = 0;
-> >> >> >> >> >> > > > >> > >> > +	int sent = 0, drops = 0, err = 0;
-> >> >> >> >> >> > > > >> > >> > +	unsigned int cnt = bq->count;
-> >> >> >> >> >> > > > >> > >> > +	int to_send = cnt;
-> >> >> >> >> >> > > > >> > >> >  	int i;
-> >> >> >> >> >> > > > >> > >> >  
-> >> >> >> >> >> > > > >> > >> > -	if (unlikely(!bq->count))
-> >> >> >> >> >> > > > >> > >> > +	if (unlikely(!cnt))
-> >> >> >> >> >> > > > >> > >> >  		return;
-> >> >> >> >> >> > > > >> > >> >  
-> >> >> >> >> >> > > > >> > >> > -	for (i = 0; i < bq->count; i++) {
-> >> >> >> >> >> > > > >> > >> > +	for (i = 0; i < cnt; i++) {
-> >> >> >> >> >> > > > >> > >> >  		struct xdp_frame *xdpf = bq->q[i];
-> >> >> >> >> >> > > > >> > >> >  
-> >> >> >> >> >> > > > >> > >> >  		prefetch(xdpf);
-> >> >> >> >> >> > > > >> > >> >  	}
-> >> >> >> >> >> > > > >> > >> >  
-> >> >> >> >> >> > > > >> > >> > -	sent = dev->netdev_ops->ndo_xdp_xmit(dev, bq->count, bq->q, flags);
-> >> >> >> >> >> > > > >> > >> > +	if (bq->xdp_prog) {    
-> >> >> >> >> >> > > > >> > >> bq->xdp_prog is used here
-> >> >> >> >> >> > > > >> > >>     
-> >> >> >> >> >> > > > >> > >> > +		to_send = dev_map_bpf_prog_run(bq->xdp_prog, bq->q, cnt, dev);
-> >> >> >> >> >> > > > >> > >> > +		if (!to_send)
-> >> >> >> >> >> > > > >> > >> > +			goto out;
-> >> >> >> >> >> > > > >> > >> > +
-> >> >> >> >> >> > > > >> > >> > +		drops = cnt - to_send;
-> >> >> >> >> >> > > > >> > >> > +	}
-> >> >> >> >> >> > > > >> > >> > +    
-> >> >> >> >> >> > > > >> > >> 
-> >> >> >> >> >> > > > >> > >> [ ... ]
-> >> >> >> >> >> > > > >> > >>     
-> >> >> >> >> >> > > > >> > >> >  static void bq_enqueue(struct net_device *dev, struct xdp_frame *xdpf,
-> >> >> >> >> >> > > > >> > >> > -		       struct net_device *dev_rx)
-> >> >> >> >> >> > > > >> > >> > +		       struct net_device *dev_rx, struct bpf_prog *xdp_prog)
-> >> >> >> >> >> > > > >> > >> >  {
-> >> >> >> >> >> > > > >> > >> >  	struct list_head *flush_list = this_cpu_ptr(&dev_flush_list);
-> >> >> >> >> >> > > > >> > >> >  	struct xdp_dev_bulk_queue *bq = this_cpu_ptr(dev->xdp_bulkq);
-> >> >> >> >> >> > > > >> > >> > @@ -412,18 +466,22 @@ static void bq_enqueue(struct net_device *dev, struct xdp_frame *xdpf,
-> >> >> >> >> >> > > > >> > >> >  	/* Ingress dev_rx will be the same for all xdp_frame's in
-> >> >> >> >> >> > > > >> > >> >  	 * bulk_queue, because bq stored per-CPU and must be flushed
-> >> >> >> >> >> > > > >> > >> >  	 * from net_device drivers NAPI func end.
-> >> >> >> >> >> > > > >> > >> > +	 *
-> >> >> >> >> >> > > > >> > >> > +	 * Do the same with xdp_prog and flush_list since these fields
-> >> >> >> >> >> > > > >> > >> > +	 * are only ever modified together.
-> >> >> >> >> >> > > > >> > >> >  	 */
-> >> >> >> >> >> > > > >> > >> > -	if (!bq->dev_rx)
-> >> >> >> >> >> > > > >> > >> > +	if (!bq->dev_rx) {
-> >> >> >> >> >> > > > >> > >> >  		bq->dev_rx = dev_rx;
-> >> >> >> >> >> > > > >> > >> > +		bq->xdp_prog = xdp_prog;    
-> >> >> >> >> >> > > > >> > >> bp->xdp_prog is assigned here and could be used later in bq_xmit_all().
-> >> >> >> >> >> > > > >> > >> How is bq->xdp_prog protected? Are they all under one rcu_read_lock()?
-> >> >> >> >> >> > > > >> > >> It is not very obvious after taking a quick look at xdp_do_flush[_map].
-> >> >> >> >> >> > > > >> > >> 
-> >> >> >> >> >> > > > >> > >> e.g. what if the devmap elem gets deleted.    
-> >> >> >> >> >> > > > >> > >
-> >> >> >> >> >> > > > >> > > Jesper knows better than me. From my veiw, based on the description of
-> >> >> >> >> >> > > > >> > > __dev_flush():
-> >> >> >> >> >> > > > >> > >
-> >> >> >> >> >> > > > >> > > On devmap tear down we ensure the flush list is empty before completing to
-> >> >> >> >> >> > > > >> > > ensure all flush operations have completed. When drivers update the bpf
-> >> >> >> >> >> > > > >> > > program they may need to ensure any flush ops are also complete.    
-> >> >> >> >> >> > > > >>
-> >> >> >> >> >> > > > >> AFAICT, the bq->xdp_prog is not from the dev. It is from a devmap's elem.
-> >> >> >> >> >> > 
-> >> >> >> >> >> > The bq->xdp_prog comes form the devmap "dev" element, and it is stored
-> >> >> >> >> >> > in temporarily in the "bq" structure that is only valid for this
-> >> >> >> >> >> > softirq NAPI-cycle.  I'm slightly worried that we copied this pointer
-> >> >> >> >> >> > the the xdp_prog here, more below (and Q for Paul).
-> >> >> >> >> >> > 
-> >> >> >> >> >> > > > >> > 
-> >> >> >> >> >> > > > >> > Yeah, drivers call xdp_do_flush() before exiting their NAPI poll loop,
-> >> >> >> >> >> > > > >> > which also runs under one big rcu_read_lock(). So the storage in the
-> >> >> >> >> >> > > > >> > bulk queue is quite temporary, it's just used for bulking to increase
-> >> >> >> >> >> > > > >> > performance :)    
-> >> >> >> >> >> > > > >>
-> >> >> >> >> >> > > > >> I am missing the one big rcu_read_lock() part.  For example, in i40e_txrx.c,
-> >> >> >> >> >> > > > >> i40e_run_xdp() has its own rcu_read_lock/unlock().  dst->xdp_prog used to run
-> >> >> >> >> >> > > > >> in i40e_run_xdp() and it is fine.
-> >> >> >> >> >> > > > >> 
-> >> >> >> >> >> > > > >> In this patch, dst->xdp_prog is run outside of i40e_run_xdp() where the
-> >> >> >> >> >> > > > >> rcu_read_unlock() has already done.  It is now run in xdp_do_flush_map().
-> >> >> >> >> >> > > > >> or I missed the big rcu_read_lock() in i40e_napi_poll()?
-> >> >> >> >> >> > > > >>
-> >> >> >> >> >> > > > >> I do see the big rcu_read_lock() in mlx5e_napi_poll().  
-> >> >> >> >> >> > > > >
-> >> >> >> >> >> > > > > I believed/assumed xdp_do_flush_map() was already protected under an
-> >> >> >> >> >> > > > > rcu_read_lock.  As the devmap and cpumap, which get called via
-> >> >> >> >> >> > > > > __dev_flush() and __cpu_map_flush(), have multiple RCU objects that we
-> >> >> >> >> >> > > > > are operating on.  
-> >> >> >> >> >> > >
-> >> >> >> >> >> > > What other rcu objects it is using during flush?
-> >> >> >> >> >> > 
-> >> >> >> >> >> > Look at code:
-> >> >> >> >> >> >  kernel/bpf/cpumap.c
-> >> >> >> >> >> >  kernel/bpf/devmap.c
-> >> >> >> >> >> > 
-> >> >> >> >> >> > The devmap is filled with RCU code and complicated take-down steps.  
-> >> >> >> >> >> > The devmap's elements are also RCU objects and the BPF xdp_prog is
-> >> >> >> >> >> > embedded in this object (struct bpf_dtab_netdev).  The call_rcu
-> >> >> >> >> >> > function is __dev_map_entry_free().
-> >> >> >> >> >> > 
-> >> >> >> >> >> > 
-> >> >> >> >> >> > > > > Perhaps it is a bug in i40e?  
-> >> >> >> >> >> > >
-> >> >> >> >> >> > > A quick look into ixgbe falls into the same bucket.
-> >> >> >> >> >> > > didn't look at other drivers though.
-> >> >> >> >> >> > 
-> >> >> >> >> >> > Intel driver are very much in copy-paste mode.
-> >> >> >> >> >> >  
-> >> >> >> >> >> > > > >
-> >> >> >> >> >> > > > > We are running in softirq in NAPI context, when xdp_do_flush_map() is
-> >> >> >> >> >> > > > > call, which I think means that this CPU will not go-through a RCU grace
-> >> >> >> >> >> > > > > period before we exit softirq, so in-practice it should be safe.  
-> >> >> >> >> >> > > > 
-> >> >> >> >> >> > > > Yup, this seems to be correct: rcu_softirq_qs() is only called between
-> >> >> >> >> >> > > > full invocations of the softirq handler, which for networking is
-> >> >> >> >> >> > > > net_rx_action(), and so translates into full NAPI poll cycles.  
-> >> >> >> >> >> > >
-> >> >> >> >> >> > > I don't know enough to comment on the rcu/softirq part, may be someone
-> >> >> >> >> >> > > can chime in.  There is also a recent napi_threaded_poll().
-> >> >> >> >> >> > 
-> >> >> >> >> >> > CC added Paul. (link to patch[1][2] for context)
-> >> >> >> >> >> Updated Paul's email address.
-> >> >> >> >> >> 
-> >> >> >> >> >> > 
-> >> >> >> >> >> > > If it is the case, then some of the existing rcu_read_lock() is unnecessary?
-> >> >> >> >> >> > 
-> >> >> >> >> >> > Well, in many cases, especially depending on how kernel is compiled,
-> >> >> >> >> >> > that is true.  But we want to keep these, as they also document the
-> >> >> >> >> >> > intend of the programmer.  And allow us to make the kernel even more
-> >> >> >> >> >> > preempt-able in the future.
-> >> >> >> >> >> > 
-> >> >> >> >> >> > > At least, it sounds incorrect to only make an exception here while keeping
-> >> >> >> >> >> > > other rcu_read_lock() as-is.
-> >> >> >> >> >> > 
-> >> >> >> >> >> > Let me be clear:  I think you have spotted a problem, and we need to
-> >> >> >> >> >> > add rcu_read_lock() at least around the invocation of
-> >> >> >> >> >> > bpf_prog_run_xdp() or before around if-statement that call
-> >> >> >> >> >> > dev_map_bpf_prog_run(). (Hangbin please do this in V8).
-> >> >> >> >> >> > 
-> >> >> >> >> >> > Thank you Martin for reviewing the code carefully enough to find this
-> >> >> >> >> >> > issue, that some drivers don't have a RCU-section around the full XDP
-> >> >> >> >> >> > code path in their NAPI-loop.
-> >> >> >> >> >> > 
-> >> >> >> >> >> > Question to Paul.  (I will attempt to describe in generic terms what
-> >> >> >> >> >> > happens, but ref real-function names).
-> >> >> >> >> >> > 
-> >> >> >> >> >> > We are running in softirq/NAPI context, the driver will call a
-> >> >> >> >> >> > bq_enqueue() function for every packet (if calling xdp_do_redirect) ,
-> >> >> >> >> >> > some driver wrap this with a rcu_read_lock/unlock() section (other have
-> >> >> >> >> >> > a large RCU-read section, that include the flush operation).
-> >> >> >> >> >> > 
-> >> >> >> >> >> > In the bq_enqueue() function we have a per_cpu_ptr (that store the
-> >> >> >> >> >> > xdp_frame packets) that will get flushed/send in the call
-> >> >> >> >> >> > xdp_do_flush() (that end-up calling bq_xmit_all()).  This flush will
-> >> >> >> >> >> > happen before we end our softirq/NAPI context.
-> >> >> >> >> >> > 
-> >> >> >> >> >> > The extension is that the per_cpu_ptr data structure (after this patch)
-> >> >> >> >> >> > store a pointer to an xdp_prog (which is a RCU object).  In the flush
-> >> >> >> >> >> > operation (which we will wrap with RCU-read section), we will use this
-> >> >> >> >> >> > xdp_prog pointer.   I can see that it is in-principle wrong to pass
-> >> >> >> >> >> > this-pointer between RCU-read sections, but I consider this safe as we
-> >> >> >> >> >> > are running under softirq/NAPI and the per_cpu_ptr is only valid in
-> >> >> >> >> >> > this short interval.
-> >> >> >> >> >> > 
-> >> >> >> >> >> > I claim a grace/quiescent RCU cannot happen between these two RCU-read
-> >> >> >> >> >> > sections, but I might be wrong? (especially in the future or for RT).
-> >> >> >> >> >
-> >> >> >> >> > If I am reading this correctly (ha!), a very high-level summary of the
-> >> >> >> >> > code in question is something like this:
-> >> >> >> >> >
-> >> >> >> >> > 	void foo(void)
-> >> >> >> >> > 	{
-> >> >> >> >> > 		local_bh_disable();
-> >> >> >> >> >
-> >> >> >> >> > 		rcu_read_lock();
-> >> >> >> >> > 		p = rcu_dereference(gp);
-> >> >> >> >> > 		do_something_with(p);
-> >> >> >> >> > 		rcu_read_unlock();
-> >> >> >> >> >
-> >> >> >> >> > 		do_something_else();
-> >> >> >> >> >
-> >> >> >> >> > 		rcu_read_lock();
-> >> >> >> >> > 		do_some_other_thing(p);
-> >> >> >> >> > 		rcu_read_unlock();
-> >> >> >> >> >
-> >> >> >> >> > 		local_bh_enable();
-> >> >> >> >> > 	}
-> >> >> >> >> >
-> >> >> >> >> > 	void bar(struct blat *new_gp)
-> >> >> >> >> > 	{
-> >> >> >> >> > 		struct blat *old_gp;
-> >> >> >> >> >
-> >> >> >> >> > 		spin_lock(my_lock);
-> >> >> >> >> > 		old_gp = rcu_dereference_protected(gp, lock_held(my_lock));
-> >> >> >> >> > 		rcu_assign_pointer(gp, new_gp);
-> >> >> >> >> > 		spin_unlock(my_lock);
-> >> >> >> >> > 		synchronize_rcu();
-> >> >> >> >> > 		kfree(old_gp);
-> >> >> >> >> > 	}
-> >> >> >> >> 
-> >> >> >> >> Yeah, something like that (the object is freed using call_rcu() - but I
-> >> >> >> >> think that's equivalent, right?). And the question is whether we need to
-> >> >> >> >> extend foo() so that is has one big rcu_read_lock() that covers the
-> >> >> >> >> whole lifetime of p.
-> >> >> >> >
-> >> >> >> > Yes, use of call_rcu() is an asynchronous version of synchronize_rcu().
-> >> >> >> > In fact, synchronize_rcu() is implemented in terms of call_rcu().  ;-)
-> >> >> >> 
-> >> >> >> Right, gotcha!
-> >> >> >> 
-> >> >> >> >> > I need to check up on -rt.
-> >> >> >> >> >
-> >> >> >> >> > But first... In recent mainline kernels, the local_bh_disable() region
-> >> >> >> >> > will look like one big RCU read-side critical section.  But don't try
-> >> >> >> >> > this prior to v4.20!!!  In v4.19 and earlier, you would need to use
-> >> >> >> >> > both synchronize_rcu() and synchronize_rcu_bh() to make this work, or,
-> >> >> >> >> > for less latency, synchronize_rcu_mult(call_rcu, call_rcu_bh).
-> >> >> >> >> 
-> >> >> >> >> OK. Variants of this code has been around since before then, but I
-> >> >> >> >> honestly have no idea what it looked like back then exactly...
-> >> >> >> >
-> >> >> >> > I know that feeling...
-> >> >> >> >
-> >> >> >> >> > Except that in that case, why not just drop the inner rcu_read_unlock()
-> >> >> >> >> > and rcu_read_lock() pair?  Awkward function boundaries or some such?
-> >> >> >> >> 
-> >> >> >> >> Well if we can just treat such a local_bh_disable()/enable() pair as the
-> >> >> >> >> equivalent of rcu_read_lock()/unlock() then I suppose we could just get
-> >> >> >> >> rid of the inner ones. What about tools like lockdep; do they understand
-> >> >> >> >> this, or are we likely to get complaints if we remove it?
-> >> >> >> >
-> >> >> >> > If you just got rid of the first rcu_read_unlock() and the second
-> >> >> >> > rcu_read_lock() in the code above, lockdep will understand.
-> >> >> >> 
-> >> >> >> Right, but doing so entails going through all the drivers, which is what
-> >> >> >> we're trying to avoid :)
-> >> >> >
-> >> >> > I was afraid of that...  ;-)
-> >> >> >
-> >> >> >> > However, if you instead get rid of -all- of the rcu_read_lock() and
-> >> >> >> > rcu_read_unlock() invocations in the code above, you would need to let
-> >> >> >> > lockdep know by adding rcu_read_lock_bh_held().  So instead of this:
-> >> >> >> >
-> >> >> >> > 	p = rcu_dereference(gp);
-> >> >> >> >
-> >> >> >> > You would do this:
-> >> >> >> >
-> >> >> >> > 	p = rcu_dereference_check(gp, rcu_read_lock_bh_held());
-> >> >> >> >
-> >> >> >> > This would be needed for mainline, regardless of -rt.
-> >> >> >> 
-> >> >> >> OK. And as far as I can tell this is harmless for code paths that call
-> >> >> >> the same function but from a regular rcu_read_lock()-protected section
-> >> >> >> instead from a bh-disabled section, right?
-> >> >> >
-> >> >> > That is correct.  That rcu_dereference_check() invocation will make
-> >> >> > lockdep be OK with rcu_read_lock() or with softirq being disabled.
-> >> >> > Or both, for that matter.
-> >> >> 
-> >> >> OK, great, thank you for confirming my understanding!
-> >> >> 
-> >> >> >> What happens, BTW, if we *don't* get rid of all the existing
-> >> >> >> rcu_read_lock() sections? Going back to your foo() example above, what
-> >> >> >> we're discussing is whether to add that second rcu_read_lock() around
-> >> >> >> do_some_other_thing(p). I.e., the first one around the rcu_dereference()
-> >> >> >> is already there (in the particular driver we're discussing), and the
-> >> >> >> local_bh_disable/enable() pair is already there. AFAICT from our
-> >> >> >> discussion, there really is not much point in adding that second
-> >> >> >> rcu_read_lock/unlock(), is there?
-> >> >> >
-> >> >> > From an algorithmic point of view, the second rcu_read_lock()
-> >> >> > and rcu_read_unlock() are redundant.  Of course, there are also
-> >> >> > software-engineering considerations, including copy-pasta issues.
-> >> >> >
-> >> >> >> And because that first rcu_read_lock() around the rcu_dereference() is
-> >> >> >> already there, lockdep is not likely to complain either, so we're
-> >> >> >> basically fine? Except that the code is somewhat confusing as-is, of
-> >> >> >> course; i.e., we should probably fix it but it's not terribly urgent. Or?
-> >> >> >
-> >> >> > I am concerned about copy-pasta-induced bugs.  Someone looks just at
-> >> >> > the code, fails to note the fact that softirq is disabled throughout,
-> >> >> > and decides that leaking a pointer from one RCU read-side critical
-> >> >> > section to a later one is just fine.  :-/
-> >> >> 
-> >> >> Yup, totally agreed that we need to fix this for the sake of the humans
-> >> >> reading the code; just wanted to make sure my understanding was correct
-> >> >> that we don't strictly need to do anything as far as the machines
-> >> >> executing it are concerned :)
-> >> >> 
-> >> >> >> Hmm, looking at it now, it seems not all the lookup code is actually
-> >> >> >> doing rcu_dereference() at all, but rather just a plain READ_ONCE() with
-> >> >> >> a comment above it saying that RCU ensures objects won't disappear[0];
-> >> >> >> so I suppose we're at least safe from lockdep in that sense :P - but we
-> >> >> >> should definitely clean this up.
-> >> >> >> 
-> >> >> >> [0] Exhibit A: https://elixir.bootlin.com/linux/latest/source/kernel/bpf/devmap.c#L391
-> >> >> >
-> >> >> > That use of READ_ONCE() will definitely avoid lockdep complaints,
-> >> >> > including those complaints that point out bugs.  It also might get you
-> >> >> > sparse complaints if the RCU-protected pointer is marked with __rcu.
-> >> >> 
-> >> >> It's not; it's the netdev_map member of this struct:
-> >> >> 
-> >> >> struct bpf_dtab {
-> >> >> 	struct bpf_map map;
-> >> >> 	struct bpf_dtab_netdev **netdev_map; /* DEVMAP type only */
-> >> >> 	struct list_head list;
-> >> >> 
-> >> >> 	/* these are only used for DEVMAP_HASH type maps */
-> >> >> 	struct hlist_head *dev_index_head;
-> >> >> 	spinlock_t index_lock;
-> >> >> 	unsigned int items;
-> >> >> 	u32 n_buckets;
-> >> >> };
-> >> >> 
-> >> >> Will adding __rcu to such a dynamic array member do the right thing when
-> >> >> paired with rcu_dereference() on array members (i.e., in place of the
-> >> >> READ_ONCE in the code linked above)?
-> >> >
-> >> > The only thing __rcu will do is provide information to the sparse static
-> >> > analysis tool.  Which will then gripe at you for applying READ_ONCE()
-> >> > to a __rcu pointer.  But it is already griping at you for applying
-> >> > rcu_dereference() to something not marked __rcu, so...  ;-)
-> >> 
-> >> Right, hence the need for a cleanup ;)
-> >> 
-> >> My question was more if it understood arrays, though. I.e., that
-> >> 'netdev_map' is an array of RCU pointers, not an RCU pointer to an
-> >> array... Or am I maybe thinking that tool is way smarter than it is, and
-> >> it just complains for any access to that field that doesn't use
-> >> rcu_dereference()?
-> >
-> > I believe that sparse will know about the pointers being __rcu, but
-> > not the array.  Unless you mark both levels.
-> 
-> Hi Paul
-> 
-> One more question, since I started adding the annotations: We are
-> currently swapping out the pointers using xchg():
-> https://elixir.bootlin.com/linux/latest/source/kernel/bpf/devmap.c#L555
-> 
-> and even cmpxchg():
-> https://elixir.bootlin.com/linux/latest/source/kernel/bpf/devmap.c#L831
-> 
-> Sparse complains about these if I add the __rcu annotation to the
-> definition (which otherwise works just fine with the double-pointer,
-> BTW). Is there a way to fix that? Some kind of rcu_ macro version of the
-> atomic swaps or something? Or do we just keep the regular xchg() and
-> ignore those particular sparse warnings?
 
-Sounds like I need to supply a unrcu_pointer() macro or some such.
-This would operate something like the current open-coded casts
-in __rcu_dereference_protected().
-
-Would something like that work for you?
-
-							Thanx, Paul
+On 21.04.2021 12:35, Stefano Garzarella wrote:
+> On Tue, Apr 13, 2021 at 03:46:58PM +0300, Arseny Krasnov wrote:
+>> This adds test of SOCK_SEQPACKET socket: it transfer data and
+>> then tests MSG_TRUNC flag. Cases for connect(), bind(), etc. are
+>> not tested, because it is same as for stream socket.
+>>
+>> Signed-off-by: Arseny Krasnov <arseny.krasnov@kaspersky.com>
+>> ---
+>> v7 -> v8:
+>> - Test for MSG_EOR flags now removed.
+> Why did we remove it?
+Because MSG_EOR flag support was removed.
+>
+> Thanks,
+> Stefano
+>
+>> tools/testing/vsock/util.c       | 32 +++++++++++++---
+>> tools/testing/vsock/util.h       |  3 ++
+>> tools/testing/vsock/vsock_test.c | 63 ++++++++++++++++++++++++++++++++
+>> 3 files changed, 93 insertions(+), 5 deletions(-)
+>>
+>> diff --git a/tools/testing/vsock/util.c b/tools/testing/vsock/util.c
+>> index 93cbd6f603f9..2acbb7703c6a 100644
+>> --- a/tools/testing/vsock/util.c
+>> +++ b/tools/testing/vsock/util.c
+>> @@ -84,7 +84,7 @@ void vsock_wait_remote_close(int fd)
+>> }
+>>
+>> /* Connect to <cid, port> and return the file descriptor. */
+>> -int vsock_stream_connect(unsigned int cid, unsigned int port)
+>> +static int vsock_connect(unsigned int cid, unsigned int port, int type)
+>> {
+>> 	union {
+>> 		struct sockaddr sa;
+>> @@ -101,7 +101,7 @@ int vsock_stream_connect(unsigned int cid, unsigned int port)
+>>
+>> 	control_expectln("LISTENING");
+>>
+>> -	fd = socket(AF_VSOCK, SOCK_STREAM, 0);
+>> +	fd = socket(AF_VSOCK, type, 0);
+>>
+>> 	timeout_begin(TIMEOUT);
+>> 	do {
+>> @@ -120,11 +120,21 @@ int vsock_stream_connect(unsigned int cid, unsigned int port)
+>> 	return fd;
+>> }
+>>
+>> +int vsock_stream_connect(unsigned int cid, unsigned int port)
+>> +{
+>> +	return vsock_connect(cid, port, SOCK_STREAM);
+>> +}
+>> +
+>> +int vsock_seqpacket_connect(unsigned int cid, unsigned int port)
+>> +{
+>> +	return vsock_connect(cid, port, SOCK_SEQPACKET);
+>> +}
+>> +
+>> /* Listen on <cid, port> and return the first incoming connection.  The remote
+>>  * address is stored to clientaddrp.  clientaddrp may be NULL.
+>>  */
+>> -int vsock_stream_accept(unsigned int cid, unsigned int port,
+>> -			struct sockaddr_vm *clientaddrp)
+>> +static int vsock_accept(unsigned int cid, unsigned int port,
+>> +			struct sockaddr_vm *clientaddrp, int type)
+>> {
+>> 	union {
+>> 		struct sockaddr sa;
+>> @@ -145,7 +155,7 @@ int vsock_stream_accept(unsigned int cid, unsigned int port,
+>> 	int client_fd;
+>> 	int old_errno;
+>>
+>> -	fd = socket(AF_VSOCK, SOCK_STREAM, 0);
+>> +	fd = socket(AF_VSOCK, type, 0);
+>>
+>> 	if (bind(fd, &addr.sa, sizeof(addr.svm)) < 0) {
+>> 		perror("bind");
+>> @@ -189,6 +199,18 @@ int vsock_stream_accept(unsigned int cid, unsigned int port,
+>> 	return client_fd;
+>> }
+>>
+>> +int vsock_stream_accept(unsigned int cid, unsigned int port,
+>> +			struct sockaddr_vm *clientaddrp)
+>> +{
+>> +	return vsock_accept(cid, port, clientaddrp, SOCK_STREAM);
+>> +}
+>> +
+>> +int vsock_seqpacket_accept(unsigned int cid, unsigned int port,
+>> +			   struct sockaddr_vm *clientaddrp)
+>> +{
+>> +	return vsock_accept(cid, port, clientaddrp, SOCK_SEQPACKET);
+>> +}
+>> +
+>> /* Transmit one byte and check the return value.
+>>  *
+>>  * expected_ret:
+>> diff --git a/tools/testing/vsock/util.h b/tools/testing/vsock/util.h
+>> index e53dd09d26d9..a3375ad2fb7f 100644
+>> --- a/tools/testing/vsock/util.h
+>> +++ b/tools/testing/vsock/util.h
+>> @@ -36,8 +36,11 @@ struct test_case {
+>> void init_signals(void);
+>> unsigned int parse_cid(const char *str);
+>> int vsock_stream_connect(unsigned int cid, unsigned int port);
+>> +int vsock_seqpacket_connect(unsigned int cid, unsigned int port);
+>> int vsock_stream_accept(unsigned int cid, unsigned int port,
+>> 			struct sockaddr_vm *clientaddrp);
+>> +int vsock_seqpacket_accept(unsigned int cid, unsigned int port,
+>> +			   struct sockaddr_vm *clientaddrp);
+>> void vsock_wait_remote_close(int fd);
+>> void send_byte(int fd, int expected_ret, int flags);
+>> void recv_byte(int fd, int expected_ret, int flags);
+>> diff --git a/tools/testing/vsock/vsock_test.c b/tools/testing/vsock/vsock_test.c
+>> index 5a4fb80fa832..ffec985fd36f 100644
+>> --- a/tools/testing/vsock/vsock_test.c
+>> +++ b/tools/testing/vsock/vsock_test.c
+>> @@ -14,6 +14,8 @@
+>> #include <errno.h>
+>> #include <unistd.h>
+>> #include <linux/kernel.h>
+>> +#include <sys/types.h>
+>> +#include <sys/socket.h>
+>>
+>> #include "timeout.h"
+>> #include "control.h"
+>> @@ -279,6 +281,62 @@ static void test_stream_msg_peek_server(const struct test_opts *opts)
+>> 	close(fd);
+>> }
+>>
+>> +#define MESSAGE_TRUNC_SZ 32
+>> +static void test_seqpacket_msg_trunc_client(const struct test_opts *opts)
+>> +{
+>> +	int fd;
+>> +	char buf[MESSAGE_TRUNC_SZ];
+>> +
+>> +	fd = vsock_seqpacket_connect(opts->peer_cid, 1234);
+>> +	if (fd < 0) {
+>> +		perror("connect");
+>> +		exit(EXIT_FAILURE);
+>> +	}
+>> +
+>> +	if (send(fd, buf, sizeof(buf), 0) != sizeof(buf)) {
+>> +		perror("send failed");
+>> +		exit(EXIT_FAILURE);
+>> +	}
+>> +
+>> +	control_writeln("SENDDONE");
+>> +	close(fd);
+>> +}
+>> +
+>> +static void test_seqpacket_msg_trunc_server(const struct test_opts *opts)
+>> +{
+>> +	int fd;
+>> +	char buf[MESSAGE_TRUNC_SZ / 2];
+>> +	struct msghdr msg = {0};
+>> +	struct iovec iov = {0};
+>> +
+>> +	fd = vsock_seqpacket_accept(VMADDR_CID_ANY, 1234, NULL);
+>> +	if (fd < 0) {
+>> +		perror("accept");
+>> +		exit(EXIT_FAILURE);
+>> +	}
+>> +
+>> +	control_expectln("SENDDONE");
+>> +	iov.iov_base = buf;
+>> +	iov.iov_len = sizeof(buf);
+>> +	msg.msg_iov = &iov;
+>> +	msg.msg_iovlen = 1;
+>> +
+>> +	ssize_t ret = recvmsg(fd, &msg, MSG_TRUNC);
+>> +
+>> +	if (ret != MESSAGE_TRUNC_SZ) {
+>> +		printf("%zi\n", ret);
+>> +		perror("MSG_TRUNC doesn't work");
+>> +		exit(EXIT_FAILURE);
+>> +	}
+>> +
+>> +	if (!(msg.msg_flags & MSG_TRUNC)) {
+>> +		fprintf(stderr, "MSG_TRUNC expected\n");
+>> +		exit(EXIT_FAILURE);
+>> +	}
+>> +
+>> +	close(fd);
+>> +}
+>> +
+>> static struct test_case test_cases[] = {
+>> 	{
+>> 		.name = "SOCK_STREAM connection reset",
+>> @@ -309,6 +367,11 @@ static struct test_case test_cases[] = {
+>> 		.run_client = test_stream_msg_peek_client,
+>> 		.run_server = test_stream_msg_peek_server,
+>> 	},
+>> +	{
+>> +		.name = "SOCK_SEQPACKET send data MSG_TRUNC",
+>> +		.run_client = test_seqpacket_msg_trunc_client,
+>> +		.run_server = test_seqpacket_msg_trunc_server,
+>> +	},
+>> 	{},
+>> };
+>>
+>> -- 
+>> 2.25.1
+>>
+>
