@@ -2,101 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BACAB366D1C
-	for <lists+netdev@lfdr.de>; Wed, 21 Apr 2021 15:47:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CE3AF366D28
+	for <lists+netdev@lfdr.de>; Wed, 21 Apr 2021 15:49:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242768AbhDUNs2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 21 Apr 2021 09:48:28 -0400
-Received: from mail.kernel.org ([198.145.29.99]:56474 "EHLO mail.kernel.org"
+        id S242826AbhDUNuK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 21 Apr 2021 09:50:10 -0400
+Received: from mail.kernel.org ([198.145.29.99]:57366 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S241066AbhDUNs1 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 21 Apr 2021 09:48:27 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 4766D60C3E;
-        Wed, 21 Apr 2021 13:47:51 +0000 (UTC)
+        id S242814AbhDUNuJ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 21 Apr 2021 09:50:09 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 199C161439;
+        Wed, 21 Apr 2021 13:49:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1619012874;
-        bh=KTVLWVJq8vwl6vTzOgA9P5+hpcqgLU/xnyvuwWytlYE=;
-        h=From:To:Cc:Subject:Date:From;
-        b=nhD24SoAze3qpdTO9xcGGlp+5fd7qGoArYtTzCjyKkgaklPGTEYVGcbeK7XKfXLe2
-         kn6F8MrroDr8Swusb2ybIXRpbRt/NHdRPbGan00G6hZMRWIQNPSFAriEJPKBqcH2Qw
-         B0oCHNxakFJDXWRTyDUyWxAIsBNCdJDfgxZn8OI9jdfViZut1nlrVp8mEMsMfJVBJ1
-         0/EA5WUqa+uY/w81+QR+1UU7NoPdCuO8usoXdsfuM3p06iarE+2yea+DSspBrd4yVe
-         bcOFUMbnA08QNPYapoPBNBoZfgthhIhR4BXWQlEcbFnyZiSPqYr5fPWaaqcIV+59db
-         /yIHpNdhKPECg==
-From:   Arnd Bergmann <arnd@kernel.org>
-To:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Jose Abreu <joabreu@synopsys.com>,
+        s=k20201202; t=1619012975;
+        bh=DfvW4thW35pyhxnz0Xb3KHpopcscliALtkpJSIRX4gA=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=VBmtKNXEDbDJq2+QztTmG9r2Vg8OCWs/gZ/nFZKANBM8qtEdKgo9G//Ro21DlXotR
+         IyXp/TqMMa9NHAvp97bjZZfR4Jq/F8M94GEPqrN1y8J+oRa7rP8GSFpGhJCiT3NVeU
+         RUZX2Jpw9ukIK/qRqzWgHmdc90tyBKE1iWhBc2ukukB1ynT8UMy0fMsReZkvAZkqib
+         pM80DJ6mFWv32EUkoX710SR++2fUXyhAeJowWiFEQx4gYfQlxsSBLDReakV3r52v4e
+         mnbLdxAoaiK7rk5LYFACLm0A7nZj5Cl82yCQCXDeYX8E0SCpasBx3qn409RmTNcVfF
+         a5VeukcK1eFZQ==
+Date:   Wed, 21 Apr 2021 16:49:31 +0300
+From:   Leon Romanovsky <leon@kernel.org>
+To:     "J. Bruce Fields" <bfields@fieldses.org>
+Cc:     "Shelat, Abhi" <a.shelat@northeastern.edu>,
+        Greg KH <gregkh@linuxfoundation.org>,
+        Sudip Mukherjee <sudipm.mukherjee@gmail.com>,
+        Aditya Pakki <pakki001@umn.edu>,
+        Chuck Lever <chuck.lever@oracle.com>,
+        Trond Myklebust <trond.myklebust@hammerspace.com>,
+        Anna Schumaker <anna.schumaker@netapp.com>,
         "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     Arnd Bergmann <arnd@arndb.de>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Ong Boon Leong <boon.leong.ong@intel.com>,
-        Voon Weifeng <weifeng.voon@intel.com>,
-        Joakim Zhang <qiangqing.zhang@nxp.com>,
-        Fugang Duan <fugang.duan@nxp.com>,
-        Thierry Reding <treding@nvidia.com>,
-        "Song, Yoong Siang" <yoong.siang.song@intel.com>,
-        netdev@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] [net-next] net: stmmac: fix gcc-10 -Wrestrict warning
-Date:   Wed, 21 Apr 2021 15:47:29 +0200
-Message-Id: <20210421134743.3260921-1-arnd@kernel.org>
-X-Mailer: git-send-email 2.29.2
+        Jakub Kicinski <kuba@kernel.org>,
+        Dave Wysochanski <dwysocha@redhat.com>,
+        "linux-nfs@vger.kernel.org" <linux-nfs@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH] SUNRPC: Add a check for gss_release_msg
+Message-ID: <YIAta3cRl8mk/RkH@unreal>
+References: <20210407001658.2208535-1-pakki001@umn.edu>
+ <YH5/i7OvsjSmqADv@kroah.com>
+ <20210420171008.GB4017@fieldses.org>
+ <YH+zwQgBBGUJdiVK@unreal>
+ <YH+7ZydHv4+Y1hlx@kroah.com>
+ <CADVatmNgU7t-Co84tSS6VW=3NcPu=17qyVyEEtVMVR_g51Ma6Q@mail.gmail.com>
+ <YH/8jcoC1ffuksrf@kroah.com>
+ <3B9A54F7-6A61-4A34-9EAC-95332709BAE7@northeastern.edu>
+ <20210421133727.GA27929@fieldses.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210421133727.GA27929@fieldses.org>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Arnd Bergmann <arnd@arndb.de>
+On Wed, Apr 21, 2021 at 09:37:27AM -0400, J. Bruce Fields wrote:
+> On Wed, Apr 21, 2021 at 11:58:08AM +0000, Shelat, Abhi wrote:
+> > Academic research should NOT waste the time of a community.
+> > 
+> > If you believe this behavior deserves an escalation, you can contact
+> > the Institutional Review Board (irb@umn.edu) at UMN to investigate
+> > whether this behavior was harmful; in particular, whether the research
+> > activity had an appropriate IRB review, and what safeguards prevent
+> > repeats in other communities.
+> 
+> For what it's worth, they do address security, IRB, and maintainer-time
+> questions in "Ethical Considerations", starting on p. 8:
+> 
+> 	https://github.com/QiushiWu/QiushiWu.github.io/blob/main/papers/OpenSourceInsecurity.pdf
+> 
+> (Summary: in that experiment, they claim actual fixes were sent before
+> the original (incorrect) patches had a chance to be committed; that
+> their IRB reviewed the plan and determined it was not human research;
+> and that patches were all small and (after correction) fixed real (if
+> minor) bugs.)
+> 
+> This effort doesn't appear to be following similar protocols, if Leon
+> Romanvosky and Aditya Pakki are correct that security holes have already
+> reached stable.
 
-gcc-10 and later warn about a theoretical array overrun when
-accessing priv->int_name_rx_irq[i] with an out of bounds value
-of 'i':
+Aditya Pakki is the one who is sending those patches.
 
-drivers/net/ethernet/stmicro/stmmac/stmmac_main.c: In function 'stmmac_request_irq_multi_msi':
-drivers/net/ethernet/stmicro/stmmac/stmmac_main.c:3528:17: error: 'snprintf' argument 4 may overlap destination object 'dev' [-Werror=restrict]
- 3528 |                 snprintf(int_name, int_name_len, "%s:%s-%d", dev->name, "tx", i);
-      |                 ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-drivers/net/ethernet/stmicro/stmmac/stmmac_main.c:3404:60: note: destination object referenced by 'restrict'-qualified argument 1 was declared here
- 3404 | static int stmmac_request_irq_multi_msi(struct net_device *dev)
-      |                                         ~~~~~~~~~~~~~~~~~~~^~~
+If you want to see another accepted patch that is already part of
+stable@, you are invited to take a look on this patch that has "built-in bug":
+8e949363f017 ("net: mlx5: Add a missing check on idr_find, free buf")
 
-The warning is a bit strange since it's not actually about the array
-bounds but rather about possible string operations with overlapping
-arguments, but it's not technically wrong.
-
-Avoid the warning by adding an extra bounds check.
-
-Fixes: 8532f613bc78 ("net: stmmac: introduce MSI Interrupt routines for mac, safety, RX & TX")
-Signed-off-by: Arnd Bergmann <arnd@arndb.de>
----
- drivers/net/ethernet/stmicro/stmmac/stmmac_main.c | 4 ++++
- 1 file changed, 4 insertions(+)
-
-diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-index d1ca07c846e6..aadac783687b 100644
---- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-@@ -3498,6 +3498,8 @@ static int stmmac_request_irq_multi_msi(struct net_device *dev)
- 
- 	/* Request Rx MSI irq */
- 	for (i = 0; i < priv->plat->rx_queues_to_use; i++) {
-+		if (i > MTL_MAX_RX_QUEUES)
-+			break;
- 		if (priv->rx_irq[i] == 0)
- 			continue;
- 
-@@ -3521,6 +3523,8 @@ static int stmmac_request_irq_multi_msi(struct net_device *dev)
- 
- 	/* Request Tx MSI irq */
- 	for (i = 0; i < priv->plat->tx_queues_to_use; i++) {
-+		if (i > MTL_MAX_TX_QUEUES)
-+			break;
- 		if (priv->tx_irq[i] == 0)
- 			continue;
- 
--- 
-2.29.2
-
+Thanks
