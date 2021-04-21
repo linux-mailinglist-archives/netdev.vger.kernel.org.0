@@ -2,92 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C439E366537
-	for <lists+netdev@lfdr.de>; Wed, 21 Apr 2021 08:11:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2A80B36657E
+	for <lists+netdev@lfdr.de>; Wed, 21 Apr 2021 08:35:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235530AbhDUGMN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 21 Apr 2021 02:12:13 -0400
-Received: from mail.kernel.org ([198.145.29.99]:43242 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231821AbhDUGMK (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 21 Apr 2021 02:12:10 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 3F65661420;
-        Wed, 21 Apr 2021 06:11:32 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1618985497;
-        bh=YhPOHuGJ/c29KhIGdQUtJ/biKTM/tPQx+TdNyvwGiJ8=;
-        h=From:To:Cc:Subject:Date:From;
-        b=VtD+/yB1oLQwLgsb+e9qbA5z47LcOQckXo0SDV/pEz0+sEJEArmwhncjlEnc2AgdM
-         lnLMn9wFn9RgtD5sLjVJGyPriC3VIccLZIgpxxPHLAGTQPSj9dEDEqncfR91faE6tE
-         R8iMlVFIp3++aD+rEmQ/GRuGULNUWRaC6ke8cORTWi2z/Q2MT4PrnOGNTLIl43rA2L
-         YzkyplhIpZ4ecEmPUrRU11rM09KJxnnx0FKKqDlR0fXviPVPIyUvUgORZpsgTUUrHL
-         qHkSNzkWvo8zl7L4VrPdPLmKVjZra5M4GgGBLboGl1eEeNcy0Y8onTLIaGmTNrQlgR
-         cE1EwTSCIcEzg==
-From:   Mike Rapoport <rppt@kernel.org>
-To:     Jonathan Corbet <corbet@lwn.net>
-Cc:     Alexey Dobriyan <adobriyan@gmail.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Eric Dumazet <eric.dumazet@gmail.com>,
-        Matthew Wilcox <willy@infradead.org>,
-        Michal Hocko <mhocko@suse.com>,
-        Mike Rapoport <rppt@kernel.org>,
-        Mike Rapoport <rppt@linux.ibm.com>, linux-doc@vger.kernel.org,
-        linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-mm@kvack.org, netdev@vger.kernel.org
-Subject: [PATCH v3] docs: proc.rst: meminfo: briefly describe gaps in memory accounting
-Date:   Wed, 21 Apr 2021 09:11:27 +0300
-Message-Id: <20210421061127.1182723-1-rppt@kernel.org>
-X-Mailer: git-send-email 2.29.2
+        id S236076AbhDUGfp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 21 Apr 2021 02:35:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37002 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229536AbhDUGfn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 21 Apr 2021 02:35:43 -0400
+Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DCA2AC06174A;
+        Tue, 20 Apr 2021 23:35:10 -0700 (PDT)
+From:   Kurt Kanzenbach <kurt@linutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1618986908;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=Z6EUUiEJOblPxT1w4z7114vadpacx2AEQX1f9yDMYqc=;
+        b=lEuNRrcRd5xehOxWkhsJcyzkY5ItC/TzQ3vW0lGDuQCGszdkBlJIaRFEdWcs1Q8Hn8MBKI
+        8+dOZYJedEitM9JeZJJBjkR/vmJJDFy1bMK0AmrY2wff3xbnKhQ+wPTok6LVV79hJvONpM
+        9JQuHbaB6UMSDTdD4zRSB9muYF89OxR/kRW9Yt6/STwi6d+zJCpkyjZ0xKNpto4wvspxB7
+        mHuNn5DzjGwzI/9wUHWBqxrj32Kj8IdT4ZcU12kC/sXEos3eKg22IPozobXEuASTg+4mbE
+        K8Ria10j8+dq+hPu+UFlcsnT/4kklACn05+NxL7NeRVajmDM5VWVyaG2Gc6H3Q==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1618986908;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=Z6EUUiEJOblPxT1w4z7114vadpacx2AEQX1f9yDMYqc=;
+        b=+Op9AgrN6rv3f98XM0KuHGxatYW1bWwtiDwOubp2q3LP+7fjDPzKYdIj3FoadTkk6spBlY
+        p2QfcWFU+jtMGAAQ==
+To:     "Nguyen\, Anthony L" <anthony.l.nguyen@intel.com>,
+        "davem\@davemloft.net" <davem@davemloft.net>,
+        "kuba\@kernel.org" <kuba@kernel.org>,
+        "Brandeburg\, Jesse" <jesse.brandeburg@intel.com>
+Cc:     "bigeasy\@linutronix.de" <bigeasy@linutronix.de>,
+        "daniel\@iogearbox.net" <daniel@iogearbox.net>,
+        "bpf\@vger.kernel.org" <bpf@vger.kernel.org>,
+        "ast\@kernel.org" <ast@kernel.org>,
+        "hawk\@kernel.org" <hawk@kernel.org>,
+        "lorenzo\@kernel.org" <lorenzo@kernel.org>,
+        "john.fastabend\@gmail.com" <john.fastabend@gmail.com>,
+        "alexander.duyck\@gmail.com" <alexander.duyck@gmail.com>,
+        "ilias.apalodimas\@linaro.org" <ilias.apalodimas@linaro.org>,
+        "richardcochran\@gmail.com" <richardcochran@gmail.com>,
+        "netdev\@vger.kernel.org" <netdev@vger.kernel.org>,
+        "sven.auhagen\@voleatech.de" <sven.auhagen@voleatech.de>,
+        "intel-wired-lan\@lists.osuosl.org" 
+        <intel-wired-lan@lists.osuosl.org>
+Subject: Re: [PATCH net v2] igb: Fix XDP with PTP enabled
+In-Reply-To: <c1eed5fe05a59f86ff868580e3ae89e251f498ec.camel@intel.com>
+References: <20210419072332.7246-1-kurt@linutronix.de> <c1eed5fe05a59f86ff868580e3ae89e251f498ec.camel@intel.com>
+Date:   Wed, 21 Apr 2021 08:35:06 +0200
+Message-ID: <874kg0b0x1.fsf@kurt>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/signed; boundary="=-=-=";
+        micalg=pgp-sha512; protocol="application/pgp-signature"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Mike Rapoport <rppt@linux.ibm.com>
+--=-=-=
+Content-Type: text/plain
 
-Add a paragraph that explains that it may happen that the counters in
-/proc/meminfo do not add up to the overall memory usage.
+>> +		/* pull rx packet timestamp if available */
+>> +		if (igb_test_staterr(rx_desc, E1000_RXDADV_STAT_TSIP))
+>> {
+>> +			timestamp = igb_ptp_rx_pktstamp(rx_ring-
+>> >q_vector,
+>> +							pktbuf);
+>
+> The timestamp should be checked for failure and not adjust these values
+> if the timestamp was invalid.
 
-Signed-off-by: Mike Rapoport <rppt@linux.ibm.com>
----
-v3:
-* Add sentense about counters overlap
-* Use wording suggested by Matthew
+OK. I'll adjust it.
 
-v2: Link: https://lore.kernel.org/lkml/20210420121354.1160437-1-rppt@kernel.org
-* Add brief changelog
-* Fix typo
-* Update example about network memory usage according to Eric's comment at
+Thanks,
+Kurt
 
-https://lore.kernel.org/lkml/CANn89iKprp7WYeZy4RRO5jHykprnSCcVBc7Tk14Ui_MA9OK7Fg@mail.gmail.com
+--=-=-=
+Content-Type: application/pgp-signature; name="signature.asc"
 
-v1: Link: https://lore.kernel.org/lkml/20210420085105.1156640-1-rppt@kernel.org
- Documentation/filesystems/proc.rst | 11 +++++++++--
- 1 file changed, 9 insertions(+), 2 deletions(-)
+-----BEGIN PGP SIGNATURE-----
 
-diff --git a/Documentation/filesystems/proc.rst b/Documentation/filesystems/proc.rst
-index 48fbfc336ebf..0a07a5025571 100644
---- a/Documentation/filesystems/proc.rst
-+++ b/Documentation/filesystems/proc.rst
-@@ -929,8 +929,15 @@ meminfo
- ~~~~~~~
- 
- Provides information about distribution and utilization of memory.  This
--varies by architecture and compile options.  The following is from a
--16GB PIII, which has highmem enabled.  You may not have all of these fields.
-+varies by architecture and compile options.  Some of the counters reported
-+here overlap.  The memory reported by the non overlapping counters may not
-+add up to the overall memory usage and the difference for some workloads
-+can be substantial.  In many cases there are other means to find out
-+additional memory using subsystem specific interfaces, for instance
-+/proc/net/sockstat for TCP memory allocations.
-+
-+The following is from a 16GB PIII, which has highmem enabled.
-+You may not have all of these fields.
- 
- ::
- 
--- 
-2.29.2
-
+iQIzBAEBCgAdFiEEooWgvezyxHPhdEojeSpbgcuY8KYFAmB/x5oACgkQeSpbgcuY
+8KbLIxAAmG5oUNtJmfrc3pqEBAta5uyV2H7xPFqHyHTH2EAn7xPr4idVnyX0xntg
+0hzdnuXGElZawt5BVtvyaWvI0cLvD0lD3hDKx3NC8n0otehzv87c3ooE3Tamch/o
+pXbAh21R7C3PuLMGTambH7xH2TM3Ts/8pgTW4zjZ48mVWlodMTEewzvbJlT5EJO1
+zGQBCqaQG3bHCy6+6Tl+9tKzTCoL2GzHkhGd7gT/aphWDaNNaOl8sFEWGdoAodQh
+Y/GvhMPu3SO+MA/2G1ZP/xJJkSoZ1i3Dp76dCMLfqd9GGfA46yA9aASRV0BQi3HB
+ceiiUkuGNGHzmXEDQfDfNYGOFwzHsRmiLey8ZNL5zUUD7MxvkxqOdn1CKq4iemuz
+qjcP4Ibbt0ZesTjpMkCLxeI+6PdOYfdz6c2z4T4zBermFXMq3ovXDSgv1z39EqfT
+7QHJASn9rr5pdxJurT6uqZqR7mtWJqPW66uHza3r0YV1CSvKYPZ0N/PQSKTnaA1J
+mErbg9Y4kfoamTUmYJQWus3w75n6GDe2A6lDnzTsHRTOw8luXbBlwu7Vj/sEFP+A
++O0tfuoftZyO9BgUWkTSfFnn/62JEMsXCVsb1RXRcbVu/aLQtFNjolG8R9dy3ifi
+WFN8B/z5BGKYqbb8F6UVplXu4aUmglfR5tv44jxpQZSjP+5PaYA=
+=cV8D
+-----END PGP SIGNATURE-----
+--=-=-=--
