@@ -2,115 +2,296 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3768A367390
-	for <lists+netdev@lfdr.de>; Wed, 21 Apr 2021 21:42:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3D1503673BD
+	for <lists+netdev@lfdr.de>; Wed, 21 Apr 2021 21:48:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243742AbhDUTnT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 21 Apr 2021 15:43:19 -0400
-Received: from m43-7.mailgun.net ([69.72.43.7]:37088 "EHLO m43-7.mailgun.net"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S241211AbhDUTnP (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 21 Apr 2021 15:43:15 -0400
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1619034161; h=Content-Type: MIME-Version: Message-ID:
- Subject: Cc: To: From: Date: Sender;
- bh=vNoreGJpN2zFBzxWUhIMCetNAVN//zoCXymlx1dTtb8=; b=qtR7/1g0Yxl/EuEkh101abc2FVELI2da+/5iuVV4ofcMsv+gE455wMzfndVZXQFsBl1teGsj
- 3iHaNJoCYAYGdzDkEROvfDUceP/fH+IgWJtGXHlNIetGR4t6n+re8osWh+R8Y89ru8jzzSaK
- lp4fHpBb0oTTzj00/zJTGVnNxR4=
-X-Mailgun-Sending-Ip: 69.72.43.7
-X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
-Received: from smtp.codeaurora.org
- (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
- smtp-out-n06.prod.us-east-1.postgun.com with SMTP id
- 60808029853c0a2c46983bee (version=TLS1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Wed, 21 Apr 2021 19:42:33
- GMT
-Sender: chinagar=codeaurora.org@mg.codeaurora.org
-Received: by smtp.codeaurora.org (Postfix, from userid 1001)
-        id AFBC5C43460; Wed, 21 Apr 2021 19:42:32 +0000 (UTC)
-X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
-        aws-us-west-2-caf-mail-1.web.codeaurora.org
-X-Spam-Level: 
-X-Spam-Status: No, score=-2.9 required=2.0 tests=ALL_TRUSTED,BAYES_00,SPF_FAIL,
-        URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
-Received: from chinagar-linux.qualcomm.com (unknown [202.46.22.19])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        (Authenticated sender: chinagar)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id 4985FC433F1;
-        Wed, 21 Apr 2021 19:42:29 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 4985FC433F1
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=fail smtp.mailfrom=chinagar@codeaurora.org
-Date:   Thu, 22 Apr 2021 01:12:22 +0530
-From:   Chinmay Agarwal <chinagar@codeaurora.org>
-To:     netdev@vger.kernel.org, davem@davemloft.net,
-        xiyou.wangcong@gmail.com
-Cc:     chinmay.12cs207@gmail.com, sharathv@codeaurora.org
-Subject: [PATCH] neighbour: Prevent Race condition in neighbour subsytem
-Message-ID: <20210421194212.GA5676@chinagar-linux.qualcomm.com>
+        id S243366AbhDUTs7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 21 Apr 2021 15:48:59 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:44358 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S235886AbhDUTs7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 21 Apr 2021 15:48:59 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1619034505;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=aDyAIAqxEn1SzlmQk6UpZ8hs3r6UcjdZArF9QOOa8Jk=;
+        b=bP+xMkLB+pab2BZjl5J6CBIoO117bH98C6bDTZofqg4XCu5/lAmkeoNt7VUXzmcZquTtoz
+        ipBemHpHm4428QxpXZlwJUcX/aYJ3v/kzeq7iHvl9bfVAoMBTDx2trjo8vU28PUefUfNv0
+        0RY5JvtG9ZC4kcyTMMKTGdDHgt4oT9o=
+Received: from mail-ej1-f69.google.com (mail-ej1-f69.google.com
+ [209.85.218.69]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-604-X7pKH2LJO3GMxMMAD_zBCQ-1; Wed, 21 Apr 2021 15:48:17 -0400
+X-MC-Unique: X7pKH2LJO3GMxMMAD_zBCQ-1
+Received: by mail-ej1-f69.google.com with SMTP id z6-20020a17090665c6b02903700252d1ccso6278789ejn.10
+        for <netdev@vger.kernel.org>; Wed, 21 Apr 2021 12:48:17 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
+         :message-id:mime-version:content-transfer-encoding;
+        bh=aDyAIAqxEn1SzlmQk6UpZ8hs3r6UcjdZArF9QOOa8Jk=;
+        b=gL6G1Ynqe3SSapCQSraQXdjTnusNGaETyWZK0rKLraeK7rM9QDqTyGqSop262POUhF
+         ldSusDQrwvM8zmRGwaZafb9g95WVQ1uNM/g3I4G+oNFd7mpp2TsndJOeW19PBOFNY8Ad
+         WjdmBooPLMGOP3gmaUMWLkCXGGMnBM0iGcP9gDci0PFXqgFez7uMkYF4ZB7ZjP4kr4/0
+         nRIvYSchTfwONL2gWgqT/xPAAmlUNI6uD2K1ety8A8MRgwBFYCpGJoAF/LGcJ4sO+j6d
+         RNXP0cBHbiDEhxshhMMrv/Utpep3rP9J5dq6reTSL9q5o8C5HNsNEc7E12Tkhg94Mwjj
+         DcRw==
+X-Gm-Message-State: AOAM533I1lPoGuqwIi03GUZ8zQXGTszrq6f+AKk8zAkkEqKh8jEh85rP
+        CuIJbyNmtPOmxcqMkgPwSYt0gaGFCITEPov8CVPQG9spRX6Q/MN1HC7sJVfON0/LEm1kzUmm5k2
+        aXaLzPwxGph37eBHZ
+X-Received: by 2002:a17:906:1c98:: with SMTP id g24mr34969325ejh.457.1619034496277;
+        Wed, 21 Apr 2021 12:48:16 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJxUEQGSALFlwav/fV6aD+lgzplpjC3to3umNZrY1bwWGdvt15dySM2RR9Gi0GKsq8zflWd6BA==
+X-Received: by 2002:a17:906:1c98:: with SMTP id g24mr34969298ejh.457.1619034495962;
+        Wed, 21 Apr 2021 12:48:15 -0700 (PDT)
+Received: from alrua-x1.borgediget.toke.dk ([45.145.92.2])
+        by smtp.gmail.com with ESMTPSA id v19sm314399ejy.78.2021.04.21.12.48.14
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 21 Apr 2021 12:48:15 -0700 (PDT)
+Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
+        id 501A41802FE; Wed, 21 Apr 2021 21:48:14 +0200 (CEST)
+From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>,
+        Kumar Kartikeya Dwivedi <memxor@gmail.com>
+Cc:     bpf <bpf@vger.kernel.org>, Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        Networking <netdev@vger.kernel.org>
+Subject: Re: [PATCH bpf-next v3 2/3] libbpf: add low level TC-BPF API
+In-Reply-To: <CAEf4BzYj_pODiQ_Xkdz_czAj3iaBcRhudeb_kJ4M2SczA_jDjA@mail.gmail.com>
+References: <20210420193740.124285-1-memxor@gmail.com>
+ <20210420193740.124285-3-memxor@gmail.com>
+ <CAEf4BzYj_pODiQ_Xkdz_czAj3iaBcRhudeb_kJ4M2SczA_jDjA@mail.gmail.com>
+X-Clacks-Overhead: GNU Terry Pratchett
+Date:   Wed, 21 Apr 2021 21:48:14 +0200
+Message-ID: <87tunzh11d.fsf@toke.dk>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.5.24 (2015-08-30)
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Following Race Condition was detected:
+Andrii Nakryiko <andrii.nakryiko@gmail.com> writes:
 
-<CPU A, t0>: Executing: __netif_receive_skb() ->__netif_receive_skb_core()
--> arp_rcv() -> arp_process().arp_process() calls __neigh_lookup() which
-takes a reference on neighbour entry 'n'.
-Moves further along, arp_process() and calls neigh_update()->
-__neigh_update(). Neighbour entry is unlocked just before a call to
-neigh_update_gc_list.
+> On Tue, Apr 20, 2021 at 12:37 PM Kumar Kartikeya Dwivedi
+> <memxor@gmail.com> wrote:
+>>
+>> This adds functions that wrap the netlink API used for adding,
+>> manipulating, and removing traffic control filters. These functions
+>> operate directly on the loaded prog's fd, and return a handle to the
+>> filter using an out parameter named id.
+>>
+>> The basic featureset is covered to allow for attaching and removal of
+>> filters. Some additional features like TCA_BPF_POLICE and TCA_RATE for
+>> the API have been omitted. These can added on top later by extending the
+>> bpf_tc_opts struct.
+>>
+>> Support for binding actions directly to a classifier by passing them in
+>> during filter creation has also been omitted for now. These actions have
+>> an auto clean up property because their lifetime is bound to the filter
+>> they are attached to. This can be added later, but was omitted for now
+>> as direct action mode is a better alternative to it, which is enabled by
+>> default.
+>>
+>> An API summary:
+>>
+>> bpf_tc_attach may be used to attach, and replace SCHED_CLS bpf
+>> classifier. The protocol is always set as ETH_P_ALL. The replace option
+>> in bpf_tc_opts is used to control replacement behavior.  Attachment
+>> fails if filter with existing attributes already exists.
+>>
+>> bpf_tc_detach may be used to detach existing SCHED_CLS filter. The
+>> bpf_tc_attach_id object filled in during attach must be passed in to the
+>> detach functions for them to remove the filter and its attached
+>> classififer correctly.
+>>
+>> bpf_tc_get_info is a helper that can be used to obtain attributes
+>> for the filter and classififer.
+>>
+>> Examples:
+>>
+>>         struct bpf_tc_attach_id id =3D {};
+>>         struct bpf_object *obj;
+>>         struct bpf_program *p;
+>>         int fd, r;
+>>
+>>         obj =3D bpf_object_open("foo.o");
+>>         if (IS_ERR_OR_NULL(obj))
+>>                 return PTR_ERR(obj);
+>>
+>>         p =3D bpf_object__find_program_by_title(obj, "classifier");
+>>         if (IS_ERR_OR_NULL(p))
+>>                 return PTR_ERR(p);
+>>
+>>         if (bpf_object__load(obj) < 0)
+>>                 return -1;
+>>
+>>         fd =3D bpf_program__fd(p);
+>>
+>>         r =3D bpf_tc_attach(fd, if_nametoindex("lo"),
+>>                           BPF_TC_CLSACT_INGRESS,
+>>                           NULL, &id);
+>>         if (r < 0)
+>>                 return r;
+>>
+>> ... which is roughly equivalent to:
+>>   # tc qdisc add dev lo clsact
+>>   # tc filter add dev lo ingress bpf obj foo.o sec classifier da
+>>
+>> ... as direct action mode is always enabled.
+>>
+>> To replace an existing filter:
+>>
+>>         DECLARE_LIBBPF_OPTS(bpf_tc_opts, opts, .handle =3D id.handle,
+>>                             .priority =3D id.priority, .replace =3D true=
+);
+>>         r =3D bpf_tc_attach(fd, if_nametoindex("lo"),
+>>                           BPF_TC_CLSACT_INGRESS,
+>>                           &opts, &id);
+>>         if (r < 0)
+>>                 return r;
+>>
+>> To obtain info of a particular filter, the example above can be extended
+>> as follows:
+>>
+>>         struct bpf_tc_info info =3D {};
+>>
+>>         r =3D bpf_tc_get_info(if_nametoindex("lo"),
+>>                             BPF_TC_CLSACT_INGRESS,
+>>                             &id, &info);
+>>         if (r < 0)
+>>                 return r;
+>>
+>> ... where id corresponds to the bpf_tc_attach_id filled in during an
+>> attach operation.
+>>
+>> Reviewed-by: Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com>
+>> Signed-off-by: Kumar Kartikeya Dwivedi <memxor@gmail.com>
+>> ---
+>>  tools/lib/bpf/libbpf.h   |  44 ++++++
+>>  tools/lib/bpf/libbpf.map |   3 +
+>>  tools/lib/bpf/netlink.c  | 319 ++++++++++++++++++++++++++++++++++++++-
+>>  3 files changed, 360 insertions(+), 6 deletions(-)
+>>
+>> diff --git a/tools/lib/bpf/libbpf.h b/tools/lib/bpf/libbpf.h
+>> index bec4e6a6e31d..b4ed6a41ea70 100644
+>> --- a/tools/lib/bpf/libbpf.h
+>> +++ b/tools/lib/bpf/libbpf.h
+>> @@ -16,6 +16,8 @@
+>>  #include <stdbool.h>
+>>  #include <sys/types.h>  // for size_t
+>>  #include <linux/bpf.h>
+>> +#include <linux/pkt_sched.h>
+>> +#include <linux/tc_act/tc_bpf.h>
+>
+> apart from those unused macros below, are these needed in public API head=
+er?
+>
+>>
+>>  #include "libbpf_common.h"
+>>
+>> @@ -775,6 +777,48 @@ LIBBPF_API int bpf_linker__add_file(struct bpf_link=
+er *linker, const char *filen
+>>  LIBBPF_API int bpf_linker__finalize(struct bpf_linker *linker);
+>>  LIBBPF_API void bpf_linker__free(struct bpf_linker *linker);
+>>
+>> +/* Convenience macros for the clsact attach hooks */
+>> +#define BPF_TC_CLSACT_INGRESS TC_H_MAKE(TC_H_CLSACT, TC_H_MIN_INGRESS)
+>> +#define BPF_TC_CLSACT_EGRESS TC_H_MAKE(TC_H_CLSACT, TC_H_MIN_EGRESS)
+>
+> these seem to be used only internally, why exposing them in public
+> API?
 
-This unlocking paves way for another thread that may take a reference on
-the same and mark it dead and remove it from gc_list.
+No they're "aliases" for when you want to attach the filter directly to
+the interface (and thus install the clsact qdisc as the root). You can
+also use the filter with an existing qdisc (most commonly HTB), in which
+case you need to specify the qdisc handle as the root. We have a few
+examples of this use case:
 
-<CPU B, t1> - neigh_flush_dev() is under execution and calls
-neigh_mark_dead(n) marking the neighbour entry 'n' as dead. Also n will be
-removed from gc_list.
-Moves further along neigh_flush_dev() and calls
-neigh_cleanup_and_release(n), but since reference count increased in t1,
-'n' couldn't be destroyed.
+https://github.com/xdp-project/bpf-examples/tree/master/traffic-pacing-edt
+and
+https://github.com/xdp-project/xdp-cpumap-tc
 
-<CPU A, t3>- Code hits neigh_update_gc_list, with neighbour entry
-set as dead.
+>> +struct bpf_tc_opts {
+>> +       size_t sz;
+>> +       __u32 handle;
+>> +       __u32 class_id;
+>> +       __u16 priority;
+>> +       bool replace;
+>> +       size_t :0;
+>> +};
+>> +
+>> +#define bpf_tc_opts__last_field replace
+>> +
+>> +/* Acts as a handle for an attached filter */
+>> +struct bpf_tc_attach_id {
+>> +       __u32 handle;
+>> +       __u16 priority;
+>> +};
+>
+> what are the chances that we'll need to grow this id struct? If that
+> happens, how do we do that in a backward/forward compatible manner?
+>
+> if handle/prio are the only two ever necessary, we can actually use
+> bpf_tc_opts to return them back to user (we do that with
+> bpf_test_run_opts API). And then adjust detach/get_info methods to let
+> pass those values.
+>
+> The whole idea of a struct for id just screams "compatibility problems
+> down the road" at me. Does anyone else has any other opinion on this?
 
-<CPU A, t4> - arp_process() finally calls neigh_release(n), destroying
-the neighbour entry and we have a destroyed ntry still part of gc_list.
+Well, *if* we ever want to extend them (e.g., to support other values of
+the protocol field, if that ever becomes necessary), we'll probably also
+want to make it possible to pass the same identifiers as options, so
+just reusing the opts struct definitely makes sense!
 
-Fixes: eb4e8fac00d1("neighbour: Prevent a dead entry from updating gc_list")
-Signed-off-by: Chinmay Agarwal <chinagar@codeaurora.org>
----
- net/core/neighbour.c | 4 ++++
- 1 file changed, 4 insertions(+)
+>> +struct bpf_tc_info {
+>> +       struct bpf_tc_attach_id id;
+>> +       __u16 protocol;
+>> +       __u32 chain_index;
+>> +       __u32 prog_id;
+>> +       __u8 tag[BPF_TAG_SIZE];
+>> +       __u32 class_id;
+>> +       __u32 bpf_flags;
+>> +       __u32 bpf_flags_gen;
+>> +};
+>> +
+>> +/* id is out parameter that will be written to, it must not be NULL */
+>> +LIBBPF_API int bpf_tc_attach(int fd, __u32 ifindex, __u32 parent_id,
+>
+> so parent_id is INGRESS|EGRESS, right? Is that an obvious name for
+> this parameter? I had to look at the code to understand what's
+> expected. Is it possible that it will be anything other than INGRESS
+> or EGRESS? If not `bool ingress` might be an option. Or perhaps enum
+> bpf_tc_direction { BPF_TC_INGRESS, BPF_TC_EGRESS } is better still.
 
-diff --git a/net/core/neighbour.c b/net/core/neighbour.c
-index c26ecbe..bce395ed 100644
---- a/net/core/neighbour.c
-+++ b/net/core/neighbour.c
-@@ -133,6 +133,9 @@ static void neigh_update_gc_list(struct neighbour *n)
- 	write_lock_bh(&n->tbl->lock);
- 	write_lock(&n->lock);
- 
-+	if (n->dead)
-+		goto out;
-+
- 	/* remove from the gc list if new state is permanent or if neighbor
- 	 * is externally learned; otherwise entry should be on the gc list
- 	 */
-@@ -149,6 +152,7 @@ static void neigh_update_gc_list(struct neighbour *n)
- 		atomic_inc(&n->tbl->gc_entries);
- 	}
- 
-+out:
- 	write_unlock(&n->lock);
- 	write_unlock_bh(&n->tbl->lock);
- }
--- 
-The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum,
-a Linux Foundation Collaborative Project
+See above; the parent is the attach point, and you use the defines from
+above if you just want to attach to the interface.
+
+But maybe documenting this in a comment above the function signature
+would be good (along with a bit of terminology from the TC world for
+those coming from there) :)
+
+>> +                            const struct bpf_tc_opts *opts,
+>> +                            struct bpf_tc_attach_id *id);
+>> +LIBBPF_API int bpf_tc_detach(__u32 ifindex, __u32 parent_id,
+>> +                            const struct bpf_tc_attach_id *id);
+>> +LIBBPF_API int bpf_tc_get_info(__u32 ifindex, __u32 parent_id,
+>
+> bpf_tc_query() to be more in line with attach/detach single-word
+> verbs?
+
+OK by me!
+
+-Toke
 
