@@ -2,90 +2,76 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E8A1A366B2E
-	for <lists+netdev@lfdr.de>; Wed, 21 Apr 2021 14:51:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9B744366BCE
+	for <lists+netdev@lfdr.de>; Wed, 21 Apr 2021 15:06:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239922AbhDUMvy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 21 Apr 2021 08:51:54 -0400
-Received: from mail-ej1-f46.google.com ([209.85.218.46]:41774 "EHLO
-        mail-ej1-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239900AbhDUMvw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 21 Apr 2021 08:51:52 -0400
-Received: by mail-ej1-f46.google.com with SMTP id mh2so41786208ejb.8;
-        Wed, 21 Apr 2021 05:51:18 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=ndLA2M+eu6ciNQZvp40gevyZgJ40JW6t1jKr4dHYt6E=;
-        b=GVdv/pJdcsjPikrL0rJn2eBqfJt+ttlaOoszt/i8xMxbLxWU1DwABVBEOvIC+7pp6l
-         8Xrh4z9/hd1wq19k8nV93STQgdWfBi+RywOdatZ8kXJYuiDQt0eT9nAwDo1iAX98jpKq
-         gzqqdH+JOqBdMJwzeISeR4YKTotK3GKUp9rYx4fs4I7IvXgj6qXdAJTgTh8BsBEOzRX7
-         E9xwIQqJzIofUOWIyYePnSBDR1sPRzIQ7P9hoOJHvJNY06DpUNTsN9RtADQDpmFCnNwA
-         w8ZZjmZTtY+hcRV2dcI7nuomNqNVaDonA83mzRXZxUvxSMvdrCV/gWmCK6B59aCD0VD4
-         qeaw==
-X-Gm-Message-State: AOAM532tvWOaWdGJrGnywK0G1QbjrNTRnCJ+yN1iwj3EZDjz8mQrSkp6
-        V1GiLA0dvG+csLcHPKfmBUrMA5U0ZYGtFb16k6mBHk56
-X-Google-Smtp-Source: ABdhPJyhc+VdqYvLWXX86cSr/y6wBO3PWkQALkB7GRQlIZpNdpHoZaohjcxYkO3CuXF0/U2VCBTxpqs72mkC/7/CnM4=
-X-Received: by 2002:a17:907:72cc:: with SMTP id du12mr20167788ejc.436.1619009478136;
- Wed, 21 Apr 2021 05:51:18 -0700 (PDT)
-MIME-Version: 1.0
-References: <20210407001658.2208535-1-pakki001@umn.edu> <YH5/i7OvsjSmqADv@kroah.com>
- <20210420171008.GB4017@fieldses.org> <YH+zwQgBBGUJdiVK@unreal>
-In-Reply-To: <YH+zwQgBBGUJdiVK@unreal>
-From:   Anna Schumaker <anna.schumaker@netapp.com>
-Date:   Wed, 21 Apr 2021 08:51:02 -0400
-Message-ID: <CAFX2JfnGCbanTaGurArBw-5F2MynPD=GpwkfU6wVoNKr9ffzRg@mail.gmail.com>
-Subject: Re: [PATCH] SUNRPC: Add a check for gss_release_msg
-To:     Leon Romanovsky <leon@kernel.org>
-Cc:     "J. Bruce Fields" <bfields@fieldses.org>,
-        Greg KH <gregkh@linuxfoundation.org>,
-        Aditya Pakki <pakki001@umn.edu>,
-        Chuck Lever <chuck.lever@oracle.com>,
-        Trond Myklebust <trond.myklebust@hammerspace.com>,
+        id S240963AbhDUNHN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 21 Apr 2021 09:07:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38776 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S240968AbhDUNGW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 21 Apr 2021 09:06:22 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A3C81C06138D
+        for <netdev@vger.kernel.org>; Wed, 21 Apr 2021 06:05:48 -0700 (PDT)
+Received: from dude.hi.pengutronix.de ([2001:67c:670:100:1d::7])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ore@pengutronix.de>)
+        id 1lZCY3-0006AR-M4; Wed, 21 Apr 2021 15:05:43 +0200
+Received: from ore by dude.hi.pengutronix.de with local (Exim 4.92)
+        (envelope-from <ore@pengutronix.de>)
+        id 1lZCY2-0004qf-Bi; Wed, 21 Apr 2021 15:05:42 +0200
+From:   Oleksij Rempel <o.rempel@pengutronix.de>
+To:     Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
         "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Dave Wysochanski <dwysocha@redhat.com>,
-        Linux NFS Mailing List <linux-nfs@vger.kernel.org>,
-        netdev@vger.kernel.org,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     Oleksij Rempel <o.rempel@pengutronix.de>, kernel@pengutronix.de,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Russell King <linux@armlinux.org.uk>
+Subject: [PATCH net-next v1] net: dsa: fix bridge support for drivers without port_bridge_flags callback
+Date:   Wed, 21 Apr 2021 15:05:40 +0200
+Message-Id: <20210421130540.12522-1-o.rempel@pengutronix.de>
+X-Mailer: git-send-email 2.29.2
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::7
+X-SA-Exim-Mail-From: ore@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Apr 21, 2021 at 2:07 AM Leon Romanovsky <leon@kernel.org> wrote:
->
-> On Tue, Apr 20, 2021 at 01:10:08PM -0400, J. Bruce Fields wrote:
-> > On Tue, Apr 20, 2021 at 09:15:23AM +0200, Greg KH wrote:
-> > > If you look at the code, this is impossible to have happen.
-> > >
-> > > Please stop submitting known-invalid patches.  Your professor is playing
-> > > around with the review process in order to achieve a paper in some
-> > > strange and bizarre way.
-> > >
-> > > This is not ok, it is wasting our time, and we will have to report this,
-> > > AGAIN, to your university...
-> >
-> > What's the story here?
->
-> Those commits are part of the following research:
-> https://github.com/QiushiWu/QiushiWu.github.io/blob/main/papers/OpenSourceInsecurity.pdf
+Starting with patch:
+a8b659e7ff75 ("net: dsa: act as passthrough for bridge port flags")
 
-This thread is the first I'm hearing about this. I wonder if there is
-a good way of alerting the entire kernel community (including those
-only subscribed to subsystem mailing lists) about what's going on? It
-seems like useful information to have to push back against these
-patches.
+drivers without "port_bridge_flags" callback will fail to join the bridge.
+Looking at the code, -EOPNOTSUPP seems to be the proper return value,
+which makes at least microchip and atheros switches work again.
 
-Anna
+Fixes: a8b659e7ff75 ("net: dsa: act as passthrough for bridge port flags")
+Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
+---
+ net/dsa/port.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
->
-> They introduce kernel bugs on purpose. Yesterday, I took a look on 4
-> accepted patches from Aditya and 3 of them added various severity security
-> "holes".
->
-> Thanks
->
-> >
-> > --b.
+diff --git a/net/dsa/port.c b/net/dsa/port.c
+index 01e30264b25b..6379d66a6bb3 100644
+--- a/net/dsa/port.c
++++ b/net/dsa/port.c
+@@ -550,7 +550,7 @@ int dsa_port_bridge_flags(const struct dsa_port *dp,
+ 	struct dsa_switch *ds = dp->ds;
+ 
+ 	if (!ds->ops->port_bridge_flags)
+-		return -EINVAL;
++		return -EOPNOTSUPP;
+ 
+ 	return ds->ops->port_bridge_flags(ds, dp->index, flags, extack);
+ }
+-- 
+2.29.2
+
