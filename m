@@ -2,33 +2,30 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id ECC2D366CA7
-	for <lists+netdev@lfdr.de>; Wed, 21 Apr 2021 15:22:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 74670366CAB
+	for <lists+netdev@lfdr.de>; Wed, 21 Apr 2021 15:22:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242286AbhDUNWd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 21 Apr 2021 09:22:33 -0400
-Received: from mail.kernel.org ([198.145.29.99]:38764 "EHLO mail.kernel.org"
+        id S241889AbhDUNWn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 21 Apr 2021 09:22:43 -0400
+Received: from mail.kernel.org ([198.145.29.99]:39108 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S241745AbhDUNVY (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 21 Apr 2021 09:21:24 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 16FB1601FD;
-        Wed, 21 Apr 2021 13:20:49 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1619011250;
-        bh=eC3IDRJsjjQbiM4nyZrpIMd+T/Oe9fAhzosf/ug5/bs=;
+        id S240951AbhDUNVw (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 21 Apr 2021 09:21:52 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 5CEEB61451;
+        Wed, 21 Apr 2021 13:21:17 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1619011277;
+        bh=7VQd0qhBnhsqrviqQpQMiYsht0iCQ4F6r5F05O1PqxM=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=rh9Z60yMfDSNGgDgoGe+JGQMX6J+cEE//zgJ7r24476K5FT7c0VZs7UzyqmrCJj/0
-         y4eSWG7/975skGcV9dWZ+if67mmJgE+xLwsK1R6b7iTe5/zEkfkxYarKRqZ0fIT3Qc
-         23vLUCfj4ckU02ZFtXEqiMF6JB1R98GksD2e9B+z0cBhDUk7sIRYCntFlAB4w3EV33
-         ROO7ZXEV8f1tsWsY0HMuF5SEYWzCyGuN8PN5/wX9RPFL5K+xIxEUc08OTVFXslT5RG
-         Yvx8n/2X6sMRRPOY2tUODJuq5hnJcVkmXJQEaFwCNHG6Kpw81MULdO109f0LPR4YRV
-         fOni1bpb9Lm4w==
-Date:   Wed, 21 Apr 2021 16:20:46 +0300
-From:   Leon Romanovsky <leon@kernel.org>
+        b=k8iTGcHg7SnZd56r7hp1DWGB/dbQEU0GKpIeE2srY23P9NGnc2iund9f2XzWUu/mV
+         YzT08DkFW7ViV32OnhojtzOUT99FFNBRbFyKF5AXNRFJ8WrwKVIRqnpmv4VsvPSomO
+         tDSnLaHZtAdtXTa/J6sYL30+n+VJp2RTd+b3KCOo=
+Date:   Wed, 21 Apr 2021 15:21:15 +0200
+From:   "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>
 To:     Trond Myklebust <trondmy@hammerspace.com>
 Cc:     "a.shelat@northeastern.edu" <a.shelat@northeastern.edu>,
+        "leon@kernel.org" <leon@kernel.org>,
         "davem@davemloft.net" <davem@davemloft.net>,
-        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
         "chuck.lever@oracle.com" <chuck.lever@oracle.com>,
         "dwysocha@redhat.com" <dwysocha@redhat.com>,
         "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
@@ -40,7 +37,7 @@ Cc:     "a.shelat@northeastern.edu" <a.shelat@northeastern.edu>,
         "linux-nfs@vger.kernel.org" <linux-nfs@vger.kernel.org>,
         "netdev@vger.kernel.org" <netdev@vger.kernel.org>
 Subject: Re: [PATCH] SUNRPC: Add a check for gss_release_msg
-Message-ID: <YIAmrgZ4Bnqo/nmI@unreal>
+Message-ID: <YIAmy0zgrQW/44Hz@kroah.com>
 References: <20210407001658.2208535-1-pakki001@umn.edu>
  <YH5/i7OvsjSmqADv@kroah.com>
  <20210420171008.GB4017@fieldses.org>
@@ -102,25 +99,25 @@ On Wed, Apr 21, 2021 at 01:11:03PM +0000, Trond Myklebust wrote:
 > 
 > <shrug>That's an easy thing to sidestep by just shifting to using a
 > private email address.</shrug>
-> 
+
+If they just want to be jerks, yes.  But they can't then use that type
+of "hiding" to get away with claiming it was done for a University
+research project as that's even more unethical than what they are doing
+now.
+
 > There really is no alternative for maintainers other than to always be
 > sceptical of patches submitted by people who are not known and trusted
 > members of the community, and to scrutinise those patches with more
 > care.
 
-Right, my guess is that many maintainers failed in the trap when they
-saw respectful address @umn.edu together with commit message saying
-about "new static analyzer tool".
+Agreed, and when we notice things like this that were determined to be
+bad, we have the ability to easily go back and rip the changes out and
+we can slowly add them back if they are actually something we want to
+do.
 
-The mental bias here is to say that "oh, another academic group tries
-to reinvent the wheel, looks ok".
+Which is what I just did:
+	https://lore.kernel.org/lkml/20210421130105.1226686-1-gregkh@linuxfoundation.org/
 
-Thanks
+thanks,
 
-> 
-> -- 
-> Trond Myklebust
-> Linux NFS client maintainer, Hammerspace
-> trond.myklebust@hammerspace.com
-> 
-> 
+greg k-h
