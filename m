@@ -2,108 +2,146 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 411D3366D61
-	for <lists+netdev@lfdr.de>; Wed, 21 Apr 2021 15:57:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EC750366D78
+	for <lists+netdev@lfdr.de>; Wed, 21 Apr 2021 16:01:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243103AbhDUN60 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 21 Apr 2021 09:58:26 -0400
-Received: from relay1-d.mail.gandi.net ([217.70.183.193]:40039 "EHLO
-        relay1-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238217AbhDUN60 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 21 Apr 2021 09:58:26 -0400
-X-Originating-IP: 78.45.89.65
-Received: from im-t490s.redhat.com (ip-78-45-89-65.net.upcbroadband.cz [78.45.89.65])
-        (Authenticated sender: i.maximets@ovn.org)
-        by relay1-d.mail.gandi.net (Postfix) with ESMTPSA id 89E21240007;
-        Wed, 21 Apr 2021 13:57:49 +0000 (UTC)
-From:   Ilya Maximets <i.maximets@ovn.org>
-To:     Pravin B Shelar <pshelar@ovn.org>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, Andy Zhou <azhou@ovn.org>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        dev@openvswitch.org, Tonghao Zhang <xiangxia.m.yue@gmail.com>,
-        William Tu <u9012063@gmail.com>,
-        Jean Tourrilhes <jean.tourrilhes@hpe.com>,
-        Ilya Maximets <i.maximets@ovn.org>
-Subject: [PATCH net] openvswitch: meter: remove rate from the bucket size calculation
-Date:   Wed, 21 Apr 2021 15:57:47 +0200
-Message-Id: <20210421135747.312095-1-i.maximets@ovn.org>
-X-Mailer: git-send-email 2.26.3
+        id S237591AbhDUOB7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 21 Apr 2021 10:01:59 -0400
+Received: from mail.kernel.org ([198.145.29.99]:37474 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S236913AbhDUOB5 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 21 Apr 2021 10:01:57 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 04BEC61439;
+        Wed, 21 Apr 2021 14:01:21 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1619013684;
+        bh=NAHWkIPCTubNFEdu5PvwFwsX+MLtZ95c+VqOn5fzIh4=;
+        h=From:To:Cc:Subject:Date:From;
+        b=V0OlZwE/BdwxgfEFfE7u7GYoWVM37GunB6tDOud82E9Xz8pxNlkcuPkX+mZI20RbS
+         u1rOmTgFI9nLr9EPxFOyPUOa71vI7xohjtKWJ5zlA0pwxNUA7NZeHLvumsxtCnacKC
+         cGOOc/C6rnyCBmwakagZxIFYlvgi9r7pihmezpatE1dGc7HI7V64wYxg9IzLJbcmA3
+         fkeNKAiChjdTCd3ii74YakQDxgD+SRDNOG8FPaNAiOKdawT9MUz3xoNyl1STztOewQ
+         aT/hJL+4f8v8b2e67055l901H0Lup7vIzBLoBXNedPIWinQ+VKzB09RLhxo6wvtISJ
+         BtWUvxgN2WTaA==
+From:   Arnd Bergmann <arnd@kernel.org>
+To:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>
+Cc:     Arnd Bergmann <arnd@arndb.de>, Andrew Lunn <andrew@lunn.ch>,
+        Valentin Vidic <vvidic@valentin-vidic.from.hr>,
+        Mike Rapoport <rppt@kernel.org>,
+        =?UTF-8?q?Vincent=20Stehl=C3=A9?= <vincent.stehle@laposte.net>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] [net-next] net: korina: fix compile-testing on x86
+Date:   Wed, 21 Apr 2021 16:01:12 +0200
+Message-Id: <20210421140117.3745422-1-arnd@kernel.org>
+X-Mailer: git-send-email 2.29.2
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Implementation of meters supposed to be a classic token bucket with 2
-typical parameters: rate and burst size.
+From: Arnd Bergmann <arnd@arndb.de>
 
-Burst size in this schema is the maximum number of bytes/packets that
-could pass without being rate limited.
+The 'desc_empty' enum in this driver conflicts with a function
+of the same namem that is declared in an x86 header:
 
-Recent changes to userspace datapath made meter implementation to be
-in line with the kernel one, and this uncovered several issues.
+drivers/net/ethernet/korina.c:326:9: error: 'desc_empty' redeclared as different kind of symbol
+  326 |         desc_empty
+      |         ^~~~~~~~~~
+In file included from arch/x86/include/asm/elf.h:93,
+                 from include/linux/elf.h:6,
+                 from include/linux/module.h:18,
+                 from drivers/net/ethernet/korina.c:36:
+arch/x86/include/asm/desc.h:99:19: note: previous definition of 'desc_empty' with type 'int(const void *)'
+   99 | static inline int desc_empty(const void *ptr)
 
-The main problem is that maximum bucket size for unknown reason
-accounts not only burst size, but also the numerical value of rate.
-This creates a lot of confusion around behavior of meters.
+As the header was there first, rename the enum value to use
+a more specific namespace.
 
-For example, if rate is configured as 1000 pps and burst size set to 1,
-this should mean that meter will tolerate bursts of 1 packet at most,
-i.e. not a single packet above the rate should pass the meter.
-However, current implementation calculates maximum bucket size as
-(rate + burst size), so the effective bucket size will be 1001.  This
-means that first 1000 packets will not be rate limited and average
-rate might be twice as high as the configured rate.  This also makes
-it practically impossible to configure meter that will have burst size
-lower than the rate, which might be a desirable configuration if the
-rate is high.
-
-Inability to configure low values of a burst size and overall inability
-for a user to predict what will be a maximum and average rate from the
-configured parameters of a meter without looking at the OVS and kernel
-code might be also classified as a security issue, because drop meters
-are frequently used as a way of protection from DoS attacks.
-
-This change removes rate from the calculation of a bucket size, making
-it in line with the classic token bucket algorithm and essentially
-making the rate and burst tolerance being predictable from a users'
-perspective.
-
-Same change proposed for the userspace implementation.
-
-Fixes: 96fbc13d7e77 ("openvswitch: Add meter infrastructure")
-Signed-off-by: Ilya Maximets <i.maximets@ovn.org>
+Fixes: 6ef92063bf94 ("net: korina: Make driver COMPILE_TESTable")
+Signed-off-by: Arnd Bergmann <arnd@arndb.de>
 ---
+ drivers/net/ethernet/korina.c | 20 ++++++++++----------
+ 1 file changed, 10 insertions(+), 10 deletions(-)
 
-The same patch for the userspace datapath:
-  https://patchwork.ozlabs.org/project/openvswitch/patch/20210421134816.311584-1-i.maximets@ovn.org/
-
- net/openvswitch/meter.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
-
-diff --git a/net/openvswitch/meter.c b/net/openvswitch/meter.c
-index 15424d26e85d..96b524ceabca 100644
---- a/net/openvswitch/meter.c
-+++ b/net/openvswitch/meter.c
-@@ -392,7 +392,7 @@ static struct dp_meter *dp_meter_create(struct nlattr **a)
- 		 *
- 		 * Start with a full bucket.
- 		 */
--		band->bucket = (band->burst_size + band->rate) * 1000ULL;
-+		band->bucket = band->burst_size * 1000ULL;
- 		band_max_delta_t = div_u64(band->bucket, band->rate);
- 		if (band_max_delta_t > meter->max_delta_t)
- 			meter->max_delta_t = band_max_delta_t;
-@@ -641,7 +641,7 @@ bool ovs_meter_execute(struct datapath *dp, struct sk_buff *skb,
- 		long long int max_bucket_size;
+diff --git a/drivers/net/ethernet/korina.c b/drivers/net/ethernet/korina.c
+index 4878e527e3c8..300b5e8aac3a 100644
+--- a/drivers/net/ethernet/korina.c
++++ b/drivers/net/ethernet/korina.c
+@@ -322,8 +322,8 @@ struct dma_reg {
+ #define TX_TIMEOUT	(6000 * HZ / 1000)
  
- 		band = &meter->bands[i];
--		max_bucket_size = (band->burst_size + band->rate) * 1000LL;
-+		max_bucket_size = band->burst_size * 1000LL;
+ enum chain_status {
+-	desc_filled,
+-	desc_empty
++	korina_desc_filled,
++	korina_desc_empty
+ };
  
- 		band->bucket += delta_ms * band->rate;
- 		if (band->bucket > max_bucket_size)
+ #define DMA_COUNT(count)	((count) & DMA_DESC_COUNT_MSK)
+@@ -459,7 +459,7 @@ static int korina_send_packet(struct sk_buff *skb, struct net_device *dev)
+ 	chain_next = (idx + 1) & KORINA_TDS_MASK;
+ 
+ 	if (readl(&(lp->tx_dma_regs->dmandptr)) == 0) {
+-		if (lp->tx_chain_status == desc_empty) {
++		if (lp->tx_chain_status == korina_desc_empty) {
+ 			/* Update tail */
+ 			td->control = DMA_COUNT(length) |
+ 					DMA_DESC_COF | DMA_DESC_IOF;
+@@ -486,16 +486,16 @@ static int korina_send_packet(struct sk_buff *skb, struct net_device *dev)
+ 			       &lp->tx_dma_regs->dmandptr);
+ 			/* Move head to tail */
+ 			lp->tx_chain_head = lp->tx_chain_tail;
+-			lp->tx_chain_status = desc_empty;
++			lp->tx_chain_status = korina_desc_empty;
+ 		}
+ 	} else {
+-		if (lp->tx_chain_status == desc_empty) {
++		if (lp->tx_chain_status == korina_desc_empty) {
+ 			/* Update tail */
+ 			td->control = DMA_COUNT(length) |
+ 					DMA_DESC_COF | DMA_DESC_IOF;
+ 			/* Move tail */
+ 			lp->tx_chain_tail = chain_next;
+-			lp->tx_chain_status = desc_filled;
++			lp->tx_chain_status = korina_desc_filled;
+ 		} else {
+ 			/* Update tail */
+ 			td->control = DMA_COUNT(length) |
+@@ -864,11 +864,11 @@ korina_tx_dma_interrupt(int irq, void *dev_id)
+ 
+ 		korina_tx(dev);
+ 
+-		if (lp->tx_chain_status == desc_filled &&
++		if (lp->tx_chain_status == korina_desc_filled &&
+ 			(readl(&(lp->tx_dma_regs->dmandptr)) == 0)) {
+ 			writel(korina_tx_dma(lp, lp->tx_chain_head),
+ 			       &lp->tx_dma_regs->dmandptr);
+-			lp->tx_chain_status = desc_empty;
++			lp->tx_chain_status = korina_desc_empty;
+ 			lp->tx_chain_head = lp->tx_chain_tail;
+ 			netif_trans_update(dev);
+ 		}
+@@ -999,7 +999,7 @@ static int korina_alloc_ring(struct net_device *dev)
+ 	}
+ 	lp->tx_next_done = lp->tx_chain_head = lp->tx_chain_tail =
+ 			lp->tx_full = lp->tx_count = 0;
+-	lp->tx_chain_status = desc_empty;
++	lp->tx_chain_status = korina_desc_empty;
+ 
+ 	/* Initialize the receive descriptors */
+ 	for (i = 0; i < KORINA_NUM_RDS; i++) {
+@@ -1027,7 +1027,7 @@ static int korina_alloc_ring(struct net_device *dev)
+ 	lp->rx_next_done  = 0;
+ 	lp->rx_chain_head = 0;
+ 	lp->rx_chain_tail = 0;
+-	lp->rx_chain_status = desc_empty;
++	lp->rx_chain_status = korina_desc_empty;
+ 
+ 	return 0;
+ }
 -- 
-2.26.3
+2.29.2
 
