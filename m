@@ -2,68 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7C6A936715A
+	by mail.lfdr.de (Postfix) with ESMTP id C9BF136715B
 	for <lists+netdev@lfdr.de>; Wed, 21 Apr 2021 19:30:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244752AbhDURat (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 21 Apr 2021 13:30:49 -0400
-Received: from mail.kernel.org ([198.145.29.99]:49272 "EHLO mail.kernel.org"
+        id S244760AbhDURaw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 21 Apr 2021 13:30:52 -0400
+Received: from mail.kernel.org ([198.145.29.99]:49280 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S244672AbhDURan (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S244681AbhDURan (ORCPT <rfc822;netdev@vger.kernel.org>);
         Wed, 21 Apr 2021 13:30:43 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id 4DCBC6145C;
+Received: by mail.kernel.org (Postfix) with ESMTPS id 597936145F;
         Wed, 21 Apr 2021 17:30:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1619026210;
-        bh=wvG6mq/pPzzw+F3r/h1+Yj8Af73d25CcCy4yT3YbXyI=;
+        bh=oKYnH2gsKoQbVYXzSxJCYULxUPFnJ24wTgRD9TyXuT0=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=dJuh4n8zXWmLA3oNwCD/f/Wy53aaRMstQmirCTqglofjWb25/nEEykH5gRMeRGCSC
-         TSRRrUpEcZCO/tTY9IBMXecAj5mHkOpTH6wwtnspDBOx+HVFREID2/FNDkdctXDPPN
-         Rge3aYpuisIltu2MTGHLcL/Oxm8xfudPy390k+576iRr/uhMQ2dLNiQ8iLBBhmxUay
-         DAtYe9hGVPzz5FN8eVDnjKW3v05IwEIbF7XkwmzgtsepV2dRz5fVlkPpuHZ8ucgmC9
-         uXjtFbhNKmwlnQrJiXLyYRxGzzGdOhZ0QNs+Y9PFf8x7XxJ17k9hZqOEISe2MXL+R4
-         jilbJ45JAmnbg==
+        b=V5PsviPTpwXStpsmsJIEV5zm8HNVlITlZL4m5Imt2loluqNJ++kxG5E4HoZ+b/sFn
+         2Z/MLKlXOYxjlO6nGr5PWSWk1sBo6B4GsFX1T18p1AamOw0aHKZtusOaXGaXs9R46J
+         NOoz4sqIA9q6TY9K9PqxTEe0e/rq4iL0PjxVLDQfW4SQ/8NzKs279d/xupIV5sTxBA
+         GtcN75HowtrceeczF8Bokq1vZHP43vhc59KIwuCXiYj2UTGRGGHCx5cvbU+S/ULcyr
+         8xFAKrxEI5ABpsHVaMzE+L/qljO8D7FMnBy7yAC75x04YDwF2HMVm0bRqQkbY9wzsc
+         yRMTPnbAWytcA==
 Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 4847B60A3C;
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 515A060A39;
         Wed, 21 Apr 2021 17:30:10 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next] stmmac: intel: unlock on error path in
- intel_crosststamp()
+Subject: Re: [PATCH v2 net-next 0/3] Add support for CN10K CPT block
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <161902621029.9844.10834595645280467228.git-patchwork-notify@kernel.org>
+Message-Id: <161902621032.9844.14587772703604794442.git-patchwork-notify@kernel.org>
 Date:   Wed, 21 Apr 2021 17:30:10 +0000
-References: <YIAnKtpJa/K+0efq@mwanda>
-In-Reply-To: <YIAnKtpJa/K+0efq@mwanda>
-To:     Dan Carpenter <dan.carpenter@oracle.com>
-Cc:     peppe.cavallaro@st.com, tee.min.tan@intel.com,
-        alexandre.torgue@foss.st.com, joabreu@synopsys.com,
-        davem@davemloft.net, kuba@kernel.org, mcoquelin.stm32@gmail.com,
-        vee.khee.wong@linux.intel.com, richardcochran@gmail.com,
-        netdev@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com,
-        kernel-janitors@vger.kernel.org
+References: <20210421092302.22402-1-schalla@marvell.com>
+In-Reply-To: <20210421092302.22402-1-schalla@marvell.com>
+To:     Srujana Challa <schalla@marvell.com>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
+        sgoutham@marvell.com, lcherian@marvell.com, sbhatta@marvell.com,
+        hkelam@marvell.com, gakula@marvell.com, jerinj@marvell.com,
+        pathreya@marvell.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 Hello:
 
-This patch was applied to netdev/net-next.git (refs/heads/master):
+This series was applied to netdev/net-next.git (refs/heads/master):
 
-On Wed, 21 Apr 2021 16:22:50 +0300 you wrote:
-> We recently added some new locking to this function but one error path
-> was overlooked.  We need to drop the lock before returning.
+On Wed, 21 Apr 2021 14:52:59 +0530 you wrote:
+> OcteonTX3 (CN10K) silicon is a Marvell next-gen silicon. CN10K CPT
+> introduces new features like reassembly support and some feature
+> enhancements.
+> This patchset adds new mailbox messages and some minor changes to
+> existing mailbox messages to support CN10K CPT.
 > 
-> Fixes: f4da56529da6 ("net: stmmac: Add support for external trigger timestamping")
-> Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
-> ---
->  drivers/net/ethernet/stmicro/stmmac/dwmac-intel.c | 1 +
->  1 file changed, 1 insertion(+)
+> v1-v2
+> Fixed sparse warnings.
+> 
+> [...]
 
 Here is the summary with links:
-  - [net-next] stmmac: intel: unlock on error path in intel_crosststamp()
-    https://git.kernel.org/netdev/net-next/c/53e35ebb9a17
+  - [v2,1/3] octeontx2-af: cn10k: Mailbox changes for CN10K CPT
+    https://git.kernel.org/netdev/net-next/c/e4bbc5c53a8f
+  - [v2,2/3] octeontx2-af: cn10k: Add mailbox to configure reassembly timeout
+    https://git.kernel.org/netdev/net-next/c/ecad2ce8c48f
+  - [v2,3/3] octeontx2-af: Add mailbox for CPT stats
+    https://git.kernel.org/netdev/net-next/c/2e2ee4cd0ab5
 
 You are awesome, thank you!
 --
