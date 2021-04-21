@@ -2,50 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 67A1C3664AF
+	by mail.lfdr.de (Postfix) with ESMTP id 1C4F93664AE
 	for <lists+netdev@lfdr.de>; Wed, 21 Apr 2021 07:11:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235061AbhDUFKb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 21 Apr 2021 01:10:31 -0400
-Received: from mxout70.expurgate.net ([91.198.224.70]:58388 "EHLO
+        id S234919AbhDUFIc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 21 Apr 2021 01:08:32 -0400
+Received: from mxout70.expurgate.net ([91.198.224.70]:56790 "EHLO
         mxout70.expurgate.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230440AbhDUFKb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 21 Apr 2021 01:10:31 -0400
+        with ESMTP id S230440AbhDUFI3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 21 Apr 2021 01:08:29 -0400
+X-Greylist: delayed 443 seconds by postgrey-1.27 at vger.kernel.org; Wed, 21 Apr 2021 01:08:28 EDT
 Received: from [127.0.0.1] (helo=localhost)
         by relay.expurgate.net with smtp (Exim 4.92)
         (envelope-from <ms@dev.tdt.de>)
-        id 1lZ4xf-000CbZ-Oa; Wed, 21 Apr 2021 06:59:39 +0200
+        id 1lZ54j-0006TL-10; Wed, 21 Apr 2021 07:06:57 +0200
 Received: from [195.243.126.94] (helo=securemail.tdt.de)
         by relay.expurgate.net with esmtps (TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <ms@dev.tdt.de>)
-        id 1lZ4xe-000K08-St; Wed, 21 Apr 2021 06:59:38 +0200
+        id 1lZ54i-000Lxz-50; Wed, 21 Apr 2021 07:06:56 +0200
 Received: from securemail.tdt.de (localhost [127.0.0.1])
-        by securemail.tdt.de (Postfix) with ESMTP id 082F3240041;
-        Wed, 21 Apr 2021 06:59:38 +0200 (CEST)
+        by securemail.tdt.de (Postfix) with ESMTP id 7913F240041;
+        Wed, 21 Apr 2021 07:06:55 +0200 (CEST)
 Received: from mail.dev.tdt.de (unknown [10.2.4.42])
-        by securemail.tdt.de (Postfix) with ESMTP id 7B28E240040;
-        Wed, 21 Apr 2021 06:59:37 +0200 (CEST)
+        by securemail.tdt.de (Postfix) with ESMTP id D6726240040;
+        Wed, 21 Apr 2021 07:06:54 +0200 (CEST)
 Received: from mschiller01.dev.tdt.de (unknown [10.2.3.20])
-        by mail.dev.tdt.de (Postfix) with ESMTPSA id 19A2F20240;
-        Wed, 21 Apr 2021 06:59:37 +0200 (CEST)
+        by mail.dev.tdt.de (Postfix) with ESMTPSA id 833D620240;
+        Wed, 21 Apr 2021 07:06:54 +0200 (CEST)
 From:   Martin Schiller <ms@dev.tdt.de>
-To:     andrew.hendry@gmail.com, hkallweit1@gmail.com,
+To:     hauke@hauke-m.de, martin.blumenstingl@googlemail.com,
+        andrew.hendry@gmail.com, hkallweit1@gmail.com,
         linux@armlinux.org.uk, davem@davemloft.net, kuba@kernel.org
 Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
         Martin Schiller <ms@dev.tdt.de>
-Subject: [PATCH net] net: phy: intel-xway: enable integrated led functions
-Date:   Wed, 21 Apr 2021 06:59:17 +0200
-Message-ID: <20210421045917.10171-1-ms@dev.tdt.de>
+Subject: [PATCH net v2] net: phy: intel-xway: enable integrated led functions
+Date:   Wed, 21 Apr 2021 07:06:27 +0200
+Message-ID: <20210421050627.11250-1-ms@dev.tdt.de>
 X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
 X-Spam-Status: No, score=-1.0 required=5.0 tests=ALL_TRUSTED,URIBL_BLOCKED
         autolearn=ham autolearn_force=no version=3.4.2
 X-Spam-Checker-Version: SpamAssassin 3.4.2 (2018-09-13) on mail.dev.tdt.de
 Content-Transfer-Encoding: quoted-printable
-X-purgate: clean
-X-purgate-ID: 151534::1618981179-0001DC19-A880F7FB/0/0
 X-purgate-type: clean
+X-purgate-ID: 151534::1618981616-0000EC72-D3A4C568/0/0
+X-purgate: clean
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
@@ -64,6 +66,11 @@ still preventing an excessive amount of soft resets.
 
 Fixes: 6e2d85ec0559 ("net: phy: Stop with excessive soft reset")
 Signed-off-by: Martin Schiller <ms@dev.tdt.de>
+---
+
+Changes to v1:
+Added additional email recipients.
+
 ---
  drivers/net/phy/intel-xway.c | 21 +++++++++++++++++++++
  1 file changed, 21 insertions(+)
