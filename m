@@ -2,90 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 80197367597
-	for <lists+netdev@lfdr.de>; Thu, 22 Apr 2021 01:12:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DDFE43675A1
+	for <lists+netdev@lfdr.de>; Thu, 22 Apr 2021 01:14:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234867AbhDUXLn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 21 Apr 2021 19:11:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60088 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343674AbhDUXLk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 21 Apr 2021 19:11:40 -0400
-Received: from mail-wr1-x429.google.com (mail-wr1-x429.google.com [IPv6:2a00:1450:4864:20::429])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE2FCC06174A
-        for <netdev@vger.kernel.org>; Wed, 21 Apr 2021 16:11:04 -0700 (PDT)
-Received: by mail-wr1-x429.google.com with SMTP id h4so33863693wrt.12
-        for <netdev@vger.kernel.org>; Wed, 21 Apr 2021 16:11:04 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=philpotter-co-uk.20150623.gappssmtp.com; s=20150623;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=BbWVjYPqLwnuhatdoL5i7GvVhe7lvMrxaHilttyNRMU=;
-        b=nNNm3pMKhsGiG7o9fMMK7bQrVPxij3MuM7drbcQMRXhPmUb7mixi8xe/eYFsP4axmi
-         X1DnmbwLT0k20AWnWnuiLWKIhaL1EnpEx+kxSqsm6xO+SQ0uyNrIflatz2oLSsrmVz2A
-         VcFS0gy/Y6mBy4twReQBiWG66JcNqODbxpQMbXCRyyQhKUA6huA2dmdrMBiFgb3eqjn8
-         zjwTmGl/B68ZvNY/TKciP7iM3GkDHGO0trB4kZ9iIqZXbcqxVFsOv2z30uDYla7/XA9S
-         WisSB//a6F6KnOOkTVXNl2UPH9ujF4A2dW2XzxcZi4F09QJEXKIaABBsOEOfhGnXWMFV
-         +b6Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=BbWVjYPqLwnuhatdoL5i7GvVhe7lvMrxaHilttyNRMU=;
-        b=QFbxUhoR1D1+vx1tIQzykYyQyERRAaigAl2c0KGWuR1+QFtgS10mQOl1N3cHmAAMnX
-         s1O+0pvf4VME9SZ+mM7c1+BNUpc/rvHu4lJpZrLffgKZs71XOSkuqtpUCfqaA2QvvGah
-         blCFpr0OXE5GJMNy/c7JCJwVF4ur647xfoJb6lZiVXytMYnFwGpLKNfgWN7dQgz31w1J
-         FKwifMFpc1UOo21FrKYVLJMVq3Pgtwdm+lmnsi4n1ABwCXQ6dms4vmhmL3YfiZeWTQBB
-         q+pyW8OywkH702RMosh/0KEQXtEAXl9ctulX66yt+QWjZP3ck4HShn7ioPK8G6Jbb794
-         liDw==
-X-Gm-Message-State: AOAM532uAxJqQucsfExvaUvG2d8e/9KeBoyuhs/o7ArN2Sj2zFhPcOMb
-        s1WvW5KoiQSF3Ig1F7TVf1yU+A==
-X-Google-Smtp-Source: ABdhPJzb8usVsAK0c/UPmOrjqriA+wCPj8E4jJDBY/EWTh2ihuumYIN5Gg3uqQr5d+dExV4d/9NyEQ==
-X-Received: by 2002:adf:d1c9:: with SMTP id b9mr503203wrd.352.1619046663555;
-        Wed, 21 Apr 2021 16:11:03 -0700 (PDT)
-Received: from localhost.localdomain (2.0.5.1.1.6.3.8.5.c.c.3.f.b.d.3.0.0.0.0.6.1.f.d.0.b.8.0.1.0.0.2.ip6.arpa. [2001:8b0:df16:0:3dbf:3cc5:8361:1502])
-        by smtp.gmail.com with ESMTPSA id a2sm3335236wmn.48.2021.04.21.16.11.02
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 21 Apr 2021 16:11:03 -0700 (PDT)
-From:   Phillip Potter <phil@philpotter.co.uk>
-To:     davem@davemloft.net
-Cc:     kuba@kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, edumazet@google.com
-Subject: [PATCH] net: geneve: modify IP header check in geneve6_xmit_skb
-Date:   Thu, 22 Apr 2021 00:11:00 +0100
-Message-Id: <20210421231100.7467-1-phil@philpotter.co.uk>
-X-Mailer: git-send-email 2.30.2
+        id S1343692AbhDUXPU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 21 Apr 2021 19:15:20 -0400
+Received: from www62.your-server.de ([213.133.104.62]:46940 "EHLO
+        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234867AbhDUXPT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 21 Apr 2021 19:15:19 -0400
+Received: from sslproxy02.your-server.de ([78.47.166.47])
+        by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92.3)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1lZM3P-000Er3-Ka; Thu, 22 Apr 2021 01:14:43 +0200
+Received: from [85.7.101.30] (helo=linux.home)
+        by sslproxy02.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1lZM3P-000JQ5-Ad; Thu, 22 Apr 2021 01:14:43 +0200
+Subject: Re: [PATCH bpf-next v3 2/3] libbpf: add low level TC-BPF API
+To:     =?UTF-8?Q?Toke_H=c3=b8iland-J=c3=b8rgensen?= <toke@redhat.com>,
+        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
+        Kumar Kartikeya Dwivedi <memxor@gmail.com>
+Cc:     bpf <bpf@vger.kernel.org>, Alexei Starovoitov <ast@kernel.org>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        Networking <netdev@vger.kernel.org>
+References: <20210420193740.124285-1-memxor@gmail.com>
+ <20210420193740.124285-3-memxor@gmail.com>
+ <CAEf4BzYj_pODiQ_Xkdz_czAj3iaBcRhudeb_kJ4M2SczA_jDjA@mail.gmail.com>
+ <87tunzh11d.fsf@toke.dk>
+From:   Daniel Borkmann <daniel@iogearbox.net>
+Message-ID: <bd2ed7ed-a502-bee5-0a56-0f3064ee2be5@iogearbox.net>
+Date:   Thu, 22 Apr 2021 01:14:42 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
 MIME-Version: 1.0
+In-Reply-To: <87tunzh11d.fsf@toke.dk>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
 Content-Transfer-Encoding: 8bit
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.102.4/26147/Wed Apr 21 13:06:05 2021)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Modify the check in geneve6_xmit_skb to use the size of a struct iphdr
-rather than struct ipv6hdr. This fixes two kernel selftest failures
-introduced by commit 6628ddfec758
-("net: geneve: check skb is large enough for IPv4/IPv6 header"), without
-diminishing the fix provided by that commit.
+On 4/21/21 9:48 PM, Toke Høiland-Jørgensen wrote:
+> Andrii Nakryiko <andrii.nakryiko@gmail.com> writes:
+>> On Tue, Apr 20, 2021 at 12:37 PM Kumar Kartikeya Dwivedi
+>> <memxor@gmail.com> wrote:
+[...]
+>>> ---
+>>>   tools/lib/bpf/libbpf.h   |  44 ++++++
+>>>   tools/lib/bpf/libbpf.map |   3 +
+>>>   tools/lib/bpf/netlink.c  | 319 ++++++++++++++++++++++++++++++++++++++-
+>>>   3 files changed, 360 insertions(+), 6 deletions(-)
+>>>
+>>> diff --git a/tools/lib/bpf/libbpf.h b/tools/lib/bpf/libbpf.h
+>>> index bec4e6a6e31d..b4ed6a41ea70 100644
+>>> --- a/tools/lib/bpf/libbpf.h
+>>> +++ b/tools/lib/bpf/libbpf.h
+>>> @@ -16,6 +16,8 @@
+>>>   #include <stdbool.h>
+>>>   #include <sys/types.h>  // for size_t
+>>>   #include <linux/bpf.h>
+>>> +#include <linux/pkt_sched.h>
+>>> +#include <linux/tc_act/tc_bpf.h>
+>>
+>> apart from those unused macros below, are these needed in public API header?
+>>
+>>>   #include "libbpf_common.h"
+>>>
+>>> @@ -775,6 +777,48 @@ LIBBPF_API int bpf_linker__add_file(struct bpf_linker *linker, const char *filen
+>>>   LIBBPF_API int bpf_linker__finalize(struct bpf_linker *linker);
+>>>   LIBBPF_API void bpf_linker__free(struct bpf_linker *linker);
+>>>
+>>> +/* Convenience macros for the clsact attach hooks */
+>>> +#define BPF_TC_CLSACT_INGRESS TC_H_MAKE(TC_H_CLSACT, TC_H_MIN_INGRESS)
+>>> +#define BPF_TC_CLSACT_EGRESS TC_H_MAKE(TC_H_CLSACT, TC_H_MIN_EGRESS)
+>>
+>> these seem to be used only internally, why exposing them in public
+>> API?
+> 
+> No they're "aliases" for when you want to attach the filter directly to
+> the interface (and thus install the clsact qdisc as the root). You can
+> also use the filter with an existing qdisc (most commonly HTB), in which
+> case you need to specify the qdisc handle as the root. We have a few
+> examples of this use case:
+> 
+> https://github.com/xdp-project/bpf-examples/tree/master/traffic-pacing-edt
+> and
+> https://github.com/xdp-project/xdp-cpumap-tc
 
-Reported-by: kernel test robot <oliver.sang@intel.com>
-Signed-off-by: Phillip Potter <phil@philpotter.co.uk>
----
- drivers/net/geneve.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+I'm a bit puzzled, could you elaborate on your use case on why you wouldn't
+use the tc egress hook for those especially given it's guaranteed to run
+outside of root qdisc lock?
 
-diff --git a/drivers/net/geneve.c b/drivers/net/geneve.c
-index 42f31c681846..a57a5e6f614f 100644
---- a/drivers/net/geneve.c
-+++ b/drivers/net/geneve.c
-@@ -988,7 +988,7 @@ static int geneve6_xmit_skb(struct sk_buff *skb, struct net_device *dev,
- 	__be16 sport;
- 	int err;
- 
--	if (!pskb_network_may_pull(skb, sizeof(struct ipv6hdr)))
-+	if (!pskb_network_may_pull(skb, sizeof(struct iphdr)))
- 		return -EINVAL;
- 
- 	sport = udp_flow_src_port(geneve->net, skb, 1, USHRT_MAX, true);
--- 
-2.30.2
+Some pointers as well:
 
+  - http://vger.kernel.org/lpc-bpf2018.html#session-1
+  - https://netdevconf.info/0x14/session.html?talk-replacing-HTB-with-EDT-and-BPF
+  - https://cilium.io/blog/2020/11/10/cilium-19#bwmanager
+
+Thanks,
+Daniel
