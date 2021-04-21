@@ -2,75 +2,41 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EAEEA366A77
-	for <lists+netdev@lfdr.de>; Wed, 21 Apr 2021 14:09:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DC0AE366A91
+	for <lists+netdev@lfdr.de>; Wed, 21 Apr 2021 14:17:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238413AbhDUMJd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 21 Apr 2021 08:09:33 -0400
-Received: from mail.kernel.org ([198.145.29.99]:40308 "EHLO mail.kernel.org"
+        id S239642AbhDUMSB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 21 Apr 2021 08:18:01 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:33528 "EHLO vps0.lunn.ch"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S235392AbhDUMJa (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 21 Apr 2021 08:09:30 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id CDF7B613E0;
-        Wed, 21 Apr 2021 12:08:56 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1619006937;
-        bh=NqFDGkhYlRMiJHTALUJ/CZF7PfCzmd7eTSEsM8iXJTE=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=KuKVg4HLbA2Nf+78ZDgbo2U08h31kzp56CNuphfVNhnWthd+ayYdQu3qXGOOtoXrJ
-         T7QRTxtNRnb9TL0Th+9Bu5woNqOn6dx7CXuuYmYEC4NEcXCyOAkt/LcUDB42guSxY1
-         ES8LETtsfqvX6i8OFZhCHr1fUe5JOcRee6xA/a2M=
-Date:   Wed, 21 Apr 2021 14:08:54 +0200
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     "Shelat, Abhi" <a.shelat@northeastern.edu>
-Cc:     Sudip Mukherjee <sudipm.mukherjee@gmail.com>,
-        Leon Romanovsky <leon@kernel.org>,
-        "J. Bruce Fields" <bfields@fieldses.org>,
-        Aditya Pakki <pakki001@umn.edu>,
-        Chuck Lever <chuck.lever@oracle.com>,
-        Trond Myklebust <trond.myklebust@hammerspace.com>,
-        Anna Schumaker <anna.schumaker@netapp.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Dave Wysochanski <dwysocha@redhat.com>,
-        "linux-nfs@vger.kernel.org" <linux-nfs@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH] SUNRPC: Add a check for gss_release_msg
-Message-ID: <YIAV1hqp3rkBxVWA@kroah.com>
-References: <20210407001658.2208535-1-pakki001@umn.edu>
- <YH5/i7OvsjSmqADv@kroah.com>
- <20210420171008.GB4017@fieldses.org>
- <YH+zwQgBBGUJdiVK@unreal>
- <YH+7ZydHv4+Y1hlx@kroah.com>
- <CADVatmNgU7t-Co84tSS6VW=3NcPu=17qyVyEEtVMVR_g51Ma6Q@mail.gmail.com>
- <YH/8jcoC1ffuksrf@kroah.com>
- <3B9A54F7-6A61-4A34-9EAC-95332709BAE7@northeastern.edu>
+        id S238221AbhDUMSA (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 21 Apr 2021 08:18:00 -0400
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
+        (envelope-from <andrew@lunn.ch>)
+        id 1lZBnF-000JIp-1F; Wed, 21 Apr 2021 14:17:21 +0200
+Date:   Wed, 21 Apr 2021 14:17:21 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Tobias Waldekranz <tobias@waldekranz.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, vivien.didelot@gmail.com,
+        f.fainelli@gmail.com, olteanv@gmail.com, netdev@vger.kernel.org
+Subject: Re: [PATCH net-next 1/3] net: dsa: mv88e6xxx: Correct spelling of
+ define "ADRR" -> "ADDR"
+Message-ID: <YIAX0axv5LWchKtM@lunn.ch>
+References: <20210421120454.1541240-1-tobias@waldekranz.com>
+ <20210421120454.1541240-2-tobias@waldekranz.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <3B9A54F7-6A61-4A34-9EAC-95332709BAE7@northeastern.edu>
+In-Reply-To: <20210421120454.1541240-2-tobias@waldekranz.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Apr 21, 2021 at 11:58:08AM +0000, Shelat, Abhi wrote:
-> >> 
-> >>>> They introduce kernel bugs on purpose. Yesterday, I took a look on 4
-> >>>> accepted patches from Aditya and 3 of them added various severity security
-> >>>> "holes".
-> >>> 
-> >>> All contributions by this group of people need to be reverted, if they
-> >>> have not been done so already, as what they are doing is intentional
-> >>> malicious behavior and is not acceptable and totally unethical.  I'll
-> >>> look at it after lunch unless someone else wants to do it…
-> >> 
+On Wed, Apr 21, 2021 at 02:04:52PM +0200, Tobias Waldekranz wrote:
+> Because ADRR is not a thing.
 > 
-> <snip>
-> 
-> Academic research should NOT waste the time of a community.
+> Signed-off-by: Tobias Waldekranz <tobias@waldekranz.com>
 
-Thank you for saying this, I appreciate it.
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
 
-greg k-h
+    Andrew
