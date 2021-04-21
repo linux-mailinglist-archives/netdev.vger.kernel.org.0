@@ -2,111 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 07140367182
-	for <lists+netdev@lfdr.de>; Wed, 21 Apr 2021 19:39:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A15D23671B0
+	for <lists+netdev@lfdr.de>; Wed, 21 Apr 2021 19:46:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243043AbhDURk3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 21 Apr 2021 13:40:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43864 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243027AbhDURk1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 21 Apr 2021 13:40:27 -0400
-Received: from mail-oo1-xc2f.google.com (mail-oo1-xc2f.google.com [IPv6:2607:f8b0:4864:20::c2f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1FE26C06174A
-        for <netdev@vger.kernel.org>; Wed, 21 Apr 2021 10:39:54 -0700 (PDT)
-Received: by mail-oo1-xc2f.google.com with SMTP id i3-20020a4ad3830000b02901ef20f8cae8so2069966oos.11
-        for <netdev@vger.kernel.org>; Wed, 21 Apr 2021 10:39:54 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=2NIvDL/pnxWG/XSWH6ctMJRwrsiMqVjZJOoDaRoJS8c=;
-        b=gOY34zMKpKy19sMBflS95m2MN3RgmXslX4/+ftWEiEVP1DHf+TSCC3zUfL4ROg23v+
-         9b3/+vRixP/giuz63hBEzXMciraTCQLIP7sMBwZc+bR/LBhqKDMNQiElzOgwKRSsnHNY
-         pHBIt8Jm4t4VOz9NC4qeX8ALH7ClGgjZFNpxCj0ykypTE4fuRxx+3DAKHmUIJ2DZHPjh
-         a9IeSzoKfhGotdS/TkbrXIQzwMPmfRn4jHDlOAy0rt+AdslndDxB6DvTjWHd0HzekQ77
-         zZh5bUv/SUye4oycQS0cgYTkQs3n+ZRKtvoVtgRZHmmRfoImqqF5XjCYAczktkeYD5HP
-         cjrg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=2NIvDL/pnxWG/XSWH6ctMJRwrsiMqVjZJOoDaRoJS8c=;
-        b=hol0kwBZbHKhvioYk/s9cKtTPjJ4aLzqn5rOqD2LpVd46KNnp+VKMyS79qkN+zzw4f
-         mn5e8bcvyUBsjBgfPz7mAfaEZI4j7LW+HGgjLlaDAdz1CPuVXBmMKspXzLEbrY7YsIGq
-         1rrUC8UTApByJPqnreXnzJUtaB8jqvqK6wReHJKSQKi7rIa6mlBwnx9tw9o4/Yre0xSq
-         95ZlKuolechROK9wg5qC74Vw/yr2ih6olt1hQMpJE/Sf9U+4Q2aw1OVefC/tPYtSFeSJ
-         +1Y40YRJi45o9GxwdCcWh88HXvp44u+R+Tx7fNikG9rzdaDn6igy84uKOB5EudjOqxFN
-         0dIA==
-X-Gm-Message-State: AOAM532Vmxsl5woZ79ToD0D5mXKvGgesVC9qLMqO7IlOPs5PCePRq9EI
-        8EkXhmez7AwpkGHgyNb+Lrt67tNxqX2F8Q==
-X-Google-Smtp-Source: ABdhPJx8BGLlHmozMfXwtB99k0C+w4yPut6QtEKNm6JL+RYogkPpgrqX1bIqExM1XjlhrOA9ZvY7nQ==
-X-Received: by 2002:a4a:dc11:: with SMTP id p17mr21288861oov.50.1619026793532;
-        Wed, 21 Apr 2021 10:39:53 -0700 (PDT)
-Received: from localhost.localdomain (104-57-184-186.lightspeed.austtx.sbcglobal.net. [104.57.184.186])
-        by smtp.gmail.com with ESMTPSA id q130sm595947oif.40.2021.04.21.10.39.52
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 21 Apr 2021 10:39:53 -0700 (PDT)
-From:   Bjorn Andersson <bjorn.andersson@linaro.org>
-To:     Manivannan Sadhasivam <mani@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     linux-arm-msm@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH] net: qrtr: Avoid potential use after free in MHI send
-Date:   Wed, 21 Apr 2021 10:40:07 -0700
-Message-Id: <20210421174007.2954194-1-bjorn.andersson@linaro.org>
-X-Mailer: git-send-email 2.29.2
+        id S244754AbhDURqq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 21 Apr 2021 13:46:46 -0400
+Received: from so254-9.mailgun.net ([198.61.254.9]:36930 "EHLO
+        so254-9.mailgun.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S238606AbhDURqq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 21 Apr 2021 13:46:46 -0400
+DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
+ s=smtp; t=1619027173; h=Date: Message-Id: Cc: To: References:
+ In-Reply-To: From: Subject: Content-Transfer-Encoding: MIME-Version:
+ Content-Type: Sender; bh=mIoGwTFNFlNcqe2snL+bh4loHX2D9cEh/9+/MXFcrK8=;
+ b=kP2MrSU3uz60tEHRxXogWLt46shRnnNzxfsVa1dutg9FZf52ZO2TFyqOvM2KeitP7foPRGwZ
+ +rTesVkKV7ILkFT1iAaOL3LoqyO5xJ308tnSEeQmVvERgia/tGWkj8PQfFmQGv4x7l0OY8IN
+ fRk4stG9TKnNTtpDnZUi0D+txSQ=
+X-Mailgun-Sending-Ip: 198.61.254.9
+X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
+Received: from smtp.codeaurora.org
+ (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
+ smtp-out-n02.prod.us-east-1.postgun.com with SMTP id
+ 608064e32cbba88980e64842 (version=TLS1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Wed, 21 Apr 2021 17:46:11
+ GMT
+Sender: kvalo=codeaurora.org@mg.codeaurora.org
+Received: by smtp.codeaurora.org (Postfix, from userid 1001)
+        id B4FD1C433F1; Wed, 21 Apr 2021 17:46:10 +0000 (UTC)
+X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
+        aws-us-west-2-caf-mail-1.web.codeaurora.org
+X-Spam-Level: 
+X-Spam-Status: No, score=-1.0 required=2.0 tests=ALL_TRUSTED,BAYES_00,
+        MISSING_DATE,MISSING_MID,SPF_FAIL,URIBL_BLOCKED autolearn=no
+        autolearn_force=no version=3.4.0
+Received: from potku.adurom.net (88-114-240-156.elisa-laajakaista.fi [88.114.240.156])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        (Authenticated sender: kvalo)
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id 2C943C43460;
+        Wed, 21 Apr 2021 17:46:06 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 2C943C43460
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=fail smtp.mailfrom=kvalo@codeaurora.org
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
+Subject: Re: [PATCH] ath9k:remove unneeded variable in
+ ath9k_dump_legacy_btcoex
+From:   Kalle Valo <kvalo@codeaurora.org>
+In-Reply-To: <20210224130356.51444-1-zhangkun4jr@163.com>
+References: <20210224130356.51444-1-zhangkun4jr@163.com>
+To:     zhangkun4jr@163.com
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, ath9k-devel@qca.qualcomm.com,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Zhang Kun <zhangkun@cdjrlc.com>
+User-Agent: pwcli/0.1.0-git (https://github.com/kvalo/pwcli/) Python/3.5.2
+Message-Id: <20210421174610.B4FD1C433F1@smtp.codeaurora.org>
+Date:   Wed, 21 Apr 2021 17:46:10 +0000 (UTC)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-It is possible that the MHI ul_callback will be invoked immediately
-following the queueing of the skb for transmission, leading to the
-callback decrementing the refcount of the associated sk and freeing the
-skb.
+zhangkun4jr@163.com wrote:
 
-As such the dereference of skb and the increment of the sk refcount must
-happen before the skb is queued, to avoid the skb to be used after free
-and potentially the sk to drop its last refcount..
+> From: Zhang Kun <zhangkun@cdjrlc.com>
+> 
+> Remove unneeded variable 'len' in ath9k_dump_legacy_btcoex.
+> 
+> Signed-off-by: Zhang Kun <zhangkun@cdjrlc.com>
 
-Fixes: 6e728f321393 ("net: qrtr: Add MHI transport layer")
-Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
----
- net/qrtr/mhi.c | 8 +++++---
- 1 file changed, 5 insertions(+), 3 deletions(-)
+This fails to compile. Always build check your patches!
 
-diff --git a/net/qrtr/mhi.c b/net/qrtr/mhi.c
-index 2bf2b1943e61..fa611678af05 100644
---- a/net/qrtr/mhi.c
-+++ b/net/qrtr/mhi.c
-@@ -50,6 +50,9 @@ static int qcom_mhi_qrtr_send(struct qrtr_endpoint *ep, struct sk_buff *skb)
- 	struct qrtr_mhi_dev *qdev = container_of(ep, struct qrtr_mhi_dev, ep);
- 	int rc;
- 
-+	if (skb->sk)
-+		sock_hold(skb->sk);
-+
- 	rc = skb_linearize(skb);
- 	if (rc)
- 		goto free_skb;
-@@ -59,12 +62,11 @@ static int qcom_mhi_qrtr_send(struct qrtr_endpoint *ep, struct sk_buff *skb)
- 	if (rc)
- 		goto free_skb;
- 
--	if (skb->sk)
--		sock_hold(skb->sk);
--
- 	return rc;
- 
- free_skb:
-+	if (skb->sk)
-+		sock_put(skb->sk);
- 	kfree_skb(skb);
- 
- 	return rc;
+In file included from drivers/net/wireless/ath/ath9k/gpio.c:17:
+drivers/net/wireless/ath/ath9k/gpio.c: In function 'ath9k_dump_legacy_btcoex':
+drivers/net/wireless/ath/ath9k/ath9k.h:763:3: error: 'len' undeclared (first use in this function)
+  763 |   len += scnprintf(buf + len, size - len,  \
+      |   ^~~
+drivers/net/wireless/ath/ath9k/gpio.c:501:2: note: in expansion of macro 'ATH_DUMP_BTCOEX'
+  501 |  ATH_DUMP_BTCOEX("Stomp Type", btcoex->bt_stomp_type);
+      |  ^~~~~~~~~~~~~~~
+drivers/net/wireless/ath/ath9k/ath9k.h:763:3: note: each undeclared identifier is reported only once for each function it appears in
+  763 |   len += scnprintf(buf + len, size - len,  \
+      |   ^~~
+drivers/net/wireless/ath/ath9k/gpio.c:501:2: note: in expansion of macro 'ATH_DUMP_BTCOEX'
+  501 |  ATH_DUMP_BTCOEX("Stomp Type", btcoex->bt_stomp_type);
+      |  ^~~~~~~~~~~~~~~
+make[5]: *** [drivers/net/wireless/ath/ath9k/gpio.o] Error 1
+make[4]: *** [drivers/net/wireless/ath/ath9k] Error 2
+make[3]: *** [drivers/net/wireless/ath] Error 2
+make[2]: *** [drivers/net/wireless] Error 2
+make[1]: *** [drivers/net] Error 2
+make: *** [drivers] Error 2
+
+Patch set to Changes Requested.
+
 -- 
-2.29.2
+https://patchwork.kernel.org/project/linux-wireless/patch/20210224130356.51444-1-zhangkun4jr@163.com/
+
+https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
 
