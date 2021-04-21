@@ -2,283 +2,323 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8E0A136753F
-	for <lists+netdev@lfdr.de>; Thu, 22 Apr 2021 00:42:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A20C636754A
+	for <lists+netdev@lfdr.de>; Thu, 22 Apr 2021 00:44:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343580AbhDUWmR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 21 Apr 2021 18:42:17 -0400
-Received: from www62.your-server.de ([213.133.104.62]:42730 "EHLO
-        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229706AbhDUWmQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 21 Apr 2021 18:42:16 -0400
-Received: from sslproxy01.your-server.de ([78.46.139.224])
-        by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92.3)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1lZLXP-000Cs0-2c; Thu, 22 Apr 2021 00:41:39 +0200
-Received: from [85.7.101.30] (helo=linux.home)
-        by sslproxy01.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1lZLXO-0001R9-Oa; Thu, 22 Apr 2021 00:41:38 +0200
-Subject: Re: [PATCH bpf-next v3 3/3] libbpf: add selftests for TC-BPF API
-To:     =?UTF-8?Q?Toke_H=c3=b8iland-J=c3=b8rgensen?= <toke@redhat.com>,
-        Kumar Kartikeya Dwivedi <memxor@gmail.com>,
-        Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Cc:     bpf <bpf@vger.kernel.org>, Alexei Starovoitov <ast@kernel.org>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
+        id S1343580AbhDUWos (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 21 Apr 2021 18:44:48 -0400
+Received: from mail-oo1-f49.google.com ([209.85.161.49]:43541 "EHLO
+        mail-oo1-f49.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S235004AbhDUWor (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 21 Apr 2021 18:44:47 -0400
+Received: by mail-oo1-f49.google.com with SMTP id c84-20020a4a4f570000b02901e9af00ac1bso3337850oob.10;
+        Wed, 21 Apr 2021 15:44:14 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=ccwTC3neOX0xiorVPiV2PK1AQuSwP8rpi8GyFurEX0M=;
+        b=WC3ptBAfqlpAhKNsPPRr/vb4ZEjXrS17PrTThE52cuahMwCrUowTc6ZhTNzxN8us7K
+         /DxTC55raTMk2KcNhwezdcgfcej/5/1wQH6SEy6RccGqxeLcADw4nia+b9XeibETzsJi
+         XUe5vKyvl9+UN2BvnLkH0we7j5Z4Xse4eiKCiB0HXwNaXHkgYCyaD1+4kLfWPl/6s+ob
+         7ysdoDTNJ0mCgHmjXkmjATnUVrbhYJEJ34NofeDwE9QNEDDY7SGOoFcE9wfOcmylzMHu
+         s3iFIX9je1P8OGHX5nsvHTuRiGH9WezGM20RsaRaY3Gs/hX057RQtw+cWMXhO9skbz6b
+         nPEQ==
+X-Gm-Message-State: AOAM532dw/L9m1JH5B4Q+zBPJzzfPm9mltR08znC1aLDV6JNBDeaVVeK
+        ZJ9n2uwlWIgSwscV4TKFBA==
+X-Google-Smtp-Source: ABdhPJyptlu2eKJffP1adI8PWAHI0oQ2kI/lX0QBV5TF1DXpD7yX2ZK2FNDEB5Fpmo2dNXzjKCSsrg==
+X-Received: by 2002:a05:6820:381:: with SMTP id r1mr132243ooj.79.1619045053823;
+        Wed, 21 Apr 2021 15:44:13 -0700 (PDT)
+Received: from robh.at.kernel.org (24-155-109-49.dyn.grandenetworks.net. [24.155.109.49])
+        by smtp.gmail.com with ESMTPSA id d12sm223231ook.1.2021.04.21.15.44.11
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 21 Apr 2021 15:44:12 -0700 (PDT)
+Received: (nullmailer pid 1750431 invoked by uid 1000);
+        Wed, 21 Apr 2021 22:44:11 -0000
+Date:   Wed, 21 Apr 2021 17:44:11 -0500
+From:   Rob Herring <robh@kernel.org>
+To:     Steen Hegelund <steen.hegelund@microchip.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        Networking <netdev@vger.kernel.org>
-References: <20210420193740.124285-1-memxor@gmail.com>
- <20210420193740.124285-4-memxor@gmail.com>
- <CAEf4BzbQjWkVM-dy+ebSKzgO89_W9vMGz_ZYicXCfp5XD_d_1g@mail.gmail.com>
- <20210421195643.tduqyyfr5xubxfgn@apollo> <87o8e7gypg.fsf@toke.dk>
-From:   Daniel Borkmann <daniel@iogearbox.net>
-Message-ID: <67563477-49b4-a475-7002-a27f30c1d3e4@iogearbox.net>
-Date:   Thu, 22 Apr 2021 00:41:38 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
+        Device Tree List <devicetree@vger.kernel.org>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Russell King <linux@armlinux.org.uk>,
+        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Madalin Bucur <madalin.bucur@oss.nxp.com>,
+        Mark Einon <mark.einon@gmail.com>,
+        Masahiro Yamada <masahiroy@kernel.org>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        Simon Horman <simon.horman@netronome.com>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        Lars Povlsen <lars.povlsen@microchip.com>,
+        Bjarni Jonasson <bjarni.jonasson@microchip.com>
+Subject: Re: [PATCH net-next 01/10] dt-bindings: net: sparx5: Add
+ sparx5-switch bindings
+Message-ID: <20210421224411.GA1746146@robh.at.kernel.org>
+References: <20210416131657.3151464-1-steen.hegelund@microchip.com>
+ <20210416131657.3151464-2-steen.hegelund@microchip.com>
 MIME-Version: 1.0
-In-Reply-To: <87o8e7gypg.fsf@toke.dk>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.102.4/26147/Wed Apr 21 13:06:05 2021)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210416131657.3151464-2-steen.hegelund@microchip.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 4/21/21 10:38 PM, Toke Høiland-Jørgensen wrote:
-> Kumar Kartikeya Dwivedi <memxor@gmail.com> writes:
+On Fri, Apr 16, 2021 at 03:16:48PM +0200, Steen Hegelund wrote:
+> Document the Sparx5 switch device driver bindings
 > 
->> On Wed, Apr 21, 2021 at 11:54:18PM IST, Andrii Nakryiko wrote:
->>> On Tue, Apr 20, 2021 at 12:37 PM Kumar Kartikeya Dwivedi
->>> <memxor@gmail.com> wrote:
->>>>
->>>> This adds some basic tests for the low level bpf_tc_* API.
->>>>
->>>> Reviewed-by: Toke Høiland-Jørgensen <toke@redhat.com>
->>>> Signed-off-by: Kumar Kartikeya Dwivedi <memxor@gmail.com>
->>>> ---
->>>>   .../selftests/bpf/prog_tests/test_tc_bpf.c    | 169 ++++++++++++++++++
->>>>   .../selftests/bpf/progs/test_tc_bpf_kern.c    |  12 ++
->>>>   2 files changed, 181 insertions(+)
->>>>   create mode 100644 tools/testing/selftests/bpf/prog_tests/test_tc_bpf.c
->>>
->>> we normally don't call prog_test's files with "test_" prefix, it can
->>> be just tc_bpf.c (or just tc.c)
->>>
->>
->> Ok, will rename.
->>
->>>>   create mode 100644 tools/testing/selftests/bpf/progs/test_tc_bpf_kern.c
->>>
->>> we also don't typically call BPF source code files with _kern suffix,
->>> just test_tc_bpf.c would be more in line with most common case
->>>
->>
->> Will rename.
->>
->>>>
->>>> diff --git a/tools/testing/selftests/bpf/prog_tests/test_tc_bpf.c b/tools/testing/selftests/bpf/prog_tests/test_tc_bpf.c
->>>> new file mode 100644
->>>> index 000000000000..563a3944553c
->>>> --- /dev/null
->>>> +++ b/tools/testing/selftests/bpf/prog_tests/test_tc_bpf.c
->>>> @@ -0,0 +1,169 @@
->>>> +// SPDX-License-Identifier: GPL-2.0
->>>> +
->>>> +#include <linux/bpf.h>
->>>> +#include <linux/err.h>
->>>> +#include <linux/limits.h>
->>>> +#include <bpf/libbpf.h>
->>>> +#include <errno.h>
->>>> +#include <stdio.h>
->>>> +#include <stdlib.h>
->>>> +#include <test_progs.h>
->>>> +#include <linux/if_ether.h>
->>>> +
->>>> +#define LO_IFINDEX 1
->>>> +
->>>> +static int test_tc_internal(int fd, __u32 parent_id)
->>>> +{
->>>> +       DECLARE_LIBBPF_OPTS(bpf_tc_opts, opts, .handle = 1, .priority = 10,
->>>> +                           .class_id = TC_H_MAKE(1UL << 16, 1));
->>>> +       struct bpf_tc_attach_id id = {};
->>>> +       struct bpf_tc_info info = {};
->>>> +       int ret;
->>>> +
->>>> +       ret = bpf_tc_attach(fd, LO_IFINDEX, parent_id, &opts, &id);
->>>> +       if (!ASSERT_EQ(ret, 0, "bpf_tc_attach"))
->>>> +               return ret;
->>>> +
->>>> +       ret = bpf_tc_get_info(LO_IFINDEX, parent_id, &id, &info);
->>>> +       if (!ASSERT_EQ(ret, 0, "bpf_tc_get_info"))
->>>> +               goto end;
->>>> +
->>>> +       if (!ASSERT_EQ(info.id.handle, id.handle, "handle mismatch") ||
->>>> +           !ASSERT_EQ(info.id.priority, id.priority, "priority mismatch") ||
->>>> +           !ASSERT_EQ(info.id.handle, 1, "handle incorrect") ||
->>>> +           !ASSERT_EQ(info.chain_index, 0, "chain_index incorrect") ||
->>>> +           !ASSERT_EQ(info.id.priority, 10, "priority incorrect") ||
->>>> +           !ASSERT_EQ(info.class_id, TC_H_MAKE(1UL << 16, 1),
->>>> +                      "class_id incorrect") ||
->>>> +           !ASSERT_EQ(info.protocol, ETH_P_ALL, "protocol incorrect"))
->>>> +               goto end;
->>>> +
->>>> +       opts.replace = true;
->>>> +       ret = bpf_tc_attach(fd, LO_IFINDEX, parent_id, &opts, &id);
->>>> +       if (!ASSERT_EQ(ret, 0, "bpf_tc_attach in replace mode"))
->>>> +               return ret;
->>>> +
->>>> +       /* Demonstrate changing attributes */
->>>> +       opts.class_id = TC_H_MAKE(1UL << 16, 2);
->>>> +
->>>> +       ret = bpf_tc_attach(fd, LO_IFINDEX, parent_id, &opts, &id);
->>>> +       if (!ASSERT_EQ(ret, 0, "bpf_tc attach in replace mode"))
->>>> +               goto end;
->>>> +
->>>> +       ret = bpf_tc_get_info(LO_IFINDEX, parent_id, &id, &info);
->>>> +       if (!ASSERT_EQ(ret, 0, "bpf_tc_get_info"))
->>>> +               goto end;
->>>> +
->>>> +       if (!ASSERT_EQ(info.class_id, TC_H_MAKE(1UL << 16, 2),
->>>> +                      "class_id incorrect after replace"))
->>>> +               goto end;
->>>> +       if (!ASSERT_EQ(info.bpf_flags & TCA_BPF_FLAG_ACT_DIRECT, 1,
->>>> +                      "direct action mode not set"))
->>>> +               goto end;
->>>> +
->>>> +end:
->>>> +       ret = bpf_tc_detach(LO_IFINDEX, parent_id, &id);
->>>> +       ASSERT_EQ(ret, 0, "detach failed");
->>>> +       return ret;
->>>> +}
->>>> +
->>>> +int test_tc_info(int fd)
->>>> +{
->>>> +       DECLARE_LIBBPF_OPTS(bpf_tc_opts, opts, .handle = 1, .priority = 10,
->>>> +                           .class_id = TC_H_MAKE(1UL << 16, 1));
->>>> +       struct bpf_tc_attach_id id = {}, old;
->>>> +       struct bpf_tc_info info = {};
->>>> +       int ret;
->>>> +
->>>> +       ret = bpf_tc_attach(fd, LO_IFINDEX, BPF_TC_CLSACT_INGRESS, &opts, &id);
->>>> +       if (!ASSERT_EQ(ret, 0, "bpf_tc_attach"))
->>>> +               return ret;
->>>> +       old = id;
->>>> +
->>>> +       ret = bpf_tc_get_info(LO_IFINDEX, BPF_TC_CLSACT_INGRESS, &id, &info);
->>>> +       if (!ASSERT_EQ(ret, 0, "bpf_tc_get_info"))
->>>> +               goto end_old;
->>>> +
->>>> +       if (!ASSERT_EQ(info.id.handle, id.handle, "handle mismatch") ||
->>>> +           !ASSERT_EQ(info.id.priority, id.priority, "priority mismatch") ||
->>>> +           !ASSERT_EQ(info.id.handle, 1, "handle incorrect") ||
->>>> +           !ASSERT_EQ(info.chain_index, 0, "chain_index incorrect") ||
->>>> +           !ASSERT_EQ(info.id.priority, 10, "priority incorrect") ||
->>>> +           !ASSERT_EQ(info.class_id, TC_H_MAKE(1UL << 16, 1),
->>>> +                      "class_id incorrect") ||
->>>> +           !ASSERT_EQ(info.protocol, ETH_P_ALL, "protocol incorrect"))
->>>> +               goto end_old;
->>>> +
->>>> +       /* choose a priority */
->>>> +       opts.priority = 0;
->>>> +       ret = bpf_tc_attach(fd, LO_IFINDEX, BPF_TC_CLSACT_INGRESS, &opts, &id);
->>>> +       if (!ASSERT_EQ(ret, 0, "bpf_tc_attach"))
->>>> +               goto end_old;
->>>> +
->>>> +       ret = bpf_tc_get_info(LO_IFINDEX, BPF_TC_CLSACT_INGRESS, &id, &info);
->>>> +       if (!ASSERT_EQ(ret, 0, "bpf_tc_get_info"))
->>>> +               goto end;
->>>> +
->>>> +       if (!ASSERT_NEQ(id.priority, old.priority, "filter priority mismatch"))
->>>> +               goto end;
->>>> +       if (!ASSERT_EQ(info.id.priority, id.priority, "priority mismatch"))
->>>> +               goto end;
->>>> +
->>>> +end:
->>>> +       ret = bpf_tc_detach(LO_IFINDEX, BPF_TC_CLSACT_INGRESS, &id);
->>>> +       ASSERT_EQ(ret, 0, "detach failed");
->>>> +end_old:
->>>> +       ret = bpf_tc_detach(LO_IFINDEX, BPF_TC_CLSACT_INGRESS, &old);
->>>> +       ASSERT_EQ(ret, 0, "detach failed");
->>>> +       return ret;
->>>> +}
->>>> +
->>>> +void test_test_tc_bpf(void)
->>>
->>> test_test_ tautology, drop one test?
->>>
->>
->> Ok.
->>
->>>> +{
->>>> +       const char *file = "./test_tc_bpf_kern.o";
->>>
->>> please use BPF skeleton instead, see lots of other selftests doing
->>> that already. You won't even need find_program_by_{name,title}, among
->>> other things.
->>>
->>
->> Sounds good, will change.
->>
->>>> +       struct bpf_program *clsp;
->>>> +       struct bpf_object *obj;
->>>> +       int cls_fd, ret;
->>>> +
->>>> +       obj = bpf_object__open(file);
->>>> +       if (!ASSERT_OK_PTR(obj, "bpf_object__open"))
->>>> +               return;
->>>> +
->>>> +       clsp = bpf_object__find_program_by_title(obj, "classifier");
->>>> +       if (!ASSERT_OK_PTR(clsp, "bpf_object__find_program_by_title"))
->>>> +               goto end;
->>>> +
->>>> +       ret = bpf_object__load(obj);
->>>> +       if (!ASSERT_EQ(ret, 0, "bpf_object__load"))
->>>> +               goto end;
->>>> +
->>>> +       cls_fd = bpf_program__fd(clsp);
->>>> +
->>>> +       system("tc qdisc del dev lo clsact");
->>>
->>> can this fail? also why is this necessary? it's still not possible to
->>
->> This is just removing any existing clsact qdisc since it will be setup by the
->> attach call, which is again removed later (where we do check if it fails, if it
->> does clsact qdisc was not setup, and something was wrong in that it returned 0
->> when the attach point was one of the clsact hooks).
->>
->> We don't care about failure initially, since if it isn't present we'd just move
->> on to running the test.
->>
->>> do anything with only libbpf APIs?
->>
->> I don't think so, I can do the qdisc teardown using netlink in the selftest,
->> but that would mean duplicating a lot of code. I think expecting tc to be
->> present on the system is a reasonable assumption for this test.
+> Signed-off-by: Steen Hegelund <steen.hegelund@microchip.com>
+> Signed-off-by: Lars Povlsen <lars.povlsen@microchip.com>
+> Signed-off-by: Bjarni Jonasson <bjarni.jonasson@microchip.com>
+> ---
+>  .../bindings/net/microchip,sparx5-switch.yaml | 227 ++++++++++++++++++
+>  1 file changed, 227 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/net/microchip,sparx5-switch.yaml
 > 
-> So this stems from the fact that bpf_tc_detach() doesn't clean up the
-> clsact qdisc that is added by bpf_tc_attach(). I think we should fix
-> this.
+> diff --git a/Documentation/devicetree/bindings/net/microchip,sparx5-switch.yaml b/Documentation/devicetree/bindings/net/microchip,sparx5-switch.yaml
+> new file mode 100644
+> index 000000000000..2eeb5230d8c8
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/net/microchip,sparx5-switch.yaml
+> @@ -0,0 +1,227 @@
+> +# SPDX-License-Identifier: GPL-2.0-only OR BSD-2-Clause
+> +%YAML 1.2
+> +---
+> +$id: http://devicetree.org/schemas/net/microchip,sparx5-switch.yaml#
+> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> +
+> +title: Microchip Sparx5 Ethernet switch controller
+> +
+> +maintainers:
+> +  - Steen Hegelund <steen.hegelund@microchip.com>
+> +  - Lars Povlsen <lars.povlsen@microchip.com>
+> +
+> +description: |
+> +  The SparX-5 Enterprise Ethernet switch family provides a rich set of
+> +  Enterprise switching features such as advanced TCAM-based VLAN and
+> +  QoS processing enabling delivery of differentiated services, and
+> +  security through TCAM-based frame processing using versatile content
+> +  aware processor (VCAP).
+> +
+> +  IPv4/IPv6 Layer 3 (L3) unicast and multicast routing is supported
+> +  with up to 18K IPv4/9K IPv6 unicast LPM entries and up to 9K IPv4/3K
+> +  IPv6 (S,G) multicast groups.
+> +
+> +  L3 security features include source guard and reverse path
+> +  forwarding (uRPF) tasks. Additional L3 features include VRF-Lite and
+> +  IP tunnels (IP over GRE/IP).
+> +
+> +  The SparX-5 switch family targets managed Layer 2 and Layer 3
+> +  equipment in SMB, SME, and Enterprise where high port count
+> +  1G/2.5G/5G/10G switching with 10G/25G aggregation links is required.
+> +
+> +properties:
+> +  $nodename:
+> +    pattern: "^switch@[0-9a-f]+$"
+> +
+> +  compatible:
+> +    const: microchip,sparx5-switch
+> +
+> +  reg:
+> +    minItems: 3
 
-I was wondering whether it would make sense to add a bpf_tc_ctx_init() and
-bpf_tc_ctx_destroy() API which would auto-create the sch_clsact qdisc, plus
-provide a 'handle' for bpf_tc_attach() and bpf_tc_detach(), and for the other
-one, it would delete the qdisc. Otoh, if an empty sch_clsact obj is sitting
-around while not being great (given minor effect on fast-path), it also doesn't
-harm /overly/ much. Maybe a /poor/ analogy could be that if you open a v6 socket,
-it pulls in the ipv6 module, but also doesn't remove it when you close() it.
-Anyway, but for the test itself, given you can define prio etc, I don't think
-it would even need the system() call?
+Drop, that's the default implied by 'items' length.
 
-Thanks,
-Daniel
+Otherwise,
+
+Reviewed-by: Rob Herring <robh@kernel.org>
+
+> +    items:
+> +      - description: cpu target
+> +      - description: devices target
+> +      - description: general control block target
+> +
+> +  reg-names:
+> +    items:
+> +      - const: cpu
+> +      - const: devices
+> +      - const: gcb
+> +
+> +  interrupts:
+> +    minItems: 1
+> +    items:
+> +      - description: register based extraction
+> +      - description: frame dma based extraction
+> +
+> +  interrupt-names:
+> +    minItems: 1
+> +    items:
+> +      - const: xtr
+> +      - const: fdma
+> +
+> +  resets:
+> +    items:
+> +      - description: Reset controller used for switch core reset (soft reset)
+> +
+> +  reset-names:
+> +    items:
+> +      - const: switch
+> +
+> +  mac-address: true
+> +
+> +  ethernet-ports:
+> +    type: object
+> +    patternProperties:
+> +      "^port@[0-9a-f]+$":
+> +        type: object
+> +
+> +        properties:
+> +          '#address-cells':
+> +            const: 1
+> +          '#size-cells':
+> +            const: 0
+> +
+> +          reg:
+> +            description: Switch port number
+> +
+> +          phys:
+> +            maxItems: 1
+> +            description:
+> +              phandle of a Ethernet SerDes PHY.  This defines which SerDes
+> +              instance will handle the Ethernet traffic.
+> +
+> +          phy-mode:
+> +            description:
+> +              This specifies the interface used by the Ethernet SerDes towards
+> +              the PHY or SFP.
+> +
+> +          microchip,bandwidth:
+> +            description: Specifies bandwidth in Mbit/s allocated to the port.
+> +            $ref: "/schemas/types.yaml#/definitions/uint32"
+> +            maximum: 25000
+> +
+> +          phy-handle:
+> +            description:
+> +              phandle of a Ethernet PHY.  This is optional and if provided it
+> +              points to the cuPHY used by the Ethernet SerDes.
+> +
+> +          sfp:
+> +            description:
+> +              phandle of an SFP.  This is optional and used when not specifying
+> +              a cuPHY.  It points to the SFP node that describes the SFP used by
+> +              the Ethernet SerDes.
+> +
+> +          managed: true
+> +
+> +          microchip,sd-sgpio:
+> +            description:
+> +              Index of the ports Signal Detect SGPIO in the set of 384 SGPIOs
+> +              This is optional, and only needed if the default used index is
+> +              is not correct.
+> +            $ref: "/schemas/types.yaml#/definitions/uint32"
+> +            minimum: 0
+> +            maximum: 383
+> +
+> +        required:
+> +          - reg
+> +          - phys
+> +          - phy-mode
+> +          - microchip,bandwidth
+> +
+> +        oneOf:
+> +          - required:
+> +              - phy-handle
+> +          - required:
+> +              - sfp
+> +              - managed
+> +
+> +required:
+> +  - compatible
+> +  - reg
+> +  - reg-names
+> +  - interrupts
+> +  - interrupt-names
+> +  - resets
+> +  - reset-names
+> +  - ethernet-ports
+> +
+> +additionalProperties: false
+> +
+> +examples:
+> +  - |
+> +    #include <dt-bindings/interrupt-controller/arm-gic.h>
+> +    switch: switch@600000000 {
+> +      compatible = "microchip,sparx5-switch";
+> +      reg =  <0 0x401000>,
+> +             <0x10004000 0x7fc000>,
+> +             <0x11010000 0xaf0000>;
+> +      reg-names = "cpu", "devices", "gcb";
+> +      interrupts = <GIC_SPI 30 IRQ_TYPE_LEVEL_HIGH>;
+> +      interrupt-names = "xtr";
+> +      resets = <&reset 0>;
+> +      reset-names = "switch";
+> +      ethernet-ports {
+> +        #address-cells = <1>;
+> +        #size-cells = <0>;
+> +
+> +        port0: port@0 {
+> +          reg = <0>;
+> +          microchip,bandwidth = <1000>;
+> +          phys = <&serdes 13>;
+> +          phy-handle = <&phy0>;
+> +          phy-mode = "qsgmii";
+> +        };
+> +        /* ... */
+> +        /* Then the 25G interfaces */
+> +        port60: port@60 {
+> +          reg = <60>;
+> +          microchip,bandwidth = <25000>;
+> +          phys = <&serdes 29>;
+> +          phy-mode = "10gbase-r";
+> +          sfp = <&sfp_eth60>;
+> +          managed = "in-band-status";
+> +          microchip,sd-sgpio = <365>;
+> +        };
+> +        port61: port@61 {
+> +          reg = <61>;
+> +          microchip,bandwidth = <25000>;
+> +          phys = <&serdes 30>;
+> +          phy-mode = "10gbase-r";
+> +          sfp = <&sfp_eth61>;
+> +          managed = "in-band-status";
+> +          microchip,sd-sgpio = <369>;
+> +        };
+> +        port62: port@62 {
+> +          reg = <62>;
+> +          microchip,bandwidth = <25000>;
+> +          phys = <&serdes 31>;
+> +          phy-mode = "10gbase-r";
+> +          sfp = <&sfp_eth62>;
+> +          managed = "in-band-status";
+> +          microchip,sd-sgpio = <373>;
+> +        };
+> +        port63: port@63 {
+> +          reg = <63>;
+> +          microchip,bandwidth = <25000>;
+> +          phys = <&serdes 32>;
+> +          phy-mode = "10gbase-r";
+> +          sfp = <&sfp_eth63>;
+> +          managed = "in-band-status";
+> +          microchip,sd-sgpio = <377>;
+> +        };
+> +        /* Finally the Management interface */
+> +        port64: port@64 {
+> +          reg = <64>;
+> +          microchip,bandwidth = <1000>;
+> +          phys = <&serdes 0>;
+> +          phy-handle = <&phy64>;
+> +          phy-mode = "sgmii";
+> +          mac-address = [ 00 00 00 01 02 03 ];
+> +        };
+> +      };
+> +    };
+> +
+> +...
+> +#  vim: set ts=2 sw=2 sts=2 tw=80 et cc=80 ft=yaml :
+> -- 
+> 2.31.1
+> 
