@@ -2,313 +2,141 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AD49136727D
-	for <lists+netdev@lfdr.de>; Wed, 21 Apr 2021 20:24:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 823743672A2
+	for <lists+netdev@lfdr.de>; Wed, 21 Apr 2021 20:35:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242540AbhDUSZJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 21 Apr 2021 14:25:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53936 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241161AbhDUSZE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 21 Apr 2021 14:25:04 -0400
-Received: from mail-yb1-xb32.google.com (mail-yb1-xb32.google.com [IPv6:2607:f8b0:4864:20::b32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 80EF8C06174A;
-        Wed, 21 Apr 2021 11:24:29 -0700 (PDT)
-Received: by mail-yb1-xb32.google.com with SMTP id 65so48304878ybc.4;
-        Wed, 21 Apr 2021 11:24:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=AzMlWrvxOHBcG9VE8VGKjvy0XKDo5TiPyzXMmG46dJA=;
-        b=OeHHclwDAg72g49ZJ2kOzh5+ZCUpWkKtErRexESGiBqudme91F6vO8UZJu4wDmgZJS
-         n+2kJSj0bqZEL8/uH59nTcoNv6UNVVINh9ZOM6wLA2i+8YbvGmStb7cWKP3bLDzPuXTm
-         MdIcCOlp2ipBOa7sa5S+X+sQwmFvVd3x/ykJR8eA2irMWESvCt8OWJd9GGAoxEXsF6KL
-         ze2+qA4rLZISSYYzrvnQfzr+SBnRHIsGG35cHnR7umLQ3beZn6G20EVhJA80/AWFt7V9
-         EookeIss7MDofy3Nb/2t2vwmsGWWm2SnFh2/W0xJKclII+a5AGxPcwt8BJOzp/3Mei5i
-         dRkw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=AzMlWrvxOHBcG9VE8VGKjvy0XKDo5TiPyzXMmG46dJA=;
-        b=bhacq71xBm3RqEJrJpWjr63aseZY8gCdHAv8JtexFhxXnBk0muOLnHaMXnCry3wCae
-         VFHhPPLZ7hhNyd3z1t5HDAODNk7115Dan4GhRdgqEvTmDLLo91j92elbDL+jsvzfGj8Z
-         mYzrn441caPlCs1unTk0WrmnITPqJGZPNkJ+U6X9pnCdHLWG7jC879aGsBPM8SuabWQ0
-         WBUvvZqw29SAtpcmbNHIOyVaSyvcoPc7pO/rUmTDJzpDUlZW8NKJkIMC5gwVBHIMf0AY
-         Qk7My8kH5MT+Ky98h/f3uzQypw0apzfUUrHpXbNzIvUWEnOB/jI91swdRgNwkdpfPU7Y
-         WCJg==
-X-Gm-Message-State: AOAM533xRyEJdyISZZ13FS7zdPBqWWbdfhtWbwls4n7rXX7FrKB8/Xbj
-        BwqqwlD64uB3HGbJgdW7F/vYvRDDCCbg4QFpEQg=
-X-Google-Smtp-Source: ABdhPJwwNX4bb2UwUJwYmjVKMr5Whi2nJctvjqpFahuhCDUKSqVikCW0GMXq0h4/xUuEowBHNCYsEKjXxajNpBNvjhw=
-X-Received: by 2002:a25:ba06:: with SMTP id t6mr25331904ybg.459.1619029468784;
- Wed, 21 Apr 2021 11:24:28 -0700 (PDT)
+        id S243962AbhDUSgM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 21 Apr 2021 14:36:12 -0400
+Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:36930 "EHLO
+        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S238438AbhDUSgH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 21 Apr 2021 14:36:07 -0400
+Received: from pps.filterd (m0098413.ppops.net [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 13LIYld2173924;
+        Wed, 21 Apr 2021 14:35:21 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=subject : to : cc :
+ references : from : message-id : date : in-reply-to : content-type :
+ content-transfer-encoding : mime-version; s=pp1;
+ bh=H4FQWRdQUzQzwSbH54CK2GuR16Hmmg8XZEso2oUnrNA=;
+ b=Tmg+MuO+f1QheaueqhgZnugLi7dl1jCaQPP8x0ZHimBxoPmTULn0fZuoRQTCQcF8nV4X
+ zAayagOCvW7pIiaDjQEK8eCVSAkTENNIo6OgHZT99G3U7broyf0FiN8gNhevDQwaaiUW
+ FnhPfNwGVxJSDudGVtkm6MwM4LHKDeFqB0uy+4/ZulCOXmoBGEReXE3qaWr7WiqZyiMs
+ Y9bw+K65tqq/OeTR/qxhMHZzkSViUMrMUhCVu9NumiXxb5Cg5Pxso94vHHPzeuZTBkDO
+ nvVAg18l17sFIDA2s+zq7L6t7/BfvnUSIdGpzOykCEe3y40/Bw3p/FeYKn2rIUU50wTb ag== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com with ESMTP id 382sf1g0g0-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 21 Apr 2021 14:35:21 -0400
+Received: from m0098413.ppops.net (m0098413.ppops.net [127.0.0.1])
+        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 13LIZ2vt174564;
+        Wed, 21 Apr 2021 14:35:20 -0400
+Received: from ppma03fra.de.ibm.com (6b.4a.5195.ip4.static.sl-reverse.com [149.81.74.107])
+        by mx0b-001b2d01.pphosted.com with ESMTP id 382sf1g0fn-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 21 Apr 2021 14:35:20 -0400
+Received: from pps.filterd (ppma03fra.de.ibm.com [127.0.0.1])
+        by ppma03fra.de.ibm.com (8.16.0.43/8.16.0.43) with SMTP id 13LIZJuq023583;
+        Wed, 21 Apr 2021 18:35:19 GMT
+Received: from b06cxnps4076.portsmouth.uk.ibm.com (d06relay13.portsmouth.uk.ibm.com [9.149.109.198])
+        by ppma03fra.de.ibm.com with ESMTP id 37yqa89bw8-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 21 Apr 2021 18:35:19 +0000
+Received: from d06av25.portsmouth.uk.ibm.com (d06av25.portsmouth.uk.ibm.com [9.149.105.61])
+        by b06cxnps4076.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 13LIZG3q41681348
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Wed, 21 Apr 2021 18:35:16 GMT
+Received: from d06av25.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 9AC5411C04C;
+        Wed, 21 Apr 2021 18:35:16 +0000 (GMT)
+Received: from d06av25.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 004BF11C04A;
+        Wed, 21 Apr 2021 18:35:16 +0000 (GMT)
+Received: from oc7455500831.ibm.com (unknown [9.171.22.74])
+        by d06av25.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+        Wed, 21 Apr 2021 18:35:15 +0000 (GMT)
+Subject: Re: net: bridge: propagate error code and extack from
+ br_mc_disabled_update
+To:     olteanv@gmail.com
+Cc:     andrew@lunn.ch, davem@davemloft.net, f.fainelli@gmail.com,
+        idosch@idosch.org, jiri@resnulli.us, kuba@kernel.org,
+        netdev@vger.kernel.org, nikolay@nvidia.com, roopa@nvidia.com,
+        vladimir.oltean@nxp.com, linux-next@vger.kernel.org,
+        kvm list <kvm@vger.kernel.org>,
+        linux-s390 <linux-s390@vger.kernel.org>
+References: <20210414192257.1954575-1-olteanv@gmail.com>
+ <20210421181808.5210-1-borntraeger@de.ibm.com>
+From:   Christian Borntraeger <borntraeger@de.ibm.com>
+Message-ID: <cfc19833-01ec-08ea-881d-4101780d1d86@de.ibm.com>
+Date:   Wed, 21 Apr 2021 20:35:15 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.9.1
+In-Reply-To: <20210421181808.5210-1-borntraeger@de.ibm.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: bYhH-jlKvDdy6Ek5vGd6kViOHlpk1Ujz
+X-Proofpoint-ORIG-GUID: 0Vjk2YeSdJHOQI2SXkMjN_DW-mkDN8Zo
+Content-Transfer-Encoding: 7bit
+X-Proofpoint-UnRewURL: 0 URL was un-rewritten
 MIME-Version: 1.0
-References: <20210420193740.124285-1-memxor@gmail.com> <20210420193740.124285-4-memxor@gmail.com>
-In-Reply-To: <20210420193740.124285-4-memxor@gmail.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Wed, 21 Apr 2021 11:24:18 -0700
-Message-ID: <CAEf4BzbQjWkVM-dy+ebSKzgO89_W9vMGz_ZYicXCfp5XD_d_1g@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v3 3/3] libbpf: add selftests for TC-BPF API
-To:     Kumar Kartikeya Dwivedi <memxor@gmail.com>
-Cc:     bpf <bpf@vger.kernel.org>,
-        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        Networking <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.391,18.0.761
+ definitions=2021-04-21_05:2021-04-21,2021-04-21 signatures=0
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 malwarescore=0 spamscore=0
+ impostorscore=0 suspectscore=0 phishscore=0 lowpriorityscore=0 bulkscore=0
+ clxscore=1015 mlxlogscore=999 adultscore=0 priorityscore=1501 mlxscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2104060000
+ definitions=main-2104210128
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Apr 20, 2021 at 12:37 PM Kumar Kartikeya Dwivedi
-<memxor@gmail.com> wrote:
->
-> This adds some basic tests for the low level bpf_tc_* API.
->
-> Reviewed-by: Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com>
-> Signed-off-by: Kumar Kartikeya Dwivedi <memxor@gmail.com>
-> ---
->  .../selftests/bpf/prog_tests/test_tc_bpf.c    | 169 ++++++++++++++++++
->  .../selftests/bpf/progs/test_tc_bpf_kern.c    |  12 ++
->  2 files changed, 181 insertions(+)
->  create mode 100644 tools/testing/selftests/bpf/prog_tests/test_tc_bpf.c
 
-we normally don't call prog_test's files with "test_" prefix, it can
-be just tc_bpf.c (or just tc.c)
 
->  create mode 100644 tools/testing/selftests/bpf/progs/test_tc_bpf_kern.c
+On 21.04.21 20:18, Christian Borntraeger wrote:
+> Whatever version landed in next, according to bisect this broke libvirt/kvms use of bridges:
+> 
+> 
+> # virsh start s31128001
+> error: Failed to start domain 's31128001'
+> error: Unable to add bridge virbr1 port vnet0: Operation not supported
+> 
+> # grep vnet0 /var/log/libvirt/libvirtd.log
+> 
+> 2021-04-21 07:43:09.453+0000: 2460: info : virNetDevTapCreate:240 : created device: 'vnet0'
+> 2021-04-21 07:43:09.453+0000: 2460: debug : virNetDevSetMACInternal:287 : SIOCSIFHWADDR vnet0 MAC=fe:bb:83:28:01:02 - Success
+> 2021-04-21 07:43:09.453+0000: 2460: error : virNetDevBridgeAddPort:633 : Unable to add bridge virbr1 port vnet0: Operation not supported
+> 2021-04-21 07:43:09.466+0000: 2543: debug : udevHandleOneDevice:1695 : udev action: 'add': /sys/devices/virtual/net/vnet0
+> 
+> Christian
+> 
 
-we also don't typically call BPF source code files with _kern suffix,
-just test_tc_bpf.c would be more in line with most common case
+For reference:
 
->
-> diff --git a/tools/testing/selftests/bpf/prog_tests/test_tc_bpf.c b/tools=
-/testing/selftests/bpf/prog_tests/test_tc_bpf.c
-> new file mode 100644
-> index 000000000000..563a3944553c
-> --- /dev/null
-> +++ b/tools/testing/selftests/bpf/prog_tests/test_tc_bpf.c
-> @@ -0,0 +1,169 @@
-> +// SPDX-License-Identifier: GPL-2.0
-> +
-> +#include <linux/bpf.h>
-> +#include <linux/err.h>
-> +#include <linux/limits.h>
-> +#include <bpf/libbpf.h>
-> +#include <errno.h>
-> +#include <stdio.h>
-> +#include <stdlib.h>
-> +#include <test_progs.h>
-> +#include <linux/if_ether.h>
-> +
-> +#define LO_IFINDEX 1
-> +
-> +static int test_tc_internal(int fd, __u32 parent_id)
-> +{
-> +       DECLARE_LIBBPF_OPTS(bpf_tc_opts, opts, .handle =3D 1, .priority =
-=3D 10,
-> +                           .class_id =3D TC_H_MAKE(1UL << 16, 1));
-> +       struct bpf_tc_attach_id id =3D {};
-> +       struct bpf_tc_info info =3D {};
-> +       int ret;
-> +
-> +       ret =3D bpf_tc_attach(fd, LO_IFINDEX, parent_id, &opts, &id);
-> +       if (!ASSERT_EQ(ret, 0, "bpf_tc_attach"))
-> +               return ret;
-> +
-> +       ret =3D bpf_tc_get_info(LO_IFINDEX, parent_id, &id, &info);
-> +       if (!ASSERT_EQ(ret, 0, "bpf_tc_get_info"))
-> +               goto end;
-> +
-> +       if (!ASSERT_EQ(info.id.handle, id.handle, "handle mismatch") ||
-> +           !ASSERT_EQ(info.id.priority, id.priority, "priority mismatch"=
-) ||
-> +           !ASSERT_EQ(info.id.handle, 1, "handle incorrect") ||
-> +           !ASSERT_EQ(info.chain_index, 0, "chain_index incorrect") ||
-> +           !ASSERT_EQ(info.id.priority, 10, "priority incorrect") ||
-> +           !ASSERT_EQ(info.class_id, TC_H_MAKE(1UL << 16, 1),
-> +                      "class_id incorrect") ||
-> +           !ASSERT_EQ(info.protocol, ETH_P_ALL, "protocol incorrect"))
-> +               goto end;
-> +
-> +       opts.replace =3D true;
-> +       ret =3D bpf_tc_attach(fd, LO_IFINDEX, parent_id, &opts, &id);
-> +       if (!ASSERT_EQ(ret, 0, "bpf_tc_attach in replace mode"))
-> +               return ret;
-> +
-> +       /* Demonstrate changing attributes */
-> +       opts.class_id =3D TC_H_MAKE(1UL << 16, 2);
-> +
-> +       ret =3D bpf_tc_attach(fd, LO_IFINDEX, parent_id, &opts, &id);
-> +       if (!ASSERT_EQ(ret, 0, "bpf_tc attach in replace mode"))
-> +               goto end;
-> +
-> +       ret =3D bpf_tc_get_info(LO_IFINDEX, parent_id, &id, &info);
-> +       if (!ASSERT_EQ(ret, 0, "bpf_tc_get_info"))
-> +               goto end;
-> +
-> +       if (!ASSERT_EQ(info.class_id, TC_H_MAKE(1UL << 16, 2),
-> +                      "class_id incorrect after replace"))
-> +               goto end;
-> +       if (!ASSERT_EQ(info.bpf_flags & TCA_BPF_FLAG_ACT_DIRECT, 1,
-> +                      "direct action mode not set"))
-> +               goto end;
-> +
-> +end:
-> +       ret =3D bpf_tc_detach(LO_IFINDEX, parent_id, &id);
-> +       ASSERT_EQ(ret, 0, "detach failed");
-> +       return ret;
-> +}
-> +
-> +int test_tc_info(int fd)
-> +{
-> +       DECLARE_LIBBPF_OPTS(bpf_tc_opts, opts, .handle =3D 1, .priority =
-=3D 10,
-> +                           .class_id =3D TC_H_MAKE(1UL << 16, 1));
-> +       struct bpf_tc_attach_id id =3D {}, old;
-> +       struct bpf_tc_info info =3D {};
-> +       int ret;
-> +
-> +       ret =3D bpf_tc_attach(fd, LO_IFINDEX, BPF_TC_CLSACT_INGRESS, &opt=
-s, &id);
-> +       if (!ASSERT_EQ(ret, 0, "bpf_tc_attach"))
-> +               return ret;
-> +       old =3D id;
-> +
-> +       ret =3D bpf_tc_get_info(LO_IFINDEX, BPF_TC_CLSACT_INGRESS, &id, &=
-info);
-> +       if (!ASSERT_EQ(ret, 0, "bpf_tc_get_info"))
-> +               goto end_old;
-> +
-> +       if (!ASSERT_EQ(info.id.handle, id.handle, "handle mismatch") ||
-> +           !ASSERT_EQ(info.id.priority, id.priority, "priority mismatch"=
-) ||
-> +           !ASSERT_EQ(info.id.handle, 1, "handle incorrect") ||
-> +           !ASSERT_EQ(info.chain_index, 0, "chain_index incorrect") ||
-> +           !ASSERT_EQ(info.id.priority, 10, "priority incorrect") ||
-> +           !ASSERT_EQ(info.class_id, TC_H_MAKE(1UL << 16, 1),
-> +                      "class_id incorrect") ||
-> +           !ASSERT_EQ(info.protocol, ETH_P_ALL, "protocol incorrect"))
-> +               goto end_old;
-> +
-> +       /* choose a priority */
-> +       opts.priority =3D 0;
-> +       ret =3D bpf_tc_attach(fd, LO_IFINDEX, BPF_TC_CLSACT_INGRESS, &opt=
-s, &id);
-> +       if (!ASSERT_EQ(ret, 0, "bpf_tc_attach"))
-> +               goto end_old;
-> +
-> +       ret =3D bpf_tc_get_info(LO_IFINDEX, BPF_TC_CLSACT_INGRESS, &id, &=
-info);
-> +       if (!ASSERT_EQ(ret, 0, "bpf_tc_get_info"))
-> +               goto end;
-> +
-> +       if (!ASSERT_NEQ(id.priority, old.priority, "filter priority misma=
-tch"))
-> +               goto end;
-> +       if (!ASSERT_EQ(info.id.priority, id.priority, "priority mismatch"=
-))
-> +               goto end;
-> +
-> +end:
-> +       ret =3D bpf_tc_detach(LO_IFINDEX, BPF_TC_CLSACT_INGRESS, &id);
-> +       ASSERT_EQ(ret, 0, "detach failed");
-> +end_old:
-> +       ret =3D bpf_tc_detach(LO_IFINDEX, BPF_TC_CLSACT_INGRESS, &old);
-> +       ASSERT_EQ(ret, 0, "detach failed");
-> +       return ret;
-> +}
-> +
-> +void test_test_tc_bpf(void)
+ae1ea84b33dab45c7b6c1754231ebda5959b504c is the first bad commit
+commit ae1ea84b33dab45c7b6c1754231ebda5959b504c
+Author: Florian Fainelli <f.fainelli@gmail.com>
+Date:   Wed Apr 14 22:22:57 2021 +0300
 
-test_test_ tautology, drop one test?
+     net: bridge: propagate error code and extack from br_mc_disabled_update
+     
+     Some Ethernet switches might only be able to support disabling multicast
+     snooping globally, which is an issue for example when several bridges
+     span the same physical device and request contradictory settings.
+     
+     Propagate the return value of br_mc_disabled_update() such that this
+     limitation is transmitted correctly to user-space.
+     
+     Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
+     Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+     Signed-off-by: David S. Miller <davem@davemloft.net>
 
-> +{
-> +       const char *file =3D "./test_tc_bpf_kern.o";
+  net/bridge/br_multicast.c | 28 +++++++++++++++++++++-------
+  net/bridge/br_netlink.c   |  4 +++-
+  net/bridge/br_private.h   |  3 ++-
+  net/bridge/br_sysfs_br.c  |  8 +-------
+  4 files changed, 27 insertions(+), 16 deletions(-)
 
-please use BPF skeleton instead, see lots of other selftests doing
-that already. You won't even need find_program_by_{name,title}, among
-other things.
+not sure if it matters this is on s390.
+A simple reproducer is virt-install, e.g.
+virt-install --name test --disk size=12 --memory=2048 --vcpus=2 --location http://ports.ubuntu.com/ubuntu-ports/dists/bionic/main/installer-s390x/
 
-> +       struct bpf_program *clsp;
-> +       struct bpf_object *obj;
-> +       int cls_fd, ret;
-> +
-> +       obj =3D bpf_object__open(file);
-> +       if (!ASSERT_OK_PTR(obj, "bpf_object__open"))
-> +               return;
-> +
-> +       clsp =3D bpf_object__find_program_by_title(obj, "classifier");
-> +       if (!ASSERT_OK_PTR(clsp, "bpf_object__find_program_by_title"))
-> +               goto end;
-> +
-> +       ret =3D bpf_object__load(obj);
-> +       if (!ASSERT_EQ(ret, 0, "bpf_object__load"))
-> +               goto end;
-> +
-> +       cls_fd =3D bpf_program__fd(clsp);
-> +
-> +       system("tc qdisc del dev lo clsact");
-
-can this fail? also why is this necessary? it's still not possible to
-do anything with only libbpf APIs?
-
-> +
-> +       ret =3D test_tc_internal(cls_fd, BPF_TC_CLSACT_INGRESS);
-> +       if (!ASSERT_EQ(ret, 0, "test_tc_internal INGRESS"))
-> +               goto end;
-> +
-> +       if (!ASSERT_EQ(system("tc qdisc del dev lo clsact"), 0,
-> +                      "clsact qdisc delete failed"))
-> +               goto end;
-> +
-> +       ret =3D test_tc_info(cls_fd);
-> +       if (!ASSERT_EQ(ret, 0, "test_tc_info"))
-> +               goto end;
-> +
-> +       if (!ASSERT_EQ(system("tc qdisc del dev lo clsact"), 0,
-> +                      "clsact qdisc delete failed"))
-> +               goto end;
-> +
-> +       ret =3D test_tc_internal(cls_fd, BPF_TC_CLSACT_EGRESS);
-> +       if (!ASSERT_EQ(ret, 0, "test_tc_internal EGRESS"))
-> +               goto end;
-> +
-> +       ASSERT_EQ(system("tc qdisc del dev lo clsact"), 0,
-> +                 "clsact qdisc delete failed");
-> +
-> +end:
-> +       bpf_object__close(obj);
-> +}
-> diff --git a/tools/testing/selftests/bpf/progs/test_tc_bpf_kern.c b/tools=
-/testing/selftests/bpf/progs/test_tc_bpf_kern.c
-> new file mode 100644
-> index 000000000000..18a3a7ed924a
-> --- /dev/null
-> +++ b/tools/testing/selftests/bpf/progs/test_tc_bpf_kern.c
-> @@ -0,0 +1,12 @@
-> +// SPDX-License-Identifier: GPL-2.0
-> +
-> +#include <linux/bpf.h>
-> +#include <bpf/bpf_helpers.h>
-> +
-> +/* Dummy prog to test TC-BPF API */
-> +
-> +SEC("classifier")
-> +int cls(struct __sk_buff *skb)
-> +{
-> +       return 0;
-> +}
-> --
-> 2.30.2
->
