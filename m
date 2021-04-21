@@ -2,96 +2,75 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8AFAA366689
-	for <lists+netdev@lfdr.de>; Wed, 21 Apr 2021 09:54:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C204E3666AB
+	for <lists+netdev@lfdr.de>; Wed, 21 Apr 2021 10:03:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235604AbhDUHzW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 21 Apr 2021 03:55:22 -0400
-Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:60720 "EHLO
-        mx0b-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S231463AbhDUHzV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 21 Apr 2021 03:55:21 -0400
-Received: from pps.filterd (m0127361.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 13L7YwmQ184653;
-        Wed, 21 Apr 2021 03:54:28 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=subject : to : cc :
- references : from : message-id : date : mime-version : in-reply-to :
- content-type : content-transfer-encoding; s=pp1;
- bh=WOE3R1b3R7c75tHsejOc95dkQqk3TOGxsEnOEyMupvQ=;
- b=WlqwUZO58DjQwhOl6LwuyEUnCDzZSbmCCu5fnFchJoT+PEM5FRjFq/a0WI3GTeXNJmz8
- 4KXhzqNfAYtjr55+ZezxauSxtt9tNk4LqyJOt7FX60uSwaX5nWvySLFEfnBCXVKxTklU
- 36YgWToclpt0zNOk6VekfvZsLhxWNxsMLKapYSqVPYChXq900quhXuJ83BxQ0b0YtMkB
- lstuA4mXkep+Cwj/R++Lcd14ev5d8MGYttG32k3yMNCBN6xFUsAmWMUwP0qM8CryZ/We
- CgApxJowYz9QH9yTrK+uXFL5fsbLv8/DA1I1UP4+D8zN9A2ZBcDHCAlS79cz1RPk2rjq DQ== 
-Received: from ppma04dal.us.ibm.com (7a.29.35a9.ip4.static.sl-reverse.com [169.53.41.122])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 382espa62d-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 21 Apr 2021 03:54:28 -0400
-Received: from pps.filterd (ppma04dal.us.ibm.com [127.0.0.1])
-        by ppma04dal.us.ibm.com (8.16.0.43/8.16.0.43) with SMTP id 13L7gdJi028644;
-        Wed, 21 Apr 2021 07:54:27 GMT
-Received: from b03cxnp08027.gho.boulder.ibm.com (b03cxnp08027.gho.boulder.ibm.com [9.17.130.19])
-        by ppma04dal.us.ibm.com with ESMTP id 37yqaa0edu-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 21 Apr 2021 07:54:27 +0000
-Received: from b03ledav001.gho.boulder.ibm.com (b03ledav001.gho.boulder.ibm.com [9.17.130.232])
-        by b03cxnp08027.gho.boulder.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 13L7sQnP31261332
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 21 Apr 2021 07:54:26 GMT
-Received: from b03ledav001.gho.boulder.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 4E7DB6E04C;
-        Wed, 21 Apr 2021 07:54:26 +0000 (GMT)
-Received: from b03ledav001.gho.boulder.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 3A6536E050;
-        Wed, 21 Apr 2021 07:54:24 +0000 (GMT)
-Received: from [9.160.109.21] (unknown [9.160.109.21])
-        by b03ledav001.gho.boulder.ibm.com (Postfix) with ESMTP;
-        Wed, 21 Apr 2021 07:54:23 +0000 (GMT)
-Subject: Re: [PATCH V2 net] ibmvnic: Continue with reset if set link down
- failed
-To:     Lijun Pan <ljp@linux.vnet.ibm.com>, Dany Madden <drt@linux.ibm.com>
-Cc:     David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Tom Falcon <tlfalcon@linux.ibm.com>, netdev@vger.kernel.org,
-        paulus@samba.org, Sukadev Bhattiprolu <sukadev@linux.ibm.com>,
-        linuxppc-dev@lists.ozlabs.org
-References: <20210420213517.24171-1-drt@linux.ibm.com>
- <60C99F56-617D-455B-9ACF-8CE1EED64D92@linux.vnet.ibm.com>
-From:   Rick Lindsley <ricklind@linux.vnet.ibm.com>
-Message-ID: <51a63be8-9b24-3f72-71d0-111959649059@linux.vnet.ibm.com>
-Date:   Wed, 21 Apr 2021 00:54:22 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.9.0
+        id S234154AbhDUIEJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 21 Apr 2021 04:04:09 -0400
+Received: from mail.kernel.org ([198.145.29.99]:57004 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S234126AbhDUIEF (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 21 Apr 2021 04:04:05 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 44BD761434;
+        Wed, 21 Apr 2021 08:03:32 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1618992213;
+        bh=jXiT4IH+777BS2DeQ/xUqpZtNLaaRzu1D7DxC43qKBs=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=RFJnJhqY4M12LSI6+rmgmiCZoXMlDKHi0awbHq0gVR76VlmbROpUPGMIFqXMNb/rf
+         wgHPOuiPvmbd08vUthZNQfhou12lvPDpm6gh2PAZgY3AEJ/5ORz5zPRvJCeZcbuGKn
+         jxPH86BUUdJXlRjfNXyTvzsXtaQ8MVRbMP6/hYi3hnXvoY3BENvXZ+0MwTizR5u5CL
+         Q/APIhZWVKYCEGT4sKt7l30sYU0gMlKKeSj//sK+3bOEn2ur/Zjha3wz2uQv8uzO4E
+         +Cqr/CDklXxnPdAAP6dNcp8nuFSm6wJQXtpZvpNJHakQdmfcylQNQYmZRBLyh250sB
+         yhqPTSawHzbTA==
+Date:   Wed, 21 Apr 2021 11:03:28 +0300
+From:   Leon Romanovsky <leon@kernel.org>
+To:     Johannes Berg <johannes@sipsolutions.net>
+Cc:     M Chetan Kumar <m.chetan.kumar@intel.com>, netdev@vger.kernel.org,
+        linux-wireless@vger.kernel.org, krishna.c.sudi@intel.com,
+        linuxwwan@intel.com
+Subject: Re: [PATCH V2 01/16] net: iosm: entry point
+Message-ID: <YH/cUKYPLQryUjSJ@unreal>
+References: <20210420161310.16189-1-m.chetan.kumar@intel.com>
+ <20210420161310.16189-2-m.chetan.kumar@intel.com>
+ <YH+71wFykp/fWcCe@unreal>
+ <494b1d770d7730b5a865b077cdd72ba6d17c7d38.camel@sipsolutions.net>
 MIME-Version: 1.0
-In-Reply-To: <60C99F56-617D-455B-9ACF-8CE1EED64D92@linux.vnet.ibm.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: qoGb_kptybPMowIAmvtbiHa6dhgYhfzA
-X-Proofpoint-ORIG-GUID: qoGb_kptybPMowIAmvtbiHa6dhgYhfzA
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.391,18.0.761
- definitions=2021-04-21_02:2021-04-21,2021-04-21 signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxscore=0 malwarescore=0
- impostorscore=0 bulkscore=0 adultscore=0 mlxlogscore=999 phishscore=0
- clxscore=1011 suspectscore=0 lowpriorityscore=0 spamscore=0
- priorityscore=1501 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2104060000 definitions=main-2104210060
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <494b1d770d7730b5a865b077cdd72ba6d17c7d38.camel@sipsolutions.net>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 4/20/21 2:42 PM, Lijun Pan wrote:
+On Wed, Apr 21, 2021 at 08:51:44AM +0200, Johannes Berg wrote:
+> On Wed, 2021-04-21 at 08:44 +0300, Leon Romanovsky wrote:
+> > 
+> > > +#define DRV_AUTHOR "Intel Corporation <linuxwwan@intel.com>"
+> > 
+> > Driver author can't be a company. It needs to be a person.
 > 
-> This v2 does not adddress the concerns mentioned in v1.
-> And I think it is better to exit with error from do_reset, and schedule a thorough
-> do_hard_reset if the the adapter is already in unstable state.
+> Most of
+> 
+> 	git grep MODULE_AUTHOR|grep Inc
+> 
+> disagrees.
 
-But the point is that the testing and analysis has indicated that doing a full
-hard reset is not necessary. We are about to take the very action which will fix
-this situation, but currently do not.
+Did you actually look on the output of that grep?
 
-Please describe the advantage in deferring it further by routing it through
-do_hard_reset().  I don't see one.
+We have three types of MODULE_AUTHOR(..) there
+1. Really old code with non-existent companies
+2. People who added their names together with the company name
+3. Heavy copy/pasted code
 
-Rick
+MODULE_AUTHOR is not copyright which (usually) goes to the company that
+sponsored the work, but can be seen as git commit author in pre-historic
+days.
+
+So no, old doesn't mean correct.
+
+Thanks
+
+> 
+> johannes
+> 
