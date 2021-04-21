@@ -2,104 +2,131 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C359C366399
-	for <lists+netdev@lfdr.de>; Wed, 21 Apr 2021 04:19:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 30A9036639C
+	for <lists+netdev@lfdr.de>; Wed, 21 Apr 2021 04:24:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234642AbhDUCTb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 20 Apr 2021 22:19:31 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:51871 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S234641AbhDUCT3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 20 Apr 2021 22:19:29 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1618971537;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=9yVWRiTHEeiJqibXK+e+btFkthskENsxGNffKLisiss=;
-        b=cdElWFCe467FXfLw114D55njFCKCMRkvU7SolYzuz5WHiuBEVfo7hHfsVsQtlDeKjO+7IB
-        pnV5dLxsz1eXASrBRL/NiDWafmeG9/RQyXxehudOPky60mE3eacdm/vWvu0MYPKM9Gw1gY
-        NH6gdr1yKUTdInkXaBSQMeagqjudIVk=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-369-mztFxCmlM0KYyf41_JgvWQ-1; Tue, 20 Apr 2021 22:18:53 -0400
-X-MC-Unique: mztFxCmlM0KYyf41_JgvWQ-1
-Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 8D86D8189CE;
-        Wed, 21 Apr 2021 02:18:51 +0000 (UTC)
-Received: from wangxiaodeMacBook-Air.local (ovpn-13-189.pek2.redhat.com [10.72.13.189])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 8EDDE5032C;
-        Wed, 21 Apr 2021 02:18:45 +0000 (UTC)
-Subject: Re: [PATCH net-next] virtio-net: restrict build_skb() use to some
- arches
-To:     Eric Dumazet <eric.dumazet@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev <netdev@vger.kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Xuan Zhuo <xuanzhuo@linux.alibaba.com>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        virtualization@lists.linux-foundation.org
-References: <20210420200144.4189597-1-eric.dumazet@gmail.com>
-From:   Jason Wang <jasowang@redhat.com>
-Message-ID: <179b050d-52b0-7201-9b1c-702d0978d496@redhat.com>
-Date:   Wed, 21 Apr 2021 10:18:43 +0800
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
- Gecko/20100101 Thunderbird/78.9.1
+        id S234646AbhDUCYb convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Tue, 20 Apr 2021 22:24:31 -0400
+Received: from rtits2.realtek.com ([211.75.126.72]:51848 "EHLO
+        rtits2.realtek.com.tw" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234023AbhDUCYa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 20 Apr 2021 22:24:30 -0400
+Authenticated-By: 
+X-SpamFilter-By: ArmorX SpamTrap 5.73 with qID 13L2Nn3pA020711, This message is accepted by code: ctloc85258
+Received: from mail.realtek.com (rtexh36502.realtek.com.tw[172.21.6.25])
+        by rtits2.realtek.com.tw (8.15.2/2.71/5.88) with ESMTPS id 13L2Nn3pA020711
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
+        Wed, 21 Apr 2021 10:23:49 +0800
+Received: from RTEXMBS03.realtek.com.tw (172.21.6.96) by
+ RTEXH36502.realtek.com.tw (172.21.6.25) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2106.2; Wed, 21 Apr 2021 10:23:48 +0800
+Received: from RTEXMBS04.realtek.com.tw (172.21.6.97) by
+ RTEXMBS03.realtek.com.tw (172.21.6.96) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2106.2; Wed, 21 Apr 2021 10:23:48 +0800
+Received: from RTEXMBS04.realtek.com.tw ([fe80::1d8:ba7d:61ca:bd74]) by
+ RTEXMBS04.realtek.com.tw ([fe80::1d8:ba7d:61ca:bd74%5]) with mapi id
+ 15.01.2106.013; Wed, 21 Apr 2021 10:23:47 +0800
+From:   Hayes Wang <hayeswang@realtek.com>
+To:     Jakub Kicinski <kuba@kernel.org>
+CC:     "davem@davemloft.net" <davem@davemloft.net>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        nic_swsd <nic_swsd@realtek.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-usb@vger.kernel.org" <linux-usb@vger.kernel.org>
+Subject: RE: [PATCH net-next 4/6] r8152: support new chips
+Thread-Topic: [PATCH net-next 4/6] r8152: support new chips
+Thread-Index: AQHXMpdaTtc3dnJiRE+pHF9mj571x6q3Ka6AgAXMWPCAAEY8AIABAclQ
+Date:   Wed, 21 Apr 2021 02:23:47 +0000
+Message-ID: <cc2e5a6ba1b649d3a5806f71256e657f@realtek.com>
+References: <1394712342-15778-350-Taiwan-albertk@realtek.com>
+        <1394712342-15778-354-Taiwan-albertk@realtek.com>
+        <20210416145017.1946f013@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <0de9842749db4718b8f45a0f2fff7967@realtek.com>
+ <20210420113420.79d7c65a@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20210420113420.79d7c65a@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Accept-Language: zh-TW, en-US
+Content-Language: zh-TW
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [172.21.177.203]
+x-kse-serverinfo: RTEXMBS03.realtek.com.tw, 9
+x-kse-antivirus-interceptor-info: scan successful
+x-kse-antivirus-info: =?us-ascii?Q?Clean,_bases:_2021/4/20_=3F=3F_10:27:00?=
+x-kse-attachment-filter-triggered-rules: Clean
+x-kse-attachment-filter-triggered-filters: Clean
+x-kse-bulkmessagesfiltering-scan-result: protection disabled
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 8BIT
 MIME-Version: 1.0
-In-Reply-To: <20210420200144.4189597-1-eric.dumazet@gmail.com>
-Content-Type: text/plain; charset=gbk; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
+X-KSE-AntiSpam-Outbound-Interceptor-Info: scan successful
+X-KSE-AntiSpam-Version: 5.9.20, Database issued on: 04/21/2021 01:51:53
+X-KSE-AntiSpam-Status: KAS_STATUS_NOT_DETECTED
+X-KSE-AntiSpam-Method: none
+X-KSE-AntiSpam-Rate: 0
+X-KSE-AntiSpam-Info: Lua profiles 163255 [Apr 21 2021]
+X-KSE-AntiSpam-Info: Version: 5.9.20.0
+X-KSE-AntiSpam-Info: Envelope from: hayeswang@realtek.com
+X-KSE-AntiSpam-Info: LuaCore: 442 442 b985cb57763b61d2a20abb585d5d4cc10c315b09
+X-KSE-AntiSpam-Info: {Tracking_from_domain_doesnt_match_to}
+X-KSE-AntiSpam-Info: d41d8cd98f00b204e9800998ecf8427e.com:7.1.1;127.0.0.199:7.1.2;realtek.com:7.1.1
+X-KSE-AntiSpam-Info: Rate: 0
+X-KSE-AntiSpam-Info: Status: not_detected
+X-KSE-AntiSpam-Info: Method: none
+X-KSE-AntiSpam-Info: Auth:dkim=none
+X-KSE-Antiphishing-Info: Clean
+X-KSE-Antiphishing-ScanningType: Heuristic
+X-KSE-Antiphishing-Method: None
+X-KSE-Antiphishing-Bases: 04/21/2021 01:54:00
+X-KSE-ServerInfo: RTEXH36502.realtek.com.tw, 9
+X-KSE-Attachment-Filter-Triggered-Rules: Clean
+X-KSE-Attachment-Filter-Triggered-Filters: Clean
+X-KSE-BulkMessagesFiltering-Scan-Result: protection disabled
+X-KSE-AntiSpam-Outbound-Interceptor-Info: scan successful
+X-KSE-AntiSpam-Version: 5.9.20, Database issued on: 04/21/2021 02:01:58
+X-KSE-AntiSpam-Status: KAS_STATUS_NOT_DETECTED
+X-KSE-AntiSpam-Method: none
+X-KSE-AntiSpam-Rate: 0
+X-KSE-AntiSpam-Info: Lua profiles 163255 [Apr 21 2021]
+X-KSE-AntiSpam-Info: Version: 5.9.20.0
+X-KSE-AntiSpam-Info: Envelope from: hayeswang@realtek.com
+X-KSE-AntiSpam-Info: LuaCore: 442 442 b985cb57763b61d2a20abb585d5d4cc10c315b09
+X-KSE-AntiSpam-Info: {Tracking_from_domain_doesnt_match_to}
+X-KSE-AntiSpam-Info: d41d8cd98f00b204e9800998ecf8427e.com:7.1.1;realtek.com:7.1.1;127.0.0.199:7.1.2
+X-KSE-AntiSpam-Info: Rate: 0
+X-KSE-AntiSpam-Info: Status: not_detected
+X-KSE-AntiSpam-Info: Method: none
+X-KSE-AntiSpam-Info: Auth:dkim=none
+X-KSE-Antiphishing-Info: Clean
+X-KSE-Antiphishing-ScanningType: Heuristic
+X-KSE-Antiphishing-Method: None
+X-KSE-Antiphishing-Bases: 04/21/2021 02:04:00
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Jakub Kicinski <kuba@kernel.org>
+> Sent: Wednesday, April 21, 2021 2:34 AM
+[...]
+> > We test 2.5G Ethernet on some embedded platform.
+> > And we find 64 is not large enough, and the performance
+> > couldn't reach 2.5 G bits/s.
+> 
+> Did you manage to identify what the cause is?
+> 
+> NAPI will keep calling your driver if the budget was exhausted, the
+> only difference between 64 and 256 should be the setup cost of the
+> driver's internal loop. And perhaps more frequent GRO flush - what's
+> the CONFIG_HZ set to?
 
-ÔÚ 2021/4/21 ÉÏÎç4:01, Eric Dumazet Ð´µÀ:
-> From: Eric Dumazet <edumazet@google.com>
->
-> build_skb() is supposed to be followed by
-> skb_reserve(skb, NET_IP_ALIGN), so that IP headers are word-aligned.
-> (Best practice is to reserve NET_IP_ALIGN+NET_SKB_PAD, but the NET_SKB_PAD
-> part is only a performance optimization if tunnel encaps are added.)
->
-> Unfortunately virtio_net has not provisioned this reserve.
-> We can only use build_skb() for arches where NET_IP_ALIGN == 0
->
-> We might refine this later, with enough testing.
->
-> Fixes: fb32856b16ad ("virtio-net: page_to_skb() use build_skb when there's sufficient tailroom")
-> Signed-off-by: Eric Dumazet <edumazet@google.com>
-> Reported-by: Guenter Roeck <linux@roeck-us.net>
-> Cc: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
-> Cc: Jason Wang <jasowang@redhat.com>
-> Cc: "Michael S. Tsirkin" <mst@redhat.com>
-> Cc: virtualization@lists.linux-foundation.org
+I am not sure. It is more than one year ago.
+The CONFIG_HZ may be 250.
 
+First, the CPU of that platform is slower than a x86 platform.
+Then, the rx data comes very fast, because of the 2.5G Ethernet.
+We find the budget is always exhausted, when the traffic is busy.
 
-Acked-by: Jason Wang <jasowang@redhat.com>
-
-
-> ---
->   drivers/net/virtio_net.c | 2 +-
->   1 file changed, 1 insertion(+), 1 deletion(-)
->
-> diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
-> index 2e28c04aa6351d2b4016f7d277ce104c4970069d..74d2d49264f3f3b7039be70331d4a44c53b8cc28 100644
-> --- a/drivers/net/virtio_net.c
-> +++ b/drivers/net/virtio_net.c
-> @@ -416,7 +416,7 @@ static struct sk_buff *page_to_skb(struct virtnet_info *vi,
->   
->   	shinfo_size = SKB_DATA_ALIGN(sizeof(struct skb_shared_info));
->   
-> -	if (len > GOOD_COPY_LEN && tailroom >= shinfo_size) {
-> +	if (!NET_IP_ALIGN && len > GOOD_COPY_LEN && tailroom >= shinfo_size) {
->   		skb = build_skb(p, truesize);
->   		if (unlikely(!skb))
->   			return NULL;
+Best Regards,
+Hayes
 
