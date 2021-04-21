@@ -2,85 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 505E136652F
-	for <lists+netdev@lfdr.de>; Wed, 21 Apr 2021 08:08:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C439E366537
+	for <lists+netdev@lfdr.de>; Wed, 21 Apr 2021 08:11:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235472AbhDUGI7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 21 Apr 2021 02:08:59 -0400
-Received: from mail.kernel.org ([198.145.29.99]:42422 "EHLO mail.kernel.org"
+        id S235530AbhDUGMN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 21 Apr 2021 02:12:13 -0400
+Received: from mail.kernel.org ([198.145.29.99]:43242 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S234510AbhDUGI6 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 21 Apr 2021 02:08:58 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id D8E29613F0;
-        Wed, 21 Apr 2021 06:08:24 +0000 (UTC)
+        id S231821AbhDUGMK (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 21 Apr 2021 02:12:10 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 3F65661420;
+        Wed, 21 Apr 2021 06:11:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1618985305;
-        bh=WIwPEMJ2n2GN6Jt5ndPkfj7Jm7o9UsjQNTF/6yR/MTU=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=InOtHgCHHyr+UD/fD4781eHlCauiwID5+l3E/0C87fRACgeHv7qNSuJDe/h9kBnd7
-         4A2TQg8JZfNjlxd7hN5LuE5oDORFNqmcxXE/vF13CMQuBRSiqrncI/77a1pnCs8hN2
-         EquWx2/oCxBJBDrwi690LLrmqPDyNZjyaAQqrH4DCWJbHVXj+z8sX48UCYp4ImdS4+
-         UL8ctNm7RtjL3P7T7ve6B3okuJVP704lPWxbIHecjZrXJXiKIq6Us/1tuuSgEMFzHs
-         GdBHDxWMwfB7OrgLZt3JDEJ1rvwYOuIt5V7yK+lcvvIreWLEPPe9X5DIk3SAZNhS2Z
-         G7urCY6QYfu2g==
-Date:   Wed, 21 Apr 2021 09:08:21 +0300
-From:   Leon Romanovsky <leon@kernel.org>
-To:     Greg KH <gregkh@linuxfoundation.org>
-Cc:     "J. Bruce Fields" <bfields@fieldses.org>,
-        Aditya Pakki <pakki001@umn.edu>,
-        Chuck Lever <chuck.lever@oracle.com>,
-        Trond Myklebust <trond.myklebust@hammerspace.com>,
-        Anna Schumaker <anna.schumaker@netapp.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Dave Wysochanski <dwysocha@redhat.com>,
-        linux-nfs@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] SUNRPC: Add a check for gss_release_msg
-Message-ID: <YH/BVW9Kdr9nY5Bs@unreal>
-References: <20210407001658.2208535-1-pakki001@umn.edu>
- <YH5/i7OvsjSmqADv@kroah.com>
- <20210420171008.GB4017@fieldses.org>
- <YH+zwQgBBGUJdiVK@unreal>
- <YH+7ZydHv4+Y1hlx@kroah.com>
+        s=k20201202; t=1618985497;
+        bh=YhPOHuGJ/c29KhIGdQUtJ/biKTM/tPQx+TdNyvwGiJ8=;
+        h=From:To:Cc:Subject:Date:From;
+        b=VtD+/yB1oLQwLgsb+e9qbA5z47LcOQckXo0SDV/pEz0+sEJEArmwhncjlEnc2AgdM
+         lnLMn9wFn9RgtD5sLjVJGyPriC3VIccLZIgpxxPHLAGTQPSj9dEDEqncfR91faE6tE
+         R8iMlVFIp3++aD+rEmQ/GRuGULNUWRaC6ke8cORTWi2z/Q2MT4PrnOGNTLIl43rA2L
+         YzkyplhIpZ4ecEmPUrRU11rM09KJxnnx0FKKqDlR0fXviPVPIyUvUgORZpsgTUUrHL
+         qHkSNzkWvo8zl7L4VrPdPLmKVjZra5M4GgGBLboGl1eEeNcy0Y8onTLIaGmTNrQlgR
+         cE1EwTSCIcEzg==
+From:   Mike Rapoport <rppt@kernel.org>
+To:     Jonathan Corbet <corbet@lwn.net>
+Cc:     Alexey Dobriyan <adobriyan@gmail.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        Matthew Wilcox <willy@infradead.org>,
+        Michal Hocko <mhocko@suse.com>,
+        Mike Rapoport <rppt@kernel.org>,
+        Mike Rapoport <rppt@linux.ibm.com>, linux-doc@vger.kernel.org,
+        linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-mm@kvack.org, netdev@vger.kernel.org
+Subject: [PATCH v3] docs: proc.rst: meminfo: briefly describe gaps in memory accounting
+Date:   Wed, 21 Apr 2021 09:11:27 +0300
+Message-Id: <20210421061127.1182723-1-rppt@kernel.org>
+X-Mailer: git-send-email 2.29.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YH+7ZydHv4+Y1hlx@kroah.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Apr 21, 2021 at 07:43:03AM +0200, Greg KH wrote:
-> On Wed, Apr 21, 2021 at 08:10:25AM +0300, Leon Romanovsky wrote:
-> > On Tue, Apr 20, 2021 at 01:10:08PM -0400, J. Bruce Fields wrote:
-> > > On Tue, Apr 20, 2021 at 09:15:23AM +0200, Greg KH wrote:
-> > > > If you look at the code, this is impossible to have happen.
-> > > > 
-> > > > Please stop submitting known-invalid patches.  Your professor is playing
-> > > > around with the review process in order to achieve a paper in some
-> > > > strange and bizarre way.
-> > > > 
-> > > > This is not ok, it is wasting our time, and we will have to report this,
-> > > > AGAIN, to your university...
-> > > 
-> > > What's the story here?
-> > 
-> > Those commits are part of the following research:
-> > https://github.com/QiushiWu/QiushiWu.github.io/blob/main/papers/OpenSourceInsecurity.pdf
-> > 
-> > They introduce kernel bugs on purpose. Yesterday, I took a look on 4
-> > accepted patches from Aditya and 3 of them added various severity security
-> > "holes".
-> 
-> All contributions by this group of people need to be reverted, if they
-> have not been done so already, as what they are doing is intentional
-> malicious behavior and is not acceptable and totally unethical.  I'll
-> look at it after lunch unless someone else wants to do it...
+From: Mike Rapoport <rppt@linux.ibm.com>
 
-It looks like the best possible scenario.
-I asked to revert the bad patch, but didn't get any response yet.
-https://lore.kernel.org/lkml/YH6aMsbqruMZiWFe@unreal/
+Add a paragraph that explains that it may happen that the counters in
+/proc/meminfo do not add up to the overall memory usage.
 
-> 
-> greg k-h
+Signed-off-by: Mike Rapoport <rppt@linux.ibm.com>
+---
+v3:
+* Add sentense about counters overlap
+* Use wording suggested by Matthew
+
+v2: Link: https://lore.kernel.org/lkml/20210420121354.1160437-1-rppt@kernel.org
+* Add brief changelog
+* Fix typo
+* Update example about network memory usage according to Eric's comment at
+
+https://lore.kernel.org/lkml/CANn89iKprp7WYeZy4RRO5jHykprnSCcVBc7Tk14Ui_MA9OK7Fg@mail.gmail.com
+
+v1: Link: https://lore.kernel.org/lkml/20210420085105.1156640-1-rppt@kernel.org
+ Documentation/filesystems/proc.rst | 11 +++++++++--
+ 1 file changed, 9 insertions(+), 2 deletions(-)
+
+diff --git a/Documentation/filesystems/proc.rst b/Documentation/filesystems/proc.rst
+index 48fbfc336ebf..0a07a5025571 100644
+--- a/Documentation/filesystems/proc.rst
++++ b/Documentation/filesystems/proc.rst
+@@ -929,8 +929,15 @@ meminfo
+ ~~~~~~~
+ 
+ Provides information about distribution and utilization of memory.  This
+-varies by architecture and compile options.  The following is from a
+-16GB PIII, which has highmem enabled.  You may not have all of these fields.
++varies by architecture and compile options.  Some of the counters reported
++here overlap.  The memory reported by the non overlapping counters may not
++add up to the overall memory usage and the difference for some workloads
++can be substantial.  In many cases there are other means to find out
++additional memory using subsystem specific interfaces, for instance
++/proc/net/sockstat for TCP memory allocations.
++
++The following is from a 16GB PIII, which has highmem enabled.
++You may not have all of these fields.
+ 
+ ::
+ 
+-- 
+2.29.2
+
