@@ -2,75 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 82C233674BE
-	for <lists+netdev@lfdr.de>; Wed, 21 Apr 2021 23:19:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 698F43674C6
+	for <lists+netdev@lfdr.de>; Wed, 21 Apr 2021 23:25:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245749AbhDUVTz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 21 Apr 2021 17:19:55 -0400
-Received: from mail-oi1-f175.google.com ([209.85.167.175]:38462 "EHLO
-        mail-oi1-f175.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240805AbhDUVTx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 21 Apr 2021 17:19:53 -0400
-Received: by mail-oi1-f175.google.com with SMTP id d25so6277737oij.5;
-        Wed, 21 Apr 2021 14:19:20 -0700 (PDT)
+        id S1343491AbhDUV0V (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 21 Apr 2021 17:26:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37302 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S235570AbhDUV0U (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 21 Apr 2021 17:26:20 -0400
+Received: from mail-ed1-x529.google.com (mail-ed1-x529.google.com [IPv6:2a00:1450:4864:20::529])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F2B0C06174A;
+        Wed, 21 Apr 2021 14:25:46 -0700 (PDT)
+Received: by mail-ed1-x529.google.com with SMTP id bx20so49860610edb.12;
+        Wed, 21 Apr 2021 14:25:46 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=googlemail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=e/nJoTAQRidVHQajPs6q3ldHAPVF7uFU+R0j/RWewsY=;
+        b=vTbY4Is3R6vMevScZijHb09K732UcNymc5BEx27wrMNUAtM4eONLsOvzobtQJtjXZl
+         rAjmv39/niikrCzbIvP9q1LownTiAt6F/Uh6X6JnwnLfNg0E5b4vRMxdXCK/Y2Ok+CWt
+         pWGIK/SJVdSF1V2/q1j+Vv8ZgjbzlQcCtpCr8MzPya/F9e76AewWngAeg9ikD5sW0Yq0
+         kxkdWtD6OtvbFIH+2hmutqXLkbhpchualSSkrWG9s0NNZPk909bCDvfFiQbO6Gbmfav2
+         qPEoAFYlqlAaLX75AiO7VoSi/hJ7K4Eyn4CFeiKkGxNzi9yPzp7gXJKzs2ylJwd6D/+9
+         A65w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=/zCIIFL1GCBgRmLE1MQYC8dpYz/9OyAnNShFhPOZZ4s=;
-        b=ndmixSfrha8rF8kkWV1iaCd2EIXboP+AGVciAdNPzE7pheRlt9Y9c6XKVY3fKV92LB
-         NLfQRYrdmcecnjzh8pJnBBB3lsvHXOz4PoR9Vrv0ltC0d0lev6awJv6muRyV7IhONDl+
-         30nGTyOPHvAja8RFC/nRw9ahD8CeVYym0gD92L0h/a2I24BDZ06YUaQaLKoJ3+j3ytCi
-         JhMWHkSoh0zjNHxUYpIQwxzgFKvqfYR8E/Qmz6n2Yyko+GCmMj0J0BCxZeN3/1m6M4Vb
-         Pfr2yhIjwnr0TuA60xDTwW8wcZy7WCvoZ/AQ7lOjeaGW/QjFrFRWt3NjJOzg3mb0upPb
-         KI2A==
-X-Gm-Message-State: AOAM530a9Wc9GkIWLG8bVtW1JmvIQZd1wtQs50PbE0jbY7Y/vmpcKLQu
-        w1n36KbrevkwGCvzap+KgFCF4jSC8g==
-X-Google-Smtp-Source: ABdhPJyjoWEzjl9qveDytM3botwyCf+n/PmFgLRlcEgYx6IDU0UzqnFaGinghjGAzmRkrdgFAO9y/g==
-X-Received: by 2002:aca:408b:: with SMTP id n133mr8194678oia.13.1619039959996;
-        Wed, 21 Apr 2021 14:19:19 -0700 (PDT)
-Received: from robh.at.kernel.org (24-155-109-49.dyn.grandenetworks.net. [24.155.109.49])
-        by smtp.gmail.com with ESMTPSA id w23sm153439otl.60.2021.04.21.14.19.18
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 21 Apr 2021 14:19:19 -0700 (PDT)
-Received: (nullmailer pid 1637631 invoked by uid 1000);
-        Wed, 21 Apr 2021 21:19:17 -0000
-Date:   Wed, 21 Apr 2021 16:19:17 -0500
-From:   Rob Herring <robh@kernel.org>
-To:     Ilya Lipnitskiy <ilya.lipnitskiy@gmail.com>
-Cc:     Jakub Kicinski <kuba@kernel.org>, Rob Herring <robh+dt@kernel.org>,
-        Greg Ungerer <gerg@kernel.org>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        linux-arm-kernel@lists.infradead.org, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-mediatek@lists.infradead.org,
-        =?iso-8859-1?Q?Bj=F8rn?= Mork <bjorn@mork.no>,
-        "David S. Miller" <davem@davemloft.net>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Sean Wang <sean.wang@kernel.org>
-Subject: Re: [PATCH] dt-bindings: net: mediatek: support MT7621 SoC
-Message-ID: <20210421211917.GA1637579@robh.at.kernel.org>
-References: <20210419034253.21322-1-ilya.lipnitskiy@gmail.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=e/nJoTAQRidVHQajPs6q3ldHAPVF7uFU+R0j/RWewsY=;
+        b=iOv3gZgebWYKLCx9HSDWFw/CbdlYquYWZ/yd0YD/dzdqfjS4WKCy7J0EZWZ7tCP/fM
+         +kO9b1fMQE080jlmTwORJH559M4rNG+nL2nTT4IzdMSxaRtS8Mmrg+U60qv0dAZM55RH
+         VQeLedpDbtHTq3QG7NAFM36TtvmZ/kte9zzHKp28yiaNnmaU32iz1cGtC2WX6tqd1/Sf
+         DYdWIUXmvJaQA9/NCHgBB3ZHGra97ouLbxHJYjPwSPo/6ZLnVpvim7DP5Im1EDxE/NRr
+         5td+Bsr0hqWME4RP8OliiIfJpy5MxS81qOx5R++gSeGkObIlxwbYXxo7HnjeHvblU2Lc
+         7BmQ==
+X-Gm-Message-State: AOAM5332IIl+dUHNRSprQAK81biExT0+63fcAOQWroa/Yc/jdksCT9Us
+        Msk+myTlvPPzS3Nx/g0AeJUC7SE52bUqIt2vhBI=
+X-Google-Smtp-Source: ABdhPJwIUasehulChO42GfO1UO8CZ/OXVHkF6uHScXZmO/f6mtA0RzJmMflbHK10o6dgnfkFrarwNMz0iFv0Q7cqf+g=
+X-Received: by 2002:a05:6402:51d0:: with SMTP id r16mr37461733edd.52.1619040345069;
+ Wed, 21 Apr 2021 14:25:45 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20210419034253.21322-1-ilya.lipnitskiy@gmail.com>
+References: <20210421055047.22858-1-ms@dev.tdt.de>
+In-Reply-To: <20210421055047.22858-1-ms@dev.tdt.de>
+From:   Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+Date:   Wed, 21 Apr 2021 23:25:34 +0200
+Message-ID: <CAFBinCA1hm0zQKinds414p1p8q-On-uhKcHzqLZ4o9m7YENrcg@mail.gmail.com>
+Subject: Re: [PATCH net v3] net: phy: intel-xway: enable integrated led functions
+To:     Martin Schiller <ms@dev.tdt.de>
+Cc:     Hauke Mehrtens <hauke@hauke-m.de>, f.fainelli@gmail.com,
+        andrew@lunn.ch, hkallweit1@gmail.com, linux@armlinux.org.uk,
+        davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, 18 Apr 2021 20:42:53 -0700, Ilya Lipnitskiy wrote:
-> Add missing binding documentation for SoC support that has been in place
-> since v5.1
-> 
-> Fixes: 889bcbdeee57 ("net: ethernet: mediatek: support MT7621 SoC ethernet hardware")
-> Cc: Bjørn Mork <bjorn@mork.no>
-> Signed-off-by: Ilya Lipnitskiy <ilya.lipnitskiy@gmail.com>
-> ---
->  Documentation/devicetree/bindings/net/mediatek-net.txt | 1 +
->  1 file changed, 1 insertion(+)
-> 
-
-Acked-by: Rob Herring <robh@kernel.org>
+On Wed, Apr 21, 2021 at 7:51 AM Martin Schiller <ms@dev.tdt.de> wrote:
+>
+> The Intel xway phys offer the possibility to deactivate the integrated
+> LED function and to control the LEDs manually.
+> If this was set by the bootloader, it must be ensured that the
+> integrated LED function is enabled for all LEDs when loading the driver.
+>
+> Before commit 6e2d85ec0559 ("net: phy: Stop with excessive soft reset")
+> the LEDs were enabled by a soft-reset of the PHY (using
+> genphy_soft_reset). Initialize the XWAY_MDIO_LED with it's default
+> value (which is applied during a soft reset) instead of adding back
+> the soft reset. This brings back the default LED configuration while
+> still preventing an excessive amount of soft resets.
+>
+> Fixes: 6e2d85ec0559 ("net: phy: Stop with excessive soft reset")
+> Signed-off-by: Martin Schiller <ms@dev.tdt.de>
+Acked-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
