@@ -2,67 +2,67 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7FDE8366F7B
+	by mail.lfdr.de (Postfix) with ESMTP id CBB23366F7C
 	for <lists+netdev@lfdr.de>; Wed, 21 Apr 2021 17:54:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244168AbhDUPyb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 21 Apr 2021 11:54:31 -0400
-Received: from mail-dm3nam07on2064.outbound.protection.outlook.com ([40.107.95.64]:21377
-        "EHLO NAM02-DM3-obe.outbound.protection.outlook.com"
+        id S244159AbhDUPye (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 21 Apr 2021 11:54:34 -0400
+Received: from mail-eopbgr750049.outbound.protection.outlook.com ([40.107.75.49]:33661
+        "EHLO NAM02-BL2-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S244150AbhDUPyJ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 21 Apr 2021 11:54:09 -0400
+        id S244169AbhDUPyO (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 21 Apr 2021 11:54:14 -0400
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=iGzMwRPJQdqtiYUezkPWy+/uFchIMoEDksmFxlmQD8GTVVvYA1P///4qCGNI1VRCT8oQuOqucVyJRElxrK1+4egIMFHqcsXCfLmzMUxba7hA3z3eyYkQ7Xzt9L9g7UFWxCjpAEhRuNMOhxLNJZb+q56mUI6ZQnvVZIzWRY16ss/JLqFRaLhSNKdk4rHNzoVMqa3EpbCXs88URZlU9VGRV1+hKqT9qCNOJrAQr0A7s1QgiOsQT1HW4WR5IDwddmYVw6O4EeSIhyLPu8sU3/DEnJZ+Da0nIojYy7pmYN0wW0/nPi9aPXzPLa5NTwrzEIQsqIEf27tiJ5vDOmLWSLBNXA==
+ b=NAOxrky/S9LAdyK9p0FdMBkjq7uDcJhR0E1VFCct7tJn0fZtxOnfJG9TBtKKPAWHP40KMTzZklJSEpd49OBrMDfdTapCiPQoCSVVDQ8RiUkKthMl2lo58jhLcbTyBHHrnsj8ZXdWT/i+Yxux2W4fsYxt7/X19j/CewjkOmTH2GVpO4ZjcNjcogkwIK6u2/YwJKamIaJ9uKoiY1PvXYhtJho+mqAquEEJzp1gl+nuMuOYdb785yEwK/j/NkXtgisewUqftqkl20zKmjug3PC91tTQOeZ9zcmsjLfAc/7OG+3sHPdy+4fZ0XEvzMGUBzVT4Wyw9sFkoHwhhj1PTQ+YlA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=G+0AKlKMFkcBr6wS14xi5JBTHdfBtvmB4W6wM08MndY=;
- b=f0Os9TmSZEMydOA6ji0zdyEr4voc/mPrrX+mn3bL3D5ihovGLw78r1gnxmMtX55SqKR5IVTqqX9Gy74yv0+8S0r+LzozSCpD7dy7/gGHT0PwJ++JjfmA6fLu9M9EMAOmFy+DNr00h9tCas6ZQRF1dGxtgI+c1C9Jm9j767aMhDMi82dKsWAM2h8QiEpUk4U5YjaDr/lb3SFF/vBDhEEkaZvz0aKY5sQHqSJSTQzRiT1abhYJG8hxtLL8aB4jE/AOvNtn9/ulr3ev7wV+ZwSbi7vPzlhuLncjHDrUEHWQ8TYZqpxZjTyrX5A89FZ7S+7LcB/D4fw9h3mU4igCwgpRqQ==
+ bh=6YDIJRr9/oRAxDtMDHFTD40odxPuUACu4zSDwFKfqOI=;
+ b=afnsGjnAYhxTW09g/iaODZBlPwfXnqEfpSYZAC2G2J32Rw1O7Bejp8trdlDXRc0jfUS8nryWyOG1aZaFBQXe7DKfX6N+AdPF7QLkFebmu0qyiZZAO24VYXiVbOu/IPg0zVqW5NOo66FalvoAhO6q+hSM/2pYL//1wrPijACWecAuTNDxO6l+91Kal2N9DPo1s/FRdYIVn8cfyha1iHNpambWuop75WQ6Sk/nJJm6cFxStnkvdoAwK1zomYEY44L2beEIAaNOjA7bovqQqPhnYP45fEqoj0rBurr7qh4GGV59F+8gdkmfvUGfSsCz1uE8/2Let9fmFWR/vs8zmk5JNg==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.112.32) smtp.rcpttodomain=networkplumber.org
+ 216.228.112.35) smtp.rcpttodomain=networkplumber.org
  smtp.mailfrom=nvidia.com; dmarc=pass (p=none sp=none pct=100) action=none
  header.from=nvidia.com; dkim=none (message not signed); arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=G+0AKlKMFkcBr6wS14xi5JBTHdfBtvmB4W6wM08MndY=;
- b=F+Sw4lRofdLZR81gGs0XJ1DKsTpJBgSXpOWXkjIIWL3qJb13WHfHxI38bdTvEK04qSqxpCvk1cRsGt4SAi3XZuydXdntthijDXrdK51v44RfzJamMOGsRXLjpVW6GNkmE70mi0Sqgha8ZNQkNjYumUcFfjkN+lCIIOV6EBleSe1EWNt7aQRzAM8lckxu23HWHJUH/YMiuJaa0CxseSbWoRs3pRHN6TcFYZfDONT1dgurbpbSWxEVM3kA2Q/PixP4kGzTgmy6F7u94GBXdJND8lXFVfJ1BN0XsDDALqvKXYNOp31HgPIMbFytiGjhJ+rvPA+ca6EIAYy2bVED+ysV/w==
-Received: from MWHPR1701CA0016.namprd17.prod.outlook.com
- (2603:10b6:301:14::26) by BN6PR12MB1330.namprd12.prod.outlook.com
- (2603:10b6:404:1e::12) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4042.16; Wed, 21 Apr
- 2021 15:53:34 +0000
-Received: from CO1NAM11FT036.eop-nam11.prod.protection.outlook.com
- (2603:10b6:301:14:cafe::1) by MWHPR1701CA0016.outlook.office365.com
- (2603:10b6:301:14::26) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4065.22 via Frontend
- Transport; Wed, 21 Apr 2021 15:53:34 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.112.32)
+ bh=6YDIJRr9/oRAxDtMDHFTD40odxPuUACu4zSDwFKfqOI=;
+ b=FgW1U8UiXzJdBsEN34OpfsFRS+wgvbsa0eWxCmpSJ9sUhK4mZBpDhL8bMA08IfddNzI6cXzW2GfJIGcwGzaKOJmo2Ydg5PccBaR1ASpN3ZfATmS3fGAZVgOCipPZMoO/r73ibumWeMy8a27vGundnB/54Mi72IBH2BnJX26tR7jT1bhxoFpu11cG1QfkcD3Dq4x4Yj0TU6rIjQLIsE71BA+Xwnn3pTKPTkEr1n6EbOp408ftbaQWTYvV61e2iimLKuANxf25p+eDpDlU1A+YLwVzePPOsg8SC/2urZXAoSlW97hh/SYEB+pYY6D5SceXuqdNoBeObHV6AOgDy+Vx0A==
+Received: from BN6PR20CA0051.namprd20.prod.outlook.com (2603:10b6:404:151::13)
+ by CY4PR12MB1719.namprd12.prod.outlook.com (2603:10b6:903:125::17) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4042.18; Wed, 21 Apr
+ 2021 15:53:39 +0000
+Received: from BN8NAM11FT046.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:404:151:cafe::be) by BN6PR20CA0051.outlook.office365.com
+ (2603:10b6:404:151::13) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4065.20 via Frontend
+ Transport; Wed, 21 Apr 2021 15:53:39 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.112.35)
  smtp.mailfrom=nvidia.com; networkplumber.org; dkim=none (message not signed)
  header.d=none;networkplumber.org; dmarc=pass action=none
  header.from=nvidia.com;
 Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.112.32 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.112.32; helo=mail.nvidia.com;
-Received: from mail.nvidia.com (216.228.112.32) by
- CO1NAM11FT036.mail.protection.outlook.com (10.13.174.124) with Microsoft SMTP
+ 216.228.112.35 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.112.35; helo=mail.nvidia.com;
+Received: from mail.nvidia.com (216.228.112.35) by
+ BN8NAM11FT046.mail.protection.outlook.com (10.13.177.127) with Microsoft SMTP
  Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.20.4065.21 via Frontend Transport; Wed, 21 Apr 2021 15:53:33 +0000
-Received: from HQMAIL105.nvidia.com (172.20.187.12) by HQMAIL109.nvidia.com
- (172.20.187.15) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Wed, 21 Apr
- 2021 08:53:33 -0700
+ 15.20.4065.21 via Frontend Transport; Wed, 21 Apr 2021 15:53:36 +0000
+Received: from HQMAIL105.nvidia.com (172.20.187.12) by HQMAIL111.nvidia.com
+ (172.20.187.18) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Wed, 21 Apr
+ 2021 15:53:35 +0000
 Received: from vdi.nvidia.com (172.20.145.6) by mail.nvidia.com
  (172.20.187.12) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Wed, 21 Apr 2021 15:53:31 +0000
+ Transport; Wed, 21 Apr 2021 15:53:33 +0000
 From:   <dlinkin@nvidia.com>
 To:     <netdev@vger.kernel.org>
 CC:     <davem@davemloft.net>, <kuba@kernel.org>, <jiri@nvidia.com>,
         <stephen@networkplumber.org>, <dsahern@gmail.com>,
         <vladbu@nvidia.com>, Dmytro Linkin <dlinkin@nvidia.com>
-Subject: [PATCH RESEND-2 RFC net-next 10/18] netdevsim: Implement devlink rate leafs tx rate support
-Date:   Wed, 21 Apr 2021 18:52:57 +0300
-Message-ID: <1619020385-20220-11-git-send-email-dlinkin@nvidia.com>
+Subject: [PATCH RESEND-2 RFC net-next 11/18] selftest: netdevsim: Add devlink port shared/max tx rate test
+Date:   Wed, 21 Apr 2021 18:52:58 +0300
+Message-ID: <1619020385-20220-12-git-send-email-dlinkin@nvidia.com>
 X-Mailer: git-send-email 1.8.3.1
 In-Reply-To: <1619020385-20220-1-git-send-email-dlinkin@nvidia.com>
 References: <1619020385-20220-1-git-send-email-dlinkin@nvidia.com>
@@ -70,153 +70,114 @@ MIME-Version: 1.0
 Content-Type: text/plain
 X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: ac8102b0-736c-40d2-856a-08d904dd9e40
-X-MS-TrafficTypeDiagnostic: BN6PR12MB1330:
-X-Microsoft-Antispam-PRVS: <BN6PR12MB13308085C5F7B54F5E93625BCB479@BN6PR12MB1330.namprd12.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:166;
+X-MS-Office365-Filtering-Correlation-Id: 6d09d457-71dc-4974-0979-08d904dd9fe8
+X-MS-TrafficTypeDiagnostic: CY4PR12MB1719:
+X-Microsoft-Antispam-PRVS: <CY4PR12MB17199984E8A0985F84EA256ECB479@CY4PR12MB1719.namprd12.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:4714;
 X-MS-Exchange-SenderADCheck: 1
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: jmy/HHO3IJ8x36j6d64Z52V+/TvrhGTR/o4VrzaSEVpde4Fo0WGbtbXu6dIOAVLKbn8OjUmZeh80Hd19gMJSG1OYSJYtV0XthhgJzD3dLqs84p+uMnexNUxJ4ckYw8S6eG5vpn5jtlFD0WDXfgHvdR6gYhaZP+DDMDo16vNUN9tJ9B0gRaEw+ElC9k0iYzMDka6i/8cm2f3aE1/nmvVT9X6ANTISQRaKamjry0UdNTJO45Pes6m4W0FV0G14JcKVDvUEI5YRKFREpXe3Z0Lk20bIODNDEy3IjYnEszB7rMof6sc4Z+GXAHYxElpgMh6goxRQrcNZUNGrAhiuYSUttSIC2U0n83nmGOGVA3uwN+Nc7ejSNYPoX+AKMbIqQ9NwNlOhkOYvS6EoY5+gbkk1S5A245AkcQddZOcNyEdH7XDfJlv6a5e5Bg7EKXAI5JwItGejQg6xyb6OqDq1apBFO8NTTqQ0LYDxyHx4ygdPmU/Vjud4wND2afA9QVmULV659YMnDiw8kvhMML2x+lBEkMC8vFcHGrezkD1SW4jMgLqDNr9hXhuzIUAlu9VRe193EFMgWETTcEmcg/S4doi+fmUngeHBKodbZhPzZ0f++mba0UVUk0QSFKAdm/dg+z9VntJ5J4OWXMmNyjb3XaE5cS/St6SlR3ilUHvF0xYTkdg=
-X-Forefront-Antispam-Report: CIP:216.228.112.32;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:schybrid01.nvidia.com;CAT:NONE;SFS:(4636009)(346002)(39860400002)(136003)(376002)(396003)(36840700001)(46966006)(70206006)(478600001)(6666004)(316002)(83380400001)(2876002)(82310400003)(7696005)(36756003)(2906002)(54906003)(36860700001)(426003)(107886003)(8676002)(26005)(186003)(5660300002)(4326008)(7636003)(356005)(336012)(2616005)(47076005)(82740400003)(8936002)(6916009)(86362001)(70586007);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: erQFgyaycgyVGZs1SKyUnqgBzy0Wtbpl9h0qfWRkDMgB8tCS4GVwpq5ZyVaKtYHMdvxwyR02gOnzzphHEGjRedawW4LSlhAKEcwA58K9QeB8Bo21aUXKutRVATuEtY3+hl54cSUOVLuEKmmIqPis32E0nmLdFYMbSkGhFNgxMJi0rDEvaFWun/40WccSFc/dw1GDqVhdyODXYykP25kj2N/o/iDg4e0DiWbgU2jvFxdaIp2vxt6pjCQafugre58bxALFJ9YURVwxmPhez1o+DLggxRYiVetky21musjkXHPqlYyBvqC4MUUuaeq3Jdf2v7QEqzdepm8/we0ScHn7O4/k5zTg7q5v2zPNChulO4l/tOtG5mRRSmWCTdnS8qYXs1i2WqWiGoujVw/o/FW3t0XG/u/By+PfTspzXjYgw1wfKt2LR2y75pSXjKDKI7NQzlQsrP+061ps4odBJn4t7SSShs6ZOuWqC57FycKJSVuqRWZb7jDIWsW4r80A3QVLHzGprpNOxPZaz6U13L+WHT66F80d+EAhOG12WBY41UPqMPadA2pdL4Y7V+0eeNk4WHvplE1lGjT2JpPj73g3dpbJyGU7rUnpXP1l6Fif6cuD8DluQZrqtoWcvVQhATPy8bP72LWW0rXyoTVUxcEmiA==
+X-Forefront-Antispam-Report: CIP:216.228.112.35;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:schybrid04.nvidia.com;CAT:NONE;SFS:(4636009)(396003)(346002)(39860400002)(136003)(376002)(46966006)(36840700001)(70586007)(356005)(6916009)(36906005)(86362001)(2876002)(82740400003)(2906002)(426003)(70206006)(36756003)(2616005)(8936002)(82310400003)(107886003)(5660300002)(54906003)(36860700001)(6666004)(47076005)(336012)(8676002)(186003)(26005)(4326008)(316002)(7696005)(478600001)(7636003);DIR:OUT;SFP:1101;
 X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 21 Apr 2021 15:53:33.7778
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 21 Apr 2021 15:53:36.4884
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: ac8102b0-736c-40d2-856a-08d904dd9e40
+X-MS-Exchange-CrossTenant-Network-Message-Id: 6d09d457-71dc-4974-0979-08d904dd9fe8
 X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.112.32];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource: CO1NAM11FT036.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.112.35];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource: BN8NAM11FT046.eop-nam11.prod.protection.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Anonymous
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN6PR12MB1330
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY4PR12MB1719
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 From: Dmytro Linkin <dlinkin@nvidia.com>
 
-Implement new devlink ops that allow shared and max tx rate control for
-devlink port rate objects (leafs) through devlink API.
-
-Expose rate values of VF ports to netdevsim debugfs.
+Test verifies that netdevsim VFs can set and retrieve shared/max tx
+rate through new devlink API.
 
 Co-developed-by: Vlad Buslov <vladbu@nvidia.com>
 Signed-off-by: Vlad Buslov <vladbu@nvidia.com>
 Signed-off-by: Dmytro Linkin <dlinkin@nvidia.com>
 Reviewed-by: Jiri Pirko <jiri@nvidia.com>
 ---
- drivers/net/netdevsim/dev.c | 77 +++++++++++++++++++++++++++++++++++++++++++--
- 1 file changed, 74 insertions(+), 3 deletions(-)
+ .../selftests/drivers/net/netdevsim/devlink.sh     | 55 ++++++++++++++++++++++
+ 1 file changed, 55 insertions(+)
 
-diff --git a/drivers/net/netdevsim/dev.c b/drivers/net/netdevsim/dev.c
-index 356287a..a6dfa6b6 100644
---- a/drivers/net/netdevsim/dev.c
-+++ b/drivers/net/netdevsim/dev.c
-@@ -276,17 +276,26 @@ static void nsim_dev_debugfs_exit(struct nsim_dev *nsim_dev)
- static int nsim_dev_port_debugfs_init(struct nsim_dev *nsim_dev,
- 				      struct nsim_dev_port *nsim_dev_port)
- {
-+	struct nsim_bus_dev *nsim_bus_dev = nsim_dev->nsim_bus_dev;
-+	unsigned int port_index = nsim_dev_port->port_index;
- 	char port_ddir_name[16];
- 	char dev_link_name[32];
- 
--	sprintf(port_ddir_name, "%u", nsim_dev_port->port_index);
-+	sprintf(port_ddir_name, "%u", port_index);
- 	nsim_dev_port->ddir = debugfs_create_dir(port_ddir_name,
- 						 nsim_dev->ports_ddir);
- 	if (IS_ERR(nsim_dev_port->ddir))
- 		return PTR_ERR(nsim_dev_port->ddir);
- 
--	sprintf(dev_link_name, "../../../" DRV_NAME "%u",
--		nsim_dev->nsim_bus_dev->dev.id);
-+	sprintf(dev_link_name, "../../../" DRV_NAME "%u", nsim_bus_dev->dev.id);
-+	if (nsim_dev_port_is_vf(nsim_dev_port)) {
-+		unsigned int vf_id = nsim_dev_port_index_to_vf_index(port_index);
-+
-+		debugfs_create_u16("tx_share", 0400, nsim_dev_port->ddir,
-+				   &nsim_bus_dev->vfconfigs[vf_id].min_tx_rate);
-+		debugfs_create_u16("tx_max", 0400, nsim_dev_port->ddir,
-+				   &nsim_bus_dev->vfconfigs[vf_id].max_tx_rate);
-+	}
- 	debugfs_create_symlink("dev", nsim_dev_port->ddir, dev_link_name);
- 
- 	return 0;
-@@ -990,6 +999,66 @@ static int nsim_dev_devlink_trap_init(struct devlink *devlink,
- 	return 0;
+diff --git a/tools/testing/selftests/drivers/net/netdevsim/devlink.sh b/tools/testing/selftests/drivers/net/netdevsim/devlink.sh
+index b8b0990..c4be343 100755
+--- a/tools/testing/selftests/drivers/net/netdevsim/devlink.sh
++++ b/tools/testing/selftests/drivers/net/netdevsim/devlink.sh
+@@ -516,6 +516,45 @@ rate_leafs_get()
+ 	       '.[] | to_entries | .[] | select(.value.type == "leaf") | .key | select(contains("'$handle'"))'
  }
  
-+#define NSIM_LINK_SPEED_MAX     5000 /* Mbps */
-+#define NSIM_LINK_SPEED_UNIT    125000 /* 1 Mbps given in bytes/sec to avoid
-+					* u64 overflow during conversion from
-+					* bytes to bits.
-+					*/
-+
-+static int nsim_rate_bytes_to_units(char *name, u64 *rate, struct netlink_ext_ack *extack)
++rate_attr_set()
 +{
-+	u64 val = *rate;
++	local handle=$1
++	local name=$2
++	local value=$3
++	local units=$4
 +
-+	if (val % NSIM_LINK_SPEED_UNIT) {
-+		pr_err("%s rate value %lluBps not in link speed units of 1Mbps.\n",
-+		       name, val);
-+		NL_SET_ERR_MSG_MOD(extack, "TX rate value not in link speed units of 1Mbps.");
-+		return -EINVAL;
-+	}
-+
-+	val = div_u64(val, NSIM_LINK_SPEED_UNIT);
-+	if (val > NSIM_LINK_SPEED_MAX) {
-+		pr_err("%s rate value %lluMbps exceed link maximum speed 5000Mbps.\n",
-+		       name, val);
-+		NL_SET_ERR_MSG_MOD(extack, "TX rate value exceed link maximum speed 5000Mbps.");
-+		return -EINVAL;
-+	}
-+	*rate = val;
-+	return 0;
++	devlink port func rate set $handle $name $value$units
 +}
 +
-+static int nsim_leaf_tx_share_set(struct devlink_rate *devlink_rate, void *priv,
-+				  u64 tx_share, struct netlink_ext_ack *extack)
++rate_attr_get()
 +{
-+	struct nsim_dev_port *nsim_dev_port = priv;
-+	struct nsim_bus_dev *nsim_bus_dev = nsim_dev_port->ns->nsim_bus_dev;
-+	int vf_id = nsim_dev_port_index_to_vf_index(nsim_dev_port->port_index);
-+	int err;
++	local handle=$1
++	local name=$2
 +
-+	err = nsim_rate_bytes_to_units("tx_share", &tx_share, extack);
-+	if (err)
-+		return err;
-+
-+	nsim_bus_dev->vfconfigs[vf_id].min_tx_rate = tx_share;
-+	return 0;
++	cmd_jq "devlink port func rate show $handle -j" '.[][].'$name
 +}
 +
-+static int nsim_leaf_tx_max_set(struct devlink_rate *devlink_rate, void *priv,
-+				u64 tx_max, struct netlink_ext_ack *extack)
++rate_attr_tx_rate_check()
 +{
-+	struct nsim_dev_port *nsim_dev_port = priv;
-+	struct nsim_bus_dev *nsim_bus_dev = nsim_dev_port->ns->nsim_bus_dev;
-+	int vf_id = nsim_dev_port_index_to_vf_index(nsim_dev_port->port_index);
-+	int err;
++	local handle=$1
++	local name=$2
++	local rate=$3
++	local debug_file=$4
 +
-+	err = nsim_rate_bytes_to_units("tx_max", &tx_max, extack);
-+	if (err)
-+		return err;
++	rate_attr_set $handle $name $rate mbit
++	check_err $? "Failed to set $name value"
 +
-+	nsim_bus_dev->vfconfigs[vf_id].max_tx_rate = tx_max;
-+	return 0;
++	local debug_value=$(cat $debug_file)
++	check_err $? "Failed to read $name value from debugfs"
++	[ "$debug_value" == "$rate" ]
++	check_err $? "Unexpected $name debug value $debug_value != $rate"
++
++	local api_value=$(( $(rate_attr_get $handle $name) * 8 / 1000000 ))
++	check_err $? "Failed to get $name attr value"
++	[ "$api_value" == "$rate" ]
++	check_err $? "Unexpected $name attr value $api_value != $rate"
 +}
 +
- static const struct devlink_ops nsim_dev_devlink_ops = {
- 	.eswitch_mode_set = nsim_devlink_eswitch_mode_set,
- 	.eswitch_mode_get = nsim_devlink_eswitch_mode_get,
-@@ -1005,6 +1074,8 @@ static int nsim_dev_devlink_trap_init(struct devlink *devlink,
- 	.trap_group_set = nsim_dev_devlink_trap_group_set,
- 	.trap_policer_set = nsim_dev_devlink_trap_policer_set,
- 	.trap_policer_counter_get = nsim_dev_devlink_trap_policer_counter_get,
-+	.rate_leaf_tx_share_set = nsim_leaf_tx_share_set,
-+	.rate_leaf_tx_max_set = nsim_leaf_tx_max_set,
- };
+ rate_test()
+ {
+ 	RET=0
+@@ -527,6 +566,22 @@ rate_test()
+ 	[ "$num_leafs" == "$VF_COUNT" ]
+ 	check_err $? "Expected $VF_COUNT rate leafs but got $num_leafs"
  
- #define NSIM_DEV_MAX_MACS_DEFAULT 32
++	rate=10
++	for r_obj in $leafs
++	do
++		rate_attr_tx_rate_check $r_obj tx_share $rate \
++			$DEBUGFS_DIR/ports/${r_obj##*/}/tx_share
++		rate=$(($rate+10))
++	done
++
++	rate=100
++	for r_obj in $leafs
++	do
++		rate_attr_tx_rate_check $r_obj tx_max $rate \
++			$DEBUGFS_DIR/ports/${r_obj##*/}/tx_max
++		rate=$(($rate+100))
++	done
++
+ 	log_test "rate test"
+ }
+ 
 -- 
 1.8.3.1
 
