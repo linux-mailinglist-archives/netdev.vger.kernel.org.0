@@ -2,99 +2,75 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0972A3667FE
-	for <lists+netdev@lfdr.de>; Wed, 21 Apr 2021 11:28:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 03C8136680C
+	for <lists+netdev@lfdr.de>; Wed, 21 Apr 2021 11:32:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238206AbhDUJ2p (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 21 Apr 2021 05:28:45 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:36222 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S230516AbhDUJ2o (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 21 Apr 2021 05:28:44 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1618997291;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=koLisk6SX7FmrTDba5lKCo3w2wDBed6q1YMsOPtWkOc=;
-        b=gKrMj0a67joeKYZVBrQ2zERTElfE6iW2yLntyUYVpA+8AOngLPSkwDID7p27bNvqEScJXW
-        fSMAKWiA94EPw3bYuLxuGLZv7NsAJfVeqha04kF7K12WrsON2Gzv1VN7Yx45UPDuZ0jHoH
-        Rs98zninBo3sx3eRxvDun3ZSLYuRRzU=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-492-2EmJtXA2N7SKx9n0D4ZX4w-1; Wed, 21 Apr 2021 05:27:27 -0400
-X-MC-Unique: 2EmJtXA2N7SKx9n0D4ZX4w-1
-Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id AFEAB1008063;
-        Wed, 21 Apr 2021 09:27:26 +0000 (UTC)
-Received: from [10.36.113.98] (ovpn-113-98.ams2.redhat.com [10.36.113.98])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id 49DAB60C5F;
-        Wed, 21 Apr 2021 09:27:25 +0000 (UTC)
-From:   "Eelco Chaudron" <echaudro@redhat.com>
-To:     "Davide Caratti" <dcaratti@redhat.com>
-Cc:     "Pravin B Shelar" <pshelar@ovn.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        "Jakub Kicinski" <kuba@kernel.org>,
-        "Sabrina Dubroca" <sd@queasysnail.net>, netdev@vger.kernel.org
-Subject: Re: [PATCH net 1/2] openvswitch: fix stack OOB read while fragmenting
- IPv4 packets
-Date:   Wed, 21 Apr 2021 11:27:21 +0200
-Message-ID: <1097839A-30AD-4AE9-859A-4B7C6A3EFA40@redhat.com>
-In-Reply-To: <94839fa9e7995afa6139b4f65c12ac15c1a8dc2f.1618844973.git.dcaratti@redhat.com>
-References: <cover.1618844973.git.dcaratti@redhat.com>
- <94839fa9e7995afa6139b4f65c12ac15c1a8dc2f.1618844973.git.dcaratti@redhat.com>
+        id S238267AbhDUJdG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 21 Apr 2021 05:33:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48008 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S237041AbhDUJdD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 21 Apr 2021 05:33:03 -0400
+Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 64077C06174A;
+        Wed, 21 Apr 2021 02:32:30 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=YDpKhq3lEyHoaGRnqdn0n1KeXiDGOFgpAVazWEK6jjM=; b=hUTRioDO9yMCVjGjRtZdJIimKD
+        amLrXljQUyiXujO/gW2E/5KfG3hGTS3/F4kpLS++BJSjrSaTN98spYobmufzP5bekJHiGjKwN9wqa
+        P7Fwejqp6uAdUAsZYVsI+zikYWZ/+bI6vR1L1dIJCJXxMjmb8e1Fqatof//5WX0Uw365ZoCSPNpSj
+        ha5Zl1BJwFTKzeO51GXyGmWZf9BTUbilsD+okvhfsT8MaGSdijhIZqLasYWnu0bIVq8lH/kNVKLQN
+        kbIUYF4lSF/5gqsbfaya7Eyhy4yl3VNP21IzgC/PRgbYwcvcs9d19zs5Txx+IhHSMSVlal8LqhBw9
+        rOF3FDFQ==;
+Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=noisy.programming.kicks-ass.net)
+        by casper.infradead.org with esmtpsa (Exim 4.94 #2 (Red Hat Linux))
+        id 1lZ9Ay-00GKSu-6P; Wed, 21 Apr 2021 09:29:59 +0000
+Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits))
+        (Client did not present a certificate)
+        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id 15616300130;
+        Wed, 21 Apr 2021 11:29:38 +0200 (CEST)
+Received: by hirez.programming.kicks-ass.net (Postfix, from userid 1000)
+        id C529F20190AC3; Wed, 21 Apr 2021 11:29:38 +0200 (CEST)
+Date:   Wed, 21 Apr 2021 11:29:38 +0200
+From:   Peter Zijlstra <peterz@infradead.org>
+To:     syzbot <syzbot+7692cea7450c97fa2a0a@syzkaller.appspotmail.com>
+Cc:     acme@kernel.org, acme@redhat.com,
+        alexander.shishkin@linux.intel.com, andrii@kernel.org,
+        ast@kernel.org, bpf@vger.kernel.org, cobranza@ingcoecuador.com,
+        daniel@iogearbox.net, eranian@google.com, john.fastabend@gmail.com,
+        jolsa@redhat.com, kafai@fb.com, kpsingh@kernel.org,
+        linux-kernel@vger.kernel.org, mark.rutland@arm.com,
+        mingo@kernel.org, mingo@redhat.com, namhyung@kernel.org,
+        netdev@vger.kernel.org, songliubraving@fb.com,
+        syzkaller-bugs@googlegroups.com, tglx@linutronix.de,
+        torvalds@linux-foundation.org, vincent.weaver@maine.edu, yhs@fb.com
+Subject: Re: [syzbot] INFO: task hung in perf_event_free_task
+Message-ID: <YH/wggx86Ph1bwPi@hirez.programming.kicks-ass.net>
+References: <00000000000057102e058e722bba@google.com>
+ <000000000000dfe1bc05c063d0fa@google.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <000000000000dfe1bc05c063d0fa@google.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Tue, Apr 20, 2021 at 02:10:22AM -0700, syzbot wrote:
+> syzbot has found a reproducer for the following issue on:
+> 
+> HEAD commit:    7af08140 Revert "gcov: clang: fix clang-11+ build"
+> git tree:       upstream
+> console output: https://syzkaller.appspot.com/x/log.txt?x=15416871d00000
+> kernel config:  https://syzkaller.appspot.com/x/.config?x=c0a6882014fd3d45
+> dashboard link: https://syzkaller.appspot.com/bug?extid=7692cea7450c97fa2a0a
+> compiler:       Debian clang version 11.0.1-2
+> syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=145c9ffed00000
+> C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=12de31ded00000
 
-
-On 19 Apr 2021, at 17:23, Davide Caratti wrote:
-
-> running openvswitch on kernels built with KASAN, it's possible to see 
-> the
-> following splat while testing fragmentation of IPv4 packets:
-
-<SNIP>
-
-> for IPv4 packets, ovs_fragment() uses a temporary struct dst_entry. 
-> Then,
-> in the following call graph:
->
->   ip_do_fragment()
->     ip_skb_dst_mtu()
->       ip_dst_mtu_maybe_forward()
->         ip_mtu_locked()
->
-> the pointer to struct dst_entry is used as pointer to struct rtable: 
-> this
-> turns the access to struct members like rt_mtu_locked into an OOB read 
-> in
-> the stack. Fix this changing the temporary variable used for IPv4 
-> packets
-> in ovs_fragment(), similarly to what is done for IPv6 few lines below.
->
-> Fixes: d52e5a7e7ca4 ("ipv4: lock mtu in fnhe when received PMTU < 
-> net.ipv4.route.min_pmt")
-> Cc: <stable@vger.kernel.org>
-> Signed-off-by: Davide Caratti <dcaratti@redhat.com>
-
-The fix looks good to me, however isn’t the real root cause 
-ip_mtu_locked() who casts struct dst_entry to struct rtable (not even 
-using container_of())?
-
-I do not know details in this area of the code, so maybe it’s just 
-fine to always assume dst_entry is part of a rtable struct, as I see 
-other core functions do the same 
-ipv4_neigh_lookup()/ipv4_confirm_neigh().
-
-
-Acked-by: Eelco Chaudron <echaudro@redhat.com>
-
+When I build that C file and run it, it completes. AFAICT that's not the
+expected outcome given we're looking for a hung-task scenario. Hmm?
