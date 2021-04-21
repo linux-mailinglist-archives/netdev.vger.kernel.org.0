@@ -2,188 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 07649366D02
-	for <lists+netdev@lfdr.de>; Wed, 21 Apr 2021 15:41:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1B2D7366D0D
+	for <lists+netdev@lfdr.de>; Wed, 21 Apr 2021 15:43:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241066AbhDUNlh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 21 Apr 2021 09:41:37 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:36134 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S229536AbhDUNlg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 21 Apr 2021 09:41:36 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1619012463;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=STcz0ul+ETL19QfN18GAZ+r8q/bNd6kMm1/aoWNmSeA=;
-        b=CPiUrCPqU6QcA9y7f0E5/DiAWq+qeeUJC67rlTu3wfXk4k96sBOckZODZSuNtIJKsOfCEZ
-        HyC09RZKGq0ddWWepkc+rFYpwE2zZX00//6XkWgkoexmwmLxPIYqyDK/4XyW2U3NANwe/l
-        3CZh5DMgr/Y2dmeWgkUGasSxdIEu+Nw=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-251-I3NGd9NBN_iruWEv8XyJwg-1; Wed, 21 Apr 2021 09:40:51 -0400
-X-MC-Unique: I3NGd9NBN_iruWEv8XyJwg-1
-Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        id S242699AbhDUNnv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 21 Apr 2021 09:43:51 -0400
+Received: from mail.kernel.org ([198.145.29.99]:53988 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S242670AbhDUNnY (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 21 Apr 2021 09:43:24 -0400
+Received: from gandalf.local.home (cpe-66-24-58-225.stny.res.rr.com [66.24.58.225])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id B1AC21020C32;
-        Wed, 21 Apr 2021 13:40:48 +0000 (UTC)
-Received: from krava (unknown [10.40.195.227])
-        by smtp.corp.redhat.com (Postfix) with SMTP id 583815D9C0;
-        Wed, 21 Apr 2021 13:40:38 +0000 (UTC)
-Date:   Wed, 21 Apr 2021 15:40:37 +0200
-From:   Jiri Olsa <jolsa@redhat.com>
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     Steven Rostedt <rostedt@goodmis.org>,
-        Masami Hiramatsu <mhiramat@kernel.org>,
-        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
-        Jiri Olsa <jolsa@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andriin@fb.com>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>, Daniel Xu <dxu@dxuuu.xyz>,
-        Jesper Brouer <jbrouer@redhat.com>,
-        Toke =?iso-8859-1?Q?H=F8iland-J=F8rgensen?= <toke@redhat.com>,
-        Viktor Malik <vmalik@redhat.com>
-Subject: Re: [PATCHv2 RFC bpf-next 0/7] bpf: Add support for ftrace probe
-Message-ID: <YIArVa6IE37vsazU@krava>
-References: <CAEf4BzYyVj-Tjy9ZZdAU5nOtJ8_auvVobTT6pMqg8zPb9jj-Ow@mail.gmail.com>
- <20210415111002.324b6bfa@gandalf.local.home>
- <CAEf4BzY=yBZH2Aad1hNcqCt51u0+SmNdkD6NfJRVMzF7DsvG+A@mail.gmail.com>
- <20210415170007.31420132@gandalf.local.home>
- <20210417000304.fc987dc00d706e7551b29c04@kernel.org>
- <20210416124834.05862233@gandalf.local.home>
- <YH7OXrjBIqvEZbsc@krava>
- <CAADnVQK55WzR6_JfxkMzEfUnLJnX75bRHjCkaptcVF=nQ_gWfw@mail.gmail.com>
- <YH8GxNi5VuYjwNmK@krava>
- <CAADnVQLh3tCWi=TiWnJVaMrYhJ=j-xSrJ72+XnZDP8CMZM+1mQ@mail.gmail.com>
+        by mail.kernel.org (Postfix) with ESMTPSA id 9C793611F2;
+        Wed, 21 Apr 2021 13:42:43 +0000 (UTC)
+Date:   Wed, 21 Apr 2021 09:42:41 -0400
+From:   Steven Rostedt <rostedt@goodmis.org>
+To:     Leon Romanovsky <leon@kernel.org>
+Cc:     Trond Myklebust <trondmy@hammerspace.com>,
+        "a.shelat@northeastern.edu" <a.shelat@northeastern.edu>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
+        "chuck.lever@oracle.com" <chuck.lever@oracle.com>,
+        "dwysocha@redhat.com" <dwysocha@redhat.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "sudipm.mukherjee@gmail.com" <sudipm.mukherjee@gmail.com>,
+        "bfields@fieldses.org" <bfields@fieldses.org>,
+        "anna.schumaker@netapp.com" <anna.schumaker@netapp.com>,
+        "pakki001@umn.edu" <pakki001@umn.edu>,
+        "linux-nfs@vger.kernel.org" <linux-nfs@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: Re: [PATCH] SUNRPC: Add a check for gss_release_msg
+Message-ID: <20210421094241.1bb65758@gandalf.local.home>
+In-Reply-To: <YIAmrgZ4Bnqo/nmI@unreal>
+References: <20210407001658.2208535-1-pakki001@umn.edu>
+        <YH5/i7OvsjSmqADv@kroah.com>
+        <20210420171008.GB4017@fieldses.org>
+        <YH+zwQgBBGUJdiVK@unreal>
+        <YH+7ZydHv4+Y1hlx@kroah.com>
+        <CADVatmNgU7t-Co84tSS6VW=3NcPu=17qyVyEEtVMVR_g51Ma6Q@mail.gmail.com>
+        <YH/8jcoC1ffuksrf@kroah.com>
+        <3B9A54F7-6A61-4A34-9EAC-95332709BAE7@northeastern.edu>
+        <YIAYThdIoAPu2h7b@unreal>
+        <6530850bc6f0341d1f2d5043ba1dd04e242cff66.camel@hammerspace.com>
+        <YIAmrgZ4Bnqo/nmI@unreal>
+X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAADnVQLh3tCWi=TiWnJVaMrYhJ=j-xSrJ72+XnZDP8CMZM+1mQ@mail.gmail.com>
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Apr 20, 2021 at 04:38:45PM -0700, Alexei Starovoitov wrote:
+On Wed, 21 Apr 2021 16:20:46 +0300
+Leon Romanovsky <leon@kernel.org> wrote:
 
-SNIP
-
-> > >
-> > > I don't see how you can do it without BTF.
-> > > The mass-attach feature should prepare generic 6 or so arguments
-> > > from all functions it attached to.
-> > > On x86-64 it's trivial because 6 regs are the same.
-> > > On arm64 is now more challenging since return value regs overlaps with
-> > > first argument, so bpf trampoline (when it's ready for arm64) will look
-> > > a bit different than bpf trampoline on x86-64 to preserve arg0, arg1,
-> > > ..arg6, ret
-> > > 64-bit values that bpf prog expects to see.
-> > > On x86-32 it's even more trickier, since the same 6 args need to be copied
-> > > from a combination of regs and stack.
-> > > This is not some hypothetical case. We already use BTF in x86-32 JIT
-> > > and btf_func_model was introduced specifically to handle such cases.
-> > > So I really don't see how ftrace can do that just yet. It has to understand BTF
-> > > of all of the funcs it attaches to otherwise it's just saving all regs.
-> > > That approach was a pain to deal with.
-> >
-> > ok, my idea was to get regs from the ftrace and have arch specific code
-> > to prepare 6 (or less) args for ebpf program.. that part would be
-> > already in bpf code
-> >
-> > so you'd like to see this functionality directly in ftrace, so we don't
-> > save unneeded regs, is that right?
+> > There really is no alternative for maintainers other than to always be
+> > sceptical of patches submitted by people who are not known and trusted
+> > members of the community, and to scrutinise those patches with more
+> > care.  
 > 
-> What do you mean by "already in bpf code" ?
 
-that it would not be part of ftrace code
+There's only a couple of contributors to my code that I will take without
+looking deeply at what it does. And those are well respected developers
+that many other people know.
 
+> Right, my guess is that many maintainers failed in the trap when they
+> saw respectful address @umn.edu together with commit message saying
+> about "new static analyzer tool".
 > 
-> The main question is an api across layers.
-> If ftrace doesn't use BTF it has to prepare all regs that could be used.
-> Meaning on x86-64 that has to be 6 regs for args, 1 reg for return and
-> stack pointer.
-> That would be enough to discover input args and return value in fexit.
-> On arm64 that has to be similar, but while x86-64 can do with single pt_regs
-> where %rax is updated on fexit, arm64 cannot do so, since the same register
-> is used as arg1 and as a return value.
-> The most generic api between ftrace and bpf layers would be two sets of
-> pt_regs. One on entry and one on exit, but that's going to be very expensive.
+> The mental bias here is to say that "oh, another academic group tries
+> to reinvent the wheel, looks ok".
 
-that's what I was going for and I think it's the only way if
-we use ftrace graph_ops for mass attaching
+I'm skeptical of all static analyzers, as I've seen too many good ones
+still produce crappy fixes. I look even more carefully if I see that it was
+a tool that discovered the bug and not a human.
 
-> On x86-32 it would have to be 3 regs plus stack pointer and another 2 regs
-> to cover all input args and return value.
-> So there will be plenty of per-arch differences.
-> 
-> Jiri, if you're thinking of a bpf helper like:
-> u64 bpf_read_argN(pt_regs, ip, arg_num)
-> that will do lookup of btf_id from ip, then it will parse btf_id and
-> function proto,
-> then it will translate that to btf_func_model and finally will extract the right
-> argument value from a combination of stack and regs ?
-> That's doable, but it's a lot of run-time overhead.
-> It would be usable by bpf progs that don't care much about run-time perf
-> and don't care that they're not usable 24/7 on production systems.
-> Such tools exist and they're useful,
-> but I'd like this mass-attach facility to be usable everywhere
-> including the production and 24/7 tracing.
+The one patch from Greg's reverts that affects my code was actually a
+legitimate fix, and looking back at the thread of the submission, I even
+asked if it was found via inspection or a tool.
 
-I did not think of this option, but yep, seems also expensive
+https://lore.kernel.org/lkml/20190419223718.17fa8246@oasis.local.home/
 
-> Hence I think it's better to do this per-arch translation during bpf
-> prog attach.
-> That's exactly what bpf trampoline is doing.
-> Currently it's doing for single btf_id, single trampoline, and single bpf prog.
-> To make the same logic work across N attach points the trampoline logic
-> would need to iterate all btf_func_model-s of all btf_id-s and generate
-> M trampolines (where M < N) for a combination of possible argument passing.
-> On x86-64 the M will be equal to 1. On arm64 it will be equal to 1 as well.
-> But on x86-32 it will depend on a set of btf_ids. It could be 1,2,..10.
-> Since bpf doesn't allow to attach to struct-by-value it's only 32-bit and 64-bit
-> integers to deal with and number of combinations of possible calling conventions
-> is actually very small. I suspect it won't be more than 10.
-> This way there will be no additional run-time overhead and bpf programs
-> can be portable. They will work as-is on x86-64, x86-32, arm64.
-> Just like fentry/fexit work today. Or rather they will be portable
-> when bpf trampoline is supported on these archs.
-> This portability is the key feature of bpf trampoline design. The bpf trampoline
-> was implemented for x86-64 only so far. Arm64 patches are still wip.
-> btf_func_model is used by both x86-64 and x86-32 JITs.
-
-ok, I understand why this would be the best solution for calling
-the program from multiple probes
-
-I think it's the 'attach' layer which is the source of problems
-
-currently there is ftrace's fgraph_ops support that allows fast mass
-attach and calls callbacks for functions entry and exit:
-  https://lore.kernel.org/lkml/20190525031633.811342628@goodmis.org/
-
-these callbacks get ip/parent_ip and can get pt_regs (that's not
-implemented at the moment)
-
-but that gets us to the situation of having full pt_regs on both
-entry/exit callbacks that you described above and want to avoid,
-but I think it's the price for having this on top of generic
-tracing layer
-
-the way ftrace's fgraph_ops is implemented, I'm not sure it can
-be as fast as current bpf entry/exit trampoline
-
-but to better understand the pain points I think I'll try to implement
-the 'mass trampolines' call to the bpf program you described above and
-attach it for now to fgraph_ops callbacks
-
-perhaps this is a good topic to discuss in one of the Thursday's BPF mtg?
-
-thanks,
-jirka
-
+-- Steve
