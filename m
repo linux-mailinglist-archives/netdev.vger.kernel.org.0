@@ -2,319 +2,204 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7CA19366F55
-	for <lists+netdev@lfdr.de>; Wed, 21 Apr 2021 17:39:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2A260366F6A
+	for <lists+netdev@lfdr.de>; Wed, 21 Apr 2021 17:48:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243564AbhDUPkO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 21 Apr 2021 11:40:14 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:37293 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S238880AbhDUPkN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 21 Apr 2021 11:40:13 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1619019580;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=bVNum44dAUpgnvC+nvXv78yCMxeDErB6G4dWdidL3ZY=;
-        b=WAlgfhwXKvJnl8OM5/VaLTFjVQydnXsTRsB/NjTN8+qFXxs7pT1UPUG1MIxSwdfpYVlaWb
-        XPTIAoOKXY9cHZWpitGo8N5PuulHARjhE0FFi+ycKvNM72rlPOwnbF7z5+ZYvCUnDBY5Ml
-        WLOIYAwbDWozQOb7t2pcOS5P2aiZONY=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-518-0DfOuL98OdOOIP3D4PeMdA-1; Wed, 21 Apr 2021 11:39:37 -0400
-X-MC-Unique: 0DfOuL98OdOOIP3D4PeMdA-1
-Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id AC88B1008064;
-        Wed, 21 Apr 2021 15:39:34 +0000 (UTC)
-Received: from carbon (unknown [10.36.110.19])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id F306B19726;
-        Wed, 21 Apr 2021 15:39:22 +0000 (UTC)
-Date:   Wed, 21 Apr 2021 17:39:21 +0200
-From:   Jesper Dangaard Brouer <brouer@redhat.com>
-To:     Magnus Karlsson <magnus.karlsson@gmail.com>
-Cc:     Lorenzo Bianconi <lorenzo.bianconi@redhat.com>,
-        Lorenzo Bianconi <lorenzo@kernel.org>,
-        bpf <bpf@vger.kernel.org>,
-        Network Development <netdev@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
+        id S244096AbhDUPsd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 21 Apr 2021 11:48:33 -0400
+Received: from aserp2130.oracle.com ([141.146.126.79]:45616 "EHLO
+        aserp2130.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S243667AbhDUPsa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 21 Apr 2021 11:48:30 -0400
+Received: from pps.filterd (aserp2130.oracle.com [127.0.0.1])
+        by aserp2130.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 13LFePJO176671;
+        Wed, 21 Apr 2021 15:47:25 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=from : to : cc :
+ subject : date : message-id : references : in-reply-to : content-type :
+ content-id : content-transfer-encoding : mime-version; s=corp-2020-01-29;
+ bh=GM2g1QJjJ9vKwEienjcbeAtqSd/T1o7rPbxCRzSPXJc=;
+ b=elVZcvV6IdtP23AlogaDQxV/A/nd/YLiJpEg5isqXGt8+B5XXdeVRY0Kdw/tJFAuySck
+ vwQXXBQ7qCl2wZcH0Gw9ps+jS2W1YPbcarVnCoYwyKDma4iAlfFEjfGYHDSn5bp+42bY
+ LAn+P+7Fhl270vmuZb61tDsaTgn5fXP9hwqk37C72O/jSbfiBANASOs+eHIv+Ii/mq4r
+ szhThpvamZzqodEcMjPKeCeDf50C78U7cx7lU3v91GCYdHDWiQ0vObIJvlbCzmtw8gWy
+ 2623t8f+Cubqi4aMANdGwl0DZNSG8YoW3ImO9mQih83eS6/fOWuzd63ycg++k0j9QlcN 6g== 
+Received: from aserp3030.oracle.com (aserp3030.oracle.com [141.146.126.71])
+        by aserp2130.oracle.com with ESMTP id 37yn6catkj-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Wed, 21 Apr 2021 15:47:24 +0000
+Received: from pps.filterd (aserp3030.oracle.com [127.0.0.1])
+        by aserp3030.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 13LFexHM150103;
+        Wed, 21 Apr 2021 15:47:24 GMT
+Received: from nam12-mw2-obe.outbound.protection.outlook.com (mail-mw2nam12lp2047.outbound.protection.outlook.com [104.47.66.47])
+        by aserp3030.oracle.com with ESMTP id 38098rwrgq-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Wed, 21 Apr 2021 15:47:24 +0000
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=ezVLnPfB12c96E0YzQnh1GP0Yrcot+Nx1MCVJHtJiNOI+ZOIBR6ElXQFMmomODqlpu9mLt/KHnNMaxDsZ4iffQpWcr8vgy62V/tV+n6TIY+I4V8qZazB0PR7IAZemHGuc0do4LKsTWyJCM7LJmI8z42SA8U5J3j7dPWX/L00oLS9ABw6Vzd4R9gkensvshaK0leW/kaJGQE2xsI1dxj0Bmk84c3unxI2scOuux+R3Fn/PkitWf98Xfx7g7B5ql3M7/B7QTn8/Y/2HMJFz/Za4QgPEJ7vNnYL4XOxPzNBlUPxz4EaoD8z2vUsyLBRMP4ay8GA+91FpSUYUbG1aKM+FQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=GM2g1QJjJ9vKwEienjcbeAtqSd/T1o7rPbxCRzSPXJc=;
+ b=Vio/iKlvYjX7ctSRYNYjopcY6Qivos9F7ETGCJOckqIEzHTlzHawyk12hRdMmubE0qNowhCTYIGh1GkXFplKsm0yInZNTYK8VS04y+naFfJ7hXTR6uv9vFnF2vwTSUVWJ03bE018Ug132wKDll7qO48M1bye6q6OS275TGnms0AnfH7E3NBmLxusOLqFuHSEoAzFf+TXhk3kxhuEWN7NkQTqHqsVS8rNNF0H35l33sgZVedrdn1mQ+n1H/M0IvFJLOc6xCkRuTj/zMUGBV0ib56LEBA6JqxrkkEn2d4H0Tyuwnaen/xDL34Za4KQQxmYzpTdaIEcSDD/XVIG3rqMyQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
+ dkim=pass header.d=oracle.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=GM2g1QJjJ9vKwEienjcbeAtqSd/T1o7rPbxCRzSPXJc=;
+ b=xGKuYqzdyI0nF1Zvg4c/idKlbgdom6pzVZ2dPAJDsAbFtOvgEj7fw4NiY35K5h8q1YK2eIS0rGGQnOnPMctZ8f6QESRTelNWdeJJ7ByyTOhRy4AzeRrHc7pLLFEeDjXMSOip8tDiDy/6KNvWqzLEiHYFcfrFwkCRvPkGY7RCRKI=
+Received: from MWHPR10MB1582.namprd10.prod.outlook.com (2603:10b6:300:22::8)
+ by MWHPR1001MB2080.namprd10.prod.outlook.com (2603:10b6:301:35::27) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4042.22; Wed, 21 Apr
+ 2021 15:47:21 +0000
+Received: from MWHPR10MB1582.namprd10.prod.outlook.com
+ ([fe80::353a:1802:6e91:1811]) by MWHPR10MB1582.namprd10.prod.outlook.com
+ ([fe80::353a:1802:6e91:1811%8]) with mapi id 15.20.4042.024; Wed, 21 Apr 2021
+ 15:47:21 +0000
+From:   Liam Howlett <liam.howlett@oracle.com>
+To:     kernel test robot <lkp@intel.com>
+CC:     Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>,
+        Julien Grall <julien.grall@arm.com>,
+        "kbuild-all@lists.01.org" <kbuild-all@lists.01.org>,
         Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>, shayagr@amazon.com,
-        sameehj@amazon.com, John Fastabend <john.fastabend@gmail.com>,
-        David Ahern <dsahern@kernel.org>,
-        Eelco Chaudron <echaudro@redhat.com>,
-        Jason Wang <jasowang@redhat.com>,
-        Alexander Duyck <alexander.duyck@gmail.com>,
-        Saeed Mahameed <saeed@kernel.org>,
-        "Fijalkowski, Maciej" <maciej.fijalkowski@intel.com>,
-        Tirthendu <tirthendu.sarkar@intel.com>, brouer@redhat.com
-Subject: Re: [PATCH v8 bpf-next 00/14] mvneta: introduce XDP multi-buffer
- support
-Message-ID: <20210421173921.23fef6a7@carbon>
-In-Reply-To: <CAJ8uoz3ROiPn+-bh7OjFOjXjXK9xGhU5cxWoFPM9JoYeh=zw=g@mail.gmail.com>
-References: <cover.1617885385.git.lorenzo@kernel.org>
-        <CAJ8uoz1MOYLzyy7xXq_fmpKDEakxSomzfM76Szjr5gWsqHc9jQ@mail.gmail.com>
-        <20210418181801.17166935@carbon>
-        <CAJ8uoz0m8AAJFddn2LjehXtdeGS0gat7dwOLA_-_ZeOVYjBdxw@mail.gmail.com>
-        <YH0pdXXsZ7IELBn3@lore-desk>
-        <CAJ8uoz101VZiwuvM-bs4UdW+kFT5xjgdgUwPWHZn4ABEOkyQ-w@mail.gmail.com>
-        <20210421144747.33c5f51f@carbon>
-        <CAJ8uoz3ROiPn+-bh7OjFOjXjXK9xGhU5cxWoFPM9JoYeh=zw=g@mail.gmail.com>
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: Re: [PATCH 1/3] arm64: armv8_deprecated: Fix swp_handler() signal
+ generation
+Thread-Topic: [PATCH 1/3] arm64: armv8_deprecated: Fix swp_handler() signal
+ generation
+Thread-Index: AQHXNgU7pAWIynV4NUyh79ZCugEeMKq96l4AgAE0zAA=
+Date:   Wed, 21 Apr 2021 15:47:21 +0000
+Message-ID: <20210421154716.z65ergzd3pylpbvl@revolver>
+References: <20210420165001.3790670-1-Liam.Howlett@Oracle.com>
+ <202104210515.VoF3YT1J-lkp@intel.com>
+In-Reply-To: <202104210515.VoF3YT1J-lkp@intel.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: intel.com; dkim=none (message not signed)
+ header.d=none;intel.com; dmarc=none action=none header.from=oracle.com;
+x-originating-ip: [23.233.25.87]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 76329b60-167e-4774-96ac-08d904dcc07d
+x-ms-traffictypediagnostic: MWHPR1001MB2080:
+x-microsoft-antispam-prvs: <MWHPR1001MB208094148FAB2A3DA9F4D4F1FD479@MWHPR1001MB2080.namprd10.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:3631;
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: j6oXXPalR5Z0y5yG3Xu4UmtDaYUJ7vXX5ZQ0b3oYMg9Rr+WaMEUSOtyQCu/yl4MtDB3Ou06uHhelK0fkzy/0h2csJcC8Tn6Isfl8MTBs8h7uhNAKXX3Skn/pMusdVLvTnnv5H24EBpN3IL/EtqaNNXW9zmRmRtQ1+kQhfDA7Tcn6lPRT4MFt1+OoJlCP3QEJ0pEU0FFfQHrW8xDMf6Eb0keFD8Dsdl9U8yd00TK9rt1/nA0Jnw1c48n6/0W+4QkDbKjfcgRzjxRWHLLpQx0qbI4td6jepguDblg6zndNdsr+nctC0ANllePD3wwAoRfFofXlzFoiW6NeWn6YGG8BgRkEl3u4+vfD2iApYCMYAA2MB0XHjyRbF3tD9dPHE78Fhkwdujo0u+AWIadatW2SbOFZfKsJ2y9fHABjT7ISOjcV3wnk0FJeTBQ65CjSTbQxbK000cf8wLn6WbYYW8z59BopkKBUapHsumDrCDPTHOhT2JekwZ1C8TPDQl8knb4uEQByzoS5pg9amXmp5eeB5mDvd+YZb0bhgK0yeC9KeDOwSqmrEm4gMxrUZcOYHQgUPv9UAmiVF2PejlAaeEVILDX/uGNSWUNo7Dtt2Rq6WvhCK8izwLbfdNSlbyTDPLTWvgNaMqIg18Ay+dBAsBqbz2D8Yo/ScrIWYwjy5TFDxmU=
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MWHPR10MB1582.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(7916004)(136003)(396003)(39860400002)(376002)(366004)(346002)(6916009)(8936002)(54906003)(9686003)(6512007)(316002)(7416002)(5660300002)(33716001)(122000001)(86362001)(38100700002)(4326008)(6486002)(966005)(26005)(83380400001)(44832011)(186003)(6506007)(66556008)(66946007)(478600001)(8676002)(1076003)(66476007)(76116006)(2906002)(64756008)(66446008)(71200400001)(91956017);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata: =?us-ascii?Q?IK1dJ64n17qO5T8K/bZVx2U9DOXl8h+TwqZUCyYvufxryq1l0lWJcFXXGru5?=
+ =?us-ascii?Q?xQyOUcCyJkXKXFCGCftsnCIogd9M29nwusDN3ebeU5rLy549/O1wT7MNzk6/?=
+ =?us-ascii?Q?DosXpIVgVEfqC6fewkkHIa3buqjKwf0ntqAsZO8Zpxz+eC4eF1wadjHA7gG5?=
+ =?us-ascii?Q?n00KNhT878MVVkCEm2Ce3TJVBooVIuEgzTXMV+AYbagvMudh6c6x0Z7I2NKy?=
+ =?us-ascii?Q?C6xlMscNqR00X7bLZ7KIaDWMLDXaI0CqWTSfZkoZXeWDjSP+wNMyy2BCqOUS?=
+ =?us-ascii?Q?NAEcKNcpPwzbcZfw8XByoCaS/koMOi7vGRCUIGPuF5K802l04SX/A6emmlTp?=
+ =?us-ascii?Q?0/AAWaFq8Vloae/HV9nTYVvIc1vQszklUvcVSEfs2wn9IBN/eccXnDJsPQ5a?=
+ =?us-ascii?Q?m0ophGBi6QJ+orTNjTuU78rf+5UCOAfuu1Gpa5S84D7QX9JmRw3k4wqHEPni?=
+ =?us-ascii?Q?7F1JUh3OTVK3gTUiNFi0nprfgU8UQUUumB6eJxE2GfH/l2fAtcXxyoSLCbml?=
+ =?us-ascii?Q?H4LI/zBdxDjRalR6aVKyYUurkbJL7oUk6t/v0oPGs4NmVn+OxK4mxB571v7S?=
+ =?us-ascii?Q?97GvF/orfoO5W0pPoOdjhCTJ7mgGtPHt44eeGDS/DByfu9U62LHNlC0UFGyp?=
+ =?us-ascii?Q?62+EZW+T3M0JS/SK0pwZSgjTCPoZbp9tZ81TLeEceFCRKtog/To+WJPcUbHL?=
+ =?us-ascii?Q?luAXpdK+uIBQ1v1fMGFez69NsK4U4g5oiRs0m5VLA/lQ8bjWJfOSLOmpXuZ0?=
+ =?us-ascii?Q?joqHRp36c7oMGstHM0aAKa8kjdk2Nz3Vc1kcXhiYCsjm8m7EV6ox9Eu2i2tH?=
+ =?us-ascii?Q?gk+wqkyKl9zbOzsDXVZ0vK/2x9+lUVknXKZ+JJg2DN6yB3du65IlF1Lax1my?=
+ =?us-ascii?Q?go/tleAZ4XIxMGgQByo4eSdjCiJpfcQ6ZVxbaJFz29Zat5339DLKArtebySv?=
+ =?us-ascii?Q?DWK827OAaaIHqjGIqZ9k0l/rfGHrfEiRDm3HIV3texeHtJC4XZhM0wK+USpF?=
+ =?us-ascii?Q?Tq+JdNLmCKfMwekZ5I/pAsKcNi+KHOqTvwHlSfYRuyb4onteHxY08SGy6N10?=
+ =?us-ascii?Q?poKhiZKtz6jiJsXfiKzd+6dhAOL2WzrstwovgoafCPeQoxodAxaZMatKtmOL?=
+ =?us-ascii?Q?0w5YumXpK6FaGtAXR2B/dEFDHvcQTnfpLJNz7jTcns0eJQP1lBK357FgSeA2?=
+ =?us-ascii?Q?F1EIL/sdfbRzchzuOI83jsM9sQ6Xdms9c9wGDl6TxaWT3N+n2DaOVDXqJf3A?=
+ =?us-ascii?Q?9Zm+S92DjMmAsPVGDqmt284z/6VirwmV4e0xP9izsBPhCeptjID+6v/766KP?=
+ =?us-ascii?Q?E1bAdhKP8LJMWLmp0TVKCERB?=
+x-ms-exchange-transport-forked: True
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <B9C66899E7684C40AC75B5F81EE1C5E5@namprd10.prod.outlook.com>
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
+X-OriginatorOrg: oracle.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: MWHPR10MB1582.namprd10.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 76329b60-167e-4774-96ac-08d904dcc07d
+X-MS-Exchange-CrossTenant-originalarrivaltime: 21 Apr 2021 15:47:21.5439
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: gZ6835TXsO/hOS0XZeJ/GJgqC8zzBFbhUEgaO8j+7na2/nggjutocbYunntSvgCg8qIbrOgZeWyxT8T/hbVL2A==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MWHPR1001MB2080
+X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=9961 signatures=668683
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 suspectscore=0 spamscore=0 phishscore=0
+ mlxlogscore=942 malwarescore=0 bulkscore=0 mlxscore=0 adultscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2104060000
+ definitions=main-2104210117
+X-Proofpoint-GUID: K7KbAM0BpHRYpSVYUEyHUdEcboO9y9AX
+X-Proofpoint-ORIG-GUID: K7KbAM0BpHRYpSVYUEyHUdEcboO9y9AX
+X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=9961 signatures=668683
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 malwarescore=0 priorityscore=1501
+ bulkscore=0 suspectscore=0 impostorscore=0 mlxscore=0 lowpriorityscore=0
+ clxscore=1011 spamscore=0 mlxlogscore=999 adultscore=0 phishscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2104060000
+ definitions=main-2104210117
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 21 Apr 2021 16:12:32 +0200
-Magnus Karlsson <magnus.karlsson@gmail.com> wrote:
+* kernel test robot <lkp@intel.com> [210420 17:22]:
+> Hi Liam,
+>=20
+> Thank you for the patch! Perhaps something to improve:
+>=20
+> [auto build test WARNING on arm64/for-next/core]
+> [also build test WARNING on arm-perf/for-next/perf xlnx/master arm/for-ne=
+xt soc/for-next kvmarm/next linus/master v5.12-rc8 next-20210420]
+> [If your patch is applied to the wrong git tree, kindly drop us a note.
+> And when submitting patch, we suggest to use '--base' as documented in
+> https://git-scm.com/docs/git-format-patch]
+>=20
+> url:    https://github.com/0day-ci/linux/commits/Liam-Howlett/arm64-armv8=
+_deprecated-Fix-swp_handler-signal-generation/20210421-005252
+> base:   https://git.kernel.org/pub/scm/linux/kernel/git/arm64/linux.git f=
+or-next/core
+> config: arm64-allyesconfig (attached as .config)
+> compiler: aarch64-linux-gcc (GCC) 9.3.0
+> reproduce (this is a W=3D1 build):
+>         wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbi=
+n/make.cross -O ~/bin/make.cross
+>         chmod +x ~/bin/make.cross
+>         # https://github.com/0day-ci/linux/commit/96a011695861072d32851ba=
+3a104b19106955869
+>         git remote add linux-review https://github.com/0day-ci/linux
+>         git fetch --no-tags linux-review Liam-Howlett/arm64-armv8_depreca=
+ted-Fix-swp_handler-signal-generation/20210421-005252
+>         git checkout 96a011695861072d32851ba3a104b19106955869
+>         # save the attached .config to linux build tree
+>         COMPILER_INSTALL_PATH=3D$HOME/0day COMPILER=3Dgcc-9.3.0 make.cros=
+s W=3D1 ARCH=3Darm64=20
+>=20
+> If you fix the issue, kindly add following tag as appropriate
+> Reported-by: kernel test robot <lkp@intel.com>
+>=20
+> All warnings (new ones prefixed by >>):
+>=20
+>    arch/arm64/kernel/armv8_deprecated.c: In function 'swp_handler':
+> >> arch/arm64/kernel/armv8_deprecated.c:418:11: warning: suggest parenthe=
+ses around assignment used as truth value [-Wparentheses]
+>      418 |  else if (res =3D -ENXIO) /* Unaligned pointer */
+>          |           ^~~
+>=20
 
-> On Wed, Apr 21, 2021 at 2:48 PM Jesper Dangaard Brouer
-> <brouer@redhat.com> wrote:
-> >
-> > On Tue, 20 Apr 2021 15:49:44 +0200
-> > Magnus Karlsson <magnus.karlsson@gmail.com> wrote:
-> >  
-> > > On Mon, Apr 19, 2021 at 8:56 AM Lorenzo Bianconi
-> > > <lorenzo.bianconi@redhat.com> wrote:  
-> > > >  
-> > > > > On Sun, Apr 18, 2021 at 6:18 PM Jesper Dangaard Brouer
-> > > > > <brouer@redhat.com> wrote:  
-> > > > > >
-> > > > > > On Fri, 16 Apr 2021 16:27:18 +0200
-> > > > > > Magnus Karlsson <magnus.karlsson@gmail.com> wrote:
-> > > > > >  
-> > > > > > > On Thu, Apr 8, 2021 at 2:51 PM Lorenzo Bianconi <lorenzo@kernel.org> wrote:  
-> > > > > > > >
-> > > > > > > > This series introduce XDP multi-buffer support. The mvneta driver is
-> > > > > > > > the first to support these new "non-linear" xdp_{buff,frame}. Reviewers
-> > > > > > > > please focus on how these new types of xdp_{buff,frame} packets
-> > > > > > > > traverse the different layers and the layout design. It is on purpose
-> > > > > > > > that BPF-helpers are kept simple, as we don't want to expose the
-> > > > > > > > internal layout to allow later changes.
-> > > > > > > >
-> > > > > > > > For now, to keep the design simple and to maintain performance, the XDP
-> > > > > > > > BPF-prog (still) only have access to the first-buffer. It is left for
-> > > > > > > > later (another patchset) to add payload access across multiple buffers.
-> > > > > > > > This patchset should still allow for these future extensions. The goal
-> > > > > > > > is to lift the XDP MTU restriction that comes with XDP, but maintain
-> > > > > > > > same performance as before.  
-> > > > > > [...]  
-> > > > > > > >
-> > > > > > > > [0] https://netdevconf.info/0x14/session.html?talk-the-path-to-tcp-4k-mtu-and-rx-zerocopy
-> > > > > > > > [1] https://github.com/xdp-project/xdp-project/blob/master/areas/core/xdp-multi-buffer01-design.org
-> > > > > > > > [2] https://netdevconf.info/0x14/session.html?tutorial-add-XDP-support-to-a-NIC-driver (XDPmulti-buffers section)  
-> > > > > > >
-> > > > > > > Took your patches for a test run with the AF_XDP sample xdpsock on an
-> > > > > > > i40e card and the throughput degradation is between 2 to 6% depending
-> > > > > > > on the setup and microbenchmark within xdpsock that is executed. And
-> > > > > > > this is without sending any multi frame packets. Just single frame
-> > > > > > > ones. Tirtha made changes to the i40e driver to support this new
-> > > > > > > interface so that is being included in the measurements.  
-> > > > > >
-> > > > > > Could you please share Tirtha's i40e support patch with me?  
-> > > > >
-> > > > > We will post them on the list as an RFC. Tirtha also added AF_XDP
-> > > > > multi-frame support on top of Lorenzo's patches so we will send that
-> > > > > one out as well. Will also rerun my experiments, properly document
-> > > > > them and send out just to be sure that I did not make any mistake.  
-> > > >
-> > > > ack, very cool, thx  
-> > >
-> > > I have now run a new set of experiments on a Cascade Lake server at
-> > > 2.1 GHz with turbo boost disabled. Two NICs: i40e and ice. The
-> > > baseline is commit 5c507329000e ("libbpf: Clarify flags in ringbuf
-> > > helpers") and Lorenzo's and Eelco's path set is their v8. First some
-> > > runs with xdpsock (i.e. AF_XDP) in both 2-core mode (app on one core
-> > > and the driver on another) and 1-core mode using busy_poll.
-> > >
-> > > xdpsock rxdrop throughput change with the multi-buffer patches without
-> > > any driver changes:
-> > > 1-core i40e: -0.5 to 0%   2-cores i40e: -0.5%
-> > > 1-core ice: -2%   2-cores ice: -1 to -0.5%
-> > >
-> > > xdp_rxq_info -a XDP_DROP
-> > > i40e: -4%   ice: +8%
-> > >
-> > > xdp_rxq_info -a XDP_TX
-> > > i40e: -10%   ice: +9%
-> > >
-> > > The XDP results with xdp_rxq_info are just weird! I reran them three
-> > > times, rebuilt and rebooted in between and I always get the same
-> > > results. And I also checked that I am running on the correct NUMA node
-> > > and so on. But I have a hard time believing them. Nearly +10% and -10%
-> > > difference. Too much in my book. Jesper, could you please run the same
-> > > and see what you get?  
-> >
-> > We of-cause have to find the root-cause of the +-10%, but let me drill
-> > into what the 10% represent time/cycle wise.  Using a percentage
-> > difference is usually a really good idea as it implies a comparative
-> > measure (something I always request people to do, as a single
-> > performance number means nothing by itself).
-> >
-> > For a zoom-in-benchmarks like these where the amount of code executed
-> > is very small, the effect of removing or adding code can effect the
-> > measurement a lot.
-> >
-> > I can only do the tests for i40e, as I don't have ice hardware (but
-> > Intel is working on fixing that ;-)).
-> >
-> >  xdp_rxq_info -a XDP_DROP
-> >   i40e: 33,417,775 pps  
-> 
-> Here I only get around 21 Mpps
-> 
-> >  CPU is 100% used, so we can calculate nanosec used per packet:
-> >   29.92 nanosec (1/33417775*10^9)
-> >   2.1 GHz CPU =  approx 63 CPU-cycles
-> >
-> >  You lost -4% performance in this case.  This correspond to:
-> >   -1.2 nanosec (29.92*0.04) slower
-> >   (This could be cost of single func call overhead = 1.3 ns)
-> >
-> > My measurement for XDP_TX:
-> >
-> >  xdp_rxq_info -a XDP_TX
-> >   28,278,722 pps
-> >   35.36 ns (1/28278722*10^9)  
-> 
-> And here, much lower at around 8 Mpps. But I do see correct packets
-> coming back on the cable for i40e but not for ice! There is likely a
-> bug there in the XDP_TX logic for ice. Might explain the weird results
-> I am getting. Will investigate.
-> 
-> But why do I get only a fraction of your performance? XDP_TX touches
-> the packet so I would expect it to be far less than what you get, but
-> more than I get. 
+Ah, I hadn't had the correct config enabled for this code to be
+compiled.  I will wait for any other comments then I'll send out a v2
+with this fix.
 
-I clearly have a bug in the i40e driver.  As I wrote later, I don't see
-any packets transmitted for XDP_TX.  Hmm, I using Mel Gorman's tree,
-which doesn't contain the i40e/ice/ixgbe bug we fixed earlier.
-
-The call to xdp_convert_buff_to_frame() fails, but (see below) that
-error is simply converted to I40E_XDP_CONSUMED.  Thus, not even the
-'trace_xdp_exception' will be able to troubleshoot this.  You/Intel
-should consider making XDP_TX errors detectable (this will also happen
-if TX ring don't have room).
-
- int i40e_xmit_xdp_tx_ring(struct xdp_buff *xdp, struct i40e_ring *xdp_ring)
- {
-	struct xdp_frame *xdpf = xdp_convert_buff_to_frame(xdp);
-
-	if (unlikely(!xdpf))
-		return I40E_XDP_CONSUMED;
-
-	return i40e_xmit_xdp_ring(xdpf, xdp_ring);
- }
-
-
-> What CPU core do you run on? 
-
-Intel(R) Xeon(R) CPU E5-1650 v4 @ 3.60GHz
-
-> It actually looks like
-> your packet data gets prefetched successfully. If it had not, you
-> would have gotten an access to LLC which is much more expensive than
-> the drop you are seeing. If I run on the wrong NUMA node, I get 4
-> Mpps, so it is not that.
-> 
-> One interesting thing is that I get better results using the zero-copy
-> path in the driver. I start xdp_rxq_drop then tie an AF_XDP socket to
-> the queue id the XDP program gets its traffic from. The AF_XDP program
-> will get no traffic in this case, but it will force the driver to use
-> the zero-copy path for its XDP processing. In this case I get this:
-> 
-> -0.5% for XDP_DROP and +-0% for XDP_TX for i40e.
-> 
-> >  You lost -10% performance in this case:
-> >   -3.54 nanosec (35.36*0.10) slower
-> >
-> > In XDP context 3.54 nanosec is a lot, as you can see it is 10% in this
-> > zoom-in benchmark.  We have to look at the details.
-> >
-> > One detail/issue with i40e doing XDP_TX, is that I cannot verify that
-> > packets are actually transmitted... not via exception tracepoint, not
-> > via netstats, not via ethtool_stats.pl.  Maybe all the packets are
-> > getting (silently) drop in my tests...!?!
-> >
-> >  
-> > > The xdpsock numbers are more in the ballpark of
-> > > what I would expect.
-> > >
-> > > Tirtha and I found some optimizations in the i40e
-> > > multi-frame/multi-buffer support that we have implemented. Will test
-> > > those next, post the results and share the code.
-> > >  
-> > > > >
-> > > > > Just note that I would really like for the multi-frame support to get
-> > > > > in. I have lost count on how many people that have asked for it to be
-> > > > > added to XDP and AF_XDP. So please check our implementation and
-> > > > > improve it so we can get the overhead down to where we want it to be.  
-> > > >
-> > > > sure, I will do.
-> > > >
-> > > > Regards,
-> > > > Lorenzo
-> > > >  
-> > > > >
-> > > > > Thanks: Magnus
-> > > > >  
-> > > > > > I would like to reproduce these results in my testlab, in-order to
-> > > > > > figure out where the throughput degradation comes from.
-> > > > > >  
-> > > > > > > What performance do you see with the mvneta card? How much are we
-> > > > > > > willing to pay for this feature when it is not being used or can we in
-> > > > > > > some way selectively turn it on only when needed?  
-> > > > > >
-> > > > > > Well, as Daniel says performance wise we require close to /zero/
-> > > > > > additional overhead, especially as you state this happens when sending
-> > > > > > a single frame, which is a base case that we must not slowdown.
-> > > > > >
-> > > > > > --
-> > > > > > Best regards,
-> > > > > >   Jesper Dangaard Brouer  
-> >
-> > --
-> > Best regards,
-> >   Jesper Dangaard Brouer
-> >   MSc.CS, Principal Kernel Engineer at Red Hat
-> >   LinkedIn: http://www.linkedin.com/in/brouer
-> >
-> >
-> > Running XDP on dev:i40e2 (ifindex:6) action:XDP_DROP options:read
-> > XDP stats       CPU     pps         issue-pps
-> > XDP-RX CPU      2       33,417,775  0
-> > XDP-RX CPU      total   33,417,775
-> >
-> > RXQ stats       RXQ:CPU pps         issue-pps
-> > rx_queue_index    2:2   33,417,775  0
-> > rx_queue_index    2:sum 33,417,775
-> >
-> >
-> > Running XDP on dev:i40e2 (ifindex:6) action:XDP_TX options:swapmac
-> > XDP stats       CPU     pps         issue-pps
-> > XDP-RX CPU      2       28,278,722  0
-> > XDP-RX CPU      total   28,278,722
-> >
-> > RXQ stats       RXQ:CPU pps         issue-pps
-> > rx_queue_index    2:2   28,278,726  0
-> > rx_queue_index    2:sum 28,278,726
-> >
-> >
-> >  
-> 
-
-
-
--- 
-Best regards,
-  Jesper Dangaard Brouer
-  MSc.CS, Principal Kernel Engineer at Red Hat
-  LinkedIn: http://www.linkedin.com/in/brouer
-
+Thanks,
+Liam
