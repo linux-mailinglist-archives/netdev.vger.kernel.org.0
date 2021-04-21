@@ -2,168 +2,150 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E69B33675D6
-	for <lists+netdev@lfdr.de>; Thu, 22 Apr 2021 01:41:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7FB813675E7
+	for <lists+netdev@lfdr.de>; Thu, 22 Apr 2021 01:49:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240975AbhDUXmJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 21 Apr 2021 19:42:09 -0400
-Received: from www62.your-server.de ([213.133.104.62]:50060 "EHLO
-        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232353AbhDUXmI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 21 Apr 2021 19:42:08 -0400
-Received: from sslproxy02.your-server.de ([78.47.166.47])
-        by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92.3)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1lZMTM-000GyF-U2; Thu, 22 Apr 2021 01:41:32 +0200
-Received: from [85.7.101.30] (helo=linux.home)
-        by sslproxy02.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1lZMTM-000FjC-Ka; Thu, 22 Apr 2021 01:41:32 +0200
-Subject: Re: [PATCH bpf-next v3 2/3] libbpf: add low level TC-BPF API
-To:     Kumar Kartikeya Dwivedi <memxor@gmail.com>
-Cc:     bpf@vger.kernel.org,
-        =?UTF-8?Q?Toke_H=c3=b8iland-J=c3=b8rgensen?= <toke@redhat.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
+        id S244140AbhDUXtg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 21 Apr 2021 19:49:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40166 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234816AbhDUXtf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 21 Apr 2021 19:49:35 -0400
+X-Greylist: delayed 414 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 21 Apr 2021 16:48:59 PDT
+Received: from sequoia-grove.ad.secure-endpoints.com (sequoia-grove.secure-endpoints.com [IPv6:2001:470:1f07:f77:70f5:c082:a96a:5685])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2720AC06174A
+        for <netdev@vger.kernel.org>; Wed, 21 Apr 2021 16:48:59 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/relaxed;
+        d=auristor.com; s=MDaemon; r=y; t=1619048522; x=1619653322;
+        i=jaltman@auristor.com; q=dns/txt; h=Subject:To:Cc:References:
+        From:Organization:Message-ID:Date:User-Agent:MIME-Version:
+        In-Reply-To:Content-Type; bh=siwg87SXJYiTWdziVpoZ1/WZRB5wq4B9NwI
+        qCSHRR8g=; b=rw7OjJ/vGqPAxymRRG7lpzeJ7Lc9a9NulEyrry5On/2FylijJtR
+        /dn70eT/e+HAdoDRhxXOZqoax+1HUmHJ3IMVPWTwvUGJ1+LXw7MmiYGwU4I6/uT0
+        v661PU/IkTzkOD6gDwsWqxpgMduj1ZEq1uwKzGPMxtU1GFOn8pIgM7s0=
+X-MDAV-Result: clean
+X-MDAV-Processed: sequoia-grove.ad.secure-endpoints.com, Wed, 21 Apr 2021 19:42:02 -0400
+Received: from [IPv6:2603:7000:73d:4f22:a130:f9e2:913b:3942] by auristor.com (IPv6:2001:470:1f07:f77:28d9:68fb:855d:c2a5) (MDaemon PRO v21.0.1) 
+        with ESMTPSA id md5001002923297.msg; Wed, 21 Apr 2021 19:42:02 -0400
+X-Spam-Processed: sequoia-grove.ad.secure-endpoints.com, Wed, 21 Apr 2021 19:42:02 -0400
+        (not processed: message from trusted or authenticated source)
+X-MDRemoteIP: 2603:7000:73d:4f22:a130:f9e2:913b:3942
+X-MDHelo: [IPv6:2603:7000:73d:4f22:a130:f9e2:913b:3942]
+X-MDArrival-Date: Wed, 21 Apr 2021 19:42:02 -0400
+X-MDOrigin-Country: United States, North America
+X-Authenticated-Sender: jaltman@auristor.com
+X-Return-Path: prvs=1745ad0e69=jaltman@auristor.com
+X-Envelope-From: jaltman@auristor.com
+X-MDaemon-Deliver-To: netdev@vger.kernel.org
+Subject: Re: [PATCH RESEND][next] rxrpc: Fix fall-through warnings for Clang
+To:     "Gustavo A. R. Silva (gustavoars@kernel.org)" <gustavoars@kernel.org>,
+        David Howells <dhowells@redhat.com>,
         "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Shaun Crampton <shaun@tigera.io>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        netdev@vger.kernel.org
-References: <20210420193740.124285-1-memxor@gmail.com>
- <20210420193740.124285-3-memxor@gmail.com>
- <9b0aab2c-9b92-0bcb-2064-f66dd39e7552@iogearbox.net>
- <20210421230858.ruwqw5jvsy7cjioy@apollo>
- <21c55619-e26d-d901-076e-20f55302c2fd@iogearbox.net>
- <20210421233054.sgs5lemcuycx4vjb@apollo>
-From:   Daniel Borkmann <daniel@iogearbox.net>
-Message-ID: <b504c839-d698-19a2-2018-05f867a8ff84@iogearbox.net>
-Date:   Thu, 22 Apr 2021 01:41:32 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     linux-afs@lists.infradead.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-hardening@vger.kernel.org
+References: <20210305091900.GA139713@embeddedor>
+From:   Jeffrey E Altman <jaltman@auristor.com>
+Organization: AuriStor, Inc.
+Message-ID: <f843303f-435f-7b37-a717-0026492d5342@auristor.com>
+Date:   Wed, 21 Apr 2021 19:41:56 -0400
+User-Agent: Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.10.0
 MIME-Version: 1.0
-In-Reply-To: <20210421233054.sgs5lemcuycx4vjb@apollo>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.102.4/26147/Wed Apr 21 13:06:05 2021)
+In-Reply-To: <20210305091900.GA139713@embeddedor>
+Content-Type: multipart/signed; micalg=pgp-sha256;
+ protocol="application/pgp-signature";
+ boundary="vZGXR53gPZweKfBp9WjYp9mam63MimH4v"
+X-MDCFSigsAdded: auristor.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 4/22/21 1:30 AM, Kumar Kartikeya Dwivedi wrote:
-> On Thu, Apr 22, 2021 at 04:51:55AM IST, Daniel Borkmann wrote:
->> On 4/22/21 1:08 AM, Kumar Kartikeya Dwivedi wrote:
->>> On Thu, Apr 22, 2021 at 04:29:28AM IST, Daniel Borkmann wrote:
->>>> On 4/20/21 9:37 PM, Kumar Kartikeya Dwivedi wrote:
->>>> [...]
->>>>> diff --git a/tools/lib/bpf/libbpf.h b/tools/lib/bpf/libbpf.h
->>>>> index bec4e6a6e31d..b4ed6a41ea70 100644
->>>>> --- a/tools/lib/bpf/libbpf.h
->>>>> +++ b/tools/lib/bpf/libbpf.h
->>>>> @@ -16,6 +16,8 @@
->>>>>     #include <stdbool.h>
->>>>>     #include <sys/types.h>  // for size_t
->>>>>     #include <linux/bpf.h>
->>>>> +#include <linux/pkt_sched.h>
->>>>> +#include <linux/tc_act/tc_bpf.h>
->>>>>     #include "libbpf_common.h"
->>>>> @@ -775,6 +777,48 @@ LIBBPF_API int bpf_linker__add_file(struct bpf_linker *linker, const char *filen
->>>>>     LIBBPF_API int bpf_linker__finalize(struct bpf_linker *linker);
->>>>>     LIBBPF_API void bpf_linker__free(struct bpf_linker *linker);
->>>>> +/* Convenience macros for the clsact attach hooks */
->>>>> +#define BPF_TC_CLSACT_INGRESS TC_H_MAKE(TC_H_CLSACT, TC_H_MIN_INGRESS)
->>>>> +#define BPF_TC_CLSACT_EGRESS TC_H_MAKE(TC_H_CLSACT, TC_H_MIN_EGRESS)
->>>>
->>>> I would abstract those away into an enum, plus avoid having to pull in
->>>> linux/pkt_sched.h and linux/tc_act/tc_bpf.h from main libbpf.h header.
->>>>
->>>> Just add a enum { BPF_TC_DIR_INGRESS, BPF_TC_DIR_EGRESS, } and then the
->>>> concrete tc bits (TC_H_MAKE()) can be translated internally.
->>>
->>> Ok, will do.
->>>
->>>>> +struct bpf_tc_opts {
->>>>> +	size_t sz;
->>>>
->>>> Is this set anywhere?
->>>
->>> This is needed by the OPTS_* infrastructure.
->>>
->>>>> +	__u32 handle;
->>>>> +	__u32 class_id;
->>>>
->>>> I'd remove class_id from here as well given in direct-action a BPF prog can
->>>> set it if needed.
->>>
->>> Ok, makes sense.
->>>
->>>>> +	__u16 priority;
->>>>> +	bool replace;
->>>>> +	size_t :0;
->>>>
->>>> What's the rationale for this padding?
->>>
->>> dde7b3f5f2f4 ("libbpf: Add explicit padding to bpf_xdp_set_link_opts")
->>
->> Hm, fair enough.
->>
->>>>> +};
->>>>> +
->>>>> +#define bpf_tc_opts__last_field replace
->>>>> +
->>>>> +/* Acts as a handle for an attached filter */
->>>>> +struct bpf_tc_attach_id {
->>>>
->>>> nit: maybe bpf_tc_ctx
->>>
->>> Noted.
->>>
->>>>> +	__u32 handle;
->>>>> +	__u16 priority;
->>>>> +};
->>>>> +
->>>>> +struct bpf_tc_info {
->>>>> +	struct bpf_tc_attach_id id;
->>>>> +	__u16 protocol;
->>>>> +	__u32 chain_index;
->>>>> +	__u32 prog_id;
->>>>> +	__u8 tag[BPF_TAG_SIZE];
->>>>> +	__u32 class_id;
->>>>> +	__u32 bpf_flags;
->>>>> +	__u32 bpf_flags_gen;
->>>>
->>>> Given we do not yet have any setters e.g. for offload, etc, the one thing
->>>> I'd see useful and crucial initially is prog_id.
->>>>
->>>> The protocol, chain_index, and I would also include tag should be dropped.
->>>
->>> A future user of this API needs to know the tag, so I would like to keep that.
->>> The rest we can drop, and probably document the default values explicitly.
->>
->> Couldn't this be added along with the future patch for the [future] user?
-> 
-> True.
-> 
->> The tag should be the tag of the prog itself, so if you have prog_id, you
->> could also retrieve the same tag from the prog. The tag was basically from
->> the early days where we didn't have bpf_prog_get_info_by_fd().
->>
->> What does that future user need to do different here?
-> 
->  From Shaun Crampton:
-> "My particular use case is to load a program, link it with its maps and then
-> check if its tag matches the existing program on the interface (and if so, abort
-> the update)"
-> 
-> Also CC'd, they would be able to elaborate better, and whether or not dropping
-> it is ok.
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--vZGXR53gPZweKfBp9WjYp9mam63MimH4v
+Content-Type: multipart/mixed; boundary="wFwjbYYuEXESC2Po1enD2cAyA32wXLtF6";
+ protected-headers="v1"
+From: Jeffrey E Altman <jaltman@auristor.com>
+To: "Gustavo A. R. Silva (gustavoars@kernel.org)" <gustavoars@kernel.org>,
+ David Howells <dhowells@redhat.com>, "David S. Miller"
+ <davem@davemloft.net>, Jakub Kicinski <kuba@kernel.org>
+Cc: linux-afs@lists.infradead.org, netdev@vger.kernel.org,
+ linux-kernel@vger.kernel.org, linux-hardening@vger.kernel.org
+Message-ID: <f843303f-435f-7b37-a717-0026492d5342@auristor.com>
+Subject: Re: [PATCH RESEND][next] rxrpc: Fix fall-through warnings for Clang
+References: <20210305091900.GA139713@embeddedor>
+In-Reply-To: <20210305091900.GA139713@embeddedor>
 
-Nope, just get it from the prog itself.
+--wFwjbYYuEXESC2Po1enD2cAyA32wXLtF6
+Content-Type: multipart/mixed;
+ boundary="------------BB28084041891EC2EF6E9249"
+Content-Language: en-US
+
+This is a multi-part message in MIME format.
+--------------BB28084041891EC2EF6E9249
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: quoted-printable
+
+On 3/5/2021 4:19 AM, Gustavo A. R. Silva (gustavoars@kernel.org) wrote:
+> In preparation to enable -Wimplicit-fallthrough for Clang, fix a warnin=
+g
+> by explicitly adding a break statement instead of letting the code fall=
+
+> through to the next case.
+>=20
+> Link: https://github.com/KSPP/linux/issues/115
+> Signed-off-by: Gustavo A. R. Silva <gustavoars@kernel.org>
+
+This change looks good to me.  Although I would also be happy with a=20
+fallthrough statement being added instead.
+
+Reviewed-by: Jeffrey Altman <jaltman@auristor.com>
+
+
+--------------BB28084041891EC2EF6E9249
+Content-Type: text/x-vcard; charset=utf-8;
+ name="jaltman.vcf"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: attachment;
+ filename="jaltman.vcf"
+
+begin:vcard
+fn:Jeffrey Altman
+n:Altman;Jeffrey
+org:AuriStor, Inc.
+adr:;;255 W 94TH ST STE 6B;New York;NY;10025-6985;United States
+email;internet:jaltman@auristor.com
+title:CEO
+tel;work:+1-212-769-9018
+url:https://www.linkedin.com/in/jeffreyaltman/
+version:2.1
+end:vcard
+
+
+--------------BB28084041891EC2EF6E9249--
+
+--wFwjbYYuEXESC2Po1enD2cAyA32wXLtF6--
+
+--vZGXR53gPZweKfBp9WjYp9mam63MimH4v
+Content-Type: application/pgp-signature; name="OpenPGP_signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="OpenPGP_signature"
+
+-----BEGIN PGP SIGNATURE-----
+
+wsF5BAABCAAjFiEE+kRK8Zf0SbJM8+aZ93pzVZK2mgQFAmCAuEQFAwAAAAAACgkQ93pzVZK2mgQ6
+vxAAnvRRrMO46SO6sEIk7UdNXwggTg09B+Gs5/g2WX+GFeJyhi/Ap2a5C0sx9phaGC2a31dTqsXQ
+dwRXt/8V0l+Lx1tlnyhUY/D2z0YMA2vHxfYo+ksmGcoNbzXg0imuCiCd7EUrp5GEaVmSziFzdQxq
+P/Di8xePJymwRKXwm9FRWGQOe0zxExFWDqEjQm2NIvowzCxVOdotC8+pC/m3fIkW6wGygSvkeVCf
+ZX620oebCBOym56oI/QPm/HOpm+i4GWxpHIwbAmbYzEmxsG7grFJQK2Eu4CGt/Vw1tZCskzvY/8p
+Q9UMATgg/i5jpvNphQZ74BzfWuhS5qowJF0NMjFwbZ7BDHo68iOX2cKhOahi/rqys1I9IgcX13K3
+NZ2BmJrgGOAgyUl1kr/8pXFjRkLTDZ2f4vhIDiiq69l6drOMET6GyLbZmXrvxYo0FvrE5WzkARgO
+BWZFDFkNUJpWAwgTC4mnbY11vsL0Jar+36tuMrbDn5M9/bkzDl+TojKwbpyNb8mdHZNZ6nBq16rC
+hvBfrf/Tq/GRcVG2kWdaEeu0aazSPL4/MwhoiqvyXc+y++iJb4KV39x16iMSDScMQtnnez/GmrJB
+dVXd+zeK9r4Gww4appSWeLVMZTawBgJtJm5V/tfbm/wulW/pjNLdPOg3BIGiEi/ST2d9RuiaPMaA
+Em8=
+=JlT8
+-----END PGP SIGNATURE-----
+
+--vZGXR53gPZweKfBp9WjYp9mam63MimH4v--
+
