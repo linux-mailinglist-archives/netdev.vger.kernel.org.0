@@ -2,85 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1AB92367169
-	for <lists+netdev@lfdr.de>; Wed, 21 Apr 2021 19:35:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 07140367182
+	for <lists+netdev@lfdr.de>; Wed, 21 Apr 2021 19:39:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244697AbhDURfq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 21 Apr 2021 13:35:46 -0400
-Received: from mail.kernel.org ([198.145.29.99]:51278 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S242842AbhDURfn (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 21 Apr 2021 13:35:43 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id F35A461459;
-        Wed, 21 Apr 2021 17:35:03 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1619026509;
-        bh=jsF90jMAoP9rK5ubz9IvKkVCBAZVLs25dg+tP0TLXVY=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=CI/LM0CuFrIxtemc7ItH2CTT5rer1JL8jQlmFFw0zQO98sG1dSJAHsiOCoi0fgmgP
-         lRH2hvNnMgiD9yohzQHoR+PQQRvICsZcNQ/GjE50SdDeyzpBqouFisnzs1e97adR9l
-         cRZFSIlL7+FCibqyAziu+I+IBU/btp5XJpAQPhL5v2IAw88co9nhh+CucTualNI1rL
-         j1aVfUqIP+FEy7kc1TZAR/4rw/GvCNUZ6X0Br6y3Znde9OZyK0Ljza2CBq4gCwYjLh
-         D4llnQ2T7kbGNqy9HYKO8+sEmU3tY3LNXrmy6OsfN3LRMRnkmSKBrS1aERhseka/oo
-         etulTyRUw7+Og==
-Date:   Wed, 21 Apr 2021 20:34:59 +0300
-From:   Mike Rapoport <rppt@kernel.org>
-To:     Theodore Ts'o <tytso@mit.edu>
-Cc:     Leon Romanovsky <leon@kernel.org>,
-        Anna Schumaker <anna.schumaker@netapp.com>,
-        "J. Bruce Fields" <bfields@fieldses.org>,
-        Greg KH <gregkh@linuxfoundation.org>,
-        Aditya Pakki <pakki001@umn.edu>,
-        Chuck Lever <chuck.lever@oracle.com>,
-        Trond Myklebust <trond.myklebust@hammerspace.com>,
+        id S243043AbhDURk3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 21 Apr 2021 13:40:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43864 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S243027AbhDURk1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 21 Apr 2021 13:40:27 -0400
+Received: from mail-oo1-xc2f.google.com (mail-oo1-xc2f.google.com [IPv6:2607:f8b0:4864:20::c2f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1FE26C06174A
+        for <netdev@vger.kernel.org>; Wed, 21 Apr 2021 10:39:54 -0700 (PDT)
+Received: by mail-oo1-xc2f.google.com with SMTP id i3-20020a4ad3830000b02901ef20f8cae8so2069966oos.11
+        for <netdev@vger.kernel.org>; Wed, 21 Apr 2021 10:39:54 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=2NIvDL/pnxWG/XSWH6ctMJRwrsiMqVjZJOoDaRoJS8c=;
+        b=gOY34zMKpKy19sMBflS95m2MN3RgmXslX4/+ftWEiEVP1DHf+TSCC3zUfL4ROg23v+
+         9b3/+vRixP/giuz63hBEzXMciraTCQLIP7sMBwZc+bR/LBhqKDMNQiElzOgwKRSsnHNY
+         pHBIt8Jm4t4VOz9NC4qeX8ALH7ClGgjZFNpxCj0ykypTE4fuRxx+3DAKHmUIJ2DZHPjh
+         a9IeSzoKfhGotdS/TkbrXIQzwMPmfRn4jHDlOAy0rt+AdslndDxB6DvTjWHd0HzekQ77
+         zZh5bUv/SUye4oycQS0cgYTkQs3n+ZRKtvoVtgRZHmmRfoImqqF5XjCYAczktkeYD5HP
+         cjrg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=2NIvDL/pnxWG/XSWH6ctMJRwrsiMqVjZJOoDaRoJS8c=;
+        b=hol0kwBZbHKhvioYk/s9cKtTPjJ4aLzqn5rOqD2LpVd46KNnp+VKMyS79qkN+zzw4f
+         mn5e8bcvyUBsjBgfPz7mAfaEZI4j7LW+HGgjLlaDAdz1CPuVXBmMKspXzLEbrY7YsIGq
+         1rrUC8UTApByJPqnreXnzJUtaB8jqvqK6wReHJKSQKi7rIa6mlBwnx9tw9o4/Yre0xSq
+         95ZlKuolechROK9wg5qC74Vw/yr2ih6olt1hQMpJE/Sf9U+4Q2aw1OVefC/tPYtSFeSJ
+         +1Y40YRJi45o9GxwdCcWh88HXvp44u+R+Tx7fNikG9rzdaDn6igy84uKOB5EudjOqxFN
+         0dIA==
+X-Gm-Message-State: AOAM532Vmxsl5woZ79ToD0D5mXKvGgesVC9qLMqO7IlOPs5PCePRq9EI
+        8EkXhmez7AwpkGHgyNb+Lrt67tNxqX2F8Q==
+X-Google-Smtp-Source: ABdhPJx8BGLlHmozMfXwtB99k0C+w4yPut6QtEKNm6JL+RYogkPpgrqX1bIqExM1XjlhrOA9ZvY7nQ==
+X-Received: by 2002:a4a:dc11:: with SMTP id p17mr21288861oov.50.1619026793532;
+        Wed, 21 Apr 2021 10:39:53 -0700 (PDT)
+Received: from localhost.localdomain (104-57-184-186.lightspeed.austtx.sbcglobal.net. [104.57.184.186])
+        by smtp.gmail.com with ESMTPSA id q130sm595947oif.40.2021.04.21.10.39.52
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 21 Apr 2021 10:39:53 -0700 (PDT)
+From:   Bjorn Andersson <bjorn.andersson@linaro.org>
+To:     Manivannan Sadhasivam <mani@kernel.org>,
         "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Dave Wysochanski <dwysocha@redhat.com>,
-        Linux NFS Mailing List <linux-nfs@vger.kernel.org>,
-        netdev@vger.kernel.org,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH] SUNRPC: Add a check for gss_release_msg
-Message-ID: <YIBiQ3p9z7y6PeqT@kernel.org>
-References: <20210407001658.2208535-1-pakki001@umn.edu>
- <YH5/i7OvsjSmqADv@kroah.com>
- <20210420171008.GB4017@fieldses.org>
- <YH+zwQgBBGUJdiVK@unreal>
- <CAFX2JfnGCbanTaGurArBw-5F2MynPD=GpwkfU6wVoNKr9ffzRg@mail.gmail.com>
- <YIAzfsMx6bn5Twu8@unreal>
- <YIBJXjCbJ1ntH1RF@mit.edu>
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     linux-arm-msm@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH] net: qrtr: Avoid potential use after free in MHI send
+Date:   Wed, 21 Apr 2021 10:40:07 -0700
+Message-Id: <20210421174007.2954194-1-bjorn.andersson@linaro.org>
+X-Mailer: git-send-email 2.29.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YIBJXjCbJ1ntH1RF@mit.edu>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Apr 21, 2021 at 11:48:46AM -0400, Theodore Ts'o wrote:
-> On Wed, Apr 21, 2021 at 05:15:26PM +0300, Leon Romanovsky wrote:
-> > > This thread is the first I'm hearing about this. I wonder if there is
-> > > a good way of alerting the entire kernel community (including those
-> > > only subscribed to subsystem mailing lists) about what's going on? It
-> > > seems like useful information to have to push back against these
-> > > patches.
+It is possible that the MHI ul_callback will be invoked immediately
+following the queueing of the skb for transmission, leading to the
+callback decrementing the refcount of the associated sk and freeing the
+skb.
 
-Heh, I've got this information from google news feed on my phone :)
+As such the dereference of skb and the increment of the sk refcount must
+happen before the skb is queued, to avoid the skb to be used after free
+and potentially the sk to drop its last refcount..
+
+Fixes: 6e728f321393 ("net: qrtr: Add MHI transport layer")
+Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+---
+ net/qrtr/mhi.c | 8 +++++---
+ 1 file changed, 5 insertions(+), 3 deletions(-)
+
+diff --git a/net/qrtr/mhi.c b/net/qrtr/mhi.c
+index 2bf2b1943e61..fa611678af05 100644
+--- a/net/qrtr/mhi.c
++++ b/net/qrtr/mhi.c
+@@ -50,6 +50,9 @@ static int qcom_mhi_qrtr_send(struct qrtr_endpoint *ep, struct sk_buff *skb)
+ 	struct qrtr_mhi_dev *qdev = container_of(ep, struct qrtr_mhi_dev, ep);
+ 	int rc;
  
-> > IMHO, kernel users ML is good enough for that.
-> 
-> The problem is that LKML is too high traffic for a lot of people to
-> want to follow.
-
-I think Leon meant kernel.org users ML (users@linux.kernel.org). Along with
-ksummut-discuss it'll reach most maintainers, IMHO.
++	if (skb->sk)
++		sock_hold(skb->sk);
++
+ 	rc = skb_linearize(skb);
+ 	if (rc)
+ 		goto free_skb;
+@@ -59,12 +62,11 @@ static int qcom_mhi_qrtr_send(struct qrtr_endpoint *ep, struct sk_buff *skb)
+ 	if (rc)
+ 		goto free_skb;
  
-> There are some people who have used the kernel summit discuss list
-> (previously ksummit-discuss@lists.linux-foundation.org, now
-> ksummit@lists.linux.dev) as a place where most maintainers tend to be
-> subscribed, although that's not really a guarantee, either.  (Speaking
-> of which, how to handle groups who submit patches in bad faith a good
-> Maintainer Summit topic for someone to propose...)
-
+-	if (skb->sk)
+-		sock_hold(skb->sk);
+-
+ 	return rc;
+ 
+ free_skb:
++	if (skb->sk)
++		sock_put(skb->sk);
+ 	kfree_skb(skb);
+ 
+ 	return rc;
 -- 
-Sincerely yours,
-Mike.
+2.29.2
+
