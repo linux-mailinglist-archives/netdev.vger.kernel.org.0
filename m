@@ -2,65 +2,68 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A8C013662BC
-	for <lists+netdev@lfdr.de>; Wed, 21 Apr 2021 02:01:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 315D13662E3
+	for <lists+netdev@lfdr.de>; Wed, 21 Apr 2021 02:11:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234542AbhDUAAy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 20 Apr 2021 20:00:54 -0400
-Received: from mail.kernel.org ([198.145.29.99]:56928 "EHLO mail.kernel.org"
+        id S234526AbhDUAKr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 20 Apr 2021 20:10:47 -0400
+Received: from mail.kernel.org ([198.145.29.99]:59652 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S234509AbhDUAAn (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 20 Apr 2021 20:00:43 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id 0813261423;
-        Wed, 21 Apr 2021 00:00:11 +0000 (UTC)
+        id S233925AbhDUAKm (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 20 Apr 2021 20:10:42 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPS id 02485613AB;
+        Wed, 21 Apr 2021 00:10:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1618963211;
-        bh=PBeYqStowQVwignopWPr3A2fo4c5glaNTyaDJqE3uJ4=;
+        s=k20201202; t=1618963810;
+        bh=aEFN1j86mjrs+AI3p0w/G35OcT0kIvgBU/+Q6X+dcCU=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=g/I3dw5GMvAnexx7Jjad9wKhjEMvH2CmqWJAfp46w7dRawrDwekNhfNN45reU/jvo
-         xNtqyr4IGyVuta30kNQaLr+TP5zf6VCWDLlr9YGzA8FzWEeg/Z4bo/jnOR7sxgbIZr
-         bkTMbE0i36k3WUOkML3XSeGwB9T/zAfL2VROH1Ns05ucK1LkFNHH0HtGSkO2cfVjfg
-         /XiuUrgsFjYWkAVT6JTpB5/r+OJNsxbyJFL/kw0TRUj9wgiKzAECj812gzWm8aiwK1
-         3ttSibv8RFffrgPyQO5c6UaBT2XHu7DNH+u4FQNbLeLTsWYsgxoH6DOOrJiIIoaDfR
-         I7PodidSfkzcg==
+        b=IUPM+tdYkdrd+P+jNL+T3vGsq+OROeDHPOOJ6YF0M4/PfUSuTKwPiS0qZ6zBEBEeg
+         GpP6tiRciRfgg7XWyK4eCZGGGobz06il2lwWVyd5eM1bugzvOkFl26jYMEYcm9AZHV
+         3wpegrUy0GCoRr7B4lecAFi7mE0W8gbS4vLj/A6l8cbMbwTAJh24I2wgHX9V9CrAol
+         3UZnUOaHowmGUo+Fsd8MHFAmTqzY6UJZY++PNyN5EghrUkuZOF3r2EpvHCNbSuE9WW
+         jYYrMu2hapiyClj7ZFykKRgea3SdEBLtWIdASgAWrE73UCr5+7kRhMRxPtPXAXzQTl
+         LE2gwfqLW+pPg==
 Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 022FD60A3C;
-        Wed, 21 Apr 2021 00:00:11 +0000 (UTC)
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id EBCB360A0B;
+        Wed, 21 Apr 2021 00:10:09 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next] virtio-net: restrict build_skb() use to some arches
+Subject: Re: [PATCH net] vsock/virtio: free queued packets when closing socket
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <161896321100.2554.2855560777126908523.git-patchwork-notify@kernel.org>
-Date:   Wed, 21 Apr 2021 00:00:11 +0000
-References: <20210420200144.4189597-1-eric.dumazet@gmail.com>
-In-Reply-To: <20210420200144.4189597-1-eric.dumazet@gmail.com>
-To:     Eric Dumazet <eric.dumazet@gmail.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
-        edumazet@google.com, linux@roeck-us.net,
-        xuanzhuo@linux.alibaba.com, jasowang@redhat.com, mst@redhat.com,
-        virtualization@lists.linux-foundation.org
+Message-Id: <161896380996.7038.17484390718444445248.git-patchwork-notify@kernel.org>
+Date:   Wed, 21 Apr 2021 00:10:09 +0000
+References: <20210420110727.139945-1-sgarzare@redhat.com>
+In-Reply-To: <20210420110727.139945-1-sgarzare@redhat.com>
+To:     Stefano Garzarella <sgarzare@redhat.com>
+Cc:     netdev@vger.kernel.org, kvm@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        virtualization@lists.linux-foundation.org, davem@davemloft.net,
+        kuba@kernel.org, stefanha@redhat.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 Hello:
 
-This patch was applied to netdev/net-next.git (refs/heads/master):
+This patch was applied to netdev/net.git (refs/heads/master):
 
-On Tue, 20 Apr 2021 13:01:44 -0700 you wrote:
-> From: Eric Dumazet <edumazet@google.com>
+On Tue, 20 Apr 2021 13:07:27 +0200 you wrote:
+> As reported by syzbot [1], there is a memory leak while closing the
+> socket. We partially solved this issue with commit ac03046ece2b
+> ("vsock/virtio: free packets during the socket release"), but we
+> forgot to drain the RX queue when the socket is definitely closed by
+> the scheduled work.
 > 
-> build_skb() is supposed to be followed by
-> skb_reserve(skb, NET_IP_ALIGN), so that IP headers are word-aligned.
-> (Best practice is to reserve NET_IP_ALIGN+NET_SKB_PAD, but the NET_SKB_PAD
-> part is only a performance optimization if tunnel encaps are added.)
+> To avoid future issues, let's use the new virtio_transport_remove_sock()
+> to drain the RX queue before removing the socket from the af_vsock lists
+> calling vsock_remove_sock().
 > 
 > [...]
 
 Here is the summary with links:
-  - [net-next] virtio-net: restrict build_skb() use to some arches
-    https://git.kernel.org/netdev/net-next/c/f5d7872a8b8a
+  - [net] vsock/virtio: free queued packets when closing socket
+    https://git.kernel.org/netdev/net/c/8432b8114957
 
 You are awesome, thank you!
 --
