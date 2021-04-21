@@ -2,65 +2,126 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 79827366504
-	for <lists+netdev@lfdr.de>; Wed, 21 Apr 2021 07:50:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2D5F3366509
+	for <lists+netdev@lfdr.de>; Wed, 21 Apr 2021 07:51:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235295AbhDUFvK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 21 Apr 2021 01:51:10 -0400
-Received: from verein.lst.de ([213.95.11.211]:52980 "EHLO verein.lst.de"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230390AbhDUFvF (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 21 Apr 2021 01:51:05 -0400
-Received: by verein.lst.de (Postfix, from userid 2407)
-        id 7324868BFE; Wed, 21 Apr 2021 07:50:28 +0200 (CEST)
-Date:   Wed, 21 Apr 2021 07:50:28 +0200
-From:   "hch@lst.de" <hch@lst.de>
-To:     Arnd Bergmann <arnd@kernel.org>
-Cc:     Vineet Gupta <Vineet.Gupta1@synopsys.com>,
-        Matthew Wilcox <willy@infradead.org>,
-        "grygorii.strashko@ti.com" <grygorii.strashko@ti.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "ilias.apalodimas@linaro.org" <ilias.apalodimas@linaro.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-mips@vger.kernel.org" <linux-mips@vger.kernel.org>,
-        "mhocko@kernel.org" <mhocko@kernel.org>,
-        "linux-mm@kvack.org" <linux-mm@kvack.org>,
-        "mgorman@suse.de" <mgorman@suse.de>,
-        "brouer@redhat.com" <brouer@redhat.com>,
-        "mcroce@linux.microsoft.com" <mcroce@linux.microsoft.com>,
-        "linux-snps-arc@lists.infradead.org" 
-        <linux-snps-arc@lists.infradead.org>,
-        "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>,
-        "hch@lst.de" <hch@lst.de>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>
-Subject: Re: [PATCH 1/2] mm: Fix struct page layout on 32-bit systems
-Message-ID: <20210421055028.GA28910@lst.de>
-References: <20210416230724.2519198-1-willy@infradead.org> <20210416230724.2519198-2-willy@infradead.org> <20210417024522.GP2531743@casper.infradead.org> <9f99b0a0-f1c1-f3b0-5f84-3a4bfc711725@synopsys.com> <20210420031029.GI2531743@casper.infradead.org> <CAK8P3a0KUwf1Z0bHiUaHC2nHztevkxg5_FBSzHddNeSsBayWUA@mail.gmail.com> <8d0fce1c-be7c-1c9b-bf5c-0c531db496ac@synopsys.com> <CAK8P3a3rzz1gfNLoGC8aZJiAC-tgZYD6P8pQsoEfgCAmQK=FAw@mail.gmail.com>
+        id S235325AbhDUFwA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 21 Apr 2021 01:52:00 -0400
+Received: from mxout70.expurgate.net ([194.37.255.70]:39305 "EHLO
+        mxout70.expurgate.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230390AbhDUFv6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 21 Apr 2021 01:51:58 -0400
+Received: from [127.0.0.1] (helo=localhost)
+        by relay.expurgate.net with smtp (Exim 4.90)
+        (envelope-from <ms@dev.tdt.de>)
+        id 1lZ5lV-0008PZ-QE; Wed, 21 Apr 2021 07:51:09 +0200
+Received: from [195.243.126.94] (helo=securemail.tdt.de)
+        by relay.expurgate.net with esmtps (TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.90)
+        (envelope-from <ms@dev.tdt.de>)
+        id 1lZ5lS-0009lB-Q3; Wed, 21 Apr 2021 07:51:06 +0200
+Received: from securemail.tdt.de (localhost [127.0.0.1])
+        by securemail.tdt.de (Postfix) with ESMTP id A9F46240041;
+        Wed, 21 Apr 2021 07:51:05 +0200 (CEST)
+Received: from mail.dev.tdt.de (unknown [10.2.4.42])
+        by securemail.tdt.de (Postfix) with ESMTP id 08AEA240040;
+        Wed, 21 Apr 2021 07:51:05 +0200 (CEST)
+Received: from mschiller01.dev.tdt.de (unknown [10.2.3.20])
+        by mail.dev.tdt.de (Postfix) with ESMTPSA id 5A6F520043;
+        Wed, 21 Apr 2021 07:51:03 +0200 (CEST)
+From:   Martin Schiller <ms@dev.tdt.de>
+To:     hauke@hauke-m.de, martin.blumenstingl@googlemail.com,
+        f.fainelli@gmail.com, andrew@lunn.ch, hkallweit1@gmail.com,
+        linux@armlinux.org.uk, davem@davemloft.net, kuba@kernel.org
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Martin Schiller <ms@dev.tdt.de>
+Subject: [PATCH net v3] net: phy: intel-xway: enable integrated led functions
+Date:   Wed, 21 Apr 2021 07:50:47 +0200
+Message-ID: <20210421055047.22858-1-ms@dev.tdt.de>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAK8P3a3rzz1gfNLoGC8aZJiAC-tgZYD6P8pQsoEfgCAmQK=FAw@mail.gmail.com>
-User-Agent: Mutt/1.5.17 (2007-11-01)
+X-Spam-Status: No, score=-1.0 required=5.0 tests=ALL_TRUSTED,URIBL_BLOCKED
+        autolearn=ham autolearn_force=no version=3.4.2
+X-Spam-Checker-Version: SpamAssassin 3.4.2 (2018-09-13) on mail.dev.tdt.de
+Content-Transfer-Encoding: quoted-printable
+X-purgate-ID: 151534::1618984267-000063FF-A2736355/0/0
+X-purgate-type: clean
+X-purgate: clean
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Apr 20, 2021 at 11:20:19PM +0200, Arnd Bergmann wrote:
-> In that case, there should be no problem for you.
-> 
-> The main issue is with system calls and ioctls that contain a misaligned
-> struct member like
-> 
-> struct s {
->        u32 a;
->        u64 b;
-> };
-> 
-> Passing this structure by reference from a 32-bit user space application
-> to a 64-bit kernel with different alignment constraints means that the
-> kernel has to convert the structure layout. See
-> compat_ioctl_preallocate() in fs/ioctl.c for one such example.
+The Intel xway phys offer the possibility to deactivate the integrated
+LED function and to control the LEDs manually.
+If this was set by the bootloader, it must be ensured that the
+integrated LED function is enabled for all LEDs when loading the driver.
 
-We've also had this problem with some on-disk structures in the past,
-but hopefully people desining those have learnt the lesson by now.
+Before commit 6e2d85ec0559 ("net: phy: Stop with excessive soft reset")
+the LEDs were enabled by a soft-reset of the PHY (using
+genphy_soft_reset). Initialize the XWAY_MDIO_LED with it's default
+value (which is applied during a soft reset) instead of adding back
+the soft reset. This brings back the default LED configuration while
+still preventing an excessive amount of soft resets.
+
+Fixes: 6e2d85ec0559 ("net: phy: Stop with excessive soft reset")
+Signed-off-by: Martin Schiller <ms@dev.tdt.de>
+---
+
+Changes to v2:
+o Fixed commit message
+o Fixed email recipients once again.
+
+Changes to v1:
+Added additional email recipients.
+
+---
+ drivers/net/phy/intel-xway.c | 21 +++++++++++++++++++++
+ 1 file changed, 21 insertions(+)
+
+diff --git a/drivers/net/phy/intel-xway.c b/drivers/net/phy/intel-xway.c
+index 6eac50d4b42f..d453ec016168 100644
+--- a/drivers/net/phy/intel-xway.c
++++ b/drivers/net/phy/intel-xway.c
+@@ -11,6 +11,18 @@
+=20
+ #define XWAY_MDIO_IMASK			0x19	/* interrupt mask */
+ #define XWAY_MDIO_ISTAT			0x1A	/* interrupt status */
++#define XWAY_MDIO_LED			0x1B	/* led control */
++
++/* bit 15:12 are reserved */
++#define XWAY_MDIO_LED_LED3_EN		BIT(11)	/* Enable the integrated function=
+ of LED3 */
++#define XWAY_MDIO_LED_LED2_EN		BIT(10)	/* Enable the integrated function=
+ of LED2 */
++#define XWAY_MDIO_LED_LED1_EN		BIT(9)	/* Enable the integrated function =
+of LED1 */
++#define XWAY_MDIO_LED_LED0_EN		BIT(8)	/* Enable the integrated function =
+of LED0 */
++/* bit 7:4 are reserved */
++#define XWAY_MDIO_LED_LED3_DA		BIT(3)	/* Direct Access to LED3 */
++#define XWAY_MDIO_LED_LED2_DA		BIT(2)	/* Direct Access to LED2 */
++#define XWAY_MDIO_LED_LED1_DA		BIT(1)	/* Direct Access to LED1 */
++#define XWAY_MDIO_LED_LED0_DA		BIT(0)	/* Direct Access to LED0 */
+=20
+ #define XWAY_MDIO_INIT_WOL		BIT(15)	/* Wake-On-LAN */
+ #define XWAY_MDIO_INIT_MSRE		BIT(14)
+@@ -159,6 +171,15 @@ static int xway_gphy_config_init(struct phy_device *=
+phydev)
+ 	/* Clear all pending interrupts */
+ 	phy_read(phydev, XWAY_MDIO_ISTAT);
+=20
++	/* Ensure that integrated led function is enabled for all leds */
++	err =3D phy_write(phydev, XWAY_MDIO_LED,
++			XWAY_MDIO_LED_LED0_EN |
++			XWAY_MDIO_LED_LED1_EN |
++			XWAY_MDIO_LED_LED2_EN |
++			XWAY_MDIO_LED_LED3_EN);
++	if (err)
++		return err;
++
+ 	phy_write_mmd(phydev, MDIO_MMD_VEND2, XWAY_MMD_LEDCH,
+ 		      XWAY_MMD_LEDCH_NACS_NONE |
+ 		      XWAY_MMD_LEDCH_SBF_F02HZ |
+--=20
+2.20.1
+
