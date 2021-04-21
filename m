@@ -2,283 +2,222 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id ACBA0366DD3
+	by mail.lfdr.de (Postfix) with ESMTP id 8A3B6366DD0
 	for <lists+netdev@lfdr.de>; Wed, 21 Apr 2021 16:12:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242984AbhDUONT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 21 Apr 2021 10:13:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54004 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242126AbhDUONR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 21 Apr 2021 10:13:17 -0400
-Received: from mail-pl1-x62c.google.com (mail-pl1-x62c.google.com [IPv6:2607:f8b0:4864:20::62c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 437B5C06174A;
-        Wed, 21 Apr 2021 07:12:44 -0700 (PDT)
-Received: by mail-pl1-x62c.google.com with SMTP id t22so21390654ply.1;
-        Wed, 21 Apr 2021 07:12:44 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=pof0238uH77OvXTLRd+cnQcvD+lGCLIOdFWhGakoP3Y=;
-        b=KbHl3oDR8QzL/Iaau8qpmm25cSyTLBtIHJraKZ/KC9A3ZpsFoR6t9nG5KnxYpFEOhU
-         B32CGcJ2wn4IGhRoZOY8ToY8V+mpxrto/EwWaHeJ9/63sYHWNEUkgqcyv9OqZDZ86BqR
-         mWCifRd9Wjgm4HPmwQuWSSFeE4LcCI0DoEIRk2hBGgVPR/yGj9UAul2shtDFB4BixZU7
-         wNukWzjGgBVOh0nG7kkvyHRKy6qWMnrXpPhrFU9+++WuBI5lDMhP+XDe8f3ZUcHJUICO
-         r/Y4upF66QXFe8+CNdnYxAMaolbLu7ifbTaX/XzCscwRuTIwGEvDqkk3wpAXwCU7nD1Y
-         afDg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=pof0238uH77OvXTLRd+cnQcvD+lGCLIOdFWhGakoP3Y=;
-        b=KAYe2Sq2HS11Husufe4rdiUn5Z2t9p8Pk7TPyvvM2/BiykEeXfDoIC24deafettrBI
-         1b48BqyhsizALU+PLSwA5GMhWxhedLgKTm3Dqr5F5UunmNP/9EpAYywsVR43q8pj3ve9
-         xsbGGaah+pxyiT8mwpCNK4lfoVs61RWsL+zZDrqXzFdt692HMxakHQ11MnyLw0KoYwG9
-         03Ls4bwd34yFP0j8XT9v8ihbg7hwvzHBUoMgGqgt5AUJq6TOa9Abc3ctpQT29l/uHf2u
-         KMV5C5d7NKdAUlW7LzIm+E/zRWwpSLZtx4Y40SgJTUs3CPTBpPprf7z+OyLQd1e+RCfK
-         ZGnA==
-X-Gm-Message-State: AOAM532x6ZFqcS705QpSE+AOvf+vvdyjpbj+tTNeh45NU3aS9OLKoPx8
-        u3ShobLxn84Byb7As7cRo7zquxGIC+oG+RVC1ps=
-X-Google-Smtp-Source: ABdhPJwUno5YPC7BqOWOKEZ6oMfGNxK4o0iMZCJO4gHU2e8g4g6LUewoB+EzV3dwXoV2Tj0Kt7CDnZg1nkaQqbPwYLk=
-X-Received: by 2002:a17:902:b494:b029:e7:36be:9ce7 with SMTP id
- y20-20020a170902b494b02900e736be9ce7mr34047403plr.43.1619014363633; Wed, 21
- Apr 2021 07:12:43 -0700 (PDT)
+        id S241192AbhDUONQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 21 Apr 2021 10:13:16 -0400
+Received: from mail.kernel.org ([198.145.29.99]:45010 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S235552AbhDUONQ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 21 Apr 2021 10:13:16 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 0069461445;
+        Wed, 21 Apr 2021 14:12:41 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1619014362;
+        bh=n0NteZqvzMWXZ+4wogR9QLuIhPzmShJ7ox00dqcop78=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=oD+5wY8O7TfywO13RREcUmEEEUjSivHJ3SIo7cIlvZrNC6b2wEy4sFQPuduqW55y/
+         akZfMCH31j1bpC6S32DHETpFFIFZ+TttM13cZxzbepTzrjQq6AOitb5itybjk2wc7L
+         CRIYCeJtEwJFnN4y4/6NcIgX9qfz12Wsgiqrd42CBHrcu3conLXVawCDZXtvseyRzx
+         zQxVZUmGTol/qOitFje+XNNFab7NXZljGSz3y3vAjtEl08heG01AKoN+m8GBYK4Qjx
+         xREJ/NPAQMqlV3Q5vqLWpgo7EJUoh+VWVuTjkA4JGVkdBLgLv7Z//hjs3CWHtoRoAS
+         WWuTMEsMfCyYw==
+Date:   Wed, 21 Apr 2021 17:12:38 +0300
+From:   Leon Romanovsky <leon@kernel.org>
+To:     "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>
+Cc:     Trond Myklebust <trondmy@hammerspace.com>,
+        "a.shelat@northeastern.edu" <a.shelat@northeastern.edu>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "chuck.lever@oracle.com" <chuck.lever@oracle.com>,
+        "dwysocha@redhat.com" <dwysocha@redhat.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "sudipm.mukherjee@gmail.com" <sudipm.mukherjee@gmail.com>,
+        "bfields@fieldses.org" <bfields@fieldses.org>,
+        "anna.schumaker@netapp.com" <anna.schumaker@netapp.com>,
+        "pakki001@umn.edu" <pakki001@umn.edu>,
+        "linux-nfs@vger.kernel.org" <linux-nfs@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: Re: [PATCH] SUNRPC: Add a check for gss_release_msg
+Message-ID: <YIAy1tH0miFxEJEk@unreal>
+References: <YH+zwQgBBGUJdiVK@unreal>
+ <YH+7ZydHv4+Y1hlx@kroah.com>
+ <CADVatmNgU7t-Co84tSS6VW=3NcPu=17qyVyEEtVMVR_g51Ma6Q@mail.gmail.com>
+ <YH/8jcoC1ffuksrf@kroah.com>
+ <3B9A54F7-6A61-4A34-9EAC-95332709BAE7@northeastern.edu>
+ <YIAYThdIoAPu2h7b@unreal>
+ <6530850bc6f0341d1f2d5043ba1dd04e242cff66.camel@hammerspace.com>
+ <YIAmy0zgrQW/44Hz@kroah.com>
+ <YIApyFQNCBOgNkhU@unreal>
+ <YIAtwtOpy/emQWr2@kroah.com>
 MIME-Version: 1.0
-References: <cover.1617885385.git.lorenzo@kernel.org> <CAJ8uoz1MOYLzyy7xXq_fmpKDEakxSomzfM76Szjr5gWsqHc9jQ@mail.gmail.com>
- <20210418181801.17166935@carbon> <CAJ8uoz0m8AAJFddn2LjehXtdeGS0gat7dwOLA_-_ZeOVYjBdxw@mail.gmail.com>
- <YH0pdXXsZ7IELBn3@lore-desk> <CAJ8uoz101VZiwuvM-bs4UdW+kFT5xjgdgUwPWHZn4ABEOkyQ-w@mail.gmail.com>
- <20210421144747.33c5f51f@carbon>
-In-Reply-To: <20210421144747.33c5f51f@carbon>
-From:   Magnus Karlsson <magnus.karlsson@gmail.com>
-Date:   Wed, 21 Apr 2021 16:12:32 +0200
-Message-ID: <CAJ8uoz3ROiPn+-bh7OjFOjXjXK9xGhU5cxWoFPM9JoYeh=zw=g@mail.gmail.com>
-Subject: Re: [PATCH v8 bpf-next 00/14] mvneta: introduce XDP multi-buffer support
-To:     Jesper Dangaard Brouer <brouer@redhat.com>
-Cc:     Lorenzo Bianconi <lorenzo.bianconi@redhat.com>,
-        Lorenzo Bianconi <lorenzo@kernel.org>,
-        bpf <bpf@vger.kernel.org>,
-        Network Development <netdev@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>, shayagr@amazon.com,
-        sameehj@amazon.com, John Fastabend <john.fastabend@gmail.com>,
-        David Ahern <dsahern@kernel.org>,
-        Eelco Chaudron <echaudro@redhat.com>,
-        Jason Wang <jasowang@redhat.com>,
-        Alexander Duyck <alexander.duyck@gmail.com>,
-        Saeed Mahameed <saeed@kernel.org>,
-        "Fijalkowski, Maciej" <maciej.fijalkowski@intel.com>,
-        Tirthendu <tirthendu.sarkar@intel.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <YIAtwtOpy/emQWr2@kroah.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Apr 21, 2021 at 2:48 PM Jesper Dangaard Brouer
-<brouer@redhat.com> wrote:
->
-> On Tue, 20 Apr 2021 15:49:44 +0200
-> Magnus Karlsson <magnus.karlsson@gmail.com> wrote:
->
-> > On Mon, Apr 19, 2021 at 8:56 AM Lorenzo Bianconi
-> > <lorenzo.bianconi@redhat.com> wrote:
-> > >
-> > > > On Sun, Apr 18, 2021 at 6:18 PM Jesper Dangaard Brouer
-> > > > <brouer@redhat.com> wrote:
-> > > > >
-> > > > > On Fri, 16 Apr 2021 16:27:18 +0200
-> > > > > Magnus Karlsson <magnus.karlsson@gmail.com> wrote:
-> > > > >
-> > > > > > On Thu, Apr 8, 2021 at 2:51 PM Lorenzo Bianconi <lorenzo@kernel.org> wrote:
-> > > > > > >
-> > > > > > > This series introduce XDP multi-buffer support. The mvneta driver is
-> > > > > > > the first to support these new "non-linear" xdp_{buff,frame}. Reviewers
-> > > > > > > please focus on how these new types of xdp_{buff,frame} packets
-> > > > > > > traverse the different layers and the layout design. It is on purpose
-> > > > > > > that BPF-helpers are kept simple, as we don't want to expose the
-> > > > > > > internal layout to allow later changes.
-> > > > > > >
-> > > > > > > For now, to keep the design simple and to maintain performance, the XDP
-> > > > > > > BPF-prog (still) only have access to the first-buffer. It is left for
-> > > > > > > later (another patchset) to add payload access across multiple buffers.
-> > > > > > > This patchset should still allow for these future extensions. The goal
-> > > > > > > is to lift the XDP MTU restriction that comes with XDP, but maintain
-> > > > > > > same performance as before.
-> > > > > [...]
-> > > > > > >
-> > > > > > > [0] https://netdevconf.info/0x14/session.html?talk-the-path-to-tcp-4k-mtu-and-rx-zerocopy
-> > > > > > > [1] https://github.com/xdp-project/xdp-project/blob/master/areas/core/xdp-multi-buffer01-design.org
-> > > > > > > [2] https://netdevconf.info/0x14/session.html?tutorial-add-XDP-support-to-a-NIC-driver (XDPmulti-buffers section)
-> > > > > >
-> > > > > > Took your patches for a test run with the AF_XDP sample xdpsock on an
-> > > > > > i40e card and the throughput degradation is between 2 to 6% depending
-> > > > > > on the setup and microbenchmark within xdpsock that is executed. And
-> > > > > > this is without sending any multi frame packets. Just single frame
-> > > > > > ones. Tirtha made changes to the i40e driver to support this new
-> > > > > > interface so that is being included in the measurements.
-> > > > >
-> > > > > Could you please share Tirtha's i40e support patch with me?
-> > > >
-> > > > We will post them on the list as an RFC. Tirtha also added AF_XDP
-> > > > multi-frame support on top of Lorenzo's patches so we will send that
-> > > > one out as well. Will also rerun my experiments, properly document
-> > > > them and send out just to be sure that I did not make any mistake.
-> > >
-> > > ack, very cool, thx
-> >
-> > I have now run a new set of experiments on a Cascade Lake server at
-> > 2.1 GHz with turbo boost disabled. Two NICs: i40e and ice. The
-> > baseline is commit 5c507329000e ("libbpf: Clarify flags in ringbuf
-> > helpers") and Lorenzo's and Eelco's path set is their v8. First some
-> > runs with xdpsock (i.e. AF_XDP) in both 2-core mode (app on one core
-> > and the driver on another) and 1-core mode using busy_poll.
-> >
-> > xdpsock rxdrop throughput change with the multi-buffer patches without
-> > any driver changes:
-> > 1-core i40e: -0.5 to 0%   2-cores i40e: -0.5%
-> > 1-core ice: -2%   2-cores ice: -1 to -0.5%
-> >
-> > xdp_rxq_info -a XDP_DROP
-> > i40e: -4%   ice: +8%
-> >
-> > xdp_rxq_info -a XDP_TX
-> > i40e: -10%   ice: +9%
-> >
-> > The XDP results with xdp_rxq_info are just weird! I reran them three
-> > times, rebuilt and rebooted in between and I always get the same
-> > results. And I also checked that I am running on the correct NUMA node
-> > and so on. But I have a hard time believing them. Nearly +10% and -10%
-> > difference. Too much in my book. Jesper, could you please run the same
-> > and see what you get?
->
-> We of-cause have to find the root-cause of the +-10%, but let me drill
-> into what the 10% represent time/cycle wise.  Using a percentage
-> difference is usually a really good idea as it implies a comparative
-> measure (something I always request people to do, as a single
-> performance number means nothing by itself).
->
-> For a zoom-in-benchmarks like these where the amount of code executed
-> is very small, the effect of removing or adding code can effect the
-> measurement a lot.
->
-> I can only do the tests for i40e, as I don't have ice hardware (but
-> Intel is working on fixing that ;-)).
->
->  xdp_rxq_info -a XDP_DROP
->   i40e: 33,417,775 pps
+On Wed, Apr 21, 2021 at 03:50:58PM +0200, gregkh@linuxfoundation.org wrote:
+> On Wed, Apr 21, 2021 at 04:34:00PM +0300, Leon Romanovsky wrote:
+> > On Wed, Apr 21, 2021 at 03:21:15PM +0200, gregkh@linuxfoundation.org wrote:
+> > > On Wed, Apr 21, 2021 at 01:11:03PM +0000, Trond Myklebust wrote:
+> > > > On Wed, 2021-04-21 at 15:19 +0300, Leon Romanovsky wrote:
+> > > > > On Wed, Apr 21, 2021 at 11:58:08AM +0000, Shelat, Abhi wrote:
+> > > > > > > > 
+> > > > > > > > > > They introduce kernel bugs on purpose. Yesterday, I took a
+> > > > > > > > > > look on 4
+> > > > > > > > > > accepted patches from Aditya and 3 of them added various
+> > > > > > > > > > severity security
+> > > > > > > > > > "holes".
+> > > > > > > > > 
+> > > > > > > > > All contributions by this group of people need to be
+> > > > > > > > > reverted, if they
+> > > > > > > > > have not been done so already, as what they are doing is
+> > > > > > > > > intentional
+> > > > > > > > > malicious behavior and is not acceptable and totally
+> > > > > > > > > unethical.  I'll
+> > > > > > > > > look at it after lunch unless someone else wants to do it…
+> > > > > > > > 
+> > > > > > 
+> > > > > > <snip>
+> > > > > > 
+> > > > > > Academic research should NOT waste the time of a community.
+> > > > > > 
+> > > > > > If you believe this behavior deserves an escalation, you can
+> > > > > > contact the Institutional Review Board (irb@umn.edu) at UMN to
+> > > > > > investigate whether this behavior was harmful; in particular,
+> > > > > > whether the research activity had an appropriate IRB review, and
+> > > > > > what safeguards prevent repeats in other communities.
+> > > > > 
+> > > > > The huge advantage of being "community" is that we don't need to do
+> > > > > all
+> > > > > the above and waste our time to fill some bureaucratic forms with
+> > > > > unclear
+> > > > > timelines and results.
+> > > > > 
+> > > > > Our solution to ignore all @umn.edu contributions is much more
+> > > > > reliable
+> > > > > to us who are suffering from these researchers.
+> > > > > 
+> > > > 
+> > > > <shrug>That's an easy thing to sidestep by just shifting to using a
+> > > > private email address.</shrug>
+> > > 
+> > > If they just want to be jerks, yes.  But they can't then use that type
+> > > of "hiding" to get away with claiming it was done for a University
+> > > research project as that's even more unethical than what they are doing
+> > > now.
+> > > 
+> > > > There really is no alternative for maintainers other than to always be
+> > > > sceptical of patches submitted by people who are not known and trusted
+> > > > members of the community, and to scrutinise those patches with more
+> > > > care.
+> > > 
+> > > Agreed, and when we notice things like this that were determined to be
+> > > bad, we have the ability to easily go back and rip the changes out and
+> > > we can slowly add them back if they are actually something we want to
+> > > do.
+> > > 
+> > > Which is what I just did:
+> > > 	https://lore.kernel.org/lkml/20210421130105.1226686-1-gregkh@linuxfoundation.org/
+> > 
+> > Greg,
+> > 
+> > Did you push your series to the public git? I would like to add you a
+> > couple of reverts.
+> 
+> Yes, it can be found here:
+> 	git@gitolite.kernel.org:/pub/scm/linux/kernel/git/gregkh/driver-core.git umn.edu-reverts
+> 
+> You can send reverts in email if you want, whatever works best.
+> 
+> > And do you have a list of not reverted commits? It will save us from
+> > doing same comparison of reverted/not reverted over and over.
+> 
+> Below is the list that didn't do a simple "revert" that I need to look
+> at.  I was going to have my interns look into this, there's no need to
+> bother busy maintainers with it unless you really want to, as I can't
+> tell anyone what to work on :)
 
-Here I only get around 21 Mpps
+Ohh, you have interns, so even better.
 
->  CPU is 100% used, so we can calculate nanosec used per packet:
->   29.92 nanosec (1/33417775*10^9)
->   2.1 GHz CPU =  approx 63 CPU-cycles
->
->  You lost -4% performance in this case.  This correspond to:
->   -1.2 nanosec (29.92*0.04) slower
->   (This could be cost of single func call overhead = 1.3 ns)
->
-> My measurement for XDP_TX:
->
->  xdp_rxq_info -a XDP_TX
->   28,278,722 pps
->   35.36 ns (1/28278722*10^9)
+Thanks
 
-And here, much lower at around 8 Mpps. But I do see correct packets
-coming back on the cable for i40e but not for ice! There is likely a
-bug there in the XDP_TX logic for ice. Might explain the weird results
-I am getting. Will investigate.
-
-But why do I get only a fraction of your performance? XDP_TX touches
-the packet so I would expect it to be far less than what you get, but
-more than I get. What CPU core do you run on? It actually looks like
-your packet data gets prefetched successfully. If it had not, you
-would have gotten an access to LLC which is much more expensive than
-the drop you are seeing. If I run on the wrong NUMA node, I get 4
-Mpps, so it is not that.
-
-One interesting thing is that I get better results using the zero-copy
-path in the driver. I start xdp_rxq_drop then tie an AF_XDP socket to
-the queue id the XDP program gets its traffic from. The AF_XDP program
-will get no traffic in this case, but it will force the driver to use
-the zero-copy path for its XDP processing. In this case I get this:
-
--0.5% for XDP_DROP and +-0% for XDP_TX for i40e.
-
->  You lost -10% performance in this case:
->   -3.54 nanosec (35.36*0.10) slower
->
-> In XDP context 3.54 nanosec is a lot, as you can see it is 10% in this
-> zoom-in benchmark.  We have to look at the details.
->
-> One detail/issue with i40e doing XDP_TX, is that I cannot verify that
-> packets are actually transmitted... not via exception tracepoint, not
-> via netstats, not via ethtool_stats.pl.  Maybe all the packets are
-> getting (silently) drop in my tests...!?!
->
->
-> > The xdpsock numbers are more in the ballpark of
-> > what I would expect.
-> >
-> > Tirtha and I found some optimizations in the i40e
-> > multi-frame/multi-buffer support that we have implemented. Will test
-> > those next, post the results and share the code.
-> >
-> > > >
-> > > > Just note that I would really like for the multi-frame support to get
-> > > > in. I have lost count on how many people that have asked for it to be
-> > > > added to XDP and AF_XDP. So please check our implementation and
-> > > > improve it so we can get the overhead down to where we want it to be.
-> > >
-> > > sure, I will do.
-> > >
-> > > Regards,
-> > > Lorenzo
-> > >
-> > > >
-> > > > Thanks: Magnus
-> > > >
-> > > > > I would like to reproduce these results in my testlab, in-order to
-> > > > > figure out where the throughput degradation comes from.
-> > > > >
-> > > > > > What performance do you see with the mvneta card? How much are we
-> > > > > > willing to pay for this feature when it is not being used or can we in
-> > > > > > some way selectively turn it on only when needed?
-> > > > >
-> > > > > Well, as Daniel says performance wise we require close to /zero/
-> > > > > additional overhead, especially as you state this happens when sending
-> > > > > a single frame, which is a base case that we must not slowdown.
-> > > > >
-> > > > > --
-> > > > > Best regards,
-> > > > >   Jesper Dangaard Brouer
->
-> --
-> Best regards,
->   Jesper Dangaard Brouer
->   MSc.CS, Principal Kernel Engineer at Red Hat
->   LinkedIn: http://www.linkedin.com/in/brouer
->
->
-> Running XDP on dev:i40e2 (ifindex:6) action:XDP_DROP options:read
-> XDP stats       CPU     pps         issue-pps
-> XDP-RX CPU      2       33,417,775  0
-> XDP-RX CPU      total   33,417,775
->
-> RXQ stats       RXQ:CPU pps         issue-pps
-> rx_queue_index    2:2   33,417,775  0
-> rx_queue_index    2:sum 33,417,775
->
->
-> Running XDP on dev:i40e2 (ifindex:6) action:XDP_TX options:swapmac
-> XDP stats       CPU     pps         issue-pps
-> XDP-RX CPU      2       28,278,722  0
-> XDP-RX CPU      total   28,278,722
->
-> RXQ stats       RXQ:CPU pps         issue-pps
-> rx_queue_index    2:2   28,278,726  0
-> rx_queue_index    2:sum 28,278,726
->
->
->
+> 
+> thanks,
+> 
+> greg k-h
+> 
+> -------------------------
+> # commits that need to be looked at as a clean revert did not work
+> 990a1162986e
+> 58d0c864e1a7
+> a068aab42258
+> 8816cd726a4f
+> c705f9fc6a17
+> 8b6fc114beeb
+> 169f9acae086
+> 8da96730331d
+> f4f5748bfec9
+> e08f0761234d
+> cb5173594d50
+> 06d5d6b7f994
+> d9350f21e5fe
+> 6f0ce4dfc5a3
+> f0d14edd2ba4
+> 46953f97224d
+> 3c77ff8f8bae
+> 0aab8e4df470
+> 8e949363f017
+> f8ee34c3e77a
+> fd21b79e541e
+> 766460852cfa
+> 41f00e6e9e55
+> 78540a259b05
+> 208c6e8cff1b
+> 7ecced0934e5
+> 48f40b96de2c
+> 9aabb68568b4
+> 2cc12751cf46
+> 534c89c22e26
+> 6a8ca24590a2
+> d70d70aec963
+> d7737d425745
+> 3a10e3dd52e8
+> d6cb77228e3a
+> 517ccc2aa50d
+> 07660ca679da
+> 0fff9bd47e13
+> 6ade657d6125
+> 2795e8c25161
+> 4ec850e5dfec
+> 035a14e71f27
+> 10010493c126
+> 4280b73092fe
+> 5910fa0d0d98
+> 40619f7dd3ef
+> 0a54ea9f481f
+> 44fabd8cdaaa
+> 02cc53e223d4
+> c99776cc4018
+> 7fc93f3285b1
+> 6ae16dfb61bc
+> 9c6260de505b
+> eb8950861c1b
+> 46273cf7e009
+> 89dfd0083751
+> c9c63915519b
+> cd07e3701fa6
+> 15b3048aeed8
+> 7172122be6a4
+> 47db7873136a
+> 58f5bbe331c5
+> 6b995f4eec34
+> 8af03d1ae2e1
+> f16b613ca8b3
+> 6009d1fe6ba3
+> 8e03477cb709
+> dc487321b1e6
