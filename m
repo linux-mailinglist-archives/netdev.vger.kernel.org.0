@@ -2,120 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AFD55367091
-	for <lists+netdev@lfdr.de>; Wed, 21 Apr 2021 18:49:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 07C29367093
+	for <lists+netdev@lfdr.de>; Wed, 21 Apr 2021 18:49:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241630AbhDUQtw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 21 Apr 2021 12:49:52 -0400
-Received: from mout.gmx.net ([212.227.15.19]:49523 "EHLO mout.gmx.net"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S237358AbhDUQtu (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 21 Apr 2021 12:49:50 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
-        s=badeba3b8450; t=1619023715;
-        bh=40y2ogTwZHjVV2UFcvvi314l227rNstpubsLcSaRYGw=;
-        h=X-UI-Sender-Class:Date:In-Reply-To:References:Subject:Reply-to:To:
-         CC:From;
-        b=RD4rwJLAE+hx8dc2j+xXELvDJe44VQWdkz6RArOIzrmoxQHmULbh+wDgIL1BFhg3Y
-         KZNPcHepnC4Jae6Ppw6bBoENc/M9Tk6xUK7/zZwALhLXB607ZmPus9SyeZ7oLxjauE
-         7tX9N4UBHJ0Ch9U1GjJh6U2WtwVjpS3HjlOUOcFA=
-X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
-Received: from frank-s9 ([80.245.77.133]) by mail.gmx.net (mrgmx005
- [212.227.17.190]) with ESMTPSA (Nemesis) id 1MwQT9-1lJ65W2iwP-00sLhi; Wed, 21
- Apr 2021 18:48:35 +0200
-Date:   Wed, 21 Apr 2021 18:48:28 +0200
-User-Agent: K-9 Mail for Android
-In-Reply-To: <CAL_JsqKne=ASOyd0E9GakVvDvaXDauHOOU5NgxU8X8ySvyrAcw@mail.gmail.com>
-References: <20210419154659.44096-1-ilya.lipnitskiy@gmail.com> <20210419154659.44096-3-ilya.lipnitskiy@gmail.com> <20210420195132.GA3686955@robh.at.kernel.org> <CALCv0x2SG=0kBRnxfSPxi+FvaBK=QGPHQkHWHvTXOw64KawPUQ@mail.gmail.com> <trinity-47c2d588-093d-4054-a16f-81d76aa667e0-1619013874284@3c-app-gmx-bs34> <CAL_JsqKne=ASOyd0E9GakVvDvaXDauHOOU5NgxU8X8ySvyrAcw@mail.gmail.com>
+        id S242262AbhDUQtz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 21 Apr 2021 12:49:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60748 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S242056AbhDUQtx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 21 Apr 2021 12:49:53 -0400
+Received: from mail-pg1-x535.google.com (mail-pg1-x535.google.com [IPv6:2607:f8b0:4864:20::535])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 41082C06174A
+        for <netdev@vger.kernel.org>; Wed, 21 Apr 2021 09:49:19 -0700 (PDT)
+Received: by mail-pg1-x535.google.com with SMTP id p2so14985140pgh.4
+        for <netdev@vger.kernel.org>; Wed, 21 Apr 2021 09:49:19 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=networkplumber-org.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:subject:message-id:mime-version
+         :content-transfer-encoding;
+        bh=YofVd7h9TTAUtJm02RuQ1uMGb1tLcZYg66RQ0VMaxfY=;
+        b=xfSYFpqTi/9rUNUnLj17Pm+oOiO4ZNx/7pIFtcGrpx1QnLk2CLsr2a3NP6gQ5B3hBk
+         zun7saLACyQv1gE6VMIGwU8pg6i8est8ZfLgshxAA3A6zhqTMLWLzoaDQUZxL/rUpYrF
+         5htV8tVWrOky+0yt2IRuHgKM4vnuC63CtzUej9s8lW1VrSDKk5eVOUSScozPV9/hB9SO
+         OZSKOofjF/Ix4gfUiruryNlwEZ5xykppFmIeMpYA2vcBA3b6vJ2NHxAfADqc1aPRFOtv
+         DSvlruZgE4lTJ6y0ksqyJaNbHzfkDNPf0cU1hlMhz40tUMYLsQapIJfQy6hDZuCY5AJK
+         iviA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:subject:message-id:mime-version
+         :content-transfer-encoding;
+        bh=YofVd7h9TTAUtJm02RuQ1uMGb1tLcZYg66RQ0VMaxfY=;
+        b=qXWak1bQ0OffqN5S2Z1xjxhBUCADKnYI1C2q8SBQnRH8IZqUMFR3kxIpP90kMEfVqN
+         K/AgRYfBQ18Z3Z4NOx24IeNpvXeAVWVU37ndhMss+crg4MWSU5GxO0AHP38GatpI/if4
+         luZg1bw3Ent1XMYj/SDJy/6kvYe50eoMnGKAoQZiBrC6RiG7h+Vvq215B6YEZ7Wdxxxn
+         DphvJzWjt0D1SxO4CT4kmNHgueYbBqRtQZD6Ut7h6caOVnzSTI77jsKxA//ZbmAT3fY1
+         yjHGF7lZ8Q2CFZPgjCMNgCAotbLk4IM2Q7N5oL5mYPSBfDLNWrtiOfRyn33g70BLuXgd
+         KQRw==
+X-Gm-Message-State: AOAM533dfg4c9c0ymKEuWpXRsKRDaLzO8BmDY/87rNnkWNjGzMOpa0w9
+        IiJeXbRzeOeBkwbJsgsPxP9lPhLfXqTbVA==
+X-Google-Smtp-Source: ABdhPJwUTqChCRKwNoPq0hyrTxaRFa9tk2NiLG9lg/Q8Q6NrC1j6MZdQ3Zy7nf64HdqhrvCUbFV//g==
+X-Received: by 2002:a17:90a:db15:: with SMTP id g21mr11930635pjv.113.1619023758819;
+        Wed, 21 Apr 2021 09:49:18 -0700 (PDT)
+Received: from hermes.local (76-14-218-44.or.wavecable.com. [76.14.218.44])
+        by smtp.gmail.com with ESMTPSA id kk7sm2706279pjb.11.2021.04.21.09.49.18
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 21 Apr 2021 09:49:18 -0700 (PDT)
+Date:   Wed, 21 Apr 2021 09:49:10 -0700
+From:   Stephen Hemminger <stephen@networkplumber.org>
+To:     linux-usb@vger.kernel.org, netdev@vger.kernel.org
+Subject: Fw: [Bug 212741] New: unregister_netdevice: waiting for enp0s20f0u1
+ to become free.
+Message-ID: <20210421094910.2ccf58b3@hermes.local>
 MIME-Version: 1.0
-Content-Type: text/plain;
- charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: Re: [PATCH net-next v2 2/2] net: ethernet: mediatek: support custom GMAC label
-Reply-to: frank-w@public-files.de
-To:     linux-mediatek@lists.infradead.org, Rob Herring <robh@kernel.org>
-CC:     Ilya Lipnitskiy <ilya.lipnitskiy@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, Felix Fietkau <nbd@nbd.name>,
-        John Crispin <john@phrozen.org>,
-        Sean Wang <sean.wang@mediatek.com>,
-        Mark Lee <Mark-MC.Lee@mediatek.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        netdev <netdev@vger.kernel.org>,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
-        "moderated list:ARM/Mediatek SoC support" 
-        <linux-mediatek@lists.infradead.org>,
-        =?ISO-8859-1?Q?Ren=E9_van_Dorst?= <opensource@vdorst.com>
-From:   Frank Wunderlich <frank-w@public-files.de>
-Message-ID: <278445B7-727F-444D-8F5F-986CAD38BA57@public-files.de>
-X-Provags-ID: V03:K1:i4lFH21GXNNZAau9Nq++WTeXreXX1sfRjeshPFKYIVVtlsNV0e1
- IMeY+l/cJEiY5tCksT+kTXePvUQkmN3Rwevzn/muTwx8SeR6zdgtVBMrMoYlLr4JS637SG0
- SKZ13gCYiTkam5Zl0Wz3brEPXaqN7gDh/s5x6vzPFue7gDkKI+UNBYFUmeF1+9R+LhIrnfF
- 1ytvCuGAUq6JMwbIrTA4A==
-X-Spam-Flag: NO
-X-UI-Out-Filterresults: notjunk:1;V03:K0:o9viHyDaucU=:0rlcnz0e7JdvUX3oF/E7p9
- J1/G+8uMTzTLN6yJCNebZmuNDxl4tmI/GrZWf3xe140dNFsL9LyJndS8gPRATWrxVN+bYyw7t
- w8zikTRkv+QxI+rHBdDYoyJqwd11YxRrQrPvKAoFyIbq5427Ah7UGSDT0swtuli42GH1oxypZ
- DDt1JyjFBRGVfn1O2giVC+oIB1Hc20s4bUlvD9B8mhT75LkQYbzHrh1Bq5eAOhJH3usXHz1Tr
- d1pOc1VEQHagmnjGIiaw3QVpzcqRqd3MynpGKCMv77cX0/ZB/mxddj3R5qYWh9N63m8/ouReX
- pRa/acWLfxWi0CEFG0eDe7DamprjGlZv8nuAJ6x/Ut+FqLZk1faHmTW/tpWWFAWy9ovmLzLvR
- a68NvgC8RWTCIYqNmgoGWDmTR+x+qml+EYzLen0Owz8h4ZKoXTz26NEPG0+16o+2FkTdmPRtN
- s7/YqXEKhbajEJoDtO09uCLYRdB8geyRfO7ceCbA4lzvakEr63DXc7TbKaE87FIZBWhChxmgj
- cIeA455EMmLZ5irtHjCGShxm4Pc4UKowHM+GM5LDAvV5QYgSr0R3fZNKjB20tN57uDeGeA5qn
- 2V05j1bMRPoVFgW7uRVJs+44tw3XDw+Ypw1Yd/O5c5ZYnn3AzDZ8pzn7lGd1SVN18VBEDL3IN
- YN5m2PicnkMZKkFvZ+LMVO91Gi0HKMGQTF2UttBnlw7bBq1DXebjGS1vO4mtG1tx84snUV/oR
- M43B00vF4AVldwJsvgY6bymPduJD6PaMIta1YGcHuQ8oY4MIV1kxcTgPPlo/iPXGOCjuynAZA
- waOSiw6WWVz89E5A+BlGJFVJMH48IzpvPy0SORIp2AGHAsUas4gjH4uoVvMwFTSadgkKT9yLi
- yu1apNeAcatOzWgodjIloZB1vPXJ8ynY5onfF/dvHgeDcT9eeHh9jbZoyBh4oXi3/iwtd84dw
- AqBRagZHByPnqYkuVrj4yJxo7ZGU4D2o0H1FYDPc+vfgrRJEOOB0CrEbnAsvi3vqqL21sIfOO
- qkKIX0ct23cGDnCVv+SFSrpSHBsSffM0TJrSCEeK7LSvEBV0tBxY4Z3m8iyTkJneJPuAC7RGy
- LHOlKeKKu5hoP/Tkue4KoO/HXrs6XfLYOU3iCn1rU6uos6BkYB6m4au+94Mh4XBd+oa2viZse
- 4P3lc49bw1wYiPKQ8YsTB78S5RVzV4jlbXPhl80YuhNgW0JYl+XT+iOfavig1jjHyia2vLL/A
- 3IJFskSsr1P3MJQIA
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Am 21=2E April 2021 18:12:41 MESZ schrieb Rob Herring <robh@kernel=2Eorg>:
->On Wed, Apr 21, 2021 at 9:05 AM Frank Wunderlich
-><frank-w@public-files=2Ede> wrote:
->>
->> Hi,
->>
->> for dsa slave-ports there is already a property "label", but not for
->master/cpu-ports
->
->Is that because slave ports are external and master are not? If so,
->that makes sense=2E
+Looks like a USB driver network device ref count bug.
 
-In my case gmac is internal,yes=2E=2E=2Ei don't know if ilyas device is si=
-milar=2E
+Begin forwarded message:
 
-But in a previous kernel-version the gmac of bpi-r2 can be passed through =
-mt7530 switch and gets available external while bypassing dsa core=2E Here =
-i wanted renaming of this port (gmac1=3Deth1 mapped as wan-port,while gmac0=
-=3Deth0 was splitted by dsa switch driver to lan0-lan3)
+Date: Wed, 21 Apr 2021 08:39:38 +0000
+From: bugzilla-daemon@bugzilla.kernel.org
+To: stephen@networkplumber.org
+Subject: [Bug 212741] New: unregister_netdevice: waiting for enp0s20f0u1 to become free.
 
->Seems like it could be possible to want to distinguish port types for
->reasons other than just what to name the device=2E Better to describe
->that difference in DT and then base the device name off of that=2E
 
-Interface names should be not only numbering as they can have different me=
-aning (wan vs=2E lan)=2E
+https://bugzilla.kernel.org/show_bug.cgi?id=212741
 
->If you just want fixed numbering, then 'aliases' node is generally how
->that is done (either because it sneaks in or fatigue from arguing
->fixed /dev nodes are an anti-feature)=2E There's already 'ethernetN'
->which u-boot uses, but the kernel so far does not=2E
+            Bug ID: 212741
+           Summary: unregister_netdevice: waiting for enp0s20f0u1 to
+                    become free.
+           Product: Networking
+           Version: 2.5
+    Kernel Version: 5.11.14
+          Hardware: All
+                OS: Linux
+              Tree: Mainline
+            Status: NEW
+          Severity: normal
+          Priority: P1
+         Component: Other
+          Assignee: stephen@networkplumber.org
+          Reporter: dexter+kernelbugzilla@beetjevreemd.nl
+        Regression: No
 
-Aliases are not yet used as interface name=2E=2E=2Edo you want this way (u=
-se alias name as ifname)? imho we can define multiple aliases to one dt nod=
-e which is imho not the best way as interface can have only one name, and i=
-nterface is created feom target node from where the alias needs to be found=
-=2E
+This problem exists for years by now, I could work around it until now.
+Somewhere around kernel 4.9 ish this problem started to appear.
 
-regards Frank
+I have an USB network adapter and whenever the connection is severed (because I
+touch the cable, USB reset, sleep, cosmic rays) the kernel starts logging below
+message every 10~ish seconds. The usagecount is always different, but increases
+with uptime. I can replicate this on all my laptops and workstations.
+
+My setup is quite straigtforward, just (networkmanager)DHCP and a wireguard
+VPN. Running Fedora 33 (but exists since like 26 or so).
+
+
+[  992.787930] unregister_netdevice: waiting for enp0s20f0u1 to become free.
+Usage count = 8113
+
+-- 
+You may reply to this email to add a comment.
+
+You are receiving this mail because:
+You are the assignee for the bug.
