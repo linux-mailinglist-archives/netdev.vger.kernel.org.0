@@ -2,119 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 92825367F7C
-	for <lists+netdev@lfdr.de>; Thu, 22 Apr 2021 13:22:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 30600367F4C
+	for <lists+netdev@lfdr.de>; Thu, 22 Apr 2021 13:10:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236038AbhDVLVy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 22 Apr 2021 07:21:54 -0400
-Received: from fallback22.m.smailru.net ([94.100.176.132]:48492 "EHLO
-        fallback22.mail.ru" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235882AbhDVLVy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 22 Apr 2021 07:21:54 -0400
-X-Greylist: delayed 2151 seconds by postgrey-1.27 at vger.kernel.org; Thu, 22 Apr 2021 07:21:53 EDT
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=inbox.ru; s=mail3;
-        h=Content-Transfer-Encoding:MIME-Version:References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From; bh=mzPEIVGg4pAmX+hu6DFe/xtS4mul7PUbnYXjVimxWyE=;
-        b=TTvYdB5JnxqCdSGwJ4mjxgmZmlXJlxiTwmNllBvlTZRFC9CaIviojlX+pfL3DbgW+cr6g77ZHriEQLnNz+PQesoTNy6eo5vl5yj9/gC6pCfozaVEexwkd0sDkqC8UKsdpNRqRudgtJHTp3px9ZoY4a4kx/5VZFWe4h8KM1qbIM8=;
-Received: from [10.161.117.32] (port=47942 helo=smtp3.mail.ru)
-        by fallback22.m.smailru.net with esmtp (envelope-from <fido_max@inbox.ru>)
-        id 1lZWpq-0005zm-Om
-        for netdev@vger.kernel.org; Thu, 22 Apr 2021 13:45:27 +0300
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=inbox.ru; s=mail3;
-        h=Content-Transfer-Encoding:MIME-Version:References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:From:Subject:Content-Type:Content-Transfer-Encoding:To:Cc; bh=mzPEIVGg4pAmX+hu6DFe/xtS4mul7PUbnYXjVimxWyE=;
-        b=oQOpNb9mX/7WrT22UviJ+n66c+7lLXb9dzn1QzgRf6LghXst5jueSD6XVwE1lOMaEBSXXQp1Uyu0jvFr+jeZZ/OtMYOg5NFw3axtOnMEcmTq927ZZGMoJ2ogLKMqKK4+J9frt/pkDvnsnCcQvSFimiHEqH1vuTSQvExjncswcKw=;
-Received: by smtp3.mail.ru with esmtpa (envelope-from <fido_max@inbox.ru>)
-        id 1lZWpn-0000ww-1d; Thu, 22 Apr 2021 13:45:23 +0300
-From:   Maxim Kochetkov <fido_max@inbox.ru>
-To:     netdev@vger.kernel.org
-Cc:     andrew@lunn.ch, hkallweit1@gmail.com, linux@armlinux.org.uk,
-        davem@davemloft.net, kuba@kernel.org, f.fainelli@gmail.com,
-        Maxim Kochetkov <fido_max@inbox.ru>
-Subject: [PATCH 2/2] net: phy: marvell: fix m88e1111_set_downshift
-Date:   Thu, 22 Apr 2021 13:46:44 +0300
-Message-Id: <20210422104644.9472-3-fido_max@inbox.ru>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20210422104644.9472-1-fido_max@inbox.ru>
-References: <20210422104644.9472-1-fido_max@inbox.ru>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-7564579A: B8F34718100C35BD
-X-77F55803: 4F1203BC0FB41BD9DD7F0C977691F2B1E5FF39DF8BC957E24B746F5234D6004C182A05F5380850402F2A7E56AB5F8DDFD8462E71622F5C19F31A87DEFC60094CBD3B719FE5D5640A
-X-7FA49CB5: FF5795518A3D127A4AD6D5ED66289B5278DA827A17800CE7C6068CE86C2B75F5EA1F7E6F0F101C67BD4B6F7A4D31EC0BCC500DACC3FED6E28638F802B75D45FF8AA50765F7900637329F9579A0E72DCC8638F802B75D45FF914D58D5BE9E6BC1A93B80C6DEB9DEE97C6FB206A91F05B21DDDE7573B2463322803994895D47BE979373A8315E4CF65D2E47CDBA5A96583C09775C1D3CA48CF17B107DEF921CE79117882F4460429724CE54428C33FAD30A8DF7F3B2552694AC26CFBAC0749D213D2E47CDBA5A9658378DA827A17800CE71AE4D56B06699BBC9FA2833FD35BB23DF004C90652538430302FCEF25BFAB3454AD6D5ED66289B5278DA827A17800CE7494AAEFF9D85BA3DD32BA5DBAC0009BE395957E7521B51C20BC6067A898B09E4090A508E0FED6299176DF2183F8FC7C021F5160717EECE6CCD04E86FAF290E2D7E9C4E3C761E06A71DD303D21008E29813377AFFFEAFD269A417C69337E82CC2E827F84554CEF50127C277FBC8AE2E8BA83251EDC214901ED5E8D9A59859A8B613439FA09F3DCB32089D37D7C0E48F6C5571747095F342E88FB05168BE4CE3AF
-X-B7AD71C0: AC4F5C86D027EB782CDD5689AFBDA7A2AD77751E876CB595E8F7B195E1C97831906A50FD69B36923B24383D33A8A987E
-X-C1DE0DAB: C20DE7B7AB408E4181F030C43753B8186998911F362727C414F749A5E30D975C3E7AEEB2EA3DACB38494A9F188F785D150B539352C4134069C2B6934AE262D3EE7EAB7254005DCED7532B743992DF240BDC6A1CF3F042BAD6DF99611D93F60EF46906D4753B15FC0699F904B3F4130E343918A1A30D5E7FCCB5012B2E24CD356
-X-C8649E89: 4E36BF7865823D7055A7F0CF078B5EC49A30900B95165D3468964757141B82E0CB64017E9DD7B00B870662A3D8F094F9EEB14A8953F0AC9E57206CBF9D28EAA51D7E09C32AA3244C8D31004AF247107B02573F6A41889BB7D9ADFF0C0BDB8D1FAD832FF50B3043B1
-X-D57D3AED: 3ZO7eAau8CL7WIMRKs4sN3D3tLDjz0dLbV79QFUyzQ2Ujvy7cMT6pYYqY16iZVKkSc3dCLJ7zSJH7+u4VD18S7Vl4ZUrpaVfd2+vE6kuoey4m4VkSEu530nj6fImhcD4MUrOEAnl0W826KZ9Q+tr5ycPtXkTV4k65bRjmOUUP8cvGozZ33TWg5HZplvhhXbhDGzqmQDTd6OAevLeAnq3Ra9uf7zvY2zzsIhlcp/Y7m53TZgf2aB4JOg4gkr2biojd3ipC3Yuge3w9tnHBcT4Fw==
-X-Mailru-Sender: 11C2EC085EDE56FA9C10FA2967F5AB24FF0E9E4A50476AF5166E5606519823F2CBED7222F07C268EEE9242D420CFEBFD3DDE9B364B0DF2891A624F84B2C74EDA4239CF2AF0A6D4F80DA7A0AF5A3A8387
-X-Mras: Ok
-X-7564579A: 646B95376F6C166E
-X-77F55803: 6242723A09DB00B44BADD4F5929CCB15E536D9810E242AD34A4A4DAE34B9811F049FFFDB7839CE9E5F41FB687843EBABC87C54600BE446EAE5111D6A2C269B5F420BA7EA0E445CEE
-X-7FA49CB5: 0D63561A33F958A56523CB669E9E4432BE09D7CF1775943F66C8AC0F504746A68941B15DA834481FA18204E546F3947CEDC5C53491350371F6B57BC7E64490618DEB871D839B7333395957E7521B51C2DFABB839C843B9C08941B15DA834481F8AA50765F7900637DC24B783B16D3BB1389733CBF5DBD5E9B5C8C57E37DE458BD9DD9810294C998ED8FC6C240DEA76428AA50765F790063740BA071C1C7EF6BBD81D268191BDAD3DBD4B6F7A4D31EC0BEA7A3FFF5B025636AAAE862A0553A39223F8577A6DFFEA7C565C1E6824D8037B43847C11F186F3C59DAA53EE0834AAEE
-X-C1DE0DAB: C20DE7B7AB408E4181F030C43753B8186998911F362727C414F749A5E30D975C3E7AEEB2EA3DACB37AA83F8EDA6DD3EE9DC7B1F20CB95BFC9C2B6934AE262D3EE7EAB7254005DCED8DA55E71E02F9FC08E8E86DC7131B365E7726E8460B7C23C
-X-D57D3AED: 3ZO7eAau8CL7WIMRKs4sN3D3tLDjz0dLbV79QFUyzQ2Ujvy7cMT6pYYqY16iZVKkSc3dCLJ7zSJH7+u4VD18S7Vl4ZUrpaVfd2+vE6kuoey4m4VkSEu530nj6fImhcD4MUrOEAnl0W826KZ9Q+tr5ycPtXkTV4k65bRjmOUUP8cvGozZ33TWg5HZplvhhXbhDGzqmQDTd6OAevLeAnq3Ra9uf7zvY2zzsIhlcp/Y7m53TZgf2aB4JOg4gkr2biojd3ipC3Yuge3vyNG3E5hvsw==
-X-Mailru-MI: 800
-X-Mailru-Sender: A5480F10D64C90053DB5E8752E58C64B6107DA3D8362899C82189DEDF2630B47174BD9EFAF5FAE7EEE9242D420CFEBFD3DDE9B364B0DF2891A624F84B2C74EDA4239CF2AF0A6D4F80DA7A0AF5A3A8387
-X-Mras: Ok
+        id S235955AbhDVLKr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 22 Apr 2021 07:10:47 -0400
+Received: from mail.loongson.cn ([114.242.206.163]:42466 "EHLO loongson.cn"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S229972AbhDVLKq (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 22 Apr 2021 07:10:46 -0400
+Received: from linux.localdomain (unknown [113.200.148.30])
+        by mail.loongson.cn (Coremail) with SMTP id AQAAf9Dx7+6AWYFgpFQMAA--.4507S2;
+        Thu, 22 Apr 2021 19:09:54 +0800 (CST)
+From:   Tiezhu Yang <yangtiezhu@loongson.cn>
+To:     Jonathan Corbet <corbet@lwn.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>
+Cc:     Jesper Dangaard Brouer <brouer@redhat.com>,
+        linux-doc@vger.kernel.org, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Xuefeng Li <lixuefeng@loongson.cn>
+Subject: [PATCH bpf-next v4] bpf: Fix some invalid links in bpf_devel_QA.rst
+Date:   Thu, 22 Apr 2021 19:09:50 +0800
+Message-Id: <1619089790-6252-1-git-send-email-yangtiezhu@loongson.cn>
+X-Mailer: git-send-email 2.1.0
+X-CM-TRANSID: AQAAf9Dx7+6AWYFgpFQMAA--.4507S2
+X-Coremail-Antispam: 1UD129KBjvJXoW7Zw1kJw1fKF1UKFyfZFW5Wrg_yoW8Kr1rpa
+        18Gr1a9r1Sgr1fXw4kKr4jvF4SvFs5Way7CFn7Jw1UZFyDZFykXr1S9rs8XanxGrykCFW5
+        ArnakryF9w18Z37anT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+        9KBjDU0xBIdaVrnRJUUU9j14x267AKxVW8JVW5JwAFc2x0x2IEx4CE42xK8VAvwI8IcIk0
+        rVWrJVCq3wAFIxvE14AKwVWUJVWUGwA2ocxC64kIII0Yj41l84x0c7CEw4AK67xGY2AK02
+        1l84ACjcxK6xIIjxv20xvE14v26r4j6ryUM28EF7xvwVC0I7IYx2IY6xkF7I0E14v26r4U
+        JVWxJr1l84ACjcxK6I8E87Iv67AKxVW0oVCq3wA2z4x0Y4vEx4A2jsIEc7CjxVAFwI0_Gc
+        CE3s1le2I262IYc4CY6c8Ij28IcVAaY2xG8wAqx4xG64xvF2IEw4CE5I8CrVC2j2WlYx0E
+        2Ix0cI8IcVAFwI0_Jr0_Jr4lYx0Ex4A2jsIE14v26F4j6r4UJwAm72CE4IkC6x0Yz7v_Jr
+        0_Gr1lF7xvr2IYc2Ij64vIr41lF7I21c0EjII2zVCS5cI20VAGYxC7M4IIrI8v6xkF7I0E
+        8cxan2IY04v7MxkIecxEwVAFwVW8KwCF04k20xvY0x0EwIxGrwCFx2IqxVCFs4IE7xkEbV
+        WUJVW8JwC20s026c02F40E14v26r1j6r18MI8I3I0E7480Y4vE14v26r106r1rMI8E67AF
+        67kF1VAFwI0_Jw0_GFylIxkGc2Ij64vIr41lIxAIcVC0I7IYx2IY67AKxVWUJVWUCwCI42
+        IY6xIIjxv20xvEc7CjxVAFwI0_Gr0_Cr1lIxAIcVCF04k26cxKx2IYs7xG6rW3Jr0E3s1l
+        IxAIcVC2z280aVAFwI0_Jr0_Gr1lIxAIcVC2z280aVCY1x0267AKxVW8JVW8JrUvcSsGvf
+        C2KfnxnUUI43ZEXa7VUbG2NtUUUUU==
+X-CM-SenderInfo: p1dqw3xlh2x3gn0dqz5rrqw2lrqou0/
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Changing downshift params without software reset has no effect,
-so call genphy_soft_reset() after change downshift params.
+There exist some errors "404 Not Found" when I click the link
+of "MAINTAINERS" [1], "samples/bpf/" [2] and "selftests" [3]
+in the documentation "HOWTO interact with BPF subsystem" [4].
 
-As the datasheet says:
-Changes to these bits are disruptive to the normal operation therefore,
-any changes to these registers must be followed by software reset
-to take effect.
+As Jesper Dangaard Brouer said, the links work if you are browsing
+the document via GitHub [5], so I think maybe it is better to use
+the corresponding GitHub links to fix the issues in the kernel.org
+official document [4], this change has no influence on GitHub and
+looks like more clear.
 
-Fixes: 5c6bc5199b5d ("net: phy: marvell: add downshift support for M88E1111")
-Signed-off-by: Maxim Kochetkov <fido_max@inbox.ru>
+[1] https://www.kernel.org/doc/html/MAINTAINERS
+[2] https://www.kernel.org/doc/html/samples/bpf/
+[3] https://www.kernel.org/doc/html/tools/testing/selftests/bpf/
+[4] https://www.kernel.org/doc/html/latest/bpf/bpf_devel_QA.html
+[5] https://github.com/torvalds/linux/blob/master/Documentation/bpf/bpf_devel_QA.rst
+
+Fixes: 542228384888 ("bpf, doc: convert bpf_devel_QA.rst to use RST formatting")
+Signed-off-by: Tiezhu Yang <yangtiezhu@loongson.cn>
 ---
- drivers/net/phy/marvell.c | 26 ++++++++++++++++----------
- 1 file changed, 16 insertions(+), 10 deletions(-)
 
-diff --git a/drivers/net/phy/marvell.c b/drivers/net/phy/marvell.c
-index 5fd5f4986644..a61fde7013bd 100644
---- a/drivers/net/phy/marvell.c
-+++ b/drivers/net/phy/marvell.c
-@@ -978,22 +978,28 @@ static int m88e1111_get_downshift(struct phy_device *phydev, u8 *data)
+The initial aim is to fix the invalid links, sorry for the noisy.
+
+v4: Use the corresponding GitHub links
+
+v3: Remove "MAINTAINERS" and "samples/bpf/" links and
+    use correct link of "selftests"
+
+v2: Add Fixes: tag
+
+ Documentation/bpf/bpf_devel_QA.rst | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/Documentation/bpf/bpf_devel_QA.rst b/Documentation/bpf/bpf_devel_QA.rst
+index 2ed89ab..36a9b62 100644
+--- a/Documentation/bpf/bpf_devel_QA.rst
++++ b/Documentation/bpf/bpf_devel_QA.rst
+@@ -645,10 +645,10 @@ when:
  
- static int m88e1111_set_downshift(struct phy_device *phydev, u8 cnt)
- {
--	int val;
-+	int val, err;
- 
- 	if (cnt > MII_M1111_PHY_EXT_CR_DOWNSHIFT_MAX)
- 		return -E2BIG;
- 
--	if (!cnt)
--		return phy_clear_bits(phydev, MII_M1111_PHY_EXT_CR,
--				      MII_M1111_PHY_EXT_CR_DOWNSHIFT_EN);
-+	if (!cnt) {
-+		err = phy_clear_bits(phydev, MII_M1111_PHY_EXT_CR,
-+				     MII_M1111_PHY_EXT_CR_DOWNSHIFT_EN);
-+	} else {
-+		val = MII_M1111_PHY_EXT_CR_DOWNSHIFT_EN;
-+		val |= FIELD_PREP(MII_M1111_PHY_EXT_CR_DOWNSHIFT_MASK, cnt - 1);
- 
--	val = MII_M1111_PHY_EXT_CR_DOWNSHIFT_EN;
--	val |= FIELD_PREP(MII_M1111_PHY_EXT_CR_DOWNSHIFT_MASK, cnt - 1);
-+		err = phy_modify(phydev, MII_M1111_PHY_EXT_CR,
-+				 MII_M1111_PHY_EXT_CR_DOWNSHIFT_EN |
-+				 MII_M1111_PHY_EXT_CR_DOWNSHIFT_MASK,
-+				 val);
-+	}
- 
--	return phy_modify(phydev, MII_M1111_PHY_EXT_CR,
--			  MII_M1111_PHY_EXT_CR_DOWNSHIFT_EN |
--			  MII_M1111_PHY_EXT_CR_DOWNSHIFT_MASK,
--			  val);
-+	if (err < 0)
-+		return err;
-+
-+	return genphy_soft_reset(phydev);
- }
- 
- static int m88e1111_get_tunable(struct phy_device *phydev,
+ .. Links
+ .. _Documentation/process/: https://www.kernel.org/doc/html/latest/process/
+-.. _MAINTAINERS: ../../MAINTAINERS
++.. _MAINTAINERS: https://github.com/torvalds/linux/blob/master/MAINTAINERS
+ .. _netdev-FAQ: ../networking/netdev-FAQ.rst
+-.. _samples/bpf/: ../../samples/bpf/
+-.. _selftests: ../../tools/testing/selftests/bpf/
++.. _samples/bpf/: https://github.com/torvalds/linux/tree/master/samples/bpf
++.. _selftests: https://github.com/torvalds/linux/tree/master/tools/testing/selftests/bpf
+ .. _Documentation/dev-tools/kselftest.rst:
+    https://www.kernel.org/doc/html/latest/dev-tools/kselftest.html
+ .. _Documentation/bpf/btf.rst: btf.rst
 -- 
-2.30.2
+2.1.0
 
