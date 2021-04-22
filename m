@@ -2,81 +2,68 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 54171368217
-	for <lists+netdev@lfdr.de>; Thu, 22 Apr 2021 16:04:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 97439368269
+	for <lists+netdev@lfdr.de>; Thu, 22 Apr 2021 16:24:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236944AbhDVOEq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 22 Apr 2021 10:04:46 -0400
-Received: from m43-7.mailgun.net ([69.72.43.7]:26907 "EHLO m43-7.mailgun.net"
+        id S236971AbhDVOZ2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 22 Apr 2021 10:25:28 -0400
+Received: from mail.kernel.org ([198.145.29.99]:57572 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S236455AbhDVOEo (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 22 Apr 2021 10:04:44 -0400
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1619100250; h=Date: Message-Id: Cc: To: References:
- In-Reply-To: From: Subject: Content-Transfer-Encoding: MIME-Version:
- Content-Type: Sender; bh=4HMCjdtvHaTSyjFKUDRAhNbN/Lc1AjfSDQkLeUEgxs4=;
- b=s7bE5Eoci5yUAVgCzSqmZW5GNWMKLfcf17h7UUIMHl321G4hSU/5pGxBqKi8sgBy1YimRNoO
- vJCLKHnnJo4Ww57c5Z3nJzTr1faeI4Mmcy8SEdgO54DQG/p/i5iCISP16u2/l582cjDIDL1s
- cJUGgoGhSyJgFnhhvaVOmIj2HKg=
-X-Mailgun-Sending-Ip: 69.72.43.7
-X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
-Received: from smtp.codeaurora.org
- (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
- smtp-out-n03.prod.us-west-2.postgun.com with SMTP id
- 6081823ae0e9c9a6b6e97aae (version=TLS1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Thu, 22 Apr 2021 14:03:38
- GMT
-Sender: kvalo=codeaurora.org@mg.codeaurora.org
-Received: by smtp.codeaurora.org (Postfix, from userid 1001)
-        id 66487C4338A; Thu, 22 Apr 2021 14:03:38 +0000 (UTC)
-X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
-        aws-us-west-2-caf-mail-1.web.codeaurora.org
-X-Spam-Level: 
-X-Spam-Status: No, score=-1.0 required=2.0 tests=ALL_TRUSTED,BAYES_00,
-        MISSING_DATE,MISSING_MID,SPF_FAIL autolearn=no autolearn_force=no
-        version=3.4.0
-Received: from potku.adurom.net (88-114-240-156.elisa-laajakaista.fi [88.114.240.156])
+        id S236398AbhDVOZ1 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 22 Apr 2021 10:25:27 -0400
+Received: from gandalf.local.home (cpe-66-24-58-225.stny.res.rr.com [66.24.58.225])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        (Authenticated sender: kvalo)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id 35198C433F1;
-        Thu, 22 Apr 2021 14:03:35 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 35198C433F1
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=fail smtp.mailfrom=kvalo@codeaurora.org
-Content-Type: text/plain; charset="utf-8"
+        by mail.kernel.org (Postfix) with ESMTPSA id 622C661421;
+        Thu, 22 Apr 2021 14:24:50 +0000 (UTC)
+Date:   Thu, 22 Apr 2021 10:24:48 -0400
+From:   Steven Rostedt <rostedt@goodmis.org>
+To:     Jiri Olsa <jolsa@redhat.com>
+Cc:     Andrii Nakryiko <andrii.nakryiko@gmail.com>,
+        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        Masami Hiramatsu <mhiramat@kernel.org>,
+        Jiri Olsa <jolsa@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andriin@fb.com>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>, Daniel Xu <dxu@dxuuu.xyz>,
+        Jesper Brouer <jbrouer@redhat.com>,
+        Toke =?UTF-8?B?SMO4aWxhbmQtSsO4cmdlbnNlbg==?= <toke@redhat.com>,
+        Viktor Malik <vmalik@redhat.com>
+Subject: Re: [PATCHv2 RFC bpf-next 0/7] bpf: Add support for ftrace probe
+Message-ID: <20210422102448.03c12531@gandalf.local.home>
+In-Reply-To: <YIB6kr1fb5VvK5H4@krava>
+References: <20210415170007.31420132@gandalf.local.home>
+        <20210417000304.fc987dc00d706e7551b29c04@kernel.org>
+        <20210416124834.05862233@gandalf.local.home>
+        <YH7OXrjBIqvEZbsc@krava>
+        <CAADnVQK55WzR6_JfxkMzEfUnLJnX75bRHjCkaptcVF=nQ_gWfw@mail.gmail.com>
+        <YH8GxNi5VuYjwNmK@krava>
+        <CAADnVQLh3tCWi=TiWnJVaMrYhJ=j-xSrJ72+XnZDP8CMZM+1mQ@mail.gmail.com>
+        <YIArVa6IE37vsazU@krava>
+        <20210421100541.3ea5c3bf@gandalf.local.home>
+        <CAEf4BzaYEOqVYBaxVSs8p6Nmy_giztaxTX9DtDk4N77NzsHbDQ@mail.gmail.com>
+        <YIB6kr1fb5VvK5H4@krava>
+X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-Subject: Re: [PATCH][next] ath11k: qmi: Fix spelling mistake "requeqst" ->
- "request"
-From:   Kalle Valo <kvalo@codeaurora.org>
-In-Reply-To: <20210316091924.15627-1-colin.king@canonical.com>
-References: <20210316091924.15627-1-colin.king@canonical.com>
-To:     Colin King <colin.king@canonical.com>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, ath11k@lists.infradead.org,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
-User-Agent: pwcli/0.1.0-git (https://github.com/kvalo/pwcli/) Python/3.5.2
-Message-Id: <20210422140338.66487C4338A@smtp.codeaurora.org>
-Date:   Thu, 22 Apr 2021 14:03:38 +0000 (UTC)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Colin King <colin.king@canonical.com> wrote:
+On Wed, 21 Apr 2021 21:18:42 +0200
+Jiri Olsa <jolsa@redhat.com> wrote:
 
-> There is a spelling mistake in an ath11k_warn message. Fix it.
+> > 
+> >   [0] https://docs.google.com/spreadsheets/d/1LfrDXZ9-fdhvPEp_LHkxAMYyxxpwBXjywWa0AejEveU/edit#gid=883029154  
 > 
-> Signed-off-by: Colin Ian King <colin.king@canonical.com>
-> Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
+> great, I can come
 
-Patch applied to ath-next branch of ath.git, thanks.
+I'll attend as well, and so may some of my team.
 
-6dc89f070d28 ath11k: qmi: Fix spelling mistake "requeqst" -> "request"
-
--- 
-https://patchwork.kernel.org/project/linux-wireless/patch/20210316091924.15627-1-colin.king@canonical.com/
-
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
-
+-- Steve
