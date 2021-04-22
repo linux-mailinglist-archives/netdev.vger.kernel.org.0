@@ -2,92 +2,126 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CD236367821
-	for <lists+netdev@lfdr.de>; Thu, 22 Apr 2021 05:57:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7D233367829
+	for <lists+netdev@lfdr.de>; Thu, 22 Apr 2021 06:00:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234679AbhDVD5t (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 21 Apr 2021 23:57:49 -0400
-Received: from mail.kernel.org ([198.145.29.99]:41538 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229536AbhDVD5s (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 21 Apr 2021 23:57:48 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 68F9E613E0;
-        Thu, 22 Apr 2021 03:57:13 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1619063834;
-        bh=QlWwdprMt2Kc9yJ/6D6n6mMFBdEaVscgEP+0IDmaR/M=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=WJdgWqQWfv0ItM4Ef4GhFlh6L1uueZBCKq1vci709noRw1y8S/VEHAlxDJpR0a80g
-         LUX4NxExeLP8rKkzj7JoK+FG4M/S2/4wtaMHf2DUDbH+TeXmqHBmS0PGvdlhX5HSzt
-         bUq1C2hBxJhe4I09ngf78I6DgxLpYkuH7kKogZUc6hQqrKR/6Uc71+AM+tvK2F8UNv
-         pnRiKMdVdUzF2yslSDcWlu4NUXR2V/beF/ja7TYohDTUlfabEn4gNzTNjcKxH4Hkn9
-         Uf1gdFfM5rr7Cchbl8CDNZ993lItzgllORf5/R767XPISc21LDDuCuulFZxyWxQMa8
-         obnJrXEJEkIuA==
-Date:   Thu, 22 Apr 2021 06:57:10 +0300
-From:   Leon Romanovsky <leon@kernel.org>
-To:     Mike Rapoport <rppt@kernel.org>
-Cc:     Theodore Ts'o <tytso@mit.edu>,
-        Anna Schumaker <anna.schumaker@netapp.com>,
-        "J. Bruce Fields" <bfields@fieldses.org>,
-        Greg KH <gregkh@linuxfoundation.org>,
-        Aditya Pakki <pakki001@umn.edu>,
-        Chuck Lever <chuck.lever@oracle.com>,
-        Trond Myklebust <trond.myklebust@hammerspace.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Dave Wysochanski <dwysocha@redhat.com>,
-        Linux NFS Mailing List <linux-nfs@vger.kernel.org>,
-        netdev@vger.kernel.org,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH] SUNRPC: Add a check for gss_release_msg
-Message-ID: <YID0Fg3f0PzckJI9@unreal>
-References: <20210407001658.2208535-1-pakki001@umn.edu>
- <YH5/i7OvsjSmqADv@kroah.com>
- <20210420171008.GB4017@fieldses.org>
- <YH+zwQgBBGUJdiVK@unreal>
- <CAFX2JfnGCbanTaGurArBw-5F2MynPD=GpwkfU6wVoNKr9ffzRg@mail.gmail.com>
- <YIAzfsMx6bn5Twu8@unreal>
- <YIBJXjCbJ1ntH1RF@mit.edu>
- <YIBiQ3p9z7y6PeqT@kernel.org>
+        id S229550AbhDVEAo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 22 Apr 2021 00:00:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38642 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229536AbhDVEAi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 22 Apr 2021 00:00:38 -0400
+Received: from mail-yb1-xb31.google.com (mail-yb1-xb31.google.com [IPv6:2607:f8b0:4864:20::b31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 65960C06174A;
+        Wed, 21 Apr 2021 21:00:02 -0700 (PDT)
+Received: by mail-yb1-xb31.google.com with SMTP id v3so47416796ybi.1;
+        Wed, 21 Apr 2021 21:00:02 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=XrmiHn9veLJZtruOzFEYxfRmanDJ+LDdZNSOgA37p+4=;
+        b=hx3OvCwl6VNHXOWE6Efxu2zzB2VxzN8gkGSbSj8GiQ7oHA/cpKEY2uByb16l6L7b/a
+         SoXODyZemZ0LoXOXwEWWp2H2Ssr/VlnuLDCLKOL48pw8o5cLJgqtG49x7h2xDuC5Sw4g
+         tyZ6fkLTtXUHD2QFPI6WNwQbcvevdMETKneGK0anxQqZo4oTwmN9iGaQSxSaz4NudNu9
+         rmuDZs7nKfzNZO/T+XQ+C15FfCmGpjGxA+Uqz9/tqWh+f6dOetZcgHPlZlQDLwniOzJJ
+         NwkJtY+Gm4glHixs7uqWN4HmOg7oGRwi19RkgqioGmYVKTcbfXAM6RyBsQ/svAw2J/C1
+         5cWg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=XrmiHn9veLJZtruOzFEYxfRmanDJ+LDdZNSOgA37p+4=;
+        b=Npg0FyojjNUVdWmjFHJEZcyOA3r6n+73MZoDWLh6hWjBzWzzXMW1VLRyBfip3Grh/R
+         O58eos4Ou9LLozKA/5Yxq3ceu2k8vJxUGt/EUMV4+4a+CECqfZH/3rBDV9q9ZC0Ccg9F
+         99PS7xKIAhdf8RfOBSVSK+ICGJitlFbZ2GA6X/kXjNUDTZoqY3zh+tJcMVM4JcBrZV/W
+         gw1ZUlrhnR5KDtbZHhYCex6jGrH6PUk3eQ9NDp8POVH2v3TQ8oWy9q94ZKcRjC9sR/hS
+         B0Eu0IJsL+DWxfTZu+x5sT25rJfB7rmFDZolEsA3GyPxhVfB6sQqYS/T0IZHss+1D61y
+         VVtQ==
+X-Gm-Message-State: AOAM533D6n1Iuvud7d46+riidL7IhxVXXA0WaSmN73O6FZLPYMca1S95
+        gzx/5NCvCKQCeBXu3v7q4eXOy58QpByvI31NYsA=
+X-Google-Smtp-Source: ABdhPJwzGeskpZsGlTF8Pff4DLzeb+hWhNgq1LZWlacRa3BBHV8IIuj184EiaMmGJXAqp+FfhcEjSN4clgKhj/RGRn0=
+X-Received: by 2002:a25:ae8c:: with SMTP id b12mr1845190ybj.347.1619064001784;
+ Wed, 21 Apr 2021 21:00:01 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YIBiQ3p9z7y6PeqT@kernel.org>
+References: <20210416202404.3443623-1-andrii@kernel.org> <20210416202404.3443623-4-andrii@kernel.org>
+ <c9367c9d-527c-ba50-bb28-59abad9f5009@fb.com>
+In-Reply-To: <c9367c9d-527c-ba50-bb28-59abad9f5009@fb.com>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Wed, 21 Apr 2021 20:59:50 -0700
+Message-ID: <CAEf4BzbJMtqxkaJNAvv_M1OoxN6TKZgniLbJD1u5nxj1H32wKw@mail.gmail.com>
+Subject: Re: [PATCH v2 bpf-next 03/17] libbpf: suppress compiler warning when
+ using SEC() macro with externs
+To:     Yonghong Song <yhs@fb.com>
+Cc:     Andrii Nakryiko <andrii@kernel.org>, bpf <bpf@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@fb.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Kernel Team <kernel-team@fb.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Apr 21, 2021 at 08:34:59PM +0300, Mike Rapoport wrote:
-> On Wed, Apr 21, 2021 at 11:48:46AM -0400, Theodore Ts'o wrote:
-> > On Wed, Apr 21, 2021 at 05:15:26PM +0300, Leon Romanovsky wrote:
-> > > > This thread is the first I'm hearing about this. I wonder if there is
-> > > > a good way of alerting the entire kernel community (including those
-> > > > only subscribed to subsystem mailing lists) about what's going on? It
-> > > > seems like useful information to have to push back against these
-> > > > patches.
-> 
-> Heh, I've got this information from google news feed on my phone :)
->  
-> > > IMHO, kernel users ML is good enough for that.
-> > 
-> > The problem is that LKML is too high traffic for a lot of people to
-> > want to follow.
-> 
-> I think Leon meant kernel.org users ML (users@linux.kernel.org). Along with
-> ksummut-discuss it'll reach most maintainers, IMHO.
+On Wed, Apr 21, 2021 at 8:48 PM Yonghong Song <yhs@fb.com> wrote:
+>
+>
+>
+> On 4/16/21 1:23 PM, Andrii Nakryiko wrote:
+> > When used on externs SEC() macro will trigger compilation warning about
+> > inapplicable `__attribute__((used))`. That's expected for extern declarations,
+> > so suppress it with the corresponding _Pragma.
+> >
+> > Signed-off-by: Andrii Nakryiko <andrii@kernel.org>
+>
+> Ack with some comments below.
+> Acked-by: Yonghong Song <yhs@fb.com>
+>
+> > ---
+> >   tools/lib/bpf/bpf_helpers.h | 11 +++++++++--
+> >   1 file changed, 9 insertions(+), 2 deletions(-)
+> >
+> > diff --git a/tools/lib/bpf/bpf_helpers.h b/tools/lib/bpf/bpf_helpers.h
+> > index b904128626c2..75c7581b304c 100644
+> > --- a/tools/lib/bpf/bpf_helpers.h
+> > +++ b/tools/lib/bpf/bpf_helpers.h
+> > @@ -25,9 +25,16 @@
+> >   /*
+> >    * Helper macro to place programs, maps, license in
+> >    * different sections in elf_bpf file. Section names
+> > - * are interpreted by elf_bpf loader
+> > + * are interpreted by libbpf depending on the context (BPF programs, BPF maps,
+> > + * extern variables, etc).
+> > + * To allow use of SEC() with externs (e.g., for extern .maps declarations),
+> > + * make sure __attribute__((unused)) doesn't trigger compilation warning.
+> >    */
+> > -#define SEC(NAME) __attribute__((section(NAME), used))
+> > +#define SEC(name) \
+> > +     _Pragma("GCC diagnostic push")                                      \
+> > +     _Pragma("GCC diagnostic ignored \"-Wignored-attributes\"")          \
+> > +     __attribute__((section(name), used))                                \
+> > +     _Pragma("GCC diagnostic pop")                                       \
+>
+> The 'used' attribute is mostly useful for static variable/functions
+> since otherwise if not really used, the compiler could delete them
+> freely. The 'used' attribute does not really have an impact on
+> global variables regardless whether they are used or not in a particular
+> compilation unit. We could drop 'used' here and selftests should still
+> work. The only worry is that if people define something like
+>     static int _version SEC("version") = 1;
+>     static char _license[] SEC("license") = "GPL";
+> Removing 'used' may cause failure.
+>
+> Since we don't want to remove 'used', then adding _Pragma to silence
+> the warning is a right thing to do here.
 
-Exactly.
+Right, SEC() has become a universal macro used for functions,
+variables, and externs. I didn't want to introduce multiple variants,
+but also we can't break existing use cases. So pragma, luckily,
+allowed to support all cases.
 
-Thanks
-
->  
-> > There are some people who have used the kernel summit discuss list
-> > (previously ksummit-discuss@lists.linux-foundation.org, now
-> > ksummit@lists.linux.dev) as a place where most maintainers tend to be
-> > subscribed, although that's not really a guarantee, either.  (Speaking
-> > of which, how to handle groups who submit patches in bad faith a good
-> > Maintainer Summit topic for someone to propose...)
-> 
-> -- 
-> Sincerely yours,
-> Mike.
+>
+> >
+> >   /* Avoid 'linux/stddef.h' definition of '__always_inline'. */
+> >   #undef __always_inline
+> >
