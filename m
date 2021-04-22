@@ -2,96 +2,63 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 27E34368939
-	for <lists+netdev@lfdr.de>; Fri, 23 Apr 2021 01:07:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 27F14368942
+	for <lists+netdev@lfdr.de>; Fri, 23 Apr 2021 01:12:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239819AbhDVXHn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 22 Apr 2021 19:07:43 -0400
-Received: from mga07.intel.com ([134.134.136.100]:60916 "EHLO mga07.intel.com"
+        id S236915AbhDVXNI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 22 Apr 2021 19:13:08 -0400
+Received: from mx2.suse.de ([195.135.220.15]:37228 "EHLO mx2.suse.de"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S235977AbhDVXHm (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 22 Apr 2021 19:07:42 -0400
-IronPort-SDR: VLDgnOw0v/bAeHDYa8/PO11uQqMGPdTcLWkGplLIEk2ftbVZfyakNxCjiGNUCgmNSR/f4w8hDs
- h2E4fKN4puOQ==
-X-IronPort-AV: E=McAfee;i="6200,9189,9962"; a="259941511"
-X-IronPort-AV: E=Sophos;i="5.82,244,1613462400"; 
-   d="scan'208";a="259941511"
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Apr 2021 16:07:06 -0700
-IronPort-SDR: iw6rdYTWxrrSYSa6YB+4+iC0FdoUaaTo3F0ZPS8xiL2TagiWR3ZgrCaWavKz6TjiEKv2mqdwhI
- G/HHPSJDKDnA==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.82,244,1613462400"; 
-   d="scan'208";a="603374991"
-Received: from mismail5-ilbpg0.png.intel.com ([10.88.229.82])
-  by orsmga005.jf.intel.com with ESMTP; 22 Apr 2021 16:07:02 -0700
-From:   mohammad.athari.ismail@intel.com
-To:     Alexandre Torgue <alexandre.torgue@st.com>,
-        Jose Abreu <joabreu@synopsys.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>
-Cc:     Ong Boon Leong <boon.leong.ong@intel.com>,
-        Voon Weifeng <weifeng.voon@intel.com>,
-        Wong Vee Khee <vee.khee.wong@intel.com>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        mohammad.athari.ismail@intel.com
-Subject: [PATCH v2 net-next] net: pcs: Enable pre-emption packet for 10/100Mbps
-Date:   Fri, 23 Apr 2021 07:06:45 +0800
-Message-Id: <20210422230645.23736-1-mohammad.athari.ismail@intel.com>
-X-Mailer: git-send-email 2.17.1
+        id S230353AbhDVXNH (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 22 Apr 2021 19:13:07 -0400
+X-Virus-Scanned: by amavisd-new at test-mx.suse.de
+Received: from relay2.suse.de (unknown [195.135.221.27])
+        by mx2.suse.de (Postfix) with ESMTP id 0A8AEB17E;
+        Thu, 22 Apr 2021 23:12:31 +0000 (UTC)
+Received: by lion.mk-sys.cz (Postfix, from userid 1000)
+        id D82566074E; Fri, 23 Apr 2021 01:12:30 +0200 (CEST)
+Date:   Fri, 23 Apr 2021 01:12:30 +0200
+From:   Michal Kubecek <mkubecek@suse.cz>
+To:     Ido Schimmel <idosch@idosch.org>
+Cc:     Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
+Subject: Re: [PATCH ethtool-next 0/7] ethtool: support FEC and standard stats
+Message-ID: <20210422231230.elg3iqlcehra6lpz@lion.mk-sys.cz>
+References: <20210420003112.3175038-1-kuba@kernel.org>
+ <YIE4gZWsjrHNrZGA@shredder.lan>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YIE4gZWsjrHNrZGA@shredder.lan>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Mohammad Athari Bin Ismail <mohammad.athari.ismail@intel.com>
+On Thu, Apr 22, 2021 at 11:49:05AM +0300, Ido Schimmel wrote:
+> On Mon, Apr 19, 2021 at 05:31:05PM -0700, Jakub Kicinski wrote:
+> > This series adds support for FEC requests via netlink
+> > and new "standard" stats.
+> 
+> Jakub, you wrote "ethtool-next" in subject, but I only managed to apply
+> the patches to the master branch.
 
-Set VR_MII_DIG_CTRL1 bit-6(PRE_EMP) to enable pre-emption packet for
-10/100Mbps by default. This setting doesn`t impact pre-emption
-capability for other speeds.
+That's my fault. When I decided to skip version 5.12 because there were
+only few minor commits, I should have merged next into master. I'll do
+it tomorrow.
 
-Signed-off-by: Mohammad Athari Bin Ismail <mohammad.athari.ismail@intel.com>
----
+> Michal, I assume we are expected to send new features to next? If so,
+> can you please update the web page [1] ?
 
-v2 changelog:
--Removed useless (). Comment fron Leon Romanovsky.
----
- drivers/net/pcs/pcs-xpcs.c | 7 ++++++-
- 1 file changed, 6 insertions(+), 1 deletion(-)
+I don't insist on the strict division between fixes and features. The
+main purpose of next branch is to queue changes to be merged after the
+closest release because their kernel counterpart is in net-next and is
+not going to be present in the closest kernel.
 
-diff --git a/drivers/net/pcs/pcs-xpcs.c b/drivers/net/pcs/pcs-xpcs.c
-index 944ba105cac1..ea33842eb0f4 100644
---- a/drivers/net/pcs/pcs-xpcs.c
-+++ b/drivers/net/pcs/pcs-xpcs.c
-@@ -66,6 +66,7 @@
- 
- /* VR_MII_DIG_CTRL1 */
- #define DW_VR_MII_DIG_CTRL1_MAC_AUTO_SW		BIT(9)
-+#define DW_VR_MII_DIG_CTRL1_PRE_EMP		BIT(6)
- 
- /* VR_MII_AN_CTRL */
- #define DW_VR_MII_AN_CTRL_TX_CONFIG_SHIFT	3
-@@ -666,6 +667,10 @@ static int xpcs_config_aneg_c37_sgmii(struct mdio_xpcs_args *xpcs)
- 	 *	 PHY about the link state change after C28 AN is completed
- 	 *	 between PHY and Link Partner. There is also no need to
- 	 *	 trigger AN restart for MAC-side SGMII.
-+	 *
-+	 * For pre-emption, the setting is :-
-+	 * 1) VR_MII_DIG_CTRL1 Bit(6) [PRE_EMP] = 1b (Enable pre-emption packet
-+	 *    for 10/100Mbps)
- 	 */
- 	ret = xpcs_read(xpcs, MDIO_MMD_VEND2, DW_VR_MII_AN_CTRL);
- 	if (ret < 0)
-@@ -686,7 +691,7 @@ static int xpcs_config_aneg_c37_sgmii(struct mdio_xpcs_args *xpcs)
- 	if (ret < 0)
- 		return ret;
- 
--	ret |= DW_VR_MII_DIG_CTRL1_MAC_AUTO_SW;
-+	ret |= DW_VR_MII_DIG_CTRL1_MAC_AUTO_SW | DW_VR_MII_DIG_CTRL1_PRE_EMP;
- 
- 	return xpcs_write(xpcs, MDIO_MMD_VEND2, DW_VR_MII_DIG_CTRL1, ret);
- }
--- 
-2.17.1
+On the other hand, I also plan to use it for stuff which feels too
+intrusive to be merged into master shortly before a new release. Thanks
+for the reminder, I'll review the web page and update the information.
 
+Michal
+
+> Thanks
+> 
+> [1] https://mirrors.edge.kernel.org/pub/software/network/ethtool/devel.html
