@@ -2,174 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BCE39367D35
-	for <lists+netdev@lfdr.de>; Thu, 22 Apr 2021 11:09:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 73C36367D75
+	for <lists+netdev@lfdr.de>; Thu, 22 Apr 2021 11:12:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235097AbhDVJJm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 22 Apr 2021 05:09:42 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:25294 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S230270AbhDVJJl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 22 Apr 2021 05:09:41 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1619082546;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=4rCc8lLkNUHdhonmC2gi0L9aKXC3shqcqZPuL+BdCFg=;
-        b=QALoVgz8UbVL6y8tGEgXFDlipk0TV2n4C9Nr3T9vdSx6LW2ZR9KtV8AS9S88QN+/9SC7Ao
-        Z9kq1J7inn3raoX47X3Z2CxyN9Oxn7IGQ/nwgK9u+zJN5gS0fx1bh7XNYbCM5CkU+bUyea
-        +f4iOufKr9Vtanq2DRs8qgn6Xc6YauY=
-Received: from mail-ed1-f70.google.com (mail-ed1-f70.google.com
- [209.85.208.70]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-526-KLzexBnFMlGX7mxQAiE-Hw-1; Thu, 22 Apr 2021 05:09:03 -0400
-X-MC-Unique: KLzexBnFMlGX7mxQAiE-Hw-1
-Received: by mail-ed1-f70.google.com with SMTP id m18-20020a0564025112b0290378d2a266ebso16372546edd.15
-        for <netdev@vger.kernel.org>; Thu, 22 Apr 2021 02:09:02 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version:content-transfer-encoding;
-        bh=4rCc8lLkNUHdhonmC2gi0L9aKXC3shqcqZPuL+BdCFg=;
-        b=CruMy7Eg+EGtJU6ex3X8876vQVqQOUmZzOMs5PuBSPoJ0QbjLrnqVUPIWExXTol6UK
-         iOW6loz9FeH2+LWImmsqmd9CpGY1HVqTZJ7e3SwI9XRjA+PyXZ/vFkv28xu7CGQiGrU1
-         mrpN4bvefG2oOWozCL4aBTvUIVWsWq2oQEogyiQ7lO8r1BMqgL+tLynyjPNeUUESwmUV
-         6KmNsIgnrqHEyWKA0K22EczJQx06PPOmC14bNet86mV5kWnUysvjqDzqNrsfkPxjvN/w
-         lKj0cJ3mzQR8YrRvpo3zrGBNHs/HE46wD5JR1+2o2hlj3OW3RONzOkuOUnqZsJRYVlsG
-         hnXg==
-X-Gm-Message-State: AOAM533vPISg4KwePTH49N901IQs1YSPcwoSo6NiBLxBRo2UD7s1DIc7
-        xZl/olbWARvNU4+7WcRp1SDhZkqkdumElh2TNaHZqXfl84EbhcLTRLa7tj/WgifJWAzIy2E9vNC
-        ivbpiu82WHTN541zq
-X-Received: by 2002:a05:6402:10c9:: with SMTP id p9mr2579860edu.268.1619082541802;
-        Thu, 22 Apr 2021 02:09:01 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJxjBEzGdVX1CQq9A+Dj2UFi2PunHTkRL//AaNrncT26WrCeL1f0mRERmTIFkIr+bSUhpseTAQ==
-X-Received: by 2002:a05:6402:10c9:: with SMTP id p9mr2579834edu.268.1619082541601;
-        Thu, 22 Apr 2021 02:09:01 -0700 (PDT)
-Received: from alrua-x1.borgediget.toke.dk ([45.145.92.2])
-        by smtp.gmail.com with ESMTPSA id ck29sm1559672edb.47.2021.04.22.02.09.00
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 22 Apr 2021 02:09:00 -0700 (PDT)
-Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id F378C180675; Thu, 22 Apr 2021 11:08:59 +0200 (CEST)
-From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-To:     Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
-        Kumar Kartikeya Dwivedi <memxor@gmail.com>
-Cc:     bpf <bpf@vger.kernel.org>, Alexei Starovoitov <ast@kernel.org>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        Networking <netdev@vger.kernel.org>
-Subject: Re: [PATCH bpf-next v3 2/3] libbpf: add low level TC-BPF API
-In-Reply-To: <bd2ed7ed-a502-bee5-0a56-0f3064ee2be5@iogearbox.net>
-References: <20210420193740.124285-1-memxor@gmail.com>
- <20210420193740.124285-3-memxor@gmail.com>
- <CAEf4BzYj_pODiQ_Xkdz_czAj3iaBcRhudeb_kJ4M2SczA_jDjA@mail.gmail.com>
- <87tunzh11d.fsf@toke.dk>
- <bd2ed7ed-a502-bee5-0a56-0f3064ee2be5@iogearbox.net>
-X-Clacks-Overhead: GNU Terry Pratchett
-Date:   Thu, 22 Apr 2021 11:08:59 +0200
-Message-ID: <875z0ehej8.fsf@toke.dk>
+        id S235553AbhDVJNA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 22 Apr 2021 05:13:00 -0400
+Received: from userp2120.oracle.com ([156.151.31.85]:58368 "EHLO
+        userp2120.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230270AbhDVJM5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 22 Apr 2021 05:12:57 -0400
+Received: from pps.filterd (userp2120.oracle.com [127.0.0.1])
+        by userp2120.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 13M98vRd179706;
+        Thu, 22 Apr 2021 09:10:39 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
+ : subject : message-id : mime-version : content-type; s=corp-2020-01-29;
+ bh=yMvGDxuBCHmaYIODgZ2Gjc4XWpSEGvxViHuFEN9vEIA=;
+ b=YTzYlSF8sRZMuNZtrLGwwfV85kzixFnMkz19KP+d8nAh7r6R42jjGE7NgBhBD9iMe9G/
+ pzFXVsJkyFEBI7w9z3zJkPBpVd6jwdMV4qPNaiFoMR4kFftbQI0MQb4nFZrprsvqF/4y
+ R69Fz/mS3vPX2FdRXeQUKmkfXjV97sYyciNjwhof3vGezRWT2wTz33cpxeEl1r3f7caf
+ 72wzvih4ACvklAfAJkwz4Dz45f5oWYAJR/1UlK8cULhJSfA0GXzFWiC4wbCeFo4sR0u8
+ PJQ1UEHHPR/x5O+U1cd894X/N2LtTpG9bmyElnIXOeHe7f2AgeEZap3Amzxyj+SBpcnO Zw== 
+Received: from aserp3020.oracle.com (aserp3020.oracle.com [141.146.126.70])
+        by userp2120.oracle.com with ESMTP id 38022y454m-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Thu, 22 Apr 2021 09:10:39 +0000
+Received: from pps.filterd (aserp3020.oracle.com [127.0.0.1])
+        by aserp3020.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 13M9AEqm076479;
+        Thu, 22 Apr 2021 09:10:38 GMT
+Received: from pps.reinject (localhost [127.0.0.1])
+        by aserp3020.oracle.com with ESMTP id 3809k36nky-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Thu, 22 Apr 2021 09:10:38 +0000
+Received: from aserp3020.oracle.com (aserp3020.oracle.com [127.0.0.1])
+        by pps.reinject (8.16.0.36/8.16.0.36) with SMTP id 13M9Ab2Z078564;
+        Thu, 22 Apr 2021 09:10:37 GMT
+Received: from userv0122.oracle.com (userv0122.oracle.com [156.151.31.75])
+        by aserp3020.oracle.com with ESMTP id 3809k36nkj-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Thu, 22 Apr 2021 09:10:37 +0000
+Received: from abhmp0016.oracle.com (abhmp0016.oracle.com [141.146.116.22])
+        by userv0122.oracle.com (8.14.4/8.14.4) with ESMTP id 13M9AZVR024776;
+        Thu, 22 Apr 2021 09:10:36 GMT
+Received: from mwanda (/102.36.221.92)
+        by default (Oracle Beehive Gateway v4.0)
+        with ESMTP ; Thu, 22 Apr 2021 02:10:35 -0700
+Date:   Thu, 22 Apr 2021 12:10:28 +0300
+From:   Dan Carpenter <dan.carpenter@oracle.com>
+To:     Michael Chan <michael.chan@broadcom.com>,
+        Edwin Peer <edwin.peer@broadcom.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        kernel-janitors@vger.kernel.org
+Subject: [PATCH net] bnxt_en: fix ternary sign extension bug in
+ bnxt_show_temp()
+Message-ID: <YIE9hEhXpdfffKg1@mwanda>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+X-Mailer: git-send-email haha only kidding
+X-Proofpoint-ORIG-GUID: HY-fF0bX4yRn8f2SUIYfb9stiHq-O93L
+X-Proofpoint-GUID: HY-fF0bX4yRn8f2SUIYfb9stiHq-O93L
+X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=9961 signatures=668683
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 priorityscore=1501 lowpriorityscore=0
+ spamscore=0 bulkscore=0 phishscore=0 clxscore=1011 impostorscore=0
+ mlxlogscore=999 adultscore=0 malwarescore=0 mlxscore=0 suspectscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2104060000
+ definitions=main-2104220077
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Daniel Borkmann <daniel@iogearbox.net> writes:
+The problem is that bnxt_show_temp() returns long but "rc" is an int
+and "len" is a u32.  With ternary operations the type promotion is quite
+tricky.  The negative "rc" is first promoted to u32 and then to long so
+it ends up being a high positive value instead of a a negative as we
+intended.
 
-> On 4/21/21 9:48 PM, Toke H=C3=B8iland-J=C3=B8rgensen wrote:
->> Andrii Nakryiko <andrii.nakryiko@gmail.com> writes:
->>> On Tue, Apr 20, 2021 at 12:37 PM Kumar Kartikeya Dwivedi
->>> <memxor@gmail.com> wrote:
-> [...]
->>>> ---
->>>>   tools/lib/bpf/libbpf.h   |  44 ++++++
->>>>   tools/lib/bpf/libbpf.map |   3 +
->>>>   tools/lib/bpf/netlink.c  | 319 +++++++++++++++++++++++++++++++++++++=
-+-
->>>>   3 files changed, 360 insertions(+), 6 deletions(-)
->>>>
->>>> diff --git a/tools/lib/bpf/libbpf.h b/tools/lib/bpf/libbpf.h
->>>> index bec4e6a6e31d..b4ed6a41ea70 100644
->>>> --- a/tools/lib/bpf/libbpf.h
->>>> +++ b/tools/lib/bpf/libbpf.h
->>>> @@ -16,6 +16,8 @@
->>>>   #include <stdbool.h>
->>>>   #include <sys/types.h>  // for size_t
->>>>   #include <linux/bpf.h>
->>>> +#include <linux/pkt_sched.h>
->>>> +#include <linux/tc_act/tc_bpf.h>
->>>
->>> apart from those unused macros below, are these needed in public API he=
-ader?
->>>
->>>>   #include "libbpf_common.h"
->>>>
->>>> @@ -775,6 +777,48 @@ LIBBPF_API int bpf_linker__add_file(struct bpf_li=
-nker *linker, const char *filen
->>>>   LIBBPF_API int bpf_linker__finalize(struct bpf_linker *linker);
->>>>   LIBBPF_API void bpf_linker__free(struct bpf_linker *linker);
->>>>
->>>> +/* Convenience macros for the clsact attach hooks */
->>>> +#define BPF_TC_CLSACT_INGRESS TC_H_MAKE(TC_H_CLSACT, TC_H_MIN_INGRESS)
->>>> +#define BPF_TC_CLSACT_EGRESS TC_H_MAKE(TC_H_CLSACT, TC_H_MIN_EGRESS)
->>>
->>> these seem to be used only internally, why exposing them in public
->>> API?
->>=20
->> No they're "aliases" for when you want to attach the filter directly to
->> the interface (and thus install the clsact qdisc as the root). You can
->> also use the filter with an existing qdisc (most commonly HTB), in which
->> case you need to specify the qdisc handle as the root. We have a few
->> examples of this use case:
->>=20
->> https://github.com/xdp-project/bpf-examples/tree/master/traffic-pacing-e=
-dt
->> and
->> https://github.com/xdp-project/xdp-cpumap-tc
->
-> I'm a bit puzzled, could you elaborate on your use case on why you wouldn=
-'t
-> use the tc egress hook for those especially given it's guaranteed to run
-> outside of root qdisc lock?
+Fix this by removing the ternary.
 
-Jesper can correct me if I'm wrong, but I think the first one of the
-links above is basically his implementation of just that EDT-based
-shaper. And it works reasonably well, except you don't get the nice
-per-flow scheduling and sparse flow prioritisation like in FQ-CoDel
-unless you implement that yourself in BPF when you set the timestamps
-(and that is by no means trivial to implement).
+Fixes: d69753fa1ecb ("bnxt_en: return proper error codes in bnxt_show_temp")
+Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
+---
+ drivers/net/ethernet/broadcom/bnxt/bnxt.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-So if you want to use any of the features of the existing qdiscs (I have
-also been suggesting to people that they use tc_bpf if they want to
-customise sch_cake's notion of flows or shaping tiers), you need to be
-able to attach the filter to an existing qdisc. Sure, this means you're
-still stuck behind the qdisc lock, but for some applications that is
-fine (not everything is a data centre, some devices don't have that many
-CPUs anyway; and as the second example above shows, you can get around
-the qdisc lock by some clever use of partitioning of flows using
-cpumap).
-
-So what this boils down to is, we should keep the 'parent' parameter not
-just as an egress/ingress enum, but also as a field the user can fill
-out. I'm fine with moving the latter into the opts struct, though, so
-maybe the function parameter can be an enum like:
-
-enum bpf_tc_attach_point {
-  BPF_TC_CLSACT_INGRESS,
-  BPF_TC_CLSACT_EGRESS,
-  BPF_TC_QDISC_PARENT
-};
-
-where if you set the last one you have to fill in the parent in opts?
-
--Toke
+diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt.c b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
+index e15d454e33f0..f582d51e25ed 100644
+--- a/drivers/net/ethernet/broadcom/bnxt/bnxt.c
++++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
+@@ -9736,7 +9736,9 @@ static ssize_t bnxt_show_temp(struct device *dev,
+ 	if (!rc)
+ 		len = sprintf(buf, "%u\n", resp->temp * 1000); /* display millidegree */
+ 	mutex_unlock(&bp->hwrm_cmd_lock);
+-	return rc ?: len;
++	if (rc)
++		return rc;
++	return len;
+ }
+ static SENSOR_DEVICE_ATTR(temp1_input, 0444, bnxt_show_temp, NULL, 0);
+ 
+-- 
+2.30.2
 
