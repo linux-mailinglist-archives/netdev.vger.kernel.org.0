@@ -2,30 +2,30 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2C2DA3680D7
-	for <lists+netdev@lfdr.de>; Thu, 22 Apr 2021 14:49:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 92E6B3680E2
+	for <lists+netdev@lfdr.de>; Thu, 22 Apr 2021 14:53:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236242AbhDVMtd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 22 Apr 2021 08:49:33 -0400
-Received: from mail.kernel.org ([198.145.29.99]:44118 "EHLO mail.kernel.org"
+        id S236250AbhDVMyQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 22 Apr 2021 08:54:16 -0400
+Received: from mail.kernel.org ([198.145.29.99]:45258 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S236008AbhDVMtb (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 22 Apr 2021 08:49:31 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id C42B761417;
-        Thu, 22 Apr 2021 12:48:54 +0000 (UTC)
+        id S230510AbhDVMyO (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 22 Apr 2021 08:54:14 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 28C6761421;
+        Thu, 22 Apr 2021 12:53:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1619095736;
-        bh=sio4yeEIpcAeAuHiVfe5CZRdx47ywV9hEITNO0odMhE=;
+        s=k20201202; t=1619096020;
+        bh=QY4q0Wt0COJBeXEbp9vPIxWFGHaGiOrakwpjUWPB1aw=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=kE/zD7pFcFxF7sC9BIItIyqC7453Q2szTEBLlsKU70yuC9IaDYMdcGSJSZZc4+jaO
-         a352SBjIYIFv9MIhAQF9NfLs+ByM5vQPLQfTtoegTH/G3Xt7HbL89GbyRT97Jr2kyN
-         UuzCpspdrmOq0SDo5pKDdJjGBbdS7oTut34USllAKcJ1+EOM2bTWT1SwyWlkGU6IFl
-         xWdvsq965CA50pKiJOW/gFt3+K30scIpxFFSyOlkJAjnv20i6L3ijG49qrfZrXGwU1
-         wHc3saIp5vHS9RQ0L/RjR2k+UdkdrSGHGzdBq8EgoZUxsWHYVBHN9R1spslWObPkAP
-         dZnbFc6DTGnQg==
-Date:   Thu, 22 Apr 2021 13:48:50 +0100
+        b=ibKfsQmd0KaSiH0RVUfeEnW09IXzLMfWDpJLewySDNOiLvqG0gPVlZa5aAYmhkGU5
+         HEpOtY8D213CFK5vGfeKWGzJGkLSEkc26M0fQ73oJfrPcE82hn2fM3rVvySu6/vwtb
+         DzEbaA7sp4Q5qliKJpU7SqlsIRcWaOGs6vPj5XvCgNnDgU8TjiGrbi2SNOVT+/tzB/
+         D+VJgevS3sTAeGOETYeYn92QCNd0AlhV5LeaWymZhhmXhhlaHcX+lg0c20Rj4v7pST
+         46x7WpQSA2OujBNCcG95ZNbVGsmjnO+r4Vc8X+uSGQqqgou0gDBb/eiIvCNCvaOE+0
+         Si5khKEWxAysA==
+Date:   Thu, 22 Apr 2021 13:53:34 +0100
 From:   Will Deacon <will@kernel.org>
-To:     Liam Howlett <liam.howlett@oracle.com>, ebiederm@xmission.com
+To:     Liam Howlett <liam.howlett@oracle.com>
 Cc:     Catalin Marinas <catalin.marinas@arm.com>,
         Julien Grall <julien.grall@arm.com>,
         Alexei Starovoitov <ast@kernel.org>,
@@ -36,91 +36,55 @@ Cc:     Catalin Marinas <catalin.marinas@arm.com>,
         "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
         "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
         "bpf@vger.kernel.org" <bpf@vger.kernel.org>
-Subject: Re: [PATCH 2/3] arm64: signal: sigreturn() and rt_sigreturn()
- sometime returns the wrong signals
-Message-ID: <20210422124849.GA1521@willie-the-truck>
+Subject: Re: [PATCH 3/3] arch/arm64/kernel/traps: Use find_vma_intersection()
+ in traps for setting si_code
+Message-ID: <20210422125334.GB1521@willie-the-truck>
 References: <20210420165001.3790670-1-Liam.Howlett@Oracle.com>
- <20210420165001.3790670-2-Liam.Howlett@Oracle.com>
+ <20210420165001.3790670-3-Liam.Howlett@Oracle.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20210420165001.3790670-2-Liam.Howlett@Oracle.com>
+In-Reply-To: <20210420165001.3790670-3-Liam.Howlett@Oracle.com>
 User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-[+Eric as he actually understands how this is supposed to work]
-
 On Tue, Apr 20, 2021 at 04:50:13PM +0000, Liam Howlett wrote:
-> arm64_notify_segfault() was used to force a SIGSEGV in all error cases
-> in sigreturn() and rt_sigreturn() to avoid writing a new sig handler.
-> There is now a better sig handler to use which does not search the VMA
-> address space and return a slightly incorrect error code.  Restore the
-> older and correct si_code of SI_KERNEL by using arm64_notify_die().  In
-> the case of !access_ok(), simply return SIGSEGV with si_code
-> SEGV_ACCERR.
+> find_vma() will continue to search upwards until the end of the virtual
+> memory space.  This means the si_code would almost never be set to
+> SEGV_MAPERR even when the address falls outside of any VMA.  The result
+> is that the si_code is not reliable as it may or may not be set to the
+> correct result, depending on where the address falls in the address
+> space.
 > 
-> This change requires exporting arm64_notfiy_die() to the arm64 traps.h
+> Using find_vma_intersection() allows for what is intended by only
+> returning a VMA if it falls within the range provided, in this case a
+> window of 1.
 > 
-> Fixes: f71016a8a8c5 (arm64: signal: Call arm64_notify_segfault when
-> failing to deliver signal)
+> Fixes: bd35a4adc413 (arm64: Port SWP/SWPB emulation support from arm)
 > Signed-off-by: Liam R. Howlett <Liam.Howlett@Oracle.com>
 > ---
->  arch/arm64/include/asm/traps.h |  2 ++
->  arch/arm64/kernel/signal.c     |  8 ++++++--
->  arch/arm64/kernel/signal32.c   | 18 ++++++++++++++----
->  3 files changed, 22 insertions(+), 6 deletions(-)
+>  arch/arm64/kernel/traps.c | 3 ++-
+>  1 file changed, 2 insertions(+), 1 deletion(-)
 > 
-> diff --git a/arch/arm64/include/asm/traps.h b/arch/arm64/include/asm/traps.h
-> index 54f32a0675df..9b76144fcba6 100644
-> --- a/arch/arm64/include/asm/traps.h
-> +++ b/arch/arm64/include/asm/traps.h
-> @@ -29,6 +29,8 @@ void arm64_notify_segfault(unsigned long addr);
->  void arm64_force_sig_fault(int signo, int code, unsigned long far, const char *str);
->  void arm64_force_sig_mceerr(int code, unsigned long far, short lsb, const char *str);
->  void arm64_force_sig_ptrace_errno_trap(int errno, unsigned long far, const char *str);
-> +void arm64_notify_die(const char *str, struct pt_regs *regs, int signo,
-> +		      int sicode, unsigned long far, int err);
+> diff --git a/arch/arm64/kernel/traps.c b/arch/arm64/kernel/traps.c
+> index a05d34f0e82a..a44007904a64 100644
+> --- a/arch/arm64/kernel/traps.c
+> +++ b/arch/arm64/kernel/traps.c
+> @@ -383,9 +383,10 @@ void force_signal_inject(int signal, int code, unsigned long address, unsigned i
+>  void arm64_notify_segfault(unsigned long addr)
+>  {
+>  	int code;
+> +	unsigned long ut_addr = untagged_addr(addr);
 >  
->  /*
->   * Move regs->pc to next instruction and do necessary setup before it
-> diff --git a/arch/arm64/kernel/signal.c b/arch/arm64/kernel/signal.c
-> index 6237486ff6bb..9fde6dc760c3 100644
-> --- a/arch/arm64/kernel/signal.c
-> +++ b/arch/arm64/kernel/signal.c
-> @@ -544,7 +544,7 @@ SYSCALL_DEFINE0(rt_sigreturn)
->  	frame = (struct rt_sigframe __user *)regs->sp;
->  
->  	if (!access_ok(frame, sizeof (*frame)))
-> -		goto badframe;
-> +		goto e_access;
->  
->  	if (restore_sigframe(regs, frame))
->  		goto badframe;
-> @@ -555,7 +555,11 @@ SYSCALL_DEFINE0(rt_sigreturn)
->  	return regs->regs[0];
->  
->  badframe:
-> -	arm64_notify_segfault(regs->sp);
-> +	arm64_notify_die("Bad frame", regs, SIGSEGV, SI_KERNEL, regs->sp, 0);
-> +	return 0;
-> +
-> +e_access:
-> +	force_signal_inject(SIGSEGV, SEGV_ACCERR, regs->sp, 0);
->  	return 0;
+>  	mmap_read_lock(current->mm);
+> -	if (find_vma(current->mm, untagged_addr(addr)) == NULL)
+> +	if (find_vma_intersection(current->mm, ut_addr, ut_addr + 1) == NULL)
+>  		code = SEGV_MAPERR;
+>  	else
+>  		code = SEGV_ACCERR;
 
-This seems really error-prone to me, but maybe I'm just missing some
-context. What's the rule for reporting an si_code of SI_KERNEL vs
-SEGV_ACCERR, and is the former actually valid for SIGSEGV?
-
-With this change, pointing the (signal) stack to a kernel address will
-result in SEGV_ACCERR but pointing it to something like a PROT_NONE user
-address will give SI_KERNEL (well, assuming that we manage to deliver
-the SEGV somehow). I'm having a hard time seeing why that's a useful
-distinction to make..
-
-If it's important to get this a particular way around, please can you
-add some selftests?
+I'm not seeing how this addresses VM_GROWSDOWN as Catalin mentioned before.
 
 Will
