@@ -2,220 +2,118 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8AE3D36868E
-	for <lists+netdev@lfdr.de>; Thu, 22 Apr 2021 20:28:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 86DB036868F
+	for <lists+netdev@lfdr.de>; Thu, 22 Apr 2021 20:29:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238690AbhDVS3Z (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 22 Apr 2021 14:29:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33206 "EHLO
+        id S238740AbhDVS36 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 22 Apr 2021 14:29:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33332 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238463AbhDVS3Y (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 22 Apr 2021 14:29:24 -0400
-Received: from mail-yb1-xb34.google.com (mail-yb1-xb34.google.com [IPv6:2607:f8b0:4864:20::b34])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F010C06174A;
-        Thu, 22 Apr 2021 11:28:48 -0700 (PDT)
-Received: by mail-yb1-xb34.google.com with SMTP id p202so8979724ybg.8;
-        Thu, 22 Apr 2021 11:28:48 -0700 (PDT)
+        with ESMTP id S238463AbhDVS35 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 22 Apr 2021 14:29:57 -0400
+Received: from mail-il1-x12e.google.com (mail-il1-x12e.google.com [IPv6:2607:f8b0:4864:20::12e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 55997C061756
+        for <netdev@vger.kernel.org>; Thu, 22 Apr 2021 11:29:22 -0700 (PDT)
+Received: by mail-il1-x12e.google.com with SMTP id l9so2915280ilh.10
+        for <netdev@vger.kernel.org>; Thu, 22 Apr 2021 11:29:22 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=kccFp5PkD2OzEdY3szoFVg5JbDJwnPZzgBEkYQnfrB0=;
-        b=qXj5xLHlA+PIZD3iIGirCpXXZIvXbVtVMWheYsd+G8D9o89UERWqfqtyEsRRISxqdc
-         2HZ9jZUwwF0RsCNtGQxOAJxV9mjI86yftTWNF9KfefdNbc4hsbucDKjAZxOct4boNHCW
-         KBxdYbHYOd1iUy9iE7Gf3+uSjNLpZzEQ4YCxMtjAuYSdbK2Dg9xsTjZf7iqI7v+N1Hoi
-         HG4LNU6TtpS4bYVXG7CLty1cF3AuWdMa/ljUXrrsUTvYWLQw8syH9o5Ii3ZPHK7z5FdZ
-         yUI0XHlF17QPsFJG977zyu4m3V5mzdbyb5maq+InHwWY0MDQg0/+JcYxnB6Kcr4LU0pe
-         07kw==
+        d=linaro.org; s=google;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=IbyceF9eui++TAtaSZCeZk5izUprZMiF7QKSv4IUobA=;
+        b=wFbJIb87LPilAH04qOvCl1m//akK+exnwlHVZTVvemwMBA6BxEytxRdZvZuT1Vut8Y
+         /hlyWUZEQwaZ8dv6gZ6Nm3zJUeuqxhs6csXnOwf1mp7ZrLo3ZVvmPWEQ/aVX1NIbafj7
+         lrTqpo83oxozY6x1fEVyGMdK32GgDkBCEx1yFzxxrmC8TIXAf5PqlHfhs9TP9vSXWZPB
+         CvvW+rBpDSZN/T4YYy8zg2+RzffPIu/2hz0FvVHV8Onqti5uLSDPKoyDiZX/mJUv9S+L
+         LiZNoFpulV9KdU+8Bv0hQ0r+4FiYgwtHhuez87M+pLnZHO99w5BwQiU/Tdsm6lx8ih71
+         e18w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=kccFp5PkD2OzEdY3szoFVg5JbDJwnPZzgBEkYQnfrB0=;
-        b=YSYDIYdj0VEIDjVhFwkyUpq2gD9EAepKUY4ul6Mle9zRVW0YnTMYcy+sgBR+wMYy7O
-         Z8+ce9CNNmfo+oZ4azWwDKA6o4ojSnnKscJEWx3gyB/7Y4l91dVOY0oW+RZHR1tJGs2l
-         NHuTdzsY351hR0TxMdn5oHIU0B0Kvb4Z/g8gGEtkIp+syL6tbU72gylbdjffGbfo5Xba
-         +9JuKQ8IQrGb6q3kcIvLvWT6z4NSk7n6Gt5234znjfqzZeRrv4muFO4epIyv4HcpSJwM
-         JKntKN8Mzuqf/OS8U23Uz7IK6Y+pixJGfhcOXE3Bv9SrCEOTE697torIhfatBrvAsb1w
-         aPIQ==
-X-Gm-Message-State: AOAM5300xL53qzqz5splEBQIM2VQaa2jWs/OboqH1LECw85XxPielOn5
-        wNtIIUg8Mf918rhKBUr3tLGtFBE8fyVw2ZFr9Go=
-X-Google-Smtp-Source: ABdhPJz12k0vgb/zprEdY0F4pPYSCC55kx1TKYoUV9kTG7E5cLCUbaE9B9FsmmM3VIPwttxF7VgnzuPXumDdogUKDx0=
-X-Received: by 2002:a25:d70f:: with SMTP id o15mr6398881ybg.403.1619116127605;
- Thu, 22 Apr 2021 11:28:47 -0700 (PDT)
-MIME-Version: 1.0
-References: <20210420193740.124285-1-memxor@gmail.com> <20210420193740.124285-3-memxor@gmail.com>
- <9b0aab2c-9b92-0bcb-2064-f66dd39e7552@iogearbox.net> <CAEf4Bzai3maV8E9eWi1fc8fgaeC7qFg7_-N_WdLH4ukv302bhg@mail.gmail.com>
- <b7ace8c2-0147-fde7-d319-479be1e2a05e@iogearbox.net>
-In-Reply-To: <b7ace8c2-0147-fde7-d319-479be1e2a05e@iogearbox.net>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Thu, 22 Apr 2021 11:28:36 -0700
-Message-ID: <CAEf4BzZKjhsrF3ii4U-pMk3pJt7G3U7Hzkf_7zMOFhGMv7WKWg@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v3 2/3] libbpf: add low level TC-BPF API
-To:     Daniel Borkmann <daniel@iogearbox.net>
-Cc:     Kumar Kartikeya Dwivedi <memxor@gmail.com>,
-        bpf <bpf@vger.kernel.org>,
-        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=IbyceF9eui++TAtaSZCeZk5izUprZMiF7QKSv4IUobA=;
+        b=Mo+0Wbno7P5RujRImXJiX61IgSqD+UT2MmdqpmOcA8qbzasqYe42KMCrIFOr5WS5qq
+         +Lt50nKaPrerI04JSIJXHf0YvnJe0VTStxUaj8spZxbfqzGYAoeE2NgBvYRcsgRw8gMb
+         qUhdjnTQZix6qk12ZzOuWQCfyuFYADz/SXqVtgvlrbck+II8KDNFG7dahDq2jnXHHe0L
+         Y5vUPQeoIzALy0sBcj6KsgDR5GEQMjecVvfV7sgrdC+dUfBS5ZpgiPPspdEMX5U+GXeV
+         X3we/N9dcqzQI9xw2tVc8o/Ip1YEDx2v9KBU3T4ugfqmW47Dr9ZWmEGwhhkvQzxywowW
+         qiPg==
+X-Gm-Message-State: AOAM531fFQSFqyFvervtcWIPXLs1llUubihYSv1CsOMLJF1qRheaAgbY
+        3RxDWnu1ydId3QEBt4ZReQcwHw==
+X-Google-Smtp-Source: ABdhPJyY9eJZp9VAetK5Q0+RdfAXkpq38nHagsnhZeEz9s729SPJ5vt8aH5CMSfLEBwViFdbG+qADA==
+X-Received: by 2002:a05:6e02:168f:: with SMTP id f15mr4222568ila.264.1619116161690;
+        Thu, 22 Apr 2021 11:29:21 -0700 (PDT)
+Received: from [172.22.22.4] (c-73-185-129-58.hsd1.mn.comcast.net. [73.185.129.58])
+        by smtp.googlemail.com with ESMTPSA id u9sm1422138ilg.69.2021.04.22.11.29.20
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 22 Apr 2021 11:29:21 -0700 (PDT)
+Subject: Re: [PATCH] net: qualcomm: rmnet: Allow partial updates of IFLA_FLAGS
+To:     Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Subash Abhinov Kasiviswanathan <subashab@codeaurora.org>,
+        Sean Tranchetti <stranche@codeaurora.org>,
         "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        Networking <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Daniele Palmas <dnlplm@gmail.com>,
+        Aleksander Morgado <aleksander@aleksander.es>,
+        Loic Poulain <loic.poulain@linaro.org>
+References: <20210422182045.1040966-1-bjorn.andersson@linaro.org>
+From:   Alex Elder <elder@linaro.org>
+Message-ID: <76db0c51-15be-2d27-00a7-c9f8dc234816@linaro.org>
+Date:   Thu, 22 Apr 2021 13:29:20 -0500
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.7.1
+MIME-Version: 1.0
+In-Reply-To: <20210422182045.1040966-1-bjorn.andersson@linaro.org>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Apr 22, 2021 at 8:35 AM Daniel Borkmann <daniel@iogearbox.net> wrote:
->
-> On 4/22/21 5:43 AM, Andrii Nakryiko wrote:
-> > On Wed, Apr 21, 2021 at 3:59 PM Daniel Borkmann <daniel@iogearbox.net> wrote:
-> >> On 4/20/21 9:37 PM, Kumar Kartikeya Dwivedi wrote:
-> >> [...]
-> >>> diff --git a/tools/lib/bpf/libbpf.h b/tools/lib/bpf/libbpf.h
-> >>> index bec4e6a6e31d..b4ed6a41ea70 100644
-> >>> --- a/tools/lib/bpf/libbpf.h
-> >>> +++ b/tools/lib/bpf/libbpf.h
-> >>> @@ -16,6 +16,8 @@
-> >>>    #include <stdbool.h>
-> >>>    #include <sys/types.h>  // for size_t
-> >>>    #include <linux/bpf.h>
-> >>> +#include <linux/pkt_sched.h>
-> >>> +#include <linux/tc_act/tc_bpf.h>
-> >>>
-> >>>    #include "libbpf_common.h"
-> >>>
-> >>> @@ -775,6 +777,48 @@ LIBBPF_API int bpf_linker__add_file(struct bpf_linker *linker, const char *filen
-> >>>    LIBBPF_API int bpf_linker__finalize(struct bpf_linker *linker);
-> >>>    LIBBPF_API void bpf_linker__free(struct bpf_linker *linker);
-> >>>
-> >>> +/* Convenience macros for the clsact attach hooks */
-> >>> +#define BPF_TC_CLSACT_INGRESS TC_H_MAKE(TC_H_CLSACT, TC_H_MIN_INGRESS)
-> >>> +#define BPF_TC_CLSACT_EGRESS TC_H_MAKE(TC_H_CLSACT, TC_H_MIN_EGRESS)
-> >>
-> >> I would abstract those away into an enum, plus avoid having to pull in
-> >> linux/pkt_sched.h and linux/tc_act/tc_bpf.h from main libbpf.h header.
-> >>
-> >> Just add a enum { BPF_TC_DIR_INGRESS, BPF_TC_DIR_EGRESS, } and then the
-> >> concrete tc bits (TC_H_MAKE()) can be translated internally.
-> >>
-> >>> +struct bpf_tc_opts {
-> >>> +     size_t sz;
-> >>
-> >> Is this set anywhere?
-> >>
-> >>> +     __u32 handle;
-> >>> +     __u32 class_id;
-> >>
-> >> I'd remove class_id from here as well given in direct-action a BPF prog can
-> >> set it if needed.
-> >>
-> >>> +     __u16 priority;
-> >>> +     bool replace;
-> >>> +     size_t :0;
-> >>
-> >> What's the rationale for this padding?
-> >>
-> >>> +};
-> >>> +
-> >>> +#define bpf_tc_opts__last_field replace
-> >>> +
-> >>> +/* Acts as a handle for an attached filter */
-> >>> +struct bpf_tc_attach_id {
-> >>
-> >> nit: maybe bpf_tc_ctx
-> >
-> > ok, so wait. It seems like apart from INGRESS|EGRESS enum and ifindex,
-> > everything else is optional and/or has some sane defaults, right? So
-> > this bpf_tc_attach_id or bpf_tc_ctx seems a bit artificial construct
-> > and it will cause problems for extending this.
-> >
-> > So if my understanding is correct, I'd get rid of it completely. As I
-> > said previously, opts allow returning parameters back, so if user
-> > didn't specify handle and priority and kernel picks values on user's
-> > behalf, we can return them in the same opts fields.
-> >
-> > For detach, again, ifindex and INGRESS|EGRESS is sufficient, but if
-> > user want to provide more detailed parameters, we should do that
-> > through extensible opts. That way we can keep growing this easily,
-> > plus simple cases will remain simple.
-> >
-> > Similarly bpf_tc_info below, there is no need to have struct
-> > bpf_tc_attach_id id; field, just have handle and priority right there.
-> > And bpf_tc_info should use OPTS framework for extensibility (though
-> > opts name doesn't fit it very well, but it is still nice for
-> > extensibility and for doing optional input/output params).
-> >
-> > Does this make sense? Am I missing something crucial here?
->
-> I would probably keep the handle + priority in there; maybe if both are 0,
-> we could fix it to some default value internally, but without those it might
-> be a bit hard if people want to build a 'pipeline' of cls_bpf progs if they
-> need/want to.
+On 4/22/21 1:20 PM, Bjorn Andersson wrote:
+> The idiomatic way to handle the changelink flags/mask pair seems to be
+> allow partial updates of the driver's link flags. In contrast the rmnet
+> driver masks the incoming flags and then use that as the new flags.
+> 
+> Change the rmnet driver to follow the common scheme, before the
+> introduction of IFLA_RMNET_FLAGS handling in iproute2 et al.
 
-Oh, I'm not proposing to drop support for specifying handle and prio.
-I'm just saying having a fixed UAPI struct bpf_tc_attach_id as an "ID"
-is problematic from API stability point of view. So instead of
-pretending we know what "ID" will always be like, pass any extra
-non-default fields in OPTS struct. And if those are not specified by
-user (either opts is NULL or handle/prio is 0), use sane defaults, as
-you are proposing.
+I like this a lot.  It should have been implemented this way
+to begin with; there's not much point to have the mask if
+it's only applied to the passed-in value.
 
->
-> Potentially, one could fixate the handle itself, and then allow to specify
-> different priorities for it such that when a BPF prog returns a TC_ACT_UNSPEC,
-> it will exec the next one inside that cls_bpf instance, every other TC_ACT_*
-> opcode will terminate the processing. Technically, only priority would really
-> be needed (unless you combine multiple different classifiers from tc side on
-> the ingress/egress hook which is not great to begin with, tbh).
->
-> > The general rule with any new structs added to libbpf APIs is to
-> > either be 100% (ok, 99.99%) sure that they will never be changed, or
-> > do forward/backward compatible OPTS. Any other thing is pain and calls
-> > for symbol versioning, which we are trying really hard to avoid.
-> >
-> >>> +     __u32 handle;
-> >>> +     __u16 priority;
-> >>> +};
-> >>> +
-> >>> +struct bpf_tc_info {
-> >>> +     struct bpf_tc_attach_id id;
-> >>> +     __u16 protocol;
-> >>> +     __u32 chain_index;
-> >>> +     __u32 prog_id;
-> >>> +     __u8 tag[BPF_TAG_SIZE];
-> >>> +     __u32 class_id;
-> >>> +     __u32 bpf_flags;
-> >>> +     __u32 bpf_flags_gen;
-> >>
-> >> Given we do not yet have any setters e.g. for offload, etc, the one thing
-> >> I'd see useful and crucial initially is prog_id.
-> >>
-> >> The protocol, chain_index, and I would also include tag should be dropped.
-> >> Similarly class_id given my earlier statement, and flags I would extend once
-> >> this lib API would support offloading progs.
-> >>
-> >>> +};
-> >>> +
-> >>> +/* id is out parameter that will be written to, it must not be NULL */
-> >>> +LIBBPF_API int bpf_tc_attach(int fd, __u32 ifindex, __u32 parent_id,
-> >>> +                          const struct bpf_tc_opts *opts,
-> >>> +                          struct bpf_tc_attach_id *id);
-> >>> +LIBBPF_API int bpf_tc_detach(__u32 ifindex, __u32 parent_id,
-> >>> +                          const struct bpf_tc_attach_id *id);
-> >>> +LIBBPF_API int bpf_tc_get_info(__u32 ifindex, __u32 parent_id,
-> >>> +                            const struct bpf_tc_attach_id *id,
-> >>> +                            struct bpf_tc_info *info);
-> >>
-> >> As per above, for parent_id I'd replace with dir enum.
-> >>
-> >>> +
-> >>>    #ifdef __cplusplus
-> >>>    } /* extern "C" */
-> >>>    #endif
->
+KS, are you aware of *any* existing user space code that
+would not work correctly if this were accepted?
+
+I.e., the way it was (is), the value passed in *assigns*
+the data format flags.  But with Bjorn's changes, the
+data format flags would be *updated* (i.e., any bits not
+set in the mask field would remain with their previous
+value).
+
+Reviewed-by: Alex Elder <elder@linaro.org>
+
+> Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+> ---
+>   drivers/net/ethernet/qualcomm/rmnet/rmnet_config.c | 3 ++-
+>   1 file changed, 2 insertions(+), 1 deletion(-)
+> 
+> diff --git a/drivers/net/ethernet/qualcomm/rmnet/rmnet_config.c b/drivers/net/ethernet/qualcomm/rmnet/rmnet_config.c
+> index 8d51b0cb545c..2c8db2fcc53d 100644
+> --- a/drivers/net/ethernet/qualcomm/rmnet/rmnet_config.c
+> +++ b/drivers/net/ethernet/qualcomm/rmnet/rmnet_config.c
+> @@ -336,7 +336,8 @@ static int rmnet_changelink(struct net_device *dev, struct nlattr *tb[],
+>   
+>   		old_data_format = port->data_format;
+>   		flags = nla_data(data[IFLA_RMNET_FLAGS]);
+> -		port->data_format = flags->flags & flags->mask;
+> +		port->data_format &= ~flags->mask;
+> +		port->data_format |= flags->flags & flags->mask;
+>   
+>   		if (rmnet_vnd_update_dev_mtu(port, real_dev)) {
+>   			port->data_format = old_data_format;
+> 
+
