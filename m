@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 759FB36785A
+	by mail.lfdr.de (Postfix) with ESMTP id C218136785B
 	for <lists+netdev@lfdr.de>; Thu, 22 Apr 2021 06:13:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231631AbhDVELF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 22 Apr 2021 00:11:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40756 "EHLO
+        id S234885AbhDVELN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 22 Apr 2021 00:11:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40758 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234739AbhDVEKX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 22 Apr 2021 00:10:23 -0400
-Received: from mail-pg1-x52e.google.com (mail-pg1-x52e.google.com [IPv6:2607:f8b0:4864:20::52e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 054A3C06138C;
+        with ESMTP id S234797AbhDVEKZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 22 Apr 2021 00:10:25 -0400
+Received: from mail-pj1-x1030.google.com (mail-pj1-x1030.google.com [IPv6:2607:f8b0:4864:20::1030])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C7388C06138E;
         Wed, 21 Apr 2021 21:09:49 -0700 (PDT)
-Received: by mail-pg1-x52e.google.com with SMTP id p12so31918090pgj.10;
+Received: by mail-pj1-x1030.google.com with SMTP id f2-20020a17090a4a82b02900c67bf8dc69so247012pjh.1;
         Wed, 21 Apr 2021 21:09:49 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=Z+GoIGK0ASypWzKq72OR9x8SOdqUZq5a0/koCWBmuF4=;
-        b=AprUGNkG4iniX7gYV9sc0nkIUpaw4DobJ3++iTN7JS1NrwMyOKGGVaf1e30tNIa2fS
-         9Y6nYK+mNrT+XNGmGy7DRF+fGYtEm14LyCfV0Fx9FEO8gBU4ik38GOv1jcJuLGLXaD5F
-         iBwjY25Oxbsp2K6ujWm3YM8eXHcTWlk2AuujaGh48a6d3DqDr5fTUpnwUTMpGHo9JZUk
-         Ecc2BqqOrxpsAH4/ufHOPDgaeab6jBSNFcEBFh0epEuGDlNV2C6mkO5s871Ebdi9aq4V
-         rekaU3kfYEudV5imStEtUGcGERNtIqjWQfL3JfUvfrGz/1x7gJWp2voSN6PItH0wgTEA
-         wYFQ==
+        bh=gTam4Dh4Exrox41UjgsTUAzDdF7hSjfRPYT1wQxzNIA=;
+        b=h4Ws/FzzrLMIqrmOr0IySyYw5sQpcKQebJ4fr52tIz8OeJS0J18r+Kk3Yby02VwCZb
+         lB0VnuYreH0/WBg432DwfJyANbzRXjq+RyqMjMV91avjh7P6AVWyD36N3taxcUivyk81
+         gRifTzGqz56xEmn2k6jtorxqr5N1vLDH+pPNDe+b83J928uzB0K9oz/QkVW18/V0NOEm
+         PmNXRP4p7ocJ3OqSd75VYOZ622O3F6Tb2dKbCXDirHHasEkzg3neP8XRcwVvl6xSnCcV
+         p6+FpUvxCPmYMV8eIuZjKOIvK1JtK9l7z/eVW37FaQEAOnPMN480/2GGvYDW3XruZYWi
+         OurQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=Z+GoIGK0ASypWzKq72OR9x8SOdqUZq5a0/koCWBmuF4=;
-        b=e3LiU4sq4jFcWEXd5a4UaXh3lTM5InMNE7gEq/KOUJ/Gxb2tpQCDuVJxvx8xnmfeCU
-         TqUoe8GtxBmO2c8QgJGSYdjwpIqBqW0QUxl2L+dC8dwweWpJEkLkp6thfK8GIWRnDf7n
-         YvqR3fowdz7vi3W6DUwHXe7zmKbp3LHAmDgV41f0rG+gP7tkD8zwMVUad+hNPeg4D5nL
-         yIORKMzMwRIaCrJ2lEIchgsK8QY9onpV6KwaHzU8fOWvXjNdC3GADBclFiT0afHCbgBQ
-         nF/VTB+0E2DeEVRpZhinbVtaxdCKFdlHkz56qITW98ZcXtbWepQ7yI6qAy5d80freMiS
-         pt7A==
-X-Gm-Message-State: AOAM530i2je5MPimEjQQnZSNRbnrr6mW1zI9RZuTdUIGjf9DhSGpi+pK
-        j/+cat+LS2ebWvQ5GUq0AdY=
-X-Google-Smtp-Source: ABdhPJwdXfftitSkQgijuSk3gh09yZ8hWXEU9IIUiEfUBuPEVMliIZMb7ZvHXRb3o8qf6vA4R76wXw==
-X-Received: by 2002:a63:4866:: with SMTP id x38mr1518318pgk.135.1619064588652;
-        Wed, 21 Apr 2021 21:09:48 -0700 (PDT)
+        bh=gTam4Dh4Exrox41UjgsTUAzDdF7hSjfRPYT1wQxzNIA=;
+        b=YOJ22B4TCoKas1FzeX/4/E690QhwjseauqICd3gUSM0zIvkBcJI3uKSCeOLFK29rj3
+         n1nt4nG+4FtjZOUEoeBuGScC+6GjUl7yBRispxzKzgg4RxtqfKqZxMCIZVEwuWSJZgzl
+         Ev2dparxe05HCv/uf8kV9TaU0ocq6H76Wn+I1t6q+0r4tyhmaJwmiMfb08kBIFOQY+6H
+         nJa5niR8EOErHmNIm2N1bo4bEdfEiuJXahdMrWcUlhok79/tu9GPEgnwAYVhAcO/TqGs
+         cBborCt/2onD38n/QtIaO8Tu1LdifW9PJb+2LBssUa6A1rnUlLlC+FXcrdnJKXtBAPWI
+         PgVg==
+X-Gm-Message-State: AOAM530r0VAXqhwACUovjchccKIkwV4bznkRDEwrRgXc9hThFaTKlWKC
+        fFqiDvad+PvW3FDjikAVdYU=
+X-Google-Smtp-Source: ABdhPJzmrEjvXUJJGC9Se3LcQu04Mdkl0aXOfVWFnghAJi2orXke+l4GVOKEPwHkQQLbn8xZTwi3fw==
+X-Received: by 2002:a17:902:778f:b029:ec:d04d:4556 with SMTP id o15-20020a170902778fb02900ecd04d4556mr1407386pll.43.1619064589415;
+        Wed, 21 Apr 2021 21:09:49 -0700 (PDT)
 Received: from z640-arch.lan ([2602:61:7344:f100::678])
         by smtp.gmail.com with ESMTPSA id i17sm635354pfd.84.2021.04.21.21.09.48
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 21 Apr 2021 21:09:48 -0700 (PDT)
+        Wed, 21 Apr 2021 21:09:49 -0700 (PDT)
 From:   Ilya Lipnitskiy <ilya.lipnitskiy@gmail.com>
 To:     Felix Fietkau <nbd@nbd.name>, John Crispin <john@phrozen.org>,
         Sean Wang <sean.wang@mediatek.com>,
@@ -58,9 +58,9 @@ To:     Felix Fietkau <nbd@nbd.name>, John Crispin <john@phrozen.org>,
         linux-arm-kernel@lists.infradead.org,
         linux-mediatek@lists.infradead.org
 Cc:     Ilya Lipnitskiy <ilya.lipnitskiy@gmail.com>
-Subject: [PATCH net-next 13/14] net: ethernet: mtk_eth_soc: set PPE flow hash as skb hash if present
-Date:   Wed, 21 Apr 2021 21:09:13 -0700
-Message-Id: <20210422040914.47788-14-ilya.lipnitskiy@gmail.com>
+Subject: [PATCH net-next 14/14] net: ethernet: mtk_eth_soc: use iopoll.h macro for DMA init
+Date:   Wed, 21 Apr 2021 21:09:14 -0700
+Message-Id: <20210422040914.47788-15-ilya.lipnitskiy@gmail.com>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20210422040914.47788-1-ilya.lipnitskiy@gmail.com>
 References: <20210422040914.47788-1-ilya.lipnitskiy@gmail.com>
@@ -70,50 +70,74 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Felix Fietkau <nbd@nbd.name>
+Replace a tight busy-wait loop without a pause with a standard
+readx_poll_timeout_atomic routine with a 5 us poll period.
 
-This improves GRO performance
+Tested by booting a MT7621 device to ensure the driver initializes
+properly.
 
-Signed-off-by: Felix Fietkau <nbd@nbd.name>
-[Ilya: Use MTK_RXD4_FOE_ENTRY instead of GENMASK(13, 0)]
 Signed-off-by: Ilya Lipnitskiy <ilya.lipnitskiy@gmail.com>
 ---
- drivers/net/ethernet/mediatek/mtk_eth_soc.c | 8 ++++++++
- 1 file changed, 8 insertions(+)
+ drivers/net/ethernet/mediatek/mtk_eth_soc.c | 29 +++++++++------------
+ drivers/net/ethernet/mediatek/mtk_eth_soc.h |  2 +-
+ 2 files changed, 14 insertions(+), 17 deletions(-)
 
 diff --git a/drivers/net/ethernet/mediatek/mtk_eth_soc.c b/drivers/net/ethernet/mediatek/mtk_eth_soc.c
-index 88a437f478fd..8c863322587e 100644
+index 8c863322587e..720d73d0c007 100644
 --- a/drivers/net/ethernet/mediatek/mtk_eth_soc.c
 +++ b/drivers/net/ethernet/mediatek/mtk_eth_soc.c
-@@ -19,6 +19,7 @@
- #include <linux/interrupt.h>
- #include <linux/pinctrl/devinfo.h>
- #include <linux/phylink.h>
-+#include <linux/jhash.h>
- #include <net/dsa.h>
+@@ -2037,25 +2037,22 @@ static int mtk_set_features(struct net_device *dev, netdev_features_t features)
+ /* wait for DMA to finish whatever it is doing before we start using it again */
+ static int mtk_dma_busy_wait(struct mtk_eth *eth)
+ {
+-	unsigned long t_start = jiffies;
++	u32 val;
++	int ret;
++	unsigned int reg;
  
- #include "mtk_eth_soc.h"
-@@ -1248,6 +1249,7 @@ static int mtk_poll_rx(struct napi_struct *napi, int budget,
- 		struct net_device *netdev;
- 		unsigned int pktlen;
- 		dma_addr_t dma_addr;
-+		u32 hash;
- 		int mac;
+-	while (1) {
+-		if (MTK_HAS_CAPS(eth->soc->caps, MTK_QDMA)) {
+-			if (!(mtk_r32(eth, MTK_QDMA_GLO_CFG) &
+-			      (MTK_RX_DMA_BUSY | MTK_TX_DMA_BUSY)))
+-				return 0;
+-		} else {
+-			if (!(mtk_r32(eth, MTK_PDMA_GLO_CFG) &
+-			      (MTK_RX_DMA_BUSY | MTK_TX_DMA_BUSY)))
+-				return 0;
+-		}
++	if (MTK_HAS_CAPS(eth->soc->caps, MTK_QDMA))
++		reg = MTK_QDMA_GLO_CFG;
++	else
++		reg = MTK_PDMA_GLO_CFG;
  
- 		ring = mtk_get_rx_ring(eth);
-@@ -1317,6 +1319,12 @@ static int mtk_poll_rx(struct napi_struct *napi, int budget,
- 		skb->protocol = eth_type_trans(skb, netdev);
- 		bytes += pktlen;
+-		if (time_after(jiffies, t_start + MTK_DMA_BUSY_TIMEOUT))
+-			break;
+-	}
++	ret = readx_poll_timeout_atomic(__raw_readl, eth->base + reg, val,
++					!(val & (MTK_RX_DMA_BUSY | MTK_TX_DMA_BUSY)),
++					5, MTK_DMA_BUSY_TIMEOUT_US);
++	if (ret)
++		dev_err(eth->dev, "DMA init timeout\n");
  
-+		hash = trxd.rxd4 & MTK_RXD4_FOE_ENTRY;
-+		if (hash != MTK_RXD4_FOE_ENTRY) {
-+			hash = jhash_1word(hash, 0);
-+			skb_set_hash(skb, hash, PKT_HASH_TYPE_L4);
-+		}
-+
- 		if (netdev->features & NETIF_F_HW_VLAN_CTAG_RX &&
- 		    (trxd.rxd2 & RX_DMA_VTAG))
- 			__vlan_hwaccel_put_tag(skb, htons(ETH_P_8021Q),
+-	dev_err(eth->dev, "DMA init timeout\n");
+-	return -1;
++	return ret;
+ }
+ 
+ static int mtk_dma_init(struct mtk_eth *eth)
+diff --git a/drivers/net/ethernet/mediatek/mtk_eth_soc.h b/drivers/net/ethernet/mediatek/mtk_eth_soc.h
+index 214da569e869..2e4356ccf778 100644
+--- a/drivers/net/ethernet/mediatek/mtk_eth_soc.h
++++ b/drivers/net/ethernet/mediatek/mtk_eth_soc.h
+@@ -214,7 +214,7 @@
+ #define MTK_TX_DMA_BUSY		BIT(1)
+ #define MTK_RX_DMA_EN		BIT(2)
+ #define MTK_TX_DMA_EN		BIT(0)
+-#define MTK_DMA_BUSY_TIMEOUT	HZ
++#define MTK_DMA_BUSY_TIMEOUT_US	1000000
+ 
+ /* QDMA Reset Index Register */
+ #define MTK_QDMA_RST_IDX	0x1A08
 -- 
 2.31.1
 
