@@ -2,168 +2,176 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CD260368524
-	for <lists+netdev@lfdr.de>; Thu, 22 Apr 2021 18:46:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 88237368537
+	for <lists+netdev@lfdr.de>; Thu, 22 Apr 2021 18:50:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236780AbhDVQrL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 22 Apr 2021 12:47:11 -0400
-Received: from mout01.posteo.de ([185.67.36.65]:44225 "EHLO mout01.posteo.de"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S236682AbhDVQrJ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 22 Apr 2021 12:47:09 -0400
-Received: from submission (posteo.de [89.146.220.130]) 
-        by mout01.posteo.de (Postfix) with ESMTPS id 85C3C24002E
-        for <netdev@vger.kernel.org>; Thu, 22 Apr 2021 18:46:31 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=posteo.de; s=2017;
-        t=1619109991; bh=NwMQQhZafs6gKjo9Gp3dbEkCrSG9YYY7a0NcJuWWj6M=;
-        h=To:Cc:From:Autocrypt:Subject:Date:From;
-        b=ShvIJOM42n40JfQUF7Q234ql8+71xhayigIOSK+SIy6kchzw1I5kRoRt0O9OYvfZq
-         BFsDXoEItqbOyViqL5zv+TqYjpc+MN2b27k7d1wGNbnubTG2fSXysjDSkk9rcJlf8+
-         M4rH430DIFE1nqL0CVTda9Qd+R1cv9BPR9l2pAPvBxOjKDs8C/XYy8FfIRPFOgPC1l
-         +REsCMwikuJwWdYDSGYSj8fSZvMUY8ltU/MYXO3He5qJdAr7NwPLT34SElu4iGvUuh
-         OABqdF0fAm9fPz7+Hpt4SlZ3L2COf9etPyFlfo6cLEOlZZM40wX0LOjy5MYt3UMerv
-         SholeIGgD9D5A==
-Received: from customer (localhost [127.0.0.1])
-        by submission (posteo.de) with ESMTPSA id 4FR3GX6cWXz6tmT;
-        Thu, 22 Apr 2021 18:46:28 +0200 (CEST)
-To:     Marc Kleine-Budde <mkl@pengutronix.de>,
-        Drew Fustini <drew@beagleboard.org>
-Cc:     netdev@vger.kernel.org, linux-can@vger.kernel.org,
-        kernel@pengutronix.de, Manivannan Sadhasivam <mani@kernel.org>,
-        Will C <will@macchina.cc>,
-        Thomas Kopp <thomas.kopp@microchip.com>
-References: <20210407080118.1916040-1-mkl@pengutronix.de>
- <20210407080118.1916040-7-mkl@pengutronix.de>
- <CAPgEAj6N9d=s1a-P_P0mBe1aV2tQBQ4m6shvbPcPvX7W1NNzJw@mail.gmail.com>
- <a46b95e3-4238-a930-6de3-360f86beaf52@pengutronix.de>
-From:   Patrick Menschel <menschel.p@posteo.de>
-Autocrypt: addr=menschel.p@posteo.de; prefer-encrypt=mutual; keydata=
- LS0tLS1CRUdJTiBQR1AgUFVCTElDIEtFWSBCTE9DSy0tLS0tCgptUUlOQkZ3RG1RZ0JFQUMr
- elBRRy9KTHQyWUpiNTRERFBKd0Jtd25EUTh4dUZQcEFjRjNYSVVuZkFOTGs0OUpoClhWczFR
- TnVHZk1VLytmY3RPWGd0SmF6Q3doc3NGdlUvWStPc1Nmd3FTN1ROOXhIWE1DZmtnK1gxRHhI
- ZGtqcmoKL1pUYkxHd1FUQlE2SVpVeW9BTEVSQ2RHZFBETFVqWERSS0poSTdvV3RqYlVFWUVr
- ZE9RYnY2eDhLVWd1bGtHUgpYYWxka1hJZ0R0VWZLaUE0VGhBVXpncVJuZ09DV2ZITis4TnBo
- Q2pGVlFnclRSakxCc3pkZTFnTmJkZ2kvdWxiClcyTngvS1Jqa0F1TTdFUVJvVUJ2QUJWb2FX
- R3ZYenIzUmphUFhrSk5wNHdFbm1IcVoxZlVteWMvSGZRNnVjWnkKRW5QZnlEWExtWTJQUU5P
- N2ZCemZLMTJVRTdWZHh0OTBDNURPSkRBc25kNHYreloxNHJObEpmTHNwaDZkVlNIbApsS2t2
- NE1BTndNaGxRT3Bta1pLMHhVU0Q2R0M1OHRiV0RSbEg4b3UrWUhDYlh2OHJCTXphR0phWDVB
- S25lNTJTCmZEUCtiQVVTdWVQdDhrRG5TaU1ZNk9iUEdObWhqcW1JN1RmNkU1NDdqRXUzcmxr
- aVI3Rno2cktVVzA5VlBlcnAKUnVya3orSTFtTDZ5ZTlZdGFDZ3MwbFR4b3VuYnA5emROVE04
- djZFOGJsMWNoSnRoYWs1bkEvRktnbmRtVHdhUQpNclFTRFEyNmxMcUw0MXRPZzhlVXFhTzJI
- TXVPRGNaaVVIMGVNWHlQZjhsbXhMcy9sbUVZU3hGUXFMWlBjWW9pClA0SGxVcDNSMkxIa0hO
- WDg1WDBKUldwRkkwLzNKMTFiWEpjLzc1MzVKODExdE9aRDkyRHlkK20zS3dBUkFRQUIKdENk
- UVlYUnlhV05ySUUxbGJuTmphR1ZzSUR4dFpXNXpZMmhsYkM1d1FIQnZjM1JsYnk1a1pUNkpB
- bFFFRXdFSwpBRDRXSVFUcFZLQkNXcGNoUW9QQURFY3g1bTR3ejYrNFRnVUNYQU9aQ0FJYkl3
- VUpDV1lCZ0FVTENRZ0hBZ1lWCkNna0lDd0lFRmdJREFRSWVBUUlYZ0FBS0NSQXg1bTR3ejYr
- NFRnQTJELzBTQW92U0xuK1pTcGUzK0d4UUhKMzYKWmJ1TWs0REVSa0RKMnIveStvc254WUd2
- TmNtU3N5Q1pBaVZjTTlFM0kxUXVtdDZvWHpoditJUDJNd09MZTlQMwpvUmhJQ1JyQ2RwWmY1
- YjdDb0lOc3lENUJwNGFsSUs5UFpHUDdXTjRHeGE3OVpNYkRhNVBNWGVQZ2psckFNVGNOCjRv
- c2Q5NVB4eFNkV1dheTB2TUh0VWYwRGJkaDFRNUs1U3lkREpxdG56dFBkNzBzUG9wOHBRSWhE
- NExGUWdpcFgKL3VRdkEvWnZpN2c5T3N4YThCNnRDTG41VG5LT2lNYktCVUFya1FHTDFnbDQ4
- NFJtKzRlR011YVZrVjVBb3VYMApOaGQvTVU3eEMxS2dGcWZwYTMzZ0ZRdUxTSTU2aStuRkt6
- dzNIdiszeHBJOXJjaHFXQjNnSWNVQ2lQZmFxcU1vCnI4RVNKODF0NWlvckQrRlpQb1RyMUEz
- aGZTMTNuMGxWUytsZUd3dlNucjRRZ0gvcjZ5eGw4RERIaUdFMUFXblAKaTNaWFNKWnkxRUJW
- TWJXTXFBNzFwczZDS2ZnbmpmSHVvVmNsTElXd3cxT2gwYXlER1hMZUFic1VPTGtGOXAxMwo1
- MWxRS0lJWUZpcXVwL09qa0pKMlgxaTdITjlqV2xRVnR0SER3QlhZOWNYWDRHUzk3cnNwSVhj
- S2hHRytFSVB0CjFEaFdBdDR1ZDdqcDIrSDRmTXlKZGlVK0wrYTVXNjlTODZpOURTMjBUdXd2
- K3JRemNQWTQ3MkVxZmo0elhWWmsKNUNzZ2kxVDZzQ1lnZDd5TGpHMnFYblZsSTJqQ1JyT0RW
- dGJiY25jSi9peEhPQ1h2TmlvRzZPREhBM3ZtNlZxaQpEelBmYTBFaWZveWMxbDRvSUZvQ2c3
- a0NEUVJjQTVrSUFSQUEwdUlXUGNrRlpzb0ZVZG1Sd29vMW95YzhmSyttCll6TmhTc1l0UTlI
- ZDMvQmlWeUxwUERQK0F6eks4U2JvWXVGcTJOaGRJaTIyeFRTZ2pyRFZMOU10YTdNbDB6cHgK
- QnJSTitySm5LRFl3bThJeUl6eUpCRmhXU1l3YnVPSXVqbnB6U1IvVGVDT1VvelRadFhnQmRU
- YzZrUG5kV1BWTgpDWU9hZVFXdDI1Qnc3ZGNVbllUQ1FWYm9EN0RFVWFEVkVqM1BKM2U0aGli
- TEp1UnEvK1dQY3kxQ3g2UFNucTJ6CkdQN1pVNWh6NjF2ZGovbVJJa2QxS2UzUTZmWUwzSVRN
- T1l1WGF6VUVEZ3l3TlN0bVkwRmZUT05GWEtGTXdSNm8KcUtuSGlTN2tINytxQWFodUpkdVFB
- MW9SU2xUTWRFb3F2WHEySlVJTm1NaGdYL0ZQN3ZpZEFxcTdnVjRXWElxcAptckliVHBiNVpz
- U0N6dUJBd3lkOTYxM1lmYWpZVGlUYkJGRzQ1Mld4TnlJeTFUdVpWMmIxZlhPbGdLRjNvbmUx
- CnhwbURqbTFlZVhSdjRnV0d0Vks5cXlEaUtYWnlmQ0YyL2o5d08xaTNnUHZqYmFvU1dhT2hH
- T2V6dlNFQzB4RjgKWU9TMitGSmxVclVyVm54UXZsZkdyWFYxbUpRTHpvcFJ5N0VndjNlRDI0
- NUx5YjhjUHpOUmppelRqV2RYN0g0MwpuNTlXMkdWTkFLTkNyV1pkOGNjZEdJK1RodmwzUUh1
- YWQ3NEY5cGdDUUNZWXM5dG92YVZldFR1WlI2Y3JMaG10CmxmK1V4ME5SV29PV2ZTR0w5anBt
- dkR3aGlwWCszMUlvb1FiOTZ1a2UzOFBZMUVOMjJ6QlBxZ25jVVVrUkxQQncKbEhYbnpFVit6
- U1p4QXpFQUVRRUFBWWtDUEFRWUFRb0FKaFloQk9sVW9FSmFseUZDZzhBTVJ6SG1iakRQcjdo
- TwpCUUpjQTVrSUFoc01CUWtKWmdHQUFBb0pFREhtYmpEUHI3aE9Db0lQLzNTanBFdTl4Wkpj
- TlZvU0s5MTA0enB6CmtnS2FUVmcrR0tZSEFJa1NZL3U2NU1zVmFTWk14bWVDSzdtTiswNU1w
- RUZCYW9uMG5sVTlRK0ZMRDFkRDBsenYKTVBkOEZOcEx4VEMxVDQwbXBVN0ZCV1hlVjZWRHoz
- STY5VkFBdjRWVDM4ZVZhYXBOS1lmVGdwcFRYVEVNYVdoTApVYUpGaU1HaFNYaGkrR01GV2Ji
- NVNFOGJJRTZ0WUpONWlYZUFNVFE4NjhYVGtHS0VHTjk3bEU2S09odmpWV0kxCkhiUVIzZ0tV
- ck1uVmlhbGp0YnV4bGNvS2YrblRvNG85OUEyTkprRCswaFozclJZTWhacFR1MitkcCt2Rm9p
- aEQKdVNFTCtoblZhNFRMd2pYd2gzNzNweU9XMFhra2E5YWpNTEFoMUFtMmRBa0pLSDhzMVlJ
- UUlpL2Q3bEkyYXQ1awpIcWtIa2p0YzE1ZkgrQUU5Q0VSM3RCSVNoYU9Fb0hXTXc0WEs5NS9n
- MWVnMVB1cmJmN3RwRnltcklxU3ppQjlvCjJBWituSHVDQ001ZC9pQXh5MmJOcndqNDhPM2Z5
- WXd1a0pManUyNlJKbzRMNStjNEJoTU1Ray9nVWROdldHK2YKNUxreVhvbHNMY0p0SktLdStD
- V1pFK1hxc2RGWHd2d2xDRVNSQ012cGZyQmNtY1hrT0g3S1JKVy9pUjFXVjVRZApjR3ZDcDl0
- a08vaEhSb2t0dzBibUl1MlFhZkovajZLTGJqZWV4cTc0TWUyb0U5YmkxY3B2azYvSElDV0JQ
- dHVYCnNqd2o1Q2M3UlZOMjJLekdZT0RKVGtxU0d4RjV1NVlkTHVNVG5CVGNweEphR2h3MzNq
- QjgwY3o3enFwQXBpREIKZFFnR2psVlNQT3ZidU04aXBPZDYKPW1nREMKLS0tLS1FTkQgUEdQ
- IFBVQkxJQyBLRVkgQkxPQ0stLS0tLQo=
-Subject: Re: [net-next 6/6] can: mcp251xfd: mcp251xfd_regmap_crc_read(): work
- around broken CRC on TBC register
-Message-ID: <3630a3da-f892-d3e1-341f-d6c68ef267f7@posteo.de>
-Date:   Thu, 22 Apr 2021 16:46:28 +0000
+        id S238183AbhDVQvT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 22 Apr 2021 12:51:19 -0400
+Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:20878 "EHLO
+        mx0b-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S236058AbhDVQvS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 22 Apr 2021 12:51:18 -0400
+Received: from pps.filterd (m0148460.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 13MGnqxH014269;
+        Thu, 22 Apr 2021 09:50:30 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=subject : to : cc :
+ references : from : message-id : date : in-reply-to : content-type :
+ content-transfer-encoding : mime-version; s=facebook;
+ bh=iFr04GAN4D5agnqqXnFWCQhau40v+cw8X7wDcjqlCi8=;
+ b=rF50CATTDLAT5xg1zSj33zpt+bQqn/XbUGMQZOEzFtvF6dLolXYypncnxXiIAdRybHrl
+ 6krs9lxf7b9RuwfWNvFqEzLKkY5zOX9/t1eN3lD4oxKbIKZfS96Au66ECGLd9ipah3Iv
+ DvZdPF4C9Zyx9SA+OCl7ckdjn2zWk3gma3s= 
+Received: from mail.thefacebook.com ([163.114.132.120])
+        by mx0a-00082601.pphosted.com with ESMTP id 3831khunc1-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
+        Thu, 22 Apr 2021 09:50:30 -0700
+Received: from NAM12-DM6-obe.outbound.protection.outlook.com (100.104.98.9) by
+ o365-in.thefacebook.com (100.104.94.230) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2176.2; Thu, 22 Apr 2021 09:50:29 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=Vt9G2cApOW8q1h/n5sZMBx5F0Oq6Jn/tlP2NUrrPY7P1TxuVDIb+gD8P/9G1qKlyb0MG2MjfT0PgbhQlWJnFuN1fgcyLcMRmHRHuuSARgzOsfXH5BviVjau7pg8TV1k58ToPTbf3wA/6gStTA2/Oo+B6FtUEtEMTrMh8USqlJgqoveZ5KX6rM+wKpIvbuss3Uj+OIewAkvQ+zP20DCMF5n15SOjvNdpmaXQ+7PfCAvYblkkaQDcF2N5Qp25GBLjZxRDMLd+HjG+UAiq3SjKagdopM+RZM0c2TQa0i4hlqc6RqYBSNWaMUM9maB8wIsR5UDTFEpY32hwUkDNemmvxOQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=iFr04GAN4D5agnqqXnFWCQhau40v+cw8X7wDcjqlCi8=;
+ b=Ydwqm0SPZ6rg3TvGerdVK1HyLVR/7FxlUNv5mIJEJCQY9M7dUDQ+mdmke6FeqGkfhAUEObPpS6ILHiK1SrTp27Yxi3l1RlSRKVCTAMT/spiKBkRmqGVLnbbUGwQGnoIdkjUmWh9s/j8lD5/idR1FNkjRXUR5XLiTMexjnsvfRUVWsOBo/1m8Wkd2PzxHFKkr30rd3MWMrbBQ4rF48GDmqa6Gj+CMwGKo2G89MyajECQzNCZ1NtCHjowzzc8i1CBuW3b7Ue4Zu2BKAxILrxyTEPgvKp1UxtJ9EkvFldSC8KlAX9KOnJNuMtXdQ6n8HJWBjb5ByqObJ9sVP5O0qCGUlQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
+ header.d=fb.com; arc=none
+Received: from SN6PR1501MB2064.namprd15.prod.outlook.com (2603:10b6:805:d::27)
+ by SA1PR15MB4418.namprd15.prod.outlook.com (2603:10b6:806:195::5) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4065.23; Thu, 22 Apr
+ 2021 16:50:28 +0000
+Received: from SN6PR1501MB2064.namprd15.prod.outlook.com
+ ([fe80::f433:fd99:f905:8912]) by SN6PR1501MB2064.namprd15.prod.outlook.com
+ ([fe80::f433:fd99:f905:8912%3]) with mapi id 15.20.4065.021; Thu, 22 Apr 2021
+ 16:50:28 +0000
+Subject: Re: [PATCH v2 bpf-next 10/17] libbpf: tighten BTF type ID rewriting
+ with error checking
+To:     Andrii Nakryiko <andrii@kernel.org>, <bpf@vger.kernel.org>,
+        <netdev@vger.kernel.org>, <ast@fb.com>, <daniel@iogearbox.net>
+CC:     <kernel-team@fb.com>
+References: <20210416202404.3443623-1-andrii@kernel.org>
+ <20210416202404.3443623-11-andrii@kernel.org>
+From:   Yonghong Song <yhs@fb.com>
+Message-ID: <c9f1cab3-2aba-bbfb-25bd-6d23f7191a5d@fb.com>
+Date:   Thu, 22 Apr 2021 09:50:25 -0700
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
+ Gecko/20100101 Thunderbird/78.9.1
+In-Reply-To: <20210416202404.3443623-11-andrii@kernel.org>
+Content-Type: text/plain; charset="utf-8"; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [2620:10d:c090:400::5:427c]
+X-ClientProxiedBy: CO2PR05CA0108.namprd05.prod.outlook.com
+ (2603:10b6:104:1::34) To SN6PR1501MB2064.namprd15.prod.outlook.com
+ (2603:10b6:805:d::27)
 MIME-Version: 1.0
-In-Reply-To: <a46b95e3-4238-a930-6de3-360f86beaf52@pengutronix.de>
-Content-Type: text/plain; charset=utf-8
-Content-Language: de-DE
-Content-Transfer-Encoding: 8bit
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from [IPv6:2620:10d:c085:21c8::16ea] (2620:10d:c090:400::5:427c) by CO2PR05CA0108.namprd05.prod.outlook.com (2603:10b6:104:1::34) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4087.16 via Frontend Transport; Thu, 22 Apr 2021 16:50:27 +0000
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: e158c4b8-0884-440d-0bf5-08d905aebbc9
+X-MS-TrafficTypeDiagnostic: SA1PR15MB4418:
+X-MS-Exchange-Transport-Forked: True
+X-Microsoft-Antispam-PRVS: <SA1PR15MB4418ADD9C7FE8A36C37D159DD3469@SA1PR15MB4418.namprd15.prod.outlook.com>
+X-FB-Source: Internal
+X-MS-Oob-TLC-OOBClassifiers: OLM:5236;
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: r3M2cD0Dkk2sGj9oU4I++QeZwQ2MtMNHlYVshUVQFwjSo5v9EqvSB4CPmpDpDizhUNVZPE4UgUW+1q0qCHNbmMi6w5MPaSA5U9VQCekWSNBTLEC1NrSUh1jkUHeAH6kjyItoBv9dU5FyRQDDPIkzQBnK0pQx3Uxk/HfK7MkxSb791Lh9+tFrvImdmu2JsMdcUfhqToQ8lgs/fasM7p+e7Qx+tFvk4IW2A0VvuB+mrAWaWQpTzD1K2jAUAf/fjIOAPvR1rkSlL/cIAWl0KRLzZ2MUDJ23hFna/tmdRp3G+aazIIClTaoaA5Nd4rbDbHZ2a5lilNVQbCs1QgyZJ1gBFAdhJF0N7I5zAvZTOxylqyY0LiDoGtg2VYEqLr6889u44YIlJMCZ8l00m0hJgK8xgKD+W0kX0+8DmkAYr94OeblaJpyeeMLemPwosq6kZjEUNpteLFLZGfbRGeE0JP+eEZLRrK40FzzJyFGk64kBISHmqkCK18tghp6SGuOU4t4jnTTzMSYa536ODKYxIzeA/46BOkBktxoGuApi0G+lUoFcW/OQRaDm2SqgOdQl2g3g9O+U54ZCFxN0piHzFIA9DU4UH3NsPfuVzamQmMEvGFv3P7Q9XnKqDMR4ByiNXkNmT6P6ZVslAzycDYBGJax0va84s+SsMxA9rZgLJH7ItvwjW8jUwCiZjiAagtHQHBFu
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SN6PR1501MB2064.namprd15.prod.outlook.com;PTR:;CAT:NONE;SFS:(136003)(376002)(396003)(346002)(39860400002)(366004)(2906002)(478600001)(5660300002)(52116002)(53546011)(36756003)(38100700002)(4326008)(316002)(8936002)(16526019)(66946007)(66556008)(66476007)(8676002)(31696002)(6486002)(86362001)(186003)(31686004)(2616005)(45980500001)(43740500002);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData: =?utf-8?B?OXBLeGl5eURpQTNKMjdHeE1USlF3ZDh5NTFxUkF4RUtPQ0FBWkcwOUhOVW1n?=
+ =?utf-8?B?SUxwZzZEM1NRSWR5YTVha2RLd3RlS2R4ZVNzRDZOYmE5dThBZnYwVXR4WUIx?=
+ =?utf-8?B?RWZHTktBOUVrOWw3WkYyd3ZKbnMrVEZETjdxODgzcEdrWWxwK24vRldHVDlq?=
+ =?utf-8?B?SGJjYlNPV3NqUWVWenppdkpiZmw2M1ZpNlFJSm9scC9iOGtRQnQrNFpLYjJY?=
+ =?utf-8?B?NjhZTGhsMFZBZjNsYW1RaTA2U1FaZ0tXbUQ2REh3VmNNTVNtclZIMFlKVnA0?=
+ =?utf-8?B?ZnB2cE9DL0p6N0Rsd0FRTStnVm5SbE4rSmpzQTdGelhYWEk4Nk1pWGRyMm12?=
+ =?utf-8?B?WjhnWEZacnVwWFJSK0JFTWFGVzhnTUhDTGJCU0hTOURmZXIyZ01MRWxNa0or?=
+ =?utf-8?B?V0NmQkFGQkpXbkltamJ4WHZpcXp0SU8wL0xTOS9CYWd1eHFyR0dhTE4zblZi?=
+ =?utf-8?B?YktZQitzSFE3bi8xSHlaOXVYaElZR215VVlGY29HVTl3enF2VGhYZGN1aEZz?=
+ =?utf-8?B?NmxOOU4yNW4xYWVsZjIrVjhvRGpxRzArTGJUSkl4aWYzZEFEeUZjR2RHOVlB?=
+ =?utf-8?B?M0VBa3Q3M0N0alBVcUp4MElrZ2hxZklJMjVtNjNTNm93K0Y0K3dBd3F5aXF4?=
+ =?utf-8?B?ZHBWdWtKSmZobFhqYzJVbHRORXNIMHJFNGZIYzlQb2hCVGprYi9ranZlSXZt?=
+ =?utf-8?B?R0VJRWxJQlppT2lGWk8wMlBOVkRsWGtQTkFRSTVYbVRSR2dxeHZlN2JBand4?=
+ =?utf-8?B?blJBVmZvcHJXbi9mM1laWXA2b2tZS0ExN3ZKYzFmbytmM2pSc2pxdUI0MHRm?=
+ =?utf-8?B?QVdkYmd4b01Zbm9zRU5jRm5UZ2R5d0loS1I3WjJTK09pQ0NHTDZEK2g3NmZL?=
+ =?utf-8?B?VkJvbHRKUk85d20yc3YvdFhQSXI2QU1xdkRGRHdnNTh1VEtDWjlCQ09NQVZw?=
+ =?utf-8?B?OXhadGg4NnlXWXZ2SEE5emFyaWJoTnNKQnJTNlEwQjk3QlRIZnRZNDR3ZnY1?=
+ =?utf-8?B?aEY2b3lzdFFHb25sM3pFZG1JYWZKYUdNZUdObFRMYkd3MFV4SHNGcmE4R0VS?=
+ =?utf-8?B?L1MxWUNmQ3Q5cEh4UVdIU2lKZ3oydXUrWFdTZ0oxcjVHUm4vZ0hGemhvV2Fp?=
+ =?utf-8?B?dFgrM2E3YmdGblpTWTNJYWJNeG5RSllxUmtyM0t5ZjJ5eVI0ZVR0SGVmVi9p?=
+ =?utf-8?B?SHdJTnBVb2tPdU9RaklBSmtONU9mQytSNWEwVHM2dFg4aFAvMFZWcjlnRTBq?=
+ =?utf-8?B?bXhER3QvYzJmTTQ1ZU9WYUplMFU4M0pJMm5waXJ5T2tWM004QldjRmRqQUFZ?=
+ =?utf-8?B?RjduQTlSTWRJQkJTUE9odm1XQVczOUUycjRqOUdBMHFNam9XbC9CN1h2dWJr?=
+ =?utf-8?B?ZUFGQXdUazIvbnlaUDdOYmtBUVM4VFliYWthMnFRZ3d3RGFqc29FamdKamVU?=
+ =?utf-8?B?aEx1UW9oY3dYWjhUOUU0UThaTXE2elRSUHFJN2t4RnloVzE4aEQzNFE3VEgy?=
+ =?utf-8?B?NHNQTDIzR1lwQ0g2RDdjUUo1TDdWMVkzR1EzaEJhT1ovKzdQWU1zdEg5WHVy?=
+ =?utf-8?B?UldsZjFXRzJGcGFZcXd6VjlXZS9GeVAvOXBSRk9TTVE5cklJeVNIYnl6OVow?=
+ =?utf-8?B?eTc1Z1JycGJ3T1MvRUhWYmJsOEo1bU8zOWhaNTl0SXNuWmo4M2hobCtaR0Va?=
+ =?utf-8?B?NjM3U2lMallYWUpZM3ZqN0FBcWEvcnh6T3pzaUNNRTZzOVByMHJnUE5kSTVZ?=
+ =?utf-8?B?T01ZTmZ2dkl0TmpkY1RIS0VBUmhzOWVtYjcrZmZjdUttVVdiU2xXcUtSem9k?=
+ =?utf-8?Q?HbEVvKDYUgoIi6sUZ8L2PDy+XiM7DBJQpXJBQ=3D?=
+X-MS-Exchange-CrossTenant-Network-Message-Id: e158c4b8-0884-440d-0bf5-08d905aebbc9
+X-MS-Exchange-CrossTenant-AuthSource: SN6PR1501MB2064.namprd15.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 22 Apr 2021 16:50:28.3338
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: 6f0QjB8YF40TLghCWo5QySYh+v3td0HpnLkOKg2mT7X3aB+AhlrFY2l/bGMModWq
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA1PR15MB4418
+X-OriginatorOrg: fb.com
+X-Proofpoint-ORIG-GUID: z0NIAzd-4tvOM02EU_SKWqRpAKG7cl69
+X-Proofpoint-GUID: z0NIAzd-4tvOM02EU_SKWqRpAKG7cl69
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.391,18.0.761
+ definitions=2021-04-22_11:2021-04-22,2021-04-22 signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 priorityscore=1501
+ phishscore=0 malwarescore=0 bulkscore=0 adultscore=0 clxscore=1015
+ suspectscore=0 lowpriorityscore=0 impostorscore=0 mlxscore=0
+ mlxlogscore=999 spamscore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.12.0-2104060000 definitions=main-2104220126
+X-FB-Internal: deliver
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Am 22.04.21 um 09:18 schrieb Marc Kleine-Budde:
-> On 4/21/21 9:58 PM, Drew Fustini wrote:
->> I am encountering similar error with the 5.10 raspberrypi kernel on
->> RPi 4 with MCP2518FD:
->>
->>   mcp251xfd spi0.0 can0: CRC read error at address 0x0010 (length=4,
->> data=00 ad 58 67, CRC=0xbbfd) retrying
+
+
+On 4/16/21 1:23 PM, Andrii Nakryiko wrote:
+> It should never fail, but if it does, it's better to know about this rather
+> than end up with nonsensical type IDs.
+
+So this is defensive programming. Maybe do another round of
+audit of the callers and if you didn't find any issue, you
+do not need to check not-happening condition here?
+
 > 
-> What's the situation you see these errors?
+> Signed-off-by: Andrii Nakryiko <andrii@kernel.org>
+> ---
+>   tools/lib/bpf/linker.c | 9 +++++++++
+>   1 file changed, 9 insertions(+)
 > 
-> I'm not particular happy with that patch, as it only works around that one
-> particular bit flip issue. If you really hammer the register, the driver will
-> still notice CRC errors that can be explained by other bits flipping. Consider
-> this as the first order approximation of a higher order problem :) - the root
-> cause is still unknown.
+> diff --git a/tools/lib/bpf/linker.c b/tools/lib/bpf/linker.c
+> index 283249df9831..d5dc1d401f57 100644
+> --- a/tools/lib/bpf/linker.c
+> +++ b/tools/lib/bpf/linker.c
+> @@ -1423,6 +1423,15 @@ static int linker_fixup_btf(struct src_obj *obj)
+>   static int remap_type_id(__u32 *type_id, void *ctx)
+>   {
+>   	int *id_map = ctx;
+> +	int new_id = id_map[*type_id];
+> +
+> +	if (*type_id == 0)
+> +		return 0;
+> +
+> +	if (new_id == 0) {
+> +		pr_warn("failed to find new ID mapping for original BTF type ID %u\n", *type_id);
+> +		return -EINVAL;
+> +	}
+>   
+>   	*type_id = id_map[*type_id];
+>   
 > 
->> Would it be possible for you to pull these patches into a v5.10 branch
->> in your linux-rpi repo [1]?
-> 
-> Here you are:
-> 
-> https://github.com/marckleinebudde/linux-rpi/tree/v5.10-rpi/backport-performance-improvements
-> 
-> I've included the UINC performance enhancements, too. The branch is compiled
-> tested only, though. I'll send a pull request to the rpi kernel after I've
-> testing feedback from you.
-> 
-> regards,
-> Marc
-> 
-
-I can also confirm these occasional CRC errors. I run a custom pytest
-suite on a pi3b+ that uses isotp and bcm in parallel.
-No CAN-FD, just 500k regular vehicle can for infotainment.
-
-$ dmesg | grep CRC
-
-[    8.198863] mcp251xfd spi0.1 can0: MCP2518FD rev0.0 (-RX_INT
--MAB_NO_WARN +CRC_REG +CRC_RX +CRC_TX +ECC -HD c:40.00MHz m:20.00MHz
-r:17.00MHz e:16.66MHz) successfully initialized.
-
-[    8.209159] mcp251xfd spi0.0 can1: MCP2518FD rev0.0 (-RX_INT
--MAB_NO_WARN +CRC_REG +CRC_RX +CRC_TX +ECC -HD c:40.00MHz m:20.00MHz
-r:17.00MHz e:16.66MHz) successfully initialized.
-
-[74264.462934] mcp251xfd spi0.0 mcp0: CRC read error at address 0x0010
-(length=4, data=80 33 d2 8a, CRC=0x0e3e) retrying.
-
-[74749.267977] mcp251xfd spi0.0 mcp0: CRC read error at address 0x0010
-(length=4, data=80 1a ad 0e, CRC=0x8d17) retrying.
-
-[591150.766153] mcp251xfd spi0.0 mcp0: CRC read error at address 0x0010
-(length=4, data=80 3d b5 60, CRC=0x5e9c) retrying.
-
-
-Best Regards,
-Patrick
