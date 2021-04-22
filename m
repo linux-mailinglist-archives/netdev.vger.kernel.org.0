@@ -2,173 +2,241 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 55784368620
-	for <lists+netdev@lfdr.de>; Thu, 22 Apr 2021 19:39:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3BC1636861D
+	for <lists+netdev@lfdr.de>; Thu, 22 Apr 2021 19:39:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238555AbhDVRje (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 22 Apr 2021 13:39:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50456 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238487AbhDVRja (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 22 Apr 2021 13:39:30 -0400
-Received: from mail-wm1-x332.google.com (mail-wm1-x332.google.com [IPv6:2a00:1450:4864:20::332])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 24368C06174A
-        for <netdev@vger.kernel.org>; Thu, 22 Apr 2021 10:38:55 -0700 (PDT)
-Received: by mail-wm1-x332.google.com with SMTP id n10-20020a05600c4f8ab0290130f0d3cba3so4542367wmq.1
-        for <netdev@vger.kernel.org>; Thu, 22 Apr 2021 10:38:55 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=2vkXac7yp9NUvqcf8IeQfovS3NNdlTrsnVHyXJyBs9E=;
-        b=Smc5xpn1IYP2qUdFPFDJ96mWkjUYNho7weEWvckpTAfNRmv9BDQUeyznUT+axkyEBf
-         S44iFvbr13GwraiI4x/ZAainLJ4LUlQ/L4SFBDKpAyTJ4XHa1FMfHmH5/eW9Cz3SCkCP
-         Iy8a5yC79kDBlA1PTpOafMX1z9SBHzdsDMSWZllpLdeLvHt+NaQSBmQHFXTpEkXK4cjw
-         i15S3c/EM2AwEpjoHB6sRN0/+z2mVBwV3cH9OtKQNnCAa11UlKVE7rVbxSkIJI6Ct4vR
-         5acuOFckbeuwFDhmNsWYHIlCgGtQNoJ3VPdxsKuCwHFhd3dltPErzNo6zGDO2CVWiT1P
-         A9ww==
+        id S236882AbhDVRj0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 22 Apr 2021 13:39:26 -0400
+Received: from mail-oo1-f41.google.com ([209.85.161.41]:33456 "EHLO
+        mail-oo1-f41.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S236754AbhDVRjW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 22 Apr 2021 13:39:22 -0400
+Received: by mail-oo1-f41.google.com with SMTP id i25-20020a4aa1190000b02901bbd9429832so10135347ool.0;
+        Thu, 22 Apr 2021 10:38:47 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=2vkXac7yp9NUvqcf8IeQfovS3NNdlTrsnVHyXJyBs9E=;
-        b=qqefWLmx0hws0SGpc/AUJGAwr8ePGxzeQoz31tXHiJbV3xpE8tNs9AHmfnd/9rpe7X
-         6Ov4cjS6PbKwEmE2Jt7d8A/Z70aWJYJGavmHIqnktj21gtnWITYiH0hTrj25ZW/Jk298
-         /NECLyFM00Q9I1m9KNaI82i4bFdBmnSRldVVsQExgUQCL+Kz0gzONcq4A34Z8vD83EoD
-         elzQhBBCD91zs/iNx7905Xq2hbs4bz2idsTXLIpul93+mfUqcnrb5gkU/xnSjhCCunYg
-         /e8xXNDDMsepmQ7/eJpWt2f/QqFMILxqOh+/03XqqAWBKYm6dYza9rvGaBMsexhGsK6w
-         SwbQ==
-X-Gm-Message-State: AOAM530/A56yKdkarzgqyeFyqLRVRs0kSB3vVJaB+s4IafyxyIgBIqyC
-        3izM4bXy14Ghyq18cYObgCWQYoE4SCTZrzg71r4=
-X-Google-Smtp-Source: ABdhPJyoKLeikWw8HkfoV3BagAb55y2ug3Z8C5su2wr4ffVdez5eCKuw5rmXCehRVEju8ZmiQUqEnRPqY9TXd2UkdnE=
-X-Received: by 2002:a05:600c:9:: with SMTP id g9mr5124786wmc.134.1619113133872;
- Thu, 22 Apr 2021 10:38:53 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=tMVnVypmvdM6x0K9pdf9C+ZDup5EGo+8ylMsMxOJ0dM=;
+        b=jUVgvYDgYY7/6lBdZB7v17Y4UXOhNeHgAp2SNjivYk6i0UsJw7yzxGiABecnL5RIUF
+         muiHrJGHVmrsCiK3We5ZYuQRLh+WAi29bJcPQQfsgotRNHAF7eDqDQ80OBYqFTA8hY7z
+         5t7l+A5HGxMyBvSz5+SKcKjOi4ORekr7nvQEKwiGVzaOwCrRHZYBs/MisaNfYNQQslfY
+         W6Y+37DDYevkTi3PVKXtZPBuqWYTV+gWuAtvtVn8j7wHEaqhu8fZgEE5Qk94uYo/k8rJ
+         G1afdT+zNG3uHbPn1GeFMJ+cPyVZsGu1mFkJelrwjD7rOkezDBcygrB+iJkqw30aS/BV
+         HyRw==
+X-Gm-Message-State: AOAM531BKL00Dj/Mpkt+42P+vW2RQYfeSEZ6w+zF/FjRqDiIvlzEfvBJ
+        Lk1KPYdqibL5Y7GpXgkSkA==
+X-Google-Smtp-Source: ABdhPJwcgWM0XLWrK7WEs8CdBSkklMghctKgwcSHGZbx3s62U5GMyPjoEZD7BN22/aQxOKo2Wojj3w==
+X-Received: by 2002:a4a:96e3:: with SMTP id t32mr3235742ooi.14.1619113127295;
+        Thu, 22 Apr 2021 10:38:47 -0700 (PDT)
+Received: from robh.at.kernel.org (24-155-109-49.dyn.grandenetworks.net. [24.155.109.49])
+        by smtp.gmail.com with ESMTPSA id r9sm688532ool.3.2021.04.22.10.38.45
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 22 Apr 2021 10:38:46 -0700 (PDT)
+Received: (nullmailer pid 3297132 invoked by uid 1000);
+        Thu, 22 Apr 2021 17:38:44 -0000
+Date:   Thu, 22 Apr 2021 12:38:44 -0500
+From:   Rob Herring <robh@kernel.org>
+To:     Prasanna Vengateshan <prasanna.vengateshan@microchip.com>
+Cc:     andrew@lunn.ch, netdev@vger.kernel.org, olteanv@gmail.com,
+        UNGLinuxDriver@microchip.com, hkallweit1@gmail.com,
+        linux@armlinux.org.uk, davem@davemloft.net, kuba@kernel.org,
+        linux-kernel@vger.kernel.org, vivien.didelot@gmail.com,
+        f.fainelli@gmail.com, devicetree@vger.kernel.org
+Subject: Re: [PATCH v2 net-next 1/9] dt-bindings: net: dsa: dt bindings for
+ microchip lan937x
+Message-ID: <20210422173844.GA3227277@robh.at.kernel.org>
+References: <20210422094257.1641396-1-prasanna.vengateshan@microchip.com>
+ <20210422094257.1641396-2-prasanna.vengateshan@microchip.com>
 MIME-Version: 1.0
-References: <20210420213517.24171-1-drt@linux.ibm.com> <60C99F56-617D-455B-9ACF-8CE1EED64D92@linux.vnet.ibm.com>
- <20210421064527.GA2648262@us.ibm.com> <CAOhMmr4ckVFTZtSeHFHNgGPUA12xYO8WcUoakx7WdwQfSKBJhA@mail.gmail.com>
- <20210422172135.GY6564@kitsune.suse.cz>
-In-Reply-To: <20210422172135.GY6564@kitsune.suse.cz>
-From:   Lijun Pan <lijunp213@gmail.com>
-Date:   Thu, 22 Apr 2021 12:38:43 -0500
-Message-ID: <CAOhMmr5=4rhhrGJBvB8-HL-bjo-9RGi1u-jP43GSvDcc=BgF7A@mail.gmail.com>
-Subject: Re: [PATCH V2 net] ibmvnic: Continue with reset if set link down failed
-To:     =?UTF-8?Q?Michal_Such=C3=A1nek?= <msuchanek@suse.de>
-Cc:     Sukadev Bhattiprolu <sukadev@linux.ibm.com>,
-        netdev@vger.kernel.org, Lijun Pan <ljp@linux.vnet.ibm.com>,
-        Tom Falcon <tlfalcon@linux.ibm.com>,
-        Paul Mackerras <paulus@samba.org>,
-        Dany Madden <drt@linux.ibm.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        linuxppc-dev@lists.ozlabs.org, David Miller <davem@davemloft.net>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210422094257.1641396-2-prasanna.vengateshan@microchip.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Apr 22, 2021 at 12:21 PM Michal Such=C3=A1nek <msuchanek@suse.de> w=
-rote:
->
-> Hello,
->
-> On Thu, Apr 22, 2021 at 12:06:45AM -0500, Lijun Pan wrote:
-> > On Wed, Apr 21, 2021 at 2:25 AM Sukadev Bhattiprolu
-> > <sukadev@linux.ibm.com> wrote:
-> > >
-> > > Lijun Pan [ljp@linux.vnet.ibm.com] wrote:
-> > > >
-> > > >
-> > > > > On Apr 20, 2021, at 4:35 PM, Dany Madden <drt@linux.ibm.com> wrot=
-e:
-> > > > >
-> > > > > When ibmvnic gets a FATAL error message from the vnicserver, it m=
-arks
-> > > > > the Command Respond Queue (CRQ) inactive and resets the adapter. =
-If this
-> > > > > FATAL reset fails and a transmission timeout reset follows, the C=
-RQ is
-> > > > > still inactive, ibmvnic's attempt to set link down will also fail=
-. If
-> > > > > ibmvnic abandons the reset because of this failed set link down a=
-nd this
-> > > > > is the last reset in the workqueue, then this adapter will be lef=
-t in an
-> > > > > inoperable state.
-> > > > >
-> > > > > Instead, make the driver ignore this link down failure and contin=
-ue to
-> > > > > free and re-register CRQ so that the adapter has an opportunity t=
-o
-> > > > > recover.
-> > > >
-> > > > This v2 does not adddress the concerns mentioned in v1.
-> > > > And I think it is better to exit with error from do_reset, and sche=
-dule a thorough
-> > > > do_hard_reset if the the adapter is already in unstable state.
-> > >
-> > > We had a FATAL error and when handling it, we failed to send a
-> > > link-down message to the VIOS. So what we need to try next is to
-> > > reset the connection with the VIOS. For this we must talk to the
-> > > firmware using the H_FREE_CRQ and H_REG_CRQ hcalls. do_reset()
-> > > does just that in ibmvnic_reset_crq().
-> > >
-> > > Now, sure we can attempt a "thorough hard reset" which also does
-> > > the same hcalls to reestablish the connection. Is there any
-> > > other magic in do_hard_reset()? But in addition, it also frees lot
-> > > more Linux kernel buffers and reallocates them for instance.
-> >
-> > Working around everything in do_reset will make the code very difficult
-> > to manage. Ultimately do_reset can do anything I am afraid, and do_hard=
-_reset
-> > can be removed completely or merged into do_reset.
+On Thu, Apr 22, 2021 at 03:12:49PM +0530, Prasanna Vengateshan wrote:
+> Documentation in .yaml format and updates to the MAINTAINERS
+> Also 'make dt_binding_check' is passed
+> 
+> Signed-off-by: Prasanna Vengateshan <prasanna.vengateshan@microchip.com>
+> ---
+>  .../bindings/net/dsa/microchip,lan937x.yaml   | 142 ++++++++++++++++++
+>  MAINTAINERS                                   |   1 +
+>  2 files changed, 143 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/net/dsa/microchip,lan937x.yaml
+> 
+> diff --git a/Documentation/devicetree/bindings/net/dsa/microchip,lan937x.yaml b/Documentation/devicetree/bindings/net/dsa/microchip,lan937x.yaml
+> new file mode 100644
+> index 000000000000..22128a52d699
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/net/dsa/microchip,lan937x.yaml
+> @@ -0,0 +1,142 @@
+> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+> +%YAML 1.2
+> +---
+> +$id: http://devicetree.org/schemas/net/dsa/microchip,lan937x.yaml#
+> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> +
+> +title: LAN937x Ethernet Switch Series Tree Bindings
+> +
+> +maintainers:
+> +  - UNGLinuxDriver@microchip.com
+> +
+> +allOf:
+> +  - $ref: dsa.yaml#
+> +
+> +properties:
+> +  compatible:
+> +    enum:
+> +      - microchip,lan9370
+> +      - microchip,lan9371
+> +      - microchip,lan9372
+> +      - microchip,lan9373
+> +      - microchip,lan9374
+> +
+> +  reg:
+> +    maxItems: 1
+> +
+> +  spi-max-frequency:
+> +    maximum: 50000000
+> +
+> +  reset-gpios:
+> +    description: Optional gpio specifier for a reset line
+> +    maxItems: 1
+> +
+> +required:
+> +  - compatible
+> +  - reg
+> +
+> +unevaluatedProperties: false
+> +
+> +examples:
+> +  - |
+> +    #include <dt-bindings/gpio/gpio.h>
+> +
+> +    //Ethernet switch connected via spi to the host
 
-Michal,
+If this is on SPI, why is it not under the spi bus node?
 
-I should have given more details about the above statement. Thanks for
-your detailed info in the below.
+> +    ethernet {
+> +      #address-cells = <1>;
+> +      #size-cells = <0>;
+> +
+> +      fixed-link {
+> +        speed = <1000>;
+> +        full-duplex;
+> +      };
+> +    };
+> +
+> +    spi {
+> +      #address-cells = <1>;
+> +      #size-cells = <0>;
+> +
+> +      lan9374: switch@0 {
+> +        compatible = "microchip,lan9374";
+> +        reg = <0>;
+> +
+> +        spi-max-frequency = <44000000>;
+> +
+> +        ethernet-ports {
+> +          #address-cells = <1>;
+> +          #size-cells = <0>;
+> +          port@0 {
+> +            reg = <0>;
+> +            label = "lan1";
+> +            phy-handle = <&t1phy0>;
+> +          };
+> +          port@1 {
+> +            reg = <1>;
+> +            label = "lan2";
+> +            phy-handle = <&t1phy1>;
+> +          };
+> +          port@2 {
+> +            reg = <2>;
+> +            label = "lan4";
+> +            phy-handle = <&t1phy2>;
+> +          };
+> +          port@3 {
+> +            reg = <3>;
+> +            label = "lan6";
+> +            phy-handle = <&t1phy3>;
+> +          };
+> +          port@4 {
+> +            reg = <4>;
+> +            phy-mode = "rgmii";
+> +            ethernet = <&ethernet>;
 
->
-> This debate is not very constructive.
->
-> In the context of driver that has separate do_reset and do_hard_reset
-> this fix picks the correct one unless you can refute the arguments
-> provided.
->
-> Merging do_reset and do_hard_reset might be a good code cleanup which is
-> out of the scope of this fix.
+You are missing 'ethernet' label.
 
-Right.
+> +            fixed-link {
+> +              speed = <1000>;
+> +              full-duplex;
+> +            };
+> +          };
+> +          port@5 {
+> +            reg = <5>;
+> +            label = "lan7";
+> +            fixed-link {
+> +              speed = <1000>;
+> +              full-duplex;
+> +            };
+> +          };
+> +          port@6 {
+> +            reg = <6>;
+> +            label = "lan5";
+> +            phy-handle = <&t1phy4>;
+> +          };
+> +          port@7 {
+> +            reg = <7>;
+> +            label = "lan3";
+> +            phy-handle = <&t1phy5>;
+> +          };
+> +        };
+> +
+> +        mdio {
+> +          compatible = "microchip,lan937x-mdio";
 
->
->
->
-> Given that vast majority of fixes to the vnic driver are related to the
-> reset handling it would improve stability and testability if every
-> reset took the same code path.
+You can just drop this to make the example pass. Or convert that binding 
+to schema.
 
-I agree.
-
->
-> In the context of merging do_hard_reset and do_reset the question is
-> what is the intended distinction and performance gain by having
-> 'lightweight' reset.
-
-Right.
-
->
-> I don't have a vnic protocol manual at hand and I suspect I would not
-> get one even if I searched for one.
->
-> From reading through the fixes in the past my understanding is that the
-> full reset is required when the backend changes which then potentially
-> requires different size/number of buffers.
-
-Yes, full reset is better when the backend changes.
-
->
-> What is the expected situation when reset is required without changing
-> the backend?
->
-> Is this so common that it warrants a separate 'lightweight' optimized
-> function?
->
+> +          #address-cells = <1>;
+> +          #size-cells = <0>;
+> +
+> +          t1phy0: ethernet-phy@0{
+> +            reg = <0x0>;
+> +          };
+> +          t1phy1: ethernet-phy@1{
+> +            reg = <0x1>;
+> +          };
+> +          t1phy2: ethernet-phy@2{
+> +            reg = <0x2>;
+> +          };
+> +          t1phy3: ethernet-phy@3{
+> +            reg = <0x3>;
+> +          };
+> +          t1phy4: ethernet-phy@6{
+> +            reg = <0x6>;
+> +          };
+> +          t1phy5: ethernet-phy@7{
+> +            reg = <0x7>;
+> +          };
+> +        };
+> +      };
+> +    };
+> diff --git a/MAINTAINERS b/MAINTAINERS
+> index c3c8fa572580..a0fdfef8802a 100644
+> --- a/MAINTAINERS
+> +++ b/MAINTAINERS
+> @@ -11752,6 +11752,7 @@ M:	UNGLinuxDriver@microchip.com
+>  L:	netdev@vger.kernel.org
+>  S:	Maintained
+>  F:	Documentation/devicetree/bindings/net/dsa/microchip,ksz.yaml
+> +F:	Documentation/devicetree/bindings/net/dsa/microchip,lan937x.yaml
+>  F:	drivers/net/dsa/microchip/*
+>  F:	include/linux/platform_data/microchip-ksz.h
+>  F:	net/dsa/tag_ksz.c
+> -- 
+> 2.27.0
+> 
