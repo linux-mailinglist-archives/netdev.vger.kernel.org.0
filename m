@@ -2,56 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 32C2D368660
-	for <lists+netdev@lfdr.de>; Thu, 22 Apr 2021 20:09:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 37AEA368664
+	for <lists+netdev@lfdr.de>; Thu, 22 Apr 2021 20:10:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236787AbhDVSKI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 22 Apr 2021 14:10:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57196 "EHLO
+        id S236830AbhDVSLZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 22 Apr 2021 14:11:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57492 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236058AbhDVSKF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 22 Apr 2021 14:10:05 -0400
-Received: from mail-yb1-xb2e.google.com (mail-yb1-xb2e.google.com [IPv6:2607:f8b0:4864:20::b2e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5CAD1C06174A;
-        Thu, 22 Apr 2021 11:09:29 -0700 (PDT)
-Received: by mail-yb1-xb2e.google.com with SMTP id k73so46239124ybf.3;
-        Thu, 22 Apr 2021 11:09:29 -0700 (PDT)
+        with ESMTP id S236659AbhDVSLY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 22 Apr 2021 14:11:24 -0400
+Received: from mail-yb1-xb32.google.com (mail-yb1-xb32.google.com [IPv6:2607:f8b0:4864:20::b32])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A3C2C06174A;
+        Thu, 22 Apr 2021 11:10:47 -0700 (PDT)
+Received: by mail-yb1-xb32.google.com with SMTP id 130so8754930ybd.10;
+        Thu, 22 Apr 2021 11:10:47 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=ck5dXsJs8ipPbbhauxdiabXdKXATC0+chn6WJfCnuNQ=;
-        b=vRmB0WK99lI7D7b7/sAtezGJ+4baj7y6MyxzVHCuaHylCBZ1KUe5giyGeCcFNqJOIQ
-         Vq4LCxArnIOoDJWJvMvfgcZUKP1czQMw2h5ByprnmcXUbyHopTgDkCk+n22D47c25TaE
-         PEQgibzjP4ucoJKg9CKTP03LI4MMyThHOKw4dvOYRyo6vtKq3O8CpZgJ+ytJGzKbYi59
-         yTrTlkd4S9HiQOeZYJcE8rQ+0Kj8BP+N7+VoQVn/FltQjth0VEEPYF/YR9Bd3X5N3EI7
-         6anxHNhSEpUZ5DH+QJOUbYY0A9fRVGjbt43bez14c64caod9hQP7M2vrT7YLHoJJVbii
-         aHRA==
+        bh=PPYJpKOar/qFpGg/gU+1Gq10BuC71OZBVRDZh2PCs2w=;
+        b=uNqdWu7+GScFbyxDvvcdZViXc9vq0dCZFTJH7QM7T4aunuBcKiBGLzKV9raBTxd105
+         KU8RD9MBYww3khTOFEZyeAve65iCJ7G1hnC9/1jntvCpyW/hUSGL06EMmF0wj1fwd7RL
+         NP9hihAEDcTRn7oJrLO+PYwSn5vQhs06wlY3xzyY1d60++oy2EAyCcdz70QOAo/x+KQr
+         MIocG2JkEZBqqllN21FsktbLpS/VFB48/1fPULGW7mVunVopAG5R14zmKSxs6eLsB41I
+         TC9DRriJmEp1HcwYn7kQjbQq+3U8XhBO+N7/3HVeFTK3Ib2QTG2o6S5knPKkI2nmKL5q
+         DtDQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=ck5dXsJs8ipPbbhauxdiabXdKXATC0+chn6WJfCnuNQ=;
-        b=Gw9wbvuzDhoZ+uwUULOfblmPCNTt2x5w7hKFpKSdc7nDruEzYZzEA+gphAIb420TZp
-         GYqOwSlNWGF4yiqCKcZF/1NQrnLZCoZL+fQk66o1Go76xUR+CRMYNE+i9BmQYX9g0Lbt
-         p5N7AB8LS/jkZpxhBjyd1yHL1Xy5t3tKkphgOHZS32JbYIZ7I/TMX5OIeHE47pIfxu/7
-         /XEqipUPB+7doEz36M68Y9GvCufZ4TL8WLsl5/e5R8wbUdUXYZGcuuxHx+rar500/5vb
-         c4xMyPN7OpUU4sZnpc9vAi9+Kump/LEdB1POfEXIiOAFI1/RIx7s0rSRGTTgHuuUKwV3
-         NWAA==
-X-Gm-Message-State: AOAM532YCBrj3tH7UZEPJhxc6ueiJCNcA0srWjymS5wpNP/1LgEWDFSy
-        0zxCHXYxzFnVZKGzI28VOB6DabbZt3iFO2e1HwNSQHQnc1A=
-X-Google-Smtp-Source: ABdhPJzZiP4dOMuru75rHtViTdj0UeEuZuyh7/5CUBNrLtZT1gNIAtKlHQaLYTriyRUawwQ3aJ2Ory/U2sJx6PvVqOg=
-X-Received: by 2002:a25:ba06:: with SMTP id t6mr6264451ybg.459.1619114968572;
- Thu, 22 Apr 2021 11:09:28 -0700 (PDT)
+        bh=PPYJpKOar/qFpGg/gU+1Gq10BuC71OZBVRDZh2PCs2w=;
+        b=fR4n9ZYg/UYmv+JzdYrt0Ec0ttFMFsrY7gLdRXv4IFTnU/e3IeC0TX21Xg5bT31y2U
+         cPorpSuYqFnD21QZSEodwijByMhJFeNC7RFYe/gIMcS/hSi0mTExWTcaXJYlkSTR0hlo
+         EaPlU4C2THfxMabCiIj6AkJpXH12knbS9Sz8Qt2fAcjwrzpo33VjsYvG2h4waY03xy5d
+         lkZL3kmIsogMybckvj9LJyAgPh34DZxxOwzCpwBcR1H+/VLHf3+qmA/DcWaoGvFDGi/3
+         f5hIHGAq0BbX6Di7J797Hb3BihrvnCxs4IycA4/L7zdZKo+WVlJcd+LPI+BaUtt0ACUt
+         em2w==
+X-Gm-Message-State: AOAM532YgxDdaTKttaAkWpk1BkZLni0m5/KpIsycuVk9NlsjltBeipWq
+        0nEW3PZG7n0K9AfwMY6ELSxK9AU5zDQFYgCz+84=
+X-Google-Smtp-Source: ABdhPJwEEylLI7WkZTEHesGEkeGs8jIP9WF+IXWWr26jOPptKy2UTgFrIK0lWWzQ4Bel+MjOiX2/vUlTBhMxwzJdkGc=
+X-Received: by 2002:a25:dc46:: with SMTP id y67mr6766176ybe.27.1619115046357;
+ Thu, 22 Apr 2021 11:10:46 -0700 (PDT)
 MIME-Version: 1.0
-References: <20210416202404.3443623-1-andrii@kernel.org> <20210416202404.3443623-5-andrii@kernel.org>
- <8cde2756-e62f-7103-05b1-7d9a9d97442a@fb.com>
-In-Reply-To: <8cde2756-e62f-7103-05b1-7d9a9d97442a@fb.com>
+References: <20210416202404.3443623-1-andrii@kernel.org> <20210416202404.3443623-6-andrii@kernel.org>
+ <71bfd67c-c8f0-595c-e721-201ec4e8e062@fb.com>
+In-Reply-To: <71bfd67c-c8f0-595c-e721-201ec4e8e062@fb.com>
 From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Thu, 22 Apr 2021 11:09:17 -0700
-Message-ID: <CAEf4BzYFHp8vt6rwgcZG5Lp-DQU0xrVq8QXvDqOyVOtx0gosnw@mail.gmail.com>
-Subject: Re: [PATCH v2 bpf-next 04/17] libbpf: mark BPF subprogs with hidden
- visibility as static for BPF verifier
+Date:   Thu, 22 Apr 2021 11:10:35 -0700
+Message-ID: <CAEf4BzZ4kSXjv762oLW4ihGD235Xi4kHAPgZU5fHC3q+7_HKzA@mail.gmail.com>
+Subject: Re: [PATCH v2 bpf-next 05/17] libbpf: allow gaps in BPF program
+ sections to support overriden weak functions
 To:     Yonghong Song <yhs@fb.com>
 Cc:     Andrii Nakryiko <andrii@kernel.org>, bpf <bpf@vger.kernel.org>,
         Networking <netdev@vger.kernel.org>,
@@ -63,101 +63,120 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Apr 21, 2021 at 10:43 PM Yonghong Song <yhs@fb.com> wrote:
+On Wed, Apr 21, 2021 at 11:26 PM Yonghong Song <yhs@fb.com> wrote:
 >
 >
 >
 > On 4/16/21 1:23 PM, Andrii Nakryiko wrote:
-> > Define __hidden helper macro in bpf_helpers.h, which is a short-hand for
-> > __attribute__((visibility("hidden"))). Add libbpf support to mark BPF
-> > subprograms marked with __hidden as static in BTF information to enforce BPF
-> > verifier's static function validation algorithm, which takes more information
-> > (caller's context) into account during a subprogram validation.
+> > Currently libbpf is very strict about parsing BPF program isnstruction
+>
+> isnstruction => instruction
+
+will fix
+
+>
+> > sections. No gaps are allowed between sequential BPF programs within a given
+> > ELF section. Libbpf enforced that by keeping track of the next section offset
+> > that should start a new BPF (sub)program and cross-checks that by searching for
+> > a corresponding STT_FUNC ELF symbol.
+> >
+> > But this is too restrictive once we allow to have weak BPF programs and link
+> > together two or more BPF object files. In such case, some weak BPF programs
+> > might be "overriden" by either non-weak BPF program with the same name and
+>
+> overriden => overridden
+
+will fix
+
+>
+> > signature, or even by another weak BPF program that just happened to be linked
+> > first. That, in turn, leaves BPF instructions of the "lost" BPF (sub)program
+> > intact, but there is no corresponding ELF symbol, because no one is going to
+> > be referencing it.
+> >
+> > Libbpf already correctly handles such cases in the sense that it won't append
+> > such dead code to actual BPF programs loaded into kernel. So the only change
+> > that needs to be done is to relax the logic of parsing BPF instruction
+> > sections. Instead of assuming next BPF (sub)program section offset, iterate
+> > available STT_FUNC ELF symbols to discover all available BPF subprograms and
+> > programs.
 > >
 > > Signed-off-by: Andrii Nakryiko <andrii@kernel.org>
+>
+> Ack with a minor suggestion below.
+> Acked-by: Yonghong Song <yhs@fb.com>
+>
 > > ---
-> >   tools/lib/bpf/bpf_helpers.h     |  8 ++++++
-> >   tools/lib/bpf/btf.c             |  5 ----
-> >   tools/lib/bpf/libbpf.c          | 45 ++++++++++++++++++++++++++++++++-
-> >   tools/lib/bpf/libbpf_internal.h |  6 +++++
-> >   4 files changed, 58 insertions(+), 6 deletions(-)
+> >   tools/lib/bpf/libbpf.c | 56 ++++++++++++++++--------------------------
+> >   1 file changed, 21 insertions(+), 35 deletions(-)
 > >
-> > diff --git a/tools/lib/bpf/bpf_helpers.h b/tools/lib/bpf/bpf_helpers.h
-> > index 75c7581b304c..9720dc0b4605 100644
-> > --- a/tools/lib/bpf/bpf_helpers.h
-> > +++ b/tools/lib/bpf/bpf_helpers.h
-> > @@ -47,6 +47,14 @@
-> >   #define __weak __attribute__((weak))
-> >   #endif
+> > diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
+> > index ce5558d0a61b..a0e6d6bc47f3 100644
+> > --- a/tools/lib/bpf/libbpf.c
+> > +++ b/tools/lib/bpf/libbpf.c
+> > @@ -502,8 +502,6 @@ static Elf_Scn *elf_sec_by_name(const struct bpf_object *obj, const char *name);
+> >   static int elf_sec_hdr(const struct bpf_object *obj, Elf_Scn *scn, GElf_Shdr *hdr);
+> >   static const char *elf_sec_name(const struct bpf_object *obj, Elf_Scn *scn);
+> >   static Elf_Data *elf_sec_data(const struct bpf_object *obj, Elf_Scn *scn);
+> > -static int elf_sym_by_sec_off(const struct bpf_object *obj, size_t sec_idx,
+> > -                           size_t off, __u32 sym_type, GElf_Sym *sym);
 > >
-> > +/*
-> > + * Use __hidden attribute to mark a non-static BPF subprogram effectively
-> > + * static for BPF verifier's verification algorithm purposes, allowing more
-> > + * extensive and permissive BPF verification process, taking into account
-> > + * subprogram's caller context.
-> > + */
-> > +#define __hidden __attribute__((visibility("hidden")))
+> >   void bpf_program__unload(struct bpf_program *prog)
+> >   {
+> > @@ -644,10 +642,12 @@ static int
+> >   bpf_object__add_programs(struct bpf_object *obj, Elf_Data *sec_data,
+> >                        const char *sec_name, int sec_idx)
+> >   {
+> > +     Elf_Data *symbols = obj->efile.symbols;
+> >       struct bpf_program *prog, *progs;
+> >       void *data = sec_data->d_buf;
+> >       size_t sec_sz = sec_data->d_size, sec_off, prog_sz;
+> > -     int nr_progs, err;
+> > +     size_t n = symbols->d_size / sizeof(GElf_Sym);
 >
-> To prevent potential external __hidden macro definition conflict, how
-> about
->
-> #ifdef __hidden
-> #undef __hidden
-> #define __hidden __attribute__((visibility("hidden")))
-> #endif
+> Maybe use "nr_syms" instead of "n" to be more descriptive?
 >
 
-We do force #undef only with __always_inline because of the bad
-definition in linux/stddef.h And we check #ifndef for __weak, because
-__weak is defined in kernel headers. This is not really the case for
-__hidden, the only definition is in
-tools/lib/traceevent/event-parse-local.h, which I don't think we
-should worry about in BPF context. So I wanted to keep it simple and
-fix only if that really causes some real conflicts.
+sure
 
-And keep in mind that in BPF code bpf_helpers.h is usually included as
-one of the first few headers anyways.
-
-
-> > +
-> >   /* When utilizing vmlinux.h with BPF CO-RE, user BPF programs can't include
-> >    * any system-level headers (such as stddef.h, linux/version.h, etc), and
-> >    * commonly-used macros like NULL and KERNEL_VERSION aren't available through
-
-[...]
-
-> > @@ -698,6 +700,15 @@ bpf_object__add_programs(struct bpf_object *obj, Elf_Data *sec_data,
-> >               if (err)
-> >                       return err;
+> > +     int nr_progs, err, i;
+> >       const char *name;
+> >       GElf_Sym sym;
 > >
-> > +             /* if function is a global/weak symbol, but has hidden
-> > +              * visibility (or any non-default one), mark its BTF FUNC as
-> > +              * static to enable more permissive BPF verification mode with
-> > +              * more outside context available to BPF verifier
-> > +              */
-> > +             if (GELF_ST_BIND(sym.st_info) != STB_LOCAL
-> > +                 && GELF_ST_VISIBILITY(sym.st_other) != STV_DEFAULT)
->
-> Maybe we should check GELF_ST_VISIBILITY(sym.st_other) == STV_HIDDEN
-> instead?
-
-It felt like only STV_DEFAULT should be "exported", semantically
-speaking. Everything else would be treated as if it was static, except
-that C rules require that function has to be global. Do you think
-there is some danger to do it this way?
-
-Currently static linker doesn't do anything special for STV_INTERNAL
-and STV_PROTECTED, so we could just disable those. Do you prefer that?
-
-I just felt that there is no risk of regression if we do this for
-non-STV_DEFAULT generically.
-
-
->
-> > +                     prog->mark_btf_static = true;
-> > +
+> > @@ -655,14 +655,16 @@ bpf_object__add_programs(struct bpf_object *obj, Elf_Data *sec_data,
+> >       nr_progs = obj->nr_programs;
+> >       sec_off = 0;
+> >
+> > -     while (sec_off < sec_sz) {
+> > -             if (elf_sym_by_sec_off(obj, sec_idx, sec_off, STT_FUNC, &sym)) {
+> > -                     pr_warn("sec '%s': failed to find program symbol at offset %zu\n",
+> > -                             sec_name, sec_off);
+> > -                     return -LIBBPF_ERRNO__FORMAT;
+> > -             }
+> > +     for (i = 0; i < n; i++) {
+> > +             if (!gelf_getsym(symbols, i, &sym))
+> > +                     continue;
+> > +             if (sym.st_shndx != sec_idx)
+> > +                     continue;
+> > +             if (GELF_ST_TYPE(sym.st_info) != STT_FUNC)
+> > +                     continue;
+> >
+> >               prog_sz = sym.st_size;
+> > +             sec_off = sym.st_value;
+> >
+> >               name = elf_sym_str(obj, sym.st_name);
+> >               if (!name) {
+> > @@ -711,8 +713,6 @@ bpf_object__add_programs(struct bpf_object *obj, Elf_Data *sec_data,
+> >
 > >               nr_progs++;
 > >               obj->nr_programs = nr_progs;
+> > -
+> > -             sec_off += prog_sz;
+> >       }
 > >
-
-[...]
+> >       return 0;
+> > @@ -2825,26 +2825,6 @@ static Elf_Data *elf_sec_data(const struct bpf_object *obj, Elf_Scn *scn)
+> >       return data;
+> >   }
+> >
+> [...]
