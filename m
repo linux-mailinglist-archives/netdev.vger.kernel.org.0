@@ -2,106 +2,136 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 03FF5368541
-	for <lists+netdev@lfdr.de>; Thu, 22 Apr 2021 18:52:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B40A2368549
+	for <lists+netdev@lfdr.de>; Thu, 22 Apr 2021 18:54:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237972AbhDVQw7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 22 Apr 2021 12:52:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39996 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236236AbhDVQw6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 22 Apr 2021 12:52:58 -0400
-Received: from mail-yb1-xb36.google.com (mail-yb1-xb36.google.com [IPv6:2607:f8b0:4864:20::b36])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 58898C06174A
-        for <netdev@vger.kernel.org>; Thu, 22 Apr 2021 09:52:23 -0700 (PDT)
-Received: by mail-yb1-xb36.google.com with SMTP id 65so52276007ybc.4
-        for <netdev@vger.kernel.org>; Thu, 22 Apr 2021 09:52:23 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=yOkRs5K237gbs6NB3+gfmjX34Dy4iq9wMXif+x22Iz8=;
-        b=AHzAwu6MBDObX75VQhBcdu7RnDvM5vAUMIR/iHS3V5/BGi9W0n4jx03qZJz9U37uiE
-         0kjuqZ1M3x6N18PncMR6LQEJytpJFhqDncy0wwwgKh9z/3nhj/HjRwvpr0BztWP0Uktf
-         BP2IFGgc2e6S/WH/c63V1MVNvz50Z2b/XoIbhm2GYd93GkT1MOLuuPuL1jh50VJTjl/u
-         NJrdA0HBBiRSeAWozu0nDRi9+fuAw1m1T+A8EoZJCw00oohwMDdIvq46PiW/AF3L8q7j
-         42MkrEAoTDt0FmVcBA03wCazvRoq/LRai8HRo/6JH/a8ImJsIhz6L6gw1xvesmkzLop6
-         mrmA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=yOkRs5K237gbs6NB3+gfmjX34Dy4iq9wMXif+x22Iz8=;
-        b=L5id/A8QiKeejfouN6jzsSjU8Kej2Vy7y600wQfR3JJx5GFbLL1aSonIdJANC/KaWw
-         LO+mQqtxQ0xT+rSwXalaNnnBoN18o0sh/ZsUgUucGU7Tn94FDTKnVCZhW/XAddVl+8gQ
-         HwnsQABLqLblRDDyBgyZ5uYhQVQuZROFk1YytMw9/F+t4y2BglPB62nQeE++O+sMr7/x
-         sTjHNDVSJmM8Yum5BogDd4Ovs2NFT86Dyz7iAsyOp/2YklGBCBpv98D1lE5C3Nj9yGeT
-         SVoULXPSiw3lDlQ2KbJeSW9mm1fXo/IE9ptpp7YZID0mn+wPjCNORu4khxexWT5fLokp
-         wBEw==
-X-Gm-Message-State: AOAM533OvBZykvMg+X8hVtGurcvIvZoV5LTR66LndJNzVvBrw6kAwuuH
-        3dqwuLVlskEV0d1j2ReFnplrPPc8S6iG7BRwDvLRuPFN8qKFQg==
-X-Google-Smtp-Source: ABdhPJy7j5HYC4iKiLboV+WKi7D6pJIZJzjC0yhQZJogGQAWyxpptaIBXGKrobDExKxmRatAdTWCv/YoDx+RzKzdcCY=
-X-Received: by 2002:a25:4883:: with SMTP id v125mr6306231yba.253.1619110342298;
- Thu, 22 Apr 2021 09:52:22 -0700 (PDT)
+        id S237829AbhDVQyf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 22 Apr 2021 12:54:35 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:33186 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S236459AbhDVQyd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 22 Apr 2021 12:54:33 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1619110438;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=L67e35Y8xefipQs4qC6+RLpK6ouDIFBfNvy+uHX4DBo=;
+        b=AHxGH+OZ18vjsdeG3HFyBJBA6IAl+ce3DpCS7TVbH7oUf4Mv66JQAoXm6XzUxZ14GCYFcw
+        uvClTySAlha49xlgndV9uVtl9ze8QzjQME4kDVyX3dHUjfYYgP5+PC9jzzjjDgWD+lGgUC
+        c4y8XPuUkecjnVY1mKMbbAXMPvqA8Gc=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-488-sCyT0bQ0MnKfk83RlvTJmw-1; Thu, 22 Apr 2021 12:53:54 -0400
+X-MC-Unique: sCyT0bQ0MnKfk83RlvTJmw-1
+Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 6D1E5A40C7;
+        Thu, 22 Apr 2021 16:53:52 +0000 (UTC)
+Received: from carbon (unknown [10.36.110.19])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id F175B5C261;
+        Thu, 22 Apr 2021 16:53:34 +0000 (UTC)
+Date:   Thu, 22 Apr 2021 18:53:32 +0200
+From:   Jesper Dangaard Brouer <brouer@redhat.com>
+To:     Hangbin Liu <liuhangbin@gmail.com>
+Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org,
+        Toke =?UTF-8?B?SMO4aWxh?= =?UTF-8?B?bmQtSsO4cmdlbnNlbg==?= 
+        <toke@redhat.com>, Jiri Benc <jbenc@redhat.com>,
+        Eelco Chaudron <echaudro@redhat.com>, ast@kernel.org,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Lorenzo Bianconi <lorenzo.bianconi@redhat.com>,
+        David Ahern <dsahern@gmail.com>,
+        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
+        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
+        =?UTF-8?B?QmrDtnJuIFQ=?= =?UTF-8?B?w7ZwZWw=?= 
+        <bjorn.topel@gmail.com>, Martin KaFai Lau <kafai@fb.com>,
+        brouer@redhat.com
+Subject: Re: [PATCHv9 bpf-next 2/4] xdp: extend xdp_redirect_map with
+ broadcast support
+Message-ID: <20210422185332.3199ca2e@carbon>
+In-Reply-To: <20210422071454.2023282-3-liuhangbin@gmail.com>
+References: <20210422071454.2023282-1-liuhangbin@gmail.com>
+        <20210422071454.2023282-3-liuhangbin@gmail.com>
 MIME-Version: 1.0
-References: <20210421231100.7467-1-phil@philpotter.co.uk> <20210422003942.GF4841@breakpoint.cc>
- <YIGeVLyfa2MrAZym@hog>
-In-Reply-To: <YIGeVLyfa2MrAZym@hog>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Thu, 22 Apr 2021 18:52:10 +0200
-Message-ID: <CANn89iJSy82k+5b-vgSE-tD7hc8MhM6Niu=eY8sg-b7LbULouQ@mail.gmail.com>
-Subject: Re: [PATCH] net: geneve: modify IP header check in geneve6_xmit_skb
-To:     Sabrina Dubroca <sd@queasysnail.net>
-Cc:     Florian Westphal <fw@strlen.de>,
-        Phillip Potter <phil@philpotter.co.uk>,
-        David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Apr 22, 2021 at 6:04 PM Sabrina Dubroca <sd@queasysnail.net> wrote:
->
-> 2021-04-22, 02:39:42 +0200, Florian Westphal wrote:
-> > Phillip Potter <phil@philpotter.co.uk> wrote:
-> > > Modify the check in geneve6_xmit_skb to use the size of a struct iphdr
-> > > rather than struct ipv6hdr. This fixes two kernel selftest failures
-> > > introduced by commit 6628ddfec758
-> > > ("net: geneve: check skb is large enough for IPv4/IPv6 header"), without
-> > > diminishing the fix provided by that commit.
-> >
-> > What errors?
-> >
-> > > Reported-by: kernel test robot <oliver.sang@intel.com>
-> > > Signed-off-by: Phillip Potter <phil@philpotter.co.uk>
-> > > ---
-> > >  drivers/net/geneve.c | 2 +-
-> > >  1 file changed, 1 insertion(+), 1 deletion(-)
-> > >
-> > > diff --git a/drivers/net/geneve.c b/drivers/net/geneve.c
-> > > index 42f31c681846..a57a5e6f614f 100644
-> > > --- a/drivers/net/geneve.c
-> > > +++ b/drivers/net/geneve.c
-> > > @@ -988,7 +988,7 @@ static int geneve6_xmit_skb(struct sk_buff *skb, struct net_device *dev,
-> > >     __be16 sport;
-> > >     int err;
-> > >
-> > > -   if (!pskb_network_may_pull(skb, sizeof(struct ipv6hdr)))
-> > > +   if (!pskb_network_may_pull(skb, sizeof(struct iphdr)))
-> > >             return -EINVAL;
-> >
-> > Seems this is papering over some bug, this change makes no sense to
-> > me.  Can you please explain this?
->
-> I'm not sure the original commit (6628ddfec758 ("net: geneve: check
-> skb is large enough for IPv4/IPv6 header")) is correct either. GENEVE
-> isn't limited to carrying IP, I think an ethernet header with not much
-> else on top should be valid.
+On Thu, 22 Apr 2021 15:14:52 +0800
+Hangbin Liu <liuhangbin@gmail.com> wrote:
 
-Maybe, but we still attempt to use ip_hdr() in this case, from
-geneve_get_v6_dst()
+> diff --git a/net/core/filter.c b/net/core/filter.c
+> index cae56d08a670..afec192c3b21 100644
+> --- a/net/core/filter.c
+> +++ b/net/core/filter.c
+[...]
+>  int xdp_do_redirect(struct net_device *dev, struct xdp_buff *xdp,
+>  		    struct bpf_prog *xdp_prog)
+>  {
+> @@ -3933,6 +3950,7 @@ int xdp_do_redirect(struct net_device *dev, struct xdp_buff *xdp,
+>  	enum bpf_map_type map_type = ri->map_type;
+>  	void *fwd = ri->tgt_value;
+>  	u32 map_id = ri->map_id;
+> +	struct bpf_map *map;
+>  	int err;
+>  
+>  	ri->map_id = 0; /* Valid map id idr range: [1,INT_MAX[ */
+> @@ -3942,7 +3960,12 @@ int xdp_do_redirect(struct net_device *dev, struct xdp_buff *xdp,
+>  	case BPF_MAP_TYPE_DEVMAP:
+>  		fallthrough;
+>  	case BPF_MAP_TYPE_DEVMAP_HASH:
+> -		err = dev_map_enqueue(fwd, xdp, dev);
+> +		map = xchg(&ri->map, NULL);
 
-So there is something fishy.
+Hmm, this looks dangerous for performance to have on this fast-path.
+The xchg call can be expensive, AFAIK this is an atomic operation.
+
+
+> +		if (map)
+> +			err = dev_map_enqueue_multi(xdp, dev, map,
+> +						    ri->flags & BPF_F_EXCLUDE_INGRESS);
+> +		else
+> +			err = dev_map_enqueue(fwd, xdp, dev);
+>  		break;
+>  	case BPF_MAP_TYPE_CPUMAP:
+>  		err = cpu_map_enqueue(fwd, xdp, dev);
+> @@ -3984,13 +4007,19 @@ static int xdp_do_generic_redirect_map(struct net_device *dev,
+>  				       enum bpf_map_type map_type, u32 map_id)
+>  {
+>  	struct bpf_redirect_info *ri = this_cpu_ptr(&bpf_redirect_info);
+> +	struct bpf_map *map;
+>  	int err;
+>  
+>  	switch (map_type) {
+>  	case BPF_MAP_TYPE_DEVMAP:
+>  		fallthrough;
+>  	case BPF_MAP_TYPE_DEVMAP_HASH:
+> -		err = dev_map_generic_redirect(fwd, skb, xdp_prog);
+> +		map = xchg(&ri->map, NULL);
+
+Same here!
+
+> +		if (map)
+> +			err = dev_map_redirect_multi(dev, skb, xdp_prog, map,
+> +						     ri->flags & BPF_F_EXCLUDE_INGRESS);
+> +		else
+> +			err = dev_map_generic_redirect(fwd, skb, xdp_prog);
+>  		if (unlikely(err))
+>  			goto err;
+>  		break;
+
+
+
+-- 
+Best regards,
+  Jesper Dangaard Brouer
+  MSc.CS, Principal Kernel Engineer at Red Hat
+  LinkedIn: http://www.linkedin.com/in/brouer
+
