@@ -2,125 +2,236 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C4CF436867B
-	for <lists+netdev@lfdr.de>; Thu, 22 Apr 2021 20:21:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 718DC368684
+	for <lists+netdev@lfdr.de>; Thu, 22 Apr 2021 20:23:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236903AbhDVSVj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 22 Apr 2021 14:21:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59732 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236873AbhDVSVh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 22 Apr 2021 14:21:37 -0400
-Received: from mail-pj1-x1029.google.com (mail-pj1-x1029.google.com [IPv6:2607:f8b0:4864:20::1029])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F23FC06138B
-        for <netdev@vger.kernel.org>; Thu, 22 Apr 2021 11:21:01 -0700 (PDT)
-Received: by mail-pj1-x1029.google.com with SMTP id f11-20020a17090a638bb02901524d3a3d48so1450624pjj.3
-        for <netdev@vger.kernel.org>; Thu, 22 Apr 2021 11:21:01 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=k6MO6W4PcnXzP6uuyjmhxnwfDotiZ6sasWpgvoL068E=;
-        b=i0pRqER/1z6lfSeBcdJMNqEfwIaFjUGjAlgKC8/uqmBsOfOcPxlOainv03U0ezAop1
-         azHBuG49EdjGv1WSSXAzD/kG3HDYh4utZ9vwAz/eqtmHbS/3aWPbm9GQxHfNkhTimANu
-         8bIy91/FGzOyJ5ryQ46xNy05PfvFPPie0q9LE5BnhACFpOeSq0x/UnlZUtmGy93bPg/9
-         vvFOtHsSTeyLHlczEY/mQMir17Y+UaWb1pFZXVa7xwOV71gjoVEI73fB6Ktm1Rd9LElw
-         jVg3RpX03sLCMvK03yxOEPxWgxpqQ9aeSxjYyNekP4m59QXgzdbSVP2OiBKziAVlbiQ4
-         +W7w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=k6MO6W4PcnXzP6uuyjmhxnwfDotiZ6sasWpgvoL068E=;
-        b=cjrVuhQSd62p7AdBPYuwPBYW4VHtSsRmFjDs3JA6e6ZtiHFfjjhFyXAfWbKp88c8eJ
-         0nCMgu+oEO/W/sW4l1Sk5LTWgvvvXhDF/Rslc1L8Ud6zr2JZ/YWcICO1Ljq53ol8aQbq
-         d+/YQQr3YrJzgGP4WFuR6sTuDhhu/N4DjicEum+/qm8f0/cU8qMG3Fl8KPCiQ1DYQI/d
-         Tdg+sXc/I9uWgsS3OtQwvG+RLKEOGZNLk0qReL4s2jRm5XthBM6299sA1SuKDBBT2u2i
-         1UOMRr0NcBweV3TLZI3Xpdwg5jNtPKref7ekIKMuMNUrXEAu0ybMUNfLo9sYPJ9JRs8a
-         yhuQ==
-X-Gm-Message-State: AOAM533UkEsuN/VdEY2kyDq6UNSP6umHZipiRf02sgTqqr4exzojM6+E
-        R6packBc856QRP6qIh35fQWArIvoGG8=
-X-Google-Smtp-Source: ABdhPJyshwAsDq3MCvazwBuItbM10KSfAg+/4EIvdg4ekhpb8CG94HrMmvy0eMtk3Dktr7bbORccbw==
-X-Received: by 2002:a17:90a:4d8a:: with SMTP id m10mr81742pjh.42.1619115660236;
-        Thu, 22 Apr 2021 11:21:00 -0700 (PDT)
-Received: from [192.168.1.67] (99-44-17-11.lightspeed.irvnca.sbcglobal.net. [99.44.17.11])
-        by smtp.gmail.com with ESMTPSA id f19sm2847020pga.71.2021.04.22.11.20.58
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 22 Apr 2021 11:20:59 -0700 (PDT)
-Subject: Re: [RFC net-next] net: stmmac: should not modify RX descriptor when
- STMMAC resume
-To:     Jon Hunter <jonathanh@nvidia.com>,
-        Joakim Zhang <qiangqing.zhang@nxp.com>,
-        "peppe.cavallaro@st.com" <peppe.cavallaro@st.com>,
-        "alexandre.torgue@foss.st.com" <alexandre.torgue@foss.st.com>,
-        "joabreu@synopsys.com" <joabreu@synopsys.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "mcoquelin.stm32@gmail.com" <mcoquelin.stm32@gmail.com>,
-        "andrew@lunn.ch" <andrew@lunn.ch>
-Cc:     dl-linux-imx <linux-imx@nxp.com>,
-        "treding@nvidia.com" <treding@nvidia.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-References: <20210419115921.19219-1-qiangqing.zhang@nxp.com>
- <f00e1790-5ba6-c9f0-f34f-d8a39c355cd7@nvidia.com>
- <DB8PR04MB67954D37A59B2D91C69BF6A9E6489@DB8PR04MB6795.eurprd04.prod.outlook.com>
- <cec17489-2ef9-7862-94c8-202d31507a0c@nvidia.com>
- <DB8PR04MB67953A499438FF3FF6BE531BE6469@DB8PR04MB6795.eurprd04.prod.outlook.com>
- <2cf60306-e2b9-cc24-359c-774c9d339074@gmail.com>
- <9abe58c4-a788-e07d-f281-847ee5b9fcf3@nvidia.com>
- <22bf351b-3f01-db62-8185-7a925f19998e@gmail.com>
- <bd184c72-7b12-db4c-0dd3-25f0fd45b7aa@nvidia.com>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-Message-ID: <3ba28b13-15eb-85bd-0625-f99450c8341b@gmail.com>
-Date:   Thu, 22 Apr 2021 11:20:57 -0700
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Firefox/78.0 Thunderbird/78.9.0
+        id S238583AbhDVSYK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 22 Apr 2021 14:24:10 -0400
+Received: from out01.mta.xmission.com ([166.70.13.231]:48480 "EHLO
+        out01.mta.xmission.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S236989AbhDVSYD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 22 Apr 2021 14:24:03 -0400
+Received: from in02.mta.xmission.com ([166.70.13.52])
+        by out01.mta.xmission.com with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.93)
+        (envelope-from <ebiederm@xmission.com>)
+        id 1lZdz3-00FE0J-4i; Thu, 22 Apr 2021 12:23:25 -0600
+Received: from ip68-227-160-95.om.om.cox.net ([68.227.160.95] helo=fess.xmission.com)
+        by in02.mta.xmission.com with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.93)
+        (envelope-from <ebiederm@xmission.com>)
+        id 1lZdz1-0002QV-Qf; Thu, 22 Apr 2021 12:23:24 -0600
+From:   ebiederm@xmission.com (Eric W. Biederman)
+To:     Will Deacon <will@kernel.org>
+Cc:     Liam Howlett <liam.howlett@oracle.com>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Julien Grall <julien.grall@arm.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        "linux-arm-kernel\@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>,
+        "linux-kernel\@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "netdev\@vger.kernel.org" <netdev@vger.kernel.org>,
+        "bpf\@vger.kernel.org" <bpf@vger.kernel.org>
+In-Reply-To: <20210422124849.GA1521@willie-the-truck> (Will Deacon's message
+        of "Thu, 22 Apr 2021 13:48:50 +0100")
+References: <20210420165001.3790670-1-Liam.Howlett@Oracle.com>
+        <20210420165001.3790670-2-Liam.Howlett@Oracle.com>
+        <20210422124849.GA1521@willie-the-truck>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.1 (gnu/linux)
+Date:   Thu, 22 Apr 2021 13:22:04 -0500
+Message-ID: <m1v98egoxf.fsf@fess.ebiederm.org>
 MIME-Version: 1.0
-In-Reply-To: <bd184c72-7b12-db4c-0dd3-25f0fd45b7aa@nvidia.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
+X-XM-SPF: eid=1lZdz1-0002QV-Qf;;;mid=<m1v98egoxf.fsf@fess.ebiederm.org>;;;hst=in02.mta.xmission.com;;;ip=68.227.160.95;;;frm=ebiederm@xmission.com;;;spf=neutral
+X-XM-AID: U2FsdGVkX18OxciQMXgnIAFK7zvjgsqQsTkQAuA57qY=
+X-SA-Exim-Connect-IP: 68.227.160.95
+X-SA-Exim-Mail-From: ebiederm@xmission.com
+X-Spam-Checker-Version: SpamAssassin 3.4.2 (2018-09-13) on sa08.xmission.com
+X-Spam-Level: ***
+X-Spam-Status: No, score=3.4 required=8.0 tests=ALL_TRUSTED,BAYES_50,
+        DCC_CHECK_NEGATIVE,LotsOfNums_01,T_TM2_M_HEADER_IN_MSG,T_TooManySym_01,
+        T_TooManySym_02,T_TooManySym_03,XMNoVowels,XMSubLong,XM_B_SpammyWords
+        autolearn=disabled version=3.4.2
+X-Spam-Report: * -1.0 ALL_TRUSTED Passed through trusted hosts only via SMTP
+        *  0.8 BAYES_50 BODY: Bayes spam probability is 40 to 60%
+        *      [score: 0.4287]
+        *  1.5 XMNoVowels Alpha-numberic number with no vowels
+        *  0.7 XMSubLong Long Subject
+        *  0.0 T_TM2_M_HEADER_IN_MSG BODY: No description available.
+        *  1.2 LotsOfNums_01 BODY: Lots of long strings of numbers
+        * -0.0 DCC_CHECK_NEGATIVE Not listed in DCC
+        *      [sa08 0; Body=1 Fuz1=1 Fuz2=1]
+        *  0.0 T_TooManySym_03 6+ unique symbols in subject
+        *  0.0 T_TooManySym_01 4+ unique symbols in subject
+        *  0.0 T_TooManySym_02 5+ unique symbols in subject
+        *  0.2 XM_B_SpammyWords One or more commonly used spammy words
+X-Spam-DCC: ; sa08 0; Body=1 Fuz1=1 Fuz2=1 
+X-Spam-Combo: ***;Will Deacon <will@kernel.org>
+X-Spam-Relay-Country: 
+X-Spam-Timing: total 774 ms - load_scoreonly_sql: 0.04 (0.0%),
+        signal_user_changed: 14 (1.8%), b_tie_ro: 12 (1.5%), parse: 0.96
+        (0.1%), extract_message_metadata: 4.6 (0.6%), get_uri_detail_list: 2.7
+        (0.3%), tests_pri_-1000: 3.8 (0.5%), tests_pri_-950: 1.49 (0.2%),
+        tests_pri_-900: 1.17 (0.2%), tests_pri_-90: 314 (40.5%), check_bayes:
+        311 (40.2%), b_tokenize: 11 (1.4%), b_tok_get_all: 14 (1.7%),
+        b_comp_prob: 3.4 (0.4%), b_tok_touch_all: 277 (35.7%), b_finish: 1.62
+        (0.2%), tests_pri_0: 418 (54.0%), check_dkim_signature: 0.78 (0.1%),
+        check_dkim_adsp: 3.0 (0.4%), poll_dns_idle: 1.32 (0.2%), tests_pri_10:
+        2.2 (0.3%), tests_pri_500: 8 (1.0%), rewrite_mail: 0.00 (0.0%)
+Subject: Re: [PATCH 2/3] arm64: signal: sigreturn() and rt_sigreturn() sometime returns the wrong signals
+X-SA-Exim-Version: 4.2.1 (built Sat, 08 Feb 2020 21:53:50 +0000)
+X-SA-Exim-Scanned: Yes (on in02.mta.xmission.com)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Will Deacon <will@kernel.org> writes:
+
+> [+Eric as he actually understands how this is supposed to work]
+
+I try.
+
+> On Tue, Apr 20, 2021 at 04:50:13PM +0000, Liam Howlett wrote:
+>> arm64_notify_segfault() was used to force a SIGSEGV in all error cases
+>> in sigreturn() and rt_sigreturn() to avoid writing a new sig handler.
+>> There is now a better sig handler to use which does not search the VMA
+>> address space and return a slightly incorrect error code.  Restore the
+>> older and correct si_code of SI_KERNEL by using arm64_notify_die().  In
+>> the case of !access_ok(), simply return SIGSEGV with si_code
+>> SEGV_ACCERR.
+
+What is userspace cares?  Why does it care?
+
+This is changing userspace visible semantics so understanding userspace
+and understanding how it might break, and what the risk of regression
+seems the most important detail here.
+
+>> This change requires exporting arm64_notfiy_die() to the arm64 traps.h
+>> 
+>> Fixes: f71016a8a8c5 (arm64: signal: Call arm64_notify_segfault when
+>> failing to deliver signal)
+>> Signed-off-by: Liam R. Howlett <Liam.Howlett@Oracle.com>
+>> ---
+>>  arch/arm64/include/asm/traps.h |  2 ++
+>>  arch/arm64/kernel/signal.c     |  8 ++++++--
+>>  arch/arm64/kernel/signal32.c   | 18 ++++++++++++++----
+>>  3 files changed, 22 insertions(+), 6 deletions(-)
+>> 
+>> diff --git a/arch/arm64/include/asm/traps.h b/arch/arm64/include/asm/traps.h
+>> index 54f32a0675df..9b76144fcba6 100644
+>> --- a/arch/arm64/include/asm/traps.h
+>> +++ b/arch/arm64/include/asm/traps.h
+>> @@ -29,6 +29,8 @@ void arm64_notify_segfault(unsigned long addr);
+>>  void arm64_force_sig_fault(int signo, int code, unsigned long far, const char *str);
+>>  void arm64_force_sig_mceerr(int code, unsigned long far, short lsb, const char *str);
+>>  void arm64_force_sig_ptrace_errno_trap(int errno, unsigned long far, const char *str);
+>> +void arm64_notify_die(const char *str, struct pt_regs *regs, int signo,
+>> +		      int sicode, unsigned long far, int err);
+>>  
+>>  /*
+>>   * Move regs->pc to next instruction and do necessary setup before it
+>> diff --git a/arch/arm64/kernel/signal.c b/arch/arm64/kernel/signal.c
+>> index 6237486ff6bb..9fde6dc760c3 100644
+>> --- a/arch/arm64/kernel/signal.c
+>> +++ b/arch/arm64/kernel/signal.c
+>> @@ -544,7 +544,7 @@ SYSCALL_DEFINE0(rt_sigreturn)
+>>  	frame = (struct rt_sigframe __user *)regs->sp;
+>>  
+>>  	if (!access_ok(frame, sizeof (*frame)))
+>> -		goto badframe;
+>> +		goto e_access;
+>>  
+>>  	if (restore_sigframe(regs, frame))
+>>  		goto badframe;
+>> @@ -555,7 +555,11 @@ SYSCALL_DEFINE0(rt_sigreturn)
+>>  	return regs->regs[0];
+>>  
+>>  badframe:
+>> -	arm64_notify_segfault(regs->sp);
+>> +	arm64_notify_die("Bad frame", regs, SIGSEGV, SI_KERNEL, regs->sp, 0);
+>> +	return 0;
+>> +
+>> +e_access:
+>> +	force_signal_inject(SIGSEGV, SEGV_ACCERR, regs->sp, 0);
+>>  	return 0;
+>
+> This seems really error-prone to me, but maybe I'm just missing some
+> context. What's the rule for reporting an si_code of SI_KERNEL vs
+> SEGV_ACCERR, and is the former actually valid for SIGSEGV?
+
+The si_codes SI_USER == 0 and SI_KERNEL == 0x80 are valid for all
+signals.  SI_KERNEL means I don't have any information for you other
+than signal number.
+
+In general something better than SI_KERNEL is desirable.
+
+> With this change, pointing the (signal) stack to a kernel address will
+> result in SEGV_ACCERR but pointing it to something like a PROT_NONE user
+> address will give SI_KERNEL (well, assuming that we manage to deliver
+> the SEGV somehow). I'm having a hard time seeing why that's a useful
+> distinction to make..
+>
+> If it's important to get this a particular way around, please can you
+> add some selftests?
+
+Going down the current path I see 3 possible cases:
+
+copy_from_user returns -EFAULT which becomes SEGV_MAPERR or SEGV_ACCERR.
+
+A signal frame parse error.  For which SI_KERNEL seems as good an error
+code as any.
 
 
-On 4/22/2021 11:18 AM, Jon Hunter wrote:
-> 
-> On 22/04/2021 18:32, Florian Fainelli wrote:
->>
->>
->> On 4/22/2021 10:00 AM, Jon Hunter wrote:
->>>
->>> On 22/04/2021 17:12, Florian Fainelli wrote:
->>>
->>> ...
->>>
->>>> What does the resumption failure looks like? Does the stmmac driver
->>>> successfully resume from your suspend state, but there is no network
->>>> traffic? Do you have a log by any chance?
->>>
->>> The board fails to resume and appears to hang. With regard to the
->>> original patch I did find that moving the code to re-init the RX buffers
->>> to before the PHY is enabled did work [0].
->>
->> You indicated that you are using a Broadcom PHY, which specific PHY are
->> you using?
->>
->> I suspect that the stmmac is somehow relying on the PHY to provide its
->> 125MHz RXC clock back to you in order to have its RX logic work correctly.
->>
->> One difference between using the Broadcom PHY and the Generic PHY
->> drivers could be whether your Broadcom PHY driver entry has a
->> .suspend/.resume callback implemented or not.
-> 
-> 
-> This board has a BCM89610 and uses the drivers/net/phy/broadcom.c
-> driver. Interestingly I don't see any suspend/resume handlers for this phy.
+On x86 there is no attempt to figure out the cause of the -EFAULT, and
+always uses SI_KERNEL.  This is because x86 just does:
+"force_sig(SIGSEGV);" As arm64 did until f71016a8a8c5 ("arm64: signal:
+Call arm64_notify_segfault when failing to deliver signal")
 
-Now if you do add .suspend = genphy_suspend and .resume = bcm54xx_resume
-for this PHY entry does it work better?
--- 
-Florian
+
+
+I think the big question is what does it make sense to do here.
+
+The big picture.  Upon return from a signal the kernel arranges
+for rt_sigreturn to be called to return to a pre-signal state.
+As such rt_sigreturn can not return an error code.
+
+In general the kernel will write the signal frame and that will
+guarantee that the signal from can be processes by rt_sigreturn.
+
+For error handling we are dealing with the case that userspace
+has modified the signal frame.  So that it either does not
+parse or that it is unmapped.
+
+
+So who cares?  The only two cases I can think of are debuggers, and
+programs playing fancy memory management games like garbage collections.
+I have heard of applications (like garbage collectors)
+unmapping/mprotecting memory to create a barrier.
+
+Liam Howlett is that the issue here?  Is not seeing SI_KERNEL confusing
+the JVM?
+
+For debuggers I expect the stack backtrace from SIGSEGV is enough to see
+that something is wrong.
+
+For applications performing fancy processing of the signal frame I think
+that tends to be very architecture specific.  In part because even
+knowing the faulting address the size of the access is not known so the
+instruction must be interpreted.  Getting a system call instead of a
+load or store instruction might be enough to completely confuse
+applications processing SEGV_MAPERR or SEGV_ACCERR.  Such applications
+may also struggle with the fact that the address in siginfo is less
+precise than it would be for an ordinary page fault.
+
+
+So my sense is if you known you are helping userspace returning either
+SEGV_MAPERR or SEGV_ACCERR go for it.  Otherwise there are enough
+variables that returning less information when rt_sigreturn fails
+would be more reliable.
+
+
+Or in short what is userspace doing?  What does userspace care about?
+
+Eric
