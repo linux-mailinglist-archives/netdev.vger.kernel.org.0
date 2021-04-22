@@ -2,88 +2,66 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 389F136886E
-	for <lists+netdev@lfdr.de>; Thu, 22 Apr 2021 23:10:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 43F9936887E
+	for <lists+netdev@lfdr.de>; Thu, 22 Apr 2021 23:20:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236949AbhDVVLG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 22 Apr 2021 17:11:06 -0400
-Received: from mail.kernel.org ([198.145.29.99]:45828 "EHLO mail.kernel.org"
+        id S239452AbhDVVUp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 22 Apr 2021 17:20:45 -0400
+Received: from mail.kernel.org ([198.145.29.99]:49122 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S236851AbhDVVLG (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 22 Apr 2021 17:11:06 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id DDE6D613D5;
-        Thu, 22 Apr 2021 21:10:30 +0000 (UTC)
+        id S237018AbhDVVUo (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 22 Apr 2021 17:20:44 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPS id 3F96761406;
+        Thu, 22 Apr 2021 21:20:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1619125830;
-        bh=tUZ/AgYMoYyAXOnmuYD1yCXZ3wuyuSPI8VordPPsAXw=;
+        s=k20201202; t=1619126409;
+        bh=RGNneSD2l5wopnH94EKqNGopTGxfb8buT03WI3gH7Dw=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=TKnGbGcWn6z3vNztGupo2TdJzbam8S412D1kIJWaeOVQgeehbr3cXzk2ZeaflwdNK
-         UnRX9sbOR162fzHYNCURkthD5iH+9w2shcuQ8LDgDP8vvG81YSIgaxC3DxuuCTIcRf
-         QZ3BHU6dBn0JSnIFnde2FTAqlcGdfAEJcEeULSJHkIoKLejDB6Z5JMXaGJ9ADRcZem
-         Ok+C60AyFHthYmmwePRXTZqVWCyVIDPGLgfF40JoC1IbWLs7A1AEH04Q3RuzBywVPe
-         WC+Vo1ktJ171WwcK8Iyaa5AHNFAnTe422gBXbFkAAl2ne/eXaUNKdCKI68C3tBisgI
-         c5XyoNnJjboDA==
+        b=K/CwQ8FG7qRYSnIyysXYfrwjDmjdGocYeZ+EG4FcFx7pzWqEgXoocQple5JhVCJ1k
+         FcZW2/cW4AGv4wY9CvHru7+D8waBU3E++SG/on2sbPHe3MXm58pICv0Sax/PlzFy1C
+         IbQwag+qyyFXn6kEEnNvY1uVJF69Kfiv6YaEfZPORS3vxEQyAgJzQPpadFJetRuyXl
+         q9Ki8D9GTu3OQm4MDni2GRGkCunlq45SYDFKbdVabE+28rxo7gWBTcyu8xTmPB2eD5
+         /8HToT/pOASHHA3J5JWOsGApNw0Kq9YwAJLNj30ZivU4HQg0j30Iku755y2sSA9Cb3
+         lEXEKMBVKc9SQ==
 Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id D554C60A53;
-        Thu, 22 Apr 2021 21:10:30 +0000 (UTC)
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 375DD60A53;
+        Thu, 22 Apr 2021 21:20:09 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next 00/12][pull request] 100GbE Intel Wired LAN Driver
- Updates 2021-04-22
+Subject: Re: [PATCH net-next] r8152: replace return with break for ram code
+ speedup mode timeout
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <161912583086.10777.11797731949850793034.git-patchwork-notify@kernel.org>
-Date:   Thu, 22 Apr 2021 21:10:30 +0000
-References: <20210422173130.1143082-1-anthony.l.nguyen@intel.com>
-In-Reply-To: <20210422173130.1143082-1-anthony.l.nguyen@intel.com>
-To:     Nguyen@ci.codeaurora.org, Anthony L <anthony.l.nguyen@intel.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
-        sassmann@redhat.com
+Message-Id: <161912640922.15549.7928635712864520520.git-patchwork-notify@kernel.org>
+Date:   Thu, 22 Apr 2021 21:20:09 +0000
+References: <1394712342-15778-358-Taiwan-albertk@realtek.com>
+In-Reply-To: <1394712342-15778-358-Taiwan-albertk@realtek.com>
+To:     Hayes Wang <hayeswang@realtek.com>
+Cc:     kuba@kernel.org, davem@davemloft.net, netdev@vger.kernel.org,
+        nic_swsd@realtek.com, linux-kernel@vger.kernel.org,
+        linux-usb@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 Hello:
 
-This series was applied to netdev/net-next.git (refs/heads/master):
+This patch was applied to netdev/net-next.git (refs/heads/master):
 
-On Thu, 22 Apr 2021 10:31:18 -0700 you wrote:
-> This series contains updates to virtchnl header file, ice, and iavf
-> drivers.
+On Thu, 22 Apr 2021 16:48:02 +0800 you wrote:
+> When the timeout occurs, we still have to run the following process
+> for releasing patch request. Otherwise, the PHY would keep no link.
+> Therefore, use break to stop the loop of loading firmware and
+> release the patch request rather than return the function directly.
 > 
-> Vignesh adds support to warn about potentially malicious VFs; those that
-> are overflowing the mailbox for the ice driver.
-> 
-> Michal adds support for an allowlist/denylist of VF commands based on
-> supported capabilities for the ice driver.
+> Fixes: 4a51b0e8a014 ("r8152: support PHY firmware for RTL8156 series")
+> Signed-off-by: Hayes Wang <hayeswang@realtek.com>
 > 
 > [...]
 
 Here is the summary with links:
-  - [net-next,01/12] ice: warn about potentially malicious VFs
-    https://git.kernel.org/netdev/net-next/c/0891c89674e8
-  - [net-next,02/12] ice: Allow ignoring opcodes on specific VF
-    https://git.kernel.org/netdev/net-next/c/c0dcaa55f91d
-  - [net-next,03/12] ice: Advertise virtchnl UDP segmentation offload capability
-    https://git.kernel.org/netdev/net-next/c/142da08c4dc0
-  - [net-next,04/12] iavf: add support for UDP Segmentation Offload
-    https://git.kernel.org/netdev/net-next/c/c91a4f9feb67
-  - [net-next,05/12] ice: remove redundant assignment to pointer vsi
-    https://git.kernel.org/netdev/net-next/c/c9b5f681fe41
-  - [net-next,06/12] ice: Add helper function to get the VF's VSI
-    https://git.kernel.org/netdev/net-next/c/c5afbe99b778
-  - [net-next,07/12] ice: Enable RSS configure for AVF
-    https://git.kernel.org/netdev/net-next/c/222a8ab01698
-  - [net-next,08/12] ice: Support RSS configure removal for AVF
-    https://git.kernel.org/netdev/net-next/c/ddd1f3cfed3f
-  - [net-next,09/12] iavf: Add framework to enable ethtool RSS config
-    https://git.kernel.org/netdev/net-next/c/0aaeb4fbc842
-  - [net-next,10/12] iavf: Support for modifying TCP RSS flow hashing
-    https://git.kernel.org/netdev/net-next/c/5ab91e0593a1
-  - [net-next,11/12] iavf: Support for modifying UDP RSS flow hashing
-    https://git.kernel.org/netdev/net-next/c/7b8f3f957b22
-  - [net-next,12/12] iavf: Support for modifying SCTP RSS flow hashing
-    https://git.kernel.org/netdev/net-next/c/e41985f0fe8b
+  - [net-next] r8152: replace return with break for ram code speedup mode timeout
+    https://git.kernel.org/netdev/net-next/c/f49c35b89b78
 
 You are awesome, thank you!
 --
