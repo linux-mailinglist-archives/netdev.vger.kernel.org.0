@@ -2,121 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E47FC367CE2
-	for <lists+netdev@lfdr.de>; Thu, 22 Apr 2021 10:49:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A63F6367CDD
+	for <lists+netdev@lfdr.de>; Thu, 22 Apr 2021 10:49:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235658AbhDVItv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 22 Apr 2021 04:49:51 -0400
-Received: from rtits2.realtek.com ([211.75.126.72]:49047 "EHLO
-        rtits2.realtek.com.tw" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235634AbhDVItu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 22 Apr 2021 04:49:50 -0400
-Authenticated-By: 
-X-SpamFilter-By: ArmorX SpamTrap 5.73 with qID 13M8n4bbD015489, This message is accepted by code: ctloc85258
-Received: from mail.realtek.com (rtexh36502.realtek.com.tw[172.21.6.25])
-        by rtits2.realtek.com.tw (8.15.2/2.71/5.88) with ESMTPS id 13M8n4bbD015489
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Thu, 22 Apr 2021 16:49:04 +0800
-Received: from RTEXMBS04.realtek.com.tw (172.21.6.97) by
- RTEXH36502.realtek.com.tw (172.21.6.25) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2106.2; Thu, 22 Apr 2021 16:49:03 +0800
-Received: from fc32.localdomain (172.21.177.102) by RTEXMBS04.realtek.com.tw
- (172.21.6.97) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2106.2; Thu, 22 Apr
- 2021 16:49:02 +0800
-From:   Hayes Wang <hayeswang@realtek.com>
-To:     <kuba@kernel.org>, <davem@davemloft.net>
-CC:     <netdev@vger.kernel.org>, <nic_swsd@realtek.com>,
-        <linux-kernel@vger.kernel.org>, <linux-usb@vger.kernel.org>,
-        Hayes Wang <hayeswang@realtek.com>
-Subject: [PATCH net-next] r8152: replace return with break for ram code speedup mode timeout
-Date:   Thu, 22 Apr 2021 16:48:02 +0800
-Message-ID: <1394712342-15778-358-Taiwan-albertk@realtek.com>
-X-Mailer: Microsoft Office Outlook 11
+        id S235523AbhDVItp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 22 Apr 2021 04:49:45 -0400
+Received: from wout5-smtp.messagingengine.com ([64.147.123.21]:34579 "EHLO
+        wout5-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S235004AbhDVItp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 22 Apr 2021 04:49:45 -0400
+Received: from compute2.internal (compute2.nyi.internal [10.202.2.42])
+        by mailout.west.internal (Postfix) with ESMTP id 27720126F;
+        Thu, 22 Apr 2021 04:49:10 -0400 (EDT)
+Received: from mailfrontend2 ([10.202.2.163])
+  by compute2.internal (MEProxy); Thu, 22 Apr 2021 04:49:10 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:content-type:date:from:in-reply-to
+        :message-id:mime-version:references:subject:to:x-me-proxy
+        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm2; bh=7HPiV0
+        pnyAEMImm53FuY3vNQrk11H1LMSrVINkNhiyM=; b=neIGLIaxdPcRasYSeqIEvp
+        TNau8m6yL0WjIGwDAUSpa89HeRV2ebX5OUDn7cUaitg9SYKZnQ/Eyw7XjAP9xASy
+        +rTj4DDfvWNmV6eRY9M6Wj6mKnXIOSzZWwHBzBvF4khAWcuAnyavLKF0UCyvIHj2
+        yD7HWNb8A/7b6Vm6LRKpvTHn5ibQHVQnEhqp92JnBcRF4YW4BP2AoGXw/M67pCZr
+        z8EjOj591TmYsdF/dnaLSD8v+ju/alXsS8sFHTl03cYPubRUTH/SmyiAxCvkW8o3
+        pW4eEVMMBSjh1o16TotQn39QrekWWWyz8THHh7Ry+D9E4lSeErddxf81ZdV8wxHw
+        ==
+X-ME-Sender: <xms:hTiBYExpasN1LKheZHX1Sn2c8HELW3v2SbQva_TH56bo1JCFFSqgQg>
+    <xme:hTiBYIOebjFrP_KW0K7z6YbXYrVwplUb3W0FFU2PdTsxuzOjRK7v4nh0VVZnIPy_6
+    uC7JFNrmgnzIok>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduledrvddutddgtdekucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucenucfjughrpeffhffvuffkfhggtggujgesthdtre
+    dttddtvdenucfhrhhomhepkfguohcuufgthhhimhhmvghluceoihguohhstghhsehiugho
+    shgthhdrohhrgheqnecuggftrfgrthhtvghrnhepgfevgfevueduueffieffheeifffgje
+    elvedtteeuteeuffekvefggfdtudfgkeevnecuffhomhgrihhnpehkvghrnhgvlhdrohhr
+    ghenucfkphepkeegrddvvdelrdduheefrddukeejnecuvehluhhsthgvrhfuihiivgeptd
+    enucfrrghrrghmpehmrghilhhfrhhomhepihguohhstghhsehiughoshgthhdrohhrgh
+X-ME-Proxy: <xmx:hTiBYDMlbMoYsFjzc9oFCe1Uf9MXcnCgv86ZZ7470mYWTRjT15Ds0A>
+    <xmx:hTiBYKSVJqB63-jbPGAiA_1Tf-_IsDur21jGk3TjDvb8ZIQXvfZJtA>
+    <xmx:hTiBYFAYDhWUlE7vftKBtOeJ19wtQK35mguyn5Ey_pfS1Bn4AKFZdg>
+    <xmx:hTiBYLbpSTscO9qBRcf5nQtOencic-cPaGT0C5B8DzdizL29pcUgyA>
+Received: from localhost (igld-84-229-153-187.inter.net.il [84.229.153.187])
+        by mail.messagingengine.com (Postfix) with ESMTPA id 394741080069;
+        Thu, 22 Apr 2021 04:49:09 -0400 (EDT)
+Date:   Thu, 22 Apr 2021 11:49:05 +0300
+From:   Ido Schimmel <idosch@idosch.org>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     mkubecek@suse.cz, netdev@vger.kernel.org
+Subject: Re: [PATCH ethtool-next 0/7] ethtool: support FEC and standard stats
+Message-ID: <YIE4gZWsjrHNrZGA@shredder.lan>
+References: <20210420003112.3175038-1-kuba@kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [172.21.177.102]
-X-ClientProxiedBy: RTEXMBS01.realtek.com.tw (172.21.6.94) To
- RTEXMBS04.realtek.com.tw (172.21.6.97)
-X-KSE-ServerInfo: RTEXMBS04.realtek.com.tw, 9
-X-KSE-Antivirus-Interceptor-Info: scan successful
-X-KSE-Antivirus-Info: =?big5?B?Q2xlYW4sIGJhc2VzOiAyMDIxLzQvMjIgpFekyCAwNzowNTowMA==?=
-X-KSE-Attachment-Filter-Triggered-Rules: Clean
-X-KSE-Attachment-Filter-Triggered-Filters: Clean
-X-KSE-BulkMessagesFiltering-Scan-Result: protection disabled
-X-KSE-AntiSpam-Outbound-Interceptor-Info: scan successful
-X-KSE-AntiSpam-Version: 5.9.20, Database issued on: 04/22/2021 08:29:57
-X-KSE-AntiSpam-Status: KAS_STATUS_NOT_DETECTED
-X-KSE-AntiSpam-Method: none
-X-KSE-AntiSpam-Rate: 0
-X-KSE-AntiSpam-Info: Lua profiles 163277 [Apr 22 2021]
-X-KSE-AntiSpam-Info: Version: 5.9.20.0
-X-KSE-AntiSpam-Info: Envelope from: hayeswang@realtek.com
-X-KSE-AntiSpam-Info: LuaCore: 442 442 b985cb57763b61d2a20abb585d5d4cc10c315b09
-X-KSE-AntiSpam-Info: {Tracking_from_domain_doesnt_match_to}
-X-KSE-AntiSpam-Info: realtek.com:7.1.1;d41d8cd98f00b204e9800998ecf8427e.com:7.1.1;127.0.0.199:7.1.2
-X-KSE-AntiSpam-Info: {Track_Chinese_Simplified, headers_charset}
-X-KSE-AntiSpam-Info: Rate: 0
-X-KSE-AntiSpam-Info: Status: not_detected
-X-KSE-AntiSpam-Info: Method: none
-X-KSE-AntiSpam-Info: Auth:dkim=none
-X-KSE-Antiphishing-Info: Clean
-X-KSE-Antiphishing-ScanningType: Heuristic
-X-KSE-Antiphishing-Method: None
-X-KSE-Antiphishing-Bases: 04/22/2021 08:33:00
-X-KSE-ServerInfo: RTEXH36502.realtek.com.tw, 9
-X-KSE-Attachment-Filter-Triggered-Rules: Clean
-X-KSE-Attachment-Filter-Triggered-Filters: Clean
-X-KSE-BulkMessagesFiltering-Scan-Result: protection disabled
-X-KSE-AntiSpam-Outbound-Interceptor-Info: scan successful
-X-KSE-AntiSpam-Version: 5.9.20, Database issued on: 04/22/2021 08:35:59
-X-KSE-AntiSpam-Status: KAS_STATUS_NOT_DETECTED
-X-KSE-AntiSpam-Method: none
-X-KSE-AntiSpam-Rate: 0
-X-KSE-AntiSpam-Info: Lua profiles 163277 [Apr 22 2021]
-X-KSE-AntiSpam-Info: Version: 5.9.20.0
-X-KSE-AntiSpam-Info: Envelope from: hayeswang@realtek.com
-X-KSE-AntiSpam-Info: LuaCore: 442 442 b985cb57763b61d2a20abb585d5d4cc10c315b09
-X-KSE-AntiSpam-Info: {Tracking_from_domain_doesnt_match_to}
-X-KSE-AntiSpam-Info: realtek.com:7.1.1;d41d8cd98f00b204e9800998ecf8427e.com:7.1.1;127.0.0.199:7.1.2
-X-KSE-AntiSpam-Info: Rate: 0
-X-KSE-AntiSpam-Info: Status: not_detected
-X-KSE-AntiSpam-Info: Method: none
-X-KSE-AntiSpam-Info: Auth:dkim=none
-X-KSE-Antiphishing-Info: Clean
-X-KSE-Antiphishing-ScanningType: Heuristic
-X-KSE-Antiphishing-Method: None
-X-KSE-Antiphishing-Bases: 04/22/2021 08:38:00
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210420003112.3175038-1-kuba@kernel.org>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When the timeout occurs, we still have to run the following process
-for releasing patch request. Otherwise, the PHY would keep no link.
-Therefore, use break to stop the loop of loading firmware and
-release the patch request rather than return the function directly.
+On Mon, Apr 19, 2021 at 05:31:05PM -0700, Jakub Kicinski wrote:
+> This series adds support for FEC requests via netlink
+> and new "standard" stats.
 
-Fixes: 4a51b0e8a014 ("r8152: support PHY firmware for RTL8156 series")
-Signed-off-by: Hayes Wang <hayeswang@realtek.com>
----
- drivers/net/usb/r8152.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Jakub, you wrote "ethtool-next" in subject, but I only managed to apply
+the patches to the master branch.
 
-diff --git a/drivers/net/usb/r8152.c b/drivers/net/usb/r8152.c
-index 9119a860e9bd..5b4ed69df64f 100644
---- a/drivers/net/usb/r8152.c
-+++ b/drivers/net/usb/r8152.c
-@@ -4803,7 +4803,7 @@ static void rtl_ram_code_speed_up(struct r8152 *tp, struct fw_phy_speed_up *phy,
- 
- 		if (i == 1000) {
- 			dev_err(&tp->intf->dev, "ram code speedup mode timeout\n");
--			return;
-+			break;
- 		}
- 	}
- 
--- 
-2.26.3
+Michal, I assume we are expected to send new features to next? If so,
+can you please update the web page [1] ?
 
+Thanks
+
+[1] https://mirrors.edge.kernel.org/pub/software/network/ethtool/devel.html
