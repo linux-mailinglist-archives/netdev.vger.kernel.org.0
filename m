@@ -2,307 +2,331 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C3ED4367E9A
-	for <lists+netdev@lfdr.de>; Thu, 22 Apr 2021 12:26:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D4E1C367E97
+	for <lists+netdev@lfdr.de>; Thu, 22 Apr 2021 12:26:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235796AbhDVK0p (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 22 Apr 2021 06:26:45 -0400
-Received: from mga04.intel.com ([192.55.52.120]:63261 "EHLO mga04.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230270AbhDVK0n (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 22 Apr 2021 06:26:43 -0400
-IronPort-SDR: q3QOC3K7l8px/15bCqfR5isEsx5Sh6iZK+wBM02DH2SEH+5kfzdiORF64KSZe5TROHyr21l7kp
- wx4/qaXs0xkQ==
-X-IronPort-AV: E=McAfee;i="6200,9189,9961"; a="193743764"
-X-IronPort-AV: E=Sophos;i="5.82,242,1613462400"; 
-   d="scan'208";a="193743764"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Apr 2021 03:26:09 -0700
-IronPort-SDR: mHY7u5k59moItct7caFWGDF+/okmwjUEh+XeA0FcTjUAh/KjJDBss1VZbhrXWCi4c5fZrrH1Zw
- NMEkUKsQFD/g==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.82,242,1613462400"; 
-   d="scan'208";a="524603351"
-Received: from ranger.igk.intel.com ([10.102.21.164])
-  by fmsmga001.fm.intel.com with ESMTP; 22 Apr 2021 03:26:05 -0700
-Date:   Thu, 22 Apr 2021 12:11:29 +0200
-From:   Maciej Fijalkowski <maciej.fijalkowski@intel.com>
-To:     Kurt Kanzenbach <kurt@linutronix.de>
-Cc:     Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
+        id S236001AbhDVKZ0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 22 Apr 2021 06:25:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39114 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S235949AbhDVKZU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 22 Apr 2021 06:25:20 -0400
+Received: from mail-pl1-x62f.google.com (mail-pl1-x62f.google.com [IPv6:2607:f8b0:4864:20::62f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 80482C06174A;
+        Thu, 22 Apr 2021 03:24:43 -0700 (PDT)
+Received: by mail-pl1-x62f.google.com with SMTP id n10so12148756plc.0;
+        Thu, 22 Apr 2021 03:24:43 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=1i4wA+0DkmrdGX1gV+r0TmDTowuEzj1fqhiyDNAnCj8=;
+        b=X+oL/7cdWjnHaatvSJT67WDsoQAXb4WdS5GDtEiikoZFfXdqigovUS9D1RJ1KQshg1
+         p+TG2ISMdtHNwQu58I2teGvWWGv9dmA/Og0esgeUK0Hn/bb4szWVTNFLtzjjyMoxL4Ul
+         IvbHRcB/iKj3lsCg9lMzQsRhtGGwX3FmjStCR5CiSygSX5p6xucDXZaKW1S9VAaCxv1R
+         sl4c7VMXJrSi5ylo/9FkcmUvbaQVXzW1lqyaeekt91Ivnn265RTiad1JRBVbQwR/m2JT
+         t9uAvQK3Pz9kdh2BJ224TwhngnHgzGTN//vVqYV1T7lZtEMSuqfj50EvfwRFYILtvlQ4
+         vrvw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=1i4wA+0DkmrdGX1gV+r0TmDTowuEzj1fqhiyDNAnCj8=;
+        b=sbsbWX5ePlmgkDabG/YbJoIkRYak/XDNaV/O6lOnZD+GSZUKe4LptoSz5pvzmejqlT
+         Aqsb+SvVY9gVW8tDrmD8i37ySVzAyRNHEEiJL3mzdEBu4rC3PS/dYYP7lotAz0ScRNjj
+         jtGSXW3fQTavJhGnx7x1U8uedslbSaYZx4P1H+iurHtpl65L2DcZhivTVqJv+pQrYMiI
+         fkIBlH1l3yFmzuPNM4OqQQ3EpOLc5mlzSCAlvyA+JKSDeVltzGqw0lUXAd17DyHkQBcK
+         e/8EQ5FLe2emQm0y5gGO9NLV+QpubPLhAiKH7YfFobf/qMnJF1+cRbDIRtFk2g0nzJ5q
+         NkOg==
+X-Gm-Message-State: AOAM532vuAy6JmrohF6uJroiRuNkS/deUln3SoM60NBwJymfCBTSfp3c
+        aD6PSGk19rtSw8Tg9Up4QRAE5Tb2jjltabOv8itXCU7nOE1YrQ==
+X-Google-Smtp-Source: ABdhPJyMJDURnXjlQJGtjyXSVNoLE2fVAd6xEvH5e2fZU1ky7q7j+k5hinI7dIrF8I6Bc+fTMvOCd99kuGUKalPgRtg=
+X-Received: by 2002:a17:902:4d:b029:ec:94df:c9aa with SMTP id
+ 71-20020a170902004db02900ec94dfc9aamr2853732pla.7.1619087082933; Thu, 22 Apr
+ 2021 03:24:42 -0700 (PDT)
+MIME-Version: 1.0
+References: <cover.1617885385.git.lorenzo@kernel.org> <CAJ8uoz1MOYLzyy7xXq_fmpKDEakxSomzfM76Szjr5gWsqHc9jQ@mail.gmail.com>
+ <20210418181801.17166935@carbon> <CAJ8uoz0m8AAJFddn2LjehXtdeGS0gat7dwOLA_-_ZeOVYjBdxw@mail.gmail.com>
+ <YH0pdXXsZ7IELBn3@lore-desk> <CAJ8uoz101VZiwuvM-bs4UdW+kFT5xjgdgUwPWHZn4ABEOkyQ-w@mail.gmail.com>
+ <20210421144747.33c5f51f@carbon> <CAJ8uoz3ROiPn+-bh7OjFOjXjXK9xGhU5cxWoFPM9JoYeh=zw=g@mail.gmail.com>
+ <20210421173921.23fef6a7@carbon>
+In-Reply-To: <20210421173921.23fef6a7@carbon>
+From:   Magnus Karlsson <magnus.karlsson@gmail.com>
+Date:   Thu, 22 Apr 2021 12:24:32 +0200
+Message-ID: <CAJ8uoz2JpfdjvjJp-vjWuhw5z1=2D32jj-KktFnLN6Zd9ZVmAQ@mail.gmail.com>
+Subject: Re: [PATCH v8 bpf-next 00/14] mvneta: introduce XDP multi-buffer support
+To:     Jesper Dangaard Brouer <brouer@redhat.com>
+Cc:     Lorenzo Bianconi <lorenzo.bianconi@redhat.com>,
+        Lorenzo Bianconi <lorenzo@kernel.org>,
+        bpf <bpf@vger.kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
         Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Sven Auhagen <sven.auhagen@voleatech.de>,
-        intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org,
-        bpf@vger.kernel.org,
-        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
-        Lorenzo Bianconi <lorenzo@kernel.org>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Richard Cochran <richardcochran@gmail.com>,
-        Alexander Duyck <alexander.duyck@gmail.com>
-Subject: Re: [PATCH net v3] igb: Fix XDP with PTP enabled
-Message-ID: <20210422101129.GB44289@ranger.igk.intel.com>
-References: <20210422052617.17267-1-kurt@linutronix.de>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210422052617.17267-1-kurt@linutronix.de>
-User-Agent: Mutt/1.12.1 (2019-06-15)
+        Daniel Borkmann <daniel@iogearbox.net>, shayagr@amazon.com,
+        sameehj@amazon.com, John Fastabend <john.fastabend@gmail.com>,
+        David Ahern <dsahern@kernel.org>,
+        Eelco Chaudron <echaudro@redhat.com>,
+        Jason Wang <jasowang@redhat.com>,
+        Alexander Duyck <alexander.duyck@gmail.com>,
+        Saeed Mahameed <saeed@kernel.org>,
+        "Fijalkowski, Maciej" <maciej.fijalkowski@intel.com>,
+        Tirthendu <tirthendu.sarkar@intel.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Apr 22, 2021 at 07:26:17AM +0200, Kurt Kanzenbach wrote:
-> When using native XDP with the igb driver, the XDP frame data doesn't point to
-> the beginning of the packet. It's off by 16 bytes. Everything works as expected
-> with XDP skb mode.
-> 
-> Actually these 16 bytes are used to store the packet timestamps. Therefore, pull
-> the timestamp before executing any XDP operations and adjust all other code
-> accordingly. The igc driver does it like that as well.
-> 
-> Tested with Intel i210 card and AF_XDP sockets.
-> 
-> Fixes: 9cbc948b5a20 ("igb: add XDP support")
-> Signed-off-by: Kurt Kanzenbach <kurt@linutronix.de>
-> ---
-> 
-> Changes since v2:
-> 
->  * Check timestamp for validity (Nguyen, Anthony L)
-> 
-> Changes since v1:
-> 
->  * Use xdp_prepare_buff() (Lorenzo Bianconi)
-> 
-> Changes since RFC:
-> 
->  * Removed unused return value definitions (Alexander Duyck)
-> 
-> Previous versions:
-> 
->  * https://lkml.kernel.org/netdev/20210419072332.7246-1-kurt@linutronix.de/
->  * https://lkml.kernel.org/netdev/20210415092145.27322-1-kurt@linutronix.de/
->  * https://lkml.kernel.org/netdev/20210412101713.15161-1-kurt@linutronix.de/
-> 
->  drivers/net/ethernet/intel/igb/igb.h      |  3 +-
->  drivers/net/ethernet/intel/igb/igb_main.c | 45 +++++++++++++----------
->  drivers/net/ethernet/intel/igb/igb_ptp.c  | 21 ++++-------
->  3 files changed, 34 insertions(+), 35 deletions(-)
-> 
-> diff --git a/drivers/net/ethernet/intel/igb/igb.h b/drivers/net/ethernet/intel/igb/igb.h
-> index 7bda8c5edea5..72cf967c1a00 100644
-> --- a/drivers/net/ethernet/intel/igb/igb.h
-> +++ b/drivers/net/ethernet/intel/igb/igb.h
-> @@ -748,8 +748,7 @@ void igb_ptp_suspend(struct igb_adapter *adapter);
->  void igb_ptp_rx_hang(struct igb_adapter *adapter);
->  void igb_ptp_tx_hang(struct igb_adapter *adapter);
->  void igb_ptp_rx_rgtstamp(struct igb_q_vector *q_vector, struct sk_buff *skb);
-> -int igb_ptp_rx_pktstamp(struct igb_q_vector *q_vector, void *va,
-> -			struct sk_buff *skb);
-> +ktime_t igb_ptp_rx_pktstamp(struct igb_q_vector *q_vector, void *va);
->  int igb_ptp_set_ts_config(struct net_device *netdev, struct ifreq *ifr);
->  int igb_ptp_get_ts_config(struct net_device *netdev, struct ifreq *ifr);
->  void igb_set_flag_queue_pairs(struct igb_adapter *, const u32);
-> diff --git a/drivers/net/ethernet/intel/igb/igb_main.c b/drivers/net/ethernet/intel/igb/igb_main.c
-> index a45cd2b416c8..13595618f9e3 100644
-> --- a/drivers/net/ethernet/intel/igb/igb_main.c
-> +++ b/drivers/net/ethernet/intel/igb/igb_main.c
-> @@ -8281,7 +8281,7 @@ static void igb_add_rx_frag(struct igb_ring *rx_ring,
->  static struct sk_buff *igb_construct_skb(struct igb_ring *rx_ring,
->  					 struct igb_rx_buffer *rx_buffer,
->  					 struct xdp_buff *xdp,
-> -					 union e1000_adv_rx_desc *rx_desc)
-> +					 ktime_t timestamp)
+On Wed, Apr 21, 2021 at 5:39 PM Jesper Dangaard Brouer
+<brouer@redhat.com> wrote:
+>
+> On Wed, 21 Apr 2021 16:12:32 +0200
+> Magnus Karlsson <magnus.karlsson@gmail.com> wrote:
+>
+> > On Wed, Apr 21, 2021 at 2:48 PM Jesper Dangaard Brouer
+> > <brouer@redhat.com> wrote:
+> > >
+> > > On Tue, 20 Apr 2021 15:49:44 +0200
+> > > Magnus Karlsson <magnus.karlsson@gmail.com> wrote:
+> > >
+> > > > On Mon, Apr 19, 2021 at 8:56 AM Lorenzo Bianconi
+> > > > <lorenzo.bianconi@redhat.com> wrote:
+> > > > >
+> > > > > > On Sun, Apr 18, 2021 at 6:18 PM Jesper Dangaard Brouer
+> > > > > > <brouer@redhat.com> wrote:
+> > > > > > >
+> > > > > > > On Fri, 16 Apr 2021 16:27:18 +0200
+> > > > > > > Magnus Karlsson <magnus.karlsson@gmail.com> wrote:
+> > > > > > >
+> > > > > > > > On Thu, Apr 8, 2021 at 2:51 PM Lorenzo Bianconi <lorenzo@kernel.org> wrote:
+> > > > > > > > >
+> > > > > > > > > This series introduce XDP multi-buffer support. The mvneta driver is
+> > > > > > > > > the first to support these new "non-linear" xdp_{buff,frame}. Reviewers
+> > > > > > > > > please focus on how these new types of xdp_{buff,frame} packets
+> > > > > > > > > traverse the different layers and the layout design. It is on purpose
+> > > > > > > > > that BPF-helpers are kept simple, as we don't want to expose the
+> > > > > > > > > internal layout to allow later changes.
+> > > > > > > > >
+> > > > > > > > > For now, to keep the design simple and to maintain performance, the XDP
+> > > > > > > > > BPF-prog (still) only have access to the first-buffer. It is left for
+> > > > > > > > > later (another patchset) to add payload access across multiple buffers.
+> > > > > > > > > This patchset should still allow for these future extensions. The goal
+> > > > > > > > > is to lift the XDP MTU restriction that comes with XDP, but maintain
+> > > > > > > > > same performance as before.
+> > > > > > > [...]
+> > > > > > > > >
+> > > > > > > > > [0] https://netdevconf.info/0x14/session.html?talk-the-path-to-tcp-4k-mtu-and-rx-zerocopy
+> > > > > > > > > [1] https://github.com/xdp-project/xdp-project/blob/master/areas/core/xdp-multi-buffer01-design.org
+> > > > > > > > > [2] https://netdevconf.info/0x14/session.html?tutorial-add-XDP-support-to-a-NIC-driver (XDPmulti-buffers section)
+> > > > > > > >
+> > > > > > > > Took your patches for a test run with the AF_XDP sample xdpsock on an
+> > > > > > > > i40e card and the throughput degradation is between 2 to 6% depending
+> > > > > > > > on the setup and microbenchmark within xdpsock that is executed. And
+> > > > > > > > this is without sending any multi frame packets. Just single frame
+> > > > > > > > ones. Tirtha made changes to the i40e driver to support this new
+> > > > > > > > interface so that is being included in the measurements.
+> > > > > > >
+> > > > > > > Could you please share Tirtha's i40e support patch with me?
+> > > > > >
+> > > > > > We will post them on the list as an RFC. Tirtha also added AF_XDP
+> > > > > > multi-frame support on top of Lorenzo's patches so we will send that
+> > > > > > one out as well. Will also rerun my experiments, properly document
+> > > > > > them and send out just to be sure that I did not make any mistake.
+> > > > >
+> > > > > ack, very cool, thx
+> > > >
+> > > > I have now run a new set of experiments on a Cascade Lake server at
+> > > > 2.1 GHz with turbo boost disabled. Two NICs: i40e and ice. The
+> > > > baseline is commit 5c507329000e ("libbpf: Clarify flags in ringbuf
+> > > > helpers") and Lorenzo's and Eelco's path set is their v8. First some
+> > > > runs with xdpsock (i.e. AF_XDP) in both 2-core mode (app on one core
+> > > > and the driver on another) and 1-core mode using busy_poll.
+> > > >
+> > > > xdpsock rxdrop throughput change with the multi-buffer patches without
+> > > > any driver changes:
+> > > > 1-core i40e: -0.5 to 0%   2-cores i40e: -0.5%
+> > > > 1-core ice: -2%   2-cores ice: -1 to -0.5%
+> > > >
+> > > > xdp_rxq_info -a XDP_DROP
+> > > > i40e: -4%   ice: +8%
+> > > >
+> > > > xdp_rxq_info -a XDP_TX
+> > > > i40e: -10%   ice: +9%
+> > > >
+> > > > The XDP results with xdp_rxq_info are just weird! I reran them three
+> > > > times, rebuilt and rebooted in between and I always get the same
+> > > > results. And I also checked that I am running on the correct NUMA node
+> > > > and so on. But I have a hard time believing them. Nearly +10% and -10%
+> > > > difference. Too much in my book. Jesper, could you please run the same
+> > > > and see what you get?
+> > >
+> > > We of-cause have to find the root-cause of the +-10%, but let me drill
+> > > into what the 10% represent time/cycle wise.  Using a percentage
+> > > difference is usually a really good idea as it implies a comparative
+> > > measure (something I always request people to do, as a single
+> > > performance number means nothing by itself).
+> > >
+> > > For a zoom-in-benchmarks like these where the amount of code executed
+> > > is very small, the effect of removing or adding code can effect the
+> > > measurement a lot.
+> > >
+> > > I can only do the tests for i40e, as I don't have ice hardware (but
+> > > Intel is working on fixing that ;-)).
+> > >
+> > >  xdp_rxq_info -a XDP_DROP
+> > >   i40e: 33,417,775 pps
+> >
+> > Here I only get around 21 Mpps
+> >
+> > >  CPU is 100% used, so we can calculate nanosec used per packet:
+> > >   29.92 nanosec (1/33417775*10^9)
+> > >   2.1 GHz CPU =  approx 63 CPU-cycles
+> > >
+> > >  You lost -4% performance in this case.  This correspond to:
+> > >   -1.2 nanosec (29.92*0.04) slower
+> > >   (This could be cost of single func call overhead = 1.3 ns)
+> > >
+> > > My measurement for XDP_TX:
+> > >
+> > >  xdp_rxq_info -a XDP_TX
+> > >   28,278,722 pps
+> > >   35.36 ns (1/28278722*10^9)
+> >
+> > And here, much lower at around 8 Mpps. But I do see correct packets
+> > coming back on the cable for i40e but not for ice! There is likely a
+> > bug there in the XDP_TX logic for ice. Might explain the weird results
+> > I am getting. Will investigate.
+> >
+> > But why do I get only a fraction of your performance? XDP_TX touches
+> > the packet so I would expect it to be far less than what you get, but
+> > more than I get.
+>
+> I clearly have a bug in the i40e driver.  As I wrote later, I don't see
+> any packets transmitted for XDP_TX.  Hmm, I using Mel Gorman's tree,
+> which doesn't contain the i40e/ice/ixgbe bug we fixed earlier.
+>
+> The call to xdp_convert_buff_to_frame() fails, but (see below) that
+> error is simply converted to I40E_XDP_CONSUMED.  Thus, not even the
+> 'trace_xdp_exception' will be able to troubleshoot this.  You/Intel
+> should consider making XDP_TX errors detectable (this will also happen
+> if TX ring don't have room).
+
+This is not good. Will submit a fix. Thanks for reporting Jesper.
+
+>  int i40e_xmit_xdp_tx_ring(struct xdp_buff *xdp, struct i40e_ring *xdp_ring)
 >  {
->  #if (PAGE_SIZE < 8192)
->  	unsigned int truesize = igb_rx_pg_size(rx_ring) / 2;
-> @@ -8301,12 +8301,8 @@ static struct sk_buff *igb_construct_skb(struct igb_ring *rx_ring,
->  	if (unlikely(!skb))
->  		return NULL;
->  
-> -	if (unlikely(igb_test_staterr(rx_desc, E1000_RXDADV_STAT_TSIP))) {
-> -		if (!igb_ptp_rx_pktstamp(rx_ring->q_vector, xdp->data, skb)) {
-> -			xdp->data += IGB_TS_HDR_LEN;
-> -			size -= IGB_TS_HDR_LEN;
-> -		}
-> -	}
-> +	if (timestamp)
-> +		skb_hwtstamps(skb)->hwtstamp = timestamp;
->  
->  	/* Determine available headroom for copy */
->  	headlen = size;
-> @@ -8337,7 +8333,7 @@ static struct sk_buff *igb_construct_skb(struct igb_ring *rx_ring,
->  static struct sk_buff *igb_build_skb(struct igb_ring *rx_ring,
->  				     struct igb_rx_buffer *rx_buffer,
->  				     struct xdp_buff *xdp,
-> -				     union e1000_adv_rx_desc *rx_desc)
-> +				     ktime_t timestamp)
->  {
->  #if (PAGE_SIZE < 8192)
->  	unsigned int truesize = igb_rx_pg_size(rx_ring) / 2;
-> @@ -8364,11 +8360,8 @@ static struct sk_buff *igb_build_skb(struct igb_ring *rx_ring,
->  	if (metasize)
->  		skb_metadata_set(skb, metasize);
->  
-> -	/* pull timestamp out of packet data */
-> -	if (igb_test_staterr(rx_desc, E1000_RXDADV_STAT_TSIP)) {
-> -		if (!igb_ptp_rx_pktstamp(rx_ring->q_vector, skb->data, skb))
-> -			__skb_pull(skb, IGB_TS_HDR_LEN);
-> -	}
-> +	if (timestamp)
-> +		skb_hwtstamps(skb)->hwtstamp = timestamp;
->  
->  	/* update buffer offset */
->  #if (PAGE_SIZE < 8192)
-> @@ -8683,7 +8676,10 @@ static int igb_clean_rx_irq(struct igb_q_vector *q_vector, const int budget)
->  	while (likely(total_packets < budget)) {
->  		union e1000_adv_rx_desc *rx_desc;
->  		struct igb_rx_buffer *rx_buffer;
-> +		ktime_t timestamp = 0;
-> +		int pkt_offset = 0;
->  		unsigned int size;
-> +		void *pktbuf;
->  
->  		/* return some buffers to hardware, one at a time is too slow */
->  		if (cleaned_count >= IGB_RX_BUFFER_WRITE) {
-> @@ -8703,14 +8699,24 @@ static int igb_clean_rx_irq(struct igb_q_vector *q_vector, const int budget)
->  		dma_rmb();
->  
->  		rx_buffer = igb_get_rx_buffer(rx_ring, size, &rx_buf_pgcnt);
-> +		pktbuf = page_address(rx_buffer->page) + rx_buffer->page_offset;
-> +
-> +		/* pull rx packet timestamp if available and valid */
-> +		if (igb_test_staterr(rx_desc, E1000_RXDADV_STAT_TSIP)) {
-> +			timestamp = igb_ptp_rx_pktstamp(rx_ring->q_vector,
-> +							pktbuf);
-> +
-> +			if (timestamp) {
-> +				pkt_offset += IGB_TS_HDR_LEN;
-> +				size -= IGB_TS_HDR_LEN;
-> +			}
-> +		}
-
-Small nit: since this is a hot path, maybe we could omit the additional
-branch that you're introducing above and make igb_ptp_rx_pktstamp() to
-return either 0 for error cases and IGB_TS_HDR_LEN if timestamp was fine?
-timestamp itself would be passed as an arg.
-
-So:
-		if (igb_test_staterr(rx_desc, E1000_RXDADV_STAT_TSIP)) {
-			ts_offset = igb_ptp_rx_pktstamp(rx_ring->q_vector,
-							pktbuf, &timestamp);
-			pkt_offset += ts_offset;
-			size -= ts_offset;
-		}
-
-Thoughts? I feel like if we see that desc has timestamp enabled then let's
-optimize it for successful case.
-
->  
->  		/* retrieve a buffer from the ring */
->  		if (!skb) {
-> -			unsigned int offset = igb_rx_offset(rx_ring);
-> -			unsigned char *hard_start;
-> +			unsigned char *hard_start = pktbuf - igb_rx_offset(rx_ring);
-> +			unsigned int offset = pkt_offset + igb_rx_offset(rx_ring);
-
-Probably we could do something similar in flavour of:
-https://lore.kernel.org/bpf/20210118151318.12324-10-maciej.fijalkowski@intel.com/
-
-which broke XDP_REDIRECT and got fixed in:
-https://lore.kernel.org/bpf/20210303153928.11764-2-maciej.fijalkowski@intel.com/
-
-You get the idea.
-
->  
-> -			hard_start = page_address(rx_buffer->page) +
-> -				     rx_buffer->page_offset - offset;
->  			xdp_prepare_buff(&xdp, hard_start, offset, size, true);
->  #if (PAGE_SIZE > 4096)
->  			/* At larger PAGE_SIZE, frame_sz depend on len size */
-> @@ -8733,10 +8739,11 @@ static int igb_clean_rx_irq(struct igb_q_vector *q_vector, const int budget)
->  		} else if (skb)
->  			igb_add_rx_frag(rx_ring, rx_buffer, skb, size);
->  		else if (ring_uses_build_skb(rx_ring))
-> -			skb = igb_build_skb(rx_ring, rx_buffer, &xdp, rx_desc);
-> +			skb = igb_build_skb(rx_ring, rx_buffer, &xdp,
-> +					    timestamp);
->  		else
->  			skb = igb_construct_skb(rx_ring, rx_buffer,
-> -						&xdp, rx_desc);
-> +						&xdp, timestamp);
->  
->  		/* exit if we failed to retrieve a buffer */
->  		if (!skb) {
-> diff --git a/drivers/net/ethernet/intel/igb/igb_ptp.c b/drivers/net/ethernet/intel/igb/igb_ptp.c
-> index 86a576201f5f..8e23df7da641 100644
-> --- a/drivers/net/ethernet/intel/igb/igb_ptp.c
-> +++ b/drivers/net/ethernet/intel/igb/igb_ptp.c
-> @@ -856,30 +856,26 @@ static void igb_ptp_tx_hwtstamp(struct igb_adapter *adapter)
->  	dev_kfree_skb_any(skb);
+>         struct xdp_frame *xdpf = xdp_convert_buff_to_frame(xdp);
+>
+>         if (unlikely(!xdpf))
+>                 return I40E_XDP_CONSUMED;
+>
+>         return i40e_xmit_xdp_ring(xdpf, xdp_ring);
 >  }
->  
-> -#define IGB_RET_PTP_DISABLED 1
-> -#define IGB_RET_PTP_INVALID 2
-> -
->  /**
->   * igb_ptp_rx_pktstamp - retrieve Rx per packet timestamp
->   * @q_vector: Pointer to interrupt specific structure
->   * @va: Pointer to address containing Rx buffer
-> - * @skb: Buffer containing timestamp and packet
->   *
->   * This function is meant to retrieve a timestamp from the first buffer of an
->   * incoming frame.  The value is stored in little endian format starting on
->   * byte 8
->   *
-> - * Returns: 0 if success, nonzero if failure
-> + * Returns: 0 on failure, timestamp on success
->   **/
-> -int igb_ptp_rx_pktstamp(struct igb_q_vector *q_vector, void *va,
-> -			struct sk_buff *skb)
-> +ktime_t igb_ptp_rx_pktstamp(struct igb_q_vector *q_vector, void *va)
->  {
->  	struct igb_adapter *adapter = q_vector->adapter;
-> +	struct skb_shared_hwtstamps ts;
->  	__le64 *regval = (__le64 *)va;
->  	int adjust = 0;
->  
->  	if (!(adapter->ptp_flags & IGB_PTP_ENABLED))
-> -		return IGB_RET_PTP_DISABLED;
-> +		return 0;
->  
->  	/* The timestamp is recorded in little endian format.
->  	 * DWORD: 0        1        2        3
-> @@ -888,10 +884,9 @@ int igb_ptp_rx_pktstamp(struct igb_q_vector *q_vector, void *va,
->  
->  	/* check reserved dwords are zero, be/le doesn't matter for zero */
->  	if (regval[0])
-> -		return IGB_RET_PTP_INVALID;
-> +		return 0;
->  
-> -	igb_ptp_systim_to_hwtstamp(adapter, skb_hwtstamps(skb),
-> -				   le64_to_cpu(regval[1]));
-> +	igb_ptp_systim_to_hwtstamp(adapter, &ts, le64_to_cpu(regval[1]));
->  
->  	/* adjust timestamp for the RX latency based on link speed */
->  	if (adapter->hw.mac.type == e1000_i210) {
-> @@ -907,10 +902,8 @@ int igb_ptp_rx_pktstamp(struct igb_q_vector *q_vector, void *va,
->  			break;
->  		}
->  	}
-> -	skb_hwtstamps(skb)->hwtstamp =
-> -		ktime_sub_ns(skb_hwtstamps(skb)->hwtstamp, adjust);
->  
-> -	return 0;
-> +	return ktime_sub_ns(ts.hwtstamp, adjust);
->  }
->  
->  /**
-> -- 
-> 2.20.1
-> 
+>
+>
+> > What CPU core do you run on?
+>
+> Intel(R) Xeon(R) CPU E5-1650 v4 @ 3.60GHz
+
+So significantly higher clocked than my system. Explains your high numbers.
+
+> > It actually looks like
+> > your packet data gets prefetched successfully. If it had not, you
+> > would have gotten an access to LLC which is much more expensive than
+> > the drop you are seeing. If I run on the wrong NUMA node, I get 4
+> > Mpps, so it is not that.
+> >
+> > One interesting thing is that I get better results using the zero-copy
+> > path in the driver. I start xdp_rxq_drop then tie an AF_XDP socket to
+> > the queue id the XDP program gets its traffic from. The AF_XDP program
+> > will get no traffic in this case, but it will force the driver to use
+> > the zero-copy path for its XDP processing. In this case I get this:
+> >
+> > -0.5% for XDP_DROP and +-0% for XDP_TX for i40e.
+> >
+> > >  You lost -10% performance in this case:
+> > >   -3.54 nanosec (35.36*0.10) slower
+> > >
+> > > In XDP context 3.54 nanosec is a lot, as you can see it is 10% in this
+> > > zoom-in benchmark.  We have to look at the details.
+> > >
+> > > One detail/issue with i40e doing XDP_TX, is that I cannot verify that
+> > > packets are actually transmitted... not via exception tracepoint, not
+> > > via netstats, not via ethtool_stats.pl.  Maybe all the packets are
+> > > getting (silently) drop in my tests...!?!
+> > >
+> > >
+> > > > The xdpsock numbers are more in the ballpark of
+> > > > what I would expect.
+> > > >
+> > > > Tirtha and I found some optimizations in the i40e
+> > > > multi-frame/multi-buffer support that we have implemented. Will test
+> > > > those next, post the results and share the code.
+> > > >
+> > > > > >
+> > > > > > Just note that I would really like for the multi-frame support to get
+> > > > > > in. I have lost count on how many people that have asked for it to be
+> > > > > > added to XDP and AF_XDP. So please check our implementation and
+> > > > > > improve it so we can get the overhead down to where we want it to be.
+> > > > >
+> > > > > sure, I will do.
+> > > > >
+> > > > > Regards,
+> > > > > Lorenzo
+> > > > >
+> > > > > >
+> > > > > > Thanks: Magnus
+> > > > > >
+> > > > > > > I would like to reproduce these results in my testlab, in-order to
+> > > > > > > figure out where the throughput degradation comes from.
+> > > > > > >
+> > > > > > > > What performance do you see with the mvneta card? How much are we
+> > > > > > > > willing to pay for this feature when it is not being used or can we in
+> > > > > > > > some way selectively turn it on only when needed?
+> > > > > > >
+> > > > > > > Well, as Daniel says performance wise we require close to /zero/
+> > > > > > > additional overhead, especially as you state this happens when sending
+> > > > > > > a single frame, which is a base case that we must not slowdown.
+> > > > > > >
+> > > > > > > --
+> > > > > > > Best regards,
+> > > > > > >   Jesper Dangaard Brouer
+> > >
+> > > --
+> > > Best regards,
+> > >   Jesper Dangaard Brouer
+> > >   MSc.CS, Principal Kernel Engineer at Red Hat
+> > >   LinkedIn: http://www.linkedin.com/in/brouer
+> > >
+> > >
+> > > Running XDP on dev:i40e2 (ifindex:6) action:XDP_DROP options:read
+> > > XDP stats       CPU     pps         issue-pps
+> > > XDP-RX CPU      2       33,417,775  0
+> > > XDP-RX CPU      total   33,417,775
+> > >
+> > > RXQ stats       RXQ:CPU pps         issue-pps
+> > > rx_queue_index    2:2   33,417,775  0
+> > > rx_queue_index    2:sum 33,417,775
+> > >
+> > >
+> > > Running XDP on dev:i40e2 (ifindex:6) action:XDP_TX options:swapmac
+> > > XDP stats       CPU     pps         issue-pps
+> > > XDP-RX CPU      2       28,278,722  0
+> > > XDP-RX CPU      total   28,278,722
+> > >
+> > > RXQ stats       RXQ:CPU pps         issue-pps
+> > > rx_queue_index    2:2   28,278,726  0
+> > > rx_queue_index    2:sum 28,278,726
+> > >
+> > >
+> > >
+> >
+>
+>
+>
+> --
+> Best regards,
+>   Jesper Dangaard Brouer
+>   MSc.CS, Principal Kernel Engineer at Red Hat
+>   LinkedIn: http://www.linkedin.com/in/brouer
+>
