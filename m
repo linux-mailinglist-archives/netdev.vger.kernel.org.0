@@ -2,64 +2,63 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0683B367930
-	for <lists+netdev@lfdr.de>; Thu, 22 Apr 2021 07:21:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C66AB367937
+	for <lists+netdev@lfdr.de>; Thu, 22 Apr 2021 07:23:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229940AbhDVFVs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 22 Apr 2021 01:21:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56260 "EHLO
+        id S230319AbhDVFYG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 22 Apr 2021 01:24:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56752 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229533AbhDVFVr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 22 Apr 2021 01:21:47 -0400
-Received: from mail-io1-xd2f.google.com (mail-io1-xd2f.google.com [IPv6:2607:f8b0:4864:20::d2f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B580BC06174A
-        for <netdev@vger.kernel.org>; Wed, 21 Apr 2021 22:21:13 -0700 (PDT)
-Received: by mail-io1-xd2f.google.com with SMTP id b9so14589697iod.13
-        for <netdev@vger.kernel.org>; Wed, 21 Apr 2021 22:21:13 -0700 (PDT)
+        with ESMTP id S229608AbhDVFYF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 22 Apr 2021 01:24:05 -0400
+Received: from mail-pj1-x102c.google.com (mail-pj1-x102c.google.com [IPv6:2607:f8b0:4864:20::102c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2666FC06174A
+        for <netdev@vger.kernel.org>; Wed, 21 Apr 2021 22:23:30 -0700 (PDT)
+Received: by mail-pj1-x102c.google.com with SMTP id nm3-20020a17090b19c3b029014e1bbf6c60so320274pjb.4
+        for <netdev@vger.kernel.org>; Wed, 21 Apr 2021 22:23:30 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:to:cc:references:from:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=BxySs4mZ50Sl4m/lAP9NacbpbY2vXX78s/hjs7G+D/Q=;
-        b=D6dhaabc4Mc0Z329tOKK+WVgvg4DdcycgwZfJ8/fr5Dhbe4h4oGqIegoBTmdS+1C0g
-         ZLtOEBdH3veesqr5GSAUNkQdX9ydCAsqz0m8KkPeTsiQUNSl8UVyp+xtmYSxwqoUAtsv
-         VKpYg9njjxafnOoUgEblBauN2dJqTGJnQEVTVHHiGCXc3uvrPRYSUApfoPotjfGZSgvZ
-         agacPHiCE1EQLn6MOP9BWPf6yxSRcSXtlZ+m7ICkQbm6cyeLgDVTJPHRZt4Lp9bM4Y3R
-         2qUUs1hNjr/GO3wcFT5kdYl9xQwvLYYDlaIzegqIIatt8S0WFQxywsEGgPEcox6Bws9w
-         YIbA==
+        bh=TrGjSqinnkCbNMxpeyr0DfODoargIAwuwPx/KOpbkXk=;
+        b=SQZGDAtoB5VdL23YwytwE3oqqEUow2elqZLVazg3hC3vi/Jw8wRY1r7bAj7MNl+rT3
+         Z4Ne9jUR0HTAWbD+FjEu4b4Tpe+1SbMex77ZCI7vQGyKAY7HhXzS4JQAf7OwEv2HwXOy
+         ZDV5P3IE5Na9YXXGnGbgFx2RiFkcmIMaopOuvGDXHZrwiXhnuvtUCMm8LWE1UwosB9fx
+         XTF9WqPZG3PA7KNEwj1XMCzYOvIyt7+sNIH2xgAPvzdcrQEj9tu5TiC0pljsT5m1Ri9y
+         LZsxwBt/eXM625yPExa9LYyRcq26EM3tXju6oT1SArNqeXgaPq+uoP7QwnqvcPFGurjd
+         T8PQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:message-id:date
          :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=BxySs4mZ50Sl4m/lAP9NacbpbY2vXX78s/hjs7G+D/Q=;
-        b=bNbAviTpO+SEUMawG48VUDsUxGHcjavM2BZ8X2RSarC5WwxptBfTxcWSgJEG4ZzNO7
-         WXu/lBCBe6XcRNVoQUcM/Tm5sJ08bbOOp7DUWJHKEt74eRmAFYsyGbt2fooi8MZmr4O2
-         uAjZ8oCXzAKskG1MvlyWvaFosmkQu6/qG62hlCWPXmQYsWC0Ipvy/VhCnClxhF2JWiaI
-         xKXQITp1lsnuOdydRJYtJB57VziIkR+nX7oyt+bsW1I86HS0hp2wrcSx2YGkRP32ZZu1
-         HH6T59aHP4AkyiHSDr3cXzIura6hRJ6aCHXDnrePSHl4PZcYrehHrUJi5xT/0axYnYew
-         aU+A==
-X-Gm-Message-State: AOAM533xubrfdzKCvZXzYINcaIt9yDM4m/aJ4RkiDML1ARm4XcWSM2eT
-        VqWzeB20FfBxHK8SKObJanDbMFE+rzs=
-X-Google-Smtp-Source: ABdhPJxeo0QhlqVjoM7ctXuqgddM4nLYt1VtOSKII3EKTBiPCXBQKlPpkpE1y8vYX8gWRy3cwpdKwQ==
-X-Received: by 2002:a02:4e45:: with SMTP id r66mr1593946jaa.137.1619068872915;
-        Wed, 21 Apr 2021 22:21:12 -0700 (PDT)
+        bh=TrGjSqinnkCbNMxpeyr0DfODoargIAwuwPx/KOpbkXk=;
+        b=HL4TDzUOL2HcEhfnYrrfhLSRUwGL8k59jWX/2E/HfIWnfuOMYcYRVHONoZmEjpjp0V
+         OzUwO9lzpGYCNAd5DIxOGfB96wcdHrcnMt3CsWOZ3jHcPEEpgcwngu2Sz1TDmB1hMIuN
+         VnUH7pzVn+pE9V3wriJSHbEfJqmqZd8hJIj3iAQ5kuZ+IpjQS3j9ihb0inv+Hy+Nj0QC
+         IXqWDIoXa4iP6nN1CxcHjj77w8HS/YiuOYzPjLjb93Zjtawgxw/25og0scXwQBp9LK3H
+         aXy0z+uoxZlfd2/loOW/UghsCcwXrDrNCk6AGCmay0t5kg4mZAWqAVLWyIBRP5Z/C5qA
+         AqEg==
+X-Gm-Message-State: AOAM531WGF7gDPBAZrTGYMzCJKkKQeEV9H9HLJtn3hwTZWs1VPD3lmtj
+        FKejUNFhkkcBev/DLQF9Ggw=
+X-Google-Smtp-Source: ABdhPJxykES6T+0eWcRAOAC7pxWyuwQr5kJBKo0ZWLmDqoAmqcspQXEaQzbItP4NeFIJ/L3/BppKVQ==
+X-Received: by 2002:a17:90a:f195:: with SMTP id bv21mr15431269pjb.56.1619069009565;
+        Wed, 21 Apr 2021 22:23:29 -0700 (PDT)
 Received: from Davids-MacBook-Pro.local ([8.45.42.15])
-        by smtp.googlemail.com with ESMTPSA id q11sm685409ile.56.2021.04.21.22.21.11
+        by smtp.googlemail.com with ESMTPSA id j27sm1038238pgb.54.2021.04.21.22.23.28
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 21 Apr 2021 22:21:12 -0700 (PDT)
-Subject: Re: [PATCH iproute2-next 0/6] bridge: vlan: add per-vlan options
- support
-To:     Nikolay Aleksandrov <razor@blackwall.org>, netdev@vger.kernel.org
-Cc:     roopa@nvidia.com, Nikolay Aleksandrov <nikolay@nvidia.com>
-References: <20210418120137.2605522-1-razor@blackwall.org>
+        Wed, 21 Apr 2021 22:23:29 -0700 (PDT)
+Subject: Re: [PATCH iproute2] lib: move get_task_name() from rdma
+To:     Andrea Claudi <aclaudi@redhat.com>, netdev@vger.kernel.org
+Cc:     stephen@networkplumber.org, dsahern@gmail.com
+References: <a41d23aa24bbe5b4acfc2465feca582c6e355e0d.1618839246.git.aclaudi@redhat.com>
 From:   David Ahern <dsahern@gmail.com>
-Message-ID: <01b06927-754d-2f09-ecdc-f5d61847c689@gmail.com>
-Date:   Wed, 21 Apr 2021 22:21:10 -0700
+Message-ID: <35a2896f-a6bc-961b-5807-fb83059e3dd0@gmail.com>
+Date:   Wed, 21 Apr 2021 22:23:27 -0700
 User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
  Gecko/20100101 Thunderbird/78.9.1
 MIME-Version: 1.0
-In-Reply-To: <20210418120137.2605522-1-razor@blackwall.org>
+In-Reply-To: <a41d23aa24bbe5b4acfc2465feca582c6e355e0d.1618839246.git.aclaudi@redhat.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -67,48 +66,22 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 4/18/21 5:01 AM, Nikolay Aleksandrov wrote:
-> From: Nikolay Aleksandrov <nikolay@nvidia.com>
+On 4/19/21 6:34 AM, Andrea Claudi wrote:
+> The function get_task_name() is used to get the name of a process from
+> its pid, and its implementation is similar to ip/iptuntap.c:pid_name().
 > 
-> Hi,
-> This set extends the bridge vlan code to use the new vlan RTM calls
-> which allow to dump detailed per-port, per-vlan information and also to
-> manipulate the per-vlan options. It also allows to monitor any vlan
-> changes (add/del/option change). The rtm vlan dumps have an extensible
-> format which allows us to add new options and attributes easily, and
-> also to request the kernel to filter on different vlan information when
-> dumping. The new kernel dump code tries to use compressed vlan format as
-> much as possible (it includes netlink attributes for vlan start and
-> end) to reduce the number of generated messages and netlink traffic.
-> The iproute2 support is activated by using the "-d" flag when showing
-> vlan information, that will cause it to use the new rtm dump call and
-> get all the detailed information, if "-s" is also specified it will dump
-> per-vlan statistics as well. Obviously in that case the vlans cannot be
-> compressed. To change per-vlan options (currently only STP state is
-> supported) a new vlan command is added - "set". It can be used to set
-> options of bridge or port vlans and vlan ranges can be used, all of the
-> new vlan option code uses extack to show more understandable errors.
-> The set adds the first supported per-vlan option - STP state.
-> Man pages and usage information are updated accordingly.
+> Move it to lib/fs.c to use a single implementation and make it easily
+> reusable.
 > 
-> Example:
->  $ bridge -d vlan show
->  port              vlan-id
->  ens13             1 PVID Egress Untagged
->                      state forwarding
->  bridge            1 PVID Egress Untagged
->                      state forwarding
-> 
->  $ bridge vlan set vid 1 dev ens13 state blocking
->  $ bridge -d vlan show
->  port              vlan-id
->  ens13             1 PVID Egress Untagged
->                      state blocking
->  bridge            1 PVID Egress Untagged
->                      state forwarding
-> 
-> We plan to add many more per-vlan options in the future.
+> Signed-off-by: Andrea Claudi <aclaudi@redhat.com>
+> ---
+>  include/utils.h |  1 +
+>  ip/iptuntap.c   | 31 +------------------------------
+>  lib/fs.c        | 24 ++++++++++++++++++++++++
+>  rdma/res.c      | 24 ------------------------
+>  rdma/res.h      |  1 -
+>  5 files changed, 26 insertions(+), 55 deletions(-)
 > 
 
-applied. Thanks, Nik
+applied to iproute2-next. Thanks,
 
