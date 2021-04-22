@@ -2,150 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 513D5367EA7
-	for <lists+netdev@lfdr.de>; Thu, 22 Apr 2021 12:31:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DD9F1367EBC
+	for <lists+netdev@lfdr.de>; Thu, 22 Apr 2021 12:36:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235782AbhDVKad (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 22 Apr 2021 06:30:33 -0400
-Received: from mx13.kaspersky-labs.com ([91.103.66.164]:62670 "EHLO
-        mx13.kaspersky-labs.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230270AbhDVKad (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 22 Apr 2021 06:30:33 -0400
-Received: from relay13.kaspersky-labs.com (unknown [127.0.0.10])
-        by relay13.kaspersky-labs.com (Postfix) with ESMTP id 89125520F5B;
-        Thu, 22 Apr 2021 13:29:56 +0300 (MSK)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kaspersky.com;
-        s=mail202102; t=1619087396;
-        bh=gJ/b/xwdSVpAeKgXpj2z9DnCJJYMjVhcutsivV4jIkI=;
-        h=Subject:To:From:Message-ID:Date:MIME-Version:Content-Type;
-        b=46n0d7GcTC/DtZ4ug9hLxZavNm3XtWUYB5Agtxf8YzYw9c0FrFGwHufOtD4XaaU7C
-         PduJnoEmWuUwD0PJK3C6cDK1EsFOaWR9yJ4twT0uMK89Jni5z2oSjamCLHDACbwm3N
-         1uuUEIS0JSR7W3R3pI4VmSLVUVca11fFOxGBtHWflaNQPrUbUqZwnV7tTR6iv1ZXy0
-         F1HKhMNf7lWDRlGvfNdP7nBcqC/iW6GfSFM4rWBrEYcg0w0mkZr9slmTBO17WtJt6v
-         vgxcYCHvUxSxIH6hL7hcV4MdHbdXYUQgP2JtK6ScPCqaDcr10Lqb/FW9VWh0SH1YiZ
-         M1uiBwoJAA7bQ==
-Received: from mail-hq2.kaspersky.com (unknown [91.103.66.206])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-SHA256 (128/128 bits))
-        (Client CN "mail-hq2.kaspersky.com", Issuer "Kaspersky MailRelays CA G3" (verified OK))
-        by mailhub13.kaspersky-labs.com (Postfix) with ESMTPS id DDAED520D77;
-        Thu, 22 Apr 2021 13:29:55 +0300 (MSK)
-Received: from [10.16.171.77] (10.64.64.121) by hqmailmbx3.avp.ru
- (10.64.67.243) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2176.2; Thu, 22
- Apr 2021 13:29:54 +0300
-Subject: Re: [RFC PATCH v8 00/19] virtio/vsock: introduce SOCK_SEQPACKET
- support
-To:     Stefano Garzarella <sgarzare@redhat.com>
-CC:     Stefan Hajnoczi <stefanha@redhat.com>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        Jason Wang <jasowang@redhat.com>,
+        id S235912AbhDVKgp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 22 Apr 2021 06:36:45 -0400
+Received: from relay.sw.ru ([185.231.240.75]:33262 "EHLO relay.sw.ru"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S235513AbhDVKgn (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 22 Apr 2021 06:36:43 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=virtuozzo.com; s=relay; h=Content-Type:MIME-Version:Date:Message-ID:Subject
+        :From; bh=uOkZzTEzLDYGvDz2EcEVr3MAZr7Fo0gfzmPbZqUA8K8=; b=IJW2qTrUgmj+QbyXTMS
+        sn1XsfjzFp8BDDhkt1pTpTw5KMJeeSLci/BuLsZXus52iIzs3YmodO0VSewya7W8Lwn0MGc8Kh+qD
+        rwdqGhv3wCgP4vsIkHDcYkuyejvIn5qT9OGwVGTBs8nk6wGXJvnizglEDtcDBongh8YbhorRn50=
+Received: from [10.93.0.56]
+        by relay.sw.ru with esmtp (Exim 4.94)
+        (envelope-from <vvs@virtuozzo.com>)
+        id 1lZWgo-001AKn-KF; Thu, 22 Apr 2021 13:36:06 +0300
+From:   Vasily Averin <vvs@virtuozzo.com>
+Subject: [PATCH v3 01/16] memcg: enable accounting for net_device and Tx/Rx
+ queues
+To:     cgroups@vger.kernel.org, Michal Hocko <mhocko@kernel.org>,
+        Shakeel Butt <shakeelb@google.com>,
+        Johannes Weiner <hannes@cmpxchg.org>,
+        Vladimir Davydov <vdavydov.dev@gmail.com>
+Cc:     Roman Gushchin <guro@fb.com>,
         "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jorgen Hansen <jhansen@vmware.com>,
-        Colin Ian King <colin.king@canonical.com>,
-        Andra Paraschiv <andraprs@amazon.com>,
-        Norbert Slusarek <nslusarek@gmx.net>,
-        Alexander Popov <alex.popov@linux.com>,
-        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
-        "virtualization@lists.linux-foundation.org" 
-        <virtualization@lists.linux-foundation.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "stsp2@yandex.ru" <stsp2@yandex.ru>,
-        "oxffffaa@gmail.com" <oxffffaa@gmail.com>
-References: <20210413123954.3396314-1-arseny.krasnov@kaspersky.com>
- <20210421095213.25hnfi2th7gzyzt2@steredhat>
- <2c3d0749-0f41-e064-0153-b6130268add2@kaspersky.com>
- <20210422084638.bvblk33b4oi6cec6@steredhat>
- <bfefdd94-a84f-8bed-331e-274654a7426f@kaspersky.com>
- <20210422100217.jmpgevtrukqyukfo@steredhat>
-From:   Arseny Krasnov <arseny.krasnov@kaspersky.com>
-Message-ID: <bc649d1b-80d8-835c-6f47-8a7d402dd0b7@kaspersky.com>
-Date:   Thu, 22 Apr 2021 13:29:54 +0300
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
+References: <dddf6b29-debd-dcb5-62d0-74909d610edb@virtuozzo.com>
+Message-ID: <63329bfe-a000-a450-fdd2-be829aee8762@virtuozzo.com>
+Date:   Thu, 22 Apr 2021 13:36:06 +0300
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.7.1
 MIME-Version: 1.0
-In-Reply-To: <20210422100217.jmpgevtrukqyukfo@steredhat>
-Content-Type: text/plain; charset="windows-1252"
-Content-Transfer-Encoding: 7bit
+In-Reply-To: <dddf6b29-debd-dcb5-62d0-74909d610edb@virtuozzo.com>
+Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
-X-Originating-IP: [10.64.64.121]
-X-ClientProxiedBy: hqmailmbx2.avp.ru (10.64.67.242) To hqmailmbx3.avp.ru
- (10.64.67.243)
-X-KSE-ServerInfo: hqmailmbx3.avp.ru, 9
-X-KSE-AntiSpam-Interceptor-Info: scan successful
-X-KSE-AntiSpam-Version: 5.9.20, Database issued on: 04/22/2021 10:12:55
-X-KSE-AntiSpam-Status: KAS_STATUS_NOT_DETECTED
-X-KSE-AntiSpam-Method: none
-X-KSE-AntiSpam-Rate: 0
-X-KSE-AntiSpam-Info: Lua profiles 163280 [Apr 22 2021]
-X-KSE-AntiSpam-Info: Version: 5.9.20.0
-X-KSE-AntiSpam-Info: Envelope from: arseny.krasnov@kaspersky.com
-X-KSE-AntiSpam-Info: LuaCore: 442 442 b985cb57763b61d2a20abb585d5d4cc10c315b09
-X-KSE-AntiSpam-Info: {Tracking_from_domain_doesnt_match_to}
-X-KSE-AntiSpam-Info: kaspersky.com:7.1.1;d41d8cd98f00b204e9800998ecf8427e.com:7.1.1;127.0.0.199:7.1.2
-X-KSE-AntiSpam-Info: Rate: 0
-X-KSE-AntiSpam-Info: Status: not_detected
-X-KSE-AntiSpam-Info: Method: none
-X-KSE-Antiphishing-Info: Clean
-X-KSE-Antiphishing-ScanningType: Deterministic
-X-KSE-Antiphishing-Method: None
-X-KSE-Antiphishing-Bases: 04/22/2021 10:15:00
-X-KSE-AttachmentFiltering-Interceptor-Info: no applicable attachment filtering
- rules found
-X-KSE-Antivirus-Interceptor-Info: scan successful
-X-KSE-Antivirus-Info: Clean, bases: 22.04.2021 7:02:00
-X-KSE-BulkMessagesFiltering-Scan-Result: InTheLimit
-X-KSE-AttachmentFiltering-Interceptor-Info: no applicable attachment filtering
- rules found
-X-KSE-BulkMessagesFiltering-Scan-Result: InTheLimit
-X-KLMS-Rule-ID: 52
-X-KLMS-Message-Action: clean
-X-KLMS-AntiSpam-Status: not scanned, disabled by settings
-X-KLMS-AntiSpam-Interceptor-Info: not scanned
-X-KLMS-AntiPhishing: Clean, bases: 2021/04/22 09:51:00
-X-KLMS-AntiVirus: Kaspersky Security for Linux Mail Server, version 8.0.3.30, bases: 2021/04/22 07:02:00 #16598851
-X-KLMS-AntiVirus-Status: Clean, skipped
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Container netadmin can create a lot of fake net devices,
+then create a new net namespace and repeat it again and again.
+Net device can request the creation of up to 4096 tx and rx queues,
+and force kernel to allocate up to several tens of megabytes memory
+per net device.
 
-On 22.04.2021 13:02, Stefano Garzarella wrote:
-> On Thu, Apr 22, 2021 at 12:40:17PM +0300, Arseny Krasnov wrote:
->> On 22.04.2021 11:46, Stefano Garzarella wrote:
->>> On Wed, Apr 21, 2021 at 06:06:28PM +0300, Arseny Krasnov wrote:
->>>> Thank You, i'll prepare next version. Main question is: does this
->>>> approach(no SEQ_BEGIN, SEQ_END, 'msg_len' and 'msg_id') considered
->>>> good? In this case it will be easier to prepare final version, because
->>>> is smaller and more simple than previous logic. Also patch to spec
->>>> will be smaller.
->>> Yes, it's definitely much better than before.
->>>
->>> The only problem I see is that we add some overhead per fragment
->>> (header). We could solve that with the mergeable buffers that Jiang is
->>> considering for DGRAM.
->> If we are talking about receive, i think, i can reuse merge logic for
-> Yep, for TX the guest can potentially enqueue a big buffer.
-> Maybe it's still worth keeping a maximum size and fragmenting as we do 
-> now.
->
->> stream sockets, the only difference is that buffers are mergeable
->> until previous EOR(e.g. previous message) bit is found in rx queue.
->>
-> I got a little lost.
-> Can you elaborate more?
+It makes sense to account for them to restrict the host's memory
+consumption from inside the memcg-limited container.
 
-I'm talking about 'virtio_transport_recv_enqueue()': it tries to copy
+Signed-off-by: Vasily Averin <vvs@virtuozzo.com>
+---
+ net/core/dev.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-data of new packet to buffer of tail packet in rx queue. In case of
+diff --git a/net/core/dev.c b/net/core/dev.c
+index 1f79b9a..87b1e80 100644
+--- a/net/core/dev.c
++++ b/net/core/dev.c
+@@ -9994,7 +9994,7 @@ static int netif_alloc_rx_queues(struct net_device *dev)
+ 
+ 	BUG_ON(count < 1);
+ 
+-	rx = kvzalloc(sz, GFP_KERNEL | __GFP_RETRY_MAYFAIL);
++	rx = kvzalloc(sz, GFP_KERNEL_ACCOUNT | __GFP_RETRY_MAYFAIL);
+ 	if (!rx)
+ 		return -ENOMEM;
+ 
+@@ -10061,7 +10061,7 @@ static int netif_alloc_netdev_queues(struct net_device *dev)
+ 	if (count < 1 || count > 0xffff)
+ 		return -EINVAL;
+ 
+-	tx = kvzalloc(sz, GFP_KERNEL | __GFP_RETRY_MAYFAIL);
++	tx = kvzalloc(sz, GFP_KERNEL_ACCOUNT | __GFP_RETRY_MAYFAIL);
+ 	if (!tx)
+ 		return -ENOMEM;
+ 
+@@ -10693,7 +10693,7 @@ struct net_device *alloc_netdev_mqs(int sizeof_priv, const char *name,
+ 	/* ensure 32-byte alignment of whole construct */
+ 	alloc_size += NETDEV_ALIGN - 1;
+ 
+-	p = kvzalloc(alloc_size, GFP_KERNEL | __GFP_RETRY_MAYFAIL);
++	p = kvzalloc(alloc_size, GFP_KERNEL_ACCOUNT | __GFP_RETRY_MAYFAIL);
+ 	if (!p)
+ 		return NULL;
+ 
+-- 
+1.8.3.1
 
-SEQPACKET i can reuse it, just adding logic that check EOR bit of
-
-tail packet.
-
->
-> Thanks,
-> Stefano
->
->
