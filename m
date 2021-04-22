@@ -2,81 +2,68 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1C20E367ECA
-	for <lists+netdev@lfdr.de>; Thu, 22 Apr 2021 12:38:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 93EE1367EEC
+	for <lists+netdev@lfdr.de>; Thu, 22 Apr 2021 12:45:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235782AbhDVKh0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 22 Apr 2021 06:37:26 -0400
-Received: from relay.sw.ru ([185.231.240.75]:33480 "EHLO relay.sw.ru"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S236008AbhDVKhY (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 22 Apr 2021 06:37:24 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=virtuozzo.com; s=relay; h=Content-Type:MIME-Version:Date:Message-ID:Subject
-        :From; bh=SkoUid64jfWnCkxDzH08xkMfbWx02U1lgMhR2hvrunE=; b=M0ytvzFU20jfoZ0ah//
-        n2t+nSFQEXAqq/EilM0XSd2D69FoejlXb3IVllJE64fjgW8EjmbKbRI4ppZsBiL73Gk7KhakdAH5c
-        aP9DdEyWeOKvMASwItUuaws0+RAmeZLARy80CHodyqALO0T0UZB/F0d3w2BqKgZP2SxY9fR6d+g=
-Received: from [10.93.0.56]
-        by relay.sw.ru with esmtp (Exim 4.94)
-        (envelope-from <vvs@virtuozzo.com>)
-        id 1lZWhU-001ALs-JX; Thu, 22 Apr 2021 13:36:48 +0300
-From:   Vasily Averin <vvs@virtuozzo.com>
-Subject: [PATCH v3 06/16] memcg: enable accounting for scm_fp_list objects
-To:     cgroups@vger.kernel.org, Michal Hocko <mhocko@kernel.org>,
-        Shakeel Butt <shakeelb@google.com>,
-        Johannes Weiner <hannes@cmpxchg.org>,
-        Vladimir Davydov <vdavydov.dev@gmail.com>
-Cc:     Roman Gushchin <guro@fb.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
-References: <dddf6b29-debd-dcb5-62d0-74909d610edb@virtuozzo.com>
-Message-ID: <9b82c165-5138-3c03-4a1d-1f16bd8416ef@virtuozzo.com>
-Date:   Thu, 22 Apr 2021 13:36:48 +0300
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.7.1
+        id S235782AbhDVKqC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 22 Apr 2021 06:46:02 -0400
+Received: from fallback10.mail.ru ([94.100.178.50]:43962 "EHLO
+        fallback10.mail.ru" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230270AbhDVKqC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 22 Apr 2021 06:46:02 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=inbox.ru; s=mail3;
+        h=Content-Transfer-Encoding:MIME-Version:Message-Id:Date:Subject:Cc:To:From; bh=N68yG+YDJQa/pTm02kMIrbwzP83sTnDfJ8b9QVl8Sd4=;
+        b=t6MZ3WKELq68AHA9rJVbohDI0w42Htw6WNUqglNd+eHzWB47Q6zaQrzPJ+Ay96+A3bH+MEWUL5B7THSkcDlrCMgjjEeS1yHGr1QD2TXZp1dbzqgmvAYg27uViuLKmDEw6bFKZx9yCLMCCLYLihblBnVsaf6ARI9KapJbCx4O/W8=;
+Received: from [10.161.117.32] (port=47880 helo=smtp3.mail.ru)
+        by fallback10.m.smailru.net with esmtp (envelope-from <fido_max@inbox.ru>)
+        id 1lZWpq-0005Mr-2w
+        for netdev@vger.kernel.org; Thu, 22 Apr 2021 13:45:26 +0300
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=inbox.ru; s=mail3;
+        h=Content-Transfer-Encoding:MIME-Version:Message-Id:Date:Subject:Cc:To:From:From:Subject:Content-Type:Content-Transfer-Encoding:To:Cc; bh=N68yG+YDJQa/pTm02kMIrbwzP83sTnDfJ8b9QVl8Sd4=;
+        b=WauEawGdEC6aUKWlwmm91oxvFGmPC3kNVkXiJNBpzCKqeqkJnd7i77Dn/JdDBl+E5Wl/wk9aHG5z3KoLNDKPTqY4twXSuxbcvZXrw3kUnbU9cNzHKpFYrqh4MxXLiV0UF3p/jlbXi1fm7bRJKH4V3huJ+rW/4GfI+5GPXN6TxRk=;
+Received: by smtp3.mail.ru with esmtpa (envelope-from <fido_max@inbox.ru>)
+        id 1lZWpk-0000ww-S4; Thu, 22 Apr 2021 13:45:21 +0300
+From:   Maxim Kochetkov <fido_max@inbox.ru>
+To:     netdev@vger.kernel.org
+Cc:     andrew@lunn.ch, hkallweit1@gmail.com, linux@armlinux.org.uk,
+        davem@davemloft.net, kuba@kernel.org, f.fainelli@gmail.com,
+        Maxim Kochetkov <fido_max@inbox.ru>
+Subject: [PATCH 0/2] net: phy: marvell: fix set downshift params
+Date:   Thu, 22 Apr 2021 13:46:42 +0300
+Message-Id: <20210422104644.9472-1-fido_max@inbox.ru>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-In-Reply-To: <dddf6b29-debd-dcb5-62d0-74909d610edb@virtuozzo.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+X-7564579A: 646B95376F6C166E
+X-77F55803: 4F1203BC0FB41BD9DD7F0C977691F2B1028A1B9238D46FC7D6DD4EEAEDFDB30C182A05F5380850408D6CF6A1C07101603DFE1148B24C32B412710BDF411997F7E45C714884E72615
+X-7FA49CB5: FF5795518A3D127A4AD6D5ED66289B5278DA827A17800CE7AD2F2D6F6013FF7FC2099A533E45F2D0395957E7521B51C2CFCAF695D4D8E9FCEA1F7E6F0F101C6778DA827A17800CE78EA80DE462DCD770EA1F7E6F0F101C67CDEEF6D7F21E0D1D9295C2E9FA3191EE1B59CA4C82EFA658A6E030CC4393436B045FD3A1FFA9AF73F6B57BC7E64490618DEB871D839B73339E8FC8737B5C2249A50BD5087FBFCDAACC7F00164DA146DAFE8445B8C89999729449624AB7ADAF37F6B57BC7E64490611E7FA7ABCAF51C92176DF2183F8FC7C0618001F51B5FD3F9D2E47CDBA5A96583BA9C0B312567BB2376E601842F6C81A19E625A9149C048EEC24E1E72F37C03A09D765CF6BB0EE041D8FC6C240DEA7642DBF02ECDB25306B2B78CF848AE20165D0A6AB1C7CE11FEE365B78C30F681404DBA3038C0950A5D36B5C8C57E37DE458B0BC6067A898B09E46D1867E19FE14079C09775C1D3CA48CF3D321E7403792E342EB15956EA79C166A417C69337E82CC275ECD9A6C639B01B78DA827A17800CE7E1BCFB2C0BE3F189731C566533BA786AA5CC5B56E945C8DA
+X-C1DE0DAB: C20DE7B7AB408E4181F030C43753B8186998911F362727C414F749A5E30D975C3E7AEEB2EA3DACB3AEF6577090DDAD7869C6D2724BE475869C2B6934AE262D3EE7EAB7254005DCED2B0D99E5FC5BAFA11E0A4E2319210D9B64D260DF9561598F01A9E91200F654B02E4E6844585584458E8E86DC7131B365E7726E8460B7C23C
+X-C8649E89: 4E36BF7865823D7055A7F0CF078B5EC49A30900B95165D3498EF79680EE3725C5D4CB2595AE62CDD1F486D0A777BDBD147AF06DC883D9D0B5D16FBA36E159ACB1D7E09C32AA3244C6C55E81718C14E0E60F853847A1C18537101BF96129E4011AD832FF50B3043B1
+X-D57D3AED: 3ZO7eAau8CL7WIMRKs4sN3D3tLDjz0dLbV79QFUyzQ2Ujvy7cMT6pYYqY16iZVKkSc3dCLJ7zSJH7+u4VD18S7Vl4ZUrpaVfd2+vE6kuoey4m4VkSEu530nj6fImhcD4MUrOEAnl0W826KZ9Q+tr5ycPtXkTV4k65bRjmOUUP8cvGozZ33TWg5HZplvhhXbhDGzqmQDTd6OAevLeAnq3Ra9uf7zvY2zzsIhlcp/Y7m53TZgf2aB4JOg4gkr2biojd3ipC3Yuge1trKHfCTdQ1Q==
+X-Mailru-Sender: 11C2EC085EDE56FA9C10FA2967F5AB24123149756043E43E166E5606519823F29FF793AD724AFED6EE9242D420CFEBFD3DDE9B364B0DF2891A624F84B2C74EDA4239CF2AF0A6D4F80DA7A0AF5A3A8387
+X-Mras: Ok
+X-7564579A: 646B95376F6C166E
+X-77F55803: 6242723A09DB00B44BADD4F5929CCB15E536D9810E242AD3D3969FF9BA4B0BBD049FFFDB7839CE9E5F41FB687843EBABC87C54600BE446EA591890F7003875EC5C023F79A8AA4BFE
+X-7FA49CB5: 0D63561A33F958A56523CB669E9E443212E994C03708658E42B14328CBB710008941B15DA834481FA18204E546F3947CEBAEFC6015046CFCF6B57BC7E64490618DEB871D839B7333395957E7521B51C2DFABB839C843B9C08941B15DA834481F8AA50765F790063749305D2801D13566389733CBF5DBD5E9B5C8C57E37DE458BD9DD9810294C998ED8FC6C240DEA76428AA50765F790063740BA071C1C7EF6BBD81D268191BDAD3DBD4B6F7A4D31EC0BEA7A3FFF5B025636AAAE862A0553A39223F8577A6DFFEA7C565C1E6824D8037B43847C11F186F3C59DAA53EE0834AAEE
+X-C1DE0DAB: C20DE7B7AB408E4181F030C43753B8186998911F362727C414F749A5E30D975C3E7AEEB2EA3DACB37AA83F8EDA6DD3EE21AC2BF6D1B86BDC9C2B6934AE262D3EE7EAB7254005DCED2B0D99E5FC5BAFA1699F904B3F4130E343918A1A30D5E7FCCB5012B2E24CD356
+X-D57D3AED: 3ZO7eAau8CL7WIMRKs4sN3D3tLDjz0dLbV79QFUyzQ2Ujvy7cMT6pYYqY16iZVKkSc3dCLJ7zSJH7+u4VD18S7Vl4ZUrpaVfd2+vE6kuoey4m4VkSEu530nj6fImhcD4MUrOEAnl0W826KZ9Q+tr5ycPtXkTV4k65bRjmOUUP8cvGozZ33TWg5HZplvhhXbhDGzqmQDTd6OAevLeAnq3Ra9uf7zvY2zzsIhlcp/Y7m53TZgf2aB4JOg4gkr2biojd3ipC3Yuge3S0MSpsAm/Tw==
+X-Mailru-MI: 800
+X-Mailru-Sender: A5480F10D64C90053DB5E8752E58C64B6107DA3D8362899C67E37518350C817B8735D1064880384AEE9242D420CFEBFD3DDE9B364B0DF2891A624F84B2C74EDA4239CF2AF0A6D4F80DA7A0AF5A3A8387
+X-Mras: Ok
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-unix sockets allows to send file descriptors via SCM_RIGHTS type messages.
-Each such send call forces kernel to allocate up to 2Kb memory for
-struct scm_fp_list.
+Changing downshift params without software reset has no effect,
+so call genphy_soft_reset() after change downshift params.
 
-It makes sense to account for them to restrict the host's memory
-consumption from inside the memcg-limited container.
+Maxim Kochetkov (2):
+  net: phy: marvell: fix m88e1011_set_downshift
+  net: phy: marvell: fix m88e1111_set_downshift
 
-Signed-off-by: Vasily Averin <vvs@virtuozzo.com>
----
- net/core/scm.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/net/phy/marvell.c | 52 ++++++++++++++++++++++++---------------
+ 1 file changed, 32 insertions(+), 20 deletions(-)
 
-diff --git a/net/core/scm.c b/net/core/scm.c
-index 8156d4f..e837e4f 100644
---- a/net/core/scm.c
-+++ b/net/core/scm.c
-@@ -79,7 +79,7 @@ static int scm_fp_copy(struct cmsghdr *cmsg, struct scm_fp_list **fplp)
- 
- 	if (!fpl)
- 	{
--		fpl = kmalloc(sizeof(struct scm_fp_list), GFP_KERNEL);
-+		fpl = kmalloc(sizeof(struct scm_fp_list), GFP_KERNEL_ACCOUNT);
- 		if (!fpl)
- 			return -ENOMEM;
- 		*fplp = fpl;
-@@ -348,7 +348,7 @@ struct scm_fp_list *scm_fp_dup(struct scm_fp_list *fpl)
- 		return NULL;
- 
- 	new_fpl = kmemdup(fpl, offsetof(struct scm_fp_list, fp[fpl->count]),
--			  GFP_KERNEL);
-+			  GFP_KERNEL_ACCOUNT);
- 	if (new_fpl) {
- 		for (i = 0; i < fpl->count; i++)
- 			get_file(fpl->fp[i]);
 -- 
-1.8.3.1
+2.30.2
 
