@@ -2,115 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DB3B6367BCF
-	for <lists+netdev@lfdr.de>; Thu, 22 Apr 2021 10:12:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CE470367C2E
+	for <lists+netdev@lfdr.de>; Thu, 22 Apr 2021 10:17:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235317AbhDVIMI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 22 Apr 2021 04:12:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37378 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235305AbhDVIMG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 22 Apr 2021 04:12:06 -0400
-Received: from mail-yb1-xb35.google.com (mail-yb1-xb35.google.com [IPv6:2607:f8b0:4864:20::b35])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D6C4C06174A;
-        Thu, 22 Apr 2021 01:11:30 -0700 (PDT)
-Received: by mail-yb1-xb35.google.com with SMTP id k73so44078562ybf.3;
-        Thu, 22 Apr 2021 01:11:30 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=ZrVYM7lQBGs3R7hQ2ZGY213TaJIwxgrLXRygZ4v+z0U=;
-        b=jIR23OjUT14MSwjYVPMTJWiptWi9XvyJBdUyblk4rG7zoX/mEXLyVdEk6QRBAjVt7q
-         7pFy4Wbzv6SaQ5L31jtxjzokgFWNiVfBgpGNy6Nb49s7YYIYqqvwPOEI8pGMurM+8nQG
-         zAyC6MkzVYqN3hm2UaPZCG9afppKHw5C7hin9S+QJAwYepvxy66KYjJ8qHSmqH7pg/cY
-         mXiFhI4dyNbzkeinDAItaiZvUMktVsESDDpqZqFdkeV5bP8iOmjmwF1h9umQCHG6mx9z
-         tnuWnKnl3BVzD5qS0pRa1+lenIXo49pvYvp/BquikGJvnS+8wzhF9DU4bMDbQ5229JC7
-         Mafw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=ZrVYM7lQBGs3R7hQ2ZGY213TaJIwxgrLXRygZ4v+z0U=;
-        b=VN642rTv3VQLhrGg1H/yCrNKJsyQxuCJ0Gse1KT9Q7Uff7oQQDMB3mbe2iKlWqqwCq
-         0DEzUoySpy9CRRsJYfVNL47pFF4m6doQSi67bixCDSnF5qOe8sS9W785q6IDU480GWX+
-         BY653/Hp24NTvw/DMq8i8ywbL5mKX+UUAYjIqOLQz7XVnoK2f2uij1fm7L718X7RBDz6
-         TA6ui/OmilL9eOtVWk0h2eEHN/17DEgIBN15zkUWHILUDCaR3SeAkXjNllF2skWlS7v7
-         YuT4Y4q52Z6n6NOzfem2SD22KkKzv42B3eIAWJGBFVbN2IL3klKsIUzae0RJ/Ut+GdOf
-         TPgw==
-X-Gm-Message-State: AOAM532Za4n8jLHPncrW0Fhlm1Re7tBtfQzaAwItgmTK92Jk/fvsco7P
-        VOM8NyxubpUR3sNSwDKpmW2VR75hwEbz+dhI3LA=
-X-Google-Smtp-Source: ABdhPJz5X/E6nFJxcNntdBxPY0DTX1/xz+1VZ+whImx63TD2+eoYZPRzh6/pirV/Levh3n0MNLI1UWoyRJsMshXKZfA=
-X-Received: by 2002:a25:d195:: with SMTP id i143mr3118696ybg.331.1619079089583;
- Thu, 22 Apr 2021 01:11:29 -0700 (PDT)
-MIME-Version: 1.0
-References: <20210407001658.2208535-1-pakki001@umn.edu> <YH5/i7OvsjSmqADv@kroah.com>
- <20210420171008.GB4017@fieldses.org> <YH+zwQgBBGUJdiVK@unreal>
- <YH+7ZydHv4+Y1hlx@kroah.com> <CADVatmNgU7t-Co84tSS6VW=3NcPu=17qyVyEEtVMVR_g51Ma6Q@mail.gmail.com>
- <YH/8jcoC1ffuksrf@kroah.com>
-In-Reply-To: <YH/8jcoC1ffuksrf@kroah.com>
-From:   Sudip Mukherjee <sudipm.mukherjee@gmail.com>
-Date:   Thu, 22 Apr 2021 09:10:53 +0100
-Message-ID: <CADVatmORofURmrLiV7GRW2ZchzL6zdQopwxAh2YSVT0y69KuHA@mail.gmail.com>
-Subject: Re: [PATCH] SUNRPC: Add a check for gss_release_msg
-To:     Greg KH <gregkh@linuxfoundation.org>
-Cc:     Leon Romanovsky <leon@kernel.org>,
-        "J. Bruce Fields" <bfields@fieldses.org>,
-        Aditya Pakki <pakki001@umn.edu>,
-        Chuck Lever <chuck.lever@oracle.com>,
-        Trond Myklebust <trond.myklebust@hammerspace.com>,
-        Anna Schumaker <anna.schumaker@netapp.com>,
-        "David S. Miller" <davem@davemloft.net>,
+        id S235459AbhDVIQv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 22 Apr 2021 04:16:51 -0400
+Received: from mail.kernel.org ([198.145.29.99]:48314 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S235216AbhDVIQu (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 22 Apr 2021 04:16:50 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id F2079613DC;
+        Thu, 22 Apr 2021 08:16:14 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1619079375;
+        bh=poQJR1pO5d3haclh9Pnw8hwLbFU79fJkKdVKmgVjTwY=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=TfCp2hF3b5rwma1VIyd64845DC/YFDd9meDPC9Od2JNXxK7/mWKQ8+7OWFWouUbYP
+         Mf1uYTrVdZYoFWPs3aHVTCQBVPhBsVsUgjdMyqD9tdahayOW6bOf0+tHZLa5VkBU82
+         COKWDf5mQTFazB/PcPNJNKO1aYfRJ0MGLAA8PKCMHYg/Dr2vHRtNKceozySPYPxYxt
+         mlPrzH1vXDCCV0Da8LB8jiT3ZwORXSF9CpBWmT7TzXjXjjan4lw8Q/2/oB1J9thmra
+         QZ96lSW6Furg8uHUVN9mjh9JZezrXig4NaPpbIPDAOt7/0Bo9ITd3uSSIIymr2BaUo
+         S3XsGdOGHPuvQ==
+Date:   Thu, 22 Apr 2021 11:16:11 +0300
+From:   Leon Romanovsky <leon@kernel.org>
+To:     mohammad.athari.ismail@intel.com
+Cc:     Jose Abreu <joabreu@synopsys.com>, Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Dave Wysochanski <dwysocha@redhat.com>,
-        linux-nfs@vger.kernel.org, netdev <netdev@vger.kernel.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+        Russell King <linux@armlinux.org.uk>,
+        Ong Boon Leong <boon.leong.ong@intel.com>,
+        Voon Weifeng <weifeng.voon@intel.com>, vee.khee.wong@intel.com,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net-next] net: pcs: Enable pre-emption packet for
+ 10/100Mbps
+Message-ID: <YIEwy1VnPuOP7Wuz@unreal>
+References: <20210422074851.17375-1-mohammad.athari.ismail@intel.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210422074851.17375-1-mohammad.athari.ismail@intel.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Greg,
+On Thu, Apr 22, 2021 at 03:48:51PM +0800, mohammad.athari.ismail@intel.com wrote:
+> From: Mohammad Athari Bin Ismail <mohammad.athari.ismail@intel.com>
+> 
+> Set VR_MII_DIG_CTRL1 bit-6(PRE_EMP) to enable pre-emption packet for
+> 10/100Mbps by default. This setting doesn`t impact pre-emption
+> capability for other speeds.
+> 
+> Signed-off-by: Mohammad Athari Bin Ismail <mohammad.athari.ismail@intel.com>
+> ---
+>  drivers/net/pcs/pcs-xpcs.c | 7 ++++++-
+>  1 file changed, 6 insertions(+), 1 deletion(-)
+> 
+> diff --git a/drivers/net/pcs/pcs-xpcs.c b/drivers/net/pcs/pcs-xpcs.c
+> index 944ba105cac1..2dbc1d46821e 100644
+> --- a/drivers/net/pcs/pcs-xpcs.c
+> +++ b/drivers/net/pcs/pcs-xpcs.c
+> @@ -66,6 +66,7 @@
+>  
+>  /* VR_MII_DIG_CTRL1 */
+>  #define DW_VR_MII_DIG_CTRL1_MAC_AUTO_SW		BIT(9)
+> +#define DW_VR_MII_DIG_CTRL1_PRE_EMP		BIT(6)
+>  
+>  /* VR_MII_AN_CTRL */
+>  #define DW_VR_MII_AN_CTRL_TX_CONFIG_SHIFT	3
+> @@ -666,6 +667,10 @@ static int xpcs_config_aneg_c37_sgmii(struct mdio_xpcs_args *xpcs)
+>  	 *	 PHY about the link state change after C28 AN is completed
+>  	 *	 between PHY and Link Partner. There is also no need to
+>  	 *	 trigger AN restart for MAC-side SGMII.
+> +	 *
+> +	 * For pre-emption, the setting is :-
+> +	 * 1) VR_MII_DIG_CTRL1 Bit(6) [PRE_EMP] = 1b (Enable pre-emption packet
+> +	 *    for 10/100Mbps)
+>  	 */
+>  	ret = xpcs_read(xpcs, MDIO_MMD_VEND2, DW_VR_MII_AN_CTRL);
+>  	if (ret < 0)
+> @@ -686,7 +691,7 @@ static int xpcs_config_aneg_c37_sgmii(struct mdio_xpcs_args *xpcs)
+>  	if (ret < 0)
+>  		return ret;
+>  
+> -	ret |= DW_VR_MII_DIG_CTRL1_MAC_AUTO_SW;
+> +	ret |= (DW_VR_MII_DIG_CTRL1_MAC_AUTO_SW | DW_VR_MII_DIG_CTRL1_PRE_EMP);
 
-On Wed, Apr 21, 2021 at 11:21 AM Greg KH <gregkh@linuxfoundation.org> wrote:
->
-> On Wed, Apr 21, 2021 at 11:07:11AM +0100, Sudip Mukherjee wrote:
-> > Hi Greg,
-> >
-> > On Wed, Apr 21, 2021 at 6:44 AM Greg KH <gregkh@linuxfoundation.org> wrote:
-> > >
-> > > On Wed, Apr 21, 2021 at 08:10:25AM +0300, Leon Romanovsky wrote:
-> > > > On Tue, Apr 20, 2021 at 01:10:08PM -0400, J. Bruce Fields wrote:
-> > > > > On Tue, Apr 20, 2021 at 09:15:23AM +0200, Greg KH wrote:
-> > > > > > If you look at the code, this is impossible to have happen.
-> > > > > >
-> >
-> > <snip>
-> >
-> > > > They introduce kernel bugs on purpose. Yesterday, I took a look on 4
-> > > > accepted patches from Aditya and 3 of them added various severity security
-> > > > "holes".
-> > >
-> > > All contributions by this group of people need to be reverted, if they
-> > > have not been done so already, as what they are doing is intentional
-> > > malicious behavior and is not acceptable and totally unethical.  I'll
-> > > look at it after lunch unless someone else wants to do it...
-> >
-> > A lot of these have already reached the stable trees. I can send you
-> > revert patches for stable by the end of today (if your scripts have
-> > not already done it).
->
-> Yes, if you have a list of these that are already in the stable trees,
-> that would be great to have revert patches, it would save me the extra
-> effort these mess is causing us to have to do...
+() are useless here.
 
-The patch series for all the stable branches should be with you now.
+Thanks
 
-But for others:
-https://lore.kernel.org/stable/YIEVGXEoeizx6O1p@debian/  for v5.11.y
-and other branches are sent as a reply to that mail.
-
-
--- 
-Regards
-Sudip
+>  
+>  	return xpcs_write(xpcs, MDIO_MMD_VEND2, DW_VR_MII_DIG_CTRL1, ret);
+>  }
+> -- 
+> 2.17.1
+> 
