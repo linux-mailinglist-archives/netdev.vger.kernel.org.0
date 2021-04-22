@@ -2,241 +2,136 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3BC1636861D
-	for <lists+netdev@lfdr.de>; Thu, 22 Apr 2021 19:39:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D77A336864A
+	for <lists+netdev@lfdr.de>; Thu, 22 Apr 2021 20:00:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236882AbhDVRj0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 22 Apr 2021 13:39:26 -0400
-Received: from mail-oo1-f41.google.com ([209.85.161.41]:33456 "EHLO
-        mail-oo1-f41.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236754AbhDVRjW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 22 Apr 2021 13:39:22 -0400
-Received: by mail-oo1-f41.google.com with SMTP id i25-20020a4aa1190000b02901bbd9429832so10135347ool.0;
-        Thu, 22 Apr 2021 10:38:47 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=tMVnVypmvdM6x0K9pdf9C+ZDup5EGo+8ylMsMxOJ0dM=;
-        b=jUVgvYDgYY7/6lBdZB7v17Y4UXOhNeHgAp2SNjivYk6i0UsJw7yzxGiABecnL5RIUF
-         muiHrJGHVmrsCiK3We5ZYuQRLh+WAi29bJcPQQfsgotRNHAF7eDqDQ80OBYqFTA8hY7z
-         5t7l+A5HGxMyBvSz5+SKcKjOi4ORekr7nvQEKwiGVzaOwCrRHZYBs/MisaNfYNQQslfY
-         W6Y+37DDYevkTi3PVKXtZPBuqWYTV+gWuAtvtVn8j7wHEaqhu8fZgEE5Qk94uYo/k8rJ
-         G1afdT+zNG3uHbPn1GeFMJ+cPyVZsGu1mFkJelrwjD7rOkezDBcygrB+iJkqw30aS/BV
-         HyRw==
-X-Gm-Message-State: AOAM531BKL00Dj/Mpkt+42P+vW2RQYfeSEZ6w+zF/FjRqDiIvlzEfvBJ
-        Lk1KPYdqibL5Y7GpXgkSkA==
-X-Google-Smtp-Source: ABdhPJwcgWM0XLWrK7WEs8CdBSkklMghctKgwcSHGZbx3s62U5GMyPjoEZD7BN22/aQxOKo2Wojj3w==
-X-Received: by 2002:a4a:96e3:: with SMTP id t32mr3235742ooi.14.1619113127295;
-        Thu, 22 Apr 2021 10:38:47 -0700 (PDT)
-Received: from robh.at.kernel.org (24-155-109-49.dyn.grandenetworks.net. [24.155.109.49])
-        by smtp.gmail.com with ESMTPSA id r9sm688532ool.3.2021.04.22.10.38.45
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 22 Apr 2021 10:38:46 -0700 (PDT)
-Received: (nullmailer pid 3297132 invoked by uid 1000);
-        Thu, 22 Apr 2021 17:38:44 -0000
-Date:   Thu, 22 Apr 2021 12:38:44 -0500
-From:   Rob Herring <robh@kernel.org>
-To:     Prasanna Vengateshan <prasanna.vengateshan@microchip.com>
-Cc:     andrew@lunn.ch, netdev@vger.kernel.org, olteanv@gmail.com,
-        UNGLinuxDriver@microchip.com, hkallweit1@gmail.com,
-        linux@armlinux.org.uk, davem@davemloft.net, kuba@kernel.org,
-        linux-kernel@vger.kernel.org, vivien.didelot@gmail.com,
-        f.fainelli@gmail.com, devicetree@vger.kernel.org
-Subject: Re: [PATCH v2 net-next 1/9] dt-bindings: net: dsa: dt bindings for
- microchip lan937x
-Message-ID: <20210422173844.GA3227277@robh.at.kernel.org>
-References: <20210422094257.1641396-1-prasanna.vengateshan@microchip.com>
- <20210422094257.1641396-2-prasanna.vengateshan@microchip.com>
+        id S236826AbhDVSBC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 22 Apr 2021 14:01:02 -0400
+Received: from mail.kernel.org ([198.145.29.99]:41690 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S236287AbhDVSA7 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 22 Apr 2021 14:00:59 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 662C3613F5;
+        Thu, 22 Apr 2021 18:00:23 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1619114424;
+        bh=egWDsX0yqk96ieznqeLeCw1Tuzn2uxvCmXxvAmpHf9A=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=ggWHayk99M89Mxo3jOOpneGFS75RRjFQzo7TgFW0dR5vDE/aQmsKtO2bZvJvpCG2g
+         1EziTt76QhbfLYUMp09PEPpbaR7BjuSEE5DMh9/5g1bKr6l0RjytIvsAANAXK+k88W
+         dXl0ImA25oddOAgg8aE9+nXYVBANs8A2nGZQcolRNEWc9bjcJvAu8QcQIdonQb3o1r
+         2aNjVhnlkQuNEvYf4hQKWaj+ihVP8k5fWnk8eCjCA86uqnkSkI8ObG4kb08XlgCNRc
+         MG1Koxlsc9RUuvgf3y4tPJbBKKOEn9P4rV7yjfw8AM3pVTdJ1N7gM/ryfyv19gUnyq
+         swFK3+5Ilj9yw==
+Date:   Thu, 22 Apr 2021 21:00:20 +0300
+From:   Leon Romanovsky <leon@kernel.org>
+To:     Bart Van Assche <bvanassche@acm.org>
+Cc:     Jason Gunthorpe <jgg@ziepe.ca>,
+        Marion et Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        tj@kernel.org, jiangshanlai@gmail.com, saeedm@nvidia.com,
+        davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
+        linux-rdma@vger.kernel.org, linux-kernel@vger.kernel.org,
+        kernel-janitors@vger.kernel.org
+Subject: Re: [PATCH 1/2] workqueue: Have 'alloc_workqueue()' like macros
+ accept a format specifier
+Message-ID: <YIG5tLBIAledZetf@unreal>
+References: <cover.1618780558.git.christophe.jaillet@wanadoo.fr>
+ <ae88f6c2c613d17bc1a56692cfa4f960dbc723d2.1618780558.git.christophe.jaillet@wanadoo.fr>
+ <042f5fff-5faf-f3c5-0819-b8c8d766ede6@acm.org>
+ <1032428026.331.1618814178946.JavaMail.www@wwinf2229>
+ <40c21bfe-e304-230d-b319-b98063347b8b@acm.org>
+ <20210422122419.GF2047089@ziepe.ca>
+ <782e329a-7c3f-a0da-5d2f-89871b0c4b9b@acm.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=iso-8859-1
 Content-Disposition: inline
-In-Reply-To: <20210422094257.1641396-2-prasanna.vengateshan@microchip.com>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <782e329a-7c3f-a0da-5d2f-89871b0c4b9b@acm.org>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Apr 22, 2021 at 03:12:49PM +0530, Prasanna Vengateshan wrote:
-> Documentation in .yaml format and updates to the MAINTAINERS
-> Also 'make dt_binding_check' is passed
+On Thu, Apr 22, 2021 at 10:12:33AM -0700, Bart Van Assche wrote:
+> On 4/22/21 5:24 AM, Jason Gunthorpe wrote:
+> > On Mon, Apr 19, 2021 at 01:02:34PM -0700, Bart Van Assche wrote:
+> >> On 4/18/21 11:36 PM, Marion et Christophe JAILLET wrote:
+> >>> The list in To: is the one given by get_maintainer.pl. Usualy, I only
+> >>> put the ML in Cc: I've run the script on the 2 patches of the serie
+> >>> and merged the 2 lists. Everyone is in the To: of the cover letter
+> >>> and of the 2 patches.
+> >>>
+> >>> If Théo is "Tejun Heo" (  (maintainer:WORKQUEUE) ), he is already in
+> >>> the To: line.
+> >> Linus wants to see a "Cc: ${maintainer}" tag in patches that he receives
+> >> from a maintainer and that modify another subsystem than the subsystem
+> >> maintained by that maintainer.
+> > 
+> > Really? Do you remember a lore link for this?
 > 
-> Signed-off-by: Prasanna Vengateshan <prasanna.vengateshan@microchip.com>
-> ---
->  .../bindings/net/dsa/microchip,lan937x.yaml   | 142 ++++++++++++++++++
->  MAINTAINERS                                   |   1 +
->  2 files changed, 143 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/net/dsa/microchip,lan937x.yaml
+> Last time I saw Linus mentioning this was a few months ago.
+> Unfortunately I cannot find that message anymore.
 > 
-> diff --git a/Documentation/devicetree/bindings/net/dsa/microchip,lan937x.yaml b/Documentation/devicetree/bindings/net/dsa/microchip,lan937x.yaml
-> new file mode 100644
-> index 000000000000..22128a52d699
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/net/dsa/microchip,lan937x.yaml
-> @@ -0,0 +1,142 @@
-> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-> +%YAML 1.2
-> +---
-> +$id: http://devicetree.org/schemas/net/dsa/microchip,lan937x.yaml#
-> +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> +
-> +title: LAN937x Ethernet Switch Series Tree Bindings
-> +
-> +maintainers:
-> +  - UNGLinuxDriver@microchip.com
-> +
-> +allOf:
-> +  - $ref: dsa.yaml#
-> +
-> +properties:
-> +  compatible:
-> +    enum:
-> +      - microchip,lan9370
-> +      - microchip,lan9371
-> +      - microchip,lan9372
-> +      - microchip,lan9373
-> +      - microchip,lan9374
-> +
-> +  reg:
-> +    maxItems: 1
-> +
-> +  spi-max-frequency:
-> +    maximum: 50000000
-> +
-> +  reset-gpios:
-> +    description: Optional gpio specifier for a reset line
-> +    maxItems: 1
-> +
-> +required:
-> +  - compatible
-> +  - reg
-> +
-> +unevaluatedProperties: false
-> +
-> +examples:
-> +  - |
-> +    #include <dt-bindings/gpio/gpio.h>
-> +
-> +    //Ethernet switch connected via spi to the host
-
-If this is on SPI, why is it not under the spi bus node?
-
-> +    ethernet {
-> +      #address-cells = <1>;
-> +      #size-cells = <0>;
-> +
-> +      fixed-link {
-> +        speed = <1000>;
-> +        full-duplex;
-> +      };
-> +    };
-> +
-> +    spi {
-> +      #address-cells = <1>;
-> +      #size-cells = <0>;
-> +
-> +      lan9374: switch@0 {
-> +        compatible = "microchip,lan9374";
-> +        reg = <0>;
-> +
-> +        spi-max-frequency = <44000000>;
-> +
-> +        ethernet-ports {
-> +          #address-cells = <1>;
-> +          #size-cells = <0>;
-> +          port@0 {
-> +            reg = <0>;
-> +            label = "lan1";
-> +            phy-handle = <&t1phy0>;
-> +          };
-> +          port@1 {
-> +            reg = <1>;
-> +            label = "lan2";
-> +            phy-handle = <&t1phy1>;
-> +          };
-> +          port@2 {
-> +            reg = <2>;
-> +            label = "lan4";
-> +            phy-handle = <&t1phy2>;
-> +          };
-> +          port@3 {
-> +            reg = <3>;
-> +            label = "lan6";
-> +            phy-handle = <&t1phy3>;
-> +          };
-> +          port@4 {
-> +            reg = <4>;
-> +            phy-mode = "rgmii";
-> +            ethernet = <&ethernet>;
-
-You are missing 'ethernet' label.
-
-> +            fixed-link {
-> +              speed = <1000>;
-> +              full-duplex;
-> +            };
-> +          };
-> +          port@5 {
-> +            reg = <5>;
-> +            label = "lan7";
-> +            fixed-link {
-> +              speed = <1000>;
-> +              full-duplex;
-> +            };
-> +          };
-> +          port@6 {
-> +            reg = <6>;
-> +            label = "lan5";
-> +            phy-handle = <&t1phy4>;
-> +          };
-> +          port@7 {
-> +            reg = <7>;
-> +            label = "lan3";
-> +            phy-handle = <&t1phy5>;
-> +          };
-> +        };
-> +
-> +        mdio {
-> +          compatible = "microchip,lan937x-mdio";
-
-You can just drop this to make the example pass. Or convert that binding 
-to schema.
-
-> +          #address-cells = <1>;
-> +          #size-cells = <0>;
-> +
-> +          t1phy0: ethernet-phy@0{
-> +            reg = <0x0>;
-> +          };
-> +          t1phy1: ethernet-phy@1{
-> +            reg = <0x1>;
-> +          };
-> +          t1phy2: ethernet-phy@2{
-> +            reg = <0x2>;
-> +          };
-> +          t1phy3: ethernet-phy@3{
-> +            reg = <0x3>;
-> +          };
-> +          t1phy4: ethernet-phy@6{
-> +            reg = <0x6>;
-> +          };
-> +          t1phy5: ethernet-phy@7{
-> +            reg = <0x7>;
-> +          };
-> +        };
-> +      };
-> +    };
-> diff --git a/MAINTAINERS b/MAINTAINERS
-> index c3c8fa572580..a0fdfef8802a 100644
-> --- a/MAINTAINERS
-> +++ b/MAINTAINERS
-> @@ -11752,6 +11752,7 @@ M:	UNGLinuxDriver@microchip.com
->  L:	netdev@vger.kernel.org
->  S:	Maintained
->  F:	Documentation/devicetree/bindings/net/dsa/microchip,ksz.yaml
-> +F:	Documentation/devicetree/bindings/net/dsa/microchip,lan937x.yaml
->  F:	drivers/net/dsa/microchip/*
->  F:	include/linux/platform_data/microchip-ksz.h
->  F:	net/dsa/tag_ksz.c
-> -- 
-> 2.27.0
+> > Generally I've been junking the CC lines (vs Andrew at the other
+> > extreme that often has 10's of CC lines)
 > 
+> Most entries in the MAINTAINERS file have one to three email addresses
+> so I'm surprised to read that Cc-ing maintainer(s) could result in tens
+> of Cc lines?
+
+git log mm/
+
+commit 2b8305260fb37fc20e13f71e13073304d0a031c8
+Author: Alexander Potapenko <glider@google.com>
+Date:   Thu Feb 25 17:19:21 2021 -0800
+
+    kfence, kasan: make KFENCE compatible with KASAN
+
+    Make KFENCE compatible with KASAN. Currently this helps test KFENCE
+    itself, where KASAN can catch potential corruptions to KFENCE state, or
+    other corruptions that may be a result of freepointer corruptions in the
+    main allocators.
+
+    [akpm@linux-foundation.org: merge fixup]
+    [andreyknvl@google.com: untag addresses for KFENCE]
+      Link: https://lkml.kernel.org/r/9dc196006921b191d25d10f6e611316db7da2efc.1611946152.git.andreyknvl@google.com
+
+    Link: https://lkml.kernel.org/r/20201103175841.3495947-7-elver@google.com
+    Signed-off-by: Marco Elver <elver@google.com>
+    Signed-off-by: Alexander Potapenko <glider@google.com>
+    Signed-off-by: Andrey Konovalov <andreyknvl@google.com>
+    Reviewed-by: Dmitry Vyukov <dvyukov@google.com>
+    Reviewed-by: Jann Horn <jannh@google.com>
+    Co-developed-by: Marco Elver <elver@google.com>
+    Cc: Andrey Konovalov <andreyknvl@google.com>
+    Cc: Andrey Ryabinin <aryabinin@virtuozzo.com>
+    Cc: Andy Lutomirski <luto@kernel.org>
+    Cc: Borislav Petkov <bp@alien8.de>
+    Cc: Catalin Marinas <catalin.marinas@arm.com>
+    Cc: Christopher Lameter <cl@linux.com>
+    Cc: Dave Hansen <dave.hansen@linux.intel.com>
+    Cc: David Rientjes <rientjes@google.com>
+    Cc: Eric Dumazet <edumazet@google.com>
+    Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+    Cc: Hillf Danton <hdanton@sina.com>
+    Cc: "H. Peter Anvin" <hpa@zytor.com>
+    Cc: Ingo Molnar <mingo@redhat.com>
+    Cc: Joern Engel <joern@purestorage.com>
+    Cc: Jonathan Corbet <corbet@lwn.net>
+    Cc: Joonsoo Kim <iamjoonsoo.kim@lge.com>
+    Cc: Kees Cook <keescook@chromium.org>
+    Cc: Mark Rutland <mark.rutland@arm.com>
+    Cc: Paul E. McKenney <paulmck@kernel.org>
+    Cc: Pekka Enberg <penberg@kernel.org>
+    Cc: Peter Zijlstra <peterz@infradead.org>
+    Cc: SeongJae Park <sjpark@amazon.de>
+    Cc: Thomas Gleixner <tglx@linutronix.de>
+    Cc: Vlastimil Babka <vbabka@suse.cz>
+    Cc: Will Deacon <will@kernel.org>
+    Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
+    Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
+
+
+> 
+> Thanks,
+> 
+> Bart.
