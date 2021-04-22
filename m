@@ -2,67 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CF2B236833B
-	for <lists+netdev@lfdr.de>; Thu, 22 Apr 2021 17:22:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9C526368357
+	for <lists+netdev@lfdr.de>; Thu, 22 Apr 2021 17:31:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237561AbhDVPX1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 22 Apr 2021 11:23:27 -0400
-Received: from mail.kernel.org ([198.145.29.99]:55780 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S236545AbhDVPX0 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 22 Apr 2021 11:23:26 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 24A306143B;
-        Thu, 22 Apr 2021 15:22:51 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1619104971;
-        bh=S23DvyFbD937/eRF/yGO4YHwePp1UxxeFZXs819frVc=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=mr3fVlfvk0nnjFaRFExNjCMBOWYrHkqslozgig1GNjDf9RcZW4QWxxj1SHB1k8j96
-         lfTJFpRjntxMl+Tlgbk3Xd586MBzTNodrXsqbGFGD44SFmjSU7StGSBQHjkmNBpnjb
-         xenenO+8l4HllQZgGNfh0/+/kS+gU8PMpRmvlnDQqTD9zf/ubaNeIvJmVX9O9oqwKI
-         WVdSx04CXu26Mis7ajCZEerdVz/VMEQIroyonS9pxVZyeyGfx2j4m7CNxlxCzmd3yz
-         dlhKYv+LZPUBIlZskHVL3ilQam4QgVaRV9XmAAJWlfYFEPjooK/UCKeQeoPwT3d3Ps
-         hQKzmTQc8/PcQ==
-Received: by mail-wm1-f49.google.com with SMTP id n127so12522778wmb.5;
-        Thu, 22 Apr 2021 08:22:51 -0700 (PDT)
-X-Gm-Message-State: AOAM5301QPx1jZq7saA//nBmf5OdB9LrQ9XQvDd085mu6wie763GhW12
-        y1S46uDkqWSQt25VBWHMYer0itRRcLHbpYWaQ0A=
-X-Google-Smtp-Source: ABdhPJyoqMZkh2iVaSsCHD5prrldh89au5x5VTTB0Au5qmjidvSi0VHRgBUmYUlk+xcZBjT7RFhcntH4fy5u8AwRCjg=
-X-Received: by 2002:a7b:c14a:: with SMTP id z10mr562999wmi.75.1619104969636;
- Thu, 22 Apr 2021 08:22:49 -0700 (PDT)
-MIME-Version: 1.0
-References: <20210422133518.1835403-1-arnd@kernel.org> <20210422151451.hp6w2jlgdt53lq4j@skbuf>
-In-Reply-To: <20210422151451.hp6w2jlgdt53lq4j@skbuf>
-From:   Arnd Bergmann <arnd@kernel.org>
-Date:   Thu, 22 Apr 2021 17:22:29 +0200
-X-Gmail-Original-Message-ID: <CAK8P3a2FvQer9ryjWyeXpHg=umcV2_aULN04mA4w+zeKNGbhcA@mail.gmail.com>
-Message-ID: <CAK8P3a2FvQer9ryjWyeXpHg=umcV2_aULN04mA4w+zeKNGbhcA@mail.gmail.com>
-Subject: Re: [PATCH] [net-next] net: enetc: fix link error again
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>,
-        Networking <netdev@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Michael Walle <michael@walle.cc>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>
-Content-Type: text/plain; charset="UTF-8"
+        id S237716AbhDVPbh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 22 Apr 2021 11:31:37 -0400
+Received: from mail-oo1-f46.google.com ([209.85.161.46]:41730 "EHLO
+        mail-oo1-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233106AbhDVPbg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 22 Apr 2021 11:31:36 -0400
+Received: by mail-oo1-f46.google.com with SMTP id d16-20020a4a3c100000b02901f0590a614eso2227443ooa.8;
+        Thu, 22 Apr 2021 08:31:00 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:in-reply-to:references:subject:date
+         :message-id;
+        bh=HTlnkyJ2bx5zva7MZ1v2kYWtL16cGGPmEHiXhdTzOHU=;
+        b=EzEwUI9DTgrtUEQoSY/ckO7miu6TK/4GpdX7I7IimXkPohTTXOqvS4be3LEvlkQe/V
+         nqGbnQ21fQP/SEGR0aEVqGK16uWBYHeKd+mHimf2BcMlC2ha64aI2RlZaYAAR16XqH85
+         RjzS0cd82EltzB/TnEeG1pjG/oHLUxNljlAXKRFwIl3GB0QOLveXQ7tliYl2ERjDCp5y
+         AVhio6OO66KWvFcSAgpZr+7IsDu8yS71jwcPLGoANL6rxX4Xdcek3s90BhY+1owI19DI
+         B7Anx7Jy8tqSLRshjYsxS+OsHPv84cK+06d+tUL7opLCJSkyZe4ztNJ49UOQRO8Fk+2D
+         siog==
+X-Gm-Message-State: AOAM530qWSSAPG8UaFpwXv0ygJooKWlAbRX5qybpS7r8TJlapiE+4P/k
+        gqC1owLV6hiiWv/GiKTZDA==
+X-Google-Smtp-Source: ABdhPJwqakckRYJVHwoIhYL2B1/ENLYjf63BtHWsSTRO8L+AxUf+NmRdpEGbtri7jdAiD6oKA1/hOQ==
+X-Received: by 2002:a4a:e08c:: with SMTP id w12mr2847550oos.48.1619105459963;
+        Thu, 22 Apr 2021 08:30:59 -0700 (PDT)
+Received: from robh.at.kernel.org (24-155-109-49.dyn.grandenetworks.net. [24.155.109.49])
+        by smtp.gmail.com with ESMTPSA id g26sm696687otr.73.2021.04.22.08.30.58
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 22 Apr 2021 08:30:58 -0700 (PDT)
+Received: (nullmailer pid 3134281 invoked by uid 1000);
+        Thu, 22 Apr 2021 15:30:57 -0000
+From:   Rob Herring <robh@kernel.org>
+To:     Prasanna Vengateshan <prasanna.vengateshan@microchip.com>
+Cc:     davem@davemloft.net, devicetree@vger.kernel.org,
+        vivien.didelot@gmail.com, olteanv@gmail.com, linux@armlinux.org.uk,
+        robh+dt@kernel.org, kuba@kernel.org, linux-kernel@vger.kernel.org,
+        hkallweit1@gmail.com, f.fainelli@gmail.com, netdev@vger.kernel.org,
+        UNGLinuxDriver@microchip.com, andrew@lunn.ch
+In-Reply-To: <20210422094257.1641396-2-prasanna.vengateshan@microchip.com>
+References: <20210422094257.1641396-1-prasanna.vengateshan@microchip.com> <20210422094257.1641396-2-prasanna.vengateshan@microchip.com>
+Subject: Re: [PATCH v2 net-next 1/9] dt-bindings: net: dsa: dt bindings for microchip lan937x
+Date:   Thu, 22 Apr 2021 10:30:57 -0500
+Message-Id: <1619105457.718289.3134280.nullmailer@robh.at.kernel.org>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Apr 22, 2021 at 5:15 PM Vladimir Oltean <olteanv@gmail.com> wrote:
->> The problem is that the enetc Makefile is not actually used for
->> the ierb module if that is the only built-in driver in there
->> and everything else is a loadable module.
->
-> I feel so bad that I'm incapable of troubleshooting even the most
-> elementary Kconfig issues... I did not even once think of opening that
-> Makefile.
->
-> Acked-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+On Thu, 22 Apr 2021 15:12:49 +0530, Prasanna Vengateshan wrote:
+> Documentation in .yaml format and updates to the MAINTAINERS
+> Also 'make dt_binding_check' is passed
+> 
+> Signed-off-by: Prasanna Vengateshan <prasanna.vengateshan@microchip.com>
+> ---
+>  .../bindings/net/dsa/microchip,lan937x.yaml   | 142 ++++++++++++++++++
+>  MAINTAINERS                                   |   1 +
+>  2 files changed, 143 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/net/dsa/microchip,lan937x.yaml
+> 
 
-No worries, this is a particularly nasty way Kconfig can go wrong, I thing
-most kernel developers would struggle with this.
+My bot found errors running 'make DT_CHECKER_FLAGS=-m dt_binding_check'
+on your patch (DT_CHECKER_FLAGS is new in v5.13):
 
-       Arnd
+yamllint warnings/errors:
+
+dtschema/dtc warnings/errors:
+Documentation/devicetree/bindings/net/dsa/microchip,lan937x.example.dt.yaml:0:0: /example-0/spi/switch@0/mdio: failed to match any schema with compatible: ['microchip,lan937x-mdio']
+
+See https://patchwork.ozlabs.org/patch/1469135
+
+This check can fail if there are any dependencies. The base for a patch
+series is generally the most recent rc1.
+
+If you already ran 'make dt_binding_check' and didn't see the above
+error(s), then make sure 'yamllint' is installed and dt-schema is up to
+date:
+
+pip3 install dtschema --upgrade
+
+Please check and re-submit.
+
