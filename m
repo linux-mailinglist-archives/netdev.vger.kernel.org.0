@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4A472367855
-	for <lists+netdev@lfdr.de>; Thu, 22 Apr 2021 06:13:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3A086367857
+	for <lists+netdev@lfdr.de>; Thu, 22 Apr 2021 06:13:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235000AbhDVEKo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 22 Apr 2021 00:10:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40748 "EHLO
+        id S235032AbhDVEKt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 22 Apr 2021 00:10:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40746 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234670AbhDVEKV (ORCPT
+        with ESMTP id S234679AbhDVEKV (ORCPT
         <rfc822;netdev@vger.kernel.org>); Thu, 22 Apr 2021 00:10:21 -0400
-Received: from mail-pj1-x1033.google.com (mail-pj1-x1033.google.com [IPv6:2607:f8b0:4864:20::1033])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 58AA1C061347;
-        Wed, 21 Apr 2021 21:09:46 -0700 (PDT)
-Received: by mail-pj1-x1033.google.com with SMTP id nm3-20020a17090b19c3b029014e1bbf6c60so240563pjb.4;
-        Wed, 21 Apr 2021 21:09:46 -0700 (PDT)
+Received: from mail-pf1-x42e.google.com (mail-pf1-x42e.google.com [IPv6:2607:f8b0:4864:20::42e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 77881C06174A;
+        Wed, 21 Apr 2021 21:09:47 -0700 (PDT)
+Received: by mail-pf1-x42e.google.com with SMTP id a12so30780617pfc.7;
+        Wed, 21 Apr 2021 21:09:47 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=Smtj4gwdxb0ZLZIeEWGZNPNrgYDMaUuIXb1nAA+jADw=;
-        b=m2/PbzI84d6d9OgipdUa6ooqlmZ1yTJHHypRkqQkG2bpVUy3ScKdKsanBUcLcxPxe1
-         49Kl7GHhccN4bfMUvm5TbmHyZOKAy0qg1/Lkgd4NpuXTRdVO447y3T1pUIZNBFe+LkVB
-         X2sHi/hwQvHU3pJJ8ahjC6omiel2gEdz77r1GYe90YLzLabr0xm7vqS7hBAison6UqOv
-         1BUr3umNN7qJe3cJGP4m7zsIIndBNxgYdCrODgwC1Lwzkt4BXbwzaPs9/jhbmsg2+mM8
-         0dH7Ab68oGanlDKPvEZLj18t06rr10OH3gBzdHJghF7LbzlSlKd2MXyLZtPiVMow5lUH
-         T4dA==
+        bh=4KIdtN06FgF/t+etJxyiKFbFDdfz1IAmwoqjnTRUY1Q=;
+        b=ekE6yKJ21GS2BTKeAlc+gBcCC1y9VzR7QBm1Rwve24KFcJ+0jNVnyEwmOwJl0lc/ho
+         HyceoJIh+MUMTQjmMu4LScm0ubkQ0jjL01eKuoW4G65UuUYJ1l8W/0POGR2Deva/KspM
+         G3jSY2RBu6FnW+ZPTIBOWgWnL7o7oHdYT5xTeTDJfQXG0rvU9U+Idr4pObH7IGrVtfe8
+         7Dv9p0Z0i2BNeI382eLt+dvGT49vhsadMXHj7k4uzcHgaLigpt65RnT7/x/sucLZaoRD
+         hlWse+uINeiHf2fiDhFmH0kqG+jmLHxbt57wz1a+kX923t/lX3ZHkr106Egkia+d9Wrj
+         Du0A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=Smtj4gwdxb0ZLZIeEWGZNPNrgYDMaUuIXb1nAA+jADw=;
-        b=dWwCPWHPZC+zVB/Cfy0uZq2+3/Iz/4eCadYp1ImiHq++ElecbPXYpCLRNnTH7D5r1H
-         zk4LXHIBWsE6lmwKfg/IKZ4DpLr/MrQOOjan/wWHnxlJJcY1J6vF4EdAvS5B46+HIVPH
-         qvyNQEUnoXXPaqP139sH9w5JscTZqN+g5+jMvWHzxM+ah4zpZGQlwZCIHtLFtTgqeKat
-         xG+skpY3qwC0Lgk4CKjWBvprA/Ty/IFsEcGm5TosF3X2ihb0rA5prW/7zbehMWEfWyzb
-         lhQFBCnXJ104BUqnqGI9IHO1sQgOMmwuWiUiJQlLJN9LRIBx7twsRNCoVfl9/ortA/3f
-         0csg==
-X-Gm-Message-State: AOAM532jhHNAvJBqUYROVFw4jhcESLBct+7HCo4uBOiMdIqKJ+Fcapc9
-        1OajAhwFV8JGAo3J0AY7aOY=
-X-Google-Smtp-Source: ABdhPJw/RJBg5z72O0mNnzutjMCrzGHJDTgHgizsfQ9xv1oCCJjoF/x/bDrceXqjOabCBFD3JsC4ew==
-X-Received: by 2002:a17:902:edc4:b029:eb:159f:32b7 with SMTP id q4-20020a170902edc4b02900eb159f32b7mr1461172plk.11.1619064585968;
-        Wed, 21 Apr 2021 21:09:45 -0700 (PDT)
+        bh=4KIdtN06FgF/t+etJxyiKFbFDdfz1IAmwoqjnTRUY1Q=;
+        b=VuXGE0OF63DgvxWSEH2Cfgc6DGKMpuObiQ5keXbJQP5nM9nPxYmQom89hP5H2LQ6tN
+         EscH+wtVqEOJcJ8Tk++T7fM59qt0HTl0yAD9OhfsMDp2hukx//DTBMRcfwVyUUOHsyZH
+         EHG+6ao99K4A3VI1jmGRYEQXGMIP3V+ERpciPqx5mJMI5H41DhIWYK8Q3oG2BXp1ERKD
+         SpMtd0zi32kaXyk7BbJrRzLRtntlXyUg5wq75/j3szKRQ3rSNRMXu7VcXGSz4jAYZzWv
+         Z5OLLQY6r5QglA3O4xcNxZzc5zTOexNOsfGY7t+a3LXkwyiDwpzpmtRaESCsiZJ6zm/R
+         b70A==
+X-Gm-Message-State: AOAM5314XO9NRz0Smv1TAI0UeuTpmUZlqe6xMIj5qShurOhPYlwntjjC
+        q5BQBZKYA76DER4UaBpN0T8=
+X-Google-Smtp-Source: ABdhPJxj4FOHEJL6eLG9j3s9bhz2cI5WstGPCENCBwwWnpKmfpEhlE8pRtJ7/rs9B268HliKtl5R2w==
+X-Received: by 2002:a63:4f21:: with SMTP id d33mr1525579pgb.434.1619064587028;
+        Wed, 21 Apr 2021 21:09:47 -0700 (PDT)
 Received: from z640-arch.lan ([2602:61:7344:f100::678])
-        by smtp.gmail.com with ESMTPSA id i17sm635354pfd.84.2021.04.21.21.09.45
+        by smtp.gmail.com with ESMTPSA id i17sm635354pfd.84.2021.04.21.21.09.46
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 21 Apr 2021 21:09:45 -0700 (PDT)
+        Wed, 21 Apr 2021 21:09:46 -0700 (PDT)
 From:   Ilya Lipnitskiy <ilya.lipnitskiy@gmail.com>
 To:     Felix Fietkau <nbd@nbd.name>, John Crispin <john@phrozen.org>,
         Sean Wang <sean.wang@mediatek.com>,
@@ -58,9 +58,9 @@ To:     Felix Fietkau <nbd@nbd.name>, John Crispin <john@phrozen.org>,
         linux-arm-kernel@lists.infradead.org,
         linux-mediatek@lists.infradead.org
 Cc:     Ilya Lipnitskiy <ilya.lipnitskiy@gmail.com>
-Subject: [PATCH net-next 10/14] net: ethernet: mtk_eth_soc: cache HW pointer of last freed TX descriptor
-Date:   Wed, 21 Apr 2021 21:09:10 -0700
-Message-Id: <20210422040914.47788-11-ilya.lipnitskiy@gmail.com>
+Subject: [PATCH net-next 11/14] net: ethernet: mtk_eth_soc: only read the full RX descriptor if DMA is done
+Date:   Wed, 21 Apr 2021 21:09:11 -0700
+Message-Id: <20210422040914.47788-12-ilya.lipnitskiy@gmail.com>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20210422040914.47788-1-ilya.lipnitskiy@gmail.com>
 References: <20210422040914.47788-1-ilya.lipnitskiy@gmail.com>
@@ -72,76 +72,50 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Felix Fietkau <nbd@nbd.name>
 
-The value is only updated by the CPU, so it is cheaper to access from the
-ring data structure than from a hardware register.
+Uncached memory access is expensive, and there is no need to access all
+descriptor words if we can't process them anyway
 
 Signed-off-by: Felix Fietkau <nbd@nbd.name>
 Signed-off-by: Ilya Lipnitskiy <ilya.lipnitskiy@gmail.com>
 ---
- drivers/net/ethernet/mediatek/mtk_eth_soc.c | 8 ++++----
- drivers/net/ethernet/mediatek/mtk_eth_soc.h | 2 ++
- 2 files changed, 6 insertions(+), 4 deletions(-)
+ drivers/net/ethernet/mediatek/mtk_eth_soc.c | 12 ++++++++----
+ 1 file changed, 8 insertions(+), 4 deletions(-)
 
 diff --git a/drivers/net/ethernet/mediatek/mtk_eth_soc.c b/drivers/net/ethernet/mediatek/mtk_eth_soc.c
-index 043ab5446524..01ad10c76d53 100644
+index 01ad10c76d53..5a531bb83348 100644
 --- a/drivers/net/ethernet/mediatek/mtk_eth_soc.c
 +++ b/drivers/net/ethernet/mediatek/mtk_eth_soc.c
-@@ -1362,7 +1362,7 @@ static int mtk_poll_tx_qdma(struct mtk_eth *eth, int budget,
- 	struct mtk_tx_buf *tx_buf;
- 	u32 cpu, dma;
+@@ -775,13 +775,18 @@ static inline int mtk_max_buf_size(int frag_size)
+ 	return buf_size;
+ }
  
--	cpu = mtk_r32(eth, MTK_QTX_CRX_PTR);
-+	cpu = ring->last_free_ptr;
- 	dma = mtk_r32(eth, MTK_QTX_DRX_PTR);
+-static inline void mtk_rx_get_desc(struct mtk_rx_dma *rxd,
++static inline bool mtk_rx_get_desc(struct mtk_rx_dma *rxd,
+ 				   struct mtk_rx_dma *dma_rxd)
+ {
+-	rxd->rxd1 = READ_ONCE(dma_rxd->rxd1);
+ 	rxd->rxd2 = READ_ONCE(dma_rxd->rxd2);
++	if (!(rxd->rxd2 & RX_DMA_DONE))
++		return false;
++
++	rxd->rxd1 = READ_ONCE(dma_rxd->rxd1);
+ 	rxd->rxd3 = READ_ONCE(dma_rxd->rxd3);
+ 	rxd->rxd4 = READ_ONCE(dma_rxd->rxd4);
++
++	return true;
+ }
  
- 	desc = mtk_qdma_phys_to_virt(ring, cpu);
-@@ -1396,6 +1396,7 @@ static int mtk_poll_tx_qdma(struct mtk_eth *eth, int budget,
- 		cpu = next_cpu;
- 	}
+ /* the qdma core needs scratch memory to be setup */
+@@ -1253,8 +1258,7 @@ static int mtk_poll_rx(struct napi_struct *napi, int budget,
+ 		rxd = &ring->dma[idx];
+ 		data = ring->data[idx];
  
-+	ring->last_free_ptr = cpu;
- 	mtk_w32(eth, cpu, MTK_QTX_CRX_PTR);
+-		mtk_rx_get_desc(&trxd, rxd);
+-		if (!(trxd.rxd2 & RX_DMA_DONE))
++		if (!mtk_rx_get_desc(&trxd, rxd))
+ 			break;
  
- 	return budget;
-@@ -1596,6 +1597,7 @@ static int mtk_tx_alloc(struct mtk_eth *eth)
- 	atomic_set(&ring->free_count, MTK_DMA_SIZE - 2);
- 	ring->next_free = &ring->dma[0];
- 	ring->last_free = &ring->dma[MTK_DMA_SIZE - 1];
-+	ring->last_free_ptr = (u32)(ring->phys + ((MTK_DMA_SIZE - 1) * sz));
- 	ring->thresh = MAX_SKB_FRAGS;
- 
- 	/* make sure that all changes to the dma ring are flushed before we
-@@ -1609,9 +1611,7 @@ static int mtk_tx_alloc(struct mtk_eth *eth)
- 		mtk_w32(eth,
- 			ring->phys + ((MTK_DMA_SIZE - 1) * sz),
- 			MTK_QTX_CRX_PTR);
--		mtk_w32(eth,
--			ring->phys + ((MTK_DMA_SIZE - 1) * sz),
--			MTK_QTX_DRX_PTR);
-+		mtk_w32(eth, ring->last_free_ptr, MTK_QTX_DRX_PTR);
- 		mtk_w32(eth, (QDMA_RES_THRES << 8) | QDMA_RES_THRES,
- 			MTK_QTX_CFG(0));
- 	} else {
-diff --git a/drivers/net/ethernet/mediatek/mtk_eth_soc.h b/drivers/net/ethernet/mediatek/mtk_eth_soc.h
-index a8d388b02558..214da569e869 100644
---- a/drivers/net/ethernet/mediatek/mtk_eth_soc.h
-+++ b/drivers/net/ethernet/mediatek/mtk_eth_soc.h
-@@ -642,6 +642,7 @@ struct mtk_tx_buf {
-  * @phys:		The physical addr of tx_buf
-  * @next_free:		Pointer to the next free descriptor
-  * @last_free:		Pointer to the last free descriptor
-+ * @last_free_ptr:	Hardware pointer value of the last free descriptor
-  * @thresh:		The threshold of minimum amount of free descriptors
-  * @free_count:		QDMA uses a linked list. Track how many free descriptors
-  *			are present
-@@ -652,6 +653,7 @@ struct mtk_tx_ring {
- 	dma_addr_t phys;
- 	struct mtk_tx_dma *next_free;
- 	struct mtk_tx_dma *last_free;
-+	u32 last_free_ptr;
- 	u16 thresh;
- 	atomic_t free_count;
- 	int dma_size;
+ 		/* find out which mac the packet come from. values start at 1 */
 -- 
 2.31.1
 
