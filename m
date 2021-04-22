@@ -2,118 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 86DB036868F
-	for <lists+netdev@lfdr.de>; Thu, 22 Apr 2021 20:29:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 254AB368696
+	for <lists+netdev@lfdr.de>; Thu, 22 Apr 2021 20:32:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238740AbhDVS36 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 22 Apr 2021 14:29:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33332 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238463AbhDVS35 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 22 Apr 2021 14:29:57 -0400
-Received: from mail-il1-x12e.google.com (mail-il1-x12e.google.com [IPv6:2607:f8b0:4864:20::12e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 55997C061756
-        for <netdev@vger.kernel.org>; Thu, 22 Apr 2021 11:29:22 -0700 (PDT)
-Received: by mail-il1-x12e.google.com with SMTP id l9so2915280ilh.10
-        for <netdev@vger.kernel.org>; Thu, 22 Apr 2021 11:29:22 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=IbyceF9eui++TAtaSZCeZk5izUprZMiF7QKSv4IUobA=;
-        b=wFbJIb87LPilAH04qOvCl1m//akK+exnwlHVZTVvemwMBA6BxEytxRdZvZuT1Vut8Y
-         /hlyWUZEQwaZ8dv6gZ6Nm3zJUeuqxhs6csXnOwf1mp7ZrLo3ZVvmPWEQ/aVX1NIbafj7
-         lrTqpo83oxozY6x1fEVyGMdK32GgDkBCEx1yFzxxrmC8TIXAf5PqlHfhs9TP9vSXWZPB
-         CvvW+rBpDSZN/T4YYy8zg2+RzffPIu/2hz0FvVHV8Onqti5uLSDPKoyDiZX/mJUv9S+L
-         LiZNoFpulV9KdU+8Bv0hQ0r+4FiYgwtHhuez87M+pLnZHO99w5BwQiU/Tdsm6lx8ih71
-         e18w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=IbyceF9eui++TAtaSZCeZk5izUprZMiF7QKSv4IUobA=;
-        b=Mo+0Wbno7P5RujRImXJiX61IgSqD+UT2MmdqpmOcA8qbzasqYe42KMCrIFOr5WS5qq
-         +Lt50nKaPrerI04JSIJXHf0YvnJe0VTStxUaj8spZxbfqzGYAoeE2NgBvYRcsgRw8gMb
-         qUhdjnTQZix6qk12ZzOuWQCfyuFYADz/SXqVtgvlrbck+II8KDNFG7dahDq2jnXHHe0L
-         Y5vUPQeoIzALy0sBcj6KsgDR5GEQMjecVvfV7sgrdC+dUfBS5ZpgiPPspdEMX5U+GXeV
-         X3we/N9dcqzQI9xw2tVc8o/Ip1YEDx2v9KBU3T4ugfqmW47Dr9ZWmEGwhhkvQzxywowW
-         qiPg==
-X-Gm-Message-State: AOAM531fFQSFqyFvervtcWIPXLs1llUubihYSv1CsOMLJF1qRheaAgbY
-        3RxDWnu1ydId3QEBt4ZReQcwHw==
-X-Google-Smtp-Source: ABdhPJyY9eJZp9VAetK5Q0+RdfAXkpq38nHagsnhZeEz9s729SPJ5vt8aH5CMSfLEBwViFdbG+qADA==
-X-Received: by 2002:a05:6e02:168f:: with SMTP id f15mr4222568ila.264.1619116161690;
-        Thu, 22 Apr 2021 11:29:21 -0700 (PDT)
-Received: from [172.22.22.4] (c-73-185-129-58.hsd1.mn.comcast.net. [73.185.129.58])
-        by smtp.googlemail.com with ESMTPSA id u9sm1422138ilg.69.2021.04.22.11.29.20
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 22 Apr 2021 11:29:21 -0700 (PDT)
-Subject: Re: [PATCH] net: qualcomm: rmnet: Allow partial updates of IFLA_FLAGS
-To:     Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Subash Abhinov Kasiviswanathan <subashab@codeaurora.org>,
-        Sean Tranchetti <stranche@codeaurora.org>,
+        id S236832AbhDVScy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 22 Apr 2021 14:32:54 -0400
+Received: from gateway34.websitewelcome.com ([192.185.148.212]:45807 "EHLO
+        gateway34.websitewelcome.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S236058AbhDVScx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 22 Apr 2021 14:32:53 -0400
+Received: from cm12.websitewelcome.com (cm12.websitewelcome.com [100.42.49.8])
+        by gateway34.websitewelcome.com (Postfix) with ESMTP id 0ABB3575340
+        for <netdev@vger.kernel.org>; Thu, 22 Apr 2021 13:32:14 -0500 (CDT)
+Received: from gator4166.hostgator.com ([108.167.133.22])
+        by cmsmtp with SMTP
+        id Ze5dlON3e1cHeZe5dlUVcf; Thu, 22 Apr 2021 13:30:13 -0500
+X-Authority-Reason: nr=8
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=embeddedor.com; s=default; h=Content-Transfer-Encoding:Content-Type:
+        In-Reply-To:MIME-Version:Date:Message-ID:From:References:Cc:To:Subject:Sender
+        :Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
+        Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
+        List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=Gj4ZzlY1opy7V2GETXx3MyvWl67CzzjHj9tWMTMO6zc=; b=MEpJteWQLmz2N2caWwYhuetppY
+        8mI9RWs7QeTbds9avFafYF5jaaoNj1g2xEPqyBWIn7ik7FxdR5/ah6neRNInuoUEB8qjvaoH69VDT
+        1bsOKe7fv/hV7x0aSxvL4Il6FQ4FKMlykaGgeaPcBeM5++zkC4z5jO13leZKf0fYFFlhaWqhKASeh
+        m7PnmDco9IvjDq6UXXxn0mQ4v3zgo0T7JhBzEsqplAcWS1rA6g6c9HPuATRn0AvIbrnaN9b5t6lRc
+        9XZSgK+xdZSZqAeLlfLVxjazVmHFQeUhr8znCTPPlTIS+4ba8EuxALHZ1Io7/fkhb4MXNNx56Ru9V
+        D9GybQaw==;
+Received: from 187-162-31-110.static.axtel.net ([187.162.31.110]:57122 helo=[192.168.15.8])
+        by gator4166.hostgator.com with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
+        (Exim 4.94)
+        (envelope-from <gustavo@embeddedor.com>)
+        id 1lZe5Z-001KxQ-Rm; Thu, 22 Apr 2021 13:30:09 -0500
+Subject: Re: [PATCH v3 1/2] wl3501_cs: Fix out-of-bounds warnings in
+ wl3501_send_pkt
+To:     Kalle Valo <kvalo@codeaurora.org>,
+        "Gustavo A. R. Silva" <gustavoars@kernel.org>
+Cc:     linux-kernel@vger.kernel.org,
         "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Daniele Palmas <dnlplm@gmail.com>,
-        Aleksander Morgado <aleksander@aleksander.es>,
-        Loic Poulain <loic.poulain@linaro.org>
-References: <20210422182045.1040966-1-bjorn.andersson@linaro.org>
-From:   Alex Elder <elder@linaro.org>
-Message-ID: <76db0c51-15be-2d27-00a7-c9f8dc234816@linaro.org>
-Date:   Thu, 22 Apr 2021 13:29:20 -0500
+        Jakub Kicinski <kuba@kernel.org>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-hardening@vger.kernel.org, Kees Cook <keescook@chromium.org>
+References: <d260fe56aed7112bff2be5b4d152d03ad7b78e78.1618442265.git.gustavoars@kernel.org>
+ <20210422143910.C8B5CC4338A@smtp.codeaurora.org>
+From:   "Gustavo A. R. Silva" <gustavo@embeddedor.com>
+Message-ID: <83e2efc6-2bdf-ddfb-8322-3b9536fc1644@embeddedor.com>
+Date:   Thu, 22 Apr 2021 13:30:28 -0500
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
  Thunderbird/78.7.1
 MIME-Version: 1.0
-In-Reply-To: <20210422182045.1040966-1-bjorn.andersson@linaro.org>
-Content-Type: text/plain; charset=utf-8; format=flowed
+In-Reply-To: <20210422143910.C8B5CC4338A@smtp.codeaurora.org>
+Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
+X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
+X-AntiAbuse: Primary Hostname - gator4166.hostgator.com
+X-AntiAbuse: Original Domain - vger.kernel.org
+X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
+X-AntiAbuse: Sender Address Domain - embeddedor.com
+X-BWhitelist: no
+X-Source-IP: 187.162.31.110
+X-Source-L: No
+X-Exim-ID: 1lZe5Z-001KxQ-Rm
+X-Source: 
+X-Source-Args: 
+X-Source-Dir: 
+X-Source-Sender: 187-162-31-110.static.axtel.net ([192.168.15.8]) [187.162.31.110]:57122
+X-Source-Auth: gustavo@embeddedor.com
+X-Email-Count: 7
+X-Source-Cap: Z3V6aWRpbmU7Z3V6aWRpbmU7Z2F0b3I0MTY2Lmhvc3RnYXRvci5jb20=
+X-Local-Domain: yes
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 4/22/21 1:20 PM, Bjorn Andersson wrote:
-> The idiomatic way to handle the changelink flags/mask pair seems to be
-> allow partial updates of the driver's link flags. In contrast the rmnet
-> driver masks the incoming flags and then use that as the new flags.
+
+
+On 4/22/21 09:39, Kalle Valo wrote:
+> 2 patches applied to wireless-drivers-next.git, thanks.
 > 
-> Change the rmnet driver to follow the common scheme, before the
-> introduction of IFLA_RMNET_FLAGS handling in iproute2 et al.
+> 820aa37638a2 wl3501_cs: Fix out-of-bounds warnings in wl3501_send_pkt
+> bb43e5718d8f wl3501_cs: Fix out-of-bounds warnings in wl3501_mgmt_join
 
-I like this a lot.  It should have been implemented this way
-to begin with; there's not much point to have the mask if
-it's only applied to the passed-in value.
+Thanks, Kalle.
 
-KS, are you aware of *any* existing user space code that
-would not work correctly if this were accepted?
-
-I.e., the way it was (is), the value passed in *assigns*
-the data format flags.  But with Bjorn's changes, the
-data format flags would be *updated* (i.e., any bits not
-set in the mask field would remain with their previous
-value).
-
-Reviewed-by: Alex Elder <elder@linaro.org>
-
-> Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
-> ---
->   drivers/net/ethernet/qualcomm/rmnet/rmnet_config.c | 3 ++-
->   1 file changed, 2 insertions(+), 1 deletion(-)
-> 
-> diff --git a/drivers/net/ethernet/qualcomm/rmnet/rmnet_config.c b/drivers/net/ethernet/qualcomm/rmnet/rmnet_config.c
-> index 8d51b0cb545c..2c8db2fcc53d 100644
-> --- a/drivers/net/ethernet/qualcomm/rmnet/rmnet_config.c
-> +++ b/drivers/net/ethernet/qualcomm/rmnet/rmnet_config.c
-> @@ -336,7 +336,8 @@ static int rmnet_changelink(struct net_device *dev, struct nlattr *tb[],
->   
->   		old_data_format = port->data_format;
->   		flags = nla_data(data[IFLA_RMNET_FLAGS]);
-> -		port->data_format = flags->flags & flags->mask;
-> +		port->data_format &= ~flags->mask;
-> +		port->data_format |= flags->flags & flags->mask;
->   
->   		if (rmnet_vnd_update_dev_mtu(port, real_dev)) {
->   			port->data_format = old_data_format;
-> 
-
+--
+Gustavo
