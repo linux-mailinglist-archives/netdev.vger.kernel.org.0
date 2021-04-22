@@ -2,81 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 194EB368443
-	for <lists+netdev@lfdr.de>; Thu, 22 Apr 2021 17:56:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2D921368444
+	for <lists+netdev@lfdr.de>; Thu, 22 Apr 2021 17:56:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236527AbhDVP5M (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 22 Apr 2021 11:57:12 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:36046 "EHLO vps0.lunn.ch"
+        id S236605AbhDVP5Z (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 22 Apr 2021 11:57:25 -0400
+Received: from mail.kernel.org ([198.145.29.99]:47826 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S236333AbhDVP5H (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 22 Apr 2021 11:57:07 -0400
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
-        (envelope-from <andrew@lunn.ch>)
-        id 1lZbgh-000W0f-VR; Thu, 22 Apr 2021 17:56:19 +0200
-Date:   Thu, 22 Apr 2021 17:56:19 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Linus Walleij <linus.walleij@linaro.org>
-Cc:     Rob Herring <robh+dt@kernel.org>, netdev <netdev@vger.kernel.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Zoltan HERPAI <wigyori@uid0.hu>,
-        Raylynn Knight <rayknight@me.com>,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>
-Subject: Re: [PATCH 1/3] net: ethernet: ixp4xx: Add DT bindings
-Message-ID: <YIGco30TpBiyZLgD@lunn.ch>
-References: <20210419225133.2005360-1-linus.walleij@linaro.org>
- <YH4tsFtGJUMf2BFS@lunn.ch>
- <CACRpkdbppvaNUXE9GD_UXDrB8SJA5qv7wrQ1dj5E4ySU_6bG7w@mail.gmail.com>
+        id S236333AbhDVP5Y (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 22 Apr 2021 11:57:24 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 0C3EF613D1;
+        Thu, 22 Apr 2021 15:56:49 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1619107009;
+        bh=3A1lONZmc2L40wnJPowdIircP7DAhBfWCyzhVUSzlFc=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=X1jHTmqFRb+J37YymjElCmNrBtEQVe1i48m98zhDaQMkeDe5fUXml3zuAhf15ph3C
+         Ga4KTJcLBG+mhdAIRSgzUswebP1xPKuS4j4lK5apOHH5tHMN9HoiGqz2jc4lo8xMws
+         iJt3QGnY/jjQ3QWv9R1cOe08mjOjJvyhrEDBUShI3Qrdh4ksa99sKOqgMIrbESnVew
+         W5m3VDrWILJi0erK4/u7EAcOhfwnWFB0o9jpsnZQJsUoh/PD4FiTWbrS2TvHxjaF5q
+         OpUHcNmQgFNcmpTCXaT5rjuUCqQnDg04HBQTh6wJ9+iwsz2NV2kAh/Mbq94PM5HsVv
+         gMFcit9CPzVQQ==
+Date:   Thu, 22 Apr 2021 08:56:48 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Joakim Zhang <qiangqing.zhang@nxp.com>
+Cc:     Jon Hunter <jonathanh@nvidia.com>,
+        "peppe.cavallaro@st.com" <peppe.cavallaro@st.com>,
+        "alexandre.torgue@foss.st.com" <alexandre.torgue@foss.st.com>,
+        "joabreu@synopsys.com" <joabreu@synopsys.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "mcoquelin.stm32@gmail.com" <mcoquelin.stm32@gmail.com>,
+        "andrew@lunn.ch" <andrew@lunn.ch>,
+        "f.fainelli@gmail.com" <f.fainelli@gmail.com>,
+        dl-linux-imx <linux-imx@nxp.com>,
+        "treding@nvidia.com" <treding@nvidia.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: Re: [RFC net-next] net: stmmac: should not modify RX descriptor
+ when STMMAC resume
+Message-ID: <20210422085648.33738d1f@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <DB8PR04MB67953A499438FF3FF6BE531BE6469@DB8PR04MB6795.eurprd04.prod.outlook.com>
+References: <20210419115921.19219-1-qiangqing.zhang@nxp.com>
+        <f00e1790-5ba6-c9f0-f34f-d8a39c355cd7@nvidia.com>
+        <DB8PR04MB67954D37A59B2D91C69BF6A9E6489@DB8PR04MB6795.eurprd04.prod.outlook.com>
+        <cec17489-2ef9-7862-94c8-202d31507a0c@nvidia.com>
+        <DB8PR04MB67953A499438FF3FF6BE531BE6469@DB8PR04MB6795.eurprd04.prod.outlook.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CACRpkdbppvaNUXE9GD_UXDrB8SJA5qv7wrQ1dj5E4ySU_6bG7w@mail.gmail.com>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Apr 22, 2021 at 05:39:07PM +0200, Linus Walleij wrote:
-> On Tue, Apr 20, 2021 at 3:26 AM Andrew Lunn <andrew@lunn.ch> wrote:
-> 
-> > > +      mdio {
-> > > +        #address-cells = <1>;
-> > > +        #size-cells = <0>;
-> > > +        phy1: phy@1 {
-> > > +          #phy-cells = <0>;
-> >
-> > Hi Linus
-> >
-> > phy-cells is not part of the Ethernet PHY binding.
-> 
-> Nevertheless:
-> 
->   CHECK   Documentation/devicetree/bindings/net/intel,ixp4xx-ethernet.example.dt.yaml
-> /var/linus/linux-nomadik/build-ixp4/Documentation/devicetree/bindings/net/intel,ixp4xx-ethernet.example.dt.yaml:
-> phy@1: '#phy-cells' is a required property
->     From schema:
-> /home/linus/.local/lib/python3.9/site-packages/dtschema/schemas/phy/phy-provider.yaml
-> 
-> It has been hardcoded as required into the dtschema python package.
-> Looks like this:
-> 
-> properties:
->   $nodename:
->     pattern: "^(|usb-|usb2-|usb3-|pci-|pcie-|sata-)phy(@[0-9a-f,]+)*$"
-> 
->   "#phy-cells": true
-> 
->   phy-supply: true
-> 
-> required:
->   - "#phy-cells"
-> 
-> additionalProperties: true
-> 
-> If this is wrong I bet Rob needs to hear about it.
+On Thu, 22 Apr 2021 04:53:08 +0000 Joakim Zhang wrote:
+> Could you please help review this patch? It's really beyond my
+> comprehension, why this patch would affect Tegra186 Jetson TX2 board?
 
-That is the wrong sort of PHY. That is a generic PHY, not a PHY, aka
-Ethernet PHY. Maybe you need to change the label to ethernet-phy ?
-
-	 Andrew
+Looks okay, please repost as non-RFC.
