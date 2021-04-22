@@ -2,86 +2,284 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C66AB367937
-	for <lists+netdev@lfdr.de>; Thu, 22 Apr 2021 07:23:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6E50736793B
+	for <lists+netdev@lfdr.de>; Thu, 22 Apr 2021 07:26:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230319AbhDVFYG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 22 Apr 2021 01:24:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56752 "EHLO
+        id S231694AbhDVF1L (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 22 Apr 2021 01:27:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57456 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229608AbhDVFYF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 22 Apr 2021 01:24:05 -0400
-Received: from mail-pj1-x102c.google.com (mail-pj1-x102c.google.com [IPv6:2607:f8b0:4864:20::102c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2666FC06174A
-        for <netdev@vger.kernel.org>; Wed, 21 Apr 2021 22:23:30 -0700 (PDT)
-Received: by mail-pj1-x102c.google.com with SMTP id nm3-20020a17090b19c3b029014e1bbf6c60so320274pjb.4
-        for <netdev@vger.kernel.org>; Wed, 21 Apr 2021 22:23:30 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=TrGjSqinnkCbNMxpeyr0DfODoargIAwuwPx/KOpbkXk=;
-        b=SQZGDAtoB5VdL23YwytwE3oqqEUow2elqZLVazg3hC3vi/Jw8wRY1r7bAj7MNl+rT3
-         Z4Ne9jUR0HTAWbD+FjEu4b4Tpe+1SbMex77ZCI7vQGyKAY7HhXzS4JQAf7OwEv2HwXOy
-         ZDV5P3IE5Na9YXXGnGbgFx2RiFkcmIMaopOuvGDXHZrwiXhnuvtUCMm8LWE1UwosB9fx
-         XTF9WqPZG3PA7KNEwj1XMCzYOvIyt7+sNIH2xgAPvzdcrQEj9tu5TiC0pljsT5m1Ri9y
-         LZsxwBt/eXM625yPExa9LYyRcq26EM3tXju6oT1SArNqeXgaPq+uoP7QwnqvcPFGurjd
-         T8PQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=TrGjSqinnkCbNMxpeyr0DfODoargIAwuwPx/KOpbkXk=;
-        b=HL4TDzUOL2HcEhfnYrrfhLSRUwGL8k59jWX/2E/HfIWnfuOMYcYRVHONoZmEjpjp0V
-         OzUwO9lzpGYCNAd5DIxOGfB96wcdHrcnMt3CsWOZ3jHcPEEpgcwngu2Sz1TDmB1hMIuN
-         VnUH7pzVn+pE9V3wriJSHbEfJqmqZd8hJIj3iAQ5kuZ+IpjQS3j9ihb0inv+Hy+Nj0QC
-         IXqWDIoXa4iP6nN1CxcHjj77w8HS/YiuOYzPjLjb93Zjtawgxw/25og0scXwQBp9LK3H
-         aXy0z+uoxZlfd2/loOW/UghsCcwXrDrNCk6AGCmay0t5kg4mZAWqAVLWyIBRP5Z/C5qA
-         AqEg==
-X-Gm-Message-State: AOAM531WGF7gDPBAZrTGYMzCJKkKQeEV9H9HLJtn3hwTZWs1VPD3lmtj
-        FKejUNFhkkcBev/DLQF9Ggw=
-X-Google-Smtp-Source: ABdhPJxykES6T+0eWcRAOAC7pxWyuwQr5kJBKo0ZWLmDqoAmqcspQXEaQzbItP4NeFIJ/L3/BppKVQ==
-X-Received: by 2002:a17:90a:f195:: with SMTP id bv21mr15431269pjb.56.1619069009565;
-        Wed, 21 Apr 2021 22:23:29 -0700 (PDT)
-Received: from Davids-MacBook-Pro.local ([8.45.42.15])
-        by smtp.googlemail.com with ESMTPSA id j27sm1038238pgb.54.2021.04.21.22.23.28
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 21 Apr 2021 22:23:29 -0700 (PDT)
-Subject: Re: [PATCH iproute2] lib: move get_task_name() from rdma
-To:     Andrea Claudi <aclaudi@redhat.com>, netdev@vger.kernel.org
-Cc:     stephen@networkplumber.org, dsahern@gmail.com
-References: <a41d23aa24bbe5b4acfc2465feca582c6e355e0d.1618839246.git.aclaudi@redhat.com>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <35a2896f-a6bc-961b-5807-fb83059e3dd0@gmail.com>
-Date:   Wed, 21 Apr 2021 22:23:27 -0700
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
- Gecko/20100101 Thunderbird/78.9.1
+        with ESMTP id S229533AbhDVF1J (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 22 Apr 2021 01:27:09 -0400
+Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF2ABC06174A;
+        Wed, 21 Apr 2021 22:26:34 -0700 (PDT)
+From:   Kurt Kanzenbach <kurt@linutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1619069192;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=H4I9jDECVuNT5dAo2H1sU8x8x5LKQ978c0zFpbnNYhQ=;
+        b=bMGf8v7PqPG3YVT5KTAu25H9MLK7qPgAbOoHLoFnJqNPPCATp/ARNny3Mr2S2YIQeYKPTF
+        0r9+mcUnYVpbs2UapZoEj0F87IaKUO0QlajbxQEXoDF/H7ZqYShfAmMbOCq476Xug7SjTO
+        BnTXe6fgNIsjBMNySigUW2fjiMPDLlVuHDY+VAg2rLrDSisE2uoHPKqjiQToJAy13J1aEP
+        6DtlZZewkCRiJ+mHFBy6L186ZzhnVL46sT78i2UbK0TOK/Sgy4dQw38pjahlsE9OJoeNHh
+        58Y3pweQrzs0fsbl1JtHatf3QxvFkh/p3ANrYmJd+PnW4f105muZSaDGfLpGbQ==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1619069192;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=H4I9jDECVuNT5dAo2H1sU8x8x5LKQ978c0zFpbnNYhQ=;
+        b=JscbAzBIx+fpzhBRlBO2IxLI29oXcUjrFMOKnp1QP+KvO3h6zbZLJXQUBcxy3YZXy9dBRo
+        rGCquC/A3/bWMgBg==
+To:     Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Sven Auhagen <sven.auhagen@voleatech.de>,
+        intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org,
+        bpf@vger.kernel.org,
+        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
+        Lorenzo Bianconi <lorenzo@kernel.org>,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Richard Cochran <richardcochran@gmail.com>,
+        Alexander Duyck <alexander.duyck@gmail.com>,
+        Kurt Kanzenbach <kurt@linutronix.de>
+Subject: [PATCH net v3] igb: Fix XDP with PTP enabled
+Date:   Thu, 22 Apr 2021 07:26:17 +0200
+Message-Id: <20210422052617.17267-1-kurt@linutronix.de>
 MIME-Version: 1.0
-In-Reply-To: <a41d23aa24bbe5b4acfc2465feca582c6e355e0d.1618839246.git.aclaudi@redhat.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 4/19/21 6:34 AM, Andrea Claudi wrote:
-> The function get_task_name() is used to get the name of a process from
-> its pid, and its implementation is similar to ip/iptuntap.c:pid_name().
-> 
-> Move it to lib/fs.c to use a single implementation and make it easily
-> reusable.
-> 
-> Signed-off-by: Andrea Claudi <aclaudi@redhat.com>
-> ---
->  include/utils.h |  1 +
->  ip/iptuntap.c   | 31 +------------------------------
->  lib/fs.c        | 24 ++++++++++++++++++++++++
->  rdma/res.c      | 24 ------------------------
->  rdma/res.h      |  1 -
->  5 files changed, 26 insertions(+), 55 deletions(-)
-> 
+When using native XDP with the igb driver, the XDP frame data doesn't point to
+the beginning of the packet. It's off by 16 bytes. Everything works as expected
+with XDP skb mode.
 
-applied to iproute2-next. Thanks,
+Actually these 16 bytes are used to store the packet timestamps. Therefore, pull
+the timestamp before executing any XDP operations and adjust all other code
+accordingly. The igc driver does it like that as well.
+
+Tested with Intel i210 card and AF_XDP sockets.
+
+Fixes: 9cbc948b5a20 ("igb: add XDP support")
+Signed-off-by: Kurt Kanzenbach <kurt@linutronix.de>
+---
+
+Changes since v2:
+
+ * Check timestamp for validity (Nguyen, Anthony L)
+
+Changes since v1:
+
+ * Use xdp_prepare_buff() (Lorenzo Bianconi)
+
+Changes since RFC:
+
+ * Removed unused return value definitions (Alexander Duyck)
+
+Previous versions:
+
+ * https://lkml.kernel.org/netdev/20210419072332.7246-1-kurt@linutronix.de/
+ * https://lkml.kernel.org/netdev/20210415092145.27322-1-kurt@linutronix.de/
+ * https://lkml.kernel.org/netdev/20210412101713.15161-1-kurt@linutronix.de/
+
+ drivers/net/ethernet/intel/igb/igb.h      |  3 +-
+ drivers/net/ethernet/intel/igb/igb_main.c | 45 +++++++++++++----------
+ drivers/net/ethernet/intel/igb/igb_ptp.c  | 21 ++++-------
+ 3 files changed, 34 insertions(+), 35 deletions(-)
+
+diff --git a/drivers/net/ethernet/intel/igb/igb.h b/drivers/net/ethernet/intel/igb/igb.h
+index 7bda8c5edea5..72cf967c1a00 100644
+--- a/drivers/net/ethernet/intel/igb/igb.h
++++ b/drivers/net/ethernet/intel/igb/igb.h
+@@ -748,8 +748,7 @@ void igb_ptp_suspend(struct igb_adapter *adapter);
+ void igb_ptp_rx_hang(struct igb_adapter *adapter);
+ void igb_ptp_tx_hang(struct igb_adapter *adapter);
+ void igb_ptp_rx_rgtstamp(struct igb_q_vector *q_vector, struct sk_buff *skb);
+-int igb_ptp_rx_pktstamp(struct igb_q_vector *q_vector, void *va,
+-			struct sk_buff *skb);
++ktime_t igb_ptp_rx_pktstamp(struct igb_q_vector *q_vector, void *va);
+ int igb_ptp_set_ts_config(struct net_device *netdev, struct ifreq *ifr);
+ int igb_ptp_get_ts_config(struct net_device *netdev, struct ifreq *ifr);
+ void igb_set_flag_queue_pairs(struct igb_adapter *, const u32);
+diff --git a/drivers/net/ethernet/intel/igb/igb_main.c b/drivers/net/ethernet/intel/igb/igb_main.c
+index a45cd2b416c8..13595618f9e3 100644
+--- a/drivers/net/ethernet/intel/igb/igb_main.c
++++ b/drivers/net/ethernet/intel/igb/igb_main.c
+@@ -8281,7 +8281,7 @@ static void igb_add_rx_frag(struct igb_ring *rx_ring,
+ static struct sk_buff *igb_construct_skb(struct igb_ring *rx_ring,
+ 					 struct igb_rx_buffer *rx_buffer,
+ 					 struct xdp_buff *xdp,
+-					 union e1000_adv_rx_desc *rx_desc)
++					 ktime_t timestamp)
+ {
+ #if (PAGE_SIZE < 8192)
+ 	unsigned int truesize = igb_rx_pg_size(rx_ring) / 2;
+@@ -8301,12 +8301,8 @@ static struct sk_buff *igb_construct_skb(struct igb_ring *rx_ring,
+ 	if (unlikely(!skb))
+ 		return NULL;
+ 
+-	if (unlikely(igb_test_staterr(rx_desc, E1000_RXDADV_STAT_TSIP))) {
+-		if (!igb_ptp_rx_pktstamp(rx_ring->q_vector, xdp->data, skb)) {
+-			xdp->data += IGB_TS_HDR_LEN;
+-			size -= IGB_TS_HDR_LEN;
+-		}
+-	}
++	if (timestamp)
++		skb_hwtstamps(skb)->hwtstamp = timestamp;
+ 
+ 	/* Determine available headroom for copy */
+ 	headlen = size;
+@@ -8337,7 +8333,7 @@ static struct sk_buff *igb_construct_skb(struct igb_ring *rx_ring,
+ static struct sk_buff *igb_build_skb(struct igb_ring *rx_ring,
+ 				     struct igb_rx_buffer *rx_buffer,
+ 				     struct xdp_buff *xdp,
+-				     union e1000_adv_rx_desc *rx_desc)
++				     ktime_t timestamp)
+ {
+ #if (PAGE_SIZE < 8192)
+ 	unsigned int truesize = igb_rx_pg_size(rx_ring) / 2;
+@@ -8364,11 +8360,8 @@ static struct sk_buff *igb_build_skb(struct igb_ring *rx_ring,
+ 	if (metasize)
+ 		skb_metadata_set(skb, metasize);
+ 
+-	/* pull timestamp out of packet data */
+-	if (igb_test_staterr(rx_desc, E1000_RXDADV_STAT_TSIP)) {
+-		if (!igb_ptp_rx_pktstamp(rx_ring->q_vector, skb->data, skb))
+-			__skb_pull(skb, IGB_TS_HDR_LEN);
+-	}
++	if (timestamp)
++		skb_hwtstamps(skb)->hwtstamp = timestamp;
+ 
+ 	/* update buffer offset */
+ #if (PAGE_SIZE < 8192)
+@@ -8683,7 +8676,10 @@ static int igb_clean_rx_irq(struct igb_q_vector *q_vector, const int budget)
+ 	while (likely(total_packets < budget)) {
+ 		union e1000_adv_rx_desc *rx_desc;
+ 		struct igb_rx_buffer *rx_buffer;
++		ktime_t timestamp = 0;
++		int pkt_offset = 0;
+ 		unsigned int size;
++		void *pktbuf;
+ 
+ 		/* return some buffers to hardware, one at a time is too slow */
+ 		if (cleaned_count >= IGB_RX_BUFFER_WRITE) {
+@@ -8703,14 +8699,24 @@ static int igb_clean_rx_irq(struct igb_q_vector *q_vector, const int budget)
+ 		dma_rmb();
+ 
+ 		rx_buffer = igb_get_rx_buffer(rx_ring, size, &rx_buf_pgcnt);
++		pktbuf = page_address(rx_buffer->page) + rx_buffer->page_offset;
++
++		/* pull rx packet timestamp if available and valid */
++		if (igb_test_staterr(rx_desc, E1000_RXDADV_STAT_TSIP)) {
++			timestamp = igb_ptp_rx_pktstamp(rx_ring->q_vector,
++							pktbuf);
++
++			if (timestamp) {
++				pkt_offset += IGB_TS_HDR_LEN;
++				size -= IGB_TS_HDR_LEN;
++			}
++		}
+ 
+ 		/* retrieve a buffer from the ring */
+ 		if (!skb) {
+-			unsigned int offset = igb_rx_offset(rx_ring);
+-			unsigned char *hard_start;
++			unsigned char *hard_start = pktbuf - igb_rx_offset(rx_ring);
++			unsigned int offset = pkt_offset + igb_rx_offset(rx_ring);
+ 
+-			hard_start = page_address(rx_buffer->page) +
+-				     rx_buffer->page_offset - offset;
+ 			xdp_prepare_buff(&xdp, hard_start, offset, size, true);
+ #if (PAGE_SIZE > 4096)
+ 			/* At larger PAGE_SIZE, frame_sz depend on len size */
+@@ -8733,10 +8739,11 @@ static int igb_clean_rx_irq(struct igb_q_vector *q_vector, const int budget)
+ 		} else if (skb)
+ 			igb_add_rx_frag(rx_ring, rx_buffer, skb, size);
+ 		else if (ring_uses_build_skb(rx_ring))
+-			skb = igb_build_skb(rx_ring, rx_buffer, &xdp, rx_desc);
++			skb = igb_build_skb(rx_ring, rx_buffer, &xdp,
++					    timestamp);
+ 		else
+ 			skb = igb_construct_skb(rx_ring, rx_buffer,
+-						&xdp, rx_desc);
++						&xdp, timestamp);
+ 
+ 		/* exit if we failed to retrieve a buffer */
+ 		if (!skb) {
+diff --git a/drivers/net/ethernet/intel/igb/igb_ptp.c b/drivers/net/ethernet/intel/igb/igb_ptp.c
+index 86a576201f5f..8e23df7da641 100644
+--- a/drivers/net/ethernet/intel/igb/igb_ptp.c
++++ b/drivers/net/ethernet/intel/igb/igb_ptp.c
+@@ -856,30 +856,26 @@ static void igb_ptp_tx_hwtstamp(struct igb_adapter *adapter)
+ 	dev_kfree_skb_any(skb);
+ }
+ 
+-#define IGB_RET_PTP_DISABLED 1
+-#define IGB_RET_PTP_INVALID 2
+-
+ /**
+  * igb_ptp_rx_pktstamp - retrieve Rx per packet timestamp
+  * @q_vector: Pointer to interrupt specific structure
+  * @va: Pointer to address containing Rx buffer
+- * @skb: Buffer containing timestamp and packet
+  *
+  * This function is meant to retrieve a timestamp from the first buffer of an
+  * incoming frame.  The value is stored in little endian format starting on
+  * byte 8
+  *
+- * Returns: 0 if success, nonzero if failure
++ * Returns: 0 on failure, timestamp on success
+  **/
+-int igb_ptp_rx_pktstamp(struct igb_q_vector *q_vector, void *va,
+-			struct sk_buff *skb)
++ktime_t igb_ptp_rx_pktstamp(struct igb_q_vector *q_vector, void *va)
+ {
+ 	struct igb_adapter *adapter = q_vector->adapter;
++	struct skb_shared_hwtstamps ts;
+ 	__le64 *regval = (__le64 *)va;
+ 	int adjust = 0;
+ 
+ 	if (!(adapter->ptp_flags & IGB_PTP_ENABLED))
+-		return IGB_RET_PTP_DISABLED;
++		return 0;
+ 
+ 	/* The timestamp is recorded in little endian format.
+ 	 * DWORD: 0        1        2        3
+@@ -888,10 +884,9 @@ int igb_ptp_rx_pktstamp(struct igb_q_vector *q_vector, void *va,
+ 
+ 	/* check reserved dwords are zero, be/le doesn't matter for zero */
+ 	if (regval[0])
+-		return IGB_RET_PTP_INVALID;
++		return 0;
+ 
+-	igb_ptp_systim_to_hwtstamp(adapter, skb_hwtstamps(skb),
+-				   le64_to_cpu(regval[1]));
++	igb_ptp_systim_to_hwtstamp(adapter, &ts, le64_to_cpu(regval[1]));
+ 
+ 	/* adjust timestamp for the RX latency based on link speed */
+ 	if (adapter->hw.mac.type == e1000_i210) {
+@@ -907,10 +902,8 @@ int igb_ptp_rx_pktstamp(struct igb_q_vector *q_vector, void *va,
+ 			break;
+ 		}
+ 	}
+-	skb_hwtstamps(skb)->hwtstamp =
+-		ktime_sub_ns(skb_hwtstamps(skb)->hwtstamp, adjust);
+ 
+-	return 0;
++	return ktime_sub_ns(ts.hwtstamp, adjust);
+ }
+ 
+ /**
+-- 
+2.20.1
 
