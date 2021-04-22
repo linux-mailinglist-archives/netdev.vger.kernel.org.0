@@ -2,82 +2,487 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5C1F83676EF
-	for <lists+netdev@lfdr.de>; Thu, 22 Apr 2021 03:46:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A879B3676FA
+	for <lists+netdev@lfdr.de>; Thu, 22 Apr 2021 03:46:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234139AbhDVBqj convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Wed, 21 Apr 2021 21:46:39 -0400
-Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:64760 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S229740AbhDVBqi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 21 Apr 2021 21:46:38 -0400
-Received: from pps.filterd (m0109334.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 13M1hftf019611
-        for <netdev@vger.kernel.org>; Wed, 21 Apr 2021 18:46:04 -0700
+        id S234374AbhDVBqw convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Wed, 21 Apr 2021 21:46:52 -0400
+Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:63020 "EHLO
+        mx0b-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S234182AbhDVBqt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 21 Apr 2021 21:46:49 -0400
+Received: from pps.filterd (m0109331.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 13M1hmGw000846
+        for <netdev@vger.kernel.org>; Wed, 21 Apr 2021 18:46:15 -0700
 Received: from maileast.thefacebook.com ([163.114.130.16])
-        by mx0a-00082601.pphosted.com with ESMTP id 382ksdcwnu-5
+        by mx0a-00082601.pphosted.com with ESMTP id 3826yug4m9-4
         (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-        for <netdev@vger.kernel.org>; Wed, 21 Apr 2021 18:46:04 -0700
-Received: from intmgw006.03.ash8.facebook.com (2620:10d:c0a8:1b::d) by
- mail.thefacebook.com (2620:10d:c0a8:83::5) with Microsoft SMTP Server
+        for <netdev@vger.kernel.org>; Wed, 21 Apr 2021 18:46:15 -0700
+Received: from intmgw001.38.frc1.facebook.com (2620:10d:c0a8:1b::d) by
+ mail.thefacebook.com (2620:10d:c0a8:83::6) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2176.2; Wed, 21 Apr 2021 18:46:02 -0700
+ 15.1.2176.2; Wed, 21 Apr 2021 18:46:06 -0700
 Received: by devbig012.ftw2.facebook.com (Postfix, from userid 137359)
-        id A78362ED59F8; Wed, 21 Apr 2021 18:46:00 -0700 (PDT)
+        id B42AD2ED59F8; Wed, 21 Apr 2021 18:46:02 -0700 (PDT)
 From:   Andrii Nakryiko <andrii@kernel.org>
 To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>, <ast@fb.com>,
         <daniel@iogearbox.net>
 CC:     <andrii@kernel.org>, <kernel-team@fb.com>
-Subject: [PATCH bpf-next 1/6] selftests/bpf: document latest Clang fix expectations for linking tests
-Date:   Wed, 21 Apr 2021 18:45:51 -0700
-Message-ID: <20210422014556.3451936-2-andrii@kernel.org>
+Subject: [PATCH bpf-next 2/6] libbpf: rename static variables during linking
+Date:   Wed, 21 Apr 2021 18:45:52 -0700
+Message-ID: <20210422014556.3451936-3-andrii@kernel.org>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20210422014556.3451936-1-andrii@kernel.org>
 References: <20210422014556.3451936-1-andrii@kernel.org>
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8BIT
 X-FB-Internal: Safe
 Content-Type: text/plain
-X-Proofpoint-GUID: 4eheDqvTpQW3ZSMab-ez70dPwjYqQPkM
-X-Proofpoint-ORIG-GUID: 4eheDqvTpQW3ZSMab-ez70dPwjYqQPkM
-Content-Transfer-Encoding: 8BIT
-X-Proofpoint-UnRewURL: 0 URL was un-rewritten
-MIME-Version: 1.0
+X-Proofpoint-GUID: Tu6WG3Ce06GG3g3SEVpL198cEr31XiRh
+X-Proofpoint-ORIG-GUID: Tu6WG3Ce06GG3g3SEVpL198cEr31XiRh
 X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.391,18.0.761
  definitions=2021-04-21_08:2021-04-21,2021-04-21 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 spamscore=0 phishscore=0
- mlxlogscore=999 lowpriorityscore=0 suspectscore=0 malwarescore=0
- bulkscore=0 priorityscore=1501 clxscore=1034 mlxscore=0 impostorscore=0
- adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 impostorscore=0
+ adultscore=0 mlxscore=0 spamscore=0 clxscore=1015 priorityscore=1501
+ mlxlogscore=999 malwarescore=0 bulkscore=0 suspectscore=0 phishscore=0
+ lowpriorityscore=0 classifier=spam adjust=0 reason=mlx scancount=1
  engine=8.12.0-2104060000 definitions=main-2104220014
 X-FB-Internal: deliver
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Document which fixes are required to generate correct static linking
-selftests.
+Prepend <obj_name>.. prefix to each static variable in BTF info during static
+linking. This makes them uniquely named for the sake of BPF skeleton use,
+allowing to read/write static BPF variables from user-space. This uniqueness
+guarantee depends on each linked file name uniqueness, of course. Double dots
+separator was chosen both to be different (but similar) to the separator that
+Clang is currently using for static variables defined inside functions as well
+as to generate a natural (in libbpf parlance, at least) obj__var naming pattern
+in BPF skeleton. Static linker also checks for static variable to already
+contain ".." separator and skips the rename to allow multi-pass linking and not
+keep making variable name ever increasing, if derived object name is changing on
+each pass (as is the case for selftests).
+
+This patch also adds opts to bpf_linker__add_file() API, which currently
+allows to override object name for a given file and could be extended with other
+per-file options in the future. This is not a breaking change because
+bpf_linker__add_file() isn't yet released officially.
+
+This patch also includes fixes to few selftests that are already using static
+variables. They have to go in in the same patch to not break selftest build.
+Keep in mind, this static variable rename only happens during static linking.
+For any existing user of BPF skeleton using static variables nothing changes,
+because those use cases are using variable names generated by Clang. Only new
+users utilizing static linker might need to adjust BPF skeleton use, which
+currently will be always new use cases. So ther is no risk of breakage.
+
+static_linked selftests is modified to also validate conflicting static variable
+names are handled correctly both during static linking and in BPF skeleton.
 
 Signed-off-by: Andrii Nakryiko <andrii@kernel.org>
 ---
- tools/testing/selftests/bpf/README.rst | 9 +++++++++
- 1 file changed, 9 insertions(+)
+ tools/bpf/bpftool/gen.c                       |   2 +-
+ tools/lib/bpf/libbpf.h                        |  12 +-
+ tools/lib/bpf/linker.c                        | 121 +++++++++++++++++-
+ .../selftests/bpf/prog_tests/skeleton.c       |   8 +-
+ .../selftests/bpf/prog_tests/static_linked.c  |   8 +-
+ .../selftests/bpf/progs/bpf_iter_test_kern4.c |   4 +-
+ .../selftests/bpf/progs/test_check_mtu.c      |   4 +-
+ .../selftests/bpf/progs/test_cls_redirect.c   |   4 +-
+ .../bpf/progs/test_snprintf_single.c          |   2 +-
+ .../selftests/bpf/progs/test_sockmap_listen.c |   4 +-
+ .../selftests/bpf/progs/test_static_linked1.c |   6 +-
+ .../selftests/bpf/progs/test_static_linked2.c |   4 +-
+ 12 files changed, 151 insertions(+), 28 deletions(-)
 
-diff --git a/tools/testing/selftests/bpf/README.rst b/tools/testing/selftests/bpf/README.rst
-index 65fe318d1e71..3353778c30f8 100644
---- a/tools/testing/selftests/bpf/README.rst
-+++ b/tools/testing/selftests/bpf/README.rst
-@@ -193,3 +193,12 @@ Without it, the error from compiling bpf selftests looks like:
-   libbpf: failed to find BTF for extern 'tcp_slow_start' [25] section: -2
+diff --git a/tools/bpf/bpftool/gen.c b/tools/bpf/bpftool/gen.c
+index 440a2fcb6441..06fee4a2910a 100644
+--- a/tools/bpf/bpftool/gen.c
++++ b/tools/bpf/bpftool/gen.c
+@@ -638,7 +638,7 @@ static int do_object(int argc, char **argv)
+ 	while (argc) {
+ 		file = GET_ARG();
  
- __ https://reviews.llvm.org/D93563
+-		err = bpf_linker__add_file(linker, file);
++		err = bpf_linker__add_file(linker, file, NULL);
+ 		if (err) {
+ 			p_err("failed to link '%s': %s (%d)", file, strerror(err), err);
+ 			goto out;
+diff --git a/tools/lib/bpf/libbpf.h b/tools/lib/bpf/libbpf.h
+index bec4e6a6e31d..67505030c8d1 100644
+--- a/tools/lib/bpf/libbpf.h
++++ b/tools/lib/bpf/libbpf.h
+@@ -768,10 +768,20 @@ struct bpf_linker_opts {
+ };
+ #define bpf_linker_opts__last_field sz
+ 
++struct bpf_linker_file_opts {
++	/* size of this struct, for forward/backward compatiblity */
++	size_t sz;
++	/* object name override, similar to the one in bpf_object_open_opts */
++	const char *object_name;
++};
++#define bpf_linker_file_opts__last_field sz
 +
-+Clang dependencies for static linking tests
-+===========================================
+ struct bpf_linker;
+ 
+ LIBBPF_API struct bpf_linker *bpf_linker__new(const char *filename, struct bpf_linker_opts *opts);
+-LIBBPF_API int bpf_linker__add_file(struct bpf_linker *linker, const char *filename);
++LIBBPF_API int bpf_linker__add_file(struct bpf_linker *linker,
++				    const char *filename,
++				    const struct bpf_linker_file_opts *opts);
+ LIBBPF_API int bpf_linker__finalize(struct bpf_linker *linker);
+ LIBBPF_API void bpf_linker__free(struct bpf_linker *linker);
+ 
+diff --git a/tools/lib/bpf/linker.c b/tools/lib/bpf/linker.c
+index 84d444427b65..6700084a5bf4 100644
+--- a/tools/lib/bpf/linker.c
++++ b/tools/lib/bpf/linker.c
+@@ -4,6 +4,8 @@
+  *
+  * Copyright (c) 2021 Facebook
+  */
++#define _GNU_SOURCE
++#include <ctype.h>
+ #include <stdbool.h>
+ #include <stddef.h>
+ #include <stdio.h>
+@@ -47,6 +49,16 @@ struct src_sec {
+ 	int sec_type_id;
+ };
+ 
++#define MAX_OBJ_NAME_LEN 64
 +
-+linked_vars, linked_maps, and linked_funcs tests depend on `Clang fix`__ to
-+generate valid BTF information for weak variables. Please make sure you use
-+Clang that contains the fix.
++/* According to C standard, only first 63 characters of C identifiers are
++ * guaranteed to be significant. So for transformed static variables of the most
++ * verbose form ('<obj_name>..<func_name>.<var_name>') we need to reserve extra
++ * 64 (function name and dot) + 63 (variable name) + 2 (for .. separator)
++ * characters.
++ */
++#define MAX_VAR_NAME_LEN (MAX_OBJ_NAME_LEN + 2 + 63 + 1 + 63)
 +
-+__ https://reviews.llvm.org/D100362
+ struct src_obj {
+ 	const char *filename;
+ 	int fd;
+@@ -67,6 +79,10 @@ struct src_obj {
+ 	int *sym_map;
+ 	/* mapping from the src BTF type IDs to dst ones */
+ 	int *btf_type_map;
++
++	/* BPF object name used for static variable prefixing */
++	char obj_name[MAX_OBJ_NAME_LEN];
++	size_t obj_name_len;
+ };
+ 
+ /* single .BTF.ext data section */
+@@ -158,7 +174,9 @@ struct bpf_linker {
+ 
+ static int init_output_elf(struct bpf_linker *linker, const char *file);
+ 
+-static int linker_load_obj_file(struct bpf_linker *linker, const char *filename, struct src_obj *obj);
++static int linker_load_obj_file(struct bpf_linker *linker, const char *filename,
++				const struct bpf_linker_file_opts *opts,
++				struct src_obj *obj);
+ static int linker_sanity_check_elf(struct src_obj *obj);
+ static int linker_sanity_check_elf_symtab(struct src_obj *obj, struct src_sec *sec);
+ static int linker_sanity_check_elf_relos(struct src_obj *obj, struct src_sec *sec);
+@@ -435,15 +453,19 @@ static int init_output_elf(struct bpf_linker *linker, const char *file)
+ 	return 0;
+ }
+ 
+-int bpf_linker__add_file(struct bpf_linker *linker, const char *filename)
++int bpf_linker__add_file(struct bpf_linker *linker, const char *filename,
++			 const struct bpf_linker_file_opts *opts)
+ {
+ 	struct src_obj obj = {};
+ 	int err = 0;
+ 
++	if (!OPTS_VALID(opts, bpf_linker_file_opts))
++		return -EINVAL;
++
+ 	if (!linker->elf)
+ 		return -EINVAL;
+ 
+-	err = err ?: linker_load_obj_file(linker, filename, &obj);
++	err = err ?: linker_load_obj_file(linker, filename, opts, &obj);
+ 	err = err ?: linker_append_sec_data(linker, &obj);
+ 	err = err ?: linker_append_elf_syms(linker, &obj);
+ 	err = err ?: linker_append_elf_relos(linker, &obj);
+@@ -529,7 +551,49 @@ static struct src_sec *add_src_sec(struct src_obj *obj, const char *sec_name)
+ 	return sec;
+ }
+ 
+-static int linker_load_obj_file(struct bpf_linker *linker, const char *filename, struct src_obj *obj)
++static void sanitize_obj_name(char *name)
++{
++	int i;
++
++	for (i = 0; name[i]; i++) {
++		if (name[i] == '_')
++			continue;
++		if (i == 0 && isalpha(name[i]))
++			continue;
++		if (i > 0 && isalnum(name[i]))
++			continue;
++
++		name[i] = '_';
++	}
++}
++
++static bool str_has_suffix(const char *str, const char *suffix)
++{
++	size_t n1 = strlen(str), n2 = strlen(suffix);
++
++	if (n1 < n2)
++		return false;
++
++	return strcmp(str + n1 - n2, suffix) == 0;
++}
++
++static void get_obj_name(char *name, const char *file)
++{
++	/* Using basename() GNU version which doesn't modify arg. */
++	strncpy(name, basename(file), MAX_OBJ_NAME_LEN - 1);
++	name[MAX_OBJ_NAME_LEN - 1] = '\0';
++
++	if (str_has_suffix(name, ".o"))
++		name[strlen(name) - sizeof(".o") + 1] = '\0';
++	if (str_has_suffix(name, ".bpf.o"))
++		name[strlen(name) - sizeof(".bpf.o") + 1] = '\0';
++
++	sanitize_obj_name(name);
++}
++
++static int linker_load_obj_file(struct bpf_linker *linker, const char *filename,
++				const struct bpf_linker_file_opts *opts,
++				struct src_obj *obj)
+ {
+ #if __BYTE_ORDER == __LITTLE_ENDIAN
+ 	const int host_endianness = ELFDATA2LSB;
+@@ -549,6 +613,14 @@ static int linker_load_obj_file(struct bpf_linker *linker, const char *filename,
+ 
+ 	obj->filename = filename;
+ 
++	if (OPTS_GET(opts, object_name, NULL)) {
++		strncpy(obj->obj_name, opts->object_name, MAX_OBJ_NAME_LEN);
++		obj->obj_name[MAX_OBJ_NAME_LEN - 1] = '\0';
++	} else {
++		get_obj_name(obj->obj_name, filename);
++	}
++	obj->obj_name_len = strlen(obj->obj_name);
++
+ 	obj->fd = open(filename, O_RDONLY);
+ 	if (obj->fd < 0) {
+ 		err = -errno;
+@@ -2255,6 +2327,47 @@ static int linker_append_btf(struct bpf_linker *linker, struct src_obj *obj)
+ 				obj->btf_type_map[i] = glob_sym->btf_id;
+ 				continue;
+ 			}
++		} else if (btf_is_var(t) && btf_var(t)->linkage == BTF_VAR_STATIC) {
++			/* Static variables are renamed to include
++			 * "<obj_name>.." prefix (note double dots), similarly
++			 * to how static variables inside functions are named
++			 * "<func_name>.<var_name>" by compiler. This allows to
++			 * have  unique identifiers for static variables across
++			 * all linked object files (assuming unique filenames,
++			 * of course), which BPF skeleton relies on.
++			 *
++			 * So worst case static variable inside the function
++			 * will have the form "<obj_name>..<func_name>.<var_name"
++			 * and will get sanitized by BPF skeleton generation
++			 * logic to a field with <obj_name>__<func_name>_<var_name>
++			 * name. Typical static variable will have a
++			 * <obj_name>__<var_name> name, implying arguably nice
++			 * per-file scoping.
++			 *
++			 * If static var name already contains '..', though,
++			 * don't rename it, because it was already renamed by
++			 * previous linker passes.
++			 */
++			name = btf__str_by_offset(obj->btf, t->name_off);
++			if (!strstr(name, "..")) {
++				char new_name[MAX_VAR_NAME_LEN];
++
++				memcpy(new_name, obj->obj_name, obj->obj_name_len);
++				new_name[obj->obj_name_len] = '.';
++				new_name[obj->obj_name_len + 1] = '.';
++				new_name[obj->obj_name_len + 2] = '\0';
++				/* -3 is for '..' separator and terminating '\0' */
++				strncat(new_name, name, MAX_VAR_NAME_LEN - obj->obj_name_len - 3);
++
++				id = btf__add_str(obj->btf, new_name);
++				if (id < 0)
++					return id;
++
++				/* btf__add_str() might invalidate t, so re-fetch */
++				t = btf__type_by_id(obj->btf, i);
++
++				((struct btf_type *)t)->name_off = id;
++			}
+ 		}
+ 
+ 		id = btf__add_type(linker->btf, obj->btf, t);
+diff --git a/tools/testing/selftests/bpf/prog_tests/skeleton.c b/tools/testing/selftests/bpf/prog_tests/skeleton.c
+index fe87b77af459..bbade99fa544 100644
+--- a/tools/testing/selftests/bpf/prog_tests/skeleton.c
++++ b/tools/testing/selftests/bpf/prog_tests/skeleton.c
+@@ -82,10 +82,10 @@ void test_skeleton(void)
+ 	CHECK(data->out2 != 2, "res2", "got %lld != exp %d\n", data->out2, 2);
+ 	CHECK(bss->out3 != 3, "res3", "got %d != exp %d\n", (int)bss->out3, 3);
+ 	CHECK(bss->out4 != 4, "res4", "got %lld != exp %d\n", bss->out4, 4);
+-	CHECK(bss->handler_out5.a != 5, "res5", "got %d != exp %d\n",
+-	      bss->handler_out5.a, 5);
+-	CHECK(bss->handler_out5.b != 6, "res6", "got %lld != exp %d\n",
+-	      bss->handler_out5.b, 6);
++	CHECK(bss->test_skeleton__handler_out5.a != 5, "res5", "got %d != exp %d\n",
++	      bss->test_skeleton__handler_out5.a, 5);
++	CHECK(bss->test_skeleton__handler_out5.b != 6, "res6", "got %lld != exp %d\n",
++	      bss->test_skeleton__handler_out5.b, 6);
+ 	CHECK(bss->out6 != 14, "res7", "got %d != exp %d\n", bss->out6, 14);
+ 
+ 	CHECK(bss->bpf_syscall != kcfg->CONFIG_BPF_SYSCALL, "ext1",
+diff --git a/tools/testing/selftests/bpf/prog_tests/static_linked.c b/tools/testing/selftests/bpf/prog_tests/static_linked.c
+index 46556976dccc..f16736eab900 100644
+--- a/tools/testing/selftests/bpf/prog_tests/static_linked.c
++++ b/tools/testing/selftests/bpf/prog_tests/static_linked.c
+@@ -14,12 +14,12 @@ void test_static_linked(void)
+ 		return;
+ 
+ 	skel->rodata->rovar1 = 1;
+-	skel->bss->static_var1 = 2;
+-	skel->bss->static_var11 = 3;
++	skel->bss->test_static_linked1__static_var = 2;
++	skel->bss->test_static_linked1__static_var1 = 3;
+ 
+ 	skel->rodata->rovar2 = 4;
+-	skel->bss->static_var2 = 5;
+-	skel->bss->static_var22 = 6;
++	skel->bss->test_static_linked2__static_var = 5;
++	skel->bss->test_static_linked2__static_var2 = 6;
+ 
+ 	err = test_static_linked__load(skel);
+ 	if (!ASSERT_OK(err, "skel_load"))
+diff --git a/tools/testing/selftests/bpf/progs/bpf_iter_test_kern4.c b/tools/testing/selftests/bpf/progs/bpf_iter_test_kern4.c
+index ee49493dc125..43bf8ec8ae79 100644
+--- a/tools/testing/selftests/bpf/progs/bpf_iter_test_kern4.c
++++ b/tools/testing/selftests/bpf/progs/bpf_iter_test_kern4.c
+@@ -9,8 +9,8 @@ __u32 map1_id = 0, map2_id = 0;
+ __u32 map1_accessed = 0, map2_accessed = 0;
+ __u64 map1_seqnum = 0, map2_seqnum1 = 0, map2_seqnum2 = 0;
+ 
+-static volatile const __u32 print_len;
+-static volatile const __u32 ret1;
++volatile const __u32 print_len = 0;
++volatile const __u32 ret1 = 0;
+ 
+ SEC("iter/bpf_map")
+ int dump_bpf_map(struct bpf_iter__bpf_map *ctx)
+diff --git a/tools/testing/selftests/bpf/progs/test_check_mtu.c b/tools/testing/selftests/bpf/progs/test_check_mtu.c
+index c4a9bae96e75..71184af57749 100644
+--- a/tools/testing/selftests/bpf/progs/test_check_mtu.c
++++ b/tools/testing/selftests/bpf/progs/test_check_mtu.c
+@@ -11,8 +11,8 @@
+ char _license[] SEC("license") = "GPL";
+ 
+ /* Userspace will update with MTU it can see on device */
+-static volatile const int GLOBAL_USER_MTU;
+-static volatile const __u32 GLOBAL_USER_IFINDEX;
++volatile const int GLOBAL_USER_MTU;
++volatile const __u32 GLOBAL_USER_IFINDEX;
+ 
+ /* BPF-prog will update these with MTU values it can see */
+ __u32 global_bpf_mtu_xdp = 0;
+diff --git a/tools/testing/selftests/bpf/progs/test_cls_redirect.c b/tools/testing/selftests/bpf/progs/test_cls_redirect.c
+index 3c1e042962e6..e2a5acc4785c 100644
+--- a/tools/testing/selftests/bpf/progs/test_cls_redirect.c
++++ b/tools/testing/selftests/bpf/progs/test_cls_redirect.c
+@@ -39,8 +39,8 @@ char _license[] SEC("license") = "Dual BSD/GPL";
+ /**
+  * Destination port and IP used for UDP encapsulation.
+  */
+-static volatile const __be16 ENCAPSULATION_PORT;
+-static volatile const __be32 ENCAPSULATION_IP;
++volatile const __be16 ENCAPSULATION_PORT;
++volatile const __be32 ENCAPSULATION_IP;
+ 
+ typedef struct {
+ 	uint64_t processed_packets_total;
+diff --git a/tools/testing/selftests/bpf/progs/test_snprintf_single.c b/tools/testing/selftests/bpf/progs/test_snprintf_single.c
+index 402adaf344f9..6b63ba86b409 100644
+--- a/tools/testing/selftests/bpf/progs/test_snprintf_single.c
++++ b/tools/testing/selftests/bpf/progs/test_snprintf_single.c
+@@ -5,7 +5,7 @@
+ #include <bpf/bpf_helpers.h>
+ 
+ /* The format string is filled from the userspace such that loading fails */
+-static const char fmt[10];
++const char fmt[10] = {};
+ 
+ SEC("raw_tp/sys_enter")
+ int handler(const void *ctx)
+diff --git a/tools/testing/selftests/bpf/progs/test_sockmap_listen.c b/tools/testing/selftests/bpf/progs/test_sockmap_listen.c
+index a39eba9f5201..a1cc58b10c7c 100644
+--- a/tools/testing/selftests/bpf/progs/test_sockmap_listen.c
++++ b/tools/testing/selftests/bpf/progs/test_sockmap_listen.c
+@@ -28,8 +28,8 @@ struct {
+ 	__type(value, unsigned int);
+ } verdict_map SEC(".maps");
+ 
+-static volatile bool test_sockmap; /* toggled by user-space */
+-static volatile bool test_ingress; /* toggled by user-space */
++bool test_sockmap = false; /* toggled by user-space */
++bool test_ingress = false; /* toggled by user-space */
+ 
+ SEC("sk_skb/stream_parser")
+ int prog_stream_parser(struct __sk_buff *skb)
+diff --git a/tools/testing/selftests/bpf/progs/test_static_linked1.c b/tools/testing/selftests/bpf/progs/test_static_linked1.c
+index ea1a6c4c7172..7e15d05888e7 100644
+--- a/tools/testing/selftests/bpf/progs/test_static_linked1.c
++++ b/tools/testing/selftests/bpf/progs/test_static_linked1.c
+@@ -5,8 +5,8 @@
+ #include <bpf/bpf_helpers.h>
+ 
+ /* 8-byte aligned .bss */
+-static volatile long static_var1;
+-static volatile int static_var11;
++static volatile long static_var;
++static volatile int static_var1;
+ int var1 = 0;
+ /* 4-byte aligned .rodata */
+ const volatile int rovar1;
+@@ -21,7 +21,7 @@ static __noinline int subprog(int x)
+ SEC("raw_tp/sys_enter")
+ int handler1(const void *ctx)
+ {
+-	var1 = subprog(rovar1) + static_var1 + static_var11;
++	var1 = subprog(rovar1) + static_var + static_var1;
+ 
+ 	return 0;
+ }
+diff --git a/tools/testing/selftests/bpf/progs/test_static_linked2.c b/tools/testing/selftests/bpf/progs/test_static_linked2.c
+index 54d8d1ab577c..0d37c05d508e 100644
+--- a/tools/testing/selftests/bpf/progs/test_static_linked2.c
++++ b/tools/testing/selftests/bpf/progs/test_static_linked2.c
+@@ -5,8 +5,8 @@
+ #include <bpf/bpf_helpers.h>
+ 
+ /* 4-byte aligned .bss */
++static volatile int static_var;
+ static volatile int static_var2;
+-static volatile int static_var22;
+ int var2 = 0;
+ /* 8-byte aligned .rodata */
+ const volatile long rovar2;
+@@ -21,7 +21,7 @@ static __noinline int subprog(int x)
+ SEC("raw_tp/sys_enter")
+ int handler2(const void *ctx)
+ {
+-	var2 = subprog(rovar2) + static_var2 + static_var22;
++	var2 = subprog(rovar2) + static_var + static_var2;
+ 
+ 	return 0;
+ }
 -- 
 2.30.2
 
