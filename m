@@ -2,129 +2,119 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 900C1367F23
-	for <lists+netdev@lfdr.de>; Thu, 22 Apr 2021 12:59:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4B3DD367F59
+	for <lists+netdev@lfdr.de>; Thu, 22 Apr 2021 13:14:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235830AbhDVK74 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 22 Apr 2021 06:59:56 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:49366 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S235455AbhDVK7y (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 22 Apr 2021 06:59:54 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1619089158;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=jXNqgpkvJIOW6Rt8kqHFZkkNxiI31FFU9sMkTfD7ohA=;
-        b=CVLojpTDZ6SE3vOIRWQqhRIpC8JJHyfbK4CcMsQKwBTdGuW3IBTBxamRY1JTggnxcHnO4F
-        nwD2yoGwNVTFU8X5eDDME4MBFH5QscfoK0YinOAjOJZ19c3zTfkxMN3Y5bO6OUZ65KMoED
-        TpoZvlRnWpxO4ZTcq7il9XFISw8Ioyk=
-Received: from mail-yb1-f199.google.com (mail-yb1-f199.google.com
- [209.85.219.199]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-22-fy-y-uw3P-yWy8J5Xyumxg-1; Thu, 22 Apr 2021 06:59:16 -0400
-X-MC-Unique: fy-y-uw3P-yWy8J5Xyumxg-1
-Received: by mail-yb1-f199.google.com with SMTP id d89-20020a25a3620000b02904dc8d0450c6so19383061ybi.2
-        for <netdev@vger.kernel.org>; Thu, 22 Apr 2021 03:59:16 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=jXNqgpkvJIOW6Rt8kqHFZkkNxiI31FFU9sMkTfD7ohA=;
-        b=XMBY2NdvnQpZ0ib35YndWVC78V9PQpOCXQF3fW9NUtBpOKQ082BzcMDPsrsWvHhDhj
-         i1ViHFzfT4Y5Fc5P1E6J6paE1sAyWwWp95Q7rFoVKQLlA8DqtBqfzvAHixRfRB8ZOdVD
-         I0Get63QtUHdhCTw7uOL8apvcvERCDOWfIxLLIN6/4DSUS/N8R6Dzmfo4L7bnvz88YON
-         AnOquTr+ekjQdlTpV84ZBMRImflj1x6E47eWh6zKnLdCiCV0GwbgcmQ//WU0QLP0XTfb
-         lKchylLWJiRk3hS2Mf6HL+AusohBXd3b3+ibNA+3JywpIci3MZBCl+ZqsWfEd+CHJwW7
-         XIfA==
-X-Gm-Message-State: AOAM530P4WaBG0Rr/k0YJkkbw3CriYmq/MQOdvET9n0FdBUzbyNB/MXU
-        R0WhizVt66xfW+f0ElGLlMpQ9HHXbsvodRYfVcBbfiMu4nCtRwI5D2E8u/InEGyt/XMCDN1DEKW
-        924OYa87482X4I9k0qTcfupG30jS6fHVa
-X-Received: by 2002:a25:3585:: with SMTP id c127mr3926068yba.494.1619089155923;
-        Thu, 22 Apr 2021 03:59:15 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJzbSavXiKuXISIWG4lDMx1DpdqRbDapWghhX7SXS7dMcL+73FMg0jHtgYPGDi4OvA7FZTXtYyB2luur95DYKP8=
-X-Received: by 2002:a25:3585:: with SMTP id c127mr3926032yba.494.1619089155577;
- Thu, 22 Apr 2021 03:59:15 -0700 (PDT)
+        id S236013AbhDVLOt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 22 Apr 2021 07:14:49 -0400
+Received: from fallback24.m.smailru.net ([94.100.187.223]:43262 "EHLO
+        fallback24.mail.ru" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S235634AbhDVLOs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 22 Apr 2021 07:14:48 -0400
+X-Greylist: delayed 1726 seconds by postgrey-1.27 at vger.kernel.org; Thu, 22 Apr 2021 07:14:48 EDT
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=inbox.ru; s=mail3;
+        h=Content-Transfer-Encoding:MIME-Version:References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From; bh=DT6/s8bWx6dRQ+iAwrdGoXzlyGjYlSDA4ycFx/PkTWI=;
+        b=gAmhVH94kq+sCmX6UNt5LW2wGORRCoEWsg1YnLhriXBj9v0IQQxV1xDX3bSpRZ+5Xx0J3z3ELG0/LZ7IwDu0DVJnkD5CslmgnhDeyrhnRs9JgO7BK/23vb3rzt1v+VhEGYOHDQRl2ggQKoqzLGgfSAwwpSXmuaecc5euN2P4HVo=;
+Received: from [10.161.117.32] (port=53868 helo=smtp3.mail.ru)
+        by fallback24.m.smailru.net with esmtp (envelope-from <fido_max@inbox.ru>)
+        id 1lZWpq-0000yu-95
+        for netdev@vger.kernel.org; Thu, 22 Apr 2021 13:45:26 +0300
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=inbox.ru; s=mail3;
+        h=Content-Transfer-Encoding:MIME-Version:References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:From:Subject:Content-Type:Content-Transfer-Encoding:To:Cc; bh=DT6/s8bWx6dRQ+iAwrdGoXzlyGjYlSDA4ycFx/PkTWI=;
+        b=JxBlh/lgPrQ/9w0uwy8+Ox2fKtbVLTcaUdr0j6llJ9lsBBJY253YrYCVyR1Qe++Mqz7hNFRp7PWDnYgVnBePvjnzDxOc3kLbn7c7tP5EvVg9x+cxQR0/RHE6sC8WLmOyX2AvrJB2RLLN2CGMVTD4QDrlu9kfI3wnLl82MRKrZ/4=;
+Received: by smtp3.mail.ru with esmtpa (envelope-from <fido_max@inbox.ru>)
+        id 1lZWpm-0000ww-5e; Thu, 22 Apr 2021 13:45:22 +0300
+From:   Maxim Kochetkov <fido_max@inbox.ru>
+To:     netdev@vger.kernel.org
+Cc:     andrew@lunn.ch, hkallweit1@gmail.com, linux@armlinux.org.uk,
+        davem@davemloft.net, kuba@kernel.org, f.fainelli@gmail.com,
+        Maxim Kochetkov <fido_max@inbox.ru>
+Subject: [PATCH 1/2] net: phy: marvell: fix m88e1011_set_downshift
+Date:   Thu, 22 Apr 2021 13:46:43 +0300
+Message-Id: <20210422104644.9472-2-fido_max@inbox.ru>
+X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20210422104644.9472-1-fido_max@inbox.ru>
+References: <20210422104644.9472-1-fido_max@inbox.ru>
 MIME-Version: 1.0
-References: <01cd8afa22786b2c8a4cd7250d165741e990a771.1618927173.git.lorenzo@kernel.org>
- <20210420185440.1dfcf71c@carbon> <YH8K0gkYoZVfq0FV@lore-desk>
-In-Reply-To: <YH8K0gkYoZVfq0FV@lore-desk>
-From:   Lorenzo Bianconi <lorenzo.bianconi@redhat.com>
-Date:   Thu, 22 Apr 2021 12:59:31 +0200
-Message-ID: <CAJ0CqmVozWi5uCnzWCpkc5kccnEJWRNbLMb-5YmWe7te9E_Odg@mail.gmail.com>
-Subject: Re: [PATCH v3 bpf-next] cpumap: bulk skb using netif_receive_skb_list
-To:     Jesper Dangaard Brouer <brouer@redhat.com>
-Cc:     Lorenzo Bianconi <lorenzo@kernel.org>,
-        BPF-dev-list <bpf@vger.kernel.org>,
-        Network Development <netdev@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Song Liu <song@kernel.org>,
-        Toke Hoiland Jorgensen <toke@redhat.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+X-7564579A: B8F34718100C35BD
+X-77F55803: 4F1203BC0FB41BD9DD7F0C977691F2B1E5FF39DF8BC957E24B746F5234D6004C182A05F538085040D00A0D1DAB6F3832B4334DEFBD60714524FAF12F9C51DF36C6D148D8999858FF
+X-7FA49CB5: FF5795518A3D127A4AD6D5ED66289B5278DA827A17800CE7FCFCB92DA8654BB0EA1F7E6F0F101C67BD4B6F7A4D31EC0BCC500DACC3FED6E28638F802B75D45FF8AA50765F790063786D6A7D810B9582D8638F802B75D45FF914D58D5BE9E6BC1A93B80C6DEB9DEE97C6FB206A91F05B2B8648DB7A7F4F3000FFCDDABCCF43407BE5E7F44427E1A0ED2E47CDBA5A96583C09775C1D3CA48CFED8438A78DFE0A9E117882F4460429724CE54428C33FAD30A8DF7F3B2552694AC26CFBAC0749D213D2E47CDBA5A9658359CC434672EE6371117882F4460429728AD0CFFFB425014E868A13BD56FB6657D81D268191BDAD3DC09775C1D3CA48CF10846442021A9C29BA3038C0950A5D36C8A9BA7A39EFB766EC990983EF5C0329BA3038C0950A5D36D5E8D9A59859A8B6F7EC8CC465A83DA33AA81AA40904B5D9DBF02ECDB25306B2201CA6A4E26CD07C3BBE47FD9DD3FB595F5C1EE8F4F765FC72CEEB2601E22B093A03B725D353964B0B7D0EA88DDEDAC722CA9DD8327EE4930A3850AC1BE2E735D05AD665AB97B35DC4224003CC83647689D4C264860C145E
+X-B7AD71C0: AC4F5C86D027EB782CDD5689AFBDA7A2AD77751E876CB595E8F7B195E1C97831906A50FD69B36923008EF5BE183B7CB3
+X-C1DE0DAB: C20DE7B7AB408E4181F030C43753B8186998911F362727C414F749A5E30D975C3E7AEEB2EA3DACB398D68DDA0C7E1E9E97C85A34EB8F7D649C2B6934AE262D3EE7EAB7254005DCED7532B743992DF240BDC6A1CF3F042BAD6DF99611D93F60EF46906D4753B15FC0699F904B3F4130E343918A1A30D5E7FCCB5012B2E24CD356
+X-C8649E89: 4E36BF7865823D7055A7F0CF078B5EC49A30900B95165D341B5517184E88C1BD2369AD379DED1938BEE4E2F0937DBADCA276E4011CE8B8C9F098B238FAAB17891D7E09C32AA3244C51C7476C4D883DEA390E901556702BACA995755A1445935EAD832FF50B3043B1
+X-D57D3AED: 3ZO7eAau8CL7WIMRKs4sN3D3tLDjz0dLbV79QFUyzQ2Ujvy7cMT6pYYqY16iZVKkSc3dCLJ7zSJH7+u4VD18S7Vl4ZUrpaVfd2+vE6kuoey4m4VkSEu530nj6fImhcD4MUrOEAnl0W826KZ9Q+tr5ycPtXkTV4k65bRjmOUUP8cvGozZ33TWg5HZplvhhXbhDGzqmQDTd6OAevLeAnq3Ra9uf7zvY2zzsIhlcp/Y7m53TZgf2aB4JOg4gkr2biojd3ipC3Yuge3Auu2zKhT5Fg==
+X-Mailru-Sender: 11C2EC085EDE56FA9C10FA2967F5AB24CCAA6BE7B7761317166E5606519823F20F6604896108845BEE9242D420CFEBFD3DDE9B364B0DF2891A624F84B2C74EDA4239CF2AF0A6D4F80DA7A0AF5A3A8387
+X-Mras: Ok
+X-7564579A: B8F34718100C35BD
+X-77F55803: 6242723A09DB00B44BADD4F5929CCB15E536D9810E242AD3F3B678AD184A8ACF049FFFDB7839CE9E5F41FB687843EBAB06F00E08F85C521E21C237ABC3298BF45C023F79A8AA4BFE
+X-7FA49CB5: 0D63561A33F958A56523CB669E9E4432734CC897D80F37DBA4D2052C2575E1C58941B15DA834481FA18204E546F3947CEDC5C53491350371F6B57BC7E64490618DEB871D839B7333395957E7521B51C2DFABB839C843B9C08941B15DA834481F8AA50765F7900637DC24B783B16D3BB1389733CBF5DBD5E9B5C8C57E37DE458BD9DD9810294C998ED8FC6C240DEA76428AA50765F790063740BA071C1C7EF6BBD81D268191BDAD3DBD4B6F7A4D31EC0BEA7A3FFF5B025636AAAE862A0553A39223F8577A6DFFEA7C565C1E6824D8037B43847C11F186F3C59DAA53EE0834AAEE
+X-C1DE0DAB: C20DE7B7AB408E4181F030C43753B8186998911F362727C414F749A5E30D975C3E7AEEB2EA3DACB3709DCBF4CC5428C8E238C1E0F2B938C09C2B6934AE262D3EE7EAB7254005DCED8DA55E71E02F9FC08E8E86DC7131B365E7726E8460B7C23C
+X-D57D3AED: 3ZO7eAau8CL7WIMRKs4sN3D3tLDjz0dLbV79QFUyzQ2Ujvy7cMT6pYYqY16iZVKkSc3dCLJ7zSJH7+u4VD18S7Vl4ZUrpaVfd2+vE6kuoey4m4VkSEu530nj6fImhcD4MUrOEAnl0W826KZ9Q+tr5ycPtXkTV4k65bRjmOUUP8cvGozZ33TWg5HZplvhhXbhDGzqmQDTd6OAevLeAnq3Ra9uf7zvY2zzsIhlcp/Y7m53TZgf2aB4JOg4gkr2biojd3ipC3Yuge3S0MSpsAm/Tw==
+X-Mailru-MI: 800
+X-Mailru-Sender: A5480F10D64C90053DB5E8752E58C64B6107DA3D8362899CD368D2C4C45289A11BE96DBAF4D557C5EE9242D420CFEBFD3DDE9B364B0DF2891A624F84B2C74EDA4239CF2AF0A6D4F80DA7A0AF5A3A8387
+X-Mras: Ok
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
->
-> [...]
-> > > +   TP_ARGS(map_id, processed, sched, xdp_stats),
-> > >
-> > >     TP_STRUCT__entry(
-> > >             __field(int, map_id)
-> > >             __field(u32, act)
-> > >             __field(int, cpu)
-> > > -           __field(unsigned int, drops)
-> > >             __field(unsigned int, processed)
-> >
-> > So, struct member @processed will takeover the room for @drops.
-> >
-> > Can you please test how an old xdp_monitor program will react to this?
-> > Will it fail, or extract and show wrong values?
->
-> Ack, right. I think we should keep the struct layout in order to maintain
-> back-compatibility. I will fix it in v4.
->
-> >
-> > The xdp_mointor tool is in several external git repos:
-> >
-> >  https://github.com/netoptimizer/prototype-kernel/blob/master/kernel/samples/bpf/xdp_monitor_kern.c
-> >  https://github.com/xdp-project/xdp-tutorial/tree/master/tracing02-xdp-monitor
+Changing downshift params without software reset has no effect,
+so call genphy_soft_reset() after change downshift params.
 
-Running an old version of xdp_monitor with a patched kernel, I
-verified the xdp sample does not crash but it reports wrong values
-(e.g. pps are reported as drops for tracepoint disagliment).
-I think we have two possibilities here:
-- assuming tracepoints are not a stable ABI, we can just fix xdp
-samples available in the kernel tree and provide a patch for
-xdp-project
-- keep current tracepoint layout and just rename current drop variable
-in bpf/cpumap.c in something like skb_alloc_drop.
+As the datasheet says:
+Changes to these bits are disruptive to the normal operation therefore,
+any changes to these registers must be followed by software reset
+to take effect.
 
-I am not against both of them. What do you think?
+Fixes: 911af5e149bb ("net: phy: marvell: fix downshift function naming")
+Signed-off-by: Maxim Kochetkov <fido_max@inbox.ru>
+---
+ drivers/net/phy/marvell.c | 26 ++++++++++++++++----------
+ 1 file changed, 16 insertions(+), 10 deletions(-)
 
-Regards,
-Lorenzo
-
-> >
-> > Do you have any plans for fixing those tools?
->
-> I update xdp_monitor_{kern,user}.c and xdp_redirect_cpu_{kern,user}.c in the
-> patch. Do you mean to post a dedicated patch for xdp-project tutorial?
->
-> Regards,
-> Lorenzo
->
-> >
-> >
-> >
-> >
-> > --
-> > Best regards,
-> >   Jesper Dangaard Brouer
-> >   MSc.CS, Principal Kernel Engineer at Red Hat
-> >   LinkedIn: http://www.linkedin.com/in/brouer
-> >
+diff --git a/drivers/net/phy/marvell.c b/drivers/net/phy/marvell.c
+index e2b2b20c0dc5..5fd5f4986644 100644
+--- a/drivers/net/phy/marvell.c
++++ b/drivers/net/phy/marvell.c
+@@ -1036,22 +1036,28 @@ static int m88e1011_get_downshift(struct phy_device *phydev, u8 *data)
+ 
+ static int m88e1011_set_downshift(struct phy_device *phydev, u8 cnt)
+ {
+-	int val;
++	int val, err;
+ 
+ 	if (cnt > MII_M1011_PHY_SCR_DOWNSHIFT_MAX)
+ 		return -E2BIG;
+ 
+-	if (!cnt)
+-		return phy_clear_bits(phydev, MII_M1011_PHY_SCR,
+-				      MII_M1011_PHY_SCR_DOWNSHIFT_EN);
++	if (!cnt) {
++		err = phy_clear_bits(phydev, MII_M1011_PHY_SCR,
++				     MII_M1011_PHY_SCR_DOWNSHIFT_EN);
++	} else {
++		val = MII_M1011_PHY_SCR_DOWNSHIFT_EN;
++		val |= FIELD_PREP(MII_M1011_PHY_SCR_DOWNSHIFT_MASK, cnt - 1);
+ 
+-	val = MII_M1011_PHY_SCR_DOWNSHIFT_EN;
+-	val |= FIELD_PREP(MII_M1011_PHY_SCR_DOWNSHIFT_MASK, cnt - 1);
++		err = phy_modify(phydev, MII_M1011_PHY_SCR,
++				 MII_M1011_PHY_SCR_DOWNSHIFT_EN |
++				 MII_M1011_PHY_SCR_DOWNSHIFT_MASK,
++				 val);
++	}
+ 
+-	return phy_modify(phydev, MII_M1011_PHY_SCR,
+-			  MII_M1011_PHY_SCR_DOWNSHIFT_EN |
+-			  MII_M1011_PHY_SCR_DOWNSHIFT_MASK,
+-			  val);
++	if (err < 0)
++		return err;
++
++	return genphy_soft_reset(phydev);
+ }
+ 
+ static int m88e1011_get_tunable(struct phy_device *phydev,
+-- 
+2.30.2
 
