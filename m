@@ -2,125 +2,143 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6666C367AAD
-	for <lists+netdev@lfdr.de>; Thu, 22 Apr 2021 09:12:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4FCD3367AC1
+	for <lists+netdev@lfdr.de>; Thu, 22 Apr 2021 09:16:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234992AbhDVHKS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 22 Apr 2021 03:10:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51830 "EHLO
+        id S235041AbhDVHPs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 22 Apr 2021 03:15:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53038 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229655AbhDVHKR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 22 Apr 2021 03:10:17 -0400
-Received: from mail-ej1-x632.google.com (mail-ej1-x632.google.com [IPv6:2a00:1450:4864:20::632])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D75F7C06174A;
-        Thu, 22 Apr 2021 00:09:42 -0700 (PDT)
-Received: by mail-ej1-x632.google.com with SMTP id g5so60461047ejx.0;
-        Thu, 22 Apr 2021 00:09:42 -0700 (PDT)
+        with ESMTP id S229655AbhDVHPq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 22 Apr 2021 03:15:46 -0400
+Received: from mail-pg1-x531.google.com (mail-pg1-x531.google.com [IPv6:2607:f8b0:4864:20::531])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B88EC06174A;
+        Thu, 22 Apr 2021 00:15:12 -0700 (PDT)
+Received: by mail-pg1-x531.google.com with SMTP id p2so16740822pgh.4;
+        Thu, 22 Apr 2021 00:15:12 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=X338HNooootoGgLp4Uh2rRwvRKYDOVvH5vsvPe4Uc28=;
-        b=A4XeclTyEu5VZVCgWBT7mGSoaa+ezp2msSvlhn3okMVtX8kfU5RTlI0DB9GK8Bfy1c
-         YsZ+tEqCWOg/FfoWRnk+uwU/bW9ynDbdPAkNUDc0judgL9b//hLi8sw8YrJuYAKoQTdQ
-         bBthX0C89A7XDfJ9/XCmHFiPk/EzStAMu0BW8+KCped+pUq/lRJFX2xrZJ4MyzgfSZPW
-         ySCMEbY9lqECYczEpDOPc+5XgQIvvxg3t7czWVhDnsOTV5BUCfPfHcDEh+jLu6wTU66U
-         hh4kHAmtWM5ElPVOxLmhQK0SF1nDcAeXn5gc7/l85MyXFa+X3m77+OmxcJFzMkeRG1BF
-         Ijjg==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=08Beg/X2DkMw4LbTKV9DGPwWfP+ZIvVZ0dj7l+E72oA=;
+        b=UoKZx+pJyvG7CInq3T4GJnngnw8xESG9QlEpGhdwnoNUAGLFqpVqVigfw7S2mt+Cyq
+         2rbxVlXptoBzYP42V1cCjjO+M3UwHWu17zmUw9r34C4qCaNNQVD3GRd3Dc3+1NWX4VQb
+         Y/vw7b9C9QFiECCSRwrM8qHuK3vsbhY72EZJGVRLTcdzqQgVMp1S/XiKSnrqskFhPWt+
+         8vJisN3VGc9KeousnbXV2KsROclnEp/51OthsnNaaqyzxi5XK5sNTxiSA5jpJZJCqeTE
+         zaSAKGV1wfU8FY4/NAxQm6risXk1YwU52ZptXGJYcheAmEKIVDI4z8QiKxaL6xKREKjG
+         RZjg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=X338HNooootoGgLp4Uh2rRwvRKYDOVvH5vsvPe4Uc28=;
-        b=ZV605v+x2dc0fLSwirbcouzlOZoduPuTZaPEuNLte3tk79+tdAtNW8W9OPTHVkODPR
-         ac8CmFqXC8707ccmTpjuWkgqlVs5zhZfGaYzAbud3oLUGqFq/m8W8Dy8vxwScnX/l1dF
-         aFkrkmFkC5mthatHRG6CRqzMHv6l9KFr2iciUkZc0pR/IO2wGQJ5EvDsOwqbp2SWJWgK
-         11L8+LmnzQB1Bvspc0hXgqF01DinCWSu2GuFZJFUgYWXskskeLUf7HOJ0idWw4rEBwaN
-         60pVPujkiGMKiZy0nX3MOoz7jhQO5guIrwdVBV7D2nIrGRAPhqVS7AI4jbe2Pg8B39Mi
-         0mEg==
-X-Gm-Message-State: AOAM5329uQIz6xSgEq4vcJVcg/RlcTQj4AU5h0DbfBqrTkmQpF2mAb1L
-        b9VvFrmH1nSBuNA0ROtocmG0h5StPH6h7w==
-X-Google-Smtp-Source: ABdhPJw7AiSOCXLuAM3X1uaXnIrKWtUTvd48Dx8U7MRWPzUfhI1/uIkMX6vMkTzWuyMk2zTsy38yhw==
-X-Received: by 2002:a17:906:b01:: with SMTP id u1mr1875232ejg.310.1619075381367;
-        Thu, 22 Apr 2021 00:09:41 -0700 (PDT)
-Received: from ?IPv6:2003:ea:8f38:4600:bdfe:7c1a:e805:a0da? (p200300ea8f384600bdfe7c1ae805a0da.dip0.t-ipconnect.de. [2003:ea:8f38:4600:bdfe:7c1a:e805:a0da])
-        by smtp.googlemail.com with ESMTPSA id s8sm1258056edj.25.2021.04.22.00.09.38
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 22 Apr 2021 00:09:40 -0700 (PDT)
-Subject: Re: [PATCH] net: called rtnl_unlock() before runpm resumes devices
-To:     AceLan Kao <acelan.kao@canonical.com>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     Eric Dumazet <edumazet@google.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Andrii Nakryiko <andriin@fb.com>, Wei Wang <weiwan@google.com>,
-        Cong Wang <cong.wang@bytedance.com>,
-        Taehee Yoo <ap420073@gmail.com>,
-        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn@kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>
-References: <20210420075406.64105-1-acelan.kao@canonical.com>
- <CANn89iJLSmtBNoDo8QJ6a0MzsHjdLB0Pf=cs9e4g8Y6-KuFiMQ@mail.gmail.com>
- <20210420122715.2066b537@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <CAFv23Q=ywiuZp7Y=bj=SAZmDdAnanAXA954hdO3GpkjmDo=RpQ@mail.gmail.com>
-From:   Heiner Kallweit <hkallweit1@gmail.com>
-Message-ID: <c10a6c72-9db7-18c8-6b03-1f8c40b8fd87@gmail.com>
-Date:   Thu, 22 Apr 2021 09:09:20 +0200
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.10.0
+        bh=08Beg/X2DkMw4LbTKV9DGPwWfP+ZIvVZ0dj7l+E72oA=;
+        b=OcllMrxfxBK1gkSBP5vfydx7UD/Mk1+waob+Cf3NRwGCVVzdT48N3015m4NpMitt/m
+         aPD+v/YgNN6i/aMCgGBSDn38bgJ0YJBh1vOssQLneTIA2g1Y1qAe6UrWsfqrDQeWmIQM
+         27QCmmLKw4Fq+5ZxrwyXZ82Og7tOgtFotrlJ/vqXkk5wbdy+6sK9Y9dZemNvw64H4Gpz
+         oQhZtjWgutmSjLwI7TzNzGFuC97G6QbsHsyGH5xMFoPWRyLUimY3aFTzMMU0BU/Q0y/r
+         sCSG0xgAposrJ8uJxRj+yd/ihWeYGzJQk/4zxJgcTAnawLrzNKKHgIQqoUcmfYx5VPc7
+         eggA==
+X-Gm-Message-State: AOAM531kbAKzF+mXk/7cIDGbIOepFVwzQKFTKlDy+QeKzT89KVYrmskZ
+        5DluVXjzW7t2HazXhMVrlOajH397CGVLlw==
+X-Google-Smtp-Source: ABdhPJxchR3BUy9g7TRPj11sGHjyeuSm/IiPy0p1lRnfpjR7S1B8xx6ZRm8xDme877oFPhq37Okl4g==
+X-Received: by 2002:a65:4382:: with SMTP id m2mr2160268pgp.354.1619075711784;
+        Thu, 22 Apr 2021 00:15:11 -0700 (PDT)
+Received: from Leo-laptop-t470s.redhat.com ([209.132.188.80])
+        by smtp.gmail.com with ESMTPSA id u21sm1181816pfm.89.2021.04.22.00.15.06
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 22 Apr 2021 00:15:11 -0700 (PDT)
+From:   Hangbin Liu <liuhangbin@gmail.com>
+To:     bpf@vger.kernel.org
+Cc:     netdev@vger.kernel.org,
+        =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
+        Jiri Benc <jbenc@redhat.com>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        Eelco Chaudron <echaudro@redhat.com>, ast@kernel.org,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Lorenzo Bianconi <lorenzo.bianconi@redhat.com>,
+        David Ahern <dsahern@gmail.com>,
+        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
+        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
+        =?UTF-8?q?Bj=C3=B6rn=20T=C3=B6pel?= <bjorn.topel@gmail.com>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Hangbin Liu <liuhangbin@gmail.com>
+Subject: [PATCHv9 bpf-next 0/4] xdp: extend xdp_redirect_map with broadcast support
+Date:   Thu, 22 Apr 2021 15:14:50 +0800
+Message-Id: <20210422071454.2023282-1-liuhangbin@gmail.com>
+X-Mailer: git-send-email 2.26.3
 MIME-Version: 1.0
-In-Reply-To: <CAFv23Q=ywiuZp7Y=bj=SAZmDdAnanAXA954hdO3GpkjmDo=RpQ@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 22.04.2021 08:30, AceLan Kao wrote:
-> Yes, should add
-> 
-> Fixes: 9474933caf21 ("igb: close/suspend race in netif_device_detach")
-> and also
-> Fixes: 9513d2a5dc7f ("igc: Add legacy power management support")
-> 
-Please don't top-post. Apart from that:
-If the issue was introduced with driver changes, then adding a workaround
-in net core may not be the right approach.
+Hi,
 
-> Jakub Kicinski <kuba@kernel.org> 於 2021年4月21日 週三 上午3:27寫道：
->>
->> On Tue, 20 Apr 2021 10:34:17 +0200 Eric Dumazet wrote:
->>> On Tue, Apr 20, 2021 at 9:54 AM AceLan Kao <acelan.kao@canonical.com> wrote:
->>>>
->>>> From: "Chia-Lin Kao (AceLan)" <acelan.kao@canonical.com>
->>>>
->>>> The rtnl_lock() has been called in rtnetlink_rcv_msg(), and then in
->>>> __dev_open() it calls pm_runtime_resume() to resume devices, and in
->>>> some devices' resume function(igb_resum,igc_resume) they calls rtnl_lock()
->>>> again. That leads to a recursive lock.
->>>>
->>>> It should leave the devices' resume function to decide if they need to
->>>> call rtnl_lock()/rtnl_unlock(), so call rtnl_unlock() before calling
->>>> pm_runtime_resume() and then call rtnl_lock() after it in __dev_open().
->>>>
->>>>
->>>
->>> Hi Acelan
->>>
->>> When was the bugg added ?
->>> Please add a Fixes: tag
->>
->> For immediate cause probably:
->>
->> Fixes: 9474933caf21 ("igb: close/suspend race in netif_device_detach")
->>
->>> By doing so, you give more chances for reviewers to understand why the
->>> fix is not risky,
->>> and help stable teams work.
->>
->> IMO the driver lacks internal locking. Taking rtnl from resume is just
->> one example, git history shows many more places that lacked locking and
->> got papered over with rtnl here.
+This patchset is a new implementation for XDP multicast support based
+on my previous 2 maps implementation[1]. The reason is that Daniel thinks
+the exclude map implementation is missing proper bond support in XDP
+context. And there is a plan to add native XDP bonding support. Adding a
+exclude map in the helper also increases the complexity of verifier and has
+drawback of performance.
+
+The new implementation just add two new flags BPF_F_BROADCAST and
+BPF_F_EXCLUDE_INGRESS to extend xdp_redirect_map for broadcast support.
+
+With BPF_F_BROADCAST the packet will be broadcasted to all the interfaces
+in the map. with BPF_F_EXCLUDE_INGRESS the ingress interface will be
+excluded when do broadcasting.
+
+The patchv8 link is here[2].
+
+[1] https://lore.kernel.org/bpf/20210223125809.1376577-1-liuhangbin@gmail.com
+[2] https://lore.kernel.org/bpf/20210415135320.4084595-1-liuhangbin@gmail.com
+
+v9: Update patch 01 commit description
+v8: use hlist_for_each_entry_rcu() when looping the devmap hash ojbs
+v7: No need to free xdpf in dev_map_enqueue_clone() if xdpf_clone failed.
+v6: Fix a skb leak in the error path for generic XDP
+v5: Just walk the map directly to get interfaces as get_next_key() of devmap
+    hash may restart looping from the first key if the device get removed.
+    After update the performace has improved 10% compired with v4.
+v4: Fix flags never cleared issue in patch 02. Update selftest to cover this.
+v3: Rebase the code based on latest bpf-next
+v2: fix flag renaming issue in patch 02
+
+Hangbin Liu (3):
+  xdp: extend xdp_redirect_map with broadcast support
+  sample/bpf: add xdp_redirect_map_multi for redirect_map broadcast test
+  selftests/bpf: add xdp_redirect_multi test
+
+Jesper Dangaard Brouer (1):
+  bpf: run devmap xdp_prog on flush instead of bulk enqueue
+
+ include/linux/bpf.h                           |  20 ++
+ include/linux/filter.h                        |  18 +-
+ include/net/xdp.h                             |   1 +
+ include/uapi/linux/bpf.h                      |  17 +-
+ kernel/bpf/cpumap.c                           |   3 +-
+ kernel/bpf/devmap.c                           | 304 +++++++++++++++---
+ net/core/filter.c                             |  33 +-
+ net/core/xdp.c                                |  29 ++
+ net/xdp/xskmap.c                              |   3 +-
+ samples/bpf/Makefile                          |   3 +
+ samples/bpf/xdp_redirect_map_multi_kern.c     |  87 +++++
+ samples/bpf/xdp_redirect_map_multi_user.c     | 302 +++++++++++++++++
+ tools/include/uapi/linux/bpf.h                |  17 +-
+ tools/testing/selftests/bpf/Makefile          |   3 +-
+ .../bpf/progs/xdp_redirect_multi_kern.c       |  99 ++++++
+ .../selftests/bpf/test_xdp_redirect_multi.sh  | 205 ++++++++++++
+ .../selftests/bpf/xdp_redirect_multi.c        | 236 ++++++++++++++
+ 17 files changed, 1316 insertions(+), 64 deletions(-)
+ create mode 100644 samples/bpf/xdp_redirect_map_multi_kern.c
+ create mode 100644 samples/bpf/xdp_redirect_map_multi_user.c
+ create mode 100644 tools/testing/selftests/bpf/progs/xdp_redirect_multi_kern.c
+ create mode 100755 tools/testing/selftests/bpf/test_xdp_redirect_multi.sh
+ create mode 100644 tools/testing/selftests/bpf/xdp_redirect_multi.c
+
+-- 
+2.26.3
 
