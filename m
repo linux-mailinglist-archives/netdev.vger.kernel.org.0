@@ -2,100 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6AD953681E1
-	for <lists+netdev@lfdr.de>; Thu, 22 Apr 2021 15:51:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 483783681F4
+	for <lists+netdev@lfdr.de>; Thu, 22 Apr 2021 15:54:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236893AbhDVNw1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 22 Apr 2021 09:52:27 -0400
-Received: from out1-smtp.messagingengine.com ([66.111.4.25]:45575 "EHLO
-        out1-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S236459AbhDVNwZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 22 Apr 2021 09:52:25 -0400
-Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-        by mailout.nyi.internal (Postfix) with ESMTP id 8E7A95C00DC;
-        Thu, 22 Apr 2021 09:51:47 -0400 (EDT)
-Received: from mailfrontend1 ([10.202.2.162])
-  by compute3.internal (MEProxy); Thu, 22 Apr 2021 09:51:47 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:content-transfer-encoding:date:from
-        :message-id:mime-version:subject:to:x-me-proxy:x-me-proxy
-        :x-me-sender:x-me-sender:x-sasl-enc; s=fm2; bh=P6tEnDufyu4Ld4het
-        a43rN/h/1A4rvYoxNQMG/kr4NI=; b=wtRHVdSAzfm2ddaT7r8CJtqcQYCml17lX
-        T7AL//SUFTCkJB36u97mBlf6KpZJQPd82KZCrVHhP2ZHVuUr6TH07UL2o/Qcb1YS
-        z0CpOcSWYIDTlpEyRcG5fjjm9s4mlJm94npR+yBDPT8uts6QerDfB5/KCXvg0kh6
-        sI9zVbrUpbB43/sD97NbAgW5idQMORuRafC8mYFPfgpoW4+NFx3RGtoH7N/OkVQm
-        5K2wwQDSsCzjFO7paqChaF+UkzEnZRD8F0XlYO9e61uliHfpdqVVaO6MqtdwDx0r
-        0r9sEN/FG440j/YfSomqIobRvI6qFyecq2si4nKU13p82ZqmPvMQA==
-X-ME-Sender: <xms:c3-BYFCSaLkmzSSCwAhOh4EZnvC3k-gpZw_hTDkDOZVD_o-rcCGq8A>
-    <xme:c3-BYDhIsG486Kx0E5IeBbfuDMYncML-2-u-0uBkm0SSVyiYyzN7YLmHuAIls2pCm
-    FpOkmLN3qB07Vo>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduledrvddutddgjedtucetufdoteggodetrfdotf
-    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucenucfjughrpefhvffufffkofgggfestdekredtre
-    dttdenucfhrhhomhepkfguohcuufgthhhimhhmvghluceoihguohhstghhsehiughoshgt
-    hhdrohhrgheqnecuggftrfgrthhtvghrnhepteevgefhvefggfffkeeuffeuvdfhueehhe
-    etffeikeegheevfedvgeelvdffudfhnecukfhppeekgedrvddvledrudehfedrudekjeen
-    ucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpehiughosh
-    gthhesihguohhstghhrdhorhhg
-X-ME-Proxy: <xmx:c3-BYAlo8ZzfgVwhADwjPX9uD3TzAtyJcVDaWV6K7AGkpv_igvb4dg>
-    <xmx:c3-BYPzNcLFR4eNFTlJekEW7NKM8MBvPfKhD3Sm19oTJziO3ifTRfg>
-    <xmx:c3-BYKTgq44Qy-9jBVvKlTZXjDHwYDDS8mpCkpMsoMCOCbIrRqDpSA>
-    <xmx:c3-BYNIcPVRqsbAc_CcaFZ1575a6lKA4J8do_hTJ0g9JdBjWMjD8XQ>
-Received: from shredder.lan (igld-84-229-153-187.inter.net.il [84.229.153.187])
-        by mail.messagingengine.com (Postfix) with ESMTPA id E919924005B;
-        Thu, 22 Apr 2021 09:51:45 -0400 (EDT)
-From:   Ido Schimmel <idosch@idosch.org>
-To:     netdev@vger.kernel.org
-Cc:     davem@davemloft.net, kuba@kernel.org, mlxsw@nvidia.com,
-        Ido Schimmel <idosch@nvidia.com>
-Subject: [PATCH net-next] netdevsim: Only use sampling truncation length when valid
-Date:   Thu, 22 Apr 2021 16:50:50 +0300
-Message-Id: <20210422135050.2429936-1-idosch@idosch.org>
-X-Mailer: git-send-email 2.30.2
+        id S236672AbhDVNzL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 22 Apr 2021 09:55:11 -0400
+Received: from m43-7.mailgun.net ([69.72.43.7]:22708 "EHLO m43-7.mailgun.net"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S236365AbhDVNzJ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 22 Apr 2021 09:55:09 -0400
+DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
+ s=smtp; t=1619099674; h=Date: Message-Id: Cc: To: References:
+ In-Reply-To: From: Subject: Content-Transfer-Encoding: MIME-Version:
+ Content-Type: Sender; bh=uv2qyrmEi4TwpCp1U2TqtW6eqajB9ZYNrKzSmO0EAjo=;
+ b=LVBrAamyiUn+zEq1UNd1foDR9Linir6527ngnTUFooMCB//oLwjtlWXzvGcFGCjHQZmdT74s
+ 34dMe3cBsOtspH3SD0tXM/xXxgF0d6t3R6UXtthM92FUY5ldq/QV2uBfsX/zRi8pMbLfTsRc
+ YFBKWHHNzK5DVGrdfBEUsYP4ETA=
+X-Mailgun-Sending-Ip: 69.72.43.7
+X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
+Received: from smtp.codeaurora.org
+ (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
+ smtp-out-n03.prod.us-west-2.postgun.com with SMTP id
+ 60818019e0e9c9a6b6e084f8 (version=TLS1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Thu, 22 Apr 2021 13:54:33
+ GMT
+Sender: kvalo=codeaurora.org@mg.codeaurora.org
+Received: by smtp.codeaurora.org (Postfix, from userid 1001)
+        id CB321C433F1; Thu, 22 Apr 2021 13:54:33 +0000 (UTC)
+X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
+        aws-us-west-2-caf-mail-1.web.codeaurora.org
+X-Spam-Level: 
+X-Spam-Status: No, score=-1.0 required=2.0 tests=ALL_TRUSTED,BAYES_00,
+        MISSING_DATE,MISSING_MID,SPF_FAIL autolearn=no autolearn_force=no
+        version=3.4.0
+Received: from potku.adurom.net (88-114-240-156.elisa-laajakaista.fi [88.114.240.156])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        (Authenticated sender: kvalo)
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id BB23DC433D3;
+        Thu, 22 Apr 2021 13:54:29 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org BB23DC433D3
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=fail smtp.mailfrom=kvalo@codeaurora.org
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
+Subject: Re: [PATCH] wireless: ath10k: Fix a use after free in
+ ath10k_htc_send_bundle
+From:   Kalle Valo <kvalo@codeaurora.org>
+In-Reply-To: <20210329120154.8963-1-lyl2019@mail.ustc.edu.cn>
+References: <20210329120154.8963-1-lyl2019@mail.ustc.edu.cn>
+To:     Lv Yunlong <lyl2019@mail.ustc.edu.cn>
+Cc:     davem@davemloft.net, kuba@kernel.org, ath10k@lists.infradead.org,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Lv Yunlong <lyl2019@mail.ustc.edu.cn>
+User-Agent: pwcli/0.1.0-git (https://github.com/kvalo/pwcli/) Python/3.5.2
+Message-Id: <20210422135433.CB321C433F1@smtp.codeaurora.org>
+Date:   Thu, 22 Apr 2021 13:54:33 +0000 (UTC)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Ido Schimmel <idosch@nvidia.com>
+Lv Yunlong <lyl2019@mail.ustc.edu.cn> wrote:
 
-When the sampling truncation length is invalid (zero), pass the length
-of the packet. Without the fix, no payload is reported to user space
-when the truncation length is zero.
+> In ath10k_htc_send_bundle, the bundle_skb could be freed by
+> dev_kfree_skb_any(bundle_skb). But the bundle_skb is used later
+> by bundle_skb->len.
+> 
+> As skb_len = bundle_skb->len, my patch replaces bundle_skb->len to
+> skb_len after the bundle_skb was freed.
+> 
+> Fixes: c8334512f3dd1 ("ath10k: add htt TX bundle for sdio")
+> Signed-off-by: Lv Yunlong <lyl2019@mail.ustc.edu.cn>
+> Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
 
-Fixes: a8700c3dd0a4 ("netdevsim: Add dummy psample implementation")
-Signed-off-by: Ido Schimmel <idosch@nvidia.com>
----
- drivers/net/netdevsim/psample.c | 7 ++++---
- 1 file changed, 4 insertions(+), 3 deletions(-)
+Patch applied to ath-next branch of ath.git, thanks.
 
-diff --git a/drivers/net/netdevsim/psample.c b/drivers/net/netdevsim/psample.c
-index 5ec3bd7f891b..f0c6477dd0ae 100644
---- a/drivers/net/netdevsim/psample.c
-+++ b/drivers/net/netdevsim/psample.c
-@@ -79,9 +79,10 @@ static struct sk_buff *nsim_dev_psample_skb_build(void)
- }
- 
- static void nsim_dev_psample_md_prepare(const struct nsim_dev_psample *psample,
--					struct psample_metadata *md)
-+					struct psample_metadata *md,
-+					unsigned int len)
- {
--	md->trunc_size = psample->trunc_size;
-+	md->trunc_size = psample->trunc_size ? psample->trunc_size : len;
- 	md->in_ifindex = psample->in_ifindex;
- 	md->out_ifindex = psample->out_ifindex;
- 
-@@ -120,7 +121,7 @@ static void nsim_dev_psample_report_work(struct work_struct *work)
- 	if (!skb)
- 		goto out;
- 
--	nsim_dev_psample_md_prepare(psample, &md);
-+	nsim_dev_psample_md_prepare(psample, &md, skb->len);
- 	psample_sample_packet(psample->group, skb, psample->rate, &md);
- 	consume_skb(skb);
- 
+8392df5d7e0b ath10k: Fix a use after free in ath10k_htc_send_bundle
+
 -- 
-2.30.2
+https://patchwork.kernel.org/project/linux-wireless/patch/20210329120154.8963-1-lyl2019@mail.ustc.edu.cn/
+
+https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
 
