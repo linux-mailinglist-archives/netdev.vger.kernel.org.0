@@ -2,194 +2,135 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B4DC136836A
-	for <lists+netdev@lfdr.de>; Thu, 22 Apr 2021 17:35:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7E290368380
+	for <lists+netdev@lfdr.de>; Thu, 22 Apr 2021 17:38:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236555AbhDVPgT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 22 Apr 2021 11:36:19 -0400
-Received: from www62.your-server.de ([213.133.104.62]:59250 "EHLO
-        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234158AbhDVPgS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 22 Apr 2021 11:36:18 -0400
-Received: from sslproxy03.your-server.de ([88.198.220.132])
-        by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92.3)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1lZbMi-000EgG-8z; Thu, 22 Apr 2021 17:35:40 +0200
-Received: from [85.7.101.30] (helo=linux.home)
-        by sslproxy03.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1lZbMh-000XNf-W9; Thu, 22 Apr 2021 17:35:40 +0200
-Subject: Re: [PATCH bpf-next v3 2/3] libbpf: add low level TC-BPF API
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Cc:     Kumar Kartikeya Dwivedi <memxor@gmail.com>,
-        bpf <bpf@vger.kernel.org>,
-        =?UTF-8?Q?Toke_H=c3=b8iland-J=c3=b8rgensen?= <toke@redhat.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        Networking <netdev@vger.kernel.org>
-References: <20210420193740.124285-1-memxor@gmail.com>
- <20210420193740.124285-3-memxor@gmail.com>
- <9b0aab2c-9b92-0bcb-2064-f66dd39e7552@iogearbox.net>
- <CAEf4Bzai3maV8E9eWi1fc8fgaeC7qFg7_-N_WdLH4ukv302bhg@mail.gmail.com>
-From:   Daniel Borkmann <daniel@iogearbox.net>
-Message-ID: <b7ace8c2-0147-fde7-d319-479be1e2a05e@iogearbox.net>
-Date:   Thu, 22 Apr 2021 17:35:39 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
-MIME-Version: 1.0
-In-Reply-To: <CAEf4Bzai3maV8E9eWi1fc8fgaeC7qFg7_-N_WdLH4ukv302bhg@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
+        id S234158AbhDVPjB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 22 Apr 2021 11:39:01 -0400
+Received: from mail-eopbgr760075.outbound.protection.outlook.com ([40.107.76.75]:37601
+        "EHLO NAM02-CY1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S230005AbhDVPi4 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 22 Apr 2021 11:38:56 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=U5eHasnc23FtLf6l8mWlugadimW1oRDG4dIIR4cCYYAcnUoh6IfBkydRrwk0efhhfT6aXeCBLkkJTAuVBT8joFZIBaUvg1HCC6jof8Z2ThExJpYVq1wuJjLDtHsNV5QgmRglbxD8cL+BtAlZkRI9FzLtGWNp7zPIbiIZ+IzQGR0XD6vaio5CYuQs0AF6YvSPwfUHrpjpBrFl99VRW0hiVVk17QEpXBGJ+DDLY+BAV4J3SNgPeog0kKQoDguOffdr9ZrJMc+DVmWCk3TJeAt2soUbRottGdBKG7iN4wTMrUuNd3f5Oysp0mG8m7aoXtF146IjxufBVC+lqBH9V822RQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=V1Scsn3mKoCRaj4NLKgmism7tozEDbOy85ZmonZoaW4=;
+ b=OyZzpn9X6MritSP057atE4iWjn9zJKhoqKThufyX/fLZAj+8NpVW4vqe2dbL021G3xcPiApfm2O72YaZji3GVjrHMB8xiMurYw1EDUvhqEfdNLniYc5mEJYryhA22LR2xzS1+OCYHNcuiC42WQ8rEXnpFNoXNsYcL5yXYCBPSzq+1N6cVqa2oLSf9IVn8rzyxAP2oYlVjiZnFv1EvUtpj/hiUm1dOkPW2YGBiXt9Zyi+ylZCKDfkS15+GFe815Ra6ptIQOM4Zz0gWsrYVIEjpNtBKbbznAHgzjCCZRGa0haYMuaSdnXzRGvM0qW43+902ouUE43Y6hzKjjQjkwbS2A==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=V1Scsn3mKoCRaj4NLKgmism7tozEDbOy85ZmonZoaW4=;
+ b=HQVxON7Pk0730EJavvxqVBYbUve087R/a2QwzMW4L3Y7C8AWQIw9pZXt7F8vt5vkz1BVgw3Gzos0ri37d114tYW6wsPCPDw54IsEF/3JFpQZFpoBo/UytzMjQAJm9lvCKZ8jVyDPDDutOgVtcmmYR9NFx3eMeskl2k9IN3AWMaMn1TUrENcvC5716IC6G6w9DXWSU6Ip2AfWBFPAiTYT3XwT2o5O7cTQaftHndqak0+2agywrABeP1UVDbLzevcU6mCbZYYWFXmIeHtEuWkYaolX9awooLMD+afe0zslh2sTZEemxGY+U4JJT3t06Q2O3DQ4HjHQPcL16wkP6CYsWA==
+Received: from DM6PR12MB4516.namprd12.prod.outlook.com (2603:10b6:5:2ac::20)
+ by DM6PR12MB2619.namprd12.prod.outlook.com (2603:10b6:5:45::18) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4065.21; Thu, 22 Apr
+ 2021 15:38:19 +0000
+Received: from DM6PR12MB4516.namprd12.prod.outlook.com
+ ([fe80::8423:fe54:e2ea:7775]) by DM6PR12MB4516.namprd12.prod.outlook.com
+ ([fe80::8423:fe54:e2ea:7775%6]) with mapi id 15.20.4065.023; Thu, 22 Apr 2021
+ 15:38:18 +0000
+From:   Danielle Ratson <danieller@nvidia.com>
+To:     Andrew Lunn <andrew@lunn.ch>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "alobakin@pm.me" <alobakin@pm.me>,
+        Meir Lichtinger <meirl@nvidia.com>,
+        "dmurphy@ti.com" <dmurphy@ti.com>,
+        "mkubecek@suse.cz" <mkubecek@suse.cz>,
+        "f.fainelli@gmail.com" <f.fainelli@gmail.com>,
+        "irusskikh@marvell.com" <irusskikh@marvell.com>,
+        "alexanderduyck@fb.com" <alexanderduyck@fb.com>,
+        "magnus.karlsson@intel.com" <magnus.karlsson@intel.com>,
+        "ecree@solarflare.com" <ecree@solarflare.com>,
+        Ido Schimmel <idosch@nvidia.com>, Jiri Pirko <jiri@nvidia.com>,
+        mlxsw <mlxsw@nvidia.com>
+Subject: RE: [PATCH net-next] ethtool: Move __ethtool_get_link_ksettings() to
+ common file
+Thread-Topic: [PATCH net-next] ethtool: Move __ethtool_get_link_ksettings() to
+ common file
+Thread-Index: AQHXLGYhK09PAvsPd0ejFpN7OgkHKaqqo0wAgBYevxA=
+Date:   Thu, 22 Apr 2021 15:38:18 +0000
+Message-ID: <DM6PR12MB451615D959313E7675C3AEF8D8469@DM6PR12MB4516.namprd12.prod.outlook.com>
+References: <20210408105813.2555878-1-danieller@nvidia.com>
+ <YG8KAOtjkpNuEPkN@lunn.ch>
+In-Reply-To: <YG8KAOtjkpNuEPkN@lunn.ch>
+Accept-Language: he-IL, en-US
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.102.4/26148/Thu Apr 22 13:06:46 2021)
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: lunn.ch; dkim=none (message not signed)
+ header.d=none;lunn.ch; dmarc=none action=none header.from=nvidia.com;
+x-originating-ip: [89.139.122.244]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: eb31b369-a8cd-4209-fec9-08d905a4a756
+x-ms-traffictypediagnostic: DM6PR12MB2619:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <DM6PR12MB2619E8F659D1D36971B2BC17D8469@DM6PR12MB2619.namprd12.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:7219;
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: AarlL1hj5tlFHlz/j79rvkhRsM1jP+x2rT0l8Ir9fQB1xN1S3DiVqPG7CDNRdSxkXTyO1b5t4nH3LrbBGujWWHQL2sXLg0duai+OBM0dch7gYxVfMHLWVc/xqdl8eJmbfvR1iVObf6jrCCReF7YuKc1qRbsI9/Pm0nx2ZehHhj4ZZcrVHsgqk33Dcxa6HILI6i5WDnhsleEUV15rD/bfO222L916k8afnj3ND2BE8iQnrsEdFOcKwibLC6w5jBNM6NYdaM0gxinnIzW4w6AtE0iQwC7BHL+EKfmZxYGXD6LuHSF/nrl+VltUc3QdUkRPYwA4cRWNVHLJbav6pycDlg+iVwUE31AFSwWjTZFGXwSoCVQkrud4lWEpuVWm8cX5xI2YVyQuWvYnZbg1VIDXfNpbD7q/ftWv9ROpJQcpcyiCgkf30Q3Yn+cMR788wIiM/uHvNgpSCc4zKd84RYao/00yr0FvSdXbT4x419GFjlzbbjstqWwONkykf+cj2XxqDgR0SM6fIBIw+UCbPc/ott12ManqmiJwMrDgYwGId+uGlOuNT473WG5L72UHJtcOwcgRPKxP8ECRur59RdiddZIiw9BQ3oTB58MtEmMGGec=
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM6PR12MB4516.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(8676002)(7416002)(8936002)(83380400001)(38100700002)(66556008)(122000001)(66446008)(498600001)(66476007)(64756008)(186003)(26005)(6916009)(71200400001)(7696005)(76116006)(2906002)(52536014)(66946007)(54906003)(55016002)(4326008)(5660300002)(53546011)(6506007)(33656002)(9686003)(107886003)(86362001);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata: t0+4dtfWr2/XtS+LvZXzFat5EmCKTY0PUKjHS0P/3Xh/o8LDJU27Hdq5IJu5F4P2jzBiTcFLgIaY3nZi/WuLfnwWAbL9FCJF3Nwj9pMc9eHkTs0iSHOdAoad/wggyjMdq0rHLjxz/kMCkQ0/u4LHFLsGhPBfJd98Np0QahOaOGNxAKufAhLEC9oWp4CcQMmu94O4XxXiZEw2FbKWP4pYuscsgO8RJEaLHeKoZx0zW5NhlwTEq06mq0rU2OwOc5eboeY4skbF5nxZh7+wm4hk8kuMMzwtwhKXpV96gfw5dEL6WmqX1ehRdo91EYIKyOjCUaRlAKmEl2oKNZIMVZfiXRokg34BefWNG+VmrwXgBWp78bVzSzdUa8Q3EbakpZmcDGaEeHSKdLeUTM6Bu8aYqqu2trtmHT37AhYyK0/yhwLUh26H/BJDeAb62e32kLr3iJ2INtrleqcI9Ac5jsfzNQM+HrNuivwEskcP1b25Zxp3METlvrCvvUXoYJs9j4piQcR7Av6Eu7fBIt3LDEsba3qXAUsyuyuwAsps0khj4kHhWOngoNLSGggvrRaPXtYqPWlykHmjp9mrq60EV97W2PFb6JgtEdTmfjn5hP8NwRoxwVul13iLF2ClLevMV2AzIOMFt6Yl6pAozyvWRLec5hkjdqJ+mS+sa04+7y1RR+enE/eXuGPkbtXSR0hCZdLBiQ9FrnJCSQy64kzvf7SxRG7A62C8pcfe1gVVUdDoP2g=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+MIME-Version: 1.0
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: DM6PR12MB4516.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: eb31b369-a8cd-4209-fec9-08d905a4a756
+X-MS-Exchange-CrossTenant-originalarrivaltime: 22 Apr 2021 15:38:18.9429
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: YRB4LOGnF+lpYCcx8Eh5VqWOOzK1pypNLPhDKOsMMNpviXBhjjinkBcBMjxBRA8SQ3T7+FZl4yE5muiBKysDiQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR12MB2619
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 4/22/21 5:43 AM, Andrii Nakryiko wrote:
-> On Wed, Apr 21, 2021 at 3:59 PM Daniel Borkmann <daniel@iogearbox.net> wrote:
->> On 4/20/21 9:37 PM, Kumar Kartikeya Dwivedi wrote:
->> [...]
->>> diff --git a/tools/lib/bpf/libbpf.h b/tools/lib/bpf/libbpf.h
->>> index bec4e6a6e31d..b4ed6a41ea70 100644
->>> --- a/tools/lib/bpf/libbpf.h
->>> +++ b/tools/lib/bpf/libbpf.h
->>> @@ -16,6 +16,8 @@
->>>    #include <stdbool.h>
->>>    #include <sys/types.h>  // for size_t
->>>    #include <linux/bpf.h>
->>> +#include <linux/pkt_sched.h>
->>> +#include <linux/tc_act/tc_bpf.h>
->>>
->>>    #include "libbpf_common.h"
->>>
->>> @@ -775,6 +777,48 @@ LIBBPF_API int bpf_linker__add_file(struct bpf_linker *linker, const char *filen
->>>    LIBBPF_API int bpf_linker__finalize(struct bpf_linker *linker);
->>>    LIBBPF_API void bpf_linker__free(struct bpf_linker *linker);
->>>
->>> +/* Convenience macros for the clsact attach hooks */
->>> +#define BPF_TC_CLSACT_INGRESS TC_H_MAKE(TC_H_CLSACT, TC_H_MIN_INGRESS)
->>> +#define BPF_TC_CLSACT_EGRESS TC_H_MAKE(TC_H_CLSACT, TC_H_MIN_EGRESS)
->>
->> I would abstract those away into an enum, plus avoid having to pull in
->> linux/pkt_sched.h and linux/tc_act/tc_bpf.h from main libbpf.h header.
->>
->> Just add a enum { BPF_TC_DIR_INGRESS, BPF_TC_DIR_EGRESS, } and then the
->> concrete tc bits (TC_H_MAKE()) can be translated internally.
->>
->>> +struct bpf_tc_opts {
->>> +     size_t sz;
->>
->> Is this set anywhere?
->>
->>> +     __u32 handle;
->>> +     __u32 class_id;
->>
->> I'd remove class_id from here as well given in direct-action a BPF prog can
->> set it if needed.
->>
->>> +     __u16 priority;
->>> +     bool replace;
->>> +     size_t :0;
->>
->> What's the rationale for this padding?
->>
->>> +};
->>> +
->>> +#define bpf_tc_opts__last_field replace
->>> +
->>> +/* Acts as a handle for an attached filter */
->>> +struct bpf_tc_attach_id {
->>
->> nit: maybe bpf_tc_ctx
-> 
-> ok, so wait. It seems like apart from INGRESS|EGRESS enum and ifindex,
-> everything else is optional and/or has some sane defaults, right? So
-> this bpf_tc_attach_id or bpf_tc_ctx seems a bit artificial construct
-> and it will cause problems for extending this.
-> 
-> So if my understanding is correct, I'd get rid of it completely. As I
-> said previously, opts allow returning parameters back, so if user
-> didn't specify handle and priority and kernel picks values on user's
-> behalf, we can return them in the same opts fields.
-> 
-> For detach, again, ifindex and INGRESS|EGRESS is sufficient, but if
-> user want to provide more detailed parameters, we should do that
-> through extensible opts. That way we can keep growing this easily,
-> plus simple cases will remain simple.
-> 
-> Similarly bpf_tc_info below, there is no need to have struct
-> bpf_tc_attach_id id; field, just have handle and priority right there.
-> And bpf_tc_info should use OPTS framework for extensibility (though
-> opts name doesn't fit it very well, but it is still nice for
-> extensibility and for doing optional input/output params).
-> 
-> Does this make sense? Am I missing something crucial here?
 
-I would probably keep the handle + priority in there; maybe if both are 0,
-we could fix it to some default value internally, but without those it might
-be a bit hard if people want to build a 'pipeline' of cls_bpf progs if they
-need/want to.
 
-Potentially, one could fixate the handle itself, and then allow to specify
-different priorities for it such that when a BPF prog returns a TC_ACT_UNSPEC,
-it will exec the next one inside that cls_bpf instance, every other TC_ACT_*
-opcode will terminate the processing. Technically, only priority would really
-be needed (unless you combine multiple different classifiers from tc side on
-the ingress/egress hook which is not great to begin with, tbh).
+> -----Original Message-----
+> From: Andrew Lunn <andrew@lunn.ch>
+> Sent: Thursday, April 8, 2021 4:50 PM
+> To: Danielle Ratson <danieller@nvidia.com>
+> Cc: netdev@vger.kernel.org; davem@davemloft.net; kuba@kernel.org; alobaki=
+n@pm.me; Meir Lichtinger <meirl@nvidia.com>;
+> dmurphy@ti.com; mkubecek@suse.cz; f.fainelli@gmail.com; irusskikh@marvell=
+.com; alexanderduyck@fb.com;
+> magnus.karlsson@intel.com; ecree@solarflare.com; Ido Schimmel <idosch@nvi=
+dia.com>; Jiri Pirko <jiri@nvidia.com>; mlxsw
+> <mlxsw@nvidia.com>
+> Subject: Re: [PATCH net-next] ethtool: Move __ethtool_get_link_ksettings(=
+) to common file
+>=20
+> On Thu, Apr 08, 2021 at 01:58:13PM +0300, Danielle Ratson wrote:
+> > __ethtool_get_link_ksettings() function is shared by both ioctl and
+> > netlink ethtool interfaces.
+> >
+> > Move it to net/ethtool/common.c file, which is the suitable place for
+> > a shared code.
+> >
+> > Signed-off-by: Danielle Ratson <danieller@nvidia.com>
+> > Suggested-by: Jakub Kicinski <kuba@kernel.org>
+> > Reviewed-by: Ido Schimmel <idosch@nvidia.com>
+> > Reviewed-by: Jiri Pirko <jiri@nvidia.com>
+>=20
+> Seems sensible.
+>=20
+> Did you look to see what else is shared and should move? Rather than doin=
+g it one function at a time, can we do it all at once?
+>=20
+>     Andrew
 
-> The general rule with any new structs added to libbpf APIs is to
-> either be 100% (ok, 99.99%) sure that they will never be changed, or
-> do forward/backward compatible OPTS. Any other thing is pain and calls
-> for symbol versioning, which we are trying really hard to avoid.
-> 
->>> +     __u32 handle;
->>> +     __u16 priority;
->>> +};
->>> +
->>> +struct bpf_tc_info {
->>> +     struct bpf_tc_attach_id id;
->>> +     __u16 protocol;
->>> +     __u32 chain_index;
->>> +     __u32 prog_id;
->>> +     __u8 tag[BPF_TAG_SIZE];
->>> +     __u32 class_id;
->>> +     __u32 bpf_flags;
->>> +     __u32 bpf_flags_gen;
->>
->> Given we do not yet have any setters e.g. for offload, etc, the one thing
->> I'd see useful and crucial initially is prog_id.
->>
->> The protocol, chain_index, and I would also include tag should be dropped.
->> Similarly class_id given my earlier statement, and flags I would extend once
->> this lib API would support offloading progs.
->>
->>> +};
->>> +
->>> +/* id is out parameter that will be written to, it must not be NULL */
->>> +LIBBPF_API int bpf_tc_attach(int fd, __u32 ifindex, __u32 parent_id,
->>> +                          const struct bpf_tc_opts *opts,
->>> +                          struct bpf_tc_attach_id *id);
->>> +LIBBPF_API int bpf_tc_detach(__u32 ifindex, __u32 parent_id,
->>> +                          const struct bpf_tc_attach_id *id);
->>> +LIBBPF_API int bpf_tc_get_info(__u32 ifindex, __u32 parent_id,
->>> +                            const struct bpf_tc_attach_id *id,
->>> +                            struct bpf_tc_info *info);
->>
->> As per above, for parent_id I'd replace with dir enum.
->>
->>> +
->>>    #ifdef __cplusplus
->>>    } /* extern "C" */
->>>    #endif
-
+This is the only one I found that needs to be moved, thanks.
