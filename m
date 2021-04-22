@@ -2,112 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 69A0B367DC4
-	for <lists+netdev@lfdr.de>; Thu, 22 Apr 2021 11:34:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3B5CF367E0E
+	for <lists+netdev@lfdr.de>; Thu, 22 Apr 2021 11:46:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235529AbhDVJfA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 22 Apr 2021 05:35:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55960 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235339AbhDVJez (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 22 Apr 2021 05:34:55 -0400
-Received: from mail-wr1-x434.google.com (mail-wr1-x434.google.com [IPv6:2a00:1450:4864:20::434])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D160C06174A
-        for <netdev@vger.kernel.org>; Thu, 22 Apr 2021 02:34:21 -0700 (PDT)
-Received: by mail-wr1-x434.google.com with SMTP id c15so35135623wro.13
-        for <netdev@vger.kernel.org>; Thu, 22 Apr 2021 02:34:21 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id;
-        bh=KbK/rt/VL2w8jSHm46KzCJTJMHDRS8TBwcrZdxvlZQk=;
-        b=LJzsD8rrIQwYziKgRjIh2WPNfwfnaR9vtuJJZLFoc4+EikTpRSLEZjr1KCaeFj8Mcf
-         VMgyAXFEYkA8Bt9PuE9v1XLzbpz7odFa/mNLaW5ZSUn/BRqyrgZG7b4yQI2x+k6qgMeO
-         ZMqIkYpnN2UT7rfjJOxRAH158x4Wn7WkSFRsu8FF8T/qZ9sGKmEhrelaAb1tuuA4omnH
-         v5neocraSTjTEaY1J4niMLgPEJX0YJhuMYF18PjBrspF8i9N2Zi7OSgxxSJduZjxMODi
-         nSUvtCwVl5bT+g3hZpwABG63eAP7qpxDRtufw8gdLRf/DpaXBIzomEg7337phB+JHPHe
-         ++6g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=KbK/rt/VL2w8jSHm46KzCJTJMHDRS8TBwcrZdxvlZQk=;
-        b=PlHSoxn4PHRQI/PzP8E8ZRU5YXePANJUJSVMZcb+gPfjcOK5HbkFn6CpuL/MiRjUIk
-         M5oveiwqxzIChkuKrufoQScN0f5cROa5+Swphrw3/7p50m5nUExpc/zXyjQegdQl6Iks
-         k8B/L4IBoXojpM15JlRDWAesfwlrhpCZqTPA/o4oDJFI2BAXL6QMoy30UbYexNYvQL6L
-         IcIS9QOH/jfbkGLIsrcIaeaHAW/UwPr4LZ2JAXwhMUD2N3i0Dv8YU3wfCDatt4vzqSDv
-         ojmKzV9K0hzOvv3tthb4YMuB8Qd8UNn7uImFS7ABkr84g2G+8jm00Jvc39bsibEQycH9
-         0SrQ==
-X-Gm-Message-State: AOAM532GyuCOAjZwDpSO96aOPq/BtjKs1dfuUqI5hnJGt93/9fpj2syP
-        NCzyOXSCv6dFMy07NYghSVa+lt69BcJJ2Tqt
-X-Google-Smtp-Source: ABdhPJyfbsEso+9Iz1YNOoClIl8dkBycPZaXZYnLqvrnA2tzSgOZVO1i4BeXO7GAOYaLU/9/v+FyKg==
-X-Received: by 2002:a5d:43c1:: with SMTP id v1mr2932089wrr.419.1619084059857;
-        Thu, 22 Apr 2021 02:34:19 -0700 (PDT)
-Received: from localhost.localdomain ([2a01:e0a:82c:5f0:d197:cfbe:5a91:301])
-        by smtp.gmail.com with ESMTPSA id h81sm2717519wmf.41.2021.04.22.02.34.19
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Thu, 22 Apr 2021 02:34:19 -0700 (PDT)
-From:   Loic Poulain <loic.poulain@linaro.org>
-To:     kuba@kernel.org, davem@davemloft.net
-Cc:     netdev@vger.kernel.org, Loic Poulain <loic.poulain@linaro.org>
-Subject: [PATCH net-next] net: wwan: core: Return poll error in case of port removal
-Date:   Thu, 22 Apr 2021 11:43:34 +0200
-Message-Id: <1619084614-24925-1-git-send-email-loic.poulain@linaro.org>
-X-Mailer: git-send-email 2.7.4
+        id S235818AbhDVJpJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 22 Apr 2021 05:45:09 -0400
+Received: from wout5-smtp.messagingengine.com ([64.147.123.21]:49999 "EHLO
+        wout5-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S235809AbhDVJpE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 22 Apr 2021 05:45:04 -0400
+Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
+        by mailout.west.internal (Postfix) with ESMTP id 7C9B610AC;
+        Thu, 22 Apr 2021 05:44:28 -0400 (EDT)
+Received: from mailfrontend2 ([10.202.2.163])
+  by compute3.internal (MEProxy); Thu, 22 Apr 2021 05:44:28 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:content-type:date:from:in-reply-to
+        :message-id:mime-version:references:subject:to:x-me-proxy
+        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm2; bh=EAVKBY
+        RCUAxx+DP9lvwCNC3TR2gLoQFsbf+1d0aMdVU=; b=uiFlVsX4DID8iQBUYF9f5U
+        bSGiHTwcaMQXm6wG+Sueh09iJxKcE92qafU865L3BgQUHkqONE8l/dzE8xc2sU46
+        P4HeAVD+U1IoxGAlVvolNDt+JrI30sC2Y3eX/iJZLifaot9YDEJzu84wh3qbRt+B
+        Lp6A127qQWG6TCPAj8Mv8jcc2QoNFvq5RsiI0ox+40ZRQBAMXCJxOOfj0zI8OUbr
+        /ROOY+qCCnljvk0c/Lm7B+NJi2rDvO5CJcthkpjHgB+S6DxB5uDEo5KpaHn8BDuE
+        U0tr0qQ3uYmrGzKt+WSkXIteFoHg9gmKxnP2ZFE1dWgsEKlVoUnNTrtZh5RslSuQ
+        ==
+X-ME-Sender: <xms:e0WBYAa9E9e2GcMjjsdcXawNGjEHML2JuBzK7jbRW1ZKBEI_9WP9ag>
+    <xme:e0WBYLb7uAxCOkNWmKaaiPzyrDqMujLOqQCyCqPkINku2hpwLDmWi7hfxwVbwPpJ2
+    O92B8mUB5T5U1w>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduledrvddutddgvddtucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucenucfjughrpeffhffvuffkfhggtggujgesthdtro
+    dttddtvdenucfhrhhomhepkfguohcuufgthhhimhhmvghluceoihguohhstghhsehiugho
+    shgthhdrohhrgheqnecuggftrfgrthhtvghrnhepgfejvefhvdegiedukeetudevgeeuje
+    efffeffeetkeekueeuheejudeltdejuedunecukfhppeekgedrvddvledrudehfedrudek
+    jeenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpehiug
+    hoshgthhesihguohhstghhrdhorhhg
+X-ME-Proxy: <xmx:e0WBYK8IEXSpJsGEn0mNsFMgKNfeOWH6WIMfHVBHuIxo1unDjALUaw>
+    <xmx:e0WBYKpYRcEW9-HAQ9gY_P-nEI7_ukeycMAuBHqWbv_gtyd1jOxUKw>
+    <xmx:e0WBYLpAK_2wIhJEKtZ-_8_AR9d0YkMw1eWtO2MJpWzp-7fV0v0x6g>
+    <xmx:fEWBYKTsLqWJYaSXnXwgX8Q5qch9Q4-UJ2cmoNAwvma0JuW2dUTvwg>
+Received: from localhost (igld-84-229-153-187.inter.net.il [84.229.153.187])
+        by mail.messagingengine.com (Postfix) with ESMTPA id 555A6108005F;
+        Thu, 22 Apr 2021 05:44:27 -0400 (EDT)
+Date:   Thu, 22 Apr 2021 12:44:24 +0300
+From:   Ido Schimmel <idosch@idosch.org>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     mkubecek@suse.cz, netdev@vger.kernel.org,
+        Ido Schimmel <idosch@nvidia.com>
+Subject: Re: [PATCH ethtool-next 7/7] netlink: stats: add on --all-groups
+ option
+Message-ID: <YIFFeDibFAmusGhM@shredder.lan>
+References: <20210420003112.3175038-1-kuba@kernel.org>
+ <20210420003112.3175038-8-kuba@kernel.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210420003112.3175038-8-kuba@kernel.org>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Ensure that the poll system call returns error flags when port is
-removed, allowing user side to properly fail, without trying read
-or write. Port removal leads to nullified port operations, add a
-is_port_connected() helper to safely check the status.
+On Mon, Apr 19, 2021 at 05:31:12PM -0700, Jakub Kicinski wrote:
+> Add a switch for querying all statistic groups available
+> in the kernel.
+> 
+> To reject --groups and --all-groups being specified
+> for one request add a concept of "parameter equivalency"
+> in the parser. Alternative of having a special group
+> type like "--groups all" seems less clean.
+> 
+> Suggested-by: Ido Schimmel <idosch@nvidia.com>
+> Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 
-Fixes: 9a44c1cc6388 ("net: Add a WWAN subsystem")
-Signed-off-by: Loic Poulain <loic.poulain@linaro.org>
----
- drivers/net/wwan/wwan_core.c | 17 +++++++++++++++--
- 1 file changed, 15 insertions(+), 2 deletions(-)
+Tested-by: Ido Schimmel <idosch@nvidia.com>
 
-diff --git a/drivers/net/wwan/wwan_core.c b/drivers/net/wwan/wwan_core.c
-index 5be5e1e..c965b21 100644
---- a/drivers/net/wwan/wwan_core.c
-+++ b/drivers/net/wwan/wwan_core.c
-@@ -369,14 +369,25 @@ static int wwan_port_op_tx(struct wwan_port *port, struct sk_buff *skb)
- 	return ret;
- }
- 
-+static bool is_port_connected(struct wwan_port *port)
-+{
-+	bool connected;
-+
-+	mutex_lock(&port->ops_lock);
-+	connected = !!port->ops;
-+	mutex_unlock(&port->ops_lock);
-+
-+	return connected;
-+}
-+
- static bool is_read_blocked(struct wwan_port *port)
- {
--	return skb_queue_empty(&port->rxq) && port->ops;
-+	return skb_queue_empty(&port->rxq) && is_port_connected(port);
- }
- 
- static bool is_write_blocked(struct wwan_port *port)
- {
--	return test_bit(WWAN_PORT_TX_OFF, &port->flags) && port->ops;
-+	return test_bit(WWAN_PORT_TX_OFF, &port->flags) && is_port_connected(port);
- }
- 
- static int wwan_wait_rx(struct wwan_port *port, bool nonblock)
-@@ -508,6 +519,8 @@ static __poll_t wwan_port_fops_poll(struct file *filp, poll_table *wait)
- 		mask |= EPOLLOUT | EPOLLWRNORM;
- 	if (!is_read_blocked(port))
- 		mask |= EPOLLIN | EPOLLRDNORM;
-+	if (!is_port_connected(port))
-+		mask |= EPOLLHUP | EPOLLERR;
- 
- 	return mask;
- }
--- 
-2.7.4
-
+Thanks!
