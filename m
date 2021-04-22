@@ -2,142 +2,133 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C218136785B
-	for <lists+netdev@lfdr.de>; Thu, 22 Apr 2021 06:13:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6CAE3367862
+	for <lists+netdev@lfdr.de>; Thu, 22 Apr 2021 06:13:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234885AbhDVELN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 22 Apr 2021 00:11:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40758 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234797AbhDVEKZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 22 Apr 2021 00:10:25 -0400
-Received: from mail-pj1-x1030.google.com (mail-pj1-x1030.google.com [IPv6:2607:f8b0:4864:20::1030])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C7388C06138E;
-        Wed, 21 Apr 2021 21:09:49 -0700 (PDT)
-Received: by mail-pj1-x1030.google.com with SMTP id f2-20020a17090a4a82b02900c67bf8dc69so247012pjh.1;
-        Wed, 21 Apr 2021 21:09:49 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=gTam4Dh4Exrox41UjgsTUAzDdF7hSjfRPYT1wQxzNIA=;
-        b=h4Ws/FzzrLMIqrmOr0IySyYw5sQpcKQebJ4fr52tIz8OeJS0J18r+Kk3Yby02VwCZb
-         lB0VnuYreH0/WBg432DwfJyANbzRXjq+RyqMjMV91avjh7P6AVWyD36N3taxcUivyk81
-         gRifTzGqz56xEmn2k6jtorxqr5N1vLDH+pPNDe+b83J928uzB0K9oz/QkVW18/V0NOEm
-         PmNXRP4p7ocJ3OqSd75VYOZ622O3F6Tb2dKbCXDirHHasEkzg3neP8XRcwVvl6xSnCcV
-         p6+FpUvxCPmYMV8eIuZjKOIvK1JtK9l7z/eVW37FaQEAOnPMN480/2GGvYDW3XruZYWi
-         OurQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=gTam4Dh4Exrox41UjgsTUAzDdF7hSjfRPYT1wQxzNIA=;
-        b=YOJ22B4TCoKas1FzeX/4/E690QhwjseauqICd3gUSM0zIvkBcJI3uKSCeOLFK29rj3
-         n1nt4nG+4FtjZOUEoeBuGScC+6GjUl7yBRispxzKzgg4RxtqfKqZxMCIZVEwuWSJZgzl
-         Ev2dparxe05HCv/uf8kV9TaU0ocq6H76Wn+I1t6q+0r4tyhmaJwmiMfb08kBIFOQY+6H
-         nJa5niR8EOErHmNIm2N1bo4bEdfEiuJXahdMrWcUlhok79/tu9GPEgnwAYVhAcO/TqGs
-         cBborCt/2onD38n/QtIaO8Tu1LdifW9PJb+2LBssUa6A1rnUlLlC+FXcrdnJKXtBAPWI
-         PgVg==
-X-Gm-Message-State: AOAM530r0VAXqhwACUovjchccKIkwV4bznkRDEwrRgXc9hThFaTKlWKC
-        fFqiDvad+PvW3FDjikAVdYU=
-X-Google-Smtp-Source: ABdhPJzmrEjvXUJJGC9Se3LcQu04Mdkl0aXOfVWFnghAJi2orXke+l4GVOKEPwHkQQLbn8xZTwi3fw==
-X-Received: by 2002:a17:902:778f:b029:ec:d04d:4556 with SMTP id o15-20020a170902778fb02900ecd04d4556mr1407386pll.43.1619064589415;
-        Wed, 21 Apr 2021 21:09:49 -0700 (PDT)
-Received: from z640-arch.lan ([2602:61:7344:f100::678])
-        by smtp.gmail.com with ESMTPSA id i17sm635354pfd.84.2021.04.21.21.09.48
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 21 Apr 2021 21:09:49 -0700 (PDT)
-From:   Ilya Lipnitskiy <ilya.lipnitskiy@gmail.com>
-To:     Felix Fietkau <nbd@nbd.name>, John Crispin <john@phrozen.org>,
-        Sean Wang <sean.wang@mediatek.com>,
-        Mark Lee <Mark-MC.Lee@mediatek.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org
-Cc:     Ilya Lipnitskiy <ilya.lipnitskiy@gmail.com>
-Subject: [PATCH net-next 14/14] net: ethernet: mtk_eth_soc: use iopoll.h macro for DMA init
-Date:   Wed, 21 Apr 2021 21:09:14 -0700
-Message-Id: <20210422040914.47788-15-ilya.lipnitskiy@gmail.com>
-X-Mailer: git-send-email 2.31.1
-In-Reply-To: <20210422040914.47788-1-ilya.lipnitskiy@gmail.com>
-References: <20210422040914.47788-1-ilya.lipnitskiy@gmail.com>
+        id S234816AbhDVELu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 22 Apr 2021 00:11:50 -0400
+Received: from relay11.mail.gandi.net ([217.70.178.231]:55487 "EHLO
+        relay11.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234992AbhDVEKo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 22 Apr 2021 00:10:44 -0400
+Received: from mail-yb1-f172.google.com (mail-yb1-f172.google.com [209.85.219.172])
+        (Authenticated sender: joe@ovn.org)
+        by relay11.mail.gandi.net (Postfix) with ESMTPSA id A1CBB100010;
+        Thu, 22 Apr 2021 04:10:08 +0000 (UTC)
+Received: by mail-yb1-f172.google.com with SMTP id k73so43492094ybf.3;
+        Wed, 21 Apr 2021 21:10:08 -0700 (PDT)
+X-Gm-Message-State: AOAM532ftW7g8pAEXVvM4YxTXJ8+FR7m/9uowpVCxmAsvGCJlMU5KEzE
+        ndb6xLn3biujG5EGFI9h4fYAEhl4wOWh1+jyvVg=
+X-Google-Smtp-Source: ABdhPJwXP5PsKga+gsABTn582f0ZNbO6oVx7Et/U+fU+xwoaHDnJQCv37IRLXdm5utZYVW+Jv5yr8Rj9twKfQz7/dUw=
+X-Received: by 2002:a25:7612:: with SMTP id r18mr1939030ybc.172.1619064607436;
+ Wed, 21 Apr 2021 21:10:07 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20210421130105.1226686-1-gregkh@linuxfoundation.org>
+ <20210421130105.1226686-127-gregkh@linuxfoundation.org> <20210422015957.4f6d4dfa@linux.microsoft.com>
+In-Reply-To: <20210422015957.4f6d4dfa@linux.microsoft.com>
+From:   Joe Stringer <joe@ovn.org>
+Date:   Wed, 21 Apr 2021 21:09:56 -0700
+X-Gmail-Original-Message-ID: <CAOftzPioU8h9b=isMPZtE8AYF=+qh_nNEp3rFEyQmb6Fi7QZ2g@mail.gmail.com>
+Message-ID: <CAOftzPioU8h9b=isMPZtE8AYF=+qh_nNEp3rFEyQmb6Fi7QZ2g@mail.gmail.com>
+Subject: Re: [PATCH 126/190] Revert "net: openvswitch: fix a NULL pointer dereference"
+To:     Matteo Croce <mcroce@linux.microsoft.com>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        LKML <linux-kernel@vger.kernel.org>, Kangjie Lu <kjlu@umn.edu>,
+        "David S . Miller" <davem@davemloft.net>,
+        netdev <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Replace a tight busy-wait loop without a pause with a standard
-readx_poll_timeout_atomic routine with a 5 us poll period.
+On Wed, Apr 21, 2021 at 5:01 PM Matteo Croce <mcroce@linux.microsoft.com> wrote:
+>
+> On Wed, 21 Apr 2021 15:00:01 +0200
+> Greg Kroah-Hartman <gregkh@linuxfoundation.org> wrote:
+>
+> > This reverts commit 6f19893b644a9454d85e593b5e90914e7a72b7dd.
+> >
+> > Commits from @umn.edu addresses have been found to be submitted in
+> > "bad faith" to try to test the kernel community's ability to review
+> > "known malicious" changes.  The result of these submissions can be
+> > found in a paper published at the 42nd IEEE Symposium on Security and
+> > Privacy entitled, "Open Source Insecurity: Stealthily Introducing
+> > Vulnerabilities via Hypocrite Commits" written by Qiushi Wu
+> > (University of Minnesota) and Kangjie Lu (University of Minnesota).
+> >
+> > Because of this, all submissions from this group must be reverted from
+> > the kernel tree and will need to be re-reviewed again to determine if
+> > they actually are a valid fix.  Until that work is complete, remove
+> > this change to ensure that no problems are being introduced into the
+> > codebase.
+> >
+> > Cc: Kangjie Lu <kjlu@umn.edu>
+> > Cc: David S. Miller <davem@davemloft.net>
+> > Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+> > ---
+> >  net/openvswitch/datapath.c | 4 ----
+> >  1 file changed, 4 deletions(-)
+> >
+> > diff --git a/net/openvswitch/datapath.c b/net/openvswitch/datapath.c
+> > index 9d6ef6cb9b26..99e63f4bbcaf 100644
+> > --- a/net/openvswitch/datapath.c
+> > +++ b/net/openvswitch/datapath.c
+> > @@ -443,10 +443,6 @@ static int queue_userspace_packet(struct
+> > datapath *dp, struct sk_buff *skb,
+> >       upcall = genlmsg_put(user_skb, 0, 0, &dp_packet_genl_family,
+> >                            0, upcall_info->cmd);
+> > -     if (!upcall) {
+> > -             err = -EINVAL;
+> > -             goto out;
+> > -     }
+> >       upcall->dp_ifindex = dp_ifindex;
+> >
+> >       err = ovs_nla_put_key(key, key, OVS_PACKET_ATTR_KEY, false,
+> > user_skb);
+>
+> This patch seems good to me, but given the situation I'd like another
+> pair of eyes on it, at least.
 
-Tested by booting a MT7621 device to ensure the driver initializes
-properly.
+The revert LGTM.
 
-Signed-off-by: Ilya Lipnitskiy <ilya.lipnitskiy@gmail.com>
----
- drivers/net/ethernet/mediatek/mtk_eth_soc.c | 29 +++++++++------------
- drivers/net/ethernet/mediatek/mtk_eth_soc.h |  2 +-
- 2 files changed, 14 insertions(+), 17 deletions(-)
+A few lines above:
 
-diff --git a/drivers/net/ethernet/mediatek/mtk_eth_soc.c b/drivers/net/ethernet/mediatek/mtk_eth_soc.c
-index 8c863322587e..720d73d0c007 100644
---- a/drivers/net/ethernet/mediatek/mtk_eth_soc.c
-+++ b/drivers/net/ethernet/mediatek/mtk_eth_soc.c
-@@ -2037,25 +2037,22 @@ static int mtk_set_features(struct net_device *dev, netdev_features_t features)
- /* wait for DMA to finish whatever it is doing before we start using it again */
- static int mtk_dma_busy_wait(struct mtk_eth *eth)
- {
--	unsigned long t_start = jiffies;
-+	u32 val;
-+	int ret;
-+	unsigned int reg;
- 
--	while (1) {
--		if (MTK_HAS_CAPS(eth->soc->caps, MTK_QDMA)) {
--			if (!(mtk_r32(eth, MTK_QDMA_GLO_CFG) &
--			      (MTK_RX_DMA_BUSY | MTK_TX_DMA_BUSY)))
--				return 0;
--		} else {
--			if (!(mtk_r32(eth, MTK_PDMA_GLO_CFG) &
--			      (MTK_RX_DMA_BUSY | MTK_TX_DMA_BUSY)))
--				return 0;
--		}
-+	if (MTK_HAS_CAPS(eth->soc->caps, MTK_QDMA))
-+		reg = MTK_QDMA_GLO_CFG;
-+	else
-+		reg = MTK_PDMA_GLO_CFG;
- 
--		if (time_after(jiffies, t_start + MTK_DMA_BUSY_TIMEOUT))
--			break;
--	}
-+	ret = readx_poll_timeout_atomic(__raw_readl, eth->base + reg, val,
-+					!(val & (MTK_RX_DMA_BUSY | MTK_TX_DMA_BUSY)),
-+					5, MTK_DMA_BUSY_TIMEOUT_US);
-+	if (ret)
-+		dev_err(eth->dev, "DMA init timeout\n");
- 
--	dev_err(eth->dev, "DMA init timeout\n");
--	return -1;
-+	return ret;
- }
- 
- static int mtk_dma_init(struct mtk_eth *eth)
-diff --git a/drivers/net/ethernet/mediatek/mtk_eth_soc.h b/drivers/net/ethernet/mediatek/mtk_eth_soc.h
-index 214da569e869..2e4356ccf778 100644
---- a/drivers/net/ethernet/mediatek/mtk_eth_soc.h
-+++ b/drivers/net/ethernet/mediatek/mtk_eth_soc.h
-@@ -214,7 +214,7 @@
- #define MTK_TX_DMA_BUSY		BIT(1)
- #define MTK_RX_DMA_EN		BIT(2)
- #define MTK_TX_DMA_EN		BIT(0)
--#define MTK_DMA_BUSY_TIMEOUT	HZ
-+#define MTK_DMA_BUSY_TIMEOUT_US	1000000
- 
- /* QDMA Reset Index Register */
- #define MTK_QDMA_RST_IDX	0x1A08
--- 
-2.31.1
+        len = upcall_msg_size(upcall_info, hlen - cutlen,
+                              OVS_CB(skb)->acts_origlen);
+        user_skb = genlmsg_new(len, GFP_ATOMIC);
+        if (!user_skb) {
+                err = -ENOMEM;
+                goto out;
+        }
 
+upcall_msg_size() calculates the expected size of the buffer,
+including at the very least a nlmsg-aligned sizeof(struct ovs_header),
+plus other constants and also potential (likely) variable lengths
+based on the current flow context.
+
+genlmsg_new() adds the (nlmsg-aligned) nlmsg header length to the
+calculated length when allocating the buffer, and if the memory
+allocation fails here then the error is already returned.
+
+I don't then see a way for genlmsg_put() to fail per the hunk in the
+commit here given that its buffer reservation is calculated based on:
+
+        nlh = nlmsg_put(skb, portid, seq, family->id, GENL_HDRLEN +
+                        family->hdrsize, flags);
+
+Where family->hdrsize would be sizeof(struct ovs_header) since
+dp_packet_genl_family is the family passed into the genlmsg_put()
+call:
+
+static struct genl_family dp_packet_genl_family __ro_after_init = {
+        .hdrsize = sizeof(struct ovs_header),
+
+Even if there were some allocation bug here to be fixed (due to
+miscalculating the buffer size in the first place), I don't see how
+the extra error path in the included patch could catch such an error.
+The original patch doesn't seem necessarily problematic, but it
+doesn't seem like it adds anything of value either (or at least,
+nothing a comment couldn't clearly explain).
+
+Cheers,
+Joe
