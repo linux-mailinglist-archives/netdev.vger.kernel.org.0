@@ -2,73 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7EA96368899
-	for <lists+netdev@lfdr.de>; Thu, 22 Apr 2021 23:30:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 391D83688C3
+	for <lists+netdev@lfdr.de>; Thu, 22 Apr 2021 23:56:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239657AbhDVVaq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 22 Apr 2021 17:30:46 -0400
-Received: from mail.kernel.org ([198.145.29.99]:52330 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S236763AbhDVVap (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 22 Apr 2021 17:30:45 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id 0A95560FDC;
-        Thu, 22 Apr 2021 21:30:10 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1619127010;
-        bh=YSJLX1h7487v3apmi9GeRWhr4B1D+RbexRwkvYvlVEk=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=CqeYayhOa0CRf9EdqIRpFFOwayS7OeoZouqY21AXBMK6UeFVUroIUwaHJmMO/XkS4
-         wIVx/AIyYH/jo8kNcIGsFlpGLouf1TU3IsEhRICp8rYKompV3jev0mbjyNXxxERZPh
-         sgxmx7WbtLFGG9w1vDxN9XKa1R6AW5Sl6EBFlXaBJCFBz9VNm4BhDK6lsnAjIHRxLv
-         F9/WS/UzfZSbqsNc+oCLCPxImoPhiBJPgfG/mliZk6mPronodpTj7UmORaPebVawqu
-         O7Dlfe9Zl/q6zpmzT76rbSG8EG0azWqINYppF3kYF1K4+JgcEwzJpbt843UhBm2a39
-         dnMPyDqD1bjbw==
-Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 04EEC60A53;
-        Thu, 22 Apr 2021 21:30:10 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        id S237047AbhDVV4x (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 22 Apr 2021 17:56:53 -0400
+Received: from www62.your-server.de ([213.133.104.62]:39264 "EHLO
+        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232844AbhDVV4w (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 22 Apr 2021 17:56:52 -0400
+Received: from sslproxy06.your-server.de ([78.46.172.3])
+        by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92.3)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1lZhIs-000DUm-AJ; Thu, 22 Apr 2021 23:56:06 +0200
+Received: from [85.7.101.30] (helo=linux.home)
+        by sslproxy06.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1lZhIs-000JP5-1R; Thu, 22 Apr 2021 23:56:06 +0200
+Subject: Re: [PATCH] selftests/bpf: fix warning comparing pointer to 0
+To:     Jiapeng Chong <jiapeng.chong@linux.alibaba.com>, shuah@kernel.org
+Cc:     ast@kernel.org, andrii@kernel.org, kafai@fb.com,
+        songliubraving@fb.com, yhs@fb.com, john.fastabend@gmail.com,
+        kpsingh@kernel.org, linux-kselftest@vger.kernel.org,
+        netdev@vger.kernel.org, bpf@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <1619085648-36826-1-git-send-email-jiapeng.chong@linux.alibaba.com>
+From:   Daniel Borkmann <daniel@iogearbox.net>
+Message-ID: <7ecb85e6-410b-65bb-a042-74045ee17c3f@iogearbox.net>
+Date:   Thu, 22 Apr 2021 23:56:05 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next] net: xdp: Update pkt_type if generic XDP changes
- unicast MAC
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <161912701001.19496.14636181962804630969.git-patchwork-notify@kernel.org>
-Date:   Thu, 22 Apr 2021 21:30:10 +0000
-References: <20210419141559.8611-1-martin@strongswan.org>
-In-Reply-To: <20210419141559.8611-1-martin@strongswan.org>
-To:     Martin Willi <martin@strongswan.org>
-Cc:     davem@davemloft.net, kuba@kernel.org, ast@kernel.org,
-        daniel@iogearbox.net, hawk@kernel.org, john.fastabend@gmail.com,
-        netdev@vger.kernel.org, bpf@vger.kernel.org
+In-Reply-To: <1619085648-36826-1-git-send-email-jiapeng.chong@linux.alibaba.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.102.4/26148/Thu Apr 22 13:06:46 2021)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
-
-This patch was applied to bpf/bpf-next.git (refs/heads/master):
-
-On Mon, 19 Apr 2021 16:15:59 +0200 you wrote:
-> If a generic XDP program changes the destination MAC address from/to
-> multicast/broadcast, the skb->pkt_type is updated to properly handle
-> the packet when passed up the stack. When changing the MAC from/to
-> the NICs MAC, PACKET_HOST/OTHERHOST is not updated, though, making
-> the behavior different from that of native XDP.
+On 4/22/21 12:00 PM, Jiapeng Chong wrote:
+> Fix the following coccicheck warning:
 > 
-> Remember the PACKET_HOST/OTHERHOST state before calling the program
-> in generic XDP, and update pkt_type accordingly if the destination
-> MAC address has changed. As eth_type_trans() assumes a default
-> pkt_type of PACKET_HOST, restore that before calling it.
+> ./tools/testing/selftests/bpf/progs/fentry_test.c:76:15-16: WARNING
+> comparing pointer to 0.
 > 
-> [...]
+> Reported-by: Abaci Robot <abaci@linux.alibaba.com>
+> Signed-off-by: Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
 
-Here is the summary with links:
-  - [net-next] net: xdp: Update pkt_type if generic XDP changes unicast MAC
-    https://git.kernel.org/bpf/bpf-next/c/22b6034323fd
+How many more of those 'comparing pointer to 0' patches do you have?
+Right now we already merged the following with similar trivial pattern:
 
-You are awesome, thank you!
---
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+  - ebda107e5f222a086c83ddf6d1ab1da97dd15810
+  - a9c80b03e586fd3819089fbd33c38fb65ad5e00c
+  - 04ea63e34a2ee85cfd38578b3fc97b2d4c9dd573
 
+Given they don't really 'fix' anything, I would like to reduce such
+patch cleanup churn on the bpf tree. Please _consolidate_ all other
+such occurrences into a _single_ patch for BPF selftests, and resubmit.
+
+Thanks!
+
+> ---
+>   tools/testing/selftests/bpf/progs/fentry_test.c | 2 +-
+>   1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/tools/testing/selftests/bpf/progs/fentry_test.c b/tools/testing/selftests/bpf/progs/fentry_test.c
+> index 52a550d..d4247d6 100644
+> --- a/tools/testing/selftests/bpf/progs/fentry_test.c
+> +++ b/tools/testing/selftests/bpf/progs/fentry_test.c
+> @@ -73,7 +73,7 @@ int BPF_PROG(test7, struct bpf_fentry_test_t *arg)
+>   SEC("fentry/bpf_fentry_test8")
+>   int BPF_PROG(test8, struct bpf_fentry_test_t *arg)
+>   {
+> -	if (arg->a == 0)
+> +	if (!arg->a)
+>   		test8_result = 1;
+>   	return 0;
+>   }
+> 
 
