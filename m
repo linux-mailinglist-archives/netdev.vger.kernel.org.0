@@ -2,68 +2,137 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 93EE1367EEC
-	for <lists+netdev@lfdr.de>; Thu, 22 Apr 2021 12:45:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 31615367F06
+	for <lists+netdev@lfdr.de>; Thu, 22 Apr 2021 12:50:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235782AbhDVKqC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 22 Apr 2021 06:46:02 -0400
-Received: from fallback10.mail.ru ([94.100.178.50]:43962 "EHLO
-        fallback10.mail.ru" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230270AbhDVKqC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 22 Apr 2021 06:46:02 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=inbox.ru; s=mail3;
-        h=Content-Transfer-Encoding:MIME-Version:Message-Id:Date:Subject:Cc:To:From; bh=N68yG+YDJQa/pTm02kMIrbwzP83sTnDfJ8b9QVl8Sd4=;
-        b=t6MZ3WKELq68AHA9rJVbohDI0w42Htw6WNUqglNd+eHzWB47Q6zaQrzPJ+Ay96+A3bH+MEWUL5B7THSkcDlrCMgjjEeS1yHGr1QD2TXZp1dbzqgmvAYg27uViuLKmDEw6bFKZx9yCLMCCLYLihblBnVsaf6ARI9KapJbCx4O/W8=;
-Received: from [10.161.117.32] (port=47880 helo=smtp3.mail.ru)
-        by fallback10.m.smailru.net with esmtp (envelope-from <fido_max@inbox.ru>)
-        id 1lZWpq-0005Mr-2w
-        for netdev@vger.kernel.org; Thu, 22 Apr 2021 13:45:26 +0300
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=inbox.ru; s=mail3;
-        h=Content-Transfer-Encoding:MIME-Version:Message-Id:Date:Subject:Cc:To:From:From:Subject:Content-Type:Content-Transfer-Encoding:To:Cc; bh=N68yG+YDJQa/pTm02kMIrbwzP83sTnDfJ8b9QVl8Sd4=;
-        b=WauEawGdEC6aUKWlwmm91oxvFGmPC3kNVkXiJNBpzCKqeqkJnd7i77Dn/JdDBl+E5Wl/wk9aHG5z3KoLNDKPTqY4twXSuxbcvZXrw3kUnbU9cNzHKpFYrqh4MxXLiV0UF3p/jlbXi1fm7bRJKH4V3huJ+rW/4GfI+5GPXN6TxRk=;
-Received: by smtp3.mail.ru with esmtpa (envelope-from <fido_max@inbox.ru>)
-        id 1lZWpk-0000ww-S4; Thu, 22 Apr 2021 13:45:21 +0300
-From:   Maxim Kochetkov <fido_max@inbox.ru>
-To:     netdev@vger.kernel.org
-Cc:     andrew@lunn.ch, hkallweit1@gmail.com, linux@armlinux.org.uk,
-        davem@davemloft.net, kuba@kernel.org, f.fainelli@gmail.com,
-        Maxim Kochetkov <fido_max@inbox.ru>
-Subject: [PATCH 0/2] net: phy: marvell: fix set downshift params
-Date:   Thu, 22 Apr 2021 13:46:42 +0300
-Message-Id: <20210422104644.9472-1-fido_max@inbox.ru>
-X-Mailer: git-send-email 2.30.2
+        id S235513AbhDVKtC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 22 Apr 2021 06:49:02 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:34587 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S235099AbhDVKsz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 22 Apr 2021 06:48:55 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1619088499;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=W56Co4nmu9futOlRgTdRc7GGowpj4sKz++PgS6J5tsk=;
+        b=dlqBfDXOPLAAthq3eU+GFg8nSm5PKmrKr5EzImFVCrKAovkON0hRU4n+bkR1F1FpRCSW2h
+        OkG9wFFfJxV7OWqPYYVvVLqaX2EP3QSnP93znGnOGPW5+CImK8+9i2vfi1Uufz0WlJQoI6
+        tGBv79/rl8rQfpV6rrWKRoZGgfs+xuI=
+Received: from mail-ed1-f72.google.com (mail-ed1-f72.google.com
+ [209.85.208.72]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-418-v2SIzgXfOnWby2ON_fad4w-1; Thu, 22 Apr 2021 06:48:17 -0400
+X-MC-Unique: v2SIzgXfOnWby2ON_fad4w-1
+Received: by mail-ed1-f72.google.com with SMTP id w14-20020aa7da4e0000b02903834aeed684so14751236eds.13
+        for <netdev@vger.kernel.org>; Thu, 22 Apr 2021 03:48:17 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=W56Co4nmu9futOlRgTdRc7GGowpj4sKz++PgS6J5tsk=;
+        b=RPGbT0H8qo/QJ88FD2LnpMt/itAYYh7uu9yc5KLQU+EZswX3SCBtnFOpn+BBXKvDjo
+         JGJchuwuOkXksg0wZyfgjc4WQMQSvmIkYrMEWeCa4FwOpxqsdcEi8kWa+cMIoQFf8oxf
+         hh6vnzR4CC0gvjLiU8//EJ78M1VUaFospDVS6tJKfiUG0IZvuCztPW5ciljMl7uAHBVc
+         Qj/2LlqqUmeH2SGZJsLOKEQ1em4sq+teFX8RYYjWWcA3SyMIUD+hYup7oAE6uEfxuSsF
+         dogqzHRiQpLD49P429ZN2XEqRjCXlOaQmugnMyL1kkEDLlN+V7c9/oyMuZitB1zaZjnc
+         LeUA==
+X-Gm-Message-State: AOAM531dlJu6qCiKOC+O0gE2xucTJ2c2Kcz0GCjJArun4U8wajAo+6ez
+        +66HVDRsu5MZsUG2ZV0zRrJtzGNqZ9hVqPVNopTV5m1tbL6sB/Z07pndNx5j8KTSUPKt137gT+i
+        Klc9SzYp5ppseSGbT
+X-Received: by 2002:a17:906:cec2:: with SMTP id si2mr2807080ejb.234.1619088496486;
+        Thu, 22 Apr 2021 03:48:16 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJz3/JpW1+yllDt8fPHdvJEi1YttSx3GfTb7YhzmFF4NC8d2xAOCwtXohAtzSrborDsblnu1zw==
+X-Received: by 2002:a17:906:cec2:: with SMTP id si2mr2807055ejb.234.1619088496251;
+        Thu, 22 Apr 2021 03:48:16 -0700 (PDT)
+Received: from steredhat (host-79-34-249-199.business.telecomitalia.it. [79.34.249.199])
+        by smtp.gmail.com with ESMTPSA id d10sm1577096ejw.125.2021.04.22.03.48.14
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 22 Apr 2021 03:48:15 -0700 (PDT)
+Date:   Thu, 22 Apr 2021 12:48:13 +0200
+From:   Stefano Garzarella <sgarzare@redhat.com>
+To:     Arseny Krasnov <arseny.krasnov@kaspersky.com>
+Cc:     Stefan Hajnoczi <stefanha@redhat.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        Jason Wang <jasowang@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jorgen Hansen <jhansen@vmware.com>,
+        Colin Ian King <colin.king@canonical.com>,
+        Andra Paraschiv <andraprs@amazon.com>,
+        Norbert Slusarek <nslusarek@gmx.net>,
+        Alexander Popov <alex.popov@linux.com>,
+        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+        "virtualization@lists.linux-foundation.org" 
+        <virtualization@lists.linux-foundation.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "stsp2@yandex.ru" <stsp2@yandex.ru>,
+        "oxffffaa@gmail.com" <oxffffaa@gmail.com>
+Subject: Re: [RFC PATCH v8 00/19] virtio/vsock: introduce SOCK_SEQPACKET
+ support
+Message-ID: <20210422104813.e2p4wzuk2ahw7af7@steredhat>
+References: <20210413123954.3396314-1-arseny.krasnov@kaspersky.com>
+ <20210421095213.25hnfi2th7gzyzt2@steredhat>
+ <2c3d0749-0f41-e064-0153-b6130268add2@kaspersky.com>
+ <20210422084638.bvblk33b4oi6cec6@steredhat>
+ <bfefdd94-a84f-8bed-331e-274654a7426f@kaspersky.com>
+ <20210422100217.jmpgevtrukqyukfo@steredhat>
+ <bc649d1b-80d8-835c-6f47-8a7d402dd0b7@kaspersky.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-7564579A: 646B95376F6C166E
-X-77F55803: 4F1203BC0FB41BD9DD7F0C977691F2B1028A1B9238D46FC7D6DD4EEAEDFDB30C182A05F5380850408D6CF6A1C07101603DFE1148B24C32B412710BDF411997F7E45C714884E72615
-X-7FA49CB5: FF5795518A3D127A4AD6D5ED66289B5278DA827A17800CE7AD2F2D6F6013FF7FC2099A533E45F2D0395957E7521B51C2CFCAF695D4D8E9FCEA1F7E6F0F101C6778DA827A17800CE78EA80DE462DCD770EA1F7E6F0F101C67CDEEF6D7F21E0D1D9295C2E9FA3191EE1B59CA4C82EFA658A6E030CC4393436B045FD3A1FFA9AF73F6B57BC7E64490618DEB871D839B73339E8FC8737B5C2249A50BD5087FBFCDAACC7F00164DA146DAFE8445B8C89999729449624AB7ADAF37F6B57BC7E64490611E7FA7ABCAF51C92176DF2183F8FC7C0618001F51B5FD3F9D2E47CDBA5A96583BA9C0B312567BB2376E601842F6C81A19E625A9149C048EEC24E1E72F37C03A09D765CF6BB0EE041D8FC6C240DEA7642DBF02ECDB25306B2B78CF848AE20165D0A6AB1C7CE11FEE365B78C30F681404DBA3038C0950A5D36B5C8C57E37DE458B0BC6067A898B09E46D1867E19FE14079C09775C1D3CA48CF3D321E7403792E342EB15956EA79C166A417C69337E82CC275ECD9A6C639B01B78DA827A17800CE7E1BCFB2C0BE3F189731C566533BA786AA5CC5B56E945C8DA
-X-C1DE0DAB: C20DE7B7AB408E4181F030C43753B8186998911F362727C414F749A5E30D975C3E7AEEB2EA3DACB3AEF6577090DDAD7869C6D2724BE475869C2B6934AE262D3EE7EAB7254005DCED2B0D99E5FC5BAFA11E0A4E2319210D9B64D260DF9561598F01A9E91200F654B02E4E6844585584458E8E86DC7131B365E7726E8460B7C23C
-X-C8649E89: 4E36BF7865823D7055A7F0CF078B5EC49A30900B95165D3498EF79680EE3725C5D4CB2595AE62CDD1F486D0A777BDBD147AF06DC883D9D0B5D16FBA36E159ACB1D7E09C32AA3244C6C55E81718C14E0E60F853847A1C18537101BF96129E4011AD832FF50B3043B1
-X-D57D3AED: 3ZO7eAau8CL7WIMRKs4sN3D3tLDjz0dLbV79QFUyzQ2Ujvy7cMT6pYYqY16iZVKkSc3dCLJ7zSJH7+u4VD18S7Vl4ZUrpaVfd2+vE6kuoey4m4VkSEu530nj6fImhcD4MUrOEAnl0W826KZ9Q+tr5ycPtXkTV4k65bRjmOUUP8cvGozZ33TWg5HZplvhhXbhDGzqmQDTd6OAevLeAnq3Ra9uf7zvY2zzsIhlcp/Y7m53TZgf2aB4JOg4gkr2biojd3ipC3Yuge1trKHfCTdQ1Q==
-X-Mailru-Sender: 11C2EC085EDE56FA9C10FA2967F5AB24123149756043E43E166E5606519823F29FF793AD724AFED6EE9242D420CFEBFD3DDE9B364B0DF2891A624F84B2C74EDA4239CF2AF0A6D4F80DA7A0AF5A3A8387
-X-Mras: Ok
-X-7564579A: 646B95376F6C166E
-X-77F55803: 6242723A09DB00B44BADD4F5929CCB15E536D9810E242AD3D3969FF9BA4B0BBD049FFFDB7839CE9E5F41FB687843EBABC87C54600BE446EA591890F7003875EC5C023F79A8AA4BFE
-X-7FA49CB5: 0D63561A33F958A56523CB669E9E443212E994C03708658E42B14328CBB710008941B15DA834481FA18204E546F3947CEBAEFC6015046CFCF6B57BC7E64490618DEB871D839B7333395957E7521B51C2DFABB839C843B9C08941B15DA834481F8AA50765F790063749305D2801D13566389733CBF5DBD5E9B5C8C57E37DE458BD9DD9810294C998ED8FC6C240DEA76428AA50765F790063740BA071C1C7EF6BBD81D268191BDAD3DBD4B6F7A4D31EC0BEA7A3FFF5B025636AAAE862A0553A39223F8577A6DFFEA7C565C1E6824D8037B43847C11F186F3C59DAA53EE0834AAEE
-X-C1DE0DAB: C20DE7B7AB408E4181F030C43753B8186998911F362727C414F749A5E30D975C3E7AEEB2EA3DACB37AA83F8EDA6DD3EE21AC2BF6D1B86BDC9C2B6934AE262D3EE7EAB7254005DCED2B0D99E5FC5BAFA1699F904B3F4130E343918A1A30D5E7FCCB5012B2E24CD356
-X-D57D3AED: 3ZO7eAau8CL7WIMRKs4sN3D3tLDjz0dLbV79QFUyzQ2Ujvy7cMT6pYYqY16iZVKkSc3dCLJ7zSJH7+u4VD18S7Vl4ZUrpaVfd2+vE6kuoey4m4VkSEu530nj6fImhcD4MUrOEAnl0W826KZ9Q+tr5ycPtXkTV4k65bRjmOUUP8cvGozZ33TWg5HZplvhhXbhDGzqmQDTd6OAevLeAnq3Ra9uf7zvY2zzsIhlcp/Y7m53TZgf2aB4JOg4gkr2biojd3ipC3Yuge3S0MSpsAm/Tw==
-X-Mailru-MI: 800
-X-Mailru-Sender: A5480F10D64C90053DB5E8752E58C64B6107DA3D8362899C67E37518350C817B8735D1064880384AEE9242D420CFEBFD3DDE9B364B0DF2891A624F84B2C74EDA4239CF2AF0A6D4F80DA7A0AF5A3A8387
-X-Mras: Ok
+Content-Type: text/plain; charset=us-ascii; format=flowed
+Content-Disposition: inline
+In-Reply-To: <bc649d1b-80d8-835c-6f47-8a7d402dd0b7@kaspersky.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Changing downshift params without software reset has no effect,
-so call genphy_soft_reset() after change downshift params.
+On Thu, Apr 22, 2021 at 01:29:54PM +0300, Arseny Krasnov wrote:
+>
+>On 22.04.2021 13:02, Stefano Garzarella wrote:
+>> On Thu, Apr 22, 2021 at 12:40:17PM +0300, Arseny Krasnov wrote:
+>>> On 22.04.2021 11:46, Stefano Garzarella wrote:
+>>>> On Wed, Apr 21, 2021 at 06:06:28PM +0300, Arseny Krasnov wrote:
+>>>>> Thank You, i'll prepare next version. Main question is: does this
+>>>>> approach(no SEQ_BEGIN, SEQ_END, 'msg_len' and 'msg_id') considered
+>>>>> good? In this case it will be easier to prepare final version, because
+>>>>> is smaller and more simple than previous logic. Also patch to spec
+>>>>> will be smaller.
+>>>> Yes, it's definitely much better than before.
+>>>>
+>>>> The only problem I see is that we add some overhead per fragment
+>>>> (header). We could solve that with the mergeable buffers that Jiang is
+>>>> considering for DGRAM.
+>>> If we are talking about receive, i think, i can reuse merge logic for
+>> Yep, for TX the guest can potentially enqueue a big buffer.
+>> Maybe it's still worth keeping a maximum size and fragmenting as we do
+>> now.
+>>
+>>> stream sockets, the only difference is that buffers are mergeable
+>>> until previous EOR(e.g. previous message) bit is found in rx queue.
+>>>
+>> I got a little lost.
+>> Can you elaborate more?
+>
+>I'm talking about 'virtio_transport_recv_enqueue()': it tries to copy
+>
+>data of new packet to buffer of tail packet in rx queue. In case of
+>
+>SEQPACKET i can reuse it, just adding logic that check EOR bit of
+>
+>tail packet.
 
-Maxim Kochetkov (2):
-  net: phy: marvell: fix m88e1011_set_downshift
-  net: phy: marvell: fix m88e1111_set_downshift
+This might be a good idea.
+It doesn't save us the transmitted header though, but at least it saves 
+us from queuing it.
+Even if with SEQPACKET I don't expect small packets, since it's the 
+driver that divides them and I think it does everything to use the 
+maximum available.
 
- drivers/net/phy/marvell.c | 52 ++++++++++++++++++++++++---------------
- 1 file changed, 32 insertions(+), 20 deletions(-)
+Instead the mergeable buffers I was referring to are based on the 
+virito-net feature VIRTIO_NET_F_MRG_RXBUF.
+Jiang is investigating whether we can reuse them for DGRAM.
 
--- 
-2.30.2
+Thanks,
+Stefano
 
