@@ -2,114 +2,169 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 89FDF3687C2
-	for <lists+netdev@lfdr.de>; Thu, 22 Apr 2021 22:14:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F02483687F0
+	for <lists+netdev@lfdr.de>; Thu, 22 Apr 2021 22:30:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238948AbhDVUPC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 22 Apr 2021 16:15:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56808 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236822AbhDVUPB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 22 Apr 2021 16:15:01 -0400
-Received: from mail-io1-xd2d.google.com (mail-io1-xd2d.google.com [IPv6:2607:f8b0:4864:20::d2d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E2280C06174A
-        for <netdev@vger.kernel.org>; Thu, 22 Apr 2021 13:14:25 -0700 (PDT)
-Received: by mail-io1-xd2d.google.com with SMTP id a11so3663557ioo.0
-        for <netdev@vger.kernel.org>; Thu, 22 Apr 2021 13:14:25 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ieee.org; s=google;
-        h=subject:to:references:from:message-id:date:user-agent:mime-version
-         :in-reply-to:content-language:content-transfer-encoding;
-        bh=cvCS96FY4AJz7K/5a4aRGifUPl+rI1zPuDuUotH2+vw=;
-        b=aRr2O/q4Om9qYJP+ZXJmjABPgwFTM4XkcLEdCSJSDbW9YoWbhvT9njtpuiiOXIP6zq
-         Yi/8E4QU3uUduuNkOMAHNiC2ef0o5JaXv5YPvIh3kJn7Mf75tpuw7wsaMB5Z0jeuVLrn
-         WYi4jEsaeFffzRoOoj+uB/iGI1EmfY0ruSEXo=
+        id S239482AbhDVUal (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 22 Apr 2021 16:30:41 -0400
+Received: from mail-pg1-f179.google.com ([209.85.215.179]:45859 "EHLO
+        mail-pg1-f179.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S239298AbhDVUaj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 22 Apr 2021 16:30:39 -0400
+Received: by mail-pg1-f179.google.com with SMTP id d10so33648888pgf.12;
+        Thu, 22 Apr 2021 13:30:04 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:references:from:message-id:date
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
          :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=cvCS96FY4AJz7K/5a4aRGifUPl+rI1zPuDuUotH2+vw=;
-        b=GIcbnJ2n83lD9+un1rXFH6TCAGpaNww7b08Y86xsqbW0Xx3DjjPgxpik6sJgg5qeNZ
-         66Fw7u13Rqzkev++UFY9rykkB6vynFJwPrruGumQXQsiG3XD+zT1CeL61fbTWWaKyILF
-         fdEp+q7woP2h5NaeM2KmcsSlJRQzyPe5gXxvg0edqMOgaIna0yCWTfy2SnKN1oS4vDuQ
-         0lY4XGUsrJZo8DuyF8aC7kwD42ZJlb07Uk1od8v/TzA/HGhjsBufTr/w0keSZ4h1N07f
-         MNC257ijr+GuEV2mlqp9oqUv3koX+//5tFk17CxpPM77FPEepJslsGO6gXvg64iFahJz
-         GMuw==
-X-Gm-Message-State: AOAM530D6QKTeLaJizwaVrJk4oSx0mcr5jPPtfCg95slonx/8E/ncfGO
-        OxzFTh/jxSblsQl8kKYL93H1eQ==
-X-Google-Smtp-Source: ABdhPJzovPGKD9dCyvzDQpCaUbpywpWKhJxNNjgyb0I8xDv+9NsIcq3kFQpCHjN9cbxAx0IUgDKvOg==
-X-Received: by 2002:a6b:7202:: with SMTP id n2mr588343ioc.86.1619122465386;
-        Thu, 22 Apr 2021 13:14:25 -0700 (PDT)
-Received: from [172.22.22.4] (c-73-185-129-58.hsd1.mn.comcast.net. [73.185.129.58])
-        by smtp.googlemail.com with ESMTPSA id f8sm1550930ilr.20.2021.04.22.13.14.23
+        bh=ErwniLcaGVO/kxmEwl8gGV0QjSUQKJ/t9ZJlSqCEkEo=;
+        b=UHgXJpPoOZl081FZ+7kXYg7dS6ENxhs/XxcdbvKZCeDIyYkcYigb8pTmVeDOynj2dU
+         yAqCRdte7xpQJkrcwylxj+YmeQ7bN/6xVlrBMUYEIVvQUGDtq77EDoRnpGC5g0O/94Lq
+         /z9zQfTWs9jeBCu6WkSWswffr6lBeCI+hr66LumWxgIQjjXwxhAYWK3zs0BS1vdI7GGg
+         iAsAkEA4MX+v67TFaGljp+vebE9hu/GIJpOqn+1z2ltMsCKIbmxHZHTDhJLjeSE/Q/L4
+         Hv+q2g19vtZGhhrTfq2h0Eoh6DIzLf46TumoHK/mIi/GqhoCwu/FeC5buUcuLRE/N5LU
+         aPew==
+X-Gm-Message-State: AOAM531AAsbQr95dMFhLh+N+Ltd2fZeZQNcWNxzNvMzhi/z+mNP/a8fC
+        E6wY4WUMsX09fplieFsVjPRbAXnXkLw6MA==
+X-Google-Smtp-Source: ABdhPJxNNltJlaq4UgjTTlU6u2x4QZW/U/kixD1KrCTqqMjziRQo0Aws14ZZK/60vBVE/YGzE7v9Mg==
+X-Received: by 2002:a63:e00f:: with SMTP id e15mr407170pgh.317.1619123403370;
+        Thu, 22 Apr 2021 13:30:03 -0700 (PDT)
+Received: from [192.168.51.110] (c-73-241-217-19.hsd1.ca.comcast.net. [73.241.217.19])
+        by smtp.gmail.com with ESMTPSA id k21sm2751759pfi.28.2021.04.22.13.30.01
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 22 Apr 2021 13:14:24 -0700 (PDT)
-Subject: Re: [PATCH net-next v4 0/3] net: qualcomm: rmnet: Enable Mapv5
-To:     Sharath Chandra Vurukala <sharathv@codeaurora.org>,
-        davem@davemloft.net, kuba@kernel.org, elder@kernel.org,
-        cpratapa@codeaurora.org, subashab@codeaurora.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <1619121731-17782-1-git-send-email-sharathv@codeaurora.org>
-From:   Alex Elder <elder@ieee.org>
-Message-ID: <ed00501e-d558-a47f-5444-b1a5a895d6db@ieee.org>
-Date:   Thu, 22 Apr 2021 15:14:23 -0500
+        Thu, 22 Apr 2021 13:30:02 -0700 (PDT)
+Subject: Re: [PATCH 1/2] workqueue: Have 'alloc_workqueue()' like macros
+ accept a format specifier
+To:     Leon Romanovsky <leon@kernel.org>
+Cc:     Jason Gunthorpe <jgg@ziepe.ca>,
+        Marion et Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        tj@kernel.org, jiangshanlai@gmail.com, saeedm@nvidia.com,
+        davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
+        linux-rdma@vger.kernel.org, linux-kernel@vger.kernel.org,
+        kernel-janitors@vger.kernel.org
+References: <cover.1618780558.git.christophe.jaillet@wanadoo.fr>
+ <ae88f6c2c613d17bc1a56692cfa4f960dbc723d2.1618780558.git.christophe.jaillet@wanadoo.fr>
+ <042f5fff-5faf-f3c5-0819-b8c8d766ede6@acm.org>
+ <1032428026.331.1618814178946.JavaMail.www@wwinf2229>
+ <40c21bfe-e304-230d-b319-b98063347b8b@acm.org>
+ <20210422122419.GF2047089@ziepe.ca>
+ <782e329a-7c3f-a0da-5d2f-89871b0c4b9b@acm.org> <YIG5tLBIAledZetf@unreal>
+From:   Bart Van Assche <bvanassche@acm.org>
+Message-ID: <53b2ef14-1b8a-43b1-ef53-e314e2649ea0@acm.org>
+Date:   Thu, 22 Apr 2021 13:30:00 -0700
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.7.1
+ Thunderbird/78.9.0
 MIME-Version: 1.0
-In-Reply-To: <1619121731-17782-1-git-send-email-sharathv@codeaurora.org>
+In-Reply-To: <YIG5tLBIAledZetf@unreal>
 Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 4/22/21 3:02 PM, Sharath Chandra Vurukala wrote:
-> This series introduces the MAPv5 packet format.
+On 4/22/21 11:00 AM, Leon Romanovsky wrote:
+> On Thu, Apr 22, 2021 at 10:12:33AM -0700, Bart Van Assche wrote:
+>> On 4/22/21 5:24 AM, Jason Gunthorpe wrote:
+>>> On Mon, Apr 19, 2021 at 01:02:34PM -0700, Bart Van Assche wrote:
+>>>> On 4/18/21 11:36 PM, Marion et Christophe JAILLET wrote:
+>>>>> The list in To: is the one given by get_maintainer.pl. Usualy, I only
+>>>>> put the ML in Cc: I've run the script on the 2 patches of the serie
+>>>>> and merged the 2 lists. Everyone is in the To: of the cover letter
+>>>>> and of the 2 patches.
+>>>>>
+>>>>> If Théo is "Tejun Heo" (  (maintainer:WORKQUEUE) ), he is already in
+>>>>> the To: line.
+>>>> Linus wants to see a "Cc: ${maintainer}" tag in patches that he receives
+>>>> from a maintainer and that modify another subsystem than the subsystem
+>>>> maintained by that maintainer.
+>>>
+>>> Really? Do you remember a lore link for this?
+>>
+>> Last time I saw Linus mentioning this was a few months ago.
+>> Unfortunately I cannot find that message anymore.
+>>
+>>> Generally I've been junking the CC lines (vs Andrew at the other
+>>> extreme that often has 10's of CC lines)
+>>
+>> Most entries in the MAINTAINERS file have one to three email addresses
+>> so I'm surprised to read that Cc-ing maintainer(s) could result in tens
+>> of Cc lines?
 > 
->    Patch 0 documents the MAPv4/v5.
->    Patch 1 introduces the MAPv5 and the Inline checksum offload for RX/Ingress.
->    Patch 2 introduces the MAPv5 and the Inline checksum offload for TX/Egress.
+> git log mm/
+> 
+> commit 2b8305260fb37fc20e13f71e13073304d0a031c8
+> Author: Alexander Potapenko <glider@google.com>
+> Date:   Thu Feb 25 17:19:21 2021 -0800
+> 
+>      kfence, kasan: make KFENCE compatible with KASAN
+> 
+>      Make KFENCE compatible with KASAN. Currently this helps test KFENCE
+>      itself, where KASAN can catch potential corruptions to KFENCE state, or
+>      other corruptions that may be a result of freepointer corruptions in the
+>      main allocators.
+> 
+>      [akpm@linux-foundation.org: merge fixup]
+>      [andreyknvl@google.com: untag addresses for KFENCE]
+>        Link: https://lkml.kernel.org/r/9dc196006921b191d25d10f6e611316db7da2efc.1611946152.git.andreyknvl@google.com
+> 
+>      Link: https://lkml.kernel.org/r/20201103175841.3495947-7-elver@google.com
+>      Signed-off-by: Marco Elver <elver@google.com>
+>      Signed-off-by: Alexander Potapenko <glider@google.com>
+>      Signed-off-by: Andrey Konovalov <andreyknvl@google.com>
+>      Reviewed-by: Dmitry Vyukov <dvyukov@google.com>
+>      Reviewed-by: Jann Horn <jannh@google.com>
+>      Co-developed-by: Marco Elver <elver@google.com>
+>      Cc: Andrey Konovalov <andreyknvl@google.com>
+>      Cc: Andrey Ryabinin <aryabinin@virtuozzo.com>
+>      Cc: Andy Lutomirski <luto@kernel.org>
+>      Cc: Borislav Petkov <bp@alien8.de>
+>      Cc: Catalin Marinas <catalin.marinas@arm.com>
+>      Cc: Christopher Lameter <cl@linux.com>
+>      Cc: Dave Hansen <dave.hansen@linux.intel.com>
+>      Cc: David Rientjes <rientjes@google.com>
+>      Cc: Eric Dumazet <edumazet@google.com>
+>      Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+>      Cc: Hillf Danton <hdanton@sina.com>
+>      Cc: "H. Peter Anvin" <hpa@zytor.com>
+>      Cc: Ingo Molnar <mingo@redhat.com>
+>      Cc: Joern Engel <joern@purestorage.com>
+>      Cc: Jonathan Corbet <corbet@lwn.net>
+>      Cc: Joonsoo Kim <iamjoonsoo.kim@lge.com>
+>      Cc: Kees Cook <keescook@chromium.org>
+>      Cc: Mark Rutland <mark.rutland@arm.com>
+>      Cc: Paul E. McKenney <paulmck@kernel.org>
+>      Cc: Pekka Enberg <penberg@kernel.org>
+>      Cc: Peter Zijlstra <peterz@infradead.org>
+>      Cc: SeongJae Park <sjpark@amazon.de>
+>      Cc: Thomas Gleixner <tglx@linutronix.de>
+>      Cc: Vlastimil Babka <vbabka@suse.cz>
+>      Cc: Will Deacon <will@kernel.org>
+>      Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
+>      Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
 
-Was this supposed to be version 5?
+But where does that Cc-list come from? If I extract that patch and run 
+the get_maintainer.pl script, the following output appears:
 
-I already reviewed version 4.
+$ git format-patch -1 2b8305260fb37fc20e13f71e13073304d0a031c8
+0001-kfence-kasan-make-KFENCE-compatible-with-KASAN.patch
+$ scripts/get_maintainer.pl 
+0001-kfence-kasan-make-KFENCE-compatible-with-KASAN.patch
+Alexander Potapenko <glider@google.com> (maintainer:KFENCE)
+Marco Elver <elver@google.com> (maintainer:KFENCE)
+Dmitry Vyukov <dvyukov@google.com> (reviewer:KFENCE)
+Andrey Ryabinin <ryabinin.a.a@gmail.com> (maintainer:KASAN)
+Andrey Konovalov <andreyknvl@gmail.com> (reviewer:KASAN)
+Andrew Morton <akpm@linux-foundation.org> (maintainer:MEMORY MANAGEMENT)
+kasan-dev@googlegroups.com (open list:KFENCE)
+linux-kernel@vger.kernel.org (open list)
+linux-mm@kvack.org (open list:MEMORY MANAGEMENT)
 
-Please post version 5.  I am going to ignore this series.
+Additionally, please note that in my email I was referring to the 
+MAINTAINERS file. I do not use the get_maintainers.pl script but instead 
+select the Cc-list manually based on what I find in the MAINTAINERS file.
 
-					-Alex
+Thanks,
 
-> 
->    A new checksum header format is used as part of MAPv5.For RX checksum offload,
->    the checksum is verified by the HW and the validity is marked in the checksum
->    header of MAPv5. For TX, the required metadata is filled up so hardware can
->    compute the checksum.
-> 
->    v1->v2:
->    - Fixed the compilation errors, warnings reported by kernel test robot.
->    - Checksum header definition is expanded to support big, little endian
->            formats as mentioned by Jakub.
-> 
->    v2->v3:
->    - Fixed compilation errors reported by kernel bot for big endian flavor.
-> 
->    v3->v4:
->    - Made changes to use masks instead of C bit-fields as suggested by Jakub/Alex.
-> 
-> Sharath Chandra Vurukala (3):
->    docs: networking: Add documentation for MAPv5
->    net: ethernet: rmnet: Support for ingress MAPv5 checksum offload
->    net: ethernet: rmnet: Add support for MAPv5 egress packets
-> 
->   .../device_drivers/cellular/qualcomm/rmnet.rst     | 126 +++++++++++++++--
->   drivers/net/ethernet/qualcomm/rmnet/rmnet_config.h |   4 +-
->   .../net/ethernet/qualcomm/rmnet/rmnet_handlers.c   |  29 ++--
->   drivers/net/ethernet/qualcomm/rmnet/rmnet_map.h    |  11 +-
->   .../net/ethernet/qualcomm/rmnet/rmnet_map_data.c   | 151 ++++++++++++++++++++-
->   drivers/net/ethernet/qualcomm/rmnet/rmnet_vnd.c    |   3 +-
->   include/linux/if_rmnet.h                           |  27 +++-
->   include/uapi/linux/if_link.h                       |   2 +
->   8 files changed, 318 insertions(+), 35 deletions(-)
-> 
-
+Bart.
