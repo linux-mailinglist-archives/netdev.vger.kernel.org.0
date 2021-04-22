@@ -2,105 +2,119 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D0C733685B3
-	for <lists+netdev@lfdr.de>; Thu, 22 Apr 2021 19:19:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F17283685C8
+	for <lists+netdev@lfdr.de>; Thu, 22 Apr 2021 19:21:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238583AbhDVRTm convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Thu, 22 Apr 2021 13:19:42 -0400
-Received: from us-smtp-delivery-44.mimecast.com ([207.211.30.44]:33852 "EHLO
-        us-smtp-delivery-44.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S238568AbhDVRTl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 22 Apr 2021 13:19:41 -0400
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-451-GF4bTg4fOemEsP4NsiUe0Q-1; Thu, 22 Apr 2021 13:18:54 -0400
-X-MC-Unique: GF4bTg4fOemEsP4NsiUe0Q-1
-Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id BBA2E1006C8E;
-        Thu, 22 Apr 2021 17:18:52 +0000 (UTC)
-Received: from hog (unknown [10.40.192.89])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id 0066E60BE5;
-        Thu, 22 Apr 2021 17:18:50 +0000 (UTC)
-Date:   Thu, 22 Apr 2021 19:18:49 +0200
-From:   Sabrina Dubroca <sd@queasysnail.net>
-To:     Eric Dumazet <edumazet@google.com>
-Cc:     Florian Westphal <fw@strlen.de>,
-        Phillip Potter <phil@philpotter.co.uk>,
-        David Miller <davem@davemloft.net>,
+        id S236667AbhDVRWP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 22 Apr 2021 13:22:15 -0400
+Received: from mx2.suse.de ([195.135.220.15]:42600 "EHLO mx2.suse.de"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S236287AbhDVRWO (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 22 Apr 2021 13:22:14 -0400
+X-Virus-Scanned: by amavisd-new at test-mx.suse.de
+Received: from relay2.suse.de (unknown [195.135.221.27])
+        by mx2.suse.de (Postfix) with ESMTP id 515C4B1A4;
+        Thu, 22 Apr 2021 17:21:38 +0000 (UTC)
+Date:   Thu, 22 Apr 2021 19:21:36 +0200
+From:   Michal =?iso-8859-1?Q?Such=E1nek?= <msuchanek@suse.de>
+To:     Lijun Pan <lijunp213@gmail.com>
+Cc:     Sukadev Bhattiprolu <sukadev@linux.ibm.com>,
+        netdev@vger.kernel.org, Lijun Pan <ljp@linux.vnet.ibm.com>,
+        Tom Falcon <tlfalcon@linux.ibm.com>,
+        Paul Mackerras <paulus@samba.org>,
+        Dany Madden <drt@linux.ibm.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH] net: geneve: modify IP header check in geneve6_xmit_skb
-Message-ID: <YIGv+UOHIl8c/JVk@hog>
-References: <20210421231100.7467-1-phil@philpotter.co.uk>
- <20210422003942.GF4841@breakpoint.cc>
- <YIGeVLyfa2MrAZym@hog>
- <CANn89iJSy82k+5b-vgSE-tD7hc8MhM6Niu=eY8sg-b7LbULouQ@mail.gmail.com>
+        linuxppc-dev@lists.ozlabs.org, David Miller <davem@davemloft.net>
+Subject: Re: [PATCH V2 net] ibmvnic: Continue with reset if set link down
+ failed
+Message-ID: <20210422172135.GY6564@kitsune.suse.cz>
+References: <20210420213517.24171-1-drt@linux.ibm.com>
+ <60C99F56-617D-455B-9ACF-8CE1EED64D92@linux.vnet.ibm.com>
+ <20210421064527.GA2648262@us.ibm.com>
+ <CAOhMmr4ckVFTZtSeHFHNgGPUA12xYO8WcUoakx7WdwQfSKBJhA@mail.gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <CANn89iJSy82k+5b-vgSE-tD7hc8MhM6Niu=eY8sg-b7LbULouQ@mail.gmail.com>
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
-Authentication-Results: relay.mimecast.com;
-        auth=pass smtp.auth=CUSA124A263 smtp.mailfrom=sd@queasysnail.net
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: queasysnail.net
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8BIT
+In-Reply-To: <CAOhMmr4ckVFTZtSeHFHNgGPUA12xYO8WcUoakx7WdwQfSKBJhA@mail.gmail.com>
+User-Agent: Mutt/1.11.3 (2019-02-01)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-2021-04-22, 18:52:10 +0200, Eric Dumazet wrote:
-> On Thu, Apr 22, 2021 at 6:04 PM Sabrina Dubroca <sd@queasysnail.net> wrote:
+Hello,
+
+On Thu, Apr 22, 2021 at 12:06:45AM -0500, Lijun Pan wrote:
+> On Wed, Apr 21, 2021 at 2:25 AM Sukadev Bhattiprolu
+> <sukadev@linux.ibm.com> wrote:
 > >
-> > 2021-04-22, 02:39:42 +0200, Florian Westphal wrote:
-> > > Phillip Potter <phil@philpotter.co.uk> wrote:
-> > > > Modify the check in geneve6_xmit_skb to use the size of a struct iphdr
-> > > > rather than struct ipv6hdr. This fixes two kernel selftest failures
-> > > > introduced by commit 6628ddfec758
-> > > > ("net: geneve: check skb is large enough for IPv4/IPv6 header"), without
-> > > > diminishing the fix provided by that commit.
+> > Lijun Pan [ljp@linux.vnet.ibm.com] wrote:
 > > >
-> > > What errors?
 > > >
-> > > > Reported-by: kernel test robot <oliver.sang@intel.com>
-> > > > Signed-off-by: Phillip Potter <phil@philpotter.co.uk>
-> > > > ---
-> > > >  drivers/net/geneve.c | 2 +-
-> > > >  1 file changed, 1 insertion(+), 1 deletion(-)
+> > > > On Apr 20, 2021, at 4:35 PM, Dany Madden <drt@linux.ibm.com> wrote:
 > > > >
-> > > > diff --git a/drivers/net/geneve.c b/drivers/net/geneve.c
-> > > > index 42f31c681846..a57a5e6f614f 100644
-> > > > --- a/drivers/net/geneve.c
-> > > > +++ b/drivers/net/geneve.c
-> > > > @@ -988,7 +988,7 @@ static int geneve6_xmit_skb(struct sk_buff *skb, struct net_device *dev,
-> > > >     __be16 sport;
-> > > >     int err;
+> > > > When ibmvnic gets a FATAL error message from the vnicserver, it marks
+> > > > the Command Respond Queue (CRQ) inactive and resets the adapter. If this
+> > > > FATAL reset fails and a transmission timeout reset follows, the CRQ is
+> > > > still inactive, ibmvnic's attempt to set link down will also fail. If
+> > > > ibmvnic abandons the reset because of this failed set link down and this
+> > > > is the last reset in the workqueue, then this adapter will be left in an
+> > > > inoperable state.
 > > > >
-> > > > -   if (!pskb_network_may_pull(skb, sizeof(struct ipv6hdr)))
-> > > > +   if (!pskb_network_may_pull(skb, sizeof(struct iphdr)))
-> > > >             return -EINVAL;
+> > > > Instead, make the driver ignore this link down failure and continue to
+> > > > free and re-register CRQ so that the adapter has an opportunity to
+> > > > recover.
 > > >
-> > > Seems this is papering over some bug, this change makes no sense to
-> > > me.  Can you please explain this?
+> > > This v2 does not adddress the concerns mentioned in v1.
+> > > And I think it is better to exit with error from do_reset, and schedule a thorough
+> > > do_hard_reset if the the adapter is already in unstable state.
 > >
-> > I'm not sure the original commit (6628ddfec758 ("net: geneve: check
-> > skb is large enough for IPv4/IPv6 header")) is correct either. GENEVE
-> > isn't limited to carrying IP, I think an ethernet header with not much
-> > else on top should be valid.
+> > We had a FATAL error and when handling it, we failed to send a
+> > link-down message to the VIOS. So what we need to try next is to
+> > reset the connection with the VIOS. For this we must talk to the
+> > firmware using the H_FREE_CRQ and H_REG_CRQ hcalls. do_reset()
+> > does just that in ibmvnic_reset_crq().
+> >
+> > Now, sure we can attempt a "thorough hard reset" which also does
+> > the same hcalls to reestablish the connection. Is there any
+> > other magic in do_hard_reset()? But in addition, it also frees lot
+> > more Linux kernel buffers and reallocates them for instance.
 > 
-> Maybe, but we still attempt to use ip_hdr() in this case, from
-> geneve_get_v6_dst()
-> 
-> So there is something fishy.
+> Working around everything in do_reset will make the code very difficult
+> to manage. Ultimately do_reset can do anything I am afraid, and do_hard_reset
+> can be removed completely or merged into do_reset.
 
-In ip_tunnel_get_dsfield()? Only if there's IP in the packet. Other
-tunnel types (except vxlan, which probably has the same problem as
-geneve) ues pskb_inet_may_pull, that looks like what we need here as
-well.
+This debate is not very constructive.
 
--- 
-Sabrina
+In the context of driver that has separate do_reset and do_hard_reset
+this fix picks the correct one unless you can refute the arguments
+provided.
 
+Merging do_reset and do_hard_reset might be a good code cleanup which is
+out of the scope of this fix.
+
+
+
+Given that vast majority of fixes to the vnic driver are related to the
+reset handling it would improve stability and testability if every
+reset took the same code path.
+
+In the context of merging do_hard_reset and do_reset the question is
+what is the intended distinction and performance gain by having
+'lightweight' reset.
+
+I don't have a vnic protocol manual at hand and I suspect I would not
+get one even if I searched for one.
+
+From reading through the fixes in the past my understanding is that the
+full reset is required when the backend changes which then potentially
+requires different size/number of buffers.
+
+What is the expected situation when reset is required without changing
+the backend?
+
+Is this so common that it warrants a separate 'lightweight' optimized
+function?
+
+Thanks
+
+Michal
