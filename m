@@ -2,59 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2D921368444
-	for <lists+netdev@lfdr.de>; Thu, 22 Apr 2021 17:56:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E0AE7368459
+	for <lists+netdev@lfdr.de>; Thu, 22 Apr 2021 18:04:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236605AbhDVP5Z (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 22 Apr 2021 11:57:25 -0400
-Received: from mail.kernel.org ([198.145.29.99]:47826 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S236333AbhDVP5Y (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 22 Apr 2021 11:57:24 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 0C3EF613D1;
-        Thu, 22 Apr 2021 15:56:49 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1619107009;
-        bh=3A1lONZmc2L40wnJPowdIircP7DAhBfWCyzhVUSzlFc=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=X1jHTmqFRb+J37YymjElCmNrBtEQVe1i48m98zhDaQMkeDe5fUXml3zuAhf15ph3C
-         Ga4KTJcLBG+mhdAIRSgzUswebP1xPKuS4j4lK5apOHH5tHMN9HoiGqz2jc4lo8xMws
-         iJt3QGnY/jjQ3QWv9R1cOe08mjOjJvyhrEDBUShI3Qrdh4ksa99sKOqgMIrbESnVew
-         W5m3VDrWILJi0erK4/u7EAcOhfwnWFB0o9jpsnZQJsUoh/PD4FiTWbrS2TvHxjaF5q
-         OpUHcNmQgFNcmpTCXaT5rjuUCqQnDg04HBQTh6wJ9+iwsz2NV2kAh/Mbq94PM5HsVv
-         gMFcit9CPzVQQ==
-Date:   Thu, 22 Apr 2021 08:56:48 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Joakim Zhang <qiangqing.zhang@nxp.com>
-Cc:     Jon Hunter <jonathanh@nvidia.com>,
-        "peppe.cavallaro@st.com" <peppe.cavallaro@st.com>,
-        "alexandre.torgue@foss.st.com" <alexandre.torgue@foss.st.com>,
-        "joabreu@synopsys.com" <joabreu@synopsys.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "mcoquelin.stm32@gmail.com" <mcoquelin.stm32@gmail.com>,
-        "andrew@lunn.ch" <andrew@lunn.ch>,
-        "f.fainelli@gmail.com" <f.fainelli@gmail.com>,
-        dl-linux-imx <linux-imx@nxp.com>,
-        "treding@nvidia.com" <treding@nvidia.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: Re: [RFC net-next] net: stmmac: should not modify RX descriptor
- when STMMAC resume
-Message-ID: <20210422085648.33738d1f@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <DB8PR04MB67953A499438FF3FF6BE531BE6469@DB8PR04MB6795.eurprd04.prod.outlook.com>
-References: <20210419115921.19219-1-qiangqing.zhang@nxp.com>
-        <f00e1790-5ba6-c9f0-f34f-d8a39c355cd7@nvidia.com>
-        <DB8PR04MB67954D37A59B2D91C69BF6A9E6489@DB8PR04MB6795.eurprd04.prod.outlook.com>
-        <cec17489-2ef9-7862-94c8-202d31507a0c@nvidia.com>
-        <DB8PR04MB67953A499438FF3FF6BE531BE6469@DB8PR04MB6795.eurprd04.prod.outlook.com>
+        id S236236AbhDVQEi convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Thu, 22 Apr 2021 12:04:38 -0400
+Received: from us-smtp-delivery-44.mimecast.com ([207.211.30.44]:45006 "EHLO
+        us-smtp-delivery-44.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S232670AbhDVQEi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 22 Apr 2021 12:04:38 -0400
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-207-ufYayBnTNhuXUT5o0X5VwA-1; Thu, 22 Apr 2021 12:03:59 -0400
+X-MC-Unique: ufYayBnTNhuXUT5o0X5VwA-1
+Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com [10.5.11.13])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id D65E81B2C9B3;
+        Thu, 22 Apr 2021 16:03:36 +0000 (UTC)
+Received: from hog (unknown [10.40.192.89])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id C5CA06091B;
+        Thu, 22 Apr 2021 16:03:34 +0000 (UTC)
+Date:   Thu, 22 Apr 2021 18:03:32 +0200
+From:   Sabrina Dubroca <sd@queasysnail.net>
+To:     Florian Westphal <fw@strlen.de>
+Cc:     Phillip Potter <phil@philpotter.co.uk>, davem@davemloft.net,
+        kuba@kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, edumazet@google.com
+Subject: Re: [PATCH] net: geneve: modify IP header check in geneve6_xmit_skb
+Message-ID: <YIGeVLyfa2MrAZym@hog>
+References: <20210421231100.7467-1-phil@philpotter.co.uk>
+ <20210422003942.GF4841@breakpoint.cc>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+In-Reply-To: <20210422003942.GF4841@breakpoint.cc>
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
+Authentication-Results: relay.mimecast.com;
+        auth=pass smtp.auth=CUSA124A263 smtp.mailfrom=sd@queasysnail.net
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: queasysnail.net
+Content-Type: text/plain; charset=UTF-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8BIT
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 22 Apr 2021 04:53:08 +0000 Joakim Zhang wrote:
-> Could you please help review this patch? It's really beyond my
-> comprehension, why this patch would affect Tegra186 Jetson TX2 board?
+2021-04-22, 02:39:42 +0200, Florian Westphal wrote:
+> Phillip Potter <phil@philpotter.co.uk> wrote:
+> > Modify the check in geneve6_xmit_skb to use the size of a struct iphdr
+> > rather than struct ipv6hdr. This fixes two kernel selftest failures
+> > introduced by commit 6628ddfec758
+> > ("net: geneve: check skb is large enough for IPv4/IPv6 header"), without
+> > diminishing the fix provided by that commit.
+> 
+> What errors?
+> 
+> > Reported-by: kernel test robot <oliver.sang@intel.com>
+> > Signed-off-by: Phillip Potter <phil@philpotter.co.uk>
+> > ---
+> >  drivers/net/geneve.c | 2 +-
+> >  1 file changed, 1 insertion(+), 1 deletion(-)
+> > 
+> > diff --git a/drivers/net/geneve.c b/drivers/net/geneve.c
+> > index 42f31c681846..a57a5e6f614f 100644
+> > --- a/drivers/net/geneve.c
+> > +++ b/drivers/net/geneve.c
+> > @@ -988,7 +988,7 @@ static int geneve6_xmit_skb(struct sk_buff *skb, struct net_device *dev,
+> >  	__be16 sport;
+> >  	int err;
+> >  
+> > -	if (!pskb_network_may_pull(skb, sizeof(struct ipv6hdr)))
+> > +	if (!pskb_network_may_pull(skb, sizeof(struct iphdr)))
+> >  		return -EINVAL;
+> 
+> Seems this is papering over some bug, this change makes no sense to
+> me.  Can you please explain this?
 
-Looks okay, please repost as non-RFC.
+I'm not sure the original commit (6628ddfec758 ("net: geneve: check
+skb is large enough for IPv4/IPv6 header")) is correct either. GENEVE
+isn't limited to carrying IP, I think an ethernet header with not much
+else on top should be valid.
+
+-- 
+Sabrina
+
