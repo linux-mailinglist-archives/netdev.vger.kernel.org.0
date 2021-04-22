@@ -2,34 +2,34 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E0173368391
-	for <lists+netdev@lfdr.de>; Thu, 22 Apr 2021 17:41:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3161D368392
+	for <lists+netdev@lfdr.de>; Thu, 22 Apr 2021 17:41:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236603AbhDVPlk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 22 Apr 2021 11:41:40 -0400
-Received: from mail.kernel.org ([198.145.29.99]:37438 "EHLO mail.kernel.org"
+        id S236599AbhDVPln (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 22 Apr 2021 11:41:43 -0400
+Received: from mail.kernel.org ([198.145.29.99]:37450 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S236485AbhDVPla (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S236487AbhDVPla (ORCPT <rfc822;netdev@vger.kernel.org>);
         Thu, 22 Apr 2021 11:41:30 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id EC8E861459;
-        Thu, 22 Apr 2021 15:40:54 +0000 (UTC)
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 634E26145B;
+        Thu, 22 Apr 2021 15:40:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1619106055;
-        bh=Vv4eNI5EmcVg6W1ff3uhAWU37NRElg8zmyTXumU0ONk=;
+        bh=shOi8BaShBs4zJ+AU2a2ivzPf3vLDNF93EiUsHT5vYo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=O7yOoewgfhQBSzTBhja//89KZlh+rsW7sC93Fy0+OWuu9TfZ5zIc8EfOCZLdxI9dp
-         OYyuedLdY6xn0EdMLNCdd3LM7DUhqAvtAZWWSkiqbHZsIAJ60YnC1W4H5jNBM8byqg
-         I1OdN4HverXPv3FgCYRBmFHaWORU2s4izKTsqDBRkS8cPStjiqV9WmysBPJI0+FUZH
-         zYWyhSFqfz3jktgivwAzmI8/0KhrIlMJJxW70MYUgEoW2ylbYL0TJ43Zcqsu07frP5
-         knLDVgyTLBRCWVsuXA0/uo7SglWofdWZMIE68nYJTlNEXaED+ymLIcmFBInHnvaAVl
-         Iz40wZPIAEkpw==
+        b=AWefUTDNYx1RmRbxE3tZDEgA1kEj4Ww6QZ8Y5/FWOGsOBQiI1SjIIj+Y962CwYsuI
+         Ka+0H1we5k8XyYuA/lbLAtbjVpSELzg6O57EurCv+LYjXf+33mctpbbtwcOcsHXqe9
+         vbMgC0Eyq7hILm7LcyK+4hTKpSB/CD3/KWAd/eV9g8cXRSCHTb12J9I9AqA+pDENIe
+         P/0CP7qa81Mm4HKEitJ/q6LH2zkxkNhhthDuh47lWla/Y8w+wMwI+MY+BVJVKghdDB
+         Ud+mMFjp+DgW8rZ1o2YH1/8ojOSuzL8/Tau5X5J2JHBMK58jgnTz2utKpXTHkToYUW
+         v/4x0Luub1QOg==
 From:   Jakub Kicinski <kuba@kernel.org>
 To:     mkubecek@suse.cz
 Cc:     netdev@vger.kernel.org, idosch@idosch.org,
         Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH ethtool-next v2 4/7] netlink: fec: support displaying statistics
-Date:   Thu, 22 Apr 2021 08:40:47 -0700
-Message-Id: <20210422154050.3339628-5-kuba@kernel.org>
+Subject: [PATCH ethtool-next v2 5/7] ethtool: add nlchk for redirecting to netlink
+Date:   Thu, 22 Apr 2021 08:40:48 -0700
+Message-Id: <20210422154050.3339628-6-kuba@kernel.org>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20210422154050.3339628-1-kuba@kernel.org>
 References: <20210422154050.3339628-1-kuba@kernel.org>
@@ -39,168 +39,108 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Similar implementation-wise to pause stats.
-The difference is that stats are reported as arrays
-(first entry being total, and remaining ones per-lane).
-
- # ethtool  -I --show-fec eth0
-FEC parameters for eth0:
-Configured FEC encodings: None
-Active FEC encoding: None
-Statistics:
-  corrected_blocks: 256
-    Lane 0: 255
-    Lane 1: 1
-  uncorrectable_blocks: 145
-    Lane 0: 128
-    Lane 1: 17
- # ethtool --json -I --show-fec eth0
-[ {
-        "ifname": "eth0",
-        "config": [ "None" ],
-        "active": [ "None" ],
-        "statistics": {
-            "corrected_blocks": {
-                "total": 256,
-                "lanes": [ 255,1 ]
-            },
-            "uncorrectable_blocks": {
-                "total": 145,
-                "lanes": [ 128,17 ]
-            }
-        }
-    } ]
+To support commands which differ from the ioctl implementation
+add a new callback which can check if the arguments on the command
+line indicate that the request should be sent over netlink.
+The decision should be inferred from the arguments, rather
+than an explicit --netlink argument.
 
 Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 ---
- netlink/fec.c | 85 ++++++++++++++++++++++++++++++++++++++++++++++++++-
- 1 file changed, 84 insertions(+), 1 deletion(-)
+ ethtool.c         | 5 ++++-
+ netlink/extapi.h  | 5 +++--
+ netlink/netlink.c | 9 +++++++--
+ 3 files changed, 14 insertions(+), 5 deletions(-)
 
-diff --git a/netlink/fec.c b/netlink/fec.c
-index bc9e120ce1be..f2659199c157 100644
---- a/netlink/fec.c
-+++ b/netlink/fec.c
-@@ -7,6 +7,7 @@
- 
- #include <errno.h>
- #include <ctype.h>
-+#include <inttypes.h>
- #include <string.h>
- #include <stdio.h>
- 
-@@ -40,6 +41,79 @@ fec_mode_walk(unsigned int idx, const char *name, bool val, void *data)
- 	print_string(PRINT_ANY, NULL, " %s", name);
- }
- 
-+static int fec_show_stats(const struct nlattr *nest)
-+{
-+	const struct nlattr *tb[ETHTOOL_A_FEC_STAT_MAX + 1] = {};
-+	DECLARE_ATTR_TB_INFO(tb);
-+	static const struct {
-+		unsigned int attr;
-+		char *name;
-+	} stats[] = {
-+		{ ETHTOOL_A_FEC_STAT_CORRECTED, "corrected_blocks" },
-+		{ ETHTOOL_A_FEC_STAT_UNCORR, "uncorrectable_blocks" },
-+		{ ETHTOOL_A_FEC_STAT_CORR_BITS, "corrected_bits" },
-+	};
-+	bool header = false;
-+	unsigned int i;
-+	int ret;
-+
-+	ret = mnl_attr_parse_nested(nest, attr_cb, &tb_info);
-+	if (ret < 0)
-+		return ret;
-+
-+	open_json_object("statistics");
-+	for (i = 0; i < ARRAY_SIZE(stats); i++) {
-+		uint64_t *vals;
-+		int lanes, l;
-+
-+		if (!tb[stats[i].attr] ||
-+		    !mnl_attr_get_payload_len(tb[stats[i].attr]))
-+			continue;
-+
-+		if (!header && !is_json_context()) {
-+			printf("Statistics:\n");
-+			header = true;
-+		}
-+
-+		if (mnl_attr_get_payload_len(tb[stats[i].attr]) % 8) {
-+			fprintf(stderr, "malformed netlink message (statistic)\n");
-+			goto err_close_stats;
-+		}
-+
-+		vals = mnl_attr_get_payload(tb[stats[i].attr]);
-+		lanes = mnl_attr_get_payload_len(tb[stats[i].attr]) / 8 - 1;
-+
-+		if (!is_json_context()) {
-+			fprintf(stdout, "  %s: %" PRIu64 "\n",
-+				stats[i].name, *vals++);
-+		} else {
-+			open_json_object(stats[i].name);
-+			print_u64(PRINT_JSON, "total", NULL, *vals++);
-+		}
-+
-+		if (lanes)
-+			open_json_array("lanes", "");
-+		for (l = 0; l < lanes; l++) {
-+			if (!is_json_context())
-+				fprintf(stdout, "    Lane %d: %" PRIu64 "\n",
-+					l, *vals++);
-+			else
-+				print_u64(PRINT_JSON, NULL, NULL, *vals++);
-+		}
-+		if (lanes)
-+			close_json_array("");
-+
-+		close_json_object();
-+	}
-+	close_json_object();
-+
-+	return 0;
-+
-+err_close_stats:
-+	close_json_object();
-+	return -1;
-+}
-+
- int fec_reply_cb(const struct nlmsghdr *nlhdr, void *data)
- {
- 	const struct nlattr *tb[ETHTOOL_A_FEC_MAX + 1] = {};
-@@ -106,6 +180,12 @@ int fec_reply_cb(const struct nlmsghdr *nlhdr, void *data)
+diff --git a/ethtool.c b/ethtool.c
+index b01a29bcf069..f4a7d396f487 100644
+--- a/ethtool.c
++++ b/ethtool.c
+@@ -5608,6 +5608,7 @@ struct option {
+ 	const char	*opts;
+ 	bool		no_dev;
+ 	int		(*func)(struct cmd_context *);
++	nl_chk_t	nlchk;
+ 	nl_func_t	nlfunc;
+ 	const char	*help;
+ 	const char	*xhelp;
+@@ -6270,6 +6271,7 @@ int main(int argc, char **argp)
+ 	int (*func)(struct cmd_context *);
+ 	struct cmd_context ctx = {};
+ 	nl_func_t nlfunc = NULL;
++	nl_chk_t nlchk = NULL;
+ 	bool no_dev;
+ 	int ret;
+ 	int k;
+@@ -6329,6 +6331,7 @@ int main(int argc, char **argp)
+ 		argc--;
+ 		func = args[k].func;
+ 		nlfunc = args[k].nlfunc;
++		nlchk = args[k].nlchk;
+ 		no_dev = args[k].no_dev;
+ 		goto opt_found;
  	}
- 	close_json_array("\n");
+@@ -6348,7 +6351,7 @@ int main(int argc, char **argp)
+ 	}
+ 	ctx.argc = argc;
+ 	ctx.argp = argp;
+-	netlink_run_handler(&ctx, nlfunc, !func);
++	netlink_run_handler(&ctx, nlchk, nlfunc, !func);
  
-+	if (tb[ETHTOOL_A_FEC_STATS]) {
-+		ret = fec_show_stats(tb[ETHTOOL_A_FEC_STATS]);
-+		if (ret < 0)
-+			goto err_close_dev;
-+	}
-+
- 	close_json_object();
+ 	ret = ioctl_init(&ctx, no_dev);
+ 	if (ret)
+diff --git a/netlink/extapi.h b/netlink/extapi.h
+index 5cadacce08e8..d6036a39e920 100644
+--- a/netlink/extapi.h
++++ b/netlink/extapi.h
+@@ -11,11 +11,12 @@ struct cmd_context;
+ struct nl_context;
  
- 	return MNL_CB_OK;
-@@ -119,6 +199,7 @@ int nl_gfec(struct cmd_context *ctx)
+ typedef int (*nl_func_t)(struct cmd_context *);
++typedef bool (*nl_chk_t)(struct cmd_context *);
+ 
+ #ifdef ETHTOOL_ENABLE_NETLINK
+ 
+-void netlink_run_handler(struct cmd_context *ctx, nl_func_t nlfunc,
+-			 bool no_fallback);
++void netlink_run_handler(struct cmd_context *ctx, nl_chk_t nlchk,
++			 nl_func_t nlfunc, bool no_fallback);
+ 
+ int nl_gset(struct cmd_context *ctx);
+ int nl_sset(struct cmd_context *ctx);
+diff --git a/netlink/netlink.c b/netlink/netlink.c
+index ffe06339f099..4cee9b23b28f 100644
+--- a/netlink/netlink.c
++++ b/netlink/netlink.c
+@@ -452,14 +452,15 @@ static void netlink_done(struct cmd_context *ctx)
+ /**
+  * netlink_run_handler() - run netlink handler for subcommand
+  * @ctx:         command context
++ * @nlchk:       netlink capability check
+  * @nlfunc:      subcommand netlink handler to call
+  * @no_fallback: there is no ioctl fallback handler
+  *
+  * This function returns only if ioctl() handler should be run as fallback.
+  * Otherwise it exits with appropriate return code.
+  */
+-void netlink_run_handler(struct cmd_context *ctx, nl_func_t nlfunc,
+-			 bool no_fallback)
++void netlink_run_handler(struct cmd_context *ctx, nl_chk_t nlchk,
++			 nl_func_t nlfunc, bool no_fallback)
  {
- 	struct nl_context *nlctx = ctx->nlctx;
- 	struct nl_socket *nlsk = nlctx->ethnl_socket;
-+	u32 flags;
+ 	bool wildcard = ctx->devname && !strcmp(ctx->devname, WILDCARD_DEVNAME);
+ 	bool wildcard_unsupported, ioctl_fallback;
+@@ -467,6 +468,10 @@ void netlink_run_handler(struct cmd_context *ctx, nl_func_t nlfunc,
+ 	const char *reason;
  	int ret;
  
- 	if (netlink_cmd_check(ctx, ETHTOOL_MSG_FEC_GET, true))
-@@ -129,8 +210,10 @@ int nl_gfec(struct cmd_context *ctx)
- 		return 1;
- 	}
- 
-+	flags = get_stats_flag(nlctx, ETHTOOL_MSG_FEC_GET,
-+			       ETHTOOL_A_FEC_HEADER);
- 	ret = nlsock_prep_get_request(nlsk, ETHTOOL_MSG_FEC_GET,
--				      ETHTOOL_A_FEC_HEADER, 0);
-+				      ETHTOOL_A_FEC_HEADER, flags);
- 	if (ret < 0)
- 		return ret;
- 
++	if (nlchk && !nlchk(ctx)) {
++		reason = "ioctl-only request";
++		goto no_support;
++	}
+ 	if (ctx->devname && strlen(ctx->devname) >= ALTIFNAMSIZ) {
+ 		fprintf(stderr, "device name '%s' longer than %u characters\n",
+ 			ctx->devname, ALTIFNAMSIZ - 1);
 -- 
 2.30.2
 
