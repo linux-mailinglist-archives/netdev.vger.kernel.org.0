@@ -2,91 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 88938367C77
-	for <lists+netdev@lfdr.de>; Thu, 22 Apr 2021 10:25:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8C5A1367C79
+	for <lists+netdev@lfdr.de>; Thu, 22 Apr 2021 10:27:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235097AbhDVIZk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 22 Apr 2021 04:25:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40578 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229938AbhDVIZj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 22 Apr 2021 04:25:39 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D0ECC06138B
-        for <netdev@vger.kernel.org>; Thu, 22 Apr 2021 01:25:05 -0700 (PDT)
-Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <mkl@pengutronix.de>)
-        id 1lZUdz-0000jT-Oc; Thu, 22 Apr 2021 10:25:03 +0200
-Received: from pengutronix.de (unknown [IPv6:2a03:f580:87bc:d400:621c:4946:3355:86a4])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (Client did not present a certificate)
-        (Authenticated sender: mkl-all@blackshift.org)
-        by smtp.blackshift.org (Postfix) with ESMTPSA id A1BA5613930;
-        Thu, 22 Apr 2021 08:25:02 +0000 (UTC)
-Date:   Thu, 22 Apr 2021 10:25:01 +0200
-From:   Marc Kleine-Budde <mkl@pengutronix.de>
-To:     Daniel =?utf-8?B?R2zDtmNrbmVy?= <dg@emlix.com>
-Cc:     netdev@vger.kernel.org, linux-can@vger.kernel.org
-Subject: Re: Softirq error with mcp251xfd driver
-Message-ID: <20210422082501.mvi5x6seiokglf4e@pengutronix.de>
-References: <20210310064626.GA11893@homes.emlix.com>
+        id S235216AbhDVI14 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 22 Apr 2021 04:27:56 -0400
+Received: from mail.kernel.org ([198.145.29.99]:53770 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229655AbhDVI1z (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 22 Apr 2021 04:27:55 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id D34DE613D1;
+        Thu, 22 Apr 2021 08:27:19 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1619080040;
+        bh=LS/NEzSKx2GRkFlEEFV0SXW4rgTOUa82+jGpdMVITaE=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=rKy5TDzRXqv52AOAOvC40y2CdPyHU6amaTWKJGwyhRZQBHNuZgGFbWfPWzPgyQAcq
+         OqojzsPUX6IQQXYHwwkCmWD4sna3vtqvDGJshCfmFn092RUWyL4qhuWslWBhJ3RppK
+         e67tD2+GNEuy9zmdU0lznaLePTVvUz3l2S22OWP4=
+Date:   Thu, 22 Apr 2021 10:27:17 +0200
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     Sudip Mukherjee <sudipm.mukherjee@gmail.com>
+Cc:     Leon Romanovsky <leon@kernel.org>,
+        "J. Bruce Fields" <bfields@fieldses.org>,
+        Aditya Pakki <pakki001@umn.edu>,
+        Chuck Lever <chuck.lever@oracle.com>,
+        Trond Myklebust <trond.myklebust@hammerspace.com>,
+        Anna Schumaker <anna.schumaker@netapp.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Dave Wysochanski <dwysocha@redhat.com>,
+        linux-nfs@vger.kernel.org, netdev <netdev@vger.kernel.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH] SUNRPC: Add a check for gss_release_msg
+Message-ID: <YIEzZQR0hTSxmpAz@kroah.com>
+References: <20210407001658.2208535-1-pakki001@umn.edu>
+ <YH5/i7OvsjSmqADv@kroah.com>
+ <20210420171008.GB4017@fieldses.org>
+ <YH+zwQgBBGUJdiVK@unreal>
+ <YH+7ZydHv4+Y1hlx@kroah.com>
+ <CADVatmNgU7t-Co84tSS6VW=3NcPu=17qyVyEEtVMVR_g51Ma6Q@mail.gmail.com>
+ <YH/8jcoC1ffuksrf@kroah.com>
+ <CADVatmORofURmrLiV7GRW2ZchzL6zdQopwxAh2YSVT0y69KuHA@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="pwalfuj3rnpezbql"
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20210310064626.GA11893@homes.emlix.com>
-X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
-X-SA-Exim-Mail-From: mkl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
+In-Reply-To: <CADVatmORofURmrLiV7GRW2ZchzL6zdQopwxAh2YSVT0y69KuHA@mail.gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Thu, Apr 22, 2021 at 09:10:53AM +0100, Sudip Mukherjee wrote:
+> Hi Greg,
+> 
+> On Wed, Apr 21, 2021 at 11:21 AM Greg KH <gregkh@linuxfoundation.org> wrote:
+> >
+> > On Wed, Apr 21, 2021 at 11:07:11AM +0100, Sudip Mukherjee wrote:
+> > > Hi Greg,
+> > >
+> > > On Wed, Apr 21, 2021 at 6:44 AM Greg KH <gregkh@linuxfoundation.org> wrote:
+> > > >
+> > > > On Wed, Apr 21, 2021 at 08:10:25AM +0300, Leon Romanovsky wrote:
+> > > > > On Tue, Apr 20, 2021 at 01:10:08PM -0400, J. Bruce Fields wrote:
+> > > > > > On Tue, Apr 20, 2021 at 09:15:23AM +0200, Greg KH wrote:
+> > > > > > > If you look at the code, this is impossible to have happen.
+> > > > > > >
+> > >
+> > > <snip>
+> > >
+> > > > > They introduce kernel bugs on purpose. Yesterday, I took a look on 4
+> > > > > accepted patches from Aditya and 3 of them added various severity security
+> > > > > "holes".
+> > > >
+> > > > All contributions by this group of people need to be reverted, if they
+> > > > have not been done so already, as what they are doing is intentional
+> > > > malicious behavior and is not acceptable and totally unethical.  I'll
+> > > > look at it after lunch unless someone else wants to do it...
+> > >
+> > > A lot of these have already reached the stable trees. I can send you
+> > > revert patches for stable by the end of today (if your scripts have
+> > > not already done it).
+> >
+> > Yes, if you have a list of these that are already in the stable trees,
+> > that would be great to have revert patches, it would save me the extra
+> > effort these mess is causing us to have to do...
+> 
+> The patch series for all the stable branches should be with you now.
+> 
+> But for others:
+> https://lore.kernel.org/stable/YIEVGXEoeizx6O1p@debian/  for v5.11.y
+> and other branches are sent as a reply to that mail.
 
---pwalfuj3rnpezbql
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Thank you, I now have them.  I will be looking at them when I get the
+chance, and comparing them to what I end up getting merged into
+5.13-rc1.
 
-On 10.03.2021 07:46:26, Daniel Gl=C3=B6ckner wrote:
-> Hi,
->=20
-> the mcp251xfd driver uses a threaded irq handler to queue skbs with the
-> can_rx_offload_* helpers. I get the following error on every packet until
-> the rate limit kicks in:
->=20
-> NOHZ tick-stop error: Non-RCU local softirq work is pending, handler
-> #08!!!
-
-FYI:
-
-echo 1 > /sys/class/net/can0/threaded
-
-Marc
-
---=20
-Pengutronix e.K.                 | Marc Kleine-Budde           |
-Embedded Linux                   | https://www.pengutronix.de  |
-Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
-Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
-
---pwalfuj3rnpezbql
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEK3kIWJt9yTYMP3ehqclaivrt76kFAmCBMtsACgkQqclaivrt
-76kHFwgArWeDl80non1JVFQMICOkPLGBeGX4Vs6cuxnf0uZOEJV1ZDbHzFwpzcd8
-lKcEjns/uEialSe7agov5XQHPbLB2iqyAA8uAPtlkFCUml/T8KsXBTw2aNsV6Ss0
-+Q5sabQnVHCbVYRgR9POiQVHXWFMGw45dyA46tRCGbo8e8P3Ufo9GQYzM74GbGqE
-wuY4ervyoGkCFkyfAPgWiRU1XXFihiMvsji1MorRuSl3TMzGul0HuYMp9t3fPiZ4
-a+wpfKiiLvCYCPYjNglGBeWTQDA+BDxsd0CK6N4rlYy1elkSfAMU+B+VyXgVepEA
-bEaiCF2UINuYeVdfiLLSJgzS88c4kQ==
-=gbye
------END PGP SIGNATURE-----
-
---pwalfuj3rnpezbql--
+greg k-h
