@@ -2,115 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 66740368786
-	for <lists+netdev@lfdr.de>; Thu, 22 Apr 2021 22:00:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 63A3036878F
+	for <lists+netdev@lfdr.de>; Thu, 22 Apr 2021 22:02:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239082AbhDVUAq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 22 Apr 2021 16:00:46 -0400
-Received: from mail.kernel.org ([198.145.29.99]:53544 "EHLO mail.kernel.org"
+        id S238922AbhDVUDI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 22 Apr 2021 16:03:08 -0400
+Received: from m43-7.mailgun.net ([69.72.43.7]:47757 "EHLO m43-7.mailgun.net"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S236058AbhDVUAp (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 22 Apr 2021 16:00:45 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 12E126100B;
-        Thu, 22 Apr 2021 20:00:08 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1619121609;
-        bh=f/P+1/0wMQTXhtxadIAI7KmLHWPPdlXhjk/DweX0UbQ=;
-        h=Date:From:To:Cc:Subject:From;
-        b=rfEbGF7maHCbOROn8ePxnwH8t94xIoe2A4oyzoJbeH0JXeGokZScZ8S757OVSfzSh
-         PXMRAoY9tvwBe1iYHxaSJ7q3Djs0dQcg9jZXZJXRnSwSUvJ/QVru7y2CfIIRxN8htR
-         SXpT1GUtxaq12aPNUFqCSW8Ir75dGE0GRatucZpYP97bhAQX1LlInV7bs04O/+9ipT
-         p7U0caxepGRb7pZTJJqdXEDii5FuVrYRX75WC+Rvqlm0KAb2WIrWt+dgz2jg7VCgRM
-         4DG+88NKuFqQ9w3ssbrBh1vu6Cu5ksApx44vHTzq4juYvV2WmuuOj9ds14di6ipf9S
-         DpfU9PLAiluqQ==
-Date:   Thu, 22 Apr 2021 15:00:32 -0500
-From:   "Gustavo A. R. Silva" <gustavoars@kernel.org>
-To:     Johannes Berg <johannes@sipsolutions.net>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
-        linux-hardening@vger.kernel.org, Kees Cook <keescook@chromium.org>
-Subject: [PATCH v2][next] wireless: wext-spy: Fix out-of-bounds warning
-Message-ID: <20210422200032.GA168995@embeddedor>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+        id S237049AbhDVUDH (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 22 Apr 2021 16:03:07 -0400
+DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
+ s=smtp; t=1619121752; h=Message-Id: Date: Subject: Cc: To: From:
+ Sender; bh=a881ow+4PhxSX+A5ZfdVsrzB9Qul8Rd5g0XoSWyK3+o=; b=igIv3XfG4OWoTgdOkMSa2RibFM/iq2GJcKeQGUJmQjOREmARxuq5g+88m/bSpPKfnPRvDNcD
+ 4eJe2ZX+RuAw3d2w8w81k40Gap0svU5Ogx0dtIPEiUz/Wco0ZWGh1JDwoNiAvrOLKhiVKPGe
+ k+6cFA+04aZiWtRAY5jRq8jJamM=
+X-Mailgun-Sending-Ip: 69.72.43.7
+X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
+Received: from smtp.codeaurora.org
+ (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
+ smtp-out-n02.prod.us-west-2.postgun.com with SMTP id
+ 6081d652215b831afb7c3756 (version=TLS1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Thu, 22 Apr 2021 20:02:26
+ GMT
+Sender: sharathv=codeaurora.org@mg.codeaurora.org
+Received: by smtp.codeaurora.org (Postfix, from userid 1001)
+        id 368F1C43460; Thu, 22 Apr 2021 20:02:26 +0000 (UTC)
+X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
+        aws-us-west-2-caf-mail-1.web.codeaurora.org
+X-Spam-Level: 
+X-Spam-Status: No, score=-2.9 required=2.0 tests=ALL_TRUSTED,BAYES_00,SPF_FAIL
+        autolearn=no autolearn_force=no version=3.4.0
+Received: from svurukal-linux.qualcomm.com (unknown [202.46.22.19])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-SHA256 (128/128 bits))
+        (No client certificate requested)
+        (Authenticated sender: sharathv)
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id 48F80C433D3;
+        Thu, 22 Apr 2021 20:02:22 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 48F80C433D3
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=fail smtp.mailfrom=sharathv@codeaurora.org
+From:   Sharath Chandra Vurukala <sharathv@codeaurora.org>
+To:     davem@davemloft.net, kuba@kernel.org, elder@kernel.org,
+        cpratapa@codeaurora.org, subashab@codeaurora.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     Sharath Chandra Vurukala <sharathv@codeaurora.org>
+Subject: [PATCH net-next v4 0/3] net: qualcomm: rmnet: Enable Mapv5
+Date:   Fri, 23 Apr 2021 01:32:08 +0530
+Message-Id: <1619121731-17782-1-git-send-email-sharathv@codeaurora.org>
+X-Mailer: git-send-email 2.7.4
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Fix the following out-of-bounds warning:
+This series introduces the MAPv5 packet format.
 
-net/wireless/wext-spy.c:178:2: warning: 'memcpy' offset [25, 28] from the object at 'threshold' is out of the bounds of referenced subobject 'low' with type 'struct iw_quality' at offset 20 [-Warray-bounds]
+  Patch 0 documents the MAPv4/v5.
+  Patch 1 introduces the MAPv5 and the Inline checksum offload for RX/Ingress.
+  Patch 2 introduces the MAPv5 and the Inline checksum offload for TX/Egress.
 
-The problem is that the original code is trying to copy data into a
-couple of struct members adjacent to each other in a single call to
-memcpy(). This causes a legitimate compiler warning because memcpy()
-overruns the length of &threshold.low and &spydata->spy_thr_low. As
-these are just a couple of struct members, fix this by using direct
-assignments, instead of memcpy().
+  A new checksum header format is used as part of MAPv5.For RX checksum offload,
+  the checksum is verified by the HW and the validity is marked in the checksum
+  header of MAPv5. For TX, the required metadata is filled up so hardware can
+  compute the checksum.
 
-This helps with the ongoing efforts to globally enable -Warray-bounds
-and get us closer to being able to tighten the FORTIFY_SOURCE routines
-on memcpy().
+  v1->v2:
+  - Fixed the compilation errors, warnings reported by kernel test robot.
+  - Checksum header definition is expanded to support big, little endian
+          formats as mentioned by Jakub.
 
-Link: https://github.com/KSPP/linux/issues/109
-Reported-by: kernel test robot <lkp@intel.com>
-Reviewed-by: Kees Cook <keescook@chromium.org>
-Signed-off-by: Gustavo A. R. Silva <gustavoars@kernel.org>
----
-Changes in v2:
- - Use direct struct assignments instead of memcpy().
- - Fix one more instance of this same issue in function
-   iw_handler_get_thrspy().
- - Update changelog text.
- - Add Kees' RB tag. 
+  v2->v3:
+  - Fixed compilation errors reported by kernel bot for big endian flavor.
 
- net/wireless/wext-spy.c | 14 +++++++-------
- 1 file changed, 7 insertions(+), 7 deletions(-)
+  v3->v4:
+  - Made changes to use masks instead of C bit-fields as suggested by Jakub/Alex.
 
-diff --git a/net/wireless/wext-spy.c b/net/wireless/wext-spy.c
-index 33bef22e44e9..b379a0371653 100644
---- a/net/wireless/wext-spy.c
-+++ b/net/wireless/wext-spy.c
-@@ -120,8 +120,8 @@ int iw_handler_set_thrspy(struct net_device *	dev,
- 		return -EOPNOTSUPP;
- 
- 	/* Just do it */
--	memcpy(&(spydata->spy_thr_low), &(threshold->low),
--	       2 * sizeof(struct iw_quality));
-+	spydata->spy_thr_low = threshold->low;
-+	spydata->spy_thr_high = threshold->high;
- 
- 	/* Clear flag */
- 	memset(spydata->spy_thr_under, '\0', sizeof(spydata->spy_thr_under));
-@@ -147,8 +147,8 @@ int iw_handler_get_thrspy(struct net_device *	dev,
- 		return -EOPNOTSUPP;
- 
- 	/* Just do it */
--	memcpy(&(threshold->low), &(spydata->spy_thr_low),
--	       2 * sizeof(struct iw_quality));
-+	threshold->low = spydata->spy_thr_low;
-+	threshold->high = spydata->spy_thr_high;
- 
- 	return 0;
- }
-@@ -173,10 +173,10 @@ static void iw_send_thrspy_event(struct net_device *	dev,
- 	memcpy(threshold.addr.sa_data, address, ETH_ALEN);
- 	threshold.addr.sa_family = ARPHRD_ETHER;
- 	/* Copy stats */
--	memcpy(&(threshold.qual), wstats, sizeof(struct iw_quality));
-+	threshold.qual = *wstats;
- 	/* Copy also thresholds */
--	memcpy(&(threshold.low), &(spydata->spy_thr_low),
--	       2 * sizeof(struct iw_quality));
-+	threshold.low = spydata->spy_thr_low;
-+	threshold.high = spydata->spy_thr_high;
- 
- 	/* Send event to user space */
- 	wireless_send_event(dev, SIOCGIWTHRSPY, &wrqu, (char *) &threshold);
+Sharath Chandra Vurukala (3):
+  docs: networking: Add documentation for MAPv5
+  net: ethernet: rmnet: Support for ingress MAPv5 checksum offload
+  net: ethernet: rmnet: Add support for MAPv5 egress packets
+
+ .../device_drivers/cellular/qualcomm/rmnet.rst     | 126 +++++++++++++++--
+ drivers/net/ethernet/qualcomm/rmnet/rmnet_config.h |   4 +-
+ .../net/ethernet/qualcomm/rmnet/rmnet_handlers.c   |  29 ++--
+ drivers/net/ethernet/qualcomm/rmnet/rmnet_map.h    |  11 +-
+ .../net/ethernet/qualcomm/rmnet/rmnet_map_data.c   | 151 ++++++++++++++++++++-
+ drivers/net/ethernet/qualcomm/rmnet/rmnet_vnd.c    |   3 +-
+ include/linux/if_rmnet.h                           |  27 +++-
+ include/uapi/linux/if_link.h                       |   2 +
+ 8 files changed, 318 insertions(+), 35 deletions(-)
+
 -- 
-2.27.0
+The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum,
+a Linux Foundation Collaborative Project
 
