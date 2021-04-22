@@ -2,232 +2,245 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1B8FB3679D3
-	for <lists+netdev@lfdr.de>; Thu, 22 Apr 2021 08:22:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8270E3679E2
+	for <lists+netdev@lfdr.de>; Thu, 22 Apr 2021 08:26:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234797AbhDVGWf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 22 Apr 2021 02:22:35 -0400
-Received: from aserp2130.oracle.com ([141.146.126.79]:34154 "EHLO
-        aserp2130.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229938AbhDVGWb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 22 Apr 2021 02:22:31 -0400
-Received: from pps.filterd (aserp2130.oracle.com [127.0.0.1])
-        by aserp2130.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 13M6L1o9122173;
-        Thu, 22 Apr 2021 06:21:53 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=from : to : subject :
- date : message-id : mime-version : content-type :
- content-transfer-encoding; s=corp-2020-01-29;
- bh=X83JZ/2N1DSnIYFTbCumPVNF60Vg3JGcOSd41nEHEtw=;
- b=NlJTO1CoACXSskzDR12OQjpWN4dyF7uI71aMBQ7XIU5tN7u/3UjesPalwBZtxq/JJVzw
- rdiV0Gk0QHc/FtcqmesKG8mAzXx1x+GcrlDy1DLQ5u+cIeKjYvSMx5Sn8BUWVU7HgAP2
- xhukCkWe8XqedheX3id02qYMUywCCQ8qEHvD9De04i2jpy1nNqUD1+Ky+ZdoGWfoBqFy
- BkBLEH1kJq3vS4VxyQutE4g2r/VUEDMGl/JpfIbL/RhFZ2bD4hxbGBec/a+zeJiGu+qf
- lUPoV7CLHCqh1O1pqNv+XdHKXBp6RlIuHg7mDxxVxVVw6obxOcyTRkGKDfVR2wrEOQex Iw== 
-Received: from aserp3030.oracle.com (aserp3030.oracle.com [141.146.126.71])
-        by aserp2130.oracle.com with ESMTP id 37yn6ccbe9-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Thu, 22 Apr 2021 06:21:53 +0000
-Received: from pps.filterd (aserp3030.oracle.com [127.0.0.1])
-        by aserp3030.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 13M6KxE0103825;
-        Thu, 22 Apr 2021 06:21:52 GMT
-Received: from aserv0121.oracle.com (aserv0121.oracle.com [141.146.126.235])
-        by aserp3030.oracle.com with ESMTP id 383005yxvh-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Thu, 22 Apr 2021 06:21:52 +0000
-Received: from abhmp0005.oracle.com (abhmp0005.oracle.com [141.146.116.11])
-        by aserv0121.oracle.com (8.14.4/8.13.8) with ESMTP id 13M6LpvK005891;
-        Thu, 22 Apr 2021 06:21:52 GMT
-Received: from lab02.no.oracle.com (/10.172.144.56)
-        by default (Oracle Beehive Gateway v4.0)
-        with ESMTP ; Wed, 21 Apr 2021 23:21:50 -0700
-From:   Hans Westgaard Ry <hans.westgaard.ry@oracle.com>
-To:     Tariq Toukan <tariqt@nvidia.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH v2 net-next] net/mlx4: Treat VFs fair when handling comm_channel_events
-Date:   Thu, 22 Apr 2021 08:21:40 +0200
-Message-Id: <1619072500-13789-1-git-send-email-hans.westgaard.ry@oracle.com>
-X-Mailer: git-send-email 1.8.3.1
+        id S234774AbhDVG0y (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 22 Apr 2021 02:26:54 -0400
+Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:2152 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S229547AbhDVG0w (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 22 Apr 2021 02:26:52 -0400
+Received: from pps.filterd (m0044012.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 13M6Olx0030498;
+        Wed, 21 Apr 2021 23:26:01 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=subject : to : cc :
+ references : from : message-id : date : in-reply-to : content-type :
+ content-transfer-encoding : mime-version; s=facebook;
+ bh=Vv22pK2Ku9KQbud5SDdswHuFljZKhuJ8PWoflhwSGdc=;
+ b=SCZtwNjMRhrMwNyQ5vq1T5FSgzjEDZH1tbBhOUEgHuI3CmNVCPqD27QxzsqNj5K9Oduf
+ ib4v7kUPngYq96wXJ7rQWoOfgNZbvI+flqTOyhhK20EPuWenih/QMuwHoBwNmyBYPdxj
+ ubBFialAhVrkd0OrJaNQwmtiKCyGEwmmkKM= 
+Received: from maileast.thefacebook.com ([163.114.130.16])
+        by mx0a-00082601.pphosted.com with ESMTP id 382npsw5f8-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
+        Wed, 21 Apr 2021 23:26:00 -0700
+Received: from NAM04-MW2-obe.outbound.protection.outlook.com (100.104.31.183)
+ by o365-in.thefacebook.com (100.104.36.101) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2176.2; Wed, 21 Apr 2021 23:25:59 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=exufiNXbGd4uLjyvkVWUzbbp5ZRb7c4vy/buZhmZzOL4AjJJieGhBJle+VPWBNydr35HfB8oPyukmOLz83Ls7BKeHtij3pmtAnnAX1KDCcP9JpdRWEiaxN+JQqJsZ+OT44VCmm0Nm0pJnP/tOka2rAemhWfcmYBly9/DaHKeDl2UZfKo69MuEbJM086/ij/Fz7U/6FopaCj/X0pjz0jIaZV21TtRNOMfCKjEyE/H4kZYSek18dPd/KJiqBGLQcdHN7xavOc0CojKp1jUSUa6ODxjT+gqrr1g1CTNy4Kx6R4iobbA81IGovNOOiYpQiNGAeofKaJZ9dWx3n8KA5vm8w==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=Vv22pK2Ku9KQbud5SDdswHuFljZKhuJ8PWoflhwSGdc=;
+ b=Z08ZcgZQjTotTqme3Rt7OvJmwJixuTbGlyPDIhXOm9ddfGJMEs+HoeEIoq0mNnF+urQb8tVa24Me3Q2/oniDbZycW+kudf9Fc9XwhNHnnm5cKWzV2JuLeQviGxmZnN+IW4FzHTqLi9jpa0/68YpSZgd9XBj3bZCG+O+YsPai4mhf5rTSU8VPcxA+j1zbQfsOtEA+JGeYPCiD2I2CUzDWeRZg9kO2lLknCkLxLTLJsMsCzWp+GBvg6uD2grc4OG1ftWxlsvxKjm6ivIWO53dB4HidAREX51ttFT51fqVe0NCMi7M1w+vrPVU2IJ0CV4pB860qt/97PBXCW90vKMcvqQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
+ header.d=fb.com; arc=none
+Received: from SN6PR1501MB2064.namprd15.prod.outlook.com (2603:10b6:805:d::27)
+ by SA1PR15MB4738.namprd15.prod.outlook.com (2603:10b6:806:19d::11) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4065.21; Thu, 22 Apr
+ 2021 06:25:55 +0000
+Received: from SN6PR1501MB2064.namprd15.prod.outlook.com
+ ([fe80::f433:fd99:f905:8912]) by SN6PR1501MB2064.namprd15.prod.outlook.com
+ ([fe80::f433:fd99:f905:8912%3]) with mapi id 15.20.4065.021; Thu, 22 Apr 2021
+ 06:25:55 +0000
+Subject: Re: [PATCH v2 bpf-next 05/17] libbpf: allow gaps in BPF program
+ sections to support overriden weak functions
+To:     Andrii Nakryiko <andrii@kernel.org>, <bpf@vger.kernel.org>,
+        <netdev@vger.kernel.org>, <ast@fb.com>, <daniel@iogearbox.net>
+CC:     <kernel-team@fb.com>
+References: <20210416202404.3443623-1-andrii@kernel.org>
+ <20210416202404.3443623-6-andrii@kernel.org>
+From:   Yonghong Song <yhs@fb.com>
+Message-ID: <71bfd67c-c8f0-595c-e721-201ec4e8e062@fb.com>
+Date:   Wed, 21 Apr 2021 23:25:50 -0700
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
+ Gecko/20100101 Thunderbird/78.9.1
+In-Reply-To: <20210416202404.3443623-6-andrii@kernel.org>
+Content-Type: text/plain; charset="utf-8"; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [2620:10d:c090:400::5:df89]
+X-ClientProxiedBy: CO2PR04CA0091.namprd04.prod.outlook.com
+ (2603:10b6:104:6::17) To SN6PR1501MB2064.namprd15.prod.outlook.com
+ (2603:10b6:805:d::27)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=9961 signatures=668683
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 mlxlogscore=999 bulkscore=0
- malwarescore=0 mlxscore=0 adultscore=0 suspectscore=0 spamscore=0
- phishscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2104060000 definitions=main-2104220054
-X-Proofpoint-GUID: rtvmX_WN58Hp7l6UtcTdqzw-3UvI-4WS
-X-Proofpoint-ORIG-GUID: rtvmX_WN58Hp7l6UtcTdqzw-3UvI-4WS
-X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=9961 signatures=668683
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 malwarescore=0 priorityscore=1501
- bulkscore=0 suspectscore=0 impostorscore=0 mlxscore=0 lowpriorityscore=0
- clxscore=1011 spamscore=0 mlxlogscore=999 adultscore=0 phishscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2104060000
- definitions=main-2104220054
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from [IPv6:2620:10d:c085:21c8::16ea] (2620:10d:c090:400::5:df89) by CO2PR04CA0091.namprd04.prod.outlook.com (2603:10b6:104:6::17) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4065.21 via Frontend Transport; Thu, 22 Apr 2021 06:25:54 +0000
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: c4557689-7101-40a1-e3a5-08d905577bf8
+X-MS-TrafficTypeDiagnostic: SA1PR15MB4738:
+X-MS-Exchange-Transport-Forked: True
+X-Microsoft-Antispam-PRVS: <SA1PR15MB4738EDCC077B65BCDF5A0263D3469@SA1PR15MB4738.namprd15.prod.outlook.com>
+X-FB-Source: Internal
+X-MS-Oob-TLC-OOBClassifiers: OLM:8882;
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: M8OU966brIWrnHhYlOwXg0xvnJT0bNU0IpWQFe0qV8kxUMd+Vo3a44SmWfSPc8eiL3V5us/EI+MR6Df8BFFwAnGf49qn18yHFPZmJ7WuuJifOFQCGrtF/b3W9YJrP1n0Ot4ClPjHuOFMvguTdEGnJwVPbOwkAHK+xTMnkvHnrHMNmfwJn0mtXfYM42KsU6pu4PkE/eiWObQg29tsXds/ogau9Dwg0fWfFLef2D9MQsg9ycdksfUURA8zoodRjpDPScpcdt3wLUBapL4m2DVLhRufE18I6ZZV9b15RIVFdVXgHUTL8O+eZczvNZkMbWDGA/GPG3hA8vCOzR23/ltjIOiNgDJ9Nli26lXJo61sdfolwPbv44Y096PTlGi6PcvXAZTjTdRsAi1BSXk9tqca+gNDKa+WIBHWL3LMe9kjy8Hb9Z5TsebL3TQ8V6T+pqigcYomhWHF+CF5u2bnFH+JtWYD87kp4uGfi3K266zBPAT3xyDoj+dwLugCgdW4gON8xxg+4xXDSuiN5P+6GC0fRZj50Lwfstx/Rowlxz16f3GE1LcnyKfe+B9C2PMojdTnHkuA+BOVHh5jtM94wGDh/trwHmZG1dGQT0sPUqfbEHlMvo/kmpBsZHc7wLYcyOhQuLjvFlF5RDgeXRE1Qh1qYy7WMJ4WNUe3RFlqRrkWhwKTggPJBTJZhOpN0W6IA/fm
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SN6PR1501MB2064.namprd15.prod.outlook.com;PTR:;CAT:NONE;SFS:(346002)(396003)(39860400002)(376002)(136003)(366004)(66946007)(5660300002)(316002)(478600001)(2616005)(52116002)(53546011)(31696002)(66556008)(36756003)(31686004)(8676002)(86362001)(6486002)(66476007)(6666004)(83380400001)(186003)(16526019)(2906002)(38100700002)(8936002)(4326008)(45980500001)(43740500002);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData: =?utf-8?B?RVhsSGh6YUlhZDllZ0R5U1RaRitQUTg2ZUUvZEhiK2NFUSttNFNFM09MaDZU?=
+ =?utf-8?B?MmxMSlBjNDltNUVSY0xORWI5allNeE5rQjQ1MGh2MGZEZGc2VE0rcy9oR3Bu?=
+ =?utf-8?B?Q1FjdzhLdS9MUGhra3BKM0w3YjQxRTZuL2V1c20zN3pteWlYYUVYMWFGS0ZB?=
+ =?utf-8?B?bnFqWjRDKzlxMjZQV0RHaUxvREN2amQzRUVheXkvakZDOGozdkorT2tpd1RH?=
+ =?utf-8?B?Snh1eCthd3RpN1dmUUl4OHdndTNacHlmSEwxcytpeDVhTU5kMzNPeHI4Q1pp?=
+ =?utf-8?B?SU5Kck0vUlhOUi9XOGtWZjh2eGEzellmWVgvQnhnb3VrMVVnbHMzMXU3blg3?=
+ =?utf-8?B?Z0h3N2tpRXNWaGNsMkFFbU5IR0VENlNqL3ZxelFOTFJDVjFmakhrenh2azd4?=
+ =?utf-8?B?VzFDaUltd2pFMjV4cU1EYmxTYm51Y1gwY0hSektCQ1I3bUlvNm9samV4Mkpz?=
+ =?utf-8?B?YXhTdWRjSzhJM1E2cFRtS0pObDZRcERCS2pJQVd4bkcrYmpUMHlyK0FqZEdv?=
+ =?utf-8?B?UGcvV0t0SUhvM2lvMWFFTG41WlUvb2hvSlhjTWFSTlFuVlFUeU5BMzArTnFW?=
+ =?utf-8?B?b2lwdFppV3EyWVR2QjlTekVBeFJYYUNxQ1RYaDhzcXlWcWkvNDR0T3R5S2Mw?=
+ =?utf-8?B?VHI4NGxnZWVHWUdGMmlZZ0tBVXl1UWthcGk3RjZTQTNwUDdEL3loOFhZU002?=
+ =?utf-8?B?VXo5elpBbVVSdG5PSi95VXIyZkwwVk0xRUtWdnhubFNndzE3ZzZvRkZmYk1D?=
+ =?utf-8?B?bHBpR05naVJaVVpiQjlUNnpTOXIwQlJVYXpCaGtHaXkyc0FudExRREh6Y3JT?=
+ =?utf-8?B?dzN4SHQ4dWpIRnVybUlIWEYvS3RVRFEzQmJZNFBhcEtQc0F6Zmo3R1hTTGlE?=
+ =?utf-8?B?ZDB0WTZxbGJNcUxpMWNWdFczN25FTlB4L2hYRGxBQklTUzUwZWx3Yk01SEt2?=
+ =?utf-8?B?U0pzWmVqb2Z5RjNaK0diODM5SG5xQS8rT2x6eEdONlFsUHJ3ZTNTZkRqdTFU?=
+ =?utf-8?B?NkNmbUViYlNnUmt6VVppRXRVSUNFTC9adDl6QVBNcUdMQUtzd2hsc1dIdkwy?=
+ =?utf-8?B?T0s4RGlZMzZNeUMxdE1VaTdDcWhLWlJ2a2IvZG5vcVcyZkhnSEZPSUJXQjRh?=
+ =?utf-8?B?UERHL0FVRVFyM3NXeFJQczYrQnBCWTNKYjBxNFZMSjBCTXdWMjNEVjBhNUl2?=
+ =?utf-8?B?NW5vejF5ZVZDU3o0cUN0UGJIL2RTNFJXUmU4L1JrQjBEZ3p2TGsvYkNaSWhx?=
+ =?utf-8?B?WjlhYVlXdEcwK3pVTE52alVUNkozZUhqTTFtdnBKdllwcHQxek9yKy84MDhw?=
+ =?utf-8?B?eGxXVUE4WUhndlFmYzR2Zko4MDNxMXE0QkJKdzRUb05FKzg2dE9DalFwN2xO?=
+ =?utf-8?B?c2xhL1FMbmxRQUcwLy9yWUtpK0NVekFRK01vemlNVGFwVFRoazBKWGxWeEtn?=
+ =?utf-8?B?VFNWbVI1anNoS1czcTRhRGR6Nk5VWG1naVJ3dmlydzJjNm1mVGtqWDJqaG11?=
+ =?utf-8?B?dGJTNGhYTWZtOFo2ZVdCWVBhMVppMXlHMVFMZ0sycXVFb1FJM0RJQXI5dlg4?=
+ =?utf-8?B?V0tjaXV6ZU16VldDelQzRW8yZ0F0UkhORDJLQ3QvR2hJQTFtUXFZNVhId0Yz?=
+ =?utf-8?B?aGo3b0dWUWovbzIzVGVFR0RjdnR1WlZZVDFEMDhNQ3RwdUU1a2o2Z0FhY2Zo?=
+ =?utf-8?B?VzlxQ2o3WTNtdE5OT3N1bjhsQkhKZUtoaFJta0RIbXFnZFhIZExwVzkzL3NH?=
+ =?utf-8?B?OWJuVmk2S0dkalJzOFpYcXBxV2RLUlhaMEN1ZHdDcVpPZkdFSnduRWl2MFRo?=
+ =?utf-8?Q?Txvxv2VvJEC09csnWOWUTwT7Ra6LhRp9L5/h8=3D?=
+X-MS-Exchange-CrossTenant-Network-Message-Id: c4557689-7101-40a1-e3a5-08d905577bf8
+X-MS-Exchange-CrossTenant-AuthSource: SN6PR1501MB2064.namprd15.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 22 Apr 2021 06:25:55.2756
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: 1euol/LSG/fAfStphRFBJJI1zI2086cfCW1/uTa/30XuyhDCcyu/OLU5/WmOXjpw
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA1PR15MB4738
+X-OriginatorOrg: fb.com
+X-Proofpoint-GUID: rLklhxAA1rjhXwmwn7KkNgZV5lYLX0kg
+X-Proofpoint-ORIG-GUID: rLklhxAA1rjhXwmwn7KkNgZV5lYLX0kg
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.391,18.0.761
+ definitions=2021-04-22_01:2021-04-21,2021-04-21 signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 clxscore=1015
+ adultscore=0 phishscore=0 malwarescore=0 spamscore=0 mlxscore=0
+ bulkscore=0 lowpriorityscore=0 suspectscore=0 impostorscore=0
+ priorityscore=1501 mlxlogscore=999 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.12.0-2104060000 definitions=main-2104220055
+X-FB-Internal: deliver
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Handling comm_channel_event in mlx4_master_comm_channel uses a double
-loop to determine which slaves have requested work. The search is
-always started at lowest slave. This leads to unfairness; lower VFs
-tends to be prioritized over higher VFs.
 
-The patch uses find_next_bit to determine which slaves to handle.
-Fairness is implemented by always starting at the next to the last
-start.
 
-An MPI program has been used to measure improvements. It runs 500
-ibv_reg_mr, synchronizes with all other instances and then runs 500
-ibv_dereg_mr.
+On 4/16/21 1:23 PM, Andrii Nakryiko wrote:
+> Currently libbpf is very strict about parsing BPF program isnstruction
 
-The results running 500 processes, time reported is for running 500
-calls:
+isnstruction => instruction
 
-ibv_reg_mr:
-             Mod.   Org.
-mlx4_1    403.356ms 424.674ms
-mlx4_2    403.355ms 424.674ms
-mlx4_3    403.354ms 424.674ms
-mlx4_4    403.355ms 424.674ms
-mlx4_5    403.357ms 424.677ms
-mlx4_6    403.354ms 424.676ms
-mlx4_7    403.357ms 424.675ms
-mlx4_8    403.355ms 424.675ms
+> sections. No gaps are allowed between sequential BPF programs within a given
+> ELF section. Libbpf enforced that by keeping track of the next section offset
+> that should start a new BPF (sub)program and cross-checks that by searching for
+> a corresponding STT_FUNC ELF symbol.
+> 
+> But this is too restrictive once we allow to have weak BPF programs and link
+> together two or more BPF object files. In such case, some weak BPF programs
+> might be "overriden" by either non-weak BPF program with the same name and
 
-ibv_dereg_mr:
-             Mod.   Org.
-mlx4_1    116.408ms 142.818ms
-mlx4_2    116.434ms 142.793ms
-mlx4_3    116.488ms 143.247ms
-mlx4_4    116.679ms 143.230ms
-mlx4_5    112.017ms 107.204ms
-mlx4_6    112.032ms 107.516ms
-mlx4_7    112.083ms 184.195ms
-mlx4_8    115.089ms 190.618ms
+overriden => overridden
 
-Suggested-by: Håkon Bugge <haakon.bugge@oracle.com>
-Signed-off-by: Hans Westgaard Ry <hans.westgaard.ry@oracle.com>
----
-v1 -> v2:                                                                                                                                                                                                                                
- - removed set but not user varible,
-   reported by 'kernel test robot'
- - fixed reversed Christmas tree,
-   removed else,
-   removed extra varibles in printout,
-   moved next_slave to struct mlx4_mfunc_master_ctx,
-   as suggested by Tariq Toukan       
- drivers/net/ethernet/mellanox/mlx4/cmd.c  | 69 ++++++++++++++++++-------------
- drivers/net/ethernet/mellanox/mlx4/mlx4.h |  1 +
- 2 files changed, 41 insertions(+), 29 deletions(-)
+> signature, or even by another weak BPF program that just happened to be linked
+> first. That, in turn, leaves BPF instructions of the "lost" BPF (sub)program
+> intact, but there is no corresponding ELF symbol, because no one is going to
+> be referencing it.
+> 
+> Libbpf already correctly handles such cases in the sense that it won't append
+> such dead code to actual BPF programs loaded into kernel. So the only change
+> that needs to be done is to relax the logic of parsing BPF instruction
+> sections. Instead of assuming next BPF (sub)program section offset, iterate
+> available STT_FUNC ELF symbols to discover all available BPF subprograms and
+> programs.
+> 
+> Signed-off-by: Andrii Nakryiko <andrii@kernel.org>
 
-diff --git a/drivers/net/ethernet/mellanox/mlx4/cmd.c b/drivers/net/ethernet/mellanox/mlx4/cmd.c
-index c678344d22a2..8d751383530b 100644
---- a/drivers/net/ethernet/mellanox/mlx4/cmd.c
-+++ b/drivers/net/ethernet/mellanox/mlx4/cmd.c
-@@ -2241,43 +2241,52 @@ void mlx4_master_comm_channel(struct work_struct *work)
- 	struct mlx4_priv *priv =
- 		container_of(mfunc, struct mlx4_priv, mfunc);
- 	struct mlx4_dev *dev = &priv->dev;
--	__be32 *bit_vec;
-+	u32 lbit_vec[COMM_CHANNEL_BIT_ARRAY_SIZE];
-+	u32 nmbr_bits;
- 	u32 comm_cmd;
--	u32 vec;
--	int i, j, slave;
-+	int i, slave;
- 	int toggle;
-+	bool first = true;
- 	int served = 0;
- 	int reported = 0;
- 	u32 slt;
- 
--	bit_vec = master->comm_arm_bit_vector;
--	for (i = 0; i < COMM_CHANNEL_BIT_ARRAY_SIZE; i++) {
--		vec = be32_to_cpu(bit_vec[i]);
--		for (j = 0; j < 32; j++) {
--			if (!(vec & (1 << j)))
--				continue;
--			++reported;
--			slave = (i * 32) + j;
--			comm_cmd = swab32(readl(
--					  &mfunc->comm[slave].slave_write));
--			slt = swab32(readl(&mfunc->comm[slave].slave_read))
--				     >> 31;
--			toggle = comm_cmd >> 31;
--			if (toggle != slt) {
--				if (master->slave_state[slave].comm_toggle
--				    != slt) {
--					pr_info("slave %d out of sync. read toggle %d, state toggle %d. Resynching.\n",
--						slave, slt,
--						master->slave_state[slave].comm_toggle);
--					master->slave_state[slave].comm_toggle =
--						slt;
--				}
--				mlx4_master_do_cmd(dev, slave,
--						   comm_cmd >> 16 & 0xff,
--						   comm_cmd & 0xffff, toggle);
--				++served;
-+	for (i = 0; i < COMM_CHANNEL_BIT_ARRAY_SIZE; i++)
-+		lbit_vec[i] = be32_to_cpu(master->comm_arm_bit_vector[i]);
-+	nmbr_bits = dev->persist->num_vfs + 1;
-+	if (++master->next_slave >= nmbr_bits)
-+		master->next_slave = 0;
-+	slave = master->next_slave;
-+	while (true) {
-+		slave = find_next_bit((const unsigned long *)&lbit_vec, nmbr_bits, slave);
-+		if  (!first && slave >= master->next_slave)
-+			break;
-+		if (slave == nmbr_bits) {
-+			if (!first)
-+				break;
-+			first = false;
-+			slave = 0;
-+			continue;
-+		}
-+		++reported;
-+		comm_cmd = swab32(readl(&mfunc->comm[slave].slave_write));
-+		slt = swab32(readl(&mfunc->comm[slave].slave_read)) >> 31;
-+		toggle = comm_cmd >> 31;
-+		if (toggle != slt) {
-+			if (master->slave_state[slave].comm_toggle
-+			    != slt) {
-+				pr_info("slave %d out of sync. read toggle %d, state toggle %d. Resynching.\n",
-+					slave, slt,
-+					master->slave_state[slave].comm_toggle);
-+				master->slave_state[slave].comm_toggle =
-+					slt;
- 			}
-+			mlx4_master_do_cmd(dev, slave,
-+					   comm_cmd >> 16 & 0xff,
-+					   comm_cmd & 0xffff, toggle);
-+			++served;
- 		}
-+		slave++;
- 	}
- 
- 	if (reported && reported != served)
-@@ -2389,6 +2398,8 @@ int mlx4_multi_func_init(struct mlx4_dev *dev)
- 		if (!priv->mfunc.master.vf_oper)
- 			goto err_comm_oper;
- 
-+		priv->mfunc.master.next_slave = 0;
-+
- 		for (i = 0; i < dev->num_slaves; ++i) {
- 			vf_admin = &priv->mfunc.master.vf_admin[i];
- 			vf_oper = &priv->mfunc.master.vf_oper[i];
-diff --git a/drivers/net/ethernet/mellanox/mlx4/mlx4.h b/drivers/net/ethernet/mellanox/mlx4/mlx4.h
-index 64bed7ac3836..6ccf340660d9 100644
---- a/drivers/net/ethernet/mellanox/mlx4/mlx4.h
-+++ b/drivers/net/ethernet/mellanox/mlx4/mlx4.h
-@@ -603,6 +603,7 @@ struct mlx4_mfunc_master_ctx {
- 	struct mlx4_slave_event_eq slave_eq;
- 	struct mutex		gen_eqe_mutex[MLX4_MFUNC_MAX];
- 	struct mlx4_qos_manager qos_ctl[MLX4_MAX_PORTS + 1];
-+	u32			next_slave; /* mlx4_master_comm_channel */
- };
- 
- struct mlx4_mfunc {
--- 
-1.8.3.1
+Ack with a minor suggestion below.
+Acked-by: Yonghong Song <yhs@fb.com>
 
+> ---
+>   tools/lib/bpf/libbpf.c | 56 ++++++++++++++++--------------------------
+>   1 file changed, 21 insertions(+), 35 deletions(-)
+> 
+> diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
+> index ce5558d0a61b..a0e6d6bc47f3 100644
+> --- a/tools/lib/bpf/libbpf.c
+> +++ b/tools/lib/bpf/libbpf.c
+> @@ -502,8 +502,6 @@ static Elf_Scn *elf_sec_by_name(const struct bpf_object *obj, const char *name);
+>   static int elf_sec_hdr(const struct bpf_object *obj, Elf_Scn *scn, GElf_Shdr *hdr);
+>   static const char *elf_sec_name(const struct bpf_object *obj, Elf_Scn *scn);
+>   static Elf_Data *elf_sec_data(const struct bpf_object *obj, Elf_Scn *scn);
+> -static int elf_sym_by_sec_off(const struct bpf_object *obj, size_t sec_idx,
+> -			      size_t off, __u32 sym_type, GElf_Sym *sym);
+>   
+>   void bpf_program__unload(struct bpf_program *prog)
+>   {
+> @@ -644,10 +642,12 @@ static int
+>   bpf_object__add_programs(struct bpf_object *obj, Elf_Data *sec_data,
+>   			 const char *sec_name, int sec_idx)
+>   {
+> +	Elf_Data *symbols = obj->efile.symbols;
+>   	struct bpf_program *prog, *progs;
+>   	void *data = sec_data->d_buf;
+>   	size_t sec_sz = sec_data->d_size, sec_off, prog_sz;
+> -	int nr_progs, err;
+> +	size_t n = symbols->d_size / sizeof(GElf_Sym);
+
+Maybe use "nr_syms" instead of "n" to be more descriptive?
+
+> +	int nr_progs, err, i;
+>   	const char *name;
+>   	GElf_Sym sym;
+>   
+> @@ -655,14 +655,16 @@ bpf_object__add_programs(struct bpf_object *obj, Elf_Data *sec_data,
+>   	nr_progs = obj->nr_programs;
+>   	sec_off = 0;
+>   
+> -	while (sec_off < sec_sz) {
+> -		if (elf_sym_by_sec_off(obj, sec_idx, sec_off, STT_FUNC, &sym)) {
+> -			pr_warn("sec '%s': failed to find program symbol at offset %zu\n",
+> -				sec_name, sec_off);
+> -			return -LIBBPF_ERRNO__FORMAT;
+> -		}
+> +	for (i = 0; i < n; i++) {
+> +		if (!gelf_getsym(symbols, i, &sym))
+> +			continue;
+> +		if (sym.st_shndx != sec_idx)
+> +			continue;
+> +		if (GELF_ST_TYPE(sym.st_info) != STT_FUNC)
+> +			continue;
+>   
+>   		prog_sz = sym.st_size;
+> +		sec_off = sym.st_value;
+>   
+>   		name = elf_sym_str(obj, sym.st_name);
+>   		if (!name) {
+> @@ -711,8 +713,6 @@ bpf_object__add_programs(struct bpf_object *obj, Elf_Data *sec_data,
+>   
+>   		nr_progs++;
+>   		obj->nr_programs = nr_progs;
+> -
+> -		sec_off += prog_sz;
+>   	}
+>   
+>   	return 0;
+> @@ -2825,26 +2825,6 @@ static Elf_Data *elf_sec_data(const struct bpf_object *obj, Elf_Scn *scn)
+>   	return data;
+>   }
+>   
+[...]
