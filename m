@@ -2,126 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7D233367829
-	for <lists+netdev@lfdr.de>; Thu, 22 Apr 2021 06:00:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 836E0367840
+	for <lists+netdev@lfdr.de>; Thu, 22 Apr 2021 06:09:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229550AbhDVEAo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 22 Apr 2021 00:00:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38642 "EHLO
+        id S230052AbhDVEKO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 22 Apr 2021 00:10:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40712 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229536AbhDVEAi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 22 Apr 2021 00:00:38 -0400
-Received: from mail-yb1-xb31.google.com (mail-yb1-xb31.google.com [IPv6:2607:f8b0:4864:20::b31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 65960C06174A;
-        Wed, 21 Apr 2021 21:00:02 -0700 (PDT)
-Received: by mail-yb1-xb31.google.com with SMTP id v3so47416796ybi.1;
-        Wed, 21 Apr 2021 21:00:02 -0700 (PDT)
+        with ESMTP id S229568AbhDVEKN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 22 Apr 2021 00:10:13 -0400
+Received: from mail-pj1-x102c.google.com (mail-pj1-x102c.google.com [IPv6:2607:f8b0:4864:20::102c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 15E69C06174A;
+        Wed, 21 Apr 2021 21:09:38 -0700 (PDT)
+Received: by mail-pj1-x102c.google.com with SMTP id y22-20020a17090a8b16b0290150ae1a6d2bso240238pjn.0;
+        Wed, 21 Apr 2021 21:09:38 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=XrmiHn9veLJZtruOzFEYxfRmanDJ+LDdZNSOgA37p+4=;
-        b=hx3OvCwl6VNHXOWE6Efxu2zzB2VxzN8gkGSbSj8GiQ7oHA/cpKEY2uByb16l6L7b/a
-         SoXODyZemZ0LoXOXwEWWp2H2Ssr/VlnuLDCLKOL48pw8o5cLJgqtG49x7h2xDuC5Sw4g
-         tyZ6fkLTtXUHD2QFPI6WNwQbcvevdMETKneGK0anxQqZo4oTwmN9iGaQSxSaz4NudNu9
-         rmuDZs7nKfzNZO/T+XQ+C15FfCmGpjGxA+Uqz9/tqWh+f6dOetZcgHPlZlQDLwniOzJJ
-         NwkJtY+Gm4glHixs7uqWN4HmOg7oGRwi19RkgqioGmYVKTcbfXAM6RyBsQ/svAw2J/C1
-         5cWg==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=U9ndYHHujvr1zav297RhllK1op/Od2oHV/TZTHj5aJs=;
+        b=sl0iLZcInFVAtLnDOFrIXPW2KwmX5CPRzW7Wl29+gSD1dN/KP7OeEsfr7anUJpf7IH
+         vtF0SDUkffma2cQ7e5s2QjBXQ4ifU/pbb51BFC4jWaXFMJkFJ8SFDpzSFOrM8m3W+MsP
+         j6T7bed+GaTDS0aytX66+omjj6BTQhy0/BY3ls4tnt7OuMzuI0df8TgVpEtaleixw9wA
+         h1OV++0OVlBnDSRj+QutLb1f5QbZrIP2ZCbTgPb2bZt3Wp+pk47elXdyEPvGq3R36Lzd
+         wQHsI2J/sSgR4V5edR+waJDZnYUinPfbTLA/ZOe4UNohr43LEI8rNzfOzL2aV/lZtSdV
+         etrQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=XrmiHn9veLJZtruOzFEYxfRmanDJ+LDdZNSOgA37p+4=;
-        b=Npg0FyojjNUVdWmjFHJEZcyOA3r6n+73MZoDWLh6hWjBzWzzXMW1VLRyBfip3Grh/R
-         O58eos4Ou9LLozKA/5Yxq3ceu2k8vJxUGt/EUMV4+4a+CECqfZH/3rBDV9q9ZC0Ccg9F
-         99PS7xKIAhdf8RfOBSVSK+ICGJitlFbZ2GA6X/kXjNUDTZoqY3zh+tJcMVM4JcBrZV/W
-         gw1ZUlrhnR5KDtbZHhYCex6jGrH6PUk3eQ9NDp8POVH2v3TQ8oWy9q94ZKcRjC9sR/hS
-         B0Eu0IJsL+DWxfTZu+x5sT25rJfB7rmFDZolEsA3GyPxhVfB6sQqYS/T0IZHss+1D61y
-         VVtQ==
-X-Gm-Message-State: AOAM533D6n1Iuvud7d46+riidL7IhxVXXA0WaSmN73O6FZLPYMca1S95
-        gzx/5NCvCKQCeBXu3v7q4eXOy58QpByvI31NYsA=
-X-Google-Smtp-Source: ABdhPJwzGeskpZsGlTF8Pff4DLzeb+hWhNgq1LZWlacRa3BBHV8IIuj184EiaMmGJXAqp+FfhcEjSN4clgKhj/RGRn0=
-X-Received: by 2002:a25:ae8c:: with SMTP id b12mr1845190ybj.347.1619064001784;
- Wed, 21 Apr 2021 21:00:01 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=U9ndYHHujvr1zav297RhllK1op/Od2oHV/TZTHj5aJs=;
+        b=MgRJ4XlXNq2LgRUGepaq91EVwMVP/YIXTmJg2D0cI3+oj828CupJpakYmHDRwHgDR5
+         CTo4dFNQDWIJQfCtIJmOOORc2H9ObI+TiK484N7xAsWgMP+dK4gmZlgPulSa7r5zTVKK
+         ck0WXT2OcNlN6vNGNaFSrjnO7CCOn+IW/B2oleRenmLnJqEWdmAoXKu/J79EYsUPVLUu
+         SS4z6XPsHFbkLjwQx7kvqZxjZGq4MMf7pmjaOcDPZ3iqKNP6tk+Pdb1TT1Rjrw+6ov/4
+         JYAEYePViMx7/3qMpiXcc6bmfzqKwDiY+iucoJvNDQpU+N0jjD5suBOcpHwsbq1jt5Mk
+         NAlw==
+X-Gm-Message-State: AOAM531LOvUZK+QMf9JfNlwsHY0TYoUYlxXyiQJ4F/vX5ZHIF27P/6fd
+        zmGaIEpJQUZxuEgWrgMRFgQ=
+X-Google-Smtp-Source: ABdhPJzBiSiO1OFTfb8ncPAgubknwm6a4rAa1zMYzUajGilaHKacgpxpKY5LA35Y1+AhtpGLBgKYnw==
+X-Received: by 2002:a17:90a:7d02:: with SMTP id g2mr7902256pjl.153.1619064577536;
+        Wed, 21 Apr 2021 21:09:37 -0700 (PDT)
+Received: from z640-arch.lan ([2602:61:7344:f100::678])
+        by smtp.gmail.com with ESMTPSA id i17sm635354pfd.84.2021.04.21.21.09.36
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 21 Apr 2021 21:09:36 -0700 (PDT)
+From:   Ilya Lipnitskiy <ilya.lipnitskiy@gmail.com>
+To:     Felix Fietkau <nbd@nbd.name>, John Crispin <john@phrozen.org>,
+        Sean Wang <sean.wang@mediatek.com>,
+        Mark Lee <Mark-MC.Lee@mediatek.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org
+Cc:     Ilya Lipnitskiy <ilya.lipnitskiy@gmail.com>
+Subject: [PATCH net-next 00/14] mtk_eth_soc: fixes and performance improvements
+Date:   Wed, 21 Apr 2021 21:09:00 -0700
+Message-Id: <20210422040914.47788-1-ilya.lipnitskiy@gmail.com>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-References: <20210416202404.3443623-1-andrii@kernel.org> <20210416202404.3443623-4-andrii@kernel.org>
- <c9367c9d-527c-ba50-bb28-59abad9f5009@fb.com>
-In-Reply-To: <c9367c9d-527c-ba50-bb28-59abad9f5009@fb.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Wed, 21 Apr 2021 20:59:50 -0700
-Message-ID: <CAEf4BzbJMtqxkaJNAvv_M1OoxN6TKZgniLbJD1u5nxj1H32wKw@mail.gmail.com>
-Subject: Re: [PATCH v2 bpf-next 03/17] libbpf: suppress compiler warning when
- using SEC() macro with externs
-To:     Yonghong Song <yhs@fb.com>
-Cc:     Andrii Nakryiko <andrii@kernel.org>, bpf <bpf@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>,
-        Alexei Starovoitov <ast@fb.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Kernel Team <kernel-team@fb.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Apr 21, 2021 at 8:48 PM Yonghong Song <yhs@fb.com> wrote:
->
->
->
-> On 4/16/21 1:23 PM, Andrii Nakryiko wrote:
-> > When used on externs SEC() macro will trigger compilation warning about
-> > inapplicable `__attribute__((used))`. That's expected for extern declarations,
-> > so suppress it with the corresponding _Pragma.
-> >
-> > Signed-off-by: Andrii Nakryiko <andrii@kernel.org>
->
-> Ack with some comments below.
-> Acked-by: Yonghong Song <yhs@fb.com>
->
-> > ---
-> >   tools/lib/bpf/bpf_helpers.h | 11 +++++++++--
-> >   1 file changed, 9 insertions(+), 2 deletions(-)
-> >
-> > diff --git a/tools/lib/bpf/bpf_helpers.h b/tools/lib/bpf/bpf_helpers.h
-> > index b904128626c2..75c7581b304c 100644
-> > --- a/tools/lib/bpf/bpf_helpers.h
-> > +++ b/tools/lib/bpf/bpf_helpers.h
-> > @@ -25,9 +25,16 @@
-> >   /*
-> >    * Helper macro to place programs, maps, license in
-> >    * different sections in elf_bpf file. Section names
-> > - * are interpreted by elf_bpf loader
-> > + * are interpreted by libbpf depending on the context (BPF programs, BPF maps,
-> > + * extern variables, etc).
-> > + * To allow use of SEC() with externs (e.g., for extern .maps declarations),
-> > + * make sure __attribute__((unused)) doesn't trigger compilation warning.
-> >    */
-> > -#define SEC(NAME) __attribute__((section(NAME), used))
-> > +#define SEC(name) \
-> > +     _Pragma("GCC diagnostic push")                                      \
-> > +     _Pragma("GCC diagnostic ignored \"-Wignored-attributes\"")          \
-> > +     __attribute__((section(name), used))                                \
-> > +     _Pragma("GCC diagnostic pop")                                       \
->
-> The 'used' attribute is mostly useful for static variable/functions
-> since otherwise if not really used, the compiler could delete them
-> freely. The 'used' attribute does not really have an impact on
-> global variables regardless whether they are used or not in a particular
-> compilation unit. We could drop 'used' here and selftests should still
-> work. The only worry is that if people define something like
->     static int _version SEC("version") = 1;
->     static char _license[] SEC("license") = "GPL";
-> Removing 'used' may cause failure.
->
-> Since we don't want to remove 'used', then adding _Pragma to silence
-> the warning is a right thing to do here.
+Most of these changes come from OpenWrt where they have been present and
+tested for months.
 
-Right, SEC() has become a universal macro used for functions,
-variables, and externs. I didn't want to introduce multiple variants,
-but also we can't break existing use cases. So pragma, luckily,
-allowed to support all cases.
+First three patches are bug fixes. The rest are performance
+improvements. The last patch is a cleanup to use the iopoll.h macro for
+busy-waiting instead of a custom loop.
 
->
-> >
-> >   /* Avoid 'linux/stddef.h' definition of '__always_inline'. */
-> >   #undef __always_inline
-> >
+Source: 770-*.patch at https://git.openwrt.org/?p=openwrt/openwrt.git;a=tree;f=target/linux/generic/pending-5.10;hb=HEAD
+
+Felix Fietkau (12):
+  net: ethernet: mtk_eth_soc: fix RX VLAN offload
+  net: ethernet: mtk_eth_soc: unmap RX data before calling build_skb
+  net: ethernet: mtk_eth_soc: use napi_consume_skb
+  net: ethernet: mtk_eth_soc: reduce MDIO bus access latency
+  net: ethernet: mtk_eth_soc: remove unnecessary TX queue stops
+  net: ethernet: mtk_eth_soc: use larger burst size for QDMA TX
+  net: ethernet: mtk_eth_soc: increase DMA ring sizes
+  net: ethernet: mtk_eth_soc: implement dynamic interrupt moderation
+  net: ethernet: mtk_eth_soc: cache HW pointer of last freed TX
+    descriptor
+  net: ethernet: mtk_eth_soc: only read the full RX descriptor if DMA is
+    done
+  net: ethernet: mtk_eth_soc: reduce unnecessary interrupts
+  net: ethernet: mtk_eth_soc: set PPE flow hash as skb hash if present
+
+Ilya Lipnitskiy (2):
+  net: ethernet: mtk_eth_soc: fix build_skb cleanup
+  net: ethernet: mtk_eth_soc: use iopoll.h macro for DMA init
+
+ drivers/net/ethernet/mediatek/Kconfig       |   1 +
+ drivers/net/ethernet/mediatek/mtk_eth_soc.c | 228 ++++++++++++++------
+ drivers/net/ethernet/mediatek/mtk_eth_soc.h |  52 ++++-
+ 3 files changed, 199 insertions(+), 82 deletions(-)
+
+-- 
+2.31.1
+
