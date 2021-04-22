@@ -2,239 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 18BE9367E13
-	for <lists+netdev@lfdr.de>; Thu, 22 Apr 2021 11:46:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4AD72367E18
+	for <lists+netdev@lfdr.de>; Thu, 22 Apr 2021 11:48:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235742AbhDVJp5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 22 Apr 2021 05:45:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58530 "EHLO
+        id S235513AbhDVJsi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 22 Apr 2021 05:48:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59122 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235339AbhDVJp4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 22 Apr 2021 05:45:56 -0400
-Received: from mail-ed1-x52a.google.com (mail-ed1-x52a.google.com [IPv6:2a00:1450:4864:20::52a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0BE52C06174A
-        for <netdev@vger.kernel.org>; Thu, 22 Apr 2021 02:45:22 -0700 (PDT)
-Received: by mail-ed1-x52a.google.com with SMTP id s15so52683043edd.4
-        for <netdev@vger.kernel.org>; Thu, 22 Apr 2021 02:45:21 -0700 (PDT)
+        with ESMTP id S230285AbhDVJsh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 22 Apr 2021 05:48:37 -0400
+Received: from mail-wm1-x331.google.com (mail-wm1-x331.google.com [IPv6:2a00:1450:4864:20::331])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1CF7CC06174A
+        for <netdev@vger.kernel.org>; Thu, 22 Apr 2021 02:48:02 -0700 (PDT)
+Received: by mail-wm1-x331.google.com with SMTP id t14-20020a05600c198eb029012eeb3edfaeso2874425wmq.2
+        for <netdev@vger.kernel.org>; Thu, 22 Apr 2021 02:48:02 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:references:from:message-id:date:user-agent:mime-version
-         :in-reply-to:content-language:content-transfer-encoding;
-        bh=InL6JkjcoekxNOoclWCb17Bs9BWbgksVUpeKoXAFNFE=;
-        b=J7mMK5yAhWb0ur7UgcTIW/757x26JAj//w2lEOlF1s6bCNRqOfyRCrqK3eC1DiXKiD
-         qROQcZyL5AjPBHDYqumfURnH/i19AtWJJmmpARTLxYcZLZ8WSKh1CZqfJAeEvN+pWl0v
-         7jeiqZOApKC83/CXEj/Edk0Mpx3wn2utkm+TUxiEUSS10xL8Mh2JFcYBepBRDmOQU/Mi
-         /73KdlO7DV63y0oHmhDLCG3eZA+M1l5FGiU90zkj3mbA+LJVuPsAunsAu7l8uyQzn5Ja
-         Lbuh4wRW9uyPrRhzc7vWmgI7ejLhYq47NoYdgwfWMLxQDzyr3JfiPULA+sjh7bfWIjwD
-         2YVA==
+        d=tigera.io; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=e0wB+8LWoSHa2GesXosjoVr98ClHI2C+EzkIcTmgClI=;
+        b=WwS3aZBqFszFrbR1qs6xGYxOyqDpPkFY2r3EF63TXkGOWh65REBH5gHGdw/I2aXQsC
+         0+FU/fRKQzsDoNmCujV4Y+q3EFmIyvhtnZXg5NRaeCs6puMWImxLCcPxhUAgpH4HVTPC
+         WXMFNyXTtRkJ/RtqyEgjO441hqsFI9yOZjqME=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=InL6JkjcoekxNOoclWCb17Bs9BWbgksVUpeKoXAFNFE=;
-        b=CZRptVm2kmslgqXLH8LVyk+PlYzePj8sPHJvh9g20HPzQAEoBfRqz6yrs2xTYOrxxQ
-         l65It5WYDgEk+ixHsD/qr1elSh2BnVXXLWNFc/HK36/XxpGHilqXh81wp94pqpoD5d3l
-         nM0zTO2QH92cD5T0FqKCtD4Yrm8DlDduFyfST2WtLzc/cez1ixbrFNQLFQyjs55vjfhn
-         M1S2Cl+ubNyHkBa7G/2x2FPGy2I7bnoGT/1Rjwuvos8pKwRxyUXnTTAURHwpZ7q/lVW/
-         i1b7G27Y2o5Fj9YAHCqy5uyQuBitYD3siHNN+n1Y1NrGqhG5IJHWmf6AOMgndXvzkfHn
-         ouLQ==
-X-Gm-Message-State: AOAM531/GbcqCmtmZIzKDAPxvSzgKRxeXry60sGpxqh2edXSUDnclCbA
-        tbwSxWhVJk8tGsPMlubJ1QE8r0+kiOY=
-X-Google-Smtp-Source: ABdhPJzzsq8kjDxeOQloJcxiCuybvJIgpWuFsy3DucjgYkMH3WbYTUVWjHLhl5Vn6RrFNgLHTWyJCQ==
-X-Received: by 2002:a05:6402:2219:: with SMTP id cq25mr2680989edb.60.1619084720619;
-        Thu, 22 Apr 2021 02:45:20 -0700 (PDT)
-Received: from [192.168.1.115] ([77.124.203.106])
-        by smtp.gmail.com with ESMTPSA id w6sm1473542eje.107.2021.04.22.02.45.19
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 22 Apr 2021 02:45:20 -0700 (PDT)
-Subject: Re: [PATCH v2 net-next] net/mlx4: Treat VFs fair when handling
- comm_channel_events
-To:     Hans Westgaard Ry <hans.westgaard.ry@oracle.com>,
-        Tariq Toukan <tariqt@nvidia.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
-References: <1619072500-13789-1-git-send-email-hans.westgaard.ry@oracle.com>
-From:   Tariq Toukan <ttoukan.linux@gmail.com>
-Message-ID: <f4807945-4a7c-c701-86ae-bd2bb01af781@gmail.com>
-Date:   Thu, 22 Apr 2021 12:45:18 +0300
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.9.1
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=e0wB+8LWoSHa2GesXosjoVr98ClHI2C+EzkIcTmgClI=;
+        b=pA3KUUnDO0gLhYINn4TkNEfjU0XUYnX7fB+uyD59Qawtd6V9iGkpHNS9HT+NpaYh4/
+         qOwkGJgYwS44I7l8pt6VEpnhXzGIm1g03etEYvHkQ7rjl/lJ1XPlBf1P04mST9xQuw5l
+         meGysOR1aR5gETbUruUg31S+Aidzxq0fmhdz5Ak4oXWRuDLh2ljwJHUJ9kpcA0xbATiN
+         eRUlJ5L4Ynbv9yCP0TfON5n2T8J7T9Z7jNTdE4idZxpHb3Jt0F6oH5dW0PWAjXmT7UkJ
+         IodfHbO2vUf8mG+3xTMPrapiPRX8SBApN6aYv7Rx1j5criaWgkxCxGh8vIAr8rvJtjoi
+         W6Sg==
+X-Gm-Message-State: AOAM531sMHoU0sF9tPCnjSQJ480cbAUxIu2jNVpGXHCTOI+PFbv24Bn/
+        dBYu2fF1RosV1le6z0GOajaxfZTb/o04j9giTE7hrw==
+X-Google-Smtp-Source: ABdhPJxDtSxcLvikHxQEhHxlbbW6PsL6kkqYQSnRdfqxv0h5SdqoKOlPazhs9irT5B/Zj/3Qw+9dRgEn12X8kEBoDUA=
+X-Received: by 2002:a1c:a78b:: with SMTP id q133mr2939987wme.68.1619084880811;
+ Thu, 22 Apr 2021 02:48:00 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <1619072500-13789-1-git-send-email-hans.westgaard.ry@oracle.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+References: <20210420193740.124285-1-memxor@gmail.com> <20210420193740.124285-3-memxor@gmail.com>
+ <9b0aab2c-9b92-0bcb-2064-f66dd39e7552@iogearbox.net> <20210421230858.ruwqw5jvsy7cjioy@apollo>
+ <21c55619-e26d-d901-076e-20f55302c2fd@iogearbox.net> <20210421233054.sgs5lemcuycx4vjb@apollo>
+ <b504c839-d698-19a2-2018-05f867a8ff84@iogearbox.net>
+In-Reply-To: <b504c839-d698-19a2-2018-05f867a8ff84@iogearbox.net>
+From:   Shaun Crampton <shaun@tigera.io>
+Date:   Thu, 22 Apr 2021 10:47:50 +0100
+Message-ID: <CAMhR0U1DRBw5AjzzLfN+bpnxsrONO_Jkr9p57yfeyCND+qMAtQ@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v3 2/3] libbpf: add low level TC-BPF API
+To:     Daniel Borkmann <daniel@iogearbox.net>
+Cc:     Kumar Kartikeya Dwivedi <memxor@gmail.com>, bpf@vger.kernel.org,
+        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        netdev@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+> Nope, just get it from the prog itself.
 
+Looks like the API returns the prog ID, so from that we can look up the prog
+and then get its tag? If so that meets our needs.  Alternatively, if
+the API allows
+for atomic replacement of a BPF program with another, that'd also work for us.
 
-On 4/22/2021 9:21 AM, Hans Westgaard Ry wrote:
-> Handling comm_channel_event in mlx4_master_comm_channel uses a double
-> loop to determine which slaves have requested work. The search is
-> always started at lowest slave. This leads to unfairness; lower VFs
-> tends to be prioritized over higher VFs.
-> 
-> The patch uses find_next_bit to determine which slaves to handle.
-> Fairness is implemented by always starting at the next to the last
-> start.
-> 
-> An MPI program has been used to measure improvements. It runs 500
-> ibv_reg_mr, synchronizes with all other instances and then runs 500
-> ibv_dereg_mr.
-> 
-> The results running 500 processes, time reported is for running 500
-> calls:
-> 
-> ibv_reg_mr:
->               Mod.   Org.
-> mlx4_1    403.356ms 424.674ms
-> mlx4_2    403.355ms 424.674ms
-> mlx4_3    403.354ms 424.674ms
-> mlx4_4    403.355ms 424.674ms
-> mlx4_5    403.357ms 424.677ms
-> mlx4_6    403.354ms 424.676ms
-> mlx4_7    403.357ms 424.675ms
-> mlx4_8    403.355ms 424.675ms
-> 
-> ibv_dereg_mr:
->               Mod.   Org.
-> mlx4_1    116.408ms 142.818ms
-> mlx4_2    116.434ms 142.793ms
-> mlx4_3    116.488ms 143.247ms
-> mlx4_4    116.679ms 143.230ms
-> mlx4_5    112.017ms 107.204ms
-> mlx4_6    112.032ms 107.516ms
-> mlx4_7    112.083ms 184.195ms
-> mlx4_8    115.089ms 190.618ms
-> 
-> Suggested-by: Håkon Bugge <haakon.bugge@oracle.com>
-> Signed-off-by: Hans Westgaard Ry <hans.westgaard.ry@oracle.com>
-> ---
-> v1 -> v2:
->   - removed set but not user varible,
->     reported by 'kernel test robot'
->   - fixed reversed Christmas tree,
->     removed else,
->     removed extra varibles in printout,
->     moved next_slave to struct mlx4_mfunc_master_ctx,
->     as suggested by Tariq Toukan
->   drivers/net/ethernet/mellanox/mlx4/cmd.c  | 69 ++++++++++++++++++-------------
->   drivers/net/ethernet/mellanox/mlx4/mlx4.h |  1 +
->   2 files changed, 41 insertions(+), 29 deletions(-)
-> 
-> diff --git a/drivers/net/ethernet/mellanox/mlx4/cmd.c b/drivers/net/ethernet/mellanox/mlx4/cmd.c
-> index c678344d22a2..8d751383530b 100644
-> --- a/drivers/net/ethernet/mellanox/mlx4/cmd.c
-> +++ b/drivers/net/ethernet/mellanox/mlx4/cmd.c
-> @@ -2241,43 +2241,52 @@ void mlx4_master_comm_channel(struct work_struct *work)
->   	struct mlx4_priv *priv =
->   		container_of(mfunc, struct mlx4_priv, mfunc);
->   	struct mlx4_dev *dev = &priv->dev;
-> -	__be32 *bit_vec;
-> +	u32 lbit_vec[COMM_CHANNEL_BIT_ARRAY_SIZE];
-> +	u32 nmbr_bits;
->   	u32 comm_cmd;
-> -	u32 vec;
-> -	int i, j, slave;
-> +	int i, slave;
->   	int toggle;
-> +	bool first = true;
->   	int served = 0;
->   	int reported = 0;
->   	u32 slt;
->   
-> -	bit_vec = master->comm_arm_bit_vector;
-> -	for (i = 0; i < COMM_CHANNEL_BIT_ARRAY_SIZE; i++) {
-> -		vec = be32_to_cpu(bit_vec[i]);
-> -		for (j = 0; j < 32; j++) {
-> -			if (!(vec & (1 << j)))
-> -				continue;
-> -			++reported;
-> -			slave = (i * 32) + j;
-> -			comm_cmd = swab32(readl(
-> -					  &mfunc->comm[slave].slave_write));
-> -			slt = swab32(readl(&mfunc->comm[slave].slave_read))
-> -				     >> 31;
-> -			toggle = comm_cmd >> 31;
-> -			if (toggle != slt) {
-> -				if (master->slave_state[slave].comm_toggle
-> -				    != slt) {
-> -					pr_info("slave %d out of sync. read toggle %d, state toggle %d. Resynching.\n",
-> -						slave, slt,
-> -						master->slave_state[slave].comm_toggle);
-> -					master->slave_state[slave].comm_toggle =
-> -						slt;
-> -				}
-> -				mlx4_master_do_cmd(dev, slave,
-> -						   comm_cmd >> 16 & 0xff,
-> -						   comm_cmd & 0xffff, toggle);
-> -				++served;
-> +	for (i = 0; i < COMM_CHANNEL_BIT_ARRAY_SIZE; i++)
-> +		lbit_vec[i] = be32_to_cpu(master->comm_arm_bit_vector[i]);
-> +	nmbr_bits = dev->persist->num_vfs + 1;
-> +	if (++master->next_slave >= nmbr_bits)
-> +		master->next_slave = 0;
-> +	slave = master->next_slave;
-> +	while (true) {
-> +		slave = find_next_bit((const unsigned long *)&lbit_vec, nmbr_bits, slave);
-> +		if  (!first && slave >= master->next_slave)
-> +			break;
-> +		if (slave == nmbr_bits) {
-> +			if (!first)
-> +				break;
-> +			first = false;
-> +			slave = 0;
-> +			continue;
-> +		}
-> +		++reported;
-> +		comm_cmd = swab32(readl(&mfunc->comm[slave].slave_write));
-> +		slt = swab32(readl(&mfunc->comm[slave].slave_read)) >> 31;
-> +		toggle = comm_cmd >> 31;
-> +		if (toggle != slt) {
-> +			if (master->slave_state[slave].comm_toggle
-> +			    != slt) {
-> +				pr_info("slave %d out of sync. read toggle %d, state toggle %d. Resynching.\n",
-> +					slave, slt,
-> +					master->slave_state[slave].comm_toggle);
-> +				master->slave_state[slave].comm_toggle =
-> +					slt;
->   			}
-> +			mlx4_master_do_cmd(dev, slave,
-> +					   comm_cmd >> 16 & 0xff,
-> +					   comm_cmd & 0xffff, toggle);
-> +			++served;
->   		}
-> +		slave++;
->   	}
->   
->   	if (reported && reported != served)
-> @@ -2389,6 +2398,8 @@ int mlx4_multi_func_init(struct mlx4_dev *dev)
->   		if (!priv->mfunc.master.vf_oper)
->   			goto err_comm_oper;
->   
-> +		priv->mfunc.master.next_slave = 0;
-> +
->   		for (i = 0; i < dev->num_slaves; ++i) {
->   			vf_admin = &priv->mfunc.master.vf_admin[i];
->   			vf_oper = &priv->mfunc.master.vf_oper[i];
-> diff --git a/drivers/net/ethernet/mellanox/mlx4/mlx4.h b/drivers/net/ethernet/mellanox/mlx4/mlx4.h
-> index 64bed7ac3836..6ccf340660d9 100644
-> --- a/drivers/net/ethernet/mellanox/mlx4/mlx4.h
-> +++ b/drivers/net/ethernet/mellanox/mlx4/mlx4.h
-> @@ -603,6 +603,7 @@ struct mlx4_mfunc_master_ctx {
->   	struct mlx4_slave_event_eq slave_eq;
->   	struct mutex		gen_eqe_mutex[MLX4_MFUNC_MAX];
->   	struct mlx4_qos_manager qos_ctl[MLX4_MAX_PORTS + 1];
-> +	u32			next_slave; /* mlx4_master_comm_channel */
->   };
->   
->   struct mlx4_mfunc {
-> 
-
-Reviewed-by: Tariq Toukan <tariqt@nvidia.com>
-
-Thanks,
-Tariq
+The use case is that our daemon is restarted and it doesn't know what BPF
+program was previously loaded. We want to make sure we end up with the
+latest version loaded, either by doing a seamless replace with the
+latest version
+or by checking if the loaded version matches the latest.
