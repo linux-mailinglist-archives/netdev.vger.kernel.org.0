@@ -2,64 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8B36B369067
-	for <lists+netdev@lfdr.de>; Fri, 23 Apr 2021 12:31:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7D40B369071
+	for <lists+netdev@lfdr.de>; Fri, 23 Apr 2021 12:35:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241927AbhDWKcX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 23 Apr 2021 06:32:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46264 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229794AbhDWKcX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 23 Apr 2021 06:32:23 -0400
-Received: from mail-ed1-x535.google.com (mail-ed1-x535.google.com [IPv6:2a00:1450:4864:20::535])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E698C061574
-        for <netdev@vger.kernel.org>; Fri, 23 Apr 2021 03:31:45 -0700 (PDT)
-Received: by mail-ed1-x535.google.com with SMTP id j12so31879153edy.3
-        for <netdev@vger.kernel.org>; Fri, 23 Apr 2021 03:31:44 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:from:date:message-id:subject:to;
-        bh=zgXhv+/Rj8CBe08H/fibshtnHQRwqVlQCSFe1envBpU=;
-        b=NdOJLzpCH8K2k7u2rZWaKrox1mPh3RK5Mn4tzsgN1A7yVEo2a0RzAjzUtPDRq96/KU
-         uoHPYToJgQ7vBsAzpmTV8NiwTPhKjwZ2mqwf6xT/3tyYaBCZZPO1sL3pnwD5r4VFJil8
-         +H59udLJbDYuuvTwOm0tK80m7c44nr0TrWQjl3RczkZvy3SGJEjdc/020AVO8EHoZ5dj
-         dh67BlbqUnrEvM4NFfyYdaFXMQmmPKHYiS9c2cbD13xVUfrDIywWRIDO2aDVl+cYrj6T
-         GNWNBVoqgFMsMo+0/vxM2ssNOy/ZnZHGvWKYLfWuyIN9gC2sBuuVe/tMbrPvGMxUyv84
-         i4gQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:from:date:message-id:subject:to;
-        bh=zgXhv+/Rj8CBe08H/fibshtnHQRwqVlQCSFe1envBpU=;
-        b=aa1kpK4OkX8Ugbjj3y1Vztir6odDFHBZ9AAgtAiOih+1iWTQUv4PBUS4n83cWhNazO
-         9O3RXpdH4TNTFn8B8puB1ADm2312x5NkzMCAW/psZ7Y3tU0k5Y0AQw2YFAaavYOppMq8
-         vOY30OsNroSvK3gewfLkx+3UUOlv6aIVh0hXJei1J5KsxdNaPy8iW1FPwAUUz3lDFFNy
-         TvArDOwUqYghZ/XiKIh4nfz6mMkPw8ntwtIKglqKFoPHChK9HJIs/brC3zixxNePrXqp
-         g0sPD+3Llph9EXXFD7WqFPRScVzggGSTN14+U7XvZGpTgww8L/cES/LNgywqsUfasjAV
-         Dcqw==
-X-Gm-Message-State: AOAM531a0X70Q/QTJRwZ9O9MSc9gbNsnUgn29LebpKRQm7t5o6iQLfB0
-        LmWYLCgxFV/1dexJbP4nVucUXOkm4Y9LYSzJlkg=
-X-Google-Smtp-Source: ABdhPJyS+2fhQgRgkUJZ5DfetaKh4iwTS2zXiSx7FNQc/SSvEQCJxzGP0zIb6QPkfaBVf6QrAY8JjjZA+FwCdz5LSRk=
-X-Received: by 2002:a05:6402:27ce:: with SMTP id c14mr3552265ede.263.1619173903800;
- Fri, 23 Apr 2021 03:31:43 -0700 (PDT)
+        id S236107AbhDWKfs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 23 Apr 2021 06:35:48 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:51464 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S229772AbhDWKfr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 23 Apr 2021 06:35:47 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1619174110;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=x6V3sezXsAAxDR9VM4Vjf0CE1EnjmSBiIUUbI8iN2Aw=;
+        b=emiS5OlSyq7IUYeVWAYUG6xwAiOx+7Eg1oYIdoZ+dGE4yVXSR3FCICr40idoy9vk1hfJd7
+        F+5jMwbb5huUpfaNTWp5uSB1ESrtpy4ZIflvwl8tztVQE39dRZxmqm3D4bhnEK6xOTrJWD
+        9paFZcUAqJAxprFA+00G8rbpaoWtV28=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-175-KPx-srr6Mtas2ozr-3_I7Q-1; Fri, 23 Apr 2021 06:35:08 -0400
+X-MC-Unique: KPx-srr6Mtas2ozr-3_I7Q-1
+Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com [10.5.11.15])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id AA954343A0;
+        Fri, 23 Apr 2021 10:35:06 +0000 (UTC)
+Received: from carbon (unknown [10.36.110.19])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id E93342D103;
+        Fri, 23 Apr 2021 10:34:56 +0000 (UTC)
+Date:   Fri, 23 Apr 2021 12:34:55 +0200
+From:   Jesper Dangaard Brouer <brouer@redhat.com>
+To:     Lorenzo Bianconi <lorenzo@kernel.org>
+Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org,
+        lorenzo.bianconi@redhat.com, davem@davemloft.net, kuba@kernel.org,
+        ast@kernel.org, daniel@iogearbox.net, toke@redhat.com,
+        song@kernel.org, brouer@redhat.com
+Subject: Re: [PATCH v4 bpf-next] cpumap: bulk skb using
+ netif_receive_skb_list
+Message-ID: <20210423123455.279dae88@carbon>
+In-Reply-To: <c729f83e5d7482d9329e0f165bdbe5adcefd1510.1619169700.git.lorenzo@kernel.org>
+References: <c729f83e5d7482d9329e0f165bdbe5adcefd1510.1619169700.git.lorenzo@kernel.org>
 MIME-Version: 1.0
-Received: by 2002:a17:906:31c9:0:0:0:0 with HTTP; Fri, 23 Apr 2021 03:31:43
- -0700 (PDT)
-From:   Mrs Ayaka Azumi <freaswa@gmail.com>
-Date:   Fri, 23 Apr 2021 03:31:43 -0700
-Message-ID: <CAFyD4O4fgZ99=v17YRt2bj4aD6TLFoub2iuFBehZXfY_AcsgqQ@mail.gmail.com>
-Subject: Greetings
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Fri, 23 Apr 2021 11:27:27 +0200
+Lorenzo Bianconi <lorenzo@kernel.org> wrote:
+
+> Rely on netif_receive_skb_list routine to send skbs converted from
+> xdp_frames in cpu_map_kthread_run in order to improve i-cache usage.
+> The proposed patch has been tested running xdp_redirect_cpu bpf sample
+> available in the kernel tree that is used to redirect UDP frames from
+> ixgbe driver to a cpumap entry and then to the networking stack.
+> UDP frames are generated using pkt_gen. Packets are discarded by the
+> UDP layer.
+> 
+> $xdp_redirect_cpu  --cpu <cpu> --progname xdp_cpu_map0 --dev <eth>
+> 
+> bpf-next: ~2.35Mpps
+> bpf-next + cpumap skb-list: ~2.72Mpps
+> 
+> Rename drops counter in kmem_alloc_drops since now it reports just
+> kmem_cache_alloc_bulk failures
+> 
+> Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
+
+Acked-by: Jesper Dangaard Brouer <brouer@redhat.com>
+
 -- 
+Best regards,
+  Jesper Dangaard Brouer
+  MSc.CS, Principal Kernel Engineer at Red Hat
+  LinkedIn: http://www.linkedin.com/in/brouer
 
-
-*Compliments of Season Greetings from our Lord Jesus Christ
-I have something to discuss with you and it is very important and urgent.
-Please feel free to reach me on my e-mail:mrsayakaazumi6@gmail.com
-for further clarifications
-
-Yours Sincerely Mrs Ayaka Azumi
