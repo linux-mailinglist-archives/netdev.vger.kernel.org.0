@@ -2,151 +2,148 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1355A368F68
-	for <lists+netdev@lfdr.de>; Fri, 23 Apr 2021 11:32:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 504F4368F8A
+	for <lists+netdev@lfdr.de>; Fri, 23 Apr 2021 11:42:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230339AbhDWJcj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 23 Apr 2021 05:32:39 -0400
-Received: from regular1.263xmail.com ([211.150.70.200]:36892 "EHLO
-        regular1.263xmail.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229939AbhDWJcj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 23 Apr 2021 05:32:39 -0400
-X-Greylist: delayed 403 seconds by postgrey-1.27 at vger.kernel.org; Fri, 23 Apr 2021 05:32:38 EDT
-Received: from localhost (unknown [192.168.167.13])
-        by regular1.263xmail.com (Postfix) with ESMTP id 8D4001D50;
-        Fri, 23 Apr 2021 17:24:52 +0800 (CST)
-X-MAIL-GRAY: 0
-X-MAIL-DELIVERY: 1
-X-ADDR-CHECKED4: 1
-X-ANTISPAM-LEVEL: 2
-X-SKE-CHECKED: 1
-X-ABS-CHECKED: 1
-Received: from [172.16.12.8] (unknown [58.22.7.114])
-        by smtp.263.net (postfix) whith ESMTP id P1751T140588909328128S1619169891555006_;
-        Fri, 23 Apr 2021 17:24:52 +0800 (CST)
-X-IP-DOMAINF: 1
-X-UNIQUE-TAG: <b461bbc0964960a8c3512ac7df7186b9>
-X-RL-SENDER: david.wu@rock-chips.com
-X-SENDER: wdc@rock-chips.com
-X-LOGIN-NAME: david.wu@rock-chips.com
-X-FST-TO: kernel@collabora.com
-X-RCPT-COUNT: 10
-X-SENDER-IP: 58.22.7.114
-X-ATTACHMENT-NUM: 0
-X-System-Flag: 0
-Subject: Re: [PATCH v2 net-next 0/3] net: stmmac: RK3566
-To:     Ezequiel Garcia <ezequiel@collabora.com>, netdev@vger.kernel.org,
-        linux-rockchip@lists.infradead.org
-Cc:     Jose Abreu <joabreu@synopsys.com>,
-        Heiko Stuebner <heiko@sntech.de>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Peter Geis <pgwipeout@gmail.com>,
-        Kever Yang <kever.yang@rock-chips.com>, kernel@collabora.com
-References: <20210421203409.40717-1-ezequiel@collabora.com>
-From:   David Wu <david.wu@rock-chips.com>
-Message-ID: <ae524a70-7886-27a0-1289-0c3a1c7371bb@rock-chips.com>
-Date:   Fri, 23 Apr 2021 17:24:51 +0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+        id S241755AbhDWJmt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 23 Apr 2021 05:42:49 -0400
+Received: from szxga08-in.huawei.com ([45.249.212.255]:3343 "EHLO
+        szxga08-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229811AbhDWJms (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 23 Apr 2021 05:42:48 -0400
+Received: from DGGEML404-HUB.china.huawei.com (unknown [172.30.72.54])
+        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4FRTk25Ljvz19Gmj;
+        Fri, 23 Apr 2021 17:38:18 +0800 (CST)
+Received: from dggpemm500005.china.huawei.com (7.185.36.74) by
+ DGGEML404-HUB.china.huawei.com (10.3.17.39) with Microsoft SMTP Server (TLS)
+ id 14.3.498.0; Fri, 23 Apr 2021 17:42:08 +0800
+Received: from [127.0.0.1] (10.69.30.204) by dggpemm500005.china.huawei.com
+ (7.185.36.74) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id 15.1.2176.2; Fri, 23 Apr
+ 2021 17:42:08 +0800
+Subject: Re: [PATCH net v4 1/2] net: sched: fix packet stuck problem for
+ lockless qdisc
+From:   Yunsheng Lin <linyunsheng@huawei.com>
+To:     Michal Kubecek <mkubecek@suse.cz>
+CC:     <davem@davemloft.net>, <kuba@kernel.org>, <olteanv@gmail.com>,
+        <ast@kernel.org>, <daniel@iogearbox.net>, <andriin@fb.com>,
+        <edumazet@google.com>, <weiwan@google.com>,
+        <cong.wang@bytedance.com>, <ap420073@gmail.com>,
+        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linuxarm@openeuler.org>, <mkl@pengutronix.de>,
+        <linux-can@vger.kernel.org>, <jhs@mojatatu.com>,
+        <xiyou.wangcong@gmail.com>, <jiri@resnulli.us>,
+        <andrii@kernel.org>, <kafai@fb.com>, <songliubraving@fb.com>,
+        <yhs@fb.com>, <john.fastabend@gmail.com>, <kpsingh@kernel.org>,
+        <bpf@vger.kernel.org>, <pabeni@redhat.com>, <mzhivich@akamai.com>,
+        <johunt@akamai.com>, <albcamus@gmail.com>, <kehuan.feng@gmail.com>,
+        <a.fatoum@pengutronix.de>, <atenart@kernel.org>,
+        <alexander.duyck@gmail.com>, <hdanton@sina.com>, <jgross@suse.com>,
+        <JKosina@suse.com>
+References: <1618535809-11952-1-git-send-email-linyunsheng@huawei.com>
+ <1618535809-11952-2-git-send-email-linyunsheng@huawei.com>
+ <20210419152946.3n7adsd355rfeoda@lion.mk-sys.cz>
+ <20210419235503.eo77f6s73a4d25oh@lion.mk-sys.cz>
+ <20210420203459.h7top4zogn56oa55@lion.mk-sys.cz>
+ <80d64438-e3e5-e861-4da0-f6c89e3c73f7@huawei.com>
+ <20210421053123.wdq3kwlvf72kwtch@lion.mk-sys.cz>
+ <6a8dea49-3a3e-4172-1d65-5dbcb0125eda@huawei.com>
+ <20210421084428.xbjgoi4r2d6t65gy@lion.mk-sys.cz>
+ <b3dacf14-0fb6-0cad-8b85-f5c8d7cd97ef@huawei.com>
+Message-ID: <a6abb3d8-f857-14e1-4212-a12df36027cf@huawei.com>
+Date:   Fri, 23 Apr 2021 17:42:08 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:52.0) Gecko/20100101
+ Thunderbird/52.2.0
 MIME-Version: 1.0
-In-Reply-To: <20210421203409.40717-1-ezequiel@collabora.com>
-Content-Type: text/plain; charset=gbk; format=flowed
+In-Reply-To: <b3dacf14-0fb6-0cad-8b85-f5c8d7cd97ef@huawei.com>
+Content-Type: text/plain; charset="utf-8"
 Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.69.30.204]
+X-ClientProxiedBy: dggeme713-chm.china.huawei.com (10.1.199.109) To
+ dggpemm500005.china.huawei.com (7.185.36.74)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Ezequiel,
+On 2021/4/21 17:25, Yunsheng Lin wrote:
+> On 2021/4/21 16:44, Michal Kubecek wrote:
+> 
+>>
+>> I'll try running some tests also on other architectures, including arm64
+>> and s390x (to catch potential endinanity issues).
 
-ÔÚ 2021/4/22 ÉÏÎç4:34, Ezequiel Garcia Ð´µÀ:
-> Now that RK3568 SoC devicetree upstreaming is happening [1],
-> here's another round for the RK3566 dwmac. There wasn't any clear
-> consensus on how to implement the two interfaces present
-> on RK3568, so I decided to drop that and just submit RK3566 for now.
-> 
-> This has been tested on a Pine64 RK3566 Quartz64 Model B board,
-> DHCP and iperf are looking good.
-> 
-> For all the people testing, here's Quartz 64 Model B device tree
-> snippet:
-> 
->          gmac1: ethernet@fe010000 {
->                  compatible = "rockchip,rk3566-gmac", "snps,dwmac-4.20a";
+I tried debugging nperf in arm64, with the below patch:
+diff --git a/client/main.c b/client/main.c
+index 429634d..de1a3ef 100644
+--- a/client/main.c
++++ b/client/main.c
+@@ -63,7 +63,10 @@ static int client_init(void)
+        ret = client_set_usr1_handler();
+        if (ret < 0)
+                return ret;
+-       return ignore_signal(SIGPIPE);
++       //return ignore_signal(SIGPIPE);
++       signal(SIGPIPE, SIG_IGN);
++
++       return 0;
+ }
 
-It is better to use "rockchip,rk3568-gmac" here, "rockchip,rk3566-gmac" 
-is not compatible, 3568 has two gmacs, which are compatible with 3566.
+ static int ctrl_send_start(struct client_config *config)
+diff --git a/client/worker.c b/client/worker.c
+index ac026893..d269311 100644
+--- a/client/worker.c
++++ b/client/worker.c
+@@ -7,7 +7,7 @@
+ #include "worker.h"
+ #include "main.h"
 
-If there is no better way, using bus_id from alias is good, it is a 
-fixed id, and U-Boot also use the id to write MAC address into kernel DTB.
+-#define WORKER_STACK_SIZE 16384
++#define WORKER_STACK_SIZE 131072
 
-plat->bus_id = of_alias_get_id(np, "ethernet");
+ struct client_worker_data *workers_data;
+ union sockaddr_any test_addr;
 
->                  reg = <0x0 0xfe010000 0x0 0x10000>;
->                  interrupts = <GIC_SPI 32 IRQ_TYPE_LEVEL_HIGH>,
->                               <GIC_SPI 29 IRQ_TYPE_LEVEL_HIGH>;
->                  interrupt-names = "macirq", "eth_wake_irq";
->                  rockchip,grf = <&grf>;
->                  clocks = <&cru SCLK_GMAC1>, <&cru SCLK_GMAC1_RX_TX>,
->                           <&cru SCLK_GMAC1_RX_TX>, <&cru CLK_MAC1_REFOUT>,
->                           <&cru ACLK_GMAC1>, <&cru PCLK_GMAC1>,
->                           <&cru SCLK_GMAC1_RX_TX>, <&cru CLK_GMAC1_PTP_REF>;
->                  clock-names = "stmmaceth", "mac_clk_rx",
->                                "mac_clk_tx", "clk_mac_refout",
->                                "aclk_mac", "pclk_mac",
->                                "clk_mac_speed", "ptp_ref";
->                  resets = <&cru SRST_A_GMAC1>;
->                  reset-names = "stmmaceth";
-> 
->                  snps,mixed-burst;
->                  snps,tso;
-> 
->                  snps,axi-config = <&gmac1_stmmac_axi_setup>;
->                  snps,mtl-rx-config = <&gmac1_mtl_rx_setup>;
->                  snps,mtl-tx-config = <&gmac1_mtl_tx_setup>;
->                  status = "disabled";
-> 
->                  mdio1: mdio {
->                          compatible = "snps,dwmac-mdio";
->                          #address-cells = <0x1>;
->                          #size-cells = <0x0>;
->                  };
-> 
->                  gmac1_stmmac_axi_setup: stmmac-axi-config {
->                          snps,wr_osr_lmt = <4>;
->                          snps,rd_osr_lmt = <8>;
->                          snps,blen = <0 0 0 0 16 8 4>;
->                  };
-> 
->                  gmac1_mtl_rx_setup: rx-queues-config {
->                          snps,rx-queues-to-use = <1>;
->                          queue0 {};
->                  };
-> 
->                  gmac1_mtl_tx_setup: tx-queues-config {
->                          snps,tx-queues-to-use = <1>;
->                          queue0 {};
->                  };
->          };
-> 
-> While here, I'm adding a small patch from David Wu, for some
-> sanity checks for dwmac-rockchip-specific non-NULL ops.
-> 
-> Thanks!
-> 
-> [1] http://lore.kernel.org/r/20210421065921.23917-1-cl@rock-chips.com
-> 
-> David Wu (2):
->    net: stmmac: dwmac-rk: Check platform-specific ops
->    net: stmmac: Add RK3566 SoC support
-> 
-> Ezequiel Garcia (1):
->    net: stmmac: Don't set has_gmac if has_gmac4 is set
-> 
->   .../bindings/net/rockchip-dwmac.txt           |   1 +
->   .../net/ethernet/stmicro/stmmac/dwmac-rk.c    | 126 +++++++++++++++++-
->   2 files changed, 124 insertions(+), 3 deletions(-)
-> 
+It has below error output:
 
+../nperf/nperf -H 127.0.0.1 -l 3 -i 1 --exact -t TCP_STREAM -M 1
+server: 127.0.0.1, port 12543
+iterations: 1, threads: 1, test length: 3
+test: TCP_STREAM, message size: 1048576
+
+run test begin
+send begin
+send done: -32
+failed to receive server stats
+*** Iteration 1 failed, quitting. ***
+
+
+Tcpdump has below output:
+09:55:12.253341 IP localhost.53080 > localhost.12543: Flags [S], seq 3954442980, win 65495, options [mss 65495,sackOK,TS val 3268837738 ecr 0,nop,wscale 7], length 0
+09:55:12.253363 IP localhost.12543 > localhost.53080: Flags [S.], seq 4240541653, ack 3954442981, win 65483, options [mss 65495,sackOK,TS val 3268837738 ecr 3268837738,nop,wscale 7], length 0
+09:55:12.253379 IP localhost.53080 > localhost.12543: Flags [.], ack 1, win 512, options [nop,nop,TS val 3268837738 ecr 3268837738], length 0
+09:55:12.253412 IP localhost.53080 > localhost.12543: Flags [P.], seq 1:29, ack 1, win 512, options [nop,nop,TS val 3268837738 ecr 3268837738], length 28
+09:55:12.253863 IP localhost.12543 > localhost.53080: Flags [P.], seq 1:17, ack 29, win 512, options [nop,nop,TS val 3268837739 ecr 3268837738], length 16
+09:55:12.253891 IP localhost.53080 > localhost.12543: Flags [.], ack 17, win 512, options [nop,nop,TS val 3268837739 ecr 3268837739], length 0
+09:55:12.254265 IP localhost.12543 > localhost.53080: Flags [F.], seq 17, ack 29, win 512, options [nop,nop,TS val 3268837739 ecr 3268837739], length 0
+09:55:12.301992 IP localhost.53080 > localhost.12543: Flags [.], ack 18, win 512, options [nop,nop,TS val 3268837787 ecr 3268837739], length 0
+09:55:15.254389 IP localhost.53080 > localhost.12543: Flags [F.], seq 29, ack 18, win 512, options [nop,nop,TS val 3268840739 ecr 3268837739], length 0
+09:55:15.254426 IP localhost.12543 > localhost.53080: Flags [.], ack 30, win 512, options [nop,nop,TS val 3268840739 ecr 3268840739], length 0
+
+
+Any idea what went wrong here?
+
+Also, Would you mind running netperf to see if there is similar issue
+in your system?
+
+>>
+>> Michal
+>>
+>> .
+>>
+> 
+> 
+> .
+> 
 
