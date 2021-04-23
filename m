@@ -2,179 +2,183 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A59A336957C
-	for <lists+netdev@lfdr.de>; Fri, 23 Apr 2021 17:02:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id ABF33369593
+	for <lists+netdev@lfdr.de>; Fri, 23 Apr 2021 17:06:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243520AbhDWPCN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 23 Apr 2021 11:02:13 -0400
-Received: from mail-eopbgr20047.outbound.protection.outlook.com ([40.107.2.47]:7938
-        "EHLO EUR02-VE1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S243514AbhDWPBn (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 23 Apr 2021 11:01:43 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=BqtYCBU6xKZXall1jvNidehXbW2qlvWMBXsURBkElZJT866EfXw5QuqOAAhROnPidpyfAe3vM4eKdHtPbD4qehr8kDiYR957z6tzDgbAifMUVVyN9QwJLojZgPGfky/tVXemSPkSoygxtwAqFrYA9s+0RWxgFW9fv7Oio4BCjF5oEEW+FNGOnJtrtbt1DW2g1kzm2z3QXIM9BLRkafM1ODeahyQvmr350v1z6rAaJm6GZkoza2yfTkBZLShkBJCUmp2NWz/q6U/f27pD2P2I/LevPcumj/U4dN8C7UxYA+eMcCi5JOy0G5LuTTjVBYzsd6ELvQSoJTjfl9gFZ58MSw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=mpbUpwpVqA5enuQomRYBOFq7zUUBa+qw2krnBrme4rg=;
- b=Bh7PoSz8UlQrmLvYLFmGKAmM4OFIBNfFxSBaRyFIjKsrXSBMpfJlx2nqPPBFLnCF4aEZoGyAUlGQabpDL4joo3YMQ9qXSX99yZvuzRfXBRuRC0jVoA4pFjcemLVH7phZHDdPxRpN9SaHgRAtcgBBYw/HaYrFLiJomzSDzaS+gZU9FDwPgkj67yJuKRWCpFhDziit+i5E4y6mzBeAwaqkf346QH9soVBegeKkm9u/i8U6+vJbHXgAaDPPuB09x4p+9x73JxmuVavzaNjOjVr7AzLVRa0Zidd5wP9GE99hBQEZmPB8IN5FkFUBhhIN4mV8Xvv84UWrEQpUZBLc3kOAqg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=oss.nxp.com; dmarc=pass action=none header.from=oss.nxp.com;
- dkim=pass header.d=oss.nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=NXP1.onmicrosoft.com;
- s=selector2-NXP1-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=mpbUpwpVqA5enuQomRYBOFq7zUUBa+qw2krnBrme4rg=;
- b=AIluh28Gf1268Mw4fgjSUhYhHJjDDVNE6+9e7nlFfAC3WVxylK8XFPQLnpyLt0f+mPqsLfzEEHEQML5b6Ca0F5hYB6gByVNA54JwaJWcywlewz/MOpQW7w4D9nLdMxKzCyjYc0TkvlvFa9c6GfLWlLuHbd1iRL6TKTnBysfNQhg=
-Authentication-Results: lunn.ch; dkim=none (message not signed)
- header.d=none;lunn.ch; dmarc=none action=none header.from=oss.nxp.com;
-Received: from VI1PR04MB5101.eurprd04.prod.outlook.com (2603:10a6:803:5f::31)
- by VI1PR0401MB2589.eurprd04.prod.outlook.com (2603:10a6:800:4f::16) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4042.19; Fri, 23 Apr
- 2021 15:01:03 +0000
-Received: from VI1PR04MB5101.eurprd04.prod.outlook.com
- ([fe80::1d18:6e9:995c:1945]) by VI1PR04MB5101.eurprd04.prod.outlook.com
- ([fe80::1d18:6e9:995c:1945%6]) with mapi id 15.20.4042.024; Fri, 23 Apr 2021
- 15:01:03 +0000
-From:   "Radu Pirea (NXP OSS)" <radu-nicolae.pirea@oss.nxp.com>
-To:     andrew@lunn.ch, hkallweit1@gmail.com, linux@armlinux.org.uk,
-        davem@davemloft.net, kuba@kernel.org
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        "Radu Pirea (NXP OSS)" <radu-nicolae.pirea@oss.nxp.com>
-Subject: [PATCH v2 1/1] phy: nxp-c45-tja11xx: add interrupt support
-Date:   Fri, 23 Apr 2021 18:00:50 +0300
-Message-Id: <20210423150050.1037224-1-radu-nicolae.pirea@oss.nxp.com>
-X-Mailer: git-send-email 2.31.1
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Originating-IP: [89.45.21.213]
-X-ClientProxiedBy: AM0PR02CA0176.eurprd02.prod.outlook.com
- (2603:10a6:20b:28e::13) To VI1PR04MB5101.eurprd04.prod.outlook.com
- (2603:10a6:803:5f::31)
+        id S242689AbhDWPGm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 23 Apr 2021 11:06:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50290 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231169AbhDWPGm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 23 Apr 2021 11:06:42 -0400
+Received: from mail-pg1-x544.google.com (mail-pg1-x544.google.com [IPv6:2607:f8b0:4864:20::544])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B215BC061574;
+        Fri, 23 Apr 2021 08:06:05 -0700 (PDT)
+Received: by mail-pg1-x544.google.com with SMTP id q10so35371755pgj.2;
+        Fri, 23 Apr 2021 08:06:05 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=jlFjeMrY51eGzmAt0epcO53og1wArwrENzvx0COGPak=;
+        b=PtU4XlGmecTNXArYLD++y1GuaubvrOM/KcIlXiV1jcu/i57++tSkCZd4oS1QJ3r7rU
+         9MPZswQreE7ZuL2as4hhHaDHG2NsK02bdfCJMqvrb64P7tAtF53i3P3w98TuYYF1Wru+
+         7TcW63YJ0D2bYOX9eQcM87iOJa1LCwQtzCWfBbmJZ62bnmwLOLsl4wjKoWBDTcGsRzQY
+         2dULvycmwoiOkQcnXKZ8fooRBM14ISgfcWp9qavGmzoljY9qhoywNrvkUSF88+tGNeWg
+         Kl0O/9IhRkCHBTSSAAhxiti8cxs3Msk26lMBJtf+83Ea5nCBGcrikq/Lk98rZw89XR18
+         tK5Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=jlFjeMrY51eGzmAt0epcO53og1wArwrENzvx0COGPak=;
+        b=oq9QUHp4xuXJVuy6jZkOwQ0/43Sh+8GL/CgXHYE1o81/3nFdVdPo2foiGDOvxesUWU
+         XD2diQkNpjHB4IPdGXrL9DO359LnMqKfbZvgCqoexmYIBj4Ug6+JWljAb1nB5f9batn1
+         33HEZZ9XIRG4ujVioe6Qk3sAfSXXh7LMzNrvCBW91eppmD2lQvr7MaNvVZ66xvcq3Sam
+         tX/5Jk72XLJzgYvXViirx0dtCcLxy58+gItmyNoXLhJ6hCD/8egfiLjSw2AJBFdyU1hp
+         f/woiqY0Iuc2WWywhD2Py8If6cis4RoodWmL49HnvSgPMIWPXh2d3+YDlsXKRbJD9MfZ
+         3dPw==
+X-Gm-Message-State: AOAM53123WCfyCb4trEsmyIDiZN3oAl1q29xqnk5IwoQKv0yWzYOVSCD
+        eDquYHswgWKOMe3eILvWSKWcOf0f1+pijw==
+X-Google-Smtp-Source: ABdhPJwZI5oxOvrQzNPmk8mB47BPs62/TKrfesMcU/KyyaHNPict7FiGVfl8jXxJGzHfdKwFwHGU0Q==
+X-Received: by 2002:a62:82c8:0:b029:25a:b502:e1aa with SMTP id w191-20020a6282c80000b029025ab502e1aamr4203677pfd.64.1619190364924;
+        Fri, 23 Apr 2021 08:06:04 -0700 (PDT)
+Received: from localhost ([112.79.255.145])
+        by smtp.gmail.com with ESMTPSA id n11sm5576399pff.96.2021.04.23.08.06.04
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 23 Apr 2021 08:06:04 -0700 (PDT)
+From:   Kumar Kartikeya Dwivedi <memxor@gmail.com>
+To:     bpf@vger.kernel.org
+Cc:     Kumar Kartikeya Dwivedi <memxor@gmail.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
+        netdev@vger.kernel.org
+Subject: [PATCH bpf-next v4 0/3] Add TC-BPF API
+Date:   Fri, 23 Apr 2021 20:35:57 +0530
+Message-Id: <20210423150600.498490-1-memxor@gmail.com>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from localhost.localdomain (89.45.21.213) by AM0PR02CA0176.eurprd02.prod.outlook.com (2603:10a6:20b:28e::13) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4065.22 via Frontend Transport; Fri, 23 Apr 2021 15:01:02 +0000
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: bca26882-c943-407a-8889-08d906689d11
-X-MS-TrafficTypeDiagnostic: VI1PR0401MB2589:
-X-MS-Exchange-SharedMailbox-RoutingAgent-Processed: True
-X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <VI1PR0401MB2589AF750DE157F86BBE0EBB9F459@VI1PR0401MB2589.eurprd04.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:124;
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: bAoV1GKimLg/ba8y//q9LLmWNGBojFVpxdb8yGOWlS4BEuQLf3ulkLdsqfKaxnFL0HZqBBQWEt3g0NtageXd7bUPhF1QljW8VtTc6eGY8LWWqWVvdzZ3NsLya3CPCCxpOAVZVUZZNIyYdxPjwdCx+GmkvfCprOGN+G7PhT00pDuNXvbl0oYXu7zpxDnEGlMHd7gvmBluQlVlCd9S4211tdodhqSCgzd1q1y+eVLUcJv6F4H4HxLNzAjsBGzbCKmMt2BZR9Oy0Qx7jDMlnCuDOzHlrrGqEo8YXzh5WaxyR8FbHsYwnBBrz9t989h9e1kuGkkhL3E+vm86yr1HYuVOHlbDxsFfI/Jde5IfGL+QiQHnkJ/Ka226042kQry809wwiNr7rmeNEnvuq0H+YCMRgNeb3LbSU0q0LWqsjBiGamEMw3Kg+tc4rGsqCbO3vzG+Z1c4Xd2ATGu8h+JqtoMXlZ4KS1UuIaPSDibYyWSnDYulRZp/IjGqX3CuZaIAiax+NL7BDmTwdYOne4zmP8Gfllwgjd8BXQphrdyMjzoJYuJ9+aJntm61y3me2m5ZzwXLok+Wgw1SPrF9pL3znKaDOPRXTvBxKvnontDRlexCD1pfJsqG8tAJ8g7W90G5CsNjKM6z9vaRETg7zxSNw6kgoUoo5OCIjNB0eVXyxALXLxQFIx3F31R+l8QnyfCP8VaNucOJA/0hBQopq957QWuhgJ5pzY6yv1BRDjrFHY4RbuY=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5101.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(396003)(346002)(136003)(39850400004)(366004)(376002)(66946007)(478600001)(52116002)(16526019)(6512007)(2616005)(186003)(8676002)(83380400001)(8936002)(38350700002)(5660300002)(2906002)(26005)(316002)(66556008)(4326008)(86362001)(6506007)(956004)(38100700002)(6486002)(66476007)(6666004)(1076003)(69590400013)(41350200001);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData: =?us-ascii?Q?vKFBzqu+sh+/RnU3m3PVg3oq38vXxerA3oOCx7F97g9HQnWCHAngE+ZctJ4r?=
- =?us-ascii?Q?pjpCQzxYR70hF1WfQP16AHS9ATk+jFJK7dAiQ/b2OZpQh7qoiUTbFKHYOJQP?=
- =?us-ascii?Q?3XCu/hTl8dp9/vQ7DISieoydMIMw+DNWQNavY/hqmC6Osz3+967q8aymzVJW?=
- =?us-ascii?Q?1x+mJJl59pudAskWpybzGWrxjXrjSUkELxTTKaL+TIEMzQeqBSGBwUc9nKq+?=
- =?us-ascii?Q?7WbiF0ZkVmII3SVExnvPSamM2l5QZRVfdNQWjrn8D29wh4QlQRhs4mfxxpmd?=
- =?us-ascii?Q?hkUuPrlRrgHfb4nUD8lxtzFX24mQaAEpsp1+6F3Fb45g7ApBxwawRb3VfCj7?=
- =?us-ascii?Q?gVsFLl1iRHLpg7eN2LWv4m935hdE3xkzi6Ae1RxK7ovDtJT9RibZNH+NPAkI?=
- =?us-ascii?Q?jeK5yN9b12F6H1DLMgNq/3jXj4dCI9IkMcT+cdrcSt4bE+en9QfcWjAFAFmD?=
- =?us-ascii?Q?VjjxCqvPtvpb9cGtmKB17iz1n1MoUggRMinP4TViu3NVTz5PMqkHezQ3KFuA?=
- =?us-ascii?Q?64TZqzfuMskGnhY6XhRsNntNmS4DT3iXK/zspMPoBFE5pWi4nHeRnqmV2l5s?=
- =?us-ascii?Q?BZ1DI5LyZUO9rn2K9RNyF5JwyZVzBzTKhZngu+JsrZVj5ikmBDkPZZSfm3P6?=
- =?us-ascii?Q?iim1ZlbpqFREA+Zc/5tPCBnp7K3biV9mOir09OBR+jSGhFSoSLRTGVRCbuMm?=
- =?us-ascii?Q?m05Qnqt8bIhHBejWQZJGuF/gOOu+PMKwWR4EBG0wTPSwUb1HAjber9/ntv3D?=
- =?us-ascii?Q?LpQub1JVzzXqfvwHs2KWGloQ63sJTQvIcfnxgelbXmkci7nqxtpAcSPrDiTy?=
- =?us-ascii?Q?NbJZM5zqU/q4Ze2qm0pnMOqq9qAChkvsfaTlTd7WsZt80HmlQ2sKSo4N8z56?=
- =?us-ascii?Q?inHtZt+EmexSWy05pqMNpWCUFIlNm26ov74qS4MtSmfRnzYHZQeoKt3/Ky1X?=
- =?us-ascii?Q?SMrE40Ih0Wnfl+cgCWK3u4JfwxSHHmwTTzjIAqqvx2LUEieltM+8XZ2ew52y?=
- =?us-ascii?Q?zrakH/dHskFUxdbxryUGnYc0sTcXI3mPL+fZm/yx0A4xcHpsRsyPQxAK1NGw?=
- =?us-ascii?Q?n2oijQr/QJFouADUjaZX7MWrCUA0sBmsNylV+e7bZ6/dfRyhUtb1mppHPt64?=
- =?us-ascii?Q?G+UodmKEiImOSaS7Q8OtT2LXvWcLolksewD8S4cl8v67t3V6zM6x4clDD6fJ?=
- =?us-ascii?Q?4BSbkkrcC2j2q9n0njg/wi86BsU9qiqc4zVg4NkLfxAygGXBZzoBV8A/Xxhc?=
- =?us-ascii?Q?/zOKvTIUNNiBAJMOXXw6862zRO1kDEtTxjswD1fj1VxBknjaM+jAoi7R+i36?=
- =?us-ascii?Q?3XIeQM8/tyw1ccs302bSSclX?=
-X-OriginatorOrg: oss.nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: bca26882-c943-407a-8889-08d906689d11
-X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5101.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 23 Apr 2021 15:01:03.4791
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: sFxIxmSYZsJZV35r/fIGw7F1N3J5ztIJwutpbLmzID6KjoO6jxwwcFQh5roFn2hKWQm8LLx1W/8yKA2kPH4AZyZ16yuI3F5sctup97bEkaw=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR0401MB2589
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Added .config_intr and .handle_interrupt callbacks.
+This is the fourth version of the TC-BPF series.
 
-Link event interrupt will trigger an interrupt every time when the link
-goes up or down.
+It adds a simple API that uses netlink to attach the tc filter and its bpf
+classifier. Currently, a user needs to shell out to the tc command line to be
+able to create filters and attach SCHED_CLS programs as classifiers. With the
+help of this API, it will be possible to use libbpf for doing all parts of bpf
+program setup and attach.
 
-Signed-off-by: Radu Pirea (NXP OSS) <radu-nicolae.pirea@oss.nxp.com>
----
- drivers/net/phy/nxp-c45-tja11xx.c | 33 +++++++++++++++++++++++++++++++
- 1 file changed, 33 insertions(+)
+Changelog contains details of patchset evolution.
 
-diff --git a/drivers/net/phy/nxp-c45-tja11xx.c b/drivers/net/phy/nxp-c45-tja11xx.c
-index 95307097ebff..26b9c0d7cb9d 100644
---- a/drivers/net/phy/nxp-c45-tja11xx.c
-+++ b/drivers/net/phy/nxp-c45-tja11xx.c
-@@ -28,6 +28,11 @@
- #define DEVICE_CONTROL_CONFIG_GLOBAL_EN	BIT(14)
- #define DEVICE_CONTROL_CONFIG_ALL_EN	BIT(13)
- 
-+#define VEND1_PHY_IRQ_ACK		0x80A0
-+#define VEND1_PHY_IRQ_EN		0x80A1
-+#define VEND1_PHY_IRQ_STATUS		0x80A2
-+#define PHY_IRQ_LINK_EVENT		BIT(1)
-+
- #define VEND1_PHY_CONTROL		0x8100
- #define PHY_CONFIG_EN			BIT(14)
- #define PHY_START_OP			BIT(0)
-@@ -188,6 +193,32 @@ static int nxp_c45_start_op(struct phy_device *phydev)
- 				PHY_START_OP);
- }
- 
-+static int nxp_c45_config_intr(struct phy_device *phydev)
-+{
-+	if (phydev->interrupts == PHY_INTERRUPT_ENABLED)
-+		return phy_set_bits_mmd(phydev, MDIO_MMD_VEND1,
-+					VEND1_PHY_IRQ_EN, PHY_IRQ_LINK_EVENT);
-+	else
-+		return phy_clear_bits_mmd(phydev, MDIO_MMD_VEND1,
-+					  VEND1_PHY_IRQ_EN, PHY_IRQ_LINK_EVENT);
-+}
-+
-+static irqreturn_t nxp_c45_handle_interrupt(struct phy_device *phydev)
-+{
-+	irqreturn_t ret = IRQ_NONE;
-+	int irq;
-+
-+	irq = phy_read_mmd(phydev, MDIO_MMD_VEND1, VEND1_PHY_IRQ_STATUS);
-+	if (irq & PHY_IRQ_LINK_EVENT) {
-+		phy_write_mmd(phydev, MDIO_MMD_VEND1, VEND1_PHY_IRQ_ACK,
-+			      PHY_IRQ_LINK_EVENT);
-+		phy_trigger_machine(phydev);
-+		ret = IRQ_HANDLED;
-+	}
-+
-+	return ret;
-+}
-+
- static int nxp_c45_soft_reset(struct phy_device *phydev)
- {
- 	int ret;
-@@ -560,6 +591,8 @@ static struct phy_driver nxp_c45_driver[] = {
- 		.soft_reset		= nxp_c45_soft_reset,
- 		.config_aneg		= nxp_c45_config_aneg,
- 		.config_init		= nxp_c45_config_init,
-+		.config_intr		= nxp_c45_config_intr,
-+		.handle_interrupt	= nxp_c45_handle_interrupt,
- 		.read_status		= nxp_c45_read_status,
- 		.suspend		= genphy_c45_pma_suspend,
- 		.resume			= genphy_c45_pma_resume,
+In an effort to keep discussion focused, this series doesn't have the high level
+TC-BPF API. It was clear that there is a need for a bpf_link API in the kernel,
+hence that will be submitted as a separate patchset.
 
-base-commit: cad4162a90aeff737a16c0286987f51e927f003a
--- 
-2.31.1
+The individual commit messages contain more details, and also a brief summary of
+the API.
+
+Changelog:
+----------
+v3 -> v4
+v3: https://lore.kernel.org/bpf/20210420193740.124285-1-memxor@gmail.com
+
+ * We add a concept of bpf_tc_ctx context structure representing the attach point.
+   The qdisc setup and delete is tied to this object's lifetime if it succeeds
+   in creating the clsact qdisc when the attach point is BPF_TC_INGRESS or
+   BPF_TC_EGRESS. Qdisc is only deleted when there are no filters attached to
+   it. The struct itself is opaque to the user.
+ * Refactor all API functions to take ctx.
+ * Remove bpf_tc_info, bpf_tc_attach_id, instead reuse bpf_tc_opts for filling
+   in attributes in various API functions (including query).
+ * Explicitly document the expectation of each function regarding the opts
+   fields that must be set/unset. Add some small notes for the defaults chosen
+   by the API.
+ * Rename bpf_tc_get_info to bpf_tc_query
+ * Keep the netlink socket open in the context structure to save on open/close
+   cycles for each operation.
+ * Miscellaneous adjustments due to keeping the socket open.
+ * Rewrite the tests, and also add tests for verifying all preconditions of the
+   TC-BPF API.
+ * Use bpf skeleton API in examples and tests.
+
+v2 -> v3
+v2: https://lore.kernel.org/bpf/20210419121811.117400-1-memxor@gmail.com
+
+ * bpf_tc_cls_* -> bpf_tc_* rename
+ * bpf_tc_attach_id now only consists of handle and priority, the two variables
+   that user may or may not set.
+ * bpf_tc_replace has been dropped, instead a replace bool is introduced in
+   bpf_tc_opts for the same purpose.
+ * bpf_tc_get_info now takes attach_id for filling in filter details during
+   lookup instead of requiring user to do so. This also allows us to remove the
+   fd parameter, as no matching is needed as long as we have all attributes
+   necessary to identify a specific filter.
+ * A little bit of code simplification taking into account the change above.
+ * priority and protocol are now __u16 members in user facing API structs to
+   reflect actual size.
+ * Patch updating pkt_cls.h header has been removed, as it is unused now.
+ * protocol and chain_index options have been dropped in bpf_tc_opts,
+   protocol is always set to ETH_P_ALL, while chain_index is set as 0 by
+   default in the kernel. This also means removal of chain_index from
+   bpf_tc_attach_id, as it is unconditionally always 0.
+ * bpf_tc_cls_change has been dropped
+ * selftest now uses ASSERT_* macros
+
+v1 -> v2
+v1: https://lore.kernel.org/bpf/20210325120020.236504-1-memxor@gmail.com
+
+ * netlink helpers have been renamed to object_action style.
+ * attach_id now only contains attributes that are not explicitly set. Only
+   the bare minimum info is kept in it.
+ * protocol is now an optional and always set to ETH_P_ALL.
+ * direct-action mode is always set.
+ * skip_sw and skip_hw options have also been removed.
+ * bpf_tc_cls_info struct now also returns the bpf program tag and id, as
+   available in the netlink response. This came up as a requirement during
+   discussion with people wanting to use this functionality.
+ * support for attaching SCHED_ACT programs has been dropped, as it isn't
+   useful without any support for binding loaded actions to a classifier.
+ * the distinction between dev and block API has been dropped, there is now
+   a single set of functions and user has to pass the special ifindex value
+   to indicate operation on a shared filter block on their own.
+ * The high level API returning a bpf_link is gone. This was already non-
+   functional for pinning and typical ownership semantics. Instead, a separate
+   patchset will be sent adding a bpf_link API for attaching SCHED_CLS progs to
+   the kernel, and its corresponding libbpf API.
+ * The clsact qdisc is now setup automatically in a best-effort fashion whenever
+   user passes in the clsact ingress or egress parent id. This is done with
+   exclusive mode, such that if an ingress or clsact qdisc is already set up,
+   we skip the setup and move on with filter creation.
+ * Other minor changes that came up during the course of discussion and rework.
+
+Kumar Kartikeya Dwivedi (3):
+  libbpf: add helpers for preparing netlink attributes
+  libbpf: add low level TC-BPF API
+  libbpf: add selftests for TC-BPF API
+
+ tools/lib/bpf/libbpf.h                        |  92 ++++
+ tools/lib/bpf/libbpf.map                      |   5 +
+ tools/lib/bpf/netlink.c                       | 515 +++++++++++++++++-
+ tools/lib/bpf/nlattr.h                        |  48 ++
+ .../testing/selftests/bpf/prog_tests/tc_bpf.c | 204 +++++++
+ .../testing/selftests/bpf/progs/test_tc_bpf.c |  12 +
+ 6 files changed, 854 insertions(+), 22 deletions(-)
+ create mode 100644 tools/testing/selftests/bpf/prog_tests/tc_bpf.c
+ create mode 100644 tools/testing/selftests/bpf/progs/test_tc_bpf.c
+
+--
+2.30.2
 
