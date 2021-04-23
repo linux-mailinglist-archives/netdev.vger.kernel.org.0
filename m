@@ -2,103 +2,182 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 00A89368EC3
-	for <lists+netdev@lfdr.de>; Fri, 23 Apr 2021 10:19:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 64BED368EC6
+	for <lists+netdev@lfdr.de>; Fri, 23 Apr 2021 10:22:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241443AbhDWIUY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 23 Apr 2021 04:20:24 -0400
-Received: from vulcan.natalenko.name ([104.207.131.136]:47848 "EHLO
-        vulcan.natalenko.name" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229456AbhDWIUX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 23 Apr 2021 04:20:23 -0400
-Received: from localhost (kaktus.kanapka.ml [151.237.229.131])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by vulcan.natalenko.name (Postfix) with ESMTPSA id 6BF2FA471E0;
-        Fri, 23 Apr 2021 10:19:45 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=natalenko.name;
-        s=dkim-20170712; t=1619165985;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=Sq6FHbzlathvCZzoMydAX13uBBzPWKO/SRxFralH4D8=;
-        b=KaXcWN7NsMg/HQb9++N0iYdLJ6eHuzsRPeDfCoFVS/TmOevAzY/DLmjA+y6gsb/Miriec7
-        zUHhIG5zF/EVgwu7lMpjeu/qx8hPIXsjjRuXOMyUMjKmWY2HhYcUD7FFChAwHTtFnFLipm
-        2YAvxBEUDY1gGszhyGzK4MOo8LaDmEk=
-Date:   Fri, 23 Apr 2021 10:19:44 +0200
-From:   Oleksandr Natalenko <oleksandr@natalenko.name>
-To:     Alexander Duyck <alexander.duyck@gmail.com>
-Cc:     Jakub Kicinski <kuba@kernel.org>, linux-kernel@vger.kernel.org,
-        Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org
-Subject: Re: [igb] netconsole triggers warning in netpoll_poll_dev
-Message-ID: <20210423081944.kvvm4v7jcdyj74l3@spock.localdomain>
-References: <20210406123619.rhvtr73xwwlbu2ll@spock.localdomain>
- <20210406114734.0e00cb2f@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <20210407060053.wyo75mqwcva6w6ci@spock.localdomain>
- <20210407083748.56b9c261@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <CAKgT0UfLLQycLsAZQ98ofBGYPwejA6zHbG6QsNrU92mizS7e0g@mail.gmail.com>
- <20210407110722.1eb4ebf2@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <CAKgT0UcQXVOifi_2r_Y6meg_zvHDBf1me8VwA4pvEtEMzOaw2Q@mail.gmail.com>
+        id S241196AbhDWIWx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 23 Apr 2021 04:22:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46130 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229456AbhDWIWv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 23 Apr 2021 04:22:51 -0400
+Received: from mail-lf1-x132.google.com (mail-lf1-x132.google.com [IPv6:2a00:1450:4864:20::132])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ACDFEC06174A
+        for <netdev@vger.kernel.org>; Fri, 23 Apr 2021 01:22:13 -0700 (PDT)
+Received: by mail-lf1-x132.google.com with SMTP id j18so76323894lfg.5
+        for <netdev@vger.kernel.org>; Fri, 23 Apr 2021 01:22:13 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=qWBkgkLzB2qRvLb6AJXGYdWv19iR0S4JnZjEAIUSrBk=;
+        b=LWPq+d2szR6MC/Ahhk1UXiNveVPJTDobHg9JtntjxCeTvsr100pE2nNxi26KPQxFFp
+         FmDKXmznsNFa9/CkBXuwQqwG7QFuvLClN3noH5kKwXGvyjaKTCKU+0yRfPCdIEPtZmHx
+         qLIC3UeqYHzwsowST1oPsBp0aB9U+unmtxLRRVl8co2wXTvba5Gj2mhBa49CRgi/vf3e
+         BruU+fadCo56PRfo8ZdZoBtzRuAe+wDvQLM8NMiNFfMlyV1XRSOCNcMmZJSS4P7wln57
+         9wybHstYmpoM3Dw3AAKSOAMSacqaEBy/w3plpkqv8rXaqlOAfAYhEz/Qtcthszkk6wo/
+         KVZg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=qWBkgkLzB2qRvLb6AJXGYdWv19iR0S4JnZjEAIUSrBk=;
+        b=YTaSWy1mtCszae/QYWRSvZSmKlidyWDUxyicJkJKLqb9qn2qln3vs5lA3YDwSXGuuP
+         BsmoJ41vaH4vCqkMEAlDjeh2Td4fEC6Cgm89+03ho46If5F+rskhGKxuMQ/uoo+2C4op
+         I2SnJChpIFlngHbJ0NkEScW5GWrAZlMRCKH95i4e1YKW0HvMcWIR/YHrAWRrDT95bsdS
+         Bm/2a+AV8ycSMINw9LXOyE7O2i7TzLKiITLyEMR5sWvJ6WxKt5Yx16D7IA8z4NRhNC45
+         1nS9WuvIWadcAW6T7pBxnl3n7RHMpsFnBBDKtQxnmJ6AD59ATZnONh01I+3ni4bHyADX
+         AW4g==
+X-Gm-Message-State: AOAM530GSsbxHQC63maSuFSWYR1XIXI5sB7Hh0L7BZlR1BQyt4sgqLZz
+        B3oFgfirSUn93uJLpC0coTBgDYpNOHOCFg==
+X-Google-Smtp-Source: ABdhPJwM0N5vJrY4HbRVirs2DUVVbbIs8U2o/3xElJHb03KF6XRyNippWAUA4fbVFLpxkfEEDhuU5w==
+X-Received: by 2002:a19:f018:: with SMTP id p24mr1822876lfc.421.1619166132016;
+        Fri, 23 Apr 2021 01:22:12 -0700 (PDT)
+Received: from localhost.localdomain (c-fdcc225c.014-348-6c756e10.bbcust.telenor.se. [92.34.204.253])
+        by smtp.gmail.com with ESMTPSA id x74sm484475lff.145.2021.04.23.01.22.10
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 23 Apr 2021 01:22:11 -0700 (PDT)
+From:   Linus Walleij <linus.walleij@linaro.org>
+To:     netdev@vger.kernel.org, "David S . Miller" <davem@davemloft.net>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Zoltan HERPAI <wigyori@uid0.hu>,
+        Raylynn Knight <rayknight@me.com>, devicetree@vger.kernel.org
+Subject: [PATCH 1/3 net-next v3] net: ethernet: ixp4xx: Add DT bindings
+Date:   Fri, 23 Apr 2021 10:22:06 +0200
+Message-Id: <20210423082208.2244803-1-linus.walleij@linaro.org>
+X-Mailer: git-send-email 2.29.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAKgT0UcQXVOifi_2r_Y6meg_zvHDBf1me8VwA4pvEtEMzOaw2Q@mail.gmail.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello.
+This adds device tree bindings for the IXP4xx ethernet
+controller with optional MDIO bridge.
 
-On Wed, Apr 07, 2021 at 04:06:29PM -0700, Alexander Duyck wrote:
-> On Wed, Apr 7, 2021 at 11:07 AM Jakub Kicinski <kuba@kernel.org> wrote:
-> >
-> > On Wed, 7 Apr 2021 09:25:28 -0700 Alexander Duyck wrote:
-> > > On Wed, Apr 7, 2021 at 8:37 AM Jakub Kicinski <kuba@kernel.org> wrote:
-> > > >
-> > > > On Wed, 7 Apr 2021 08:00:53 +0200 Oleksandr Natalenko wrote:
-> > > > > Thanks for the effort, but reportedly [1] it made no difference,
-> > > > > unfortunately.
-> > > > >
-> > > > > [1] https://bugzilla.kernel.org/show_bug.cgi?id=212573#c8
-> > > >
-> > > > The only other option I see is that somehow the NAPI has no rings.
-> > > >
-> > > > diff --git a/drivers/net/ethernet/intel/igb/igb_main.c b/drivers/net/ethernet/intel/igb/igb_main.c
-> > > > index a45cd2b416c8..24568adc2fb1 100644
-> > > > --- a/drivers/net/ethernet/intel/igb/igb_main.c
-> > > > +++ b/drivers/net/ethernet/intel/igb/igb_main.c
-> > > > @@ -7980,7 +7980,7 @@ static int igb_poll(struct napi_struct *napi, int budget)
-> > > >         struct igb_q_vector *q_vector = container_of(napi,
-> > > >                                                      struct igb_q_vector,
-> > > >                                                      napi);
-> > > > -       bool clean_complete = true;
-> > > > +       bool clean_complete = q_vector->tx.ring || q_vector->rx.ring;
-> > > >         int work_done = 0;
-> > > >
-> > > >  #ifdef CONFIG_IGB_DCA
-> > >
-> > > It might make sense to just cast the work_done as a unsigned int, and
-> > > then on the end of igb_poll use:
-> > >   return min_t(unsigned int, work_done, budget - 1);
-> >
-> > Sure, that's simplest. I wasn't sure something is supposed to prevent
-> > this condition or if it's okay to cover it up.
-> 
-> I'm pretty sure it is okay to cover it up. In this case the "budget -
-> 1" is supposed to be the upper limit on what can be reported. I think
-> it was assuming an unsigned value anyway.
-> 
-> Another alternative would be to default clean_complete to !!budget.
-> Then if budget is 0 clean_complete would always return false.
+Cc: Zoltan HERPAI <wigyori@uid0.hu>
+Cc: Raylynn Knight <rayknight@me.com>
+Cc: devicetree@vger.kernel.org
+Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
+---
+ChangeLog v2->v3:
+- Designate phy nodes with ethernet-phy@
+- Include phy-mode in the schema
+ChangeLog v1->v2:
+- Add schema for the (optional) embedded MDIO bus inside
+  the ethernet controller in an "mdio" node instead of just
+  letting the code randomly populate and present it to
+  the operating system.
+- Reference the standard schemas for ethernet controller and
+  MDIO buses.
+- Add intel,npe to indentify the NPE unit used with each
+  ethernet adapter.
+---
+ .../bindings/net/intel,ixp4xx-ethernet.yaml   | 82 +++++++++++++++++++
+ 1 file changed, 82 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/net/intel,ixp4xx-ethernet.yaml
 
-So, among all the variants, which one to try? Or there was a separate
-patch sent to address this?
-
-Thanks.
-
+diff --git a/Documentation/devicetree/bindings/net/intel,ixp4xx-ethernet.yaml b/Documentation/devicetree/bindings/net/intel,ixp4xx-ethernet.yaml
+new file mode 100644
+index 000000000000..978e7f236f3a
+--- /dev/null
++++ b/Documentation/devicetree/bindings/net/intel,ixp4xx-ethernet.yaml
+@@ -0,0 +1,82 @@
++# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
++# Copyright 2018 Linaro Ltd.
++%YAML 1.2
++---
++$id: "http://devicetree.org/schemas/net/intel,ixp4xx-ethernet.yaml#"
++$schema: "http://devicetree.org/meta-schemas/core.yaml#"
++
++title: Intel IXP4xx ethernet
++
++allOf:
++  - $ref: "ethernet-controller.yaml#"
++
++maintainers:
++  - Linus Walleij <linus.walleij@linaro.org>
++
++description: |
++  The Intel IXP4xx ethernet makes use of the IXP4xx NPE (Network
++  Processing Engine) and the IXP4xx Queue Mangager to process
++  the ethernet frames. It can optionally contain an MDIO bus to
++  talk to PHYs.
++
++properties:
++  compatible:
++    const: intel,ixp4xx-ethernet
++
++  reg:
++    maxItems: 1
++    description: Ethernet MMIO address range
++
++  queue-rx:
++    $ref: '/schemas/types.yaml#/definitions/phandle-array'
++    maxItems: 1
++    description: phandle to the RX queue on the NPE
++
++  queue-txready:
++    $ref: '/schemas/types.yaml#/definitions/phandle-array'
++    maxItems: 1
++    description: phandle to the TX READY queue on the NPE
++
++  phy-mode: true
++
++  phy-handle: true
++
++  intel,npe:
++    $ref: /schemas/types.yaml#/definitions/uint32
++    enum: [0, 1, 2, 3]
++    description: which NPE (Network Processing Engine) this ethernet
++      instance is using
++
++  mdio:
++    type: object
++    $ref: "mdio.yaml#"
++    description: optional node for embedded MDIO controller
++
++required:
++  - compatible
++  - reg
++  - queue-rx
++  - queue-txready
++
++additionalProperties: false
++
++examples:
++  - |
++    ethernet@c8009000 {
++      compatible = "intel,ixp4xx-ethernet";
++      reg = <0xc8009000 0x1000>;
++      status = "disabled";
++      queue-rx = <&qmgr 3>;
++      queue-txready = <&qmgr 20>;
++      intel,npe = <1>;
++      phy-mode = "rgmii";
++      phy-handle = <&phy1>;
++
++      mdio {
++        #address-cells = <1>;
++        #size-cells = <0>;
++        phy1: ethernet-phy@1 {
++          reg = <1>;
++        };
++      };
++    };
 -- 
-  Oleksandr Natalenko (post-factum)
+2.29.2
+
