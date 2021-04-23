@@ -2,19 +2,19 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D4984369241
-	for <lists+netdev@lfdr.de>; Fri, 23 Apr 2021 14:38:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8F78636924E
+	for <lists+netdev@lfdr.de>; Fri, 23 Apr 2021 14:42:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242328AbhDWMjL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 23 Apr 2021 08:39:11 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:37888 "EHLO vps0.lunn.ch"
+        id S242326AbhDWMmq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 23 Apr 2021 08:42:46 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:37902 "EHLO vps0.lunn.ch"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229479AbhDWMjJ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 23 Apr 2021 08:39:09 -0400
+        id S229479AbhDWMmp (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 23 Apr 2021 08:42:45 -0400
 Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
         (envelope-from <andrew@lunn.ch>)
-        id 1lZv4j-000eNb-E5; Fri, 23 Apr 2021 14:38:25 +0200
-Date:   Fri, 23 Apr 2021 14:38:25 +0200
+        id 1lZv8H-000eQR-55; Fri, 23 Apr 2021 14:42:05 +0200
+Date:   Fri, 23 Apr 2021 14:42:05 +0200
 From:   Andrew Lunn <andrew@lunn.ch>
 To:     Ansuel Smith <ansuelsmth@gmail.com>
 Cc:     Florian Fainelli <f.fainelli@gmail.com>,
@@ -26,72 +26,37 @@ Cc:     Florian Fainelli <f.fainelli@gmail.com>,
         Heiner Kallweit <hkallweit1@gmail.com>,
         Russell King <linux@armlinux.org.uk>, netdev@vger.kernel.org,
         devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 03/14] drivers: net: mdio: mdio-ip8064: improve busy wait
- delay
-Message-ID: <YIK/wUOplWbf4hK0@lunn.ch>
+Subject: Re: [PATCH 05/14] drivers: net: dsa: qca8k: add support for qca8327
+ switch
+Message-ID: <YILAnViiXnMdCJNv@lunn.ch>
 References: <20210423014741.11858-1-ansuelsmth@gmail.com>
- <20210423014741.11858-4-ansuelsmth@gmail.com>
+ <20210423014741.11858-6-ansuelsmth@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20210423014741.11858-4-ansuelsmth@gmail.com>
+In-Reply-To: <20210423014741.11858-6-ansuelsmth@gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Apr 23, 2021 at 03:47:29AM +0200, Ansuel Smith wrote:
-> With the use of the qca8k dsa driver, some problem arised related to
-> port status detection. With a load on a specific port (for example a
-> simple speed test), the driver starts to bheave in a strange way and
-> garbage data is produced. To address this, enlarge the sleep delay and
-> address a bug for the reg offset 31 that require additional delay for
-> this specific reg.
-
->  struct ipq8064_mdio {
->  	struct regmap *base; /* NSS_GMAC0_BASE */
-> @@ -65,7 +66,7 @@ ipq8064_mdio_read(struct mii_bus *bus, int phy_addr, int reg_offset)
->  		   ((reg_offset << MII_REG_SHIFT) & MII_REG_MASK);
+> @@ -1467,11 +1468,16 @@ qca8k_sw_probe(struct mdio_device *mdiodev)
+>  		gpiod_set_value_cansleep(priv->reset_gpio, 0);
+>  	}
 >  
->  	regmap_write(priv->base, MII_ADDR_REG_ADDR, miiaddr);
-> -	usleep_range(8, 10);
-> +	usleep_range(10, 13);
->  
->  	err = ipq8064_mdio_wait_busy(priv);
->  	if (err)
-> @@ -91,7 +92,14 @@ ipq8064_mdio_write(struct mii_bus *bus, int phy_addr, int reg_offset, u16 data)
->  		   ((reg_offset << MII_REG_SHIFT) & MII_REG_MASK);
->  
->  	regmap_write(priv->base, MII_ADDR_REG_ADDR, miiaddr);
-> -	usleep_range(8, 10);
+> +	/* get the switches ID from the compatible */
+> +	data = of_device_get_match_data(&mdiodev->dev);
+> +	if (!data)
+> +		return -ENODEV;
 > +
-> +	/* For the specific reg 31 extra time is needed or the next
-> +	 * read will produce grabage data.
-> +	 */
-> +	if (reg_offset == 31)
-> +		usleep_range(30, 43);
-> +	else
-> +		usleep_range(10, 13);
->  
->  	return ipq8064_mdio_wait_busy(priv);
+>  	/* read the switches ID register */
+>  	id = qca8k_read(priv, QCA8K_REG_MASK_CTRL);
+>  	id >>= QCA8K_MASK_CTRL_ID_S;
+>  	id &= QCA8K_MASK_CTRL_ID_M;
+> -	if (id != QCA8K_ID_QCA8337)
+> +	if (id != data->id)
+>  		return -ENODEV;
 
-Is there any documentation as to what register 31 does?
+It is useful to print an error message here: Found X, expected
+Y. Gives the DT writer an idea what they did wrong.
 
-Maybe the real problem is in ipq8064_mdio_wait_busy()? Have you looked
-at how long you typically end up waiting? If you know the MDIO bus
-speed, you can work out how long a transaction should take. If it is
-taking less, something is broken.
-
-Are you sure regmap caching is disabled, so that
-ipq8064_mdio_wait_busy() really is reading the register, not some
-old cached value?
-
-      Andrew
-
-
-
-
-
->  }
-> -- 
-> 2.30.2
-> 
+   Andrew
