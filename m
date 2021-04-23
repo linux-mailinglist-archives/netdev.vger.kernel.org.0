@@ -2,329 +2,167 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 34F08369690
-	for <lists+netdev@lfdr.de>; Fri, 23 Apr 2021 18:00:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E5E473696A8
+	for <lists+netdev@lfdr.de>; Fri, 23 Apr 2021 18:09:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243284AbhDWQAn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 23 Apr 2021 12:00:43 -0400
-Received: from mail-vi1eur05on2101.outbound.protection.outlook.com ([40.107.21.101]:55911
-        "EHLO EUR05-VI1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S243216AbhDWQAi (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 23 Apr 2021 12:00:38 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=j7dkwkwqZC3QGEWAQnk8Dhrtp78u9pvSca3+LZJjbu+7mRLfhg6P5fTROAVLe4Ws1UXNKBf8Bynp0oKUgC9n4KQGGQMkDLKDuzzCpMcGy9Cx+rDPCjemusMtE0AmT/wzpaxD4ISONibiFW9b+Y+vQiqeji0XY3dgQwXoGfuzexrVHUCJpZGTEFkIe8+Hy4c+FQOQLXNdRcC+ob/qo+gwiFhlMW3idw00OBb+I+d5j6HgAhy+yIDlZF4wzEOuuMYkaOTRwatM4UAH0tnAMYKlZ5OptR50fYTEUTcNX+6vUJtk88GV9Wmnc+iGc2hCT4r5JAG2zRDczqsOYdv/uleCow==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=KFpqKsR6aKyV1WiLABviZ6okCsrssu6rdDIzdKlGqog=;
- b=GL5I31cNQ7IwFFO86ACHlR8dMVxMfwxlC8AGsaULQA7oCoZ4kyKambPBYAOLYRQcm/84U/C08w3NROdG+XmqsDbF095sPwShaoksC+yTLhBSDHhlMUFzNGCBoF+obp12VRN4hcvUSsExYHynJD2MJdRFYFMJ5F4gu54lncnGT1kJ0fdNNAA47u6HmMuuuu0qM2XIgags8lTHLwqm8wu0nikTTqbAJ2vxCrDgX6Ng3Bcy2Cc4oqTAbF4+6T7OxYNtb27EgjSz2E5H+7nFIMY/6yVpMXlk19fdPTbi/rVnO/EJvtsbjajXqVSU72so/W6RYY/T8VVP9uTdOuUIjrR9hA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=plvision.eu; dmarc=pass action=none header.from=plvision.eu;
- dkim=pass header.d=plvision.eu; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=plvision.eu;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=KFpqKsR6aKyV1WiLABviZ6okCsrssu6rdDIzdKlGqog=;
- b=acyrrkjV8qK3q+QxDiii3NnTPiUf+9gUsgz+6CIN/IXjjp1Vlg4xbzJh3DghVDr5/QNAG6PK6le/u1qvPY1rm1fMMWcLx7nCfYH2vo/abzgNsbk95Q//QhXNrgqVWlf4ElwR4PGlBWFBmO8cOcp6Ra1ZXAcKNT9revjwY1CnK5o=
-Authentication-Results: davemloft.net; dkim=none (message not signed)
- header.d=none;davemloft.net; dmarc=none action=none header.from=plvision.eu;
-Received: from HE1P190MB0539.EURP190.PROD.OUTLOOK.COM (2603:10a6:7:56::28) by
- HE1P190MB0187.EURP190.PROD.OUTLOOK.COM (2603:10a6:3:cb::15) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.4065.23; Fri, 23 Apr 2021 15:59:57 +0000
-Received: from HE1P190MB0539.EURP190.PROD.OUTLOOK.COM
- ([fe80::a03e:2330:7686:125c]) by HE1P190MB0539.EURP190.PROD.OUTLOOK.COM
- ([fe80::a03e:2330:7686:125c%7]) with mapi id 15.20.4065.023; Fri, 23 Apr 2021
- 15:59:57 +0000
-From:   Vadym Kochan <vadym.kochan@plvision.eu>
-To:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
-Cc:     Vadym Kochan <vadym.kochan@plvision.eu>,
-        Taras Chornyi <tchornyi@marvell.com>,
-        linux-kernel@vger.kernel.org,
-        Mickey Rachamim <mickeyr@marvell.com>,
-        Vadym Kochan <vkochan@marvell.com>
-Subject: [PATCH net-next 3/3] net: marvell: prestera: align flood setting according to latest firmware version
-Date:   Fri, 23 Apr 2021 18:59:33 +0300
-Message-Id: <20210423155933.29787-4-vadym.kochan@plvision.eu>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20210423155933.29787-1-vadym.kochan@plvision.eu>
-References: <20210423155933.29787-1-vadym.kochan@plvision.eu>
-Content-Type: text/plain
-X-Originating-IP: [217.20.186.93]
-X-ClientProxiedBy: AS8PR04CA0147.eurprd04.prod.outlook.com
- (2603:10a6:20b:127::32) To HE1P190MB0539.EURP190.PROD.OUTLOOK.COM
- (2603:10a6:7:56::28)
+        id S231401AbhDWQKF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 23 Apr 2021 12:10:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36468 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229549AbhDWQKE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 23 Apr 2021 12:10:04 -0400
+Received: from mail-yb1-xb2f.google.com (mail-yb1-xb2f.google.com [IPv6:2607:f8b0:4864:20::b2f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D7ECC061574;
+        Fri, 23 Apr 2021 09:09:26 -0700 (PDT)
+Received: by mail-yb1-xb2f.google.com with SMTP id p3so35555332ybk.0;
+        Fri, 23 Apr 2021 09:09:26 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=2PppScy9yGIBUpbTFjzNiwr+1UDgZpQDsW+ECfiTrdQ=;
+        b=isNXTbR9S4UhCRLC6U0V1rcnVdTOnyX/6FrcJmUlDrw0I24d3suVoNvO33jSLmMU0L
+         lMWyw+WkSGag3wA2qNWguA2DhnIKGeuj0FzYvgwDOY8ydBUGePYo1HB9ykICu6Ff7o9a
+         6C5fDNWqMwyXeikcZZohz0UlpkYW9GGUT0yxzTJTS5uJuPHJ3/w8prBtGocFHmbGh8BC
+         GXlbCCJlckKkciCSPvjV08ywIg28k+FBY0D+NGaosobFGVQdtWxHvpDefWvG3qixKaJI
+         DEFaeoK9uurIcaHooqqVyNUDczcHpyXObNPnUCtqRoLrsQubEGMiEwBL66FQujF8HtLn
+         lrHg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=2PppScy9yGIBUpbTFjzNiwr+1UDgZpQDsW+ECfiTrdQ=;
+        b=q79lusG5zeJztloayXosAUPWk9yginGmvag0wkQ968CB5X1vmHGnnKAZm9zoeTXPt9
+         ZM9ErRMpB/9dOiiQ/TjK5+00CIMg/gd5UpI2pikZuuX/sngjqJcfxcLVkFOhuqamEpa/
+         XMI8Ik2phdeD9ugHBqAJhiL8oxhAMTE/F0axAop0jWdf4HCeE4HPOEIUZjgFyYs8bUnn
+         78va1/SBT3kSxAYGR+JE4/467EBCWUbfoHyFYHN4yOa5htRl1Ts/zNlaiP8tZxO0/TI/
+         D2PAogORG/cWYq8R1PdZh2Lgb6CIyaNpCcjirtcXwUn05nPI795yIf2PuxFGQl1hvjdb
+         4moQ==
+X-Gm-Message-State: AOAM530E7hCsfzxNKDiAMq9ru/Gz+swe/FzEaFsxjo9+AjAYGzj+PPb2
+        9USpz+ESmrmplksYweMfwVuiPd+JPpky1dAdyH8=
+X-Google-Smtp-Source: ABdhPJwbKenXnBC9ZrA/Uaua4QnvMHKc4h+i3ByBpPOSV2758LXZbW59tCqPJEVD2vw/ymipBgbXIUbz922uGeCDato=
+X-Received: by 2002:a25:9942:: with SMTP id n2mr6694168ybo.230.1619194160280;
+ Fri, 23 Apr 2021 09:09:20 -0700 (PDT)
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from pc60716vkochan.x.ow.s (217.20.186.93) by AS8PR04CA0147.eurprd04.prod.outlook.com (2603:10a6:20b:127::32) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4065.21 via Frontend Transport; Fri, 23 Apr 2021 15:59:56 +0000
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: ece516d6-4751-4704-aea6-08d90670d7a7
-X-MS-TrafficTypeDiagnostic: HE1P190MB0187:
-X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <HE1P190MB01871DDD84DCC6495862E53895459@HE1P190MB0187.EURP190.PROD.OUTLOOK.COM>
-X-MS-Oob-TLC-OOBClassifiers: OLM:644;
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: tBbKF8SvHzQPnEIn1JA7irTjxr6/G5eM8VAdo5HbbeG1SV21V5rch3GzO7a872/Z0hQohnOgQd33bk8iFCcyqPrduSwphhFqbgFUx10dpbGJvn/Gn0n1+FEdJvqH18b6Ua/oYGtFYcMmLoUHzlwZh4m+7lF6PXF36TtT7MeVU+GQ99j/CxqpEMDkGSSFgw7JPhjSZqQO6WZLqGuAmN7jFYUXIrr+a1ET6VMnnfRqKkA22XNnjHDj7rps9lRB5ZO/u1x2zvNyXf8+IRrkan8V6Nauw029sjPTBz5X7DkM14+Jun7XtBNGUWMIJ1KRRurPHyAuimCela+Rme5enUhGPbp1Y1CIxp9lRsbd1JxY5iuhkWFdKCQszUAODhYal9mMBV0tunfjFaXgJ0uhh5b9d+OmFJLqCADwX7m0noivwTJDMQ2Mx8BZouV4t+lUAcCQHvLNR2LnVNWmBHj7CEYnRbMSAdfEQmmXHb+iR6zN0S9GgvdSNJsJOcnKNPHUEAwRqmdrTiyJb+EIw2KjiospeRJyUnV0gvZvo+sH6/ZFhR86yqx4MHC52k5Mnx2SKpRawYXT86WS+w4m7BbWTJY6PtAtdX5Qw0EWJlAi2htvE14NJtRIBJC8yu0fL0DrQo937hHZCFeshBQPasKT+CyOUZ4wXxF7MmOTSLMwBwkJeB0=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:HE1P190MB0539.EURP190.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(39830400003)(136003)(396003)(376002)(346002)(366004)(86362001)(66556008)(66476007)(6666004)(5660300002)(4326008)(66946007)(186003)(2906002)(316002)(36756003)(1076003)(6512007)(478600001)(54906003)(2616005)(110136005)(6506007)(26005)(8676002)(16526019)(8936002)(956004)(6486002)(83380400001)(52116002)(44832011)(38100700002)(38350700002);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData: =?us-ascii?Q?byTmgalO4TFDfihJhOoOgY5jnU/JV+9Wax5Xz02t/w97Fv6464FiIrLnXXFS?=
- =?us-ascii?Q?7upyHzRTmQ+d56CC+8HpsGv17DwMRu20cB0j7IokeXu7hVxfJtBz4st+CDHE?=
- =?us-ascii?Q?xCAMbeX3Nk4aQ2dk1uQDITni7bkMHvD/XeuNxw/RNrHZiFg7x0pC5QWNoadz?=
- =?us-ascii?Q?qxwaWJXYf9Oy1nUfbi2kj6DR9kDRR/P4cP4t0WD8Fh9oguhOYfO1N/IEWCZu?=
- =?us-ascii?Q?BzpPMZULF4LOR+TErt45pMOE1V/hBbdboNXQDII30ev/P+wBxrOfwtrvHpuA?=
- =?us-ascii?Q?ke6tZKEPkX+N3qwVyNmqsDeBW65tq+stKmrDVUkEKBd2NvOSirct8SKQpEVb?=
- =?us-ascii?Q?Jr8dXezGLqR9BE6xUA8846IEEb+GpWDFdJbUXFS9ie446kZHbyeHxNYJ5qkR?=
- =?us-ascii?Q?h7/Yk3ZORqG/9+EnQ1Q+UUIIwc1In8iNQk81z1JKsou8DzDntD7yGpH3xaNO?=
- =?us-ascii?Q?0K/PP7mEctjLg02xV3LvS/ve8+UsWypE7ZotzGGMUzUFBQ2P8cPfXKfE8Ug9?=
- =?us-ascii?Q?rksNhEdki85NwwjKwqr3HtB8Hp4y7EBhAtnSqRWfT9ku3UBWP3pYRy7D/Xnw?=
- =?us-ascii?Q?q1dG8WjqZyUj3eV1mji9gtdDjcyeJg4jKaqJDb8VCF8nDlYcjn74zt+O7Skl?=
- =?us-ascii?Q?G/MeTDtp4oeAmzEKcNSLagSbdiIhBRsjgLK0HvpBVx1MhvlsYpqxk9i/I6TY?=
- =?us-ascii?Q?4OG0wLDs9Qpb8wK0AzON8OCTJu/oKrRBL/tSHP8yDDYJ1VKftpIWb2HMyNXE?=
- =?us-ascii?Q?AgkjL85Uy0DBoasR0u+asuCaZ3YGOHyDdm2gzvBRKHgfMBoWo6En0NTZ2X4u?=
- =?us-ascii?Q?n0iHecYvZlsvM516dvOjx4y1MyvAwm7IoCv7QHstIaAeYRfbMjMd5ARim368?=
- =?us-ascii?Q?wU8VRlmh6a+5Mg7qXJdrO0nrQefg+H2qljeLoadPfe8ev2khLn8kOsBIIyUY?=
- =?us-ascii?Q?9EIgYQhfW75Yrw0OBk1IFHiMDXKXqXu7IAAIbPkfnv9OcEmeAWNiRgunmBU2?=
- =?us-ascii?Q?27wkRBNXBFB5mihhgIX1zApurMzATTdTLYACESyWjLZ7iqzlEC0xyQl5g3gh?=
- =?us-ascii?Q?JYcPenFaXGHlyuJBfbstobm/D55oqNP6ab/2QDvoKIcoszSFrS6zIcv7pLSn?=
- =?us-ascii?Q?5h1m8mNW8uW91Beu+ZrHC7CrzVpF4/Fhq/I0NYK9GVnVwEsyUq55HDlx49o+?=
- =?us-ascii?Q?VV0wxRWOUgwSEW42MIm1OhBpQZkN8L0sMI5BufkotzGyxfXD81yf5TPwRaN7?=
- =?us-ascii?Q?I3Gx7QiBw5woIIRNYcjDjunVlxovutpyCapw0QlQxFEEKupYwNv7rJDnNy/3?=
- =?us-ascii?Q?7kuPpr3Cbha5DWBcDFmKIh0s?=
-X-OriginatorOrg: plvision.eu
-X-MS-Exchange-CrossTenant-Network-Message-Id: ece516d6-4751-4704-aea6-08d90670d7a7
-X-MS-Exchange-CrossTenant-AuthSource: HE1P190MB0539.EURP190.PROD.OUTLOOK.COM
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 23 Apr 2021 15:59:57.5289
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 03707b74-30f3-46b6-a0e0-ff0a7438c9c4
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: XWD5+K9vtQoZaSbYy+2QDbduXo5pq0tBeIn9AJlueWGreJAiWse1rYCSeaXS2E7Hs2r/+Vb3+ZcKr5mprZ1a0O9rVMlrwcJFN2cIORiF6R8=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: HE1P190MB0187
+References: <20210416202404.3443623-1-andrii@kernel.org> <20210416202404.3443623-11-andrii@kernel.org>
+ <c9f1cab3-2aba-bbfb-25bd-6d23f7191a5d@fb.com> <CAEf4Bzai43dFxkZuh3FU0VrHZ008qT=GDDhhAsmOdgZuykkdTw@mail.gmail.com>
+ <CAADnVQJ_PS=PH8AQySiHqn-Bm=+DxsqRkgx+2_7OxM5CQkB4Mg@mail.gmail.com>
+ <CAEf4BzYXZOX=dmrAQAxHinSa0mxJ5gkJkpL=paVJjtrEWQex4A@mail.gmail.com> <CAADnVQK+s=hx1z4wjNFp5oYqi4_ovtcbGMbkVD4qKkUzVaeLvQ@mail.gmail.com>
+In-Reply-To: <CAADnVQK+s=hx1z4wjNFp5oYqi4_ovtcbGMbkVD4qKkUzVaeLvQ@mail.gmail.com>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Fri, 23 Apr 2021 09:09:09 -0700
+Message-ID: <CAEf4BzY8VZyXGUYdtOCvyLjRGGcuOF07rA1OJPTLpRmEat+jbg@mail.gmail.com>
+Subject: Re: [PATCH v2 bpf-next 10/17] libbpf: tighten BTF type ID rewriting
+ with error checking
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     Yonghong Song <yhs@fb.com>, Andrii Nakryiko <andrii@kernel.org>,
+        bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@fb.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Kernel Team <kernel-team@fb.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Vadym Kochan <vkochan@marvell.com>
+On Thu, Apr 22, 2021 at 10:11 PM Alexei Starovoitov
+<alexei.starovoitov@gmail.com> wrote:
+>
+> On Thu, Apr 22, 2021 at 9:25 PM Andrii Nakryiko
+> <andrii.nakryiko@gmail.com> wrote:
+> >
+> > On Thu, Apr 22, 2021 at 7:54 PM Alexei Starovoitov
+> > <alexei.starovoitov@gmail.com> wrote:
+> > >
+> > > On Thu, Apr 22, 2021 at 11:24 AM Andrii Nakryiko
+> > > <andrii.nakryiko@gmail.com> wrote:
+> > > >
+> > > > On Thu, Apr 22, 2021 at 9:50 AM Yonghong Song <yhs@fb.com> wrote:
+> > > > >
+> > > > >
+> > > > >
+> > > > > On 4/16/21 1:23 PM, Andrii Nakryiko wrote:
+> > > > > > It should never fail, but if it does, it's better to know about this rather
+> > > > > > than end up with nonsensical type IDs.
+> > > > >
+> > > > > So this is defensive programming. Maybe do another round of
+> > > > > audit of the callers and if you didn't find any issue, you
+> > > > > do not need to check not-happening condition here?
+> > > >
+> > > > It's far from obvious that this will never happen, because we do a
+> > > > decently complicated BTF processing (we skip some types altogether
+> > > > believing that they are not used, for example) and it will only get
+> > > > more complicated with time. Just as there are "verifier bug" checks in
+> > > > kernel, this prevents things from going wild if non-trivial bugs will
+> > > > inevitably happen.
+> > >
+> > > I agree with Yonghong. This doesn't look right.
+> >
+> > I read it as Yonghong was asking about the entire patch. You seem to
+> > be concerned with one particular check, right?
+> >
+> > > The callback will be called for all non-void types, right?
+> > > so *type_id == 0 shouldn't never happen.
+> > > If it does there is a bug somewhere that should be investigated
+> > > instead of ignored.
+> >
+> > See btf_type_visit_type_ids() and btf_ext_visit_type_ids(), they call
+> > callback for every field that contains type ID, even if it points to
+> > VOID. So this can happen and is expected.
+>
+> I see. So something like 'extern cosnt void foo __ksym' would
+> point to void type?
+> But then why is it not a part of the id_map[] and has
+> to be handled explicitly?
 
-Latest FW IPC flood message format was changed to configure uc/mc
-flooding separately, so change code according to this.
+const void foo will be VAR -> CONST -> VOID. But any `void *` anywhere
+will be PTR -> VOID. Any void bla(int x) would have return type VOID
+(0), and so on. There are a lot of cases when we use VOID as type_id.
+VOID always is handled specially, because it stays zero despite any
+transformation: during BTF concatenation, BTF dedup, BTF generation,
+etc.
 
-Signed-off-by: Vadym Kochan <vkochan@marvell.com>
----
- .../ethernet/marvell/prestera/prestera_hw.c   | 37 ++++++++++++--
- .../ethernet/marvell/prestera/prestera_hw.h   |  3 +-
- .../marvell/prestera/prestera_switchdev.c     | 50 +++++++++++++++----
- 3 files changed, 76 insertions(+), 14 deletions(-)
+>
+> > > The
+> > > if (new_id == 0) pr_warn
+> > > bit makes sense.
+> >
+> > Right, and this is the point of this patch. id_map[] will have zeroes
+> > for any unmapped type, so I just need to make sure I'm not false
+> > erroring on id_map[0] (== 0, which is valid, but never used).
+>
+> Right, id_map[0] should be 0.
+> I'm still missing something in this combination of 'if's.
+> May be do it as:
+> if (new_id == 0 && *type_id != 0) { pr_warn
+> ?
+> That was the idea?
 
-diff --git a/drivers/net/ethernet/marvell/prestera/prestera_hw.c b/drivers/net/ethernet/marvell/prestera/prestera_hw.c
-index 0424718d5998..4afef6e14db3 100644
---- a/drivers/net/ethernet/marvell/prestera/prestera_hw.c
-+++ b/drivers/net/ethernet/marvell/prestera/prestera_hw.c
-@@ -85,6 +85,11 @@ enum {
- 	PRESTERA_PORT_TP_AUTO,
- };
- 
-+enum {
-+	PRESTERA_PORT_FLOOD_TYPE_UC = 0,
-+	PRESTERA_PORT_FLOOD_TYPE_MC = 1,
-+};
-+
- enum {
- 	PRESTERA_PORT_GOOD_OCTETS_RCV_CNT,
- 	PRESTERA_PORT_BAD_OCTETS_RCV_CNT,
-@@ -188,6 +193,11 @@ struct prestera_msg_port_mdix_param {
- 	u8 admin_mode;
- };
- 
-+struct prestera_msg_port_flood_param {
-+	u8 type;
-+	u8 enable;
-+};
-+
- union prestera_msg_port_param {
- 	u8  admin_state;
- 	u8  oper_state;
-@@ -196,7 +206,6 @@ union prestera_msg_port_param {
- 	u8  accept_frm_type;
- 	u32 speed;
- 	u8 learning;
--	u8 flood;
- 	u32 link_mode;
- 	u8  type;
- 	u8  duplex;
-@@ -205,6 +214,7 @@ union prestera_msg_port_param {
- 	struct prestera_msg_port_mdix_param mdix;
- 	struct prestera_msg_port_autoneg_param autoneg;
- 	struct prestera_msg_port_cap_param cap;
-+	struct prestera_msg_port_flood_param flood;
- };
- 
- struct prestera_msg_port_attr_req {
-@@ -988,14 +998,35 @@ int prestera_hw_port_learning_set(struct prestera_port *port, bool enable)
- 			    &req.cmd, sizeof(req));
- }
- 
--int prestera_hw_port_flood_set(struct prestera_port *port, bool flood)
-+int prestera_hw_port_uc_flood_set(struct prestera_port *port, bool flood)
-+{
-+	struct prestera_msg_port_attr_req req = {
-+		.attr = PRESTERA_CMD_PORT_ATTR_FLOOD,
-+		.port = port->hw_id,
-+		.dev = port->dev_id,
-+		.param = {
-+			.flood = {
-+				.type = PRESTERA_PORT_FLOOD_TYPE_UC,
-+				.enable = flood,
-+			}
-+		}
-+	};
-+
-+	return prestera_cmd(port->sw, PRESTERA_CMD_TYPE_PORT_ATTR_SET,
-+			    &req.cmd, sizeof(req));
-+}
-+
-+int prestera_hw_port_mc_flood_set(struct prestera_port *port, bool flood)
- {
- 	struct prestera_msg_port_attr_req req = {
- 		.attr = PRESTERA_CMD_PORT_ATTR_FLOOD,
- 		.port = port->hw_id,
- 		.dev = port->dev_id,
- 		.param = {
--			.flood = flood,
-+			.flood = {
-+				.type = PRESTERA_PORT_FLOOD_TYPE_MC,
-+				.enable = flood,
-+			}
- 		}
- 	};
- 
-diff --git a/drivers/net/ethernet/marvell/prestera/prestera_hw.h b/drivers/net/ethernet/marvell/prestera/prestera_hw.h
-index b2b5ac95b4e3..109a677951cc 100644
---- a/drivers/net/ethernet/marvell/prestera/prestera_hw.h
-+++ b/drivers/net/ethernet/marvell/prestera/prestera_hw.h
-@@ -138,7 +138,8 @@ int prestera_hw_port_mdix_get(const struct prestera_port *port, u8 *status,
- int prestera_hw_port_mdix_set(const struct prestera_port *port, u8 mode);
- int prestera_hw_port_speed_get(const struct prestera_port *port, u32 *speed);
- int prestera_hw_port_learning_set(struct prestera_port *port, bool enable);
--int prestera_hw_port_flood_set(struct prestera_port *port, bool flood);
-+int prestera_hw_port_uc_flood_set(struct prestera_port *port, bool flood);
-+int prestera_hw_port_mc_flood_set(struct prestera_port *port, bool flood);
- int prestera_hw_port_accept_frm_type(struct prestera_port *port,
- 				     enum prestera_accept_frm_type type);
- /* Vlan API */
-diff --git a/drivers/net/ethernet/marvell/prestera/prestera_switchdev.c b/drivers/net/ethernet/marvell/prestera/prestera_switchdev.c
-index cb564890a3dc..f615ebe683f0 100644
---- a/drivers/net/ethernet/marvell/prestera/prestera_switchdev.c
-+++ b/drivers/net/ethernet/marvell/prestera/prestera_switchdev.c
-@@ -404,9 +404,13 @@ prestera_bridge_1d_port_join(struct prestera_bridge_port *br_port)
- 	if (err)
- 		return err;
- 
--	err = prestera_hw_port_flood_set(port, br_port->flags & BR_FLOOD);
-+	err = prestera_hw_port_uc_flood_set(port, br_port->flags & BR_FLOOD);
- 	if (err)
--		goto err_port_flood_set;
-+		goto err_port_uc_flood_set;
-+
-+	err = prestera_hw_port_mc_flood_set(port, br_port->flags & BR_MCAST_FLOOD);
-+	if (err)
-+		goto err_port_mc_flood_set;
- 
- 	err = prestera_hw_port_learning_set(port, br_port->flags & BR_LEARNING);
- 	if (err)
-@@ -415,8 +419,10 @@ prestera_bridge_1d_port_join(struct prestera_bridge_port *br_port)
- 	return 0;
- 
- err_port_learning_set:
--	prestera_hw_port_flood_set(port, false);
--err_port_flood_set:
-+	prestera_hw_port_mc_flood_set(port, false);
-+err_port_mc_flood_set:
-+	prestera_hw_port_uc_flood_set(port, false);
-+err_port_uc_flood_set:
- 	prestera_hw_bridge_port_delete(port, bridge->bridge_id);
- 
- 	return err;
-@@ -528,7 +534,8 @@ static void prestera_port_bridge_leave(struct prestera_port *port,
- 		prestera_bridge_1d_port_leave(br_port);
- 
- 	prestera_hw_port_learning_set(port, false);
--	prestera_hw_port_flood_set(port, false);
-+	prestera_hw_port_uc_flood_set(port, false);
-+	prestera_hw_port_mc_flood_set(port, false);
- 	prestera_port_vid_stp_set(port, PRESTERA_VID_ALL, BR_STATE_FORWARDING);
- 	prestera_bridge_port_put(br_port);
- }
-@@ -591,21 +598,36 @@ static int prestera_port_attr_br_flags_set(struct prestera_port *port,
- 		return 0;
- 
- 	if (flags.mask & BR_FLOOD) {
--		err = prestera_hw_port_flood_set(port, flags.val & BR_FLOOD);
-+		err = prestera_hw_port_uc_flood_set(port,
-+						    flags.val & BR_FLOOD);
-+		if (err)
-+			goto err_port_uc_flood_set;
-+	}
-+
-+	if (flags.mask & BR_MCAST_FLOOD) {
-+		err = prestera_hw_port_mc_flood_set(port,
-+						    flags.val & BR_MCAST_FLOOD);
- 		if (err)
--			return err;
-+			goto err_port_mc_flood_set;
- 	}
- 
- 	if (flags.mask & BR_LEARNING) {
- 		err = prestera_hw_port_learning_set(port,
- 						    flags.val & BR_LEARNING);
- 		if (err)
--			return err;
-+			goto err_port_learning_set;
- 	}
- 
- 	memcpy(&br_port->flags, &flags.val, sizeof(flags.val));
- 
- 	return 0;
-+
-+err_port_learning_set:
-+	prestera_hw_port_mc_flood_set(port, false);
-+err_port_mc_flood_set:
-+	prestera_hw_port_uc_flood_set(port, false);
-+err_port_uc_flood_set:
-+	return err;
- }
- 
- static int prestera_port_attr_br_ageing_set(struct prestera_port *port,
-@@ -901,9 +923,13 @@ prestera_port_vlan_bridge_join(struct prestera_port_vlan *port_vlan,
- 	if (port_vlan->br_port)
- 		return 0;
- 
--	err = prestera_hw_port_flood_set(port, br_port->flags & BR_FLOOD);
-+	err = prestera_hw_port_uc_flood_set(port, br_port->flags & BR_FLOOD);
- 	if (err)
--		return err;
-+		goto err_port_uc_flood_set;
-+
-+	err = prestera_hw_port_mc_flood_set(port, br_port->flags & BR_MCAST_FLOOD);
-+	if (err)
-+		goto err_port_mc_flood_set;
- 
- 	err = prestera_hw_port_learning_set(port, br_port->flags & BR_LEARNING);
- 	if (err)
-@@ -934,6 +960,10 @@ prestera_port_vlan_bridge_join(struct prestera_port_vlan *port_vlan,
- err_port_vid_stp_set:
- 	prestera_hw_port_learning_set(port, false);
- err_port_learning_set:
-+	prestera_hw_port_mc_flood_set(port, false);
-+err_port_mc_flood_set:
-+	prestera_hw_port_uc_flood_set(port, false);
-+err_port_uc_flood_set:
- 	return err;
- }
- 
--- 
-2.17.1
+That's the idea, there is just no need to do VOID -> VOID
+transformation, but I'll rewrite it to a combined if if it makes it
+easier to follow. Here's full source of remap_type_id with few
+comments to added:
 
+static int remap_type_id(__u32 *type_id, void *ctx)
+{
+        int *id_map = ctx;
+        int new_id = id_map[*type_id];
+
+
+/* Here VOID stays VOID, that's all */
+
+        if (*type_id == 0)
+                return 0;
+
+/* This means whatever type we are trying to remap didn't get a new ID
+assigned in linker->btf and that's an error */
+        if (new_id == 0) {
+                pr_warn("failed to find new ID mapping for original
+BTF type ID %u\n", *type_id);
+                return -EINVAL;
+        }
+
+        *type_id = id_map[*type_id];
+
+        return 0;
+}
