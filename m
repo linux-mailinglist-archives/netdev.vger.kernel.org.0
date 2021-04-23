@@ -2,180 +2,161 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 438133698D9
-	for <lists+netdev@lfdr.de>; Fri, 23 Apr 2021 20:11:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D8DA93698DD
+	for <lists+netdev@lfdr.de>; Fri, 23 Apr 2021 20:13:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232244AbhDWSMX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 23 Apr 2021 14:12:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35270 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229549AbhDWSMX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 23 Apr 2021 14:12:23 -0400
-Received: from mail-pg1-x52f.google.com (mail-pg1-x52f.google.com [IPv6:2607:f8b0:4864:20::52f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 12DB8C061574;
-        Fri, 23 Apr 2021 11:11:46 -0700 (PDT)
-Received: by mail-pg1-x52f.google.com with SMTP id f29so35710593pgm.8;
-        Fri, 23 Apr 2021 11:11:45 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=DiSw/qAMoONsSWQTcoaLe62+2sBX8B5LroHrtuiwM8c=;
-        b=bDTi51ar5byMFgBynAmx36yDmvSgoC6xU7qp00TnYABbn+yIwd6i9amM1OdA52rmTl
-         9JaF24In1ZNORbGtCDPgfHIfpz9oHsWgseP42yh36+jm0NU3CcDk/GdsLNRbNmKTQDIW
-         naBdZpVcVHMAyxK67vWlSTb583sgGOuNLDPDFJ9cPO64S5/Qo0BwZ6bv8rbVAmZ73mxW
-         XQP4gEJLfkpdEhMYCdObaWmN7JkNW8QcotThUw0UuxFi0mcFx4gc7faSlEjDEp4sYWS7
-         Vr+Q4vvSEqqHTLXtCLT5M5jYRArbx2VqnZW6Q3JdJixGj+ZQS95SE6lMNhXpBSzxSNa2
-         xtXw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=DiSw/qAMoONsSWQTcoaLe62+2sBX8B5LroHrtuiwM8c=;
-        b=haXA0deYcRmDcKL6LLtrKcndOm0R3fn8bERqXWHQ2LHSkKm2b3nkKjjL8LZXDwu74s
-         ZtjEVxYOjOioOIG4a8k7CxuusZBv6uR0vXfNzklB/86EG73Tsj83iTBsC5M6Ff/pUx3B
-         9t6zv/KGtA9yh+lMACjzvGQegMn7AhICdR3BgCPavwmiOfMLONFTLK1C2kEDPbh6xMrs
-         8lsaDnVCHRKFwJZc91IOCyHdSBYHfkCdOwqz6XjE2oPf038QT++ANCy509+XF4BQp/4v
-         S7L2opOSrtsFHOKbKCki9RQpMO8XZNLvVSPSnxMKGznnZixOQkOlMcCAnfBb4wHZBy1h
-         2n5w==
-X-Gm-Message-State: AOAM532K6iWMWQYg15iYS+vJQwSRsdLWK0FofHEvkwurXV84RTfDZ8YQ
-        kNTiLROWwKQTmPMl3AvlSegUSDCbgkV8jw==
-X-Google-Smtp-Source: ABdhPJyLrjtulAK7Jya1YQZCBSYme2Xe70THzCV77evmc+viycLmYSqPPMX6k0Ihj3VCOJOaBgmnCA==
-X-Received: by 2002:a63:1111:: with SMTP id g17mr4983947pgl.267.1619201505436;
-        Fri, 23 Apr 2021 11:11:45 -0700 (PDT)
-Received: from skbuf (5-12-16-165.residential.rdsnet.ro. [5.12.16.165])
-        by smtp.gmail.com with ESMTPSA id j10sm5402978pfn.207.2021.04.23.11.11.38
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 23 Apr 2021 11:11:45 -0700 (PDT)
-Date:   Fri, 23 Apr 2021 21:11:33 +0300
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     "Ismail, Mohammad Athari" <mohammad.athari.ismail@intel.com>
-Cc:     Alexandre Torgue <alexandre.torgue@st.com>,
-        Jose Abreu <joabreu@synopsys.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        "Ong, Boon Leong" <boon.leong.ong@intel.com>,
-        "Voon, Weifeng" <weifeng.voon@intel.com>,
-        "Wong, Vee Khee" <vee.khee.wong@intel.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v2 net-next] net: pcs: Enable pre-emption packet for
- 10/100Mbps
-Message-ID: <20210423181133.cl5ooguhdm5rfbch@skbuf>
-References: <20210422230645.23736-1-mohammad.athari.ismail@intel.com>
- <20210422235317.erltirtrxnva5o2d@skbuf>
- <CO1PR11MB4771A73442ECD81BEC2F1F04D5459@CO1PR11MB4771.namprd11.prod.outlook.com>
- <20210423005308.wnhpxryw6emgohaa@skbuf>
- <CO1PR11MB47716991AAEA525773FEAFC8D5459@CO1PR11MB4771.namprd11.prod.outlook.com>
+        id S232569AbhDWSOc convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Fri, 23 Apr 2021 14:14:32 -0400
+Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:58142 "EHLO
+        mx0b-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S229549AbhDWSOb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 23 Apr 2021 14:14:31 -0400
+Received: from pps.filterd (m0148460.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 13NI9kwN019467
+        for <netdev@vger.kernel.org>; Fri, 23 Apr 2021 11:13:54 -0700
+Received: from mail.thefacebook.com ([163.114.132.120])
+        by mx0a-00082601.pphosted.com with ESMTP id 3841bqgtmv-4
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
+        for <netdev@vger.kernel.org>; Fri, 23 Apr 2021 11:13:54 -0700
+Received: from intmgw001.25.frc3.facebook.com (2620:10d:c085:208::f) by
+ mail.thefacebook.com (2620:10d:c085:11d::5) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2176.2; Fri, 23 Apr 2021 11:13:52 -0700
+Received: by devbig012.ftw2.facebook.com (Postfix, from userid 137359)
+        id 623672ED5CB8; Fri, 23 Apr 2021 11:13:50 -0700 (PDT)
+From:   Andrii Nakryiko <andrii@kernel.org>
+To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>, <ast@fb.com>,
+        <daniel@iogearbox.net>
+CC:     <andrii@kernel.org>, <kernel-team@fb.com>
+Subject: [PATCH v3 bpf-next 00/18] BPF static linker: support externs
+Date:   Fri, 23 Apr 2021 11:13:30 -0700
+Message-ID: <20210423181348.1801389-1-andrii@kernel.org>
+X-Mailer: git-send-email 2.30.2
+X-FB-Internal: Safe
+Content-Type: text/plain
+X-Proofpoint-GUID: eprBa0cg1FqYFXHK4RGIULishibXpXH_
+X-Proofpoint-ORIG-GUID: eprBa0cg1FqYFXHK4RGIULishibXpXH_
+Content-Transfer-Encoding: 8BIT
+X-Proofpoint-UnRewURL: 0 URL was un-rewritten
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CO1PR11MB47716991AAEA525773FEAFC8D5459@CO1PR11MB4771.namprd11.prod.outlook.com>
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.391,18.0.761
+ definitions=2021-04-23_07:2021-04-23,2021-04-23 signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 spamscore=0
+ lowpriorityscore=0 impostorscore=0 clxscore=1015 mlxscore=0 suspectscore=0
+ mlxlogscore=999 phishscore=0 bulkscore=0 malwarescore=0 adultscore=0
+ priorityscore=1501 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2104060000 definitions=main-2104230120
+X-FB-Internal: deliver
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Apr 23, 2021 at 09:30:07AM +0000, Ismail, Mohammad Athari wrote:
-> Hi Vladimir,
-> 
-> > -----Original Message-----
-> > From: Vladimir Oltean <olteanv@gmail.com>
-> > Sent: Friday, April 23, 2021 8:53 AM
-> > To: Ismail, Mohammad Athari <mohammad.athari.ismail@intel.com>
-> > Cc: Alexandre Torgue <alexandre.torgue@st.com>; Jose Abreu
-> > <joabreu@synopsys.com>; David S . Miller <davem@davemloft.net>; Jakub
-> > Kicinski <kuba@kernel.org>; Andrew Lunn <andrew@lunn.ch>; Heiner Kallweit
-> > <hkallweit1@gmail.com>; Russell King <linux@armlinux.org.uk>; Ong, Boon
-> > Leong <boon.leong.ong@intel.com>; Voon, Weifeng
-> > <weifeng.voon@intel.com>; Wong, Vee Khee <vee.khee.wong@intel.com>;
-> > netdev@vger.kernel.org; linux-kernel@vger.kernel.org
-> > Subject: Re: [PATCH v2 net-next] net: pcs: Enable pre-emption packet for
-> > 10/100Mbps
-> > 
-> > On Fri, Apr 23, 2021 at 12:45:25AM +0000, Ismail, Mohammad Athari wrote:
-> > > Hi Vladimir,
-> > >
-> > > > -----Original Message-----
-> > > > From: Vladimir Oltean <olteanv@gmail.com>
-> > > > Sent: Friday, April 23, 2021 7:53 AM
-> > > > To: Ismail, Mohammad Athari <mohammad.athari.ismail@intel.com>
-> > > > Cc: Alexandre Torgue <alexandre.torgue@st.com>; Jose Abreu
-> > > > <joabreu@synopsys.com>; David S . Miller <davem@davemloft.net>;
-> > > > Jakub Kicinski <kuba@kernel.org>; Andrew Lunn <andrew@lunn.ch>;
-> > > > Heiner Kallweit <hkallweit1@gmail.com>; Russell King
-> > > > <linux@armlinux.org.uk>; Ong, Boon Leong <boon.leong.ong@intel.com>;
-> > > > Voon, Weifeng <weifeng.voon@intel.com>; Wong, Vee Khee
-> > > > <vee.khee.wong@intel.com>; netdev@vger.kernel.org;
-> > > > linux-kernel@vger.kernel.org
-> > > > Subject: Re: [PATCH v2 net-next] net: pcs: Enable pre-emption packet
-> > > > for 10/100Mbps
-> > > >
-> > > > Hi Mohammad,
-> > > >
-> > > > On Fri, Apr 23, 2021 at 07:06:45AM +0800,
-> > > > mohammad.athari.ismail@intel.com
-> > > > wrote:
-> > > > > From: Mohammad Athari Bin Ismail
-> > > > > <mohammad.athari.ismail@intel.com>
-> > > > >
-> > > > > Set VR_MII_DIG_CTRL1 bit-6(PRE_EMP) to enable pre-emption packet
-> > > > > for 10/100Mbps by default. This setting doesn`t impact pre-emption
-> > > > > capability for other speeds.
-> > > > >
-> > > > > Signed-off-by: Mohammad Athari Bin Ismail
-> > > > > <mohammad.athari.ismail@intel.com>
-> > > > > ---
-> > > >
-> > > > What is a "pre-emption packet"?
-> > >
-> > > In IEEE 802.1 Qbu (Frame Preemption), pre-emption packet is used to
-> > > differentiate between MAC Frame packet, Express Packet, Non-fragmented
-> > > Normal Frame Packet, First Fragment of Preemptable Packet,
-> > > Intermediate Fragment of Preemptable Packet and Last Fragment of
-> > > Preemptable Packet.
-> > 
-> > Citation needed, which clause are you referring to?
-> 
-> Cited from IEEE802.3-2018 Clause 99.3.
+Add BPF static linker support for extern resolution of global variables,
+functions, and BTF-defined maps.
 
-Aha, you know that what you just said is not what's in the "MAC Merge
-sublayer" clause, right? There is no such thing as "pre-emption packet"
-in the standard, this is a made-up name, maybe preemptable packets, but
-the definition of preemptable packets is not that, hence my question.
+This patch set consists of 4 parts:
+  - few patches are extending bpftool to simplify working with BTF dump;
+  - libbpf object loading logic is extended to support __hidden functions and
+    overriden (unused) __weak functions; also BTF-defined map parsing logic is
+    refactored to be re-used by linker;
+  - the crux of the patch set is BPF static linker logic extension to perform
+    extern resolution for three categories: global variables, BPF
+    sub-programs, BTF-defined maps;
+  - a set of selftests that validate that all the combinations of
+    extern/weak/__hidden are working as expected.
 
-> > 
-> > >
-> > > This bit "VR_MII_DIG_CTRL1 bit-6(PRE_EMP)" defined in DesignWare Cores
-> > > Ethernet PCS Databook is to allow the IP to properly receive/transmit
-> > > pre-emption packets in SGMII 10M/100M Modes.
-> > 
-> > Shouldn't everything be handled at the MAC merge sublayer? What business
-> > does the PCS have in frame preemption?
-> 
-> There is no further detail explained in the databook w.r.t to
-> VR_MII_DIG_CTRL1 bit-6(PRE_EMP). The only statement it mentions is
-> "This bit should be set to 1 to allow the DWC_xpcs to properly
-> receive/transmit pre-emption packets in SGMII 10M/100M Modes".
+See respective patches for more details.
 
-Correct, I see this too. I asked our hardware design team, and at least
-on NXP LS1028A (no Synopsys PCS), the PCS layer has nothing to do with
-frame preemption, as mentioned.
+One aspect hasn't been addressed yet and is going to be resolved in the next
+patch set, but is worth mentioning. With BPF static linking of multiple .o
+files, dealing with static everything becomes more problematic for BPF
+skeleton and in general for any by name look up APIs. This is due to static
+entities are allowed to have non-unique name. Historically this was never
+a problem due to BPF programs were always confined to a single C file. That
+changes now and needs to be addressed. The thinking so far is for BPF static
+linker to prepend filename to each static variable and static map (which is
+currently not supported by libbpf, btw), so that they can be unambiguously
+resolved by (mostly) unique name. Mostly, because even filenames can be
+duplicated, but that should be rare and easy to address by wiser choice of
+filenames by users. Fortunately, static BPF subprograms don't suffer from this
+issues, as they are not independent entities and are neither exposed in BPF
+skeleton, nor is lookup-able by any of libbpf APIs (and there is little reason
+to do that anyways).
 
-But indeed, I do see this obscure bit in the Digital Control 1 register
-too, I've no idea what it does. I'll ask around. Odd anyway. If you have
-to set it, you have to set it, I guess. But it is interesting to see why
-is it even a configurable bit, why it is not enabled by default, what is
-the drawback of enabling it?!
+This and few other things will be the topic of the next set of patches.
 
-> > 
-> > Also, I know it's easy to forget, but Vinicius' patch series for supporting frame
-> > preemption via ethtool wasn't accepted yet. How are you testing this?
-> 
-> For stmmac Kernel driver, frame pre-emption capability is already
-> supported. For iproute2 (tc command), we are using custom patch based
-> on Vinicius patch.
+Some tests rely on Clang fix ([0]), so need latest Clang built from main.
 
-Don't you want to help contributing the ethtool netlink support to the
-mainline kernel though? :)
+  [0] https://reviews.llvm.org/D100362
+
+v2->v3:
+  - allow only STV_DEFAULT and STV_HIDDEN ELF symbol visibility (Yonghong);
+  - update selftests' README for required Clang 13 fix dependency (Alexei);
+  - comments, typos, slight code changes (Yonghong, Alexei);
+
+v1->v2:
+  - make map externs support full attribute list, adjust linked_maps selftest
+    to demonstrate that typedef works now (though no shared header file was
+    added to simplicity sake) (Alexei);
+  - remove commented out parts from selftests and fix few minor code style
+    issues;
+  - special __weak map definition semantics not yet implemented and will be
+    addressed in a follow up.
+
+Andrii Nakryiko (18):
+  bpftool: support dumping BTF VAR's "extern" linkage
+  bpftool: dump more info about DATASEC members
+  libbpf: suppress compiler warning when using SEC() macro with externs
+  libbpf: mark BPF subprogs with hidden visibility as static for BPF
+    verifier
+  libbpf: allow gaps in BPF program sections to support overriden weak
+    functions
+  libbpf: refactor BTF map definition parsing
+  libbpf: factor out symtab and relos sanity checks
+  libbpf: make few internal helpers available outside of libbpf.c
+  libbpf: extend sanity checking ELF symbols with externs validation
+  libbpf: tighten BTF type ID rewriting with error checking
+  libbpf: add linker extern resolution support for functions and global
+    variables
+  libbpf: support extern resolution for BTF-defined maps in .maps
+    section
+  selftests/bpf: use -O0 instead of -Og in selftests builds
+  selftests/bpf: omit skeleton generation for multi-linked BPF object
+    files
+  selftests/bpf: add function linking selftest
+  selftests/bpf: add global variables linking selftest
+  selftests/bpf: add map linking selftest
+  selftests/bpf: document latest Clang fix expectations for linking
+    tests
+
+ tools/bpf/bpftool/btf.c                       |   30 +-
+ tools/lib/bpf/bpf_helpers.h                   |   19 +-
+ tools/lib/bpf/btf.c                           |    5 -
+ tools/lib/bpf/libbpf.c                        |  373 +++--
+ tools/lib/bpf/libbpf_internal.h               |   45 +
+ tools/lib/bpf/linker.c                        | 1270 ++++++++++++++---
+ tools/testing/selftests/bpf/Makefile          |   18 +-
+ tools/testing/selftests/bpf/README.rst        |    9 +
+ .../selftests/bpf/prog_tests/linked_funcs.c   |   42 +
+ .../selftests/bpf/prog_tests/linked_maps.c    |   30 +
+ .../selftests/bpf/prog_tests/linked_vars.c    |   43 +
+ .../selftests/bpf/progs/linked_funcs1.c       |   73 +
+ .../selftests/bpf/progs/linked_funcs2.c       |   73 +
+ .../selftests/bpf/progs/linked_maps1.c        |   82 ++
+ .../selftests/bpf/progs/linked_maps2.c        |   76 +
+ .../selftests/bpf/progs/linked_vars1.c        |   54 +
+ .../selftests/bpf/progs/linked_vars2.c        |   55 +
+ 17 files changed, 1942 insertions(+), 355 deletions(-)
+ create mode 100644 tools/testing/selftests/bpf/prog_tests/linked_funcs.c
+ create mode 100644 tools/testing/selftests/bpf/prog_tests/linked_maps.c
+ create mode 100644 tools/testing/selftests/bpf/prog_tests/linked_vars.c
+ create mode 100644 tools/testing/selftests/bpf/progs/linked_funcs1.c
+ create mode 100644 tools/testing/selftests/bpf/progs/linked_funcs2.c
+ create mode 100644 tools/testing/selftests/bpf/progs/linked_maps1.c
+ create mode 100644 tools/testing/selftests/bpf/progs/linked_maps2.c
+ create mode 100644 tools/testing/selftests/bpf/progs/linked_vars1.c
+ create mode 100644 tools/testing/selftests/bpf/progs/linked_vars2.c
+
+-- 
+2.30.2
+
