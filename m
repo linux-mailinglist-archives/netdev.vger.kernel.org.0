@@ -2,116 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C7B12369C1C
-	for <lists+netdev@lfdr.de>; Fri, 23 Apr 2021 23:39:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9DE54369C36
+	for <lists+netdev@lfdr.de>; Fri, 23 Apr 2021 23:48:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243974AbhDWVk1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 23 Apr 2021 17:40:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52742 "EHLO
+        id S243960AbhDWVtb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 23 Apr 2021 17:49:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54700 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230056AbhDWVkY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 23 Apr 2021 17:40:24 -0400
-Received: from mail-yb1-xb30.google.com (mail-yb1-xb30.google.com [IPv6:2607:f8b0:4864:20::b30])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 29738C061574;
-        Fri, 23 Apr 2021 14:39:46 -0700 (PDT)
-Received: by mail-yb1-xb30.google.com with SMTP id q192so3618810ybg.4;
-        Fri, 23 Apr 2021 14:39:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=y20H1hcXw5NLpPWF3SrqvIhtpy0uh9xGzSSIElxTLGY=;
-        b=sxA1i/1OL/y9hu9rxlESTSTc2K9tYasTSkqiEtG0dx3BRibsmfAX/Y8uIV1VKoCYt8
-         9ib3Gj6mRFqoC2yXzpLs4hCwoXkRpMslxYeHbN5ut8iIgn8EOUi6bOQoR9gapIkt9ACp
-         CJjfXZT5/mmXTRcuv31AssoDjwMdTGli9CXzcrjEoXT1AkXWq6dyhknli/GejAWobVoh
-         R93NOeuRejdapMUEv8Am3n1U5FNwI2zXY+zulevy+vv7eHYJo1J6Brz5JPm0hhOV2EAU
-         MP7aytfarUMpTLKM1wpMiubDTFWH4XnNUXI5+avYMVyxYsiSnb7m8CI+2/mYJKnQAC10
-         gGfQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=y20H1hcXw5NLpPWF3SrqvIhtpy0uh9xGzSSIElxTLGY=;
-        b=SQY/7Mm/XOzGvfjxvpjTmqupCAppe+NgD6izVe6L4gI/Kkc53RnXx0mDTVXjFpgKQm
-         myckLW2J4tOsQRJWDJs5seYXvPRmKqLo8Z0SkR7qAGf+r8gEnWMzBpNHf6YYX5yk42jt
-         ao3iG8aiye23KYDhhk+iJZvT0ShS8LyFYZ7flwiu7RYO3yBb7laa1jxrAtYr4cq2CK+r
-         6OepdWSif7e7qv06qa/F6U2uJcqTWDMYPVdFoWAxQKV5nvZ2eyrtdlH3kPZ+GgZD0J1g
-         kJSUBrIEx6MaiTffkZkHN8TLKFKtMO07eHwL/ZT2Nz+CI8Z3WWXfT6M81e7PB78ayOhG
-         0Mpg==
-X-Gm-Message-State: AOAM533GUJUcvXdnO+cZZoLENFw6VhKGQ7wuZ7SLx8HwpmIkydoBgeI+
-        gIEUs2fOzPy5eBWN2UV1V17iadk4tnCvEysZcjg=
-X-Google-Smtp-Source: ABdhPJxDX0bKKe7uOox0/D4O5ImURhyu8ycfC3Ik40ZeBJj3X92xzZ/sjKOdZ8Azkt15PXB1h69BUpCcfm+eazJY5pw=
-X-Received: by 2002:a25:3357:: with SMTP id z84mr8263467ybz.260.1619213985497;
- Fri, 23 Apr 2021 14:39:45 -0700 (PDT)
+        with ESMTP id S231881AbhDWVt3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 23 Apr 2021 17:49:29 -0400
+Received: from fieldses.org (fieldses.org [IPv6:2600:3c00:e000:2f7::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF624C061574;
+        Fri, 23 Apr 2021 14:48:51 -0700 (PDT)
+Received: by fieldses.org (Postfix, from userid 2815)
+        id DA2B772B6; Fri, 23 Apr 2021 17:48:50 -0400 (EDT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 fieldses.org DA2B772B6
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fieldses.org;
+        s=default; t=1619214530;
+        bh=U6WWEJE6HYu6e1qTzNl9Bf2+HqMso5r8EtnlDNeMCkY=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=Xp+q4a1R8/kJxx5HrVczUxD/JWnCmEUYCs9ErozpMoBkibkVhrk7Rm8P7awvKiokQ
+         43mzlHqlB+ceAQFyW2LT2yfPCfys29j0npQbK0O9KpYUNLObIg1etF+8lXzzelXmI9
+         2dLY6vl0ElmMSl9blg1XxIyLnwhEBhRh+yvz/AaA=
+Date:   Fri, 23 Apr 2021 17:48:50 -0400
+From:   "J. Bruce Fields" <bfields@fieldses.org>
+To:     Leon Romanovsky <leon@kernel.org>
+Cc:     "Shelat, Abhi" <a.shelat@northeastern.edu>,
+        Greg KH <gregkh@linuxfoundation.org>,
+        Sudip Mukherjee <sudipm.mukherjee@gmail.com>,
+        Aditya Pakki <pakki001@umn.edu>,
+        Chuck Lever <chuck.lever@oracle.com>,
+        Trond Myklebust <trond.myklebust@hammerspace.com>,
+        Anna Schumaker <anna.schumaker@netapp.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Dave Wysochanski <dwysocha@redhat.com>,
+        "linux-nfs@vger.kernel.org" <linux-nfs@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH] SUNRPC: Add a check for gss_release_msg
+Message-ID: <20210423214850.GI10457@fieldses.org>
+References: <CADVatmNgU7t-Co84tSS6VW=3NcPu=17qyVyEEtVMVR_g51Ma6Q@mail.gmail.com>
+ <YH/8jcoC1ffuksrf@kroah.com>
+ <3B9A54F7-6A61-4A34-9EAC-95332709BAE7@northeastern.edu>
+ <20210421133727.GA27929@fieldses.org>
+ <YIAta3cRl8mk/RkH@unreal>
+ <20210421135637.GB27929@fieldses.org>
+ <20210422193950.GA25415@fieldses.org>
+ <YIMDCNx4q6esHTYt@unreal>
+ <20210423180727.GD10457@fieldses.org>
+ <YIMgMHwYkVBdrICs@unreal>
 MIME-Version: 1.0
-References: <20210423181348.1801389-1-andrii@kernel.org> <20210423181348.1801389-18-andrii@kernel.org>
- <5d96d205-1483-95a4-dc36-798fef934f72@fb.com> <CAADnVQ+20NcPHKYyMpAYr6SQ2fuvr4yqu5eiY90hL8J9-t1L9w@mail.gmail.com>
-In-Reply-To: <CAADnVQ+20NcPHKYyMpAYr6SQ2fuvr4yqu5eiY90hL8J9-t1L9w@mail.gmail.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Fri, 23 Apr 2021 14:39:34 -0700
-Message-ID: <CAEf4BzbRH-5-1MVtEnfLKOMO4f2sVFrdROBLTBT8GrESs1p1XQ@mail.gmail.com>
-Subject: Re: [PATCH v3 bpf-next 17/18] selftests/bpf: add map linking selftest
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     Yonghong Song <yhs@fb.com>, Andrii Nakryiko <andrii@kernel.org>,
-        bpf <bpf@vger.kernel.org>,
-        Network Development <netdev@vger.kernel.org>,
-        Alexei Starovoitov <ast@fb.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Kernel Team <kernel-team@fb.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YIMgMHwYkVBdrICs@unreal>
+User-Agent: Mutt/1.5.21 (2010-09-15)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Apr 23, 2021 at 2:23 PM Alexei Starovoitov
-<alexei.starovoitov@gmail.com> wrote:
->
-> On Fri, Apr 23, 2021 at 11:54 AM Yonghong Song <yhs@fb.com> wrote:
-> >
-> >
-> >
-> > On 4/23/21 11:13 AM, Andrii Nakryiko wrote:
-> > > Add selftest validating various aspects of statically linking BTF-defined map
-> > > definitions. Legacy map definitions do not support extern resolution between
-> > > object files. Some of the aspects validated:
-> > >    - correct resolution of extern maps against concrete map definitions;
-> > >    - extern maps can currently only specify map type and key/value size and/or
-> > >      type information;
-> > >    - weak concrete map definitions are resolved properly.
-> > >
-> > > Static map definitions are not yet supported by libbpf, so they are not
-> > > explicitly tested, though manual testing showes that BPF linker handles them
-> > > properly.
-> > >
-> > > Acked-by: Yonghong Song <yhs@fb.com>
-> > > Signed-off-by: Andrii Nakryiko <andrii@kernel.org>
-> > [...]
-> > > +
-> > > +SEC("raw_tp/sys_exit")
-> > > +int BPF_PROG(handler_exit1)
-> > > +{
-> > > +     /* lookup values with key = 2, set in another file */
-> > > +     int key = 2, *val;
-> > > +     struct my_key key_struct = { .x = 2 };
-> > > +     struct my_value *value_struct;
-> > > +
-> > > +     value_struct = bpf_map_lookup_elem(&map1, &key_struct);
-> > > +     if (value_struct)
-> > > +             output_first1 = value_struct->x;
-> > > +
-> > > +     val = bpf_map_lookup_elem(&map2, &key);
-> > > +     if (val)
-> > > +             output_second1 = *val;
-> > > +
-> > > +     val = bpf_map_lookup_elem(&map_weak, &key);
-> > > +     if (val)
-> > > +             output_weak1 = *val;
-> > > +
-> >
-> > There is an extra tab in the above line. There is no need for new
-> > revision just for this. If no new revision is needed, maybe
-> > the maintainer can help fix it.
->
-> Sorry. I applied without it. Pls fold the fix in some of the future patches.
+Have umn addresses been blocked from posting to kernel lists?
 
-Ok, no problem, I'll do it in v3 of statics support patch set.
+Anyway:
+
+On Fri, Apr 23, 2021 at 10:29:52PM +0300, Leon Romanovsky wrote:
+> On Fri, Apr 23, 2021 at 02:07:27PM -0400, J. Bruce Fields wrote:
+> > On Fri, Apr 23, 2021 at 08:25:28PM +0300, Leon Romanovsky wrote:
+> > > On Thu, Apr 22, 2021 at 03:39:50PM -0400, J. Bruce Fields wrote:
+> > > > On Wed, Apr 21, 2021 at 09:56:37AM -0400, J. Bruce Fields wrote:
+> > > > > On Wed, Apr 21, 2021 at 04:49:31PM +0300, Leon Romanovsky wrote:
+> > > > > > If you want to see another accepted patch that is already part of
+> > > > > > stable@, you are invited to take a look on this patch that has "built-in bug":
+> > > > > > 8e949363f017 ("net: mlx5: Add a missing check on idr_find, free buf")
+> > > > > 
+> > > > > Interesting, thanks.
+> > > > 
+> > > > Though looking at it now, I'm not actually seeing the bug--probably I'm
+> > > > overlooking something obvious.
+> > > 
+> > > It was fixed in commit 31634bf5dcc4 ("net/mlx5: FPGA, tls, hold rcu read lock a bit longer")
+> > 
+> > So is the "Fixes:" line on that commit wrong?  It claims the bug was
+> > introduced by an earlier commit, ab412e1dd7db ("net/mlx5: Accel, add TLS
+> > rx offload routines").
+> 
+> Yes, I think that Fixes line is misleading.
+> 
+> > 
+> > Looks like Aditya Pakki's commit may have widened the race a little, but
+> > I find it a little hard to fault him for that.
+> 
+> We can argue about severity of this bug, but the whole paper talks about
+> introduction of UAF bugs unnoticed.
+
+Aditya Pakki points out in private mail that this patch is part of the
+work described in this paper:
+
+	https://www-users.cs.umn.edu/~kjlu/papers/crix.pdf
+
+(See the list of patches in the appendix.)
+
+I mean, sure, I suppose they could have created that whole second line
+of research just as a cover to submit malicious patches, but I think
+we're running pretty hard into Occam's Razor at that point.
+
+--b.
