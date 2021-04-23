@@ -2,167 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3ECA0369AE4
-	for <lists+netdev@lfdr.de>; Fri, 23 Apr 2021 21:27:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 04871369AED
+	for <lists+netdev@lfdr.de>; Fri, 23 Apr 2021 21:30:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232378AbhDWT22 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 23 Apr 2021 15:28:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52210 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231684AbhDWT20 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 23 Apr 2021 15:28:26 -0400
-Received: from mail-ej1-x62a.google.com (mail-ej1-x62a.google.com [IPv6:2a00:1450:4864:20::62a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4CD0DC06174A
-        for <netdev@vger.kernel.org>; Fri, 23 Apr 2021 12:27:48 -0700 (PDT)
-Received: by mail-ej1-x62a.google.com with SMTP id x12so54687181ejc.1
-        for <netdev@vger.kernel.org>; Fri, 23 Apr 2021 12:27:48 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=paul-moore-com.20150623.gappssmtp.com; s=20150623;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=GGmswUWs0RhjLm11KvpLJnLg6G3DSRO1QkIM1fXbk7s=;
-        b=02tLZjLeYkxGPB2kXMhpJATnGAtGmYPsmzTboVgl/LmG2WbReuSJpJrPlxJd90ALKR
-         97sPdAcYuV4/oaDQXmOwIgdjD3nkc+vwW8/gPUaZkaeqTEC94+s9E0R4OCZ0ig8W1+nl
-         nqyN38L7dwd2RMuWYF5cioO9XPfvVR8M4cdSiNRh2SX+d3OdOTrXdAsX8ksUKHDvZ72w
-         waDXwP7pSE48qNSKfm0IAeh4BaI4PqR+hSTGCwLYYApnxxeImRsdoFWDHwFXJVBi+Q3C
-         zRKDs+BLZ0nrlPvvpF+sufIB8MBeGS7GtuL2Al6hW3uvcCJLJ1xC0gcUtMBvVM0hyzO2
-         HqhA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=GGmswUWs0RhjLm11KvpLJnLg6G3DSRO1QkIM1fXbk7s=;
-        b=ljpG0ouTAIvQLn8VCnddYJazQo3i3LlZQhKGQtesO83apc7Vipz59kzO+/nIL9Yc0z
-         zRw9JLuseSd2n3zysVX795E75zCuiJI8ZJa5BAYwso282iRjgaRMmg1X9iBFYfMS8ocV
-         LnEwvHIqSNTlBmEBb6XbyUYyn1JQn24Hey/4PiICgQKmew5KNMOrERnznY/lG6OJi+iB
-         6Ood3rUXhIvnd1cDe3GmQ4RPp7aH5plq8iyQcxA29p1z+YTEBNNc4Sj+5lH0izqT0XY2
-         1+mkkJN2patqRiTA+cVbix9+dk27L9qsTcIwYGid5aypkGiD81di1+0bIgHevAyDGDBf
-         RdSA==
-X-Gm-Message-State: AOAM531hpWtrRxYt7Ob0vuKCrij+QFahZ/+dRYg504x7QaGFG4VC1zi9
-        RXboMl0emuRkJUCp05m2/vOYDnb6zVWL0NXKgcWR
-X-Google-Smtp-Source: ABdhPJxFunO8u/UyY8hB3Vbeq+g3Smp6PbgP4kttDr+81dktNKM4DKLyCDErbfUfCB/j8VqV43lTQ0UFMkx/w+QTI+E=
-X-Received: by 2002:a17:906:f283:: with SMTP id gu3mr5825341ejb.91.1619206066758;
- Fri, 23 Apr 2021 12:27:46 -0700 (PDT)
+        id S243799AbhDWTae (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 23 Apr 2021 15:30:34 -0400
+Received: from mail.kernel.org ([198.145.29.99]:57138 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229549AbhDWTad (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 23 Apr 2021 15:30:33 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 107286134F;
+        Fri, 23 Apr 2021 19:29:55 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1619206196;
+        bh=ikzGb+8FgMM5E+UXyiyzMOROEMO+CNXykpkkBbepjm8=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=NIzx/5eCMVVtm4AJM102X9KO2qHDSz+Aul45b4EMeDbQDu4C66vCLColnWz7AdRPw
+         2zyXZMMH1pdI+PR+MrAoINvOmsnNhJxU4EPfq298jYqHiH5RmVaRH/sIsYpWE0h7lx
+         N950L7r1vBrIYR+O6JLnrkjw5AX1vILGLlKb4NaDDSbyBqeyToNYCiJn7FXf3VUjU5
+         xsYWyoKup6RctsBga+G+vJZ9Y/9AndFHfcrkv3J13ImdzxMM0n5n2Az+4LsEXTemL7
+         wTP5DzUhusiat/7txRfZ6Q/xuR+19uzHmU5yRvkW5+JYOlEsmhgwHskZy1WW5NvXnj
+         t4G5C7kfGUutg==
+Date:   Fri, 23 Apr 2021 22:29:52 +0300
+From:   Leon Romanovsky <leon@kernel.org>
+To:     "J. Bruce Fields" <bfields@fieldses.org>
+Cc:     "Shelat, Abhi" <a.shelat@northeastern.edu>,
+        Greg KH <gregkh@linuxfoundation.org>,
+        Sudip Mukherjee <sudipm.mukherjee@gmail.com>,
+        Aditya Pakki <pakki001@umn.edu>,
+        Chuck Lever <chuck.lever@oracle.com>,
+        Trond Myklebust <trond.myklebust@hammerspace.com>,
+        Anna Schumaker <anna.schumaker@netapp.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Dave Wysochanski <dwysocha@redhat.com>,
+        "linux-nfs@vger.kernel.org" <linux-nfs@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH] SUNRPC: Add a check for gss_release_msg
+Message-ID: <YIMgMHwYkVBdrICs@unreal>
+References: <YH+7ZydHv4+Y1hlx@kroah.com>
+ <CADVatmNgU7t-Co84tSS6VW=3NcPu=17qyVyEEtVMVR_g51Ma6Q@mail.gmail.com>
+ <YH/8jcoC1ffuksrf@kroah.com>
+ <3B9A54F7-6A61-4A34-9EAC-95332709BAE7@northeastern.edu>
+ <20210421133727.GA27929@fieldses.org>
+ <YIAta3cRl8mk/RkH@unreal>
+ <20210421135637.GB27929@fieldses.org>
+ <20210422193950.GA25415@fieldses.org>
+ <YIMDCNx4q6esHTYt@unreal>
+ <20210423180727.GD10457@fieldses.org>
 MIME-Version: 1.0
-References: <000000000000307cc205bbbf31d3@google.com> <29f03460-c0ba-07a0-ef98-9597ef157797@oracle.com>
-In-Reply-To: <29f03460-c0ba-07a0-ef98-9597ef157797@oracle.com>
-From:   Paul Moore <paul@paul-moore.com>
-Date:   Fri, 23 Apr 2021 15:27:35 -0400
-Message-ID: <CAHC9VhSKtS7syw51S8=KOFNu-NSyV5vw+uyr50KexBKW_QAP_w@mail.gmail.com>
-Subject: Re: WARNING in netlbl_cipsov4_add
-To:     Vegard Nossum <vegard.nossum@oracle.com>
-Cc:     syzbot <syzbot+cdd51ee2e6b0b2e18c0d@syzkaller.appspotmail.com>,
-        akpm@linux-foundation.org, linux-kernel@vger.kernel.org,
-        linux-mm@kvack.org, netdev@vger.kernel.org,
-        syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210423180727.GD10457@fieldses.org>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Apr 23, 2021 at 6:47 AM Vegard Nossum <vegard.nossum@oracle.com> wr=
-ote:
-> Hi Paul,
->
-> This syzbot report reproduces in mainline for me and it looks like
-> you're the author/maintainer of this code, so I'm just adding some info
-> to hopefully aid the preparation of a fix:
+On Fri, Apr 23, 2021 at 02:07:27PM -0400, J. Bruce Fields wrote:
+> On Fri, Apr 23, 2021 at 08:25:28PM +0300, Leon Romanovsky wrote:
+> > On Thu, Apr 22, 2021 at 03:39:50PM -0400, J. Bruce Fields wrote:
+> > > On Wed, Apr 21, 2021 at 09:56:37AM -0400, J. Bruce Fields wrote:
+> > > > On Wed, Apr 21, 2021 at 04:49:31PM +0300, Leon Romanovsky wrote:
+> > > > > If you want to see another accepted patch that is already part of
+> > > > > stable@, you are invited to take a look on this patch that has "built-in bug":
+> > > > > 8e949363f017 ("net: mlx5: Add a missing check on idr_find, free buf")
+> > > > 
+> > > > Interesting, thanks.
+> > > 
+> > > Though looking at it now, I'm not actually seeing the bug--probably I'm
+> > > overlooking something obvious.
+> > 
+> > It was fixed in commit 31634bf5dcc4 ("net/mlx5: FPGA, tls, hold rcu read lock a bit longer")
+> 
+> So is the "Fixes:" line on that commit wrong?  It claims the bug was
+> introduced by an earlier commit, ab412e1dd7db ("net/mlx5: Accel, add TLS
+> rx offload routines").
 
-Hi Vegard,
+Yes, I think that Fixes line is misleading.
 
-Yes, you've come to the right place, thank you for your help in
-tracking this down.  Some comments and initial thoughts below ...
+> 
+> Looks like Aditya Pakki's commit may have widened the race a little, but
+> I find it a little hard to fault him for that.
 
-> On 2021-02-20 08:05, syzbot wrote:
-> > Hello,
-> >
-> > syzbot found the following issue on:
+We can argue about severity of this bug, but the whole paper talks about
+introduction of UAF bugs unnoticed.
 
-...
+Thanks
 
-> Running strace on the reproducer says:
->
-> socket(PF_NETLINK, SOCK_RAW, NETLINK_GENERIC) =3D 3
-> socket(PF_NETLINK, SOCK_RAW, NETLINK_GENERIC) =3D 4
-> sendto(4,
-> "(\0\0\0\20\0\5\0\0\0\0\0\0\0\0\0\3\0\0\0\21\0\2\0NLBL_CIPSOv4\0\0\0\0",
-> 40, 0, {sa_family=3DAF_NETLINK, pid=3D0, groups=3D00000000}, 12) =3D 40
-> recvfrom(4,
-> "\234\0\0\0\20\0\0\0\0\0\0\0\f\r\0\0\1\2\0\0\21\0\2\0NLBL_CIPSOv4\0\0\0\0=
-\6\0\1\0\24\0\0\0\10\0\3\0\3\0\0\0\10\0\4\0\0\0\0\0\10\0\5\0\f\0\0\0T\0\6\0=
-\24\0\1\0\10\0\1\0\1\0\0\0\10\0\2\0\v\0\0\0\24\0\2\0\10\0\1\0\2\0\0\0\10\0\=
-2\0\v\0\0\0\24\0\3\0\10\0\1\0\3\0\0\0\10\0\2\0\n\0\0\0\24\0\4\0\10\0\1\0\4\=
-0\0\0\10\0\2\0\f\0\0\0",
-> 4096, 0, NULL, NULL) =3D 156
-> recvfrom(4,
-> "$\0\0\0\2\0\0\0\0\0\0\0\f\r\0\0\0\0\0\0(\0\0\0\20\0\5\0\0\0\0\0\0\0\0\0"=
-,
-> 4096, 0, NULL, NULL) =3D 36
-> sendmsg(3, {msg_name(0)=3DNULL,
-> msg_iov(1)=3D[{"T\0\0\0\24\0\1\0\0\0\0\0\0\0\0\0\1\0\0\0,\0\10\200\34\0\7=
-\200\10\0\5\0\3608)
-> \10\0\6\0\0\0\0\0\10\0\6\0\0\0\0\0\f\0\7\200\10\0\5\0\0\0\0\0\4\0\4\200\1=
-0\0\1\0\0\0\0\0\10\0\2\0\1\0\0\0",
-> 84}], msg_controllen=3D0, msg_flags=3D0}, 0) =3D 84
->
-> We're ending up in netlbl_cipsov4_add() with CIPSO_V4_MAP_TRANS, so it
-> calls netlbl_cipsov4_add_std() where this is the problematic allocation:
->
-> doi_def->map.std->lvl.local =3D kcalloc(doi_def->map.std->lvl.local_size,
->                                        sizeof(u32),
->                                        GFP_KERNEL);
->
-> It looks like there is already a check on the max size:
->
-> if (nla_get_u32(nla_b) >
->      CIPSO_V4_MAX_LOC_LVLS)
->          goto add_std_failure;
-> if (nla_get_u32(nla_b) >=3D
->      doi_def->map.std->lvl.local_size)
->       doi_def->map.std->lvl.local_size =3D
->               nla_get_u32(nla_b) + 1;
->
-> However, the limit is quite generous:
->
-> #define CIPSO_V4_INV_LVL              0x80000000
-> #define CIPSO_V4_MAX_LOC_LVLS         (CIPSO_V4_INV_LVL - 1)
->
-> so maybe a fix would just lower this to something that agrees with the
-> page allocator?
-
-Hmm, I agree that from a practical point of view the limit does seem
-high.  The issue is that I'm not sure we have an easy way to determine
-an appropriate local limit considering that it is determined by the
-LSM and in some cases it is determined by the LSM's loaded policy.  On
-the plus side you need privilege to get this far in the code so the
-impact is minimized, although we still should look into catching this
-prior to the WARN_ON_ONCE() in __alloc_pages_nodemask().  If nothing
-else it allows the fuzzers to keep making progress and not die here.
-
-We could drop CIPSO_V4_MAX_LOC_LVLS to an arbitrary value, or better
-yet make it a sysctl (or similar), but that doesn't feel right and I'd
-prefer to not create another runtime config knob if we don't have to
-do so.  Is there a safe/stable way to ask the allocator what size is
-*too* big?  That might be a better solution as we could catch it in
-the CIPSO code and return an error before calling kmalloc.  I'm not a
-mm expert, but looking through include/linux/slab.h I wonder if we
-could just compare the allocation size with KMALLOC_SHIFT_MAX?  Or is
-that still too big?
-
-> At first glance it may appear like there is a similar issue with
-> doi_def->map.std->lvl.cipso_size, but that one looks restricted to a
-> saner limit of CIPSO_V4_MAX_REM_LVLS =3D=3D 255. It's probably better to
-> double check both in case I read this wrong.
-
-This one is a bit easier, that limit is defined by the CIPSO protocol
-and we really shouldn't change that.
-
-FWIW, I would expect that we would have a similar issue with the
-CIPSO_V4_MAX_LOC_CATS check in the same function.  My initial thinking
-is that we can solve it in the same manner as the
-CIPSO_V4_MAX_LOC_LVLS fix.
-
---=20
-paul moore
-www.paul-moore.com
+> 
+> --b.
