@@ -2,45 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AFE8336948E
-	for <lists+netdev@lfdr.de>; Fri, 23 Apr 2021 16:24:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8B3893694A9
+	for <lists+netdev@lfdr.de>; Fri, 23 Apr 2021 16:27:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240985AbhDWOZE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 23 Apr 2021 10:25:04 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:38096 "EHLO vps0.lunn.ch"
+        id S242576AbhDWO2Z (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 23 Apr 2021 10:28:25 -0400
+Received: from mx2.suse.de ([195.135.220.15]:42362 "EHLO mx2.suse.de"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230520AbhDWOZC (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 23 Apr 2021 10:25:02 -0400
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
-        (envelope-from <andrew@lunn.ch>)
-        id 1lZwjH-000fYe-T5; Fri, 23 Apr 2021 16:24:23 +0200
-Date:   Fri, 23 Apr 2021 16:24:23 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Linus Walleij <linus.walleij@linaro.org>
-Cc:     netdev@vger.kernel.org, "David S . Miller" <davem@davemloft.net>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>
-Subject: Re: [PATCH 2/3 net-next v3] net: ethernet: ixp4xx: Retire ancient
- phy retrieveal
-Message-ID: <YILYl9ntSpWxojk7@lunn.ch>
-References: <20210423082208.2244803-1-linus.walleij@linaro.org>
- <20210423082208.2244803-2-linus.walleij@linaro.org>
+        id S240603AbhDWO2Y (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 23 Apr 2021 10:28:24 -0400
+X-Virus-Scanned: by amavisd-new at test-mx.suse.de
+Received: from relay2.suse.de (unknown [195.135.221.27])
+        by mx2.suse.de (Postfix) with ESMTP id 2EFA1AF17;
+        Fri, 23 Apr 2021 14:27:46 +0000 (UTC)
+Subject: Re: [PATCH v3] docs: proc.rst: meminfo: briefly describe gaps in
+ memory accounting
+To:     Mike Rapoport <rppt@kernel.org>, Jonathan Corbet <corbet@lwn.net>
+Cc:     Alexey Dobriyan <adobriyan@gmail.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        Matthew Wilcox <willy@infradead.org>,
+        Michal Hocko <mhocko@suse.com>,
+        Mike Rapoport <rppt@linux.ibm.com>, linux-doc@vger.kernel.org,
+        linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-mm@kvack.org, netdev@vger.kernel.org
+References: <20210421061127.1182723-1-rppt@kernel.org>
+From:   Vlastimil Babka <vbabka@suse.cz>
+Message-ID: <d047c2fb-d15a-d094-3256-ea6eeff2d7c7@suse.cz>
+Date:   Fri, 23 Apr 2021 16:27:45 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.9.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210423082208.2244803-2-linus.walleij@linaro.org>
+In-Reply-To: <20210421061127.1182723-1-rppt@kernel.org>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Apr 23, 2021 at 10:22:07AM +0200, Linus Walleij wrote:
-> This driver was using a really dated way of obtaining the
-> phy by printing a string and using it with phy_connect().
-> Switch to using more reasonable modern interfaces.
+On 4/21/21 8:11 AM, Mike Rapoport wrote:
+> From: Mike Rapoport <rppt@linux.ibm.com>
 > 
-> Suggested-by: Andrew Lunn <andrew@lunn.ch>
-> Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
+> Add a paragraph that explains that it may happen that the counters in
+> /proc/meminfo do not add up to the overall memory usage.
+> 
+> Signed-off-by: Mike Rapoport <rppt@linux.ibm.com>
 
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+Acked-by: Vlastimil Babka <vbabka@suse.cz>
 
-    Andrew
+Thanks.
+
+> ---
+> v3:
+> * Add sentense about counters overlap
+> * Use wording suggested by Matthew
+> 
+> v2: Link: https://lore.kernel.org/lkml/20210420121354.1160437-1-rppt@kernel.org
+> * Add brief changelog
+> * Fix typo
+> * Update example about network memory usage according to Eric's comment at
+> 
+> https://lore.kernel.org/lkml/CANn89iKprp7WYeZy4RRO5jHykprnSCcVBc7Tk14Ui_MA9OK7Fg@mail.gmail.com
+> 
+> v1: Link: https://lore.kernel.org/lkml/20210420085105.1156640-1-rppt@kernel.org
+>  Documentation/filesystems/proc.rst | 11 +++++++++--
+>  1 file changed, 9 insertions(+), 2 deletions(-)
+> 
+> diff --git a/Documentation/filesystems/proc.rst b/Documentation/filesystems/proc.rst
+> index 48fbfc336ebf..0a07a5025571 100644
+> --- a/Documentation/filesystems/proc.rst
+> +++ b/Documentation/filesystems/proc.rst
+> @@ -929,8 +929,15 @@ meminfo
+>  ~~~~~~~
+>  
+>  Provides information about distribution and utilization of memory.  This
+> -varies by architecture and compile options.  The following is from a
+> -16GB PIII, which has highmem enabled.  You may not have all of these fields.
+> +varies by architecture and compile options.  Some of the counters reported
+> +here overlap.  The memory reported by the non overlapping counters may not
+> +add up to the overall memory usage and the difference for some workloads
+> +can be substantial.  In many cases there are other means to find out
+> +additional memory using subsystem specific interfaces, for instance
+> +/proc/net/sockstat for TCP memory allocations.
+> +
+> +The following is from a 16GB PIII, which has highmem enabled.
+> +You may not have all of these fields.
+>  
+>  ::
+>  
+> 
+
