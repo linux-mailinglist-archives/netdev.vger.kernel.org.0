@@ -2,137 +2,137 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 627EC369CF4
-	for <lists+netdev@lfdr.de>; Sat, 24 Apr 2021 01:00:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3AD1D369D13
+	for <lists+netdev@lfdr.de>; Sat, 24 Apr 2021 01:04:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235740AbhDWXAm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 23 Apr 2021 19:00:42 -0400
-Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:59484 "EHLO
+        id S229548AbhDWXEi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 23 Apr 2021 19:04:38 -0400
+Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:15482 "EHLO
         mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S229548AbhDWXAi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 23 Apr 2021 19:00:38 -0400
+        by vger.kernel.org with ESMTP id S244088AbhDWXEc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 23 Apr 2021 19:04:32 -0400
 Received: from pps.filterd (m0109333.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 13NMeqHi006858;
-        Fri, 23 Apr 2021 15:59:48 -0700
+        by mx0a-00082601.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 13NN0vik007287;
+        Fri, 23 Apr 2021 16:03:43 -0700
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=subject : to : cc :
  references : from : message-id : date : in-reply-to : content-type :
  content-transfer-encoding : mime-version; s=facebook;
- bh=Uzz1RE2aohYcI/zEh7ZZecDqYAbW93cuMOQjGR4rh2I=;
- b=PkEn58SoIMHHL/1EDGgSDV5BhFDzCTJ4XLwSSf4oc4JpzmmZGb56uh2NRnmGrCTiEshM
- 9Nfs0/F1pD+2ljRE3yqXnZvR0gPC7tpFZMsR1BuPLqOOFqPVRXjHFdEWUhtzTBsPWJ4S
- +4HJimCDRbCFZvjTe4ut+Gg88GVzJPfeBwg= 
+ bh=JFt9TQrDgpUuNjIgW1rg0gbSpeip0XX+AJ72MqJm9cU=;
+ b=YaukeDMHASfTEhvQYTljZ7oC4ylT5IHG5hl475LwO7kHYPe5QHwJ7fl1lT6f25SbaA1A
+ oELGOPZZVprmCevw5o+3TMj1jJzO9hdMA5rZn0WgDr4MuI4tnTHCnE8rlLF0IYSoAC6s
+ IljEGFh9gyUdmsaG56VAdkr+MIfuFSyLfwo= 
 Received: from mail.thefacebook.com ([163.114.132.120])
-        by mx0a-00082601.pphosted.com with ESMTP id 383b4q9jam-1
+        by mx0a-00082601.pphosted.com with ESMTP id 383b4q9k2x-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Fri, 23 Apr 2021 15:59:48 -0700
+        Fri, 23 Apr 2021 16:03:43 -0700
 Received: from NAM12-MW2-obe.outbound.protection.outlook.com (100.104.98.9) by
- o365-in.thefacebook.com (100.104.94.199) with Microsoft SMTP Server
+ o365-in.thefacebook.com (100.104.94.229) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2176.2; Fri, 23 Apr 2021 15:59:47 -0700
+ 15.1.2176.2; Fri, 23 Apr 2021 16:03:42 -0700
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Tk++oTzw7uOotyCuDrViWJdchCSs3bEl9MkzlCFvfet8nq/rxGnz8zLvVNjgPwaNzCOduQNvQzcq9rIKH7boSLia2x75M2hNMDAzza38KT0a3g7VLXyY7OaVAO6nuRdtseUO4/nRC2I98xun+y244joubGlvhGkjKLMQaUMmatGQigJFUzrMEt45IfVOTkKTfZkLdic1d97X2Fb+GFa2nn35TuSQ7wI8g+uBsKEZJbI3yfVNsxi/7l7NBnxlHLuG8SAlJvS2ypi4XESTGvSg+ACQW1WIthnpAc8LwQobVw8ASBTdgl9tOZooQ7BoU/MVkOWrksCXpRh3gZuXOvUoYw==
+ b=izAAGMvH0N2OaNKZ1vrLGE9ELmttA3A/B24rRdP7+VnVJ/GJd+v4BC/RlInK2cVwU7oJdfTKGRC92RutUXrnKertipKH7jV5zvJBUX3EoijCm+RJt5iGT0GCJwjDV0XtNnbXvlspMi26xqAkCuYbCMiJzoeDZG7leRcP0m0gsCCGZ11aOaDGdSIlIXBgPfrOrT+qShbdKfmjztYBfwtqwBsNGwee7L4FqACWJlBRo3YaVbeBzPr+tK3vBHMBCgx1Xuw9ydpbHrb/ks2gRFuJwjeciXBOV+qG6PwU6+jWR61vvNDNM7MjtmEExTJBwa/DC2jGSMBsfs8Cp6L89ZJcYA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Uzz1RE2aohYcI/zEh7ZZecDqYAbW93cuMOQjGR4rh2I=;
- b=Q5Tr9jKLEgX8lN1xVAGk4D1vjAP5aAa1P+sOLyZo+W3M9tUBx+LRasv8PhSYW4QxjK3DNXoynbMOL9oDGBtM4hwgGG3n0fnI3xUMmtcmITGrLOeJd2yexeKnIRVddvIFmsa/3a18lIozHqzjbv7KQpPehlM3Rz52clfRnESKeArwdffVdHMzTRgY9siqPaGYcEUp/U2Ok/OJj8n56vJebslBQSqEUD/46IQQNHaD21KomjLul272zefBhQKN5EiNX6WlJkd965B4ufanwVYb5PqcqXMOWuSgU/p7R0cd/QQrb21l87GIJCnazvyMZvDC2ztSKTm2zoR3Yn6NFV3B5A==
+ bh=JFt9TQrDgpUuNjIgW1rg0gbSpeip0XX+AJ72MqJm9cU=;
+ b=c67Jc8E+aP0XNs7/G7/KkYytXbtDI+UsDyx9/DgqYYwHgxuTPcKACto6C/Rstxv9lBuHKDoVXpJUuvmTrFG9GLv8qZKc9lOZsNQMTWYpLxjZHxxbvmuTUoLFExB1zgf1mb1iWk2BqOu99KHL59VE5gJ8dwc62MhsFx/VNSN7IYeWGy6Zt9I1Xxeamg0Nh4IoybLDvhCaFLL34DrIbzxS2LimNAgq2P/j+3mgIZ+cq560MExk/Ouyh7xDII8zTlgkm11yNYAtQKA0eaS4VZngHF1HaxoYshhPPMjD+3AXjhPE8jHhrsTROiT09h9VcDWtfsIr5bXs82xxMyVDRAmZZg==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
  header.d=fb.com; arc=none
 Received: from SN6PR1501MB2064.namprd15.prod.outlook.com (2603:10b6:805:d::27)
- by SA1PR15MB4919.namprd15.prod.outlook.com (2603:10b6:806:1d2::11) with
+ by SA1PR15MB4657.namprd15.prod.outlook.com (2603:10b6:806:19c::17) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4065.23; Fri, 23 Apr
- 2021 22:59:42 +0000
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4065.21; Fri, 23 Apr
+ 2021 23:03:40 +0000
 Received: from SN6PR1501MB2064.namprd15.prod.outlook.com
  ([fe80::f433:fd99:f905:8912]) by SN6PR1501MB2064.namprd15.prod.outlook.com
  ([fe80::f433:fd99:f905:8912%3]) with mapi id 15.20.4065.025; Fri, 23 Apr 2021
- 22:59:42 +0000
-Subject: Re: [PATCH v2 bpf-next 4/6] bpftool: handle transformed static map
- names in BPF skeleton
+ 23:03:40 +0000
+Subject: Re: [PATCH v2 bpf-next 5/6] selftests/bpf: extend linked_vars
+ selftests with static variables
 To:     Andrii Nakryiko <andrii@kernel.org>, <bpf@vger.kernel.org>,
         <netdev@vger.kernel.org>, <ast@fb.com>, <daniel@iogearbox.net>
 CC:     <kernel-team@fb.com>
 References: <20210423185357.1992756-1-andrii@kernel.org>
- <20210423185357.1992756-5-andrii@kernel.org>
+ <20210423185357.1992756-6-andrii@kernel.org>
 From:   Yonghong Song <yhs@fb.com>
-Message-ID: <af65a52b-7a64-74bf-8330-2f4f93547c82@fb.com>
-Date:   Fri, 23 Apr 2021 15:59:38 -0700
+Message-ID: <d1693e2c-35a3-a411-edd8-3ea0964abb74@fb.com>
+Date:   Fri, 23 Apr 2021 16:03:36 -0700
 User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
  Gecko/20100101 Thunderbird/78.9.1
-In-Reply-To: <20210423185357.1992756-5-andrii@kernel.org>
+In-Reply-To: <20210423185357.1992756-6-andrii@kernel.org>
 Content-Type: text/plain; charset="utf-8"; format=flowed
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
 X-Originating-IP: [2620:10d:c090:400::5:a7ce]
-X-ClientProxiedBy: CO2PR04CA0082.namprd04.prod.outlook.com
- (2603:10b6:102:1::50) To SN6PR1501MB2064.namprd15.prod.outlook.com
+X-ClientProxiedBy: MWHPR1201CA0021.namprd12.prod.outlook.com
+ (2603:10b6:301:4a::31) To SN6PR1501MB2064.namprd15.prod.outlook.com
  (2603:10b6:805:d::27)
 MIME-Version: 1.0
 X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from [IPv6:2620:10d:c085:21c1::134e] (2620:10d:c090:400::5:a7ce) by CO2PR04CA0082.namprd04.prod.outlook.com (2603:10b6:102:1::50) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4065.20 via Frontend Transport; Fri, 23 Apr 2021 22:59:41 +0000
+Received: from [IPv6:2620:10d:c085:21c1::134e] (2620:10d:c090:400::5:a7ce) by MWHPR1201CA0021.namprd12.prod.outlook.com (2603:10b6:301:4a::31) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4065.20 via Frontend Transport; Fri, 23 Apr 2021 23:03:39 +0000
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 4a5a762b-6935-49e1-0e19-08d906ab7abf
-X-MS-TrafficTypeDiagnostic: SA1PR15MB4919:
+X-MS-Office365-Filtering-Correlation-Id: 5c73b8d3-4b43-444d-b708-08d906ac08cd
+X-MS-TrafficTypeDiagnostic: SA1PR15MB4657:
 X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <SA1PR15MB491940C62C6D0868417025F8D3459@SA1PR15MB4919.namprd15.prod.outlook.com>
+X-Microsoft-Antispam-PRVS: <SA1PR15MB46578D7AEC96F971538617E7D3459@SA1PR15MB4657.namprd15.prod.outlook.com>
 X-FB-Source: Internal
-X-MS-Oob-TLC-OOBClassifiers: OLM:4125;
+X-MS-Oob-TLC-OOBClassifiers: OLM:1284;
 X-MS-Exchange-SenderADCheck: 1
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 6YR/35jNYGv4t+1vXTPCMtsi8t7Xlhl/O9681lj5QfURAfWjnKiymxVGDSP7neLGomilBrbWcMG3Oza3dV4FFwnRgeWY7OR9OgLxFTnE7CuhszAychivBRHFn5n8+gOWCgx0asqb7Ed+6+GqVhubtkVWXdGadkbxaWlfg5x2AP6FrX4mBBTF9Mufxx2d+rp/H59QNiTFtOpQMWpc+fj8/IlOuUvqbJcRylV4A44dv5NSx8li8H14Dq9gEYo3fV5gygfSrt/Stuv+zlW30d/ygDTgdJEtVma/HX0S4uHZubf+u/3efA2qLwDPzqephjxeW3G2qkHt+6a+mbF5i0Lp0N1v2qteMP3pcus8IIiMUGTypmS17tL7i0Pp6CYT6e+93/9mfqQcAI/HuFYNPwLclHAUwjg77BKs4DyMGMAfn456NIWCo+KMHln+DgIIpoC0KEDy43C+Z3yqQyp141krIUe2e9FPTyb6x6e2Gh2fmNs80swZF2SaG3lvpf8GoqwxUb/1aBCLODVjRmR3hwaK6zq9L15Dz0roCFEAc6oFfW5ose4F8atPL9RHZPTqbWaZVbNW3MCjZHBWqhE9p9xZ5sddqAsteUE6qzqKILzSp+VezjzHNtY5KeyTR/RYpMyTCqQ7xHhvytld/jMfvD+Kv8k6V+0y1zxCJpguaya0DDAQVd9es3paCsBgolpkMy7t
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SN6PR1501MB2064.namprd15.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(39860400002)(346002)(136003)(366004)(396003)(376002)(31686004)(4744005)(66476007)(31696002)(5660300002)(316002)(86362001)(6486002)(2906002)(2616005)(6666004)(36756003)(4326008)(66946007)(52116002)(8936002)(478600001)(53546011)(8676002)(38100700002)(16526019)(186003)(66556008)(43740500002)(45980500001);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData: =?utf-8?B?eGR2MjdJZG0vSlAzenUxSGN1a0crN0E4TTltV2lYM0ltUkYrVlFrQWY1bkI0?=
- =?utf-8?B?eXFHN2x4cVVHRXN6bWs0bnkrZWUvL0ZrS3VFYUdIS24zcFpocmNpQThDZXFx?=
- =?utf-8?B?aTc5RXJ6bjQ5c3BHV2dHcGRpRkVUajVDWHVPMmUwbjBqb3NGbHZsTUQzVFd6?=
- =?utf-8?B?NkxVTnZST01oaXNzZnJBbWQ5d2dEY2drQW44Z095VlJ1NHR5MVJOOVAvMVpH?=
- =?utf-8?B?aHNIOWJWQmF4RU9OeFVJejBvNkFJQ3BYdm91OTlMSDU4WHpEQ1FSNXk3WUFM?=
- =?utf-8?B?RHE0WEd0cUZuYVgvMk94SkJ6cHptT1BQMitlc1lBK0ZGWHhVdEh5NGRES0l0?=
- =?utf-8?B?elFEeWxFM2dzUC84RkRZYkJWbVdsZlVJRC9KWStQUTRYQ1VVaVovMldxWG5T?=
- =?utf-8?B?cDVFcTAreVg5T2hicm00V1VGSXpaU1ptOUUyUEhaUTJlSkEvRkZWc2thNGEy?=
- =?utf-8?B?b0RvekFNNGNoQ2lBenNxK0xOdjc3cEMzRmJOb3FkMU81WVExZDNUT2JNN2RM?=
- =?utf-8?B?bjZxemVnN2NaZEM5V1JadUduaVRUOHdkbm53akF6TmN4aStEdklTdTFyYkNt?=
- =?utf-8?B?em5MY29yeUxGTGRneGxndWs1d1RsMEZUTTNhNVRWZFVEMXNMbUR6S29raVZD?=
- =?utf-8?B?dU5IN2FmNXoyQmx3eVBrcnlaOHBxMk9ZWVhiTEtodHZza2poSGgyRGVWZURw?=
- =?utf-8?B?Rk9nRDNXSUVXUmU2UzVjaDFRYWVIaUNYWGY5YU1KaXFBS2RrUEJROGczOXBX?=
- =?utf-8?B?SklidkorSmUwRVRUQU0vWTRTdlZwcGdGdE9vR2haNXgrUWhOSEw5WS9NTENV?=
- =?utf-8?B?UW5VaklRZEJLMEdycEVYTDVPVTdRRXhBZkVEREFVTnF4MnM0c09HVHJHSVUz?=
- =?utf-8?B?dlNiWUdHTVZpQTlYSksxTjhraklIdzBsSitVOTZMdVc3WTY5S3FqZ3hUMkQ2?=
- =?utf-8?B?SFQ1aWY0NjBnVWdERGUvaU92MEZiZ2xtYjRkWVZ6bGZ3eStuUTd3UjMvWFNY?=
- =?utf-8?B?dkd5TVlaTVRqcFY0dEltSG1yU1N2dFZZekJtWUVkT3J1TlBBblBlaVplUUox?=
- =?utf-8?B?dW1MaGhDbS9ZL1RBZ1NlRVd6UTZUbjNNSE8zeFhmdmFBTDk1cE96VTF1QS9j?=
- =?utf-8?B?Q2taRGora0dXZkpFRXMxQ0twaW0xTnlubmtCRUY3Yk5BSnZkbm90dHZtalNV?=
- =?utf-8?B?Q3BSN2lYSnY3ZDhlS1UwUldWQzdOSjJuTVFpMWh1eURVQ01rZkRWc0FDYjQx?=
- =?utf-8?B?dUFrdWVXazhoUXRzTWJsSkovREk3NEdEbytqaitLOW4wSkFxWkdyRXhSV2Mv?=
- =?utf-8?B?RER1dWlOTE1kRExPOW85VHdhZ1pOVzJXK0Zwc3hlLzF5WEtneXdLSmRlNzFV?=
- =?utf-8?B?TWtiZU40YTdFN0d4WG40MlZxS2Mxam4rc2g1dU1aWkU4anNwaCsxMUY3UVZE?=
- =?utf-8?B?ci80SFZ0MVhCdkJuWEZ6YXMwQ3JFelVnSmY0ckVFd3V1Vm1xQ3JmN2c5RDFi?=
- =?utf-8?B?L3dDMGpUR1NvbkVkQnkvaFF0RUUxZmZlU0tQeDNXK29zbk4xYllVYjY4bHRB?=
- =?utf-8?B?Q3BMY2x2MGdpRTZDVnR6S2d2RTU5NUhSWDRodmtHT2xhSkdxam54K21CYk4r?=
- =?utf-8?B?R1RDeFB0RHZILzFpOEVVbFBnZlU2bmlBdU5YaEJPOHJ6UmRzQllYekV6MDlq?=
- =?utf-8?B?dzUwTEpHSVFuV3NQRFlQTlJya0xRL2VyOUdkdzV2ZCtlNURmb0lGMnhsMGNC?=
- =?utf-8?B?bWFzZjh0OG9hdGpCK2xIbnBXVCtDVnYxemZ2MEc2aXJiOHM5aDEwQXpZMGFQ?=
- =?utf-8?Q?wUeDphcE9DrpVUfwZovmgzgYaiWg4ukXvtNN0=3D?=
-X-MS-Exchange-CrossTenant-Network-Message-Id: 4a5a762b-6935-49e1-0e19-08d906ab7abf
+X-Microsoft-Antispam-Message-Info: W6Jv2SyNAweb893H/C1X4+w9b6k3R9DIxPneAZpqe6HeLGCbcf0HZJG3nD8DMadcq2Q1dXEl7n2N7DPh6nG4gMsGeFh/yYw4QFmXWZ4LdTmLTKKByC78aFFQjHqAiPzhNlqspt4aiTo9+pe0MYF8Z5vU6XDRW4M1N0Xu/y/NEWRP+ccLl27/+gReEM5TeYKTl8UFDkSzFX4vPW5ldJ0IQblxhJI9W+9KreBX2D+kIYLzQmWb6FHfE+YlPztz/fTVPfvdnm6eeT4Lwkkwoa2a6wgwkwmjecxISCvXo1ItaSFASt+oCKLWixrd5AKmmdVZksB7SHi8COM/+vqsHWFzV+KsqHofyWPkuO4VMr3xkbbvYW8fJiqQ3baj13G0QXRyvPPLgxh2TcxTnTcVhY1ZnOIthT1hmY+JFiKz7mCje3QWEKWO7up5xlNSH9FqhxrvzwDaO+LKW54PT6GaucOZuhAa5kxT42JABzf8fJQJ4PAgvqDXeuqnekQITDlvH2HRLfey4pb2geNGlYgYVq/lrDK8KOJQAgx+RHdeU+e8bgVOqW02Ix/gUqiNeGRgFJ/3jpLsvIhgWbTxQd4/47zEI62ecI/1qPuOXHYNFl6/PUl/PtcA3bCIC2bF60wc+j1AKZbtkY88hCelqxm3EzubMjKbQbvWPE2GTGdCdefwwW9N1Ila/PHPA032eYwL4sJj
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SN6PR1501MB2064.namprd15.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(376002)(396003)(366004)(136003)(39860400002)(346002)(31686004)(38100700002)(8676002)(36756003)(52116002)(478600001)(66946007)(186003)(2906002)(6666004)(66476007)(66556008)(53546011)(2616005)(31696002)(83380400001)(316002)(5660300002)(6486002)(4326008)(86362001)(8936002)(16526019)(43740500002)(45980500001);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData: =?utf-8?B?L005aWlTTm1CeVZHZEJ3NlhpL20wWitmNXo4d0V0aCt0QXFjdFFRTFEzNWlz?=
+ =?utf-8?B?VkdnbDN5UXRla1JKcHFneThsZHIzNW0yRUF6S2kvTUQ1SWVLeHdZb2I4VUVM?=
+ =?utf-8?B?alYzMEhaVU9zYXQzdWxpN1dXWWgzNE52Wjk1YS9vMUJDcmozVmNXNEtpNUdL?=
+ =?utf-8?B?aUlxRUI3SGx2Y3Iyd1JWbGxhNml2VWx4bk9KYk0vOWRrY3NqT2lFWk53cyty?=
+ =?utf-8?B?VjB2RXgxdEhQN2FtU2pjZy9FdTkxVTZxbE1VcFhPOWpLVjlCLzdPcjIrWVVv?=
+ =?utf-8?B?RFpLcWtHdlpyRnhrVTdaUVZNek9XM1owVFU4U0tKbHA1T3ZJNVdqS1VuVXMv?=
+ =?utf-8?B?MU1vVVl2Qjl0bHJVNC8vbDR4enpUY3o3SGxCek4wbUlyODEwUFd5TmxuSHor?=
+ =?utf-8?B?SEhvOEw3RTY0Nm9MdlFrbDhycXRUUklZZ2VISC80VnJUejlxdFlNZ0FzdHlR?=
+ =?utf-8?B?T25hWTZmdlVxL0p2QTVSYit5SEo5T2x1c244VTVHK3hiNXpZWktqL01nejJS?=
+ =?utf-8?B?ZkxnQy9tTGFGZWsxOVlGaVlPVFpHSWM1dGlpZzFJRW9PRkxQSTRRQkxxQmFv?=
+ =?utf-8?B?L2Jqby9WQm11b2x6eXN4MW0zdVNwV2swREcvbm8wRndINmkzMWJyZVBvT05K?=
+ =?utf-8?B?U1RkL2lhVnZlL01Sbi9Mb1RXSFo3S1h4ZWl1S0xDeFBTcXp0UWpWZHNuaFNB?=
+ =?utf-8?B?c1JZM3JxNGc5UnVxdzNBT1lqeUtRY3RFeGxhOXlhK0pqaHUwdnFVVko0NVVs?=
+ =?utf-8?B?NkR3WEcvcGU1ZEp3YjhXNjNNb3BZTXpnQTY1T3lhMW5rNlA3Y2FKOHNjS0xy?=
+ =?utf-8?B?MEhqZi9KZ0NCcW1qazZWakMvdW94WmdNeHNoaEx2M1ladlVkeUJQV0xBbkVx?=
+ =?utf-8?B?RGdrV3NFOWtxZmFCVlQ5bWswb2pseis3Q0l2L0R6WHV0M3BLdUVkY1JoZitw?=
+ =?utf-8?B?b09MQVByNU9JQUQzY0lHbit0ck45WEY0Q2pLZlFLNGthYlBWSVc1LzhaRW1I?=
+ =?utf-8?B?eHZvL1IxQXNycjVrNCtOM0FqV2VVLzBqSXRsMm1hQWM3UGsyWjBqdmpLaWtT?=
+ =?utf-8?B?ei9Hbzd2cUNrcWNHeFlyZDFaWWVnOTloVmlrdjZJNWNORy92TmdnNlBWdVJL?=
+ =?utf-8?B?Vi9Qa1ovaFNRbjVLN0ZHUHBhR1pTZExOeVRvRVZpRFF0WjE3VUF6cnBaL25u?=
+ =?utf-8?B?MGhXbS9IMmJOU2hJNmJwY3RwMkRVak1KYlZzcWxkbTErTEZFbHNsTjkrNGRi?=
+ =?utf-8?B?S2VWYy9udnh3NnpWWVp2R1BTdEFENkhLaHJvb2pmWmtWc0YwaHRNc0FUSmdJ?=
+ =?utf-8?B?bG1yL2VhQVRld0FNSFdZM1V1bmxUUlF4TVlmWHYrUEMrd0Roa0VUamNYcytq?=
+ =?utf-8?B?NkpJclZCZHF3MVBXOEpyVk5OVTFUUjdUSS9jRG1IeUU3bG9rRWlrbEF1YkJJ?=
+ =?utf-8?B?c2ZRaFhybFJlQnkzOHU4S1Z2L3JIcU83WmU3eEZtVXRocGx0bUNScTJiU2tk?=
+ =?utf-8?B?VjFleUpnUkVmQlBnVm16YVFjR0ZpVW80YnB2TTBUOUtNUEkzaHJvTUtoaDNF?=
+ =?utf-8?B?NDdwUTFmOCt5MzBITGhTNWZwTGZaS2ZvN2ZWb1E0VXl5QXlURGVLUGFtN0d4?=
+ =?utf-8?B?QXdwRG8wNXJ6NXRZM1o0RU1OQWxDNW84VlhWV2dMNk5QSlRmeXVVUjBRdVFs?=
+ =?utf-8?B?elZXcC9KbG90MEtMcU44SlRXNSthbWswL2t0VFBPZUx4aU1aLzIwMjkwTlUy?=
+ =?utf-8?B?QTRpb1ZQcDdldHhSRWJaazNFeXNxY21qVUlIQVREZDQvWGJkZm84YUIvY2Zj?=
+ =?utf-8?Q?0pU2t4QM6nyPlrIvfavvgf3cW07+bqvtR7fK0=3D?=
+X-MS-Exchange-CrossTenant-Network-Message-Id: 5c73b8d3-4b43-444d-b708-08d906ac08cd
 X-MS-Exchange-CrossTenant-AuthSource: SN6PR1501MB2064.namprd15.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 23 Apr 2021 22:59:42.2109
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 23 Apr 2021 23:03:40.2916
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: YveX9cFNehq7zmtaUdA4s5wWA5J46bHomhJRgZfUWiOY7sDGMgRlcW2kAfKnhBuv
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA1PR15MB4919
+X-MS-Exchange-CrossTenant-UserPrincipalName: KUgH+6CRneL/FeP6ORser5LJQ/tGHMNxhZRCPiUHv58MSjNSrB8TtWjPonr7uSDi
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA1PR15MB4657
 X-OriginatorOrg: fb.com
-X-Proofpoint-GUID: _6t60766-cCrWsvzny942RxBbqjXRX2t
-X-Proofpoint-ORIG-GUID: _6t60766-cCrWsvzny942RxBbqjXRX2t
+X-Proofpoint-GUID: 1U6Ww6Gb30qTy63Y1nriGQIrseZL0dMP
+X-Proofpoint-ORIG-GUID: 1U6Ww6Gb30qTy63Y1nriGQIrseZL0dMP
 X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.391,18.0.761
  definitions=2021-04-23_14:2021-04-23,2021-04-23 signatures=0
 X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 clxscore=1015
  mlxlogscore=999 phishscore=0 impostorscore=0 malwarescore=0
  priorityscore=1501 spamscore=0 mlxscore=0 adultscore=0 suspectscore=0
  bulkscore=0 lowpriorityscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.12.0-2104060000 definitions=main-2104230153
+ scancount=1 engine=8.12.0-2104060000 definitions=main-2104230154
 X-FB-Internal: deliver
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
@@ -141,21 +141,95 @@ X-Mailing-List: netdev@vger.kernel.org
 
 
 On 4/23/21 11:53 AM, Andrii Nakryiko wrote:
-> Static maps will be renamed according to the same rules as global variables
-   global => static
-> (<obj_name>..<map_name>) during static linking. This breaks current BPF
-> skeleton logic that uses normal non-internal maps' names as is. Instead, do
-> the same map identifier sanitization as is done for global variables, turning
-   global => static
-> static maps into <obj_name>__<map_name> fields in BPF skeleton. Their original
-> names with '..' separator are preserved by libbpf and submitted as is into the
-> kernel. As well as they can be looked up using their unsanitized name with
-> using bpf_object__find_map_by_name() API.
-> 
-> There are no breaking changes concerns, similarly to static variable renames,
-> because this renaming happens only during static linking. Plus static maps
-> never really worked and thus were never used in practice.
+> Now that BPF static linker supports static variable renames and thus
+> non-unique static variables in BPF skeleton, add tests validating static
+> variables are resolved properly during multi-file static linking.
 > 
 > Signed-off-by: Andrii Nakryiko <andrii@kernel.org>
 
 Acked-by: Yonghong Song <yhs@fb.com>
+
+> ---
+>   tools/testing/selftests/bpf/prog_tests/linked_vars.c | 12 ++++++++----
+>   tools/testing/selftests/bpf/progs/linked_vars1.c     |  4 +++-
+>   tools/testing/selftests/bpf/progs/linked_vars2.c     |  4 +++-
+>   3 files changed, 14 insertions(+), 6 deletions(-)
+> 
+> diff --git a/tools/testing/selftests/bpf/prog_tests/linked_vars.c b/tools/testing/selftests/bpf/prog_tests/linked_vars.c
+> index 267166abe4c1..75dcce539ff1 100644
+> --- a/tools/testing/selftests/bpf/prog_tests/linked_vars.c
+> +++ b/tools/testing/selftests/bpf/prog_tests/linked_vars.c
+> @@ -14,8 +14,12 @@ void test_linked_vars(void)
+>   	if (!ASSERT_OK_PTR(skel, "skel_open"))
+>   		return;
+>   
+> +	skel->bss->linked_vars1__input_bss_static = 100;
+>   	skel->bss->input_bss1 = 1000;
+> +
+> +	skel->bss->linked_vars2__input_bss_static = 200;
+>   	skel->bss->input_bss2 = 2000;
+> +
+>   	skel->bss->input_bss_weak = 3000;
+>   
+>   	err = linked_vars__load(skel);
+> @@ -29,11 +33,11 @@ void test_linked_vars(void)
+>   	/* trigger */
+>   	syscall(SYS_getpgid);
+>   
+> -	ASSERT_EQ(skel->bss->output_bss1, 1000 + 2000 + 3000, "output_bss1");
+> -	ASSERT_EQ(skel->bss->output_bss2, 1000 + 2000 + 3000, "output_bss2");
+> +	ASSERT_EQ(skel->bss->output_bss1, 100 + 1000 + 2000 + 3000, "output_bss1");
+> +	ASSERT_EQ(skel->bss->output_bss2, 200 + 1000 + 2000 + 3000, "output_bss2");
+>   	/* 10 comes from "winner" input_data_weak in first obj file */
+> -	ASSERT_EQ(skel->bss->output_data1, 1 + 2 + 10, "output_bss1");
+> -	ASSERT_EQ(skel->bss->output_data2, 1 + 2 + 10, "output_bss2");
+> +	ASSERT_EQ(skel->bss->output_data1, 1 + 2 + 10, "output_data1");
+> +	ASSERT_EQ(skel->bss->output_data2, 1 + 2 + 10, "output_data2");
+>   	/* 100 comes from "winner" input_rodata_weak in first obj file */
+>   	ASSERT_EQ(skel->bss->output_rodata1, 11 + 22 + 100, "output_weak1");
+>   	ASSERT_EQ(skel->bss->output_rodata2, 11 + 22 + 100, "output_weak2");
+> diff --git a/tools/testing/selftests/bpf/progs/linked_vars1.c b/tools/testing/selftests/bpf/progs/linked_vars1.c
+> index ef9e9d0bb0ca..7d5152c066d9 100644
+> --- a/tools/testing/selftests/bpf/progs/linked_vars1.c
+> +++ b/tools/testing/selftests/bpf/progs/linked_vars1.c
+> @@ -10,6 +10,8 @@ extern int LINUX_KERNEL_VERSION __kconfig;
+>   extern bool CONFIG_BPF_SYSCALL __kconfig __weak;
+>   extern const void bpf_link_fops __ksym __weak;
+>   
+> +static volatile int input_bss_static;
+> +
+>   int input_bss1;
+>   int input_data1 = 1;
+>   const volatile int input_rodata1 = 11;
+> @@ -32,7 +34,7 @@ long output_sink1;
+>   static __noinline int get_bss_res(void)
+>   {
+>   	/* just make sure all the relocations work against .text as well */
+> -	return input_bss1 + input_bss2 + input_bss_weak;
+> +	return input_bss_static + input_bss1 + input_bss2 + input_bss_weak;
+>   }
+>   
+>   SEC("raw_tp/sys_enter")
+> diff --git a/tools/testing/selftests/bpf/progs/linked_vars2.c b/tools/testing/selftests/bpf/progs/linked_vars2.c
+> index e4f5bd388a3c..fdc347a609d9 100644
+> --- a/tools/testing/selftests/bpf/progs/linked_vars2.c
+> +++ b/tools/testing/selftests/bpf/progs/linked_vars2.c
+> @@ -10,6 +10,8 @@ extern int LINUX_KERNEL_VERSION __kconfig;
+>   extern bool CONFIG_BPF_SYSCALL __kconfig;
+>   extern const void __start_BTF __ksym;
+>   
+> +static volatile int input_bss_static;
+> +
+>   int input_bss2;
+>   int input_data2 = 2;
+>   const volatile int input_rodata2 = 22;
+> @@ -38,7 +40,7 @@ static __noinline int get_data_res(void)
+>   SEC("raw_tp/sys_enter")
+>   int BPF_PROG(handler2)
+>   {
+> -	output_bss2 = input_bss1 + input_bss2 + input_bss_weak;
+> +	output_bss2 = input_bss_static + input_bss1 + input_bss2 + input_bss_weak;
+>   	output_data2 = get_data_res();
+>   	output_rodata2 = input_rodata1 + input_rodata2 + input_rodata_weak;
+>   
+> 
