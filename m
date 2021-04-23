@@ -2,106 +2,151 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 69A74368F5A
-	for <lists+netdev@lfdr.de>; Fri, 23 Apr 2021 11:27:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1355A368F68
+	for <lists+netdev@lfdr.de>; Fri, 23 Apr 2021 11:32:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241786AbhDWJ2Z (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 23 Apr 2021 05:28:25 -0400
-Received: from inva021.nxp.com ([92.121.34.21]:51160 "EHLO inva021.nxp.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S241759AbhDWJ2Z (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 23 Apr 2021 05:28:25 -0400
-Received: from inva021.nxp.com (localhost [127.0.0.1])
-        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id 39816201F9F;
-        Fri, 23 Apr 2021 11:27:48 +0200 (CEST)
-Received: from invc005.ap-rdc01.nxp.com (invc005.ap-rdc01.nxp.com [165.114.16.14])
-        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id DBDFA200E40;
-        Fri, 23 Apr 2021 11:27:44 +0200 (CEST)
-Received: from localhost.localdomain (mega.ap.freescale.net [10.192.208.232])
-        by invc005.ap-rdc01.nxp.com (Postfix) with ESMTP id 655B1402B7;
-        Fri, 23 Apr 2021 11:27:40 +0200 (CEST)
-From:   Yangbo Lu <yangbo.lu@nxp.com>
-To:     netdev@vger.kernel.org
-Cc:     Yangbo Lu <yangbo.lu@nxp.com>,
-        Richard Cochran <richardcochran@gmail.com>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>,
+        id S230339AbhDWJcj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 23 Apr 2021 05:32:39 -0400
+Received: from regular1.263xmail.com ([211.150.70.200]:36892 "EHLO
+        regular1.263xmail.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229939AbhDWJcj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 23 Apr 2021 05:32:39 -0400
+X-Greylist: delayed 403 seconds by postgrey-1.27 at vger.kernel.org; Fri, 23 Apr 2021 05:32:38 EDT
+Received: from localhost (unknown [192.168.167.13])
+        by regular1.263xmail.com (Postfix) with ESMTP id 8D4001D50;
+        Fri, 23 Apr 2021 17:24:52 +0800 (CST)
+X-MAIL-GRAY: 0
+X-MAIL-DELIVERY: 1
+X-ADDR-CHECKED4: 1
+X-ANTISPAM-LEVEL: 2
+X-SKE-CHECKED: 1
+X-ABS-CHECKED: 1
+Received: from [172.16.12.8] (unknown [58.22.7.114])
+        by smtp.263.net (postfix) whith ESMTP id P1751T140588909328128S1619169891555006_;
+        Fri, 23 Apr 2021 17:24:52 +0800 (CST)
+X-IP-DOMAINF: 1
+X-UNIQUE-TAG: <b461bbc0964960a8c3512ac7df7186b9>
+X-RL-SENDER: david.wu@rock-chips.com
+X-SENDER: wdc@rock-chips.com
+X-LOGIN-NAME: david.wu@rock-chips.com
+X-FST-TO: kernel@collabora.com
+X-RCPT-COUNT: 10
+X-SENDER-IP: 58.22.7.114
+X-ATTACHMENT-NUM: 0
+X-System-Flag: 0
+Subject: Re: [PATCH v2 net-next 0/3] net: stmmac: RK3566
+To:     Ezequiel Garcia <ezequiel@collabora.com>, netdev@vger.kernel.org,
+        linux-rockchip@lists.infradead.org
+Cc:     Jose Abreu <joabreu@synopsys.com>,
+        Heiko Stuebner <heiko@sntech.de>,
         "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        linux-kernel@vger.kernel.org
-Subject: [net-next, v2] enetc: fix locking for one-step timestamping packet transfer
-Date:   Fri, 23 Apr 2021 17:33:55 +0800
-Message-Id: <20210423093355.8665-1-yangbo.lu@nxp.com>
-X-Mailer: git-send-email 2.17.1
-X-Virus-Scanned: ClamAV using ClamSMTP
+        Peter Geis <pgwipeout@gmail.com>,
+        Kever Yang <kever.yang@rock-chips.com>, kernel@collabora.com
+References: <20210421203409.40717-1-ezequiel@collabora.com>
+From:   David Wu <david.wu@rock-chips.com>
+Message-ID: <ae524a70-7886-27a0-1289-0c3a1c7371bb@rock-chips.com>
+Date:   Fri, 23 Apr 2021 17:24:51 +0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
+MIME-Version: 1.0
+In-Reply-To: <20210421203409.40717-1-ezequiel@collabora.com>
+Content-Type: text/plain; charset=gbk; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The previous patch to support PTP Sync packet one-step timestamping
-described one-step timestamping packet handling logic as below in
-commit message:
+Hi Ezequiel,
 
-- Trasmit packet immediately if no other one in transfer, or queue to
-  skb queue if there is already one in transfer.
-  The test_and_set_bit_lock() is used here to lock and check state.
-- Start a work when complete transfer on hardware, to release the bit
-  lock and to send one skb in skb queue if has.
+ÔÚ 2021/4/22 ÉÏÎç4:34, Ezequiel Garcia Ð´µÀ:
+> Now that RK3568 SoC devicetree upstreaming is happening [1],
+> here's another round for the RK3566 dwmac. There wasn't any clear
+> consensus on how to implement the two interfaces present
+> on RK3568, so I decided to drop that and just submit RK3566 for now.
+> 
+> This has been tested on a Pine64 RK3566 Quartz64 Model B board,
+> DHCP and iperf are looking good.
+> 
+> For all the people testing, here's Quartz 64 Model B device tree
+> snippet:
+> 
+>          gmac1: ethernet@fe010000 {
+>                  compatible = "rockchip,rk3566-gmac", "snps,dwmac-4.20a";
 
-There was not problem of the description, but there was a mistake in
-implementation. The locking/test_and_set_bit_lock() should be put in
-enetc_start_xmit() which may be called by worker, rather than in
-enetc_xmit(). Otherwise, the worker calling enetc_start_xmit() after
-bit lock released is not able to lock again for transfer.
+It is better to use "rockchip,rk3568-gmac" here, "rockchip,rk3566-gmac" 
+is not compatible, 3568 has two gmacs, which are compatible with 3566.
 
-Fixes: 7294380c5211 ("enetc: support PTP Sync packet one-step timestamping")
-Signed-off-by: Yangbo Lu <yangbo.lu@nxp.com>
-Reviewed-by: Claudiu Manoil <claudiu.manoil@nxp.com>
----
-Changes for v2:
-	- None. Just resent.
----
- drivers/net/ethernet/freescale/enetc/enetc.c | 18 +++++++++---------
- 1 file changed, 9 insertions(+), 9 deletions(-)
+If there is no better way, using bus_id from alias is good, it is a 
+fixed id, and U-Boot also use the id to write MAC address into kernel DTB.
 
-diff --git a/drivers/net/ethernet/freescale/enetc/enetc.c b/drivers/net/ethernet/freescale/enetc/enetc.c
-index 4f23829e7317..3ca93adb9662 100644
---- a/drivers/net/ethernet/freescale/enetc/enetc.c
-+++ b/drivers/net/ethernet/freescale/enetc/enetc.c
-@@ -321,6 +321,15 @@ static netdev_tx_t enetc_start_xmit(struct sk_buff *skb,
- 	struct enetc_bdr *tx_ring;
- 	int count;
- 
-+	/* Queue one-step Sync packet if already locked */
-+	if (skb->cb[0] & ENETC_F_TX_ONESTEP_SYNC_TSTAMP) {
-+		if (test_and_set_bit_lock(ENETC_TX_ONESTEP_TSTAMP_IN_PROGRESS,
-+					  &priv->flags)) {
-+			skb_queue_tail(&priv->tx_skbs, skb);
-+			return NETDEV_TX_OK;
-+		}
-+	}
-+
- 	tx_ring = priv->tx_ring[skb->queue_mapping];
- 
- 	if (unlikely(skb_shinfo(skb)->nr_frags > ENETC_MAX_SKB_FRAGS))
-@@ -372,15 +381,6 @@ netdev_tx_t enetc_xmit(struct sk_buff *skb, struct net_device *ndev)
- 			skb->cb[0] = ENETC_F_TX_TSTAMP;
- 	}
- 
--	/* Queue one-step Sync packet if already locked */
--	if (skb->cb[0] & ENETC_F_TX_ONESTEP_SYNC_TSTAMP) {
--		if (test_and_set_bit_lock(ENETC_TX_ONESTEP_TSTAMP_IN_PROGRESS,
--					  &priv->flags)) {
--			skb_queue_tail(&priv->tx_skbs, skb);
--			return NETDEV_TX_OK;
--		}
--	}
--
- 	return enetc_start_xmit(skb, ndev);
- }
- 
+plat->bus_id = of_alias_get_id(np, "ethernet");
 
-base-commit: cad4162a90aeff737a16c0286987f51e927f003a
--- 
-2.25.1
+>                  reg = <0x0 0xfe010000 0x0 0x10000>;
+>                  interrupts = <GIC_SPI 32 IRQ_TYPE_LEVEL_HIGH>,
+>                               <GIC_SPI 29 IRQ_TYPE_LEVEL_HIGH>;
+>                  interrupt-names = "macirq", "eth_wake_irq";
+>                  rockchip,grf = <&grf>;
+>                  clocks = <&cru SCLK_GMAC1>, <&cru SCLK_GMAC1_RX_TX>,
+>                           <&cru SCLK_GMAC1_RX_TX>, <&cru CLK_MAC1_REFOUT>,
+>                           <&cru ACLK_GMAC1>, <&cru PCLK_GMAC1>,
+>                           <&cru SCLK_GMAC1_RX_TX>, <&cru CLK_GMAC1_PTP_REF>;
+>                  clock-names = "stmmaceth", "mac_clk_rx",
+>                                "mac_clk_tx", "clk_mac_refout",
+>                                "aclk_mac", "pclk_mac",
+>                                "clk_mac_speed", "ptp_ref";
+>                  resets = <&cru SRST_A_GMAC1>;
+>                  reset-names = "stmmaceth";
+> 
+>                  snps,mixed-burst;
+>                  snps,tso;
+> 
+>                  snps,axi-config = <&gmac1_stmmac_axi_setup>;
+>                  snps,mtl-rx-config = <&gmac1_mtl_rx_setup>;
+>                  snps,mtl-tx-config = <&gmac1_mtl_tx_setup>;
+>                  status = "disabled";
+> 
+>                  mdio1: mdio {
+>                          compatible = "snps,dwmac-mdio";
+>                          #address-cells = <0x1>;
+>                          #size-cells = <0x0>;
+>                  };
+> 
+>                  gmac1_stmmac_axi_setup: stmmac-axi-config {
+>                          snps,wr_osr_lmt = <4>;
+>                          snps,rd_osr_lmt = <8>;
+>                          snps,blen = <0 0 0 0 16 8 4>;
+>                  };
+> 
+>                  gmac1_mtl_rx_setup: rx-queues-config {
+>                          snps,rx-queues-to-use = <1>;
+>                          queue0 {};
+>                  };
+> 
+>                  gmac1_mtl_tx_setup: tx-queues-config {
+>                          snps,tx-queues-to-use = <1>;
+>                          queue0 {};
+>                  };
+>          };
+> 
+> While here, I'm adding a small patch from David Wu, for some
+> sanity checks for dwmac-rockchip-specific non-NULL ops.
+> 
+> Thanks!
+> 
+> [1] http://lore.kernel.org/r/20210421065921.23917-1-cl@rock-chips.com
+> 
+> David Wu (2):
+>    net: stmmac: dwmac-rk: Check platform-specific ops
+>    net: stmmac: Add RK3566 SoC support
+> 
+> Ezequiel Garcia (1):
+>    net: stmmac: Don't set has_gmac if has_gmac4 is set
+> 
+>   .../bindings/net/rockchip-dwmac.txt           |   1 +
+>   .../net/ethernet/stmicro/stmmac/dwmac-rk.c    | 126 +++++++++++++++++-
+>   2 files changed, 124 insertions(+), 3 deletions(-)
+> 
+
 
