@@ -2,65 +2,65 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 29C46369268
-	for <lists+netdev@lfdr.de>; Fri, 23 Apr 2021 14:48:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7F9F8369269
+	for <lists+netdev@lfdr.de>; Fri, 23 Apr 2021 14:49:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242571AbhDWMt1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 23 Apr 2021 08:49:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48094 "EHLO
+        id S242578AbhDWMtb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 23 Apr 2021 08:49:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48112 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242541AbhDWMt0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 23 Apr 2021 08:49:26 -0400
-Received: from mail-io1-xd33.google.com (mail-io1-xd33.google.com [IPv6:2607:f8b0:4864:20::d33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5389DC061574
-        for <netdev@vger.kernel.org>; Fri, 23 Apr 2021 05:48:49 -0700 (PDT)
-Received: by mail-io1-xd33.google.com with SMTP id h141so4700275iof.2
-        for <netdev@vger.kernel.org>; Fri, 23 Apr 2021 05:48:49 -0700 (PDT)
+        with ESMTP id S242541AbhDWMt3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 23 Apr 2021 08:49:29 -0400
+Received: from mail-il1-x12b.google.com (mail-il1-x12b.google.com [IPv6:2607:f8b0:4864:20::12b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D5D2EC061574
+        for <netdev@vger.kernel.org>; Fri, 23 Apr 2021 05:48:52 -0700 (PDT)
+Received: by mail-il1-x12b.google.com with SMTP id c18so40558139iln.7
+        for <netdev@vger.kernel.org>; Fri, 23 Apr 2021 05:48:52 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=ieee.org; s=google;
         h=subject:to:references:from:message-id:date:user-agent:mime-version
          :in-reply-to:content-language:content-transfer-encoding;
-        bh=cQ+MBXE+++xp1zOWlTgF7TNTO8L2yA1pVovqRQEspeU=;
-        b=G9D0VkOd02dIR5UwpVtNRa+BD0De8I/lJwpxjwa3FTZqtD3miUu4AfhbDi7ZE2/UMQ
-         eNzZc6a3weOdVNLOzHhQOXK4V2IX2ijHkd0ECewA2826vxlIjNj+1PFWwE8DvVeSyehR
-         qNT1p5R/gd7ckG+6BPmC4U28svU7nF8z+lkQA=
+        bh=lo/rAQX3JqqYmcbHi2pu5XlhMOdXzZ/yiobTWsp1zxA=;
+        b=fob/g0pPSfeVnkINLLzPOIlVaWLOWFtARl2ngm3Tc3ItYK8sR5Is4T4g/2JhPVcHK5
+         Wec+ekYjVleo4JmnPvDtALRy+TjvLzEBsHuKg/zujfH2W5lrcuOmIgWXgyKyl9qrNt5n
+         5OVffhiC+Rut8FkqFAvA6IMsjGxVvD6WNTlI8=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:references:from:message-id:date
          :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=cQ+MBXE+++xp1zOWlTgF7TNTO8L2yA1pVovqRQEspeU=;
-        b=EiW08mszUVxtFDXPufByXx5y6QtR6xzOpMrwVoQotevxsKH6suoaRkdW1S9Le6yMjP
-         ttdrfqwltHoCH/l7vUPImBt/AOvKuO8Xol4F9cv/S3hldwwKXJfUF8+Qhczp16gUZBFA
-         38KB0XfjarMgMAU3um+izUr7ve1PE3R+QtUWlkWz0x+W8obtcAkexeuFjkpFkba2xd27
-         fMOirIjtMXV3sHnkzMPSK0oMBvHfNflBJ1UVJfYXi956dTpEO1ZT9DdZm3h62Ygm8tpQ
-         zKLJzG/WAdwF/oH5FkQB5HejnFnRtVhDJ/ZPkqlKCisSoIKuFBiOO7MflPF7f8GUzxVi
-         Bwcg==
-X-Gm-Message-State: AOAM533FnmV1ZVslgOL6CkyqS9C86m/W5OQazelM0nTpn9KDsZxEmyPx
-        Ep5wO9n3waTEq2TLKZXHutkLAA==
-X-Google-Smtp-Source: ABdhPJyYOpZ9/IADM3mbcd5lY/wDXn4qWQFT2fWsQqT7XJ59KdFeo57J9qAuf13jiV45CXHMGOWgSQ==
-X-Received: by 2002:a6b:fa14:: with SMTP id p20mr3053966ioh.168.1619182128721;
-        Fri, 23 Apr 2021 05:48:48 -0700 (PDT)
+        bh=lo/rAQX3JqqYmcbHi2pu5XlhMOdXzZ/yiobTWsp1zxA=;
+        b=qPz13ZpGpRvgOkATPKLIKPXrCqBTyS9VrIZQ4dDWAsS9DwOPK/6qpckQNdWbmpbcA3
+         6nKwW9fHcIvwWX4N6t7Dhcn6mPho4w0PSOw3C4fR3vwsImulNOERUAlZfsOqdXWTSc04
+         XJIMk3KtJTel7ZQsuwobL8TIKD1NkXBMuFG13CLJaq63ebOdDjD5p0KV9imMo+fK43RE
+         YcrwV2r+2IlxmoNe7DCtUZ7vnhlpc6qQcLrElKwla+ARcL8/1IyWQZiegIUwqjeRbPsI
+         QPhSpEulLsAjmsjXGYRQeg+ZUzJVENl1vtejCWendXS2l/fq+ELqNmdtProri3h+Zcp2
+         uEmw==
+X-Gm-Message-State: AOAM533WiDzcqubaIBgrE+SwCuydaFvmBzL2cGWZ1LhZhxycLzq3J4zw
+        BIEq91dUw+OquoPHcbSd7Ti2Qg==
+X-Google-Smtp-Source: ABdhPJzIRWUKgUxIOsBd1GJERiTxJIeRCjnv/SXx2HKXZ5b3uhigM2X6y/qWqwwx/iH2b1LMfn5JDA==
+X-Received: by 2002:a05:6e02:1282:: with SMTP id y2mr2840434ilq.308.1619182132258;
+        Fri, 23 Apr 2021 05:48:52 -0700 (PDT)
 Received: from [172.22.22.4] (c-73-185-129-58.hsd1.mn.comcast.net. [73.185.129.58])
-        by smtp.googlemail.com with ESMTPSA id f12sm2579599ils.50.2021.04.23.05.48.47
+        by smtp.googlemail.com with ESMTPSA id c12sm2753329iod.9.2021.04.23.05.48.51
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 23 Apr 2021 05:48:48 -0700 (PDT)
-Subject: Re: [PATCH net-next v5 1/3] docs: networking: Add documentation for
- MAPv5
+        Fri, 23 Apr 2021 05:48:51 -0700 (PDT)
+Subject: Re: [PATCH net-next v5 2/3] net: ethernet: rmnet: Support for ingress
+ MAPv5 checksum offload
 To:     Sharath Chandra Vurukala <sharathv@codeaurora.org>,
         davem@davemloft.net, kuba@kernel.org, elder@kernel.org,
         cpratapa@codeaurora.org, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org
 References: <stranche@codeaurora.org linux-doc@vger.kernel.org corbet@lwn.net>
  <1619180343-3943-1-git-send-email-sharathv@codeaurora.org>
- <1619180343-3943-2-git-send-email-sharathv@codeaurora.org>
+ <1619180343-3943-3-git-send-email-sharathv@codeaurora.org>
 From:   Alex Elder <elder@ieee.org>
-Message-ID: <ea12b4dd-a540-fdf7-44f8-6b9bc822a50d@ieee.org>
-Date:   Fri, 23 Apr 2021 07:48:47 -0500
+Message-ID: <cfbc5a5e-9b28-f9d3-f1ba-06c0ce0a7ca7@ieee.org>
+Date:   Fri, 23 Apr 2021 07:48:50 -0500
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
  Thunderbird/78.7.1
 MIME-Version: 1.0
-In-Reply-To: <1619180343-3943-2-git-send-email-sharathv@codeaurora.org>
+In-Reply-To: <1619180343-3943-3-git-send-email-sharathv@codeaurora.org>
 Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -69,182 +69,280 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 On 4/23/21 7:19 AM, Sharath Chandra Vurukala wrote:
-> Adding documentation explaining the new MAPv4/v5 packet formats
-> and the corresponding checksum offload headers.
+> Adding support for processing of MAPv5 downlink packets.
+> It involves parsing the Mapv5 packet and checking the csum header
+> to know whether the hardware has validated the checksum and is
+> valid or not.
+> 
+> Based on the checksum valid bit the corresponding stats are
+> incremented and skb->ip_summed is marked either CHECKSUM_UNNECESSARY
+> or left as CHEKSUM_NONE to let network stack revalidate the checksum
+> and update the respective snmp stats.
+> 
+> Current MAPV1 header has been modified, the reserved field in the
+> Mapv1 header is now used for next header indication.
 > 
 > Acked-by: Subash Abhinov Kasiviswanathan <subashab@codeaurora.org>
 > Acked-by: Alex Elder <elder@linaro.org>
-> Signed-off-by: Sharath Chandra Vurukala <sharathv@codeaurora.org>
 
-You indicated I acknowledged this, and I didn't have any
-other real input, so this looks good.
+I did not acknowledge this message.  I did for patch 1
+only, which only updates the documentation.
+
+I have a few other minor things I recommend you fix.
+
+I don't see any bugs, but I'm not going to offer
+"Reviewed-by" until you've had a chance to either
+update your patch or explain why you won't.
+
+> Signed-off-by: Sharath Chandra Vurukala <sharathv@codeaurora.org>
+> ---
+>   .../net/ethernet/qualcomm/rmnet/rmnet_handlers.c   | 17 ++++---
+>   drivers/net/ethernet/qualcomm/rmnet/rmnet_map.h    |  3 +-
+>   .../net/ethernet/qualcomm/rmnet/rmnet_map_data.c   | 58 +++++++++++++++++++++-
+>   include/linux/if_rmnet.h                           | 27 +++++++++-
+>   include/uapi/linux/if_link.h                       |  1 +
+>   5 files changed, 97 insertions(+), 9 deletions(-)
+> 
+> diff --git a/drivers/net/ethernet/qualcomm/rmnet/rmnet_handlers.c b/drivers/net/ethernet/qualcomm/rmnet/rmnet_handlers.c
+> index 0be5ac7..706a225 100644
+> --- a/drivers/net/ethernet/qualcomm/rmnet/rmnet_handlers.c
+> +++ b/drivers/net/ethernet/qualcomm/rmnet/rmnet_handlers.c
+> @@ -1,5 +1,5 @@
+>   // SPDX-License-Identifier: GPL-2.0-only
+> -/* Copyright (c) 2013-2018, The Linux Foundation. All rights reserved.
+> +/* Copyright (c) 2013-2018, 2021, The Linux Foundation. All rights reserved.
+>    *
+>    * RMNET Data ingress/egress handler
+>    */
+> @@ -82,11 +82,16 @@ __rmnet_map_ingress_handler(struct sk_buff *skb,
+>   
+>   	skb->dev = ep->egress_dev;
+>   
+> -	/* Subtract MAP header */
+> -	skb_pull(skb, sizeof(struct rmnet_map_header));
+> -	rmnet_set_skb_proto(skb);
+> -
+> -	if (port->data_format & RMNET_FLAGS_INGRESS_MAP_CKSUMV4) {
+> +	if ((port->data_format & RMNET_FLAGS_INGRESS_MAP_CKSUMV5) &&
+> +	    (map_header->flags & MAP_NEXT_HEADER_FLAG)) {
+> +		if (rmnet_map_process_next_hdr_packet(skb, len))
+> +			goto free_skb;
+> +		skb_pull(skb, sizeof(*map_header));
+> +		rmnet_set_skb_proto(skb);
+> +	} else if (port->data_format & RMNET_FLAGS_INGRESS_MAP_CKSUMV4) {
+> +		/* Subtract MAP header */
+> +		skb_pull(skb, sizeof(*map_header));
+> +		rmnet_set_skb_proto(skb);
+>   		if (!rmnet_map_checksum_downlink_packet(skb, len + pad))
+>   			skb->ip_summed = CHECKSUM_UNNECESSARY;
+>   	}
+> diff --git a/drivers/net/ethernet/qualcomm/rmnet/rmnet_map.h b/drivers/net/ethernet/qualcomm/rmnet/rmnet_map.h
+> index 2aea153..1a399bf 100644
+> --- a/drivers/net/ethernet/qualcomm/rmnet/rmnet_map.h
+> +++ b/drivers/net/ethernet/qualcomm/rmnet/rmnet_map.h
+> @@ -1,5 +1,5 @@
+>   /* SPDX-License-Identifier: GPL-2.0-only */
+> -/* Copyright (c) 2013-2018, The Linux Foundation. All rights reserved.
+> +/* Copyright (c) 2013-2018, 2021, The Linux Foundation. All rights reserved.
+>    */
+>   
+>   #ifndef _RMNET_MAP_H_
+> @@ -48,5 +48,6 @@ void rmnet_map_command(struct sk_buff *skb, struct rmnet_port *port);
+>   int rmnet_map_checksum_downlink_packet(struct sk_buff *skb, u16 len);
+>   void rmnet_map_checksum_uplink_packet(struct sk_buff *skb,
+>   				      struct net_device *orig_dev);
+> +int rmnet_map_process_next_hdr_packet(struct sk_buff *skb, u16 len);
+>   
+>   #endif /* _RMNET_MAP_H_ */
+> diff --git a/drivers/net/ethernet/qualcomm/rmnet/rmnet_map_data.c b/drivers/net/ethernet/qualcomm/rmnet/rmnet_map_data.c
+> index 0ac2ff8..43813cf 100644
+> --- a/drivers/net/ethernet/qualcomm/rmnet/rmnet_map_data.c
+> +++ b/drivers/net/ethernet/qualcomm/rmnet/rmnet_map_data.c
+> @@ -1,5 +1,5 @@
+>   // SPDX-License-Identifier: GPL-2.0-only
+> -/* Copyright (c) 2013-2018, The Linux Foundation. All rights reserved.
+> +/* Copyright (c) 2013-2018, 2021, The Linux Foundation. All rights reserved.
+>    *
+>    * RMNET Data MAP protocol
+>    */
+> @@ -8,6 +8,7 @@
+>   #include <linux/ip.h>
+>   #include <linux/ipv6.h>
+>   #include <net/ip6_checksum.h>
+> +#include <linux/bitfield.h>
+>   #include "rmnet_config.h"
+>   #include "rmnet_map.h"
+>   #include "rmnet_private.h"
+> @@ -300,8 +301,11 @@ struct rmnet_map_header *rmnet_map_add_map_header(struct sk_buff *skb,
+>   struct sk_buff *rmnet_map_deaggregate(struct sk_buff *skb,
+>   				      struct rmnet_port *port)
+>   {
+> +	struct rmnet_map_v5_csum_header *next_hdr = NULL;
+> +	unsigned char *data = skb->data;
+
+If you define the data variable to have (void *) type you can
+get rid of some casts below, and it won't need to use a cast
+when assigned here either.
+
+>   	struct rmnet_map_header *maph;
+>   	struct sk_buff *skbn;
+> +	u8 nexthdr_type;
+>   	u32 packet_len;
+>   
+>   	if (skb->len == 0)
+> @@ -312,6 +316,17 @@ struct sk_buff *rmnet_map_deaggregate(struct sk_buff *skb,
+>   
+>   	if (port->data_format & RMNET_FLAGS_INGRESS_MAP_CKSUMV4)
+>   		packet_len += sizeof(struct rmnet_map_dl_csum_trailer);
+
+This block should be surrounded by curly braces.  If one block
+in an if statement (or chain of them) has them, they all should.
+
+> +	else if (port->data_format & RMNET_FLAGS_INGRESS_MAP_CKSUMV5) {
+> +		if (!(maph->flags & MAP_CMD_FLAG)) {
+> +			packet_len += sizeof(struct rmnet_map_v5_csum_header);
+
+			packet_len += sizeof(*next_hdr);
+
+> +			if (maph->flags & MAP_NEXT_HEADER_FLAG)
+> +				next_hdr = (struct rmnet_map_v5_csum_header *)
+> +						(data + sizeof(*maph));
+
+If data is a void pointer, this could be:
+				next_hdr = data + sizeof(*maph);
+
+> +			else
+> +				/* Mapv5 data pkt without csum hdr is invalid */
+> +				return NULL;
+> +		}
+> +	}
+>   
+>   	if (((int)skb->len - (int)packet_len) < 0)
+>   		return NULL;
+> @@ -320,6 +335,13 @@ struct sk_buff *rmnet_map_deaggregate(struct sk_buff *skb,
+>   	if (!maph->pkt_len)
+>   		return NULL;
+>   
+> +	if (next_hdr) {
+> +		nexthdr_type = u8_get_bits(next_hdr->header_info,
+> +					   MAPV5_HDRINFO_HDR_TYPE_FMASK);
+> +		if (nexthdr_type != RMNET_MAP_HEADER_TYPE_CSUM_OFFLOAD)
+> +			return NULL;
+> +	}
+> +
+>   	skbn = alloc_skb(packet_len + RMNET_MAP_DEAGGR_SPACING, GFP_ATOMIC);
+>   	if (!skbn)
+>   		return NULL;
+> @@ -414,3 +436,37 @@ void rmnet_map_checksum_uplink_packet(struct sk_buff *skb,
+>   
+>   	priv->stats.csum_sw++;
+>   }
+> +
+> +/* Process a MAPv5 packet header */
+> +int rmnet_map_process_next_hdr_packet(struct sk_buff *skb,
+> +				      u16 len)
+> +{
+> +	struct rmnet_priv *priv = netdev_priv(skb->dev);
+> +	struct rmnet_map_v5_csum_header *next_hdr;
+> +	u8 nexthdr_type;
+> +	int rc = 0;
+> +
+> +	next_hdr = (struct rmnet_map_v5_csum_header *)(skb->data +
+> +			sizeof(struct rmnet_map_header));
+> +
+> +	nexthdr_type = u8_get_bits(next_hdr->header_info,
+> +				   MAPV5_HDRINFO_HDR_TYPE_FMASK);
+> +
+> +	if (nexthdr_type == RMNET_MAP_HEADER_TYPE_CSUM_OFFLOAD) {
+> +		if (unlikely(!(skb->dev->features & NETIF_F_RXCSUM))) {
+> +			priv->stats.csum_sw++;
+> +		} else if (next_hdr->csum_info & MAPV5_CSUMINFO_VALID_FLAG) {
+> +			priv->stats.csum_ok++;
+> +			skb->ip_summed = CHECKSUM_UNNECESSARY;
+> +		} else {
+> +			priv->stats.csum_valid_unset++;
+> +		}
+> +
+> +		/* Pull csum v5 header */
+> +		skb_pull(skb, sizeof(struct rmnet_map_v5_csum_header));
+
+         skb_pull(skb, sizeof(*next_hdr);
+
+> +	} else {
+> +		return -EINVAL;
+> +	}
+> +
+> +	return rc;
+> +}
+> diff --git a/include/linux/if_rmnet.h b/include/linux/if_rmnet.h
+> index 4efb537..f82e37e 100644
+> --- a/include/linux/if_rmnet.h
+> +++ b/include/linux/if_rmnet.h
+> @@ -1,5 +1,5 @@
+>   /* SPDX-License-Identifier: GPL-2.0-only
+> - * Copyright (c) 2013-2019, The Linux Foundation. All rights reserved.
+> + * Copyright (c) 2013-2019, 2021 The Linux Foundation. All rights reserved.
+>    */
+>   
+>   #ifndef _LINUX_IF_RMNET_H_
+> @@ -14,8 +14,10 @@ struct rmnet_map_header {
+>   /* rmnet_map_header flags field:
+>    *  PAD_LEN:	number of pad bytes following packet data
+>    *  CMD:	1 = packet contains a MAP command; 0 = packet contains data
+> + *  NEXT_HEADER	1 = packet contains V5 CSUM header 0 = no V5 CSUM header
+>    */
+>   #define MAP_PAD_LEN_MASK		GENMASK(5, 0)
+> +#define MAP_NEXT_HEADER_FLAG		BIT(6)
+>   #define MAP_CMD_FLAG			BIT(7)
+>   
+>   struct rmnet_map_dl_csum_trailer {
+> @@ -45,4 +47,27 @@ struct rmnet_map_ul_csum_header {
+>   #define MAP_CSUM_UL_UDP_FLAG		BIT(14)
+>   #define MAP_CSUM_UL_ENABLED_FLAG	BIT(15)
+>   
+> +/* MAP CSUM headers */
+> +struct rmnet_map_v5_csum_header {
+> +	u8 header_info;
+> +	u8 csum_info;
+> +	__be16 reserved;
+> +} __aligned(1);
+> +
+> +/* v5 header_info field
+> + * NEXT_HEADER:  Represents whether there is any other header
+> + * HEADER TYPE: represents the type of this header
+> + *
+> + * csum_info field
+> + * CSUM_VALID_OR_REQ:
+> + * 1 = for UL, checksum computation is requested.
+> + * 1 = for DL, validated the checksum and has found it valid
+> + */
+> +
+> +#define MAPV5_HDRINFO_NXT_HDR_FLAG	BIT(0)
+> +#define MAPV5_HDRINFO_HDR_TYPE_SHIFT	1
+> +#define MAPV5_HDRINFO_HDR_TYPE_FMASK	GENMASK(7, MAPV5_HDRINFO_HDR_TYPE_SHIFT)
+> +#define MAPV5_CSUMINFO_VALID_FLAG	BIT(7)
+
+This is the only place you use MAPV5_HDRINFO_TYPE_SHIFT.
+Defining and using it here immediately after its definition
+subtracts, rather than adds value.  Just do:
+
+#define MAPV5_HDRINFO_HDR_TYPE_FMASK    GENMASK(7, 1)
 
 					-Alex
 
-> ---
->   .../device_drivers/cellular/qualcomm/rmnet.rst     | 126 +++++++++++++++++++--
->   1 file changed, 114 insertions(+), 12 deletions(-)
-> 
-> diff --git a/Documentation/networking/device_drivers/cellular/qualcomm/rmnet.rst b/Documentation/networking/device_drivers/cellular/qualcomm/rmnet.rst
-> index 70643b5..4118384 100644
-> --- a/Documentation/networking/device_drivers/cellular/qualcomm/rmnet.rst
-> +++ b/Documentation/networking/device_drivers/cellular/qualcomm/rmnet.rst
-> @@ -27,34 +27,136 @@ these MAP frames and send them to appropriate PDN's.
->   2. Packet format
->   ================
+> +#define RMNET_MAP_HEADER_TYPE_CSUM_OFFLOAD 2
+>   #endif /* !(_LINUX_IF_RMNET_H_) */
+> diff --git a/include/uapi/linux/if_link.h b/include/uapi/linux/if_link.h
+> index 91c8dda..21529b3 100644
+> --- a/include/uapi/linux/if_link.h
+> +++ b/include/uapi/linux/if_link.h
+> @@ -1235,6 +1235,7 @@ enum {
+>   #define RMNET_FLAGS_INGRESS_MAP_COMMANDS          (1U << 1)
+>   #define RMNET_FLAGS_INGRESS_MAP_CKSUMV4           (1U << 2)
+>   #define RMNET_FLAGS_EGRESS_MAP_CKSUMV4            (1U << 3)
+> +#define RMNET_FLAGS_INGRESS_MAP_CKSUMV5           (1U << 4)
 >   
-> -a. MAP packet (data / control)
-> +a. MAP packet v1 (data / control)
->   
-> -MAP header has the same endianness of the IP packet.
-> +MAP header fields are in big endian format.
->   
->   Packet format::
->   
-> -  Bit             0             1           2-7      8 - 15           16 - 31
-> +  Bit             0             1           2-7      8-15           16-31
->     Function   Command / Data   Reserved     Pad   Multiplexer ID    Payload length
-> -  Bit            32 - x
-> -  Function     Raw  Bytes
-> +
-> +  Bit            32-x
-> +  Function      Raw bytes
->   
->   Command (1)/ Data (0) bit value is to indicate if the packet is a MAP command
-> -or data packet. Control packet is used for transport level flow control. Data
-> +or data packet. Command packet is used for transport level flow control. Data
->   packets are standard IP packets.
->   
-> -Reserved bits are usually zeroed out and to be ignored by receiver.
-> +Reserved bits must be zero when sent and ignored when received.
->   
-> -Padding is number of bytes to be added for 4 byte alignment if required by
-> -hardware.
-> +Padding is the number of bytes to be appended to the payload to
-> +ensure 4 byte alignment.
->   
->   Multiplexer ID is to indicate the PDN on which data has to be sent.
->   
->   Payload length includes the padding length but does not include MAP header
->   length.
->   
-> -b. MAP packet (command specific)::
-> +b. Map packet v4 (data / control)
-> +
-> +MAP header fields are in big endian format.
-> +
-> +Packet format::
-> +
-> +  Bit             0             1           2-7      8-15           16-31
-> +  Function   Command / Data   Reserved     Pad   Multiplexer ID    Payload length
-> +
-> +  Bit            32-(x-33)      (x-32)-x
-> +  Function      Raw bytes      Checksum offload header
-> +
-> +Command (1)/ Data (0) bit value is to indicate if the packet is a MAP command
-> +or data packet. Command packet is used for transport level flow control. Data
-> +packets are standard IP packets.
-> +
-> +Reserved bits must be zero when sent and ignored when received.
-> +
-> +Padding is the number of bytes to be appended to the payload to
-> +ensure 4 byte alignment.
-> +
-> +Multiplexer ID is to indicate the PDN on which data has to be sent.
-> +
-> +Payload length includes the padding length but does not include MAP header
-> +length.
-> +
-> +Checksum offload header, has the information about the checksum processing done
-> +by the hardware.Checksum offload header fields are in big endian format.
-> +
-> +Packet format::
-> +
-> +  Bit             0-14        15              16-31
-> +  Function      Reserved   Valid     Checksum start offset
-> +
-> +  Bit                31-47                    48-64
-> +  Function      Checksum length           Checksum value
-> +
-> +Reserved bits must be zero when sent and ignored when received.
-> +
-> +Valid bit indicates whether the partial checksum is calculated and is valid.
-> +Set to 1, if its is valid. Set to 0 otherwise.
-> +
-> +Padding is the number of bytes to be appended to the payload to
-> +ensure 4 byte alignment.
-> +
-> +Checksum start offset, Indicates the offset in bytes from the beginning of the
-> +IP header, from which modem computed checksum.
-> +
-> +Checksum length is the Length in bytes starting from CKSUM_START_OFFSET,
-> +over which checksum is computed.
-> +
-> +Checksum value, indicates the checksum computed.
-> +
-> +c. MAP packet v5 (data / control)
-> +
-> +MAP header fields are in big endian format.
-> +
-> +Packet format::
-> +
-> +  Bit             0             1         2-7      8-15           16-31
-> +  Function   Command / Data  Next header  Pad   Multiplexer ID   Payload length
-> +
-> +  Bit            32-x
-> +  Function      Raw bytes
-> +
-> +Command (1)/ Data (0) bit value is to indicate if the packet is a MAP command
-> +or data packet. Command packet is used for transport level flow control. Data
-> +packets are standard IP packets.
-> +
-> +Next header is used to indicate the presence of another header, currently is
-> +limited to checksum header.
-> +
-> +Padding is the number of bytes to be appended to the payload to
-> +ensure 4 byte alignment.
-> +
-> +Multiplexer ID is to indicate the PDN on which data has to be sent.
-> +
-> +Payload length includes the padding length but does not include MAP header
-> +length.
-> +
-> +d. Checksum offload header v5
-> +
-> +Checksum offload header fields are in big endian format.
-> +
-> +  Bit            0 - 6          7               8-15              16-31
-> +  Function     Header Type    Next Header     Checksum Valid    Reserved
-> +
-> +Header Type is to indicate the type of header, this usually is set to CHECKSUM
-> +
-> +Header types
-> += ==========================================
-> +0 Reserved
-> +1 Reserved
-> +2 checksum header
-> +
-> +Checksum Valid is to indicate whether the header checksum is valid. Value of 1
-> +implies that checksum is calculated on this packet and is valid, value of 0
-> +indicates that the calculated packet checksum is invalid.
-> +
-> +Reserved bits must be zero when sent and ignored when received.
-> +
-> +e. MAP packet v1/v5 (command specific)::
->   
-> -    Bit             0             1           2-7      8 - 15           16 - 31
-> +    Bit             0             1         2-7      8 - 15           16 - 31
->       Function   Command         Reserved     Pad   Multiplexer ID    Payload length
->       Bit          32 - 39        40 - 45    46 - 47       48 - 63
->       Function   Command name    Reserved   Command Type   Reserved
-> @@ -74,7 +176,7 @@ Command types
->   3 is for error during processing of commands
->   = ==========================================
->   
-> -c. Aggregation
-> +f. Aggregation
->   
->   Aggregation is multiple MAP packets (can be data or command) delivered to
->   rmnet in a single linear skb. rmnet will process the individual
+>   enum {
+>   	IFLA_RMNET_UNSPEC,
 > 
 
