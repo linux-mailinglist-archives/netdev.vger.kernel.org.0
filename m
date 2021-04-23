@@ -2,68 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5D3CD369BB8
+	by mail.lfdr.de (Postfix) with ESMTP id 11DE4369BB7
 	for <lists+netdev@lfdr.de>; Fri, 23 Apr 2021 23:00:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244058AbhDWVA5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 23 Apr 2021 17:00:57 -0400
-Received: from mail.kernel.org ([198.145.29.99]:55800 "EHLO mail.kernel.org"
+        id S243797AbhDWVAy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 23 Apr 2021 17:00:54 -0400
+Received: from mail.kernel.org ([198.145.29.99]:55778 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232686AbhDWVAu (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S232657AbhDWVAu (ORCPT <rfc822;netdev@vger.kernel.org>);
         Fri, 23 Apr 2021 17:00:50 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id 4306861463;
+Received: by mail.kernel.org (Postfix) with ESMTPS id 2546261075;
         Fri, 23 Apr 2021 21:00:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1619211613;
-        bh=Kn8OxbTul1GfBwbgvgh1hJuYcjygWsnsjwncqXrzUno=;
+        bh=V70RhErbBzFuXbKLEaoLK/tys5yhalQiMWbd0AiSmME=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=B5/1TVHictfgytz+wb9pMw0iNFq+VjRkr3ELzoF1NDEcAthhGv3ke6u3zTUdtIUmG
-         H0HEaZ0GqvqNjRhM1m4R9CybjI7uMPidEktXKQCZ1LyqlJ2BymRvcqPzMAjo2yWAtn
-         iaABuEulyX4I7hgC8ieHBZ2dc/kmOvBQAfgW/7ld+1zyzS7krx347r5zxmbG71yJfR
-         M8OG56RuOW+ryxhw2q+fk3xsBsHLvfDbqnRf0snoHRrYm/nJfVpoRABaaN1nPHKM6D
-         EV6KjTwKeb1D1YvqK5dd6uIF+FQk/WQHWSfW5BBKb/Ro11/+ktsJaEzUtcWdaVVJgE
-         Beh3Yt6k7HrWQ==
+        b=QBM6+3/yDP3zOzmdVEvo3M87/E5m/wvOMcsQ/HBUHAO652ePLi+oLfTvM7GLmmkVx
+         MyF/I1fbXBWg2kOLJynQ7fmetq/1837OOq0WQ3/pgHvsbf2QdLWOove7Rcch8HWPAG
+         wkYLZ63KJYCaroZDHXiWirOpvG+Zs04fEd4Y3Zv/P7zaclBdTgZtRgB5AwWTkttwD1
+         A6MJsGkcNBIeTcxKW9DYxl0NAqmgY0fPymQuVdmNzCJa3jCNVEuzpKv46O6ESA374U
+         ZMcNijZQPLlwyFHx/nBfZGjqaxDZnDzpl5du69SSHEaOrGr5kERTVecwIResZvVHNm
+         DkXgcuLdfwa5g==
 Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 381B860C28;
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 1C4CA608FB;
         Fri, 23 Apr 2021 21:00:13 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [net-next,
- v2] enetc: fix locking for one-step timestamping packet transfer
+Subject: Re: pull request (net-next): ipsec-next 2021-04-23
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <161921161322.19917.12823767295470536369.git-patchwork-notify@kernel.org>
+Message-Id: <161921161311.19917.1849606365072790152.git-patchwork-notify@kernel.org>
 Date:   Fri, 23 Apr 2021 21:00:13 +0000
-References: <20210423093355.8665-1-yangbo.lu@nxp.com>
-In-Reply-To: <20210423093355.8665-1-yangbo.lu@nxp.com>
-To:     Yangbo Lu <yangbo.lu@nxp.com>
-Cc:     netdev@vger.kernel.org, richardcochran@gmail.com,
-        vladimir.oltean@nxp.com, davem@davemloft.net, kuba@kernel.org,
-        claudiu.manoil@nxp.com, linux-kernel@vger.kernel.org
+References: <20210423081409.729557-1-steffen.klassert@secunet.com>
+In-Reply-To: <20210423081409.729557-1-steffen.klassert@secunet.com>
+To:     Steffen Klassert <steffen.klassert@secunet.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, herbert@gondor.apana.org.au,
+        netdev@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 Hello:
 
-This patch was applied to netdev/net-next.git (refs/heads/master):
+This pull request was applied to netdev/net-next.git (refs/heads/master):
 
-On Fri, 23 Apr 2021 17:33:55 +0800 you wrote:
-> The previous patch to support PTP Sync packet one-step timestamping
-> described one-step timestamping packet handling logic as below in
-> commit message:
+On Fri, 23 Apr 2021 10:14:05 +0200 you wrote:
+> 1) The SPI flow key in struct flowi has no consumers,
+>    so remove it. From Florian Westphal.
 > 
-> - Trasmit packet immediately if no other one in transfer, or queue to
->   skb queue if there is already one in transfer.
->   The test_and_set_bit_lock() is used here to lock and check state.
-> - Start a work when complete transfer on hardware, to release the bit
->   lock and to send one skb in skb queue if has.
+> 2) Remove stray synchronize_rcu from xfrm_init.
+>    From Florian Westphal.
+> 
+> 3) Use the new exit_pre hook to reset the netlink socket
+>    on net namespace destruction. From Florian Westphal.
 > 
 > [...]
 
 Here is the summary with links:
-  - [net-next,v2] enetc: fix locking for one-step timestamping packet transfer
-    https://git.kernel.org/netdev/net-next/c/7ce9c3d363ac
+  - pull request (net-next): ipsec-next 2021-04-23
+    https://git.kernel.org/netdev/net-next/c/7679f864a0b1
+  - [2/4] xfrm: remove stray synchronize_rcu from xfrm_init
+    https://git.kernel.org/netdev/net-next/c/7baf867fef7c
+  - [3/4] xfrm: avoid synchronize_rcu during netns destruction
+    https://git.kernel.org/netdev/net-next/c/6218fe186109
+  - [4/4] xfrm: ipcomp: remove unnecessary get_cpu()
+    https://git.kernel.org/netdev/net-next/c/747b67088f8d
 
 You are awesome, thank you!
 --
