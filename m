@@ -2,65 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F30AC368F99
-	for <lists+netdev@lfdr.de>; Fri, 23 Apr 2021 11:43:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9EECE368FAB
+	for <lists+netdev@lfdr.de>; Fri, 23 Apr 2021 11:45:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241900AbhDWJns (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 23 Apr 2021 05:43:48 -0400
-Received: from szxga06-in.huawei.com ([45.249.212.32]:17396 "EHLO
-        szxga06-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241898AbhDWJnr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 23 Apr 2021 05:43:47 -0400
-Received: from DGGEMS401-HUB.china.huawei.com (unknown [172.30.72.59])
-        by szxga06-in.huawei.com (SkyGuard) with ESMTP id 4FRTnM57L5zlZHb;
-        Fri, 23 Apr 2021 17:41:11 +0800 (CST)
-Received: from localhost (10.174.242.151) by DGGEMS401-HUB.china.huawei.com
- (10.3.19.201) with Microsoft SMTP Server id 14.3.498.0; Fri, 23 Apr 2021
- 17:42:59 +0800
-From:   wangyunjian <wangyunjian@huawei.com>
+        id S241782AbhDWJqI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 23 Apr 2021 05:46:08 -0400
+Received: from rtits2.realtek.com ([211.75.126.72]:47409 "EHLO
+        rtits2.realtek.com.tw" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S241803AbhDWJqC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 23 Apr 2021 05:46:02 -0400
+Authenticated-By: 
+X-SpamFilter-By: ArmorX SpamTrap 5.73 with qID 13N9jHC11012512, This message is accepted by code: ctloc85258
+Received: from mail.realtek.com (rtexh36502.realtek.com.tw[172.21.6.25])
+        by rtits2.realtek.com.tw (8.15.2/2.71/5.88) with ESMTPS id 13N9jHC11012512
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
+        Fri, 23 Apr 2021 17:45:17 +0800
+Received: from RTEXMBS04.realtek.com.tw (172.21.6.97) by
+ RTEXH36502.realtek.com.tw (172.21.6.25) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2106.2; Fri, 23 Apr 2021 17:45:17 +0800
+Received: from fc32.localdomain (172.21.177.102) by RTEXMBS04.realtek.com.tw
+ (172.21.6.97) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2106.2; Fri, 23 Apr
+ 2021 17:45:15 +0800
+From:   Hayes Wang <hayeswang@realtek.com>
 To:     <kuba@kernel.org>, <davem@davemloft.net>
-CC:     <netdev@vger.kernel.org>, <chuck.lever@oracle.com>,
-        <bfields@fieldses.org>, <dingxiaoxiong@huawei.com>,
-        Yunjian Wang <wangyunjian@huawei.com>
-Subject: [PATCH net] SUNRPC: Fix null pointer dereference in svc_rqst_free()
-Date:   Fri, 23 Apr 2021 17:42:58 +0800
-Message-ID: <1619170978-15192-1-git-send-email-wangyunjian@huawei.com>
-X-Mailer: git-send-email 1.9.5.msysgit.1
+CC:     <netdev@vger.kernel.org>, <nic_swsd@realtek.com>,
+        <linux-kernel@vger.kernel.org>, <linux-usb@vger.kernel.org>,
+        Hayes Wang <hayeswang@realtek.com>
+Subject: [PATCH net-next 0/2] r8152: adjust REALTEK_USB_DEVICE
+Date:   Fri, 23 Apr 2021 17:44:53 +0800
+Message-ID: <1394712342-15778-359-Taiwan-albertk@realtek.com>
+X-Mailer: Microsoft Office Outlook 11
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.174.242.151]
-X-CFilter-Loop: Reflected
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [172.21.177.102]
+X-ClientProxiedBy: RTEXMBS01.realtek.com.tw (172.21.6.94) To
+ RTEXMBS04.realtek.com.tw (172.21.6.97)
+X-KSE-ServerInfo: RTEXMBS04.realtek.com.tw, 9
+X-KSE-Antivirus-Interceptor-Info: scan successful
+X-KSE-Antivirus-Info: =?big5?B?Q2xlYW4sIGJhc2VzOiAyMDIxLzQvMjMgpFekyCAwNjoxOTowMA==?=
+X-KSE-Attachment-Filter-Triggered-Rules: Clean
+X-KSE-Attachment-Filter-Triggered-Filters: Clean
+X-KSE-BulkMessagesFiltering-Scan-Result: protection disabled
+X-KSE-AntiSpam-Outbound-Interceptor-Info: scan successful
+X-KSE-AntiSpam-Version: 5.9.20, Database issued on: 04/23/2021 09:33:25
+X-KSE-AntiSpam-Status: KAS_STATUS_NOT_DETECTED
+X-KSE-AntiSpam-Method: none
+X-KSE-AntiSpam-Rate: 0
+X-KSE-AntiSpam-Info: Lua profiles 163300 [Apr 23 2021]
+X-KSE-AntiSpam-Info: Version: 5.9.20.0
+X-KSE-AntiSpam-Info: Envelope from: hayeswang@realtek.com
+X-KSE-AntiSpam-Info: LuaCore: 443 443 d64ad0ad6f66abd85f8fb55fe5d831fdcc4c44a0
+X-KSE-AntiSpam-Info: {Tracking_from_domain_doesnt_match_to}
+X-KSE-AntiSpam-Info: 127.0.0.199:7.1.2;d41d8cd98f00b204e9800998ecf8427e.com:7.1.1;realtek.com:7.1.1
+X-KSE-AntiSpam-Info: {Track_Chinese_Simplified, headers_charset}
+X-KSE-AntiSpam-Info: Rate: 0
+X-KSE-AntiSpam-Info: Status: not_detected
+X-KSE-AntiSpam-Info: Method: none
+X-KSE-AntiSpam-Info: Auth:dkim=none
+X-KSE-Antiphishing-Info: Clean
+X-KSE-Antiphishing-ScanningType: Heuristic
+X-KSE-Antiphishing-Method: None
+X-KSE-Antiphishing-Bases: 04/23/2021 09:36:00
+X-KSE-ServerInfo: RTEXH36502.realtek.com.tw, 9
+X-KSE-Attachment-Filter-Triggered-Rules: Clean
+X-KSE-Attachment-Filter-Triggered-Filters: Clean
+X-KSE-BulkMessagesFiltering-Scan-Result: protection disabled
+X-KSE-AntiSpam-Outbound-Interceptor-Info: scan successful
+X-KSE-AntiSpam-Version: 5.9.20, Database issued on: 04/23/2021 09:29:24
+X-KSE-AntiSpam-Status: KAS_STATUS_NOT_DETECTED
+X-KSE-AntiSpam-Method: none
+X-KSE-AntiSpam-Rate: 0
+X-KSE-AntiSpam-Info: Lua profiles 163300 [Apr 23 2021]
+X-KSE-AntiSpam-Info: Version: 5.9.20.0
+X-KSE-AntiSpam-Info: Envelope from: hayeswang@realtek.com
+X-KSE-AntiSpam-Info: LuaCore: 443 443 d64ad0ad6f66abd85f8fb55fe5d831fdcc4c44a0
+X-KSE-AntiSpam-Info: {Tracking_from_domain_doesnt_match_to}
+X-KSE-AntiSpam-Info: d41d8cd98f00b204e9800998ecf8427e.com:7.1.1;realtek.com:7.1.1;127.0.0.199:7.1.2
+X-KSE-AntiSpam-Info: Rate: 0
+X-KSE-AntiSpam-Info: Status: not_detected
+X-KSE-AntiSpam-Info: Method: none
+X-KSE-AntiSpam-Info: Auth:dkim=none
+X-KSE-Antiphishing-Info: Clean
+X-KSE-Antiphishing-ScanningType: Heuristic
+X-KSE-Antiphishing-Method: None
+X-KSE-Antiphishing-Bases: 04/23/2021 09:31:00
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Yunjian Wang <wangyunjian@huawei.com>
+Modify REALTEK_USB_DEVICE macro.
 
-When alloc_pages_node() returns null in svc_rqst_alloc(), the
-null rq_scratch_page pointer will be dereferenced when calling
-put_page() in svc_rqst_free(). Fix it by adding a null check.
+Hayes Wang (2):
+  r8152: remove NCM mode from REALTEK_USB_DEVICE macro
+  r8152: redefine REALTEK_USB_DEVICE macro
 
-Addresses-Coverity: ("Dereference after null check")
-Fixes: 5191955d6fc6 ("SUNRPC: Prepare for xdr_stream-style decoding on the server-side")
-Signed-off-by: Yunjian Wang <wangyunjian@huawei.com>
----
- net/sunrpc/svc.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/net/usb/r8152.c | 71 ++++++++++++++++-------------------------
+ 1 file changed, 27 insertions(+), 44 deletions(-)
 
-diff --git a/net/sunrpc/svc.c b/net/sunrpc/svc.c
-index d76dc9d95d16..0de918cb3d90 100644
---- a/net/sunrpc/svc.c
-+++ b/net/sunrpc/svc.c
-@@ -846,7 +846,8 @@ void
- svc_rqst_free(struct svc_rqst *rqstp)
- {
- 	svc_release_buffer(rqstp);
--	put_page(rqstp->rq_scratch_page);
-+	if (rqstp->rq_scratch_page)
-+		put_page(rqstp->rq_scratch_page);
- 	kfree(rqstp->rq_resp);
- 	kfree(rqstp->rq_argp);
- 	kfree(rqstp->rq_auth_data);
 -- 
-2.23.0
+2.26.3
 
