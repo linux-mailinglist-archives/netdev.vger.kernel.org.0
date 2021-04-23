@@ -2,57 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 712073689C0
-	for <lists+netdev@lfdr.de>; Fri, 23 Apr 2021 02:27:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 221DD3689C2
+	for <lists+netdev@lfdr.de>; Fri, 23 Apr 2021 02:27:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239969AbhDWA12 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 22 Apr 2021 20:27:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55310 "EHLO
+        id S240001AbhDWA1a (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 22 Apr 2021 20:27:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55318 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235569AbhDWA11 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 22 Apr 2021 20:27:27 -0400
-Received: from mail-pl1-x631.google.com (mail-pl1-x631.google.com [IPv6:2607:f8b0:4864:20::631])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7DBF9C061574;
-        Thu, 22 Apr 2021 17:26:50 -0700 (PDT)
-Received: by mail-pl1-x631.google.com with SMTP id e9so7411789plj.2;
-        Thu, 22 Apr 2021 17:26:50 -0700 (PDT)
+        with ESMTP id S239954AbhDWA12 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 22 Apr 2021 20:27:28 -0400
+Received: from mail-pf1-x431.google.com (mail-pf1-x431.google.com [IPv6:2607:f8b0:4864:20::431])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE3A6C06174A;
+        Thu, 22 Apr 2021 17:26:51 -0700 (PDT)
+Received: by mail-pf1-x431.google.com with SMTP id c3so14132388pfo.3;
+        Thu, 22 Apr 2021 17:26:51 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=Qz3N8e3CiMwxMuXV9RfUOV3WPHa8dXx7N42Tvs9AYCM=;
-        b=ZGCMTPI5NngwL3vtSB389chFgAAuwTFuixS/8X6JRCDR8COs1cpgZajIzT1/E+pQ48
-         DuUAUCkJ/15cDJPOl9rK4DbdStwkBbZlvkkeI33bXeY4yh0KMRBuCtv3V0bMmqIMmzZS
-         72B1GBRT8bV4JmJl8AFUwIoN1E4JxErPdWJETzC7zQUvDvuSAm2AGIbQSwm1ktSbTsuj
-         7aqXZh8msV5t+QkPpYsdnpQbgSpaIJoUxgOC2rCM2tanF3lPwA1Fp8lX9WNm2cO70yWT
-         4SyKUu2zA75c5WF+OoTqQRAOxXHdBw1P9tAisj+tX9IFSk4BTc2ow0Pcd5QTMXJgprsF
-         /rAw==
+        bh=Nwc5XWdKz5jG+SAGsD0OMALB7sp2qsIR5lQRCTO9YJs=;
+        b=isAwycRgk+Hy469zW1dv20mU0O3rTcHdpRuI3A2ey0B3iCk+Dy854CwXV4X3BEfciz
+         +0Q8Af3Cl1O3mPyKGgOTMHKOZKZF8PeeupocoqhBO6hDXleVaZmB9B6KLUj7LZV/IcjQ
+         Yu8tCcpUrDima0R16bWJfNu51bLm2vLlXwVhVqF2mPKxcLqeSZB02d7/RUDH/c98Jx9Z
+         yEyjG86GG2mCrX9xW0zywq3tkdHY+hRMbCdtXizYp6mXv/96APJFOM7EnQWg4a2tWzX0
+         Wf3mLm5ITs5iZw1+mzHO6xKfZMXXUEOec3c5YUOGlwpyGFaAbz1ItjqvKl0y/jNuBuR3
+         5CUA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=Qz3N8e3CiMwxMuXV9RfUOV3WPHa8dXx7N42Tvs9AYCM=;
-        b=mR9ngi0YrNSZV6gNV53rF6pSma/oCCd/vilryQxuUxc0nvQmUzEPrWOb9zjBQCLOnp
-         dxVGVgs5IbZxyelWEhIAi0prOR9QJV/EpgrkZCQQaJ/vSPGQst4qb84Lh32S9B28sSJB
-         qxQKdi7EKzRBX74DG2u14knbqfOHAZ3gcUR2rGD/byb751eV2RPEyB8+PNNT9V8sdl4e
-         jISxhRTEOl2NSOfUmNQRUK9zxuC0vn0UBEqopuSFc+d/VKDE7103xLBCx2GIxjvAtBqq
-         rAjl0z6R+F56yqWvmqEnxEa+D0rcpPvH9F3HyTh2m6LKvNLmesdxQkId+JIblkVo9JCd
-         emLQ==
-X-Gm-Message-State: AOAM5326e1mUtce4/bIKdUmMyo2aRhHN2/eFMC4DhXXa4XCKIvJFTnVI
-        ErhsVQda08O6XX1gX6SFVs4=
-X-Google-Smtp-Source: ABdhPJzTQgz/B231aD/BqA+Lk1sz8neRPqe+sm+iu6pZ6V4dGTb4w6XBVauIvVdkJeajJZJ9lpwPmA==
-X-Received: by 2002:a17:90a:4410:: with SMTP id s16mr1384028pjg.203.1619137610008;
-        Thu, 22 Apr 2021 17:26:50 -0700 (PDT)
+        bh=Nwc5XWdKz5jG+SAGsD0OMALB7sp2qsIR5lQRCTO9YJs=;
+        b=DJUjvgIx/gtELAOzbtMaGGlg6SLfE0VLdGuHp9qVKD89iP2MJji2upzialkvzkCKgc
+         E33SxgENB9W3McD9yCqcB5REuog+XhLvcuSTh+o/I0CYAslHM13BiKY/0refdQ0NWucf
+         txXZauAcu91ElKEyEs15KCG6B6gZUVjDmAloWCUq75TUQ3cYT5z2ZpzxuzR1+q8ZMBYs
+         FiZyZbVdawvwZ5CmPSz7WSrz7AD0sDzZiaBZDcpKY0qPR/gC6ay10WxV2wuXPNm/6zgq
+         FULdndnbZ+j9p9xo2Lv49+kK1tvKltgEIVaroAe/wTwamln4PtWAM2MMkgyD91hZ15vz
+         Blgw==
+X-Gm-Message-State: AOAM533i5Qlc3gBEa4QJ05JShlvIg2sFqZHDyYFF8SmUQbEiShyyttGb
+        KMGSvq0VQtNrAOJeYql9AsM=
+X-Google-Smtp-Source: ABdhPJwnOfbih1xX+yZbZKN7CS/v6L+GtZJ7Ix2jgLtcCLK+zlx49KFOfzfBUMz34//AmhJSF3svYQ==
+X-Received: by 2002:a63:6ec5:: with SMTP id j188mr1209278pgc.394.1619137611424;
+        Thu, 22 Apr 2021 17:26:51 -0700 (PDT)
 Received: from ast-mbp.thefacebook.com ([163.114.132.7])
-        by smtp.gmail.com with ESMTPSA id u12sm6390987pji.45.2021.04.22.17.26.48
+        by smtp.gmail.com with ESMTPSA id u12sm6390987pji.45.2021.04.22.17.26.50
         (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Thu, 22 Apr 2021 17:26:49 -0700 (PDT)
+        Thu, 22 Apr 2021 17:26:50 -0700 (PDT)
 From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
 To:     davem@davemloft.net
 Cc:     daniel@iogearbox.net, andrii@kernel.org, netdev@vger.kernel.org,
         bpf@vger.kernel.org, kernel-team@fb.com
-Subject: [PATCH v2 bpf-next 01/16] bpf: Introduce bpf_sys_bpf() helper and program type.
-Date:   Thu, 22 Apr 2021 17:26:31 -0700
-Message-Id: <20210423002646.35043-2-alexei.starovoitov@gmail.com>
+Subject: [PATCH v2 bpf-next 02/16] bpf: Introduce bpfptr_t user/kernel pointer.
+Date:   Thu, 22 Apr 2021 17:26:32 -0700
+Message-Id: <20210423002646.35043-3-alexei.starovoitov@gmail.com>
 X-Mailer: git-send-email 2.13.5
 In-Reply-To: <20210423002646.35043-1-alexei.starovoitov@gmail.com>
 References: <20210423002646.35043-1-alexei.starovoitov@gmail.com>
@@ -62,250 +62,104 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Alexei Starovoitov <ast@kernel.org>
 
-Add placeholders for bpf_sys_bpf() helper and new program type.
-
-v1->v2:
-- check that expected_attach_type is zero
-- allow more helper functions to be used in this program type, since they will
-  only execute from user context via bpf_prog_test_run.
+Similar to sockptr_t introduce bpfptr_t with few additions:
+make_bpfptr() creates new user/kernel pointer in the same address space as
+existing user/kernel pointer.
+bpfptr_add() advances the user/kernel pointer.
 
 Signed-off-by: Alexei Starovoitov <ast@kernel.org>
 ---
- include/linux/bpf.h            | 10 +++++++
- include/linux/bpf_types.h      |  2 ++
- include/uapi/linux/bpf.h       |  8 +++++
- kernel/bpf/syscall.c           | 54 ++++++++++++++++++++++++++++++++++
- net/bpf/test_run.c             | 43 +++++++++++++++++++++++++++
- tools/include/uapi/linux/bpf.h |  8 +++++
- 6 files changed, 125 insertions(+)
+ include/linux/bpfptr.h | 81 ++++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 81 insertions(+)
+ create mode 100644 include/linux/bpfptr.h
 
-diff --git a/include/linux/bpf.h b/include/linux/bpf.h
-index f8a45f109e96..aed30bbffb54 100644
---- a/include/linux/bpf.h
-+++ b/include/linux/bpf.h
-@@ -1824,6 +1824,9 @@ static inline bool bpf_map_is_dev_bound(struct bpf_map *map)
- 
- struct bpf_map *bpf_map_offload_map_alloc(union bpf_attr *attr);
- void bpf_map_offload_map_free(struct bpf_map *map);
-+int bpf_prog_test_run_syscall(struct bpf_prog *prog,
-+			      const union bpf_attr *kattr,
-+			      union bpf_attr __user *uattr);
- #else
- static inline int bpf_prog_offload_init(struct bpf_prog *prog,
- 					union bpf_attr *attr)
-@@ -1849,6 +1852,13 @@ static inline struct bpf_map *bpf_map_offload_map_alloc(union bpf_attr *attr)
- static inline void bpf_map_offload_map_free(struct bpf_map *map)
- {
- }
+diff --git a/include/linux/bpfptr.h b/include/linux/bpfptr.h
+new file mode 100644
+index 000000000000..e370acb04977
+--- /dev/null
++++ b/include/linux/bpfptr.h
+@@ -0,0 +1,81 @@
++/* SPDX-License-Identifier: GPL-2.0-only */
++/* A pointer that can point to either kernel or userspace memory. */
++#ifndef _LINUX_BPFPTR_H
++#define _LINUX_BPFPTR_H
 +
-+static inline int bpf_prog_test_run_syscall(struct bpf_prog *prog,
-+					    const union bpf_attr *kattr,
-+					    union bpf_attr __user *uattr)
-+{
-+	return -ENOTSUPP;
-+}
- #endif /* CONFIG_NET && CONFIG_BPF_SYSCALL */
- 
- #if defined(CONFIG_INET) && defined(CONFIG_BPF_SYSCALL)
-diff --git a/include/linux/bpf_types.h b/include/linux/bpf_types.h
-index f883f01a5061..a9db1eae6796 100644
---- a/include/linux/bpf_types.h
-+++ b/include/linux/bpf_types.h
-@@ -77,6 +77,8 @@ BPF_PROG_TYPE(BPF_PROG_TYPE_LSM, lsm,
- 	       void *, void *)
- #endif /* CONFIG_BPF_LSM */
- #endif
-+BPF_PROG_TYPE(BPF_PROG_TYPE_SYSCALL, bpf_syscall,
-+	      void *, void *)
- 
- BPF_MAP_TYPE(BPF_MAP_TYPE_ARRAY, array_map_ops)
- BPF_MAP_TYPE(BPF_MAP_TYPE_PERCPU_ARRAY, percpu_array_map_ops)
-diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
-index ec6d85a81744..c92648f38144 100644
---- a/include/uapi/linux/bpf.h
-+++ b/include/uapi/linux/bpf.h
-@@ -937,6 +937,7 @@ enum bpf_prog_type {
- 	BPF_PROG_TYPE_EXT,
- 	BPF_PROG_TYPE_LSM,
- 	BPF_PROG_TYPE_SK_LOOKUP,
-+	BPF_PROG_TYPE_SYSCALL, /* a program that can execute syscalls */
- };
- 
- enum bpf_attach_type {
-@@ -4735,6 +4736,12 @@ union bpf_attr {
-  *		be zero-terminated except when **str_size** is 0.
-  *
-  *		Or **-EBUSY** if the per-CPU memory copy buffer is busy.
-+ *
-+ * long bpf_sys_bpf(u32 cmd, void *attr, u32 attr_size)
-+ * 	Description
-+ * 		Execute bpf syscall with given arguments.
-+ * 	Return
-+ * 		A syscall result.
-  */
- #define __BPF_FUNC_MAPPER(FN)		\
- 	FN(unspec),			\
-@@ -4903,6 +4910,7 @@ union bpf_attr {
- 	FN(check_mtu),			\
- 	FN(for_each_map_elem),		\
- 	FN(snprintf),			\
-+	FN(sys_bpf),			\
- 	/* */
- 
- /* integer value in 'imm' field of BPF_CALL instruction selects which helper
-diff --git a/kernel/bpf/syscall.c b/kernel/bpf/syscall.c
-index fd495190115e..8636876f3e6b 100644
---- a/kernel/bpf/syscall.c
-+++ b/kernel/bpf/syscall.c
-@@ -2014,6 +2014,7 @@ bpf_prog_load_check_attach(enum bpf_prog_type prog_type,
- 		if (expected_attach_type == BPF_SK_LOOKUP)
- 			return 0;
- 		return -EINVAL;
-+	case BPF_PROG_TYPE_SYSCALL:
- 	case BPF_PROG_TYPE_EXT:
- 		if (expected_attach_type)
- 			return -EINVAL;
-@@ -4497,3 +4498,56 @@ SYSCALL_DEFINE3(bpf, int, cmd, union bpf_attr __user *, uattr, unsigned int, siz
- 
- 	return err;
- }
++#include <linux/sockptr.h>
 +
-+static bool syscall_prog_is_valid_access(int off, int size,
-+					 enum bpf_access_type type,
-+					 const struct bpf_prog *prog,
-+					 struct bpf_insn_access_aux *info)
++typedef sockptr_t bpfptr_t;
++
++static inline bool bpfptr_is_kernel(bpfptr_t bpfptr)
 +{
-+	if (off < 0 || off >= U16_MAX)
-+		return false;
-+	if (off % size != 0)
-+		return false;
-+	return true;
++	return bpfptr.is_kernel;
 +}
 +
-+BPF_CALL_3(bpf_sys_bpf, int, cmd, void *, attr, u32, attr_size)
++static inline bpfptr_t KERNEL_BPFPTR(void *p)
 +{
-+	return -EINVAL;
++	return (bpfptr_t) { .kernel = p, .is_kernel = true };
 +}
 +
-+const struct bpf_func_proto bpf_sys_bpf_proto = {
-+	.func		= bpf_sys_bpf,
-+	.gpl_only	= false,
-+	.ret_type	= RET_INTEGER,
-+	.arg1_type	= ARG_ANYTHING,
-+	.arg2_type	= ARG_PTR_TO_MEM,
-+	.arg3_type	= ARG_CONST_SIZE,
-+};
-+
-+const struct bpf_func_proto * __weak
-+tracing_prog_func_proto(enum bpf_func_id func_id, const struct bpf_prog *prog)
++static inline bpfptr_t USER_BPFPTR(void __user *p)
 +{
-+
-+	return bpf_base_func_proto(func_id);
++	return (bpfptr_t) { .user = p };
 +}
 +
-+static const struct bpf_func_proto *
-+syscall_prog_func_proto(enum bpf_func_id func_id, const struct bpf_prog *prog)
++static inline bpfptr_t make_bpfptr(u64 addr, bool is_kernel)
 +{
-+	switch (func_id) {
-+	case BPF_FUNC_sys_bpf:
-+		return &bpf_sys_bpf_proto;
-+	default:
-+		return tracing_prog_func_proto(func_id, prog);
-+	}
++	if (is_kernel)
++		return (bpfptr_t) {
++			.kernel = (void*) (uintptr_t) addr,
++			.is_kernel = true,
++		};
++	else
++		return (bpfptr_t) {
++			.user = u64_to_user_ptr(addr),
++			.is_kernel = false,
++		};
 +}
 +
-+const struct bpf_verifier_ops bpf_syscall_verifier_ops = {
-+	.get_func_proto  = syscall_prog_func_proto,
-+	.is_valid_access = syscall_prog_is_valid_access,
-+};
-+
-+const struct bpf_prog_ops bpf_syscall_prog_ops = {
-+	.test_run = bpf_prog_test_run_syscall,
-+};
-diff --git a/net/bpf/test_run.c b/net/bpf/test_run.c
-index a5d72c48fb66..1783ea77b95c 100644
---- a/net/bpf/test_run.c
-+++ b/net/bpf/test_run.c
-@@ -918,3 +918,46 @@ int bpf_prog_test_run_sk_lookup(struct bpf_prog *prog, const union bpf_attr *kat
- 	kfree(user_ctx);
- 	return ret;
- }
-+
-+int bpf_prog_test_run_syscall(struct bpf_prog *prog,
-+			      const union bpf_attr *kattr,
-+			      union bpf_attr __user *uattr)
++static inline bool bpfptr_is_null(bpfptr_t bpfptr)
 +{
-+	void __user *ctx_in = u64_to_user_ptr(kattr->test.ctx_in);
-+	__u32 ctx_size_in = kattr->test.ctx_size_in;
-+	void *ctx = NULL;
-+	u32 retval;
-+	int err = 0;
-+
-+	/* doesn't support data_in/out, ctx_out, duration, or repeat or flags */
-+	if (kattr->test.data_in || kattr->test.data_out ||
-+	    kattr->test.ctx_out || kattr->test.duration ||
-+	    kattr->test.repeat || kattr->test.flags)
-+		return -EINVAL;
-+
-+	if (ctx_size_in < prog->aux->max_ctx_offset ||
-+	    ctx_size_in > U16_MAX)
-+		return -EINVAL;
-+
-+	if (ctx_size_in) {
-+		ctx = kzalloc(ctx_size_in, GFP_USER);
-+		if (!ctx)
-+			return -ENOMEM;
-+		if (copy_from_user(ctx, ctx_in, ctx_size_in)) {
-+			err = -EFAULT;
-+			goto out;
-+		}
-+	}
-+	retval = bpf_prog_run_pin_on_cpu(prog, ctx);
-+
-+	if (copy_to_user(&uattr->test.retval, &retval, sizeof(u32)))
-+		err = -EFAULT;
-+	if (ctx_size_in)
-+		if (copy_to_user(ctx_in, ctx, ctx_size_in)) {
-+			err = -EFAULT;
-+			goto out;
-+		}
-+out:
-+	kfree(ctx);
-+	return err;
++	if (bpfptr_is_kernel(bpfptr))
++		return !bpfptr.kernel;
++	return !bpfptr.user;
 +}
-diff --git a/tools/include/uapi/linux/bpf.h b/tools/include/uapi/linux/bpf.h
-index ec6d85a81744..0c13016d3d2c 100644
---- a/tools/include/uapi/linux/bpf.h
-+++ b/tools/include/uapi/linux/bpf.h
-@@ -937,6 +937,7 @@ enum bpf_prog_type {
- 	BPF_PROG_TYPE_EXT,
- 	BPF_PROG_TYPE_LSM,
- 	BPF_PROG_TYPE_SK_LOOKUP,
-+	BPF_PROG_TYPE_SYSCALL,
- };
- 
- enum bpf_attach_type {
-@@ -4735,6 +4736,12 @@ union bpf_attr {
-  *		be zero-terminated except when **str_size** is 0.
-  *
-  *		Or **-EBUSY** if the per-CPU memory copy buffer is busy.
-+ *
-+ * long bpf_sys_bpf(u32 cmd, void *attr, u32 attr_size)
-+ * 	Description
-+ * 		Execute bpf syscall with given arguments.
-+ * 	Return
-+ * 		A syscall result.
-  */
- #define __BPF_FUNC_MAPPER(FN)		\
- 	FN(unspec),			\
-@@ -4903,6 +4910,7 @@ union bpf_attr {
- 	FN(check_mtu),			\
- 	FN(for_each_map_elem),		\
- 	FN(snprintf),			\
-+	FN(sys_bpf),			\
- 	/* */
- 
- /* integer value in 'imm' field of BPF_CALL instruction selects which helper
++
++static inline void bpfptr_add(bpfptr_t *bpfptr, size_t val)
++{
++	if (bpfptr_is_kernel(*bpfptr))
++		bpfptr->kernel += val;
++	else
++		bpfptr->user += val;
++}
++
++static inline int copy_from_bpfptr_offset(void *dst, bpfptr_t src,
++					  size_t offset, size_t size)
++{
++	return copy_from_sockptr_offset(dst, (sockptr_t) src, offset, size);
++}
++
++static inline int copy_from_bpfptr(void *dst, bpfptr_t src, size_t size)
++{
++	return copy_from_bpfptr_offset(dst, src, 0, size);
++}
++
++static inline int copy_to_bpfptr_offset(bpfptr_t dst, size_t offset,
++					const void *src, size_t size)
++{
++	return copy_to_sockptr_offset((sockptr_t) dst, offset, src, size);
++}
++
++static inline void *memdup_bpfptr(bpfptr_t src, size_t len)
++{
++	return memdup_sockptr((sockptr_t) src, len);
++}
++
++static inline long strncpy_from_bpfptr(char *dst, bpfptr_t src, size_t count)
++{
++	return strncpy_from_sockptr(dst, (sockptr_t) src, count);
++}
++
++#endif /* _LINUX_BPFPTR_H */
 -- 
 2.30.2
 
