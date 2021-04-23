@@ -2,152 +2,215 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7E1C43689AC
-	for <lists+netdev@lfdr.de>; Fri, 23 Apr 2021 02:14:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8FC3E3689BE
+	for <lists+netdev@lfdr.de>; Fri, 23 Apr 2021 02:26:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235812AbhDWAPJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 22 Apr 2021 20:15:09 -0400
-Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:62544 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S231605AbhDWAPI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 22 Apr 2021 20:15:08 -0400
-Received: from pps.filterd (m0001303.ppops.net [127.0.0.1])
-        by m0001303.ppops.net (8.16.0.43/8.16.0.43) with SMTP id 13N0DC67021616;
-        Thu, 22 Apr 2021 17:14:22 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=subject : to : cc :
- references : from : message-id : date : in-reply-to : content-type :
- content-transfer-encoding : mime-version; s=facebook;
- bh=GnFHq3hkaZjv3Y7N7w5nHrAmcL/et/GWygbDzC1yko4=;
- b=ISiOGMXSr51psqP/f5q1zBURyACgF7Zqd34WSVJLP8Y8CuICV1SfCIZyzLF+tRNcAkKe
- 7FdzXnTbsNSOpOMSwT9Jr8ZV+WSJewpGt/Jyml74fZ3/fdRS1h7eAGMP4/26RAq9rnmG
- +MRP2LvWGlCAirl6jycAt7Y7AmOy4ziEEns= 
-Received: from mail.thefacebook.com ([163.114.132.120])
-        by m0001303.ppops.net with ESMTP id 3839vuknnv-3
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Thu, 22 Apr 2021 17:14:21 -0700
-Received: from NAM04-SN1-obe.outbound.protection.outlook.com (100.104.98.9) by
- o365-in.thefacebook.com (100.104.94.231) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2176.2; Thu, 22 Apr 2021 17:14:20 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=APnScUXOtFNCyztYrmEEBYm/1QlRIPxMo0mJunM0BoH4hinKnyWydF5vU/HNOzGWYBx1qzMgXgYRNHe4VBu43Wngm1MQ51ChHqsWkSGDTFJ4YdJCgGCLDymMWZz5K+xB3rfQ7RGg9unhQyKlJjtF1sNyNXtZrh7oSZ+R2TaYv0VNd2LCdOZxuskpsrNU0tKlyIF+H/f/GD7sEfWuJNYcJcuEzSc4Nh/xFkpv/D/iPgiqrK/ohE8GpJxfJEsmwaVCJDTxI7vMTZPL6jCoMasIquhbObPOdfTrn/QQ43bStTc3Fd970j5goq4yG/lAe+S6Lm7AE23FYUHOSH8XdWTRSQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=GnFHq3hkaZjv3Y7N7w5nHrAmcL/et/GWygbDzC1yko4=;
- b=ey7fqBM5OWinZAz0a9gj7hu1q7iqAi4P8xeoyaUyi9RN6ttL7lJURBpaRl/WpWrY1OqZU+Rj7KqLzUprZSi6M15srJUDBKcin6YOdhrffw32v6MmjEiTn6wpKWepo8L/qRq98Ch6iM0gYqxWpw+hOht6V5q81cOZk3eT0BRtK2tHHPdamk/DKxZTkKRN/Oy4clW5nvopqYae1ARqGe/Kdly4Re1zFIFoin/1cIvMbHP1tNAQpnYPlR2oIoDHX3Ti96GYDlbEPZ4tt5N9hW+IECT+znh93aaVa2/VJa3ubDGGKjbfeag1eWjjrB/ro3SHDQ8e/w+++8EIWBzzX/iF1Q==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
- header.d=fb.com; arc=none
-Received: from SN6PR1501MB2064.namprd15.prod.outlook.com (2603:10b6:805:d::27)
- by SA0PR15MB3965.namprd15.prod.outlook.com (2603:10b6:806:83::10) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4065.23; Fri, 23 Apr
- 2021 00:14:19 +0000
-Received: from SN6PR1501MB2064.namprd15.prod.outlook.com
- ([fe80::f433:fd99:f905:8912]) by SN6PR1501MB2064.namprd15.prod.outlook.com
- ([fe80::f433:fd99:f905:8912%3]) with mapi id 15.20.4065.021; Fri, 23 Apr 2021
- 00:14:19 +0000
-Subject: Re: [PATCH v2 bpf-next 14/17] selftests/bpf: omit skeleton generation
- for multi-linked BPF object files
-To:     Andrii Nakryiko <andrii@kernel.org>, <bpf@vger.kernel.org>,
-        <netdev@vger.kernel.org>, <ast@fb.com>, <daniel@iogearbox.net>
-CC:     <kernel-team@fb.com>
-References: <20210416202404.3443623-1-andrii@kernel.org>
- <20210416202404.3443623-15-andrii@kernel.org>
-From:   Yonghong Song <yhs@fb.com>
-Message-ID: <46159a14-9470-883d-e948-b09ef9bd122c@fb.com>
-Date:   Thu, 22 Apr 2021 17:13:12 -0700
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
- Gecko/20100101 Thunderbird/78.9.1
-In-Reply-To: <20210416202404.3443623-15-andrii@kernel.org>
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [2620:10d:c090:400::5:83f]
-X-ClientProxiedBy: MWHPR22CA0026.namprd22.prod.outlook.com
- (2603:10b6:300:69::12) To SN6PR1501MB2064.namprd15.prod.outlook.com
- (2603:10b6:805:d::27)
-MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from [IPv6:2620:10d:c085:21e8::17f2] (2620:10d:c090:400::5:83f) by MWHPR22CA0026.namprd22.prod.outlook.com (2603:10b6:300:69::12) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4065.21 via Frontend Transport; Fri, 23 Apr 2021 00:14:18 +0000
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 7ed23168-f7f2-4279-0962-08d905ecbcde
-X-MS-TrafficTypeDiagnostic: SA0PR15MB3965:
-X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <SA0PR15MB3965790F56205BC949A6B24ED3459@SA0PR15MB3965.namprd15.prod.outlook.com>
-X-FB-Source: Internal
-X-MS-Oob-TLC-OOBClassifiers: OLM:5236;
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: ANJf9wtcA+CfMv/H+Za3vCALOfLVAiz06q3YMoFgyrhI2i3JKdEcndAX+v9iQKPbjH5/yLQXIQNChpVru0CBzSHt0DoqC9dwoulTGLppV6CjOrvkN5H8br4XKk6lFqpAtlsxyPq6VGBbbkpawIcjD7EO1ECV7FtizKsWtctUTR93DOgzYmORp1oX+FqAGN1Y/L3MPbHfp4c6mYfhG471JoS6RaLZjI56A0tBnjK4cYPLqlfJXbvXArYM86xWmkRi702rWFrDwWx8lyoxy8XCeAuhwuihEZXliEK3pCuMhLAjO8JopzMewnkEXc5WFWhHN01drQ3Md5fQgfsHfO2mOLP2ZuP/2PjufmNWBMx4OcEpnetD8AkeeJcjmSJ/CNT46nwHRwUdQ5Mc5ja2mxlk0EnAFR6M198NPROjmlseYVhXXfejwerMx39EspG7bjFpM4By+mpaQH55y3NKHa1bG77msB83e4xwVBq328/krOhzbijYLg8BPiuWUg9AUuvNUTtwmFDTSCsV5GxitWVRLw5a+VjJap+ZCiK/Fpt9wzWjrwbb+MgqjY4XELxXeWS73XOtttI3cZJDYBbB5NhIK/UNf8Jv3fmiDXodfCXH50UG1QpxMkPe/f7eLKDk8R030c9LmqqZ8OGlCysAVyWibiKzyklxv2tHSdpq4z8bFbSU6j5TeHvR4VTrA2pnpX7R
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SN6PR1501MB2064.namprd15.prod.outlook.com;PTR:;CAT:NONE;SFS:(346002)(39860400002)(396003)(366004)(376002)(136003)(66476007)(66556008)(66946007)(31696002)(6666004)(8936002)(316002)(8676002)(31686004)(186003)(16526019)(2616005)(6486002)(86362001)(83380400001)(4744005)(5660300002)(2906002)(478600001)(36756003)(53546011)(4326008)(52116002)(38100700002)(43740500002)(45980500001);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData: =?utf-8?B?WEx2Sm1jZExLMFM4djVKaEFzQUl3YkhGV1RxaTgwNGtoZDNNSVY3ZDhDdmI0?=
- =?utf-8?B?MHRrdXpNUmZhTVg0ckVCN2szNnQ5N3pEQmlCbXZpQ2RzT3l2L2xlQU15TGli?=
- =?utf-8?B?cGxRRk56aWNJK3RhWWRwcEpzRFlaTHl3MnpNR1RKdTVEVlRkSVJuUHU1Nmt5?=
- =?utf-8?B?WEg2NWhBTnpQVjFhcjR2WG5MaWY1cFVhcWNYbEg3bytBbVZZRU52bkFKclJp?=
- =?utf-8?B?U3dBVzVsQ3pTK0diZ2ZKK0pHSStJQ0d6MDczdGZoWk04ZlBhS2c0MUhYekVx?=
- =?utf-8?B?YTh3cjdlYUROTTlCWmpnR3BycHFOd21MT2IzWFBzL2hLVURkaU1oQWhwRlBT?=
- =?utf-8?B?RVJ3VVVFajh6WDc5WHhoRC9PNDdJRkNpVmp0cjFORXlMNzRSUDdJd0tEaUt1?=
- =?utf-8?B?eERLZjA1aUhQSmVFRitqZ2pmS0hXWS95ZDhhTTZ6eDJTZHYzWTlyRVFTeFJE?=
- =?utf-8?B?bDJRK0hxN0kzakVDb09rcWg5Q0ZBbEYzMUQ5cGRMKzRBUjkyUWZUWnNGUyt1?=
- =?utf-8?B?VXN6MHE1dVZaL0E5Zm9qWXQrOFNZQ0pOdndsamJtYnJGKzJ4VDhXUVRyc29i?=
- =?utf-8?B?cmZQeFdzMnY3eG52d05paHFodEppQ09uaUpteS8rRy9xUmxlNlB4ZXhPWmJn?=
- =?utf-8?B?SlpPaHBMQXJjK3VWTHNTZnA4QWFnNnhWSm1UdUM4SnRoUzg5eE5VR01yMThP?=
- =?utf-8?B?L0NFQ09uc0MydUFLM3piL0FNQkg5Q3lnNVQrTWhaSXdrUnMwU0k2Z1lBQ1Vw?=
- =?utf-8?B?WFQ4TmlpanpCZjlmaEJMN0hUSjNvS2xRak1kYUo0c3V2eUtLdlViRGhQVDJR?=
- =?utf-8?B?OVlZQk43am92TFFzS0hnb2ZVQ1I1VjJJNUJNTmVWZ3FpdmoyaVhkSTk1dzg0?=
- =?utf-8?B?Yk41cUs5Nm8wUG0vSjc4bWZIMERFRHZJVGh2S0g3c1VPcGRBTThhS1hVQ2ow?=
- =?utf-8?B?djJYNHVNOHY3b3pkZVpra2tLVmE4QnNzZ0xqWG1hcldPQmU4ZXBzQmxvaEN6?=
- =?utf-8?B?c1BSKzUwR3VRV0oyeEZMYVJ1YWJqbmtGeWQ0SU9tMGFEbTBvL3Z4RHkrd2Rn?=
- =?utf-8?B?UGZ3OU5Kc0MwdzlwSXJNYkRubG1RUi9KcUYrZ1VsR2ZaK280ZWVaZWJVUkdt?=
- =?utf-8?B?cnBTS2hIYldId0tmMDVPR0YzYVZFMTlHeTBjVG03RGpkMzBBNkc4TmVXcWVD?=
- =?utf-8?B?VHltMnZFTmJ0UnBsQXBMSXhVb2lqSVRTNnhHUVIxdjZVRzRtcWtyVnovSktu?=
- =?utf-8?B?bWl0ZEcrVkJ3UHN4bGEzNW5sRkVHVGpBRHV2WXJxbTF4TjFRcXc5dDFaa2Vk?=
- =?utf-8?B?ZENZQ1VLOW1NZEF2ZHJNNGxxT3NjQVlDVXhhdXByMGJWWGgrYWQrWmluVnB3?=
- =?utf-8?B?dE5pLzR2ZU1kZnRHUkJWcjBIN3hiaUNiR25rdU5qMHVzNU05UXhkdmdJRWl3?=
- =?utf-8?B?eXExRVdTanVsSEhmUmJBNDhlZUJ6aG9MbnREbk9WTGQwYzA2eVdQMlpscE9m?=
- =?utf-8?B?b2ZrRzE5WENZaUhwSlNvMDlMVVJSOWtIakJMSHFSS3VRTm5NcndzbjB2ZU1T?=
- =?utf-8?B?VkdBV3cxNUg5RzhzU3E5TWloakFvQXNmWjVYN0lkNkZScmozTzhjcmhwd2tK?=
- =?utf-8?B?d3l2SFlnRXhJNmsycWJCUkxSN0tzUzNmMHk1dHl0Ny9PN1F2bmJ5QXE2OWVv?=
- =?utf-8?B?RVZTTzBoSWtieEsrZ2ZwbkxUR0xtYmw2QzRIYXMrVldScGthWjFvNVRNVFE4?=
- =?utf-8?B?VFFuKzY5YnNjWUZqV3I5MGFsOWpqcVhQdEFZaGpJK3A3eHNrcjVoOTFhclE5?=
- =?utf-8?Q?H6DVcR7UVxILYQxG9XKjmhRu+qgPRvZH4/1po=3D?=
-X-MS-Exchange-CrossTenant-Network-Message-Id: 7ed23168-f7f2-4279-0962-08d905ecbcde
-X-MS-Exchange-CrossTenant-AuthSource: SN6PR1501MB2064.namprd15.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 23 Apr 2021 00:14:19.1403
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: f1ohUwGQudtru2h5zujrqtLJMCMnGGHMlTbP9TXNcTYWqgxf4fAUxggeE6RBWGAd
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA0PR15MB3965
-X-OriginatorOrg: fb.com
-X-Proofpoint-ORIG-GUID: XBS_y_TmhFsd7RJrwqC4hbb5dhutS-S3
-X-Proofpoint-GUID: XBS_y_TmhFsd7RJrwqC4hbb5dhutS-S3
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.391,18.0.761
- definitions=2021-04-22_15:2021-04-22,2021-04-22 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 malwarescore=0
- adultscore=0 suspectscore=0 clxscore=1015 mlxscore=0 lowpriorityscore=0
- phishscore=0 mlxlogscore=999 impostorscore=0 spamscore=0
- priorityscore=1501 bulkscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.12.0-2104060000 definitions=main-2104230000
-X-FB-Internal: deliver
+        id S239919AbhDWA1Z (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 22 Apr 2021 20:27:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55308 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S235569AbhDWA1Y (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 22 Apr 2021 20:27:24 -0400
+Received: from mail-pg1-x52c.google.com (mail-pg1-x52c.google.com [IPv6:2607:f8b0:4864:20::52c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 70B16C061574;
+        Thu, 22 Apr 2021 17:26:49 -0700 (PDT)
+Received: by mail-pg1-x52c.google.com with SMTP id j7so24622855pgi.3;
+        Thu, 22 Apr 2021 17:26:49 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id;
+        bh=jeEDLg+StEu7eh4HI+ViR1Zz997ewh1U1o6wpHZqTmI=;
+        b=ct7pmBZrh9qEm6cX5vKxb/I1qJpOJdz1D/Y7Pj+EaDhF73jr3oE1N3I3xtXvY0ni8Q
+         aFPj3VabNDPgpwfTEUXJSizdkm5tKY4GAvN08YNnmihbvJpl5rS/RNTe7O7zDo1eEaUL
+         SK9rYq8eMVJu6cCaLSGvGaEwG4hRuSkFyigK6rFbUEEtWncd8/67bwvegkyp58AbDYhy
+         eC4CFa6Yz4xyvZw2o91WhMFbn9zyx2FvmSuEz56dU4voQNmF7kELbLuG9qXAQ0CY6gbi
+         1yjStUvmk6bJN/Vskq7SxuT0USQ/um71czqVexUm2oksSmWxvw/AYCezJH1u8jYD7E4B
+         Z8sw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=jeEDLg+StEu7eh4HI+ViR1Zz997ewh1U1o6wpHZqTmI=;
+        b=JzhQpf1RXkYqkB+oLertvCdZcD1lgdJJi+ogJRXss2WXT6y5phnaiDZkjiOG3RBCDJ
+         jX0rMOkBelCIRrPCUVGBDKnfqMx9C57qqYtG+PVYSKKLY4ayQcXfmQc64UqgIgevm+S7
+         90t7OaVnskWhx+j28Prw0yvlgclNzFvQzmC4AAk6hzL21t6Ue0R8W1GvyiPddIxz9iFT
+         C4Fk9EABIrYendH9AEllfCs4sSLKZW97IIwYcxhOapFXagMXuypn90IhCvpQZPxOsmN3
+         OE/wh+w4mzvExebWZaAGfiS1Sz8a5ViJ5LIidy9MwgpRT0KXR3kPkVIXkl6mlKVX122m
+         D+Tw==
+X-Gm-Message-State: AOAM531JdxiX5oZIqMBEGlaRanmCoBn/9lcHhG5crMc3iuOTufqAEz4i
+        4n9LPz3tGwUxj6nK7Brd1v36BH9XRnw=
+X-Google-Smtp-Source: ABdhPJwH4dVtZtDosaxyk/G1wJrZ83i+I5XFIOGoIX+dFGFS28BYBB/mBLZxMStSgzBPz6l0FtYBsw==
+X-Received: by 2002:aa7:9837:0:b029:264:b19e:acce with SMTP id q23-20020aa798370000b0290264b19eaccemr1115112pfl.79.1619137608541;
+        Thu, 22 Apr 2021 17:26:48 -0700 (PDT)
+Received: from ast-mbp.thefacebook.com ([163.114.132.7])
+        by smtp.gmail.com with ESMTPSA id u12sm6390987pji.45.2021.04.22.17.26.47
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Thu, 22 Apr 2021 17:26:47 -0700 (PDT)
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+To:     davem@davemloft.net
+Cc:     daniel@iogearbox.net, andrii@kernel.org, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, kernel-team@fb.com
+Subject: [PATCH v2 bpf-next 00/16] bpf: syscall program, FD array, loader program, light skeleton.
+Date:   Thu, 22 Apr 2021 17:26:30 -0700
+Message-Id: <20210423002646.35043-1-alexei.starovoitov@gmail.com>
+X-Mailer: git-send-email 2.13.5
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+From: Alexei Starovoitov <ast@kernel.org>
 
+v1->v2: Addressed comments from Al, Yonghong and Andrii.
+- documented sys_close fdget/fdput requirement and non-recursion check.
+- reduced internal api leaks between libbpf and bpftool.
+  Now bpf_object__gen_loader() is the only new libbf api with minimal fields.
+- fixed light skeleton __destroy() method to munmap and close maps and progs.
+- refactored bpf_btf_find_by_name_kind to return btf_id | (btf_obj_fd << 32).
+- refactored use of bpf_btf_find_by_name_kind from loader prog.
+- moved auto-gen like code into skel_internal.h that is used by *.lskel.h
+  It has minimal static inline bpf_load_and_run() method used by lskel.
+- added lksel.h example in patch 15.
+- replaced union bpf_map_prog_desc with struct bpf_map_desc and struct bpf_prog_desc.
+- removed mark_feat_supported and added a patch to pass 'obj' into kernel_supports.
+- added proper tracking of temporary FDs in loader prog and their cleanup via bpf_sys_close.
+- rename gen_trace.c into gen_loader.c to better align the naming throughout.
+- expanded number of available helpers in new prog type.
+- added support for raw_tp attaching in lskel.
+  lskel supports tracing and raw_tp progs now.
+  It correctly loads all networking prog types too, but __attach() method is tbd.
+- converted progs/test_ksyms_module.c to lskel.
+- minor feedback fixes all over.
 
-On 4/16/21 1:24 PM, Andrii Nakryiko wrote:
-> Skip generating individual BPF skeletons for files that are supposed to be
-> linked together to form the final BPF object file. Very often such files are
-> "incomplete" BPF object files, which will fail libbpf bpf_object__open() step,
-> if used individually, thus failing BPF skeleton generation. This is by design,
-> so skip individual BPF skeletons and only validate them as part of their
-> linked final BPF object file and skeleton.
-> 
-> Signed-off-by: Andrii Nakryiko <andrii@kernel.org>
+One thing that was not addressed from feedback is the name of new program type.
+Currently it's still:
+BPF_PROG_TYPE_SYSCALL, /* a program that can execute syscalls */
 
-Acked-by: Yonghong Song <yhs@fb.com>
+The concern raised was that it sounds like a program that should be attached
+to a syscall. Like BPF_PROG_TYPE_KPROBE is used to process kprobes.
+I've considered and rejected:
+BPF_PROG_TYPE_USER - too generic
+BPF_PROG_TYPE_USERCTX - ambiguous with uprobes
+BPF_PROG_TYPE_LOADER - ok-ish, but imo TYPE_SYSCALL is cleaner.
+Other suggestions?
+
+The description of V1 set is still valid:
+----
+This is a first step towards signed bpf programs and the third approach of that kind.
+The first approach was to bring libbpf into the kernel as a user-mode-driver.
+The second approach was to invent a new file format and let kernel execute
+that format as a sequence of syscalls that create maps and load programs.
+This third approach is using new type of bpf program instead of inventing file format.
+1st and 2nd approaches had too many downsides comparing to this 3rd and were discarded
+after months of work.
+
+To make it work the following new concepts are introduced:
+1. syscall bpf program type
+A kind of bpf program that can do sys_bpf and sys_close syscalls.
+It can only execute in user context.
+
+2. FD array or FD index.
+Traditionally BPF instructions are patched with FDs.
+What it means that maps has to be created first and then instructions modified
+which breaks signature verification if the program is signed.
+Instead of patching each instruction with FD patch it with an index into array of FDs.
+That makes the program signature stable if it uses maps.
+
+3. loader program that is generated as "strace of libbpf".
+When libbpf is loading bpf_file.o it does a bunch of sys_bpf() syscalls to
+load BTF, create maps, populate maps and finally load programs.
+Instead of actually doing the syscalls generate a trace of what libbpf
+would have done and represent it as the "loader program".
+The "loader program" consists of single map and single bpf program that
+does those syscalls.
+Executing such "loader program" via bpf_prog_test_run() command will
+replay the sequence of syscalls that libbpf would have done which will result
+the same maps created and programs loaded as specified in the elf file.
+The "loader program" removes libelf and majority of libbpf dependency from
+program loading process.
+
+4. light skeleton
+Instead of embedding the whole elf file into skeleton and using libbpf
+to parse it later generate a loader program and embed it into "light skeleton".
+Such skeleton can load the same set of elf files, but it doesn't need
+libbpf and libelf to do that. It only needs few sys_bpf wrappers.
+
+Future steps:
+- support CO-RE in the kernel. This patch set is already too big,
+so that critical feature is left for the next step.
+- generate light skeleton in golang to allow such users use BTF and
+all other features provided by libbpf
+- generate light skeleton for kernel, so that bpf programs can be embeded
+in the kernel module. The UMD usage in bpf_preload will be replaced with
+such skeleton, so bpf_preload would become a standard kernel module
+without user space dependency.
+- finally do the signing of the loader program.
+
+The patches are work in progress with few rough edges.
+
+Alexei Starovoitov (16):
+  bpf: Introduce bpf_sys_bpf() helper and program type.
+  bpf: Introduce bpfptr_t user/kernel pointer.
+  bpf: Prepare bpf syscall to be used from kernel and user space.
+  libbpf: Support for syscall program type
+  selftests/bpf: Test for syscall program type
+  bpf: Make btf_load command to be bpfptr_t compatible.
+  selftests/bpf: Test for btf_load command.
+  bpf: Introduce fd_idx
+  libbpf: Support for fd_idx
+  bpf: Add bpf_btf_find_by_name_kind() helper.
+  bpf: Add bpf_sys_close() helper.
+  libbpf: Change the order of data and text relocations.
+  libbpf: Add bpf_object pointer to kernel_supports().
+  libbpf: Generate loader program out of BPF ELF file.
+  bpftool: Use syscall/loader program in "prog load" and "gen skeleton"
+    command.
+  selftests/bpf: Convert few tests to light skeleton.
+
+ include/linux/bpf.h                           |  19 +-
+ include/linux/bpf_types.h                     |   2 +
+ include/linux/bpf_verifier.h                  |   1 +
+ include/linux/bpfptr.h                        |  81 +++
+ include/linux/btf.h                           |   2 +-
+ include/uapi/linux/bpf.h                      |  39 +-
+ kernel/bpf/bpf_iter.c                         |  13 +-
+ kernel/bpf/btf.c                              |  76 ++-
+ kernel/bpf/syscall.c                          | 195 ++++--
+ kernel/bpf/verifier.c                         |  81 ++-
+ net/bpf/test_run.c                            |  45 +-
+ tools/bpf/bpftool/Makefile                    |   2 +-
+ tools/bpf/bpftool/gen.c                       | 313 ++++++++-
+ tools/bpf/bpftool/main.c                      |   7 +-
+ tools/bpf/bpftool/main.h                      |   1 +
+ tools/bpf/bpftool/prog.c                      |  80 +++
+ tools/bpf/bpftool/xlated_dumper.c             |   3 +
+ tools/include/uapi/linux/bpf.h                |  39 +-
+ tools/lib/bpf/Build                           |   2 +-
+ tools/lib/bpf/bpf.c                           |   1 +
+ tools/lib/bpf/bpf_gen_internal.h              |  40 ++
+ tools/lib/bpf/gen_loader.c                    | 615 ++++++++++++++++++
+ tools/lib/bpf/libbpf.c                        | 399 +++++++++---
+ tools/lib/bpf/libbpf.h                        |  12 +
+ tools/lib/bpf/libbpf.map                      |   1 +
+ tools/lib/bpf/libbpf_internal.h               |   3 +
+ tools/lib/bpf/skel_internal.h                 | 105 +++
+ tools/testing/selftests/bpf/.gitignore        |   1 +
+ tools/testing/selftests/bpf/Makefile          |  16 +-
+ .../selftests/bpf/prog_tests/fentry_fexit.c   |   6 +-
+ .../selftests/bpf/prog_tests/fentry_test.c    |   4 +-
+ .../selftests/bpf/prog_tests/fexit_sleep.c    |   6 +-
+ .../selftests/bpf/prog_tests/fexit_test.c     |   4 +-
+ .../selftests/bpf/prog_tests/kfunc_call.c     |   6 +-
+ .../selftests/bpf/prog_tests/ksyms_module.c   |   2 +-
+ .../selftests/bpf/prog_tests/syscall.c        |  53 ++
+ tools/testing/selftests/bpf/progs/syscall.c   | 121 ++++
+ .../selftests/bpf/progs/test_subprogs.c       |  13 +
+ 38 files changed, 2198 insertions(+), 211 deletions(-)
+ create mode 100644 include/linux/bpfptr.h
+ create mode 100644 tools/lib/bpf/bpf_gen_internal.h
+ create mode 100644 tools/lib/bpf/gen_loader.c
+ create mode 100644 tools/lib/bpf/skel_internal.h
+ create mode 100644 tools/testing/selftests/bpf/prog_tests/syscall.c
+ create mode 100644 tools/testing/selftests/bpf/progs/syscall.c
+
+-- 
+2.30.2
+
