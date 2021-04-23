@@ -2,152 +2,126 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9A21D368C3B
-	for <lists+netdev@lfdr.de>; Fri, 23 Apr 2021 06:37:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 61517368C6D
+	for <lists+netdev@lfdr.de>; Fri, 23 Apr 2021 07:11:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229643AbhDWEiP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 23 Apr 2021 00:38:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53360 "EHLO
+        id S240329AbhDWFMK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 23 Apr 2021 01:12:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60648 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229456AbhDWEiO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 23 Apr 2021 00:38:14 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C5FA8C061574
-        for <netdev@vger.kernel.org>; Thu, 22 Apr 2021 21:37:38 -0700 (PDT)
-Received: from pty.hi.pengutronix.de ([2001:67c:670:100:1d::c5])
-        by metis.ext.pengutronix.de with esmtps (TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ore@pengutronix.de>)
-        id 1lZnZL-0002Kh-Tg; Fri, 23 Apr 2021 06:37:31 +0200
-Received: from ore by pty.hi.pengutronix.de with local (Exim 4.89)
-        (envelope-from <ore@pengutronix.de>)
-        id 1lZnZJ-0005tt-8w; Fri, 23 Apr 2021 06:37:29 +0200
-Date:   Fri, 23 Apr 2021 06:37:29 +0200
-From:   Oleksij Rempel <o.rempel@pengutronix.de>
-To:     Joakim Zhang <qiangqing.zhang@nxp.com>
-Cc:     Shawn Guo <shawnguo@kernel.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Fugang Duan <fugang.duan@nxp.com>,
-        "kernel@pengutronix.de" <kernel@pengutronix.de>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        dl-linux-imx <linux-imx@nxp.com>,
-        Fabio Estevam <festevam@gmail.com>,
-        David Jander <david@protonic.nl>,
-        Russell King <linux@armlinux.org.uk>,
-        Philippe Schenker <philippe.schenker@toradex.com>
-Subject: Re: [PATCH net-next v3 0/6] provide generic net selftest support
-Message-ID: <20210423043729.tup7nntmmyv6vurm@pengutronix.de>
-References: <20210419130106.6707-1-o.rempel@pengutronix.de>
- <DB8PR04MB67951B9C6AB1620E807205F2E6459@DB8PR04MB6795.eurprd04.prod.outlook.com>
+        with ESMTP id S229456AbhDWFMK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 23 Apr 2021 01:12:10 -0400
+Received: from mail-lf1-x12d.google.com (mail-lf1-x12d.google.com [IPv6:2a00:1450:4864:20::12d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 22635C061574;
+        Thu, 22 Apr 2021 22:11:33 -0700 (PDT)
+Received: by mail-lf1-x12d.google.com with SMTP id d27so18779518lfv.9;
+        Thu, 22 Apr 2021 22:11:33 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=fIRfzDU/CpJ2GwUwi5qaYyALcM0b/ZoofzJjBH1j+y0=;
+        b=pofHhJn5Dbu9gmZ8D0IkPEuxaxfysZnusWgwpk5zuMzElVg5ywpEIYE0dcmAtSQJSB
+         X4AxLNumat7hlUCquX+K+3KzFDUyveGLsH25BaXqPDk6aSl30k2A68QdCYayI3M7+pZR
+         yyEEdWmRpN9F8x2EQhwuxix0JEkDsuD10hVbitcElO9PlpVJs8ohdxMtcZ+ZnV766wWs
+         yEa62gxxAG9z+nPS/PLtBF9yWfWdPFvhK3JVCvCQjO+OPFAIAMgccsjSFmrUZpRMeIbQ
+         zFN6bOVMkrFa85m/7S0MDDRCAXgOH/j26Wzs0czw8T11zev0yeOd76T7TsrrxJozv9EW
+         SEAg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=fIRfzDU/CpJ2GwUwi5qaYyALcM0b/ZoofzJjBH1j+y0=;
+        b=IZ31usEJdvDkvDxIwTHR4ckaeIzJnE2tB8d3ybWmFscQQajIlm0B9VMDcteN4L84A7
+         9ZEgyN/UfdE9LnEpoc7OGadSkr9GzicAOwdVbYfyBr3B7aotCoD0V5h8VdRc6DEP/wMD
+         a66Wn2vjHIQB8TrtBAmA9eWl1mQg04vRhFVdNJIBPRiCYW3YY4sxCpuBEo0syEYN9G8Y
+         B1Iv00KNJKAitxxPdb+nlm6gpDvmhtL9L+aRcK1NgSie8ysbTi4Erod3BcAiSRO2+PBq
+         CljxdRlqGuc/zS7er2xIFpZ1rwbkGhyVHTL2PkhrmaKDT8QVfQOyiDEu3UQ92pRacljX
+         HuEA==
+X-Gm-Message-State: AOAM533M9nhi/7kuxpzvKVHIBuEjt2OAxdGf8iTd52qaMRBlcn9gHhge
+        3OlG3P3kuHrf65S5njcDyheamd8wgiUz2GoUJT4=
+X-Google-Smtp-Source: ABdhPJw8mhdySLWueSTV2SK7AvfuBatrn3Uj6BnJfYkemulWBsXlXDZF+yVlzCCy8onhrwG5HodIQ8JjYtYp8zFgRF8=
+X-Received: by 2002:ac2:510d:: with SMTP id q13mr1400930lfb.75.1619154691477;
+ Thu, 22 Apr 2021 22:11:31 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <DB8PR04MB67951B9C6AB1620E807205F2E6459@DB8PR04MB6795.eurprd04.prod.outlook.com>
-X-Sent-From: Pengutronix Hildesheim
-X-URL:  http://www.pengutronix.de/
-X-IRC:  #ptxdist @freenode
-X-Accept-Language: de,en
-X-Accept-Content-Type: text/plain
-X-Uptime: 06:06:48 up 141 days, 18:13, 35 users,  load average: 0.09, 0.05,
- 0.01
-User-Agent: NeoMutt/20170113 (1.7.2)
-X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c5
-X-SA-Exim-Mail-From: ore@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
+References: <20210416202404.3443623-1-andrii@kernel.org> <20210416202404.3443623-11-andrii@kernel.org>
+ <c9f1cab3-2aba-bbfb-25bd-6d23f7191a5d@fb.com> <CAEf4Bzai43dFxkZuh3FU0VrHZ008qT=GDDhhAsmOdgZuykkdTw@mail.gmail.com>
+ <CAADnVQJ_PS=PH8AQySiHqn-Bm=+DxsqRkgx+2_7OxM5CQkB4Mg@mail.gmail.com> <CAEf4BzYXZOX=dmrAQAxHinSa0mxJ5gkJkpL=paVJjtrEWQex4A@mail.gmail.com>
+In-Reply-To: <CAEf4BzYXZOX=dmrAQAxHinSa0mxJ5gkJkpL=paVJjtrEWQex4A@mail.gmail.com>
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Date:   Thu, 22 Apr 2021 22:11:19 -0700
+Message-ID: <CAADnVQK+s=hx1z4wjNFp5oYqi4_ovtcbGMbkVD4qKkUzVaeLvQ@mail.gmail.com>
+Subject: Re: [PATCH v2 bpf-next 10/17] libbpf: tighten BTF type ID rewriting
+ with error checking
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Cc:     Yonghong Song <yhs@fb.com>, Andrii Nakryiko <andrii@kernel.org>,
+        bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@fb.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Kernel Team <kernel-team@fb.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Joakim,
+On Thu, Apr 22, 2021 at 9:25 PM Andrii Nakryiko
+<andrii.nakryiko@gmail.com> wrote:
+>
+> On Thu, Apr 22, 2021 at 7:54 PM Alexei Starovoitov
+> <alexei.starovoitov@gmail.com> wrote:
+> >
+> > On Thu, Apr 22, 2021 at 11:24 AM Andrii Nakryiko
+> > <andrii.nakryiko@gmail.com> wrote:
+> > >
+> > > On Thu, Apr 22, 2021 at 9:50 AM Yonghong Song <yhs@fb.com> wrote:
+> > > >
+> > > >
+> > > >
+> > > > On 4/16/21 1:23 PM, Andrii Nakryiko wrote:
+> > > > > It should never fail, but if it does, it's better to know about this rather
+> > > > > than end up with nonsensical type IDs.
+> > > >
+> > > > So this is defensive programming. Maybe do another round of
+> > > > audit of the callers and if you didn't find any issue, you
+> > > > do not need to check not-happening condition here?
+> > >
+> > > It's far from obvious that this will never happen, because we do a
+> > > decently complicated BTF processing (we skip some types altogether
+> > > believing that they are not used, for example) and it will only get
+> > > more complicated with time. Just as there are "verifier bug" checks in
+> > > kernel, this prevents things from going wild if non-trivial bugs will
+> > > inevitably happen.
+> >
+> > I agree with Yonghong. This doesn't look right.
+>
+> I read it as Yonghong was asking about the entire patch. You seem to
+> be concerned with one particular check, right?
+>
+> > The callback will be called for all non-void types, right?
+> > so *type_id == 0 shouldn't never happen.
+> > If it does there is a bug somewhere that should be investigated
+> > instead of ignored.
+>
+> See btf_type_visit_type_ids() and btf_ext_visit_type_ids(), they call
+> callback for every field that contains type ID, even if it points to
+> VOID. So this can happen and is expected.
 
-On Fri, Apr 23, 2021 at 03:18:32AM +0000, Joakim Zhang wrote:
-> 
-> Hi Oleksij,
-> 
-> I look both stmmac selftest code and this patch set. For stmmac, if PHY doesn't support loopback, it will fallthrough to MAC loopback.
-> You provide this generic net selftest support based on PHY loopback, I have a question, is it possible to extend it also support MAC loopback later?
+I see. So something like 'extern cosnt void foo __ksym' would
+point to void type?
+But then why is it not a part of the id_map[] and has
+to be handled explicitly?
 
-Yes. If you have interest and time to implement it, please do.
-It should be some kind of generic callback as phy_loopback() and if PHY
-and MAC loopbacks are supported we need to tests both variants.
+> > The
+> > if (new_id == 0) pr_warn
+> > bit makes sense.
+>
+> Right, and this is the point of this patch. id_map[] will have zeroes
+> for any unmapped type, so I just need to make sure I'm not false
+> erroring on id_map[0] (== 0, which is valid, but never used).
 
-Best regards,
-Oleksij
-
-> > -----Original Message-----
-> > From: Oleksij Rempel <o.rempel@pengutronix.de>
-> > Sent: 2021年4月19日 21:01
-> > To: Shawn Guo <shawnguo@kernel.org>; Sascha Hauer
-> > <s.hauer@pengutronix.de>; Andrew Lunn <andrew@lunn.ch>; Florian Fainelli
-> > <f.fainelli@gmail.com>; Heiner Kallweit <hkallweit1@gmail.com>; Fugang
-> > Duan <fugang.duan@nxp.com>
-> > Cc: Oleksij Rempel <o.rempel@pengutronix.de>; kernel@pengutronix.de;
-> > netdev@vger.kernel.org; linux-arm-kernel@lists.infradead.org;
-> > linux-kernel@vger.kernel.org; dl-linux-imx <linux-imx@nxp.com>; Fabio
-> > Estevam <festevam@gmail.com>; David Jander <david@protonic.nl>; Russell
-> > King <linux@armlinux.org.uk>; Philippe Schenker
-> > <philippe.schenker@toradex.com>
-> > Subject: [PATCH net-next v3 0/6] provide generic net selftest support
-> > 
-> > changes v3:
-> > - make more granular tests
-> > - enable loopback for all PHYs by default
-> > - fix allmodconfig build errors
-> > - poll for link status update after switching to the loopback mode
-> > 
-> > changes v2:
-> > - make generic selftests available for all networking devices.
-> > - make use of net_selftest* on FEC, ag71xx and all DSA switches.
-> > - add loopback support on more PHYs.
-> > 
-> > This patch set provides diagnostic capabilities for some iMX, ag71xx or any DSA
-> > based devices. For proper functionality, PHY loopback support is needed.
-> > So far there is only initial infrastructure with basic tests.
-> > 
-> > Oleksij Rempel (6):
-> >   net: phy: execute genphy_loopback() per default on all PHYs
-> >   net: phy: genphy_loopback: add link speed configuration
-> >   net: add generic selftest support
-> >   net: fec: make use of generic NET_SELFTESTS library
-> >   net: ag71xx: make use of generic NET_SELFTESTS library
-> >   net: dsa: enable selftest support for all switches by default
-> > 
-> >  drivers/net/ethernet/atheros/Kconfig      |   1 +
-> >  drivers/net/ethernet/atheros/ag71xx.c     |  20 +-
-> >  drivers/net/ethernet/freescale/Kconfig    |   1 +
-> >  drivers/net/ethernet/freescale/fec_main.c |   7 +
-> >  drivers/net/phy/phy.c                     |   3 +-
-> >  drivers/net/phy/phy_device.c              |  35 +-
-> >  include/linux/phy.h                       |   1 +
-> >  include/net/dsa.h                         |   2 +
-> >  include/net/selftests.h                   |  12 +
-> >  net/Kconfig                               |   4 +
-> >  net/core/Makefile                         |   1 +
-> >  net/core/selftests.c                      | 400
-> > ++++++++++++++++++++++
-> >  net/dsa/Kconfig                           |   1 +
-> >  net/dsa/slave.c                           |  21 ++
-> >  14 files changed, 500 insertions(+), 9 deletions(-)  create mode 100644
-> > include/net/selftests.h  create mode 100644 net/core/selftests.c
-> > 
-> > --
-> > 2.29.2
-> 
-> _______________________________________________
-> linux-arm-kernel mailing list
-> linux-arm-kernel@lists.infradead.org
-> http://lists.infradead.org/mailman/listinfo/linux-arm-kernel
-
--- 
-Pengutronix e.K.                           |                             |
-Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
-31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
-Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
+Right, id_map[0] should be 0.
+I'm still missing something in this combination of 'if's.
+May be do it as:
+if (new_id == 0 && *type_id != 0) { pr_warn
+?
+That was the idea?
