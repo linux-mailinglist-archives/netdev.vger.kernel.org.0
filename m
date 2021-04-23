@@ -2,57 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 053453689CF
-	for <lists+netdev@lfdr.de>; Fri, 23 Apr 2021 02:27:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D6A633689D3
+	for <lists+netdev@lfdr.de>; Fri, 23 Apr 2021 02:27:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240106AbhDWA1l (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 22 Apr 2021 20:27:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55356 "EHLO
+        id S240187AbhDWA1o (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 22 Apr 2021 20:27:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55384 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236068AbhDWA1g (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 22 Apr 2021 20:27:36 -0400
-Received: from mail-pj1-x102f.google.com (mail-pj1-x102f.google.com [IPv6:2607:f8b0:4864:20::102f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 64FBFC06138B;
-        Thu, 22 Apr 2021 17:27:01 -0700 (PDT)
-Received: by mail-pj1-x102f.google.com with SMTP id nm3-20020a17090b19c3b029014e1bbf6c60so307208pjb.4;
-        Thu, 22 Apr 2021 17:27:01 -0700 (PDT)
+        with ESMTP id S240078AbhDWA1k (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 22 Apr 2021 20:27:40 -0400
+Received: from mail-pl1-x631.google.com (mail-pl1-x631.google.com [IPv6:2607:f8b0:4864:20::631])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C4130C06138E;
+        Thu, 22 Apr 2021 17:27:02 -0700 (PDT)
+Received: by mail-pl1-x631.google.com with SMTP id u15so15836600plf.10;
+        Thu, 22 Apr 2021 17:27:02 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=6yT1ByoX159U3vaGMBYzet+3E76VUkccZqjOF7M8F8U=;
-        b=DwVqyIlY9LhTDrGvxPtEeSlfUUfVqx7o4+9XC+CVHT8ghOARzO/Jl0uAXdFl0qMpMK
-         HHFDlI8pDZltwSVUbJ1lH1+qE2GwqRciD90VEHVJhmj0SiqZnF3deUqcg9dnUfHjagBs
-         rLr3Gz+wjZ9AQVep5F6566A+NGCRwME7pyCriD4kARMJ/iDPA7QMgNtimbqjkpAXaDvM
-         C8+7X+lCIgNZLlGFQJqSWIfK+KMDR6AR+NtHJRcbN09jNfO1BNk1MlUBkRGXW5j3P32J
-         /lzWf+prspFGfBv4h8U+mzH62ZKIpZ6tmmBiWgZJFI/3HGm0OhPocqFnPyEl7MbpfXa2
-         1R7w==
+        bh=AzzvOUyd8TsZNiC1m9Nop4BPUbcupIF2MZCJ1uFtDTE=;
+        b=S3jn+t6zhpcpMRjKBPzfFbe/RYV569zKjq7Oi4pSF6R+1tV/JVlWN1q/ZFvsnDJhn0
+         WTs8elmZqEcPIDZXXmK4T/BNhcB5O10pDlrEUHNg2IXXgNOuPKGb6NMmDXIU4nsx1B0+
+         9zCasOuBRdtJv1JWyGhGnDQsCqfFsrGM/evwWZO/gWytui5pJWMTYTLOtfprqGQ0sP6k
+         MNHt4yPqst1I0/RY2qEb5Wq0qivHTxfpjc/MebXEAEPqSV0JseKhkQthtQ6s87PvuuK2
+         Ip2q8xwQHYqbN+a7hCiz9qh8Qgk5KZnM9mZ46pzUU+cnzO6+cVzqnK441SR2C09+rMxT
+         TB+Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=6yT1ByoX159U3vaGMBYzet+3E76VUkccZqjOF7M8F8U=;
-        b=PJbJ8+/0JBemdQp+tXejKd4rhrb4vNrArKOF+Wl/6Pi0ZRIn1Jxs5YL/1r+nbVTTsH
-         rmI+bePsBwskOWS3HC8meWcrT5iI77yDXdtIZphIDiD2OctYkTVDou9n37rGGrbzQbra
-         7xChKBtUIJuITEQhl7jGaJcKj6SWuOgq6Fh8FA0Wvgcw2405trkcTT2lboRXsmpUCJXv
-         hV/SG/4ph/p0yU3xQtRhhZXopc2mUVrEBdyrnS5sN5K7mQlMNAEwkhLX6GRen91fpjfi
-         G6WH/ciut1GERopyZdWqXynGHKiam7bLq24vaFIw2hhzhEKW0UW2HjN3NHLwSiwnnxNE
-         FemQ==
-X-Gm-Message-State: AOAM532/LkHanQjK1aIEQXvzyfRG3Kd5ITsFOQ6pTMTFULqShJ4okfkK
-        KkSRpfTeY/KcoM2zw3gAaZIQGD89OvA=
-X-Google-Smtp-Source: ABdhPJwj+Be6xAfmHQ2LZ/5ZkqvMxLf+fA7I2YZxl/A3KfSP0AiJgjn6Q6Q4EQNwAkjLft8QVS6JCw==
-X-Received: by 2002:a17:90a:b00b:: with SMTP id x11mr2768060pjq.67.1619137621001;
-        Thu, 22 Apr 2021 17:27:01 -0700 (PDT)
+        bh=AzzvOUyd8TsZNiC1m9Nop4BPUbcupIF2MZCJ1uFtDTE=;
+        b=piTasgump7BLJQPkEibeN5DjJcXQRb1oY87L0KnWHnw/+r070VVDuWRm7f1/GWBCND
+         0RpTf/GqGQgMreTAMyQn3T+Yg15iQo50/SzypExXmkzwjYob3W/89hkSoD2gVYAVsitN
+         FeUX0pDrZGdnVydn33zjVxHsN3yAo0rVqF5c0pFOU9Oqf7DThsOXiPZYq50UmYvNCTEp
+         LtwboJdwHTTI6U14mZUfm/eN8bO7XEVFfYP4F4vsy6JqfsB4sJ+nPkl6CWmD/PAnpYo3
+         Ak/J7O9JunixgNY8TbggYZ/y45rYhFipdhiLc5CV0Rj08d9Ug0Ze4wjOiWYG93V0gv/P
+         TR+w==
+X-Gm-Message-State: AOAM533JimxQ8YP2mMM6eA4e1mu9fnyEgCp7pGN10m7JrjjsXzJkIuG1
+        20nJgy0k5CVVcvRk9iYhfvQ=
+X-Google-Smtp-Source: ABdhPJzicS2HSCLgjNvL1swHFT623s5vjayH/fWuSsRLry7T7t8BLeLRVVRLS7cKiYwwZX4sc191jw==
+X-Received: by 2002:a17:90b:314:: with SMTP id ay20mr2779816pjb.186.1619137622312;
+        Thu, 22 Apr 2021 17:27:02 -0700 (PDT)
 Received: from ast-mbp.thefacebook.com ([163.114.132.7])
-        by smtp.gmail.com with ESMTPSA id u12sm6390987pji.45.2021.04.22.17.26.59
+        by smtp.gmail.com with ESMTPSA id u12sm6390987pji.45.2021.04.22.17.27.01
         (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Thu, 22 Apr 2021 17:27:00 -0700 (PDT)
+        Thu, 22 Apr 2021 17:27:01 -0700 (PDT)
 From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
 To:     davem@davemloft.net
 Cc:     daniel@iogearbox.net, andrii@kernel.org, netdev@vger.kernel.org,
         bpf@vger.kernel.org, kernel-team@fb.com
-Subject: [PATCH v2 bpf-next 09/16] libbpf: Support for fd_idx
-Date:   Thu, 22 Apr 2021 17:26:39 -0700
-Message-Id: <20210423002646.35043-10-alexei.starovoitov@gmail.com>
+Subject: [PATCH v2 bpf-next 10/16] bpf: Add bpf_btf_find_by_name_kind() helper.
+Date:   Thu, 22 Apr 2021 17:26:40 -0700
+Message-Id: <20210423002646.35043-11-alexei.starovoitov@gmail.com>
 X-Mailer: git-send-email 2.13.5
 In-Reply-To: <20210423002646.35043-1-alexei.starovoitov@gmail.com>
 References: <20210423002646.35043-1-alexei.starovoitov@gmail.com>
@@ -62,186 +62,177 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Alexei Starovoitov <ast@kernel.org>
 
-Add support for FD_IDX make libbpf prefer that approach to loading programs.
+Add new helper:
+
+long bpf_btf_find_by_name_kind(u32 btf_fd, char *name, u32 kind, int flags)
+	Description
+		Find given name with given type in BTF pointed to by btf_fd.
+		If btf_fd is zero look for the name in vmlinux BTF and in module's BTFs.
+	Return
+		Returns btf_id and btf_obj_fd in lower and upper 32 bits.
 
 Signed-off-by: Alexei Starovoitov <ast@kernel.org>
 ---
- tools/lib/bpf/bpf.c             |  1 +
- tools/lib/bpf/libbpf.c          | 70 +++++++++++++++++++++++++++++----
- tools/lib/bpf/libbpf_internal.h |  1 +
- 3 files changed, 65 insertions(+), 7 deletions(-)
+ include/linux/bpf.h            |  1 +
+ include/uapi/linux/bpf.h       |  8 ++++
+ kernel/bpf/btf.c               | 68 ++++++++++++++++++++++++++++++++++
+ kernel/bpf/syscall.c           |  2 +
+ tools/include/uapi/linux/bpf.h |  8 ++++
+ 5 files changed, 87 insertions(+)
 
-diff --git a/tools/lib/bpf/bpf.c b/tools/lib/bpf/bpf.c
-index bba48ff4c5c0..b96a3aba6fcc 100644
---- a/tools/lib/bpf/bpf.c
-+++ b/tools/lib/bpf/bpf.c
-@@ -252,6 +252,7 @@ int libbpf__bpf_prog_load(const struct bpf_prog_load_params *load_attr)
+diff --git a/include/linux/bpf.h b/include/linux/bpf.h
+index 0f841bd0cb85..4cf361eb6a80 100644
+--- a/include/linux/bpf.h
++++ b/include/linux/bpf.h
+@@ -1972,6 +1972,7 @@ extern const struct bpf_func_proto bpf_get_socket_ptr_cookie_proto;
+ extern const struct bpf_func_proto bpf_task_storage_get_proto;
+ extern const struct bpf_func_proto bpf_task_storage_delete_proto;
+ extern const struct bpf_func_proto bpf_for_each_map_elem_proto;
++extern const struct bpf_func_proto bpf_btf_find_by_name_kind_proto;
  
- 	attr.prog_btf_fd = load_attr->prog_btf_fd;
- 	attr.prog_flags = load_attr->prog_flags;
-+	attr.fd_array = ptr_to_u64(load_attr->fd_array);
+ const struct bpf_func_proto *bpf_tracing_func_proto(
+ 	enum bpf_func_id func_id, const struct bpf_prog *prog);
+diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
+index de58a714ed36..253f5f031f08 100644
+--- a/include/uapi/linux/bpf.h
++++ b/include/uapi/linux/bpf.h
+@@ -4748,6 +4748,13 @@ union bpf_attr {
+  * 		Execute bpf syscall with given arguments.
+  * 	Return
+  * 		A syscall result.
++ *
++ * long bpf_btf_find_by_name_kind(u32 btf_fd, char *name, u32 kind, int flags)
++ * 	Description
++ * 		Find given name with given type in BTF pointed to by btf_fd.
++ * 		If btf_fd is zero look for the name in vmlinux BTF and in module's BTFs.
++ * 	Return
++ * 		Returns btf_id and btf_obj_fd in lower and upper 32 bits.
+  */
+ #define __BPF_FUNC_MAPPER(FN)		\
+ 	FN(unspec),			\
+@@ -4917,6 +4924,7 @@ union bpf_attr {
+ 	FN(for_each_map_elem),		\
+ 	FN(snprintf),			\
+ 	FN(sys_bpf),			\
++	FN(btf_find_by_name_kind),	\
+ 	/* */
  
- 	attr.func_info_rec_size = load_attr->func_info_rec_size;
- 	attr.func_info_cnt = load_attr->func_info_cnt;
-diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
-index 254a0c9aa6cf..17cfc5b66111 100644
---- a/tools/lib/bpf/libbpf.c
-+++ b/tools/lib/bpf/libbpf.c
-@@ -176,6 +176,8 @@ enum kern_feature_id {
- 	FEAT_MODULE_BTF,
- 	/* BTF_KIND_FLOAT support */
- 	FEAT_BTF_FLOAT,
-+	/* Kernel support for FD_IDX */
-+	FEAT_FD_IDX,
- 	__FEAT_CNT,
- };
+ /* integer value in 'imm' field of BPF_CALL instruction selects which helper
+diff --git a/kernel/bpf/btf.c b/kernel/bpf/btf.c
+index fbf6c06a9d62..446c64171464 100644
+--- a/kernel/bpf/btf.c
++++ b/kernel/bpf/btf.c
+@@ -6085,3 +6085,71 @@ struct module *btf_try_get_module(const struct btf *btf)
  
-@@ -288,6 +290,7 @@ struct bpf_program {
- 	__u32 line_info_rec_size;
- 	__u32 line_info_cnt;
- 	__u32 prog_flags;
-+	int *fd_array;
- };
- 
- struct bpf_struct_ops {
-@@ -4181,6 +4184,24 @@ static int probe_module_btf(void)
- 	return !err;
+ 	return res;
  }
- 
-+static int probe_kern_fd_idx(void)
++
++BPF_CALL_4(bpf_btf_find_by_name_kind, int, btf_fd, char *, name, u32, kind, int, flags)
 +{
-+	struct bpf_load_program_attr attr;
-+	struct bpf_insn insns[] = {
-+		BPF_LD_IMM64_RAW(BPF_REG_0, BPF_PSEUDO_MAP_IDX, 0),
-+		BPF_EXIT_INSN(),
-+	};
++	char kname[KSYM_NAME_LEN];
++	struct btf *btf;
++	long ret;
 +
-+	memset(&attr, 0, sizeof(attr));
-+	attr.prog_type = BPF_PROG_TYPE_SOCKET_FILTER;
-+	attr.insns = insns;
-+	attr.insns_cnt = ARRAY_SIZE(insns);
-+	attr.license = "GPL";
++	if (flags)
++		return -EINVAL;
 +
-+	probe_fd(bpf_load_program_xattr(&attr, NULL, 0));
-+	return errno == EPROTO;
++	ret = strncpy_from_kernel_nofault(kname, name, sizeof(kname));
++	if (ret < 0)
++		return ret;
++	if (btf_fd)
++		btf = btf_get_by_fd(btf_fd);
++	else
++		btf = bpf_get_btf_vmlinux();
++	if (IS_ERR(btf))
++		return PTR_ERR(btf);
++
++	ret = btf_find_by_name_kind(btf, kname, kind);
++	/* ret is never zero, since btf_find_by_name_kind returns
++	 * positive btf_id or negative error.
++	 */
++	if (btf_fd)
++		btf_put(btf);
++	else if (ret < 0) {
++		struct btf *mod_btf;
++		int id;
++
++		/* If name is not found in vmlinux's BTF then search in module's BTFs */
++		spin_lock_bh(&btf_idr_lock);
++		idr_for_each_entry(&btf_idr, mod_btf, id) {
++			if (!btf_is_module(mod_btf))
++				continue;
++			/* linear search could be slow hence unlock/lock
++			 * the IDR to avoiding holding it for too long
++			 */
++			btf_get(mod_btf);
++			spin_unlock_bh(&btf_idr_lock);
++			ret = btf_find_by_name_kind(mod_btf, kname, kind);
++			if (ret > 0) {
++				int btf_obj_fd;
++
++				btf_obj_fd = __btf_new_fd(mod_btf);
++				if (btf_obj_fd < 0) {
++					btf_put(mod_btf);
++					return btf_obj_fd;
++				}
++				return ret | (((u64)btf_obj_fd) << 32);
++			}
++			spin_lock_bh(&btf_idr_lock);
++			btf_put(mod_btf);
++		}
++		spin_unlock_bh(&btf_idr_lock);
++	}
++	return ret;
 +}
 +
- enum kern_feature_result {
- 	FEAT_UNKNOWN = 0,
- 	FEAT_SUPPORTED = 1,
-@@ -4231,6 +4252,9 @@ static struct kern_feature_desc {
- 	[FEAT_BTF_FLOAT] = {
- 		"BTF_KIND_FLOAT support", probe_kern_btf_float,
- 	},
-+	[FEAT_FD_IDX] = {
-+		"prog_load with fd_idx", probe_kern_fd_idx,
-+	},
- };
- 
- static bool kernel_supports(enum kern_feature_id feat_id)
-@@ -6309,19 +6333,34 @@ bpf_object__relocate_data(struct bpf_object *obj, struct bpf_program *prog)
- 
- 		switch (relo->type) {
- 		case RELO_LD64:
--			insn[0].src_reg = BPF_PSEUDO_MAP_FD;
--			insn[0].imm = obj->maps[relo->map_idx].fd;
-+			if (kernel_supports(FEAT_FD_IDX)) {
-+				insn[0].src_reg = BPF_PSEUDO_MAP_IDX;
-+				insn[0].imm = relo->map_idx;
-+			} else {
-+				insn[0].src_reg = BPF_PSEUDO_MAP_FD;
-+				insn[0].imm = obj->maps[relo->map_idx].fd;
-+			}
- 			break;
- 		case RELO_DATA:
--			insn[0].src_reg = BPF_PSEUDO_MAP_VALUE;
- 			insn[1].imm = insn[0].imm + relo->sym_off;
--			insn[0].imm = obj->maps[relo->map_idx].fd;
-+			if (kernel_supports(FEAT_FD_IDX)) {
-+				insn[0].src_reg = BPF_PSEUDO_MAP_IDX_VALUE;
-+				insn[0].imm = relo->map_idx;
-+			} else {
-+				insn[0].src_reg = BPF_PSEUDO_MAP_VALUE;
-+				insn[0].imm = obj->maps[relo->map_idx].fd;
-+			}
- 			break;
- 		case RELO_EXTERN_VAR:
- 			ext = &obj->externs[relo->sym_off];
- 			if (ext->type == EXT_KCFG) {
--				insn[0].src_reg = BPF_PSEUDO_MAP_VALUE;
--				insn[0].imm = obj->maps[obj->kconfig_map_idx].fd;
-+				if (kernel_supports(FEAT_FD_IDX)) {
-+					insn[0].src_reg = BPF_PSEUDO_MAP_IDX_VALUE;
-+					insn[0].imm = obj->kconfig_map_idx;
-+				} else {
-+					insn[0].src_reg = BPF_PSEUDO_MAP_VALUE;
-+					insn[0].imm = obj->maps[obj->kconfig_map_idx].fd;
-+				}
- 				insn[1].imm = ext->kcfg.data_off;
- 			} else /* EXT_KSYM */ {
- 				if (ext->ksym.type_id) { /* typed ksyms */
-@@ -7047,6 +7086,7 @@ load_program(struct bpf_program *prog, struct bpf_insn *insns, int insns_cnt,
- 	load_attr.attach_btf_id = prog->attach_btf_id;
- 	load_attr.kern_version = kern_version;
- 	load_attr.prog_ifindex = prog->prog_ifindex;
-+	load_attr.fd_array = prog->fd_array;
- 
- 	/* specify func_info/line_info only if kernel supports them */
- 	btf_fd = bpf_object__btf_fd(prog->obj);
-@@ -7239,6 +7279,8 @@ bpf_object__load_progs(struct bpf_object *obj, int log_level)
- 	struct bpf_program *prog;
- 	size_t i;
- 	int err;
-+	struct bpf_map *map;
-+	int *fd_array = NULL;
- 
- 	for (i = 0; i < obj->nr_programs; i++) {
- 		prog = &obj->programs[i];
-@@ -7247,6 +7289,16 @@ bpf_object__load_progs(struct bpf_object *obj, int log_level)
- 			return err;
++const struct bpf_func_proto bpf_btf_find_by_name_kind_proto = {
++	.func		= bpf_btf_find_by_name_kind,
++	.gpl_only	= false,
++	.ret_type	= RET_INTEGER,
++	.arg1_type	= ARG_ANYTHING,
++	.arg2_type	= ARG_ANYTHING,
++	.arg3_type	= ARG_ANYTHING,
++	.arg4_type	= ARG_ANYTHING,
++};
+diff --git a/kernel/bpf/syscall.c b/kernel/bpf/syscall.c
+index a81496c5d09f..638c7acad925 100644
+--- a/kernel/bpf/syscall.c
++++ b/kernel/bpf/syscall.c
+@@ -4574,6 +4574,8 @@ syscall_prog_func_proto(enum bpf_func_id func_id, const struct bpf_prog *prog)
+ 	switch (func_id) {
+ 	case BPF_FUNC_sys_bpf:
+ 		return &bpf_sys_bpf_proto;
++	case BPF_FUNC_btf_find_by_name_kind:
++		return &bpf_btf_find_by_name_kind_proto;
+ 	default:
+ 		return tracing_prog_func_proto(func_id, prog);
  	}
+diff --git a/tools/include/uapi/linux/bpf.h b/tools/include/uapi/linux/bpf.h
+index 6c8e178d8ffa..5841adb44de6 100644
+--- a/tools/include/uapi/linux/bpf.h
++++ b/tools/include/uapi/linux/bpf.h
+@@ -4748,6 +4748,13 @@ union bpf_attr {
+  * 		Execute bpf syscall with given arguments.
+  * 	Return
+  * 		A syscall result.
++ *
++ * long bpf_btf_find_by_name_kind(u32 btf_fd, char *name, u32 kind, int flags)
++ * 	Description
++ * 		Find given name with given type in BTF pointed to by btf_fd.
++ * 		If btf_fd is zero look for the name in vmlinux BTF and in module's BTFs.
++ * 	Return
++ * 		Returns btf_id and btf_obj_fd in lower and upper 32 bits.
+  */
+ #define __BPF_FUNC_MAPPER(FN)		\
+ 	FN(unspec),			\
+@@ -4917,6 +4924,7 @@ union bpf_attr {
+ 	FN(for_each_map_elem),		\
+ 	FN(snprintf),			\
+ 	FN(sys_bpf),			\
++	FN(btf_find_by_name_kind),	\
+ 	/* */
  
-+	if (kernel_supports(FEAT_FD_IDX) && obj->nr_maps) {
-+		fd_array = malloc(sizeof(int) * obj->nr_maps);
-+		if (!fd_array)
-+			return -ENOMEM;
-+		for (i = 0; i < obj->nr_maps; i++) {
-+			map = &obj->maps[i];
-+			fd_array[i] = map->fd;
-+		}
-+	}
-+
- 	for (i = 0; i < obj->nr_programs; i++) {
- 		prog = &obj->programs[i];
- 		if (prog_is_subprog(obj, prog))
-@@ -7256,10 +7308,14 @@ bpf_object__load_progs(struct bpf_object *obj, int log_level)
- 			continue;
- 		}
- 		prog->log_level |= log_level;
-+		prog->fd_array = fd_array;
- 		err = bpf_program__load(prog, obj->license, obj->kern_version);
--		if (err)
-+		if (err) {
-+			free(fd_array);
- 			return err;
-+		}
- 	}
-+	free(fd_array);
- 	return 0;
- }
- 
-diff --git a/tools/lib/bpf/libbpf_internal.h b/tools/lib/bpf/libbpf_internal.h
-index 6017902c687e..9114c7085f2a 100644
---- a/tools/lib/bpf/libbpf_internal.h
-+++ b/tools/lib/bpf/libbpf_internal.h
-@@ -204,6 +204,7 @@ struct bpf_prog_load_params {
- 	__u32 log_level;
- 	char *log_buf;
- 	size_t log_buf_sz;
-+	int *fd_array;
- };
- 
- int libbpf__bpf_prog_load(const struct bpf_prog_load_params *load_attr);
+ /* integer value in 'imm' field of BPF_CALL instruction selects which helper
 -- 
 2.30.2
 
