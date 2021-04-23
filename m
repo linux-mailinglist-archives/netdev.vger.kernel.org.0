@@ -2,49 +2,49 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 10C10368C8A
-	for <lists+netdev@lfdr.de>; Fri, 23 Apr 2021 07:22:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4E55E368C8D
+	for <lists+netdev@lfdr.de>; Fri, 23 Apr 2021 07:22:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240956AbhDWFW1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 23 Apr 2021 01:22:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34572 "EHLO
+        id S241035AbhDWFWe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 23 Apr 2021 01:22:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34540 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240602AbhDWFWF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 23 Apr 2021 01:22:05 -0400
-Received: from mail-pl1-x62a.google.com (mail-pl1-x62a.google.com [IPv6:2607:f8b0:4864:20::62a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF37FC06138D;
-        Thu, 22 Apr 2021 22:21:29 -0700 (PDT)
-Received: by mail-pl1-x62a.google.com with SMTP id o16so11066563plg.5;
-        Thu, 22 Apr 2021 22:21:29 -0700 (PDT)
+        with ESMTP id S240552AbhDWFWH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 23 Apr 2021 01:22:07 -0400
+Received: from mail-pg1-x529.google.com (mail-pg1-x529.google.com [IPv6:2607:f8b0:4864:20::529])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B6D85C06174A;
+        Thu, 22 Apr 2021 22:21:30 -0700 (PDT)
+Received: by mail-pg1-x529.google.com with SMTP id p2so18982865pgh.4;
+        Thu, 22 Apr 2021 22:21:30 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=cVCvFP7FkhaoSFqQuRF6Qi4Ni9yogvujik129mGGQRY=;
-        b=b8DQMctCJXEHiD048Y5scEAzRTZ7QYvWF0SxauygF7xjyqpaGVHJSji2oR+CngdSj/
-         vvS7D2kVSZtdUKViEdS0uSACqA5QM0IpxROAN41YOz8O9yNm4+RSTCa2GYpdTTZnGvA/
-         NrCPPzaCIkTwUEL+ftiCUwGmNEvco9FLYkjBz7WLg19cJk/cENK55WipKFnstSh1vyhm
-         ldz7VUzgN1E782MgEVp44U7FVEY7gY2anAgw5F0BC7BUwMmHOuXyAkA3zUC0HUa58uxH
-         MQo0nC9HZTuh+PjehkK4X4hHwiVBoTDa3ADj/945jPJatpfXrlT72yao2WwYMjrZRHn4
-         OeSQ==
+        bh=1zBsYlQcq61seY0imZReAqd25ZKjbgbucT8yzndF0G8=;
+        b=mXObVk0IL/7DFMTpyCRPZqGetBuk3drJ5M/Obl1C6xlK7NDyhWWCkl+KNYiQutboxo
+         kW6NaspOYeE4qWwHpjbIUz5ErGST9GY4/eGwtQc2odt1wMZD2IcUhPqD7dBy4NkNPGp6
+         tLrU2REcLNeOdDmQFXDupVzyomCI8NOfpFEHRpNz4ig38eg/mrkEcIXxjnR0osGV2q0+
+         xDwo2ZK2B8OGp7uC4aJhP7+Udx313yhxFi88+DxnbG/lTvoUAMI1y+IIfQ540dy3P3I3
+         h2xF0CqSDfBDDUk1QwMwVSTt5nZm7ixz/P7ca/S9n6Ac0i6+Ji+RlmRQgNyh98fCyjxt
+         /fsg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=cVCvFP7FkhaoSFqQuRF6Qi4Ni9yogvujik129mGGQRY=;
-        b=l+qbO7OMdFVJbdkLrWgIa9nbXET2ztOtCk+wawoLyr5TiDcEG8L5ZNz04xkXQ/3v3L
-         TkISxKPuI31aMmLugVy9YmZsGaJtzHaTOMpGiYs1okxeFAB0Ta/zHJYHkPxDOsaK0IDo
-         3Ow2MONBOQ5UVJiC9wSXfTFlVY0DrjerQyRD33G/LB6yKcsWbbelJYQhFkPDm9zHGZOo
-         KZsmr618otCzbMZzmazxwSb/wMCeWBCMdhZ2jow2XYJTiKoPE/BJuKaJGfg27Tcj0YqS
-         Dc2PM6DLMK5YG2dotbqfpZ+hFqUPjYN03iQ/4xrSwdT46OtPfcAEwEMApvv934StUWyC
-         Zcsw==
-X-Gm-Message-State: AOAM530CcQ+0s4FqKLDkxukGpQivtqcljlfzNkylCsow9msYnJ57JqKg
-        zJAMgP5Jux3scNaD1Pg5Hew=
-X-Google-Smtp-Source: ABdhPJzlYQGDMbvjAhTMbiHqgzZgVDWONAAlUkjdJXUrpAtnk/pfi10MLR7qP/KayIypU4kejcy7TA==
-X-Received: by 2002:a17:90a:4f41:: with SMTP id w1mr3896776pjl.231.1619155289404;
-        Thu, 22 Apr 2021 22:21:29 -0700 (PDT)
+        bh=1zBsYlQcq61seY0imZReAqd25ZKjbgbucT8yzndF0G8=;
+        b=CcybcUWyC0HoCOZIElIdpJ7xMp4hnCZLn0OaJeEKtu6eaV96NzgU3RAeH13QLdDniE
+         Pxz12kriK57YMkyckSoSL6dpAJ8kvDg+GiNGvtCkZVvUcXhJgLICbxbMNIegC+FoP2Li
+         pS0hz2X+oQUZKBbFp88tvSHDqM+pAimpDk9abgWXL256rfM2kQUwVCaRVi05cv8FX5Eb
+         Y/7PPUIsSO5wsoJ60sJuPbqp4pSnF1UCjQ4wrq6BK+BjsqVs27aDIRclUu9IoiPTvjEF
+         aKV6dE1haOEeisM8spKdYOW+rv3+ThhVtXh//1Eyr17ZYrBEB54F0Xl4dcVuCyDkgt4q
+         JwKg==
+X-Gm-Message-State: AOAM533wKyN+bx9u3Xk24gtn5aR1+Kv1AoCAY+GH9lsVm2yFUyE39NLC
+        orLEdFdKufpXiw02A/WyJpk=
+X-Google-Smtp-Source: ABdhPJzYTtLTrv/HN8NBYaCqVRueYZcK2ZzzlX8xhlJjUZfD3Gdzp3iB1pwBdX68Cwy/NGXiEfx9FQ==
+X-Received: by 2002:a62:1b50:0:b029:257:da1e:837f with SMTP id b77-20020a621b500000b0290257da1e837fmr2066529pfb.57.1619155290331;
+        Thu, 22 Apr 2021 22:21:30 -0700 (PDT)
 Received: from z640-arch.lan ([2602:61:7344:f100::678])
-        by smtp.gmail.com with ESMTPSA id y24sm6238825pjp.26.2021.04.22.22.21.28
+        by smtp.gmail.com with ESMTPSA id y24sm6238825pjp.26.2021.04.22.22.21.29
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
         Thu, 22 Apr 2021 22:21:29 -0700 (PDT)
 From:   Ilya Lipnitskiy <ilya.lipnitskiy@gmail.com>
@@ -58,9 +58,9 @@ To:     Felix Fietkau <nbd@nbd.name>, John Crispin <john@phrozen.org>,
         linux-arm-kernel@lists.infradead.org,
         linux-mediatek@lists.infradead.org
 Cc:     Ilya Lipnitskiy <ilya.lipnitskiy@gmail.com>
-Subject: [PATCH net-next v2 13/15] net: ethernet: mtk_eth_soc: rework NAPI callbacks
-Date:   Thu, 22 Apr 2021 22:21:06 -0700
-Message-Id: <20210423052108.423853-14-ilya.lipnitskiy@gmail.com>
+Subject: [PATCH net-next v2 14/15] net: ethernet: mtk_eth_soc: set PPE flow hash as skb hash if present
+Date:   Thu, 22 Apr 2021 22:21:07 -0700
+Message-Id: <20210423052108.423853-15-ilya.lipnitskiy@gmail.com>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20210423052108.423853-1-ilya.lipnitskiy@gmail.com>
 References: <20210423052108.423853-1-ilya.lipnitskiy@gmail.com>
@@ -70,112 +70,50 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Use napi_complete_done to communicate total TX and RX work done to NAPI.
-Count total RX work up instead of remaining work down for clarity.
-Remove unneeded local variables for clarity. Use do {} while instead of
-goto for clarity.
+From: Felix Fietkau <nbd@nbd.name>
 
-Suggested-by: Jakub Kicinski <kuba@kernel.org>
+This improves GRO performance
+
+Signed-off-by: Felix Fietkau <nbd@nbd.name>
+[Ilya: Use MTK_RXD4_FOE_ENTRY instead of GENMASK(13, 0)]
 Signed-off-by: Ilya Lipnitskiy <ilya.lipnitskiy@gmail.com>
 ---
- drivers/net/ethernet/mediatek/mtk_eth_soc.c | 54 +++++++++------------
- 1 file changed, 24 insertions(+), 30 deletions(-)
+ drivers/net/ethernet/mediatek/mtk_eth_soc.c | 8 ++++++++
+ 1 file changed, 8 insertions(+)
 
 diff --git a/drivers/net/ethernet/mediatek/mtk_eth_soc.c b/drivers/net/ethernet/mediatek/mtk_eth_soc.c
-index e1792ccaedc3..8faf8fb1c83a 100644
+index 8faf8fb1c83a..37e50a2e7d0e 100644
 --- a/drivers/net/ethernet/mediatek/mtk_eth_soc.c
 +++ b/drivers/net/ethernet/mediatek/mtk_eth_soc.c
-@@ -1496,7 +1496,6 @@ static void mtk_handle_status_irq(struct mtk_eth *eth)
- static int mtk_napi_tx(struct napi_struct *napi, int budget)
- {
- 	struct mtk_eth *eth = container_of(napi, struct mtk_eth, tx_napi);
--	u32 status, mask;
- 	int tx_done = 0;
+@@ -19,6 +19,7 @@
+ #include <linux/interrupt.h>
+ #include <linux/pinctrl/devinfo.h>
+ #include <linux/phylink.h>
++#include <linux/jhash.h>
+ #include <net/dsa.h>
  
- 	if (MTK_HAS_CAPS(eth->soc->caps, MTK_QDMA))
-@@ -1505,21 +1504,19 @@ static int mtk_napi_tx(struct napi_struct *napi, int budget)
- 	tx_done = mtk_poll_tx(eth, budget);
+ #include "mtk_eth_soc.h"
+@@ -1250,6 +1251,7 @@ static int mtk_poll_rx(struct napi_struct *napi, int budget,
+ 		struct net_device *netdev;
+ 		unsigned int pktlen;
+ 		dma_addr_t dma_addr;
++		u32 hash;
+ 		int mac;
  
- 	if (unlikely(netif_msg_intr(eth))) {
--		status = mtk_r32(eth, eth->tx_int_status_reg);
--		mask = mtk_r32(eth, eth->tx_int_mask_reg);
- 		dev_info(eth->dev,
--			 "done tx %d, intr 0x%08x/0x%x\n",
--			 tx_done, status, mask);
-+			 "done tx %d, intr 0x%08x/0x%x\n", tx_done,
-+			 mtk_r32(eth, eth->tx_int_status_reg),
-+			 mtk_r32(eth, eth->tx_int_mask_reg));
- 	}
+ 		ring = mtk_get_rx_ring(eth);
+@@ -1319,6 +1321,12 @@ static int mtk_poll_rx(struct napi_struct *napi, int budget,
+ 		skb->protocol = eth_type_trans(skb, netdev);
+ 		bytes += pktlen;
  
- 	if (tx_done == budget)
- 		return budget;
- 
--	status = mtk_r32(eth, eth->tx_int_status_reg);
--	if (status & MTK_TX_DONE_INT)
-+	if (mtk_r32(eth, eth->tx_int_status_reg) & MTK_TX_DONE_INT)
- 		return budget;
- 
--	if (napi_complete(napi))
-+	if (napi_complete_done(napi, tx_done))
- 		mtk_tx_irq_enable(eth, MTK_TX_DONE_INT);
- 
- 	return tx_done;
-@@ -1528,36 +1525,33 @@ static int mtk_napi_tx(struct napi_struct *napi, int budget)
- static int mtk_napi_rx(struct napi_struct *napi, int budget)
- {
- 	struct mtk_eth *eth = container_of(napi, struct mtk_eth, rx_napi);
--	u32 status, mask;
--	int rx_done = 0;
--	int remain_budget = budget;
-+	int rx_done_total = 0;
- 
- 	mtk_handle_status_irq(eth);
- 
--poll_again:
--	mtk_w32(eth, MTK_RX_DONE_INT, MTK_PDMA_INT_STATUS);
--	rx_done = mtk_poll_rx(napi, remain_budget, eth);
-+	do {
-+		int rx_done;
- 
--	if (unlikely(netif_msg_intr(eth))) {
--		status = mtk_r32(eth, MTK_PDMA_INT_STATUS);
--		mask = mtk_r32(eth, MTK_PDMA_INT_MASK);
--		dev_info(eth->dev,
--			 "done rx %d, intr 0x%08x/0x%x\n",
--			 rx_done, status, mask);
--	}
--	if (rx_done == remain_budget)
--		return budget;
-+		mtk_w32(eth, MTK_RX_DONE_INT, MTK_PDMA_INT_STATUS);
-+		rx_done = mtk_poll_rx(napi, budget - rx_done_total, eth);
-+		rx_done_total += rx_done;
- 
--	status = mtk_r32(eth, MTK_PDMA_INT_STATUS);
--	if (status & MTK_RX_DONE_INT) {
--		remain_budget -= rx_done;
--		goto poll_again;
--	}
-+		if (unlikely(netif_msg_intr(eth))) {
-+			dev_info(eth->dev,
-+				 "done rx %d, intr 0x%08x/0x%x\n", rx_done,
-+				 mtk_r32(eth, MTK_PDMA_INT_STATUS),
-+				 mtk_r32(eth, MTK_PDMA_INT_MASK));
++		hash = trxd.rxd4 & MTK_RXD4_FOE_ENTRY;
++		if (hash != MTK_RXD4_FOE_ENTRY) {
++			hash = jhash_1word(hash, 0);
++			skb_set_hash(skb, hash, PKT_HASH_TYPE_L4);
 +		}
 +
-+		if (rx_done_total == budget)
-+			return budget;
-+
-+	} while (mtk_r32(eth, MTK_PDMA_INT_STATUS) & MTK_RX_DONE_INT);
- 
--	if (napi_complete(napi))
-+	if (napi_complete_done(napi, rx_done_total))
- 		mtk_rx_irq_enable(eth, MTK_RX_DONE_INT);
- 
--	return rx_done + budget - remain_budget;
-+	return rx_done_total;
- }
- 
- static int mtk_tx_alloc(struct mtk_eth *eth)
+ 		if (netdev->features & NETIF_F_HW_VLAN_CTAG_RX &&
+ 		    (trxd.rxd2 & RX_DMA_VTAG))
+ 			__vlan_hwaccel_put_tag(skb, htons(ETH_P_8021Q),
 -- 
 2.31.1
 
