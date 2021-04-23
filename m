@@ -2,23 +2,23 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8D8893691FD
-	for <lists+netdev@lfdr.de>; Fri, 23 Apr 2021 14:23:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 093243691FE
+	for <lists+netdev@lfdr.de>; Fri, 23 Apr 2021 14:23:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242545AbhDWMXc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 23 Apr 2021 08:23:32 -0400
-Received: from mail-dm6nam11on2074.outbound.protection.outlook.com ([40.107.223.74]:19108
-        "EHLO NAM11-DM6-obe.outbound.protection.outlook.com"
+        id S242578AbhDWMXd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 23 Apr 2021 08:23:33 -0400
+Received: from mail-mw2nam10on2061.outbound.protection.outlook.com ([40.107.94.61]:42129
+        "EHLO NAM10-MW2-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S242542AbhDWMXZ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 23 Apr 2021 08:23:25 -0400
+        id S242249AbhDWMX0 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 23 Apr 2021 08:23:26 -0400
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=OWIm3ioYiokXMFgkldtIfVQ4XFpuaQgCPUeghkeRgj58D+PMIlm2OIEIfutZ/1AEXzWt38dXAEucF+EcFpD75eC/rhUgfSswkZ9YyTuErj94pCjl9nrB+PXpdpDTJ1TB7ftb7rNAM/Oi6PvHZMRnnJQ7JNTrJmcjQPfHMPURCT2CPJBlZiiuYrA0cS7kdqr91GCWwTrtg2LONh6DoYiBkDUtXV05A2HXSBC/++9N2SI+iFyhTcjc7IULrga0OiU5YsnyH/4522l9zprpeGGD8J/wd4o4u+++bH94VZhOf5A114zhAc5K6P3rHWTkqWovmIe3SfmRdaNbT7UEexWyrw==
+ b=I36eSxcfZwQ4n8UzjfLSt4ISOpAScOVSV8b3PyJHQjekDM5vGHOhuBwsnXeBJ2wfOHGsltjcF7Iey46RvdmfII1G+vdxwHQXfIvoiThZ1vaY1GKOptgF4C+z0sKfaFy9hlDOSwuA8Vzgobk9Yay56eB6TTi/AcDZy6OW6oVqm6LYvLw1wNe5inspheHWpjxMrIOnRLob56Sv23bU/ILj3RmYyczvfAqBnCEyCbBWA+i9yM96UGBMYWnzAL8T5U0dwtbkTJA6yreg0qIOslJP2ksEffJP2KnVQP8fbIvNTWMPSPWdam3VS4eAyEs+im45WLefjsBOrM263Ja7zR4LbQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=fxNcMJ7AjsY3NXZShxR71YocN+B76Qtet5ZIV67cUco=;
- b=gkyOsETazQLfI+cAuSb08uW3tRzzeGQSjIeAv6CqzFZwxzw83e034mL4hJOwucp1wa0tGMP/Nr71f2zPVWLBT2Kq75ucFS7sJysDgf2nPiUMD9q/A3HajR2A3Ve6kXlRxT2Zq5NvRucw22xGbPKqbp4TfjJA/xMytcjjYqtmspmh68Sd2GRrAbDzyUzShg7VLLMwbWIY4a+s6I4FpIa70JiMl3Cd1bluZJyMerXI92JVp8V3X9Iy3Wp88H4dZxDJFLZlHzMPQwfh05AcRiUwc+OmlsSLjYThGtseREc3RNBQCCuBuYLBGTUEkgReySakRGzau55lfDPwkAtyoDjrqA==
+ bh=TdRSvPBSkHVMXjCD+qz3Kao9OEPiA+Ol4wrWnPsZNFE=;
+ b=XbCJUUToa2xD+/m7JnzzJ4HJ3tPf+nZEp0UNMk2itps5CY7wEwby3rPlexp/iI17vt/1Q7nBnOCMU79/clcAax5QHUPdTjluFq/BvD78LhpZadUlim8eT8bSLRNVXPwN8huxom5BBxx3rG5JSIdZ/+FLA7ejVLj4FmL0WqGqZ188strlXpEqqcLCFoUMPW7aQtgSuVWaWB/hvbEsE6H4JpG37fEivbRrJ6TE9nq9tXaC2q48Fu+4qkksXw6SJbvHqXjYIk0K8Ke8lNR5pYsKuQtlbBMHDnfyodXlGSIvGThouNvKwCRVty1+Q/ezMGj6h6Wm1WPMg4wbiqLYjHC0SA==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
  216.228.112.34) smtp.rcpttodomain=kernel.org smtp.mailfrom=nvidia.com;
  dmarc=pass (p=none sp=none pct=100) action=none header.from=nvidia.com;
@@ -26,18 +26,18 @@ ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=fxNcMJ7AjsY3NXZShxR71YocN+B76Qtet5ZIV67cUco=;
- b=quW7l/CkMNzLQq4sH5/TGrYtMkdJQ1NRMfVjLQGjc4Vnx0nD1It0z01Eaq/5eVaC3yQqsvmA1p5eHvX2uWFzBD2kVBkMBoyMqFD/jd2+AAG0JxbIyZ7zzjWVAEeYPYQUm/nvhBQ7S0G6zrKeAJw3W2IhJEfnwwNQ+ZB+kDok3Q00h9X013s4/yXM7iJE990pWp//s2XMHun0IwRu+PnQSB/u+vVfSfotz+heuhV3oEBQJ2VZsOYI9KvIQteDborcrLXPPvlKAY9y+UXF8q13izYbO/8x+XGeoq7GF8elrcKCTL3lWUd4Tv0RtDfutaDQTo00CbjmrbAW8j/8tkCG0g==
-Received: from BN6PR13CA0071.namprd13.prod.outlook.com (2603:10b6:404:11::33)
- by BYAPR12MB3095.namprd12.prod.outlook.com (2603:10b6:a03:a9::17) with
+ bh=TdRSvPBSkHVMXjCD+qz3Kao9OEPiA+Ol4wrWnPsZNFE=;
+ b=gKyboEnTgzUmLgYQU++R8eRv+1PfDC8HoLODPH6mSlHmdWIisicUPTbASriQxRv4X3z9UqYVJIf213Lz9qALk6oYnUz2KsVsbKwpLROR9c1o//Zj79t3WKjmGQ9+pOipL5OJml0EDMX8EwmLfVnDkz7NMnK9CndNt8k/XJUEKUrrtQ2W8nn72oSRGOd5moe1DrXjVHoe26dgc+AL9A19MwlG7JkJ+j4bigbpo+yYMhWVztB0M0vfcOZF7OJ3p0vYUOuvLHHU1B77wkvKPTyN0dpbvx9hujgdVZWrQNFKVDHIlR2DRaZlxI7nKBDw7wmS1zss05dHTHRSNHfXjZLgIQ==
+Received: from BN6PR12CA0043.namprd12.prod.outlook.com (2603:10b6:405:70::29)
+ by CY4PR12MB1366.namprd12.prod.outlook.com (2603:10b6:903:40::13) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4042.18; Fri, 23 Apr
- 2021 12:22:47 +0000
-Received: from BN8NAM11FT020.eop-nam11.prod.protection.outlook.com
- (2603:10b6:404:11:cafe::e7) by BN6PR13CA0071.outlook.office365.com
- (2603:10b6:404:11::33) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4087.17 via Frontend
- Transport; Fri, 23 Apr 2021 12:22:46 +0000
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4065.21; Fri, 23 Apr
+ 2021 12:22:49 +0000
+Received: from BN8NAM11FT049.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:405:70:cafe::2f) by BN6PR12CA0043.outlook.office365.com
+ (2603:10b6:405:70::29) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4065.20 via Frontend
+ Transport; Fri, 23 Apr 2021 12:22:49 +0000
 X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.112.34)
  smtp.mailfrom=nvidia.com; kernel.org; dkim=none (message not signed)
  header.d=none;kernel.org; dmarc=pass action=none header.from=nvidia.com;
@@ -45,12 +45,12 @@ Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
  216.228.112.34 as permitted sender) receiver=protection.outlook.com;
  client-ip=216.228.112.34; helo=mail.nvidia.com;
 Received: from mail.nvidia.com (216.228.112.34) by
- BN8NAM11FT020.mail.protection.outlook.com (10.13.176.223) with Microsoft SMTP
+ BN8NAM11FT049.mail.protection.outlook.com (10.13.177.157) with Microsoft SMTP
  Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.20.4065.21 via Frontend Transport; Fri, 23 Apr 2021 12:22:46 +0000
+ 15.20.4065.21 via Frontend Transport; Fri, 23 Apr 2021 12:22:48 +0000
 Received: from localhost.localdomain (172.20.145.6) by HQMAIL107.nvidia.com
  (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Fri, 23 Apr
- 2021 12:22:44 +0000
+ 2021 12:22:46 +0000
 From:   Petr Machata <petrm@nvidia.com>
 To:     <netdev@vger.kernel.org>
 CC:     "David S . Miller" <davem@davemloft.net>,
@@ -58,9 +58,9 @@ CC:     "David S . Miller" <davem@davemloft.net>,
         Ido Schimmel <idosch@nvidia.com>,
         Danielle Ratson <danieller@nvidia.com>,
         Jiri Pirko <jiri@nvidia.com>, "Petr Machata" <petrm@nvidia.com>
-Subject: [PATCH net-next 2/6] selftests: mlxsw: Remove a redundant if statement in port_scale test
-Date:   Fri, 23 Apr 2021 14:19:44 +0200
-Message-ID: <54a1517a6951c5bc84af3c2b5df323c153d04b59.1619179926.git.petrm@nvidia.com>
+Subject: [PATCH net-next 3/6] selftests: mlxsw: Remove a redundant if statement in tc_flower_scale test
+Date:   Fri, 23 Apr 2021 14:19:45 +0200
+Message-ID: <898eb9e5bb2cc8ed82e7f5b5458befef96bb2ff4.1619179926.git.petrm@nvidia.com>
 X-Mailer: git-send-email 2.26.3
 In-Reply-To: <cover.1619179926.git.petrm@nvidia.com>
 References: <cover.1619179926.git.petrm@nvidia.com>
@@ -72,24 +72,24 @@ X-ClientProxiedBy: HQMAIL111.nvidia.com (172.20.187.18) To
  HQMAIL107.nvidia.com (172.20.187.13)
 X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: aa7df6fa-ff9e-4b70-1ef8-08d9065280ec
-X-MS-TrafficTypeDiagnostic: BYAPR12MB3095:
-X-Microsoft-Antispam-PRVS: <BYAPR12MB3095F0E9343ACE0019D798C0D6459@BYAPR12MB3095.namprd12.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:5236;
+X-MS-Office365-Filtering-Correlation-Id: e16cc12b-f0ea-4c9d-fd1c-08d906528232
+X-MS-TrafficTypeDiagnostic: CY4PR12MB1366:
+X-Microsoft-Antispam-PRVS: <CY4PR12MB1366614B90B3735B2FFEDB0FD6459@CY4PR12MB1366.namprd12.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:4941;
 X-MS-Exchange-SenderADCheck: 1
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: ISjjO4MrVsQ8UFMq4WDNlY9ZOxvIg62M0xgDuiTPg1rUGRUUWfH4HSlrJHwdFtH9OUdq2seoVGdLelF6PBzXSfxRewxWidKGKeIFREEWKjPt5vfEfkPkIdJtAUBCMu16VT0WYCqfO9P82uhpUMaQw27OXRIe7m6c/Zv14XsRTJb3LPSVX5BzIgJvE7hK44jTSJEhyDyIP6vmIV9jeMlDBTmzBLFIQjzh/gp4r1MDk5/gf7RlLTfqRgwEiNr5qzAwNsbEtuENvFhMgFCmEM33TYEZEBnwhy1In/+kjo9IIgNS74CQu2QjXNAc3rQ/ZnyzrZw9Y5diPKuMm5/ZAl0fZsT5lGus+eIipes+ltoxCjpfCFOJA0iaVkdWphT7Tjnr/JyHuWyMxmKpLx5vTFRajvbDB7VZp8r2K9uyPxZSWFChlZIeD4ne3bOQSkE43WpPbPOS/+Gut8BFIROoAtDcwoM4PgLIrzG5p4DJDBkIbNw7ksKDKJR2IAcwhMgSSOjNecE0u1fBZGUxpQETY4YQYVvYvsYafnsSqZkPYcQPj/OrdK0HinYKVaYfyKKTIzrmvgLhaaPxl0L3q9IqBBKP6UHB0qY822slRJjLy9A8CCdtNI/SRkT/JG3L0P3ugXIZ+1gkQWvRqTwuA+qcv1XjCQ==
-X-Forefront-Antispam-Report: CIP:216.228.112.34;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:schybrid03.nvidia.com;CAT:NONE;SFS:(4636009)(136003)(39850400004)(376002)(396003)(346002)(46966006)(36840700001)(2906002)(86362001)(47076005)(5660300002)(316002)(8936002)(36906005)(426003)(336012)(2616005)(8676002)(82310400003)(26005)(186003)(16526019)(356005)(82740400003)(6916009)(478600001)(4326008)(36756003)(70586007)(7636003)(107886003)(54906003)(36860700001)(70206006)(83380400001);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: 6tVsaIz9as+m1WUhWFmsNqWdw4QpUD4+GrJ5LVYWp+8VUtJGgS2nxv/L617rydx5y21yboTvD7MjiCtOlI3K+KscPs0FDoV63m8+uXW8hiNwMCpnK5mFcCOQRJU5dpdhDIy2D/UK3J0W3iW2EDsxa67gUwqjxqQWt1RJyhJnQDDeeyTNDZ7bRkT9+nu5ZfyrGTSq673DRd+28xc6Q2wgSW5D7An57YB1uQZxCZHG/8F25oyO5zdg+WnDIBIlAVFCn01enV06O8j58mJ9qy55+sP1MU0N+2WgYW2EAPTygdZtu5lBpKA6GrA85XD9RiSFwTCtOU9g5CkW9EOVFv1qEN/EvHU2D3wfZBbF3pKUIoCVR+7byGH3tmS6EbMjE5vknnSnf2di0stCrFMb5aP3L7GIFDO/j+SX64wnBAqSmHxf3EW0FJaxFqx5OKtLtiy0j2dKtdllOljynToDN0839IWejnwafXLkRMxTzG+6xiSKIbBMCJsjZIqe2hcyvoikZh3m5V/oXKSRLBBJC+V2kIE3tL2BP31W/7OcVKnoj3vVoyfaRIN9AoAHGjkA6ZZWiuqAIUYVa6l+g0BqRPYBecdBA3+h9Y1lD8l4KC04AKPrXYT8clyfADg67BEO18xH6NiXgShHIP0ce/OfP381EKGlcjll5WLXBh1Yy5bsRjE=
+X-Forefront-Antispam-Report: CIP:216.228.112.34;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:schybrid03.nvidia.com;CAT:NONE;SFS:(4636009)(39860400002)(376002)(136003)(396003)(346002)(46966006)(36840700001)(107886003)(26005)(186003)(6916009)(8936002)(7636003)(426003)(36756003)(16526019)(36906005)(8676002)(356005)(2906002)(336012)(316002)(70206006)(83380400001)(70586007)(47076005)(2616005)(36860700001)(82310400003)(86362001)(4326008)(5660300002)(82740400003)(478600001)(54906003);DIR:OUT;SFP:1101;
 X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 23 Apr 2021 12:22:46.6940
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 23 Apr 2021 12:22:48.9391
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: aa7df6fa-ff9e-4b70-1ef8-08d9065280ec
+X-MS-Exchange-CrossTenant-Network-Message-Id: e16cc12b-f0ea-4c9d-fd1c-08d906528232
 X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
 X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.112.34];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource: BN8NAM11FT020.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthSource: BN8NAM11FT049.eop-nam11.prod.protection.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Anonymous
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR12MB3095
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY4PR12MB1366
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
@@ -102,31 +102,32 @@ using an if statement, so the test doesn't fail when it should.
 Remove the if statement that separates the condition and the error code
 check, so the test won't always pass.
 
-Fixes: 5154b1b826d9b ("selftests: mlxsw: Add a scale test for physical ports")
+Fixes: abfce9e062021 ("selftests: mlxsw: Reduce running time using offload indication")
 Reported-by: Ido Schimmel <idosch@nvidia.com>
 Signed-off-by: Danielle Ratson <danieller@nvidia.com>
 Reviewed-by: Petr Machata <petrm@nvidia.com>
 Signed-off-by: Petr Machata <petrm@nvidia.com>
 ---
- tools/testing/selftests/drivers/net/mlxsw/port_scale.sh | 6 +-----
+ .../testing/selftests/drivers/net/mlxsw/tc_flower_scale.sh  | 6 +-----
  1 file changed, 1 insertion(+), 5 deletions(-)
 
-diff --git a/tools/testing/selftests/drivers/net/mlxsw/port_scale.sh b/tools/testing/selftests/drivers/net/mlxsw/port_scale.sh
-index f813ffefc07e..65f43a7ce9c9 100644
---- a/tools/testing/selftests/drivers/net/mlxsw/port_scale.sh
-+++ b/tools/testing/selftests/drivers/net/mlxsw/port_scale.sh
-@@ -55,10 +55,6 @@ port_test()
- 	      | jq '.[][][] | select(.name=="physical_ports") |.["occ"]')
- 
- 	[[ $occ -eq $max_ports ]]
+diff --git a/tools/testing/selftests/drivers/net/mlxsw/tc_flower_scale.sh b/tools/testing/selftests/drivers/net/mlxsw/tc_flower_scale.sh
+index cc0f07e72cf2..aa74be9f47c8 100644
+--- a/tools/testing/selftests/drivers/net/mlxsw/tc_flower_scale.sh
++++ b/tools/testing/selftests/drivers/net/mlxsw/tc_flower_scale.sh
+@@ -98,11 +98,7 @@ __tc_flower_test()
+ 			jq -r '[ .[] | select(.kind == "flower") |
+ 			.options | .in_hw ]' | jq .[] | wc -l)
+ 	[[ $((offload_count - 1)) -eq $count ]]
 -	if [[ $should_fail -eq 0 ]]; then
--		check_err $? "Mismatch ports number: Expected $max_ports, got $occ."
+-		check_err $? "Offload mismatch"
 -	else
--		check_err_fail $should_fail $? "Reached more ports than expected"
+-		check_err_fail $should_fail $? "Offload more than expacted"
 -	fi
-+	check_err_fail $should_fail $? "Attempt to create $max_ports ports (actual result $occ)"
- 
++	check_err_fail $should_fail $? "Attempt to offload $count rules (actual result $((offload_count - 1)))"
  }
+ 
+ tc_flower_test()
 -- 
 2.26.2
 
