@@ -2,71 +2,76 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 16B60369909
-	for <lists+netdev@lfdr.de>; Fri, 23 Apr 2021 20:17:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D95A036990A
+	for <lists+netdev@lfdr.de>; Fri, 23 Apr 2021 20:17:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243418AbhDWSRw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 23 Apr 2021 14:17:52 -0400
+        id S243459AbhDWSRx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 23 Apr 2021 14:17:53 -0400
 Received: from mga03.intel.com ([134.134.136.65]:40508 "EHLO mga03.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229549AbhDWSRv (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S231400AbhDWSRv (ORCPT <rfc822;netdev@vger.kernel.org>);
         Fri, 23 Apr 2021 14:17:51 -0400
-IronPort-SDR: MzoMUZZfv7Sv6sDjys77Y+j67tuRjqBiPcac/aNJWfjM3oLLzKr/qZyJ9nQQlZKa26YPKfyz/r
- JoQzlCLwTDEQ==
-X-IronPort-AV: E=McAfee;i="6200,9189,9963"; a="196172518"
+IronPort-SDR: VdDSzGTHEK0dvcw25b7k7ow5nP6ilEq82eoPaKZWoHyA9mPrnSDRXdrWMsUZh/SCMsao2H19yz
+ V5Xh3zYD5LMA==
+X-IronPort-AV: E=McAfee;i="6200,9189,9963"; a="196172519"
 X-IronPort-AV: E=Sophos;i="5.82,246,1613462400"; 
-   d="scan'208";a="196172518"
+   d="scan'208";a="196172519"
 Received: from orsmga002.jf.intel.com ([10.7.209.21])
   by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Apr 2021 11:17:14 -0700
-IronPort-SDR: LW9qXCt4g0q1brPfHw6YMETn7T8DGBIsajekmhAS4v7hpFBIvz5vPor+9Vbkidv7c9kJ5Gbkot
- rgTwGmZHT7hA==
+IronPort-SDR: 3cJ9tlV6f8s9hb1Mw9evb6XTGcTSxqQjIevvDmtX21YwG6yCFb7frc1h/PgDxqvtu/puUpqNOM
+ lTvpKPp94uhg==
 X-IronPort-AV: E=Sophos;i="5.82,246,1613462400"; 
-   d="scan'208";a="402264966"
+   d="scan'208";a="402264967"
 Received: from mjmartin-desk2.amr.corp.intel.com (HELO mjmartin-desk2.intel.com) ([10.254.72.13])
   by orsmga002-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Apr 2021 11:17:14 -0700
 From:   Mat Martineau <mathew.j.martineau@linux.intel.com>
 To:     netdev@vger.kernel.org
-Cc:     Mat Martineau <mathew.j.martineau@linux.intel.com>,
-        davem@davemloft.net, kuba@kernel.org, matthieu.baerts@tessares.net,
-        mptcp@lists.linux.dev
-Subject: [PATCH net-next 0/5] mptcp: Compatibility with common msg flags
-Date:   Fri, 23 Apr 2021 11:17:04 -0700
-Message-Id: <20210423181709.330233-1-mathew.j.martineau@linux.intel.com>
+Cc:     Paolo Abeni <pabeni@redhat.com>, davem@davemloft.net,
+        kuba@kernel.org, matthieu.baerts@tessares.net,
+        mptcp@lists.linux.dev,
+        Mat Martineau <mathew.j.martineau@linux.intel.com>
+Subject: [PATCH net-next 1/5] mptcp: implement dummy MSG_ERRQUEUE support
+Date:   Fri, 23 Apr 2021 11:17:05 -0700
+Message-Id: <20210423181709.330233-2-mathew.j.martineau@linux.intel.com>
 X-Mailer: git-send-email 2.31.1
+In-Reply-To: <20210423181709.330233-1-mathew.j.martineau@linux.intel.com>
+References: <20210423181709.330233-1-mathew.j.martineau@linux.intel.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-These patches from the MPTCP tree handle some of the msg flags that are
-typically used with TCP, to make it easier to adapt userspace programs
-for use with MPTCP.
+From: Paolo Abeni <pabeni@redhat.com>
 
-Patches 1, 2, and 4 add support for MSG_ERRQUEUE (no-op for now),
-MSG_TRUNC, and MSG_PEEK on the receive side.
+mptcp_recvmsg() currently silently ignores MSG_ERRQUEUE, returning
+input data instead of error cmsg.
 
-Patch 3 ignores unsupported msg flags for send and receive.
+This change provides a dummy implementation for MSG_ERRQUEUE - always
+returns no data. That is consistent with the current lack of a suitable
+IP_RECVERR setsockopt() support.
 
-Patch 5 adds a selftest for MSG_PEEK.
+Signed-off-by: Paolo Abeni <pabeni@redhat.com>
+Signed-off-by: Mat Martineau <mathew.j.martineau@linux.intel.com>
+---
+ net/mptcp/protocol.c | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-
-Paolo Abeni (3):
-  mptcp: implement dummy MSG_ERRQUEUE support
-  mptcp: implement MSG_TRUNC support
-  mptcp: ignore unsupported msg flags
-
-Yonglong Li (2):
-  mptcp: add MSG_PEEK support
-  selftests: mptcp: add a test case for MSG_PEEK
-
- net/mptcp/protocol.c                          | 49 ++++++++++++-------
- .../selftests/net/mptcp/mptcp_connect.c       | 48 +++++++++++++++++-
- .../selftests/net/mptcp/mptcp_connect.sh      | 29 ++++++++---
- 3 files changed, 99 insertions(+), 27 deletions(-)
-
-
-base-commit: cad4162a90aeff737a16c0286987f51e927f003a
+diff --git a/net/mptcp/protocol.c b/net/mptcp/protocol.c
+index c14ac2975736..1d5f23bd640c 100644
+--- a/net/mptcp/protocol.c
++++ b/net/mptcp/protocol.c
+@@ -1945,6 +1945,10 @@ static int mptcp_recvmsg(struct sock *sk, struct msghdr *msg, size_t len,
+ 	int target;
+ 	long timeo;
+ 
++	/* MSG_ERRQUEUE is really a no-op till we support IP_RECVERR */
++	if (unlikely(flags & MSG_ERRQUEUE))
++		return inet_recv_error(sk, msg, len, addr_len);
++
+ 	if (msg->msg_flags & ~(MSG_WAITALL | MSG_DONTWAIT))
+ 		return -EOPNOTSUPP;
+ 
 -- 
 2.31.1
 
