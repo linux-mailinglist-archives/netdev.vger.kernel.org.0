@@ -2,133 +2,116 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C2780369776
-	for <lists+netdev@lfdr.de>; Fri, 23 Apr 2021 18:55:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CA6E33697E4
+	for <lists+netdev@lfdr.de>; Fri, 23 Apr 2021 19:02:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231760AbhDWQzg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 23 Apr 2021 12:55:36 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:59115 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S231522AbhDWQzf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 23 Apr 2021 12:55:35 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1619196898;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=wFxz5Zzs7llrIJ0AdPOjAD3crmXIVLE/A0MxWzI0Aeg=;
-        b=Kvu9SUVxn/RaKNnaxBhrXETi+pyo2jhQqaey3qaXvXTyYoVCBWzQjdIiNutqwi4Xe790eO
-        nqgmC+OMZF8JcVfrfVvWgXex3u0yjA68pwFDPmaIb0eJQxqtBOkgebbOAWPLRs9hAo/n6k
-        N2jO6GFLp5MbdDG8z+uCpcreA8vGbvk=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-514-zQJN5xTOOAaKRbp0h_W9Ew-1; Fri, 23 Apr 2021 12:54:56 -0400
-X-MC-Unique: zQJN5xTOOAaKRbp0h_W9Ew-1
-Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 4FC98107ACCD;
-        Fri, 23 Apr 2021 16:54:54 +0000 (UTC)
-Received: from carbon (unknown [10.36.110.19])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id E20E71992D;
-        Fri, 23 Apr 2021 16:54:30 +0000 (UTC)
-Date:   Fri, 23 Apr 2021 18:54:29 +0200
-From:   Jesper Dangaard Brouer <brouer@redhat.com>
-To:     Toke =?UTF-8?B?SMO4aWxhbmQtSsO4cmdlbnNlbg==?= <toke@redhat.com>
-Cc:     Hangbin Liu <liuhangbin@gmail.com>, bpf@vger.kernel.org,
-        netdev@vger.kernel.org, Jiri Benc <jbenc@redhat.com>,
-        Eelco Chaudron <echaudro@redhat.com>, ast@kernel.org,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Lorenzo Bianconi <lorenzo.bianconi@redhat.com>,
-        David Ahern <dsahern@gmail.com>,
-        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
-        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
-        =?UTF-8?B?QmrDtnJuIFQ=?= =?UTF-8?B?w7ZwZWw=?= 
-        <bjorn.topel@gmail.com>, Martin KaFai Lau <kafai@fb.com>,
-        brouer@redhat.com
-Subject: Re: [PATCHv9 bpf-next 2/4] xdp: extend xdp_redirect_map with
- broadcast support
-Message-ID: <20210423185429.126492d0@carbon>
-In-Reply-To: <87a6pqfb9x.fsf@toke.dk>
-References: <20210422071454.2023282-1-liuhangbin@gmail.com>
-        <20210422071454.2023282-3-liuhangbin@gmail.com>
-        <20210422185332.3199ca2e@carbon>
-        <87a6pqfb9x.fsf@toke.dk>
+        id S243264AbhDWRDJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 23 Apr 2021 13:03:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48302 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229691AbhDWRDH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 23 Apr 2021 13:03:07 -0400
+Received: from mail-yb1-xb34.google.com (mail-yb1-xb34.google.com [IPv6:2607:f8b0:4864:20::b34])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E738C061574;
+        Fri, 23 Apr 2021 10:02:31 -0700 (PDT)
+Received: by mail-yb1-xb34.google.com with SMTP id g38so56376379ybi.12;
+        Fri, 23 Apr 2021 10:02:31 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=owg94yUIU0a2eRqMOnoPDCKjXrACNS+uhbxAnQkFBqI=;
+        b=XYOe2NjaeNttbS+/bzmBLPVv0G2fUZl87TWVzFDiKWN06wUJRdqxX00IX2tU9llt62
+         E+xGTjKxtRS/SS81dKCvHXEaOXMXhybPvuK+c5z6X1tLzd/0ZxNEu/ohIy+az/PkFWy8
+         EJ4K9FNF8fX5xwSasLWvJs6kqTOMXf5Aoailojd8dAMpKJ/ISFHIpS0qtpCCQ2j1DaUt
+         PZE6/TcSeJpVF3zyXxxi5RZCRjt2VTBK/jN8kPaUDS/jQi8xmQEg0D4qWQJDuWwFLNum
+         kust6JhcnqluB9LXmkTvsmsTULs+IMNzJBUkkhH/YZzwu62u1o59QNDlEGxPdu+/YSnt
+         VKTw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=owg94yUIU0a2eRqMOnoPDCKjXrACNS+uhbxAnQkFBqI=;
+        b=I+vYgmij1D9Gtuh8Bd1x37DRg2yK6Q9uoN1iDUS1HZiKJ79xDRnUKeKA5hGg6Qx5YZ
+         JgyJQSrEImd6CJY9sM+yoSzhLrhCNm6win1vgOB6JX6qXcGV3l//8LuqvJy+TeoF715V
+         D9YSclzo+RCImbzYrgmBUe6/2KjSKuCwJg7ZG5+h27UED0Hs2ARSePkSuYurSCvR7FOy
+         snnN+IFRN9OzvfVT1rE3H19FcigNPttVOTY7++o53+qg/I3MwryE5i0Gpa0FJad8DwQA
+         XexiDXm7xKb3UEZG/ZLxHx9bjcOgyt9XAFJd4RahjNCWZxwCVSeADClkh+Rp3+V26rlE
+         5MMw==
+X-Gm-Message-State: AOAM532yMKEgmRqjjOcu5tLPdlZxhRL0RBYLWIRexAZRzR38gk626Oyc
+        9G6Q2M1/uedRgQWBqADsEH3EAXlk0xjcnk71QLo=
+X-Google-Smtp-Source: ABdhPJxLx0Is4f0m7YmQiEx8RXvbldyfM84RdoX1zH4Ix89f7jtKtSPjrciCTLjym1xZKKm06KPJ0leaEeycKApOon0=
+X-Received: by 2002:a25:ba06:: with SMTP id t6mr6268185ybg.459.1619197350640;
+ Fri, 23 Apr 2021 10:02:30 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
+References: <20210416202404.3443623-1-andrii@kernel.org> <20210416202404.3443623-11-andrii@kernel.org>
+ <c9f1cab3-2aba-bbfb-25bd-6d23f7191a5d@fb.com> <CAEf4Bzai43dFxkZuh3FU0VrHZ008qT=GDDhhAsmOdgZuykkdTw@mail.gmail.com>
+ <CAADnVQJ_PS=PH8AQySiHqn-Bm=+DxsqRkgx+2_7OxM5CQkB4Mg@mail.gmail.com>
+ <CAEf4BzYXZOX=dmrAQAxHinSa0mxJ5gkJkpL=paVJjtrEWQex4A@mail.gmail.com>
+ <CAADnVQK+s=hx1z4wjNFp5oYqi4_ovtcbGMbkVD4qKkUzVaeLvQ@mail.gmail.com>
+ <CAEf4BzY8VZyXGUYdtOCvyLjRGGcuOF07rA1OJPTLpRmEat+jbg@mail.gmail.com>
+ <CAADnVQJe-5sPyRxWnOwSyVyudkFo-WC2TgxXaibiMRM=54XhgA@mail.gmail.com>
+ <CAEf4BzZbaOv0UoGF3Vwim94EgLtkTWtVYnDeuhfEbWkK9B1orw@mail.gmail.com> <CAADnVQLkXhui3K2O4v4u1gfMVXzBdEtfuUixPhnb=n-BdUbH9Q@mail.gmail.com>
+In-Reply-To: <CAADnVQLkXhui3K2O4v4u1gfMVXzBdEtfuUixPhnb=n-BdUbH9Q@mail.gmail.com>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Fri, 23 Apr 2021 10:02:19 -0700
+Message-ID: <CAEf4Bzaw0Je1zQvbKQh9VP3f1UuWTbsLZjJpyvSCHOr_JZGjsA@mail.gmail.com>
+Subject: Re: [PATCH v2 bpf-next 10/17] libbpf: tighten BTF type ID rewriting
+ with error checking
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     Yonghong Song <yhs@fb.com>, Andrii Nakryiko <andrii@kernel.org>,
+        bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@fb.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Kernel Team <kernel-team@fb.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 22 Apr 2021 20:02:18 +0200
-Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com> wrote:
-
-> Jesper Dangaard Brouer <brouer@redhat.com> writes:
->=20
-> > On Thu, 22 Apr 2021 15:14:52 +0800
-> > Hangbin Liu <liuhangbin@gmail.com> wrote:
-> > =20
-> >> diff --git a/net/core/filter.c b/net/core/filter.c
-> >> index cae56d08a670..afec192c3b21 100644
-> >> --- a/net/core/filter.c
-> >> +++ b/net/core/filter.c =20
-> > [...] =20
-> >>  int xdp_do_redirect(struct net_device *dev, struct xdp_buff *xdp,
-> >>  		    struct bpf_prog *xdp_prog)
-> >>  {
-> >> @@ -3933,6 +3950,7 @@ int xdp_do_redirect(struct net_device *dev, stru=
-ct xdp_buff *xdp,
-> >>  	enum bpf_map_type map_type =3D ri->map_type;
-> >>  	void *fwd =3D ri->tgt_value;
-> >>  	u32 map_id =3D ri->map_id;
-> >> +	struct bpf_map *map;
-> >>  	int err;
-> >> =20
-> >>  	ri->map_id =3D 0; /* Valid map id idr range: [1,INT_MAX[ */
-> >> @@ -3942,7 +3960,12 @@ int xdp_do_redirect(struct net_device *dev, str=
-uct xdp_buff *xdp,
-> >>  	case BPF_MAP_TYPE_DEVMAP:
-> >>  		fallthrough;
-> >>  	case BPF_MAP_TYPE_DEVMAP_HASH:
-> >> -		err =3D dev_map_enqueue(fwd, xdp, dev);
-> >> +		map =3D xchg(&ri->map, NULL); =20
+On Fri, Apr 23, 2021 at 9:34 AM Alexei Starovoitov
+<alexei.starovoitov@gmail.com> wrote:
+>
+> On Fri, Apr 23, 2021 at 9:31 AM Andrii Nakryiko
+> <andrii.nakryiko@gmail.com> wrote:
+> > > >
+> > > > static int remap_type_id(__u32 *type_id, void *ctx)
+> > > > {
+> > > >         int *id_map = ctx;
+> > > >         int new_id = id_map[*type_id];
+> > > >
+> > > >
+> > > > /* Here VOID stays VOID, that's all */
+> > > >
+> > > >         if (*type_id == 0)
+> > > >                 return 0;
+> > >
+> > > Does it mean that id_map[0] is a garbage value?
+> > > and all other code that might be doing id_map[idx] might be reading
+> > > garbage if it doesn't have a check for idx == 0 ?
 > >
-> > Hmm, this looks dangerous for performance to have on this fast-path.
-> > The xchg call can be expensive, AFAIK this is an atomic operation. =20
->=20
-> Ugh, you're right. That's my bad, I suggested replacing the
-> READ_ONCE()/WRITE_ONCE() pair with the xchg() because an exchange is
-> what it's doing, but I failed to consider the performance implications
-> of the atomic operation. Sorry about that, Hangbin! I guess this should
-> be changed to:
->=20
-> +		map =3D READ_ONCE(ri->map);
-> +		if (map) {
-> +			WRITE_ONCE(ri->map, NULL);
-> +			err =3D dev_map_enqueue_multi(xdp, dev, map,
-> +						    ri->flags & BPF_F_EXCLUDE_INGRESS);
-> +		} else {
-> +			err =3D dev_map_enqueue(fwd, xdp, dev);
-> +		}
+> > No, id_map[0] == 0 by construction (id_map is obj->btf_type_map and is
+> > calloc()'ed) and can be used as id_map[idx].
+>
+> Ok. Then why are you insisting on this micro optimization to return 0
+> directly?
+> That's the confusing part for me.
 
-This is highly sensitive fast-path code, as you saw Bj=C3=B8rn have been
-hunting nanosec in this area.  The above code implicitly have "map" as
-the likely option, which I don't think it is.
+I'm not insisting:
 
+  > but I'll rewrite it to a combined if if it makes it easier to follow
 
-> (and the same for the generic-XDP path, of course)
->=20
-> -Toke
->=20
+So I'm confused why you are confused.
 
---=20
-Best regards,
-  Jesper Dangaard Brouer
-  MSc.CS, Principal Kernel Engineer at Red Hat
-  LinkedIn: http://www.linkedin.com/in/brouer
+>
+> If it was:
+> "if (new_id == 0 && *type_id != 0) { pr_warn"
+> Then it would be clear what error condition is about.
+> But 'return 0' messing things up in my mind,
+> because it's far from obvious that first check is really a combination
+> with the 2nd check and by itself it's a micro optimization to avoid
+> reading id_map[0].
 
+I didn't try to micro optimize, that's how I naturally think about the
+problem. I'll rewrite the if, don't know why we are spending emails on
+this still.
