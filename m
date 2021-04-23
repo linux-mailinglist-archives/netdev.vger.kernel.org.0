@@ -2,191 +2,124 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D2D2B369750
-	for <lists+netdev@lfdr.de>; Fri, 23 Apr 2021 18:43:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A0B6B36975F
+	for <lists+netdev@lfdr.de>; Fri, 23 Apr 2021 18:47:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231339AbhDWQoF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 23 Apr 2021 12:44:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44018 "EHLO
+        id S243173AbhDWQsZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 23 Apr 2021 12:48:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44982 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231499AbhDWQoC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 23 Apr 2021 12:44:02 -0400
-Received: from mail-io1-xd31.google.com (mail-io1-xd31.google.com [IPv6:2607:f8b0:4864:20::d31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3233EC06174A;
-        Fri, 23 Apr 2021 09:43:26 -0700 (PDT)
-Received: by mail-io1-xd31.google.com with SMTP id e186so1015048iof.7;
-        Fri, 23 Apr 2021 09:43:26 -0700 (PDT)
+        with ESMTP id S243109AbhDWQsY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 23 Apr 2021 12:48:24 -0400
+Received: from mail-lj1-x22b.google.com (mail-lj1-x22b.google.com [IPv6:2a00:1450:4864:20::22b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 55FD9C061574;
+        Fri, 23 Apr 2021 09:47:47 -0700 (PDT)
+Received: by mail-lj1-x22b.google.com with SMTP id l22so49016409ljc.9;
+        Fri, 23 Apr 2021 09:47:47 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=uxcKhMoafVu5pDvZrUJZidliSNtT7SAxuh7MO5dRu3E=;
-        b=rqiSva+fvYwUhf+01m6vSpaFdhu2a3BaaZH/YHcrf0TxwHS0iPdJFv5O8SNRLhsjKa
-         6Wtn9WudjfsOKY8/t3+oOUzIFHzIgDOsMZRFDnHaqSYcelXW+noTw64XPE95P+XClvWN
-         YI2CD+DzIP5OA3NbD9DNaeoy43DyT+SUpNmSGB8+duM+hlsGLm2LNI/Fzj4PtxuXUZrI
-         cLNBL0rBuGQzdOMLhRLutcq2+rfUNc3zrSjrjQ6d1uCnCjxQJf8WkJcREAGy7RTKEquM
-         /nKYkE3pA/kvfn+MLc/OW7hWL9a0wkTtW1cryQ0glp8uCXwc0eIEdsakUB383OHNYNXE
-         OJUA==
+         :cc:content-transfer-encoding;
+        bh=Z9CSkWjoaT/hQ88KgcDlGnLSBzYbOvKna9ZhP8lUZlE=;
+        b=hh2gs7JpCs90IkiY1rJczvQ4E//glxdSIg/kg+tq2pkIs4RN3xiMFPZ+TMAuGELAyM
+         57ls2e8+VzwclzTEv4xYxrB0/CnzL0unkwFIs6KTd7ECdG/7eJ4fIWeg9SpFKuOx4vB0
+         TWgV+nXk0XrtEuuLhwu4Crrf++Cl/7ERHNZikP8jfpNKX8KmZiqxSKRoDyZULJY/yUmZ
+         FnD/a86WVXqJ/zLNyTEgZoQKrUfPbaIywZuGhuwOac9YNZCANo+KH91Vm5AAoWBdaugE
+         LgidWvZ866PrB9S+uBJLpd8XnFtPvCC7yywctkJxX1gs4MWHhrmK/kN7ZyvnEFdqRuce
+         8fKg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=uxcKhMoafVu5pDvZrUJZidliSNtT7SAxuh7MO5dRu3E=;
-        b=BX8pe/k38wKk6qWgPQ7ZvQKaRM8+j/VSMfkSU2W4zVbFQaK14F1U9SvSg3kp1K8/H/
-         NwKrKzSREU5vZqV9qJmKzY6o2f4r1QeXHuW+vDvXB6zZajM0fojfEpn8giF6dz3I/ImI
-         vws9qjga3J3Q8BI6xthdFc8kBHKi+riKixUbPrb/l1JWy4oaBs4bIy26Db3eB47lTglh
-         puB/bViFUOmSnx2Sp/HHQ5gyE/xUw4I85rjy81fZMn9j2WVp30HUNj4f8bXezOXVL9yf
-         /aEA/KqD3FumAi/+yzfuRH8i9MP1C/jxI2YzxPNMxDPBAltipkTlR4sl+nfaOJUgZa7B
-         sxeg==
-X-Gm-Message-State: AOAM533NlVnuLKWcO4bGqWufuHx7iJO9OAwm7N3N3PtxIQcTHgrKjMqy
-        JHW21V+Bbh/6XE5Z87BzgWnf/9BKNASzj0VJWuo=
-X-Google-Smtp-Source: ABdhPJy/lilPoyWSzZMog491+865yLWizvyW38l7UoLBYrx3q0pUysd1yApKJMjO7tD5ox6dp7CI/Bt+M+DvuiVlu0M=
-X-Received: by 2002:a05:6602:112:: with SMTP id s18mr4075204iot.38.1619196205520;
- Fri, 23 Apr 2021 09:43:25 -0700 (PDT)
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=Z9CSkWjoaT/hQ88KgcDlGnLSBzYbOvKna9ZhP8lUZlE=;
+        b=Cg7GTGJrPJNDtDXjNP5saJ0H5QsShwQI/t1triNCOHaRU1Do1D/izQsTRb05TD033N
+         kP/ZDWpDDQmOAwPf3UuXVr/3Wu9k2ieZ3Fr1fhyxBYOxY8WmUnoW5CAukfnJslCrEmBb
+         Hh0Bg6Ss1DG0KpwHO5NvpzuYG4UJ+ed4J6kkmwT7PK2Md/SzKSYSLpXCWLXPMFGEh1b9
+         jj9NU2GJQQ7kHgLQA2YOuF3O4jwrdhVlOVmzFGzQLiyWVorAHWqNTTZ2OIuODJHShX/T
+         mdA6A9dMtv8Y4TfwGdTPH0frHLSX+ciR/5PH6Xc5SCOIhppo0aFPFlQYHApmL7nwiDrg
+         rz7w==
+X-Gm-Message-State: AOAM531O8xdyOQe0gGjBpq/QWx9KZGwXfqJqXj7elHYxmQ8W2iKdU65s
+        tZA7hV+Qh88TzOOqoTAYvWuuRIqTURDesvQI1de7Rh6Z
+X-Google-Smtp-Source: ABdhPJxpbgAqS1GibhcllwDT+1U4zjY+5kMeemf9VlkANhkfYipY7NLqbF5yJgJW4JdQkixwi8+KQjlNOUQR7YAdedk=
+X-Received: by 2002:a2e:6c0d:: with SMTP id h13mr3226834ljc.486.1619196465904;
+ Fri, 23 Apr 2021 09:47:45 -0700 (PDT)
 MIME-Version: 1.0
-References: <cover.1617885385.git.lorenzo@kernel.org> <CAJ8uoz1MOYLzyy7xXq_fmpKDEakxSomzfM76Szjr5gWsqHc9jQ@mail.gmail.com>
- <20210418181801.17166935@carbon> <CAJ8uoz0m8AAJFddn2LjehXtdeGS0gat7dwOLA_-_ZeOVYjBdxw@mail.gmail.com>
- <YH0pdXXsZ7IELBn3@lore-desk> <CAJ8uoz101VZiwuvM-bs4UdW+kFT5xjgdgUwPWHZn4ABEOkyQ-w@mail.gmail.com>
- <20210421144747.33c5f51f@carbon> <CAJ8uoz3ROiPn+-bh7OjFOjXjXK9xGhU5cxWoFPM9JoYeh=zw=g@mail.gmail.com>
- <20210421173921.23fef6a7@carbon> <CAJ8uoz2JpfdjvjJp-vjWuhw5z1=2D32jj-KktFnLN6Zd9ZVmAQ@mail.gmail.com>
- <20210422164223.77870d28@carbon> <20210422170508.22c58226@carbon> <CAJ8uoz1oEa6ZEp3QKZiPx4oUtt9-nuY4Sh6PVrEnZdu-d_PudQ@mail.gmail.com>
-In-Reply-To: <CAJ8uoz1oEa6ZEp3QKZiPx4oUtt9-nuY4Sh6PVrEnZdu-d_PudQ@mail.gmail.com>
-From:   Alexander Duyck <alexander.duyck@gmail.com>
-Date:   Fri, 23 Apr 2021 09:43:14 -0700
-Message-ID: <CAKgT0UceK7D1R7c_Y=ze4_6pupCfLpfr5QOj-GCeJeMSD=P48g@mail.gmail.com>
-Subject: Re: Crash for i40e on net-next (was: [PATCH v8 bpf-next 00/14]
- mvneta: introduce XDP multi-buffer support)
-To:     Magnus Karlsson <magnus.karlsson@gmail.com>
-Cc:     Jesper Dangaard Brouer <brouer@redhat.com>,
-        Lorenzo Bianconi <lorenzo@kernel.org>,
-        bpf <bpf@vger.kernel.org>,
+References: <1619085648-36826-1-git-send-email-jiapeng.chong@linux.alibaba.com>
+ <7ecb85e6-410b-65bb-a042-74045ee17c3f@iogearbox.net> <93957f3e-2274-c389-64a4-235ed8a228bf@linux.alibaba.com>
+In-Reply-To: <93957f3e-2274-c389-64a4-235ed8a228bf@linux.alibaba.com>
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Date:   Fri, 23 Apr 2021 09:47:34 -0700
+Message-ID: <CAADnVQJoJW9GWk4guqzHQkDPD4RWoh-puVhnfW0LBPT_N6-4HA@mail.gmail.com>
+Subject: Re: [PATCH] selftests/bpf: fix warning comparing pointer to 0
+To:     Abaci Robot <abaci@linux.alibaba.com>
+Cc:     Daniel Borkmann <daniel@iogearbox.net>,
+        Jiapeng Chong <jiapeng.chong@linux.alibaba.com>,
+        "open list:KERNEL SELFTEST FRAMEWORK" 
+        <linux-kselftest@vger.kernel.org>,
         Network Development <netdev@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        John Fastabend <john.fastabend@gmail.com>,
-        David Ahern <dsahern@kernel.org>,
-        Eelco Chaudron <echaudro@redhat.com>,
-        Jason Wang <jasowang@redhat.com>,
-        Saeed Mahameed <saeed@kernel.org>,
-        "Fijalkowski, Maciej" <maciej.fijalkowski@intel.com>,
-        Tirthendu <tirthendu.sarkar@intel.com>
+        bpf <bpf@vger.kernel.org>, LKML <linux-kernel@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Apr 22, 2021 at 10:28 PM Magnus Karlsson
-<magnus.karlsson@gmail.com> wrote:
+On Fri, Apr 23, 2021 at 4:57 AM Abaci Robot <abaci@linux.alibaba.com> wrote=
+:
 >
-> On Thu, Apr 22, 2021 at 5:05 PM Jesper Dangaard Brouer
-> <brouer@redhat.com> wrote:
+> =E5=9C=A8 2021/4/23 =E4=B8=8A=E5=8D=885:56, Daniel Borkmann =E5=86=99=E9=
+=81=93:
+> > On 4/22/21 12:00 PM, Jiapeng Chong wrote:
+> >> Fix the following coccicheck warning:
+> >>
+> >> ./tools/testing/selftests/bpf/progs/fentry_test.c:76:15-16: WARNING
+> >> comparing pointer to 0.
+> >>
+> >> Reported-by: Abaci Robot <abaci@linux.alibaba.com>
+> >> Signed-off-by: Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
 > >
-> > On Thu, 22 Apr 2021 16:42:23 +0200
-> > Jesper Dangaard Brouer <brouer@redhat.com> wrote:
+> > How many more of those 'comparing pointer to 0' patches do you have?
+> > Right now we already merged the following with similar trivial pattern:
 > >
-> > > On Thu, 22 Apr 2021 12:24:32 +0200
-> > > Magnus Karlsson <magnus.karlsson@gmail.com> wrote:
-> > >
-> > > > On Wed, Apr 21, 2021 at 5:39 PM Jesper Dangaard Brouer
-> > > > <brouer@redhat.com> wrote:
-> > > > >
-> > > > > On Wed, 21 Apr 2021 16:12:32 +0200
-> > > > > Magnus Karlsson <magnus.karlsson@gmail.com> wrote:
-> > > > >
-> > > [...]
-> > > > > > more than I get.
-> > > > >
-> > > > > I clearly have a bug in the i40e driver.  As I wrote later, I don't see
-> > > > > any packets transmitted for XDP_TX.  Hmm, I using Mel Gorman's tree,
-> > > > > which contains the i40e/ice/ixgbe bug we fixed earlier.
-> > >
-> > > Something is wrong with i40e, I changed git-tree to net-next (at
-> > > commit 5d869070569a) and XDP seems to have stopped working on i40e :-(
+> > - ebda107e5f222a086c83ddf6d1ab1da97dd15810
+> > - a9c80b03e586fd3819089fbd33c38fb65ad5e00c
+> > - 04ea63e34a2ee85cfd38578b3fc97b2d4c9dd573
+> >
+> > Given they don't really 'fix' anything, I would like to reduce such
+> > patch cleanup churn on the bpf tree. Please _consolidate_ all other
+> > such occurrences into a _single_ patch for BPF selftests, and resubmit.
+> >
+> > Thanks!
+> >
+> >> ---
+> >>   tools/testing/selftests/bpf/progs/fentry_test.c | 2 +-
+> >>   1 file changed, 1 insertion(+), 1 deletion(-)
+> >>
+> >> diff --git a/tools/testing/selftests/bpf/progs/fentry_test.c
+> >> b/tools/testing/selftests/bpf/progs/fentry_test.c
+> >> index 52a550d..d4247d6 100644
+> >> --- a/tools/testing/selftests/bpf/progs/fentry_test.c
+> >> +++ b/tools/testing/selftests/bpf/progs/fentry_test.c
+> >> @@ -73,7 +73,7 @@ int BPF_PROG(test7, struct bpf_fentry_test_t *arg)
+> >>   SEC("fentry/bpf_fentry_test8")
+> >>   int BPF_PROG(test8, struct bpf_fentry_test_t *arg)
+> >>   {
+> >> -    if (arg->a =3D=3D 0)
+> >> +    if (!arg->a)
+> >>           test8_result =3D 1;
+> >>       return 0;
+> >>   }
+> >>
 >
-> Found this out too when switching to the net tree yesterday to work on
-> proper packet drop tracing as you spotted/requested yesterday. The
-> commit below completely broke XDP support on i40e (if you do not run
-> with a zero-copy AF_XDP socket because that path still works). I am
-> working on a fix that does not just revert the patch, but fixes the
-> original problem without breaking XDP. Will post it and the tracing
-> fixes as soon as I can.
+> Hi,
 >
-> commit 12738ac4754ec92a6a45bf3677d8da780a1412b3
-> Author: Arkadiusz Kubalewski <arkadiusz.kubalewski@intel.com>
-> Date:   Fri Mar 26 19:43:40 2021 +0100
+> Thanks for your reply.
 >
->     i40e: Fix sparse errors in i40e_txrx.c
->
->     Remove error handling through pointers. Instead use plain int
->     to return value from i40e_run_xdp(...).
->
->     Previously:
->     - sparse errors were produced during compilation:
->     i40e_txrx.c:2338 i40e_run_xdp() error: (-2147483647) too low for ERR_PTR
->     i40e_txrx.c:2558 i40e_clean_rx_irq() error: 'skb' dereferencing
-> possible ERR_PTR()
->
->     - sk_buff* was used to return value, but it has never had valid
->     pointer to sk_buff. Returned value was always int handled as
->     a pointer.
->
->     Fixes: 0c8493d90b6b ("i40e: add XDP support for pass and drop actions")
->     Fixes: 2e6893123830 ("i40e: split XDP_TX tail and XDP_REDIRECT map
-> flushing")
->     Signed-off-by: Aleksandr Loktionov <aleksandr.loktionov@intel.com>
->     Signed-off-by: Arkadiusz Kubalewski <arkadiusz.kubalewski@intel.com>
->     Tested-by: Dave Switzer <david.switzer@intel.com>
->     Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
+> TLDR:
+> 1. Now all this kind of warning in tools/testing/selftests/bpf/progs/
+> were reported and discussed except this one.
+> 2. We might not do scanning and check reports on
+> tools/testing/selftests/bpf/progs/ in the future,
 
-Yeah, this patch would horribly break things, especially in the
-multi-buffer case. The idea behind using the skb pointer to indicate
-the error is that it is persistent until we hit the EOP descriptor.
-With that removed you end up mangling the entire list of frames since
-it will start trying to process the next frame in the middle of a
-packet.
-
->
-> > Renamed subj as this is without this patchset applied.
-> >
-> > > $ uname -a
-> > > Linux broadwell 5.12.0-rc7-net-next+ #600 SMP PREEMPT Thu Apr 22 15:13:15 CEST 2021 x86_64 x86_64 x86_64 GNU/Linux
-> > >
-> > > When I load any XDP prog almost no packets are let through:
-> > >
-> > >  [kernel-bpf-samples]$ sudo ./xdp1 i40e2
-> > >  libbpf: elf: skipping unrecognized data section(16) .eh_frame
-> > >  libbpf: elf: skipping relo section(17) .rel.eh_frame for section(16) .eh_frame
-> > >  proto 17:          1 pkt/s
-> > >  proto 0:          0 pkt/s
-> > >  proto 17:          0 pkt/s
-> > >  proto 0:          0 pkt/s
-> > >  proto 17:          1 pkt/s
-> >
-> > Trying out xdp_redirect:
-> >
-> >  [kernel-bpf-samples]$ sudo ./xdp_redirect i40e2 i40e2
-> >  input: 7 output: 7
-> >  libbpf: elf: skipping unrecognized data section(20) .eh_frame
-> >  libbpf: elf: skipping relo section(21) .rel.eh_frame for section(20) .eh_frame
-> >  libbpf: Kernel error message: XDP program already attached
-> >  WARN: link set xdp fd failed on 7
-> >  ifindex 7:       7357 pkt/s
-> >  ifindex 7:       7909 pkt/s
-> >  ifindex 7:       7909 pkt/s
-> >  ifindex 7:       7909 pkt/s
-> >  ifindex 7:       7909 pkt/s
-> >  ifindex 7:       7909 pkt/s
-> >  ifindex 7:       6357 pkt/s
-> >
-> > And then it crash (see below) at page_frag_free+0x31 which calls
-> > virt_to_head_page() with a wrong addr (I guess).  This is called by
-> > i40e_clean_tx_irq+0xc9.
->
-> Did not see a crash myself, just 4 Kpps. But the rings and DMA
-> mappings got completely mangled by the patch above, so could be the
-> same cause.
-
-Are you running with jumbo frames enabled? I would think this change
-would really blow things up in the jumbo enabled case.
+please stop such scans in selftests/bpf.
+I don't see any value in such patches.
