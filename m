@@ -2,75 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 124FF369D31
-	for <lists+netdev@lfdr.de>; Sat, 24 Apr 2021 01:14:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2A7A0369D34
+	for <lists+netdev@lfdr.de>; Sat, 24 Apr 2021 01:16:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235346AbhDWXPB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 23 Apr 2021 19:15:01 -0400
-Received: from mail.kernel.org ([198.145.29.99]:49580 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S235280AbhDWXOz (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 23 Apr 2021 19:14:55 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id AD0F2613BE;
-        Fri, 23 Apr 2021 23:14:15 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1619219656;
-        bh=rgFbm4rSeZo7SNUA5vojLwUrtdE0OJSl7zDHjIXUgRM=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=SXxzyfJHubDdXLaTyI3RBY9fEv+2X0c752JhyMDUtaGBJppDHeAfmIvDpToeFqM6I
-         5OgfcHTQ7tFWhkAgzytzzbinMDRe1mpQJ2V/Qy3udhxgeI3hZ1fpTeP/3VDqw345fd
-         sAZcugGF47FWCrNa6HZKB5JuahWV0nwR2ME8FCnCV7Gso9k5oNTApPFAIqZO0F0t+9
-         /I+HjHibFYLpvDbLHIZ2olQf36TCBzEC0f9iN2Xf/ZQGg5SUlkFdj49VGu3xJgDNBD
-         2Ltf6LjRueuQspGV46r1KVuQJ8sOKTSMoAEoRwjCl2IxNL1L3wqTdxy2pb/2J9hVsz
-         islAMN0NFdTrw==
-Date:   Fri, 23 Apr 2021 16:14:14 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Parav Pandit <parav@nvidia.com>
-Cc:     Saeed Mahameed <saeed@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Jiri Pirko <jiri@nvidia.com>, Vu Pham <vuhuong@nvidia.com>,
-        Saeed Mahameed <saeedm@nvidia.com>
-Subject: Re: [net-next 06/11] devlink: Extend SF port attributes to have
- external attribute
-Message-ID: <20210423161414.5ac326e6@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <BY5PR12MB432267E19D8EB0F0760E1D76DC459@BY5PR12MB4322.namprd12.prod.outlook.com>
-References: <20210421174723.159428-1-saeed@kernel.org>
-        <20210421174723.159428-7-saeed@kernel.org>
-        <20210421122008.2877c21f@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <BY5PR12MB4322B0D056D310687E3CEA58DC469@BY5PR12MB4322.namprd12.prod.outlook.com>
-        <20210422093642.20c9e89e@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <BY5PR12MB432267E19D8EB0F0760E1D76DC459@BY5PR12MB4322.namprd12.prod.outlook.com>
+        id S232501AbhDWXRZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 23 Apr 2021 19:17:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45430 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229548AbhDWXRX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 23 Apr 2021 19:17:23 -0400
+Received: from mail-pj1-x1031.google.com (mail-pj1-x1031.google.com [IPv6:2607:f8b0:4864:20::1031])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 042D2C061574;
+        Fri, 23 Apr 2021 16:16:45 -0700 (PDT)
+Received: by mail-pj1-x1031.google.com with SMTP id nk8so10702439pjb.3;
+        Fri, 23 Apr 2021 16:16:45 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=PVq++V0MwpK7bbM6rQxN4JsPfV1zGlBbHrHQNxX5sZA=;
+        b=Mxr4iMH8H5ggi7xOag8R6+BfPQt4bsk5E8i8jP+qDs8Nuk3884bNWnrMV7hyV4Ew/j
+         Dxi7VbDenUVUl9egorTD4opYTtqR77ktQzjap6fUcdRERIeIfeS0mYCNiAqUf0MGkP99
+         yzBbUbCQ8R8fevsZPIFz3n3SxU6L9B79jCHLNadm7gEQVc1/qM86w1krZ8usNPYAYMoz
+         wY/jUrci467s6LYqw1RAm9ha1M1tnJHXjf/naIQl3Z3ssN+MY2MzBYy8HzjPXx9cUm9+
+         CYH4+7/EBzzf0a594IHInWCjCnMh83N3jlwE4/4/v8AWLW/t5IxwKcB8Xe7+HNSqQhZd
+         v3uQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=PVq++V0MwpK7bbM6rQxN4JsPfV1zGlBbHrHQNxX5sZA=;
+        b=RUgk4xupe4IEuDa2FVWt6QSW/MsljHaWpPK6FwAXeK5s0/SFx8ey+d5rRbdzJQ6pGo
+         0Yxv2P50n/YdEbTFF3zgt/sbBQgxjwNoKuQONCV2/o/VWUnhmZ89gKgFLYyXTrQ/UzCZ
+         X61M24sCP/EE4XDa4ZYvlIO9mFKLhQHkZ9wqJOzy7mMNHFYxxTALwUxMsy40Xpn725Xx
+         9sjxKPpTIQIHEG/v1j8Xz6vzockYsBtQrgQuweCZ3zzNtCf+OY430PKENc6rST8Dz0NV
+         j0NVmfyZ7GS+pbCYcubtj5wFbl6HFjjm6944Xc0k8UWVt+LSj37pmTGt6BIg3VP1aMsx
+         1ZWQ==
+X-Gm-Message-State: AOAM531BA576Z+dTiWwNQuimp+rOjvSKX5k+YTOeiMNS79r8ELM3kvUH
+        HRgGgMn2nbePAgQnH7ierQaRkgE67QM=
+X-Google-Smtp-Source: ABdhPJxQqrOi4Tu8ILJrR5ZSQieTu1HFlFamhWRDWnS6G69CaWbPSR0m8y2uQVfGf+RucVHVO/tADQ==
+X-Received: by 2002:a17:90a:950c:: with SMTP id t12mr8200273pjo.135.1619219805472;
+        Fri, 23 Apr 2021 16:16:45 -0700 (PDT)
+Received: from ast-mbp.dhcp.thefacebook.com ([2620:10d:c090:400::5:a88])
+        by smtp.gmail.com with ESMTPSA id p10sm5219339pfo.210.2021.04.23.16.16.44
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 23 Apr 2021 16:16:44 -0700 (PDT)
+Date:   Fri, 23 Apr 2021 16:16:42 -0700
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+To:     Yonghong Song <yhs@fb.com>
+Cc:     davem@davemloft.net, daniel@iogearbox.net, andrii@kernel.org,
+        netdev@vger.kernel.org, bpf@vger.kernel.org, kernel-team@fb.com
+Subject: Re: [PATCH v2 bpf-next 00/16] bpf: syscall program, FD array, loader
+ program, light skeleton.
+Message-ID: <20210423231642.tbypsaxqurjnjqts@ast-mbp.dhcp.thefacebook.com>
+References: <20210423002646.35043-1-alexei.starovoitov@gmail.com>
+ <4142514b-3a0f-f931-9a8c-fb72be9c66b3@fb.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <4142514b-3a0f-f931-9a8c-fb72be9c66b3@fb.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 23 Apr 2021 06:53:29 +0000 Parav Pandit wrote:
-> > > Your memory is correct.
-> > > In past external flag was present but it was always set to false.
-> > > So you asked to move out until we set it to true, which we did.
-> > > This series uses it as true similar to existing PF and VF eswitch ports of an  
-> > external controller.  
-> > > Hence, it was removed from past series and done in this series that actually  
-> > uses it.
+On Fri, Apr 23, 2021 at 02:36:43PM -0700, Yonghong Song wrote:
 > > 
-> > Right. I still think it's a weird model to instantiate an SF from the controller
-> > side, but if your HW is too limited to support nested switching that's fine.  
+> > One thing that was not addressed from feedback is the name of new program type.
+> > Currently it's still:
+> > BPF_PROG_TYPE_SYSCALL, /* a program that can execute syscalls */
 > 
-> I can't locate the old email thread, but we discussed the use cases.
-> Nested switch may be solution to some use case but not for the current one.
-> In the use case of interest, multiple tenant applications are running in a bare-metal host.
-> Such host should not have access to switching rate, policy, filter rules, encryption keys.
-> Each such tenant is assigned one VF or SF running on the host system.
+> Do you have plan for other non-bpf syscalls? Maybe use the name
+> BPF_PROG_TYPE_BPF_SYSCALL? It will be really clear this is
+> the program type you can execute bpf syscalls.
 
-Bare metal, and multiple tenants do not compute for me but that's fine.
+In this patch set it's already doing sys_bpf and sys_close syscalls :)
 
-> Also, this model doesn't prevent nested switch implementation for mlx5 and other vendors.
-> Each such nested switch in that case will do its own programming at its own level.
-> Such model is already described by Jiri in the RFCv3 [1].
+> > 
+> > The concern raised was that it sounds like a program that should be attached
+> > to a syscall. Like BPF_PROG_TYPE_KPROBE is used to process kprobes.
+> > I've considered and rejected:
+> > BPF_PROG_TYPE_USER - too generic
+> > BPF_PROG_TYPE_USERCTX - ambiguous with uprobes
+> 
+> USERCTX probably not a good choice. People can write a program without
+> context and put the ctx into a map and use it.
+> 
+> > BPF_PROG_TYPE_LOADER - ok-ish, but imo TYPE_SYSCALL is cleaner.
+> 
+> User can write a program to do more than loading although I am not sure
+> how useful it is compared to implementation in user space.
 
-As I said, I'm okay with the changes, please repost if they were
-dropped from PW already.
+Exactly.
+Just BPF_PROG_TYPE_SYSCALL alone can be used as more generic equivalent
+to sys_close_range syscalls.
+If somebody needs to close a sparse set of FDs or get fd_to_be_closed
+from a map they can craft a bpf prog that would do that.
+Or if somebody wants to do a batched map processing...
+instead of doing sys_bpf() with BPF_MAP_UPDATE_BATCH they can craft
+a bpf prog.
+Plenty of use cases beyond LOADER.
+
+This patch set only allows BPF_PROG_TYPE_SYSCALL to be executed
+via prog_test_run, but I think it's safe to execute it upon entry
+to pretty much any syscall.
+So _SYSCALL suffix fits as both "a program that can execute syscalls"
+and as "a program that attaches to syscalls".
+The later is not implemented yet, but would fit right in.
