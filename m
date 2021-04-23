@@ -2,83 +2,131 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7D40B369071
-	for <lists+netdev@lfdr.de>; Fri, 23 Apr 2021 12:35:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0D26C36908A
+	for <lists+netdev@lfdr.de>; Fri, 23 Apr 2021 12:46:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236107AbhDWKfs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 23 Apr 2021 06:35:48 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:51464 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S229772AbhDWKfr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 23 Apr 2021 06:35:47 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1619174110;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=x6V3sezXsAAxDR9VM4Vjf0CE1EnjmSBiIUUbI8iN2Aw=;
-        b=emiS5OlSyq7IUYeVWAYUG6xwAiOx+7Eg1oYIdoZ+dGE4yVXSR3FCICr40idoy9vk1hfJd7
-        F+5jMwbb5huUpfaNTWp5uSB1ESrtpy4ZIflvwl8tztVQE39dRZxmqm3D4bhnEK6xOTrJWD
-        9paFZcUAqJAxprFA+00G8rbpaoWtV28=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-175-KPx-srr6Mtas2ozr-3_I7Q-1; Fri, 23 Apr 2021 06:35:08 -0400
-X-MC-Unique: KPx-srr6Mtas2ozr-3_I7Q-1
-Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com [10.5.11.15])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id AA954343A0;
-        Fri, 23 Apr 2021 10:35:06 +0000 (UTC)
-Received: from carbon (unknown [10.36.110.19])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id E93342D103;
-        Fri, 23 Apr 2021 10:34:56 +0000 (UTC)
-Date:   Fri, 23 Apr 2021 12:34:55 +0200
-From:   Jesper Dangaard Brouer <brouer@redhat.com>
-To:     Lorenzo Bianconi <lorenzo@kernel.org>
-Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org,
-        lorenzo.bianconi@redhat.com, davem@davemloft.net, kuba@kernel.org,
-        ast@kernel.org, daniel@iogearbox.net, toke@redhat.com,
-        song@kernel.org, brouer@redhat.com
-Subject: Re: [PATCH v4 bpf-next] cpumap: bulk skb using
- netif_receive_skb_list
-Message-ID: <20210423123455.279dae88@carbon>
-In-Reply-To: <c729f83e5d7482d9329e0f165bdbe5adcefd1510.1619169700.git.lorenzo@kernel.org>
-References: <c729f83e5d7482d9329e0f165bdbe5adcefd1510.1619169700.git.lorenzo@kernel.org>
+        id S242108AbhDWKr3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 23 Apr 2021 06:47:29 -0400
+Received: from pegase1.c-s.fr ([93.17.236.30]:43462 "EHLO pegase1.c-s.fr"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229885AbhDWKr0 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 23 Apr 2021 06:47:26 -0400
+Received: from localhost (mailhub1-int [192.168.12.234])
+        by localhost (Postfix) with ESMTP id 4FRWF12hTFz9vBLr;
+        Fri, 23 Apr 2021 12:46:45 +0200 (CEST)
+X-Virus-Scanned: Debian amavisd-new at c-s.fr
+Received: from pegase1.c-s.fr ([192.168.12.234])
+        by localhost (pegase1.c-s.fr [192.168.12.234]) (amavisd-new, port 10024)
+        with ESMTP id OMUajc0KWjbX; Fri, 23 Apr 2021 12:46:45 +0200 (CEST)
+Received: from messagerie.si.c-s.fr (messagerie.si.c-s.fr [192.168.25.192])
+        by pegase1.c-s.fr (Postfix) with ESMTP id 4FRWF117fBz9vBKj;
+        Fri, 23 Apr 2021 12:46:45 +0200 (CEST)
+Received: from localhost (localhost [127.0.0.1])
+        by messagerie.si.c-s.fr (Postfix) with ESMTP id CE9A68B849;
+        Fri, 23 Apr 2021 12:46:46 +0200 (CEST)
+X-Virus-Scanned: amavisd-new at c-s.fr
+Received: from messagerie.si.c-s.fr ([127.0.0.1])
+        by localhost (messagerie.si.c-s.fr [127.0.0.1]) (amavisd-new, port 10023)
+        with ESMTP id bnOKyCWI-iRB; Fri, 23 Apr 2021 12:46:46 +0200 (CEST)
+Received: from [192.168.4.90] (unknown [192.168.4.90])
+        by messagerie.si.c-s.fr (Postfix) with ESMTP id B69ED8B765;
+        Fri, 23 Apr 2021 12:46:43 +0200 (CEST)
+Subject: Re: [PATCH bpf-next 1/2] bpf: Remove bpf_jit_enable=2 debugging mode
+To:     Quentin Monnet <quentin@isovalent.com>,
+        Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     Ian Rogers <irogers@google.com>, Song Liu <songliubraving@fb.com>,
+        "open list:DOCUMENTATION" <linux-doc@vger.kernel.org>,
+        Zi Shen Lim <zlim.lnx@gmail.com>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Paul Mackerras <paulus@samba.org>,
+        Sandipan Das <sandipan@linux.ibm.com>,
+        "H. Peter Anvin" <hpa@zytor.com>, sparclinux@vger.kernel.org,
+        Shubham Bansal <illusionist.neo@gmail.com>,
+        Mahesh Bandewar <maheshb@google.com>,
+        Will Deacon <will@kernel.org>,
+        Nicolas Dichtel <nicolas.dichtel@6wind.com>,
+        linux-s390 <linux-s390@vger.kernel.org>,
+        Ilya Leoshkevich <iii@linux.ibm.com>, paulburton@kernel.org,
+        Jonathan Corbet <corbet@lwn.net>,
+        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
+        Masahiro Yamada <masahiroy@kernel.org>,
+        X86 ML <x86@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        linux-riscv <linux-riscv@lists.infradead.org>,
+        Christian Borntraeger <borntraeger@de.ibm.com>,
+        Ingo Molnar <mingo@redhat.com>,
+        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        "Naveen N . Rao" <naveen.n.rao@linux.ibm.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Tobias Klauser <tklauser@distanz.ch>,
+        linux-mips@vger.kernel.org, grantseltzer@gmail.com,
+        Xi Wang <xi.wang@gmail.com>, Albert Ou <aou@eecs.berkeley.edu>,
+        Kees Cook <keescook@chromium.org>,
+        Vasily Gorbik <gor@linux.ibm.com>,
+        Luke Nelson <luke.r.nels@gmail.com>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Heiko Carstens <hca@linux.ibm.com>,
+        ppc-dev <linuxppc-dev@lists.ozlabs.org>,
+        KP Singh <kpsingh@kernel.org>, iecedge@gmail.com,
+        Simon Horman <horms@verge.net.au>,
+        Borislav Petkov <bp@alien8.de>,
+        Alexander Viro <viro@zeniv.linux.org.uk>,
+        Yonghong Song <yhs@fb.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Dmitry Vyukov <dvyukov@google.com>, tsbogend@alpha.franken.de,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        Network Development <netdev@vger.kernel.org>,
+        David Ahern <dsahern@kernel.org>,
+        Wang YanQing <udknight@gmail.com>,
+        Martin KaFai Lau <kafai@fb.com>,
+        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn@kernel.org>,
+        Palmer Dabbelt <palmer@dabbelt.com>, bpf <bpf@vger.kernel.org>,
+        Jianlin Lv <Jianlin.Lv@arm.com>,
+        "David S. Miller" <davem@davemloft.net>
+References: <20210415093250.3391257-1-Jianlin.Lv@arm.com>
+ <9c4a78d2-f73c-832a-e6e2-4b4daa729e07@iogearbox.net>
+ <d3949501-8f7d-57c4-b3fe-bcc3b24c09d8@isovalent.com>
+ <CAADnVQJ2oHbYfgY9jqM_JMxUsoZxaNrxKSVFYfgCXuHVpDehpQ@mail.gmail.com>
+ <0dea05ba-9467-0d84-4515-b8766f60318e@csgroup.eu>
+ <CAADnVQ+oQT6C7Qv7P5TV-x7im54omKoCYYKtYhcnhb1Uv3LPMQ@mail.gmail.com>
+ <be132117-f267-5817-136d-e1aeb8409c2a@csgroup.eu>
+ <58296f87-ad00-a0f5-954b-2150aa84efc4@isovalent.com>
+From:   Christophe Leroy <christophe.leroy@csgroup.eu>
+Message-ID: <6a809d3f-c9e3-0eb7-9c1d-a202ad848424@csgroup.eu>
+Date:   Fri, 23 Apr 2021 12:46:39 +0200
+User-Agent: Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.10.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
+In-Reply-To: <58296f87-ad00-a0f5-954b-2150aa84efc4@isovalent.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: fr
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 23 Apr 2021 11:27:27 +0200
-Lorenzo Bianconi <lorenzo@kernel.org> wrote:
 
-> Rely on netif_receive_skb_list routine to send skbs converted from
-> xdp_frames in cpu_map_kthread_run in order to improve i-cache usage.
-> The proposed patch has been tested running xdp_redirect_cpu bpf sample
-> available in the kernel tree that is used to redirect UDP frames from
-> ixgbe driver to a cpumap entry and then to the networking stack.
-> UDP frames are generated using pkt_gen. Packets are discarded by the
-> UDP layer.
-> 
-> $xdp_redirect_cpu  --cpu <cpu> --progname xdp_cpu_map0 --dev <eth>
-> 
-> bpf-next: ~2.35Mpps
-> bpf-next + cpumap skb-list: ~2.72Mpps
-> 
-> Rename drops counter in kmem_alloc_drops since now it reports just
-> kmem_cache_alloc_bulk failures
-> 
-> Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
 
-Acked-by: Jesper Dangaard Brouer <brouer@redhat.com>
+Le 23/04/2021 à 12:26, Quentin Monnet a écrit :
+> 2021-04-23 09:19 UTC+0200 ~ Christophe Leroy <christophe.leroy@csgroup.eu>
+> 
+> [...]
+> 
+>> I finally managed to cross compile bpftool with libbpf, libopcodes,
+>> readline, ncurses, libcap, libz and all needed stuff. Was not easy but I
+>> made it.
+> 
+> Libcap is optional and bpftool does not use readline or ncurses. May I
+> ask how you tried to build it?
 
--- 
-Best regards,
-  Jesper Dangaard Brouer
-  MSc.CS, Principal Kernel Engineer at Red Hat
-  LinkedIn: http://www.linkedin.com/in/brouer
+cd tools/bpf/
 
+make ARCH=powerpc CROSS_COMPILE=ppc-linux-
+
+
+Christophe
