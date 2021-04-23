@@ -2,340 +2,145 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B3E963691E7
-	for <lists+netdev@lfdr.de>; Fri, 23 Apr 2021 14:20:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7B6203691FA
+	for <lists+netdev@lfdr.de>; Fri, 23 Apr 2021 14:23:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242472AbhDWMUi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 23 Apr 2021 08:20:38 -0400
-Received: from so254-9.mailgun.net ([198.61.254.9]:23342 "EHLO
-        so254-9.mailgun.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242458AbhDWMUi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 23 Apr 2021 08:20:38 -0400
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1619180402; h=References: In-Reply-To: Message-Id: Date:
- Subject: Cc: To: From: Sender;
- bh=x/2aGlJLI3uqQnBov7kDT0xjC8lNaoFdf8X3kHO3eY8=; b=K85A3Gx8L3WKHLFur2PgH8AAIcJZJEorYZN9DLrY2J4wWwr4f0JvWz+7GTr8Fji6QjLVg44+
- 2MbDI47Uur1Royd/2/h/EKGp9OTbTgJNNdYvLP/rM3piPGVS66PiVLDhJDKgBYzCTxI5S28g
- WDXXhUL32+uzyIpU6hWiMysdRHo=
-X-Mailgun-Sending-Ip: 198.61.254.9
-X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
-Received: from smtp.codeaurora.org
- (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
- smtp-out-n04.prod.us-west-2.postgun.com with SMTP id
- 6082bb572cc44d3aea4014c7 (version=TLS1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Fri, 23 Apr 2021 12:19:35
- GMT
-Sender: sharathv=codeaurora.org@mg.codeaurora.org
-Received: by smtp.codeaurora.org (Postfix, from userid 1001)
-        id 10A77C433F1; Fri, 23 Apr 2021 12:19:35 +0000 (UTC)
-X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
-        aws-us-west-2-caf-mail-1.web.codeaurora.org
-X-Spam-Level: 
-X-Spam-Status: No, score=-2.9 required=2.0 tests=ALL_TRUSTED,BAYES_00,SPF_FAIL,
-        URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
-Received: from svurukal-linux.qualcomm.com (unknown [202.46.22.19])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-SHA256 (128/128 bits))
-        (No client certificate requested)
-        (Authenticated sender: sharathv)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id D09CBC43460;
-        Fri, 23 Apr 2021 12:19:30 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org D09CBC43460
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=fail smtp.mailfrom=sharathv@codeaurora.org
-From:   Sharath Chandra Vurukala <sharathv@codeaurora.org>
-To:     davem@davemloft.net, kuba@kernel.org, elder@kernel.org,
-        cpratapa@codeaurora.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     Sharath Chandra Vurukala <sharathv@codeaurora.org>
-Subject: [PATCH net-next v5 3/3] net: ethernet: rmnet: Add support for MAPv5 egress packets
-Date:   Fri, 23 Apr 2021 17:49:03 +0530
-Message-Id: <1619180343-3943-4-git-send-email-sharathv@codeaurora.org>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1619180343-3943-1-git-send-email-sharathv@codeaurora.org>
-References: <stranche@codeaurora.org linux-doc@vger.kernel.org corbet@lwn.net>
- <1619180343-3943-1-git-send-email-sharathv@codeaurora.org>
+        id S242433AbhDWMXW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 23 Apr 2021 08:23:22 -0400
+Received: from mail-dm6nam10on2052.outbound.protection.outlook.com ([40.107.93.52]:10176
+        "EHLO NAM10-DM6-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S242301AbhDWMXT (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 23 Apr 2021 08:23:19 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=NBu56+kllyAuCFhEgCCdEZXuM6y+apJ9DtY37gqBKJ805OZ1BjmWqu+TY5k3RuNNHxyMOEdh6wEzQAAe7kwt7wYuR2AJXx56zpy6Ol+M75MH62YyuH0MAIQbQ66GoYB/xonxMqPMLG0KZvbiMTpi+HmhE/W2rnkZ+wDIt1tlBOflULZVbSBHIrxOU/JxLFplTIHgNUAfop/ImDd+5DJrWPqIsT6IkiOH/nk/VmQ8mPjJj3Ksz6UWgODjeD9NI5uxdIxyeFAS5wDXVDY0Wq0Xlwjnw4/4HNRFkLEMOLR2OMlDBUQlFKUI+2AhS2LVHTiINOrqEpRwhew5uqjXV+bg2A==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=p6pW1DIWgp7j7KLT55UDFMcSL4Y9sitWyM0X9N+57eg=;
+ b=JM321XHCr8ZqWvzwt6wrQ6BrFwsLgxG38ybxxArITScaWX/kiTNjlzbOMM9YP2wZpYIn0NPHDBEhRv27eLyKSZEZ1iCoxeofojcehr3yGcPVNWVWN5Z9w4H0Tcg79UQrrQ9G0NMWZBXeLTYVlQKcUA+gFTB83CI0oBKYLhmsYyuZswbJsrYzFGHVGwa71d2zYlgFt+/lv2BON+Huj6SrinasdecW7jpHr6UKRV84tBqnVl358+RuMYJHcu3twUm4wFbwdUu57cTJPLc2cyUSPrEXkaaRNIA3FQVy17VHUVgoNm+fSfrH5AUgWEsdIscGHJhn3aZAGI4s7Rq+TUUFvQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 216.228.112.34) smtp.rcpttodomain=kernel.org smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=none sp=none pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=p6pW1DIWgp7j7KLT55UDFMcSL4Y9sitWyM0X9N+57eg=;
+ b=k26C6my/mS383jyCqdGIcL0n95oTz1h4ps8Wd5JhIdBWY6NWiNs/bzTNwc15BSbOWIqmLgVD2586KX0amztR8+WS6/nfrvPKUPCJh3BIQNMWJJaCYf9OCCCyQmDLaqpWDnIKQAiIJImeSEkNrlDEQZbG7zvAmCd7ym/rOgl1Iu0g2E5iFNLexYmHf+WCUtq8tlUnsxEqBgIVwdtCXaPZdJRzDg9dNt6OuRPkPGhQkX2uuZQWqX2L21OzdDNlohFC7ovciEhwWknLx5zXh9gwEhkyCSSmjBKDRvvxJ1LNGrLg3YycQRLRtgaufRKwapuLEqzxrax6PWgHaAbyw2okjg==
+Received: from BN6PR12CA0039.namprd12.prod.outlook.com (2603:10b6:405:70::25)
+ by BYAPR12MB2983.namprd12.prod.outlook.com (2603:10b6:a03:d6::20) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4065.23; Fri, 23 Apr
+ 2021 12:22:42 +0000
+Received: from BN8NAM11FT049.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:405:70:cafe::33) by BN6PR12CA0039.outlook.office365.com
+ (2603:10b6:405:70::25) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4065.20 via Frontend
+ Transport; Fri, 23 Apr 2021 12:22:42 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.112.34)
+ smtp.mailfrom=nvidia.com; kernel.org; dkim=none (message not signed)
+ header.d=none;kernel.org; dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 216.228.112.34 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.112.34; helo=mail.nvidia.com;
+Received: from mail.nvidia.com (216.228.112.34) by
+ BN8NAM11FT049.mail.protection.outlook.com (10.13.177.157) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.20.4065.21 via Frontend Transport; Fri, 23 Apr 2021 12:22:41 +0000
+Received: from localhost.localdomain (172.20.145.6) by HQMAIL107.nvidia.com
+ (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Fri, 23 Apr
+ 2021 12:22:39 +0000
+From:   Petr Machata <petrm@nvidia.com>
+To:     <netdev@vger.kernel.org>
+CC:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, <mlxsw@nvidia.com>,
+        Ido Schimmel <idosch@nvidia.com>,
+        Danielle Ratson <danieller@nvidia.com>,
+        Jiri Pirko <jiri@nvidia.com>, "Petr Machata" <petrm@nvidia.com>
+Subject: [PATCH net-next 0/6] selftests: mlxsw: Fixes
+Date:   Fri, 23 Apr 2021 14:19:42 +0200
+Message-ID: <cover.1619179926.git.petrm@nvidia.com>
+X-Mailer: git-send-email 2.26.3
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [172.20.145.6]
+X-ClientProxiedBy: HQMAIL111.nvidia.com (172.20.187.18) To
+ HQMAIL107.nvidia.com (172.20.187.13)
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: b70f3910-6cc0-4526-514c-08d906527e09
+X-MS-TrafficTypeDiagnostic: BYAPR12MB2983:
+X-Microsoft-Antispam-PRVS: <BYAPR12MB298372573076644D6F84F4CFD6459@BYAPR12MB2983.namprd12.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:8882;
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: +eW/Fzf0Z3urWx0spPJ/SHI5zEA+0jrG18vOlb8Eof9YzniqOA+25oVgnFViJlqwC3+MxE5y1wN7d8kw64wv+wN5Zkajh1ZH0Lo3zdwvHjAPGggdb2tq0/mluOn2NI46GYgRWshNXsGufEfPo2PdgNjKVM92MT25UI1kVlpbzp5hxuZzaveLqwydA1XwF5uktY/Y6XNDDjwFpeiPeZDSgu0oO4Rrv3jws1ZLT+HlJP4bs3L7wG6cgsIcTr3GGqz6I2dyBheeL+AM6Kkk5X9Vnk5dOzq/oPCVRzzluB1uso23NhqE2eAXQW57LfgiR8cFChAODwAyFX2tTAl/r/E4OPR1wpx8YtZPvZo0DsiRPgrmyM9fDE50cmWXEjeN3PkyLs+EUqsw59RoWWucr/uRBX3Oij/3ydETzjQcaPPH3rE//aujFKi2CSSRzazNKwsbFXbjeUfOt7fDOfuLhmCI7hUG2BoWPEDmKQGKrH2IGj5GOpS6jL5SROikEsZ/lebwSmkjGpTiSinQ5J4l2Zaz9jyHDU4vNTlBqS9jkqAuzrQf/FCuA2pIYdx9etZGbvYolbI2swGlRFFt9pN6Al6+sbLTj+UnnWoW8+049X5q2zNO4QEdt7mjap0sg4bTCx8AsHCvPhLBDh5ePpiWx8rmxlGoqBCrOjtRJXiP91haYGc=
+X-Forefront-Antispam-Report: CIP:216.228.112.34;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:schybrid03.nvidia.com;CAT:NONE;SFS:(4636009)(136003)(376002)(396003)(346002)(39850400004)(36840700001)(46966006)(4326008)(6916009)(2616005)(82310400003)(478600001)(54906003)(36906005)(107886003)(316002)(2906002)(16526019)(186003)(36756003)(8936002)(47076005)(83380400001)(26005)(356005)(426003)(36860700001)(6666004)(82740400003)(86362001)(5660300002)(70586007)(7636003)(70206006)(8676002)(336012);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 23 Apr 2021 12:22:41.9491
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: b70f3910-6cc0-4526-514c-08d906527e09
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.112.34];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource: BN8NAM11FT049.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR12MB2983
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Adding Support for MAPv5 egress packets.
-Based on the configuration Request HW for csum offload
-by setting the csum_valid_required of Mapv5 packet.
+This patch set carries fixes to selftest issues that we have hit in our
+nightly regression run. Almost all are in mlxsw selftests, though one is in
+a generic forwarding selftest.
 
-Acked-by: Subash Abhinov Kasiviswanathan <subashab@codeaurora.org>
-Acked-by: Alex Elder <elder@linaro.org>
-Signed-off-by: Sharath Chandra Vurukala <sharathv@codeaurora.org>
----
- drivers/net/ethernet/qualcomm/rmnet/rmnet_config.h |  4 +-
- .../net/ethernet/qualcomm/rmnet/rmnet_handlers.c   | 14 +++-
- drivers/net/ethernet/qualcomm/rmnet/rmnet_map.h    |  8 +-
- .../net/ethernet/qualcomm/rmnet/rmnet_map_data.c   | 93 ++++++++++++++++++++--
- drivers/net/ethernet/qualcomm/rmnet/rmnet_vnd.c    |  3 +-
- include/uapi/linux/if_link.h                       |  1 +
- 6 files changed, 109 insertions(+), 14 deletions(-)
+- In patch #1, in an ERSPAN test, install an FDB entry as static instead of
+  (implicitly) as local.
 
-diff --git a/drivers/net/ethernet/qualcomm/rmnet/rmnet_config.h b/drivers/net/ethernet/qualcomm/rmnet/rmnet_config.h
-index 8d8d469..8e64ca9 100644
---- a/drivers/net/ethernet/qualcomm/rmnet/rmnet_config.h
-+++ b/drivers/net/ethernet/qualcomm/rmnet/rmnet_config.h
-@@ -1,5 +1,6 @@
- /* SPDX-License-Identifier: GPL-2.0-only */
--/* Copyright (c) 2013-2014, 2016-2018 The Linux Foundation. All rights reserved.
-+/* Copyright (c) 2013-2014, 2016-2018, 2021 The Linux Foundation.
-+ * All rights reserved.
-  *
-  * RMNET Data configuration engine
-  */
-@@ -56,6 +57,7 @@ struct rmnet_priv_stats {
- 	u64 csum_fragmented_pkt;
- 	u64 csum_skipped;
- 	u64 csum_sw;
-+	u64 csum_hw;
- };
- 
- struct rmnet_priv {
-diff --git a/drivers/net/ethernet/qualcomm/rmnet/rmnet_handlers.c b/drivers/net/ethernet/qualcomm/rmnet/rmnet_handlers.c
-index 706a225..51a2e94 100644
---- a/drivers/net/ethernet/qualcomm/rmnet/rmnet_handlers.c
-+++ b/drivers/net/ethernet/qualcomm/rmnet/rmnet_handlers.c
-@@ -133,7 +133,7 @@ static int rmnet_map_egress_handler(struct sk_buff *skb,
- 				    struct rmnet_port *port, u8 mux_id,
- 				    struct net_device *orig_dev)
- {
--	int required_headroom, additional_header_len;
-+	int required_headroom, additional_header_len, csum_type = 0;
- 	struct rmnet_map_header *map_header;
- 
- 	additional_header_len = 0;
-@@ -142,6 +142,10 @@ static int rmnet_map_egress_handler(struct sk_buff *skb,
- 	if (port->data_format & RMNET_FLAGS_EGRESS_MAP_CKSUMV4) {
- 		additional_header_len = sizeof(struct rmnet_map_ul_csum_header);
- 		required_headroom += additional_header_len;
-+		csum_type = RMNET_FLAGS_EGRESS_MAP_CKSUMV4;
-+	} else if (port->data_format & RMNET_FLAGS_EGRESS_MAP_CKSUMV5) {
-+		additional_header_len = sizeof(struct rmnet_map_v5_csum_header);
-+		csum_type = RMNET_FLAGS_EGRESS_MAP_CKSUMV5;
- 	}
- 
- 	if (skb_headroom(skb) < required_headroom) {
-@@ -149,10 +153,12 @@ static int rmnet_map_egress_handler(struct sk_buff *skb,
- 			return -ENOMEM;
- 	}
- 
--	if (port->data_format & RMNET_FLAGS_EGRESS_MAP_CKSUMV4)
--		rmnet_map_checksum_uplink_packet(skb, orig_dev);
-+	if (csum_type)
-+		rmnet_map_checksum_uplink_packet(skb, port, orig_dev,
-+						 csum_type);
- 
--	map_header = rmnet_map_add_map_header(skb, additional_header_len, 0);
-+	map_header = rmnet_map_add_map_header(skb, additional_header_len,
-+					      port, 0);
- 	if (!map_header)
- 		return -ENOMEM;
- 
-diff --git a/drivers/net/ethernet/qualcomm/rmnet/rmnet_map.h b/drivers/net/ethernet/qualcomm/rmnet/rmnet_map.h
-index 1a399bf..e5a0b38 100644
---- a/drivers/net/ethernet/qualcomm/rmnet/rmnet_map.h
-+++ b/drivers/net/ethernet/qualcomm/rmnet/rmnet_map.h
-@@ -43,11 +43,15 @@ enum rmnet_map_commands {
- struct sk_buff *rmnet_map_deaggregate(struct sk_buff *skb,
- 				      struct rmnet_port *port);
- struct rmnet_map_header *rmnet_map_add_map_header(struct sk_buff *skb,
--						  int hdrlen, int pad);
-+						  int hdrlen,
-+						  struct rmnet_port *port,
-+						  int pad);
- void rmnet_map_command(struct sk_buff *skb, struct rmnet_port *port);
- int rmnet_map_checksum_downlink_packet(struct sk_buff *skb, u16 len);
- void rmnet_map_checksum_uplink_packet(struct sk_buff *skb,
--				      struct net_device *orig_dev);
-+				      struct rmnet_port *port,
-+				      struct net_device *orig_dev,
-+				      int csum_type);
- int rmnet_map_process_next_hdr_packet(struct sk_buff *skb, u16 len);
- 
- #endif /* _RMNET_MAP_H_ */
-diff --git a/drivers/net/ethernet/qualcomm/rmnet/rmnet_map_data.c b/drivers/net/ethernet/qualcomm/rmnet/rmnet_map_data.c
-index 43813cf..339d964 100644
---- a/drivers/net/ethernet/qualcomm/rmnet/rmnet_map_data.c
-+++ b/drivers/net/ethernet/qualcomm/rmnet/rmnet_map_data.c
-@@ -12,6 +12,7 @@
- #include "rmnet_config.h"
- #include "rmnet_map.h"
- #include "rmnet_private.h"
-+#include <linux/bitfield.h>
- 
- #define RMNET_MAP_DEAGGR_SPACING  64
- #define RMNET_MAP_DEAGGR_HEADROOM (RMNET_MAP_DEAGGR_SPACING / 2)
-@@ -251,12 +252,69 @@ rmnet_map_ipv6_ul_csum_header(void *ip6hdr,
- }
- #endif
- 
-+static void rmnet_map_v5_checksum_uplink_packet(struct sk_buff *skb,
-+						struct rmnet_port *port,
-+						struct net_device *orig_dev)
-+{
-+	struct rmnet_priv *priv = netdev_priv(orig_dev);
-+	struct rmnet_map_v5_csum_header *ul_header;
-+
-+	if (!(port->data_format & RMNET_FLAGS_EGRESS_MAP_CKSUMV5))
-+		return;
-+
-+	ul_header = skb_push(skb, sizeof(*ul_header));
-+	memset(ul_header, 0, sizeof(*ul_header));
-+	ul_header->header_info = RMNET_MAP_HEADER_TYPE_CSUM_OFFLOAD <<
-+					MAPV5_HDRINFO_HDR_TYPE_SHIFT;
-+
-+	if (skb->ip_summed == CHECKSUM_PARTIAL) {
-+		void *iph = (char *)ul_header + sizeof(*ul_header);
-+		__sum16 *check;
-+		void *trans;
-+		u8 proto;
-+
-+		if (skb->protocol == htons(ETH_P_IP)) {
-+			u16 ip_len = ((struct iphdr *)iph)->ihl * 4;
-+
-+			proto = ((struct iphdr *)iph)->protocol;
-+			trans = iph + ip_len;
-+		} else if (skb->protocol == htons(ETH_P_IPV6)) {
-+#if IS_ENABLED(CONFIG_IPV6)
-+			u16 ip_len = sizeof(struct ipv6hdr);
-+
-+			proto = ((struct ipv6hdr *)iph)->nexthdr;
-+			trans = iph + ip_len;
-+#else
-+			priv->stats.csum_err_invalid_ip_version++;
-+			goto sw_csum;
-+#endif /* CONFIG_IPV6 */
-+		} else {
-+			priv->stats.csum_err_invalid_ip_version++;
-+			goto sw_csum;
-+		}
-+
-+		check = rmnet_map_get_csum_field(proto, trans);
-+		if (check) {
-+			skb->ip_summed = CHECKSUM_NONE;
-+			/* Ask for checksum offloading */
-+			ul_header->csum_info |= MAPV5_CSUMINFO_VALID_FLAG;
-+			priv->stats.csum_hw++;
-+			return;
-+		}
-+	}
-+
-+sw_csum:
-+	priv->stats.csum_sw++;
-+}
-+
- /* Adds MAP header to front of skb->data
-  * Padding is calculated and set appropriately in MAP header. Mux ID is
-  * initialized to 0.
-  */
- struct rmnet_map_header *rmnet_map_add_map_header(struct sk_buff *skb,
--						  int hdrlen, int pad)
-+						  int hdrlen,
-+						  struct rmnet_port *port,
-+						  int pad)
- {
- 	struct rmnet_map_header *map_header;
- 	u32 padding, map_datalen;
-@@ -267,6 +325,10 @@ struct rmnet_map_header *rmnet_map_add_map_header(struct sk_buff *skb,
- 			skb_push(skb, sizeof(struct rmnet_map_header));
- 	memset(map_header, 0, sizeof(struct rmnet_map_header));
- 
-+	/* Set next_hdr bit for csum offload packets */
-+	if (port->data_format & RMNET_FLAGS_EGRESS_MAP_CKSUMV5)
-+		map_header->flags |= MAP_NEXT_HEADER_FLAG;
-+
- 	if (pad == RMNET_MAP_NO_PAD_BYTES) {
- 		map_header->pkt_len = htons(map_datalen);
- 		return map_header;
-@@ -394,11 +456,8 @@ int rmnet_map_checksum_downlink_packet(struct sk_buff *skb, u16 len)
- 	return 0;
- }
- 
--/* Generates UL checksum meta info header for IPv4 and IPv6 over TCP and UDP
-- * packets that are supported for UL checksum offload.
-- */
--void rmnet_map_checksum_uplink_packet(struct sk_buff *skb,
--				      struct net_device *orig_dev)
-+static void rmnet_map_v4_checksum_uplink_packet(struct sk_buff *skb,
-+						struct net_device *orig_dev)
- {
- 	struct rmnet_priv *priv = netdev_priv(orig_dev);
- 	struct rmnet_map_ul_csum_header *ul_header;
-@@ -417,10 +476,12 @@ void rmnet_map_checksum_uplink_packet(struct sk_buff *skb,
- 
- 		if (skb->protocol == htons(ETH_P_IP)) {
- 			rmnet_map_ipv4_ul_csum_header(iphdr, ul_header, skb);
-+			priv->stats.csum_hw++;
- 			return;
- 		} else if (skb->protocol == htons(ETH_P_IPV6)) {
- #if IS_ENABLED(CONFIG_IPV6)
- 			rmnet_map_ipv6_ul_csum_header(iphdr, ul_header, skb);
-+			priv->stats.csum_hw++;
- 			return;
- #else
- 			priv->stats.csum_err_invalid_ip_version++;
-@@ -437,6 +498,26 @@ void rmnet_map_checksum_uplink_packet(struct sk_buff *skb,
- 	priv->stats.csum_sw++;
- }
- 
-+/* Generates UL checksum meta info header for IPv4 and IPv6 over TCP and UDP
-+ * packets that are supported for UL checksum offload.
-+ */
-+void rmnet_map_checksum_uplink_packet(struct sk_buff *skb,
-+				      struct rmnet_port *port,
-+				      struct net_device *orig_dev,
-+				      int csum_type)
-+{
-+	switch (csum_type) {
-+	case RMNET_FLAGS_EGRESS_MAP_CKSUMV4:
-+		rmnet_map_v4_checksum_uplink_packet(skb, orig_dev);
-+		break;
-+	case RMNET_FLAGS_EGRESS_MAP_CKSUMV5:
-+		rmnet_map_v5_checksum_uplink_packet(skb, port, orig_dev);
-+		break;
-+	default:
-+		break;
-+	}
-+}
-+
- /* Process a MAPv5 packet header */
- int rmnet_map_process_next_hdr_packet(struct sk_buff *skb,
- 				      u16 len)
-diff --git a/drivers/net/ethernet/qualcomm/rmnet/rmnet_vnd.c b/drivers/net/ethernet/qualcomm/rmnet/rmnet_vnd.c
-index 41fbd2c..bc6d6ac 100644
---- a/drivers/net/ethernet/qualcomm/rmnet/rmnet_vnd.c
-+++ b/drivers/net/ethernet/qualcomm/rmnet/rmnet_vnd.c
-@@ -174,6 +174,7 @@ static const char rmnet_gstrings_stats[][ETH_GSTRING_LEN] = {
- 	"Checksum skipped on ip fragment",
- 	"Checksum skipped",
- 	"Checksum computed in software",
-+	"Checksum computed in hardware",
- };
- 
- static void rmnet_get_strings(struct net_device *dev, u32 stringset, u8 *buf)
-@@ -354,4 +355,4 @@ int rmnet_vnd_update_dev_mtu(struct rmnet_port *port,
- 	}
- 
- 	return 0;
--}
-\ No newline at end of file
-+}
-diff --git a/include/uapi/linux/if_link.h b/include/uapi/linux/if_link.h
-index 21529b3..1691f3a 100644
---- a/include/uapi/linux/if_link.h
-+++ b/include/uapi/linux/if_link.h
-@@ -1236,6 +1236,7 @@ enum {
- #define RMNET_FLAGS_INGRESS_MAP_CKSUMV4           (1U << 2)
- #define RMNET_FLAGS_EGRESS_MAP_CKSUMV4            (1U << 3)
- #define RMNET_FLAGS_INGRESS_MAP_CKSUMV5           (1U << 4)
-+#define RMNET_FLAGS_EGRESS_MAP_CKSUMV5            (1U << 5)
- 
- enum {
- 	IFLA_RMNET_UNSPEC,
+- In the mlxsw resource-scale test, an if statement overrides the value of
+  $?, which is supposed to contain the result of the test. As a result, the
+  resource scale test can spuriously pass.
+
+  In patches #2 and #3, remove the if statements to fix the issue in,
+  respectively, port_scale test and tc_flower_scale tests.
+
+- Again in the mlxsw resource-scale test, when more then one sub-test is
+  run, a successful sub-test overrides any previous failures. This causes a
+  spurious pass of the overall test. This is fixed in patch #4.
+
+- In patch #5, increase a tolerance in a mlxsw-specific RED backlog test.
+  This test is very noisy, due to rounding errors and the unpredictability
+  of software traffic generation. By bumping the tolerance from 5 % to 10,
+  get the failure rate to zero. This shouldn't impact the accuracy,
+  mistakes in backlog configuration (e.g. due to wrong cell size) are
+  likely to cause a much larger discrepancy.
+
+- In patch #6, fix mausezahn invocation in the mlxsw ERSPAN scale
+  test. The test failed because of the wrong invocation.
+
+Danielle Ratson (3):
+  selftests: mlxsw: Remove a redundant if statement in port_scale test
+  selftests: mlxsw: Remove a redundant if statement in tc_flower_scale
+    test
+  selftests: mlxsw: Return correct error code in resource scale tests
+
+Petr Machata (3):
+  selftests: net: mirror_gre_vlan_bridge_1q: Make an FDB entry static
+  selftests: mlxsw: Increase the tolerance of backlog buildup
+  selftests: mlxsw: Fix mausezahn invocation in ERSPAN scale test
+
+ .../drivers/net/mlxsw/mirror_gre_scale.sh     |  3 ++-
+ .../selftests/drivers/net/mlxsw/port_scale.sh |  6 +-----
+ .../drivers/net/mlxsw/sch_red_core.sh         |  4 ++--
+ .../net/mlxsw/spectrum-2/resource_scale.sh    |  4 +++-
+ .../net/mlxsw/spectrum/resource_scale.sh      |  4 +++-
+ .../drivers/net/mlxsw/tc_flower_scale.sh      |  6 +-----
+ .../forwarding/mirror_gre_vlan_bridge_1q.sh   |  2 +-
+ .../selftests/net/forwarding/mirror_lib.sh    | 19 +++++++++++++++++--
+ 8 files changed, 30 insertions(+), 18 deletions(-)
+
 -- 
-The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum,
-a Linux Foundation Collaborative Project
+2.26.2
 
