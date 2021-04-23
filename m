@@ -2,54 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 989FE368AE8
-	for <lists+netdev@lfdr.de>; Fri, 23 Apr 2021 04:09:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 01328368AEB
+	for <lists+netdev@lfdr.de>; Fri, 23 Apr 2021 04:09:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240201AbhDWCDR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 22 Apr 2021 22:03:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48034 "EHLO
+        id S240330AbhDWCD6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 22 Apr 2021 22:03:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48174 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235569AbhDWCDQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 22 Apr 2021 22:03:16 -0400
-Received: from mail-pj1-x102e.google.com (mail-pj1-x102e.google.com [IPv6:2607:f8b0:4864:20::102e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BAE38C061574;
-        Thu, 22 Apr 2021 19:02:40 -0700 (PDT)
-Received: by mail-pj1-x102e.google.com with SMTP id j14-20020a17090a694eb0290152d92c205dso406537pjm.0;
-        Thu, 22 Apr 2021 19:02:40 -0700 (PDT)
+        with ESMTP id S235569AbhDWCD4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 22 Apr 2021 22:03:56 -0400
+Received: from mail-ej1-x62a.google.com (mail-ej1-x62a.google.com [IPv6:2a00:1450:4864:20::62a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B07DC061574;
+        Thu, 22 Apr 2021 19:03:18 -0700 (PDT)
+Received: by mail-ej1-x62a.google.com with SMTP id g5so64910127ejx.0;
+        Thu, 22 Apr 2021 19:03:18 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=MIgdRjUh37KQpO3V53b3PzVFuP1EGMTOBO5R7sQ4s44=;
-        b=jrOv5SVRGoXakdq5c6ty45y4EMN+/UQPhG1Gz0G0uHim0lhaW6TVYc+N/V6OELfCSJ
-         Gtem1rEE/vMqX+otWKg3aum4dLnzqh0SN0lAXGGiYZBf5ASYhuanqtiN4n//2FFjNbtu
-         Z4ZBwkuZfBBIDBRF9/8pfBwhDMIx805YYBYxW7h8AqLgbUF6h07mNXnZj2eUNsxdhh/O
-         yw0m7eDOa/UH2BBY+dnxB7hs1mIdAU/DmTOYvgxSuFv2jDVoib0RujAadNf9OmvDyOtH
-         m9BoutcM6/yU0Z3tVIoi+xazORaq9E7bLoZpp01q3tJAL2dhDXDuHeE//xTDDP+DcgK1
-         X/zA==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=3XKuyqUzDOuX16SXd9OtTX2N8z10+36sGgTfwqHicEU=;
+        b=jFVAUcObhHH3rjXs4KcCH/PO8aNbIyqiguGFgop25zWtS93hGm+r1NtZUY3284YFFv
+         P/TA+2ewN68s6AeAWuaNoghFu47b0S5onAnJzLZtIRO3ySaMX6pxgrE9zmro7aHntYyd
+         wDfZTxqDjBlCI9t3gXpgatYYiTcXlcq9skNQjI2k9e6lo2qghLBh0BI9PoJD+dbn9S/l
+         OUfckaS374eqJhPEK1nV+OFkr07+wTaaVB42BrtJT6GB4k0IOXfJmj2wB3gmRb0Xwgzz
+         zDbCG3klDg99+Zca5yAwZGNrMx9M2n0xGdwhtZfAp9TDvQX6Iek9s/moNb+OyfYInN7K
+         k0PA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=MIgdRjUh37KQpO3V53b3PzVFuP1EGMTOBO5R7sQ4s44=;
-        b=RG27h3jeaKlfNswbytL15g482UeXC/9DY8zfT//S3j1tiACgbI8suBqiO9aAK+BA3o
-         vUc22F0e8Jhm7GWTYGsz2OwyKsMxmqvveJtuI/wYiEiQQbedM8SZorRbOSs/j9slRUZo
-         OuxfMnWeUPCJ5/RfTNE3nqEV1v8I75ZVMenOnTnEVValzWX4pKbRhAiyGvCtQ99dpwqa
-         JrW8HEfNC2dRuQCrrCfP9oI2jqSUULf6vLT9klObVdCdCpN1YC9aSgGIF9ek4TEV9g9i
-         KWqmyxmRjk2DylCkdnvIKQGEpmV/W/sZBspb1HWXhIPDPV/dBF8MSaueY+Bw0SOjPOne
-         k9vA==
-X-Gm-Message-State: AOAM530Xs0+9dSusea+Ilm2BcwZecYqhORpG10INHN7INcpOXdETn4aS
-        +y1gWxwuDW7239LkNrCxlkWmTWgfBVA=
-X-Google-Smtp-Source: ABdhPJw3K2W9fZBiaJg/10xJwsrXtpI/hNtnoTOa/fhFPBkVQWTCVUSsAeImRQQJDBRcqr/DRCCsag==
-X-Received: by 2002:a17:902:bd4a:b029:ec:7b39:9738 with SMTP id b10-20020a170902bd4ab02900ec7b399738mr1718439plx.59.1619143360004;
-        Thu, 22 Apr 2021 19:02:40 -0700 (PDT)
-Received: from [10.230.29.202] ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id cv12sm3118503pjb.35.2021.04.22.19.02.38
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 22 Apr 2021 19:02:39 -0700 (PDT)
-Subject: Re: [PATCH 11/14] drivers: net: dsa: qca8k: apply switch revision fix
-To:     Ansuel Smith <ansuelsmth@gmail.com>
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=3XKuyqUzDOuX16SXd9OtTX2N8z10+36sGgTfwqHicEU=;
+        b=ROY0OrvU/6yK2QGIfEgOjGCCtp5NwmQXN+1SLnahvhn7KQXT5Fp1rS0U12jttuj5tT
+         RxYGRJUYP1eNV1aixSPp+NHSdkf3zhuHZcex3eLZrbic4n2R/nTDIokh5YmR9FTw4AKz
+         Izi/vVGJx+pIhWT29QKm+DXDeMtHkmwL0LV09CxtUZW7gLPA8DIK82nJqBaBuwRDBkt8
+         zfhveddbQ2GoHGTXGi6DWJuOe/mlDAqsGr/LrMCJ5TtT/LtIci10rxJh+PPpLo18mMgT
+         6jQ+7VvuGMWv3DoTKa94dKDPskttdom0J/rNDVO8NA8enDsnhk8YeXzvyhMP+4Wk+zWB
+         rQgw==
+X-Gm-Message-State: AOAM532TvIGqMEOvAZPkbvSmySIqyeF96A9JBDUMm/voVrFWEyFgY4vR
+        YeuUnwPEI0EWGoM8WrIwKJE=
+X-Google-Smtp-Source: ABdhPJzDX7REHeUvBPsrXFyngPuRNIm2YTRVmBd943aZu+j8XRksIFU1UXutpijlRJ2aL2yry4BkOA==
+X-Received: by 2002:a17:906:c08f:: with SMTP id f15mr1658363ejz.318.1619143396943;
+        Thu, 22 Apr 2021 19:03:16 -0700 (PDT)
+Received: from Ansuel-xps.localdomain (93-35-189-2.ip56.fastwebnet.it. [93.35.189.2])
+        by smtp.gmail.com with ESMTPSA id b22sm3608094edr.52.2021.04.22.19.03.16
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 22 Apr 2021 19:03:16 -0700 (PDT)
+Date:   Fri, 23 Apr 2021 04:03:13 +0200
+From:   Ansuel Smith <ansuelsmth@gmail.com>
+To:     Florian Fainelli <f.fainelli@gmail.com>
 Cc:     Andrew Lunn <andrew@lunn.ch>,
         Vivien Didelot <vivien.didelot@gmail.com>,
         Vladimir Oltean <olteanv@gmail.com>,
@@ -59,73 +59,132 @@ Cc:     Andrew Lunn <andrew@lunn.ch>,
         Heiner Kallweit <hkallweit1@gmail.com>,
         Russell King <linux@armlinux.org.uk>, netdev@vger.kernel.org,
         devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 03/14] drivers: net: mdio: mdio-ip8064: improve busy wait
+ delay
+Message-ID: <YIIq4SgzceJfhwDC@Ansuel-xps.localdomain>
 References: <20210423014741.11858-1-ansuelsmth@gmail.com>
- <20210423014741.11858-12-ansuelsmth@gmail.com>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-Message-ID: <e644aba9-a092-3825-b55b-e0cca158d28b@gmail.com>
-Date:   Thu, 22 Apr 2021 19:02:37 -0700
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Firefox/78.0 Thunderbird/78.10.0
+ <20210423014741.11858-4-ansuelsmth@gmail.com>
+ <3157ddd3-0a93-fe2d-bc99-751708d3b9e9@gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <20210423014741.11858-12-ansuelsmth@gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <3157ddd3-0a93-fe2d-bc99-751708d3b9e9@gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-
-On 4/22/2021 6:47 PM, Ansuel Smith wrote:
-> qca8k require special debug value based on the switch revision.
+On Thu, Apr 22, 2021 at 06:56:34PM -0700, Florian Fainelli wrote:
 > 
-> Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
-> ---
->  drivers/net/dsa/qca8k.c | 23 +++++++++++++++++++++--
->  1 file changed, 21 insertions(+), 2 deletions(-)
 > 
-> diff --git a/drivers/net/dsa/qca8k.c b/drivers/net/dsa/qca8k.c
-> index 193c269d8ed3..12d2c97d1417 100644
-> --- a/drivers/net/dsa/qca8k.c
-> +++ b/drivers/net/dsa/qca8k.c
-> @@ -909,7 +909,7 @@ qca8k_phylink_mac_config(struct dsa_switch *ds, int port, unsigned int mode,
->  {
->  	const struct qca8k_match_data *data;
->  	struct qca8k_priv *priv = ds->priv;
-> -	u32 reg, val;
-> +	u32 phy, reg, val;
->  
->  	/* get the switches ID from the compatible */
->  	data = of_device_get_match_data(priv->dev);
-> @@ -928,7 +928,26 @@ qca8k_phylink_mac_config(struct dsa_switch *ds, int port, unsigned int mode,
->  	case 3:
->  	case 4:
->  	case 5:
-> -		/* Internal PHY, nothing to do */
-> +		/* Internal PHY, apply revision fixup */
-> +		phy = qca8k_port_to_phy(port) % PHY_MAX_ADDR;
-> +		switch (priv->switch_revision) {
-> +		case 1:
-> +			/* For 100M waveform */
-> +			qca8k_phy_dbg_write(priv, phy, 0, 0x02ea);
-> +			/* Turn on Gigabit clock */
-> +			qca8k_phy_dbg_write(priv, phy, 0x3d, 0x68a0);
-> +			break;
-> +
-> +		case 2:
-> +			qca8k_phy_mmd_write(priv, phy, 0x7, 0x3c, 0x0);
-> +			fallthrough;
-> +		case 4:
-> +			qca8k_phy_mmd_write(priv, phy, 0x3, 0x800d, 0x803f);
-> +			qca8k_phy_dbg_write(priv, phy, 0x3d, 0x6860);
-> +			qca8k_phy_dbg_write(priv, phy, 0x5, 0x2c46);
-> +			qca8k_phy_dbg_write(priv, phy, 0x3c, 0x6000);
-> +			break;
+> On 4/22/2021 6:47 PM, Ansuel Smith wrote:
+> > With the use of the qca8k dsa driver, some problem arised related to
+> > port status detection. With a load on a specific port (for example a
+> > simple speed test), the driver starts to bheave in a strange way and
+> 
+> s/bheave/behave/
+> 
+> > garbage data is produced. To address this, enlarge the sleep delay and
+> > address a bug for the reg offset 31 that require additional delay for
+> > this specific reg.
+> > 
+> > Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
+> > ---
+> >  drivers/net/mdio/mdio-ipq8064.c | 36 ++++++++++++++++++++-------------
+> >  1 file changed, 22 insertions(+), 14 deletions(-)
+> > 
+> > diff --git a/drivers/net/mdio/mdio-ipq8064.c b/drivers/net/mdio/mdio-ipq8064.c
+> > index 1bd18857e1c5..5bd6d0501642 100644
+> > --- a/drivers/net/mdio/mdio-ipq8064.c
+> > +++ b/drivers/net/mdio/mdio-ipq8064.c
+> > @@ -15,25 +15,26 @@
+> >  #include <linux/mfd/syscon.h>
+> >  
+> >  /* MII address register definitions */
+> > -#define MII_ADDR_REG_ADDR                       0x10
+> > -#define MII_BUSY                                BIT(0)
+> > -#define MII_WRITE                               BIT(1)
+> > -#define MII_CLKRANGE_60_100M                    (0 << 2)
+> > -#define MII_CLKRANGE_100_150M                   (1 << 2)
+> > -#define MII_CLKRANGE_20_35M                     (2 << 2)
+> > -#define MII_CLKRANGE_35_60M                     (3 << 2)
+> > -#define MII_CLKRANGE_150_250M                   (4 << 2)
+> > -#define MII_CLKRANGE_250_300M                   (5 << 2)
+> > +#define MII_ADDR_REG_ADDR			0x10
+> > +#define MII_BUSY				BIT(0)
+> > +#define MII_WRITE				BIT(1)
+> > +#define MII_CLKRANGE(x)				((x) << 2)
+> > +#define MII_CLKRANGE_60_100M			MII_CLKRANGE(0)
+> > +#define MII_CLKRANGE_100_150M			MII_CLKRANGE(1)
+> > +#define MII_CLKRANGE_20_35M			MII_CLKRANGE(2)
+> > +#define MII_CLKRANGE_35_60M			MII_CLKRANGE(3)
+> > +#define MII_CLKRANGE_150_250M			MII_CLKRANGE(4)
+> > +#define MII_CLKRANGE_250_300M			MII_CLKRANGE(5)
+> >  #define MII_CLKRANGE_MASK			GENMASK(4, 2)
+> >  #define MII_REG_SHIFT				6
+> >  #define MII_REG_MASK				GENMASK(10, 6)
+> >  #define MII_ADDR_SHIFT				11
+> >  #define MII_ADDR_MASK				GENMASK(15, 11)
+> >  
+> > -#define MII_DATA_REG_ADDR                       0x14
+> > +#define MII_DATA_REG_ADDR			0x14
+> >  
+> > -#define MII_MDIO_DELAY_USEC                     (1000)
+> > -#define MII_MDIO_RETRY_MSEC                     (10)
+> > +#define MII_MDIO_DELAY_USEC			(1000)
+> > +#define MII_MDIO_RETRY_MSEC			(10)
+> 
+> These changes are not related to what you are doing and are just
+> whitespace cleaning, better not to mix them with functional changes.
+>
 
-This would be better done with a PHY driver that is specific to the
-integrated PHY found in these switches, it would provide a nice clean
-layer and would allow you to expose additional features like cable
-tests, PHY statistics/counters, etc.
--- 
-Florian
+Ok will send them in a different patch.
+
+> >  
+> >  struct ipq8064_mdio {
+> >  	struct regmap *base; /* NSS_GMAC0_BASE */
+> > @@ -65,7 +66,7 @@ ipq8064_mdio_read(struct mii_bus *bus, int phy_addr, int reg_offset)
+> >  		   ((reg_offset << MII_REG_SHIFT) & MII_REG_MASK);
+> >  
+> >  	regmap_write(priv->base, MII_ADDR_REG_ADDR, miiaddr);
+> > -	usleep_range(8, 10);
+> > +	usleep_range(10, 13);
+> >  
+> >  	err = ipq8064_mdio_wait_busy(priv);
+> >  	if (err)
+> > @@ -91,7 +92,14 @@ ipq8064_mdio_write(struct mii_bus *bus, int phy_addr, int reg_offset, u16 data)
+> >  		   ((reg_offset << MII_REG_SHIFT) & MII_REG_MASK);
+> >  
+> >  	regmap_write(priv->base, MII_ADDR_REG_ADDR, miiaddr);
+> > -	usleep_range(8, 10);
+> > +
+> > +	/* For the specific reg 31 extra time is needed or the next
+> > +	 * read will produce grabage data.
+> 
+> s/grabage/garbage/
+> 
+> > +	 */
+> > +	if (reg_offset == 31)
+> > +		usleep_range(30, 43);
+> > +	else
+> > +		usleep_range(10, 13);
+> 
+> This is just super weird, presumably register 31 needs to be conditional
+> to the PHY, or pseudo-PHY being driven here. Not that it would harm, but
+> waiting an extra 30 to 43 microseconds with a Marvell PHY or Broadcom
+> PHY or from another vendor would not be necessary.
+>
+
+Any idea how to check this? I found this by printing every value wrote
+and read to the mdio driver and notice this. With only this reg. By
+adding extra delay the problem is solved, without this the very next
+read produce bad data. Maybe some type of specific binding can be useful
+here? Some type of 'qcom,extra-delay-31' binding? (fell free to suggest
+a better name since i'm very bad at them)
+
+> >  
+> >  	return ipq8064_mdio_wait_busy(priv);
+> >  }
+> > 
+> 
+> -- 
+> Florian
