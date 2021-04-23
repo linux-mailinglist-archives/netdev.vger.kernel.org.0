@@ -2,200 +2,149 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F1DB7368D32
-	for <lists+netdev@lfdr.de>; Fri, 23 Apr 2021 08:27:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B1B36368D4E
+	for <lists+netdev@lfdr.de>; Fri, 23 Apr 2021 08:46:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240594AbhDWG1z (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 23 Apr 2021 02:27:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48956 "EHLO
+        id S236806AbhDWGqm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 23 Apr 2021 02:46:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53006 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240603AbhDWG1r (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 23 Apr 2021 02:27:47 -0400
-Received: from mail-lf1-x130.google.com (mail-lf1-x130.google.com [IPv6:2a00:1450:4864:20::130])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 80ED9C06138B
-        for <netdev@vger.kernel.org>; Thu, 22 Apr 2021 23:27:09 -0700 (PDT)
-Received: by mail-lf1-x130.google.com with SMTP id j18so75904578lfg.5
-        for <netdev@vger.kernel.org>; Thu, 22 Apr 2021 23:27:09 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=UaLpQ1STBJ3djn7BvenYPfKeT30znCG7395QctSkfQY=;
-        b=Oo6R7FobKIJW9Od8FqNcKW4kowhygFTVFrzwCrQAIoVXY+rqskfQ+MFX86IiYVjesg
-         BXgT7RPLNq9B0/2V1YRc1ZDfNeyd1w7cS3fuf44y3FzKu/PuwPZSJ2Bqah9VrsGUolKP
-         ZWANJzTOq6LGgUhnoex0Otu1xms4hIkeTt0FYHbjgnGIFmHl73CDQGk5wBFomQptLzhD
-         Y+I3cdMhUmDl+Ua8ZadwEDqc4pEjosV2mK2Sf3XmvN4R08EJ98d5LIGmU+PvQptmk9/y
-         l4zN6fsE93pH2cM7oWateT9Iwwty4v51zr2t7h5XqR10gryt+U/vLHuI6djDtGE87TtJ
-         f8WQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=UaLpQ1STBJ3djn7BvenYPfKeT30znCG7395QctSkfQY=;
-        b=czFOpaJhM2KUCe+S/uDNT74QCQ8H90x0IK3oj67/9MvT4JuH0ecBuwpbw1rMKO/Yp5
-         QFzwFquj5wbBZj6bcLAADtx4bSU3c41DbOM3OnFDKRK+ceKPTrIrEGGgJjiuXvQRQptI
-         VJtwnpOnBR8XxIW/vmiZpwouxvdIf2KAXk51VaQxTYE00XKgFNJDPsmN3583EwiS/n9Y
-         a7y14bL/Dfvd/fp77e7kPzX7LtG+HgTFd3PayFq4/gFyodoX0uIu/6RDQ/B+5d1yjNYs
-         7WVEknaOYPs/dQS0rWt4nzdKFr2CNgjRqdhSSWgOAdQkCGFEBT3h/2KW9iDn+c9No0QT
-         TGsA==
-X-Gm-Message-State: AOAM532GCDCRPx//UW2Qklz1OymqgFtbsMLcaWozs0XFAP47foWA/wqG
-        Ufo+C+GFgA/5UXKV1Ktu1Ns8m1xXk1pMOZHtFYsmQQ==
-X-Google-Smtp-Source: ABdhPJxwVNFz3aKPzwkMWWBUlqtIdr0gCVWb25meiGsqk5X/pr6U5Kjm8pNj2Whr4PHav4ogcf3/EODMFeeeiu7k4ZA=
-X-Received: by 2002:a05:6512:138e:: with SMTP id p14mr1534510lfa.47.1619159227671;
- Thu, 22 Apr 2021 23:27:07 -0700 (PDT)
+        with ESMTP id S229945AbhDWGql (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 23 Apr 2021 02:46:41 -0400
+Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 81650C061574;
+        Thu, 22 Apr 2021 23:46:05 -0700 (PDT)
+From:   Kurt Kanzenbach <kurt@linutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1619160362;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=COpI2hRP60Vs2lnyODeiD9EhKAi0HtjdTtgcT2kw3Hc=;
+        b=Tat9RtrgjoUdU2WZNdvnghT6Etxjtfc9mkKhkXJIVA7dzvtLJqNjYSKisckLvjSwoIiUIV
+        RnMLSK7XGcAGMJbZVYoHOa3MntLf/UMEOwqqXqn/4fBBJqwRut1oNsy+1L624nLYAM/9zE
+        +PYsVB9Z2U+8dPtXvxGu0Fp+RNT2u5CfuOLZDovLGYQiVGepJa8rgWaJD75aga2EObBYQ6
+        ITXgCRNnB1Rfqej4THc5QfPj8CQwFtAnt10Oat2ujzWeJR9ewWPWJpPpFHJ0ymOl04lT4T
+        lm3/FuwwHsB+vORaCX36YerTLoAI4Tq1mBWQvpCOp5MfTjff4MO8bj4GtfSaEg==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1619160362;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=COpI2hRP60Vs2lnyODeiD9EhKAi0HtjdTtgcT2kw3Hc=;
+        b=XVXMIiSoL7ZehE5pRQd2hsow7veSTYahNLh/QvNIKx3Es3yPioDrWLNDxXFPibFmxfQvUf
+        XN71MyCQfFRc7LDg==
+To:     Maciej Fijalkowski <maciej.fijalkowski@intel.com>
+Cc:     Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Sven Auhagen <sven.auhagen@voleatech.de>,
+        intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org,
+        bpf@vger.kernel.org,
+        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
+        Lorenzo Bianconi <lorenzo@kernel.org>,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Richard Cochran <richardcochran@gmail.com>,
+        Alexander Duyck <alexander.duyck@gmail.com>
+Subject: Re: [PATCH net v3] igb: Fix XDP with PTP enabled
+In-Reply-To: <20210422101129.GB44289@ranger.igk.intel.com>
+References: <20210422052617.17267-1-kurt@linutronix.de> <20210422101129.GB44289@ranger.igk.intel.com>
+Date:   Fri, 23 Apr 2021 08:45:52 +0200
+Message-ID: <878s59qz1b.fsf@kurt>
 MIME-Version: 1.0
-References: <cover.1618388989.git.npache@redhat.com> <YHyK+5xJEMcDDhVy@mit.edu>
- <dbe6abeb-0082-e309-1208-9c43c6f127ae@redhat.com>
-In-Reply-To: <dbe6abeb-0082-e309-1208-9c43c6f127ae@redhat.com>
-From:   David Gow <davidgow@google.com>
-Date:   Fri, 23 Apr 2021 14:26:55 +0800
-Message-ID: <CABVgOSmW=HPhpY05PJ2aj7q6G42YK1LfvifQY5EtheFE+of2RQ@mail.gmail.com>
-Subject: Re: [PATCH v2 0/6] kunit: Fix formatting of KUNIT tests to meet the standard
-To:     Nico Pache <npache@redhat.com>
-Cc:     "Theodore Ts'o" <tytso@mit.edu>,
-        Brendan Higgins <brendanhiggins@google.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-ext4@vger.kernel.org, Networking <netdev@vger.kernel.org>,
-        rafael@kernel.org, linux-m68k@vger.kernel.org,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        mathew.j.martineau@linux.intel.com, davem@davemloft.net,
-        Mark Brown <broonie@kernel.org>,
-        Shuah Khan <skhan@linuxfoundation.org>, mptcp@lists.linux.dev
-Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256;
-        boundary="000000000000a0e53f05c09de2c8"
+Content-Type: multipart/signed; boundary="=-=-=";
+        micalg=pgp-sha512; protocol="application/pgp-signature"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---000000000000a0e53f05c09de2c8
-Content-Type: text/plain; charset="UTF-8"
+--=-=-=
+Content-Type: text/plain
+Content-Transfer-Encoding: quoted-printable
 
-On Fri, Apr 23, 2021 at 4:39 AM Nico Pache <npache@redhat.com> wrote:
+On Thu Apr 22 2021, Maciej Fijalkowski wrote:
+> On Thu, Apr 22, 2021 at 07:26:17AM +0200, Kurt Kanzenbach wrote:
+>> +		/* pull rx packet timestamp if available and valid */
+>> +		if (igb_test_staterr(rx_desc, E1000_RXDADV_STAT_TSIP)) {
+>> +			timestamp =3D igb_ptp_rx_pktstamp(rx_ring->q_vector,
+>> +							pktbuf);
+>> +
+>> +			if (timestamp) {
+>> +				pkt_offset +=3D IGB_TS_HDR_LEN;
+>> +				size -=3D IGB_TS_HDR_LEN;
+>> +			}
+>> +		}
 >
-> On 4/18/21 3:39 PM, Theodore Ts'o wrote:
+> Small nit: since this is a hot path, maybe we could omit the additional
+> branch that you're introducing above and make igb_ptp_rx_pktstamp() to
+> return either 0 for error cases and IGB_TS_HDR_LEN if timestamp was fine?
+> timestamp itself would be passed as an arg.
 >
-> > On Wed, Apr 14, 2021 at 04:58:03AM -0400, Nico Pache wrote:
-> >> There are few instances of KUNIT tests that are not properly defined.
-> >> This commit focuses on correcting these issues to match the standard
-> >> defined in the Documentation.
-> > The word "standard" seems to be over-stating things.  The
-> > documentation currently states, "they _usually_ have config options
-> > ending in ``_KUNIT_TEST'' (emphasis mine).  I can imagine that there
-> > might be some useful things we can do from a tooling perspective if we
-> > do standardize things, but if you really want to make it a "standard",
-> > we should first update the manpage to say so,
+> So:
+> 		if (igb_test_staterr(rx_desc, E1000_RXDADV_STAT_TSIP)) {
+> 			ts_offset =3D igb_ptp_rx_pktstamp(rx_ring->q_vector,
+> 							pktbuf, &timestamp);
+> 			pkt_offset +=3D ts_offset;
+> 			size -=3D ts_offset;
+> 		}
 >
-> KUNIT Maintainers, should we go ahead and make this the "standard"?
+> Thoughts? I feel like if we see that desc has timestamp enabled then let's
+> optimize it for successful case.
+
+Yes, this should work as well. Actually I didn't like the if statement
+either. Only one comment: It's not an offset but rather the timestamp
+header length. I'd call it 'ts_len'.
+
 >
-> As Ted has stated...  consistency with 'grep' is my desired outcome.
+>>=20=20
+>>  		/* retrieve a buffer from the ring */
+>>  		if (!skb) {
+>> -			unsigned int offset =3D igb_rx_offset(rx_ring);
+>> -			unsigned char *hard_start;
+>> +			unsigned char *hard_start =3D pktbuf - igb_rx_offset(rx_ring);
+>> +			unsigned int offset =3D pkt_offset + igb_rx_offset(rx_ring);
 >
+> Probably we could do something similar in flavour of:
+> https://lore.kernel.org/bpf/20210118151318.12324-10-maciej.fijalkowski@in=
+tel.com/
+>
+> which broke XDP_REDIRECT and got fixed in:
+> https://lore.kernel.org/bpf/20210303153928.11764-2-maciej.fijalkowski@int=
+el.com/
+>
+> You get the idea.
 
-The intention here is for this to be a "standard", with the caveat
-that there may be reasons for not following said standard, though they
-should be rare and may result in incompatibility with some tooling.
-This is broadly laid out in the opening of the
-Development/dev-tools/style.rst document, albeit still referring to
-"guidelines" rather than a "standard". The rest of the document does,
-as Ted pointed out, become more descriptive than prescriptive in some
-sections (like the Kconfig entry one): assuming no-one is particularly
-unhappy with that being tightened up, I've no problem with rewording
-it.
+Yes, I do. However, I think such a change doesn't belong in this patch,
+which is a bugfix for XDP. It looks like an optimization. Should I split
+it into two patches and rather target net-next instead of net?
 
-That being said, when it comes to tooling, the Kconfig name does seem
-like it's less important than it could've been: the existence of a
-KUNIT_ALL_TESTS option, as well as support for having
-per-directory/per-subsystem .kunitconfig files should hopefully mean
-there's no need for tools to search for entries ending in _KUNIT_TEST.
-(I do agree that it makes using 'grep' more convenient, though.)
+Thanks for your review.
 
-> > and explain why (e.g.,
-> > so that we can easily extract out all of the kunit test modules, and
-> > perhaps paint a vision of what tools might be able to do with such a
-> > standard).
-> >
-> > Alternatively, the word "standard" could perhaps be changed to
-> > "convention", which I think more accurately defines how things work at
-> > the moment.
+Thanks,
+Kurt
 
-Cheers,
--- David
+--=-=-=
+Content-Type: application/pgp-signature; name="signature.asc"
 
---000000000000a0e53f05c09de2c8
-Content-Type: application/pkcs7-signature; name="smime.p7s"
-Content-Transfer-Encoding: base64
-Content-Disposition: attachment; filename="smime.p7s"
-Content-Description: S/MIME Cryptographic Signature
+-----BEGIN PGP SIGNATURE-----
 
-MIIPnAYJKoZIhvcNAQcCoIIPjTCCD4kCAQExDzANBglghkgBZQMEAgEFADALBgkqhkiG9w0BBwGg
-ggz2MIIEtjCCA56gAwIBAgIQeAMYYHb81ngUVR0WyMTzqzANBgkqhkiG9w0BAQsFADBMMSAwHgYD
-VQQLExdHbG9iYWxTaWduIFJvb3QgQ0EgLSBSMzETMBEGA1UEChMKR2xvYmFsU2lnbjETMBEGA1UE
-AxMKR2xvYmFsU2lnbjAeFw0yMDA3MjgwMDAwMDBaFw0yOTAzMTgwMDAwMDBaMFQxCzAJBgNVBAYT
-AkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52LXNhMSowKAYDVQQDEyFHbG9iYWxTaWduIEF0bGFz
-IFIzIFNNSU1FIENBIDIwMjAwggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEKAoIBAQCvLe9xPU9W
-dpiHLAvX7kFnaFZPuJLey7LYaMO8P/xSngB9IN73mVc7YiLov12Fekdtn5kL8PjmDBEvTYmWsuQS
-6VBo3vdlqqXZ0M9eMkjcKqijrmDRleudEoPDzTumwQ18VB/3I+vbN039HIaRQ5x+NHGiPHVfk6Rx
-c6KAbYceyeqqfuJEcq23vhTdium/Bf5hHqYUhuJwnBQ+dAUcFndUKMJrth6lHeoifkbw2bv81zxJ
-I9cvIy516+oUekqiSFGfzAqByv41OrgLV4fLGCDH3yRh1tj7EtV3l2TngqtrDLUs5R+sWIItPa/4
-AJXB1Q3nGNl2tNjVpcSn0uJ7aFPbAgMBAAGjggGKMIIBhjAOBgNVHQ8BAf8EBAMCAYYwHQYDVR0l
-BBYwFAYIKwYBBQUHAwIGCCsGAQUFBwMEMBIGA1UdEwEB/wQIMAYBAf8CAQAwHQYDVR0OBBYEFHzM
-CmjXouseLHIb0c1dlW+N+/JjMB8GA1UdIwQYMBaAFI/wS3+oLkUkrk1Q+mOai97i3Ru8MHsGCCsG
-AQUFBwEBBG8wbTAuBggrBgEFBQcwAYYiaHR0cDovL29jc3AyLmdsb2JhbHNpZ24uY29tL3Jvb3Ry
-MzA7BggrBgEFBQcwAoYvaHR0cDovL3NlY3VyZS5nbG9iYWxzaWduLmNvbS9jYWNlcnQvcm9vdC1y
-My5jcnQwNgYDVR0fBC8wLTAroCmgJ4YlaHR0cDovL2NybC5nbG9iYWxzaWduLmNvbS9yb290LXIz
-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
-ILbFHw0h01NI0v+AeczGMEwGA1UdIARFMEMwQQYJKwYBBAGgMgEoMDQwMgYIKwYBBQUHAgEWJmh0
-dHBzOi8vd3d3Lmdsb2JhbHNpZ24uY29tL3JlcG9zaXRvcnkvMAkGA1UdEwQCMAAwgZoGCCsGAQUF
-BwEBBIGNMIGKMD4GCCsGAQUFBzABhjJodHRwOi8vb2NzcC5nbG9iYWxzaWduLmNvbS9jYS9nc2F0
-bGFzcjNzbWltZWNhMjAyMDBIBggrBgEFBQcwAoY8aHR0cDovL3NlY3VyZS5nbG9iYWxzaWduLmNv
-bS9jYWNlcnQvZ3NhdGxhc3Izc21pbWVjYTIwMjAuY3J0MB8GA1UdIwQYMBaAFHzMCmjXouseLHIb
-0c1dlW+N+/JjMEYGA1UdHwQ/MD0wO6A5oDeGNWh0dHA6Ly9jcmwuZ2xvYmFsc2lnbi5jb20vY2Ev
-Z3NhdGxhc3Izc21pbWVjYTIwMjAuY3JsMA0GCSqGSIb3DQEBCwUAA4IBAQCNr3LBERPjVctGdVEb
-/hN6/N6F2eUWxZLSUbuV7fOle0OvI8xz2AUBrOYQLp94ox9LqmsATKPsBl2uiktsvfs/AXNMcmOz
-qsWHzfqp4XlvNgQsC/UyUMWxZoEyTDfTSat09yQjkFJ7viwzrqqscmTx5oTZz8TPRt0mbxwx3qry
-wDzYxadSUQXNpNnfi0FBDYUUfuCLFWPsPsAXmgh483u0RbNik9OY/ozNq1Gvg/U0jQOlJf2IiKbE
-kUL5Vq8gDDu6bETx5bHmRmSjHhwo7eVbxywczpzdFsU3dauZ3BzqhLy2pRGGzZybSH/3mf7o9y15
-gmRHE7WzPLrsULHG/TM8MYICajCCAmYCAQEwaDBUMQswCQYDVQQGEwJCRTEZMBcGA1UEChMQR2xv
-YmFsU2lnbiBudi1zYTEqMCgGA1UEAxMhR2xvYmFsU2lnbiBBdGxhcyBSMyBTTUlNRSBDQSAyMDIw
-AhABm/kO+4pd09krN7Fjk8ypMA0GCWCGSAFlAwQCAQUAoIHUMC8GCSqGSIb3DQEJBDEiBCCh7i1G
-xEa2Zy4mEF14lMt4G1bH/lllueUJtLj1vySixjAYBgkqhkiG9w0BCQMxCwYJKoZIhvcNAQcBMBwG
-CSqGSIb3DQEJBTEPFw0yMTA0MjMwNjI3MDhaMGkGCSqGSIb3DQEJDzFcMFowCwYJYIZIAWUDBAEq
-MAsGCWCGSAFlAwQBFjALBglghkgBZQMEAQIwCgYIKoZIhvcNAwcwCwYJKoZIhvcNAQEKMAsGCSqG
-SIb3DQEBBzALBglghkgBZQMEAgEwDQYJKoZIhvcNAQEBBQAEggEAjnHCdN9RnYjqXdO7bXdKmary
-TYS/w5AwbUbQ5IYadX5M4PTbGNa3bxfHfrz3NrUWF0bmJecomzt5SJe3NmDVzkntxuLGzZyUv2F4
-vk2p8uY0TMZad94dMfI+L3LsWngr7WNPqjDg/DXt+1dRhWbgVZSHnLMSOveUUCWV8ej/yaoSeRMQ
-YqxCK5e3VquVBt10CL/0cgXsj0AkhmddkHqkUyLQKioDONQWHfVSAeIyenaOU8TLhRDFfct1JL0I
-lfEWQWgYDhgY7tc3G0E0h9J2OBwUCmsuW3+czPgLLST8nvxkeyJKRykuAXcfEoBFGr233twR4UMQ
-aSowOoDaOEf06A==
---000000000000a0e53f05c09de2c8--
+iQIzBAEBCgAdFiEEooWgvezyxHPhdEojeSpbgcuY8KYFAmCCbSAACgkQeSpbgcuY
+8KZFcw//eFr5BqqCeafT7m7sSMhiuiG0plalsTXxSK877VCcoGMIMMjAks4moTNv
+3oL7Mz6NkGsMCi/BXwwBTer/orNzEfEPphWV/HcShgnBErsaJtHydiFkL+KaKFBm
+HPkghjIfN9bOehDLrLmXNWWLuLx7I1YWak+LeH7NGCNo4oAu2IvaDPxhJNDEpywk
+5hC3oSsGdHLv81SqKc8pkGSEhdiNloAOuPDuOxAJTmC3eEgXszSMk5MYdLK8huDs
+FzkHiGWNZgYRMR1lWePzhlrTIMQPf7J0Kg3zk5urmwQxNP3xg6ljsNOs3yMATKM5
+DTyvE3PsRQjMRDIsGhBCk3N6OezoOfM0Iqz7bJLOJNwMgffyeFHQgvE1x0qSHatV
+bLWl2pr5SaoGsPxrrmUgpbF/DoXRwfZhrC3fk9vznzHNNHL7HiP2soE+K1EgyYCZ
+/7HbwRlaMjeELhtwueh2fuSXQoHJDq5QzoqnceJOirgXJmGiJTNZn9CptHtYQHsL
+OCe9BC6XPcB53Tmyqf5IGqkdS40Uw6vqV7aAp/gB1HJfPHGE6F4Bqg5U5Cdzlqr5
+PUH12N0JhvcbUnXpX/Rl0fnXDcmSbtv6heH0e+rQowJK5E1MlVz+wJoKpq8sndJB
+WWpn5MbDOHzpzXxImgyJL9zY1HuS1sIZb4vjDfmiKHShgqXIXEs=
+=yxE8
+-----END PGP SIGNATURE-----
+--=-=-=--
