@@ -2,194 +2,252 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 873F9369C13
-	for <lists+netdev@lfdr.de>; Fri, 23 Apr 2021 23:37:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CA2C2369C1A
+	for <lists+netdev@lfdr.de>; Fri, 23 Apr 2021 23:39:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244015AbhDWVhl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 23 Apr 2021 17:37:41 -0400
-Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:11880 "EHLO
-        mx0b-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S229488AbhDWVhk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 23 Apr 2021 17:37:40 -0400
-Received: from pps.filterd (m0109332.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 13NLT8u2018955;
-        Fri, 23 Apr 2021 14:36:48 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=subject : to : cc :
- references : from : message-id : date : in-reply-to : content-type :
- content-transfer-encoding : mime-version; s=facebook;
- bh=l9w2uH6A9LaeKYAsyEL3WcdMJqDrfl0PttUMCwzRlCE=;
- b=MDzJZ4NdSQn+o8+/jC142rEaSbysPAFvFVLwb2Q5Bkl83QHj7b6pSO1vrGd/GaYKBGLb
- AecVe+LmeHsNe/SGdTJhunmMs5G2Db2JVfPAD0VY6cFFEsSFcZdoMeUGNjXEd0o7CHCX
- WHM7J20JJ9CnaD/IB0k920VBZMBdosBhK2Q= 
-Received: from maileast.thefacebook.com ([163.114.130.16])
-        by mx0a-00082601.pphosted.com with ESMTP id 3839ussk60-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Fri, 23 Apr 2021 14:36:48 -0700
-Received: from NAM11-DM6-obe.outbound.protection.outlook.com (100.104.31.183)
- by o365-in.thefacebook.com (100.104.35.172) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2176.2; Fri, 23 Apr 2021 14:36:47 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=cK+MriZCVogtqXC70UqN17Sgqn+ZwCR6xaofY86fmXr+oE+eQvRQCB66mPnFMtc1uoJh9PPjKvsrs0jWzvfrAAgqj6mr3s0PW+j7MB+YurNvX/UtRCFiIfTLSugvIE21gNPfzOIw+/+Igpwo0mY/uOAjiE39JHDP5tU7BRI/9R/6P2oU11/SSBgj0MWjR+ipu52BwRTEhaTM6yqf870sF6UorBuw6/TmCuol7L0LWWu18MUjI3xaHivwBAWtC/DMIvuCgFo0bGJO5aPOuuONmtxegZhckpHq7SU6ooC0arnP/Q5ah25vSlYZrh70MLeD1Qrkdpmp0MLY4w9ybP4rUA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=l9w2uH6A9LaeKYAsyEL3WcdMJqDrfl0PttUMCwzRlCE=;
- b=YMU3anMutVwkunFRSfbqh+GWqD55e/0cnzpDK7ZwL3LLvdalYXOHcHx+U3hF9vGnpeHvfm7jMjm+izBQO7eKlk1ch/KHAU2a5HeoOIEq9OEpOqYE3ir+k+V776IzhCV69VlrVKTkdbiTXL7ZXmAAMlzWUJcTQq8HQuCv59OfW0u0PlgK5mPkJ3g8zk4k115XIzfb+XM13kIcmBXQriaEBeW9NUfaHhkHDkiHM1r0EG7KTKPV3OvktWjXxez529F0gBJ16vq528nuZYs5zVnO+R6c30bDay/57zw9MjBlEtGoAhQ0UhT01Tq1VRBQzjvHkofTaKBffGDmJ3aVBvsq0w==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
- header.d=fb.com; arc=none
-Received: from SN6PR1501MB2064.namprd15.prod.outlook.com (2603:10b6:805:d::27)
- by SN7PR15MB4224.namprd15.prod.outlook.com (2603:10b6:806:f5::10) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4065.23; Fri, 23 Apr
- 2021 21:36:47 +0000
-Received: from SN6PR1501MB2064.namprd15.prod.outlook.com
- ([fe80::f433:fd99:f905:8912]) by SN6PR1501MB2064.namprd15.prod.outlook.com
- ([fe80::f433:fd99:f905:8912%3]) with mapi id 15.20.4065.025; Fri, 23 Apr 2021
- 21:36:46 +0000
-Subject: Re: [PATCH v2 bpf-next 00/16] bpf: syscall program, FD array, loader
- program, light skeleton.
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        <davem@davemloft.net>
-CC:     <daniel@iogearbox.net>, <andrii@kernel.org>,
-        <netdev@vger.kernel.org>, <bpf@vger.kernel.org>,
-        <kernel-team@fb.com>
-References: <20210423002646.35043-1-alexei.starovoitov@gmail.com>
-From:   Yonghong Song <yhs@fb.com>
-Message-ID: <4142514b-3a0f-f931-9a8c-fb72be9c66b3@fb.com>
-Date:   Fri, 23 Apr 2021 14:36:43 -0700
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
- Gecko/20100101 Thunderbird/78.9.1
-In-Reply-To: <20210423002646.35043-1-alexei.starovoitov@gmail.com>
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [2620:10d:c090:400::5:d0ec]
-X-ClientProxiedBy: CO2PR04CA0094.namprd04.prod.outlook.com
- (2603:10b6:104:6::20) To SN6PR1501MB2064.namprd15.prod.outlook.com
- (2603:10b6:805:d::27)
+        id S235671AbhDWVjj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 23 Apr 2021 17:39:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52570 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230056AbhDWVjh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 23 Apr 2021 17:39:37 -0400
+Received: from mail-yb1-xb29.google.com (mail-yb1-xb29.google.com [IPv6:2607:f8b0:4864:20::b29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D327C061574;
+        Fri, 23 Apr 2021 14:38:59 -0700 (PDT)
+Received: by mail-yb1-xb29.google.com with SMTP id 82so57285285yby.7;
+        Fri, 23 Apr 2021 14:38:59 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=l729HMdhgRfdan4GldI4MviqHBVE4/h3UaSgCT0jtXA=;
+        b=gLktoMHz/zB131BgS1KtCLFetFUD0k6BiQpdiUgTqUCtHr8zZdgsX4QRZesIqDEJf1
+         akCs4ednXJmmMQ/eIkJ/nzjAT+VNcIhuirDdPsZe57Ia6b59DU27TvwYVRkj9L7Ihpgc
+         1OCX+a4ZPk9vanM3MlZrlicjzrVjQ3CDpaYygZEZZsUFu2AYEsewzZmfyShf93uQ8UzQ
+         BuXxtIUmpxJhiLoC2M1zMGk3BMC5FPbJb4On+HDr+6oesKUK9kABJthWIBnBlqRSKglN
+         mwfM/E8yjtttduJGF0LroCk8OV3syUgpY3Qb36f7+QaoT5MvrPzDQmSGL29S4XeyhTvz
+         2Iiw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=l729HMdhgRfdan4GldI4MviqHBVE4/h3UaSgCT0jtXA=;
+        b=RtKgw+mazCBdEBC1VBUOYpaeY2BQsJWhulGicR8y3LwFN335p9uK42iAdamhTGtYkk
+         Jsm4BTiFfTbpsV1CUJx3HxqJrAdy7r21lKgVV7fhEBKm0DqpApGABBCg87aUrrNNER4E
+         2EyCWozPhFLa1A4XK5aMh88YCml7E7um6qZ1kKGFoZAAYEi0f6rMAC5zjq8NGsvBid1O
+         uzOR0fqgoVjL//1PDfOvFVtaGkRfMrbhEr4wvSpedh4PwaMg2L2owmoNF9BRtXQvFVQZ
+         K1k/WGc0to4YbvKL0eIblcqmKTHwAGryZ5tpq4fyZtYHIVHxMs5sKIX6RHAjcwRyrnA2
+         dyUg==
+X-Gm-Message-State: AOAM531Rba3YYk8IqMXnMbtjHR1WclP5wwE+40qhEich6PL9felW2RJy
+        sxHq+0+NDVy5ba8uibEqpt/veoPhiCdoXHWcpT0=
+X-Google-Smtp-Source: ABdhPJx0Ox+YnHfGAfmCw01nkPRckcleVBxfN2dDBsXcSEL+f1+YbWpXfymxcGMkg6NCa/Pyy7NcFxguSxNoFV/m4tI=
+X-Received: by 2002:a25:9942:: with SMTP id n2mr8644188ybo.230.1619213938741;
+ Fri, 23 Apr 2021 14:38:58 -0700 (PDT)
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from [IPv6:2620:10d:c085:21e8::17f2] (2620:10d:c090:400::5:d0ec) by CO2PR04CA0094.namprd04.prod.outlook.com (2603:10b6:104:6::20) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4065.20 via Frontend Transport; Fri, 23 Apr 2021 21:36:45 +0000
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: b5b7579c-a99e-4209-31ad-08d9069fe552
-X-MS-TrafficTypeDiagnostic: SN7PR15MB4224:
-X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <SN7PR15MB422415EE12673DA890E58EC2D3459@SN7PR15MB4224.namprd15.prod.outlook.com>
-X-FB-Source: Internal
-X-MS-Oob-TLC-OOBClassifiers: OLM:6790;
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: ARw32N+JoDk+x1qoCR/cPSay1AqY8JiFWnILctPaE9hLwSpwxL1IFFpCfbDqESI6EUqC11ntqmgomGyAhbL8yr2JvLDgHxvC5sSMMG0FGHMHiyr3Yf3axJVr0HLPvua/aDj0RXAbdvO3rfB4mKOsItk1cw3REmGCurzB6YpcCOFjcwWbEWi2IEsNxh08uUCcCukXB+E3JJiwam4VwAqoUTD4yUFMRxlUGWRuWpBiRt5qx/eskhzb1s42xh/OH0IY2BoBQiFNDSQ1mrxuU/XNX6CjwfzQk5m6J9JHxM2CBaMpvqQNF+CT3ZsL7+8KEPwy94J4zWl7wEZaZUDy+7/Bh4KHH31XG53Q/bjFp8TnCjmUhW9vazkuPC/nOE8CIWB+JwmEhRHrPmqYjj+oygdmuabh/1bR4gRhpsdQaUeB57ljHO6xnApC4/EUQVWzMa5Ba1oJNwT5ex7Ln6yfUf4eBLhVFdkOCTfooz8B80d37Bgnioz/lKlfcpek/zfbQJ4QME6oD4pBY7NkYEA/HLB1poozr4g7Z9Hmybo2puemf1XUjIkXCspYKMBY7VKtaBJ8llfQ3jEW8BqJNIp5W4rjvpWu2Ans+R9sRTkgNHsGHiTURkXe4cuTuHEF+hU2onKcko1Vs4MxAHXFB0yLwbh5hYFabYM7TDvrykAhLjMD9TD6P1kRRDFVhCb6Mka6S1wQ
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SN6PR1501MB2064.namprd15.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(396003)(376002)(366004)(39860400002)(136003)(346002)(16526019)(316002)(8936002)(186003)(31686004)(5660300002)(4326008)(36756003)(6486002)(2906002)(8676002)(53546011)(31696002)(2616005)(478600001)(66556008)(83380400001)(66946007)(52116002)(86362001)(66476007)(38100700002)(43740500002)(45980500001);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData: =?utf-8?B?RmRFSlAzU2VhRE1LVEdiS1IvWFBtNVpYRnpUUUMvZW9yMkJhWFgzYkhtSlhP?=
- =?utf-8?B?TDdSSS9LbWI3NHhIWGU4MmIyZmtnU2RDeUtjc0Fubk9IRjdMbWRDUGt5THVs?=
- =?utf-8?B?ZXJzWEJTdjJqOXVFWHI3eDFpeVNqaVdtY0VVdW9vL3lUMnRDbnc1ZzhFdHhM?=
- =?utf-8?B?R2VyRFdxQjZ2L0NHNWtyeW02WHM3VS9sVHhHODhPNW5keXZLUGxMeFc0RDB1?=
- =?utf-8?B?cnBtN0ozSzAyOFZXYTQ1N3Y5R095NHlkN2FPa042QTVLbEJNV1JxM0F3K2VY?=
- =?utf-8?B?cm5RQUdGT2VNRzJxUW5sS2MyMDhOSFlWQ0hEYlIzRnMwTHJtRmhyeGZLaUto?=
- =?utf-8?B?Vi9yaFFqMGxrYUZGRkN2VG5IYnFvU1g0Sk5pTTNpRTIzYyt4WmQzdHZTUU94?=
- =?utf-8?B?b2hHOEV3Y29YSUpjSjI0SGxYdlptYlpBSTU4N2R4NUJlZll3enNndER4ejJM?=
- =?utf-8?B?R0Q4Zy93d3lRbUtWZkswb2UrL0pCYmZPK3QxTUtWR0VMRkc2emtnRjlTYjRL?=
- =?utf-8?B?cUt1bllHamNIVVVsYTlGbjJiRXUyeFdqYkRmOXpJVDZldGdaT2RnbEU4Ymto?=
- =?utf-8?B?YXBQa29EcSt4WGN1YjVGWkhHeWtSd2ZDZ00vOWFpMnJkeFFLdGhaWnZYTitE?=
- =?utf-8?B?L1lRUzBXUmtGMGhnemIyQVI5enNTMDNwMGNKYUZPek5Jci9vNmxUZnhObXln?=
- =?utf-8?B?cUFmYlM0U21jTVVOdU5BSDNjbWVTTnZWa3B2L0xtOVMrTGRRbk1XY1RRWTMw?=
- =?utf-8?B?OHpyc1NUNEdQRm04dG4wZ3QyT2NyeUdjUzdYYVo1NS8zMlVHK3g5VmJNWDA0?=
- =?utf-8?B?SHJldTVTT1g3QmVuMnlSL0ljeGFrbTdvbFgwQlBpek1JdFI0dTJHaHM3aG8v?=
- =?utf-8?B?M0RLTk80cFZJTlBRaFY4QytvdTMwRGFZRHU3WXBKc2l1alUzOGtHQzByNjRo?=
- =?utf-8?B?cDhwaW1nOHgyNmU2WE9CMEQ1MFpRRDlHWGVXRmJYNExuVjZocUNHbEpQNGJE?=
- =?utf-8?B?TTNqL2ZRTk9Ib2FEdnIzaDJielpXekt6NVBlcUVIblgxMzlWV2gxbWYzV2RD?=
- =?utf-8?B?akR4MkZzeTYwVFBLTndKZHBzbDh4SURMeWV1bkhyLzd3SUdkQjM2ZDFiY1Ro?=
- =?utf-8?B?dmRaY09VcllsTDI2bmJNNWlCV1R6dkNTMXM3dUx1eWZGMEc3T1dNZkFWWTA0?=
- =?utf-8?B?ck5DOTlCZFhiWmt0NnE4aWtvdkdaem8yd2htZUhyYlV5ejhmRnNBczhNWnJz?=
- =?utf-8?B?TW5MOXFhU1ZpZ1BYVWR5VTJpUjJGUllhZUQ4Z3AxUFZIN1pVSFlGendab0Rl?=
- =?utf-8?B?RGIvQTlaVXNXYUNVdC9VT0lWMVROSlBhdjF0QmxPcXRuQjduSUREZTIrY0JV?=
- =?utf-8?B?NzJiNEVJc2htOWhoZ3RIS3RwNEJRMUdiZFprQTZkWUhYeUJOUHcrWVpDVURY?=
- =?utf-8?B?eGdXV1ZDNWhIYndoMUZLMk05cFl3RkF6L25wQVJhUjgzRk5UdVBPc3QvUW9N?=
- =?utf-8?B?bmRDZXoybVVsRVZjYXcvVDdOUnV3Q0xUTVRiWkgvalk5MEJkVFQvM3FRaFdQ?=
- =?utf-8?B?YmFkTG5DWmxTazZablZRSXJJSE8vQzhlM1dVT1lJOUwraXRhL25GWUhaTUt6?=
- =?utf-8?B?RmMzdVIwZFVhSVdFbVlTOHAzeVVTREJQTzBaL1M2R2kzSTV3eXAwTjJJd3ho?=
- =?utf-8?B?RHkvdCtzTjNkbUxCRU9ZNEE2YlpnZkh2clFMWVRjSE9HSGRQd0luQlhhRmxF?=
- =?utf-8?B?Y00xSms3TVFGeER3MEtaZjdURG9XMUJYRDhGVlYvNDJmdVFVb24rQnIrcWFT?=
- =?utf-8?Q?fbAZ8a0N1o8zIXnvTRKGbX9wbasUo/Ufnd7sU=3D?=
-X-MS-Exchange-CrossTenant-Network-Message-Id: b5b7579c-a99e-4209-31ad-08d9069fe552
-X-MS-Exchange-CrossTenant-AuthSource: SN6PR1501MB2064.namprd15.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 23 Apr 2021 21:36:46.7950
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: y5E0tiJhTtpRHA2ho6U+rLT/AtRPEWvgrUy54RAtiWnxl4nZIlHWX/4li7sHAObH
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SN7PR15MB4224
-X-OriginatorOrg: fb.com
-X-Proofpoint-GUID: 8PSIs7ZBr1AB9522ZetyF703PyNI0h9a
-X-Proofpoint-ORIG-GUID: 8PSIs7ZBr1AB9522ZetyF703PyNI0h9a
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.391,18.0.761
- definitions=2021-04-23_13:2021-04-23,2021-04-23 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 priorityscore=1501
- impostorscore=0 adultscore=0 mlxlogscore=999 clxscore=1015
- lowpriorityscore=0 mlxscore=0 malwarescore=0 suspectscore=0 spamscore=0
- phishscore=0 bulkscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2104060000 definitions=main-2104230144
-X-FB-Internal: deliver
+References: <20210423185357.1992756-1-andrii@kernel.org> <20210423185357.1992756-3-andrii@kernel.org>
+ <2b398ad6-31be-8997-4115-851d79f2d0d2@fb.com>
+In-Reply-To: <2b398ad6-31be-8997-4115-851d79f2d0d2@fb.com>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Fri, 23 Apr 2021 14:38:47 -0700
+Message-ID: <CAEf4BzYDiuh+OLcRKfcZDSL6esu6dK8js8pudHKvtMvAxS1=WQ@mail.gmail.com>
+Subject: Re: [PATCH v2 bpf-next 2/6] libbpf: rename static variables during linking
+To:     Yonghong Song <yhs@fb.com>
+Cc:     Andrii Nakryiko <andrii@kernel.org>, bpf <bpf@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@fb.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Kernel Team <kernel-team@fb.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Fri, Apr 23, 2021 at 1:24 PM Yonghong Song <yhs@fb.com> wrote:
+>
+>
+>
+> On 4/23/21 11:53 AM, Andrii Nakryiko wrote:
+> > Prepend <obj_name>.. prefix to each static variable in BTF info during static
+> > linking. This makes them uniquely named for the sake of BPF skeleton use,
+> > allowing to read/write static BPF variables from user-space. This uniqueness
+> > guarantee depends on each linked file name uniqueness, of course. Double dots
+> > separator was chosen both to be different (but similar) to the separator that
+> > Clang is currently using for static variables defined inside functions as well
+> > as to generate a natural (in libbpf parlance, at least) obj__var naming pattern
+> > in BPF skeleton. Static linker also checks for static variable to already
+> > contain ".." separator and skips the rename to allow multi-pass linking and not
+> > keep making variable name ever increasing, if derived object name is changing on
+> > each pass (as is the case for selftests).
+> >
+> > This patch also adds opts to bpf_linker__add_file() API, which currently
+> > allows to override object name for a given file and could be extended with other
+> > per-file options in the future. This is not a breaking change because
+> > bpf_linker__add_file() isn't yet released officially.
+> >
+> > This patch also includes fixes to few selftests that are already using static
+> > variables. They have to go in in the same patch to not break selftest build.
+>
+> "in in" => "in"
 
+heh, I knew this would be confusing :) it's "go in" a verb and "in the
+same patch" as where they go into. But I'll re-phrase in the next
+version.
 
-On 4/22/21 5:26 PM, Alexei Starovoitov wrote:
-> From: Alexei Starovoitov <ast@kernel.org>
-> 
-> v1->v2: Addressed comments from Al, Yonghong and Andrii.
-> - documented sys_close fdget/fdput requirement and non-recursion check.
-> - reduced internal api leaks between libbpf and bpftool.
->    Now bpf_object__gen_loader() is the only new libbf api with minimal fields.
-> - fixed light skeleton __destroy() method to munmap and close maps and progs.
-> - refactored bpf_btf_find_by_name_kind to return btf_id | (btf_obj_fd << 32).
-> - refactored use of bpf_btf_find_by_name_kind from loader prog.
-> - moved auto-gen like code into skel_internal.h that is used by *.lskel.h
->    It has minimal static inline bpf_load_and_run() method used by lskel.
-> - added lksel.h example in patch 15.
-> - replaced union bpf_map_prog_desc with struct bpf_map_desc and struct bpf_prog_desc.
-> - removed mark_feat_supported and added a patch to pass 'obj' into kernel_supports.
-> - added proper tracking of temporary FDs in loader prog and their cleanup via bpf_sys_close.
-> - rename gen_trace.c into gen_loader.c to better align the naming throughout.
-> - expanded number of available helpers in new prog type.
-> - added support for raw_tp attaching in lskel.
->    lskel supports tracing and raw_tp progs now.
->    It correctly loads all networking prog types too, but __attach() method is tbd.
-> - converted progs/test_ksyms_module.c to lskel.
-> - minor feedback fixes all over.
-> 
-> One thing that was not addressed from feedback is the name of new program type.
-> Currently it's still:
-> BPF_PROG_TYPE_SYSCALL, /* a program that can execute syscalls */
+>
+> > Keep in mind, this static variable rename only happens during static linking.
+> > For any existing user of BPF skeleton using static variables nothing changes,
+> > because those use cases are using variable names generated by Clang. Only new
+> > users utilizing static linker might need to adjust BPF skeleton use, which
+> > currently will be always new use cases. So ther is no risk of breakage.
+> >
+> > static_linked selftests is modified to also validate conflicting static variable
+> > names are handled correctly both during static linking and in BPF skeleton.
+> >
+> > Signed-off-by: Andrii Nakryiko <andrii@kernel.org>
+> > ---
+> >   tools/bpf/bpftool/gen.c                       |   2 +-
+> >   tools/lib/bpf/libbpf.h                        |  12 +-
+> >   tools/lib/bpf/linker.c                        | 121 +++++++++++++++++-
+> >   .../selftests/bpf/prog_tests/skeleton.c       |   8 +-
+> >   .../selftests/bpf/prog_tests/static_linked.c  |   8 +-
+> >   .../selftests/bpf/progs/bpf_iter_test_kern4.c |   4 +-
+> >   .../selftests/bpf/progs/test_check_mtu.c      |   4 +-
+> >   .../selftests/bpf/progs/test_cls_redirect.c   |   4 +-
+> >   .../bpf/progs/test_snprintf_single.c          |   2 +-
+> >   .../selftests/bpf/progs/test_sockmap_listen.c |   4 +-
+> >   .../selftests/bpf/progs/test_static_linked1.c |   6 +-
+> >   .../selftests/bpf/progs/test_static_linked2.c |   4 +-
+> >   12 files changed, 151 insertions(+), 28 deletions(-)
+> >
 
-Do you have plan for other non-bpf syscalls? Maybe use the name
-BPF_PROG_TYPE_BPF_SYSCALL? It will be really clear this is
-the program type you can execute bpf syscalls.
+[...]
 
-> 
-> The concern raised was that it sounds like a program that should be attached
-> to a syscall. Like BPF_PROG_TYPE_KPROBE is used to process kprobes.
-> I've considered and rejected:
-> BPF_PROG_TYPE_USER - too generic
-> BPF_PROG_TYPE_USERCTX - ambiguous with uprobes
+> > +static int linker_load_obj_file(struct bpf_linker *linker, const char *filename,
+> > +                             const struct bpf_linker_file_opts *opts,
+> > +                             struct src_obj *obj)
+> >   {
+> >   #if __BYTE_ORDER == __LITTLE_ENDIAN
+> >       const int host_endianness = ELFDATA2LSB;
+> > @@ -549,6 +613,14 @@ static int linker_load_obj_file(struct bpf_linker *linker, const char *filename,
+> >
+> >       obj->filename = filename;
+> >
+> > +     if (OPTS_GET(opts, object_name, NULL)) {
+> > +             strncpy(obj->obj_name, opts->object_name, MAX_OBJ_NAME_LEN);
+> > +             obj->obj_name[MAX_OBJ_NAME_LEN - 1] = '\0';
+>
+> Looks we don't have examples/selftests which actually use this option.
+> The only place to use bpf_linker__add_file() is bpftool which did not
+> have option to overwrite the obj file name.
+>
+> The code looks fine to me though.
 
-USERCTX probably not a good choice. People can write a program without
-context and put the ctx into a map and use it.
+Right, I was a bit lazy in adding this to bpftool, but I'm sure we'll
+want to support overriding obj file name, at least to resolve object
+file name conflicts. One other problem is syntax, I haven't thought
+through what's the best way to do this with bpftool. Something like
+this would do it:
 
-> BPF_PROG_TYPE_LOADER - ok-ish, but imo TYPE_SYSCALL is cleaner.
+bpftool gen object dest.o input1.o=custom_obj_name
+path/to/file2.o=another_custom_obj_name
 
-User can write a program to do more than loading although I am not sure
-how useful it is compared to implementation in user space.
+But this is too bike-shedding a topic which I want to avoid for now.
 
-> Other suggestions?
-> 
-> The description of V1 set is still valid:
-> ----
+>
+> > +     } else {
+> > +             get_obj_name(obj->obj_name, filename);
+> > +     }
+> > +     obj->obj_name_len = strlen(obj->obj_name);
+> > +
+> >       obj->fd = open(filename, O_RDONLY);
+> >       if (obj->fd < 0) {
+> >               err = -errno;
+> > @@ -2264,6 +2336,47 @@ static int linker_append_btf(struct bpf_linker *linker, struct src_obj *obj)
+> >                               obj->btf_type_map[i] = glob_sym->btf_id;
+> >                               continue;
+> >                       }
+> > +             } else if (btf_is_var(t) && btf_var(t)->linkage == BTF_VAR_STATIC) {
+> > +                     /* Static variables are renamed to include
+> > +                      * "<obj_name>.." prefix (note double dots), similarly
+> > +                      * to how static variables inside functions are named
+> > +                      * "<func_name>.<var_name>" by compiler. This allows to
+> > +                      * have  unique identifiers for static variables across
+> > +                      * all linked object files (assuming unique filenames,
+> > +                      * of course), which BPF skeleton relies on.
+> > +                      *
+> > +                      * So worst case static variable inside the function
+> > +                      * will have the form "<obj_name>..<func_name>.<var_name"
+> <var_name  => <var_name>
+
+good catch, will fix
+
+> > +                      * and will get sanitized by BPF skeleton generation
+> > +                      * logic to a field with <obj_name>__<func_name>_<var_name>
+> > +                      * name. Typical static variable will have a
+> > +                      * <obj_name>__<var_name> name, implying arguably nice
+> > +                      * per-file scoping.
+> > +                      *
+> > +                      * If static var name already contains '..', though,
+> > +                      * don't rename it, because it was already renamed by
+> > +                      * previous linker passes.
+> > +                      */
+> > +                     name = btf__str_by_offset(obj->btf, t->name_off);
+> > +                     if (!strstr(name, "..")) {
+> > +                             char new_name[MAX_VAR_NAME_LEN];
+> > +
+> > +                             memcpy(new_name, obj->obj_name, obj->obj_name_len);
+> > +                             new_name[obj->obj_name_len] = '.';
+> > +                             new_name[obj->obj_name_len + 1] = '.';
+> > +                             new_name[obj->obj_name_len + 2] = '\0';
+> > +                             /* -3 is for '..' separator and terminating '\0' */
+> > +                             strncat(new_name, name, MAX_VAR_NAME_LEN - obj->obj_name_len - 3);
+> > +
+> > +                             id = btf__add_str(obj->btf, new_name);
+> > +                             if (id < 0)
+> > +                                     return id;
+> > +
+> > +                             /* btf__add_str() might invalidate t, so re-fetch */
+> > +                             t = btf__type_by_id(obj->btf, i);
+> > +
+> > +                             ((struct btf_type *)t)->name_off = id;
+> > +                     }
+> >               }
+> >
+
+[...]
+
+> > diff --git a/tools/testing/selftests/bpf/progs/bpf_iter_test_kern4.c b/tools/testing/selftests/bpf/progs/bpf_iter_test_kern4.c
+> > index ee49493dc125..43bf8ec8ae79 100644
+> > --- a/tools/testing/selftests/bpf/progs/bpf_iter_test_kern4.c
+> > +++ b/tools/testing/selftests/bpf/progs/bpf_iter_test_kern4.c
+> > @@ -9,8 +9,8 @@ __u32 map1_id = 0, map2_id = 0;
+> >   __u32 map1_accessed = 0, map2_accessed = 0;
+> >   __u64 map1_seqnum = 0, map2_seqnum1 = 0, map2_seqnum2 = 0;
+> >
+> > -static volatile const __u32 print_len;
+> > -static volatile const __u32 ret1;
+> > +volatile const __u32 print_len = 0;
+> > +volatile const __u32 ret1 = 0;
+>
+> I am little bit puzzled why bpf_iter_test_kern4.c is impacted. I think
+> this is not in a static link test, right? The same for a few tests below.
+
+All the selftests are passed through a static linker, so it will
+append obj_name to each static variable. So I just minimized use of
+static variables to avoid too much code churn. If this variable was
+static, it would have to be accessed as
+skel->rodata->bpf_iter_test_kern4__print_len, for example.
+
+>
+> >
+> >   SEC("iter/bpf_map")
+> >   int dump_bpf_map(struct bpf_iter__bpf_map *ctx)
+> > diff --git a/tools/testing/selftests/bpf/progs/test_check_mtu.c b/tools/testing/selftests/bpf/progs/test_check_mtu.c
+> > index c4a9bae96e75..71184af57749 100644
+> > --- a/tools/testing/selftests/bpf/progs/test_check_mtu.c
+> > +++ b/tools/testing/selftests/bpf/progs/test_check_mtu.c
+> > @@ -11,8 +11,8 @@
+> >   char _license[] SEC("license") = "GPL";
+> >
+
 [...]
