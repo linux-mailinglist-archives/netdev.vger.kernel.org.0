@@ -2,69 +2,65 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 17176369B4F
-	for <lists+netdev@lfdr.de>; Fri, 23 Apr 2021 22:30:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B21C3369B4E
+	for <lists+netdev@lfdr.de>; Fri, 23 Apr 2021 22:30:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243969AbhDWUav (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 23 Apr 2021 16:30:51 -0400
-Received: from mail.kernel.org ([198.145.29.99]:46246 "EHLO mail.kernel.org"
+        id S243930AbhDWUas (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 23 Apr 2021 16:30:48 -0400
+Received: from mail.kernel.org ([198.145.29.99]:46220 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232200AbhDWUaq (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S229691AbhDWUaq (ORCPT <rfc822;netdev@vger.kernel.org>);
         Fri, 23 Apr 2021 16:30:46 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id 9AD7261458;
+Received: by mail.kernel.org (Postfix) with ESMTPS id 517CF60FE6;
         Fri, 23 Apr 2021 20:30:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1619209809;
-        bh=aoqS7P/8ZfPna4brzERZq7nuNJe7PM/uvZLtCVYSgIs=;
+        bh=8mMevMnIpN6L9ppNytiHiaF8PJqmIVCSVKr/0HU7o8s=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=Q8U8bo13x8A4FLvULOykwygE6ccVEJHfHjL8Z7Rq3xbLslzBCqGh/6go2Rfq91Lwq
-         aR+W5fbJC7bsb9cV+z4BvlD0amXjYeUJfI/xs/j7pP1bm/Zx+Ru/RiM/wrzhB4JbLy
-         TurjGfgk/SILL0nH4YikaNZXMkC9Y+BIQoLZq1Gda4FvblMh6kB99VSWwNbOQ/CGfY
-         1rA0D79aZtnt0WHlH8oP+9EgRadk1rvoEDzz+SEhcdQTnREGyn1KUvp5a8JtkWKmT9
-         7LFnE8l3DWHc+3wKtlP3/mVTCDukWDTChS+8UfHo7qObqw3k8CKn/Z8+Z6lhaXxhqf
-         vjIjqksC1N0Jg==
+        b=HEJBOs5U5OpQSkXWQmOM3mXBg39jBu7OxG7At3s9+D2eJUKiBp1AjLeV5fTQRKWo/
+         fOEhAOfnKk5t2zquCO+Bu3UCKVdWOyL7ttxg3VDN+0I8+43N907NATNATr0spmBlvL
+         C+LQTQNQLbJyXXY7wBZU4jXTdERxoDdFpLo36rZMqXtqR53dAPQxZmA4mXaEw39M3N
+         HcRTKY2EDXhwIwFW0Nj1YCRWzHq7ywlAgJYOi1WRwY6PmFEFCsIYLrqI4eiPTtPZLp
+         JsW1kRjhc2/E1b+YyZflqi/vsMOHnhlzbFQ8hBsGFEqIeXALmtjw10fnKmNdYVrFZ9
+         s9j9vJB3md6lQ==
 Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 9432060A53;
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 490A760976;
         Fri, 23 Apr 2021 20:30:09 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next] net: mana: Use int to check the return value of
- mana_gd_poll_cq()
+Subject: Re: [PATCH v2] net: geneve: modify IP header check in geneve6_xmit_skb
+ and geneve_xmit_skb
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <161920980960.7001.3474811538584488537.git-patchwork-notify@kernel.org>
+Message-Id: <161920980929.7001.16835676253305880901.git-patchwork-notify@kernel.org>
 Date:   Fri, 23 Apr 2021 20:30:09 +0000
-References: <20210422200816.11100-1-decui@microsoft.com>
-In-Reply-To: <20210422200816.11100-1-decui@microsoft.com>
-To:     Dexuan Cui <decui@microsoft.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, kys@microsoft.com,
-        haiyangz@microsoft.com, stephen@networkplumber.org,
-        sthemmin@microsoft.com, wei.liu@kernel.org, liuwe@microsoft.com,
-        netdev@vger.kernel.org, dan.carpenter@oracle.com,
-        linux-kernel@vger.kernel.org, linux-hyperv@vger.kernel.org
+References: <20210422234945.1190-1-phil@philpotter.co.uk>
+In-Reply-To: <20210422234945.1190-1-phil@philpotter.co.uk>
+To:     Phillip Potter <phil@philpotter.co.uk>
+Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, sd@queasysnail.net,
+        edumazet@google.com, fw@strlen.de
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 Hello:
 
-This patch was applied to netdev/net-next.git (refs/heads/master):
+This patch was applied to netdev/net.git (refs/heads/master):
 
-On Thu, 22 Apr 2021 13:08:16 -0700 you wrote:
-> mana_gd_poll_cq() may return -1 if an overflow error is detected (this
-> should never happen unless there is a bug in the driver or the hardware).
-> 
-> Fix the type of the variable "comp_read" by using int rather than u32.
-> 
-> Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
-> Fixes: ca9c54d2d6a5 ("net: mana: Add a driver for Microsoft Azure Network Adapter (MANA)")
-> Signed-off-by: Dexuan Cui <decui@microsoft.com>
+On Fri, 23 Apr 2021 00:49:45 +0100 you wrote:
+> Modify the header size check in geneve6_xmit_skb and geneve_xmit_skb
+> to use pskb_inet_may_pull rather than pskb_network_may_pull. This fixes
+> two kernel selftest failures introduced by the commit introducing the
+> checks:
+> IPv4 over geneve6: PMTU exceptions
+> IPv4 over geneve6: PMTU exceptions - nexthop objects
 > 
 > [...]
 
 Here is the summary with links:
-  - [net-next] net: mana: Use int to check the return value of mana_gd_poll_cq()
-    https://git.kernel.org/netdev/net-next/c/d90a94680bc0
+  - [v2] net: geneve: modify IP header check in geneve6_xmit_skb and geneve_xmit_skb
+    https://git.kernel.org/netdev/net/c/d13f048dd40e
 
 You are awesome, thank you!
 --
