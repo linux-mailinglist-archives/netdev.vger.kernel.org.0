@@ -2,154 +2,233 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2D4B23697E9
-	for <lists+netdev@lfdr.de>; Fri, 23 Apr 2021 19:04:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B4EBE369825
+	for <lists+netdev@lfdr.de>; Fri, 23 Apr 2021 19:18:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243153AbhDWRFU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 23 Apr 2021 13:05:20 -0400
-Received: from mail-vi1eur05on2125.outbound.protection.outlook.com ([40.107.21.125]:10124
-        "EHLO EUR05-VI1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S229549AbhDWRFT (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 23 Apr 2021 13:05:19 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Ctsw0P6B78bp8VtR505ftnZCXb4DLMPOc6OeA9BaprA8cgXxrOQI3kPtJOULh5AiHEMjdjbnyBtf2cE0z+XxJqGLkU23P47m9ad5XhazoTbor6NlAV1FBABgbyggIJJb2pWosYizpN1tbsJpHQfgLDGoUrRKJfR4aptLq+thWU8ugaeRE7gs8sdakSeizSLDyydy72/fR6J99XuA0oMOSseQLflOns5XkhbW4nS/NHRhwSWJFEGcZUwobZDYg2Gdmf3qsL8rbRhhRAkgkLkdjEBvQqqBNnarL9Zam1uPcp/Tuwb3poxShzuxiioaCY68/07LgmehO+qAC+AGrB09rA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=xW5wje2Cfc8Lx+PRnXuZCrF/3mWm1sXM6qVMJQO6O+8=;
- b=IMMwW55xY+eNupdgzewU00LoN5b3nh5WH/9aPJ3vsGvsGUi8DgBnBgJBHpZCGrYu1YVn5tl4Jgeyd/aREHkYbiPWIuWnShEqAKvwOHi3gHqGi2nXDUmR0veH9cZELK5uRUOTMvCh2YhNXuo7tWSbmCwIgFGiJhPs7PFvJevh0ZEpZFidAqcWmmeT9/GYvLsxtmVfu0nIxbbPN23ywPS/sAIcEx9lvDbgy6+8NqK3IQVDysl02bOu9cxKe2LukQwruv8uFTP/wL1xZlJsU3oU6S12qsuSgks20T/bVaEai8mX4R3Hgg4nJyVdSUHEudhuWUjbFVP7kCflBWcu6g5sjA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=plvision.eu; dmarc=pass action=none header.from=plvision.eu;
- dkim=pass header.d=plvision.eu; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=plvision.eu;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=xW5wje2Cfc8Lx+PRnXuZCrF/3mWm1sXM6qVMJQO6O+8=;
- b=wapgNvnly7WrNqGgTTlHYp/LPdXrXjFyjw5e5Ds8Y602SJyvwtoaGHvdVxoVJmRRzSA4QgKjkGoAzNL7/nx/sDNBNbg3tWEoN7Yn2GhaE8B5WeTlojfF219di3vtmu3p/yCqYpbXuHxBJ2SxPQ0AS0Yh0SCkdP8H2EuSfyX3h94=
-Authentication-Results: lunn.ch; dkim=none (message not signed)
- header.d=none;lunn.ch; dmarc=none action=none header.from=plvision.eu;
-Received: from HE1P190MB0539.EURP190.PROD.OUTLOOK.COM (2603:10a6:7:56::28) by
- HE1P190MB0396.EURP190.PROD.OUTLOOK.COM (2603:10a6:7:5e::19) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.4065.21; Fri, 23 Apr 2021 17:04:40 +0000
-Received: from HE1P190MB0539.EURP190.PROD.OUTLOOK.COM
- ([fe80::a03e:2330:7686:125c]) by HE1P190MB0539.EURP190.PROD.OUTLOOK.COM
- ([fe80::a03e:2330:7686:125c%7]) with mapi id 15.20.4065.023; Fri, 23 Apr 2021
- 17:04:40 +0000
-Date:   Fri, 23 Apr 2021 20:04:37 +0300
-From:   Vadym Kochan <vadym.kochan@plvision.eu>
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        Taras Chornyi <tchornyi@marvell.com>,
-        linux-kernel@vger.kernel.org,
-        Mickey Rachamim <mickeyr@marvell.com>,
-        Vadym Kochan <vkochan@marvell.com>
-Subject: Re: [PATCH net-next 1/3] net: marvell: prestera: bump supported
- firmware version to 3.0
-Message-ID: <20210423170437.GC17656@plvision.eu>
-References: <20210423155933.29787-1-vadym.kochan@plvision.eu>
- <20210423155933.29787-2-vadym.kochan@plvision.eu>
- <YIL6feaar8Y/yOaZ@lunn.ch>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YIL6feaar8Y/yOaZ@lunn.ch>
-User-Agent: Mutt/1.9.4 (2018-02-28)
-X-Originating-IP: [217.20.186.93]
-X-ClientProxiedBy: AM6P194CA0011.EURP194.PROD.OUTLOOK.COM
- (2603:10a6:209:90::24) To HE1P190MB0539.EURP190.PROD.OUTLOOK.COM
- (2603:10a6:7:56::28)
+        id S243237AbhDWRTC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 23 Apr 2021 13:19:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51790 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229691AbhDWRTA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 23 Apr 2021 13:19:00 -0400
+Received: from mail-yb1-xb2a.google.com (mail-yb1-xb2a.google.com [IPv6:2607:f8b0:4864:20::b2a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 50D97C061574;
+        Fri, 23 Apr 2021 10:18:24 -0700 (PDT)
+Received: by mail-yb1-xb2a.google.com with SMTP id p126so2824698yba.1;
+        Fri, 23 Apr 2021 10:18:24 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=Ro7xCYFTIMq+4aXdu0vnN1al3dV+lMpIl8csXTesIbU=;
+        b=sjl8rnUjbHS5FhocMnzYK/CDexn3v38B54UYwP3iFCPU+PwGcOQaKI59Y3HKb8L3o8
+         24R/zBF5yZjwwZhtFTyRQfIgmP/FK7hzDREhgJEBcwOrAxisuw3NLqZVL+kPsfHtNlwW
+         NJB3t59NfUhelqL5udZkEu4iqdaCNRPxsYoSYUDsA45GP03reoaa4LQnDQ3LRf4AtgfQ
+         e3e3gc4tS+XJMEGxnflX0ykJH8HZDxY7PGFf2CnF+bHo0pIou8OKxupWLdI6vN17f6Yq
+         N0g5XupONvXOVW1W0eAnloXkB1QmVdAfExNVDpW6jZUXQ09A9HUAMpW7lBOcEsCysbS0
+         lHVw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=Ro7xCYFTIMq+4aXdu0vnN1al3dV+lMpIl8csXTesIbU=;
+        b=RsFMxv9XvI7TGxWjLGuNVZZQak/x9sB4zWNUCN6BZW+KoDLU25RrUTkrHkuu70ZE7Y
+         I3UuniYpINPmMkfBn+agt5mwMeeHIIw1oK5iotckx08DxN3afLqZSrSmTVKBVVnaFRTv
+         8YAJF6CubvdTl14R4VRPXbZCAp8GKeEnoJeDhDZt/fMQxdkyEk0F1CJC5BPrvMzi7kS/
+         u7iLKTnJhyo0lw3sThzbMFKDrSfnp00fIhDWNlg24O/mGiJ1j/ikMqOrd5wMoKHc48yU
+         bjxXPlYGWPZIpIYntqM5uHr9tWdt4QY8sZ4HAkZMMTkY0ayZi95qAu3yQuO/CIcYOy4Z
+         QXYg==
+X-Gm-Message-State: AOAM531b7mkdiEQesPjSd0wBzd+EE9chubG1ycz78Hzzv2zGWqpme+ix
+        2TG+MvalQoJQd4rirk6T6lLjYAZr5V1n7ySd9Lw=
+X-Google-Smtp-Source: ABdhPJy/PI8enZ3VVWM1OOLOMAN/E+WKrgw2anRZOFWnpYPUGT0G3hO4Kbh7I2X0+QHUB6roP+X1D3RE4Q9uSs8Ln9Q=
+X-Received: by 2002:a25:c4c5:: with SMTP id u188mr6949290ybf.425.1619198303207;
+ Fri, 23 Apr 2021 10:18:23 -0700 (PDT)
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from plvision.eu (217.20.186.93) by AM6P194CA0011.EURP194.PROD.OUTLOOK.COM (2603:10a6:209:90::24) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4065.20 via Frontend Transport; Fri, 23 Apr 2021 17:04:39 +0000
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: a2ee1883-a871-4589-6acf-08d90679e1e4
-X-MS-TrafficTypeDiagnostic: HE1P190MB0396:
-X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <HE1P190MB0396A4AB6FA1F59AC8A57FDF95459@HE1P190MB0396.EURP190.PROD.OUTLOOK.COM>
-X-MS-Oob-TLC-OOBClassifiers: OLM:10000;
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: EmPssA883VhXaM2DdxKYmP8+1zv8XRGArYsPMo0dkzLkfOQ9H9u6Hqi6OeLvpU97AMxVYSlolJbK6N1RBqSF0qanS9E3brPzGAu5zFeccJSBXCmSZ8dsYtonFhcTVl2zQfE8sp6eEIsqTe+gNMBbCkO0bVe0eA4ycGMnda68TKET4s71nA/FvyDjx5ZhkfxPzXGKsLWlj+tYYV/MUAonVFnIKsGmZIW1zL0RYBxQ2xgg4jcit8vc6twU5WdiW/QNi7OJeqnKAvgF0lL4/Od3l7Orm4gEdRq43TMQ5foU0EnO5BtN/x0RY5dNsz74GPMBZvVWSgRjCYvwXoE8hXfa33Medk4xmWPWaPm90IuxtH7Rc2VMNilCAg33P8SLvhkUObLRjZQcanrioyaxriz7jspm4avHQgT1ZL+FA837SDkoJV42FUD5CD0+V4eRAjgZv41timWhs5DBmLROQMlEtzh3w5f6OgnCZCo/Lc2U5S8QoUPyR/TpKzUPQ1D3lQo1cBS3u08Fnwj8G8nLO+uyQia2pIwrgreZdroisHkGr9Ty/L+MXO5ST1990YqFhmu8an5j3Qg07eQGlBKlIvZc2+T8rw921nuyPa3AXtTW7I9b1fsqolRecl4o33Ujl1YICUsBf39CT3PNsZi0zLZAbCSXcMdnXZMqSMpogO+sbQs=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:HE1P190MB0539.EURP190.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(136003)(366004)(376002)(396003)(39830400003)(346002)(186003)(4326008)(2906002)(66476007)(26005)(8676002)(52116002)(16526019)(8936002)(66556008)(44832011)(7696005)(66946007)(33656002)(8886007)(6916009)(38100700002)(55016002)(5660300002)(38350700002)(83380400001)(956004)(316002)(36756003)(1076003)(54906003)(478600001)(86362001)(2616005);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData: =?us-ascii?Q?kqIIlJITR1VKvvdTKj7h1qYofkd0WZzk50py5H4t+keGGsnX15ZffUIxUWVb?=
- =?us-ascii?Q?vaEXGJ9cFAnoheWhV0vNopwsUfbuVD1kwtZLMVIEtTVXatRzDAskV4z0TKaY?=
- =?us-ascii?Q?HL/EV5cyBDkSW+kruI0HaAjov3RoR+3YJzn+6Wx5uhxyFLnwtHzBL3cLNN+U?=
- =?us-ascii?Q?TSDOnS4iYLoMSu2FudnAOjLeIozLNA5YEv7hzIDErIlHqT2kWnaZT5QVD5vW?=
- =?us-ascii?Q?VNChOGu2LSD8djPqO3NX8KR38ANmqNlPZgxsTNgw7HPC75C1xIb3wSt01C4V?=
- =?us-ascii?Q?lJc17HihxA0WLZgFCyEO0Lg5xf4dT0AXsQpfD7boB3J31Enls93B+VjxElTu?=
- =?us-ascii?Q?OCGrJJ+ZxcwzlSwiJGL8LekAQRdNnkhPzjeBsGVOck0S1tJi07tniDdEEa+4?=
- =?us-ascii?Q?cDFnPwjE2w1WXz2hroA6XCSn0L3s+Bv0BYA7Ex9PrCfJMuayt2Owfxasjb2W?=
- =?us-ascii?Q?d62R2Y/6OVduLDUYvKDJh3mO/d4mDHxrNiJPW8Pp8JKJB+qlk1DdVnUrvTzy?=
- =?us-ascii?Q?XMQpYDUYBClw+9kPpRRVF/0ZUBHVf51nY21dOjRSPcdzhB3Zr4S2iHeHOMNd?=
- =?us-ascii?Q?CSsH7Lnll+F23E5KUst8GYbPHufVIItljoeq9mzgyCYWE0/i5wZH4UtDbHow?=
- =?us-ascii?Q?OKGKWd1miWK9AXvX/WhPJsKHdePh8OB25iYIk9vcwRvauKHxtH/eFKtukZ3T?=
- =?us-ascii?Q?5QmLqqXo45Usi6O1deQMV76auDrSY3nnTqIBY88m2f30kham+3Hz+DGNq40X?=
- =?us-ascii?Q?jyYoUcNQAoeFv+oD2n/Vr1EcSvmBTbsMlOaj5shjiwzxu8PeBsX4oYqau7fh?=
- =?us-ascii?Q?4CqAObiPr2xWN4nXF50a8N51+FAhITZbkpKtEoZlysvNvaI0Q9WZvUD1cigp?=
- =?us-ascii?Q?bQF2MthjxvEK+A9Ivq5je7qohfuY7JinPcHtNh0laNEVnLcQ0JhljpC865Ou?=
- =?us-ascii?Q?NKeSG/8GvDI2ClaSpM0Ab3a+AOD16pjt4/iq/dA/XJ1RO9w1OQdP157fglPj?=
- =?us-ascii?Q?18sFqnyE6YQzfdjvJzuk3Y5g6JiGkJhrCd3D1vUZCGAe/uzpXKM5QwPu8JW8?=
- =?us-ascii?Q?1M1xlks4yQ5gyZpiDxW6z6ATo2R83gwPdIhQjTZefSr+DAcR8ikL4+zjj+sc?=
- =?us-ascii?Q?l5CQdlD2rmIVhoDRHqWgvf5bq3MmPuuTlL9WQj2xXtii9tHgwSEWzGKn1MNE?=
- =?us-ascii?Q?f/OGNBXpHR8WTn8pNm1MCfB9T4U6xhq3QlYvlBaoEkXwqVEEG//04QNcLtfE?=
- =?us-ascii?Q?RZCsmYRUg2i0k0LslnFm/o46l98rbbmuU28VAnhNMjWPi7hwaCVxfPh8ZDEY?=
- =?us-ascii?Q?PQBHos8/eIe+8Qzu47gJO8sR?=
-X-OriginatorOrg: plvision.eu
-X-MS-Exchange-CrossTenant-Network-Message-Id: a2ee1883-a871-4589-6acf-08d90679e1e4
-X-MS-Exchange-CrossTenant-AuthSource: HE1P190MB0539.EURP190.PROD.OUTLOOK.COM
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 23 Apr 2021 17:04:40.2597
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 03707b74-30f3-46b6-a0e0-ff0a7438c9c4
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: bn19tGegwpAPhNRaVgpPUejVW/GJS8+lJS2P0RZhJK+ZdzJEpETwQo9kppwXpcSToy8UXeQU7NrEj7qvgjR0KxFzLTn2JpH5HWWXsO6BuaU=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: HE1P190MB0396
+References: <20210416202404.3443623-1-andrii@kernel.org> <20210416202404.3443623-16-andrii@kernel.org>
+ <3947e6ff-0b73-995e-630f-4a1252f8694b@fb.com>
+In-Reply-To: <3947e6ff-0b73-995e-630f-4a1252f8694b@fb.com>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Fri, 23 Apr 2021 10:18:12 -0700
+Message-ID: <CAEf4BzasVszkBCA0Ra2NsU+0ixoR65khF2E6h7CG_P3FOyamFQ@mail.gmail.com>
+Subject: Re: [PATCH v2 bpf-next 15/17] selftests/bpf: add function linking selftest
+To:     Yonghong Song <yhs@fb.com>
+Cc:     Andrii Nakryiko <andrii@kernel.org>, bpf <bpf@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@fb.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Kernel Team <kernel-team@fb.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Andrew,
-
-On Fri, Apr 23, 2021 at 06:49:01PM +0200, Andrew Lunn wrote:
-> On Fri, Apr 23, 2021 at 06:59:31PM +0300, Vadym Kochan wrote:
-> > From: Vadym Kochan <vkochan@marvell.com>
-> > 
-> > New firmware version has some ABI and feature changes like:
-> > 
-> >     - LAG support
-> >     - initial L3 support
-> >     - changed events handling logic
-> > 
-> > Signed-off-by: Vadym Kochan <vkochan@marvell.com>
+On Thu, Apr 22, 2021 at 5:50 PM Yonghong Song <yhs@fb.com> wrote:
+>
+>
+>
+> On 4/16/21 1:24 PM, Andrii Nakryiko wrote:
+> > Add selftest validating various aspects of statically linking functions:
+> >    - no conflicts and correct resolution for name-conflicting static funcs;
+> >    - correct resolution of extern functions;
+> >    - correct handling of weak functions, both resolution itself and libbpf's
+> >      handling of unused weak function that "lost" (it leaves gaps in code with
+> >      no ELF symbols);
+> >    - correct handling of hidden visibility to turn global function into
+> >      "static" for the purpose of BPF verification.
+> >
+> > Signed-off-by: Andrii Nakryiko <andrii@kernel.org>
+>
+> Ack with a small nit below.
+>
+> Acked-by: Yonghong Song <yhs@fb.com>
+>
 > > ---
-> >  drivers/net/ethernet/marvell/prestera/prestera_pci.c | 2 +-
-> >  1 file changed, 1 insertion(+), 1 deletion(-)
-> > 
-> > diff --git a/drivers/net/ethernet/marvell/prestera/prestera_pci.c b/drivers/net/ethernet/marvell/prestera/prestera_pci.c
-> > index 298110119272..80fb5daf1da8 100644
-> > --- a/drivers/net/ethernet/marvell/prestera/prestera_pci.c
-> > +++ b/drivers/net/ethernet/marvell/prestera/prestera_pci.c
-> > @@ -13,7 +13,7 @@
-> >  
-> >  #define PRESTERA_MSG_MAX_SIZE 1500
-> >  
-> > -#define PRESTERA_SUPP_FW_MAJ_VER	2
-> > +#define PRESTERA_SUPP_FW_MAJ_VER	3
-> >  #define PRESTERA_SUPP_FW_MIN_VER	0
-> 
-> I could be reading the code wrong, but it looks like anybody with
-> firmware version 2 on their machine and this new driver version
-> results in the switch not probing? And if the switch does not probe,
-> do they have any networking to go get the new firmware version?
-> 
+> >   tools/testing/selftests/bpf/Makefile          |  3 +-
+> >   .../selftests/bpf/prog_tests/linked_funcs.c   | 42 +++++++++++
+> >   .../selftests/bpf/progs/linked_funcs1.c       | 73 +++++++++++++++++++
+> >   .../selftests/bpf/progs/linked_funcs2.c       | 73 +++++++++++++++++++
+> >   4 files changed, 190 insertions(+), 1 deletion(-)
+> >   create mode 100644 tools/testing/selftests/bpf/prog_tests/linked_funcs.c
+> >   create mode 100644 tools/testing/selftests/bpf/progs/linked_funcs1.c
+> >   create mode 100644 tools/testing/selftests/bpf/progs/linked_funcs2.c
+> >
+> > diff --git a/tools/testing/selftests/bpf/Makefile b/tools/testing/selftests/bpf/Makefile
+> > index 666b462c1218..427ccfec1a6a 100644
+> > --- a/tools/testing/selftests/bpf/Makefile
+> > +++ b/tools/testing/selftests/bpf/Makefile
+> > @@ -308,9 +308,10 @@ endef
+> >
+> >   SKEL_BLACKLIST := btf__% test_pinning_invalid.c test_sk_assign.c
+> >
+> > -LINKED_SKELS := test_static_linked.skel.h
+> > +LINKED_SKELS := test_static_linked.skel.h linked_funcs.skel.h
+> >
+> >   test_static_linked.skel.h-deps := test_static_linked1.o test_static_linked2.o
+> > +linked_funcs.skel.h-deps := linked_funcs1.o linked_funcs2.o
+> >
+> >   LINKED_BPF_SRCS := $(patsubst %.o,%.c,$(foreach skel,$(LINKED_SKELS),$($(skel)-deps)))
+> >
+> > diff --git a/tools/testing/selftests/bpf/prog_tests/linked_funcs.c b/tools/testing/selftests/bpf/prog_tests/linked_funcs.c
+> > new file mode 100644
+> > index 000000000000..03bf8ef131ce
+> > --- /dev/null
+> > +++ b/tools/testing/selftests/bpf/prog_tests/linked_funcs.c
+> > @@ -0,0 +1,42 @@
+> > +// SPDX-License-Identifier: GPL-2.0
+> > +/* Copyright (c) 2021 Facebook */
+> > +
+> > +#include <test_progs.h>
+> > +#include <sys/syscall.h>
+> > +#include "linked_funcs.skel.h"
+> > +
+> > +void test_linked_funcs(void)
+> > +{
+> > +     int err;
+> > +     struct linked_funcs *skel;
+> > +
+> > +     skel = linked_funcs__open();
+> > +     if (!ASSERT_OK_PTR(skel, "skel_open"))
+> > +             return;
+> > +
+> > +     skel->rodata->my_tid = syscall(SYS_gettid);
+> > +     skel->rodata->syscall_id = SYS_getpgid;
+> > +
+> > +     err = linked_funcs__load(skel);
+> > +     if (!ASSERT_OK(err, "skel_load"))
+> > +             goto cleanup;
+> > +
+> > +     err = linked_funcs__attach(skel);
+> > +     if (!ASSERT_OK(err, "skel_attach"))
+> > +             goto cleanup;
+> > +
+> > +     /* trigger */
+> > +     syscall(SYS_getpgid);
+> > +
+> > +     ASSERT_EQ(skel->bss->output_val1, 2000 + 2000, "output_val1");
+> > +     ASSERT_EQ(skel->bss->output_ctx1, SYS_getpgid, "output_ctx1");
+> > +     ASSERT_EQ(skel->bss->output_weak1, 42, "output_weak1");
+> > +
+> > +     ASSERT_EQ(skel->bss->output_val2, 2 * 1000 + 2 * (2 * 1000), "output_val2");
+> > +     ASSERT_EQ(skel->bss->output_ctx2, SYS_getpgid, "output_ctx2");
+> > +     /* output_weak2 should never be updated */
+> > +     ASSERT_EQ(skel->bss->output_weak2, 0, "output_weak2");
+> > +
+> > +cleanup:
+> > +     linked_funcs__destroy(skel);
+> > +}
+> > diff --git a/tools/testing/selftests/bpf/progs/linked_funcs1.c b/tools/testing/selftests/bpf/progs/linked_funcs1.c
+> > new file mode 100644
+> > index 000000000000..cc621d4e4d82
+> > --- /dev/null
+> > +++ b/tools/testing/selftests/bpf/progs/linked_funcs1.c
+> > @@ -0,0 +1,73 @@
+> > +// SPDX-License-Identifier: GPL-2.0
+> > +/* Copyright (c) 2021 Facebook */
+> > +
+> > +#include "vmlinux.h"
+> > +#include <bpf/bpf_helpers.h>
+> > +#include <bpf/bpf_tracing.h>
+> > +
+> > +/* weak and shared between two files */
+> > +const volatile int my_tid __weak = 0;
+> > +const volatile long syscall_id __weak = 0;
+>
+> Since the new compiler (llvm13) is recommended for this patch set.
+> We can simplify the above two definition with
+>    int my_tid __weak;
+>    long syscall_id __weak;
+> The same for the other file.
 
-Existing boards have management port which is separated from the PP.
+This is not about old vs new compilers. I wanted to use .rodata
+variables, but I'll switch to .bss, no problem.
 
-> I think you need to provide some degree of backwards compatibly to
-> older firmware. Support version 2 and 3. When version 4 comes out,
-> drop support for version 2 in the driver etc.
-> 
->      Andrew
+>
+> But I am also okay with the current form
+> to *satisfy* llvm10 some people may still use.
+>
+> > +
+> > +int output_val1 = 0;
+> > +int output_ctx1 = 0;
+> > +int output_weak1 = 0;
+> > +
+> > +/* same "subprog" name in all files, but it's ok because they all are static */
+> > +static __noinline int subprog(int x)
+> > +{
+> > +     /* but different formula */
+> > +     return x * 1;
+> > +}
+> > +
+> > +/* Global functions can't be void */
+> > +int set_output_val1(int x)
+> > +{
+> > +     output_val1 = x + subprog(x);
+> > +     return x;
+> > +}
+> > +
+> > +/* This function can't be verified as global, as it assumes raw_tp/sys_enter
+> > + * context and accesses syscall id (second argument). So we mark it as
+> > + * __hidden, so that libbpf will mark it as static in the final object file,
+> > + * right before verifying it in the kernel.
+> > + *
+> > + * But we don't mark it as __hidden here, rather at extern site. __hidden is
+> > + * "contaminating" visibility, so it will get propagated from either extern or
+> > + * actual definition (including from the losing __weak definition).
+> > + */
+> > +void set_output_ctx1(__u64 *ctx)
+> > +{
+> > +     output_ctx1 = ctx[1]; /* long id, same as in BPF_PROG below */
+> > +}
+> > +
+> > +/* this weak instance should win because it's the first one */
+> > +__weak int set_output_weak(int x)
+> > +{
+> > +     output_weak1 = x;
+> > +     return x;
+> > +}
+> > +
+> > +extern int set_output_val2(int x);
+> > +
+> > +/* here we'll force set_output_ctx2() to be __hidden in the final obj file */
+> > +__hidden extern void set_output_ctx2(__u64 *ctx);
+> > +
+> [...]
