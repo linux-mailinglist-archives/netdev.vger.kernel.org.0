@@ -2,63 +2,65 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DC1F0369265
-	for <lists+netdev@lfdr.de>; Fri, 23 Apr 2021 14:48:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 29C46369268
+	for <lists+netdev@lfdr.de>; Fri, 23 Apr 2021 14:48:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242497AbhDWMtW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 23 Apr 2021 08:49:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48066 "EHLO
+        id S242571AbhDWMt1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 23 Apr 2021 08:49:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48094 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231283AbhDWMtV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 23 Apr 2021 08:49:21 -0400
-Received: from mail-il1-x12d.google.com (mail-il1-x12d.google.com [IPv6:2607:f8b0:4864:20::12d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1CB2AC061574
-        for <netdev@vger.kernel.org>; Fri, 23 Apr 2021 05:48:44 -0700 (PDT)
-Received: by mail-il1-x12d.google.com with SMTP id r5so393646ilb.2
-        for <netdev@vger.kernel.org>; Fri, 23 Apr 2021 05:48:44 -0700 (PDT)
+        with ESMTP id S242541AbhDWMt0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 23 Apr 2021 08:49:26 -0400
+Received: from mail-io1-xd33.google.com (mail-io1-xd33.google.com [IPv6:2607:f8b0:4864:20::d33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5389DC061574
+        for <netdev@vger.kernel.org>; Fri, 23 Apr 2021 05:48:49 -0700 (PDT)
+Received: by mail-io1-xd33.google.com with SMTP id h141so4700275iof.2
+        for <netdev@vger.kernel.org>; Fri, 23 Apr 2021 05:48:49 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=ieee.org; s=google;
         h=subject:to:references:from:message-id:date:user-agent:mime-version
          :in-reply-to:content-language:content-transfer-encoding;
-        bh=mWfAtGdxpFEp4LVoo+rqb8Rn9YokussnKSoryb4RU5M=;
-        b=GPM1lSeP//ZNKPiXG9KWBfZNpNlCEb4eR/mfOGUqMRlymkABLJtitF7ZktuD+LYuqF
-         Q2w+25DvrTWzTaQVM7ylqyGA4V6T6n8EygMAMpz66XPOMzIiAQJTt9ovnZ4Nx6z2OwtS
-         z+IqQAXWHcmZvGsYlknsdjJlsvndBvKI3SKbY=
+        bh=cQ+MBXE+++xp1zOWlTgF7TNTO8L2yA1pVovqRQEspeU=;
+        b=G9D0VkOd02dIR5UwpVtNRa+BD0De8I/lJwpxjwa3FTZqtD3miUu4AfhbDi7ZE2/UMQ
+         eNzZc6a3weOdVNLOzHhQOXK4V2IX2ijHkd0ECewA2826vxlIjNj+1PFWwE8DvVeSyehR
+         qNT1p5R/gd7ckG+6BPmC4U28svU7nF8z+lkQA=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:references:from:message-id:date
          :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=mWfAtGdxpFEp4LVoo+rqb8Rn9YokussnKSoryb4RU5M=;
-        b=UHYl3Q2Zln5GMFr+J6/HSSYXqYXa4ubMMm/HSvz+V7Otk0EYLMAlNBbM9+haUhfHEM
-         2uVDij+zLQB440VqBzQlrmvaghD+LoHo01djNgcoaHQooTEe5Lq9NJczBwyhvf+Yx8sM
-         GZoe50r631P+LTjop8ibMjVj0c3AGOOfIhv03dcrdWWyDNAeczNI/fL6wj6KkfaWtiJe
-         +yItv7MOUAVItdXWFdE2TngJrjM7LduHCaLDFaCeI6Vsxj3c+mnAqneatEpi8XHSoKCi
-         NxmMNkhNK05PSKdVeK4sSusF/t+3ph0Yxp1Mt44/2xLdQgWZyRwS1is2WqmKtHQh9E+B
-         Dk/A==
-X-Gm-Message-State: AOAM531/rxa50TIIj0o0egoUOS8CRKcadnOxUn5usLltXFeWfN/TgS8z
-        8+q6hD3bhcefIeqFi0NoVqF4roEgHv4Mxw==
-X-Google-Smtp-Source: ABdhPJxfCx4yvv+7+tVgXbNOcieXDlNCf7ZH4e8yceqIc1vWC80Y099PWOBobq7IE4QBeObQIjjZlA==
-X-Received: by 2002:a92:d143:: with SMTP id t3mr3024278ilg.241.1619182123496;
-        Fri, 23 Apr 2021 05:48:43 -0700 (PDT)
+        bh=cQ+MBXE+++xp1zOWlTgF7TNTO8L2yA1pVovqRQEspeU=;
+        b=EiW08mszUVxtFDXPufByXx5y6QtR6xzOpMrwVoQotevxsKH6suoaRkdW1S9Le6yMjP
+         ttdrfqwltHoCH/l7vUPImBt/AOvKuO8Xol4F9cv/S3hldwwKXJfUF8+Qhczp16gUZBFA
+         38KB0XfjarMgMAU3um+izUr7ve1PE3R+QtUWlkWz0x+W8obtcAkexeuFjkpFkba2xd27
+         fMOirIjtMXV3sHnkzMPSK0oMBvHfNflBJ1UVJfYXi956dTpEO1ZT9DdZm3h62Ygm8tpQ
+         zKLJzG/WAdwF/oH5FkQB5HejnFnRtVhDJ/ZPkqlKCisSoIKuFBiOO7MflPF7f8GUzxVi
+         Bwcg==
+X-Gm-Message-State: AOAM533FnmV1ZVslgOL6CkyqS9C86m/W5OQazelM0nTpn9KDsZxEmyPx
+        Ep5wO9n3waTEq2TLKZXHutkLAA==
+X-Google-Smtp-Source: ABdhPJyYOpZ9/IADM3mbcd5lY/wDXn4qWQFT2fWsQqT7XJ59KdFeo57J9qAuf13jiV45CXHMGOWgSQ==
+X-Received: by 2002:a6b:fa14:: with SMTP id p20mr3053966ioh.168.1619182128721;
+        Fri, 23 Apr 2021 05:48:48 -0700 (PDT)
 Received: from [172.22.22.4] (c-73-185-129-58.hsd1.mn.comcast.net. [73.185.129.58])
-        by smtp.googlemail.com with ESMTPSA id q5sm2732695iop.17.2021.04.23.05.48.42
+        by smtp.googlemail.com with ESMTPSA id f12sm2579599ils.50.2021.04.23.05.48.47
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 23 Apr 2021 05:48:42 -0700 (PDT)
-Subject: Re: [PATCH net-next v5 0/3] net: qualcomm: rmnet: Enable Mapv5
+        Fri, 23 Apr 2021 05:48:48 -0700 (PDT)
+Subject: Re: [PATCH net-next v5 1/3] docs: networking: Add documentation for
+ MAPv5
 To:     Sharath Chandra Vurukala <sharathv@codeaurora.org>,
         davem@davemloft.net, kuba@kernel.org, elder@kernel.org,
         cpratapa@codeaurora.org, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org
 References: <stranche@codeaurora.org linux-doc@vger.kernel.org corbet@lwn.net>
  <1619180343-3943-1-git-send-email-sharathv@codeaurora.org>
+ <1619180343-3943-2-git-send-email-sharathv@codeaurora.org>
 From:   Alex Elder <elder@ieee.org>
-Message-ID: <2c7d9807-0b9c-2334-b059-c3c18f63a341@ieee.org>
-Date:   Fri, 23 Apr 2021 07:48:41 -0500
+Message-ID: <ea12b4dd-a540-fdf7-44f8-6b9bc822a50d@ieee.org>
+Date:   Fri, 23 Apr 2021 07:48:47 -0500
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
  Thunderbird/78.7.1
 MIME-Version: 1.0
-In-Reply-To: <1619180343-3943-1-git-send-email-sharathv@codeaurora.org>
+In-Reply-To: <1619180343-3943-2-git-send-email-sharathv@codeaurora.org>
 Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -67,67 +69,182 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 On 4/23/21 7:19 AM, Sharath Chandra Vurukala wrote:
-> This series introduces the MAPv5 packet format.
+> Adding documentation explaining the new MAPv4/v5 packet formats
+> and the corresponding checksum offload headers.
 > 
->    Patch 0 documents the MAPv4/v5.
->    Patch 1 introduces the MAPv5 and the Inline checksum offload for RX/Ingress.
->    Patch 2 introduces the MAPv5 and the Inline checksum offload for TX/Egress.
-> 
->    A new checksum header format is used as part of MAPv5.For RX checksum offload,
->    the checksum is verified by the HW and the validity is marked in the checksum
->    header of MAPv5. For TX, the required metadata is filled up so hardware can
->    compute the checksum.
-> 
->    v1->v2:
->    - Fixed the compilation errors, warnings reported by kernel test robot.
->    - Checksum header definition is expanded to support big, little endian
->            formats as mentioned by Jakub.
-> 
->    v2->v3:
->    - Fixed compilation errors reported by kernel bot for big endian flavor.
-> 
->    v3->v4:
->    - Made changes to use masks instead of C bit-fields as suggested by Jakub/Alex.
->   
->    v4->v5:
->    - Corrected checkpatch errors and warnings reported by patchwork.
+> Acked-by: Subash Abhinov Kasiviswanathan <subashab@codeaurora.org>
+> Acked-by: Alex Elder <elder@linaro.org>
+> Signed-off-by: Sharath Chandra Vurukala <sharathv@codeaurora.org>
 
-Unfortunately our e-mails crossed paths...  I'll reproduce
-my comments on v4 here.  I'm sure you're going to grow tired
-of this feedback.
-
-
-I see one thing that I think might be a bug in the third
-patch, but maybe I'm mistaken, and you can explain why.
-
-I tested the code you supplied me last week, and with a
-bug fix applied I found they worked for:
-   IPA v3.5.1, IPv4 in loopback, checksum enabled and not
-   IPA v4.2, IPv6 using LTE, checksum enabled and not
-Both of the above tested ICMP, UDP, and TCP.  I will retest
-with version 5 of this series.
-
-I did not test with IPA v4.5+, which is unfortunately
-the main user of this new code.  I will try to do so
-with your updated code, and if all testing passes I'll
-send a message with "Tested-by" for you to add to your
-patches.
+You indicated I acknowledged this, and I didn't have any
+other real input, so this looks good.
 
 					-Alex
 
-> Sharath Chandra Vurukala (3):
->    docs: networking: Add documentation for MAPv5
->    net: ethernet: rmnet: Support for ingress MAPv5 checksum offload
->    net: ethernet: rmnet: Add support for MAPv5 egress packets
+> ---
+>   .../device_drivers/cellular/qualcomm/rmnet.rst     | 126 +++++++++++++++++++--
+>   1 file changed, 114 insertions(+), 12 deletions(-)
 > 
->   .../device_drivers/cellular/qualcomm/rmnet.rst     | 126 +++++++++++++++--
->   drivers/net/ethernet/qualcomm/rmnet/rmnet_config.h |   4 +-
->   .../net/ethernet/qualcomm/rmnet/rmnet_handlers.c   |  31 +++--
->   drivers/net/ethernet/qualcomm/rmnet/rmnet_map.h    |  11 +-
->   .../net/ethernet/qualcomm/rmnet/rmnet_map_data.c   | 151 ++++++++++++++++++++-
->   drivers/net/ethernet/qualcomm/rmnet/rmnet_vnd.c    |   3 +-
->   include/linux/if_rmnet.h                           |  27 +++-
->   include/uapi/linux/if_link.h                       |   2 +
->   8 files changed, 320 insertions(+), 35 deletions(-)
+> diff --git a/Documentation/networking/device_drivers/cellular/qualcomm/rmnet.rst b/Documentation/networking/device_drivers/cellular/qualcomm/rmnet.rst
+> index 70643b5..4118384 100644
+> --- a/Documentation/networking/device_drivers/cellular/qualcomm/rmnet.rst
+> +++ b/Documentation/networking/device_drivers/cellular/qualcomm/rmnet.rst
+> @@ -27,34 +27,136 @@ these MAP frames and send them to appropriate PDN's.
+>   2. Packet format
+>   ================
+>   
+> -a. MAP packet (data / control)
+> +a. MAP packet v1 (data / control)
+>   
+> -MAP header has the same endianness of the IP packet.
+> +MAP header fields are in big endian format.
+>   
+>   Packet format::
+>   
+> -  Bit             0             1           2-7      8 - 15           16 - 31
+> +  Bit             0             1           2-7      8-15           16-31
+>     Function   Command / Data   Reserved     Pad   Multiplexer ID    Payload length
+> -  Bit            32 - x
+> -  Function     Raw  Bytes
+> +
+> +  Bit            32-x
+> +  Function      Raw bytes
+>   
+>   Command (1)/ Data (0) bit value is to indicate if the packet is a MAP command
+> -or data packet. Control packet is used for transport level flow control. Data
+> +or data packet. Command packet is used for transport level flow control. Data
+>   packets are standard IP packets.
+>   
+> -Reserved bits are usually zeroed out and to be ignored by receiver.
+> +Reserved bits must be zero when sent and ignored when received.
+>   
+> -Padding is number of bytes to be added for 4 byte alignment if required by
+> -hardware.
+> +Padding is the number of bytes to be appended to the payload to
+> +ensure 4 byte alignment.
+>   
+>   Multiplexer ID is to indicate the PDN on which data has to be sent.
+>   
+>   Payload length includes the padding length but does not include MAP header
+>   length.
+>   
+> -b. MAP packet (command specific)::
+> +b. Map packet v4 (data / control)
+> +
+> +MAP header fields are in big endian format.
+> +
+> +Packet format::
+> +
+> +  Bit             0             1           2-7      8-15           16-31
+> +  Function   Command / Data   Reserved     Pad   Multiplexer ID    Payload length
+> +
+> +  Bit            32-(x-33)      (x-32)-x
+> +  Function      Raw bytes      Checksum offload header
+> +
+> +Command (1)/ Data (0) bit value is to indicate if the packet is a MAP command
+> +or data packet. Command packet is used for transport level flow control. Data
+> +packets are standard IP packets.
+> +
+> +Reserved bits must be zero when sent and ignored when received.
+> +
+> +Padding is the number of bytes to be appended to the payload to
+> +ensure 4 byte alignment.
+> +
+> +Multiplexer ID is to indicate the PDN on which data has to be sent.
+> +
+> +Payload length includes the padding length but does not include MAP header
+> +length.
+> +
+> +Checksum offload header, has the information about the checksum processing done
+> +by the hardware.Checksum offload header fields are in big endian format.
+> +
+> +Packet format::
+> +
+> +  Bit             0-14        15              16-31
+> +  Function      Reserved   Valid     Checksum start offset
+> +
+> +  Bit                31-47                    48-64
+> +  Function      Checksum length           Checksum value
+> +
+> +Reserved bits must be zero when sent and ignored when received.
+> +
+> +Valid bit indicates whether the partial checksum is calculated and is valid.
+> +Set to 1, if its is valid. Set to 0 otherwise.
+> +
+> +Padding is the number of bytes to be appended to the payload to
+> +ensure 4 byte alignment.
+> +
+> +Checksum start offset, Indicates the offset in bytes from the beginning of the
+> +IP header, from which modem computed checksum.
+> +
+> +Checksum length is the Length in bytes starting from CKSUM_START_OFFSET,
+> +over which checksum is computed.
+> +
+> +Checksum value, indicates the checksum computed.
+> +
+> +c. MAP packet v5 (data / control)
+> +
+> +MAP header fields are in big endian format.
+> +
+> +Packet format::
+> +
+> +  Bit             0             1         2-7      8-15           16-31
+> +  Function   Command / Data  Next header  Pad   Multiplexer ID   Payload length
+> +
+> +  Bit            32-x
+> +  Function      Raw bytes
+> +
+> +Command (1)/ Data (0) bit value is to indicate if the packet is a MAP command
+> +or data packet. Command packet is used for transport level flow control. Data
+> +packets are standard IP packets.
+> +
+> +Next header is used to indicate the presence of another header, currently is
+> +limited to checksum header.
+> +
+> +Padding is the number of bytes to be appended to the payload to
+> +ensure 4 byte alignment.
+> +
+> +Multiplexer ID is to indicate the PDN on which data has to be sent.
+> +
+> +Payload length includes the padding length but does not include MAP header
+> +length.
+> +
+> +d. Checksum offload header v5
+> +
+> +Checksum offload header fields are in big endian format.
+> +
+> +  Bit            0 - 6          7               8-15              16-31
+> +  Function     Header Type    Next Header     Checksum Valid    Reserved
+> +
+> +Header Type is to indicate the type of header, this usually is set to CHECKSUM
+> +
+> +Header types
+> += ==========================================
+> +0 Reserved
+> +1 Reserved
+> +2 checksum header
+> +
+> +Checksum Valid is to indicate whether the header checksum is valid. Value of 1
+> +implies that checksum is calculated on this packet and is valid, value of 0
+> +indicates that the calculated packet checksum is invalid.
+> +
+> +Reserved bits must be zero when sent and ignored when received.
+> +
+> +e. MAP packet v1/v5 (command specific)::
+>   
+> -    Bit             0             1           2-7      8 - 15           16 - 31
+> +    Bit             0             1         2-7      8 - 15           16 - 31
+>       Function   Command         Reserved     Pad   Multiplexer ID    Payload length
+>       Bit          32 - 39        40 - 45    46 - 47       48 - 63
+>       Function   Command name    Reserved   Command Type   Reserved
+> @@ -74,7 +176,7 @@ Command types
+>   3 is for error during processing of commands
+>   = ==========================================
+>   
+> -c. Aggregation
+> +f. Aggregation
+>   
+>   Aggregation is multiple MAP packets (can be data or command) delivered to
+>   rmnet in a single linear skb. rmnet will process the individual
 > 
 
