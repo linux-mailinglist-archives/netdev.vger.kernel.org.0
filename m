@@ -2,93 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 954173698C9
-	for <lists+netdev@lfdr.de>; Fri, 23 Apr 2021 20:01:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D14DF3698D4
+	for <lists+netdev@lfdr.de>; Fri, 23 Apr 2021 20:07:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243329AbhDWSCI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 23 Apr 2021 14:02:08 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:38492 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231400AbhDWSCG (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 23 Apr 2021 14:02:06 -0400
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
-        (envelope-from <andrew@lunn.ch>)
-        id 1la07G-000hrM-F4; Fri, 23 Apr 2021 20:01:22 +0200
-Date:   Fri, 23 Apr 2021 20:01:22 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Vadym Kochan <vadym.kochan@plvision.eu>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        Taras Chornyi <tchornyi@marvell.com>,
-        linux-kernel@vger.kernel.org,
-        Mickey Rachamim <mickeyr@marvell.com>,
-        Vadym Kochan <vkochan@marvell.com>
-Subject: Re: [PATCH net-next 1/3] net: marvell: prestera: bump supported
- firmware version to 3.0
-Message-ID: <YIMLcsstbpY215oJ@lunn.ch>
-References: <20210423155933.29787-1-vadym.kochan@plvision.eu>
- <20210423155933.29787-2-vadym.kochan@plvision.eu>
- <YIL6feaar8Y/yOaZ@lunn.ch>
- <20210423170437.GC17656@plvision.eu>
+        id S243465AbhDWSIF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 23 Apr 2021 14:08:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34348 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229549AbhDWSIE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 23 Apr 2021 14:08:04 -0400
+Received: from fieldses.org (fieldses.org [IPv6:2600:3c00:e000:2f7::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 316FCC061574;
+        Fri, 23 Apr 2021 11:07:28 -0700 (PDT)
+Received: by fieldses.org (Postfix, from userid 2815)
+        id 542AE72B7; Fri, 23 Apr 2021 14:07:27 -0400 (EDT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 fieldses.org 542AE72B7
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fieldses.org;
+        s=default; t=1619201247;
+        bh=1HWABe1pBrZRNSlmKUpJ27EmxvYwRlFblgJzINxdFHU=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=JlB/RqCRZaUXv2F0AHjVjc3KWpwwU4LxrmDVK6vAeG1GIUxukeByBcG/m9U9lC07c
+         0nDtoSvfa03M+d6ch3T1BXdAOl8dHXLZ172qYuet4JoV6VO+GtC56Mt1/ezM3QR+cC
+         Fuwo+9UJBWVIK3HYFSB/yqdy+ACYYvsRkJE8MURs=
+Date:   Fri, 23 Apr 2021 14:07:27 -0400
+From:   "J. Bruce Fields" <bfields@fieldses.org>
+To:     Leon Romanovsky <leon@kernel.org>
+Cc:     "Shelat, Abhi" <a.shelat@northeastern.edu>,
+        Greg KH <gregkh@linuxfoundation.org>,
+        Sudip Mukherjee <sudipm.mukherjee@gmail.com>,
+        Aditya Pakki <pakki001@umn.edu>,
+        Chuck Lever <chuck.lever@oracle.com>,
+        Trond Myklebust <trond.myklebust@hammerspace.com>,
+        Anna Schumaker <anna.schumaker@netapp.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Dave Wysochanski <dwysocha@redhat.com>,
+        "linux-nfs@vger.kernel.org" <linux-nfs@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH] SUNRPC: Add a check for gss_release_msg
+Message-ID: <20210423180727.GD10457@fieldses.org>
+References: <YH+zwQgBBGUJdiVK@unreal>
+ <YH+7ZydHv4+Y1hlx@kroah.com>
+ <CADVatmNgU7t-Co84tSS6VW=3NcPu=17qyVyEEtVMVR_g51Ma6Q@mail.gmail.com>
+ <YH/8jcoC1ffuksrf@kroah.com>
+ <3B9A54F7-6A61-4A34-9EAC-95332709BAE7@northeastern.edu>
+ <20210421133727.GA27929@fieldses.org>
+ <YIAta3cRl8mk/RkH@unreal>
+ <20210421135637.GB27929@fieldses.org>
+ <20210422193950.GA25415@fieldses.org>
+ <YIMDCNx4q6esHTYt@unreal>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20210423170437.GC17656@plvision.eu>
+In-Reply-To: <YIMDCNx4q6esHTYt@unreal>
+User-Agent: Mutt/1.5.21 (2010-09-15)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Apr 23, 2021 at 08:04:37PM +0300, Vadym Kochan wrote:
-> Hi Andrew,
-> 
-> On Fri, Apr 23, 2021 at 06:49:01PM +0200, Andrew Lunn wrote:
-> > On Fri, Apr 23, 2021 at 06:59:31PM +0300, Vadym Kochan wrote:
-> > > From: Vadym Kochan <vkochan@marvell.com>
+On Fri, Apr 23, 2021 at 08:25:28PM +0300, Leon Romanovsky wrote:
+> On Thu, Apr 22, 2021 at 03:39:50PM -0400, J. Bruce Fields wrote:
+> > On Wed, Apr 21, 2021 at 09:56:37AM -0400, J. Bruce Fields wrote:
+> > > On Wed, Apr 21, 2021 at 04:49:31PM +0300, Leon Romanovsky wrote:
+> > > > If you want to see another accepted patch that is already part of
+> > > > stable@, you are invited to take a look on this patch that has "built-in bug":
+> > > > 8e949363f017 ("net: mlx5: Add a missing check on idr_find, free buf")
 > > > 
-> > > New firmware version has some ABI and feature changes like:
-> > > 
-> > >     - LAG support
-> > >     - initial L3 support
-> > >     - changed events handling logic
-> > > 
-> > > Signed-off-by: Vadym Kochan <vkochan@marvell.com>
-> > > ---
-> > >  drivers/net/ethernet/marvell/prestera/prestera_pci.c | 2 +-
-> > >  1 file changed, 1 insertion(+), 1 deletion(-)
-> > > 
-> > > diff --git a/drivers/net/ethernet/marvell/prestera/prestera_pci.c b/drivers/net/ethernet/marvell/prestera/prestera_pci.c
-> > > index 298110119272..80fb5daf1da8 100644
-> > > --- a/drivers/net/ethernet/marvell/prestera/prestera_pci.c
-> > > +++ b/drivers/net/ethernet/marvell/prestera/prestera_pci.c
-> > > @@ -13,7 +13,7 @@
-> > >  
-> > >  #define PRESTERA_MSG_MAX_SIZE 1500
-> > >  
-> > > -#define PRESTERA_SUPP_FW_MAJ_VER	2
-> > > +#define PRESTERA_SUPP_FW_MAJ_VER	3
-> > >  #define PRESTERA_SUPP_FW_MIN_VER	0
+> > > Interesting, thanks.
 > > 
-> > I could be reading the code wrong, but it looks like anybody with
-> > firmware version 2 on their machine and this new driver version
-> > results in the switch not probing? And if the switch does not probe,
-> > do they have any networking to go get the new firmware version?
-> > 
+> > Though looking at it now, I'm not actually seeing the bug--probably I'm
+> > overlooking something obvious.
 > 
-> Existing boards have management port which is separated from the PP.
+> It was fixed in commit 31634bf5dcc4 ("net/mlx5: FPGA, tls, hold rcu read lock a bit longer")
 
-I don't think that is enough. You have strongly tied the kernel
-version to the firmware version. Upgrade the kernel without first
-upgrading linux-firmware, and things break. In Linux distributions
-these are separate packages, each with their own life cycle. There is
-no guarantee they will be upgraded together.
+So is the "Fixes:" line on that commit wrong?  It claims the bug was
+introduced by an earlier commit, ab412e1dd7db ("net/mlx5: Accel, add TLS
+rx offload routines").
 
-> > I think you need to provide some degree of backwards compatibly to
-> > older firmware. Support version 2 and 3. When version 4 comes out,
-> > drop support for version 2 in the driver etc.
+Looks like Aditya Pakki's commit may have widened the race a little, but
+I find it a little hard to fault him for that.
 
-The wifi driver i have for my laptop does something like this. It
-first tries to load the latest version of the firmware the driver
-supports, and if that fails, it goes back to older versions until it
-finds a version it can load, or gives up, saying they are all too old.
-
-      Andrew
+--b.
