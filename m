@@ -2,69 +2,63 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BBB91369B23
-	for <lists+netdev@lfdr.de>; Fri, 23 Apr 2021 22:10:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 483C5369B39
+	for <lists+netdev@lfdr.de>; Fri, 23 Apr 2021 22:20:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243889AbhDWULF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 23 Apr 2021 16:11:05 -0400
-Received: from mail.kernel.org ([198.145.29.99]:50348 "EHLO mail.kernel.org"
+        id S243935AbhDWUUw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 23 Apr 2021 16:20:52 -0400
+Received: from mail.kernel.org ([198.145.29.99]:49062 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229549AbhDWULF (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 23 Apr 2021 16:11:05 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id 3279361452;
-        Fri, 23 Apr 2021 20:10:28 +0000 (UTC)
+        id S229549AbhDWUUp (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 23 Apr 2021 16:20:45 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPS id 16AE061396;
+        Fri, 23 Apr 2021 20:20:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1619208628;
-        bh=UWmAWC2tPQK+/jLuSr28NYJrUsePoE9Ilbuq5V7dFiw=;
+        s=k20201202; t=1619209209;
+        bh=Cpr3iJLCq3B4ez1UOmNaUNBIfNOOKNbyqZCwRteXx88=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=oCeZjZETPlV++Wu7U6VGVroHOG5velueGx6I1FpF71W+s/XQjWbDB3zyoAWWy7otr
-         x4N2FIn8FDswg2HWB82V48rMRsPJOcTsayOaF6nHQcXgqzDeiAMmv/OZKCw4O1oYbX
-         FQ2xfpWxJlnqsrk3QQVl4SUM3IaUZibxZpA8h3cCU5GUehWmaLHnj4MHyrppFrjJiO
-         n4TB/5CRjOKspdF1nORZ5PEGVJD4KgFBZ6J9Ql4tYxtxSgiJinTm2RK6cOKWOyvauQ
-         7EZ0f3A/uhvgUWTzcmg7H3tRDH+i4AJRNhcQF3ZwFRodHnlsgWELDKH4CEqQctxcVK
-         Qo3H0eWLSDplg==
+        b=agP7g3dQdK7msngwBZQ5zEseu02VLCdQzAA79aPZxL3Jvxwvv6zgylk9ZJB06/jon
+         OHAiOF12RXEwgQbNY1qGd9J2BqgrCrGU6nUDWZ0BYqA0f2SpEQq25DMkZaOnI2ZFYa
+         uUOburfY7/Hvi7cDglfh1h1bn4HbGtRHM3jyDJjlnbtrPl4W2AhlogQNBRx5v+S0wT
+         ubwZ5obaF/bU9o5v47m9OF99qdrblE7uHItgTA1trUQWpfvIcyE3d3FHrFUD/Seu94
+         jVrR4DTL5Os+j0R7oF8KQBedoATWCuGXcQl93/Il3Vm6JVqpMjZdpytCLgraM7uS1m
+         aBwc3XGvVTRXA==
 Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 27D3A60976;
-        Fri, 23 Apr 2021 20:10:28 +0000 (UTC)
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 0E6B960A53;
+        Fri, 23 Apr 2021 20:20:09 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net] openvswitch: meter: remove rate from the bucket size
- calculation
+Subject: Re: [PATCH] net: sock: remove the unnecessary check in proto_register
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <161920862815.30338.13572609304102929067.git-patchwork-notify@kernel.org>
-Date:   Fri, 23 Apr 2021 20:10:28 +0000
-References: <20210421135747.312095-1-i.maximets@ovn.org>
-In-Reply-To: <20210421135747.312095-1-i.maximets@ovn.org>
-To:     Ilya Maximets <i.maximets@ovn.org>
-Cc:     pshelar@ovn.org, davem@davemloft.net, kuba@kernel.org,
-        azhou@ovn.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, dev@openvswitch.org,
-        xiangxia.m.yue@gmail.com, u9012063@gmail.com,
-        jean.tourrilhes@hpe.com
+Message-Id: <161920920905.3258.13413289137138136442.git-patchwork-notify@kernel.org>
+Date:   Fri, 23 Apr 2021 20:20:09 +0000
+References: <20210422134151.28905-1-xiangxia.m.yue@gmail.com>
+In-Reply-To: <20210422134151.28905-1-xiangxia.m.yue@gmail.com>
+To:     Tonghao Zhang <xiangxia.m.yue@gmail.com>
+Cc:     netdev@vger.kernel.org, linmiaohe@huawei.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 Hello:
 
-This patch was applied to netdev/net.git (refs/heads/master):
+This patch was applied to netdev/net-next.git (refs/heads/master):
 
-On Wed, 21 Apr 2021 15:57:47 +0200 you wrote:
-> Implementation of meters supposed to be a classic token bucket with 2
-> typical parameters: rate and burst size.
+On Thu, 22 Apr 2021 21:41:51 +0800 you wrote:
+> From: Tonghao Zhang <xiangxia.m.yue@gmail.com>
 > 
-> Burst size in this schema is the maximum number of bytes/packets that
-> could pass without being rate limited.
+> tw_prot_cleanup will check the twsk_prot.
 > 
-> Recent changes to userspace datapath made meter implementation to be
-> in line with the kernel one, and this uncovered several issues.
+> Fixes: 0f5907af3913 ("net: Fix potential memory leak in proto_register()")
+> Cc: Miaohe Lin <linmiaohe@huawei.com>
+> Signed-off-by: Tonghao Zhang <xiangxia.m.yue@gmail.com>
 > 
 > [...]
 
 Here is the summary with links:
-  - [net] openvswitch: meter: remove rate from the bucket size calculation
-    https://git.kernel.org/netdev/net/c/7d742b509dd7
+  - net: sock: remove the unnecessary check in proto_register
+    https://git.kernel.org/netdev/net-next/c/ed744d819379
 
 You are awesome, thank you!
 --
