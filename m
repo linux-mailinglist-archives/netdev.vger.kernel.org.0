@@ -2,348 +2,296 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9BC3F369C55
-	for <lists+netdev@lfdr.de>; Fri, 23 Apr 2021 23:56:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 23A13369C62
+	for <lists+netdev@lfdr.de>; Sat, 24 Apr 2021 00:04:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232438AbhDWV5P (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 23 Apr 2021 17:57:15 -0400
-Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:54072 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S244125AbhDWV5A (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 23 Apr 2021 17:57:00 -0400
-Received: from pps.filterd (m0109333.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 13NLimOC010334;
-        Fri, 23 Apr 2021 14:56:10 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=subject : to : cc :
- references : from : message-id : date : in-reply-to : content-type :
- content-transfer-encoding : mime-version; s=facebook;
- bh=4iWaNmKqDwpTHBXqoza/f2EN84OhPMpqPr6+IahXNBE=;
- b=ADxw4BvRCh6fTHRjqDXLYrf338N4SqZj9Af5rE7xh1Fi0lt2Hm9jRYly/qNgJoLYaUwA
- c6HgrczyLLffv8SiBsrO7tco/AwS6TIdwCk/Xs0R1IVpcoBWeWPHzLYPcV0zaH55mWv5
- sdB6FyvDWOklBtrVj9ATcmeYPz/Cm2E/x74= 
-Received: from maileast.thefacebook.com ([163.114.130.16])
-        by mx0a-00082601.pphosted.com with ESMTP id 383b4q96vp-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Fri, 23 Apr 2021 14:56:10 -0700
-Received: from NAM12-MW2-obe.outbound.protection.outlook.com (100.104.31.183)
- by o365-in.thefacebook.com (100.104.35.173) with Microsoft SMTP Server
+        id S244015AbhDWWEn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 23 Apr 2021 18:04:43 -0400
+Received: from mga05.intel.com ([192.55.52.43]:25665 "EHLO mga05.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S232429AbhDWWEl (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 23 Apr 2021 18:04:41 -0400
+IronPort-SDR: T09eh/B26D2waHB2hFfhQRWrSL0IisKvwDwqWFao2aV3CexPOvcpHPfz9kbLfjBRZ45xUOd1/u
+ eK5lX1WtnBdw==
+X-IronPort-AV: E=McAfee;i="6200,9189,9963"; a="281466192"
+X-IronPort-AV: E=Sophos;i="5.82,246,1613462400"; 
+   d="scan'208";a="281466192"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Apr 2021 15:04:01 -0700
+IronPort-SDR: Rd8rbBj41QlgCAjE6WWLxorMGiSv/EMASm3WL1f/0BUYG+IWaUpfSkwRD3JQ2QM57beq0HpL3h
+ NbdHQ9dGl20w==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.82,246,1613462400"; 
+   d="scan'208";a="424371105"
+Received: from orsmsx605.amr.corp.intel.com ([10.22.229.18])
+  by orsmga007.jf.intel.com with ESMTP; 23 Apr 2021 15:04:00 -0700
+Received: from orsmsx608.amr.corp.intel.com (10.22.229.21) by
+ ORSMSX605.amr.corp.intel.com (10.22.229.18) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2176.2; Fri, 23 Apr 2021 14:56:08 -0700
+ 15.1.2106.2; Fri, 23 Apr 2021 15:04:00 -0700
+Received: from orsmsx610.amr.corp.intel.com (10.22.229.23) by
+ ORSMSX608.amr.corp.intel.com (10.22.229.21) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2106.2; Fri, 23 Apr 2021 15:03:59 -0700
+Received: from ORSEDG601.ED.cps.intel.com (10.7.248.6) by
+ orsmsx610.amr.corp.intel.com (10.22.229.23) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2106.2
+ via Frontend Transport; Fri, 23 Apr 2021 15:03:59 -0700
+Received: from NAM11-CO1-obe.outbound.protection.outlook.com (104.47.56.174)
+ by edgegateway.intel.com (134.134.137.102) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2106.2; Fri, 23 Apr 2021 15:03:59 -0700
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=gECHAF3b+y/YJ+vUyICSNOGttI3vO5fU7b4vLh78nLsLZWQEcYm+3o6mXh9UsCYg4oTIQzxfRb5PHP2JVYHaEwKT6kTboolc5670Op7mSpd0hTFXCUB8D3X4OG5FjQwmCQnc/asWIOSZ53qA5EujwTJTWjbRpI812uKUDqKYtk/y2PNwmKxZU4ZTuzd3d4dSda17ugAwhN6LERH5f5OT+jSCuNWb2j8k4Hg5SSjslDPqHzYtJsumRWIF6/VSpybrEARZYp/Q6Pr8P00j4x/WECQgB7zLKZOFgl1tqTl6ckaF8PzZRYyz87slJBtjOQfC7P8R7rlcLNJw7qQn9gSbcw==
+ b=GIxII1IYTHYO7GamffMeQRqAZ8hQGfIdh0zBTt2Z/lA5GFOxDaYAT/c9gkcm9LArBaFv+rHagqjx4KlT85Mimiy3hu4iH3FegxJgsTjPnCZBWbSHpAw6fq8ypFfuou7UHPebr9ofYF52+CXk82n38sjqiSCMtNojmz22cEjj7vpkhDoxIbfxxNiwEaCfLqe8n2idtWl5QTJj5TA8XpcNNFUbJRp9w3YI4EcI3ayyczKazVHh4BTZyRjHf70Jtn2Elg5/Q5m0239LCRh/kxK6mNmX4D+WRbrSgnUmqhCielc05NJWL40l9N8z2rjUJdye8eYOXiqQebN2AVj/0ziDGQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=4iWaNmKqDwpTHBXqoza/f2EN84OhPMpqPr6+IahXNBE=;
- b=YNkuMydrl3PIsI2Ig0uFD7qdymRh2SKar5wChXyAY/vkGajJivSf9IsBYBDiuLo56dh7O5pg56drqFZ7N5+bm4XmWYqCH2cZdXB421xgum3VQtjc3j9spHbmRK+n7A3Yc6ZWBgzx9LBlCYjuUhPRWsqPjLXnTF48ct1iorBbj2L0RJp8NQhdcpitnsOhwV9Z6fAY2tKosno9ehxCGkJz4+/Xu6OD+UsCy0u+eW3FoOfIybvbV4pWaHZ8KJ2O8qvh/yHG+jx4DtHfFbN9hPzUxDRDkaZFPa8muZcZ2iTt1Q5m2OvtUYSNi5CtFIKliK5n9Tl0fpLmia9C0szltTUeXQ==
+ bh=Yd2NdfGAn8JqwZyX9SoXDwqUhXegldKx5D9HNg4Bu60=;
+ b=YTQBdK6w27SpT61gniRm6rHUaL2tFPFx9l5OE4AVi20FEpvu/ZGJRCa+awzPAMtphvw5R42ksrtOY12ZuKaNfbgfDb0EE+3Z6F3sU0hET9k2w5lg5TARu2bsUlksuz0tS751/4deJL3v6e/m4l9sH3Rije50KnaRe7NJrWNfq+f79Ji2HBT8pATYsKu0zANuqAJWO6qIE1LT4zJCpnS9ylSkiteAQ/WmhpI1CaMF3DOnFVi6KF6ezpx15F92YH0Tn1SbF4dV7S3+ZrYBiFm2SeMtPMpo53vTPb4AefnyvmBChP+GL+KoN9L9qex0W7VOocl2nklbTiDQMMS4gC5tRg==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
- header.d=fb.com; arc=none
-Received: from SN6PR1501MB2064.namprd15.prod.outlook.com (2603:10b6:805:d::27)
- by SA0PR15MB3903.namprd15.prod.outlook.com (2603:10b6:806:8a::9) with
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=intel.onmicrosoft.com;
+ s=selector2-intel-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=Yd2NdfGAn8JqwZyX9SoXDwqUhXegldKx5D9HNg4Bu60=;
+ b=JHy/EQ2vVFaRoBJNaGXC/Bx0gSq7bETqHSf8hRsH5LHH6VhkmCp4X3rwI+3PQenTv8MzM0g5/KEFchgUhJ5VspxzalWlCOTATUKlpbOI77QIfFSm0HnF9YNXTFZPbt1HYLIrvmcmQvcfsXw/l0vT6yV1H+H26+cTiV9JzruN2+A=
+Received: from CO1PR11MB4771.namprd11.prod.outlook.com (2603:10b6:303:9f::9)
+ by MWHPR1101MB2320.namprd11.prod.outlook.com (2603:10b6:301:53::19) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4065.23; Fri, 23 Apr
- 2021 21:56:06 +0000
-Received: from SN6PR1501MB2064.namprd15.prod.outlook.com
- ([fe80::f433:fd99:f905:8912]) by SN6PR1501MB2064.namprd15.prod.outlook.com
- ([fe80::f433:fd99:f905:8912%3]) with mapi id 15.20.4065.025; Fri, 23 Apr 2021
- 21:56:06 +0000
-Subject: Re: [PATCH v2 bpf-next 2/6] libbpf: rename static variables during
- linking
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
-CC:     Andrii Nakryiko <andrii@kernel.org>, bpf <bpf@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>,
-        Alexei Starovoitov <ast@fb.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Kernel Team <kernel-team@fb.com>
-References: <20210423185357.1992756-1-andrii@kernel.org>
- <20210423185357.1992756-3-andrii@kernel.org>
- <2b398ad6-31be-8997-4115-851d79f2d0d2@fb.com>
- <CAEf4BzYDiuh+OLcRKfcZDSL6esu6dK8js8pudHKvtMvAxS1=WQ@mail.gmail.com>
-From:   Yonghong Song <yhs@fb.com>
-Message-ID: <065e8768-b066-185f-48f9-7ca8f15a2547@fb.com>
-Date:   Fri, 23 Apr 2021 14:56:02 -0700
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
- Gecko/20100101 Thunderbird/78.9.1
-In-Reply-To: <CAEf4BzYDiuh+OLcRKfcZDSL6esu6dK8js8pudHKvtMvAxS1=WQ@mail.gmail.com>
-Content-Type: text/plain; charset="utf-8"; format=flowed
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4065.22; Fri, 23 Apr
+ 2021 22:03:58 +0000
+Received: from CO1PR11MB4771.namprd11.prod.outlook.com
+ ([fe80::5c19:a154:82ac:30ad]) by CO1PR11MB4771.namprd11.prod.outlook.com
+ ([fe80::5c19:a154:82ac:30ad%5]) with mapi id 15.20.4065.024; Fri, 23 Apr 2021
+ 22:03:58 +0000
+From:   "Ismail, Mohammad Athari" <mohammad.athari.ismail@intel.com>
+To:     Vladimir Oltean <olteanv@gmail.com>
+CC:     Alexandre Torgue <alexandre.torgue@st.com>,
+        Jose Abreu <joabreu@synopsys.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        "Jakub Kicinski" <kuba@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        "Ong, Boon Leong" <boon.leong.ong@intel.com>,
+        "Voon, Weifeng" <weifeng.voon@intel.com>,
+        "Wong, Vee Khee" <vee.khee.wong@intel.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: RE: [PATCH v2 net-next] net: pcs: Enable pre-emption packet for
+ 10/100Mbps
+Thread-Topic: [PATCH v2 net-next] net: pcs: Enable pre-emption packet for
+ 10/100Mbps
+Thread-Index: AQHXN8w75Vo0bmfsFEyfZYnEbB76e6rBNbyAgAAK1lCAAAXiAIAAkBXggACSDYCAAD4QMA==
+Date:   Fri, 23 Apr 2021 22:03:58 +0000
+Message-ID: <CO1PR11MB4771248BAF7FF5EF4331F688D5459@CO1PR11MB4771.namprd11.prod.outlook.com>
+References: <20210422230645.23736-1-mohammad.athari.ismail@intel.com>
+ <20210422235317.erltirtrxnva5o2d@skbuf>
+ <CO1PR11MB4771A73442ECD81BEC2F1F04D5459@CO1PR11MB4771.namprd11.prod.outlook.com>
+ <20210423005308.wnhpxryw6emgohaa@skbuf>
+ <CO1PR11MB47716991AAEA525773FEAFC8D5459@CO1PR11MB4771.namprd11.prod.outlook.com>
+ <20210423181133.cl5ooguhdm5rfbch@skbuf>
+In-Reply-To: <20210423181133.cl5ooguhdm5rfbch@skbuf>
+Accept-Language: en-US
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [2620:10d:c090:400::5:d0ec]
-X-ClientProxiedBy: CO2PR04CA0132.namprd04.prod.outlook.com
- (2603:10b6:104:7::34) To SN6PR1501MB2064.namprd15.prod.outlook.com
- (2603:10b6:805:d::27)
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+dlp-version: 11.5.1.3
+dlp-product: dlpe-windows
+dlp-reaction: no-action
+authentication-results: gmail.com; dkim=none (message not signed)
+ header.d=none;gmail.com; dmarc=none action=none header.from=intel.com;
+x-originating-ip: [42.189.200.23]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 5ddb435f-c107-449f-166d-08d906a3b226
+x-ms-traffictypediagnostic: MWHPR1101MB2320:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <MWHPR1101MB2320839A70E886A8ACC19777D5459@MWHPR1101MB2320.namprd11.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:9508;
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: dcByOoH2AE7V9SorrmwevdibXLruPFqeUurV4UMFsVSwXf+hADescm1TTyghAdWGRiqGDAbwoQHXJyAtwzV/NKMV674XLK6Swk2nVreVQTc3ptUqRIQvzAIcxYdgyAVe3LFTvPhrps/OHnQYK2ytGYPJ8atTrZKwFK5NJb5htdjEusecBpaKMt2YGyISIxDbWMF9ESqW1HDcc35ULxMyB9LqYySPsnByhjk8YRuMot19NjW0TfgyMbfEXyZNLYHYSAZFpO6ZQyzcWdBYzFKI7chDoxqBsYddkc+WBBsuG9fsQCZI4dBNaRbPn64FNhHL2Uc4NwG6Bjvv6JZ55W19i9ZcPvtMgoBpRT3YvzlK6+pEcEWRraxRDhcKHC4V3gobAtQXdPAem3HdtFAkiHNrrx62Ft6Bcw5UXN/r/lY3B9v40MGVAO1J7/Zgg1FOKEsmKTuKUq1aZvu9wqC0s2A5li0LkRADZ0vpjV4mNnuEDrvnsfCCZwISDKymG/VEWwkK3YJT8eMUD6Pap1YUVxu3gI2mvqd7qDeMhWvhByMqNIMw8UZhDpc3lQHEuUyVxB4IXH4gmMcwvSOHX+p1CaOhJ/qky+kK2SWB0Z2tH/dDmwE=
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CO1PR11MB4771.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(39860400002)(366004)(136003)(376002)(346002)(396003)(478600001)(66446008)(76116006)(9686003)(66946007)(86362001)(64756008)(83380400001)(66556008)(38100700002)(66476007)(71200400001)(122000001)(33656002)(55016002)(52536014)(7416002)(53546011)(316002)(54906003)(8936002)(5660300002)(8676002)(6916009)(26005)(186003)(7696005)(4326008)(6506007)(2906002);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata: =?us-ascii?Q?E8KLtZjEXcpbgJX3xcxgWYntCJ/owbQOSvXPBhRwL4MWnXdsYb3AJ4DBWQ5O?=
+ =?us-ascii?Q?KQXr3EGrn3mboiPOCbxJkcg1QN3R0BRAPBviWLylcD+FQ+aefg90TyBw9c7U?=
+ =?us-ascii?Q?Qys6W048ngdu0i9OkGnCaXm495T8h0EjIeZSJCmYEPC+kSRWqqRogChgFKh9?=
+ =?us-ascii?Q?IVrJSKqjcbgQEmXzxZd5XID/eTOvSMDR+oORksiIEEAW7Ql4M6Zb1JtMW1l2?=
+ =?us-ascii?Q?VsHnuQVBPqGIkAUjfvSMI02quIHfCuWxesycNrvr+FIyXsLrI2EIOmr23ZiH?=
+ =?us-ascii?Q?irdeUtNpQ9l1hSruwpXcK8ZZ69F1NDMqVHr1JWIeUa/yjcU7mpK/G3gYrnmu?=
+ =?us-ascii?Q?QcP1/J7x0FjlympgyGkBqzEv3T2vTxh+iwtm7ZkgrW7UgZrsf7CfzG95cQab?=
+ =?us-ascii?Q?FJmxYvbJVD6/okpeKIxNaDHlKiucquxeEkOMA9yR4197a6CTvKm2CtUI7BHB?=
+ =?us-ascii?Q?rDdm6zd7CBXDE6UYy3Jq1+86fkWC7VYjVBLfJfdf43afnTbeJ9wESYXpg2LT?=
+ =?us-ascii?Q?eK6zJUse0i6wZSm9B1mj1GzH/U2JzbziERWUabZZ8gsqDxKaiwW9kLFB5eZI?=
+ =?us-ascii?Q?2QjdIhEdykCfFh/WHYUWtOS39IaFSZu8mo2kt6aj6faaEsMJ2M5q6CaSZd6U?=
+ =?us-ascii?Q?75z7e2Toa9i+eENdDx0/EAq6+l0kKT65+IXy1f3pdipOIpcDp++IJIk7DYgs?=
+ =?us-ascii?Q?KwP5INmmZQWP3e6wiFYvMvTWoUIpI8mgq4dCLMzsRsCTuFt6cMMahE1Nk5j5?=
+ =?us-ascii?Q?PYwLnTE6zeFD1UKIrdkIYtu68PQzM9N0zxatAJx8uzxWh+HRF/FDad1bDzPp?=
+ =?us-ascii?Q?NRl0giTckcC9AUznPOF1JPveFuFDWH7eXnit3EgigoY6X91tA//qkYvdN3j5?=
+ =?us-ascii?Q?cIhvSzEkvT/tehkWkmcABVmeyG4pOhurMKggW4yeWJCvz8yJc/XGDNDkn0T0?=
+ =?us-ascii?Q?oRxYrlb8ErGTIUP7lBOmeXk2tP/DD407A3xoNdn5oKjGFvZ3ldAEHJoAzalN?=
+ =?us-ascii?Q?Uhh1FDbU2+NlrIh2PQfXMPc96zwa+6VyhJdrq2kL+GaARGGfdvCxmlQaAA6S?=
+ =?us-ascii?Q?pRVAHFFWhg8XYx1sgdMgRBQMQDcsdhYmgMsx6UO5YBldC1ERXOSttUlQrOIy?=
+ =?us-ascii?Q?J/kKXQAb79ZROKG2z5oj8xVWMjhAznH9TRKiTXZYsCnq+9v4K23DnXjjLksZ?=
+ =?us-ascii?Q?x6iRds8bDQts/pp/KluC5+eQcvPAfKiL1SiQ7kHD43IEA2tMNzfr95r0tGwJ?=
+ =?us-ascii?Q?vXZXnKx2TQylhkbWJsaaJqz5v6Vy18HicA1bwRa8iShdXE8dfRwU7hcEy6jF?=
+ =?us-ascii?Q?rpVtuMrCNWNAZiUFqbsLKTEs?=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from [IPv6:2620:10d:c085:21e8::17f2] (2620:10d:c090:400::5:d0ec) by CO2PR04CA0132.namprd04.prod.outlook.com (2603:10b6:104:7::34) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4065.20 via Frontend Transport; Fri, 23 Apr 2021 21:56:05 +0000
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 54b468b8-36cc-4d2b-6122-08d906a2989a
-X-MS-TrafficTypeDiagnostic: SA0PR15MB3903:
-X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <SA0PR15MB390378383B4D2AA283EB5A95D3459@SA0PR15MB3903.namprd15.prod.outlook.com>
-X-FB-Source: Internal
-X-MS-Oob-TLC-OOBClassifiers: OLM:8882;
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: PIIfLp4a9S+WuNRFgCawOqgV0QlxdJvLbd9hSYijiocsfSGNFFxi+N3gPaktOfl+dfaXQixgrOo5RlCq6vzw+psxoBUwc10KkbRjyAAWWbYI6+mpVp4XCYz+iudBXxnPEyrraA7cf1r/r1PEXIP8ir8ku3BzQb7mk1u3XgK3AymVEaql5uizqOyftx0R3MBVLSbkj6F7Gfu0l5esXg1DXxt75sODgEwT473Pr4I4ykhYm1mmC+/mjsWpsTe4GOoKxZuEQsFPGcRcgru0U/50p73/SO/JZfeiXccvHDUJaNArCvYqPYUK77YxJXC/IpDtK1ALxMReet9+SDx8j7F3pfOmS+qBaewq1w6DWUxZTMAYdvA/xot7jHdPJPJH0ind+IGIxY3pDGtUfLWXQeSH8J5bpZbxRGIGyNCakyZ3HQvW24V0I9EghplCMjUhSmUhNvS/FGIN9E7ecQzhyELalj/PrSerMqy9QUU60IW7btfoXPlScxL/W3spQ36Kw+JhKVmqMf8dVxr5wqToWIzk0b85+6eVyRuoBlYQde1MdZWdyKlEhFOwhm03aFI6eOzvrtl9CCx09bPYPx0Hjlnpj6PuSuTXggi0nCyz4d8GMGCQnfQktjJp3oeJdF8rW3znKTAH/bvEFlq9nB7G0+jTwY2e3S0yL78k0AFOno/VGViMkPMVmTId2nZ6gHSJ6Lex
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SN6PR1501MB2064.namprd15.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(136003)(346002)(39860400002)(376002)(366004)(396003)(31686004)(31696002)(2616005)(83380400001)(316002)(86362001)(5660300002)(2906002)(66476007)(6666004)(4326008)(54906003)(6486002)(36756003)(478600001)(66556008)(8676002)(66946007)(52116002)(8936002)(53546011)(6916009)(38100700002)(16526019)(186003)(43740500002)(45980500001);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData: =?utf-8?B?ME9ZdkJoZ29Hc0U3dlV6K0hpVzUzdExoeSswWmY0UlVkTVVaRlozNm0xeXdI?=
- =?utf-8?B?Zlc5SWVGbElnclZEUHp5VjRHR3RFbTg5K1JzTldJS3NMcVhWREJuZEZkUWxu?=
- =?utf-8?B?cXhYcTNobVZ0ZDJmMGE5eTg1U2JsT0lZV011b3JYU1NmZnU0M1RIdXExVFdJ?=
- =?utf-8?B?dDl2eHVMU2pQbUp6eTRscVRZRE9CQW84RWZUK1FGSlJZREVKT0dHMVJMWGtj?=
- =?utf-8?B?ejg2Tit4azRhbEtsWUFBRy9IdUFhZXhKU1Q0ODNZbHpGOGFBQ04rVXRyWVM4?=
- =?utf-8?B?dXdDWi9RS1B2RVBHdzhyVUhLZlh6UUhQK2kyS2dVZDVzSlh2SEdLdVBLMjBr?=
- =?utf-8?B?RXI1bFJPcklKZkRESWFYdXFqSERrZ0VvMmV5ZWtOMU9KTVB6VUptYnFFdVVZ?=
- =?utf-8?B?S2cweXRoc1RvbTJoWjh1ck5HMkhiMXNhOEM4dGY3VlphZ1hldVVWY2hhVzVu?=
- =?utf-8?B?b3hIZG1pYXJsd2xiUkc2azRkWkJRYTJUcUpzTDFGdEgrQWx4MmhBYkhjdVdP?=
- =?utf-8?B?NnZrNkhZQ2tHZ0ZPaSsrUm9Hb29qWHpjV3pPTEt0QklSUEtQaHJiQ2l4VjFs?=
- =?utf-8?B?YXRIZzVucERBMFNKMXVxWE13RkRwYWhIc3UvN09BcnNNaUJQUVRCVHdOYnl4?=
- =?utf-8?B?ZnJWck5PSEhqMytyS2o2ZGFaU2FZYnM1dFlSUkIzclgyQkt6aitKelNIQWRv?=
- =?utf-8?B?NEpxVVBRbFB5cVNiU0gxRWIvS1R5U3EzSkUwamVjSnk5aldZWWJmOVZ2NW1S?=
- =?utf-8?B?eHF3R1ZmcnNPZzgrSFFidFB4QlpEeGpOdWExNG9tVEN1YzE2VVV5a0F4S2Fa?=
- =?utf-8?B?VUxMdjNvVnpmSktoSGJpeDdKL05YKzZnS2FyR3B1N3RRMzhDbEFGRkxRV2Ey?=
- =?utf-8?B?OGxMMzAwKzhUVzBLOVhtbHlvR21pVFZUc0k4VkxtbmlQck5DWjYwTjZwTkxZ?=
- =?utf-8?B?TzlQK1ZqU3ZxNFpkVlUzSSt3TGN3bUV5Y3dyQmdsbml3NXdnSWhkV1dHNnR6?=
- =?utf-8?B?Vml2Qmdqb3M0TE1ZbmppcFFnZ1REZk1VSTNyMmdtVHRxN25PUEYrQUxHbmVV?=
- =?utf-8?B?LzJDY3VsbG1HemQ3eEFBYVBIbVVxNUN3Z1N1TWl6REN4NFl6Qm1VV1Q0Qng1?=
- =?utf-8?B?UzJDRWlRSXJEQVdvMWNTdFUvdWRzNy9hSHhXVGl5SFMyVkw1d1hyUkM4NnV2?=
- =?utf-8?B?RnVHSFdxUm9wMUw3Y0cyQ3ZyOHRPQmduNXZRWXpTY0FuOHpJYkxuSFN6a1ZF?=
- =?utf-8?B?SWhXZnZnSEUwR3I5S3MrQ1NxckpET3o4ZEovdENFT0t6Mlh1Y1NlV2NSaWYr?=
- =?utf-8?B?YnNiWWdNQlNhMXVPTWlHWmYvZ3l5ck4zZGs3VXRxTzVjamhKc1JUc21KMitD?=
- =?utf-8?B?TVNSK0NpT21TVllTR2lkVGsyZWFUZ3hkVkoxem42eVRsSHZLMmhaZnVQdWYv?=
- =?utf-8?B?OU9VaHpkemk0VUkxUzFXWTFuQ1hyYmxqTERhQW1sT0JFLzc0NURSYlFEZkI2?=
- =?utf-8?B?cjV4V2w3c2tibEdPL0JOYWJyd29qd0dMWEkzMmZNWVkxTU0vRTYvdTU4VUR5?=
- =?utf-8?B?bG1OZmUyVW1CNEFCS2QrcHorR25HTVp4VW9Gb3VGUEE3Z1ljZFBoMCt4d0F0?=
- =?utf-8?B?bWZWZHhMcEN3VEdXbnZ0ZFBuWk4xVVpiM0o3SjYzbiszZnpuajRtZE9GZXlx?=
- =?utf-8?B?VWVtQWwxZm5MSmpEdjQ3UEtCVVpEQUxjTFZBTEhJZDRlZ29waEczNTdqcmJm?=
- =?utf-8?B?ZXpleXJHYUFKcUI4R3ppQWhIdkE1NUtnL0t6ZUQvU2N1RWR4WEhQS25uY0ZB?=
- =?utf-8?Q?Gbu8JK+zURJCJgm08fyG+QAczmBhFHBJWmNP0=3D?=
-X-MS-Exchange-CrossTenant-Network-Message-Id: 54b468b8-36cc-4d2b-6122-08d906a2989a
-X-MS-Exchange-CrossTenant-AuthSource: SN6PR1501MB2064.namprd15.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 23 Apr 2021 21:56:06.5787
+X-MS-Exchange-CrossTenant-AuthSource: CO1PR11MB4771.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 5ddb435f-c107-449f-166d-08d906a3b226
+X-MS-Exchange-CrossTenant-originalarrivaltime: 23 Apr 2021 22:03:58.6926
  (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: F0IFdKMvzZws/sHdKrUcXPIqtVGGth9uwr1zj+/+jhh4s66y1RxUxHfscezdq52F
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA0PR15MB3903
-X-OriginatorOrg: fb.com
-X-Proofpoint-GUID: 7p9gsJ6hmfw6D17ggV8zRNfNz27zUKyW
-X-Proofpoint-ORIG-GUID: 7p9gsJ6hmfw6D17ggV8zRNfNz27zUKyW
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.391,18.0.761
- definitions=2021-04-23_13:2021-04-23,2021-04-23 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 clxscore=1015
- mlxlogscore=999 phishscore=0 impostorscore=0 malwarescore=0
- priorityscore=1501 spamscore=0 mlxscore=0 adultscore=0 suspectscore=0
- bulkscore=0 lowpriorityscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.12.0-2104060000 definitions=main-2104230145
-X-FB-Internal: deliver
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: +1CyrQIB/lupHe36LODnyjZEg0pss8i+RjL+0yptuui7eu7L3lfNYMV/5W90McYtKyH/q8OcIoVWlBhZZyX4oMt5X8jSrYCy0j+w+YpKMNy9UYVlOP/rJ0sGw2uyX9+c
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MWHPR1101MB2320
+X-OriginatorOrg: intel.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hi Vladimir,
 
+> -----Original Message-----
+> From: Vladimir Oltean <olteanv@gmail.com>
+> Sent: Saturday, April 24, 2021 2:12 AM
+> To: Ismail, Mohammad Athari <mohammad.athari.ismail@intel.com>
+> Cc: Alexandre Torgue <alexandre.torgue@st.com>; Jose Abreu
+> <joabreu@synopsys.com>; David S . Miller <davem@davemloft.net>; Jakub
+> Kicinski <kuba@kernel.org>; Andrew Lunn <andrew@lunn.ch>; Heiner Kallweit
+> <hkallweit1@gmail.com>; Russell King <linux@armlinux.org.uk>; Ong, Boon
+> Leong <boon.leong.ong@intel.com>; Voon, Weifeng
+> <weifeng.voon@intel.com>; Wong, Vee Khee <vee.khee.wong@intel.com>;
+> netdev@vger.kernel.org; linux-kernel@vger.kernel.org
+> Subject: Re: [PATCH v2 net-next] net: pcs: Enable pre-emption packet for
+> 10/100Mbps
+>=20
+> On Fri, Apr 23, 2021 at 09:30:07AM +0000, Ismail, Mohammad Athari wrote:
+> > Hi Vladimir,
+> >
+> > > -----Original Message-----
+> > > From: Vladimir Oltean <olteanv@gmail.com>
+> > > Sent: Friday, April 23, 2021 8:53 AM
+> > > To: Ismail, Mohammad Athari <mohammad.athari.ismail@intel.com>
+> > > Cc: Alexandre Torgue <alexandre.torgue@st.com>; Jose Abreu
+> > > <joabreu@synopsys.com>; David S . Miller <davem@davemloft.net>;
+> > > Jakub Kicinski <kuba@kernel.org>; Andrew Lunn <andrew@lunn.ch>;
+> > > Heiner Kallweit <hkallweit1@gmail.com>; Russell King
+> > > <linux@armlinux.org.uk>; Ong, Boon Leong <boon.leong.ong@intel.com>;
+> > > Voon, Weifeng <weifeng.voon@intel.com>; Wong, Vee Khee
+> > > <vee.khee.wong@intel.com>; netdev@vger.kernel.org;
+> > > linux-kernel@vger.kernel.org
+> > > Subject: Re: [PATCH v2 net-next] net: pcs: Enable pre-emption packet
+> > > for 10/100Mbps
+> > >
+> > > On Fri, Apr 23, 2021 at 12:45:25AM +0000, Ismail, Mohammad Athari wro=
+te:
+> > > > Hi Vladimir,
+> > > >
+> > > > > -----Original Message-----
+> > > > > From: Vladimir Oltean <olteanv@gmail.com>
+> > > > > Sent: Friday, April 23, 2021 7:53 AM
+> > > > > To: Ismail, Mohammad Athari <mohammad.athari.ismail@intel.com>
+> > > > > Cc: Alexandre Torgue <alexandre.torgue@st.com>; Jose Abreu
+> > > > > <joabreu@synopsys.com>; David S . Miller <davem@davemloft.net>;
+> > > > > Jakub Kicinski <kuba@kernel.org>; Andrew Lunn <andrew@lunn.ch>;
+> > > > > Heiner Kallweit <hkallweit1@gmail.com>; Russell King
+> > > > > <linux@armlinux.org.uk>; Ong, Boon Leong
+> > > > > <boon.leong.ong@intel.com>; Voon, Weifeng
+> > > > > <weifeng.voon@intel.com>; Wong, Vee Khee
+> > > > > <vee.khee.wong@intel.com>; netdev@vger.kernel.org;
+> > > > > linux-kernel@vger.kernel.org
+> > > > > Subject: Re: [PATCH v2 net-next] net: pcs: Enable pre-emption
+> > > > > packet for 10/100Mbps
+> > > > >
+> > > > > Hi Mohammad,
+> > > > >
+> > > > > On Fri, Apr 23, 2021 at 07:06:45AM +0800,
+> > > > > mohammad.athari.ismail@intel.com
+> > > > > wrote:
+> > > > > > From: Mohammad Athari Bin Ismail
+> > > > > > <mohammad.athari.ismail@intel.com>
+> > > > > >
+> > > > > > Set VR_MII_DIG_CTRL1 bit-6(PRE_EMP) to enable pre-emption
+> > > > > > packet for 10/100Mbps by default. This setting doesn`t impact
+> > > > > > pre-emption capability for other speeds.
+> > > > > >
+> > > > > > Signed-off-by: Mohammad Athari Bin Ismail
+> > > > > > <mohammad.athari.ismail@intel.com>
+> > > > > > ---
+> > > > >
+> > > > > What is a "pre-emption packet"?
+> > > >
+> > > > In IEEE 802.1 Qbu (Frame Preemption), pre-emption packet is used
+> > > > to differentiate between MAC Frame packet, Express Packet,
+> > > > Non-fragmented Normal Frame Packet, First Fragment of Preemptable
+> > > > Packet, Intermediate Fragment of Preemptable Packet and Last
+> > > > Fragment of Preemptable Packet.
+> > >
+> > > Citation needed, which clause are you referring to?
+> >
+> > Cited from IEEE802.3-2018 Clause 99.3.
+>=20
+> Aha, you know that what you just said is not what's in the "MAC Merge sub=
+layer"
+> clause, right? There is no such thing as "pre-emption packet"
+> in the standard, this is a made-up name, maybe preemptable packets, but t=
+he
+> definition of preemptable packets is not that, hence my question.
+>=20
 
-On 4/23/21 2:38 PM, Andrii Nakryiko wrote:
-> On Fri, Apr 23, 2021 at 1:24 PM Yonghong Song <yhs@fb.com> wrote:
->>
->>
->>
->> On 4/23/21 11:53 AM, Andrii Nakryiko wrote:
->>> Prepend <obj_name>.. prefix to each static variable in BTF info during static
->>> linking. This makes them uniquely named for the sake of BPF skeleton use,
->>> allowing to read/write static BPF variables from user-space. This uniqueness
->>> guarantee depends on each linked file name uniqueness, of course. Double dots
->>> separator was chosen both to be different (but similar) to the separator that
->>> Clang is currently using for static variables defined inside functions as well
->>> as to generate a natural (in libbpf parlance, at least) obj__var naming pattern
->>> in BPF skeleton. Static linker also checks for static variable to already
->>> contain ".." separator and skips the rename to allow multi-pass linking and not
->>> keep making variable name ever increasing, if derived object name is changing on
->>> each pass (as is the case for selftests).
->>>
->>> This patch also adds opts to bpf_linker__add_file() API, which currently
->>> allows to override object name for a given file and could be extended with other
->>> per-file options in the future. This is not a breaking change because
->>> bpf_linker__add_file() isn't yet released officially.
->>>
->>> This patch also includes fixes to few selftests that are already using static
->>> variables. They have to go in in the same patch to not break selftest build.
->>
->> "in in" => "in"
-> 
-> heh, I knew this would be confusing :) it's "go in" a verb and "in the
-> same patch" as where they go into. But I'll re-phrase in the next
-> version.
-> 
->>
->>> Keep in mind, this static variable rename only happens during static linking.
->>> For any existing user of BPF skeleton using static variables nothing changes,
->>> because those use cases are using variable names generated by Clang. Only new
->>> users utilizing static linker might need to adjust BPF skeleton use, which
->>> currently will be always new use cases. So ther is no risk of breakage.
->>>
->>> static_linked selftests is modified to also validate conflicting static variable
->>> names are handled correctly both during static linking and in BPF skeleton.
->>>
->>> Signed-off-by: Andrii Nakryiko <andrii@kernel.org>
->>> ---
->>>    tools/bpf/bpftool/gen.c                       |   2 +-
->>>    tools/lib/bpf/libbpf.h                        |  12 +-
->>>    tools/lib/bpf/linker.c                        | 121 +++++++++++++++++-
->>>    .../selftests/bpf/prog_tests/skeleton.c       |   8 +-
->>>    .../selftests/bpf/prog_tests/static_linked.c  |   8 +-
->>>    .../selftests/bpf/progs/bpf_iter_test_kern4.c |   4 +-
->>>    .../selftests/bpf/progs/test_check_mtu.c      |   4 +-
->>>    .../selftests/bpf/progs/test_cls_redirect.c   |   4 +-
->>>    .../bpf/progs/test_snprintf_single.c          |   2 +-
->>>    .../selftests/bpf/progs/test_sockmap_listen.c |   4 +-
->>>    .../selftests/bpf/progs/test_static_linked1.c |   6 +-
->>>    .../selftests/bpf/progs/test_static_linked2.c |   4 +-
->>>    12 files changed, 151 insertions(+), 28 deletions(-)
->>>
-> 
-> [...]
-> 
->>> +static int linker_load_obj_file(struct bpf_linker *linker, const char *filename,
->>> +                             const struct bpf_linker_file_opts *opts,
->>> +                             struct src_obj *obj)
->>>    {
->>>    #if __BYTE_ORDER == __LITTLE_ENDIAN
->>>        const int host_endianness = ELFDATA2LSB;
->>> @@ -549,6 +613,14 @@ static int linker_load_obj_file(struct bpf_linker *linker, const char *filename,
->>>
->>>        obj->filename = filename;
->>>
->>> +     if (OPTS_GET(opts, object_name, NULL)) {
->>> +             strncpy(obj->obj_name, opts->object_name, MAX_OBJ_NAME_LEN);
->>> +             obj->obj_name[MAX_OBJ_NAME_LEN - 1] = '\0';
->>
->> Looks we don't have examples/selftests which actually use this option.
->> The only place to use bpf_linker__add_file() is bpftool which did not
->> have option to overwrite the obj file name.
->>
->> The code looks fine to me though.
-> 
-> Right, I was a bit lazy in adding this to bpftool, but I'm sure we'll
-> want to support overriding obj file name, at least to resolve object
-> file name conflicts. One other problem is syntax, I haven't thought
-> through what's the best way to do this with bpftool. Something like
-> this would do it:
-> 
-> bpftool gen object dest.o input1.o=custom_obj_name
-> path/to/file2.o=another_custom_obj_name
-> 
-> But this is too bike-shedding a topic which I want to avoid for now.
+Thank you for the knowledge sharing. My guess, this "pre-emption packet" mi=
+ght be referring to "preamble" byte in Ethernet frame.=20
 
-Okay. The additional option thing can be done later.
+> > >
+> > > >
+> > > > This bit "VR_MII_DIG_CTRL1 bit-6(PRE_EMP)" defined in DesignWare
+> > > > Cores Ethernet PCS Databook is to allow the IP to properly
+> > > > receive/transmit pre-emption packets in SGMII 10M/100M Modes.
+> > >
+> > > Shouldn't everything be handled at the MAC merge sublayer? What
+> > > business does the PCS have in frame preemption?
+> >
+> > There is no further detail explained in the databook w.r.t to
+> > VR_MII_DIG_CTRL1 bit-6(PRE_EMP). The only statement it mentions is
+> > "This bit should be set to 1 to allow the DWC_xpcs to properly
+> > receive/transmit pre-emption packets in SGMII 10M/100M Modes".
+>=20
+> Correct, I see this too. I asked our hardware design team, and at least o=
+n NXP
+> LS1028A (no Synopsys PCS), the PCS layer has nothing to do with frame
+> preemption, as mentioned.
+>=20
+> But indeed, I do see this obscure bit in the Digital Control 1 register t=
+oo, I've no
+> idea what it does. I'll ask around. Odd anyway. If you have to set it, yo=
+u have to
+> set it, I guess. But it is interesting to see why is it even a configurab=
+le bit, why it
+> is not enabled by default, what is the drawback of enabling it?!
 
-> 
->>
->>> +     } else {
->>> +             get_obj_name(obj->obj_name, filename);
->>> +     }
->>> +     obj->obj_name_len = strlen(obj->obj_name);
->>> +
->>>        obj->fd = open(filename, O_RDONLY);
->>>        if (obj->fd < 0) {
->>>                err = -errno;
->>> @@ -2264,6 +2336,47 @@ static int linker_append_btf(struct bpf_linker *linker, struct src_obj *obj)
->>>                                obj->btf_type_map[i] = glob_sym->btf_id;
->>>                                continue;
->>>                        }
->>> +             } else if (btf_is_var(t) && btf_var(t)->linkage == BTF_VAR_STATIC) {
->>> +                     /* Static variables are renamed to include
->>> +                      * "<obj_name>.." prefix (note double dots), similarly
->>> +                      * to how static variables inside functions are named
->>> +                      * "<func_name>.<var_name>" by compiler. This allows to
->>> +                      * have  unique identifiers for static variables across
->>> +                      * all linked object files (assuming unique filenames,
->>> +                      * of course), which BPF skeleton relies on.
->>> +                      *
->>> +                      * So worst case static variable inside the function
->>> +                      * will have the form "<obj_name>..<func_name>.<var_name"
->> <var_name  => <var_name>
-> 
-> good catch, will fix
-> 
->>> +                      * and will get sanitized by BPF skeleton generation
->>> +                      * logic to a field with <obj_name>__<func_name>_<var_name>
->>> +                      * name. Typical static variable will have a
->>> +                      * <obj_name>__<var_name> name, implying arguably nice
->>> +                      * per-file scoping.
->>> +                      *
->>> +                      * If static var name already contains '..', though,
->>> +                      * don't rename it, because it was already renamed by
->>> +                      * previous linker passes.
->>> +                      */
->>> +                     name = btf__str_by_offset(obj->btf, t->name_off);
->>> +                     if (!strstr(name, "..")) {
->>> +                             char new_name[MAX_VAR_NAME_LEN];
->>> +
->>> +                             memcpy(new_name, obj->obj_name, obj->obj_name_len);
->>> +                             new_name[obj->obj_name_len] = '.';
->>> +                             new_name[obj->obj_name_len + 1] = '.';
->>> +                             new_name[obj->obj_name_len + 2] = '\0';
->>> +                             /* -3 is for '..' separator and terminating '\0' */
->>> +                             strncat(new_name, name, MAX_VAR_NAME_LEN - obj->obj_name_len - 3);
->>> +
->>> +                             id = btf__add_str(obj->btf, new_name);
->>> +                             if (id < 0)
->>> +                                     return id;
->>> +
->>> +                             /* btf__add_str() might invalidate t, so re-fetch */
->>> +                             t = btf__type_by_id(obj->btf, i);
->>> +
->>> +                             ((struct btf_type *)t)->name_off = id;
->>> +                     }
->>>                }
->>>
-> 
-> [...]
-> 
->>> diff --git a/tools/testing/selftests/bpf/progs/bpf_iter_test_kern4.c b/tools/testing/selftests/bpf/progs/bpf_iter_test_kern4.c
->>> index ee49493dc125..43bf8ec8ae79 100644
->>> --- a/tools/testing/selftests/bpf/progs/bpf_iter_test_kern4.c
->>> +++ b/tools/testing/selftests/bpf/progs/bpf_iter_test_kern4.c
->>> @@ -9,8 +9,8 @@ __u32 map1_id = 0, map2_id = 0;
->>>    __u32 map1_accessed = 0, map2_accessed = 0;
->>>    __u64 map1_seqnum = 0, map2_seqnum1 = 0, map2_seqnum2 = 0;
->>>
->>> -static volatile const __u32 print_len;
->>> -static volatile const __u32 ret1;
->>> +volatile const __u32 print_len = 0;
->>> +volatile const __u32 ret1 = 0;
->>
->> I am little bit puzzled why bpf_iter_test_kern4.c is impacted. I think
->> this is not in a static link test, right? The same for a few tests below.
-> 
-> All the selftests are passed through a static linker, so it will
-> append obj_name to each static variable. So I just minimized use of
-> static variables to avoid too much code churn. If this variable was
-> static, it would have to be accessed as
-> skel->rodata->bpf_iter_test_kern4__print_len, for example.
+The databook states that the default value is 0. We don`t see any drawback =
+of enabling it. As the databook mentions that, enabling the bit will allow =
+SGMII 10/100M to receive/transmit preamble properly, so I think it is recom=
+mended to enable it for IP that support SGMII 10/100M speed.
 
-Okay this should be fine. selftests/bpf specific. I just feel that
-some people may get confused if they write/see a single program in 
-selftest and they have to use obj_varname format and thinking this
-is a new standard, but actually it is due to static linking buried
-in Makefile. Maybe add a note in selftests/README.rst so we
-can point to people if there is confusion.
+>=20
+> > >
+> > > Also, I know it's easy to forget, but Vinicius' patch series for
+> > > supporting frame preemption via ethtool wasn't accepted yet. How are =
+you
+> testing this?
+> >
+> > For stmmac Kernel driver, frame pre-emption capability is already
+> > supported. For iproute2 (tc command), we are using custom patch based
+> > on Vinicius patch.
+>=20
+> Don't you want to help contributing the ethtool netlink support to the ma=
+inline
+> kernel though? :)
 
-> 
->>
->>>
->>>    SEC("iter/bpf_map")
->>>    int dump_bpf_map(struct bpf_iter__bpf_map *ctx)
->>> diff --git a/tools/testing/selftests/bpf/progs/test_check_mtu.c b/tools/testing/selftests/bpf/progs/test_check_mtu.c
->>> index c4a9bae96e75..71184af57749 100644
->>> --- a/tools/testing/selftests/bpf/progs/test_check_mtu.c
->>> +++ b/tools/testing/selftests/bpf/progs/test_check_mtu.c
->>> @@ -11,8 +11,8 @@
->>>    char _license[] SEC("license") = "GPL";
->>>
-> 
-> [...]
-> 
+We are working with Vinicius to have ethtool support for frame pre-emption.=
+=20
