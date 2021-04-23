@@ -2,89 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 847EB3694AF
-	for <lists+netdev@lfdr.de>; Fri, 23 Apr 2021 16:28:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0E8E63694D2
+	for <lists+netdev@lfdr.de>; Fri, 23 Apr 2021 16:35:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242208AbhDWO2b (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 23 Apr 2021 10:28:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41692 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231362AbhDWO23 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 23 Apr 2021 10:28:29 -0400
-Received: from mail-qt1-x82f.google.com (mail-qt1-x82f.google.com [IPv6:2607:f8b0:4864:20::82f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 54144C061574
-        for <netdev@vger.kernel.org>; Fri, 23 Apr 2021 07:27:53 -0700 (PDT)
-Received: by mail-qt1-x82f.google.com with SMTP id z25so13773487qtn.8
-        for <netdev@vger.kernel.org>; Fri, 23 Apr 2021 07:27:53 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=YLPJWY/azRbnnEeqJelTHQDU3rlCapQE7SWi8gOkxo8=;
-        b=X8DMnOvJWz6RVRUcb6+nr43WXMARL/jS3IeUBfx0zbIDKsAcmX69OndHPl+ndP2HGJ
-         VH9VgVugzyWKzbcfFKLCIUxTRIlbynnxGumlG227wFnOYYHOx51GidlswE9k5kFwkIQt
-         RwmBGsmDEtfnn56saGev6jZPLRffF5TngdXYcHxlLYUz2WcXvKiBzcD89hdg1t88bu3t
-         MK7Xwt6gXFikn7F7kEx/P/Gmyn6y2iizIGswNP9TlXVlUByT+nGEJXJvixkqNjWCF6Ry
-         SOGd19Xj3sG7YdJVb22Uhkv/NtXAot/N51k1rPmwGqBIkXRY4pKNEBBuxAqpatiFjJ2f
-         2CfA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=YLPJWY/azRbnnEeqJelTHQDU3rlCapQE7SWi8gOkxo8=;
-        b=WmjVxVoWroYGqmdq3QnhxQAIIgKaafYaRcC71Zpc0Zq51u5lWrqw2Ak79KePv4mk5N
-         TBwVEgVkMks9jOQfBXh4ItC7ueCC+EGpQrD5bp/Kk3ZHnDrQi//Lt062KUBd185YkzAl
-         Qeuu/U/tT4nCHiuqW3fVdCAiHMPvixNn6IL9stiMnwsUdfH63xscTRip1EQaCqgcLj+9
-         00kWm+4xF1kPLRorVX2Qev8264d3e3X67KjKZy2AV3YGeTL03wtwgPHW8eR4zguRwwYf
-         +Auem7olffHVjFwh2YNMZk9Pb1zINXi1+rrB3zKWRcsXKzbsIZaHEEpwTrMacJBRbcGC
-         DgZA==
-X-Gm-Message-State: AOAM530Lj8buI4HvTTGnQU3e+GpOLNYgrCWjA4mcrdTbD+i0dT5crpx3
-        CVDsy6AaEWwuYqxP9ucF8JCvag==
-X-Google-Smtp-Source: ABdhPJxkzemfNaJUgp3rIDqZFUObtNumgoSWIwZ/JIcNRt5n2hkELchTzx5suzsRW3S+A6j/ytkumg==
-X-Received: by 2002:ac8:488f:: with SMTP id i15mr4193224qtq.75.1619188072605;
-        Fri, 23 Apr 2021 07:27:52 -0700 (PDT)
-Received: from ziepe.ca (hlfxns017vw-47-55-113-94.dhcp-dynamic.fibreop.ns.bellaliant.net. [47.55.113.94])
-        by smtp.gmail.com with ESMTPSA id x20sm4412854qkf.42.2021.04.23.07.27.52
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 23 Apr 2021 07:27:52 -0700 (PDT)
-Received: from jgg by mlx with local (Exim 4.94)
-        (envelope-from <jgg@ziepe.ca>)
-        id 1lZwmd-00AbSa-Gy; Fri, 23 Apr 2021 11:27:51 -0300
-Date:   Fri, 23 Apr 2021 11:27:51 -0300
-From:   Jason Gunthorpe <jgg@ziepe.ca>
-To:     Bart Van Assche <bvanassche@acm.org>
-Cc:     Leon Romanovsky <leon@kernel.org>,
-        Marion et Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        tj@kernel.org, jiangshanlai@gmail.com, saeedm@nvidia.com,
-        davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
-        linux-rdma@vger.kernel.org, linux-kernel@vger.kernel.org,
-        kernel-janitors@vger.kernel.org
-Subject: Re: [PATCH 1/2] workqueue: Have 'alloc_workqueue()' like macros
- accept a format specifier
-Message-ID: <20210423142751.GI2047089@ziepe.ca>
-References: <cover.1618780558.git.christophe.jaillet@wanadoo.fr>
- <ae88f6c2c613d17bc1a56692cfa4f960dbc723d2.1618780558.git.christophe.jaillet@wanadoo.fr>
- <042f5fff-5faf-f3c5-0819-b8c8d766ede6@acm.org>
- <1032428026.331.1618814178946.JavaMail.www@wwinf2229>
- <40c21bfe-e304-230d-b319-b98063347b8b@acm.org>
- <20210422122419.GF2047089@ziepe.ca>
- <782e329a-7c3f-a0da-5d2f-89871b0c4b9b@acm.org>
- <YIG5tLBIAledZetf@unreal>
- <53b2ef14-1b8a-43b1-ef53-e314e2649ea0@acm.org>
+        id S240603AbhDWOgG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 23 Apr 2021 10:36:06 -0400
+Received: from sender4-op-o14.zoho.com ([136.143.188.14]:17474 "EHLO
+        sender4-op-o14.zoho.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230355AbhDWOgB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 23 Apr 2021 10:36:01 -0400
+ARC-Seal: i=1; a=rsa-sha256; t=1619188510; cv=none; 
+        d=zohomail.com; s=zohoarc; 
+        b=dcJNNI8pmtiInXQeyw1r9uQBYltypcyc7Er2Xg3sUYpGQ0T5rfqYTtMgWrtxI8aGClJiVN4sGHmtzJ+Ybv/S/XcWOOO7xOaio2/QRzmmTWXDOeqSju+q72/o33SecrReISQcQGpww8sD0RPCpvf1Ey08jhGTwHJYEJY7+KirYjA=
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
+        t=1619188510; h=Content-Type:Cc:Date:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:To; 
+        bh=9+apoH+2AFQr9EAzLeLG2Umbi8a49d9Y10mHolgEbFg=; 
+        b=f+9zp60DRsqcxUoBd2ZdeDfwO4c2hEiEUAIoYDGc+INuVMLL0YFH30/BD3jl8BeaGoPya1tcxE+Y/WuyNVo4kKzkIUmxLxrDMQwPcUdX7x2nVZz1HlqAUgUmqqAtxF4Amd4yBRuG7gWLivd33fZa0M0PkrpNwY9wMDu6qixz4/0=
+ARC-Authentication-Results: i=1; mx.zohomail.com;
+        spf=pass  smtp.mailfrom=dan@dlrobertson.com;
+        dmarc=pass header.from=<dan@dlrobertson.com> header.from=<dan@dlrobertson.com>
+Received: from dlrobertson.com (pool-173-66-46-118.washdc.fios.verizon.net [173.66.46.118]) by mx.zohomail.com
+        with SMTPS id 1619188504531448.3632427738072; Fri, 23 Apr 2021 07:35:04 -0700 (PDT)
+Date:   Fri, 23 Apr 2021 10:35:02 -0400
+From:   Dan Robertson <dan@dlrobertson.com>
+To:     Alexander Aring <alex.aring@gmail.com>
+Cc:     Stefan Schmidt <stefan@datenfreihafen.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        linux-wpan - ML <linux-wpan@vger.kernel.org>,
+        "open list:NETWORKING [GENERAL]" <netdev@vger.kernel.org>
+Subject: Re: [PATCH 2/2] net: ieee802154: fix null deref in parse key id
+Message-ID: <YILbFi7LQb40lTkP@dlrobertson.com>
+References: <20210423040214.15438-1-dan@dlrobertson.com>
+ <20210423040214.15438-3-dan@dlrobertson.com>
+ <CAB_54W557gEShnirMUfa1Y0MM0ho=At-sbuW10HbY=HEAX91AQ@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: multipart/signed; micalg=pgp-sha256;
+        protocol="application/pgp-signature"; boundary="2p+E3+hU0vJz9kLx"
 Content-Disposition: inline
-In-Reply-To: <53b2ef14-1b8a-43b1-ef53-e314e2649ea0@acm.org>
+In-Reply-To: <CAB_54W557gEShnirMUfa1Y0MM0ho=At-sbuW10HbY=HEAX91AQ@mail.gmail.com>
+X-Zoho-Virus-Status: 1
+X-ZohoMailClient: External
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Apr 22, 2021 at 01:30:00PM -0700, Bart Van Assche wrote:
- 
-> But where does that Cc-list come from? If I extract that patch and run the
-> get_maintainer.pl script, the following output appears:
 
-Andrew takes it from the email CC list in the original email that the
-patch came from
+--2p+E3+hU0vJz9kLx
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Jason
+On Fri, Apr 23, 2021 at 09:28:48AM -0400, Alexander Aring wrote:
+> Hi,
+>=20
+> On Fri, 23 Apr 2021 at 00:03, Dan Robertson <dan@dlrobertson.com> wrote:
+> >
+> > Fix a logic error that could result in a null deref if the user does not
+> > set the PAN ID but does set the address.
+>=20
+> That should already be fixed by commit 6f7f657f2440 ("net: ieee802154:
+> nl-mac: fix check on panid").
+
+Ah right. I didn't look hard enough for an existing patch :) Thanks!
+
+ - Dan
+
+--2p+E3+hU0vJz9kLx
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAABCAAdFiEEF5dO2RaKc5C+SCJ9RcSmUsR+QqUFAmCC2xUACgkQRcSmUsR+
+QqUDdQ/9FclarcMjC6urIsBrsNOF5IzA8A/RCrPlG1IApiumstK+51zWtL8mYm71
+laek0n3GbBzRsTZdM5kQOTCeSTY0TqyPDfNQ0besVKuEo2X3w5sP7bdq+rVJVjlo
+Ls5ahTOQJQzmbvyq1YG0rkceD/1GS5RPxSYfOEHGm4/M7/wMeGZHGgRwvNb/lFO/
+lZAEVddm1rH/MxIpw1XU3fmNTPEUu9l97lv0Xf8OBKcfeHH+QSKsZfNoKErm2kOR
+sGYTCiT8bWXWNbFYyrly4/y8zBIXcbCXyjD3W8M0Rgw4jFuvq6URXwLftIPUmx6C
+kr9ESrOTBaUAaG7IOdSuajKTTlTbxhmgdlK+ky7T7DOoRoYPF6cqs59j1ppjNyA1
+dEpC12i2V88Xp+GYMUnekOqRpQiCjkyTJKj0+qVpObg1uPpwa+bjfP40tQoPP0ag
+Up4vmocdQ1ZvyuTmYisSapUs1r+7p07OYoDc8Pm5ww3RKhOcsKuaE7kvINVX9ueq
+t75IWwzIrycOZYbLYghQBYwvFqqNwDuZISDwimZInJmnxWJL8oTH9b+hU3vqVTTQ
+mCbeJkb10K6FngqDKqjZuClelPBJZ2y2TdKz89XdoTFpw38MU62KcutwprJJpGQy
+JFnrOobtz+PwpoYi/AcWklGG2EdCEtSbEABNb9ErFkV8usGoyY0=
+=NJtg
+-----END PGP SIGNATURE-----
+
+--2p+E3+hU0vJz9kLx--
