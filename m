@@ -2,74 +2,65 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A332F369BEB
-	for <lists+netdev@lfdr.de>; Fri, 23 Apr 2021 23:10:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6A8AE369BED
+	for <lists+netdev@lfdr.de>; Fri, 23 Apr 2021 23:10:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232686AbhDWVLI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 23 Apr 2021 17:11:08 -0400
-Received: from mail.kernel.org ([198.145.29.99]:58970 "EHLO mail.kernel.org"
+        id S243974AbhDWVLW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 23 Apr 2021 17:11:22 -0400
+Received: from mail.kernel.org ([198.145.29.99]:58958 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S244032AbhDWVKx (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S244029AbhDWVKx (ORCPT <rfc822;netdev@vger.kernel.org>);
         Fri, 23 Apr 2021 17:10:53 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id 4183961466;
+Received: by mail.kernel.org (Postfix) with ESMTPS id 2F07B61458;
         Fri, 23 Apr 2021 21:10:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1619212216;
-        bh=rDMBLdFs+wWL4z8l73Ta3ms6lsUsUYvjWn7OycMAWrw=;
+        bh=bwTl0NlQviroOMPbuJ/rHft8U6MOssDL+7X6EahTb8c=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=QLyZqjb2oQVdCDJR4PLPBA4GzR51hIl1bfv7bqkxnp9dPjoSAWjrCB7mKpHsGL95n
-         hJkVJfRXJohefZqT7Gxfm1RiFRf3gUda4kZsuMtMfRtrz0/WjmYxk15wUqOKupdAA8
-         kDHuOSv1uhwLl3CcgKuTLSvqBAvL6HfeMCLY2HFQv0I9gUxikUSUEmqVKnz5n1SGEd
-         +y2DoZMI1RMgV3gf5gvze2t+LmagJghVhyvYnkGdI+/20eXb5xwOdJNwWMj6oAcykv
-         yPEn6Fl7wg7B+nVV3wPaFRzyU/Q6HqDjFNp14ftqKFTx8TKQJvYi6/kYFHBk7YokUY
-         R68Ex5ap/qwNw==
+        b=i6nBKkCdq59G4pZqPw0DpHULSeT2ju/X0niUiHIMNg9HlfnDzasgX4lLUI6W5dJm7
+         9PpHVeFoXcdHrEkZq7jggJ7fKv1EuCaUvst+R1+4JEpe28WMxbJlUDeKByx9VcmQ/I
+         LA/AOHVriSt4wQkrEsYdTrsOHiokCycbet/cVUOrFpY3Pb5uCTxPoP7q3BTK1q7MqB
+         S2/dQBCLiuRHU+EQEWq1QEQvn+Uj89FdepjkEZdaHdRddWmnNfC8q/dSOux394W8Qh
+         e/w2h+6pbbZh9cOQLX208ms07lNjF5atAlqv74rBmPhSwJIM8NYhJsMRMcmS/U1pIq
+         HlGKw1SdnDQZA==
 Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 3898860A53;
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 24DBD60C28;
         Fri, 23 Apr 2021 21:10:16 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next 0/6] selftests: mlxsw: Fixes
+Subject: Re: [PATCH] selftests/net: bump timeout to 5 minutes
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <161921221622.24005.11828493414067253441.git-patchwork-notify@kernel.org>
+Message-Id: <161921221614.24005.15722074906496073270.git-patchwork-notify@kernel.org>
 Date:   Fri, 23 Apr 2021 21:10:16 +0000
-References: <cover.1619179926.git.petrm@nvidia.com>
-In-Reply-To: <cover.1619179926.git.petrm@nvidia.com>
-To:     Petr Machata <petrm@nvidia.com>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
-        mlxsw@nvidia.com, idosch@nvidia.com, danieller@nvidia.com,
-        jiri@nvidia.com
+References: <20210423111538.83084-1-po-hsu.lin@canonical.com>
+In-Reply-To: <20210423111538.83084-1-po-hsu.lin@canonical.com>
+To:     Po-Hsu Lin <po-hsu.lin@canonical.com>
+Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kselftest@vger.kernel.org, davem@davemloft.net,
+        kuba@kernel.org, shuah@kernel.org, skhan@linuxfoundation.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 Hello:
 
-This series was applied to netdev/net-next.git (refs/heads/master):
+This patch was applied to netdev/net-next.git (refs/heads/master):
 
-On Fri, 23 Apr 2021 14:19:42 +0200 you wrote:
-> This patch set carries fixes to selftest issues that we have hit in our
-> nightly regression run. Almost all are in mlxsw selftests, though one is in
-> a generic forwarding selftest.
-> 
-> - In patch #1, in an ERSPAN test, install an FDB entry as static instead of
->   (implicitly) as local.
+On Fri, 23 Apr 2021 19:15:38 +0800 you wrote:
+> We found that with the latest mainline kernel (5.12.0-051200rc8) on
+> some KVM instances / bare-metal systems, the following tests will take
+> longer than the kselftest framework default timeout (45 seconds) to
+> run and thus got terminated with TIMEOUT error:
+> * xfrm_policy.sh - took about 2m20s
+> * pmtu.sh - took about 3m5s
+> * udpgso_bench.sh - took about 60s
 > 
 > [...]
 
 Here is the summary with links:
-  - [net-next,1/6] selftests: net: mirror_gre_vlan_bridge_1q: Make an FDB entry static
-    https://git.kernel.org/netdev/net-next/c/c8d0260cdd96
-  - [net-next,2/6] selftests: mlxsw: Remove a redundant if statement in port_scale test
-    https://git.kernel.org/netdev/net-next/c/b6fc2f212108
-  - [net-next,3/6] selftests: mlxsw: Remove a redundant if statement in tc_flower_scale test
-    https://git.kernel.org/netdev/net-next/c/1f1c92139e36
-  - [net-next,4/6] selftests: mlxsw: Return correct error code in resource scale tests
-    https://git.kernel.org/netdev/net-next/c/059b18e21c63
-  - [net-next,5/6] selftests: mlxsw: Increase the tolerance of backlog buildup
-    https://git.kernel.org/netdev/net-next/c/dda7f4fa5583
-  - [net-next,6/6] selftests: mlxsw: Fix mausezahn invocation in ERSPAN scale test
-    https://git.kernel.org/netdev/net-next/c/1233898ab758
+  - selftests/net: bump timeout to 5 minutes
+    https://git.kernel.org/netdev/net-next/c/b881d089c7c9
 
 You are awesome, thank you!
 --
