@@ -2,26 +2,26 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 22A44368E4C
-	for <lists+netdev@lfdr.de>; Fri, 23 Apr 2021 10:02:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6580D368E51
+	for <lists+netdev@lfdr.de>; Fri, 23 Apr 2021 10:02:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241448AbhDWIDP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 23 Apr 2021 04:03:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41560 "EHLO
+        id S241560AbhDWID1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 23 Apr 2021 04:03:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41570 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241196AbhDWIDF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 23 Apr 2021 04:03:05 -0400
+        with ESMTP id S241348AbhDWIDI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 23 Apr 2021 04:03:08 -0400
 Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E317CC061756
-        for <netdev@vger.kernel.org>; Fri, 23 Apr 2021 01:02:29 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EFE72C06138D
+        for <netdev@vger.kernel.org>; Fri, 23 Apr 2021 01:02:31 -0700 (PDT)
 Received: from dude.hi.pengutronix.de ([2001:67c:670:100:1d::7])
         by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <ore@pengutronix.de>)
-        id 1lZqlZ-0007ap-C9; Fri, 23 Apr 2021 10:02:21 +0200
+        id 1lZqlZ-0007aq-CA; Fri, 23 Apr 2021 10:02:21 +0200
 Received: from ore by dude.hi.pengutronix.de with local (Exim 4.92)
         (envelope-from <ore@pengutronix.de>)
-        id 1lZqlX-0006vd-TD; Fri, 23 Apr 2021 10:02:19 +0200
+        id 1lZqlX-0006vm-UU; Fri, 23 Apr 2021 10:02:19 +0200
 From:   Oleksij Rempel <o.rempel@pengutronix.de>
 To:     Woojung Huh <woojung.huh@microchip.com>,
         UNGLinuxDriver@microchip.com, Andrew Lunn <andrew@lunn.ch>,
@@ -31,12 +31,13 @@ To:     Woojung Huh <woojung.huh@microchip.com>,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
 Cc:     Michael Grzeschik <m.grzeschik@pengutronix.de>,
+        devicetree@vger.kernel.org, Rob Herring <robh@kernel.org>,
         Oleksij Rempel <o.rempel@pengutronix.de>,
         kernel@pengutronix.de, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org, Russell King <linux@armlinux.org.uk>
-Subject: [PATCH net-next v6 05/10] net: dsa: microchip: Add Microchip KSZ8863 SPI based driver support
-Date:   Fri, 23 Apr 2021 10:02:13 +0200
-Message-Id: <20210423080218.26526-6-o.rempel@pengutronix.de>
+Subject: [PATCH net-next v6 06/10] dt-bindings: net: dsa: document additional Microchip KSZ8863/8873 switch
+Date:   Fri, 23 Apr 2021 10:02:14 +0200
+Message-Id: <20210423080218.26526-7-o.rempel@pengutronix.de>
 X-Mailer: git-send-email 2.29.2
 In-Reply-To: <20210423080218.26526-1-o.rempel@pengutronix.de>
 References: <20210423080218.26526-1-o.rempel@pengutronix.de>
@@ -52,104 +53,38 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Michael Grzeschik <m.grzeschik@pengutronix.de>
 
-Add KSZ88X3 driver support. We add support for the KXZ88X3 three port
-switches using the SPI Interface.
+It is a 3-Port 10/100 Ethernet Switch. One CPU-Port and two
+Switch-Ports.
 
+Cc: devicetree@vger.kernel.org
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+Acked-by: Rob Herring <robh@kernel.org>
 Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
 Signed-off-by: Michael Grzeschik <m.grzeschik@pengutronix.de>
 Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
 
 ---
-v1 -> v2: - this glue was not implemented
-v2 -> v3: - this glue was part of previous bigger patch
-v3 -> v4: - this glue was moved to this separate patch
-v4 -> v5: - added reviewed by from f.fainelli
-          - using device_get_match_data instead of own matching code
+v1 -> v3: - nothing changes
+          - already Acked-by Rob Herring
+v1 -> v4: - nothing changes
+v4 -> v5: - nothing changes
 ---
- drivers/net/dsa/microchip/ksz8795_spi.c | 44 ++++++++++++++++++-------
- 1 file changed, 32 insertions(+), 12 deletions(-)
+ Documentation/devicetree/bindings/net/dsa/microchip,ksz.yaml | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/drivers/net/dsa/microchip/ksz8795_spi.c b/drivers/net/dsa/microchip/ksz8795_spi.c
-index 45420c07c99f..708f8daaedbc 100644
---- a/drivers/net/dsa/microchip/ksz8795_spi.c
-+++ b/drivers/net/dsa/microchip/ksz8795_spi.c
-@@ -14,34 +14,52 @@
- #include <linux/regmap.h>
- #include <linux/spi/spi.h>
- 
-+#include "ksz8.h"
- #include "ksz_common.h"
- 
--#define SPI_ADDR_SHIFT			12
--#define SPI_ADDR_ALIGN			3
--#define SPI_TURNAROUND_SHIFT		1
-+#define KSZ8795_SPI_ADDR_SHIFT			12
-+#define KSZ8795_SPI_ADDR_ALIGN			3
-+#define KSZ8795_SPI_TURNAROUND_SHIFT		1
- 
--KSZ_REGMAP_TABLE(ksz8795, 16, SPI_ADDR_SHIFT,
--		 SPI_TURNAROUND_SHIFT, SPI_ADDR_ALIGN);
-+#define KSZ8863_SPI_ADDR_SHIFT			8
-+#define KSZ8863_SPI_ADDR_ALIGN			8
-+#define KSZ8863_SPI_TURNAROUND_SHIFT		0
-+
-+KSZ_REGMAP_TABLE(ksz8795, 16, KSZ8795_SPI_ADDR_SHIFT,
-+		 KSZ8795_SPI_TURNAROUND_SHIFT, KSZ8795_SPI_ADDR_ALIGN);
-+
-+KSZ_REGMAP_TABLE(ksz8863, 16, KSZ8863_SPI_ADDR_SHIFT,
-+		 KSZ8863_SPI_TURNAROUND_SHIFT, KSZ8863_SPI_ADDR_ALIGN);
- 
- static int ksz8795_spi_probe(struct spi_device *spi)
- {
-+	const struct regmap_config *regmap_config;
-+	struct device *ddev = &spi->dev;
-+	struct ksz8 *ksz8;
- 	struct regmap_config rc;
- 	struct ksz_device *dev;
--	int i, ret;
-+	int i, ret = 0;
- 
--	dev = ksz_switch_alloc(&spi->dev, spi);
-+	ksz8 = devm_kzalloc(&spi->dev, sizeof(struct ksz8), GFP_KERNEL);
-+	ksz8->priv = spi;
-+
-+	dev = ksz_switch_alloc(&spi->dev, ksz8);
- 	if (!dev)
- 		return -ENOMEM;
- 
-+	regmap_config = device_get_match_data(ddev);
-+	if (!regmap_config)
-+		return -EINVAL;
-+
- 	for (i = 0; i < ARRAY_SIZE(ksz8795_regmap_config); i++) {
--		rc = ksz8795_regmap_config[i];
-+		rc = regmap_config[i];
- 		rc.lock_arg = &dev->regmap_mutex;
- 		dev->regmap[i] = devm_regmap_init_spi(spi, &rc);
- 		if (IS_ERR(dev->regmap[i])) {
- 			ret = PTR_ERR(dev->regmap[i]);
- 			dev_err(&spi->dev,
- 				"Failed to initialize regmap%i: %d\n",
--				ksz8795_regmap_config[i].val_bits, ret);
-+				regmap_config[i].val_bits, ret);
- 			return ret;
- 		}
- 	}
-@@ -85,9 +103,11 @@ static void ksz8795_spi_shutdown(struct spi_device *spi)
- }
- 
- static const struct of_device_id ksz8795_dt_ids[] = {
--	{ .compatible = "microchip,ksz8765" },
--	{ .compatible = "microchip,ksz8794" },
--	{ .compatible = "microchip,ksz8795" },
-+	{ .compatible = "microchip,ksz8765", .data = &ksz8795_regmap_config },
-+	{ .compatible = "microchip,ksz8794", .data = &ksz8795_regmap_config },
-+	{ .compatible = "microchip,ksz8795", .data = &ksz8795_regmap_config },
-+	{ .compatible = "microchip,ksz8863", .data = &ksz8863_regmap_config },
-+	{ .compatible = "microchip,ksz8873", .data = &ksz8863_regmap_config },
- 	{},
- };
- MODULE_DEVICE_TABLE(of, ksz8795_dt_ids);
+diff --git a/Documentation/devicetree/bindings/net/dsa/microchip,ksz.yaml b/Documentation/devicetree/bindings/net/dsa/microchip,ksz.yaml
+index 9f7d131bbcef..84985f53bffd 100644
+--- a/Documentation/devicetree/bindings/net/dsa/microchip,ksz.yaml
++++ b/Documentation/devicetree/bindings/net/dsa/microchip,ksz.yaml
+@@ -21,6 +21,8 @@ properties:
+       - microchip,ksz8765
+       - microchip,ksz8794
+       - microchip,ksz8795
++      - microchip,ksz8863
++      - microchip,ksz8873
+       - microchip,ksz9477
+       - microchip,ksz9897
+       - microchip,ksz9896
 -- 
 2.29.2
 
