@@ -2,228 +2,117 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 345F8369734
-	for <lists+netdev@lfdr.de>; Fri, 23 Apr 2021 18:38:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A9672369740
+	for <lists+netdev@lfdr.de>; Fri, 23 Apr 2021 18:40:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231935AbhDWQil (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 23 Apr 2021 12:38:41 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:54708 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S229691AbhDWQik (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 23 Apr 2021 12:38:40 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1619195883;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=diPVr+widlL41D+Vcx+6umn09bUuroA9P7fw3tKBNkc=;
-        b=bQmqRddkrh0S34fJPESvxRy8OGGSbQCrnYvvstFiQRvG9/LqLxDV2u30Vb0XcEF8QBkcBn
-        KgemSO1WD2v2/TNJNcVr/zVFUA/rv7L20stXViVBFdNXZ6BM2kZjOBpss3B+1wZuLDhfZJ
-        Ene79nhVEE20ooIfonLBBp4QfQpqzT8=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-150-ySlCSfJaP-6g9hqTyfEo3A-1; Fri, 23 Apr 2021 12:37:59 -0400
-X-MC-Unique: ySlCSfJaP-6g9hqTyfEo3A-1
-Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 79224107ACC7;
-        Fri, 23 Apr 2021 16:37:57 +0000 (UTC)
-Received: from carbon (unknown [10.36.110.19])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 1A4C0175BE;
-        Fri, 23 Apr 2021 16:37:32 +0000 (UTC)
-Date:   Fri, 23 Apr 2021 18:37:31 +0200
-From:   Jesper Dangaard Brouer <brouer@redhat.com>
-To:     "Ong, Boon Leong" <boon.leong.ong@intel.com>
-Cc:     "Joseph, Jithu" <jithu.joseph@intel.com>,
-        "Desouza, Ederson" <ederson.desouza@intel.com>,
-        "Song, Yoong Siang" <yoong.siang.song@intel.com>,
-        Lorenzo Bianconi <lorenzo.bianconi@redhat.com>,
-        "Gomes, Vinicius" <vinicius.gomes@intel.com>, brouer@redhat.com,
-        "Machnikowski, Maciej" <maciej.machnikowski@intel.com>,
-        David Ahern <dsahern@gmail.com>,
-        "Karlsson, Magnus" <magnus.karlsson@intel.com>,
-        Saeed Mahameed <saeed@kernel.org>,
-        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        Jens Steen Krogh <jskro@vestas.com>,
-        Joao Pedro Barros Silva <jopbs@vestas.com>
-Subject: Re: PTP RX & TX time-stamp and TX Time in XDP ZC socket
-Message-ID: <20210423183731.7279808a@carbon>
-In-Reply-To: <DM6PR11MB2780B29F0045B76119AFC388CA469@DM6PR11MB2780.namprd11.prod.outlook.com>
-References: <DM6PR11MB27800045D6EE4A69B1A65C45CA479@DM6PR11MB2780.namprd11.prod.outlook.com>
-        <20210421103948.5a453e6d@carbon>
-        <DM6PR11MB2780B29F0045B76119AFC388CA469@DM6PR11MB2780.namprd11.prod.outlook.com>
+        id S231312AbhDWQlP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 23 Apr 2021 12:41:15 -0400
+Received: from mga17.intel.com ([192.55.52.151]:13549 "EHLO mga17.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229691AbhDWQlP (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 23 Apr 2021 12:41:15 -0400
+IronPort-SDR: ixqW11+cw+TC1Wd5kkU5pbzgyYfNQX5UHdnA4KsQB+AdlhLo9oTRzwmJwxyUd6mvHXr/fo+zHS
+ TPS3EsCkceqw==
+X-IronPort-AV: E=McAfee;i="6200,9189,9963"; a="176218609"
+X-IronPort-AV: E=Sophos;i="5.82,246,1613462400"; 
+   d="scan'208";a="176218609"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Apr 2021 09:40:38 -0700
+IronPort-SDR: d7JlwaUXzlGT1OH1nsvTSWRS05fVhKp+6GpOj8jQsHkNYNYf4rQYLVyI3528Y9o/l7y+ho6/eO
+ Z+V7JpQChaGw==
+X-IronPort-AV: E=Sophos;i="5.82,246,1613462400"; 
+   d="scan'208";a="428449394"
+Received: from mjmartin-desk2.amr.corp.intel.com (HELO mjmartin-desk2.intel.com) ([10.254.72.13])
+  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Apr 2021 09:40:38 -0700
+From:   Mat Martineau <mathew.j.martineau@linux.intel.com>
+To:     netdev@vger.kernel.org
+Cc:     Mat Martineau <mathew.j.martineau@linux.intel.com>,
+        davem@davemloft.net, kuba@kernel.org, matthieu.baerts@tessares.net,
+        mptcp@lists.linux.dev, Paolo Abeni <pabeni@redhat.com>
+Subject: [PATCH net] mptcp: Retransmit DATA_FIN
+Date:   Fri, 23 Apr 2021 09:40:33 -0700
+Message-Id: <20210423164033.264095-1-mathew.j.martineau@linux.intel.com>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+With this change, the MPTCP-level retransmission timer is used to resend
+DATA_FIN. The retranmit timer is not stopped while waiting for a
+MPTCP-level ACK of DATA_FIN, and retransmitted DATA_FINs are sent on all
+subflows. The retry interval starts at TCP_RTO_MIN and then doubles on
+each attempt, up to TCP_RTO_MAX.
 
-Cc, netdev, as I think we get upstream feedback as early as possible.
-(Maybe Alexei will be critique my idea of storing btf_id in struct?)
+Closes: https://github.com/multipath-tcp/mptcp_net-next/issues/146
+Fixes: 43b54c6ee382 ("mptcp: Use full MPTCP-level disconnect state machine")
+Acked-by: Paolo Abeni <pabeni@redhat.com>
+Signed-off-by: Mat Martineau <mathew.j.martineau@linux.intel.com>
+---
+ net/mptcp/protocol.c | 25 +++++++++++++++++++++++--
+ 1 file changed, 23 insertions(+), 2 deletions(-)
 
+diff --git a/net/mptcp/protocol.c b/net/mptcp/protocol.c
+index 4bde960e19dc..61329b8181ea 100644
+--- a/net/mptcp/protocol.c
++++ b/net/mptcp/protocol.c
+@@ -399,6 +399,14 @@ static bool mptcp_pending_data_fin(struct sock *sk, u64 *seq)
+ 	return false;
+ }
+ 
++static void mptcp_set_datafin_timeout(const struct sock *sk)
++{
++	struct inet_connection_sock *icsk = inet_csk(sk);
++
++	mptcp_sk(sk)->timer_ival = min(TCP_RTO_MAX,
++				       TCP_RTO_MIN << icsk->icsk_retransmits);
++}
++
+ static void mptcp_set_timeout(const struct sock *sk, const struct sock *ssk)
+ {
+ 	long tout = ssk && inet_csk(ssk)->icsk_pending ?
+@@ -1052,7 +1060,7 @@ static void __mptcp_clean_una(struct sock *sk)
+ 	}
+ 
+ 	if (snd_una == READ_ONCE(msk->snd_nxt)) {
+-		if (msk->timer_ival)
++		if (msk->timer_ival && !mptcp_data_fin_enabled(msk))
+ 			mptcp_stop_timer(sk);
+ 	} else {
+ 		mptcp_reset_timer(sk);
+@@ -2276,8 +2284,19 @@ static void __mptcp_retrans(struct sock *sk)
+ 
+ 	__mptcp_clean_una_wakeup(sk);
+ 	dfrag = mptcp_rtx_head(sk);
+-	if (!dfrag)
++	if (!dfrag) {
++		if (mptcp_data_fin_enabled(msk)) {
++			struct inet_connection_sock *icsk = inet_csk(sk);
++
++			icsk->icsk_retransmits++;
++			mptcp_set_datafin_timeout(sk);
++			mptcp_send_ack(msk);
++
++			goto reset_timer;
++		}
++
+ 		return;
++	}
+ 
+ 	ssk = mptcp_subflow_get_retrans(msk);
+ 	if (!ssk)
+@@ -2460,6 +2479,8 @@ void mptcp_subflow_shutdown(struct sock *sk, struct sock *ssk, int how)
+ 			pr_debug("Sending DATA_FIN on subflow %p", ssk);
+ 			mptcp_set_timeout(sk, ssk);
+ 			tcp_send_ack(ssk);
++			if (!mptcp_timer_pending(sk))
++				mptcp_reset_timer(sk);
+ 		}
+ 		break;
+ 	}
 
-On Thu, 22 Apr 2021 07:34:23 +0000
-"Ong, Boon Leong" <boon.leong.ong@intel.com> wrote:
-
-> >> Now that stmmac driver has been added with XDP ZC, we would like
-> >> to know if there is any on-going POC or discussion on XDP ZC
-> >> socket for adding below:
-> >>
-> >> 1) PTP RX & TX time-stamp
-> >> 2) Per-packet TX transmit time (similar to SO_TXTIME) =20
-> >
-> > Well, this is actually perfect timing! (pun intended)
-> >
-> > I'm actually going to work on adding this to XDP.  I was reading igc
-> > driver and i225 sw datasheet last night, trying to figure out a design
-> > based on what hardware can do. My design ideas obviously involve BTF,
-> > but a lot of missing pieces like an XDP TX hook is also missing. =20
->=20
-> Currently, we are using a non-standard/not elegant way to provide for=20
-> internal real-time KPI measurement purpose as follow=20
->
-> 1) TX time stored in a newly introduced 64-bit timestamp in XDP descripto=
-r.
-
-Did you create a separate XDP descriptor?
-If so what memory is backing that?
-
-My idea[1] is to use the meta-data area (xdp_buff->data_meta), that is
-located in-front of the packet headers.  Or the area in top of the
-"packet" memory, which is already used by struct xdp_frame, except that
-zero-copy AF_XDP don't have the xdp_frame.  Due to AF_XDP limits I'm
-leaning towards using xdp_buff->data_meta area.
-
-[1] https://people.netfilter.org/hawk/presentations/KernelRecipes2019/xdp-n=
-etstack-concert.pdf
-
-I should mention that I want a generic solution (based on BTF), that can
-support many types of hardware hints.  Like existing RX-hash, VLAN,
-checksum, mark and timestamps.  And newer HW hints that netstack
-doesn't support yet, e.g. I know mlx5 can assign unique (64-bit)
-flow-marks.
-
-I should also mention that I also want the solution to work for (struct)
-xdp_frame packets that gets redirected from RX to TX.  And work when/if
-an xdp_frame gets converted to an SKB (happens for veth and cpumap)
-then the RX-hash, VLAN, checksum, mark, timestamp should be transferred
-to the SKB.
-
-
-> 2) RX T/S is stored in the meta-data of the RX frame.
-
-Yes, I also want to store the RX-timestamp the meta-data area.  This
-means that RX-timestamp is stored memory-wise just before the packet
-header starts.
-
-For AF_XDP how does the userspace program know that info is stored in
-this area(?).  As you know, it might only be some packets that contain
-the timestamp, e.g. for some NIC is it only the PTP packets.
-
-I've discussed this with OVS VMware people before (they requested
-RX-hash), and in that discussion Bj=C3=B8rn came up with the idea, that the
-"-32 bit" could contain the BTF-id number.  Meaning the last u32 member
-of the metadata is btf_id (example below).
-
- struct my_metadata {
-	u64 rx_timestamp;
-	u32 rx_hash32;
-	u32 btf_id;
- };
-
-When having the btf_id then the memory layout basically becomes self
-describing.  I guess, we still need a single bit in the AF_XDP
-RX-descriptor telling us that meta-data area is populated, or perhaps
-we should store the btf_id in the AF_XDP RX-descriptor?
-
-Same goes for xdp_frame, should it store btf_id or have a single bit
-that says, btf_id is located in data_meta area.
-
-> 3) TX T/S is simply trace_printk out as there is missing XDP TX hook
->    like you pointed out.
-
-Again I want to use BTF to describe that a driver supports of
-TX-timestamp features.  Like Saeed did for RX, the driver should export
-(a number) of BTF-id's that it support.
-
-E.g when the LaunchTime features is configured;
-
- struct my_metadata_tx {
-	u64 LaunchTime_ktime;
-	u32 btf_id;
- };
-
-When AF_XDP (or xdp_frame) want to transmit a frame as a specific time,
-e.g. via LaunchTime feature in i210 (igb) and i225 (igc).
-
-I've read up on i210 and i225 capabilities, and I think this will help
-us guide our design choices.  We need to support different BTF-desc per
-TX queue basis, because the LaunchTime is configured per TX queue, and
-further more, i210 only support this on queue 0 and 1.
-
-Currently the LaunchTime config happens via TC config when attaching a
-ETF qdisc and doing TC-offloading.  For now, I'm not suggesting
-changing that.  Instead we can simply export/expose that the driver now
-support LaunchTime BTF-desc, when the config gets enabled.
-
-
-> So, if there is some ready work that we can evaluate, it will have us
-> greatly in extending it to stmmac driver.=20
-
-Saeed have done a number of different implementation attempts on RX
-side with BTF.  We might be able to leverage some of that work.  That
-said, the kernels BTF API have become more advanced since Saeed worked
-on this. Thus, I expect that we might be able to leverage some of this
-to simplify the approach.
-
-
-> >I have a practical project with a wind-turbine producer Vestas (they
-> >have even approved we can say this publicly on mailing lists). Thus, I
-> >can actually dedicate some time for this.
-> >
-> >You also have a practical project that needs this? (And I/we can keep it
-> >off the mailing lists if you prefer/need-to). =20
->=20
-> Yes, we are about to start a a 3-way joint-development project that is
-> evaluating the suitability of using preempt-RT + XDP ZC + TSN for
-> integrating high level Industrial Ethernet stack on-top of Linux mainline
-> interface. So, there is couple of area that we will be looking into and
-> above two capabilities are foundational in adding "time-aware" to
-> XDP ZC interface.  But, our current focus on getting the Linux mainline
-> capability ready, so we can discuss in ML.
-
-It sounds like our projects align very well! :-)))
-My customer also want the combination preempt-RT + XDP ZC + TSN.
-
-> >My plans: I will try to understand the hardware and drivers better, and
-> >then I will work on a design proposal that I will share with you for
-> >review.
-> >
-> >What are your plans? =20
->=20
-> Siang and myself are looking into this area starting next week and
-> hopefully our time is aligned and we are hopeful to get this
-> capability available in stmmac for next RC cycles. Is the time-line
-> aligned to yours?
-
-Yes, this aligns with my time-line.  I want to start prototyping some
-things next week, so I can start to run experiments with TSN.  The
-TSN capable hardware for our PoC is being shipped to my house and
-should arrive next week.
-
-Looking forward to collaborate with all of you.  You can let me know
-(offlist) if you prefer not getting Cc'ed on these mails. Some of you
-are bcc'ed and you have to opt-in if you are interested in collaborating.
---=20
-Best regards,
-  Jesper Dangaard Brouer
-  MSc.CS, Principal Kernel Engineer at Red Hat
-  LinkedIn: http://www.linkedin.com/in/brouer
+base-commit: bb556de79f0a9e647e8febe15786ee68483fa67b
+-- 
+2.31.1
 
