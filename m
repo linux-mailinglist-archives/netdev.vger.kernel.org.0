@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E05C6368ADE
-	for <lists+netdev@lfdr.de>; Fri, 23 Apr 2021 04:09:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B37A3368AE0
+	for <lists+netdev@lfdr.de>; Fri, 23 Apr 2021 04:09:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240195AbhDWCBZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 22 Apr 2021 22:01:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47610 "EHLO
+        id S240261AbhDWCBc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 22 Apr 2021 22:01:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47638 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230367AbhDWCBZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 22 Apr 2021 22:01:25 -0400
-Received: from mail-pj1-x1034.google.com (mail-pj1-x1034.google.com [IPv6:2607:f8b0:4864:20::1034])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA7D5C061574;
-        Thu, 22 Apr 2021 19:00:49 -0700 (PDT)
-Received: by mail-pj1-x1034.google.com with SMTP id u14-20020a17090a1f0eb029014e38011b09so408566pja.5;
-        Thu, 22 Apr 2021 19:00:49 -0700 (PDT)
+        with ESMTP id S230367AbhDWCBb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 22 Apr 2021 22:01:31 -0400
+Received: from mail-pf1-x42e.google.com (mail-pf1-x42e.google.com [IPv6:2607:f8b0:4864:20::42e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 110BCC061574;
+        Thu, 22 Apr 2021 19:00:56 -0700 (PDT)
+Received: by mail-pf1-x42e.google.com with SMTP id q2so1092793pfk.9;
+        Thu, 22 Apr 2021 19:00:56 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=mtGrsoLRm6yuKMc9pFMMMRzrTKFrebBHy6EvapVbSQ0=;
-        b=LwiqbKC66g2VP8M/+KGTAFLmrUjq0ba0ZAILayQXQoLSRoTSaFsB6dfjPivDouLWzO
-         Do5BmEtNV1VzlXTvrXkwd8kTJ+4KDMFGVRiigZLUHBd7aFpxTLZ5N4kHbTHbiZYg7huc
-         /w24ziwSp8A0QGriYcdVpEUKQnyh0S5AtEW7dQhlXaSzCt1yoJmLM134ntOge9TH7Z4M
-         IJPIxDbAQ+XNY3Oqxo0aHjsLpLk0rUkAxND1hqIOOP7anFkpvBeUdJbpCGvuZHvelyfm
-         mGp7FHz5gZbJM9vfHkquP++/ky6ADdzJyLD+p2ng+PwBqX6pxeBWaw6V53QO8FaEaLof
-         u/2Q==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=47SButdVzCUdMPjO8neneZ2zoMjg4Jd9d6/LmqtXjOo=;
+        b=bdI6uZ0LtjT9V3Ood5+qxgfM0Gj5Bu8zoJF8i59/H03kANovlNbTzAkRtMbvGnOodD
+         Ds9T2F12fxhv6Xd+Af+QuJ6ju/0XS2b6KYhpEdnCOdLVIGUjslkaZN7yYhQWAr0ru5uP
+         jyucFCcDuM+ztJdqhSz5lI2AgvrHcqEgz8asfMErgg0AQsCf6qbOlR0Hi9WfgcReCB4P
+         7Af+UFbx2OaDP4EjmouN8VxMIj7RTLBnUjs9xWX0yeviJaCqdPgj1dsYWHTMSsXLQos3
+         SkbW1XmTtncpYdZGiDi0mAy2AnL7THy8kFiyCjuXMiEgD7SoSZCMbWScfLGfAYaf0lPF
+         OJoQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=mtGrsoLRm6yuKMc9pFMMMRzrTKFrebBHy6EvapVbSQ0=;
-        b=WfgVdjx3E5PiNyZqQQ6of/YqAthUGVIUbZXjAlGmx+Oj7IQYcgINx0Uqu2icAEUnOt
-         WTcgw4dTjO24idfby6YfVvSxi7mWrUJHU0F1jk0I3xJa5rnla5sBtZ8T/SeFdr+2BhF0
-         KSdllynW7bQNHDGrLexm4gcK0jDSizIf7OuPpuyn4WYbTKIx86hYd2Zz2LFuzu7K+OfB
-         uhms2gtSdHWkK2TDe00g+vKVoJS5Vm6Eld+C/L0lf2RnlSuI2nF0dc74VKuKzRT/GK05
-         g0FR72eHlL8+xAUDZ4fEj5kzFzgOEqVeQ3q7CYmp+b0kP05LK7Xtv1eN7bhV1rr8HL5c
-         Gacw==
-X-Gm-Message-State: AOAM531qAC0+YZCPiyRVBu0ZJZbtXdRav60g6HFec+yQQm855DIyqG6T
-        JPbxDNG8heTnwgLRazMIwmWhQ6avFXH1+Q==
-X-Google-Smtp-Source: ABdhPJzKj/oDpBn6/iXOqBRR/WggCf6HtawoiH7eo8OyetvT8k3shKx2w+29v1SY/X6sdXatvsbwCg==
-X-Received: by 2002:a17:90b:238d:: with SMTP id mr13mr1810864pjb.23.1619143249178;
-        Thu, 22 Apr 2021 19:00:49 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=47SButdVzCUdMPjO8neneZ2zoMjg4Jd9d6/LmqtXjOo=;
+        b=XH8xDLZNdvprZg65lcdNw9kXVBoAxnw0wzDuWu7xOGmqi1THf7lkeZbwnzJw5fxcv3
+         /7Bx5iXlEcsh+mrWr6Anb8iMGytrMovVtIXAnO3DWTprCwl/+ArWWL8wJNO6otKicbKg
+         z17pWdoyeAi1XexqmuQDXEuXwyngik3UYHUo1e1WexovRbvy9iuvfxe2uZ6T23dBKiDK
+         WBXcXWq38P1iqCUTvXFB4A8Fwc+k1iU4PREUSkg9yId1SEUxwtqXrBnK1aWalrj7OKR9
+         bUV72hq0kpEibJsgnKkAKkY2BKrnfufiaLhzW1x4RRlfURNJm0XmHJXpDJ/99liUo+wL
+         nSUQ==
+X-Gm-Message-State: AOAM533zIulihaljf7+cFEXhag47a4koIg5fYun4WeUeSvN2oi6Nc6SR
+        ISksxiyQ/UdR7bM7NU/lVNNEOy3QSKVAyw==
+X-Google-Smtp-Source: ABdhPJySa3J8r0KQonOkwkvSuIfmQa2ecgTuXc6StAIpD3/Sv096MJgYpoRNsMRcF+OkU+FOwf/VtA==
+X-Received: by 2002:a63:1d5d:: with SMTP id d29mr1614684pgm.398.1619143255212;
+        Thu, 22 Apr 2021 19:00:55 -0700 (PDT)
 Received: from Leo-laptop-t470s.redhat.com ([209.132.188.80])
-        by smtp.gmail.com with ESMTPSA id z5sm3079244pff.191.2021.04.22.19.00.43
+        by smtp.gmail.com with ESMTPSA id z5sm3079244pff.191.2021.04.22.19.00.49
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 22 Apr 2021 19:00:48 -0700 (PDT)
+        Thu, 22 Apr 2021 19:00:54 -0700 (PDT)
 From:   Hangbin Liu <liuhangbin@gmail.com>
 To:     bpf@vger.kernel.org
 Cc:     netdev@vger.kernel.org,
@@ -64,10 +64,12 @@ Cc:     netdev@vger.kernel.org,
         =?UTF-8?q?Bj=C3=B6rn=20T=C3=B6pel?= <bjorn.topel@gmail.com>,
         Martin KaFai Lau <kafai@fb.com>,
         Hangbin Liu <liuhangbin@gmail.com>
-Subject: [PATCHv10 bpf-next 0/4] xdp: extend xdp_redirect_map with broadcast support
-Date:   Fri, 23 Apr 2021 10:00:15 +0800
-Message-Id: <20210423020019.2333192-1-liuhangbin@gmail.com>
+Subject: [PATCHv10 bpf-next 1/4] bpf: run devmap xdp_prog on flush instead of bulk enqueue
+Date:   Fri, 23 Apr 2021 10:00:16 +0800
+Message-Id: <20210423020019.2333192-2-liuhangbin@gmail.com>
 X-Mailer: git-send-email 2.26.3
+In-Reply-To: <20210423020019.2333192-1-liuhangbin@gmail.com>
+References: <20210423020019.2333192-1-liuhangbin@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -75,71 +77,285 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+From: Jesper Dangaard Brouer <brouer@redhat.com>
 
-This patchset is a new implementation for XDP multicast support based
-on my previous 2 maps implementation[1]. The reason is that Daniel thinks
-the exclude map implementation is missing proper bond support in XDP
-context. And there is a plan to add native XDP bonding support. Adding a
-exclude map in the helper also increases the complexity of verifier and has
-drawback of performance.
+This changes the devmap XDP program support to run the program when the
+bulk queue is flushed instead of before the frame is enqueued. This has
+a couple of benefits:
 
-The new implementation just add two new flags BPF_F_BROADCAST and
-BPF_F_EXCLUDE_INGRESS to extend xdp_redirect_map for broadcast support.
+- It "sorts" the packets by destination devmap entry, and then runs the
+  same BPF program on all the packets in sequence. This ensures that we
+  keep the XDP program and destination device properties hot in I-cache.
 
-With BPF_F_BROADCAST the packet will be broadcasted to all the interfaces
-in the map. with BPF_F_EXCLUDE_INGRESS the ingress interface will be
-excluded when do broadcasting.
+- It makes the multicast implementation simpler because it can just
+  enqueue packets using bq_enqueue() without having to deal with the
+  devmap program at all.
 
-The patchv9 link is here[2].
+The drawback is that if the devmap program drops the packet, the enqueue
+step is redundant. However, arguably this is mostly visible in a
+micro-benchmark, and with more mixed traffic the I-cache benefit should
+win out. The performance impact of just this patch is as follows:
 
-[1] https://lore.kernel.org/bpf/20210223125809.1376577-1-liuhangbin@gmail.com
-[2] https://lore.kernel.org/bpf/20210422071454.2023282-1-liuhangbin@gmail.com
+Using 10Gb i40e NIC, do XDP_DROP on veth peer, with xdp_redirect_map in
+sample/bpf, send pkts via pktgen cmd:
+./pktgen_sample03_burst_single_flow.sh -i eno1 -d $dst_ip -m $dst_mac -t 10 -s 64
 
-v10: use READ/WRITE_ONCE when read/write map instead of xchg()
-v9: Update patch 01 commit description
-v8: use hlist_for_each_entry_rcu() when looping the devmap hash ojbs
-v7: No need to free xdpf in dev_map_enqueue_clone() if xdpf_clone failed.
-v6: Fix a skb leak in the error path for generic XDP
-v5: Just walk the map directly to get interfaces as get_next_key() of devmap
-    hash may restart looping from the first key if the device get removed.
-    After update the performace has improved 10% compired with v4.
-v4: Fix flags never cleared issue in patch 02. Update selftest to cover this.
-v3: Rebase the code based on latest bpf-next
-v2: fix flag renaming issue in patch 02
+There are about +/- 0.1M deviation for native testing, the performance
+improved for the base-case, but some drop back with xdp devmap prog attached.
 
-Hangbin Liu (3):
-  xdp: extend xdp_redirect_map with broadcast support
-  sample/bpf: add xdp_redirect_map_multi for redirect_map broadcast test
-  selftests/bpf: add xdp_redirect_multi test
+Version          | Test                           | Generic | Native | Native + 2nd xdp_prog
+5.12 rc4         | xdp_redirect_map   i40e->i40e  |    1.9M |   9.6M |  8.4M
+5.12 rc4         | xdp_redirect_map   i40e->veth  |    1.7M |  11.7M |  9.8M
+5.12 rc4 + patch | xdp_redirect_map   i40e->i40e  |    1.9M |   9.8M |  8.0M
+5.12 rc4 + patch | xdp_redirect_map   i40e->veth  |    1.7M |  12.0M |  9.4M
 
-Jesper Dangaard Brouer (1):
-  bpf: run devmap xdp_prog on flush instead of bulk enqueue
+When bq_xmit_all() is called from bq_enqueue(), another packet will
+always be enqueued immediately after, so clearing dev_rx, xdp_prog and
+flush_node in bq_xmit_all() is redundant. Move the clear to __dev_flush(),
+and only check them once in bq_enqueue() since they are all modified
+together.
 
- include/linux/bpf.h                           |  20 ++
- include/linux/filter.h                        |  18 +-
- include/net/xdp.h                             |   1 +
- include/uapi/linux/bpf.h                      |  17 +-
- kernel/bpf/cpumap.c                           |   3 +-
- kernel/bpf/devmap.c                           | 304 +++++++++++++++---
- net/core/filter.c                             |  37 ++-
- net/core/xdp.c                                |  29 ++
- net/xdp/xskmap.c                              |   3 +-
- samples/bpf/Makefile                          |   3 +
- samples/bpf/xdp_redirect_map_multi_kern.c     |  87 +++++
- samples/bpf/xdp_redirect_map_multi_user.c     | 302 +++++++++++++++++
- tools/include/uapi/linux/bpf.h                |  17 +-
- tools/testing/selftests/bpf/Makefile          |   3 +-
- .../bpf/progs/xdp_redirect_multi_kern.c       |  99 ++++++
- .../selftests/bpf/test_xdp_redirect_multi.sh  | 205 ++++++++++++
- .../selftests/bpf/xdp_redirect_multi.c        | 236 ++++++++++++++
- 17 files changed, 1320 insertions(+), 64 deletions(-)
- create mode 100644 samples/bpf/xdp_redirect_map_multi_kern.c
- create mode 100644 samples/bpf/xdp_redirect_map_multi_user.c
- create mode 100644 tools/testing/selftests/bpf/progs/xdp_redirect_multi_kern.c
- create mode 100755 tools/testing/selftests/bpf/test_xdp_redirect_multi.sh
- create mode 100644 tools/testing/selftests/bpf/xdp_redirect_multi.c
+This change also has the side effect of extending the lifetime of the
+RCU-protected xdp_prog that lives inside the devmap entries: Instead of
+just living for the duration of the XDP program invocation, the
+reference now lives all the way until the bq is flushed. This is safe
+because the bq flush happens at the end of the NAPI poll loop, so
+everything happens between a local_bh_disable()/local_bh_enable() pair.
+However, this is by no means obvious from looking at the call sites; in
+particular, some drivers have an additional rcu_read_lock() around only
+the XDP program invocation, which only confuses matters further.
+Cleaning this up will be done in a separate patch series.
 
+Acked-by: Toke Høiland-Jørgensen <toke@redhat.com>
+Signed-off-by: Jesper Dangaard Brouer <brouer@redhat.com>
+Signed-off-by: Hangbin Liu <liuhangbin@gmail.com>
+
+---
+v9: update commit description based on Toke and Martin's suggestion
+v4-v8: no update
+v3: rebase the code based on Lorenzo's "Move drop error path to devmap
+    for XDP_REDIRECT"
+v2: no update
+---
+ kernel/bpf/devmap.c | 127 ++++++++++++++++++++++++++------------------
+ 1 file changed, 76 insertions(+), 51 deletions(-)
+
+diff --git a/kernel/bpf/devmap.c b/kernel/bpf/devmap.c
+index aa516472ce46..3980fb3bfb09 100644
+--- a/kernel/bpf/devmap.c
++++ b/kernel/bpf/devmap.c
+@@ -57,6 +57,7 @@ struct xdp_dev_bulk_queue {
+ 	struct list_head flush_node;
+ 	struct net_device *dev;
+ 	struct net_device *dev_rx;
++	struct bpf_prog *xdp_prog;
+ 	unsigned int count;
+ };
+ 
+@@ -326,22 +327,71 @@ bool dev_map_can_have_prog(struct bpf_map *map)
+ 	return false;
+ }
+ 
++static int dev_map_bpf_prog_run(struct bpf_prog *xdp_prog,
++				struct xdp_frame **frames, int n,
++				struct net_device *dev)
++{
++	struct xdp_txq_info txq = { .dev = dev };
++	struct xdp_buff xdp;
++	int i, nframes = 0;
++
++	for (i = 0; i < n; i++) {
++		struct xdp_frame *xdpf = frames[i];
++		u32 act;
++		int err;
++
++		xdp_convert_frame_to_buff(xdpf, &xdp);
++		xdp.txq = &txq;
++
++		act = bpf_prog_run_xdp(xdp_prog, &xdp);
++		switch (act) {
++		case XDP_PASS:
++			err = xdp_update_frame_from_buff(&xdp, xdpf);
++			if (unlikely(err < 0))
++				xdp_return_frame_rx_napi(xdpf);
++			else
++				frames[nframes++] = xdpf;
++			break;
++		default:
++			bpf_warn_invalid_xdp_action(act);
++			fallthrough;
++		case XDP_ABORTED:
++			trace_xdp_exception(dev, xdp_prog, act);
++			fallthrough;
++		case XDP_DROP:
++			xdp_return_frame_rx_napi(xdpf);
++			break;
++		}
++	}
++	return nframes; /* sent frames count */
++}
++
+ static void bq_xmit_all(struct xdp_dev_bulk_queue *bq, u32 flags)
+ {
+ 	struct net_device *dev = bq->dev;
+-	int sent = 0, err = 0;
++	int sent = 0, drops = 0, err = 0;
++	unsigned int cnt = bq->count;
++	int to_send = cnt;
+ 	int i;
+ 
+-	if (unlikely(!bq->count))
++	if (unlikely(!cnt))
+ 		return;
+ 
+-	for (i = 0; i < bq->count; i++) {
++	for (i = 0; i < cnt; i++) {
+ 		struct xdp_frame *xdpf = bq->q[i];
+ 
+ 		prefetch(xdpf);
+ 	}
+ 
+-	sent = dev->netdev_ops->ndo_xdp_xmit(dev, bq->count, bq->q, flags);
++	if (bq->xdp_prog) {
++		to_send = dev_map_bpf_prog_run(bq->xdp_prog, bq->q, cnt, dev);
++		if (!to_send)
++			goto out;
++
++		drops = cnt - to_send;
++	}
++
++	sent = dev->netdev_ops->ndo_xdp_xmit(dev, to_send, bq->q, flags);
+ 	if (sent < 0) {
+ 		/* If ndo_xdp_xmit fails with an errno, no frames have
+ 		 * been xmit'ed.
+@@ -353,13 +403,13 @@ static void bq_xmit_all(struct xdp_dev_bulk_queue *bq, u32 flags)
+ 	/* If not all frames have been transmitted, it is our
+ 	 * responsibility to free them
+ 	 */
+-	for (i = sent; unlikely(i < bq->count); i++)
++	for (i = sent; unlikely(i < to_send); i++)
+ 		xdp_return_frame_rx_napi(bq->q[i]);
+ 
+-	trace_xdp_devmap_xmit(bq->dev_rx, dev, sent, bq->count - sent, err);
+-	bq->dev_rx = NULL;
++out:
++	drops = cnt - sent;
+ 	bq->count = 0;
+-	__list_del_clearprev(&bq->flush_node);
++	trace_xdp_devmap_xmit(bq->dev_rx, dev, sent, drops, err);
+ }
+ 
+ /* __dev_flush is called from xdp_do_flush() which _must_ be signaled
+@@ -377,8 +427,12 @@ void __dev_flush(void)
+ 	struct list_head *flush_list = this_cpu_ptr(&dev_flush_list);
+ 	struct xdp_dev_bulk_queue *bq, *tmp;
+ 
+-	list_for_each_entry_safe(bq, tmp, flush_list, flush_node)
++	list_for_each_entry_safe(bq, tmp, flush_list, flush_node) {
+ 		bq_xmit_all(bq, XDP_XMIT_FLUSH);
++		bq->dev_rx = NULL;
++		bq->xdp_prog = NULL;
++		__list_del_clearprev(&bq->flush_node);
++	}
+ }
+ 
+ /* rcu_read_lock (from syscall and BPF contexts) ensures that if a delete and/or
+@@ -401,7 +455,7 @@ static void *__dev_map_lookup_elem(struct bpf_map *map, u32 key)
+  * Thus, safe percpu variable access.
+  */
+ static void bq_enqueue(struct net_device *dev, struct xdp_frame *xdpf,
+-		       struct net_device *dev_rx)
++		       struct net_device *dev_rx, struct bpf_prog *xdp_prog)
+ {
+ 	struct list_head *flush_list = this_cpu_ptr(&dev_flush_list);
+ 	struct xdp_dev_bulk_queue *bq = this_cpu_ptr(dev->xdp_bulkq);
+@@ -412,18 +466,22 @@ static void bq_enqueue(struct net_device *dev, struct xdp_frame *xdpf,
+ 	/* Ingress dev_rx will be the same for all xdp_frame's in
+ 	 * bulk_queue, because bq stored per-CPU and must be flushed
+ 	 * from net_device drivers NAPI func end.
++	 *
++	 * Do the same with xdp_prog and flush_list since these fields
++	 * are only ever modified together.
+ 	 */
+-	if (!bq->dev_rx)
++	if (!bq->dev_rx) {
+ 		bq->dev_rx = dev_rx;
++		bq->xdp_prog = xdp_prog;
++		list_add(&bq->flush_node, flush_list);
++	}
+ 
+ 	bq->q[bq->count++] = xdpf;
+-
+-	if (!bq->flush_node.prev)
+-		list_add(&bq->flush_node, flush_list);
+ }
+ 
+ static inline int __xdp_enqueue(struct net_device *dev, struct xdp_buff *xdp,
+-			       struct net_device *dev_rx)
++				struct net_device *dev_rx,
++				struct bpf_prog *xdp_prog)
+ {
+ 	struct xdp_frame *xdpf;
+ 	int err;
+@@ -439,42 +497,14 @@ static inline int __xdp_enqueue(struct net_device *dev, struct xdp_buff *xdp,
+ 	if (unlikely(!xdpf))
+ 		return -EOVERFLOW;
+ 
+-	bq_enqueue(dev, xdpf, dev_rx);
++	bq_enqueue(dev, xdpf, dev_rx, xdp_prog);
+ 	return 0;
+ }
+ 
+-static struct xdp_buff *dev_map_run_prog(struct net_device *dev,
+-					 struct xdp_buff *xdp,
+-					 struct bpf_prog *xdp_prog)
+-{
+-	struct xdp_txq_info txq = { .dev = dev };
+-	u32 act;
+-
+-	xdp_set_data_meta_invalid(xdp);
+-	xdp->txq = &txq;
+-
+-	act = bpf_prog_run_xdp(xdp_prog, xdp);
+-	switch (act) {
+-	case XDP_PASS:
+-		return xdp;
+-	case XDP_DROP:
+-		break;
+-	default:
+-		bpf_warn_invalid_xdp_action(act);
+-		fallthrough;
+-	case XDP_ABORTED:
+-		trace_xdp_exception(dev, xdp_prog, act);
+-		break;
+-	}
+-
+-	xdp_return_buff(xdp);
+-	return NULL;
+-}
+-
+ int dev_xdp_enqueue(struct net_device *dev, struct xdp_buff *xdp,
+ 		    struct net_device *dev_rx)
+ {
+-	return __xdp_enqueue(dev, xdp, dev_rx);
++	return __xdp_enqueue(dev, xdp, dev_rx, NULL);
+ }
+ 
+ int dev_map_enqueue(struct bpf_dtab_netdev *dst, struct xdp_buff *xdp,
+@@ -482,12 +512,7 @@ int dev_map_enqueue(struct bpf_dtab_netdev *dst, struct xdp_buff *xdp,
+ {
+ 	struct net_device *dev = dst->dev;
+ 
+-	if (dst->xdp_prog) {
+-		xdp = dev_map_run_prog(dev, xdp, dst->xdp_prog);
+-		if (!xdp)
+-			return 0;
+-	}
+-	return __xdp_enqueue(dev, xdp, dev_rx);
++	return __xdp_enqueue(dev, xdp, dev_rx, dst->xdp_prog);
+ }
+ 
+ int dev_map_generic_redirect(struct bpf_dtab_netdev *dst, struct sk_buff *skb,
 -- 
 2.26.3
 
