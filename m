@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E147F368A9F
-	for <lists+netdev@lfdr.de>; Fri, 23 Apr 2021 04:09:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E9667368AA5
+	for <lists+netdev@lfdr.de>; Fri, 23 Apr 2021 04:09:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240431AbhDWBtF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 22 Apr 2021 21:49:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44668 "EHLO
+        id S240297AbhDWBtQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 22 Apr 2021 21:49:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44680 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240298AbhDWBso (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 22 Apr 2021 21:48:44 -0400
-Received: from mail-ed1-x536.google.com (mail-ed1-x536.google.com [IPv6:2a00:1450:4864:20::536])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E6AB1C061346;
-        Thu, 22 Apr 2021 18:48:03 -0700 (PDT)
-Received: by mail-ed1-x536.google.com with SMTP id y3so19423484eds.5;
-        Thu, 22 Apr 2021 18:48:03 -0700 (PDT)
+        with ESMTP id S240322AbhDWBss (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 22 Apr 2021 21:48:48 -0400
+Received: from mail-ed1-x535.google.com (mail-ed1-x535.google.com [IPv6:2a00:1450:4864:20::535])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6ADB1C06134A;
+        Thu, 22 Apr 2021 18:48:05 -0700 (PDT)
+Received: by mail-ed1-x535.google.com with SMTP id g17so55027461edm.6;
+        Thu, 22 Apr 2021 18:48:05 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=uhLbsqsD1UeBHl9g3+cRO5/yYo+Kk02FCDPrTgf7heY=;
-        b=gfOqBa4VU57XUrhMExIO4kzxF0q76b9VjVo5c0m9+3PkoQG4lW/dfPOWOMxXoEG4Rl
-         rLRjMrt6YoMr/UGZRkfSzs/ZIXRsYnjTvRGnnpI8uvs8M94nXTbgZFljDdxb9aVENmyV
-         GzUOnZ20++UKybTLVQLpt4L7b8jmc96L5L1sYISGZMTewEn+q+htKqfpAsXxEfraH53x
-         dm+6+v/iXdpgBhKBfW0irqG4FdAbPmyfxL4JoPYAxdY5j+42xI08KOliMSlii7gNGeq+
-         l5lNcrnNsybIKSCPENm2Pir4M+Bx0mRe92fE/vLHk9xRMnfpwSjiXtQwe+eC4NUSilpw
-         CVFQ==
+        bh=sSWmtFvTcUAZu/Zb+36JfrIL3vEfr0W+ZYt4KTD5sQM=;
+        b=S7VkY6eDOfAseD9WyrX1cyhew8QjBP+pKNWaQTg4fPmLL2YhXW5UzZn/fzGAval254
+         zlu23OTvPXXWTavEWDwPqqBD+ybqrwL2jsa+cM3g/PLYnIy0uo5krmlc8fppEX5CrnY4
+         6hF8sdAnzbqiJKKyDGkks9fH0SmFlck+M1rv5ZpgblCPQqOLohGqkTT1heVIiPjetJyz
+         9E1ixKvUPZuj8P7mPKOd3tZdxiD7bW2bsvZekavwE5AOl6OQDH91HkYzl+bQLSL3TzD+
+         GjpahMj/K+O55w7gQyLrjt1kFcDpiqDz6dknntH7awbP5OK11DgpoXBWxkYPzdoMtHuw
+         /jWw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=uhLbsqsD1UeBHl9g3+cRO5/yYo+Kk02FCDPrTgf7heY=;
-        b=mSBFWAwfhnNtXqHOJMbYoiJp8FUmYqzcC0Ejw7c8zgk2oI+6h3qWBIqx6kxfNQaBIc
-         fAvxzHTcODXQCtKZahRTl9AIHzWGHY2/uzQ1jeEHiv0A3HXkViNO7vH9qr5HwhkbME8F
-         nYkRoQDy5xOnXCSCiJco3+cgyZ4rnmqo8JC686QnYS9UBHIr341YOSa+zdiP35RTKeF7
-         2rSWUw0YrNrN9lV0D6iOjaEk7dzYEfgjP2s47UmrJPGpU9CUsABrJW53dFPFZURX1FKU
-         ZGfKYV3rcMHlL/bXzTrhmNTgi0lGK+mPrWt0sEJfZItfU1fiIDktYk/H+jAKtEdEIHY9
-         eucQ==
-X-Gm-Message-State: AOAM531NkeHSu0vMCC1OHArduuwCevd/ZEC85XAX0eG05h+TmgnlAr9b
-        38ogBycwl68DugNKbCVrxYI=
-X-Google-Smtp-Source: ABdhPJxvpvfxgIEe8vQvP3vgLGG6GwZ6QXsujtBXl3GyinOBxHQ5gjTHTmgXbjMd9/t4ESV7dEbBXw==
-X-Received: by 2002:a05:6402:5189:: with SMTP id q9mr1574997edd.168.1619142482566;
-        Thu, 22 Apr 2021 18:48:02 -0700 (PDT)
+        bh=sSWmtFvTcUAZu/Zb+36JfrIL3vEfr0W+ZYt4KTD5sQM=;
+        b=q+BNs4sTj9T0MFgeFLqPnsq+PY4RBu+gtt4piFkkF+aKemCp30D3wkwwfkBnCh3zf6
+         idX1/MsJB8Pqj4JJnM/VMgEKT1GYo3eK4tpYDu18F3W8RGvb6SbVE4kSIcfBHcZjvmq3
+         sa43a3CYCr2vT8EyLccC2XnjXPPhjI/6jAi+XqsoqUVUGvL7EwPDnzNDmN79hXXw3EcX
+         zAvAKwsSjBE810t2INvmjjwfZEYqOn/JoyqIfW/m+1xofiN4dW5HixxAhz3q2AVm5+Aw
+         BvFvoh/yULl9DrgMUdBsBp7oTJuNqS0uYedaR4gX0qxxz7w6uQ5f9KfxwNZ5sqlF9AyT
+         xZEg==
+X-Gm-Message-State: AOAM532K3HL5WChUl02s4JCG6+daAVKtsMeyltMxaesEUAK6n5ow14N7
+        ioeWXFb9m0q1rd1arypacPg=
+X-Google-Smtp-Source: ABdhPJyT+DAXNLhDhs/FyopZmzjpTUBhfWFz2AEKPioUQPtd8d0sow/raI2BMAcdJd8pSOUcXdZsQA==
+X-Received: by 2002:aa7:d78a:: with SMTP id s10mr1571068edq.310.1619142484127;
+        Thu, 22 Apr 2021 18:48:04 -0700 (PDT)
 Received: from Ansuel-xps.localdomain (93-35-189-2.ip56.fastwebnet.it. [93.35.189.2])
-        by smtp.googlemail.com with ESMTPSA id t4sm3408635edd.6.2021.04.22.18.48.01
+        by smtp.googlemail.com with ESMTPSA id t4sm3408635edd.6.2021.04.22.18.48.03
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 22 Apr 2021 18:48:02 -0700 (PDT)
+        Thu, 22 Apr 2021 18:48:03 -0700 (PDT)
 From:   Ansuel Smith <ansuelsmth@gmail.com>
 To:     Florian Fainelli <f.fainelli@gmail.com>
 Cc:     Ansuel Smith <ansuelsmth@gmail.com>, Andrew Lunn <andrew@lunn.ch>,
@@ -58,9 +58,9 @@ Cc:     Ansuel Smith <ansuelsmth@gmail.com>, Andrew Lunn <andrew@lunn.ch>,
         Heiner Kallweit <hkallweit1@gmail.com>,
         Russell King <linux@armlinux.org.uk>, netdev@vger.kernel.org,
         devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH 07/14] drivers: net: dsa: qca8k: limit priority tweak to qca8337 switch
-Date:   Fri, 23 Apr 2021 03:47:33 +0200
-Message-Id: <20210423014741.11858-8-ansuelsmth@gmail.com>
+Subject: [PATCH 08/14] drivers: net: dsa: qca8k: add GLOBAL_FC settings needed for qca8327
+Date:   Fri, 23 Apr 2021 03:47:34 +0200
+Message-Id: <20210423014741.11858-9-ansuelsmth@gmail.com>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20210423014741.11858-1-ansuelsmth@gmail.com>
 References: <20210423014741.11858-1-ansuelsmth@gmail.com>
@@ -70,137 +70,52 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The packet priority tweak and the rx delay is specific to qca8337.
-Limit this changes to qca8337 as now we also support 8327 switch.
+Switch qca8327 needs special settings for the GLOBAL_FC_THRES regs.
 
 Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
 ---
- drivers/net/dsa/qca8k.c | 84 +++++++++++++++++++++++------------------
- 1 file changed, 48 insertions(+), 36 deletions(-)
+ drivers/net/dsa/qca8k.c | 10 ++++++++++
+ drivers/net/dsa/qca8k.h |  6 ++++++
+ 2 files changed, 16 insertions(+)
 
 diff --git a/drivers/net/dsa/qca8k.c b/drivers/net/dsa/qca8k.c
-index ca12394c2ff7..19bb3754d9ec 100644
+index 19bb3754d9ec..d469620e9344 100644
 --- a/drivers/net/dsa/qca8k.c
 +++ b/drivers/net/dsa/qca8k.c
-@@ -700,9 +700,13 @@ static int
- qca8k_setup(struct dsa_switch *ds)
- {
- 	struct qca8k_priv *priv = (struct qca8k_priv *)ds->priv;
-+	const struct qca8k_match_data *data;
- 	int ret, i;
- 	u32 mask;
- 
-+	/* get the switches ID from the compatible */
-+	data = of_device_get_match_data(priv->dev);
-+
- 	/* Make sure that port 0 is the cpu port */
- 	if (!dsa_is_cpu_port(ds, 0)) {
- 		pr_err("port 0 is not the CPU port\n");
-@@ -790,41 +794,43 @@ qca8k_setup(struct dsa_switch *ds)
- 	 * To fix this the original code has some specific priority values
- 	 * suggested by the QCA switch team.
- 	 */
--	for (i = 0; i < QCA8K_NUM_PORTS; i++) {
--		switch (i) {
--		/* The 2 CPU port and port 5 requires some different
--		 * priority than any other ports.
--		 */
--		case 0:
--		case 5:
--		case 6:
--			mask = QCA8K_PORT_HOL_CTRL0_EG_PRI0(0x3) |
--				QCA8K_PORT_HOL_CTRL0_EG_PRI1(0x4) |
--				QCA8K_PORT_HOL_CTRL0_EG_PRI2(0x4) |
--				QCA8K_PORT_HOL_CTRL0_EG_PRI3(0x4) |
--				QCA8K_PORT_HOL_CTRL0_EG_PRI4(0x6) |
--				QCA8K_PORT_HOL_CTRL0_EG_PRI5(0x8) |
--				QCA8K_PORT_HOL_CTRL0_EG_PORT(0x1e);
--			break;
--		default:
--			mask = QCA8K_PORT_HOL_CTRL0_EG_PRI0(0x3) |
--				QCA8K_PORT_HOL_CTRL0_EG_PRI1(0x4) |
--				QCA8K_PORT_HOL_CTRL0_EG_PRI2(0x6) |
--				QCA8K_PORT_HOL_CTRL0_EG_PRI3(0x8) |
--				QCA8K_PORT_HOL_CTRL0_EG_PORT(0x19);
-+	if (data->id == QCA8K_ID_QCA8337) {
-+		for (i = 0; i < QCA8K_NUM_PORTS; i++) {
-+			switch (i) {
-+			/* The 2 CPU port and port 5 requires some different
-+			 * priority than any other ports.
-+			 */
-+			case 0:
-+			case 5:
-+			case 6:
-+				mask = QCA8K_PORT_HOL_CTRL0_EG_PRI0(0x3) |
-+					QCA8K_PORT_HOL_CTRL0_EG_PRI1(0x4) |
-+					QCA8K_PORT_HOL_CTRL0_EG_PRI2(0x4) |
-+					QCA8K_PORT_HOL_CTRL0_EG_PRI3(0x4) |
-+					QCA8K_PORT_HOL_CTRL0_EG_PRI4(0x6) |
-+					QCA8K_PORT_HOL_CTRL0_EG_PRI5(0x8) |
-+					QCA8K_PORT_HOL_CTRL0_EG_PORT(0x1e);
-+				break;
-+			default:
-+				mask = QCA8K_PORT_HOL_CTRL0_EG_PRI0(0x3) |
-+					QCA8K_PORT_HOL_CTRL0_EG_PRI1(0x4) |
-+					QCA8K_PORT_HOL_CTRL0_EG_PRI2(0x6) |
-+					QCA8K_PORT_HOL_CTRL0_EG_PRI3(0x8) |
-+					QCA8K_PORT_HOL_CTRL0_EG_PORT(0x19);
-+			}
-+			qca8k_write(priv, QCA8K_REG_PORT_HOL_CTRL0(i), mask);
-+
-+			mask = QCA8K_PORT_HOL_CTRL1_ING(0x6) |
-+			QCA8K_PORT_HOL_CTRL1_EG_PRI_BUF_EN |
-+			QCA8K_PORT_HOL_CTRL1_EG_PORT_BUF_EN |
-+			QCA8K_PORT_HOL_CTRL1_WRED_EN;
-+			qca8k_rmw(priv, QCA8K_REG_PORT_HOL_CTRL1(i),
-+				  QCA8K_PORT_HOL_CTRL1_ING_BUF |
-+				  QCA8K_PORT_HOL_CTRL1_EG_PRI_BUF_EN |
-+				  QCA8K_PORT_HOL_CTRL1_EG_PORT_BUF_EN |
-+				  QCA8K_PORT_HOL_CTRL1_WRED_EN,
-+				  mask);
+@@ -833,6 +833,16 @@ qca8k_setup(struct dsa_switch *ds)
  		}
--		qca8k_write(priv, QCA8K_REG_PORT_HOL_CTRL0(i), mask);
--
--		mask = QCA8K_PORT_HOL_CTRL1_ING(0x6) |
--		       QCA8K_PORT_HOL_CTRL1_EG_PRI_BUF_EN |
--		       QCA8K_PORT_HOL_CTRL1_EG_PORT_BUF_EN |
--		       QCA8K_PORT_HOL_CTRL1_WRED_EN;
--		qca8k_rmw(priv, QCA8K_REG_PORT_HOL_CTRL1(i),
--			  QCA8K_PORT_HOL_CTRL1_ING_BUF |
--			  QCA8K_PORT_HOL_CTRL1_EG_PRI_BUF_EN |
--			  QCA8K_PORT_HOL_CTRL1_EG_PORT_BUF_EN |
--			  QCA8K_PORT_HOL_CTRL1_WRED_EN,
--			  mask);
  	}
  
- 	/* Flush the FDB table */
-@@ -840,9 +846,13 @@ static void
- qca8k_phylink_mac_config(struct dsa_switch *ds, int port, unsigned int mode,
- 			 const struct phylink_link_state *state)
- {
-+	const struct qca8k_match_data *data;
- 	struct qca8k_priv *priv = ds->priv;
- 	u32 reg, val;
- 
-+	/* get the switches ID from the compatible */
-+	data = of_device_get_match_data(priv->dev);
++	/* Special GLOBAL_FC_THRESH value are needed for ar8327 switch */
++	if (data->id == QCA8K_ID_QCA8327) {
++		mask = QCA8K_GLOBAL_FC_GOL_XON_THRES(288) |
++		       QCA8K_GLOBAL_FC_GOL_XOFF_THRES(496);
++		qca8k_rmw(priv, QCA8K_REG_GLOBAL_FC_THRESH,
++			  QCA8K_GLOBAL_FC_GOL_XON_THRES_S |
++			  QCA8K_GLOBAL_FC_GOL_XOFF_THRES_S,
++			  mask);
++	}
 +
- 	switch (port) {
- 	case 0: /* 1st CPU port */
- 		if (state->interface != PHY_INTERFACE_MODE_RGMII &&
-@@ -895,8 +905,10 @@ qca8k_phylink_mac_config(struct dsa_switch *ds, int port, unsigned int mode,
- 			    QCA8K_PORT_PAD_RGMII_RX_DELAY(2) |
- 			    QCA8K_PORT_PAD_RGMII_TX_DELAY_EN |
- 			    QCA8K_PORT_PAD_RGMII_RX_DELAY_EN);
--		qca8k_write(priv, QCA8K_REG_PORT5_PAD_CTRL,
--			    QCA8K_PORT_PAD_RGMII_RX_DELAY_EN);
-+		/* QCA8337 requires to set rgmii rx delay */
-+		if (data->id == QCA8K_ID_QCA8337)
-+			qca8k_write(priv, QCA8K_REG_PORT5_PAD_CTRL,
-+				    QCA8K_PORT_PAD_RGMII_RX_DELAY_EN);
- 		break;
- 	case PHY_INTERFACE_MODE_SGMII:
- 	case PHY_INTERFACE_MODE_1000BASEX:
+ 	/* Flush the FDB table */
+ 	qca8k_fdb_flush(priv);
+ 
+diff --git a/drivers/net/dsa/qca8k.h b/drivers/net/dsa/qca8k.h
+index d94129371a1c..308d8410fdb6 100644
+--- a/drivers/net/dsa/qca8k.h
++++ b/drivers/net/dsa/qca8k.h
+@@ -165,6 +165,12 @@
+ #define   QCA8K_PORT_LOOKUP_STATE			GENMASK(18, 16)
+ #define   QCA8K_PORT_LOOKUP_LEARN			BIT(20)
+ 
++#define QCA8K_REG_GLOBAL_FC_THRESH			0x800
++#define   QCA8K_GLOBAL_FC_GOL_XON_THRES(x)		((x) << 16)
++#define   QCA8K_GLOBAL_FC_GOL_XON_THRES_S		GENMASK(24, 16)
++#define   QCA8K_GLOBAL_FC_GOL_XOFF_THRES(x)		((x) << 0)
++#define   QCA8K_GLOBAL_FC_GOL_XOFF_THRES_S		GENMASK(8, 0)
++
+ #define QCA8K_REG_PORT_HOL_CTRL0(_i)			(0x970 + (_i) * 0x8)
+ #define   QCA8K_PORT_HOL_CTRL0_EG_PRI0_BUF		GENMASK(3, 0)
+ #define   QCA8K_PORT_HOL_CTRL0_EG_PRI0(x)		((x) << 0)
 -- 
 2.30.2
 
