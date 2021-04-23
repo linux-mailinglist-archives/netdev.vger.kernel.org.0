@@ -2,179 +2,278 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7A1CE3698BE
-	for <lists+netdev@lfdr.de>; Fri, 23 Apr 2021 19:58:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 841503698C8
+	for <lists+netdev@lfdr.de>; Fri, 23 Apr 2021 20:00:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232244AbhDWR65 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 23 Apr 2021 13:58:57 -0400
-Received: from mail-ot1-f48.google.com ([209.85.210.48]:34437 "EHLO
-        mail-ot1-f48.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231735AbhDWR6z (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 23 Apr 2021 13:58:55 -0400
-Received: by mail-ot1-f48.google.com with SMTP id k14-20020a9d7dce0000b02901b866632f29so46010978otn.1;
-        Fri, 23 Apr 2021 10:58:19 -0700 (PDT)
+        id S232569AbhDWSAr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 23 Apr 2021 14:00:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60996 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231400AbhDWSAq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 23 Apr 2021 14:00:46 -0400
+Received: from mail-yb1-xb32.google.com (mail-yb1-xb32.google.com [IPv6:2607:f8b0:4864:20::b32])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EDA60C061574;
+        Fri, 23 Apr 2021 11:00:09 -0700 (PDT)
+Received: by mail-yb1-xb32.google.com with SMTP id v72so35893802ybe.11;
+        Fri, 23 Apr 2021 11:00:09 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=5XY99hVS9yq4YHWv0NyUo7LsqeDBpS85jO1WJl2092g=;
+        b=Q476CmVkPihaBow0uIezkhDQfIqRZFneGFaKsRz39fFxgR1Fd0ExVEXcJhqwHLy6XP
+         cV3hrpntjCs4qZbKnTUXvrdYXjquSt2ZbaxA54K/N88R/vYU+PXOg7wrm9UESG3APTHY
+         2zlV/MqdLtQs1xM/sD7UyrAm5teopI8zGLGNAp53hiUDUh8n5K3wHgtzruzDKNKOSZkS
+         SMS2aZOUIK9Sxj/NDn5rba8aFZnPkYWNINU/EtoADJ+h94+sGISR5YyB3BmqL+ci/Fsa
+         Hu1zRASOpk37cebsCUrD5Vu5b+KPznI+9Ys4aaIMP8v3l87HCvLp7FiXbh/rzEyNkPPP
+         HSIg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=4aci9N8Ge0QjDAS/mJvl8Fe/7qt/Qhc8QTVGcATfEqk=;
-        b=uVFnP4H7uGi+vWDjBQZW5JKHa45GaxcX3aCpcoltv76dLtjr23yd8v0n20EGbOPadX
-         IoL+czB6yiOXVV5U8RFJTqMKzu9oT/4yfKpTQPQV1eqssbg0lJ6PWqIv3mtOoit3A+lb
-         AL8acVkyuRi2TZvZ3roRL8LLfz1k+50UWLSZlhJIhCNbJVxGQ0q3Of5WAoRFXISTJRfZ
-         2ooqRTpysz0zbfHg6BYqWYzqtfuW9Zz5J5euHfEUyOYgmnM2KQahANvPoJH6RNKn4OGa
-         76ci4779A7fJYCmuvhLxTUJ7Oe5DgvXpS0yXx1tKXCaDCiAy8YX6XNLldZ9ekNOsHeN7
-         ItHw==
-X-Gm-Message-State: AOAM5323HKNzi5B8uDcicQNOO4Ulu8ftlsCu6epsebpy2Wa7WFiDFrht
-        Ho9YT5J+w7o2umTwuuc1fg==
-X-Google-Smtp-Source: ABdhPJwGlPGXFac7obioUMhI2eKiG1eoOtQY8QFtFfiWTOAW8tV34BnJOzEKa8OdLJSdzLfsHojKYA==
-X-Received: by 2002:a05:6830:120a:: with SMTP id r10mr4430301otp.47.1619200698667;
-        Fri, 23 Apr 2021 10:58:18 -0700 (PDT)
-Received: from robh.at.kernel.org (24-155-109-49.dyn.grandenetworks.net. [24.155.109.49])
-        by smtp.gmail.com with ESMTPSA id o64sm1357310oif.50.2021.04.23.10.58.17
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 23 Apr 2021 10:58:18 -0700 (PDT)
-Received: (nullmailer pid 1338644 invoked by uid 1000);
-        Fri, 23 Apr 2021 17:58:16 -0000
-Date:   Fri, 23 Apr 2021 12:58:16 -0500
-From:   Rob Herring <robh@kernel.org>
-To:     Linus Walleij <linus.walleij@linaro.org>
-Cc:     netdev@vger.kernel.org, "David S . Miller" <davem@davemloft.net>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Zoltan HERPAI <wigyori@uid0.hu>,
-        Raylynn Knight <rayknight@me.com>, devicetree@vger.kernel.org
-Subject: Re: [PATCH 1/3 net-next v3] net: ethernet: ixp4xx: Add DT bindings
-Message-ID: <20210423175816.GA1332201@robh.at.kernel.org>
-References: <20210423082208.2244803-1-linus.walleij@linaro.org>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=5XY99hVS9yq4YHWv0NyUo7LsqeDBpS85jO1WJl2092g=;
+        b=XwD7zxjUErr+50B1MZYszB+/JmcDFKepEx+Qo2wG6c0lArc+5glU2l2tnQECMCLD2G
+         mvH8P0daJ3rX44ZSdmrTc3yXeKw0WAvmfj2crTw9YOgWyTpl6igR3/OKUVDrEfegb0rM
+         FImFE7dRzgOioxL/bs3gFJ4icc1QgX5hgfxx+UTRFkBHw4YmKM7DrybDrOtRxzPgBgx5
+         DlLfL1NPHaC6dnPGlkEVFmjCBp1rbvzSx4XGbi0W84EARf70vJ3aeTyR8fuPn7KXDkzh
+         G9ZCrYt06gTGAUO6lengyJExxOWSZCEceqWfht0GPQfnXHpq9AEp4dqt/xMM062BoFnE
+         /y8w==
+X-Gm-Message-State: AOAM532ZwImmqAFYPzTUD4RY5w7evMWxV/xRnh6fdZ9IACGbwxvAEseK
+        68UWSM+/Ni/h+2qyHKTchKVeJndpTGwLY70HEPY=
+X-Google-Smtp-Source: ABdhPJyzElvI7RLtyIMkDldepWKdYAhxTmBUIz0Yh8D31khrpK/qgPuGbFTpdG/pHphs8WZuIiqC7pEan6xnICgSpj8=
+X-Received: by 2002:a05:6902:1144:: with SMTP id p4mr7022759ybu.510.1619200809234;
+ Fri, 23 Apr 2021 11:00:09 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210423082208.2244803-1-linus.walleij@linaro.org>
+References: <20210416202404.3443623-1-andrii@kernel.org> <20210416202404.3443623-16-andrii@kernel.org>
+ <3947e6ff-0b73-995e-630f-4a1252f8694b@fb.com> <CAEf4BzasVszkBCA0Ra2NsU+0ixoR65khF2E6h7CG_P3FOyamFQ@mail.gmail.com>
+ <b49042fc-0af8-11f4-4316-39b0d6f0e6e4@fb.com> <CAEf4BzbP+trfjW-_AwcLsmS=79jqXWoRbQJnSH2xkE=MOxN2Gg@mail.gmail.com>
+ <94f367e9-24f0-5ba6-eb8d-2951dee4219a@fb.com>
+In-Reply-To: <94f367e9-24f0-5ba6-eb8d-2951dee4219a@fb.com>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Fri, 23 Apr 2021 10:59:58 -0700
+Message-ID: <CAEf4BzaH4Sr5HenM1+-j4d=r=juw8pacPpXZM3YBxJu2S_uPwg@mail.gmail.com>
+Subject: Re: [PATCH v2 bpf-next 15/17] selftests/bpf: add function linking selftest
+To:     Yonghong Song <yhs@fb.com>
+Cc:     Andrii Nakryiko <andrii@kernel.org>, bpf <bpf@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@fb.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Kernel Team <kernel-team@fb.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Apr 23, 2021 at 10:22:06AM +0200, Linus Walleij wrote:
-> This adds device tree bindings for the IXP4xx ethernet
-> controller with optional MDIO bridge.
-> 
-> Cc: Zoltan HERPAI <wigyori@uid0.hu>
-> Cc: Raylynn Knight <rayknight@me.com>
-> Cc: devicetree@vger.kernel.org
-> Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
-> ---
-> ChangeLog v2->v3:
-> - Designate phy nodes with ethernet-phy@
-> - Include phy-mode in the schema
-> ChangeLog v1->v2:
-> - Add schema for the (optional) embedded MDIO bus inside
->   the ethernet controller in an "mdio" node instead of just
->   letting the code randomly populate and present it to
->   the operating system.
-> - Reference the standard schemas for ethernet controller and
->   MDIO buses.
-> - Add intel,npe to indentify the NPE unit used with each
->   ethernet adapter.
-> ---
->  .../bindings/net/intel,ixp4xx-ethernet.yaml   | 82 +++++++++++++++++++
->  1 file changed, 82 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/net/intel,ixp4xx-ethernet.yaml
-> 
-> diff --git a/Documentation/devicetree/bindings/net/intel,ixp4xx-ethernet.yaml b/Documentation/devicetree/bindings/net/intel,ixp4xx-ethernet.yaml
-> new file mode 100644
-> index 000000000000..978e7f236f3a
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/net/intel,ixp4xx-ethernet.yaml
-> @@ -0,0 +1,82 @@
-> +# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
-> +# Copyright 2018 Linaro Ltd.
-> +%YAML 1.2
-> +---
-> +$id: "http://devicetree.org/schemas/net/intel,ixp4xx-ethernet.yaml#"
-> +$schema: "http://devicetree.org/meta-schemas/core.yaml#"
-> +
-> +title: Intel IXP4xx ethernet
-> +
-> +allOf:
-> +  - $ref: "ethernet-controller.yaml#"
-> +
-> +maintainers:
-> +  - Linus Walleij <linus.walleij@linaro.org>
-> +
-> +description: |
-> +  The Intel IXP4xx ethernet makes use of the IXP4xx NPE (Network
-> +  Processing Engine) and the IXP4xx Queue Mangager to process
+On Fri, Apr 23, 2021 at 10:58 AM Yonghong Song <yhs@fb.com> wrote:
+>
+>
+>
+> On 4/23/21 10:55 AM, Andrii Nakryiko wrote:
+> > On Fri, Apr 23, 2021 at 10:35 AM Yonghong Song <yhs@fb.com> wrote:
+> >>
+> >>
+> >>
+> >> On 4/23/21 10:18 AM, Andrii Nakryiko wrote:
+> >>> On Thu, Apr 22, 2021 at 5:50 PM Yonghong Song <yhs@fb.com> wrote:
+> >>>>
+> >>>>
+> >>>>
+> >>>> On 4/16/21 1:24 PM, Andrii Nakryiko wrote:
+> >>>>> Add selftest validating various aspects of statically linking functions:
+> >>>>>      - no conflicts and correct resolution for name-conflicting static funcs;
+> >>>>>      - correct resolution of extern functions;
+> >>>>>      - correct handling of weak functions, both resolution itself and libbpf's
+> >>>>>        handling of unused weak function that "lost" (it leaves gaps in code with
+> >>>>>        no ELF symbols);
+> >>>>>      - correct handling of hidden visibility to turn global function into
+> >>>>>        "static" for the purpose of BPF verification.
+> >>>>>
+> >>>>> Signed-off-by: Andrii Nakryiko <andrii@kernel.org>
+> >>>>
+> >>>> Ack with a small nit below.
+> >>>>
+> >>>> Acked-by: Yonghong Song <yhs@fb.com>
+> >>>>
+> >>>>> ---
+> >>>>>     tools/testing/selftests/bpf/Makefile          |  3 +-
+> >>>>>     .../selftests/bpf/prog_tests/linked_funcs.c   | 42 +++++++++++
+> >>>>>     .../selftests/bpf/progs/linked_funcs1.c       | 73 +++++++++++++++++++
+> >>>>>     .../selftests/bpf/progs/linked_funcs2.c       | 73 +++++++++++++++++++
+> >>>>>     4 files changed, 190 insertions(+), 1 deletion(-)
+> >>>>>     create mode 100644 tools/testing/selftests/bpf/prog_tests/linked_funcs.c
+> >>>>>     create mode 100644 tools/testing/selftests/bpf/progs/linked_funcs1.c
+> >>>>>     create mode 100644 tools/testing/selftests/bpf/progs/linked_funcs2.c
+> >>>>>
+> >>>>> diff --git a/tools/testing/selftests/bpf/Makefile b/tools/testing/selftests/bpf/Makefile
+> >>>>> index 666b462c1218..427ccfec1a6a 100644
+> >>>>> --- a/tools/testing/selftests/bpf/Makefile
+> >>>>> +++ b/tools/testing/selftests/bpf/Makefile
+> >>>>> @@ -308,9 +308,10 @@ endef
+> >>>>>
+> >>>>>     SKEL_BLACKLIST := btf__% test_pinning_invalid.c test_sk_assign.c
+> >>>>>
+> >>>>> -LINKED_SKELS := test_static_linked.skel.h
+> >>>>> +LINKED_SKELS := test_static_linked.skel.h linked_funcs.skel.h
+> >>>>>
+> >>>>>     test_static_linked.skel.h-deps := test_static_linked1.o test_static_linked2.o
+> >>>>> +linked_funcs.skel.h-deps := linked_funcs1.o linked_funcs2.o
+> >>>>>
+> >>>>>     LINKED_BPF_SRCS := $(patsubst %.o,%.c,$(foreach skel,$(LINKED_SKELS),$($(skel)-deps)))
+> >>>>>
+> >>>>> diff --git a/tools/testing/selftests/bpf/prog_tests/linked_funcs.c b/tools/testing/selftests/bpf/prog_tests/linked_funcs.c
+> >>>>> new file mode 100644
+> >>>>> index 000000000000..03bf8ef131ce
+> >>>>> --- /dev/null
+> >>>>> +++ b/tools/testing/selftests/bpf/prog_tests/linked_funcs.c
+> >>>>> @@ -0,0 +1,42 @@
+> >>>>> +// SPDX-License-Identifier: GPL-2.0
+> >>>>> +/* Copyright (c) 2021 Facebook */
+> >>>>> +
+> >>>>> +#include <test_progs.h>
+> >>>>> +#include <sys/syscall.h>
+> >>>>> +#include "linked_funcs.skel.h"
+> >>>>> +
+> >>>>> +void test_linked_funcs(void)
+> >>>>> +{
+> >>>>> +     int err;
+> >>>>> +     struct linked_funcs *skel;
+> >>>>> +
+> >>>>> +     skel = linked_funcs__open();
+> >>>>> +     if (!ASSERT_OK_PTR(skel, "skel_open"))
+> >>>>> +             return;
+> >>>>> +
+> >>>>> +     skel->rodata->my_tid = syscall(SYS_gettid);
+> >>>>> +     skel->rodata->syscall_id = SYS_getpgid;
+> >>>>> +
+> >>>>> +     err = linked_funcs__load(skel);
+> >>>>> +     if (!ASSERT_OK(err, "skel_load"))
+> >>>>> +             goto cleanup;
+> >>>>> +
+> >>>>> +     err = linked_funcs__attach(skel);
+> >>>>> +     if (!ASSERT_OK(err, "skel_attach"))
+> >>>>> +             goto cleanup;
+> >>>>> +
+> >>>>> +     /* trigger */
+> >>>>> +     syscall(SYS_getpgid);
+> >>>>> +
+> >>>>> +     ASSERT_EQ(skel->bss->output_val1, 2000 + 2000, "output_val1");
+> >>>>> +     ASSERT_EQ(skel->bss->output_ctx1, SYS_getpgid, "output_ctx1");
+> >>>>> +     ASSERT_EQ(skel->bss->output_weak1, 42, "output_weak1");
+> >>>>> +
+> >>>>> +     ASSERT_EQ(skel->bss->output_val2, 2 * 1000 + 2 * (2 * 1000), "output_val2");
+> >>>>> +     ASSERT_EQ(skel->bss->output_ctx2, SYS_getpgid, "output_ctx2");
+> >>>>> +     /* output_weak2 should never be updated */
+> >>>>> +     ASSERT_EQ(skel->bss->output_weak2, 0, "output_weak2");
+> >>>>> +
+> >>>>> +cleanup:
+> >>>>> +     linked_funcs__destroy(skel);
+> >>>>> +}
+> >>>>> diff --git a/tools/testing/selftests/bpf/progs/linked_funcs1.c b/tools/testing/selftests/bpf/progs/linked_funcs1.c
+> >>>>> new file mode 100644
+> >>>>> index 000000000000..cc621d4e4d82
+> >>>>> --- /dev/null
+> >>>>> +++ b/tools/testing/selftests/bpf/progs/linked_funcs1.c
+> >>>>> @@ -0,0 +1,73 @@
+> >>>>> +// SPDX-License-Identifier: GPL-2.0
+> >>>>> +/* Copyright (c) 2021 Facebook */
+> >>>>> +
+> >>>>> +#include "vmlinux.h"
+> >>>>> +#include <bpf/bpf_helpers.h>
+> >>>>> +#include <bpf/bpf_tracing.h>
+> >>>>> +
+> >>>>> +/* weak and shared between two files */
+> >>>>> +const volatile int my_tid __weak = 0;
+> >>>>> +const volatile long syscall_id __weak = 0;
+> >>>>
+> >>>> Since the new compiler (llvm13) is recommended for this patch set.
+> >>>> We can simplify the above two definition with
+> >>>>      int my_tid __weak;
+> >>>>      long syscall_id __weak;
+> >>>> The same for the other file.
+> >>>
+> >>> This is not about old vs new compilers. I wanted to use .rodata
+> >>> variables, but I'll switch to .bss, no problem.
+> >>
+> >> I see. You can actually hone one "const volatile ing my_tid __weak = 0"
+> >> and another "long syscall_id __weak". This way, you will be able to
+> >> test both .rodata and .bss section.
+> >
+> > I wonder if you meant to have one my_tid __weak in .bss and another
+> > my_tid __weak in .rodata. Or just my_tid in .bss and syscall_id in
+> > .rodata?
+> >
+> > If the former (mixing ELF sections across definitions of the same
+> > symbol), then it's disallowed right now. libbpf will error out on
+> > mismatched sections. I tested this with normal compilation, it does
+> > work and the final section is the section of the winner.
+> >
+> > But I think that's quite confusing, actually, so I'm going to leave it
+> > disallowed for now. E.g., if one file expects a read-write variable
+> > and another expects that same variable to be read-only, and the winner
+> > ends up being read-only one, then the file expecting read-write will
+> > essentially have incorrect code (and will be rejected by BPF verifier,
+> > if anything attempts to write). So I think it's better to reject it at
+> > the linking time.
+> >
+> > But I'll do one (my_tid) as .bss, and another (syscall_id) as .rodata.
+>
+> I mean this one. Permitting the same variable in both .bss and .rodata
+> sections is never a good practice.
 
-typo
+Ok, cool, that's what we do right now. I wonder why it is allowed by
+user-space linkers, it seems dangerous.
 
-> +  the ethernet frames. It can optionally contain an MDIO bus to
-> +  talk to PHYs.
-> +
-> +properties:
-> +  compatible:
-> +    const: intel,ixp4xx-ethernet
-> +
-> +  reg:
-> +    maxItems: 1
-> +    description: Ethernet MMIO address range
-> +
-> +  queue-rx:
-> +    $ref: '/schemas/types.yaml#/definitions/phandle-array'
-> +    maxItems: 1
-> +    description: phandle to the RX queue on the NPE
-> +
-> +  queue-txready:
-> +    $ref: '/schemas/types.yaml#/definitions/phandle-array'
-> +    maxItems: 1
-> +    description: phandle to the TX READY queue on the NPE
-> +
-> +  phy-mode: true
-> +
-> +  phy-handle: true
-> +
-> +  intel,npe:
-> +    $ref: /schemas/types.yaml#/definitions/uint32
-> +    enum: [0, 1, 2, 3]
-> +    description: which NPE (Network Processing Engine) this ethernet
-> +      instance is using
-
-Is there a node for the NPE? If so, make this a phandle.
-
-> +
-> +  mdio:
-> +    type: object
-> +    $ref: "mdio.yaml#"
-> +    description: optional node for embedded MDIO controller
-> +
-> +required:
-> +  - compatible
-> +  - reg
-> +  - queue-rx
-> +  - queue-txready
-> +
-> +additionalProperties: false
-> +
-> +examples:
-> +  - |
-> +    ethernet@c8009000 {
-> +      compatible = "intel,ixp4xx-ethernet";
-> +      reg = <0xc8009000 0x1000>;
-> +      status = "disabled";
-> +      queue-rx = <&qmgr 3>;
-> +      queue-txready = <&qmgr 20>;
-> +      intel,npe = <1>;
-> +      phy-mode = "rgmii";
-> +      phy-handle = <&phy1>;
-> +
-> +      mdio {
-> +        #address-cells = <1>;
-> +        #size-cells = <0>;
-> +        phy1: ethernet-phy@1 {
-> +          reg = <1>;
-> +        };
-> +      };
-> +    };
-> -- 
-> 2.29.2
-> 
+>
+> >
+> >>
+> >>>
+> >>>>
+> >>>> But I am also okay with the current form
+> >>>> to *satisfy* llvm10 some people may still use.
+> >>>>
+> >>>>> +
+> >>>>> +int output_val1 = 0;
+> >>>>> +int output_ctx1 = 0;
+> >>>>> +int output_weak1 = 0;
+> >>>>> +
+> >>>>> +/* same "subprog" name in all files, but it's ok because they all are static */
+> >>>>> +static __noinline int subprog(int x)
+> >>>>> +{
+> >>>>> +     /* but different formula */
+> >>>>> +     return x * 1;
+> >>>>> +}
+> >>>>> +
+> >>>>> +/* Global functions can't be void */
+> >>>>> +int set_output_val1(int x)
+> >>>>> +{
+> >>>>> +     output_val1 = x + subprog(x);
+> >>>>> +     return x;
+> >>>>> +}
+> >>>>> +
+> >>>>> +/* This function can't be verified as global, as it assumes raw_tp/sys_enter
+> >>>>> + * context and accesses syscall id (second argument). So we mark it as
+> >>>>> + * __hidden, so that libbpf will mark it as static in the final object file,
+> >>>>> + * right before verifying it in the kernel.
+> >>>>> + *
+> >>>>> + * But we don't mark it as __hidden here, rather at extern site. __hidden is
+> >>>>> + * "contaminating" visibility, so it will get propagated from either extern or
+> >>>>> + * actual definition (including from the losing __weak definition).
+> >>>>> + */
+> >>>>> +void set_output_ctx1(__u64 *ctx)
+> >>>>> +{
+> >>>>> +     output_ctx1 = ctx[1]; /* long id, same as in BPF_PROG below */
+> >>>>> +}
+> >>>>> +
+> >>>>> +/* this weak instance should win because it's the first one */
+> >>>>> +__weak int set_output_weak(int x)
+> >>>>> +{
+> >>>>> +     output_weak1 = x;
+> >>>>> +     return x;
+> >>>>> +}
+> >>>>> +
+> >>>>> +extern int set_output_val2(int x);
+> >>>>> +
+> >>>>> +/* here we'll force set_output_ctx2() to be __hidden in the final obj file */
+> >>>>> +__hidden extern void set_output_ctx2(__u64 *ctx);
+> >>>>> +
+> >>>> [...]
