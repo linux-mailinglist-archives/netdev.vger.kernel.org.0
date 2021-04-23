@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 73AF8368AB6
-	for <lists+netdev@lfdr.de>; Fri, 23 Apr 2021 04:09:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B3711368AB1
+	for <lists+netdev@lfdr.de>; Fri, 23 Apr 2021 04:09:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240299AbhDWBtm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 22 Apr 2021 21:49:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44666 "EHLO
+        id S240692AbhDWBth (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 22 Apr 2021 21:49:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44780 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240296AbhDWBtC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 22 Apr 2021 21:49:02 -0400
-Received: from mail-ej1-x634.google.com (mail-ej1-x634.google.com [IPv6:2a00:1450:4864:20::634])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 88582C06134E;
-        Thu, 22 Apr 2021 18:48:08 -0700 (PDT)
-Received: by mail-ej1-x634.google.com with SMTP id sd23so62961764ejb.12;
-        Thu, 22 Apr 2021 18:48:08 -0700 (PDT)
+        with ESMTP id S240403AbhDWBtA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 22 Apr 2021 21:49:00 -0400
+Received: from mail-ej1-x62d.google.com (mail-ej1-x62d.google.com [IPv6:2a00:1450:4864:20::62d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 07B66C06138C;
+        Thu, 22 Apr 2021 18:48:10 -0700 (PDT)
+Received: by mail-ej1-x62d.google.com with SMTP id n2so71582816ejy.7;
+        Thu, 22 Apr 2021 18:48:09 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=45/h3np2XdosMRdyfP66Wi+ituKDQEn8bMrDLXmNq0g=;
-        b=rc7ijcAbQO9NO1vJmxagYi6OfZ2wRxmgu9EnIDU5lIdVpVmrTnG/0xCDOf73b66D3K
-         UplIdazdm4iZuO4AG2bqOcS0mnSbIGrLIepm+pHar+3dA+64wfZ5UrleelORW1ixKCle
-         GZ0anjRgXTHjjUXylpbdju61u4krYfli7DNDvmqwM7qB/TdOS4EHOb5ip69wbgP+QTMs
-         ubb6619BbyivziZcPKZg1c/2Qbv26/4Oc1gzMsJXnBS5ecNHA4AECzl/WUXwTzuOPBYn
-         2J6p+Gxv2Lu0UjZnZ/Bc5VWHcwubV9pD9es+aDYv2pFmlD8t1WNTWRys70qvI8Klot3k
-         ydBw==
+        bh=56PL0a5zXu4rcg3HLsKZZ+epvuKuacuxdJ5tVhsmylI=;
+        b=BqZZKKo1hpCxnIbzNFdSp+JpbJurHmDiX2ajEiy5gHkbeTWqo3Au0CAvO/YtkZ+Olw
+         Icw7O0rBzbPPOAEJUGsg2bQmhngSLEwDqLQ3kcBTKMGMmP0/OB3tu4ss35N+wXsubJFl
+         NwNbKhb3dr/+GDSg497I35s3PYRIBi/D1FsXeZgTBfGbiobrrg6/NVs7kCCYmknVnrnX
+         O0cp627DUc6S+PAj2uuQzgFWkc/p5cjTi6iT0wNRsMndA5o6F/Pd/sr5Kni5Jn9wsisP
+         P3qLda360N8KO76Jaf8PtutaUKLsreVGqmdXgBj2I1nGNYUwIlEaIFwMmy95mWUaBxka
+         9Iog==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=45/h3np2XdosMRdyfP66Wi+ituKDQEn8bMrDLXmNq0g=;
-        b=Op9l9YDzTZa/1eKzf8qhe1H5S/Z8VUFCxidLaZ1H0YOtY2UStDUgUEcyIUbu5YDTBy
-         IO8OHdEebp+hKumts8Fhej++7CKvVwrUt0T7rEgSXPw9baw4Bzf4HQ1W8ezRgakFZI/G
-         +J+8F+W3W0SBNc+aZtUyycl1PKdr8y7SAJFC/z5cR1ijeqT24uJ88RBP3trvvMS/yIbn
-         v19Hu+06kzRFkbOHoFetyQOUFhNzWG5WHTfZ6O24/cXWNa2JW5Rk8muG+cYo/FZwV463
-         KShXQIADfzzfD0fRqVcqY7of86n4TGs8WUlKp5Erl5jdc+SuvDZC+ltjk7xUPoM5kSYY
-         zKOA==
-X-Gm-Message-State: AOAM531XXVZNgs2fj5E38WEHXqstUjoHxtHeJyLG6+clXJHSHsB7Nlch
-        1jKDxlfbS7JfxB9OS7zIito=
-X-Google-Smtp-Source: ABdhPJx/rZege13ZdgX3GLanO7xwOucQ9ydaRXt0nu7Ywjrz+rDvEBeotHwCmoIjii9TpAw4d+kpqQ==
-X-Received: by 2002:a17:906:c34d:: with SMTP id ci13mr1541319ejb.430.1619142487237;
-        Thu, 22 Apr 2021 18:48:07 -0700 (PDT)
+        bh=56PL0a5zXu4rcg3HLsKZZ+epvuKuacuxdJ5tVhsmylI=;
+        b=f0MWA46c+is9g5PjacWYKl5M6Kr+5q+maca42LsrcOBvbLVYVGWos9sb8bSwYz9+W/
+         +BeqHm+bmz3f9Rmf9nAhlH0pY9CPZM4YrwSySzCK6rwyzKB9JXbZRjiK0RonIhMzmki5
+         gLse7dnPfiiEl/BU1+mTnvlb3F4rPa0e0p1tC5KbhwlO7CkGMA38Jybit1jMtEPWgxKh
+         rO5WkEa5zVA7UW3dOU/d2cJFC39XA1QIq5uK09RC7c25UYcDdvHf+jrJQb6Ccn/t8jwg
+         O4syyQxHUwN/n/zjoBpZ3VHlR0ggLSsvMHuNfKm/TvDjeKIXReT6JzxKvonVqGewsawS
+         A/PQ==
+X-Gm-Message-State: AOAM5336UBLLggSh1uV+lFrGHy7ICTKYIIy09D2siktCM7KQEnwdoRuk
+        QhFZpI/4H/Rq46viV4d1TxY=
+X-Google-Smtp-Source: ABdhPJzfZqD/Zxc+bJLESHf2GJLG7qiUI1wsupPLBD/+ZmEgQudFNmr6VMSwrpRKt4NkNX23CKd4Qw==
+X-Received: by 2002:a17:907:3f22:: with SMTP id hq34mr1525547ejc.535.1619142488732;
+        Thu, 22 Apr 2021 18:48:08 -0700 (PDT)
 Received: from Ansuel-xps.localdomain (93-35-189-2.ip56.fastwebnet.it. [93.35.189.2])
-        by smtp.googlemail.com with ESMTPSA id t4sm3408635edd.6.2021.04.22.18.48.06
+        by smtp.googlemail.com with ESMTPSA id t4sm3408635edd.6.2021.04.22.18.48.07
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 22 Apr 2021 18:48:06 -0700 (PDT)
+        Thu, 22 Apr 2021 18:48:08 -0700 (PDT)
 From:   Ansuel Smith <ansuelsmth@gmail.com>
 To:     Florian Fainelli <f.fainelli@gmail.com>
 Cc:     Ansuel Smith <ansuelsmth@gmail.com>, Andrew Lunn <andrew@lunn.ch>,
@@ -58,9 +58,9 @@ Cc:     Ansuel Smith <ansuelsmth@gmail.com>, Andrew Lunn <andrew@lunn.ch>,
         Heiner Kallweit <hkallweit1@gmail.com>,
         Russell King <linux@armlinux.org.uk>, netdev@vger.kernel.org,
         devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH 10/14] drivers: net: dsa: qca8k: add support for specific QCA access function
-Date:   Fri, 23 Apr 2021 03:47:36 +0200
-Message-Id: <20210423014741.11858-11-ansuelsmth@gmail.com>
+Subject: [PATCH 11/14] drivers: net: dsa: qca8k: apply switch revision fix
+Date:   Fri, 23 Apr 2021 03:47:37 +0200
+Message-Id: <20210423014741.11858-12-ansuelsmth@gmail.com>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20210423014741.11858-1-ansuelsmth@gmail.com>
 References: <20210423014741.11858-1-ansuelsmth@gmail.com>
@@ -70,91 +70,54 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Some qca8k switch revision require some special dbg value to be set
-based on the revision number. Add required function to write and read in
-these specific registers.
+qca8k require special debug value based on the switch revision.
 
 Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
 ---
- drivers/net/dsa/qca8k.c | 51 +++++++++++++++++++++++++++++++++++++++++
- drivers/net/dsa/qca8k.h |  2 ++
- 2 files changed, 53 insertions(+)
+ drivers/net/dsa/qca8k.c | 23 +++++++++++++++++++++--
+ 1 file changed, 21 insertions(+), 2 deletions(-)
 
 diff --git a/drivers/net/dsa/qca8k.c b/drivers/net/dsa/qca8k.c
-index 20b507a35191..193c269d8ed3 100644
+index 193c269d8ed3..12d2c97d1417 100644
 --- a/drivers/net/dsa/qca8k.c
 +++ b/drivers/net/dsa/qca8k.c
-@@ -69,6 +69,57 @@ static const struct qca8k_mib_desc ar8327_mib[] = {
- 	MIB_DESC(1, 0xa4, "TxLateCol"),
- };
+@@ -909,7 +909,7 @@ qca8k_phylink_mac_config(struct dsa_switch *ds, int port, unsigned int mode,
+ {
+ 	const struct qca8k_match_data *data;
+ 	struct qca8k_priv *priv = ds->priv;
+-	u32 reg, val;
++	u32 phy, reg, val;
  
-+/* QCA specific MII registers access function */
-+void qca8k_phy_dbg_read(struct qca8k_priv *priv, int phy_addr, u16 dbg_addr, u16 *dbg_data)
-+{
-+	struct mii_bus *bus = priv->bus;
+ 	/* get the switches ID from the compatible */
+ 	data = of_device_get_match_data(priv->dev);
+@@ -928,7 +928,26 @@ qca8k_phylink_mac_config(struct dsa_switch *ds, int port, unsigned int mode,
+ 	case 3:
+ 	case 4:
+ 	case 5:
+-		/* Internal PHY, nothing to do */
++		/* Internal PHY, apply revision fixup */
++		phy = qca8k_port_to_phy(port) % PHY_MAX_ADDR;
++		switch (priv->switch_revision) {
++		case 1:
++			/* For 100M waveform */
++			qca8k_phy_dbg_write(priv, phy, 0, 0x02ea);
++			/* Turn on Gigabit clock */
++			qca8k_phy_dbg_write(priv, phy, 0x3d, 0x68a0);
++			break;
 +
-+	mutex_lock_nested(&bus->mdio_lock, MDIO_MUTEX_NESTED);
-+	bus->write(bus, phy_addr, MII_ATH_DBG_ADDR, dbg_addr);
-+	*dbg_data = bus->read(bus, phy_addr, MII_ATH_DBG_DATA);
-+	mutex_unlock(&bus->mdio_lock);
-+}
-+
-+void qca8k_phy_dbg_write(struct qca8k_priv *priv, int phy_addr, u16 dbg_addr, u16 dbg_data)
-+{
-+	struct mii_bus *bus = priv->bus;
-+
-+	mutex_lock_nested(&bus->mdio_lock, MDIO_MUTEX_NESTED);
-+	bus->write(bus, phy_addr, MII_ATH_DBG_ADDR, dbg_addr);
-+	bus->write(bus, phy_addr, MII_ATH_DBG_DATA, dbg_data);
-+	mutex_unlock(&bus->mdio_lock);
-+}
-+
-+static inline void qca8k_phy_mmd_prep(struct mii_bus *bus, int phy_addr, u16 addr, u16 reg)
-+{
-+	bus->write(bus, phy_addr, MII_ATH_MMD_ADDR, addr);
-+	bus->write(bus, phy_addr, MII_ATH_MMD_DATA, reg);
-+	bus->write(bus, phy_addr, MII_ATH_MMD_ADDR, addr | 0x4000);
-+}
-+
-+void qca8k_phy_mmd_write(struct qca8k_priv *priv, int phy_addr, u16 addr, u16 reg, u16 data)
-+{
-+	struct mii_bus *bus = priv->bus;
-+
-+	mutex_lock_nested(&bus->mdio_lock, MDIO_MUTEX_NESTED);
-+	qca8k_phy_mmd_prep(bus, phy_addr, addr, reg);
-+	bus->write(bus, phy_addr, MII_ATH_MMD_DATA, data);
-+	mutex_unlock(&bus->mdio_lock);
-+}
-+
-+u16 qca8k_phy_mmd_read(struct qca8k_priv *priv, int phy_addr, u16 addr, u16 reg)
-+{
-+	struct mii_bus *bus = priv->bus;
-+	u16 data;
-+
-+	mutex_lock_nested(&bus->mdio_lock, MDIO_MUTEX_NESTED);
-+	qca8k_phy_mmd_prep(bus, phy_addr, addr, reg);
-+	data = bus->read(bus, phy_addr, MII_ATH_MMD_DATA);
-+	mutex_unlock(&bus->mdio_lock);
-+
-+	return data;
-+}
-+
- /* The 32bit switch registers are accessed indirectly. To achieve this we need
-  * to set the page of the register. Track the last page that was set to reduce
-  * mdio writes
-diff --git a/drivers/net/dsa/qca8k.h b/drivers/net/dsa/qca8k.h
-index dbd54d870a30..de00aa74868b 100644
---- a/drivers/net/dsa/qca8k.h
-+++ b/drivers/net/dsa/qca8k.h
-@@ -215,6 +215,8 @@
- /* QCA specific MII registers */
- #define MII_ATH_MMD_ADDR				0x0d
- #define MII_ATH_MMD_DATA				0x0e
-+#define MII_ATH_DBG_ADDR				0x1d
-+#define MII_ATH_DBG_DATA				0x1e
- 
- enum {
- 	QCA8K_PORT_SPEED_10M = 0,
++		case 2:
++			qca8k_phy_mmd_write(priv, phy, 0x7, 0x3c, 0x0);
++			fallthrough;
++		case 4:
++			qca8k_phy_mmd_write(priv, phy, 0x3, 0x800d, 0x803f);
++			qca8k_phy_dbg_write(priv, phy, 0x3d, 0x6860);
++			qca8k_phy_dbg_write(priv, phy, 0x5, 0x2c46);
++			qca8k_phy_dbg_write(priv, phy, 0x3c, 0x6000);
++			break;
++		}
+ 		return;
+ 	case 6: /* 2nd CPU port / external PHY */
+ 		if (state->interface != PHY_INTERFACE_MODE_RGMII &&
 -- 
 2.30.2
 
