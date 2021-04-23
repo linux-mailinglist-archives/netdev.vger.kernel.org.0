@@ -2,185 +2,154 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7043F368DD2
-	for <lists+netdev@lfdr.de>; Fri, 23 Apr 2021 09:19:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 59DB9368DDD
+	for <lists+netdev@lfdr.de>; Fri, 23 Apr 2021 09:23:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241031AbhDWHTu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 23 Apr 2021 03:19:50 -0400
-Received: from pegase1.c-s.fr ([93.17.236.30]:18001 "EHLO pegase1.c-s.fr"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229935AbhDWHTs (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 23 Apr 2021 03:19:48 -0400
-Received: from localhost (mailhub1-int [192.168.12.234])
-        by localhost (Postfix) with ESMTP id 4FRQdS46lvz9tynk;
-        Fri, 23 Apr 2021 09:19:08 +0200 (CEST)
-X-Virus-Scanned: Debian amavisd-new at c-s.fr
-Received: from pegase1.c-s.fr ([192.168.12.234])
-        by localhost (pegase1.c-s.fr [192.168.12.234]) (amavisd-new, port 10024)
-        with ESMTP id 0oQPQKgd4ski; Fri, 23 Apr 2021 09:19:08 +0200 (CEST)
-Received: from messagerie.si.c-s.fr (messagerie.si.c-s.fr [192.168.25.192])
-        by pegase1.c-s.fr (Postfix) with ESMTP id 4FRQdS3HSvz9tynf;
-        Fri, 23 Apr 2021 09:19:08 +0200 (CEST)
-Received: from localhost (localhost [127.0.0.1])
-        by messagerie.si.c-s.fr (Postfix) with ESMTP id C25808B798;
-        Fri, 23 Apr 2021 09:19:09 +0200 (CEST)
-X-Virus-Scanned: amavisd-new at c-s.fr
-Received: from messagerie.si.c-s.fr ([127.0.0.1])
-        by localhost (messagerie.si.c-s.fr [127.0.0.1]) (amavisd-new, port 10023)
-        with ESMTP id QeOANgzeLlXn; Fri, 23 Apr 2021 09:19:09 +0200 (CEST)
-Received: from [192.168.4.90] (unknown [192.168.4.90])
-        by messagerie.si.c-s.fr (Postfix) with ESMTP id D2C2E8B765;
-        Fri, 23 Apr 2021 09:19:06 +0200 (CEST)
-Subject: Re: [PATCH bpf-next 1/2] bpf: Remove bpf_jit_enable=2 debugging mode
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     Quentin Monnet <quentin@isovalent.com>,
-        Ian Rogers <irogers@google.com>,
-        Song Liu <songliubraving@fb.com>,
-        "open list:DOCUMENTATION" <linux-doc@vger.kernel.org>,
-        Zi Shen Lim <zlim.lnx@gmail.com>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Paul Mackerras <paulus@samba.org>,
-        Sandipan Das <sandipan@linux.ibm.com>,
-        "H. Peter Anvin" <hpa@zytor.com>, sparclinux@vger.kernel.org,
-        Shubham Bansal <illusionist.neo@gmail.com>,
-        Mahesh Bandewar <maheshb@google.com>,
-        Will Deacon <will@kernel.org>,
-        Nicolas Dichtel <nicolas.dichtel@6wind.com>,
-        linux-s390 <linux-s390@vger.kernel.org>,
-        Ilya Leoshkevich <iii@linux.ibm.com>, paulburton@kernel.org,
-        Jonathan Corbet <corbet@lwn.net>,
-        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
-        Masahiro Yamada <masahiroy@kernel.org>,
-        X86 ML <x86@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        linux-riscv <linux-riscv@lists.infradead.org>,
-        Christian Borntraeger <borntraeger@de.ibm.com>,
-        Ingo Molnar <mingo@redhat.com>,
-        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        "Naveen N . Rao" <naveen.n.rao@linux.ibm.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Tobias Klauser <tklauser@distanz.ch>,
-        linux-mips@vger.kernel.org, grantseltzer@gmail.com,
-        Xi Wang <xi.wang@gmail.com>, Albert Ou <aou@eecs.berkeley.edu>,
-        Kees Cook <keescook@chromium.org>,
-        Vasily Gorbik <gor@linux.ibm.com>,
-        Luke Nelson <luke.r.nels@gmail.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Heiko Carstens <hca@linux.ibm.com>,
-        ppc-dev <linuxppc-dev@lists.ozlabs.org>,
-        KP Singh <kpsingh@kernel.org>, iecedge@gmail.com,
-        Simon Horman <horms@verge.net.au>,
-        Borislav Petkov <bp@alien8.de>,
-        Alexander Viro <viro@zeniv.linux.org.uk>,
-        Yonghong Song <yhs@fb.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Dmitry Vyukov <dvyukov@google.com>, tsbogend@alpha.franken.de,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        Network Development <netdev@vger.kernel.org>,
-        David Ahern <dsahern@kernel.org>,
-        Wang YanQing <udknight@gmail.com>,
-        Martin KaFai Lau <kafai@fb.com>,
-        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn@kernel.org>,
-        Palmer Dabbelt <palmer@dabbelt.com>, bpf <bpf@vger.kernel.org>,
-        Jianlin Lv <Jianlin.Lv@arm.com>,
-        "David S. Miller" <davem@davemloft.net>
-References: <20210415093250.3391257-1-Jianlin.Lv@arm.com>
- <9c4a78d2-f73c-832a-e6e2-4b4daa729e07@iogearbox.net>
- <d3949501-8f7d-57c4-b3fe-bcc3b24c09d8@isovalent.com>
- <CAADnVQJ2oHbYfgY9jqM_JMxUsoZxaNrxKSVFYfgCXuHVpDehpQ@mail.gmail.com>
- <0dea05ba-9467-0d84-4515-b8766f60318e@csgroup.eu>
- <CAADnVQ+oQT6C7Qv7P5TV-x7im54omKoCYYKtYhcnhb1Uv3LPMQ@mail.gmail.com>
-From:   Christophe Leroy <christophe.leroy@csgroup.eu>
-Message-ID: <be132117-f267-5817-136d-e1aeb8409c2a@csgroup.eu>
-Date:   Fri, 23 Apr 2021 09:19:06 +0200
-User-Agent: Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.9.1
+        id S230191AbhDWHYU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 23 Apr 2021 03:24:20 -0400
+Received: from mail-bn7nam10on2077.outbound.protection.outlook.com ([40.107.92.77]:11105
+        "EHLO NAM10-BN7-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S229982AbhDWHYT (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 23 Apr 2021 03:24:19 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=PoGBCcKs+TXEwWynsZ+03VPKHC9MqPUWaaL7mFrq2yTXgM89DeMZOcMl3dYrz4E1bEZRoaqAoF8FN8dpBBnO7vu0y+7m8FJIHrr3AH/H3ONewrx6iSNrwGq1h6XvOuWp6rrj8YgSJvMMpgQAvi8KpCNHxI4rAUT6aGaZOIrOI/ToYwc43oruQjTxGlYbTwT1CgRR7sOP13jX8bNYrD1GCBYnnpOedZuinAx0WiMjGzJOkJEtvqpnw6KAgdidINsGHXQrn6vpkXD68fKKWUfnbh+XdOjWhq4agnoyGF9Vtd+KpxUKxRpMt/LSI2EM2WseFAfMM0SufHseb/pEboqQZg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=+YcUvIJGJNUkBGjr6A7EaeRVclhq/RQvyVNEyYDfT1M=;
+ b=Oh7XxW2HM/eTcEBai4zBifmVn/FVZ4Ji7slTFpdqm3ZwJuraOiN/VVRTNSHPUpKjHuTO7uzkXOPMJ4ZX+ODEfjrPo5FzCy3yO5vpFZ0xgeBVcjoC5q1AV0ILurW55s/OBUcdBIjzXZQxCDpOzUAkC2tuRF9kY7Xl1rO0lqRdVTqhm7gvLPvh5R5Te93UY6GTcdfEPV3aY5qEvJp0dj8xTN36iqCglYtRhgJKJjP2k9L58CSB4N8evy2nfJl9W2YGdmI4lpHV9/em+9ktPpVtLFKRLp1wN3El0JUrs+S+tvD5tbCyb+5nd5xvYOXacGIkuSJ3skPbECRApFkpyQgWww==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 216.228.112.35) smtp.rcpttodomain=lunn.ch smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=none sp=none pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=+YcUvIJGJNUkBGjr6A7EaeRVclhq/RQvyVNEyYDfT1M=;
+ b=RPNh+Fx7q+yBKTFKY5XMkNKwQyZU4MbFC5gwrvGa6ahJsgPBQUnPk0V1J/2e2tN+744LfR8xqIdAnuMLnBlNFh8LQFpmkfJs+NkvRymMYjspeECHT8QAz3ziNfwN8rPXb6vUtz9QZsYJdrR11Tdjg9buxfGZ4iUEWAWlfHiUKzo4Gn1s5Hk/7SxpCs5sw2vOsv5cQfZPpkgnAEqkzm1+3IJjRVaRe0GwzVkAV4ruNCBpb8cUEi6TWTfymm3O/Pqbvs1HjACWnBw1N1cmCEI/XxSrrg0lQyZHhl43NApETlIL2Lrh2ZiZFim1LjSVR09kG4fF+qRVg0ZVfSHNOEKRjw==
+Received: from DM5PR04CA0057.namprd04.prod.outlook.com (2603:10b6:3:ef::19) by
+ BY5PR12MB4998.namprd12.prod.outlook.com (2603:10b6:a03:1d4::11) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4065.21; Fri, 23 Apr
+ 2021 07:23:41 +0000
+Received: from DM6NAM11FT010.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:3:ef:cafe::7b) by DM5PR04CA0057.outlook.office365.com
+ (2603:10b6:3:ef::19) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4065.20 via Frontend
+ Transport; Fri, 23 Apr 2021 07:23:41 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.112.35)
+ smtp.mailfrom=nvidia.com; lunn.ch; dkim=none (message not signed)
+ header.d=none;lunn.ch; dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 216.228.112.35 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.112.35; helo=mail.nvidia.com;
+Received: from mail.nvidia.com (216.228.112.35) by
+ DM6NAM11FT010.mail.protection.outlook.com (10.13.172.222) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.20.4065.21 via Frontend Transport; Fri, 23 Apr 2021 07:23:41 +0000
+Received: from HQMAIL105.nvidia.com (172.20.187.12) by HQMAIL111.nvidia.com
+ (172.20.187.18) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Fri, 23 Apr
+ 2021 07:23:40 +0000
+Received: from HQMAIL105.nvidia.com (172.20.187.12) by HQMAIL105.nvidia.com
+ (172.20.187.12) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Fri, 23 Apr
+ 2021 07:23:40 +0000
+Received: from vdi.nvidia.com (172.20.145.6) by mail.nvidia.com
+ (172.20.187.12) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Fri, 23 Apr 2021 07:23:38 +0000
+From:   Moshe Shemesh <moshe@nvidia.com>
+To:     Michal Kubecek <mkubecek@suse.cz>, Andrew Lunn <andrew@lunn.ch>,
+        "Jakub Kicinski" <kuba@kernel.org>,
+        Don Bollinger <don@thebollingers.org>, <netdev@vger.kernel.org>
+CC:     Vladyslav Tarasiuk <vladyslavt@nvidia.com>,
+        Moshe Shemesh <moshe@nvidia.com>
+Subject: [PATCH ethtool-next 0/4] Extend module EEPROM API
+Date:   Fri, 23 Apr 2021 10:23:12 +0300
+Message-ID: <1619162596-23846-1-git-send-email-moshe@nvidia.com>
+X-Mailer: git-send-email 1.8.4.3
 MIME-Version: 1.0
-In-Reply-To: <CAADnVQ+oQT6C7Qv7P5TV-x7im54omKoCYYKtYhcnhb1Uv3LPMQ@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: fr
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: af8af40b-624c-472a-f030-08d90628b894
+X-MS-TrafficTypeDiagnostic: BY5PR12MB4998:
+X-Microsoft-Antispam-PRVS: <BY5PR12MB49980F30FB04C952D64F8412D4459@BY5PR12MB4998.namprd12.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:6108;
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: lWVfBDUaLc0b8unuOKzgBPSYP0MnDGAwErA5BVtBXBjpuDuxmuuXTkLXB++Ir6blveT+ilwRbMqWx+8qMYMv9ckg0Vq9mzM5fnRVuQsBXvh2NRc4YqDwXGKwc6KnaEOUapjNxHM8lJuHSfgAnc3AjnIHexTgEaOfASrqtK38b4LX2bgZCp/i2yJFfygGe6Q8zFIM6ZdnjpGrmu2qjbYdge06/p2Lb0iqqoQM+HqRTNsc/e4/X9AWlbteXepGO8LrZJTicHBQw8spWBZaQo975+dfY9zZrowh7sul8i4ZooK2xm0wPjFUqdj2c5E3SNFDY3hDnf6VgUwMYFiJBHEB9UCZOKb0b40AqZwYTKUXo2IplHw1W7oqLAzvggG+1zXtkq7nueJQvqGff/GF1BQu/sKu67ThMPl9iwT9tfVG4J53lW+wHDgcjNgfaU2zidnXvVJsOakf5FuOeKf5d7q3lUlJHY0pulkRGxKWeCOFvLftf+8yHDiiAn0JmlDjNPs83klG8y+3B+OSOZPPbVpYb6ygELspvsgF2ifaw7sHDHjTlL60zGy5Lf+E2OCIQHcyO9Hn9wGoGqGCgWm8MKn82Wa3emxGFmYGYbuVXiG0wujZl48oz5pzOn0F/XLAGAdo5tl2QsQCGe+DVg6zQbhlHYC4+ML7PBeZxYuKnd040yo=
+X-Forefront-Antispam-Report: CIP:216.228.112.35;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:schybrid04.nvidia.com;CAT:NONE;SFS:(4636009)(39860400002)(346002)(376002)(396003)(136003)(36840700001)(46966006)(36860700001)(7636003)(36906005)(82310400003)(82740400003)(107886003)(70206006)(478600001)(83380400001)(356005)(8676002)(70586007)(4326008)(36756003)(316002)(26005)(54906003)(86362001)(8936002)(2906002)(426003)(336012)(186003)(5660300002)(47076005)(2616005)(6666004)(7696005)(110136005);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 23 Apr 2021 07:23:41.3753
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: af8af40b-624c-472a-f030-08d90628b894
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.112.35];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource: DM6NAM11FT010.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BY5PR12MB4998
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Ethtool supports module EEPROM dumps via the `ethtool -m <dev>` command.
+But in current state its functionality is limited - offset and length
+parameters, which are used to specify a linear desired region of EEPROM
+data to dump, is not enough, considering emergence of complex module
+EEPROM layouts such as CMIS 4.0.
 
+Moreover, CMIS 4.0 extends the amount of pages that may be accessible by
+introducing another parameter for page addressing - banks.
+Besides, currently module EEPROM is represented as a chunk of
+concatenated pages, where lower 128 bytes of all pages, except page 00h,
+are omitted. Offset and length are used to address parts of this fake
+linear memory. But in practice drivers, which implement
+get_module_info() and get_module_eeprom() ethtool ops still calculate
+page number and set I2C address on their own.
 
-Le 20/04/2021 à 05:28, Alexei Starovoitov a écrit :
-> On Sat, Apr 17, 2021 at 1:16 AM Christophe Leroy
-> <christophe.leroy@csgroup.eu> wrote:
->>
->>
->>
->> Le 16/04/2021 à 01:49, Alexei Starovoitov a écrit :
->>> On Thu, Apr 15, 2021 at 8:41 AM Quentin Monnet <quentin@isovalent.com> wrote:
->>>>
->>>> 2021-04-15 16:37 UTC+0200 ~ Daniel Borkmann <daniel@iogearbox.net>
->>>>> On 4/15/21 11:32 AM, Jianlin Lv wrote:
->>>>>> For debugging JITs, dumping the JITed image to kernel log is discouraged,
->>>>>> "bpftool prog dump jited" is much better way to examine JITed dumps.
->>>>>> This patch get rid of the code related to bpf_jit_enable=2 mode and
->>>>>> update the proc handler of bpf_jit_enable, also added auxiliary
->>>>>> information to explain how to use bpf_jit_disasm tool after this change.
->>>>>>
->>>>>> Signed-off-by: Jianlin Lv <Jianlin.Lv@arm.com>
->>>>
->>>> Hello,
->>>>
->>>> For what it's worth, I have already seen people dump the JIT image in
->>>> kernel logs in Qemu VMs running with just a busybox, not for kernel
->>>> development, but in a context where buiding/using bpftool was not
->>>> possible.
->>>
->>> If building/using bpftool is not possible then majority of selftests won't
->>> be exercised. I don't think such environment is suitable for any kind
->>> of bpf development. Much so for JIT debugging.
->>> While bpf_jit_enable=2 is nothing but the debugging tool for JIT developers.
->>> I'd rather nuke that code instead of carrying it from kernel to kernel.
->>>
->>
->> When I implemented JIT for PPC32, it was extremely helpfull.
->>
->> As far as I understand, for the time being bpftool is not usable in my environment because it
->> doesn't support cross compilation when the target's endianess differs from the building host
->> endianess, see discussion at
->> https://lore.kernel.org/bpf/21e66a09-514f-f426-b9e2-13baab0b938b@csgroup.eu/
->>
->> That's right that selftests can't be exercised because they don't build.
->>
->> The question might be candid as I didn't investigate much about the replacement of "bpf_jit_enable=2
->> debugging mode" by bpftool, how do we use bpftool exactly for that ? Especially when using the BPF
->> test module ?
-> 
-> the kernel developers can add any amount of printk and dumps to debug
-> their code,
-> but such debugging aid should not be part of the production kernel.
-> That sysctl was two things at once: debugging tool for kernel devs and
-> introspection for users.
-> bpftool jit dump solves the 2nd part. It provides JIT introspection to users.
-> Debugging of the kernel can be done with any amount of auxiliary code
-> including calling print_hex_dump() during jiting.
-> 
+This series adds support in `ethtool -m` of dumping an arbitrary page
+specified by page number, bank number and I2C address. Implement netlink
+handler for `ethtool -m` in order to make such requests to the kernel
+and extend CLI by adding corresponding parameters.
+New command line format:
+ ethtool -m <dev> [hex on|off] [raw on|off] [offset N] [length N] [page N] [bank N] [i2c N]
 
-I finally managed to cross compile bpftool with libbpf, libopcodes, readline, ncurses, libcap, libz 
-and all needed stuff. Was not easy but I made it.
+Netlink infrastructure works on per-page basis and allows dumps of a
+single page at once. But in case user requests human-readable output,
+which currently may require more than one page, userspace can make such
+additional calls to kernel on demand and place pages in a linked list.
+It allows to get pages from cache on demand and pass them to refactored
+SFF decoders.
 
-Now, how do I use it ?
+Vladyslav Tarasiuk (4):
+  ethtool: Add netlink handler for getmodule (-m)
+  ethtool: Refactor human-readable module EEPROM output for new API
+  ethtool: Rename QSFP-DD identifiers to use CMIS 4.0
+  ethtool: Update manpages to reflect changes to getmodule (-m) command
 
-Let say I want to dump the jitted code generated from a call to 'tcpdump'. How do I do that with 
-'bpftool prog dump jited' ?
+ Makefile.am             |   3 +-
+ qsfp-dd.c => cmis4.c    | 220 +++++++++++---------
+ cmis4.h                 | 128 ++++++++++++
+ ethtool.8.in            |  14 ++
+ ethtool.c               |   4 +
+ internal.h              |  12 ++
+ list.h                  |  34 ++++
+ netlink/desc-ethtool.c  |  13 ++
+ netlink/extapi.h        |   2 +
+ netlink/module-eeprom.c | 438 ++++++++++++++++++++++++++++++++++++++++
+ qsfp-dd.h               | 125 ------------
+ qsfp.c                  | 129 +++++++-----
+ qsfp.h                  |  52 ++---
+ sff-common.c            |   3 +
+ sff-common.h            |   3 +-
+ 15 files changed, 876 insertions(+), 304 deletions(-)
+ rename qsfp-dd.c => cmis4.c (55%)
+ create mode 100644 cmis4.h
+ create mode 100644 list.h
+ create mode 100644 netlink/module-eeprom.c
+ delete mode 100644 qsfp-dd.h
 
-I thought by calling this line I would then get programs dumped in a way or another just like when 
-setting 'bpf_jit_enable=2', but calling that line just provides me some bpftool help text.
+-- 
+2.26.2
 
-By the way, I would be nice to have a kernel OPTION that selects all OPTIONS required for building 
-bpftool. Because you discover them one by one at every build failure. I had to had CONFIG_IPV6, 
-CONFIG_DEBUG_BTF, CONFIG_CGROUPS, ... If there could be an option like "Build a 'bpftool' ready 
-kernel" that selected all those, it would be great.
-
-Christophe
