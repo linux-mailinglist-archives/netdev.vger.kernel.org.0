@@ -2,127 +2,121 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A1B123690C5
-	for <lists+netdev@lfdr.de>; Fri, 23 Apr 2021 13:04:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8DB763690CE
+	for <lists+netdev@lfdr.de>; Fri, 23 Apr 2021 13:05:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229920AbhDWLFP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 23 Apr 2021 07:05:15 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:53208 "EHLO
+        id S242180AbhDWLGC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 23 Apr 2021 07:06:02 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:31103 "EHLO
         us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S229807AbhDWLFN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 23 Apr 2021 07:05:13 -0400
+        by vger.kernel.org with ESMTP id S230026AbhDWLF7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 23 Apr 2021 07:05:59 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1619175876;
+        s=mimecast20190719; t=1619175922;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=cDqRU4xoeQBq+o0x4/mB6P0WkqM1pYsz0fuPPw/7z8s=;
-        b=hxV6M7YQLW9SLnw0qhKanFnNScNzir6oAfGYnbDrr04GA+IbQp6FmfgUyd3eI24gc+F95u
-        4SRMYyOW+KgYKD2fznLRcEaucgmDKDQqz2nW42CDEFbN74NMFwDgS2t7uQTGNWsQO6ssFN
-        lj9rlWGL0KwT6KIxaMbrNix4hp4Cg7A=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-571-4IUDAQOzOgOBTwnbUgIRUw-1; Fri, 23 Apr 2021 07:04:35 -0400
-X-MC-Unique: 4IUDAQOzOgOBTwnbUgIRUw-1
-Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 90FF5817469;
-        Fri, 23 Apr 2021 11:04:33 +0000 (UTC)
-Received: from carbon (unknown [10.36.110.19])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 521D660BE5;
-        Fri, 23 Apr 2021 11:04:28 +0000 (UTC)
-Date:   Fri, 23 Apr 2021 13:04:27 +0200
-From:   Jesper Dangaard Brouer <brouer@redhat.com>
-To:     Magnus Karlsson <magnus.karlsson@gmail.com>
-Cc:     magnus.karlsson@intel.com, intel-wired-lan@lists.osuosl.org,
-        anthony.l.nguyen@intel.com, maciej.fijalkowski@intel.com,
-        netdev@vger.kernel.org, brouer@redhat.com
-Subject: Re: [PATCH intel-net] i40e: fix broken XDP support
-Message-ID: <20210423130427.1bbe4df2@carbon>
-In-Reply-To: <20210423095955.15207-1-magnus.karlsson@gmail.com>
-References: <20210423095955.15207-1-magnus.karlsson@gmail.com>
+         content-transfer-encoding:content-transfer-encoding;
+        bh=jr7f/c656B14iZH1W7iqJ5TVJAXFbRzcz+BEzN3sEdE=;
+        b=cMNx+9LHPEr8euShxVGrPsTz/+E5IDXZlDWkE7SEFn7q1FDzmkcilSBLj7J2R1sy9DmGO2
+        /py5mDiw58dvU8p8mPtHu7IMJepwuhZLz1UBP+pPUVThfQ3T7ufjzfSLkHGsXuzlLabyvD
+        GoBQzdqVwmAKHRVCI/OY+0dwt+f+ACQ=
+Received: from mail-ed1-f69.google.com (mail-ed1-f69.google.com
+ [209.85.208.69]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-517-i6w-qtGqNouLxVKPJPDqgQ-1; Fri, 23 Apr 2021 07:05:18 -0400
+X-MC-Unique: i6w-qtGqNouLxVKPJPDqgQ-1
+Received: by mail-ed1-f69.google.com with SMTP id f9-20020a50fe090000b02903839889635cso16438902edt.14
+        for <netdev@vger.kernel.org>; Fri, 23 Apr 2021 04:05:18 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:from:to:cc:date:message-id:user-agent
+         :mime-version:content-transfer-encoding;
+        bh=jr7f/c656B14iZH1W7iqJ5TVJAXFbRzcz+BEzN3sEdE=;
+        b=Mot078JBDqMNvCr5NYC552FSRnhHmponGtkHtR/fuwZ4btdcAtJFwJe05KVFinNU1C
+         68zPbbeb1or4cZyDDeGNybYmueD32HPblE2TAsADT2f+tVirzzMeGVu6+4z6SbMen0NV
+         s4CmvphU7GXFBCmCunJaFhI3TmctPvOOPi+3jrb9OpBF8vr9TRIlDIgX/aOVH5mf9mP1
+         7uKaGOcQVQ4Bo3jm8XoUtPUbOORVf7HzKCQDhfdr55xQI3XhmVWEZeHHb8462n875C5/
+         0S7y/B8hpQ2KuVDgqui2oTWAqH0BtL7QYiUCnyi/DIWYe2y4odCEZZIDp1KCDRVwq98H
+         1DiA==
+X-Gm-Message-State: AOAM532enlYwpYtIrYriikzLoWrPNYrtLR41rYy3fywMGn9FJOimSA4E
+        aQY7wLz++1gV28EMQLI+EjBvrj7kM0+cT6OJd34oOGIjT9yT6ruVXw3UcvvMAwtE4Crfn71RzXJ
+        X2gM4cxv7fzj+amo/
+X-Received: by 2002:a50:e848:: with SMTP id k8mr3711100edn.179.1619175917568;
+        Fri, 23 Apr 2021 04:05:17 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJwXXZ2dv5SzDhemDUOV/fCE22p57ll81ceIAP/uMuiIiYIkTTmOwirVTG7v6dZRooXO3JjS4A==
+X-Received: by 2002:a50:e848:: with SMTP id k8mr3711072edn.179.1619175917300;
+        Fri, 23 Apr 2021 04:05:17 -0700 (PDT)
+Received: from alrua-x1.borgediget.toke.dk ([45.145.92.2])
+        by smtp.gmail.com with ESMTPSA id gz10sm3720420ejc.25.2021.04.23.04.05.16
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 23 Apr 2021 04:05:16 -0700 (PDT)
+Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
+        id A7A42180675; Fri, 23 Apr 2021 13:05:15 +0200 (CEST)
+Subject: [PATCH RFC bpf-next 0/4] Clean up and document RCU-based object
+ protection for XDP_REDIRECT
+From:   =?utf-8?q?Toke_H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
+To:     bpf@vger.kernel.org
+Cc:     netdev@vger.kernel.org, Martin KaFai Lau <kafai@fb.com>,
+        Hangbin Liu <liuhangbin@gmail.com>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        Magnus Karlsson <magnus.karlsson@gmail.com>,
+        "Paul E. McKenney" <paulmck@kernel.org>
+Date:   Fri, 23 Apr 2021 13:05:15 +0200
+Message-ID: <161917591559.102337.3558507780042453425.stgit@toke.dk>
+User-Agent: StGit/1.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 23 Apr 2021 11:59:55 +0200
-Magnus Karlsson <magnus.karlsson@gmail.com> wrote:
+During the discussion[0] of Hangbin's multicast patch series, Martin pointed out
+that the lifetime of the RCU-protected  map entries used by XDP_REDIRECT is by
+no means obvious. I promised to look into cleaning this up, and Paul helpfully
+provided some hints and a new unrcu_pointer() helper to aid in this.
 
-> From: Magnus Karlsson <magnus.karlsson@intel.com>
-> 
-> Commit 12738ac4754e ("i40e: Fix sparse errors in i40e_txrx.c") broke
-> XDP support in the i40e driver. That commit was fixing a sparse error
-> in the code by introducing a new variable xdp_res instead of
-> overloading this into the skb pointer. The problem is that the code
-> later uses the skb pointer in if statements and these where not
-> extended to also test for the new xdp_res variable. Fix this by adding
-> the correct tests for xdp_res in these places.
-> 
-> Fixes: 12738ac4754e ("i40e: Fix sparse errors in i40e_txrx.c")
-> Reported-by: Jesper Dangaard Brouer <brouer@redhat.com>
-> Signed-off-by: Magnus Karlsson <magnus.karlsson@intel.com>
-> ---
->  drivers/net/ethernet/intel/i40e/i40e_txrx.c | 10 +++-------
->  1 file changed, 3 insertions(+), 7 deletions(-)
+This is mostly a documentation exercise, clearing up the description of the
+lifetime expectations and adding __rcu annotations so sparse and lockdep can
+help verify it. I'm sending this as RFC since I don't have any i40e hardware to
+test on. A complete submission would also involve going through all the drivers,
+of course, but I wanted to get some feedback onthis first. I did test on mlx5,
+but that uses an rhashtable in the driver code, so we can't actually remove the
+top-level rcu_read_lock() from that without getting lockdep splats.
 
-Acked-by: Jesper Dangaard Brouer <brouer@redhat.com>
+Patches 1-2 are prepatory: Patch 1 adds Paul's unrcu_pointer() helper and patch
+2 is a small fix for dev_get_by_index_rcu() so lockdep understands _bh-disabled
+access to it. Patch 3 is the main bit that adds the __rcu annotations and
+updates documentation comments, and patch 4 is an example of driver changes,
+removing the rcu_read_lock() from i40e.
 
-Tested-by: Jesper Dangaard Brouer <brouer@redhat.com>
+Please take a look, and let me know if you think this is the right direction for
+clarifying the usage.
 
-I also tested that i40e works on my system again.
- Intel(R) Xeon(R) CPU E5-1650 v4 @ 3.60GHz
+Thanks,
+-Toke
 
-Running XDP on dev:i40e2 (ifindex:8) action:XDP_DROP options:no_touch
-XDP stats       CPU     pps         issue-pps  
-XDP-RX CPU      4       33,670,895  0          
-XDP-RX CPU      total   33,670,895 
+[0] https://lore.kernel.org/bpf/20210415173551.7ma4slcbqeyiba2r@kafai-mbp.dhcp.thefacebook.com/
 
-RXQ stats       RXQ:CPU pps         issue-pps  
-rx_queue_index    4:4   33,670,900  0          
-rx_queue_index    4:sum 33,670,900 
+---
 
+Paul E. McKenney (1):
+      rcu: Create an unrcu_pointer() to remove __rcu from a pointer
 
-Running XDP on dev:i40e2 (ifindex:8) action:XDP_DROP options:read
-XDP stats       CPU     pps         issue-pps  
-XDP-RX CPU      4       31,424,994  0          
-XDP-RX CPU      total   31,424,994 
-
-RXQ stats       RXQ:CPU pps         issue-pps  
-rx_queue_index    4:4   31,424,997  0          
-rx_queue_index    4:sum 31,424,997 
+Toke Høiland-Jørgensen (3):
+      dev: add rcu_read_lock_bh_held() as a valid check when getting a RCU dev ref
+      xdp: add proper __rcu annotations to redirect map entries
+      i40e: remove rcu_read_lock() around XDP program invocation
 
 
-Running XDP on dev:i40e2 (ifindex:8) action:XDP_TX options:swapmac
-XDP stats       CPU     pps         issue-pps  
-XDP-RX CPU      4       14,777,900  0          
-XDP-RX CPU      total   14,777,900 
-
-RXQ stats       RXQ:CPU pps         issue-pps  
-rx_queue_index    4:4   14,777,893  0          
-rx_queue_index    4:sum 14,777,893 
-
-
-$ sudo ./xdp_redirect_map i40e2 i40e2
-input: 8 output: 8
-libbpf: elf: skipping unrecognized data section(24) .eh_frame
-libbpf: elf: skipping relo section(25) .rel.eh_frame for section(24) .eh_frame
-libbpf: Kernel error message: XDP program already attached
-WARN: link set xdp fd failed on 8
-ifindex 8:    8212980 pkt/s
-ifindex 8:   11725145 pkt/s
-ifindex 8:   11727939 pkt/s
-ifindex 8:   11727640 pkt/s
-ifindex 8:   11729593 pkt/s
-
--- 
-Best regards,
-  Jesper Dangaard Brouer
-  MSc.CS, Principal Kernel Engineer at Red Hat
-  LinkedIn: http://www.linkedin.com/in/brouer
+ drivers/net/ethernet/intel/i40e/i40e_txrx.c |  2 -
+ drivers/net/ethernet/intel/i40e/i40e_xsk.c  |  6 +--
+ include/net/xdp_sock.h                      |  2 +-
+ kernel/bpf/cpumap.c                         | 14 ++++--
+ kernel/bpf/devmap.c                         | 52 +++++++++------------
+ net/core/dev.c                              |  2 +-
+ net/core/filter.c                           | 28 +++++++++++
+ net/xdp/xsk.c                               |  4 +-
+ net/xdp/xsk.h                               |  4 +-
+ net/xdp/xskmap.c                            | 29 +++++++-----
+ 10 files changed, 85 insertions(+), 58 deletions(-)
 
