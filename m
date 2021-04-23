@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 59F3D368A92
+	by mail.lfdr.de (Postfix) with ESMTP id 0B76E368A94
 	for <lists+netdev@lfdr.de>; Fri, 23 Apr 2021 04:09:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240213AbhDWBsf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 22 Apr 2021 21:48:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44648 "EHLO
+        id S240238AbhDWBsh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 22 Apr 2021 21:48:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44660 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240094AbhDWBsb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 22 Apr 2021 21:48:31 -0400
-Received: from mail-ed1-x52e.google.com (mail-ed1-x52e.google.com [IPv6:2a00:1450:4864:20::52e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 048D8C061574;
-        Thu, 22 Apr 2021 18:47:56 -0700 (PDT)
-Received: by mail-ed1-x52e.google.com with SMTP id bx20so54579636edb.12;
-        Thu, 22 Apr 2021 18:47:55 -0700 (PDT)
+        with ESMTP id S236126AbhDWBsd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 22 Apr 2021 21:48:33 -0400
+Received: from mail-ej1-x635.google.com (mail-ej1-x635.google.com [IPv6:2a00:1450:4864:20::635])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D5EFC061574;
+        Thu, 22 Apr 2021 18:47:57 -0700 (PDT)
+Received: by mail-ej1-x635.google.com with SMTP id r20so21855159ejo.11;
+        Thu, 22 Apr 2021 18:47:57 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=pvbtV9z9Nr84yi5HQm0Sl3OJ0RmRKTgXaB8Aibs1Fi8=;
-        b=EfRbrmuBOsfwwNIQNwN5GJp3OecEYddJmdaOR6JSbMsoY6lBC76RhjCTvceB0TPBd2
-         77S72/SYUO+z6E9y6A8iuGSV4h7Q27S0GqdEuhMp1KazW0IJpqyjiScuPSGO0SFRrSAz
-         WnoTOh+LU0E5vUxZO59H1jFFN2CtOiIMRaiUMUZMLw0pucHTvFQc6y64awrM8uR9VXyC
-         bR/dNgD0OPiU9usH0Yfk5ggv9J0E8twIM/Z/oV4dhKml8R43Z4UilpG2gQprQV0Ls0id
-         /uVPlVqt+Oar8hY7GB+milL4VAr8MWSp8tjbxfSvaDpZh79aQvZi/cGsiKKdglcSskyl
-         f1tg==
+        bh=q9gaocBlk1TPMqWqSo24Pc1wb4Ov1hZl7cSxG+HTprk=;
+        b=Dj+5ckk2rTGumx9FfCWvmxxcDx06KjZjwBK6VYRhtTnCAoh/a9B6l0QFPEPPn6W3ub
+         mtqBtwQliJ17nn4bppWH9j+uJsxY3SxWJm8gY8C1wRBnpoR3bFJr6COtgCLgBDtirELG
+         8U6HZ5CSXvt4YJVhH89sJbXKsbSdZm3gg7UQqmtuiK37We6oK385EJJnNJtq8zfJcU5b
+         9Uk9hGLeDcM6epx9chmdlhklIFBh3pVcr3Q2L1y3DeRWa+vosSaz86hGvPoGNkgpcpfh
+         /30g4sLFaqkmp9STm9UOa3UgLVm54nhboXhL5dCdtbESVM0XczRSL7CO0rGpQoAbspbE
+         tcxg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=pvbtV9z9Nr84yi5HQm0Sl3OJ0RmRKTgXaB8Aibs1Fi8=;
-        b=EUXRBRtv9uTqKjBc+Br08W77oJmjBSAmCDOZf6s8+Zfy2Q9y9r6BtC6sY5yQY6eaQN
-         zTdy7Hof6aYBB0KnI2HqltLOICZct0VSi9im1M/oC6cZmEn2HwL/cuhv/yzcAMS78hkO
-         A36Nb0Cg69wSlKZIEVkd9z8jN9cB648OdszlQWmQWANxtPe0LofRPyismBQOE1WZfgVj
-         CHPXT8afef6xMd/5gj3E2ZDyxljaZUkbW4GvOD5dyI0MKTYS2Yqzrd5Xx+mlNjC0wH58
-         J3MJkbs45hlv30QiU4AXqoc9UGJJ6SQqiHWNVJWhHTElV1RULuLrQa9hb5qAu937QcAH
-         ZEnQ==
-X-Gm-Message-State: AOAM5334cXKuHFxvYZWmf48OsJrlkXWuvBdwND10f9WIdN9oexwLAbK9
-        UmXdUqxNgGOGua+zX6EM2Jw=
-X-Google-Smtp-Source: ABdhPJxyUWMKaSFu4paSngAiB+5r6Rkz9pq5QLh3DwWoyDCpPTxn6OBbJPJGdeBTBeVqYp6gwZLQKw==
-X-Received: by 2002:aa7:c78a:: with SMTP id n10mr1527723eds.239.1619142474723;
-        Thu, 22 Apr 2021 18:47:54 -0700 (PDT)
+        bh=q9gaocBlk1TPMqWqSo24Pc1wb4Ov1hZl7cSxG+HTprk=;
+        b=RSUKKu6TQ7Z+RwcOGM3HxC/QydpHP/81TkntmMhA09uTJp/eRcTMfHYtzVbUS1Ch7A
+         H6pAnJfJo5l8tyFYi1zR34UkXH6nFTGbibMHfwn4EvZXj4xj66bMfJZT3TJBFBsbB3gH
+         H99YuGGTubS2ufEJtSQ6buKFg4fzV+RbeIFz3dS+pf+nxUJZBxFHDek/dh/vjofZNqrO
+         gZEGiu9MmD7h36h/n9NzGHcFkwNvI9+N06UqnG6Jyh5T6FsBY9tDzam5klqKR2bmMufk
+         wqbPHnPt4u6s/7aPzBhBqd7vO0NwmEplC8awPBmIuNfdMkDRRXquJtCLfyKiLTSDisyw
+         U5gg==
+X-Gm-Message-State: AOAM532ciCRK4H0DFQGk6Ay4tK9cH8JZn8oJTVkfUauri8sF8DCdOjRQ
+        CM3I4MwImtlpCJ9B644XXww=
+X-Google-Smtp-Source: ABdhPJwtwQQgziVfHwY7UWl0SRDKT0e8BrDzig5Jv05DklRZ2tfQdUYLG2GGAhyp2Kyow6HtXYrikw==
+X-Received: by 2002:a17:906:b2d8:: with SMTP id cf24mr1561407ejb.305.1619142476265;
+        Thu, 22 Apr 2021 18:47:56 -0700 (PDT)
 Received: from Ansuel-xps.localdomain (93-35-189-2.ip56.fastwebnet.it. [93.35.189.2])
-        by smtp.googlemail.com with ESMTPSA id t4sm3408635edd.6.2021.04.22.18.47.53
+        by smtp.googlemail.com with ESMTPSA id t4sm3408635edd.6.2021.04.22.18.47.55
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 22 Apr 2021 18:47:54 -0700 (PDT)
+        Thu, 22 Apr 2021 18:47:55 -0700 (PDT)
 From:   Ansuel Smith <ansuelsmth@gmail.com>
 To:     Florian Fainelli <f.fainelli@gmail.com>
 Cc:     Ansuel Smith <ansuelsmth@gmail.com>, Andrew Lunn <andrew@lunn.ch>,
@@ -58,9 +58,9 @@ Cc:     Ansuel Smith <ansuelsmth@gmail.com>, Andrew Lunn <andrew@lunn.ch>,
         Heiner Kallweit <hkallweit1@gmail.com>,
         Russell King <linux@armlinux.org.uk>, netdev@vger.kernel.org,
         devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH 02/14] drivers: net: dsa: qca8k: tweak internal delay to oem spec
-Date:   Fri, 23 Apr 2021 03:47:28 +0200
-Message-Id: <20210423014741.11858-3-ansuelsmth@gmail.com>
+Subject: [PATCH 03/14] drivers: net: mdio: mdio-ip8064: improve busy wait delay
+Date:   Fri, 23 Apr 2021 03:47:29 +0200
+Message-Id: <20210423014741.11858-4-ansuelsmth@gmail.com>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20210423014741.11858-1-ansuelsmth@gmail.com>
 References: <20210423014741.11858-1-ansuelsmth@gmail.com>
@@ -70,53 +70,86 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The original code had the internal dalay set to 1 for tx and 2 for rx.
-Apply the oem internal dalay to fix some switch communication error.
+With the use of the qca8k dsa driver, some problem arised related to
+port status detection. With a load on a specific port (for example a
+simple speed test), the driver starts to bheave in a strange way and
+garbage data is produced. To address this, enlarge the sleep delay and
+address a bug for the reg offset 31 that require additional delay for
+this specific reg.
 
 Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
 ---
- drivers/net/dsa/qca8k.c | 6 ++++--
- drivers/net/dsa/qca8k.h | 9 ++++-----
- 2 files changed, 8 insertions(+), 7 deletions(-)
+ drivers/net/mdio/mdio-ipq8064.c | 36 ++++++++++++++++++++-------------
+ 1 file changed, 22 insertions(+), 14 deletions(-)
 
-diff --git a/drivers/net/dsa/qca8k.c b/drivers/net/dsa/qca8k.c
-index a6d35b825c0e..b8bfc7acf6f4 100644
---- a/drivers/net/dsa/qca8k.c
-+++ b/drivers/net/dsa/qca8k.c
-@@ -849,8 +849,10 @@ qca8k_phylink_mac_config(struct dsa_switch *ds, int port, unsigned int mode,
- 		 */
- 		qca8k_write(priv, reg,
- 			    QCA8K_PORT_PAD_RGMII_EN |
--			    QCA8K_PORT_PAD_RGMII_TX_DELAY(QCA8K_MAX_DELAY) |
--			    QCA8K_PORT_PAD_RGMII_RX_DELAY(QCA8K_MAX_DELAY));
-+			    QCA8K_PORT_PAD_RGMII_TX_DELAY(1) |
-+			    QCA8K_PORT_PAD_RGMII_RX_DELAY(2) |
-+			    QCA8K_PORT_PAD_RGMII_TX_DELAY_EN |
-+			    QCA8K_PORT_PAD_RGMII_RX_DELAY_EN);
- 		qca8k_write(priv, QCA8K_REG_PORT5_PAD_CTRL,
- 			    QCA8K_PORT_PAD_RGMII_RX_DELAY_EN);
- 		break;
-diff --git a/drivers/net/dsa/qca8k.h b/drivers/net/dsa/qca8k.h
-index 7ca4b93e0bb5..e0b679133880 100644
---- a/drivers/net/dsa/qca8k.h
-+++ b/drivers/net/dsa/qca8k.h
-@@ -32,12 +32,11 @@
- #define QCA8K_REG_PORT5_PAD_CTRL			0x008
- #define QCA8K_REG_PORT6_PAD_CTRL			0x00c
- #define   QCA8K_PORT_PAD_RGMII_EN			BIT(26)
--#define   QCA8K_PORT_PAD_RGMII_TX_DELAY(x)		\
--						((0x8 + (x & 0x3)) << 22)
--#define   QCA8K_PORT_PAD_RGMII_RX_DELAY(x)		\
--						((0x10 + (x & 0x3)) << 20)
--#define   QCA8K_MAX_DELAY				3
-+#define   QCA8K_PORT_PAD_RGMII_TX_DELAY(x)		((x) << 22)
-+#define   QCA8K_PORT_PAD_RGMII_RX_DELAY(x)		((x) << 20)
-+#define	  QCA8K_PORT_PAD_RGMII_TX_DELAY_EN		BIT(25)
- #define   QCA8K_PORT_PAD_RGMII_RX_DELAY_EN		BIT(24)
-+#define   QCA8K_MAX_DELAY				3
- #define   QCA8K_PORT_PAD_SGMII_EN			BIT(7)
- #define QCA8K_REG_PWS					0x010
- #define   QCA8K_PWS_SERDES_AEN_DIS			BIT(7)
+diff --git a/drivers/net/mdio/mdio-ipq8064.c b/drivers/net/mdio/mdio-ipq8064.c
+index 1bd18857e1c5..5bd6d0501642 100644
+--- a/drivers/net/mdio/mdio-ipq8064.c
++++ b/drivers/net/mdio/mdio-ipq8064.c
+@@ -15,25 +15,26 @@
+ #include <linux/mfd/syscon.h>
+ 
+ /* MII address register definitions */
+-#define MII_ADDR_REG_ADDR                       0x10
+-#define MII_BUSY                                BIT(0)
+-#define MII_WRITE                               BIT(1)
+-#define MII_CLKRANGE_60_100M                    (0 << 2)
+-#define MII_CLKRANGE_100_150M                   (1 << 2)
+-#define MII_CLKRANGE_20_35M                     (2 << 2)
+-#define MII_CLKRANGE_35_60M                     (3 << 2)
+-#define MII_CLKRANGE_150_250M                   (4 << 2)
+-#define MII_CLKRANGE_250_300M                   (5 << 2)
++#define MII_ADDR_REG_ADDR			0x10
++#define MII_BUSY				BIT(0)
++#define MII_WRITE				BIT(1)
++#define MII_CLKRANGE(x)				((x) << 2)
++#define MII_CLKRANGE_60_100M			MII_CLKRANGE(0)
++#define MII_CLKRANGE_100_150M			MII_CLKRANGE(1)
++#define MII_CLKRANGE_20_35M			MII_CLKRANGE(2)
++#define MII_CLKRANGE_35_60M			MII_CLKRANGE(3)
++#define MII_CLKRANGE_150_250M			MII_CLKRANGE(4)
++#define MII_CLKRANGE_250_300M			MII_CLKRANGE(5)
+ #define MII_CLKRANGE_MASK			GENMASK(4, 2)
+ #define MII_REG_SHIFT				6
+ #define MII_REG_MASK				GENMASK(10, 6)
+ #define MII_ADDR_SHIFT				11
+ #define MII_ADDR_MASK				GENMASK(15, 11)
+ 
+-#define MII_DATA_REG_ADDR                       0x14
++#define MII_DATA_REG_ADDR			0x14
+ 
+-#define MII_MDIO_DELAY_USEC                     (1000)
+-#define MII_MDIO_RETRY_MSEC                     (10)
++#define MII_MDIO_DELAY_USEC			(1000)
++#define MII_MDIO_RETRY_MSEC			(10)
+ 
+ struct ipq8064_mdio {
+ 	struct regmap *base; /* NSS_GMAC0_BASE */
+@@ -65,7 +66,7 @@ ipq8064_mdio_read(struct mii_bus *bus, int phy_addr, int reg_offset)
+ 		   ((reg_offset << MII_REG_SHIFT) & MII_REG_MASK);
+ 
+ 	regmap_write(priv->base, MII_ADDR_REG_ADDR, miiaddr);
+-	usleep_range(8, 10);
++	usleep_range(10, 13);
+ 
+ 	err = ipq8064_mdio_wait_busy(priv);
+ 	if (err)
+@@ -91,7 +92,14 @@ ipq8064_mdio_write(struct mii_bus *bus, int phy_addr, int reg_offset, u16 data)
+ 		   ((reg_offset << MII_REG_SHIFT) & MII_REG_MASK);
+ 
+ 	regmap_write(priv->base, MII_ADDR_REG_ADDR, miiaddr);
+-	usleep_range(8, 10);
++
++	/* For the specific reg 31 extra time is needed or the next
++	 * read will produce grabage data.
++	 */
++	if (reg_offset == 31)
++		usleep_range(30, 43);
++	else
++		usleep_range(10, 13);
+ 
+ 	return ipq8064_mdio_wait_busy(priv);
+ }
 -- 
 2.30.2
 
