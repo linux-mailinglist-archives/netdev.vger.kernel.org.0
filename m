@@ -2,200 +2,200 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 908CB368D05
-	for <lists+netdev@lfdr.de>; Fri, 23 Apr 2021 08:18:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F1DB7368D32
+	for <lists+netdev@lfdr.de>; Fri, 23 Apr 2021 08:27:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236799AbhDWGTU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 23 Apr 2021 02:19:20 -0400
-Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:11150 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S230504AbhDWGTT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 23 Apr 2021 02:19:19 -0400
-Received: from pps.filterd (m0089730.ppops.net [127.0.0.1])
-        by m0089730.ppops.net (8.16.0.43/8.16.0.43) with SMTP id 13N69w01024138;
-        Thu, 22 Apr 2021 23:18:25 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=subject : to : cc :
- references : from : message-id : date : in-reply-to : content-type :
- content-transfer-encoding : mime-version; s=facebook;
- bh=sPjmUqvkk0RR+EjlmY6/c4dIyMGvw5ro2jMQLu5FEQk=;
- b=KSDBflUHiaB2r1Y0/fpZeVldd6T10NGCWmnfLyL6zCnpElqQDmO7ivXOJ145PfPyooVz
- 3oOhDMEb4AX5DlFbA+Sc5txNg9ysof+TUeUKT4y75zn5BdheQl7njUwrTLsgJM/pvXXX
- heT17NfJi1qBnGY71TKtKnxdU/I0sPL8X+g= 
-Received: from maileast.thefacebook.com ([163.114.130.16])
-        by m0089730.ppops.net with ESMTP id 383h1uj9pp-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Thu, 22 Apr 2021 23:18:24 -0700
-Received: from NAM11-DM6-obe.outbound.protection.outlook.com (100.104.31.183)
- by o365-in.thefacebook.com (100.104.35.173) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2176.2; Thu, 22 Apr 2021 23:18:24 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=IjB9hzj5Ulviz+JLA4keWWOIhndMHEcbacsNRP1GbmAc8xOyqS6sHS3tXTohYuyPgib9NXep1668/aVQvZEZp6yhbXMgTAVWO/+xEd4RaYMf7/3iDeseMPomfqRD43bqkqD/Rl0cgpxxDdypFIPlYs8R9Ie1VNpxY8NNidYT7djhJt6x2EdSB8E/rkeNF0V7zLyOhcBXFXLfZ+FsZISLoh4z/WL15wyelEt2Y918yNokQHHDtnhBwealo0X3OAy9g5oWVeLYau8WjNu+cReMJw9DOi8zXIY9C5BJdsQIpY7DvHNXmcS5tbTAY8OF1vtAtL/I2UHHjOv0UcmsbrTmjw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=sPjmUqvkk0RR+EjlmY6/c4dIyMGvw5ro2jMQLu5FEQk=;
- b=P8rR/8izRL2YXHzYP0nwewtR2EURnT0kKzUOjaYeC8ZQxCgqrED/fleDvFr0YUqGsF+9WWV9TU53854fRC9XnubcjTO9kI/yFCiosJCtYL4OFJt8HSDC28xhIVNsdb98SQPNSdnaVR6sWH9s86xt4Zgqe5hrgMTL7DSyc+IcET9ndFEgsYRFpQhbuXUKw1rgTHOn3BJDzAc8MuJZpBMruYauUp6K1nSoyCHHHgXK8c7hJ+Hd/j8HKI5oxbicpBBfXuMaBrRqjyYNPokcjWCozjre9/xhr68S/yiiLFIZYP12yohpUYVyDEOpohV5LuX/bi5u4vXKD0g++U8Si6c45Q==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
- header.d=fb.com; arc=none
-Authentication-Results: linux.intel.com; dkim=none (message not signed)
- header.d=none;linux.intel.com; dmarc=none action=none header.from=fb.com;
-Received: from SN6PR1501MB2064.namprd15.prod.outlook.com (2603:10b6:805:d::27)
- by SA0PR15MB3968.namprd15.prod.outlook.com (2603:10b6:806:8d::7) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4065.23; Fri, 23 Apr
- 2021 06:18:23 +0000
-Received: from SN6PR1501MB2064.namprd15.prod.outlook.com
- ([fe80::f433:fd99:f905:8912]) by SN6PR1501MB2064.namprd15.prod.outlook.com
- ([fe80::f433:fd99:f905:8912%3]) with mapi id 15.20.4065.021; Fri, 23 Apr 2021
- 06:18:23 +0000
-Subject: Re: [PATCH v2] kallsyms: Remove function arch_get_kallsym()
-To:     Jiapeng Chong <jiapeng.chong@linux.alibaba.com>, <ast@kernel.org>
-CC:     <daniel@iogearbox.net>, <andrii@kernel.org>, <kafai@fb.com>,
-        <songliubraving@fb.com>, <john.fastabend@gmail.com>,
-        <kpsingh@kernel.org>, <linux-kernel@vger.kernel.org>,
-        <netdev@vger.kernel.org>, <bpf@vger.kernel.org>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>
-References: <1619084946-28509-1-git-send-email-jiapeng.chong@linux.alibaba.com>
-From:   Yonghong Song <yhs@fb.com>
-Message-ID: <ac65180a-c55f-4ee8-398e-64b0fcbaa0aa@fb.com>
-Date:   Thu, 22 Apr 2021 23:18:19 -0700
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
- Gecko/20100101 Thunderbird/78.9.1
-In-Reply-To: <1619084946-28509-1-git-send-email-jiapeng.chong@linux.alibaba.com>
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [2620:10d:c090:400::5:c7f9]
-X-ClientProxiedBy: MW4PR04CA0160.namprd04.prod.outlook.com
- (2603:10b6:303:85::15) To SN6PR1501MB2064.namprd15.prod.outlook.com
- (2603:10b6:805:d::27)
+        id S240594AbhDWG1z (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 23 Apr 2021 02:27:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48956 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S240603AbhDWG1r (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 23 Apr 2021 02:27:47 -0400
+Received: from mail-lf1-x130.google.com (mail-lf1-x130.google.com [IPv6:2a00:1450:4864:20::130])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 80ED9C06138B
+        for <netdev@vger.kernel.org>; Thu, 22 Apr 2021 23:27:09 -0700 (PDT)
+Received: by mail-lf1-x130.google.com with SMTP id j18so75904578lfg.5
+        for <netdev@vger.kernel.org>; Thu, 22 Apr 2021 23:27:09 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=UaLpQ1STBJ3djn7BvenYPfKeT30znCG7395QctSkfQY=;
+        b=Oo6R7FobKIJW9Od8FqNcKW4kowhygFTVFrzwCrQAIoVXY+rqskfQ+MFX86IiYVjesg
+         BXgT7RPLNq9B0/2V1YRc1ZDfNeyd1w7cS3fuf44y3FzKu/PuwPZSJ2Bqah9VrsGUolKP
+         ZWANJzTOq6LGgUhnoex0Otu1xms4hIkeTt0FYHbjgnGIFmHl73CDQGk5wBFomQptLzhD
+         Y+I3cdMhUmDl+Ua8ZadwEDqc4pEjosV2mK2Sf3XmvN4R08EJ98d5LIGmU+PvQptmk9/y
+         l4zN6fsE93pH2cM7oWateT9Iwwty4v51zr2t7h5XqR10gryt+U/vLHuI6djDtGE87TtJ
+         f8WQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=UaLpQ1STBJ3djn7BvenYPfKeT30znCG7395QctSkfQY=;
+        b=czFOpaJhM2KUCe+S/uDNT74QCQ8H90x0IK3oj67/9MvT4JuH0ecBuwpbw1rMKO/Yp5
+         QFzwFquj5wbBZj6bcLAADtx4bSU3c41DbOM3OnFDKRK+ceKPTrIrEGGgJjiuXvQRQptI
+         VJtwnpOnBR8XxIW/vmiZpwouxvdIf2KAXk51VaQxTYE00XKgFNJDPsmN3583EwiS/n9Y
+         a7y14bL/Dfvd/fp77e7kPzX7LtG+HgTFd3PayFq4/gFyodoX0uIu/6RDQ/B+5d1yjNYs
+         7WVEknaOYPs/dQS0rWt4nzdKFr2CNgjRqdhSSWgOAdQkCGFEBT3h/2KW9iDn+c9No0QT
+         TGsA==
+X-Gm-Message-State: AOAM532GCDCRPx//UW2Qklz1OymqgFtbsMLcaWozs0XFAP47foWA/wqG
+        Ufo+C+GFgA/5UXKV1Ktu1Ns8m1xXk1pMOZHtFYsmQQ==
+X-Google-Smtp-Source: ABdhPJxwVNFz3aKPzwkMWWBUlqtIdr0gCVWb25meiGsqk5X/pr6U5Kjm8pNj2Whr4PHav4ogcf3/EODMFeeeiu7k4ZA=
+X-Received: by 2002:a05:6512:138e:: with SMTP id p14mr1534510lfa.47.1619159227671;
+ Thu, 22 Apr 2021 23:27:07 -0700 (PDT)
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from [IPv6:2620:10d:c085:21e8::17f2] (2620:10d:c090:400::5:c7f9) by MW4PR04CA0160.namprd04.prod.outlook.com (2603:10b6:303:85::15) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4065.20 via Frontend Transport; Fri, 23 Apr 2021 06:18:21 +0000
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 9b476efb-4fd9-465e-0cee-08d9061f98e8
-X-MS-TrafficTypeDiagnostic: SA0PR15MB3968:
-X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <SA0PR15MB3968CDE1964E23DE7A9C0DEFD3459@SA0PR15MB3968.namprd15.prod.outlook.com>
-X-FB-Source: Internal
-X-MS-Oob-TLC-OOBClassifiers: OLM:4125;
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: iEtObSkXw9WM/HROpWzr2SFTsFg+THKHyUD24MmHK8UXc9WsVVmZ54DT/NaiToNPiR3t7dD6lSr6BWK6hH++LgpafdJalmep97+ZSxsXSrQtTFiOP/uBnFmVFKUOsCR+LOe8kqFMpriKJS5lJuVTjh7v0C1D1Ocb9IUtBuAVXFkj2BDqAt06U4vExUagVoC293Rmeu29AIJyjDJahoFxK3hv74JVh+UzkjiqG7LKqrm6YCQbAnnsIXlJ4vGGnwpiy3PFJHp9IcJ4s2tCOiu7Iun11Qwt/dJOAE0d1SWKRGuwwLtE3T48bkDBziyOK0LKXkrtHjXE4xPxRJAC+rI3Cwv29q4IvqDFNjFIjUjKWRRq6dMdeR01hjIZG3686A+baEP13VVDpNJgvYSGc6bQZ8gsrDiXWXCZerV5xHRrxwSADGPA95pANYXuQKAUlanHfkRbJXRQ+jP5TQ8v71AVPJ6H39kaikxPgP+xUw7tJZDdrXrce44JedbLAiRjeEw35GalpujscroBfH4OmC1UovEjFxHbr7VWuzjNXy+gn9le5d7wNE7hLzMrhLH9LyuPjl8Eq/gYdDt4G2Krqty7dX0lPKHHnHdLiqE+yxACvGSeb86mJ/Eyh9BRY8YQphVF07nDNnSz6qMMvQb9U8UAavTiOvgOjh6m0meLtR9T69UvYlJH7Zx/tC3naSoNXGp9
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SN6PR1501MB2064.namprd15.prod.outlook.com;PTR:;CAT:NONE;SFS:(346002)(39860400002)(136003)(366004)(396003)(376002)(36756003)(8676002)(2616005)(66946007)(66556008)(316002)(38100700002)(7416002)(66476007)(8936002)(53546011)(16526019)(52116002)(186003)(2906002)(4326008)(83380400001)(86362001)(478600001)(6486002)(31686004)(31696002)(5660300002)(45980500001)(43740500002);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData: =?utf-8?B?UEx2QWhLMzV4T1Z0UFpPZkN3aUpCbE1LMFJMQlpWUW1DZi9UYUQ0Wm5ia25T?=
- =?utf-8?B?L1ZVekxzcVh3QzlUa1BDaWZkTi9mZ0J5MkN5S2lnaWlVTlVwUjN3K0xvQW1Y?=
- =?utf-8?B?cUZmbW9oUkNwb1podjZ3bnIxU2xmeHR6QmJteG5MQ1hDU3dnOUV4TkNVZjQ2?=
- =?utf-8?B?OU5aVHFadzU1OURJbzhNb2I3UlY0SldDZVVEWE5sUVk0SGFiVlNvenhsZ0I5?=
- =?utf-8?B?OUE1V3VuSGI0MGd3bEhqNGRqVHo0dThYd0JxWmlaeEVWQ0ZVMTJIR2NqMTlO?=
- =?utf-8?B?VUE1NUpLa2lDOEdpMWVkWE9Kd3B1c1d5aC8rTmFLNGdlb1loUzN2eUEyS0dY?=
- =?utf-8?B?NHFNNGk4d0s3bGxMZGZFZkhqSXJHeEEwNURnZGVEWXNKQkpKa1lkZGlia1pO?=
- =?utf-8?B?MkpDVzZCZTNqeFlReklxUnlJdlAzeFJWOFFtcDBCV2ttRmxUalkzdGRlVTFz?=
- =?utf-8?B?VTRnTEdkNVJXa0RkTEFVYkF0TzZoNzB3ZkxJYVNpLyswSUIrZ01mSW51Q21j?=
- =?utf-8?B?bnljaHorMXV6aFhRYlZDS0gxVUNidXdMVHdvdmliY2tpbHBXSTNQa1RZQTVW?=
- =?utf-8?B?ZW5LQ1hvQ0xtYUJIayszaFhmOHNSTmRaSEZzRnRDazFWd0ZqbmxNakdlUmRC?=
- =?utf-8?B?UnJReXk1WmpwM0lzMXJCZVlnK2V4NlVYZHBhWFJNeDVqS0JSTXZjNkl4cFM0?=
- =?utf-8?B?YUo3NGYvNWpQMHNEM21vQW1RZ0l5UzRvUWpaWXRlazFiTERsOGdwV3RBQzJC?=
- =?utf-8?B?ZUhXUDFjWEdGc0h6SUZxZFYwVmdxaFJMYVNuQzlqYlp3Y1ArZkt1VzNMUHIv?=
- =?utf-8?B?bWg3TGdGRUgrYjVJR2FVamgyTWJnTnEzWWRIcFZFY0t3bmRnb1RmaHBnMU83?=
- =?utf-8?B?T2d3VHZ3emJYQUYzMGdmVWFWampXVC9aelY1NXpOdjZqcVRqMy9iU3dPQnhO?=
- =?utf-8?B?Z2JEZ3lBWlRoem1VOVB0ZTV4ZHhYaE90MERKV0hNZHUzaTh5S0wvY2lqZ3JL?=
- =?utf-8?B?T2FiUkZITjJxaXZaT0R5Umx2RWYxOWZ3NU5hKzNFdFRha3IzT0pkWnpoWndW?=
- =?utf-8?B?d2YraEpKdVZkeFVEY043WGc0Z3dScmJpWGZFWUZFaFNHbWVJbVVlMzhtT3Mw?=
- =?utf-8?B?TGN3U0x4dnVnN3RMei9rSUx1M3ByZGZpckxySWZCNnEzckpLOFB5Slh5RXpj?=
- =?utf-8?B?T2hKaVdtWHBFTlBjbzhLdmorUnJjb2hJdCtsZXUvakpBTGpPREYzclZmY3ZG?=
- =?utf-8?B?VzdQMUJ0R09oWHp5bkJMem10RThVTEJHSkJXbnFTUC9hNXNmWm0zQjdjalJ5?=
- =?utf-8?B?OFZTbDhxOFNBUDFZTWdLVUdVM2NoTXl2bzRVdytWSGg3TkdyUjNuTDNwRHZl?=
- =?utf-8?B?SUo2MGtVSGMxbXp0WDJlZ3pHakhyT1Q4WlZqRXlIZE04RmhsdzgwSFpjNFU4?=
- =?utf-8?B?OHAzckpIODhYR3I3N2Q3dFhWeXdObFFHcW8vK2o2TUkrTGZsU05GeWVGV0Fo?=
- =?utf-8?B?TDk1OXcrMFFMWHJ2OTJHUFNkMkpYUmhleCtReWtrd3EyaWJYWDYzMnFZNjgx?=
- =?utf-8?B?SmlESXBIdlVRT2g1Mmd3dEkzV2FYUnlaVG1RY2VyTnA1UlVVWUh4dGx4cHNX?=
- =?utf-8?B?Q1VRT29JNStabklYbjFmTlRQa21xSWp5VmhoSVg5WElGZUwxR3Z1dFVYNisx?=
- =?utf-8?B?b3JhL20zR096Smg0L0VJNTJnTlUzODIyRnNGa2pGVG9iMzliOS9UZFBJTFQ1?=
- =?utf-8?B?bUt4dXJqOEtTSGNYUFk4cDVINEVqM3lSc2FZZi90RHlBdUhobEIybFBOL3Nh?=
- =?utf-8?Q?lJNM4eJgodaPSY3Vm0TFh1ql5KtqY83HnesoU=3D?=
-X-MS-Exchange-CrossTenant-Network-Message-Id: 9b476efb-4fd9-465e-0cee-08d9061f98e8
-X-MS-Exchange-CrossTenant-AuthSource: SN6PR1501MB2064.namprd15.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 23 Apr 2021 06:18:23.0132
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: ZWB4dD0NMUsP8U0BoTzM0vqqRPutKmkzPnGN0YWbggaN8XA+9sjbBf4eGGbKtd2E
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA0PR15MB3968
-X-OriginatorOrg: fb.com
-X-Proofpoint-GUID: H8fKu_657Vli4lJ8EGHgFUd-5SDVPfp3
-X-Proofpoint-ORIG-GUID: H8fKu_657Vli4lJ8EGHgFUd-5SDVPfp3
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.391,18.0.761
- definitions=2021-04-22_15:2021-04-22,2021-04-22 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 clxscore=1011
- adultscore=0 malwarescore=0 mlxscore=0 spamscore=0 bulkscore=0
- phishscore=0 impostorscore=0 priorityscore=1501 lowpriorityscore=0
- mlxlogscore=999 suspectscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.12.0-2104060000 definitions=main-2104230041
-X-FB-Internal: deliver
+References: <cover.1618388989.git.npache@redhat.com> <YHyK+5xJEMcDDhVy@mit.edu>
+ <dbe6abeb-0082-e309-1208-9c43c6f127ae@redhat.com>
+In-Reply-To: <dbe6abeb-0082-e309-1208-9c43c6f127ae@redhat.com>
+From:   David Gow <davidgow@google.com>
+Date:   Fri, 23 Apr 2021 14:26:55 +0800
+Message-ID: <CABVgOSmW=HPhpY05PJ2aj7q6G42YK1LfvifQY5EtheFE+of2RQ@mail.gmail.com>
+Subject: Re: [PATCH v2 0/6] kunit: Fix formatting of KUNIT tests to meet the standard
+To:     Nico Pache <npache@redhat.com>
+Cc:     "Theodore Ts'o" <tytso@mit.edu>,
+        Brendan Higgins <brendanhiggins@google.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-ext4@vger.kernel.org, Networking <netdev@vger.kernel.org>,
+        rafael@kernel.org, linux-m68k@vger.kernel.org,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        mathew.j.martineau@linux.intel.com, davem@davemloft.net,
+        Mark Brown <broonie@kernel.org>,
+        Shuah Khan <skhan@linuxfoundation.org>, mptcp@lists.linux.dev
+Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256;
+        boundary="000000000000a0e53f05c09de2c8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+--000000000000a0e53f05c09de2c8
+Content-Type: text/plain; charset="UTF-8"
 
+On Fri, Apr 23, 2021 at 4:39 AM Nico Pache <npache@redhat.com> wrote:
+>
+> On 4/18/21 3:39 PM, Theodore Ts'o wrote:
+>
+> > On Wed, Apr 14, 2021 at 04:58:03AM -0400, Nico Pache wrote:
+> >> There are few instances of KUNIT tests that are not properly defined.
+> >> This commit focuses on correcting these issues to match the standard
+> >> defined in the Documentation.
+> > The word "standard" seems to be over-stating things.  The
+> > documentation currently states, "they _usually_ have config options
+> > ending in ``_KUNIT_TEST'' (emphasis mine).  I can imagine that there
+> > might be some useful things we can do from a tooling perspective if we
+> > do standardize things, but if you really want to make it a "standard",
+> > we should first update the manpage to say so,
+>
+> KUNIT Maintainers, should we go ahead and make this the "standard"?
+>
+> As Ted has stated...  consistency with 'grep' is my desired outcome.
+>
 
-On 4/22/21 2:49 AM, Jiapeng Chong wrote:
-> Fix the following sparse warning:
-> 
-> kernel/kallsyms.c:457:12: warning: symbol 'arch_get_kallsym' was not
-> declared. Should it be static?
-> 
-> Reported-by: Abaci Robot <abaci@linux.alibaba.com>
-> Signed-off-by: Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
-> ---
-> Changes in v2:
->    -Remove function arch_get_kallsym().
-> 
->   kernel/kallsyms.c | 18 ++----------------
->   1 file changed, 2 insertions(+), 16 deletions(-)
-> 
-> diff --git a/kernel/kallsyms.c b/kernel/kallsyms.c
-> index 8043a90..49c4268 100644
-> --- a/kernel/kallsyms.c
-> +++ b/kernel/kallsyms.c
-> @@ -454,24 +454,10 @@ struct kallsym_iter {
->   	int show_value;
->   };
->   
-> -int __weak arch_get_kallsym(unsigned int symnum, unsigned long *value,
-> -			    char *type, char *name)
-> -{
-> -	return -EINVAL;
-> -}
+The intention here is for this to be a "standard", with the caveat
+that there may be reasons for not following said standard, though they
+should be rare and may result in incompatibility with some tooling.
+This is broadly laid out in the opening of the
+Development/dev-tools/style.rst document, albeit still referring to
+"guidelines" rather than a "standard". The rest of the document does,
+as Ted pointed out, become more descriptive than prescriptive in some
+sections (like the Kconfig entry one): assuming no-one is particularly
+unhappy with that being tightened up, I've no problem with rewording
+it.
 
-This is originally added by
-   d83212d5dd67 kallsyms, x86: Export addresses of PTI entry trampolines
-by Alexander Shishkin.
-The original patch has a x86 specific implementation but later
-it is removed.
+That being said, when it comes to tooling, the Kconfig name does seem
+like it's less important than it could've been: the existence of a
+KUNIT_ALL_TESTS option, as well as support for having
+per-directory/per-subsystem .kunitconfig files should hopefully mean
+there's no need for tools to search for entries ending in _KUNIT_TEST.
+(I do agree that it makes using 'grep' more convenient, though.)
 
-Maybe Alexander Shishkin can take a look?
+> > and explain why (e.g.,
+> > so that we can easily extract out all of the kunit test modules, and
+> > perhaps paint a vision of what tools might be able to do with such a
+> > standard).
+> >
+> > Alternatively, the word "standard" could perhaps be changed to
+> > "convention", which I think more accurately defines how things work at
+> > the moment.
 
-> -
->   static int get_ksymbol_arch(struct kallsym_iter *iter)
->   {
-> -	int ret = arch_get_kallsym(iter->pos - kallsyms_num_syms,
-> -				   &iter->value, &iter->type,
-> -				   iter->name);
-> -
-> -	if (ret < 0) {
-> -		iter->pos_arch_end = iter->pos;
-> -		return 0;
-> -	}
-> -
-> -	return 1;
-> +	iter->pos_arch_end = iter->pos;
-> +	return 0;
->   }
->   
->   static int get_ksymbol_mod(struct kallsym_iter *iter)
-> 
+Cheers,
+-- David
+
+--000000000000a0e53f05c09de2c8
+Content-Type: application/pkcs7-signature; name="smime.p7s"
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment; filename="smime.p7s"
+Content-Description: S/MIME Cryptographic Signature
+
+MIIPnAYJKoZIhvcNAQcCoIIPjTCCD4kCAQExDzANBglghkgBZQMEAgEFADALBgkqhkiG9w0BBwGg
+ggz2MIIEtjCCA56gAwIBAgIQeAMYYHb81ngUVR0WyMTzqzANBgkqhkiG9w0BAQsFADBMMSAwHgYD
+VQQLExdHbG9iYWxTaWduIFJvb3QgQ0EgLSBSMzETMBEGA1UEChMKR2xvYmFsU2lnbjETMBEGA1UE
+AxMKR2xvYmFsU2lnbjAeFw0yMDA3MjgwMDAwMDBaFw0yOTAzMTgwMDAwMDBaMFQxCzAJBgNVBAYT
+AkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52LXNhMSowKAYDVQQDEyFHbG9iYWxTaWduIEF0bGFz
+IFIzIFNNSU1FIENBIDIwMjAwggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEKAoIBAQCvLe9xPU9W
+dpiHLAvX7kFnaFZPuJLey7LYaMO8P/xSngB9IN73mVc7YiLov12Fekdtn5kL8PjmDBEvTYmWsuQS
+6VBo3vdlqqXZ0M9eMkjcKqijrmDRleudEoPDzTumwQ18VB/3I+vbN039HIaRQ5x+NHGiPHVfk6Rx
+c6KAbYceyeqqfuJEcq23vhTdium/Bf5hHqYUhuJwnBQ+dAUcFndUKMJrth6lHeoifkbw2bv81zxJ
+I9cvIy516+oUekqiSFGfzAqByv41OrgLV4fLGCDH3yRh1tj7EtV3l2TngqtrDLUs5R+sWIItPa/4
+AJXB1Q3nGNl2tNjVpcSn0uJ7aFPbAgMBAAGjggGKMIIBhjAOBgNVHQ8BAf8EBAMCAYYwHQYDVR0l
+BBYwFAYIKwYBBQUHAwIGCCsGAQUFBwMEMBIGA1UdEwEB/wQIMAYBAf8CAQAwHQYDVR0OBBYEFHzM
+CmjXouseLHIb0c1dlW+N+/JjMB8GA1UdIwQYMBaAFI/wS3+oLkUkrk1Q+mOai97i3Ru8MHsGCCsG
+AQUFBwEBBG8wbTAuBggrBgEFBQcwAYYiaHR0cDovL29jc3AyLmdsb2JhbHNpZ24uY29tL3Jvb3Ry
+MzA7BggrBgEFBQcwAoYvaHR0cDovL3NlY3VyZS5nbG9iYWxzaWduLmNvbS9jYWNlcnQvcm9vdC1y
+My5jcnQwNgYDVR0fBC8wLTAroCmgJ4YlaHR0cDovL2NybC5nbG9iYWxzaWduLmNvbS9yb290LXIz
+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
+ILbFHw0h01NI0v+AeczGMEwGA1UdIARFMEMwQQYJKwYBBAGgMgEoMDQwMgYIKwYBBQUHAgEWJmh0
+dHBzOi8vd3d3Lmdsb2JhbHNpZ24uY29tL3JlcG9zaXRvcnkvMAkGA1UdEwQCMAAwgZoGCCsGAQUF
+BwEBBIGNMIGKMD4GCCsGAQUFBzABhjJodHRwOi8vb2NzcC5nbG9iYWxzaWduLmNvbS9jYS9nc2F0
+bGFzcjNzbWltZWNhMjAyMDBIBggrBgEFBQcwAoY8aHR0cDovL3NlY3VyZS5nbG9iYWxzaWduLmNv
+bS9jYWNlcnQvZ3NhdGxhc3Izc21pbWVjYTIwMjAuY3J0MB8GA1UdIwQYMBaAFHzMCmjXouseLHIb
+0c1dlW+N+/JjMEYGA1UdHwQ/MD0wO6A5oDeGNWh0dHA6Ly9jcmwuZ2xvYmFsc2lnbi5jb20vY2Ev
+Z3NhdGxhc3Izc21pbWVjYTIwMjAuY3JsMA0GCSqGSIb3DQEBCwUAA4IBAQCNr3LBERPjVctGdVEb
+/hN6/N6F2eUWxZLSUbuV7fOle0OvI8xz2AUBrOYQLp94ox9LqmsATKPsBl2uiktsvfs/AXNMcmOz
+qsWHzfqp4XlvNgQsC/UyUMWxZoEyTDfTSat09yQjkFJ7viwzrqqscmTx5oTZz8TPRt0mbxwx3qry
+wDzYxadSUQXNpNnfi0FBDYUUfuCLFWPsPsAXmgh483u0RbNik9OY/ozNq1Gvg/U0jQOlJf2IiKbE
+kUL5Vq8gDDu6bETx5bHmRmSjHhwo7eVbxywczpzdFsU3dauZ3BzqhLy2pRGGzZybSH/3mf7o9y15
+gmRHE7WzPLrsULHG/TM8MYICajCCAmYCAQEwaDBUMQswCQYDVQQGEwJCRTEZMBcGA1UEChMQR2xv
+YmFsU2lnbiBudi1zYTEqMCgGA1UEAxMhR2xvYmFsU2lnbiBBdGxhcyBSMyBTTUlNRSBDQSAyMDIw
+AhABm/kO+4pd09krN7Fjk8ypMA0GCWCGSAFlAwQCAQUAoIHUMC8GCSqGSIb3DQEJBDEiBCCh7i1G
+xEa2Zy4mEF14lMt4G1bH/lllueUJtLj1vySixjAYBgkqhkiG9w0BCQMxCwYJKoZIhvcNAQcBMBwG
+CSqGSIb3DQEJBTEPFw0yMTA0MjMwNjI3MDhaMGkGCSqGSIb3DQEJDzFcMFowCwYJYIZIAWUDBAEq
+MAsGCWCGSAFlAwQBFjALBglghkgBZQMEAQIwCgYIKoZIhvcNAwcwCwYJKoZIhvcNAQEKMAsGCSqG
+SIb3DQEBBzALBglghkgBZQMEAgEwDQYJKoZIhvcNAQEBBQAEggEAjnHCdN9RnYjqXdO7bXdKmary
+TYS/w5AwbUbQ5IYadX5M4PTbGNa3bxfHfrz3NrUWF0bmJecomzt5SJe3NmDVzkntxuLGzZyUv2F4
+vk2p8uY0TMZad94dMfI+L3LsWngr7WNPqjDg/DXt+1dRhWbgVZSHnLMSOveUUCWV8ej/yaoSeRMQ
+YqxCK5e3VquVBt10CL/0cgXsj0AkhmddkHqkUyLQKioDONQWHfVSAeIyenaOU8TLhRDFfct1JL0I
+lfEWQWgYDhgY7tc3G0E0h9J2OBwUCmsuW3+czPgLLST8nvxkeyJKRykuAXcfEoBFGr233twR4UMQ
+aSowOoDaOEf06A==
+--000000000000a0e53f05c09de2c8--
