@@ -2,278 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 841503698C8
-	for <lists+netdev@lfdr.de>; Fri, 23 Apr 2021 20:00:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 954173698C9
+	for <lists+netdev@lfdr.de>; Fri, 23 Apr 2021 20:01:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232569AbhDWSAr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 23 Apr 2021 14:00:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60996 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231400AbhDWSAq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 23 Apr 2021 14:00:46 -0400
-Received: from mail-yb1-xb32.google.com (mail-yb1-xb32.google.com [IPv6:2607:f8b0:4864:20::b32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EDA60C061574;
-        Fri, 23 Apr 2021 11:00:09 -0700 (PDT)
-Received: by mail-yb1-xb32.google.com with SMTP id v72so35893802ybe.11;
-        Fri, 23 Apr 2021 11:00:09 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=5XY99hVS9yq4YHWv0NyUo7LsqeDBpS85jO1WJl2092g=;
-        b=Q476CmVkPihaBow0uIezkhDQfIqRZFneGFaKsRz39fFxgR1Fd0ExVEXcJhqwHLy6XP
-         cV3hrpntjCs4qZbKnTUXvrdYXjquSt2ZbaxA54K/N88R/vYU+PXOg7wrm9UESG3APTHY
-         2zlV/MqdLtQs1xM/sD7UyrAm5teopI8zGLGNAp53hiUDUh8n5K3wHgtzruzDKNKOSZkS
-         SMS2aZOUIK9Sxj/NDn5rba8aFZnPkYWNINU/EtoADJ+h94+sGISR5YyB3BmqL+ci/Fsa
-         Hu1zRASOpk37cebsCUrD5Vu5b+KPznI+9Ys4aaIMP8v3l87HCvLp7FiXbh/rzEyNkPPP
-         HSIg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=5XY99hVS9yq4YHWv0NyUo7LsqeDBpS85jO1WJl2092g=;
-        b=XwD7zxjUErr+50B1MZYszB+/JmcDFKepEx+Qo2wG6c0lArc+5glU2l2tnQECMCLD2G
-         mvH8P0daJ3rX44ZSdmrTc3yXeKw0WAvmfj2crTw9YOgWyTpl6igR3/OKUVDrEfegb0rM
-         FImFE7dRzgOioxL/bs3gFJ4icc1QgX5hgfxx+UTRFkBHw4YmKM7DrybDrOtRxzPgBgx5
-         DlLfL1NPHaC6dnPGlkEVFmjCBp1rbvzSx4XGbi0W84EARf70vJ3aeTyR8fuPn7KXDkzh
-         G9ZCrYt06gTGAUO6lengyJExxOWSZCEceqWfht0GPQfnXHpq9AEp4dqt/xMM062BoFnE
-         /y8w==
-X-Gm-Message-State: AOAM532ZwImmqAFYPzTUD4RY5w7evMWxV/xRnh6fdZ9IACGbwxvAEseK
-        68UWSM+/Ni/h+2qyHKTchKVeJndpTGwLY70HEPY=
-X-Google-Smtp-Source: ABdhPJyzElvI7RLtyIMkDldepWKdYAhxTmBUIz0Yh8D31khrpK/qgPuGbFTpdG/pHphs8WZuIiqC7pEan6xnICgSpj8=
-X-Received: by 2002:a05:6902:1144:: with SMTP id p4mr7022759ybu.510.1619200809234;
- Fri, 23 Apr 2021 11:00:09 -0700 (PDT)
+        id S243329AbhDWSCI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 23 Apr 2021 14:02:08 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:38492 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S231400AbhDWSCG (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 23 Apr 2021 14:02:06 -0400
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
+        (envelope-from <andrew@lunn.ch>)
+        id 1la07G-000hrM-F4; Fri, 23 Apr 2021 20:01:22 +0200
+Date:   Fri, 23 Apr 2021 20:01:22 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Vadym Kochan <vadym.kochan@plvision.eu>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        Taras Chornyi <tchornyi@marvell.com>,
+        linux-kernel@vger.kernel.org,
+        Mickey Rachamim <mickeyr@marvell.com>,
+        Vadym Kochan <vkochan@marvell.com>
+Subject: Re: [PATCH net-next 1/3] net: marvell: prestera: bump supported
+ firmware version to 3.0
+Message-ID: <YIMLcsstbpY215oJ@lunn.ch>
+References: <20210423155933.29787-1-vadym.kochan@plvision.eu>
+ <20210423155933.29787-2-vadym.kochan@plvision.eu>
+ <YIL6feaar8Y/yOaZ@lunn.ch>
+ <20210423170437.GC17656@plvision.eu>
 MIME-Version: 1.0
-References: <20210416202404.3443623-1-andrii@kernel.org> <20210416202404.3443623-16-andrii@kernel.org>
- <3947e6ff-0b73-995e-630f-4a1252f8694b@fb.com> <CAEf4BzasVszkBCA0Ra2NsU+0ixoR65khF2E6h7CG_P3FOyamFQ@mail.gmail.com>
- <b49042fc-0af8-11f4-4316-39b0d6f0e6e4@fb.com> <CAEf4BzbP+trfjW-_AwcLsmS=79jqXWoRbQJnSH2xkE=MOxN2Gg@mail.gmail.com>
- <94f367e9-24f0-5ba6-eb8d-2951dee4219a@fb.com>
-In-Reply-To: <94f367e9-24f0-5ba6-eb8d-2951dee4219a@fb.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Fri, 23 Apr 2021 10:59:58 -0700
-Message-ID: <CAEf4BzaH4Sr5HenM1+-j4d=r=juw8pacPpXZM3YBxJu2S_uPwg@mail.gmail.com>
-Subject: Re: [PATCH v2 bpf-next 15/17] selftests/bpf: add function linking selftest
-To:     Yonghong Song <yhs@fb.com>
-Cc:     Andrii Nakryiko <andrii@kernel.org>, bpf <bpf@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>,
-        Alexei Starovoitov <ast@fb.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Kernel Team <kernel-team@fb.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210423170437.GC17656@plvision.eu>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Apr 23, 2021 at 10:58 AM Yonghong Song <yhs@fb.com> wrote:
->
->
->
-> On 4/23/21 10:55 AM, Andrii Nakryiko wrote:
-> > On Fri, Apr 23, 2021 at 10:35 AM Yonghong Song <yhs@fb.com> wrote:
-> >>
-> >>
-> >>
-> >> On 4/23/21 10:18 AM, Andrii Nakryiko wrote:
-> >>> On Thu, Apr 22, 2021 at 5:50 PM Yonghong Song <yhs@fb.com> wrote:
-> >>>>
-> >>>>
-> >>>>
-> >>>> On 4/16/21 1:24 PM, Andrii Nakryiko wrote:
-> >>>>> Add selftest validating various aspects of statically linking functions:
-> >>>>>      - no conflicts and correct resolution for name-conflicting static funcs;
-> >>>>>      - correct resolution of extern functions;
-> >>>>>      - correct handling of weak functions, both resolution itself and libbpf's
-> >>>>>        handling of unused weak function that "lost" (it leaves gaps in code with
-> >>>>>        no ELF symbols);
-> >>>>>      - correct handling of hidden visibility to turn global function into
-> >>>>>        "static" for the purpose of BPF verification.
-> >>>>>
-> >>>>> Signed-off-by: Andrii Nakryiko <andrii@kernel.org>
-> >>>>
-> >>>> Ack with a small nit below.
-> >>>>
-> >>>> Acked-by: Yonghong Song <yhs@fb.com>
-> >>>>
-> >>>>> ---
-> >>>>>     tools/testing/selftests/bpf/Makefile          |  3 +-
-> >>>>>     .../selftests/bpf/prog_tests/linked_funcs.c   | 42 +++++++++++
-> >>>>>     .../selftests/bpf/progs/linked_funcs1.c       | 73 +++++++++++++++++++
-> >>>>>     .../selftests/bpf/progs/linked_funcs2.c       | 73 +++++++++++++++++++
-> >>>>>     4 files changed, 190 insertions(+), 1 deletion(-)
-> >>>>>     create mode 100644 tools/testing/selftests/bpf/prog_tests/linked_funcs.c
-> >>>>>     create mode 100644 tools/testing/selftests/bpf/progs/linked_funcs1.c
-> >>>>>     create mode 100644 tools/testing/selftests/bpf/progs/linked_funcs2.c
-> >>>>>
-> >>>>> diff --git a/tools/testing/selftests/bpf/Makefile b/tools/testing/selftests/bpf/Makefile
-> >>>>> index 666b462c1218..427ccfec1a6a 100644
-> >>>>> --- a/tools/testing/selftests/bpf/Makefile
-> >>>>> +++ b/tools/testing/selftests/bpf/Makefile
-> >>>>> @@ -308,9 +308,10 @@ endef
-> >>>>>
-> >>>>>     SKEL_BLACKLIST := btf__% test_pinning_invalid.c test_sk_assign.c
-> >>>>>
-> >>>>> -LINKED_SKELS := test_static_linked.skel.h
-> >>>>> +LINKED_SKELS := test_static_linked.skel.h linked_funcs.skel.h
-> >>>>>
-> >>>>>     test_static_linked.skel.h-deps := test_static_linked1.o test_static_linked2.o
-> >>>>> +linked_funcs.skel.h-deps := linked_funcs1.o linked_funcs2.o
-> >>>>>
-> >>>>>     LINKED_BPF_SRCS := $(patsubst %.o,%.c,$(foreach skel,$(LINKED_SKELS),$($(skel)-deps)))
-> >>>>>
-> >>>>> diff --git a/tools/testing/selftests/bpf/prog_tests/linked_funcs.c b/tools/testing/selftests/bpf/prog_tests/linked_funcs.c
-> >>>>> new file mode 100644
-> >>>>> index 000000000000..03bf8ef131ce
-> >>>>> --- /dev/null
-> >>>>> +++ b/tools/testing/selftests/bpf/prog_tests/linked_funcs.c
-> >>>>> @@ -0,0 +1,42 @@
-> >>>>> +// SPDX-License-Identifier: GPL-2.0
-> >>>>> +/* Copyright (c) 2021 Facebook */
-> >>>>> +
-> >>>>> +#include <test_progs.h>
-> >>>>> +#include <sys/syscall.h>
-> >>>>> +#include "linked_funcs.skel.h"
-> >>>>> +
-> >>>>> +void test_linked_funcs(void)
-> >>>>> +{
-> >>>>> +     int err;
-> >>>>> +     struct linked_funcs *skel;
-> >>>>> +
-> >>>>> +     skel = linked_funcs__open();
-> >>>>> +     if (!ASSERT_OK_PTR(skel, "skel_open"))
-> >>>>> +             return;
-> >>>>> +
-> >>>>> +     skel->rodata->my_tid = syscall(SYS_gettid);
-> >>>>> +     skel->rodata->syscall_id = SYS_getpgid;
-> >>>>> +
-> >>>>> +     err = linked_funcs__load(skel);
-> >>>>> +     if (!ASSERT_OK(err, "skel_load"))
-> >>>>> +             goto cleanup;
-> >>>>> +
-> >>>>> +     err = linked_funcs__attach(skel);
-> >>>>> +     if (!ASSERT_OK(err, "skel_attach"))
-> >>>>> +             goto cleanup;
-> >>>>> +
-> >>>>> +     /* trigger */
-> >>>>> +     syscall(SYS_getpgid);
-> >>>>> +
-> >>>>> +     ASSERT_EQ(skel->bss->output_val1, 2000 + 2000, "output_val1");
-> >>>>> +     ASSERT_EQ(skel->bss->output_ctx1, SYS_getpgid, "output_ctx1");
-> >>>>> +     ASSERT_EQ(skel->bss->output_weak1, 42, "output_weak1");
-> >>>>> +
-> >>>>> +     ASSERT_EQ(skel->bss->output_val2, 2 * 1000 + 2 * (2 * 1000), "output_val2");
-> >>>>> +     ASSERT_EQ(skel->bss->output_ctx2, SYS_getpgid, "output_ctx2");
-> >>>>> +     /* output_weak2 should never be updated */
-> >>>>> +     ASSERT_EQ(skel->bss->output_weak2, 0, "output_weak2");
-> >>>>> +
-> >>>>> +cleanup:
-> >>>>> +     linked_funcs__destroy(skel);
-> >>>>> +}
-> >>>>> diff --git a/tools/testing/selftests/bpf/progs/linked_funcs1.c b/tools/testing/selftests/bpf/progs/linked_funcs1.c
-> >>>>> new file mode 100644
-> >>>>> index 000000000000..cc621d4e4d82
-> >>>>> --- /dev/null
-> >>>>> +++ b/tools/testing/selftests/bpf/progs/linked_funcs1.c
-> >>>>> @@ -0,0 +1,73 @@
-> >>>>> +// SPDX-License-Identifier: GPL-2.0
-> >>>>> +/* Copyright (c) 2021 Facebook */
-> >>>>> +
-> >>>>> +#include "vmlinux.h"
-> >>>>> +#include <bpf/bpf_helpers.h>
-> >>>>> +#include <bpf/bpf_tracing.h>
-> >>>>> +
-> >>>>> +/* weak and shared between two files */
-> >>>>> +const volatile int my_tid __weak = 0;
-> >>>>> +const volatile long syscall_id __weak = 0;
-> >>>>
-> >>>> Since the new compiler (llvm13) is recommended for this patch set.
-> >>>> We can simplify the above two definition with
-> >>>>      int my_tid __weak;
-> >>>>      long syscall_id __weak;
-> >>>> The same for the other file.
-> >>>
-> >>> This is not about old vs new compilers. I wanted to use .rodata
-> >>> variables, but I'll switch to .bss, no problem.
-> >>
-> >> I see. You can actually hone one "const volatile ing my_tid __weak = 0"
-> >> and another "long syscall_id __weak". This way, you will be able to
-> >> test both .rodata and .bss section.
-> >
-> > I wonder if you meant to have one my_tid __weak in .bss and another
-> > my_tid __weak in .rodata. Or just my_tid in .bss and syscall_id in
-> > .rodata?
-> >
-> > If the former (mixing ELF sections across definitions of the same
-> > symbol), then it's disallowed right now. libbpf will error out on
-> > mismatched sections. I tested this with normal compilation, it does
-> > work and the final section is the section of the winner.
-> >
-> > But I think that's quite confusing, actually, so I'm going to leave it
-> > disallowed for now. E.g., if one file expects a read-write variable
-> > and another expects that same variable to be read-only, and the winner
-> > ends up being read-only one, then the file expecting read-write will
-> > essentially have incorrect code (and will be rejected by BPF verifier,
-> > if anything attempts to write). So I think it's better to reject it at
-> > the linking time.
-> >
-> > But I'll do one (my_tid) as .bss, and another (syscall_id) as .rodata.
->
-> I mean this one. Permitting the same variable in both .bss and .rodata
-> sections is never a good practice.
+On Fri, Apr 23, 2021 at 08:04:37PM +0300, Vadym Kochan wrote:
+> Hi Andrew,
+> 
+> On Fri, Apr 23, 2021 at 06:49:01PM +0200, Andrew Lunn wrote:
+> > On Fri, Apr 23, 2021 at 06:59:31PM +0300, Vadym Kochan wrote:
+> > > From: Vadym Kochan <vkochan@marvell.com>
+> > > 
+> > > New firmware version has some ABI and feature changes like:
+> > > 
+> > >     - LAG support
+> > >     - initial L3 support
+> > >     - changed events handling logic
+> > > 
+> > > Signed-off-by: Vadym Kochan <vkochan@marvell.com>
+> > > ---
+> > >  drivers/net/ethernet/marvell/prestera/prestera_pci.c | 2 +-
+> > >  1 file changed, 1 insertion(+), 1 deletion(-)
+> > > 
+> > > diff --git a/drivers/net/ethernet/marvell/prestera/prestera_pci.c b/drivers/net/ethernet/marvell/prestera/prestera_pci.c
+> > > index 298110119272..80fb5daf1da8 100644
+> > > --- a/drivers/net/ethernet/marvell/prestera/prestera_pci.c
+> > > +++ b/drivers/net/ethernet/marvell/prestera/prestera_pci.c
+> > > @@ -13,7 +13,7 @@
+> > >  
+> > >  #define PRESTERA_MSG_MAX_SIZE 1500
+> > >  
+> > > -#define PRESTERA_SUPP_FW_MAJ_VER	2
+> > > +#define PRESTERA_SUPP_FW_MAJ_VER	3
+> > >  #define PRESTERA_SUPP_FW_MIN_VER	0
+> > 
+> > I could be reading the code wrong, but it looks like anybody with
+> > firmware version 2 on their machine and this new driver version
+> > results in the switch not probing? And if the switch does not probe,
+> > do they have any networking to go get the new firmware version?
+> > 
+> 
+> Existing boards have management port which is separated from the PP.
 
-Ok, cool, that's what we do right now. I wonder why it is allowed by
-user-space linkers, it seems dangerous.
+I don't think that is enough. You have strongly tied the kernel
+version to the firmware version. Upgrade the kernel without first
+upgrading linux-firmware, and things break. In Linux distributions
+these are separate packages, each with their own life cycle. There is
+no guarantee they will be upgraded together.
 
->
-> >
-> >>
-> >>>
-> >>>>
-> >>>> But I am also okay with the current form
-> >>>> to *satisfy* llvm10 some people may still use.
-> >>>>
-> >>>>> +
-> >>>>> +int output_val1 = 0;
-> >>>>> +int output_ctx1 = 0;
-> >>>>> +int output_weak1 = 0;
-> >>>>> +
-> >>>>> +/* same "subprog" name in all files, but it's ok because they all are static */
-> >>>>> +static __noinline int subprog(int x)
-> >>>>> +{
-> >>>>> +     /* but different formula */
-> >>>>> +     return x * 1;
-> >>>>> +}
-> >>>>> +
-> >>>>> +/* Global functions can't be void */
-> >>>>> +int set_output_val1(int x)
-> >>>>> +{
-> >>>>> +     output_val1 = x + subprog(x);
-> >>>>> +     return x;
-> >>>>> +}
-> >>>>> +
-> >>>>> +/* This function can't be verified as global, as it assumes raw_tp/sys_enter
-> >>>>> + * context and accesses syscall id (second argument). So we mark it as
-> >>>>> + * __hidden, so that libbpf will mark it as static in the final object file,
-> >>>>> + * right before verifying it in the kernel.
-> >>>>> + *
-> >>>>> + * But we don't mark it as __hidden here, rather at extern site. __hidden is
-> >>>>> + * "contaminating" visibility, so it will get propagated from either extern or
-> >>>>> + * actual definition (including from the losing __weak definition).
-> >>>>> + */
-> >>>>> +void set_output_ctx1(__u64 *ctx)
-> >>>>> +{
-> >>>>> +     output_ctx1 = ctx[1]; /* long id, same as in BPF_PROG below */
-> >>>>> +}
-> >>>>> +
-> >>>>> +/* this weak instance should win because it's the first one */
-> >>>>> +__weak int set_output_weak(int x)
-> >>>>> +{
-> >>>>> +     output_weak1 = x;
-> >>>>> +     return x;
-> >>>>> +}
-> >>>>> +
-> >>>>> +extern int set_output_val2(int x);
-> >>>>> +
-> >>>>> +/* here we'll force set_output_ctx2() to be __hidden in the final obj file */
-> >>>>> +__hidden extern void set_output_ctx2(__u64 *ctx);
-> >>>>> +
-> >>>> [...]
+> > I think you need to provide some degree of backwards compatibly to
+> > older firmware. Support version 2 and 3. When version 4 comes out,
+> > drop support for version 2 in the driver etc.
+
+The wifi driver i have for my laptop does something like this. It
+first tries to load the latest version of the firmware the driver
+supports, and if that fails, it goes back to older versions until it
+finds a version it can load, or gives up, saying they are all too old.
+
+      Andrew
