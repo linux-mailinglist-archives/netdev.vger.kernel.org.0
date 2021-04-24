@@ -2,173 +2,163 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2C24E369EFE
-	for <lists+netdev@lfdr.de>; Sat, 24 Apr 2021 08:11:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E554E369FEB
+	for <lists+netdev@lfdr.de>; Sat, 24 Apr 2021 09:01:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231921AbhDXGL6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 24 Apr 2021 02:11:58 -0400
-Received: from rtits2.realtek.com ([211.75.126.72]:34032 "EHLO
-        rtits2.realtek.com.tw" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230174AbhDXGL4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 24 Apr 2021 02:11:56 -0400
-Authenticated-By: 
-X-SpamFilter-By: ArmorX SpamTrap 5.73 with qID 13O6B8uH4001152, This message is accepted by code: ctloc85258
-Received: from mail.realtek.com (rtexh36502.realtek.com.tw[172.21.6.25])
-        by rtits2.realtek.com.tw (8.15.2/2.71/5.88) with ESMTPS id 13O6B8uH4001152
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Sat, 24 Apr 2021 14:11:08 +0800
-Received: from RTEXMBS04.realtek.com.tw (172.21.6.97) by
- RTEXH36502.realtek.com.tw (172.21.6.25) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2106.2; Sat, 24 Apr 2021 14:11:08 +0800
-Received: from fc32.localdomain (172.21.177.102) by RTEXMBS04.realtek.com.tw
- (172.21.6.97) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2106.2; Sat, 24 Apr
- 2021 14:11:06 +0800
-From:   Hayes Wang <hayeswang@realtek.com>
-To:     <kuba@kernel.org>, <davem@davemloft.net>
-CC:     <netdev@vger.kernel.org>, <nic_swsd@realtek.com>,
-        <linux-kernel@vger.kernel.org>, <linux-usb@vger.kernel.org>,
-        Hayes Wang <hayeswang@realtek.com>
-Subject: [PATCH net-next] r8152: remove some bit operations
-Date:   Sat, 24 Apr 2021 14:09:03 +0800
-Message-ID: <1394712342-15778-362-Taiwan-albertk@realtek.com>
-X-Mailer: Microsoft Office Outlook 11
+        id S231921AbhDXHC3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 24 Apr 2021 03:02:29 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:21092 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S231467AbhDXHC2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 24 Apr 2021 03:02:28 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1619247709;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=8XLwy8kqxeYQ9e51ZlWT1aEPp0xe58DQ+7TgxaQsEAI=;
+        b=Z+vUkJZM5EcYTV09Yvf9N6X6HcFhc/SkkU1JIBJYzMPwlzWPcPmcjN34wzNp941D8CzMlG
+        uCYjDIIfSxWD9FZywf8iKQduuHUT1oXNvBWdX7h600ZT/wdakHc97D8XOwbdm03XpAlEAH
+        4HD25GEt0hTkJQwoQI7dDuO1lHxdjxI=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-57-VJTHMsaAN4O8n2Q0HH7i0Q-1; Sat, 24 Apr 2021 03:01:47 -0400
+X-MC-Unique: VJTHMsaAN4O8n2Q0HH7i0Q-1
+Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com [10.5.11.22])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id D6CB38026B1;
+        Sat, 24 Apr 2021 07:01:44 +0000 (UTC)
+Received: from carbon (unknown [10.36.110.19])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id A13B710027A5;
+        Sat, 24 Apr 2021 07:01:30 +0000 (UTC)
+Date:   Sat, 24 Apr 2021 09:01:29 +0200
+From:   Jesper Dangaard Brouer <brouer@redhat.com>
+To:     Hangbin Liu <liuhangbin@gmail.com>
+Cc:     Toke =?UTF-8?B?SMO4aWxhbmQtSsO4cmdlbnNlbg==?= <toke@redhat.com>,
+        bpf@vger.kernel.org, netdev@vger.kernel.org,
+        Jiri Benc <jbenc@redhat.com>,
+        Eelco Chaudron <echaudro@redhat.com>, ast@kernel.org,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Lorenzo Bianconi <lorenzo.bianconi@redhat.com>,
+        David Ahern <dsahern@gmail.com>,
+        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
+        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
+        =?UTF-8?B?QmrDtnJuIFQ=?= =?UTF-8?B?w7ZwZWw=?= 
+        <bjorn.topel@gmail.com>, Martin KaFai Lau <kafai@fb.com>,
+        brouer@redhat.com
+Subject: Re: [PATCHv9 bpf-next 2/4] xdp: extend xdp_redirect_map with
+ broadcast support
+Message-ID: <20210424090129.1b8fe377@carbon>
+In-Reply-To: <20210424010925.GG3465@Leo-laptop-t470s>
+References: <20210422071454.2023282-1-liuhangbin@gmail.com>
+        <20210422071454.2023282-3-liuhangbin@gmail.com>
+        <20210422185332.3199ca2e@carbon>
+        <87a6pqfb9x.fsf@toke.dk>
+        <20210423185429.126492d0@carbon>
+        <20210424010925.GG3465@Leo-laptop-t470s>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [172.21.177.102]
-X-ClientProxiedBy: RTEXMBS01.realtek.com.tw (172.21.6.94) To
- RTEXMBS04.realtek.com.tw (172.21.6.97)
-X-KSE-ServerInfo: RTEXMBS04.realtek.com.tw, 9
-X-KSE-Antivirus-Interceptor-Info: scan successful
-X-KSE-Antivirus-Info: =?big5?B?Q2xlYW4sIGJhc2VzOiAyMDIxLzQvMjQgpFekyCAwNDo1OTowMA==?=
-X-KSE-Attachment-Filter-Triggered-Rules: Clean
-X-KSE-Attachment-Filter-Triggered-Filters: Clean
-X-KSE-BulkMessagesFiltering-Scan-Result: protection disabled
-X-KSE-AntiSpam-Outbound-Interceptor-Info: scan successful
-X-KSE-AntiSpam-Version: 5.9.20, Database issued on: 04/24/2021 05:56:33
-X-KSE-AntiSpam-Status: KAS_STATUS_NOT_DETECTED
-X-KSE-AntiSpam-Method: none
-X-KSE-AntiSpam-Rate: 0
-X-KSE-AntiSpam-Info: Lua profiles 163316 [Apr 23 2021]
-X-KSE-AntiSpam-Info: Version: 5.9.20.0
-X-KSE-AntiSpam-Info: Envelope from: hayeswang@realtek.com
-X-KSE-AntiSpam-Info: LuaCore: 443 443 d64ad0ad6f66abd85f8fb55fe5d831fdcc4c44a0
-X-KSE-AntiSpam-Info: {Tracking_from_domain_doesnt_match_to}
-X-KSE-AntiSpam-Info: d41d8cd98f00b204e9800998ecf8427e.com:7.1.1;127.0.0.199:7.1.2;realtek.com:7.1.1
-X-KSE-AntiSpam-Info: {Track_Chinese_Simplified, headers_charset}
-X-KSE-AntiSpam-Info: Rate: 0
-X-KSE-AntiSpam-Info: Status: not_detected
-X-KSE-AntiSpam-Info: Method: none
-X-KSE-AntiSpam-Info: Auth:dkim=none
-X-KSE-Antiphishing-Info: Clean
-X-KSE-Antiphishing-ScanningType: Heuristic
-X-KSE-Antiphishing-Method: None
-X-KSE-Antiphishing-Bases: 04/24/2021 06:00:00
-X-KSE-ServerInfo: RTEXH36502.realtek.com.tw, 9
-X-KSE-Attachment-Filter-Triggered-Rules: Clean
-X-KSE-Attachment-Filter-Triggered-Filters: Clean
-X-KSE-BulkMessagesFiltering-Scan-Result: protection disabled
-X-KSE-AntiSpam-Outbound-Interceptor-Info: scan successful
-X-KSE-AntiSpam-Version: 5.9.20, Database issued on: 04/24/2021 05:56:33
-X-KSE-AntiSpam-Status: KAS_STATUS_NOT_DETECTED
-X-KSE-AntiSpam-Method: none
-X-KSE-AntiSpam-Rate: 0
-X-KSE-AntiSpam-Info: Lua profiles 163316 [Apr 23 2021]
-X-KSE-AntiSpam-Info: Version: 5.9.20.0
-X-KSE-AntiSpam-Info: Envelope from: hayeswang@realtek.com
-X-KSE-AntiSpam-Info: LuaCore: 443 443 d64ad0ad6f66abd85f8fb55fe5d831fdcc4c44a0
-X-KSE-AntiSpam-Info: {Tracking_from_domain_doesnt_match_to}
-X-KSE-AntiSpam-Info: 127.0.0.199:7.1.2;realtek.com:7.1.1;d41d8cd98f00b204e9800998ecf8427e.com:7.1.1
-X-KSE-AntiSpam-Info: Rate: 0
-X-KSE-AntiSpam-Info: Status: not_detected
-X-KSE-AntiSpam-Info: Method: none
-X-KSE-AntiSpam-Info: Auth:dkim=none
-X-KSE-Antiphishing-Info: Clean
-X-KSE-Antiphishing-ScanningType: Heuristic
-X-KSE-Antiphishing-Method: None
-X-KSE-Antiphishing-Bases: 04/24/2021 06:00:00
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Remove DELL_TB_RX_AGG_BUG and LENOVO_MACPASSTHRU flags of rtl8152_flags.
-They are only set when initializing and wouldn't be change. It is enough
-to record them with variables.
+On Sat, 24 Apr 2021 09:09:25 +0800
+Hangbin Liu <liuhangbin@gmail.com> wrote:
 
-Signed-off-by: Hayes Wang <hayeswang@realtek.com>
----
- drivers/net/usb/r8152.c | 14 +++++++-------
- 1 file changed, 7 insertions(+), 7 deletions(-)
+> On Fri, Apr 23, 2021 at 06:54:29PM +0200, Jesper Dangaard Brouer wrote:
+> > On Thu, 22 Apr 2021 20:02:18 +0200
+> > Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com> wrote:
+> >  =20
+> > > Jesper Dangaard Brouer <brouer@redhat.com> writes:
+> > >  =20
+> > > > On Thu, 22 Apr 2021 15:14:52 +0800
+> > > > Hangbin Liu <liuhangbin@gmail.com> wrote:
+> > > >   =20
+> > > >> diff --git a/net/core/filter.c b/net/core/filter.c
+> > > >> index cae56d08a670..afec192c3b21 100644
+> > > >> --- a/net/core/filter.c
+> > > >> +++ b/net/core/filter.c   =20
+> > > > [...]   =20
+> > > >>  int xdp_do_redirect(struct net_device *dev, struct xdp_buff *xdp,
+> > > >>  		    struct bpf_prog *xdp_prog)
+> > > >>  {
+> > > >> @@ -3933,6 +3950,7 @@ int xdp_do_redirect(struct net_device *dev, =
+struct xdp_buff *xdp,
+> > > >>  	enum bpf_map_type map_type =3D ri->map_type;
+> > > >>  	void *fwd =3D ri->tgt_value;
+> > > >>  	u32 map_id =3D ri->map_id;
+> > > >> +	struct bpf_map *map;
+> > > >>  	int err;
+> > > >> =20
+> > > >>  	ri->map_id =3D 0; /* Valid map id idr range: [1,INT_MAX[ */
+> > > >> @@ -3942,7 +3960,12 @@ int xdp_do_redirect(struct net_device *dev,=
+ struct xdp_buff *xdp,
+> > > >>  	case BPF_MAP_TYPE_DEVMAP:
+> > > >>  		fallthrough;
+> > > >>  	case BPF_MAP_TYPE_DEVMAP_HASH:
+> > > >> -		err =3D dev_map_enqueue(fwd, xdp, dev);
+> > > >> +		map =3D xchg(&ri->map, NULL);   =20
+> > > >
+> > > > Hmm, this looks dangerous for performance to have on this fast-path.
+> > > > The xchg call can be expensive, AFAIK this is an atomic operation. =
+  =20
+> > >=20
+> > > Ugh, you're right. That's my bad, I suggested replacing the
+> > > READ_ONCE()/WRITE_ONCE() pair with the xchg() because an exchange is
+> > > what it's doing, but I failed to consider the performance implications
+> > > of the atomic operation. Sorry about that, Hangbin! I guess this shou=
+ld
+> > > be changed to:
+> > >=20
+> > > +		map =3D READ_ONCE(ri->map);
+> > > +		if (map) {
+> > > +			WRITE_ONCE(ri->map, NULL);
+> > > +			err =3D dev_map_enqueue_multi(xdp, dev, map,
+> > > +						    ri->flags & BPF_F_EXCLUDE_INGRESS);
+> > > +		} else {
+> > > +			err =3D dev_map_enqueue(fwd, xdp, dev);
+> > > +		} =20
+> >=20
+> > This is highly sensitive fast-path code, as you saw Bj=C3=B8rn have been
+> > hunting nanosec in this area.  The above code implicitly have "map" as
+> > the likely option, which I don't think it is. =20
+>=20
+> Hi Jesper,
+>=20
+> From the performance data, there is only a slightly impact. Do we still n=
+eed
+> to block the whole patch on this? Or if you have a better solution?
 
-diff --git a/drivers/net/usb/r8152.c b/drivers/net/usb/r8152.c
-index 9986f8969d02..136ea06540ff 100644
---- a/drivers/net/usb/r8152.c
-+++ b/drivers/net/usb/r8152.c
-@@ -767,8 +767,6 @@ enum rtl8152_flags {
- 	PHY_RESET,
- 	SCHEDULE_TASKLET,
- 	GREEN_ETHERNET,
--	DELL_TB_RX_AGG_BUG,
--	LENOVO_MACPASSTHRU,
- };
- 
- #define DEVICE_ID_THINKPAD_THUNDERBOLT3_DOCK_GEN2	0x3082
-@@ -934,6 +932,8 @@ struct r8152 {
- 	u32 fc_pause_on, fc_pause_off;
- 
- 	u32 support_2500full:1;
-+	u32 lenovo_macpassthru:1;
-+	u32 dell_tb_rx_agg_bug:1;
- 	u16 ocp_base;
- 	u16 speed;
- 	u16 eee_adv;
-@@ -1594,7 +1594,7 @@ static int vendor_mac_passthru_addr_read(struct r8152 *tp, struct sockaddr *sa)
- 	acpi_object_type mac_obj_type;
- 	int mac_strlen;
- 
--	if (test_bit(LENOVO_MACPASSTHRU, &tp->flags)) {
-+	if (tp->lenovo_macpassthru) {
- 		mac_obj_name = "\\MACA";
- 		mac_obj_type = ACPI_TYPE_STRING;
- 		mac_strlen = 0x16;
-@@ -2283,7 +2283,7 @@ static int r8152_tx_agg_fill(struct r8152 *tp, struct tx_agg *agg)
- 
- 		remain = agg_buf_sz - (int)(tx_agg_align(tx_data) - agg->head);
- 
--		if (test_bit(DELL_TB_RX_AGG_BUG, &tp->flags))
-+		if (tp->dell_tb_rx_agg_bug)
- 			break;
- 	}
- 
-@@ -6941,7 +6941,7 @@ static void r8153_init(struct r8152 *tp)
- 	/* rx aggregation */
- 	ocp_data = ocp_read_word(tp, MCU_TYPE_USB, USB_USB_CTRL);
- 	ocp_data &= ~(RX_AGG_DISABLE | RX_ZERO_EN);
--	if (test_bit(DELL_TB_RX_AGG_BUG, &tp->flags))
-+	if (tp->dell_tb_rx_agg_bug)
- 		ocp_data |= RX_AGG_DISABLE;
- 
- 	ocp_write_word(tp, MCU_TYPE_USB, USB_USB_CTRL, ocp_data);
-@@ -9447,7 +9447,7 @@ static int rtl8152_probe(struct usb_interface *intf,
- 		switch (le16_to_cpu(udev->descriptor.idProduct)) {
- 		case DEVICE_ID_THINKPAD_THUNDERBOLT3_DOCK_GEN2:
- 		case DEVICE_ID_THINKPAD_USB_C_DOCK_GEN2:
--			set_bit(LENOVO_MACPASSTHRU, &tp->flags);
-+			tp->lenovo_macpassthru = 1;
- 		}
- 	}
- 
-@@ -9455,7 +9455,7 @@ static int rtl8152_probe(struct usb_interface *intf,
- 	    (!strcmp(udev->serial, "000001000000") ||
- 	     !strcmp(udev->serial, "000002000000"))) {
- 		dev_info(&udev->dev, "Dell TB16 Dock, disable RX aggregation");
--		set_bit(DELL_TB_RX_AGG_BUG, &tp->flags);
-+		tp->dell_tb_rx_agg_bug = 1;
- 	}
- 
- 	netdev->ethtool_ops = &ops;
--- 
-2.26.3
+I'm basically just asking you to add an unlikely() annotation:
+
+	map =3D READ_ONCE(ri->map);
+	if (unlikely(map)) {
+		WRITE_ONCE(ri->map, NULL);
+		err =3D dev_map_enqueue_multi(xdp, dev, map, [...]
+
+For XDP, performance is the single most important factor!  You say your
+performance data, there is only a slightly impact, there must be ZERO
+impact (when your added features is not in use).
+
+You data:
+ Version          | Test                                | Generic | Native
+ 5.12 rc4         | redirect_map        i40e->i40e      |    1.9M |  9.6M
+ 5.12 rc4 + patch | redirect_map        i40e->i40e      |    1.9M |  9.3M
+
+The performance difference 9.6M -> 9.3M is a slowdown of 3.36 nanosec.
+Bj=C3=B8rn and others have been working really hard to optimize the code and
+remove down to 1.5 nanosec overheads.  Thus, introducing 3.36 nanosec
+added overhead to the fast-path is significant.
+
+--=20
+Best regards,
+  Jesper Dangaard Brouer
+  MSc.CS, Principal Kernel Engineer at Red Hat
+  LinkedIn: http://www.linkedin.com/in/brouer
 
