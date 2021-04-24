@@ -2,141 +2,153 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EDB6836A2EF
-	for <lists+netdev@lfdr.de>; Sat, 24 Apr 2021 22:21:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4539736A2F0
+	for <lists+netdev@lfdr.de>; Sat, 24 Apr 2021 22:21:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237458AbhDXUPf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 24 Apr 2021 16:15:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32810 "EHLO
+        id S237478AbhDXUPg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 24 Apr 2021 16:15:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32818 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237297AbhDXUP3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 24 Apr 2021 16:15:29 -0400
-Received: from mail-pf1-x430.google.com (mail-pf1-x430.google.com [IPv6:2607:f8b0:4864:20::430])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A7B80C061574
-        for <netdev@vger.kernel.org>; Sat, 24 Apr 2021 13:14:50 -0700 (PDT)
-Received: by mail-pf1-x430.google.com with SMTP id y62so3703013pfg.4
-        for <netdev@vger.kernel.org>; Sat, 24 Apr 2021 13:14:50 -0700 (PDT)
+        with ESMTP id S237325AbhDXUPa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 24 Apr 2021 16:15:30 -0400
+Received: from mail-pg1-x52a.google.com (mail-pg1-x52a.google.com [IPv6:2607:f8b0:4864:20::52a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 77F48C061574
+        for <netdev@vger.kernel.org>; Sat, 24 Apr 2021 13:14:52 -0700 (PDT)
+Received: by mail-pg1-x52a.google.com with SMTP id d10so37496768pgf.12
+        for <netdev@vger.kernel.org>; Sat, 24 Apr 2021 13:14:52 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=broadcom.com; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=AEK7y+JAfyWNssuiwMErVK+mx+sPocT+phuirHZDwcA=;
-        b=cSt8iG8GZoYyGw2IclcXf9nL1z03lrYphJJGi2AE1LK+WUTiTtZJWS+EiwEOUKLkko
-         eDXK8cfDfkuxaAxLMACGIYYAj2BlAXmgWfXKMt3rJc9QEkeheOeewViUx06sNoPpm3H+
-         vhT3LzmEgpsjN4aGMsocc92jQwV73IGo7sAqc=
+        bh=AkmY7z9elHDIjjZrq77/lAbQiTUfjJDqg3q8BxsiwM4=;
+        b=G4x/8VucHSdYmfrgfAFMy+JuUtfLnnl+0/5qA0YYki1f/zsNigik++/9Wxlrq8pLR0
+         3y6g969s7QHsdj0RWmmzILCrUcXAGQPtJo+UbQhjH2JR/MAyoMXiz1aJs5OLFl0SXnBM
+         AIVagU++YDsCB0Wvh8WYxMUDDPq4jH8EIWtNM=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=AEK7y+JAfyWNssuiwMErVK+mx+sPocT+phuirHZDwcA=;
-        b=UKT1L9c1qe/uBLz4dWUInVOI/LfP7QxghtwoZijUMN6YaOa7iqnWmOsmfc8+6otfDC
-         nsUj7ryvsl2QNFvMMbhKpkX2HT9Q6hbXwFled/5ziz3H44s1gY88sRKIZjQykl4gU+UK
-         4vlSsJYDkCF7YSTMYWoLdz0FZNf8TycDNvPvHgAcfH0dOExe6qNGRCz1uJ0/H1QhiQ6I
-         9cIBINhxSnl26hxjywe9rSEN/fHIpUwm+uSyB6InPJNbuXx8omtKiiJnIVBUxkk+p3bz
-         U7DyUgB7/V8bHMVb3L1PUWAwMY5Iq8S4iqTgn0AfAxhQqR5swbjoo9g+fofPjEIWCrG8
-         +F7Q==
-X-Gm-Message-State: AOAM531BxELTtiRAuPUmLCs34Q7ycwM12Tgjds+O7K0ZnptJFgaHNjKm
-        PZpzmGkksuB6q9bC2SBWGFRmVw==
-X-Google-Smtp-Source: ABdhPJx0HXD7xh6FDultfFyy5OuXtTfuKXGeXl5VcJlPeBBccUgeOq+yyd6jLGRLwYcmNLptyBNS+w==
-X-Received: by 2002:a62:a21d:0:b029:264:fa97:32dc with SMTP id m29-20020a62a21d0000b0290264fa9732dcmr10256122pff.32.1619295289950;
-        Sat, 24 Apr 2021 13:14:49 -0700 (PDT)
+        bh=AkmY7z9elHDIjjZrq77/lAbQiTUfjJDqg3q8BxsiwM4=;
+        b=p2t8WAdRJSnTbbyo7idQNi/r/F1hJq6TvKyEgwa871agqxjvTeG41sNdhaPy4FVgyo
+         rhvbIV79BSBXz5EZd/B3G5PmTY8nocphReIQM9Q86e48tMCDbvc9cH97fhb8iFY4XKSr
+         6/9vePT8vm8/ClfoGGbv/4fVw3VS4DYl4Rlocjx4xJ7C60svAKbbHWTUCZWxhXWDDW7+
+         /BQI8/7gf3DU9kxVT1FttrJBSeGJZJN10mdD2J0agHQLPiTW76hopU1M5ZOMu913rKp4
+         0WuRjhkydUh3pCYF/HUguF2hooW5NrtxSwSx/G4qW4SXBN3EKri+SkyqvTphT19icuvQ
+         dLmg==
+X-Gm-Message-State: AOAM533aZ0RkU5I95Pg9w5pZ9NWm3SNai2miWdgchSrbAR2DXkIm0lre
+        KMjyjwixnnntQje0Dl1i2UOmUw==
+X-Google-Smtp-Source: ABdhPJwC+SD18458QmnVWeh3yACkdhbiOT/yXk2vLDTO4CikJ7wvm9unYQGdl4V6On3oiHYF+TwG7g==
+X-Received: by 2002:a05:6a00:1a12:b029:272:bfa6:867f with SMTP id g18-20020a056a001a12b0290272bfa6867fmr2844706pfv.6.1619295291200;
+        Sat, 24 Apr 2021 13:14:51 -0700 (PDT)
 Received: from localhost.swdvt.lab.broadcom.net ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id z29sm7914070pga.52.2021.04.24.13.14.49
+        by smtp.gmail.com with ESMTPSA id z29sm7914070pga.52.2021.04.24.13.14.50
         (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Sat, 24 Apr 2021 13:14:49 -0700 (PDT)
+        Sat, 24 Apr 2021 13:14:50 -0700 (PDT)
 From:   Michael Chan <michael.chan@broadcom.com>
 To:     davem@davemloft.net
 Cc:     netdev@vger.kernel.org, kuba@kernel.org, gospo@broadcom.com
-Subject: [PATCH net-next 08/10] bnxt_en: Add PCI IDs for Hyper-V VF devices.
-Date:   Sat, 24 Apr 2021 16:14:29 -0400
-Message-Id: <1619295271-30853-9-git-send-email-michael.chan@broadcom.com>
+Subject: [PATCH net-next 09/10] bnxt_en: Support IFF_SUPP_NOFCS feature to transmit without ethernet FCS.
+Date:   Sat, 24 Apr 2021 16:14:30 -0400
+Message-Id: <1619295271-30853-10-git-send-email-michael.chan@broadcom.com>
 X-Mailer: git-send-email 1.8.3.1
 In-Reply-To: <1619295271-30853-1-git-send-email-michael.chan@broadcom.com>
 References: <1619295271-30853-1-git-send-email-michael.chan@broadcom.com>
 Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256;
-        boundary="000000000000929c7305c0bd9080"
+        boundary="000000000000ae3c8705c0bd9031"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---000000000000929c7305c0bd9080
+--000000000000ae3c8705c0bd9031
 
-Support VF device IDs used by the Hyper-V hypervisor.
+If firmware is capable, set the IFF_SUPP_NOFCS flag to support the
+sockets option to transmit packets without FCS.  This is mainly used
+for testing.
 
-Reviewed-by: Vasundhara Volam <vasundhara-v.volam@broadcom.com>
-Reviewed-by: Andy Gospodarek <gospo@broadcom.com>
-Signed-off-by: Edwin Peer <edwin.peer@broadcom.com>
+Reviewed-by: Edwin Peer <edwin.peer@broadcom.com
 Signed-off-by: Michael Chan <michael.chan@broadcom.com>
 ---
- drivers/net/ethernet/broadcom/bnxt/bnxt.c | 19 ++++++++++++++++++-
- 1 file changed, 18 insertions(+), 1 deletion(-)
+ drivers/net/ethernet/broadcom/bnxt/bnxt.c | 16 +++++++++++++---
+ drivers/net/ethernet/broadcom/bnxt/bnxt.h |  1 +
+ 2 files changed, 14 insertions(+), 3 deletions(-)
 
 diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt.c b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-index 9862f517960d..77ebafbd2dce 100644
+index 77ebafbd2dce..53db073b457c 100644
 --- a/drivers/net/ethernet/broadcom/bnxt/bnxt.c
 +++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-@@ -122,7 +122,10 @@ enum board_idx {
- 	NETXTREME_E_VF,
- 	NETXTREME_C_VF,
- 	NETXTREME_S_VF,
-+	NETXTREME_C_VF_HV,
-+	NETXTREME_E_VF_HV,
- 	NETXTREME_E_P5_VF,
-+	NETXTREME_E_P5_VF_HV,
- };
+@@ -375,6 +375,7 @@ static netdev_tx_t bnxt_start_xmit(struct sk_buff *skb, struct net_device *dev)
+ 	struct pci_dev *pdev = bp->pdev;
+ 	struct bnxt_tx_ring_info *txr;
+ 	struct bnxt_sw_tx_bd *tx_buf;
++	__le32 lflags = 0;
  
- /* indexed by enum above */
-@@ -170,7 +173,10 @@ static const struct {
- 	[NETXTREME_E_VF] = { "Broadcom NetXtreme-E Ethernet Virtual Function" },
- 	[NETXTREME_C_VF] = { "Broadcom NetXtreme-C Ethernet Virtual Function" },
- 	[NETXTREME_S_VF] = { "Broadcom NetXtreme-S Ethernet Virtual Function" },
-+	[NETXTREME_C_VF_HV] = { "Broadcom NetXtreme-C Virtual Function for Hyper-V" },
-+	[NETXTREME_E_VF_HV] = { "Broadcom NetXtreme-E Virtual Function for Hyper-V" },
- 	[NETXTREME_E_P5_VF] = { "Broadcom BCM5750X NetXtreme-E Ethernet Virtual Function" },
-+	[NETXTREME_E_P5_VF_HV] = { "Broadcom BCM5750X NetXtreme-E Virtual Function for Hyper-V" },
- };
+ 	i = skb_get_queue_mapping(skb);
+ 	if (unlikely(i >= bp->tx_nr_rings)) {
+@@ -416,6 +417,11 @@ static netdev_tx_t bnxt_start_xmit(struct sk_buff *skb, struct net_device *dev)
+ 			vlan_tag_flags |= 1 << TX_BD_CFA_META_TPID_SHIFT;
+ 	}
  
- static const struct pci_device_id bnxt_pci_tbl[] = {
-@@ -222,15 +228,25 @@ static const struct pci_device_id bnxt_pci_tbl[] = {
- 	{ PCI_VDEVICE(BROADCOM, 0xd804), .driver_data = BCM58804 },
- #ifdef CONFIG_BNXT_SRIOV
- 	{ PCI_VDEVICE(BROADCOM, 0x1606), .driver_data = NETXTREME_E_VF },
-+	{ PCI_VDEVICE(BROADCOM, 0x1607), .driver_data = NETXTREME_E_VF_HV },
-+	{ PCI_VDEVICE(BROADCOM, 0x1608), .driver_data = NETXTREME_E_VF_HV },
- 	{ PCI_VDEVICE(BROADCOM, 0x1609), .driver_data = NETXTREME_E_VF },
-+	{ PCI_VDEVICE(BROADCOM, 0x16bd), .driver_data = NETXTREME_E_VF_HV },
- 	{ PCI_VDEVICE(BROADCOM, 0x16c1), .driver_data = NETXTREME_E_VF },
-+	{ PCI_VDEVICE(BROADCOM, 0x16c2), .driver_data = NETXTREME_C_VF_HV },
-+	{ PCI_VDEVICE(BROADCOM, 0x16c3), .driver_data = NETXTREME_C_VF_HV },
-+	{ PCI_VDEVICE(BROADCOM, 0x16c4), .driver_data = NETXTREME_E_VF_HV },
-+	{ PCI_VDEVICE(BROADCOM, 0x16c5), .driver_data = NETXTREME_E_VF_HV },
- 	{ PCI_VDEVICE(BROADCOM, 0x16cb), .driver_data = NETXTREME_C_VF },
- 	{ PCI_VDEVICE(BROADCOM, 0x16d3), .driver_data = NETXTREME_E_VF },
- 	{ PCI_VDEVICE(BROADCOM, 0x16dc), .driver_data = NETXTREME_E_VF },
- 	{ PCI_VDEVICE(BROADCOM, 0x16e1), .driver_data = NETXTREME_C_VF },
- 	{ PCI_VDEVICE(BROADCOM, 0x16e5), .driver_data = NETXTREME_C_VF },
-+	{ PCI_VDEVICE(BROADCOM, 0x16e6), .driver_data = NETXTREME_C_VF_HV },
- 	{ PCI_VDEVICE(BROADCOM, 0x1806), .driver_data = NETXTREME_E_P5_VF },
- 	{ PCI_VDEVICE(BROADCOM, 0x1807), .driver_data = NETXTREME_E_P5_VF },
-+	{ PCI_VDEVICE(BROADCOM, 0x1808), .driver_data = NETXTREME_E_P5_VF_HV },
-+	{ PCI_VDEVICE(BROADCOM, 0x1809), .driver_data = NETXTREME_E_P5_VF_HV },
- 	{ PCI_VDEVICE(BROADCOM, 0xd800), .driver_data = NETXTREME_S_VF },
- #endif
- 	{ 0 }
-@@ -265,7 +281,8 @@ static struct workqueue_struct *bnxt_pf_wq;
- static bool bnxt_vf_pciid(enum board_idx idx)
- {
- 	return (idx == NETXTREME_C_VF || idx == NETXTREME_E_VF ||
--		idx == NETXTREME_S_VF || idx == NETXTREME_E_P5_VF);
-+		idx == NETXTREME_S_VF || idx == NETXTREME_C_VF_HV ||
-+		idx == NETXTREME_E_VF_HV || idx == NETXTREME_E_P5_VF);
- }
++	if (unlikely(skb->no_fcs)) {
++		lflags |= cpu_to_le32(TX_BD_FLAGS_NO_CRC);
++		goto normal_tx;
++	}
++
+ 	if (free_size == bp->tx_ring_size && length <= bp->tx_push_thresh) {
+ 		struct tx_push_buffer *tx_push_buf = txr->tx_push;
+ 		struct tx_push_bd *tx_push = &tx_push_buf->push_bd;
+@@ -517,7 +523,7 @@ static netdev_tx_t bnxt_start_xmit(struct sk_buff *skb, struct net_device *dev)
+ 	txbd1 = (struct tx_bd_ext *)
+ 		&txr->tx_desc_ring[TX_RING(prod)][TX_IDX(prod)];
  
- #define DB_CP_REARM_FLAGS	(DB_KEY_CP | DB_IDX_VALID)
+-	txbd1->tx_bd_hsize_lflags = 0;
++	txbd1->tx_bd_hsize_lflags = lflags;
+ 	if (skb_is_gso(skb)) {
+ 		u32 hdr_len;
+ 
+@@ -529,14 +535,14 @@ static netdev_tx_t bnxt_start_xmit(struct sk_buff *skb, struct net_device *dev)
+ 			hdr_len = skb_transport_offset(skb) +
+ 				tcp_hdrlen(skb);
+ 
+-		txbd1->tx_bd_hsize_lflags = cpu_to_le32(TX_BD_FLAGS_LSO |
++		txbd1->tx_bd_hsize_lflags |= cpu_to_le32(TX_BD_FLAGS_LSO |
+ 					TX_BD_FLAGS_T_IPID |
+ 					(hdr_len << (TX_BD_HSIZE_SHIFT - 1)));
+ 		length = skb_shinfo(skb)->gso_size;
+ 		txbd1->tx_bd_mss = cpu_to_le32(length);
+ 		length += hdr_len;
+ 	} else if (skb->ip_summed == CHECKSUM_PARTIAL) {
+-		txbd1->tx_bd_hsize_lflags =
++		txbd1->tx_bd_hsize_lflags |=
+ 			cpu_to_le32(TX_BD_FLAGS_TCP_UDP_CHKSUM);
+ 		txbd1->tx_bd_mss = 0;
+ 	}
+@@ -12460,6 +12466,10 @@ static int bnxt_probe_phy(struct bnxt *bp, bool fw_dflt)
+ 			   rc);
+ 		return rc;
+ 	}
++	if (bp->phy_flags & BNXT_PHY_FL_NO_FCS)
++		bp->dev->priv_flags |= IFF_SUPP_NOFCS;
++	else
++		bp->dev->priv_flags &= ~IFF_SUPP_NOFCS;
+ 	if (!fw_dflt)
+ 		return 0;
+ 
+diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt.h b/drivers/net/ethernet/broadcom/bnxt/bnxt.h
+index 5835d8ca8c22..a3744247740b 100644
+--- a/drivers/net/ethernet/broadcom/bnxt/bnxt.h
++++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.h
+@@ -2015,6 +2015,7 @@ struct bnxt {
+ #define BNXT_PHY_FL_PORT_STATS_NO_RESET	PORT_PHY_QCAPS_RESP_FLAGS_CUMULATIVE_COUNTERS_ON_RESET
+ #define BNXT_PHY_FL_NO_PHY_LPBK		PORT_PHY_QCAPS_RESP_FLAGS_LOCAL_LPBK_NOT_SUPPORTED
+ #define BNXT_PHY_FL_FW_MANAGED_LKDN	PORT_PHY_QCAPS_RESP_FLAGS_FW_MANAGED_LINK_DOWN
++#define BNXT_PHY_FL_NO_FCS		PORT_PHY_QCAPS_RESP_FLAGS_NO_FCS
+ 
+ 	u8			num_tests;
+ 	struct bnxt_test_info	*test_info;
 -- 
 2.18.1
 
 
---000000000000929c7305c0bd9080
+--000000000000ae3c8705c0bd9031
 Content-Type: application/pkcs7-signature; name="smime.p7s"
 Content-Transfer-Encoding: base64
 Content-Disposition: attachment; filename="smime.p7s"
@@ -207,13 +219,13 @@ FSWQptLx+kiu63idTII4r3k/7+dJ5AhLRr4WCoXEme2GZkfSbYC3fEL46tb1w7w+25OEFCv1MtDZ
 DauX1eWVM+KepL7zoSNzVbTipc65WuZFLR8ngOwkpknqvS9n/nKd885m23oIocC+GA4xggJtMIIC
 aQIBATBrMFsxCzAJBgNVBAYTAkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52LXNhMTEwLwYDVQQD
 EyhHbG9iYWxTaWduIEdDQyBSMyBQZXJzb25hbFNpZ24gMiBDQSAyMDIwAgwQeU+Y6hbenPzRMJsw
-DQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEIFgc9VzwHF/H6gIradykg946e4DdemCp
-PmQKESPKJzx7MBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIxMDQy
-NDIwMTQ1MFowaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZIAWUDBAEWMAsGCWCG
+DQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEIDoh0LEpClfeQ9cUDRhGiqeBsGL+C7Le
+SOn1f4N85HEHMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIxMDQy
+NDIwMTQ1MlowaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZIAWUDBAEWMAsGCWCG
 SAFlAwQBAjAKBggqhkiG9w0DBzALBgkqhkiG9w0BAQowCwYJKoZIhvcNAQEHMAsGCWCGSAFlAwQC
-ATANBgkqhkiG9w0BAQEFAASCAQDJ/s1MS9Nzavmz4NJvNuW8t8dwnr6tgsbHfVBIl8g32qROvRGc
-73tOp0ohP1EuxJfbVizKUcozFMJkMu7CIY14DYNzQ4iQ50CzY5YlgMZWurx8AVLigz5BZ8PqED2D
-qnhPPgmZUeD87/Ix/WCeEHLYPv93eT7SZXnnjxmY7M67m0EmPzKoCeAdTAtxcbCJw29TsvsHcCbI
-mC2Q+riSU5yqkbJIT7ia08I7IALosB2w9rsOL7lXLfQ2yLLWDocsqGbpWBD8nRjchdSWVLf1SF9w
-Fqd4jfa6Mm85vl09iZeKn4BoumHLkkKBDTl43xpZqw5M6/FDzPFdQs5R/GP/5XOT
---000000000000929c7305c0bd9080--
+ATANBgkqhkiG9w0BAQEFAASCAQDFyaa044/ocBKPa9yjZOeYW6X5NfYNjEXGbEwIkFf5lMHjHZfD
+DTFxNKQN3qH6H/FUcCb8/vHHD3aGDnzpztqoJKm8qiE73YezQYkBjYQOcktq3IJFgej/xAzUPY33
+UcsbsrGZK68Q8oCCOYuKkYJZakW9ZyDJcosWX61/JqYdsxlygVxq7RtFBVwC1oD4S9adWvFbBRRA
+XlW1LoEHB5GBroBLfql7/YKG7YbbdpMsD1z8Wl0xDGiVGGs2my6L+J9ZmPPeGhvAYsJzQigY9yt0
+h7UCG2gLRa4MzU52wc4/hQQsidZNYjPLidDOT7Nq64uwUdAtW6y7xJ7iWMH+ghMd
+--000000000000ae3c8705c0bd9031--
