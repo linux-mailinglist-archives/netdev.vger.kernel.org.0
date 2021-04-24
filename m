@@ -2,169 +2,168 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4D01B36A092
-	for <lists+netdev@lfdr.de>; Sat, 24 Apr 2021 11:53:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BC38836A0F8
+	for <lists+netdev@lfdr.de>; Sat, 24 Apr 2021 13:52:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233491AbhDXJy0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 24 Apr 2021 05:54:26 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:25423 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S237032AbhDXJyS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 24 Apr 2021 05:54:18 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1619258020;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=6vvarF7tleWgKobJBRvOBVQVnBeK645Sn0Qu8FN72LA=;
-        b=EUAMiRBdnWD2BF65F4TQlsqNGbMglKzeuezoYpuJk/5SnJo7i8cs0X66ZQ9v/210m1G4uQ
-        k6klWedrX0FVLxD0C5bb00io3ky/uERAjjB3unlgw669JYwX5BpFLadExEAJhOOriWC4jr
-        Uj21nHoe8KX1BiG6Rs4+1bZvP2Md9X4=
-Received: from mail-ed1-f71.google.com (mail-ed1-f71.google.com
- [209.85.208.71]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-518-WaQAkIUsOpaXkloOiwlndw-1; Sat, 24 Apr 2021 05:53:38 -0400
-X-MC-Unique: WaQAkIUsOpaXkloOiwlndw-1
-Received: by mail-ed1-f71.google.com with SMTP id l7-20020aa7c3070000b029038502ffe9f2so14232358edq.16
-        for <netdev@vger.kernel.org>; Sat, 24 Apr 2021 02:53:38 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version:content-transfer-encoding;
-        bh=6vvarF7tleWgKobJBRvOBVQVnBeK645Sn0Qu8FN72LA=;
-        b=i62i7Xjl1GLxIkV3YB75VQi2HpaUTIsem6dd8R8bGGxVTgOjA3gJHdvtmrJoR+J/V3
-         FogpZMFg0JeTseJk4zkTJTdRmiKYF41lUWxmJxZqZzOTX1UruKxDI2AlRUDyFyMlS/8z
-         lO+Ksj0m2zByVK+vzZgmjYBsHvGWswBROAbpWbogfolUkO4ZWo4HzdrZ4UqFdI0e2D0m
-         JR/qf4Vc7LXdxosZ/eO659iGWMbVXSM3t1g6yA7HUSFpevEd2QYDLJ/VoIns+uOvUtJ3
-         k/PAIeHF5CS9Fa5qQstZrKJ3znxySCbkvSsF1e04qApPLesoaEBOuNFj0TEjgqpHnAg/
-         ynZw==
-X-Gm-Message-State: AOAM5323gkbY/lzEodbntD9ynX02I5BK4eqz5VkzZ+Mqiz44OKVeqsS6
-        VZX1un9Z/+UcPnR1pQjOHbh+LMmO6+v4Lk6yI5c7EjATW37POmSU1jJoJ72k7Yi8GQ/uSSyYFoD
-        0xuT1q2bBdX7RLSgt
-X-Received: by 2002:a05:6402:4386:: with SMTP id o6mr9424070edc.33.1619258017484;
-        Sat, 24 Apr 2021 02:53:37 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJwDgq5hbZIFjYRKMDCL7Jul3AJ+fKFZEQN/YXigYbK7gZr7NUuTqMDRVwrCrRYhzbzWzr0i0A==
-X-Received: by 2002:a05:6402:4386:: with SMTP id o6mr9424044edc.33.1619258017228;
-        Sat, 24 Apr 2021 02:53:37 -0700 (PDT)
-Received: from alrua-x1.borgediget.toke.dk ([45.145.92.2])
-        by smtp.gmail.com with ESMTPSA id s3sm7685956edw.66.2021.04.24.02.53.36
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 24 Apr 2021 02:53:36 -0700 (PDT)
-Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id F0F01180615; Sat, 24 Apr 2021 11:53:35 +0200 (CEST)
-From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-To:     Jesper Dangaard Brouer <brouer@redhat.com>,
-        Hangbin Liu <liuhangbin@gmail.com>
-Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org,
-        Jiri Benc <jbenc@redhat.com>,
-        Eelco Chaudron <echaudro@redhat.com>, ast@kernel.org,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Lorenzo Bianconi <lorenzo.bianconi@redhat.com>,
-        David Ahern <dsahern@gmail.com>,
-        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
-        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
-        =?utf-8?B?QmrDtnJuIFQ=?= =?utf-8?B?w7ZwZWw=?= 
-        <bjorn.topel@gmail.com>, Martin KaFai Lau <kafai@fb.com>,
-        brouer@redhat.com
-Subject: Re: [PATCHv9 bpf-next 2/4] xdp: extend xdp_redirect_map with
- broadcast support
-In-Reply-To: <20210424090129.1b8fe377@carbon>
-References: <20210422071454.2023282-1-liuhangbin@gmail.com>
- <20210422071454.2023282-3-liuhangbin@gmail.com>
- <20210422185332.3199ca2e@carbon> <87a6pqfb9x.fsf@toke.dk>
- <20210423185429.126492d0@carbon> <20210424010925.GG3465@Leo-laptop-t470s>
- <20210424090129.1b8fe377@carbon>
-X-Clacks-Overhead: GNU Terry Pratchett
-Date:   Sat, 24 Apr 2021 11:53:35 +0200
-Message-ID: <87zgxoc8kg.fsf@toke.dk>
+        id S234391AbhDXLwi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 24 Apr 2021 07:52:38 -0400
+Received: from conuserg-12.nifty.com ([210.131.2.79]:22439 "EHLO
+        conuserg-12.nifty.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231203AbhDXLwg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 24 Apr 2021 07:52:36 -0400
+Received: from localhost.localdomain (133-32-232-101.west.xps.vectant.ne.jp [133.32.232.101]) (authenticated)
+        by conuserg-12.nifty.com with ESMTP id 13OBmmYp018893;
+        Sat, 24 Apr 2021 20:48:48 +0900
+DKIM-Filter: OpenDKIM Filter v2.10.3 conuserg-12.nifty.com 13OBmmYp018893
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
+        s=dec2015msa; t=1619264929;
+        bh=QZtRNPI9tcJewNEkn9qFVV65UXR5+ejTwS0WZTz9ytE=;
+        h=From:To:Cc:Subject:Date:From;
+        b=OgS1xS1pH9Ae7mvvS/tN0XQ1KlXN6XJGvC6a13xxxGpBWrmoZDHvSad9U/i4OE8GB
+         SCxToXKcTar8y85/ZgdttfyNTyNT4QrOt9teXbme+DbWLOvA6ZrXrCO9RRSno8lrbq
+         LjUaRUllsq7tNZxY6TW1P2027e2ET3kGuIHAKskUXsNQpb0WM+C5rMbvyGoCM6Ek/7
+         Q/SeGxa5kazVx8r7jeV7piS2uH99EolfxgJA1jfMxcGW50i+Le9Z1lHf7UOa7+H1Z8
+         9PSecdZ0jU7Sa07LWptBy+FREZsqXgLxyhpbsEsyDWHdwWRB00Ubg9Phg50IHfqaLC
+         nNznHrSvYzgDQ==
+X-Nifty-SrcIP: [133.32.232.101]
+From:   Masahiro Yamada <masahiroy@kernel.org>
+To:     linux-kbuild@vger.kernel.org
+Cc:     Masahiro Yamada <masahiroy@kernel.org>,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Mat Martineau <mathew.j.martineau@linux.intel.com>,
+        Matthias Maennich <maennich@google.com>,
+        Matthieu Baerts <matthieu.baerts@tessares.net>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Paul Mackerras <paulus@samba.org>,
+        Shuah Khan <shuah@kernel.org>, linux-kernel@vger.kernel.org,
+        linux-kselftest@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
+        mptcp@lists.01.org, netdev@vger.kernel.org
+Subject: [PATCH] kbuild: replace LANG=C with LC_ALL=C
+Date:   Sat, 24 Apr 2021 20:48:41 +0900
+Message-Id: <20210424114841.394239-1-masahiroy@kernel.org>
+X-Mailer: git-send-email 2.27.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Jesper Dangaard Brouer <brouer@redhat.com> writes:
+LANG gives a weak default to each LC_* in case it is not explicitly
+defined. LC_ALL, if set, overrides all other LC_* variables.
 
-> On Sat, 24 Apr 2021 09:09:25 +0800
-> Hangbin Liu <liuhangbin@gmail.com> wrote:
->
->> On Fri, Apr 23, 2021 at 06:54:29PM +0200, Jesper Dangaard Brouer wrote:
->> > On Thu, 22 Apr 2021 20:02:18 +0200
->> > Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com> wrote:
->> >=20=20=20
->> > > Jesper Dangaard Brouer <brouer@redhat.com> writes:
->> > >=20=20=20
->> > > > On Thu, 22 Apr 2021 15:14:52 +0800
->> > > > Hangbin Liu <liuhangbin@gmail.com> wrote:
->> > > >=20=20=20=20
->> > > >> diff --git a/net/core/filter.c b/net/core/filter.c
->> > > >> index cae56d08a670..afec192c3b21 100644
->> > > >> --- a/net/core/filter.c
->> > > >> +++ b/net/core/filter.c=20=20=20=20
->> > > > [...]=20=20=20=20
->> > > >>  int xdp_do_redirect(struct net_device *dev, struct xdp_buff *xdp,
->> > > >>  		    struct bpf_prog *xdp_prog)
->> > > >>  {
->> > > >> @@ -3933,6 +3950,7 @@ int xdp_do_redirect(struct net_device *dev,=
- struct xdp_buff *xdp,
->> > > >>  	enum bpf_map_type map_type =3D ri->map_type;
->> > > >>  	void *fwd =3D ri->tgt_value;
->> > > >>  	u32 map_id =3D ri->map_id;
->> > > >> +	struct bpf_map *map;
->> > > >>  	int err;
->> > > >>=20=20
->> > > >>  	ri->map_id =3D 0; /* Valid map id idr range: [1,INT_MAX[ */
->> > > >> @@ -3942,7 +3960,12 @@ int xdp_do_redirect(struct net_device *dev=
-, struct xdp_buff *xdp,
->> > > >>  	case BPF_MAP_TYPE_DEVMAP:
->> > > >>  		fallthrough;
->> > > >>  	case BPF_MAP_TYPE_DEVMAP_HASH:
->> > > >> -		err =3D dev_map_enqueue(fwd, xdp, dev);
->> > > >> +		map =3D xchg(&ri->map, NULL);=20=20=20=20
->> > > >
->> > > > Hmm, this looks dangerous for performance to have on this fast-pat=
-h.
->> > > > The xchg call can be expensive, AFAIK this is an atomic operation.=
-=20=20=20=20
->> > >=20
->> > > Ugh, you're right. That's my bad, I suggested replacing the
->> > > READ_ONCE()/WRITE_ONCE() pair with the xchg() because an exchange is
->> > > what it's doing, but I failed to consider the performance implicatio=
-ns
->> > > of the atomic operation. Sorry about that, Hangbin! I guess this sho=
-uld
->> > > be changed to:
->> > >=20
->> > > +		map =3D READ_ONCE(ri->map);
->> > > +		if (map) {
->> > > +			WRITE_ONCE(ri->map, NULL);
->> > > +			err =3D dev_map_enqueue_multi(xdp, dev, map,
->> > > +						    ri->flags & BPF_F_EXCLUDE_INGRESS);
->> > > +		} else {
->> > > +			err =3D dev_map_enqueue(fwd, xdp, dev);
->> > > +		}=20=20
->> >=20
->> > This is highly sensitive fast-path code, as you saw Bj=C3=B8rn have be=
-en
->> > hunting nanosec in this area.  The above code implicitly have "map" as
->> > the likely option, which I don't think it is.=20=20
->>=20
->> Hi Jesper,
->>=20
->> From the performance data, there is only a slightly impact. Do we still =
-need
->> to block the whole patch on this? Or if you have a better solution?
->
-> I'm basically just asking you to add an unlikely() annotation:
+  LANG  <  LC_CTYPE, LC_COLLATE, LC_MONETARY, LC_NUMERIC, ...  <  LC_ALL
 
-Maybe the maintainers could add this while applying, though? Or we could
-fix it in a follow-up? Hangbin has been respinning this series with very
-minor changes for a while now, so I can certainly emphasise with his
-reluctance to keep doing this. IMO it's way past time to merge this
-already... :/
+This is why documentation such as [1] suggests to set LC_ALL in build
+scripts to get the deterministic result.
 
--Toke
+LANG=C is not strong enough to override LC_* that may be set by end
+users.
+
+[1]: https://reproducible-builds.org/docs/locales/
+
+Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
+---
+
+ arch/powerpc/boot/wrapper                          | 2 +-
+ scripts/nsdeps                                     | 2 +-
+ scripts/recordmcount.pl                            | 2 +-
+ scripts/setlocalversion                            | 2 +-
+ scripts/tags.sh                                    | 2 +-
+ tools/testing/selftests/net/mptcp/mptcp_connect.sh | 2 +-
+ usr/gen_initramfs.sh                               | 2 +-
+ 7 files changed, 7 insertions(+), 7 deletions(-)
+
+diff --git a/arch/powerpc/boot/wrapper b/arch/powerpc/boot/wrapper
+index 41fa0a8715e3..cdb796b76e2e 100755
+--- a/arch/powerpc/boot/wrapper
++++ b/arch/powerpc/boot/wrapper
+@@ -191,7 +191,7 @@ if [ -z "$kernel" ]; then
+     kernel=vmlinux
+ fi
+ 
+-LANG=C elfformat="`${CROSS}objdump -p "$kernel" | grep 'file format' | awk '{print $4}'`"
++LC_ALL=C elfformat="`${CROSS}objdump -p "$kernel" | grep 'file format' | awk '{print $4}'`"
+ case "$elfformat" in
+     elf64-powerpcle)	format=elf64lppc	;;
+     elf64-powerpc)	format=elf32ppc	;;
+diff --git a/scripts/nsdeps b/scripts/nsdeps
+index e8ce2a4d704a..04c4b96e95ec 100644
+--- a/scripts/nsdeps
++++ b/scripts/nsdeps
+@@ -44,7 +44,7 @@ generate_deps() {
+ 		for source_file in $mod_source_files; do
+ 			sed '/MODULE_IMPORT_NS/Q' $source_file > ${source_file}.tmp
+ 			offset=$(wc -l ${source_file}.tmp | awk '{print $1;}')
+-			cat $source_file | grep MODULE_IMPORT_NS | LANG=C sort -u >> ${source_file}.tmp
++			cat $source_file | grep MODULE_IMPORT_NS | LC_ALL=C sort -u >> ${source_file}.tmp
+ 			tail -n +$((offset +1)) ${source_file} | grep -v MODULE_IMPORT_NS >> ${source_file}.tmp
+ 			if ! diff -q ${source_file} ${source_file}.tmp; then
+ 				mv ${source_file}.tmp ${source_file}
+diff --git a/scripts/recordmcount.pl b/scripts/recordmcount.pl
+index 867860ea57da..0a7fc9507d6f 100755
+--- a/scripts/recordmcount.pl
++++ b/scripts/recordmcount.pl
+@@ -497,7 +497,7 @@ sub update_funcs
+ #
+ # Step 2: find the sections and mcount call sites
+ #
+-open(IN, "LANG=C $objdump -hdr $inputfile|") || die "error running $objdump";
++open(IN, "LC_ALL=C $objdump -hdr $inputfile|") || die "error running $objdump";
+ 
+ my $text;
+ 
+diff --git a/scripts/setlocalversion b/scripts/setlocalversion
+index bb709eda96cd..db941f6d9591 100755
+--- a/scripts/setlocalversion
++++ b/scripts/setlocalversion
+@@ -126,7 +126,7 @@ scm_version()
+ 	fi
+ 
+ 	# Check for svn and a svn repo.
+-	if rev=$(LANG= LC_ALL= LC_MESSAGES=C svn info 2>/dev/null | grep '^Last Changed Rev'); then
++	if rev=$(LC_ALL=C svn info 2>/dev/null | grep '^Last Changed Rev'); then
+ 		rev=$(echo $rev | awk '{print $NF}')
+ 		printf -- '-svn%s' "$rev"
+ 
+diff --git a/scripts/tags.sh b/scripts/tags.sh
+index fd96734deff1..db8ba411860a 100755
+--- a/scripts/tags.sh
++++ b/scripts/tags.sh
+@@ -326,5 +326,5 @@ esac
+ 
+ # Remove structure forward declarations.
+ if [ -n "$remove_structs" ]; then
+-    LANG=C sed -i -e '/^\([a-zA-Z_][a-zA-Z0-9_]*\)\t.*\t\/\^struct \1;.*\$\/;"\tx$/d' $1
++    LC_ALL=C sed -i -e '/^\([a-zA-Z_][a-zA-Z0-9_]*\)\t.*\t\/\^struct \1;.*\$\/;"\tx$/d' $1
+ fi
+diff --git a/tools/testing/selftests/net/mptcp/mptcp_connect.sh b/tools/testing/selftests/net/mptcp/mptcp_connect.sh
+index 10a030b53b23..1d2a6e7b877c 100755
+--- a/tools/testing/selftests/net/mptcp/mptcp_connect.sh
++++ b/tools/testing/selftests/net/mptcp/mptcp_connect.sh
+@@ -273,7 +273,7 @@ check_mptcp_disabled()
+ 	ip netns exec ${disabled_ns} sysctl -q net.mptcp.enabled=0
+ 
+ 	local err=0
+-	LANG=C ip netns exec ${disabled_ns} ./mptcp_connect -t $timeout -p 10000 -s MPTCP 127.0.0.1 < "$cin" 2>&1 | \
++	LC_ALL=C ip netns exec ${disabled_ns} ./mptcp_connect -t $timeout -p 10000 -s MPTCP 127.0.0.1 < "$cin" 2>&1 | \
+ 		grep -q "^socket: Protocol not available$" && err=1
+ 	ip netns delete ${disabled_ns}
+ 
+diff --git a/usr/gen_initramfs.sh b/usr/gen_initramfs.sh
+index 8ae831657e5d..63476bb70b41 100755
+--- a/usr/gen_initramfs.sh
++++ b/usr/gen_initramfs.sh
+@@ -147,7 +147,7 @@ dir_filelist() {
+ 	header "$1"
+ 
+ 	srcdir=$(echo "$1" | sed -e 's://*:/:g')
+-	dirlist=$(find "${srcdir}" -printf "%p %m %U %G\n" | LANG=C sort)
++	dirlist=$(find "${srcdir}" -printf "%p %m %U %G\n" | LC_ALL=C sort)
+ 
+ 	# If $dirlist is only one line, then the directory is empty
+ 	if [  "$(echo "${dirlist}" | wc -l)" -gt 1 ]; then
+-- 
+2.27.0
 
