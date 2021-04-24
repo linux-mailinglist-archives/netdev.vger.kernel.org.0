@@ -2,106 +2,122 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 07E7436A2E7
+	by mail.lfdr.de (Postfix) with ESMTP id 5544B36A2E8
 	for <lists+netdev@lfdr.de>; Sat, 24 Apr 2021 22:21:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234081AbhDXUPW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 24 Apr 2021 16:15:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60998 "EHLO
+        id S235872AbhDXUPX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 24 Apr 2021 16:15:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32768 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231814AbhDXUPW (ORCPT
+        with ESMTP id S233563AbhDXUPW (ORCPT
         <rfc822;netdev@vger.kernel.org>); Sat, 24 Apr 2021 16:15:22 -0400
-Received: from mail-pj1-x102c.google.com (mail-pj1-x102c.google.com [IPv6:2607:f8b0:4864:20::102c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 87045C061574
-        for <netdev@vger.kernel.org>; Sat, 24 Apr 2021 13:14:43 -0700 (PDT)
-Received: by mail-pj1-x102c.google.com with SMTP id u11so21166474pjr.0
-        for <netdev@vger.kernel.org>; Sat, 24 Apr 2021 13:14:43 -0700 (PDT)
+Received: from mail-pg1-x536.google.com (mail-pg1-x536.google.com [IPv6:2607:f8b0:4864:20::536])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D1C1C061574
+        for <netdev@vger.kernel.org>; Sat, 24 Apr 2021 13:14:44 -0700 (PDT)
+Received: by mail-pg1-x536.google.com with SMTP id j7so28099489pgi.3
+        for <netdev@vger.kernel.org>; Sat, 24 Apr 2021 13:14:44 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=broadcom.com; s=google;
-        h=from:to:cc:subject:date:message-id;
-        bh=TNYeYVbp9hWIeyX4PSuaYxYV3rSQJhKcOyv92XlwP4Y=;
-        b=dBJh5Q5rg20Xj/OLWwzWUUTjvhlktLVKC5ppv7sgfFvuC2u9HN2mwzy/aaU9Jk6zwQ
-         pl3J54LNpqKxYRB90ivii6HTPoojjbQg8K3v2gnQPx9qOK3d4sgbZ1Ga0kyfHiz39Dam
-         bCmA72R/bViH4czfL8zt/staStpLQsID3z0LI=
+        h=from:to:cc:subject:date:message-id:in-reply-to:references;
+        bh=6H8VOL+zkYYPi1vUZJacnC7u1O0papi4ihkOtJ+wYiI=;
+        b=S2TtQirVzzZB2eME2Mp3QN+ffmlpIlEiGquNjEoeXsdCgFdSBvwuj5XbamWgJZw1LK
+         Brcm6PM6DyPGUsncz+3nz7lauVC8WurPua4UMmVoBUXA0nSykZA63gc6MVJ0zMQeZoeq
+         3unmS10Y9h/NmQgeLz7uyaY6rq1N5Ab+EnF74=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=TNYeYVbp9hWIeyX4PSuaYxYV3rSQJhKcOyv92XlwP4Y=;
-        b=jZcc9k7wRvbxYz685T1Gv3Fh38uNUB2QFUByPw7C7jEPILNpgjp0lCeL2rMQj1PlGt
-         nhwqd+0vUK29b0iSzKzrgbxL9JEwinNDL7brZugpM8m4q3cFU6L1RgyIB8UZfoMmVQ77
-         Msj/NJUjHOcdziu9jdtz5jqKcH6yGJc3TUVayoDcRagpKTBSiaelDCbZR011xFbGYwet
-         DWYEuAGEmxZmqs8zkauEDf7GND6cVSt3kzD/xix3//m6ZmwX+gSC2V/4PpuSiAL7OjXi
-         /k7ELEnzGyZD7K49lxJeBySgRnrRIE8G71jJXFzHIzLvUYiCqrsuc3HLcqSwf8+t25+/
-         xeMA==
-X-Gm-Message-State: AOAM530VmBHsjfaWBrWEzf3DkA/HvrJHdb6sksU4cv4HobuIOX5pBGuY
-        Uhl/G/9cd7ooHgqRo3Z2wrKXig==
-X-Google-Smtp-Source: ABdhPJyUAG0pDUT+i7fef0VkrUryWGLbsV9QZZhg/+Bq/BhF40c9Mwa6gYTr1zfsLeqopiiPA16u4g==
-X-Received: by 2002:a17:902:c947:b029:eb:6f61:cde with SMTP id i7-20020a170902c947b02900eb6f610cdemr10156549pla.4.1619295282381;
-        Sat, 24 Apr 2021 13:14:42 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references;
+        bh=6H8VOL+zkYYPi1vUZJacnC7u1O0papi4ihkOtJ+wYiI=;
+        b=jPsg8O7PfS/hY/XG896tIWbJTzh3R1WTbpG2W9m3jY9DMZdQsqPS+F2oIygk5R3dHY
+         msUFdV6eqbJRY1XqnqYGmURhHSDzHV/aqkVWfh0IFmPPF82sQ9np/qsF2DHPKEEpxJov
+         Qtjh9emecbQlTMrLng/yxndQ+p+xZ48x2tT/GWMj3qPL44Jz9DQDH1oeuIsOPiIAeF8g
+         Og3BPoxgr0HOIxi9YRjPvivF+UJJjv3ZoT4ghtSDN3ms7sr+CAQqlQ7tggNLJBeadf8p
+         q4+VvEfw9vfLglU5lfY+FDuW8ZxD19PYZki+V9jBljc9gvftTvArXc7GCEspkLX274xr
+         ZTRA==
+X-Gm-Message-State: AOAM5332MOAdkLKfyXYX4Yfb3HqnXaFDHChdT82/A7BukUJxEIMXYEOB
+        icgjGD4gM36DqZrQsa+KD9eF1/eNM7heYANe
+X-Google-Smtp-Source: ABdhPJxZcVqDQSs7/aaOXytnHOgo1NBvuN71iCqfSaGn3CW0wOl90uoVy67jFZ5mQSQ5M3y9bvOu8g==
+X-Received: by 2002:a62:dd41:0:b029:24c:27a4:48f1 with SMTP id w62-20020a62dd410000b029024c27a448f1mr9883175pff.42.1619295283321;
+        Sat, 24 Apr 2021 13:14:43 -0700 (PDT)
 Received: from localhost.swdvt.lab.broadcom.net ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id z29sm7914070pga.52.2021.04.24.13.14.41
+        by smtp.gmail.com with ESMTPSA id z29sm7914070pga.52.2021.04.24.13.14.42
         (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Sat, 24 Apr 2021 13:14:41 -0700 (PDT)
+        Sat, 24 Apr 2021 13:14:42 -0700 (PDT)
 From:   Michael Chan <michael.chan@broadcom.com>
 To:     davem@davemloft.net
 Cc:     netdev@vger.kernel.org, kuba@kernel.org, gospo@broadcom.com
-Subject: [PATCH net-next 00/10] bnxt_en: Updates for net-next.
-Date:   Sat, 24 Apr 2021 16:14:21 -0400
-Message-Id: <1619295271-30853-1-git-send-email-michael.chan@broadcom.com>
+Subject: [PATCH net-next 01/10] bnxt_en: report signal mode in link up messages
+Date:   Sat, 24 Apr 2021 16:14:22 -0400
+Message-Id: <1619295271-30853-2-git-send-email-michael.chan@broadcom.com>
 X-Mailer: git-send-email 1.8.3.1
+In-Reply-To: <1619295271-30853-1-git-send-email-michael.chan@broadcom.com>
+References: <1619295271-30853-1-git-send-email-michael.chan@broadcom.com>
 Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256;
-        boundary="000000000000242af505c0bd902e"
+        boundary="0000000000002d596e05c0bd903f"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---000000000000242af505c0bd902e
+--0000000000002d596e05c0bd903f
 
-This series includes these main enhancements:
+From: Edwin Peer <edwin.peer@broadcom.com>
 
-1. Link related changes
-    - add NRZ/PAM4 link signal mode to the link up message if known
-    - rely on firmware to bring down the link during ifdown
+Firmware reports link signalling mode for certain speeds. In these
+cases, print the signalling modes in kernel log link up messages.
 
-2. SRIOV related changes
-    - allow VF promiscuous mode if the VF is trusted
-    - allow ndo operations to configure VF when the PF is ifdown
-    - fix the scenario of the VF taking back control of it's MAC address 
-    - add Hyper-V VF device IDs
+Reviewed-by: Andy Gospodarek <gospo@broadcom.com>
+Signed-off-by: Edwin Peer <edwin.peer@broadcom.com>
+Signed-off-by: Michael Chan <michael.chan@broadcom.com>
+---
+ drivers/net/ethernet/broadcom/bnxt/bnxt.c | 22 +++++++++++++++++++---
+ 1 file changed, 19 insertions(+), 3 deletions(-)
 
-3. Support the option to transmit without FCS/CRC.
-
-4. Implement .ndo_features_check() to disable offload when the UDP
-   encap. packets are not supported.
-
-Edwin Peer (3):
-  bnxt_en: report signal mode in link up messages
-  bnxt_en: allow promiscuous mode for trusted VFs
-  bnxt_en: allow VF config ops when PF is closed
-
-Michael Chan (7):
-  bnxt_en: Add a new phy_flags field to the main driver structure.
-  bnxt_en: Add support for fw managed link down feature.
-  bnxt_en: Move bnxt_approve_mac().
-  bnxt_en: Call bnxt_approve_mac() after the PF gives up control of the
-    VF MAC.
-  bnxt_en: Add PCI IDs for Hyper-V VF devices.
-  bnxt_en: Support IFF_SUPP_NOFCS feature to transmit without ethernet
-    FCS.
-  bnxt_en: Implement .ndo_features_check().
-
- drivers/net/ethernet/broadcom/bnxt/bnxt.c     | 141 +++++++++++++-----
- drivers/net/ethernet/broadcom/bnxt/bnxt.h     |  23 ++-
- .../net/ethernet/broadcom/bnxt/bnxt_ethtool.c |   8 +-
- .../net/ethernet/broadcom/bnxt/bnxt_sriov.c   |  74 ++++-----
- .../net/ethernet/broadcom/bnxt/bnxt_sriov.h   |   1 +
- 5 files changed, 165 insertions(+), 82 deletions(-)
-
+diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt.c b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
+index e15d454e33f0..573c039e6046 100644
+--- a/drivers/net/ethernet/broadcom/bnxt/bnxt.c
++++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
+@@ -9075,8 +9075,9 @@ static char *bnxt_report_fec(struct bnxt_link_info *link_info)
+ static void bnxt_report_link(struct bnxt *bp)
+ {
+ 	if (bp->link_info.link_up) {
+-		const char *duplex;
++		const char *signal = "";
+ 		const char *flow_ctrl;
++		const char *duplex;
+ 		u32 speed;
+ 		u16 fec;
+ 
+@@ -9098,8 +9099,23 @@ static void bnxt_report_link(struct bnxt *bp)
+ 			flow_ctrl = "ON - receive";
+ 		else
+ 			flow_ctrl = "none";
+-		netdev_info(bp->dev, "NIC Link is Up, %u Mbps %s duplex, Flow control: %s\n",
+-			    speed, duplex, flow_ctrl);
++		if (bp->link_info.phy_qcfg_resp.option_flags &
++		    PORT_PHY_QCFG_RESP_OPTION_FLAGS_SIGNAL_MODE_KNOWN) {
++			u8 sig_mode = bp->link_info.active_fec_sig_mode &
++				      PORT_PHY_QCFG_RESP_SIGNAL_MODE_MASK;
++			switch (sig_mode) {
++			case PORT_PHY_QCFG_RESP_SIGNAL_MODE_NRZ:
++				signal = "(NRZ) ";
++				break;
++			case PORT_PHY_QCFG_RESP_SIGNAL_MODE_PAM4:
++				signal = "(PAM4) ";
++				break;
++			default:
++				break;
++			}
++		}
++		netdev_info(bp->dev, "NIC Link is Up, %u Mbps %s%s duplex, Flow control: %s\n",
++			    speed, signal, duplex, flow_ctrl);
+ 		if (bp->flags & BNXT_FLAG_EEE_CAP)
+ 			netdev_info(bp->dev, "EEE is %s\n",
+ 				    bp->eee.eee_active ? "active" :
 -- 
 2.18.1
 
 
---000000000000242af505c0bd902e
+--0000000000002d596e05c0bd903f
 Content-Type: application/pkcs7-signature; name="smime.p7s"
 Content-Transfer-Encoding: base64
 Content-Disposition: attachment; filename="smime.p7s"
@@ -172,13 +188,13 @@ FSWQptLx+kiu63idTII4r3k/7+dJ5AhLRr4WCoXEme2GZkfSbYC3fEL46tb1w7w+25OEFCv1MtDZ
 DauX1eWVM+KepL7zoSNzVbTipc65WuZFLR8ngOwkpknqvS9n/nKd885m23oIocC+GA4xggJtMIIC
 aQIBATBrMFsxCzAJBgNVBAYTAkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52LXNhMTEwLwYDVQQD
 EyhHbG9iYWxTaWduIEdDQyBSMyBQZXJzb25hbFNpZ24gMiBDQSAyMDIwAgwQeU+Y6hbenPzRMJsw
-DQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEIIpQxIe3n71R2oaSAVDxCJvmkUe0MtQI
-7ButvymJVMruMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIxMDQy
+DQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEIEifxSIw3BoPULfnJIn6evHS99lppF3P
+dfsOgJpr3plKMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIxMDQy
 NDIwMTQ0M1owaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZIAWUDBAEWMAsGCWCG
 SAFlAwQBAjAKBggqhkiG9w0DBzALBgkqhkiG9w0BAQowCwYJKoZIhvcNAQEHMAsGCWCGSAFlAwQC
-ATANBgkqhkiG9w0BAQEFAASCAQCRr/27NTYrKmBs+6VZ7DZa9TiazgfDlFrKmpJqvQAcaA77E2lv
-+qKU31hTxbKcVMyv9W0bIIMRuTs/gpUJ9Q+173UfVsxNKXgyLaAhitiTuvtqXRQZhBvCfnT6sfiP
-ZpjQQBDtqdGTre3ehbAVNYkvqfMVbehNOq4Oda34S9O9APdQz2SPjnl/ShWjvkak9h/nO87Hbzfs
-aZ4Kc8fm7AWBBcSYLnM0uhWkYnPUjGbZ6mOjQ631loGr5uWH7LAUpmtpERhU9si4W+xBARjDc1G3
-sonA47oQfGat4m3J/vAGCL8tR1lIpOpvsbWJr5wLb16y5kFLcPR//by89T8ufVdQ
---000000000000242af505c0bd902e--
+ATANBgkqhkiG9w0BAQEFAASCAQCp/OdW/Eel+6E219yF5jkPn5DTqLOtCrdA3teY/FwVg+piKHck
+FZZkfB0+1v/HI1lK85va5bEXbsknSI6XqDhCxhsk01u6Gtx80M5VaQ85JnfXHWcxF1AsNRNMHvgM
+9xzW+OIheW/OpU9hmvZlgoOj4Ig17zgaMS7mRDomxBfVTX2OHUUuWZfy+D8NrgJ4izRgYkFtwag+
+/vRINUrQ7zP0fGZ0XTS22U3KiOGY1SKoamPOfM1DtL4StEW5BnD6Hpf05HHTPPyP/B0EMn1qOtP1
+P7/BwrU7xv8kgDtamo8jhpL3MT5XmLdFyS9OutJSUfbF3+5hx9+ldN4jAP7OZRig
+--0000000000002d596e05c0bd903f--
