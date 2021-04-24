@@ -2,40 +2,40 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3156D36A335
-	for <lists+netdev@lfdr.de>; Sat, 24 Apr 2021 23:35:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D8F9A36A334
+	for <lists+netdev@lfdr.de>; Sat, 24 Apr 2021 23:35:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234081AbhDXVfP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 24 Apr 2021 17:35:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49960 "EHLO
+        id S233485AbhDXVfN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 24 Apr 2021 17:35:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49952 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233568AbhDXVfN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 24 Apr 2021 17:35:13 -0400
+        with ESMTP id S229778AbhDXVfM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 24 Apr 2021 17:35:12 -0400
 Received: from daxilon.jbeekman.nl (jbeekman.nl [IPv6:2a01:7c8:aab4:5fb::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0768FC061574
-        for <netdev@vger.kernel.org>; Sat, 24 Apr 2021 14:34:34 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 52AE4C061574
+        for <netdev@vger.kernel.org>; Sat, 24 Apr 2021 14:34:33 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=jbeekman.nl
         ; s=main; h=Subject:Content-Transfer-Encoding:Content-Type:MIME-Version:Date:
         Message-ID:To:From:Sender:Reply-To:Cc:Content-ID:Content-Description:
         Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:
         In-Reply-To:References:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
         List-Post:List-Owner:List-Archive;
-        bh=j08ZpYheCi22k3921t+NYtvKMFP7wBcNQ7KuQITJVQg=; b=UG5HdtxUjeDwLEIhkCeIFF4Wvd
-        9bFe7nhd1dmJdQqZf6fURu5dEv8TMpq02w9bfIut9nU8bsMW5j4C4xwGSlStYtmqqC3AhgDozwOf4
-        4se/JvUgRbH186A7HeN/bwTTKR91AGYDgG+4n9P+lM6uJBft9bHwR2QbxQvpsbzTjPoqrhEXfPMcp
-        hvIJD99v/DD3tDKZ/Vj4XsY3Mq7YVz874QSnp1j7rT1WsLgNBfiFxBi6CT8nv+x2SJu0htMdNz8vE
-        AMNHaDXC3O6Cmqv/bOBCmtdrxZ9Gc/km0N5e9xwa0Z8kWNG3d/opDV6EkkbAnq7OtF6OiqR2ruNRn
-        CGIoYgOw==;
+        bh=/+MThYSnFaQnrmuHlBZscVyuQwyH8k0TXXHYTbgmJFg=; b=TrU+a5yZ+m/p3Dfu1nStBCAuPJ
+        nCuVOYSkwyiF6fHyjXMmxnGlebOXZxbyhXs9Mp5IBi+N8je4w7R2MK2l1uKZPP9c2tH7rVwgXMp0W
+        dpaRb+Q1BsAMVUT/cic82bDfQdBMGxfwQeWtL3HyKUxHjVfu9xYyyIhbWQTv8teSSrYI/z1EHhhP3
+        QGzfz/1D24Ew4cM1wDiO5Ms1ljDoVlMBbLF7mkqrRicXDNKIKyJFprFXBmUjcRXV8YJLEHIpYDtvY
+        9NAVE6Kk4xZRzGfU4HFh31qwqWqCNRWDT/xHak4QlsnbuLC0i+UELLGfNoiPzFP42Th8pP2QHfJcq
+        mjApAwNg==;
 Received: from ip-213-127-124-30.ip.prioritytelecom.net ([213.127.124.30] helo=[192.168.3.100])
         by daxilon.jbeekman.nl with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
         (Exim 4.90_1)
         (envelope-from <kernel@jbeekman.nl>)
-        id 1laPph-0006gK-0y
-        for netdev@vger.kernel.org; Sat, 24 Apr 2021 23:28:57 +0200
+        id 1laPpj-0006gQ-J0
+        for netdev@vger.kernel.org; Sat, 24 Apr 2021 23:29:00 +0200
 From:   Jethro Beekman <kernel@jbeekman.nl>
 To:     netdev@vger.kernel.org
-Message-ID: <a526d3f6-1570-2e2b-969f-4bf4e60b2ada@jbeekman.nl>
-Date:   Sat, 24 Apr 2021 23:28:56 +0200
+Message-ID: <702c692e-c45a-8daa-50e1-e17564f8b787@jbeekman.nl>
+Date:   Sat, 24 Apr 2021 23:28:59 +0200
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
  Thunderbird/78.9.0
 MIME-Version: 1.0
@@ -58,7 +58,7 @@ X-Spam-Report: Content analysis details:   (-2.9 points, 5.0 required)
         -1.0 ALL_TRUSTED            Passed through trusted hosts only via SMTP
         -1.9 BAYES_00               BODY: Bayes spam probability is 0 to 1%
         [score: 0.0000]
-Subject: [PATCH net-next] macvlan: Add nodst option to macvlan type source
+Subject: [PATCH iproute2-next] ip: Add nodst option to macvlan type source
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
@@ -74,82 +74,92 @@ and incoming traffic will be received on exactly one device.
 
 Signed-off-by: Jethro Beekman <kernel@jbeekman.nl>
 ---
- drivers/net/macvlan.c        | 18 +++++++++++++-----
- include/uapi/linux/if_link.h |  1 +
- 2 files changed, 14 insertions(+), 5 deletions(-)
+ ip/iplink_macvlan.c   | 12 ++++++++++--
+ man/man8/ip-link.8.in |  9 ++++++---
+ 2 files changed, 16 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/net/macvlan.c b/drivers/net/macvlan.c
-index 9a9a5cf36a4b..5154371a0c84 100644
---- a/drivers/net/macvlan.c
-+++ b/drivers/net/macvlan.c
-@@ -423,18 +423,24 @@ static void macvlan_forward_source_one(struct sk_buff *skb,
- 	macvlan_count_rx(vlan, len, ret == NET_RX_SUCCESS, false);
- }
- 
--static void macvlan_forward_source(struct sk_buff *skb,
-+static bool macvlan_forward_source(struct sk_buff *skb,
- 				   struct macvlan_port *port,
- 				   const unsigned char *addr)
+diff --git a/ip/iplink_macvlan.c b/ip/iplink_macvlan.c
+index 302a3748..9c109ef6 100644
+--- a/ip/iplink_macvlan.c
++++ b/ip/iplink_macvlan.c
+@@ -33,7 +33,7 @@ static void print_explain(struct link_util *lu, FILE *f)
+ 		"Usage: ... %s mode MODE [flag MODE_FLAG] MODE_OPTS [bcqueuelen BC_QUEUE_LEN]\n"
+ 		"\n"
+ 		"MODE: private | vepa | bridge | passthru | source\n"
+-		"MODE_FLAG: null | nopromisc\n"
++		"MODE_FLAG: null | nopromisc | nodst\n"
+ 		"MODE_OPTS: for mode \"source\":\n"
+ 		"\tmacaddr { { add | del } <macaddr> | set [ <macaddr> [ <macaddr>  ... ] ] | flush }\n"
+ 		"BC_QUEUE_LEN: Length of the rx queue for broadcast/multicast: [0-4294967295]\n",
+@@ -58,7 +58,7 @@ static int mode_arg(const char *arg)
+ static int flag_arg(const char *arg)
  {
- 	struct macvlan_source_entry *entry;
- 	u32 idx = macvlan_eth_hash(addr);
- 	struct hlist_head *h = &port->vlan_source_hash[idx];
-+	bool consume = false;
- 
- 	hlist_for_each_entry_rcu(entry, h, hlist) {
--		if (ether_addr_equal_64bits(entry->addr, addr))
-+		if (ether_addr_equal_64bits(entry->addr, addr)) {
-+			if (entry->vlan->flags & MACVLAN_FLAG_NODST)
-+				consume = true;
- 			macvlan_forward_source_one(skb, entry->vlan);
-+		}
- 	}
-+
-+	return consume;
+ 	fprintf(stderr,
+-		"Error: argument of \"flag\" must be \"nopromisc\" or \"null\", not \"%s\"\n",
++		"Error: argument of \"flag\" must be \"nopromisc\", \"nodst\" or \"null\", not \"%s\"\n",
+ 		arg);
+ 	return -1;
  }
+@@ -102,6 +102,8 @@ static int macvlan_parse_opt(struct link_util *lu, int argc, char **argv,
  
- /* called under rcu_read_lock() from netif_receive_skb */
-@@ -463,7 +469,8 @@ static rx_handler_result_t macvlan_handle_frame(struct sk_buff **pskb)
- 			return RX_HANDLER_CONSUMED;
- 		*pskb = skb;
- 		eth = eth_hdr(skb);
--		macvlan_forward_source(skb, port, eth->h_source);
-+		if (macvlan_forward_source(skb, port, eth->h_source))
-+			return RX_HANDLER_CONSUMED;
- 		src = macvlan_hash_lookup(port, eth->h_source);
- 		if (src && src->mode != MACVLAN_MODE_VEPA &&
- 		    src->mode != MACVLAN_MODE_BRIDGE) {
-@@ -482,7 +489,8 @@ static rx_handler_result_t macvlan_handle_frame(struct sk_buff **pskb)
- 		return RX_HANDLER_PASS;
- 	}
+ 			if (strcmp(*argv, "nopromisc") == 0)
+ 				flags |= MACVLAN_FLAG_NOPROMISC;
++			else if (strcmp(*argv, "nodst") == 0)
++				flags |= MACVLAN_FLAG_NODST;
+ 			else if (strcmp(*argv, "null") == 0)
+ 				flags |= 0;
+ 			else
+@@ -159,6 +161,9 @@ static int macvlan_parse_opt(struct link_util *lu, int argc, char **argv,
+ 		} else if (matches(*argv, "nopromisc") == 0) {
+ 			flags |= MACVLAN_FLAG_NOPROMISC;
+ 			has_flags = 1;
++		} else if (matches(*argv, "nodst") == 0) {
++			flags |= MACVLAN_FLAG_NODST;
++			has_flags = 1;
+ 		} else if (matches(*argv, "bcqueuelen") == 0) {
+ 			__u32 bc_queue_len;
+ 			NEXT_ARG();
+@@ -229,6 +234,9 @@ static void macvlan_print_opt(struct link_util *lu, FILE *f, struct rtattr *tb[]
+ 	if (flags & MACVLAN_FLAG_NOPROMISC)
+ 		print_bool(PRINT_ANY, "nopromisc", "nopromisc ", true);
  
--	macvlan_forward_source(skb, port, eth->h_source);
-+	if (macvlan_forward_source(skb, port, eth->h_source))
-+		return RX_HANDLER_CONSUMED;
- 	if (macvlan_passthru(port))
- 		vlan = list_first_or_null_rcu(&port->vlans,
- 					      struct macvlan_dev, list);
-@@ -1286,7 +1294,7 @@ static int macvlan_validate(struct nlattr *tb[], struct nlattr *data[],
- 		return 0;
++	if (flags & MACVLAN_FLAG_NODST)
++		print_bool(PRINT_ANY, "nodst", "nodst ", true);
++
+ 	if (tb[IFLA_MACVLAN_BC_QUEUE_LEN] &&
+ 		RTA_PAYLOAD(tb[IFLA_MACVLAN_BC_QUEUE_LEN]) >= sizeof(__u32)) {
+ 		__u32 bc_queue_len = rta_getattr_u32(tb[IFLA_MACVLAN_BC_QUEUE_LEN]);
+diff --git a/man/man8/ip-link.8.in b/man/man8/ip-link.8.in
+index a4abae5f..ce828999 100644
+--- a/man/man8/ip-link.8.in
++++ b/man/man8/ip-link.8.in
+@@ -1354,7 +1354,7 @@ the following additional arguments are supported:
+ .BI "ip link add link " DEVICE " name " NAME
+ .BR type " { " macvlan " | " macvtap " } "
+ .BR mode " { " private " | " vepa " | " bridge " | " passthru
+-.RB " [ " nopromisc " ] | " source " } "
++.RB " [ " nopromisc " ] | " source " [ " nodst " ] } "
+ .RB " [ " bcqueuelen " { " LENGTH " } ] "
  
- 	if (data[IFLA_MACVLAN_FLAGS] &&
--	    nla_get_u16(data[IFLA_MACVLAN_FLAGS]) & ~MACVLAN_FLAG_NOPROMISC)
-+	    nla_get_u16(data[IFLA_MACVLAN_FLAGS]) & ~(MACVLAN_FLAG_NOPROMISC | MACVLAN_FLAG_NODST))
- 		return -EINVAL;
+ .in +8
+@@ -1395,12 +1395,15 @@ forces the underlying interface into promiscuous mode. Passing the
+ .BR nopromisc " flag prevents this, so the promisc flag may be controlled "
+ using standard tools.
  
- 	if (data[IFLA_MACVLAN_MODE]) {
-diff --git a/include/uapi/linux/if_link.h b/include/uapi/linux/if_link.h
-index 91c8dda6d95d..cd5b382a4138 100644
---- a/include/uapi/linux/if_link.h
-+++ b/include/uapi/linux/if_link.h
-@@ -614,6 +614,7 @@ enum macvlan_macaddr_mode {
- };
+-.B mode source
++.BR mode " " source " [ " nodst " ] "
+ - allows one to set a list of allowed mac address, which is used to match
+ against source mac address from received frames on underlying interface. This
+ allows creating mac based VLAN associations, instead of standard port or tag
+ based. The feature is useful to deploy 802.1x mac based behavior,
+-where drivers of underlying interfaces doesn't allows that.
++where drivers of underlying interfaces doesn't allows that. By default, packets
++are also considered (duplicated) for destination-based MACVLAN. Passing the
++.BR nodst " flag stops matching packets from also going through the "
++destination-based flow.
  
- #define MACVLAN_FLAG_NOPROMISC	1
-+#define MACVLAN_FLAG_NODST	2 /* skip dst macvlan if matching src macvlan */
- 
- /* VRF section */
- enum {
+ .BR bcqueuelen " { " LENGTH " } "
+ - Set the length of the RX queue used to process broadcast and multicast packets.
 -- 
 2.31.1
 
