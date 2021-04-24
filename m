@@ -2,120 +2,167 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 55D93369FF3
-	for <lists+netdev@lfdr.de>; Sat, 24 Apr 2021 09:21:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E754D36A007
+	for <lists+netdev@lfdr.de>; Sat, 24 Apr 2021 10:02:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232629AbhDXHW0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 24 Apr 2021 03:22:26 -0400
-Received: from mail.kernel.org ([198.145.29.99]:53750 "EHLO mail.kernel.org"
+        id S233206AbhDXIDE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 24 Apr 2021 04:03:04 -0400
+Received: from mail.kernel.org ([198.145.29.99]:47236 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230471AbhDXHWX (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 24 Apr 2021 03:22:23 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 1B4D961404;
-        Sat, 24 Apr 2021 07:21:44 +0000 (UTC)
+        id S231722AbhDXICK (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 24 Apr 2021 04:02:10 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 2C4EA61462;
+        Sat, 24 Apr 2021 08:01:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1619248905;
-        bh=2IBg5lD3luughl/O28DyG4n7IZAasZN8SR4zzP9umVY=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=T/mUlID+VCER99XBM7rxiCQNaW22mN7Z9/USnqDT/ucOQZLn/mdh5SGMKbidSefPX
-         Rf4JbhOcoL4tb9Re3uYHLlHl405t2+ACO38WozZiBdnghBgrlL0+knAQgOcgxQsow9
-         tKrQyhEpqsFPE55ZO7eFU2u5M8FBmeAv6eCj2qzbyLHVsBpyI05T96Xj2WOxWcnILH
-         eOqQkNOcvW954sHM6pK6cOtV/meI6/tEy72I3zH2Tca4107mNyvoNBnO3TvezyJtzT
-         Gr9GVMy8LvrUdClP+rFTp5os6X7AM7ND8Ah71hFsvMUCBWiz5zwBrakoHqqLBnQcmB
-         mKEQSv/CNzfXA==
-Date:   Sat, 24 Apr 2021 10:21:41 +0300
-From:   Leon Romanovsky <leon@kernel.org>
-To:     "J. Bruce Fields" <bfields@fieldses.org>
-Cc:     "Shelat, Abhi" <a.shelat@northeastern.edu>,
-        Greg KH <gregkh@linuxfoundation.org>,
-        Sudip Mukherjee <sudipm.mukherjee@gmail.com>,
-        Aditya Pakki <pakki001@umn.edu>,
-        Chuck Lever <chuck.lever@oracle.com>,
-        Trond Myklebust <trond.myklebust@hammerspace.com>,
-        Anna Schumaker <anna.schumaker@netapp.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Dave Wysochanski <dwysocha@redhat.com>,
-        "linux-nfs@vger.kernel.org" <linux-nfs@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH] SUNRPC: Add a check for gss_release_msg
-Message-ID: <YIPHBZj/0Tn4nWVe@unreal>
-References: <YH/8jcoC1ffuksrf@kroah.com>
- <3B9A54F7-6A61-4A34-9EAC-95332709BAE7@northeastern.edu>
- <20210421133727.GA27929@fieldses.org>
- <YIAta3cRl8mk/RkH@unreal>
- <20210421135637.GB27929@fieldses.org>
- <20210422193950.GA25415@fieldses.org>
- <YIMDCNx4q6esHTYt@unreal>
- <20210423180727.GD10457@fieldses.org>
- <YIMgMHwYkVBdrICs@unreal>
- <20210423214850.GI10457@fieldses.org>
+        s=k20201202; t=1619251281;
+        bh=XDwlpZMJRYh6rtNo1bwuEHSTav3hdHOiP6db0kscWtg=;
+        h=From:To:Cc:Subject:Date:From;
+        b=cxHLqm1EM7Z5AEMkuNz34vd61Lsx2lxXSM6XhpD+vU7mVy7l0gqYiXALOZRRe4kN/
+         XRIpUiJAIb6SR7w0auHXJtR7Lkn6O36X4wDk8RF/790nXmTTugTkAFutWD1jvNpD3S
+         4pLOuJCE5kf7E+FtUV1i1Jk97EySXSxgYu33nYzgcNnfjQvz2Du8QVE3jTXA/WjsMw
+         r1dF6zozx+dmB5LZvTEKypYMzZt2twbHYRIiasv/8lojGUd5s2SLWeh/fJ8qyahD/8
+         jvtN/rqd1s1JhlYkkInaxOZUjA+bi7HjizM7X0y3P3UnJy3/LsrhkpP5kJUUIWfBJ2
+         5zvIzkyOVO1oA==
+From:   Saeed Mahameed <saeed@kernel.org>
+To:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev@vger.kernel.org, Saeed Mahameed <saeedm@nvidia.com>
+Subject: [pull request][net-next V2 00/11] mlx5 External sub function controller
+Date:   Sat, 24 Apr 2021 01:01:04 -0700
+Message-Id: <20210424080115.97273-1-saeed@kernel.org>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210423214850.GI10457@fieldses.org>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Apr 23, 2021 at 05:48:50PM -0400, J. Bruce Fields wrote:
-> Have umn addresses been blocked from posting to kernel lists?
+From: Saeed Mahameed <saeedm@nvidia.com>
 
-It is very unlikely.
+Hi Dave, Jakub,
 
-> 
-> Anyway:
-> 
-> On Fri, Apr 23, 2021 at 10:29:52PM +0300, Leon Romanovsky wrote:
-> > On Fri, Apr 23, 2021 at 02:07:27PM -0400, J. Bruce Fields wrote:
-> > > On Fri, Apr 23, 2021 at 08:25:28PM +0300, Leon Romanovsky wrote:
-> > > > On Thu, Apr 22, 2021 at 03:39:50PM -0400, J. Bruce Fields wrote:
-> > > > > On Wed, Apr 21, 2021 at 09:56:37AM -0400, J. Bruce Fields wrote:
-> > > > > > On Wed, Apr 21, 2021 at 04:49:31PM +0300, Leon Romanovsky wrote:
-> > > > > > > If you want to see another accepted patch that is already part of
-> > > > > > > stable@, you are invited to take a look on this patch that has "built-in bug":
-> > > > > > > 8e949363f017 ("net: mlx5: Add a missing check on idr_find, free buf")
-> > > > > > 
-> > > > > > Interesting, thanks.
-> > > > > 
-> > > > > Though looking at it now, I'm not actually seeing the bug--probably I'm
-> > > > > overlooking something obvious.
-> > > > 
-> > > > It was fixed in commit 31634bf5dcc4 ("net/mlx5: FPGA, tls, hold rcu read lock a bit longer")
-> > > 
-> > > So is the "Fixes:" line on that commit wrong?  It claims the bug was
-> > > introduced by an earlier commit, ab412e1dd7db ("net/mlx5: Accel, add TLS
-> > > rx offload routines").
-> > 
-> > Yes, I think that Fixes line is misleading.
-> > 
-> > > 
-> > > Looks like Aditya Pakki's commit may have widened the race a little, but
-> > > I find it a little hard to fault him for that.
-> > 
-> > We can argue about severity of this bug, but the whole paper talks about
-> > introduction of UAF bugs unnoticed.
-> 
-> Aditya Pakki points out in private mail that this patch is part of the
-> work described in this paper:
-> 
-> 	https://www-users.cs.umn.edu/~kjlu/papers/crix.pdf
-> 
-> (See the list of patches in the appendix.)
-> 
-> I mean, sure, I suppose they could have created that whole second line
-> of research just as a cover to submit malicious patches, but I think
-> we're running pretty hard into Occam's Razor at that point.
+This adds the support to instantiate Sub-Functions on external hosts.
 
-Let's not speculate here.
+changelog:
+v1->v2:
+ - fixed unused variable warning
 
-The lack of trust, due to unethical research that was done by UMN researchers,
-amount of bugs already introduced by @umn, and multiple attempts to repeat the
-same pattern (see Al Viro responses on patches like this SUNRPC patch) is enough
-to stop waste our time.
+For more information please see tag log below.
 
-Thanks
+Please pull and let me know if there is any problem.
 
-> 
-> --b.
+Thanks,
+Saeed.
+
+---
+
+The following changes since commit b2f0ca00e6b34bd57c9298a869ea133699e8ec39:
+
+  phy: nxp-c45-tja11xx: add interrupt support (2021-04-23 14:13:16 -0700)
+
+are available in the Git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/saeed/linux.git tags/mlx5-updates-2021-04-21
+
+for you to fetch changes up to f1b9acd3a5e800bb68e7b8abc5b56d01faf68bbc:
+
+  net/mlx5: SF, Extend SF table for additional SF id range (2021-04-24 00:59:07 -0700)
+
+----------------------------------------------------------------
+mlx5-updates-2021-04-21
+
+devlink external port attribute for SF (Sub-Function) port flavour
+
+This adds the support to instantiate Sub-Functions on external hosts
+E.g when Eswitch manager is enabled on the ARM SmarNic SoC CPU, users
+are now able to spawn new Sub-Functions on the Host server CPU.
+
+Parav Pandit Says:
+==================
+
+This series introduces and uses external attribute for the SF port to
+indicate that a SF port belongs to an external controller.
+
+This is needed to generate unique phys_port_name when PF and SF numbers
+are overlapping between local and external controllers.
+For example two controllers 0 and 1, both of these controller have a SF.
+having PF number 0, SF number 77. Here, phys_port_name has duplicate
+entry which doesn't have controller number in it.
+
+Hence, add controller number optionally when a SF port is for an
+external controller. This extension is similar to existing PF and VF
+eswitch ports of the external controller.
+
+When a SF is for external controller an example view of external SF
+port and config sequence:
+
+On eswitch system:
+$ devlink dev eswitch set pci/0033:01:00.0 mode switchdev
+
+$ devlink port show
+pci/0033:01:00.0/196607: type eth netdev enP51p1s0f0np0 flavour physical port 0 splittable false
+pci/0033:01:00.0/131072: type eth netdev eth0 flavour pcipf controller 1 pfnum 0 external true splittable false
+  function:
+    hw_addr 00:00:00:00:00:00
+
+$ devlink port add pci/0033:01:00.0 flavour pcisf pfnum 0 sfnum 77 controller 1
+pci/0033:01:00.0/163840: type eth netdev eth1 flavour pcisf controller 1 pfnum 0 sfnum 77 splittable false
+  function:
+    hw_addr 00:00:00:00:00:00 state inactive opstate detached
+
+phys_port_name construction:
+$ cat /sys/class/net/eth1/phys_port_name
+c1pf0sf77
+
+Patch summary:
+First 3 patches prepares the eswitch to handle vports in more generic
+way using xarray to lookup vport from its unique vport number.
+Patch-1 returns maximum eswitch ports only when eswitch is enabled
+Patch-2 prepares eswitch to return eswitch max ports from a struct
+Patch-3 uses xarray for vport and representor lookup
+Patch-4 considers SF for an additioanl range of SF vports
+Patch-5 relies on SF hw table to check SF support
+Patch-6 extends SF devlink port attribute for external flag
+Patch-7 stores the per controller SF allocation attributes
+Patch-8 uses SF function id for filtering events
+Patch-9 uses helper for allocation and free
+Patch-10 splits hw table into per controller table and generic one
+Patch-11 extends sf table for additional range
+
+==================
+
+----------------------------------------------------------------
+Parav Pandit (11):
+      net/mlx5: E-Switch, Return eswitch max ports when eswitch is supported
+      net/mlx5: E-Switch, Prepare to return total vports from eswitch struct
+      net/mlx5: E-Switch, Use xarray for vport number to vport and rep mapping
+      net/mlx5: E-Switch, Consider SF ports of host PF
+      net/mlx5: SF, Rely on hw table for SF devlink port allocation
+      devlink: Extend SF port attributes to have external attribute
+      net/mlx5: SF, Store and use start function id
+      net/mlx5: SF, Consider own vhca events of SF devices
+      net/mlx5: SF, Use helpers for allocation and free
+      net/mlx5: SF, Split mlx5_sf_hw_table into two parts
+      net/mlx5: SF, Extend SF table for additional SF id range
+
+ .../mellanox/mlx5/core/esw/acl/egress_lgcy.c       |   2 +-
+ .../mellanox/mlx5/core/esw/acl/egress_ofld.c       |   4 +-
+ .../ethernet/mellanox/mlx5/core/esw/acl/helper.c   |   8 +-
+ .../ethernet/mellanox/mlx5/core/esw/acl/helper.h   |   2 +-
+ .../mellanox/mlx5/core/esw/acl/ingress_lgcy.c      |   2 +-
+ .../mellanox/mlx5/core/esw/acl/ingress_ofld.c      |   4 +-
+ .../ethernet/mellanox/mlx5/core/esw/devlink_port.c |   7 +-
+ .../net/ethernet/mellanox/mlx5/core/esw/legacy.c   |   3 +-
+ drivers/net/ethernet/mellanox/mlx5/core/eswitch.c  | 276 +++++++++++++++----
+ drivers/net/ethernet/mellanox/mlx5/core/eswitch.h  | 193 +++-----------
+ .../ethernet/mellanox/mlx5/core/eswitch_offloads.c | 293 ++++++++++++++-------
+ .../net/ethernet/mellanox/mlx5/core/sf/dev/dev.c   |  12 +-
+ .../net/ethernet/mellanox/mlx5/core/sf/devlink.c   |  38 +--
+ .../net/ethernet/mellanox/mlx5/core/sf/hw_table.c  | 256 +++++++++++++-----
+ drivers/net/ethernet/mellanox/mlx5/core/sf/priv.h  |   9 +-
+ drivers/net/ethernet/mellanox/mlx5/core/vport.c    |  14 -
+ include/linux/mlx5/eswitch.h                       |  11 +-
+ include/linux/mlx5/vport.h                         |   8 -
+ include/net/devlink.h                              |   5 +-
+ net/core/devlink.c                                 |  11 +-
+ 20 files changed, 724 insertions(+), 434 deletions(-)
