@@ -2,80 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2622836A349
-	for <lists+netdev@lfdr.de>; Sat, 24 Apr 2021 23:52:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B7FD936A371
+	for <lists+netdev@lfdr.de>; Sun, 25 Apr 2021 00:17:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230254AbhDXVwq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 24 Apr 2021 17:52:46 -0400
-Received: from mail.kernel.org ([198.145.29.99]:52544 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229778AbhDXVwp (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 24 Apr 2021 17:52:45 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 8665461152;
-        Sat, 24 Apr 2021 21:52:06 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1619301126;
-        bh=o3OoMNK/IghjSJvhPQEmAGGIedBeMRwzlmyAYnWps8Q=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=EOweIolik/yWko0S2h/Q61uCUd8E/yBaj8RJFO83bbUbnZNz6Ogf3vWn3FbdxRQbn
-         3XmqipoPDEIBJMQV+0wbiXJC7vYVTFTrHdXhUR5ZnZRKD+1Qm7f8ugG7cIX8hGkmVU
-         +S3DP9hiMx/rZATfRcN18JrXTqZzZXNTBXNIzcyFUWQ5OVNH9ixO/1PNkcrmRGnCxP
-         9ZMUNLNU5NGkltkX4h9JKY8bxmiMq58AyvNF5w/m/K/etHbGAGPvkCreUaRZ6XZsil
-         JUy8B38QoNy3Ra7xzxmDO+LDn/8t5s0uWbp50lW9NBklzWR6iylJbmiM3x4Ti7sHTY
-         VDV7iDIxwFnRQ==
-Date:   Sat, 24 Apr 2021 14:52:05 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Michael Chan <michael.chan@broadcom.com>
-Cc:     davem@davemloft.net, netdev@vger.kernel.org, gospo@broadcom.com
-Subject: Re: [PATCH net-next 10/10] bnxt_en: Implement
- .ndo_features_check().
-Message-ID: <20210424145205.1bfbdb06@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <1619295271-30853-11-git-send-email-michael.chan@broadcom.com>
-References: <1619295271-30853-1-git-send-email-michael.chan@broadcom.com>
-        <1619295271-30853-11-git-send-email-michael.chan@broadcom.com>
+        id S230210AbhDXWRp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 24 Apr 2021 18:17:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59082 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229730AbhDXWRm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 24 Apr 2021 18:17:42 -0400
+Received: from mail-qt1-x82a.google.com (mail-qt1-x82a.google.com [IPv6:2607:f8b0:4864:20::82a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 243B4C061574;
+        Sat, 24 Apr 2021 15:17:02 -0700 (PDT)
+Received: by mail-qt1-x82a.google.com with SMTP id u8so38921543qtq.12;
+        Sat, 24 Apr 2021 15:17:02 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=HQHroiY1imSgCq9jOEwzvyvDcHUhWnRty0vg2BtbJsg=;
+        b=D4yztm5iazarzBHH/iiinWS8TGHyfHcPBhBrLoNMUb4v1VHQg4C8+3xA88elVsY34Y
+         51GH3VMouGqMpc9g7GW6cpJg/uVIYQ2La3hXTvYTrvSQdwcBsrNn6wLFypk09tUPWxnA
+         y/Yda2xhOdA+BqqDk+Yqu2WFeMfPeFDjzyBC7nxuqfZ3tgICR+twRGwxBI54GcXaJpgT
+         SixOvjX7/b9hgoXoFfjEAPqX6KYeAXibRiVGU1lVQpnrSn8hjMVQSJ2BpdfQWZOYInRg
+         YkMejkv5yzsGXEKJqR/O2e5y48PReQKyiQxyfRcXeeanuuYlOag6Ew7u0wN7/HPji/8K
+         hMjA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=HQHroiY1imSgCq9jOEwzvyvDcHUhWnRty0vg2BtbJsg=;
+        b=UqXtWgCU2PfAJecxUsszO6pVt1BQwx8KamJiFz2pj2Qq2dUIdMn5ufKDBGV/YLe721
+         jbNLLkUemPmTifWkS7HvzmxkLJcw0e1dRNQZhp2n/dqapZnTc/7IPQCFxtz8JCkNCwdk
+         POBg/bPDFIAq4n41411NLYfNq3IFmg6kW0ntfGp8j7HT/eMtD2p54vTKIukQ8qGKsiN5
+         3ppeDLkmYYQzY6mODky3IIskb7e8Vn6StuTWG4LQvxehNDldRhTjmLIrvUAlkaaHBlKK
+         uuO4/YnbTWgXzC2rjGUPWDrXG+TYNgS2T2RZ08qJEAWf0x6RY2tDtLwFyryer2sQqI1O
+         WL+A==
+X-Gm-Message-State: AOAM530nDLn8ncmV85C1Qs2TjuZxcBF0KPufi2yySEU2hZRpFtEPYyLo
+        6RwaK0ZE9c55Q0gL+SWECRQ=
+X-Google-Smtp-Source: ABdhPJzh4sjZHOPAifUecywP85IuMnkSllo82CH6kktCMI1YcrKgFDXyu9v4ztaykHcQmkILJr2EBw==
+X-Received: by 2002:ac8:7453:: with SMTP id h19mr1754006qtr.89.1619302621242;
+        Sat, 24 Apr 2021 15:17:01 -0700 (PDT)
+Received: from localhost.localdomain ([179.218.4.27])
+        by smtp.gmail.com with ESMTPSA id k11sm1070764qth.34.2021.04.24.15.16.57
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 24 Apr 2021 15:17:00 -0700 (PDT)
+From:   Pedro Tammela <pctammela@gmail.com>
+X-Google-Original-From: Pedro Tammela <pctammela@mojatatu.com>
+To:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     Pedro Tammela <pctammela@mojatatu.com>
+Subject: [PATCH bpf-next] libbpf: handle ENOTSUPP errno in libbpf_strerror()
+Date:   Sat, 24 Apr 2021 19:16:48 -0300
+Message-Id: <20210424221648.809525-1-pctammela@mojatatu.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, 24 Apr 2021 16:14:31 -0400 Michael Chan wrote:
-> +	features = vlan_features_check(skb, features);
-> +	if (!skb->encapsulation)
-> +		return features;
-> +
-> +	switch (vlan_get_protocol(skb)) {
-> +	case htons(ETH_P_IP):
-> +		l4_proto = ip_hdr(skb)->protocol;
-> +		break;
-> +	case htons(ETH_P_IPV6):
-> +		l4_proto = ipv6_hdr(skb)->nexthdr;
-> +		break;
-> +	default:
-> +		return features;
-> +	}
-> +
-> +	/* For UDP, we can only handle 1 Vxlan port and 1 Geneve port. */
-> +	if (l4_proto == IPPROTO_UDP) {
-> +		struct bnxt *bp = netdev_priv(dev);
-> +		__be16 udp_port = udp_hdr(skb)->dest;
-> +
-> +		if (udp_port != bp->vxlan_port && udp_port != bp->nge_port)
-> +			return features & ~(NETIF_F_CSUM_MASK |
-> +					    NETIF_F_GSO_MASK);
-> +	}
-> +	return features;
+The 'bpf()' syscall is leaking the ENOTSUPP errno that is internal to the kernel[1].
+More recent code is already using the correct EOPNOTSUPP, but changing
+older return codes is not possible due to dependency concerns, so handle ENOTSUPP
+in libbpf_strerror().
 
-This is still written a little too much like a block list.
+[1] https://lore.kernel.org/netdev/20200511165319.2251678-1-kuba@kernel.org/
 
-What if, for example it's a UDP tunnel but with extension headers?
-Is there any particular case that is served by not writing it as:
+Signed-off-by: Pedro Tammela <pctammela@mojatatu.com>
+---
+ tools/lib/bpf/libbpf_errno.c | 9 +++++++++
+ 1 file changed, 9 insertions(+)
 
-	if (l4_proto == UDP && (port == bp->vxl_port ||
-				port == bp->nge_port))
-		return features;
-	return features & ~(CSUM | GSO);
-?
+diff --git a/tools/lib/bpf/libbpf_errno.c b/tools/lib/bpf/libbpf_errno.c
+index 0afb51f7a919..7de8bbc34a37 100644
+--- a/tools/lib/bpf/libbpf_errno.c
++++ b/tools/lib/bpf/libbpf_errno.c
+@@ -13,6 +13,9 @@
+ 
+ #include "libbpf.h"
+ 
++/* This errno is internal to the kernel but leaks in the bpf() syscall. */
++#define ENOTSUPP 524
++
+ /* make sure libbpf doesn't use kernel-only integer typedefs */
+ #pragma GCC poison u8 u16 u32 u64 s8 s16 s32 s64
+ 
+@@ -43,6 +46,12 @@ int libbpf_strerror(int err, char *buf, size_t size)
+ 
+ 	err = err > 0 ? err : -err;
+ 
++	if (err == ENOTSUPP) {
++		snprintf(buf, size, "Operation not supported");
++		buf[size - 1] = '\0';
++		return 0;
++	}
++
+ 	if (err < __LIBBPF_ERRNO__START) {
+ 		int ret;
+ 
+-- 
+2.25.1
 
-Sorry for not realizing this earlier.
