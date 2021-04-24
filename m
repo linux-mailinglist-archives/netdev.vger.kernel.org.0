@@ -2,163 +2,120 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E554E369FEB
-	for <lists+netdev@lfdr.de>; Sat, 24 Apr 2021 09:01:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 55D93369FF3
+	for <lists+netdev@lfdr.de>; Sat, 24 Apr 2021 09:21:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231921AbhDXHC3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 24 Apr 2021 03:02:29 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:21092 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S231467AbhDXHC2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 24 Apr 2021 03:02:28 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1619247709;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=8XLwy8kqxeYQ9e51ZlWT1aEPp0xe58DQ+7TgxaQsEAI=;
-        b=Z+vUkJZM5EcYTV09Yvf9N6X6HcFhc/SkkU1JIBJYzMPwlzWPcPmcjN34wzNp941D8CzMlG
-        uCYjDIIfSxWD9FZywf8iKQduuHUT1oXNvBWdX7h600ZT/wdakHc97D8XOwbdm03XpAlEAH
-        4HD25GEt0hTkJQwoQI7dDuO1lHxdjxI=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-57-VJTHMsaAN4O8n2Q0HH7i0Q-1; Sat, 24 Apr 2021 03:01:47 -0400
-X-MC-Unique: VJTHMsaAN4O8n2Q0HH7i0Q-1
-Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com [10.5.11.22])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id D6CB38026B1;
-        Sat, 24 Apr 2021 07:01:44 +0000 (UTC)
-Received: from carbon (unknown [10.36.110.19])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id A13B710027A5;
-        Sat, 24 Apr 2021 07:01:30 +0000 (UTC)
-Date:   Sat, 24 Apr 2021 09:01:29 +0200
-From:   Jesper Dangaard Brouer <brouer@redhat.com>
-To:     Hangbin Liu <liuhangbin@gmail.com>
-Cc:     Toke =?UTF-8?B?SMO4aWxhbmQtSsO4cmdlbnNlbg==?= <toke@redhat.com>,
-        bpf@vger.kernel.org, netdev@vger.kernel.org,
-        Jiri Benc <jbenc@redhat.com>,
-        Eelco Chaudron <echaudro@redhat.com>, ast@kernel.org,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Lorenzo Bianconi <lorenzo.bianconi@redhat.com>,
-        David Ahern <dsahern@gmail.com>,
-        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
-        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
-        =?UTF-8?B?QmrDtnJuIFQ=?= =?UTF-8?B?w7ZwZWw=?= 
-        <bjorn.topel@gmail.com>, Martin KaFai Lau <kafai@fb.com>,
-        brouer@redhat.com
-Subject: Re: [PATCHv9 bpf-next 2/4] xdp: extend xdp_redirect_map with
- broadcast support
-Message-ID: <20210424090129.1b8fe377@carbon>
-In-Reply-To: <20210424010925.GG3465@Leo-laptop-t470s>
-References: <20210422071454.2023282-1-liuhangbin@gmail.com>
-        <20210422071454.2023282-3-liuhangbin@gmail.com>
-        <20210422185332.3199ca2e@carbon>
-        <87a6pqfb9x.fsf@toke.dk>
-        <20210423185429.126492d0@carbon>
-        <20210424010925.GG3465@Leo-laptop-t470s>
+        id S232629AbhDXHW0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 24 Apr 2021 03:22:26 -0400
+Received: from mail.kernel.org ([198.145.29.99]:53750 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S230471AbhDXHWX (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 24 Apr 2021 03:22:23 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 1B4D961404;
+        Sat, 24 Apr 2021 07:21:44 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1619248905;
+        bh=2IBg5lD3luughl/O28DyG4n7IZAasZN8SR4zzP9umVY=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=T/mUlID+VCER99XBM7rxiCQNaW22mN7Z9/USnqDT/ucOQZLn/mdh5SGMKbidSefPX
+         Rf4JbhOcoL4tb9Re3uYHLlHl405t2+ACO38WozZiBdnghBgrlL0+knAQgOcgxQsow9
+         tKrQyhEpqsFPE55ZO7eFU2u5M8FBmeAv6eCj2qzbyLHVsBpyI05T96Xj2WOxWcnILH
+         eOqQkNOcvW954sHM6pK6cOtV/meI6/tEy72I3zH2Tca4107mNyvoNBnO3TvezyJtzT
+         Gr9GVMy8LvrUdClP+rFTp5os6X7AM7ND8Ah71hFsvMUCBWiz5zwBrakoHqqLBnQcmB
+         mKEQSv/CNzfXA==
+Date:   Sat, 24 Apr 2021 10:21:41 +0300
+From:   Leon Romanovsky <leon@kernel.org>
+To:     "J. Bruce Fields" <bfields@fieldses.org>
+Cc:     "Shelat, Abhi" <a.shelat@northeastern.edu>,
+        Greg KH <gregkh@linuxfoundation.org>,
+        Sudip Mukherjee <sudipm.mukherjee@gmail.com>,
+        Aditya Pakki <pakki001@umn.edu>,
+        Chuck Lever <chuck.lever@oracle.com>,
+        Trond Myklebust <trond.myklebust@hammerspace.com>,
+        Anna Schumaker <anna.schumaker@netapp.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Dave Wysochanski <dwysocha@redhat.com>,
+        "linux-nfs@vger.kernel.org" <linux-nfs@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH] SUNRPC: Add a check for gss_release_msg
+Message-ID: <YIPHBZj/0Tn4nWVe@unreal>
+References: <YH/8jcoC1ffuksrf@kroah.com>
+ <3B9A54F7-6A61-4A34-9EAC-95332709BAE7@northeastern.edu>
+ <20210421133727.GA27929@fieldses.org>
+ <YIAta3cRl8mk/RkH@unreal>
+ <20210421135637.GB27929@fieldses.org>
+ <20210422193950.GA25415@fieldses.org>
+ <YIMDCNx4q6esHTYt@unreal>
+ <20210423180727.GD10457@fieldses.org>
+ <YIMgMHwYkVBdrICs@unreal>
+ <20210423214850.GI10457@fieldses.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210423214850.GI10457@fieldses.org>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, 24 Apr 2021 09:09:25 +0800
-Hangbin Liu <liuhangbin@gmail.com> wrote:
+On Fri, Apr 23, 2021 at 05:48:50PM -0400, J. Bruce Fields wrote:
+> Have umn addresses been blocked from posting to kernel lists?
 
-> On Fri, Apr 23, 2021 at 06:54:29PM +0200, Jesper Dangaard Brouer wrote:
-> > On Thu, 22 Apr 2021 20:02:18 +0200
-> > Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com> wrote:
-> >  =20
-> > > Jesper Dangaard Brouer <brouer@redhat.com> writes:
-> > >  =20
-> > > > On Thu, 22 Apr 2021 15:14:52 +0800
-> > > > Hangbin Liu <liuhangbin@gmail.com> wrote:
-> > > >   =20
-> > > >> diff --git a/net/core/filter.c b/net/core/filter.c
-> > > >> index cae56d08a670..afec192c3b21 100644
-> > > >> --- a/net/core/filter.c
-> > > >> +++ b/net/core/filter.c   =20
-> > > > [...]   =20
-> > > >>  int xdp_do_redirect(struct net_device *dev, struct xdp_buff *xdp,
-> > > >>  		    struct bpf_prog *xdp_prog)
-> > > >>  {
-> > > >> @@ -3933,6 +3950,7 @@ int xdp_do_redirect(struct net_device *dev, =
-struct xdp_buff *xdp,
-> > > >>  	enum bpf_map_type map_type =3D ri->map_type;
-> > > >>  	void *fwd =3D ri->tgt_value;
-> > > >>  	u32 map_id =3D ri->map_id;
-> > > >> +	struct bpf_map *map;
-> > > >>  	int err;
-> > > >> =20
-> > > >>  	ri->map_id =3D 0; /* Valid map id idr range: [1,INT_MAX[ */
-> > > >> @@ -3942,7 +3960,12 @@ int xdp_do_redirect(struct net_device *dev,=
- struct xdp_buff *xdp,
-> > > >>  	case BPF_MAP_TYPE_DEVMAP:
-> > > >>  		fallthrough;
-> > > >>  	case BPF_MAP_TYPE_DEVMAP_HASH:
-> > > >> -		err =3D dev_map_enqueue(fwd, xdp, dev);
-> > > >> +		map =3D xchg(&ri->map, NULL);   =20
-> > > >
-> > > > Hmm, this looks dangerous for performance to have on this fast-path.
-> > > > The xchg call can be expensive, AFAIK this is an atomic operation. =
-  =20
-> > >=20
-> > > Ugh, you're right. That's my bad, I suggested replacing the
-> > > READ_ONCE()/WRITE_ONCE() pair with the xchg() because an exchange is
-> > > what it's doing, but I failed to consider the performance implications
-> > > of the atomic operation. Sorry about that, Hangbin! I guess this shou=
-ld
-> > > be changed to:
-> > >=20
-> > > +		map =3D READ_ONCE(ri->map);
-> > > +		if (map) {
-> > > +			WRITE_ONCE(ri->map, NULL);
-> > > +			err =3D dev_map_enqueue_multi(xdp, dev, map,
-> > > +						    ri->flags & BPF_F_EXCLUDE_INGRESS);
-> > > +		} else {
-> > > +			err =3D dev_map_enqueue(fwd, xdp, dev);
-> > > +		} =20
-> >=20
-> > This is highly sensitive fast-path code, as you saw Bj=C3=B8rn have been
-> > hunting nanosec in this area.  The above code implicitly have "map" as
-> > the likely option, which I don't think it is. =20
->=20
-> Hi Jesper,
->=20
-> From the performance data, there is only a slightly impact. Do we still n=
-eed
-> to block the whole patch on this? Or if you have a better solution?
+It is very unlikely.
 
-I'm basically just asking you to add an unlikely() annotation:
+> 
+> Anyway:
+> 
+> On Fri, Apr 23, 2021 at 10:29:52PM +0300, Leon Romanovsky wrote:
+> > On Fri, Apr 23, 2021 at 02:07:27PM -0400, J. Bruce Fields wrote:
+> > > On Fri, Apr 23, 2021 at 08:25:28PM +0300, Leon Romanovsky wrote:
+> > > > On Thu, Apr 22, 2021 at 03:39:50PM -0400, J. Bruce Fields wrote:
+> > > > > On Wed, Apr 21, 2021 at 09:56:37AM -0400, J. Bruce Fields wrote:
+> > > > > > On Wed, Apr 21, 2021 at 04:49:31PM +0300, Leon Romanovsky wrote:
+> > > > > > > If you want to see another accepted patch that is already part of
+> > > > > > > stable@, you are invited to take a look on this patch that has "built-in bug":
+> > > > > > > 8e949363f017 ("net: mlx5: Add a missing check on idr_find, free buf")
+> > > > > > 
+> > > > > > Interesting, thanks.
+> > > > > 
+> > > > > Though looking at it now, I'm not actually seeing the bug--probably I'm
+> > > > > overlooking something obvious.
+> > > > 
+> > > > It was fixed in commit 31634bf5dcc4 ("net/mlx5: FPGA, tls, hold rcu read lock a bit longer")
+> > > 
+> > > So is the "Fixes:" line on that commit wrong?  It claims the bug was
+> > > introduced by an earlier commit, ab412e1dd7db ("net/mlx5: Accel, add TLS
+> > > rx offload routines").
+> > 
+> > Yes, I think that Fixes line is misleading.
+> > 
+> > > 
+> > > Looks like Aditya Pakki's commit may have widened the race a little, but
+> > > I find it a little hard to fault him for that.
+> > 
+> > We can argue about severity of this bug, but the whole paper talks about
+> > introduction of UAF bugs unnoticed.
+> 
+> Aditya Pakki points out in private mail that this patch is part of the
+> work described in this paper:
+> 
+> 	https://www-users.cs.umn.edu/~kjlu/papers/crix.pdf
+> 
+> (See the list of patches in the appendix.)
+> 
+> I mean, sure, I suppose they could have created that whole second line
+> of research just as a cover to submit malicious patches, but I think
+> we're running pretty hard into Occam's Razor at that point.
 
-	map =3D READ_ONCE(ri->map);
-	if (unlikely(map)) {
-		WRITE_ONCE(ri->map, NULL);
-		err =3D dev_map_enqueue_multi(xdp, dev, map, [...]
+Let's not speculate here.
 
-For XDP, performance is the single most important factor!  You say your
-performance data, there is only a slightly impact, there must be ZERO
-impact (when your added features is not in use).
+The lack of trust, due to unethical research that was done by UMN researchers,
+amount of bugs already introduced by @umn, and multiple attempts to repeat the
+same pattern (see Al Viro responses on patches like this SUNRPC patch) is enough
+to stop waste our time.
 
-You data:
- Version          | Test                                | Generic | Native
- 5.12 rc4         | redirect_map        i40e->i40e      |    1.9M |  9.6M
- 5.12 rc4 + patch | redirect_map        i40e->i40e      |    1.9M |  9.3M
+Thanks
 
-The performance difference 9.6M -> 9.3M is a slowdown of 3.36 nanosec.
-Bj=C3=B8rn and others have been working really hard to optimize the code and
-remove down to 1.5 nanosec overheads.  Thus, introducing 3.36 nanosec
-added overhead to the fast-path is significant.
-
---=20
-Best regards,
-  Jesper Dangaard Brouer
-  MSc.CS, Principal Kernel Engineer at Red Hat
-  LinkedIn: http://www.linkedin.com/in/brouer
-
+> 
+> --b.
