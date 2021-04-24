@@ -2,315 +2,245 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 90116369E82
-	for <lists+netdev@lfdr.de>; Sat, 24 Apr 2021 04:25:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7CB44369E87
+	for <lists+netdev@lfdr.de>; Sat, 24 Apr 2021 04:37:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236492AbhDXCZn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 23 Apr 2021 22:25:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57816 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232155AbhDXCZk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 23 Apr 2021 22:25:40 -0400
-Received: from mail-pj1-x1030.google.com (mail-pj1-x1030.google.com [IPv6:2607:f8b0:4864:20::1030])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 815C9C061574;
-        Fri, 23 Apr 2021 19:25:03 -0700 (PDT)
-Received: by mail-pj1-x1030.google.com with SMTP id lt13so15168875pjb.1;
-        Fri, 23 Apr 2021 19:25:03 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=BJMOJherPDXPAwQz7zMKR9TdRbXkn6U4di8aK+tbR0A=;
-        b=YXBi6QJonuUF8BM+f6j8KU9zrOWZ4mzSH0cwFj4OS3ut4Mg66oAu9FEXL1pCxm+ZuB
-         toTq/muPTFvuDvaJfVGz8gonM1IQrps0J2zy8lj23uRUYZtsZIQB3nWWLUbj9np//g4l
-         ifEn+Wy9Mms3jenSH2HnB94yUzBL5ziJqi/lasYHnnH4G4YsluaLPaQeLcL9ngEaWEIK
-         HFAa3pA8V1v/TBMj0dRFuHTM3DYsZKRqBfc3xgbX89OjndlDoiUvx+dSPQySZf0AQWUz
-         weWJV+fltAToh7FUiNOMMg91xLz0QAjRIrlB66WbT8gixOfnzwYVwXXjW0aDuLWop+Xh
-         DU8A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=BJMOJherPDXPAwQz7zMKR9TdRbXkn6U4di8aK+tbR0A=;
-        b=ERHMhMYvct/AOoxV2azEVwbZU7uo6wvvYr6HZEAsOSOdE5r4ivhqfFJ6ipyOKXaNXB
-         oCzneED81OAvI0T8M+jz/zD1Xx5hRnY/3kldNaaocNpA7CZ5C89mORPfEVsgD4Ashja+
-         neq6sfTDzxllFGyBSnnsRmyXOZRQcLgYlTR7of5Or5kMcYfmOprN/X0MwsugbW1lUbm0
-         d1FSaA5wkfRzACJ8v298NbPj0vakmZiaRvbC1+6IPrqa16o6pI3Zj83Ge+qjWHRKmQf0
-         f1fFbfQMDHMgTRq0dKOM4HdHA3r2sY5jwdp7lsuxWX9oSQqdnDA6Qn1bxnS+SKy3OcGb
-         uT8w==
-X-Gm-Message-State: AOAM530/NN/xowDm+DiHABIwl2fnccmMLIxmfucYgSAaMFOsMULud7FE
-        uuyjaBL/Dux6XmJo/QbJebA=
-X-Google-Smtp-Source: ABdhPJymK8JbJquiMayDFB6QNFlHWwHLXIHMTjSSt8D18txYlvSnqq9uhLRzQU4nPhzXPB9rZQF9Mw==
-X-Received: by 2002:a17:90a:420d:: with SMTP id o13mr9154950pjg.61.1619231102781;
-        Fri, 23 Apr 2021 19:25:02 -0700 (PDT)
-Received: from ast-mbp.thefacebook.com ([163.114.132.7])
-        by smtp.gmail.com with ESMTPSA id k20sm5618812pfa.34.2021.04.23.19.25.01
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Fri, 23 Apr 2021 19:25:01 -0700 (PDT)
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-To:     davem@davemloft.net
-Cc:     daniel@iogearbox.net, andrii@kernel.org, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, kernel-team@fb.com
-Subject: pull-request: bpf-next 2021-04-23
-Date:   Fri, 23 Apr 2021 19:24:59 -0700
-Message-Id: <20210424022459.16039-1-alexei.starovoitov@gmail.com>
-X-Mailer: git-send-email 2.13.5
+        id S236781AbhDXCht (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 23 Apr 2021 22:37:49 -0400
+Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:51708 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S232155AbhDXChs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 23 Apr 2021 22:37:48 -0400
+Received: from pps.filterd (m0044010.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 13O2aaN2019345;
+        Fri, 23 Apr 2021 19:36:57 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=subject : to : cc :
+ references : from : message-id : date : in-reply-to : content-type :
+ content-transfer-encoding : mime-version; s=facebook;
+ bh=D2SP62oVe0DS5rTG3R5gge+mvmMWy+1SvLJA4OfjeR8=;
+ b=ZdhPjUY/GqWUv8DDUL+a1tfVUP0w4BfFoFdCBtn0rcGkPqp58z652gguZZVMmjVDS63m
+ sFSu/IM5AjdgFzP7IzOx/HqxoNWuSPfGgh52jS4CNbd5un0bZLZXnVt1yOhkgpn0nnaO
+ J/zRVkNSIPgbpjkBu1KPkNdtwdER42R015o= 
+Received: from mail.thefacebook.com ([163.114.132.120])
+        by mx0a-00082601.pphosted.com with ESMTP id 383an2a92a-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
+        Fri, 23 Apr 2021 19:36:57 -0700
+Received: from NAM12-BN8-obe.outbound.protection.outlook.com (100.104.98.9) by
+ o365-in.thefacebook.com (100.104.94.231) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2176.2; Fri, 23 Apr 2021 19:36:56 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=Lt0gN0Q71MCl3PaGPYMo+iW7M801QD48lenD3clSXWjxwGjVA1LzO7Stcht5zSmxLxiEac9ClloINiSuV6tMHWAuTov2Jq3wEGDbM3kAS0iVghOJwMo0sYflMRI2sCYzORciT9Vmzl64ZpHoqhp0kg5+IELACHNgahqigSEFGdJQCwirRf6Vuflbc1m/C/4p9jCQmLoX+YF5wJxie6N4WbsAYKTxwlrqAsOscePfD/zNPPkLAxo7c6onWBC4xCv3LzzSRG/mL83v7BT0/PlvYVUJIl+fxc08hOCQXaDP9TAnm2DrbObWenX2LuJefxhVQRsp4gNY1r6426Q2znhXVw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=D2SP62oVe0DS5rTG3R5gge+mvmMWy+1SvLJA4OfjeR8=;
+ b=KyIcifKkT3QfLkD2ISGgdllR8rOBpQ/hEqeU0SFPmVESb8zD16MoANeidz0kgaArrF31v4gr491z+wIL1kfQ/XxS/0unE2mDvp6sckEcu2l5uszwXqiGhSJWXY/GG5ww/+ZlRFmHjHZvBU++vf7lNj3mf7LAwHKr43EC1yZ/WVlfObx+IgiggGC6XdWsyS/eOGLxCmLz677ewiVupvftWiYBmV6zlBswvkvjrnNGN8JLMvwUrR+OhPkLLADQ8hmyIi1+JAnewmXfUIAF9Qv5dbvjfRPRVwJWqb52ugN4opqo24rzepqrM+xe9kAZVOZsxj1em/LwyUSf+3Ig66V8tg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
+ header.d=fb.com; arc=none
+Received: from SN6PR1501MB2064.namprd15.prod.outlook.com (2603:10b6:805:d::27)
+ by SN6PR15MB2285.namprd15.prod.outlook.com (2603:10b6:805:19::29) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4020.21; Sat, 24 Apr
+ 2021 02:36:52 +0000
+Received: from SN6PR1501MB2064.namprd15.prod.outlook.com
+ ([fe80::f433:fd99:f905:8912]) by SN6PR1501MB2064.namprd15.prod.outlook.com
+ ([fe80::f433:fd99:f905:8912%3]) with mapi id 15.20.4065.025; Sat, 24 Apr 2021
+ 02:36:52 +0000
+Subject: Re: [PATCH v2 bpf-next 2/6] libbpf: rename static variables during
+ linking
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>,
+        Alexei Starovoitov <alexei.starovoitov@gmail.com>
+CC:     Andrii Nakryiko <andrii@kernel.org>, bpf <bpf@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@fb.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Kernel Team <kernel-team@fb.com>
+References: <20210423185357.1992756-1-andrii@kernel.org>
+ <20210423185357.1992756-3-andrii@kernel.org>
+ <2b398ad6-31be-8997-4115-851d79f2d0d2@fb.com>
+ <CAEf4BzYDiuh+OLcRKfcZDSL6esu6dK8js8pudHKvtMvAxS1=WQ@mail.gmail.com>
+ <065e8768-b066-185f-48f9-7ca8f15a2547@fb.com>
+ <CAADnVQ+h9eS0P9Jb0QZQ374WxNSF=jhFAiBV7czqhnJxV51m6A@mail.gmail.com>
+ <CAEf4BzadCR+QFy4UY8NSVFjGJF4CszhjjZ48XeeqrfX3aYTnkA@mail.gmail.com>
+ <CAADnVQKo+efxMvgrqYqVvUEgiz_GXgBVOt4ddPTw_mLuvr2HUw@mail.gmail.com>
+ <CAEf4BzZifOFHr4gozUuSFTh7rTWu2cE_-L4H1shLV5OKyQ92uw@mail.gmail.com>
+From:   Yonghong Song <yhs@fb.com>
+Message-ID: <f9d8328e-6f3e-59c7-05f5-d67b54e6b4ce@fb.com>
+Date:   Fri, 23 Apr 2021 19:36:49 -0700
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
+ Gecko/20100101 Thunderbird/78.9.1
+In-Reply-To: <CAEf4BzZifOFHr4gozUuSFTh7rTWu2cE_-L4H1shLV5OKyQ92uw@mail.gmail.com>
+Content-Type: text/plain; charset="utf-8"; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [2620:10d:c090:400::5:81f0]
+X-ClientProxiedBy: MW4PR03CA0167.namprd03.prod.outlook.com
+ (2603:10b6:303:8d::22) To SN6PR1501MB2064.namprd15.prod.outlook.com
+ (2603:10b6:805:d::27)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from [IPv6:2620:10d:c085:21c1::134e] (2620:10d:c090:400::5:81f0) by MW4PR03CA0167.namprd03.prod.outlook.com (2603:10b6:303:8d::22) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4065.20 via Frontend Transport; Sat, 24 Apr 2021 02:36:51 +0000
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 20f1c3c3-4a4a-4286-033a-08d906c9d196
+X-MS-TrafficTypeDiagnostic: SN6PR15MB2285:
+X-MS-Exchange-Transport-Forked: True
+X-Microsoft-Antispam-PRVS: <SN6PR15MB228539B89857B663F85FB0BDD3449@SN6PR15MB2285.namprd15.prod.outlook.com>
+X-FB-Source: Internal
+X-MS-Oob-TLC-OOBClassifiers: OLM:10000;
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: SsSgFEOrXBrLuDr487Um9MPEyGwy681FydBp4B1x0jcAZC5AlgAvyvR54IcQvoxhYPFSOoQX36xif3+DSLARXz56NA7chDLhBqH0+fK2/U5K2kZeYhf90UP+/FPAkQfap+PaIa0qdHIiAk4CkwqqUKU3DrJKspLtED/qYQVZkFz/57ix7WGt2ZHrhrCtwu8FSC4CLLg6KjmmWTUC5Rf9jMn81HIr9XC4VXo+NWTO0IT6Ho8cywtcTHaCfNxadiNp0IbolERDPHSu3zWDz338FekZTKTYhitZQQzMBHOFC0V/CvtqoNpq0nH4LkJBXjeIo3H6wcxeYXcxeWS1F1Bm1n6iQtau6yFEiCQNf0b8nxL4QZwvRKrJZ7aGNQ3bsnLVU/mW79kUsCG/5QQiWSbdgQz6jN67qKPt+4k5bc7l6oJUXZOtSYyyMp5ua2y1fwsyxX+PSLjfL8ol+hT0leKGqmUhtbszO7ogEel+1bzNmOg7G/rz4CtUspsmK/D3gyheEmEHLMAyIdQXBfYy+XVV8EcpwwuALZ/tqrc1T1j5Im+I0PaJbSu/MsrG2uWAbk4QE7Hww7sUiqp3U3Ta9NwHtDr+w5dlRvWg67KghUgaI8NCY/z6MVILRILuoYaBBzDiOygbV80Tg16bVSfqI/4lGR+uH6mP9gWoZEOp02dulUmmNUGJ8rUUackUsFvFjLEb
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SN6PR1501MB2064.namprd15.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(39860400002)(136003)(376002)(346002)(396003)(31696002)(66946007)(316002)(36756003)(54906003)(8676002)(86362001)(52116002)(4326008)(186003)(6486002)(31686004)(16526019)(53546011)(66476007)(110136005)(8936002)(66556008)(2616005)(478600001)(2906002)(83380400001)(5660300002)(38100700002)(45980500001)(43740500002);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData: =?utf-8?B?YkZPYS9JcFl2WlY5ZW53WE5BWnRUNXNuSFdDaUZwR3krTllXYndTTEVXNXVp?=
+ =?utf-8?B?Uyt4a1RTSWxvdWRiaktrSjBlRzloODRwQ1hQdEZPQlRnNVBRT0hxU1pIc0g2?=
+ =?utf-8?B?NVMrOVZma1d4QkszMlBqNmVmT3IzNmwyMGF0amJnbHhVK2N2S0xCSmNuWUJy?=
+ =?utf-8?B?eWc4ZWljKzBXakRNSm0rWXNuQjZJYTIxN0dURDI3M2JKYWc2a0YwR3dUMlhX?=
+ =?utf-8?B?VFdGTEZzcDkzcUM3K3VqTUtVdGJMc2IxNThPV2JFM0NoZUlGanZ0MmxqOUd0?=
+ =?utf-8?B?SmxJL3p0S0tkL3lEL0d1QTE3OU9jYlAzV0hDSmVHTDlGbCt2V1JqbFhTZ3dw?=
+ =?utf-8?B?OXFTTnBhY3oxZ1N0Yk15V3NUbzJReW1aWXM1REl0cTdLM2dhSDVSUU5xeG04?=
+ =?utf-8?B?OWFGZ3lXNnFrUlU0RDU3QlFGb05zMk1DaWdiUjJ6VGpzK08wZjc5REM0WU53?=
+ =?utf-8?B?ZlNLMk04SGppS3JZQm41WGVYQjhieTM5anFyRTNoMDRvSDB5Q0I5VHgvbzU3?=
+ =?utf-8?B?Y0hMZ3ladlpVaURLMk9oNUUwTjRkVHRwb0w3QlQxai93YXhBNERkemMzTktj?=
+ =?utf-8?B?ZGtMbW1HODBvczYzYUk3c1J2dVJMRWt0cjNYVjNFbkVRSWRTcm9wTVlyRW4x?=
+ =?utf-8?B?a3hsZ3RIbEJmUXpudDRYbGlDSjBzeUIvLzdtRm40VDBNNDlGQ0dYMng1Q1F1?=
+ =?utf-8?B?anJkZmRWRGZQSVkzWVJ2byt6T3Z6K1l0SUF3cG1PUHVTc0pkcWUwbWQ5V1Zq?=
+ =?utf-8?B?MXRSOXF6YkNNY3o5K2JMSm1MZlM4RU1NZWdzamVXRDlndjlORWI5Y1huRlB4?=
+ =?utf-8?B?OWlhc3NPc2FIMEJlTnNCMUpoWHlIbFhYRmRnWjJuY28yUjB1eXZTYXRtUkpp?=
+ =?utf-8?B?cXdKZTRTQ0xodTdSek1uZnd1a1dVWk5GM3p5bVFCNXgrb0FWaUZIWk44MkhO?=
+ =?utf-8?B?WWpzV3NjT1pyaDRhektwZGt1dWZuKzQ0emFYL1Zac2hTeHhrdjhJK2JuZXhB?=
+ =?utf-8?B?YmU0NEtxY2x6VW42c2ZuajlWM2NZV3FGajJzK1U1K003cGIwb1lEdGNHd2FQ?=
+ =?utf-8?B?emVmQW1IWEFaeWhBbGZpZXJpdnBZa21xQVNaWmd2RTBSam1QR2R4ZnJyUHEy?=
+ =?utf-8?B?bFNUYTFGU1V2VmdtMDU1aFNPdXQ5YjlkU1lJcFV3YXh2aTRGVFg3MENRRzgr?=
+ =?utf-8?B?YXBwWHJTRkk5WnFsVy9EZU5LYkgwWjhZU21DZEZidVNkMkxvL3ZMRzRWYlNn?=
+ =?utf-8?B?eS9Pd01LTS84TG5hVDF2TVA3ZHZBcWI0N1FybXd5Z3JOTkRmNXFQaWFaY2l5?=
+ =?utf-8?B?cXZ3VWdQV2dJbGUzYngvL0F0MFQvUE50YVFORkZFUklsSlFVKzNtSUU4VWhQ?=
+ =?utf-8?B?QjdEaExsRVlvQStkLzlWcmNIdHM1dnB6amlrR2FTUmtBbE9LbmQ2a3RVUjZT?=
+ =?utf-8?B?WFdnVFpuQUZyTGZPM2tSVkMrVktraFN4RnQzREErTFM4NTBqS3NpK0pDZTlp?=
+ =?utf-8?B?UE1MYjNINUlDVkhpUjd4bC80UkNYeTE0RXAvbTBmQk5HQ3RLd2o5SU9sMzZG?=
+ =?utf-8?B?VFNmQlhMRkIzb3JkVExhbkZITURjZ3pMZFFXeWxlL0IzeWdmK1NJNTEySldl?=
+ =?utf-8?B?Zk40WmJoM2gwcW9OWk5BTWpLZGZJeDAvSUJIditzaFFMT0UrMGdaSXlPSVF2?=
+ =?utf-8?B?aUIwVzRGVmczMHJKUW94MFFIdHE1dk9XTjZJb0Q3cWZIaHRGR1V2dHZ1ZEtO?=
+ =?utf-8?B?clVCS0llb09YRGF6c25XalVGTnlpa1NnRlkvS2lXV2paQU9hS0ZpTWdZek04?=
+ =?utf-8?Q?tvXNLTB+up7ebhhgsIAaWfaH/RsEEx/rd9Qco=3D?=
+X-MS-Exchange-CrossTenant-Network-Message-Id: 20f1c3c3-4a4a-4286-033a-08d906c9d196
+X-MS-Exchange-CrossTenant-AuthSource: SN6PR1501MB2064.namprd15.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 24 Apr 2021 02:36:52.6347
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: c8vS4cmyfxBqIySuFDjS91AamawbriHuPNQffE6KzL2vy983HO8viAJKN8l5Uztv
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SN6PR15MB2285
+X-OriginatorOrg: fb.com
+X-Proofpoint-ORIG-GUID: i72jDZ9YKzYJhMoGdyMOLlJzCZp05ik5
+X-Proofpoint-GUID: i72jDZ9YKzYJhMoGdyMOLlJzCZp05ik5
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.391,18.0.761
+ definitions=2021-04-23_14:2021-04-23,2021-04-23 signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 bulkscore=0
+ mlxlogscore=999 clxscore=1015 malwarescore=0 suspectscore=0 phishscore=0
+ adultscore=0 spamscore=0 lowpriorityscore=0 impostorscore=0
+ priorityscore=1501 mlxscore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.12.0-2104060000 definitions=main-2104240015
+X-FB-Internal: deliver
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi David, hi Jakub,
 
-The following pull-request contains BPF updates for your *net-next* tree.
 
-We've added 69 non-merge commits during the last 22 day(s) which contain
-a total of 69 files changed, 3141 insertions(+), 866 deletions(-).
+On 4/23/21 5:13 PM, Andrii Nakryiko wrote:
+> On Fri, Apr 23, 2021 at 4:48 PM Alexei Starovoitov
+> <alexei.starovoitov@gmail.com> wrote:
+>>
+>> On Fri, Apr 23, 2021 at 4:35 PM Andrii Nakryiko
+>> <andrii.nakryiko@gmail.com> wrote:
+>>>
+>>> On Fri, Apr 23, 2021 at 4:06 PM Alexei Starovoitov
+>>> <alexei.starovoitov@gmail.com> wrote:
+>>>>
+>>>> On Fri, Apr 23, 2021 at 2:56 PM Yonghong Song <yhs@fb.com> wrote:
+>>>>>>>>
+>>>>>>>> -static volatile const __u32 print_len;
+>>>>>>>> -static volatile const __u32 ret1;
+>>>>>>>> +volatile const __u32 print_len = 0;
+>>>>>>>> +volatile const __u32 ret1 = 0;
+>>>>>>>
+>>>>>>> I am little bit puzzled why bpf_iter_test_kern4.c is impacted. I think
+>>>>>>> this is not in a static link test, right? The same for a few tests below.
+>>>>>>
+>>>>>> All the selftests are passed through a static linker, so it will
+>>>>>> append obj_name to each static variable. So I just minimized use of
+>>>>>> static variables to avoid too much code churn. If this variable was
+>>>>>> static, it would have to be accessed as
+>>>>>> skel->rodata->bpf_iter_test_kern4__print_len, for example.
+>>>>>
+>>>>> Okay this should be fine. selftests/bpf specific. I just feel that
+>>>>> some people may get confused if they write/see a single program in
+>>>>> selftest and they have to use obj_varname format and thinking this
+>>>>> is a new standard, but actually it is due to static linking buried
+>>>>> in Makefile. Maybe add a note in selftests/README.rst so we
+>>>>> can point to people if there is confusion.
+>>>>
+>>>> I'm not sure I understand.
+>>>> Are you saying that
+>>>> bpftool gen object out_file.o in_file.o
+>>>> is no longer equivalent to llvm-strip ?
+>>>> Since during that step static vars will get their names mangled?
+>>>
+>>> Yes. Static vars and static maps. We don't allow (yet?) static
+>>> entry-point BPF programs, so those don't change.
+>>>
+>>>> So a good chunk of code that uses skeleton right now should either
+>>>> 1. don't do the linking step
+>>>> or
+>>>> 2. adjust their code to use global vars
+>>>> or
+>>>> 3. adjust the usage of skel.h in their corresponding user code
+>>>>    to accommodate mangled static names?
+>>>> Did it get it right?
+>>>
+>>> Yes, you are right. But so far most cases outside of selftest that
+>>> I've seen don't use static variables (partially because they need
+>>> pesky volatile to be visible from user-space at all), global vars are
+>>> much nicer in that regard.
+>>
+>> Right.
+>> but wait...
+>> why linker is mangling them at all and why they appear in the skeleton?
+>> static vars without volatile should not be in a skeleton, since changing
+>> them from user space might have no meaning on the bpf program.
+>> The behavior of the bpf prog is unpredictable.
+> 
+> It's up to the compiler. If compiler decides that it shouldn't inline
+> all the uses (or e.g. if static variable is an array accessed with
+> index known only at runtime, or many other cases where compiler can't
+> just deduce constant value), then compiler will emit ELF symbols, will
+> allocate storage, and code will use that storage. static volatile just
+> forces the compiler to not assume anything at all.
+> 
+> If the compiler does inline all the uses of static, then we won't have
+> storage allocated for it and it won't be even present in BTF. So for
+> libbpf, linker and skeleton statics are no different than globals.
+> 
+> Static maps are slightly different, because we use SEC() which marks
+> them as used, so they should always be present.
+> 
+> Sub-skeleton will present those statics to the BPF library without
+> name mangling, but for the final linked BPF object file we need to
+> handle statics. Definitely for maps, because static means that library
+> or library user shouldn't be able to just extern that definition and
+> update/lookup/corrupt its state. But I think for static variables it
+> should be the same. Both are visible to user-space, but invisible
+> between linked BPF compilation units.
+> 
+>> Only volatile static can theoretically be in the skeleton, but as you said
+>> probably no one is using them yet, so we can omit them from skeleton too.
 
-The main changes are:
-
-1) Add BPF static linker support for extern resolution of global, from Andrii.
-
-2) Refine retval for bpf_get_task_stack helper, from Dave.
-
-3) Add a bpf_snprintf helper, from Florent.
-
-4) A bunch of miscellaneous improvements from many developers.
-
-Please consider pulling these changes from:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf-next.git
-
-Thanks a lot!
-
-Also thanks to reporters, reviewers and testers of commits in this pull-request:
-
-Alexei Starovoitov, Andrii Nakryiko, Arnaldo Carvalho de Melo, Jakub 
-Sitnicki, Jesper Dangaard Brouer, John Fastabend, Lorenz Bauer, Magnus 
-Karlsson, Martin KaFai Lau, Song Liu, Toke Høiland-Jørgensen, Yonghong 
-Song
-
-----------------------------------------------------------------
-
-The following changes since commit 82506665179209e43d3c9d39ffa42f8c8ff968bd:
-
-  tcp: reorder tcp_congestion_ops for better cache locality (2021-04-02 14:32:27 -0700)
-
-are available in the Git repository at:
-
-  https://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf-next.git 
-
-for you to fetch changes up to 350a62ca065be252ababc43a7c96f8aca390a18f:
-
-  bpf: Document the pahole release info related to libbpf in bpf_devel_QA.rst (2021-04-23 17:11:58 -0700)
-
-----------------------------------------------------------------
-Alexei Starovoitov (6):
-      libbpf: Remove unused field.
-      Merge branch 'bpf: tools: support build selftests/bpf with clang'
-      Merge branch 'Add a snprintf eBPF helper'
-      Merge branch 'bpf: refine retval for bpf_get_task_stack helper'
-      Merge branch 'Simplify bpf_snprintf verifier code'
-      Merge branch 'BPF static linker: support externs'
-
-Andrii Nakryiko (20):
-      libbpf: Add bpf_map__inner_map API
-      Merge branch 'bpf/selftests: page size fixes'
-      bpftool: Support dumping BTF VAR's "extern" linkage
-      bpftool: Dump more info about DATASEC members
-      libbpf: Suppress compiler warning when using SEC() macro with externs
-      libbpf: Mark BPF subprogs with hidden visibility as static for BPF verifier
-      libbpf: Allow gaps in BPF program sections to support overriden weak functions
-      libbpf: Refactor BTF map definition parsing
-      libbpf: Factor out symtab and relos sanity checks
-      libbpf: Make few internal helpers available outside of libbpf.c
-      libbpf: Extend sanity checking ELF symbols with externs validation
-      libbpf: Tighten BTF type ID rewriting with error checking
-      libbpf: Add linker extern resolution support for functions and global variables
-      libbpf: Support extern resolution for BTF-defined maps in .maps section
-      selftests/bpf: Use -O0 instead of -Og in selftests builds
-      selftests/bpf: Omit skeleton generation for multi-linked BPF object files
-      selftests/bpf: Add function linking selftest
-      selftests/bpf: Add global variables linking selftest
-      selftests/bpf: Add map linking selftest
-      selftests/bpf: Document latest Clang fix expectations for linking tests
-
-Cong Wang (3):
-      bpf, udp: Remove some pointless comments
-      skmsg: Pass psock pointer to ->psock_update_sk_prot()
-      sock_map: Fix a potential use-after-free in sock_map_close()
-
-Daniel Borkmann (1):
-      bpf: Sync bpf headers in tooling infrastucture
-
-Dave Marchevsky (3):
-      bpf: Refine retval for bpf_get_task_stack helper
-      bpf/selftests: Add bpf_get_task_stack retval bounds verifier test
-      bpf/selftests: Add bpf_get_task_stack retval bounds test_prog
-
-Florent Revest (9):
-      selftests/bpf: Fix the ASSERT_ERR_PTR macro
-      bpf: Factorize bpf_trace_printk and bpf_seq_printf
-      bpf: Add a ARG_PTR_TO_CONST_STR argument type
-      bpf: Add a bpf_snprintf helper
-      libbpf: Initialize the bpf_seq_printf parameters array field by field
-      libbpf: Introduce a BPF_SNPRINTF helper macro
-      selftests/bpf: Add a series of tests for bpf_snprintf
-      bpf: Notify user if we ever hit a bpf_snprintf verifier bug
-      bpf: Remove unnecessary map checks for ARG_PTR_TO_CONST_STR
-
-He Fengqing (1):
-      bpf: Remove unused parameter from ___bpf_prog_run
-
-Hengqi Chen (1):
-      libbpf: Fix KERNEL_VERSION macro
-
-Ilya Leoshkevich (1):
-      bpf: Generate BTF_KIND_FLOAT when linking vmlinux
-
-Jiri Olsa (1):
-      selftests/bpf: Add docs target as all dependency
-
-Joe Stringer (1):
-      bpf: Document PROG_TEST_RUN limitations
-
-John Fastabend (1):
-      bpf, selftests: test_maps generating unrecognized data section
-
-Li RongQing (1):
-      xsk: Align XDP socket batch size with DPDK
-
-Martin KaFai Lau (1):
-      bpf: selftests: Specify CONFIG_DYNAMIC_FTRACE in the testing config
-
-Martin Willi (1):
-      net, xdp: Update pkt_type if generic XDP changes unicast MAC
-
-Muhammad Usama Anjum (1):
-      bpf, inode: Remove second initialization of the bpf_preload_lock
-
-Pedro Tammela (1):
-      libbpf: Clarify flags in ringbuf helpers
-
-Tiezhu Yang (2):
-      bpf, doc: Fix some invalid links in bpf_devel_QA.rst
-      bpf: Document the pahole release info related to libbpf in bpf_devel_QA.rst
-
-Toke Høiland-Jørgensen (2):
-      bpf: Return target info when a tracing bpf_link is queried
-      selftests/bpf: Add tests for target information in bpf_link info queries
-
-Wan Jiabing (2):
-      bpf, cgroup: Delete repeated struct bpf_prog declaration
-      bpf: Remove repeated struct btf_type declaration
-
-Yang Yingliang (1):
-      libbpf: Remove redundant semi-colon
-
-Yaqi Chen (1):
-      samples/bpf: Fix broken tracex1 due to kprobe argument change
-
-Yauheni Kaliuta (8):
-      selftests/bpf: test_progs/sockopt_sk: Remove version
-      selftests/bpf: test_progs/sockopt_sk: Convert to use BPF skeleton
-      selftests/bpf: Pass page size from userspace in sockopt_sk
-      selftests/bpf: Pass page size from userspace in map_ptr
-      selftests/bpf: mmap: Use runtime page size
-      selftests/bpf: ringbuf: Use runtime page size
-      selftests/bpf: ringbuf_multi: Use runtime page size
-      selftests/bpf: ringbuf_multi: Test bpf_map__set_inner_map_fd
-
-Yonghong Song (5):
-      selftests: Set CC to clang in lib.mk if LLVM is set
-      tools: Allow proper CC/CXX/... override with LLVM=1 in Makefile.include
-      selftests/bpf: Fix test_cpp compilation failure with clang
-      selftests/bpf: Silence clang compilation warnings
-      bpftool: Fix a clang compilation warning
-
-zuoqilin (1):
-      tools/testing: Remove unused variable
-
- Documentation/bpf/bpf_devel_QA.rst                 |   30 +-
- include/linux/bpf-cgroup.h                         |    1 -
- include/linux/bpf.h                                |   23 +-
- include/linux/bpf_verifier.h                       |    9 +
- include/linux/skmsg.h                              |    5 +-
- include/net/sock.h                                 |    5 +-
- include/net/tcp.h                                  |    2 +-
- include/net/udp.h                                  |    2 +-
- include/uapi/linux/bpf.h                           |   67 ++
- kernel/bpf/core.c                                  |    7 +-
- kernel/bpf/helpers.c                               |  306 +++++
- kernel/bpf/inode.c                                 |    2 -
- kernel/bpf/syscall.c                               |    3 +
- kernel/bpf/verifier.c                              |   84 ++
- kernel/trace/bpf_trace.c                           |  373 +-----
- net/core/dev.c                                     |    6 +-
- net/core/sock_map.c                                |    5 +-
- net/ipv4/tcp_bpf.c                                 |    3 +-
- net/ipv4/udp_bpf.c                                 |    5 +-
- net/xdp/xsk.c                                      |    2 +-
- samples/bpf/tracex1_kern.c                         |    4 +-
- scripts/link-vmlinux.sh                            |    7 +-
- tools/bpf/bpftool/btf.c                            |   30 +-
- tools/bpf/bpftool/net.c                            |    2 +-
- tools/include/uapi/linux/bpf.h                     |   83 +-
- tools/lib/bpf/bpf_helpers.h                        |   21 +-
- tools/lib/bpf/bpf_tracing.h                        |   58 +-
- tools/lib/bpf/btf.c                                |    5 -
- tools/lib/bpf/libbpf.c                             |  396 +++---
- tools/lib/bpf/libbpf.h                             |    1 +
- tools/lib/bpf/libbpf.map                           |    1 +
- tools/lib/bpf/libbpf_internal.h                    |   45 +
- tools/lib/bpf/linker.c                             | 1272 +++++++++++++++++---
- tools/scripts/Makefile.include                     |   12 +-
- tools/testing/selftests/bpf/Makefile               |   28 +-
- tools/testing/selftests/bpf/README.rst             |    9 +
- tools/testing/selftests/bpf/config                 |    2 +
- tools/testing/selftests/bpf/prog_tests/bpf_iter.c  |    1 +
- .../selftests/bpf/prog_tests/fexit_bpf2bpf.c       |   58 +-
- .../testing/selftests/bpf/prog_tests/fexit_sleep.c |    4 +-
- .../selftests/bpf/prog_tests/linked_funcs.c        |   42 +
- .../testing/selftests/bpf/prog_tests/linked_maps.c |   30 +
- .../testing/selftests/bpf/prog_tests/linked_vars.c |   43 +
- tools/testing/selftests/bpf/prog_tests/map_ptr.c   |   15 +-
- tools/testing/selftests/bpf/prog_tests/mmap.c      |   24 +-
- .../selftests/bpf/prog_tests/ns_current_pid_tgid.c |    4 +-
- tools/testing/selftests/bpf/prog_tests/ringbuf.c   |   17 +-
- .../selftests/bpf/prog_tests/ringbuf_multi.c       |   37 +-
- tools/testing/selftests/bpf/prog_tests/snprintf.c  |  125 ++
- .../testing/selftests/bpf/prog_tests/sockopt_sk.c  |   65 +-
- .../selftests/bpf/progs/bpf_iter_task_stack.c      |   27 +
- tools/testing/selftests/bpf/progs/linked_funcs1.c  |   73 ++
- tools/testing/selftests/bpf/progs/linked_funcs2.c  |   73 ++
- tools/testing/selftests/bpf/progs/linked_maps1.c   |   82 ++
- tools/testing/selftests/bpf/progs/linked_maps2.c   |   76 ++
- tools/testing/selftests/bpf/progs/linked_vars1.c   |   54 +
- tools/testing/selftests/bpf/progs/linked_vars2.c   |   55 +
- tools/testing/selftests/bpf/progs/map_ptr_kern.c   |    4 +-
- .../selftests/bpf/progs/sockmap_tcp_msg_prog.c     |   12 -
- tools/testing/selftests/bpf/progs/sockopt_sk.c     |   11 +-
- tools/testing/selftests/bpf/progs/test_mmap.c      |    2 -
- tools/testing/selftests/bpf/progs/test_ringbuf.c   |    1 -
- .../selftests/bpf/progs/test_ringbuf_multi.c       |   12 +-
- tools/testing/selftests/bpf/progs/test_snprintf.c  |   73 ++
- .../selftests/bpf/progs/test_snprintf_single.c     |   20 +
- .../testing/selftests/bpf/progs/test_tunnel_kern.c |    2 +-
- tools/testing/selftests/bpf/test_progs.h           |    2 +-
- .../testing/selftests/bpf/verifier/bpf_get_stack.c |   43 +
- tools/testing/selftests/lib.mk                     |    4 +
- 69 files changed, 3141 insertions(+), 866 deletions(-)
- create mode 100644 tools/testing/selftests/bpf/prog_tests/linked_funcs.c
- create mode 100644 tools/testing/selftests/bpf/prog_tests/linked_maps.c
- create mode 100644 tools/testing/selftests/bpf/prog_tests/linked_vars.c
- create mode 100644 tools/testing/selftests/bpf/prog_tests/snprintf.c
- create mode 100644 tools/testing/selftests/bpf/progs/linked_funcs1.c
- create mode 100644 tools/testing/selftests/bpf/progs/linked_funcs2.c
- create mode 100644 tools/testing/selftests/bpf/progs/linked_maps1.c
- create mode 100644 tools/testing/selftests/bpf/progs/linked_maps2.c
- create mode 100644 tools/testing/selftests/bpf/progs/linked_vars1.c
- create mode 100644 tools/testing/selftests/bpf/progs/linked_vars2.c
- create mode 100644 tools/testing/selftests/bpf/progs/test_snprintf.c
- create mode 100644 tools/testing/selftests/bpf/progs/test_snprintf_single.c
+I think it is a good idea to keep volatile static use case in
+the skeleton if we add support for static map. The volatile
+static variable essentially a private map. Without this,
+for skeleton users, they may need to use an explicit one-element
+static array map which we probably want to avoid.
