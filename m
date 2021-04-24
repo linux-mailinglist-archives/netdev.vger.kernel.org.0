@@ -2,96 +2,150 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D9D3736A2EC
-	for <lists+netdev@lfdr.de>; Sat, 24 Apr 2021 22:21:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 315FA36A2ED
+	for <lists+netdev@lfdr.de>; Sat, 24 Apr 2021 22:21:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237337AbhDXUPb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 24 Apr 2021 16:15:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32790 "EHLO
+        id S237377AbhDXUPd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 24 Apr 2021 16:15:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32792 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237262AbhDXUP0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 24 Apr 2021 16:15:26 -0400
-Received: from mail-pl1-x631.google.com (mail-pl1-x631.google.com [IPv6:2607:f8b0:4864:20::631])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4941AC06174A
-        for <netdev@vger.kernel.org>; Sat, 24 Apr 2021 13:14:47 -0700 (PDT)
-Received: by mail-pl1-x631.google.com with SMTP id s20so11056524plr.13
-        for <netdev@vger.kernel.org>; Sat, 24 Apr 2021 13:14:47 -0700 (PDT)
+        with ESMTP id S236954AbhDXUP1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 24 Apr 2021 16:15:27 -0400
+Received: from mail-pf1-x431.google.com (mail-pf1-x431.google.com [IPv6:2607:f8b0:4864:20::431])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 89E97C061756
+        for <netdev@vger.kernel.org>; Sat, 24 Apr 2021 13:14:48 -0700 (PDT)
+Received: by mail-pf1-x431.google.com with SMTP id m11so36359131pfc.11
+        for <netdev@vger.kernel.org>; Sat, 24 Apr 2021 13:14:48 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=broadcom.com; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=vXRv6LB0NtHdt36Le3VINVXDJ1qxk2E0aeiMKn1xvdM=;
-        b=gsm/JmfORCWxs+L0DJhHrN1Lcc2sBYRbJZX5Z0gmH1WmY4wHYwPnGFyEIVSgn5Q/3N
-         zd5rQAAeGO9UkUJhGJCHRGBfNmPobPsa675Glijh9z0vdwkLL1isqmcK9c/sFaXKuoTG
-         oiRQiYWMxUhn3BygOyjBssMe8ThfYbEfQWWSQ=
+        bh=fmHMzftTFEsjNC9Oc3kwKDlrGFyBYxa5VB0miELt/sE=;
+        b=RfNumrxjLD+Fz2UL4fgdQdpyaRMXnben+2jiUS4Hrj/FGEs2Kzgj/WhPW6B5x35Xc+
+         dIVxklRQzUHNwX+PAaXHkWJwdlsUml/D8pA1z8EIgIDrM3jseli5t33nwdajgr+S2Bsv
+         7Oi4VmP1FjjESmUN4i9JTciwghE+EEkZVTJaY=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=vXRv6LB0NtHdt36Le3VINVXDJ1qxk2E0aeiMKn1xvdM=;
-        b=pwb1OfzQC9q8067d4t1JRDyUBPzZz7DGT2HSDXSPXrjhWUjUHNeS/i+gDs5H7Tuf5n
-         uDj4oXugJavCxhr1qu/pnCZK3QHugQDj7XUa5UviDIY7alnXasIyHva+rhp5WicXbsPd
-         ADO1nWGtiTF0+2UmUgvLJQtJ6I47VYg9BXlA9gljr2mXfF1G8UF3y30j9u00oDAztg3g
-         QprSgDPD+ypzEzRtgwqpix0pSF9ro155IzaPW4X6SwY8P/jVAnEhX3EzRhkzjw1a0iyO
-         +qZAOXxppNhFlsJMfe6xmBb4Hu+0HKEZfLgMlaocnFPVydGlN52+o3y9qOxuiqasCeAM
-         OthA==
-X-Gm-Message-State: AOAM533/Rha5vdREapQVqTK9w6ZGbHn1VWOXyrHVaul1UHSUrUqnzAiL
-        0nQTklfW74Hc8dhXWPPzG0ouyg==
-X-Google-Smtp-Source: ABdhPJymXI2OtSGWcmrZHVLbcv5gNjxuyefn9Rg1+E7fejPzVlnqMq8r96ODSf/5XcwSolVrAkuldA==
-X-Received: by 2002:a17:902:d2c3:b029:ec:b1ce:c488 with SMTP id n3-20020a170902d2c3b02900ecb1cec488mr10399402plc.4.1619295286630;
-        Sat, 24 Apr 2021 13:14:46 -0700 (PDT)
+        bh=fmHMzftTFEsjNC9Oc3kwKDlrGFyBYxa5VB0miELt/sE=;
+        b=j69HCOkfANBVTPsrEg2XIuvNBGXM273uAeIDhCaUugeKX/NqX1m2vEgLnmci4IJCAK
+         rqdy5muWTUwF3PQQpP7Ri5DzIs6J+8PmRxcWF/l+pxROy87axaI+aoahvuO3tY7xJJ7/
+         0VbDxBvRBhqOzpuPr+GGSA01nIf/CsplO0yQEsaxBAf/Wb3i60/nxxFe+ha6M99QLENH
+         HRYbBNFS/bdpAM2mG4lwaXqnRGpp3lkI0M4LOWLInTQSMzoSd6Nfqm+DMcB7GmBwoAP8
+         CbFKWCaRtmLh8aECmOtr9PhYKZSewlkkfe0xp91q7SOFAt0OuTxUKX3SkUazisn9We3Q
+         sGgA==
+X-Gm-Message-State: AOAM530ikFwRhyuHkfNBROKWYfFoI9P7qtudwxhIgi1kujeHnwdc1j4P
+        jvZMk1CDg3WpLD/dU4rznjNVAQ==
+X-Google-Smtp-Source: ABdhPJy9Q6HleClR1bcaIJlhsqE3xMGw/bgL+DrXq6SanvsB+B++Scxh6r8TiikpGsCrEBkweiQaZQ==
+X-Received: by 2002:a62:ce4a:0:b029:261:aa4e:a03c with SMTP id y71-20020a62ce4a0000b0290261aa4ea03cmr10217639pfg.19.1619295287774;
+        Sat, 24 Apr 2021 13:14:47 -0700 (PDT)
 Received: from localhost.swdvt.lab.broadcom.net ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id z29sm7914070pga.52.2021.04.24.13.14.45
+        by smtp.gmail.com with ESMTPSA id z29sm7914070pga.52.2021.04.24.13.14.46
         (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Sat, 24 Apr 2021 13:14:46 -0700 (PDT)
+        Sat, 24 Apr 2021 13:14:47 -0700 (PDT)
 From:   Michael Chan <michael.chan@broadcom.com>
 To:     davem@davemloft.net
 Cc:     netdev@vger.kernel.org, kuba@kernel.org, gospo@broadcom.com
-Subject: [PATCH net-next 05/10] bnxt_en: allow VF config ops when PF is closed
-Date:   Sat, 24 Apr 2021 16:14:26 -0400
-Message-Id: <1619295271-30853-6-git-send-email-michael.chan@broadcom.com>
+Subject: [PATCH net-next 06/10] bnxt_en: Move bnxt_approve_mac().
+Date:   Sat, 24 Apr 2021 16:14:27 -0400
+Message-Id: <1619295271-30853-7-git-send-email-michael.chan@broadcom.com>
 X-Mailer: git-send-email 1.8.3.1
 In-Reply-To: <1619295271-30853-1-git-send-email-michael.chan@broadcom.com>
 References: <1619295271-30853-1-git-send-email-michael.chan@broadcom.com>
 Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256;
-        boundary="0000000000005fb38705c0bd90be"
+        boundary="00000000000072ec6405c0bd90f8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---0000000000005fb38705c0bd90be
+--00000000000072ec6405c0bd90f8
 
-From: Edwin Peer <edwin.peer@broadcom.com>
+Move it before bnxt_update_vf_mac().  In the next patch, we need to call
+bnxt_approve_mac() from bnxt_update_mac() under some conditions.  This
+will avoid forward declaration.
 
-It is perfectly legal for the stack to query and configure VFs via PF
-NDOs while the NIC is administratively down.  Remove the unnecessary
-check for the PF to be in open state.
-
-Signed-off-by: Edwin Peer <edwin.peer@broadcom.com>
+Reviewed-by: Edwin Peer <edwin.peer@broadcom.com>
 Signed-off-by: Michael Chan <michael.chan@broadcom.com>
 ---
- drivers/net/ethernet/broadcom/bnxt/bnxt_sriov.c | 4 ----
- 1 file changed, 4 deletions(-)
+ .../net/ethernet/broadcom/bnxt/bnxt_sriov.c   | 53 ++++++++++---------
+ 1 file changed, 27 insertions(+), 26 deletions(-)
 
 diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_sriov.c b/drivers/net/ethernet/broadcom/bnxt/bnxt_sriov.c
-index 4da52f812585..67856dbf9ce9 100644
+index 67856dbf9ce9..e65093f4aa7a 100644
 --- a/drivers/net/ethernet/broadcom/bnxt/bnxt_sriov.c
 +++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_sriov.c
-@@ -49,10 +49,6 @@ static int bnxt_hwrm_fwd_async_event_cmpl(struct bnxt *bp,
+@@ -1116,6 +1116,33 @@ void bnxt_hwrm_exec_fwd_req(struct bnxt *bp)
+ 	}
+ }
  
- static int bnxt_vf_ndo_prep(struct bnxt *bp, int vf_id)
++int bnxt_approve_mac(struct bnxt *bp, u8 *mac, bool strict)
++{
++	struct hwrm_func_vf_cfg_input req = {0};
++	int rc = 0;
++
++	if (!BNXT_VF(bp))
++		return 0;
++
++	if (bp->hwrm_spec_code < 0x10202) {
++		if (is_valid_ether_addr(bp->vf.mac_addr))
++			rc = -EADDRNOTAVAIL;
++		goto mac_done;
++	}
++	bnxt_hwrm_cmd_hdr_init(bp, &req, HWRM_FUNC_VF_CFG, -1, -1);
++	req.enables = cpu_to_le32(FUNC_VF_CFG_REQ_ENABLES_DFLT_MAC_ADDR);
++	memcpy(req.dflt_mac_addr, mac, ETH_ALEN);
++	rc = hwrm_send_message(bp, &req, sizeof(req), HWRM_CMD_TIMEOUT);
++mac_done:
++	if (rc && strict) {
++		rc = -EADDRNOTAVAIL;
++		netdev_warn(bp->dev, "VF MAC address %pM not approved by the PF\n",
++			    mac);
++		return rc;
++	}
++	return 0;
++}
++
+ void bnxt_update_vf_mac(struct bnxt *bp)
  {
--	if (!test_bit(BNXT_STATE_OPEN, &bp->state)) {
--		netdev_err(bp->dev, "vf ndo called though PF is down\n");
--		return -EINVAL;
+ 	struct hwrm_func_qcaps_input req = {0};
+@@ -1145,32 +1172,6 @@ void bnxt_update_vf_mac(struct bnxt *bp)
+ 	mutex_unlock(&bp->hwrm_cmd_lock);
+ }
+ 
+-int bnxt_approve_mac(struct bnxt *bp, u8 *mac, bool strict)
+-{
+-	struct hwrm_func_vf_cfg_input req = {0};
+-	int rc = 0;
+-
+-	if (!BNXT_VF(bp))
+-		return 0;
+-
+-	if (bp->hwrm_spec_code < 0x10202) {
+-		if (is_valid_ether_addr(bp->vf.mac_addr))
+-			rc = -EADDRNOTAVAIL;
+-		goto mac_done;
 -	}
- 	if (!bp->pf.active_vfs) {
- 		netdev_err(bp->dev, "vf ndo called though sriov is disabled\n");
- 		return -EINVAL;
+-	bnxt_hwrm_cmd_hdr_init(bp, &req, HWRM_FUNC_VF_CFG, -1, -1);
+-	req.enables = cpu_to_le32(FUNC_VF_CFG_REQ_ENABLES_DFLT_MAC_ADDR);
+-	memcpy(req.dflt_mac_addr, mac, ETH_ALEN);
+-	rc = hwrm_send_message(bp, &req, sizeof(req), HWRM_CMD_TIMEOUT);
+-mac_done:
+-	if (rc && strict) {
+-		rc = -EADDRNOTAVAIL;
+-		netdev_warn(bp->dev, "VF MAC address %pM not approved by the PF\n",
+-			    mac);
+-		return rc;
+-	}
+-	return 0;
+-}
+ #else
+ 
+ int bnxt_cfg_hw_sriov(struct bnxt *bp, int *num_vfs, bool reset)
 -- 
 2.18.1
 
 
---0000000000005fb38705c0bd90be
+--00000000000072ec6405c0bd90f8
 Content-Type: application/pkcs7-signature; name="smime.p7s"
 Content-Transfer-Encoding: base64
 Content-Disposition: attachment; filename="smime.p7s"
@@ -162,13 +216,13 @@ FSWQptLx+kiu63idTII4r3k/7+dJ5AhLRr4WCoXEme2GZkfSbYC3fEL46tb1w7w+25OEFCv1MtDZ
 DauX1eWVM+KepL7zoSNzVbTipc65WuZFLR8ngOwkpknqvS9n/nKd885m23oIocC+GA4xggJtMIIC
 aQIBATBrMFsxCzAJBgNVBAYTAkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52LXNhMTEwLwYDVQQD
 EyhHbG9iYWxTaWduIEdDQyBSMyBQZXJzb25hbFNpZ24gMiBDQSAyMDIwAgwQeU+Y6hbenPzRMJsw
-DQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEIPMUP3KCiWacOv/auDEhKSxKV/TQJLfl
-9fL9W/dmKINrMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIxMDQy
-NDIwMTQ0N1owaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZIAWUDBAEWMAsGCWCG
+DQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEIEEWY23hhIhHq/nx8qAFzJ+au8B9OLr8
+8BTg9YJaL0R7MBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIxMDQy
+NDIwMTQ0OFowaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZIAWUDBAEWMAsGCWCG
 SAFlAwQBAjAKBggqhkiG9w0DBzALBgkqhkiG9w0BAQowCwYJKoZIhvcNAQEHMAsGCWCGSAFlAwQC
-ATANBgkqhkiG9w0BAQEFAASCAQBJ0N5btNf5oA++0pL1xCDvNQ/AMI+ite2bUoZKy3oSr4vKJ8dT
-lL/fl1K+QlQ2LiGtb6cgdKmI725gy95PDMFP8JI2LCRp4rkGsL4Zfd4TQP6Ivijl8ZMrcvv3TWMI
-wtk2ZQTMc1/sptEK4Ubv83t+ac5iAqjvZjjtexnlR8mBKH6DAOG6Ry4JINHprkkCEc6NdxB3/Xmp
-fFzrtrDJ7//dZZqdt1ZPZEZuBcqPXJuXV69I10Ajgx6UVZbYLkTVvMrWdG7i6HZhKAHWeyEGZe1e
-fcm6exYpXMiP43fNH4Zhwdcnz4SmEgkI2u0FsPOXL3D4kJl1URqv1eeImjykQx3G
---0000000000005fb38705c0bd90be--
+ATANBgkqhkiG9w0BAQEFAASCAQAKRzzs7Xs0eEnTFSmqpWoC0wQia/NoG40CynSe5JafmjPc1ouF
+s5ZYMOBmZxpyhR5ETODlkQYFb4lJMRaId1M4CtQyFEtI/RakklQkMyCNKN0Fa0axCoKx14NzvJhg
+4mx3We19hEyFAV5imkcnPtGWAQpsUkN6/8JZc6XcT170cUpxBdlwhNDVyTl3o09XXa+/v0qY45PK
+jt6+8MrW8GriFb3MG27hGJlMayXzwD6/mjp39sfJsjD6GYI/YIeBUrnQdJqvllQPQZ/P3jy17c6t
+CTKmbfaU29a36wAaI/hlLuVcYJ28wyUPh6GUqs5MTzsfofVuS7igt4tXSUmTUNIv
+--00000000000072ec6405c0bd90f8--
