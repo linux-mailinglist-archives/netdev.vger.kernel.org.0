@@ -2,173 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 68EE436A2EB
+	by mail.lfdr.de (Postfix) with ESMTP id D9D3736A2EC
 	for <lists+netdev@lfdr.de>; Sat, 24 Apr 2021 22:21:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237298AbhDXUP3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 24 Apr 2021 16:15:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32780 "EHLO
+        id S237337AbhDXUPb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 24 Apr 2021 16:15:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32790 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237074AbhDXUPZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 24 Apr 2021 16:15:25 -0400
-Received: from mail-pg1-x534.google.com (mail-pg1-x534.google.com [IPv6:2607:f8b0:4864:20::534])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 825B9C061574
-        for <netdev@vger.kernel.org>; Sat, 24 Apr 2021 13:14:46 -0700 (PDT)
-Received: by mail-pg1-x534.google.com with SMTP id d10so37496661pgf.12
-        for <netdev@vger.kernel.org>; Sat, 24 Apr 2021 13:14:46 -0700 (PDT)
+        with ESMTP id S237262AbhDXUP0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 24 Apr 2021 16:15:26 -0400
+Received: from mail-pl1-x631.google.com (mail-pl1-x631.google.com [IPv6:2607:f8b0:4864:20::631])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4941AC06174A
+        for <netdev@vger.kernel.org>; Sat, 24 Apr 2021 13:14:47 -0700 (PDT)
+Received: by mail-pl1-x631.google.com with SMTP id s20so11056524plr.13
+        for <netdev@vger.kernel.org>; Sat, 24 Apr 2021 13:14:47 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=broadcom.com; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=LaU+YFZcXV78gbWkrECUiY0O8bzhC8KaMna0O3Y3ccY=;
-        b=XYrKSSQ82U0+a/Ajd1M0IdOh1blqumbB392VtnFH4u67gWXb9BbvggU8r5k2SrfqsM
-         O/0gfZncMQmX4y2RBr2ylWkJRavZE+4UjSLAi0NgxPz6Wf1DBXPVaIEdDVX9XDba7JsO
-         0yENa3cLdE9ZR5DVju2qClH9L8nbL031N8mBc=
+        bh=vXRv6LB0NtHdt36Le3VINVXDJ1qxk2E0aeiMKn1xvdM=;
+        b=gsm/JmfORCWxs+L0DJhHrN1Lcc2sBYRbJZX5Z0gmH1WmY4wHYwPnGFyEIVSgn5Q/3N
+         zd5rQAAeGO9UkUJhGJCHRGBfNmPobPsa675Glijh9z0vdwkLL1isqmcK9c/sFaXKuoTG
+         oiRQiYWMxUhn3BygOyjBssMe8ThfYbEfQWWSQ=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=LaU+YFZcXV78gbWkrECUiY0O8bzhC8KaMna0O3Y3ccY=;
-        b=r37it/dJpHW9KFM/H0hoKhavKYDkLoxl8sERYUpWvH1HZQhf+EbhVkbpMlnsNbbKtu
-         Sv4kZ6yquuuA9GQxEjq9r+mjQDs4ibwLo9vy4NeF9tp0wfnkKx9m9nygD5nEmqPBvZIu
-         RatU0lYZAcNKxiD6w1AnMo1v1KbdRP9QhTkbJRM6HYLKqFSd6YeJRJWIPReV/5D6OYHr
-         aUuHvh8D6/S04SSmYw8MeDPqUAH8yT4SBWfZRebcpxkV88AnrkA9/vmV+10LTd9wu0Fh
-         tZf+rJVQ6JXcWXudkTZYEwzlvB0BajA6R22+c5aev5H/jVqpydroJ9JWk0hRxtcE8VR6
-         bTCQ==
-X-Gm-Message-State: AOAM531U4fR5ybawpwFd1asZgl0Gjw5FWhfzI7//sbAkAipcPXCUCUdL
-        tWtQDQ1Ubse9EnAxIhiUfGgqqA==
-X-Google-Smtp-Source: ABdhPJzs3vwCIrLJXFOPnD4urgvkCBUfQGR92JPL0Mt8I6Qi6NeidYy0/2IG2iCiDxoELZKsh5USgQ==
-X-Received: by 2002:a63:204f:: with SMTP id r15mr2797595pgm.315.1619295285798;
-        Sat, 24 Apr 2021 13:14:45 -0700 (PDT)
+        bh=vXRv6LB0NtHdt36Le3VINVXDJ1qxk2E0aeiMKn1xvdM=;
+        b=pwb1OfzQC9q8067d4t1JRDyUBPzZz7DGT2HSDXSPXrjhWUjUHNeS/i+gDs5H7Tuf5n
+         uDj4oXugJavCxhr1qu/pnCZK3QHugQDj7XUa5UviDIY7alnXasIyHva+rhp5WicXbsPd
+         ADO1nWGtiTF0+2UmUgvLJQtJ6I47VYg9BXlA9gljr2mXfF1G8UF3y30j9u00oDAztg3g
+         QprSgDPD+ypzEzRtgwqpix0pSF9ro155IzaPW4X6SwY8P/jVAnEhX3EzRhkzjw1a0iyO
+         +qZAOXxppNhFlsJMfe6xmBb4Hu+0HKEZfLgMlaocnFPVydGlN52+o3y9qOxuiqasCeAM
+         OthA==
+X-Gm-Message-State: AOAM533/Rha5vdREapQVqTK9w6ZGbHn1VWOXyrHVaul1UHSUrUqnzAiL
+        0nQTklfW74Hc8dhXWPPzG0ouyg==
+X-Google-Smtp-Source: ABdhPJymXI2OtSGWcmrZHVLbcv5gNjxuyefn9Rg1+E7fejPzVlnqMq8r96ODSf/5XcwSolVrAkuldA==
+X-Received: by 2002:a17:902:d2c3:b029:ec:b1ce:c488 with SMTP id n3-20020a170902d2c3b02900ecb1cec488mr10399402plc.4.1619295286630;
+        Sat, 24 Apr 2021 13:14:46 -0700 (PDT)
 Received: from localhost.swdvt.lab.broadcom.net ([192.19.223.252])
         by smtp.gmail.com with ESMTPSA id z29sm7914070pga.52.2021.04.24.13.14.45
         (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Sat, 24 Apr 2021 13:14:45 -0700 (PDT)
+        Sat, 24 Apr 2021 13:14:46 -0700 (PDT)
 From:   Michael Chan <michael.chan@broadcom.com>
 To:     davem@davemloft.net
 Cc:     netdev@vger.kernel.org, kuba@kernel.org, gospo@broadcom.com
-Subject: [PATCH net-next 04/10] bnxt_en: allow promiscuous mode for trusted VFs
-Date:   Sat, 24 Apr 2021 16:14:25 -0400
-Message-Id: <1619295271-30853-5-git-send-email-michael.chan@broadcom.com>
+Subject: [PATCH net-next 05/10] bnxt_en: allow VF config ops when PF is closed
+Date:   Sat, 24 Apr 2021 16:14:26 -0400
+Message-Id: <1619295271-30853-6-git-send-email-michael.chan@broadcom.com>
 X-Mailer: git-send-email 1.8.3.1
 In-Reply-To: <1619295271-30853-1-git-send-email-michael.chan@broadcom.com>
 References: <1619295271-30853-1-git-send-email-michael.chan@broadcom.com>
 Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256;
-        boundary="00000000000054001805c0bd90f1"
+        boundary="0000000000005fb38705c0bd90be"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---00000000000054001805c0bd90f1
+--0000000000005fb38705c0bd90be
 
 From: Edwin Peer <edwin.peer@broadcom.com>
 
-Firmware previously only allowed promiscuous mode for VFs associated with
-a default VLAN. It is now possible to enable promiscuous mode for a VF
-having no VLAN configured provided that it is trusted. In such cases the
-VF will see all packets received by the PF, irrespective of destination
-MAC or VLAN.
-
-Note, it is necessary to query firmware at the time of bnxt_promisc_ok()
-instead of in bnxt_hwrm_func_qcfg() because the trusted status might be
-altered by the PF after the VF has been configured. This check must now
-also be deferred because the firmware call sleeps.
+It is perfectly legal for the stack to query and configure VFs via PF
+NDOs while the NIC is administratively down.  Remove the unnecessary
+check for the PF to be in open state.
 
 Signed-off-by: Edwin Peer <edwin.peer@broadcom.com>
 Signed-off-by: Michael Chan <michael.chan@broadcom.com>
 ---
- drivers/net/ethernet/broadcom/bnxt/bnxt.c       | 11 +++++++----
- drivers/net/ethernet/broadcom/bnxt/bnxt_sriov.c |  6 +++---
- drivers/net/ethernet/broadcom/bnxt/bnxt_sriov.h |  1 +
- 3 files changed, 11 insertions(+), 7 deletions(-)
+ drivers/net/ethernet/broadcom/bnxt/bnxt_sriov.c | 4 ----
+ 1 file changed, 4 deletions(-)
 
-diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt.c b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-index dcf1598afac2..9862f517960d 100644
---- a/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-+++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-@@ -8340,11 +8340,11 @@ static int bnxt_alloc_rfs_vnics(struct bnxt *bp)
- #endif
- }
- 
--/* Allow PF and VF with default VLAN to be in promiscuous mode */
-+/* Allow PF, trusted VFs and VFs with default VLAN to be in promiscuous mode */
- static bool bnxt_promisc_ok(struct bnxt *bp)
- {
- #ifdef CONFIG_BNXT_SRIOV
--	if (BNXT_VF(bp) && !bp->vf.vlan)
-+	if (BNXT_VF(bp) && !bp->vf.vlan && !bnxt_is_trusted_vf(bp, &bp->vf))
- 		return false;
- #endif
- 	return true;
-@@ -8441,7 +8441,7 @@ static int bnxt_init_chip(struct bnxt *bp, bool irq_re_init)
- 	if (bp->dev->flags & IFF_BROADCAST)
- 		vnic->rx_mask |= CFA_L2_SET_RX_MASK_REQ_MASK_BCAST;
- 
--	if ((bp->dev->flags & IFF_PROMISC) && bnxt_promisc_ok(bp))
-+	if (bp->dev->flags & IFF_PROMISC)
- 		vnic->rx_mask |= CFA_L2_SET_RX_MASK_REQ_MASK_PROMISCUOUS;
- 
- 	if (bp->dev->flags & IFF_ALLMULTI) {
-@@ -10485,7 +10485,7 @@ static void bnxt_set_rx_mode(struct net_device *dev)
- 		  CFA_L2_SET_RX_MASK_REQ_MASK_ALL_MCAST |
- 		  CFA_L2_SET_RX_MASK_REQ_MASK_BCAST);
- 
--	if ((dev->flags & IFF_PROMISC) && bnxt_promisc_ok(bp))
-+	if (dev->flags & IFF_PROMISC)
- 		mask |= CFA_L2_SET_RX_MASK_REQ_MASK_PROMISCUOUS;
- 
- 	uc_update = bnxt_uc_list_updated(bp);
-@@ -10561,6 +10561,9 @@ static int bnxt_cfg_rx_mode(struct bnxt *bp)
- 	}
- 
- skip_uc:
-+	if ((vnic->rx_mask & CFA_L2_SET_RX_MASK_REQ_MASK_PROMISCUOUS) &&
-+	    !bnxt_promisc_ok(bp))
-+		vnic->rx_mask &= ~CFA_L2_SET_RX_MASK_REQ_MASK_PROMISCUOUS;
- 	rc = bnxt_hwrm_cfa_l2_set_rx_mask(bp, 0);
- 	if (rc && vnic->mc_list_count) {
- 		netdev_info(bp->dev, "Failed setting MC filters rc: %d, turning on ALL_MCAST mode\n",
 diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_sriov.c b/drivers/net/ethernet/broadcom/bnxt/bnxt_sriov.c
-index a217316228f4..4da52f812585 100644
+index 4da52f812585..67856dbf9ce9 100644
 --- a/drivers/net/ethernet/broadcom/bnxt/bnxt_sriov.c
 +++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_sriov.c
-@@ -113,7 +113,7 @@ static int bnxt_hwrm_func_qcfg_flags(struct bnxt *bp, struct bnxt_vf_info *vf)
- 	int rc;
+@@ -49,10 +49,6 @@ static int bnxt_hwrm_fwd_async_event_cmpl(struct bnxt *bp,
  
- 	bnxt_hwrm_cmd_hdr_init(bp, &req, HWRM_FUNC_QCFG, -1, -1);
--	req.fid = cpu_to_le16(vf->fw_fid);
-+	req.fid = cpu_to_le16(BNXT_PF(bp) ? vf->fw_fid : 0xffff);
- 	mutex_lock(&bp->hwrm_cmd_lock);
- 	rc = _hwrm_send_message(bp, &req, sizeof(req), HWRM_CMD_TIMEOUT);
- 	if (rc) {
-@@ -125,9 +125,9 @@ static int bnxt_hwrm_func_qcfg_flags(struct bnxt *bp, struct bnxt_vf_info *vf)
- 	return 0;
- }
- 
--static bool bnxt_is_trusted_vf(struct bnxt *bp, struct bnxt_vf_info *vf)
-+bool bnxt_is_trusted_vf(struct bnxt *bp, struct bnxt_vf_info *vf)
+ static int bnxt_vf_ndo_prep(struct bnxt *bp, int vf_id)
  {
--	if (!(bp->fw_cap & BNXT_FW_CAP_TRUSTED_VF))
-+	if (BNXT_PF(bp) && !(bp->fw_cap & BNXT_FW_CAP_TRUSTED_VF))
- 		return !!(vf->flags & BNXT_VF_TRUST);
- 
- 	bnxt_hwrm_func_qcfg_flags(bp, vf);
-diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_sriov.h b/drivers/net/ethernet/broadcom/bnxt/bnxt_sriov.h
-index 629641bf6fc5..995535e4c11b 100644
---- a/drivers/net/ethernet/broadcom/bnxt/bnxt_sriov.h
-+++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_sriov.h
-@@ -34,6 +34,7 @@ int bnxt_set_vf_vlan(struct net_device *, int, u16, u8, __be16);
- int bnxt_set_vf_bw(struct net_device *, int, int, int);
- int bnxt_set_vf_link_state(struct net_device *, int, int);
- int bnxt_set_vf_spoofchk(struct net_device *, int, bool);
-+bool bnxt_is_trusted_vf(struct bnxt *bp, struct bnxt_vf_info *vf);
- int bnxt_set_vf_trust(struct net_device *dev, int vf_id, bool trust);
- int bnxt_sriov_configure(struct pci_dev *pdev, int num_vfs);
- int bnxt_cfg_hw_sriov(struct bnxt *bp, int *num_vfs, bool reset);
+-	if (!test_bit(BNXT_STATE_OPEN, &bp->state)) {
+-		netdev_err(bp->dev, "vf ndo called though PF is down\n");
+-		return -EINVAL;
+-	}
+ 	if (!bp->pf.active_vfs) {
+ 		netdev_err(bp->dev, "vf ndo called though sriov is disabled\n");
+ 		return -EINVAL;
 -- 
 2.18.1
 
 
---00000000000054001805c0bd90f1
+--0000000000005fb38705c0bd90be
 Content-Type: application/pkcs7-signature; name="smime.p7s"
 Content-Transfer-Encoding: base64
 Content-Disposition: attachment; filename="smime.p7s"
@@ -239,13 +162,13 @@ FSWQptLx+kiu63idTII4r3k/7+dJ5AhLRr4WCoXEme2GZkfSbYC3fEL46tb1w7w+25OEFCv1MtDZ
 DauX1eWVM+KepL7zoSNzVbTipc65WuZFLR8ngOwkpknqvS9n/nKd885m23oIocC+GA4xggJtMIIC
 aQIBATBrMFsxCzAJBgNVBAYTAkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52LXNhMTEwLwYDVQQD
 EyhHbG9iYWxTaWduIEdDQyBSMyBQZXJzb25hbFNpZ24gMiBDQSAyMDIwAgwQeU+Y6hbenPzRMJsw
-DQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEIMkPTcc531b6crTW58z8Mz6jO8sQr5wd
-yafMt87tZyzoMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIxMDQy
-NDIwMTQ0NlowaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZIAWUDBAEWMAsGCWCG
+DQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEIPMUP3KCiWacOv/auDEhKSxKV/TQJLfl
+9fL9W/dmKINrMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIxMDQy
+NDIwMTQ0N1owaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZIAWUDBAEWMAsGCWCG
 SAFlAwQBAjAKBggqhkiG9w0DBzALBgkqhkiG9w0BAQowCwYJKoZIhvcNAQEHMAsGCWCGSAFlAwQC
-ATANBgkqhkiG9w0BAQEFAASCAQB6YbqWNi9jC7Uk7mxtGMpx1iKa8Sb/8R0Mw7iVU77F1lr1QiVn
-DbBFlNy1SKI1roFYM77akdGFduhhLbdzMeyWHCiQQlLZGUi0H0kexFqIMUR634H+plxeA3Y+ZGx0
-V3ytd/iJI8VW46k2XzShCgRxW+sGZvGD77Xe2JtWAAqLty7ZnWtpBHlALWysq9xDNXupkN06cgMB
-/VHPDdWJi9vL9ovQtCos6Jd6AKDEYhj/BJ/Y/NwIgSzwd+p2Ng6DlAxPyx2VJg8GWQPkMatRxW2V
-mAuUM0tigpCw4yayeI7HMvnoXMtIoiSBBJJJ+ZOg/eC4dWjk1D84r3Yjq1y4liKx
---00000000000054001805c0bd90f1--
+ATANBgkqhkiG9w0BAQEFAASCAQBJ0N5btNf5oA++0pL1xCDvNQ/AMI+ite2bUoZKy3oSr4vKJ8dT
+lL/fl1K+QlQ2LiGtb6cgdKmI725gy95PDMFP8JI2LCRp4rkGsL4Zfd4TQP6Ivijl8ZMrcvv3TWMI
+wtk2ZQTMc1/sptEK4Ubv83t+ac5iAqjvZjjtexnlR8mBKH6DAOG6Ry4JINHprkkCEc6NdxB3/Xmp
+fFzrtrDJ7//dZZqdt1ZPZEZuBcqPXJuXV69I10Ajgx6UVZbYLkTVvMrWdG7i6HZhKAHWeyEGZe1e
+fcm6exYpXMiP43fNH4Zhwdcnz4SmEgkI2u0FsPOXL3D4kJl1URqv1eeImjykQx3G
+--0000000000005fb38705c0bd90be--
