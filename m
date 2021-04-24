@@ -2,269 +2,155 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 22BCB36A345
-	for <lists+netdev@lfdr.de>; Sat, 24 Apr 2021 23:46:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EA97136A347
+	for <lists+netdev@lfdr.de>; Sat, 24 Apr 2021 23:49:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237410AbhDXVqa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 24 Apr 2021 17:46:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52394 "EHLO
+        id S231458AbhDXVuV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 24 Apr 2021 17:50:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53234 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233568AbhDXVq3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 24 Apr 2021 17:46:29 -0400
-Received: from mail-qk1-x72b.google.com (mail-qk1-x72b.google.com [IPv6:2607:f8b0:4864:20::72b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E9BEAC061574;
-        Sat, 24 Apr 2021 14:45:50 -0700 (PDT)
-Received: by mail-qk1-x72b.google.com with SMTP id i12so21559488qke.3;
-        Sat, 24 Apr 2021 14:45:50 -0700 (PDT)
+        with ESMTP id S229778AbhDXVuU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 24 Apr 2021 17:50:20 -0400
+Received: from mail-ej1-x629.google.com (mail-ej1-x629.google.com [IPv6:2a00:1450:4864:20::629])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0BB22C061574;
+        Sat, 24 Apr 2021 14:49:42 -0700 (PDT)
+Received: by mail-ej1-x629.google.com with SMTP id u3so110710eja.12;
+        Sat, 24 Apr 2021 14:49:41 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:subject:date:message-id:in-reply-to:references:mime-version
-         :content-transfer-encoding;
-        bh=uvNOfoTuzB56ceqkmKY+oWGvxVel5zO/sDE0EqYhDjY=;
-        b=FJx9Bijx6Acou5sivqFJG+qwSWSoWu53oKaNzotdHfoIfiJ4yYJRBAFGxdAynvDRbD
-         qzALirICLUW+Tw9Ys20dNQF/FJKAR7cGKKFuvx9M/bDFkNS5yiTkiHkCafdqdo4bPT/e
-         RnNkCb65aJP0QXLthvtsCes4XqTWcS0MO40K4P6aRU5RyU+Ji/+8Vt5BEz+AxIAKlwis
-         xUARGkICR1yZW70qperS6azFw7QTUbaRrThL60rxMMmmf9bDbkvsoUzuaEFP9IqlBcpB
-         6ZRWwS9WexlDJoZ2oBkAUwTApC20cxnhpM7jAPPHSqjfZnve2U2m6mYBIVnRyNqdsAjp
-         Ve/g==
+        h=to:cc:references:from:subject:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=9zBOH67TcxSCIlOkEt/A577wH0/U00RQGBXJyvaiY8s=;
+        b=l/zgWa3S/73rHedDFs72ZWvsAkNvqqYxGmOPBqSInAc4RUarhcoULzwviy7j/ukDE2
+         fLovZILz71LNzzi2sV1tdkDqZiwqWgw2rMI2G2yTDCcgV/a296qyw23B1+6XP6xT58nk
+         /AuBcMfLpgi/Diz6IQvTjbNntqrbJ3F/ncQ1YCuTui1zqH9VVcJdtY/JLDaFnFRKQ9S7
+         n2qYJG8JEL7NXQb7N0udummxvhHL2jkS6Zbhia4D/vaF5U2Yd4tupkZ8FF92K28Od4Bh
+         PfBvxXNsSm0mI0X/rUOBoZ32F6eOXhXdi5hyTn4x8UtqXxUCo5jgiuDvCk+pj9MXdPME
+         UGNg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=uvNOfoTuzB56ceqkmKY+oWGvxVel5zO/sDE0EqYhDjY=;
-        b=bF6qlGktBVfQFUSwLf7mu0fVRIXnyGqFsUzPy0JKNycWc6hCuvzUx/xP1xrIZhxeM+
-         oluduHMdDDHLhwouUGi6J4d/eFigLnwhrZlow9USRT+aLADwyNfELikWiEdB+7Izlmqy
-         kPn/C8tk8y2c8V9zL/WvV69D73OBTf5ZhjyimjKDKyTPkv9UykJjnAmVp9AXkC8pa7pg
-         ZtGzHOpxR6O0l7l+Dr2hhUrIEBIyX/LgWYOuo/cMifp48ABaDtdojq325gwlCTEYuYpQ
-         5fJXkfadzMpWCRWjK/9QGdZAJPRwBhwo7kqVRe4gKYlwTunYIDCAaay36CTbe6S6mPbp
-         DzOg==
-X-Gm-Message-State: AOAM530/F22y/R2Jn/6Xx8bF3zOjXTA2Fbqk6DHuQ3oPUsvY9Cu+m7Bz
-        loy7TsBphjHsA0CE/9wPhIw=
-X-Google-Smtp-Source: ABdhPJyAWflWqgRxi0Gf2qhig3hEdATvl9oGqPRRTUcEbb551UmDu1Zrfu6zReubKu2tb32Pyfc71A==
-X-Received: by 2002:a37:af44:: with SMTP id y65mr10245520qke.398.1619300750172;
-        Sat, 24 Apr 2021 14:45:50 -0700 (PDT)
-Received: from localhost.localdomain ([179.218.4.27])
-        by smtp.gmail.com with ESMTPSA id b17sm6638904qto.88.2021.04.24.14.45.43
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 24 Apr 2021 14:45:47 -0700 (PDT)
-From:   Pedro Tammela <pctammela@gmail.com>
-X-Google-Original-From: Pedro Tammela <pctammela@mojatatu.com>
-To:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>, Shuah Khan <shuah@kernel.org>,
-        Pedro Tammela <pctammela@mojatatu.com>,
-        David Verbeiren <david.verbeiren@tessares.net>,
-        Matthieu Baerts <matthieu.baerts@tessares.net>,
-        netdev@vger.kernel.org, bpf@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-kselftest@vger.kernel.org
-Subject: [PATCH bpf-next v5 2/2] bpf: selftests: update array map tests for per-cpu batched ops
-Date:   Sat, 24 Apr 2021 18:45:10 -0300
-Message-Id: <20210424214510.806627-3-pctammela@mojatatu.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20210424214510.806627-1-pctammela@mojatatu.com>
-References: <20210424214510.806627-1-pctammela@mojatatu.com>
+        h=x-gm-message-state:to:cc:references:from:subject:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=9zBOH67TcxSCIlOkEt/A577wH0/U00RQGBXJyvaiY8s=;
+        b=gc2tndbkldHw/CcPBGpjsV9S6qGFpsZ0FI49tWbbIXEs5vL5M6x5T0E42hSttMRmZ2
+         qBzB0HqaOEQw9or5SAxfbqBigBJZ5xwd8aKayZulaSDZY4BRGrU4iQOx6qvM5YSLtEMX
+         6foFtjTNiFoYxzvBClgGfXU9VnTtp/qktWd7oETs16Qn3rCrnQ/tgI225mVl1euwGA1N
+         wPsNucl+f0oJ/DCklHq3V2Unpap3JoxlHcshiKdMUJSaOxQZJrgGhQyWi9kKw/ZC8u+R
+         GgioXdEVi/pTBXtLT1ASVo2sS0KOK4CYGhvcGYX90KNxpKpyIPN3s88D8ZBy9Den0gGD
+         TLng==
+X-Gm-Message-State: AOAM5327jQGXGSI21gBJWLOSqzku5DZ98SaLAopHkXuf1+BKGoIgPP83
+        Wu83X5dLPgbIGwBIxR8WUuAoo0kbPfab/w==
+X-Google-Smtp-Source: ABdhPJzqHu1EqvKezfc6NeQxqO3YyHeEekHwiviaB5gTWD80mXPafGP3hgrq9dV/jpB8POgg94InQg==
+X-Received: by 2002:a17:906:2746:: with SMTP id a6mr10545524ejd.265.1619300980546;
+        Sat, 24 Apr 2021 14:49:40 -0700 (PDT)
+Received: from ?IPv6:2003:ea:8f38:4600:d4b:63c:654f:4f21? (p200300ea8f3846000d4b063c654f4f21.dip0.t-ipconnect.de. [2003:ea:8f38:4600:d4b:63c:654f:4f21])
+        by smtp.googlemail.com with ESMTPSA id g11sm9992423edt.35.2021.04.24.14.49.39
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sat, 24 Apr 2021 14:49:40 -0700 (PDT)
+To:     Ansuel Smith <ansuelsmth@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Russell King <linux@armlinux.org.uk>, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20210423014741.11858-1-ansuelsmth@gmail.com>
+ <20210423014741.11858-12-ansuelsmth@gmail.com>
+ <e644aba9-a092-3825-b55b-e0cca158d28b@gmail.com>
+ <YISLHNK8binc9T1N@Ansuel-xps.localdomain>
+From:   Heiner Kallweit <hkallweit1@gmail.com>
+Subject: Re: [PATCH 11/14] drivers: net: dsa: qca8k: apply switch revision fix
+Message-ID: <16092d86-30be-da60-b366-9316798da636@gmail.com>
+Date:   Sat, 24 Apr 2021 23:49:26 +0200
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.10.0
 MIME-Version: 1.0
+In-Reply-To: <YISLHNK8binc9T1N@Ansuel-xps.localdomain>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Follows the same logic as the hashtable tests.
+On 24.04.2021 23:18, Ansuel Smith wrote:
+> On Thu, Apr 22, 2021 at 07:02:37PM -0700, Florian Fainelli wrote:
+>>
+>>
+>> On 4/22/2021 6:47 PM, Ansuel Smith wrote:
+>>> qca8k require special debug value based on the switch revision.
+>>>
+>>> Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
+>>> ---
+>>>  drivers/net/dsa/qca8k.c | 23 +++++++++++++++++++++--
+>>>  1 file changed, 21 insertions(+), 2 deletions(-)
+>>>
+>>> diff --git a/drivers/net/dsa/qca8k.c b/drivers/net/dsa/qca8k.c
+>>> index 193c269d8ed3..12d2c97d1417 100644
+>>> --- a/drivers/net/dsa/qca8k.c
+>>> +++ b/drivers/net/dsa/qca8k.c
+>>> @@ -909,7 +909,7 @@ qca8k_phylink_mac_config(struct dsa_switch *ds, int port, unsigned int mode,
+>>>  {
+>>>  	const struct qca8k_match_data *data;
+>>>  	struct qca8k_priv *priv = ds->priv;
+>>> -	u32 reg, val;
+>>> +	u32 phy, reg, val;
+>>>  
+>>>  	/* get the switches ID from the compatible */
+>>>  	data = of_device_get_match_data(priv->dev);
+>>> @@ -928,7 +928,26 @@ qca8k_phylink_mac_config(struct dsa_switch *ds, int port, unsigned int mode,
+>>>  	case 3:
+>>>  	case 4:
+>>>  	case 5:
+>>> -		/* Internal PHY, nothing to do */
+>>> +		/* Internal PHY, apply revision fixup */
+>>> +		phy = qca8k_port_to_phy(port) % PHY_MAX_ADDR;
+>>> +		switch (priv->switch_revision) {
+>>> +		case 1:
+>>> +			/* For 100M waveform */
+>>> +			qca8k_phy_dbg_write(priv, phy, 0, 0x02ea);
+>>> +			/* Turn on Gigabit clock */
+>>> +			qca8k_phy_dbg_write(priv, phy, 0x3d, 0x68a0);
+>>> +			break;
+>>> +
+>>> +		case 2:
+>>> +			qca8k_phy_mmd_write(priv, phy, 0x7, 0x3c, 0x0);
 
-Signed-off-by: Pedro Tammela <pctammela@mojatatu.com>
----
- .../bpf/map_tests/array_map_batch_ops.c       | 104 +++++++++++++-----
- 1 file changed, 75 insertions(+), 29 deletions(-)
+Please replace the magic numbers with constants. Here even standard
+registers are used: 0x7 = MDIO_MMD_AN, 0x3c = MDIO_AN_EEE_ADV
+Effectively EEE advertisement is disabled.
 
-diff --git a/tools/testing/selftests/bpf/map_tests/array_map_batch_ops.c b/tools/testing/selftests/bpf/map_tests/array_map_batch_ops.c
-index e42ea1195d18..f4d870da7684 100644
---- a/tools/testing/selftests/bpf/map_tests/array_map_batch_ops.c
-+++ b/tools/testing/selftests/bpf/map_tests/array_map_batch_ops.c
-@@ -9,10 +9,13 @@
- 
- #include <test_maps.h>
- 
-+static int nr_cpus;
-+
- static void map_batch_update(int map_fd, __u32 max_entries, int *keys,
--			     int *values)
-+			     __s64 *values, bool is_pcpu)
- {
--	int i, err;
-+	int i, j, err;
-+	int cpu_offset = 0;
- 	DECLARE_LIBBPF_OPTS(bpf_map_batch_opts, opts,
- 		.elem_flags = 0,
- 		.flags = 0,
-@@ -20,22 +23,41 @@ static void map_batch_update(int map_fd, __u32 max_entries, int *keys,
- 
- 	for (i = 0; i < max_entries; i++) {
- 		keys[i] = i;
--		values[i] = i + 1;
-+		if (is_pcpu) {
-+			cpu_offset = i * nr_cpus;
-+			for (j = 0; j < nr_cpus; j++)
-+				(values + cpu_offset)[j] = i + 1 + j;
-+		} else {
-+			values[i] = i + 1;
-+		}
- 	}
- 
- 	err = bpf_map_update_batch(map_fd, keys, values, &max_entries, &opts);
- 	CHECK(err, "bpf_map_update_batch()", "error:%s\n", strerror(errno));
- }
- 
--static void map_batch_verify(int *visited, __u32 max_entries,
--			     int *keys, int *values)
-+static void map_batch_verify(int *visited, __u32 max_entries, int *keys,
-+			     __s64 *values, bool is_pcpu)
- {
--	int i;
-+	int i, j;
-+	int cpu_offset = 0;
- 
- 	memset(visited, 0, max_entries * sizeof(*visited));
- 	for (i = 0; i < max_entries; i++) {
--		CHECK(keys[i] + 1 != values[i], "key/value checking",
--		      "error: i %d key %d value %d\n", i, keys[i], values[i]);
-+		if (is_pcpu) {
-+			cpu_offset = i * nr_cpus;
-+			for (j = 0; j < nr_cpus; j++) {
-+				__s64 value = (values + cpu_offset)[j];
-+				CHECK(keys[i] + j + 1 != value,
-+				      "key/value checking",
-+				      "error: i %d j %d key %d value %lld\n", i,
-+				      j, keys[i], value);
-+			}
-+		} else {
-+			CHECK(keys[i] + 1 != values[i], "key/value checking",
-+			      "error: i %d key %d value %lld\n", i, keys[i],
-+			      values[i]);
-+		}
- 		visited[i] = 1;
- 	}
- 	for (i = 0; i < max_entries; i++) {
-@@ -44,19 +66,21 @@ static void map_batch_verify(int *visited, __u32 max_entries,
- 	}
- }
- 
--void test_array_map_batch_ops(void)
-+static void __test_map_lookup_and_update_batch(bool is_pcpu)
- {
- 	struct bpf_create_map_attr xattr = {
- 		.name = "array_map",
--		.map_type = BPF_MAP_TYPE_ARRAY,
-+		.map_type = is_pcpu ? BPF_MAP_TYPE_PERCPU_ARRAY :
-+				      BPF_MAP_TYPE_ARRAY,
- 		.key_size = sizeof(int),
--		.value_size = sizeof(int),
-+		.value_size = sizeof(__s64),
- 	};
--	int map_fd, *keys, *values, *visited;
-+	int map_fd, *keys, *visited;
- 	__u32 count, total, total_success;
- 	const __u32 max_entries = 10;
- 	__u64 batch = 0;
--	int err, step;
-+	int err, step, value_size;
-+	void *values;
- 	DECLARE_LIBBPF_OPTS(bpf_map_batch_opts, opts,
- 		.elem_flags = 0,
- 		.flags = 0,
-@@ -67,22 +91,23 @@ void test_array_map_batch_ops(void)
- 	CHECK(map_fd == -1,
- 	      "bpf_create_map_xattr()", "error:%s\n", strerror(errno));
- 
--	keys = malloc(max_entries * sizeof(int));
--	values = malloc(max_entries * sizeof(int));
--	visited = malloc(max_entries * sizeof(int));
-+	value_size = sizeof(__s64);
-+	if (is_pcpu)
-+		value_size *= nr_cpus;
-+
-+	keys = calloc(max_entries, sizeof(*keys));
-+	values = calloc(max_entries, value_size);
-+	visited = calloc(max_entries, sizeof(*visited));
- 	CHECK(!keys || !values || !visited, "malloc()", "error:%s\n",
- 	      strerror(errno));
- 
--	/* populate elements to the map */
--	map_batch_update(map_fd, max_entries, keys, values);
--
- 	/* test 1: lookup in a loop with various steps. */
- 	total_success = 0;
- 	for (step = 1; step < max_entries; step++) {
--		map_batch_update(map_fd, max_entries, keys, values);
--		map_batch_verify(visited, max_entries, keys, values);
-+		map_batch_update(map_fd, max_entries, keys, values, is_pcpu);
-+		map_batch_verify(visited, max_entries, keys, values, is_pcpu);
- 		memset(keys, 0, max_entries * sizeof(*keys));
--		memset(values, 0, max_entries * sizeof(*values));
-+		memset(values, 0, max_entries * value_size);
- 		batch = 0;
- 		total = 0;
- 		/* iteratively lookup/delete elements with 'step'
-@@ -91,10 +116,10 @@ void test_array_map_batch_ops(void)
- 		count = step;
- 		while (true) {
- 			err = bpf_map_lookup_batch(map_fd,
--						total ? &batch : NULL, &batch,
--						keys + total,
--						values + total,
--						&count, &opts);
-+						   total ? &batch : NULL,
-+						   &batch, keys + total,
-+						   values + total * value_size,
-+						   &count, &opts);
- 
- 			CHECK((err && errno != ENOENT), "lookup with steps",
- 			      "error: %s\n", strerror(errno));
-@@ -108,7 +133,7 @@ void test_array_map_batch_ops(void)
- 		CHECK(total != max_entries, "lookup with steps",
- 		      "total = %u, max_entries = %u\n", total, max_entries);
- 
--		map_batch_verify(visited, max_entries, keys, values);
-+		map_batch_verify(visited, max_entries, keys, values, is_pcpu);
- 
- 		total_success++;
- 	}
-@@ -116,9 +141,30 @@ void test_array_map_batch_ops(void)
- 	CHECK(total_success == 0, "check total_success",
- 	      "unexpected failure\n");
- 
--	printf("%s:PASS\n", __func__);
--
- 	free(keys);
- 	free(values);
- 	free(visited);
- }
-+
-+static void array_map_batch_ops(void)
-+{
-+	__test_map_lookup_and_update_batch(false);
-+	printf("test_%s:PASS\n", __func__);
-+}
-+
-+static void array_percpu_map_batch_ops(void)
-+{
-+	__test_map_lookup_and_update_batch(true);
-+	printf("test_%s:PASS\n", __func__);
-+}
-+
-+void test_array_map_batch_ops(void)
-+{
-+	nr_cpus = libbpf_num_possible_cpus();
-+
-+	CHECK(nr_cpus < 0, "nr_cpus checking",
-+	      "error: get possible cpus failed");
-+
-+	array_map_batch_ops();
-+	array_percpu_map_batch_ops();
-+}
--- 
-2.25.1
+>>> +			fallthrough;
+>>> +		case 4:
+>>> +			qca8k_phy_mmd_write(priv, phy, 0x3, 0x800d, 0x803f);
+>>> +			qca8k_phy_dbg_write(priv, phy, 0x3d, 0x6860);
+>>> +			qca8k_phy_dbg_write(priv, phy, 0x5, 0x2c46);
+>>> +			qca8k_phy_dbg_write(priv, phy, 0x3c, 0x6000);
+>>> +			break;
+>>
+>> This would be better done with a PHY driver that is specific to the
+>> integrated PHY found in these switches, it would provide a nice clean
+>> layer and would allow you to expose additional features like cable
+>> tests, PHY statistics/counters, etc.
+> 
+> I'm starting to do some work with this and a problem arised. Since these
+> value are based on the switch revision, how can I access these kind of
+> data from the phy driver? It's allowed to declare a phy driver in the
+> dsa directory? (The idea would be to create a qca8k dir with the dsa
+> driver and the dedicated internal phy driver.) This would facilitate the
+> use of normal qca8k_read/write (to access the switch revision from the
+> phy driver) using common function?
+> 
 
+PHY drivers reside under drivers/net/phy. Not sure whether your internal
+PHY's have a proper PHY ID, you could assign pseudo PHY ID's differing
+per switch revision. See mv88e6xxx_mdio_read() for a similar use case.
+
+>> -- 
+>> Florian
+
+Heiner
