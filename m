@@ -2,153 +2,162 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4539736A2F0
+	by mail.lfdr.de (Postfix) with ESMTP id 909B236A2F1
 	for <lists+netdev@lfdr.de>; Sat, 24 Apr 2021 22:21:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237478AbhDXUPg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 24 Apr 2021 16:15:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32818 "EHLO
+        id S237500AbhDXUPi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 24 Apr 2021 16:15:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32822 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237325AbhDXUPa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 24 Apr 2021 16:15:30 -0400
-Received: from mail-pg1-x52a.google.com (mail-pg1-x52a.google.com [IPv6:2607:f8b0:4864:20::52a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 77F48C061574
+        with ESMTP id S237339AbhDXUPb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 24 Apr 2021 16:15:31 -0400
+Received: from mail-pg1-x52c.google.com (mail-pg1-x52c.google.com [IPv6:2607:f8b0:4864:20::52c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD498C06175F
         for <netdev@vger.kernel.org>; Sat, 24 Apr 2021 13:14:52 -0700 (PDT)
-Received: by mail-pg1-x52a.google.com with SMTP id d10so37496768pgf.12
+Received: by mail-pg1-x52c.google.com with SMTP id d10so37496773pgf.12
         for <netdev@vger.kernel.org>; Sat, 24 Apr 2021 13:14:52 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=broadcom.com; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=AkmY7z9elHDIjjZrq77/lAbQiTUfjJDqg3q8BxsiwM4=;
-        b=G4x/8VucHSdYmfrgfAFMy+JuUtfLnnl+0/5qA0YYki1f/zsNigik++/9Wxlrq8pLR0
-         3y6g969s7QHsdj0RWmmzILCrUcXAGQPtJo+UbQhjH2JR/MAyoMXiz1aJs5OLFl0SXnBM
-         AIVagU++YDsCB0Wvh8WYxMUDDPq4jH8EIWtNM=
+        bh=pjMsIzX0qdBulXlBS8KgpZayy/fyucBOs33YxcDYICY=;
+        b=iNb3yRscsZpdcJs3n4VVH5bNJ8wTUV9JEem2K5ABcIm93rZyobjzZpPkxX3H5oqJcz
+         YAzZV2Tjg6aq/jjHoGTENSrYIc4Eo/8jmTf8rkZULSxzcXQrpKEu0FQb+XUO0IRnlgND
+         TQN2ESX9Wgh5Hg7egVhmVVN9lFuoLO0Xii+TU=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=AkmY7z9elHDIjjZrq77/lAbQiTUfjJDqg3q8BxsiwM4=;
-        b=p2t8WAdRJSnTbbyo7idQNi/r/F1hJq6TvKyEgwa871agqxjvTeG41sNdhaPy4FVgyo
-         rhvbIV79BSBXz5EZd/B3G5PmTY8nocphReIQM9Q86e48tMCDbvc9cH97fhb8iFY4XKSr
-         6/9vePT8vm8/ClfoGGbv/4fVw3VS4DYl4Rlocjx4xJ7C60svAKbbHWTUCZWxhXWDDW7+
-         /BQI8/7gf3DU9kxVT1FttrJBSeGJZJN10mdD2J0agHQLPiTW76hopU1M5ZOMu913rKp4
-         0WuRjhkydUh3pCYF/HUguF2hooW5NrtxSwSx/G4qW4SXBN3EKri+SkyqvTphT19icuvQ
-         dLmg==
-X-Gm-Message-State: AOAM533aZ0RkU5I95Pg9w5pZ9NWm3SNai2miWdgchSrbAR2DXkIm0lre
-        KMjyjwixnnntQje0Dl1i2UOmUw==
-X-Google-Smtp-Source: ABdhPJwC+SD18458QmnVWeh3yACkdhbiOT/yXk2vLDTO4CikJ7wvm9unYQGdl4V6On3oiHYF+TwG7g==
-X-Received: by 2002:a05:6a00:1a12:b029:272:bfa6:867f with SMTP id g18-20020a056a001a12b0290272bfa6867fmr2844706pfv.6.1619295291200;
-        Sat, 24 Apr 2021 13:14:51 -0700 (PDT)
+        bh=pjMsIzX0qdBulXlBS8KgpZayy/fyucBOs33YxcDYICY=;
+        b=P/1e2pppYUOPj6zY+JjgO+bncImTWF4FfD9pdI3i5HleTvwQvaCH8LH6SIXlfgdVae
+         8T/0B7D5ksvq+HL7IHEv/P6kWwHKiDpypWZdnScfQiPtL613gk8ga7+P1yC8RJn1Para
+         tn8NuEINr98u95vM8+uuYyXOgSBlbVxPJa7LPqOGddzZmrD6B8syn0GXqQu3oyTo680p
+         VnjcgnpvMfofUgFFznPjxX1+StMCbX0QHPFXdkyMGrseooO/kiXNCIHpn1SbfE2gNRRR
+         LxeJioag/I/AdZYlcmdlaKSoyPoQ1tz4cDWb5cKleD0s3LyYSGoIQS9gUq3BuDEEtihC
+         Hkog==
+X-Gm-Message-State: AOAM533Mru4VySG/bXkU+J0bNxpqiKNxClxd17cmS4HgEGxN/Kw1b7T0
+        Xttp8jtqDCP3dX4cf4liva4/Qg==
+X-Google-Smtp-Source: ABdhPJyGvn8Voy36MY9BStqguRaj0MjmJwMetbJdaKCuW7FVN9z9UfAb/vBhKCZLhk1MeSYKYWYtrQ==
+X-Received: by 2002:a63:48c:: with SMTP id 134mr9949511pge.448.1619295292095;
+        Sat, 24 Apr 2021 13:14:52 -0700 (PDT)
 Received: from localhost.swdvt.lab.broadcom.net ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id z29sm7914070pga.52.2021.04.24.13.14.50
+        by smtp.gmail.com with ESMTPSA id z29sm7914070pga.52.2021.04.24.13.14.51
         (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Sat, 24 Apr 2021 13:14:50 -0700 (PDT)
+        Sat, 24 Apr 2021 13:14:51 -0700 (PDT)
 From:   Michael Chan <michael.chan@broadcom.com>
 To:     davem@davemloft.net
 Cc:     netdev@vger.kernel.org, kuba@kernel.org, gospo@broadcom.com
-Subject: [PATCH net-next 09/10] bnxt_en: Support IFF_SUPP_NOFCS feature to transmit without ethernet FCS.
-Date:   Sat, 24 Apr 2021 16:14:30 -0400
-Message-Id: <1619295271-30853-10-git-send-email-michael.chan@broadcom.com>
+Subject: [PATCH net-next 10/10] bnxt_en: Implement .ndo_features_check().
+Date:   Sat, 24 Apr 2021 16:14:31 -0400
+Message-Id: <1619295271-30853-11-git-send-email-michael.chan@broadcom.com>
 X-Mailer: git-send-email 1.8.3.1
 In-Reply-To: <1619295271-30853-1-git-send-email-michael.chan@broadcom.com>
 References: <1619295271-30853-1-git-send-email-michael.chan@broadcom.com>
 Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256;
-        boundary="000000000000ae3c8705c0bd9031"
+        boundary="000000000000b31ee805c0bd9037"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---000000000000ae3c8705c0bd9031
+--000000000000b31ee805c0bd9037
 
-If firmware is capable, set the IFF_SUPP_NOFCS flag to support the
-sockets option to transmit packets without FCS.  This is mainly used
-for testing.
+For UDP encapsultions, we only support the offloaded Vxlan port and
+Geneve port.  All other ports included FOU and GUE are not supported so
+we need to turn off TSO and checksum features.
 
-Reviewed-by: Edwin Peer <edwin.peer@broadcom.com
+Reviewed-by: Sriharsha Basavapatna <sriharsha.basavapatna@broadcom.com>
+Reviewed-by: Edwin Peer <edwin.peer@broadcom.com>
 Signed-off-by: Michael Chan <michael.chan@broadcom.com>
 ---
- drivers/net/ethernet/broadcom/bnxt/bnxt.c | 16 +++++++++++++---
- drivers/net/ethernet/broadcom/bnxt/bnxt.h |  1 +
- 2 files changed, 14 insertions(+), 3 deletions(-)
+ drivers/net/ethernet/broadcom/bnxt/bnxt.c | 41 +++++++++++++++++++++--
+ drivers/net/ethernet/broadcom/bnxt/bnxt.h |  2 ++
+ 2 files changed, 41 insertions(+), 2 deletions(-)
 
 diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt.c b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-index 77ebafbd2dce..53db073b457c 100644
+index 53db073b457c..9d7c98a617f9 100644
 --- a/drivers/net/ethernet/broadcom/bnxt/bnxt.c
 +++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-@@ -375,6 +375,7 @@ static netdev_tx_t bnxt_start_xmit(struct sk_buff *skb, struct net_device *dev)
- 	struct pci_dev *pdev = bp->pdev;
- 	struct bnxt_tx_ring_info *txr;
- 	struct bnxt_sw_tx_bd *tx_buf;
-+	__le32 lflags = 0;
+@@ -10781,6 +10781,39 @@ static int bnxt_set_features(struct net_device *dev, netdev_features_t features)
+ 	return rc;
+ }
  
- 	i = skb_get_queue_mapping(skb);
- 	if (unlikely(i >= bp->tx_nr_rings)) {
-@@ -416,6 +417,11 @@ static netdev_tx_t bnxt_start_xmit(struct sk_buff *skb, struct net_device *dev)
- 			vlan_tag_flags |= 1 << TX_BD_CFA_META_TPID_SHIFT;
- 	}
- 
-+	if (unlikely(skb->no_fcs)) {
-+		lflags |= cpu_to_le32(TX_BD_FLAGS_NO_CRC);
-+		goto normal_tx;
++static netdev_features_t bnxt_features_check(struct sk_buff *skb,
++					     struct net_device *dev,
++					     netdev_features_t features)
++{
++	u8 l4_proto = 0;
++
++	features = vlan_features_check(skb, features);
++	if (!skb->encapsulation)
++		return features;
++
++	switch (vlan_get_protocol(skb)) {
++	case htons(ETH_P_IP):
++		l4_proto = ip_hdr(skb)->protocol;
++		break;
++	case htons(ETH_P_IPV6):
++		l4_proto = ipv6_hdr(skb)->nexthdr;
++		break;
++	default:
++		return features;
 +	}
 +
- 	if (free_size == bp->tx_ring_size && length <= bp->tx_push_thresh) {
- 		struct tx_push_buffer *tx_push_buf = txr->tx_push;
- 		struct tx_push_bd *tx_push = &tx_push_buf->push_bd;
-@@ -517,7 +523,7 @@ static netdev_tx_t bnxt_start_xmit(struct sk_buff *skb, struct net_device *dev)
- 	txbd1 = (struct tx_bd_ext *)
- 		&txr->tx_desc_ring[TX_RING(prod)][TX_IDX(prod)];
++	/* For UDP, we can only handle 1 Vxlan port and 1 Geneve port. */
++	if (l4_proto == IPPROTO_UDP) {
++		struct bnxt *bp = netdev_priv(dev);
++		__be16 udp_port = udp_hdr(skb)->dest;
++
++		if (udp_port != bp->vxlan_port && udp_port != bp->nge_port)
++			return features & ~(NETIF_F_CSUM_MASK |
++					    NETIF_F_GSO_MASK);
++	}
++	return features;
++}
++
+ int bnxt_dbg_hwrm_rd_reg(struct bnxt *bp, u32 reg_off, u16 num_words,
+ 			 u32 *reg_buf)
+ {
+@@ -12288,10 +12321,13 @@ static int bnxt_udp_tunnel_sync(struct net_device *netdev, unsigned int table)
+ 	unsigned int cmd;
  
--	txbd1->tx_bd_hsize_lflags = 0;
-+	txbd1->tx_bd_hsize_lflags = lflags;
- 	if (skb_is_gso(skb)) {
- 		u32 hdr_len;
+ 	udp_tunnel_nic_get_port(netdev, table, 0, &ti);
+-	if (ti.type == UDP_TUNNEL_TYPE_VXLAN)
++	if (ti.type == UDP_TUNNEL_TYPE_VXLAN) {
++		bp->vxlan_port = ti.port;
+ 		cmd = TUNNEL_DST_PORT_FREE_REQ_TUNNEL_TYPE_VXLAN;
+-	else
++	} else {
++		bp->nge_port = ti.port;
+ 		cmd = TUNNEL_DST_PORT_FREE_REQ_TUNNEL_TYPE_GENEVE;
++	}
  
-@@ -529,14 +535,14 @@ static netdev_tx_t bnxt_start_xmit(struct sk_buff *skb, struct net_device *dev)
- 			hdr_len = skb_transport_offset(skb) +
- 				tcp_hdrlen(skb);
- 
--		txbd1->tx_bd_hsize_lflags = cpu_to_le32(TX_BD_FLAGS_LSO |
-+		txbd1->tx_bd_hsize_lflags |= cpu_to_le32(TX_BD_FLAGS_LSO |
- 					TX_BD_FLAGS_T_IPID |
- 					(hdr_len << (TX_BD_HSIZE_SHIFT - 1)));
- 		length = skb_shinfo(skb)->gso_size;
- 		txbd1->tx_bd_mss = cpu_to_le32(length);
- 		length += hdr_len;
- 	} else if (skb->ip_summed == CHECKSUM_PARTIAL) {
--		txbd1->tx_bd_hsize_lflags =
-+		txbd1->tx_bd_hsize_lflags |=
- 			cpu_to_le32(TX_BD_FLAGS_TCP_UDP_CHKSUM);
- 		txbd1->tx_bd_mss = 0;
- 	}
-@@ -12460,6 +12466,10 @@ static int bnxt_probe_phy(struct bnxt *bp, bool fw_dflt)
- 			   rc);
- 		return rc;
- 	}
-+	if (bp->phy_flags & BNXT_PHY_FL_NO_FCS)
-+		bp->dev->priv_flags |= IFF_SUPP_NOFCS;
-+	else
-+		bp->dev->priv_flags &= ~IFF_SUPP_NOFCS;
- 	if (!fw_dflt)
- 		return 0;
- 
+ 	if (ti.port)
+ 		return bnxt_hwrm_tunnel_dst_port_alloc(bp, ti.port, cmd);
+@@ -12391,6 +12427,7 @@ static const struct net_device_ops bnxt_netdev_ops = {
+ 	.ndo_change_mtu		= bnxt_change_mtu,
+ 	.ndo_fix_features	= bnxt_fix_features,
+ 	.ndo_set_features	= bnxt_set_features,
++	.ndo_features_check	= bnxt_features_check,
+ 	.ndo_tx_timeout		= bnxt_tx_timeout,
+ #ifdef CONFIG_BNXT_SRIOV
+ 	.ndo_get_vf_config	= bnxt_get_vf_config,
 diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt.h b/drivers/net/ethernet/broadcom/bnxt/bnxt.h
-index 5835d8ca8c22..a3744247740b 100644
+index a3744247740b..24d2ad6a8740 100644
 --- a/drivers/net/ethernet/broadcom/bnxt/bnxt.h
 +++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.h
-@@ -2015,6 +2015,7 @@ struct bnxt {
- #define BNXT_PHY_FL_PORT_STATS_NO_RESET	PORT_PHY_QCAPS_RESP_FLAGS_CUMULATIVE_COUNTERS_ON_RESET
- #define BNXT_PHY_FL_NO_PHY_LPBK		PORT_PHY_QCAPS_RESP_FLAGS_LOCAL_LPBK_NOT_SUPPORTED
- #define BNXT_PHY_FL_FW_MANAGED_LKDN	PORT_PHY_QCAPS_RESP_FLAGS_FW_MANAGED_LINK_DOWN
-+#define BNXT_PHY_FL_NO_FCS		PORT_PHY_QCAPS_RESP_FLAGS_NO_FCS
+@@ -1914,6 +1914,8 @@ struct bnxt {
  
- 	u8			num_tests;
- 	struct bnxt_test_info	*test_info;
+ 	u16			vxlan_fw_dst_port_id;
+ 	u16			nge_fw_dst_port_id;
++	__be16			vxlan_port;
++	__be16			nge_port;
+ 	u8			port_partition_type;
+ 	u8			port_count;
+ 	u16			br_mode;
 -- 
 2.18.1
 
 
---000000000000ae3c8705c0bd9031
+--000000000000b31ee805c0bd9037
 Content-Type: application/pkcs7-signature; name="smime.p7s"
 Content-Transfer-Encoding: base64
 Content-Disposition: attachment; filename="smime.p7s"
@@ -219,13 +228,13 @@ FSWQptLx+kiu63idTII4r3k/7+dJ5AhLRr4WCoXEme2GZkfSbYC3fEL46tb1w7w+25OEFCv1MtDZ
 DauX1eWVM+KepL7zoSNzVbTipc65WuZFLR8ngOwkpknqvS9n/nKd885m23oIocC+GA4xggJtMIIC
 aQIBATBrMFsxCzAJBgNVBAYTAkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52LXNhMTEwLwYDVQQD
 EyhHbG9iYWxTaWduIEdDQyBSMyBQZXJzb25hbFNpZ24gMiBDQSAyMDIwAgwQeU+Y6hbenPzRMJsw
-DQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEIDoh0LEpClfeQ9cUDRhGiqeBsGL+C7Le
-SOn1f4N85HEHMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIxMDQy
+DQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEIAcz2rcj/FHR8LjZGzxw7UoREp95o2Ox
+6TWjqAYMqJoEMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIxMDQy
 NDIwMTQ1MlowaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZIAWUDBAEWMAsGCWCG
 SAFlAwQBAjAKBggqhkiG9w0DBzALBgkqhkiG9w0BAQowCwYJKoZIhvcNAQEHMAsGCWCGSAFlAwQC
-ATANBgkqhkiG9w0BAQEFAASCAQDFyaa044/ocBKPa9yjZOeYW6X5NfYNjEXGbEwIkFf5lMHjHZfD
-DTFxNKQN3qH6H/FUcCb8/vHHD3aGDnzpztqoJKm8qiE73YezQYkBjYQOcktq3IJFgej/xAzUPY33
-UcsbsrGZK68Q8oCCOYuKkYJZakW9ZyDJcosWX61/JqYdsxlygVxq7RtFBVwC1oD4S9adWvFbBRRA
-XlW1LoEHB5GBroBLfql7/YKG7YbbdpMsD1z8Wl0xDGiVGGs2my6L+J9ZmPPeGhvAYsJzQigY9yt0
-h7UCG2gLRa4MzU52wc4/hQQsidZNYjPLidDOT7Nq64uwUdAtW6y7xJ7iWMH+ghMd
---000000000000ae3c8705c0bd9031--
+ATANBgkqhkiG9w0BAQEFAASCAQA3ZdGukM+rhgHJKhY4WaP8CIvsrJ3Q/dUPtpM2FPuNgw1MwaC1
+yca5kSpny3EdlejlFD70O8Uas+hkSM0zA2Lfs0OM2ETIWOdR4NkSjKKG2H/LlkRKVu4V47avHazQ
+kV3PH8YMkOF4RH+fA+DjqT4JyGW8q50tZJ7CtflTR78lHLilyOptLMGqaeDnkNs7RfnGAysniVGf
+GZ42Qel0DPQyTXBoiMsCW7HuDs5sNOKVymnUVxoenvv5YMl7u8hXUChJRJ4fqnz5jN1lG1Y8j2m5
+UgMei4Gri0N3BJlQ7GqmqeCNk5oytoF6VJIpBgRoqPoRGEPNd9euEhQWeXT6VSBo
+--000000000000b31ee805c0bd9037--
