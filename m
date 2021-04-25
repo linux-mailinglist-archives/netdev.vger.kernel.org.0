@@ -2,254 +2,284 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1961636A8BD
-	for <lists+netdev@lfdr.de>; Sun, 25 Apr 2021 20:04:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 876FC36A90E
+	for <lists+netdev@lfdr.de>; Sun, 25 Apr 2021 21:49:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231205AbhDYSEi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 25 Apr 2021 14:04:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59868 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230329AbhDYSEh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 25 Apr 2021 14:04:37 -0400
-Received: from mail-wr1-x42d.google.com (mail-wr1-x42d.google.com [IPv6:2a00:1450:4864:20::42d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7FBCBC061574
-        for <netdev@vger.kernel.org>; Sun, 25 Apr 2021 11:03:57 -0700 (PDT)
-Received: by mail-wr1-x42d.google.com with SMTP id a4so53459002wrr.2
-        for <netdev@vger.kernel.org>; Sun, 25 Apr 2021 11:03:57 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=to:references:from:subject:message-id:date:user-agent:mime-version
-         :in-reply-to:content-language:content-transfer-encoding;
-        bh=9OL0OlRXc1nSbmzqegdZimzYL1pFvw5oCivkkb0kv48=;
-        b=nf525OSUXYIh0ST8ge8wNjDtu1fSy/7+SZIpae0shKwFRpWy9Yv/E0BMKW27vDj45I
-         +xgpiacflDJgH+SR6NLwdDT7lSAwh5mDUWtIEl0SbocarNL/ZQIBvjoqKPue3Wb/4xiE
-         BRXUwOD7uO0/CvUneokAb2QgGRNFm2x/JeMBDFcWPkj8nIqWnmjvGNcplo3oPLH5bjhx
-         ZCC4Tmog2YbD6c7ZzwP62RheqlDnCiIqas8Y61LtmEFjt02W6f8tFY1T+6oto1kCy4r/
-         pNiIJ5MmcN3IRunfth5Hr4R+v8Y87iPPJK3N3BCWePvAYUkyafIpGQdt8FXcfnTLGCfp
-         D5PQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:to:references:from:subject:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=9OL0OlRXc1nSbmzqegdZimzYL1pFvw5oCivkkb0kv48=;
-        b=SmtTJ+xUawV3NkEPoxTeywNuttqVHbX3SA7taXZqHibMyDMRyabGW7eH31kixdf/Pc
-         SjBPBFJwgV+XOdyTB0C5ZT//NO9B5Uz7Anf8v9ml0yP9aklUGVJX/dNNtVAEoWMYcI3o
-         M1sb2/VbH5UdF5wNlacLp2Bsj9Z5C5TMhcsGqbuWkM/EiXGoKy/ROCKFt7XHLGtel8Du
-         hO+MabV5/ns3+47agMTG7SrX+U41YKVx4lsAXtNrBMJjwxw+m7ncTU+t7uCi5xPfCYwG
-         t0raRUp+EHl8swVeJCTiswFsSnIOz+k6PRY9/zp50xTWNC+ls4rWDUV32ERSIExsljSz
-         Hidw==
-X-Gm-Message-State: AOAM532L2EFq5H+Dm6/M5fNFwAPKIE+cE+N/Isoj2dZaR/OYl2m1t66D
-        4EJ6olFjbQeJSQG/BXYWjzwNRIHRV3TnRQ==
-X-Google-Smtp-Source: ABdhPJyrLI3AzvV3yJSg+iI05XbbB/ioRbg+PX/fIanjsIhfOtk4Xj7JmvjWvGfQQq2QGAwLnP+/Qw==
-X-Received: by 2002:a5d:638f:: with SMTP id p15mr5090427wru.255.1619373836282;
-        Sun, 25 Apr 2021 11:03:56 -0700 (PDT)
-Received: from ?IPv6:2003:ea:8f38:4600:29ce:8a0d:b323:586a? (p200300ea8f38460029ce8a0db323586a.dip0.t-ipconnect.de. [2003:ea:8f38:4600:29ce:8a0d:b323:586a])
-        by smtp.googlemail.com with ESMTPSA id q20sm43458913wmq.2.2021.04.25.11.03.55
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 25 Apr 2021 11:03:55 -0700 (PDT)
-To:     Taehee Yoo <ap420073@gmail.com>, davem@davemloft.net,
-        kuba@kernel.org, dsahern@kernel.org, yoshfuji@linux-ipv6.org,
-        netdev@vger.kernel.org, j.vosburgh@gmail.com, vfalico@gmail.com,
-        andy@greyhouse.net, roopa@nvidia.com, nikolay@nvidia.com,
-        ast@kernel.org, andriin@fb.com, daniel@iogearbox.net,
-        weiwan@google.com, cong.wang@bytedance.com, bjorn@kernel.org,
-        herbert@gondor.apana.org.au, bridge@lists.linux-foundation.org
-References: <20210425155742.30057-1-ap420073@gmail.com>
- <20210425155742.30057-2-ap420073@gmail.com>
-From:   Heiner Kallweit <hkallweit1@gmail.com>
-Subject: Re: [PATCH net v2 1/2] net: core: make bond_get_lowest_level_rcu()
- generic
-Message-ID: <d7cf5368-21a4-a551-169a-00a4cb2b3a0d@gmail.com>
-Date:   Sun, 25 Apr 2021 20:03:49 +0200
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.10.0
+        id S231247AbhDYTsR convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Sun, 25 Apr 2021 15:48:17 -0400
+Received: from us-smtp-delivery-44.mimecast.com ([207.211.30.44]:49093 "EHLO
+        us-smtp-delivery-44.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S230494AbhDYTsR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 25 Apr 2021 15:48:17 -0400
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-293-wiec5V3mN2-wS34zbrqB4A-1; Sun, 25 Apr 2021 15:47:33 -0400
+X-MC-Unique: wiec5V3mN2-wS34zbrqB4A-1
+Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com [10.5.11.22])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 5F173107ACC7;
+        Sun, 25 Apr 2021 19:47:32 +0000 (UTC)
+Received: from hog.localdomain (unknown [10.40.192.89])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 2182D100763B;
+        Sun, 25 Apr 2021 19:47:30 +0000 (UTC)
+From:   Sabrina Dubroca <sd@queasysnail.net>
+To:     netdev@vger.kernel.org
+Cc:     steffen.klassert@secunet.com, Sabrina Dubroca <sd@queasysnail.net>
+Subject: [PATCH ipsec-next] xfrm: add state hashtable keyed by seq
+Date:   Sun, 25 Apr 2021 21:47:12 +0200
+Message-Id: <d5f097821cddd17ddcba75f5153f034322c9fc6b.1619194963.git.sd@queasysnail.net>
 MIME-Version: 1.0
-In-Reply-To: <20210425155742.30057-2-ap420073@gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: queasysnail.net
+Content-Transfer-Encoding: 8BIT
+Content-Type: text/plain; charset=WINDOWS-1252
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 25.04.2021 17:57, Taehee Yoo wrote:
-> The purpose of bond_get_lowest_level_rcu() is to get nested_level under
-> RCU. Because dev->nested_level is protected by RTNL, so it shouldn't be
-> used without RTNL. But bonding module needs this value under RCU without
-> RTNL.
-> So, this function was added.
-> 
-> But, there is another module, which needs this function.
-> So, make this function generic.
-> the new name is netdev_get_nest_level_rcu().
-> 
-> Signed-off-by: Taehee Yoo <ap420073@gmail.com>
-> ---
-> 
-> v2:
->  - No change
-> 
->  drivers/net/bonding/bond_main.c | 45 +--------------------------------
->  include/linux/netdevice.h       |  1 +
->  net/core/dev.c                  | 44 ++++++++++++++++++++++++++++++++
->  3 files changed, 46 insertions(+), 44 deletions(-)
-> 
-> diff --git a/drivers/net/bonding/bond_main.c b/drivers/net/bonding/bond_main.c
-> index 83ef62db6285..a9feb039ffa6 100644
-> --- a/drivers/net/bonding/bond_main.c
-> +++ b/drivers/net/bonding/bond_main.c
-> @@ -3754,47 +3754,6 @@ static void bond_fold_stats(struct rtnl_link_stats64 *_res,
->  	}
->  }
->  
-> -#ifdef CONFIG_LOCKDEP
-> -static int bond_get_lowest_level_rcu(struct net_device *dev)
-> -{
-> -	struct net_device *ldev, *next, *now, *dev_stack[MAX_NEST_DEV + 1];
-> -	struct list_head *niter, *iter, *iter_stack[MAX_NEST_DEV + 1];
-> -	int cur = 0, max = 0;
-> -
-> -	now = dev;
-> -	iter = &dev->adj_list.lower;
-> -
-> -	while (1) {
-> -		next = NULL;
-> -		while (1) {
-> -			ldev = netdev_next_lower_dev_rcu(now, &iter);
-> -			if (!ldev)
-> -				break;
-> -
-> -			next = ldev;
-> -			niter = &ldev->adj_list.lower;
-> -			dev_stack[cur] = now;
-> -			iter_stack[cur++] = iter;
-> -			if (max <= cur)
-> -				max = cur;
-> -			break;
-> -		}
-> -
-> -		if (!next) {
-> -			if (!cur)
-> -				return max;
-> -			next = dev_stack[--cur];
-> -			niter = iter_stack[cur];
-> -		}
-> -
-> -		now = next;
-> -		iter = niter;
-> -	}
-> -
-> -	return max;
-> -}
-> -#endif
-> -
->  static void bond_get_stats(struct net_device *bond_dev,
->  			   struct rtnl_link_stats64 *stats)
->  {
-> @@ -3806,9 +3765,7 @@ static void bond_get_stats(struct net_device *bond_dev,
->  
->  
->  	rcu_read_lock();
-> -#ifdef CONFIG_LOCKDEP
-> -	nest_level = bond_get_lowest_level_rcu(bond_dev);
-> -#endif
-> +	nest_level = netdev_get_nest_level_rcu(bond_dev);
->  
->  	spin_lock_nested(&bond->stats_lock, nest_level);
->  	memcpy(stats, &bond->bond_stats, sizeof(*stats));
-> diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
-> index 87a5d186faff..507c06bf5dba 100644
-> --- a/include/linux/netdevice.h
-> +++ b/include/linux/netdevice.h
-> @@ -4699,6 +4699,7 @@ int netdev_walk_all_lower_dev(struct net_device *dev,
->  			      int (*fn)(struct net_device *lower_dev,
->  					struct netdev_nested_priv *priv),
->  			      struct netdev_nested_priv *priv);
-> +int netdev_get_nest_level_rcu(struct net_device *dev);
->  int netdev_walk_all_lower_dev_rcu(struct net_device *dev,
->  				  int (*fn)(struct net_device *lower_dev,
->  					    struct netdev_nested_priv *priv),
-> diff --git a/net/core/dev.c b/net/core/dev.c
-> index 15fe36332fb8..efc2bf88eafd 100644
-> --- a/net/core/dev.c
-> +++ b/net/core/dev.c
-> @@ -7709,6 +7709,50 @@ static int __netdev_update_lower_level(struct net_device *dev,
->  	return 0;
->  }
->  
-> +int netdev_get_nest_level_rcu(struct net_device *dev)
-> +{
-> +#ifdef CONFIG_LOCKDEP
-> +	struct net_device *ldev, *next, *now, *dev_stack[MAX_NEST_DEV + 1];
-> +	struct list_head *niter, *iter, *iter_stack[MAX_NEST_DEV + 1];
-> +	int cur = 0, max = 0;
-> +
-> +	now = dev;
-> +	iter = &dev->adj_list.lower;
-> +
-> +	while (1) {
-> +		next = NULL;
-> +		while (1) {
-> +			ldev = netdev_next_lower_dev_rcu(now, &iter);
-> +			if (!ldev)
-> +				break;
-> +
-> +			next = ldev;
-> +			niter = &ldev->adj_list.lower;
-> +			dev_stack[cur] = now;
-> +			iter_stack[cur++] = iter;
-> +			if (max <= cur)
-> +				max = cur;
-> +			break;
+When creating new states with seq set in xfrm_usersa_info, we walk
+through all the states already installed in that netns to find a
+matching ACQUIRE state (__xfrm_find_acq_byseq, called from
+xfrm_state_add). This causes severe slowdowns on systems with a large
+number of states.
 
-This looks odd. Why a while loop if it's left in the first iteration
-anyway? The whole loop looks unnecessarily complex. The following
-should do the same, just in a simpler way (untested!)
+This patch introduces a hashtable using x->km.seq as key, so that the
+corresponding state can be found in a reasonable time.
 
-        while (1) {
-                ldev = netdev_next_lower_dev_rcu(now, &iter);
-                if (ldev) {
-                        dev_stack[cur] = now;
-                        iter_stack[cur++] = iter;
-                        if (max <= cur)
-                                max = cur;
-                        now = ldev;
-                        iter = &ldev->adj_list.lower;
-                } else {
-                        if (!cur)
-                                break;
-                        now = dev_stack[--cur];
-                        iter = iter_stack[cur];
-                }
-        }
+Signed-off-by: Sabrina Dubroca <sd@queasysnail.net>
+---
+ include/net/netns/xfrm.h |  1 +
+ include/net/xfrm.h       |  1 +
+ net/xfrm/xfrm_hash.h     |  7 +++++
+ net/xfrm/xfrm_state.c    | 65 ++++++++++++++++++++++++++++++++--------
+ 4 files changed, 61 insertions(+), 13 deletions(-)
 
-I know that you just copied the original function.
-Simplifying the function should be something for a
-follow-up patch.
-
-> +		}
-> +
-> +		if (!next) {
-> +			if (!cur)
-> +				return max;
-> +			next = dev_stack[--cur];
-> +			niter = iter_stack[cur];
-> +		}
-> +
-> +		now = next;
-> +		iter = niter;
-> +	}
-> +
-> +	return max;
-> +#else
-> +	return 0;
-> +#endif
-> +}
-> +EXPORT_SYMBOL_GPL(netdev_get_nest_level_rcu);
-> +
->  int netdev_walk_all_lower_dev_rcu(struct net_device *dev,
->  				  int (*fn)(struct net_device *dev,
->  					    struct netdev_nested_priv *priv),
-> 
+diff --git a/include/net/netns/xfrm.h b/include/net/netns/xfrm.h
+index e816b6a3ef2b..e946366e8ba5 100644
+--- a/include/net/netns/xfrm.h
++++ b/include/net/netns/xfrm.h
+@@ -42,6 +42,7 @@ struct netns_xfrm {
+ 	struct hlist_head	__rcu *state_bydst;
+ 	struct hlist_head	__rcu *state_bysrc;
+ 	struct hlist_head	__rcu *state_byspi;
++	struct hlist_head	__rcu *state_byseq;
+ 	unsigned int		state_hmask;
+ 	unsigned int		state_num;
+ 	struct work_struct	state_hash_work;
+diff --git a/include/net/xfrm.h b/include/net/xfrm.h
+index c58a6d4eb610..6e11db6fa0ab 100644
+--- a/include/net/xfrm.h
++++ b/include/net/xfrm.h
+@@ -154,6 +154,7 @@ struct xfrm_state {
+ 	};
+ 	struct hlist_node	bysrc;
+ 	struct hlist_node	byspi;
++	struct hlist_node	byseq;
+ 
+ 	refcount_t		refcnt;
+ 	spinlock_t		lock;
+diff --git a/net/xfrm/xfrm_hash.h b/net/xfrm/xfrm_hash.h
+index ce66323102f9..d12bb906c9c9 100644
+--- a/net/xfrm/xfrm_hash.h
++++ b/net/xfrm/xfrm_hash.h
+@@ -131,6 +131,13 @@ __xfrm_spi_hash(const xfrm_address_t *daddr, __be32 spi, u8 proto,
+ 	return (h ^ (h >> 10) ^ (h >> 20)) & hmask;
+ }
+ 
++static inline unsigned int
++__xfrm_seq_hash(u32 seq, unsigned int hmask)
++{
++	unsigned int h = seq;
++	return (h ^ (h >> 10) ^ (h >> 20)) & hmask;
++}
++
+ static inline unsigned int __idx_hash(u32 index, unsigned int hmask)
+ {
+ 	return (index ^ (index >> 8)) & hmask;
+diff --git a/net/xfrm/xfrm_state.c b/net/xfrm/xfrm_state.c
+index 4496f7efa220..8f6058e56f7f 100644
+--- a/net/xfrm/xfrm_state.c
++++ b/net/xfrm/xfrm_state.c
+@@ -78,10 +78,16 @@ xfrm_spi_hash(struct net *net, const xfrm_address_t *daddr,
+ 	return __xfrm_spi_hash(daddr, spi, proto, family, net->xfrm.state_hmask);
+ }
+ 
++static unsigned int xfrm_seq_hash(struct net *net, u32 seq)
++{
++	return __xfrm_seq_hash(seq, net->xfrm.state_hmask);
++}
++
+ static void xfrm_hash_transfer(struct hlist_head *list,
+ 			       struct hlist_head *ndsttable,
+ 			       struct hlist_head *nsrctable,
+ 			       struct hlist_head *nspitable,
++			       struct hlist_head *nseqtable,
+ 			       unsigned int nhashmask)
+ {
+ 	struct hlist_node *tmp;
+@@ -106,6 +112,11 @@ static void xfrm_hash_transfer(struct hlist_head *list,
+ 					    nhashmask);
+ 			hlist_add_head_rcu(&x->byspi, nspitable + h);
+ 		}
++
++		if (x->km.seq) {
++			h = __xfrm_seq_hash(x->km.seq, nhashmask);
++			hlist_add_head_rcu(&x->byseq, nseqtable + h);
++		}
+ 	}
+ }
+ 
+@@ -117,7 +128,7 @@ static unsigned long xfrm_hash_new_size(unsigned int state_hmask)
+ static void xfrm_hash_resize(struct work_struct *work)
+ {
+ 	struct net *net = container_of(work, struct net, xfrm.state_hash_work);
+-	struct hlist_head *ndst, *nsrc, *nspi, *odst, *osrc, *ospi;
++	struct hlist_head *ndst, *nsrc, *nspi, *nseq, *odst, *osrc, *ospi, *oseq;
+ 	unsigned long nsize, osize;
+ 	unsigned int nhashmask, ohashmask;
+ 	int i;
+@@ -137,6 +148,13 @@ static void xfrm_hash_resize(struct work_struct *work)
+ 		xfrm_hash_free(nsrc, nsize);
+ 		return;
+ 	}
++	nseq = xfrm_hash_alloc(nsize);
++	if (!nseq) {
++		xfrm_hash_free(ndst, nsize);
++		xfrm_hash_free(nsrc, nsize);
++		xfrm_hash_free(nspi, nsize);
++		return;
++	}
+ 
+ 	spin_lock_bh(&net->xfrm.xfrm_state_lock);
+ 	write_seqcount_begin(&net->xfrm.xfrm_state_hash_generation);
+@@ -144,15 +162,17 @@ static void xfrm_hash_resize(struct work_struct *work)
+ 	nhashmask = (nsize / sizeof(struct hlist_head)) - 1U;
+ 	odst = xfrm_state_deref_prot(net->xfrm.state_bydst, net);
+ 	for (i = net->xfrm.state_hmask; i >= 0; i--)
+-		xfrm_hash_transfer(odst + i, ndst, nsrc, nspi, nhashmask);
++		xfrm_hash_transfer(odst + i, ndst, nsrc, nspi, nseq, nhashmask);
+ 
+ 	osrc = xfrm_state_deref_prot(net->xfrm.state_bysrc, net);
+ 	ospi = xfrm_state_deref_prot(net->xfrm.state_byspi, net);
++	oseq = xfrm_state_deref_prot(net->xfrm.state_byseq, net);
+ 	ohashmask = net->xfrm.state_hmask;
+ 
+ 	rcu_assign_pointer(net->xfrm.state_bydst, ndst);
+ 	rcu_assign_pointer(net->xfrm.state_bysrc, nsrc);
+ 	rcu_assign_pointer(net->xfrm.state_byspi, nspi);
++	rcu_assign_pointer(net->xfrm.state_byseq, nseq);
+ 	net->xfrm.state_hmask = nhashmask;
+ 
+ 	write_seqcount_end(&net->xfrm.xfrm_state_hash_generation);
+@@ -165,6 +185,7 @@ static void xfrm_hash_resize(struct work_struct *work)
+ 	xfrm_hash_free(odst, osize);
+ 	xfrm_hash_free(osrc, osize);
+ 	xfrm_hash_free(ospi, osize);
++	xfrm_hash_free(oseq, osize);
+ }
+ 
+ static DEFINE_SPINLOCK(xfrm_state_afinfo_lock);
+@@ -621,6 +642,7 @@ struct xfrm_state *xfrm_state_alloc(struct net *net)
+ 		INIT_HLIST_NODE(&x->bydst);
+ 		INIT_HLIST_NODE(&x->bysrc);
+ 		INIT_HLIST_NODE(&x->byspi);
++		INIT_HLIST_NODE(&x->byseq);
+ 		hrtimer_init(&x->mtimer, CLOCK_BOOTTIME, HRTIMER_MODE_ABS_SOFT);
+ 		x->mtimer.function = xfrm_timer_handler;
+ 		timer_setup(&x->rtimer, xfrm_replay_timer_handler, 0);
+@@ -664,6 +686,8 @@ int __xfrm_state_delete(struct xfrm_state *x)
+ 		list_del(&x->km.all);
+ 		hlist_del_rcu(&x->bydst);
+ 		hlist_del_rcu(&x->bysrc);
++		if (x->km.seq)
++			hlist_del_rcu(&x->byseq);
+ 		if (x->id.spi)
+ 			hlist_del_rcu(&x->byspi);
+ 		net->xfrm.state_num--;
+@@ -1148,6 +1172,10 @@ xfrm_state_find(const xfrm_address_t *daddr, const xfrm_address_t *saddr,
+ 				h = xfrm_spi_hash(net, &x->id.daddr, x->id.spi, x->id.proto, encap_family);
+ 				hlist_add_head_rcu(&x->byspi, net->xfrm.state_byspi + h);
+ 			}
++			if (x->km.seq) {
++				h = xfrm_seq_hash(net, x->km.seq);
++				hlist_add_head_rcu(&x->byseq, net->xfrm.state_byseq + h);
++			}
+ 			x->lft.hard_add_expires_seconds = net->xfrm.sysctl_acq_expires;
+ 			hrtimer_start(&x->mtimer,
+ 				      ktime_set(net->xfrm.sysctl_acq_expires, 0),
+@@ -1263,6 +1291,12 @@ static void __xfrm_state_insert(struct xfrm_state *x)
+ 		hlist_add_head_rcu(&x->byspi, net->xfrm.state_byspi + h);
+ 	}
+ 
++	if (x->km.seq) {
++		h = xfrm_seq_hash(net, x->km.seq);
++
++		hlist_add_head_rcu(&x->byseq, net->xfrm.state_byseq + h);
++	}
++
+ 	hrtimer_start(&x->mtimer, ktime_set(1, 0), HRTIMER_MODE_REL_SOFT);
+ 	if (x->replay_maxage)
+ 		mod_timer(&x->rtimer, jiffies + x->replay_maxage);
+@@ -1932,20 +1966,18 @@ xfrm_state_sort(struct xfrm_state **dst, struct xfrm_state **src, int n,
+ 
+ static struct xfrm_state *__xfrm_find_acq_byseq(struct net *net, u32 mark, u32 seq)
+ {
+-	int i;
+-
+-	for (i = 0; i <= net->xfrm.state_hmask; i++) {
+-		struct xfrm_state *x;
++	unsigned int h = xfrm_seq_hash(net, seq);
++	struct xfrm_state *x;
+ 
+-		hlist_for_each_entry(x, net->xfrm.state_bydst+i, bydst) {
+-			if (x->km.seq == seq &&
+-			    (mark & x->mark.m) == x->mark.v &&
+-			    x->km.state == XFRM_STATE_ACQ) {
+-				xfrm_state_hold(x);
+-				return x;
+-			}
++	hlist_for_each_entry_rcu(x, net->xfrm.state_byseq + h, byseq) {
++		if (x->km.seq == seq &&
++		    (mark & x->mark.m) == x->mark.v &&
++		    x->km.state == XFRM_STATE_ACQ) {
++			xfrm_state_hold(x);
++			return x;
+ 		}
+ 	}
++
+ 	return NULL;
+ }
+ 
+@@ -2660,6 +2692,9 @@ int __net_init xfrm_state_init(struct net *net)
+ 	net->xfrm.state_byspi = xfrm_hash_alloc(sz);
+ 	if (!net->xfrm.state_byspi)
+ 		goto out_byspi;
++	net->xfrm.state_byseq = xfrm_hash_alloc(sz);
++	if (!net->xfrm.state_byseq)
++		goto out_byseq;
+ 	net->xfrm.state_hmask = ((sz / sizeof(struct hlist_head)) - 1);
+ 
+ 	net->xfrm.state_num = 0;
+@@ -2669,6 +2704,8 @@ int __net_init xfrm_state_init(struct net *net)
+ 			       &net->xfrm.xfrm_state_lock);
+ 	return 0;
+ 
++out_byseq:
++	xfrm_hash_free(net->xfrm.state_byspi, sz);
+ out_byspi:
+ 	xfrm_hash_free(net->xfrm.state_bysrc, sz);
+ out_bysrc:
+@@ -2688,6 +2725,8 @@ void xfrm_state_fini(struct net *net)
+ 	WARN_ON(!list_empty(&net->xfrm.state_all));
+ 
+ 	sz = (net->xfrm.state_hmask + 1) * sizeof(struct hlist_head);
++	WARN_ON(!hlist_empty(net->xfrm.state_byseq));
++	xfrm_hash_free(net->xfrm.state_byseq, sz);
+ 	WARN_ON(!hlist_empty(net->xfrm.state_byspi));
+ 	xfrm_hash_free(net->xfrm.state_byspi, sz);
+ 	WARN_ON(!hlist_empty(net->xfrm.state_bysrc));
+-- 
+2.31.1
 
