@@ -2,104 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1545D36A7B9
-	for <lists+netdev@lfdr.de>; Sun, 25 Apr 2021 16:16:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D137C36A7CE
+	for <lists+netdev@lfdr.de>; Sun, 25 Apr 2021 16:33:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230262AbhDYORA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 25 Apr 2021 10:17:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39000 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229837AbhDYOQ7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 25 Apr 2021 10:16:59 -0400
-Received: from mail-wm1-x32b.google.com (mail-wm1-x32b.google.com [IPv6:2a00:1450:4864:20::32b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B8C3C061756
-        for <netdev@vger.kernel.org>; Sun, 25 Apr 2021 07:16:19 -0700 (PDT)
-Received: by mail-wm1-x32b.google.com with SMTP id f15-20020a05600c4e8fb029013f5599b8a9so1681491wmq.1
-        for <netdev@vger.kernel.org>; Sun, 25 Apr 2021 07:16:19 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=flodin-me.20150623.gappssmtp.com; s=20150623;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=9jEHbT2HPU07YWp8UIpvxV0HKIyl8Sn3Z1db3mhpjS4=;
-        b=Ot6WOmtm/69oaFZX0wjMQfJ2sx/lD+5YRiLSkyHDqkPn//qLX5oRVlSV6aUi/63fyF
-         GTsO1Xu9iCa81pxXYuhl42cNlSlMzOff2IzfBqWfzUr54ihaDO+hw4MNxy86Fehnw2ix
-         GevCs6aFgwukTpl5easln80WvfjLXLtWgK6g6u4ginkwzgjbfJ4w2SDoH9auDAchHmiA
-         GojwaJAKttPQkouLBOybtbavQxv2c24FMd/cpODrOHyCqE4zSNgm+Ff9fkAORN+RhCU7
-         0XxWru7EGVbFhdhNtS8OutwFnoO0mqCrYj5wba2NEsWzI0qHYcVQfcRKLey0U1ojPDNJ
-         kOEQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=9jEHbT2HPU07YWp8UIpvxV0HKIyl8Sn3Z1db3mhpjS4=;
-        b=IqJ6exP5QCmi0uLeehLUmXM6mJkZ7RVOxjuKlNMzryyAW7etLX7QWBNmZV1UMZR1S8
-         ye6/ExWZP47Awksxga2opkW6bxJOAZauURH1joppWR13W+nwRAPXT1dVwte93pG2gLUj
-         BxHD2nKGUKWrv3K+2Y9L6JRq485zrzvZ8H5+nBPRzhx3jCxLaBChk3EmSRFyAycvF+H7
-         lALoPDWwexaBbwWq7aUDDEf88wc2IdWC1BdusUkColxY8r1R+HEh9KoB1p20pWPi4tSa
-         iQnyKgMjjIqxILA5eIhQ6S+a8i1/7PBpgPeOGKhvTorx3xPOf2hfU2GJb3zamnkl3Rn6
-         PfSg==
-X-Gm-Message-State: AOAM530fvz1LAaem+LtnuKhWUGhKsubRcd1VM1DR8wBNX6PYzd5aWvOB
-        55GzJDDVlhQEiz1jVCr09s5pDcf9wkb9Bcm8Jtuc/w==
-X-Google-Smtp-Source: ABdhPJx4DBUvbpkKeXuR8l7ZvZxnyRIpkd/fdESWjROrRlTUb9N7zU7ISNw3RLEjxk1i1gSXxoESGOHrz5JkpJPziFk=
-X-Received: by 2002:a1c:3587:: with SMTP id c129mr14232332wma.80.1619360177569;
- Sun, 25 Apr 2021 07:16:17 -0700 (PDT)
-MIME-Version: 1.0
-References: <20210425095249.177588-1-erik@flodin.me> <20210425122222.223839-1-erik@flodin.me>
- <20210425122701.qbalhfsbybip2fci@pengutronix.de>
-In-Reply-To: <20210425122701.qbalhfsbybip2fci@pengutronix.de>
-From:   Erik Flodin <erik@flodin.me>
-Date:   Sun, 25 Apr 2021 16:16:06 +0200
-Message-ID: <CAAMKmofSsfP4SZ_At4VqGYVfo7-i+q1Hqrxdfmk79kS+tjtsvg@mail.gmail.com>
-Subject: Re: [PATCH v3] can: proc: fix rcvlist_* header alignment on 64-bit system
-To:     Marc Kleine-Budde <mkl@pengutronix.de>
-Cc:     Oliver Hartkopp <socketcan@hartkopp.net>,
+        id S230331AbhDYOeW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 25 Apr 2021 10:34:22 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:39878 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229906AbhDYOeV (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 25 Apr 2021 10:34:21 -0400
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
+        (envelope-from <andrew@lunn.ch>)
+        id 1lafpD-000zu0-0c; Sun, 25 Apr 2021 16:33:31 +0200
+Date:   Sun, 25 Apr 2021 16:33:30 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Ansuel Smith <ansuelsmth@gmail.com>
+Cc:     DENG Qingfang <dqfext@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
         "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, linux-can@vger.kernel.org,
-        netdev@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+        Jakub Kicinski <kuba@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 11/14] drivers: net: dsa: qca8k: apply switch revision fix
+Message-ID: <YIV9unMmDMROD4sp@lunn.ch>
+References: <20210423014741.11858-1-ansuelsmth@gmail.com>
+ <20210423014741.11858-12-ansuelsmth@gmail.com>
+ <e644aba9-a092-3825-b55b-e0cca158d28b@gmail.com>
+ <YISLHNK8binc9T1N@Ansuel-xps.localdomain>
+ <20210425044554.194770-1-dqfext@gmail.com>
+ <YIVZl9qbXLcCrqNl@Ansuel-xps.localdomain>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YIVZl9qbXLcCrqNl@Ansuel-xps.localdomain>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
-
-On Sun, 25 Apr 2021 at 14:27, Marc Kleine-Budde <mkl@pengutronix.de> wrote:
->
-> On 25.04.2021 14:22:12, Erik Flodin wrote:
-> > Before this fix, the function and userdata columns weren't aligned:
-> >   device   can_id   can_mask  function  userdata   matches  ident
-> >    vcan0  92345678  9fffffff  0000000000000000  0000000000000000         0  raw
-> >    vcan0     123    00000123  0000000000000000  0000000000000000         0  raw
+On Sun, Apr 25, 2021 at 01:59:19PM +0200, Ansuel Smith wrote:
+> On Sun, Apr 25, 2021 at 12:45:54PM +0800, DENG Qingfang wrote:
+> > Hi Ansuel,
+> > 
+> > On Sat, Apr 24, 2021 at 11:18:20PM +0200, Ansuel Smith wrote:
+> > > 
+> > > I'm starting to do some work with this and a problem arised. Since these
+> > > value are based on the switch revision, how can I access these kind of
+> > > data from the phy driver? It's allowed to declare a phy driver in the
+> > > dsa directory? (The idea would be to create a qca8k dir with the dsa
+> > > driver and the dedicated internal phy driver.) This would facilitate the
+> > > use of normal qca8k_read/write (to access the switch revision from the
+> > > phy driver) using common function?
+> > 
+> > In case of different switch revision, the PHY ID should also be different.
+> > I think you can reuse the current at803x.c PHY driver, as they seem to
+> > share similar registers.
 > >
-> > After the fix they are:
-> >   device   can_id   can_mask      function          userdata       matches  ident
-> >    vcan0  92345678  9fffffff  0000000000000000  0000000000000000         0  raw
-> >    vcan0     123    00000123  0000000000000000  0000000000000000         0  raw
-> >
-> > Signed-off-by: Erik Flodin <erik@flodin.me>
-> > ---
-> >  net/can/proc.c | 7 +++++--
-> >  1 file changed, 5 insertions(+), 2 deletions(-)
-> >
-> > diff --git a/net/can/proc.c b/net/can/proc.c
-> > index 5ea8695f507e..35b6c7512785 100644
-> > --- a/net/can/proc.c
-> > +++ b/net/can/proc.c
-> > @@ -205,8 +205,11 @@ static void can_print_recv_banner(struct seq_file *m)
-> >        *                  can1.  00000000  00000000  00000000
-> >        *                 .......          0  tp20
-> >        */
-> > -     seq_puts(m, "  device   can_id   can_mask  function"
-> > -                     "  userdata   matches  ident\n");
-> > +#ifdef CONFIG_64BIT
-> > +     seq_puts(m, "  device   can_id   can_mask      function          userdata       matches  ident\n");
-> > +#else
-> > +     seq_puts(m, "  device   can_id   can_mask  function  userdata   matches  ident\n");
-> > +#endif
->
-> Please use "if (IS_ENABLED(CONFIG_64BIT))" as in your example in your
-> previous mail.
+> 
+> Is this really necessary? Every PHY has the same ID linked to the switch
+> id but the revision can change across the same switch id. Isn't the phy
+> dev flag enought to differiante one id from another? 
 
-Ok. I've sent a new patch, but of course I forgot to add -v4. Sorry about that.
+Just as general background information: A PHY ID generally consists of
+three parts.
 
-// Erik
+1) OUI - Identifies the manufacture - 22 bits
+2) device - Generally 6 bits
+3) revision - Generally 4 bits
+
+The 22 bits of OUI is standardized. But the last 10 bits the vendor
+can use as they wish. But generally, this is how it is used.
+
+Loading the PHY driver is generally based on matching the OUI and
+device ID. The revision is ignored. But it is available to the driver
+if needed.
+
+It could be, the switch revision is also reflected in the PHY
+revision.
+
+	Andrew
