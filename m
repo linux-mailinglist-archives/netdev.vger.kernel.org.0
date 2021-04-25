@@ -2,279 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5CB1536A89C
+	by mail.lfdr.de (Postfix) with ESMTP id A897E36A89D
 	for <lists+netdev@lfdr.de>; Sun, 25 Apr 2021 19:46:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231181AbhDYRq2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 25 Apr 2021 13:46:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55870 "EHLO
+        id S231201AbhDYRqa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 25 Apr 2021 13:46:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55872 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230329AbhDYRq1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 25 Apr 2021 13:46:27 -0400
-Received: from mail-pg1-x52a.google.com (mail-pg1-x52a.google.com [IPv6:2607:f8b0:4864:20::52a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 431E5C061574
-        for <netdev@vger.kernel.org>; Sun, 25 Apr 2021 10:45:47 -0700 (PDT)
-Received: by mail-pg1-x52a.google.com with SMTP id b17so1574126pgh.7
-        for <netdev@vger.kernel.org>; Sun, 25 Apr 2021 10:45:47 -0700 (PDT)
+        with ESMTP id S231167AbhDYRq2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 25 Apr 2021 13:46:28 -0400
+Received: from mail-pf1-x42e.google.com (mail-pf1-x42e.google.com [IPv6:2607:f8b0:4864:20::42e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 24E78C061574
+        for <netdev@vger.kernel.org>; Sun, 25 Apr 2021 10:45:48 -0700 (PDT)
+Received: by mail-pf1-x42e.google.com with SMTP id w6so22911571pfc.8
+        for <netdev@vger.kernel.org>; Sun, 25 Apr 2021 10:45:48 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=broadcom.com; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=vF6Z71om3AETRsqpsBidNf7KZa30ht6xVwN3DpC6SH4=;
-        b=EPOIBH5r/QihJUUX+ZTdrnPJq0psSLwiD6klqjhz+D7V8uhAfqJLhNaNsoDD4g/7xj
-         Rp58b184A17f2Gd2eqmA/lHAjVuG8OSTYONHWg+gjc/+k+aEUA52CRMk4JR/yTzatjow
-         wlRfGa53HlM8DU0TBWtkDbfHk0spGkvRZC428=
+        bh=GmqZPnUtxR9qOZTEX2Zr7wVobA/i8ZJXs7SDgr72vUI=;
+        b=GdIaXjgKtz7ag9bNYz+8H3By5Us5nln+mDZZsL3TKz/n6JXBBuEWwhbBkqwNDNuBGs
+         HZkBRbpe+eJmXJ8XT02jmyADvSN6XgEUgdrh4eyIvd5rtj9GBl+7vdAy+gdVf6dg5cDl
+         89Lv2vW9r+65aT+VQShNLZHLcqRYbdqgvGSBw=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=vF6Z71om3AETRsqpsBidNf7KZa30ht6xVwN3DpC6SH4=;
-        b=QDc/JcS7jGRnDQnGnsP/b6PEQ6mR4cRoHgFcd11JiRMR9TZGmT79WvX7738EmUkf6M
-         veskWp6G2/XcyIcrWERYjkZFsDaXkdaa7HsmJRDetFOHsxvutoHweqZL5cu/KP/uv7Nl
-         Bmlff1bxChDbmAp+6SMBjRapljrt29I8FsyjExeudg2vz7mtCm1vzLQ7EwEQeptwrDWa
-         WqQvsikpaiB852gfSK4/aarU8FfS+WJI/s4ZBd5OB2mbtlCTCJrddypZWa6uaZQtm3jT
-         t7uegh8rn52PLn2Xgf/6pbL+lQhMgSNAz6NGfuj3/UYJIdnjUdrpGl1OZ0Uq4eJ1qi96
-         b8aw==
-X-Gm-Message-State: AOAM531+99JlJurAk/lDxOThiQalSaQgQQEl7Qyjuv3N53ynU6hKSJ0f
-        L3AXFicnwEstMCmWZVI9nQMNjg==
-X-Google-Smtp-Source: ABdhPJxGuwjkxDpqGvQGKMpJcuLS/kMJwTC9u3Gqk6VyYFCUe9VDkjhJ/bCL/g4gXQQUIIJvmo17mQ==
-X-Received: by 2002:a65:6917:: with SMTP id s23mr13547236pgq.35.1619372746506;
-        Sun, 25 Apr 2021 10:45:46 -0700 (PDT)
+        bh=GmqZPnUtxR9qOZTEX2Zr7wVobA/i8ZJXs7SDgr72vUI=;
+        b=IUfiMdf8Zv2tmGEMDVgadV5iY4JwubMYUm/cgVvYOvoCvSKOFCSbtcKw4zNR75fYrb
+         7tT9pDvohfjNIsABCet0ReK5nrAC5s3tQNw705tbJD0vrVIq5R/TyM6FJrJRBlRB1T3g
+         ziFVLZQ2CKSLqx1U7NYqgZAKQCWXI3C9Ol+3p5tIRlF/8mcSXrfAt5W4s3DzI/RePHCN
+         6M02TPUY2ny0PeoEcraBPO783XXDDSF8k0VfZ7867tIyt95Uw+jKFwsDV0yVwJsoTxQh
+         CnCh5fodNZDtKAdybIq/cqLnPn3XK1GB636NWJ9n3dJ2VeeFf1ooqYp+aW/XcHi+/n3N
+         8t6A==
+X-Gm-Message-State: AOAM531QWwkA7siHBn11qCo+OTPlyo0BoDCSZgZevzl7S1xw8iyCN/h4
+        7EqlzNJhLuWhCD3Pjm0gfx+8Hg==
+X-Google-Smtp-Source: ABdhPJyOCgoLw4saGL14luiz6gLZ3i7zyEjBoZRG2JF7VeYc+Tt91BSV+zHVFfeu0QPl6/gW8ibxkw==
+X-Received: by 2002:a63:135d:: with SMTP id 29mr6774207pgt.83.1619372747365;
+        Sun, 25 Apr 2021 10:45:47 -0700 (PDT)
 Received: from localhost.swdvt.lab.broadcom.net ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id t19sm14733553pjs.1.2021.04.25.10.45.45
+        by smtp.gmail.com with ESMTPSA id t19sm14733553pjs.1.2021.04.25.10.45.46
         (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
         Sun, 25 Apr 2021 10:45:46 -0700 (PDT)
 From:   Michael Chan <michael.chan@broadcom.com>
 To:     davem@davemloft.net
 Cc:     netdev@vger.kernel.org, kuba@kernel.org, gospo@broadcom.com
-Subject: [PATCH net-next v2 02/10] bnxt_en: Add a new phy_flags field to the main driver structure.
-Date:   Sun, 25 Apr 2021 13:45:19 -0400
-Message-Id: <1619372727-19187-3-git-send-email-michael.chan@broadcom.com>
+Subject: [PATCH net-next v2 03/10] bnxt_en: Add support for fw managed link down feature.
+Date:   Sun, 25 Apr 2021 13:45:20 -0400
+Message-Id: <1619372727-19187-4-git-send-email-michael.chan@broadcom.com>
 X-Mailer: git-send-email 1.8.3.1
 In-Reply-To: <1619372727-19187-1-git-send-email-michael.chan@broadcom.com>
 References: <1619372727-19187-1-git-send-email-michael.chan@broadcom.com>
 Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256;
-        boundary="000000000000591aaf05c0cf9955"
+        boundary="0000000000006646bb05c0cf995c"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---000000000000591aaf05c0cf9955
+--0000000000006646bb05c0cf995c
 
-Copy the phy related feature flags from the firmware call
-HWRM_PORT_PHY_QCAPS to this new field.  We can also remove the flags
-field in the bnxt_test_info structure.  It's cleaner to have all PHY
-related flags in one location, directly copied from the firmware.
-
-To keep the BNXT_PHY_CFG_ABLE() macro logic the same, we need to make
-a slight adjustment to check that it is a PF.
+In the current code, the driver will not shutdown the link during
+IFDOWN if there are still VFs sharing the port.  Newer firmware will
+manage the link down decision when the port is shared by VFs, so
+we can just call firmware to shutdown the port unconditionally and
+let firmware make the final decision.
 
 Reviewed-by: Edwin Peer <edwin.peer@broadcom.com>
 Signed-off-by: Michael Chan <michael.chan@broadcom.com>
 ---
- drivers/net/ethernet/broadcom/bnxt/bnxt.c     | 29 ++++---------------
- drivers/net/ethernet/broadcom/bnxt/bnxt.h     | 19 +++++++-----
- .../net/ethernet/broadcom/bnxt/bnxt_ethtool.c |  8 ++---
- 3 files changed, 22 insertions(+), 34 deletions(-)
+ drivers/net/ethernet/broadcom/bnxt/bnxt.c | 3 ++-
+ drivers/net/ethernet/broadcom/bnxt/bnxt.h | 1 +
+ 2 files changed, 3 insertions(+), 1 deletion(-)
 
 diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt.c b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-index 573c039e6046..f08427b7dbe7 100644
+index f08427b7dbe7..dcf1598afac2 100644
 --- a/drivers/net/ethernet/broadcom/bnxt/bnxt.c
 +++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-@@ -4145,7 +4145,7 @@ static void bnxt_free_mem(struct bnxt *bp, bool irq_re_init)
- 	bnxt_free_ntp_fltrs(bp, irq_re_init);
- 	if (irq_re_init) {
- 		bnxt_free_ring_stats(bp);
--		if (!(bp->fw_cap & BNXT_FW_CAP_PORT_STATS_NO_RESET) ||
-+		if (!(bp->phy_flags & BNXT_PHY_FL_PORT_STATS_NO_RESET) ||
- 		    test_bit(BNXT_STATE_IN_FW_RESET, &bp->state))
- 			bnxt_free_port_stats(bp);
- 		bnxt_free_ring_grps(bp);
-@@ -9116,7 +9116,7 @@ static void bnxt_report_link(struct bnxt *bp)
- 		}
- 		netdev_info(bp->dev, "NIC Link is Up, %u Mbps %s%s duplex, Flow control: %s\n",
- 			    speed, signal, duplex, flow_ctrl);
--		if (bp->flags & BNXT_FLAG_EEE_CAP)
-+		if (bp->phy_flags & BNXT_PHY_FL_EEE_CAP)
- 			netdev_info(bp->dev, "EEE is %s\n",
- 				    bp->eee.eee_active ? "active" :
- 							 "not active");
-@@ -9148,10 +9148,6 @@ static int bnxt_hwrm_phy_qcaps(struct bnxt *bp)
- 	struct hwrm_port_phy_qcaps_output *resp = bp->hwrm_cmd_resp_addr;
- 	struct bnxt_link_info *link_info = &bp->link_info;
- 
--	bp->flags &= ~BNXT_FLAG_EEE_CAP;
--	if (bp->test_info)
--		bp->test_info->flags &= ~(BNXT_TEST_FL_EXT_LPBK |
--					  BNXT_TEST_FL_AN_PHY_LPBK);
- 	if (bp->hwrm_spec_code < 0x10201)
+@@ -9495,7 +9495,8 @@ static int bnxt_hwrm_shutdown_link(struct bnxt *bp)
+ 	if (!BNXT_SINGLE_PF(bp))
  		return 0;
  
-@@ -9162,31 +9158,17 @@ static int bnxt_hwrm_phy_qcaps(struct bnxt *bp)
- 	if (rc)
- 		goto hwrm_phy_qcaps_exit;
+-	if (pci_num_vf(bp->pdev))
++	if (pci_num_vf(bp->pdev) &&
++	    !(bp->phy_flags & BNXT_PHY_FL_FW_MANAGED_LKDN))
+ 		return 0;
  
-+	bp->phy_flags = resp->flags;
- 	if (resp->flags & PORT_PHY_QCAPS_RESP_FLAGS_EEE_SUPPORTED) {
- 		struct ethtool_eee *eee = &bp->eee;
- 		u16 fw_speeds = le16_to_cpu(resp->supported_speeds_eee_mode);
- 
--		bp->flags |= BNXT_FLAG_EEE_CAP;
- 		eee->supported = _bnxt_fw_to_ethtool_adv_spds(fw_speeds, 0);
- 		bp->lpi_tmr_lo = le32_to_cpu(resp->tx_lpi_timer_low) &
- 				 PORT_PHY_QCAPS_RESP_TX_LPI_TIMER_LOW_MASK;
- 		bp->lpi_tmr_hi = le32_to_cpu(resp->valid_tx_lpi_timer_high) &
- 				 PORT_PHY_QCAPS_RESP_TX_LPI_TIMER_HIGH_MASK;
- 	}
--	if (resp->flags & PORT_PHY_QCAPS_RESP_FLAGS_EXTERNAL_LPBK_SUPPORTED) {
--		if (bp->test_info)
--			bp->test_info->flags |= BNXT_TEST_FL_EXT_LPBK;
--	}
--	if (resp->flags & PORT_PHY_QCAPS_RESP_FLAGS_AUTONEG_LPBK_SUPPORTED) {
--		if (bp->test_info)
--			bp->test_info->flags |= BNXT_TEST_FL_AN_PHY_LPBK;
--	}
--	if (resp->flags & PORT_PHY_QCAPS_RESP_FLAGS_SHARED_PHY_CFG_SUPPORTED) {
--		if (BNXT_PF(bp))
--			bp->fw_cap |= BNXT_FW_CAP_SHARED_PORT_CFG;
--	}
--	if (resp->flags & PORT_PHY_QCAPS_RESP_FLAGS_CUMULATIVE_COUNTERS_ON_RESET)
--		bp->fw_cap |= BNXT_FW_CAP_PORT_STATS_NO_RESET;
- 
- 	if (bp->hwrm_spec_code >= 0x10a01) {
- 		if (bnxt_phy_qcaps_no_speed(resp)) {
-@@ -9277,7 +9259,7 @@ int bnxt_update_link(struct bnxt *bp, bool chng_link_state)
- 			      PORT_PHY_QCFG_RESP_PHY_ADDR_MASK;
- 	link_info->module_status = resp->module_status;
- 
--	if (bp->flags & BNXT_FLAG_EEE_CAP) {
-+	if (bp->phy_flags & BNXT_PHY_FL_EEE_CAP) {
- 		struct ethtool_eee *eee = &bp->eee;
- 		u16 fw_speeds;
- 
-@@ -9855,7 +9837,7 @@ static bool bnxt_eee_config_ok(struct bnxt *bp)
- 	struct ethtool_eee *eee = &bp->eee;
- 	struct bnxt_link_info *link_info = &bp->link_info;
- 
--	if (!(bp->flags & BNXT_FLAG_EEE_CAP))
-+	if (!(bp->phy_flags & BNXT_PHY_FL_EEE_CAP))
- 		return true;
- 
- 	if (eee->eee_enabled) {
-@@ -12450,6 +12432,7 @@ static int bnxt_probe_phy(struct bnxt *bp, bool fw_dflt)
- 	int rc = 0;
- 	struct bnxt_link_info *link_info = &bp->link_info;
- 
-+	bp->phy_flags = 0;
- 	rc = bnxt_hwrm_phy_qcaps(bp);
- 	if (rc) {
- 		netdev_err(bp->dev, "Probe phy can't get phy capabilities (rc: %x)\n",
+ 	bnxt_hwrm_cmd_hdr_init(bp, &req, HWRM_PORT_PHY_CFG, -1, -1);
 diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt.h b/drivers/net/ethernet/broadcom/bnxt/bnxt.h
-index 29061c577baa..6c4fb78c59fe 100644
+index 6c4fb78c59fe..5835d8ca8c22 100644
 --- a/drivers/net/ethernet/broadcom/bnxt/bnxt.h
 +++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.h
-@@ -1341,9 +1341,6 @@ struct bnxt_led_info {
+@@ -2014,6 +2014,7 @@ struct bnxt {
+ #define BNXT_PHY_FL_SHARED_PORT_CFG	PORT_PHY_QCAPS_RESP_FLAGS_SHARED_PHY_CFG_SUPPORTED
+ #define BNXT_PHY_FL_PORT_STATS_NO_RESET	PORT_PHY_QCAPS_RESP_FLAGS_CUMULATIVE_COUNTERS_ON_RESET
+ #define BNXT_PHY_FL_NO_PHY_LPBK		PORT_PHY_QCAPS_RESP_FLAGS_LOCAL_LPBK_NOT_SUPPORTED
++#define BNXT_PHY_FL_FW_MANAGED_LKDN	PORT_PHY_QCAPS_RESP_FLAGS_FW_MANAGED_LINK_DOWN
  
- struct bnxt_test_info {
- 	u8 offline_mask;
--	u8 flags;
--#define BNXT_TEST_FL_EXT_LPBK		0x1
--#define BNXT_TEST_FL_AN_PHY_LPBK	0x2
- 	u16 timeout;
- 	char string[BNXT_MAX_TEST][ETH_GSTRING_LEN];
- };
-@@ -1693,7 +1690,6 @@ struct bnxt {
- 	#define BNXT_FLAG_SHARED_RINGS	0x200
- 	#define BNXT_FLAG_PORT_STATS	0x400
- 	#define BNXT_FLAG_UDP_RSS_CAP	0x800
--	#define BNXT_FLAG_EEE_CAP	0x1000
- 	#define BNXT_FLAG_NEW_RSS_CAP	0x2000
- 	#define BNXT_FLAG_WOL_CAP	0x4000
- 	#define BNXT_FLAG_ROCEV1_CAP	0x8000
-@@ -1720,8 +1716,10 @@ struct bnxt {
- #define BNXT_NPAR(bp)		((bp)->port_partition_type)
- #define BNXT_MH(bp)		((bp)->flags & BNXT_FLAG_MULTI_HOST)
- #define BNXT_SINGLE_PF(bp)	(BNXT_PF(bp) && !BNXT_NPAR(bp) && !BNXT_MH(bp))
-+#define BNXT_SH_PORT_CFG_OK(bp)	(BNXT_PF(bp) &&				\
-+				 ((bp)->phy_flags & BNXT_PHY_FL_SHARED_PORT_CFG))
- #define BNXT_PHY_CFG_ABLE(bp)	((BNXT_SINGLE_PF(bp) ||			\
--				  ((bp)->fw_cap & BNXT_FW_CAP_SHARED_PORT_CFG)) && \
-+				  BNXT_SH_PORT_CFG_OK(bp)) &&		\
- 				 (bp)->link_info.phy_state == BNXT_PHY_STATE_ENABLED)
- #define BNXT_CHIP_TYPE_NITRO_A0(bp) ((bp)->flags & BNXT_FLAG_CHIP_NITRO_A0)
- #define BNXT_RX_PAGE_MODE(bp)	((bp)->flags & BNXT_FLAG_RX_PAGE_MODE)
-@@ -1871,11 +1869,9 @@ struct bnxt {
- 	#define BNXT_FW_CAP_EXT_STATS_SUPPORTED		0x00040000
- 	#define BNXT_FW_CAP_ERR_RECOVER_RELOAD		0x00100000
- 	#define BNXT_FW_CAP_HOT_RESET			0x00200000
--	#define BNXT_FW_CAP_SHARED_PORT_CFG		0x00400000
- 	#define BNXT_FW_CAP_VLAN_RX_STRIP		0x01000000
- 	#define BNXT_FW_CAP_VLAN_TX_INSERT		0x02000000
- 	#define BNXT_FW_CAP_EXT_HW_STATS_SUPPORTED	0x04000000
--	#define BNXT_FW_CAP_PORT_STATS_NO_RESET		0x10000000
- 	#define BNXT_FW_CAP_RING_MONITOR		0x40000000
- 
- #define BNXT_NEW_RM(bp)		((bp)->fw_cap & BNXT_FW_CAP_NEW_RM)
-@@ -2010,6 +2006,15 @@ struct bnxt {
- 	u32			lpi_tmr_lo;
- 	u32			lpi_tmr_hi;
- 
-+	/* copied from flags in hwrm_port_phy_qcaps_output */
-+	u8			phy_flags;
-+#define BNXT_PHY_FL_EEE_CAP		PORT_PHY_QCAPS_RESP_FLAGS_EEE_SUPPORTED
-+#define BNXT_PHY_FL_EXT_LPBK		PORT_PHY_QCAPS_RESP_FLAGS_EXTERNAL_LPBK_SUPPORTED
-+#define BNXT_PHY_FL_AN_PHY_LPBK		PORT_PHY_QCAPS_RESP_FLAGS_AUTONEG_LPBK_SUPPORTED
-+#define BNXT_PHY_FL_SHARED_PORT_CFG	PORT_PHY_QCAPS_RESP_FLAGS_SHARED_PHY_CFG_SUPPORTED
-+#define BNXT_PHY_FL_PORT_STATS_NO_RESET	PORT_PHY_QCAPS_RESP_FLAGS_CUMULATIVE_COUNTERS_ON_RESET
-+#define BNXT_PHY_FL_NO_PHY_LPBK		PORT_PHY_QCAPS_RESP_FLAGS_LOCAL_LPBK_NOT_SUPPORTED
-+
  	u8			num_tests;
  	struct bnxt_test_info	*test_info;
- 
-diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c b/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c
-index 3b66e300c962..c664ec52ebcf 100644
---- a/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c
-+++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c
-@@ -2912,7 +2912,7 @@ static int bnxt_set_eee(struct net_device *dev, struct ethtool_eee *edata)
- 	if (!BNXT_PHY_CFG_ABLE(bp))
- 		return -EOPNOTSUPP;
- 
--	if (!(bp->flags & BNXT_FLAG_EEE_CAP))
-+	if (!(bp->phy_flags & BNXT_PHY_FL_EEE_CAP))
- 		return -EOPNOTSUPP;
- 
- 	mutex_lock(&bp->link_lock);
-@@ -2963,7 +2963,7 @@ static int bnxt_get_eee(struct net_device *dev, struct ethtool_eee *edata)
- {
- 	struct bnxt *bp = netdev_priv(dev);
- 
--	if (!(bp->flags & BNXT_FLAG_EEE_CAP))
-+	if (!(bp->phy_flags & BNXT_PHY_FL_EEE_CAP))
- 		return -EOPNOTSUPP;
- 
- 	*edata = bp->eee;
-@@ -3215,7 +3215,7 @@ static int bnxt_disable_an_for_lpbk(struct bnxt *bp,
- 	int rc;
- 
- 	if (!link_info->autoneg ||
--	    (bp->test_info->flags & BNXT_TEST_FL_AN_PHY_LPBK))
-+	    (bp->phy_flags & BNXT_PHY_FL_AN_PHY_LPBK))
- 		return 0;
- 
- 	rc = bnxt_query_force_speeds(bp, &fw_advertising);
-@@ -3416,7 +3416,7 @@ static void bnxt_self_test(struct net_device *dev, struct ethtool_test *etest,
- 	}
- 
- 	if ((etest->flags & ETH_TEST_FL_EXTERNAL_LB) &&
--	    (bp->test_info->flags & BNXT_TEST_FL_EXT_LPBK))
-+	    (bp->phy_flags & BNXT_PHY_FL_EXT_LPBK))
- 		do_ext_lpbk = true;
- 
- 	if (etest->flags & ETH_TEST_FL_OFFLINE) {
 -- 
 2.18.1
 
 
---000000000000591aaf05c0cf9955
+--0000000000006646bb05c0cf995c
 Content-Type: application/pkcs7-signature; name="smime.p7s"
 Content-Transfer-Encoding: base64
 Content-Disposition: attachment; filename="smime.p7s"
@@ -345,13 +174,13 @@ FSWQptLx+kiu63idTII4r3k/7+dJ5AhLRr4WCoXEme2GZkfSbYC3fEL46tb1w7w+25OEFCv1MtDZ
 DauX1eWVM+KepL7zoSNzVbTipc65WuZFLR8ngOwkpknqvS9n/nKd885m23oIocC+GA4xggJtMIIC
 aQIBATBrMFsxCzAJBgNVBAYTAkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52LXNhMTEwLwYDVQQD
 EyhHbG9iYWxTaWduIEdDQyBSMyBQZXJzb25hbFNpZ24gMiBDQSAyMDIwAgwQeU+Y6hbenPzRMJsw
-DQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEINrVvBX9EUjhg1G6tdCl77ECmsZ4F888
-qb44XhlDdNKcMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIxMDQy
+DQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEICi+CeLDQtozS2yQ2bGYCbAgXQiRQoZS
+YPqwZIEoamHfMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIxMDQy
 NTE3NDU0N1owaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZIAWUDBAEWMAsGCWCG
 SAFlAwQBAjAKBggqhkiG9w0DBzALBgkqhkiG9w0BAQowCwYJKoZIhvcNAQEHMAsGCWCGSAFlAwQC
-ATANBgkqhkiG9w0BAQEFAASCAQCjY/UfR8znK0P2vKhmUbOoVa9iq+YAENxRUwjvTJnmcRb5jBo1
-tXwlD0WFiO0/B5dhoKixf6NcIM3Iov5mC/bcXDDSOq6Lc0w/RMXEgXpP+Af5C3OeVOrJUfDzLXYD
-rHJl29P1YHEcgDirwfIuLRSutdRt4JD/Zt9qWQBewgfq+Q1RZEz5zFTviFIAts+CuGDeAwF1fiRT
-JIR2D3+ZB5PO/ZTV8AlOPqylc+Rw2wGuNjrQ3oa+KBf+MJerAlwd2XGUsUIO3GX5MFCg1xk8wjXB
-BmxKuwuUmsnJ9XAmP77xLz+CsTwJq2SKKBhnJR4zbWpoJtwMhrzTRJRI/OqonxNS
---000000000000591aaf05c0cf9955--
+ATANBgkqhkiG9w0BAQEFAASCAQBPFepvdD6/BtmKMlrmdCaaOP/nGEbDtUKUp5W26ty36ug/iS1P
+k7PScHf8gRXNngmqktaQlQk2MPdIfYPeNlPTcODITyfR/mkPmP+hOZ0qnHvDYnhxYa2y7XXnO98o
+yNKItrdr8lM1qZyNci98U0PWKCy8VQc3BT6vmoK3ywHe1g2ch9C7qZzwKSchZk/bJxiEjamrf2hI
+WJXyZcuGZmlnGQAKj7EYTFgjzgFjUv6GFuKjDSYEO1+xgmkP4lYmy3yMzK6EZSN+M0WAn2JW/F82
+1loL6vuROHkn9cH+fi2YGtGn1z+a/ExhdC+Hngp5SW+/fahGWQvYxtGSmd9YEQrj
+--0000000000006646bb05c0cf995c--
