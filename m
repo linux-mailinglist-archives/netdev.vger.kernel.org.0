@@ -2,59 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6AFEF36A661
-	for <lists+netdev@lfdr.de>; Sun, 25 Apr 2021 11:54:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 28C3C36A668
+	for <lists+netdev@lfdr.de>; Sun, 25 Apr 2021 11:56:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229912AbhDYJyt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 25 Apr 2021 05:54:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39104 "EHLO
+        id S229916AbhDYJ51 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 25 Apr 2021 05:57:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39690 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229551AbhDYJyt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 25 Apr 2021 05:54:49 -0400
-Received: from mail-io1-xd29.google.com (mail-io1-xd29.google.com [IPv6:2607:f8b0:4864:20::d29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CD2B4C061574
-        for <netdev@vger.kernel.org>; Sun, 25 Apr 2021 02:54:09 -0700 (PDT)
-Received: by mail-io1-xd29.google.com with SMTP id a11so686281ioo.0
-        for <netdev@vger.kernel.org>; Sun, 25 Apr 2021 02:54:09 -0700 (PDT)
+        with ESMTP id S229906AbhDYJ50 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 25 Apr 2021 05:57:26 -0400
+Received: from mail-wr1-x42a.google.com (mail-wr1-x42a.google.com [IPv6:2a00:1450:4864:20::42a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1BB3DC061574
+        for <netdev@vger.kernel.org>; Sun, 25 Apr 2021 02:56:47 -0700 (PDT)
+Received: by mail-wr1-x42a.google.com with SMTP id j5so51802296wrn.4
+        for <netdev@vger.kernel.org>; Sun, 25 Apr 2021 02:56:47 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:reply-to:from:date:message-id:subject:to;
-        bh=ljZfsNw8ex69sV7WYLQqGS3jVhN6e3mpz6FSpZD67wA=;
-        b=pG9zRLvD948InvSMic/dEjqq8A8NhhMmo3ftAJkPe8emOzebmszojqZBcIToZloN3P
-         U9xD0s1vTcRe4JDstJYgtAWWBduz2v8FNMs0gDo4LYtIFeXqBJCFYSGGiruPQh28BHod
-         N6uEb0S1rIh0Hvhw8jt/F0Ubr9TMe1qicn9tkngRYX1de3ZUQ0BX4MbKmeRxHgbWr44K
-         eBVLpIRMyfzWM89tryuxGenZnTowGUAxNLjPI1WEwQycApuYy8NfEMJRRcY0TAefoq2R
-         80zEcisyvoo0/gw6fVcw0sB25f1/qkWS+5sVKazCA29IjLsLu5Xo9kEcbOO4VnE3ife4
-         fVYg==
+        d=flodin-me.20150623.gappssmtp.com; s=20150623;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=LpEneUQUuKYLL+bMl+mBYvXtYXwOrE7cfnqn3TgcuTA=;
+        b=gNvEtBwalKMNDxGaOQDpOVetAsU6hNibw9wdJFHzdn+UP6X1WX/2//CJj3YjAaQNLq
+         7tEq4FYWNmKsWYXdlIsB8FzwXBl5cUZTx3tyml35Yo9q9yiDoT3bkXjlBN8+60/b4KZj
+         S0dGamXQmbQeuruH3xaPDSs9koySl+r1Mo8W1Lq79p3yKgD5fpDfarmjJBiIFCs9ZC+D
+         EWSWS0K+YQGhT6jk+BDCdsYWzyfrfVGNK2fxmorhVPpU5GIqEzoQX9UebmOcYlpFoqoj
+         cshkTKTbYl9gDILSpWAi/CDsVwfJ+y/inwEO8ab5YCe3EO8cyjQeR9IoNp1WMXPCth46
+         i30g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
-         :subject:to;
-        bh=ljZfsNw8ex69sV7WYLQqGS3jVhN6e3mpz6FSpZD67wA=;
-        b=HzSBXYJhuoE4xBFFnTISLxfqyVywDdYYHJsMbe6vj2Rnpx5/FfH4gFpy+QpzBtTgbg
-         3oBFGfYC5C+43+2uIawICL3I5XQzcxgwtjPVtH7lDvhQHzilnVu070XaGjslTogEM5Qn
-         ejjydiomOSV+vbZX2hX0knJEzXvxJj/sUWgTemrNo/mJAPbyzzqfyJiuSmdgSgzmqlGn
-         YbIq3UUJUXJlTsb4ajalVCLUZAzjCst/vypx4e/SeyR09s/jXdpnt4/UcdauEQKyPHkU
-         7vvnpPmsN17R3Yowm0MqKaOY1It8NVnmKTvpYP0sjiw1iiNz0N8OpB+h9y7pvQVNtgrU
-         VBDw==
-X-Gm-Message-State: AOAM532d+r0FfEcbX1gdQ785yULG2Vvg1iKYJDj6CSJQF+EZ1b01uZeD
-        XaLjw8JvvtzmUXPgAH8g50iojPfTbcW4h86/A1k=
-X-Google-Smtp-Source: ABdhPJzXXpWiXSnm/iVmWnRF1KAlsYcdX3oxyCTFf4ewyBS46s69vKWOl39V//fkn6JpRjmIZbI16l0vzBw7TUXhaWg=
-X-Received: by 2002:a05:6602:58d:: with SMTP id v13mr9497298iox.64.1619344449364;
- Sun, 25 Apr 2021 02:54:09 -0700 (PDT)
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=LpEneUQUuKYLL+bMl+mBYvXtYXwOrE7cfnqn3TgcuTA=;
+        b=i6hLKfKzYfa6iGbQkNTN9r2MbtVK1Co210u5edB9SNioMR+ZzUPJNMRj8nVnRnVXf4
+         RxyfbsDqofyyjbAYhOgroG1LVs3tiHQu9gY1NQhAHpcA0S8IkU9+OYmhmGfPRKiD7Sag
+         LTt5dk1yqUehCYVLfPzAWIPsb3f+4TbHHOvb3X18+wqwrtCuGIdwqHUHR5XAQcAInND5
+         FzbmDILnuZsLPm0ngOK3qpX3fmkELzf8ZCxBIxUvjdSC9cIJ8LBpEjwWy/VfmuTAmFZB
+         /kOfpGfi2ZOBw8RvCsbdteWREEPbewNuJFQsN3MiAQ5ghhyFCLZWgJxjD1rSLqgtPiRH
+         lIFQ==
+X-Gm-Message-State: AOAM531qGDYaHcAN0n7nJ18J8YTRG1SpZdFOLQzwb/GJEAA+zAvkFknG
+        kLc30tfv2KMCep94aOc198gxOqe6hZC7I85ryFMjPvC54oH1pA==
+X-Google-Smtp-Source: ABdhPJz04fLCEZLYCV5+ZcH+V8F7prRVP5w5jR900dtPXUm+drMpzfL1xdjkdaH+HqH8r0LChfYCczlPLm/uMIYJTqg=
+X-Received: by 2002:a5d:524e:: with SMTP id k14mr15722421wrc.282.1619344605885;
+ Sun, 25 Apr 2021 02:56:45 -0700 (PDT)
 MIME-Version: 1.0
-Received: by 2002:a4f:fb0f:0:0:0:0:0 with HTTP; Sun, 25 Apr 2021 02:54:08
- -0700 (PDT)
-Reply-To: fionahill578@gmail.com
-From:   Fiona Hill <klouboko@gmail.com>
-Date:   Sun, 25 Apr 2021 09:54:08 +0000
-Message-ID: <CA+Adgp7gs02Bc6iSRjBv4mCHbcQ-TTzGg4dAOtUgzNU5NwuO0g@mail.gmail.com>
-Subject: 
-To:     undisclosed-recipients:;
+References: <20210425084950.171529-1-erik@flodin.me> <20210425090751.2jqj4yqx5ztyqhvg@pengutronix.de>
+In-Reply-To: <20210425090751.2jqj4yqx5ztyqhvg@pengutronix.de>
+From:   Erik Flodin <erik@flodin.me>
+Date:   Sun, 25 Apr 2021 11:56:34 +0200
+Message-ID: <CAAMKmoefuC4TXAD5JWW71PUWTauadGVkeAqdS87W3cqbHLV0AA@mail.gmail.com>
+Subject: Re: [PATCH] can: fix proc/can/net/rcvlist_* header alignment on
+ 64-bit system
+To:     Marc Kleine-Budde <mkl@pengutronix.de>
+Cc:     Oliver Hartkopp <socketcan@hartkopp.net>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, linux-can@vger.kernel.org,
+        netdev@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
--- 
-Have you see my message ?
+Hi,
+
+On Sun, 25 Apr 2021 at 11:07, Marc Kleine-Budde <mkl@pengutronix.de> wrote:
+> the subject is not 100% correct, actually it is /proc/net/can/rcvlist_*
+
+Good catch. That was sloppy of me...
+
+> nitpick:
+> For printed strings it's better to have them in a single line, so that
+> grepping for them is easier.
+
+I wasn't sure if I should keep the existing layout or change it since
+the include %s probably makes it hard(er) to grep anyway. But I've
+changed it in the fixed patch.
+
+Thanks for your comments!
+
+// Erik
