@@ -2,96 +2,150 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BCC1436A8A0
+	by mail.lfdr.de (Postfix) with ESMTP id 70E0536A89F
 	for <lists+netdev@lfdr.de>; Sun, 25 Apr 2021 19:46:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231216AbhDYRqf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 25 Apr 2021 13:46:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55894 "EHLO
+        id S231240AbhDYRqe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 25 Apr 2021 13:46:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55896 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231205AbhDYRqa (ORCPT
+        with ESMTP id S231204AbhDYRqa (ORCPT
         <rfc822;netdev@vger.kernel.org>); Sun, 25 Apr 2021 13:46:30 -0400
-Received: from mail-pj1-x1031.google.com (mail-pj1-x1031.google.com [IPv6:2607:f8b0:4864:20::1031])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 77D87C061574
+Received: from mail-pf1-x42f.google.com (mail-pf1-x42f.google.com [IPv6:2607:f8b0:4864:20::42f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9804AC061756
         for <netdev@vger.kernel.org>; Sun, 25 Apr 2021 10:45:50 -0700 (PDT)
-Received: by mail-pj1-x1031.google.com with SMTP id m6-20020a17090a8586b02901507e1acf0fso3939285pjn.3
+Received: by mail-pf1-x42f.google.com with SMTP id q2so5486273pfk.9
         for <netdev@vger.kernel.org>; Sun, 25 Apr 2021 10:45:50 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=broadcom.com; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=Qfigrm7r04oaH6YFNnwWahR21K0YAokJ3gS5W7fvQzU=;
-        b=ESyPOGDQjChVRFrqxaSADAaaec/N1fkr2aseZQD1XT38Ed/BdD0f+iCGnF1FxIAQTs
-         78hQX04VOGp0sA5QNAGa178xxq6hIQeCQVb30N/kDtzT7ozkT3kv7jHZawkfpEwy0sQW
-         WRF1Jef5c44Su3Y/k5AOHhnBqnayjvuWSw/sY=
+        bh=OoIIcI3z0U3CwAZDYr4PsXNqfhgoa74h/DJ2AZ2Bpjc=;
+        b=ECIELGrYfr3f24IeyUrQJEtnuK6HzPpAicC1J4k5PqlO7DymuMaSOUGY5f0NmCEdTc
+         1adZPP72MvtWdY8ogVx18AH01bkDLg5i+pJdqCbI8k1PMVolqA4c0RLjzd6/nczWRc1v
+         Ot0p4wkMNBplLrqZu2v2AalxjhelkcGWwrjGY=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=Qfigrm7r04oaH6YFNnwWahR21K0YAokJ3gS5W7fvQzU=;
-        b=cnPsJwTKdsUhNPQTDmTB2VPUPaXb3b2RGzBIu+PsOUaigxJEL1GmcymKZT40dWsFkz
-         hXp2kWDQnFaWbv4sCvA+PC5RrBOy0MffEwBqW2aLLSDUyUq6q7f9oRp8UR9jIv/axdsC
-         UsT+pzet46EbD6PzRd09m3kqaV42qPANblUiQPrFrwjDtI5jx8d6imWcE/Lxkqvgi7aM
-         2I9lpQFWjm8+3UnpDCqcDYJgNStKCGK4pR2szaeaiIRziCmEoYSBgDFOEotWNpUXizDW
-         LS++dokzxqKtJdFf4L8odkOeX5kiY16PhaMbZMGog5vdGgRRLZ1824h2lUo5dbXxgB0d
-         WjJQ==
-X-Gm-Message-State: AOAM5316nDkp9SpbXTkgI2BbcyrbrXdGoxCPKeFMjJKOWSeuXO2AF3U2
-        Gye10ntpPudQQdbs0pn55u80+w==
-X-Google-Smtp-Source: ABdhPJwDACKUzCrX5Hrdc5/vZMeVmu3Wk/+erUULDVN3/yDt5fUEz4jP7ySyMOUCuDJaGqY5fCva5g==
-X-Received: by 2002:a17:90b:2353:: with SMTP id ms19mr3158023pjb.118.1619372749017;
+        bh=OoIIcI3z0U3CwAZDYr4PsXNqfhgoa74h/DJ2AZ2Bpjc=;
+        b=FmE0qh/gQylrGzN2BUpSdXBo/E7f92Ho1yMbY5ugC2/sBiHuSmYJpZv/AO2JxxJm7R
+         MERTIgJ1eBcos2zMzG8EKWkjLurHMoIhKpT20QvicMH0zf/vF5HrAnj+lH+tiWPpMhCB
+         fDUTvGJ2wqBLx6lcF2L/SOOtOY1s6CViOSSNmfm292kU+nKK2igJwRq1RYyzhQ8+hp0A
+         rG0lDX3QQy5xw7J/ovdYdTgwSDzlGYcLSP/8WMrj7CWYrVpP1vAc68EheIk+ugi7MVJ5
+         DHJ+x0IZE06SYjc5V6E1C5BOfWW6sI+pM1v7JFyCWT6d3Qt+/AIbpswoJPSxKYWH84Pq
+         HsUA==
+X-Gm-Message-State: AOAM532eMJyFia+2NkxHYUfC4qohTH3zDOg2qSlmG1nX+6haxpz0XLmR
+        GqtbuZ//CaIUwOfi/gw6p0RzFA==
+X-Google-Smtp-Source: ABdhPJzlZzLa1M70rgq+4ZdFvtbhUuP4qNg/rV0CK+jsvjOKVtP0DLza5XlrrKvHmCdNFtCX1n6dFw==
+X-Received: by 2002:a63:6f8e:: with SMTP id k136mr13747840pgc.326.1619372749723;
         Sun, 25 Apr 2021 10:45:49 -0700 (PDT)
 Received: from localhost.swdvt.lab.broadcom.net ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id t19sm14733553pjs.1.2021.04.25.10.45.48
+        by smtp.gmail.com with ESMTPSA id t19sm14733553pjs.1.2021.04.25.10.45.49
         (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Sun, 25 Apr 2021 10:45:48 -0700 (PDT)
+        Sun, 25 Apr 2021 10:45:49 -0700 (PDT)
 From:   Michael Chan <michael.chan@broadcom.com>
 To:     davem@davemloft.net
 Cc:     netdev@vger.kernel.org, kuba@kernel.org, gospo@broadcom.com
-Subject: [PATCH net-next v2 05/10] bnxt_en: allow VF config ops when PF is closed
-Date:   Sun, 25 Apr 2021 13:45:22 -0400
-Message-Id: <1619372727-19187-6-git-send-email-michael.chan@broadcom.com>
+Subject: [PATCH net-next v2 06/10] bnxt_en: Move bnxt_approve_mac().
+Date:   Sun, 25 Apr 2021 13:45:23 -0400
+Message-Id: <1619372727-19187-7-git-send-email-michael.chan@broadcom.com>
 X-Mailer: git-send-email 1.8.3.1
 In-Reply-To: <1619372727-19187-1-git-send-email-michael.chan@broadcom.com>
 References: <1619372727-19187-1-git-send-email-michael.chan@broadcom.com>
 Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256;
-        boundary="0000000000008828e905c0cf998c"
+        boundary="0000000000008c290205c0cf9903"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---0000000000008828e905c0cf998c
+--0000000000008c290205c0cf9903
 
-From: Edwin Peer <edwin.peer@broadcom.com>
+Move it before bnxt_update_vf_mac().  In the next patch, we need to call
+bnxt_approve_mac() from bnxt_update_mac() under some conditions.  This
+will avoid forward declaration.
 
-It is perfectly legal for the stack to query and configure VFs via PF
-NDOs while the NIC is administratively down.  Remove the unnecessary
-check for the PF to be in open state.
-
-Signed-off-by: Edwin Peer <edwin.peer@broadcom.com>
+Reviewed-by: Edwin Peer <edwin.peer@broadcom.com>
 Signed-off-by: Michael Chan <michael.chan@broadcom.com>
 ---
- drivers/net/ethernet/broadcom/bnxt/bnxt_sriov.c | 4 ----
- 1 file changed, 4 deletions(-)
+ .../net/ethernet/broadcom/bnxt/bnxt_sriov.c   | 53 ++++++++++---------
+ 1 file changed, 27 insertions(+), 26 deletions(-)
 
 diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_sriov.c b/drivers/net/ethernet/broadcom/bnxt/bnxt_sriov.c
-index 4da52f812585..67856dbf9ce9 100644
+index 67856dbf9ce9..e65093f4aa7a 100644
 --- a/drivers/net/ethernet/broadcom/bnxt/bnxt_sriov.c
 +++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_sriov.c
-@@ -49,10 +49,6 @@ static int bnxt_hwrm_fwd_async_event_cmpl(struct bnxt *bp,
+@@ -1116,6 +1116,33 @@ void bnxt_hwrm_exec_fwd_req(struct bnxt *bp)
+ 	}
+ }
  
- static int bnxt_vf_ndo_prep(struct bnxt *bp, int vf_id)
++int bnxt_approve_mac(struct bnxt *bp, u8 *mac, bool strict)
++{
++	struct hwrm_func_vf_cfg_input req = {0};
++	int rc = 0;
++
++	if (!BNXT_VF(bp))
++		return 0;
++
++	if (bp->hwrm_spec_code < 0x10202) {
++		if (is_valid_ether_addr(bp->vf.mac_addr))
++			rc = -EADDRNOTAVAIL;
++		goto mac_done;
++	}
++	bnxt_hwrm_cmd_hdr_init(bp, &req, HWRM_FUNC_VF_CFG, -1, -1);
++	req.enables = cpu_to_le32(FUNC_VF_CFG_REQ_ENABLES_DFLT_MAC_ADDR);
++	memcpy(req.dflt_mac_addr, mac, ETH_ALEN);
++	rc = hwrm_send_message(bp, &req, sizeof(req), HWRM_CMD_TIMEOUT);
++mac_done:
++	if (rc && strict) {
++		rc = -EADDRNOTAVAIL;
++		netdev_warn(bp->dev, "VF MAC address %pM not approved by the PF\n",
++			    mac);
++		return rc;
++	}
++	return 0;
++}
++
+ void bnxt_update_vf_mac(struct bnxt *bp)
  {
--	if (!test_bit(BNXT_STATE_OPEN, &bp->state)) {
--		netdev_err(bp->dev, "vf ndo called though PF is down\n");
--		return -EINVAL;
+ 	struct hwrm_func_qcaps_input req = {0};
+@@ -1145,32 +1172,6 @@ void bnxt_update_vf_mac(struct bnxt *bp)
+ 	mutex_unlock(&bp->hwrm_cmd_lock);
+ }
+ 
+-int bnxt_approve_mac(struct bnxt *bp, u8 *mac, bool strict)
+-{
+-	struct hwrm_func_vf_cfg_input req = {0};
+-	int rc = 0;
+-
+-	if (!BNXT_VF(bp))
+-		return 0;
+-
+-	if (bp->hwrm_spec_code < 0x10202) {
+-		if (is_valid_ether_addr(bp->vf.mac_addr))
+-			rc = -EADDRNOTAVAIL;
+-		goto mac_done;
 -	}
- 	if (!bp->pf.active_vfs) {
- 		netdev_err(bp->dev, "vf ndo called though sriov is disabled\n");
- 		return -EINVAL;
+-	bnxt_hwrm_cmd_hdr_init(bp, &req, HWRM_FUNC_VF_CFG, -1, -1);
+-	req.enables = cpu_to_le32(FUNC_VF_CFG_REQ_ENABLES_DFLT_MAC_ADDR);
+-	memcpy(req.dflt_mac_addr, mac, ETH_ALEN);
+-	rc = hwrm_send_message(bp, &req, sizeof(req), HWRM_CMD_TIMEOUT);
+-mac_done:
+-	if (rc && strict) {
+-		rc = -EADDRNOTAVAIL;
+-		netdev_warn(bp->dev, "VF MAC address %pM not approved by the PF\n",
+-			    mac);
+-		return rc;
+-	}
+-	return 0;
+-}
+ #else
+ 
+ int bnxt_cfg_hw_sriov(struct bnxt *bp, int *num_vfs, bool reset)
 -- 
 2.18.1
 
 
---0000000000008828e905c0cf998c
+--0000000000008c290205c0cf9903
 Content-Type: application/pkcs7-signature; name="smime.p7s"
 Content-Transfer-Encoding: base64
 Content-Disposition: attachment; filename="smime.p7s"
@@ -162,13 +216,13 @@ FSWQptLx+kiu63idTII4r3k/7+dJ5AhLRr4WCoXEme2GZkfSbYC3fEL46tb1w7w+25OEFCv1MtDZ
 DauX1eWVM+KepL7zoSNzVbTipc65WuZFLR8ngOwkpknqvS9n/nKd885m23oIocC+GA4xggJtMIIC
 aQIBATBrMFsxCzAJBgNVBAYTAkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52LXNhMTEwLwYDVQQD
 EyhHbG9iYWxTaWduIEdDQyBSMyBQZXJzb25hbFNpZ24gMiBDQSAyMDIwAgwQeU+Y6hbenPzRMJsw
-DQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEIPMUP3KCiWacOv/auDEhKSxKV/TQJLfl
-9fL9W/dmKINrMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIxMDQy
+DQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEIEEWY23hhIhHq/nx8qAFzJ+au8B9OLr8
+8BTg9YJaL0R7MBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIxMDQy
 NTE3NDU1MFowaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZIAWUDBAEWMAsGCWCG
 SAFlAwQBAjAKBggqhkiG9w0DBzALBgkqhkiG9w0BAQowCwYJKoZIhvcNAQEHMAsGCWCGSAFlAwQC
-ATANBgkqhkiG9w0BAQEFAASCAQCo9Vvyul6j+zZbo1kLioCbsSWzfPX0+yIMGkzb7oeuwBEol5/D
-edLGufXJPH7HgqDmP3uIQ2LrwoWDukkTZwYESEhBOr7UTUVX/KH412NiS7Q6veCWORuCgIDlv72b
-7LF5i1uGymWB27RFW1mjneqC0E9w4TE0r4yhQzZk5nKscxI33d1XZpujXWBgsWmqyX5SnXFKi2vb
-HlemD126N8FZ8AYFgO2T0fm3SO8X6IQn0BlmZM22iP88FjABXkLw0FpEgwlTaFGEZoqrgH+8uAWI
-7p7DfN5a1+0RAlajnxPEYU7CmkHaiFKaGrGaE4z5oP5XtQGJUfsyFDA7fdJ4K8dF
---0000000000008828e905c0cf998c--
+ATANBgkqhkiG9w0BAQEFAASCAQClwzyb9uyJN5MTusqmLuazjQ3ba7X5clW/Frv1EaRqx+OWfnlL
+UuyJNL16jfic+jFjPVDzs9e9AchVbXISWJQMLedqucWoHKCCMAQ7SsDeN+0JWbNmr6cjLUKcRGHS
+8advzgp/QRcSEV7M9GDTnyZHe5U5JFhdVgRA/lklRAnmhrHJ09rj8V80kIkBlayK8jz89UGfWjYc
+Zwhx70qmG5mwes6weGtGxtRDpv5pYAi4vahuUAPnQfOPkjlrGyy8lq+u1qWsvSTVfuQ+0MqbvVzv
+XOE0pk4CuIo95wQBj3tqdnrsTiqZtxo/ywFCbZnyWetS3jqYFurjAiEdjbWyLrLt
+--0000000000008c290205c0cf9903--
