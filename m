@@ -2,151 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9244F36A831
-	for <lists+netdev@lfdr.de>; Sun, 25 Apr 2021 18:02:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E821636A84A
+	for <lists+netdev@lfdr.de>; Sun, 25 Apr 2021 18:10:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231150AbhDYQCd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 25 Apr 2021 12:02:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33492 "EHLO
+        id S230491AbhDYQLX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 25 Apr 2021 12:11:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35444 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231134AbhDYQC3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 25 Apr 2021 12:02:29 -0400
-Received: from mail.aperture-lab.de (mail.aperture-lab.de [IPv6:2a01:4f8:c2c:665b::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 34DE0C06175F;
-        Sun, 25 Apr 2021 09:01:49 -0700 (PDT)
-Received: from [127.0.0.1] (localhost [127.0.0.1]) by localhost (Mailerdaemon) with ESMTPSA id 609933ED90;
-        Sun, 25 Apr 2021 18:01:47 +0200 (CEST)
-From:   =?UTF-8?q?Linus=20L=C3=BCssing?= <linus.luessing@c0d3.blue>
-To:     netdev@vger.kernel.org
-Cc:     Roopa Prabhu <roopa@nvidia.com>,
-        Nikolay Aleksandrov <nikolay@nvidia.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        bridge@lists.linux-foundation.org, b.a.t.m.a.n@lists.open-mesh.org,
-        linux-kernel@vger.kernel.org,
-        =?UTF-8?q?Linus=20L=C3=BCssing?= <linus.luessing@c0d3.blue>
-Subject: [PATCH net-next 2/2] net: bridge: mcast: export multicast router presence adjacent to a port
-Date:   Sun, 25 Apr 2021 18:00:50 +0200
-Message-Id: <20210425160050.8732-3-linus.luessing@c0d3.blue>
-In-Reply-To: <20210425160050.8732-1-linus.luessing@c0d3.blue>
-References: <20210425160050.8732-1-linus.luessing@c0d3.blue>
+        with ESMTP id S230293AbhDYQLW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 25 Apr 2021 12:11:22 -0400
+Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C536CC061574;
+        Sun, 25 Apr 2021 09:10:42 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=casper.20170209; h=Content-Transfer-Encoding:Content-Type:
+        In-Reply-To:MIME-Version:Date:Message-ID:From:References:Cc:To:Subject:Sender
+        :Reply-To:Content-ID:Content-Description;
+        bh=l80BjQUd5fz5uENdDASp0UI526pBs9py8R3eB8Lkiqg=; b=BUW+IkJKvLhYYgAQXhetbzkmsE
+        NZCjeq0MMzEy1dlKu0veAYZCaNz9KWlTbxbtzt2kDFnOp7qFCWp0NnM/LNgSoYoouiLI5OYhT2kH+
+        pkojDtc/lvov2Q44QjSRi63cUxp0qyYVu2cgkI6i36RYoLc4/S4a0GLJBOUt/5mMGxbtO2V7bV5fU
+        LaSsLakXiMn5tniI3fzjHIzLErno4MfbWYUsGuyrr9MnsHgG8XcGTFpJbps/Z+PwSuAWA8PJt09GZ
+        gryvdXZLTMlKEYewCT6Z4ydMCqszNd/qXaWYUFHpTz42uhuDfT9GwqmV3YawJ7/xox0NLMPsuAZ0r
+        /QpiDozQ==;
+Received: from [2601:1c0:6280:3f0::df68]
+        by casper.infradead.org with esmtpsa (Exim 4.94 #2 (Red Hat Linux))
+        id 1lahKk-004Sdd-D4; Sun, 25 Apr 2021 16:10:21 +0000
+Subject: Re: [PATCH v2] ipw2x00: Minor documentation update
+To:     Souptick Joarder <jrdr.linux@gmail.com>, stas.yakovlev@gmail.com,
+        kvalo@codeaurora.org, davem@davemloft.net, kuba@kernel.org
+Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <1619348088-6887-1-git-send-email-jrdr.linux@gmail.com>
+From:   Randy Dunlap <rdunlap@infradead.org>
+Message-ID: <78f132c8-35f2-de23-ccd3-4f6a0ffe1052@infradead.org>
+Date:   Sun, 25 Apr 2021 09:10:07 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.8.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-Last-TLS-Session-Version: TLSv1.2
+In-Reply-To: <1619348088-6887-1-git-send-email-jrdr.linux@gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-To properly support routable multicast addresses in batman-adv in a
-group-aware way, a batman-adv node needs to know if it serves multicast
-routers.
+On 4/25/21 3:54 AM, Souptick Joarder wrote:
+> Kernel test robot throws below warning ->
+> 
+> drivers/net/wireless/intel/ipw2x00/ipw2100.c:5359: warning: This comment
+> starts with '/**', but isn't a kernel-doc comment. Refer
+> Documentation/doc-guide/kernel-doc.rst
+> 
+> Minor update in documentation.
+> 
+> Reported-by: kernel test robot <lkp@intel.com>
+> Signed-off-by: Souptick Joarder <jrdr.linux@gmail.com>
+> Cc: Randy Dunlap <rdunlap@infradead.org>
 
-This adds a function to the bridge to export this so that batman-adv
-can then make full use of the Multicast Router Discovery capability of
-the bridge.
+Acked-by: Randy Dunlap <rdunlap@infradead.org>
 
-Signed-off-by: Linus Lüssing <linus.luessing@c0d3.blue>
----
- include/linux/if_bridge.h |  8 ++++++
- net/bridge/br_multicast.c | 58 +++++++++++++++++++++++++++++++++++++++
- 2 files changed, 66 insertions(+)
+Thanks.
 
-diff --git a/include/linux/if_bridge.h b/include/linux/if_bridge.h
-index 2cc35038a8ca..12e9a32dbca0 100644
---- a/include/linux/if_bridge.h
-+++ b/include/linux/if_bridge.h
-@@ -67,6 +67,7 @@ int br_multicast_list_adjacent(struct net_device *dev,
- 			       struct list_head *br_ip_list);
- bool br_multicast_has_querier_anywhere(struct net_device *dev, int proto);
- bool br_multicast_has_querier_adjacent(struct net_device *dev, int proto);
-+bool br_multicast_has_router_adjacent(struct net_device *dev, int proto);
- bool br_multicast_enabled(const struct net_device *dev);
- bool br_multicast_router(const struct net_device *dev);
- int br_mdb_replay(struct net_device *br_dev, struct net_device *dev,
-@@ -87,6 +88,13 @@ static inline bool br_multicast_has_querier_adjacent(struct net_device *dev,
- {
- 	return false;
- }
-+
-+static inline bool br_multicast_has_router_adjacent(struct net_device *dev,
-+						    int proto)
-+{
-+	return true;
-+}
-+
- static inline bool br_multicast_enabled(const struct net_device *dev)
- {
- 	return false;
-diff --git a/net/bridge/br_multicast.c b/net/bridge/br_multicast.c
-index 0ebdbf09f44c..4afaf011f171 100644
---- a/net/bridge/br_multicast.c
-+++ b/net/bridge/br_multicast.c
-@@ -4013,6 +4013,64 @@ bool br_multicast_has_querier_adjacent(struct net_device *dev, int proto)
- }
- EXPORT_SYMBOL_GPL(br_multicast_has_querier_adjacent);
- 
-+/**
-+ * br_multicast_has_router_adjacent - Checks for a router behind a bridge port
-+ * @dev: The bridge port adjacent to which to check for a multicast router
-+ * @proto: The protocol family to check for: IGMP -> ETH_P_IP, MLD -> ETH_P_IPV6
-+ *
-+ * Checks whether the given interface has a bridge on top and if so returns
-+ * true if a multicast router is behind one of the other ports of this
-+ * bridge. Otherwise returns false.
-+ */
-+bool br_multicast_has_router_adjacent(struct net_device *dev, int proto)
-+{
-+	struct net_bridge_port *port, *p;
-+	bool ret = false;
-+
-+	rcu_read_lock();
-+	if (!netif_is_bridge_port(dev))
-+		goto unlock;
-+
-+	port = br_port_get_rcu(dev);
-+	if (!port || !port->br)
-+		goto unlock;
-+
-+	switch (proto) {
-+	case ETH_P_IP:
-+		hlist_for_each_entry_rcu(p, &port->br->ip4_mc_router_list,
-+					 ip4_rlist) {
-+			if (p == port)
-+				continue;
-+
-+			ret = true;
-+			goto unlock;
-+		}
-+		break;
-+#if IS_ENABLED(CONFIG_IPV6)
-+	case ETH_P_IPV6:
-+		hlist_for_each_entry_rcu(p, &port->br->ip6_mc_router_list,
-+					 ip6_rlist) {
-+			if (p == port)
-+				continue;
-+
-+			ret = true;
-+			goto unlock;
-+		}
-+		break;
-+#endif
-+	default:
-+		/* when compiled without IPv6 support, be conservative and
-+		 * always assume presence of an IPv6 multicast router
-+		 */
-+		ret = true;
-+	}
-+
-+unlock:
-+	rcu_read_unlock();
-+	return ret;
-+}
-+EXPORT_SYMBOL_GPL(br_multicast_has_router_adjacent);
-+
- static void br_mcast_stats_add(struct bridge_mcast_stats __percpu *stats,
- 			       const struct sk_buff *skb, u8 type, u8 dir)
- {
+> ---
+> v2:
+> 	Updated docs.
+> 
+>  drivers/net/wireless/intel/ipw2x00/ipw2100.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/drivers/net/wireless/intel/ipw2x00/ipw2100.c b/drivers/net/wireless/intel/ipw2x00/ipw2100.c
+> index 23fbddd..eeac9e3 100644
+> --- a/drivers/net/wireless/intel/ipw2x00/ipw2100.c
+> +++ b/drivers/net/wireless/intel/ipw2x00/ipw2100.c
+> @@ -5356,7 +5356,7 @@ struct ipw2100_wep_key {
+>  #define WEP_STR_128(x) x[0],x[1],x[2],x[3],x[4],x[5],x[6],x[7],x[8],x[9],x[10]
+>  
+>  /**
+> - * Set a the wep key
+> + * ipw2100_set_key() - Set the wep key
+>   *
+>   * @priv: struct to work on
+>   * @idx: index of the key we want to set
+> 
+
+
 -- 
-2.31.0
+~Randy
 
