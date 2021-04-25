@@ -2,117 +2,141 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 17D6236A8A1
+	by mail.lfdr.de (Postfix) with ESMTP id 636BA36A8A2
 	for <lists+netdev@lfdr.de>; Sun, 25 Apr 2021 19:46:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231241AbhDYRqg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        id S231249AbhDYRqg (ORCPT <rfc822;lists+netdev@lfdr.de>);
         Sun, 25 Apr 2021 13:46:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55904 "EHLO
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55918 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231211AbhDYRqc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 25 Apr 2021 13:46:32 -0400
-Received: from mail-pg1-x535.google.com (mail-pg1-x535.google.com [IPv6:2607:f8b0:4864:20::535])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 09E71C06138B
+        with ESMTP id S231233AbhDYRqe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 25 Apr 2021 13:46:34 -0400
+Received: from mail-pj1-x1032.google.com (mail-pj1-x1032.google.com [IPv6:2607:f8b0:4864:20::1032])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 09616C06138D
         for <netdev@vger.kernel.org>; Sun, 25 Apr 2021 10:45:52 -0700 (PDT)
-Received: by mail-pg1-x535.google.com with SMTP id t22so3345205pgu.0
+Received: by mail-pj1-x1032.google.com with SMTP id md17so270148pjb.0
         for <netdev@vger.kernel.org>; Sun, 25 Apr 2021 10:45:52 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=broadcom.com; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=ALNnSTmVOdUnkbbnm/g96ZIgeDiEzW6NmwE2OEPR800=;
-        b=WgAzEIW/RUnrlw2Af4AVHAZJ09rdHJiW9l9Bkbz+brI3TocLMqWbMGfeTt8OjQB+5c
-         DeEh5iA0qEmfTAZ+ACQzkcaPcRZJF9VQak8clBRPpMSmKOSVgU9UvCkJxWGsyWa9/P5k
-         JrcIbW2J2ngWZEgk8lveVLyNJC1Up83RsmHJ0=
+        bh=HLHP6i2nPkZBQmCHeYC5qH+sH2ZQ/zb2aps3VKzNnAw=;
+        b=F+klcX+ntRffbNdv7/NFEoHDAcdjv0BrcYI3yCnPxY0bP47+5uamrrXP8f0iekwMCG
+         9l96LsuAM918XKB5szdReJIuLxDaW/5hO1BZik1UsukqJ0IlPCE9qxlnCcN4W+MDl2Fw
+         DHe4kMIS2SYwJRIqEE97NBU1wNjTLMaI3UZiE=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=ALNnSTmVOdUnkbbnm/g96ZIgeDiEzW6NmwE2OEPR800=;
-        b=ulpqG7Pjjfn9S4XjwxTKOYodD1KG8OSmVzJ5w0q2SPj+mwlzgL2+JZ/I7f1G6CfT0C
-         u5Z8+ghOy0wuc3NndPfihWl46E0/G1yWSaXgR0DBlHKbskpxr8gvSD6NuUf8mvsl+Uta
-         1o0gyA7v0BzNjGyBbP6/D+wzZyILQjHmm+mCgWHP4zw75naGKAwb5x0IMbDiqGvXBHxh
-         adj60JJ519NCXQlmtdG9HL53E9Ap0lRJeaHgganSTWPjQuzrzifYqy7hejpyUQffth5g
-         LqjMfaKBvSHXRL7/4vBI2/hhNtB+frRH4cR8Zqk59mJmm7OtELtrfLNQXr89jB2pCni0
-         /Teg==
-X-Gm-Message-State: AOAM531o9gxYXYH8RI2ujgSlBLOADsmSEZDfnZklpdaosy+Xu2OKlJk+
-        x9ra/E9DDtqOoB5PPj9USqTIZw==
-X-Google-Smtp-Source: ABdhPJznQyRWcXDFDSs4NJaQe5dixwYQS89vfFovbhx/6wiX0hE9r/lWOVUrtrz7WgOEGKh8ErN6EQ==
-X-Received: by 2002:a63:2c92:: with SMTP id s140mr13439114pgs.39.1619372751238;
-        Sun, 25 Apr 2021 10:45:51 -0700 (PDT)
+        bh=HLHP6i2nPkZBQmCHeYC5qH+sH2ZQ/zb2aps3VKzNnAw=;
+        b=AicMOGLU9KuxysJGUBcPTQyjOty86ND/FOFf005O3upKF/Fa8Wj/ScYvtxdLe00g6o
+         6yIkxKi4Xouymdt8+9nzbNwkLXTGoURiJN0vT6tB4iJcYu74OkOewN0s5+Q8Bb5cuh6i
+         gZEy90lhbG+X9sTlWxU3Tp9miqFEDppVMWyuvjflQsSNAsnE405N75GnT0FRDVslG3C0
+         mDQgRlxj/QyCKnpTLH9xHdFZE3MfNWENgvlisaF3if1ecylZdf0PUjvFa4HtQlHadiyz
+         1FhWDEiRSmqfrvA1xsY/E8sFY2OdGLc8TDHPbm9as2ohCArTqBCYEO0OQX6/LI7Ll/8M
+         9o2Q==
+X-Gm-Message-State: AOAM532FMl4Ab+9ecsGW8L6HuKaZ0UWsX9GF1nSXNCJ3s57X5YPdxtuO
+        6U7N6lW0/EQv3F1FK/MxAvBS6w==
+X-Google-Smtp-Source: ABdhPJzuSIS5rFb6hDCnp4xkfb+wYiVLxG8oqFTV9VwZwpJpluWWdHbAPeodz9ZCcpNjKfTcwlfZ1A==
+X-Received: by 2002:a17:90b:3884:: with SMTP id mu4mr16265422pjb.165.1619372752136;
+        Sun, 25 Apr 2021 10:45:52 -0700 (PDT)
 Received: from localhost.swdvt.lab.broadcom.net ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id t19sm14733553pjs.1.2021.04.25.10.45.50
+        by smtp.gmail.com with ESMTPSA id t19sm14733553pjs.1.2021.04.25.10.45.51
         (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Sun, 25 Apr 2021 10:45:50 -0700 (PDT)
+        Sun, 25 Apr 2021 10:45:51 -0700 (PDT)
 From:   Michael Chan <michael.chan@broadcom.com>
 To:     davem@davemloft.net
 Cc:     netdev@vger.kernel.org, kuba@kernel.org, gospo@broadcom.com
-Subject: [PATCH net-next v2 07/10] bnxt_en: Call bnxt_approve_mac() after the PF gives up control of the VF MAC.
-Date:   Sun, 25 Apr 2021 13:45:24 -0400
-Message-Id: <1619372727-19187-8-git-send-email-michael.chan@broadcom.com>
+Subject: [PATCH net-next v2 08/10] bnxt_en: Add PCI IDs for Hyper-V VF devices.
+Date:   Sun, 25 Apr 2021 13:45:25 -0400
+Message-Id: <1619372727-19187-9-git-send-email-michael.chan@broadcom.com>
 X-Mailer: git-send-email 1.8.3.1
 In-Reply-To: <1619372727-19187-1-git-send-email-michael.chan@broadcom.com>
 References: <1619372727-19187-1-git-send-email-michael.chan@broadcom.com>
 Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256;
-        boundary="000000000000a1452a05c0cf9976"
+        boundary="000000000000adcea005c0cf9996"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---000000000000a1452a05c0cf9976
+--000000000000adcea005c0cf9996
 
-When the PF is no longer enforcing an assigned MAC address on a VF, the
-VF needs to call bnxt_approve_mac() to tell the PF what MAC address it is
-now using.  Otherwise it gets out of sync and the PF won't know what
-MAC address the VF wants to use.  Ultimately the VF will fail when it
-tries to setup the L2 MAC filter for the vnic.
+Support VF device IDs used by the Hyper-V hypervisor.
 
-Reviewed-by: Edwin Peer <edwin.peer@broadcom.com>
+Reviewed-by: Vasundhara Volam <vasundhara-v.volam@broadcom.com>
+Reviewed-by: Andy Gospodarek <gospo@broadcom.com>
+Signed-off-by: Edwin Peer <edwin.peer@broadcom.com>
 Signed-off-by: Michael Chan <michael.chan@broadcom.com>
 ---
- drivers/net/ethernet/broadcom/bnxt/bnxt_sriov.c | 11 ++++++++++-
- 1 file changed, 10 insertions(+), 1 deletion(-)
+ drivers/net/ethernet/broadcom/bnxt/bnxt.c | 19 ++++++++++++++++++-
+ 1 file changed, 18 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_sriov.c b/drivers/net/ethernet/broadcom/bnxt/bnxt_sriov.c
-index e65093f4aa7a..eb00a219aa51 100644
---- a/drivers/net/ethernet/broadcom/bnxt/bnxt_sriov.c
-+++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_sriov.c
-@@ -1147,6 +1147,7 @@ void bnxt_update_vf_mac(struct bnxt *bp)
+diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt.c b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
+index 9862f517960d..77ebafbd2dce 100644
+--- a/drivers/net/ethernet/broadcom/bnxt/bnxt.c
++++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
+@@ -122,7 +122,10 @@ enum board_idx {
+ 	NETXTREME_E_VF,
+ 	NETXTREME_C_VF,
+ 	NETXTREME_S_VF,
++	NETXTREME_C_VF_HV,
++	NETXTREME_E_VF_HV,
+ 	NETXTREME_E_P5_VF,
++	NETXTREME_E_P5_VF_HV,
+ };
+ 
+ /* indexed by enum above */
+@@ -170,7 +173,10 @@ static const struct {
+ 	[NETXTREME_E_VF] = { "Broadcom NetXtreme-E Ethernet Virtual Function" },
+ 	[NETXTREME_C_VF] = { "Broadcom NetXtreme-C Ethernet Virtual Function" },
+ 	[NETXTREME_S_VF] = { "Broadcom NetXtreme-S Ethernet Virtual Function" },
++	[NETXTREME_C_VF_HV] = { "Broadcom NetXtreme-C Virtual Function for Hyper-V" },
++	[NETXTREME_E_VF_HV] = { "Broadcom NetXtreme-E Virtual Function for Hyper-V" },
+ 	[NETXTREME_E_P5_VF] = { "Broadcom BCM5750X NetXtreme-E Ethernet Virtual Function" },
++	[NETXTREME_E_P5_VF_HV] = { "Broadcom BCM5750X NetXtreme-E Virtual Function for Hyper-V" },
+ };
+ 
+ static const struct pci_device_id bnxt_pci_tbl[] = {
+@@ -222,15 +228,25 @@ static const struct pci_device_id bnxt_pci_tbl[] = {
+ 	{ PCI_VDEVICE(BROADCOM, 0xd804), .driver_data = BCM58804 },
+ #ifdef CONFIG_BNXT_SRIOV
+ 	{ PCI_VDEVICE(BROADCOM, 0x1606), .driver_data = NETXTREME_E_VF },
++	{ PCI_VDEVICE(BROADCOM, 0x1607), .driver_data = NETXTREME_E_VF_HV },
++	{ PCI_VDEVICE(BROADCOM, 0x1608), .driver_data = NETXTREME_E_VF_HV },
+ 	{ PCI_VDEVICE(BROADCOM, 0x1609), .driver_data = NETXTREME_E_VF },
++	{ PCI_VDEVICE(BROADCOM, 0x16bd), .driver_data = NETXTREME_E_VF_HV },
+ 	{ PCI_VDEVICE(BROADCOM, 0x16c1), .driver_data = NETXTREME_E_VF },
++	{ PCI_VDEVICE(BROADCOM, 0x16c2), .driver_data = NETXTREME_C_VF_HV },
++	{ PCI_VDEVICE(BROADCOM, 0x16c3), .driver_data = NETXTREME_C_VF_HV },
++	{ PCI_VDEVICE(BROADCOM, 0x16c4), .driver_data = NETXTREME_E_VF_HV },
++	{ PCI_VDEVICE(BROADCOM, 0x16c5), .driver_data = NETXTREME_E_VF_HV },
+ 	{ PCI_VDEVICE(BROADCOM, 0x16cb), .driver_data = NETXTREME_C_VF },
+ 	{ PCI_VDEVICE(BROADCOM, 0x16d3), .driver_data = NETXTREME_E_VF },
+ 	{ PCI_VDEVICE(BROADCOM, 0x16dc), .driver_data = NETXTREME_E_VF },
+ 	{ PCI_VDEVICE(BROADCOM, 0x16e1), .driver_data = NETXTREME_C_VF },
+ 	{ PCI_VDEVICE(BROADCOM, 0x16e5), .driver_data = NETXTREME_C_VF },
++	{ PCI_VDEVICE(BROADCOM, 0x16e6), .driver_data = NETXTREME_C_VF_HV },
+ 	{ PCI_VDEVICE(BROADCOM, 0x1806), .driver_data = NETXTREME_E_P5_VF },
+ 	{ PCI_VDEVICE(BROADCOM, 0x1807), .driver_data = NETXTREME_E_P5_VF },
++	{ PCI_VDEVICE(BROADCOM, 0x1808), .driver_data = NETXTREME_E_P5_VF_HV },
++	{ PCI_VDEVICE(BROADCOM, 0x1809), .driver_data = NETXTREME_E_P5_VF_HV },
+ 	{ PCI_VDEVICE(BROADCOM, 0xd800), .driver_data = NETXTREME_S_VF },
+ #endif
+ 	{ 0 }
+@@ -265,7 +281,8 @@ static struct workqueue_struct *bnxt_pf_wq;
+ static bool bnxt_vf_pciid(enum board_idx idx)
  {
- 	struct hwrm_func_qcaps_input req = {0};
- 	struct hwrm_func_qcaps_output *resp = bp->hwrm_cmd_resp_addr;
-+	bool inform_pf = false;
- 
- 	bnxt_hwrm_cmd_hdr_init(bp, &req, HWRM_FUNC_QCAPS, -1, -1);
- 	req.fid = cpu_to_le16(0xffff);
-@@ -1162,14 +1163,22 @@ void bnxt_update_vf_mac(struct bnxt *bp)
- 	 *    default but the stored zero MAC will allow the VF user to change
- 	 *    the random MAC address using ndo_set_mac_address() if he wants.
- 	 */
--	if (!ether_addr_equal(resp->mac_address, bp->vf.mac_addr))
-+	if (!ether_addr_equal(resp->mac_address, bp->vf.mac_addr)) {
- 		memcpy(bp->vf.mac_addr, resp->mac_address, ETH_ALEN);
-+		/* This means we are now using our own MAC address, let
-+		 * the PF know about this MAC address.
-+		 */
-+		if (!is_valid_ether_addr(bp->vf.mac_addr))
-+			inform_pf = true;
-+	}
- 
- 	/* overwrite netdev dev_addr with admin VF MAC */
- 	if (is_valid_ether_addr(bp->vf.mac_addr))
- 		memcpy(bp->dev->dev_addr, bp->vf.mac_addr, ETH_ALEN);
- update_vf_mac_exit:
- 	mutex_unlock(&bp->hwrm_cmd_lock);
-+	if (inform_pf)
-+		bnxt_approve_mac(bp, bp->dev->dev_addr, false);
+ 	return (idx == NETXTREME_C_VF || idx == NETXTREME_E_VF ||
+-		idx == NETXTREME_S_VF || idx == NETXTREME_E_P5_VF);
++		idx == NETXTREME_S_VF || idx == NETXTREME_C_VF_HV ||
++		idx == NETXTREME_E_VF_HV || idx == NETXTREME_E_P5_VF);
  }
  
- #else
+ #define DB_CP_REARM_FLAGS	(DB_KEY_CP | DB_IDX_VALID)
 -- 
 2.18.1
 
 
---000000000000a1452a05c0cf9976
+--000000000000adcea005c0cf9996
 Content-Type: application/pkcs7-signature; name="smime.p7s"
 Content-Transfer-Encoding: base64
 Content-Disposition: attachment; filename="smime.p7s"
@@ -183,13 +207,13 @@ FSWQptLx+kiu63idTII4r3k/7+dJ5AhLRr4WCoXEme2GZkfSbYC3fEL46tb1w7w+25OEFCv1MtDZ
 DauX1eWVM+KepL7zoSNzVbTipc65WuZFLR8ngOwkpknqvS9n/nKd885m23oIocC+GA4xggJtMIIC
 aQIBATBrMFsxCzAJBgNVBAYTAkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52LXNhMTEwLwYDVQQD
 EyhHbG9iYWxTaWduIEdDQyBSMyBQZXJzb25hbFNpZ24gMiBDQSAyMDIwAgwQeU+Y6hbenPzRMJsw
-DQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEIB3Io1m02VOPSwWU3WPf9QazuBM99ajw
-2zIney4jCqYiMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIxMDQy
-NTE3NDU1MVowaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZIAWUDBAEWMAsGCWCG
+DQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEIFgc9VzwHF/H6gIradykg946e4DdemCp
+PmQKESPKJzx7MBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIxMDQy
+NTE3NDU1MlowaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZIAWUDBAEWMAsGCWCG
 SAFlAwQBAjAKBggqhkiG9w0DBzALBgkqhkiG9w0BAQowCwYJKoZIhvcNAQEHMAsGCWCGSAFlAwQC
-ATANBgkqhkiG9w0BAQEFAASCAQAh9gM2pCnpbXeo5iM1Tlsa6x6SjC2JCK1w7XmwN8UZ3w09rh6S
-KJ0mV2H1vio2Dk9FLT3OkWvbXj/2Bj2UJwTYSBR9ft1qANMOznQVFUW470x0z9WJtKI0RMg5oKU/
-v7j3tCEg718oVrJRwMwZmzMzgABLU0IMiPVFBQ5yPeeFPr5flfjF4lrBzHTNFAs/zbab/uefDbAE
-OziFbQFMoTJ8DwJZCs38w6QkE3dlzg97iMP2QVVtzSOnjY2gA9vcUIQuP1eDbEXHBtMsDocswXE1
-Lcy0x70VBEbwNv74xS36CiyR0HzEduGAz25zZtQxfQdMEQiplAuSQhUvmufr7GwW
---000000000000a1452a05c0cf9976--
+ATANBgkqhkiG9w0BAQEFAASCAQDSe5sZWNh7pg3rgAnPd44eOtr5tkSiRw/pVAfy2Y22zapUEEhE
+S6cprO4GGvUdl8x0KzujlQnZpMffcolf9akWRNMmYdwIEATXvbXIfKR177Gfrr0Fuq7/PT3wH+4B
+jQ30XYwBIZ2mdQaqh2oje+SVEAWZ8UAhvUjrBP+/eYOnCwIGoJwyu8s8+cgrXr1DD/NLqE1YhCqK
+2cFYNNpJpmOxIAwKX5bX2jWGfgKm1JRzve0ClCj6sLQ0wsWLo611PPAe1KisLrwQjA73h4kkXFHY
+oJtbmEbio9LENh42CztwFmiU3otN5gQuxHzNyO2VH9xAsUuY4gIcdKINXoRnDcVm
+--000000000000adcea005c0cf9996--
