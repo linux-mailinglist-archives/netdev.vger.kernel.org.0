@@ -2,158 +2,198 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9D84836A606
-	for <lists+netdev@lfdr.de>; Sun, 25 Apr 2021 11:22:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5667236A652
+	for <lists+netdev@lfdr.de>; Sun, 25 Apr 2021 11:45:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229659AbhDYJWs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 25 Apr 2021 05:22:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60376 "EHLO
+        id S230076AbhDYJqR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 25 Apr 2021 05:46:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37218 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229485AbhDYJWs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 25 Apr 2021 05:22:48 -0400
-Received: from daxilon.jbeekman.nl (jbeekman.nl [IPv6:2a01:7c8:aab4:5fb::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 53027C061574
-        for <netdev@vger.kernel.org>; Sun, 25 Apr 2021 02:22:08 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=jbeekman.nl
-        ; s=main; h=Subject:Content-Transfer-Encoding:Content-Type:MIME-Version:Date:
-        Message-ID:To:From:Sender:Reply-To:Cc:Content-ID:Content-Description:
-        Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:
-        In-Reply-To:References:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=nC1EmQC2aDc1D3V92LRuQ9iWwJu2uRPFq4IPsbVeQ9w=; b=C3l80p5UG0fJAIhj3wPPvbAjt3
-        EAFDh9RULZ56TdGy1+cEu0kTZj3heEeEL9IxjV7YZ3/6DnveYkV6z2BG7KSyt8o0D7f+ocYBui15Z
-        G0A9iBhJdhtpEdQAZo7BEwyLquY5QKecBAxZ8sQfHggYuxQAeqmXPL+TtFFeDNtWq22oVxATND0BJ
-        VWSY/kNtcXvdtbQFExOIz2/tJxwINVTV+hipzG0qkUJn0IadWZdK77YqP4UeFhXU7Qc9rZnabiBGm
-        0zs4+T1A+L1NUDe+uYJ5TNnEEoavAzq16egmJoUEx9GFSboo7H9/m0nL9A2W9oeBPZ+akNAeikHmT
-        bh9ewALQ==;
-Received: from ip-213-127-124-30.ip.prioritytelecom.net ([213.127.124.30] helo=[192.168.3.100])
-        by daxilon.jbeekman.nl with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
-        (Exim 4.90_1)
-        (envelope-from <kernel@jbeekman.nl>)
-        id 1laaxo-0001uQ-3S; Sun, 25 Apr 2021 11:22:04 +0200
-From:   Jethro Beekman <kernel@jbeekman.nl>
-To:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        open list <linux-kernel@vger.kernel.org>
-Message-ID: <2afc4d46-aa9b-a7db-d872-d02163b1f29c@jbeekman.nl>
-Date:   Sun, 25 Apr 2021 11:22:03 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.9.0
+        with ESMTP id S229551AbhDYJqH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 25 Apr 2021 05:46:07 -0400
+Received: from mail-pl1-x62c.google.com (mail-pl1-x62c.google.com [IPv6:2607:f8b0:4864:20::62c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D649C061574;
+        Sun, 25 Apr 2021 02:45:28 -0700 (PDT)
+Received: by mail-pl1-x62c.google.com with SMTP id o16so13778001plg.5;
+        Sun, 25 Apr 2021 02:45:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=T1lYoSyJXwqRNFkOwskLBS8m5G2V6R0rZBRK97ae8hM=;
+        b=Z80W45UKKLz+X9/n65cHifc7KUqdTWYZJtlbIzBMOTkNYjfEATFfS8ABbkgzB1TBeX
+         TDj380QJ3v/xt45RUzGCVOoBvoC5wEB7WRQaPL0EwVqO/6DA7SFjbEnMRAPhs8+Kq5i3
+         hmGVl2T0lp7llnZoXnXJXPuCUoRKuBASzoPtqMUTmLQnpJSTWOeVYHjoxgE7trVBOi9m
+         jIxKuXGBl1Uc2/DT0K+1hIsTOuHn/nTcGAhlSDbgR6cc21bQmf5U5BOHvFoF2ErFCWmV
+         I7gpZ9t4ZMVBOkG7kKbWCwyNryghFiVM/eQt53sAsR7UR9qRXK14TanLPOqR0JH3tKFV
+         WEGQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=T1lYoSyJXwqRNFkOwskLBS8m5G2V6R0rZBRK97ae8hM=;
+        b=EcW/h8xGciHKAQ5qU4aigQgTrGVV7eEewq8MyKq3TWEUfx5NZ0YMCfJdzKPjip6KB2
+         38i8LHKOrZO+d203BIP9lxjd7PTgK86XhLctbvRb8dxKV9pEGxDXffpaLpNE/B46Jb1B
+         Uh1q2LojQOBhxsZaC4thVDDs/suLUniX+Lfa+uXwELP0KxjOH+y07Q0NQ0einAIt/Jat
+         foDkQ+KHzdE42oeY0yqnQKMHi3GE3jzCNxUxTdx8Hq/wCCYfqmiyfVn4Z9TRIHAOMx5M
+         T1bE6OHO95qBGqhVW8DGkH3XuJZou9NM9ZBi/4skMgBgkOOszbUnGXi9hMdagD04fW1N
+         hslg==
+X-Gm-Message-State: AOAM531/MhZJSy35HsA2zXWEbOccMkqEsslbqfLTfpO0Piwr8ksqKpvi
+        2lDiteX75de65arS4nlewBmiAzyOC6y+f5o/nIs=
+X-Google-Smtp-Source: ABdhPJxzvgBuaiGB5HpleLnZlj05OywDZQTBuYaivuKjz/vONpnUlVgGSA2YmMBjNI7CmHt0XEfv8nySGLxalxMEogY=
+X-Received: by 2002:a17:902:b494:b029:e7:36be:9ce7 with SMTP id
+ y20-20020a170902b494b02900e736be9ce7mr12915494plr.43.1619343927649; Sun, 25
+ Apr 2021 02:45:27 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-SA-Exim-Connect-IP: 213.127.124.30
-X-SA-Exim-Mail-From: kernel@jbeekman.nl
-X-Spam-Checker-Version: SpamAssassin 3.4.2 (2018-09-13) on daxilon.jbeekman.nl
-X-Spam-Status: No, score=-2.9 required=5.0 tests=ALL_TRUSTED,BAYES_00,
-        URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.2
-X-Spam-Report: Content analysis details:   (-2.9 points, 5.0 required)
-        pts rule name              description
-        --- ---------------------- --------------------------------------------------
-        -1.0 ALL_TRUSTED            Passed through trusted hosts only via SMTP
-        0.0 URIBL_BLOCKED          ADMINISTRATOR NOTICE: The query to URIBL was
-        blocked.  See
-        http://wiki.apache.org/spamassassin/DnsBlocklists#dnsbl-block
-        for more information.
-        [URIs: jbeekman.nl]
-        -1.9 BAYES_00               BODY: Bayes spam probability is 0 to 1%
-        [score: 0.0000]
-Subject: [PATCH v2 net-next] macvlan: Add nodst option to macvlan type source
+References: <cover.1617885385.git.lorenzo@kernel.org> <CAJ8uoz1MOYLzyy7xXq_fmpKDEakxSomzfM76Szjr5gWsqHc9jQ@mail.gmail.com>
+ <20210418181801.17166935@carbon> <CAJ8uoz0m8AAJFddn2LjehXtdeGS0gat7dwOLA_-_ZeOVYjBdxw@mail.gmail.com>
+ <YH0pdXXsZ7IELBn3@lore-desk> <CAJ8uoz101VZiwuvM-bs4UdW+kFT5xjgdgUwPWHZn4ABEOkyQ-w@mail.gmail.com>
+ <20210421144747.33c5f51f@carbon> <CAJ8uoz3ROiPn+-bh7OjFOjXjXK9xGhU5cxWoFPM9JoYeh=zw=g@mail.gmail.com>
+ <20210421173921.23fef6a7@carbon> <CAJ8uoz2JpfdjvjJp-vjWuhw5z1=2D32jj-KktFnLN6Zd9ZVmAQ@mail.gmail.com>
+ <20210422164223.77870d28@carbon> <20210422170508.22c58226@carbon>
+ <CAJ8uoz1oEa6ZEp3QKZiPx4oUtt9-nuY4Sh6PVrEnZdu-d_PudQ@mail.gmail.com> <CAKgT0UceK7D1R7c_Y=ze4_6pupCfLpfr5QOj-GCeJeMSD=P48g@mail.gmail.com>
+In-Reply-To: <CAKgT0UceK7D1R7c_Y=ze4_6pupCfLpfr5QOj-GCeJeMSD=P48g@mail.gmail.com>
+From:   Magnus Karlsson <magnus.karlsson@gmail.com>
+Date:   Sun, 25 Apr 2021 11:45:16 +0200
+Message-ID: <CAJ8uoz2_nvDd+n_YfZZyd1m6xByQ6wo_D2HKSPRVi061+2M1RQ@mail.gmail.com>
+Subject: Re: Crash for i40e on net-next (was: [PATCH v8 bpf-next 00/14]
+ mvneta: introduce XDP multi-buffer support)
+To:     Alexander Duyck <alexander.duyck@gmail.com>
+Cc:     Jesper Dangaard Brouer <brouer@redhat.com>,
+        Lorenzo Bianconi <lorenzo@kernel.org>,
+        bpf <bpf@vger.kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        John Fastabend <john.fastabend@gmail.com>,
+        David Ahern <dsahern@kernel.org>,
+        Eelco Chaudron <echaudro@redhat.com>,
+        Jason Wang <jasowang@redhat.com>,
+        Saeed Mahameed <saeed@kernel.org>,
+        "Fijalkowski, Maciej" <maciej.fijalkowski@intel.com>,
+        Tirthendu <tirthendu.sarkar@intel.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The default behavior for source MACVLAN is to duplicate packets to
-appropriate type source devices, and then do the normal destination MACVLAN
-flow. This patch adds an option to skip destination MACVLAN processing if
-any matching source MACVLAN device has the option set.
+On Fri, Apr 23, 2021 at 6:43 PM Alexander Duyck
+<alexander.duyck@gmail.com> wrote:
+>
+> On Thu, Apr 22, 2021 at 10:28 PM Magnus Karlsson
+> <magnus.karlsson@gmail.com> wrote:
+> >
+> > On Thu, Apr 22, 2021 at 5:05 PM Jesper Dangaard Brouer
+> > <brouer@redhat.com> wrote:
+> > >
+> > > On Thu, 22 Apr 2021 16:42:23 +0200
+> > > Jesper Dangaard Brouer <brouer@redhat.com> wrote:
+> > >
+> > > > On Thu, 22 Apr 2021 12:24:32 +0200
+> > > > Magnus Karlsson <magnus.karlsson@gmail.com> wrote:
+> > > >
+> > > > > On Wed, Apr 21, 2021 at 5:39 PM Jesper Dangaard Brouer
+> > > > > <brouer@redhat.com> wrote:
+> > > > > >
+> > > > > > On Wed, 21 Apr 2021 16:12:32 +0200
+> > > > > > Magnus Karlsson <magnus.karlsson@gmail.com> wrote:
+> > > > > >
+> > > > [...]
+> > > > > > > more than I get.
+> > > > > >
+> > > > > > I clearly have a bug in the i40e driver.  As I wrote later, I don't see
+> > > > > > any packets transmitted for XDP_TX.  Hmm, I using Mel Gorman's tree,
+> > > > > > which contains the i40e/ice/ixgbe bug we fixed earlier.
+> > > >
+> > > > Something is wrong with i40e, I changed git-tree to net-next (at
+> > > > commit 5d869070569a) and XDP seems to have stopped working on i40e :-(
+> >
+> > Found this out too when switching to the net tree yesterday to work on
+> > proper packet drop tracing as you spotted/requested yesterday. The
+> > commit below completely broke XDP support on i40e (if you do not run
+> > with a zero-copy AF_XDP socket because that path still works). I am
+> > working on a fix that does not just revert the patch, but fixes the
+> > original problem without breaking XDP. Will post it and the tracing
+> > fixes as soon as I can.
+> >
+> > commit 12738ac4754ec92a6a45bf3677d8da780a1412b3
+> > Author: Arkadiusz Kubalewski <arkadiusz.kubalewski@intel.com>
+> > Date:   Fri Mar 26 19:43:40 2021 +0100
+> >
+> >     i40e: Fix sparse errors in i40e_txrx.c
+> >
+> >     Remove error handling through pointers. Instead use plain int
+> >     to return value from i40e_run_xdp(...).
+> >
+> >     Previously:
+> >     - sparse errors were produced during compilation:
+> >     i40e_txrx.c:2338 i40e_run_xdp() error: (-2147483647) too low for ERR_PTR
+> >     i40e_txrx.c:2558 i40e_clean_rx_irq() error: 'skb' dereferencing
+> > possible ERR_PTR()
+> >
+> >     - sk_buff* was used to return value, but it has never had valid
+> >     pointer to sk_buff. Returned value was always int handled as
+> >     a pointer.
+> >
+> >     Fixes: 0c8493d90b6b ("i40e: add XDP support for pass and drop actions")
+> >     Fixes: 2e6893123830 ("i40e: split XDP_TX tail and XDP_REDIRECT map
+> > flushing")
+> >     Signed-off-by: Aleksandr Loktionov <aleksandr.loktionov@intel.com>
+> >     Signed-off-by: Arkadiusz Kubalewski <arkadiusz.kubalewski@intel.com>
+> >     Tested-by: Dave Switzer <david.switzer@intel.com>
+> >     Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
+>
+> Yeah, this patch would horribly break things, especially in the
+> multi-buffer case. The idea behind using the skb pointer to indicate
+> the error is that it is persistent until we hit the EOP descriptor.
+> With that removed you end up mangling the entire list of frames since
+> it will start trying to process the next frame in the middle of a
+> packet.
+>
+> >
+> > > Renamed subj as this is without this patchset applied.
+> > >
+> > > > $ uname -a
+> > > > Linux broadwell 5.12.0-rc7-net-next+ #600 SMP PREEMPT Thu Apr 22 15:13:15 CEST 2021 x86_64 x86_64 x86_64 GNU/Linux
+> > > >
+> > > > When I load any XDP prog almost no packets are let through:
+> > > >
+> > > >  [kernel-bpf-samples]$ sudo ./xdp1 i40e2
+> > > >  libbpf: elf: skipping unrecognized data section(16) .eh_frame
+> > > >  libbpf: elf: skipping relo section(17) .rel.eh_frame for section(16) .eh_frame
+> > > >  proto 17:          1 pkt/s
+> > > >  proto 0:          0 pkt/s
+> > > >  proto 17:          0 pkt/s
+> > > >  proto 0:          0 pkt/s
+> > > >  proto 17:          1 pkt/s
+> > >
+> > > Trying out xdp_redirect:
+> > >
+> > >  [kernel-bpf-samples]$ sudo ./xdp_redirect i40e2 i40e2
+> > >  input: 7 output: 7
+> > >  libbpf: elf: skipping unrecognized data section(20) .eh_frame
+> > >  libbpf: elf: skipping relo section(21) .rel.eh_frame for section(20) .eh_frame
+> > >  libbpf: Kernel error message: XDP program already attached
+> > >  WARN: link set xdp fd failed on 7
+> > >  ifindex 7:       7357 pkt/s
+> > >  ifindex 7:       7909 pkt/s
+> > >  ifindex 7:       7909 pkt/s
+> > >  ifindex 7:       7909 pkt/s
+> > >  ifindex 7:       7909 pkt/s
+> > >  ifindex 7:       7909 pkt/s
+> > >  ifindex 7:       6357 pkt/s
+> > >
+> > > And then it crash (see below) at page_frag_free+0x31 which calls
+> > > virt_to_head_page() with a wrong addr (I guess).  This is called by
+> > > i40e_clean_tx_irq+0xc9.
+> >
+> > Did not see a crash myself, just 4 Kpps. But the rings and DMA
+> > mappings got completely mangled by the patch above, so could be the
+> > same cause.
+>
+> Are you running with jumbo frames enabled? I would think this change
+> would really blow things up in the jumbo enabled case.
 
-This allows setting up a "catch all" device for source MACVLAN: create one
-or more devices with type source nodst, and one device with e.g. type vepa,
-and incoming traffic will be received on exactly one device.
-
-v2: netdev wants non-standard line length
-
-Signed-off-by: Jethro Beekman <kernel@jbeekman.nl>
----
- drivers/net/macvlan.c        | 19 ++++++++++++++-----
- include/uapi/linux/if_link.h |  1 +
- 2 files changed, 15 insertions(+), 5 deletions(-)
-
-diff --git a/drivers/net/macvlan.c b/drivers/net/macvlan.c
-index 9a9a5cf36a4b..7427b989607e 100644
---- a/drivers/net/macvlan.c
-+++ b/drivers/net/macvlan.c
-@@ -423,18 +423,24 @@ static void macvlan_forward_source_one(struct sk_buff *skb,
- 	macvlan_count_rx(vlan, len, ret == NET_RX_SUCCESS, false);
- }
- 
--static void macvlan_forward_source(struct sk_buff *skb,
-+static bool macvlan_forward_source(struct sk_buff *skb,
- 				   struct macvlan_port *port,
- 				   const unsigned char *addr)
- {
- 	struct macvlan_source_entry *entry;
- 	u32 idx = macvlan_eth_hash(addr);
- 	struct hlist_head *h = &port->vlan_source_hash[idx];
-+	bool consume = false;
- 
- 	hlist_for_each_entry_rcu(entry, h, hlist) {
--		if (ether_addr_equal_64bits(entry->addr, addr))
-+		if (ether_addr_equal_64bits(entry->addr, addr)) {
-+			if (entry->vlan->flags & MACVLAN_FLAG_NODST)
-+				consume = true;
- 			macvlan_forward_source_one(skb, entry->vlan);
-+		}
- 	}
-+
-+	return consume;
- }
- 
- /* called under rcu_read_lock() from netif_receive_skb */
-@@ -463,7 +469,8 @@ static rx_handler_result_t macvlan_handle_frame(struct sk_buff **pskb)
- 			return RX_HANDLER_CONSUMED;
- 		*pskb = skb;
- 		eth = eth_hdr(skb);
--		macvlan_forward_source(skb, port, eth->h_source);
-+		if (macvlan_forward_source(skb, port, eth->h_source))
-+			return RX_HANDLER_CONSUMED;
- 		src = macvlan_hash_lookup(port, eth->h_source);
- 		if (src && src->mode != MACVLAN_MODE_VEPA &&
- 		    src->mode != MACVLAN_MODE_BRIDGE) {
-@@ -482,7 +489,8 @@ static rx_handler_result_t macvlan_handle_frame(struct sk_buff **pskb)
- 		return RX_HANDLER_PASS;
- 	}
- 
--	macvlan_forward_source(skb, port, eth->h_source);
-+	if (macvlan_forward_source(skb, port, eth->h_source))
-+		return RX_HANDLER_CONSUMED;
- 	if (macvlan_passthru(port))
- 		vlan = list_first_or_null_rcu(&port->vlans,
- 					      struct macvlan_dev, list);
-@@ -1286,7 +1294,8 @@ static int macvlan_validate(struct nlattr *tb[], struct nlattr *data[],
- 		return 0;
- 
- 	if (data[IFLA_MACVLAN_FLAGS] &&
--	    nla_get_u16(data[IFLA_MACVLAN_FLAGS]) & ~MACVLAN_FLAG_NOPROMISC)
-+	    nla_get_u16(data[IFLA_MACVLAN_FLAGS]) & ~(MACVLAN_FLAG_NOPROMISC |
-+						      MACVLAN_FLAG_NODST))
- 		return -EINVAL;
- 
- 	if (data[IFLA_MACVLAN_MODE]) {
-diff --git a/include/uapi/linux/if_link.h b/include/uapi/linux/if_link.h
-index 91c8dda6d95d..cd5b382a4138 100644
---- a/include/uapi/linux/if_link.h
-+++ b/include/uapi/linux/if_link.h
-@@ -614,6 +614,7 @@ enum macvlan_macaddr_mode {
- };
- 
- #define MACVLAN_FLAG_NOPROMISC	1
-+#define MACVLAN_FLAG_NODST	2 /* skip dst macvlan if matching src macvlan */
- 
- /* VRF section */
- enum {
--- 
-2.31.1
-
+I did not. Just using XDP_DROP or XDP_TX would crash the system just fine.
