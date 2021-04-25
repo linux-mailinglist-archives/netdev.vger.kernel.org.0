@@ -2,141 +2,153 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 636BA36A8A2
+	by mail.lfdr.de (Postfix) with ESMTP id AF3EB36A8A3
 	for <lists+netdev@lfdr.de>; Sun, 25 Apr 2021 19:46:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231249AbhDYRqg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 25 Apr 2021 13:46:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55918 "EHLO
+        id S231258AbhDYRqh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 25 Apr 2021 13:46:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55934 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231233AbhDYRqe (ORCPT
+        with ESMTP id S231176AbhDYRqe (ORCPT
         <rfc822;netdev@vger.kernel.org>); Sun, 25 Apr 2021 13:46:34 -0400
-Received: from mail-pj1-x1032.google.com (mail-pj1-x1032.google.com [IPv6:2607:f8b0:4864:20::1032])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 09616C06138D
-        for <netdev@vger.kernel.org>; Sun, 25 Apr 2021 10:45:52 -0700 (PDT)
-Received: by mail-pj1-x1032.google.com with SMTP id md17so270148pjb.0
-        for <netdev@vger.kernel.org>; Sun, 25 Apr 2021 10:45:52 -0700 (PDT)
+Received: from mail-pg1-x535.google.com (mail-pg1-x535.google.com [IPv6:2607:f8b0:4864:20::535])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC035C061343
+        for <netdev@vger.kernel.org>; Sun, 25 Apr 2021 10:45:53 -0700 (PDT)
+Received: by mail-pg1-x535.google.com with SMTP id f29so1472782pgm.8
+        for <netdev@vger.kernel.org>; Sun, 25 Apr 2021 10:45:53 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=broadcom.com; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=HLHP6i2nPkZBQmCHeYC5qH+sH2ZQ/zb2aps3VKzNnAw=;
-        b=F+klcX+ntRffbNdv7/NFEoHDAcdjv0BrcYI3yCnPxY0bP47+5uamrrXP8f0iekwMCG
-         9l96LsuAM918XKB5szdReJIuLxDaW/5hO1BZik1UsukqJ0IlPCE9qxlnCcN4W+MDl2Fw
-         DHe4kMIS2SYwJRIqEE97NBU1wNjTLMaI3UZiE=
+        bh=O0DgEQgiV9uHjNOx+zVysSmGekJkEFhquaqvVj8e8VQ=;
+        b=SCq9UC4Z6m63f9Q5hQnlKkdlXl7CAEONxOX319PaqYcLCmKOSmXEBn4deFHlX0FD3h
+         0h7GwB3l/05G6DgLRgfJmkqhntRfE8IQuqudKr2PYErJW0I/3yZl460glps7Sb9VGi/a
+         uJc9eJkuiCVIHn/Zhrskp+E8otzmBFi6zI8NM=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=HLHP6i2nPkZBQmCHeYC5qH+sH2ZQ/zb2aps3VKzNnAw=;
-        b=AicMOGLU9KuxysJGUBcPTQyjOty86ND/FOFf005O3upKF/Fa8Wj/ScYvtxdLe00g6o
-         6yIkxKi4Xouymdt8+9nzbNwkLXTGoURiJN0vT6tB4iJcYu74OkOewN0s5+Q8Bb5cuh6i
-         gZEy90lhbG+X9sTlWxU3Tp9miqFEDppVMWyuvjflQsSNAsnE405N75GnT0FRDVslG3C0
-         mDQgRlxj/QyCKnpTLH9xHdFZE3MfNWENgvlisaF3if1ecylZdf0PUjvFa4HtQlHadiyz
-         1FhWDEiRSmqfrvA1xsY/E8sFY2OdGLc8TDHPbm9as2ohCArTqBCYEO0OQX6/LI7Ll/8M
-         9o2Q==
-X-Gm-Message-State: AOAM532FMl4Ab+9ecsGW8L6HuKaZ0UWsX9GF1nSXNCJ3s57X5YPdxtuO
-        6U7N6lW0/EQv3F1FK/MxAvBS6w==
-X-Google-Smtp-Source: ABdhPJzuSIS5rFb6hDCnp4xkfb+wYiVLxG8oqFTV9VwZwpJpluWWdHbAPeodz9ZCcpNjKfTcwlfZ1A==
-X-Received: by 2002:a17:90b:3884:: with SMTP id mu4mr16265422pjb.165.1619372752136;
+        bh=O0DgEQgiV9uHjNOx+zVysSmGekJkEFhquaqvVj8e8VQ=;
+        b=Yy1UjVdTeFdzMiw3JUTTld9f0S55Q8zm5oKGRgKJzF/ID4JgHE5dPTnF5M95T6N51H
+         umSBH9IzLLOuXj2D9aK8WREb+P0xEi/tz7ah2We0lgzzhPSQ/hbdK287OlPNlvuO5PMm
+         1QZrEZmtI7tmiRZyvpm02bG3gKh/qLxoibDnFWvRzieegsMTxsmdQk7mtnLZ/9vNRfdH
+         QPOTUVlV4LftzQJmXG4NYYNpbay22lAMtP8wrfEur12ItdJmaEdk1HkfVhnxph0icLme
+         LYiSHoS/SEVINnGwqJOl1ZpjV1AQYezhscsNlQfwAOtmsMvVamuYLV+dqIpo08yNE3YN
+         g/Jg==
+X-Gm-Message-State: AOAM533xZMSSQf6KF/I+lR7fcAHuOqDjXR4S1XE9y+GJlSlVer3IASo5
+        no9rylZ9wRsuvsFSaJwQ7bLtkQ==
+X-Google-Smtp-Source: ABdhPJycaaVUzGbFlN9Gn245ajKa1TqBPe6GvXp+Vz+D8yKGRwl+PlkMYkWCKfNA+Rfmt7VCqLZ3Rw==
+X-Received: by 2002:a63:b915:: with SMTP id z21mr13166021pge.424.1619372752939;
         Sun, 25 Apr 2021 10:45:52 -0700 (PDT)
 Received: from localhost.swdvt.lab.broadcom.net ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id t19sm14733553pjs.1.2021.04.25.10.45.51
+        by smtp.gmail.com with ESMTPSA id t19sm14733553pjs.1.2021.04.25.10.45.52
         (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Sun, 25 Apr 2021 10:45:51 -0700 (PDT)
+        Sun, 25 Apr 2021 10:45:52 -0700 (PDT)
 From:   Michael Chan <michael.chan@broadcom.com>
 To:     davem@davemloft.net
 Cc:     netdev@vger.kernel.org, kuba@kernel.org, gospo@broadcom.com
-Subject: [PATCH net-next v2 08/10] bnxt_en: Add PCI IDs for Hyper-V VF devices.
-Date:   Sun, 25 Apr 2021 13:45:25 -0400
-Message-Id: <1619372727-19187-9-git-send-email-michael.chan@broadcom.com>
+Subject: [PATCH net-next v2 09/10] bnxt_en: Support IFF_SUPP_NOFCS feature to transmit without ethernet FCS.
+Date:   Sun, 25 Apr 2021 13:45:26 -0400
+Message-Id: <1619372727-19187-10-git-send-email-michael.chan@broadcom.com>
 X-Mailer: git-send-email 1.8.3.1
 In-Reply-To: <1619372727-19187-1-git-send-email-michael.chan@broadcom.com>
 References: <1619372727-19187-1-git-send-email-michael.chan@broadcom.com>
 Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256;
-        boundary="000000000000adcea005c0cf9996"
+        boundary="000000000000bd97ed05c0cf9944"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---000000000000adcea005c0cf9996
+--000000000000bd97ed05c0cf9944
 
-Support VF device IDs used by the Hyper-V hypervisor.
+If firmware is capable, set the IFF_SUPP_NOFCS flag to support the
+sockets option to transmit packets without FCS.  This is mainly used
+for testing.
 
-Reviewed-by: Vasundhara Volam <vasundhara-v.volam@broadcom.com>
-Reviewed-by: Andy Gospodarek <gospo@broadcom.com>
-Signed-off-by: Edwin Peer <edwin.peer@broadcom.com>
+Reviewed-by: Edwin Peer <edwin.peer@broadcom.com
 Signed-off-by: Michael Chan <michael.chan@broadcom.com>
 ---
- drivers/net/ethernet/broadcom/bnxt/bnxt.c | 19 ++++++++++++++++++-
- 1 file changed, 18 insertions(+), 1 deletion(-)
+ drivers/net/ethernet/broadcom/bnxt/bnxt.c | 16 +++++++++++++---
+ drivers/net/ethernet/broadcom/bnxt/bnxt.h |  1 +
+ 2 files changed, 14 insertions(+), 3 deletions(-)
 
 diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt.c b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-index 9862f517960d..77ebafbd2dce 100644
+index 77ebafbd2dce..53db073b457c 100644
 --- a/drivers/net/ethernet/broadcom/bnxt/bnxt.c
 +++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-@@ -122,7 +122,10 @@ enum board_idx {
- 	NETXTREME_E_VF,
- 	NETXTREME_C_VF,
- 	NETXTREME_S_VF,
-+	NETXTREME_C_VF_HV,
-+	NETXTREME_E_VF_HV,
- 	NETXTREME_E_P5_VF,
-+	NETXTREME_E_P5_VF_HV,
- };
+@@ -375,6 +375,7 @@ static netdev_tx_t bnxt_start_xmit(struct sk_buff *skb, struct net_device *dev)
+ 	struct pci_dev *pdev = bp->pdev;
+ 	struct bnxt_tx_ring_info *txr;
+ 	struct bnxt_sw_tx_bd *tx_buf;
++	__le32 lflags = 0;
  
- /* indexed by enum above */
-@@ -170,7 +173,10 @@ static const struct {
- 	[NETXTREME_E_VF] = { "Broadcom NetXtreme-E Ethernet Virtual Function" },
- 	[NETXTREME_C_VF] = { "Broadcom NetXtreme-C Ethernet Virtual Function" },
- 	[NETXTREME_S_VF] = { "Broadcom NetXtreme-S Ethernet Virtual Function" },
-+	[NETXTREME_C_VF_HV] = { "Broadcom NetXtreme-C Virtual Function for Hyper-V" },
-+	[NETXTREME_E_VF_HV] = { "Broadcom NetXtreme-E Virtual Function for Hyper-V" },
- 	[NETXTREME_E_P5_VF] = { "Broadcom BCM5750X NetXtreme-E Ethernet Virtual Function" },
-+	[NETXTREME_E_P5_VF_HV] = { "Broadcom BCM5750X NetXtreme-E Virtual Function for Hyper-V" },
- };
+ 	i = skb_get_queue_mapping(skb);
+ 	if (unlikely(i >= bp->tx_nr_rings)) {
+@@ -416,6 +417,11 @@ static netdev_tx_t bnxt_start_xmit(struct sk_buff *skb, struct net_device *dev)
+ 			vlan_tag_flags |= 1 << TX_BD_CFA_META_TPID_SHIFT;
+ 	}
  
- static const struct pci_device_id bnxt_pci_tbl[] = {
-@@ -222,15 +228,25 @@ static const struct pci_device_id bnxt_pci_tbl[] = {
- 	{ PCI_VDEVICE(BROADCOM, 0xd804), .driver_data = BCM58804 },
- #ifdef CONFIG_BNXT_SRIOV
- 	{ PCI_VDEVICE(BROADCOM, 0x1606), .driver_data = NETXTREME_E_VF },
-+	{ PCI_VDEVICE(BROADCOM, 0x1607), .driver_data = NETXTREME_E_VF_HV },
-+	{ PCI_VDEVICE(BROADCOM, 0x1608), .driver_data = NETXTREME_E_VF_HV },
- 	{ PCI_VDEVICE(BROADCOM, 0x1609), .driver_data = NETXTREME_E_VF },
-+	{ PCI_VDEVICE(BROADCOM, 0x16bd), .driver_data = NETXTREME_E_VF_HV },
- 	{ PCI_VDEVICE(BROADCOM, 0x16c1), .driver_data = NETXTREME_E_VF },
-+	{ PCI_VDEVICE(BROADCOM, 0x16c2), .driver_data = NETXTREME_C_VF_HV },
-+	{ PCI_VDEVICE(BROADCOM, 0x16c3), .driver_data = NETXTREME_C_VF_HV },
-+	{ PCI_VDEVICE(BROADCOM, 0x16c4), .driver_data = NETXTREME_E_VF_HV },
-+	{ PCI_VDEVICE(BROADCOM, 0x16c5), .driver_data = NETXTREME_E_VF_HV },
- 	{ PCI_VDEVICE(BROADCOM, 0x16cb), .driver_data = NETXTREME_C_VF },
- 	{ PCI_VDEVICE(BROADCOM, 0x16d3), .driver_data = NETXTREME_E_VF },
- 	{ PCI_VDEVICE(BROADCOM, 0x16dc), .driver_data = NETXTREME_E_VF },
- 	{ PCI_VDEVICE(BROADCOM, 0x16e1), .driver_data = NETXTREME_C_VF },
- 	{ PCI_VDEVICE(BROADCOM, 0x16e5), .driver_data = NETXTREME_C_VF },
-+	{ PCI_VDEVICE(BROADCOM, 0x16e6), .driver_data = NETXTREME_C_VF_HV },
- 	{ PCI_VDEVICE(BROADCOM, 0x1806), .driver_data = NETXTREME_E_P5_VF },
- 	{ PCI_VDEVICE(BROADCOM, 0x1807), .driver_data = NETXTREME_E_P5_VF },
-+	{ PCI_VDEVICE(BROADCOM, 0x1808), .driver_data = NETXTREME_E_P5_VF_HV },
-+	{ PCI_VDEVICE(BROADCOM, 0x1809), .driver_data = NETXTREME_E_P5_VF_HV },
- 	{ PCI_VDEVICE(BROADCOM, 0xd800), .driver_data = NETXTREME_S_VF },
- #endif
- 	{ 0 }
-@@ -265,7 +281,8 @@ static struct workqueue_struct *bnxt_pf_wq;
- static bool bnxt_vf_pciid(enum board_idx idx)
- {
- 	return (idx == NETXTREME_C_VF || idx == NETXTREME_E_VF ||
--		idx == NETXTREME_S_VF || idx == NETXTREME_E_P5_VF);
-+		idx == NETXTREME_S_VF || idx == NETXTREME_C_VF_HV ||
-+		idx == NETXTREME_E_VF_HV || idx == NETXTREME_E_P5_VF);
- }
++	if (unlikely(skb->no_fcs)) {
++		lflags |= cpu_to_le32(TX_BD_FLAGS_NO_CRC);
++		goto normal_tx;
++	}
++
+ 	if (free_size == bp->tx_ring_size && length <= bp->tx_push_thresh) {
+ 		struct tx_push_buffer *tx_push_buf = txr->tx_push;
+ 		struct tx_push_bd *tx_push = &tx_push_buf->push_bd;
+@@ -517,7 +523,7 @@ static netdev_tx_t bnxt_start_xmit(struct sk_buff *skb, struct net_device *dev)
+ 	txbd1 = (struct tx_bd_ext *)
+ 		&txr->tx_desc_ring[TX_RING(prod)][TX_IDX(prod)];
  
- #define DB_CP_REARM_FLAGS	(DB_KEY_CP | DB_IDX_VALID)
+-	txbd1->tx_bd_hsize_lflags = 0;
++	txbd1->tx_bd_hsize_lflags = lflags;
+ 	if (skb_is_gso(skb)) {
+ 		u32 hdr_len;
+ 
+@@ -529,14 +535,14 @@ static netdev_tx_t bnxt_start_xmit(struct sk_buff *skb, struct net_device *dev)
+ 			hdr_len = skb_transport_offset(skb) +
+ 				tcp_hdrlen(skb);
+ 
+-		txbd1->tx_bd_hsize_lflags = cpu_to_le32(TX_BD_FLAGS_LSO |
++		txbd1->tx_bd_hsize_lflags |= cpu_to_le32(TX_BD_FLAGS_LSO |
+ 					TX_BD_FLAGS_T_IPID |
+ 					(hdr_len << (TX_BD_HSIZE_SHIFT - 1)));
+ 		length = skb_shinfo(skb)->gso_size;
+ 		txbd1->tx_bd_mss = cpu_to_le32(length);
+ 		length += hdr_len;
+ 	} else if (skb->ip_summed == CHECKSUM_PARTIAL) {
+-		txbd1->tx_bd_hsize_lflags =
++		txbd1->tx_bd_hsize_lflags |=
+ 			cpu_to_le32(TX_BD_FLAGS_TCP_UDP_CHKSUM);
+ 		txbd1->tx_bd_mss = 0;
+ 	}
+@@ -12460,6 +12466,10 @@ static int bnxt_probe_phy(struct bnxt *bp, bool fw_dflt)
+ 			   rc);
+ 		return rc;
+ 	}
++	if (bp->phy_flags & BNXT_PHY_FL_NO_FCS)
++		bp->dev->priv_flags |= IFF_SUPP_NOFCS;
++	else
++		bp->dev->priv_flags &= ~IFF_SUPP_NOFCS;
+ 	if (!fw_dflt)
+ 		return 0;
+ 
+diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt.h b/drivers/net/ethernet/broadcom/bnxt/bnxt.h
+index 5835d8ca8c22..a3744247740b 100644
+--- a/drivers/net/ethernet/broadcom/bnxt/bnxt.h
++++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.h
+@@ -2015,6 +2015,7 @@ struct bnxt {
+ #define BNXT_PHY_FL_PORT_STATS_NO_RESET	PORT_PHY_QCAPS_RESP_FLAGS_CUMULATIVE_COUNTERS_ON_RESET
+ #define BNXT_PHY_FL_NO_PHY_LPBK		PORT_PHY_QCAPS_RESP_FLAGS_LOCAL_LPBK_NOT_SUPPORTED
+ #define BNXT_PHY_FL_FW_MANAGED_LKDN	PORT_PHY_QCAPS_RESP_FLAGS_FW_MANAGED_LINK_DOWN
++#define BNXT_PHY_FL_NO_FCS		PORT_PHY_QCAPS_RESP_FLAGS_NO_FCS
+ 
+ 	u8			num_tests;
+ 	struct bnxt_test_info	*test_info;
 -- 
 2.18.1
 
 
---000000000000adcea005c0cf9996
+--000000000000bd97ed05c0cf9944
 Content-Type: application/pkcs7-signature; name="smime.p7s"
 Content-Transfer-Encoding: base64
 Content-Disposition: attachment; filename="smime.p7s"
@@ -207,13 +219,13 @@ FSWQptLx+kiu63idTII4r3k/7+dJ5AhLRr4WCoXEme2GZkfSbYC3fEL46tb1w7w+25OEFCv1MtDZ
 DauX1eWVM+KepL7zoSNzVbTipc65WuZFLR8ngOwkpknqvS9n/nKd885m23oIocC+GA4xggJtMIIC
 aQIBATBrMFsxCzAJBgNVBAYTAkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52LXNhMTEwLwYDVQQD
 EyhHbG9iYWxTaWduIEdDQyBSMyBQZXJzb25hbFNpZ24gMiBDQSAyMDIwAgwQeU+Y6hbenPzRMJsw
-DQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEIFgc9VzwHF/H6gIradykg946e4DdemCp
-PmQKESPKJzx7MBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIxMDQy
-NTE3NDU1MlowaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZIAWUDBAEWMAsGCWCG
+DQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEIDoh0LEpClfeQ9cUDRhGiqeBsGL+C7Le
+SOn1f4N85HEHMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIxMDQy
+NTE3NDU1M1owaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZIAWUDBAEWMAsGCWCG
 SAFlAwQBAjAKBggqhkiG9w0DBzALBgkqhkiG9w0BAQowCwYJKoZIhvcNAQEHMAsGCWCGSAFlAwQC
-ATANBgkqhkiG9w0BAQEFAASCAQDSe5sZWNh7pg3rgAnPd44eOtr5tkSiRw/pVAfy2Y22zapUEEhE
-S6cprO4GGvUdl8x0KzujlQnZpMffcolf9akWRNMmYdwIEATXvbXIfKR177Gfrr0Fuq7/PT3wH+4B
-jQ30XYwBIZ2mdQaqh2oje+SVEAWZ8UAhvUjrBP+/eYOnCwIGoJwyu8s8+cgrXr1DD/NLqE1YhCqK
-2cFYNNpJpmOxIAwKX5bX2jWGfgKm1JRzve0ClCj6sLQ0wsWLo611PPAe1KisLrwQjA73h4kkXFHY
-oJtbmEbio9LENh42CztwFmiU3otN5gQuxHzNyO2VH9xAsUuY4gIcdKINXoRnDcVm
---000000000000adcea005c0cf9996--
+ATANBgkqhkiG9w0BAQEFAASCAQAY2wtW/yWPwJDxnIIbrQ/w+bSe8BcOArkR5yhbRi1ZBNHwPolC
+LohVlG2Pzop9P5vyfgCeBSn36c7D5Dxb+3Mh7PNXuzRSuGafsgAIhSZgax5ql3E6HKyfIRS3y9il
+aICF1CLajmozgbHyg+Os+Ldnk++MRAtaUKKfmdE6M8KpLTYoQ6+0suctqN3ZGnkYeOkas33ABKOY
+x4EZeJOMbynNK8yfwS66DSvGwuttTi3tPxM8pQkXMKeRpyfrfH6qNXbDIpGr8sA1B3Fi1mcMkXBP
+/7171wA2LCDXN2tYZKo4fL4eJpVgi1XF18RF4yNjw5RVZasDD7G8xQqzKtFfjTNV
+--000000000000bd97ed05c0cf9944--
