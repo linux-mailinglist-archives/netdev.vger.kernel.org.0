@@ -2,68 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BD2C736A688
-	for <lists+netdev@lfdr.de>; Sun, 25 Apr 2021 12:14:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DF1D636A69C
+	for <lists+netdev@lfdr.de>; Sun, 25 Apr 2021 12:25:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229937AbhDYKPQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 25 Apr 2021 06:15:16 -0400
-Received: from out30-54.freemail.mail.aliyun.com ([115.124.30.54]:33804 "EHLO
-        out30-54.freemail.mail.aliyun.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S229466AbhDYKPP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 25 Apr 2021 06:15:15 -0400
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R131e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04394;MF=yang.lee@linux.alibaba.com;NM=1;PH=DS;RN=9;SR=0;TI=SMTPD_---0UWfrnwm_1619345673;
-Received: from j63c13417.sqa.eu95.tbsite.net(mailfrom:yang.lee@linux.alibaba.com fp:SMTPD_---0UWfrnwm_1619345673)
+        id S229916AbhDYKZr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 25 Apr 2021 06:25:47 -0400
+Received: from out30-43.freemail.mail.aliyun.com ([115.124.30.43]:50800 "EHLO
+        out30-43.freemail.mail.aliyun.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S229466AbhDYKZq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 25 Apr 2021 06:25:46 -0400
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R201e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e01424;MF=yang.lee@linux.alibaba.com;NM=1;PH=DS;RN=8;SR=0;TI=SMTPD_---0UWg2IQf_1619346303;
+Received: from j63c13417.sqa.eu95.tbsite.net(mailfrom:yang.lee@linux.alibaba.com fp:SMTPD_---0UWg2IQf_1619346303)
           by smtp.aliyun-inc.com(127.0.0.1);
-          Sun, 25 Apr 2021 18:14:34 +0800
+          Sun, 25 Apr 2021 18:25:04 +0800
 From:   Yang Li <yang.lee@linux.alibaba.com>
-To:     steffen.klassert@secunet.com
-Cc:     herbert@gondor.apana.org.au, davem@davemloft.net,
-        yoshfuji@linux-ipv6.org, dsahern@kernel.org, kuba@kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Yang Li <yang.lee@linux.alibaba.com>
-Subject: [PATCH] esp: drop unneeded assignment in esp4_gro_receive()
-Date:   Sun, 25 Apr 2021 18:14:32 +0800
-Message-Id: <1619345672-31802-1-git-send-email-yang.lee@linux.alibaba.com>
+To:     alex.aring@gmail.com
+Cc:     stefan@datenfreihafen.org, davem@davemloft.net, kuba@kernel.org,
+        linux-wpan@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Yang Li <yang.lee@linux.alibaba.com>
+Subject: [PATCH] net/ieee802154: drop unneeded assignment in llsec_iter_devkeys()
+Date:   Sun, 25 Apr 2021 18:24:59 +0800
+Message-Id: <1619346299-40237-1-git-send-email-yang.lee@linux.alibaba.com>
 X-Mailer: git-send-email 1.8.3.1
+MIME-Version: 1.0
+Content-Type: text/plain; charset=n
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Making '!=' operation with 0 directly after calling
-the function xfrm_parse_spi() is more efficient,
-assignment to err is redundant.
+In order to keep the code style consistency of the whole file,
+redundant return value ‘rc’ and its assignments should be deleted
 
-Eliminate the following clang_analyzer warning:
-net/ipv4/esp4_offload.c:41:7: warning: Although the value stored to
-'err' is used in the enclosing expression, the value is never actually
-read from 'err'
+The clang_analyzer complains as follows:
+net/ieee802154/nl-mac.c:1203:12: warning: Although the value stored to
+'rc' is used in the enclosing expression, the value is never actually
+read from 'rc'
 
 No functional change, only more efficient.
 
 Reported-by: Abaci Robot <abaci@linux.alibaba.com>
 Signed-off-by: Yang Li <yang.lee@linux.alibaba.com>
 ---
- net/ipv4/esp4_offload.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+ net/ieee802154/nl-mac.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/net/ipv4/esp4_offload.c b/net/ipv4/esp4_offload.c
-index 33687cf..be019a1 100644
---- a/net/ipv4/esp4_offload.c
-+++ b/net/ipv4/esp4_offload.c
-@@ -33,12 +33,11 @@ static struct sk_buff *esp4_gro_receive(struct list_head *head,
- 	struct xfrm_state *x;
- 	__be32 seq;
- 	__be32 spi;
--	int err;
+diff --git a/net/ieee802154/nl-mac.c b/net/ieee802154/nl-mac.c
+index 0c1b077..a6a8cf6 100644
+--- a/net/ieee802154/nl-mac.c
++++ b/net/ieee802154/nl-mac.c
+@@ -1184,7 +1184,7 @@ static int llsec_iter_devkeys(struct llsec_dump_data *data)
+ {
+ 	struct ieee802154_llsec_device *dpos;
+ 	struct ieee802154_llsec_device_key *kpos;
+-	int rc = 0, idx = 0, idx2;
++	int idx = 0, idx2;
  
- 	if (!pskb_pull(skb, offset))
- 		return NULL;
+ 	list_for_each_entry(dpos, &data->table->devices, list) {
+ 		if (idx++ < data->s_idx)
+@@ -1200,7 +1200,7 @@ static int llsec_iter_devkeys(struct llsec_dump_data *data)
+ 						      data->nlmsg_seq,
+ 						      dpos->hwaddr, kpos,
+ 						      data->dev)) {
+-				return rc = -EMSGSIZE;
++				return -EMSGSIZE;
+ 			}
  
--	if ((err = xfrm_parse_spi(skb, IPPROTO_ESP, &spi, &seq)) != 0)
-+	if (xfrm_parse_spi(skb, IPPROTO_ESP, &spi, &seq) != 0)
- 		goto out;
+ 			data->s_idx2++;
+@@ -1209,7 +1209,7 @@ static int llsec_iter_devkeys(struct llsec_dump_data *data)
+ 		data->s_idx++;
+ 	}
  
- 	xo = xfrm_offload(skb);
+-	return rc;
++	return 0;
+ }
+ 
+ int ieee802154_llsec_dump_devkeys(struct sk_buff *skb,
 -- 
 1.8.3.1
 
