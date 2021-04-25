@@ -2,91 +2,117 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E821636A84A
-	for <lists+netdev@lfdr.de>; Sun, 25 Apr 2021 18:10:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8E8FB36A84E
+	for <lists+netdev@lfdr.de>; Sun, 25 Apr 2021 18:14:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230491AbhDYQLX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 25 Apr 2021 12:11:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35444 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230293AbhDYQLW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 25 Apr 2021 12:11:22 -0400
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C536CC061574;
-        Sun, 25 Apr 2021 09:10:42 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=Content-Transfer-Encoding:Content-Type:
-        In-Reply-To:MIME-Version:Date:Message-ID:From:References:Cc:To:Subject:Sender
-        :Reply-To:Content-ID:Content-Description;
-        bh=l80BjQUd5fz5uENdDASp0UI526pBs9py8R3eB8Lkiqg=; b=BUW+IkJKvLhYYgAQXhetbzkmsE
-        NZCjeq0MMzEy1dlKu0veAYZCaNz9KWlTbxbtzt2kDFnOp7qFCWp0NnM/LNgSoYoouiLI5OYhT2kH+
-        pkojDtc/lvov2Q44QjSRi63cUxp0qyYVu2cgkI6i36RYoLc4/S4a0GLJBOUt/5mMGxbtO2V7bV5fU
-        LaSsLakXiMn5tniI3fzjHIzLErno4MfbWYUsGuyrr9MnsHgG8XcGTFpJbps/Z+PwSuAWA8PJt09GZ
-        gryvdXZLTMlKEYewCT6Z4ydMCqszNd/qXaWYUFHpTz42uhuDfT9GwqmV3YawJ7/xox0NLMPsuAZ0r
-        /QpiDozQ==;
-Received: from [2601:1c0:6280:3f0::df68]
-        by casper.infradead.org with esmtpsa (Exim 4.94 #2 (Red Hat Linux))
-        id 1lahKk-004Sdd-D4; Sun, 25 Apr 2021 16:10:21 +0000
-Subject: Re: [PATCH v2] ipw2x00: Minor documentation update
-To:     Souptick Joarder <jrdr.linux@gmail.com>, stas.yakovlev@gmail.com,
-        kvalo@codeaurora.org, davem@davemloft.net, kuba@kernel.org
-Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <1619348088-6887-1-git-send-email-jrdr.linux@gmail.com>
-From:   Randy Dunlap <rdunlap@infradead.org>
-Message-ID: <78f132c8-35f2-de23-ccd3-4f6a0ffe1052@infradead.org>
-Date:   Sun, 25 Apr 2021 09:10:07 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.8.0
+        id S230508AbhDYQOz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 25 Apr 2021 12:14:55 -0400
+Received: from smtp06.smtpout.orange.fr ([80.12.242.128]:36596 "EHLO
+        smtp.smtpout.orange.fr" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230329AbhDYQOy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 25 Apr 2021 12:14:54 -0400
+Received: from localhost.localdomain ([86.243.172.93])
+        by mwinf5d64 with ME
+        id x4EB2400621Fzsu034EBvP; Sun, 25 Apr 2021 18:14:12 +0200
+X-ME-Helo: localhost.localdomain
+X-ME-Auth: Y2hyaXN0b3BoZS5qYWlsbGV0QHdhbmFkb28uZnI=
+X-ME-Date: Sun, 25 Apr 2021 18:14:12 +0200
+X-ME-IP: 86.243.172.93
+From:   Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+To:     davem@davemloft.net, kuba@kernel.org
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        kernel-janitors@vger.kernel.org,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Subject: [PATCH] macvlan: Use 'hash' iterators to simplify code
+Date:   Sun, 25 Apr 2021 18:14:10 +0200
+Message-Id: <fa1b35d89a6254b3d46d9385ae6f85584138cc31.1619367130.git.christophe.jaillet@wanadoo.fr>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-In-Reply-To: <1619348088-6887-1-git-send-email-jrdr.linux@gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 4/25/21 3:54 AM, Souptick Joarder wrote:
-> Kernel test robot throws below warning ->
-> 
-> drivers/net/wireless/intel/ipw2x00/ipw2100.c:5359: warning: This comment
-> starts with '/**', but isn't a kernel-doc comment. Refer
-> Documentation/doc-guide/kernel-doc.rst
-> 
-> Minor update in documentation.
-> 
-> Reported-by: kernel test robot <lkp@intel.com>
-> Signed-off-by: Souptick Joarder <jrdr.linux@gmail.com>
-> Cc: Randy Dunlap <rdunlap@infradead.org>
+Use 'hash_for_each_rcu' and 'hash_for_each_safe' instead of hand writing
+them. This saves some lines of code, reduce indentation and improve
+readability.
 
-Acked-by: Randy Dunlap <rdunlap@infradead.org>
+Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+---
+Compile tested only
+---
+ drivers/net/macvlan.c | 45 +++++++++++++++++--------------------------
+ 1 file changed, 18 insertions(+), 27 deletions(-)
 
-Thanks.
-
-> ---
-> v2:
-> 	Updated docs.
-> 
->  drivers/net/wireless/intel/ipw2x00/ipw2100.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/drivers/net/wireless/intel/ipw2x00/ipw2100.c b/drivers/net/wireless/intel/ipw2x00/ipw2100.c
-> index 23fbddd..eeac9e3 100644
-> --- a/drivers/net/wireless/intel/ipw2x00/ipw2100.c
-> +++ b/drivers/net/wireless/intel/ipw2x00/ipw2100.c
-> @@ -5356,7 +5356,7 @@ struct ipw2100_wep_key {
->  #define WEP_STR_128(x) x[0],x[1],x[2],x[3],x[4],x[5],x[6],x[7],x[8],x[9],x[10]
->  
->  /**
-> - * Set a the wep key
-> + * ipw2100_set_key() - Set the wep key
->   *
->   * @priv: struct to work on
->   * @idx: index of the key we want to set
-> 
-
-
+diff --git a/drivers/net/macvlan.c b/drivers/net/macvlan.c
+index 9a9a5cf36a4b..b4f9c66e9a75 100644
+--- a/drivers/net/macvlan.c
++++ b/drivers/net/macvlan.c
+@@ -272,25 +272,22 @@ static void macvlan_broadcast(struct sk_buff *skb,
+ 	if (skb->protocol == htons(ETH_P_PAUSE))
+ 		return;
+ 
+-	for (i = 0; i < MACVLAN_HASH_SIZE; i++) {
+-		hlist_for_each_entry_rcu(vlan, &port->vlan_hash[i], hlist) {
+-			if (vlan->dev == src || !(vlan->mode & mode))
+-				continue;
++	hash_for_each_rcu(port->vlan_hash, i, vlan, hlist) {
++		if (vlan->dev == src || !(vlan->mode & mode))
++			continue;
+ 
+-			hash = mc_hash(vlan, eth->h_dest);
+-			if (!test_bit(hash, vlan->mc_filter))
+-				continue;
++		hash = mc_hash(vlan, eth->h_dest);
++		if (!test_bit(hash, vlan->mc_filter))
++			continue;
+ 
+-			err = NET_RX_DROP;
+-			nskb = skb_clone(skb, GFP_ATOMIC);
+-			if (likely(nskb))
+-				err = macvlan_broadcast_one(
+-					nskb, vlan, eth,
++		err = NET_RX_DROP;
++		nskb = skb_clone(skb, GFP_ATOMIC);
++		if (likely(nskb))
++			err = macvlan_broadcast_one(nskb, vlan, eth,
+ 					mode == MACVLAN_MODE_BRIDGE) ?:
+-				      netif_rx_ni(nskb);
+-			macvlan_count_rx(vlan, skb->len + ETH_HLEN,
+-					 err == NET_RX_SUCCESS, true);
+-		}
++			      netif_rx_ni(nskb);
++		macvlan_count_rx(vlan, skb->len + ETH_HLEN,
++				 err == NET_RX_SUCCESS, true);
+ 	}
+ }
+ 
+@@ -380,20 +377,14 @@ static void macvlan_broadcast_enqueue(struct macvlan_port *port,
+ static void macvlan_flush_sources(struct macvlan_port *port,
+ 				  struct macvlan_dev *vlan)
+ {
++	struct macvlan_source_entry *entry;
++	struct hlist_node *next;
+ 	int i;
+ 
+-	for (i = 0; i < MACVLAN_HASH_SIZE; i++) {
+-		struct hlist_node *h, *n;
+-
+-		hlist_for_each_safe(h, n, &port->vlan_source_hash[i]) {
+-			struct macvlan_source_entry *entry;
++	hash_for_each_safe(port->vlan_source_hash, i, next, entry, hlist)
++		if (entry->vlan == vlan)
++			macvlan_hash_del_source(entry);
+ 
+-			entry = hlist_entry(h, struct macvlan_source_entry,
+-					    hlist);
+-			if (entry->vlan == vlan)
+-				macvlan_hash_del_source(entry);
+-		}
+-	}
+ 	vlan->macaddr_count = 0;
+ }
+ 
 -- 
-~Randy
+2.30.2
 
