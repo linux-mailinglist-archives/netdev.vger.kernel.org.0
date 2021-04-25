@@ -2,85 +2,207 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A878236A3AC
-	for <lists+netdev@lfdr.de>; Sun, 25 Apr 2021 02:25:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AAEE236A3B0
+	for <lists+netdev@lfdr.de>; Sun, 25 Apr 2021 02:31:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229951AbhDYAZT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 24 Apr 2021 20:25:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57978 "EHLO
+        id S229882AbhDYAbe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 24 Apr 2021 20:31:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59308 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229687AbhDYAZS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 24 Apr 2021 20:25:18 -0400
-Received: from mail-lf1-x129.google.com (mail-lf1-x129.google.com [IPv6:2a00:1450:4864:20::129])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B5F97C06174A
-        for <netdev@vger.kernel.org>; Sat, 24 Apr 2021 17:24:39 -0700 (PDT)
-Received: by mail-lf1-x129.google.com with SMTP id b23so303602lfv.8
-        for <netdev@vger.kernel.org>; Sat, 24 Apr 2021 17:24:39 -0700 (PDT)
+        with ESMTP id S229723AbhDYAbd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 24 Apr 2021 20:31:33 -0400
+Received: from mail-lf1-x12d.google.com (mail-lf1-x12d.google.com [IPv6:2a00:1450:4864:20::12d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F4190C061574
+        for <netdev@vger.kernel.org>; Sat, 24 Apr 2021 17:30:52 -0700 (PDT)
+Received: by mail-lf1-x12d.google.com with SMTP id 124so1835747lff.5
+        for <netdev@vger.kernel.org>; Sat, 24 Apr 2021 17:30:52 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=5WR8dQYJUa1XML4lYiw3V24xbNj3qpJxpfUKdL6UNik=;
-        b=kdRWdV+xz0cGtFlHE81ER9+UqoZz84Ss/7eSXeLS9dnQvp1YfVW+NZ1ZDQa4cYVCrO
-         UZa6oP5V3cYYSzq/Atn0hj+97/omWtlKrgGbqWBpE0CcUg72Q4Gqt4h1KVS/uG2IAKEc
-         E+5ZveE+BQrH/0O8AQWyhX6yXfHECChjVDP9KaJDvD55WtyH3qZL6p3YSkLpgih7DWnK
-         Dq/louH0Te+3y6wKVaTcYGpHgzLJ3WE8OcN+2yvYKaCbI4ZAES/9vtaPpR14JQ5jBX/a
-         aaXMB1oAdkwz6J4oMWZL73Omeqf13LMk1OLlqAITdzT+Ll+jsOw0wm9Kve17HeylFVr3
-         RQlg==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=GWMZ3joFDXAfixsaT3M1mL9BXCqmaTfhrxyajNcq/7M=;
+        b=Nse9hLCSJYQ8gYGGbutxJq0dJTWct2loAtnwFpLBlNUPSClQLOb4Rebe77I5YgTh3O
+         xwKgfyf+hg6kJNaQbvPDkggyFtqhzt0Ej9r6Jym1oos+JJB0G23f8p+K7lEh9Vcnjq3s
+         rWpN8digbAv+eVpqIqqdwN7Nqz9YTQRwUcdLLQstPjTZYmPs00Y9QfuWnFpULQFhwpMm
+         nq/4LxDvHT8kfFNVJhcXCdRoJyW8C/WJ0R+UAJ6f2I0dNTLyv6Y9U6fbSNtoQzc3OzzD
+         LewKAxtCZivQuIAJDB4blLvTHtlV3nnj/HKnLpw5z9DFkpzPp5Z2m+DxavI211WxP9+y
+         ru2g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=5WR8dQYJUa1XML4lYiw3V24xbNj3qpJxpfUKdL6UNik=;
-        b=pJJUlYAh140pazdF9R3P8oaNFBgh5Y+BLFKe/EismLZh7cTgvdhD1gH/7ef4iw+5Bq
-         bCCsxWpBqE40z/k7QuJor59rwelYwFuK+wgtvdElaTtYdv/5PXBA3cKErRBROmsYsWoX
-         zMv8n3O+Ut1A/OTK9QafXTvczksfyV2pZmuXQr66DAgng9P2fTaOawEWZ3zISFW1ZrTK
-         vgReq9+cTmPlUj4HwR1eskkpLsA+Hk+O3Lko7qs2eq8PDvvhjCICy4R5GboXGLzF3/PF
-         96XP4cEfLhLkgZtFsU7O/Iyvo62S5Pl0ay/4qzx4PyIcSpgRPV4z4/JCRRLr7Vd+DhZk
-         sutg==
-X-Gm-Message-State: AOAM531NE4RQjSdhtcafFvxdS0Y1bGDi3nEg21fhj6dhTWaCpt08qNur
-        iOVtxLVcvE4P2Az+NUow/m63yXbuOFfiStCnPqYglg==
-X-Google-Smtp-Source: ABdhPJyk1el2iJEAC5nGKFSLU5jZj2NH8WDX6XF2wkPJJGPT8WIqVYlrHEACs4H7/ZQB1SxqPQ8XQ3wLL7hgEfYkeaw=
-X-Received: by 2002:a05:6512:3a85:: with SMTP id q5mr7406490lfu.465.1619310278090;
- Sat, 24 Apr 2021 17:24:38 -0700 (PDT)
-MIME-Version: 1.0
-References: <20210423082208.2244803-1-linus.walleij@linaro.org> <YILeb1OyrE0k0PyY@lunn.ch>
-In-Reply-To: <YILeb1OyrE0k0PyY@lunn.ch>
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=GWMZ3joFDXAfixsaT3M1mL9BXCqmaTfhrxyajNcq/7M=;
+        b=jxTRg0WMcFRjlQevInt+XJjpsqBAZ7LZWVJMnN/VHHQtnq1WqGpIaiLIcYBEfc+AXe
+         FIgGiZjAeu/UPWPerHte/wCnuBoVg1Dv9EPo8jTT1lp//FwZlv3feKYSdNMUUVWF0ihM
+         C5NFR40uaojHrrCocc17G5HKB33SEAEmqRMHkQZAMVNKKkvMJYO60soNw0roF99PUNrt
+         RUB9du7XF9NFQhDLRNl8DgabvsobZbv6swMeDBuUEWfff46vQ0+EW5vS4YZsEPBrJ5PQ
+         jK/H9/3shzSkicD8fu10e3V73oFcUXIsuklT2Mph4sWZwshW0J4MtVWBmQ9t87znxCFF
+         9TIw==
+X-Gm-Message-State: AOAM530q9uSwbwtrxEcIxNnMi7Q45s8oBeHzdznmfieTnxQWwlIUmFl3
+        pJU89xfNb2NBTh+ziOIAG+cQVyaWd9qwxg==
+X-Google-Smtp-Source: ABdhPJyzfYYlfkJ0nNn+UV6oub7WXr9QW5+g6MlLlaikSiTLeHGA44Wrqo4MnsOaJEKrUGX1CEMEQQ==
+X-Received: by 2002:a05:6512:3e1:: with SMTP id n1mr7434540lfq.31.1619310650872;
+        Sat, 24 Apr 2021 17:30:50 -0700 (PDT)
+Received: from localhost.localdomain (c-fdcc225c.014-348-6c756e10.bbcust.telenor.se. [92.34.204.253])
+        by smtp.gmail.com with ESMTPSA id t5sm950352lfe.211.2021.04.24.17.30.50
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 24 Apr 2021 17:30:50 -0700 (PDT)
 From:   Linus Walleij <linus.walleij@linaro.org>
-Date:   Sun, 25 Apr 2021 02:24:26 +0200
-Message-ID: <CACRpkdZp8OYyQtuhRqGmjc2gVpmjyBMFivHbk3xBiQk5NKbbww@mail.gmail.com>
-Subject: Re: [PATCH 1/3 net-next v3] net: ethernet: ixp4xx: Add DT bindings
-To:     Andrew Lunn <andrew@lunn.ch>, Rob Herring <robh+dt@kernel.org>
-Cc:     netdev <netdev@vger.kernel.org>,
-        "David S . Miller" <davem@davemloft.net>,
+To:     netdev@vger.kernel.org, "David S . Miller" <davem@davemloft.net>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
         Heiner Kallweit <hkallweit1@gmail.com>,
         Russell King <linux@armlinux.org.uk>,
+        Linus Walleij <linus.walleij@linaro.org>,
         Zoltan HERPAI <wigyori@uid0.hu>,
-        Raylynn Knight <rayknight@me.com>,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+        Raylynn Knight <rayknight@me.com>, devicetree@vger.kernel.org
+Subject: [PATCH 1/3 net-next v4] net: ethernet: ixp4xx: Add DT bindings
+Date:   Sun, 25 Apr 2021 02:30:36 +0200
+Message-Id: <20210425003038.2937498-1-linus.walleij@linaro.org>
+X-Mailer: git-send-email 2.29.2
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Apr 23, 2021 at 4:49 PM Andrew Lunn <andrew@lunn.ch> wrote:
+This adds device tree bindings for the IXP4xx ethernet
+controller with optional MDIO bridge.
 
-> (...) it should be impossible for multiple devices to
-> instantiate an MDIO bus. But with device tree, is that still true?
-> Should there be validation that only one device has an MDIO bus in its
-> device tree?
+Cc: Zoltan HERPAI <wigyori@uid0.hu>
+Cc: Raylynn Knight <rayknight@me.com>
+Cc: devicetree@vger.kernel.org
+Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
+---
+ChangeLog v3->v4:
+- Use a phandle to reference the NPE
+- Make a more verbose example with two ethernet devices
+  sharing a MDIO bus on just one of them
+- Spelling fix
+ChangeLog v2->v3:
+- Designate phy nodes with ethernet-phy@
+- Include phy-mode in the schema
+ChangeLog v1->v2:
+- Add schema for the (optional) embedded MDIO bus inside
+  the ethernet controller in an "mdio" node instead of just
+  letting the code randomly populate and present it to
+  the operating system.
+- Reference the standard schemas for ethernet controller and
+  MDIO buses.
+- Add intel,npe to indentify the NPE unit used with each
+  ethernet adapter.
+---
+ .../bindings/net/intel,ixp4xx-ethernet.yaml   | 102 ++++++++++++++++++
+ 1 file changed, 102 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/net/intel,ixp4xx-ethernet.yaml
 
-This would be more of a question to Rob.
+diff --git a/Documentation/devicetree/bindings/net/intel,ixp4xx-ethernet.yaml b/Documentation/devicetree/bindings/net/intel,ixp4xx-ethernet.yaml
+new file mode 100644
+index 000000000000..f2e91d1bf7d7
+--- /dev/null
++++ b/Documentation/devicetree/bindings/net/intel,ixp4xx-ethernet.yaml
+@@ -0,0 +1,102 @@
++# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
++# Copyright 2018 Linaro Ltd.
++%YAML 1.2
++---
++$id: "http://devicetree.org/schemas/net/intel,ixp4xx-ethernet.yaml#"
++$schema: "http://devicetree.org/meta-schemas/core.yaml#"
++
++title: Intel IXP4xx ethernet
++
++allOf:
++  - $ref: "ethernet-controller.yaml#"
++
++maintainers:
++  - Linus Walleij <linus.walleij@linaro.org>
++
++description: |
++  The Intel IXP4xx ethernet makes use of the IXP4xx NPE (Network
++  Processing Engine) and the IXP4xx Queue Manager to process
++  the ethernet frames. It can optionally contain an MDIO bus to
++  talk to PHYs.
++
++properties:
++  compatible:
++    const: intel,ixp4xx-ethernet
++
++  reg:
++    maxItems: 1
++    description: Ethernet MMIO address range
++
++  queue-rx:
++    $ref: '/schemas/types.yaml#/definitions/phandle-array'
++    maxItems: 1
++    description: phandle to the RX queue on the NPE
++
++  queue-txready:
++    $ref: '/schemas/types.yaml#/definitions/phandle-array'
++    maxItems: 1
++    description: phandle to the TX READY queue on the NPE
++
++  phy-mode: true
++
++  phy-handle: true
++
++  intel,npe-handle:
++    $ref: '/schemas/types.yaml#/definitions/phandle-array'
++    maxItems: 1
++    description: phandle to the NPE this ethernet instance is using
++      and the instance to use in the second cell
++
++  mdio:
++    type: object
++    $ref: "mdio.yaml#"
++    description: optional node for embedded MDIO controller
++
++required:
++  - compatible
++  - reg
++  - queue-rx
++  - queue-txready
++  - intel,npe-handle
++
++additionalProperties: false
++
++examples:
++  - |
++    npe: npe@c8006000 {
++      compatible = "intel,ixp4xx-network-processing-engine";
++      reg = <0xc8006000 0x1000>, <0xc8007000 0x1000>, <0xc8008000 0x1000>;
++    };
++
++    ethernet@c8009000 {
++      compatible = "intel,ixp4xx-ethernet";
++      reg = <0xc8009000 0x1000>;
++      status = "disabled";
++      queue-rx = <&qmgr 4>;
++      queue-txready = <&qmgr 21>;
++      intel,npe-handle = <&npe 1>;
++      phy-mode = "rgmii";
++      phy-handle = <&phy1>;
++    };
++
++    ethernet@c800c000 {
++      compatible = "intel,ixp4xx-ethernet";
++      reg = <0xc800c000 0x1000>;
++      status = "disabled";
++      queue-rx = <&qmgr 3>;
++      queue-txready = <&qmgr 20>;
++      intel,npe-handle = <&npe 2>;
++      phy-mode = "rgmii";
++      phy-handle = <&phy2>;
++
++      mdio {
++        #address-cells = <1>;
++        #size-cells = <0>;
++        phy1: ethernet-phy@1 {
++          reg = <1>;
++        };
++        phy2: ethernet-phy@2 {
++          reg = <2>;
++        };
++      };
++    };
+-- 
+2.29.2
 
-I am "OK" at writing YAML but not great.
-
-If I were to express that out of 3 nodes in the DT one and only
-one *must* contain a certain subnode, but it doesn't matter
-which one, I have no idea how to express that.
-
-Since the abstract syntax in YAML is pretty much stateless
-this beats me.
-
-Yours,
-Linus Walleij
