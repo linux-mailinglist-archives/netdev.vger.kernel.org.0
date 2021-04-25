@@ -2,59 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2790436A6C2
-	for <lists+netdev@lfdr.de>; Sun, 25 Apr 2021 12:43:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BAA2D36A6CA
+	for <lists+netdev@lfdr.de>; Sun, 25 Apr 2021 12:51:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230053AbhDYKno (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 25 Apr 2021 06:43:44 -0400
-Received: from out30-45.freemail.mail.aliyun.com ([115.124.30.45]:46850 "EHLO
-        out30-45.freemail.mail.aliyun.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S229551AbhDYKno (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 25 Apr 2021 06:43:44 -0400
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R121e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04423;MF=jiapeng.chong@linux.alibaba.com;NM=1;PH=DS;RN=5;SR=0;TI=SMTPD_---0UWgU-OO_1619347377;
-Received: from j63c13417.sqa.eu95.tbsite.net(mailfrom:jiapeng.chong@linux.alibaba.com fp:SMTPD_---0UWgU-OO_1619347377)
-          by smtp.aliyun-inc.com(127.0.0.1);
-          Sun, 25 Apr 2021 18:43:03 +0800
-From:   Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
-To:     davem@davemloft.net
-Cc:     kuba@kernel.org, netdev@vger.kernel.org,
+        id S229903AbhDYKvj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 25 Apr 2021 06:51:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51330 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229466AbhDYKvi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 25 Apr 2021 06:51:38 -0400
+Received: from mail-pj1-x1029.google.com (mail-pj1-x1029.google.com [IPv6:2607:f8b0:4864:20::1029])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DEE44C061574;
+        Sun, 25 Apr 2021 03:50:58 -0700 (PDT)
+Received: by mail-pj1-x1029.google.com with SMTP id g1-20020a17090adac1b0290150d07f9402so3521243pjx.5;
+        Sun, 25 Apr 2021 03:50:58 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id;
+        bh=RURj9XuYGzMSpSGq6ZIOr5+JIyOF+Ge9AaA7rhnAEGM=;
+        b=dAUHhmljewOAjM8L+nhYGIOQy+wuRcc9sgKpHvmmNgFTic9/EOTZlgDyZcbJ+IB9+0
+         ZmTpMVWNGmP8+IIxT78nBz+6pXRJql/dOLjpvk2ceaySAMhHYqSOF1CtLOvInb+7hEbv
+         jPVj4OeSzOO/H+HDiKJowLt5yEmVpQtaYAixN5AidexBf1JPvyfTGi24Yicqo0iAiXhj
+         RQ7R1llV/KZc/nuXU9D57VbVtVgbgT06bLT7Tk9ZjCyjXerrpvYgNbyi0vIBInp23kzc
+         ndeRTmqv1feBBdwYjb4xiKzFLnvkkYhKkeypkmTAmvI5I146s47gZLvn5AnsIeMxrzXk
+         HuBw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=RURj9XuYGzMSpSGq6ZIOr5+JIyOF+Ge9AaA7rhnAEGM=;
+        b=rIyqbbHWbyMp8NzBGm8XrjNgjSrDNufrrh2ChDkXB6Q4VQ5NI/PA96hnAKa8Fm00FD
+         3+Rn8SEkB1iw6Zfuc1avMn4Q85o5wKa+W31e+Nz+VTr7PctsRS5DJiHAk5HHmYtQY/p3
+         1x0v+3KSaXTuA/DAvJd8VWAQPAUr1ZzuavSS2rBc/sI/BWaTZ1aZUx1wM3pObB/Uml/p
+         CSU4M+adlfb180RKEPqFsgq9TMWpvaCef5S03lKtiAcVB9NQ5aYh7tNHrmHMusNMq1/A
+         V/h8X9tN9DScNDDiV5wn7ieyeuE0GSSEhkOwms3bRnkrs3uMvINuSf5ae2gHBLKfreP6
+         2r+g==
+X-Gm-Message-State: AOAM531H+o9Tbii4P4ragxUriEGi6FkA873ckVn5d4OroTu9H+3Tp18A
+        At40dYny9U2o9amTg3L3CJE=
+X-Google-Smtp-Source: ABdhPJzbzKUG8Qg4A7QzgaIYOxKGJjLuLrcg7g/RDZHhvj1HHxiJmqhGw5XAOIuxCAfFxodReJij0w==
+X-Received: by 2002:a17:90b:1948:: with SMTP id nk8mr14649666pjb.154.1619347858250;
+        Sun, 25 Apr 2021 03:50:58 -0700 (PDT)
+Received: from localhost.localdomain ([49.37.83.82])
+        by smtp.gmail.com with ESMTPSA id g185sm8502663pfb.120.2021.04.25.03.50.54
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Sun, 25 Apr 2021 03:50:57 -0700 (PDT)
+From:   Souptick Joarder <jrdr.linux@gmail.com>
+To:     stas.yakovlev@gmail.com, kvalo@codeaurora.org, davem@davemloft.net,
+        kuba@kernel.org
+Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org,
-        Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
-Subject: [PATCH] net: davicom: Remove redundant assignment to ret
-Date:   Sun, 25 Apr 2021 18:42:56 +0800
-Message-Id: <1619347376-56140-1-git-send-email-jiapeng.chong@linux.alibaba.com>
-X-Mailer: git-send-email 1.8.3.1
+        Souptick Joarder <jrdr.linux@gmail.com>,
+        Randy Dunlap <rdunlap@infradead.org>
+Subject: [PATCH] ipw2x00: Minor documentation update
+Date:   Sun, 25 Apr 2021 16:20:42 +0530
+Message-Id: <1619347842-6638-1-git-send-email-jrdr.linux@gmail.com>
+X-Mailer: git-send-email 1.9.1
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Variable ret is set to zero but this value is never read as it is
-overwritten with a new value later on, hence it is a redundant
-assignment and can be removed.
+Kernel test robot throws below warning ->
 
-Cleans up the following clang-analyzer warning:
+drivers/net/wireless/intel/ipw2x00/ipw2100.c:5359: warning: This comment
+starts with '/**', but isn't a kernel-doc comment. Refer
+Documentation/doc-guide/kernel-doc.rst
 
-drivers/net/ethernet/davicom/dm9000.c:1527:5: warning: Value stored to
-'ret' is never read [clang-analyzer-deadcode.DeadStores].
+Minor update in documentation.
 
-Reported-by: Abaci Robot <abaci@linux.alibaba.com>
-Signed-off-by: Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
+Reported-by: kernel test robot <lkp@intel.com>
+Signed-off-by: Souptick Joarder <jrdr.linux@gmail.com>
+Cc: Randy Dunlap <rdunlap@infradead.org>
 ---
- drivers/net/ethernet/davicom/dm9000.c | 1 -
- 1 file changed, 1 deletion(-)
+ drivers/net/wireless/intel/ipw2x00/ipw2100.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/davicom/dm9000.c b/drivers/net/ethernet/davicom/dm9000.c
-index 8a9096a..e0c0349 100644
---- a/drivers/net/ethernet/davicom/dm9000.c
-+++ b/drivers/net/ethernet/davicom/dm9000.c
-@@ -1524,7 +1524,6 @@ static struct dm9000_plat_data *dm9000_parse_dt(struct device *dev)
- 			if (ret) {
- 				dev_err(db->dev, "irq %d cannot set wakeup (%d)\n",
- 					db->irq_wake, ret);
--				ret = 0;
- 			} else {
- 				irq_set_irq_wake(db->irq_wake, 0);
- 				db->wake_supported = 1;
+diff --git a/drivers/net/wireless/intel/ipw2x00/ipw2100.c b/drivers/net/wireless/intel/ipw2x00/ipw2100.c
+index 23fbddd..47eb89b 100644
+--- a/drivers/net/wireless/intel/ipw2x00/ipw2100.c
++++ b/drivers/net/wireless/intel/ipw2x00/ipw2100.c
+@@ -5356,7 +5356,7 @@ struct ipw2100_wep_key {
+ #define WEP_STR_128(x) x[0],x[1],x[2],x[3],x[4],x[5],x[6],x[7],x[8],x[9],x[10]
+ 
+ /**
+- * Set a the wep key
++ * ipw2100_set_key() - Set a the wep key
+  *
+  * @priv: struct to work on
+  * @idx: index of the key we want to set
 -- 
-1.8.3.1
+1.9.1
 
