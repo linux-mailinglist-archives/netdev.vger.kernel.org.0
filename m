@@ -2,192 +2,138 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6D10336A5FB
-	for <lists+netdev@lfdr.de>; Sun, 25 Apr 2021 11:08:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2615636A5FA
+	for <lists+netdev@lfdr.de>; Sun, 25 Apr 2021 11:08:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229668AbhDYJJJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 25 Apr 2021 05:09:09 -0400
-Received: from regular1.263xmail.com ([211.150.70.204]:44786 "EHLO
-        regular1.263xmail.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229485AbhDYJJI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 25 Apr 2021 05:09:08 -0400
-Received: from localhost (unknown [192.168.167.172])
-        by regular1.263xmail.com (Postfix) with ESMTP id 8CD8C610;
-        Sun, 25 Apr 2021 17:07:52 +0800 (CST)
-X-MAIL-GRAY: 0
-X-MAIL-DELIVERY: 1
-X-ADDR-CHECKED4: 1
-X-ANTISPAM-LEVEL: 2
-X-SKE-CHECKED: 1
-X-ABS-CHECKED: 1
-Received: from [172.16.12.8] (unknown [58.22.7.114])
-        by smtp.263.net (postfix) whith ESMTP id P18451T140670035396352S1619341670916448_;
-        Sun, 25 Apr 2021 17:07:51 +0800 (CST)
-X-IP-DOMAINF: 1
-X-UNIQUE-TAG: <28b8855cf8005ca39a20aeebff46b6d1>
-X-RL-SENDER: david.wu@rock-chips.com
-X-SENDER: wdc@rock-chips.com
-X-LOGIN-NAME: david.wu@rock-chips.com
-X-FST-TO: kernel@collabora.com
-X-RCPT-COUNT: 10
-X-SENDER-IP: 58.22.7.114
-X-ATTACHMENT-NUM: 0
-X-System-Flag: 0
-Subject: Re: [PATCH v2 net-next 0/3] net: stmmac: RK3566
-To:     Ezequiel Garcia <ezequiel@collabora.com>, netdev@vger.kernel.org,
-        linux-rockchip@lists.infradead.org
-Cc:     Jose Abreu <joabreu@synopsys.com>,
-        Heiko Stuebner <heiko@sntech.de>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Peter Geis <pgwipeout@gmail.com>,
-        Kever Yang <kever.yang@rock-chips.com>, kernel@collabora.com
-References: <20210421203409.40717-1-ezequiel@collabora.com>
- <ae524a70-7886-27a0-1289-0c3a1c7371bb@rock-chips.com>
- <08e97e0e291aecb218b9ebb8aaa37afead504e1c.camel@collabora.com>
-From:   David Wu <david.wu@rock-chips.com>
-Message-ID: <84039ea3-711b-dce3-ee00-3a00b3315cf5@rock-chips.com>
-Date:   Sun, 25 Apr 2021 17:07:51 +0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+        id S229596AbhDYJIo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 25 Apr 2021 05:08:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57352 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229485AbhDYJIm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 25 Apr 2021 05:08:42 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 350D1C061574
+        for <netdev@vger.kernel.org>; Sun, 25 Apr 2021 02:08:02 -0700 (PDT)
+Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <mkl@pengutronix.de>)
+        id 1laak7-0004FR-9Y; Sun, 25 Apr 2021 11:07:55 +0200
+Received: from pengutronix.de (unknown [IPv6:2a03:f580:87bc:d400:c28e:7dee:2502:6631])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (Client did not present a certificate)
+        (Authenticated sender: mkl-all@blackshift.org)
+        by smtp.blackshift.org (Postfix) with ESMTPSA id B055D61683D;
+        Sun, 25 Apr 2021 09:07:52 +0000 (UTC)
+Date:   Sun, 25 Apr 2021 11:07:51 +0200
+From:   Marc Kleine-Budde <mkl@pengutronix.de>
+To:     Erik Flodin <erik@flodin.me>
+Cc:     Oliver Hartkopp <socketcan@hartkopp.net>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, linux-can@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH] can: fix proc/can/net/rcvlist_* header alignment on
+ 64-bit system
+Message-ID: <20210425090751.2jqj4yqx5ztyqhvg@pengutronix.de>
+References: <20210425084950.171529-1-erik@flodin.me>
 MIME-Version: 1.0
-In-Reply-To: <08e97e0e291aecb218b9ebb8aaa37afead504e1c.camel@collabora.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="rjbsgmzjagbnrltp"
+Content-Disposition: inline
+In-Reply-To: <20210425084950.171529-1-erik@flodin.me>
+X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
+X-SA-Exim-Mail-From: mkl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Ezequiel,
 
-在 2021/4/23 下午9:57, Ezequiel Garcia 写道:
-> Hi David,
-> 
-> Thanks a lot for reviewing.
-> 
-> On Fri, 2021-04-23 at 17:24 +0800, David Wu wrote:
->> Hi Ezequiel,
->>
->> 在 2021/4/22 上午4:34, Ezequiel Garcia 写道:
->>> Now that RK3568 SoC devicetree upstreaming is happening [1],
->>> here's another round for the RK3566 dwmac. There wasn't any clear
->>> consensus on how to implement the two interfaces present
->>> on RK3568, so I decided to drop that and just submit RK3566 for now.
->>>
->>> This has been tested on a Pine64 RK3566 Quartz64 Model B board,
->>> DHCP and iperf are looking good.
->>>
->>> For all the people testing, here's Quartz 64 Model B device tree
->>> snippet:
->>>
->>>           gmac1: ethernet@fe010000 {
->>>                   compatible = "rockchip,rk3566-gmac", "snps,dwmac-4.20a";
->>
->> It is better to use "rockchip,rk3568-gmac" here, "rockchip,rk3566-gmac"
->> is not compatible, 3568 has two gmacs, which are compatible with 3566.
->>
->> If there is no better way, using bus_id from alias is good, it is a
->> fixed id, and U-Boot also use the id to write MAC address into kernel DTB.
->>
->> plat->bus_id = of_alias_get_id(np, "ethernet");
->>
-> 
-> This was discussed, see ChenYu's reply. I think the idea
-> is considered fragile:
-> 
-> https://lore.kernel.org/netdev/CAGb2v67ZBR=XDFPeXQc429HNu_dbY__-KN50tvBW44fXMs78_w@mail.gmail.com/
-> 
-> However, I agree with you about going back to just "rockchip,rk3568-gmac".
-> Adding rockchip,rk3566-gmac maybe wasn't a great idea :-)
-> 
-> The most accepted way forward seems Heiko's proposal of hardcoding the mmio
-> addresses to identify each block, as it's done in the DSI driver:
-> 
-> https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/drivers/gpu/drm/rockchip/dw-mipi-dsi-rockchip.c#n1170
-> 
-> Would you agree with it?
-> 
+--rjbsgmzjagbnrltp
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Yes, I agree.
-I also think the alias should be rarely changed. The DSI mmio addresses 
-example here can be used for reference, and it seems that it will be 
-stronger than alias.
+Hey Erik,
 
-> Thanks!
-> Ezequiel
->   
->>>                   reg = <0x0 0xfe010000 0x0 0x10000>;
->>>                   interrupts = <GIC_SPI 32 IRQ_TYPE_LEVEL_HIGH>,
->>>                                <GIC_SPI 29 IRQ_TYPE_LEVEL_HIGH>;
->>>                   interrupt-names = "macirq", "eth_wake_irq";
->>>                   rockchip,grf = <&grf>;
->>>                   clocks = <&cru SCLK_GMAC1>, <&cru SCLK_GMAC1_RX_TX>,
->>>                            <&cru SCLK_GMAC1_RX_TX>, <&cru CLK_MAC1_REFOUT>,
->>>                            <&cru ACLK_GMAC1>, <&cru PCLK_GMAC1>,
->>>                            <&cru SCLK_GMAC1_RX_TX>, <&cru CLK_GMAC1_PTP_REF>;
->>>                   clock-names = "stmmaceth", "mac_clk_rx",
->>>                                 "mac_clk_tx", "clk_mac_refout",
->>>                                 "aclk_mac", "pclk_mac",
->>>                                 "clk_mac_speed", "ptp_ref";
->>>                   resets = <&cru SRST_A_GMAC1>;
->>>                   reset-names = "stmmaceth";
->>>
->>>                   snps,mixed-burst;
->>>                   snps,tso;
->>>
->>>                   snps,axi-config = <&gmac1_stmmac_axi_setup>;
->>>                   snps,mtl-rx-config = <&gmac1_mtl_rx_setup>;
->>>                   snps,mtl-tx-config = <&gmac1_mtl_tx_setup>;
->>>                   status = "disabled";
->>>
->>>                   mdio1: mdio {
->>>                           compatible = "snps,dwmac-mdio";
->>>                           #address-cells = <0x1>;
->>>                           #size-cells = <0x0>;
->>>                   };
->>>
->>>                   gmac1_stmmac_axi_setup: stmmac-axi-config {
->>>                           snps,wr_osr_lmt = <4>;
->>>                           snps,rd_osr_lmt = <8>;
->>>                           snps,blen = <0 0 0 0 16 8 4>;
->>>                   };
->>>
->>>                   gmac1_mtl_rx_setup: rx-queues-config {
->>>                           snps,rx-queues-to-use = <1>;
->>>                           queue0 {};
->>>                   };
->>>
->>>                   gmac1_mtl_tx_setup: tx-queues-config {
->>>                           snps,tx-queues-to-use = <1>;
->>>                           queue0 {};
->>>                   };
->>>           };
->>>
->>> While here, I'm adding a small patch from David Wu, for some
->>> sanity checks for dwmac-rockchip-specific non-NULL ops.
->>>
->>> Thanks!
->>>
->>> [1] http://lore.kernel.org/r/20210421065921.23917-1-cl@rock-chips.com
->>>
->>> David Wu (2):
->>>     net: stmmac: dwmac-rk: Check platform-specific ops
->>>     net: stmmac: Add RK3566 SoC support
->>>
->>> Ezequiel Garcia (1):
->>>     net: stmmac: Don't set has_gmac if has_gmac4 is set
->>>
->>>    .../bindings/net/rockchip-dwmac.txt           |   1 +
->>>    .../net/ethernet/stmicro/stmmac/dwmac-rk.c    | 126 +++++++++++++++++-
->>>    2 files changed, 124 insertions(+), 3 deletions(-)
->>>
->>
->>
-> 
-> 
-> 
-> 
-> 
+the subject is not 100% correct, actually it is /proc/net/can/rcvlist_*
 
+On 25.04.2021 10:49:29, Erik Flodin wrote:
+> Before this fix, the function and userdata columns weren't aligned:
+>   device   can_id   can_mask  function  userdata   matches  ident
+>    vcan0  92345678  9fffffff  0000000000000000  0000000000000000         =
+0  raw
+>    vcan0     123    00000123  0000000000000000  0000000000000000         =
+0  raw
+>=20
+> After the fix they are:
+>   device   can_id   can_mask      function          userdata       matche=
+s  ident
+>    vcan0  92345678  9fffffff  0000000000000000  0000000000000000         =
+0  raw
+>    vcan0     123    00000123  0000000000000000  0000000000000000         =
+0  raw
+>=20
+> Signed-off-by: Erik Flodin <erik@flodin.me>
+> ---
+>  net/can/proc.c | 7 +++++--
+>  1 file changed, 5 insertions(+), 2 deletions(-)
+>=20
+> diff --git a/net/can/proc.c b/net/can/proc.c
+> index 5ea8695f507e..97901e56c429 100644
+> --- a/net/can/proc.c
+> +++ b/net/can/proc.c
+> @@ -205,8 +205,11 @@ static void can_print_recv_banner(struct seq_file *m)
+>  	 *                  can1.  00000000  00000000  00000000
+>  	 *                 .......          0  tp20
+>  	 */
+> -	seq_puts(m, "  device   can_id   can_mask  function"
+> -			"  userdata   matches  ident\n");
+> +	const char *pad =3D sizeof(void *) =3D=3D 8 ? "    " : "";
 
+nitpick: please move this to the beginning of the function, even before
+the comment.
+
+> +
+> +	seq_printf(m, "  device   can_id   can_mask  %sfunction%s"
+> +		   "  %suserdata%s   matches  ident\n",
+
+nitpick:
+For printed strings it's better to have them in a single line, so that
+grepping for them is easier.
+
+> +		   pad, pad, pad, pad);
+>  }
+> =20
+>  static int can_stats_proc_show(struct seq_file *m, void *v)
+> --=20
+> 2.31.0
+>=20
+>=20
+
+Marc
+
+--=20
+Pengutronix e.K.                 | Marc Kleine-Budde           |
+Embedded Linux                   | https://www.pengutronix.de  |
+Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
+Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
+
+--rjbsgmzjagbnrltp
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEK3kIWJt9yTYMP3ehqclaivrt76kFAmCFMWUACgkQqclaivrt
+76nfpwf/cWOE7JZ/XzLWmDQF8+J8nzEU4xxgH0FXeoT9noHPZh0IbVTVtvCT/Z4K
+5VIsenBWH8ga0RB8O/hF7mhWHn6i3cptkiMqgBcNftje4+GkX89S5vTxeuHCgeYk
+EPY1lYhUbuTDQ4j/roV9kZsJ39aNofptVXVuLS2LTczRqdZmDVpCyfC85ybwpn+v
+8Aof1OiTb5hexwCYskTfX4lR+Eg2SJPb2qVLwKfoR7nqPouUQSGqTCMJFSeduVqZ
+ap5fNq7CIMb3akBY2CfJXyCFiOiYF7vb46KL+SlMTBAV1w5jeAMaaW73L8wkmyx+
+Qd/YrHjstGWeGUre04i5rhvTeb92ig==
+=OxLH
+-----END PGP SIGNATURE-----
+
+--rjbsgmzjagbnrltp--
