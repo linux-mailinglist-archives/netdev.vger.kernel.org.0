@@ -2,114 +2,142 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 56ADB36A6D6
-	for <lists+netdev@lfdr.de>; Sun, 25 Apr 2021 13:02:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4A6EE36A6DB
+	for <lists+netdev@lfdr.de>; Sun, 25 Apr 2021 13:13:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230047AbhDYLC4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 25 Apr 2021 07:02:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53746 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229551AbhDYLCz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 25 Apr 2021 07:02:55 -0400
-Received: from mail-pj1-x1029.google.com (mail-pj1-x1029.google.com [IPv6:2607:f8b0:4864:20::1029])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA356C061756
-        for <netdev@vger.kernel.org>; Sun, 25 Apr 2021 04:02:12 -0700 (PDT)
-Received: by mail-pj1-x1029.google.com with SMTP id f6-20020a17090a6546b029015088cf4a1eso3651756pjs.2
-        for <netdev@vger.kernel.org>; Sun, 25 Apr 2021 04:02:12 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id;
-        bh=RZKR8ck1KX2HeGx+2oK1RAn3RiTZ1YTGQyJAx9GZEnI=;
-        b=eI1slnRP0b9nAS71fudHoITMbsdH1FtZrqWcIhDw6ZVScwWGRNxt9YyeDiOwmQSKuF
-         5Y+dGzWIwONOXZtjhBgQD4rbyDvAgBW2AmKBThruM+CDMdKMwQOwnW6i452H5dFZrYqb
-         IKX+KkxIwfaTxrAKHfUjvgNjm2bfoPg1I/EAwr0yvvy2ZZ/coWmjjwvSyd5AH+GG+Oz8
-         AFkO44xZWNIOb4FdmuuaK1S4dfe3ZCQip6QqYj5R3DyFwmAJ7nGx45iEZYXXEGHjYhP4
-         aT27nykRGvTfIVRJj0M0160hjBrmMXOSZmhrp1O/nBLh/nixDbzD3tWiRASJTrtH67ct
-         4G/w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=RZKR8ck1KX2HeGx+2oK1RAn3RiTZ1YTGQyJAx9GZEnI=;
-        b=SycDVsnaL7jPYfHmDkUtATYGBO1OVugRE30UkSD4yXZAHEmDNg1jACcZ1j8IPce82u
-         wenB78qe/78OAkV0T7D1wQJBDrgYwl83JoewF1u5Y9/G8NDkum9bEKZ8pgZmeoF2Ut1z
-         LfZV4FMOwB68oHXKyHr16V1/STJk3eZIaceBh6QyNVFCYhn61GavC+f35VOdmUO4xV56
-         mon5jR4+YUK2C2GfRO3givfnDw7TW+c++ZqMxYP0lOxnZMmGDe2Lkm+ttOS9vzGoOweM
-         WsU6tKIAQyrgbF5Hy55N/JSplC4YTqcaN45wcLUKJZwW9AvAij+hk97G3x8sZPkkvk3K
-         kVQA==
-X-Gm-Message-State: AOAM531N/Hc/ew1WPw9dPDTJAk0v+4ZFtOnSzIa9LiP07sfA5FG+KHHr
-        Pgt7PCADMC9fET51YRsBWufLlQ==
-X-Google-Smtp-Source: ABdhPJxwsmKYfTpwBg5m/3CapXl2HSdzZPvK9p8vUYBYwfw64aWilPMIw33q9Hrr+GqWWWtNWywnkg==
-X-Received: by 2002:a17:90b:1bc1:: with SMTP id oa1mr13972865pjb.46.1619348532126;
-        Sun, 25 Apr 2021 04:02:12 -0700 (PDT)
-Received: from localhost.localdomain (80.251.214.228.16clouds.com. [80.251.214.228])
-        by smtp.gmail.com with ESMTPSA id o5sm8728629pgq.58.2021.04.25.04.02.07
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 25 Apr 2021 04:02:11 -0700 (PDT)
-From:   Shawn Guo <shawn.guo@linaro.org>
-To:     Kalle Valo <kvalo@codeaurora.org>
-Cc:     =?UTF-8?q?Rafa=C5=82=20Mi=C5=82ecki?= <rafal@milecki.pl>,
-        Arend van Spriel <aspriel@gmail.com>,
-        Franky Lin <franky.lin@broadcom.com>,
-        Hante Meuleman <hante.meuleman@broadcom.com>,
-        Chi-hsien Lin <chi-hsien.lin@infineon.com>,
-        Wright Feng <wright.feng@infineon.com>,
-        Chung-hsien Hsu <chung-hsien.hsu@infineon.com>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        brcm80211-dev-list.pdl@broadcom.com,
-        SHA-cyfmac-dev-list@infineon.com, Shawn Guo <shawn.guo@linaro.org>
-Subject: [PATCH] brcmfmac: use ISO3166 country code and 0 rev as fallback
-Date:   Sun, 25 Apr 2021 19:02:00 +0800
-Message-Id: <20210425110200.3050-1-shawn.guo@linaro.org>
-X-Mailer: git-send-email 2.17.1
+        id S230140AbhDYLNA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 25 Apr 2021 07:13:00 -0400
+Received: from mail.kernel.org ([198.145.29.99]:40574 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229707AbhDYLM7 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 25 Apr 2021 07:12:59 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 7B5E16120C;
+        Sun, 25 Apr 2021 11:12:19 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1619349140;
+        bh=5lGEsDFA3d/Fb4AUtFXHzwkNjEGaSwEjqnnuzHp0H8o=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=ZsGQ2P/MD9LN1jzVG/y0h5BNz6xHNOMEFhoI6QnMDSnzbxMXfihUpMl1cEWmJeWap
+         +yhTveH8dqxyl59ZVjp3MFo8axqnDl9/1hbHWxsowu613kfM7vLaZkbYdGT7ARdM2p
+         fxMnChbXdN0WIldvMIHbf3iuUkbmtIL9jvB62zq6QJkP+HSjsPCVPBPSrdhkNVkwy7
+         6EPF++xlePG6dzZ/AqHbCZTajl27NNwmBwclPF4V11+Fhsm0Rl8J+guCaVR5D6Yu6u
+         WrVSaRztHMLPFglO+zgcWYNUUCsTPyLmYjpippyrGVByPZNsIAjb1xLWbp1Nxgg+7C
+         uB6lCTgb6g0sQ==
+Date:   Sun, 25 Apr 2021 14:12:16 +0300
+From:   Leon Romanovsky <leon@kernel.org>
+To:     Jethro Beekman <kernel@jbeekman.nl>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        open list <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v2 net-next] macvlan: Add nodst option to macvlan type
+ source
+Message-ID: <YIVOkHgZXiShCH2M@unreal>
+References: <2afc4d46-aa9b-a7db-d872-d02163b1f29c@jbeekman.nl>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <2afc4d46-aa9b-a7db-d872-d02163b1f29c@jbeekman.nl>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Instead of aborting country code setup in firmware, use ISO3166 country
-code and 0 rev as fallback, when country_codes mapping table is not
-configured.  This fallback saves the country_codes table setup for recent
-brcmfmac chipsets/firmwares, which just use ISO3166 code and require no
-revision number.
+On Sun, Apr 25, 2021 at 11:22:03AM +0200, Jethro Beekman wrote:
+> The default behavior for source MACVLAN is to duplicate packets to
+> appropriate type source devices, and then do the normal destination MACVLAN
+> flow. This patch adds an option to skip destination MACVLAN processing if
+> any matching source MACVLAN device has the option set.
+> 
+> This allows setting up a "catch all" device for source MACVLAN: create one
+> or more devices with type source nodst, and one device with e.g. type vepa,
+> and incoming traffic will be received on exactly one device.
+> 
+> v2: netdev wants non-standard line length
 
-Signed-off-by: Shawn Guo <shawn.guo@linaro.org>
----
- .../broadcom/brcm80211/brcmfmac/cfg80211.c      | 17 +++++++++++------
- 1 file changed, 11 insertions(+), 6 deletions(-)
+Can you please put the changelog after "---"? So it won't be part of
+commit message in the git log.
 
-diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/cfg80211.c b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/cfg80211.c
-index f4405d7861b6..6cb09c7c37b6 100644
---- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/cfg80211.c
-+++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/cfg80211.c
-@@ -7442,18 +7442,23 @@ static s32 brcmf_translate_country_code(struct brcmf_pub *drvr, char alpha2[2],
- 	s32 found_index;
- 	int i;
- 
--	country_codes = drvr->settings->country_codes;
--	if (!country_codes) {
--		brcmf_dbg(TRACE, "No country codes configured for device\n");
--		return -EINVAL;
--	}
--
- 	if ((alpha2[0] == ccreq->country_abbrev[0]) &&
- 	    (alpha2[1] == ccreq->country_abbrev[1])) {
- 		brcmf_dbg(TRACE, "Country code already set\n");
- 		return -EAGAIN;
- 	}
- 
-+	country_codes = drvr->settings->country_codes;
-+	if (!country_codes) {
-+		brcmf_dbg(TRACE, "No country codes configured for device, using ISO3166 code and 0 rev\n");
-+		memset(ccreq, 0, sizeof(*ccreq));
-+		ccreq->country_abbrev[0] = alpha2[0];
-+		ccreq->country_abbrev[1] = alpha2[1];
-+		ccreq->ccode[0] = alpha2[0];
-+		ccreq->ccode[1] = alpha2[1];
-+		return 0;
-+	}
-+
- 	found_index = -1;
- 	for (i = 0; i < country_codes->table_size; i++) {
- 		cc = &country_codes->table[i];
--- 
-2.17.1
+Thanks
 
+> 
+> Signed-off-by: Jethro Beekman <kernel@jbeekman.nl>
+> ---
+>  drivers/net/macvlan.c        | 19 ++++++++++++++-----
+>  include/uapi/linux/if_link.h |  1 +
+>  2 files changed, 15 insertions(+), 5 deletions(-)
+> 
+> diff --git a/drivers/net/macvlan.c b/drivers/net/macvlan.c
+> index 9a9a5cf36a4b..7427b989607e 100644
+> --- a/drivers/net/macvlan.c
+> +++ b/drivers/net/macvlan.c
+> @@ -423,18 +423,24 @@ static void macvlan_forward_source_one(struct sk_buff *skb,
+>  	macvlan_count_rx(vlan, len, ret == NET_RX_SUCCESS, false);
+>  }
+>  
+> -static void macvlan_forward_source(struct sk_buff *skb,
+> +static bool macvlan_forward_source(struct sk_buff *skb,
+>  				   struct macvlan_port *port,
+>  				   const unsigned char *addr)
+>  {
+>  	struct macvlan_source_entry *entry;
+>  	u32 idx = macvlan_eth_hash(addr);
+>  	struct hlist_head *h = &port->vlan_source_hash[idx];
+> +	bool consume = false;
+>  
+>  	hlist_for_each_entry_rcu(entry, h, hlist) {
+> -		if (ether_addr_equal_64bits(entry->addr, addr))
+> +		if (ether_addr_equal_64bits(entry->addr, addr)) {
+> +			if (entry->vlan->flags & MACVLAN_FLAG_NODST)
+> +				consume = true;
+>  			macvlan_forward_source_one(skb, entry->vlan);
+> +		}
+>  	}
+> +
+> +	return consume;
+>  }
+>  
+>  /* called under rcu_read_lock() from netif_receive_skb */
+> @@ -463,7 +469,8 @@ static rx_handler_result_t macvlan_handle_frame(struct sk_buff **pskb)
+>  			return RX_HANDLER_CONSUMED;
+>  		*pskb = skb;
+>  		eth = eth_hdr(skb);
+> -		macvlan_forward_source(skb, port, eth->h_source);
+> +		if (macvlan_forward_source(skb, port, eth->h_source))
+> +			return RX_HANDLER_CONSUMED;
+>  		src = macvlan_hash_lookup(port, eth->h_source);
+>  		if (src && src->mode != MACVLAN_MODE_VEPA &&
+>  		    src->mode != MACVLAN_MODE_BRIDGE) {
+> @@ -482,7 +489,8 @@ static rx_handler_result_t macvlan_handle_frame(struct sk_buff **pskb)
+>  		return RX_HANDLER_PASS;
+>  	}
+>  
+> -	macvlan_forward_source(skb, port, eth->h_source);
+> +	if (macvlan_forward_source(skb, port, eth->h_source))
+> +		return RX_HANDLER_CONSUMED;
+>  	if (macvlan_passthru(port))
+>  		vlan = list_first_or_null_rcu(&port->vlans,
+>  					      struct macvlan_dev, list);
+> @@ -1286,7 +1294,8 @@ static int macvlan_validate(struct nlattr *tb[], struct nlattr *data[],
+>  		return 0;
+>  
+>  	if (data[IFLA_MACVLAN_FLAGS] &&
+> -	    nla_get_u16(data[IFLA_MACVLAN_FLAGS]) & ~MACVLAN_FLAG_NOPROMISC)
+> +	    nla_get_u16(data[IFLA_MACVLAN_FLAGS]) & ~(MACVLAN_FLAG_NOPROMISC |
+> +						      MACVLAN_FLAG_NODST))
+>  		return -EINVAL;
+>  
+>  	if (data[IFLA_MACVLAN_MODE]) {
+> diff --git a/include/uapi/linux/if_link.h b/include/uapi/linux/if_link.h
+> index 91c8dda6d95d..cd5b382a4138 100644
+> --- a/include/uapi/linux/if_link.h
+> +++ b/include/uapi/linux/if_link.h
+> @@ -614,6 +614,7 @@ enum macvlan_macaddr_mode {
+>  };
+>  
+>  #define MACVLAN_FLAG_NOPROMISC	1
+> +#define MACVLAN_FLAG_NODST	2 /* skip dst macvlan if matching src macvlan */
+>  
+>  /* VRF section */
+>  enum {
+> -- 
+> 2.31.1
+> 
