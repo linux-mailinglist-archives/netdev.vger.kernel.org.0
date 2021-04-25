@@ -2,186 +2,163 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AF09536A86E
-	for <lists+netdev@lfdr.de>; Sun, 25 Apr 2021 18:45:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 919AC36A896
+	for <lists+netdev@lfdr.de>; Sun, 25 Apr 2021 19:41:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230472AbhDYQqT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 25 Apr 2021 12:46:19 -0400
-Received: from mail-bn8nam12on2075.outbound.protection.outlook.com ([40.107.237.75]:46656
-        "EHLO NAM12-BN8-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S230359AbhDYQqS (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 25 Apr 2021 12:46:18 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=CNJkIeTFVS5jRAemNft1rJx2077dnW7a8sfp8IvAq7wu28gRQwRisU+x9djhfuCJbnZAxk0nAih49rfozEUJSDZ5cfyBDjdtcijcql6PB81YooYIC8YoDDLFjbLXASvgGK7avY4Ao7MMZ46PZTIipezRYUDZqSeDbYMiRxiS8a0amKYUQvRevQkseyAaRIjYbTvLqp+FcCfxBxypNYmxnbCo1OdoSlpGs3k975EZHtUoMGH0VUQkA4htX+9AdDjcRCvN159VoS+E6nn7/FTPipPactcnEgipyClsBFi7rkaSMGXT1UDoDOQDWcXQPNze6OxsEv8z9bSI/Vw23wo+oA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=YEkoeTyegjO1k7XOGHDcE5f8uOI/emx6l/0U6mSNdOM=;
- b=HabVDNMlooKPfdhOeUarTfr5MIk8hjO3rZce4rmVjv0pH73lvitmz35bp0/eVUo2YTh/zg8jtmHpxCwNflYtIXvD4UgHkjyDlLqLZn+tYhJ5TZFHVgsVa/R29eL5JLP4XTHdYRvkgrel9v4yrlf/JFRgn60Ztv+VAzX2jAiwheO0XDrNIMAizJp8NwjfIro+hr+9HjLIVKQlBqoF7I3yKJBgEENLJeew87zHy5VJ8ZrEtWUBVNtVmW69pr/aZO1VVSCHYLOFeG9p/s0Lus6+F+PioMdEgRWFKyiqrKiWSp8r44CKZzzZwJT2nWQnNYSM1P1qCVNn0dAoWLGJw543Gw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=YEkoeTyegjO1k7XOGHDcE5f8uOI/emx6l/0U6mSNdOM=;
- b=Ux+JF9biQFDKB25CT9H6kTMylUZ2/+nhTstXvlezTPkXdPCooCDpsk81TlaeyJobjQWcLkkz8hcGd4ZeBlLbEei6PeNSZA1DmyGo2kUJSsZSrSjbIgMNkPmhYMNX5NH0Yuom31PMOxIo4Prl4rjJVl8Qz6BK+wwQA8VutBUZFkDv/sHd7M9Z8lCEjGYhzDPaKdXZX/ReR3F03lNc6Exqlerx2GCkx8x01np+tkDrmmU8uziZ1o/C38R130DwYxdoaEN9Y89gKrBz9bM6L7VQQJrdZ8i8EUv5Opt70vvTWbi4z9u2+VejfP8kkBX/xW001tbUBuZnveY5ATWfivwJKw==
-Authentication-Results: lists.linux-foundation.org; dkim=none (message not
- signed) header.d=none;lists.linux-foundation.org; dmarc=none action=none
- header.from=nvidia.com;
-Received: from DM4PR12MB5278.namprd12.prod.outlook.com (2603:10b6:5:39e::17)
- by DM4PR12MB5214.namprd12.prod.outlook.com (2603:10b6:5:395::22) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4065.23; Sun, 25 Apr
- 2021 16:45:35 +0000
-Received: from DM4PR12MB5278.namprd12.prod.outlook.com
- ([fe80::a145:fd5b:8d6f:20e6]) by DM4PR12MB5278.namprd12.prod.outlook.com
- ([fe80::a145:fd5b:8d6f:20e6%2]) with mapi id 15.20.4065.025; Sun, 25 Apr 2021
- 16:45:35 +0000
-Subject: Re: [PATCH net 2/2] net: bridge: fix lockdep multicast_lock false
- positive splat
-To:     Taehee Yoo <ap420073@gmail.com>, davem@davemloft.net,
-        kuba@kernel.org, dsahern@kernel.org, yoshfuji@linux-ipv6.org,
-        netdev@vger.kernel.org, j.vosburgh@gmail.com, vfalico@gmail.com,
-        andy@greyhouse.net, roopa@nvidia.com, ast@kernel.org,
-        andriin@fb.com, daniel@iogearbox.net, weiwan@google.com,
-        cong.wang@bytedance.com, bjorn@kernel.org,
-        herbert@gondor.apana.org.au, bridge@lists.linux-foundation.org
-References: <20210425155742.30057-1-ap420073@gmail.com>
- <20210425155742.30057-3-ap420073@gmail.com>
-From:   Nikolay Aleksandrov <nikolay@nvidia.com>
-Message-ID: <ed54816f-2591-d8a7-61d8-63b7f49852c1@nvidia.com>
-Date:   Sun, 25 Apr 2021 19:45:27 +0300
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.8.1
-In-Reply-To: <20210425155742.30057-3-ap420073@gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [213.179.129.39]
-X-ClientProxiedBy: ZRAP278CA0012.CHEP278.PROD.OUTLOOK.COM
- (2603:10a6:910:10::22) To DM4PR12MB5278.namprd12.prod.outlook.com
- (2603:10b6:5:39e::17)
+        id S231192AbhDYRmJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 25 Apr 2021 13:42:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54930 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230329AbhDYRmI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 25 Apr 2021 13:42:08 -0400
+X-Greylist: delayed 515 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Sun, 25 Apr 2021 10:41:27 PDT
+Received: from mail1.systemli.org (mail1.systemli.org [IPv6:2a00:c38:11e:ffff::a032])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 97A8EC061574;
+        Sun, 25 Apr 2021 10:41:27 -0700 (PDT)
+From:   Richard Sailer <richard_siegfried@systemli.org>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=systemli.org;
+        s=default; t=1619371954;
+        bh=ox3efJnaRB77OtV0du9g3CiLZNhgcvK0gzuL7ANDrFY=;
+        h=From:To:Cc:Subject:Date:From;
+        b=0FtGQW68JkaIC4bzT41tBGuR29dttkbpUxS29ODAzKqNG9+7Us+iQAwm3FmjmxUhA
+         BLXkb+KF5lCIr6aSMFbI5sTmwDgniUhU+Fau+3390ty4R+vRdabCFa1j0D4vsriHgy
+         27h4SX3da/CFMEc3VjMS0Lz5tx//ILHQBQ8RtFDh2bKyVwINkc3GnCaXSGeUBWWKRx
+         oACWQEQAqK3CAfEqpsLwWACSPCA/3YNABq/eAnRFU+XSXcCXZhQpTs4phGjEJ3j5/P
+         ZhQFhDeAuwbjMh+gm8IOavvuUNkmUURfTdpGoNJ/vk3Au4vp68bWtaFK0kyJEi60eg
+         x4hFPbXtrZuNQ==
+To:     gerrit@erg.abdn.ac.uk, davem@davemloft.net, dccp@vger.kernel.org
+Cc:     netdev@vger.kernel.org
+Subject: [PATCH net-next] dccp: add getsockopt option for CCID2: DCCP_SOCKOPT_CCID_TX_INFO
+Date:   Sun, 25 Apr 2021 19:32:19 +0200
+Message-Id: <20210425173219.175324-1-richard_siegfried@systemli.org>
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from [10.21.240.78] (213.179.129.39) by ZRAP278CA0012.CHEP278.PROD.OUTLOOK.COM (2603:10a6:910:10::22) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4065.20 via Frontend Transport; Sun, 25 Apr 2021 16:45:31 +0000
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 85b8758d-982c-4c5c-9895-08d908098c8d
-X-MS-TrafficTypeDiagnostic: DM4PR12MB5214:
-X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <DM4PR12MB5214095CC88B7C92A3C69BADDF439@DM4PR12MB5214.namprd12.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:9508;
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: MvU7KVPyMpdOsKpeXsZOvT101oIyWGVk9ZS++QU0hv75Oqn6lK/epE/UImtnrcPtxAgfO+5ta9gvK18yf/UHXvdY4lfLOsMq5qsCsxprP+jVvnBwWjiFYKfz9pEWugDaQ14cg4cCTg5FC4QUFHB/u3OIEWxmjW0D5O6GpH3KDec6d6JrebyWdiobfcWlJ26CPFFyAOGyPjareSzw611696V5wNi380hN1oAi0XzLfggbJGJIURDvTC4UAjwTnz06C7eWG/swtR6kNWDxs45GA4bW+4tvhkYqaVeE7a8I2RbRNTEdA3OgToGFpVOckLIE7CgCYKqN4zkuFk030/bMHLLIvBezwd6oxB9oOkNJtLU5tusbijfslClpFxMSoAjaJZbyT8qyjJD+WM3RAWU+bNpcxwDVaeN9QWhGBZU6LMpy17xCrlVK9raEb85zfyk2UEoIuZMo5yjmHuwt0PgrO4tmL8Jcou3jYHtU4b6nKlGfayE34ts0bL8BQbGA0W8JQyx7XRxbg4Ry5lab1RaLRxVAmzIe9l/AvL18AMFCQkA5zZcD7yASil5c57dp7fY9BtqXy0/uvM8GxkorzuYpG6K6kfN6CguW2Ar8YlFj5F3KgKBE/Lmj/rF/xZ0tndIbPcENPxE+FGRkLGKEpQV8pMU4N9+HpWS95n1WNwUZw6KL8bOgRnW74SSoticFO7QHDCTX4cu8L66FNXR62Q0cwA==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM4PR12MB5278.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(136003)(39860400002)(396003)(366004)(376002)(346002)(26005)(186003)(66476007)(66556008)(2616005)(6666004)(31696002)(16576012)(316002)(8936002)(53546011)(921005)(2906002)(7416002)(16526019)(956004)(66946007)(478600001)(38100700002)(8676002)(86362001)(66574015)(36756003)(6486002)(83380400001)(5660300002)(31686004)(45980500001)(43740500002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData: =?utf-8?B?QXZnZThGVUFSaStxVHVNbFVKUHJqVWZaUGZNZm1OckRidnhTT1NEbU5wU2Zk?=
- =?utf-8?B?NE5jdzZsWGd1dDZFbXBOZjQ2RCtBbS85akFIWUM0eGU2aE0ybDN1NEY1OTVT?=
- =?utf-8?B?Y0x1TWt5QmtEYjc2Y2RIRDZoZ3lFZ0JoaFpFU2NtdXV5b1hxcFFWUDNNMFQ4?=
- =?utf-8?B?eUJaQlpsL21lLy9hcXlSaEdPeU12S1liekNIZ0lqSG4zM0hQY0ZOME1JMlNo?=
- =?utf-8?B?VUNJQkVKcVBVQXM1R2wycHltQ1lQbER3Z0NvVFhOUzk4RmRKNnVDSGNtYmtF?=
- =?utf-8?B?Sno0ZXdkdGVBTXlhaEVtSkhjNXMvbkJ4QU53WUFsM3RnMFF5L1NnTGVhZ052?=
- =?utf-8?B?SGFncWR2TEp2MEkrR09BelNqTFYyRmg0cHdqWHRBT2F3Q3FlQ2s4Z2VPd0My?=
- =?utf-8?B?K2ZpekZrSHc3WGxqYzRkRWVuTitrZytlRFYvYUVLeVZzMkNhUnpleHhiS21T?=
- =?utf-8?B?MCtlOTZHbDlFOEg1RTJSR0U2ejZyMklLYUV6WXB1clI4bFp4Y0cwR1ZUS3J1?=
- =?utf-8?B?ZE1ZQ3ViMUVCVXNHQVpFb053REJwNXJDckVlTGp6eVdzMnltdVdEeTJYeFh3?=
- =?utf-8?B?T0RUb1o5KzFSTm5kUTV1YjRUYTMxMDdCdzZselVGaTZSM1pRVkxTT3RFUlA0?=
- =?utf-8?B?b3dvQmpNakZFR1B0aFFSTG8xRnBaOUVGYTJNQTRKWVpUWG45Z21Icnh1SzRW?=
- =?utf-8?B?cm0wb3JkakVzZ284Z1VCT0VLczNuTGRzbDJWYWNqamN1SVdNdklja3lHYUNX?=
- =?utf-8?B?ek5yK1FvRms4VjdSZDFUL1pMWFRuT3VWemR1RWNUQ0gxeU9sc2dGdG9JQUcz?=
- =?utf-8?B?SDF5OWZFOWJqbk52TE96ajRWK1RleUg1ZHV0b0VORnpUbVpmWEVKSThuN3pL?=
- =?utf-8?B?U0xXTzUvTVpaNE9oMEV0aE94VnIzR2xDZ1QzYlI1RkVrN1lpb1I2RUFiSUM4?=
- =?utf-8?B?eHZIZ3ArQ2IrYTFvSVNCMjNSZFVEQ2FlaUVtQklDTng5a2VkV3RDY2tYbzgw?=
- =?utf-8?B?Q1R1U2NXZjdpZ21vNjd1OFFrTDNJYlF0TnovdTFqZlpLZ0lzaG8zR0hQMTdY?=
- =?utf-8?B?ZzdkQ0NFUk5EcmlvdWZXY2s3dTM3aDRTc0JUb2RTbndoWUhtc2o5N25RTjVV?=
- =?utf-8?B?Wmw5UmZmMis4S1hXZDVWY3hTemU0RWhISzZMb1I5SWJHT0NKb3VJQ09uOHM4?=
- =?utf-8?B?YmJEcmJyeXFaaWRodmVHMy91VmpjQmY3ZUMzdTNaN05ZR0YrSHZzK3JoRFZF?=
- =?utf-8?B?c2x2M0lnWVZXSlZsU0treVM2Nmg3bnlleDZJSjZvYjZxMUp3ejRENXpRS1pN?=
- =?utf-8?B?QldEOE83YnN4cm53YnNQemh6MFJMcWcyQ2pQYk5YeU9hMTlMZjFZY25DSmJt?=
- =?utf-8?B?TDl1dVNEMVE0cDd4VkNnNERIT3hxS1JzS09IMHozU2tqQ09xZDhCNnZha0sy?=
- =?utf-8?B?SDdMV1FoNTRHMEhFOVJTV3JmSjBjL1RsWHlHOE9uN0UvYm1FakkvbGxQUWFv?=
- =?utf-8?B?cjYyZzlRU0tVTW14cHFDbEttTlZvRGZESG0xbWZCRnZYOVY3RjFvYjR2YU5I?=
- =?utf-8?B?bTN2TUdpb2ZXT29acElzMmhaaUl0eit1K0c1b2VJemJHdWsyYzBOMVdKaTQ2?=
- =?utf-8?B?aHJIcFBGUDBSMVlkbXZYMGN5UVIzZSt5ZWFFSVFHVSt4VjdaNXJsRjRqOUIy?=
- =?utf-8?B?NmoySGJiQjcvR2phQVBlSUdZcEF3T1JFKzdtRGJsaTVlQUM4Z3Z2UmtvVUxB?=
- =?utf-8?Q?eQByvX7QBSfU2pM12f/B6ud0uqUsLMLFZz8FZOH?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 85b8758d-982c-4c5c-9895-08d908098c8d
-X-MS-Exchange-CrossTenant-AuthSource: DM4PR12MB5278.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 25 Apr 2021 16:45:35.7643
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: Rd+Z/UVq38Ol0ARxNi/XqLCkc0ofRagxoeOyw2oi3LeabP+RjX1EbA0UEDd/yeRLcpfYrm1Z0e6ZoFNuBeJe1Q==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM4PR12MB5214
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 25/04/2021 18:57, Taehee Yoo wrote:
-> multicast_lock is a per-interface(bridge) lock.
-> This lock can be used recursively because interfaces can be used
-> recursively. So, it should use spin_lock_nested() but it doesn't.
-> So lockdep false positive splat occurred.
-> 
-> Some inline helper functions are added.
-> These functions internally get 'subclass' variable, which is used as
-> parameter of spin_lock_nested() and use spin_lock_nested() with a
-> subclass parameter.
-> 
-> Test commands:
->     ip link add br0 type bridge
->     ip link add bond0 type bond
->     ip link add br1 type bridge
->     ip link set br0 master bond0
->     ip link set bond0 up
->     ip link set bond0 master br1
->     ip link set br0 up
->     ip link set br1 up
->     ip link set br0 type bridge mcast_router 1 mcast_querier 1
->     ip link set br1 type bridge mcast_querier 1 mcast_router 1
-> 
-> Splat looks like:
-> ============================================
-> WARNING: possible recursive locking detected
-> 5.12.0-rc7+ #855 Not tainted
-> --------------------------------------------
-> kworker/5:1/56 is trying to acquire lock:
-> ffff88810f833000 (&br->multicast_lock){+.-.}-{2:2}, at:
-> br_multicast_rcv+0x1484/0x5280 [bridge]
-> 
-[snip]
-> 
-> Fixes: eb1d16414339 ("bridge: Add core IGMP snooping support")
-> Signed-off-by: Taehee Yoo <ap420073@gmail.com>
-> ---
-> 
-> v2:
->  - No change
-> 
->  net/bridge/br_mdb.c           |  12 +--
->  net/bridge/br_multicast.c     | 146 +++++++++++++++++++++-------------
->  net/bridge/br_multicast_eht.c |  18 +++--
->  net/bridge/br_private.h       |  48 +++++++++++
->  4 files changed, 158 insertions(+), 66 deletions(-)
-> 
+CCID 3 already has the getsockopt() option DCCP_SOCKOPT_CCID_TX_INFO,
+this commit also adds it for CCID2. It returns tx and congestion control
+information in struct ccid_tx_info.
 
-Hi Taehee,
-Ugh.. that's just very ugly. :) The setup you've described above is by all means invalid, but
-possible unfortunately. The bridge already checks if it's being added as a port to another
-bridge, but not through multiple levels of indirection. These locks are completely unrelated
-as they're in very different contexts (different devices).
+This also adds doc in Documentation/networking/dccp.rst and defines
+the struct in include/uapi/linux/dccp.h to make it accessible to userspace.
+---
+ Documentation/networking/dccp.rst | 22 +++++++++++----------
+ include/uapi/linux/dccp.h         | 16 ++++++++++++++++
+ net/dccp/ccids/ccid2.c            | 32 +++++++++++++++++++++++++++++++
+ 3 files changed, 60 insertions(+), 10 deletions(-)
 
-At the very least please push the rcu_read_lock() calls in br_multicast_lock_rcu/_bh() 
-as they're needed only to get the nest level for netdev_get_nest_level_rcu(), we don't need
-them for the whole code paths (right ?), we could save a few lines in the process and
-avoid confusion about the locking rules for those code paths.
-
-I wish there was a better solution.
-
-Thanks,
- Nik
+diff --git a/Documentation/networking/dccp.rst b/Documentation/networking/dccp.rst
+index 91e5c33ba3ff..8f2852817773 100644
+--- a/Documentation/networking/dccp.rst
++++ b/Documentation/networking/dccp.rst
+@@ -126,16 +126,18 @@ DCCP_SOCKOPT_RECV_CSCOV is for the receiver and has a different meaning: it
+ 	restrictive this setting (see [RFC 4340, sec. 9.2.1]). Partial coverage
+ 	settings are inherited to the child socket after accept().
+ 
+-The following two options apply to CCID 3 exclusively and are getsockopt()-only.
+-In either case, a TFRC info struct (defined in <linux/tfrc.h>) is returned.
+-
+-DCCP_SOCKOPT_CCID_RX_INFO
+-	Returns a ``struct tfrc_rx_info`` in optval; the buffer for optval and
+-	optlen must be set to at least sizeof(struct tfrc_rx_info).
+-
+-DCCP_SOCKOPT_CCID_TX_INFO
+-	Returns a ``struct tfrc_tx_info`` in optval; the buffer for optval and
+-	optlen must be set to at least sizeof(struct tfrc_tx_info).
++DCCP_SOCKOPT_CCID_RX_INFO (CCID3 only, getsockopt() only)
++	Returns a ``struct tfrc_rx_info`` (defined in <linux/tfrc.h>) in optval;
++	the buffer for optval and optlen must be at least sizeof(struct tfrc_rx_info).
++
++DCCP_SOCKOPT_CCID_TX_INFO (getsockopt() only)
++	CCID 3:
++	Returns a ``struct tfrc_tx_info`` (defined in <linux/tfrc.h>) in optval;
++	the buffer for optval and optlen must be at least sizeof(struct tfrc_tx_info).
++
++	CCID 2:
++	Returns a ``struct ccid2_tx_info`` (defined in <uapi/linux/dccp.h>) in optval;
++	the buffer for optval and optlen must be at least sizeof(struct ccid2_tx_info).
+ 
+ On unidirectional connections it is useful to close the unused half-connection
+ via shutdown (SHUT_WR or SHUT_RD): this will reduce per-packet processing costs.
+diff --git a/include/uapi/linux/dccp.h b/include/uapi/linux/dccp.h
+index 6e1978dbcf7c..5d5290b8788a 100644
+--- a/include/uapi/linux/dccp.h
++++ b/include/uapi/linux/dccp.h
+@@ -47,6 +47,22 @@ struct dccp_hdr {
+ 	__be16	dccph_seq;
+ };
+ 
++/**  struct ccid2_tx_info (Congestion Control Infos)
++ *
++ * @tx_cwnd:                 max number of packets the path can handle
++ * @tx_srtt:                 smoothed RTT estimate, scaled by 2^3
++ * @tx_pipe:                 estimate of "in flight" packets
++ * @buffer_fill              number of bytes in send buffer
++ * @cur_mss                  current MSS (in bytes) (pMTU - header_sizes)
++ */
++struct ccid2_tx_info {
++	__u32	tx_cwnd;
++	__u32	tx_srtt;
++	__u32	tx_pipe;
++	int	buffer_fill;
++	__u32	cur_mss;
++};
++
+ /**
+  * struct dccp_hdr_ext - the low bits of a 48 bit seq packet
+  *
+diff --git a/net/dccp/ccids/ccid2.c b/net/dccp/ccids/ccid2.c
+index 4d9823d6dced..3f40265552c5 100644
+--- a/net/dccp/ccids/ccid2.c
++++ b/net/dccp/ccids/ccid2.c
+@@ -22,6 +22,37 @@ static bool ccid2_debug;
+ #define ccid2_pr_debug(format, a...)
+ #endif
+ 
++int ccid2_hc_tx_getsockopt(struct sock *sk, const int optname, int len,
++                           u32 __user *optval, int __user *optlen)
++{
++	const struct ccid2_hc_tx_sock *hc = ccid2_hc_tx_sk(sk);
++	struct dccp_sock *dp = dccp_sk(sk);
++	struct ccid2_tx_info ccid2_info;
++	const void *val;
++
++	switch (optname) {
++	case DCCP_SOCKOPT_CCID_TX_INFO:
++		if (len < sizeof(ccid2_info))
++			return -EINVAL;
++		memset(&ccid2_info, 0, sizeof(ccid2_info));
++		ccid2_info.tx_cwnd	   = hc->tx_cwnd;
++		ccid2_info.tx_srtt         = hc->tx_srtt;
++		ccid2_info.tx_pipe         = hc->tx_pipe;
++		ccid2_info.buffer_fill     = sk_wmem_alloc_get(sk);
++		ccid2_info.cur_mss         = dp->dccps_mss_cache;
++		len = sizeof(ccid2_info);
++		val = &ccid2_info;
++		break;
++	default:
++		return -ENOPROTOOPT;
++	}
++
++	if (put_user(len, optlen) || copy_to_user(optval, val, len))
++		return -EFAULT;
++
++	return 0;
++}
++
+ static int ccid2_hc_tx_alloc_seq(struct ccid2_hc_tx_sock *hc)
+ {
+ 	struct ccid2_seq *seqp;
+@@ -785,6 +816,7 @@ struct ccid_operations ccid2_ops = {
+ 	.ccid_hc_tx_packet_recv	  = ccid2_hc_tx_packet_recv,
+ 	.ccid_hc_rx_obj_size	  = sizeof(struct ccid2_hc_rx_sock),
+ 	.ccid_hc_rx_packet_recv	  = ccid2_hc_rx_packet_recv,
++	.ccid_hc_tx_getsockopt    = ccid2_hc_tx_getsockopt,
+ };
+ 
+ #ifdef CONFIG_IP_DCCP_CCID2_DEBUG
+-- 
+2.30.2
 
