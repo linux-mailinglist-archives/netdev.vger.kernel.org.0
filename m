@@ -2,91 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6D12636A51D
-	for <lists+netdev@lfdr.de>; Sun, 25 Apr 2021 08:30:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0F69336A525
+	for <lists+netdev@lfdr.de>; Sun, 25 Apr 2021 08:39:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229663AbhDYGak (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 25 Apr 2021 02:30:40 -0400
-Received: from mail.kernel.org ([198.145.29.99]:49978 "EHLO mail.kernel.org"
+        id S229610AbhDYGkN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 25 Apr 2021 02:40:13 -0400
+Received: from mail.kernel.org ([198.145.29.99]:56420 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229480AbhDYGaj (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 25 Apr 2021 02:30:39 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id B51706147F;
-        Sun, 25 Apr 2021 06:29:57 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1619332198;
-        bh=XpYhucM6z3qhvkS1BQ76ZyjHypzTB3CNG91CD9wFHK0=;
+        id S229480AbhDYGkM (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 25 Apr 2021 02:40:12 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 3C4396113D;
+        Sun, 25 Apr 2021 06:39:32 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1619332772;
+        bh=0o3GuEStuPPp6fhAZuQAurJbIkCnuOyJDSAE60E8ZZE=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=g8VMoCLTfgJlmlKtaI9opdSQGRmtNOMzGO6XvoNBhvHmHnn3ox6PoAYv5Y+cE3i1T
-         sg2+VoR4ZZYPr+75nHqjWLi9mCuaUck3ZSEnJDfnALXrNH7ZITvfDu7uTc5TWAK353
-         /YG/RZRlGuaBsQ6ppAaWJug1IYWxtn4Enhb8uwJA=
-Date:   Sun, 25 Apr 2021 08:29:53 +0200
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     Theodore Ts'o <tytso@mit.edu>
-Cc:     "J. Bruce Fields" <bfields@fieldses.org>,
-        Al Viro <viro@zeniv.linux.org.uk>,
-        Leon Romanovsky <leon@kernel.org>,
-        "Shelat, Abhi" <a.shelat@northeastern.edu>,
-        Sudip Mukherjee <sudipm.mukherjee@gmail.com>,
-        Aditya Pakki <pakki001@umn.edu>,
-        Chuck Lever <chuck.lever@oracle.com>,
-        Trond Myklebust <trond.myklebust@hammerspace.com>,
-        Anna Schumaker <anna.schumaker@netapp.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Dave Wysochanski <dwysocha@redhat.com>,
-        "linux-nfs@vger.kernel.org" <linux-nfs@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH] SUNRPC: Add a check for gss_release_msg
-Message-ID: <YIUMYYcf/VW4a28k@kroah.com>
-References: <YIAta3cRl8mk/RkH@unreal>
- <20210421135637.GB27929@fieldses.org>
- <20210422193950.GA25415@fieldses.org>
- <YIMDCNx4q6esHTYt@unreal>
- <20210423180727.GD10457@fieldses.org>
- <YIMgMHwYkVBdrICs@unreal>
- <20210423214850.GI10457@fieldses.org>
- <YIRkxQCVr6lFM3r3@zeniv-ca.linux.org.uk>
- <20210424213454.GA4239@fieldses.org>
- <YIS6t+X1DOKlB+Z/@mit.edu>
+        b=k8uVJFmK9TeL94byE618v1RmX2TVpkekCbBNjNrnbNihMHrKtNdZ09yo55BHtpk1N
+         2NDYB3bVwp3rILzEifCXzazG0NcriyPBY+6HuhO+IVPjuH4fb2rNKOxEDI0gB771v0
+         zS++DL9Dvvi1lbNeOTLFUoaS4eigMIq0XtbKsrLJ5NkGjQBVEgQozJFb7XUPHe5GUE
+         qab8QYNWpVa8hFk+i4Be0cfxQhtSQCxszCnZmQkCIbGz2iA9ZtXW2ex3X3KplcdCyU
+         O9UIgGx241YCOPb0xcUQK9UJY3YWS1Zj8OCHApTqXhcRKLTN9GIHZAM5yVySKeqCwR
+         uPlZTWDlTS08Q==
+Date:   Sun, 25 Apr 2021 09:39:29 +0300
+From:   Leon Romanovsky <leon@kernel.org>
+To:     Dan Carpenter <dan.carpenter@oracle.com>
+Cc:     Saeed Mahameed <saeedm@nvidia.com>,
+        Yevgeny Kliteynik <kliteyn@nvidia.com>,
+        linux-rdma@vger.kernel.org, kernel-janitors@vger.kernel.org,
+        linux-netdev <netdev@vger.kernel.org>
+Subject: Re: [PATCH net-next] net/mlx5: Fix some error messages
+Message-ID: <YIUOoTKRwy3UTRWz@unreal>
+References: <YIKywXhusLj4cDFM@mwanda>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <YIS6t+X1DOKlB+Z/@mit.edu>
+In-Reply-To: <YIKywXhusLj4cDFM@mwanda>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Apr 24, 2021 at 08:41:27PM -0400, Theodore Ts'o wrote:
-> On Sat, Apr 24, 2021 at 05:34:54PM -0400, J. Bruce Fields wrote:
-> > In Greg's revert thread, Kangjie Lu's messages are also missing from the
-> > archives:
-> > 
-> > 	https://lore.kernel.org/lkml/20210421130105.1226686-1-gregkh@linuxfoundation.org/
-> >
+On Fri, Apr 23, 2021 at 02:42:57PM +0300, Dan Carpenter wrote:
+> This code was using IS_ERR() instead of PTR_ERR() so it prints 1 instead
+> of the correct error code.
 > 
-> I'm going to guess it's one of two things.  The first is that they are
-> sending mail messages with HTML which is getting bounced; the other
-> possibility is that some of the messages were sent only to Greg, and
-> he added the mailing list back to the cc.
-> 
-> So for exampple, message-id
-> CA+EnHHSw4X+ubOUNYP2zXNpu70G74NN1Sct2Zin6pRgq--TqhA@mail.gmail.com
-> isn't in lore, but Greg's reply:
-> 
-> https://lore.kernel.org/linux-nfs/YH%2FfM%2FTsbmcZzwnX@kroah.com/
-> 
-> can be found in lore.kernel.org was presumably because the message
-> where Aditya accused "wild accusations bordering on slander" and his
-> claim that his patches were the fault of a "new static code analyzer"
-> was sent only to Greg?  Either that, or it was bounced because he sent
-> it from gmail without suppressing HTML.
+> Fixes: 25cb31768042 ("net/mlx5: E-Switch, Improve error messages in term table creation")
+> Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
+> ---
+>  .../mellanox/mlx5/core/eswitch_offloads_termtbl.c    | 12 ++++++------
+>  1 file changed, 6 insertions(+), 6 deletions(-)
+>
 
-I did not "add back" the mailing list, it looks like they sent email in
-html format which prevented it from hitting the public lists.  I have
-the originals sent to me that shows the author intended it to be public.
+It should go through netdev@.
 
-thanks,
+Thanks,
+Reviewed-by: Leon Romanovsky <leonro@nvidia.com> 
 
-greg k-h
+
+> diff --git a/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads_termtbl.c b/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads_termtbl.c
+> index a81ece94f599..95f5c1a27718 100644
+> --- a/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads_termtbl.c
+> +++ b/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads_termtbl.c
+> @@ -83,16 +83,16 @@ mlx5_eswitch_termtbl_create(struct mlx5_core_dev *dev,
+>  	ft_attr.autogroup.max_num_groups = 1;
+>  	tt->termtbl = mlx5_create_auto_grouped_flow_table(root_ns, &ft_attr);
+>  	if (IS_ERR(tt->termtbl)) {
+> -		esw_warn(dev, "Failed to create termination table (error %d)\n",
+> -			 IS_ERR(tt->termtbl));
+> +		esw_warn(dev, "Failed to create termination table (error %ld)\n",
+> +			 PTR_ERR(tt->termtbl));
+>  		return -EOPNOTSUPP;
+>  	}
+>  
+>  	tt->rule = mlx5_add_flow_rules(tt->termtbl, NULL, flow_act,
+>  				       &tt->dest, 1);
+>  	if (IS_ERR(tt->rule)) {
+> -		esw_warn(dev, "Failed to create termination table rule (error %d)\n",
+> -			 IS_ERR(tt->rule));
+> +		esw_warn(dev, "Failed to create termination table rule (error %ld)\n",
+> +			 PTR_ERR(tt->rule));
+>  		goto add_flow_err;
+>  	}
+>  	return 0;
+> @@ -283,8 +283,8 @@ mlx5_eswitch_add_termtbl_rule(struct mlx5_eswitch *esw,
+>  		tt = mlx5_eswitch_termtbl_get_create(esw, &term_tbl_act,
+>  						     &dest[i], attr);
+>  		if (IS_ERR(tt)) {
+> -			esw_warn(esw->dev, "Failed to get termination table (error %d)\n",
+> -				 IS_ERR(tt));
+> +			esw_warn(esw->dev, "Failed to get termination table (error %ld)\n",
+> +				 PTR_ERR(tt));
+>  			goto revert_changes;
+>  		}
+>  		attr->dests[num_vport_dests].termtbl = tt;
+> -- 
+> 2.30.2
+> 
