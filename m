@@ -2,112 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2006B36BA16
-	for <lists+netdev@lfdr.de>; Mon, 26 Apr 2021 21:30:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2854A36BA2D
+	for <lists+netdev@lfdr.de>; Mon, 26 Apr 2021 21:40:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240476AbhDZTbH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 26 Apr 2021 15:31:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58110 "EHLO
+        id S238085AbhDZTlM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 26 Apr 2021 15:41:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60332 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240438AbhDZTbC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 26 Apr 2021 15:31:02 -0400
-Received: from mail-ed1-x52a.google.com (mail-ed1-x52a.google.com [IPv6:2a00:1450:4864:20::52a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4CC4FC061760
-        for <netdev@vger.kernel.org>; Mon, 26 Apr 2021 12:30:20 -0700 (PDT)
-Received: by mail-ed1-x52a.google.com with SMTP id d14so3282413edc.12
-        for <netdev@vger.kernel.org>; Mon, 26 Apr 2021 12:30:20 -0700 (PDT)
+        with ESMTP id S233755AbhDZTlL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 26 Apr 2021 15:41:11 -0400
+Received: from mail-ed1-x52d.google.com (mail-ed1-x52d.google.com [IPv6:2a00:1450:4864:20::52d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 98848C061574
+        for <netdev@vger.kernel.org>; Mon, 26 Apr 2021 12:40:29 -0700 (PDT)
+Received: by mail-ed1-x52d.google.com with SMTP id cq11so23522183edb.0
+        for <netdev@vger.kernel.org>; Mon, 26 Apr 2021 12:40:29 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=tessares-net.20150623.gappssmtp.com; s=20150623;
-        h=to:cc:references:from:subject:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=Dr87k9ZfKSIjKnHclx7DePEImf+rQ7+qp484Yc2GQDI=;
-        b=PPOrCQABnsVUARLGHk3k4EHRz5rL54WAC/3DmqIc9Chmcl13vZveHm9YTgPByu9ISi
-         BCM/sigWLiv6oopbIxbMFfnPjXDDtLMM7ucX+DRa10VkRS6dPJUiaf2WgASxfslYX16E
-         +bppZXEMf+sV9kNORgUP1nYT3q7/2Za5BgRMgLnxUbuBHvygarfczX+R3rRy0AfqqvgH
-         Xitwa51T16WbhvkAvSG4cEktOXnr6XxCEyVTfulx1je4TvHzlBJ10ZT2yTfsjgzv6ePw
-         Y9LgkJ4yyVK6FRcD7HdvGU04WKY4YtpvKyRVuqndTXJYPUNTtQ3PWYHDR1yWXuDSDmmy
-         jROw==
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=Is2SDw8WeN8XVXoywR6GIkJzDlR3VcflqryG4qw9d8I=;
+        b=ueRq8J2oOg2cDQawuLIidmcLpsWVOn320XQbHevQDQFX1pqUMprNUFGbR23FVS3nTE
+         Uc4qQs2befSyroRSuplHhB0omOiXVJCP1fvYP3UaoyaijKoG7KYyLRyaGdvzALeELsZK
+         GfTbZnHlX8cgz3L9NpiaFj0cJmzb7zeWSfA331y50C6TPL401IUVkivlNKAloSjkAvxd
+         zhU1D6vM9q5MQ/1JzQ0+2HVlenqXYpZCflgkCeda7NOqkyaprjlQJL/O/YrYeUteHMKr
+         0jI6+q1Uq+ZQAQgeDj+ER/xsnHtcnTEAiddGXRpldDhA27/dOoQ6eKh2Wu/xE7Uh/WhR
+         L+2A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:to:cc:references:from:subject:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=Dr87k9ZfKSIjKnHclx7DePEImf+rQ7+qp484Yc2GQDI=;
-        b=gIDXp5EHNpu1ZmKDmGNN5ItLOonOojeVJdMyptYUwHayYRGg5622ZoNRxQInrJMlvW
-         KHTWuLrSBO+21z6MgVuAIfgiuLXHrKO353Px84frV5Y+1QoGsOCVB8gjgb6zwlR8q01b
-         NivPDLGHNN1pZYNsJC2Ld1dOqG1BnQyJyAhVTvVzUmU/gwl2lOXd4NpP64sd5ZlsYkig
-         vIDZZaDMleKuRQYXKamsM3QJl3+5k0HYx6NDF0E84aabSdleYUk6FzJG+D+e7hbkRokS
-         Y7txL79XpxEvZOpUv9mdPLzth4CsJejtGxXRG9MFyUbhCdeLV2e02S5jZvVyO+FWddOR
-         BXCQ==
-X-Gm-Message-State: AOAM530yluqR9x5dmM4BnrgzZCORVveUO0HwGFA7KxR9iJpwqecdAdZt
-        TOh5IPUHN+vlhf1gb3RIoPA8mHWe48qhRhfV
-X-Google-Smtp-Source: ABdhPJwEsGiSPn86sUce28FQhOIkZd9EDC808DnlsPjgtQS2kJzYU55xlwjSXiAaAe8rkGOR/w0UhA==
-X-Received: by 2002:a05:6402:3514:: with SMTP id b20mr267417edd.348.1619465418825;
-        Mon, 26 Apr 2021 12:30:18 -0700 (PDT)
-Received: from tsr-lap-08.nix.tessares.net ([46.166.143.116])
-        by smtp.gmail.com with ESMTPSA id r10sm12090371ejd.112.2021.04.26.12.30.17
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 26 Apr 2021 12:30:18 -0700 (PDT)
-To:     Masahiro Yamada <masahiroy@kernel.org>,
-        linux-kbuild@vger.kernel.org
-Cc:     Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Mat Martineau <mathew.j.martineau@linux.intel.com>,
-        Matthias Maennich <maennich@google.com>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Paul Mackerras <paulus@samba.org>,
-        Shuah Khan <shuah@kernel.org>, linux-kernel@vger.kernel.org,
-        linux-kselftest@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
-        mptcp@lists.01.org, netdev@vger.kernel.org
-References: <20210424114841.394239-1-masahiroy@kernel.org>
-From:   Matthieu Baerts <matthieu.baerts@tessares.net>
-Subject: Re: [PATCH] kbuild: replace LANG=C with LC_ALL=C
-Message-ID: <2f8ccc46-16a1-e0fe-7cb0-0912295153ee@tessares.net>
-Date:   Mon, 26 Apr 2021 21:30:16 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.8.1
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=Is2SDw8WeN8XVXoywR6GIkJzDlR3VcflqryG4qw9d8I=;
+        b=NXWis9aJTEInKmvi5AModc1HJu2/X84q6xAmPDr3st8wJq8ILTeu1LC8QRaF4AVjbs
+         sXJNEG+/jqEPXK1VamJYq3Ga82vs1TpiT3A9u+m6dCgVx32sqhCrWCL9o3Q/4czeguJ3
+         M4xLqlqDmjFQ4+f5xYA1JiinLQHiGSBFqKl4750zHKb6smPcHRbzAwkj9L+sPAXsm3Ba
+         rlDSelQYY3QD7uNVDaarCVkIBxGu1JRMlCa8BLJK5ciogxemU+9gomLIk8mOm6B58AOl
+         oDdhAkePSrAwVlA1lokLOngSGCPUeceC5Wy3J87rP4wJ7QRh0D3VV9zWA7HxTQeHE8T/
+         09uA==
+X-Gm-Message-State: AOAM532YhESwgJKjnyuFwrHlcEmzhPFiOTU+y1kyknHaoBuFq/EF9uHI
+        kmu783drc8kTcDqyDUrscus=
+X-Google-Smtp-Source: ABdhPJwSjXK9iN2Jta354iUSV1YcFrkLwVahg3PrhUegd2cne5RyDoBF4cNv+LUk6pzLI0abflOj0Q==
+X-Received: by 2002:a05:6402:4405:: with SMTP id y5mr310923eda.149.1619466028283;
+        Mon, 26 Apr 2021 12:40:28 -0700 (PDT)
+Received: from skbuf (5-12-16-165.residential.rdsnet.ro. [5.12.16.165])
+        by smtp.gmail.com with ESMTPSA id br14sm12139667ejb.61.2021.04.26.12.40.27
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 26 Apr 2021 12:40:27 -0700 (PDT)
+Date:   Mon, 26 Apr 2021 22:40:26 +0300
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Tobias Waldekranz <tobias@waldekranz.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, andrew@lunn.ch,
+        vivien.didelot@gmail.com, f.fainelli@gmail.com, roopa@nvidia.com,
+        nikolay@nvidia.com, jiri@resnulli.us, idosch@idosch.org,
+        stephen@networkplumber.org, netdev@vger.kernel.org,
+        bridge@lists.linux-foundation.org
+Subject: Re: [RFC net-next 5/9] net: dsa: Track port PVIDs
+Message-ID: <20210426194026.3sr22rqyf2srrwtq@skbuf>
+References: <20210426170411.1789186-1-tobias@waldekranz.com>
+ <20210426170411.1789186-6-tobias@waldekranz.com>
 MIME-Version: 1.0
-In-Reply-To: <20210424114841.394239-1-masahiroy@kernel.org>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-GB
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210426170411.1789186-6-tobias@waldekranz.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+Hi Tobias,
 
-Thank you for the patch!
-
-On 24/04/2021 13:48, Masahiro Yamada wrote:
-> LANG gives a weak default to each LC_* in case it is not explicitly
-> defined. LC_ALL, if set, overrides all other LC_* variables.
+On Mon, Apr 26, 2021 at 07:04:07PM +0200, Tobias Waldekranz wrote:
+> In some scenarios a tagger must know which VLAN to assign to a packet,
+> even if the packet is set to egress untagged. Since the VLAN
+> information in the skb will be removed by the bridge in this case,
+> track each port's PVID such that the VID of an outgoing frame can
+> always be determined.
 > 
->   LANG  <  LC_CTYPE, LC_COLLATE, LC_MONETARY, LC_NUMERIC, ...  <  LC_ALL
-> 
-> This is why documentation such as [1] suggests to set LC_ALL in build
-> scripts to get the deterministic result.
-> 
-> LANG=C is not strong enough to override LC_* that may be set by end
-> users.
-> 
-> [1]: https://reproducible-builds.org/docs/locales/
-> 
-> Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
+> Signed-off-by: Tobias Waldekranz <tobias@waldekranz.com>
 > ---
-> 
->  arch/powerpc/boot/wrapper                          | 2 +-
->  scripts/nsdeps                                     | 2 +-
->  scripts/recordmcount.pl                            | 2 +-
->  scripts/setlocalversion                            | 2 +-
->  scripts/tags.sh                                    | 2 +-
->  tools/testing/selftests/net/mptcp/mptcp_connect.sh | 2 +-
 
-Acked-by: Matthieu Baerts <matthieu.baerts@tessares.net> (mptcp)
+Let me give you this real-life example:
 
-Cheers,
-Matt
--- 
-Tessares | Belgium | Hybrid Access Solutions
-www.tessares.net
+#!/bin/bash
+
+ip link add br0 type bridge vlan_filtering 1
+for eth in eth0 eth1 swp2 swp3 swp4 swp5; do
+	ip link set $eth up
+	ip link set $eth master br0
+done
+ip link set br0 up
+
+bridge vlan add dev eth0 vid 100 pvid untagged
+bridge vlan del dev swp2 vid 1
+bridge vlan del dev swp3 vid 1
+bridge vlan add dev swp2 vid 100
+bridge vlan add dev swp3 vid 100 untagged
+
+reproducible on the NXP LS1021A-TSN board.
+The bridge receives an untagged packet on eth0 and floods it.
+It should reach swp2 and swp3, and be tagged on swp2, and untagged on
+swp3 respectively.
+
+With your idea of sending untagged frames towards the port's pvid,
+wouldn't we be leaking this packet to VLAN 1, therefore towards ports
+swp4 and swp5, and the real destination ports would not get this packet?
