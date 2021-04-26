@@ -2,121 +2,326 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4663536B27E
-	for <lists+netdev@lfdr.de>; Mon, 26 Apr 2021 13:47:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F088D36B28D
+	for <lists+netdev@lfdr.de>; Mon, 26 Apr 2021 13:54:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232059AbhDZLsj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 26 Apr 2021 07:48:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38892 "EHLO
+        id S232575AbhDZLy4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 26 Apr 2021 07:54:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40282 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231864AbhDZLsi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 26 Apr 2021 07:48:38 -0400
-Received: from mail-pf1-x42b.google.com (mail-pf1-x42b.google.com [IPv6:2607:f8b0:4864:20::42b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F760C061574;
-        Mon, 26 Apr 2021 04:47:55 -0700 (PDT)
-Received: by mail-pf1-x42b.google.com with SMTP id y62so6114036pfg.4;
-        Mon, 26 Apr 2021 04:47:55 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=sFXfbLv5MdulIa6o/mktVMnOLjPpaT+AU4ZaAeR84S8=;
-        b=eol+/anqgjuJsZKMh6NhhBErcNmtrT7pUFGduGpoQ9YSyVI/GWwY4gobEbgCqzVvD2
-         8Wf7IHv5eqsVB+oX+GCaGXgls+NoFqjyM80jwaI2hv61pxMliXdbF83aKL0AkfQIctY6
-         HQcbRF/Yhf7arq7uuX63l0JOSEW13/mKk85rhJmA58fi9xeWFd2ZuyTT8kMnyWpxDhB1
-         gUfMNI4BAA6U9FKemcqef5Q2eo3U9hXZkXBNvEkdRgAvYzzkhIDZI4wB9e8WXpqcuShV
-         zMJAbRIXV4ZTsQqCwxIIf0fJ439GnbqQzG4kngCiOkSD0tzs5NOWB8BQp/qeMyKKBHjf
-         xn6w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=sFXfbLv5MdulIa6o/mktVMnOLjPpaT+AU4ZaAeR84S8=;
-        b=nI/XJn5jKV52ZP2yglnhG4PbwIb31+ggIPJrmUv3stSZyhKBJTiGmcVa1ZfpOK79/l
-         47k9PRsXVY4Pl1t+YAZlbSTIAXWWqta48wIVtGTc1ZPbHcTYIpm1QeONJIyT8KkcUhk7
-         vfSyjPlS7WRe8k1qQKnZshjg2nv6DxltPNIEMAXH8fuc1WEvaDTzcpGiXewAfrmNTqTS
-         V4ARoeK7DsQ8XH3qjLBOfNECpl4uvHbgrvWnwNQHQZvX88OiAYhd97O+M5WYvaon1ym9
-         UAu9ouyCKUkK154/QeVYmIZKYzUy2iM738VZOQFtR33PNI5HwZAhsHHV0vmgf+9zUkwh
-         QFfg==
-X-Gm-Message-State: AOAM533x1RRK7WnuCYJXmE3iKmiw0j3rDfOWmUbkXRuQSk+CKlvxcYy5
-        mwr8z7G7w0AW9GQQ+zjrnx8=
-X-Google-Smtp-Source: ABdhPJyOGsDk2wgaVvvBLGyWKvYPe+QTVSc2+A/IJlWvuOMR10G3om6rVQZPU7YjaAwK+8J8keUopA==
-X-Received: by 2002:a65:6698:: with SMTP id b24mr16582112pgw.297.1619437675229;
-        Mon, 26 Apr 2021 04:47:55 -0700 (PDT)
-Received: from Leo-laptop-t470s ([209.132.188.80])
-        by smtp.gmail.com with ESMTPSA id w7sm11188889pff.208.2021.04.26.04.47.50
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 26 Apr 2021 04:47:54 -0700 (PDT)
-Date:   Mon, 26 Apr 2021 19:47:42 +0800
-From:   Hangbin Liu <liuhangbin@gmail.com>
-To:     Jesper Dangaard Brouer <brouer@redhat.com>
-Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org,
-        Toke =?iso-8859-1?Q?H=F8iland-J=F8rgensen?= <toke@redhat.com>,
-        Jiri Benc <jbenc@redhat.com>,
-        Eelco Chaudron <echaudro@redhat.com>, ast@kernel.org,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Lorenzo Bianconi <lorenzo.bianconi@redhat.com>,
-        David Ahern <dsahern@gmail.com>,
-        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
-        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
-        =?iso-8859-1?Q?Bj=F6rn_T=F6pel?= <bjorn.topel@gmail.com>,
-        Martin KaFai Lau <kafai@fb.com>
-Subject: Re: [PATCHv10 bpf-next 2/4] xdp: extend xdp_redirect_map with
- broadcast support
-Message-ID: <20210426114742.GU3465@Leo-laptop-t470s>
-References: <20210423020019.2333192-1-liuhangbin@gmail.com>
- <20210423020019.2333192-3-liuhangbin@gmail.com>
- <20210426115350.501cef2a@carbon>
- <20210426114014.GT3465@Leo-laptop-t470s>
+        with ESMTP id S231831AbhDZLy4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 26 Apr 2021 07:54:56 -0400
+Received: from Chamillionaire.breakpoint.cc (Chamillionaire.breakpoint.cc [IPv6:2a0a:51c0:0:12e:520::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AB509C061574;
+        Mon, 26 Apr 2021 04:54:14 -0700 (PDT)
+Received: from fw by Chamillionaire.breakpoint.cc with local (Exim 4.92)
+        (envelope-from <fw@strlen.de>)
+        id 1lazoP-0000DT-H6; Mon, 26 Apr 2021 13:54:01 +0200
+Date:   Mon, 26 Apr 2021 13:54:01 +0200
+From:   Florian Westphal <fw@strlen.de>
+To:     Cole Dishington <Cole.Dishington@alliedtelesis.co.nz>
+Cc:     fw@strlen.de, pablo@netfilter.org, kadlec@netfilter.org,
+        davem@davemloft.net, kuba@kernel.org, linux-kernel@vger.kernel.org,
+        netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH] netfilter: nf_conntrack: Add conntrack helper for
+ ESP/IPsec
+Message-ID: <20210426115401.GB19277@breakpoint.cc>
+References: <20210414154021.GE14932@breakpoint.cc>
+ <20210420223514.10827-1-Cole.Dishington@alliedtelesis.co.nz>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20210426114014.GT3465@Leo-laptop-t470s>
+In-Reply-To: <20210420223514.10827-1-Cole.Dishington@alliedtelesis.co.nz>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Apr 26, 2021 at 07:40:28PM +0800, Hangbin Liu wrote:
-> On Mon, Apr 26, 2021 at 11:53:50AM +0200, Jesper Dangaard Brouer wrote:
-> > Decode: perf_trace_xdp_redirect_template+0xba
-> >  ./scripts/faddr2line vmlinux perf_trace_xdp_redirect_template+0xba
-> > perf_trace_xdp_redirect_template+0xba/0x130:
-> > perf_trace_xdp_redirect_template at include/trace/events/xdp.h:89 (discriminator 13)
-> > 
-> > less -N net/core/filter.c
-> >  [...]
-> >    3993         if (unlikely(err))
-> >    3994                 goto err;
-> >    3995 
-> > -> 3996         _trace_xdp_redirect_map(dev, xdp_prog, fwd, map_type, map_id, ri->tgt_index);
-> 
-> Oh, the fwd in xdp xdp_redirect_map broadcast is NULL...
-> 
-> I will see how to fix it. Maybe assign the ingress interface to fwd?
-
-Er, sorry for the flood message. I just checked the trace point code, fwd
-in xdp trace event means to_ifindex. So we can't assign the ingress interface
-to fwd.
-
-In xdp_redirect_map broadcast case, there is no specific to_ifindex.
-So how about just ignore it... e.g.
-
-diff --git a/include/trace/events/xdp.h b/include/trace/events/xdp.h
-index fcad3645a70b..1751da079330 100644
---- a/include/trace/events/xdp.h
-+++ b/include/trace/events/xdp.h
-@@ -110,7 +110,8 @@ DECLARE_EVENT_CLASS(xdp_redirect_template,
-                u32 ifindex = 0, map_index = index;
-
-                if (map_type == BPF_MAP_TYPE_DEVMAP || map_type == BPF_MAP_TYPE_DEVMAP_HASH) {
--                       ifindex = ((struct _bpf_dtab_netdev *)tgt)->dev->ifindex;
-+                       if (tgt)
-+                               ifindex = ((struct _bpf_dtab_netdev *)tgt)->dev->ifindex;
-                } else if (map_type == BPF_MAP_TYPE_UNSPEC && map_id == INT_MAX) {
-                        ifindex = index;
-                        map_index = 0;
+Cole Dishington <Cole.Dishington@alliedtelesis.co.nz> wrote:
+> @@ -90,6 +90,8 @@ enum ctattr_l4proto {
+>  	CTA_PROTO_ICMPV6_ID,
+>  	CTA_PROTO_ICMPV6_TYPE,
+>  	CTA_PROTO_ICMPV6_CODE,
+> +	CTA_PROTO_SRC_ESP_ID,
+> +	CTA_PROTO_DST_ESP_ID,
+>  	__CTA_PROTO_MAX
+>  };
 
 
-Hangbin
+> diff --git a/net/netfilter/nf_conntrack_proto_esp.c b/net/netfilter/nf_conntrack_proto_esp.c
+> new file mode 100644
+> index 000000000000..f17ce8a9439f
+> --- /dev/null
+> +++ b/net/netfilter/nf_conntrack_proto_esp.c
+> @@ -0,0 +1,736 @@
+> +// SPDX-License-Identifier: GPL-2.0
+> +/*
+> + * <:copyright-gpl
+> + * Copyright 2008 Broadcom Corp. All Rights Reserved.
+> + * Copyright (C) 2021 Allied Telesis Labs NZ
+> + *
+> + * This program is free software; you can distribute it and/or modify it
+> + * under the terms of the GNU General Public License (Version 2) as
+> + * published by the Free Software Foundation.
+> + *
+> + * This program is distributed in the hope it will be useful, but WITHOUT
+> + * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+> + * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
+> + * for more details.
+> + *
+> + * You should have received a copy of the GNU General Public License along
+> + * with this program.
+> + * :>
+> + */
+> +/******************************************************************************
+> + * Filename:       nf_conntrack_proto_esp.c
+> + * Author:         Pavan Kumar
+> + * Creation Date:  05/27/04
+> + *
+
+Can you remove this changelog?  The history isn't relevant for upstream.
+You can add credits to the commit message if you like.
+
+> +	struct rhash_head lnode;
+> +	struct rhash_head rnode;
+> +	struct rhlist_head incmpl_rlist;
+> +
+> +	u16 esp_id;
+> +
+> +	u32 l_spi;
+> +	u32 r_spi;
+> +
+> +	u16 l3num;
+
+Minor nit: you can save a few bytes by placing the two u16 next to each
+other.
+
+> +	union nf_inet_addr l_ip;
+> +	union nf_inet_addr r_ip;
+> +
+> +	u32 alloc_time_jiffies;
+> +	struct net *net;
+> +};
+> +
+> +struct _esp_hkey {
+> +	u16 l3num;
+
+Nit: l3num can be u8.
+
+> +static inline void esp_ip_addr_set_any(int af, union nf_inet_addr *a)
+> +{
+> +	if (af == AF_INET6)
+> +		ipv6_addr_set(&a->in6, 0, 0, 0, 0);
+
+Alternative is a->in6 = IN6ADDR_ANY_INIT , up to you.
+
+You could also remove the if (af ... conditional and just zero
+everything.
+
+Also, with very few exceptions, we try to avoid 'inline' keyword in .c
+files.
+
+> +static inline void esp_ip_addr_copy(int af, union nf_inet_addr *dst,
+> +				    const union nf_inet_addr *src)
+> +{
+> +	if (af == AF_INET6)
+> +		ipv6_addr_prefix_copy(&dst->in6, &src->in6, 128);
+
+Alternative is to dst->in6 = src->in6.
+
+> +static inline void calculate_key(const u32 net_hmix, const u32 spi,
+> +				 const u16 l3num,
+
+l3num can be u8.
+
+> +int nf_conntrack_esp_init(void)
+> +{
+> +	int i;
+> +	int ret = 0;
+> +
+> +	spin_lock_bh(&esp_table_lock);
+
+This lock isn't needed.  There is no way this function
+can be executed concurrently.
+
+> +	/* Check if esphdr already associated with a pre-existing connection:
+> +	 *   if no, create a new connection, missing the r_spi;
+> +	 *   if yes, check if we have seen the source IP:
+> +	 *             if no, fill in r_spi in the pre-existing connection.
+> +	 */
+> +	spin_lock_bh(&esp_table_lock);
+
+Can you remove this lock?
+
+It would be very unfortunate if we lose rhashtable ability of parallel
+insert & lockless lookups.
+
+> +	esp_entry = search_esp_entry_by_spi(net, spi, tuple->src.l3num,
+> +					    &tuple->src.u3, &tuple->dst.u3);
+> +	if (!esp_entry) {
+> +		struct _esp_hkey key = {};
+> +		union nf_inet_addr any;
+> +		u32 net_hmix = net_hash_mix(net);
+> +		int err;
+> +
+> +		esp_entry = alloc_esp_entry(net);
+> +		if (!esp_entry) {
+> +			pr_debug("All esp connection slots in use\n");
+> +			spin_unlock_bh(&esp_table_lock);
+> +			return false;
+> +		}
+> +		esp_entry->l_spi = spi;
+> +		esp_entry->l3num = tuple->src.l3num;
+> +		esp_ip_addr_copy(esp_entry->l3num, &esp_entry->l_ip, &tuple->src.u3);
+> +		esp_ip_addr_copy(esp_entry->l3num, &esp_entry->r_ip, &tuple->dst.u3);
+> +
+> +		/* Add entries to the hash tables */
+> +
+> +		err = rhashtable_insert_fast(&ltable, &esp_entry->lnode, ltable_params);
+> +		if (err) {
+
+... without lock, this can fail with -EEXIST.
+
+You could remove the esp_table_lock and change the above
+rhashtable_insert_fast() to something like:
+
+esp_entry_old = rhashtable_lookup_get_insert_fast(&ltable, &esp_entry->lnode ltable_params);
+if (esp_entry_old) {
+	if (IS_ERR(esp_entry_old)) {
+		esp_table_free_entry_by_esp_id(net, esp_entry->esp_id);
+		return false;
+	}
+
+	esp_table_free_entry_by_esp_id(net, esp_entry->esp_id);
+	/* insertion raced, use existing entry */
+	esp_entry = esp_entry_old;
+}
+/* esp_entry_old == NULL -- insertion successful */
+
+This should allow removal of the esp_table_lock spinlock.
+
+> +#ifdef CONFIG_NF_CONNTRACK_PROCFS
+> +/* print private data for conntrack */
+> +static void esp_print_conntrack(struct seq_file *s, struct nf_conn *ct)
+> +{
+> +	seq_printf(s, "l_spi=%x, r_spi=%x ", ct->proto.esp.l_spi, ct->proto.esp.r_spi);
+
+Thanks, this looks good.
+
+> +			nf_conntrack_event_cache(IPCT_ASSURED, ct);
+> +
+> +			/* Retrieve SPIs of original and reply from esp_entry.
+> +			 * Both directions should contain the same esp_entry,
+> +			 * so just check the first one.
+> +			 */
+> +			tuple = nf_ct_tuple(ct, IP_CT_DIR_ORIGINAL);
+> +			esp_id = tuple->src.u.esp.id;
+> +			if (esp_id >= TEMP_SPI_START && esp_id <= TEMP_SPI_MAX) {
+> +				spin_lock_bh(&esp_table_lock);
+> +				esp_entry = esp_table[esp_id - TEMP_SPI_START];
+
+This esp_table[] has to be removed.
+
+1. It breaks netns isolation
+2. It forces contention on a single spinlock.
+
+As far as I understand, this table also serves as a resource limiter to
+avoid eating up too much resources.
+
+So, how about adding a espid bitmap to struct nf_conntrack_net?
+
+Something like this:
+
+diff --git a/include/net/netfilter/nf_conntrack.h b/include/net/netfilter/nf_conntrack.h
+--- a/include/net/netfilter/nf_conntrack.h
++++ b/include/net/netfilter/nf_conntrack.h
+@@ -63,6 +63,9 @@ struct nf_conntrack_net {
+ 	struct delayed_work ecache_dwork;
+ 	struct netns_ct *ct_net;
+ #endif
++#ifdef CONFIG_NF_CT_PROTO_ESP
++	DECLARE_BITMAP(esp_id_map, 1024);
++#endif
+ };
+ 
+ #include <linux/types.h>
+diff --git a/net/netfilter/nf_conntrack_proto_esp.c b/net/netfilter/nf_conntrack_proto_esp.c
+index f17ce8a9439f..ce4d5864c480 100644
+--- a/net/netfilter/nf_conntrack_proto_esp.c
++++ b/net/netfilter/nf_conntrack_proto_esp.c
+@@ -341,24 +340,28 @@ static void esp_table_free_entry_by_esp_id(struct net *net, u16 esp_id)
+  */
+ struct _esp_table *alloc_esp_entry(struct net *net)
+ {
+-	int idx;
++	struct nf_conntrack_net *cnet = net_generic(net, nf_conntrack_net_id);
+ 	struct _esp_table *esp_entry = NULL;
++	int idx;
+ 
+-	/* Find the first unused slot */
+-	for (idx = 0; idx < ESP_MAX_CONNECTIONS; idx++) {
+-		if (esp_table[idx])
+-			continue;
++again:
++	idx = find_first_zero_bit(cnet->esp_id_map, 1024);
++	if (idx >= 1024)
++		return NULL;
+ 
+-		esp_table[idx] = kmalloc(sizeof(*esp_entry), GFP_ATOMIC);
+-		if (!esp_table[idx])
+-			return NULL;
+-		memset(esp_table[idx], 0, sizeof(struct _esp_table));
+-		esp_table[idx]->esp_id = idx + TEMP_SPI_START;
+-		esp_table[idx]->alloc_time_jiffies = nfct_time_stamp;
+-		esp_table[idx]->net = net;
+-		esp_entry = esp_table[idx];
+-		break;
++	if (test_and_set_bit(cnet->esp_id_map, idx))
++		goto again; /* raced */
++
++	esp_entry = kmalloc(sizeof(*esp_entry), GFP_ATOMIC);
++	if (!esp_entry) {
++		clear_bit(cnet->esp_id_map, idx);
++		return NULL;
+ 	}
++
++	esp_entry->esp_id = idx + TEMP_SPI_START;
++	esp_entry->alloc_time_jiffies = nfct_time_stamp;
++	esp_entry->net = net;
++
+ 	return esp_entry;
+ }
+
+
+I have a few more concerns:
+
+AFAICS there is no guarantee that an allocated esp table entry is backed
+by a conntrack entry.
+
+So, there must be a way to reap all allocated esp_entry structs
+when a network namespace goes down.
+
+Perhaps you could add a pernet (nf_conntrack_net) spinlock+list head
+that appends each allocated entry to that list.
+
+Then, on conntrack removal, in addition to removal from the rhash
+tables, add a list_del().
+
+On network namespace destruction, walk this list and remove all
+remaining entries (those that are still around after removal of all
+the conntrack objects).
+
+Does that make sense to you?
+
+> +static int esp_tuple_to_nlattr(struct sk_buff *skb,
+> +			       const struct nf_conntrack_tuple *t)
+> +{
+> +	if (nla_put_be16(skb, CTA_PROTO_SRC_ESP_ID, t->src.u.esp.id) ||
+> +	    nla_put_be16(skb, CTA_PROTO_DST_ESP_ID, t->dst.u.esp.id))
+> +		goto nla_put_failure;
+
+This exposes the 16 bit kernel-generated IDs, right?
+Should this dump the real on-wire SPIs instead?
+
+Or is there are reason why the internal IDs need exposure?
