@@ -2,269 +2,217 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BC25D36AADB
-	for <lists+netdev@lfdr.de>; Mon, 26 Apr 2021 04:52:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 66E3B36AB0B
+	for <lists+netdev@lfdr.de>; Mon, 26 Apr 2021 05:20:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231856AbhDZCvJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 25 Apr 2021 22:51:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33660 "EHLO
+        id S231787AbhDZDVJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 25 Apr 2021 23:21:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40142 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231804AbhDZCvH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 25 Apr 2021 22:51:07 -0400
-Received: from mail-qk1-x72c.google.com (mail-qk1-x72c.google.com [IPv6:2607:f8b0:4864:20::72c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CFA39C061761;
-        Sun, 25 Apr 2021 19:50:26 -0700 (PDT)
-Received: by mail-qk1-x72c.google.com with SMTP id 8so21507548qkv.8;
-        Sun, 25 Apr 2021 19:50:26 -0700 (PDT)
+        with ESMTP id S231679AbhDZDVH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 25 Apr 2021 23:21:07 -0400
+Received: from mail-wr1-x42b.google.com (mail-wr1-x42b.google.com [IPv6:2a00:1450:4864:20::42b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC9DEC061574
+        for <netdev@vger.kernel.org>; Sun, 25 Apr 2021 20:20:24 -0700 (PDT)
+Received: by mail-wr1-x42b.google.com with SMTP id n2so1024667wrm.0
+        for <netdev@vger.kernel.org>; Sun, 25 Apr 2021 20:20:24 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=GwgRYiRyslo628iscBvsP7av/19EwrhlvyUG9PJn1s0=;
-        b=J2LzrXgMlx4zBH1RzvBV6CejWskknV9ns40Pnxg9ir8UU2LYoLubsgKT2e2ZqFtrhJ
-         eq01rxaiEtHtNPR4kF2ok8rrdKE9pN7e/A+5JTs7sJXBpoSxZW1I5FamSXMEkqbO0om2
-         J7pj3kfB2a0H9gaBzuRUoCSsZ02SZ431jRWlanDmLjPypkrALXzJ447B2FuVyqpRinNq
-         cwHUCAYNVZNZbjWl15lFvkSx4TqJj0UmKnZkBJAGbyRE0c7aOVxuy1gtdP7L6eh+uIaI
-         dseAdf968/X1a9RvFV0pt4BuepqM/QiVglHdgbpACyyKiScv1IZcQPxV+0x4B8SX0sm5
-         Rzhg==
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=A+O9XxSyRAxC04s135zV0ImqDIzVrFlS/3PdrRouQHM=;
+        b=tz057H0ZyVDZA4cz2Ph0/d0cDQLB20ImUcGHhlecr3NTGfQE0EVtrrle92XvODW3CP
+         SQ8sE1EdnY5psqwpYIIPbQ+4hjw5CArt0nfU8maG1GwJkA4Cl4cLSGP/FS4R/qCYbfLV
+         Xk5S8OEfeQd4xms8ondf7Bx8E+jsbTOPzyQtC8+7AyvxvgSSQ/aS3iqp0qgrflXyNI0f
+         /ILMdVMa41rChzyMEMaM/nUvemuLZg5PyL5pytZb2M6zuqEVBR+rA79auA2U1klA/9nM
+         huPH8+uou1uRkF44Na0JYeRJ/HXj3p+XrEsMQPqRjNX1y0s8ZGsIwmOnIzljpL0USf0g
+         XhIA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=GwgRYiRyslo628iscBvsP7av/19EwrhlvyUG9PJn1s0=;
-        b=RHOLu/Qvxf3lHdFaTglSVIRDnvScsAI6U5MzaD4S+YoWUmvLYkDn5Z2FGBLxVF2/vI
-         Hi0rzMWMs0izVqQOv0IOYqDnqFCnTiUkfFo7j6Q+tUthkb6C1leZZ00Ce8/bZmFpHR0v
-         qPofcxjUHgD3cqCy0P6t6dPwjB3+FpAS50oJjIfGMt5uQ7rZoKf5eT9/CWAQQ7eOn6nM
-         CtJHO1xKsaNvvkXVUpJjduxgDFsw2S80BihJKBZz1Gg+ttkW2olU8pdPyfoIKvkh/ltz
-         HOqtJCSwOEoh+NM7mCpgKTXbOPxvzRzs+5d0tDxSi41L/rK/OhAPRdE5DtDic8jJoL0Q
-         G34g==
-X-Gm-Message-State: AOAM533w4kXHA0xVal77ysNdHSjN5GZ5hqruFv4ZhsrCcfdUM/Yv3lVG
-        seqn59qI0VajjiZNQYXKYH68WfvnQFg9Hw==
-X-Google-Smtp-Source: ABdhPJzI8gNdFrtz7xLlNRhZe/gkVXOgDrTi36tKoxswbiLMzkHPqRwGACHxz5Q5/eYHndW4TXeKaw==
-X-Received: by 2002:a05:620a:7d4:: with SMTP id 20mr15126539qkb.58.1619405425930;
-        Sun, 25 Apr 2021 19:50:25 -0700 (PDT)
-Received: from unknown.attlocal.net ([2600:1700:65a0:ab60:9050:63f8:875d:8edf])
-        by smtp.gmail.com with ESMTPSA id e15sm9632969qkm.129.2021.04.25.19.50.24
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 25 Apr 2021 19:50:25 -0700 (PDT)
-From:   Cong Wang <xiyou.wangcong@gmail.com>
-To:     netdev@vger.kernel.org
-Cc:     bpf@vger.kernel.org, jiang.wang@bytedance.com,
-        duanxiongchun@bytedance.com, wangdongdong.6@bytedance.com,
-        Cong Wang <cong.wang@bytedance.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jakub Sitnicki <jakub@cloudflare.com>,
-        Lorenz Bauer <lmb@cloudflare.com>
-Subject: [Patch bpf-next v3 10/10] selftests/bpf: add test cases for redirection between udp and unix
-Date:   Sun, 25 Apr 2021 19:50:01 -0700
-Message-Id: <20210426025001.7899-11-xiyou.wangcong@gmail.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20210426025001.7899-1-xiyou.wangcong@gmail.com>
-References: <20210426025001.7899-1-xiyou.wangcong@gmail.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=A+O9XxSyRAxC04s135zV0ImqDIzVrFlS/3PdrRouQHM=;
+        b=nsb8TW/BQg9d1ncWI3a5ApIVx3U5Qkoy0HYCxDzScJl7wpOGpFW9bMuuak0bZ3THx7
+         i/lQsBJjN1IA8agwNr2xdNXo+VkA0c5ruvKgzeUIWYleU2x/T7M2M8dfMVUExpwj7hmV
+         PBAwS6ugi6YJyn6lM2Rk/3ivr9V9fAY6W/q1pSPmbTdmTr4WiRsIgelS2Lj6BrONW8sm
+         goT+AR062Oyn9gttxWYihgiF8pkTa5j34fKApoC2quqnjS97/JdXJLdaEFBDACo9nIUR
+         ZCAMpoEJ2ODmgYGp49Vl0Gio5aA13J7IEg3QFwlD123A8vAuqeFeDrfiZIpyRYmk7Q76
+         7crQ==
+X-Gm-Message-State: AOAM531mDcUC8QVZ8omBKzpXVbrJexioe4HkizlxAlOrRbhR9HelwpNG
+        qh3XS0/YC9xtp1LNq7xc4pYA3j8xijCo6ox0N/0wWQ==
+X-Google-Smtp-Source: ABdhPJwei9VUtsJLBZyc0PgKIEMreSZc6VoK8XBJH+rMhh/h403LwXwyRD34IF06reumKVvxPXGYSIv/3Akqw7iHNRE=
+X-Received: by 2002:a5d:5903:: with SMTP id v3mr4103013wrd.405.1619407223551;
+ Sun, 25 Apr 2021 20:20:23 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <d7fbf3d3a2490d0a9e99945593ada243da58e0f8.1619000255.git.cdleonard@gmail.com>
+ <CADVnQynLSDQHxgMN6=mU2m58t_JKUyugmw0j6g1UDG+jLxTfAw@mail.gmail.com> <50de1e9f-eed7-f827-77ea-708f4621e3d4@drivenets.com>
+In-Reply-To: <50de1e9f-eed7-f827-77ea-708f4621e3d4@drivenets.com>
+From:   Matt Mathis <mattmathis@google.com>
+Date:   Sun, 25 Apr 2021 20:20:11 -0700
+Message-ID: <CAH56bmA7bRwd5DVVA++jxZqoG2GVLSMb+g1iyN8zHgFFeP-BVQ@mail.gmail.com>
+Subject: Re: [RFC] tcp: Delay sending non-probes for RFC4821 mtu probing
+To:     Leonard Crestez <lcrestez@drivenets.com>
+Cc:     Neal Cardwell <ncardwell@google.com>,
+        Willem de Bruijn <willemb@google.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        David Ahern <dsahern@kernel.org>,
+        Soheil Hassas Yeganeh <soheil@google.com>,
+        Roopa Prabhu <roopa@cumulusnetworks.com>,
+        netdev <netdev@vger.kernel.org>, linux-kernel@vger.kernel.org,
+        Yuchung Cheng <ycheng@google.com>,
+        John Heffner <johnwheffner@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Cong Wang <cong.wang@bytedance.com>
+First RFC 4821 was finished in 2007, but most of the work was done
+several years earlier.   In the intervening years just about
+everything else in TCP has been overhauled.   The 11 packets was
+probably reasonable for Reno with early retransmit and non adaptive
+reordering.   These are archaic algorithms by today's standards.
 
-Add two test cases to ensure redirection between udp and unix
-work bidirectionally.
+You have two problems that you need to address:
+1) like TSO you need to hold back transmits that are otherwise
+eligible to be sent, such that you have enough data in the backlog to
+send a probe or TSO.
+2) you need to make sure that TCP recovers promptly when a probe is
+lost (which is the most common case).  This is not so hard on a well
+behaved network, but is likely to make your head hurt in the presence
+of reordering (e,g, ECMP w/o flow pinning).  RACK helps, I'm sure.
 
-Cc: John Fastabend <john.fastabend@gmail.com>
-Cc: Daniel Borkmann <daniel@iogearbox.net>
-Cc: Jakub Sitnicki <jakub@cloudflare.com>
-Cc: Lorenz Bauer <lmb@cloudflare.com>
-Signed-off-by: Cong Wang <cong.wang@bytedance.com>
----
- .../selftests/bpf/prog_tests/sockmap_listen.c | 165 ++++++++++++++++++
- 1 file changed, 165 insertions(+)
+Thanks,
+--MM--
+The best way to predict the future is to create it.  - Alan Kay
 
-diff --git a/tools/testing/selftests/bpf/prog_tests/sockmap_listen.c b/tools/testing/selftests/bpf/prog_tests/sockmap_listen.c
-index 2b1bdb8fa48d..01c052e15a83 100644
---- a/tools/testing/selftests/bpf/prog_tests/sockmap_listen.c
-+++ b/tools/testing/selftests/bpf/prog_tests/sockmap_listen.c
-@@ -1813,6 +1813,170 @@ static void test_udp_redir(struct test_sockmap_listen *skel, struct bpf_map *map
- 	udp_skb_redir_to_connected(skel, map, family);
- }
- 
-+static void udp_unix_redir_to_connected(int family, int sock_mapfd,
-+					int verd_mapfd, enum redir_mode mode)
-+{
-+	const char *log_prefix = redir_mode_str(mode);
-+	int c0, c1, p0, p1;
-+	unsigned int pass;
-+	int err, n;
-+	int sfd[2];
-+	u32 key;
-+	char b;
-+
-+	zero_verdict_count(verd_mapfd);
-+
-+	if (socketpair(AF_UNIX, SOCK_DGRAM | SOCK_NONBLOCK, 0, sfd))
-+		return;
-+	c0 = sfd[0], p0 = sfd[1];
-+
-+	err = udp_socketpair(family, &p1, &c1);
-+	if (err)
-+		goto close;
-+
-+	err = add_to_sockmap(sock_mapfd, p0, p1);
-+	if (err)
-+		goto close_cli1;
-+
-+	n = write(c1, "a", 1);
-+	if (n < 0)
-+		FAIL_ERRNO("%s: write", log_prefix);
-+	if (n == 0)
-+		FAIL("%s: incomplete write", log_prefix);
-+	if (n < 1)
-+		goto close_cli1;
-+
-+	key = SK_PASS;
-+	err = xbpf_map_lookup_elem(verd_mapfd, &key, &pass);
-+	if (err)
-+		goto close_cli1;
-+	if (pass != 1)
-+		FAIL("%s: want pass count 1, have %d", log_prefix, pass);
-+
-+	n = read(mode == REDIR_INGRESS ? p0 : c0, &b, 1);
-+	if (n < 0)
-+		FAIL_ERRNO("%s: read", log_prefix);
-+	if (n == 0)
-+		FAIL("%s: incomplete read", log_prefix);
-+
-+close_cli1:
-+	xclose(c1);
-+	xclose(p1);
-+close:
-+	xclose(c0);
-+	xclose(p0);
-+}
-+
-+static void udp_unix_skb_redir_to_connected(struct test_sockmap_listen *skel,
-+					    struct bpf_map *inner_map, int family)
-+{
-+	int verdict = bpf_program__fd(skel->progs.prog_skb_verdict);
-+	int verdict_map = bpf_map__fd(skel->maps.verdict_map);
-+	int sock_map = bpf_map__fd(inner_map);
-+	int err;
-+
-+	err = xbpf_prog_attach(verdict, sock_map, BPF_SK_SKB_VERDICT, 0);
-+	if (err)
-+		return;
-+
-+	skel->bss->test_ingress = false;
-+	udp_unix_redir_to_connected(family, sock_map, verdict_map, REDIR_EGRESS);
-+	skel->bss->test_ingress = true;
-+	udp_unix_redir_to_connected(family, sock_map, verdict_map, REDIR_INGRESS);
-+
-+	xbpf_prog_detach2(verdict, sock_map, BPF_SK_SKB_VERDICT);
-+}
-+
-+static void unix_udp_redir_to_connected(int family, int sock_mapfd,
-+					int verd_mapfd, enum redir_mode mode)
-+{
-+	const char *log_prefix = redir_mode_str(mode);
-+	int c0, c1, p0, p1;
-+	unsigned int pass;
-+	int err, n;
-+	int sfd[2];
-+	u32 key;
-+	char b;
-+
-+	zero_verdict_count(verd_mapfd);
-+
-+	err = udp_socketpair(family, &p0, &c0);
-+	if (err)
-+		return;
-+
-+	if (socketpair(AF_UNIX, SOCK_DGRAM | SOCK_NONBLOCK, 0, sfd))
-+		goto close_cli0;
-+	c1 = sfd[0], p1 = sfd[1];
-+
-+	err = add_to_sockmap(sock_mapfd, p0, p1);
-+	if (err)
-+		goto close;
-+
-+	n = write(c1, "a", 1);
-+	if (n < 0)
-+		FAIL_ERRNO("%s: write", log_prefix);
-+	if (n == 0)
-+		FAIL("%s: incomplete write", log_prefix);
-+	if (n < 1)
-+		goto close;
-+
-+	key = SK_PASS;
-+	err = xbpf_map_lookup_elem(verd_mapfd, &key, &pass);
-+	if (err)
-+		goto close;
-+	if (pass != 1)
-+		FAIL("%s: want pass count 1, have %d", log_prefix, pass);
-+
-+	n = read(mode == REDIR_INGRESS ? p0 : c0, &b, 1);
-+	if (n < 0)
-+		FAIL_ERRNO("%s: read", log_prefix);
-+	if (n == 0)
-+		FAIL("%s: incomplete read", log_prefix);
-+
-+close:
-+	xclose(c1);
-+	xclose(p1);
-+close_cli0:
-+	xclose(c0);
-+	xclose(p0);
-+
-+}
-+
-+static void unix_udp_skb_redir_to_connected(struct test_sockmap_listen *skel,
-+					    struct bpf_map *inner_map, int family)
-+{
-+	int verdict = bpf_program__fd(skel->progs.prog_skb_verdict);
-+	int verdict_map = bpf_map__fd(skel->maps.verdict_map);
-+	int sock_map = bpf_map__fd(inner_map);
-+	int err;
-+
-+	err = xbpf_prog_attach(verdict, sock_map, BPF_SK_SKB_VERDICT, 0);
-+	if (err)
-+		return;
-+
-+	skel->bss->test_ingress = false;
-+	unix_udp_redir_to_connected(family, sock_map, verdict_map, REDIR_EGRESS);
-+	skel->bss->test_ingress = true;
-+	unix_udp_redir_to_connected(family, sock_map, verdict_map, REDIR_INGRESS);
-+
-+	xbpf_prog_detach2(verdict, sock_map, BPF_SK_SKB_VERDICT);
-+}
-+
-+static void test_udp_unix_redir(struct test_sockmap_listen *skel, struct bpf_map *map,
-+				int family)
-+{
-+	const char *family_name, *map_name;
-+	char s[MAX_TEST_NAME];
-+
-+	family_name = family_str(family);
-+	map_name = map_type_str(map);
-+	snprintf(s, sizeof(s), "%s %s %s", map_name, family_name, __func__);
-+	if (!test__start_subtest(s))
-+		return;
-+	udp_unix_skb_redir_to_connected(skel, map, family);
-+	unix_udp_skb_redir_to_connected(skel, map, family);
-+}
-+
- static void run_tests(struct test_sockmap_listen *skel, struct bpf_map *map,
- 		      int family)
- {
-@@ -1822,6 +1986,7 @@ static void run_tests(struct test_sockmap_listen *skel, struct bpf_map *map,
- 	test_reuseport(skel, map, family, SOCK_STREAM);
- 	test_reuseport(skel, map, family, SOCK_DGRAM);
- 	test_udp_redir(skel, map, family);
-+	test_udp_unix_redir(skel, map, family);
- }
- 
- void test_sockmap_listen(void)
--- 
-2.25.1
+We must not tolerate intolerance;
+       however our response must be carefully measured:
+            too strong would be hypocritical and risks spiraling out of control;
+            too weak risks being mistaken for tacit approval.
 
+On Sun, Apr 25, 2021 at 7:34 PM Leonard Crestez <lcrestez@drivenets.com> wrote:
+>
+> On 4/21/21 3:47 PM, Neal Cardwell wrote:
+> > On Wed, Apr 21, 2021 at 6:21 AM Leonard Crestez <cdleonard@gmail.com> wrote:
+> >>
+> >> According to RFC4821 Section 7.4 "Protocols MAY delay sending non-probes
+> >> in order to accumulate enough data" but linux almost never does that.
+> >>
+> >> Linux waits for probe_size + (1 + retries) * mss_cache to be available
+> >> in the send buffer and if that condition is not met it will send anyway
+> >> using the current MSS. The feature can be made to work by sending very
+> >> large chunks of data from userspace (for example 128k) but for small writes
+> >> on fast links probes almost never happen.
+> >>
+> >> This patch tries to implement the "MAY" by adding an extra flag
+> >> "wait_data" to icsk_mtup which is set to 1 if a probe is possible but
+> >> insufficient data is available. Then data is held back in
+> >> tcp_write_xmit until a probe is sent, probing conditions are no longer
+> >> met, or 500ms pass.
+> >>
+> >> Signed-off-by: Leonard Crestez <cdleonard@gmail.com>
+> >>
+> >> ---
+> >>   Documentation/networking/ip-sysctl.rst |  4 ++
+> >>   include/net/inet_connection_sock.h     |  7 +++-
+> >>   include/net/netns/ipv4.h               |  1 +
+> >>   include/net/tcp.h                      |  2 +
+> >>   net/ipv4/sysctl_net_ipv4.c             |  7 ++++
+> >>   net/ipv4/tcp_ipv4.c                    |  1 +
+> >>   net/ipv4/tcp_output.c                  | 54 ++++++++++++++++++++++++--
+> >>   7 files changed, 71 insertions(+), 5 deletions(-)
+> >>
+> >> My tests are here: https://github.com/cdleonard/test-tcp-mtu-probing
+> >>
+> >> This patch makes the test pass quite reliably with
+> >> ICMP_BLACKHOLE=1 TCP_MTU_PROBING=1 IPERF_WINDOW=256k IPERF_LEN=8k while
+> >> before it only worked with much higher IPERF_LEN=256k
+> >>
+> >> In my loopback tests I also observed another issue when tcp_retries
+> >> increases because of SACKReorder. This makes the original problem worse
+> >> (since the retries amount factors in buffer requirement) and seems to be
+> >> unrelated issue. Maybe when loss happens due to MTU shrinkage the sender
+> >> sack logic is confused somehow?
+> >>
+> >> I know it's towards the end of the cycle but this is mostly just intended for
+> >> discussion.
+> >
+> > Thanks for raising the question of how to trigger PMTU probes more often!
+> >
+> > AFAICT this approach would cause unacceptable performance impacts by
+> > often injecting unnecessary 500ms delays when there is no need to do
+> > so.
+> >
+> > If the goal is to increase the frequency of PMTU probes, which seems
+> > like a valid goal, I would suggest that we rethink the Linux heuristic
+> > for triggering PMTU probes in the light of the fact that the loss
+> > detection mechanism is now RACK-TLP, which provides quick recovery in
+> > a much wider variety of scenarios.
+>
+> > After all, https://tools.ietf.org/html/rfc4821#section-7.4 says:
+> >
+> >     In addition, the timely loss detection algorithms in most protocols
+> >     have pre-conditions that SHOULD be satisfied before sending a probe.
+> >
+> > And we know that the "timely loss detection algorithms" have advanced
+> > since this RFC was written in 2007. >
+> > You mention:
+> >> Linux waits for probe_size + (1 + retries) * mss_cache to be available
+> >
+> > The code in question seems to be:
+> >
+> >    size_needed = probe_size + (tp->reordering + 1) * tp->mss_cache;
+>
+> As far as I understand this is meant to work with classical retransmit:
+> if 3 dupacks are received then the first segment is considered lost and
+> probe success or failure is can determine within roughly 1*rtt. RACK
+> marks segments as lost based on echoed timestamps so it doesn't need
+> multiple segments. The minimum time interval is only a little higher
+> (5/4 rtt). Is this correct?
+>
+> > How about just changing this to:
+> >
+> >    size_needed = probe_size + tp->mss_cache;
+> >
+> > The rationale would be that if that amount of data is available, then
+> > the sender can send one probe and one following current-mss-size
+> > packet. If the path MTU has not increased to allow the probe of size
+> > probe_size to pass through the network, then the following
+> > current-mss-size packet will likely pass through the network, generate
+> > a SACK, and trigger a RACK fast recovery 1/4*min_rtt later, when the
+> > RACK reorder timer fires.
+>
+> This appears to almost work except it stalls after a while. I spend some
+> time investigating it and it seems that cwnd is shrunk on mss increases
+> and does not go back up. This causes probes to be skipped because of a
+> "snd_cwnd < 11" condition.
+>
+> I don't undestand where that magical "11" comes from, could that be
+> shrunk. Maybe it's meant to only send probes when the cwnd is above the
+> default of 10? Then maybe mtu_probe_success shouldn't shrink mss below
+> what is required for an additional probe, or at least round-up.
+>
+> The shrinkage of cwnd is a problem with this "short probes" approach
+> because tcp_is_cwnd_limited returns false because tp->max_packets_out is
+> smaller (4). With longer probes tp->max_packets_out is larger (6) so
+> tcp_is_cwnd_limited returns true even for a cwnd of 10.
+>
+> I'm testing using namespace-to-namespace loopback so my delays are close
+> to zero. I tried to introduce an artificial delay of 30ms (using tc
+> netem) and it works but 20ms does not.
+>
+> > A secondary rationale for this heuristic would be: if the flow never
+> > accumulates roughly two packets worth of data, then does the flow
+> > really need a bigger packet size?
+>
+> The problem is that "accumulating sufficient data" is an extremely fuzzy
+> concept. In particular it seems that at the same traffic level
+> performing shorter writes from userspace (2kb instead of 64k) can
+> prevent mtu probing entirely and this is unreasonable.
+>
+> --
+> Regards,
+> Leonard
