@@ -2,24 +2,24 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5B8F936B09E
-	for <lists+netdev@lfdr.de>; Mon, 26 Apr 2021 11:32:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3C7A636B0AB
+	for <lists+netdev@lfdr.de>; Mon, 26 Apr 2021 11:33:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232726AbhDZJdJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 26 Apr 2021 05:33:09 -0400
-Received: from inva020.nxp.com ([92.121.34.13]:42628 "EHLO inva020.nxp.com"
+        id S232861AbhDZJdW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 26 Apr 2021 05:33:22 -0400
+Received: from inva020.nxp.com ([92.121.34.13]:42660 "EHLO inva020.nxp.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232601AbhDZJc7 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 26 Apr 2021 05:32:59 -0400
+        id S232249AbhDZJdA (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 26 Apr 2021 05:33:00 -0400
 Received: from inva020.nxp.com (localhost [127.0.0.1])
-        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id 1078D1A3506;
-        Mon, 26 Apr 2021 11:32:13 +0200 (CEST)
+        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id 7A69E1A34EA;
+        Mon, 26 Apr 2021 11:32:14 +0200 (CEST)
 Received: from invc005.ap-rdc01.nxp.com (invc005.ap-rdc01.nxp.com [165.114.16.14])
-        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id C575C1A34E0;
-        Mon, 26 Apr 2021 11:32:06 +0200 (CEST)
+        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id 3706D1A0544;
+        Mon, 26 Apr 2021 11:32:08 +0200 (CEST)
 Received: from localhost.localdomain (mega.ap.freescale.net [10.192.208.232])
-        by invc005.ap-rdc01.nxp.com (Postfix) with ESMTP id DB758402DA;
-        Mon, 26 Apr 2021 11:31:58 +0200 (CEST)
+        by invc005.ap-rdc01.nxp.com (Postfix) with ESMTP id 615AF40305;
+        Mon, 26 Apr 2021 11:32:00 +0200 (CEST)
 From:   Yangbo Lu <yangbo.lu@nxp.com>
 To:     netdev@vger.kernel.org
 Cc:     Yangbo Lu <yangbo.lu@nxp.com>,
@@ -36,9 +36,9 @@ Cc:     Yangbo Lu <yangbo.lu@nxp.com>,
         Alexandre Belloni <alexandre.belloni@bootlin.com>,
         UNGLinuxDriver@microchip.com, linux-doc@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Subject: [net-next, v2, 5/7] docs: networking: timestamping: update for DSA switches
-Date:   Mon, 26 Apr 2021 17:38:00 +0800
-Message-Id: <20210426093802.38652-6-yangbo.lu@nxp.com>
+Subject: [net-next, v2, 6/7] net: mscc: ocelot: convert to ocelot_port_txtstamp_request()
+Date:   Mon, 26 Apr 2021 17:38:01 +0800
+Message-Id: <20210426093802.38652-7-yangbo.lu@nxp.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20210426093802.38652-1-yangbo.lu@nxp.com>
 References: <20210426093802.38652-1-yangbo.lu@nxp.com>
@@ -47,93 +47,139 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Update timestamping doc for DSA switches to describe current
-implementation accurately. On TX, the skb cloning is no longer
-in DSA generic code.
+Convert to a common ocelot_port_txtstamp_request() for TX timestamp
+request handling.
 
 Signed-off-by: Yangbo Lu <yangbo.lu@nxp.com>
+Reviewed-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 ---
 Changes for v2:
-	- Split from tx timestamp optimization big patch.
-	- Updated the doc.
+	- Rebased.
 ---
- Documentation/networking/timestamping.rst | 63 ++++++++++++++---------
- 1 file changed, 39 insertions(+), 24 deletions(-)
+ drivers/net/dsa/ocelot/felix.c         | 15 +++++++--------
+ drivers/net/ethernet/mscc/ocelot.c     | 24 +++++++++++++++++++++---
+ drivers/net/ethernet/mscc/ocelot_net.c | 18 +++++++-----------
+ include/soc/mscc/ocelot.h              |  5 +++--
+ 4 files changed, 38 insertions(+), 24 deletions(-)
 
-diff --git a/Documentation/networking/timestamping.rst b/Documentation/networking/timestamping.rst
-index f682e88fa87e..7db3985359bc 100644
---- a/Documentation/networking/timestamping.rst
-+++ b/Documentation/networking/timestamping.rst
-@@ -630,30 +630,45 @@ hardware timestamping on it. This is because the SO_TIMESTAMPING API does not
- allow the delivery of multiple hardware timestamps for the same packet, so
- anybody else except for the DSA switch port must be prevented from doing so.
+diff --git a/drivers/net/dsa/ocelot/felix.c b/drivers/net/dsa/ocelot/felix.c
+index b28280b6e91a..ce607fbaaa3a 100644
+--- a/drivers/net/dsa/ocelot/felix.c
++++ b/drivers/net/dsa/ocelot/felix.c
+@@ -1399,17 +1399,16 @@ static void felix_txtstamp(struct dsa_switch *ds, int port,
+ 			   struct sk_buff *skb)
+ {
+ 	struct ocelot *ocelot = ds->priv;
+-	struct ocelot_port *ocelot_port = ocelot->ports[port];
+-	struct sk_buff *clone;
++	struct sk_buff *clone = NULL;
  
--In code, DSA provides for most of the infrastructure for timestamping already,
--in generic code: a BPF classifier (``ptp_classify_raw``) is used to identify
--PTP event messages (any other packets, including PTP general messages, are not
--timestamped), and provides two hooks to drivers:
--
--- ``.port_txtstamp()``: The driver is passed a clone of the timestampable skb
--  to be transmitted, before actually transmitting it. Typically, a switch will
--  have a PTP TX timestamp register (or sometimes a FIFO) where the timestamp
--  becomes available. There may be an IRQ that is raised upon this timestamp's
--  availability, or the driver might have to poll after invoking
--  ``dev_queue_xmit()`` towards the host interface. Either way, in the
--  ``.port_txtstamp()`` method, the driver only needs to save the clone for
--  later use (when the timestamp becomes available). Each skb is annotated with
--  a pointer to its clone, in ``DSA_SKB_CB(skb)->clone``, to ease the driver's
--  job of keeping track of which clone belongs to which skb.
--
--- ``.port_rxtstamp()``: The original (and only) timestampable skb is provided
--  to the driver, for it to annotate it with a timestamp, if that is immediately
--  available, or defer to later. On reception, timestamps might either be
--  available in-band (through metadata in the DSA header, or attached in other
--  ways to the packet), or out-of-band (through another RX timestamping FIFO).
--  Deferral on RX is typically necessary when retrieving the timestamp needs a
--  sleepable context. In that case, it is the responsibility of the DSA driver
--  to call ``netif_rx_ni()`` on the freshly timestamped skb.
-+In the generic layer, DSA provides the following infrastructure for PTP
-+timestamping:
-+
-+- ``.port_txtstamp()``: a hook called prior to the transmission of
-+  packets with a hardware TX timestamping request from user space.
-+  This is required for two-step timestamping, since the hardware
-+  timestamp becomes available after the actual MAC transmission, so the
-+  driver must be prepared to correlate the timestamp with the original
-+  packet so that it can re-enqueue the packet back into the socket's
-+  error queue. To save the packet for when the timestamp becomes
-+  available, the driver can call ``skb_clone_sk`` , save the clone pointer
-+  in skb->cb and enqueue a tx skb queue. Typically, a switch will have a
-+  PTP TX timestamp register (or sometimes a FIFO) where the timestamp
-+  becomes available. In case of a FIFO, the hardware might store
-+  key-value pairs of PTP sequence ID/message type/domain number and the
-+  actual timestamp. To perform the correlation correctly between the
-+  packets in a queue waiting for timestamping and the actual timestamps,
-+  drivers can use a BPF classifier (``ptp_classify_raw``) to identify
-+  the PTP transport type, and ``ptp_parse_header`` to interpret the PTP
-+  header fields. There may be an IRQ that is raised upon this
-+  timestamp's availability, or the driver might have to poll after
-+  invoking ``dev_queue_xmit()`` towards the host interface.
-+  One-step TX timestamping do not require packet cloning, since there is
-+  no follow-up message required by the PTP protocol (because the
-+  TX timestamp is embedded into the packet by the MAC), and therefore
-+  user space does not expect the packet annotated with the TX timestamp
-+  to be re-enqueued into its socket's error queue.
-+
-+- ``.port_rxtstamp()``: On RX, the BPF classifier is run by DSA to
-+  identify PTP event messages (any other packets, including PTP general
-+  messages, are not timestamped). The original (and only) timestampable
-+  skb is provided to the driver, for it to annotate it with a timestamp,
-+  if that is immediately available, or defer to later. On reception,
-+  timestamps might either be available in-band (through metadata in the
-+  DSA header, or attached in other ways to the packet), or out-of-band
-+  (through another RX timestamping FIFO). Deferral on RX is typically
-+  necessary when retrieving the timestamp needs a sleepable context. In
-+  that case, it is the responsibility of the DSA driver to call
-+  ``netif_rx_ni()`` on the freshly timestamped skb.
+-	if (ocelot->ptp && ocelot_port->ptp_cmd == IFH_REW_OP_TWO_STEP_PTP) {
+-		clone = skb_clone_sk(skb);
+-		if (!clone)
+-			return;
++	if (!ocelot->ptp)
++		return;
  
- 3.2.2 Ethernet PHYs
- ^^^^^^^^^^^^^^^^^^^
+-		ocelot_port_add_txtstamp_skb(ocelot, port, clone);
++	if (ocelot_port_txtstamp_request(ocelot, port, skb, &clone))
++		return;
++
++	if (clone)
+ 		OCELOT_SKB_CB(skb)->clone = clone;
+-	}
+ }
+ 
+ static int felix_change_mtu(struct dsa_switch *ds, int port, int new_mtu)
+diff --git a/drivers/net/ethernet/mscc/ocelot.c b/drivers/net/ethernet/mscc/ocelot.c
+index 7da2dd1632b1..3ff4cce1ce7d 100644
+--- a/drivers/net/ethernet/mscc/ocelot.c
++++ b/drivers/net/ethernet/mscc/ocelot.c
+@@ -530,8 +530,8 @@ void ocelot_port_disable(struct ocelot *ocelot, int port)
+ }
+ EXPORT_SYMBOL(ocelot_port_disable);
+ 
+-void ocelot_port_add_txtstamp_skb(struct ocelot *ocelot, int port,
+-				  struct sk_buff *clone)
++static void ocelot_port_add_txtstamp_skb(struct ocelot *ocelot, int port,
++					 struct sk_buff *clone)
+ {
+ 	struct ocelot_port *ocelot_port = ocelot->ports[port];
+ 
+@@ -545,7 +545,25 @@ void ocelot_port_add_txtstamp_skb(struct ocelot *ocelot, int port,
+ 
+ 	spin_unlock(&ocelot_port->ts_id_lock);
+ }
+-EXPORT_SYMBOL(ocelot_port_add_txtstamp_skb);
++
++int ocelot_port_txtstamp_request(struct ocelot *ocelot, int port,
++				 struct sk_buff *skb,
++				 struct sk_buff **clone)
++{
++	struct ocelot_port *ocelot_port = ocelot->ports[port];
++	u8 ptp_cmd = ocelot_port->ptp_cmd;
++
++	if (ptp_cmd == IFH_REW_OP_TWO_STEP_PTP) {
++		*clone = skb_clone_sk(skb);
++		if (!(*clone))
++			return -ENOMEM;
++
++		ocelot_port_add_txtstamp_skb(ocelot, port, *clone);
++	}
++
++	return 0;
++}
++EXPORT_SYMBOL(ocelot_port_txtstamp_request);
+ 
+ static void ocelot_get_hwtimestamp(struct ocelot *ocelot,
+ 				   struct timespec64 *ts)
+diff --git a/drivers/net/ethernet/mscc/ocelot_net.c b/drivers/net/ethernet/mscc/ocelot_net.c
+index 789a5fba146c..e99c8fb3cb15 100644
+--- a/drivers/net/ethernet/mscc/ocelot_net.c
++++ b/drivers/net/ethernet/mscc/ocelot_net.c
+@@ -507,19 +507,15 @@ static netdev_tx_t ocelot_port_xmit(struct sk_buff *skb, struct net_device *dev)
+ 
+ 	/* Check if timestamping is needed */
+ 	if (ocelot->ptp && (skb_shinfo(skb)->tx_flags & SKBTX_HW_TSTAMP)) {
+-		rew_op = ocelot_port->ptp_cmd;
++		struct sk_buff *clone = NULL;
+ 
+-		if (ocelot_port->ptp_cmd == IFH_REW_OP_TWO_STEP_PTP) {
+-			struct sk_buff *clone;
+-
+-			clone = skb_clone_sk(skb);
+-			if (!clone) {
+-				kfree_skb(skb);
+-				return NETDEV_TX_OK;
+-			}
+-
+-			ocelot_port_add_txtstamp_skb(ocelot, port, clone);
++		if (ocelot_port_txtstamp_request(ocelot, port, skb, &clone)) {
++			kfree_skb(skb);
++			return NETDEV_TX_OK;
++		}
+ 
++		if (ocelot_port->ptp_cmd == IFH_REW_OP_TWO_STEP_PTP) {
++			rew_op = ocelot_port->ptp_cmd;
+ 			rew_op |= OCELOT_SKB_CB(clone)->ts_id << 3;
+ 		}
+ 	}
+diff --git a/include/soc/mscc/ocelot.h b/include/soc/mscc/ocelot.h
+index f075aaf70eee..f7632519cb9c 100644
+--- a/include/soc/mscc/ocelot.h
++++ b/include/soc/mscc/ocelot.h
+@@ -828,8 +828,9 @@ int ocelot_vlan_add(struct ocelot *ocelot, int port, u16 vid, bool pvid,
+ int ocelot_vlan_del(struct ocelot *ocelot, int port, u16 vid);
+ int ocelot_hwstamp_get(struct ocelot *ocelot, int port, struct ifreq *ifr);
+ int ocelot_hwstamp_set(struct ocelot *ocelot, int port, struct ifreq *ifr);
+-void ocelot_port_add_txtstamp_skb(struct ocelot *ocelot, int port,
+-				  struct sk_buff *clone);
++int ocelot_port_txtstamp_request(struct ocelot *ocelot, int port,
++				 struct sk_buff *skb,
++				 struct sk_buff **clone);
+ void ocelot_get_txtstamp(struct ocelot *ocelot);
+ void ocelot_port_set_maxlen(struct ocelot *ocelot, int port, size_t sdu);
+ int ocelot_get_max_mtu(struct ocelot *ocelot, int port);
 -- 
 2.25.1
 
