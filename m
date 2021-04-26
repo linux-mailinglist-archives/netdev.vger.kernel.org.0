@@ -2,210 +2,177 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 093C736B792
-	for <lists+netdev@lfdr.de>; Mon, 26 Apr 2021 19:09:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 015B136B796
+	for <lists+netdev@lfdr.de>; Mon, 26 Apr 2021 19:10:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235203AbhDZRKD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 26 Apr 2021 13:10:03 -0400
-Received: from dispatchb-eu1.ppe-hosted.com ([185.183.29.37]:16106 "EHLO
-        dispatchb-eu1.ppe-hosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S234767AbhDZRKB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 26 Apr 2021 13:10:01 -0400
-X-Virus-Scanned: Proofpoint Essentials engine
-Received: from EUR05-VI1-obe.outbound.protection.outlook.com (mail-vi1eur05lp2176.outbound.protection.outlook.com [104.47.17.176])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mx1-eu1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id 62FEE7C0061;
-        Mon, 26 Apr 2021 17:09:17 +0000 (UTC)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=EyVsNwBgLnGmxErFF760NyzoPHguZe0Hq9ebfkCtU88HgrFToZ2k5sbC1tCCzYph++Q38BzMprl9QfpYv+Xt/upsVJwHDxDXVa7I5oHQkPPT2ZLa5WdRleZucbnh5agHAig74sYadPR5/4XFOqPb4ITRgiw5vBuBimEX/2VKoomiU0ipGwldGZggSqk/GBqJi90OYGCV1mkT8omG9uasW33TFez4t5zkqkjRUy/0YRIf4OSYoDwrpTTPUktiks89zvo3ObSwo+tt5z9ANAI7GtfBLuTIwZtlXwwhVkFpPl41F49XDVxYd3m2mRvERb22XBOStm2SjpDZDDR1Kd3MJA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=KMR21/TtTCnl/mKR/AuTO+DnplJ64qL1Uuv4up8jI6s=;
- b=Ub0WCV5yT2sCMhv/aeWXa6kV1aEz0ajzye/4gUKd08EDCkWAHD2K0xVxh//wcKlBYXsLgqRE2EEJDrz/plm7SoNR/B+ktbCS7Ivbte7bAM2PvxFno8WuvAhjiTTW8L4khX0uYKxyfW1Xl4p/Tr76jeeooQR+lY2aQRJOCoWSsHsfqi84AYrX38PAAAW2J9NZP4EFWRAEnN/GTtEjeszvT5yJ34meZIPqcOTK+1xKmqATPz9RW9hRnyfKo8SHuV8Rb/e7v+FI652mqTfXqBgFbfL0kw6WFCM3zjAZll7T9x/UVBKGkqk63XHHgiOnio2/OL9hfZCZnVqckko9hfpQRQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=drivenets.com; dmarc=pass action=none
- header.from=drivenets.com; dkim=pass header.d=drivenets.com; arc=none
+        id S235018AbhDZRKZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 26 Apr 2021 13:10:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54870 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233736AbhDZRKX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 26 Apr 2021 13:10:23 -0400
+Received: from mail-qk1-x730.google.com (mail-qk1-x730.google.com [IPv6:2607:f8b0:4864:20::730])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C5C1C061574
+        for <netdev@vger.kernel.org>; Mon, 26 Apr 2021 10:09:41 -0700 (PDT)
+Received: by mail-qk1-x730.google.com with SMTP id o5so57230650qkb.0
+        for <netdev@vger.kernel.org>; Mon, 26 Apr 2021 10:09:41 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=drivenets.onmicrosoft.com; s=selector2-drivenets-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=KMR21/TtTCnl/mKR/AuTO+DnplJ64qL1Uuv4up8jI6s=;
- b=NsDULmQJIzF3m+/EElAs+aKrjBU+6CtG3lFJfjhqwgM14MxeoTM307Q5P0Tm9tgULDYwKawsbHuNpdUwr/+DEaIPcLN4VwrnkHioPV0Y0AJ7q20bzaxY0ADO4ovz34m036DmGyoc/bEeEASq4LMSDfs+7SmuH8M8LoUuQWgPm/o=
-Authentication-Results: gmail.com; dkim=none (message not signed)
- header.d=none;gmail.com; dmarc=none action=none header.from=drivenets.com;
-Received: from AM7PR08MB5511.eurprd08.prod.outlook.com (2603:10a6:20b:10d::12)
- by AM7PR08MB5512.eurprd08.prod.outlook.com (2603:10a6:20b:de::19) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4065.25; Mon, 26 Apr
- 2021 17:09:16 +0000
-Received: from AM7PR08MB5511.eurprd08.prod.outlook.com
- ([fe80::1b7:6f71:2dd8:a2b3]) by AM7PR08MB5511.eurprd08.prod.outlook.com
- ([fe80::1b7:6f71:2dd8:a2b3%6]) with mapi id 15.20.4065.027; Mon, 26 Apr 2021
- 17:09:16 +0000
-Subject: Re: [RFC] tcp: Delay sending non-probes for RFC4821 mtu probing
-To:     Neal Cardwell <ncardwell@google.com>,
-        Matt Mathis <mattmathis@google.com>
-Cc:     Willem de Bruijn <willemb@google.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>,
-        Soheil Hassas Yeganeh <soheil@google.com>,
-        Roopa Prabhu <roopa@cumulusnetworks.com>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Yuchung Cheng <ycheng@google.com>,
-        John Heffner <johnwheffner@gmail.com>
-References: <d7fbf3d3a2490d0a9e99945593ada243da58e0f8.1619000255.git.cdleonard@gmail.com>
- <CADVnQynLSDQHxgMN6=mU2m58t_JKUyugmw0j6g1UDG+jLxTfAw@mail.gmail.com>
- <50de1e9f-eed7-f827-77ea-708f4621e3d4@drivenets.com>
- <CADVnQykBebycW1XcvD=NGan+BrJ3N1m5Q-pWs5vyYNmQQLjrBw@mail.gmail.com>
-From:   Leonard Crestez <lcrestez@drivenets.com>
-Message-ID: <5af52ab4-237f-8646-76e4-5e24236d9b4a@drivenets.com>
-Date:   Mon, 26 Apr 2021 20:09:13 +0300
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
- Gecko/20100101 Thunderbird/78.10.0
-In-Reply-To: <CADVnQykBebycW1XcvD=NGan+BrJ3N1m5Q-pWs5vyYNmQQLjrBw@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-GB
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [78.96.81.202]
-X-ClientProxiedBy: LO3P265CA0005.GBRP265.PROD.OUTLOOK.COM
- (2603:10a6:600:bb::10) To AM7PR08MB5511.eurprd08.prod.outlook.com
- (2603:10a6:20b:10d::12)
+        d=broadcom.com; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=1lwGazPl/DeS/OJhv74bKQhLj3l22/PWVhEsnGdLLf8=;
+        b=Vq7OCjLB2HF4n02iedF4lCyEm7+0ArCKl3j2cxBBhLqJmhz6zmuBVLlYNsjXSRkAqQ
+         CHpACMa9/8SlanXWnxbfuoI8oUKtTCln/HJaw1Punix0aHKhPg6yQNE8dvQZ/mhGXtfm
+         jo+fEX8E3OEOWXQpSYwADB24DO84OSy/t5y5g=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=1lwGazPl/DeS/OJhv74bKQhLj3l22/PWVhEsnGdLLf8=;
+        b=e9N4MPPZeyLWtzSXliRrZm1tXzsgVsFdQuAqR7muANjFgFSJ2tM2Drf1mRPHUuW9eD
+         myGYvyA8HLsui2/XImP2qi5myONV4/Jv2nLobKaltfYj5Zh8p6ZonIM2fG/amUao1dRE
+         aWWX5WAhUIyLFzJ4/lFrBb5ELRDIzbz6+EwUPxFwt8jOu0qt//3vu8vF9YpshbrvO4NG
+         NoPy6BsiYmuoW3PCxyjoiyjjMO1JYWtSyp1pcr6Uyew7RQ294FSkBCpu7aa8C3fG0yZl
+         r5SToyjIZjPWlPma+099tVJiZTZbNTfM+4Aw7myJ4dmLwQDSR4y0/KvogeF0ArK5Y+nQ
+         AEKA==
+X-Gm-Message-State: AOAM5331vsjugxzDvJe+2ZrTf7OIejrtvzhxW2pQ7oAp/Wg2TDOUErwv
+        W8g5DSG9tC2VUS8uyoxCTKnAZkTOszZSGLqRTLYqNd75xzlN1w==
+X-Google-Smtp-Source: ABdhPJyt1oYJ5LMI/yhIVDwiwvvDZpT4P8IUxfHvewMlDhqFrFJXELvj61V+kACJdDvAh5QgnYFQrTf5XbAMdq8Spxs=
+X-Received: by 2002:a37:65c1:: with SMTP id z184mr18630830qkb.431.1619456980555;
+ Mon, 26 Apr 2021 10:09:40 -0700 (PDT)
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from lcrestez-mac.local (78.96.81.202) by LO3P265CA0005.GBRP265.PROD.OUTLOOK.COM (2603:10a6:600:bb::10) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4065.25 via Frontend Transport; Mon, 26 Apr 2021 17:09:15 +0000
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: c42c61d1-f9d9-4bc8-666f-08d908d605a7
-X-MS-TrafficTypeDiagnostic: AM7PR08MB5512:
-X-Microsoft-Antispam-PRVS: <AM7PR08MB551284370C484EE82A96FFD0D5429@AM7PR08MB5512.eurprd08.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:9508;
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: +i7n0+sLza8sxPY3rTD0fohfslbUdV3B/+t8WL/ggWNXs1L1yq3VOQpGugXG5XfiNr5FSu96A75Qtvd8nO1m6dT2AlX0vEekrm3+YTQNsR93m6Zf0D/DgWticVB2xFxCUR/U3//cq/Tig2BS8OcGf1TgRHSRSC3XC1X9g9eCNIfMh03DrEkZAxoouFhmgNk5Prc4OtAfxLnRN7QOmyOSak0DkLZh0Wbr68fsiBJ8lLSDDGrj9cI6XLz909Llb6zx9T3COf/kv7myuE20zOtdTB+hkPYGMJWf722F85Hyb9kIpUM/Ofwgp39KizmqEE9UEC57FEA7RwA0VV/fWq1PsNZapqItQp0sH//swgD9D5ARfIUU5BlTmjXALPXIHo/1EoW40PwcCZZiGkgcJVYWOorSbZ5G01J52gZwzkl2rCxz04qFDYRcwGiUuozF46cCLpjO+g5JN0AayIi4YUDv1GVRobuUdOiVb6kSkpTffcrYjQ+doaJGVaTTBQBpStGcQnwEG+XPKbxspLddlDMlL+ee4KDiPRIXgKz10p/ufQjdx0g4ochhLUVFeUzNwwgeN04lhNrULn2vGbD59YVB1WhJD8xLxJlyjXecvnVs1q8vWD45sxHQ7u7EHfFnrMODxvlDYlvqFLfuY0BWmI6gxH2EwfmrYFJqnLKCWcyjNmWKb9/MpieTOSpJRd/c1yUWjI2rQIMnqsCZPedDsUCmfQ==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM7PR08MB5511.eurprd08.prod.outlook.com;PTR:;CAT:NONE;SFS:(346002)(136003)(39840400004)(366004)(376002)(396003)(53546011)(6506007)(31696002)(16526019)(26005)(956004)(186003)(7416002)(2616005)(36756003)(316002)(86362001)(54906003)(110136005)(66556008)(478600001)(5660300002)(38100700002)(6512007)(38350700002)(2906002)(4326008)(8676002)(31686004)(83380400001)(66476007)(8936002)(66946007)(52116002)(6486002)(43740500002)(45980500001);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData: =?utf-8?B?aER4UmVYQVd4S2dwdDVaSFZaVlcrRW4zTVNzcWFSWG1mcmpLV0UraVRjek5m?=
- =?utf-8?B?cmpzRU4vQVF5UFExcTYyYjluWVJCWTBTUFpDUVV1OXRRK3dBN3BkaEJkYmF1?=
- =?utf-8?B?NmVRT29HZmczUlkxLzkzVEZnTVlLR1FwN1pxbUhjbFBudWNEMmhsa1RQdlNR?=
- =?utf-8?B?SzQ4TEUrdFpWWFhGbDJsMjBxTzg5dW9LTEQ0YnNpTTJmSm9LYXc3cWV4azRO?=
- =?utf-8?B?VGVrZUl5aUE2VHI5OFZvaDZRMzhRUnhnY2Q4NGRCL1NjNENsa3g1QSs0WXpG?=
- =?utf-8?B?emV2eVA0N3JkbDgrQk90TER2aVAxVVNUamNkTzVOZXhXVFVCTkVCRXJwWW9k?=
- =?utf-8?B?UjZlRzd6Rnc5NUhDUWZzYjViYkpoczcvRW1uY2owTlI4UFF5ZVFhWFAxSmR4?=
- =?utf-8?B?ZGNDZXNJS2dySVZvRXFCRURGQTEzeDhHeXRMQ1c2aTlKU3hndXVJcDlkMEwz?=
- =?utf-8?B?bmdvd3M4WklKNDZTeERMSUlTdmFhUU1tL2xWbVdOSmFVSWgwaVlheExwYVMy?=
- =?utf-8?B?akVhRitNYWo5UmVZWm9Ea2ttVThROFIvTndabTFDaGw5OWlZUTUxYUY4aXJ3?=
- =?utf-8?B?dlhNQUc3SWpWMHNTZitycnNwMU0wL3Zra1N2ZnVEcnZCL0NqWTJhNXhVazhV?=
- =?utf-8?B?R2k0NnZlNGdBQWMzNkQyQXVNN0E5KzN4MW1FcnpzS2JiN29qbUdNeHVtNlEw?=
- =?utf-8?B?TUpUUGpqRVJWRjh3blFoVnlsbnFFZGN6QW01N3E1NmpJaHlNSmJhZnEvSE1Y?=
- =?utf-8?B?VFc3dE02amJUUUtBR28rMXc3amhNcFVuYnk2QURJRCtnREpuMmdWT253YkRV?=
- =?utf-8?B?V0xlV1RVTTBXMW9HazBDNWZHd205aDEyYmNzNzFDZjcvNmwwUWxReHNUaXJU?=
- =?utf-8?B?bWhvRXpzSzExKzlxQWpZM3d0cGxoV1dpdFZyaUwyT1pCeEZUMXFRWWxZRU1B?=
- =?utf-8?B?NXNzdGZiSnFLUGNoek0xeG03bEZYaGhSSWwrWHVmTDVLMzhyays2TGh6NExz?=
- =?utf-8?B?eGREbnZhb28xOE51b0tLR09Bc1F3eEpCa0lmbHF0OHhDQVB4SUFST1h2VnN1?=
- =?utf-8?B?eWRpSmZ3RTNuVFVxNkxvazFYaC9vbmQrYkhsWXlHMzFaeENTbjZSaFlVeG82?=
- =?utf-8?B?SWM0YStXZjhyRUp0RFN6cGFCb0hFYjY0eGN4QTNJQmZRWUxlWkxrb00xQ0dn?=
- =?utf-8?B?Nyt1SjlMMnZTcGhCM3ZwMUZSaERYM0JYRFFmWi8xQzJ2M1dxQzR3VjA4QnE4?=
- =?utf-8?B?U2ppaC9TMVVMc0J1enlNWG9DRVNwakp1ZDNMc1NSZ0I3TUhueW5qSVlkV2Mv?=
- =?utf-8?B?d3BJYzdkd1N2VnpBbTI3Q0lKUW1YRTUvT2VmdlVqcjhWcUViVWFLNkl4RzhJ?=
- =?utf-8?B?MENjV3hLZEJwcHpPVDlnMk1weGpaYmZrdnZvKzVPdEkxMFhWVXNqVzBwcmJR?=
- =?utf-8?B?UVMwMkc3TmczejVwUTZiQWFqMHgwZjcyUVNZYWRXL2JXRmlzK1FwSEN3aUp0?=
- =?utf-8?B?dnMvVGV4SUkxeUVnRE5WazV1ZE9OOHVNaWlVeWxKOGFuNG9lRGFqaTUrS3po?=
- =?utf-8?B?ckphZW45aG1jR0xkVXlTbGZqNVZicURER2FDN0sxWjBDRVhSRmVyMDgzUDBK?=
- =?utf-8?B?NDlXTllxNmtMalFMbFhmTHRvNDlpSW43Z1hGOXN6NzkvekdsWlAxeTVyRHM0?=
- =?utf-8?B?ZHR6NGNrMGtJSVdaL2trY01TSmhpYnowRzd5WFJobWcyck5zV05vQkRtSk1E?=
- =?utf-8?Q?/TDcqsoRafImkqh32ocw38lgO1zn1JoJY67nX6X?=
-X-OriginatorOrg: drivenets.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: c42c61d1-f9d9-4bc8-666f-08d908d605a7
-X-MS-Exchange-CrossTenant-AuthSource: AM7PR08MB5511.eurprd08.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 26 Apr 2021 17:09:16.1143
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 662f82da-cf45-4bdf-b295-33b083f5d229
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: Cnag+3siUl+i4v6U5LDek4tK28xfVbJGeg6P8k1IPvFWmkXbDdWQiaHmMqR6koxuoe4MXEnQ6o7SEQ53sNP3pQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM7PR08MB5512
-X-MDID: 1619456958-8LyWAdv5FtGY
+References: <1619372727-19187-1-git-send-email-michael.chan@broadcom.com>
+ <1619372727-19187-11-git-send-email-michael.chan@broadcom.com>
+ <20210426092935.728fda80@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <CACKFLinRRcoaxsiHZyYcywgRtOs0E5hJdQ0gjHPAj3991gMzHw@mail.gmail.com>
+ <CACKFLimdhTTD-vmfjkFDME_uHUBZTEMbUgA0WvSzjhPMjOPn_w@mail.gmail.com> <20210426100019.53a82b13@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20210426100019.53a82b13@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+From:   Michael Chan <michael.chan@broadcom.com>
+Date:   Mon, 26 Apr 2021 10:09:29 -0700
+Message-ID: <CACKFLikyML+t3p_qhn-MGG4jbZppvp2pVBk-95B+0maVSKB1Qw@mail.gmail.com>
+Subject: Re: [PATCH net-next v2 10/10] bnxt_en: Implement .ndo_features_check().
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     David Miller <davem@davemloft.net>,
+        Netdev <netdev@vger.kernel.org>,
+        Andrew Gospodarek <gospo@broadcom.com>
+Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256;
+        boundary="00000000000015971305c0e33686"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 26.04.2021 18:59, Neal Cardwell wrote:
-> On Sun, Apr 25, 2021 at 10:34 PM Leonard Crestez <lcrestez@drivenets.com> wrote:
->> On 4/21/21 3:47 PM, Neal Cardwell wrote:
->>> On Wed, Apr 21, 2021 at 6:21 AM Leonard Crestez <cdleonard@gmail.com> wrote:
+--00000000000015971305c0e33686
+Content-Type: text/plain; charset="UTF-8"
 
->>> If the goal is to increase the frequency of PMTU probes, which seems
->>> like a valid goal, I would suggest that we rethink the Linux heuristic
->>> for triggering PMTU probes in the light of the fact that the loss
->>> detection mechanism is now RACK-TLP, which provides quick recovery in
->>> a much wider variety of scenarios.
->>
->>> You mention:
->>>> Linux waits for probe_size + (1 + retries) * mss_cache to be available
->>>
->>> The code in question seems to be:
->>>
->>>     size_needed = probe_size + (tp->reordering + 1) * tp->mss_cache;
->>> How about just changing this to:
->>>
->>>     size_needed = probe_size + tp->mss_cache;
->>>
->>> The rationale would be that if that amount of data is available, then
->>> the sender can send one probe and one following current-mss-size
->>> packet. If the path MTU has not increased to allow the probe of size
->>> probe_size to pass through the network, then the following
->>> current-mss-size packet will likely pass through the network, generate
->>> a SACK, and trigger a RACK fast recovery 1/4*min_rtt later, when the
->>> RACK reorder timer fires.
->>
->> This appears to almost work except it stalls after a while. I spend some
->> time investigating it and it seems that cwnd is shrunk on mss increases
->> and does not go back up. This causes probes to be skipped because of a
->> "snd_cwnd < 11" condition.
->>
->> I don't undestand where that magical "11" comes from, could that be
->> shrunk. Maybe it's meant to only send probes when the cwnd is above the
->> default of 10? Then maybe mtu_probe_success shouldn't shrink mss below
->> what is required for an additional probe, or at least round-up.
->>
->> The shrinkage of cwnd is a problem with this "short probes" approach
->> because tcp_is_cwnd_limited returns false because tp->max_packets_out is
->> smaller (4). With longer probes tp->max_packets_out is larger (6) so
->> tcp_is_cwnd_limited returns true even for a cwnd of 10.
->>
->> I'm testing using namespace-to-namespace loopback so my delays are close
->> to zero. I tried to introduce an artificial delay of 30ms (using tc
->> netem) and it works but 20ms does not.
-> 
-> I agree the magic 11 seems outdated and unnecessarily high, given RACK-TLP.
-> 
-> I think it would be fine to change the magic 11 to a magic
-> (TCP_FASTRETRANS_THRESH+1), aka 3+1=4:
-> 
->    - tp->snd_cwnd < 11 ||
->    + p->snd_cwnd < (TCP_FASTRETRANS_THRESH + 1) ||
-> 
-> As long as the cwnd is >= TCP_FASTRETRANS_THRESH+1 then the sender
-> should usually be able to send the 1 probe packet and then 3
-> additional packets beyond the probe, and in the common case (with no
-> reordering) then with failed probes this should allow the sender to
-> quickly receive 3 SACKed segments and enter fast recovery quickly.
-> Even if the sender doesn't have 3 additional packets, or if reordering
-> has been detected, then RACK-TLP should be able to start recovery
-> quickly (5/4*RTT if there is at least one SACK, or 2*RTT for a TLP if
-> there is no SACK).
+On Mon, Apr 26, 2021 at 10:00 AM Jakub Kicinski <kuba@kernel.org> wrote:
+>
+> On Mon, 26 Apr 2021 09:45:17 -0700 Michael Chan wrote:
+> > On Mon, Apr 26, 2021 at 9:35 AM Michael Chan <michael.chan@broadcom.com> wrote:
+> > > On Mon, Apr 26, 2021 at 9:29 AM Jakub Kicinski <kuba@kernel.org> wrote:
+> > > > On Sun, 25 Apr 2021 13:45:27 -0400 Michael Chan wrote:
+> > > > This should have been "features & ~(CSUM | GSO)" if you actually
+> > > > accepted my feedback.
+> >
+> > Sorry, hit send too early.  If it is not UDP, it could be GRE or IP
+> > over IP for example, right?  Why do we need to turn off offload?
+>
+> All supported protocols can be included in the allow list.
+> That's one of the costs of NETIF_F_IP_CSUM, the driver needs
+> to make sure the device can understand the packet.
 
-As far as I understand tp->reordering is a dynamic evaluation of the 
-fastretrans threshold to deal with environments with lots of reordering. 
-Your suggestion seems equivalent to the current size_needed calculation 
-except using packets instead of bytes.
+Only UDP encapsulations have the 2 port limitations.  The rest are supported.
 
-Wouldn't it be easier to drop the "11" check and just verify that 
-size_needed fits into cwnd as bytes?
+>
+> > > I mentioned extension headers as an example,
+> >
+> > Extension headers (Geneve for example) are supported.
+>
+> I thought the Geneve things were called options. I meant IPv6 extension
+> headers, which the device may also support, but then the right thing to
+> do is something like a call to ipv6_skip_exthdr() to retrieve the L4
+> proto.
 
---
-Regards,
-Leonard
+You're right and I misunderstood you.  I will double check for ipv6
+extension headers support and will send a follow up patch.  Thanks.
+
+--00000000000015971305c0e33686
+Content-Type: application/pkcs7-signature; name="smime.p7s"
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment; filename="smime.p7s"
+Content-Description: S/MIME Cryptographic Signature
+
+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
+xV4Em+0wQoEIR2kPG6yiZNtUK0tNCaZejYU/Mf/bzdKSwud3pLgHV8ls83y2OU/ha9xgJMLpRswv
+xucFCxMsPmk0yoVmpbr92kIpLm+TomNZsL++LcDRa2ECAwEAAaOCAdowggHWMA4GA1UdDwEB/wQE
+AwIFoDCBowYIKwYBBQUHAQEEgZYwgZMwTgYIKwYBBQUHMAKGQmh0dHA6Ly9zZWN1cmUuZ2xvYmFs
+c2lnbi5jb20vY2FjZXJ0L2dzZ2NjcjNwZXJzb25hbHNpZ24yY2EyMDIwLmNydDBBBggrBgEFBQcw
+AYY1aHR0cDovL29jc3AuZ2xvYmFsc2lnbi5jb20vZ3NnY2NyM3BlcnNvbmFsc2lnbjJjYTIwMjAw
+TQYDVR0gBEYwRDBCBgorBgEEAaAyASgKMDQwMgYIKwYBBQUHAgEWJmh0dHBzOi8vd3d3Lmdsb2Jh
+bHNpZ24uY29tL3JlcG9zaXRvcnkvMAkGA1UdEwQCMAAwSQYDVR0fBEIwQDA+oDygOoY4aHR0cDov
+L2NybC5nbG9iYWxzaWduLmNvbS9nc2djY3IzcGVyc29uYWxzaWduMmNhMjAyMC5jcmwwJAYDVR0R
+BB0wG4EZbWljaGFlbC5jaGFuQGJyb2FkY29tLmNvbTATBgNVHSUEDDAKBggrBgEFBQcDBDAfBgNV
+HSMEGDAWgBSWM9HmWBdbNHWKgVZk1b5I3qGPzzAdBgNVHQ4EFgQUz2bMvqtXpXM0u3vAvRkalz60
+CjswDQYJKoZIhvcNAQELBQADggEBAGUgeqqI/q2pkETeLr6oS7nnm1bkeNmtnJ2bnybNO/RdrbPj
+DHVSiDCCrWr6xrc+q6OiZDKm0Ieq6BN+Wfr8h5mCkZMUdJikI85WcQTRk6EEF2lzIiaULmFD7U15
+FSWQptLx+kiu63idTII4r3k/7+dJ5AhLRr4WCoXEme2GZkfSbYC3fEL46tb1w7w+25OEFCv1MtDZ
+1CHkODrS2JGwDQxXKmyF64MhJiOutWHmqoGmLJVz1jnDvClsYtgT4zcNtoqKtjpWDYAefncWDPIQ
+DauX1eWVM+KepL7zoSNzVbTipc65WuZFLR8ngOwkpknqvS9n/nKd885m23oIocC+GA4xggJtMIIC
+aQIBATBrMFsxCzAJBgNVBAYTAkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52LXNhMTEwLwYDVQQD
+EyhHbG9iYWxTaWduIEdDQyBSMyBQZXJzb25hbFNpZ24gMiBDQSAyMDIwAgwQeU+Y6hbenPzRMJsw
+DQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEIDux3t6q0f5QJ+OyV/erAemRTgFhM9Nk
+8CbF9jvG0N5PMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIxMDQy
+NjE3MDk0MVowaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZIAWUDBAEWMAsGCWCG
+SAFlAwQBAjAKBggqhkiG9w0DBzALBgkqhkiG9w0BAQowCwYJKoZIhvcNAQEHMAsGCWCGSAFlAwQC
+ATANBgkqhkiG9w0BAQEFAASCAQCEfPzdh3SwSAo5boI2mYdLYsXQdAhdWEbuvQf+P+0xSywwKqsC
+6rplQ3zu1ZFG1uL6HjOU4bWgbsojS7O2eDhejt/HC6MnJLEXCHfTY/shRjHj6PJMp88zT4WNQlUt
+9rTmLxOuRz+xmchGSxeis4PbdhkNWQcOZm9ENnmhqGlW8CtR2J9rDHS/wfOAY0jBlKCODq/DyheS
+Gqc2X+flJxLl6sE72j7zqJ5LbFGpInIXSFXU3kGHDmGlpxPmW1MDoqQvCTBb74zOfQvi01XdhCoL
+RqwTnqVPoOD2i8y4LUVcRHo7+1MxihcGSxunAdbOdMKlxo/aHAEumbhU9SFecKEZ
+--00000000000015971305c0e33686--
