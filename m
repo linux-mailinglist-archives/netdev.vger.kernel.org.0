@@ -2,138 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5B37136BBCA
-	for <lists+netdev@lfdr.de>; Tue, 27 Apr 2021 00:46:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D941236BBE2
+	for <lists+netdev@lfdr.de>; Tue, 27 Apr 2021 01:00:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234458AbhDZWrX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 26 Apr 2021 18:47:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44616 "EHLO
+        id S234579AbhDZXBF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 26 Apr 2021 19:01:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47562 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232116AbhDZWrX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 26 Apr 2021 18:47:23 -0400
-Received: from mail-yb1-xb36.google.com (mail-yb1-xb36.google.com [IPv6:2607:f8b0:4864:20::b36])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2633BC061574;
-        Mon, 26 Apr 2021 15:46:41 -0700 (PDT)
-Received: by mail-yb1-xb36.google.com with SMTP id e8so7034010ybq.11;
-        Mon, 26 Apr 2021 15:46:41 -0700 (PDT)
+        with ESMTP id S232022AbhDZXBD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 26 Apr 2021 19:01:03 -0400
+Received: from mail-pj1-x1035.google.com (mail-pj1-x1035.google.com [IPv6:2607:f8b0:4864:20::1035])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5195EC061574;
+        Mon, 26 Apr 2021 16:00:21 -0700 (PDT)
+Received: by mail-pj1-x1035.google.com with SMTP id md17so2446464pjb.0;
+        Mon, 26 Apr 2021 16:00:21 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=ZoP3h1mLOqV7AEOAza5caYoovSekocBBtoC/6WNGTI4=;
-        b=fzBktLUDM/vNKKeTrurCMkELIZf93fIotp9f7PvACPy0sEylPBcQzLdglGUWdwO7iq
-         ZUgzaFALlptDAKLTKmI+uPa4IATX2xjYldFh9D3I0uanLrJgq3o1otSf8hdvD+hUme3m
-         MXINR4K9bagUpCv/KAK51I0yWooaBKMZ1bI0hg4iF0aNlaojIF6I7LGQr+u9FQbWqFGr
-         mQJIKkviKiB42xb9lNOBwbskQ4xEqaYRr//zOgX6uuyNoqm7JTjuP3vg5ErxDAp7Mkwd
-         SJMauS1I9Ze5j12jGws2wiscwfQUxC32QzJs1Jr97Er+b/rNHFbH5U4gN8joXkUFO4e4
-         /WEA==
+        bh=yKvzyDW0Nkcjpnv1ah1fbMoG9X95Ly3D/EEtVrjYm5o=;
+        b=TQE7sGayf/oQJxC8ce7cTYS3FJuWEt7+aatNEMosDUX5LBWIKuLcFAk6KJ/QK88nsW
+         O2eX/meZoweJGzZ9lGnlWrmtCIfqVE2rNbkZ8nWY6Xi1GdYk5dSaf5KZXapBrNjKioHU
+         JUnj3829hMRnWvdfhA6vxzRx1Sc9a4ZQDN826SeYwvqhBT2aEXEDF/JU/8EtAi+vcrKx
+         E2xVgiMyBDlkyLRPqPCdeDXY0r0zNUo//0ahdRaS7Fe6z/4tC7SGqI2ZA7bphJC9pHq8
+         xdOTRhgTjFi2DdBruqPktLv0y4tZ4xRfr387nSy9RTKoJrATVVxGvZq2gP1Gbw5Cnh+i
+         iNXQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=ZoP3h1mLOqV7AEOAza5caYoovSekocBBtoC/6WNGTI4=;
-        b=qFKluE22qcd3Y/GkJRYe60lURl7duLHESM5U9rjNBsbZ91YnQb76tJrh9uz/1VY4h4
-         izBOaHyrEdjHnVlpdFVM575Yx5iS2Yv4TPtvHRq3JkyudMc4Ajl8WT7KGmR7qumMx+cD
-         59qrjEOlgwjk2xaC8wc84paTkCXmXGmHos0o9LD9z02/D6icB6x+3GtAZMkB69FpK6OF
-         bgOs5ouGiHSg7z7j5vsPHb91CFE9jRxZsFmFhdqh0VgG/dcClatL6qfnC/RKLmD+ltPc
-         9muJopafuneLbabVCl8B7hqJJ9acKKkASfykbDjqNnr0UIcJYrwsg5TTCiZgBu3Ar456
-         HErQ==
-X-Gm-Message-State: AOAM532WS2W40Ewzicceo6ee2LTa4wtG/GkWPV9N5hOtvPfYQVZmlaro
-        SPrjwFkzwTE2IKhMAG3jgH0KgxdspFWljxbNOkE=
-X-Google-Smtp-Source: ABdhPJy2sXWYpZ2X2XRYTYYBlQbxU/z2boJtt4Ny2Qx6pTdxbGcJI5bq918+eiY6CIpwA7CXypmdVRy2jh0PCF4ylg0=
-X-Received: by 2002:a25:ba06:: with SMTP id t6mr26304531ybg.459.1619477200000;
- Mon, 26 Apr 2021 15:46:40 -0700 (PDT)
+        bh=yKvzyDW0Nkcjpnv1ah1fbMoG9X95Ly3D/EEtVrjYm5o=;
+        b=LLXTjXhfzVyKIdnN2EAsGf0s0T8FEhj0xp2hVQT6A64wmVxS5lqoQ/hY5isYuOnF1C
+         hOSwxb2C83w/RD9OQu1jqfYDpi9drekFeGI/RJ9qkiNzNpbGaumvusbpp6pATGikEUfr
+         GDAzB/xzxJouWgXFsQrc3QSBhM80m1qj9OCOfE9u4/O2S5NWfdpXk2YVs2aXgY4bCCko
+         X820YCbb944KNgoMGKyEkIyFEjYrFhzPX7A1aXTHGoJfBIEBotpH0BIvG9l5pgTHtAEt
+         RK9pso4OQYADnPz0cpfusj10KxAX2alSXzt7z+2uyC4+xBgiQnB4Zo8F+ba+PH2HC9GC
+         Feug==
+X-Gm-Message-State: AOAM532uyCSvCiyalJThs9d61BAS+cw6yxKWIGIgRXFJaUzT6TFOufB6
+        YRLFv7QcmvqgyOB3onUoyzqJmbIU9T+kTzB9MiE=
+X-Google-Smtp-Source: ABdhPJzkSvMa/ef38Sy95A2rQ2GuYiCnKB7EYz2kpshOUNnHfMu5YeLi9EzgCr1Zw5Bq6a2j4fE1FsdpHmXjCwJECsk=
+X-Received: by 2002:a17:902:10b:b029:ed:2b3e:beb4 with SMTP id
+ 11-20020a170902010bb02900ed2b3ebeb4mr8488415plb.64.1619478020853; Mon, 26 Apr
+ 2021 16:00:20 -0700 (PDT)
 MIME-Version: 1.0
-References: <20210423002646.35043-1-alexei.starovoitov@gmail.com> <20210423002646.35043-11-alexei.starovoitov@gmail.com>
-In-Reply-To: <20210423002646.35043-11-alexei.starovoitov@gmail.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Mon, 26 Apr 2021 15:46:29 -0700
-Message-ID: <CAEf4BzYkzzN=ZD2X1bOg8U39Whbe6oTPuUEMOpACw6NPEW69NA@mail.gmail.com>
-Subject: Re: [PATCH v2 bpf-next 10/16] bpf: Add bpf_btf_find_by_name_kind() helper.
+References: <20210401042635.19768-1-xiyou.wangcong@gmail.com>
+ <20210402192823.bqwgipmky3xsucs5@ast-mbp> <CAM_iQpUfv7c19zFN1Y5-cSUiVwpk0bmtBMSxZoELgDOFCQ=qAw@mail.gmail.com>
+ <20210402234500.by3wigegeluy5w7j@ast-mbp> <CAM_iQpWf2aYbY=tKejb=nx7LWBLo1woTp-n4wOLhkUuDCz8u-Q@mail.gmail.com>
+ <20210412230151.763nqvaadrrg77kd@ast-mbp.dhcp.thefacebook.com>
+ <CAM_iQpWePmmpr0RKqCrQ=NPiGrq2Tx9OU9y3e4CTzFjvh5t47w@mail.gmail.com> <CAADnVQLsmULxJYq9rHS4xyg=VAUeexJTh35vTWTVgjeqwX4D6g@mail.gmail.com>
+In-Reply-To: <CAADnVQLsmULxJYq9rHS4xyg=VAUeexJTh35vTWTVgjeqwX4D6g@mail.gmail.com>
+From:   Cong Wang <xiyou.wangcong@gmail.com>
+Date:   Mon, 26 Apr 2021 16:00:09 -0700
+Message-ID: <CAM_iQpVtxgZNeqh4_Pqftc3D163JnRvP3AZRuFrYNeyWLgVBVA@mail.gmail.com>
+Subject: Re: [RFC Patch bpf-next] bpf: introduce bpf timer
 To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
+Cc:     Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>,
+        Xiongchun Duan <duanxiongchun@bytedance.com>,
+        Dongdong Wang <wangdongdong.6@bytedance.com>,
+        Muchun Song <songmuchun@bytedance.com>,
+        Cong Wang <cong.wang@bytedance.com>,
+        Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
         Andrii Nakryiko <andrii@kernel.org>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Kernel Team <kernel-team@fb.com>
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Pedro Tammela <pctammela@mojatatu.com>,
+        Jamal Hadi Salim <jhs@mojatatu.com>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Apr 22, 2021 at 5:27 PM Alexei Starovoitov
+Hi, Alexei
+
+On Wed, Apr 14, 2021 at 9:25 PM Alexei Starovoitov
 <alexei.starovoitov@gmail.com> wrote:
 >
-> From: Alexei Starovoitov <ast@kernel.org>
+> On Wed, Apr 14, 2021 at 9:02 PM Cong Wang <xiyou.wangcong@gmail.com> wrote:
+> >
+> > Then how do you prevent prog being unloaded when the timer callback
+> > is still active?
 >
-> Add new helper:
->
-> long bpf_btf_find_by_name_kind(u32 btf_fd, char *name, u32 kind, int flags)
->         Description
->                 Find given name with given type in BTF pointed to by btf_fd.
->                 If btf_fd is zero look for the name in vmlinux BTF and in module's BTFs.
->         Return
->                 Returns btf_id and btf_obj_fd in lower and upper 32 bits.
->
-> Signed-off-by: Alexei Starovoitov <ast@kernel.org>
-> ---
->  include/linux/bpf.h            |  1 +
->  include/uapi/linux/bpf.h       |  8 ++++
->  kernel/bpf/btf.c               | 68 ++++++++++++++++++++++++++++++++++
->  kernel/bpf/syscall.c           |  2 +
->  tools/include/uapi/linux/bpf.h |  8 ++++
->  5 files changed, 87 insertions(+)
->
-> diff --git a/include/linux/bpf.h b/include/linux/bpf.h
-> index 0f841bd0cb85..4cf361eb6a80 100644
-> --- a/include/linux/bpf.h
-> +++ b/include/linux/bpf.h
-> @@ -1972,6 +1972,7 @@ extern const struct bpf_func_proto bpf_get_socket_ptr_cookie_proto;
->  extern const struct bpf_func_proto bpf_task_storage_get_proto;
->  extern const struct bpf_func_proto bpf_task_storage_delete_proto;
->  extern const struct bpf_func_proto bpf_for_each_map_elem_proto;
-> +extern const struct bpf_func_proto bpf_btf_find_by_name_kind_proto;
->
->  const struct bpf_func_proto *bpf_tracing_func_proto(
->         enum bpf_func_id func_id, const struct bpf_prog *prog);
-> diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
-> index de58a714ed36..253f5f031f08 100644
-> --- a/include/uapi/linux/bpf.h
-> +++ b/include/uapi/linux/bpf.h
-> @@ -4748,6 +4748,13 @@ union bpf_attr {
->   *             Execute bpf syscall with given arguments.
->   *     Return
->   *             A syscall result.
-> + *
-> + * long bpf_btf_find_by_name_kind(u32 btf_fd, char *name, u32 kind, int flags)
-> + *     Description
-> + *             Find given name with given type in BTF pointed to by btf_fd.
+> As I said earlier:
+> "
+> If prog refers such hmap as above during prog free the kernel does
+> for_each_map_elem {if (elem->opaque) del_timer().}
+> "
 
-"Find BTF type with given name"? Should the limits on name length be
-specified? KSYM_NAME_LEN is a pretty arbitrary restriction. Also,
-would it still work fine if the caller provides a pointer to a much
-shorter piece of memory?
+I have discussed this with my colleagues, sharing timers among different
+eBPF programs is a must-have feature for conntrack.
 
-Why not add name_sz right after name, as we do with a lot of other
-arguments like this?
+For conntrack, we need to attach two eBPF programs, one on egress and
+one on ingress. They share a conntrack table (an eBPF map), and no matter
+we use a per-map or per-entry timer, updating the timer(s) could happen
+on both sides, hence timers must be shared for both.
 
-> + *             If btf_fd is zero look for the name in vmlinux BTF and in module's BTFs.
-> + *     Return
-> + *             Returns btf_id and btf_obj_fd in lower and upper 32 bits.
+So, your proposal we discussed does not work well for this scenario. The
+proposal in my RFC should still work. Please let me know if you have any
+better ideas.
 
-Mention that for vmlinux BTF btf_obj_fd will be zero? Also who "owns"
-the FD? If the BPF program doesn't close it, when are they going to be
-cleaned up?
-
->   */
->  #define __BPF_FUNC_MAPPER(FN)          \
->         FN(unspec),                     \
-> @@ -4917,6 +4924,7 @@ union bpf_attr {
->         FN(for_each_map_elem),          \
->         FN(snprintf),                   \
->         FN(sys_bpf),                    \
-> +       FN(btf_find_by_name_kind),      \
->         /* */
->
-
-[...]
+Thanks!
