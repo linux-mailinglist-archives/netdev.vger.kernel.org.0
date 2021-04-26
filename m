@@ -2,131 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5088036BA05
-	for <lists+netdev@lfdr.de>; Mon, 26 Apr 2021 21:29:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EFF1C36BA0D
+	for <lists+netdev@lfdr.de>; Mon, 26 Apr 2021 21:30:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240354AbhDZTaV convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Mon, 26 Apr 2021 15:30:21 -0400
-Received: from youngberry.canonical.com ([91.189.89.112]:35353 "EHLO
-        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240318AbhDZTaO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 26 Apr 2021 15:30:14 -0400
-Received: from 1.general.jvosburgh.us.vpn ([10.172.68.206] helo=famine.localdomain)
-        by youngberry.canonical.com with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
-        (Exim 4.86_2)
-        (envelope-from <jay.vosburgh@canonical.com>)
-        id 1lb6v6-0000rS-DQ; Mon, 26 Apr 2021 19:29:24 +0000
-Received: by famine.localdomain (Postfix, from userid 1000)
-        id CA5CC5FDD5; Mon, 26 Apr 2021 12:29:22 -0700 (PDT)
-Received: from famine (localhost [127.0.0.1])
-        by famine.localdomain (Postfix) with ESMTP id C275E9FC56;
-        Mon, 26 Apr 2021 12:29:22 -0700 (PDT)
-From:   Jay Vosburgh <jay.vosburgh@canonical.com>
-To:     David Miller <davem@davemloft.net>
-cc:     jinyiting@huawei.com, vfalico@gmail.com, andy@greyhouse.net,
-        kuba@kernel.org, netdev@vger.kernel.org, security@kernel.org,
-        linux-kernel@vger.kernel.org, xuhanbing@huawei.com,
-        wangxiaogang3@huawei.com
-Subject: Re: [PATCH] bonding: 3ad: Fix the conflict between bond_update_slave_arr and the state machine
-In-reply-to: <20210426.120822.232032630973964712.davem@davemloft.net>
-References: <1618994301-1186-1-git-send-email-jinyiting@huawei.com> <20210423.130748.1071901004935481894.davem@davemloft.net> <20034.1619450557@famine> <20210426.120822.232032630973964712.davem@davemloft.net>
-Comments: In-reply-to David Miller <davem@davemloft.net>
-   message dated "Mon, 26 Apr 2021 12:08:22 -0700."
-X-Mailer: MH-E 8.6+git; nmh 1.6; GNU Emacs 27.0.50
+        id S240398AbhDZTav convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Mon, 26 Apr 2021 15:30:51 -0400
+Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:36550 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S240343AbhDZTaq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 26 Apr 2021 15:30:46 -0400
+Received: from pps.filterd (m0109334.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 13QJNnxt024587
+        for <netdev@vger.kernel.org>; Mon, 26 Apr 2021 12:30:04 -0700
+Received: from mail.thefacebook.com ([163.114.132.120])
+        by mx0a-00082601.pphosted.com with ESMTP id 3853g8fga5-4
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
+        for <netdev@vger.kernel.org>; Mon, 26 Apr 2021 12:30:03 -0700
+Received: from intmgw002.06.ash9.facebook.com (2620:10d:c085:208::11) by
+ mail.thefacebook.com (2620:10d:c085:11d::5) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2176.2; Mon, 26 Apr 2021 12:30:01 -0700
+Received: by devbig012.ftw2.facebook.com (Postfix, from userid 137359)
+        id 073BD2ED6122; Mon, 26 Apr 2021 12:29:51 -0700 (PDT)
+From:   Andrii Nakryiko <andrii@kernel.org>
+To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>, <ast@fb.com>,
+        <daniel@iogearbox.net>
+CC:     <andrii@kernel.org>, <kernel-team@fb.com>,
+        Lorenz Bauer <lmb@cloudflare.com>
+Subject: [PATCH v2 bpf-next 0/5] CO-RE relocation selftests fixes
+Date:   Mon, 26 Apr 2021 12:29:44 -0700
+Message-ID: <20210426192949.416837-1-andrii@kernel.org>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 8BIT
-Date:   Mon, 26 Apr 2021 12:29:22 -0700
-Message-ID: <31539.1619465362@famine>
+X-FB-Internal: Safe
+Content-Type: text/plain
+X-Proofpoint-ORIG-GUID: 82nSTUbMD7_ukYNk96GnkLob_8rOjYzx
+X-Proofpoint-GUID: 82nSTUbMD7_ukYNk96GnkLob_8rOjYzx
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.391,18.0.761
+ definitions=2021-04-26_09:2021-04-26,2021-04-26 signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 impostorscore=0
+ spamscore=0 priorityscore=1501 adultscore=0 suspectscore=0 bulkscore=0
+ clxscore=1015 mlxscore=0 lowpriorityscore=0 malwarescore=0 mlxlogscore=999
+ phishscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2104060000 definitions=main-2104260149
+X-FB-Internal: deliver
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-David Miller <davem@davemloft.net> wrote:
+Lorenz Bauer noticed that core_reloc selftest has two inverted CHECK()
+conditions, allowing failing tests to pass unnoticed. Fixing that opened up
+few long-standing (field existence and direct memory bitfields) and one recent
+failures (BTF_KIND_FLOAT relos).
 
->From: Jay Vosburgh <jay.vosburgh@canonical.com>
->Date: Mon, 26 Apr 2021 08:22:37 -0700
->
->> David Miller <davem@davemloft.net> wrote:
->> 
->>>From: jinyiting <jinyiting@huawei.com>
->>>Date: Wed, 21 Apr 2021 16:38:21 +0800
->>>
->>>> The bond works in mode 4, and performs down/up operations on the bond
->>>> that is normally negotiated. The probability of bond-> slave_arr is NULL
->>>> 
->>>> Test commands:
->>>>    ifconfig bond1 down
->>>>    ifconfig bond1 up
->>>> 
->>>> The conflict occurs in the following process：
->>>> 
->>>> __dev_open (CPU A)
->>>> --bond_open
->>>>   --queue_delayed_work(bond->wq,&bond->ad_work,0);
->>>>   --bond_update_slave_arr
->>>>     --bond_3ad_get_active_agg_info
->>>> 
->>>> ad_work(CPU B)
->>>> --bond_3ad_state_machine_handler
->>>>   --ad_agg_selection_logic
->>>> 
->>>> ad_work runs on cpu B. In the function ad_agg_selection_logic, all
->>>> agg->is_active will be cleared. Before the new active aggregator is
->>>> selected on CPU B, bond_3ad_get_active_agg_info failed on CPU A,
->>>> bond->slave_arr will be set to NULL. The best aggregator in
->>>> ad_agg_selection_logic has not changed, no need to update slave arr.
->>>> 
->>>> The conflict occurred in that ad_agg_selection_logic clears
->>>> agg->is_active under mode_lock, but bond_open -> bond_update_slave_arr
->>>> is inspecting agg->is_active outside the lock.
->>>> 
->>>> Also, bond_update_slave_arr is normal for potential sleep when
->>>> allocating memory, so replace the WARN_ON with a call to might_sleep.
->>>> 
->>>> Signed-off-by: jinyiting <jinyiting@huawei.com>
->>>> ---
->>>> 
->>>> Previous versions:
->>>>  * https://lore.kernel.org/netdev/612b5e32-ea11-428e-0c17-e2977185f045@huawei.com/
->>>> 
->>>>  drivers/net/bonding/bond_main.c | 7 ++++---
->>>>  1 file changed, 4 insertions(+), 3 deletions(-)
->>>> 
->>>> diff --git a/drivers/net/bonding/bond_main.c b/drivers/net/bonding/bond_main.c
->>>> index 74cbbb2..83ef62d 100644
->>>> --- a/drivers/net/bonding/bond_main.c
->>>> +++ b/drivers/net/bonding/bond_main.c
->>>> @@ -4406,7 +4404,9 @@ int bond_update_slave_arr(struct bonding *bond, struct slave *skipslave)
->>>>  	if (BOND_MODE(bond) == BOND_MODE_8023AD) {
->>>>  		struct ad_info ad_info;
->>>>  
->>>> +		spin_lock_bh(&bond->mode_lock);
->>>
->>>The code paths that call this function with mode_lock held will now deadlock.
->> 
->> 	No path should be calling bond_update_slave_arr with mode_lock
->> already held (it expects RTNL only); did you find one?
->> 
->> 	My concern is that there's something else that does the opposite
->> order, i.e., mode_lock first, then RTNL, but I haven't found an example.
->> 
->
->This patch is removing a lockdep assertion masking sure that mode_lock was held
->when this function was called.  That should have been triggering all the time, right?
+This patch set fixes core_reloc selftest to capture such failures reliably in
+the future. It also fixes all the newly failing tests. See individual patches
+for details.
 
-	The line in question is:
-	
-#ifdef CONFIG_LOCKDEP
-	WARN_ON(lockdep_is_held(&bond->mode_lock));
-#endif
+This patch set also completes a set of ASSERT_xxx() macros, so now there
+should be a very little reason to use verbose and error-prone generic CHECK()
+macro.
 
-	The WARN_ON is triggering if mode_lock is held, not asserting
-that mode_lock is held.  I think that's wrong anyway, since mode_lock
-could be held by some other thread, leading to false positives, thus the
-change to might_sleep.
+v1->v2:
+  - updated bpf_core_fields_are_compat() comment to mention FLOAT (Lorenz).
 
-	-J
+Cc: Lorenz Bauer <lmb@cloudflare.com>
 
----
-	-Jay Vosburgh, jay.vosburgh@canonical.com
+Andrii Nakryiko (5):
+  selftests/bpf: add remaining ASSERT_xxx() variants
+  libbpf: support BTF_KIND_FLOAT during type compatibility checks in
+    CO-RE
+  selftests/bpf: fix BPF_CORE_READ_BITFIELD() macro
+  selftests/bpf: fix field existence CO-RE reloc tests
+  selftests/bpf: fix core_reloc test runner
+
+ tools/lib/bpf/bpf_core_read.h                 | 16 ++++--
+ tools/lib/bpf/libbpf.c                        |  6 ++-
+ .../selftests/bpf/prog_tests/btf_dump.c       |  2 +-
+ .../selftests/bpf/prog_tests/btf_endian.c     |  4 +-
+ .../selftests/bpf/prog_tests/cgroup_link.c    |  2 +-
+ .../selftests/bpf/prog_tests/core_reloc.c     | 51 +++++++++++--------
+ .../selftests/bpf/prog_tests/kfree_skb.c      |  2 +-
+ .../selftests/bpf/prog_tests/resolve_btfids.c |  7 +--
+ .../selftests/bpf/prog_tests/snprintf_btf.c   |  4 +-
+ ...ore_reloc_existence___err_wrong_arr_kind.c |  3 --
+ ...loc_existence___err_wrong_arr_value_type.c |  3 --
+ ...ore_reloc_existence___err_wrong_int_kind.c |  3 --
+ ..._core_reloc_existence___err_wrong_int_sz.c |  3 --
+ ...ore_reloc_existence___err_wrong_int_type.c |  3 --
+ ..._reloc_existence___err_wrong_struct_type.c |  3 --
+ ..._core_reloc_existence___wrong_field_defs.c |  3 ++
+ .../selftests/bpf/progs/core_reloc_types.h    | 20 +-------
+ tools/testing/selftests/bpf/test_progs.h      | 50 +++++++++++++++++-
+ 18 files changed, 108 insertions(+), 77 deletions(-)
+ delete mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_existence___err_wrong_arr_kind.c
+ delete mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_existence___err_wrong_arr_value_type.c
+ delete mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_existence___err_wrong_int_kind.c
+ delete mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_existence___err_wrong_int_sz.c
+ delete mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_existence___err_wrong_int_type.c
+ delete mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_existence___err_wrong_struct_type.c
+ create mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_existence___wrong_field_defs.c
+
+-- 
+2.30.2
+
