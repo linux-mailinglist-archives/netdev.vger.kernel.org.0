@@ -2,169 +2,128 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 87B4936B60B
-	for <lists+netdev@lfdr.de>; Mon, 26 Apr 2021 17:45:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A25EB36B60F
+	for <lists+netdev@lfdr.de>; Mon, 26 Apr 2021 17:46:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234076AbhDZPqD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 26 Apr 2021 11:46:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35504 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233919AbhDZPqC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 26 Apr 2021 11:46:02 -0400
-Received: from mail-yb1-xb32.google.com (mail-yb1-xb32.google.com [IPv6:2607:f8b0:4864:20::b32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B3DBBC061574;
-        Mon, 26 Apr 2021 08:45:19 -0700 (PDT)
-Received: by mail-yb1-xb32.google.com with SMTP id 82so65445946yby.7;
-        Mon, 26 Apr 2021 08:45:19 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=ScePYqdo5yXK4WAksmAPFOYlRVzJ63EN9cNWbQStmQk=;
-        b=KdXyZXHVFsp08H2OfHHm65WnSpg8f8zm2NkC/fa+YArLBp+4rSMHDSI9ZVmUimMkwn
-         cFLWpiQlvyXkeSbbQ0l9H7P/e1bBHQAORqW4K7BajPdv/4HcUEkB5o4gheF4h2FDUZwB
-         6wguJqaw6w/XPG+DkPXmR7IniNBaERL0HiGuxpHhaeIm+yc1qpaV4swYMVfF1QGBsC4Z
-         5mX8HEE+m7f1Vh3ztLeugfdmU07J2zrYkOAzeBgHVu2Odi19vQfjWj/P/ETksFC8G6lL
-         8JDaOhHtLZ1hSc2kG+4Jg9HRBew7CwInV0dv9Vqf1Tb7Rs91zm6fWcsFI0/0AfObtvEl
-         tZ7Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=ScePYqdo5yXK4WAksmAPFOYlRVzJ63EN9cNWbQStmQk=;
-        b=rpzFhcXYCkpB0n4SVshe4k6ZJvvaCp8Ang8F/jIbnB0EbsRw7NVOLIP2sLDw+lUDiF
-         CbOnHzpztbZi5fzryT1wUSNOVdMUusGeed0vn5B8WpBLHZm7891hPhd3iwku2j1nO3y6
-         d8mGHbaPZhXSq2hDw8PbZXU0ux5z1ArO1L4c72fbKjcJPVwb1MtB6zB050dsH2amw9u2
-         nA5O7p8sphmHbgV22zSwgUeGnlWjeP1H2oXE8kGwOR/0AVlJsEYxNsg9Ez5cgZu/NrG+
-         8uevzQti33GLPoAfg9i4doZVtaRL+yMduqIfNOLOUiX/CfmbI1gx/C7+Nnb1vmF8TaoW
-         /SsQ==
-X-Gm-Message-State: AOAM533q9C+jboKyBOAk3IDDD9GwjcMu28QrVhCgR+lheg5K29/mXfda
-        4cHY7kVVAKcvBoGaCduBaUT6jCedsfsB/jiEThAT3gws
-X-Google-Smtp-Source: ABdhPJynPrL7+87PGhSJ1Z+Kn5mFU3HHb1YmTA7/e1amxS2vD82l7pKK7umUCaTD2SRVkprH23LPwEU7tdj9dxN/Riw=
-X-Received: by 2002:a25:c4c5:: with SMTP id u188mr26021252ybf.425.1619451918980;
- Mon, 26 Apr 2021 08:45:18 -0700 (PDT)
+        id S234142AbhDZPq6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 26 Apr 2021 11:46:58 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:37905 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S233923AbhDZPq6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 26 Apr 2021 11:46:58 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1619451976;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=7vBOvHcHI2oZqmZM5Aa2gGUzST69IcIGKxor2uO4AfE=;
+        b=dLMOnbbZZ2GgAPal4swKuz4Q8Oz2pm6RioPZ8PArpY6yfbCHJ2AuUgZhOOX1EsCCiLmIxF
+        t/qENffm2gozl2QCDggaHCIKTaRgDHfLcpFuMnlCWN0IeNYZK3jpsYxf0/ySk7WQ3cFVPU
+        LXP8VPzpeINTWFLpCtZV7vh9+F5TWrQ=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-555-n4gEKu0mPo6RUeBd7L0vOw-1; Mon, 26 Apr 2021 11:46:12 -0400
+X-MC-Unique: n4gEKu0mPo6RUeBd7L0vOw-1
+Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 67B2A195D56E;
+        Mon, 26 Apr 2021 15:46:04 +0000 (UTC)
+Received: from computer-6.station (unknown [10.40.192.86])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 91D85610A8;
+        Mon, 26 Apr 2021 15:46:01 +0000 (UTC)
+From:   Davide Caratti <dcaratti@redhat.com>
+To:     Jamal Hadi Salim <jhs@mojatatu.com>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, wenxu <wenxu@ucloud.cn>,
+        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
+        Shuang Li <shuali@redhat.com>
+Cc:     netdev@vger.kernel.org
+Subject: [PATCH net] net/sched: act_ct: fix wild memory access when clearing fragments
+Date:   Mon, 26 Apr 2021 17:45:51 +0200
+Message-Id: <a72b5a4239942c5cc0152e4efba17b544a8a19fb.1619450967.git.dcaratti@redhat.com>
 MIME-Version: 1.0
-References: <20210423185357.1992756-1-andrii@kernel.org> <20210423185357.1992756-3-andrii@kernel.org>
- <2b398ad6-31be-8997-4115-851d79f2d0d2@fb.com> <CAEf4BzYDiuh+OLcRKfcZDSL6esu6dK8js8pudHKvtMvAxS1=WQ@mail.gmail.com>
- <065e8768-b066-185f-48f9-7ca8f15a2547@fb.com> <CAADnVQ+h9eS0P9Jb0QZQ374WxNSF=jhFAiBV7czqhnJxV51m6A@mail.gmail.com>
- <CAEf4BzadCR+QFy4UY8NSVFjGJF4CszhjjZ48XeeqrfX3aYTnkA@mail.gmail.com>
- <CAADnVQKo+efxMvgrqYqVvUEgiz_GXgBVOt4ddPTw_mLuvr2HUw@mail.gmail.com>
- <CAEf4BzZifOFHr4gozUuSFTh7rTWu2cE_-L4H1shLV5OKyQ92uw@mail.gmail.com> <f9d8328e-6f3e-59c7-05f5-d67b54e6b4ce@fb.com>
-In-Reply-To: <f9d8328e-6f3e-59c7-05f5-d67b54e6b4ce@fb.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Mon, 26 Apr 2021 08:45:07 -0700
-Message-ID: <CAEf4BzahtXOck_TTtvY4bRtnyqEw=Cxd6T0QbTdwF=UH-p-5Dw@mail.gmail.com>
-Subject: Re: [PATCH v2 bpf-next 2/6] libbpf: rename static variables during linking
-To:     Yonghong Song <yhs@fb.com>
-Cc:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        Andrii Nakryiko <andrii@kernel.org>, bpf <bpf@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>,
-        Alexei Starovoitov <ast@fb.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Kernel Team <kernel-team@fb.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Apr 23, 2021 at 7:36 PM Yonghong Song <yhs@fb.com> wrote:
->
->
->
-> On 4/23/21 5:13 PM, Andrii Nakryiko wrote:
-> > On Fri, Apr 23, 2021 at 4:48 PM Alexei Starovoitov
-> > <alexei.starovoitov@gmail.com> wrote:
-> >>
-> >> On Fri, Apr 23, 2021 at 4:35 PM Andrii Nakryiko
-> >> <andrii.nakryiko@gmail.com> wrote:
-> >>>
-> >>> On Fri, Apr 23, 2021 at 4:06 PM Alexei Starovoitov
-> >>> <alexei.starovoitov@gmail.com> wrote:
-> >>>>
-> >>>> On Fri, Apr 23, 2021 at 2:56 PM Yonghong Song <yhs@fb.com> wrote:
-> >>>>>>>>
-> >>>>>>>> -static volatile const __u32 print_len;
-> >>>>>>>> -static volatile const __u32 ret1;
-> >>>>>>>> +volatile const __u32 print_len = 0;
-> >>>>>>>> +volatile const __u32 ret1 = 0;
-> >>>>>>>
-> >>>>>>> I am little bit puzzled why bpf_iter_test_kern4.c is impacted. I think
-> >>>>>>> this is not in a static link test, right? The same for a few tests below.
-> >>>>>>
-> >>>>>> All the selftests are passed through a static linker, so it will
-> >>>>>> append obj_name to each static variable. So I just minimized use of
-> >>>>>> static variables to avoid too much code churn. If this variable was
-> >>>>>> static, it would have to be accessed as
-> >>>>>> skel->rodata->bpf_iter_test_kern4__print_len, for example.
-> >>>>>
-> >>>>> Okay this should be fine. selftests/bpf specific. I just feel that
-> >>>>> some people may get confused if they write/see a single program in
-> >>>>> selftest and they have to use obj_varname format and thinking this
-> >>>>> is a new standard, but actually it is due to static linking buried
-> >>>>> in Makefile. Maybe add a note in selftests/README.rst so we
-> >>>>> can point to people if there is confusion.
-> >>>>
-> >>>> I'm not sure I understand.
-> >>>> Are you saying that
-> >>>> bpftool gen object out_file.o in_file.o
-> >>>> is no longer equivalent to llvm-strip ?
-> >>>> Since during that step static vars will get their names mangled?
-> >>>
-> >>> Yes. Static vars and static maps. We don't allow (yet?) static
-> >>> entry-point BPF programs, so those don't change.
-> >>>
-> >>>> So a good chunk of code that uses skeleton right now should either
-> >>>> 1. don't do the linking step
-> >>>> or
-> >>>> 2. adjust their code to use global vars
-> >>>> or
-> >>>> 3. adjust the usage of skel.h in their corresponding user code
-> >>>>    to accommodate mangled static names?
-> >>>> Did it get it right?
-> >>>
-> >>> Yes, you are right. But so far most cases outside of selftest that
-> >>> I've seen don't use static variables (partially because they need
-> >>> pesky volatile to be visible from user-space at all), global vars are
-> >>> much nicer in that regard.
-> >>
-> >> Right.
-> >> but wait...
-> >> why linker is mangling them at all and why they appear in the skeleton?
-> >> static vars without volatile should not be in a skeleton, since changing
-> >> them from user space might have no meaning on the bpf program.
-> >> The behavior of the bpf prog is unpredictable.
-> >
-> > It's up to the compiler. If compiler decides that it shouldn't inline
-> > all the uses (or e.g. if static variable is an array accessed with
-> > index known only at runtime, or many other cases where compiler can't
-> > just deduce constant value), then compiler will emit ELF symbols, will
-> > allocate storage, and code will use that storage. static volatile just
-> > forces the compiler to not assume anything at all.
-> >
-> > If the compiler does inline all the uses of static, then we won't have
-> > storage allocated for it and it won't be even present in BTF. So for
-> > libbpf, linker and skeleton statics are no different than globals.
-> >
-> > Static maps are slightly different, because we use SEC() which marks
-> > them as used, so they should always be present.
-> >
-> > Sub-skeleton will present those statics to the BPF library without
-> > name mangling, but for the final linked BPF object file we need to
-> > handle statics. Definitely for maps, because static means that library
-> > or library user shouldn't be able to just extern that definition and
-> > update/lookup/corrupt its state. But I think for static variables it
-> > should be the same. Both are visible to user-space, but invisible
-> > between linked BPF compilation units.
-> >
-> >> Only volatile static can theoretically be in the skeleton, but as you said
-> >> probably no one is using them yet, so we can omit them from skeleton too.
->
-> I think it is a good idea to keep volatile static use case in
-> the skeleton if we add support for static map. The volatile
-> static variable essentially a private map. Without this,
-> for skeleton users, they may need to use an explicit one-element
-> static array map which we probably want to avoid.
+while testing re-assembly/re-fragmentation using act_ct, it's possible to
+observe a crash like the following one:
 
-I agree, `static volatile` definitely has to be supported. I wonder
-what we should do about plain statics, though? What's your opinion,
-Yonghong?
+ KASAN: maybe wild-memory-access in range [0x0001000000000448-0x000100000000044f]
+ CPU: 50 PID: 0 Comm: swapper/50 Tainted: G S                5.12.0-rc7+ #424
+ Hardware name: Dell Inc. PowerEdge R730/072T6D, BIOS 2.4.3 01/17/2017
+ RIP: 0010:inet_frag_rbtree_purge+0x50/0xc0
+ Code: 00 fc ff df 48 89 c3 31 ed 48 89 df e8 a9 7a 38 ff 4c 89 fe 48 89 df 49 89 c6 e8 5b 3a 38 ff 48 8d 7b 40 48 89 f8 48 c1 e8 03 <42> 80 3c 20 00 75 59 48 8d bb d0 00 00 00 4c 8b 6b 40 48 89 f8 48
+ RSP: 0018:ffff888c31449db8 EFLAGS: 00010203
+ RAX: 0000200000000089 RBX: 000100000000040e RCX: ffffffff989eb960
+ RDX: 0000000000000140 RSI: ffffffff97cfb977 RDI: 000100000000044e
+ RBP: 0000000000000900 R08: 0000000000000000 R09: ffffed1186289350
+ R10: 0000000000000003 R11: ffffed1186289350 R12: dffffc0000000000
+ R13: 000100000000040e R14: 0000000000000000 R15: ffff888155e02160
+ FS:  0000000000000000(0000) GS:ffff888c31440000(0000) knlGS:0000000000000000
+ CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+ CR2: 00005600cb70a5b8 CR3: 0000000a2c014005 CR4: 00000000003706e0
+ DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+ DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+ Call Trace:
+  <IRQ>
+  inet_frag_destroy+0xa9/0x150
+  call_timer_fn+0x2d/0x180
+  run_timer_softirq+0x4fe/0xe70
+  __do_softirq+0x197/0x5a0
+  irq_exit_rcu+0x1de/0x200
+  sysvec_apic_timer_interrupt+0x6b/0x80
+  </IRQ>
+
+when act_ct temporarily stores an IP fragment, restoring the skb qdisc cb
+results in putting random data in FRAG_CB(), and this causes those "wild"
+memory accesses later, when the rbtree is purged. Never overwrite the skb
+cb in case tcf_ct_handle_fragments() returns -EINPROGRESS.
+
+Fixes: ae372cb1750f ("net/sched: act_ct: fix restore the qdisc_skb_cb after defrag")
+Fixes: 7baf2429a1a9 ("net/sched: cls_flower add CT_FLAGS_INVALID flag support")
+Reported-by: Shuang Li <shuali@redhat.com>
+Signed-off-by: Davide Caratti <dcaratti@redhat.com>
+---
+ net/sched/act_ct.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/net/sched/act_ct.c b/net/sched/act_ct.c
+index 16e888a9601d..48fdf7293dea 100644
+--- a/net/sched/act_ct.c
++++ b/net/sched/act_ct.c
+@@ -732,7 +732,8 @@ static int tcf_ct_handle_fragments(struct net *net, struct sk_buff *skb,
+ #endif
+ 	}
+ 
+-	*qdisc_skb_cb(skb) = cb;
++	if (err != -EINPROGRESS)
++		*qdisc_skb_cb(skb) = cb;
+ 	skb_clear_hash(skb);
+ 	skb->ignore_df = 1;
+ 	return err;
+@@ -967,7 +968,7 @@ static int tcf_ct_act(struct sk_buff *skb, const struct tc_action *a,
+ 	err = tcf_ct_handle_fragments(net, skb, family, p->zone, &defrag);
+ 	if (err == -EINPROGRESS) {
+ 		retval = TC_ACT_STOLEN;
+-		goto out;
++		goto out_clear;
+ 	}
+ 	if (err)
+ 		goto drop;
+@@ -1030,7 +1031,6 @@ static int tcf_ct_act(struct sk_buff *skb, const struct tc_action *a,
+ out_push:
+ 	skb_push_rcsum(skb, nh_ofs);
+ 
+-out:
+ 	qdisc_skb_cb(skb)->post_ct = true;
+ out_clear:
+ 	tcf_action_update_bstats(&c->common, skb);
+-- 
+2.30.2
+
