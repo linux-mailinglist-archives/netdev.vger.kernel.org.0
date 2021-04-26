@@ -2,115 +2,177 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 43C4E36B4DB
-	for <lists+netdev@lfdr.de>; Mon, 26 Apr 2021 16:29:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AB3B536B502
+	for <lists+netdev@lfdr.de>; Mon, 26 Apr 2021 16:36:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233762AbhDZOaW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 26 Apr 2021 10:30:22 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:35930 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S231862AbhDZOaW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 26 Apr 2021 10:30:22 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1619447380;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=n46EzFusagW/ahDlcIl8UfUPxeR1VDuzUwzOh9SYcv0=;
-        b=JIu4lwJQypzVhJnwPCk1MHjaWfBBrCLpAAZAVat/Fmq/4tLZgbE8P5lwqBjtTewWu65bMT
-        6E7Q6FNH4DjWJ/R869RBo5N2C45yAdIOXs9M02ij+NjoF/8vyRTCOwUPgYTCS9cBcU8ZUV
-        yxV48MJ77QOPyFGe0cnyLCb2S5NCbm0=
-Received: from mail-ed1-f71.google.com (mail-ed1-f71.google.com
- [209.85.208.71]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-152-TPdaPW_iMR270PEyDLqsBA-1; Mon, 26 Apr 2021 10:29:38 -0400
-X-MC-Unique: TPdaPW_iMR270PEyDLqsBA-1
-Received: by mail-ed1-f71.google.com with SMTP id v5-20020a0564023485b029037ff13253bcso23113746edc.3
-        for <netdev@vger.kernel.org>; Mon, 26 Apr 2021 07:29:37 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version;
-        bh=n46EzFusagW/ahDlcIl8UfUPxeR1VDuzUwzOh9SYcv0=;
-        b=kca7dkinjBugh7dV9C9V/MouQUBUeWDIM2/qJ+PGWLC6VAnGKaZWhdfMm891ODSpDS
-         MvBVX1zZxyMC1IEXIuxC7PITKP+v415Pq5DCDVmB+9tDc0jUVv1PKiC3rGBoOiENOq1/
-         lutVa8E052NB7C2f0q+7k3/Ec9E7BIk8wJu3SgJ2oF6ctcFhhlz8C6Ta4QlHeS2n7O++
-         DpYcMx9ng++NZRmb5kMYZjqwhehxqZ8ZsHE1qF4knse9ozB9HqahfuEYnm/9ygzV5Ckl
-         hSythUBrIODP7orcJps9LWUJybcn8W07Ygx+msZnIxAkBg4qbmg9G0/6kj/m9RGuHTu/
-         tqxA==
-X-Gm-Message-State: AOAM530cnUfHNUoGjs7eF+RrC0UdQlrcyNKrYdMb8QpYSDqWB6uscKSD
-        wfdeMcP29mUp/LgZ/Ud4J4TD8OYUHaIFEYCJNR2LYwid/LPY77YGOEXSA7QY9jPR1hhfEjtONL8
-        mks+8E44O8ytxqDKO
-X-Received: by 2002:a17:906:3949:: with SMTP id g9mr18990009eje.7.1619447376591;
-        Mon, 26 Apr 2021 07:29:36 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJx/vyK35PDWKExWj9FjIbhZnWZPZu/9axc5kKeS2p7CnpOoAsINFe2QXhzu02C2aENU0YLqbA==
-X-Received: by 2002:a17:906:3949:: with SMTP id g9mr18989967eje.7.1619447376154;
-        Mon, 26 Apr 2021 07:29:36 -0700 (PDT)
-Received: from alrua-x1.borgediget.toke.dk ([2a0c:4d80:42:443::2])
-        by smtp.gmail.com with ESMTPSA id 9sm11378126ejv.73.2021.04.26.07.29.35
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 26 Apr 2021 07:29:35 -0700 (PDT)
-Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id B1A08180615; Mon, 26 Apr 2021 16:29:33 +0200 (CEST)
-From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-To:     Hangbin Liu <liuhangbin@gmail.com>,
-        Jesper Dangaard Brouer <brouer@redhat.com>
-Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org,
-        Jiri Benc <jbenc@redhat.com>,
-        Eelco Chaudron <echaudro@redhat.com>, ast@kernel.org,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Lorenzo Bianconi <lorenzo.bianconi@redhat.com>,
-        David Ahern <dsahern@gmail.com>,
-        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
-        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
-        =?utf-8?B?QmrDtnJuIFQ=?= =?utf-8?B?w7ZwZWw=?= 
-        <bjorn.topel@gmail.com>, Martin KaFai Lau <kafai@fb.com>
-Subject: Re: [PATCHv9 bpf-next 4/4] selftests/bpf: add xdp_redirect_multi test
-In-Reply-To: <20210426101940.GP3465@Leo-laptop-t470s>
-References: <20210422071454.2023282-1-liuhangbin@gmail.com>
- <20210422071454.2023282-5-liuhangbin@gmail.com>
- <20210426112832.0b746447@carbon> <20210426101940.GP3465@Leo-laptop-t470s>
-X-Clacks-Overhead: GNU Terry Pratchett
-Date:   Mon, 26 Apr 2021 16:29:33 +0200
-Message-ID: <878s55ce5u.fsf@toke.dk>
-MIME-Version: 1.0
-Content-Type: text/plain
+        id S233799AbhDZOh1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 26 Apr 2021 10:37:27 -0400
+Received: from out3-smtp.messagingengine.com ([66.111.4.27]:44227 "EHLO
+        out3-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S233501AbhDZOh1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 26 Apr 2021 10:37:27 -0400
+Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
+        by mailout.nyi.internal (Postfix) with ESMTP id 081395C0164;
+        Mon, 26 Apr 2021 10:36:45 -0400 (EDT)
+Received: from imap21 ([10.202.2.71])
+  by compute4.internal (MEProxy); Mon, 26 Apr 2021 10:36:45 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=hmh.eng.br; h=
+        mime-version:message-id:date:from:to:subject:content-type; s=
+        fm2; bh=tMx2BZVAMOMXQXtBh8utAOGoUJIA/+txAc3Z0kDjE24=; b=LSwKSwv+
+        O+YyBM+0IQhwdAcJMxhB1hnZVkHVySUqBxyw0O2wIolZ3doOB8J8LF29II6qGTBV
+        0HDcTpV7z9op7I1CZIJRxi9IMnAnGY9ZipGfeo5Bb16YRYjtV1zA59XpLQNUeSuW
+        PxngAcOVmqKfnc7OwC2LnwtN/NCCyzqs8sTlV4HPm01dPgcnnE+A1fh6ZdPBS67j
+        +PZaYQbrZxiwB8LAXv7wZRQPtgUw9equZLy4LlQx7bnNNp48rMlPCLS9ALDQVmxN
+        gn9BwznCPtvZhZTMDONKTJWuYnK2pWGrbgSMA1BadAZa66ZOIM/hIRXgmnHh9tcd
+        qnJA8eeQc5yODA==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=content-type:date:from:message-id
+        :mime-version:subject:to:x-me-proxy:x-me-proxy:x-me-sender
+        :x-me-sender:x-sasl-enc; s=fm2; bh=tMx2BZVAMOMXQXtBh8utAOGoUJIA/
+        +txAc3Z0kDjE24=; b=VXBsYUNW12bBTzcH7J80UFvHsEMfUMPNDoGcviBSNYmPQ
+        wGrhfxeuGASroJvPqXQWL/dtxhYnCkFHxExkqeq1tsxiEAH7OSmi5hWfO1Jzs9/1
+        3SPDE7qFvLFNoc3kQ9Ih0S5HXrZLlvejpjceVyWQ0qXS5yd35+FjJGcDuphpbteu
+        OTV5Ej8RS8ua5pZoSjmV4tQ29qG6rZBAnhzD29XSlqHSfCkgoqvqSkF2a6ahx0aW
+        TRuYmxaxiypcNF2lSyuoJf2o6AF/pS4BRdbWOW0c78n2nlFVTsZQwT7rWT0NpPoC
+        LpKNh1N+M9mtjGrXhf/IcuvzM0R4mazFqrzblf3xw==
+X-ME-Sender: <xms:_M-GYDTvSBlUYztLefZTHw30pQoWDL1dP5N9S-wvc3o4wnCPNYu_ZQ>
+    <xme:_M-GYEyt3C4eAN-AvuZXD19lXjVfxt9IrMqSr0XYFMVUAIqVTXK3pEuUKZyRbpc2N
+    -mS2F5Xwk5mkQ>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduledrvddukedgkedtucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucenucfjughrpefofgggkfffhffvufgtsehmtderre
+    erredtnecuhfhrohhmpedfjfgvnhhrihhquhgvucguvgcuofhorhgrvghsucfjohhlshgt
+    hhhuhhdfuceohhhmhheshhhmhhdrvghnghdrsghrqeenucggtffrrghtthgvrhhnpeelge
+    dvfeduudduueejhedtfeetvedugfehffejhfeiieektdekjeelkefhhedujeenucevlhhu
+    shhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpehhmhhhsehhmhhhrd
+    gvnhhgrdgsrh
+X-ME-Proxy: <xmx:_M-GYI1pGNnnvFrdt7nMJ_tIytgKIRIoBcYJAvfubEPHPE1D__2vHA>
+    <xmx:_M-GYDALGTdmHT9g9uxGRU-BXahe_tBM4oojIKKE1hEeIR-qRQxbtg>
+    <xmx:_M-GYMinOiKmBF9k29L6BYKzEJeZevjajyCJFPRRsqkSSySMsWDVIg>
+    <xmx:_c-GYHuMzPmt-4e2iF67T6jcCk9qN3gsolEsCxSyoQVBvKivRFMepg>
+Received: by mailuser.nyi.internal (Postfix, from userid 501)
+        id 9210A51C005F; Mon, 26 Apr 2021 10:36:44 -0400 (EDT)
+X-Mailer: MessagingEngine.com Webmail Interface
+User-Agent: Cyrus-JMAP/3.5.0-alpha0-403-gbc3c488b23-fm-20210419.005-gbc3c488b
+Mime-Version: 1.0
+Message-Id: <d3a4afd7-a448-4310-930d-063b39bde86e@www.fastmail.com>
+Date:   Mon, 26 Apr 2021 11:35:56 -0300
+From:   "Henrique de Moraes Holschuh" <hmh@hmh.eng.br>
+To:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org
+Subject: Unexpected timestamps in tcpdump with veth + tc qdisc netem delay
+Content-Type: multipart/mixed;
+ boundary=8da327b28c4047e6a73cddde4112973c
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hangbin Liu <liuhangbin@gmail.com> writes:
+--8da327b28c4047e6a73cddde4112973c
+Content-Type: text/plain
 
-> On Mon, Apr 26, 2021 at 11:28:32AM +0200, Jesper Dangaard Brouer wrote:
->> On Thu, 22 Apr 2021 15:14:54 +0800
->> Hangbin Liu <liuhangbin@gmail.com> wrote:
->> 
->> > Add a bpf selftest for new helper xdp_redirect_map_multi(). In this
->> > test there are 3 forward groups and 1 exclude group. The test will
->> > redirect each interface's packets to all the interfaces in the forward
->> > group, and exclude the interface in exclude map.
->> > 
->> > Two maps (DEVMAP, DEVMAP_HASH) and two xdp modes (generic, drive) will
->> > be tested. XDP egress program will also be tested by setting pkt src MAC
->> > to egress interface's MAC address.
->> > 
->> > For more test details, you can find it in the test script. Here is
->> > the test result.
->> > ]# ./test_xdp_redirect_multi.sh
->> 
->> Running this test takes a long time around 3 minutes.
->
-> Yes, there are some sleeps, ping tests. Don't know if I missed
-> anything, is there a time limit for the selftest?
+(please CC me in any replies, thank you!)
 
-Not formally, but we already get complaints about tests running too
-long, and if you write a test that takes three minutes to run you all
-but guarantee that no one is going to run it in practice... :)
+Hello,
 
-You could play with things like decreasing the ping interval (with -i),
-maybe running fewer of them, and getting rid of all those 'sleep'
-statements to decrease the runtime...
+While trying to simulate large delay links using veth and netns, I came across what looks like unexpected / incorrect behavior.
 
--Toke
+I have reproduced it in Debian 4.19 and 5.10 kernels, and a quick look at mainline doesn't show any relevant deviation from Debian kernels to mainline in my limited understanding of this area of the kernel.
 
+I have attached a simple script to reproduce the scenario.  If my explanation below is not clear, please just look at the script to see what it does: it should be trivial to understand.  It needs tcpdump, and CAP_NET_ADMIN (or root, etc).
+
+Topology
+
+root netns:
+   veth vec0 (192.168.233.1)   paired to ves0 (192.168.233.2)
+   tc qdisc dev vec0 root netem delay 250ms
+
+lab500ms netns:
+   veth ves0 (192.168.233.2), paired to vec0 (192.168.233.1)
+   tc qdisc dev ves0 root netem delay 250ms
+
+So:
+[root netns  -- veth (tc qdisc netem delay 250ms) ] <> [ veth (tc qdisc netem delay 250ms) -- lab500ms netns ]
+
+Expected RTT from a packet roundtrip (root nets -> lab500ms netns -> root netns) is 500ms.
+
+
+The problem:
+
+[root netns]:  ping 192.168.233.2
+PING 192.168.233.2 (192.168.233.2) 56(84) bytes of data.
+64 bytes from 192.168.233.2: icmp_seq=1 ttl=64 time=500 ms
+64 bytes from 192.168.233.2: icmp_seq=2 ttl=64 time=500 ms
+
+(the RTT reported by ping is 500ms as expected: there is a 250ms transmit delay attached to each member of the veth pair)
+
+However:
+
+[root netns]: tcpdump -i vec0 -s0 -n -p net 192.168.233.0/30
+listening on vec0, link-type EN10MB (Ethernet), capture size 262144 bytes
+17:09:09.740681 IP 192.168.233.1 > 192.168.233.2: ICMP echo request, id 9327, seq 1, length 64
+17:09:09.990891 IP 192.168.233.2 > 192.168.233.1: ICMP echo reply, id 9327, seq 1, length 64
+17:09:10.741903 IP 192.168.233.1 > 192.168.233.2: ICMP echo request, id 9327, seq 2, length 64
+17:09:10.992031 IP 192.168.233.2 > 192.168.233.1: ICMP echo reply, id 9327, seq 2, length 64
+17:09:11.742813 IP 192.168.233.1 > 192.168.233.2: ICMP echo request, id 9327, seq 3, length 64
+17:09:11.993009 IP 192.168.233.2 > 192.168.233.1: ICMP echo reply, id 9327, seq 3, length 64
+
+[lab500ms netns]: ip netns exec lab500ms tcpdump -i ves0 -s0 -n -p net 192.168.233.0/30
+listening on ves0, link-type EN10MB (Ethernet), capture size 262144 bytes
+17:09:09.740724 IP 192.168.233.1 > 192.168.233.2: ICMP echo request, id 9327, seq 1, length 64
+17:09:09.990867 IP 192.168.233.2 > 192.168.233.1: ICMP echo reply, id 9327, seq 1, length 64
+17:09:10.741942 IP 192.168.233.1 > 192.168.233.2: ICMP echo request, id 9327, seq 2, length 64
+17:09:10.992012 IP 192.168.233.2 > 192.168.233.1: ICMP echo reply, id 9327, seq 2, length 64
+17:09:11.742851 IP 192.168.233.1 > 192.168.233.2: ICMP echo request, id 9327, seq 3, length 64
+17:09:11.992985 IP 192.168.233.2 > 192.168.233.1: ICMP echo reply, id 9327, seq 3, length 64
+
+One can see that the timestamps shown by tcpdump (also reproduced using wireshark) are *not* what one would expect: the 250ms delays are missing in incoming packets (i.e. there's 250ms missing from timestamps in packets "echo reply" in vec0, and "echo request" in ves0).
+
+The 250ms vec0->ves0 delay AND 250ms ves0 -> vec0 delay *are* there, as shown by "ping", but you'd not know it if you look at the tcpdump.  The timing shown in tcpdump looks more like packet injection time at the first interface, than the time the packet was "seen" at the other end (capture interface).
+
+Adding more namespaces and VETH pairs + routing "in a row" so that the packet "exits" one veth tunnel and enters another one (after trivial routing) doesn't fix the tcpdump timestamps in the capture at the other end of the veth-veth->routing->veth-veth->routing->... chain.
+
+It looks like some sort of bug to me, but maybe I am missing something, in which case I would greatly appreciate an explanation of where I went wrong... 
+
+Thanks in advance,
+Henrique de Moraes Holschuh <hmh@hmh.eng.br>
+--8da327b28c4047e6a73cddde4112973c
+Content-Disposition: attachment;filename="netns.sh"
+Content-Type: application/x-sh; name="netns.sh"
+Content-Transfer-Encoding: BASE64
+
+IyEvYmluL2Jhc2gKCiMgV0FSTklORzogZGVsZXRlcyBhbmQgcmVjcmVhdGVzOgojICBsaW5r
+IHZlYzAKIyAgbGluayB2ZXMwCiMgIG5hbWVzcGFjZSBsYWI1MDBtcwojCiMgY3JlYXRlcyB0
+ZW1wIGRpciB3aXRoIHByZWZpeCB2ZXRoLW5ldGVtLWlzc3VlIGluICRUTVBESVIgb3IgL3Rt
+cC4KClJUVD01MDBtcwpMREVMQVk9MjUwbXMKTkVUTlM9ImxhYiRSVFQiCgpkZXZsPXZlYzAK
+ZGV2cj12ZXMwCgpURElSPSQobWt0ZW1wIC1kIC10IHZldGgtbmV0ZW0taXNzdWUuWFhYWFhY
+WFhYWCkgfHwgZXhpdCAxClsgLWQgIiRURElSIiBdIHx8IGV4aXQgMQoKIyBjcmVhdGUgbmV0
+bnMgYW5kIGVuYWJsZSBsb29wYmFjaywgaWYgbWlzc2luZwppcCBuZXRucyBhZGQgJE5FVE5T
+IDI+L2Rldi9udWxsCmlwIG5ldG5zIGV4ZWMgJE5FVE5TIGlwIGxpbmsgc2V0IGRldiBsbyB1
+cAoKIyBjcmVhdGUgVkVUSCBwYWlyCmlwIGxpbmsgZGVsIGRldiAkZGV2bCAyPiYxCmlwIGxp
+bmsgYWRkICRkZXZsIG10dSAxNTAwIHR5cGUgdmV0aCBwZWVyIG5hbWUgJGRldnIgMj4vZGV2
+L251bGwgJiYgewoJaXAgbGluayBzZXQgJGRldnIgbmV0bnMgJE5FVE5TCn0KCiMgc2V0dXAg
+bG9jYWwgc2lkZQppcCBsaW5rIHNldCAkZGV2bCB1cAppcCBhZGRyIGFkZCAxOTIuMTY4LjIz
+My4xLzMwIGRldiAkZGV2bAoKIyBzZXR1cCBuZXRucyBzaWRlCmlwIG5ldG5zIGV4ZWMgJE5F
+VE5TIGlwIGxpbmsgc2V0IGRldiAkZGV2ciB1cAppcCBuZXRucyBleGVjICRORVROUyBpcCBh
+ZGRyIGFkZCAxOTIuMTY4LjIzMy4yLzMwIGRldiAkZGV2cgoKIyBOb3cgYWRkIGhhbGYtUlRU
+IGRlbGF5IHRvIFRYIHF1ZXVlIG9mIGJvdGggdmV0aCBzaWRlcwp0YyBxZGlzYyByZXBsYWNl
+IGRldiAkZGV2bCByb290IG5ldGVtIGRlbGF5ICIkTERFTEFZIgppcCBuZXRucyBleGVjICRO
+RVROUyB0YyBxZGlzYyByZXBsYWNlIGRldiAkZGV2ciByb290IG5ldGVtIGRlbGF5ICIkTERF
+TEFZIgoKIyBwcmVsb2FkIGFycCB0byBhdm9pZCBbcG9zc2libGVdIEFSUCByZXNvbHV0aW9u
+IGRlbGF5IG9uIGZpcnN0IHBpbmcsIGp1c3QgZm9yIGNsYXJpdHkKcGluZyAtYyAxIDE5Mi4x
+NjguMjMzLjIgPi9kZXYvbnVsbCAyPiYxCgojIHN0YXJ0IHR3byB0Y3BkdW1wcywgbGltaXRl
+ZCB0byAxMCBwYWNrZXRzCmVjaG8gInN0YXJ0aW5nIHRjcGR1bXAgaW4gYmFja2dyb3VuZCwg
+b3V0cHV0IHRvICRURElSL3ZlYzAucGNhcCBhbmQgJFRESVIvdmVzMC5wY2FwIgp0Y3BkdW1w
+IC1pIHZlYzAgLW4gLXAgLXcgIiRURElSL3ZlYzAucGNhcCIgLWMgMTAgbmV0IDE5Mi4xNjgu
+MjMzLjAvMzAgYW5kIGljbXAgPi9kZXYvbnVsbCAyPiYxICYKaXAgbmV0bnMgZXhlYyAkTkVU
+TlMgdGNwZHVtcCAtaSB2ZXMwIC1uIC1wIC13ICIkVERJUi92ZXMwLnBjYXAiIC1jIDEwIG5l
+dCAxOTIuMTY4LjIzMy4wLzMwIGFuZCBpY21wID4vZGV2L251bGwgMj4mMSAmCgpzbGVlcCAx
+CgplY2hvCmVjaG8gInBpbmcgc2hvd3MgNTAwbXMgUlRUIGFzIGV4cGVjdGVkIgpwaW5nIC1j
+IDYgMTkyLjE2OC4yMzMuMgoKZWNobwplY2hvICJidXQgdGhlIHRjcGR1bXBzIHNob3cgaW5j
+b3JyZWN0IHJlY2VpdmUgdGltZXN0YW1wczogIgplY2hvICJ0aGUgdGltZXN0YW1wcyBsb29r
+IG1vcmUgbGlrZSBwYWNrZXQgY3JlYXRpb24gdGltZSB0aGFuIHBhY2tldC1zZWVuLWF0LWNh
+cHR1cmUtaW50ZXJmYWNlIHRpbWUiCmVjaG8gCmVjaG8gImxvY2FsIHNpZGU6Igp0Y3BkdW1w
+IC1uIC12IC1yICIkVERJUi92ZWMwLnBjYXAiCmVjaG8KZWNobyAicmVtb3RlIHNpZGU6Igp0
+Y3BkdW1wIC1uIC12IC1yICIkVERJUi92ZXMwLnBjYXAiCmVjaG8KZWNobyAicGNhcCBmaWxl
+cyBwcmVzZXJ2ZWQgaW4gJFRESVIiCg==
+
+--8da327b28c4047e6a73cddde4112973c--
