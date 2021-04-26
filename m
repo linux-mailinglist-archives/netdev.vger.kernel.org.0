@@ -2,112 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B2C0036AC63
-	for <lists+netdev@lfdr.de>; Mon, 26 Apr 2021 08:47:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8B98736AC72
+	for <lists+netdev@lfdr.de>; Mon, 26 Apr 2021 08:55:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231980AbhDZGsX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 26 Apr 2021 02:48:23 -0400
-Received: from vulcan.natalenko.name ([104.207.131.136]:40852 "EHLO
-        vulcan.natalenko.name" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231616AbhDZGsW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 26 Apr 2021 02:48:22 -0400
-Received: from localhost (kaktus.kanapka.ml [151.237.229.131])
+        id S231984AbhDZGzk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 26 Apr 2021 02:55:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58126 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231879AbhDZGzj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 26 Apr 2021 02:55:39 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E647C061756
+        for <netdev@vger.kernel.org>; Sun, 25 Apr 2021 23:54:58 -0700 (PDT)
+Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <mkl@pengutronix.de>)
+        id 1lav8y-0003yl-SB
+        for netdev@vger.kernel.org; Mon, 26 Apr 2021 08:54:56 +0200
+Received: from dspam.blackshift.org (localhost [127.0.0.1])
+        by bjornoya.blackshift.org (Postfix) with SMTP id C2443616F72
+        for <netdev@vger.kernel.org>; Mon, 26 Apr 2021 06:54:54 +0000 (UTC)
+Received: from hardanger.blackshift.org (unknown [172.20.34.65])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by vulcan.natalenko.name (Postfix) with ESMTPSA id B09E1A4F81D;
-        Mon, 26 Apr 2021 08:47:37 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=natalenko.name;
-        s=dkim-20170712; t=1619419657;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=hFtP1eOQddasIQX+cRuKOVejzwpAMEMFVa7yR+iwH4I=;
-        b=L3ZsAqfUjUWgneNywT2x9J81/ncsgSJzdZrKsmkpSJOI2ZW8NXFvavseYFTF4bRJsIcrCY
-        hk1gIisOhNWdd4LKvWzgOdOLAQsq9UPvVlWR4VRjButDwaCZ5K1lp1HYur1S0KyHX5h3xK
-        wcwlTBb3d9XfYW1ElJgpdoNQLXyKLQg=
-Date:   Mon, 26 Apr 2021 08:47:36 +0200
-From:   Oleksandr Natalenko <oleksandr@natalenko.name>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Alexander Duyck <alexander.duyck@gmail.com>,
-        linux-kernel@vger.kernel.org,
-        Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org
-Subject: Re: [igb] netconsole triggers warning in netpoll_poll_dev
-Message-ID: <20210426064736.7efynita4brzos4u@spock.localdomain>
-References: <20210406123619.rhvtr73xwwlbu2ll@spock.localdomain>
- <20210406114734.0e00cb2f@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <20210407060053.wyo75mqwcva6w6ci@spock.localdomain>
- <20210407083748.56b9c261@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <CAKgT0UfLLQycLsAZQ98ofBGYPwejA6zHbG6QsNrU92mizS7e0g@mail.gmail.com>
- <20210407110722.1eb4ebf2@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <CAKgT0UcQXVOifi_2r_Y6meg_zvHDBf1me8VwA4pvEtEMzOaw2Q@mail.gmail.com>
- <20210423081944.kvvm4v7jcdyj74l3@spock.localdomain>
- <20210423155836.25ef1e77@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (Client did not present a certificate)
+        by bjornoya.blackshift.org (Postfix) with ESMTPS id 198F1616F67;
+        Mon, 26 Apr 2021 06:54:54 +0000 (UTC)
+Received: from blackshift.org (localhost [::1])
+        by hardanger.blackshift.org (OpenSMTPD) with ESMTP id 22b96167;
+        Mon, 26 Apr 2021 06:54:53 +0000 (UTC)
+From:   Marc Kleine-Budde <mkl@pengutronix.de>
+To:     netdev@vger.kernel.org
+Cc:     davem@davemloft.net, kuba@kernel.org, linux-can@vger.kernel.org,
+        kernel@pengutronix.de
+Subject: pull-request: can-next 2021-04-26
+Date:   Mon, 26 Apr 2021 08:54:48 +0200
+Message-Id: <20210426065452.3411360-1-mkl@pengutronix.de>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210423155836.25ef1e77@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Content-Transfer-Encoding: 8bit
+X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
+X-SA-Exim-Mail-From: mkl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello.
+Hello Jakub, hello David,
 
-On Fri, Apr 23, 2021 at 03:58:36PM -0700, Jakub Kicinski wrote:
-> On Fri, 23 Apr 2021 10:19:44 +0200 Oleksandr Natalenko wrote:
-> > On Wed, Apr 07, 2021 at 04:06:29PM -0700, Alexander Duyck wrote:
-> > > On Wed, Apr 7, 2021 at 11:07 AM Jakub Kicinski <kuba@kernel.org> wrote:  
-> > > > Sure, that's simplest. I wasn't sure something is supposed to prevent
-> > > > this condition or if it's okay to cover it up.  
-> > > 
-> > > I'm pretty sure it is okay to cover it up. In this case the "budget -
-> > > 1" is supposed to be the upper limit on what can be reported. I think
-> > > it was assuming an unsigned value anyway.
-> > > 
-> > > Another alternative would be to default clean_complete to !!budget.
-> > > Then if budget is 0 clean_complete would always return false.  
-> > 
-> > So, among all the variants, which one to try? Or there was a separate
-> > patch sent to address this?
-> 
-> Alex's suggestion is probably best.
-> 
-> I'm not aware of the fix being posted. Perhaps you could take over and
-> post the patch if Intel doesn't chime in?
+this is a pull request of 4 patches for net-next/master.
 
-So, IIUC, Alex suggests this:
+the first two patches are from Colin Ian King and target the
+etas_es58x driver, they add a missing NULL pointer check and fix some
+typos.
 
-```
-diff --git a/drivers/net/ethernet/intel/igb/igb_main.c b/drivers/net/ethernet/intel/igb/igb_main.c
-index a45cd2b416c8..7503d5bf168a 100644
---- a/drivers/net/ethernet/intel/igb/igb_main.c
-+++ b/drivers/net/ethernet/intel/igb/igb_main.c
-@@ -7981,7 +7981,7 @@ static int igb_poll(struct napi_struct *napi, int budget)
- 						     struct igb_q_vector,
- 						     napi);
- 	bool clean_complete = true;
--	int work_done = 0;
-+	unsigned int work_done = 0;
- 
- #ifdef CONFIG_IGB_DCA
- 	if (q_vector->adapter->flags & IGB_FLAG_DCA_ENABLED)
-@@ -8008,7 +8008,7 @@ static int igb_poll(struct napi_struct *napi, int budget)
- 	if (likely(napi_complete_done(napi, work_done)))
- 		igb_ring_irq_enable(q_vector);
- 
--	return min(work_done, budget - 1);
-+	return min_t(unsigned int, work_done, budget - 1);
- }
- 
- /**
-```
+The next two patches are by Erik Flodin. The first one updates the CAN
+documentation regarding filtering, the other one fixes the header
+alignment in CAN related proc output on 64 bit systems.
 
-Am I right?
+regards,
+Marc
 
-Thanks.
+---
 
--- 
-  Oleksandr Natalenko (post-factum)
+The following changes since commit b2f0ca00e6b34bd57c9298a869ea133699e8ec39:
+
+  phy: nxp-c45-tja11xx: add interrupt support (2021-04-23 14:13:16 -0700)
+
+are available in the Git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/mkl/linux-can-next.git tags/linux-can-next-for-5.13-20210426
+
+for you to fetch changes up to e6b031d3c37f79d135c642834bdda7233a29db8d:
+
+  can: proc: fix rcvlist_* header alignment on 64-bit system (2021-04-25 19:43:00 +0200)
+
+----------------------------------------------------------------
+linux-can-next-for-5.13-20210426
+
+----------------------------------------------------------------
+Colin Ian King (2):
+      can: etas_es58x: Fix missing null check on netdev pointer
+      can: etas_es58x: Fix a couple of spelling mistakes
+
+Erik Flodin (2):
+      can: add a note that RECV_OWN_MSGS frames are subject to filtering
+      can: proc: fix rcvlist_* header alignment on 64-bit system
+
+ Documentation/networking/can.rst            | 2 ++
+ drivers/net/can/usb/etas_es58x/es58x_core.c | 4 ++--
+ drivers/net/can/usb/etas_es58x/es58x_core.h | 2 +-
+ net/can/proc.c                              | 6 ++++--
+ 4 files changed, 9 insertions(+), 5 deletions(-)
+
+
