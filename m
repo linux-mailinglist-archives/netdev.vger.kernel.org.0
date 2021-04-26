@@ -2,89 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 546F236B472
-	for <lists+netdev@lfdr.de>; Mon, 26 Apr 2021 16:02:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 233AE36B495
+	for <lists+netdev@lfdr.de>; Mon, 26 Apr 2021 16:15:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233735AbhDZOC7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 26 Apr 2021 10:02:59 -0400
-Received: from sender4-of-o53.zoho.com ([136.143.188.53]:21366 "EHLO
-        sender4-of-o53.zoho.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231862AbhDZOC6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 26 Apr 2021 10:02:58 -0400
-ARC-Seal: i=1; a=rsa-sha256; t=1619445723; cv=none; 
-        d=zohomail.com; s=zohoarc; 
-        b=UGOk35mQQbE2f7UY1W3lZfCBuIr072oCYc/IG5TqfkW4dw/WQvrfLNfMswH5UZmK5QPRRjiDCrPEMkxLCnROWI10blqW9MtmCuqAQNyO/rsUxtJ3U2HtLK1iLy8vR71kLiXAu0tWY5p0wMtXkMHhXf1ZKiRh4atQSUcSXtsr1Fg=
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
-        t=1619445723; h=Content-Type:Cc:Date:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:To; 
-        bh=rzsZ83jDBREjyjIqQHOvAx9cUe0wGukCjDAduzsjysY=; 
-        b=WDEDgpuwC8Dguh1O8y95T4TQB2sD6kAWDbd33kqEJR1XhVa7i7oyXtepLGXzCidFneOnrWJpKdH622LymDlGkAme/is5od+lY2yN31DTodjx4XFM/VIv3TNIsbZMiZDoylvp/gto88vF34QjVbcPcI7laOfC6IpNsOu23kEMwr0=
-ARC-Authentication-Results: i=1; mx.zohomail.com;
-        dkim=pass  header.i=anirudhrb.com;
-        spf=pass  smtp.mailfrom=mail@anirudhrb.com;
-        dmarc=pass header.from=<mail@anirudhrb.com> header.from=<mail@anirudhrb.com>
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1619445723;
-        s=zoho; d=anirudhrb.com; i=mail@anirudhrb.com;
-        h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:Content-Type:In-Reply-To;
-        bh=rzsZ83jDBREjyjIqQHOvAx9cUe0wGukCjDAduzsjysY=;
-        b=jeK3yROBJkjiR2Ml4jEB8wPmQRugSoQqGg5/p6IZWle0F/gsF+1w1VuAcQwZSlIL
-        VE9syP7do0DOSWeBuA8hNUYIn0ZlLD1hznje6t68LulQYS810duCdKlpsArrXSmWSwQ
-        A1e/1rciwcvJA62tS8bHCcpJDbt0bgzxi+pRPTx0=
-Received: from anirudhrb.com (49.207.208.26 [49.207.208.26]) by mx.zohomail.com
-        with SMTPS id 1619445705390287.8470601189231; Mon, 26 Apr 2021 07:01:45 -0700 (PDT)
-Date:   Mon, 26 Apr 2021 19:31:38 +0530
-From:   Anirudh Rayabharam <mail@anirudhrb.com>
-To:     Johan Hovold <johan@kernel.org>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-usb@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, stable@vger.kernel.org,
-        Leonardo Antoniazzi <leoanto@aruba.it>, mail@anirudhrb.com
-Subject: Re: [PATCH] net: hso: fix NULL-deref on disconnect regression
-Message-ID: <YIbHwqG6eukP9uQg@anirudhrb.com>
-References: <20210426081149.10498-1-johan@kernel.org>
+        id S233693AbhDZOP4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 26 Apr 2021 10:15:56 -0400
+Received: from Galois.linutronix.de ([193.142.43.55]:34356 "EHLO
+        galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231862AbhDZOPy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 26 Apr 2021 10:15:54 -0400
+From:   Kurt Kanzenbach <kurt@linutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1619446511;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=5B/T1CuqWPCNqs22nVrQhItaO/mUhF7UkyKIplWE5Eo=;
+        b=o7XL3QKmrmP9TtPabYq7HeJ2ZuGhekW5pGsTAR9z5oOvbYhTnn24JC1pdhGdnMOe2bzd7n
+        mzEKegEHZFmTT5mT/jmRLtCmQLex1wCRGAEj370KkC823NcN1rfLdatObkMy2CjZuS/1dt
+        RKiO0IUe+FDVtLDLxB44Fq03sDyEuqqupOZgafnHsCg8TALS0RLQRvCJk8yo34ibwLJYCn
+        ECDkzMMSqQ/qxPqR263o1ICX8bTrefIhxCsKI4yigvjYzVLE/XeihxDD5CrMaylGCnSPt6
+        poWQjkoZt1AsC7U4cTusF6NzIeIRwVJdV1B0ySRUkRWqlP5W+Gmg0dIL16L9Iw==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1619446511;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=5B/T1CuqWPCNqs22nVrQhItaO/mUhF7UkyKIplWE5Eo=;
+        b=Cm/Uxjazk6FAgIQPwuiCr6l0Mb4hf4hOVf/uN7Hj/0KR4aNOEsRvAWxvIBGmgra2Dg5a5F
+        ZqNn+nY+3QpDCACQ==
+To:     Tyler S <tylerjstachecki@gmail.com>
+Cc:     alexander.duyck@gmail.com, anthony.l.nguyen@intel.com,
+        ast@kernel.org, bigeasy@linutronix.de, bpf@vger.kernel.org,
+        daniel@iogearbox.net, davem@davemloft.net, hawk@kernel.org,
+        ilias.apalodimas@linaro.org, intel-wired-lan@lists.osuosl.org,
+        jesse.brandeburg@intel.com, john.fastabend@gmail.com,
+        kuba@kernel.org, lorenzo@kernel.org, netdev@vger.kernel.org,
+        richardcochran@gmail.com, sven.auhagen@voleatech.de,
+        Maciej Fijalkowski <maciej.fijalkowski@intel.com>
+Subject: Re: [PATCH net v2] igb: Fix XDP with PTP enabled
+In-Reply-To: <CAMfj=-YEh1ZnLB8zye7i-5Y2S015n0qat+FQ6JW7bFKwBUHBPg@mail.gmail.com>
+References: <CAMfj=-YEh1ZnLB8zye7i-5Y2S015n0qat+FQ6JW7bFKwBUHBPg@mail.gmail.com>
+Date:   Mon, 26 Apr 2021 16:15:08 +0200
+Message-ID: <871rax9loz.fsf@kurt>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210426081149.10498-1-johan@kernel.org>
-X-ZohoMailClient: External
+Content-Type: multipart/signed; boundary="=-=-=";
+        micalg=pgp-sha512; protocol="application/pgp-signature"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Apr 26, 2021 at 10:11:49AM +0200, Johan Hovold wrote:
-> Commit 8a12f8836145 ("net: hso: fix null-ptr-deref during tty device
-> unregistration") fixed the racy minor allocation reported by syzbot, but
-> introduced an unconditional NULL-pointer dereference on every disconnect
-> instead.
-> 
-> Specifically, the serial device table must no longer be accessed after
-> the minor has been released by hso_serial_tty_unregister().
-> 
-> Fixes: 8a12f8836145 ("net: hso: fix null-ptr-deref during tty device unregistration")
-> Cc: stable@vger.kernel.org
-> Cc: Anirudh Rayabharam <mail@anirudhrb.com>
-> Reported-by: Leonardo Antoniazzi <leoanto@aruba.it>
-> Signed-off-by: Johan Hovold <johan@kernel.org>
-> ---
->  drivers/net/usb/hso.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/drivers/net/usb/hso.c b/drivers/net/usb/hso.c
-> index 9bc58e64b5b7..3ef4b2841402 100644
-> --- a/drivers/net/usb/hso.c
-> +++ b/drivers/net/usb/hso.c
-> @@ -3104,7 +3104,7 @@ static void hso_free_interface(struct usb_interface *interface)
->  			cancel_work_sync(&serial_table[i]->async_put_intf);
->  			cancel_work_sync(&serial_table[i]->async_get_intf);
->  			hso_serial_tty_unregister(serial);
-> -			kref_put(&serial_table[i]->ref, hso_serial_ref_free);
-> +			kref_put(&serial->parent->ref, hso_serial_ref_free);
->  		}
->  	}
+--=-=-=
+Content-Type: text/plain
 
-Ah, my bad. Thanks Johan for the fix!
+On Sun Apr 25 2021, Tyler S wrote:
+> Thanks for this work; I was having trouble using XDP on my I354 NIC until this.
+>
+> Hopefully I have not err'd backporting it to 5.10 -- but I'm seeing
+> jumbo frames dropped after applying this (though as previously
+> mentioned, non-skb/full driver XDP programs do now work).
+>
+> Looking at the code, I'm not sure why that is.
 
-Reviewed-by: Anirudh Rayabharam <mail@anirudhrb.com>
+I'm also not sure, yet.
 
-	- Anirudh.
+Can you try with version 3 of this patch [1] and see if there are still
+issues with jumbo frames? Can you also share the backported patch for
+v5.10?
+
+Thanks,
+Kurt
+
+[1] - https://lkml.kernel.org/netdev/20210422052617.17267-1-kurt@linutronix.de/
+
+--=-=-=
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAEBCgAdFiEEooWgvezyxHPhdEojeSpbgcuY8KYFAmCGyuwACgkQeSpbgcuY
+8Ka3Jg/6Av5nptVlgBmPCzHPNjBzGI3hr3Q0WP40E4nSnXwQokkuP1Lal69/9oFF
+xP9bRGuWNUSnkjh+CNOHhI/RZZCKQ9Ivu3UIHjh9hWrmPXX2o40gACTf//mgYOX2
+YQLyFqE1Gzd40Nj1FkKUdcBX0jo2e8l/2fMhFARGev9z5ZtRRx1quGfDa5S7WsBz
+gQqG5a/u3OvBtwknjSKsMj5Q5TapnhfhanX7a9KeElllF0fdPFAPqDt0JMZrvasR
+W2w3L0gjZgui7AYNCg2SYdmbT+ZDpeOpe3CHvox25BFjm2Uu+NhVJgBisD3KQc1r
+EZMzUjOyZEPxpyBoPC5LZTVqtGBAkf3dp3lA5h1tgbLtCubD7HsSuFYXPa8z9CZq
+DBdft/Ig+c4GGpZ1oy11ikijeUL8RLzNhLGSJaPRoErIfS7jUmmjFwijoiVyyxOC
+jY8BqFcWqDbgGtYnBjkUoUupFoo6BoQDXZWHneTC0shYyJvjVA1bCR9SzgdqBxry
+JKkoSFQAK50tC7k8YQte4KhXg/JcoZpAwU9rDPD6kXfCYUKHEZUtD8unwPXbj8gO
+euwA2tcn/WTe58A5GWUWQSOSLJZvsRv5eoho3yd2a+7fY8Qz1hKJYvcJiWoKt+z4
+P1jJotIhyIgxXmZ8MFDfxOQomgpXhAekpFkuWBdBzO+uhBbUxAA=
+=yT0P
+-----END PGP SIGNATURE-----
+--=-=-=--
