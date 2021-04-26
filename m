@@ -2,74 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D54AE36B0BB
-	for <lists+netdev@lfdr.de>; Mon, 26 Apr 2021 11:35:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A239F36B098
+	for <lists+netdev@lfdr.de>; Mon, 26 Apr 2021 11:32:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232700AbhDZJgS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 26 Apr 2021 05:36:18 -0400
-Received: from mail.kernel.org ([198.145.29.99]:55086 "EHLO mail.kernel.org"
+        id S232695AbhDZJdI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 26 Apr 2021 05:33:08 -0400
+Received: from inva020.nxp.com ([92.121.34.13]:42476 "EHLO inva020.nxp.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232685AbhDZJgR (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 26 Apr 2021 05:36:17 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id D7EF46103E;
-        Mon, 26 Apr 2021 09:35:35 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1619429735;
-        bh=bLpWGYOQ2/M+ci5Sjuq25051I+IODYqeokzOZ36nF9o=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=ELRro1aqNRHwkv3KvqoNQ0Rl3kdWm1zeHFWfKZE/H7+mNlU5SwEghQ1xYhwZ+/eOA
-         HYDFfGeY5F5VBxvyMppJrxg11d/jo9T6Q91CEyOKSfIGtUMh08bIadA6ryO7AFMRa0
-         RKJnBILHgbUg64CjoqoTgoS/lTF2ZNuM/fN3mABK1BqoAMM8TM0sIhJmqaxc+frkoT
-         ZGhq6gntykkgXryFV6+2StcDX//W4x02FczsLjHnzID4r+rn6VHSolBeybt93RGD3T
-         BHCWEecm+AL9UXBvlenkpQOJlAfqYGE8lDg7lLbHhFYWMXMJWa4gfzx+3hGpKwtGGL
-         gOyymuXHDar6w==
-Received: from johan by xi.lan with local (Exim 4.93.0.4)
-        (envelope-from <johan@kernel.org>)
-        id 1laxec-00045S-7F; Mon, 26 Apr 2021 11:35:46 +0200
-Date:   Mon, 26 Apr 2021 11:35:46 +0200
-From:   Johan Hovold <johan@kernel.org>
-To:     Leonardo Antoniazzi <leoanto@aruba.it>
-Cc:     linux-usb@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
+        id S232592AbhDZJc7 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 26 Apr 2021 05:32:59 -0400
+Received: from inva020.nxp.com (localhost [127.0.0.1])
+        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id 4AC1D1A3502;
+        Mon, 26 Apr 2021 11:32:05 +0200 (CEST)
+Received: from invc005.ap-rdc01.nxp.com (invc005.ap-rdc01.nxp.com [165.114.16.14])
+        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id 32DBD1A34EF;
+        Mon, 26 Apr 2021 11:31:59 +0200 (CEST)
+Received: from localhost.localdomain (mega.ap.freescale.net [10.192.208.232])
+        by invc005.ap-rdc01.nxp.com (Postfix) with ESMTP id 5B0D5402F3;
+        Mon, 26 Apr 2021 11:31:51 +0200 (CEST)
+From:   Yangbo Lu <yangbo.lu@nxp.com>
+To:     netdev@vger.kernel.org
+Cc:     Yangbo Lu <yangbo.lu@nxp.com>,
+        Richard Cochran <richardcochran@gmail.com>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>,
+        "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Anirudh Rayabharam <mail@anirudhrb.com>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] net: hso: fix NULL-deref on disconnect regression
-Message-ID: <YIaJcgmiJFERvbEF@hovoldconsulting.com>
-References: <20210426081149.10498-1-johan@kernel.org>
- <20210426112911.fb3593c3a9ecbabf98a13313@aruba.it>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210426112911.fb3593c3a9ecbabf98a13313@aruba.it>
+        Jonathan Corbet <corbet@lwn.net>,
+        Kurt Kanzenbach <kurt@linutronix.de>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        UNGLinuxDriver@microchip.com, linux-doc@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [net-next, v2, 0/7] Support Ocelot PTP Sync one-step timestamping
+Date:   Mon, 26 Apr 2021 17:37:55 +0800
+Message-Id: <20210426093802.38652-1-yangbo.lu@nxp.com>
+X-Mailer: git-send-email 2.17.1
+X-Virus-Scanned: ClamAV using ClamSMTP
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Apr 26, 2021 at 11:29:11AM +0200, Leonardo Antoniazzi wrote:
-> On Mon, 26 Apr 2021 10:11:49 +0200
-> Johan Hovold <johan@kernel.org> wrote:
-> 
-> > Commit 8a12f8836145 ("net: hso: fix null-ptr-deref during tty device
-> > unregistration") fixed the racy minor allocation reported by syzbot, but
-> > introduced an unconditional NULL-pointer dereference on every disconnect
-> > instead.
-> > 
-> > Specifically, the serial device table must no longer be accessed after
-> > the minor has been released by hso_serial_tty_unregister().
-> > 
-> > Fixes: 8a12f8836145 ("net: hso: fix null-ptr-deref during tty device unregistration")
-> > Cc: stable@vger.kernel.org
-> > Cc: Anirudh Rayabharam <mail@anirudhrb.com>
-> > Reported-by: Leonardo Antoniazzi <leoanto@aruba.it>
-> > Signed-off-by: Johan Hovold <johan@kernel.org>
-> > ---
+This patch-set is to support Ocelot PTP Sync one-step timestamping.
+Actually before that, this patch-set cleans up and optimizes the
+DSA slave tx timestamp request handling process.
 
-> the patch fix the problem
+Changes for v2:
+	- Split tx timestamp optimization patch.
+	- Updated doc patch.
+	- Freed skb->cb usage in dsa core driver, and moved to device
+	  drivers.
+	- Other minor fixes.
 
-Thanks for confirming.
+Yangbo Lu (7):
+  net: dsa: check tx timestamp request in core driver
+  net: dsa: no longer identify PTP packet in core driver
+  net: dsa: free skb->cb usage in core driver
+  net: dsa: no longer clone skb in core driver
+  docs: networking: timestamping: update for DSA switches
+  net: mscc: ocelot: convert to ocelot_port_txtstamp_request()
+  net: mscc: ocelot: support PTP Sync one-step timestamping
 
-Next time, please keep the CC list intact when replying so that everyone
-sees that you've tested it.
+ Documentation/networking/timestamping.rst     | 63 ++++++++------
+ .../net/dsa/hirschmann/hellcreek_hwtstamp.c   | 28 ++++---
+ .../net/dsa/hirschmann/hellcreek_hwtstamp.h   |  4 +-
+ drivers/net/dsa/mv88e6xxx/hwtstamp.c          | 26 ++++--
+ drivers/net/dsa/mv88e6xxx/hwtstamp.h          | 10 +--
+ drivers/net/dsa/ocelot/felix.c                | 19 +++--
+ drivers/net/dsa/sja1105/sja1105_main.c        |  2 +-
+ drivers/net/dsa/sja1105/sja1105_ptp.c         | 16 ++--
+ drivers/net/dsa/sja1105/sja1105_ptp.h         |  4 +-
+ drivers/net/ethernet/mscc/ocelot.c            | 83 +++++++++++++++++--
+ drivers/net/ethernet/mscc/ocelot_net.c        | 20 ++---
+ include/linux/dsa/sja1105.h                   |  3 +-
+ include/net/dsa.h                             | 18 +---
+ include/soc/mscc/ocelot.h                     | 21 ++++-
+ net/dsa/Kconfig                               |  2 +
+ net/dsa/slave.c                               | 23 +----
+ net/dsa/tag_ocelot.c                          | 27 +-----
+ net/dsa/tag_ocelot_8021q.c                    | 41 +++------
+ 18 files changed, 230 insertions(+), 180 deletions(-)
 
-Johan
+
+base-commit: 0ea1041bfa3aa2971f858edd9e05477c2d3d54a0
+-- 
+2.25.1
+
