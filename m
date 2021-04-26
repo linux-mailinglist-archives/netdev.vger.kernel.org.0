@@ -2,105 +2,120 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4221436B0F2
-	for <lists+netdev@lfdr.de>; Mon, 26 Apr 2021 11:46:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 98F7536B108
+	for <lists+netdev@lfdr.de>; Mon, 26 Apr 2021 11:49:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232799AbhDZJqn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 26 Apr 2021 05:46:43 -0400
-Received: from mail.kernel.org ([198.145.29.99]:60672 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232239AbhDZJqm (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 26 Apr 2021 05:46:42 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id D8E2A61075;
-        Mon, 26 Apr 2021 09:46:00 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1619430360;
-        bh=qpsdBN6ORDIHKKWXNLHLog5L3frURDHaOI1Eg49/jDw=;
-        h=From:To:Cc:Subject:Date:From;
-        b=eCvxwAUO+BFi7IJ3TozokehnYq5mw16uyk/RuXzPEWJtfDuOBqsbb47lfK5Mp5vNS
-         wI9AOTNYUvdvTk2+4MSVKuMsShA6vD3bNrprf7kgVI//ciAGLqpdXIztWeR3p5wsvO
-         LYIKbOiGoeC21CLg4KwAouroC2xWxIhyCON0sbHD5fe30fibuGPqaiOD9m4OamQsnq
-         rk0r14Y/ue8IS8JA4BkR9sbn4+Ftv7z0uhfmt+l62xOL6enmYR/dWms2bLUIFaG1Bt
-         58TroM3D+7u1HTrOHbZ3F2dhGZ4BXIUW8GHHNDmKp+S/OJ1gOkaqauD6Dp2Ba24y/e
-         aZzaUTbgITCUg==
-Received: from johan by xi.lan with local (Exim 4.93.0.4)
-        (envelope-from <johan@kernel.org>)
-        id 1laxog-0005t0-I6; Mon, 26 Apr 2021 11:46:11 +0200
-From:   Johan Hovold <johan@kernel.org>
-To:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-usb@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Johan Hovold <johan@kernel.org>,
-        stable@vger.kernel.org
-Subject: [PATCH net] net: hso: fix NULL-deref on tty registration failure
-Date:   Mon, 26 Apr 2021 11:45:42 +0200
-Message-Id: <20210426094542.22578-1-johan@kernel.org>
-X-Mailer: git-send-email 2.26.3
+        id S232890AbhDZJud (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 26 Apr 2021 05:50:33 -0400
+Received: from regular1.263xmail.com ([211.150.70.198]:48262 "EHLO
+        regular1.263xmail.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232239AbhDZJuc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 26 Apr 2021 05:50:32 -0400
+X-Greylist: delayed 357 seconds by postgrey-1.27 at vger.kernel.org; Mon, 26 Apr 2021 05:50:31 EDT
+Received: from localhost (unknown [192.168.167.69])
+        by regular1.263xmail.com (Postfix) with ESMTP id 1C056760;
+        Mon, 26 Apr 2021 17:49:49 +0800 (CST)
+X-MAIL-GRAY: 0
+X-MAIL-DELIVERY: 1
+X-ADDR-CHECKED4: 1
+X-ANTISPAM-LEVEL: 2
+X-SKE-CHECKED: 1
+X-ABS-CHECKED: 1
+Received: from [172.16.12.8] (unknown [58.22.7.114])
+        by smtp.263.net (postfix) whith ESMTP id P19994T140046592108288S1619430587182149_;
+        Mon, 26 Apr 2021 17:49:48 +0800 (CST)
+X-IP-DOMAINF: 1
+X-UNIQUE-TAG: <e95a8b415f5e16b8e0881a892c3347bd>
+X-RL-SENDER: david.wu@rock-chips.com
+X-SENDER: wdc@rock-chips.com
+X-LOGIN-NAME: david.wu@rock-chips.com
+X-FST-TO: kernel@collabora.com
+X-RCPT-COUNT: 13
+X-SENDER-IP: 58.22.7.114
+X-ATTACHMENT-NUM: 0
+X-System-Flag: 0
+Subject: Re: [PATCH 2/3] dt-bindings: net: dwmac: Add Rockchip DWMAC support
+To:     Ezequiel Garcia <ezequiel@collabora.com>, netdev@vger.kernel.org,
+        linux-rockchip@lists.infradead.org, devicetree@vger.kernel.org
+Cc:     Jose Abreu <joabreu@synopsys.com>,
+        Heiko Stuebner <heiko@sntech.de>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Peter Geis <pgwipeout@gmail.com>,
+        Kever Yang <kever.yang@rock-chips.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Johan Jonker <jbx6244@gmail.com>, kernel@collabora.com
+References: <20210426024118.18717-1-ezequiel@collabora.com>
+ <20210426024118.18717-2-ezequiel@collabora.com>
+From:   David Wu <david.wu@rock-chips.com>
+Message-ID: <c82d5147-3545-03d5-47cc-cc93161d3414@rock-chips.com>
+Date:   Mon, 26 Apr 2021 17:49:47 +0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
 MIME-Version: 1.0
+In-Reply-To: <20210426024118.18717-2-ezequiel@collabora.com>
+Content-Type: text/plain; charset=gbk; format=flowed
+Content-Language: en-US
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-If resource allocation and registration fail for a muxed tty device
-(e.g. if there are no more minor numbers) the driver should not try to
-deregister the never-registered tty.
+Hi Ezequiel,
 
-Fix up the error handling to avoid dereferencing a NULL pointer when
-attempting to remove the character device:
+Good work,  this is what I plan to do.
+Thank you.
 
-	BUG: kernel NULL pointer dereference, address: 0000000000000064
-	[...]
-	RIP: 0010:cdev_del+0x4/0x20
-	[...]
-	Call Trace:
-	 tty_unregister_device+0x34/0x50
-	 hso_probe+0x1d1/0x57e [hso]
+Reviewed-by: David Wu <david.wu@rock-chips.com>
 
-Fixes: 72dc1c096c70 ("HSO: add option hso driver")
-Cc: stable@vger.kernel.org	# 2.6.27
-Signed-off-by: Johan Hovold <johan@kernel.org>
----
- drivers/net/usb/hso.c | 12 +++++-------
- 1 file changed, 5 insertions(+), 7 deletions(-)
+ÔÚ 2021/4/26 ÉÏÎç10:41, Ezequiel Garcia Ð´µÀ:
+> Add Rockchip DWMAC controllers, which are based on snps,dwmac.
+> Some of the SoCs require up to eight clocks, so maxItems
+> for clocks and clock-names need to be increased.
+> 
+> Signed-off-by: Ezequiel Garcia <ezequiel@collabora.com>
+> ---
+>   .../devicetree/bindings/net/snps,dwmac.yaml         | 13 +++++++++++--
+>   1 file changed, 11 insertions(+), 2 deletions(-)
+> 
+> diff --git a/Documentation/devicetree/bindings/net/snps,dwmac.yaml b/Documentation/devicetree/bindings/net/snps,dwmac.yaml
+> index 0642b0f59491..2edd8bea993e 100644
+> --- a/Documentation/devicetree/bindings/net/snps,dwmac.yaml
+> +++ b/Documentation/devicetree/bindings/net/snps,dwmac.yaml
+> @@ -56,6 +56,15 @@ properties:
+>           - amlogic,meson8m2-dwmac
+>           - amlogic,meson-gxbb-dwmac
+>           - amlogic,meson-axg-dwmac
+> +        - rockchip,px30-gmac
+> +        - rockchip,rk3128-gmac
+> +        - rockchip,rk3228-gmac
+> +        - rockchip,rk3288-gmac
+> +        - rockchip,rk3328-gmac
+> +        - rockchip,rk3366-gmac
+> +        - rockchip,rk3368-gmac
+> +        - rockchip,rk3399-gmac
+> +        - rockchip,rv1108-gmac
+>           - snps,dwmac
+>           - snps,dwmac-3.50a
+>           - snps,dwmac-3.610
+> @@ -89,7 +98,7 @@ properties:
+>   
+>     clocks:
+>       minItems: 1
+> -    maxItems: 5
+> +    maxItems: 8
+>       additionalItems: true
+>       items:
+>         - description: GMAC main clock
+> @@ -101,7 +110,7 @@ properties:
+>   
+>     clock-names:
+>       minItems: 1
+> -    maxItems: 5
+> +    maxItems: 8
+>       additionalItems: true
+>       contains:
+>         enum:
+> 
 
-diff --git a/drivers/net/usb/hso.c b/drivers/net/usb/hso.c
-index cfad5b36bd8e..81ff54e9587f 100644
---- a/drivers/net/usb/hso.c
-+++ b/drivers/net/usb/hso.c
-@@ -2710,14 +2710,14 @@ struct hso_device *hso_create_mux_serial_device(struct usb_interface *interface,
- 
- 	serial = kzalloc(sizeof(*serial), GFP_KERNEL);
- 	if (!serial)
--		goto exit;
-+		goto err_free_dev;
- 
- 	hso_dev->port_data.dev_serial = serial;
- 	serial->parent = hso_dev;
- 
- 	if (hso_serial_common_create
- 	    (serial, 1, CTRL_URB_RX_SIZE, CTRL_URB_TX_SIZE))
--		goto exit;
-+		goto err_free_serial;
- 
- 	serial->tx_data_length--;
- 	serial->write_data = hso_mux_serial_write_data;
-@@ -2733,11 +2733,9 @@ struct hso_device *hso_create_mux_serial_device(struct usb_interface *interface,
- 	/* done, return it */
- 	return hso_dev;
- 
--exit:
--	if (serial) {
--		tty_unregister_device(tty_drv, serial->minor);
--		kfree(serial);
--	}
-+err_free_serial:
-+	kfree(serial);
-+err_free_dev:
- 	kfree(hso_dev);
- 	return NULL;
- 
--- 
-2.26.3
 
