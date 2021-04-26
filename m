@@ -2,151 +2,193 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 25AE736B760
-	for <lists+netdev@lfdr.de>; Mon, 26 Apr 2021 19:01:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5599036B767
+	for <lists+netdev@lfdr.de>; Mon, 26 Apr 2021 19:03:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234828AbhDZRCE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 26 Apr 2021 13:02:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52880 "EHLO
+        id S235026AbhDZRDx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 26 Apr 2021 13:03:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53300 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234657AbhDZRCB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 26 Apr 2021 13:02:01 -0400
-Received: from mail-oi1-x229.google.com (mail-oi1-x229.google.com [IPv6:2607:f8b0:4864:20::229])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 169F3C061574;
-        Mon, 26 Apr 2021 10:01:20 -0700 (PDT)
-Received: by mail-oi1-x229.google.com with SMTP id l17so25762322oil.11;
-        Mon, 26 Apr 2021 10:01:20 -0700 (PDT)
+        with ESMTP id S233736AbhDZRDw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 26 Apr 2021 13:03:52 -0400
+Received: from mail-yb1-xb2a.google.com (mail-yb1-xb2a.google.com [IPv6:2607:f8b0:4864:20::b2a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 261E6C061574;
+        Mon, 26 Apr 2021 10:03:11 -0700 (PDT)
+Received: by mail-yb1-xb2a.google.com with SMTP id i4so28177991ybe.2;
+        Mon, 26 Apr 2021 10:03:11 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=j0CZ5f6wGp7F2BPuLi3ZPaUQQSf8QtoA8UUqKFrhtPo=;
-        b=fIDGIXkC/AR2c1qyMesS0BIEzD4/RjgsX///v+jD5yPkyoInldgrSsmePd08i+Ou+3
-         Ph5eWqpH9QtCXehPtNiv+zlKYJCKHF7KBMMJUoxrm9QZ8zVrNiPXH3EgJDbRoxMURuFi
-         Ed1HmjQ6RDWAf8sxUlw+30YDqKGqljnxNyixv+Au433UilmtRiH/dm/RM1WqVK0E9SeB
-         f/lOGlTejNQAMqaqWFccRPlG7u+eJSIqWqqzzPPwut73E7l1wT87FA8OQZ7q05Q1s6GA
-         hjpspRPVzn5OjkDEj5ODkY6iN6B+YuYusu6EN2hkSGN5VTtqdl7QxkiQJyl+ZwD3Rt+t
-         uEPQ==
+        bh=xnz/euQGxswp6W51WkegySe2ZyjR6VaxNo6diO6hbGI=;
+        b=t1b7Sjkd/n5n6GtEhL+mndb+6p24rBsG3KynJR22NIe1eDr3prlQAZFzkJXLGRF/lR
+         nWMPiXxVxxaGNsaIqn2vWOK4J4mKNScP/q9iQTvPrgxZNWP0rYvfHdOI5TtJg/fhR0Ky
+         PIB9o6soyw+eQ02s71g18brHoPKeVPHq2n6htfMltM1bUiG4gC6PLl0HYt0oKEWEdeNp
+         Xh2CjdJ2WR/TGfP0oPDxRlgZI69RH/WcEtRiNI1ymWrLpKb+le2h9o2T86Ak4zcXwCFe
+         euw4wJ8NLjWxxD66PSyew9q02chJddlYdO3Hdg6fcUZy/kUZFr/DJPmW86mzDu79IIi2
+         QI0A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=j0CZ5f6wGp7F2BPuLi3ZPaUQQSf8QtoA8UUqKFrhtPo=;
-        b=n2gyo+YlDKPaz/uojOj6yFXNWyoJx5SXMQ3l/RMHe3LPNDP1gYl6oTqs9UGDb0Ycqd
-         3CqNKO7V/B5nASTeBVGA5hScZsZrI5waFK/Z9QBYVxn8A8YyC7aZMNwy/KhpIEuyUDQL
-         fjBbOW3rduPYJ2GJD15QGqfwTHf98HzBECpIADlqkMiMPcEnd2fHWlvEY6ZHldIueyIk
-         giv8rc3BMzBYQyVa8KBWtyRBlVkFZOTUUNWu0N4+saOCgxaBY8yWiHhPtL1AyySQvMHr
-         oJKtAhKyX/HzRcpalnSJbMo/ftCD9ZLEK1N/bcd7SZMir/rI7FFAQNhPDJxwgZnv8MPd
-         qTMA==
-X-Gm-Message-State: AOAM533GPCZEKY3ZpD8FNZTgREi59Vf/1+hJlAPSZAOdIDXQ7c4L7xyu
-        qB1QPujsB80t+6xqf2//AFNQnwZby0TJWPy1dST74PH4qBg=
-X-Google-Smtp-Source: ABdhPJwkvhRjStvD8uamF0Ub3gxwXUI3Htk0H30ZJBBPj+mR7J5kITKpciuIexqtFAFRKykpX044/ytqHaAs+bfTUfE=
-X-Received: by 2002:aca:3446:: with SMTP id b67mr12876471oia.136.1619456479316;
- Mon, 26 Apr 2021 10:01:19 -0700 (PDT)
+        bh=xnz/euQGxswp6W51WkegySe2ZyjR6VaxNo6diO6hbGI=;
+        b=hmGiU+uK92d80g0vLX0eiT4KjQNuINjWJ/z6L5x2e4KWe8iTp6AuuhCzU5sfsQt5eD
+         mfSUZ5F2y2nM8KGXLWpOMHJLKc4jjQ9wlIH0AyHQCrfiM1PS250FCGWPHfts/QcxmNUG
+         JjXLTV2fJodqiMsqEMLk2hawxoaGB26JLETlpJsKchP4/t4SPdJy1mj+DsPPIVYCjhTf
+         EUx85FmRI7hE6n4N9GE9gR5bjbpOykEKOnqX4moRwtBtJLJLILWjexCxN5PXxK8UvY+d
+         U9DFcYnB45fP5Q+xRMI5rtvYqpshIuhcJaXD41DaTtD0DcXWQHXXonwyrUMBwvhf6H9p
+         Hr4g==
+X-Gm-Message-State: AOAM531owC2jfhPXhod27PP4FvX1L/tQ6ym1fbElvf9s86LdowZQAWGi
+        9Z7M0Ve+g7Z3r8RIrUffodezuVCl2lKAvS0ia2Td5IeN
+X-Google-Smtp-Source: ABdhPJyUfhcDN7m2npEaon8lPRui+h0b73s0sp2Ep2xFtpfTqDJTdyrPxFNPZKK6rWC6vFkQiwVflX00d+jFGAQZwF8=
+X-Received: by 2002:a25:9942:: with SMTP id n2mr26815259ybo.230.1619456590427;
+ Mon, 26 Apr 2021 10:03:10 -0700 (PDT)
 MIME-Version: 1.0
-References: <1618749928154136@kroah.com> <CAPFHKzdKcVDDERr8pmd=65Tf=tWNh_bKar9OLQd0oS2YBVu80Q@mail.gmail.com>
- <YH1xw5s0Uu5i/cRT@kroah.com>
-In-Reply-To: <YH1xw5s0Uu5i/cRT@kroah.com>
-From:   Jonathon Reinhart <jonathon.reinhart@gmail.com>
-Date:   Mon, 26 Apr 2021 13:00:53 -0400
-Message-ID: <CAPFHKzfO1+Yw-0rvWSZA62caigjjN=vtbg2a7kCoSV-+pxotUw@mail.gmail.com>
-Subject: Re: Patch "net: Make tcp_allowed_congestion_control readonly in
- non-init netns" has been added to the 5.10-stable tree
-To:     "David S. Miller" <davem@davemloft.net>,
-        Linux Netdev List <netdev@vger.kernel.org>
-Cc:     stable-commits@vger.kernel.org, stable@vger.kernel.org,
-        Greg KH <gregkh@linuxfoundation.org>
+References: <20210423002646.35043-1-alexei.starovoitov@gmail.com> <20210423002646.35043-6-alexei.starovoitov@gmail.com>
+In-Reply-To: <20210423002646.35043-6-alexei.starovoitov@gmail.com>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Mon, 26 Apr 2021 10:02:59 -0700
+Message-ID: <CAEf4BzafXkmX5RJ+c+4h9ZXV6mvto=Shx3JWL1m_AkXc9pU_4g@mail.gmail.com>
+Subject: Re: [PATCH v2 bpf-next 05/16] selftests/bpf: Test for syscall program type
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Kernel Team <kernel-team@fb.com>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Apr 19, 2021 at 8:04 AM Greg KH <gregkh@linuxfoundation.org> wrote:
+On Thu, Apr 22, 2021 at 5:26 PM Alexei Starovoitov
+<alexei.starovoitov@gmail.com> wrote:
 >
-> On Sun, Apr 18, 2021 at 10:47:04AM -0400, Jonathon Reinhart wrote:
-> > On Sun, Apr 18, 2021 at 8:46 AM <gregkh@linuxfoundation.org> wrote:
-> > >
-> > >
-> > > This is a note to let you know that I've just added the patch titled
-> > >
-> > >     net: Make tcp_allowed_congestion_control readonly in non-init netns
-> > >
-> > > to the 5.10-stable tree which can be found at:
-> > >     http://www.kernel.org/git/?p=linux/kernel/git/stable/stable-queue.git;a=summary
-> > >
-> > > The filename of the patch is:
-> > >      net-make-tcp_allowed_congestion_control-readonly-in-non-init-netns.patch
-> > > and it can be found in the queue-5.10 subdirectory.
-> > >
-> > > If you, or anyone else, feels it should not be added to the stable tree,
-> > > please let <stable@vger.kernel.org> know about it.
-> > >
-> > >
-> > > From 97684f0970f6e112926de631fdd98d9693c7e5c1 Mon Sep 17 00:00:00 2001
-> > > From: Jonathon Reinhart <jonathon.reinhart@gmail.com>
-> > > Date: Tue, 13 Apr 2021 03:08:48 -0400
-> > > Subject: net: Make tcp_allowed_congestion_control readonly in non-init netns
-> > >
-> > > From: Jonathon Reinhart <jonathon.reinhart@gmail.com>
-> > >
-> > > commit 97684f0970f6e112926de631fdd98d9693c7e5c1 upstream.
-> >
-> > Hi Greg,
-> >
-> > Thanks for picking this into the stable trees.
-> >
-> > There's an earlier, somewhat related fix, which is only on net-next:
-> >
-> > 2671fa4dc010 ("netfilter: conntrack: Make global sysctls readonly in
-> > non-init netns")
-> >
-> > That probably could have been on "net", but it followed this other
-> > commit which was not strictly a bug-fix. It's additional logic to
-> > detect bugs like the former:
-> >
-> > 31c4d2f160eb ("net: Ensure net namespace isolation of sysctls")
-> >
-> > Here's the series on Patchwork:
-> > https://patchwork.kernel.org/project/netdevbpf/cover/20210412042453.32168-1-Jonathon.Reinhart@gmail.com/
-> >
-> > I'm not yet sure where the threshold is for inclusion into "net" or
-> > "stable". Could you please take a look and see if the first (or both)
-> > of these should be included into the stable trees? If so, please feel
-> > free to pick them yourself, or let me know which patches I should send
-> > to "stable".
+> From: Alexei Starovoitov <ast@kernel.org>
 >
-> I have to wait until a patch is in Linus's tree before we can add it to
-> the stable queue, unless there is some big reason why this is not the
-> case.
+> bpf_prog_type_syscall is a program that creates a bpf map,
+> updates it, and loads another bpf program using bpf_sys_bpf() helper.
 >
-> For something like this, how about just waiting until it hits Linus's
-> tree and then email stable@vger.kernel.org saying, "please apply git
-> commit <SHA1> to the stable trees." and we can do so then.
+> Signed-off-by: Alexei Starovoitov <ast@kernel.org>
+> ---
+>  tools/testing/selftests/bpf/Makefile          |  1 +
+>  .../selftests/bpf/prog_tests/syscall.c        | 53 ++++++++++++++
+>  tools/testing/selftests/bpf/progs/syscall.c   | 73 +++++++++++++++++++
+>  3 files changed, 127 insertions(+)
+>  create mode 100644 tools/testing/selftests/bpf/prog_tests/syscall.c
+>  create mode 100644 tools/testing/selftests/bpf/progs/syscall.c
 >
-> thanks,
+> diff --git a/tools/testing/selftests/bpf/Makefile b/tools/testing/selftests/bpf/Makefile
+> index c5bcdb3d4b12..9fdfdbc61857 100644
+> --- a/tools/testing/selftests/bpf/Makefile
+> +++ b/tools/testing/selftests/bpf/Makefile
+> @@ -278,6 +278,7 @@ MENDIAN=$(if $(IS_LITTLE_ENDIAN),-mlittle-endian,-mbig-endian)
+>  CLANG_SYS_INCLUDES = $(call get_sys_includes,$(CLANG))
+>  BPF_CFLAGS = -g -D__TARGET_ARCH_$(SRCARCH) $(MENDIAN)                  \
+>              -I$(INCLUDE_DIR) -I$(CURDIR) -I$(APIDIR)                   \
+> +            -I$(TOOLSINCDIR) \
+
+is this for filter.h? also, please align \ with the previous line
+
+
+>              -I$(abspath $(OUTPUT)/../usr/include)
 >
-> greg k-h
+>  CLANG_CFLAGS = $(CLANG_SYS_INCLUDES) \
+> diff --git a/tools/testing/selftests/bpf/prog_tests/syscall.c b/tools/testing/selftests/bpf/prog_tests/syscall.c
+> new file mode 100644
+> index 000000000000..e550e36bb5da
+> --- /dev/null
+> +++ b/tools/testing/selftests/bpf/prog_tests/syscall.c
+> @@ -0,0 +1,53 @@
+> +// SPDX-License-Identifier: GPL-2.0
+> +/* Copyright (c) 2021 Facebook */
+> +#include <test_progs.h>
+> +#include "syscall.skel.h"
+> +
+> +struct args {
+> +       __u64 log_buf;
+> +       __u32 log_size;
+> +       int max_entries;
+> +       int map_fd;
+> +       int prog_fd;
+> +};
+> +
+> +void test_syscall(void)
+> +{
+> +       static char verifier_log[8192];
+> +       struct args ctx = {
+> +               .max_entries = 1024,
+> +               .log_buf = (uintptr_t) verifier_log,
+> +               .log_size = sizeof(verifier_log),
+> +       };
+> +       struct bpf_prog_test_run_attr tattr = {
+> +               .ctx_in = &ctx,
+> +               .ctx_size_in = sizeof(ctx),
+> +       };
+> +       struct syscall *skel = NULL;
+> +       __u64 key = 12, value = 0;
+> +       __u32 duration = 0;
+> +       int err;
+> +
+> +       skel = syscall__open_and_load();
+> +       if (CHECK(!skel, "skel_load", "syscall skeleton failed\n"))
+> +               goto cleanup;
+> +
+> +       tattr.prog_fd = bpf_program__fd(skel->progs.bpf_prog);
+> +       err = bpf_prog_test_run_xattr(&tattr);
+> +       if (CHECK(err || tattr.retval != 1, "test_run sys_bpf",
+> +                 "err %d errno %d retval %d duration %d\n",
+> +                 err, errno, tattr.retval, tattr.duration))
+> +               goto cleanup;
+> +
+> +       CHECK(ctx.map_fd <= 0, "map_fd", "fd = %d\n", ctx.map_fd);
+> +       CHECK(ctx.prog_fd <= 0, "prog_fd", "fd = %d\n", ctx.prog_fd);
 
-Dave,
+please use ASSERT_xxx() macros everywhere. I've just added
+ASSERT_GT(), so once that patch set lands you should have all the
+variants you need.
 
-I originally submitted 2671fa4dc010 ("netfilter: conntrack: Make
-global sysctls readonly in non-init netns") to next-next as part of
-the "Ensuring net sysctl isolation" series. However, I think that may
-have been a mistake on my part, and that commit should have been a
-bugfix sent to "net". (I submitted it to "net-next" because the other
-commit in that series 31c4d2f160eb ("net: Ensure net namespace
-isolation of sysctls") was more of a feature than a bugfix.)
+> +       CHECK(memcmp(verifier_log, "processed", sizeof("processed") - 1) != 0,
+> +             "verifier_log", "%s\n", verifier_log);
+> +
+> +       err = bpf_map_lookup_elem(ctx.map_fd, &key, &value);
+> +       CHECK(err, "map_lookup", "map_lookup failed\n");
+> +       CHECK(value != 34, "invalid_value",
+> +             "got value %llu expected %u\n", value, 34);
+> +cleanup:
+> +       syscall__destroy(skel);
+> +}
+> diff --git a/tools/testing/selftests/bpf/progs/syscall.c b/tools/testing/selftests/bpf/progs/syscall.c
+> new file mode 100644
+> index 000000000000..01476f88e45f
+> --- /dev/null
+> +++ b/tools/testing/selftests/bpf/progs/syscall.c
+> @@ -0,0 +1,73 @@
+> +// SPDX-License-Identifier: GPL-2.0
+> +/* Copyright (c) 2021 Facebook */
+> +#include <linux/stddef.h>
+> +#include <linux/bpf.h>
+> +#include <bpf/bpf_helpers.h>
+> +#include <bpf/bpf_tracing.h>
+> +#include <../../tools/include/linux/filter.h>
 
-I sent the other bugfix "net: Make tcp_allowed_congestion_control
-readonly in non-init netns" to "net-next" but you made the right call
-and applied to "net"; thanks.
+with TOOLSINCDIR shouldn't this be just <linux/fiter.h>?
 
-From my perspective, one of the two bugs I discovered is now fixed on
-Linus' tree, but the other is on "net-next". Do you think we should
-pick that into "net"? Personally, I'd really like to see both of these
-fixes in the 5.10 / 5.11 stable trees so Debian 11 can be netns-safe
-out of the box, but I understand there may be bigger fish to fry from
-your perspective.
+> +
+> +volatile const int workaround = 1;
 
-Thanks,
-Jonathon Reinhart
+not needed anymore?
+
+> +
+> +char _license[] SEC("license") = "GPL";
+> +
+> +struct args {
+> +       __u64 log_buf;
+> +       __u32 log_size;
+> +       int max_entries;
+> +       int map_fd;
+> +       int prog_fd;
+> +};
+> +
+
+[...]
