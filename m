@@ -2,69 +2,69 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7FE4236AA5A
-	for <lists+netdev@lfdr.de>; Mon, 26 Apr 2021 03:30:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B88DA36AA5E
+	for <lists+netdev@lfdr.de>; Mon, 26 Apr 2021 03:30:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231696AbhDZBbC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 25 Apr 2021 21:31:02 -0400
-Received: from mail.kernel.org ([198.145.29.99]:60330 "EHLO mail.kernel.org"
+        id S231720AbhDZBbF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 25 Apr 2021 21:31:05 -0400
+Received: from mail.kernel.org ([198.145.29.99]:60344 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231652AbhDZBa4 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S231655AbhDZBa4 (ORCPT <rfc822;netdev@vger.kernel.org>);
         Sun, 25 Apr 2021 21:30:56 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id F3BAF611F0;
-        Mon, 26 Apr 2021 01:30:15 +0000 (UTC)
+Received: by mail.kernel.org (Postfix) with ESMTPS id 182EC61354;
+        Mon, 26 Apr 2021 01:30:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1619400616;
-        bh=KWx/DXiplZ5N7iCWuJZQw6xMpJL4XWPzxB13YicR0ds=;
+        bh=HSjejELuLAnios+2Vt6fh6poFSknYMXQcK5WMIfv1UU=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=qRp6FOuYul3WstH7Z51X6aTGHMkJu0yzhGSm1iYHvyRRw0gcFNooVWsh2M87adCyJ
-         XJAHfCgaiH84GGXn2ogmr4YBf019MVLx+ie4Li7E3/H4EJ0iWbTj34lqQBQafVnXl3
-         ZpU7vYn86KrTK0mRIqxZgijTNY+DZEmtjVzgdxdPJjyIeNAGpM2m4HsuA96LNdl9b7
-         jLlQGiqYnmwppSzJ0Xl13Sb7XjMxvYSLuQxS6wg9LR6638hsqMJ8IRPD0IjGpAczef
-         yvvcqvKj0YVFSkRPbDlVOIW8G7g92F7yDr4ayPQPEBNCSVQ0LWtprf+pV24bghYlpY
-         CM1KkOax4eA0A==
+        b=fAozgIdBiU7Uc22IZ+UwQXQBAxPCcfrp1eIl71ahG2whJB8qy4GNF5KOEYxwfe5c2
+         EATPBG4deNLAul4Iq4/awq6WkgL8ODZjafBqLKBAZ43adQFiymJDxnrL4BkJ16k+dS
+         D5TPhUrSyvMRyZepvMA6Ee9KrMnA8l+mDOKVcSRK/IMzb+Syv1rHnQv317juumS/rZ
+         eIGeL8Tj2Nnt5S7gmSRo7HBcKpzjXQftwsdThF7oEtT07zkfsQNzh+KntLz2C2TtWV
+         HShpgI061pj+j0PLVx0JOr1v+YJsTIHc0SOzUwXwC3ccaJlO0l1O+yH5LvWwuIqAcL
+         51PjwMv3q9ZEw==
 Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id EE1E860CE0;
-        Mon, 26 Apr 2021 01:30:15 +0000 (UTC)
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 0D0B160CE2;
+        Mon, 26 Apr 2021 01:30:16 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH 1/3 net-next v4] net: ethernet: ixp4xx: Add DT bindings
+Subject: Re: [PATCH net-next][REPOST] hv_netvsc: Make netvsc/VF binding check both
+ MAC and serial number
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <161940061597.7794.15882879498463210620.git-patchwork-notify@kernel.org>
-Date:   Mon, 26 Apr 2021 01:30:15 +0000
-References: <20210425003038.2937498-1-linus.walleij@linaro.org>
-In-Reply-To: <20210425003038.2937498-1-linus.walleij@linaro.org>
-To:     Linus Walleij <linus.walleij@linaro.org>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, andrew@lunn.ch,
-        hkallweit1@gmail.com, linux@armlinux.org.uk, wigyori@uid0.hu,
-        rayknight@me.com, devicetree@vger.kernel.org
+Message-Id: <161940061604.7794.9498613769256285295.git-patchwork-notify@kernel.org>
+Date:   Mon, 26 Apr 2021 01:30:16 +0000
+References: <20210424011235.18721-1-decui@microsoft.com>
+In-Reply-To: <20210424011235.18721-1-decui@microsoft.com>
+To:     Dexuan Cui <decui@microsoft.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, kys@microsoft.com,
+        haiyangz@microsoft.com, stephen@networkplumber.org,
+        sthemmin@microsoft.com, wei.liu@kernel.org, liuwe@microsoft.com,
+        netdev@vger.kernel.org, leon@kernel.org, andrew@lunn.ch,
+        bernd@petrovitsch.priv.at, rdunlap@infradead.org,
+        shacharr@microsoft.com, linux-kernel@vger.kernel.org,
+        linux-hyperv@vger.kernel.org, Joseph.Salisbury@microsoft.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 Hello:
 
-This series was applied to netdev/net-next.git (refs/heads/master):
+This patch was applied to netdev/net-next.git (refs/heads/master):
 
-On Sun, 25 Apr 2021 02:30:36 +0200 you wrote:
-> This adds device tree bindings for the IXP4xx ethernet
-> controller with optional MDIO bridge.
+On Fri, 23 Apr 2021 18:12:35 -0700 you wrote:
+> Currently the netvsc/VF binding logic only checks the PCI serial number.
 > 
-> Cc: Zoltan HERPAI <wigyori@uid0.hu>
-> Cc: Raylynn Knight <rayknight@me.com>
-> Cc: devicetree@vger.kernel.org
-> Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
+> The Microsoft Azure Network Adapter (MANA) supports multiple net_device
+> interfaces (each such interface is called a "vPort", and has its unique
+> MAC address) which are backed by the same VF PCI device, so the binding
+> logic should check both the MAC address and the PCI serial number.
 > 
 > [...]
 
 Here is the summary with links:
-  - [1/3,net-next,v4] net: ethernet: ixp4xx: Add DT bindings
-    https://git.kernel.org/netdev/net-next/c/48ac0b5805dd
-  - [2/3,net-next,v4] net: ethernet: ixp4xx: Retire ancient phy retrieveal
-    https://git.kernel.org/netdev/net-next/c/3e8047a98553
-  - [3/3,net-next,v4] net: ethernet: ixp4xx: Support device tree probing
-    https://git.kernel.org/netdev/net-next/c/95aafe911db6
+  - [net-next,REPOST] hv_netvsc: Make netvsc/VF binding check both MAC and serial number
+    https://git.kernel.org/netdev/net-next/c/64ff412ad41f
 
 You are awesome, thank you!
 --
