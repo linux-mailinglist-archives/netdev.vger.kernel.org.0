@@ -2,61 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2B10E36B0B3
-	for <lists+netdev@lfdr.de>; Mon, 26 Apr 2021 11:34:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D54AE36B0BB
+	for <lists+netdev@lfdr.de>; Mon, 26 Apr 2021 11:35:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232601AbhDZJed (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 26 Apr 2021 05:34:33 -0400
-Received: from out30-54.freemail.mail.aliyun.com ([115.124.30.54]:53924 "EHLO
-        out30-54.freemail.mail.aliyun.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S232542AbhDZJeb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 26 Apr 2021 05:34:31 -0400
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R121e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04395;MF=yang.lee@linux.alibaba.com;NM=1;PH=DS;RN=8;SR=0;TI=SMTPD_---0UWpMjkG_1619429625;
-Received: from j63c13417.sqa.eu95.tbsite.net(mailfrom:yang.lee@linux.alibaba.com fp:SMTPD_---0UWpMjkG_1619429625)
-          by smtp.aliyun-inc.com(127.0.0.1);
-          Mon, 26 Apr 2021 17:33:48 +0800
-From:   Yang Li <yang.lee@linux.alibaba.com>
-To:     j.vosburgh@gmail.com
-Cc:     vfalico@gmail.com, andy@greyhouse.net, davem@davemloft.net,
-        kuba@kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Yang Li <yang.lee@linux.alibaba.com>
-Subject: [PATCH] bonding/alb: return -ENOMEM when kmalloc failed
-Date:   Mon, 26 Apr 2021 17:33:40 +0800
-Message-Id: <1619429620-52948-1-git-send-email-yang.lee@linux.alibaba.com>
-X-Mailer: git-send-email 1.8.3.1
+        id S232700AbhDZJgS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 26 Apr 2021 05:36:18 -0400
+Received: from mail.kernel.org ([198.145.29.99]:55086 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S232685AbhDZJgR (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 26 Apr 2021 05:36:17 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id D7EF46103E;
+        Mon, 26 Apr 2021 09:35:35 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1619429735;
+        bh=bLpWGYOQ2/M+ci5Sjuq25051I+IODYqeokzOZ36nF9o=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=ELRro1aqNRHwkv3KvqoNQ0Rl3kdWm1zeHFWfKZE/H7+mNlU5SwEghQ1xYhwZ+/eOA
+         HYDFfGeY5F5VBxvyMppJrxg11d/jo9T6Q91CEyOKSfIGtUMh08bIadA6ryO7AFMRa0
+         RKJnBILHgbUg64CjoqoTgoS/lTF2ZNuM/fN3mABK1BqoAMM8TM0sIhJmqaxc+frkoT
+         ZGhq6gntykkgXryFV6+2StcDX//W4x02FczsLjHnzID4r+rn6VHSolBeybt93RGD3T
+         BHCWEecm+AL9UXBvlenkpQOJlAfqYGE8lDg7lLbHhFYWMXMJWa4gfzx+3hGpKwtGGL
+         gOyymuXHDar6w==
+Received: from johan by xi.lan with local (Exim 4.93.0.4)
+        (envelope-from <johan@kernel.org>)
+        id 1laxec-00045S-7F; Mon, 26 Apr 2021 11:35:46 +0200
+Date:   Mon, 26 Apr 2021 11:35:46 +0200
+From:   Johan Hovold <johan@kernel.org>
+To:     Leonardo Antoniazzi <leoanto@aruba.it>
+Cc:     linux-usb@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Anirudh Rayabharam <mail@anirudhrb.com>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] net: hso: fix NULL-deref on disconnect regression
+Message-ID: <YIaJcgmiJFERvbEF@hovoldconsulting.com>
+References: <20210426081149.10498-1-johan@kernel.org>
+ <20210426112911.fb3593c3a9ecbabf98a13313@aruba.it>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210426112911.fb3593c3a9ecbabf98a13313@aruba.it>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The driver is using -1 instead of the -ENOMEM defined macro to
-specify that a buffer allocation failed. Using the correct error
-code is more intuitive.
+On Mon, Apr 26, 2021 at 11:29:11AM +0200, Leonardo Antoniazzi wrote:
+> On Mon, 26 Apr 2021 10:11:49 +0200
+> Johan Hovold <johan@kernel.org> wrote:
+> 
+> > Commit 8a12f8836145 ("net: hso: fix null-ptr-deref during tty device
+> > unregistration") fixed the racy minor allocation reported by syzbot, but
+> > introduced an unconditional NULL-pointer dereference on every disconnect
+> > instead.
+> > 
+> > Specifically, the serial device table must no longer be accessed after
+> > the minor has been released by hso_serial_tty_unregister().
+> > 
+> > Fixes: 8a12f8836145 ("net: hso: fix null-ptr-deref during tty device unregistration")
+> > Cc: stable@vger.kernel.org
+> > Cc: Anirudh Rayabharam <mail@anirudhrb.com>
+> > Reported-by: Leonardo Antoniazzi <leoanto@aruba.it>
+> > Signed-off-by: Johan Hovold <johan@kernel.org>
+> > ---
 
-Smatch tool warning:
-drivers/net/bonding/bond_alb.c:850 rlb_initialize() warn: returning -1
-instead of -ENOMEM is sloppy
+> the patch fix the problem
 
-No functional change, just more standardized.
+Thanks for confirming.
 
-Reported-by: Abaci Robot <abaci@linux.alibaba.com>
-Signed-off-by: Yang Li <yang.lee@linux.alibaba.com>
----
- drivers/net/bonding/bond_alb.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Next time, please keep the CC list intact when replying so that everyone
+sees that you've tested it.
 
-diff --git a/drivers/net/bonding/bond_alb.c b/drivers/net/bonding/bond_alb.c
-index c3091e0..dad5383 100644
---- a/drivers/net/bonding/bond_alb.c
-+++ b/drivers/net/bonding/bond_alb.c
-@@ -847,7 +847,7 @@ static int rlb_initialize(struct bonding *bond)
- 
- 	new_hashtbl = kmalloc(size, GFP_KERNEL);
- 	if (!new_hashtbl)
--		return -1;
-+		return -ENOMEM;
- 
- 	spin_lock_bh(&bond->mode_lock);
- 
--- 
-1.8.3.1
-
+Johan
