@@ -2,110 +2,166 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1AF1B36BBED
-	for <lists+netdev@lfdr.de>; Tue, 27 Apr 2021 01:05:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 49CCD36BBF8
+	for <lists+netdev@lfdr.de>; Tue, 27 Apr 2021 01:11:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234550AbhDZXGN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 26 Apr 2021 19:06:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48674 "EHLO
+        id S233919AbhDZXMS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 26 Apr 2021 19:12:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49984 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232022AbhDZXGM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 26 Apr 2021 19:06:12 -0400
-Received: from mail-lf1-x12e.google.com (mail-lf1-x12e.google.com [IPv6:2a00:1450:4864:20::12e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B327DC061574;
-        Mon, 26 Apr 2021 16:05:29 -0700 (PDT)
-Received: by mail-lf1-x12e.google.com with SMTP id 12so90506070lfq.13;
-        Mon, 26 Apr 2021 16:05:29 -0700 (PDT)
+        with ESMTP id S232022AbhDZXMR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 26 Apr 2021 19:12:17 -0400
+Received: from mail-yb1-xb33.google.com (mail-yb1-xb33.google.com [IPv6:2607:f8b0:4864:20::b33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7BA07C061574;
+        Mon, 26 Apr 2021 16:11:35 -0700 (PDT)
+Received: by mail-yb1-xb33.google.com with SMTP id 130so23190711ybd.10;
+        Mon, 26 Apr 2021 16:11:35 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=BPMH6qNaKQjMxsNZAGHPh/aPPkLS9VEfERR1tAOwa90=;
-        b=HidwbhW0uz2cWvkJRBxcwFH5R6NwBjOZd5gxDgtJeuSZP3iGwinU2fzECW2NVZhONv
-         lZh5tb62flYTAeV2zzNK8znTezdyo1Cw3Qyp5WMfj7cG0+zmTKAlO0A0YvyxuoLO+ZyJ
-         85uI9+6JDluZXdQ7lUADm7Rj6RQ3gIWyzy1Z9/bg9IzAN6hOxuoXYGziqxPnYcLNDqRg
-         eC069t++GMr20DAFADJvqi11s4tBZ3/9B59Hv5FlVYIgY5uFwsKdiNyZ66eRO/3ZMnDo
-         Q4Kg6Ceb5ajR7rGTuaDVcxrJPSFXD/d+nbl/azeO8pgADSFZskc+bCBDkx6/mNtoG49R
-         SaNw==
+        bh=CPYnxk6L4FHxs/fWVyMKAn+lpl/tH2wnXHBMgeYKd/A=;
+        b=Z7yZfeG48GTsv3tCFxLE8hSu798CTwjySsCGZXBSDDO9uKg+h9G4LYGcAPwFc+XVNl
+         +iGw7/4GjwGhp1qNIMABgpQAWwigrMrioeQVkbzqyuT9AUes3AM3n9cWwNt6YWjNimIY
+         s7u7OXn2WgNx1bqGmjLIYH8rsBERWKRc2ntD32ka5aRMEsAToKyPN5xIWGvqxFbMUhTT
+         zJfkupwcni1O33GMsrweMOGeTQjm/kI4irt+uOttrOs3tV/FUxEeKXtWbf8yuAv1lMmO
+         Fl5Ie/cqkcG5xeMtT/WwVk0OqBCVWV+kzYGlViVnJyAvIt4++AuQs4eOsC7Jbua/mNsI
+         PszA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=BPMH6qNaKQjMxsNZAGHPh/aPPkLS9VEfERR1tAOwa90=;
-        b=DR2Rnkq2KIZFbJ7Rtqcj1106lLr5oETub66N0ai6zBt5IVnrXk/HFbb1npqe362blI
-         qoi7cyCZK4cAcLUhzHj+ceYM0/9gZV8q1DeQB7TnEgqXXPLfRE8nK2fBDYYxRRnlduFX
-         OHe77aocmSucJGkAXUD9oO5Y4iyw8kVPps8mUp59QPA0cK1V+9qyamK4gj9/vHUsKAyG
-         nRq6WKOu6CB6QqpBiIoDUqB5Zl6OsOI05msmrwqBHtWTZircNHAGf7/1X30HDLvOTOqn
-         Zqhm72B1hSW9jGIvo+alIxPOKjwjiheRD2dcto8R1lLzbs9dOZC8nYoOv8+Z83tvp4We
-         xeiQ==
-X-Gm-Message-State: AOAM532sgn7SjhJxgZuJEhN99dZ/rn84Rafl/0JGrn0XM1XyvG+mkzck
-        3bpspq6OLKr6WMhde2tzU4IreuazgteYg0ChSWyjBmmh
-X-Google-Smtp-Source: ABdhPJzfuFjO9Q2MasxXjn/Wu2vRoWyG8OV04TwpXB4PVnm/cu+MIqWbsCkoNbOGy0/aUpXd0oDXCYNa/+RiHvTgnGQ=
-X-Received: by 2002:ac2:510d:: with SMTP id q13mr14810246lfb.75.1619478328130;
- Mon, 26 Apr 2021 16:05:28 -0700 (PDT)
+        bh=CPYnxk6L4FHxs/fWVyMKAn+lpl/tH2wnXHBMgeYKd/A=;
+        b=Ja6URyf3hhyuk1IoHr4+ZfOK1kzC0cjB9q00lpJURUcrUhodAaIqE4lOPbgHp+Z66P
+         jKUv6xr9izSS+XE4MUtUMEaxj3Zt9mkJUIAlaxiOi2+2CusLKC8/s1GmzD88Wv6kv8kO
+         s1j9Ml/NKZi8qELh3P6JfLjigFLQIJ7d0sh8Q5LTJc6tyFCfvvSq/7l0b6BB3NOkSVqT
+         hKgcLaFXF/Iw7ha//dvdGZzj51pLuanq+61Bz3oA9RelQRpobarWn/t+erhspmyYFfjO
+         UNnaIa2yMayp+ObCGK7nr5rCfihXb+W60uUfab4r0oum6OEqVSEHhepkbJhxygEGEh3d
+         jLzA==
+X-Gm-Message-State: AOAM530fBLW0VpGsFS1l3vSfKwasfxjxIhb3GjHJZy0Cz/3TwbeyfsXy
+        u2ZHMYhJ/8hVLYujQ9IUfOWJN8kt/lwAm+pKTgFB3PgB
+X-Google-Smtp-Source: ABdhPJz/wVA1V9cjT+nfmrGcwlQwq/MB+CbcRlBEPDC6LTsNXIHrHVUM01PfpucxLSmW47lW2yRdfYFz+vHJsnKnw98=
+X-Received: by 2002:a25:2441:: with SMTP id k62mr27542430ybk.347.1619478694789;
+ Mon, 26 Apr 2021 16:11:34 -0700 (PDT)
 MIME-Version: 1.0
-References: <20210401042635.19768-1-xiyou.wangcong@gmail.com>
- <20210402192823.bqwgipmky3xsucs5@ast-mbp> <CAM_iQpUfv7c19zFN1Y5-cSUiVwpk0bmtBMSxZoELgDOFCQ=qAw@mail.gmail.com>
- <20210402234500.by3wigegeluy5w7j@ast-mbp> <CAM_iQpWf2aYbY=tKejb=nx7LWBLo1woTp-n4wOLhkUuDCz8u-Q@mail.gmail.com>
- <20210412230151.763nqvaadrrg77kd@ast-mbp.dhcp.thefacebook.com>
- <CAM_iQpWePmmpr0RKqCrQ=NPiGrq2Tx9OU9y3e4CTzFjvh5t47w@mail.gmail.com>
- <CAADnVQLsmULxJYq9rHS4xyg=VAUeexJTh35vTWTVgjeqwX4D6g@mail.gmail.com> <CAM_iQpVtxgZNeqh4_Pqftc3D163JnRvP3AZRuFrYNeyWLgVBVA@mail.gmail.com>
-In-Reply-To: <CAM_iQpVtxgZNeqh4_Pqftc3D163JnRvP3AZRuFrYNeyWLgVBVA@mail.gmail.com>
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Mon, 26 Apr 2021 16:05:16 -0700
-Message-ID: <CAADnVQLFehCeQRbwEQ9VM-=Y3V3es2Ze8gFPs6cZHwNH0Ct7vw@mail.gmail.com>
-Subject: Re: [RFC Patch bpf-next] bpf: introduce bpf timer
-To:     Cong Wang <xiyou.wangcong@gmail.com>
-Cc:     Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>,
-        Xiongchun Duan <duanxiongchun@bytedance.com>,
-        Dongdong Wang <wangdongdong.6@bytedance.com>,
-        Muchun Song <songmuchun@bytedance.com>,
-        Cong Wang <cong.wang@bytedance.com>,
-        Alexei Starovoitov <ast@kernel.org>,
+References: <20210423185357.1992756-3-andrii@kernel.org> <2b398ad6-31be-8997-4115-851d79f2d0d2@fb.com>
+ <CAEf4BzYDiuh+OLcRKfcZDSL6esu6dK8js8pudHKvtMvAxS1=WQ@mail.gmail.com>
+ <065e8768-b066-185f-48f9-7ca8f15a2547@fb.com> <CAADnVQ+h9eS0P9Jb0QZQ374WxNSF=jhFAiBV7czqhnJxV51m6A@mail.gmail.com>
+ <CAEf4BzadCR+QFy4UY8NSVFjGJF4CszhjjZ48XeeqrfX3aYTnkA@mail.gmail.com>
+ <CAADnVQKo+efxMvgrqYqVvUEgiz_GXgBVOt4ddPTw_mLuvr2HUw@mail.gmail.com>
+ <CAEf4BzZifOFHr4gozUuSFTh7rTWu2cE_-L4H1shLV5OKyQ92uw@mail.gmail.com>
+ <CAADnVQ+h78QijAjbkNqAWn+TAFxrd6vE=mXqWRcy815hkTFvOw@mail.gmail.com>
+ <CAEf4BzZOmCgmbYDUGA-s5AF6XJFkT1xKinY3Jax3Zm2OLNmguA@mail.gmail.com> <20210426223449.5njjmcjpu63chqbb@ast-mbp.dhcp.thefacebook.com>
+In-Reply-To: <20210426223449.5njjmcjpu63chqbb@ast-mbp.dhcp.thefacebook.com>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Mon, 26 Apr 2021 16:11:23 -0700
+Message-ID: <CAEf4BzYZX9YJcoragK20cvQvr_tPTWYBQSRh7diKc1KoCtu4Dg@mail.gmail.com>
+Subject: Re: [PATCH v2 bpf-next 2/6] libbpf: rename static variables during linking
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     Yonghong Song <yhs@fb.com>, Andrii Nakryiko <andrii@kernel.org>,
+        bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@fb.com>,
         Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Pedro Tammela <pctammela@mojatatu.com>,
-        Jamal Hadi Salim <jhs@mojatatu.com>
+        Kernel Team <kernel-team@fb.com>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Apr 26, 2021 at 4:00 PM Cong Wang <xiyou.wangcong@gmail.com> wrote:
+On Mon, Apr 26, 2021 at 3:34 PM Alexei Starovoitov
+<alexei.starovoitov@gmail.com> wrote:
 >
-> Hi, Alexei
->
-> On Wed, Apr 14, 2021 at 9:25 PM Alexei Starovoitov
-> <alexei.starovoitov@gmail.com> wrote:
+> On Mon, Apr 26, 2021 at 08:44:04AM -0700, Andrii Nakryiko wrote:
 > >
-> > On Wed, Apr 14, 2021 at 9:02 PM Cong Wang <xiyou.wangcong@gmail.com> wrote:
 > > >
-> > > Then how do you prevent prog being unloaded when the timer callback
-> > > is still active?
+> > > > Static maps are slightly different, because we use SEC() which marks
+> > > > them as used, so they should always be present.
+> > >
+> > > yes. The used attribute makes the compiler keep the data,
+> > > but it can still inline it and lose the reference in the .text.
 > >
-> > As I said earlier:
-> > "
-> > If prog refers such hmap as above during prog free the kernel does
-> > for_each_map_elem {if (elem->opaque) del_timer().}
-> > "
+> > At least if the map is actually used with helpers (e.g.,
+> > bpf_map_lookup_elem(&map, ...)) it would be invalid for compiler to do
+> > anything crazy with that map reference, because compiler has no
+> > visibility into what opaque helpers do with that memory. So I don't
+> > think it can alias multiple maps, for instance. So I think static maps
+> > should be fine.
 >
-> I have discussed this with my colleagues, sharing timers among different
-> eBPF programs is a must-have feature for conntrack.
+> Yeah. That makes sense.
 >
-> For conntrack, we need to attach two eBPF programs, one on egress and
-> one on ingress. They share a conntrack table (an eBPF map), and no matter
-> we use a per-map or per-entry timer, updating the timer(s) could happen
-> on both sides, hence timers must be shared for both.
+> > See above about passing a pointer to map into black box functions. I'd
+> > bet that the compiler can't merge together two different references at
+> > least because of that.
+> >
+> > For static maps, btw, just like for static functions and vars, there
+> > is no symbol, it's an offset into .maps section. We use that offset to
+> > identify the map itself.
 >
-> So, your proposal we discussed does not work well for this scenario.
+> Ok. Sounds like there is a desire to expose both static and static volatile
+> into skeleton.
+> Sure, but let's make it such the linking step doesn't change the skeleton.
+> Imagine a project that using single .bpf.c file and skeleton.
+> It grows and wants to split itself into multiple .bpf.c.
+> If such split would change the skeleton generated var/map names
+> it would be annoying user experience.
 
-why? The timer inside the map element will be shared just fine.
-Just like different progs can see the same map value.
+It's surely not ideal, but it's a one-time step and only when user is
+ready to switch to linker, so I don't see it as such a big problem.
 
-Also if your colleagues have something to share they should be
-posting to the mailing list. Right now you're acting as a broken phone
-passing info back and forth and the knowledge gets lost.
-Please ask your colleagues to participate online.
+>
+> I see few options to avoid that:
+> - keeping the btf names as-is during linking
+> The final .o can have multiple vars and maps with the same name.
+> The skeleton gen can see the name collision and disambiguate them.
+> Here I think it's important to give users a choice. Blindly appending
+> file name is not ideal.
+> How to express it cleanly in .bpf.c? I don't know. SEC() would be a bit
+> ugly. May be similar to core flavors? ___1 and ___2 ? Also not ideal.
+
+___1 vs ___2 doesn't tell you which file you are accessing static
+variable from, you need to go and figure out the order of linking. If
+you look at bpf_linker__add_file() API, it has opts->object_name which
+allows you to specify what should be used as <prefix>__. Sane default
+seems to be the object name derived from filename, but it's possible
+to override this. To allow end-users customize we can extend bpftool
+to allow users to specify this. One way I was thinking would be
+something like
+
+bpftool gen object my_obj1.o=my_prefix1 my_obj2.o=my_prefix2
+
+If user doesn't want prefixing (e.g., when linking multi-file BPF
+library into a single .o) they would be able to disable this as:
+
+bpftool gen object lib_file1.o= lib_file2.o= and so on
+
+> - another option is to fail skeleton gen if names conflict.
+> This way the users wold be able to link just fine and traditonal C style
+> linker behavior will be preserved, but if the user wants a skeleton
+> then the static map names across .bpf.c files shouldn't conflict.
+> imo that's reasonable restriction.
+
+There are two reasons to use static:
+1. hide it from BPF code in other files (compilation units)
+2. allow name conflicts (i.e., not care about anyone else accidentally
+defining static variable with the same name)
+
+I think both are important and I wouldn't want to give up #2. It
+basically says: "no other file should interfere with my state neither
+through naming or hijacking my state". Obviously it's impossible to
+guard from user-space interference due to how BPF maps/progs are
+visible to user-space, so those guarantees are mostly about BPF code
+side.
+
+Name prefixing only affects BPF skeleton generation and user-space use
+of those static variables, both of which are highly-specific use
+patterns "bridging two worlds", BPF and user-space. So I think it's
+totally reasonable to specify that such variables will have naming
+prefixes. Especially that BPF static variables inside functions
+already use similar naming conventions and are similarly exposed in
+BPF skeleton.
+
+> - maybe adopt __hidden for vars and maps? Only not hidden (which is default now)
+> would be seen in skeleton?
+
+This is similar to the above, it gives up the ability to not care
+about naming so much, because everything is forced to be global.
