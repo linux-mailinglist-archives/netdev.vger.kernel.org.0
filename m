@@ -2,136 +2,112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0A66A36BA13
-	for <lists+netdev@lfdr.de>; Mon, 26 Apr 2021 21:30:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2006B36BA16
+	for <lists+netdev@lfdr.de>; Mon, 26 Apr 2021 21:30:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240471AbhDZTbE convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Mon, 26 Apr 2021 15:31:04 -0400
-Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:47960 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S240413AbhDZTaw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 26 Apr 2021 15:30:52 -0400
-Received: from pps.filterd (m0109333.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 13QJP8Lj018469
-        for <netdev@vger.kernel.org>; Mon, 26 Apr 2021 12:30:10 -0700
-Received: from maileast.thefacebook.com ([163.114.130.16])
-        by mx0a-00082601.pphosted.com with ESMTP id 3863cxr48y-3
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-        for <netdev@vger.kernel.org>; Mon, 26 Apr 2021 12:30:10 -0700
-Received: from intmgw006.03.ash8.facebook.com (2620:10d:c0a8:1b::d) by
- mail.thefacebook.com (2620:10d:c0a8:82::d) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2176.2; Mon, 26 Apr 2021 12:30:07 -0700
-Received: by devbig012.ftw2.facebook.com (Postfix, from userid 137359)
-        id 40CC92ED6122; Mon, 26 Apr 2021 12:30:02 -0700 (PDT)
-From:   Andrii Nakryiko <andrii@kernel.org>
-To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>, <ast@fb.com>,
-        <daniel@iogearbox.net>
-CC:     <andrii@kernel.org>, <kernel-team@fb.com>,
-        Lorenz Bauer <lmb@cloudflare.com>
-Subject: [PATCH v2 bpf-next 5/5] selftests/bpf: fix core_reloc test runner
-Date:   Mon, 26 Apr 2021 12:29:49 -0700
-Message-ID: <20210426192949.416837-6-andrii@kernel.org>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20210426192949.416837-1-andrii@kernel.org>
-References: <20210426192949.416837-1-andrii@kernel.org>
+        id S240476AbhDZTbH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 26 Apr 2021 15:31:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58110 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S240438AbhDZTbC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 26 Apr 2021 15:31:02 -0400
+Received: from mail-ed1-x52a.google.com (mail-ed1-x52a.google.com [IPv6:2a00:1450:4864:20::52a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4CC4FC061760
+        for <netdev@vger.kernel.org>; Mon, 26 Apr 2021 12:30:20 -0700 (PDT)
+Received: by mail-ed1-x52a.google.com with SMTP id d14so3282413edc.12
+        for <netdev@vger.kernel.org>; Mon, 26 Apr 2021 12:30:20 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=tessares-net.20150623.gappssmtp.com; s=20150623;
+        h=to:cc:references:from:subject:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=Dr87k9ZfKSIjKnHclx7DePEImf+rQ7+qp484Yc2GQDI=;
+        b=PPOrCQABnsVUARLGHk3k4EHRz5rL54WAC/3DmqIc9Chmcl13vZveHm9YTgPByu9ISi
+         BCM/sigWLiv6oopbIxbMFfnPjXDDtLMM7ucX+DRa10VkRS6dPJUiaf2WgASxfslYX16E
+         +bppZXEMf+sV9kNORgUP1nYT3q7/2Za5BgRMgLnxUbuBHvygarfczX+R3rRy0AfqqvgH
+         Xitwa51T16WbhvkAvSG4cEktOXnr6XxCEyVTfulx1je4TvHzlBJ10ZT2yTfsjgzv6ePw
+         Y9LgkJ4yyVK6FRcD7HdvGU04WKY4YtpvKyRVuqndTXJYPUNTtQ3PWYHDR1yWXuDSDmmy
+         jROw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:to:cc:references:from:subject:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=Dr87k9ZfKSIjKnHclx7DePEImf+rQ7+qp484Yc2GQDI=;
+        b=gIDXp5EHNpu1ZmKDmGNN5ItLOonOojeVJdMyptYUwHayYRGg5622ZoNRxQInrJMlvW
+         KHTWuLrSBO+21z6MgVuAIfgiuLXHrKO353Px84frV5Y+1QoGsOCVB8gjgb6zwlR8q01b
+         NivPDLGHNN1pZYNsJC2Ld1dOqG1BnQyJyAhVTvVzUmU/gwl2lOXd4NpP64sd5ZlsYkig
+         vIDZZaDMleKuRQYXKamsM3QJl3+5k0HYx6NDF0E84aabSdleYUk6FzJG+D+e7hbkRokS
+         Y7txL79XpxEvZOpUv9mdPLzth4CsJejtGxXRG9MFyUbhCdeLV2e02S5jZvVyO+FWddOR
+         BXCQ==
+X-Gm-Message-State: AOAM530yluqR9x5dmM4BnrgzZCORVveUO0HwGFA7KxR9iJpwqecdAdZt
+        TOh5IPUHN+vlhf1gb3RIoPA8mHWe48qhRhfV
+X-Google-Smtp-Source: ABdhPJwEsGiSPn86sUce28FQhOIkZd9EDC808DnlsPjgtQS2kJzYU55xlwjSXiAaAe8rkGOR/w0UhA==
+X-Received: by 2002:a05:6402:3514:: with SMTP id b20mr267417edd.348.1619465418825;
+        Mon, 26 Apr 2021 12:30:18 -0700 (PDT)
+Received: from tsr-lap-08.nix.tessares.net ([46.166.143.116])
+        by smtp.gmail.com with ESMTPSA id r10sm12090371ejd.112.2021.04.26.12.30.17
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 26 Apr 2021 12:30:18 -0700 (PDT)
+To:     Masahiro Yamada <masahiroy@kernel.org>,
+        linux-kbuild@vger.kernel.org
+Cc:     Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Mat Martineau <mathew.j.martineau@linux.intel.com>,
+        Matthias Maennich <maennich@google.com>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Paul Mackerras <paulus@samba.org>,
+        Shuah Khan <shuah@kernel.org>, linux-kernel@vger.kernel.org,
+        linux-kselftest@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
+        mptcp@lists.01.org, netdev@vger.kernel.org
+References: <20210424114841.394239-1-masahiroy@kernel.org>
+From:   Matthieu Baerts <matthieu.baerts@tessares.net>
+Subject: Re: [PATCH] kbuild: replace LANG=C with LC_ALL=C
+Message-ID: <2f8ccc46-16a1-e0fe-7cb0-0912295153ee@tessares.net>
+Date:   Mon, 26 Apr 2021 21:30:16 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.8.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8BIT
-X-FB-Internal: Safe
-Content-Type: text/plain
-X-Proofpoint-ORIG-GUID: GHsDZpuu7ZU3PgYb1lHF9BweRqwEtU_T
-X-Proofpoint-GUID: GHsDZpuu7ZU3PgYb1lHF9BweRqwEtU_T
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.391,18.0.761
- definitions=2021-04-26_09:2021-04-26,2021-04-26 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 priorityscore=1501
- suspectscore=0 bulkscore=0 mlxscore=0 mlxlogscore=999 clxscore=1034
- lowpriorityscore=0 impostorscore=0 adultscore=0 spamscore=0 phishscore=0
- malwarescore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2104060000 definitions=main-2104260149
-X-FB-Internal: deliver
+In-Reply-To: <20210424114841.394239-1-masahiroy@kernel.org>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-GB
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Fix failed tests checks in core_reloc test runner, which allowed failing tests
-to pass quietly. Also add extra check to make sure that expected to fail test cases with
-invalid names are caught as test failure anyway, as this is not an expected
-failure mode. Also fix mislabeled probed vs direct bitfield test cases.
+Hi,
 
-Acked-by: Lorenz Bauer <lmb@cloudflare.com>
-Fixes: 124a892d1c41 ("selftests/bpf: Test TYPE_EXISTS and TYPE_SIZE CO-RE relocations")
-Reported-by: Lorenz Bauer <lmb@cloudflare.com>
-Signed-off-by: Andrii Nakryiko <andrii@kernel.org>
----
- .../selftests/bpf/prog_tests/core_reloc.c     | 20 +++++++++++--------
- 1 file changed, 12 insertions(+), 8 deletions(-)
+Thank you for the patch!
 
-diff --git a/tools/testing/selftests/bpf/prog_tests/core_reloc.c b/tools/testing/selftests/bpf/prog_tests/core_reloc.c
-index 385fd7696a2e..607710826dca 100644
---- a/tools/testing/selftests/bpf/prog_tests/core_reloc.c
-+++ b/tools/testing/selftests/bpf/prog_tests/core_reloc.c
-@@ -217,7 +217,7 @@ static int duration = 0;
- 
- #define BITFIELDS_CASE(name, ...) {					\
- 	BITFIELDS_CASE_COMMON("test_core_reloc_bitfields_probed.o",	\
--			      "direct:", name),				\
-+			      "probed:", name),				\
- 	.input = STRUCT_TO_CHAR_PTR(core_reloc_##name) __VA_ARGS__,	\
- 	.input_len = sizeof(struct core_reloc_##name),			\
- 	.output = STRUCT_TO_CHAR_PTR(core_reloc_bitfields_output)	\
-@@ -225,7 +225,7 @@ static int duration = 0;
- 	.output_len = sizeof(struct core_reloc_bitfields_output),	\
- }, {									\
- 	BITFIELDS_CASE_COMMON("test_core_reloc_bitfields_direct.o",	\
--			      "probed:", name),				\
-+			      "direct:", name),				\
- 	.input = STRUCT_TO_CHAR_PTR(core_reloc_##name) __VA_ARGS__,	\
- 	.input_len = sizeof(struct core_reloc_##name),			\
- 	.output = STRUCT_TO_CHAR_PTR(core_reloc_bitfields_output)	\
-@@ -546,8 +546,7 @@ static struct core_reloc_test_case test_cases[] = {
- 	ARRAYS_ERR_CASE(arrays___err_too_small),
- 	ARRAYS_ERR_CASE(arrays___err_too_shallow),
- 	ARRAYS_ERR_CASE(arrays___err_non_array),
--	ARRAYS_ERR_CASE(arrays___err_wrong_val_type1),
--	ARRAYS_ERR_CASE(arrays___err_wrong_val_type2),
-+	ARRAYS_ERR_CASE(arrays___err_wrong_val_type),
- 	ARRAYS_ERR_CASE(arrays___err_bad_zero_sz_arr),
- 
- 	/* enum/ptr/int handling scenarios */
-@@ -865,13 +864,20 @@ void test_core_reloc(void)
- 			  "prog '%s' not found\n", probe_name))
- 			goto cleanup;
- 
-+
-+		if (test_case->btf_src_file) {
-+			err = access(test_case->btf_src_file, R_OK);
-+			if (!ASSERT_OK(err, "btf_src_file"))
-+				goto cleanup;
-+		}
-+
- 		load_attr.obj = obj;
- 		load_attr.log_level = 0;
- 		load_attr.target_btf_path = test_case->btf_src_file;
- 		err = bpf_object__load_xattr(&load_attr);
- 		if (err) {
- 			if (!test_case->fails)
--				CHECK(false, "obj_load", "failed to load prog '%s': %d\n", probe_name, err);
-+				ASSERT_OK(err, "obj_load");
- 			goto cleanup;
- 		}
- 
-@@ -910,10 +916,8 @@ void test_core_reloc(void)
- 			goto cleanup;
- 		}
- 
--		if (test_case->fails) {
--			CHECK(false, "obj_load_fail", "should fail to load prog '%s'\n", probe_name);
-+		if (!ASSERT_FALSE(test_case->fails, "obj_load_should_fail"))
- 			goto cleanup;
--		}
- 
- 		equal = memcmp(data->out, test_case->output,
- 			       test_case->output_len) == 0;
+On 24/04/2021 13:48, Masahiro Yamada wrote:
+> LANG gives a weak default to each LC_* in case it is not explicitly
+> defined. LC_ALL, if set, overrides all other LC_* variables.
+> 
+>   LANG  <  LC_CTYPE, LC_COLLATE, LC_MONETARY, LC_NUMERIC, ...  <  LC_ALL
+> 
+> This is why documentation such as [1] suggests to set LC_ALL in build
+> scripts to get the deterministic result.
+> 
+> LANG=C is not strong enough to override LC_* that may be set by end
+> users.
+> 
+> [1]: https://reproducible-builds.org/docs/locales/
+> 
+> Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
+> ---
+> 
+>  arch/powerpc/boot/wrapper                          | 2 +-
+>  scripts/nsdeps                                     | 2 +-
+>  scripts/recordmcount.pl                            | 2 +-
+>  scripts/setlocalversion                            | 2 +-
+>  scripts/tags.sh                                    | 2 +-
+>  tools/testing/selftests/net/mptcp/mptcp_connect.sh | 2 +-
+
+Acked-by: Matthieu Baerts <matthieu.baerts@tessares.net> (mptcp)
+
+Cheers,
+Matt
 -- 
-2.30.2
-
+Tessares | Belgium | Hybrid Access Solutions
+www.tessares.net
