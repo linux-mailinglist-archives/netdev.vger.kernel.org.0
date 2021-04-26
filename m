@@ -2,110 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 01BF136B290
-	for <lists+netdev@lfdr.de>; Mon, 26 Apr 2021 13:54:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D403336B2C2
+	for <lists+netdev@lfdr.de>; Mon, 26 Apr 2021 14:12:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233060AbhDZLzW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 26 Apr 2021 07:55:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40388 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232878AbhDZLzV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 26 Apr 2021 07:55:21 -0400
-Received: from mail-pl1-x634.google.com (mail-pl1-x634.google.com [IPv6:2607:f8b0:4864:20::634])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 89C49C061574;
-        Mon, 26 Apr 2021 04:54:40 -0700 (PDT)
-Received: by mail-pl1-x634.google.com with SMTP id p17so2901561plf.12;
-        Mon, 26 Apr 2021 04:54:40 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=YVWBdeIeN9rQKY5lpBVWnLapN4/WYy+0IlaZ07mPtA8=;
-        b=bLSE5s3Nb++c9HkSnlzRQvkZhLg7gD9S+SAWsDALfYLhFSFLhuj/HaDA0rPWKaWe2+
-         xDBNAqrJzGmWQvIj0bzUyW9b1PxdYFD5gfkE+8A4SvbpvQE19nadYfBmfo8CgjWyXC61
-         o0hrQtlx9zZBpsEDdE38T8QaXDqUQEI6Uizc+QmhIB1fuQ+hAKc9s+vaNGwmubEKBYq8
-         17CC9FtRzqJIzZUM1Y7yNkFzgQsrEUxldxWYc3TZjOGBc4hw5saL4aARXv9xUM89i1MC
-         2StUJhlKgTxqXNPVqhcrUGda/L8nnbnowe4uU85OF9FPMO3iyO4omCtzKz9Y5wfbf3/6
-         aZ0Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=YVWBdeIeN9rQKY5lpBVWnLapN4/WYy+0IlaZ07mPtA8=;
-        b=OQbAMMNtNbq1+HtRMAEMhYkLt3EFOBOZgX3RKxcpuaha1UnjphKj8nrn0O8jqRfzz2
-         m4tLITfOwk69ZNCkh+6rym1Woq58dAnd0LDRm2A7ePsMpdA5cIsAv2D7+tsKf25/u1jz
-         SwzcZXnse2KTBoldnnyd8YUJP0DqEIZvgXpcBH5XlB4aWhwB8E8uuUKnXkul8d84wW5C
-         4SVtoaLCurwTpKPmC2TYy1a+PL+l43SNXYoI7OQEd1j5k5EFgOe+mu++leB5eTwthrBN
-         D/2Qq/D7Bm4WsgiEBdfObeu60j8QaPdk8hAfh1vmCzmTYCIQ2uPM5m1XThwI9jw5d7UH
-         Dmqw==
-X-Gm-Message-State: AOAM533s1eEAgo7WL243x39vJe6xlPXKPlyWNtPTuwn5RFdR5bAveiRU
-        MUdFlLfBaDBfUZy73I1KEzY=
-X-Google-Smtp-Source: ABdhPJyDmCNBbXjgPoQfyUpH3P7GgTT/p/hZdoP4V4NEDpYo1PkuUyZ9ojCD5sga5uZvDaungiEaxA==
-X-Received: by 2002:a17:90a:77c8:: with SMTP id e8mr23009425pjs.69.1619438080122;
-        Mon, 26 Apr 2021 04:54:40 -0700 (PDT)
-Received: from Leo-laptop-t470s ([209.132.188.80])
-        by smtp.gmail.com with ESMTPSA id i131sm11033068pgc.20.2021.04.26.04.54.35
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 26 Apr 2021 04:54:39 -0700 (PDT)
-Date:   Mon, 26 Apr 2021 19:54:27 +0800
-From:   Hangbin Liu <liuhangbin@gmail.com>
-To:     Jesper Dangaard Brouer <brouer@redhat.com>
-Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org,
-        Toke =?iso-8859-1?Q?H=F8iland-J=F8rgensen?= <toke@redhat.com>,
-        Jiri Benc <jbenc@redhat.com>,
-        Eelco Chaudron <echaudro@redhat.com>, ast@kernel.org,
+        id S233212AbhDZMNG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 26 Apr 2021 08:13:06 -0400
+Received: from mx2.suse.de ([195.135.220.15]:47536 "EHLO mx2.suse.de"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S231550AbhDZMNF (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 26 Apr 2021 08:13:05 -0400
+X-Virus-Scanned: by amavisd-new at test-mx.suse.de
+Received: from relay2.suse.de (unknown [195.135.221.27])
+        by mx2.suse.de (Postfix) with ESMTP id 89E3CAB87;
+        Mon, 26 Apr 2021 12:12:22 +0000 (UTC)
+Date:   Mon, 26 Apr 2021 14:12:20 +0200
+From:   Michal =?iso-8859-1?Q?Such=E1nek?= <msuchanek@suse.de>
+To:     Yonghong Song <yhs@fb.com>
+Cc:     linux-kernel@vger.kernel.org, Martin KaFai Lau <kafai@fb.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        David Ahern <dsahern@kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
-        Lorenzo Bianconi <lorenzo.bianconi@redhat.com>,
-        David Ahern <dsahern@gmail.com>,
-        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
-        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Song Liu <songliubraving@fb.com>,
         John Fastabend <john.fastabend@gmail.com>,
-        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
-        =?iso-8859-1?Q?Bj=F6rn_T=F6pel?= <bjorn.topel@gmail.com>,
-        Martin KaFai Lau <kafai@fb.com>
-Subject: Re: [PATCHv10 bpf-next 2/4] xdp: extend xdp_redirect_map with
- broadcast support
-Message-ID: <20210426115427.GV3465@Leo-laptop-t470s>
-References: <20210423020019.2333192-1-liuhangbin@gmail.com>
- <20210423020019.2333192-3-liuhangbin@gmail.com>
- <20210426115350.501cef2a@carbon>
- <20210426104704.GR3465@Leo-laptop-t470s>
- <20210426134105.4706af0b@carbon>
+        KP Singh <kpsingh@kernel.org>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org
+Subject: Re: linux-next failing build due to missing cubictcp_state symbol
+Message-ID: <20210426121220.GN15381@kitsune.suse.cz>
+References: <20210423130530.GA6564@kitsune.suse.cz>
+ <316e86f9-35cc-36b0-1594-00a09631c736@fb.com>
+ <20210423175528.GF6564@kitsune.suse.cz>
+ <20210425111545.GL15381@kitsune.suse.cz>
+ <20210426113215.GM15381@kitsune.suse.cz>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: multipart/mixed; boundary="osDK9TLjxFScVI/L"
 Content-Disposition: inline
-In-Reply-To: <20210426134105.4706af0b@carbon>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20210426113215.GM15381@kitsune.suse.cz>
+User-Agent: Mutt/1.11.3 (2019-02-01)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Apr 26, 2021 at 01:41:05PM +0200, Jesper Dangaard Brouer wrote:
-> > > While running:
-> > >  $ sudo ./xdp_redirect_map_multi -F i40e2 i40e2
-> > >  Get interfaces 7 7
-> > >  libbpf: elf: skipping unrecognized data section(23) .eh_frame
-> > >  libbpf: elf: skipping relo section(24) .rel.eh_frame for section(23) .eh_frame
-> > >  Forwarding   10140845 pkt/s
-> > >  Forwarding   11767042 pkt/s
-> > >  Forwarding   11783437 pkt/s
-> > >  Forwarding   11767331 pkt/s
+
+--osDK9TLjxFScVI/L
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+
+On Mon, Apr 26, 2021 at 01:32:15PM +0200, Michal Suchánek wrote:
+> On Sun, Apr 25, 2021 at 01:15:45PM +0200, Michal Suchánek wrote:
+> > On Fri, Apr 23, 2021 at 07:55:28PM +0200, Michal Suchánek wrote:
+> > > On Fri, Apr 23, 2021 at 07:41:29AM -0700, Yonghong Song wrote:
+> > > > 
+> > > > 
+> > > > On 4/23/21 6:05 AM, Michal Suchánek wrote:
+> > > > > Hello,
+> > > > > 
+> > > > > I see this build error in linux-next (config attached).
+> > > > > 
+> > > > > [ 4939s]   LD      vmlinux
+> > > > > [ 4959s]   BTFIDS  vmlinux
+> > > > > [ 4959s] FAILED unresolved symbol cubictcp_state
+> > > > > [ 4960s] make[1]: ***
+> > > > > [/home/abuild/rpmbuild/BUILD/kernel-vanilla-5.12~rc8.next.20210422/linux-5.12-rc8-next-20210422/Makefile:1277:
+> > > > > vmlinux] Error 255
+> > > > > [ 4960s] make: *** [../Makefile:222: __sub-make] Error 2
+> > > > 
+> > > > Looks like you have DYNAMIC_FTRACE config option enabled already.
+> > > > Could you try a later version of pahole?
 > > > 
-> > > When starting:  sudo ./xdp_monitor --stats  
+> > > Is this requireent new?
+> > > 
+> > > I have pahole 1.20, and master does build without problems.
+> > > 
+> > > If newer version is needed can a check be added?
 > > 
-> > That seems the same issue I reported previously in our meeting.
-> > https://bugzilla.redhat.com/show_bug.cgi?id=1906820#c4
+> > With dwarves 1.21 some architectures are fixed and some report other
+> > missing symbol. Definitely an improvenent.
 > > 
-> > I only saw it 3 times and can't reproduce it easily.
-> > 
-> > Do you have any idea where is the root cause?
+> > I see some new type support was added so it makes sense if that type is
+> > used the new dwarves are needed.
 > 
-> All the information you need to find the root-cause is listed below.
-> I have even decoded where in the code it happens, and also include the
-> code with line-numbering and pointed to the line the crash happens in,
-> I don't think it is possible for me to be more specific and help further.
+> Ok, here is the current failure with dwarves 1.21 on 5.12:
+> 
+> [ 2548s]   LD      vmlinux
+> [ 2557s]   BTFIDS  vmlinux
+> [ 2557s] FAILED unresolved symbol vfs_truncate
+> [ 2558s] make[1]: ***
+> [/home/abuild/rpmbuild/BUILD/kernel-kvmsmall-5.12.0/linux-5.12/Makefile:1213:
+> vmlinux] Error 255
+> 
+> Any idea where this one is coming from?
+Attaching a complete config
+> 
+> Thanks
+> 
+> Michal
 
-Thanks, I mixed this issue with the one I got previously, which I haven't
-figure out yet. For this one, I have sent a propose in another reply (that
-fix it in trace point event). Would you please help review.
+--osDK9TLjxFScVI/L
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: attachment; filename=vanilla
 
-Hangbin
+CONFIG_LOCALVERSION="-vanilla"
+CONFIG_MODULES=y
+CONFIG_MODULE_SIG=y
+
+--osDK9TLjxFScVI/L--
