@@ -2,261 +2,118 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6EE1836AABB
-	for <lists+netdev@lfdr.de>; Mon, 26 Apr 2021 04:42:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5878B36AAC7
+	for <lists+netdev@lfdr.de>; Mon, 26 Apr 2021 04:50:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231764AbhDZCmY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 25 Apr 2021 22:42:24 -0400
-Received: from bhuna.collabora.co.uk ([46.235.227.227]:37606 "EHLO
-        bhuna.collabora.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231747AbhDZCmX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 25 Apr 2021 22:42:23 -0400
-Received: from [127.0.0.1] (localhost [127.0.0.1])
-        (Authenticated sender: ezequiel)
-        with ESMTPSA id 8B7671F41F95
-From:   Ezequiel Garcia <ezequiel@collabora.com>
-To:     netdev@vger.kernel.org, linux-rockchip@lists.infradead.org,
-        devicetree@vger.kernel.org
-Cc:     Jose Abreu <joabreu@synopsys.com>,
-        Heiko Stuebner <heiko@sntech.de>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Peter Geis <pgwipeout@gmail.com>,
-        Kever Yang <kever.yang@rock-chips.com>,
-        David Wu <david.wu@rock-chips.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Johan Jonker <jbx6244@gmail.com>,
-        Ezequiel Garcia <ezequiel@collabora.com>, kernel@collabora.com
-Subject: [PATCH 3/3] dt-bindings: net: convert rockchip-dwmac to json-schema
-Date:   Sun, 25 Apr 2021 23:41:18 -0300
-Message-Id: <20210426024118.18717-3-ezequiel@collabora.com>
-X-Mailer: git-send-email 2.30.0
-In-Reply-To: <20210426024118.18717-1-ezequiel@collabora.com>
-References: <20210426024118.18717-1-ezequiel@collabora.com>
+        id S231705AbhDZCux (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 25 Apr 2021 22:50:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33592 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231502AbhDZCux (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 25 Apr 2021 22:50:53 -0400
+Received: from mail-qk1-x729.google.com (mail-qk1-x729.google.com [IPv6:2607:f8b0:4864:20::729])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 87537C061574;
+        Sun, 25 Apr 2021 19:50:12 -0700 (PDT)
+Received: by mail-qk1-x729.google.com with SMTP id 8so21507246qkv.8;
+        Sun, 25 Apr 2021 19:50:12 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=AJ3dF91pArmJ3E1d8CGtHfJCvWP+o57MUIRfsQ3HzRc=;
+        b=KHjyum/ANu6+os6IkYv+fCho0hAaPbfHDgpjkCDbrrAAmNz0xAxLorTtmIGr8qRJgB
+         X9sBgsCUk+zzur+vdn27jFxm7I5lytM+FhqSpEE6yJaMYJ6Sri6x8RlehIWLvMa3aide
+         hytRbkwPM24X7nJtoxCFc7cyMh6KKANg3BHMVW0mU1kDfGo/oqfi4Xd4NddKptzWozt6
+         G+TtaL3ZccnY4WmtxXMixxGZ/c4xCiwbvNYx3xMPCcdTtxO2swSbG0zVEKjU7ZM4r1Gb
+         olLASJwvgojhgtAvFFpVTUeYICxgVgL7vkC9n/4w99P2ee0sxnF5JTCUAZnvRdRN4dTi
+         0Lng==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=AJ3dF91pArmJ3E1d8CGtHfJCvWP+o57MUIRfsQ3HzRc=;
+        b=aQptqIjPYvOb8P6hZZVlMD0BMHiJEgUytY5fPhOl9Nl5ww8koeykeOLPqXtsOtMbX+
+         34ELvWDF3uxPgVIYGYlnrgkjIDL0oRUFb4B+T8gaIkoppIv3tVsIM8tgnRMFa8dzAeF8
+         kVsSwT8y3p/Qmptpgjo22w9IbRkPqFMvzQnerNSwLawQtkOMTofZ5DgxbgiQqGYsgBO5
+         XqDMOdf+brwhB0j5PQW6FjONs9EsxkyIheY3a3C1pg2VAzRIljUNkKBUuy4m3w5nNXix
+         PZAsb5NRvWLRdokulJHH6653mSXR1hsXeEWb01C82iJ6/Du5xarsKVGAStjoNJnREc8i
+         QtwA==
+X-Gm-Message-State: AOAM533NNWMIgsvqxtggBF6d+LDIh3ZckCU2SxDuj23K0T1ZFRauIHYT
+        oOTwRUVWvdY7qsTUT0Wfidc6UgNjxClcsg==
+X-Google-Smtp-Source: ABdhPJybC1Lxz5To6LhGymSeCuFxqv/IhL/zzJyTq4P6g3dPUaNzzEtH6DLPzwCMTVJFj52lK2G6qg==
+X-Received: by 2002:a37:7685:: with SMTP id r127mr14834999qkc.359.1619405411520;
+        Sun, 25 Apr 2021 19:50:11 -0700 (PDT)
+Received: from unknown.attlocal.net ([2600:1700:65a0:ab60:9050:63f8:875d:8edf])
+        by smtp.gmail.com with ESMTPSA id e15sm9632969qkm.129.2021.04.25.19.50.10
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 25 Apr 2021 19:50:11 -0700 (PDT)
+From:   Cong Wang <xiyou.wangcong@gmail.com>
+To:     netdev@vger.kernel.org
+Cc:     bpf@vger.kernel.org, jiang.wang@bytedance.com,
+        duanxiongchun@bytedance.com, wangdongdong.6@bytedance.com,
+        Cong Wang <cong.wang@bytedance.com>
+Subject: [Patch bpf-next v3 00/10] sockmap: add sockmap support to Unix datagram socket
+Date:   Sun, 25 Apr 2021 19:49:51 -0700
+Message-Id: <20210426025001.7899-1-xiyou.wangcong@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Convert Rockchip dwmac controller dt-bindings to YAML.
+From: Cong Wang <cong.wang@bytedance.com>
 
-Signed-off-by: Ezequiel Garcia <ezequiel@collabora.com>
+This is the last patchset of the original large patchset. In the
+previous patchset, a new BPF sockmap program BPF_SK_SKB_VERDICT
+was introduced and UDP began to support it too. In this patchset,
+we add BPF_SK_SKB_VERDICT support to Unix datagram socket, so that
+we can finally splice Unix datagram socket and UDP socket. Please
+check each patch description for more details.
+
+To see the big picture, the previous patchsets are available:
+https://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf-next.git/commit/?id=1e0ab70778bd86a90de438cc5e1535c115a7c396
+https://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf-next.git/commit/?id=89d69c5d0fbcabd8656459bc8b1a476d6f1efee4
+this patchset is also available:
+https://github.com/congwang/linux/tree/sockmap3
+
 ---
- .../bindings/net/rockchip-dwmac.txt           |  76 -----------
- .../bindings/net/rockchip-dwmac.yaml          | 120 ++++++++++++++++++
- 2 files changed, 120 insertions(+), 76 deletions(-)
- delete mode 100644 Documentation/devicetree/bindings/net/rockchip-dwmac.txt
- create mode 100644 Documentation/devicetree/bindings/net/rockchip-dwmac.yaml
+v3: fix Kconfig dependency
+    make unix_read_sock() static
+    fix a UAF in unix_release()
+    add a missing header unix_bpf.c
+    
+v2: separate out from the original large patchset
+    rebase to the latest bpf-next
+    clean up unix_read_sock()
+    export sock_map_close()
+    factor out some helpers in selftests for code reuse
 
-diff --git a/Documentation/devicetree/bindings/net/rockchip-dwmac.txt b/Documentation/devicetree/bindings/net/rockchip-dwmac.txt
-deleted file mode 100644
-index 3b71da7e8742..000000000000
---- a/Documentation/devicetree/bindings/net/rockchip-dwmac.txt
-+++ /dev/null
-@@ -1,76 +0,0 @@
--Rockchip SoC RK3288 10/100/1000 Ethernet driver(GMAC)
--
--The device node has following properties.
--
--Required properties:
-- - compatible: should be "rockchip,<name>-gamc"
--   "rockchip,px30-gmac":   found on PX30 SoCs
--   "rockchip,rk3128-gmac": found on RK312x SoCs
--   "rockchip,rk3228-gmac": found on RK322x SoCs
--   "rockchip,rk3288-gmac": found on RK3288 SoCs
--   "rockchip,rk3328-gmac": found on RK3328 SoCs
--   "rockchip,rk3366-gmac": found on RK3366 SoCs
--   "rockchip,rk3368-gmac": found on RK3368 SoCs
--   "rockchip,rk3399-gmac": found on RK3399 SoCs
--   "rockchip,rv1108-gmac": found on RV1108 SoCs
-- - reg: addresses and length of the register sets for the device.
-- - interrupts: Should contain the GMAC interrupts.
-- - interrupt-names: Should contain the interrupt names "macirq".
-- - rockchip,grf: phandle to the syscon grf used to control speed and mode.
-- - clocks: <&cru SCLK_MAC>: clock selector for main clock, from PLL or PHY.
--	   <&cru SCLK_MAC_PLL>: PLL clock for SCLK_MAC
--	   <&cru SCLK_MAC_RX>: clock gate for RX
--	   <&cru SCLK_MAC_TX>: clock gate for TX
--	   <&cru SCLK_MACREF>: clock gate for RMII referce clock
--	   <&cru SCLK_MACREF_OUT> clock gate for RMII reference clock output
--	   <&cru ACLK_GMAC>: AXI clock gate for GMAC
--	   <&cru PCLK_GMAC>: APB clock gate for GMAC
-- - clock-names: One name for each entry in the clocks property.
-- - phy-mode: See ethernet.txt file in the same directory.
-- - pinctrl-names: Names corresponding to the numbered pinctrl states.
-- - pinctrl-0: pin-control mode. can be <&rgmii_pins> or <&rmii_pins>.
-- - clock_in_out: For RGMII, it must be "input", means main clock(125MHz)
--   is not sourced from SoC's PLL, but input from PHY; For RMII, "input" means
--   PHY provides the reference clock(50MHz), "output" means GMAC provides the
--   reference clock.
-- - snps,reset-gpio       gpio number for phy reset.
-- - snps,reset-active-low boolean flag to indicate if phy reset is active low.
-- - assigned-clocks: main clock, should be <&cru SCLK_MAC>;
-- - assigned-clock-parents = parent of main clock.
--   can be <&ext_gmac> or <&cru SCLK_MAC_PLL>.
--
--Optional properties:
-- - tx_delay: Delay value for TXD timing. Range value is 0~0x7F, 0x30 as default.
-- - rx_delay: Delay value for RXD timing. Range value is 0~0x7F, 0x10 as default.
-- - phy-supply: phandle to a regulator if the PHY needs one
--
--Example:
--
--gmac: ethernet@ff290000 {
--	compatible = "rockchip,rk3288-gmac";
--	reg = <0xff290000 0x10000>;
--	interrupts = <GIC_SPI 27 IRQ_TYPE_LEVEL_HIGH>;
--	interrupt-names = "macirq";
--	rockchip,grf = <&grf>;
--	clocks = <&cru SCLK_MAC>,
--		<&cru SCLK_MAC_RX>, <&cru SCLK_MAC_TX>,
--		<&cru SCLK_MACREF>, <&cru SCLK_MACREF_OUT>,
--		<&cru ACLK_GMAC>, <&cru PCLK_GMAC>;
--	clock-names = "stmmaceth",
--		"mac_clk_rx", "mac_clk_tx",
--		"clk_mac_ref", "clk_mac_refout",
--		"aclk_mac", "pclk_mac";
--	phy-mode = "rgmii";
--	pinctrl-names = "default";
--	pinctrl-0 = <&rgmii_pins /*&rmii_pins*/>;
--
--	clock_in_out = "input";
--	snps,reset-gpio = <&gpio4 7 0>;
--	snps,reset-active-low;
--
--	assigned-clocks = <&cru SCLK_MAC>;
--	assigned-clock-parents = <&ext_gmac>;
--	tx_delay = <0x30>;
--	rx_delay = <0x10>;
--
--};
-diff --git a/Documentation/devicetree/bindings/net/rockchip-dwmac.yaml b/Documentation/devicetree/bindings/net/rockchip-dwmac.yaml
-new file mode 100644
-index 000000000000..5acddb6171bf
---- /dev/null
-+++ b/Documentation/devicetree/bindings/net/rockchip-dwmac.yaml
-@@ -0,0 +1,120 @@
-+# SPDX-License-Identifier: GPL-2.0
-+%YAML 1.2
-+---
-+$id: "http://devicetree.org/schemas/net/rockchip-dwmac.yaml#"
-+$schema: "http://devicetree.org/meta-schemas/core.yaml#"
-+
-+title: Rockchip 10/100/1000 Ethernet driver(GMAC)
-+
-+maintainers:
-+  - David Wu <david.wu@rock-chips.com>
-+
-+# We need a select here so we don't match all nodes with 'snps,dwmac'
-+select:
-+  properties:
-+    compatible:
-+      contains:
-+        enum:
-+          - rockchip,px30-gmac
-+          - rockchip,rk3128-gmac
-+          - rockchip,rk3228-gmac
-+          - rockchip,rk3288-gmac
-+          - rockchip,rk3328-gmac
-+          - rockchip,rk3366-gmac
-+          - rockchip,rk3368-gmac
-+          - rockchip,rk3399-gmac
-+          - rockchip,rv1108-gmac
-+  required:
-+    - compatible
-+
-+allOf:
-+  - $ref: "snps,dwmac.yaml#"
-+
-+properties:
-+  compatible:
-+    items:
-+      - enum:
-+          - rockchip,px30-gmac
-+          - rockchip,rk3128-gmac
-+          - rockchip,rk3228-gmac
-+          - rockchip,rk3288-gmac
-+          - rockchip,rk3328-gmac
-+          - rockchip,rk3366-gmac
-+          - rockchip,rk3368-gmac
-+          - rockchip,rk3399-gmac
-+          - rockchip,rv1108-gmac
-+
-+  clocks:
-+    minItems: 5
-+    maxItems: 8
-+
-+  clock-names:
-+    contains:
-+      enum:
-+        - stmmaceth
-+        - mac_clk_tx
-+        - mac_clk_rx
-+        - aclk_mac
-+        - pclk_mac
-+        - clk_mac_ref
-+        - clk_mac_refout
-+        - clk_mac_speed
-+
-+  clock_in_out:
-+    description:
-+      For RGMII, it must be "input", means main clock(125MHz)
-+      is not sourced from SoC's PLL, but input from PHY.
-+      For RMII, "input" means PHY provides the reference clock(50MHz),
-+      "output" means GMAC provides the reference clock.
-+    $ref: /schemas/types.yaml#/definitions/string
-+    enum: [input, output]
-+
-+  rockchip,grf:
-+    description: The phandle of the syscon node for the general register file.
-+    $ref: /schemas/types.yaml#/definitions/phandle
-+
-+  tx_delay:
-+    description: Delay value for TXD timing. Range value is 0~0x7F, 0x30 as default.
-+    $ref: /schemas/types.yaml#/definitions/uint32
-+
-+  rx_delay:
-+    description: Delay value for RXD timing. Range value is 0~0x7F, 0x10 as default.
-+    $ref: /schemas/types.yaml#/definitions/uint32
-+
-+  phy-supply:
-+    description: PHY regulator
-+
-+required:
-+  - compatible
-+  - clocks
-+  - clock-names
-+
-+unevaluatedProperties: false
-+
-+examples:
-+  - |
-+    #include <dt-bindings/interrupt-controller/arm-gic.h>
-+    #include <dt-bindings/clock/rk3288-cru.h>
-+
-+    gmac: ethernet@ff290000 {
-+        compatible = "rockchip,rk3288-gmac";
-+        reg = <0xff290000 0x10000>;
-+        interrupts = <GIC_SPI 27 IRQ_TYPE_LEVEL_HIGH>;
-+        interrupt-names = "macirq";
-+        clocks = <&cru SCLK_MAC>,
-+                 <&cru SCLK_MAC_RX>, <&cru SCLK_MAC_TX>,
-+                 <&cru SCLK_MACREF>, <&cru SCLK_MACREF_OUT>,
-+                 <&cru ACLK_GMAC>, <&cru PCLK_GMAC>;
-+        clock-names = "stmmaceth",
-+                      "mac_clk_rx", "mac_clk_tx",
-+                      "clk_mac_ref", "clk_mac_refout",
-+                      "aclk_mac", "pclk_mac";
-+        assigned-clocks = <&cru SCLK_MAC>;
-+        assigned-clock-parents = <&ext_gmac>;
-+
-+        rockchip,grf = <&grf>;
-+        phy-mode = "rgmii";
-+        clock_in_out = "input";
-+        tx_delay = <0x30>;
-+        rx_delay = <0x10>;
-+    };
+Cong Wang (10):
+  sock_map: relax config dependency to CONFIG_NET
+  af_unix: implement ->read_sock() for sockmap
+  af_unix: implement ->psock_update_sk_prot()
+  af_unix: set TCP_ESTABLISHED for datagram sockets too
+  af_unix: implement unix_dgram_bpf_recvmsg()
+  sock_map: update sock type checks for AF_UNIX
+  selftests/bpf: factor out udp_socketpair()
+  selftests/bpf: factor out add_to_sockmap()
+  selftests/bpf: add a test case for unix sockmap
+  selftests/bpf: add test cases for redirection between udp and unix
+
+ MAINTAINERS                                   |   1 +
+ include/linux/bpf.h                           |  38 +-
+ include/net/af_unix.h                         |  13 +
+ init/Kconfig                                  |   2 +-
+ net/core/Makefile                             |   2 -
+ net/core/sock_map.c                           |   9 +
+ net/unix/Makefile                             |   1 +
+ net/unix/af_unix.c                            |  83 +++-
+ net/unix/unix_bpf.c                           |  96 +++++
+ .../selftests/bpf/prog_tests/sockmap_listen.c | 386 ++++++++++++++----
+ 10 files changed, 528 insertions(+), 103 deletions(-)
+ create mode 100644 net/unix/unix_bpf.c
+
 -- 
-2.30.0
+2.25.1
 
