@@ -2,55 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 02C7E36BBBA
-	for <lists+netdev@lfdr.de>; Tue, 27 Apr 2021 00:35:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5B37136BBCA
+	for <lists+netdev@lfdr.de>; Tue, 27 Apr 2021 00:46:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237270AbhDZWgK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 26 Apr 2021 18:36:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42208 "EHLO
+        id S234458AbhDZWrX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 26 Apr 2021 18:47:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44616 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232161AbhDZWgJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 26 Apr 2021 18:36:09 -0400
-Received: from mail-yb1-xb2f.google.com (mail-yb1-xb2f.google.com [IPv6:2607:f8b0:4864:20::b2f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 93C1EC061574;
-        Mon, 26 Apr 2021 15:35:27 -0700 (PDT)
-Received: by mail-yb1-xb2f.google.com with SMTP id p126so13277391yba.1;
-        Mon, 26 Apr 2021 15:35:27 -0700 (PDT)
+        with ESMTP id S232116AbhDZWrX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 26 Apr 2021 18:47:23 -0400
+Received: from mail-yb1-xb36.google.com (mail-yb1-xb36.google.com [IPv6:2607:f8b0:4864:20::b36])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2633BC061574;
+        Mon, 26 Apr 2021 15:46:41 -0700 (PDT)
+Received: by mail-yb1-xb36.google.com with SMTP id e8so7034010ybq.11;
+        Mon, 26 Apr 2021 15:46:41 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=NWagQn/COuoShM8WrVf9LFg9xKNV28jcvx8Exyu8PzY=;
-        b=klRwomMCJt74+Pv/6iWw2/9qf48Bl8BXE4majBF8aBC6OjC2lTsD4QEEHx/VVCYIzX
-         /9k76QhqQDDLFHgs5BK7xujejrQAegD221soV9yAGowd9wEHQxeXK9sDPFt03VrRqdQl
-         S7PBU0cDS59CnnWpOA86ClebOrLuQy6NZ/T0CEiN42GCsu2bGFZPGzcJHeC/HsKcnNwL
-         G61NabOZIW4jSzCJ/29kaTfIilodpev0s3ZX3umSfjU7m9r8r5Xceu71jayjmuhPMd3S
-         Wivrule9lhspYUh8iJ/h3oPBugiccGNb/i+PfAnT9AFyUQFT/xO1FPpLe2qyD2YlOE/t
-         tWQQ==
+        bh=ZoP3h1mLOqV7AEOAza5caYoovSekocBBtoC/6WNGTI4=;
+        b=fzBktLUDM/vNKKeTrurCMkELIZf93fIotp9f7PvACPy0sEylPBcQzLdglGUWdwO7iq
+         ZUgzaFALlptDAKLTKmI+uPa4IATX2xjYldFh9D3I0uanLrJgq3o1otSf8hdvD+hUme3m
+         MXINR4K9bagUpCv/KAK51I0yWooaBKMZ1bI0hg4iF0aNlaojIF6I7LGQr+u9FQbWqFGr
+         mQJIKkviKiB42xb9lNOBwbskQ4xEqaYRr//zOgX6uuyNoqm7JTjuP3vg5ErxDAp7Mkwd
+         SJMauS1I9Ze5j12jGws2wiscwfQUxC32QzJs1Jr97Er+b/rNHFbH5U4gN8joXkUFO4e4
+         /WEA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=NWagQn/COuoShM8WrVf9LFg9xKNV28jcvx8Exyu8PzY=;
-        b=O3hhboAcg6VjWolrDdIqem3Zde6epbTlTxXdnfzUn9N5nFlyJ2Qyn9bT1b9j9YcmuK
-         ZPnmxpItqFpgpk9xoxuqYEcLN1ScbSXzcLz2ietDWwWRxu8i1ULgK/m4MQh6s4vivWM8
-         SA1r3vjnvgl8E+8Fr69PDAkvuaw1iwfyh3TOVvPdKBSnfA+Z5+y0im9LeV+Fmmav/OXO
-         9+syOqhr5UKYfCzI7J1yQXu0Z1l8LnS5lrLFJlCn6iHQSO71qx1LcOEtfvdPpQvOZEwB
-         h+hQ2iErcSdxpVAtsBD76DfyNji2r+2bzU6VvzXScBZwSmq4CgbyNv/ZA/U8nlGqMrdX
-         rBmQ==
-X-Gm-Message-State: AOAM531rBjr1MtmQNsZ97B79sUnR8oMoRatqU5WvILWfaKDn1xiJLhlf
-        Syappgaf/dI8vswj44f0NpTu3wNmOzbnrTpEAKZtUthx
-X-Google-Smtp-Source: ABdhPJyuKNgESmfzztTsrf7XiitRAHRoAnts2qv5j+uUHituKxkGmSC+gItgMpGTm1z9x4LMnl0G+O9kw+LJV60GORU=
-X-Received: by 2002:a25:2441:: with SMTP id k62mr27373194ybk.347.1619476526857;
- Mon, 26 Apr 2021 15:35:26 -0700 (PDT)
+        bh=ZoP3h1mLOqV7AEOAza5caYoovSekocBBtoC/6WNGTI4=;
+        b=qFKluE22qcd3Y/GkJRYe60lURl7duLHESM5U9rjNBsbZ91YnQb76tJrh9uz/1VY4h4
+         izBOaHyrEdjHnVlpdFVM575Yx5iS2Yv4TPtvHRq3JkyudMc4Ajl8WT7KGmR7qumMx+cD
+         59qrjEOlgwjk2xaC8wc84paTkCXmXGmHos0o9LD9z02/D6icB6x+3GtAZMkB69FpK6OF
+         bgOs5ouGiHSg7z7j5vsPHb91CFE9jRxZsFmFhdqh0VgG/dcClatL6qfnC/RKLmD+ltPc
+         9muJopafuneLbabVCl8B7hqJJ9acKKkASfykbDjqNnr0UIcJYrwsg5TTCiZgBu3Ar456
+         HErQ==
+X-Gm-Message-State: AOAM532WS2W40Ewzicceo6ee2LTa4wtG/GkWPV9N5hOtvPfYQVZmlaro
+        SPrjwFkzwTE2IKhMAG3jgH0KgxdspFWljxbNOkE=
+X-Google-Smtp-Source: ABdhPJy2sXWYpZ2X2XRYTYYBlQbxU/z2boJtt4Ny2Qx6pTdxbGcJI5bq918+eiY6CIpwA7CXypmdVRy2jh0PCF4ylg0=
+X-Received: by 2002:a25:ba06:: with SMTP id t6mr26304531ybg.459.1619477200000;
+ Mon, 26 Apr 2021 15:46:40 -0700 (PDT)
 MIME-Version: 1.0
-References: <20210423002646.35043-1-alexei.starovoitov@gmail.com> <20210423002646.35043-16-alexei.starovoitov@gmail.com>
-In-Reply-To: <20210423002646.35043-16-alexei.starovoitov@gmail.com>
+References: <20210423002646.35043-1-alexei.starovoitov@gmail.com> <20210423002646.35043-11-alexei.starovoitov@gmail.com>
+In-Reply-To: <20210423002646.35043-11-alexei.starovoitov@gmail.com>
 From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Mon, 26 Apr 2021 15:35:16 -0700
-Message-ID: <CAEf4BzbY2qM7OfmjfJVO1LhSYyk-NTCEo=UykH+XxKcKcPuC7w@mail.gmail.com>
-Subject: Re: [PATCH v2 bpf-next 15/16] bpftool: Use syscall/loader program in
- "prog load" and "gen skeleton" command.
+Date:   Mon, 26 Apr 2021 15:46:29 -0700
+Message-ID: <CAEf4BzYkzzN=ZD2X1bOg8U39Whbe6oTPuUEMOpACw6NPEW69NA@mail.gmail.com>
+Subject: Re: [PATCH v2 bpf-next 10/16] bpf: Add bpf_btf_find_by_name_kind() helper.
 To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
 Cc:     "David S. Miller" <davem@davemloft.net>,
         Daniel Borkmann <daniel@iogearbox.net>,
@@ -67,159 +66,74 @@ On Thu, Apr 22, 2021 at 5:27 PM Alexei Starovoitov
 >
 > From: Alexei Starovoitov <ast@kernel.org>
 >
-> Add -L flag to bpftool to use libbpf gen_trace facility and syscall/loader program
-> for skeleton generation and program loading.
+> Add new helper:
 >
-> "bpftool gen skeleton -L" command will generate a "light skeleton" or "loader skeleton"
-> that is similar to existing skeleton, but has one major difference:
-> $ bpftool gen skeleton lsm.o > lsm.skel.h
-> $ bpftool gen skeleton -L lsm.o > lsm.lskel.h
-> $ diff lsm.skel.h lsm.lskel.h
-> @@ -5,34 +4,34 @@
->  #define __LSM_SKEL_H__
->
->  #include <stdlib.h>
-> -#include <bpf/libbpf.h>
-> +#include <bpf/bpf.h>
->
-> The light skeleton does not use majority of libbpf infrastructure.
-> It doesn't need libelf. It doesn't parse .o file.
-> It only needs few sys_bpf wrappers. All of them are in bpf/bpf.h file.
-> In future libbpf/bpf.c can be inlined into bpf.h, so not even libbpf.a would be
-> needed to work with light skeleton.
->
-> "bpftool prog load -L file.o" command is introduced for debugging of syscall/loader
-> program generation. Just like the same command without -L it will try to load
-> the programs from file.o into the kernel. It won't even try to pin them.
->
-> "bpftool prog load -L -d file.o" command will provide additional debug messages
-> on how syscall/loader program was generated.
-> Also the execution of syscall/loader program will use bpf_trace_printk() for
-> each step of loading BTF, creating maps, and loading programs.
-> The user can do "cat /.../trace_pipe" for further debug.
->
-> An example of fexit_sleep.lskel.h generated from progs/fexit_sleep.c:
-> struct fexit_sleep {
->         struct bpf_loader_ctx ctx;
->         struct {
->                 struct bpf_map_desc bss;
->         } maps;
->         struct {
->                 struct bpf_prog_desc nanosleep_fentry;
->                 struct bpf_prog_desc nanosleep_fexit;
->         } progs;
->         struct {
->                 int nanosleep_fentry_fd;
->                 int nanosleep_fexit_fd;
->         } links;
->         struct fexit_sleep__bss {
->                 int pid;
->                 int fentry_cnt;
->                 int fexit_cnt;
->         } *bss;
-> };
+> long bpf_btf_find_by_name_kind(u32 btf_fd, char *name, u32 kind, int flags)
+>         Description
+>                 Find given name with given type in BTF pointed to by btf_fd.
+>                 If btf_fd is zero look for the name in vmlinux BTF and in module's BTFs.
+>         Return
+>                 Returns btf_id and btf_obj_fd in lower and upper 32 bits.
 >
 > Signed-off-by: Alexei Starovoitov <ast@kernel.org>
 > ---
->  tools/bpf/bpftool/Makefile        |   2 +-
->  tools/bpf/bpftool/gen.c           | 313 +++++++++++++++++++++++++++---
->  tools/bpf/bpftool/main.c          |   7 +-
->  tools/bpf/bpftool/main.h          |   1 +
->  tools/bpf/bpftool/prog.c          |  80 ++++++++
->  tools/bpf/bpftool/xlated_dumper.c |   3 +
->  6 files changed, 382 insertions(+), 24 deletions(-)
+>  include/linux/bpf.h            |  1 +
+>  include/uapi/linux/bpf.h       |  8 ++++
+>  kernel/bpf/btf.c               | 68 ++++++++++++++++++++++++++++++++++
+>  kernel/bpf/syscall.c           |  2 +
+>  tools/include/uapi/linux/bpf.h |  8 ++++
+>  5 files changed, 87 insertions(+)
 >
-
-[...]
-
-> @@ -268,6 +269,254 @@ static void codegen(const char *template, ...)
->         free(s);
->  }
+> diff --git a/include/linux/bpf.h b/include/linux/bpf.h
+> index 0f841bd0cb85..4cf361eb6a80 100644
+> --- a/include/linux/bpf.h
+> +++ b/include/linux/bpf.h
+> @@ -1972,6 +1972,7 @@ extern const struct bpf_func_proto bpf_get_socket_ptr_cookie_proto;
+>  extern const struct bpf_func_proto bpf_task_storage_get_proto;
+>  extern const struct bpf_func_proto bpf_task_storage_delete_proto;
+>  extern const struct bpf_func_proto bpf_for_each_map_elem_proto;
+> +extern const struct bpf_func_proto bpf_btf_find_by_name_kind_proto;
 >
-> +static void print_hex(const char *obj_data, int file_sz)
-> +{
-> +       int i, len;
-> +
-> +       /* embed contents of BPF object file */
+>  const struct bpf_func_proto *bpf_tracing_func_proto(
+>         enum bpf_func_id func_id, const struct bpf_prog *prog);
+> diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
+> index de58a714ed36..253f5f031f08 100644
+> --- a/include/uapi/linux/bpf.h
+> +++ b/include/uapi/linux/bpf.h
+> @@ -4748,6 +4748,13 @@ union bpf_attr {
+>   *             Execute bpf syscall with given arguments.
+>   *     Return
+>   *             A syscall result.
+> + *
+> + * long bpf_btf_find_by_name_kind(u32 btf_fd, char *name, u32 kind, int flags)
+> + *     Description
+> + *             Find given name with given type in BTF pointed to by btf_fd.
 
-nit: this comment should have stayed at the original place
+"Find BTF type with given name"? Should the limits on name length be
+specified? KSYM_NAME_LEN is a pretty arbitrary restriction. Also,
+would it still work fine if the caller provides a pointer to a much
+shorter piece of memory?
 
-> +       for (i = 0, len = 0; i < file_sz; i++) {
-> +               int w = obj_data[i] ? 4 : 2;
-> +
+Why not add name_sz right after name, as we do with a lot of other
+arguments like this?
 
-[...]
+> + *             If btf_fd is zero look for the name in vmlinux BTF and in module's BTFs.
+> + *     Return
+> + *             Returns btf_id and btf_obj_fd in lower and upper 32 bits.
 
-> +       bpf_object__for_each_map(map, obj) {
-> +               const char * ident;
-> +
-> +               ident = get_map_ident(map);
-> +               if (!ident)
-> +                       continue;
-> +
-> +               if (!bpf_map__is_internal(map) ||
-> +                   !(bpf_map__def(map)->map_flags & BPF_F_MMAPABLE))
-> +                       continue;
-> +
-> +               printf("\tskel->%1$s =\n"
-> +                      "\t\tmmap(NULL, %2$zd, PROT_READ | PROT_WRITE, MAP_SHARED | MAP_FIXED,\n"
-> +                      "\t\t\tskel->maps.%1$s.map_fd, 0);\n",
-> +                      ident, bpf_map_mmap_sz(map));
+Mention that for vmlinux BTF btf_obj_fd will be zero? Also who "owns"
+the FD? If the BPF program doesn't close it, when are they going to be
+cleaned up?
 
-use codegen()?
-
-> +       }
-> +       codegen("\
-> +               \n\
-> +                       return 0;                                           \n\
-> +               }                                                           \n\
-> +                                                                           \n\
-> +               static inline struct %1$s *                                 \n\
-
-[...]
-
->  static int do_skeleton(int argc, char **argv)
->  {
->         char header_guard[MAX_OBJ_NAME_LEN + sizeof("__SKEL_H__")];
-> @@ -277,7 +526,7 @@ static int do_skeleton(int argc, char **argv)
->         struct bpf_object *obj = NULL;
->         const char *file, *ident;
->         struct bpf_program *prog;
-> -       int fd, len, err = -1;
-> +       int fd, err = -1;
->         struct bpf_map *map;
->         struct btf *btf;
->         struct stat st;
-> @@ -359,7 +608,25 @@ static int do_skeleton(int argc, char **argv)
->         }
+>   */
+>  #define __BPF_FUNC_MAPPER(FN)          \
+>         FN(unspec),                     \
+> @@ -4917,6 +4924,7 @@ union bpf_attr {
+>         FN(for_each_map_elem),          \
+>         FN(snprintf),                   \
+>         FN(sys_bpf),                    \
+> +       FN(btf_find_by_name_kind),      \
+>         /* */
 >
->         get_header_guard(header_guard, obj_name);
-> -       codegen("\
-> +       if (use_loader)
-
-please use {} for such a long if/else, even if it's, technically, a
-single-statement if
-
-> +               codegen("\
-> +               \n\
-> +               /* SPDX-License-Identifier: (LGPL-2.1 OR BSD-2-Clause) */   \n\
-> +               /* THIS FILE IS AUTOGENERATED! */                           \n\
-> +               #ifndef %2$s                                                \n\
-> +               #define %2$s                                                \n\
-> +                                                                           \n\
-> +               #include <stdlib.h>                                         \n\
-> +               #include <bpf/bpf.h>                                        \n\
-> +               #include <bpf/skel_internal.h>                              \n\
-> +                                                                           \n\
-> +               struct %1$s {                                               \n\
-> +                       struct bpf_loader_ctx ctx;                          \n\
-> +               ",
-> +               obj_name, header_guard
-> +               );
-> +       else
-> +               codegen("\
->                 \n\
->                 /* SPDX-License-Identifier: (LGPL-2.1 OR BSD-2-Clause) */   \n\
->                                                                             \n\
 
 [...]
