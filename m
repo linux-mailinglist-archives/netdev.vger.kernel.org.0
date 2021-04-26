@@ -2,138 +2,121 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D809436B007
-	for <lists+netdev@lfdr.de>; Mon, 26 Apr 2021 10:54:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 11A6236B018
+	for <lists+netdev@lfdr.de>; Mon, 26 Apr 2021 10:59:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232228AbhDZIzZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 26 Apr 2021 04:55:25 -0400
-Received: from esa.microchip.iphmx.com ([68.232.154.123]:28387 "EHLO
-        esa.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232068AbhDZIzX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 26 Apr 2021 04:55:23 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1619427282; x=1650963282;
-  h=message-id:subject:from:to:cc:date:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=AP8/vgZMLgLTPp4GWhqQOQD8yMyWeBlrSVvf3le8gkA=;
-  b=QWv06zjcnKUmaP+DSGX0pHU6tE/eY7jj2aJKBrNngPoqzszPJTC6ANR5
-   wXCskYPCZmCmutKgTRyCLPj0tFoLZ5gEi0YrBv7HjYZ7Y9QvFdkGfJJ/h
-   DOr2ISUqeHHseiFqJQb5tHCeuJZBrsjUmjM2wSvtTtd83zcKkZzWyDLbf
-   5eL+ekCNN6lIQukRSu6XS24ua82xaLJjDndmniKfGWVmhfXxQganfFfQV
-   a4fkPqDQs8tV5RWGIHRGetOUJ3wWiPAc3JkWmwA19He/lAKAtC0uUirN+
-   Jbzt0GAr7uaVVkmhiJGwf8d//OofJVWQT/wV8Nl8/lDPdTr/ykGWMFYGr
-   g==;
-IronPort-SDR: JQ55O2INFhmho3QO97hCvnd34s2JtzUVQRmYpgGVywThJiLibiI47yGkrUIDjgKKIaAlcRB9mo
- mHZuijgt0RCpsGfAn3M0VUeA59KGiOb1aRpSv21xut9hT2ybzlvnTHuG2un2TQgaDX/GI2Cqmv
- +aYnKN9GjXqtpW8RZfW0elnqkWmv85WcUXr4MdeqQnn5Gr/00nEHYQb201T5d2frahYX7/6enS
- cmDDQIwCyk5Xbp+gh+7gbgjduIWGsii/ZAAt9rrWG8xt/7L2smKOjPMOLBt1zebgl7gp/OabGT
- BOc=
-X-IronPort-AV: E=Sophos;i="5.82,252,1613458800"; 
-   d="scan'208";a="112169190"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa4.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 26 Apr 2021 01:54:41 -0700
-Received: from chn-vm-ex02.mchp-main.com (10.10.85.144) by
- chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2176.2; Mon, 26 Apr 2021 01:54:41 -0700
-Received: from INB-LOAN0158.mchp-main.com (10.10.115.15) by
- chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server id
- 15.1.2176.2 via Frontend Transport; Mon, 26 Apr 2021 01:54:37 -0700
-Message-ID: <291ac605fe404b90c571f23f457f7f855eebf970.camel@microchip.com>
-Subject: Re: [PATCH v2 net-next 4/9] net: dsa: microchip: add DSA support
- for microchip lan937x
-From:   Prasanna Vengateshan <prasanna.vengateshan@microchip.com>
-To:     Andrew Lunn <andrew@lunn.ch>, Vladimir Oltean <olteanv@gmail.com>
-CC:     <netdev@vger.kernel.org>, <robh+dt@kernel.org>,
-        <UNGLinuxDriver@microchip.com>, <hkallweit1@gmail.com>,
-        <linux@armlinux.org.uk>, <davem@davemloft.net>, <kuba@kernel.org>,
-        <linux-kernel@vger.kernel.org>, <vivien.didelot@gmail.com>,
-        <f.fainelli@gmail.com>, <devicetree@vger.kernel.org>
-Date:   Mon, 26 Apr 2021 14:24:35 +0530
-In-Reply-To: <YIIGmpea6Mf0yzYS@lunn.ch>
-References: <20210422094257.1641396-1-prasanna.vengateshan@microchip.com>
-         <20210422094257.1641396-5-prasanna.vengateshan@microchip.com>
-         <20210422195921.utxdh5dn4ddltxkf@skbuf> <YIIGmpea6Mf0yzYS@lunn.ch>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.38.1-1 
+        id S232377AbhDZI75 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 26 Apr 2021 04:59:57 -0400
+Received: from mail.katalix.com ([3.9.82.81]:43726 "EHLO mail.katalix.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S232068AbhDZI74 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 26 Apr 2021 04:59:56 -0400
+Received: from localhost (82-69-49-219.dsl.in-addr.zen.co.uk [82.69.49.219])
+        (Authenticated sender: tom)
+        by mail.katalix.com (Postfix) with ESMTPSA id 6A4087D442;
+        Mon, 26 Apr 2021 09:59:14 +0100 (BST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=katalix.com; s=mail;
+        t=1619427554; bh=blQ2Yy8nnd5V1EGST4em1kvBGmK2/b1iXrd6f6HBp5c=;
+        h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+         Content-Disposition:In-Reply-To:From;
+        z=Date:=20Mon,=2026=20Apr=202021=2009:59:14=20+0100|From:=20Tom=20P
+         arkin=20<tparkin@katalix.com>|To:=20Cong=20Wang=20<xiyou.wangcong@
+         gmail.com>|Cc:=20Sishuai=20Gong=20<sishuai@purdue.edu>,=20David=20
+         Miller=20<davem@davemloft.net>,=0D=0A=09Jakub=20Kicinski=20<kuba@k
+         ernel.org>,=0D=0A=09Matthias=20Schiffer=20<mschiffer@universe-fact
+         ory.net>,=0D=0A=09Linux=20Kernel=20Network=20Developers=20<netdev@
+         vger.kernel.org>|Subject:=20Re:=20[PATCH=20v3]=20net:=20fix=20a=20
+         concurrency=20bug=20in=20l2tp_tunnel_register()|Message-ID:=20<202
+         10426085913.GA4750@katalix.com>|References:=20<20210421192430.3036
+         -1-sishuai@purdue.edu>=0D=0A=20<CAM_iQpUV-rmGdn1g7jn=3D=3D53wLQ0Mv
+         M_bx4cJBo4AEDVZXPehRQ@mail.gmail.com>|MIME-Version:=201.0|Content-
+         Disposition:=20inline|In-Reply-To:=20<CAM_iQpUV-rmGdn1g7jn=3D=3D53
+         wLQ0MvM_bx4cJBo4AEDVZXPehRQ@mail.gmail.com>;
+        b=yZ5IiJRiLZ56PGy71RYnsiKD7QQqpZjaXdQQTVFZZnG1SaHYEDFj4WCUFFLhT5Nx0
+         GaP+E9zHmVoORD4lzD4psXTZDTepVU+EhtFESKFmUogRHWUeQNtoeeqDojrJmrR3JI
+         ZXSVA3ydpjN0r7CwMnDIGFimB8641V+/lbpntniWHJOgAn3M2SityUuqhOhL05e0ZC
+         OXGFlhzmVbW6usoSFqkQ63AX3ZXbT6JstYt3uiQzDaJgfev8mvP+xRphVW2ux3j/2O
+         2Q+2JrSOkdv3Zy5PTF1SgtATdxU66N1ttkC0KaOU7xVa/ZpAVn2et2Jloqn4DCVS/x
+         g8Kv3ExSJXSAg==
+Date:   Mon, 26 Apr 2021 09:59:14 +0100
+From:   Tom Parkin <tparkin@katalix.com>
+To:     Cong Wang <xiyou.wangcong@gmail.com>
+Cc:     Sishuai Gong <sishuai@purdue.edu>,
+        David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Matthias Schiffer <mschiffer@universe-factory.net>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>
+Subject: Re: [PATCH v3] net: fix a concurrency bug in l2tp_tunnel_register()
+Message-ID: <20210426085913.GA4750@katalix.com>
+References: <20210421192430.3036-1-sishuai@purdue.edu>
+ <CAM_iQpUV-rmGdn1g7jn==53wLQ0MvM_bx4cJBo4AEDVZXPehRQ@mail.gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="rwEMma7ioTxnRzrJ"
+Content-Disposition: inline
+In-Reply-To: <CAM_iQpUV-rmGdn1g7jn==53wLQ0MvM_bx4cJBo4AEDVZXPehRQ@mail.gmail.com>
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 2021-04-23 at 01:28 +0200, Andrew Lunn wrote:
-> EXTERNAL EMAIL: Do not click links or open attachments unless you know the
-> content is safe
-> 
-> > > +
-> > > +           lan937x_pread8(dev, port, REG_PORT_XMII_CTRL_1, &data8);
-> > > +
-> > > +           /* clear MII selection & set it based on interface later */
-> > > +           data8 &= ~PORT_MII_SEL_M;
-> > > +
-> > > +           /* configure MAC based on p->interface */
-> > > +           switch (p->interface) {
-> > > +           case PHY_INTERFACE_MODE_MII:
-> > > +                   lan937x_set_gbit(dev, false, &data8);
-> > > +                   data8 |= PORT_MII_SEL;
-> > > +                   break;
-> > > +           case PHY_INTERFACE_MODE_RMII:
-> > > +                   lan937x_set_gbit(dev, false, &data8);
-> > > +                   data8 |= PORT_RMII_SEL;
-> > > +                   break;
-> > > +           default:
-> > > +                   lan937x_set_gbit(dev, true, &data8);
-> > > +                   data8 |= PORT_RGMII_SEL;
-> > > +
-> > > +                   data8 &= ~PORT_RGMII_ID_IG_ENABLE;
-> > > +                   data8 &= ~PORT_RGMII_ID_EG_ENABLE;
-> > > +
-> > > +                   if (p->interface == PHY_INTERFACE_MODE_RGMII_ID ||
-> > > +                       p->interface == PHY_INTERFACE_MODE_RGMII_RXID)
-> > > +                           data8 |= PORT_RGMII_ID_IG_ENABLE;
-> > > +
-> > > +                   if (p->interface == PHY_INTERFACE_MODE_RGMII_ID ||
-> > > +                       p->interface == PHY_INTERFACE_MODE_RGMII_TXID)
-> > > +                           data8 |= PORT_RGMII_ID_EG_ENABLE;
-> > 
-> > This is interesting. If you have an RGMII port connected to an external
-> > PHY, how do you ensure that either the lan937x driver, or the PHY driver,
-> > but not both, enable RGMII delays?
-> 
-> What generally happens is the MAC adds no delays, and the PHY acts
-> upon the interface mode, inserting delays as requested.
-> 
-> There are a very small number of exceptions to this, for boards which
-> have a PHY which cannot do delays, and the MAC can. If i remember
-> correctly, this pretty much limited to one MAC vendor. In that case,
-> the MAC adds delays, if the interface mode requests it, and it always
-> passes PHY_INTERFACE_MODE_RGMII to the PHY so it does not add delays.
-> 
-> So what needs to be looked at here is what is passed to the phy
-> connect call? passing p->interface is definitely wrong if the MAC is
-> acting on it.
-> 
-> If even if the connect is correct, i would still prefer the MAC not do
-> the delays, let the PHY do it, like nearly every other setup.
-> 
->         Andrew
-It comes here only if the port is not internal phy which means for MII
-interface. As Andrew said, let the phy driver handles the delay if it has the
-associated phy vendor driver, otherwise can still be added by MAC if required
-(like for cpu port)?
 
-What do you think on the following code?
+--rwEMma7ioTxnRzrJ
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-	struct dsa_port *dp = dsa_to_port(dev->ds, port);
-	struct phy_device *phy_dev = dp->slave->phydev;
-	.
-	.
-	.
+On  Fri, Apr 23, 2021 at 10:38:45 -0700, Cong Wang wrote:
+> On Wed, Apr 21, 2021 at 12:25 PM Sishuai Gong <sishuai@purdue.edu> wrote:
+> >
+> > l2tp_tunnel_register() registers a tunnel without fully
+> > initializing its attribute. This can allow another kernel thread
+> > running l2tp_xmit_core() to access the uninitialized data and
+> > then cause a kernel NULL pointer dereference error, as shown below.
+> >
+> > Thread 1    Thread 2
+> > //l2tp_tunnel_register()
+> > list_add_rcu(&tunnel->list, &pn->l2tp_tunnel_list);
+> >             //pppol2tp_connect()
+> >             tunnel =3D l2tp_tunnel_get(sock_net(sk), info.tunnel_id);
+> >             // Fetch the new tunnel
+> >             ...
+> >             //l2tp_xmit_core()
+> >             struct sock *sk =3D tunnel->sock;
+> >             ...
+> >             bh_lock_sock(sk);
+> >             //Null pointer error happens
+> > tunnel->sock =3D sk;
+> >
+> > Fix this bug by initializing tunnel->sock before adding the
+> > tunnel into l2tp_tunnel_list.
+> >
+> > Signed-off-by: Sishuai Gong <sishuai@purdue.edu>
+> > Reported-by: Sishuai Gong <sishuai@purdue.edu>
+>=20
+> Reviewed-by: Cong Wang <cong.wang@bytedance.com>
+>=20
+> Thanks.
 
-    	if (!phydev || phy_driver_is_genphy(phydev)) {
-		/*Add RGMII internal delay*/
-    	}
+For some reason I've not been seeing these patches, just the replies.
+I can't see it on lore.kernel.org either, unless I'm missing something
+obvious.
 
+Have the original mails cc'd netdev?
 
+--rwEMma7ioTxnRzrJ
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEsUkgyDzMwrj81nq0lIwGZQq6i9AFAmCGgNwACgkQlIwGZQq6
+i9Dn/gf/cSPj5xcOJOX087JFWfyCgAb47h0s7o+H94NpnwPeGAnjZXWz946EGuNv
+zUCpz2WzTrxQ0vK6PWvF64tZvQJIgC6+/pSmWll18H1x1WH5d0ZSw2y8nAoJxLKw
+lrvkN2OBA9Y5UXRZVNHlDS9MZOJKi4yza+xzwpslV/DCq9URZ6e9NqkI+z54eVt9
+K8/kSHzK1pQQTYQMAzNOBCJPJSJGEPSEuXyhqmNN7mNNsOIEs6OMCStcLCT1fuXO
+vMWmZEqTvT7TXbqizHle15+sW8uEDoxbd8T3kiYxWIZeBpk1gIlOqR0HBcL2YyGY
+aFHfrobKUft+J1LdSNUmBRSOieGIYw==
+=Zb/6
+-----END PGP SIGNATURE-----
+
+--rwEMma7ioTxnRzrJ--
