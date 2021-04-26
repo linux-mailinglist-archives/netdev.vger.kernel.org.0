@@ -2,78 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D158736AF89
-	for <lists+netdev@lfdr.de>; Mon, 26 Apr 2021 10:11:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 791AE36AF8F
+	for <lists+netdev@lfdr.de>; Mon, 26 Apr 2021 10:13:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232592AbhDZIMe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 26 Apr 2021 04:12:34 -0400
-Received: from mail.kernel.org ([198.145.29.99]:56896 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232295AbhDZIMd (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 26 Apr 2021 04:12:33 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 807C261075;
-        Mon, 26 Apr 2021 08:11:52 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1619424712;
-        bh=b73sWLTfZ3rVYbqm01S+4HlwmIhgl+rHnAudGrlqVOc=;
-        h=From:To:Cc:Subject:Date:From;
-        b=sAHUPcUaaz3BS2w4HEwuPa2mq1C0zMCXoo9bkDnrEZTqbpKptfGNnS7vKhyufmaJ2
-         js6mtRYDJX2dQ+m+zzk4Op8xuOtoxNHMvk9l6c+o5+g+SLcwATOJ1hRHZUw8rP8FZG
-         IsDIAYX5XWL+RAgz7btk5Ih+I3GgAN7SjBruykxN1w+zu9fpADrBahFGAKJP7tjqHE
-         /V3WQamjw18E4HKmjq1cDTRO1oonK17VP62y8LjfxcXS+Y2VU+i4D3Dcf/H8fmR2Lu
-         aEK3SXEl2NYQatlBP27uWbBGGaxSfydotdsRTpRkn3JDIhyeO/FYAz3nyF4nEURy1W
-         0LmuJjOl5Aq+w==
-Received: from johan by xi.lan with local (Exim 4.93.0.4)
-        (envelope-from <johan@kernel.org>)
-        id 1lawLa-0002k5-5L; Mon, 26 Apr 2021 10:12:02 +0200
-From:   Johan Hovold <johan@kernel.org>
-To:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-usb@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Johan Hovold <johan@kernel.org>,
-        stable@vger.kernel.org, Anirudh Rayabharam <mail@anirudhrb.com>,
-        Leonardo Antoniazzi <leoanto@aruba.it>
-Subject: [PATCH] net: hso: fix NULL-deref on disconnect regression
-Date:   Mon, 26 Apr 2021 10:11:49 +0200
-Message-Id: <20210426081149.10498-1-johan@kernel.org>
-X-Mailer: git-send-email 2.26.3
+        id S232377AbhDZINo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 26 Apr 2021 04:13:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47486 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232185AbhDZINm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 26 Apr 2021 04:13:42 -0400
+Received: from mail-lj1-x236.google.com (mail-lj1-x236.google.com [IPv6:2a00:1450:4864:20::236])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F1995C061756
+        for <netdev@vger.kernel.org>; Mon, 26 Apr 2021 01:13:00 -0700 (PDT)
+Received: by mail-lj1-x236.google.com with SMTP id b38so21863113ljf.5
+        for <netdev@vger.kernel.org>; Mon, 26 Apr 2021 01:13:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=cloudflare.com; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=/5sZfAWMd+ikiAV3bLd2cK6LOqVMDPgtaZ3fFQ7MIjo=;
+        b=cFcaMvZYSdjF2f34XTseTA7smvlQAITftRJQdb51QRoTJ8TNFudos3QdbLm/1nfZOF
+         DrrppnG6FuhBd6RYaaFUjCSnlCLHSgMbpgHzt6215bGkj/O4pbymcb6VVyV0mMGPc1Yb
+         YYlfnxmetIahF53kLJ6xeYsaBNv3Vw52VYLDQ=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=/5sZfAWMd+ikiAV3bLd2cK6LOqVMDPgtaZ3fFQ7MIjo=;
+        b=EyHdZht8kbX6LO1mtrjg5jUDIqcJAYojyJ2jS/xi1TkU4Pblg6Z4PKlKxuBCMG5Ota
+         SJOR7ADbE4mlqJAFrME7i5L1gnHp9WeLykHeniRpO9CVpUTPFrZvdO1E+h6pxnY0zRsz
+         L71XIBIulE80HV39VP8MQqKwSLgbjEV6SVHJXKxJz6z374elgaYCdcffalbP+TulNpco
+         zvASOIrqrYVzDrAIzUpTRYccWnO5G2OvqtBD/1uSx3r60Mpp5cMVHa+4dCDue6elCxoh
+         G4iOJ/nJBpcIiZOSWnuZvna5Al/ml3PCVvVUNWBIh/ZiznbazM1vr7eGZW27cCTa+1Hv
+         G/Og==
+X-Gm-Message-State: AOAM530GWIXvbe9mbvCbeo9A04Ie5d7xd4GWEre/a2KAfrgoDCGG+xMO
+        wlt0DGjv3DmXYqot4xqTEPc6z1i37q05uv8VkNAQRw==
+X-Google-Smtp-Source: ABdhPJxEHRXvZWbIteNosiutZAq75uXJOWKFpitGwuYHp/kosW/z13xxA/NMtqpkwsMIHDFFPNPU7u/7oSW2baD3snk=
+X-Received: by 2002:a2e:b4ba:: with SMTP id q26mr11866288ljm.223.1619424779352;
+ Mon, 26 Apr 2021 01:12:59 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20210423233058.3386115-1-andrii@kernel.org> <20210423233058.3386115-5-andrii@kernel.org>
+In-Reply-To: <20210423233058.3386115-5-andrii@kernel.org>
+From:   Lorenz Bauer <lmb@cloudflare.com>
+Date:   Mon, 26 Apr 2021 09:12:48 +0100
+Message-ID: <CACAyw9_RqR9m8zBTTO+qKzs9K86sthbHRjGH2m0yyE7zvNFYSg@mail.gmail.com>
+Subject: Re: [PATCH bpf-next 4/5] selftests/bpf: fix field existence CO-RE
+ reloc tests
+To:     Andrii Nakryiko <andrii@kernel.org>
+Cc:     bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@fb.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Kernel Team <kernel-team@fb.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Commit 8a12f8836145 ("net: hso: fix null-ptr-deref during tty device
-unregistration") fixed the racy minor allocation reported by syzbot, but
-introduced an unconditional NULL-pointer dereference on every disconnect
-instead.
+On Sat, 24 Apr 2021 at 00:36, Andrii Nakryiko <andrii@kernel.org> wrote:
+>
+> Negative field existence cases for have a broken assumption that FIELD_EXISTS
+> CO-RE relo will fail for fields that match the name but have incompatible type
+> signature. That's not how CO-RE relocations generally behave. Types and fields
+> that match by name but not by expected type are treated as non-matching
+> candidates and are skipped. Error later is reported if no matching candidate
+> was found. That's what happens for most relocations, but existence relocations
+> (FIELD_EXISTS and TYPE_EXISTS) are more permissive and they are designed to
+> return 0 or 1, depending if a match is found. This allows to handle
+> name-conflicting but incompatible types in BPF code easily. Combined with
+> ___flavor suffixes, it's possible to handle pretty much any structural type
+> changes in kernel within the compiled once BPF source code.
+>
+> So, long story short, negative field existence test cases are invalid in their
+> assumptions, so this patch reworks them into a single consolidated positive
+> case that doesn't match any of the fields.
+>
+> Fixes: c7566a69695c ("selftests/bpf: Add field existence CO-RE relocs tests")
+> Reported-by: Lorenz Bauer <lmb@cloudflare.com>
+> Signed-off-by: Andrii Nakryiko <andrii@kernel.org>
 
-Specifically, the serial device table must no longer be accessed after
-the minor has been released by hso_serial_tty_unregister().
+Acked-by: Lorenz Bauer <lmb@cloudflare.com>
 
-Fixes: 8a12f8836145 ("net: hso: fix null-ptr-deref during tty device unregistration")
-Cc: stable@vger.kernel.org
-Cc: Anirudh Rayabharam <mail@anirudhrb.com>
-Reported-by: Leonardo Antoniazzi <leoanto@aruba.it>
-Signed-off-by: Johan Hovold <johan@kernel.org>
----
- drivers/net/usb/hso.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/net/usb/hso.c b/drivers/net/usb/hso.c
-index 9bc58e64b5b7..3ef4b2841402 100644
---- a/drivers/net/usb/hso.c
-+++ b/drivers/net/usb/hso.c
-@@ -3104,7 +3104,7 @@ static void hso_free_interface(struct usb_interface *interface)
- 			cancel_work_sync(&serial_table[i]->async_put_intf);
- 			cancel_work_sync(&serial_table[i]->async_get_intf);
- 			hso_serial_tty_unregister(serial);
--			kref_put(&serial_table[i]->ref, hso_serial_ref_free);
-+			kref_put(&serial->parent->ref, hso_serial_ref_free);
- 		}
- 	}
- 
 -- 
-2.26.3
+Lorenz Bauer  |  Systems Engineer
+6th Floor, County Hall/The Riverside Building, SE1 7PB, UK
 
+www.cloudflare.com
