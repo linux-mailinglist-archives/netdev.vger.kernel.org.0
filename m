@@ -2,177 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AB3B536B502
-	for <lists+netdev@lfdr.de>; Mon, 26 Apr 2021 16:36:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5156636B590
+	for <lists+netdev@lfdr.de>; Mon, 26 Apr 2021 17:18:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233799AbhDZOh1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 26 Apr 2021 10:37:27 -0400
-Received: from out3-smtp.messagingengine.com ([66.111.4.27]:44227 "EHLO
-        out3-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S233501AbhDZOh1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 26 Apr 2021 10:37:27 -0400
-Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
-        by mailout.nyi.internal (Postfix) with ESMTP id 081395C0164;
-        Mon, 26 Apr 2021 10:36:45 -0400 (EDT)
-Received: from imap21 ([10.202.2.71])
-  by compute4.internal (MEProxy); Mon, 26 Apr 2021 10:36:45 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=hmh.eng.br; h=
-        mime-version:message-id:date:from:to:subject:content-type; s=
-        fm2; bh=tMx2BZVAMOMXQXtBh8utAOGoUJIA/+txAc3Z0kDjE24=; b=LSwKSwv+
-        O+YyBM+0IQhwdAcJMxhB1hnZVkHVySUqBxyw0O2wIolZ3doOB8J8LF29II6qGTBV
-        0HDcTpV7z9op7I1CZIJRxi9IMnAnGY9ZipGfeo5Bb16YRYjtV1zA59XpLQNUeSuW
-        PxngAcOVmqKfnc7OwC2LnwtN/NCCyzqs8sTlV4HPm01dPgcnnE+A1fh6ZdPBS67j
-        +PZaYQbrZxiwB8LAXv7wZRQPtgUw9equZLy4LlQx7bnNNp48rMlPCLS9ALDQVmxN
-        gn9BwznCPtvZhZTMDONKTJWuYnK2pWGrbgSMA1BadAZa66ZOIM/hIRXgmnHh9tcd
-        qnJA8eeQc5yODA==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=content-type:date:from:message-id
-        :mime-version:subject:to:x-me-proxy:x-me-proxy:x-me-sender
-        :x-me-sender:x-sasl-enc; s=fm2; bh=tMx2BZVAMOMXQXtBh8utAOGoUJIA/
-        +txAc3Z0kDjE24=; b=VXBsYUNW12bBTzcH7J80UFvHsEMfUMPNDoGcviBSNYmPQ
-        wGrhfxeuGASroJvPqXQWL/dtxhYnCkFHxExkqeq1tsxiEAH7OSmi5hWfO1Jzs9/1
-        3SPDE7qFvLFNoc3kQ9Ih0S5HXrZLlvejpjceVyWQ0qXS5yd35+FjJGcDuphpbteu
-        OTV5Ej8RS8ua5pZoSjmV4tQ29qG6rZBAnhzD29XSlqHSfCkgoqvqSkF2a6ahx0aW
-        TRuYmxaxiypcNF2lSyuoJf2o6AF/pS4BRdbWOW0c78n2nlFVTsZQwT7rWT0NpPoC
-        LpKNh1N+M9mtjGrXhf/IcuvzM0R4mazFqrzblf3xw==
-X-ME-Sender: <xms:_M-GYDTvSBlUYztLefZTHw30pQoWDL1dP5N9S-wvc3o4wnCPNYu_ZQ>
-    <xme:_M-GYEyt3C4eAN-AvuZXD19lXjVfxt9IrMqSr0XYFMVUAIqVTXK3pEuUKZyRbpc2N
-    -mS2F5Xwk5mkQ>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduledrvddukedgkedtucetufdoteggodetrfdotf
-    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucenucfjughrpefofgggkfffhffvufgtsehmtderre
-    erredtnecuhfhrohhmpedfjfgvnhhrihhquhgvucguvgcuofhorhgrvghsucfjohhlshgt
-    hhhuhhdfuceohhhmhheshhhmhhdrvghnghdrsghrqeenucggtffrrghtthgvrhhnpeelge
-    dvfeduudduueejhedtfeetvedugfehffejhfeiieektdekjeelkefhhedujeenucevlhhu
-    shhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpehhmhhhsehhmhhhrd
-    gvnhhgrdgsrh
-X-ME-Proxy: <xmx:_M-GYI1pGNnnvFrdt7nMJ_tIytgKIRIoBcYJAvfubEPHPE1D__2vHA>
-    <xmx:_M-GYDALGTdmHT9g9uxGRU-BXahe_tBM4oojIKKE1hEeIR-qRQxbtg>
-    <xmx:_M-GYMinOiKmBF9k29L6BYKzEJeZevjajyCJFPRRsqkSSySMsWDVIg>
-    <xmx:_c-GYHuMzPmt-4e2iF67T6jcCk9qN3gsolEsCxSyoQVBvKivRFMepg>
-Received: by mailuser.nyi.internal (Postfix, from userid 501)
-        id 9210A51C005F; Mon, 26 Apr 2021 10:36:44 -0400 (EDT)
-X-Mailer: MessagingEngine.com Webmail Interface
-User-Agent: Cyrus-JMAP/3.5.0-alpha0-403-gbc3c488b23-fm-20210419.005-gbc3c488b
-Mime-Version: 1.0
-Message-Id: <d3a4afd7-a448-4310-930d-063b39bde86e@www.fastmail.com>
-Date:   Mon, 26 Apr 2021 11:35:56 -0300
-From:   "Henrique de Moraes Holschuh" <hmh@hmh.eng.br>
-To:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org
-Subject: Unexpected timestamps in tcpdump with veth + tc qdisc netem delay
-Content-Type: multipart/mixed;
- boundary=8da327b28c4047e6a73cddde4112973c
+        id S233934AbhDZPSl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 26 Apr 2021 11:18:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57602 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233736AbhDZPSk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 26 Apr 2021 11:18:40 -0400
+Received: from mail-pj1-x1030.google.com (mail-pj1-x1030.google.com [IPv6:2607:f8b0:4864:20::1030])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2FFF9C061574
+        for <netdev@vger.kernel.org>; Mon, 26 Apr 2021 08:17:59 -0700 (PDT)
+Received: by mail-pj1-x1030.google.com with SMTP id lt13so18326735pjb.1
+        for <netdev@vger.kernel.org>; Mon, 26 Apr 2021 08:17:59 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=dqh4dH8aZ6HN+B6a/NbTwQiRYC2u5Akv4+7vt6N7BqI=;
+        b=XY9Yv9AWPcZwWKle2oLxy6MXxZYJ/wI3gWfHvn1lwE0JJXaahPaKvpQZfVqimJVczU
+         6cKT0NyHZMxVxRYb1j2gl3iw6Tk0aJJSghG2us6p4q5uzGj/Bi7mgOvUX+hqf3MhzQg+
+         gTBcuWVt1SUt7oWg50ZtZ1OR0L2iUpJEBqTZ12/nkPhOna7owJ3beyuLuIs3y6kI1/0z
+         +V/a4ZdA7XHpDRqjZ4u5iYt6ECEjJ3wudJb3xa4WXtVz2JMzaaRgGQ4XBw4aHI86j7pH
+         D+LyTlb4q5HRHj7KWC+tPmNrO2NaYpKzJ1YP7lWKjUMaesuaq1PzEn1tPnB5qQMKro/f
+         FqHA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=dqh4dH8aZ6HN+B6a/NbTwQiRYC2u5Akv4+7vt6N7BqI=;
+        b=koWDaDTI9W2FIvIWPogO2XnuKuMmSLlYz0qu/8EkVpl70a8XKzIsZf2MEVxc39Nsbh
+         5Tmeo/T59sXwa7kjYhNmkHNKYtJ5Zw9QmpnMqfAx3MLJ+OaCMDeUfoib49zihoOZZSn2
+         9JDfhOFJnnhwVe+ji5SJGjwip5xZLifz42PTF9iF4fXkHExJ3W+HA73iM/B+G/PiXKZV
+         4QgSK8Ezj8eHt1OhklpiqY088e0AZ33qfmqLL2BgCqtdYyE+S0Wlza7rhAAe0l2rXEzo
+         KjkCQmzmEzXtX8gRU9vXXIJ9rJ2OlYTN/WqXBOE+AwyLTRZRKgdSOvoKhVST1HZuadA1
+         r0lA==
+X-Gm-Message-State: AOAM53156OqyUR4ntbYyUCahYI1KAvhXidfFfh1Mu6Vd4MP4yhZ0+X+d
+        9AwyZkkMZc73EmnN533i3LM=
+X-Google-Smtp-Source: ABdhPJzjB2/a2k1EK1OBw6sXE24xe/04DWLan0d03jv+ZZbEaiLUlLmytXqmukKx0eOwj7yzsb+Olw==
+X-Received: by 2002:a17:90a:cb0e:: with SMTP id z14mr3371246pjt.128.1619450278670;
+        Mon, 26 Apr 2021 08:17:58 -0700 (PDT)
+Received: from [192.168.0.4] ([49.173.165.50])
+        by smtp.gmail.com with ESMTPSA id a190sm90776pfb.185.2021.04.26.08.17.54
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 26 Apr 2021 08:17:58 -0700 (PDT)
+Subject: Re: [PATCH net 2/2] net: bridge: fix lockdep multicast_lock false
+ positive splat
+To:     Nikolay Aleksandrov <nikolay@nvidia.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>
+Cc:     davem@davemloft.net, kuba@kernel.org, dsahern@kernel.org,
+        yoshfuji@linux-ipv6.org, netdev@vger.kernel.org,
+        j.vosburgh@gmail.com, vfalico@gmail.com, andy@greyhouse.net,
+        roopa@nvidia.com, ast@kernel.org, andriin@fb.com,
+        daniel@iogearbox.net, weiwan@google.com, cong.wang@bytedance.com,
+        bjorn@kernel.org, bridge@lists.linux-foundation.org
+References: <20210425155742.30057-1-ap420073@gmail.com>
+ <20210425155742.30057-3-ap420073@gmail.com>
+ <ed54816f-2591-d8a7-61d8-63b7f49852c1@nvidia.com>
+ <20210426124806.4zqhtn4wewair4ua@gondor.apana.org.au>
+ <1e8cda49-4bc3-6f0b-29f3-97848aab18f0@nvidia.com>
+From:   Taehee Yoo <ap420073@gmail.com>
+Message-ID: <68b18d15-d472-3305-4f91-5e61f8b60488@gmail.com>
+Date:   Tue, 27 Apr 2021 00:17:52 +0900
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
+MIME-Version: 1.0
+In-Reply-To: <1e8cda49-4bc3-6f0b-29f3-97848aab18f0@nvidia.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---8da327b28c4047e6a73cddde4112973c
-Content-Type: text/plain
+On 4/26/21 10:15 PM, Nikolay Aleksandrov wrote:
+ > On 26/04/2021 15:48, Herbert Xu wrote:
 
-(please CC me in any replies, thank you!)
+Hi Nikolay and Herbert,
+Thank you for the reviews!
 
-Hello,
+ >> On Sun, Apr 25, 2021 at 07:45:27PM +0300, Nikolay Aleksandrov wrote:
+ >>>
+ >>> Ugh.. that's just very ugly. :) The setup you've described above is 
+by all means invalid, but
+ >>> possible unfortunately. The bridge already checks if it's being 
+added as a port to another
+ >>> bridge, but not through multiple levels of indirection. These locks 
+are completely unrelated
+ >>> as they're in very different contexts (different devices).
+ >>
+ >> Surely we should forbid this? Otherwise what's to stop someone
+ >> from creating a loop?
+ >>
+ >> Cheers,
+ >>
+ >
+ > Indeed that would be best, it's very easy to loop them.
+ >
 
-While trying to simulate large delay links using veth and netns, I came across what looks like unexpected / incorrect behavior.
-
-I have reproduced it in Debian 4.19 and 5.10 kernels, and a quick look at mainline doesn't show any relevant deviation from Debian kernels to mainline in my limited understanding of this area of the kernel.
-
-I have attached a simple script to reproduce the scenario.  If my explanation below is not clear, please just look at the script to see what it does: it should be trivial to understand.  It needs tcpdump, and CAP_NET_ADMIN (or root, etc).
-
-Topology
-
-root netns:
-   veth vec0 (192.168.233.1)   paired to ves0 (192.168.233.2)
-   tc qdisc dev vec0 root netem delay 250ms
-
-lab500ms netns:
-   veth ves0 (192.168.233.2), paired to vec0 (192.168.233.1)
-   tc qdisc dev ves0 root netem delay 250ms
-
-So:
-[root netns  -- veth (tc qdisc netem delay 250ms) ] <> [ veth (tc qdisc netem delay 250ms) -- lab500ms netns ]
-
-Expected RTT from a packet roundtrip (root nets -> lab500ms netns -> root netns) is 500ms.
-
-
-The problem:
-
-[root netns]:  ping 192.168.233.2
-PING 192.168.233.2 (192.168.233.2) 56(84) bytes of data.
-64 bytes from 192.168.233.2: icmp_seq=1 ttl=64 time=500 ms
-64 bytes from 192.168.233.2: icmp_seq=2 ttl=64 time=500 ms
-
-(the RTT reported by ping is 500ms as expected: there is a 250ms transmit delay attached to each member of the veth pair)
-
-However:
-
-[root netns]: tcpdump -i vec0 -s0 -n -p net 192.168.233.0/30
-listening on vec0, link-type EN10MB (Ethernet), capture size 262144 bytes
-17:09:09.740681 IP 192.168.233.1 > 192.168.233.2: ICMP echo request, id 9327, seq 1, length 64
-17:09:09.990891 IP 192.168.233.2 > 192.168.233.1: ICMP echo reply, id 9327, seq 1, length 64
-17:09:10.741903 IP 192.168.233.1 > 192.168.233.2: ICMP echo request, id 9327, seq 2, length 64
-17:09:10.992031 IP 192.168.233.2 > 192.168.233.1: ICMP echo reply, id 9327, seq 2, length 64
-17:09:11.742813 IP 192.168.233.1 > 192.168.233.2: ICMP echo request, id 9327, seq 3, length 64
-17:09:11.993009 IP 192.168.233.2 > 192.168.233.1: ICMP echo reply, id 9327, seq 3, length 64
-
-[lab500ms netns]: ip netns exec lab500ms tcpdump -i ves0 -s0 -n -p net 192.168.233.0/30
-listening on ves0, link-type EN10MB (Ethernet), capture size 262144 bytes
-17:09:09.740724 IP 192.168.233.1 > 192.168.233.2: ICMP echo request, id 9327, seq 1, length 64
-17:09:09.990867 IP 192.168.233.2 > 192.168.233.1: ICMP echo reply, id 9327, seq 1, length 64
-17:09:10.741942 IP 192.168.233.1 > 192.168.233.2: ICMP echo request, id 9327, seq 2, length 64
-17:09:10.992012 IP 192.168.233.2 > 192.168.233.1: ICMP echo reply, id 9327, seq 2, length 64
-17:09:11.742851 IP 192.168.233.1 > 192.168.233.2: ICMP echo request, id 9327, seq 3, length 64
-17:09:11.992985 IP 192.168.233.2 > 192.168.233.1: ICMP echo reply, id 9327, seq 3, length 64
-
-One can see that the timestamps shown by tcpdump (also reproduced using wireshark) are *not* what one would expect: the 250ms delays are missing in incoming packets (i.e. there's 250ms missing from timestamps in packets "echo reply" in vec0, and "echo request" in ves0).
-
-The 250ms vec0->ves0 delay AND 250ms ves0 -> vec0 delay *are* there, as shown by "ping", but you'd not know it if you look at the tcpdump.  The timing shown in tcpdump looks more like packet injection time at the first interface, than the time the packet was "seen" at the other end (capture interface).
-
-Adding more namespaces and VETH pairs + routing "in a row" so that the packet "exits" one veth tunnel and enters another one (after trivial routing) doesn't fix the tcpdump timestamps in the capture at the other end of the veth-veth->routing->veth-veth->routing->... chain.
-
-It looks like some sort of bug to me, but maybe I am missing something, in which case I would greatly appreciate an explanation of where I went wrong... 
-
-Thanks in advance,
-Henrique de Moraes Holschuh <hmh@hmh.eng.br>
---8da327b28c4047e6a73cddde4112973c
-Content-Disposition: attachment;filename="netns.sh"
-Content-Type: application/x-sh; name="netns.sh"
-Content-Transfer-Encoding: BASE64
-
-IyEvYmluL2Jhc2gKCiMgV0FSTklORzogZGVsZXRlcyBhbmQgcmVjcmVhdGVzOgojICBsaW5r
-IHZlYzAKIyAgbGluayB2ZXMwCiMgIG5hbWVzcGFjZSBsYWI1MDBtcwojCiMgY3JlYXRlcyB0
-ZW1wIGRpciB3aXRoIHByZWZpeCB2ZXRoLW5ldGVtLWlzc3VlIGluICRUTVBESVIgb3IgL3Rt
-cC4KClJUVD01MDBtcwpMREVMQVk9MjUwbXMKTkVUTlM9ImxhYiRSVFQiCgpkZXZsPXZlYzAK
-ZGV2cj12ZXMwCgpURElSPSQobWt0ZW1wIC1kIC10IHZldGgtbmV0ZW0taXNzdWUuWFhYWFhY
-WFhYWCkgfHwgZXhpdCAxClsgLWQgIiRURElSIiBdIHx8IGV4aXQgMQoKIyBjcmVhdGUgbmV0
-bnMgYW5kIGVuYWJsZSBsb29wYmFjaywgaWYgbWlzc2luZwppcCBuZXRucyBhZGQgJE5FVE5T
-IDI+L2Rldi9udWxsCmlwIG5ldG5zIGV4ZWMgJE5FVE5TIGlwIGxpbmsgc2V0IGRldiBsbyB1
-cAoKIyBjcmVhdGUgVkVUSCBwYWlyCmlwIGxpbmsgZGVsIGRldiAkZGV2bCAyPiYxCmlwIGxp
-bmsgYWRkICRkZXZsIG10dSAxNTAwIHR5cGUgdmV0aCBwZWVyIG5hbWUgJGRldnIgMj4vZGV2
-L251bGwgJiYgewoJaXAgbGluayBzZXQgJGRldnIgbmV0bnMgJE5FVE5TCn0KCiMgc2V0dXAg
-bG9jYWwgc2lkZQppcCBsaW5rIHNldCAkZGV2bCB1cAppcCBhZGRyIGFkZCAxOTIuMTY4LjIz
-My4xLzMwIGRldiAkZGV2bAoKIyBzZXR1cCBuZXRucyBzaWRlCmlwIG5ldG5zIGV4ZWMgJE5F
-VE5TIGlwIGxpbmsgc2V0IGRldiAkZGV2ciB1cAppcCBuZXRucyBleGVjICRORVROUyBpcCBh
-ZGRyIGFkZCAxOTIuMTY4LjIzMy4yLzMwIGRldiAkZGV2cgoKIyBOb3cgYWRkIGhhbGYtUlRU
-IGRlbGF5IHRvIFRYIHF1ZXVlIG9mIGJvdGggdmV0aCBzaWRlcwp0YyBxZGlzYyByZXBsYWNl
-IGRldiAkZGV2bCByb290IG5ldGVtIGRlbGF5ICIkTERFTEFZIgppcCBuZXRucyBleGVjICRO
-RVROUyB0YyBxZGlzYyByZXBsYWNlIGRldiAkZGV2ciByb290IG5ldGVtIGRlbGF5ICIkTERF
-TEFZIgoKIyBwcmVsb2FkIGFycCB0byBhdm9pZCBbcG9zc2libGVdIEFSUCByZXNvbHV0aW9u
-IGRlbGF5IG9uIGZpcnN0IHBpbmcsIGp1c3QgZm9yIGNsYXJpdHkKcGluZyAtYyAxIDE5Mi4x
-NjguMjMzLjIgPi9kZXYvbnVsbCAyPiYxCgojIHN0YXJ0IHR3byB0Y3BkdW1wcywgbGltaXRl
-ZCB0byAxMCBwYWNrZXRzCmVjaG8gInN0YXJ0aW5nIHRjcGR1bXAgaW4gYmFja2dyb3VuZCwg
-b3V0cHV0IHRvICRURElSL3ZlYzAucGNhcCBhbmQgJFRESVIvdmVzMC5wY2FwIgp0Y3BkdW1w
-IC1pIHZlYzAgLW4gLXAgLXcgIiRURElSL3ZlYzAucGNhcCIgLWMgMTAgbmV0IDE5Mi4xNjgu
-MjMzLjAvMzAgYW5kIGljbXAgPi9kZXYvbnVsbCAyPiYxICYKaXAgbmV0bnMgZXhlYyAkTkVU
-TlMgdGNwZHVtcCAtaSB2ZXMwIC1uIC1wIC13ICIkVERJUi92ZXMwLnBjYXAiIC1jIDEwIG5l
-dCAxOTIuMTY4LjIzMy4wLzMwIGFuZCBpY21wID4vZGV2L251bGwgMj4mMSAmCgpzbGVlcCAx
-CgplY2hvCmVjaG8gInBpbmcgc2hvd3MgNTAwbXMgUlRUIGFzIGV4cGVjdGVkIgpwaW5nIC1j
-IDYgMTkyLjE2OC4yMzMuMgoKZWNobwplY2hvICJidXQgdGhlIHRjcGR1bXBzIHNob3cgaW5j
-b3JyZWN0IHJlY2VpdmUgdGltZXN0YW1wczogIgplY2hvICJ0aGUgdGltZXN0YW1wcyBsb29r
-IG1vcmUgbGlrZSBwYWNrZXQgY3JlYXRpb24gdGltZSB0aGFuIHBhY2tldC1zZWVuLWF0LWNh
-cHR1cmUtaW50ZXJmYWNlIHRpbWUiCmVjaG8gCmVjaG8gImxvY2FsIHNpZGU6Igp0Y3BkdW1w
-IC1uIC12IC1yICIkVERJUi92ZWMwLnBjYXAiCmVjaG8KZWNobyAicmVtb3RlIHNpZGU6Igp0
-Y3BkdW1wIC1uIC12IC1yICIkVERJUi92ZXMwLnBjYXAiCmVjaG8KZWNobyAicGNhcCBmaWxl
-cyBwcmVzZXJ2ZWQgaW4gJFRESVIiCg==
-
---8da327b28c4047e6a73cddde4112973c--
+We can make very various interface graphs with master/slave interface types.
+So, if we need something to forbid it, I think it should be generic 
+code, not only for the bridge module.
