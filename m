@@ -2,155 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1969236B178
-	for <lists+netdev@lfdr.de>; Mon, 26 Apr 2021 12:19:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8690236B17E
+	for <lists+netdev@lfdr.de>; Mon, 26 Apr 2021 12:20:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232452AbhDZKUf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 26 Apr 2021 06:20:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47786 "EHLO
+        id S232756AbhDZKUz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 26 Apr 2021 06:20:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47884 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232253AbhDZKUf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 26 Apr 2021 06:20:35 -0400
-Received: from mail-pf1-x429.google.com (mail-pf1-x429.google.com [IPv6:2607:f8b0:4864:20::429])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E8731C061574;
-        Mon, 26 Apr 2021 03:19:53 -0700 (PDT)
-Received: by mail-pf1-x429.google.com with SMTP id d124so38580037pfa.13;
-        Mon, 26 Apr 2021 03:19:53 -0700 (PDT)
+        with ESMTP id S232561AbhDZKUy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 26 Apr 2021 06:20:54 -0400
+Received: from mail-lf1-x135.google.com (mail-lf1-x135.google.com [IPv6:2a00:1450:4864:20::135])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 65315C061574
+        for <netdev@vger.kernel.org>; Mon, 26 Apr 2021 03:20:13 -0700 (PDT)
+Received: by mail-lf1-x135.google.com with SMTP id w9so3603299lfr.12
+        for <netdev@vger.kernel.org>; Mon, 26 Apr 2021 03:20:13 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=TMUYLOMPKfiyNVH9R9syHPSncS85mDZLJ69XxngYkXM=;
-        b=p/T+P+Z3nNh+ICNzkff0+aA5sRrWUA7FjjwNBZum+2SkLOk6ezWwAbhqtvlmKlJ6AW
-         Bz+wofyyn5ZHqcIOuK/eTmoNs9gKO/tepGQyFa/9/+KdmMN5JSz0lJAjRohHkx1BUvOE
-         SJi5Qeka+aL0S0Yqpghap9imxXI2z3g9oMuwcXSCeXxdKtmMsYexJHkL4o9pKKC83jor
-         ptV9hI5q5ZQDWyfQAWTBiuwG9YTC9doJbAvxMg9NySslsJnEd9NTFgT6MhR+rGYXwX5G
-         FIb7JmWBSM+O5vGkSt8IxR4wCD/h856Xq3y8GruVZrIbaRFXinnT5v4UdngXKHlUd/4Z
-         TC7w==
+        d=codilime.com; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version;
+        bh=WxYWwA6mEw0KJTNBuUofOdthE/VY20C4OhSk4uI2arc=;
+        b=PO1YmaoDYrmmfBHZ87vyRz1Qp8Mb2BDYvze7Sy/UiziGsAlmDd6UjvnwdZWTIbcFhh
+         qjS7DwpuT+e8wHByeFC5SUcA1fbp0gV7GfOqoGcMry3YdzmZcT2lKX79GkYjeaKOjoyM
+         vSc0H6+xk1JREdGMjlB9A9vwTKjbZmlEbYunnfJt4XjhWb3vBBCPnha+PbNyuD6m6XdS
+         66msNI6pPuaGYJHgHSsXhwT3mwjxV9Ukv5Y0OfLQuZV+jAiknhrEpw3/58Pz1LnCtwsh
+         LP1fr2j0RE+fVTozN2wgq3iNMxvCIriOhn5fCz0Ge/bUb1xaBCXPgQu/bzvwkxClrpJP
+         lYIA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=TMUYLOMPKfiyNVH9R9syHPSncS85mDZLJ69XxngYkXM=;
-        b=lqrS5GdPCNBTSwH1SIHMIcEx84ok42/0mG/YMFRn7TttUBn1/gHYNRjbpfIU84c5Nc
-         4asZirnKlKuMBcpvjar3+Sm4yEX6FFvq57b2qTswMg/d0K91ejKFiWuM9XSpiHLEOv2K
-         WjG5GV61dPPMxi7Kt6XmKnzZW2XYKBw1WrmfcWuhKIRU6aVDtYQFrXVRNr+pVPlwgMes
-         y6lexCDTZMChVqqhjdkeEcg9c9Sji96z3Q6/ROMDjB/jYZ4+OVG/60sZMVCjI+2TzshL
-         JBThYvacdne+HQvssTath1r56d/j2gOY5P1vaUnRfiDejDpI1r3USCgi40KmfOopfidk
-         yyGQ==
-X-Gm-Message-State: AOAM533w+BnMCHEiTWvIhb3CPu9n9LYsCYLgtjdSeN+g3t3oXEw0JBbG
-        q3qqmIsPHhAcxLPFeFbWaQ8=
-X-Google-Smtp-Source: ABdhPJxWFNCYnPaEmjp/nkrRGy8IE00cJ6xOqefmGDs6u14tD/3HgEQcAWZ9y5NBGRehfNYu2KNs9A==
-X-Received: by 2002:a62:2c46:0:b029:245:6391:b631 with SMTP id s67-20020a622c460000b02902456391b631mr16682125pfs.67.1619432393497;
-        Mon, 26 Apr 2021 03:19:53 -0700 (PDT)
-Received: from Leo-laptop-t470s ([209.132.188.80])
-        by smtp.gmail.com with ESMTPSA id k20sm10870556pfa.34.2021.04.26.03.19.48
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version;
+        bh=WxYWwA6mEw0KJTNBuUofOdthE/VY20C4OhSk4uI2arc=;
+        b=UcILw1WB4BNJDRvaFQbKZkp0N48dMVluevGCPLrIQq19TkLk/ftKo6ACw24G3Crub/
+         w9mniLRJR2inWiI1v88W6dMX5KvKMzQvob6oeBDJjkgltsygZqcWAEunY6c0HiffXXUm
+         KlS4N7vt/IcXlfpOO/x30FxiOgzrM9WLvIAK1IaYR/FDwDw/podPOEkLkXTwhCcW2qXG
+         bQ/iwtvfJv8Tzx9QOlQMVyiowUAmSiqbz2BCrXoBZhgYhNX7I4zHt8+Gmy5PsAzI2n0E
+         nXe0ObAh+56xW8T4dZsOE6HVsg2+vmPTdXza8Xrh+K5mkCdD3C2wCXlvakRO3Y4uqAF3
+         DUCA==
+X-Gm-Message-State: AOAM531t2bLTLGGI15Ke/FdLC6LyYfYB8n9h7A8zPawQ0TvAVqCTsOcu
+        IoDhBOdrxsE2tzMjicZXnW22NT1wTSrQgvfBxajKCzewpa3WXqF91V3Zw4lu+OW0F73CW/0pHcj
+        gj0aqWzRW9A==
+X-Google-Smtp-Source: ABdhPJzyzUuUAFTFnZSJzbsaG/OEH73aHx+UC2ukR4nb0NITIXocB7ghkbMRyrXdJgxZruYnUJoVAQ==
+X-Received: by 2002:a05:6512:3b92:: with SMTP id g18mr12161689lfv.646.1619432411932;
+        Mon, 26 Apr 2021 03:20:11 -0700 (PDT)
+Received: from ak-snic-codilime.intra.codilime.com (195191163011.dynamic-2-waw-k-1-3-0.vectranet.pl. [195.191.163.11])
+        by smtp.googlemail.com with ESMTPSA id p15sm1408212lft.60.2021.04.26.03.20.10
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 26 Apr 2021 03:19:53 -0700 (PDT)
-Date:   Mon, 26 Apr 2021 18:19:40 +0800
-From:   Hangbin Liu <liuhangbin@gmail.com>
-To:     Jesper Dangaard Brouer <brouer@redhat.com>
-Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org,
-        Toke =?iso-8859-1?Q?H=F8iland-J=F8rgensen?= <toke@redhat.com>,
-        Jiri Benc <jbenc@redhat.com>,
-        Eelco Chaudron <echaudro@redhat.com>, ast@kernel.org,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Lorenzo Bianconi <lorenzo.bianconi@redhat.com>,
-        David Ahern <dsahern@gmail.com>,
-        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
-        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
-        =?iso-8859-1?Q?Bj=F6rn_T=F6pel?= <bjorn.topel@gmail.com>,
-        Martin KaFai Lau <kafai@fb.com>
-Subject: Re: [PATCHv9 bpf-next 4/4] selftests/bpf: add xdp_redirect_multi test
-Message-ID: <20210426101940.GP3465@Leo-laptop-t470s>
-References: <20210422071454.2023282-1-liuhangbin@gmail.com>
- <20210422071454.2023282-5-liuhangbin@gmail.com>
- <20210426112832.0b746447@carbon>
+        Mon, 26 Apr 2021 03:20:11 -0700 (PDT)
+From:   Arkadiusz Kudan <arkadiusz.kudan@codilime.com>
+To:     virtualization@lists.linux-foundation.org
+Cc:     mst@redhat.com, jasowang@redhat.com, netdev@vger.kernel.org,
+        Arkadiusz Kudan <arkadiusz.kudan@codilime.com>,
+        Miroslaw Walukiewicz <Miroslaw.Walukiewicz@intel.com>
+Subject: [PATCH] virtio-net: enable SRIOV
+Date:   Mon, 26 Apr 2021 12:21:35 +0200
+Message-Id: <20210426102135.227802-1-arkadiusz.kudan@codilime.com>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210426112832.0b746447@carbon>
+Content-Type: text/plain; charset="US-ASCII"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Apr 26, 2021 at 11:28:32AM +0200, Jesper Dangaard Brouer wrote:
-> On Thu, 22 Apr 2021 15:14:54 +0800
-> Hangbin Liu <liuhangbin@gmail.com> wrote:
-> 
-> > Add a bpf selftest for new helper xdp_redirect_map_multi(). In this
-> > test there are 3 forward groups and 1 exclude group. The test will
-> > redirect each interface's packets to all the interfaces in the forward
-> > group, and exclude the interface in exclude map.
-> > 
-> > Two maps (DEVMAP, DEVMAP_HASH) and two xdp modes (generic, drive) will
-> > be tested. XDP egress program will also be tested by setting pkt src MAC
-> > to egress interface's MAC address.
-> > 
-> > For more test details, you can find it in the test script. Here is
-> > the test result.
-> > ]# ./test_xdp_redirect_multi.sh
-> 
-> Running this test takes a long time around 3 minutes.
+With increasing interest for virtio, NIC have appeared that provide
+SRIOV with PF appearing in the host as a virtio network device
+and probably more similiar NICs will emerge.
+igb_uio of DPDK or pci-pf-stub can be used to provide SRIOV,
+however there are hypervisors/VMMs that require VFs, which are
+to be PCI passthrued to a VM, to have its PF with network
+representation in the kernel. For virtio-net based PFs,
+virtio-net could do that by providing both SRIOV interface and
+netdev representation.
 
-Yes, there are some sleeps, ping tests. Don't know if I missed
-anything, is there a time limit for the selftest?
+Enable SRIOV via VIRTIO_F_SR_IOV feature bit if the device
+supports it.
 
-Thanks
-hangbin
-> 
-> $ sudo time -v ./test_xdp_redirect_multi.sh
-> Pass: xdpgeneric arp ns1-2
-> Pass: xdpgeneric arp ns1-3
-> Pass: xdpgeneric arp ns1-4
-> Pass: xdpgeneric ping ns1-2
-> Pass: xdpgeneric ping ns1-3
-> Pass: xdpgeneric ping ns1-4
-> Pass: xdpgeneric ping6 ns1-2
-> Pass: xdpgeneric ping6 ns1-1 number
-> Pass: xdpgeneric ping6 ns1-2 number
-> Pass: xdpdrv arp ns1-2
-> Pass: xdpdrv arp ns1-3
-> Pass: xdpdrv arp ns1-4
-> Pass: xdpdrv ping ns1-2
-> Pass: xdpdrv ping ns1-3
-> Pass: xdpdrv ping ns1-4
-> Pass: xdpdrv ping6 ns1-2
-> Pass: xdpdrv ping6 ns1-1 number
-> Pass: xdpdrv ping6 ns1-2 number
-> Pass: xdpegress mac ns1-2
-> Pass: xdpegress mac ns1-3
-> Pass: xdpegress mac ns1-4
-> Summary: PASS 21, FAIL 0
-> 	Command being timed: "./test_xdp_redirect_multi.sh"
-> 	User time (seconds): 0.15
-> 	System time (seconds): 0.51
-> 	Percent of CPU this job got: 0%
-> 	Elapsed (wall clock) time (h:mm:ss or m:ss): 3:09.68
-> 	Average shared text size (kbytes): 0
-> 	Average unshared data size (kbytes): 0
-> 	Average stack size (kbytes): 0
-> 	Average total size (kbytes): 0
-> 	Maximum resident set size (kbytes): 6904
-> 	Average resident set size (kbytes): 0
-> 	Major (requiring I/O) page faults: 13
-> 	Minor (reclaiming a frame) page faults: 46316
-> 	Voluntary context switches: 1907
-> 	Involuntary context switches: 371
-> 	Swaps: 0
-> 	File system inputs: 0
-> 	File system outputs: 0
-> 	Socket messages sent: 0
-> 	Socket messages received: 0
-> 	Signals delivered: 0
-> 	Page size (bytes): 4096
-> 	Exit status: 0
-> 
-> -- 
-> Best regards,
->   Jesper Dangaard Brouer
->   MSc.CS, Principal Kernel Engineer at Red Hat
->   LinkedIn: http://www.linkedin.com/in/brouer
-> 
+Signed-off-by: Arkadiusz Kudan <arkadiusz.kudan@codilime.com>
+Signed-off-by: Miroslaw Walukiewicz <Miroslaw.Walukiewicz@intel.com>
+---
+ drivers/net/virtio_net.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
+index 0824e6999e49..a03aa7e99689 100644
+--- a/drivers/net/virtio_net.c
++++ b/drivers/net/virtio_net.c
+@@ -3249,6 +3249,7 @@ static struct virtio_device_id id_table[] = {
+ 
+ static unsigned int features[] = {
+ 	VIRTNET_FEATURES,
++	VIRTIO_F_SR_IOV,
+ };
+ 
+ static unsigned int features_legacy[] = {
+-- 
+2.31.1
+
+
+-- 
+
+
+-------------------------------
+This document contains material that is 
+confidential in CodiLime Sp. z o.o. DO NOT PRINT. DO NOT COPY. DO NOT 
+DISTRIBUTE. If you are not the intended recipient of this document, be 
+aware that any use, review, retransmission, distribution, reproduction or 
+any action taken in reliance upon this message is strictly prohibited. If 
+you received this in error, please contact the sender and help@codilime.com 
+<mailto:help@codilime.com>. Return the paper copy, delete the material from 
+all computers and storage media.
