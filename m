@@ -2,97 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EC79636B0E5
-	for <lists+netdev@lfdr.de>; Mon, 26 Apr 2021 11:43:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4221436B0F2
+	for <lists+netdev@lfdr.de>; Mon, 26 Apr 2021 11:46:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232520AbhDZJof (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 26 Apr 2021 05:44:35 -0400
-Received: from regular1.263xmail.com ([211.150.70.204]:39068 "EHLO
-        regular1.263xmail.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232239AbhDZJof (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 26 Apr 2021 05:44:35 -0400
-Received: from localhost (unknown [192.168.167.69])
-        by regular1.263xmail.com (Postfix) with ESMTP id 3CBAC5F0;
-        Mon, 26 Apr 2021 17:43:52 +0800 (CST)
-X-MAIL-GRAY: 0
-X-MAIL-DELIVERY: 1
-X-ADDR-CHECKED4: 1
-X-ANTISPAM-LEVEL: 2
-X-SKE-CHECKED: 1
-X-ABS-CHECKED: 1
-Received: from [172.16.12.8] (unknown [58.22.7.114])
-        by smtp.263.net (postfix) whith ESMTP id P19994T140047258068736S1619430229000270_;
-        Mon, 26 Apr 2021 17:43:49 +0800 (CST)
-X-IP-DOMAINF: 1
-X-UNIQUE-TAG: <961b36582c8993df6ca2161b3cb0b89a>
-X-RL-SENDER: david.wu@rock-chips.com
-X-SENDER: wdc@rock-chips.com
-X-LOGIN-NAME: david.wu@rock-chips.com
-X-FST-TO: kernel@collabora.com
-X-RCPT-COUNT: 13
-X-SENDER-IP: 58.22.7.114
-X-ATTACHMENT-NUM: 0
-X-System-Flag: 0
-Subject: Re: [PATCH 1/3] arm64: dts: rockchip: Remove unnecessary reset in
- rk3328.dtsi
-To:     Ezequiel Garcia <ezequiel@collabora.com>, netdev@vger.kernel.org,
-        linux-rockchip@lists.infradead.org, devicetree@vger.kernel.org
-Cc:     Jose Abreu <joabreu@synopsys.com>,
-        Heiko Stuebner <heiko@sntech.de>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Peter Geis <pgwipeout@gmail.com>,
-        Kever Yang <kever.yang@rock-chips.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Johan Jonker <jbx6244@gmail.com>, kernel@collabora.com
-References: <20210426024118.18717-1-ezequiel@collabora.com>
-From:   David Wu <david.wu@rock-chips.com>
-Message-ID: <6051db67-d662-77f5-2fd9-2460c6abbe51@rock-chips.com>
-Date:   Mon, 26 Apr 2021 17:43:49 +0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+        id S232799AbhDZJqn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 26 Apr 2021 05:46:43 -0400
+Received: from mail.kernel.org ([198.145.29.99]:60672 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S232239AbhDZJqm (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 26 Apr 2021 05:46:42 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id D8E2A61075;
+        Mon, 26 Apr 2021 09:46:00 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1619430360;
+        bh=qpsdBN6ORDIHKKWXNLHLog5L3frURDHaOI1Eg49/jDw=;
+        h=From:To:Cc:Subject:Date:From;
+        b=eCvxwAUO+BFi7IJ3TozokehnYq5mw16uyk/RuXzPEWJtfDuOBqsbb47lfK5Mp5vNS
+         wI9AOTNYUvdvTk2+4MSVKuMsShA6vD3bNrprf7kgVI//ciAGLqpdXIztWeR3p5wsvO
+         LYIKbOiGoeC21CLg4KwAouroC2xWxIhyCON0sbHD5fe30fibuGPqaiOD9m4OamQsnq
+         rk0r14Y/ue8IS8JA4BkR9sbn4+Ftv7z0uhfmt+l62xOL6enmYR/dWms2bLUIFaG1Bt
+         58TroM3D+7u1HTrOHbZ3F2dhGZ4BXIUW8GHHNDmKp+S/OJ1gOkaqauD6Dp2Ba24y/e
+         aZzaUTbgITCUg==
+Received: from johan by xi.lan with local (Exim 4.93.0.4)
+        (envelope-from <johan@kernel.org>)
+        id 1laxog-0005t0-I6; Mon, 26 Apr 2021 11:46:11 +0200
+From:   Johan Hovold <johan@kernel.org>
+To:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-usb@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Johan Hovold <johan@kernel.org>,
+        stable@vger.kernel.org
+Subject: [PATCH net] net: hso: fix NULL-deref on tty registration failure
+Date:   Mon, 26 Apr 2021 11:45:42 +0200
+Message-Id: <20210426094542.22578-1-johan@kernel.org>
+X-Mailer: git-send-email 2.26.3
 MIME-Version: 1.0
-In-Reply-To: <20210426024118.18717-1-ezequiel@collabora.com>
-Content-Type: text/plain; charset=gbk; format=flowed
-Content-Language: en-US
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Ezequiel,
+If resource allocation and registration fail for a muxed tty device
+(e.g. if there are no more minor numbers) the driver should not try to
+deregister the never-registered tty.
 
-ÔÚ 2021/4/26 ÉÏÎç10:41, Ezequiel Garcia Ð´µÀ:
-> Rockchip DWMAC glue driver uses the phy node (phy-handle)
-> reset specifier, and not a "mac-phy" reset specifier.
-> 
-> Remove it.
-> 
+Fix up the error handling to avoid dereferencing a NULL pointer when
+attempting to remove the character device:
 
-Well done, the "mac-phy" reset is not part of the controller. So
+	BUG: kernel NULL pointer dereference, address: 0000000000000064
+	[...]
+	RIP: 0010:cdev_del+0x4/0x20
+	[...]
+	Call Trace:
+	 tty_unregister_device+0x34/0x50
+	 hso_probe+0x1d1/0x57e [hso]
 
-Reviewed-by: David Wu <david.wu@rock-chips.com>
+Fixes: 72dc1c096c70 ("HSO: add option hso driver")
+Cc: stable@vger.kernel.org	# 2.6.27
+Signed-off-by: Johan Hovold <johan@kernel.org>
+---
+ drivers/net/usb/hso.c | 12 +++++-------
+ 1 file changed, 5 insertions(+), 7 deletions(-)
 
-> Signed-off-by: Ezequiel Garcia <ezequiel@collabora.com>
-> ---
->   arch/arm64/boot/dts/rockchip/rk3328.dtsi | 4 ++--
->   1 file changed, 2 insertions(+), 2 deletions(-)
-> 
-> diff --git a/arch/arm64/boot/dts/rockchip/rk3328.dtsi b/arch/arm64/boot/dts/rockchip/rk3328.dtsi
-> index 5bab61784735..3ed69ecbcf3c 100644
-> --- a/arch/arm64/boot/dts/rockchip/rk3328.dtsi
-> +++ b/arch/arm64/boot/dts/rockchip/rk3328.dtsi
-> @@ -916,8 +916,8 @@ gmac2phy: ethernet@ff550000 {
->   			      "mac_clk_tx", "clk_mac_ref",
->   			      "aclk_mac", "pclk_mac",
->   			      "clk_macphy";
-> -		resets = <&cru SRST_GMAC2PHY_A>, <&cru SRST_MACPHY>;
-> -		reset-names = "stmmaceth", "mac-phy";
-> +		resets = <&cru SRST_GMAC2PHY_A>;
-> +		reset-names = "stmmaceth";
->   		phy-mode = "rmii";
->   		phy-handle = <&phy>;
->   		snps,txpbl = <0x4>;
-> 
-
+diff --git a/drivers/net/usb/hso.c b/drivers/net/usb/hso.c
+index cfad5b36bd8e..81ff54e9587f 100644
+--- a/drivers/net/usb/hso.c
++++ b/drivers/net/usb/hso.c
+@@ -2710,14 +2710,14 @@ struct hso_device *hso_create_mux_serial_device(struct usb_interface *interface,
+ 
+ 	serial = kzalloc(sizeof(*serial), GFP_KERNEL);
+ 	if (!serial)
+-		goto exit;
++		goto err_free_dev;
+ 
+ 	hso_dev->port_data.dev_serial = serial;
+ 	serial->parent = hso_dev;
+ 
+ 	if (hso_serial_common_create
+ 	    (serial, 1, CTRL_URB_RX_SIZE, CTRL_URB_TX_SIZE))
+-		goto exit;
++		goto err_free_serial;
+ 
+ 	serial->tx_data_length--;
+ 	serial->write_data = hso_mux_serial_write_data;
+@@ -2733,11 +2733,9 @@ struct hso_device *hso_create_mux_serial_device(struct usb_interface *interface,
+ 	/* done, return it */
+ 	return hso_dev;
+ 
+-exit:
+-	if (serial) {
+-		tty_unregister_device(tty_drv, serial->minor);
+-		kfree(serial);
+-	}
++err_free_serial:
++	kfree(serial);
++err_free_dev:
+ 	kfree(hso_dev);
+ 	return NULL;
+ 
+-- 
+2.26.3
 
