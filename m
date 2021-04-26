@@ -2,268 +2,160 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C9F7B36B6E9
-	for <lists+netdev@lfdr.de>; Mon, 26 Apr 2021 18:34:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4497C36B6EC
+	for <lists+netdev@lfdr.de>; Mon, 26 Apr 2021 18:36:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234264AbhDZQfb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 26 Apr 2021 12:35:31 -0400
-Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:2026 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S233934AbhDZQfa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 26 Apr 2021 12:35:30 -0400
-Received: from pps.filterd (m0148461.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 13QGYR6Q003854;
-        Mon, 26 Apr 2021 09:34:36 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=subject : to : cc :
- references : from : message-id : date : in-reply-to : content-type :
- content-transfer-encoding : mime-version; s=facebook;
- bh=IRRy6nLoNneVM0yO9Fi9isZJ0FRTJ9yB0991u4IQzXY=;
- b=H0v7HmKIo7gFzpMRoFigMmjZyqiDW2A53F0LSPPIDQG4likR/CUSSlmzdB/jG2idgAl2
- o4BIK/F5p+cwbxiWjs9IZlcEMV4pi2TTtCYVuNFutpsi7kAEGilIyBw3G4UGwf5cPYo7
- R5XXpZzemeqQMWxooBot7DOqcydoFO8OKR8= 
-Received: from maileast.thefacebook.com ([163.114.130.16])
-        by mx0a-00082601.pphosted.com with ESMTP id 38531qxg75-2
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Mon, 26 Apr 2021 09:34:35 -0700
-Received: from NAM12-BN8-obe.outbound.protection.outlook.com (100.104.31.183)
- by o365-in.thefacebook.com (100.104.36.102) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2176.2; Mon, 26 Apr 2021 09:34:34 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=VZ7XQaKFHZCilgIS8QaUsvZRWD+XBqJuk+lUkKq2PvR4vI9cCxkCOuBfbQVWRCd+AAGa0w2m2K64UJdMPuytl10IWnDHDe6AwtnMhU6qrqiQvwi0JoKbyS3hoK2x0kUxpd7Z7lXsWxGOzqf+FwNiLMKKdT0hO1eyyq9EDYvb4ahKuq7AwHzRdSrdnVeVbp/GGpm2Gv9nuCujz7KnejcXldEd+XGzuKssr30HhGYyERDT/+e+7spOHcbP0abPUFgmfas7biI5WaSK2mGXpibQVX18lYLFazR0iAdxN0Ga7EiNIQmNamiK6fhv+MLnRugWgo+LoXWfLJ+Udo80zx6sSw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=IRRy6nLoNneVM0yO9Fi9isZJ0FRTJ9yB0991u4IQzXY=;
- b=QyDY2q/AzyGevfFz9krU8xBfjU/xSlpeobPqEeWqzmE3LnMYaXbajELHsjFvoj054lyCVkVZRELnimcf0MiNNAs76nztiLK4+B/3dtJaVH0ycpB6w7VwwT2gDGxPX9r2NGEger8PwUKr7yVexSb5S2DIZCo6rzHSLQDyOs81Z5pir0qf9EKzgORxugeolVA2i378AZmfEyNT/Iv1JDfey3Q+pBVbfLIGcDJah/5aSwpiHOU2cgQKmQRy+HrjBrlJU7CpMoOIz5zD4latppfXxaWuC3fj84RAJCymoRgazRmZ2u3t1slwHRBXhtedzv76uSaU5sriCUv0j3GCAYYCJw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
- header.d=fb.com; arc=none
-Received: from SN6PR1501MB2064.namprd15.prod.outlook.com (2603:10b6:805:d::27)
- by SA1PR15MB4417.namprd15.prod.outlook.com (2603:10b6:806:194::9) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4065.20; Mon, 26 Apr
- 2021 16:34:33 +0000
-Received: from SN6PR1501MB2064.namprd15.prod.outlook.com
- ([fe80::f433:fd99:f905:8912]) by SN6PR1501MB2064.namprd15.prod.outlook.com
- ([fe80::f433:fd99:f905:8912%3]) with mapi id 15.20.4065.027; Mon, 26 Apr 2021
- 16:34:33 +0000
-Subject: Re: [PATCH v2 bpf-next 2/6] libbpf: rename static variables during
- linking
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
-CC:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        Andrii Nakryiko <andrii@kernel.org>, bpf <bpf@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>,
-        Alexei Starovoitov <ast@fb.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Kernel Team <kernel-team@fb.com>
-References: <20210423185357.1992756-1-andrii@kernel.org>
- <20210423185357.1992756-3-andrii@kernel.org>
- <2b398ad6-31be-8997-4115-851d79f2d0d2@fb.com>
- <CAEf4BzYDiuh+OLcRKfcZDSL6esu6dK8js8pudHKvtMvAxS1=WQ@mail.gmail.com>
- <065e8768-b066-185f-48f9-7ca8f15a2547@fb.com>
- <CAADnVQ+h9eS0P9Jb0QZQ374WxNSF=jhFAiBV7czqhnJxV51m6A@mail.gmail.com>
- <CAEf4BzadCR+QFy4UY8NSVFjGJF4CszhjjZ48XeeqrfX3aYTnkA@mail.gmail.com>
- <CAADnVQKo+efxMvgrqYqVvUEgiz_GXgBVOt4ddPTw_mLuvr2HUw@mail.gmail.com>
- <CAEf4BzZifOFHr4gozUuSFTh7rTWu2cE_-L4H1shLV5OKyQ92uw@mail.gmail.com>
- <f9d8328e-6f3e-59c7-05f5-d67b54e6b4ce@fb.com>
- <CAEf4BzahtXOck_TTtvY4bRtnyqEw=Cxd6T0QbTdwF=UH-p-5Dw@mail.gmail.com>
-From:   Yonghong Song <yhs@fb.com>
-Message-ID: <aa994909-8e53-ae19-784d-a315e7d96753@fb.com>
-Date:   Mon, 26 Apr 2021 09:34:29 -0700
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
- Gecko/20100101 Thunderbird/78.9.1
-In-Reply-To: <CAEf4BzahtXOck_TTtvY4bRtnyqEw=Cxd6T0QbTdwF=UH-p-5Dw@mail.gmail.com>
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [2620:10d:c090:400::5:e445]
-X-ClientProxiedBy: MW4PR04CA0365.namprd04.prod.outlook.com
- (2603:10b6:303:81::10) To SN6PR1501MB2064.namprd15.prod.outlook.com
- (2603:10b6:805:d::27)
+        id S234369AbhDZQgl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 26 Apr 2021 12:36:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47070 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233934AbhDZQgl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 26 Apr 2021 12:36:41 -0400
+Received: from mail-qt1-x835.google.com (mail-qt1-x835.google.com [IPv6:2607:f8b0:4864:20::835])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 57347C061756
+        for <netdev@vger.kernel.org>; Mon, 26 Apr 2021 09:35:59 -0700 (PDT)
+Received: by mail-qt1-x835.google.com with SMTP id a18so18258145qtj.10
+        for <netdev@vger.kernel.org>; Mon, 26 Apr 2021 09:35:59 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=broadcom.com; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=+2nhT0lBtjKoyGRpgccJktC0VdrXVqIVWmi0zY305h0=;
+        b=iGfAUit6ahdSJ9LQJwFAGS5r2TQu1QmsnKvsKxWKUqell3qEonLrkj/14TjxU1zjTC
+         prGnZH+alseQs9bWQ9c0bACiDmC1qcpcPWfzXc/+bR1UF1y8VMulaBfgXfR18I5ahhTL
+         1f6hDvWTaO9GgfreLBmiKGQerO4v9/YrkflpE=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=+2nhT0lBtjKoyGRpgccJktC0VdrXVqIVWmi0zY305h0=;
+        b=T6FMbtmA1K5xSR4840wcSDrYZoD2xZ/8C1QVRy7MJw4cXhT8uluiz/KOtBOs9z2HGS
+         lFEeW1umChX4qD0FEJStmXojDxF1/vnIxzLt5RHwtCgpUKkb9LKjnb2KEiTXp9z4sQtX
+         RFy9FxkQ38ol30NL1aQjsk8fJcOL456fYS08EWs7Ii2Iq25P2YHS6oWwCdu6fxyRa/sU
+         S/gPM7qorqucsJXFMDHj1RghO2r+YwTa4oq5h0QYw/pt2TpHgjlcqSiJsgxeYGAmKENs
+         91T39WQARL8IKCJtX9AeTSHB/L3QS13/mGvWPweNUCCRcS/MpoLhFKPzJI0i70K1EYLH
+         EaVA==
+X-Gm-Message-State: AOAM531RIA6ME1id9qLjsefWX1D6U5T2yImfwpdsI1a6lNimi2wdfNqT
+        MDxc69p99jvU46Tn0O+SRv+DO+ASR7rdesVy5BDEPnzkDj+QkQ==
+X-Google-Smtp-Source: ABdhPJxYUrruHU/S+Hp4oLNJjgjWKSKA85nIVsekOqX2Bh6XoJ2WpqauQVpVh7il5wxssD195woXqyShYUp0ukJvSIM=
+X-Received: by 2002:ac8:5517:: with SMTP id j23mr17525423qtq.148.1619454958351;
+ Mon, 26 Apr 2021 09:35:58 -0700 (PDT)
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from [IPv6:2620:10d:c085:21e1::12ae] (2620:10d:c090:400::5:e445) by MW4PR04CA0365.namprd04.prod.outlook.com (2603:10b6:303:81::10) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4065.20 via Frontend Transport; Mon, 26 Apr 2021 16:34:32 +0000
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 363a07a1-30e9-45de-3c62-08d908d12c70
-X-MS-TrafficTypeDiagnostic: SA1PR15MB4417:
-X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <SA1PR15MB441772656AE9B8F4363D0D95D3429@SA1PR15MB4417.namprd15.prod.outlook.com>
-X-FB-Source: Internal
-X-MS-Oob-TLC-OOBClassifiers: OLM:9508;
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 8DTC8BHBd5/YUdWARhWkoYLX/VYYtkZkUDXMBwyuXGnBO4jZzRiS6ba0X0VWrutpLW4Yx3DzlFlyV+AXvwBLsOV4biKXxnOTMGOJdN3Z12ZL6ftVUYcZOHqFyN19zgMuNkrJPcaWyFIei3euKhSLSlFyhoGfiqxCknD147FoXAwMLUILQObF+CAuYNyZAwbutUPOMCsgks+IPwYfFpcnk7CTYZAsM5ESayXxPPTXfNHVofQg+g0Q13sWiIY6n9lZzvlSGxCDHRfW7/VjGsyqmfFL9t9lZ8ACjlUkVssoHJLxSsHU4hHr5Weo4cnsncY5G9JUsDQJmRL8z1AQNxcC0570IFJgtYoLD5YYcunXdAPVWKWkdPfLQFR+aFsCx50m3dsScPGkP8igDRs4cHIJRqWfkFHznI1p+ObIEFAqg6QGF7/CkHJmzx3NuFnsnWGowTWtIs75RryDV4PgKB+JDySnCfkg7YYUtu0NgrHiq1nHas3ntQmmhXqUdF42ArfErJHjWqh0HlFgHUrnCPbTtbol4LSwss90oahzydSEr6GjL6RIZQdnrf4h9Ar9K25P1raZHdtTmRQyMfaMMw+vkcY4VO/xZDTUCCXojyOO0KnidGzYU3gEvjooDuU2zxefhMdovTPOvKFn2cG/sdjW1qwa6BE0+4xxeX+P/+9OQufMvm2w4wivf3ri21R+UieH
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SN6PR1501MB2064.namprd15.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(136003)(376002)(346002)(39860400002)(396003)(366004)(478600001)(66476007)(66556008)(83380400001)(66946007)(8676002)(8936002)(31686004)(316002)(186003)(5660300002)(52116002)(53546011)(36756003)(6666004)(54906003)(31696002)(2616005)(6916009)(86362001)(4326008)(38100700002)(16526019)(6486002)(2906002)(45980500001)(43740500002);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData: =?utf-8?B?R0U0RW02UFpvUUxvVUdOOEhPVU5DNGk4RjQxT2pHQTNORkFSTTFieGVpaHl3?=
- =?utf-8?B?cWY3M3NqTUo2ZE4yYXhWUnFpb243bHg5b0dlbGhsYXI2MWxOWkZ2YUtxMG8w?=
- =?utf-8?B?NnM5MEFaVWJ4ZGs3K1YzaXpCZURRMUkwc3BzNmFJczFJeEZZWGRxc0ErVFN5?=
- =?utf-8?B?M3k0eUM3R1ZPK1pxSVF2V294MEZBaFJMUEs0WVlsekc5bnRLWnRTcisrdEpU?=
- =?utf-8?B?a281eXMwVVNrMnNlSWRkbldlM1VnMnh3cHhudUMzeFppK3dZNWUxNVEyejBB?=
- =?utf-8?B?N2tmbDB5K3FMZnBzQTd5b0RXaThRYm5DSG1pTnVUU01sZ25ycU5NUERBQ2I3?=
- =?utf-8?B?RkJBdnVsV3V6NUpXNDhqREdWdytObkhvQkpqMElkNVY1bGd4WUsxb0xQVkN5?=
- =?utf-8?B?ZGZHUTNjSE05bW5FVm5JWDBCN0cxRWhIMXVCd0RQdEZUbXdkQUNVRTVMVTlH?=
- =?utf-8?B?NGJNMXczVHhSdWZNRHM2NC9rVS9YM3NzelpLY0l4NVVJK1I0MFV3MXlUTE5X?=
- =?utf-8?B?SitWaW1BeUxaNHJzNnJZbXp2R29SdENRYk1yN3F3eW5QeFdIMzZDL3E5Vmh1?=
- =?utf-8?B?MnVqUkIzVFliRnhTUDBxd3NyR2Q4UlhjZUpNUmIxYmZrUEM2czlPbmdIRU1q?=
- =?utf-8?B?RmMxYkd3ajUxU2NnNnRucUVUeXVKaTlrdGJqTnVkU2dQYWNVUGdZMi9tQ2NW?=
- =?utf-8?B?dThkNSt0clBXYU5lb0hFMEpXbTluK05pNG12bjlVdGdtNVdRVEZURVkvWnB0?=
- =?utf-8?B?ZzBINURtRTJxVHJnR1oyVXFaZzFnZ09qdEd2TlhYZkY0T2szalRBNjZxQXlo?=
- =?utf-8?B?SGZ2bkF4MHlSY0ZxcVljWks1d3hZSEFYWDRtRk92cDl3M2JUcjBaTlhFbjFB?=
- =?utf-8?B?WTJOMmdJUHFqNTFmd2FzNWZpbjFoOENyMTZ2Z1hsYWsxMGg5aGhmOG4xR0xV?=
- =?utf-8?B?dUZhb09ucGdHVFlnUkdYMEtiazZWN1E5TDQ4ZkIxRDM1N2RybjFBVElaSnRn?=
- =?utf-8?B?dVJ4bFJ3S2ZPM0NZTUw4ZldQSmQxakpGOG9XNWozbzA2bkEzYUJ1TUpGcFBF?=
- =?utf-8?B?ejBPQjl4bitPdFY2RG56WUlhUTYzb2VBVGt4YllUWHRodDlQS0xxa2lVWGI5?=
- =?utf-8?B?czYraHNCRDE3UjZ1VTBtd0pJNkMxYjJGZ0d0cWpVakRHZEdBdkFiWTV0U2ls?=
- =?utf-8?B?SU9jVTdTY3dEam5kbEFXWUlZNitlVTZwdnRNNThrUzNxMEM0aFRvK2dieE0z?=
- =?utf-8?B?UjNRTG5JK3VKbCszT0Y3WEJRaFE1QlVCalRrTlNVTmxoSlNGV1RJeVlMdE14?=
- =?utf-8?B?NWtSd0lyZjJJR3h6VTIyQUFiSXBTKzlWZWU3VmZmTGV1WS9xbzhZSTcwc2gy?=
- =?utf-8?B?SkpmM0NCeGlSM3VOZGt4aXE4ZFBmM3FIdGdKQkdDSTA4bUw4aGF0aGU0eTg2?=
- =?utf-8?B?VzJCUXhPamZGUW9VOUg0QWh3QkFIZW01NmRVM21rdk5WM3FsQXpxUVB2OUpY?=
- =?utf-8?B?OHljRXcvem1helMyZnRUbVVkNE9DcUQ2Z0xMNjF0cUJrc0RnN2kwQ2ZEKzE2?=
- =?utf-8?B?a25JZEh6c3htcTdVS0Z1M01DTHlrQW5zYkwvQ013WHZkTGZ5MTlCam1IbFNl?=
- =?utf-8?B?WU1CcXUyKzhlNVU4Z0ZQTjZwTEVPM3JCazY0d3g3b0k2Wmw5b1VDZHExRURU?=
- =?utf-8?B?eUdwZ0xMUEh4L2ZwY3dGaWEvVEcvQWpHdXovUmZEUW1WZXpoa3VOVFM5ZHRV?=
- =?utf-8?B?TWwrQjhDbGtwaHNqek5wL2NBK28rUTYweUZoSFpiRWlKU1pESDZ4Z2I2WGt3?=
- =?utf-8?Q?+KAl8wmQiFJK4y2ZfqxoeWzbPo8KLbdOLAH30=3D?=
-X-MS-Exchange-CrossTenant-Network-Message-Id: 363a07a1-30e9-45de-3c62-08d908d12c70
-X-MS-Exchange-CrossTenant-AuthSource: SN6PR1501MB2064.namprd15.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 26 Apr 2021 16:34:33.7385
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: F7YWhPPm+tqvt6sDUNku9UyvB9EZKGX1uLAWhmUUpvtRexFfkhrFMFIKMDFuLFO3
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA1PR15MB4417
-X-OriginatorOrg: fb.com
-X-Proofpoint-ORIG-GUID: acFbiv6MlAK0kIbJ1KOMbHEmxTAt_uRL
-X-Proofpoint-GUID: acFbiv6MlAK0kIbJ1KOMbHEmxTAt_uRL
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.391,18.0.761
- definitions=2021-04-26_09:2021-04-26,2021-04-26 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 lowpriorityscore=0
- bulkscore=0 phishscore=0 clxscore=1015 spamscore=0 suspectscore=0
- mlxscore=0 mlxlogscore=999 impostorscore=0 priorityscore=1501 adultscore=0
- malwarescore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2104060000 definitions=main-2104260127
-X-FB-Internal: deliver
+References: <1619372727-19187-1-git-send-email-michael.chan@broadcom.com>
+ <1619372727-19187-11-git-send-email-michael.chan@broadcom.com> <20210426092935.728fda80@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20210426092935.728fda80@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+From:   Michael Chan <michael.chan@broadcom.com>
+Date:   Mon, 26 Apr 2021 09:35:47 -0700
+Message-ID: <CACKFLinRRcoaxsiHZyYcywgRtOs0E5hJdQ0gjHPAj3991gMzHw@mail.gmail.com>
+Subject: Re: [PATCH net-next v2 10/10] bnxt_en: Implement .ndo_features_check().
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     David Miller <davem@davemloft.net>,
+        Netdev <netdev@vger.kernel.org>,
+        Andrew Gospodarek <gospo@broadcom.com>
+Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256;
+        boundary="0000000000008cc98405c0e2bd71"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+--0000000000008cc98405c0e2bd71
+Content-Type: text/plain; charset="UTF-8"
 
+On Mon, Apr 26, 2021 at 9:29 AM Jakub Kicinski <kuba@kernel.org> wrote:
+>
+> On Sun, 25 Apr 2021 13:45:27 -0400 Michael Chan wrote:
+> > +     if (l4_proto != IPPROTO_UDP)
+> > +             return features;
+>
+> This should have been "features & ~(CSUM | GSO)" if you actually
+> accepted my feedback. I mentioned extension headers as an example,
+> v2 looks like a minor refactoring, no functional changes :/
+>
+> > +     bp = netdev_priv(dev);
+> > +     /* For UDP, we can only handle 1 Vxlan port and 1 Geneve port. */
+> > +     udp_port = udp_hdr(skb)->dest;
+> > +     if (udp_port == bp->vxlan_port || udp_port == bp->nge_port)
+> > +             return features;
+> > +     return features & ~(NETIF_F_CSUM_MASK | NETIF_F_GSO_MASK);
 
-On 4/26/21 8:45 AM, Andrii Nakryiko wrote:
-> On Fri, Apr 23, 2021 at 7:36 PM Yonghong Song <yhs@fb.com> wrote:
->>
->>
->>
->> On 4/23/21 5:13 PM, Andrii Nakryiko wrote:
->>> On Fri, Apr 23, 2021 at 4:48 PM Alexei Starovoitov
->>> <alexei.starovoitov@gmail.com> wrote:
->>>>
->>>> On Fri, Apr 23, 2021 at 4:35 PM Andrii Nakryiko
->>>> <andrii.nakryiko@gmail.com> wrote:
->>>>>
->>>>> On Fri, Apr 23, 2021 at 4:06 PM Alexei Starovoitov
->>>>> <alexei.starovoitov@gmail.com> wrote:
->>>>>>
->>>>>> On Fri, Apr 23, 2021 at 2:56 PM Yonghong Song <yhs@fb.com> wrote:
->>>>>>>>>>
->>>>>>>>>> -static volatile const __u32 print_len;
->>>>>>>>>> -static volatile const __u32 ret1;
->>>>>>>>>> +volatile const __u32 print_len = 0;
->>>>>>>>>> +volatile const __u32 ret1 = 0;
->>>>>>>>>
->>>>>>>>> I am little bit puzzled why bpf_iter_test_kern4.c is impacted. I think
->>>>>>>>> this is not in a static link test, right? The same for a few tests below.
->>>>>>>>
->>>>>>>> All the selftests are passed through a static linker, so it will
->>>>>>>> append obj_name to each static variable. So I just minimized use of
->>>>>>>> static variables to avoid too much code churn. If this variable was
->>>>>>>> static, it would have to be accessed as
->>>>>>>> skel->rodata->bpf_iter_test_kern4__print_len, for example.
->>>>>>>
->>>>>>> Okay this should be fine. selftests/bpf specific. I just feel that
->>>>>>> some people may get confused if they write/see a single program in
->>>>>>> selftest and they have to use obj_varname format and thinking this
->>>>>>> is a new standard, but actually it is due to static linking buried
->>>>>>> in Makefile. Maybe add a note in selftests/README.rst so we
->>>>>>> can point to people if there is confusion.
->>>>>>
->>>>>> I'm not sure I understand.
->>>>>> Are you saying that
->>>>>> bpftool gen object out_file.o in_file.o
->>>>>> is no longer equivalent to llvm-strip ?
->>>>>> Since during that step static vars will get their names mangled?
->>>>>
->>>>> Yes. Static vars and static maps. We don't allow (yet?) static
->>>>> entry-point BPF programs, so those don't change.
->>>>>
->>>>>> So a good chunk of code that uses skeleton right now should either
->>>>>> 1. don't do the linking step
->>>>>> or
->>>>>> 2. adjust their code to use global vars
->>>>>> or
->>>>>> 3. adjust the usage of skel.h in their corresponding user code
->>>>>>     to accommodate mangled static names?
->>>>>> Did it get it right?
->>>>>
->>>>> Yes, you are right. But so far most cases outside of selftest that
->>>>> I've seen don't use static variables (partially because they need
->>>>> pesky volatile to be visible from user-space at all), global vars are
->>>>> much nicer in that regard.
->>>>
->>>> Right.
->>>> but wait...
->>>> why linker is mangling them at all and why they appear in the skeleton?
->>>> static vars without volatile should not be in a skeleton, since changing
->>>> them from user space might have no meaning on the bpf program.
->>>> The behavior of the bpf prog is unpredictable.
->>>
->>> It's up to the compiler. If compiler decides that it shouldn't inline
->>> all the uses (or e.g. if static variable is an array accessed with
->>> index known only at runtime, or many other cases where compiler can't
->>> just deduce constant value), then compiler will emit ELF symbols, will
->>> allocate storage, and code will use that storage. static volatile just
->>> forces the compiler to not assume anything at all.
->>>
->>> If the compiler does inline all the uses of static, then we won't have
->>> storage allocated for it and it won't be even present in BTF. So for
->>> libbpf, linker and skeleton statics are no different than globals.
->>>
->>> Static maps are slightly different, because we use SEC() which marks
->>> them as used, so they should always be present.
->>>
->>> Sub-skeleton will present those statics to the BPF library without
->>> name mangling, but for the final linked BPF object file we need to
->>> handle statics. Definitely for maps, because static means that library
->>> or library user shouldn't be able to just extern that definition and
->>> update/lookup/corrupt its state. But I think for static variables it
->>> should be the same. Both are visible to user-space, but invisible
->>> between linked BPF compilation units.
->>>
->>>> Only volatile static can theoretically be in the skeleton, but as you said
->>>> probably no one is using them yet, so we can omit them from skeleton too.
->>
->> I think it is a good idea to keep volatile static use case in
->> the skeleton if we add support for static map. The volatile
->> static variable essentially a private map. Without this,
->> for skeleton users, they may need to use an explicit one-element
->> static array map which we probably want to avoid.
-> 
-> I agree, `static volatile` definitely has to be supported. I wonder
-> what we should do about plain statics, though? What's your opinion,
-> Yonghong?
+--0000000000008cc98405c0e2bd71
+Content-Type: application/pkcs7-signature; name="smime.p7s"
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment; filename="smime.p7s"
+Content-Description: S/MIME Cryptographic Signature
 
-I think we should support plain static variables if they survive the
-compilation. The 'volatile' keyword is only to prevent compiler from 
-removing the static variables. For example, for the following code,
-
-static int aa;
-void set(int v) { aa = v; }
-int foo() { return aa; }
-
-the compiler won't be able to optimize "aa" away. Adding "volatile" to
-the definition also works, but seems awkward. We should support this
-case even if user doesn't add "volatile" in the static definition.
+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
+xV4Em+0wQoEIR2kPG6yiZNtUK0tNCaZejYU/Mf/bzdKSwud3pLgHV8ls83y2OU/ha9xgJMLpRswv
+xucFCxMsPmk0yoVmpbr92kIpLm+TomNZsL++LcDRa2ECAwEAAaOCAdowggHWMA4GA1UdDwEB/wQE
+AwIFoDCBowYIKwYBBQUHAQEEgZYwgZMwTgYIKwYBBQUHMAKGQmh0dHA6Ly9zZWN1cmUuZ2xvYmFs
+c2lnbi5jb20vY2FjZXJ0L2dzZ2NjcjNwZXJzb25hbHNpZ24yY2EyMDIwLmNydDBBBggrBgEFBQcw
+AYY1aHR0cDovL29jc3AuZ2xvYmFsc2lnbi5jb20vZ3NnY2NyM3BlcnNvbmFsc2lnbjJjYTIwMjAw
+TQYDVR0gBEYwRDBCBgorBgEEAaAyASgKMDQwMgYIKwYBBQUHAgEWJmh0dHBzOi8vd3d3Lmdsb2Jh
+bHNpZ24uY29tL3JlcG9zaXRvcnkvMAkGA1UdEwQCMAAwSQYDVR0fBEIwQDA+oDygOoY4aHR0cDov
+L2NybC5nbG9iYWxzaWduLmNvbS9nc2djY3IzcGVyc29uYWxzaWduMmNhMjAyMC5jcmwwJAYDVR0R
+BB0wG4EZbWljaGFlbC5jaGFuQGJyb2FkY29tLmNvbTATBgNVHSUEDDAKBggrBgEFBQcDBDAfBgNV
+HSMEGDAWgBSWM9HmWBdbNHWKgVZk1b5I3qGPzzAdBgNVHQ4EFgQUz2bMvqtXpXM0u3vAvRkalz60
+CjswDQYJKoZIhvcNAQELBQADggEBAGUgeqqI/q2pkETeLr6oS7nnm1bkeNmtnJ2bnybNO/RdrbPj
+DHVSiDCCrWr6xrc+q6OiZDKm0Ieq6BN+Wfr8h5mCkZMUdJikI85WcQTRk6EEF2lzIiaULmFD7U15
+FSWQptLx+kiu63idTII4r3k/7+dJ5AhLRr4WCoXEme2GZkfSbYC3fEL46tb1w7w+25OEFCv1MtDZ
+1CHkODrS2JGwDQxXKmyF64MhJiOutWHmqoGmLJVz1jnDvClsYtgT4zcNtoqKtjpWDYAefncWDPIQ
+DauX1eWVM+KepL7zoSNzVbTipc65WuZFLR8ngOwkpknqvS9n/nKd885m23oIocC+GA4xggJtMIIC
+aQIBATBrMFsxCzAJBgNVBAYTAkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52LXNhMTEwLwYDVQQD
+EyhHbG9iYWxTaWduIEdDQyBSMyBQZXJzb25hbFNpZ24gMiBDQSAyMDIwAgwQeU+Y6hbenPzRMJsw
+DQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEIHsWbBHNyYoFxFLOslbs7OFZ6UBlljKF
+5y48KJIyDvIzMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIxMDQy
+NjE2MzU1OFowaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZIAWUDBAEWMAsGCWCG
+SAFlAwQBAjAKBggqhkiG9w0DBzALBgkqhkiG9w0BAQowCwYJKoZIhvcNAQEHMAsGCWCGSAFlAwQC
+ATANBgkqhkiG9w0BAQEFAASCAQAWZqgzPdsfIHWP0dkV4HA3b1TRL7SeFwB3uTxb7CDmPfmBZWdW
+HViftVrAoPrC0xLMec4Rk01sansHQQmklpctTpjzA3qUJ7H83KAVOkccEYC+JD/ghbpjPKgk86sU
+jOqlcpZixhOEQL2zdaZxI/H78YcBNUJijLYIAEWT5RjgQy00wE363pvWZ445bzHtuzUmk/epwtlw
+PFZyjo844U48oM82QriEb5aZPU34/KFaOd6TYobAJBjdkCvbd66iPA/dBob7JmclZLxocme5/R/p
+ZDw4TtJpdNNdf0oFHtw3BHyOjg1khZqrDOnwLSVzdEkHg6/dngdq/mGHJFVNJKHS
+--0000000000008cc98405c0e2bd71--
