@@ -2,24 +2,24 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EAE9B36B0A2
-	for <lists+netdev@lfdr.de>; Mon, 26 Apr 2021 11:32:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 42C3A36B0A3
+	for <lists+netdev@lfdr.de>; Mon, 26 Apr 2021 11:33:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232819AbhDZJdM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 26 Apr 2021 05:33:12 -0400
-Received: from inva021.nxp.com ([92.121.34.21]:54846 "EHLO inva021.nxp.com"
+        id S232868AbhDZJdO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 26 Apr 2021 05:33:14 -0400
+Received: from inva021.nxp.com ([92.121.34.21]:54904 "EHLO inva021.nxp.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232675AbhDZJc7 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S232633AbhDZJc7 (ORCPT <rfc822;netdev@vger.kernel.org>);
         Mon, 26 Apr 2021 05:32:59 -0400
 Received: from inva021.nxp.com (localhost [127.0.0.1])
-        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id 902CC2033CA;
-        Mon, 26 Apr 2021 11:32:08 +0200 (CEST)
+        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id 9D9902033E9;
+        Mon, 26 Apr 2021 11:32:09 +0200 (CEST)
 Received: from invc005.ap-rdc01.nxp.com (invc005.ap-rdc01.nxp.com [165.114.16.14])
-        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id 50A7F2033CB;
-        Mon, 26 Apr 2021 11:32:02 +0200 (CEST)
+        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id 5CB322033E4;
+        Mon, 26 Apr 2021 11:32:03 +0200 (CEST)
 Received: from localhost.localdomain (mega.ap.freescale.net [10.192.208.232])
-        by invc005.ap-rdc01.nxp.com (Postfix) with ESMTP id 6061D4032D;
-        Mon, 26 Apr 2021 11:31:54 +0200 (CEST)
+        by invc005.ap-rdc01.nxp.com (Postfix) with ESMTP id DC62D40323;
+        Mon, 26 Apr 2021 11:31:55 +0200 (CEST)
 From:   Yangbo Lu <yangbo.lu@nxp.com>
 To:     netdev@vger.kernel.org
 Cc:     Yangbo Lu <yangbo.lu@nxp.com>,
@@ -36,9 +36,9 @@ Cc:     Yangbo Lu <yangbo.lu@nxp.com>,
         Alexandre Belloni <alexandre.belloni@bootlin.com>,
         UNGLinuxDriver@microchip.com, linux-doc@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Subject: [net-next, v2, 2/7] net: dsa: no longer identify PTP packet in core driver
-Date:   Mon, 26 Apr 2021 17:37:57 +0800
-Message-Id: <20210426093802.38652-3-yangbo.lu@nxp.com>
+Subject: [net-next, v2, 3/7] net: dsa: free skb->cb usage in core driver
+Date:   Mon, 26 Apr 2021 17:37:58 +0800
+Message-Id: <20210426093802.38652-4-yangbo.lu@nxp.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20210426093802.38652-1-yangbo.lu@nxp.com>
 References: <20210426093802.38652-1-yangbo.lu@nxp.com>
@@ -47,212 +47,260 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Move ptp_classify_raw out of dsa core driver for handling tx
-timestamp request. Let device drivers do this if they want.
-Not all drivers want to limit tx timestamping for only PTP
-packet.
+Free skb->cb usage in core driver and let device drivers decide to
+use or not. The reason having a DSA_SKB_CB(skb)->clone was because
+dsa_skb_tx_timestamp() which may set the clone pointer was called
+before p->xmit() which would use the clone if any, and the device
+driver has no way to initialize the clone pointer.
+
+Although for now putting memset(skb->cb, 0, 48) at beginning of
+dsa_slave_xmit() by this patch is not very good, there is still way
+to improve this. Otherwise, some other new features, like one-step
+timestamp which needs a flag of skb marked in dsa_skb_tx_timestamp(),
+and handles as one-step timestamp in p->xmit() will face same
+situation.
 
 Signed-off-by: Yangbo Lu <yangbo.lu@nxp.com>
-Tested-by: Kurt Kanzenbach <kurt@linutronix.de>
 ---
 Changes for v2:
-	- Split from tx timestamp optimization big patch.
+	- Added this patch.
 ---
- drivers/net/dsa/hirschmann/hellcreek_hwtstamp.c |  7 ++++++-
- drivers/net/dsa/hirschmann/hellcreek_hwtstamp.h |  2 +-
- drivers/net/dsa/mv88e6xxx/hwtstamp.c            |  7 ++++++-
- drivers/net/dsa/mv88e6xxx/hwtstamp.h            |  5 ++---
- drivers/net/dsa/ocelot/felix.c                  |  2 +-
- drivers/net/dsa/sja1105/sja1105_ptp.c           |  3 +--
- drivers/net/dsa/sja1105/sja1105_ptp.h           |  2 +-
- include/net/dsa.h                               |  2 +-
- net/dsa/slave.c                                 | 12 ++----------
- 9 files changed, 21 insertions(+), 21 deletions(-)
+ drivers/net/dsa/ocelot/felix.c         |  1 +
+ drivers/net/dsa/sja1105/sja1105_main.c |  2 +-
+ drivers/net/dsa/sja1105/sja1105_ptp.c  |  4 +++-
+ drivers/net/ethernet/mscc/ocelot.c     |  6 +++---
+ drivers/net/ethernet/mscc/ocelot_net.c |  2 +-
+ include/linux/dsa/sja1105.h            |  3 ++-
+ include/net/dsa.h                      | 14 --------------
+ include/soc/mscc/ocelot.h              |  8 ++++++++
+ net/dsa/slave.c                        |  3 +--
+ net/dsa/tag_ocelot.c                   |  8 ++++----
+ net/dsa/tag_ocelot_8021q.c             |  8 ++++----
+ 11 files changed, 28 insertions(+), 31 deletions(-)
 
-diff --git a/drivers/net/dsa/hirschmann/hellcreek_hwtstamp.c b/drivers/net/dsa/hirschmann/hellcreek_hwtstamp.c
-index 6ba5e2333066..5b2e023468fe 100644
---- a/drivers/net/dsa/hirschmann/hellcreek_hwtstamp.c
-+++ b/drivers/net/dsa/hirschmann/hellcreek_hwtstamp.c
-@@ -374,14 +374,19 @@ long hellcreek_hwtstamp_work(struct ptp_clock_info *ptp)
- }
- 
- bool hellcreek_port_txtstamp(struct dsa_switch *ds, int port,
--			     struct sk_buff *clone, unsigned int type)
-+			     struct sk_buff *clone)
- {
- 	struct hellcreek *hellcreek = ds->priv;
- 	struct hellcreek_port_hwtstamp *ps;
- 	struct ptp_header *hdr;
-+	unsigned int type;
- 
- 	ps = &hellcreek->ports[port].port_hwtstamp;
- 
-+	type = ptp_classify_raw(clone);
-+	if (type == PTP_CLASS_NONE)
-+		return false;
-+
- 	/* Make sure the message is a PTP message that needs to be timestamped
- 	 * and the interaction with the HW timestamping is enabled. If not, stop
- 	 * here
-diff --git a/drivers/net/dsa/hirschmann/hellcreek_hwtstamp.h b/drivers/net/dsa/hirschmann/hellcreek_hwtstamp.h
-index c0745ffa1ebb..728cd5dc650f 100644
---- a/drivers/net/dsa/hirschmann/hellcreek_hwtstamp.h
-+++ b/drivers/net/dsa/hirschmann/hellcreek_hwtstamp.h
-@@ -45,7 +45,7 @@ int hellcreek_port_hwtstamp_get(struct dsa_switch *ds, int port,
- bool hellcreek_port_rxtstamp(struct dsa_switch *ds, int port,
- 			     struct sk_buff *clone, unsigned int type);
- bool hellcreek_port_txtstamp(struct dsa_switch *ds, int port,
--			     struct sk_buff *clone, unsigned int type);
-+			     struct sk_buff *clone);
- 
- int hellcreek_get_ts_info(struct dsa_switch *ds, int port,
- 			  struct ethtool_ts_info *info);
-diff --git a/drivers/net/dsa/mv88e6xxx/hwtstamp.c b/drivers/net/dsa/mv88e6xxx/hwtstamp.c
-index 05ca1d3c6498..79514a54d903 100644
---- a/drivers/net/dsa/mv88e6xxx/hwtstamp.c
-+++ b/drivers/net/dsa/mv88e6xxx/hwtstamp.c
-@@ -469,11 +469,16 @@ long mv88e6xxx_hwtstamp_work(struct ptp_clock_info *ptp)
- }
- 
- bool mv88e6xxx_port_txtstamp(struct dsa_switch *ds, int port,
--			     struct sk_buff *clone, unsigned int type)
-+			     struct sk_buff *clone)
- {
- 	struct mv88e6xxx_chip *chip = ds->priv;
- 	struct mv88e6xxx_port_hwtstamp *ps = &chip->port_hwtstamp[port];
- 	struct ptp_header *hdr;
-+	unsigned int type;
-+
-+	type = ptp_classify_raw(clone);
-+	if (type == PTP_CLASS_NONE)
-+		return false;
- 
- 	hdr = mv88e6xxx_should_tstamp(chip, port, clone, type);
- 	if (!hdr)
-diff --git a/drivers/net/dsa/mv88e6xxx/hwtstamp.h b/drivers/net/dsa/mv88e6xxx/hwtstamp.h
-index 9da9f197ba02..91fbc7838fc8 100644
---- a/drivers/net/dsa/mv88e6xxx/hwtstamp.h
-+++ b/drivers/net/dsa/mv88e6xxx/hwtstamp.h
-@@ -118,7 +118,7 @@ int mv88e6xxx_port_hwtstamp_get(struct dsa_switch *ds, int port,
- bool mv88e6xxx_port_rxtstamp(struct dsa_switch *ds, int port,
- 			     struct sk_buff *clone, unsigned int type);
- bool mv88e6xxx_port_txtstamp(struct dsa_switch *ds, int port,
--			     struct sk_buff *clone, unsigned int type);
-+			     struct sk_buff *clone);
- 
- int mv88e6xxx_get_ts_info(struct dsa_switch *ds, int port,
- 			  struct ethtool_ts_info *info);
-@@ -152,8 +152,7 @@ static inline bool mv88e6xxx_port_rxtstamp(struct dsa_switch *ds, int port,
- }
- 
- static inline bool mv88e6xxx_port_txtstamp(struct dsa_switch *ds, int port,
--					   struct sk_buff *clone,
--					   unsigned int type)
-+					   struct sk_buff *clone)
- {
- 	return false;
- }
 diff --git a/drivers/net/dsa/ocelot/felix.c b/drivers/net/dsa/ocelot/felix.c
-index 1379f86d71ec..d679f023dc00 100644
+index d679f023dc00..8980d56ee793 100644
 --- a/drivers/net/dsa/ocelot/felix.c
 +++ b/drivers/net/dsa/ocelot/felix.c
-@@ -1396,7 +1396,7 @@ static bool felix_rxtstamp(struct dsa_switch *ds, int port,
- }
+@@ -1403,6 +1403,7 @@ static bool felix_txtstamp(struct dsa_switch *ds, int port,
  
- static bool felix_txtstamp(struct dsa_switch *ds, int port,
--			   struct sk_buff *clone, unsigned int type)
-+			   struct sk_buff *clone)
- {
- 	struct ocelot *ocelot = ds->priv;
- 	struct ocelot_port *ocelot_port = ocelot->ports[port];
+ 	if (ocelot->ptp && ocelot_port->ptp_cmd == IFH_REW_OP_TWO_STEP_PTP) {
+ 		ocelot_port_add_txtstamp_skb(ocelot, port, clone);
++		OCELOT_SKB_CB(skb)->clone = clone;
+ 		return true;
+ 	}
+ 
+diff --git a/drivers/net/dsa/sja1105/sja1105_main.c b/drivers/net/dsa/sja1105/sja1105_main.c
+index d9c198ca0197..405024b637d6 100644
+--- a/drivers/net/dsa/sja1105/sja1105_main.c
++++ b/drivers/net/dsa/sja1105/sja1105_main.c
+@@ -3137,7 +3137,7 @@ static void sja1105_port_deferred_xmit(struct kthread_work *work)
+ 	struct sk_buff *skb;
+ 
+ 	while ((skb = skb_dequeue(&sp->xmit_queue)) != NULL) {
+-		struct sk_buff *clone = DSA_SKB_CB(skb)->clone;
++		struct sk_buff *clone = SJA1105_SKB_CB(skb)->clone;
+ 
+ 		mutex_lock(&priv->mgmt_lock);
+ 
 diff --git a/drivers/net/dsa/sja1105/sja1105_ptp.c b/drivers/net/dsa/sja1105/sja1105_ptp.c
-index 1b90570b257b..72d052de82d8 100644
+index 72d052de82d8..0832368aaa96 100644
 --- a/drivers/net/dsa/sja1105/sja1105_ptp.c
 +++ b/drivers/net/dsa/sja1105/sja1105_ptp.c
-@@ -435,8 +435,7 @@ bool sja1105_port_rxtstamp(struct dsa_switch *ds, int port,
-  * the skb and have it available in DSA_SKB_CB in the .port_deferred_xmit
+@@ -432,7 +432,7 @@ bool sja1105_port_rxtstamp(struct dsa_switch *ds, int port,
+ }
+ 
+ /* Called from dsa_skb_tx_timestamp. This callback is just to make DSA clone
+- * the skb and have it available in DSA_SKB_CB in the .port_deferred_xmit
++ * the skb and have it available in SJA1105_SKB_CB in the .port_deferred_xmit
   * callback, where we will timestamp it synchronously.
   */
--bool sja1105_port_txtstamp(struct dsa_switch *ds, int port,
--			   struct sk_buff *skb, unsigned int type)
-+bool sja1105_port_txtstamp(struct dsa_switch *ds, int port, struct sk_buff *skb)
- {
- 	struct sja1105_private *priv = ds->priv;
- 	struct sja1105_port *sp = &priv->ports[port];
-diff --git a/drivers/net/dsa/sja1105/sja1105_ptp.h b/drivers/net/dsa/sja1105/sja1105_ptp.h
-index 3daa33e98e77..c70c4729a06d 100644
---- a/drivers/net/dsa/sja1105/sja1105_ptp.h
-+++ b/drivers/net/dsa/sja1105/sja1105_ptp.h
-@@ -105,7 +105,7 @@ bool sja1105_port_rxtstamp(struct dsa_switch *ds, int port,
- 			   struct sk_buff *skb, unsigned int type);
+ bool sja1105_port_txtstamp(struct dsa_switch *ds, int port, struct sk_buff *skb)
+@@ -443,6 +443,8 @@ bool sja1105_port_txtstamp(struct dsa_switch *ds, int port, struct sk_buff *skb)
+ 	if (!sp->hwts_tx_en)
+ 		return false;
  
- bool sja1105_port_txtstamp(struct dsa_switch *ds, int port,
--			   struct sk_buff *skb, unsigned int type);
-+			   struct sk_buff *skb);
++	SJA1105_SKB_CB(skb)->clone = clone;
++
+ 	return true;
+ }
  
- int sja1105_hwtstamp_get(struct dsa_switch *ds, int port, struct ifreq *ifr);
+diff --git a/drivers/net/ethernet/mscc/ocelot.c b/drivers/net/ethernet/mscc/ocelot.c
+index 8d06ffaf318a..7da2dd1632b1 100644
+--- a/drivers/net/ethernet/mscc/ocelot.c
++++ b/drivers/net/ethernet/mscc/ocelot.c
+@@ -538,8 +538,8 @@ void ocelot_port_add_txtstamp_skb(struct ocelot *ocelot, int port,
+ 	spin_lock(&ocelot_port->ts_id_lock);
  
+ 	skb_shinfo(clone)->tx_flags |= SKBTX_IN_PROGRESS;
+-	/* Store timestamp ID in cb[0] of sk_buff */
+-	clone->cb[0] = ocelot_port->ts_id;
++	/* Store timestamp ID in OCELOT_SKB_CB(clone)->ts_id */
++	OCELOT_SKB_CB(clone)->ts_id = ocelot_port->ts_id;
+ 	ocelot_port->ts_id = (ocelot_port->ts_id + 1) % 4;
+ 	skb_queue_tail(&ocelot_port->tx_skbs, clone);
+ 
+@@ -604,7 +604,7 @@ void ocelot_get_txtstamp(struct ocelot *ocelot)
+ 		spin_lock_irqsave(&port->tx_skbs.lock, flags);
+ 
+ 		skb_queue_walk_safe(&port->tx_skbs, skb, skb_tmp) {
+-			if (skb->cb[0] != id)
++			if (OCELOT_SKB_CB(skb)->ts_id != id)
+ 				continue;
+ 			__skb_unlink(skb, &port->tx_skbs);
+ 			skb_match = skb;
+diff --git a/drivers/net/ethernet/mscc/ocelot_net.c b/drivers/net/ethernet/mscc/ocelot_net.c
+index 36f32a4d9b0f..789a5fba146c 100644
+--- a/drivers/net/ethernet/mscc/ocelot_net.c
++++ b/drivers/net/ethernet/mscc/ocelot_net.c
+@@ -520,7 +520,7 @@ static netdev_tx_t ocelot_port_xmit(struct sk_buff *skb, struct net_device *dev)
+ 
+ 			ocelot_port_add_txtstamp_skb(ocelot, port, clone);
+ 
+-			rew_op |= clone->cb[0] << 3;
++			rew_op |= OCELOT_SKB_CB(clone)->ts_id << 3;
+ 		}
+ 	}
+ 
+diff --git a/include/linux/dsa/sja1105.h b/include/linux/dsa/sja1105.h
+index dd93735ae228..1eb84562b311 100644
+--- a/include/linux/dsa/sja1105.h
++++ b/include/linux/dsa/sja1105.h
+@@ -47,11 +47,12 @@ struct sja1105_tagger_data {
+ };
+ 
+ struct sja1105_skb_cb {
++	struct sk_buff *clone;
+ 	u32 meta_tstamp;
+ };
+ 
+ #define SJA1105_SKB_CB(skb) \
+-	((struct sja1105_skb_cb *)DSA_SKB_CB_PRIV(skb))
++	((struct sja1105_skb_cb *)((skb)->cb))
+ 
+ struct sja1105_port {
+ 	u16 subvlan_map[DSA_8021Q_N_SUBVLAN];
 diff --git a/include/net/dsa.h b/include/net/dsa.h
-index 507082959aa4..905066055b08 100644
+index 905066055b08..5685e60cb082 100644
 --- a/include/net/dsa.h
 +++ b/include/net/dsa.h
-@@ -741,7 +741,7 @@ struct dsa_switch_ops {
- 	int	(*port_hwtstamp_set)(struct dsa_switch *ds, int port,
- 				     struct ifreq *ifr);
- 	bool	(*port_txtstamp)(struct dsa_switch *ds, int port,
--				 struct sk_buff *clone, unsigned int type);
-+				 struct sk_buff *clone);
- 	bool	(*port_rxtstamp)(struct dsa_switch *ds, int port,
- 				 struct sk_buff *skb, unsigned int type);
+@@ -117,20 +117,6 @@ struct dsa_netdevice_ops {
+ #define MODULE_ALIAS_DSA_TAG_DRIVER(__proto)				\
+ 	MODULE_ALIAS(DSA_TAG_DRIVER_ALIAS __stringify(__proto##_VALUE))
  
+-struct dsa_skb_cb {
+-	struct sk_buff *clone;
+-};
+-
+-struct __dsa_skb_cb {
+-	struct dsa_skb_cb cb;
+-	u8 priv[48 - sizeof(struct dsa_skb_cb)];
+-};
+-
+-#define DSA_SKB_CB(skb) ((struct dsa_skb_cb *)((skb)->cb))
+-
+-#define DSA_SKB_CB_PRIV(skb)			\
+-	((void *)(skb)->cb + offsetof(struct __dsa_skb_cb, priv))
+-
+ struct dsa_switch_tree {
+ 	struct list_head	list;
+ 
+diff --git a/include/soc/mscc/ocelot.h b/include/soc/mscc/ocelot.h
+index 68cdc7ceaf4d..f075aaf70eee 100644
+--- a/include/soc/mscc/ocelot.h
++++ b/include/soc/mscc/ocelot.h
+@@ -689,6 +689,14 @@ struct ocelot_policer {
+ 	u32 burst; /* bytes */
+ };
+ 
++struct ocelot_skb_cb {
++	struct sk_buff *clone;
++	u8 ts_id;
++};
++
++#define OCELOT_SKB_CB(skb) \
++	((struct ocelot_skb_cb *)((skb)->cb))
++
+ #define ocelot_read_ix(ocelot, reg, gi, ri) __ocelot_read_ix(ocelot, reg, reg##_GSZ * (gi) + reg##_RSZ * (ri))
+ #define ocelot_read_gix(ocelot, reg, gi) __ocelot_read_ix(ocelot, reg, reg##_GSZ * (gi))
+ #define ocelot_read_rix(ocelot, reg, ri) __ocelot_read_ix(ocelot, reg, reg##_RSZ * (ri))
 diff --git a/net/dsa/slave.c b/net/dsa/slave.c
-index b2a802e9330e..acaa52e60d7f 100644
+index acaa52e60d7f..2211894c2381 100644
 --- a/net/dsa/slave.c
 +++ b/net/dsa/slave.c
-@@ -20,7 +20,6 @@
- #include <linux/if_bridge.h>
- #include <linux/if_hsr.h>
- #include <linux/netpoll.h>
--#include <linux/ptp_classify.h>
- 
- #include "dsa_priv.h"
- 
-@@ -557,15 +556,10 @@ static void dsa_skb_tx_timestamp(struct dsa_slave_priv *p,
- {
- 	struct dsa_switch *ds = p->dp->ds;
- 	struct sk_buff *clone;
--	unsigned int type;
- 
- 	if (!(skb_shinfo(skb)->tx_flags & SKBTX_HW_TSTAMP))
+@@ -568,7 +568,6 @@ static void dsa_skb_tx_timestamp(struct dsa_slave_priv *p,
  		return;
  
--	type = ptp_classify_raw(skb);
--	if (type == PTP_CLASS_NONE)
--		return;
--
- 	if (!ds->ops->port_txtstamp)
- 		return;
- 
-@@ -573,7 +567,7 @@ static void dsa_skb_tx_timestamp(struct dsa_slave_priv *p,
- 	if (!clone)
- 		return;
- 
--	if (ds->ops->port_txtstamp(ds, p->dp->index, clone, type)) {
-+	if (ds->ops->port_txtstamp(ds, p->dp->index, clone)) {
- 		DSA_SKB_CB(skb)->clone = clone;
+ 	if (ds->ops->port_txtstamp(ds, p->dp->index, clone)) {
+-		DSA_SKB_CB(skb)->clone = clone;
  		return;
  	}
-@@ -632,9 +626,7 @@ static netdev_tx_t dsa_slave_xmit(struct sk_buff *skb, struct net_device *dev)
  
- 	DSA_SKB_CB(skb)->clone = NULL;
+@@ -624,7 +623,7 @@ static netdev_tx_t dsa_slave_xmit(struct sk_buff *skb, struct net_device *dev)
  
--	/* Identify PTP protocol packets, clone them, and pass them to the
--	 * switch driver
--	 */
-+	/* Handle tx timestamp if any */
+ 	dev_sw_netstats_tx_add(dev, 1, skb->len);
+ 
+-	DSA_SKB_CB(skb)->clone = NULL;
++	memset(skb->cb, 0, 48);
+ 
+ 	/* Handle tx timestamp if any */
  	dsa_skb_tx_timestamp(p, skb);
+diff --git a/net/dsa/tag_ocelot.c b/net/dsa/tag_ocelot.c
+index f9df9cac81c5..1100a16f1032 100644
+--- a/net/dsa/tag_ocelot.c
++++ b/net/dsa/tag_ocelot.c
+@@ -15,11 +15,11 @@ static void ocelot_xmit_ptp(struct dsa_port *dp, void *injection,
+ 	ocelot_port = ocelot->ports[dp->index];
+ 	rew_op = ocelot_port->ptp_cmd;
  
- 	if (dsa_realloc_skb(skb, dev)) {
+-	/* Retrieve timestamp ID populated inside skb->cb[0] of the
+-	 * clone by ocelot_port_add_txtstamp_skb
++	/* Retrieve timestamp ID populated inside OCELOT_SKB_CB(clone)->ts_id
++	 * by ocelot_port_add_txtstamp_skb
+ 	 */
+ 	if (ocelot_port->ptp_cmd == IFH_REW_OP_TWO_STEP_PTP)
+-		rew_op |= clone->cb[0] << 3;
++		rew_op |= OCELOT_SKB_CB(clone)->ts_id << 3;
+ 
+ 	ocelot_ifh_set_rew_op(injection, rew_op);
+ }
+@@ -28,7 +28,7 @@ static void ocelot_xmit_common(struct sk_buff *skb, struct net_device *netdev,
+ 			       __be32 ifh_prefix, void **ifh)
+ {
+ 	struct dsa_port *dp = dsa_slave_to_port(netdev);
+-	struct sk_buff *clone = DSA_SKB_CB(skb)->clone;
++	struct sk_buff *clone = OCELOT_SKB_CB(skb)->clone;
+ 	struct dsa_switch *ds = dp->ds;
+ 	void *injection;
+ 	__be32 *prefix;
+diff --git a/net/dsa/tag_ocelot_8021q.c b/net/dsa/tag_ocelot_8021q.c
+index 5f3e8e124a82..a001a7e3f575 100644
+--- a/net/dsa/tag_ocelot_8021q.c
++++ b/net/dsa/tag_ocelot_8021q.c
+@@ -28,11 +28,11 @@ static struct sk_buff *ocelot_xmit_ptp(struct dsa_port *dp,
+ 	ocelot_port = ocelot->ports[port];
+ 	rew_op = ocelot_port->ptp_cmd;
+ 
+-	/* Retrieve timestamp ID populated inside skb->cb[0] of the
+-	 * clone by ocelot_port_add_txtstamp_skb
++	/* Retrieve timestamp ID populated inside OCELOT_SKB_CB(clone)->ts_id
++	 * by ocelot_port_add_txtstamp_skb
+ 	 */
+ 	if (ocelot_port->ptp_cmd == IFH_REW_OP_TWO_STEP_PTP)
+-		rew_op |= clone->cb[0] << 3;
++		rew_op |= OCELOT_SKB_CB(clone)->ts_id << 3;
+ 
+ 	ocelot_port_inject_frame(ocelot, port, 0, rew_op, skb);
+ 
+@@ -46,7 +46,7 @@ static struct sk_buff *ocelot_xmit(struct sk_buff *skb,
+ 	u16 tx_vid = dsa_8021q_tx_vid(dp->ds, dp->index);
+ 	u16 queue_mapping = skb_get_queue_mapping(skb);
+ 	u8 pcp = netdev_txq_to_tc(netdev, queue_mapping);
+-	struct sk_buff *clone = DSA_SKB_CB(skb)->clone;
++	struct sk_buff *clone = OCELOT_SKB_CB(skb)->clone;
+ 
+ 	/* TX timestamping was requested, so inject through MMIO */
+ 	if (clone)
 -- 
 2.25.1
 
