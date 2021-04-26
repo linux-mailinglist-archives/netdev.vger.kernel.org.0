@@ -2,201 +2,178 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0086836ABAA
-	for <lists+netdev@lfdr.de>; Mon, 26 Apr 2021 06:34:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 494E036AC01
+	for <lists+netdev@lfdr.de>; Mon, 26 Apr 2021 08:01:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231550AbhDZEey (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 26 Apr 2021 00:34:54 -0400
-Received: from esa.microchip.iphmx.com ([68.232.154.123]:43540 "EHLO
-        esa.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229469AbhDZEew (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 26 Apr 2021 00:34:52 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1619411652; x=1650947652;
-  h=message-id:subject:from:to:cc:date:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=waRlw9pfu8PFrlVj4Ow3lPiMZiLtQJObTByWWoeyO6o=;
-  b=eeNpzuQagXFCyCAGvdNgoJ0I7SUwnBDj2wolqklFySfP02HMFhRYF9cM
-   2a+XA5fjJ2gHvwiJD71E3hQTr6KgTKD3wfKvoFPpengHSxL+I4+AXAU13
-   vO0FGXSBufmeuGjZafezbepQBugH1oLL4u6eTv2ZzoetY2o08WMRBQXTX
-   pCDjl5UUUYVoJtI+8KW+KSOErUJlz/DqbC3XCHTRFKmX0pjONpZ20MV5M
-   mtPipCy7GaT4Jrm8+JZbfqO2FnQdHiOQhZIX9yWdHB3sn9xJMhBSAPsDr
-   FesrxMDlsgmYOtUHl0UKE3koDcp+W14mY0dgjPv8P0Hp9eJXxr3suJb73
-   g==;
-IronPort-SDR: M/57nWY0I+6MOvEU216SGDfVYpSN8KTmWI+alyI8ndXhWapYShl8IyExxP89IkNfEr/EL2sOat
- rKj8JaWCXxpbJnxJxr8+Fqn4zuw/s2uSMLTh4wH8nC0945q7cSoKlf6n/d9UkssK/hzOLyhF4D
- b/GD0RIVyvz5TrsHj7AQ74uOPo7KMbznnUvkzCkTXCLzTF7OqB6o+ZntaE0iQ9YKf5eKPGAEHF
- sZPGVi8a5mqxZ78+fXRthc2CTMNcJVKeicuFqD6LyBpYx/b9IvNQ13xMNZl/MVQhcEYmyByE+1
- Nz8=
-X-IronPort-AV: E=Sophos;i="5.82,251,1613458800"; 
-   d="scan'208";a="114842862"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa2.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 25 Apr 2021 21:34:11 -0700
-Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
- chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2176.2; Sun, 25 Apr 2021 21:33:58 -0700
-Received: from INB-LOAN0158.mchp-main.com (10.10.115.15) by
- chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server id
- 15.1.2176.2 via Frontend Transport; Sun, 25 Apr 2021 21:33:53 -0700
-Message-ID: <c5f4e12beb6381c5ae08322f1316efcecf292e12.camel@microchip.com>
-Subject: Re: [PATCH v2 net-next 3/9] net: dsa: tag_ksz: add tag handling for
- Microchip LAN937x
-From:   Prasanna Vengateshan <prasanna.vengateshan@microchip.com>
-To:     Vladimir Oltean <olteanv@gmail.com>
-CC:     <andrew@lunn.ch>, <netdev@vger.kernel.org>, <robh+dt@kernel.org>,
-        <UNGLinuxDriver@microchip.com>, <hkallweit1@gmail.com>,
-        <linux@armlinux.org.uk>, <davem@davemloft.net>, <kuba@kernel.org>,
-        <linux-kernel@vger.kernel.org>, <vivien.didelot@gmail.com>,
-        <f.fainelli@gmail.com>, <devicetree@vger.kernel.org>
-Date:   Mon, 26 Apr 2021 10:03:52 +0530
-In-Reply-To: <20210422191853.luobzcuqsouubr7d@skbuf>
-References: <20210422094257.1641396-1-prasanna.vengateshan@microchip.com>
-         <20210422094257.1641396-4-prasanna.vengateshan@microchip.com>
-         <20210422191853.luobzcuqsouubr7d@skbuf>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.38.1-1 
+        id S231907AbhDZGCO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 26 Apr 2021 02:02:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46536 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229512AbhDZGCM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 26 Apr 2021 02:02:12 -0400
+Received: from mail-pf1-x42c.google.com (mail-pf1-x42c.google.com [IPv6:2607:f8b0:4864:20::42c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E09CC061574;
+        Sun, 25 Apr 2021 23:01:31 -0700 (PDT)
+Received: by mail-pf1-x42c.google.com with SMTP id c3so19436019pfo.3;
+        Sun, 25 Apr 2021 23:01:31 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=69AoA8tNSsYYpyvV+LtgNiExcNmI/3RLnrIl8Iw0l10=;
+        b=X3IVfgFgh1XTI8QaHLrGUCQ6rqfijJZfMV2uGLtQBSU1TVn8hDFYeNRRvKYUp/8Ryw
+         m60yGjGyvu0tg8lI3X8f7Pv05hzUkNHPyg86DtWrFnQdajNLe+Dq/W883KGV7f6kH3ZD
+         Aev6hmOb+UTyNr5cUxS37WmDD+I4It425Mdy4nXP7vK7rPIhJ94RwYN6yorTfRgt3oV4
+         eMi9FnM81xUewXfb0dgYjq7/7WUz/hY6wmRTMeGpYw8ssNJ+o1N8x7V2gJqZEZwYbqJ6
+         cEEMRkxNgFftmTbY5Bl7wPmvX2HVIn4R5iehHQXLxERMCgzPoocnBLZ4kMXK7FLnhXXe
+         O+kg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=69AoA8tNSsYYpyvV+LtgNiExcNmI/3RLnrIl8Iw0l10=;
+        b=l4PLn771RO4qLR56T2IO3FfumEqn+aZLunzicDrRuInSWE9ARWZ4tMDcXzjLveRAwc
+         vhp+ERTMqhf/BrzzEmi1+kmgqNPhYT1S8M3wb3iOo9G0T3C2aVeXWc5zRt/jw++AzjzH
+         274xZs5teNAzAkIsgbOVznDAPULtZvvOFk6JVU6rAmAoHRWQh0aDNjTuLbjPrkl1h+Pu
+         WwTfI+LZZc5ZfGlRykS44GZrTWRcVypsTtK4D2u85vzUUKDHUCyOxFgM7zUYCFh4H+j1
+         ZsEWPCXUhfgzt/Up1ALZxWk2s7LNbRVibl51x6uinADZvYLhz9sa8v6U3XegaZti4jAt
+         BgtA==
+X-Gm-Message-State: AOAM533aTaEKAq9njVtKJ4YN9jlyM4mrw1vJLC49CuPfM6QVpX+pJc7G
+        6iP7RxGqgWAY6puVLORpusc=
+X-Google-Smtp-Source: ABdhPJy8Tdv/NnfH53ZOD6DUjan72bTam2NptqKIn36vtTOIF/qKbAfPOF50Y0IJCKtxgLtaT+475A==
+X-Received: by 2002:aa7:91d4:0:b029:25a:d5bb:7671 with SMTP id z20-20020aa791d40000b029025ad5bb7671mr15785825pfa.65.1619416890528;
+        Sun, 25 Apr 2021 23:01:30 -0700 (PDT)
+Received: from Leo-laptop-t470s ([209.132.188.80])
+        by smtp.gmail.com with ESMTPSA id i18sm10247624pfq.59.2021.04.25.23.01.25
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 25 Apr 2021 23:01:30 -0700 (PDT)
+Date:   Mon, 26 Apr 2021 14:01:17 +0800
+From:   Hangbin Liu <liuhangbin@gmail.com>
+To:     Jesper Dangaard Brouer <brouer@redhat.com>
+Cc:     Toke =?iso-8859-1?Q?H=F8iland-J=F8rgensen?= <toke@redhat.com>,
+        bpf@vger.kernel.org, netdev@vger.kernel.org,
+        Jiri Benc <jbenc@redhat.com>,
+        Eelco Chaudron <echaudro@redhat.com>, ast@kernel.org,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Lorenzo Bianconi <lorenzo.bianconi@redhat.com>,
+        David Ahern <dsahern@gmail.com>,
+        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
+        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
+        =?iso-8859-1?Q?Bj=F6rn_T=F6pel?= <bjorn.topel@gmail.com>,
+        Martin KaFai Lau <kafai@fb.com>
+Subject: Re: [PATCHv9 bpf-next 2/4] xdp: extend xdp_redirect_map with
+ broadcast support
+Message-ID: <20210426060117.GN3465@Leo-laptop-t470s>
+References: <20210422071454.2023282-1-liuhangbin@gmail.com>
+ <20210422071454.2023282-3-liuhangbin@gmail.com>
+ <20210422185332.3199ca2e@carbon>
+ <87a6pqfb9x.fsf@toke.dk>
+ <20210423185429.126492d0@carbon>
+ <20210424010925.GG3465@Leo-laptop-t470s>
+ <20210424090129.1b8fe377@carbon>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <20210424090129.1b8fe377@carbon>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 2021-04-22 at 22:18 +0300, Vladimir Oltean wrote:
-> EXTERNAL EMAIL: Do not click links or open attachments unless you know the
-> content is safe
+On Sat, Apr 24, 2021 at 09:01:29AM +0200, Jesper Dangaard Brouer wrote:
+> > > > >> @@ -3942,7 +3960,12 @@ int xdp_do_redirect(struct net_device *dev, struct xdp_buff *xdp,
+> > > > >>  	case BPF_MAP_TYPE_DEVMAP:
+> > > > >>  		fallthrough;
+> > > > >>  	case BPF_MAP_TYPE_DEVMAP_HASH:
+> > > > >> -		err = dev_map_enqueue(fwd, xdp, dev);
+> > > > >> +		map = xchg(&ri->map, NULL);    
+> > > > >
+> > > > > Hmm, this looks dangerous for performance to have on this fast-path.
+> > > > > The xchg call can be expensive, AFAIK this is an atomic operation.    
+> > > > 
+> > > > Ugh, you're right. That's my bad, I suggested replacing the
+> > > > READ_ONCE()/WRITE_ONCE() pair with the xchg() because an exchange is
+> > > > what it's doing, but I failed to consider the performance implications
+> > > > of the atomic operation. Sorry about that, Hangbin! I guess this should
+> > > > be changed to:
+> > > > 
+> > > > +		map = READ_ONCE(ri->map);
+> > > > +		if (map) {
+> > > > +			WRITE_ONCE(ri->map, NULL);
+> > > > +			err = dev_map_enqueue_multi(xdp, dev, map,
+> > > > +						    ri->flags & BPF_F_EXCLUDE_INGRESS);
+> > > > +		} else {
+> > > > +			err = dev_map_enqueue(fwd, xdp, dev);
+> > > > +		}  
+> > > 
+> > > This is highly sensitive fast-path code, as you saw Bj�rn have been
+> > > hunting nanosec in this area.  The above code implicitly have "map" as
+> > > the likely option, which I don't think it is.  
+> > 
+> > Hi Jesper,
+> > 
+> > From the performance data, there is only a slightly impact. Do we still need
+> > to block the whole patch on this? Or if you have a better solution?
 > 
-> On Thu, Apr 22, 2021 at 03:12:51PM +0530, Prasanna Vengateshan wrote:
-> > The Microchip LAN937X switches have a tagging protocol which is
-> > very similar to KSZ tagging. So that the implementation is added to
-> > tag_ksz.c and reused common APIs
-> > 
-> > Signed-off-by: Prasanna Vengateshan <prasanna.vengateshan@microchip.com>
-> > ---
-> >  include/net/dsa.h |  2 ++
-> >  net/dsa/Kconfig   |  4 ++--
-> >  net/dsa/tag_ksz.c | 58 +++++++++++++++++++++++++++++++++++++++++++++++
-> >  3 files changed, 62 insertions(+), 2 deletions(-)
-> > 
-> > diff --git a/include/net/dsa.h b/include/net/dsa.h
-> > index 507082959aa4..98c1ab6dc4dc 100644
-> > --- a/include/net/dsa.h
-> > +++ b/include/net/dsa.h
-> > @@ -50,6 +50,7 @@ struct phylink_link_state;
-> >  #define DSA_TAG_PROTO_OCELOT_8021Q_VALUE     20
-> >  #define DSA_TAG_PROTO_SEVILLE_VALUE          21
-> >  #define DSA_TAG_PROTO_BRCM_LEGACY_VALUE              22
-> > +#define DSA_TAG_PROTO_LAN937X_VALUE          23
-> > 
-> >  enum dsa_tag_protocol {
-> >       DSA_TAG_PROTO_NONE              = DSA_TAG_PROTO_NONE_VALUE,
-> > @@ -75,6 +76,7 @@ enum dsa_tag_protocol {
-> >       DSA_TAG_PROTO_XRS700X           = DSA_TAG_PROTO_XRS700X_VALUE,
-> >       DSA_TAG_PROTO_OCELOT_8021Q      = DSA_TAG_PROTO_OCELOT_8021Q_VALUE,
-> >       DSA_TAG_PROTO_SEVILLE           = DSA_TAG_PROTO_SEVILLE_VALUE,
-> > +     DSA_TAG_PROTO_LAN937X           = DSA_TAG_PROTO_LAN937X_VALUE,
-> >  };
-> > 
-> >  struct packet_type;
-> > diff --git a/net/dsa/Kconfig b/net/dsa/Kconfig
-> > index cbc2bd643ab2..888eb79a85f2 100644
-> > --- a/net/dsa/Kconfig
-> > +++ b/net/dsa/Kconfig
-> > @@ -97,10 +97,10 @@ config NET_DSA_TAG_MTK
-> >         Mediatek switches.
-> > 
-> >  config NET_DSA_TAG_KSZ
-> > -     tristate "Tag driver for Microchip 8795/9477/9893 families of
-> > switches"
-> > +     tristate "Tag driver for Microchip 8795/937x/9477/9893 families of
-> > switches"
-> >       help
-> >         Say Y if you want to enable support for tagging frames for the
-> > -       Microchip 8795/9477/9893 families of switches.
-> > +       Microchip 8795/937x/9477/9893 families of switches.
-> > 
-> >  config NET_DSA_TAG_RTL4_A
-> >       tristate "Tag driver for Realtek 4 byte protocol A tags"
-> > diff --git a/net/dsa/tag_ksz.c b/net/dsa/tag_ksz.c
-> > index 4820dbcedfa2..a67f21bdab8f 100644
-> > --- a/net/dsa/tag_ksz.c
-> > +++ b/net/dsa/tag_ksz.c
-> > @@ -190,10 +190,68 @@ static const struct dsa_device_ops ksz9893_netdev_ops
-> > = {
-> >  DSA_TAG_DRIVER(ksz9893_netdev_ops);
-> >  MODULE_ALIAS_DSA_TAG_DRIVER(DSA_TAG_PROTO_KSZ9893);
-> > 
-> > +/* For xmit, 2 bytes are added before FCS.
-> > + * ------------------------------------------------------------------------
-> > ---
-> > + *
-> > DA(6bytes)|SA(6bytes)|....|Data(nbytes)|tag0(1byte)|tag1(1byte)|FCS(4bytes)
-> > + * ------------------------------------------------------------------------
-> > ---
-> > + * tag0 : represents tag override, lookup and valid
-> > + * tag1 : each bit represents port (eg, 0x01=port1, 0x02=port2, 0x80=port8)
-> > + *
-> > + * For rcv, 1 byte is added before FCS.
-> > + * ------------------------------------------------------------------------
-> > ---
-> > + * DA(6bytes)|SA(6bytes)|....|Data(nbytes)|tag0(1byte)|FCS(4bytes)
-> > + * ------------------------------------------------------------------------
-> > ---
-> > + * tag0 : zero-based value represents port
-> > + *     (eg, 0x00=port1, 0x02=port3, 0x07=port8)
-> > + */
-> > +#define LAN937X_INGRESS_TAG_LEN              2
-> > +
-> > +#define LAN937X_TAIL_TAG_OVERRIDE    BIT(11)
+> I'm basically just asking you to add an unlikely() annotation:
 > 
-> I had to look up the datasheet, to see what this is, because "override"
-> can mean many things, not all of them are desirable.
+> 	map = READ_ONCE(ri->map);
+> 	if (unlikely(map)) {
+> 		WRITE_ONCE(ri->map, NULL);
+> 		err = dev_map_enqueue_multi(xdp, dev, map, [...]
 > 
-> Port Blocking Override
-> When set, packets will be sent from the specified port(s) regardless, and any
-> port
-> blocking (see Port Transmit Enable in Port MSTP State Register) is ignored.
+> For XDP, performance is the single most important factor!  You say your
+> performance data, there is only a slightly impact, there must be ZERO
+> impact (when your added features is not in use).
 > 
-> Do you think you can name it LAN937X_TAIL_TAG_BLOCKING_OVERRIDE? I know
-> it's longer, but it's also more suggestive.
-Thanks for reviewing the patch series. Suggestion looks meaningful. Noted for
-next rev.
+> You data:
+>  Version          | Test                                | Generic | Native
+>  5.12 rc4         | redirect_map        i40e->i40e      |    1.9M |  9.6M
+>  5.12 rc4 + patch | redirect_map        i40e->i40e      |    1.9M |  9.3M
+> 
+> The performance difference 9.6M -> 9.3M is a slowdown of 3.36 nanosec.
+> Bj�rn and others have been working really hard to optimize the code and
+> remove down to 1.5 nanosec overheads.  Thus, introducing 3.36 nanosec
+> added overhead to the fast-path is significant.
 
-> 
-> > +#define LAN937X_TAIL_TAG_LOOKUP              BIT(12)
-> > +#define LAN937X_TAIL_TAG_VALID               BIT(13)
-> > +#define LAN937X_TAIL_TAG_PORT_MASK   7
-> > +
-> > +static struct sk_buff *lan937x_xmit(struct sk_buff *skb,
-> > +                                 struct net_device *dev)
-> > +{
-> > +     struct dsa_port *dp = dsa_slave_to_port(dev);
-> > +     __be16 *tag;
-> > +     u8 *addr;
-> > +     u16 val;
-> > +r
-> > +     tag = skb_put(skb, LAN937X_INGRESS_TAG_LEN);
-> 
-> Here we go again.. why is it called INGRESS_TAG_LEN if it is used during
-> xmit, and only during xmit?
-Definition is ingress to the LAN937x since it has different tag length for
-ingress and egress of LAN937x. Do you think should it be changed? 
+I re-check the performance data. The data
+> Version          | Test                                | Generic | Native
+> 5.12 rc4         | redirect_map        i40e->i40e      |    1.9M |  9.6M
+> 5.12 rc4 + patch | redirect_map        i40e->i40e      |    1.9M |  9.3M
 
+is done on version 5.
 
-> 
-> > +     addr = skb_mac_header(skb);
-> 
-> My personal choice would have been:
-> 
->         const struct ethhdr *hdr = eth_hdr(skb);
-> 
->         if (is_link_local_ether_addr(hdr->h_dest))
-It makes more understandable since h_dest is passed. Noted.
+Today I re-did the test, on version 10, with xchg() changed to
+READ_ONCE/WRITE_ONCE. Here is the new data (Generic path data was omitted
+as there is no change)
 
-> 
-> > 
-> > 2.27.0
-> > 
+Version          | Test                                | Generic | Native
+5.12 rc4         | redirect_map        i40e->i40e      |  9.7M
+5.12 rc4         | redirect_map        i40e->veth      | 11.8M
 
+5.12 rc4 + patch | redirect_map        i40e->i40e      |  9.6M
+5.12 rc4 + patch | redirect_map        i40e->veth      | 11.6M
+5.12 rc4 + patch | redirect_map multi  i40e->i40e      |  9.5M
+5.12 rc4 + patch | redirect_map multi  i40e->veth      | 11.5M
+5.12 rc4 + patch | redirect_map multi  i40e->mlx4+veth |  3.9M
 
+And after add unlikely() in the check path, the new data looks like
+
+Version          | Test                                | Native
+5.12 rc4 + patch | redirect_map        i40e->i40e      |  9.6M
+5.12 rc4 + patch | redirect_map        i40e->veth      | 11.7M
+5.12 rc4 + patch | redirect_map multi  i40e->i40e      |  9.4M
+5.12 rc4 + patch | redirect_map multi  i40e->veth      | 11.4M
+5.12 rc4 + patch | redirect_map multi  i40e->mlx4+veth |  3.8M
+
+So with unlikely(), the redirect_map is a slightly up, while redirect_map
+broadcast has a little drawback. But for the total data it looks this time
+there is no much gap compared with no this patch for redirect_map.
+
+Do you think we still need the unlikely() in check path?
+
+Thanks
+Hangbin
