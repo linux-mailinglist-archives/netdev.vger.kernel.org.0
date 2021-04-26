@@ -2,147 +2,269 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CA14236AFC3
-	for <lists+netdev@lfdr.de>; Mon, 26 Apr 2021 10:31:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 896E036AFDF
+	for <lists+netdev@lfdr.de>; Mon, 26 Apr 2021 10:42:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232184AbhDZIcT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 26 Apr 2021 04:32:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51792 "EHLO
+        id S232326AbhDZInT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 26 Apr 2021 04:43:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54188 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232068AbhDZIcS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 26 Apr 2021 04:32:18 -0400
-Received: from mail-ej1-x62d.google.com (mail-ej1-x62d.google.com [IPv6:2a00:1450:4864:20::62d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 692DCC061574
-        for <netdev@vger.kernel.org>; Mon, 26 Apr 2021 01:31:37 -0700 (PDT)
-Received: by mail-ej1-x62d.google.com with SMTP id n2so83132299ejy.7
-        for <netdev@vger.kernel.org>; Mon, 26 Apr 2021 01:31:37 -0700 (PDT)
+        with ESMTP id S232068AbhDZInS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 26 Apr 2021 04:43:18 -0400
+Received: from mail-wr1-x436.google.com (mail-wr1-x436.google.com [IPv6:2a00:1450:4864:20::436])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 064E1C061574;
+        Mon, 26 Apr 2021 01:42:37 -0700 (PDT)
+Received: by mail-wr1-x436.google.com with SMTP id x5so4605594wrv.13;
+        Mon, 26 Apr 2021 01:42:36 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:subject:from:in-reply-to:date:cc
-         :content-transfer-encoding:message-id:references:to;
-        bh=3LS/C6v9PlOsX0rnk9KD3LMPQee0aw0PjcSFfHRj7VA=;
-        b=mNHjcvBmV7xHyu+usfAYPg/sCa0QZg9DlUBf6DzvXguizIZByCsRYPCGb1o+fEG/88
-         7HV68u9zLEguSX47SBGHjoxr6PfqJRslEAYj+CfayXsDgm8VQXAFnkXHROCozxmG2h4N
-         khOUKHxbe3HjzNmyNMWpQ/BY7eJ0+g0SG25iCOFM21RxU3o431j1sHzrr/7Yi3cNFzmM
-         za7jsgjQoZNN+lvMw+2LEW1WmFE/DaOdweexDpyn2nJQVMYCViaAjize41tg3L+Ht0oz
-         m1skdGiTPDSXN4uzNPeBS1BY4DUYGThTV4hFHqRlfpusxTJwBNXmWHb65MeCOOA3tXRP
-         v4kQ==
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=x0l+sylJnU9lRBHIiEXDjoFBYeuoK3t6VPzwgyK8w94=;
+        b=olLH8+JAMGCpFq1of14t/FqYNibs78GaOrc/+4a/OG/qLoOE0XoeMqgoGiVLg1fu9R
+         0IebTP3Zt6nI7prMeowF7AriWCZWSYDaBnR2FdxV0QdiQ5CkfqTcl+CSNL7jGqHvBt3m
+         Ux9zpRfCGVxAFSYug+kI+fZ2XkZ3iW2586SGUhEvAFEw22GdX7WEnpLKPVl5iqPncKy6
+         5ibqOX0H2I2PexmbNubclVIwQwTguctGMHtIsKWZC2iOuSLVqevTEhz7T2kc5JY/cmSc
+         BsNNbSK0/86k/aNej30oWbb1zPUd1x+k9mU8Q+vyrycGR/+88Tk666ugt/MJwM6ufvl7
+         sJgw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:subject:from:in-reply-to:date:cc
-         :content-transfer-encoding:message-id:references:to;
-        bh=3LS/C6v9PlOsX0rnk9KD3LMPQee0aw0PjcSFfHRj7VA=;
-        b=ULTS/7qbxk+OOtC0aXAx9ZgHkkW0l45qY7UfSr2poyztc4bEdViXethVe81AeM15wE
-         D5Z654Q2qWLtdJ9Fjcnr+PAUFhu9y6JENAqyI0eZtlqMf/iOQiK36nhwmeNYz3qIFiYt
-         counFddH8nB+u3hUYt8SMlhYZ8bP+rDyDHgdVNt6LActJYO53P4JAFxRuiRPulUg8NPy
-         Q9S5ZWTjNvpFnY1LUtrGoR9e3YFDnxz5dISC/y+rvYBHubC/iWCj1uzcALEl42DLpPpB
-         rkFckTIfo9dWmiiebJDrX8cb0D5zJe3hpZNyLXmJat1JnNtFj/3flmMalIg96THfDkIj
-         Gqfw==
-X-Gm-Message-State: AOAM533yyAwcrehJLv4j9ziyApuJvwaf4I45JouxOKD5WfEhGJOli3TB
-        aD1s0BRnASZax9qJrOOooUw=
-X-Google-Smtp-Source: ABdhPJyu9iO5i8pNbN2wKLo4uMLO8NscSsnZofXFvK2buy0DfKNqbhgcBoq8AR+wia+Tl/D7Kl4sbQ==
-X-Received: by 2002:a17:907:c0b:: with SMTP id ga11mr17138438ejc.545.1619425896140;
-        Mon, 26 Apr 2021 01:31:36 -0700 (PDT)
-Received: from smtpclient.apple ([178.254.237.20])
-        by smtp.gmail.com with ESMTPSA id n11sm11227829ejg.43.2021.04.26.01.31.34
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Mon, 26 Apr 2021 01:31:35 -0700 (PDT)
-Content-Type: text/plain;
-        charset=us-ascii
-Mime-Version: 1.0 (Mac OS X Mail 14.0 \(3654.80.0.2.43\))
-Subject: Re: Bug Report Napi GRO ixgbe
-From:   Martin Zaharinov <micron10@gmail.com>
-In-Reply-To: <00722e87685db9da3ef76166780dcbf5b4617bf7.camel@redhat.com>
-Date:   Mon, 26 Apr 2021 11:31:34 +0300
-Cc:     netdev <netdev@vger.kernel.org>, Wei Wang <weiwan@google.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Alexander Duyck <alexanderduyck@fb.com>,
-        Hannes Frederic Sowa <hannes@stressinduktion.org>,
-        Eric Dumazet <edumazet@google.com>, alobakin@pm.me
-Content-Transfer-Encoding: quoted-printable
-Message-Id: <457C51FA-5AD3-40AE-B8CE-AFBDB81DD258@gmail.com>
-References: <20210316223647.4080796-1-weiwan@google.com>
- <6AF20AA6-07E7-4DDD-8A9E-BE093FC03802@gmail.com>
- <CANn89iJxXOZktXv6Arh82OAGOpn523NuOcWFDaSmJriOaXQMRw@mail.gmail.com>
- <AE7C80D4-DD7E-4AA7-B261-A66B30F57D3B@gmail.com>
- <CANn89iKyWgYeD_B-iJxL50C4BHYiDh+dWOyFYXatteF=eU7zoA@mail.gmail.com>
- <9F81F217-6E5C-49EB-95A7-CCB1D3C3ED4F@gmail.com>
- <00722e87685db9da3ef76166780dcbf5b4617bf7.camel@redhat.com>
-To:     Paolo Abeni <pabeni@redhat.com>
-X-Mailer: Apple Mail (2.3654.80.0.2.43)
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=x0l+sylJnU9lRBHIiEXDjoFBYeuoK3t6VPzwgyK8w94=;
+        b=mWbeVDdiMeGJBt0wKvkEutwTfL12LQOQGcmuZozMaHiPxhHAIP3WMR46gEXugwQwHv
+         MaXItYedkFW46s7vC6mAzhleYUUhkQEqwLnQOjRILGSqalDfG5TtUV4Lgor9T8WyH5Us
+         Qu/pdmZjanec0ZbsCUrSkxGx/7HtLunWGPUKNltviMEHmZiPoZTsZCBribrGM7ovXWDk
+         wCgJDA2V7wZwHX928NuawzYqxKAE0lNweRbOr5YSKDV6sfuPOth5QLU9xZ4XeaM9iYvI
+         jDaYod0MOxxzghtECGz+U4wwo3I2aPDxKu8Pays2xbTi+Mwn5itAZEuC3aQ6+sLZn9oT
+         vizA==
+X-Gm-Message-State: AOAM5338RKKLTIKrARK+6gqZTzzxoMFCxPDGk0BeJrJtnCJxu3Q620Xe
+        QrqU94hJa2zlqIqbGn5BoVtUGCcf6gczmQ==
+X-Google-Smtp-Source: ABdhPJzKiJ8A1Ye/w5PdLqUNAtFrabYTo6fRsQDF4bHAc7PaE8mPuT7M6TRUm/NmDI8WxmlPb5ozFQ==
+X-Received: by 2002:a5d:47ad:: with SMTP id 13mr21837883wrb.56.1619426555502;
+        Mon, 26 Apr 2021 01:42:35 -0700 (PDT)
+Received: from ?IPv6:2003:ea:8f38:4600:2cb5:3b98:e61e:144f? (p200300ea8f3846002cb53b98e61e144f.dip0.t-ipconnect.de. [2003:ea:8f38:4600:2cb5:3b98:e61e:144f])
+        by smtp.googlemail.com with ESMTPSA id g1sm19140697wrd.69.2021.04.26.01.42.34
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 26 Apr 2021 01:42:34 -0700 (PDT)
+Subject: Re: [PATCH] net: called rtnl_unlock() before runpm resumes devices
+To:     AceLan Kao <acelan.kao@canonical.com>
+Cc:     Jakub Kicinski <kuba@kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Andrii Nakryiko <andriin@fb.com>, Wei Wang <weiwan@google.com>,
+        Cong Wang <cong.wang@bytedance.com>,
+        Taehee Yoo <ap420073@gmail.com>,
+        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn@kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>
+References: <20210420075406.64105-1-acelan.kao@canonical.com>
+ <CANn89iJLSmtBNoDo8QJ6a0MzsHjdLB0Pf=cs9e4g8Y6-KuFiMQ@mail.gmail.com>
+ <20210420122715.2066b537@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <CAFv23Q=ywiuZp7Y=bj=SAZmDdAnanAXA954hdO3GpkjmDo=RpQ@mail.gmail.com>
+ <c10a6c72-9db7-18c8-6b03-1f8c40b8fd87@gmail.com>
+ <CAFv23QkUsTf5M0MoUEFNYeFCtShAn3EmA3u8vXVeZyJa20Bx=g@mail.gmail.com>
+ <f06e0e2b-c6bb-ef5a-f629-d1ab82b7aee2@gmail.com>
+ <CAFv23Qnf3aJQyXyDbb_nvq2XU8t9Gy5sLFyzM251-FU_qBBUjw@mail.gmail.com>
+From:   Heiner Kallweit <hkallweit1@gmail.com>
+Message-ID: <9caae1c4-7132-4827-ef36-7aade74e4084@gmail.com>
+Date:   Mon, 26 Apr 2021 10:42:25 +0200
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.10.0
+MIME-Version: 1.0
+In-Reply-To: <CAFv23Qnf3aJQyXyDbb_nvq2XU8t9Gy5sLFyzM251-FU_qBBUjw@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Paolo
-Sorry for delay.
+On 26.04.2021 09:36, AceLan Kao wrote:
+> Heiner Kallweit <hkallweit1@gmail.com> 於 2021年4月25日 週日 上午4:07寫道：
+>>
+>> On 23.04.2021 05:42, AceLan Kao wrote:
+>>> Heiner Kallweit <hkallweit1@gmail.com> 於 2021年4月22日 週四 下午3:09寫道：
+>>>>
+>>>> On 22.04.2021 08:30, AceLan Kao wrote:
+>>>>> Yes, should add
+>>>>>
+>>>>> Fixes: 9474933caf21 ("igb: close/suspend race in netif_device_detach")
+>>>>> and also
+>>>>> Fixes: 9513d2a5dc7f ("igc: Add legacy power management support")
+>>>>>
+>>>> Please don't top-post. Apart from that:
+>>>> If the issue was introduced with driver changes, then adding a workaround
+>>>> in net core may not be the right approach.
+>>> It's hard to say who introduces this issue, we probably could point
+>>> our finger to below commit
+>>> bd869245a3dc net: core: try to runtime-resume detached device in __dev_open
+>>>
+>>> This calling path is not usual, in my case, the NIC is not plugged in
+>>> any Ethernet cable,
+>>> and we are doing networking tests on another NIC on the system. So,
+>>> remove the rtnl lock from igb driver will affect other scenarios.
+>>>
+>>>>
+>>>>> Jakub Kicinski <kuba@kernel.org> 於 2021年4月21日 週三 上午3:27寫道：
+>>>>>>
+>>>>>> On Tue, 20 Apr 2021 10:34:17 +0200 Eric Dumazet wrote:
+>>>>>>> On Tue, Apr 20, 2021 at 9:54 AM AceLan Kao <acelan.kao@canonical.com> wrote:
+>>>>>>>>
+>>>>>>>> From: "Chia-Lin Kao (AceLan)" <acelan.kao@canonical.com>
+>>>>>>>>
+>>>>>>>> The rtnl_lock() has been called in rtnetlink_rcv_msg(), and then in
+>>>>>>>> __dev_open() it calls pm_runtime_resume() to resume devices, and in
+>>>>>>>> some devices' resume function(igb_resum,igc_resume) they calls rtnl_lock()
+>>>>>>>> again. That leads to a recursive lock.
+>>>>>>>>
+>>>>>>>> It should leave the devices' resume function to decide if they need to
+>>>>>>>> call rtnl_lock()/rtnl_unlock(), so call rtnl_unlock() before calling
+>>>>>>>> pm_runtime_resume() and then call rtnl_lock() after it in __dev_open().
+>>>>>>>>
+>>>>>>>>
+>>>>>>>
+>>>>>>> Hi Acelan
+>>>>>>>
+>>>>>>> When was the bugg added ?
+>>>>>>> Please add a Fixes: tag
+>>>>>>
+>>>>>> For immediate cause probably:
+>>>>>>
+>>>>>> Fixes: 9474933caf21 ("igb: close/suspend race in netif_device_detach")
+>>>>>>
+>>>>>>> By doing so, you give more chances for reviewers to understand why the
+>>>>>>> fix is not risky,
+>>>>>>> and help stable teams work.
+>>>>>>
+>>>>>> IMO the driver lacks internal locking. Taking 看rtnl from resume is just
+>>>>>> one example, git history shows many more places that lacked locking and
+>>>>>> got papered over with rtnl here.
+>>>>
+>>
+>> You could alternatively try the following. It should avoid the deadlock,
+>> and when runtime-resuming if __IGB_DOWN is set all we do is marking the
+>> net_device as present (because of PCI D3 -> D0 transition).
+>> I do basically the same in r8169 and it works as intended.
+>>
+>> Disclaimer: I don't have an igb-driven device and therefore can't test
+>> the proposal.
+>>
+>> diff --git a/drivers/net/ethernet/intel/igb/igb_main.c b/drivers/net/ethernet/intel/igb/igb_main.c
+>> index 038a9fd1a..21436626a 100644
+>> --- a/drivers/net/ethernet/intel/igb/igb_main.c
+>> +++ b/drivers/net/ethernet/intel/igb/igb_main.c
+>> @@ -9300,6 +9300,14 @@ static int __maybe_unused igb_runtime_suspend(struct device *dev)
+>>
+>>  static int __maybe_unused igb_runtime_resume(struct device *dev)
+>>  {
+>> +       struct net_device *netdev = dev_get_drvdata(dev);
+>> +       struct igb_adapter *adapter = netdev_priv(netdev);
+>> +
+>> +       if (test_bit(__IGB_DOWN, &adapter->state)) {
+>> +               netif_device_attach(netdev);
+>> +               return 0;
+>> +       }
+>> +
+>>         return igb_resume(dev);
+>>  }
+>>
+>> --
+>> 2.31.1
+>>
+> 
+> Hi Heiner,
+> 
+> I encountered below error after applied your patch.
+> 
+Presumably similar changes are needed also for the runtime_suspend callback.
+If __IGB_DOWN is set, I think just the net_device needs to be detached.
 
-After disable gro on eth interface and team0 and now work fine.
 
-In this case I user kernel 5.11.12 but after release 5.12 I will migrate =
-to them and will check for problem with kthread.
-
-Thanks,
-I will update if have other problem.
-
-Martin=09
-
-> On 12 Apr 2021, at 11:36, Paolo Abeni <pabeni@redhat.com> wrote:
->=20
-> Hello,
->=20
-> On Sat, 2021-04-10 at 14:22 +0300, Martin Zaharinov wrote:
->> Hi  Team
->>=20
->> One report latest kernel 5.11.12=20
->>=20
->> Please check and help to find and fix
->=20
-> Please provide a complete splat, including the trapping instruction.
->>=20
->> Apr 10 12:46:25  [214315.519319][ T3345] R13: ffff8cf193ddf700 R14: =
-ffff8cf238ab3500 R15: ffff91ab82133d88
->> Apr 10 12:46:26  [214315.570814][ T3345] FS:  0000000000000000(0000) =
-GS:ffff8cf3efb00000(0000) knlGS:0000000000000000
->> Apr 10 12:46:26  [214315.622416][ T3345] CS:  0010 DS: 0000 ES: 0000 =
-CR0: 0000000080050033
->> Apr 10 12:46:26  [214315.648390][ T3345] CR2: 00007f7211406000 CR3: =
-00000001a924a004 CR4: 00000000001706e0
->> Apr 10 12:46:26  [214315.698998][ T3345] DR0: 0000000000000000 DR1: =
-0000000000000000 DR2: 0000000000000000
->> Apr 10 12:46:26  [214315.749508][ T3345] DR3: 0000000000000000 DR6: =
-00000000fffe0ff0 DR7: 0000000000000400
->> Apr 10 12:46:26  [214315.799749][ T3345] Call Trace:
->> Apr 10 12:46:26  [214315.824268][ T3345]  =
-netif_receive_skb_list_internal+0x5e/0x2c0
->> Apr 10 12:46:26  [214315.848996][ T3345]  napi_gro_flush+0x11b/0x260
->> Apr 10 12:46:26  [214315.873320][ T3345]  =
-napi_complete_done+0x107/0x180
->> Apr 10 12:46:26  [214315.897160][ T3345]  ixgbe_poll+0x10e/0x2a0 =
-[ixgbe]
->> Apr 10 12:46:26  [214315.920564][ T3345]  __napi_poll+0x1f/0x130
->> Apr 10 12:46:26  [214315.943475][ T3345]  =
-napi_threaded_poll+0x110/0x160
->> Apr 10 12:46:26  [214315.966252][ T3345]  ? __napi_poll+0x130/0x130
->> Apr 10 12:46:26  [214315.988424][ T3345]  kthread+0xea/0x120
->> Apr 10 12:46:26  [214316.010247][ T3345]  ? kthread_park+0x80/0x80
->> Apr 10 12:46:26  [214316.031729][ T3345]  ret_from_fork+0x1f/0x30
->=20
-> Could you please also provide the decoded the stack trace? Something
-> alike the following will do:
->=20
-> cat <file contaning the splat> | ./scripts/decode_stacktrace.sh <path =
-to vmlinux>
->=20
-> Even more importantly:
->=20
-> threaded napi is implemented with the merge
-> commit adbb4fb028452b1b0488a1a7b66ab856cdf20715, which landed into the
-> vanilla tree since v5.12.rc1 and is not backported to 5.11.x. What
-> kernel are you really using?
->=20
-> Thanks,
->=20
-> Paolo
+> [  121.489970] u kernel: ------------[ cut here ]------------
+> [  121.489979] u kernel: igb 0000:05:00.0: disabling already-disabled device
+> [  121.490008] u kernel: WARNING: CPU: 7 PID: 258 at
+> drivers/pci/pci.c:2146 pci_disable_device+0x91/0xb0
+> [  121.490028] u kernel: Modules linked in: rfcomm cmac algif_hash
+> algif_skcipher af_alg bnep btusb btrtl btbcm btintel bluetooth
+> ecdh_generic ecc joydev input_leds inte
+> l_rapl_msr intel_rapl_common x86_pkg_temp_thermal intel_powerclamp
+> coretemp ath10k_pci ath10k_core kvm_intel ath mac80211 kvm
+> snd_sof_pci_intel_tgl snd_soc_acpi_intel_ma
+> tch snd_sof_intel_hda_common nls_iso8859_1 soundwire_intel
+> soundwire_generic_allocation soundwire_cadence soundwire_bus
+> snd_sof_pci snd_soc_acpi snd_sof snd_soc_core snd
+> _hda_codec_realtek snd_hda_codec_generic snd_hda_codec_hdmi
+> crct10dif_pclmul crc32_pclmul snd_sof_xtensa_dsp ghash_clmulni_intel
+> ledtrig_audio aesni_intel snd_hda_intel
+> libarc4 crypto_simd snd_intel_dspcfg snd_intel_sdw_acpi cryptd
+> snd_hda_codec cfg80211 mei_hdcp snd_hwdep snd_hda_core
+> intel_wmi_thunderbolt snd_pcm wmi_bmof snd_seq inte
+> l_cstate efi_pstore snd_timer snd_seq_device ee1004 mei_me snd mei
+> ucsi_acpi soundcore typec_ucsi typec wmi mac_hid acpi_pad acpi_tad
+> sch_fq_codel
+> [  121.490314] u kernel:  parport_pc ppdev lp parport ip_tables
+> x_tables autofs4 btrfs blake2b_generic zstd_compress raid10 raid456
+> async_raid6_recov async_memcpy async_
+> pq async_xor async_tx libcrc32c xor raid6_pq raid1 raid0 multipath
+> linear hid_generic usbhid hid i915 drm_kms_helper syscopyarea
+> sysfillrect sysimgblt fb_sys_fops cec rc
+> _core igb drm nvme e1000e nvme_core i2c_i801 dca i2c_smbus
+> i2c_algo_bit intel_lpss_pci intel_lpss ahci idma64 video xhci_pci
+> libahci virt_dma xhci_pci_renesas pinctrl_ti
+> gerlake
+> [  121.490508] u kernel: CPU: 7 PID: 258 Comm: kworker/7:2 Tainted: G
+>    U            5.12.0-rc7+ #79
+> [  121.490518] u kernel: Hardware name: Dell Inc. OptiPlex 7090/, BIOS
+> 0.12.80 02/23/2021
+> [  121.490525] u kernel: Workqueue: pm pm_runtime_work
+> [  121.490540] u kernel: RIP: 0010:pci_disable_device+0x91/0xb0
+> [  121.490550] u kernel: Code: 4d 85 e4 75 07 4c 8b a3 c8 00 00 00 48
+> 8d bb c8 00 00 00 e8 61 8d 17 00 4c 89 e2 48 c7 c7 60 5a e0 a5 48 89
+> c6 e8 9b a3 59 00 <0f> 0b eb 8
+> d 48 89 df e8 e3 fe ff ff 80 a3 49 0a 00 00 df 5b 41 5c
+> [  121.490558] u kernel: RSP: 0018:ffffb76b4169fc90 EFLAGS: 00010286
+> [  121.490569] u kernel: RAX: 0000000000000000 RBX: ffff9e2581ee6000
+> RCX: 0000000000000027
+> [  121.490576] u kernel: RDX: 0000000000000027 RSI: ffffffffa493bca0
+> RDI: ffff9e27073e89b8
+> [  121.490582] u kernel: RBP: ffffb76b4169fca0 R08: ffff9e27073e89b0
+> R09: 0000000000000000
+> [  121.490588] u kernel: R10: 0000000000000000 R11: 0000000000000001
+> R12: ffff9e2581af7c80
+> [  121.490594] u kernel: R13: ffff9e2581ee6000 R14: ffff9e25a0914000
+> R15: ffff9e25a0915280
+> [  121.490600] u kernel: FS:  0000000000000000(0000)
+> GS:ffff9e2707200000(0000) knlGS:0000000000000000
+> [  121.490608] u kernel: CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+> [  121.490614] u kernel: CR2: 00007ff86ec8d024 CR3: 0000000189c28002
+> CR4: 0000000000770ee0
+> [  121.490621] u kernel: PKRU: 55555554
+> [  121.490626] u kernel: Call Trace:
+> [  121.490638] u kernel:  __igb_shutdown+0xf2/0x1c0 [igb]
+> [  121.490676] u kernel:  igb_runtime_suspend+0x1c/0x20 [igb]
+> [  121.490703] u kernel:  pci_pm_runtime_suspend+0x63/0x180
+> [  121.490715] u kernel:  ? pci_pm_runtime_resume+0x90/0x90
+> [  121.490727] u kernel:  __rpm_callback+0xc7/0x140
+> [  121.490740] u kernel:  rpm_callback+0x57/0x80
+> [  121.490750] u kernel:  ? pci_pm_runtime_resume+0x90/0x90
+> [  121.490759] u kernel:  rpm_suspend+0x119/0x640
+> [  121.490774] u kernel:  pm_runtime_work+0x64/0xc0
+> [  121.490784] u kernel:  process_one_work+0x2af/0x5d0
+> [  121.490803] u kernel:  worker_thread+0x4d/0x3e0
+> [  121.490814] u kernel:  ? process_one_work+0x5d0/0x5d0
+> [  121.490825] u kernel:  kthread+0x12a/0x160
+> [  121.490834] u kernel:  ? kthread_park+0x90/0x90
+> [  121.490844] u kernel:  ret_from_fork+0x1f/0x30
+> [  121.490867] u kernel: irq event stamp: 0[  121.490871] u kernel:
+> hardirqs last  enabled at (0): [<0000000000000000>] 0x0
+> [  121.490916] u kernel: hardirqs last disabled at (0):
+> [<ffffffffa489ea44>] copy_process+0x714/0x1cc0
+> [  121.490929] u kernel: softirqs last  enabled at (0):
+> [<ffffffffa489ea44>] copy_process+0x714/0x1cc0
+> [  121.490938] u kernel: softirqs last disabled at (0): [<0000000000000000>] 0x0
+> [  121.490949] u kernel: ---[ end trace a9c7ffc27c226979 ]---
+> 
 
