@@ -2,142 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 64C1436B8C3
-	for <lists+netdev@lfdr.de>; Mon, 26 Apr 2021 20:16:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id ACBD336B8D6
+	for <lists+netdev@lfdr.de>; Mon, 26 Apr 2021 20:24:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234300AbhDZSRZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 26 Apr 2021 14:17:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41676 "EHLO
+        id S234335AbhDZSYl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 26 Apr 2021 14:24:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43284 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233842AbhDZSRX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 26 Apr 2021 14:17:23 -0400
-Received: from mail-ed1-x533.google.com (mail-ed1-x533.google.com [IPv6:2a00:1450:4864:20::533])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 77F3BC061574;
-        Mon, 26 Apr 2021 11:16:41 -0700 (PDT)
-Received: by mail-ed1-x533.google.com with SMTP id d14so3025900edc.12;
-        Mon, 26 Apr 2021 11:16:41 -0700 (PDT)
+        with ESMTP id S233971AbhDZSYj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 26 Apr 2021 14:24:39 -0400
+Received: from mail-pf1-x432.google.com (mail-pf1-x432.google.com [IPv6:2607:f8b0:4864:20::432])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A9469C061574;
+        Mon, 26 Apr 2021 11:23:57 -0700 (PDT)
+Received: by mail-pf1-x432.google.com with SMTP id h11so8530235pfn.0;
+        Mon, 26 Apr 2021 11:23:57 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=xkTVD7TxqQ3Zluwvp9FancUs4koGyF+oIROL0cTLdhk=;
-        b=XUQJEpNTdYzJF4uxqnEwIbQVU13+kxG+1fTgzfVoKCcV2260aiookfc9nRP/w+YdEw
-         UPStvO2Hb9yEzvEgSF0rro3K6J6ctKM+BJFYlgNIIAVvWw+f5ntN0nmbu4NCmGfvS2Bw
-         jYlhT3PDOoyrZDjhcQy7oqfUja/1LFoYvwnIXU5wUeEPcxxnB5Ft83JkHKUJDRFhH6HS
-         A9NqRwFtOlq1gJvVJbPcPGleeog6oX7zqg/uLzpRgvuPEu7InxHJLncJos5FtcmvrWng
-         9cqfFJjEyAQct+d5jcZq4IXOtGAkodPfj53TkwfatCdME5/LJa16VgVqjI2trzWDABiS
-         obEA==
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=8H8v2UpducE9QuEEY0YHQeEf4IX7YdyBQzYA5ag3dXk=;
+        b=Vkr6EvazvRVqy8e/Q9qwKinZkRHqZYYgvJan5wKIfO41t4Zhh42jJI/6Nyda8mPqwi
+         yjilBwXoie+WEwpUuoTM68mBEG+4b4DIvnNCG1Foe0A8c//r2T3r4neDz7OT72G3VHJS
+         S5z+WYGunng0bXu5UFWH1bR8IjNxlB+VTAAe6sEv72sW9WvEnG4z4H40hRNju0xPc1L1
+         vb+CVkHQKGyQwbY3pUBkzEdwL8FMtMtIAJLdL90+yGDIfS7T0njTGX2JTYpSflybPobb
+         ccVdvY0OYcKbrKhpAj4KfKHusN2THTxS7i6lDL6jHrlpkEGNwgMZ0GNno01C0PRsoYjP
+         Fw1g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=xkTVD7TxqQ3Zluwvp9FancUs4koGyF+oIROL0cTLdhk=;
-        b=E4LSHpfXqfofvccAQGC7tSfTtI1K4aGbMNkZoCcStN6ny2fv8JybKnUSnh2utRXnlc
-         6ne+cKSNzZICeA/brFH1k2CzzH6TlDyGOVXSKTJGsNE/qMFO2IgAWA8y7g/SMnNnkFYR
-         2E3ImtFEFKk/+T8QGapwZOW3uC5AXnpgyWTu93MpIsBnhe1gqY66qNkMTAGTaxE8nsOM
-         0/UjE9w+12NZGR297AiE3XsjRsEJGhjkDZZP+nNzp1wBQ0QlQEucER3k+n1XQOC1EKtn
-         SR3+jgS857wvnrUHbRDGXCvx/e5hmgkrpBmHHOYEc01qRjqbiMW2zZN0dKv5MCUsyl/p
-         nMyA==
-X-Gm-Message-State: AOAM533vGyqlW5KqFHL8wR29toLQXokFHTTrtrrDhTWhGUksm5++ViuJ
-        ytiwHBgy7sukVDL3kPkczhc=
-X-Google-Smtp-Source: ABdhPJymRIS+gVeyUphhzNtTqGsyyEe/s3ziJnnm1ligBnz6W0XYn9FI1ooD0u92DUFBoIakGIfszw==
-X-Received: by 2002:aa7:c789:: with SMTP id n9mr23203387eds.352.1619460999822;
-        Mon, 26 Apr 2021 11:16:39 -0700 (PDT)
-Received: from skbuf (5-12-16-165.residential.rdsnet.ro. [5.12.16.165])
-        by smtp.gmail.com with ESMTPSA id h11sm497319eds.15.2021.04.26.11.16.38
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 26 Apr 2021 11:16:39 -0700 (PDT)
-Date:   Mon, 26 Apr 2021 21:16:37 +0300
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Yangbo Lu <yangbo.lu@nxp.com>
-Cc:     netdev@vger.kernel.org, Richard Cochran <richardcochran@gmail.com>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Kurt Kanzenbach <kurt@linutronix.de>,
-        Andrew Lunn <andrew@lunn.ch>,
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=8H8v2UpducE9QuEEY0YHQeEf4IX7YdyBQzYA5ag3dXk=;
+        b=QPGZvzQe92edWnPx68vBTuRGSUWhd5vLGLpt1eQlTHem8balmAfgBvVszNQANvKH9a
+         jgE2xqFHs1fFujLC8TbCSaTIpljk19BlrzLOd2+tOCegALyi0o9Nk/roOZc3FhnMIGES
+         JwYi0jJRnBW0PstSCV2IpT+kIgrhFOpmg2AUaFYWktkfiH1/SC/MFtrVVNwk3imIPx8O
+         1QTI3wKs6aPogm64rAk9iZ7hgV9OchcuxbMjtHmwRPz8YfU1meioqRaSIEPaRprxzZuv
+         5Ah5O/wf4FGr+rlK/aHqGzqGRYzcwmMNdSHS8z3cvgVZk2f0PxcZyOwcTjegeJgbfS1c
+         Xf0w==
+X-Gm-Message-State: AOAM530an46bZryebk4RNAbfFQuQ/A3xaUTa+qkhnAqjAXV/wXLRN2iM
+        IrB0D1Cl+xR6IUfe1nvF4oQ=
+X-Google-Smtp-Source: ABdhPJzz/Uq/3Jq9dlGYcpvbe0AAXRcICcFpuXSAg+C+brFrPTPU9fRjzdClM/o9BZlDf8Fwcca9MA==
+X-Received: by 2002:a63:4513:: with SMTP id s19mr17709571pga.34.1619461437034;
+        Mon, 26 Apr 2021 11:23:57 -0700 (PDT)
+Received: from [10.67.49.104] ([192.19.223.252])
+        by smtp.googlemail.com with ESMTPSA id t19sm415186pjs.1.2021.04.26.11.23.55
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 26 Apr 2021 11:23:56 -0700 (PDT)
+Subject: Re: [PATCH net-next v7 7/9] net: phy: Add support for microchip SMI0
+ MDIO bus
+To:     Oleksij Rempel <o.rempel@pengutronix.de>,
+        Woojung Huh <woojung.huh@microchip.com>,
+        UNGLinuxDriver@microchip.com, Andrew Lunn <andrew@lunn.ch>,
         Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        UNGLinuxDriver@microchip.com, linux-doc@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [net-next, v2, 3/7] net: dsa: free skb->cb usage in core driver
-Message-ID: <20210426181637.2rneohfxkrvwctf2@skbuf>
-References: <20210426093802.38652-1-yangbo.lu@nxp.com>
- <20210426093802.38652-4-yangbo.lu@nxp.com>
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     Michael Grzeschik <m.grzeschik@pengutronix.de>,
+        kernel@pengutronix.de, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Russell King <linux@armlinux.org.uk>
+References: <20210426131911.25976-1-o.rempel@pengutronix.de>
+ <20210426131911.25976-8-o.rempel@pengutronix.de>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+Message-ID: <94f76086-3819-4bbb-4bc7-d917cbef01bc@gmail.com>
+Date:   Mon, 26 Apr 2021 11:23:55 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.7.1
 MIME-Version: 1.0
+In-Reply-To: <20210426131911.25976-8-o.rempel@pengutronix.de>
 Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20210426093802.38652-4-yangbo.lu@nxp.com>
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Apr 26, 2021 at 05:37:58PM +0800, Yangbo Lu wrote:
-> Free skb->cb usage in core driver and let device drivers decide to
-> use or not. The reason having a DSA_SKB_CB(skb)->clone was because
-> dsa_skb_tx_timestamp() which may set the clone pointer was called
-> before p->xmit() which would use the clone if any, and the device
-> driver has no way to initialize the clone pointer.
->
-> Although for now putting memset(skb->cb, 0, 48) at beginning of
-> dsa_slave_xmit() by this patch is not very good, there is still way
-> to improve this. Otherwise, some other new features, like one-step
-> timestamp which needs a flag of skb marked in dsa_skb_tx_timestamp(),
-> and handles as one-step timestamp in p->xmit() will face same
-> situation.
->
-> Signed-off-by: Yangbo Lu <yangbo.lu@nxp.com>
-> ---
-> Changes for v2:
-> 	- Added this patch.
-> ---
->  drivers/net/dsa/ocelot/felix.c         |  1 +
->  drivers/net/dsa/sja1105/sja1105_main.c |  2 +-
->  drivers/net/dsa/sja1105/sja1105_ptp.c  |  4 +++-
->  drivers/net/ethernet/mscc/ocelot.c     |  6 +++---
->  drivers/net/ethernet/mscc/ocelot_net.c |  2 +-
->  include/linux/dsa/sja1105.h            |  3 ++-
->  include/net/dsa.h                      | 14 --------------
->  include/soc/mscc/ocelot.h              |  8 ++++++++
->  net/dsa/slave.c                        |  3 +--
->  net/dsa/tag_ocelot.c                   |  8 ++++----
->  net/dsa/tag_ocelot_8021q.c             |  8 ++++----
->  11 files changed, 28 insertions(+), 31 deletions(-)
->
-> diff --git a/drivers/net/dsa/ocelot/felix.c b/drivers/net/dsa/ocelot/felix.c
-> index d679f023dc00..8980d56ee793 100644
-> --- a/drivers/net/dsa/ocelot/felix.c
-> +++ b/drivers/net/dsa/ocelot/felix.c
-> @@ -1403,6 +1403,7 @@ static bool felix_txtstamp(struct dsa_switch *ds, int port,
->
->  	if (ocelot->ptp && ocelot_port->ptp_cmd == IFH_REW_OP_TWO_STEP_PTP) {
->  		ocelot_port_add_txtstamp_skb(ocelot, port, clone);
-> +		OCELOT_SKB_CB(skb)->clone = clone;
->  		return true;
->  	}
->
+On 4/26/21 6:19 AM, Oleksij Rempel wrote:
+> From: Andrew Lunn <andrew@lunn.ch>
+> 
+> SMI0 is a mangled version of MDIO. The main low level difference is
+> the MDIO C22 OP code is always 0, not 0x2 or 0x1 for Read/Write. The
+> read/write information is instead encoded in the PHY address.
+> 
+> Extend the bit-bang code to allow the op code to be overridden, but
+> default to normal C22 values. Add an extra compatible to the mdio-gpio
+> driver, and when this compatible is present, set the op codes to 0.
+> 
+> A higher level driver, sitting on top of the basic MDIO bus driver can
+> then implement the rest of the microchip SMI0 odderties.
+> 
+> Signed-off-by: Andrew Lunn <andrew@lunn.ch>
+> Signed-off-by: Michael Grzeschik <m.grzeschik@pengutronix.de>
+> Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
 
-Uh-oh, this patch fails to build:
-
-In file included from ./include/soc/mscc/ocelot_vcap.h:9:0,
-                 from drivers/net/dsa/ocelot/felix.c:9:
-drivers/net/dsa/ocelot/felix.c: In function ‘felix_txtstamp’:
-drivers/net/dsa/ocelot/felix.c:1406:17: error: ‘skb’ undeclared (first use in this function)
-   OCELOT_SKB_CB(skb)->clone = clone;
-                 ^
-./include/soc/mscc/ocelot.h:698:29: note: in definition of macro ‘OCELOT_SKB_CB’
-  ((struct ocelot_skb_cb *)((skb)->cb))
-                             ^~~
-drivers/net/dsa/ocelot/felix.c:1406:17: note: each undeclared identifier is reported only once for each function it appears in
-   OCELOT_SKB_CB(skb)->clone = clone;
-                 ^
-./include/soc/mscc/ocelot.h:698:29: note: in definition of macro ‘OCELOT_SKB_CB’
-  ((struct ocelot_skb_cb *)((skb)->cb))
-                             ^~~
-
-It depends on changes made in patch 3.
+Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+-- 
+Florian
