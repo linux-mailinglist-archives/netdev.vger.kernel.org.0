@@ -2,123 +2,204 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1D68536CE01
-	for <lists+netdev@lfdr.de>; Tue, 27 Apr 2021 23:55:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4229936CE04
+	for <lists+netdev@lfdr.de>; Tue, 27 Apr 2021 23:56:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237972AbhD0V43 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 27 Apr 2021 17:56:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41246 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235440AbhD0V43 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 27 Apr 2021 17:56:29 -0400
-Received: from mail-lf1-x12e.google.com (mail-lf1-x12e.google.com [IPv6:2a00:1450:4864:20::12e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4DE03C061574;
-        Tue, 27 Apr 2021 14:55:45 -0700 (PDT)
-Received: by mail-lf1-x12e.google.com with SMTP id n138so96093940lfa.3;
-        Tue, 27 Apr 2021 14:55:45 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=3CGUbJegsHJUSe5Nc4E44D2BPZYrUahyNp0cHa9OA5s=;
-        b=OTtwu9m/KCIX81TcNNET1YkRFHJSl06WC3wlij3hpe76YNQVyb+W7XTonmajLIFKu2
-         qeP3UCmFxDAwP0E+8Y3Jp9r+x/bCGNg/C89/QYW26LieU2N7mZtVZRWbIdZdVpb2ly2a
-         jOschFyNpcSwC29/GYQRtafgH2tdhXsB1lCDDKte35Imcewrnfz+NOJgmdLgRvMXVBFq
-         RCJVa+zuEPX5kQqRhZzrxKm6gkpxrlaMov5SLlPQuRHVeC00vzxnMAY9K0xOTlDeBW7R
-         sXYSuP3aRw/foQoCMpJPatLBV7udmkD78Vzdh7vKBpLSk/vMc25IkLd+cCRxpDt/apMy
-         Bxpw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=3CGUbJegsHJUSe5Nc4E44D2BPZYrUahyNp0cHa9OA5s=;
-        b=Sfw7Xew/a6THct/w+kLUvCpEJZqeKWoTjvvIRiej9LJTe+gHkfhK8AVhWXIjsJfqy0
-         IdKNqlVq9Duyq6+5IRT9m3IlDPC4WEtLl4sQ31spLEfkXs4PHpgDWgE70Pr7fpLI1gkH
-         Z6grMEh1eTaSlmIbpSFrdybkLu4MQUZRO2Q80uequ2MU0K/132Yk5xxJTRV78w7/92Wj
-         UK6CqbBFmClrCr8vdwc6JOBSTK5nFFGHNF1hz8lLwpPlm7XoIERUk+KTXJUfC/pV4FZo
-         zO7T5fb2+MRe10B0J6PHKeQ+xGLBej0gfCsEOfV/cITifIr770UroAqnRFBbE7xsZbRD
-         7lcw==
-X-Gm-Message-State: AOAM533hD06LodfDS4D/+HCAyL1dQHwNE3lK0JuRKtknHDM14c5ct48G
-        3tX3g0bBKZod+uMlmvmGUZTOxyh/rqDd437gh3g=
-X-Google-Smtp-Source: ABdhPJwQPB7779x9oFADzbtMBQvA6JyhIHy10R//1p3hh0Zj3aPmpAdBtmRH5hwnr6ihVer8uxvdpKvD0O3PNhbi7zs=
-X-Received: by 2002:a05:6512:2296:: with SMTP id f22mr17413780lfu.161.1619560543660;
- Tue, 27 Apr 2021 14:55:43 -0700 (PDT)
-MIME-Version: 1.0
-References: <20210427034623.46528-1-kuniyu@amazon.co.jp>
-In-Reply-To: <20210427034623.46528-1-kuniyu@amazon.co.jp>
-From:   =?UTF-8?Q?Maciej_=C5=BBenczykowski?= <zenczykowski@gmail.com>
-Date:   Tue, 27 Apr 2021 14:55:32 -0700
-Message-ID: <CAHo-OowFTjZa8hiFEb9ECRuJCLchcb=CvMpPavoP4QcmS47OOQ@mail.gmail.com>
-Subject: Re: [PATCH v4 bpf-next 00/11] Socket migration for SO_REUSEPORT.
-To:     Kuniyuki Iwashima <kuniyu@amazon.co.jp>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
+        id S239088AbhD0V4l (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 27 Apr 2021 17:56:41 -0400
+Received: from www62.your-server.de ([213.133.104.62]:34788 "EHLO
+        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S239075AbhD0V4l (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 27 Apr 2021 17:56:41 -0400
+Received: from sslproxy03.your-server.de ([88.198.220.132])
+        by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92.3)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1lbVgQ-000DfO-EH; Tue, 27 Apr 2021 23:55:54 +0200
+Received: from [85.7.101.30] (helo=linux.home)
+        by sslproxy03.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1lbVgQ-000BQY-52; Tue, 27 Apr 2021 23:55:54 +0200
+Subject: Re: [PATCH bpf-next v4 2/3] libbpf: add low level TC-BPF API
+To:     Kumar Kartikeya Dwivedi <memxor@gmail.com>
+Cc:     bpf@vger.kernel.org,
+        =?UTF-8?Q?Toke_H=c3=b8iland-J=c3=b8rgensen?= <toke@redhat.com>,
         Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
         Andrii Nakryiko <andrii@kernel.org>,
         Martin KaFai Lau <kafai@fb.com>,
-        Benjamin Herrenschmidt <benh@amazon.com>,
-        Kuniyuki Iwashima <kuni1840@gmail.com>,
-        BPF Mailing List <bpf@vger.kernel.org>,
-        Linux NetDev <netdev@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        netdev@vger.kernel.org
+References: <20210423150600.498490-1-memxor@gmail.com>
+ <20210423150600.498490-3-memxor@gmail.com>
+ <5811eb10-bc93-0b81-2ee4-10490388f238@iogearbox.net>
+ <20210427180202.pepa2wdbhhap3vyg@apollo>
+From:   Daniel Borkmann <daniel@iogearbox.net>
+Message-ID: <9985fe91-76ea-7c09-c285-1006168f1c27@iogearbox.net>
+Date:   Tue, 27 Apr 2021 23:55:53 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
+MIME-Version: 1.0
+In-Reply-To: <20210427180202.pepa2wdbhhap3vyg@apollo>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.103.2/26153/Tue Apr 27 13:09:27 2021)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Apr 26, 2021 at 8:47 PM Kuniyuki Iwashima <kuniyu@amazon.co.jp> wrote:
-> The SO_REUSEPORT option allows sockets to listen on the same port and to
-> accept connections evenly. However, there is a defect in the current
-> implementation [1]. When a SYN packet is received, the connection is tied
-> to a listening socket. Accordingly, when the listener is closed, in-flight
-> requests during the three-way handshake and child sockets in the accept
-> queue are dropped even if other listeners on the same port could accept
-> such connections.
->
-> This situation can happen when various server management tools restart
-> server (such as nginx) processes. For instance, when we change nginx
-> configurations and restart it, it spins up new workers that respect the new
-> configuration and closes all listeners on the old workers, resulting in the
-> in-flight ACK of 3WHS is responded by RST.
+On 4/27/21 8:02 PM, Kumar Kartikeya Dwivedi wrote:
+> On Tue, Apr 27, 2021 at 08:34:30PM IST, Daniel Borkmann wrote:
+>> On 4/23/21 5:05 PM, Kumar Kartikeya Dwivedi wrote:
+[...]
+>>> +/*
+>>> + * @ctx: Can be NULL, if not, must point to a valid object.
+>>> + *	 If the qdisc was attached during ctx_init, it will be deleted if no
+>>> + *	 filters are attached to it.
+>>> + *	 When ctx == NULL, this is a no-op.
+>>> + */
+>>> +LIBBPF_API int bpf_tc_ctx_destroy(struct bpf_tc_ctx *ctx);
+>>> +/*
+>>> + * @ctx: Cannot be NULL.
+>>> + * @fd: Must be >= 0.
+>>> + * @opts: Cannot be NULL, prog_id must be unset, all other fields can be
+>>> + *	  optionally set. All fields except replace  will be set as per created
+>>> + *        filter's attributes. parent must only be set when attach_point of ctx is
+>>> + *        BPF_TC_CUSTOM_PARENT, otherwise parent must be unset.
+>>> + *
+>>> + * Fills the following fields in opts:
+>>> + *	handle
+>>> + *	parent
+>>> + *	priority
+>>> + *	prog_id
+>>> + */
+>>> +LIBBPF_API int bpf_tc_attach(struct bpf_tc_ctx *ctx, int fd,
+>>> +			     struct bpf_tc_opts *opts);
+>>> +/*
+>>> + * @ctx: Cannot be NULL.
+>>> + * @opts: Cannot be NULL, replace and prog_id must be unset, all other fields
+>>> + *	  must be set.
+>>> + */
+>>> +LIBBPF_API int bpf_tc_detach(struct bpf_tc_ctx *ctx,
+>>> +			     const struct bpf_tc_opts *opts);
+>>
+>> One thing that I find a bit odd from this API is that BPF_TC_INGRESS / BPF_TC_EGRESS
+>> needs to be set each time via bpf_tc_ctx_init(). So whenever a specific program would
+>> be attached to both we need to 're-init' in between just to change from hook a to b,
+>> whereas when you have BPF_TC_CUSTOM_PARENT, you could just use a different opts->parent
+>> without going this detour (unless the clsact wasn't loaded there in the first place).
+> 
+> Currently I check that opts->parent is unset when BPF_TC_INGRESS or BPF_TC_EGRESS
+> is set as attach point. But since both map to clsact, we could allow the user to
+> specify opts->parent as BPF_TC_INGRESS or BPF_TC_EGRESS (no need to use
+> TC_H_MAKE, we can detect it from ctx->parent that it won't be a parent id). This
+> would mean that by default attach point is what you set for ctx, but for
+> bpf_tc_attach you can temporarily override to be some other attach point (for
+> the same qdisc). You still won't be able to set anything other than the two
+> though.
 
-This is IMHO a userspace bug.
+I think the assumption on auto-detecting the parent id in that case might not hold given
+major number could very well be 0. Wrt BPF_TC_UNSPEC ... maybe it's not even needed, back
+to drawing board ...
 
-You should never be closing or creating new SO_REUSEPORT sockets on a
-running server (listening port).
+Here's how the whole API could look like, usage examples below:
 
-There's at least 3 ways to accomplish this.
+   enum bpf_tc_attach_point {
+	BPF_TC_INGRESS = 1 << 0,
+	BPF_TC_EGRESS  = 1 << 1,
+	BPF_TC_CUSTOM  = 1 << 2,
+   };
 
-One involves a shim parent process that takes care of creating the
-sockets (without close-on-exec),
-then fork-exec's the actual server process[es] (which will use the
-already opened listening fds),
-and can thus re-fork-exec a new child while using the same set of sockets.
-Here the old server can terminate before the new one starts.
+   enum bpf_tc_attach_flags {
+	BPF_TC_F_REPLACE = 1 << 0,
+   };
 
-(one could even envision systemd being modified to support this...)
+   struct bpf_tc_hook {
+	size_t sz;
+	int    ifindex;
+	enum bpf_tc_attach_point which;
+	__u32  parent;
+	size_t :0;
+   };
 
-The second involves the old running server fork-execing the new server
-and handing off the non-CLOEXEC sockets that way.
+   struct bpf_tc_opts {
+	size_t sz;
+	__u32  handle;
+	__u16  priority;
+	union {
+		int   prog_fd;
+		__u32 prog_id;
+	};
+	size_t :0;
+   };
 
-The third approach involves unix fd passing of sockets to hand off the
-listening sockets from the old process/thread(s) to the new
-process/thread(s).  Once handed off the old server can stop accept'ing
-on the listening sockets and close them (the real copies are in the
-child), finish processing any still active connections (or time them
-out) and terminate.
+   LIBBPF_API int bpf_tc_hook_create(struct bpf_tc_hook *hook);
+   LIBBPF_API int bpf_tc_hook_destroy(struct bpf_tc_hook *hook);
 
-Either way you're never creating new SO_REUSEPORT sockets (dup doesn't
-count), nor closing the final copy of a given socket.
+   LIBBPF_API int bpf_tc_attach(const struct bpf_tc_hook *hook, const struct bpf_tc_opts *opts, int flags);
+   LIBBPF_API int bpf_tc_detach(const struct bpf_tc_hook *hook, const struct bpf_tc_opts *opts);
+   LIBBPF_API int bpf_tc_query(const struct bpf_tc_hook *hook, struct bpf_tc_opts *opts);
 
-This is basically the same thing that was needed not to lose incoming
-connections in a pre-SO_REUSEPORT world.
-(no SO_REUSEADDR by itself doesn't prevent an incoming SYN from
-triggering a RST during the server restart, it just makes the window
-when RSTs happen shorter)
+So a user could do just:
 
-This was from day one (I reported to Tom and worked with him on the
-very initial distribution function) envisioned to work like this,
-and we (Google) have always used it with unix fd handoff to support
-transparent restart.
+   DECLARE_LIBBPF_OPTS(bpf_tc_hook, hook, .ifindex = 42, .which = BPF_TC_INGRESS);
+   DECLARE_LIBBPF_OPTS(bpf_tc_opts, opts, .handle = 1, .priority = 1, .prog_fd = fd);
+
+   err = bpf_tc_attach(&hook, &opts, BPF_TC_F_REPLACE);
+   [...]
+
+If it's not known whether the hook exists, then a preceding call to:
+
+   err = bpf_tc_hook_create(&hook);
+   [...]
+
+The bpf_tc_query() would look like:
+
+   DECLARE_LIBBPF_OPTS(bpf_tc_hook, hook, .ifindex = 42, .which = BPF_TC_EGRESS);
+   DECLARE_LIBBPF_OPTS(bpf_tc_opts, opts, .handle = 1, .priority = 1);
+
+   err = bpf_tc_query(&hook, &opts);
+   if (!err) {
+          [...]  // gives access to: opts.prog_id
+   }
+
+The bpf_tc_detach():
+
+   DECLARE_LIBBPF_OPTS(bpf_tc_hook, hook, .ifindex = 42, .which = BPF_TC_INGRESS);
+   DECLARE_LIBBPF_OPTS(bpf_tc_opts, opts, .handle = 1, .priority = 1);
+
+   err = bpf_tc_detach(&hook, &opts);
+   [...]
+
+The nice thing would be that hook and opts are kept semantically separate, meaning with
+hook you can iterate though a bunch of devs and ingress/egress locations without changing
+opts, whereas with opts you could iterate on the cls_bpf instance itself w/o changing
+hook. Both are kept extensible via DECLARE_LIBBPF_OPTS().
+
+Now the bpf_tc_hook_destroy() one:
+
+   DECLARE_LIBBPF_OPTS(bpf_tc_hook, hook, .ifindex = 42, .which = BPF_TC_INGRESS|BPF_TC_EGRESS);
+
+   err = bpf_tc_hook_destroy(&hook, &opts);
+   [...]
+
+For triggering a remove of the clsact qdisc on the device, both directions are passed in.
+Combining both is only ever allowed for bpf_tc_hook_destroy().
+
+If /only/ BPF_TC_INGRESS or only BPF_TC_EGRESS is passed, it could flush their lists (aka
+equivalent of `tc filter del dev eth0 ingress` and `tc filter del dev eth0 egress` command).
+
+For bpf_tc_hook_{create,destroy}() with BPF_TC_CUSTOM, we just return -EINVAL or -EOPNOTSUPP.
+
+I think the above interface would work nicely and feels intuitive while being extensible.
+Thoughts?
+
+Thanks,
+Daniel
