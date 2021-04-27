@@ -2,81 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 01E0236CC7C
-	for <lists+netdev@lfdr.de>; Tue, 27 Apr 2021 22:43:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C18CC36CC7F
+	for <lists+netdev@lfdr.de>; Tue, 27 Apr 2021 22:44:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237078AbhD0Uog (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 27 Apr 2021 16:44:36 -0400
-Received: from mail.netfilter.org ([217.70.188.207]:54302 "EHLO
+        id S238905AbhD0Uoh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 27 Apr 2021 16:44:37 -0400
+Received: from mail.netfilter.org ([217.70.188.207]:54310 "EHLO
         mail.netfilter.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235416AbhD0Uoe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 27 Apr 2021 16:44:34 -0400
+        with ESMTP id S235401AbhD0Uog (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 27 Apr 2021 16:44:36 -0400
 Received: from localhost.localdomain (unknown [90.77.255.23])
-        by mail.netfilter.org (Postfix) with ESMTPSA id C0AE864124;
-        Tue, 27 Apr 2021 22:43:12 +0200 (CEST)
+        by mail.netfilter.org (Postfix) with ESMTPSA id 0AAB964139;
+        Tue, 27 Apr 2021 22:43:14 +0200 (CEST)
 From:   Pablo Neira Ayuso <pablo@netfilter.org>
 To:     netfilter-devel@vger.kernel.org
 Cc:     davem@davemloft.net, netdev@vger.kernel.org, kuba@kernel.org
-Subject: [PATCH net-next 0/7] Netfilter updates for net-next
-Date:   Tue, 27 Apr 2021 22:43:38 +0200
-Message-Id: <20210427204345.22043-1-pablo@netfilter.org>
+Subject: [PATCH net-next 1/7] netfilter: nftables: rename set element data activation/deactivation functions
+Date:   Tue, 27 Apr 2021 22:43:39 +0200
+Message-Id: <20210427204345.22043-2-pablo@netfilter.org>
 X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20210427204345.22043-1-pablo@netfilter.org>
+References: <20210427204345.22043-1-pablo@netfilter.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+Rename:
 
-The following patchset contains Netfilter updates for net-next:
+- nft_set_elem_activate() to nft_set_elem_data_activate().
+- nft_set_elem_deactivate() to nft_set_elem_data_deactivate().
 
-1) Add support for the catch-all set element. This special element
-   can be used to define a default action to be applied in case that
-   the set lookup returns no matching element.
+To prepare for updates in the set element infrastructure to add support
+for the special catch-all element.
 
-2) Fix incorrect #ifdef dependencies in the nftables cgroupsv2
-   support, from Arnd Bergmann.
+Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
+---
+ net/netfilter/nf_tables_api.c | 22 +++++++++++-----------
+ 1 file changed, 11 insertions(+), 11 deletions(-)
 
-Please, pull these changes from:
+diff --git a/net/netfilter/nf_tables_api.c b/net/netfilter/nf_tables_api.c
+index 1050f23c0d29..d66be7d8f3e5 100644
+--- a/net/netfilter/nf_tables_api.c
++++ b/net/netfilter/nf_tables_api.c
+@@ -5263,8 +5263,8 @@ void nft_set_elem_destroy(const struct nft_set *set, void *elem,
+ }
+ EXPORT_SYMBOL_GPL(nft_set_elem_destroy);
+ 
+-/* Only called from commit path, nft_set_elem_deactivate() already deals with
+- * the refcounting from the preparation phase.
++/* Only called from commit path, nft_setelem_data_deactivate() already deals
++ * with the refcounting from the preparation phase.
+  */
+ static void nf_tables_set_elem_destroy(const struct nft_ctx *ctx,
+ 				       const struct nft_set *set, void *elem)
+@@ -5733,9 +5733,9 @@ void nft_data_hold(const struct nft_data *data, enum nft_data_types type)
+ 	}
+ }
+ 
+-static void nft_set_elem_activate(const struct net *net,
+-				  const struct nft_set *set,
+-				  struct nft_set_elem *elem)
++static void nft_setelem_data_activate(const struct net *net,
++				      const struct nft_set *set,
++				      struct nft_set_elem *elem)
+ {
+ 	const struct nft_set_ext *ext = nft_set_elem_ext(set, elem->priv);
+ 
+@@ -5745,9 +5745,9 @@ static void nft_set_elem_activate(const struct net *net,
+ 		(*nft_set_ext_obj(ext))->use++;
+ }
+ 
+-static void nft_set_elem_deactivate(const struct net *net,
+-				    const struct nft_set *set,
+-				    struct nft_set_elem *elem)
++static void nft_setelem_data_deactivate(const struct net *net,
++					const struct nft_set *set,
++					struct nft_set_elem *elem)
+ {
+ 	const struct nft_set_ext *ext = nft_set_elem_ext(set, elem->priv);
+ 
+@@ -5824,7 +5824,7 @@ static int nft_del_setelem(struct nft_ctx *ctx, struct nft_set *set,
+ 	kfree(elem.priv);
+ 	elem.priv = priv;
+ 
+-	nft_set_elem_deactivate(ctx->net, set, &elem);
++	nft_setelem_data_deactivate(ctx->net, set, &elem);
+ 
+ 	nft_trans_elem(trans) = elem;
+ 	nft_trans_commit_list_add_tail(ctx->net, trans);
+@@ -5858,7 +5858,7 @@ static int nft_flush_set(const struct nft_ctx *ctx,
+ 	}
+ 	set->ndeact++;
+ 
+-	nft_set_elem_deactivate(ctx->net, set, elem);
++	nft_setelem_data_deactivate(ctx->net, set, elem);
+ 	nft_trans_elem_set(trans) = set;
+ 	nft_trans_elem(trans) = *elem;
+ 	nft_trans_commit_list_add_tail(ctx->net, trans);
+@@ -8479,7 +8479,7 @@ static int __nf_tables_abort(struct net *net, enum nfnl_abort_action action)
+ 		case NFT_MSG_DELSETELEM:
+ 			te = (struct nft_trans_elem *)trans->data;
+ 
+-			nft_set_elem_activate(net, te->set, &te->elem);
++			nft_setelem_data_activate(net, te->set, &te->elem);
+ 			te->set->ops->activate(net, te->set, &te->elem);
+ 			te->set->ndeact--;
+ 
+-- 
+2.30.2
 
-  git://git.kernel.org/pub/scm/linux/kernel/git/pablo/nf-next.git
-
-Thanks!
-
-----------------------------------------------------------------
-
-The following changes since commit 6d72e7c767acbbdd44ebc7d89c6690b405b32b57:
-
-  net:emac/emac-mac: Fix a use after free in emac_mac_tx_buf_send (2021-04-26 13:07:30 -0700)
-
-are available in the Git repository at:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/pablo/nf-next.git HEAD
-
-for you to fetch changes up to 7acc0bb490c85012bcbda142b6755fd1fdf1fba1:
-
-  netfilter: nft_socket: fix build with CONFIG_SOCK_CGROUP_DATA=n (2021-04-27 22:34:05 +0200)
-
-----------------------------------------------------------------
-Arnd Bergmann (2):
-      netfilter: nft_socket: fix an unused variable warning
-      netfilter: nft_socket: fix build with CONFIG_SOCK_CGROUP_DATA=n
-
-Pablo Neira Ayuso (5):
-      netfilter: nftables: rename set element data activation/deactivation functions
-      netfilter: nftables: add loop check helper function
-      netfilter: nftables: add helper function to flush set elements
-      netfilter: nftables: add helper function to validate set element data
-      netfilter: nftables: add catch-all set element support
-
- include/net/netfilter/nf_tables.h        |   5 +
- include/uapi/linux/netfilter/nf_tables.h |   2 +
- net/netfilter/nf_tables_api.c            | 576 ++++++++++++++++++++++++++-----
- net/netfilter/nft_lookup.c               |  12 +-
- net/netfilter/nft_objref.c               |  11 +-
- net/netfilter/nft_set_hash.c             |   6 +
- net/netfilter/nft_set_pipapo.c           |   6 +-
- net/netfilter/nft_set_rbtree.c           |   6 +
- net/netfilter/nft_socket.c               |  11 +-
- 9 files changed, 532 insertions(+), 103 deletions(-)
