@@ -2,92 +2,125 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E349236CEAD
-	for <lists+netdev@lfdr.de>; Wed, 28 Apr 2021 00:40:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2DCF436CEB4
+	for <lists+netdev@lfdr.de>; Wed, 28 Apr 2021 00:42:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239298AbhD0Wkz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 27 Apr 2021 18:40:55 -0400
-Received: from mail.kernel.org ([198.145.29.99]:56418 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S237109AbhD0Wky (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 27 Apr 2021 18:40:54 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id 7B1FE61402;
-        Tue, 27 Apr 2021 22:40:10 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1619563210;
-        bh=5uc27/sHGQ0IvHf3g70GUBZepRC6Lqu1OV2I3ZDV1vQ=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=lQC6FEAsxAZ0kSHMcQZmvYDHWJFEEs+GQllLPrGr8aAHqV9/dp1Ctz3Sza11fwKe3
-         ZXBHO9D0Xy/BJxNk0xdXjoRBG1quepqmkGVD0HzL9XPTvJmcFpvJOn5fKgN1qw068H
-         C+xdZwUM/cIL1TILH3tsS3WlAWULvBBsdK6wi8yCDDm4GkXwzHbKOluLDgxIliQJhl
-         wxQHzODD9LxQqXY+2E0MEfIErsqz4Ll+LDCtJjR90wYF2FcJnvUiCMjgdT0R7ozp+b
-         iabUd42Li4oudQZHBDTinZmUsErtRBduclkEyFHmeubVf449VmvNonm1foeoPBYhbR
-         k2e6PXxFfvthg==
-Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 6EEF160A36;
-        Tue, 27 Apr 2021 22:40:10 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        id S236792AbhD0Wmv convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Tue, 27 Apr 2021 18:42:51 -0400
+Received: from us-smtp-delivery-44.mimecast.com ([205.139.111.44]:43961 "EHLO
+        us-smtp-delivery-44.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S235420AbhD0Wmv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 27 Apr 2021 18:42:51 -0400
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-192-WtPfqhlBMCqXJZwPGjXKvw-1; Tue, 27 Apr 2021 18:42:01 -0400
+X-MC-Unique: WtPfqhlBMCqXJZwPGjXKvw-1
+Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com [10.5.11.22])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id CDDC3805EF8;
+        Tue, 27 Apr 2021 22:41:59 +0000 (UTC)
+Received: from krava.cust.in.nbox.cz (unknown [10.40.192.163])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 7E18310027A5;
+        Tue, 27 Apr 2021 22:41:57 +0000 (UTC)
+From:   Jiri Olsa <jolsa@kernel.org>
+To:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andriin@fb.com>
+Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>
+Subject: [PATCH] bpf: Fix recursion check in trampoline
+Date:   Wed, 28 Apr 2021 00:41:56 +0200
+Message-Id: <20210427224156.708231-1-jolsa@kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH] sfc: adjust efx->xdp_tx_queue_count with the real number of
- initialized queues
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <161956321044.28898.6899373989686789541.git-patchwork-notify@kernel.org>
-Date:   Tue, 27 Apr 2021 22:40:10 +0000
-References: <20210427210938.661700-1-ignat@cloudflare.com>
-In-Reply-To: <20210427210938.661700-1-ignat@cloudflare.com>
-To:     Ignat Korchagin <ignat@cloudflare.com>
-Cc:     ecree.xilinx@gmail.com, habetsm.xilinx@gmail.com,
-        davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
-        kernel-team@cloudflare.com, stable@vger.kernel.org
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
+Authentication-Results: relay.mimecast.com;
+        auth=pass smtp.auth=CUSA124A263 smtp.mailfrom=jolsa@kernel.org
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: kernel.org
+Content-Transfer-Encoding: 8BIT
+Content-Type: text/plain; charset=WINDOWS-1252
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+The recursion check in __bpf_prog_enter and __bpf_prog_exit leaves
+some (not inlined) functions unprotected:
 
-This patch was applied to netdev/net-next.git (refs/heads/master):
+In __bpf_prog_enter:
+  - migrate_disable is called before prog->active is checked
 
-On Tue, 27 Apr 2021 22:09:38 +0100 you wrote:
-> efx->xdp_tx_queue_count is initially initialized to num_possible_cpus() and is
-> later used to allocate and traverse efx->xdp_tx_queues lookup array. However,
-> we may end up not initializing all the array slots with real queues during
-> probing. This results, for example, in a NULL pointer dereference, when running
-> "# ethtool -S <iface>", similar to below
-> 
-> [2570283.664955][T4126959] BUG: kernel NULL pointer dereference, address: 00000000000000f8
-> [2570283.681283][T4126959] #PF: supervisor read access in kernel mode
-> [2570283.695678][T4126959] #PF: error_code(0x0000) - not-present page
-> [2570283.710013][T4126959] PGD 0 P4D 0
-> [2570283.721649][T4126959] Oops: 0000 [#1] SMP PTI
-> [2570283.734108][T4126959] CPU: 23 PID: 4126959 Comm: ethtool Tainted: G           O      5.10.20-cloudflare-2021.3.1 #1
-> [2570283.752641][T4126959] Hardware name: <redacted>
-> [2570283.781408][T4126959] RIP: 0010:efx_ethtool_get_stats+0x2ca/0x330 [sfc]
-> [2570283.796073][T4126959] Code: 00 85 c0 74 39 48 8b 95 a8 0f 00 00 48 85 d2 74 2d 31 c0 eb 07 48 8b 95 a8 0f 00 00 48 63 c8 49 83 c4 08 83 c0 01 48 8b 14 ca <48> 8b 92 f8 00 00 00 49 89 54 24 f8 39 85 a0 0f 00 00 77 d7 48 8b
-> [2570283.831259][T4126959] RSP: 0018:ffffb79a77657ce8 EFLAGS: 00010202
-> [2570283.845121][T4126959] RAX: 0000000000000019 RBX: ffffb799cd0c9280 RCX: 0000000000000018
-> [2570283.860872][T4126959] RDX: 0000000000000000 RSI: ffff96dd970ce000 RDI: 0000000000000005
-> [2570283.876525][T4126959] RBP: ffff96dd86f0a000 R08: ffff96dd970ce480 R09: 000000000000005f
-> [2570283.892014][T4126959] R10: ffffb799cd0c9fff R11: ffffb799cd0c9000 R12: ffffb799cd0c94f8
-> [2570283.907406][T4126959] R13: ffffffffc11b1090 R14: ffff96dd970ce000 R15: ffffffffc11cd66c
-> [2570283.922705][T4126959] FS:  00007fa7723f8740(0000) GS:ffff96f51fac0000(0000) knlGS:0000000000000000
-> [2570283.938848][T4126959] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-> [2570283.952524][T4126959] CR2: 00000000000000f8 CR3: 0000001a73e6e006 CR4: 00000000007706e0
-> [2570283.967529][T4126959] DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-> [2570283.982400][T4126959] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-> [2570283.997308][T4126959] PKRU: 55555554
-> [2570284.007649][T4126959] Call Trace:
-> [2570284.017598][T4126959]  dev_ethtool+0x1832/0x2830
-> 
-> [...]
+In __bpf_prog_exit:
+  - migrate_enable,rcu_read_unlock_strict are called after
+    prog->active is decreased
 
-Here is the summary with links:
-  - sfc: adjust efx->xdp_tx_queue_count with the real number of initialized queues
-    https://git.kernel.org/netdev/net-next/c/99ba0ea616aa
+When attaching trampoline to them we get panic like:
 
-You are awesome, thank you!
---
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+  traps: PANIC: double fault, error_code: 0x0
+  double fault: 0000 [#1] SMP PTI
+  RIP: 0010:__bpf_prog_enter+0x4/0x50
+  ...
+  Call Trace:
+   <IRQ>
+   bpf_trampoline_6442466513_0+0x18/0x1000
+   migrate_disable+0x5/0x50
+   __bpf_prog_enter+0x9/0x50
+   bpf_trampoline_6442466513_0+0x18/0x1000
+   migrate_disable+0x5/0x50
+   __bpf_prog_enter+0x9/0x50
+   bpf_trampoline_6442466513_0+0x18/0x1000
+   migrate_disable+0x5/0x50
+   __bpf_prog_enter+0x9/0x50
+   bpf_trampoline_6442466513_0+0x18/0x1000
+   migrate_disable+0x5/0x50
+   ...
 
+Making the recursion check before the rest of the calls
+in __bpf_prog_enter and as last call in __bpf_prog_exit.
+
+Signed-off-by: Jiri Olsa <jolsa@kernel.org>
+---
+ kernel/bpf/trampoline.c | 12 +++++++-----
+ 1 file changed, 7 insertions(+), 5 deletions(-)
+
+diff --git a/kernel/bpf/trampoline.c b/kernel/bpf/trampoline.c
+index 4aa8b52adf25..301735f7e88e 100644
+--- a/kernel/bpf/trampoline.c
++++ b/kernel/bpf/trampoline.c
+@@ -558,12 +558,12 @@ static void notrace inc_misses_counter(struct bpf_prog *prog)
+ u64 notrace __bpf_prog_enter(struct bpf_prog *prog)
+ 	__acquires(RCU)
+ {
+-	rcu_read_lock();
+-	migrate_disable();
+ 	if (unlikely(__this_cpu_inc_return(*(prog->active)) != 1)) {
+ 		inc_misses_counter(prog);
+ 		return 0;
+ 	}
++	rcu_read_lock();
++	migrate_disable();
+ 	return bpf_prog_start_time();
+ }
+ 
+@@ -590,10 +590,12 @@ static void notrace update_prog_stats(struct bpf_prog *prog,
+ void notrace __bpf_prog_exit(struct bpf_prog *prog, u64 start)
+ 	__releases(RCU)
+ {
+-	update_prog_stats(prog, start);
++	if (start) {
++		update_prog_stats(prog, start);
++		migrate_enable();
++		rcu_read_unlock();
++	}
+ 	__this_cpu_dec(*(prog->active));
+-	migrate_enable();
+-	rcu_read_unlock();
+ }
+ 
+ u64 notrace __bpf_prog_enter_sleepable(struct bpf_prog *prog)
+-- 
+2.30.2
 
