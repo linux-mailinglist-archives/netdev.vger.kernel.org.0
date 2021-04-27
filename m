@@ -2,184 +2,151 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 036A236CAF7
-	for <lists+netdev@lfdr.de>; Tue, 27 Apr 2021 20:15:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6114836CB16
+	for <lists+netdev@lfdr.de>; Tue, 27 Apr 2021 20:28:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238442AbhD0SQd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 27 Apr 2021 14:16:33 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:44322 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S236279AbhD0SQc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 27 Apr 2021 14:16:32 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1619547348;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=tBv0uUVPXgndSKwcI/R1EYyP8Vi9i5g8yF8CVU5/x80=;
-        b=MVZanwX7Mn3GoLvFWFvIe4Expp0pLN7xFOw2xO/aHtZ9Cl0TE4ELu/d1FV4McO4WwG8LZ7
-        edDoITzvoPP54gm1XFpJ/Z5fewfqH3AXLXxtba/GhKgvNKBNxlTODRirUQniWFj4RI+9lq
-        vh8tHWnM2CfnXMAWFrFLFifW7Lb/2I4=
-Received: from mail-ej1-f72.google.com (mail-ej1-f72.google.com
- [209.85.218.72]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-93-5pXl1nYlOf2Axj-yy6sHzQ-1; Tue, 27 Apr 2021 14:15:46 -0400
-X-MC-Unique: 5pXl1nYlOf2Axj-yy6sHzQ-1
-Received: by mail-ej1-f72.google.com with SMTP id gb17-20020a1709079611b029038c058a504cso2426873ejc.7
-        for <netdev@vger.kernel.org>; Tue, 27 Apr 2021 11:15:46 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version;
-        bh=tBv0uUVPXgndSKwcI/R1EYyP8Vi9i5g8yF8CVU5/x80=;
-        b=s0/okhoT22wwjsOoYC8tLCJ9eJOJwxnjaMjZcbhExwuJ6zY6dKKi+yo/hZ/4LX0iWf
-         qO09Fuw+rYbsuHI0gsgoR5Q6ipjpX2cHOE7gc9TpnORCXWgzOYj9YJdXdLznjekez0P6
-         N1bL2Sqt01M3Hxf75iiSkXaWwwI2XqBJzAq3TjOxtNnLpTFI0VsGrL584YtUm7AVdfhC
-         kZbADvok6rekowWbbaXb5zcNv1v1AKatuZso50eHAPfaSasfGs8kLuIGyitxwVlD4O2x
-         WEcpJ164LMfOBxsxbcYmhnwyH88IqZJis4thEl9LQo6RTi59K3+bWsSUCdh7zj8y6c7g
-         9GpQ==
-X-Gm-Message-State: AOAM533Lx4mUC585I+93mSW4mlkSoy019jMImqiHAzTiNrvvRP8f3v5z
-        KpI7Ik/cCYXjw4bTXMqeLdf7ibyzbU/CT96kpMVi7vUsqVuUWqEo9c45dBF/0QNoFEzEqtQjJXy
-        KEzwzy0aqEiOnCPXt
-X-Received: by 2002:a17:906:6b89:: with SMTP id l9mr24220371ejr.249.1619547345087;
-        Tue, 27 Apr 2021 11:15:45 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJyn9fTqS18DCoCBMGZsR0vbk8EoFLp4CL4/Yk8hpfKhrBVt3NA+6igTuf6REozJLYJCOdMpkA==
-X-Received: by 2002:a17:906:6b89:: with SMTP id l9mr24220340ejr.249.1619547344857;
-        Tue, 27 Apr 2021 11:15:44 -0700 (PDT)
-Received: from alrua-x1.borgediget.toke.dk ([45.145.92.2])
-        by smtp.gmail.com with ESMTPSA id z14sm2915754edc.62.2021.04.27.11.15.44
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 27 Apr 2021 11:15:44 -0700 (PDT)
-Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id 82ED4180615; Tue, 27 Apr 2021 20:15:43 +0200 (CEST)
-From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-To:     Kumar Kartikeya Dwivedi <memxor@gmail.com>,
-        Daniel Borkmann <daniel@iogearbox.net>
-Cc:     bpf@vger.kernel.org, Alexei Starovoitov <ast@kernel.org>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
+        id S236754AbhD0S3O (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 27 Apr 2021 14:29:14 -0400
+Received: from mail.kernel.org ([198.145.29.99]:46848 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S230219AbhD0S3L (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 27 Apr 2021 14:29:11 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 1319061001;
+        Tue, 27 Apr 2021 18:28:26 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1619548107;
+        bh=QNDch69z8o0RrJ9jNFXhkcE/fN5/M67I+3jCEi22zIc=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=PtVqeekhpvQarlyi7x4skHBuZVZKCkZ5PrdI12ZxBDznW0Yg2EN8uBIPZXxjne/3C
+         PaKwuTt2SH7cNPy3zcJ3s2PXzGXjb7Mnq3YWOc18pHRmF00OOQqYltxQc6SC+LKnyo
+         URMEPMXCceh2UO1/NaHnc7+EJ7k1//X6aBKOglHkiWhFqrBJGdtYyNLiY4PBHTMuF8
+         Rifx3zcsfOAuGvNK0ljIjSmGXMwcujnEfR3Qf8jAL9bmmPVh2++IoCUCp7AHj3L4g7
+         GmFlxNyBxROY9mJUiWvn+had5lVe+skptpZ+G606BNBdbIe2FkUy1+k4FoQ5FEEtyf
+         zfn9S+c+ihbIQ==
+Date:   Tue, 27 Apr 2021 20:28:22 +0200
+From:   Lorenzo Bianconi <lorenzo@kernel.org>
+To:     Magnus Karlsson <magnus.karlsson@gmail.com>
+Cc:     bpf <bpf@vger.kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        lorenzo.bianconi@redhat.com,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>, shayagr@amazon.com,
+        sameehj@amazon.com, John Fastabend <john.fastabend@gmail.com>,
+        David Ahern <dsahern@kernel.org>,
         Jesper Dangaard Brouer <brouer@redhat.com>,
-        netdev@vger.kernel.org
-Subject: Re: [PATCH bpf-next v4 2/3] libbpf: add low level TC-BPF API
-In-Reply-To: <20210427180202.pepa2wdbhhap3vyg@apollo>
-References: <20210423150600.498490-1-memxor@gmail.com>
- <20210423150600.498490-3-memxor@gmail.com>
- <5811eb10-bc93-0b81-2ee4-10490388f238@iogearbox.net>
- <20210427180202.pepa2wdbhhap3vyg@apollo>
-X-Clacks-Overhead: GNU Terry Pratchett
-Date:   Tue, 27 Apr 2021 20:15:43 +0200
-Message-ID: <87fszba90w.fsf@toke.dk>
+        Eelco Chaudron <echaudro@redhat.com>,
+        Jason Wang <jasowang@redhat.com>,
+        Alexander Duyck <alexander.duyck@gmail.com>,
+        Saeed Mahameed <saeed@kernel.org>,
+        "Fijalkowski, Maciej" <maciej.fijalkowski@intel.com>,
+        Tirthendu <tirthendu.sarkar@intel.com>
+Subject: Re: [PATCH v8 bpf-next 00/14] mvneta: introduce XDP multi-buffer
+ support
+Message-ID: <YIhXxmXdjQdrrPbT@lore-desk>
+References: <cover.1617885385.git.lorenzo@kernel.org>
+ <CAJ8uoz1MOYLzyy7xXq_fmpKDEakxSomzfM76Szjr5gWsqHc9jQ@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: multipart/signed; micalg=pgp-sha256;
+        protocol="application/pgp-signature"; boundary="BGwRV/j/BiBdnsJe"
+Content-Disposition: inline
+In-Reply-To: <CAJ8uoz1MOYLzyy7xXq_fmpKDEakxSomzfM76Szjr5gWsqHc9jQ@mail.gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Kumar Kartikeya Dwivedi <memxor@gmail.com> writes:
 
-> On Tue, Apr 27, 2021 at 08:34:30PM IST, Daniel Borkmann wrote:
->> On 4/23/21 5:05 PM, Kumar Kartikeya Dwivedi wrote:
->> [...]
->> >   tools/lib/bpf/libbpf.h   |  92 ++++++++
->> >   tools/lib/bpf/libbpf.map |   5 +
->> >   tools/lib/bpf/netlink.c  | 478 ++++++++++++++++++++++++++++++++++++++-
->> >   3 files changed, 574 insertions(+), 1 deletion(-)
->> >
->> > diff --git a/tools/lib/bpf/libbpf.h b/tools/lib/bpf/libbpf.h
->> > index bec4e6a6e31d..1c717c07b66e 100644
->> > --- a/tools/lib/bpf/libbpf.h
->> > +++ b/tools/lib/bpf/libbpf.h
->> > @@ -775,6 +775,98 @@ LIBBPF_API int bpf_linker__add_file(struct bpf_linker *linker, const char *filen
->> >   LIBBPF_API int bpf_linker__finalize(struct bpf_linker *linker);
->> >   LIBBPF_API void bpf_linker__free(struct bpf_linker *linker);
->> >
->> > +enum bpf_tc_attach_point {
->> > +	BPF_TC_INGRESS,
->> > +	BPF_TC_EGRESS,
->> > +	BPF_TC_CUSTOM_PARENT,
->> > +	_BPF_TC_PARENT_MAX,
->>
->> I don't think we need to expose _BPF_TC_PARENT_MAX as part of the API, I would drop
->> the latter.
->>
->
-> Ok, will drop.
->
->> > +};
->> > +
->> > +/* The opts structure is also used to return the created filters attributes
->> > + * (e.g. in case the user left them unset). Some of the options that were left
->> > + * out default to a reasonable value, documented below.
->> > + *
->> > + *	protocol - ETH_P_ALL
->> > + *	chain index - 0
->> > + *	class_id - 0 (can be set by bpf program using skb->tc_classid)
->> > + *	bpf_flags - TCA_BPF_FLAG_ACT_DIRECT (direct action mode)
->> > + *	bpf_flags_gen - 0
->> > + *
->> > + *	The user must fulfill documented requirements for each function.
->>
->> Not sure if this is overly relevant as part of the bpf_tc_opts in here. For the
->> 2nd part, I would probably just mention that libbpf internally attaches the bpf
->> programs with direct action mode. The hw offload may be future todo, and the other
->> bits are little used anyway; mentioning them here, what value does it have to
->> libbpf users? I'd rather just drop the 2nd part and/or simplify this paragraph
->> just stating that the progs are attached in direct action mode.
->>
->
-> The goal was to just document whatever attributes were set to by default, but I can see
-> your point. I'll trim it.
->
->> > + */
->> > +struct bpf_tc_opts {
->> > +	size_t sz;
->> > +	__u32 handle;
->> > +	__u32 parent;
->> > +	__u16 priority;
->> > +	__u32 prog_id;
->> > +	bool replace;
->> > +	size_t :0;
->> > +};
->> > +
->> > +#define bpf_tc_opts__last_field replace
->> > +
->> > +struct bpf_tc_ctx;
->> > +
->> > +struct bpf_tc_ctx_opts {
->> > +	size_t sz;
->> > +};
->> > +
->> > +#define bpf_tc_ctx_opts__last_field sz
->> > +
->> > +/* Requirements */
->> > +/*
->> > + * @ifindex: Must be > 0.
->> > + * @parent: Must be one of the enum constants < _BPF_TC_PARENT_MAX
->> > + * @opts: Can be NULL, currently no options are supported.
->> > + */
->>
->> Up to Andrii, but we don't have such API doc in general inside libbpf.h, I
->> would drop it for the time being to be consistent with the rest (same for
->> others below).
->>
->
-> I think we need to keep this somewhere. We dropped bpf_tc_info since it wasn't
-> really serving any purpose, but that meant we would put the only extra thing it
-> returned (prog_id) into bpf_tc_opts. That means we also need to take care that
-> it is unset (along with replace) in functions where it isn't used, to allow for
-> reuse for some future purpose. If we don't document that the user needs to unset
-> them whenever working with bpf_tc_query and bpf_tc_detach, how are they supposed
-> to know?
->
-> Maybe a man page and/or a blog post would be better? Just putting it above the
-> function seemed best for now.
+--BGwRV/j/BiBdnsJe
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-You could document it together with the struct definition instead of for
-each function? See the inline comments in bpf_object_open_opts for instance...
+[...]
 
--Toke
+> Took your patches for a test run with the AF_XDP sample xdpsock on an
+> i40e card and the throughput degradation is between 2 to 6% depending
+> on the setup and microbenchmark within xdpsock that is executed. And
+> this is without sending any multi frame packets. Just single frame
+> ones. Tirtha made changes to the i40e driver to support this new
+> interface so that is being included in the measurements.
+>=20
+> What performance do you see with the mvneta card? How much are we
+> willing to pay for this feature when it is not being used or can we in
+> some way selectively turn it on only when needed?
 
+Hi Magnus,
+
+Today I carried out some comparison tests between bpf-next and bpf-next +
+xdp_multibuff series on mvneta running xdp_rxq_info sample. Results are
+basically aligned:
+
+bpf-next:
+- xdp drop ~ 665Kpps
+- xdp_tx   ~ 291Kpps
+- xdp_pass ~ 118Kpps
+
+bpf-next + xdp_multibuff:
+- xdp drop ~ 672Kpps
+- xdp_tx   ~ 288Kpps
+- xdp_pass ~ 118Kpps
+
+I am not sure if results are affected by the low power CPU, I will run some
+tests on ixgbe card.
+
+Regards,
+Lorenzo
+
+>=20
+> Thanks: Magnus
+>=20
+> > Eelco Chaudron (4):
+> >   bpf: add multi-buff support to the bpf_xdp_adjust_tail() API
+> >   bpd: add multi-buffer support to xdp copy helpers
+> >   bpf: add new frame_length field to the XDP ctx
+> >   bpf: update xdp_adjust_tail selftest to include multi-buffer
+> >
+> > Lorenzo Bianconi (10):
+> >   xdp: introduce mb in xdp_buff/xdp_frame
+> >   xdp: add xdp_shared_info data structure
+> >   net: mvneta: update mb bit before passing the xdp buffer to eBPF layer
+> >   xdp: add multi-buff support to xdp_return_{buff/frame}
+> >   net: mvneta: add multi buffer support to XDP_TX
+> >   net: mvneta: enable jumbo frames for XDP
+> >   net: xdp: add multi-buff support to xdp_build_skb_from_fram
+> >   bpf: move user_size out of bpf_test_init
+> >   bpf: introduce multibuff support to bpf_prog_test_run_xdp()
+> >   bpf: test_run: add xdp_shared_info pointer in bpf_test_finish
+> >     signature
+> >
+> >  drivers/net/ethernet/marvell/mvneta.c         | 182 ++++++++++--------
+> >  include/linux/filter.h                        |   7 +
+> >  include/net/xdp.h                             | 105 +++++++++-
+> >  include/uapi/linux/bpf.h                      |   1 +
+> >  net/bpf/test_run.c                            | 109 +++++++++--
+> >  net/core/filter.c                             | 134 ++++++++++++-
+> >  net/core/xdp.c                                | 103 +++++++++-
+> >  tools/include/uapi/linux/bpf.h                |   1 +
+> >  .../bpf/prog_tests/xdp_adjust_tail.c          | 105 ++++++++++
+> >  .../selftests/bpf/prog_tests/xdp_bpf2bpf.c    | 127 ++++++++----
+> >  .../bpf/progs/test_xdp_adjust_tail_grow.c     |  17 +-
+> >  .../bpf/progs/test_xdp_adjust_tail_shrink.c   |  32 ++-
+> >  .../selftests/bpf/progs/test_xdp_bpf2bpf.c    |   3 +-
+> >  13 files changed, 767 insertions(+), 159 deletions(-)
+> >
+> > --
+> > 2.30.2
+> >
+
+--BGwRV/j/BiBdnsJe
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iHUEABYIAB0WIQTquNwa3Txd3rGGn7Y6cBh0uS2trAUCYIhXwwAKCRA6cBh0uS2t
+rDBbAP97aFwKh4hbVWji/WAk4qNXTtRmLcFdhnUMzjs9UJCwLQD/aKxN2U5fBrf3
+xAjPBE8RWndr6pfoba20ObmWU1G3JwY=
+=p8bo
+-----END PGP SIGNATURE-----
+
+--BGwRV/j/BiBdnsJe--
