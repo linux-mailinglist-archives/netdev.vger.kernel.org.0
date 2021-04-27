@@ -2,42 +2,44 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EB24436CEAF
-	for <lists+netdev@lfdr.de>; Wed, 28 Apr 2021 00:40:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E349236CEAD
+	for <lists+netdev@lfdr.de>; Wed, 28 Apr 2021 00:40:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237109AbhD0Wk5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 27 Apr 2021 18:40:57 -0400
-Received: from mail.kernel.org ([198.145.29.99]:56422 "EHLO mail.kernel.org"
+        id S239298AbhD0Wkz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 27 Apr 2021 18:40:55 -0400
+Received: from mail.kernel.org ([198.145.29.99]:56418 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S238548AbhD0Wky (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S237109AbhD0Wky (ORCPT <rfc822;netdev@vger.kernel.org>);
         Tue, 27 Apr 2021 18:40:54 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id 845AE61404;
+Received: by mail.kernel.org (Postfix) with ESMTPS id 7B1FE61402;
         Tue, 27 Apr 2021 22:40:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1619563210;
-        bh=6uvEgWmSuI3CiTQgqx2XsEl8TVLiLcygDlDXC0plN6Y=;
+        bh=5uc27/sHGQ0IvHf3g70GUBZepRC6Lqu1OV2I3ZDV1vQ=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=PZAVerXYjeUe4GYtFKYrqTushQZzvbwbf19uumPcw5QlmAkpWuqAzN/q0f2/qNxpG
-         +DnJzB6QwAiuuA+KaRw+yQ5O4fFb8XEWCdlY/9d7WstpaBNnxxYXuoJtc/NSBgvgE+
-         3/jB+MyRdOboPzx6glJ6Ip3Qb/UHSisuZ4OUwfcORLLq++wTMMiXU/aL3N6AmPjo0g
-         mOBwkWAiLSxWPuh9Fsbvoj9iaC5TeVjMxBoPOHFhnev/7jJyBgbEuV6E1FMfyEfE3Q
-         P8Zvgm99miL7QeBLdCAamZbG/Bp0mWD5PC2wp0v2nfd0ombel/YcI5Of7VME+0cpXH
-         81TtKqdsx3MOA==
+        b=lQC6FEAsxAZ0kSHMcQZmvYDHWJFEEs+GQllLPrGr8aAHqV9/dp1Ctz3Sza11fwKe3
+         ZXBHO9D0Xy/BJxNk0xdXjoRBG1quepqmkGVD0HzL9XPTvJmcFpvJOn5fKgN1qw068H
+         C+xdZwUM/cIL1TILH3tsS3WlAWULvBBsdK6wi8yCDDm4GkXwzHbKOluLDgxIliQJhl
+         wxQHzODD9LxQqXY+2E0MEfIErsqz4Ll+LDCtJjR90wYF2FcJnvUiCMjgdT0R7ozp+b
+         iabUd42Li4oudQZHBDTinZmUsErtRBduclkEyFHmeubVf449VmvNonm1foeoPBYhbR
+         k2e6PXxFfvthg==
 Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 7967F60A24;
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 6EEF160A36;
         Tue, 27 Apr 2021 22:40:10 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH] net:nfc:digital: Fix a double free in digital_tg_recv_dep_req
+Subject: Re: [PATCH] sfc: adjust efx->xdp_tx_queue_count with the real number of
+ initialized queues
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <161956321049.28898.4886085211372158981.git-patchwork-notify@kernel.org>
+Message-Id: <161956321044.28898.6899373989686789541.git-patchwork-notify@kernel.org>
 Date:   Tue, 27 Apr 2021 22:40:10 +0000
-References: <20210427162258.7238-1-lyl2019@mail.ustc.edu.cn>
-In-Reply-To: <20210427162258.7238-1-lyl2019@mail.ustc.edu.cn>
-To:     Lv Yunlong <lyl2019@mail.ustc.edu.cn>
-Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
+References: <20210427210938.661700-1-ignat@cloudflare.com>
+In-Reply-To: <20210427210938.661700-1-ignat@cloudflare.com>
+To:     Ignat Korchagin <ignat@cloudflare.com>
+Cc:     ecree.xilinx@gmail.com, habetsm.xilinx@gmail.com,
+        davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
+        kernel-team@cloudflare.com, stable@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
@@ -46,20 +48,42 @@ Hello:
 
 This patch was applied to netdev/net-next.git (refs/heads/master):
 
-On Tue, 27 Apr 2021 09:22:58 -0700 you wrote:
-> In digital_tg_recv_dep_req, it calls nfc_tm_data_received(..,resp).
-> If nfc_tm_data_received() failed, the callee will free the resp via
-> kfree_skb() and return error. But in the exit branch, the resp
-> will be freed again.
+On Tue, 27 Apr 2021 22:09:38 +0100 you wrote:
+> efx->xdp_tx_queue_count is initially initialized to num_possible_cpus() and is
+> later used to allocate and traverse efx->xdp_tx_queues lookup array. However,
+> we may end up not initializing all the array slots with real queues during
+> probing. This results, for example, in a NULL pointer dereference, when running
+> "# ethtool -S <iface>", similar to below
 > 
-> My patch sets resp to NULL if nfc_tm_data_received() failed, to
-> avoid the double free.
+> [2570283.664955][T4126959] BUG: kernel NULL pointer dereference, address: 00000000000000f8
+> [2570283.681283][T4126959] #PF: supervisor read access in kernel mode
+> [2570283.695678][T4126959] #PF: error_code(0x0000) - not-present page
+> [2570283.710013][T4126959] PGD 0 P4D 0
+> [2570283.721649][T4126959] Oops: 0000 [#1] SMP PTI
+> [2570283.734108][T4126959] CPU: 23 PID: 4126959 Comm: ethtool Tainted: G           O      5.10.20-cloudflare-2021.3.1 #1
+> [2570283.752641][T4126959] Hardware name: <redacted>
+> [2570283.781408][T4126959] RIP: 0010:efx_ethtool_get_stats+0x2ca/0x330 [sfc]
+> [2570283.796073][T4126959] Code: 00 85 c0 74 39 48 8b 95 a8 0f 00 00 48 85 d2 74 2d 31 c0 eb 07 48 8b 95 a8 0f 00 00 48 63 c8 49 83 c4 08 83 c0 01 48 8b 14 ca <48> 8b 92 f8 00 00 00 49 89 54 24 f8 39 85 a0 0f 00 00 77 d7 48 8b
+> [2570283.831259][T4126959] RSP: 0018:ffffb79a77657ce8 EFLAGS: 00010202
+> [2570283.845121][T4126959] RAX: 0000000000000019 RBX: ffffb799cd0c9280 RCX: 0000000000000018
+> [2570283.860872][T4126959] RDX: 0000000000000000 RSI: ffff96dd970ce000 RDI: 0000000000000005
+> [2570283.876525][T4126959] RBP: ffff96dd86f0a000 R08: ffff96dd970ce480 R09: 000000000000005f
+> [2570283.892014][T4126959] R10: ffffb799cd0c9fff R11: ffffb799cd0c9000 R12: ffffb799cd0c94f8
+> [2570283.907406][T4126959] R13: ffffffffc11b1090 R14: ffff96dd970ce000 R15: ffffffffc11cd66c
+> [2570283.922705][T4126959] FS:  00007fa7723f8740(0000) GS:ffff96f51fac0000(0000) knlGS:0000000000000000
+> [2570283.938848][T4126959] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+> [2570283.952524][T4126959] CR2: 00000000000000f8 CR3: 0000001a73e6e006 CR4: 00000000007706e0
+> [2570283.967529][T4126959] DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+> [2570283.982400][T4126959] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+> [2570283.997308][T4126959] PKRU: 55555554
+> [2570284.007649][T4126959] Call Trace:
+> [2570284.017598][T4126959]  dev_ethtool+0x1832/0x2830
 > 
 > [...]
 
 Here is the summary with links:
-  - net:nfc:digital: Fix a double free in digital_tg_recv_dep_req
-    https://git.kernel.org/netdev/net-next/c/75258586793e
+  - sfc: adjust efx->xdp_tx_queue_count with the real number of initialized queues
+    https://git.kernel.org/netdev/net-next/c/99ba0ea616aa
 
 You are awesome, thank you!
 --
