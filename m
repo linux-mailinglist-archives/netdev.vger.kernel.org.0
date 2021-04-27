@@ -2,28 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 40B4836BE32
-	for <lists+netdev@lfdr.de>; Tue, 27 Apr 2021 06:13:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DEE2936BE79
+	for <lists+netdev@lfdr.de>; Tue, 27 Apr 2021 06:27:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236243AbhD0EMk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 27 Apr 2021 00:12:40 -0400
-Received: from inva020.nxp.com ([92.121.34.13]:46360 "EHLO inva020.nxp.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S234471AbhD0EMe (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 27 Apr 2021 00:12:34 -0400
-Received: from inva020.nxp.com (localhost [127.0.0.1])
-        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id 7A9481A18B7;
-        Tue, 27 Apr 2021 06:11:50 +0200 (CEST)
-Received: from invc005.ap-rdc01.nxp.com (invc005.ap-rdc01.nxp.com [165.114.16.14])
-        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id 394981A0934;
-        Tue, 27 Apr 2021 06:11:44 +0200 (CEST)
-Received: from localhost.localdomain (mega.ap.freescale.net [10.192.208.232])
-        by invc005.ap-rdc01.nxp.com (Postfix) with ESMTP id B824D40313;
-        Tue, 27 Apr 2021 06:11:36 +0200 (CEST)
-From:   Yangbo Lu <yangbo.lu@nxp.com>
-To:     netdev@vger.kernel.org
-Cc:     Yangbo Lu <yangbo.lu@nxp.com>,
-        Richard Cochran <richardcochran@gmail.com>,
+        id S230361AbhD0E0a (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 27 Apr 2021 00:26:30 -0400
+Received: from mail-eopbgr60086.outbound.protection.outlook.com ([40.107.6.86]:5617
+        "EHLO EUR04-DB3-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S229490AbhD0E02 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 27 Apr 2021 00:26:28 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=KuH6c3mIxfZ9GVmtRJtvvJfp/YF0t86q8O+QYFKG9xzS9Tkit+JFPNwJeHd4e19LdkpIqeONxe3pCM9y0BxWV4xvxthx4L5Zq759u8AeKMBbDVnxvZjDSgQlYX6ZBqbABSczF3trzOxvJlcpgbMmyv26Q7lnwO4RHHaLHvvMkldfTS/+kttBDzY0vmN8ewe561UNrj+1ZQecB+SvsFqx85B9ESP18MB4qeEuq7UNB4yWs6Jz9ioQqXLyFiF2hN3ZZqad5uhgVqm1L3vKBEAEfZbAT+Q5xU2OcQE98ZX6IvrUb34MZlJ9lVIZQYzSDwdzAJZ1ZU/bGYbopfoPrU4MVQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=X7X/v/MptBiVxhh0HYj8ZUmHpxC0xuFpHafqnpUo994=;
+ b=UErfY2kaY/+NZ6K0k6S3wCZ8nmDZJIr6Y4J2qHyx7YEdnWf3O1NOCHS5chZX0sxj8y2vsmaR9BXYA6hz09yoHwbKH3Q7wjPRVDJnA5R0/a6YEC4G7OWgWi0XGZYUA/i7/Gta6Bm1IVf2Q9kaX5poxaef7C/lkLvgry8sTJ+eJFMJ/eMORI5bzRmJqWTiN1H2/ZAdtumNKeRg0vmz6FrpKEWcnsBBWMoVKGIdHEu9NYuXlecW2Y4SaxC7VbxUky90dsRYBdSnuExvbA/Wajfb1xaaruI6Qrf2/W96Tv013A0ClZk7zkmnemavePTaocaZBqz/VmFgkWa9GjEaKkNSDg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=X7X/v/MptBiVxhh0HYj8ZUmHpxC0xuFpHafqnpUo994=;
+ b=WzaVZaMJPw5ieKbUDRYqLqOrrXamvkqBrRBkPzqeaAPl0uJmJ/izykXBYgk+lWcMdtDbN8/93+K/MD07oLBzLPebJmnV/7Kjplg8h5JUh7k6Bg/Ygl64yB9G8q2Y6CcP/khLrEcj47ixTPHuBTsWuSzsNg1FwrhJXCWmmVhykkY=
+Received: from AM7PR04MB6885.eurprd04.prod.outlook.com (2603:10a6:20b:10d::24)
+ by AM6PR0402MB3384.eurprd04.prod.outlook.com (2603:10a6:209:6::13) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4065.25; Tue, 27 Apr
+ 2021 04:25:42 +0000
+Received: from AM7PR04MB6885.eurprd04.prod.outlook.com
+ ([fe80::358e:fb22:2f7c:2777]) by AM7PR04MB6885.eurprd04.prod.outlook.com
+ ([fe80::358e:fb22:2f7c:2777%3]) with mapi id 15.20.4065.027; Tue, 27 Apr 2021
+ 04:25:42 +0000
+From:   "Y.b. Lu" <yangbo.lu@nxp.com>
+To:     Vladimir Oltean <olteanv@gmail.com>,
+        Richard Cochran <richardcochran@gmail.com>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
         Vladimir Oltean <vladimir.oltean@nxp.com>,
         "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
@@ -34,325 +49,187 @@ Cc:     Yangbo Lu <yangbo.lu@nxp.com>,
         Florian Fainelli <f.fainelli@gmail.com>,
         Claudiu Manoil <claudiu.manoil@nxp.com>,
         Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        UNGLinuxDriver@microchip.com, linux-doc@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [net-next, v3, 7/7] net: mscc: ocelot: support PTP Sync one-step timestamping
-Date:   Tue, 27 Apr 2021 12:22:03 +0800
-Message-Id: <20210427042203.26258-8-yangbo.lu@nxp.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20210427042203.26258-1-yangbo.lu@nxp.com>
-References: <20210427042203.26258-1-yangbo.lu@nxp.com>
-X-Virus-Scanned: ClamAV using ClamSMTP
+        "UNGLinuxDriver@microchip.com" <UNGLinuxDriver@microchip.com>,
+        "linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: RE: [net-next, v2, 3/7] net: dsa: free skb->cb usage in core driver
+Thread-Topic: [net-next, v2, 3/7] net: dsa: free skb->cb usage in core driver
+Thread-Index: AQHXOn8Jr4d6SG7MRkyMg7TxAYZcc6rGzfgAgABUFgCAAKBdAA==
+Date:   Tue, 27 Apr 2021 04:25:42 +0000
+Message-ID: <AM7PR04MB68859682C46E40D3D93F4692F8419@AM7PR04MB6885.eurprd04.prod.outlook.com>
+References: <20210426093802.38652-1-yangbo.lu@nxp.com>
+ <20210426093802.38652-4-yangbo.lu@nxp.com>
+ <20210426133846.GA22518@hoboy.vegasvil.org>
+ <20210426183944.4djc5dep62xz4gh6@skbuf>
+In-Reply-To: <20210426183944.4djc5dep62xz4gh6@skbuf>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: gmail.com; dkim=none (message not signed)
+ header.d=none;gmail.com; dmarc=none action=none header.from=nxp.com;
+x-originating-ip: [119.31.174.73]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 9b2fc2da-cdc4-43d8-492b-08d909348540
+x-ms-traffictypediagnostic: AM6PR0402MB3384:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <AM6PR0402MB3384AA7D63E47334F4C11BDDF8419@AM6PR0402MB3384.eurprd04.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:221;
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: o1nzXT6erprxzXaKWqBYYNhNnYecgS0iUCcQO/gI8CzHmyxJ+an7xnrEOiyKDDQ6eXkDwBNzMfX5ZEJ+10pUCrEZOqo4bFbKbkl8IUQpv0ZULGmRIz0ifx0fNFFTPPlbHU6mey1a8ab/nX0vQrEk5YNA1cRffsGXMWhfouO/8FmJVfuE+B2RPhbnAm0C7GCyvJFeGb5Ds2sLcnoeuN3lqHVuetUlQvbFOW11et/lMulsVeF0nuQF9yNSO1AB6AfuEJP4eBxqnOe79u3EpyjBzEQSFfyLOzYvFeEhXEmZDQRYyyPr/x4lvDEyduPuYEOVV45DdJda4tUgNotC8vNQAXJaB5B1zC52p4teF/dUbUwv26eKGCqOJKmzeqWd+s5I1Bxk9WiAe9WXxQvoJ2W4KbEBtoYl+EN8Aqr/3HcCx2GV5lU54MNU1hGs6xNXF7QBSO4uROn6TxQtRCrWkOPAs7fvPAF6xdwM0K7bNsDhdecMAGqUMRNusZZg6EqsuIpcVQrhi/huzRrYBOqozFyyBuojfOALKmiADz3NvUznn7Ltc/rt2bypm6D3wS0xbiMbaM0+MQLuEuXA09oNy60QTcqplmrRQZOjokrtnZIyWEg=
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM7PR04MB6885.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(33656002)(8936002)(38100700002)(8676002)(122000001)(86362001)(5660300002)(7696005)(66446008)(66476007)(76116006)(64756008)(9686003)(6506007)(66556008)(66946007)(26005)(186003)(71200400001)(52536014)(83380400001)(4326008)(2906002)(110136005)(54906003)(7416002)(498600001)(55016002)(53546011);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata: =?gb2312?B?MTNmUHQwUDNpdEVkUEZ1VkJSbVQ1dWpROHlvb2FiMFZrQzN2OW52dDdoSWFW?=
+ =?gb2312?B?ejVWeHR4UzZJcmJXWTU5U3R2KzI0WXBLNXkxQVpZbHVwMG1WZEpRVnQyUk1Z?=
+ =?gb2312?B?R0VSN055OXVWL0pNcDRzdHM0ZVFmY2NpWHFFaFFQL21la0NPM05BTURNV3dS?=
+ =?gb2312?B?Y2VQbkx1clZKQSsydGZsL0dQTDRIMDA3LzU1Ui8waVZOV2N3Si9tMDlNMWlM?=
+ =?gb2312?B?dDV6WTVDUHIzd2xVNE41TDkvR0g0V3R1TjJaWngrbFg0WFFTZjdLRFMrdHRX?=
+ =?gb2312?B?Tm9Rb2loT2ZmUzRqVnR3Y3pLRi9KMk0wTktROFdhaVJCU2pLemlZSSs5TFIr?=
+ =?gb2312?B?Qnp4S3FNaFBDbkxTdlBTNzMwK3pqUmE5SjJMSEcyaENXSEJwMXNQRXdIcWZi?=
+ =?gb2312?B?aGswQzl6cTJzSlNSV0x1Z2NzOFFNa3l6V3FSNzVGMG1XazJwSEVwZlR3d3lB?=
+ =?gb2312?B?eitLR0hFNTJoeitHV2NZUlJaL2VnYnNQQWE0UXNzcWRSYW5IdThPdmg3RXRO?=
+ =?gb2312?B?M2EzU0Z5N1JuMDBQVk9RWUVNemN4cER5Y1VVaUE1Z0FUWDVCSjhWUlVpZGpi?=
+ =?gb2312?B?WjdmbCs0MUtXcFh4NkZCRnZKalBaTjMzVVhkbmdvb1BWUldNTzlKWE51NFg1?=
+ =?gb2312?B?VzBLVU8zQnA5SVdyb0RhVnJKcFZTVk91clg4Nm5idW5aSHZxKzF0NkJaQ0JK?=
+ =?gb2312?B?QVhVM2dPK0hnc1p2UDA0RkVpQVRrOFpPY0NIU25ERFY5YUhvT1loOHR4eGxO?=
+ =?gb2312?B?TlNSbXRKT2JROWVRTWZRVXd6VnNpdXpTbFhnNmRUUUxhQ29ZRGpVMnMrbFBK?=
+ =?gb2312?B?WWhtM21Fakd3Z2VrZDk1QnJJN2svWnp0TjdWTjFiby83V2l3a2ttTDNSRnNs?=
+ =?gb2312?B?K0JBdDRYSUh6cVFxM0VJc3hqS3BpRUEzNFZ5NnBMTS9VWjBOb1cxQVJWdHNX?=
+ =?gb2312?B?T2o3VkZQK0VkdXdid1c1OG9iR1p4U0JzRTh2TllRdlViVGgyZXhKaW9pcmN3?=
+ =?gb2312?B?Vk1VWmVjK1R5M0lGMWNxNFdKTWtHTDVoTWxvSVBqNDZvUGNuR3J1NnpLK21o?=
+ =?gb2312?B?eWM0SW1MK3hBU2psY3VjZk1UY0hTYk12cjVoRW5zaE5QMi8xUStjdTN3MFVw?=
+ =?gb2312?B?SUpVakhJclMzV0U3YWRMZm84dktZaFZhVytJL1ExcDkxZlEvbTA5SThGdnJJ?=
+ =?gb2312?B?MnU3VGNJK1FkRzg5TTF4V3hTeUd1eEtmWGF0V252OFNkdTFiNzFuVmQ1Qzd1?=
+ =?gb2312?B?SXNFRmx1MlNBNXBkeldtZmhnQmEvb1BFeVBDNUtHZkZsdkVvY0VhMVNEaFdp?=
+ =?gb2312?B?TWE3YUdMS0IxUUQ4KzlzODJrMDR3ZG90Z0ROY284amFwUEo2UW5zVjV2VXZp?=
+ =?gb2312?B?SlBPdVZuenFqQWR2UytzemIyTHRtV2FGMlZHRnNMU3BzSmJtNStMaE9leTJ5?=
+ =?gb2312?B?dXVVbk5nakJmazY2bENDK3Z1YlF0c3drUlVxckd1L251NFNyQ0FhenZPSjlh?=
+ =?gb2312?B?SmpFVlhnckcvMTNLTjhGZ01pQ0lQVTlEcWpmV0RFL3k0TlFFZ2tkUG9ZMFgz?=
+ =?gb2312?B?NEh5Ris0T05rUlBWZklJVjdrMDMyZ28yYmlSRjNsUHdlUElkZ1F1WlN4RWRN?=
+ =?gb2312?B?NFVtTmJSNzV0U21reUgzcFNac016Sk04MWozT2UyOE0vZWNoYVl3WVQwajZl?=
+ =?gb2312?B?UEF2Y2F3ci9MRGhsaW1wK24wR282UEFBQzRJRXZsc2RFb2xNMlpMWnNOUWlt?=
+ =?gb2312?Q?0TaSGJ2By0PsSJA0bkVE3qCtYZIHGn6ekahbdXk?=
+Content-Type: text/plain; charset="gb2312"
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: AM7PR04MB6885.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 9b2fc2da-cdc4-43d8-492b-08d909348540
+X-MS-Exchange-CrossTenant-originalarrivaltime: 27 Apr 2021 04:25:42.7042
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: jKbVgnxKoPxUNtrrbuKjxKdmtyd7vA4EVhwnXdnxCaK9uWcLUOJ4yczzuZ2zEXGMyQs0PqFmQuiAAUdBcZFO1Q==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM6PR0402MB3384
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Although HWTSTAMP_TX_ONESTEP_SYNC existed in ioctl for hardware timestamp
-configuration, the PTP Sync one-step timestamping had never been supported.
-
-This patch is to truely support it.
-
-- ocelot_port_txtstamp_request()
-  This function handles tx timestamp request by storing
-  ptp_cmd(tx timestamp type) in OCELOT_SKB_CB(skb)->ptp_cmd,
-  and additionally for two-step timestamp storing ts_id in
-  OCELOT_SKB_CB(clone)->ptp_cmd.
-
-- ocelot_ptp_rew_op()
-  During xmit, this function is called to get rew_op (rewriter option) by
-  checking skb->cb for tx timestamp request, and configure to transmitting.
-
-Non-onestep-Sync packet with one-step timestamp request falls back to use
-two-step timestamp.
-
-Signed-off-by: Yangbo Lu <yangbo.lu@nxp.com>
-Acked-by: Richard Cochran <richardcochran@gmail.com>
----
-Changes for v2:
-	- Utilized OCELOT_SKB_CB(skb)->ptp_cmd for timestamp type.
-	- Fixed build issue.
-	- Returned u32 for ocelot_ptp_rew_op, and kept only skb
-	  argument.
-Changes for v3:
-	- None.
----
- drivers/net/ethernet/mscc/ocelot.c     | 53 ++++++++++++++++++++++++++
- drivers/net/ethernet/mscc/ocelot_net.c |  8 ++--
- include/soc/mscc/ocelot.h              |  8 +++-
- net/dsa/Kconfig                        |  2 +
- net/dsa/tag_ocelot.c                   | 27 ++-----------
- net/dsa/tag_ocelot_8021q.c             | 41 ++++++--------------
- 6 files changed, 81 insertions(+), 58 deletions(-)
-
-diff --git a/drivers/net/ethernet/mscc/ocelot.c b/drivers/net/ethernet/mscc/ocelot.c
-index 3ff4cce1ce7d..0c4283319d7f 100644
---- a/drivers/net/ethernet/mscc/ocelot.c
-+++ b/drivers/net/ethernet/mscc/ocelot.c
-@@ -6,6 +6,7 @@
-  */
- #include <linux/dsa/ocelot.h>
- #include <linux/if_bridge.h>
-+#include <linux/ptp_classify.h>
- #include <soc/mscc/ocelot_vcap.h>
- #include "ocelot.h"
- #include "ocelot_vcap.h"
-@@ -546,6 +547,46 @@ static void ocelot_port_add_txtstamp_skb(struct ocelot *ocelot, int port,
- 	spin_unlock(&ocelot_port->ts_id_lock);
- }
- 
-+u32 ocelot_ptp_rew_op(struct sk_buff *skb)
-+{
-+	struct sk_buff *clone = OCELOT_SKB_CB(skb)->clone;
-+	u8 ptp_cmd = OCELOT_SKB_CB(skb)->ptp_cmd;
-+	u32 rew_op = 0;
-+
-+	if (ptp_cmd == IFH_REW_OP_TWO_STEP_PTP && clone) {
-+		rew_op = ptp_cmd;
-+		rew_op |= OCELOT_SKB_CB(clone)->ts_id << 3;
-+	} else if (ptp_cmd == IFH_REW_OP_ORIGIN_PTP) {
-+		rew_op = ptp_cmd;
-+	}
-+
-+	return rew_op;
-+}
-+EXPORT_SYMBOL(ocelot_ptp_rew_op);
-+
-+static bool ocelot_ptp_is_onestep_sync(struct sk_buff *skb)
-+{
-+	struct ptp_header *hdr;
-+	unsigned int ptp_class;
-+	u8 msgtype, twostep;
-+
-+	ptp_class = ptp_classify_raw(skb);
-+	if (ptp_class == PTP_CLASS_NONE)
-+		return false;
-+
-+	hdr = ptp_parse_header(skb, ptp_class);
-+	if (!hdr)
-+		return false;
-+
-+	msgtype = ptp_get_msgtype(hdr, ptp_class);
-+	twostep = hdr->flag_field[0] & 0x2;
-+
-+	if (msgtype == PTP_MSGTYPE_SYNC && twostep == 0)
-+		return true;
-+
-+	return false;
-+}
-+
- int ocelot_port_txtstamp_request(struct ocelot *ocelot, int port,
- 				 struct sk_buff *skb,
- 				 struct sk_buff **clone)
-@@ -553,12 +594,24 @@ int ocelot_port_txtstamp_request(struct ocelot *ocelot, int port,
- 	struct ocelot_port *ocelot_port = ocelot->ports[port];
- 	u8 ptp_cmd = ocelot_port->ptp_cmd;
- 
-+	/* Store ptp_cmd in OCELOT_SKB_CB(skb)->ptp_cmd */
-+	if (ptp_cmd == IFH_REW_OP_ORIGIN_PTP) {
-+		if (ocelot_ptp_is_onestep_sync(skb)) {
-+			OCELOT_SKB_CB(skb)->ptp_cmd = ptp_cmd;
-+			return 0;
-+		}
-+
-+		/* Fall back to two-step timestamping */
-+		ptp_cmd = IFH_REW_OP_TWO_STEP_PTP;
-+	}
-+
- 	if (ptp_cmd == IFH_REW_OP_TWO_STEP_PTP) {
- 		*clone = skb_clone_sk(skb);
- 		if (!(*clone))
- 			return -ENOMEM;
- 
- 		ocelot_port_add_txtstamp_skb(ocelot, port, *clone);
-+		OCELOT_SKB_CB(skb)->ptp_cmd = ptp_cmd;
- 	}
- 
- 	return 0;
-diff --git a/drivers/net/ethernet/mscc/ocelot_net.c b/drivers/net/ethernet/mscc/ocelot_net.c
-index e99c8fb3cb15..aad33d22c33f 100644
---- a/drivers/net/ethernet/mscc/ocelot_net.c
-+++ b/drivers/net/ethernet/mscc/ocelot_net.c
-@@ -514,10 +514,10 @@ static netdev_tx_t ocelot_port_xmit(struct sk_buff *skb, struct net_device *dev)
- 			return NETDEV_TX_OK;
- 		}
- 
--		if (ocelot_port->ptp_cmd == IFH_REW_OP_TWO_STEP_PTP) {
--			rew_op = ocelot_port->ptp_cmd;
--			rew_op |= OCELOT_SKB_CB(clone)->ts_id << 3;
--		}
-+		if (clone)
-+			OCELOT_SKB_CB(skb)->clone = clone;
-+
-+		rew_op = ocelot_ptp_rew_op(skb);
- 	}
- 
- 	ocelot_port_inject_frame(ocelot, port, 0, rew_op, skb);
-diff --git a/include/soc/mscc/ocelot.h b/include/soc/mscc/ocelot.h
-index f7632519cb9c..2f5ce4d4fdbf 100644
---- a/include/soc/mscc/ocelot.h
-+++ b/include/soc/mscc/ocelot.h
-@@ -691,6 +691,7 @@ struct ocelot_policer {
- 
- struct ocelot_skb_cb {
- 	struct sk_buff *clone;
-+	u8 ptp_cmd;
- 	u8 ts_id;
- };
- 
-@@ -748,15 +749,16 @@ u32 __ocelot_target_read_ix(struct ocelot *ocelot, enum ocelot_target target,
- void __ocelot_target_write_ix(struct ocelot *ocelot, enum ocelot_target target,
- 			      u32 val, u32 reg, u32 offset);
- 
--/* Packet I/O */
- #if IS_ENABLED(CONFIG_MSCC_OCELOT_SWITCH_LIB)
- 
-+/* Packet I/O */
- bool ocelot_can_inject(struct ocelot *ocelot, int grp);
- void ocelot_port_inject_frame(struct ocelot *ocelot, int port, int grp,
- 			      u32 rew_op, struct sk_buff *skb);
- int ocelot_xtr_poll_frame(struct ocelot *ocelot, int grp, struct sk_buff **skb);
- void ocelot_drain_cpu_queue(struct ocelot *ocelot, int grp);
- 
-+u32 ocelot_ptp_rew_op(struct sk_buff *skb);
- #else
- 
- static inline bool ocelot_can_inject(struct ocelot *ocelot, int grp)
-@@ -780,6 +782,10 @@ static inline void ocelot_drain_cpu_queue(struct ocelot *ocelot, int grp)
- {
- }
- 
-+static inline u32 ocelot_ptp_rew_op(struct sk_buff *skb)
-+{
-+	return 0;
-+}
- #endif
- 
- /* Hardware initialization */
-diff --git a/net/dsa/Kconfig b/net/dsa/Kconfig
-index cbc2bd643ab2..5baba7021427 100644
---- a/net/dsa/Kconfig
-+++ b/net/dsa/Kconfig
-@@ -111,6 +111,8 @@ config NET_DSA_TAG_RTL4_A
- 
- config NET_DSA_TAG_OCELOT
- 	tristate "Tag driver for Ocelot family of switches, using NPI port"
-+	depends on MSCC_OCELOT_SWITCH_LIB || \
-+		   (MSCC_OCELOT_SWITCH_LIB=n && COMPILE_TEST)
- 	select PACKING
- 	help
- 	  Say Y or M if you want to enable NPI tagging for the Ocelot switches
-diff --git a/net/dsa/tag_ocelot.c b/net/dsa/tag_ocelot.c
-index 1100a16f1032..91f0fd1242cd 100644
---- a/net/dsa/tag_ocelot.c
-+++ b/net/dsa/tag_ocelot.c
-@@ -5,33 +5,14 @@
- #include <soc/mscc/ocelot.h>
- #include "dsa_priv.h"
- 
--static void ocelot_xmit_ptp(struct dsa_port *dp, void *injection,
--			    struct sk_buff *clone)
--{
--	struct ocelot *ocelot = dp->ds->priv;
--	struct ocelot_port *ocelot_port;
--	u64 rew_op;
--
--	ocelot_port = ocelot->ports[dp->index];
--	rew_op = ocelot_port->ptp_cmd;
--
--	/* Retrieve timestamp ID populated inside OCELOT_SKB_CB(clone)->ts_id
--	 * by ocelot_port_add_txtstamp_skb
--	 */
--	if (ocelot_port->ptp_cmd == IFH_REW_OP_TWO_STEP_PTP)
--		rew_op |= OCELOT_SKB_CB(clone)->ts_id << 3;
--
--	ocelot_ifh_set_rew_op(injection, rew_op);
--}
--
- static void ocelot_xmit_common(struct sk_buff *skb, struct net_device *netdev,
- 			       __be32 ifh_prefix, void **ifh)
- {
- 	struct dsa_port *dp = dsa_slave_to_port(netdev);
--	struct sk_buff *clone = OCELOT_SKB_CB(skb)->clone;
- 	struct dsa_switch *ds = dp->ds;
- 	void *injection;
- 	__be32 *prefix;
-+	u32 rew_op = 0;
- 
- 	injection = skb_push(skb, OCELOT_TAG_LEN);
- 	prefix = skb_push(skb, OCELOT_SHORT_PREFIX_LEN);
-@@ -42,9 +23,9 @@ static void ocelot_xmit_common(struct sk_buff *skb, struct net_device *netdev,
- 	ocelot_ifh_set_src(injection, ds->num_ports);
- 	ocelot_ifh_set_qos_class(injection, skb->priority);
- 
--	/* TX timestamping was requested */
--	if (clone)
--		ocelot_xmit_ptp(dp, injection, clone);
-+	rew_op = ocelot_ptp_rew_op(skb);
-+	if (rew_op)
-+		ocelot_ifh_set_rew_op(injection, rew_op);
- 
- 	*ifh = injection;
- }
-diff --git a/net/dsa/tag_ocelot_8021q.c b/net/dsa/tag_ocelot_8021q.c
-index a001a7e3f575..62a93303bd63 100644
---- a/net/dsa/tag_ocelot_8021q.c
-+++ b/net/dsa/tag_ocelot_8021q.c
-@@ -13,32 +13,6 @@
- #include <soc/mscc/ocelot_ptp.h>
- #include "dsa_priv.h"
- 
--static struct sk_buff *ocelot_xmit_ptp(struct dsa_port *dp,
--				       struct sk_buff *skb,
--				       struct sk_buff *clone)
--{
--	struct ocelot *ocelot = dp->ds->priv;
--	struct ocelot_port *ocelot_port;
--	int port = dp->index;
--	u32 rew_op;
--
--	if (!ocelot_can_inject(ocelot, 0))
--		return NULL;
--
--	ocelot_port = ocelot->ports[port];
--	rew_op = ocelot_port->ptp_cmd;
--
--	/* Retrieve timestamp ID populated inside OCELOT_SKB_CB(clone)->ts_id
--	 * by ocelot_port_add_txtstamp_skb
--	 */
--	if (ocelot_port->ptp_cmd == IFH_REW_OP_TWO_STEP_PTP)
--		rew_op |= OCELOT_SKB_CB(clone)->ts_id << 3;
--
--	ocelot_port_inject_frame(ocelot, port, 0, rew_op, skb);
--
--	return NULL;
--}
--
- static struct sk_buff *ocelot_xmit(struct sk_buff *skb,
- 				   struct net_device *netdev)
- {
-@@ -46,11 +20,18 @@ static struct sk_buff *ocelot_xmit(struct sk_buff *skb,
- 	u16 tx_vid = dsa_8021q_tx_vid(dp->ds, dp->index);
- 	u16 queue_mapping = skb_get_queue_mapping(skb);
- 	u8 pcp = netdev_txq_to_tc(netdev, queue_mapping);
--	struct sk_buff *clone = OCELOT_SKB_CB(skb)->clone;
-+	struct ocelot *ocelot = dp->ds->priv;
-+	int port = dp->index;
-+	u32 rew_op = 0;
-+
-+	rew_op = ocelot_ptp_rew_op(skb);
-+	if (rew_op) {
-+		if (!ocelot_can_inject(ocelot, 0))
-+			return NULL;
- 
--	/* TX timestamping was requested, so inject through MMIO */
--	if (clone)
--		return ocelot_xmit_ptp(dp, skb, clone);
-+		ocelot_port_inject_frame(ocelot, port, 0, rew_op, skb);
-+		return NULL;
-+	}
- 
- 	return dsa_8021q_xmit(skb, netdev, ETH_P_8021Q,
- 			      ((pcp << VLAN_PRIO_SHIFT) | tx_vid));
--- 
-2.25.1
-
+PiAtLS0tLU9yaWdpbmFsIE1lc3NhZ2UtLS0tLQ0KPiBGcm9tOiBWbGFkaW1pciBPbHRlYW4gPG9s
+dGVhbnZAZ21haWwuY29tPg0KPiBTZW50OiAyMDIxxOo01MIyN8jVIDI6NDANCj4gVG86IFJpY2hh
+cmQgQ29jaHJhbiA8cmljaGFyZGNvY2hyYW5AZ21haWwuY29tPg0KPiBDYzogWS5iLiBMdSA8eWFu
+Z2JvLmx1QG54cC5jb20+OyBuZXRkZXZAdmdlci5rZXJuZWwub3JnOyBWbGFkaW1pciBPbHRlYW4N
+Cj4gPHZsYWRpbWlyLm9sdGVhbkBueHAuY29tPjsgRGF2aWQgUyAuIE1pbGxlciA8ZGF2ZW1AZGF2
+ZW1sb2Z0Lm5ldD47IEpha3ViDQo+IEtpY2luc2tpIDxrdWJhQGtlcm5lbC5vcmc+OyBKb25hdGhh
+biBDb3JiZXQgPGNvcmJldEBsd24ubmV0PjsgS3VydA0KPiBLYW56ZW5iYWNoIDxrdXJ0QGxpbnV0
+cm9uaXguZGU+OyBBbmRyZXcgTHVubiA8YW5kcmV3QGx1bm4uY2g+OyBWaXZpZW4NCj4gRGlkZWxv
+dCA8dml2aWVuLmRpZGVsb3RAZ21haWwuY29tPjsgRmxvcmlhbiBGYWluZWxsaSA8Zi5mYWluZWxs
+aUBnbWFpbC5jb20+Ow0KPiBDbGF1ZGl1IE1hbm9pbCA8Y2xhdWRpdS5tYW5vaWxAbnhwLmNvbT47
+IEFsZXhhbmRyZSBCZWxsb25pDQo+IDxhbGV4YW5kcmUuYmVsbG9uaUBib290bGluLmNvbT47IFVO
+R0xpbnV4RHJpdmVyQG1pY3JvY2hpcC5jb207DQo+IGxpbnV4LWRvY0B2Z2VyLmtlcm5lbC5vcmc7
+IGxpbnV4LWtlcm5lbEB2Z2VyLmtlcm5lbC5vcmcNCj4gU3ViamVjdDogUmU6IFtuZXQtbmV4dCwg
+djIsIDMvN10gbmV0OiBkc2E6IGZyZWUgc2tiLT5jYiB1c2FnZSBpbiBjb3JlIGRyaXZlcg0KPiAN
+Cj4gT24gTW9uLCBBcHIgMjYsIDIwMjEgYXQgMDY6Mzg6NDZBTSAtMDcwMCwgUmljaGFyZCBDb2No
+cmFuIHdyb3RlOg0KPiA+IE9uIE1vbiwgQXByIDI2LCAyMDIxIGF0IDA1OjM3OjU4UE0gKzA4MDAs
+IFlhbmdibyBMdSB3cm90ZToNCj4gPiA+IEBAIC02MjQsNyArNjIzLDcgQEAgc3RhdGljIG5ldGRl
+dl90eF90IGRzYV9zbGF2ZV94bWl0KHN0cnVjdCBza19idWZmDQo+ID4gPiAqc2tiLCBzdHJ1Y3Qg
+bmV0X2RldmljZSAqZGV2KQ0KPiA+ID4NCj4gPiA+ICAJZGV2X3N3X25ldHN0YXRzX3R4X2FkZChk
+ZXYsIDEsIHNrYi0+bGVuKTsNCj4gPiA+DQo+ID4gPiAtCURTQV9TS0JfQ0Ioc2tiKS0+Y2xvbmUg
+PSBOVUxMOw0KPiA+ID4gKwltZW1zZXQoc2tiLT5jYiwgMCwgNDgpOw0KPiA+DQo+ID4gUmVwbGFj
+ZSBoYXJkIGNvZGVkIDQ4IHdpdGggc2l6ZW9mKCkgcGxlYXNlLg0KPiANCj4gWW91IG1lYW4ganVz
+dCBhIHRyaXZpYWwgY2hhbmdlIGxpa2UgdGhpcywgcmlnaHQ/DQo+IA0KPiAJbWVtc2V0KHNrYi0+
+Y2IsIDAsIHNpemVvZihza2ItPmNiKSk7DQo+IA0KPiBBbmQgbm90IHdoYXQgSSBoYWQgc3VnZ2Vz
+dGVkIGluIHYxLCB3aGljaCB3b3VsZCBoYXZlIGxvb2tlZCBzb21ldGhpbmcgbGlrZQ0KPiB0aGlz
+Og0KPiANCj4gLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS1bY3V0IGhlcmVdLS0tLS0tLS0t
+LS0tLS0tLS0tLS0tLS0tLS0tLS0NCj4gZGlmZiAtLWdpdCBhL2luY2x1ZGUvbmV0L2RzYS5oIGIv
+aW5jbHVkZS9uZXQvZHNhLmggaW5kZXgNCj4gZTFhMjYxMGEwZTA2Li5jNzViMjQ5ZTg0NmYgMTAw
+NjQ0DQo+IC0tLSBhL2luY2x1ZGUvbmV0L2RzYS5oDQo+ICsrKyBiL2luY2x1ZGUvbmV0L2RzYS5o
+DQo+IEBAIC05Miw2ICs5Miw3IEBAIHN0cnVjdCBkc2FfZGV2aWNlX29wcyB7DQo+ICAJICovDQo+
+ICAJYm9vbCAoKmZpbHRlcikoY29uc3Qgc3RydWN0IHNrX2J1ZmYgKnNrYiwgc3RydWN0IG5ldF9k
+ZXZpY2UgKmRldik7DQo+ICAJdW5zaWduZWQgaW50IG92ZXJoZWFkOw0KPiArCXVuc2lnbmVkIGlu
+dCBza2JfY2Jfc2l6ZTsNCj4gIAljb25zdCBjaGFyICpuYW1lOw0KPiAgCWVudW0gZHNhX3RhZ19w
+cm90b2NvbCBwcm90bzsNCj4gIAkvKiBTb21lIHRhZ2dpbmcgcHJvdG9jb2xzIGVpdGhlciBtYW5n
+bGUgb3Igc2hpZnQgdGhlIGRlc3RpbmF0aW9uIE1BQyBkaWZmDQo+IC0tZ2l0IGEvbmV0L2RzYS9z
+bGF2ZS5jIGIvbmV0L2RzYS9zbGF2ZS5jIGluZGV4IDIwMzNkOGJhYzIzZC4uMjIzMDU5NmI0OGI3
+DQo+IDEwMDY0NA0KPiAtLS0gYS9uZXQvZHNhL3NsYXZlLmMNCj4gKysrIGIvbmV0L2RzYS9zbGF2
+ZS5jDQo+IEBAIC02MTAsMTEgKzYxMCwxNCBAQCBzdGF0aWMgaW50IGRzYV9yZWFsbG9jX3NrYihz
+dHJ1Y3Qgc2tfYnVmZiAqc2tiLCBzdHJ1Y3QNCj4gbmV0X2RldmljZSAqZGV2KSAgc3RhdGljIG5l
+dGRldl90eF90IGRzYV9zbGF2ZV94bWl0KHN0cnVjdCBza19idWZmICpza2IsDQo+IHN0cnVjdCBu
+ZXRfZGV2aWNlICpkZXYpICB7DQo+ICAJc3RydWN0IGRzYV9zbGF2ZV9wcml2ICpwID0gbmV0ZGV2
+X3ByaXYoZGV2KTsNCj4gKwljb25zdCBzdHJ1Y3QgZHNhX2RldmljZV9vcHMgKnRhZ19vcHM7DQo+
+ICAJc3RydWN0IHNrX2J1ZmYgKm5za2I7DQo+IA0KPiAgCWRldl9zd19uZXRzdGF0c190eF9hZGQo
+ZGV2LCAxLCBza2ItPmxlbik7DQo+IA0KPiAtCW1lbXNldChza2ItPmNiLCAwLCA0OCk7DQo+ICsJ
+dGFnX29wcyA9IHAtPmRwLT5jcHVfZHAtPnRhZ19vcHM7DQo+ICsJaWYgKHRhZ19vcHMtPnNrYl9j
+Yl9zaXplKQ0KPiArCQltZW1zZXQoc2tiLT5jYiwgMCwgdGFnX29wcy0+c2tiX2NiX3NpemUpOw0K
+PiANCj4gIAkvKiBIYW5kbGUgdHggdGltZXN0YW1wIGlmIGFueSAqLw0KPiAgCWRzYV9za2JfdHhf
+dGltZXN0YW1wKHAsIHNrYik7DQo+IGRpZmYgLS1naXQgYS9uZXQvZHNhL3RhZ19zamExMTA1LmMg
+Yi9uZXQvZHNhL3RhZ19zamExMTA1LmMgaW5kZXgNCj4gNTA0OTYwMTNjZGI3Li4xYjMzN2ZhMTA0
+ZGMgMTAwNjQ0DQo+IC0tLSBhL25ldC9kc2EvdGFnX3NqYTExMDUuYw0KPiArKysgYi9uZXQvZHNh
+L3RhZ19zamExMTA1LmMNCj4gQEAgLTM2NSw2ICszNjUsNyBAQCBzdGF0aWMgY29uc3Qgc3RydWN0
+IGRzYV9kZXZpY2Vfb3BzDQo+IHNqYTExMDVfbmV0ZGV2X29wcyA9IHsNCj4gIAkub3ZlcmhlYWQg
+PSBWTEFOX0hMRU4sDQo+ICAJLmZsb3dfZGlzc2VjdCA9IHNqYTExMDVfZmxvd19kaXNzZWN0LA0K
+PiAgCS5wcm9taXNjX29uX21hc3RlciA9IHRydWUsDQo+ICsJLnNrYl9jYl9zaXplID0gc2l6ZW9m
+KHN0cnVjdCBzamExMTA1X3NrYl9jYiksDQo+ICB9Ow0KPiANCj4gIE1PRFVMRV9MSUNFTlNFKCJH
+UEwgdjIiKTsNCj4gLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS1bY3V0IGhlcmVdLS0tLS0t
+LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0NCj4gDQo+IEkgd2FudGVkIHRvIHNlZSBob3cgYmFkbHkg
+aW1wYWN0ZWQgd291bGQgdGhlIHBlcmZvcm1hbmNlIGJlLCBzbyBJIGNyZWF0ZWQNCj4gYW4gSVB2
+NCBmb3J3YXJkaW5nIHNldHVwIG9uIHRoZSBOWFAgTFMxMDIxQS1UU04gYm9hcmQgKGdpYW5mYXIg
+Kw0KPiBzamExMTA1KToNCj4gDQo+ICMhL2Jpbi9iYXNoDQo+IA0KPiBFVEgwPXN3cDMNCj4gRVRI
+MT1zd3AyDQo+IA0KPiBzeXN0ZW1jdGwgc3RvcCBwdHA0bCAjIHJ1bnMgYSBCUEYgY2xhc3NpZmll
+ciBvbiBldmVyeSBwYWNrZXQgc3lzdGVtY3RsIHN0b3ANCj4gcGhjMnN5cw0KPiANCj4gZWNobyAx
+ID4gL3Byb2Mvc3lzL25ldC9pcHY0L2lwX2ZvcndhcmQNCj4gaXAgYWRkciBmbHVzaCAkRVRIMCAm
+JiBpcCBhZGRyIGFkZCAxOTIuMTY4LjEwMC4xLzI0IGRldiAkRVRIMCAmJiBpcCBsaW5rDQo+IHNl
+dCAkRVRIMCB1cCBpcCBhZGRyIGZsdXNoICRFVEgxICYmIGlwIGFkZHIgYWRkIDE5Mi4xNjguMjAw
+LjEvMjQgZGV2ICRFVEgxDQo+ICYmIGlwIGxpbmsgc2V0ICRFVEgxIHVwDQo+IA0KPiBhcnAgLXMg
+MTkyLjE2OC4xMDAuMiAwMDowNDo5ZjowNjowMDowOSBkZXYgJEVUSDAgYXJwIC1zIDE5Mi4xNjgu
+MjAwLjINCj4gMDA6MDQ6OWY6MDY6MDA6MGEgZGV2ICRFVEgxDQo+IA0KPiBldGh0b29sIC0tY29u
+ZmlnLW5mYyBldGgyIGZsb3ctdHlwZSBldGhlciBkc3QgMDA6MWY6N2I6NjM6MDE6ZDQgbSBmZjpm
+ZjpmZjpmZjpmZjpmZg0KPiBhY3Rpb24gMA0KPiANCj4gYW5kIEkgZ290IHRoZSBmb2xsb3dpbmcg
+cmVzdWx0cyBvbiAxIENQVSwgNjRCIFVEUCBwYWNrZXRzICh5ZXMsIEkga25vdyB0aGUNCj4gYmFz
+ZWxpbmUgcmVzdWx0cyBzdWNrLCBJIGhhdmVuJ3QgaW52ZXN0aWdhdGVkIHdoeSB0aGF0IGlzLCBi
+dXQgbm9uZXRoZWxlc3MsIGl0DQo+IHNob3VsZCBzdGlsbCBiZSByZWxldmFudCBhcyBmYXIgYXMg
+Y29tcGFyYXRpdmUgcmVzdWx0cw0KPiBnbyk6DQo+IA0KPiBVbnBhdGNoZWQgbmV0LW5leHQ6DQo+
+IHByb3RvIDE3OiAgICAgIDY1Njk1IHBrdC9zDQo+IHByb3RvIDE3OiAgICAgIDY1NzI1IHBrdC9z
+DQo+IHByb3RvIDE3OiAgICAgIDY1NzMyIHBrdC9zDQo+IHByb3RvIDE3OiAgICAgIDY1NzIwIHBr
+dC9zDQo+IHByb3RvIDE3OiAgICAgIDY1Njk1IHBrdC9zDQo+IHByb3RvIDE3OiAgICAgIDY1NzI1
+IHBrdC9zDQo+IHByb3RvIDE3OiAgICAgIDY1NzMyIHBrdC9zDQo+IHByb3RvIDE3OiAgICAgIDY1
+NzIwIHBrdC9zDQo+IA0KPiANCj4gQWZ0ZXIgcGF0Y2ggMToNCj4gcHJvdG8gMTc6ICAgICAgNzI2
+NzkgcGt0L3MNCj4gcHJvdG8gMTc6ICAgICAgNzI2NzcgcGt0L3MNCj4gcHJvdG8gMTc6ICAgICAg
+NzI2NjkgcGt0L3MNCj4gcHJvdG8gMTc6ICAgICAgNzI3MDcgcGt0L3MNCj4gcHJvdG8gMTc6ICAg
+ICAgNzI2OTYgcGt0L3MNCj4gcHJvdG8gMTc6ICAgICAgNzI2OTkgcGt0L3MNCj4gDQo+IEFmdGVy
+IHBhdGNoIDI6DQo+IHByb3RvIDE3OiAgICAgIDcyMjkyIHBrdC9zDQo+IHByb3RvIDE3OiAgICAg
+IDcyNDI1IHBrdC9zDQo+IHByb3RvIDE3OiAgICAgIDcyNDg1IHBrdC9zDQo+IHByb3RvIDE3OiAg
+ICAgIDcyNDc4IHBrdC9zDQo+IA0KPiBBZnRlciBwYXRjaCA0IChhcyAzIGRvZXNuJ3QgYnVpbGQp
+Og0KPiBwcm90byAxNzogICAgICA3MjQzNyBwa3Qvcw0KPiBwcm90byAxNzogICAgICA3MjUxMCBw
+a3Qvcw0KPiBwcm90byAxNzogICAgICA3MjQ3OSBwa3Qvcw0KPiBwcm90byAxNzogICAgICA3MjQ5
+OSBwa3Qvcw0KPiBwcm90byAxNzogICAgICA3MjQ5NyBwa3Qvcw0KPiBwcm90byAxNzogICAgICA3
+MjQyNyBwa3Qvcw0KPiANCj4gV2l0aCB0aGUgY2hhbmdlIEkgcGFzdGVkIGFib3ZlOg0KPiBwcm90
+byAxNzogICAgICA3MTg5MSBwa3Qvcw0KPiBwcm90byAxNzogICAgICA3MTgxMCBwa3Qvcw0KPiBw
+cm90byAxNzogICAgICA3MTg1MCBwa3Qvcw0KPiBwcm90byAxNzogICAgICA3MTgyNiBwa3Qvcw0K
+PiBwcm90byAxNzogICAgICA3MTc5OCBwa3Qvcw0KPiBwcm90byAxNzogICAgICA3MTc4NiBwa3Qv
+cw0KPiBwcm90byAxNzogICAgICA3MTgxNCBwa3Qvcw0KPiBwcm90byAxNzogICAgICA3MTgxNCBw
+a3Qvcw0KPiBwcm90byAxNzogICAgICA3MjAxMCBwa3Qvcw0KPiANCj4gU28gYmFzaWNhbGx5LCBu
+b3Qgb25seSBhcmUgd2UgYmV0dGVyIG9mZiBqdXN0IHplcm8taW5pdGlhbGl6aW5nIHRoZSBjb21w
+bGV0ZQ0KPiBza2ItPmNiIGluc3RlYWQgb2YgbG9va2luZyB1cCB0aGUgdGFnZ2VyJ3Mgc2tiX2Ni
+X3NpemUsIGJ1dCB6ZXJvLWluaXRpYWxpemluZyB0aGUNCj4gc2tiLT5jYiBpc24ndCBldmVuIGFs
+bCB0aGF0IGJhZC4gWWFuZ2JvJ3MgY2hhbmdlIGlzIGFuIG92ZXJhbGwgd2luIGFueXdheSwgYWxs
+DQo+IHRoaW5ncyBjb25zaWRlcmVkLiBTbyBqdXN0IGNoYW5nZSB0aGUgbWVtc2V0IGFzIFJpY2hh
+cmQgc3VnZ2VzdGVkLCBtYWtlIHN1cmUNCj4gYWxsIHBhdGNoZXMgY29tcGlsZSwgYW5kIHdlIHNo
+b3VsZCBiZSBnb29kIHRvIGdvLg0KDQpBaC4uLiBJIGhhZCB0aG91Z2h0IDQ4Ynl0ZXMgbWVtc2V0
+IHdhcyBhY2NlcHRhYmxlIGZvciBub3cgYnkgeW91Lg0KSSBhY3R1YWxseSBkaWRuJ3QgY29uc2lk
+ZXIgdGhlIHBlcmZvcm1hbmNlIGFmZmVjdGVkIGJ5IHRoaXMuIEkganVzdCBkaWQgdGhpcyBiZWNh
+dXNlIEkgYmVsaWV2ZWQgdGhlIGRpcmVjdGlvbiB3YXMgcmlnaHQ6KQ0KVGhhdCdzIHJlYWxseSBn
+b29kIHRlc3RpbmcuIFRoYW5rIHlvdSB2ZXJ5IG11Y2gsIFZsYWRpbWlyLg0KV2l0aCB0aGUgZGF0
+YSwgd2UgY2FuIGZlZWwgZnJlZSB0byB1c2UgdGhlIGNoYW5nZXMuDQo=
