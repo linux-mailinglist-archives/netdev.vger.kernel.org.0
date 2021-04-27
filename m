@@ -2,51 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B0F0036C62B
-	for <lists+netdev@lfdr.de>; Tue, 27 Apr 2021 14:37:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BED4136C633
+	for <lists+netdev@lfdr.de>; Tue, 27 Apr 2021 14:41:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236281AbhD0MiY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 27 Apr 2021 08:38:24 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:43002 "EHLO vps0.lunn.ch"
+        id S236183AbhD0MmE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 27 Apr 2021 08:42:04 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:43026 "EHLO vps0.lunn.ch"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S235476AbhD0MiY (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 27 Apr 2021 08:38:24 -0400
+        id S235410AbhD0MmE (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 27 Apr 2021 08:42:04 -0400
 Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
         (envelope-from <andrew@lunn.ch>)
-        id 1lbMy5-001McM-3k; Tue, 27 Apr 2021 14:37:33 +0200
-Date:   Tue, 27 Apr 2021 14:37:33 +0200
+        id 1lbN1h-001MfR-Cf; Tue, 27 Apr 2021 14:41:17 +0200
+Date:   Tue, 27 Apr 2021 14:41:17 +0200
 From:   Andrew Lunn <andrew@lunn.ch>
-To:     Oleksij Rempel <o.rempel@pengutronix.de>
-Cc:     Woojung Huh <woojung.huh@microchip.com>,
-        UNGLinuxDriver@microchip.com,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Michael Grzeschik <m.grzeschik@pengutronix.de>,
-        kernel@pengutronix.de, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Russell King <linux@armlinux.org.uk>
-Subject: Re: [PATCH net-next v8 4/9] net: dsa: microchip: ksz8795: add
- support for ksz88xx chips
-Message-ID: <YIgFjSHtkdMBqu9J@lunn.ch>
-References: <20210427070909.14434-1-o.rempel@pengutronix.de>
- <20210427070909.14434-5-o.rempel@pengutronix.de>
+To:     Tobias Waldekranz <tobias@waldekranz.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, vivien.didelot@gmail.com,
+        f.fainelli@gmail.com, olteanv@gmail.com, netdev@vger.kernel.org
+Subject: Re: [PATCH net-next] net: dsa: mv88e6xxx: Fix 6095/6097/6185 ports
+ in non-SERDES CMODE
+Message-ID: <YIgGbYtJtq1EnIKD@lunn.ch>
+References: <20210426161734.1735032-1-tobias@waldekranz.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20210427070909.14434-5-o.rempel@pengutronix.de>
+In-Reply-To: <20210426161734.1735032-1-tobias@waldekranz.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Apr 27, 2021 at 09:09:04AM +0200, Oleksij Rempel wrote:
-> We add support for the ksz8863 and ksz8873 chips which are
-> using the same register patterns but other offsets as the
-> ksz8795.
+On Mon, Apr 26, 2021 at 06:17:34PM +0200, Tobias Waldekranz wrote:
+> The .serdes_get_lane op used the magic value 0xff to indicate a valid
+> SERDES lane and 0 signaled that a non-SERDES mode was set on the port.
 > 
-> Signed-off-by: Michael Grzeschik <m.grzeschik@pengutronix.de>
-> Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
+> Unfortunately, "0" is also a valid lane ID, so even when these ports
+> where configured to e.g. RGMII the driver would set them up as SERDES
+> ports.
+> 
+> - Replace 0xff with 0 to indicate a valid lane ID. The number is on
+>   the one hand just as arbitrary, but it is at least the first valid one
+>   and therefore less of a surprise.
+> 
+> - Follow the other .serdes_get_lane implementations and return -ENODEV
+>   in the case where no SERDES is assigned to the port.
+> 
+> Fixes: f5be107c3338 ("net: dsa: mv88e6xxx: Support serdes ports on MV88E6097/6095/6185")
+> Signed-off-by: Tobias Waldekranz <tobias@waldekranz.com>
 
 Reviewed-by: Andrew Lunn <andrew@lunn.ch>
 
