@@ -2,151 +2,146 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6114836CB16
-	for <lists+netdev@lfdr.de>; Tue, 27 Apr 2021 20:28:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D36B136CB26
+	for <lists+netdev@lfdr.de>; Tue, 27 Apr 2021 20:34:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236754AbhD0S3O (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 27 Apr 2021 14:29:14 -0400
-Received: from mail.kernel.org ([198.145.29.99]:46848 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230219AbhD0S3L (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 27 Apr 2021 14:29:11 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 1319061001;
-        Tue, 27 Apr 2021 18:28:26 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1619548107;
-        bh=QNDch69z8o0RrJ9jNFXhkcE/fN5/M67I+3jCEi22zIc=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=PtVqeekhpvQarlyi7x4skHBuZVZKCkZ5PrdI12ZxBDznW0Yg2EN8uBIPZXxjne/3C
-         PaKwuTt2SH7cNPy3zcJ3s2PXzGXjb7Mnq3YWOc18pHRmF00OOQqYltxQc6SC+LKnyo
-         URMEPMXCceh2UO1/NaHnc7+EJ7k1//X6aBKOglHkiWhFqrBJGdtYyNLiY4PBHTMuF8
-         Rifx3zcsfOAuGvNK0ljIjSmGXMwcujnEfR3Qf8jAL9bmmPVh2++IoCUCp7AHj3L4g7
-         GmFlxNyBxROY9mJUiWvn+had5lVe+skptpZ+G606BNBdbIe2FkUy1+k4FoQ5FEEtyf
-         zfn9S+c+ihbIQ==
-Date:   Tue, 27 Apr 2021 20:28:22 +0200
-From:   Lorenzo Bianconi <lorenzo@kernel.org>
-To:     Magnus Karlsson <magnus.karlsson@gmail.com>
-Cc:     bpf <bpf@vger.kernel.org>,
-        Network Development <netdev@vger.kernel.org>,
-        lorenzo.bianconi@redhat.com,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>, shayagr@amazon.com,
-        sameehj@amazon.com, John Fastabend <john.fastabend@gmail.com>,
-        David Ahern <dsahern@kernel.org>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        Eelco Chaudron <echaudro@redhat.com>,
-        Jason Wang <jasowang@redhat.com>,
-        Alexander Duyck <alexander.duyck@gmail.com>,
-        Saeed Mahameed <saeed@kernel.org>,
-        "Fijalkowski, Maciej" <maciej.fijalkowski@intel.com>,
-        Tirthendu <tirthendu.sarkar@intel.com>
-Subject: Re: [PATCH v8 bpf-next 00/14] mvneta: introduce XDP multi-buffer
- support
-Message-ID: <YIhXxmXdjQdrrPbT@lore-desk>
-References: <cover.1617885385.git.lorenzo@kernel.org>
- <CAJ8uoz1MOYLzyy7xXq_fmpKDEakxSomzfM76Szjr5gWsqHc9jQ@mail.gmail.com>
+        id S236836AbhD0Se6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 27 Apr 2021 14:34:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52954 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230219AbhD0Se6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 27 Apr 2021 14:34:58 -0400
+Received: from mail-lf1-x136.google.com (mail-lf1-x136.google.com [IPv6:2a00:1450:4864:20::136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 261A3C061574;
+        Tue, 27 Apr 2021 11:34:13 -0700 (PDT)
+Received: by mail-lf1-x136.google.com with SMTP id z13so14183953lft.1;
+        Tue, 27 Apr 2021 11:34:13 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=z80CSEVjLPr29NMlgVZymyRLAugdtrDYEGxKSKN9yD0=;
+        b=tohiOZW/Oy6Qbfo8fLHFQ7fTCY4O+o335heJAUMfO//hh8pgIOuV8OWv0nhLIMSPPP
+         +aCZt0tuaoudstmNc3vqBBfEiBwRcWHW/DQ+zKDJ9124whV2al/jXK41+WNi5mpCELU0
+         NIgsvrv+HPJaWUsRRYHCDzEFwpatWF44CXZpKM70hzObhcEcAE4B+gwKLxsA0eJB23ku
+         23zJcJX53jGROKo3WfTKBHRJ0VD0MpO9T9D6GgZ78sxl6tLJ6Ek4AXudmHYx0wUy1rh1
+         AkmcjVM04TXu+5Mccum4W02oBEQWjmxkLZVoHqRDe3xtgVmQBY8uI5XPbgsThfBrSbcW
+         w8rw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=z80CSEVjLPr29NMlgVZymyRLAugdtrDYEGxKSKN9yD0=;
+        b=Pt5he1UREBl4X0gQvMWJ2I401VSaTBlgoOgmZpxSOfkUsbU2F9C2vtOpS8hlUrKBzy
+         ZaY/7ZPkoJCXa4X6jGNwiQSK80FkgGW4WNr6JHe260Koc6Arhfk3hZW8kIPyRxAQAuaT
+         TU5GCohHK0vfQ2QxGR6nLXYhahOqwIrMIa7cwCSSC95Y2Uw3oTSznUe+3sZVQXuBZTrr
+         mcG85cSQbS9Q3++unGMYBpxqSzc2OqAQKNfvlxpXON8bRervWcki+dbvoG2Z13iwl3AS
+         w1AYmwkVWCK7NCS3SDRtsFj0kk2logEvBfoHC9XCXeNsrIRO8m8q7WXF3fgYsb/qPRXr
+         s4AA==
+X-Gm-Message-State: AOAM530WamQc4HnTpzRAQKlNz0WpeqUdXARsnzqEIeQv2e3OtwDOxi5V
+        GSVxIkS2YIJr1VG4RoCtXZ92bFFgW07jTKSaORY=
+X-Google-Smtp-Source: ABdhPJxNVV2s3FHip7J0ujedmFbfIf3VNt0+wzG3eQcNQvW2LGchg3XAQFwBXWEnwPVLTtWWfdiwIHJEBDYdYFViQ+A=
+X-Received: by 2002:ac2:491a:: with SMTP id n26mr18455535lfi.539.1619548451567;
+ Tue, 27 Apr 2021 11:34:11 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="BGwRV/j/BiBdnsJe"
-Content-Disposition: inline
-In-Reply-To: <CAJ8uoz1MOYLzyy7xXq_fmpKDEakxSomzfM76Szjr5gWsqHc9jQ@mail.gmail.com>
+References: <20210402192823.bqwgipmky3xsucs5@ast-mbp> <CAM_iQpUfv7c19zFN1Y5-cSUiVwpk0bmtBMSxZoELgDOFCQ=qAw@mail.gmail.com>
+ <20210402234500.by3wigegeluy5w7j@ast-mbp> <CAM_iQpWf2aYbY=tKejb=nx7LWBLo1woTp-n4wOLhkUuDCz8u-Q@mail.gmail.com>
+ <20210412230151.763nqvaadrrg77kd@ast-mbp.dhcp.thefacebook.com>
+ <CAM_iQpWePmmpr0RKqCrQ=NPiGrq2Tx9OU9y3e4CTzFjvh5t47w@mail.gmail.com>
+ <CAADnVQLsmULxJYq9rHS4xyg=VAUeexJTh35vTWTVgjeqwX4D6g@mail.gmail.com>
+ <CAM_iQpVtxgZNeqh4_Pqftc3D163JnRvP3AZRuFrYNeyWLgVBVA@mail.gmail.com>
+ <CAADnVQLFehCeQRbwEQ9VM-=Y3V3es2Ze8gFPs6cZHwNH0Ct7vw@mail.gmail.com>
+ <CAM_iQpWDhoY_msU=AowHFq3N3OuQpvxd2ADP_Z+gxBfGduhrPA@mail.gmail.com>
+ <20210427020159.hhgyfkjhzjk3lxgs@ast-mbp.dhcp.thefacebook.com> <CAM_iQpVE4XG7SPAVBmV2UtqUANg3X-1ngY7COYC03NrT6JkZ+g@mail.gmail.com>
+In-Reply-To: <CAM_iQpVE4XG7SPAVBmV2UtqUANg3X-1ngY7COYC03NrT6JkZ+g@mail.gmail.com>
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Date:   Tue, 27 Apr 2021 11:33:59 -0700
+Message-ID: <CAADnVQK9BgguVorziWgpMktLHuPCgEaKa4fz-KCfhcZtT46teQ@mail.gmail.com>
+Subject: Re: [RFC Patch bpf-next] bpf: introduce bpf timer
+To:     Cong Wang <xiyou.wangcong@gmail.com>
+Cc:     Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>,
+        Xiongchun Duan <duanxiongchun@bytedance.com>,
+        Dongdong Wang <wangdongdong.6@bytedance.com>,
+        Muchun Song <songmuchun@bytedance.com>,
+        Cong Wang <cong.wang@bytedance.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Pedro Tammela <pctammela@mojatatu.com>,
+        Jamal Hadi Salim <jhs@mojatatu.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Tue, Apr 27, 2021 at 9:36 AM Cong Wang <xiyou.wangcong@gmail.com> wrote:
+>
+> If we enforce this ownership, in case of conntrack the owner would be
+> the program which sees the connection first, which is pretty much
+> unpredictable. For example, if the ingress program sees a connection
+> first, it installs a timer for this connection, but the traffic is
+> bidirectional,
+> hence egress program needs this connection and its timer too, we
+> should not remove this timer when the ingress program is freed.
 
---BGwRV/j/BiBdnsJe
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Sure. That's trivially achieved with pinning.
+One can have an ingress prog that tailcalls into another prog
+that arms the timer with one of its subprogs.
+Egress prog can tailcall into the same prog as well.
+The ingress and egress progs can be replaced one by one
+or removed both together and middle prog can stay alive
+if it's pinned in bpffs or held alive by FD.
 
-[...]
+> From another point of view: maps and programs are both first-class
+> resources in eBPF, a timer is stored in a map and associated with a
+> program, so it is naturally a first-class resource too.
 
-> Took your patches for a test run with the AF_XDP sample xdpsock on an
-> i40e card and the throughput degradation is between 2 to 6% depending
-> on the setup and microbenchmark within xdpsock that is executed. And
-> this is without sending any multi frame packets. Just single frame
-> ones. Tirtha made changes to the i40e driver to support this new
-> interface so that is being included in the measurements.
->=20
-> What performance do you see with the mvneta card? How much are we
-> willing to pay for this feature when it is not being used or can we in
-> some way selectively turn it on only when needed?
+Not really. The timer abstraction is about data. It invokes the callback.
+That callback is a part of the program. The lifetime of the timer object
+and lifetime of the callback can be different.
+Obviously the timer logic need to make sure that callback text is alive
+when the timer is armed.
+Combining timer and callback concepts creates a messy abstraction.
+In the normal kernel code one can have a timer in any kernel data
+structure and callback in the kernel text or in the kernel module.
+The code needs to make sure that the module won't go away while
+the timer is armed. Same thing with bpf progs. The progs are safe
+kernel modules. The timers are independent objects.
 
-Hi Magnus,
-
-Today I carried out some comparison tests between bpf-next and bpf-next +
-xdp_multibuff series on mvneta running xdp_rxq_info sample. Results are
-basically aligned:
-
-bpf-next:
-- xdp drop ~ 665Kpps
-- xdp_tx   ~ 291Kpps
-- xdp_pass ~ 118Kpps
-
-bpf-next + xdp_multibuff:
-- xdp drop ~ 672Kpps
-- xdp_tx   ~ 288Kpps
-- xdp_pass ~ 118Kpps
-
-I am not sure if results are affected by the low power CPU, I will run some
-tests on ixgbe card.
-
-Regards,
-Lorenzo
-
->=20
-> Thanks: Magnus
->=20
-> > Eelco Chaudron (4):
-> >   bpf: add multi-buff support to the bpf_xdp_adjust_tail() API
-> >   bpd: add multi-buffer support to xdp copy helpers
-> >   bpf: add new frame_length field to the XDP ctx
-> >   bpf: update xdp_adjust_tail selftest to include multi-buffer
 > >
-> > Lorenzo Bianconi (10):
-> >   xdp: introduce mb in xdp_buff/xdp_frame
-> >   xdp: add xdp_shared_info data structure
-> >   net: mvneta: update mb bit before passing the xdp buffer to eBPF layer
-> >   xdp: add multi-buff support to xdp_return_{buff/frame}
-> >   net: mvneta: add multi buffer support to XDP_TX
-> >   net: mvneta: enable jumbo frames for XDP
-> >   net: xdp: add multi-buff support to xdp_build_skb_from_fram
-> >   bpf: move user_size out of bpf_test_init
-> >   bpf: introduce multibuff support to bpf_prog_test_run_xdp()
-> >   bpf: test_run: add xdp_shared_info pointer in bpf_test_finish
-> >     signature
+> > > >
+> > > > Also if your colleagues have something to share they should be
+> > > > posting to the mailing list. Right now you're acting as a broken phone
+> > > > passing info back and forth and the knowledge gets lost.
+> > > > Please ask your colleagues to participate online.
+> > >
+> > > They are already in CC from the very beginning. And our use case is
+> > > public, it is Cilium conntrack:
+> > > https://github.com/cilium/cilium/blob/master/bpf/lib/conntrack.h
+> > >
+> > > The entries of the code are:
+> > > https://github.com/cilium/cilium/blob/master/bpf/bpf_lxc.c
+> > >
+> > > The maps for conntrack are:
+> > > https://github.com/cilium/cilium/blob/master/bpf/lib/conntrack_map.h
 > >
-> >  drivers/net/ethernet/marvell/mvneta.c         | 182 ++++++++++--------
-> >  include/linux/filter.h                        |   7 +
-> >  include/net/xdp.h                             | 105 +++++++++-
-> >  include/uapi/linux/bpf.h                      |   1 +
-> >  net/bpf/test_run.c                            | 109 +++++++++--
-> >  net/core/filter.c                             | 134 ++++++++++++-
-> >  net/core/xdp.c                                | 103 +++++++++-
-> >  tools/include/uapi/linux/bpf.h                |   1 +
-> >  .../bpf/prog_tests/xdp_adjust_tail.c          | 105 ++++++++++
-> >  .../selftests/bpf/prog_tests/xdp_bpf2bpf.c    | 127 ++++++++----
-> >  .../bpf/progs/test_xdp_adjust_tail_grow.c     |  17 +-
-> >  .../bpf/progs/test_xdp_adjust_tail_shrink.c   |  32 ++-
-> >  .../selftests/bpf/progs/test_xdp_bpf2bpf.c    |   3 +-
-> >  13 files changed, 767 insertions(+), 159 deletions(-)
-> >
-> > --
-> > 2.30.2
-> >
+> > If that's the only goal then kernel timers are not needed.
+> > cilium conntrack works well as-is.
+>
+> We don't go back to why user-space cleanup is inefficient again,
+> do we? ;)
 
---BGwRV/j/BiBdnsJe
-Content-Type: application/pgp-signature; name="signature.asc"
+I remain unconvinced that cilium conntrack _needs_ timer apis.
+It works fine in production and I don't hear any complaints
+from cilium users. So 'user space cleanup inefficiencies' is
+very subjective and cannot be the reason to add timer apis.
 
------BEGIN PGP SIGNATURE-----
+> More importantly, although conntrack is our use case, we don't
+> design timers just for our case, obviously. Timers must be as flexible
+> to use as possible, to allow other future use cases.
 
-iHUEABYIAB0WIQTquNwa3Txd3rGGn7Y6cBh0uS2trAUCYIhXwwAKCRA6cBh0uS2t
-rDBbAP97aFwKh4hbVWji/WAk4qNXTtRmLcFdhnUMzjs9UJCwLQD/aKxN2U5fBrf3
-xAjPBE8RWndr6pfoba20ObmWU1G3JwY=
-=p8bo
------END PGP SIGNATURE-----
-
---BGwRV/j/BiBdnsJe--
+Right. That's why I'm asking for an explanation of a specific use case.
+"we want to do cilium conntrack but differently" is not a reason.
