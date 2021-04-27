@@ -2,168 +2,225 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7F2A536CA8E
-	for <lists+netdev@lfdr.de>; Tue, 27 Apr 2021 19:45:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5327236CABB
+	for <lists+netdev@lfdr.de>; Tue, 27 Apr 2021 20:00:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236740AbhD0Rqe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 27 Apr 2021 13:46:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42320 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230219AbhD0Rqd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 27 Apr 2021 13:46:33 -0400
-Received: from mail-yb1-xb29.google.com (mail-yb1-xb29.google.com [IPv6:2607:f8b0:4864:20::b29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2DC4CC061574;
-        Tue, 27 Apr 2021 10:45:50 -0700 (PDT)
-Received: by mail-yb1-xb29.google.com with SMTP id z1so70364917ybf.6;
-        Tue, 27 Apr 2021 10:45:50 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=XgMTxuUnQa2NKHgZKMGZHmGdLmQnXa/coa3xDwJBEwg=;
-        b=vbiX1XkgZKfjKlL/u5eU130E4uvI1N8aekf8fXB/pKpWBPMxG9MDU/8fhfYicRV/9V
-         7yWLsC2qCXJLz6t624VuwQPBicZc4qR6ODj4ROyLKm8NP2ypbIfeFmEs/4PX3TC2g7a+
-         NDXKD+zzYmgqvEv7fGhIEcma3C4aF2ouMJEP/50/uiGCcorGUK4msVw9DBaiuvST3zWk
-         4ufcdSklbOvBQI6mpa8Yx05XHTyUwyUbCqmwUSfshU3bqWXEGzqfIv7VM+UCmVpA8Evu
-         84d+BMUzS95dXJOHUSD3Derx7cbcXfTRWNDh2Ex7xhjxKsA0kF3CVp8NuYtSbK7KbA3d
-         aWaQ==
+        id S235974AbhD0SBF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 27 Apr 2021 14:01:05 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:45657 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S230219AbhD0SBE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 27 Apr 2021 14:01:04 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1619546420;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=CKrgALHVEgN6fGE15CxFWB5GcyFBxoUmnjcuKmaLHE0=;
+        b=J51UlXfaeWQcuZB5u/16wUCY/GyqVOYbUSwh3191HhTIuU1psEbaPmwXymWLhk7xH7PuaF
+        IJOwYat/FOWLiAnDhjHMj+x51ol4HCB06nhf4qhKhGZIjhEIm5SqSBYMtSCdEn40QG6/EL
+        58JyFjUFpRD9QnwQJlbEB5hTANpFo0U=
+Received: from mail-ed1-f72.google.com (mail-ed1-f72.google.com
+ [209.85.208.72]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-217-rkeaZFyFMICxMWv47Hgq_A-1; Tue, 27 Apr 2021 14:00:18 -0400
+X-MC-Unique: rkeaZFyFMICxMWv47Hgq_A-1
+Received: by mail-ed1-f72.google.com with SMTP id z3-20020a05640240c3b029037fb0c2bd3bso25553582edb.23
+        for <netdev@vger.kernel.org>; Tue, 27 Apr 2021 11:00:17 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=XgMTxuUnQa2NKHgZKMGZHmGdLmQnXa/coa3xDwJBEwg=;
-        b=UBgSuNSAE2m7eVaiM4Cch3/VvG2tGJbm5T3+OBfknjVh4Z7KpQ6uGcTlnfQ4IJPdiE
-         0FLHxsYujXhOtwgkEdy4UmiuyqBV2Lyfwtv8Lizt9fGBnuCnw2JnY1V4K3yfYTr7NnJZ
-         e/6qLH/tRe1v76tOQdHmIxcZoVgltKI81LKPYQ2WJUj9W2GdGXk1HPvpDqa3z0ZUrOZg
-         0u1XyRejwicWHJEy9E2yeHaKnc17v5zlwsDXuPZYcTowWr/EJ5zdfuAqyTl1yBGy4spV
-         mY6GAGaZ2b5mbL7icKqAnLBNsTyHkFE81ABcExN2fOJoNXnR2wlcZgco3+223hR9OngX
-         uWHQ==
-X-Gm-Message-State: AOAM532bkdgdKaTeWsXbLv5APyINJMk9uiI8hxTb3DIrB9N6+QuHhIMY
-        LqeWfefts1yRMv1KbJiY46l6Rj87plXBMMR2loc=
-X-Google-Smtp-Source: ABdhPJzHD+nEAcmcoQJxT+fUQOy2T9Fk9SK/yDBT9sQi9OwntOKDSnlZp8ZhfUKED3T/G/W2Ukdfs1Lh3NqkpUEfyFk=
-X-Received: by 2002:a25:c4c5:: with SMTP id u188mr34329832ybf.425.1619545549517;
- Tue, 27 Apr 2021 10:45:49 -0700 (PDT)
-MIME-Version: 1.0
-References: <20210423002646.35043-1-alexei.starovoitov@gmail.com>
- <20210423002646.35043-11-alexei.starovoitov@gmail.com> <CAEf4BzYkzzN=ZD2X1bOg8U39Whbe6oTPuUEMOpACw6NPEW69NA@mail.gmail.com>
- <20210427033707.fu7hsm6xi5ayx6he@ast-mbp.dhcp.thefacebook.com>
-In-Reply-To: <20210427033707.fu7hsm6xi5ayx6he@ast-mbp.dhcp.thefacebook.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Tue, 27 Apr 2021 10:45:38 -0700
-Message-ID: <CAEf4BzaPDF8h9t1xqMo-hKqp=J_bE1OtWXh+jugZxV597qjdaw@mail.gmail.com>
-Subject: Re: [PATCH v2 bpf-next 10/16] bpf: Add bpf_btf_find_by_name_kind() helper.
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Daniel Borkmann <daniel@iogearbox.net>,
+        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
+         :message-id:mime-version;
+        bh=CKrgALHVEgN6fGE15CxFWB5GcyFBxoUmnjcuKmaLHE0=;
+        b=ZG7pAKLvR1uDEAwtgBb6D7L4ieviZ+b2oSS0V2tUgW3T1OhGa25YvpF/PN1v+8fKWg
+         JNextOwwg2AzY00XBEWtcY+4M2372beHb6M16WIYZMd74HmeEHffUbjLRg+hCWiheSOe
+         Pk4O0Rc0ppeukmzjbMfCfNI3/CLsc2HgiuMZ3rUPVZtlrmaKK6n4N+qbyUkRD7EGXS6I
+         Vlb5DV0GZu6YoxVc7xMIDd7XgD+moKwlICgQUe7+JEexnnOHtMsFFSzDYTqZEAmKMVg2
+         dR3/ega6krsKZGurZ+r4T6qS3oOW/dRv99HPBQbSHZecFRuWWgHfGIeUDKy71UJgSIeE
+         pK4Q==
+X-Gm-Message-State: AOAM531YF03/bzf6s3xru8oh2tDM8njZycSz74i3kfmco5g09Z/aqFGu
+        19Vp0yP24XLwcrpVdHsz9Iq+2CK5Vl7zDbQ7o3ZETMj7WMtrECZsRzKKf4P/8q3o1Lmod9RNaXZ
+        alniespDAWOh/iagf
+X-Received: by 2002:a17:906:fa18:: with SMTP id lo24mr24423743ejb.125.1619546416466;
+        Tue, 27 Apr 2021 11:00:16 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJw5XjcnUui/mbb5+o9DehwY79r16Nweo03ctwk0YzOtas7cEKznjeo1TSrS6P8rOWZX60FoYQ==
+X-Received: by 2002:a17:906:fa18:: with SMTP id lo24mr24423716ejb.125.1619546416039;
+        Tue, 27 Apr 2021 11:00:16 -0700 (PDT)
+Received: from alrua-x1.borgediget.toke.dk ([2a0c:4d80:42:443::2])
+        by smtp.gmail.com with ESMTPSA id t15sm2806595edr.55.2021.04.27.11.00.15
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 27 Apr 2021 11:00:15 -0700 (PDT)
+Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
+        id B372B180615; Tue, 27 Apr 2021 20:00:14 +0200 (CEST)
+From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
+To:     Daniel Borkmann <daniel@iogearbox.net>,
+        Kumar Kartikeya Dwivedi <memxor@gmail.com>,
+        bpf@vger.kernel.org
+Cc:     Alexei Starovoitov <ast@kernel.org>,
         Andrii Nakryiko <andrii@kernel.org>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Kernel Team <kernel-team@fb.com>
-Content-Type: text/plain; charset="UTF-8"
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH bpf-next v4 2/3] libbpf: add low level TC-BPF API
+In-Reply-To: <5811eb10-bc93-0b81-2ee4-10490388f238@iogearbox.net>
+References: <20210423150600.498490-1-memxor@gmail.com>
+ <20210423150600.498490-3-memxor@gmail.com>
+ <5811eb10-bc93-0b81-2ee4-10490388f238@iogearbox.net>
+X-Clacks-Overhead: GNU Terry Pratchett
+Date:   Tue, 27 Apr 2021 20:00:14 +0200
+Message-ID: <87lf93a9qp.fsf@toke.dk>
+MIME-Version: 1.0
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Apr 26, 2021 at 8:37 PM Alexei Starovoitov
-<alexei.starovoitov@gmail.com> wrote:
->
-> On Mon, Apr 26, 2021 at 03:46:29PM -0700, Andrii Nakryiko wrote:
-> > On Thu, Apr 22, 2021 at 5:27 PM Alexei Starovoitov
-> > <alexei.starovoitov@gmail.com> wrote:
-> > >
-> > > From: Alexei Starovoitov <ast@kernel.org>
-> > >
-> > > Add new helper:
-> > >
-> > > long bpf_btf_find_by_name_kind(u32 btf_fd, char *name, u32 kind, int flags)
-> > >         Description
-> > >                 Find given name with given type in BTF pointed to by btf_fd.
-> > >                 If btf_fd is zero look for the name in vmlinux BTF and in module's BTFs.
-> > >         Return
-> > >                 Returns btf_id and btf_obj_fd in lower and upper 32 bits.
-> > >
-> > > Signed-off-by: Alexei Starovoitov <ast@kernel.org>
-> > > ---
-> > >  include/linux/bpf.h            |  1 +
-> > >  include/uapi/linux/bpf.h       |  8 ++++
-> > >  kernel/bpf/btf.c               | 68 ++++++++++++++++++++++++++++++++++
-> > >  kernel/bpf/syscall.c           |  2 +
-> > >  tools/include/uapi/linux/bpf.h |  8 ++++
-> > >  5 files changed, 87 insertions(+)
-> > >
-> > > diff --git a/include/linux/bpf.h b/include/linux/bpf.h
-> > > index 0f841bd0cb85..4cf361eb6a80 100644
-> > > --- a/include/linux/bpf.h
-> > > +++ b/include/linux/bpf.h
-> > > @@ -1972,6 +1972,7 @@ extern const struct bpf_func_proto bpf_get_socket_ptr_cookie_proto;
-> > >  extern const struct bpf_func_proto bpf_task_storage_get_proto;
-> > >  extern const struct bpf_func_proto bpf_task_storage_delete_proto;
-> > >  extern const struct bpf_func_proto bpf_for_each_map_elem_proto;
-> > > +extern const struct bpf_func_proto bpf_btf_find_by_name_kind_proto;
-> > >
-> > >  const struct bpf_func_proto *bpf_tracing_func_proto(
-> > >         enum bpf_func_id func_id, const struct bpf_prog *prog);
-> > > diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
-> > > index de58a714ed36..253f5f031f08 100644
-> > > --- a/include/uapi/linux/bpf.h
-> > > +++ b/include/uapi/linux/bpf.h
-> > > @@ -4748,6 +4748,13 @@ union bpf_attr {
-> > >   *             Execute bpf syscall with given arguments.
-> > >   *     Return
-> > >   *             A syscall result.
-> > > + *
-> > > + * long bpf_btf_find_by_name_kind(u32 btf_fd, char *name, u32 kind, int flags)
-> > > + *     Description
-> > > + *             Find given name with given type in BTF pointed to by btf_fd.
-> >
-> > "Find BTF type with given name"? Should the limits on name length be
->
-> +1
->
-> > specified? KSYM_NAME_LEN is a pretty arbitrary restriction.
->
-> that's implementation detail that shouldn't leak into uapi.
->
-> > Also,
-> > would it still work fine if the caller provides a pointer to a much
-> > shorter piece of memory?
-> >
-> > Why not add name_sz right after name, as we do with a lot of other
-> > arguments like this?
->
-> That's an option too, but then the helper will have 5 args and 'flags'
-> would be likely useless. I mean unlikely it will help extending it.
-> I was thinking about ARG_PTR_TO_CONST_STR, but it doesn't work,
-> since blob is writeable by the prog. It's read only from user space.
-> I'm fine with name, name_sz though.
+Daniel Borkmann <daniel@iogearbox.net> writes:
 
-Yeah, I figured ARG_PTR_TO_CONST_STR isn't an option here. By "flags
-would be useless" you mean that you'd use another parameter if some
-flags were set? Did we ever do that to existing helpers? We can always
-add a new helper, if necessary. name + name_sz seems less error-prone,
-tbh.
-
+> On 4/23/21 5:05 PM, Kumar Kartikeya Dwivedi wrote:
+> [...]
+>>   tools/lib/bpf/libbpf.h   |  92 ++++++++
+>>   tools/lib/bpf/libbpf.map |   5 +
+>>   tools/lib/bpf/netlink.c  | 478 ++++++++++++++++++++++++++++++++++++++-
+>>   3 files changed, 574 insertions(+), 1 deletion(-)
+>> 
+>> diff --git a/tools/lib/bpf/libbpf.h b/tools/lib/bpf/libbpf.h
+>> index bec4e6a6e31d..1c717c07b66e 100644
+>> --- a/tools/lib/bpf/libbpf.h
+>> +++ b/tools/lib/bpf/libbpf.h
+>> @@ -775,6 +775,98 @@ LIBBPF_API int bpf_linker__add_file(struct bpf_linker *linker, const char *filen
+>>   LIBBPF_API int bpf_linker__finalize(struct bpf_linker *linker);
+>>   LIBBPF_API void bpf_linker__free(struct bpf_linker *linker);
+>> 
+>> +enum bpf_tc_attach_point {
+>> +	BPF_TC_INGRESS,
+>> +	BPF_TC_EGRESS,
+>> +	BPF_TC_CUSTOM_PARENT,
+>> +	_BPF_TC_PARENT_MAX,
 >
-> >
-> > > + *             If btf_fd is zero look for the name in vmlinux BTF and in module's BTFs.
-> > > + *     Return
-> > > + *             Returns btf_id and btf_obj_fd in lower and upper 32 bits.
-> >
-> > Mention that for vmlinux BTF btf_obj_fd will be zero? Also who "owns"
-> > the FD? If the BPF program doesn't close it, when are they going to be
-> > cleaned up?
+> I don't think we need to expose _BPF_TC_PARENT_MAX as part of the API, I would drop
+> the latter.
 >
-> just like bpf_sys_bpf. Who owns returned FD? The program that called
-> the helper, of course.
+>> +};
+>> +
+>> +/* The opts structure is also used to return the created filters attributes
+>> + * (e.g. in case the user left them unset). Some of the options that were left
+>> + * out default to a reasonable value, documented below.
+>> + *
+>> + *	protocol - ETH_P_ALL
+>> + *	chain index - 0
+>> + *	class_id - 0 (can be set by bpf program using skb->tc_classid)
+>> + *	bpf_flags - TCA_BPF_FLAG_ACT_DIRECT (direct action mode)
+>> + *	bpf_flags_gen - 0
+>> + *
+>> + *	The user must fulfill documented requirements for each function.
+>
+> Not sure if this is overly relevant as part of the bpf_tc_opts in here. For the
+> 2nd part, I would probably just mention that libbpf internally attaches the bpf
+> programs with direct action mode. The hw offload may be future todo, and the other
+> bits are little used anyway; mentioning them here, what value does it have to
+> libbpf users? I'd rather just drop the 2nd part and/or simplify this paragraph
+> just stating that the progs are attached in direct action mode.
 
-"program" as in the user-space process that did bpf_prog_test_run(),
-right? In the cover letter you mentioned that BPF_PROG_TYPE_SYSCALL
-might be called on syscall entry in the future, for that case there is
-no clear "owning" process, so would be curious to see how that problem
-gets solved.
+The idea was that this would be for the benefit of people familiar with
+TC concepts. Maybe simplify it to "Programs are attached in direct
+action mode with a protocol value of 'all', and all other parameters
+that the 'tc' binary supports will be set to 0"?
 
-> In the current shape of loader prog these btf fds are cleaned up correctly
-> in success and in error case.
-> Not all FDs though. map fds will stay around if bpf_sys_bpf(prog_load) fails to load.
-> Tweaking loader prog to close all FDs in error case is on todo list.
+>> + */
+>> +struct bpf_tc_opts {
+>> +	size_t sz;
+>> +	__u32 handle;
+>> +	__u32 parent;
+>> +	__u16 priority;
+>> +	__u32 prog_id;
+>> +	bool replace;
+>> +	size_t :0;
+>> +};
+>> +
+>> +#define bpf_tc_opts__last_field replace
+>> +
+>> +struct bpf_tc_ctx;
+>> +
+>> +struct bpf_tc_ctx_opts {
+>> +	size_t sz;
+>> +};
+>> +
+>> +#define bpf_tc_ctx_opts__last_field sz
+>> +
+>> +/* Requirements */
+>> +/*
+>> + * @ifindex: Must be > 0.
+>> + * @parent: Must be one of the enum constants < _BPF_TC_PARENT_MAX
+>> + * @opts: Can be NULL, currently no options are supported.
+>> + */
+>
+> Up to Andrii, but we don't have such API doc in general inside libbpf.h, I
+> would drop it for the time being to be consistent with the rest (same for
+> others below).
+>
+>> +LIBBPF_API struct bpf_tc_ctx *bpf_tc_ctx_init(__u32 ifindex,
+>
+> nit: in user space s/__u32 ifindex/int ifindex/
+>
+>> +					      enum bpf_tc_attach_point parent,
+>> +					      struct bpf_tc_ctx_opts *opts);
+>
+> Should we enforce opts being NULL or non-NULL here, or drop the arg from here
+> for now altogether? (And if later versions of the functions show up this could
+> be mapped to the right one?)
 
-Ok, good, that seems important.
+Hmm, extending later is easier if there's already an opts parameter. But
+it could be declared 'void *' and enforced as always 0 for now?
+
+>> +/*
+>> + * @ctx: Can be NULL, if not, must point to a valid object.
+>> + *	 If the qdisc was attached during ctx_init, it will be deleted if no
+>> + *	 filters are attached to it.
+>> + *	 When ctx == NULL, this is a no-op.
+>> + */
+>> +LIBBPF_API int bpf_tc_ctx_destroy(struct bpf_tc_ctx *ctx);
+>> +/*
+>> + * @ctx: Cannot be NULL.
+>> + * @fd: Must be >= 0.
+>> + * @opts: Cannot be NULL, prog_id must be unset, all other fields can be
+>> + *	  optionally set. All fields except replace  will be set as per created
+>> + *        filter's attributes. parent must only be set when attach_point of ctx is
+>> + *        BPF_TC_CUSTOM_PARENT, otherwise parent must be unset.
+>> + *
+>> + * Fills the following fields in opts:
+>> + *	handle
+>> + *	parent
+>> + *	priority
+>> + *	prog_id
+>> + */
+>> +LIBBPF_API int bpf_tc_attach(struct bpf_tc_ctx *ctx, int fd,
+>> +			     struct bpf_tc_opts *opts);
+>> +/*
+>> + * @ctx: Cannot be NULL.
+>> + * @opts: Cannot be NULL, replace and prog_id must be unset, all other fields
+>> + *	  must be set.
+>> + */
+>> +LIBBPF_API int bpf_tc_detach(struct bpf_tc_ctx *ctx,
+>> +			     const struct bpf_tc_opts *opts);
+>
+> One thing that I find a bit odd from this API is that BPF_TC_INGRESS / BPF_TC_EGRESS
+> needs to be set each time via bpf_tc_ctx_init(). So whenever a specific program would
+> be attached to both we need to 're-init' in between just to change from hook a to b,
+> whereas when you have BPF_TC_CUSTOM_PARENT, you could just use a different opts->parent
+> without going this detour (unless the clsact wasn't loaded there in the first place).
+>
+> Could we add a BPF_TC_UNSPEC to enum bpf_tc_attach_point, which the user would pass to
+> bpf_tc_ctx_init(), so that opts.direction = BPF_TC_INGRESS with subsequent bpf_tc_attach()
+> can be called, and same opts.direction = BPF_TC_EGRESS with bpf_tc_attach() for different
+> fd. The only thing we cared about in bpf_tc_ctx_init() resp. the ctx was that qdisc was
+> ready.
+
+This sounds workable - no objections from me :)
+
+-Toke
+
