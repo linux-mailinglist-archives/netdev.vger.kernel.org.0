@@ -2,181 +2,216 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EBBBE36BDCC
-	for <lists+netdev@lfdr.de>; Tue, 27 Apr 2021 05:40:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4A57236BDDD
+	for <lists+netdev@lfdr.de>; Tue, 27 Apr 2021 05:47:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233361AbhD0Dkv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 26 Apr 2021 23:40:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52444 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230338AbhD0Dks (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 26 Apr 2021 23:40:48 -0400
-Received: from mail-io1-xd2d.google.com (mail-io1-xd2d.google.com [IPv6:2607:f8b0:4864:20::d2d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 792ECC061574
-        for <netdev@vger.kernel.org>; Mon, 26 Apr 2021 20:40:06 -0700 (PDT)
-Received: by mail-io1-xd2d.google.com with SMTP id z14so5752379ioc.12
-        for <netdev@vger.kernel.org>; Mon, 26 Apr 2021 20:40:06 -0700 (PDT)
+        id S234589AbhD0Dry (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 26 Apr 2021 23:47:54 -0400
+Received: from smtp-fw-6002.amazon.com ([52.95.49.90]:33976 "EHLO
+        smtp-fw-6002.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234406AbhD0Dru (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 26 Apr 2021 23:47:50 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=XVPOzhfL8Fjkv0VYQNNMPcLZkAwJOlBTfp5jTSkBo5E=;
-        b=ar9uu5Nr4qN/l6z2co3wDTB1QFW5FMJkQZ07quTblxtwJ0gYYwk1NZ5dlc4a1QftJp
-         x48Ce9/Iam15H6tLT8SU/h/idQiMPjCN6v6FiLnFVCbMm2NF6JGBJoqET2n8WCnCH4uv
-         zCHUQW6Oy0QfULfCX33uAIorx0PAaWvdSalGCcnsCjdz3NOmntwjStqsDtett532Qbhi
-         KMlBZHdMCf/NReONFNutybcRngnXe+n86ciugnKfV+rBk275GxC6SkdJl7W/uztJp1RG
-         f8cG1rA0hGE3AWdYWhZF+6UEhBEC9GWKN6lDYpG+qd5HC94SBH6kXPr2MiLhhLF1PtN+
-         TXnQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=XVPOzhfL8Fjkv0VYQNNMPcLZkAwJOlBTfp5jTSkBo5E=;
-        b=c00C5QTfZ5R8ptt15KI1vpjy9VzmTTjRRwZPa8qZ8v4Ol5W07L68KXqjBtU+y7LHyI
-         wcHE1/x5hP4V4rMQPmUsSINy9E+JaNjcuz7WVXEkkpzVuE6B/2fiwtKgpTVebKZEO3Hg
-         hEs8v/cBOPAqXUbVkbaJx2QT6nQ6un+DzeLpHJJ8Lx7PDSRbLPBK9+XJR7HISaM76X81
-         Z5nq412I1I9uAPlPJm3ExFdqelmsAwPFUV3E3Q/dTojM1ipmHC6pkKY/w87tJknGLPpM
-         N6zmB4fHxfysITYLt1MsMyb5viKFG/GHRlbBVeDNMurtSfDuAmitjSgiiI5/EUV/zVxZ
-         vsdw==
-X-Gm-Message-State: AOAM531s5+VuUviebAR13ADGsXvptwdCvqjy+QyreRoC9VAzQt3PPYjw
-        9mQGp3+ziVYFVwGEzU4QwzAnFssy9gY=
-X-Google-Smtp-Source: ABdhPJzkon7RJ1v8o9CB+96vq413g8a1ZJCiS0SAPkZIWqDV+kKX7qxNETzkLWKybWVdhzLWT9yU+Q==
-X-Received: by 2002:a02:294e:: with SMTP id p75mr19458775jap.34.1619494805793;
-        Mon, 26 Apr 2021 20:40:05 -0700 (PDT)
-Received: from aroeseler-ly545.hsd1.ut.comcast.net ([2601:681:8800:baf9:1ee4:d363:8fe6:b64f])
-        by smtp.googlemail.com with ESMTPSA id y12sm8450096ioa.12.2021.04.26.20.40.05
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 26 Apr 2021 20:40:05 -0700 (PDT)
-From:   Andreas Roeseler <andreas.a.roeseler@gmail.com>
-To:     netdev@vger.kernel.org
-Cc:     davem@davemloft.net, yoshfuji@linux-ipv6.org, dsahern@kernel.org,
-        kuba@kernel.org, Andreas Roeseler <andreas.a.roeseler@gmail.com>
-Subject: [PATCH net-next] icmp: standardize naming of RFC 8335 PROBE constants
-Date:   Mon, 26 Apr 2021 22:40:02 -0500
-Message-Id: <20210427034002.291543-1-andreas.a.roeseler@gmail.com>
-X-Mailer: git-send-email 2.31.1
+  d=amazon.co.jp; i=@amazon.co.jp; q=dns/txt;
+  s=amazon201209; t=1619495229; x=1651031229;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=t6tAdQlIpp9W88atuV8CyB0mCSqcS0sDQQjhTKNSrN0=;
+  b=D4AmW5SNIONMVO24ueSTVJa2Vvv41gnDsArL2tdW4TkgAuZ3DoBLfF6W
+   rXkvXa6XbQv0lgDwhJc2tynzhd6C5GfkkkaORIYiZSBZmFtofgClS8f+g
+   Mxcf/UlE0ez3IBKjDCWpOX6WYH+fTKdGoYMwtPI/tZmoM3Dvuie6aM8eg
+   M=;
+X-IronPort-AV: E=Sophos;i="5.82,254,1613433600"; 
+   d="scan'208";a="108548899"
+Received: from iad12-co-svc-p1-lb1-vlan2.amazon.com (HELO email-inbound-relay-2c-cc689b93.us-west-2.amazon.com) ([10.43.8.2])
+  by smtp-border-fw-6002.iad6.amazon.com with ESMTP; 27 Apr 2021 03:47:07 +0000
+Received: from EX13MTAUWB001.ant.amazon.com (pdx1-ws-svc-p6-lb9-vlan3.pdx.amazon.com [10.236.137.198])
+        by email-inbound-relay-2c-cc689b93.us-west-2.amazon.com (Postfix) with ESMTPS id B02E61201AF;
+        Tue, 27 Apr 2021 03:47:05 +0000 (UTC)
+Received: from EX13D04ANC001.ant.amazon.com (10.43.157.89) by
+ EX13MTAUWB001.ant.amazon.com (10.43.161.249) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.2; Tue, 27 Apr 2021 03:47:05 +0000
+Received: from 88665a182662.ant.amazon.com (10.43.162.93) by
+ EX13D04ANC001.ant.amazon.com (10.43.157.89) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.2; Tue, 27 Apr 2021 03:47:00 +0000
+From:   Kuniyuki Iwashima <kuniyu@amazon.co.jp>
+To:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>
+CC:     Benjamin Herrenschmidt <benh@amazon.com>,
+        Kuniyuki Iwashima <kuniyu@amazon.co.jp>,
+        Kuniyuki Iwashima <kuni1840@gmail.com>, <bpf@vger.kernel.org>,
+        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+Subject: [PATCH v4 bpf-next 00/11] Socket migration for SO_REUSEPORT.
+Date:   Tue, 27 Apr 2021 12:46:12 +0900
+Message-ID: <20210427034623.46528-1-kuniyu@amazon.co.jp>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [10.43.162.93]
+X-ClientProxiedBy: EX13D18UWC002.ant.amazon.com (10.43.162.88) To
+ EX13D04ANC001.ant.amazon.com (10.43.157.89)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The current definitions of constants for PROBE are inconsistent, with
-some beginning with ICMP and others with simply EXT. This patch
-attempts to standardize the naming conventions of the constants for
-PROBE, and update the relevant definitions in net/ipv4/icmp.c.
+The SO_REUSEPORT option allows sockets to listen on the same port and to
+accept connections evenly. However, there is a defect in the current
+implementation [1]. When a SYN packet is received, the connection is tied
+to a listening socket. Accordingly, when the listener is closed, in-flight
+requests during the three-way handshake and child sockets in the accept
+queue are dropped even if other listeners on the same port could accept
+such connections.
 
-Similarly, the definitions for the code field (previously
-ICMP_EXT_MAL_QUERY, etc) use the same prefixes as the type field. This
-patch adds _CODE_ to the prefix to clarify the distinction of these
-constants.
+This situation can happen when various server management tools restart
+server (such as nginx) processes. For instance, when we change nginx
+configurations and restart it, it spins up new workers that respect the new
+configuration and closes all listeners on the old workers, resulting in the
+in-flight ACK of 3WHS is responded by RST.
 
-Signed-off-by: Andreas Roeseler <andreas.a.roeseler@gmail.com>
----
- include/uapi/linux/icmp.h | 28 ++++++++++++++--------------
- net/ipv4/icmp.c           | 16 ++++++++--------
- 2 files changed, 22 insertions(+), 22 deletions(-)
+To avoid such a situation, users have to know deeply how the kernel handles
+SYN packets and implement connection draining by eBPF [2]:
 
-diff --git a/include/uapi/linux/icmp.h b/include/uapi/linux/icmp.h
-index 222325d1d80e..c1da8244c5e1 100644
---- a/include/uapi/linux/icmp.h
-+++ b/include/uapi/linux/icmp.h
-@@ -70,22 +70,22 @@
- #define ICMP_EXC_FRAGTIME	1	/* Fragment Reass time exceeded	*/
- 
- /* Codes for EXT_ECHO (PROBE) */
--#define ICMP_EXT_ECHO		42
--#define ICMP_EXT_ECHOREPLY	43
--#define ICMP_EXT_MAL_QUERY	1	/* Malformed Query */
--#define ICMP_EXT_NO_IF		2	/* No such Interface */
--#define ICMP_EXT_NO_TABLE_ENT	3	/* No such Table Entry */
--#define ICMP_EXT_MULT_IFS	4	/* Multiple Interfaces Satisfy Query */
-+#define ICMP_EXT_ECHO			42
-+#define ICMP_EXT_ECHOREPLY		43
-+#define ICMP_EXT_CODE_MAL_QUERY		1	/* Malformed Query */
-+#define ICMP_EXT_CODE_NO_IF		2	/* No such Interface */
-+#define ICMP_EXT_CODE_NO_TABLE_ENT	3	/* No such Table Entry */
-+#define ICMP_EXT_CODE_MULT_IFS		4	/* Multiple Interfaces Satisfy Query */
- 
- /* Constants for EXT_ECHO (PROBE) */
--#define EXT_ECHOREPLY_ACTIVE	(1 << 2)/* active bit in reply message */
--#define EXT_ECHOREPLY_IPV4	(1 << 1)/* ipv4 bit in reply message */
--#define EXT_ECHOREPLY_IPV6	1	/* ipv6 bit in reply message */
--#define EXT_ECHO_CTYPE_NAME	1
--#define EXT_ECHO_CTYPE_INDEX	2
--#define EXT_ECHO_CTYPE_ADDR	3
--#define ICMP_AFI_IP		1	/* Address Family Identifier for ipv4 */
--#define ICMP_AFI_IP6		2	/* Address Family Identifier for ipv6 */
-+#define ICMP_EXT_ECHOREPLY_ACTIVE	(1 << 2)/* active bit in reply message */
-+#define ICMP_EXT_ECHOREPLY_IPV4		(1 << 1)/* ipv4 bit in reply message */
-+#define ICMP_EXT_ECHOREPLY_IPV6		1	/* ipv6 bit in reply message */
-+#define ICMP_EXT_ECHO_CTYPE_NAME	1
-+#define ICMP_EXT_ECHO_CTYPE_INDEX	2
-+#define ICMP_EXT_ECHO_CTYPE_ADDR	3
-+#define ICMP_AFI_IP			1	/* Address Family Identifier for ipv4 */
-+#define ICMP_AFI_IP6			2	/* Address Family Identifier for ipv6 */
- 
- struct icmphdr {
-   __u8		type;
-diff --git a/net/ipv4/icmp.c b/net/ipv4/icmp.c
-index 8bd988fbcb31..7b6931a4d775 100644
---- a/net/ipv4/icmp.c
-+++ b/net/ipv4/icmp.c
-@@ -1033,7 +1033,7 @@ static bool icmp_echo(struct sk_buff *skb)
- 	status = 0;
- 	dev = NULL;
- 	switch (iio->extobj_hdr.class_type) {
--	case EXT_ECHO_CTYPE_NAME:
-+	case ICMP_EXT_ECHO_CTYPE_NAME:
- 		iio = skb_header_pointer(skb, sizeof(_ext_hdr), sizeof(_iio), &_iio);
- 		if (ident_len >= IFNAMSIZ)
- 			goto send_mal_query;
-@@ -1041,14 +1041,14 @@ static bool icmp_echo(struct sk_buff *skb)
- 		memcpy(buff, &iio->ident.name, ident_len);
- 		dev = dev_get_by_name(net, buff);
- 		break;
--	case EXT_ECHO_CTYPE_INDEX:
-+	case ICMP_EXT_ECHO_CTYPE_INDEX:
- 		iio = skb_header_pointer(skb, sizeof(_ext_hdr), sizeof(iio->extobj_hdr) +
- 					 sizeof(iio->ident.ifindex), &_iio);
- 		if (ident_len != sizeof(iio->ident.ifindex))
- 			goto send_mal_query;
- 		dev = dev_get_by_index(net, ntohl(iio->ident.ifindex));
- 		break;
--	case EXT_ECHO_CTYPE_ADDR:
-+	case ICMP_EXT_ECHO_CTYPE_ADDR:
- 		if (ident_len != sizeof(iio->ident.addr.ctype3_hdr) +
- 				 iio->ident.addr.ctype3_hdr.addrlen)
- 			goto send_mal_query;
-@@ -1080,23 +1080,23 @@ static bool icmp_echo(struct sk_buff *skb)
- 		goto send_mal_query;
- 	}
- 	if (!dev) {
--		icmp_param.data.icmph.code = ICMP_EXT_NO_IF;
-+		icmp_param.data.icmph.code = ICMP_EXT_CODE_NO_IF;
- 		goto send_reply;
- 	}
- 	/* Fill bits in reply message */
- 	if (dev->flags & IFF_UP)
--		status |= EXT_ECHOREPLY_ACTIVE;
-+		status |= ICMP_EXT_ECHOREPLY_ACTIVE;
- 	if (__in_dev_get_rcu(dev) && __in_dev_get_rcu(dev)->ifa_list)
--		status |= EXT_ECHOREPLY_IPV4;
-+		status |= ICMP_EXT_ECHOREPLY_IPV4;
- 	if (!list_empty(&rcu_dereference(dev->ip6_ptr)->addr_list))
--		status |= EXT_ECHOREPLY_IPV6;
-+		status |= ICMP_EXT_ECHOREPLY_IPV6;
- 	dev_put(dev);
- 	icmp_param.data.icmph.un.echo.sequence |= htons(status);
- send_reply:
- 	icmp_reply(&icmp_param, skb);
- 		return true;
- send_mal_query:
--	icmp_param.data.icmph.code = ICMP_EXT_MAL_QUERY;
-+	icmp_param.data.icmph.code = ICMP_EXT_CODE_MAL_QUERY;
- 	goto send_reply;
- }
- 
+  1. Stop routing SYN packets to the listener by eBPF.
+  2. Wait for all timers to expire to complete requests
+  3. Accept connections until EAGAIN, then close the listener.
+
+  or
+
+  1. Start counting SYN packets and accept syscalls using the eBPF map.
+  2. Stop routing SYN packets.
+  3. Accept connections up to the count, then close the listener.
+
+In either way, we cannot close a listener immediately. However, ideally,
+the application need not drain the not yet accepted sockets because 3WHS
+and tying a connection to a listener are just the kernel behaviour. The
+root cause is within the kernel, so the issue should be addressed in kernel
+space and should not be visible to user space. This patchset fixes it so
+that users need not take care of kernel implementation and connection
+draining. With this patchset, the kernel redistributes requests and
+connections from a listener to the others in the same reuseport group
+at/after close or shutdown syscalls.
+
+Although some software does connection draining, there are still merits in
+migration. For some security reasons, such as replacing TLS certificates,
+we may want to apply new settings as soon as possible and/or we may not be
+able to wait for connection draining. The sockets in the accept queue have
+not started application sessions yet. So, if we do not drain such sockets,
+they can be handled by the newer listeners and could have a longer
+lifetime. It is difficult to drain all connections in every case, but we
+can decrease such aborted connections by migration. In that sense,
+migration is always better than draining. 
+
+Moreover, auto-migration simplifies user space logic and also works well in
+a case where we cannot modify and build a server program to implement the
+workaround.
+
+Note that the source and destination listeners MUST have the same settings
+at the socket API level; otherwise, applications may face inconsistency and
+cause errors. In such a case, we have to use the eBPF program to select a
+specific listener or to cancel migration.
+
+Special thanks to Martin KaFai Lau for bouncing ideas and exchanging code
+snippets along the way.
+
+
+Link:
+ [1] The SO_REUSEPORT socket option
+ https://lwn.net/Articles/542629/
+
+ [2] Re: [PATCH 1/1] net: Add SO_REUSEPORT_LISTEN_OFF socket option as drain mode
+ https://lore.kernel.org/netdev/1458828813.10868.65.camel@edumazet-glaptop3.roam.corp.google.com/
+
+
+Changelog:
+ v4:
+  * Make some functions and variables 'static' in selftest
+  * Remove 'scalability' from the cover letter because it is not
+    primarily reason to use SO_REUSEPORT
+
+ v3:
+ https://lore.kernel.org/bpf/20210420154140.80034-1-kuniyu@amazon.co.jp/
+  * Add sysctl back for reuseport_grow()
+  * Add helper functions to manage socks[]
+  * Separate migration related logic into functions: reuseport_resurrect(),
+    reuseport_stop_listen_sock(), reuseport_migrate_sock()
+  * Clone request_sock to be migrated
+  * Migrate request one by one
+  * Pass child socket to eBPF prog
+
+ v2:
+ https://lore.kernel.org/netdev/20201207132456.65472-1-kuniyu@amazon.co.jp/
+  * Do not save closed sockets in socks[]
+  * Revert 607904c357c61adf20b8fd18af765e501d61a385
+  * Extract inet_csk_reqsk_queue_migrate() into a single patch
+  * Change the spin_lock order to avoid lockdep warning
+  * Add static to __reuseport_select_sock
+  * Use refcount_inc_not_zero() in reuseport_select_migrated_sock()
+  * Set the default attach type in bpf_prog_load_check_attach()
+  * Define new proto of BPF_FUNC_get_socket_cookie
+  * Fix test to be compiled successfully
+  * Update commit messages
+
+ v1:
+ https://lore.kernel.org/netdev/20201201144418.35045-1-kuniyu@amazon.co.jp/
+  * Remove the sysctl option
+  * Enable migration if eBPF progam is not attached
+  * Add expected_attach_type to check if eBPF program can migrate sockets
+  * Add a field to tell migration type to eBPF program
+  * Support BPF_FUNC_get_socket_cookie to get the cookie of sk
+  * Allocate an empty skb if skb is NULL
+  * Pass req_to_sk(req)->sk_hash because listener's hash is zero
+  * Update commit messages and coverletter
+
+ RFC:
+ https://lore.kernel.org/netdev/20201117094023.3685-1-kuniyu@amazon.co.jp/
+
+
+Kuniyuki Iwashima (11):
+  net: Introduce net.ipv4.tcp_migrate_req.
+  tcp: Add num_closed_socks to struct sock_reuseport.
+  tcp: Keep TCP_CLOSE sockets in the reuseport group.
+  tcp: Add reuseport_migrate_sock() to select a new listener.
+  tcp: Migrate TCP_ESTABLISHED/TCP_SYN_RECV sockets in accept queues.
+  tcp: Migrate TCP_NEW_SYN_RECV requests at retransmitting SYN+ACKs.
+  tcp: Migrate TCP_NEW_SYN_RECV requests at receiving the final ACK.
+  bpf: Support BPF_FUNC_get_socket_cookie() for
+    BPF_PROG_TYPE_SK_REUSEPORT.
+  bpf: Support socket migration by eBPF.
+  libbpf: Set expected_attach_type for BPF_PROG_TYPE_SK_REUSEPORT.
+  bpf: Test BPF_SK_REUSEPORT_SELECT_OR_MIGRATE.
+
+ Documentation/networking/ip-sysctl.rst        |  20 +
+ include/linux/bpf.h                           |   1 +
+ include/linux/filter.h                        |   2 +
+ include/net/netns/ipv4.h                      |   1 +
+ include/net/request_sock.h                    |   2 +
+ include/net/sock_reuseport.h                  |   9 +-
+ include/uapi/linux/bpf.h                      |  16 +
+ kernel/bpf/syscall.c                          |  13 +
+ net/core/filter.c                             |  23 +-
+ net/core/request_sock.c                       |  38 ++
+ net/core/sock_reuseport.c                     | 337 ++++++++++--
+ net/ipv4/inet_connection_sock.c               | 147 +++++-
+ net/ipv4/inet_hashtables.c                    |   2 +-
+ net/ipv4/sysctl_net_ipv4.c                    |   9 +
+ net/ipv4/tcp_ipv4.c                           |  20 +-
+ net/ipv6/tcp_ipv6.c                           |  14 +-
+ tools/include/uapi/linux/bpf.h                |  16 +
+ tools/lib/bpf/libbpf.c                        |   5 +-
+ tools/testing/selftests/bpf/network_helpers.c |   2 +-
+ tools/testing/selftests/bpf/network_helpers.h |   1 +
+ .../bpf/prog_tests/migrate_reuseport.c        | 484 ++++++++++++++++++
+ .../bpf/progs/test_migrate_reuseport.c        |  51 ++
+ 22 files changed, 1151 insertions(+), 62 deletions(-)
+ create mode 100644 tools/testing/selftests/bpf/prog_tests/migrate_reuseport.c
+ create mode 100644 tools/testing/selftests/bpf/progs/test_migrate_reuseport.c
+
 -- 
-2.31.1
+2.30.2
 
