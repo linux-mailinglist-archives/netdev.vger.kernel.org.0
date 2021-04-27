@@ -2,155 +2,181 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6B83436BDCA
-	for <lists+netdev@lfdr.de>; Tue, 27 Apr 2021 05:37:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EBBBE36BDCC
+	for <lists+netdev@lfdr.de>; Tue, 27 Apr 2021 05:40:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234235AbhD0Dhx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 26 Apr 2021 23:37:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51794 "EHLO
+        id S233361AbhD0Dkv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 26 Apr 2021 23:40:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52444 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234038AbhD0Dhx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 26 Apr 2021 23:37:53 -0400
-Received: from mail-pj1-x1032.google.com (mail-pj1-x1032.google.com [IPv6:2607:f8b0:4864:20::1032])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A949BC061574;
-        Mon, 26 Apr 2021 20:37:10 -0700 (PDT)
-Received: by mail-pj1-x1032.google.com with SMTP id j6-20020a17090adc86b02900cbfe6f2c96so6483415pjv.1;
-        Mon, 26 Apr 2021 20:37:10 -0700 (PDT)
+        with ESMTP id S230338AbhD0Dks (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 26 Apr 2021 23:40:48 -0400
+Received: from mail-io1-xd2d.google.com (mail-io1-xd2d.google.com [IPv6:2607:f8b0:4864:20::d2d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 792ECC061574
+        for <netdev@vger.kernel.org>; Mon, 26 Apr 2021 20:40:06 -0700 (PDT)
+Received: by mail-io1-xd2d.google.com with SMTP id z14so5752379ioc.12
+        for <netdev@vger.kernel.org>; Mon, 26 Apr 2021 20:40:06 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=1C9CVPJr3BySELErdByj88ox5WCaDH+ROiGvIWTc27Q=;
-        b=X1bxRQr92MujTxcXWxK6ARS9RokTQ9kEjBttRd8OBiEJV+EEDjf3jOdq1HUAh9BXrc
-         qn2jDca9by0UVF17jj9d86GrfqnyI2VgrmZbmX5d9XYMLtEp9gtgh/8v+24fpPKn9bcN
-         f+xmW3vYAuckDxFRfpEmdIstsvr/CcSTmiLlbnN+QQdxrJdiwRbICnxgO+kEM9smz5Ch
-         wRqchw3S7Zs5beuwzuBZYoHcGiuN5O83yCvU0FXYc/MdOPQssUtECj7JtMW+m7ksi3H8
-         FhwfFiMi2tfuIgdu84j17fVpbZUfjb5bp53Ig29l8JSUzUz0sAPm586CRCotvWuhbP9K
-         X/9w==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=XVPOzhfL8Fjkv0VYQNNMPcLZkAwJOlBTfp5jTSkBo5E=;
+        b=ar9uu5Nr4qN/l6z2co3wDTB1QFW5FMJkQZ07quTblxtwJ0gYYwk1NZ5dlc4a1QftJp
+         x48Ce9/Iam15H6tLT8SU/h/idQiMPjCN6v6FiLnFVCbMm2NF6JGBJoqET2n8WCnCH4uv
+         zCHUQW6Oy0QfULfCX33uAIorx0PAaWvdSalGCcnsCjdz3NOmntwjStqsDtett532Qbhi
+         KMlBZHdMCf/NReONFNutybcRngnXe+n86ciugnKfV+rBk275GxC6SkdJl7W/uztJp1RG
+         f8cG1rA0hGE3AWdYWhZF+6UEhBEC9GWKN6lDYpG+qd5HC94SBH6kXPr2MiLhhLF1PtN+
+         TXnQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=1C9CVPJr3BySELErdByj88ox5WCaDH+ROiGvIWTc27Q=;
-        b=J7LVmMxKdzyQ/X7EuormpT52sX2Ry6m9r6FGYANoSv2lNd2hE2n2io6PM8Hch1DiXb
-         N/E3EiFkSkd578i/YhoMTR6wfoR/w/6AtadPSb0qxZfIWapoh0kA9N8eQoQXIiOXgXoB
-         nNj7oUpE+cFOC81pvYxtKgrFshdUsZG5Wn9YAoQ+c8Fnqz81CmJcdtc1oys0VPCxajGS
-         W0sfPN7xy5kCWn596jhj/Tfv5/4RnwJsm1EiaBHiZZ/IwJmKEPADohw9lSenHT/hvQqz
-         gAnP9omPLXeABN7kj7GWqKPu3Fvss9SK59nugb7ASCvpgUYObOvKxPZVoKSIPZkiI6eu
-         XBeg==
-X-Gm-Message-State: AOAM533HJCptEZ5iDqDk0+alRFNhBj1VYGB09VV//OKToFwY7vbZabdZ
-        QeIItBkn4YKG3GsIvWivJocviuALhfo=
-X-Google-Smtp-Source: ABdhPJxJ300vI7i9A7zptPhLn24TUYRntVEoo0cEeDSnT8lAIjvcpK4vBggEilQFSgWwt/T631MVtA==
-X-Received: by 2002:a17:90a:6282:: with SMTP id d2mr2519701pjj.168.1619494630141;
-        Mon, 26 Apr 2021 20:37:10 -0700 (PDT)
-Received: from ast-mbp.dhcp.thefacebook.com ([2620:10d:c090:400::5:1ad0])
-        by smtp.gmail.com with ESMTPSA id q26sm970476pfg.146.2021.04.26.20.37.08
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=XVPOzhfL8Fjkv0VYQNNMPcLZkAwJOlBTfp5jTSkBo5E=;
+        b=c00C5QTfZ5R8ptt15KI1vpjy9VzmTTjRRwZPa8qZ8v4Ol5W07L68KXqjBtU+y7LHyI
+         wcHE1/x5hP4V4rMQPmUsSINy9E+JaNjcuz7WVXEkkpzVuE6B/2fiwtKgpTVebKZEO3Hg
+         hEs8v/cBOPAqXUbVkbaJx2QT6nQ6un+DzeLpHJJ8Lx7PDSRbLPBK9+XJR7HISaM76X81
+         Z5nq412I1I9uAPlPJm3ExFdqelmsAwPFUV3E3Q/dTojM1ipmHC6pkKY/w87tJknGLPpM
+         N6zmB4fHxfysITYLt1MsMyb5viKFG/GHRlbBVeDNMurtSfDuAmitjSgiiI5/EUV/zVxZ
+         vsdw==
+X-Gm-Message-State: AOAM531s5+VuUviebAR13ADGsXvptwdCvqjy+QyreRoC9VAzQt3PPYjw
+        9mQGp3+ziVYFVwGEzU4QwzAnFssy9gY=
+X-Google-Smtp-Source: ABdhPJzkon7RJ1v8o9CB+96vq413g8a1ZJCiS0SAPkZIWqDV+kKX7qxNETzkLWKybWVdhzLWT9yU+Q==
+X-Received: by 2002:a02:294e:: with SMTP id p75mr19458775jap.34.1619494805793;
+        Mon, 26 Apr 2021 20:40:05 -0700 (PDT)
+Received: from aroeseler-ly545.hsd1.ut.comcast.net ([2601:681:8800:baf9:1ee4:d363:8fe6:b64f])
+        by smtp.googlemail.com with ESMTPSA id y12sm8450096ioa.12.2021.04.26.20.40.05
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 26 Apr 2021 20:37:09 -0700 (PDT)
-Date:   Mon, 26 Apr 2021 20:37:07 -0700
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Kernel Team <kernel-team@fb.com>
-Subject: Re: [PATCH v2 bpf-next 10/16] bpf: Add bpf_btf_find_by_name_kind()
- helper.
-Message-ID: <20210427033707.fu7hsm6xi5ayx6he@ast-mbp.dhcp.thefacebook.com>
-References: <20210423002646.35043-1-alexei.starovoitov@gmail.com>
- <20210423002646.35043-11-alexei.starovoitov@gmail.com>
- <CAEf4BzYkzzN=ZD2X1bOg8U39Whbe6oTPuUEMOpACw6NPEW69NA@mail.gmail.com>
+        Mon, 26 Apr 2021 20:40:05 -0700 (PDT)
+From:   Andreas Roeseler <andreas.a.roeseler@gmail.com>
+To:     netdev@vger.kernel.org
+Cc:     davem@davemloft.net, yoshfuji@linux-ipv6.org, dsahern@kernel.org,
+        kuba@kernel.org, Andreas Roeseler <andreas.a.roeseler@gmail.com>
+Subject: [PATCH net-next] icmp: standardize naming of RFC 8335 PROBE constants
+Date:   Mon, 26 Apr 2021 22:40:02 -0500
+Message-Id: <20210427034002.291543-1-andreas.a.roeseler@gmail.com>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAEf4BzYkzzN=ZD2X1bOg8U39Whbe6oTPuUEMOpACw6NPEW69NA@mail.gmail.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Apr 26, 2021 at 03:46:29PM -0700, Andrii Nakryiko wrote:
-> On Thu, Apr 22, 2021 at 5:27 PM Alexei Starovoitov
-> <alexei.starovoitov@gmail.com> wrote:
-> >
-> > From: Alexei Starovoitov <ast@kernel.org>
-> >
-> > Add new helper:
-> >
-> > long bpf_btf_find_by_name_kind(u32 btf_fd, char *name, u32 kind, int flags)
-> >         Description
-> >                 Find given name with given type in BTF pointed to by btf_fd.
-> >                 If btf_fd is zero look for the name in vmlinux BTF and in module's BTFs.
-> >         Return
-> >                 Returns btf_id and btf_obj_fd in lower and upper 32 bits.
-> >
-> > Signed-off-by: Alexei Starovoitov <ast@kernel.org>
-> > ---
-> >  include/linux/bpf.h            |  1 +
-> >  include/uapi/linux/bpf.h       |  8 ++++
-> >  kernel/bpf/btf.c               | 68 ++++++++++++++++++++++++++++++++++
-> >  kernel/bpf/syscall.c           |  2 +
-> >  tools/include/uapi/linux/bpf.h |  8 ++++
-> >  5 files changed, 87 insertions(+)
-> >
-> > diff --git a/include/linux/bpf.h b/include/linux/bpf.h
-> > index 0f841bd0cb85..4cf361eb6a80 100644
-> > --- a/include/linux/bpf.h
-> > +++ b/include/linux/bpf.h
-> > @@ -1972,6 +1972,7 @@ extern const struct bpf_func_proto bpf_get_socket_ptr_cookie_proto;
-> >  extern const struct bpf_func_proto bpf_task_storage_get_proto;
-> >  extern const struct bpf_func_proto bpf_task_storage_delete_proto;
-> >  extern const struct bpf_func_proto bpf_for_each_map_elem_proto;
-> > +extern const struct bpf_func_proto bpf_btf_find_by_name_kind_proto;
-> >
-> >  const struct bpf_func_proto *bpf_tracing_func_proto(
-> >         enum bpf_func_id func_id, const struct bpf_prog *prog);
-> > diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
-> > index de58a714ed36..253f5f031f08 100644
-> > --- a/include/uapi/linux/bpf.h
-> > +++ b/include/uapi/linux/bpf.h
-> > @@ -4748,6 +4748,13 @@ union bpf_attr {
-> >   *             Execute bpf syscall with given arguments.
-> >   *     Return
-> >   *             A syscall result.
-> > + *
-> > + * long bpf_btf_find_by_name_kind(u32 btf_fd, char *name, u32 kind, int flags)
-> > + *     Description
-> > + *             Find given name with given type in BTF pointed to by btf_fd.
-> 
-> "Find BTF type with given name"? Should the limits on name length be
+The current definitions of constants for PROBE are inconsistent, with
+some beginning with ICMP and others with simply EXT. This patch
+attempts to standardize the naming conventions of the constants for
+PROBE, and update the relevant definitions in net/ipv4/icmp.c.
 
-+1
+Similarly, the definitions for the code field (previously
+ICMP_EXT_MAL_QUERY, etc) use the same prefixes as the type field. This
+patch adds _CODE_ to the prefix to clarify the distinction of these
+constants.
 
-> specified? KSYM_NAME_LEN is a pretty arbitrary restriction.
+Signed-off-by: Andreas Roeseler <andreas.a.roeseler@gmail.com>
+---
+ include/uapi/linux/icmp.h | 28 ++++++++++++++--------------
+ net/ipv4/icmp.c           | 16 ++++++++--------
+ 2 files changed, 22 insertions(+), 22 deletions(-)
 
-that's implementation detail that shouldn't leak into uapi.
+diff --git a/include/uapi/linux/icmp.h b/include/uapi/linux/icmp.h
+index 222325d1d80e..c1da8244c5e1 100644
+--- a/include/uapi/linux/icmp.h
++++ b/include/uapi/linux/icmp.h
+@@ -70,22 +70,22 @@
+ #define ICMP_EXC_FRAGTIME	1	/* Fragment Reass time exceeded	*/
+ 
+ /* Codes for EXT_ECHO (PROBE) */
+-#define ICMP_EXT_ECHO		42
+-#define ICMP_EXT_ECHOREPLY	43
+-#define ICMP_EXT_MAL_QUERY	1	/* Malformed Query */
+-#define ICMP_EXT_NO_IF		2	/* No such Interface */
+-#define ICMP_EXT_NO_TABLE_ENT	3	/* No such Table Entry */
+-#define ICMP_EXT_MULT_IFS	4	/* Multiple Interfaces Satisfy Query */
++#define ICMP_EXT_ECHO			42
++#define ICMP_EXT_ECHOREPLY		43
++#define ICMP_EXT_CODE_MAL_QUERY		1	/* Malformed Query */
++#define ICMP_EXT_CODE_NO_IF		2	/* No such Interface */
++#define ICMP_EXT_CODE_NO_TABLE_ENT	3	/* No such Table Entry */
++#define ICMP_EXT_CODE_MULT_IFS		4	/* Multiple Interfaces Satisfy Query */
+ 
+ /* Constants for EXT_ECHO (PROBE) */
+-#define EXT_ECHOREPLY_ACTIVE	(1 << 2)/* active bit in reply message */
+-#define EXT_ECHOREPLY_IPV4	(1 << 1)/* ipv4 bit in reply message */
+-#define EXT_ECHOREPLY_IPV6	1	/* ipv6 bit in reply message */
+-#define EXT_ECHO_CTYPE_NAME	1
+-#define EXT_ECHO_CTYPE_INDEX	2
+-#define EXT_ECHO_CTYPE_ADDR	3
+-#define ICMP_AFI_IP		1	/* Address Family Identifier for ipv4 */
+-#define ICMP_AFI_IP6		2	/* Address Family Identifier for ipv6 */
++#define ICMP_EXT_ECHOREPLY_ACTIVE	(1 << 2)/* active bit in reply message */
++#define ICMP_EXT_ECHOREPLY_IPV4		(1 << 1)/* ipv4 bit in reply message */
++#define ICMP_EXT_ECHOREPLY_IPV6		1	/* ipv6 bit in reply message */
++#define ICMP_EXT_ECHO_CTYPE_NAME	1
++#define ICMP_EXT_ECHO_CTYPE_INDEX	2
++#define ICMP_EXT_ECHO_CTYPE_ADDR	3
++#define ICMP_AFI_IP			1	/* Address Family Identifier for ipv4 */
++#define ICMP_AFI_IP6			2	/* Address Family Identifier for ipv6 */
+ 
+ struct icmphdr {
+   __u8		type;
+diff --git a/net/ipv4/icmp.c b/net/ipv4/icmp.c
+index 8bd988fbcb31..7b6931a4d775 100644
+--- a/net/ipv4/icmp.c
++++ b/net/ipv4/icmp.c
+@@ -1033,7 +1033,7 @@ static bool icmp_echo(struct sk_buff *skb)
+ 	status = 0;
+ 	dev = NULL;
+ 	switch (iio->extobj_hdr.class_type) {
+-	case EXT_ECHO_CTYPE_NAME:
++	case ICMP_EXT_ECHO_CTYPE_NAME:
+ 		iio = skb_header_pointer(skb, sizeof(_ext_hdr), sizeof(_iio), &_iio);
+ 		if (ident_len >= IFNAMSIZ)
+ 			goto send_mal_query;
+@@ -1041,14 +1041,14 @@ static bool icmp_echo(struct sk_buff *skb)
+ 		memcpy(buff, &iio->ident.name, ident_len);
+ 		dev = dev_get_by_name(net, buff);
+ 		break;
+-	case EXT_ECHO_CTYPE_INDEX:
++	case ICMP_EXT_ECHO_CTYPE_INDEX:
+ 		iio = skb_header_pointer(skb, sizeof(_ext_hdr), sizeof(iio->extobj_hdr) +
+ 					 sizeof(iio->ident.ifindex), &_iio);
+ 		if (ident_len != sizeof(iio->ident.ifindex))
+ 			goto send_mal_query;
+ 		dev = dev_get_by_index(net, ntohl(iio->ident.ifindex));
+ 		break;
+-	case EXT_ECHO_CTYPE_ADDR:
++	case ICMP_EXT_ECHO_CTYPE_ADDR:
+ 		if (ident_len != sizeof(iio->ident.addr.ctype3_hdr) +
+ 				 iio->ident.addr.ctype3_hdr.addrlen)
+ 			goto send_mal_query;
+@@ -1080,23 +1080,23 @@ static bool icmp_echo(struct sk_buff *skb)
+ 		goto send_mal_query;
+ 	}
+ 	if (!dev) {
+-		icmp_param.data.icmph.code = ICMP_EXT_NO_IF;
++		icmp_param.data.icmph.code = ICMP_EXT_CODE_NO_IF;
+ 		goto send_reply;
+ 	}
+ 	/* Fill bits in reply message */
+ 	if (dev->flags & IFF_UP)
+-		status |= EXT_ECHOREPLY_ACTIVE;
++		status |= ICMP_EXT_ECHOREPLY_ACTIVE;
+ 	if (__in_dev_get_rcu(dev) && __in_dev_get_rcu(dev)->ifa_list)
+-		status |= EXT_ECHOREPLY_IPV4;
++		status |= ICMP_EXT_ECHOREPLY_IPV4;
+ 	if (!list_empty(&rcu_dereference(dev->ip6_ptr)->addr_list))
+-		status |= EXT_ECHOREPLY_IPV6;
++		status |= ICMP_EXT_ECHOREPLY_IPV6;
+ 	dev_put(dev);
+ 	icmp_param.data.icmph.un.echo.sequence |= htons(status);
+ send_reply:
+ 	icmp_reply(&icmp_param, skb);
+ 		return true;
+ send_mal_query:
+-	icmp_param.data.icmph.code = ICMP_EXT_MAL_QUERY;
++	icmp_param.data.icmph.code = ICMP_EXT_CODE_MAL_QUERY;
+ 	goto send_reply;
+ }
+ 
+-- 
+2.31.1
 
-> Also,
-> would it still work fine if the caller provides a pointer to a much
-> shorter piece of memory?
-> 
-> Why not add name_sz right after name, as we do with a lot of other
-> arguments like this?
-
-That's an option too, but then the helper will have 5 args and 'flags'
-would be likely useless. I mean unlikely it will help extending it.
-I was thinking about ARG_PTR_TO_CONST_STR, but it doesn't work,
-since blob is writeable by the prog. It's read only from user space.
-I'm fine with name, name_sz though.
-
-> 
-> > + *             If btf_fd is zero look for the name in vmlinux BTF and in module's BTFs.
-> > + *     Return
-> > + *             Returns btf_id and btf_obj_fd in lower and upper 32 bits.
-> 
-> Mention that for vmlinux BTF btf_obj_fd will be zero? Also who "owns"
-> the FD? If the BPF program doesn't close it, when are they going to be
-> cleaned up?
-
-just like bpf_sys_bpf. Who owns returned FD? The program that called
-the helper, of course.
-In the current shape of loader prog these btf fds are cleaned up correctly
-in success and in error case.
-Not all FDs though. map fds will stay around if bpf_sys_bpf(prog_load) fails to load.
-Tweaking loader prog to close all FDs in error case is on todo list.
