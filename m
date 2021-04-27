@@ -2,78 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2D2B936CC8B
-	for <lists+netdev@lfdr.de>; Tue, 27 Apr 2021 22:44:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7A47436CD8B
+	for <lists+netdev@lfdr.de>; Tue, 27 Apr 2021 23:01:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238967AbhD0Uoo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 27 Apr 2021 16:44:44 -0400
-Received: from mail.netfilter.org ([217.70.188.207]:54322 "EHLO
-        mail.netfilter.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239010AbhD0Uok (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 27 Apr 2021 16:44:40 -0400
-Received: from localhost.localdomain (unknown [90.77.255.23])
-        by mail.netfilter.org (Postfix) with ESMTPSA id C522864145;
-        Tue, 27 Apr 2021 22:43:18 +0200 (CEST)
-From:   Pablo Neira Ayuso <pablo@netfilter.org>
-To:     netfilter-devel@vger.kernel.org
-Cc:     davem@davemloft.net, netdev@vger.kernel.org, kuba@kernel.org
-Subject: [PATCH net-next 7/7] netfilter: nft_socket: fix build with CONFIG_SOCK_CGROUP_DATA=n
-Date:   Tue, 27 Apr 2021 22:43:45 +0200
-Message-Id: <20210427204345.22043-8-pablo@netfilter.org>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20210427204345.22043-1-pablo@netfilter.org>
-References: <20210427204345.22043-1-pablo@netfilter.org>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        id S239296AbhD0VBi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 27 Apr 2021 17:01:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57276 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S239033AbhD0VBg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 27 Apr 2021 17:01:36 -0400
+Received: from mail-il1-x12c.google.com (mail-il1-x12c.google.com [IPv6:2607:f8b0:4864:20::12c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F1D70C061763;
+        Tue, 27 Apr 2021 14:00:52 -0700 (PDT)
+Received: by mail-il1-x12c.google.com with SMTP id c3so360181ils.5;
+        Tue, 27 Apr 2021 14:00:52 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:message-id:in-reply-to:references:subject
+         :mime-version:content-transfer-encoding;
+        bh=B9O6HSSSA2HKZOCKluIOarWGuOU/V28mAm16p4AZpog=;
+        b=D04IMBmMDXb6Z0W1Y9ySafEizPw3oANrBF2atbexHhUMMXIah9w/+LyNKudUBcpiOT
+         JEL9dBDyiyR2NjKGl04A31Ce+hpUUJNcKing68Q1yqDwsBYm8mB1/mnRgX04SglSVgus
+         9ILkvEDeXdm9QLjVrqYaJgNi9SdGy5Syvkc390HuR6tUesse0ldSmUR22AZKmZeDcck6
+         t5NgwwJwMQavKI3fJkBvRnMO1AoBZVidPvzNe5q180Maim2/1hHdjW5yqKZFBDPPt+Go
+         j6hVaEOfa1KBh5QDUUR6AEuxmzgYiWhL2GiT+72kf7k/QvFo8dhCkW3k/4Rvsd8r066a
+         3aXg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:message-id:in-reply-to
+         :references:subject:mime-version:content-transfer-encoding;
+        bh=B9O6HSSSA2HKZOCKluIOarWGuOU/V28mAm16p4AZpog=;
+        b=eaQ7otF4oge8EyrK9H+sUdD8mcbBIsQ3GVnSLYl/QEZLmZ6tK95K8Kme4FZJqakf6F
+         3WNSFJTdhmpAtivBUuZxGQgX9DkM8a09wGSVydFZg8+SyklLIaxI92SFF/1UTTknLlk/
+         zwDejEL30w5nrWJCRfX3GmiKqwP2OKi5d9QQoYEdhTK13sHyoINXlcvyKWDd8ewYr7HN
+         wyvWjzAslEeg+knlCdDFU8SrMPXpB+Zw5xOvSK34f0qIyzQanOsdOvbZ0iVljpQ5qg1R
+         A7rIxd/pjuvg59Eh+uKnwYQlMNrRshPZrZF7Ag4FbBSbot0MRhkImf+99GfRRa9k47il
+         K97A==
+X-Gm-Message-State: AOAM531YNBWCFbx73WlKwWRkai0Tzs7kHXcLsDK+Svdj49Ct6WaZ+tKN
+        /X6jNXXGbOYVU25zCZ4lNiA=
+X-Google-Smtp-Source: ABdhPJzO0+9U+FL/VKs1l/V42kmY09zRexDPR8IHo2zt9zpFBADk0hAplX775josdotwPTNhlSkdgg==
+X-Received: by 2002:a92:5214:: with SMTP id g20mr20724692ilb.219.1619557252439;
+        Tue, 27 Apr 2021 14:00:52 -0700 (PDT)
+Received: from localhost ([172.242.244.146])
+        by smtp.gmail.com with ESMTPSA id f13sm1913311ila.62.2021.04.27.14.00.50
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 27 Apr 2021 14:00:51 -0700 (PDT)
+Date:   Tue, 27 Apr 2021 14:00:43 -0700
+From:   John Fastabend <john.fastabend@gmail.com>
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        davem@davemloft.net
+Cc:     daniel@iogearbox.net, andrii@kernel.org, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, kernel-team@fb.com
+Message-ID: <60887b7ba5bba_12319208a5@john-XPS-13-9370.notmuch>
+In-Reply-To: <20210423002646.35043-11-alexei.starovoitov@gmail.com>
+References: <20210423002646.35043-1-alexei.starovoitov@gmail.com>
+ <20210423002646.35043-11-alexei.starovoitov@gmail.com>
+Subject: RE: [PATCH v2 bpf-next 10/16] bpf: Add bpf_btf_find_by_name_kind()
+ helper.
+Mime-Version: 1.0
+Content-Type: text/plain;
+ charset=utf-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Arnd Bergmann <arnd@arndb.de>
+Alexei Starovoitov wrote:
+> From: Alexei Starovoitov <ast@kernel.org>
+> 
+> Add new helper:
+> 
+> long bpf_btf_find_by_name_kind(u32 btf_fd, char *name, u32 kind, int flags)
+> 	Description
+> 		Find given name with given type in BTF pointed to by btf_fd.
+> 		If btf_fd is zero look for the name in vmlinux BTF and in module's BTFs.
+> 	Return
+> 		Returns btf_id and btf_obj_fd in lower and upper 32 bits.
+> 
+> Signed-off-by: Alexei Starovoitov <ast@kernel.org>
+> ---
 
-In some configurations, the sock_cgroup_ptr() function is not available:
+I'm missing some high-level concept on how this would be used? Where does btf_fd come
+from and how is it used so that it doesn't break sig-check?
 
-net/netfilter/nft_socket.c: In function 'nft_sock_get_eval_cgroupv2':
-net/netfilter/nft_socket.c:47:16: error: implicit declaration of function 'sock_cgroup_ptr'; did you mean 'obj_cgroup_put'? [-Werror=implicit-function-declaration]
-   47 |         cgrp = sock_cgroup_ptr(&sk->sk_cgrp_data);
-      |                ^~~~~~~~~~~~~~~
-      |                obj_cgroup_put
-net/netfilter/nft_socket.c:47:14: error: assignment to 'struct cgroup *' from 'int' makes pointer from integer without a cast [-Werror=int-conversion]
-   47 |         cgrp = sock_cgroup_ptr(&sk->sk_cgrp_data);
-      |              ^
+A use-case I'm trying to fit into this series is how to pass down a BTF fd/object
+with the program. I know its not doing CO-RE yet but we would want it to use the
+BTF object being passed down for CO-RE eventually. Will there be someway to do
+that here? That looks like the btf_fd here.
 
-Change the caller to match the same #ifdef check, only calling it
-when the function is defined.
-
-Fixes: e0bb96db96f8 ("netfilter: nft_socket: add support for cgroupsv2")
-Signed-off-by: Arnd Bergmann <arnd@arndb.de>
-Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
----
- net/netfilter/nft_socket.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
-
-diff --git a/net/netfilter/nft_socket.c b/net/netfilter/nft_socket.c
-index f9c5ff6024e0..d601974c9d2e 100644
---- a/net/netfilter/nft_socket.c
-+++ b/net/netfilter/nft_socket.c
-@@ -34,7 +34,7 @@ static void nft_socket_wildcard(const struct nft_pktinfo *pkt,
- 	}
- }
- 
--#ifdef CONFIG_CGROUPS
-+#ifdef CONFIG_SOCK_CGROUP_DATA
- static noinline bool
- nft_sock_get_eval_cgroupv2(u32 *dest, const struct nft_pktinfo *pkt, u32 level)
- {
-@@ -106,7 +106,7 @@ static void nft_socket_eval(const struct nft_expr *expr,
- 		}
- 		nft_socket_wildcard(pkt, regs, sk, dest);
- 		break;
--#ifdef CONFIG_CGROUPS
-+#ifdef CONFIG_SOCK_CGROUP_DATA
- 	case NFT_SOCKET_CGROUPV2:
- 		if (!nft_sock_get_eval_cgroupv2(dest, pkt, priv->level)) {
- 			regs->verdict.code = NFT_BREAK;
--- 
-2.30.2
-
+Thanks,
+John
