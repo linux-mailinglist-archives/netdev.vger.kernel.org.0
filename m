@@ -2,108 +2,156 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7047836BE19
-	for <lists+netdev@lfdr.de>; Tue, 27 Apr 2021 06:02:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6223536BE1B
+	for <lists+netdev@lfdr.de>; Tue, 27 Apr 2021 06:05:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229673AbhD0EDV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 27 Apr 2021 00:03:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57420 "EHLO
+        id S230412AbhD0EE3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 27 Apr 2021 00:04:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57666 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229455AbhD0EDV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 27 Apr 2021 00:03:21 -0400
-Received: from mail-pg1-x52a.google.com (mail-pg1-x52a.google.com [IPv6:2607:f8b0:4864:20::52a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 44225C061574
-        for <netdev@vger.kernel.org>; Mon, 26 Apr 2021 21:02:37 -0700 (PDT)
-Received: by mail-pg1-x52a.google.com with SMTP id m12so708953pgr.9
-        for <netdev@vger.kernel.org>; Mon, 26 Apr 2021 21:02:37 -0700 (PDT)
+        with ESMTP id S229846AbhD0EE2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 27 Apr 2021 00:04:28 -0400
+Received: from mail-il1-x136.google.com (mail-il1-x136.google.com [IPv6:2607:f8b0:4864:20::136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B6E8EC061574
+        for <netdev@vger.kernel.org>; Mon, 26 Apr 2021 21:03:44 -0700 (PDT)
+Received: by mail-il1-x136.google.com with SMTP id e14so24785797ils.12
+        for <netdev@vger.kernel.org>; Mon, 26 Apr 2021 21:03:44 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=networkplumber-org.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=Y3uAkds03Pwq6+pdouLjMNz3647lgEcn40tEplxgX+w=;
-        b=hRvbHlAkUIXXCtak0mbpBkUawOEPwV38UqpkNZthLLIaZGni+812ZjrtiP8GDzjmlT
-         9BOa3ha6VEsDTJbzoZdWIBvDW7eAbEFo0Bxwj2+gq7F64OTrHoMDS1hyRJzO3TOR7fSq
-         Ol0NUMBnL4x/R6/bbkmek9D2SEtoqAOnT8XVYErMuHtJHDlD91u4Fsa+v0Lvhs4TNg2H
-         aCUgrMujHul3Dng/DMmYzv8V0SXhtOX8O58riclu9gppVelAJ2GfY+84wmB3k2wrBPac
-         QJ92LPGt+0gcVcvsVM0nlpKNeU9tJBYXww5bIcnCDmgVa+CkMO0xznqG2LbCb4+mmUkY
-         sVDw==
+        d=gmail.com; s=20161025;
+        h=message-id:subject:from:to:cc:date:in-reply-to:references
+         :user-agent:mime-version:content-transfer-encoding;
+        bh=E05xGxIDGN+hK7EZQDbumPO3b3Rcjn3nPcq7k5M0VR8=;
+        b=E5p5PTBVNkEgcsRyKHOEOW6GMRBdcqMTjnKgICbFWhELtnwyiVLGXxjUW7jlPmMv17
+         xFQ2nakGHgq4/lOSE7DRua41yqeQvmxLQioJ/OEYU0J1herPMXl7M2EquZdWMhTnlGVm
+         B3BfuPEl9XNGj1ceq6XJBgELx2bz7bmZh2T4Eskh/hGmq5PytFPoxAwNnfpRUBb2P5MB
+         Ibmo9PmVz0FUpUdyjRWUYQVjRh+MpGc+yb7M+tnVEwkp8lga1/XarXm8xsS7WEkqZdrP
+         bUziLfl5cBQxiPifZWTu/sSrhvTkGQO6tZRWh1WwXwHjOpSGPRwZjUhTnSYKcyDFD2P7
+         syvQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=Y3uAkds03Pwq6+pdouLjMNz3647lgEcn40tEplxgX+w=;
-        b=YfSH6I41Ugu4EOCejAO0Yc5u0d4TTHPCISPxRO0hQZ4csdZJBhJA18SNe3oxkwiRrf
-         HaP3+jIjJwjJv5bYh4rweG8NjmPyvAcKmIBiaCbj5U2ZcD8sb2nV5HEEZKY5W4UTtOIh
-         ItRi3CXryDwP6pfzjx5fM7jjhNfNUpFhBTMlk7RxVy4RAdp8HYC0unrRPGZP/gQkaHgo
-         rQa1eS7e2706MXGdXlV34eKg7C0ODWhphqgZaNTvJJHRqDIMBy3MeKHCcPfsdIq4fEG2
-         kM1MOc6bASfIdXr9HYLsPrwUfAPJ6AU1h26URi1ir3Cl/KieAzoc+tSIHOKxhcAfPeSP
-         EvkQ==
-X-Gm-Message-State: AOAM532TATW2h6bZEJd/rS/aHGRvwhuvUuo226pPm/j4cZR5noP2BA69
-        QcNk3x0lmriDy5cWp8vnfJwvtNn+01lF8A==
-X-Google-Smtp-Source: ABdhPJyrrBtjM8CRwTqPePhQea+S+C/kFBlOWEv0hCeJpMUZTO/2w4EC2oq9EJZV1BjwAwWah5LQNA==
-X-Received: by 2002:a62:25c4:0:b029:276:a40:5729 with SMTP id l187-20020a6225c40000b02902760a405729mr9401066pfl.80.1619496156478;
-        Mon, 26 Apr 2021 21:02:36 -0700 (PDT)
-Received: from hermes.local (76-14-218-44.or.wavecable.com. [76.14.218.44])
-        by smtp.gmail.com with ESMTPSA id z29sm12549807pga.52.2021.04.26.21.02.35
+        h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
+         :references:user-agent:mime-version:content-transfer-encoding;
+        bh=E05xGxIDGN+hK7EZQDbumPO3b3Rcjn3nPcq7k5M0VR8=;
+        b=WRgF7IaFtUPwBPuZyaajTPdLvMm+dRgIASVp0vHZsPWGMlQRKt/OJ5ApDZ7RTPXk+l
+         REpMZ+jqcgTWH05amHtWYo72Xl9uolzcgX8kbvS/4MHVVtZO8JYWHoG0IoK3ag1GbZfc
+         9UIjdpxMUBaX8acc7cht12x8fridbjVVLSNGevi6izt+tbcchUNaXuPTDgj6s9F1BTq4
+         YbBmWbxZ/3HgYaVDsMl8U5jEt3FGLIGwUVi/xPmGgnDI+mMSqwoAlPygJRYk6nfgt0z7
+         NkJEqYgHBYuMkCkEjsSiVfwKgr7b5PlOx5Air4DX7/FimXPnwWKhFBE+FE98R3GBIX1L
+         k0FA==
+X-Gm-Message-State: AOAM532+bpaDZHXt/Uqw3MNtJoWpoDu4MIpxVmoFNhWB+defF32bQnRD
+        6FSYzH2o2M/WL85qEmk3gWoKBYo0XbY=
+X-Google-Smtp-Source: ABdhPJxJThc/M6meOIEOP1u8WX9OvybA48RumSypqEjWXr/xGHEh1gRThcqEkmNeTgXs60kUnGYPHQ==
+X-Received: by 2002:a92:c791:: with SMTP id c17mr11486938ilk.107.1619496224240;
+        Mon, 26 Apr 2021 21:03:44 -0700 (PDT)
+Received: from ?IPv6:2601:681:8800:baf9:1ee4:d363:8fe6:b64f? ([2601:681:8800:baf9:1ee4:d363:8fe6:b64f])
+        by smtp.gmail.com with ESMTPSA id g26sm8254660iom.14.2021.04.26.21.03.43
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 26 Apr 2021 21:02:36 -0700 (PDT)
-Date:   Mon, 26 Apr 2021 21:02:33 -0700
-From:   Stephen Hemminger <stephen@networkplumber.org>
-To:     Jethro Beekman <kernel@jbeekman.nl>
-Cc:     netdev@vger.kernel.org
-Subject: Re: [PATCH iproute2-next] ip: Clarify MACVLAN private mode
-Message-ID: <20210426210233.7941b7f1@hermes.local>
-In-Reply-To: <8685da8c-3502-34c7-c91f-db28a0a450d6@jbeekman.nl>
-References: <8685da8c-3502-34c7-c91f-db28a0a450d6@jbeekman.nl>
+        Mon, 26 Apr 2021 21:03:43 -0700 (PDT)
+Message-ID: <c522ffcadf479c3f1a46c401e38ad01bf3f3331c.camel@gmail.com>
+Subject: Re: [PATCH net-next] icmp: standardize naming of RFC 8335 PROBE
+ constants
+From:   Andreas Roeseler <andreas.a.roeseler@gmail.com>
+To:     Stephen Hemminger <stephen@networkplumber.org>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net,
+        yoshfuji@linux-ipv6.org, dsahern@kernel.org, kuba@kernel.org
+Date:   Mon, 26 Apr 2021 23:03:43 -0500
+In-Reply-To: <20210426205434.248bed86@hermes.local>
+References: <20210427034002.291543-1-andreas.a.roeseler@gmail.com>
+         <20210426205434.248bed86@hermes.local>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.38.4 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, 24 Apr 2021 23:28:52 +0200
-Jethro Beekman <kernel@jbeekman.nl> wrote:
-
-> Traffic isn't really "disallowed" but rather some broadcast traffic is filtered.
+On Mon, 2021-04-26 at 20:54 -0700, Stephen Hemminger wrote:
+> On Mon, 26 Apr 2021 22:40:02 -0500
+> Andreas Roeseler <andreas.a.roeseler@gmail.com> wrote:
 > 
-> Signed-off-by: Jethro Beekman <kernel@jbeekman.nl>
-> ---
->  man/man8/ip-link.8.in | 8 +++++---
->  1 file changed, 5 insertions(+), 3 deletions(-)
+> > The current definitions of constants for PROBE are inconsistent,
+> > with
+> > some beginning with ICMP and others with simply EXT. This patch
+> > attempts to standardize the naming conventions of the constants for
+> > PROBE, and update the relevant definitions in net/ipv4/icmp.c.
+> > 
+> > Similarly, the definitions for the code field (previously
+> > ICMP_EXT_MAL_QUERY, etc) use the same prefixes as the type field.
+> > This
+> > patch adds _CODE_ to the prefix to clarify the distinction of these
+> > constants.
+> > 
+> > Signed-off-by: Andreas Roeseler <andreas.a.roeseler@gmail.com>
+> > ---
+> >  include/uapi/linux/icmp.h | 28 ++++++++++++++--------------
+> >  net/ipv4/icmp.c           | 16 ++++++++--------
+> >  2 files changed, 22 insertions(+), 22 deletions(-)
+> > 
+> > diff --git a/include/uapi/linux/icmp.h b/include/uapi/linux/icmp.h
+> > index 222325d1d80e..c1da8244c5e1 100644
+> > --- a/include/uapi/linux/icmp.h
+> > +++ b/include/uapi/linux/icmp.h
+> > @@ -70,22 +70,22 @@
+> >  #define ICMP_EXC_FRAGTIME      1       /* Fragment Reass time
+> > exceeded */
+> >  
+> >  /* Codes for EXT_ECHO (PROBE) */
+> > -#define ICMP_EXT_ECHO          42
+> > -#define ICMP_EXT_ECHOREPLY     43
+> > -#define ICMP_EXT_MAL_QUERY     1       /* Malformed Query */
+> > -#define ICMP_EXT_NO_IF         2       /* No such Interface */
+> > -#define ICMP_EXT_NO_TABLE_ENT  3       /* No such Table Entry */
+> > -#define ICMP_EXT_MULT_IFS      4       /* Multiple Interfaces
+> > Satisfy Query */
+> > +#define ICMP_EXT_ECHO                  42
+> > +#define ICMP_EXT_ECHOREPLY             43
+> > +#define ICMP_EXT_CODE_MAL_QUERY                1       /*
+> > Malformed Query */
+> > +#define ICMP_EXT_CODE_NO_IF            2       /* No such
+> > Interface */
+> > +#define ICMP_EXT_CODE_NO_TABLE_ENT     3       /* No such Table
+> > Entry */
+> > +#define ICMP_EXT_CODE_MULT_IFS         4       /* Multiple
+> > Interfaces Satisfy Query */
+> >  
+> >  /* Constants for EXT_ECHO (PROBE) */
+> > -#define EXT_ECHOREPLY_ACTIVE   (1 << 2)/* active bit in reply
+> > message */
+> > -#define EXT_ECHOREPLY_IPV4     (1 << 1)/* ipv4 bit in reply
+> > message */
+> > -#define EXT_ECHOREPLY_IPV6     1       /* ipv6 bit in reply
+> > message */
+> > -#define EXT_ECHO_CTYPE_NAME    1
+> > -#define EXT_ECHO_CTYPE_INDEX   2
+> > -#define EXT_ECHO_CTYPE_ADDR    3
+> > -#define ICMP_AFI_IP            1       /* Address Family
+> > Identifier for ipv4 */
+> > -#define ICMP_AFI_IP6           2       /* Address Family
+> > Identifier for ipv6 */
+> > +#define ICMP_EXT_ECHOREPLY_ACTIVE      (1 << 2)/* active bit in
+> > reply message */
+> > +#define ICMP_EXT_ECHOREPLY_IPV4                (1 << 1)/* ipv4 bit
+> > in reply message */
+> > +#define ICMP_EXT_ECHOREPLY_IPV6                1       /* ipv6 bit
+> > in reply message */
+> > +#define ICMP_EXT_ECHO_CTYPE_NAME       1
+> > +#define ICMP_EXT_ECHO_CTYPE_INDEX      2
+> > +#define ICMP_EXT_ECHO_CTYPE_ADDR       3
+> > +#define ICMP_AFI_IP                    1       /* Address Family
+> > Identifier for ipv4 */
+> > +#define ICMP_AFI_IP6                   2       /* Address Family
+> > Identifier for ipv6 */
 > 
-> diff --git a/man/man8/ip-link.8.in b/man/man8/ip-link.8.in
-> index fd67e611..a4abae5f 100644
-> --- a/man/man8/ip-link.8.in
-> +++ b/man/man8/ip-link.8.in
-> @@ -1366,10 +1366,12 @@ the following additional arguments are supported:
->  .BR /dev/tapX " to be used just like a " tuntap " device."
->  
->  .B mode private
-> -- Do not allow communication between
-> +- Do not allow broadcast communication between
->  .B macvlan
->  instances on the same physical interface, even if the external switch supports
-> -hairpin mode.
-> +hairpin mode. Unicast traffic is transmitted over the physical interface as in
-> +.B vepa
-> +mode, but the lack of ARP responses may hamper communication.
+> You can't just remove the old constants. They have to stay there.
+> The #defines are part of the Linux API by now.
 
-The grammar here is a little awkward. It is using passive voice and the two clauses
-in compound sentence don't match. Let me consult the grammar expert (my spouse is
-a writer) and reword this in next release.
+Even in the case where these constants were added less than a month ago
+(3/30/2021) and are not used elsewhere in the kernel? I agree with your
+statement in the general sense, but I thought I could get ahead of it
+in this case and update them.
+
+For reference, they were added in commit
+2b246b2569cd2ac6ff700d0dce56b8bae29b1842
 
 
->  .B mode vepa
->  - Virtual Ethernet Port Aggregator mode. Data from one
-> @@ -1394,7 +1396,7 @@ forces the underlying interface into promiscuous mode. Passing the
->  using standard tools.
->  
->  .B mode source
-> -- allows one to set a list of allowed mac address, which is used to match
-> +- Allows one to set a list of allowed mac address, which is used to match
->  against source mac address from received frames on underlying interface. This
->  allows creating mac based VLAN associations, instead of standard port or tag
->  based. The feature is useful to deploy 802.1x mac based behavior,
-
-The original is also awkward wording here. Lets get rid of passive voice as well.
