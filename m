@@ -2,60 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3391836BCDD
-	for <lists+netdev@lfdr.de>; Tue, 27 Apr 2021 03:12:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9038E36BCF2
+	for <lists+netdev@lfdr.de>; Tue, 27 Apr 2021 03:37:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234602AbhD0BLK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 26 Apr 2021 21:11:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48286 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232022AbhD0BLK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 26 Apr 2021 21:11:10 -0400
-Received: from mail-wr1-x42d.google.com (mail-wr1-x42d.google.com [IPv6:2a00:1450:4864:20::42d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 83444C061574
-        for <netdev@vger.kernel.org>; Mon, 26 Apr 2021 18:10:27 -0700 (PDT)
-Received: by mail-wr1-x42d.google.com with SMTP id t18so125300wry.1
-        for <netdev@vger.kernel.org>; Mon, 26 Apr 2021 18:10:27 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=rasmussen.co.za; s=google;
-        h=mime-version:from:date:message-id:subject:to;
-        bh=m5JL+oviiEMYN2iHPoRwtixy+Ii+r7jIbAKypbLkjJw=;
-        b=tPHUQ09XZoPYnAp/5Wud0XsNW1kwUtzWkod8kxxMw6ecsklaUFoSOrjFm5ugteGhcZ
-         fUwHlPztu8IHj0N8fSPmSfcGF8Cpbvkpuq0gI/7d+6PC4Ru0t0/NxfxsCmJqAXlO8/8S
-         oEavMYCPaCTLGd3FZBuh9nyYYhKIAiTMC/Tok=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:from:date:message-id:subject:to;
-        bh=m5JL+oviiEMYN2iHPoRwtixy+Ii+r7jIbAKypbLkjJw=;
-        b=K0F3Qm4w1/sYc9MUkDwUtWsL3dc54hqBwwmUA2Kt5bWsaHj7eMeLMqG8ac63OHoz91
-         3fgsVfeXe+kbrJQBwKjkvi1u8GhfJQyE4suqKgsM+zlob1g+/m/2Vx0D8PUuHzds0d0M
-         s4NvmT344trV+lTpuIVhtpWRZXBVOdXFIoSTybL5QmwhACHElXVKi72P+FQo6NrLdd/C
-         ZsKd6NhWOC4L2Tr+l+1LMllj5zkSdxzDwxoIBKEH0nd7rSaEyOgBqCpTxv/yBnfZZjsR
-         +31ruhaLR2yj/3e52fbTaVpY02ESCzS9gWZt9hwlmDLrBY558qoCJzwzLpiHGoB1xS0b
-         ZzrA==
-X-Gm-Message-State: AOAM531w+Jscvx8D9xLwcFYUXuoTp2+jOv2Abg6tbClrD5rl5UM8Qc8U
-        Z0ebzbAvGtzadl6fc9rRhtJs7fpIQv8Mxu4GwnhRKHynL4ZDng==
-X-Google-Smtp-Source: ABdhPJyJiBBZPK1XCCZLJOXwzNWUYPqfeYmNXg2Ry9d47SVgHYzSIYWcR9JGAxYTBUokeTZXtjgZr/OMt8nIvjNZE0k=
-X-Received: by 2002:adf:ed4b:: with SMTP id u11mr17698117wro.293.1619485826087;
- Mon, 26 Apr 2021 18:10:26 -0700 (PDT)
+        id S234977AbhD0Bfx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 26 Apr 2021 21:35:53 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:42066 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S233916AbhD0Bfx (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 26 Apr 2021 21:35:53 -0400
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
+        (envelope-from <andrew@lunn.ch>)
+        id 1lbCcw-001HVH-Sk; Tue, 27 Apr 2021 03:35:02 +0200
+Date:   Tue, 27 Apr 2021 03:35:02 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     =?utf-8?B?5pu554Wc?= <cao88yu@gmail.com>
+Cc:     David Miller <davem@davemloft.net>,
+        netdev <netdev@vger.kernel.org>,
+        Chris Packham <chris.packham@alliedtelesis.co.nz>,
+        Vivien Didelot <vivien.didelot@gmail.com>
+Subject: Re: [PATCH net] dsa: mv88e6xxx: 6161: Use chip wide MAX MTU
+Message-ID: <YIdqRlY+2iSqQ8lW@lunn.ch>
+References: <20210426233441.302414-1-andrew@lunn.ch>
+ <YIdOmvPFTCcmwP/W@lunn.ch>
+ <CACu-5+0bnMJPOUZHKfSTEQiFgAVX9kjbgTTQtqLDT57yv0MDHQ@mail.gmail.com>
 MIME-Version: 1.0
-From:   Norman Rasmussen <norman@rasmussen.co.za>
-Date:   Mon, 26 Apr 2021 18:10:15 -0700
-Message-ID: <CAGF1phbWt6Qk_XG++-ZHFDcb0MvwAcBDv6=hzpGV3+J4ySqAkw@mail.gmail.com>
-Subject: iproute2: ss: feature request: filtering on process information
-To:     netdev@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <CACu-5+0bnMJPOUZHKfSTEQiFgAVX9kjbgTTQtqLDT57yv0MDHQ@mail.gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Is it possible to match process information using expressions? I can't
-figure out how to do it without matching all possible ports and using
-grep to filter. Ideally I'd like to filter using ss expressions, eg:
-`ss process sshd`, or `ss pid 1234`, or (probably only in combination
-with other predicates) `ss fd 3`, etc...
+On Tue, Apr 27, 2021 at 08:18:00AM +0800, 曹煜 wrote:
+> Hi Andrew,
+> I'll test the patch later, but what about the 88e6171r switch chip,
+> this chip also got this issue since kernel 5.9.0 Many thanks.
 
--- 
-- Norman Rasmussen
- - Email: norman@rasmussen.co.za
- - Home page: http://norman.rasmussen.co.za/
+Saying the 6171 is wrong i have problems with.
+
+The 6161 is part of the 6165 family, consisting of 6123, 6161 and
+6165. The 6123 was already using mv88e6185_g1_set_max_frame_size, and
+the documentation is ambiguous.
+
+The 6171 is part of the 6351 family: 6171 6175 6350 6351. It is a
+couple of generations newer, and all the other members of the family
+also use mv88e6165_port_set_jumbo_size. I have the GPL licensed SDK
+from Marvell. If i'm reading the SDK correctly, it has a function to
+access the per port register for jumbo settings for the 6351 family.
+
+Do you have a 6171 we can test code on?
+
+   Andrew
