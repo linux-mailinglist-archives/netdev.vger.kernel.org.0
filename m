@@ -2,231 +2,162 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8F69936BD9B
-	for <lists+netdev@lfdr.de>; Tue, 27 Apr 2021 05:00:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C19DF36BDB3
+	for <lists+netdev@lfdr.de>; Tue, 27 Apr 2021 05:22:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234038AbhD0DBC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 26 Apr 2021 23:01:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43854 "EHLO
+        id S234055AbhD0DWm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 26 Apr 2021 23:22:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48458 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231450AbhD0DBB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 26 Apr 2021 23:01:01 -0400
-Received: from mail-pf1-x42e.google.com (mail-pf1-x42e.google.com [IPv6:2607:f8b0:4864:20::42e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E7A9C061574;
-        Mon, 26 Apr 2021 20:00:19 -0700 (PDT)
-Received: by mail-pf1-x42e.google.com with SMTP id q2so8407591pfk.9;
-        Mon, 26 Apr 2021 20:00:19 -0700 (PDT)
+        with ESMTP id S231363AbhD0DWm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 26 Apr 2021 23:22:42 -0400
+Received: from mail-ot1-x32f.google.com (mail-ot1-x32f.google.com [IPv6:2607:f8b0:4864:20::32f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D4E1C061574;
+        Mon, 26 Apr 2021 20:21:58 -0700 (PDT)
+Received: by mail-ot1-x32f.google.com with SMTP id f75-20020a9d03d10000b0290280def9ab76so49015151otf.12;
+        Mon, 26 Apr 2021 20:21:58 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=CrpNO3O5PJyzDQv5l4I+f817AmeY8AfQl4ai3h//J7E=;
-        b=G9TEd/Cbpv9/60ZSLEpvUWNwLN3lwnfMRT6o8Vsq+jRS1zGq5XI7QEqBk8xcVWDPWM
-         MkASwRTQYCYu7w7H6FNRxSukoZV9ZFgI2Jhg8h9t8pH+ziPvOL7Xm68EyNwz6J6p7Tr0
-         6KC9UIGpUHVfAKfVLYlu8oIMgTboLrQ1gWYJ4I7dk9AG2qc5mSwfhLIzC1BvKI6QO3t1
-         G9astYAGsWk0dVGxygXAL6pR/tK6sXui9YHuCEh2MKkDk5C5XO/m7So8XpkVC1fD8nOK
-         0o/4x9N9OSvrQoBLAWRwqWWtJco4ArKpWuAFsQTXY+1hkPPTaEjj1UVtYP44Qawfx6Dn
-         rJCw==
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=2y1skpQm5O9nY3/sAmsR/w1AbZytq1gVeLlk4C9o/lk=;
+        b=sBFtoSAUpLDJmX0PMdbcueyJLnj7Yd0LccPDGWnmTmDDIgiI4UGvR7xD+dgaoz+4a2
+         VbarueU/Mx26TxFOi29+mkj9r4yDziOxr/Srf7g5w4rztQVjBzDCds50y3Iak2EcUJhu
+         YcL+uS62BXr2Q8aUNAQIiYXYxeDAlXwZWmvZYBrVIfI0vj+JZ0vmzPRZMHz/HFVY1bGC
+         pcwrQz/UdLLoS61hdA64/pGcGNs15FTeqQjqk+QCZWvEtJk4vmkeQ+WasQ/+WTZsvV5I
+         a/KcNj+XZ/nw+BavnoBNvOQyXx5EYRvMhMFcuQSz3yKwu9p4vgheMljfe4+xcOB0yBij
+         ZGkg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=CrpNO3O5PJyzDQv5l4I+f817AmeY8AfQl4ai3h//J7E=;
-        b=Btl+UpAkxhX36eXWkNZj5rC0NeZl+1WHxMYjMTFavQxzyPvCX7IKt5yIHAp6cAVoVG
-         NUDn3rXOZI4XiYA5WwE55t1/X76hZq+SWRTaW/cQltc0P6jLuAhxRA7XnlOj0XQt0pa9
-         X/w8ghfM3hI08jlcsVxb9Adse9ahEXpBWMHtBWoAK55i0PIO7RkmNSHDz00umqElJR5p
-         HdbXTEI2bLTXZYh0tJrcUcHphKLa3T6xrCl9Qx3Vob2eLXpzizjom7AqATEeZc0qeUiK
-         gqVrjrpre7egsl4/Ck6Rp3hsos4caIDzzbd7yvWjkhUzrTg1cZ2rl6+QFiKfT8jOYgtN
-         8FUQ==
-X-Gm-Message-State: AOAM533TnrGH2dNCleY9cEEMrOPiCM7N58V8B4+25t8l2byxz2JH/FfV
-        1Pra4gU4krN8ch8lzE1QEU8D5JlfXpc=
-X-Google-Smtp-Source: ABdhPJzFrYLjp/hZx+7E3e3xwCUJAe7hPxEKce1PV4/Z7F4WwFYBE5WO6QJK0BiowSmrZ1cik/l2iA==
-X-Received: by 2002:a62:ea05:0:b029:27a:6fc6:af83 with SMTP id t5-20020a62ea050000b029027a6fc6af83mr1192740pfh.24.1619492418682;
-        Mon, 26 Apr 2021 20:00:18 -0700 (PDT)
-Received: from ast-mbp.dhcp.thefacebook.com ([2620:10d:c090:400::5:1ad0])
-        by smtp.gmail.com with ESMTPSA id a27sm893714pfl.64.2021.04.26.20.00.17
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 26 Apr 2021 20:00:18 -0700 (PDT)
-Date:   Mon, 26 Apr 2021 20:00:16 -0700
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=2y1skpQm5O9nY3/sAmsR/w1AbZytq1gVeLlk4C9o/lk=;
+        b=H4MHcXMklok5rBbjEGLjqYFtCy7HRV1lTIeRd4U+hypXaAdkkDxSniPOaBJnyOcq5T
+         rz/5vK86EmfQ65HPs2ELQ0js91EmZ15T+32vdcvjgvJOvfjsNzx25WnqJBnzWfqrJXfz
+         swKgFr8FUXRPmYDkQ1NOFrDN3modsoK86CycxeadJ99ObZsmVBq8dUhUaTeuxsSuDDa5
+         +xCqPIfIdPKgiggr1SqV7MKvVIDvJu+EmWYKLQA/irLdck4nzV8CmQAFSm3Re+Ov+Cf0
+         PyKdyihMUsNegR2ZjQWklrXj9NeJanOVfnQmXkm2fN3ONaqID80jYQqEzRORy6Hq/M03
+         T1jg==
+X-Gm-Message-State: AOAM532pBdELgw0oXK14sIXvEVVWoKzXIlzKg77NQG7IkOQFzX295tHj
+        IOhuG4l44SsRSeiNsqQYT2lMnGEo2Vo=
+X-Google-Smtp-Source: ABdhPJz7lv4mElFZRkcyXxzJygI9MnlneCXXDmSUqufdUZy4R+6DR2GDIqlPOM9PKHJKVsvf32sAog==
+X-Received: by 2002:a9d:6e8f:: with SMTP id a15mr11153409otr.169.1619493717525;
+        Mon, 26 Apr 2021 20:21:57 -0700 (PDT)
+Received: from Davids-MacBook-Pro.local ([8.48.134.33])
+        by smtp.googlemail.com with ESMTPSA id 3sm427755ood.46.2021.04.26.20.21.55
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 26 Apr 2021 20:21:56 -0700 (PDT)
+Subject: Re: [PATCH v4 net-next] net: multipath routing: configurable seed
+To:     Balaev Pavel <balaevpa@infotecs.ru>, netdev@vger.kernel.org
 Cc:     "David S. Miller" <davem@davemloft.net>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Kernel Team <kernel-team@fb.com>
-Subject: Re: [PATCH v2 bpf-next 12/16] libbpf: Change the order of data and
- text relocations.
-Message-ID: <20210427030016.54l2azit7mn2t4ji@ast-mbp.dhcp.thefacebook.com>
-References: <20210423002646.35043-1-alexei.starovoitov@gmail.com>
- <20210423002646.35043-13-alexei.starovoitov@gmail.com>
- <CAEf4BzZofcwskPQXRpV4ZEiVbrzg296t+fSpezFxDLF3ueQBWg@mail.gmail.com>
+        Jakub Kicinski <kuba@kernel.org>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        David Ahern <dsahern@kernel.org>,
+        Shuah Khan <shuah@kernel.org>,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Ido Schimmel <idosch@nvidia.com>
+References: <YILPPCyMjlnhPmEN@rnd>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <93ca6644-fc5a-0977-db7d-16779ebd320c@gmail.com>
+Date:   Mon, 26 Apr 2021 21:21:53 -0600
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
+ Gecko/20100101 Thunderbird/78.10.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAEf4BzZofcwskPQXRpV4ZEiVbrzg296t+fSpezFxDLF3ueQBWg@mail.gmail.com>
+In-Reply-To: <YILPPCyMjlnhPmEN@rnd>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Apr 26, 2021 at 10:29:09AM -0700, Andrii Nakryiko wrote:
-> On Thu, Apr 22, 2021 at 5:27 PM Alexei Starovoitov
-> <alexei.starovoitov@gmail.com> wrote:
-> >
-> > From: Alexei Starovoitov <ast@kernel.org>
-> >
-> > In order to be able to generate loader program in the later
-> > patches change the order of data and text relocations.
-> > Also improve the test to include data relos.
-> >
-> > If the kernel supports "FD array" the map_fd relocations can be processed
-> > before text relos since generated loader program won't need to manually
-> > patch ld_imm64 insns with map_fd.
-> > But ksym and kfunc relocations can only be processed after all calls
-> > are relocated, since loader program will consist of a sequence
-> > of calls to bpf_btf_find_by_name_kind() followed by patching of btf_id
-> > and btf_obj_fd into corresponding ld_imm64 insns. The locations of those
-> > ld_imm64 insns are specified in relocations.
-> > Hence process all data relocations (maps, ksym, kfunc) together after call relos.
-> >
-> > Signed-off-by: Alexei Starovoitov <ast@kernel.org>
-> > ---
-> >  tools/lib/bpf/libbpf.c                        | 86 +++++++++++++++----
-> >  .../selftests/bpf/progs/test_subprogs.c       | 13 +++
-> >  2 files changed, 80 insertions(+), 19 deletions(-)
-> >
-> > diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
-> > index 17cfc5b66111..c73a85b97ca5 100644
-> > --- a/tools/lib/bpf/libbpf.c
-> > +++ b/tools/lib/bpf/libbpf.c
-> > @@ -6379,11 +6379,15 @@ bpf_object__relocate_data(struct bpf_object *obj, struct bpf_program *prog)
-> >                         insn[0].imm = ext->ksym.kernel_btf_id;
-> >                         break;
-> >                 case RELO_SUBPROG_ADDR:
-> > -                       insn[0].src_reg = BPF_PSEUDO_FUNC;
-> > -                       /* will be handled as a follow up pass */
-> > +                       if (insn[0].src_reg != BPF_PSEUDO_FUNC) {
-> > +                               pr_warn("prog '%s': relo #%d: bad insn\n",
-> > +                                       prog->name, i);
-> > +                               return -EINVAL;
-> > +                       }
+On 4/23/21 6:44 AM, Balaev Pavel wrote:
+> Ability for a user to assign seed value to multipath route hashes.
+> Now kernel uses random seed value to prevent hash-flooding DoS attacks;
+> however, it disables some use cases, f.e:
 > 
-> given SUBPROG_ADDR is now handled similarly to RELO_CALL in a
-> different place, I'd probably drop this error check and just combine
-> RELO_SUBPROG_ADDR and RELO_CALL cases with just a /* handled already
-> */ comment.
-
-I prefer to keep them separate. I've hit this pr_warn couple times
-while messing with relos and it saved my time.
-I bet it will save time to the next developer too.
-
-> > +                       /* handled already */
-> >                         break;
-> >                 case RELO_CALL:
-> > -                       /* will be handled as a follow up pass */
-> > +                       /* handled already */
-> >                         break;
-> >                 default:
-> >                         pr_warn("prog '%s': relo #%d: bad relo type %d\n",
-> > @@ -6552,6 +6556,31 @@ static struct reloc_desc *find_prog_insn_relo(const struct bpf_program *prog, si
-> >                        sizeof(*prog->reloc_desc), cmp_relo_by_insn_idx);
-> >  }
-> >
-> > +static int append_subprog_relos(struct bpf_program *main_prog, struct bpf_program *subprog)
-> > +{
-> > +       int new_cnt = main_prog->nr_reloc + subprog->nr_reloc;
-> > +       struct reloc_desc *relos;
-> > +       size_t off = subprog->sub_insn_off;
-> > +       int i;
-> > +
-> > +       if (main_prog == subprog)
-> > +               return 0;
-> > +       relos = libbpf_reallocarray(main_prog->reloc_desc, new_cnt, sizeof(*relos));
-> > +       if (!relos)
-> > +               return -ENOMEM;
-> > +       memcpy(relos + main_prog->nr_reloc, subprog->reloc_desc,
-> > +              sizeof(*relos) * subprog->nr_reloc);
-> > +
-> > +       for (i = main_prog->nr_reloc; i < new_cnt; i++)
-> > +               relos[i].insn_idx += off;
+> +-------+        +------+        +--------+
+> |       |-eth0---| FW0  |---eth0-|        |
+> |       |        +------+        |        |
+> |  GW0  |ECMP                ECMP|  GW1   |
+> |       |        +------+        |        |
+> |       |-eth1---| FW1  |---eth1-|        |
+> +-------+        +------+        +--------+
 > 
-> nit: off is used only here, so there is little point in having it as a
-> separate var, inline?
-
-sure.
-
-> > +       /* After insn_idx adjustment the 'relos' array is still sorted
-> > +        * by insn_idx and doesn't break bsearch.
-> > +        */
-> > +       main_prog->reloc_desc = relos;
-> > +       main_prog->nr_reloc = new_cnt;
-> > +       return 0;
-> > +}
-> > +
-> >  static int
-> >  bpf_object__reloc_code(struct bpf_object *obj, struct bpf_program *main_prog,
-> >                        struct bpf_program *prog)
-> > @@ -6560,18 +6589,32 @@ bpf_object__reloc_code(struct bpf_object *obj, struct bpf_program *main_prog,
-> >         struct bpf_program *subprog;
-> >         struct bpf_insn *insns, *insn;
-> >         struct reloc_desc *relo;
-> > -       int err;
-> > +       int err, i;
-> >
-> >         err = reloc_prog_func_and_line_info(obj, main_prog, prog);
-> >         if (err)
-> >                 return err;
-> >
-> > +       for (i = 0; i < prog->nr_reloc; i++) {
-> > +               relo = &prog->reloc_desc[i];
-> > +               insn = &main_prog->insns[prog->sub_insn_off + relo->insn_idx];
-> > +
-> > +               if (relo->type == RELO_SUBPROG_ADDR)
-> > +                       /* mark the insn, so it becomes insn_is_pseudo_func() */
-> > +                       insn[0].src_reg = BPF_PSEUDO_FUNC;
-> > +       }
-> > +
+> In this use case, two ECMP routers balance traffic between two firewalls.
+> If some flow transmits a response over a different channel than request,
+> such flow will be dropped, because keep-state rules are created on
+> the other firewall.
 > 
-> This will do the same work over and over each time we append a subprog
-> to main_prog. This should logically follow append_subprog_relos(), but
-> you wanted to do it for main_prog with the same code, right?
-
-It cannot follow append_subprog_relos.
-It has to be done before the loop below.
-Otherwise !insn_is_pseudo_func() won't catch it and all ld_imm64 insns
-will be considered which will make the loop below more complex and slower.
-The find_prog_insn_relo() will be called a lot more times.
-!relo condition would be treated different ld_imm64 vs call insn, etc.
-
-> How about instead doing this before we start appending subprogs to
-> main_progs? I.e., do it explicitly in bpf_object__relocate() before
-> you start code relocation loop.
-
-Not sure I follow.
-Do another loop:
- for (i = 0; i < obj->nr_programs; i++)
-    for (i = 0; i < prog->nr_reloc; i++)
-      if (relo->type == RELO_SUBPROG_ADDR)
-      ?
-That's an option too.
-I can do that if you prefer.
-It felt cleaner to do this mark here right before the loop below that needs it.
-
-> >         for (insn_idx = 0; insn_idx < prog->sec_insn_cnt; insn_idx++) {
-> >                 insn = &main_prog->insns[prog->sub_insn_off + insn_idx];
-> >                 if (!insn_is_subprog_call(insn) && !insn_is_pseudo_func(insn))
-> >                         continue;
-> >
-> >                 relo = find_prog_insn_relo(prog, insn_idx);
-> > +               if (relo && relo->type == RELO_EXTERN_FUNC)
-> > +                       /* kfunc relocations will be handled later
-> > +                        * in bpf_object__relocate_data()
-> > +                        */
-> > +                       continue;
-> >                 if (relo && relo->type != RELO_CALL && relo->type != RELO_SUBPROG_ADDR) {
-> >                         pr_warn("prog '%s': unexpected relo for insn #%zu, type %d\n",
-> >                                 prog->name, insn_idx, relo->type);
+> This patch adds sysctl variable: net.ipv4|ipv6.fib_multipath_hash_seed.
+> User can set the same seed value on GW0 and GW1 for traffic to be
+> mirror-balanced. By default, random value is used.
 > 
-> [...]
+> Signed-off-by: Balaev Pavel <balaevpa@infotecs.ru>
+> ---
+>  Documentation/networking/ip-sysctl.rst        |  14 +
+>  include/net/flow_dissector.h                  |   4 +
+>  include/net/netns/ipv4.h                      |   2 +
+>  include/net/netns/ipv6.h                      |   3 +
+>  net/core/flow_dissector.c                     |   9 +
+>  net/ipv4/route.c                              |  10 +-
+>  net/ipv4/sysctl_net_ipv4.c                    |  97 +++++
+>  net/ipv6/route.c                              |  10 +-
+>  net/ipv6/sysctl_net_ipv6.c                    |  96 +++++
+>  .../testing/selftests/net/forwarding/Makefile |   1 +
+>  tools/testing/selftests/net/forwarding/lib.sh |  41 +++
+>  .../net/forwarding/router_mpath_seed.sh       | 347 ++++++++++++++++++
+>  12 files changed, 632 insertions(+), 2 deletions(-)
+>  create mode 100755 tools/testing/selftests/net/forwarding/router_mpath_seed.sh
 
--- 
+this really needs to be multiple patches. At a minimum 1 for ipv4, 1 for
+ipv6 and 1 for the test script (thank you for adding that).
+
+[ cc'ed Ido since most of the tests under
+tools/testing/selftests/net/forwarding come from him and team ]
+
+> 
+> diff --git a/Documentation/networking/ip-sysctl.rst b/Documentation/networking/ip-sysctl.rst
+> index 9701906f6..d1a67e6fe 100644
+> --- a/Documentation/networking/ip-sysctl.rst
+> +++ b/Documentation/networking/ip-sysctl.rst
+> @@ -100,6 +100,20 @@ fib_multipath_hash_policy - INTEGER
+>  	- 1 - Layer 4
+>  	- 2 - Layer 3 or inner Layer 3 if present
+>  
+> +fib_multipath_hash_seed - STRING
+> +	Controls seed value for multipath route hashes. By default
+> +	random value is used. Only valid for kernels built with
+> +	CONFIG_IP_ROUTE_MULTIPATH enabled.
+> +
+> +	Valid format: two hex values set off with comma or "random"
+> +	keyword.
+> +
+> +	Example to generate the seed value::
+> +
+> +		RAND=$(openssl rand -hex 16) && echo "${RAND:0:16},${RAND:16:16}"
+> +
+> +	Default: "random"
+> +
+>  fib_sync_mem - UNSIGNED INTEGER
+>  	Amount of dirty memory from fib entries that can be backlogged before
+>  	synchronize_rcu is forced.
+> diff --git a/include/net/flow_dissector.h b/include/net/flow_dissector.h
+> index ffd386ea0..2bd4e28de 100644
+> --- a/include/net/flow_dissector.h
+> +++ b/include/net/flow_dissector.h
+> @@ -348,6 +348,10 @@ static inline bool flow_keys_have_l4(const struct flow_keys *keys)
+>  }
+>  
+>  u32 flow_hash_from_keys(struct flow_keys *keys);
+> +#ifdef CONFIG_IP_ROUTE_MULTIPATH
+> +u32 flow_multipath_hash_from_keys(struct flow_keys *keys,
+> +			   const siphash_key_t *seed);
+
+column alignment looks off here ^^^^ and a few other places; please
+correct in the next version.
+
+
