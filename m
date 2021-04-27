@@ -2,247 +2,139 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D156736C9B9
-	for <lists+netdev@lfdr.de>; Tue, 27 Apr 2021 18:47:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4579B36C9BE
+	for <lists+netdev@lfdr.de>; Tue, 27 Apr 2021 18:48:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237497AbhD0Qse (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 27 Apr 2021 12:48:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57518 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237147AbhD0Qsb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 27 Apr 2021 12:48:31 -0400
-Received: from mail-yb1-xb36.google.com (mail-yb1-xb36.google.com [IPv6:2607:f8b0:4864:20::b36])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 84C02C061756;
-        Tue, 27 Apr 2021 09:47:47 -0700 (PDT)
-Received: by mail-yb1-xb36.google.com with SMTP id y2so68068872ybq.13;
-        Tue, 27 Apr 2021 09:47:47 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=ETQT6lTAq70f0FB6uQPtu9Igo0Ar8bHMDLmR+eEFm7Y=;
-        b=ueH3RppL4qFWbHTh5hG8EecMFINQKMooJXgFDDK0ZmVEFO6vr0Cxrxlgio5T8tvCR0
-         jXw2Lxpcbtq+SZj9Cjm47UagqljS/qqtBdQ16RR6YViFI6lk99JSrhkYyBpvugfvt0Xi
-         3qH7BVh/v1mo+XzJGWm2oUMPKgNoeIcZRgBoejYc9VcerbOs8SA7uuULGa3VaxrwnLxJ
-         UTfho0HXv+GROc8rwlWYZ0AwoNW0gN4E76uIfG6alwO9TvwBRoxK1Vqpvh6NjbZWWDKN
-         2RP8+5aq6sbHvb2kkyZUA8JA1iZ6kmfxy39SEVXR6aqKe69XvyJMg62vbc4n5oIWpy+u
-         /8Gw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=ETQT6lTAq70f0FB6uQPtu9Igo0Ar8bHMDLmR+eEFm7Y=;
-        b=MM7EA4oSYPwoFoeONqv/ax5/YtssXWFe+xJuMdl/+HltBUjHw9WrqMdAIztD5K3uvF
-         QKP0SjcgG5EX75KbiYW5P0XT3hpnP0PARK7rg+LNfJ9PHG3fEdy6+ffjgIP1myXnz847
-         QNLdBL+gBR7SMVtm+eV6EQNQIwmzOR5vNSMDv/P0ZjSRZrcxx05Xz+0nWj1eRnMb40Zc
-         ys/C0rQLlmoLgPEPX8siIbNfTm7qwb9kUmEiOLOGkp1YlHhqZUyzSN1fUYZOtdVTEZRg
-         bATbFS9TedcQ7BrFykAxXiGPQzbQlOrzqUmGk8kseVjSqwZBbPi5LUHtAHuDNMB/lS9F
-         wt3w==
-X-Gm-Message-State: AOAM532do81SUWAyvTopZASoGvyuZmwxCrp0hoOay6bRW//aHp9epGct
-        jOz/wMLg/7mYbVnAz8NpFEALjspbR0UDkLGP4dg=
-X-Google-Smtp-Source: ABdhPJx1oCpbHV4bPAtF5RERGPMrrFNrsJNU5fWXq7Uuhj9iUENFDPfK4OjcjzILmnD8x4NjDFPq9NoW8ChkBvuqbhI=
-X-Received: by 2002:a25:7507:: with SMTP id q7mr13428956ybc.27.1619542066787;
- Tue, 27 Apr 2021 09:47:46 -0700 (PDT)
+        id S237927AbhD0Qtd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 27 Apr 2021 12:49:33 -0400
+Received: from mail.kernel.org ([198.145.29.99]:38150 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S237714AbhD0QtM (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 27 Apr 2021 12:49:12 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id CC65061027;
+        Tue, 27 Apr 2021 16:48:28 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1619542109;
+        bh=Zf4nW1uoa9/CCo7LdD1TpEcDkI4hFISg6GkZnsY5BV8=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=q67kPTJKUzb2HQWu6Y0JX9C1mdjLVFOnlVLflS1oENwLmIY/oon2kjdwvkKglhQVn
+         LnH+tfnlWs5RzIZu2NmXQabFwB+C5cappjR5u2Fhm5080MDjZyYkkGoVmYeHl5ZNEa
+         e2UdvjZoWmZhRkgeYilIwRvE6BdLxWNdfizlNxkc=
+Date:   Tue, 27 Apr 2021 18:48:27 +0200
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Joe Stringer <joe@ovn.org>
+Cc:     Matteo Croce <mcroce@linux.microsoft.com>,
+        LKML <linux-kernel@vger.kernel.org>, Kangjie Lu <kjlu@umn.edu>,
+        "David S . Miller" <davem@davemloft.net>,
+        netdev <netdev@vger.kernel.org>
+Subject: Re: [PATCH 126/190] Revert "net: openvswitch: fix a NULL pointer
+ dereference"
+Message-ID: <YIhAW9retWHN+D4i@kroah.com>
+References: <20210421130105.1226686-1-gregkh@linuxfoundation.org>
+ <20210421130105.1226686-127-gregkh@linuxfoundation.org>
+ <20210422015957.4f6d4dfa@linux.microsoft.com>
+ <CAOftzPioU8h9b=isMPZtE8AYF=+qh_nNEp3rFEyQmb6Fi7QZ2g@mail.gmail.com>
 MIME-Version: 1.0
-References: <20210423002646.35043-1-alexei.starovoitov@gmail.com>
- <20210423002646.35043-13-alexei.starovoitov@gmail.com> <CAEf4BzZofcwskPQXRpV4ZEiVbrzg296t+fSpezFxDLF3ueQBWg@mail.gmail.com>
- <20210427030016.54l2azit7mn2t4ji@ast-mbp.dhcp.thefacebook.com>
-In-Reply-To: <20210427030016.54l2azit7mn2t4ji@ast-mbp.dhcp.thefacebook.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Tue, 27 Apr 2021 09:47:35 -0700
-Message-ID: <CAEf4BzZCHatwKGwXNVy3XPx9D2YgnTKa6NUCm3Y90T_oxhAQ7g@mail.gmail.com>
-Subject: Re: [PATCH v2 bpf-next 12/16] libbpf: Change the order of data and
- text relocations.
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Kernel Team <kernel-team@fb.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAOftzPioU8h9b=isMPZtE8AYF=+qh_nNEp3rFEyQmb6Fi7QZ2g@mail.gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Apr 26, 2021 at 8:00 PM Alexei Starovoitov
-<alexei.starovoitov@gmail.com> wrote:
->
-> On Mon, Apr 26, 2021 at 10:29:09AM -0700, Andrii Nakryiko wrote:
-> > On Thu, Apr 22, 2021 at 5:27 PM Alexei Starovoitov
-> > <alexei.starovoitov@gmail.com> wrote:
+On Wed, Apr 21, 2021 at 09:09:56PM -0700, Joe Stringer wrote:
+> On Wed, Apr 21, 2021 at 5:01 PM Matteo Croce <mcroce@linux.microsoft.com> wrote:
+> >
+> > On Wed, 21 Apr 2021 15:00:01 +0200
+> > Greg Kroah-Hartman <gregkh@linuxfoundation.org> wrote:
+> >
+> > > This reverts commit 6f19893b644a9454d85e593b5e90914e7a72b7dd.
 > > >
-> > > From: Alexei Starovoitov <ast@kernel.org>
+> > > Commits from @umn.edu addresses have been found to be submitted in
+> > > "bad faith" to try to test the kernel community's ability to review
+> > > "known malicious" changes.  The result of these submissions can be
+> > > found in a paper published at the 42nd IEEE Symposium on Security and
+> > > Privacy entitled, "Open Source Insecurity: Stealthily Introducing
+> > > Vulnerabilities via Hypocrite Commits" written by Qiushi Wu
+> > > (University of Minnesota) and Kangjie Lu (University of Minnesota).
 > > >
-> > > In order to be able to generate loader program in the later
-> > > patches change the order of data and text relocations.
-> > > Also improve the test to include data relos.
+> > > Because of this, all submissions from this group must be reverted from
+> > > the kernel tree and will need to be re-reviewed again to determine if
+> > > they actually are a valid fix.  Until that work is complete, remove
+> > > this change to ensure that no problems are being introduced into the
+> > > codebase.
 > > >
-> > > If the kernel supports "FD array" the map_fd relocations can be processed
-> > > before text relos since generated loader program won't need to manually
-> > > patch ld_imm64 insns with map_fd.
-> > > But ksym and kfunc relocations can only be processed after all calls
-> > > are relocated, since loader program will consist of a sequence
-> > > of calls to bpf_btf_find_by_name_kind() followed by patching of btf_id
-> > > and btf_obj_fd into corresponding ld_imm64 insns. The locations of those
-> > > ld_imm64 insns are specified in relocations.
-> > > Hence process all data relocations (maps, ksym, kfunc) together after call relos.
-> > >
-> > > Signed-off-by: Alexei Starovoitov <ast@kernel.org>
+> > > Cc: Kangjie Lu <kjlu@umn.edu>
+> > > Cc: David S. Miller <davem@davemloft.net>
+> > > Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 > > > ---
-> > >  tools/lib/bpf/libbpf.c                        | 86 +++++++++++++++----
-> > >  .../selftests/bpf/progs/test_subprogs.c       | 13 +++
-> > >  2 files changed, 80 insertions(+), 19 deletions(-)
+> > >  net/openvswitch/datapath.c | 4 ----
+> > >  1 file changed, 4 deletions(-)
 > > >
-> > > diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
-> > > index 17cfc5b66111..c73a85b97ca5 100644
-> > > --- a/tools/lib/bpf/libbpf.c
-> > > +++ b/tools/lib/bpf/libbpf.c
-> > > @@ -6379,11 +6379,15 @@ bpf_object__relocate_data(struct bpf_object *obj, struct bpf_program *prog)
-> > >                         insn[0].imm = ext->ksym.kernel_btf_id;
-> > >                         break;
-> > >                 case RELO_SUBPROG_ADDR:
-> > > -                       insn[0].src_reg = BPF_PSEUDO_FUNC;
-> > > -                       /* will be handled as a follow up pass */
-> > > +                       if (insn[0].src_reg != BPF_PSEUDO_FUNC) {
-> > > +                               pr_warn("prog '%s': relo #%d: bad insn\n",
-> > > +                                       prog->name, i);
-> > > +                               return -EINVAL;
-> > > +                       }
+> > > diff --git a/net/openvswitch/datapath.c b/net/openvswitch/datapath.c
+> > > index 9d6ef6cb9b26..99e63f4bbcaf 100644
+> > > --- a/net/openvswitch/datapath.c
+> > > +++ b/net/openvswitch/datapath.c
+> > > @@ -443,10 +443,6 @@ static int queue_userspace_packet(struct
+> > > datapath *dp, struct sk_buff *skb,
+> > >       upcall = genlmsg_put(user_skb, 0, 0, &dp_packet_genl_family,
+> > >                            0, upcall_info->cmd);
+> > > -     if (!upcall) {
+> > > -             err = -EINVAL;
+> > > -             goto out;
+> > > -     }
+> > >       upcall->dp_ifindex = dp_ifindex;
+> > >
+> > >       err = ovs_nla_put_key(key, key, OVS_PACKET_ATTR_KEY, false,
+> > > user_skb);
 > >
-> > given SUBPROG_ADDR is now handled similarly to RELO_CALL in a
-> > different place, I'd probably drop this error check and just combine
-> > RELO_SUBPROG_ADDR and RELO_CALL cases with just a /* handled already
-> > */ comment.
->
-> I prefer to keep them separate. I've hit this pr_warn couple times
-> while messing with relos and it saved my time.
-> I bet it will save time to the next developer too.
+> > This patch seems good to me, but given the situation I'd like another
+> > pair of eyes on it, at least.
+> 
+> The revert LGTM.
+> 
+> A few lines above:
+> 
+>         len = upcall_msg_size(upcall_info, hlen - cutlen,
+>                               OVS_CB(skb)->acts_origlen);
+>         user_skb = genlmsg_new(len, GFP_ATOMIC);
+>         if (!user_skb) {
+>                 err = -ENOMEM;
+>                 goto out;
+>         }
+> 
+> upcall_msg_size() calculates the expected size of the buffer,
+> including at the very least a nlmsg-aligned sizeof(struct ovs_header),
+> plus other constants and also potential (likely) variable lengths
+> based on the current flow context.
+> 
+> genlmsg_new() adds the (nlmsg-aligned) nlmsg header length to the
+> calculated length when allocating the buffer, and if the memory
+> allocation fails here then the error is already returned.
+> 
+> I don't then see a way for genlmsg_put() to fail per the hunk in the
+> commit here given that its buffer reservation is calculated based on:
+> 
+>         nlh = nlmsg_put(skb, portid, seq, family->id, GENL_HDRLEN +
+>                         family->hdrsize, flags);
+> 
+> Where family->hdrsize would be sizeof(struct ovs_header) since
+> dp_packet_genl_family is the family passed into the genlmsg_put()
+> call:
+> 
+> static struct genl_family dp_packet_genl_family __ro_after_init = {
+>         .hdrsize = sizeof(struct ovs_header),
+> 
+> Even if there were some allocation bug here to be fixed (due to
+> miscalculating the buffer size in the first place), I don't see how
+> the extra error path in the included patch could catch such an error.
+> The original patch doesn't seem necessarily problematic, but it
+> doesn't seem like it adds anything of value either (or at least,
+> nothing a comment couldn't clearly explain).
+> 
+> Cheers,
+> Joe
 
-hmm.. ok, not critical to me
+Many thanks for the review, now dropping this revert from my tree.
 
->
-> > > +                       /* handled already */
-> > >                         break;
-> > >                 case RELO_CALL:
-> > > -                       /* will be handled as a follow up pass */
-> > > +                       /* handled already */
-> > >                         break;
-> > >                 default:
-> > >                         pr_warn("prog '%s': relo #%d: bad relo type %d\n",
-> > > @@ -6552,6 +6556,31 @@ static struct reloc_desc *find_prog_insn_relo(const struct bpf_program *prog, si
-> > >                        sizeof(*prog->reloc_desc), cmp_relo_by_insn_idx);
-> > >  }
-> > >
-> > > +static int append_subprog_relos(struct bpf_program *main_prog, struct bpf_program *subprog)
-> > > +{
-> > > +       int new_cnt = main_prog->nr_reloc + subprog->nr_reloc;
-> > > +       struct reloc_desc *relos;
-> > > +       size_t off = subprog->sub_insn_off;
-> > > +       int i;
-> > > +
-> > > +       if (main_prog == subprog)
-> > > +               return 0;
-> > > +       relos = libbpf_reallocarray(main_prog->reloc_desc, new_cnt, sizeof(*relos));
-> > > +       if (!relos)
-> > > +               return -ENOMEM;
-> > > +       memcpy(relos + main_prog->nr_reloc, subprog->reloc_desc,
-> > > +              sizeof(*relos) * subprog->nr_reloc);
-> > > +
-> > > +       for (i = main_prog->nr_reloc; i < new_cnt; i++)
-> > > +               relos[i].insn_idx += off;
-> >
-> > nit: off is used only here, so there is little point in having it as a
-> > separate var, inline?
->
-> sure.
->
-> > > +       /* After insn_idx adjustment the 'relos' array is still sorted
-> > > +        * by insn_idx and doesn't break bsearch.
-> > > +        */
-> > > +       main_prog->reloc_desc = relos;
-> > > +       main_prog->nr_reloc = new_cnt;
-> > > +       return 0;
-> > > +}
-> > > +
-> > >  static int
-> > >  bpf_object__reloc_code(struct bpf_object *obj, struct bpf_program *main_prog,
-> > >                        struct bpf_program *prog)
-> > > @@ -6560,18 +6589,32 @@ bpf_object__reloc_code(struct bpf_object *obj, struct bpf_program *main_prog,
-> > >         struct bpf_program *subprog;
-> > >         struct bpf_insn *insns, *insn;
-> > >         struct reloc_desc *relo;
-> > > -       int err;
-> > > +       int err, i;
-> > >
-> > >         err = reloc_prog_func_and_line_info(obj, main_prog, prog);
-> > >         if (err)
-> > >                 return err;
-> > >
-> > > +       for (i = 0; i < prog->nr_reloc; i++) {
-> > > +               relo = &prog->reloc_desc[i];
-> > > +               insn = &main_prog->insns[prog->sub_insn_off + relo->insn_idx];
-> > > +
-> > > +               if (relo->type == RELO_SUBPROG_ADDR)
-> > > +                       /* mark the insn, so it becomes insn_is_pseudo_func() */
-> > > +                       insn[0].src_reg = BPF_PSEUDO_FUNC;
-> > > +       }
-> > > +
-> >
-> > This will do the same work over and over each time we append a subprog
-> > to main_prog. This should logically follow append_subprog_relos(), but
-> > you wanted to do it for main_prog with the same code, right?
->
-> It cannot follow append_subprog_relos.
-> It has to be done before the loop below.
-> Otherwise !insn_is_pseudo_func() won't catch it and all ld_imm64 insns
-> will be considered which will make the loop below more complex and slower.
-> The find_prog_insn_relo() will be called a lot more times.
-> !relo condition would be treated different ld_imm64 vs call insn, etc.
-
-if you process main_prog->insns first all the calls to subprogs would
-be updated, then it recursively would do this right before a new
-subprog is added (initial call is bpf_object__reloc_code(obj, prog,
-prog) where prog is entry-point program). But either way I'm not
-suggesting doing this and splitting this logic into two places.
-
->
-> > How about instead doing this before we start appending subprogs to
-> > main_progs? I.e., do it explicitly in bpf_object__relocate() before
-> > you start code relocation loop.
->
-> Not sure I follow.
-> Do another loop:
->  for (i = 0; i < obj->nr_programs; i++)
->     for (i = 0; i < prog->nr_reloc; i++)
->       if (relo->type == RELO_SUBPROG_ADDR)
->       ?
-> That's an option too.
-> I can do that if you prefer.
-> It felt cleaner to do this mark here right before the loop below that needs it.
-
-Yes, I'm proposing to do another loop in bpf_object__relocate() before
-we start adding subprogs to main_progs. The reason is that
-bpf_object__reloc_code() is called recursively many times for the same
-main_prog, so doing that here is O(N^2) in the number of total
-instructions in main_prog. It processes the same (already processed)
-instructions many times unnecessarily. It's wasteful and unclean.
-
->
-> > >         for (insn_idx = 0; insn_idx < prog->sec_insn_cnt; insn_idx++) {
-> > >                 insn = &main_prog->insns[prog->sub_insn_off + insn_idx];
-> > >                 if (!insn_is_subprog_call(insn) && !insn_is_pseudo_func(insn))
-> > >                         continue;
-> > >
-> > >                 relo = find_prog_insn_relo(prog, insn_idx);
-> > > +               if (relo && relo->type == RELO_EXTERN_FUNC)
-> > > +                       /* kfunc relocations will be handled later
-> > > +                        * in bpf_object__relocate_data()
-> > > +                        */
-> > > +                       continue;
-> > >                 if (relo && relo->type != RELO_CALL && relo->type != RELO_SUBPROG_ADDR) {
-> > >                         pr_warn("prog '%s': unexpected relo for insn #%zu, type %d\n",
-> > >                                 prog->name, insn_idx, relo->type);
-> >
-> > [...]
->
-> --
+greg k-h
