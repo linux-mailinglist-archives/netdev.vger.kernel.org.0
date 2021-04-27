@@ -2,153 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 605F936C127
-	for <lists+netdev@lfdr.de>; Tue, 27 Apr 2021 10:41:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AE6E936C13E
+	for <lists+netdev@lfdr.de>; Tue, 27 Apr 2021 10:54:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235049AbhD0Ilj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 27 Apr 2021 04:41:39 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:34016 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S229487AbhD0Ilh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 27 Apr 2021 04:41:37 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1619512854;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=b4TkbOMuqL6zaiNVyrR84OzccxAUhggkjTLXhZ+grko=;
-        b=OcjpsErYOlcogL4sZj50oMtXpNmKjORQ6ojG+GdxI3250WjxY2h/E5xrc2P8a6yj612Rqj
-        7+d2s08URN+nTl4lHn67BrABrqWhehL0cLO9g4NZGAfzxUpdkdfypQ3d6lXdnl1L7Is3L/
-        dWdO5z/rPwSx5dGAz1pZLLkRGf4B998=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-428-AbM_TlEuOkOXVmDlbA7luw-1; Tue, 27 Apr 2021 04:40:52 -0400
-X-MC-Unique: AbM_TlEuOkOXVmDlbA7luw-1
-Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 57F3C801B13;
-        Tue, 27 Apr 2021 08:40:50 +0000 (UTC)
-Received: from carbon (unknown [10.36.110.19])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id C46E817C5F;
-        Tue, 27 Apr 2021 08:40:35 +0000 (UTC)
-Date:   Tue, 27 Apr 2021 10:40:34 +0200
-From:   Jesper Dangaard Brouer <brouer@redhat.com>
-To:     Hangbin Liu <liuhangbin@gmail.com>
-Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org,
-        Toke =?UTF-8?B?SMO4aWxh?= =?UTF-8?B?bmQtSsO4cmdlbnNlbg==?= 
-        <toke@redhat.com>, Jiri Benc <jbenc@redhat.com>,
-        Eelco Chaudron <echaudro@redhat.com>, ast@kernel.org,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Lorenzo Bianconi <lorenzo.bianconi@redhat.com>,
-        David Ahern <dsahern@gmail.com>,
-        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
-        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
-        =?UTF-8?B?QmrDtnJuIFQ=?= =?UTF-8?B?w7ZwZWw=?= 
-        <bjorn.topel@gmail.com>, Martin KaFai Lau <kafai@fb.com>,
-        brouer@redhat.com
-Subject: Re: [PATCHv10 bpf-next 2/4] xdp: extend xdp_redirect_map with
- broadcast support
-Message-ID: <20210427104034.0e62db4b@carbon>
-In-Reply-To: <20210426114742.GU3465@Leo-laptop-t470s>
-References: <20210423020019.2333192-1-liuhangbin@gmail.com>
-        <20210423020019.2333192-3-liuhangbin@gmail.com>
-        <20210426115350.501cef2a@carbon>
-        <20210426114014.GT3465@Leo-laptop-t470s>
-        <20210426114742.GU3465@Leo-laptop-t470s>
+        id S234561AbhD0IzH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 27 Apr 2021 04:55:07 -0400
+Received: from mail.katalix.com ([3.9.82.81]:54412 "EHLO mail.katalix.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229487AbhD0IzG (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 27 Apr 2021 04:55:06 -0400
+Received: from localhost (82-69-49-219.dsl.in-addr.zen.co.uk [82.69.49.219])
+        (Authenticated sender: tom)
+        by mail.katalix.com (Postfix) with ESMTPSA id 04D377DC8A;
+        Tue, 27 Apr 2021 09:54:22 +0100 (BST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=katalix.com; s=mail;
+        t=1619513663; bh=BkOtjIgkefCri+COLZ6fE+Zf2Wn6Kwpj2GIydOH0QXY=;
+        h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+         Content-Disposition:In-Reply-To:From;
+        z=Date:=20Tue,=2027=20Apr=202021=2009:54:22=20+0100|From:=20Tom=20P
+         arkin=20<tparkin@katalix.com>|To:=20"Gong,=20Sishuai"=20<sishuai@p
+         urdue.edu>|Cc:=20Cong=20Wang=20<xiyou.wangcong@gmail.com>,=0D=0A=0
+         9David=20Miller=20<davem@davemloft.net>,=0D=0A=09Jakub=20Kicinski=
+         20<kuba@kernel.org>,=0D=0A=09Matthias=20Schiffer=20<mschiffer@univ
+         erse-factory.net>,=0D=0A=09Linux=20Kernel=20Network=20Developers=2
+         0<netdev@vger.kernel.org>|Subject:=20Re:=20[PATCH=20v3]=20net:=20f
+         ix=20a=20concurrency=20bug=20in=20l2tp_tunnel_register()|Message-I
+         D:=20<20210427085422.GA4585@katalix.com>|References:=20<2021042119
+         2430.3036-1-sishuai@purdue.edu>=0D=0A=20<CAM_iQpUV-rmGdn1g7jn=3D=3
+         D53wLQ0MvM_bx4cJBo4AEDVZXPehRQ@mail.gmail.com>=0D=0A=20<2021042608
+         5913.GA4750@katalix.com>=0D=0A=20<E30A6022-C479-4F67-B945-BFF0472C
+         E320@purdue.edu>|MIME-Version:=201.0|Content-Disposition:=20inline
+         |In-Reply-To:=20<E30A6022-C479-4F67-B945-BFF0472CE320@purdue.edu>;
+        b=J5wF56isthrtQcsP423j3QZQ5nBpa6vG2Dsm2kYOcsrbQ0iKXj3fs+uEb9g/CmKba
+         jhn5IXcU/KLuCNmYwDnk9SiSy6qIGAS9qPOxkQHHw56tzZCvQnoVtq+zPHvqy4OxhA
+         2TPWDAkQC/zrl+t93HLDHJxIOp5GP8hqx5DEq7PEU3A5AKT5gb/2yQM6sk0sal6WMr
+         NgpijOwcr8tiqQIxw/W2QsKauVpkY/Y2tT648+kKUYkWV5moZ7M0DeUZg7SFJZc9Hz
+         ghPO/8WK2xTrNIzwKHHxaqdt0TG3CMWthccdZT571uk72LG1xjmsUn8+9exRzqybmA
+         xN4/D4lKc9G9Q==
+Date:   Tue, 27 Apr 2021 09:54:22 +0100
+From:   Tom Parkin <tparkin@katalix.com>
+To:     "Gong, Sishuai" <sishuai@purdue.edu>
+Cc:     Cong Wang <xiyou.wangcong@gmail.com>,
+        David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Matthias Schiffer <mschiffer@universe-factory.net>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>
+Subject: Re: [PATCH v3] net: fix a concurrency bug in l2tp_tunnel_register()
+Message-ID: <20210427085422.GA4585@katalix.com>
+References: <20210421192430.3036-1-sishuai@purdue.edu>
+ <CAM_iQpUV-rmGdn1g7jn==53wLQ0MvM_bx4cJBo4AEDVZXPehRQ@mail.gmail.com>
+ <20210426085913.GA4750@katalix.com>
+ <E30A6022-C479-4F67-B945-BFF0472CE320@purdue.edu>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="x+6KMIRAuhnl3hBn"
+Content-Disposition: inline
+In-Reply-To: <E30A6022-C479-4F67-B945-BFF0472CE320@purdue.edu>
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 26 Apr 2021 19:47:42 +0800
-Hangbin Liu <liuhangbin@gmail.com> wrote:
 
-> On Mon, Apr 26, 2021 at 07:40:28PM +0800, Hangbin Liu wrote:
-> > On Mon, Apr 26, 2021 at 11:53:50AM +0200, Jesper Dangaard Brouer wrote:  
-> > > Decode: perf_trace_xdp_redirect_template+0xba
-> > >  ./scripts/faddr2line vmlinux perf_trace_xdp_redirect_template+0xba
-> > > perf_trace_xdp_redirect_template+0xba/0x130:
-> > > perf_trace_xdp_redirect_template at include/trace/events/xdp.h:89 (discriminator 13)
-> > > 
-> > > less -N net/core/filter.c
-> > >  [...]
-> > >    3993         if (unlikely(err))
-> > >    3994                 goto err;
-> > >    3995   
-> > > -> 3996         _trace_xdp_redirect_map(dev, xdp_prog, fwd, map_type, map_id, ri->tgt_index);  
-> > 
-> > Oh, the fwd in xdp xdp_redirect_map broadcast is NULL...
-> > 
-> > I will see how to fix it. Maybe assign the ingress interface to fwd?  
-> 
-> Er, sorry for the flood message. I just checked the trace point code, fwd
-> in xdp trace event means to_ifindex. So we can't assign the ingress interface
-> to fwd.
-> 
-> In xdp_redirect_map broadcast case, there is no specific to_ifindex.
-> So how about just ignore it... e.g.
+--x+6KMIRAuhnl3hBn
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Yes, below code make sense, and I want to confirm that it solves the
-crash (I tested it).  IMHO leaving ifindex=0 is okay, because  it is
-not a valid ifindex, meaning a caller of the tracepoint can deduce
-(together with the map types) that this must be a broadcast.
+On  Mon, Apr 26, 2021 at 13:04:44 +0000, Gong, Sishuai wrote:
+>    On Apr 26, 2021, at 4:59 AM, Tom Parkin <tparkin@katalix.com> wrote:
+>      For some reason I've not been seeing these patches, just the replies.
+>      I can't see it on lore.kernel.org either, unless I'm missing somethi=
+ng
+>      obvious.
+>=20
+>      Have the original mails cc'd netdev?
+>=20
+>    I also noticed this problem. I CCed netdev@vger.kernel.org but=20
+>    this message didn=E2=80=99t show up in the maillist. Actually, I also
+>    CCed you in the original email but it looks like only Cong Wang
+>    could see it.
+>    Should I re-send this email?
+>    Thanks.
 
-Thank you Hangbin for keep working on this patchset.  I know it have
-been a long long road.  I truly appreciate your perseverance and
-patience with this patchset.  With this crash fixed, I actually think we
-are very close to having something we can merge.  With the unlikely()
-I'm fine with the code itself.
+If you CC'd me in the first place and I didn't see it that's strange.
+I got your initial "bug report" mail :-|
 
-I think we need to update the patch description, but I've asked Toke to
-help with this. The performance measurements in the patch description
-is not measuring what I expected, but something else.  To avoid redoing
-a lot of testing, I think we can just describe what the test
-'redirect_map-multi i40e->i40e' is doing, as broadcast feature is
-filtering the ingress port 'i40e->i40e' test out same interface will
-just drop the xdp_frame (after walking the devmap for empty ports).  Or
-maybe it is not the same interface(?). In any-case this need to be more
-clear.
+=46rom the perspective of submitting the patch, I have no problem with
+it being applied on the strength of Cong Wang's review.
 
-I think it would be valuable to show (in the commit message) some tests
-that demonstrates the overhead of packet cloning.  I expect the
-overhead of page-alloc+memcpy is to be significant, but Lorenzo have a
-number of ideas howto speed this up.  Maybe you can simply
-broadcast-redirect into multiple veth devices that (XDP_DROP in
-peer-dev) to demonstrate the effect and overhead of doing the cloning
-process.
+Thanks for working on this.
 
+--x+6KMIRAuhnl3hBn
+Content-Type: application/pgp-signature; name="signature.asc"
 
-> diff --git a/include/trace/events/xdp.h b/include/trace/events/xdp.h
-> index fcad3645a70b..1751da079330 100644
-> --- a/include/trace/events/xdp.h
-> +++ b/include/trace/events/xdp.h
-> @@ -110,7 +110,8 @@ DECLARE_EVENT_CLASS(xdp_redirect_template,
->                 u32 ifindex = 0, map_index = index;
-> 
->                 if (map_type == BPF_MAP_TYPE_DEVMAP || map_type == BPF_MAP_TYPE_DEVMAP_HASH) {
-> -                       ifindex = ((struct _bpf_dtab_netdev *)tgt)->dev->ifindex;
-> +                       if (tgt)
-> +                               ifindex = ((struct _bpf_dtab_netdev *)tgt)->dev->ifindex;
->                 } else if (map_type == BPF_MAP_TYPE_UNSPEC && map_id == INT_MAX) {
->                         ifindex = index;
->                         map_index = 0;
-> 
-> 
-> Hangbin
-> 
+-----BEGIN PGP SIGNATURE-----
 
+iQEzBAABCgAdFiEEsUkgyDzMwrj81nq0lIwGZQq6i9AFAmCH0TsACgkQlIwGZQq6
+i9DTnggAu9jxr2TeWljvsF+rAtynFJVDqrXDBntJUd+lWpHvQY+KrUfLG4xmm+Id
+ctLURLVS/5mmkcXDlrvS+Oo6jYIqOPYtQ58JtsdGtGYia/iB7hHRiHBxaUUf7kdL
+yuI79FuuXZd5uMTne2A+Q4NYX6WHQ+QY0JNMcUWnLpuEwmb31I1p+lM7e4ynWimi
+cjwNdAm9k5owtDnUATxTTStYr0DDZSnSPJb/uSZEMx09N8XLMWnhLWZ8IGjQg4IZ
+Sn9Mzn/jbqiEitUYKIDWPBLNMfQyl+5yZW7a0KJwxlICc1kw8NZXnWk/0w27HN9a
+phHU2+c9Jf0l56zf6oxKHxxq7Pt2aQ==
+=AVj+
+-----END PGP SIGNATURE-----
 
-
--- 
-Best regards,
-  Jesper Dangaard Brouer
-  MSc.CS, Principal Kernel Engineer at Red Hat
-  LinkedIn: http://www.linkedin.com/in/brouer
-
+--x+6KMIRAuhnl3hBn--
