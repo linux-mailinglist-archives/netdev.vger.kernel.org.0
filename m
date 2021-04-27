@@ -2,110 +2,151 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AE6E936C13E
-	for <lists+netdev@lfdr.de>; Tue, 27 Apr 2021 10:54:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E3A2536C180
+	for <lists+netdev@lfdr.de>; Tue, 27 Apr 2021 11:13:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234561AbhD0IzH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 27 Apr 2021 04:55:07 -0400
-Received: from mail.katalix.com ([3.9.82.81]:54412 "EHLO mail.katalix.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229487AbhD0IzG (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 27 Apr 2021 04:55:06 -0400
-Received: from localhost (82-69-49-219.dsl.in-addr.zen.co.uk [82.69.49.219])
-        (Authenticated sender: tom)
-        by mail.katalix.com (Postfix) with ESMTPSA id 04D377DC8A;
-        Tue, 27 Apr 2021 09:54:22 +0100 (BST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=katalix.com; s=mail;
-        t=1619513663; bh=BkOtjIgkefCri+COLZ6fE+Zf2Wn6Kwpj2GIydOH0QXY=;
-        h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-         Content-Disposition:In-Reply-To:From;
-        z=Date:=20Tue,=2027=20Apr=202021=2009:54:22=20+0100|From:=20Tom=20P
-         arkin=20<tparkin@katalix.com>|To:=20"Gong,=20Sishuai"=20<sishuai@p
-         urdue.edu>|Cc:=20Cong=20Wang=20<xiyou.wangcong@gmail.com>,=0D=0A=0
-         9David=20Miller=20<davem@davemloft.net>,=0D=0A=09Jakub=20Kicinski=
-         20<kuba@kernel.org>,=0D=0A=09Matthias=20Schiffer=20<mschiffer@univ
-         erse-factory.net>,=0D=0A=09Linux=20Kernel=20Network=20Developers=2
-         0<netdev@vger.kernel.org>|Subject:=20Re:=20[PATCH=20v3]=20net:=20f
-         ix=20a=20concurrency=20bug=20in=20l2tp_tunnel_register()|Message-I
-         D:=20<20210427085422.GA4585@katalix.com>|References:=20<2021042119
-         2430.3036-1-sishuai@purdue.edu>=0D=0A=20<CAM_iQpUV-rmGdn1g7jn=3D=3
-         D53wLQ0MvM_bx4cJBo4AEDVZXPehRQ@mail.gmail.com>=0D=0A=20<2021042608
-         5913.GA4750@katalix.com>=0D=0A=20<E30A6022-C479-4F67-B945-BFF0472C
-         E320@purdue.edu>|MIME-Version:=201.0|Content-Disposition:=20inline
-         |In-Reply-To:=20<E30A6022-C479-4F67-B945-BFF0472CE320@purdue.edu>;
-        b=J5wF56isthrtQcsP423j3QZQ5nBpa6vG2Dsm2kYOcsrbQ0iKXj3fs+uEb9g/CmKba
-         jhn5IXcU/KLuCNmYwDnk9SiSy6qIGAS9qPOxkQHHw56tzZCvQnoVtq+zPHvqy4OxhA
-         2TPWDAkQC/zrl+t93HLDHJxIOp5GP8hqx5DEq7PEU3A5AKT5gb/2yQM6sk0sal6WMr
-         NgpijOwcr8tiqQIxw/W2QsKauVpkY/Y2tT648+kKUYkWV5moZ7M0DeUZg7SFJZc9Hz
-         ghPO/8WK2xTrNIzwKHHxaqdt0TG3CMWthccdZT571uk72LG1xjmsUn8+9exRzqybmA
-         xN4/D4lKc9G9Q==
-Date:   Tue, 27 Apr 2021 09:54:22 +0100
-From:   Tom Parkin <tparkin@katalix.com>
-To:     "Gong, Sishuai" <sishuai@purdue.edu>
-Cc:     Cong Wang <xiyou.wangcong@gmail.com>,
-        David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Matthias Schiffer <mschiffer@universe-factory.net>,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>
-Subject: Re: [PATCH v3] net: fix a concurrency bug in l2tp_tunnel_register()
-Message-ID: <20210427085422.GA4585@katalix.com>
-References: <20210421192430.3036-1-sishuai@purdue.edu>
- <CAM_iQpUV-rmGdn1g7jn==53wLQ0MvM_bx4cJBo4AEDVZXPehRQ@mail.gmail.com>
- <20210426085913.GA4750@katalix.com>
- <E30A6022-C479-4F67-B945-BFF0472CE320@purdue.edu>
+        id S235172AbhD0JNo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 27 Apr 2021 05:13:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40904 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S235033AbhD0JNn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 27 Apr 2021 05:13:43 -0400
+Received: from mail-lj1-x22b.google.com (mail-lj1-x22b.google.com [IPv6:2a00:1450:4864:20::22b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A95AC061574
+        for <netdev@vger.kernel.org>; Tue, 27 Apr 2021 02:12:59 -0700 (PDT)
+Received: by mail-lj1-x22b.google.com with SMTP id u20so67378635lja.13
+        for <netdev@vger.kernel.org>; Tue, 27 Apr 2021 02:12:59 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=waldekranz-com.20150623.gappssmtp.com; s=20150623;
+        h=from:to:cc:subject:in-reply-to:references:date:message-id
+         :mime-version;
+        bh=Gjx1++pZJ1N245hIBg9MYcOL5Mo7UMv0gn7uV+nKO/Q=;
+        b=To8NTSsufPt1xl4Uin4I/czLrAuThfALvfpZT+v81Qk9yAUXSSYIbND/gqxDciLkOV
+         U90C8a1Yn4Yf1jtnt10lMEZjDCFnRNNEz6V8+FVNg9tm1WXwXpuVLp/HpP2zXx+tTJR9
+         7cq1bWkUH47J80nFa2KZot+CTffXk7FPFn9yt2FoouwAUMx6Kfw+M5Diws+15+++ihqV
+         1Novp/JmNP2VJhDKAAIs8J1sqRQpba7SKVeA6JlC09r+OOe9DNv/m4JC7xd0YwcEz0FF
+         F/zQNFwSfqDBSAltmHVGJmK2c9/xgZKERnFDkwGdDBFlaaUKKC1oAPlcHaSh+d8ZdPWN
+         mYkA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
+         :message-id:mime-version;
+        bh=Gjx1++pZJ1N245hIBg9MYcOL5Mo7UMv0gn7uV+nKO/Q=;
+        b=nXl6yAzJgKXqkMRauaw25GVaRJvNK6SrRwHbSrIfQ9CJxn84lag/LS0XMlKI6GvAKI
+         aYzFi+YSSqSPVU2jaH6poQQqBnB5o/ulPBtwCy3+ykfNEzevcPdUyPZrAPvthdACe7YI
+         xiFlF2kD+ASRSLUsrJkNcFZ5KRYQ9prBGVnw0o2GVO4RmcvAxbzKG9iCalnVgUGvGlSj
+         /tNGxwY7gNLS08v5MU6uFvmPrTK8P2eBH+G6yvaPcQZriR06HweKQvpnlhuDaeql85lV
+         1qW/iHcGdq9Gmb0ftZsUdNx0u/WdCknEbkVTUv0+i1JSCbXxM/vD9olfyfiviC2PSE1T
+         7dhw==
+X-Gm-Message-State: AOAM531hwYojZsay6xbr7bf1RJ71FmHsMWuHNlb80TVLFyYBLQHX+xF7
+        z5eACeIXlX6MZx/PqFc7/F/Y4g==
+X-Google-Smtp-Source: ABdhPJzpK5rhwc20jQdcvfZ8NPh51YasaIsqqnfU+84RWhxSiP1rTn6f+5sYfFcU8o/fVs2Ub26PRw==
+X-Received: by 2002:a05:651c:2047:: with SMTP id t7mr16132176ljo.308.1619514777493;
+        Tue, 27 Apr 2021 02:12:57 -0700 (PDT)
+Received: from wkz-x280 (static-193-12-47-89.cust.tele2.se. [193.12.47.89])
+        by smtp.gmail.com with ESMTPSA id p18sm278297ljo.75.2021.04.27.02.12.56
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 27 Apr 2021 02:12:57 -0700 (PDT)
+From:   Tobias Waldekranz <tobias@waldekranz.com>
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, andrew@lunn.ch,
+        vivien.didelot@gmail.com, f.fainelli@gmail.com, roopa@nvidia.com,
+        nikolay@nvidia.com, jiri@resnulli.us, idosch@idosch.org,
+        stephen@networkplumber.org, netdev@vger.kernel.org,
+        bridge@lists.linux-foundation.org
+Subject: Re: [RFC net-next 5/9] net: dsa: Track port PVIDs
+In-Reply-To: <20210426202800.y4hfurf5k3hrbvqf@skbuf>
+References: <20210426170411.1789186-1-tobias@waldekranz.com> <20210426170411.1789186-6-tobias@waldekranz.com> <20210426194026.3sr22rqyf2srrwtq@skbuf> <877dkoq09r.fsf@waldekranz.com> <20210426202800.y4hfurf5k3hrbvqf@skbuf>
+Date:   Tue, 27 Apr 2021 11:12:56 +0200
+Message-ID: <8735vcoztz.fsf@waldekranz.com>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="x+6KMIRAuhnl3hBn"
-Content-Disposition: inline
-In-Reply-To: <E30A6022-C479-4F67-B945-BFF0472CE320@purdue.edu>
-User-Agent: Mutt/1.9.4 (2018-02-28)
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Mon, Apr 26, 2021 at 23:28, Vladimir Oltean <olteanv@gmail.com> wrote:
+> On Mon, Apr 26, 2021 at 10:05:52PM +0200, Tobias Waldekranz wrote:
+>> On Mon, Apr 26, 2021 at 22:40, Vladimir Oltean <olteanv@gmail.com> wrote:
+>> > Hi Tobias,
+>> >
+>> > On Mon, Apr 26, 2021 at 07:04:07PM +0200, Tobias Waldekranz wrote:
+>> >> In some scenarios a tagger must know which VLAN to assign to a packet,
+>> >> even if the packet is set to egress untagged. Since the VLAN
+>> >> information in the skb will be removed by the bridge in this case,
+>> >> track each port's PVID such that the VID of an outgoing frame can
+>> >> always be determined.
+>> >> 
+>> >> Signed-off-by: Tobias Waldekranz <tobias@waldekranz.com>
+>> >> ---
+>> >
+>> > Let me give you this real-life example:
+>> >
+>> > #!/bin/bash
+>> >
+>> > ip link add br0 type bridge vlan_filtering 1
+>> > for eth in eth0 eth1 swp2 swp3 swp4 swp5; do
+>> > 	ip link set $eth up
+>> > 	ip link set $eth master br0
+>> > done
+>> > ip link set br0 up
+>> >
+>> > bridge vlan add dev eth0 vid 100 pvid untagged
+>> > bridge vlan del dev swp2 vid 1
+>> > bridge vlan del dev swp3 vid 1
+>> > bridge vlan add dev swp2 vid 100
+>> > bridge vlan add dev swp3 vid 100 untagged
+>> >
+>> > reproducible on the NXP LS1021A-TSN board.
+>> > The bridge receives an untagged packet on eth0 and floods it.
+>> > It should reach swp2 and swp3, and be tagged on swp2, and untagged on
+>> > swp3 respectively.
+>> >
+>> > With your idea of sending untagged frames towards the port's pvid,
+>> > wouldn't we be leaking this packet to VLAN 1, therefore towards ports
+>> > swp4 and swp5, and the real destination ports would not get this packet?
+>> 
+>> I am not sure I follow. The bridge would never send the packet to
+>> swp{4,5} because should_deliver() rejects them (as usual). So it could
+>> only be sent either to swp2 or swp3. In the case that swp3 is first in
+>> the bridge's port list, it would be sent untagged, but the PVID would be
+>> 100 and the flooding would thus be limited to swp{2,3}.
+>
+> Sorry, _I_ don't understand.
+>
+> When you say that the PVID is 100, whose PVID is it, exactly? Is it the
+> pvid of the source port (aka eth0 in this example)? That's not what I
+> see, I see the pvid of the egress port (the Marvell device)...
 
---x+6KMIRAuhnl3hBn
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+I meant the PVID of swp3.
 
-On  Mon, Apr 26, 2021 at 13:04:44 +0000, Gong, Sishuai wrote:
->    On Apr 26, 2021, at 4:59 AM, Tom Parkin <tparkin@katalix.com> wrote:
->      For some reason I've not been seeing these patches, just the replies.
->      I can't see it on lore.kernel.org either, unless I'm missing somethi=
-ng
->      obvious.
->=20
->      Have the original mails cc'd netdev?
->=20
->    I also noticed this problem. I CCed netdev@vger.kernel.org but=20
->    this message didn=E2=80=99t show up in the maillist. Actually, I also
->    CCed you in the original email but it looks like only Cong Wang
->    could see it.
->    Should I re-send this email?
->    Thanks.
+In summary: This series incorrectly assumes that a port's PVID always
+corresponds to the VID that should be assigned to untagged packets on
+egress. This is wrong because PVID only specifies which VID to assign
+packets to on ingress, it says nothing about policy on egress. Multiple
+VIDs can also be configured to egress untagged on a given port. The VID
+must thus be sent along with each packet in order for the driver to be
+able to assign it to the correct VID.
 
-If you CC'd me in the first place and I didn't see it that's strange.
-I got your initial "bug report" mail :-|
+> So to reiterate: when you transmit a packet towards your hardware switch
+> which has br0 inside the sb_dev, how does the switch know in which VLAN
+> to forward that packet? As far as I am aware, when the bridge had
+> received the packet as untagged on eth0, it did not insert VLAN 100 into
+> the skb itself, so the bridge VLAN information is lost when delivering
+> the frame to the egress net device. Am I wrong?
 
-=46rom the perspective of submitting the patch, I have no problem with
-it being applied on the strength of Cong Wang's review.
+VID 100 is inserted into skb->vlan_tci on ingress from eth0, in
+br_vlan.c/__allowed_ingress. It is then cleared again in
+br_vlan.c/br_handle_vlan if the egress port (swp3 in our example) is set
+to egress the VID untagged.
 
-Thanks for working on this.
+The last step only clears skb->vlan_present though, the actual VID
+information still resides in skb->vlan_tci. I tried just removing 5/9
+from this series, and then sourced the VID from skb->vlan_tci for
+untagged packets. It works like a charm! I think this is the way
+forward.
 
---x+6KMIRAuhnl3hBn
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEsUkgyDzMwrj81nq0lIwGZQq6i9AFAmCH0TsACgkQlIwGZQq6
-i9DTnggAu9jxr2TeWljvsF+rAtynFJVDqrXDBntJUd+lWpHvQY+KrUfLG4xmm+Id
-ctLURLVS/5mmkcXDlrvS+Oo6jYIqOPYtQ58JtsdGtGYia/iB7hHRiHBxaUUf7kdL
-yuI79FuuXZd5uMTne2A+Q4NYX6WHQ+QY0JNMcUWnLpuEwmb31I1p+lM7e4ynWimi
-cjwNdAm9k5owtDnUATxTTStYr0DDZSnSPJb/uSZEMx09N8XLMWnhLWZ8IGjQg4IZ
-Sn9Mzn/jbqiEitUYKIDWPBLNMfQyl+5yZW7a0KJwxlICc1kw8NZXnWk/0w27HN9a
-phHU2+c9Jf0l56zf6oxKHxxq7Pt2aQ==
-=AVj+
------END PGP SIGNATURE-----
-
---x+6KMIRAuhnl3hBn--
+The question is if we need another bit of information to signal that
+skb->vlan_tci contains valid information, but the packet should still be
+considered untagged? This could also be used on Rx to carry priority
+(PCP) information to the bridge.
