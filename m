@@ -2,128 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DB40836C5DE
-	for <lists+netdev@lfdr.de>; Tue, 27 Apr 2021 14:12:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B79D136C5F2
+	for <lists+netdev@lfdr.de>; Tue, 27 Apr 2021 14:19:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236075AbhD0MNZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 27 Apr 2021 08:13:25 -0400
-Received: from mx2.suse.de ([195.135.220.15]:43256 "EHLO mx2.suse.de"
+        id S236039AbhD0MTo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 27 Apr 2021 08:19:44 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:42960 "EHLO vps0.lunn.ch"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S235410AbhD0MNY (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 27 Apr 2021 08:13:24 -0400
-X-Virus-Scanned: by amavisd-new at test-mx.suse.de
-Received: from relay2.suse.de (unknown [195.135.221.27])
-        by mx2.suse.de (Postfix) with ESMTP id DBDD8B18F;
-        Tue, 27 Apr 2021 12:12:39 +0000 (UTC)
-Date:   Tue, 27 Apr 2021 14:12:37 +0200
-From:   Michal =?iso-8859-1?Q?Such=E1nek?= <msuchanek@suse.de>
-To:     Jiri Olsa <jolsa@redhat.com>
-Cc:     Yonghong Song <yhs@fb.com>, linux-kernel@vger.kernel.org,
-        Martin KaFai Lau <kafai@fb.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Song Liu <songliubraving@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, Jiri Olsa <jolsa@kernel.org>,
-        Jesper Dangaard Brouer <brouer@redhat.com>
-Subject: Re: linux-next failing build due to missing cubictcp_state symbol
-Message-ID: <20210427121237.GK6564@kitsune.suse.cz>
-References: <20210423130530.GA6564@kitsune.suse.cz>
- <316e86f9-35cc-36b0-1594-00a09631c736@fb.com>
- <20210423175528.GF6564@kitsune.suse.cz>
- <20210425111545.GL15381@kitsune.suse.cz>
- <20210426113215.GM15381@kitsune.suse.cz>
- <20210426121220.GN15381@kitsune.suse.cz>
- <20210426121401.GO15381@kitsune.suse.cz>
- <49f84147-bf32-dc59-48e0-f89241cf6264@fb.com>
- <YIbkR6z6mxdNSzGO@krava>
- <YIcRlHQWWKbOlcXr@krava>
+        id S235410AbhD0MTn (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 27 Apr 2021 08:19:43 -0400
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
+        (envelope-from <andrew@lunn.ch>)
+        id 1lbMft-001MSc-73; Tue, 27 Apr 2021 14:18:45 +0200
+Date:   Tue, 27 Apr 2021 14:18:45 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Joakim Zhang <qiangqing.zhang@nxp.com>
+Cc:     "Jisheng.Zhang@synaptics.com" <Jisheng.Zhang@synaptics.com>,
+        "peppe.cavallaro@st.com" <peppe.cavallaro@st.com>,
+        "alexandre.torgue@st.com" <alexandre.torgue@st.com>,
+        "joabreu@synopsys.com" <joabreu@synopsys.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "f.fainelli@gmail.com" <f.fainelli@gmail.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        dl-linux-imx <linux-imx@nxp.com>
+Subject: Re: [PATCH V2 net] net: stmmac: fix MAC WoL unwork if PHY doesn't
+ support WoL
+Message-ID: <YIgBJQi1H+f2VGWf@lunn.ch>
+References: <20210426090447.14323-1-qiangqing.zhang@nxp.com>
+ <YIa6hnmYhOAOyZLY@lunn.ch>
+ <DB8PR04MB6795A418BE733407FB4B7AF6E6419@DB8PR04MB6795.eurprd04.prod.outlook.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <YIcRlHQWWKbOlcXr@krava>
-User-Agent: Mutt/1.11.3 (2019-02-01)
+In-Reply-To: <DB8PR04MB6795A418BE733407FB4B7AF6E6419@DB8PR04MB6795.eurprd04.prod.outlook.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Apr 26, 2021 at 09:16:36PM +0200, Jiri Olsa wrote:
-> On Mon, Apr 26, 2021 at 06:03:19PM +0200, Jiri Olsa wrote:
-> > On Mon, Apr 26, 2021 at 08:41:49AM -0700, Yonghong Song wrote:
-> > > 
-> > > 
-> > > On 4/26/21 5:14 AM, Michal Suchánek wrote:
-> > > > On Mon, Apr 26, 2021 at 02:12:20PM +0200, Michal Suchánek wrote:
-> > > > > On Mon, Apr 26, 2021 at 01:32:15PM +0200, Michal Suchánek wrote:
-> > > > > > On Sun, Apr 25, 2021 at 01:15:45PM +0200, Michal Suchánek wrote:
-> > > > > > > On Fri, Apr 23, 2021 at 07:55:28PM +0200, Michal Suchánek wrote:
-> > > > > > > > On Fri, Apr 23, 2021 at 07:41:29AM -0700, Yonghong Song wrote:
-> > > > > > > > > 
-> > > > > > > > > 
-> > > > > > > > > On 4/23/21 6:05 AM, Michal Suchánek wrote:
-> > > > > > > > > > Hello,
-> > > > > > > > > > 
-> > > > > > > > > > I see this build error in linux-next (config attached).
-> > > > > > > > > > 
-> > > > > > > > > > [ 4939s]   LD      vmlinux
-> > > > > > > > > > [ 4959s]   BTFIDS  vmlinux
-> > > > > > > > > > [ 4959s] FAILED unresolved symbol cubictcp_state
-> > > > > > > > > > [ 4960s] make[1]: ***
-> > > > > > > > > > [/home/abuild/rpmbuild/BUILD/kernel-vanilla-5.12~rc8.next.20210422/linux-5.12-rc8-next-20210422/Makefile:1277:
-> > > > > > > > > > vmlinux] Error 255
-> > > > > > > > > > [ 4960s] make: *** [../Makefile:222: __sub-make] Error 2
-> > 
-> > this one was reported by Jesper and was fixed by upgrading pahole
-> > that contains the new function generation fixes (v1.19)
-> > 
-> > > > > > > > > 
-> > > > > > > > > Looks like you have DYNAMIC_FTRACE config option enabled already.
-> > > > > > > > > Could you try a later version of pahole?
-> > > > > > > > 
-> > > > > > > > Is this requireent new?
-> > > > > > > > 
-> > > > > > > > I have pahole 1.20, and master does build without problems.
-> > > > > > > > 
-> > > > > > > > If newer version is needed can a check be added?
-> > > > > > > 
-> > > > > > > With dwarves 1.21 some architectures are fixed and some report other
-> > > > > > > missing symbol. Definitely an improvenent.
-> > > > > > > 
-> > > > > > > I see some new type support was added so it makes sense if that type is
-> > > > > > > used the new dwarves are needed.
-> > > > > > 
-> > > > > > Ok, here is the current failure with dwarves 1.21 on 5.12:
-> > > > > > 
-> > > > > > [ 2548s]   LD      vmlinux
-> > > > > > [ 2557s]   BTFIDS  vmlinux
-> > > > > > [ 2557s] FAILED unresolved symbol vfs_truncate
-> > > > > > [ 2558s] make[1]: ***
-> > > > > > [/home/abuild/rpmbuild/BUILD/kernel-kvmsmall-5.12.0/linux-5.12/Makefile:1213:
-> > > > > > vmlinux] Error 255
-> > > 
-> > > This is PPC64, from attached config:
-> > >   CONFIG_PPC64=y
-> > > I don't have environment to cross-compile for PPC64.
-> > > Jiri, could you take a look? Thanks!
-> > 
-> > looks like vfs_truncate did not get into BTF data,
-> > I'll try to reproduce
+> According to your comments, I did a quick draft, and have not test
+> yet, could you please review the logic to see if I understand you
+> correctly?
+
+
 > 
-> I can't reproduce the problem, in both cross build and native ppc,
-> but the .config attached does not see complete, could you pelase
-> resend?
+> --- a/drivers/net/ethernet/stmicro/stmmac/stmmac_ethtool.c
+> +++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_ethtool.c
+> @@ -647,18 +647,7 @@ static void stmmac_get_wol(struct net_device *dev, struct ethtool_wolinfo *wol)
+>  static int stmmac_set_wol(struct net_device *dev, struct ethtool_wolinfo *wol)
+>  {
+>         struct stmmac_priv *priv = netdev_priv(dev);
+> -       u32 support = WAKE_MAGIC | WAKE_UCAST;
+> -
+> -       if (!device_can_wakeup(priv->device))
+> -               return -EOPNOTSUPP;
+> -
+> -       if (!priv->plat->pmt) {
+> -               int ret = phylink_ethtool_set_wol(priv->phylink, wol);
+> -
+> -               if (!ret)
+> -                       device_set_wakeup_enable(priv->device, !!wol->wolopts);
+> -               return ret;
+> -       }
+> +       u32 support = WAKE_MAGIC | WAKE_UCAST | WAKE_MAGICSECURE |  WAKE_BCAST;
+> 
+>         /* By default almost all GMAC devices support the WoL via
+>          * magic frame but we can disable it if the HW capability
+> @@ -669,13 +658,24 @@ static int stmmac_set_wol(struct net_device *dev, struct ethtool_wolinfo *wol)
+>         if (wol->wolopts & ~support)
+>                 return -EINVAL;
+> 
+> -       if (wol->wolopts) {
+> -               pr_info("stmmac: wakeup enable\n");
+> -               device_set_wakeup_enable(priv->device, 1);
+> -               enable_irq_wake(priv->wol_irq);
+> -       } else {
+> +       if (!wol->wolopts) {
+> +               device_set_wakeup_capable(priv->device, 0);
+>                 device_set_wakeup_enable(priv->device, 0);
+>                 disable_irq_wake(priv->wol_irq);
+> +       } else {
+> +               if (priv->plat->pmt && ((wol->wolopts & WAKE_MAGIC) || (wol->wolopts & WAKE_UCAST))) {
+> +                       pr_info("stmmac: mac wakeup enable\n");
+> +                       enable_irq_wake(priv->wol_irq);
+> +               } else {
+> +                       int ret = phylink_ethtool_set_wol(priv->phylink, wol);
 
-I can't reproduce outside of the build service either. There is probably
-some other tool missing that is commonly available and there is no check
-for it.
+You can have multiple wake up sources enabled at the same time. So the
+if/else is wrong here. It could be, some are provided by the MAC and
+some by the PHY.
 
-Thanks
+If you are trying to save power, it is better if the PHY provides the
+WoL sources. If the PHY can provide all the required WoL sources, you
+can turn the MAC off and save more power. So give priority to the PHY.
 
-Michal
+    Andrew
