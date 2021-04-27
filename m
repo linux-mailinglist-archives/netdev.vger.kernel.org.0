@@ -2,264 +2,152 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AB36136BD0C
-	for <lists+netdev@lfdr.de>; Tue, 27 Apr 2021 03:58:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7B4CD36BD14
+	for <lists+netdev@lfdr.de>; Tue, 27 Apr 2021 04:02:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232680AbhD0B7j convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Mon, 26 Apr 2021 21:59:39 -0400
-Received: from youngberry.canonical.com ([91.189.89.112]:43353 "EHLO
-        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230409AbhD0B7j (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 26 Apr 2021 21:59:39 -0400
-Received: from mail-wr1-f71.google.com ([209.85.221.71])
-        by youngberry.canonical.com with esmtps (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
-        (Exim 4.86_2)
-        (envelope-from <chia-lin.kao@canonical.com>)
-        id 1lbD03-0001FB-F7
-        for netdev@vger.kernel.org; Tue, 27 Apr 2021 01:58:55 +0000
-Received: by mail-wr1-f71.google.com with SMTP id t18-20020adfdc120000b02900ffe4432d8bso19977026wri.6
-        for <netdev@vger.kernel.org>; Mon, 26 Apr 2021 18:58:55 -0700 (PDT)
+        id S234084AbhD0CCs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 26 Apr 2021 22:02:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59392 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231128AbhD0CCr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 26 Apr 2021 22:02:47 -0400
+Received: from mail-pj1-x102a.google.com (mail-pj1-x102a.google.com [IPv6:2607:f8b0:4864:20::102a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2DE72C061574;
+        Mon, 26 Apr 2021 19:02:03 -0700 (PDT)
+Received: by mail-pj1-x102a.google.com with SMTP id gq23-20020a17090b1057b0290151869af68bso6259722pjb.4;
+        Mon, 26 Apr 2021 19:02:03 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=tbj9VKgVn6Bk4ORNiBYwvlVORz9AgJEtk02rBGpSXq0=;
+        b=C1r6ovIfavI2g/TCNgHOM+JGeChWgb/QnZhBY3CvVRLCANF0jZpnCVllNDiOqoe4eO
+         RHnsEy91ZX1udA0A8wkMmwwoy3ciQfz+tSMyqIyiClGaKB8dLvQ392zX2rK7uVq0Sb0j
+         sSIaZmPkeq8k5EsyyD1OsFXCXUOspP6+alCCpjI58OPXn3mvT8DUuvsbkVJaCxhiXtNN
+         hz0a/IaXN9sjGc1StXW/7WEag10oT3dundo3/blZwmf3OsLwAMw1OocJTVBGzqkEdhwg
+         sWWJmr8XX2tIv6oqlLaNJGoXYTAatWyFH7SbUH1d9stBfJ8D8W/V+DME9qXTS8xw+J2S
+         bTyQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=SegCM0fzCCeR6I4h8MfS8WByjjQM/1Q3Jo9+FK9tSYA=;
-        b=bpkW5brQLaafAFI+u9cYieB1xPvWI7Zt96TVnuerhH1bmn4rIb3MHuMbrNl89SClIe
-         33M3gSnBgwAbkFd/OK5zWW4p6YBa8w24piju1C5AVSF6Z9a01Ixy6Ai3vLOmWvlpuofi
-         fDB27gD29CiiwhAee+5rYMl5GSJt0LrdmgTwQKvgsisE5sScSlb1rn1bL9KtXRlmbnSd
-         Gcj+uXOJSAUf5IVg/Tnei68L/TYI9b72FoHVYvHdiz4bSU2oY+ouTc9GmKC0VZLCsUg+
-         MYZ8+PTKu6ZUq0hgy9amBzCrByJGyTn6sWc1nZZSIy1BYW1tuN04PmegcsXmfn0TfkjQ
-         HQng==
-X-Gm-Message-State: AOAM5301McwO9alPzQEy4iCGGjHInLw/WBVZcz/VUN7f0Tdq0S+7BI/P
-        Qz+0OOp6FXu0mmkmocZ7b2XrO3V7MpRrpJ7y1mXKzEGPZYieMHW8wFlxSgSUdYKi67mwXScr+2q
-        F5moFC6Fv5YCTN2FeNxLqnd4ommiWlboMDGCGn+ylFHsqj12+OA==
-X-Received: by 2002:a5d:47cc:: with SMTP id o12mr26226790wrc.227.1619488735125;
-        Mon, 26 Apr 2021 18:58:55 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJzaIDjRHLSoCzrNb5kg+s918hpbd2sSMuVdE5Dzu/+ISFGopXFCuhsg/wmfP4UZcqM4Ia3T8yHqcZaGgUqByWE=
-X-Received: by 2002:a5d:47cc:: with SMTP id o12mr26226767wrc.227.1619488734797;
- Mon, 26 Apr 2021 18:58:54 -0700 (PDT)
-MIME-Version: 1.0
-References: <20210420075406.64105-1-acelan.kao@canonical.com>
- <CANn89iJLSmtBNoDo8QJ6a0MzsHjdLB0Pf=cs9e4g8Y6-KuFiMQ@mail.gmail.com>
- <20210420122715.2066b537@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <CAFv23Q=ywiuZp7Y=bj=SAZmDdAnanAXA954hdO3GpkjmDo=RpQ@mail.gmail.com>
- <c10a6c72-9db7-18c8-6b03-1f8c40b8fd87@gmail.com> <CAFv23QkUsTf5M0MoUEFNYeFCtShAn3EmA3u8vXVeZyJa20Bx=g@mail.gmail.com>
- <f06e0e2b-c6bb-ef5a-f629-d1ab82b7aee2@gmail.com> <CAFv23Qnf3aJQyXyDbb_nvq2XU8t9Gy5sLFyzM251-FU_qBBUjw@mail.gmail.com>
- <9caae1c4-7132-4827-ef36-7aade74e4084@gmail.com>
-In-Reply-To: <9caae1c4-7132-4827-ef36-7aade74e4084@gmail.com>
-From:   AceLan Kao <acelan.kao@canonical.com>
-Date:   Tue, 27 Apr 2021 09:58:44 +0800
-Message-ID: <CAFv23Q=p+XM-p75RE--EHqkqtwqH743nTdb_-PSKpXbfAjpbrw@mail.gmail.com>
-Subject: Re: [PATCH] net: called rtnl_unlock() before runpm resumes devices
-To:     Heiner Kallweit <hkallweit1@gmail.com>
-Cc:     Jakub Kicinski <kuba@kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Andrii Nakryiko <andriin@fb.com>, Wei Wang <weiwan@google.com>,
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=tbj9VKgVn6Bk4ORNiBYwvlVORz9AgJEtk02rBGpSXq0=;
+        b=ChUOsuvJCnrQZwzdLysyN4AcRiB2Yb8S7kINUz4LRluS22gb4sV326wCCYQ0p046fN
+         R5skNfrpzyB42+FfdN/kKszCcbZW0vFCbiCPz47ScqH6xLN7+osCxZdMlL2w1jniTuEG
+         ly48pmcYiTosF1BTlZLdYgcz00eobhxi1sM/TsXutT6RQ6CTn2cC4wjXJX5A/fnhVqir
+         kI8VJQX2b4i4KOWHUOEGLS5JKVF876QZua6EfMuztuJMauXW+Nne7COl3MpQmQ9TJvU8
+         yS0oatAxXIOdo6vikRs8z0uZ22lS56Z35MC5blnWpTv6Ieky1mSrWU3NG5+v2vv0sDCQ
+         QjqQ==
+X-Gm-Message-State: AOAM531c38aW3BIXs6TvNTelH2v5ShT5VVXHZT0ezK9qX4yOS6ZjrLFz
+        d7r3sfSPUO+ffGVATgvdBhA=
+X-Google-Smtp-Source: ABdhPJy2C4Gr3ACDAf/4sEH3KZ51qDv9lXN6X5ZUB7aaC5DdWxz3o7FApQ5HkEHcz87mw1mIVzvXSQ==
+X-Received: by 2002:a17:902:d706:b029:e6:90aa:24e0 with SMTP id w6-20020a170902d706b02900e690aa24e0mr21952513ply.42.1619488923403;
+        Mon, 26 Apr 2021 19:02:03 -0700 (PDT)
+Received: from ast-mbp.dhcp.thefacebook.com ([2620:10d:c090:400::5:1ad0])
+        by smtp.gmail.com with ESMTPSA id g14sm546883pjh.28.2021.04.26.19.02.01
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 26 Apr 2021 19:02:02 -0700 (PDT)
+Date:   Mon, 26 Apr 2021 19:01:59 -0700
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+To:     Cong Wang <xiyou.wangcong@gmail.com>
+Cc:     Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>,
+        Xiongchun Duan <duanxiongchun@bytedance.com>,
+        Dongdong Wang <wangdongdong.6@bytedance.com>,
+        Muchun Song <songmuchun@bytedance.com>,
         Cong Wang <cong.wang@bytedance.com>,
-        Taehee Yoo <ap420073@gmail.com>,
-        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn@kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8BIT
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Pedro Tammela <pctammela@mojatatu.com>,
+        Jamal Hadi Salim <jhs@mojatatu.com>
+Subject: Re: [RFC Patch bpf-next] bpf: introduce bpf timer
+Message-ID: <20210427020159.hhgyfkjhzjk3lxgs@ast-mbp.dhcp.thefacebook.com>
+References: <20210402192823.bqwgipmky3xsucs5@ast-mbp>
+ <CAM_iQpUfv7c19zFN1Y5-cSUiVwpk0bmtBMSxZoELgDOFCQ=qAw@mail.gmail.com>
+ <20210402234500.by3wigegeluy5w7j@ast-mbp>
+ <CAM_iQpWf2aYbY=tKejb=nx7LWBLo1woTp-n4wOLhkUuDCz8u-Q@mail.gmail.com>
+ <20210412230151.763nqvaadrrg77kd@ast-mbp.dhcp.thefacebook.com>
+ <CAM_iQpWePmmpr0RKqCrQ=NPiGrq2Tx9OU9y3e4CTzFjvh5t47w@mail.gmail.com>
+ <CAADnVQLsmULxJYq9rHS4xyg=VAUeexJTh35vTWTVgjeqwX4D6g@mail.gmail.com>
+ <CAM_iQpVtxgZNeqh4_Pqftc3D163JnRvP3AZRuFrYNeyWLgVBVA@mail.gmail.com>
+ <CAADnVQLFehCeQRbwEQ9VM-=Y3V3es2Ze8gFPs6cZHwNH0Ct7vw@mail.gmail.com>
+ <CAM_iQpWDhoY_msU=AowHFq3N3OuQpvxd2ADP_Z+gxBfGduhrPA@mail.gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAM_iQpWDhoY_msU=AowHFq3N3OuQpvxd2ADP_Z+gxBfGduhrPA@mail.gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-I got another issue ticket with the same dump_stack with igc NIC.
-To fix this on the device side would lead to many other issues and we
-have to check on the device side if the calling path contains
-rtnl_lock already.
-I still think we should not keep rtnl locked when calling functions
-outside of network stack.
+On Mon, Apr 26, 2021 at 04:37:19PM -0700, Cong Wang wrote:
+> On Mon, Apr 26, 2021 at 4:05 PM Alexei Starovoitov
+> <alexei.starovoitov@gmail.com> wrote:
+> >
+> > On Mon, Apr 26, 2021 at 4:00 PM Cong Wang <xiyou.wangcong@gmail.com> wrote:
+> > >
+> > > Hi, Alexei
+> > >
+> > > On Wed, Apr 14, 2021 at 9:25 PM Alexei Starovoitov
+> > > <alexei.starovoitov@gmail.com> wrote:
+> > > >
+> > > > On Wed, Apr 14, 2021 at 9:02 PM Cong Wang <xiyou.wangcong@gmail.com> wrote:
+> > > > >
+> > > > > Then how do you prevent prog being unloaded when the timer callback
+> > > > > is still active?
+> > > >
+> > > > As I said earlier:
+> > > > "
+> > > > If prog refers such hmap as above during prog free the kernel does
+> > > > for_each_map_elem {if (elem->opaque) del_timer().}
+> > > > "
+> > >
+> > > I have discussed this with my colleagues, sharing timers among different
+> > > eBPF programs is a must-have feature for conntrack.
+> > >
+> > > For conntrack, we need to attach two eBPF programs, one on egress and
+> > > one on ingress. They share a conntrack table (an eBPF map), and no matter
+> > > we use a per-map or per-entry timer, updating the timer(s) could happen
+> > > on both sides, hence timers must be shared for both.
+> > >
+> > > So, your proposal we discussed does not work well for this scenario.
+> >
+> > why? The timer inside the map element will be shared just fine.
+> > Just like different progs can see the same map value.
+> 
+> Hmm? In the above quotes from you, you suggested removing all the
+> timers installed by one eBPF program when it is freed, but they could be
+> still running independent of which program installs them.
 
-Heiner Kallweit <hkallweit1@gmail.com> 於 2021年4月26日 週一 下午4:42寫道：
->
-> On 26.04.2021 09:36, AceLan Kao wrote:
-> > Heiner Kallweit <hkallweit1@gmail.com> 於 2021年4月25日 週日 上午4:07寫道：
-> >>
-> >> On 23.04.2021 05:42, AceLan Kao wrote:
-> >>> Heiner Kallweit <hkallweit1@gmail.com> 於 2021年4月22日 週四 下午3:09寫道：
-> >>>>
-> >>>> On 22.04.2021 08:30, AceLan Kao wrote:
-> >>>>> Yes, should add
-> >>>>>
-> >>>>> Fixes: 9474933caf21 ("igb: close/suspend race in netif_device_detach")
-> >>>>> and also
-> >>>>> Fixes: 9513d2a5dc7f ("igc: Add legacy power management support")
-> >>>>>
-> >>>> Please don't top-post. Apart from that:
-> >>>> If the issue was introduced with driver changes, then adding a workaround
-> >>>> in net core may not be the right approach.
-> >>> It's hard to say who introduces this issue, we probably could point
-> >>> our finger to below commit
-> >>> bd869245a3dc net: core: try to runtime-resume detached device in __dev_open
-> >>>
-> >>> This calling path is not usual, in my case, the NIC is not plugged in
-> >>> any Ethernet cable,
-> >>> and we are doing networking tests on another NIC on the system. So,
-> >>> remove the rtnl lock from igb driver will affect other scenarios.
-> >>>
-> >>>>
-> >>>>> Jakub Kicinski <kuba@kernel.org> 於 2021年4月21日 週三 上午3:27寫道：
-> >>>>>>
-> >>>>>> On Tue, 20 Apr 2021 10:34:17 +0200 Eric Dumazet wrote:
-> >>>>>>> On Tue, Apr 20, 2021 at 9:54 AM AceLan Kao <acelan.kao@canonical.com> wrote:
-> >>>>>>>>
-> >>>>>>>> From: "Chia-Lin Kao (AceLan)" <acelan.kao@canonical.com>
-> >>>>>>>>
-> >>>>>>>> The rtnl_lock() has been called in rtnetlink_rcv_msg(), and then in
-> >>>>>>>> __dev_open() it calls pm_runtime_resume() to resume devices, and in
-> >>>>>>>> some devices' resume function(igb_resum,igc_resume) they calls rtnl_lock()
-> >>>>>>>> again. That leads to a recursive lock.
-> >>>>>>>>
-> >>>>>>>> It should leave the devices' resume function to decide if they need to
-> >>>>>>>> call rtnl_lock()/rtnl_unlock(), so call rtnl_unlock() before calling
-> >>>>>>>> pm_runtime_resume() and then call rtnl_lock() after it in __dev_open().
-> >>>>>>>>
-> >>>>>>>>
-> >>>>>>>
-> >>>>>>> Hi Acelan
-> >>>>>>>
-> >>>>>>> When was the bugg added ?
-> >>>>>>> Please add a Fixes: tag
-> >>>>>>
-> >>>>>> For immediate cause probably:
-> >>>>>>
-> >>>>>> Fixes: 9474933caf21 ("igb: close/suspend race in netif_device_detach")
-> >>>>>>
-> >>>>>>> By doing so, you give more chances for reviewers to understand why the
-> >>>>>>> fix is not risky,
-> >>>>>>> and help stable teams work.
-> >>>>>>
-> >>>>>> IMO the driver lacks internal locking. Taking 看rtnl from resume is just
-> >>>>>> one example, git history shows many more places that lacked locking and
-> >>>>>> got papered over with rtnl here.
-> >>>>
-> >>
-> >> You could alternatively try the following. It should avoid the deadlock,
-> >> and when runtime-resuming if __IGB_DOWN is set all we do is marking the
-> >> net_device as present (because of PCI D3 -> D0 transition).
-> >> I do basically the same in r8169 and it works as intended.
-> >>
-> >> Disclaimer: I don't have an igb-driven device and therefore can't test
-> >> the proposal.
-> >>
-> >> diff --git a/drivers/net/ethernet/intel/igb/igb_main.c b/drivers/net/ethernet/intel/igb/igb_main.c
-> >> index 038a9fd1a..21436626a 100644
-> >> --- a/drivers/net/ethernet/intel/igb/igb_main.c
-> >> +++ b/drivers/net/ethernet/intel/igb/igb_main.c
-> >> @@ -9300,6 +9300,14 @@ static int __maybe_unused igb_runtime_suspend(struct device *dev)
-> >>
-> >>  static int __maybe_unused igb_runtime_resume(struct device *dev)
-> >>  {
-> >> +       struct net_device *netdev = dev_get_drvdata(dev);
-> >> +       struct igb_adapter *adapter = netdev_priv(netdev);
-> >> +
-> >> +       if (test_bit(__IGB_DOWN, &adapter->state)) {
-> >> +               netif_device_attach(netdev);
-> >> +               return 0;
-> >> +       }
-> >> +
-> >>         return igb_resume(dev);
-> >>  }
-> >>
-> >> --
-> >> 2.31.1
-> >>
+Right. That was before the office hours chat where we discussed an approach
+to remove timers installed by this particular prog only.
+The timers armed by other progs in the same map would be preserved.
+
+> In other words, timers are independent of other eBPF programs, so
+> they should not have an owner. With your proposal, the owner of a timer
+> is the program which contains the subprog (or callback) of the timer.
+
+right. so?
+How is this anything to do with "sharing timers among different eBPF programs"?
+
 > >
-> > Hi Heiner,
-> >
-> > I encountered below error after applied your patch.
-> >
-> Presumably similar changes are needed also for the runtime_suspend callback.
-> If __IGB_DOWN is set, I think just the net_device needs to be detached.
->
->
-> > [  121.489970] u kernel: ------------[ cut here ]------------
-> > [  121.489979] u kernel: igb 0000:05:00.0: disabling already-disabled device
-> > [  121.490008] u kernel: WARNING: CPU: 7 PID: 258 at
-> > drivers/pci/pci.c:2146 pci_disable_device+0x91/0xb0
-> > [  121.490028] u kernel: Modules linked in: rfcomm cmac algif_hash
-> > algif_skcipher af_alg bnep btusb btrtl btbcm btintel bluetooth
-> > ecdh_generic ecc joydev input_leds inte
-> > l_rapl_msr intel_rapl_common x86_pkg_temp_thermal intel_powerclamp
-> > coretemp ath10k_pci ath10k_core kvm_intel ath mac80211 kvm
-> > snd_sof_pci_intel_tgl snd_soc_acpi_intel_ma
-> > tch snd_sof_intel_hda_common nls_iso8859_1 soundwire_intel
-> > soundwire_generic_allocation soundwire_cadence soundwire_bus
-> > snd_sof_pci snd_soc_acpi snd_sof snd_soc_core snd
-> > _hda_codec_realtek snd_hda_codec_generic snd_hda_codec_hdmi
-> > crct10dif_pclmul crc32_pclmul snd_sof_xtensa_dsp ghash_clmulni_intel
-> > ledtrig_audio aesni_intel snd_hda_intel
-> > libarc4 crypto_simd snd_intel_dspcfg snd_intel_sdw_acpi cryptd
-> > snd_hda_codec cfg80211 mei_hdcp snd_hwdep snd_hda_core
-> > intel_wmi_thunderbolt snd_pcm wmi_bmof snd_seq inte
-> > l_cstate efi_pstore snd_timer snd_seq_device ee1004 mei_me snd mei
-> > ucsi_acpi soundcore typec_ucsi typec wmi mac_hid acpi_pad acpi_tad
-> > sch_fq_codel
-> > [  121.490314] u kernel:  parport_pc ppdev lp parport ip_tables
-> > x_tables autofs4 btrfs blake2b_generic zstd_compress raid10 raid456
-> > async_raid6_recov async_memcpy async_
-> > pq async_xor async_tx libcrc32c xor raid6_pq raid1 raid0 multipath
-> > linear hid_generic usbhid hid i915 drm_kms_helper syscopyarea
-> > sysfillrect sysimgblt fb_sys_fops cec rc
-> > _core igb drm nvme e1000e nvme_core i2c_i801 dca i2c_smbus
-> > i2c_algo_bit intel_lpss_pci intel_lpss ahci idma64 video xhci_pci
-> > libahci virt_dma xhci_pci_renesas pinctrl_ti
-> > gerlake
-> > [  121.490508] u kernel: CPU: 7 PID: 258 Comm: kworker/7:2 Tainted: G
-> >    U            5.12.0-rc7+ #79
-> > [  121.490518] u kernel: Hardware name: Dell Inc. OptiPlex 7090/, BIOS
-> > 0.12.80 02/23/2021
-> > [  121.490525] u kernel: Workqueue: pm pm_runtime_work
-> > [  121.490540] u kernel: RIP: 0010:pci_disable_device+0x91/0xb0
-> > [  121.490550] u kernel: Code: 4d 85 e4 75 07 4c 8b a3 c8 00 00 00 48
-> > 8d bb c8 00 00 00 e8 61 8d 17 00 4c 89 e2 48 c7 c7 60 5a e0 a5 48 89
-> > c6 e8 9b a3 59 00 <0f> 0b eb 8
-> > d 48 89 df e8 e3 fe ff ff 80 a3 49 0a 00 00 df 5b 41 5c
-> > [  121.490558] u kernel: RSP: 0018:ffffb76b4169fc90 EFLAGS: 00010286
-> > [  121.490569] u kernel: RAX: 0000000000000000 RBX: ffff9e2581ee6000
-> > RCX: 0000000000000027
-> > [  121.490576] u kernel: RDX: 0000000000000027 RSI: ffffffffa493bca0
-> > RDI: ffff9e27073e89b8
-> > [  121.490582] u kernel: RBP: ffffb76b4169fca0 R08: ffff9e27073e89b0
-> > R09: 0000000000000000
-> > [  121.490588] u kernel: R10: 0000000000000000 R11: 0000000000000001
-> > R12: ffff9e2581af7c80
-> > [  121.490594] u kernel: R13: ffff9e2581ee6000 R14: ffff9e25a0914000
-> > R15: ffff9e25a0915280
-> > [  121.490600] u kernel: FS:  0000000000000000(0000)
-> > GS:ffff9e2707200000(0000) knlGS:0000000000000000
-> > [  121.490608] u kernel: CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-> > [  121.490614] u kernel: CR2: 00007ff86ec8d024 CR3: 0000000189c28002
-> > CR4: 0000000000770ee0
-> > [  121.490621] u kernel: PKRU: 55555554
-> > [  121.490626] u kernel: Call Trace:
-> > [  121.490638] u kernel:  __igb_shutdown+0xf2/0x1c0 [igb]
-> > [  121.490676] u kernel:  igb_runtime_suspend+0x1c/0x20 [igb]
-> > [  121.490703] u kernel:  pci_pm_runtime_suspend+0x63/0x180
-> > [  121.490715] u kernel:  ? pci_pm_runtime_resume+0x90/0x90
-> > [  121.490727] u kernel:  __rpm_callback+0xc7/0x140
-> > [  121.490740] u kernel:  rpm_callback+0x57/0x80
-> > [  121.490750] u kernel:  ? pci_pm_runtime_resume+0x90/0x90
-> > [  121.490759] u kernel:  rpm_suspend+0x119/0x640
-> > [  121.490774] u kernel:  pm_runtime_work+0x64/0xc0
-> > [  121.490784] u kernel:  process_one_work+0x2af/0x5d0
-> > [  121.490803] u kernel:  worker_thread+0x4d/0x3e0
-> > [  121.490814] u kernel:  ? process_one_work+0x5d0/0x5d0
-> > [  121.490825] u kernel:  kthread+0x12a/0x160
-> > [  121.490834] u kernel:  ? kthread_park+0x90/0x90
-> > [  121.490844] u kernel:  ret_from_fork+0x1f/0x30
-> > [  121.490867] u kernel: irq event stamp: 0[  121.490871] u kernel:
-> > hardirqs last  enabled at (0): [<0000000000000000>] 0x0
-> > [  121.490916] u kernel: hardirqs last disabled at (0):
-> > [<ffffffffa489ea44>] copy_process+0x714/0x1cc0
-> > [  121.490929] u kernel: softirqs last  enabled at (0):
-> > [<ffffffffa489ea44>] copy_process+0x714/0x1cc0
-> > [  121.490938] u kernel: softirqs last disabled at (0): [<0000000000000000>] 0x0
-> > [  121.490949] u kernel: ---[ end trace a9c7ffc27c226979 ]---
-> >
->
+> > Also if your colleagues have something to share they should be
+> > posting to the mailing list. Right now you're acting as a broken phone
+> > passing info back and forth and the knowledge gets lost.
+> > Please ask your colleagues to participate online.
+> 
+> They are already in CC from the very beginning. And our use case is
+> public, it is Cilium conntrack:
+> https://github.com/cilium/cilium/blob/master/bpf/lib/conntrack.h
+> 
+> The entries of the code are:
+> https://github.com/cilium/cilium/blob/master/bpf/bpf_lxc.c
+> 
+> The maps for conntrack are:
+> https://github.com/cilium/cilium/blob/master/bpf/lib/conntrack_map.h
+
+If that's the only goal then kernel timers are not needed.
+cilium conntrack works well as-is.
