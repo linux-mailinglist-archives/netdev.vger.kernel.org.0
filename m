@@ -2,80 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 484D536CEAB
-	for <lists+netdev@lfdr.de>; Wed, 28 Apr 2021 00:40:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B5B1236CEB1
+	for <lists+netdev@lfdr.de>; Wed, 28 Apr 2021 00:40:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236989AbhD0Wkx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 27 Apr 2021 18:40:53 -0400
-Received: from www62.your-server.de ([213.133.104.62]:40282 "EHLO
-        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235420AbhD0Wkw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 27 Apr 2021 18:40:52 -0400
-Received: from sslproxy02.your-server.de ([78.47.166.47])
-        by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92.3)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1lbWND-0001UZ-8p; Wed, 28 Apr 2021 00:40:07 +0200
-Received: from [85.7.101.30] (helo=linux.home)
-        by sslproxy02.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1lbWNC-000TPD-W2; Wed, 28 Apr 2021 00:40:07 +0200
-Subject: Re: [PATCH bpf-next v4 2/3] libbpf: add low level TC-BPF API
-To:     =?UTF-8?Q?Toke_H=c3=b8iland-J=c3=b8rgensen?= <toke@redhat.com>,
-        Kumar Kartikeya Dwivedi <memxor@gmail.com>
-Cc:     bpf@vger.kernel.org, Alexei Starovoitov <ast@kernel.org>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        netdev@vger.kernel.org
-References: <20210423150600.498490-1-memxor@gmail.com>
- <20210423150600.498490-3-memxor@gmail.com>
- <5811eb10-bc93-0b81-2ee4-10490388f238@iogearbox.net>
- <20210427180202.pepa2wdbhhap3vyg@apollo>
- <9985fe91-76ea-7c09-c285-1006168f1c27@iogearbox.net>
- <7a75062e-b439-68b3-afa3-44ea519624c7@iogearbox.net> <87sg3b8idy.fsf@toke.dk>
-From:   Daniel Borkmann <daniel@iogearbox.net>
-Message-ID: <8e6d24fa-d3ef-af20-b2a5-dbdc9a284f6d@iogearbox.net>
-Date:   Wed, 28 Apr 2021 00:40:06 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
+        id S238548AbhD0Wk7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 27 Apr 2021 18:40:59 -0400
+Received: from mail.kernel.org ([198.145.29.99]:56398 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S235420AbhD0Wky (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 27 Apr 2021 18:40:54 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPS id 6DE13611F2;
+        Tue, 27 Apr 2021 22:40:10 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1619563210;
+        bh=WpoBdws40s0ptUiWd2wf5ZMreUQMpAaFhxEbKG9nC9Q=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=haI2X0aXC9v7KLVXP3PaHWjZq5gsqATM921KbWk63fVdEUBk+Li+NHVdGlhwQALC2
+         y5f9iKtf1v7YLsE1x8IupFiLDy5uXpPyWRnZkpEvds1D7W3D8lKVVuvMD9j38eCigS
+         XLCCCYbXlW7nG9oswkPzDbA5SJRl5psLmwm8YqyNS4hVOrXG1+OnILwxYZ4t0i2NHH
+         /1l/jZvW2Ft6Vz1Or9NFY7vmu7azuO33NHoEIyw7BD2KiGDY7vEJfzH7EYHvT5q5eb
+         mThRv7IuJeZT2QbaEFLWEz7aY/iGH2Quwt//U+eaYflL8WriMqm09EcMAE6DVpLT3K
+         p8Uef66V7OMMg==
+Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 61515609B0;
+        Tue, 27 Apr 2021 22:40:10 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-In-Reply-To: <87sg3b8idy.fsf@toke.dk>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
 Content-Transfer-Encoding: 8bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.103.2/26153/Tue Apr 27 13:09:27 2021)
+Subject: Re: [PATCH net-next 1/7] netfilter: nftables: rename set element data
+ activation/deactivation functions
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <161956321039.28898.12248117195922527285.git-patchwork-notify@kernel.org>
+Date:   Tue, 27 Apr 2021 22:40:10 +0000
+References: <20210427204345.22043-2-pablo@netfilter.org>
+In-Reply-To: <20210427204345.22043-2-pablo@netfilter.org>
+To:     Pablo Neira Ayuso <pablo@netfilter.org>
+Cc:     netfilter-devel@vger.kernel.org, davem@davemloft.net,
+        netdev@vger.kernel.org, kuba@kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 4/28/21 12:36 AM, Toke Høiland-Jørgensen wrote:
-> Daniel Borkmann <daniel@iogearbox.net> writes:
-[...]
->> Small addendum:
->>
->>       DECLARE_LIBBPF_OPTS(bpf_tc_hook, hook, .ifindex = 42, .which = BPF_TC_INGRESS|BPF_TC_EGRESS);
->>
->>       err = bpf_tc_hook_create(&hook);
->>       [...]
->>
->> ... is also possible, of course, and then both bpf_tc_hook_{create,destroy}() are symmetric.
+Hello:
+
+This series was applied to netdev/net-next.git (refs/heads/master):
+
+On Tue, 27 Apr 2021 22:43:39 +0200 you wrote:
+> Rename:
 > 
-> It should be allowed, but it wouldn't actually make any difference which
-> combination of TC_INGRESS and TC_EGRESS you specify, as long as one of
-> them is set, right? I.e., we just attach the clsact qdisc in both
-> cases...
+> - nft_set_elem_activate() to nft_set_elem_data_activate().
+> - nft_set_elem_deactivate() to nft_set_elem_data_deactivate().
+> 
+> To prepare for updates in the set element infrastructure to add support
+> for the special catch-all element.
+> 
+> [...]
 
-Yes, that is correct, for the bpf_tc_hook_create() whether you pass in BPF_TC_INGRESS,
-BPF_TC_EGRESS or BPF_TC_INGRESS|BPF_TC_EGRESS, you'll end up creating clsact qdisc in
-either of the three cases. Only the bpf_tc_hook_destroy() differs between all of them.
+Here is the summary with links:
+  - [net-next,1/7] netfilter: nftables: rename set element data activation/deactivation functions
+    https://git.kernel.org/netdev/net-next/c/f8bb7889af58
+  - [net-next,2/7] netfilter: nftables: add loop check helper function
+    https://git.kernel.org/netdev/net-next/c/6387aa6e59be
+  - [net-next,3/7] netfilter: nftables: add helper function to flush set elements
+    https://git.kernel.org/netdev/net-next/c/e6ba7cb63b8a
+  - [net-next,4/7] netfilter: nftables: add helper function to validate set element data
+    https://git.kernel.org/netdev/net-next/c/97c976d662fb
+  - [net-next,5/7] netfilter: nftables: add catch-all set element support
+    https://git.kernel.org/netdev/net-next/c/aaa31047a6d2
+  - [net-next,6/7] netfilter: nft_socket: fix an unused variable warning
+    https://git.kernel.org/netdev/net-next/c/8a7363f84979
+  - [net-next,7/7] netfilter: nft_socket: fix build with CONFIG_SOCK_CGROUP_DATA=n
+    https://git.kernel.org/netdev/net-next/c/7acc0bb490c8
 
-Thanks,
-Daniel
+You are awesome, thank you!
+--
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
