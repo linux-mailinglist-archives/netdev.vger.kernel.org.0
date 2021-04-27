@@ -2,227 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 46EF136C8EE
-	for <lists+netdev@lfdr.de>; Tue, 27 Apr 2021 17:56:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DEF7A36C8F1
+	for <lists+netdev@lfdr.de>; Tue, 27 Apr 2021 17:56:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236465AbhD0P4o (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 27 Apr 2021 11:56:44 -0400
-Received: from smtp.uniroma2.it ([160.80.6.16]:58396 "EHLO smtp.uniroma2.it"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S234932AbhD0P4m (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 27 Apr 2021 11:56:42 -0400
-Received: from localhost.localdomain ([160.80.103.126])
-        by smtp-2015.uniroma2.it (8.14.4/8.14.4/Debian-8) with ESMTP id 13RFtoGg025583
-        (version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Tue, 27 Apr 2021 17:55:50 +0200
-From:   Paolo Lungaroni <paolo.lungaroni@uniroma2.it>
-To:     David Ahern <dsahern@kernel.org>, netdev@vger.kernel.org
-Cc:     Jakub Kicinski <kuba@kernel.org>,
-        Stephen Hemminger <stephen@networkplumber.org>,
-        Stefano Salsano <stefano.salsano@uniroma2.it>,
-        Ahmed Abdelsalam <ahabdels.dev@gmail.com>,
-        Andrea Mayer <andrea.mayer@uniroma2.it>,
-        Paolo Lungaroni <paolo.lungaroni@uniroma2.it>
-Subject: [iproute2-next] seg6: add counters support for SRv6 Behaviors
-Date:   Tue, 27 Apr 2021 17:55:43 +0200
-Message-Id: <20210427155543.32268-1-paolo.lungaroni@uniroma2.it>
-X-Mailer: git-send-email 2.20.1
+        id S237916AbhD0P5W (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 27 Apr 2021 11:57:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46022 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234932AbhD0P5W (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 27 Apr 2021 11:57:22 -0400
+Received: from mail-pj1-x102f.google.com (mail-pj1-x102f.google.com [IPv6:2607:f8b0:4864:20::102f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7DC6FC061574;
+        Tue, 27 Apr 2021 08:56:37 -0700 (PDT)
+Received: by mail-pj1-x102f.google.com with SMTP id m6-20020a17090a8586b02901507e1acf0fso7484888pjn.3;
+        Tue, 27 Apr 2021 08:56:37 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=g4D6mo9ANGWmNDKoakg3uqUKRnf9rNH4O+OR6Lx34oY=;
+        b=DrJKE/IevpqN9opxieOYTY8lBVF/GEC+fcHmGMHGO943kt4GgnW1WmSM4H0n9iuLVr
+         BGD+jNHRqml1q/B8mXon2CaVdwyQxJyaLW23iFtft6ucBTr0sE6nGioas6WFq85wfZbI
+         D8cF0LAko1AYtYdlTF96o529pnvbkt2YOhgrW6796XebG8ZjvPFVEG9e1NTgAIPJlphq
+         zmEObWX3mxvfCZdIl150VAAPlYXNM1vaehhzL2pms993xqkOEtU16yRSEAKjfq9CMEnS
+         mlSskzk23REfv1lwuUFlI63Xpo4d5Dw1x3CVgUVseUWIXvsk3flToKhrbQX/TwpFHxzr
+         wxCQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=g4D6mo9ANGWmNDKoakg3uqUKRnf9rNH4O+OR6Lx34oY=;
+        b=Zjj803MIGi1Y2TkEnK8mur8ghtGKojqUTFaK2OCunD+YlU+P4PnvFIjUQPDltqejfN
+         jfFQaJr1fqGgGeisfdnMTHhGujkqQLp0Nsf3+kJOX3Y7N9GLB4wY0J2k4TvVDbj5q0lq
+         /JkMY4YToJ2hX+j3ctmGUjOjPSxSAAlFm7xgg32LBLHLq/LdctdXMOyLRBCi3S5TokmX
+         EH3i3CBOCvx7MyJBeLZzCTdXtfiHCkegLXTkTcYXptCozZstPsExA9fR102RM5XY3tYC
+         E23anbcWrch0kt9qBSNIF/7Gip5+6qeTSxddJQ0xLalS9z+WCDB4L66OIyNV37EMDs3+
+         TqNA==
+X-Gm-Message-State: AOAM531RQxIUoPOBJzR/dQj56r4cNAmHFD+4sZC+XzFWn73BWxWFHB8r
+        O62N9PVrl3xm8HipW35WQyQ=
+X-Google-Smtp-Source: ABdhPJxaMh4UoeGrf1LxxjVrpqFOptZksFCOhKl5mEUU8kqooUk8wJDHWwSUysFFleCxh8Be9zj4AQ==
+X-Received: by 2002:a17:90a:dd45:: with SMTP id u5mr5875428pjv.15.1619538997142;
+        Tue, 27 Apr 2021 08:56:37 -0700 (PDT)
+Received: from hoboy.vegasvil.org ([2601:645:c000:35:e2d5:5eff:fea5:802f])
+        by smtp.gmail.com with ESMTPSA id ca6sm1959338pjb.48.2021.04.27.08.56.35
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 27 Apr 2021 08:56:36 -0700 (PDT)
+Date:   Tue, 27 Apr 2021 08:56:33 -0700
+From:   Richard Cochran <richardcochran@gmail.com>
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     Yangbo Lu <yangbo.lu@nxp.com>, netdev@vger.kernel.org,
+        Vladimir Oltean <vladimir.oltean@nxp.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Kurt Kanzenbach <kurt@linutronix.de>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        UNGLinuxDriver@microchip.com, linux-doc@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [net-next, v2, 3/7] net: dsa: free skb->cb usage in core driver
+Message-ID: <20210427155633.GB14187@hoboy.vegasvil.org>
+References: <20210426093802.38652-1-yangbo.lu@nxp.com>
+ <20210426093802.38652-4-yangbo.lu@nxp.com>
+ <20210426133846.GA22518@hoboy.vegasvil.org>
+ <20210426183944.4djc5dep62xz4gh6@skbuf>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Virus-Scanned: clamav-milter 0.100.0 at smtp-2015
-X-Virus-Status: Clean
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210426183944.4djc5dep62xz4gh6@skbuf>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-We introduce the "count" optional attribute for supporting counters in SRv6
-Behaviors as defined in [1], section 6. For each SRv6 Behavior instance,
-counters defined in [1] are:
+On Mon, Apr 26, 2021 at 09:39:44PM +0300, Vladimir Oltean wrote:
+> On Mon, Apr 26, 2021 at 06:38:46AM -0700, Richard Cochran wrote:
+> > On Mon, Apr 26, 2021 at 05:37:58PM +0800, Yangbo Lu wrote:
+> > > @@ -624,7 +623,7 @@ static netdev_tx_t dsa_slave_xmit(struct sk_buff *skb, struct net_device *dev)
+> > >  
+> > >  	dev_sw_netstats_tx_add(dev, 1, skb->len);
+> > >  
+> > > -	DSA_SKB_CB(skb)->clone = NULL;
+> > > +	memset(skb->cb, 0, 48);
+> > 
+> > Replace hard coded 48 with sizeof() please.
+> 
+> You mean just a trivial change like this, right?
+> 
+> 	memset(skb->cb, 0, sizeof(skb->cb));
 
- - the total number of packets that have been correctly processed;
- - the total amount of traffic in bytes of all packets that have been
-   correctly processed;
+Yes.
 
-In addition, we introduce a new counter that counts the number of packets
-that have NOT been properly processed (i.e. errors) by an SRv6 Behavior
-instance.
-
-Each SRv6 Behavior instance can be configured, at the time of its creation,
-to make use of counters specifing the "count" attribute as follows:
-
- $ ip -6 route add 2001:db8::1 encap seg6local action End count dev eth0
-
-per-behavior counters can be shown by adding "-s" to the iproute2 command
-line, i.e.:
-
- $ ip -s -6 route show 2001:db8::1
- 2001:db8::1 encap seg6local action End packets 0 bytes 0 errors 0 dev eth0
-
-[1] https://www.rfc-editor.org/rfc/rfc8986.html#name-counters
-
-Signed-off-by: Andrea Mayer <andrea.mayer@uniroma2.it>
-Signed-off-by: Paolo Lungaroni <paolo.lungaroni@uniroma2.it>
----
- include/uapi/linux/seg6_local.h | 30 ++++++++++++++
- ip/iproute_lwtunnel.c           | 72 ++++++++++++++++++++++++++++++++-
- 2 files changed, 101 insertions(+), 1 deletion(-)
-
-diff --git a/include/uapi/linux/seg6_local.h b/include/uapi/linux/seg6_local.h
-index bb5c8ddf..85955514 100644
---- a/include/uapi/linux/seg6_local.h
-+++ b/include/uapi/linux/seg6_local.h
-@@ -27,6 +27,7 @@ enum {
- 	SEG6_LOCAL_OIF,
- 	SEG6_LOCAL_BPF,
- 	SEG6_LOCAL_VRFTABLE,
-+	SEG6_LOCAL_COUNTERS,
- 	__SEG6_LOCAL_MAX,
- };
- #define SEG6_LOCAL_MAX (__SEG6_LOCAL_MAX - 1)
-@@ -78,4 +79,33 @@ enum {
- 
- #define SEG6_LOCAL_BPF_PROG_MAX (__SEG6_LOCAL_BPF_PROG_MAX - 1)
- 
-+/* SRv6 Behavior counters are encoded as netlink attributes guaranteeing the
-+ * correct alignment.
-+ * Each counter is identified by a different attribute type (i.e.
-+ * SEG6_LOCAL_CNT_PACKETS).
-+ *
-+ * - SEG6_LOCAL_CNT_PACKETS: identifies a counter that counts the number of
-+ *   packets that have been CORRECTLY processed by an SRv6 Behavior instance
-+ *   (i.e., packets that generate errors or are dropped are NOT counted).
-+ *
-+ * - SEG6_LOCAL_CNT_BYTES: identifies a counter that counts the total amount
-+ *   of traffic in bytes of all packets that have been CORRECTLY processed by
-+ *   an SRv6 Behavior instance (i.e., packets that generate errors or are
-+ *   dropped are NOT counted).
-+ *
-+ * - SEG6_LOCAL_CNT_ERRORS: identifies a counter that counts the number of
-+ *   packets that have NOT been properly processed by an SRv6 Behavior instance
-+ *   (i.e., packets that generate errors or are dropped).
-+ */
-+enum {
-+	SEG6_LOCAL_CNT_UNSPEC,
-+	SEG6_LOCAL_CNT_PAD,		/* pad for 64 bits values */
-+	SEG6_LOCAL_CNT_PACKETS,
-+	SEG6_LOCAL_CNT_BYTES,
-+	SEG6_LOCAL_CNT_ERRORS,
-+	__SEG6_LOCAL_CNT_MAX,
-+};
-+
-+#define SEG6_LOCAL_CNT_MAX (__SEG6_LOCAL_CNT_MAX - 1)
-+
- #endif
-diff --git a/ip/iproute_lwtunnel.c b/ip/iproute_lwtunnel.c
-index 566fc7ea..ebc688e2 100644
---- a/ip/iproute_lwtunnel.c
-+++ b/ip/iproute_lwtunnel.c
-@@ -266,6 +266,42 @@ static void print_encap_bpf_prog(FILE *fp, struct rtattr *encap,
- 	}
- }
- 
-+static void print_seg6_local_counters(FILE *fp, struct rtattr *encap)
-+{
-+	struct rtattr *tb[SEG6_LOCAL_CNT_MAX + 1];
-+	__u64 packets = 0, bytes = 0, errors = 0;
-+
-+	parse_rtattr_nested(tb, SEG6_LOCAL_CNT_MAX, encap);
-+
-+	if (tb[SEG6_LOCAL_CNT_PACKETS])
-+		packets = rta_getattr_u64(tb[SEG6_LOCAL_CNT_PACKETS]);
-+
-+	if (tb[SEG6_LOCAL_CNT_BYTES])
-+		bytes = rta_getattr_u64(tb[SEG6_LOCAL_CNT_BYTES]);
-+
-+	if (tb[SEG6_LOCAL_CNT_ERRORS])
-+		errors = rta_getattr_u64(tb[SEG6_LOCAL_CNT_ERRORS]);
-+
-+	if (is_json_context()) {
-+		open_json_object("stats64");
-+
-+		print_u64(PRINT_JSON, "packets", NULL, packets);
-+		print_u64(PRINT_JSON, "bytes", NULL, bytes);
-+		print_u64(PRINT_JSON, "errors", NULL, errors);
-+
-+		close_json_object();
-+	} else {
-+		print_string(PRINT_FP, NULL, "%s ", "packets");
-+		print_num(fp, 1, packets);
-+
-+		print_string(PRINT_FP, NULL, "%s ", "bytes");
-+		print_num(fp, 1, bytes);
-+
-+		print_string(PRINT_FP, NULL, "%s ", "errors");
-+		print_num(fp, 1, errors);
-+	}
-+}
-+
- static void print_encap_seg6local(FILE *fp, struct rtattr *encap)
- {
- 	struct rtattr *tb[SEG6_LOCAL_MAX + 1];
-@@ -325,6 +361,9 @@ static void print_encap_seg6local(FILE *fp, struct rtattr *encap)
- 
- 	if (tb[SEG6_LOCAL_BPF])
- 		print_encap_bpf_prog(fp, tb[SEG6_LOCAL_BPF], "endpoint");
-+
-+	if (tb[SEG6_LOCAL_COUNTERS] && show_stats)
-+		print_seg6_local_counters(fp, tb[SEG6_LOCAL_COUNTERS]);
- }
- 
- static void print_encap_mpls(FILE *fp, struct rtattr *encap)
-@@ -862,13 +901,39 @@ static int lwt_parse_bpf(struct rtattr *rta, size_t len,
- 	return 0;
- }
- 
-+/* for the moment, counters are always initialized to zero by the kernel; so we
-+ * do not expect to parse any argument here.
-+ */
-+static int seg6local_fill_counters(struct rtattr *rta, size_t len, int attr)
-+{
-+	struct rtattr *nest;
-+	int ret;
-+
-+	nest = rta_nest(rta, len, attr);
-+
-+	ret = rta_addattr64(rta, len, SEG6_LOCAL_CNT_PACKETS, 0);
-+	if (ret < 0)
-+		return ret;
-+
-+	ret = rta_addattr64(rta, len, SEG6_LOCAL_CNT_BYTES, 0);
-+	if (ret < 0)
-+		return ret;
-+
-+	ret = rta_addattr64(rta, len, SEG6_LOCAL_CNT_ERRORS, 0);
-+	if (ret < 0)
-+		return ret;
-+
-+	rta_nest_end(rta, nest);
-+	return 0;
-+}
-+
- static int parse_encap_seg6local(struct rtattr *rta, size_t len, int *argcp,
- 				 char ***argvp)
- {
- 	int segs_ok = 0, hmac_ok = 0, table_ok = 0, vrftable_ok = 0;
-+	int action_ok = 0, srh_ok = 0, bpf_ok = 0, counters_ok = 0;
- 	int nh4_ok = 0, nh6_ok = 0, iif_ok = 0, oif_ok = 0;
- 	__u32 action = 0, table, vrftable, iif, oif;
--	int action_ok = 0, srh_ok = 0, bpf_ok = 0;
- 	struct ipv6_sr_hdr *srh;
- 	char **argv = *argvp;
- 	int argc = *argcp;
-@@ -932,6 +997,11 @@ static int parse_encap_seg6local(struct rtattr *rta, size_t len, int *argcp,
- 			if (!oif)
- 				exit(nodev(*argv));
- 			ret = rta_addattr32(rta, len, SEG6_LOCAL_OIF, oif);
-+		} else if (strcmp(*argv, "count") == 0) {
-+			if (counters_ok++)
-+				duparg2("count", *argv);
-+			ret = seg6local_fill_counters(rta, len,
-+						      SEG6_LOCAL_COUNTERS);
- 		} else if (strcmp(*argv, "srh") == 0) {
- 			NEXT_ARG();
- 			if (srh_ok++)
--- 
-2.20.1
-
+Thanks,
+Richard
