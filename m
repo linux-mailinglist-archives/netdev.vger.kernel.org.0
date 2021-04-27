@@ -2,168 +2,188 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B72CD36CF97
-	for <lists+netdev@lfdr.de>; Wed, 28 Apr 2021 01:39:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4A18536CFCA
+	for <lists+netdev@lfdr.de>; Wed, 28 Apr 2021 01:59:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239406AbhD0XkA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 27 Apr 2021 19:40:00 -0400
-Received: from www62.your-server.de ([213.133.104.62]:47896 "EHLO
-        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235423AbhD0Xi0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 27 Apr 2021 19:38:26 -0400
-Received: from 30.101.7.85.dynamic.wline.res.cust.swisscom.ch ([85.7.101.30] helo=localhost)
-        by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92.3)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1lbXGu-0006Bv-NO; Wed, 28 Apr 2021 01:37:40 +0200
-From:   Daniel Borkmann <daniel@iogearbox.net>
-To:     davem@davemloft.net
-Cc:     kuba@kernel.org, daniel@iogearbox.net, ast@kernel.org,
-        andrii.nakryiko@gmail.com, netdev@vger.kernel.org,
-        bpf@vger.kernel.org
-Subject: pull-request: bpf-next 2021-04-28
-Date:   Wed, 28 Apr 2021 01:37:40 +0200
-Message-Id: <20210427233740.22238-1-daniel@iogearbox.net>
-X-Mailer: git-send-email 2.21.0
+        id S239576AbhD1AAf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 27 Apr 2021 20:00:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40180 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S237104AbhD1AAe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 27 Apr 2021 20:00:34 -0400
+Received: from mail-pf1-x42c.google.com (mail-pf1-x42c.google.com [IPv6:2607:f8b0:4864:20::42c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C8953C061574
+        for <netdev@vger.kernel.org>; Tue, 27 Apr 2021 16:59:50 -0700 (PDT)
+Received: by mail-pf1-x42c.google.com with SMTP id q2so10537435pfk.9
+        for <netdev@vger.kernel.org>; Tue, 27 Apr 2021 16:59:50 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=networkplumber-org.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:subject:message-id:mime-version
+         :content-transfer-encoding;
+        bh=3bWO8kKzQdgRTfohoIdmZPbbFKbiuMnDAYSLjvXeuA8=;
+        b=Kmp2h97AJ0+Zm+e1Cus7BGJOIBvEy51/wc6MSZLYa8hN5PrDOIqff2ELvMlmjOZ0RS
+         WhoYDRbNM2ZKTnZN/KMjdooLMl9/bEwGTCT/c0NY2BT4BxkvNb3yVphnqW2JZmwpizqY
+         Q1M9P2nCHzW93aB+Kp+Ob5dCXSzI850Jc43iBXwJzLfozmBovHPgMQHafB8JsAgw9rgc
+         RVZW6j94XTD0Hy3MMyj7NljXcmrPJw7tLixRAuFo73/H/Y+4p/ISKoxANSMCDgamK6d4
+         Z9VKalt+RuoINnQQu018ZfFgIzOHCW2nrN/bW9ZK9QgClqrtBStm7GqqGgCwcoZYO6AN
+         sDXA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:subject:message-id:mime-version
+         :content-transfer-encoding;
+        bh=3bWO8kKzQdgRTfohoIdmZPbbFKbiuMnDAYSLjvXeuA8=;
+        b=OiMgFnX7/7eEias+K5tAGSV6P6daBRgh/JZSP4gaM1ZK2WEeftS8aEARAsH1VIAg88
+         FMWPOsX8+LdTJpskrn159g2GcO2RVyIhdqCKDuA9kxEbrGoNIzGu0BGxBWaxA4pNSjZS
+         NTRPxM9JSWrzSNGILIdoIx0KZcpLk3jrQh4qKiTE5eynAti2n644of3QR/C3JX5hK3kb
+         U2BaRG8A1pgFeWt7sYWbJKU675NSzuGE+mN2jlYHdDGLrb45UiQKcw3WN8CtiswwPcH6
+         eVDHZo9tTNtewQfIBWQVCbmYuJX0LktqgJMHmMD+deCl5yFA0uNv2BYig5FrcQ8LfkjZ
+         i4mA==
+X-Gm-Message-State: AOAM531hLmsivDiXpQ9T6YvB/eN9jGsvrZ22dvmeT+XovJTIt78z9nfm
+        Lyr/HISCjAGKTgN/tiNDaX6IVvFqZ3lMrw==
+X-Google-Smtp-Source: ABdhPJxP4GBL2HRKhpqkrVJUTGm8NZvqTd9vXsyfLxoKa0HkM9ofaND/2VRSuKVZuwOR2tPxHZcifA==
+X-Received: by 2002:a05:6a00:1a54:b029:278:e0f7:919d with SMTP id h20-20020a056a001a54b0290278e0f7919dmr9155348pfv.52.1619567989825;
+        Tue, 27 Apr 2021 16:59:49 -0700 (PDT)
+Received: from hermes.local (76-14-218-44.or.wavecable.com. [76.14.218.44])
+        by smtp.gmail.com with ESMTPSA id u12sm3272103pfh.122.2021.04.27.16.59.49
+        for <netdev@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 27 Apr 2021 16:59:49 -0700 (PDT)
+Date:   Tue, 27 Apr 2021 16:59:45 -0700
+From:   Stephen Hemminger <stephen@networkplumber.org>
+To:     netdev@vger.kernel.org
+Subject: [ANNOUNCE] iproute2 5.12.0 release
+Message-ID: <20210427165946.0bbd8fc0@hermes.local>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.103.2/26153/Tue Apr 27 13:09:27 2021)
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi David, hi Jakub,
+This is updated version of iproute2 to go with the 5.12 kernel.
+Relatively small release, only a few minor enhancements in this cycle.
 
-The following pull-request contains BPF updates for your *net-next* tree.
+Note: iproute2 is now maintained on the "main" branch.
+There are parallel copies (both updated) on kernel.org and github.
 
-We've added 19 non-merge commits during the last 2 day(s) which contain
-a total of 36 files changed, 494 insertions(+), 313 deletions(-).
+As always, it is recommended to always use the latest iproute2.
+The version iproute2 does not have to match the running kernel.
+The latest code will always run on older kernels (and vice versa);
+this is possible because of the kernel API/ABI guarantees.
+Except for rare cases, iproute2 does not do maintenance releases
+and there is no long term stable version.
 
-The main changes are:
+Download:
+    https://www.kernel.org/pub/linux/utils/net/iproute2/iproute2-5.12.0.tar=
+.gz
 
-1) Add link detach and following re-attach for trampolines, from Jiri Olsa.
+Repository for current release
+    https://github.com/shemminger/iproute2.git
+    git://git.kernel.org/pub/scm/network/iproute2/iproute2.git
 
-2) Use kernel's "binary printf" lib for formatted output BPF helpers (which
-   avoids the needs for variadic argument handling), from Florent Revest.
+And future release (net-next):
+    git://git.kernel.org/pub/scm/network/iproute2/iproute2-next.git
 
-3) Fix verifier 64 to 32 bit min/max bound propagation, from Daniel Borkmann.
+Thanks for all the contributions.
 
-4) Convert cpumap to use netif_receive_skb_list(), from Lorenzo Bianconi.
+Report problems (or enhancements) to the netdev@vger.kernel.org mailing lis=
+t.
 
-5) Add generic batched-ops support to percpu array map, from Pedro Tammela.
+Amit Cohen (1):
+      ip route: Print "rt_offload_failed" indication
 
-6) Various CO-RE relocation BPF selftests fixes, from Andrii Nakryiko.
+Andrea Claudi (9):
+      devlink: always check strslashrsplit() return value
+      q_cake: remove useless check on argv
+      nexthop: fix memory leak in add_nh_group_attr()
+      rdma: stat: initialize ret in stat_qp_show_parse_cb()
+      rdma: stat: fix return code
+      ip: netns: fix missing netns close on some error paths
+      tc: e_bpf: fix memory leak in parse_bpf()
+      lib: bpf_legacy: treat 0 as a valid file descriptor
+      lib: bpf_legacy: fix missing socket close when connect() fails
 
-7) Misc doc rst fixes, from Hengqi Chen.
+David Ahern (3):
+      Update kernel headers
+      Update kernel headers
+      Update kernel headers
 
-Please consider pulling these changes from:
+Ido Schimmel (2):
+      nexthop: Fix usage output
+      ipmonitor: Mention "nexthop" object in help and man page
 
-  git://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf-next.git
+Jarod Wilson (1):
+      bond: support xmit_hash_policy=3Dvlan+srcmac
 
-Thanks a lot!
+Luca Boccassi (1):
+      iproute: fix printing resolved localhost
 
-Also thanks to reporters, reviewers and testers of commits in this pull-request:
+Maxim Mikityanskiy (1):
+      tc/htb: Hierarchical QoS hardware offload
 
-Alexei Starovoitov, Andrii Nakryiko, Jesper Dangaard Brouer, John 
-Fastabend, Julia Lawall, kernel test robot, KP Singh, Lorenz Bauer, 
-Rasmus Villemoes, Toke Høiland-Jørgensen
+Oleksandr Mazur (1):
+      devlink: add support for port params get/set
 
-----------------------------------------------------------------
+Oliver Hartkopp (1):
+      iplink_can: add Classical CAN frame LEN8_DLC support
 
-The following changes since commit 0ea1041bfa3aa2971f858edd9e05477c2d3d54a0:
+Parav Pandit (10):
+      devlink: Introduce and use string to number mapper
+      devlink: Introduce PCI SF port flavour and attribute
+      devlink: Supporting add and delete of devlink port
+      devlink: Support get port function state
+      devlink: Support set of port function state
+      Add kernel headers
+      utils: Add helper routines for indent handling
+      utils: Add generic socket helpers
+      utils: Add helper to map string to unsigned int
+      vdpa: Add vdpa tool
 
-  Merge branch 'bnxt_en-next' (2021-04-25 18:37:39 -0700)
+Patrisious Haddad (1):
+      rdma: Add support for the netlink extack
 
-are available in the Git repository at:
+Paul Blakey (1):
+      tc: flower: Add support for ct_state reply flag
 
-  https://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf-next.git 
+Petr Machata (8):
+      lib: rt_names: Add rtnl_dsfield_get_name()
+      lib: Generalize parse_mapping()
+      dcb: Generalize dcb_set_attribute()
+      dcb: Generalize dcb_get_attribute()
+      dcb: Support -N to suppress translation to human-readable names
+      dcb: Add a subtool for the DCB APP object
+      dcb: Add a subtool for the DCBX object
+      ip: Fix batch processing
 
-for you to fetch changes up to 3733bfbbdd28f7a65340d0058d15d15190a4944a:
+Roi Dayan (1):
+      dcb: Fix compilation warning about reallocarray
 
-  bpf, selftests: Update array map tests for per-cpu batched ops (2021-04-28 01:18:12 +0200)
+Sabrina Dubroca (1):
+      ip: xfrm: limit the length of the security context name when printing
 
-----------------------------------------------------------------
-Alexei Starovoitov (3):
-      Merge branch 'bpf: Tracing and lsm programs re-attach'
-      Merge branch 'CO-RE relocation selftests fixes'
-      Merge branch 'Implement formatted output helpers with bstr_printf'
+Stephen Hemminger (11):
+      Update kernel headers from 5.12-pre rc
+      vdpa: add .gitignore
+      ip: cleanup help message text
+      README: remove doc instructions
+      uapi: minor header update for l2tp
+      uapi: bpf.h update from upstream
+      erspan: fix JSON output
+      uapi: update can.h
+      uapi: add missing virtio related headers
+      remove trailing whitespace
+      v5.12.0
 
-Andrii Nakryiko (5):
-      selftests/bpf: Add remaining ASSERT_xxx() variants
-      libbpf: Support BTF_KIND_FLOAT during type compatibility checks in CO-RE
-      selftests/bpf: Fix BPF_CORE_READ_BITFIELD() macro
-      selftests/bpf: Fix field existence CO-RE reloc tests
-      selftests/bpf: Fix core_reloc test runner
+Thayne McCombs (2):
+      ss: always prefer family as part of host condition to default family
+      ss: Make leading ":" always optional for sport and dport
 
-Daniel Borkmann (1):
-      bpf: Fix propagation of 32 bit unsigned bounds from 64 bit bounds
+Toke H=C3=B8iland-J=C3=B8rgensen (1):
+      q_cake: Fix incorrect printing of signed values in class statistics
 
-Florent Revest (3):
-      bpf: Lock bpf_trace_printk's tmp buf before it is written to
-      seq_file: Add a seq_bprintf function
-      bpf: Implement formatted output helpers with bstr_printf
+Tony Ambardar (1):
+      lib/bpf: add missing limits.h includes
 
-Hengqi Chen (1):
-      bpf, docs: Fix literal block for example code
+wenxu (1):
+      tc: flower: add tc conntrack inv ct_state support
 
-Jiri Olsa (6):
-      bpf: Allow trampoline re-attach for tracing and lsm programs
-      selftests/bpf: Add re-attach test to fentry_test
-      selftests/bpf: Add re-attach test to fexit_test
-      selftests/bpf: Add re-attach test to lsm test
-      selftests/bpf: Test that module can't be unloaded with attached trampoline
-      selftests/bpf: Use ASSERT macros in lsm test
-
-Lorenzo Bianconi (1):
-      bpf, cpumap: Bulk skb using netif_receive_skb_list
-
-Pedro Tammela (2):
-      bpf: Add batched ops support for percpu array
-      bpf, selftests: Update array map tests for per-cpu batched ops
-
- Documentation/networking/filter.rst                |   2 +-
- fs/seq_file.c                                      |  18 ++
- include/linux/bpf.h                                |  22 +--
- include/linux/seq_file.h                           |   4 +
- init/Kconfig                                       |   1 +
- kernel/bpf/arraymap.c                              |   2 +
- kernel/bpf/cpumap.c                                |  18 +-
- kernel/bpf/helpers.c                               | 188 +++++++++++----------
- kernel/bpf/syscall.c                               |  23 ++-
- kernel/bpf/trampoline.c                            |   4 +-
- kernel/bpf/verifier.c                              |  10 +-
- kernel/trace/bpf_trace.c                           |  36 ++--
- tools/lib/bpf/bpf_core_read.h                      |  16 +-
- tools/lib/bpf/libbpf.c                             |   6 +-
- .../selftests/bpf/map_tests/array_map_batch_ops.c  | 104 ++++++++----
- tools/testing/selftests/bpf/prog_tests/btf_dump.c  |   2 +-
- .../testing/selftests/bpf/prog_tests/btf_endian.c  |   4 +-
- .../testing/selftests/bpf/prog_tests/cgroup_link.c |   2 +-
- .../testing/selftests/bpf/prog_tests/core_reloc.c  |  51 +++---
- .../testing/selftests/bpf/prog_tests/fentry_test.c |  52 ++++--
- .../testing/selftests/bpf/prog_tests/fexit_test.c  |  52 ++++--
- tools/testing/selftests/bpf/prog_tests/kfree_skb.c |   2 +-
- .../selftests/bpf/prog_tests/module_attach.c       |  23 +++
- .../selftests/bpf/prog_tests/resolve_btfids.c      |   7 +-
- .../selftests/bpf/prog_tests/snprintf_btf.c        |   4 +-
- tools/testing/selftests/bpf/prog_tests/test_lsm.c  |  61 ++++---
- ...tf__core_reloc_existence___err_wrong_arr_kind.c |   3 -
- ...re_reloc_existence___err_wrong_arr_value_type.c |   3 -
- ...tf__core_reloc_existence___err_wrong_int_kind.c |   3 -
- .../btf__core_reloc_existence___err_wrong_int_sz.c |   3 -
- ...tf__core_reloc_existence___err_wrong_int_type.c |   3 -
- ..._core_reloc_existence___err_wrong_struct_type.c |   3 -
- .../btf__core_reloc_existence___wrong_field_defs.c |   3 +
- .../testing/selftests/bpf/progs/core_reloc_types.h |  20 +--
- tools/testing/selftests/bpf/test_progs.h           |  50 +++++-
- .../testing/selftests/bpf/verifier/array_access.c  |   2 +-
- 36 files changed, 494 insertions(+), 313 deletions(-)
- delete mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_existence___err_wrong_arr_kind.c
- delete mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_existence___err_wrong_arr_value_type.c
- delete mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_existence___err_wrong_int_kind.c
- delete mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_existence___err_wrong_int_sz.c
- delete mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_existence___err_wrong_int_type.c
- delete mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_existence___err_wrong_struct_type.c
- create mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_existence___wrong_field_defs.c
