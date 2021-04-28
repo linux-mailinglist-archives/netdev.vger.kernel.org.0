@@ -2,90 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 346CA36D3EE
-	for <lists+netdev@lfdr.de>; Wed, 28 Apr 2021 10:27:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D291136D409
+	for <lists+netdev@lfdr.de>; Wed, 28 Apr 2021 10:37:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237677AbhD1I1s (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 28 Apr 2021 04:27:48 -0400
-Received: from mga04.intel.com ([192.55.52.120]:7991 "EHLO mga04.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231635AbhD1I1q (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 28 Apr 2021 04:27:46 -0400
-IronPort-SDR: qDy/ROmfXerGipvHRgdyTvxz3wCG5nI8sToAqdH7YPPnyox4Z1Grp3Z1AAsDzVxCc9TMSbuSFQ
- 0JVUz9ze0eww==
-X-IronPort-AV: E=McAfee;i="6200,9189,9967"; a="194573427"
-X-IronPort-AV: E=Sophos;i="5.82,257,1613462400"; 
-   d="scan'208";a="194573427"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Apr 2021 01:27:02 -0700
-IronPort-SDR: pEieoWPS439dCUpyUuZKXm1DshukFKzgSi+hhDVT3w21b8a+JXdIEe5AMuK9bHNhSEoA8Puo8o
- BTZZhWXslXbg==
-X-IronPort-AV: E=Sophos;i="5.82,257,1613462400"; 
-   d="scan'208";a="430192264"
-Received: from unknown (HELO localhost.localdomain.bj.intel.com) ([10.240.193.73])
-  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Apr 2021 01:26:59 -0700
-From:   Zhu Lingshan <lingshan.zhu@intel.com>
-To:     jasowang@redhat.com, mst@redhat.com
-Cc:     virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Zhu Lingshan <lingshan.zhu@intel.com>
-Subject: [PATCH 2/2] vDPA/ifcvf: implement doorbell mapping for ifcvf
-Date:   Wed, 28 Apr 2021 16:21:33 +0800
-Message-Id: <20210428082133.6766-3-lingshan.zhu@intel.com>
-X-Mailer: git-send-email 2.27.0
-In-Reply-To: <20210428082133.6766-1-lingshan.zhu@intel.com>
-References: <20210428082133.6766-1-lingshan.zhu@intel.com>
+        id S229643AbhD1Ihp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 28 Apr 2021 04:37:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39842 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S236961AbhD1Ihn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 28 Apr 2021 04:37:43 -0400
+Received: from mail-pj1-x102f.google.com (mail-pj1-x102f.google.com [IPv6:2607:f8b0:4864:20::102f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1FFE9C06138B
+        for <netdev@vger.kernel.org>; Wed, 28 Apr 2021 01:36:59 -0700 (PDT)
+Received: by mail-pj1-x102f.google.com with SMTP id lr7so14245418pjb.2
+        for <netdev@vger.kernel.org>; Wed, 28 Apr 2021 01:36:59 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=endlessos.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=fjUF9BpvK4r1iz57hM3EhPDHjFmt6yk1iQHfr+k3qbM=;
+        b=OvLuvuwpiN9oVC4fXH86kG3mjF1qXle7T+jN//aJrJPmJtvAtZsgd3itGUvr7V5H+z
+         Q7gBgtKmYFwNRu9lVApPHSbXPD0Md2l0xKeKMS7KTzDsPmw9C4kk9+GX3jVPdGZAUJDQ
+         AvFoRvJjmf5vBYK2fbgFNUTRR0XIoRA4+VjYYUPEkYMMDhRyVSRnYSu4xhAZ5nsJYUW7
+         sy2qeWQxhJJP6jPAi+9yYhILRg4mBErAQyuXVKUnxBqVTSDU99g78cjh5iyQCX9yzni2
+         mPlLZv3nSANzvNYqKpP+tdJAUWKkQVhP6mEzNlBOEShDF/FIvOOefM1dY628B3nN9XPP
+         AQ6Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=fjUF9BpvK4r1iz57hM3EhPDHjFmt6yk1iQHfr+k3qbM=;
+        b=qGRR283I1WXM1Dx6i30RX8bDZobkNfCl0bMcUAB33D217aDoNHuq9ppMYRR6JfBTrZ
+         zuLfoLgEfrD8JqoxKsDaszX8fKrtkchn5/yC+8qYvP7mmsllTQc3AtY7iP5a93YAvRPT
+         d2kfYaxDsIHGCoziMfh0S3XKdxBBzoYodJGJAmLX43s1aubIO5DLM8SxTqscf45iNRIc
+         z5Jt4D/zJiq2vhxyaTr81HWv4HC+V4ao8+f+VjpWE1PvIw1HDbSwuAYGo2d0LKLTLqpi
+         BpwDQo4T69YUhL5qZeCxCaEYuGoP0Bi7rS7Hnxi4EfEMMjCbd9V85BDVxOzz1YrJpn3B
+         bnQA==
+X-Gm-Message-State: AOAM533Vwj0S4xJhiy/7sLxgQQaY4adRLV4lFDd7aFPJb9gzFQTc3JT+
+        pfqyBJHvrlWAzw6lZpumwNa7eg==
+X-Google-Smtp-Source: ABdhPJw+pSzP+7mqH91TiZSleK8DJBgT6+VeuQSagoS0iZQRgwYUticLT6u5Zvx8pHT8CCv8f+oPMQ==
+X-Received: by 2002:a17:90a:af8b:: with SMTP id w11mr31564179pjq.149.1619599018459;
+        Wed, 28 Apr 2021 01:36:58 -0700 (PDT)
+Received: from starnight.endlessm-sf.com (123-204-46-122.static.seed.net.tw. [123.204.46.122])
+        by smtp.googlemail.com with ESMTPSA id f18sm4498493pfe.49.2021.04.28.01.36.54
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 28 Apr 2021 01:36:58 -0700 (PDT)
+From:   Jian-Hong Pan <jhp@endlessos.org>
+To:     linux-firmware@kernel.org
+Cc:     linux-wireless@vger.kernel.org,
+        brcm80211-dev-list.pdl@broadcom.com,
+        SHA-cyfmac-dev-list@infineon.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux@endlessos.org,
+        Jian-Hong Pan <jhp@endlessos.org>
+Subject: [PATCH] brcm: Add a link to enable khadas VIM2's WiFi
+Date:   Wed, 28 Apr 2021 16:32:31 +0800
+Message-Id: <20210428083230.8137-1-jhp@endlessos.org>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This commit implements doorbell mapping feature for ifcvf.
-This feature maps the notify page to userspace, to eliminate
-vmexit when kick a vq.
+According to kernel message on khadas VIM2 board equipped with BCM4356:
 
-Signed-off-by: Zhu Lingshan <lingshan.zhu@intel.com>
+brcmfmac: brcmf_fw_alloc_request: using brcm/brcmfmac4356-sdio for chip BCM4356/2
+usbcore: registered new interface driver brcmfmac
+brcmfmac mmc0:0001:1: Direct firmware load for brcm/brcmfmac4356-sdio.khadas,vim2.txt failed with error -2
+brcmfmac mmc0:0001:1: Direct firmware load for brcm/brcmfmac4356-sdio.txt failed with error -2
+
+System needs the NVRAM file "brcmfmac4356-sdio.khadas,vim2.txt" to enable
+the WiFi. After test, found it can share with the same file
+"brcmfmac4356-sdio.vamrs,rock960.txt".
+
+This patch adds the link to brcmfmac4356-sdio.vamrs,rock960.txt for it.
+
+Signed-off-by: Jian-Hong Pan <jhp@endlessos.org>
 ---
- drivers/vdpa/ifcvf/ifcvf_main.c | 18 ++++++++++++++++++
- 1 file changed, 18 insertions(+)
+ WHENCE | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/vdpa/ifcvf/ifcvf_main.c b/drivers/vdpa/ifcvf/ifcvf_main.c
-index e48e6b74fe2e..afcb71bc0f51 100644
---- a/drivers/vdpa/ifcvf/ifcvf_main.c
-+++ b/drivers/vdpa/ifcvf/ifcvf_main.c
-@@ -413,6 +413,23 @@ static int ifcvf_vdpa_get_vq_irq(struct vdpa_device *vdpa_dev,
- 	return vf->vring[qid].irq;
- }
+diff --git a/WHENCE b/WHENCE
+index 3c29304..5773020 100644
+--- a/WHENCE
++++ b/WHENCE
+@@ -2780,6 +2780,7 @@ Link: brcm/brcmfmac43455-sdio.Raspberry\ Pi\ Foundation-Raspberry\ Pi\ Compute\
+ File: "brcm/brcmfmac43455-sdio.MINIX-NEO Z83-4.txt"
+ File: "brcm/brcmfmac4356-pcie.gpd-win-pocket.txt"
+ File: brcm/brcmfmac4356-sdio.vamrs,rock960.txt
++Link: brcm/brcmfmac4356-sdio.khadas,vim2.txt -> brcmfmac4356-sdio.vamrs,rock960.txt
  
-+static struct vdpa_notification_area ifcvf_get_vq_notification(struct vdpa_device *vdpa_dev,
-+							       u16 idx)
-+{
-+	struct ifcvf_hw *vf = vdpa_to_vf(vdpa_dev);
-+	struct vdpa_notification_area area;
-+
-+	if (vf->notify_pa % PAGE_SIZE) {
-+		area.addr = 0;
-+		area.size = 0;
-+	} else {
-+		area.addr = vf->notify_pa;
-+		area.size = PAGE_SIZE;
-+	}
-+
-+	return area;
-+}
-+
- /*
-  * IFCVF currently does't have on-chip IOMMU, so not
-  * implemented set_map()/dma_map()/dma_unmap()
-@@ -440,6 +457,7 @@ static const struct vdpa_config_ops ifc_vdpa_ops = {
- 	.get_config	= ifcvf_vdpa_get_config,
- 	.set_config	= ifcvf_vdpa_set_config,
- 	.set_config_cb  = ifcvf_vdpa_set_config_cb,
-+	.get_vq_notification = ifcvf_get_vq_notification,
- };
+ Licence: GPLv2. See GPL-2 for details.
  
- static int ifcvf_probe(struct pci_dev *pdev, const struct pci_device_id *id)
 -- 
-2.27.0
+2.31.1
 
