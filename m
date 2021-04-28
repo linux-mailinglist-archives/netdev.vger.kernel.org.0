@@ -2,80 +2,157 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0DBC036D50A
-	for <lists+netdev@lfdr.de>; Wed, 28 Apr 2021 11:52:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9615636D527
+	for <lists+netdev@lfdr.de>; Wed, 28 Apr 2021 11:56:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238304AbhD1JxE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 28 Apr 2021 05:53:04 -0400
-Received: from fallback20.mail.ru ([185.5.136.252]:57204 "EHLO
-        fallback20.mail.ru" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230339AbhD1JxC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 28 Apr 2021 05:53:02 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=inbox.ru; s=mail3;
-        h=Content-Transfer-Encoding:MIME-Version:Message-Id:Date:Subject:Cc:To:From; bh=wdX01Xs5Liy4UjTCHaJvotd+I+dSklf4DbrntnEpbm4=;
-        b=ngambwgATWvPR6eztzBYDNYWvBcJXwLY55OF4WuV28Sm0ZRYl0YDrhg80Dp9QfjVeM9ezkdaLDDnmJbdaWOPmJQfFhJ7xF2/B+sIhFlixS9Uc+yxZSMn3e1z6UBd+oIMta1ymKuIMbKTt/ibAei2h7IiJzfywvwWCYOxqbYJbPw=;
-Received: from [10.161.117.32] (port=40592 helo=smtp3.mail.ru)
-        by fallback20.m.smailru.net with esmtp (envelope-from <fido_max@inbox.ru>)
-        id 1lbgrg-0001OD-KJ
-        for netdev@vger.kernel.org; Wed, 28 Apr 2021 12:52:16 +0300
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=inbox.ru; s=mail3;
-        h=Content-Transfer-Encoding:MIME-Version:Message-Id:Date:Subject:Cc:To:From:From:Subject:Content-Type:Content-Transfer-Encoding:To:Cc; bh=wdX01Xs5Liy4UjTCHaJvotd+I+dSklf4DbrntnEpbm4=;
-        b=VU4bhmYbcoeGJ/xB3PJo5q8cQcFYNAfuIfh+bz5noENeUDPXw29HJWeXj1gQQuAb61ghDPcNrVGvldzCimrTspoi/7wCKQkIxTSqrSwxjttrHoj5VLImFAgA1gMQduSsPYi5cgefVJMjX1TS1WImp1TOvBSVg3Kngv+bTVSX3Zc=;
-Received: by smtp3.mail.ru with esmtpa (envelope-from <fido_max@inbox.ru>)
-        id 1lbgrb-0003Iz-18; Wed, 28 Apr 2021 12:52:11 +0300
-From:   Maxim Kochetkov <fido_max@inbox.ru>
-To:     netdev@vger.kernel.org
-Cc:     andrew@lunn.ch, hkallweit1@gmail.com, linux@armlinux.org.uk,
-        davem@davemloft.net, kuba@kernel.org, f.fainelli@gmail.com,
-        Maxim Kochetkov <fido_max@inbox.ru>
-Subject: [PATCH 1/1] net: phy: marvell: add downshift support for M88E1240
-Date:   Wed, 28 Apr 2021 12:53:56 +0300
-Message-Id: <20210428095356.621536-1-fido_max@inbox.ru>
-X-Mailer: git-send-email 2.30.2
+        id S238789AbhD1J4w (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 28 Apr 2021 05:56:52 -0400
+Received: from mga14.intel.com ([192.55.52.115]:55726 "EHLO mga14.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S230032AbhD1J4v (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 28 Apr 2021 05:56:51 -0400
+IronPort-SDR: lkpQhPGSx0IMmKw/ZN1ed+cFC4CR+3ZZ8AtRfWaBXYjalaIgIWaKG/wiOj4bRp/OahK2hApr6t
+ WBgNLex10XEw==
+X-IronPort-AV: E=McAfee;i="6200,9189,9967"; a="196258062"
+X-IronPort-AV: E=Sophos;i="5.82,257,1613462400"; 
+   d="scan'208";a="196258062"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Apr 2021 02:56:06 -0700
+IronPort-SDR: /jvroPBN/VZ3UMZDpzwauVfbEJ4mVOZswAFhEHEX1XPOpFgJu1IRQRcQk2hz5CEP7DN3NMMPi1
+ MUtnimI6c2Vg==
+X-IronPort-AV: E=Sophos;i="5.82,257,1613462400"; 
+   d="scan'208";a="423452748"
+Received: from lingshan-mobl5.ccr.corp.intel.com (HELO [10.254.209.93]) ([10.254.209.93])
+  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Apr 2021 02:56:04 -0700
+Subject: Re: [PATCH 2/2] vDPA/ifcvf: implement doorbell mapping for ifcvf
+To:     Jason Wang <jasowang@redhat.com>, mst@redhat.com
+Cc:     virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
+        kvm@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20210428082133.6766-1-lingshan.zhu@intel.com>
+ <20210428082133.6766-3-lingshan.zhu@intel.com>
+ <f6d9a424-9025-3eb5-1cb4-0ff22f7bec63@redhat.com>
+ <5052fced-cd9a-e453-5cb2-39cdde60a208@intel.com>
+ <1984491f-cd5e-d4bc-b328-41e2f2e935fd@redhat.com>
+From:   "Zhu, Lingshan" <lingshan.zhu@intel.com>
+Message-ID: <ef510c97-1f1c-a121-99db-b659a5f9518c@intel.com>
+Date:   Wed, 28 Apr 2021 17:56:02 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.9.0
 MIME-Version: 1.0
+In-Reply-To: <1984491f-cd5e-d4bc-b328-41e2f2e935fd@redhat.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: 8bit
-X-7564579A: B8F34718100C35BD
-X-77F55803: 4F1203BC0FB41BD9ECFD8CE5F059401038B9CDF7FBB47393FA4BE7AD94852C87182A05F53808504094B703FB09BD5DFBD05FED6264FBE1F2B32C50E69B441CFA9B2ED67500C4F6F3
-X-7FA49CB5: FF5795518A3D127A4AD6D5ED66289B5278DA827A17800CE782A779A89F7D69B2C2099A533E45F2D0395957E7521B51C2CFCAF695D4D8E9FCEA1F7E6F0F101C6778DA827A17800CE71AB87D0AB0DD9D358F08D7030A58E5ADC58D69EE07B14084F39EFFDF887939037866D6147AF826D8D83A5DCB5AF283D2B25A4F8769A549A4117882F4460429724CE54428C33FAD305F5C1EE8F4F765FCF77088377309FF52A471835C12D1D9774AD6D5ED66289B52BA9C0B312567BB23117882F44604297287769387670735201E561CDFBCA1751FF04B652EEC242312D2E47CDBA5A96583BA9C0B312567BB2376E601842F6C81A19E625A9149C048EE652FD71AFB96DC7DBA3038C0950A5D36C8A9BA7A39EFB766EC990983EF5C0329BA3038C0950A5D36D5E8D9A59859A8B6425A8B0AE447E08B76E601842F6C81A1F004C906525384307823802FF610243DF43C7A68FF6260569E8FC8737B5C2249EC8D19AE6D49635B68655334FD4449CB9ECD01F8117BC8BEAAAE862A0553A39223F8577A6DFFEA7C837C4FEFBD186071C4224003CC83647689D4C264860C145E
-X-B7AD71C0: AC4F5C86D027EB782CDD5689AFBDA7A24209795067102C07E8F7B195E1C97831BF49E47F38FA80512240D5316989BD39
-X-C1DE0DAB: C20DE7B7AB408E4181F030C43753B8186998911F362727C414F749A5E30D975C8E0B2E50BE5001AC3F12113CB9E2AADF9A1F785B5F4C6FCD9C2B6934AE262D3EE7EAB7254005DCEDFEE724B1FD2CE2B21E0A4E2319210D9B64D260DF9561598F01A9E91200F654B01098AAFFB0A1231D8E8E86DC7131B365E7726E8460B7C23C
-X-C8649E89: 4E36BF7865823D7055A7F0CF078B5EC49A30900B95165D3454E98140CCACB5B30F1DED6CA0CBE08C5B9D53B0FF9FAF2A135CB2CA644468381295A0039048F1E01D7E09C32AA3244C38845EFF62FC19764ADAF06E5DC31A0B3C6EB905E3A8056BAD832FF50B3043B1
-X-D57D3AED: 3ZO7eAau8CL7WIMRKs4sN3D3tLDjz0dLbV79QFUyzQ2Ujvy7cMT6pYYqY16iZVKkSc3dCLJ7zSJH7+u4VD18S7Vl4ZUrpaVfd2+vE6kuoey4m4VkSEu530nj6fImhcD4MUrOEAnl0W826KZ9Q+tr5ycPtXkTV4k65bRjmOUUP8cvGozZ33TWg5HZplvhhXbhDGzqmQDTd6OAevLeAnq3Ra9uf7zvY2zzsIhlcp/Y7m53TZgf2aB4JOg4gkr2biojoCaqxM2e5sotisotFRUVkA==
-X-Mailru-Sender: 11C2EC085EDE56FA9C10FA2967F5AB24DDA7F1C610ED3FB638E05AD5785F52EBA8C2B93F1F5D73B9EE9242D420CFEBFD3DDE9B364B0DF2891A624F84B2C74EDA4239CF2AF0A6D4F80DA7A0AF5A3A8387
-X-Mras: Ok
-X-7564579A: 646B95376F6C166E
-X-77F55803: 6242723A09DB00B45562A35114C4D62A7E062EA9D3FBA00FCA139D773ACC0096049FFFDB7839CE9E0088CAACE7D2CDB9F84A3E024D8B0D32157C340B930F23CE22B8993CE5569975
-X-7FA49CB5: 0D63561A33F958A5BC93B0704155546CAB1B5170ACDF537873EDE1EDC84A00078941B15DA834481FA18204E546F3947CDAEF1DB43D7511E1117882F4460429724CE54428C33FAD30A8DF7F3B2552694AC26CFBAC0749D213D2E47CDBA5A9658378DA827A17800CE758C1844A7A85E7B68941B15DA834481F9449624AB7ADAF37BA3038C0950A5D3613377AFFFEAFD269176DF2183F8FC7C0E4EE7DC94180836E7B076A6E789B0E97A8DF7F3B2552694ACDED94BCBF13EF3B2DBA43225CD8A89FB26E97DCB74E625235872C767BF85DA2F004C90652538430E4A6367B16DE6309
-X-C1DE0DAB: C20DE7B7AB408E4181F030C43753B8186998911F362727C414F749A5E30D975C8E0B2E50BE5001AC005F420255DBEB856D682D5AF74718879C2B6934AE262D3EE7EAB7254005DCEDFEE724B1FD2CE2B2699F904B3F4130E343918A1A30D5E7FCCB5012B2E24CD356
-X-D57D3AED: 3ZO7eAau8CL7WIMRKs4sN3D3tLDjz0dLbV79QFUyzQ2Ujvy7cMT6pYYqY16iZVKkSc3dCLJ7zSJH7+u4VD18S7Vl4ZUrpaVfd2+vE6kuoey4m4VkSEu530nj6fImhcD4MUrOEAnl0W826KZ9Q+tr5ycPtXkTV4k65bRjmOUUP8cvGozZ33TWg5HZplvhhXbhDGzqmQDTd6OAevLeAnq3Ra9uf7zvY2zzsIhlcp/Y7m53TZgf2aB4JOg4gkr2biojoCaqxM2e5srjVZXGdZcUnw==
-X-Mailru-MI: 800
-X-Mailru-Sender: A5480F10D64C90053DB5E8752E58C64BB1FD36C19B1948352702340FE402EA504B9E3DE306C0EA93EE9242D420CFEBFD3DDE9B364B0DF2891A624F84B2C74EDA4239CF2AF0A6D4F80DA7A0AF5A3A8387
-X-Mras: Ok
+Content-Language: en-US
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add downshift support for 88E1240, it uses the same downshift
-configuration registers as 88E1011.
 
-Signed-off-by: Maxim Kochetkov <fido_max@inbox.ru>
----
- drivers/net/phy/marvell.c | 2 ++
- 1 file changed, 2 insertions(+)
 
-diff --git a/drivers/net/phy/marvell.c b/drivers/net/phy/marvell.c
-index a61fde7013bd..0b2cccb0d865 100644
---- a/drivers/net/phy/marvell.c
-+++ b/drivers/net/phy/marvell.c
-@@ -2870,6 +2870,8 @@ static struct phy_driver marvell_drivers[] = {
- 		.get_sset_count = marvell_get_sset_count,
- 		.get_strings = marvell_get_strings,
- 		.get_stats = marvell_get_stats,
-+		.get_tunable = m88e1011_get_tunable,
-+		.set_tunable = m88e1011_set_tunable,
- 	},
- 	{
- 		.phy_id = MARVELL_PHY_ID_88E1116R,
--- 
-2.30.2
+On 4/28/2021 5:21 PM, Jason Wang wrote:
+>
+> 在 2021/4/28 下午4:59, Zhu, Lingshan 写道:
+>>
+>>
+>> On 4/28/2021 4:42 PM, Jason Wang wrote:
+>>>
+>>> 在 2021/4/28 下午4:21, Zhu Lingshan 写道:
+>>>> This commit implements doorbell mapping feature for ifcvf.
+>>>> This feature maps the notify page to userspace, to eliminate
+>>>> vmexit when kick a vq.
+>>>>
+>>>> Signed-off-by: Zhu Lingshan <lingshan.zhu@intel.com>
+>>>> ---
+>>>>   drivers/vdpa/ifcvf/ifcvf_main.c | 18 ++++++++++++++++++
+>>>>   1 file changed, 18 insertions(+)
+>>>>
+>>>> diff --git a/drivers/vdpa/ifcvf/ifcvf_main.c 
+>>>> b/drivers/vdpa/ifcvf/ifcvf_main.c
+>>>> index e48e6b74fe2e..afcb71bc0f51 100644
+>>>> --- a/drivers/vdpa/ifcvf/ifcvf_main.c
+>>>> +++ b/drivers/vdpa/ifcvf/ifcvf_main.c
+>>>> @@ -413,6 +413,23 @@ static int ifcvf_vdpa_get_vq_irq(struct 
+>>>> vdpa_device *vdpa_dev,
+>>>>       return vf->vring[qid].irq;
+>>>>   }
+>>>>   +static struct vdpa_notification_area 
+>>>> ifcvf_get_vq_notification(struct vdpa_device *vdpa_dev,
+>>>> +                                   u16 idx)
+>>>> +{
+>>>> +    struct ifcvf_hw *vf = vdpa_to_vf(vdpa_dev);
+>>>> +    struct vdpa_notification_area area;
+>>>> +
+>>>> +    if (vf->notify_pa % PAGE_SIZE) {
+>>>> +        area.addr = 0;
+>>>> +        area.size = 0;
+>>>
+>>>
+>>> We don't need this since:
+>>>
+>>> 1) there's a check in the vhost vDPA
+>> I think you mean this code block in vdpa.c
+>>         notify = ops->get_vq_notification(vdpa, index);
+>>         if (notify.addr & (PAGE_SIZE - 1))
+>>                 return -EINVAL;
+>>
+>> This should work, however, I think the parent driver should ensure it 
+>> passes a PAGE_SIZE aligned address to userspace, to be robust, to be 
+>> reliable.
+>
+>
+> The point is parent is unaware of whether or not there's a userspace.
+when calling this, I think it targets a usersapce program, why kernel 
+space need it, so IMHO no harm if we check this to keep the parent 
+driver robust.
+>
+>
+>>> 2) device is unaware of the bound driver, non page aligned doorbell 
+>>> doesn't necessarily meant it can be used
+>> Yes, non page aligned doorbell can not be used, so there is a check.
+>
+>
+> Typo, what I meant is "it can't be used". That is to say, we should 
+> let the vDPA bus driver to decide whether or not it can be used.
+If it is not page aligned, there would be extra complexities for 
+vhost/qemu, I see it as a hardware defect, why adapt to this kind of 
+defects?
+
+Thanks
+Zhu Lingshan
+>
+> Thanks
+>
+>
+>>
+>> Thanks
+>> Zhu Lingshan
+>>>
+>>> Let's leave those polices to the driver.
+>>>
+>>> Thanks
+>>>
+>>>
+>>>> +    } else {
+>>>> +        area.addr = vf->notify_pa;
+>>>> +        area.size = PAGE_SIZE;
+>>>> +    }
+>>>> +
+>>>> +    return area;
+>>>> +}
+>>>> +
+>>>>   /*
+>>>>    * IFCVF currently does't have on-chip IOMMU, so not
+>>>>    * implemented set_map()/dma_map()/dma_unmap()
+>>>> @@ -440,6 +457,7 @@ static const struct vdpa_config_ops 
+>>>> ifc_vdpa_ops ={
+>>>>       .get_config    = ifcvf_vdpa_get_config,
+>>>>       .set_config    = ifcvf_vdpa_set_config,
+>>>>       .set_config_cb  = ifcvf_vdpa_set_config_cb,
+>>>> +    .get_vq_notification = ifcvf_get_vq_notification,
+>>>>   };
+>>>>     static int ifcvf_probe(struct pci_dev *pdev, const struct 
+>>>> pci_device_id *id)
+>>>
+>>
+>
 
