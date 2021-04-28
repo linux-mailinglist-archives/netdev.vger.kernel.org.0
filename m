@@ -2,44 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 62CBF36E0C5
-	for <lists+netdev@lfdr.de>; Wed, 28 Apr 2021 23:10:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A506B36E0C0
+	for <lists+netdev@lfdr.de>; Wed, 28 Apr 2021 23:10:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232936AbhD1VLC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 28 Apr 2021 17:11:02 -0400
-Received: from mail.kernel.org ([198.145.29.99]:45904 "EHLO mail.kernel.org"
+        id S232244AbhD1VK5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 28 Apr 2021 17:10:57 -0400
+Received: from mail.kernel.org ([198.145.29.99]:45892 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230323AbhD1VKz (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S230050AbhD1VKz (ORCPT <rfc822;netdev@vger.kernel.org>);
         Wed, 28 Apr 2021 17:10:55 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id 0AF7E61446;
-        Wed, 28 Apr 2021 21:10:10 +0000 (UTC)
+Received: by mail.kernel.org (Postfix) with ESMTPS id F0E5A61441;
+        Wed, 28 Apr 2021 21:10:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1619644210;
-        bh=5vTXpMHcA1FkV3/YxNisYGt5BqaA2w+UPKYOzsifulk=;
+        bh=YlK2arpaWlpw9mRpWyiecub5pgdbqlhz0GUCbX0ykb4=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=Kc7l/NujdArbBWuSPVhNm0j4HHNM6GTcIzF+JIp/cgO5zPc/QT9bjS7bVWbhedjRU
-         uIClOn/+AbCQLYr62hC4nehSRuwV0Gug/x+EUg6KjApiwRvMNfPPhiUcJ/5S6o8SWf
-         F/QmaabG2PoqjoYse1+RDWbcd7yjUhIVyWX33c0BSXT+qG62cHZEUilu1dEuZsFmJb
-         a5rT13bp7WqTqX7XTlhRPYtYsz8EiTi9YYTWAP/rZrahsni601FAsm2VRHR39ux5l1
-         hx7xakigpArhxOi8IE0TehT8JyBIxEhQva7lGtuFEo8Gy6PqQ4SNP31HTCgRN43c0g
-         /At717IG6T+2Q==
+        b=h8ZyFDzsFUJFJXFRf31uvwDoGplft0GArTcbpHnkv2kox0dSJQ5Ysr7X+ZlJKCsTR
+         pPp3EsqW/crtSTWfhbbX07FUTE8/ZMZzFIIWcZeE2X7xEL3bZ3W97tNODaQk8UBKvQ
+         gmPYHdxg17vfuzuJTPnx2Sle2cR+qQav0Ms0UWxm5gqn6M60bWaL0BDiix7Pu5Qum1
+         /AwOeHhvT5lpDwwRbsltQrzzIfpUOutrFkCYSHFmg4ZOl42iOAj1xsW2B3BwJnQ78J
+         Z+fGoTO5uUYfNL1biKjo7H7cuI8ofMbeWfNUX4GsZ8ICS7ctTYoGRpUf0hT7C7Wapq
+         yYd19gJVdCwrQ==
 Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id EF71A60A72;
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id E539E60A36;
         Wed, 28 Apr 2021 21:10:09 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH RESEND net-next] icmp: standardize naming of RFC 8335 PROBE
- constants
+Subject: Re: [PATCH] net: tun: Remove redundant assignment to ret
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <161964420997.17892.7124305214998591659.git-patchwork-notify@kernel.org>
+Message-Id: <161964420993.17892.2389378404589308179.git-patchwork-notify@kernel.org>
 Date:   Wed, 28 Apr 2021 21:10:09 +0000
-References: <20210427153635.2591-1-andreas.a.roeseler@gmail.com>
-In-Reply-To: <20210427153635.2591-1-andreas.a.roeseler@gmail.com>
-To:     Andreas Roeseler <andreas.a.roeseler@gmail.com>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net,
-        yoshfuji@linux-ipv6.org, dsahern@kernel.org, kuba@kernel.org,
-        stephen@networkplumber.org, andrew@lunn.ch
+References: <1619603852-114996-1-git-send-email-yang.lee@linux.alibaba.com>
+In-Reply-To: <1619603852-114996-1-git-send-email-yang.lee@linux.alibaba.com>
+To:     Yang Li <yang.lee@linux.alibaba.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, nathan@kernel.org,
+        ndesaulniers@google.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, clang-built-linux@googlegroups.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
@@ -48,19 +47,21 @@ Hello:
 
 This patch was applied to netdev/net-next.git (refs/heads/master):
 
-On Tue, 27 Apr 2021 10:36:35 -0500 you wrote:
-> The current definitions of constants for PROBE, currently defined only
-> in the net-next kernel branch, are inconsistent, with
-> some beginning with ICMP and others with simply EXT. This patch
-> attempts to standardize the naming conventions of the constants for
-> PROBE before their release into a stable Kernel, and to update the
-> relevant definitions in net/ipv4/icmp.c.
+On Wed, 28 Apr 2021 17:57:32 +0800 you wrote:
+> Variable 'ret' is set to zero but this value is never read as it is
+> overwritten with a new value later on, hence it is a redundant
+> assignment and can be removed.
+> 
+> Cleans up the following clang-analyzer warning:
+> 
+> drivers/net/tun.c:3008:2: warning: Value stored to 'ret' is never read
+> [clang-analyzer-deadcode.DeadStores]
 > 
 > [...]
 
 Here is the summary with links:
-  - [RESEND,net-next] icmp: standardize naming of RFC 8335 PROBE constants
-    https://git.kernel.org/netdev/net-next/c/e542d29ca81d
+  - net: tun: Remove redundant assignment to ret
+    https://git.kernel.org/netdev/net-next/c/808337bec736
 
 You are awesome, thank you!
 --
