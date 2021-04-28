@@ -2,71 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EC02936D6E6
-	for <lists+netdev@lfdr.de>; Wed, 28 Apr 2021 14:00:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C9E7836D6F0
+	for <lists+netdev@lfdr.de>; Wed, 28 Apr 2021 14:03:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231881AbhD1MBF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 28 Apr 2021 08:01:05 -0400
-Received: from youngberry.canonical.com ([91.189.89.112]:46756 "EHLO
-        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231218AbhD1MBD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 28 Apr 2021 08:01:03 -0400
-Received: from 1.general.cking.uk.vpn ([10.172.193.212] helo=localhost)
-        by youngberry.canonical.com with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
-        (Exim 4.86_2)
-        (envelope-from <colin.king@canonical.com>)
-        id 1lbirS-00083n-E7; Wed, 28 Apr 2021 12:00:10 +0000
-From:   Colin King <colin.king@canonical.com>
-To:     Woojung Huh <woojung.huh@microchip.com>,
-        UNGLinuxDriver@microchip.com, Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, Marek Vasut <marex@denx.de>,
-        Tristram Ha <Tristram.Ha@microchip.com>, netdev@vger.kernel.org
-Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH][next] net: dsa: ksz: Make reg_mib_cnt a u8 as it never exceeds 255
-Date:   Wed, 28 Apr 2021 13:00:10 +0100
-Message-Id: <20210428120010.337959-1-colin.king@canonical.com>
-X-Mailer: git-send-email 2.30.2
+        id S231545AbhD1MD5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 28 Apr 2021 08:03:57 -0400
+Received: from lpdvacalvio01.broadcom.com ([192.19.229.182]:33132 "EHLO
+        relay.smtp-ext.broadcom.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S229645AbhD1MD5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 28 Apr 2021 08:03:57 -0400
+Received: from bld-lvn-bcawlan-34.lvn.broadcom.net (bld-lvn-bcawlan-34.lvn.broadcom.net [10.75.138.137])
+        by relay.smtp-ext.broadcom.com (Postfix) with ESMTP id 1F0217A21;
+        Wed, 28 Apr 2021 05:03:12 -0700 (PDT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 relay.smtp-ext.broadcom.com 1F0217A21
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=broadcom.com;
+        s=dkimrelay; t=1619611392;
+        bh=sqPprGDrxRqE813qXyK+XiwtTWISQ3rJhLBDakpzkSk=;
+        h=Subject:To:Cc:References:From:Date:In-Reply-To:From;
+        b=HRpYGSHCqxNp7Nx007mpVQ8NfSTtGYjv/vdVYC/fGnrWPKwOyhEO4+4TvrFjgg02x
+         Uw091ENOQIZ5OByL3iWK6KvsF6DOfviY4otN6rI+2S958oYysaO2ymUaOmhr1cLnFQ
+         qt+PRh/HT81IpC2c0u6ny0tnwIe2Xeqfor3grLhM=
+Received: from [10.230.32.233] (unknown [10.230.32.233])
+        by bld-lvn-bcawlan-34.lvn.broadcom.net (Postfix) with ESMTPSA id 9EDBB1874BE;
+        Wed, 28 Apr 2021 05:03:09 -0700 (PDT)
+Subject: Re: [PATCH] brcmfmac: use ISO3166 country code and 0 rev as fallback
+To:     Shawn Guo <shawn.guo@linaro.org>, Kalle Valo <kvalo@codeaurora.org>
+Cc:     =?UTF-8?B?UmFmYcWCIE1pxYJlY2tp?= <rafal@milecki.pl>,
+        Arend van Spriel <aspriel@gmail.com>,
+        Franky Lin <franky.lin@broadcom.com>,
+        Hante Meuleman <hante.meuleman@broadcom.com>,
+        Chi-hsien Lin <chi-hsien.lin@infineon.com>,
+        Wright Feng <wright.feng@infineon.com>,
+        Chung-hsien Hsu <chung-hsien.hsu@infineon.com>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        brcm80211-dev-list.pdl@broadcom.com,
+        SHA-cyfmac-dev-list@infineon.com
+References: <20210425110200.3050-1-shawn.guo@linaro.org>
+From:   Arend van Spriel <arend.vanspriel@broadcom.com>
+Message-ID: <b6c5713f-ebf0-9eaf-e871-d5690a6b7c10@broadcom.com>
+Date:   Wed, 28 Apr 2021 14:03:07 +0200
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.10.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <20210425110200.3050-1-shawn.guo@linaro.org>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Colin Ian King <colin.king@canonical.com>
+On 4/25/2021 1:02 PM, Shawn Guo wrote:
+> Instead of aborting country code setup in firmware, use ISO3166 country
+> code and 0 rev as fallback, when country_codes mapping table is not
+> configured.  This fallback saves the country_codes table setup for recent
+> brcmfmac chipsets/firmwares, which just use ISO3166 code and require no
+> revision number.
 
-Currently the for-loop in ksz8_port_init_cnt is causing a static
-analysis infinite loop warning with the comparison of
-mib->cnt_ptr < dev->reg_mib_cnt. This occurs because mib->cnt_ptr
-is a u8 and dev->reg_mib_cnt is an int and the analyzer determines
-that mib->cnt_ptr potentially can wrap around to zero if the value
-in dev->reg_mib_cnt is > 255. However, this value is never this
-large, it is always less than 256 so make reg_mib_cnt a u8.
+I am somewhat surprised, but with the brcm-spinoffs (cypress/infineon 
+and synaptics) my understanding may have been surpassed by reality. 
+Would you happen to know which chipsets/firmwares require only ISO3166 
+code and no rev?
 
-Addresses-Coverity: ("Infinite loop")
-Fixes: e66f840c08a2 ("net: dsa: ksz: Add Microchip KSZ8795 DSA driver")
-Signed-off-by: Colin Ian King <colin.king@canonical.com>
----
- drivers/net/dsa/microchip/ksz_common.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/net/dsa/microchip/ksz_common.h b/drivers/net/dsa/microchip/ksz_common.h
-index e0bbdca64375..2e6bfd333f50 100644
---- a/drivers/net/dsa/microchip/ksz_common.h
-+++ b/drivers/net/dsa/microchip/ksz_common.h
-@@ -69,7 +69,7 @@ struct ksz_device {
- 	int cpu_ports;			/* port bitmap can be cpu port */
- 	int phy_port_cnt;
- 	int port_cnt;
--	int reg_mib_cnt;
-+	u8 reg_mib_cnt;
- 	int mib_cnt;
- 	const struct mib_names *mib_names;
- 	phy_interface_t compat_interface;
--- 
-2.30.2
-
+Regards,
+Arend
+> Signed-off-by: Shawn Guo <shawn.guo@linaro.org>
+> ---
+>   .../broadcom/brcm80211/brcmfmac/cfg80211.c      | 17 +++++++++++------
+>   1 file changed, 11 insertions(+), 6 deletions(-)
+> 
+> diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/cfg80211.c b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/cfg80211.c
+> index f4405d7861b6..6cb09c7c37b6 100644
+> --- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/cfg80211.c
+> +++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/cfg80211.c
+> @@ -7442,18 +7442,23 @@ static s32 brcmf_translate_country_code(struct brcmf_pub *drvr, char alpha2[2],
+>   	s32 found_index;
+>   	int i;
+>   
+> -	country_codes = drvr->settings->country_codes;
+> -	if (!country_codes) {
+> -		brcmf_dbg(TRACE, "No country codes configured for device\n");
+> -		return -EINVAL;
+> -	}
+> -
+>   	if ((alpha2[0] == ccreq->country_abbrev[0]) &&
+>   	    (alpha2[1] == ccreq->country_abbrev[1])) {
+>   		brcmf_dbg(TRACE, "Country code already set\n");
+>   		return -EAGAIN;
+>   	}
+>   
+> +	country_codes = drvr->settings->country_codes;
+> +	if (!country_codes) {
+> +		brcmf_dbg(TRACE, "No country codes configured for device, using ISO3166 code and 0 rev\n");
+> +		memset(ccreq, 0, sizeof(*ccreq));
+> +		ccreq->country_abbrev[0] = alpha2[0];
+> +		ccreq->country_abbrev[1] = alpha2[1];
+> +		ccreq->ccode[0] = alpha2[0];
+> +		ccreq->ccode[1] = alpha2[1];
+> +		return 0;
+> +	}
+> +
+>   	found_index = -1;
+>   	for (i = 0; i < country_codes->table_size; i++) {
+>   		cc = &country_codes->table[i];
+> 
