@@ -2,103 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4F02D36DB43
-	for <lists+netdev@lfdr.de>; Wed, 28 Apr 2021 17:24:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 727AF36DB9A
+	for <lists+netdev@lfdr.de>; Wed, 28 Apr 2021 17:27:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236957AbhD1PLT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 28 Apr 2021 11:11:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42984 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229454AbhD1PLR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 28 Apr 2021 11:11:17 -0400
-Received: from mail-wr1-x434.google.com (mail-wr1-x434.google.com [IPv6:2a00:1450:4864:20::434])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D7BAEC061573;
-        Wed, 28 Apr 2021 08:10:30 -0700 (PDT)
-Received: by mail-wr1-x434.google.com with SMTP id x7so63410142wrw.10;
-        Wed, 28 Apr 2021 08:10:30 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=caPcWX0HvCbUGxoKUybXsnQMiEeBgCwT/cgikCWDkpc=;
-        b=ZTYFlakBWBp2Opq/jD01M4nUgx0ti9JQ4aFD9Q+GvDNrPY6zj6++mTcAniLmsOC6p3
-         n3ZxHDzViQ1KclzV2l64XWnJooQN+CqlOSot0SwWzQwkczNOg4ujcabw/Y/Q7exfiHYy
-         IUcm65kebe92ZvH4PLQ9tukBAmZSrm52uEUoiAVyHlEDKf90TSlDbMFGrQRVCEomxUdN
-         0+0HgeOrajuXqr/Xbda3LkvUKjm/9/OT2jdoRtNoMCCEBUx4YgN/HzUeFztmUnWiRtsr
-         gPmTeMAB2S6A0aiJvtoOipgwQK7TFt7Ow9i8l6crZLd4fBdshk4uQzOVN+b8xpRuujrC
-         bHrg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=caPcWX0HvCbUGxoKUybXsnQMiEeBgCwT/cgikCWDkpc=;
-        b=lgF4p3uKfwq03VeWVWlDowtUFin0K8fQd0ATxlHUSBdR8Lt+BUu2LsBrvzGuzi8xVO
-         hll+d4oBsxT/bSgoz2cQbCSzFMZA4TsyjuWSiDFfdpZoDUy73FBUu2jTpta7oesDs5EQ
-         FWBZcGCE4PRoJX40JhjCj1d23oCS0u4xys/U79jx+8MayL9MiVnwq/idhootZlIa44t2
-         9K4bfUIt0rTBN7T6PRSBq38bDM3b5iOcsx3IDoWAo2mt14EtyvB4N1AJFDSYwVdGlPuj
-         DUSPvLsnkrPVApEsZsgoG0S2sLQkpG3Dby8K93j2ST7I4ercpau1TKN1URsdCEQ5Q4kE
-         xvyg==
-X-Gm-Message-State: AOAM532KAgodls0egq8jcAtOWmEiQVOPNxJjGqG9Nkf3m2WSr2bVyzEh
-        lT7BcVpLWKFFKkq124HXlKmsDL60t0SqGJEEmvY=
-X-Google-Smtp-Source: ABdhPJxVN5btpbhyyFI3SSpFSYUJhcM6me5+lef8qqcMI92e90PN00NzDC1AMx2HcHRG/qI8ZSgbTRstZBP73rH4vZs=
-X-Received: by 2002:adf:f190:: with SMTP id h16mr22688829wro.393.1619622629615;
- Wed, 28 Apr 2021 08:10:29 -0700 (PDT)
+        id S240280AbhD1P0q (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 28 Apr 2021 11:26:46 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:44692 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S233594AbhD1P00 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 28 Apr 2021 11:26:26 -0400
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
+        (envelope-from <andrew@lunn.ch>)
+        id 1lbm4D-001Wdq-KL; Wed, 28 Apr 2021 17:25:33 +0200
+Date:   Wed, 28 Apr 2021 17:25:33 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Vadym Kochan <vadym.kochan@plvision.eu>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        Taras Chornyi <tchornyi@marvell.com>,
+        linux-kernel@vger.kernel.org,
+        Mickey Rachamim <mickeyr@marvell.com>,
+        Vadym Kochan <vkochan@marvell.com>
+Subject: Re: [PATCH net-next 1/3] net: marvell: prestera: bump supported
+ firmware version to 3.0
+Message-ID: <YIl+bduYP1ySYC8N@lunn.ch>
+References: <20210423155933.29787-1-vadym.kochan@plvision.eu>
+ <20210423155933.29787-2-vadym.kochan@plvision.eu>
+ <YIL6feaar8Y/yOaZ@lunn.ch>
+ <20210423170437.GC17656@plvision.eu>
+ <YIMLcsstbpY215oJ@lunn.ch>
+ <20210428134724.GA405@plvision.eu>
+ <YIluzFlPtSRvS/dR@lunn.ch>
+ <20210428145434.GD9325@plvision.eu>
 MIME-Version: 1.0
-References: <20210428135929.27011-1-justin.he@arm.com> <20210428135929.27011-2-justin.he@arm.com>
-In-Reply-To: <20210428135929.27011-2-justin.he@arm.com>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Wed, 28 Apr 2021 18:10:13 +0300
-Message-ID: <CAHp75Vfx8aGQGJR58o49t2bOtu5adkrSRfWW9bb63OBoePcj1g@mail.gmail.com>
-Subject: Re: [PATCH 2/4] lib/vsprintf.c: Make %p{D,d} mean as much components
- as possible
-To:     Jia He <justin.he@arm.com>
-Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
-        Petr Mladek <pmladek@suse.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Sergey Senozhatsky <senozhatsky@chromium.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Luca Coelho <luciano.coelho@intel.com>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Heiko Carstens <hca@linux.ibm.com>,
-        Vasily Gorbik <gor@linux.ibm.com>,
-        Christian Borntraeger <borntraeger@de.ibm.com>,
-        Johannes Berg <johannes.berg@intel.com>,
-        Linux Documentation List <linux-doc@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        "open list:TI WILINK WIRELES..." <linux-wireless@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>, linux-s390@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210428145434.GD9325@plvision.eu>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Apr 28, 2021 at 5:56 PM Jia He <justin.he@arm.com> wrote:
->
-> From: Linus Torvalds <torvalds@linux-foundation.org>
+On Wed, Apr 28, 2021 at 05:54:34PM +0300, Vadym Kochan wrote:
+> On Wed, Apr 28, 2021 at 04:18:52PM +0200, Andrew Lunn wrote:
+> > > Regarding the distribution issue when the driver version might be released
+> > > earlier than the firmware, it looks like that the probability of such
+> > > case is very low because the distributor of the target Linux system will
+> > > keep track (actually this is how I see it) that driver and firmware
+> > > versions are aligned.
+> > 
+> > You really expect Debian, Redhat, openWRT, SuSE to keep a close eye on
+> > your kernel driver and update their packages at a time you suggest?
+> > 
+> 
+> No, I don't think these distros will keep track it because they are
+> targeted for wider usages).
+> But I think that NOS specifc distro (which may be based on top of which
+> you listed) will do it (sure this is just my assumption).
 
-Hmm... Okay.
+Mellanox/Nvidia says you can just run Debian on their
+switches. Cumulus linux is Debian based. I've been to a few
+conferences where data center managers have said they want there
+switches to be just another linux machine they can upgrade whenever
+they need, nothing special. So that is the TOR segment of the market.
 
-> We have '%pD'(no digit following) for printing a filename. It may not be
-> perfect (by default it only prints one component.
->
-> %pD4 should be more than good enough, but we should make plain "%pD" mean
-> "as much of the path that is reasonable" rather than "as few components as
-> possible" (ie 1).
+If you look at the opposite end of the market, SOHO switches in Linux,
+very few are actually used as plain boring switches. They are actually
+embedded into something else. It is an inflight entertainment system
+which also has a switch. It is a DSL, 4G, and Ethernet switch placed
+along the side of a railway track. It is inside a bus controlling the
+passenger information system, announcements, and also a switch. None
+of these systems are using a NOS. They are using whatever distribution
+best supports the range of devices and services the box needs to
+offer.
 
-Sorry, but from above I didn't get why.
+Now, it could be Prestera will only ever be used as a plain boring
+switch in a box. It never gets used for anything interesting. And
+since it is a plain boring device, all it needs is a boring NOS? But
+do you really want to design your driver aound the assumption nobody
+will do anything interesting with Prestera?
 
-The commit message tells only about %pD, but patch changes behaviour
-of the ~100 or so users of "%pd" without any explanation.
+> > I'm also not sure your management port argument is valid. This is an
+> > enterprise switch, not a TOR. It is probably installed in some broom
+> > cupboard at a satellite facility. The management port is not likely to
+> > have its own dedicated link back to the central management
+> > site. Upgrades are going to be applied over the network, and you have
+> > a real danger of turning it into a remote brick, needing local access
+> > to restore it.
+> 
+> I am just trying to clarify if it really worth of it because it will
+> lead to the hairy code and keep structs for previous FW version.
 
-Besides that the patch is prepended only by one change (which is also
-not related to %pD), while we have ~30 users which behaviour got
-changed.
+Well, if you decide you really should support two generations of the
+firmware, you are likely to throw away 3.0.0 and release a 3.0.1 which
+is backwards compatible to 2.X.X, but adds additional calls for the
+new functionality. Go look at how other drivers have handled this in
+the past.
 
-
--- 
-With Best Regards,
-Andy Shevchenko
+       Andrew
