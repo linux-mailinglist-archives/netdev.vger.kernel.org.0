@@ -2,106 +2,123 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 05F2536D462
-	for <lists+netdev@lfdr.de>; Wed, 28 Apr 2021 11:01:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C6D3736D48C
+	for <lists+netdev@lfdr.de>; Wed, 28 Apr 2021 11:09:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238077AbhD1JBK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 28 Apr 2021 05:01:10 -0400
-Received: from mx0b-002e3701.pphosted.com ([148.163.143.35]:21338 "EHLO
-        mx0b-002e3701.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S237757AbhD1JBI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 28 Apr 2021 05:01:08 -0400
-Received: from pps.filterd (m0134423.ppops.net [127.0.0.1])
-        by mx0b-002e3701.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 13S6iZUc010716;
-        Wed, 28 Apr 2021 06:45:56 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=hpe.com; h=date : from : to : cc :
- subject : message-id : reply-to : references : content-type : in-reply-to
- : mime-version; s=pps0720;
- bh=yX8sjGtvRGtdaRZa0JMofG+qOKehAUAcfbuPnEDx2fo=;
- b=Jq3K6utLk2viNL3YjXuBPbsQnu/H28TxsARje12OIKZp23Bze4wacUD1nI1ZVOUe0VLN
- Ly3mzXYVIsl7DKbbDek97I13tjNsx1TalJF+k/S+kFtcxUy6m6VBlD5Dbeqm4Z0X2U31
- 2YN6V0m6wUlEdm2nflbAQJjBoKdbF6N0Ohl53+GtTdHLBQPM5dmYKBJsu9C6TiQFy7xn
- lDPFh+0vJ84AX/RkOGFSyelMpr0dryusImWTll0JZ91sXbnNOoQPL1H0Y+7ETyljD2Cb
- jQKrJGqr2VabN/fHK/oXG+Re90qEhBN3dt7on3Cruc0QsDSp3MvEeCk5Ctsxj8mmImD3 8Q== 
-Received: from g9t5009.houston.hpe.com (g9t5009.houston.hpe.com [15.241.48.73])
-        by mx0b-002e3701.pphosted.com with ESMTP id 386fp40n6d-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 28 Apr 2021 06:45:55 +0000
-Received: from g9t2301.houston.hpecorp.net (g9t2301.houston.hpecorp.net [16.220.97.129])
-        by g9t5009.houston.hpe.com (Postfix) with ESMTP id 9B1CB63;
-        Wed, 28 Apr 2021 06:45:54 +0000 (UTC)
-Received: from bougret.labs.hpecorp.net (bougret.labs.hpecorp.net [10.93.238.30])
-        by g9t2301.houston.hpecorp.net (Postfix) with ESMTP id 4C4E94D;
-        Wed, 28 Apr 2021 06:45:54 +0000 (UTC)
-Received: from jt by bougret.labs.hpecorp.net with local (Exim 4.92)
-        (envelope-from <jt@labs.hpe.com>)
-        id 1lbdxJ-00050I-KT; Tue, 27 Apr 2021 23:45:53 -0700
-Date:   Tue, 27 Apr 2021 23:45:53 -0700
-From:   Jean Tourrilhes <jean.tourrilhes@hpe.com>
-To:     Tonghao Zhang <xiangxia.m.yue@gmail.com>
-Cc:     Ilya Maximets <i.maximets@ovn.org>,
-        Pravin B Shelar <pshelar@ovn.org>,
+        id S238043AbhD1JJx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 28 Apr 2021 05:09:53 -0400
+Received: from www62.your-server.de ([213.133.104.62]:55294 "EHLO
+        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229643AbhD1JJw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 28 Apr 2021 05:09:52 -0400
+Received: from sslproxy05.your-server.de ([78.46.172.2])
+        by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92.3)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1lbgBt-0007y0-0E; Wed, 28 Apr 2021 11:09:05 +0200
+Received: from [85.7.101.30] (helo=linux.home)
+        by sslproxy05.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1lbgBs-000NdC-L2; Wed, 28 Apr 2021 11:09:04 +0200
+Subject: Re: [PATCH bpf] xsk: fix for xp_aligned_validate_desc() when len ==
+ chunk_size
+To:     Magnus Karlsson <magnus.karlsson@gmail.com>,
+        Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+Cc:     bpf <bpf@vger.kernel.org>,
+        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn@kernel.org>,
+        Magnus Karlsson <magnus.karlsson@intel.com>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
         "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, Andy Zhou <azhou@ovn.org>,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        ovs dev <dev@openvswitch.org>, William Tu <u9012063@gmail.com>
-Subject: Re: [PATCH net] openvswitch: meter: remove rate from the bucket size
- calculation
-Message-ID: <20210428064553.GA19023@labs.hpe.com>
-Reply-To: jean.tourrilhes@hpe.com
-References: <20210421135747.312095-1-i.maximets@ovn.org>
- <CAMDZJNVQ64NEhdfu3Z_EtnVkA2D1DshPzfur2541wA+jZgX+9Q@mail.gmail.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAMDZJNVQ64NEhdfu3Z_EtnVkA2D1DshPzfur2541wA+jZgX+9Q@mail.gmail.com>
-Organisation: HP Labs Palo Alto
-Address: HP Labs, MS1184, 1501 Page Mill road, Palo Alto, CA 94304, USA.
-E-mail: jean.tourrilhes@hpe.com
-User-Agent: Mutt/1.10.1 (2018-07-13)
-X-Proofpoint-GUID: vNfUXcOf9RESgiY_XeaHG3VXD_C81uCq
-X-Proofpoint-ORIG-GUID: vNfUXcOf9RESgiY_XeaHG3VXD_C81uCq
-X-Proofpoint-UnRewURL: 0 URL was un-rewritten
+        Jakub Kicinski <kuba@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Maxim Mikityanskiy <maximmi@mellanox.com>,
+        Network Development <netdev@vger.kernel.org>
+References: <20210427121903.76556-1-xuanzhuo@linux.alibaba.com>
+ <CAJ8uoz3fphwV9115NLpOi94w2N0j1Cn3DRJFJ2NvwA91zf+uBw@mail.gmail.com>
+From:   Daniel Borkmann <daniel@iogearbox.net>
+Message-ID: <fbda6161-41a2-016f-a90f-f3fe5034f200@iogearbox.net>
+Date:   Wed, 28 Apr 2021 11:09:03 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
 MIME-Version: 1.0
-X-HPE-SCL: -1
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.391,18.0.761
- definitions=2021-04-28_03:2021-04-27,2021-04-28 signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 lowpriorityscore=0
- adultscore=0 mlxlogscore=999 phishscore=0 spamscore=0 mlxscore=0
- bulkscore=0 impostorscore=0 suspectscore=0 malwarescore=0 clxscore=1011
- priorityscore=1501 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2104060000 definitions=main-2104280043
+In-Reply-To: <CAJ8uoz3fphwV9115NLpOi94w2N0j1Cn3DRJFJ2NvwA91zf+uBw@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.103.2/26153/Tue Apr 27 13:09:27 2021)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Apr 28, 2021 at 02:24:10PM +0800, Tonghao Zhang wrote:
-> Hi Ilya
-> If we set the burst size too small, the meters of ovs don't work.
+On 4/28/21 10:00 AM, Magnus Karlsson wrote:
+> On Tue, Apr 27, 2021 at 2:19 PM Xuan Zhuo <xuanzhuo@linux.alibaba.com> wrote:
+>>
+>> When desc->len is equal to chunk_size, it is legal. But
+>> xp_aligned_validate_desc() got "chunk_end" by desc->addr + desc->len
+>> pointing to the next chunk during the check, which caused the check to
+>> fail.
+> 
+> Thanks Xuan for the fix. Off-by-one error. A classic unfortunately.
+> 
+> Think your fix also makes it easier to understand the code too, so good.
+> 
+>> Fixes: 35fcde7f8deb ("xsk: support for Tx")
+>> Fixes: bbff2f321a86 ("xsk: new descriptor addressing scheme")
+> 
+> Just did some quick research and it seems the bug was introduced in
+> the bbff2f321a86 commit above, not the first one 35fcde7f8deb. Or am I
+> mistaken?
+> 
+>> Fixes: 2b43470add8c ("xsk: Introduce AF_XDP buffer allocation API")
+>> Fixes: 26062b185eee ("xsk: Explicitly inline functions and move definitions")
+> 
+> And in these two, the code was moved around first to a new function in
+> 2b43470add8c, then this function was moved to a new file in
+> 26062b185eee. I believe documenting this in your commit message would
+> make life simpler for the nice people backporting this fix. Or is this
+> implicit in the multiple Fixes tags? Could someone with more
+> experience in these things comment please.
 
-	Most likely, you need to set the burst size larger.
-	A quick Google on finding a good burst size :
-https://www.juniper.net/documentation/us/en/software/junos/routing-policy/topics/concept/policer-mx-m120-m320-burstsize-determining.html
+Fully agree with Magnus, providing more context in the commit message is
+always appreciated. Xuan, please extend and resubmit. Thanks!
 
-	Now, the interesting question, is the behaviour of OVS
-different from a standard token bucket, such as a kernel policer ?
-	Here is how to set up a kernel policer :
-----------------------------------------------------------
-# Create a dummy classful discipline to attach filter
-tc qdisc del dev eth6 root
-tc qdisc add dev eth6 root handle 1: prio bands 2 priomap  0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
-tc qdisc add dev eth6 parent 1:1 handle 10: pfifo limit 1000
-tc qdisc add dev eth6 parent 1:2 handle 20: pfifo limit 1000
-tc -s qdisc show dev eth6
-tc -s class show dev eth6
+> Acked-by: Magnus Karlsson <magnus.karlsson@intel.com>
+> 
+>> Signed-off-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+>> ---
+>>   net/xdp/xsk_queue.h | 7 +++----
+>>   1 file changed, 3 insertions(+), 4 deletions(-)
+>>
+>> diff --git a/net/xdp/xsk_queue.h b/net/xdp/xsk_queue.h
+>> index 2823b7c3302d..40f359bf2044 100644
+>> --- a/net/xdp/xsk_queue.h
+>> +++ b/net/xdp/xsk_queue.h
+>> @@ -128,13 +128,12 @@ static inline bool xskq_cons_read_addr_unchecked(struct xsk_queue *q, u64 *addr)
+>>   static inline bool xp_aligned_validate_desc(struct xsk_buff_pool *pool,
+>>                                              struct xdp_desc *desc)
+>>   {
+>> -       u64 chunk, chunk_end;
+>> +       u64 chunk;
+>>
+>> -       chunk = xp_aligned_extract_addr(pool, desc->addr);
+>> -       chunk_end = xp_aligned_extract_addr(pool, desc->addr + desc->len);
+>> -       if (chunk != chunk_end)
+>> +       if (desc->len > pool->chunk_size)
+>>                  return false;
+>>
+>> +       chunk = xp_aligned_extract_addr(pool, desc->addr);
+>>          if (chunk >= pool->addrs_cnt)
+>>                  return false;
+>>
+>> --
+>> 2.31.0
+>>
 
-# Filter to do hard rate limiting
-tc filter del dev eth6 parent 1: protocol all prio 1 handle 800::100 u32 
-tc filter add dev eth6 parent 1: protocol all prio 1 handle 800::100 u32 match u32 0 0 police rate 200mbit burst 20K mtu 10000 drop
-tc -s filter show dev eth6
-tc filter change dev eth6 parent 1: protocol all prio 1 handle 800::100 u32 match u32 0 0 police rate 200mbit burst 50K mtu 10000 drop
-----------------------------------------------------------
-
-	Regards,
-
-	Jean
