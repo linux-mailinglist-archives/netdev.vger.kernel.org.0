@@ -2,36 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A9F0736E083
-	for <lists+netdev@lfdr.de>; Wed, 28 Apr 2021 22:47:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CE54036E098
+	for <lists+netdev@lfdr.de>; Wed, 28 Apr 2021 22:54:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230057AbhD1Ur6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 28 Apr 2021 16:47:58 -0400
-Received: from mail.kernel.org ([198.145.29.99]:47870 "EHLO mail.kernel.org"
+        id S231857AbhD1Uzb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 28 Apr 2021 16:55:31 -0400
+Received: from mail.kernel.org ([198.145.29.99]:56602 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229549AbhD1Urz (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 28 Apr 2021 16:47:55 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 8F83361026;
-        Wed, 28 Apr 2021 20:47:09 +0000 (UTC)
+        id S229995AbhD1Uza (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 28 Apr 2021 16:55:30 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 55DE16144C;
+        Wed, 28 Apr 2021 20:54:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1619642829;
-        bh=MbOb2Pbxyp+AJJ6Ht72OYsybaRAs6aTQt/GQEr5hdBA=;
+        s=k20201202; t=1619643284;
+        bh=kfb/bt4V9KtXsOBKI/6iSTdUbEorej15R+qLz3SaquA=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=ab8bvbYicwuepAfCcnKNJqE+BePqvJcbIDH23GhNKE77uejV3GqDFlLluIV55+DmC
-         GnxNhcvt3p9ADwTtBDKSnJe4xXYDOM22o/ynHsBMusqlk/Brwg4h9/E/9iIFKccSPM
-         dk0JBAiG6j+6J7KmKJ7IEfKREpVfppcHiUEBxfdpPxUlJNWDwGV3dfHuJeOtEKyZlM
-         kz0EPfVtIm2xvUmcPCFllRhFGUELR6iNzH27kzjaUoHCmgJCgEiifAPBtOh/ul52kP
-         R/PMp5h7dJ5V/4hJe4nFwY9AbVHZIZmUAFbSmaTOro2exohI8ZDHbINZR9H+FRob6C
-         47/XDaeoZcCDg==
-Date:   Wed, 28 Apr 2021 13:47:08 -0700
+        b=BC1KXD8bp2Q0OC2Z6k9lhAIaVSGnBFc4WuEBk8w7qRyUARbdQlTWS/tgnWf7i171V
+         DoFl6Hw4Lz/V2gLrHEelci0wbL3S1wHzU/bwRzaZj2o/UhLvT1KSlkZAiveCpCPxmq
+         f+qT05H9HeEie+sTi13rlxQyapHNF4xlInIrv7pwuzy7OvepSKvs7oCAKz0Ee7dhkc
+         yUwzkF+prqkIxOeKuKm5m5avaHX1V380WcBDIVHVKL8qI8zMIt2Jl9U9yqMQBY7d8p
+         SOV6InAIS/oXk1Dj4/IGnQPZdEpc9yGQDcWYI4lH5Fkq9fyEaIU7gdESqnnWY/UrxF
+         /US3rBsHgZH3w==
+Date:   Wed, 28 Apr 2021 13:54:43 -0700
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     Daniel Borkmann <daniel@iogearbox.net>
-Cc:     davem@davemloft.net, ast@kernel.org, andrii.nakryiko@gmail.com,
-        netdev@vger.kernel.org, bpf@vger.kernel.org
-Subject: Re: pull-request: bpf-next 2021-04-28
-Message-ID: <20210428134708.5dc0a300@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20210427233740.22238-1-daniel@iogearbox.net>
-References: <20210427233740.22238-1-daniel@iogearbox.net>
+To:     Michael Walle <michael@walle.cc>
+Cc:     netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 1/2] MAINTAINERS: remove Wingman Kwok
+Message-ID: <20210428135443.7c1ef0f4@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20210428085607.32075-1-michael@walle.cc>
+References: <20210428085607.32075-1-michael@walle.cc>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -39,29 +39,11 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 28 Apr 2021 01:37:40 +0200 Daniel Borkmann wrote:
-> Hi David, hi Jakub,
+On Wed, 28 Apr 2021 10:56:06 +0200 Michael Walle wrote:
+> His email bounces with permanent error "550 Invalid recipient". His last
+> email on the LKML was from 2015-10-22 on the LKML.
 > 
-> The following pull-request contains BPF updates for your *net-next* tree.
-> 
-> We've added 19 non-merge commits during the last 2 day(s) which contain
-> a total of 36 files changed, 494 insertions(+), 313 deletions(-).
-> 
-> The main changes are:
-> 
-> 1) Add link detach and following re-attach for trampolines, from Jiri Olsa.
-> 
-> 2) Use kernel's "binary printf" lib for formatted output BPF helpers (which
->    avoids the needs for variadic argument handling), from Florent Revest.
-> 
-> 3) Fix verifier 64 to 32 bit min/max bound propagation, from Daniel Borkmann.
-> 
-> 4) Convert cpumap to use netif_receive_skb_list(), from Lorenzo Bianconi.
-> 
-> 5) Add generic batched-ops support to percpu array map, from Pedro Tammela.
-> 
-> 6) Various CO-RE relocation BPF selftests fixes, from Andrii Nakryiko.
-> 
-> 7) Misc doc rst fixes, from Hengqi Chen.
+> Signed-off-by: Michael Walle <michael@walle.cc>
 
-Pulled, thanks!
+FWIW does not apply to any networking tree, whose tree 
+are you targeting?
