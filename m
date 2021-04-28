@@ -2,489 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DE1AF36D77C
-	for <lists+netdev@lfdr.de>; Wed, 28 Apr 2021 14:36:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2AF3A36D791
+	for <lists+netdev@lfdr.de>; Wed, 28 Apr 2021 14:42:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239050AbhD1Mhc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 28 Apr 2021 08:37:32 -0400
-Received: from mx0.infotecs.ru ([91.244.183.115]:34866 "EHLO mx0.infotecs.ru"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S237785AbhD1Mhc (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 28 Apr 2021 08:37:32 -0400
-Received: from mx0.infotecs-nt (localhost [127.0.0.1])
-        by mx0.infotecs.ru (Postfix) with ESMTP id D87F0138252B;
-        Wed, 28 Apr 2021 15:36:44 +0300 (MSK)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mx0.infotecs.ru D87F0138252B
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=infotecs.ru; s=mx;
-        t=1619613405; bh=Kq9Krt5H+chEYjHPPBBWDeh4kni4tXTY3A+q7mTaPfs=;
-        h=Date:From:To:CC:Subject:From;
-        b=Ktas5b6rYUg9ZOWuPk8dMCyhKXxBtb32TwiNSbG+ck9SrnA7tQ1coSgl0j48P6kj5
-         rVjXn+yjsmG10ADN6YoXEOXOYtvCGHD299/tyBA0vaAGmr59zoJ2BAHEonuk5D7vWD
-         Z4jO6tBfzdRqfe0+C1XoG4ipDyhvoS/qeQ43ILuw=
-Received: from msk-exch-01.infotecs-nt (msk-exch-01.infotecs-nt [10.0.7.191])
-        by mx0.infotecs-nt (Postfix) with ESMTP id D6A143170B5F;
-        Wed, 28 Apr 2021 15:36:44 +0300 (MSK)
-Date:   Wed, 28 Apr 2021 15:34:55 +0300
-From:   Pavel Balaev <balaevpa@infotecs.ru>
-To:     <netdev@vger.kernel.org>
-CC:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>,
-        Shuah Khan <shuah@kernel.org>,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        <linux-doc@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        Ido Schimmel <idosch@nvidia.com>
-Subject: [PATCH v6 net-next 3/3] selftests/net/forwarding: configurable seed
- tests
-Message-ID: <YIlWbxO+AFZAFww7@rnd>
+        id S239201AbhD1MnW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 28 Apr 2021 08:43:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38218 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S239438AbhD1MnV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 28 Apr 2021 08:43:21 -0400
+Received: from mail-pf1-x42a.google.com (mail-pf1-x42a.google.com [IPv6:2607:f8b0:4864:20::42a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8D127C06138A
+        for <netdev@vger.kernel.org>; Wed, 28 Apr 2021 05:42:36 -0700 (PDT)
+Received: by mail-pf1-x42a.google.com with SMTP id 10so1107218pfl.1
+        for <netdev@vger.kernel.org>; Wed, 28 Apr 2021 05:42:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=c5f2eBMZ43KNvRMjomBjmQQVOp4RSW5JRaMXDr26isk=;
+        b=x8JPnDkO38kA7McnpFmuFU591+ZxFdcvf7b8LFPsUQdLHNSKbA5sbypctPlJXZODbP
+         suK0P3YG0B2E3l+qvWSwsjEsq4sexpetsmLOmeX21OONq3tTjp/CMaHkMV4cxpO3Ksvi
+         h5ysx1mtmKt9Soca4iShU74TbRHBD93fX2ouHYDx7TRscaj5bj+dHmRZaX2c6UPlqtul
+         FCrU2FogaIBPU4r7/bN0rdn/wNDN2kneyIIGIx5YpJLVEt5IVsqGN0xq585JpQfKbcxS
+         C+1VLYgj8IIUV0shSQsWePK1nqDjDxn/77YrfI8P3gnYLdckCsXAxgtA5t52Jh4jQeRu
+         zjzA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=c5f2eBMZ43KNvRMjomBjmQQVOp4RSW5JRaMXDr26isk=;
+        b=IKuCQxTO7zDO4tgjxL3vPgGZXS8vpaXqqatBwSAIGs3Cz3raSQkMq5EecooV01VnIL
+         YejpK0C3ouVs0iEs/LvrREe36r+IwC1kUbKpqVhmu6cUsZWKV4I+GTbXftXWoCu7POXZ
+         WjY4/ExWwpbCncSuKFQQ4V4wXP+S3AAgaXVTy8BLklSmu7jyBBhoyDMv55sUSb7jQ2hM
+         OHwV0jBU9W0BHSmnk/p8aJTFbl3IV9a3c8R2euFvk2JvY226dB8Fm1kKYSNdWRrnw/X+
+         zaPu/VnOJJx45ve2zfb89SxVNzJCtl9ABMNjRpcrIAl/bYjdIfzL9a+VrJBrukqGnB71
+         EvXg==
+X-Gm-Message-State: AOAM530yY5MCYQoetK6i7xbYf+JIK9IxOgbcPeB0kIR/hdLq+yjOPUSH
+        8cC+zC3z6K7WRmaaam23wlZmHQ==
+X-Google-Smtp-Source: ABdhPJzP0I0s/7Io7VHacUtBKWAW181HMKuDl6im1neVViLNdg3MwOn5/6NeTRR+BtKseXsAirfGog==
+X-Received: by 2002:a05:6a00:a86:b029:203:6bc9:3f14 with SMTP id b6-20020a056a000a86b02902036bc93f14mr28287473pfl.22.1619613756095;
+        Wed, 28 Apr 2021 05:42:36 -0700 (PDT)
+Received: from dragon (80.251.214.228.16clouds.com. [80.251.214.228])
+        by smtp.gmail.com with ESMTPSA id h3sm5219986pfo.155.2021.04.28.05.42.32
+        (version=TLS1_2 cipher=ECDHE-ECDSA-CHACHA20-POLY1305 bits=256/256);
+        Wed, 28 Apr 2021 05:42:35 -0700 (PDT)
+Date:   Wed, 28 Apr 2021 20:42:29 +0800
+From:   Shawn Guo <shawn.guo@linaro.org>
+To:     Arend van Spriel <arend.vanspriel@broadcom.com>
+Cc:     Kalle Valo <kvalo@codeaurora.org>,
+        =?utf-8?B?UmFmYcWCIE1pxYJlY2tp?= <rafal@milecki.pl>,
+        Arend van Spriel <aspriel@gmail.com>,
+        Franky Lin <franky.lin@broadcom.com>,
+        Hante Meuleman <hante.meuleman@broadcom.com>,
+        Chi-hsien Lin <chi-hsien.lin@infineon.com>,
+        Wright Feng <wright.feng@infineon.com>,
+        Chung-hsien Hsu <chung-hsien.hsu@infineon.com>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        brcm80211-dev-list.pdl@broadcom.com,
+        SHA-cyfmac-dev-list@infineon.com
+Subject: Re: [PATCH] brcmfmac: use ISO3166 country code and 0 rev as fallback
+Message-ID: <20210428124228.GH15093@dragon>
+References: <20210425110200.3050-1-shawn.guo@linaro.org>
+ <b6c5713f-ebf0-9eaf-e871-d5690a6b7c10@broadcom.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-X-Originating-IP: [11.0.8.107]
-X-EXCLAIMER-MD-CONFIG: 208ac3cd-1ed4-4982-a353-bdefac89ac0a
-X-KLMS-Rule-ID: 1
-X-KLMS-Message-Action: clean
-X-KLMS-AntiSpam-Lua-Profiles: 163368 [Apr 28 2021]
-X-KLMS-AntiSpam-Version: 5.9.20.0
-X-KLMS-AntiSpam-Envelope-From: BalaevPA@infotecs.ru
-X-KLMS-AntiSpam-Rate: 0
-X-KLMS-AntiSpam-Status: not_detected
-X-KLMS-AntiSpam-Method: none
-X-KLMS-AntiSpam-Auth: dkim=none
-X-KLMS-AntiSpam-Info: LuaCore: 444 444 810d227eb39db4b6b1b4a1d2ddb57b8d8d084f93, {Tracking_from_domain_doesnt_match_to}
-X-MS-Exchange-Organization-SCL: -1
-X-KLMS-AntiSpam-Interceptor-Info: scan successful
-X-KLMS-AntiPhishing: Clean, bases: 2021/04/28 11:08:00
-X-KLMS-AntiVirus: Kaspersky Security for Linux Mail Server, version 8.0.3.30, bases: 2021/04/28 07:03:00 #16582427
-X-KLMS-AntiVirus-Status: Clean, skipped
+In-Reply-To: <b6c5713f-ebf0-9eaf-e871-d5690a6b7c10@broadcom.com>
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Test equal and different seed values for IPv4/IPv6
-multipath routing.
+On Wed, Apr 28, 2021 at 02:03:07PM +0200, Arend van Spriel wrote:
+> On 4/25/2021 1:02 PM, Shawn Guo wrote:
+> > Instead of aborting country code setup in firmware, use ISO3166 country
+> > code and 0 rev as fallback, when country_codes mapping table is not
+> > configured.  This fallback saves the country_codes table setup for recent
+> > brcmfmac chipsets/firmwares, which just use ISO3166 code and require no
+> > revision number.
+> 
+> I am somewhat surprised, but with the brcm-spinoffs (cypress/infineon and
+> synaptics) my understanding may have been surpassed by reality. Would you
+> happen to know which chipsets/firmwares require only ISO3166 code and no
+> rev?
 
-Signed-off-by: Pavel Balaev <balaevpa@infotecs.ru>
----
- .../testing/selftests/net/forwarding/Makefile |   1 +
- tools/testing/selftests/net/forwarding/lib.sh |  28 ++
- .../net/forwarding/router_mpath_seed.sh       | 347 ++++++++++++++++++
- 3 files changed, 376 insertions(+)
- create mode 100755 tools/testing/selftests/net/forwarding/router_mpath_seed.sh
+The "no rev" here actually means 'rev' field being zero.  The chipset
+I'm running is a BCM43012 from Synaptics, I think.
 
-diff --git a/tools/testing/selftests/net/forwarding/Makefile b/tools/testing/selftests/net/forwarding/Makefile
-index d97bd6889..080af970c 100644
---- a/tools/testing/selftests/net/forwarding/Makefile
-+++ b/tools/testing/selftests/net/forwarding/Makefile
-@@ -38,6 +38,7 @@ TEST_PROGS = bridge_igmp.sh \
- 	router_mpath_nh.sh \
- 	router_multicast.sh \
- 	router_multipath.sh \
-+	router_mpath_seed.sh \
- 	router.sh \
- 	router_vid_1.sh \
- 	sch_ets.sh \
-diff --git a/tools/testing/selftests/net/forwarding/lib.sh b/tools/testing/selftests/net/forwarding/lib.sh
-index 42e28c983..b7445b1c5 100644
---- a/tools/testing/selftests/net/forwarding/lib.sh
-+++ b/tools/testing/selftests/net/forwarding/lib.sh
-@@ -10,6 +10,7 @@ PING6=${PING6:=ping6}
- MZ=${MZ:=mausezahn}
- ARPING=${ARPING:=arping}
- TEAMD=${TEAMD:=teamd}
-+OPENSSL=${OPENSSL:=openssl}
- WAIT_TIME=${WAIT_TIME:=5}
- PAUSE_ON_FAIL=${PAUSE_ON_FAIL:=no}
- PAUSE_ON_CLEANUP=${PAUSE_ON_CLEANUP:=no}
-@@ -698,6 +699,33 @@ link_stats_rx_errors_get()
- 	link_stats_get $1 rx errors
- }
- 
-+ns_link_stats_get()
-+{
-+	local netns=$1; shift
-+	local if_name=$1; shift
-+	local dir=$1; shift
-+	local stat=$1; shift
-+
-+	ip netns exec $netns ip -j -s link show dev $if_name \
-+		| jq '.[]["stats64"]["'$dir'"]["'$stat'"]'
-+}
-+
-+ns_link_stats_tx_packets_get()
-+{
-+	local netns=$1; shift
-+	local if_name=$1; shift
-+
-+	ns_link_stats_get $netns $if_name tx packets
-+}
-+
-+ns_link_stats_rx_errors_get()
-+{
-+	local netns=$1; shift
-+	local if_name=$1; shift
-+
-+	ns_link_stats_get $netns $if_name rx errors
-+}
-+
- tc_rule_stats_get()
- {
- 	local dev=$1; shift
-diff --git a/tools/testing/selftests/net/forwarding/router_mpath_seed.sh b/tools/testing/selftests/net/forwarding/router_mpath_seed.sh
-new file mode 100755
-index 000000000..b2f99f428
---- /dev/null
-+++ b/tools/testing/selftests/net/forwarding/router_mpath_seed.sh
-@@ -0,0 +1,347 @@
-+#!/bin/bash
-+# SPDX-License-Identifier: GPL-2.0
-+
-+ALL_TESTS="multipath_seed_test"
-+NUM_NETIFS=8
-+source lib.sh
-+
-+veth_prepare()
-+{
-+	ip link add ecmp1l type veth peer name ecmp1r
-+	ip link add ecmp2l type veth peer name ecmp2r
-+	ip link add ecmphost1l type veth peer name ecmphost1r
-+	ip link add ecmphost2l type veth peer name ecmphost2r
-+}
-+
-+cl1_create()
-+{
-+	local ns_exec="ip netns exec ecmp_cl1"
-+
-+	ip netns add ecmp_cl1
-+	ip l set dev ecmphost1l netns ecmp_cl1
-+	$ns_exec ip l set dev ecmphost1l up
-+	$ns_exec ip a a 10.100.0.2/30 dev ecmphost1l
-+	$ns_exec ip a a 2001:db8:3::2/64 dev ecmphost1l
-+	$ns_exec ip r add default via 10.100.0.1
-+	$ns_exec ip r add default via 2001:db8:3::1
-+}
-+
-+cl2_create()
-+{
-+	local ns_exec="ip netns exec ecmp_cl2"
-+
-+	ip netns add ecmp_cl2
-+	ip l set dev ecmphost2l netns ecmp_cl2
-+	$ns_exec ip l set dev ecmphost2l up
-+	$ns_exec ip a a 10.200.0.2/30 dev ecmphost2l
-+	$ns_exec ip a a 2001:db8:4::2/64 dev ecmphost2l
-+	$ns_exec ip r add default via 10.200.0.1
-+	$ns_exec ip r add default via 2001:db8:4::1
-+}
-+
-+r1_create()
-+{
-+	local ns_exec="ip netns exec ecmp1"
-+
-+	ip netns add ecmp1
-+	ip l set dev ecmp1l netns ecmp1
-+	ip l set dev ecmp2l netns ecmp1
-+	ip l set dev ecmphost1r netns ecmp1
-+	$ns_exec ip l set dev ecmphost1r up
-+	$ns_exec ip l set dev ecmp1l up
-+	$ns_exec ip l set dev ecmp2l up
-+	$ns_exec ip a a 10.100.0.1/30 dev ecmphost1r
-+	$ns_exec ip a a 10.10.0.1/30 dev ecmp1l
-+	$ns_exec ip a a 10.20.0.1/30 dev ecmp2l
-+	$ns_exec ip a a 2001:db8:3::1/64 dev ecmphost1r
-+	$ns_exec ip a a 2001:db8:1::1/64 dev ecmp1l
-+	$ns_exec ip a a 2001:db8:2::1/64 dev ecmp2l
-+	$ns_exec sysctl -q net.ipv4.ip_forward=1
-+	$ns_exec sysctl -q net.ipv6.conf.all.forwarding=1
-+	$ns_exec sysctl -q net.ipv4.fib_multipath_hash_policy=1
-+	$ns_exec sysctl -q net.ipv6.fib_multipath_hash_policy=1
-+	$ns_exec ip route add 10.200.0.0/30 nexthop via 10.10.0.2 \
-+		  weight 1 nexthop via 10.20.0.2 weight 1
-+	$ns_exec ip route add 2001:db8:4::/64 nexthop via 2001:db8:1::2 \
-+		  weight 1 nexthop via 2001:db8:2::2 weight 1
-+}
-+
-+r2_create()
-+{
-+	local ns_exec="ip netns exec ecmp2"
-+
-+	ip netns add ecmp2
-+	ip l set dev ecmp1r netns ecmp2
-+	ip l set dev ecmp2r netns ecmp2
-+	ip l set dev ecmphost2r netns ecmp2
-+	$ns_exec ip l set dev ecmphost2r up
-+	$ns_exec ip l set dev ecmp1r up
-+	$ns_exec ip l set dev ecmp2r up
-+	$ns_exec ip a a 10.200.0.1/30 dev ecmphost2r
-+	$ns_exec ip a a 10.10.0.2/30 dev ecmp1r
-+	$ns_exec ip a a 10.20.0.2/30 dev ecmp2r
-+	$ns_exec ip a a 2001:db8:4::1/64 dev ecmphost2r
-+	$ns_exec ip a a 2001:db8:1::2/64 dev ecmp1r
-+	$ns_exec ip a a 2001:db8:2::2/64 dev ecmp2r
-+	$ns_exec sysctl -q net.ipv4.ip_forward=1
-+	$ns_exec sysctl -q net.ipv6.conf.all.forwarding=1
-+	$ns_exec sysctl -q net.ipv4.fib_multipath_hash_policy=1
-+	$ns_exec sysctl -q net.ipv6.fib_multipath_hash_policy=1
-+	$ns_exec ip route add 10.100.0.0/30 nexthop via 10.10.0.1 \
-+		  weight 1 nexthop via 10.20.0.1 weight 1
-+	$ns_exec ip route add 2001:db8:3::/64 nexthop via 2001:db8:1::1 \
-+		  weight 1 nexthop via 2001:db8:2::1 weight 1
-+}
-+
-+cl1_destroy()
-+{
-+	ip netns del ecmp_cl1
-+}
-+
-+cl2_destroy()
-+{
-+	ip netns del ecmp_cl2
-+}
-+
-+r1_destroy()
-+{
-+	ip netns del ecmp1
-+}
-+
-+r2_destroy()
-+{
-+	ip netns del ecmp2
-+}
-+
-+gen_udp4()
-+{
-+	local sp=$1; shift
-+	local dp=$1; shift
-+	local tx1_1_start tx1_2_start tx2_1_start tx2_2_start
-+	local tx1_1_end tx1_2_end tx2_1_end tx2_2_end
-+	local tx1_1 tx1_2 tx2_1 tx2_2
-+	local tx1_1_res tx1_2_res tx2_1_res tx2_2_res
-+	local chan1 chan2
-+	local cl1_exec="ip netns exec ecmp_cl1"
-+	local cl2_exec="ip netns exec ecmp_cl2"
-+
-+	tx1_1_start=$(ns_link_stats_tx_packets_get ecmp1 ecmp1l)
-+	tx1_2_start=$(ns_link_stats_tx_packets_get ecmp1 ecmp2l)
-+	tx2_1_start=$(ns_link_stats_tx_packets_get ecmp2 ecmp1r)
-+	tx2_2_start=$(ns_link_stats_tx_packets_get ecmp2 ecmp2r)
-+
-+	$cl1_exec $MZ ecmphost1l -q -c 20 -p 64 -A 10.100.0.2 -B 10.200.0.2 \
-+		-t udp "sp=${sp},dp=${dp}"
-+
-+	$cl2_exec $MZ ecmphost2l -q -c 20 -p 64 -A 10.200.0.2 -B 10.100.0.2 \
-+		-t udp "sp=${dp},dp=${sp}"
-+
-+	tx1_1_end=$(ns_link_stats_tx_packets_get ecmp1 ecmp1l)
-+	tx1_2_end=$(ns_link_stats_tx_packets_get ecmp1 ecmp2l)
-+	tx2_1_end=$(ns_link_stats_tx_packets_get ecmp2 ecmp1r)
-+	tx2_2_end=$(ns_link_stats_tx_packets_get ecmp2 ecmp2r)
-+
-+	let "tx1_1 = $tx1_1_end - $tx1_1_start"
-+	let "tx1_2 = $tx1_2_end - $tx1_2_start"
-+	let "tx2_1 = $tx2_1_end - $tx2_1_start"
-+	let "tx2_2 = $tx2_2_end - $tx2_2_start"
-+
-+	[ "$tx1_1" -ge 20 ] && tx1_1_res=1 || tx1_1_res=0
-+	[ "$tx1_2" -ge 20 ] && tx1_2_res=1 || tx1_2_res=0
-+	[ "$tx2_1" -ge 20 ] && tx2_1_res=1 || tx2_1_res=0
-+	[ "$tx2_2" -ge 20 ] && tx2_2_res=1 || tx2_2_res=0
-+
-+	let "chan1 = $tx1_1_res + $tx2_1_res"
-+	let "chan2 = $tx1_2_res + $tx2_2_res"
-+
-+	if [ $chan1 -eq 2 ] || [ $chan2 -eq 2 ]; then
-+		return 0
-+	fi
-+
-+	return 1;
-+}
-+
-+gen_udp6()
-+{
-+	local sp=$1; shift
-+	local dp=$1; shift
-+	local tx1_1_start tx1_2_start tx2_1_start tx2_2_start
-+	local tx1_1_end tx1_2_end tx2_1_end tx2_2_end
-+	local tx1_1 tx1_2 tx2_1 tx2_2
-+	local tx1_1_res tx1_2_res tx2_1_res tx2_2_res
-+	local chan1 chan2
-+	local cl1_exec="ip netns exec ecmp_cl1"
-+	local cl2_exec="ip netns exec ecmp_cl2"
-+
-+	tx1_1_start=$(ns_link_stats_tx_packets_get ecmp1 ecmp1l)
-+	tx1_2_start=$(ns_link_stats_tx_packets_get ecmp1 ecmp2l)
-+	tx2_1_start=$(ns_link_stats_tx_packets_get ecmp2 ecmp1r)
-+	tx2_2_start=$(ns_link_stats_tx_packets_get ecmp2 ecmp2r)
-+
-+	$cl1_exec $MZ ecmphost1l -6 -q -c 20 -p 64 -A 2001:db8:3::2 -B 2001:db8:4::2 \
-+		-t udp "sp=${sp},dp=${dp}"
-+
-+	$cl2_exec $MZ ecmphost2l -6 -q -c 20 -p 64 -A 2001:db8:4::2 -B 2001:db8:3::2 \
-+		-t udp "sp=${dp},dp=${sp}"
-+
-+	tx1_1_end=$(ns_link_stats_tx_packets_get ecmp1 ecmp1l)
-+	tx1_2_end=$(ns_link_stats_tx_packets_get ecmp1 ecmp2l)
-+	tx2_1_end=$(ns_link_stats_tx_packets_get ecmp2 ecmp1r)
-+	tx2_2_end=$(ns_link_stats_tx_packets_get ecmp2 ecmp2r)
-+
-+	let "tx1_1 = $tx1_1_end - $tx1_1_start"
-+	let "tx1_2 = $tx1_2_end - $tx1_2_start"
-+	let "tx2_1 = $tx2_1_end - $tx2_1_start"
-+	let "tx2_2 = $tx2_2_end - $tx2_2_start"
-+
-+	[ "$tx1_1" -ge 20 ] && tx1_1_res=1 || tx1_1_res=0
-+	[ "$tx1_2" -ge 20 ] && tx1_2_res=1 || tx1_2_res=0
-+	[ "$tx2_1" -ge 20 ] && tx2_1_res=1 || tx2_1_res=0
-+	[ "$tx2_2" -ge 20 ] && tx2_2_res=1 || tx2_2_res=0
-+
-+	let "chan1 = $tx1_1_res + $tx2_1_res"
-+	let "chan2 = $tx1_2_res + $tx2_2_res"
-+
-+	if [ $chan1 -eq 2 ] || [ $chan2 -eq 2 ]; then
-+		return 0
-+	fi
-+
-+	return 1;
-+}
-+
-+
-+seed4_test_equal()
-+{
-+	RET=0
-+	local sp
-+	local dp
-+	local i
-+	local res=0
-+	local seed=$(${OPENSSL} rand -hex 16)
-+
-+	seed=${seed:0:16},${seed:16:16}
-+
-+	ip netns exec ecmp1 sysctl -q \
-+		net.ipv4.fib_multipath_hash_seed=${seed}
-+	ip netns exec ecmp2 sysctl -q \
-+		net.ipv4.fib_multipath_hash_seed=${seed}
-+
-+	for i in {1..30}; do
-+		sp=$(shuf -i 1024-65000 -n 1)
-+		dp=$(shuf -i 1024-65000 -n 1)
-+		gen_udp4 $sp $dp && let res++
-+	done
-+
-+	[ $res != 30 ] && RET=1
-+	log_test "IPv4 multipath seed tests [equal seed]"
-+}
-+
-+seed4_test_diff()
-+{
-+	RET=0
-+	local sp
-+	local dp
-+	local i
-+	local res=0
-+	local seed1=$(${OPENSSL} rand -hex 16)
-+	local seed2=$(${OPENSSL} rand -hex 16)
-+
-+	seed1=${seed1:0:16},${seed1:16:16}
-+	seed2=${seed2:0:16},${seed2:16:16}
-+
-+	ip netns exec ecmp1 sysctl -q \
-+		net.ipv4.fib_multipath_hash_seed=${seed1}
-+	ip netns exec ecmp2 sysctl -q \
-+		net.ipv4.fib_multipath_hash_seed=${seed2}
-+
-+	for i in {1..30}; do
-+		sp=$(shuf -i 1024-65000 -n 1)
-+		dp=$(shuf -i 1024-65000 -n 1)
-+		gen_udp4 $sp $dp && let res++
-+	done
-+
-+	[ $res -eq 30 ] && RET=1
-+	log_test "IPv4 multipath seed tests [different seed]"
-+}
-+
-+seed6_test_equal()
-+{
-+	RET=0
-+	local sp
-+	local dp
-+	local i
-+	local res=0
-+	local seed=$(${OPENSSL} rand -hex 16)
-+
-+	seed=${seed:0:16},${seed:16:16}
-+
-+	ip netns exec ecmp1 sysctl -q \
-+		net.ipv6.fib_multipath_hash_seed=${seed}
-+	ip netns exec ecmp2 sysctl -q \
-+		net.ipv6.fib_multipath_hash_seed=${seed}
-+
-+	for i in {1..30}; do
-+		sp=$(shuf -i 1024-65000 -n 1)
-+		dp=$(shuf -i 1024-65000 -n 1)
-+		gen_udp6 $sp $dp && let res++
-+	done
-+
-+	[ $res != 30 ] && RET=1
-+	log_test "IPv6 multipath seed tests [equal seed]"
-+}
-+
-+seed6_test_diff()
-+{
-+	RET=0
-+	local sp
-+	local dp
-+	local i
-+	local res=0
-+	local seed1=$(${OPENSSL} rand -hex 16)
-+	local seed2=$(${OPENSSL} rand -hex 16)
-+
-+	seed1=${seed1:0:16},${seed1:16:16}
-+	seed2=${seed2:0:16},${seed2:16:16}
-+
-+	ip netns exec ecmp1 sysctl -q \
-+		net.ipv6.fib_multipath_hash_seed=${seed1}
-+	ip netns exec ecmp2 sysctl -q \
-+		net.ipv6.fib_multipath_hash_seed=${seed2}
-+
-+	for i in {1..30}; do
-+		sp=$(shuf -i 1024-65000 -n 1)
-+		dp=$(shuf -i 1024-65000 -n 1)
-+		gen_udp4 $sp $dp && let res++
-+	done
-+
-+	[ $res -eq 30 ] && RET=1
-+	log_test "IPv6 multipath seed tests [different seed]"
-+}
-+
-+multipath_seed_test()
-+{
-+	require_command $OPENSSL
-+	veth_prepare
-+	cl1_create
-+	cl2_create
-+	r1_create
-+	r2_create
-+
-+	log_info "Running IPv4 multipath seed tests [equal seed]"
-+	seed4_test_equal
-+	log_info "Running IPv4 multipath seed tests [different seed]"
-+	seed4_test_diff
-+	log_info "Running IPv6 multipath seed tests [equal seed]"
-+	seed6_test_equal
-+	log_info "Running IPv6 multipath seed tests [different seed]"
-+	seed6_test_diff
-+
-+	cl1_destroy
-+	cl2_destroy
-+	r1_destroy
-+	r2_destroy
-+}
-+
-+tests_run
-+
-+exit $EXIT_STATUS
--- 
-2.31.1
+Firmware: BCM43012/2 wl0: Apr 16 2021 15:25:36 version 18.35.389.63.t2 (wlan=r836194) FWID 01-a8c7bac
 
+Shawn
