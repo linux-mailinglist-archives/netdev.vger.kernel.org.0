@@ -2,117 +2,156 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F273C36D201
-	for <lists+netdev@lfdr.de>; Wed, 28 Apr 2021 08:06:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 42E6E36D228
+	for <lists+netdev@lfdr.de>; Wed, 28 Apr 2021 08:25:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236151AbhD1GG2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 28 Apr 2021 02:06:28 -0400
-Received: from mail-mw2nam12on2078.outbound.protection.outlook.com ([40.107.244.78]:39043
-        "EHLO NAM12-MW2-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S235991AbhD1GG1 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 28 Apr 2021 02:06:27 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=LMakct3mU4guwKfDdTRcpVS5O+SVpYhZdPO1/ptitqt4B1ap5SMMEJ2lJuQ6tRntmkc9wv6Q5t1RtWhuMnnychkWLfekz7/QXd/mbHgRW4Y8mjszaNJM1Hge8/DoxT6tSAcbT2DYd9zamenJh7gXICGcptQwWCtKwtXzgJFMeJJ4XkPPWNLXGTpEdWNwwfYvdysdh8c1He4fBBDSxsChvofGnEvt+a9tlvsVqElArosWqzdPHoT2H+kI+DeveUQUczNbJIbxL2IdWz86gUBhBZLPUIyJIupUaveysxX9jrwz7XaJUVIUqYDRHKzvOaITdDouQbNMowFpSxMf2qWnvw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=laC7KtHaZ3vbk2CSyeSoqZiC8RSJyyOUlHYgn1sm7iA=;
- b=FQQA2BcUV4bkYDcUGQ9vNgzICV86x+2C7HyS1KUmcOtTYjpPXrmlatTAQ9jc5SCX8eg8nQY6Oa65pCz3IwJCaKQNjRhxDPnB5qfPgron57R1+Amr8hNQ33Q9sTxk64Gn7MQtVxLsEnpf8K/hH8W6Ny2SZS+oV66y3NBbyHNxzU6eTXV9OxmLa2DQnxdFsnDxfrS+4pNkFYbWNTSESu0iIs1prjHI/4rPRHPxLr9DXVVagR2afwtUm7egJTPmpgOIFEOEqmHRWE4ntfyb91o/y5/VydkOXJxq9FDixb3ETnUiTQVrTAObBq1dqK3Nbw+Z7uAcsXytv+5Ke3JcJImWpw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.112.35) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=nvidia.com;
- dmarc=pass (p=none sp=none pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=laC7KtHaZ3vbk2CSyeSoqZiC8RSJyyOUlHYgn1sm7iA=;
- b=Da06BAlfytQYOmN52EQGLdcTMjcVtpzmgmN+K3iFTkB6F+GoeRVJUlEf09d+c0XHcUki6jcY5SrKbb6Etf2UjaOw+80BFFYa2fDEodIQiZGJ+bywZ3yUmkotbD3h/QWXm/EzZ/Y0DdZLDbb4bAcihQt4wllGnkTgVE+Uf5jWi8nEmLCBGK/VdCmK9MEhUmq0uHj+9fEsSQVzDZFIKoDQVN0DhHFZWJPro8+0dGstJ7Avg46OP8gOVPUnOv+GeK3weU6jhE2pj3GaRPNyzbe+5UwWJ/oIIy2UJeeo78BbM9YGFzZLZA09o2mgVvEvcF6cnlYvlpzDtENHHXyP4aQ2cw==
-Received: from BN6PR17CA0028.namprd17.prod.outlook.com (2603:10b6:405:75::17)
- by DM6PR12MB3418.namprd12.prod.outlook.com (2603:10b6:5:116::31) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4065.25; Wed, 28 Apr
- 2021 06:05:42 +0000
-Received: from BN8NAM11FT053.eop-nam11.prod.protection.outlook.com
- (2603:10b6:405:75:cafe::fd) by BN6PR17CA0028.outlook.office365.com
- (2603:10b6:405:75::17) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4087.25 via Frontend
- Transport; Wed, 28 Apr 2021 06:05:42 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.112.35)
- smtp.mailfrom=nvidia.com; vger.kernel.org; dkim=none (message not signed)
- header.d=none;vger.kernel.org; dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.112.35 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.112.35; helo=mail.nvidia.com;
-Received: from mail.nvidia.com (216.228.112.35) by
- BN8NAM11FT053.mail.protection.outlook.com (10.13.177.209) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.20.4065.21 via Frontend Transport; Wed, 28 Apr 2021 06:05:41 +0000
-Received: from HQMAIL101.nvidia.com (172.20.187.10) by HQMAIL111.nvidia.com
- (172.20.187.18) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Wed, 28 Apr
- 2021 06:05:41 +0000
-Received: from dev-r-vrt-138.mtr.labs.mlnx (172.20.145.6) by mail.nvidia.com
- (172.20.187.10) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Wed, 28 Apr 2021 06:05:40 +0000
-From:   Roi Dayan <roid@nvidia.com>
-To:     <netdev@vger.kernel.org>
-CC:     Paul Blakey <paulb@nvidia.com>, Roi Dayan <roid@nvidia.com>
-Subject: [PATCH net-next 1/1] net/sched: act_ct: Remove redundant ct get and check
-Date:   Wed, 28 Apr 2021 09:05:32 +0300
-Message-ID: <20210428060532.3330974-1-roid@nvidia.com>
-X-Mailer: git-send-email 2.26.2
+        id S235811AbhD1GZo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 28 Apr 2021 02:25:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38434 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229643AbhD1GZn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 28 Apr 2021 02:25:43 -0400
+Received: from mail-ej1-x630.google.com (mail-ej1-x630.google.com [IPv6:2a00:1450:4864:20::630])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C875CC061574;
+        Tue, 27 Apr 2021 23:24:58 -0700 (PDT)
+Received: by mail-ej1-x630.google.com with SMTP id zg3so11266859ejb.8;
+        Tue, 27 Apr 2021 23:24:58 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=FJpyexBJMRWoohWakaErFpopc7jUV93q9mqmN6OQ+5E=;
+        b=CKsVc4iWBgbEYKP6Q/z88udotn7alDlUNxrK/7onujzp5+N8RuxvzSqnFykFvfD85b
+         tCmheHJLbupv1lzXCDWCBNC8h3RCceO7ZyrMicISIinqvJYtxDL0tleO7JgUlGjwuSYf
+         ODcvLzj8I3gkpxHqRjDhSn/FHaWHCz1CacMQpDg0+vNlant0qOJy/4/W2dQ1zvznOw+3
+         8TpHUDPLGj+0iGwGWfZ/WvSfDYzpXwQEnYAdGtu9ctdpG/YEfqqYYSdWUz4XNUGVWB7G
+         yyvr81DAzuA2PQWycL9P2sHWh+YvNvMMlgNrrdkB0CcTMroRHPAXTMDRPKWa5hQ3ny0a
+         FcwA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=FJpyexBJMRWoohWakaErFpopc7jUV93q9mqmN6OQ+5E=;
+        b=Au+iPP4NBQ1cc9zLPOr2lo16mamLpwen/5XYtElqCiawnJ6CyJbCTCcUYqrIwlM8SV
+         AZyouIwKx+BhSXiy/AMqqsO1NYBuqjNPD3V2vUJyXouqC57fbWR7WC8HmxqIB2G1mF9j
+         VxOo6tcRqa7YjVUEDweDTKwK4AIShZ9RqoEnb7SNQh1lHOFOJeSAjUWQTgv0bzsmxhAj
+         gvOoQOcnZlztG5D2UtwtFgy8xkq9N6ffiy9fnjkq868CeF+8s8ML1bGMTtF1UWwLIzN/
+         kJ/bBZruWu6bwhG6AtUsu8gRGn5joqJxcHn136SPJzh13c7axj9V1brw7f3lr3Hcg4yE
+         y4Xg==
+X-Gm-Message-State: AOAM5312xGBahXpYl+QJldOfoQgZVaIUYgrGjHBOuNDxUGYem/epHNLK
+        eVJh5No8lHtiZHEu1WrAjz71u28iM/+0XCbu5xk=
+X-Google-Smtp-Source: ABdhPJwofkBXdapf3IZcQgeOf2LVxlfjiCmuDgNF1LZkF9bBrSruYVDHzlDD14oN+dR44SC7JPtN6pCgsfN7VcXKaPg=
+X-Received: by 2002:a17:907:33ce:: with SMTP id zk14mr14148638ejb.372.1619591097442;
+ Tue, 27 Apr 2021 23:24:57 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 240877ee-df52-4aaa-5929-08d90a0ba788
-X-MS-TrafficTypeDiagnostic: DM6PR12MB3418:
-X-Microsoft-Antispam-PRVS: <DM6PR12MB34184153C99664CBA0C69EB8B8409@DM6PR12MB3418.namprd12.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:4714;
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: BAwgPdDJiFoeNMCtj5GLD/TGDnlVgxPz5TNh6kuB3rRReEsuHU7BWHh0n+ajERrFgy9IMDblYuszbrjEKbFEeEuRkJ/24iV5i6QcU7TOUPv6IcpNeit8lrRAs+STY3TJzdL95U5pPVdHA+FckgZPL0O6pz+mQxNtrHPsvs/MJS1raJE8tbGQnlCweIrBOyrEYeLC6WAXr81AleGu1MZWTMFSALkS6RCXZ7vH4R3wjjCKUf8ExjfYnLQjsY1IcbLAn8UJAiAc7OkHcclvV83GtujRfj5u+vZFaiqNkGdyMH8wDl1/IPwaNWRXB03P5qr6EXKf9EM12gnkoUGdcgTModSqyoTUGJ+t3eh6NHxSfEk5RiIUdEV2XM7LqknzHVw6S5XmLr9jkwtvodV4v5fcVTvmlcG3iISIDS1fP9uGluDZlohJSxjKacOkGLfcltU94dxngy6rHqQCgVi9HkA+qYqMgC/us1qYNTazRy+B7WvVe5cFJILvaOr+M0HsQYQRwoY6vSAvnEoQkCob3Pc01YJE/Qbw6WVu0hKJjYBn0AJyYfVsvEb77MEuvPP3sUWgp1qoZNtlCoU5y/okl7xW0RymIo+I7y6/V0CYYYGFWi9euDNuhtgB40h96e4tgiyq26Tn7cbGqvT89UcH8Cq/pw==
-X-Forefront-Antispam-Report: CIP:216.228.112.35;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:schybrid02.nvidia.com;CAT:NONE;SFS:(4636009)(39860400002)(376002)(396003)(346002)(136003)(46966006)(36840700001)(336012)(2906002)(8936002)(426003)(356005)(47076005)(4744005)(36906005)(26005)(5660300002)(4326008)(70206006)(70586007)(2616005)(6666004)(8676002)(36756003)(83380400001)(86362001)(1076003)(36860700001)(7636003)(478600001)(82310400003)(107886003)(316002)(82740400003)(54906003)(6916009)(186003);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 28 Apr 2021 06:05:41.9435
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 240877ee-df52-4aaa-5929-08d90a0ba788
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.112.35];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource: BN8NAM11FT053.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR12MB3418
+References: <20210421135747.312095-1-i.maximets@ovn.org>
+In-Reply-To: <20210421135747.312095-1-i.maximets@ovn.org>
+From:   Tonghao Zhang <xiangxia.m.yue@gmail.com>
+Date:   Wed, 28 Apr 2021 14:24:10 +0800
+Message-ID: <CAMDZJNVQ64NEhdfu3Z_EtnVkA2D1DshPzfur2541wA+jZgX+9Q@mail.gmail.com>
+Subject: Re: [PATCH net] openvswitch: meter: remove rate from the bucket size calculation
+To:     Ilya Maximets <i.maximets@ovn.org>
+Cc:     Pravin B Shelar <pshelar@ovn.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, Andy Zhou <azhou@ovn.org>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        ovs dev <dev@openvswitch.org>, William Tu <u9012063@gmail.com>,
+        Jean Tourrilhes <jean.tourrilhes@hpe.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The assignment is not being used and redundant.
-The check for null is redundant as nf_conntrack_put() also
-checks this.
+On Wed, Apr 21, 2021 at 9:57 PM Ilya Maximets <i.maximets@ovn.org> wrote:
+>
+> Implementation of meters supposed to be a classic token bucket with 2
+> typical parameters: rate and burst size.
+>
+> Burst size in this schema is the maximum number of bytes/packets that
+> could pass without being rate limited.
+>
+> Recent changes to userspace datapath made meter implementation to be
+> in line with the kernel one, and this uncovered several issues.
+>
+> The main problem is that maximum bucket size for unknown reason
+> accounts not only burst size, but also the numerical value of rate.
+> This creates a lot of confusion around behavior of meters.
+>
+> For example, if rate is configured as 1000 pps and burst size set to 1,
+> this should mean that meter will tolerate bursts of 1 packet at most,
+> i.e. not a single packet above the rate should pass the meter.
+> However, current implementation calculates maximum bucket size as
+> (rate + burst size), so the effective bucket size will be 1001.  This
+> means that first 1000 packets will not be rate limited and average
+> rate might be twice as high as the configured rate.  This also makes
+> it practically impossible to configure meter that will have burst size
+> lower than the rate, which might be a desirable configuration if the
+> rate is high.
+>
+> Inability to configure low values of a burst size and overall inability
+> for a user to predict what will be a maximum and average rate from the
+> configured parameters of a meter without looking at the OVS and kernel
+> code might be also classified as a security issue, because drop meters
+> are frequently used as a way of protection from DoS attacks.
+>
+> This change removes rate from the calculation of a bucket size, making
+> it in line with the classic token bucket algorithm and essentially
+> making the rate and burst tolerance being predictable from a users'
+> perspective.
+>
+> Same change proposed for the userspace implementation.
+Hi Ilya
+If we set the burst size too small, the meters of ovs don't work.  For example,
+ovs-ofctl -O OpenFlow13 add-meter br-int "meter=1 kbps stats burst
+bands=type=drop rate=10000 burst_size=12"
+ovs-ofctl -O OpenFlow13 add-flow br-int "in_port=$P0 action=meter=1,output:$P1"
+but the rate of port P1 was 5.61 Mbit/s
+or
+ovs-ofctl -O OpenFlow13 add-meter br-int "meter=1 kbps stats burst
+bands=type=drop rate=10000 burst_size=1"
+but the rate of port P1 was 0.
 
-Signed-off-by: Roi Dayan <roid@nvidia.com>
-Reviewed-by: Paul Blakey <paulb@nvidia.com>
----
- net/sched/act_ct.c | 4 +---
- 1 file changed, 1 insertion(+), 3 deletions(-)
+the length of packets is 1400B.
+I think we should check whether the band->burst_size >= band->burst_rate ?
 
-diff --git a/net/sched/act_ct.c b/net/sched/act_ct.c
-index 16e888a9601d..65e9ffe6cf7d 100644
---- a/net/sched/act_ct.c
-+++ b/net/sched/act_ct.c
-@@ -990,9 +990,7 @@ static int tcf_ct_act(struct sk_buff *skb, const struct tc_action *a,
- 
- 		/* Associate skb with specified zone. */
- 		if (tmpl) {
--			ct = nf_ct_get(skb, &ctinfo);
--			if (skb_nfct(skb))
--				nf_conntrack_put(skb_nfct(skb));
-+			nf_conntrack_put(skb_nfct(skb));
- 			nf_conntrack_get(&tmpl->ct_general);
- 			nf_ct_set(skb, tmpl, IP_CT_NEW);
- 		}
+I don't test the userspace meters.
+> Fixes: 96fbc13d7e77 ("openvswitch: Add meter infrastructure")
+> Signed-off-by: Ilya Maximets <i.maximets@ovn.org>
+> ---
+>
+> The same patch for the userspace datapath:
+>   https://patchwork.ozlabs.org/project/openvswitch/patch/20210421134816.311584-1-i.maximets@ovn.org/
+>
+>  net/openvswitch/meter.c | 4 ++--
+>  1 file changed, 2 insertions(+), 2 deletions(-)
+>
+> diff --git a/net/openvswitch/meter.c b/net/openvswitch/meter.c
+> index 15424d26e85d..96b524ceabca 100644
+> --- a/net/openvswitch/meter.c
+> +++ b/net/openvswitch/meter.c
+> @@ -392,7 +392,7 @@ static struct dp_meter *dp_meter_create(struct nlattr **a)
+>                  *
+>                  * Start with a full bucket.
+>                  */
+> -               band->bucket = (band->burst_size + band->rate) * 1000ULL;
+> +               band->bucket = band->burst_size * 1000ULL;
+>                 band_max_delta_t = div_u64(band->bucket, band->rate);
+>                 if (band_max_delta_t > meter->max_delta_t)
+>                         meter->max_delta_t = band_max_delta_t;
+> @@ -641,7 +641,7 @@ bool ovs_meter_execute(struct datapath *dp, struct sk_buff *skb,
+>                 long long int max_bucket_size;
+>
+>                 band = &meter->bands[i];
+> -               max_bucket_size = (band->burst_size + band->rate) * 1000LL;
+> +               max_bucket_size = band->burst_size * 1000LL;
+>
+>                 band->bucket += delta_ms * band->rate;
+>                 if (band->bucket > max_bucket_size)
+> --
+> 2.26.3
+>
+
+
 -- 
-2.26.2
-
+Best regards, Tonghao
