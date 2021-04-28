@@ -2,72 +2,112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9DDF936D996
-	for <lists+netdev@lfdr.de>; Wed, 28 Apr 2021 16:28:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B12E636D999
+	for <lists+netdev@lfdr.de>; Wed, 28 Apr 2021 16:28:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234156AbhD1O3I (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 28 Apr 2021 10:29:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33588 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229520AbhD1O3I (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 28 Apr 2021 10:29:08 -0400
-Received: from mail.as397444.net (mail.as397444.net [IPv6:2620:6e:a000:dead:beef:15:bad:f00d])
-        by lindbergh.monkeyblade.net (Postfix) with UTF8SMTPS id 4B4A1C061573
-        for <netdev@vger.kernel.org>; Wed, 28 Apr 2021 07:28:23 -0700 (PDT)
-Received: by mail.as397444.net (Postfix) with UTF8SMTPSA id 3F5EE55B235;
-        Wed, 28 Apr 2021 14:28:22 +0000 (UTC)
-X-DKIM-Note: Keys used to sign are likely public at https://as397444.net/dkim/
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mattcorallo.com;
-        s=1619618465; t=1619620102;
-        bh=VCdjVmz5p97uzhJIgNPBAMvTLEF1wAZ6Fhnge8Z/eiY=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=XVCf4g7AOP2l3ZjQ/boX8dKbD74WH/g3co6u3pJTPm5DMeAw6W8kXLJnhNCzhE4gN
-         Z2VOfMfR48jyW6dRiL2pmZNJ9NhktpboV7Wc1hjdiSIN+sLEiDod5NJK8SOJrJOaVg
-         N4eRF77E6xUdVNU/nRzQHgtoFNr24OZyfFGnpjuPeHqI0R2RNO7GEoO8NjzJfJ358W
-         4kbUwsYf1aiDNWgFYGSYqXXB9xZ3NQexT/eDZX6YVJFvbx/235L3DxTbN3WtBS/f9s
-         FDzNjRtVnQaIHrkNE+E+4Htn2fleEPvS/m2GVgnEZkPiZTXdvV3L1XUBcCJsOWzzi5
-         HcspAf9vjOItA==
-Message-ID: <055d0512-216c-9661-9dd4-007c46049265@bluematt.me>
-Date:   Wed, 28 Apr 2021 10:28:22 -0400
+        id S234158AbhD1O31 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 28 Apr 2021 10:29:27 -0400
+Received: from szxga05-in.huawei.com ([45.249.212.191]:16929 "EHLO
+        szxga05-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234075AbhD1O3Y (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 28 Apr 2021 10:29:24 -0400
+Received: from DGGEMS407-HUB.china.huawei.com (unknown [172.30.72.60])
+        by szxga05-in.huawei.com (SkyGuard) with ESMTP id 4FVgsp287gzvTJd;
+        Wed, 28 Apr 2021 22:26:06 +0800 (CST)
+Received: from huawei.com (10.175.101.6) by DGGEMS407-HUB.china.huawei.com
+ (10.3.19.207) with Microsoft SMTP Server id 14.3.498.0; Wed, 28 Apr 2021
+ 22:28:28 +0800
+From:   zhangzhengming <zhangzhengming@huawei.com>
+To:     <roopa@nvidia.com>, <nikolay@nvidia.com>, <davem@davemloft.net>,
+        <kuba@kernel.org>
+CC:     <bridge@lists.linux-foundation.org>, <netdev@vger.kernel.org>,
+        <zhangzhengming@huawei.com>, <wangxiaogang3@huawei.com>,
+        <xuhanbing@huawei.com>
+Subject: [PATCH v2] bridge: Fix possible races between assigning rx_handler_data and setting IFF_BRIDGE_PORT bit
+Date:   Wed, 28 Apr 2021 22:38:14 +0800
+Message-ID: <1619620694-12419-1-git-send-email-zhangzhengming@huawei.com>
+X-Mailer: git-send-email 2.7.4.huawei.3
 MIME-Version: 1.0
-Subject: Re: [PATCH net-next] Reduce IP_FRAG_TIME fragment-reassembly timeout
- to 1s, from 30s
-Content-Language: en-US
-To:     Willy Tarreau <w@1wt.eu>
-Cc:     Eric Dumazet <edumazet@google.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        netdev <netdev@vger.kernel.org>,
-        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        Keyu Man <kman001@ucr.edu>
-References: <d840ddcf-07a6-a838-abf8-b1d85446138e@bluematt.me>
- <CANn89i+L2DuD2+EMHzwZ=qYYKo1A9gw=nTTmh20GV_o9ADxe2Q@mail.gmail.com>
- <0cb19f7e-a9b3-58f8-6119-0736010f1326@bluematt.me>
- <20210428141319.GA7645@1wt.eu>
-From:   Matt Corallo <netdev-list@mattcorallo.com>
-In-Reply-To: <20210428141319.GA7645@1wt.eu>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
+X-Originating-IP: [10.175.101.6]
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+From: Zhang Zhengming <zhangzhengming@huawei.com>
 
+There is a crash in the function br_get_link_af_size_filtered,
+as the port_exists(dev) is true and the rx_handler_data of dev is NULL.
+But the rx_handler_data of dev is correct saved in vmcore.
 
-On 4/28/21 10:13, Willy Tarreau wrote:
-> On Wed, Apr 28, 2021 at 10:09:00AM -0400, Matt Corallo wrote:
-> Regardless of retransmits, large RTTs are often an indication of buffer bloat
-> on the path, and this can take some fragments apart, even worse when you mix
-> this with multi-path routing where some fragments may take a short path and
-> others can take a congested one. In this case you'll note that the excessive
-> buffer time can become a non-negligible part of the observed RTT, hence the
-> indirect relation between the two.
+The oops looks something like:
+ ...
+ pc : br_get_link_af_size_filtered+0x28/0x1c8 [bridge]
+ ...
+ Call trace:
+  br_get_link_af_size_filtered+0x28/0x1c8 [bridge]
+  if_nlmsg_size+0x180/0x1b0
+  rtnl_calcit.isra.12+0xf8/0x148
+  rtnetlink_rcv_msg+0x334/0x370
+  netlink_rcv_skb+0x64/0x130
+  rtnetlink_rcv+0x28/0x38
+  netlink_unicast+0x1f0/0x250
+  netlink_sendmsg+0x310/0x378
+  sock_sendmsg+0x4c/0x70
+  __sys_sendto+0x120/0x150
+  __arm64_sys_sendto+0x30/0x40
+  el0_svc_common+0x78/0x130
+  el0_svc_handler+0x38/0x78
+  el0_svc+0x8/0xc
 
-Right, buffer bloat is definitely a concern. Would it make more sense to reduce the default to somewhere closer to 3s?
+In br_add_if(), we found there is no guarantee that
+assigning rx_handler_data to dev->rx_handler_data
+will before setting the IFF_BRIDGE_PORT bit of priv_flags.
+So there is a possible data competition:
 
-More generally, I find this a rather interesting case - obviously breaking *deployed* use-cases of Linux is Really Bad, 
-but at the same time, the internet has changed around us and suddenly other reasonable use-cases of Linux (ie as a 
-router processing real-world consumer flows - in my case a stupid DOCSIS modem dropping 1Mbps from its measly 20Mbps 
-limit) have slowly broken instead.
+CPU 0:                                                        CPU 1:
+(RCU read lock)                                               (RTNL lock)
+rtnl_calcit()                                                 br_add_slave()
+  if_nlmsg_size()                                               br_add_if()
+    br_get_link_af_size_filtered()                              -> netdev_rx_handler_register
+                                                                    ...
+                                                                    // The order is not guaranteed
+      ...                                                           -> dev->priv_flags |= IFF_BRIDGE_PORT;
+      // The IFF_BRIDGE_PORT bit of priv_flags has been set
+      -> if (br_port_exists(dev)) {
+        // The dev->rx_handler_data has NOT been assigned
+        -> p = br_port_get_rcu(dev);
+        ....
+                                                                    -> rcu_assign_pointer(dev->rx_handler_data, rx_handler_data);
+                                                                     ...
 
-Matt
+Fix it in br_get_link_af_size_filtered, using br_port_get_check_rcu() and checking the return value.
+
+Signed-off-by: Zhang Zhengming <zhangzhengming@huawei.com>
+Reviewed-by: Zhao Lei <zhaolei69@huawei.com>
+Reviewed-by: Wang Xiaogang <wangxiaogang3@huawei.com>
+Suggested-by: Nikolay Aleksandrov <nikolay@nvidia.com>
+---
+ net/bridge/br_netlink.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
+
+diff --git a/net/bridge/br_netlink.c b/net/bridge/br_netlink.c
+index f2b1343..ed5aba2 100644
+--- a/net/bridge/br_netlink.c
++++ b/net/bridge/br_netlink.c
+@@ -103,8 +103,9 @@ static size_t br_get_link_af_size_filtered(const struct net_device *dev,
+ 
+ 	rcu_read_lock();
+ 	if (netif_is_bridge_port(dev)) {
+-		p = br_port_get_rcu(dev);
+-		vg = nbp_vlan_group_rcu(p);
++		p = br_port_get_check_rcu(dev);
++		if (p)
++			vg = nbp_vlan_group_rcu(p);
+ 	} else if (dev->priv_flags & IFF_EBRIDGE) {
+ 		br = netdev_priv(dev);
+ 		vg = br_vlan_group_rcu(br);
+-- 
+2.7.4
+
