@@ -2,91 +2,141 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4345836DC70
-	for <lists+netdev@lfdr.de>; Wed, 28 Apr 2021 17:51:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 10F7936DC7C
+	for <lists+netdev@lfdr.de>; Wed, 28 Apr 2021 17:52:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241016AbhD1Pvs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 28 Apr 2021 11:51:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52136 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240604AbhD1Pvo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 28 Apr 2021 11:51:44 -0400
-Received: from mail-pl1-x62c.google.com (mail-pl1-x62c.google.com [IPv6:2607:f8b0:4864:20::62c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 97DFBC061573;
-        Wed, 28 Apr 2021 08:50:58 -0700 (PDT)
-Received: by mail-pl1-x62c.google.com with SMTP id s20so17233268plr.13;
-        Wed, 28 Apr 2021 08:50:58 -0700 (PDT)
+        id S240643AbhD1Pxl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 28 Apr 2021 11:53:41 -0400
+Received: from smtp-fw-4101.amazon.com ([72.21.198.25]:63948 "EHLO
+        smtp-fw-4101.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S240737AbhD1Pxi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 28 Apr 2021 11:53:38 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=jV3FcrSE1f6xx8dNGDLNYNEG02MsME2EkErrjfaPOaU=;
-        b=ESs7eVif0tzZWqH4JvvIESeztG/cdET6QF60/sPVvwOuHcK7Y+aEAo78vxmNOLOL5q
-         x8Xh9BG9C6so9zK+E5Ay0DpqkSanD82rxe6HWg1DMpj6Y3HXjZSEOR3GJ30nFfg8bKuv
-         lLxd+JV0wrVA3iK/ie6ixUeLfknmgNKl1XWFQsAL0Pg8n59NAverJlgW0FQdQGP1ByIk
-         aeg7jIlZcWP7fUcvDJDO5gD1h5RJPU9BFT3r17YhV8m2KasccIk7Eh2ufNCDLd4P6VE+
-         sPdS0lqMYeuo8HjzqnzvPsZqQfdn61w/Z7K5Y/rGjIk87WHwBW8rWP6QwTe1Mwm3jwAT
-         5X3A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=jV3FcrSE1f6xx8dNGDLNYNEG02MsME2EkErrjfaPOaU=;
-        b=Xm2QAo4j54smf7rrM2s41RIOyl52MRBQsQR34pL2usgsUk+VTmJIXuBa6528pQI/w8
-         WVw1GzDXsjdRczvBNLKpXjgTENqI1zx8bcYDmKNRXRVsOGCJSNaN6pWUbxl6k8ivFOa5
-         lRhipGaZ1wTM8At4mxtjsOjyjOvMS1eUpYFCZmbJH/2g0j5GjQcR0l6BTaGdSA3Q2+TZ
-         mELJZLw82bUFKHMZkDIOVbbEOgras4/qzQ4LcO20CKEFYM8jYZcbc7j9YxPsyCWTeglo
-         XFC+ABCnXiK37vWEl+GLiM7+7cvefOLT3kl1P/7OSj0nyOhzNNUqmbrBXaGElnR9sNnB
-         yhaQ==
-X-Gm-Message-State: AOAM530lWmetjgV7N2H2XLIKnfkteoPXbOzPTQ6ADNOBQUciZ4U3YtvO
-        Yc+CviaCc3Ko4tHxqh5SGLDy4BC2K0g=
-X-Google-Smtp-Source: ABdhPJw/BJnQ3LSHtRqbRbGkglPH+mhrMGxUhGgWc0ZQQWmAzf8wjCeLB7eUos3lODUsXLmoUvWZWA==
-X-Received: by 2002:a17:902:b70f:b029:ed:36ed:299d with SMTP id d15-20020a170902b70fb02900ed36ed299dmr15912959pls.48.1619625057779;
-        Wed, 28 Apr 2021 08:50:57 -0700 (PDT)
-Received: from [192.168.1.67] (99-44-17-11.lightspeed.irvnca.sbcglobal.net. [99.44.17.11])
-        by smtp.gmail.com with ESMTPSA id i9sm6262546pjh.9.2021.04.28.08.50.56
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 28 Apr 2021 08:50:57 -0700 (PDT)
-Subject: Re: [PATCH][next] net: dsa: ksz: Make reg_mib_cnt a u8 as it never
- exceeds 255
-To:     Colin King <colin.king@canonical.com>,
-        Woojung Huh <woojung.huh@microchip.com>,
-        UNGLinuxDriver@microchip.com, Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, Marek Vasut <marex@denx.de>,
-        Tristram Ha <Tristram.Ha@microchip.com>, netdev@vger.kernel.org
-Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20210428120010.337959-1-colin.king@canonical.com>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-Message-ID: <61ccfbdd-c1d5-a91a-d651-90e6cae1a48e@gmail.com>
-Date:   Wed, 28 Apr 2021 08:50:54 -0700
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Firefox/78.0 Thunderbird/78.10.0
+  d=amazon.co.jp; i=@amazon.co.jp; q=dns/txt;
+  s=amazon201209; t=1619625174; x=1651161174;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=FnCAkov60OO7Dxf0WEMBA9HQ3rKhJnjcWSSFi9gB2V8=;
+  b=t+vRPr8+sM854VmJM24YqiBkqCEB8HL8sxQIGENvrNeQlmgqn7s9QIsy
+   ZFuOVcK5QE9+bdzGthjaiMrsl2trIjLjKo4nJy5OPjtn+zjGoaT7+zpPW
+   arzWfI4daSkF8N+wIRFfPSYpLFo3lecb5tuSrtckP2IczDXz+40R2VsCM
+   Q=;
+X-IronPort-AV: E=Sophos;i="5.82,258,1613433600"; 
+   d="scan'208";a="104526758"
+Received: from iad12-co-svc-p1-lb1-vlan3.amazon.com (HELO email-inbound-relay-1d-2c665b5d.us-east-1.amazon.com) ([10.43.8.6])
+  by smtp-border-fw-4101.iad4.amazon.com with ESMTP; 28 Apr 2021 15:52:16 +0000
+Received: from EX13MTAUWB001.ant.amazon.com (iad12-ws-svc-p26-lb9-vlan3.iad.amazon.com [10.40.163.38])
+        by email-inbound-relay-1d-2c665b5d.us-east-1.amazon.com (Postfix) with ESMTPS id 66924A1CD9;
+        Wed, 28 Apr 2021 15:52:13 +0000 (UTC)
+Received: from EX13D04ANC001.ant.amazon.com (10.43.157.89) by
+ EX13MTAUWB001.ant.amazon.com (10.43.161.249) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.2; Wed, 28 Apr 2021 15:52:12 +0000
+Received: from 88665a182662.ant.amazon.com (10.43.160.26) by
+ EX13D04ANC001.ant.amazon.com (10.43.157.89) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.2; Wed, 28 Apr 2021 15:52:07 +0000
+From:   Kuniyuki Iwashima <kuniyu@amazon.co.jp>
+To:     <jbaron@akamai.com>
+CC:     <andrii@kernel.org>, <ast@kernel.org>, <benh@amazon.com>,
+        <bpf@vger.kernel.org>, <daniel@iogearbox.net>,
+        <davem@davemloft.net>, <edumazet@google.com>, <kafai@fb.com>,
+        <kuba@kernel.org>, <kuni1840@gmail.com>, <kuniyu@amazon.co.jp>,
+        <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>
+Subject: Re: [PATCH v4 bpf-next 00/11] Socket migration for SO_REUSEPORT.
+Date:   Thu, 29 Apr 2021 00:52:03 +0900
+Message-ID: <20210428155203.39974-1-kuniyu@amazon.co.jp>
+X-Mailer: git-send-email 2.30.2
+In-Reply-To: <fabd0598-c62e-ea88-f340-050136bb8266@akamai.com>
+References: <fabd0598-c62e-ea88-f340-050136bb8266@akamai.com>
 MIME-Version: 1.0
-In-Reply-To: <20210428120010.337959-1-colin.king@canonical.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [10.43.160.26]
+X-ClientProxiedBy: EX13D38UWC002.ant.amazon.com (10.43.162.46) To
+ EX13D04ANC001.ant.amazon.com (10.43.157.89)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-
-On 4/28/2021 5:00 AM, Colin King wrote:
-> From: Colin Ian King <colin.king@canonical.com>
+From:   Jason Baron <jbaron@akamai.com>
+Date:   Wed, 28 Apr 2021 10:44:12 -0400
+> On 4/28/21 4:13 AM, Kuniyuki Iwashima wrote:
+> > From:   Jason Baron <jbaron@akamai.com>
+> > Date:   Tue, 27 Apr 2021 12:38:58 -0400
+> >> On 4/26/21 11:46 PM, Kuniyuki Iwashima wrote:
+> >>> The SO_REUSEPORT option allows sockets to listen on the same port and to
+> >>> accept connections evenly. However, there is a defect in the current
+> >>> implementation [1]. When a SYN packet is received, the connection is tied
+> >>> to a listening socket. Accordingly, when the listener is closed, in-flight
+> >>> requests during the three-way handshake and child sockets in the accept
+> >>> queue are dropped even if other listeners on the same port could accept
+> >>> such connections.
+> >>>
+> >>> This situation can happen when various server management tools restart
+> >>> server (such as nginx) processes. For instance, when we change nginx
+> >>> configurations and restart it, it spins up new workers that respect the new
+> >>> configuration and closes all listeners on the old workers, resulting in the
+> >>> in-flight ACK of 3WHS is responded by RST.
+> >>
+> >> Hi Kuniyuki,
+> >>
+> >> I had implemented a different approach to this that I wanted to get your
+> >> thoughts about. The idea is to use unix sockets and SCM_RIGHTS to pass the
+> >> listen fd (or any other fd) around. Currently, if you have an 'old' webserver
+> >> that you want to replace with a 'new' webserver, you would need a separate
+> >> process to receive the listen fd and then have that process send the fd to
+> >> the new webserver, if they are not running con-currently. So instead what
+> >> I'm proposing is a 'delayed close' for a unix socket. That is, one could do:
+> >>
+> >> 1) bind unix socket with path '/sockets'
+> >> 2) sendmsg() the listen fd via the unix socket
+> >> 2) setsockopt() some 'timeout' on the unix socket (maybe 10 seconds or so)
+> >> 3) exit/close the old webserver and the listen socket
+> >> 4) start the new webserver
+> >> 5) create new unix socket and bind to '/sockets' (if has MAY_WRITE file permissions)
+> >> 6) recvmsg() the listen fd
+> >>
+> >> So the idea is that we set a timeout on the unix socket. If the new process
+> >> does not start and bind to the unix socket, it simply closes, thus releasing
+> >> the listen socket. However, if it does bind it can now call recvmsg() and
+> >> use the listen fd as normal. It can then simply continue to use the old listen
+> >> fds and/or create new ones and drain the old ones.
+> >>
+> >> Thus, the old and new webservers do not have to run concurrently. This doesn't
+> >> involve any changes to the tcp layer and can be used to pass any type of fd.
+> >> not sure if it's actually useful for anything else though.
+> >>
+> >> I'm not sure if this solves your use-case or not but I thought I'd share it.
+> >> One can also inherit the fds like in systemd's socket activation model, but
+> >> that again requires another process to hold open the listen fd.
+> > 
+> > Thank you for sharing code.
+> > 
+> > It seems bit more crash-tolerant than normal fd passing, but it can still
+> > suffer if the process dies before passing fds. With this patch set, we can
+> > migrate children sockets even if the process dies.
+> > 
 > 
-> Currently the for-loop in ksz8_port_init_cnt is causing a static
-> analysis infinite loop warning with the comparison of
-> mib->cnt_ptr < dev->reg_mib_cnt. This occurs because mib->cnt_ptr
-> is a u8 and dev->reg_mib_cnt is an int and the analyzer determines
-> that mib->cnt_ptr potentially can wrap around to zero if the value
-> in dev->reg_mib_cnt is > 255. However, this value is never this
-> large, it is always less than 256 so make reg_mib_cnt a u8.
+> I don't think crashing should be much of an issue. The old server can setup the
+> unix socket patch '/sockets' when it starts up and queue the listen sockets
+> there from the start. When it dies it will close all its fds, and the new
+> server can pick anything up any fds that are in the '/sockets' queue.
+> 
+> 
+> > Also, as Martin said, fd passing tends to make application complicated.
+> > 
+> 
+> It may be but perhaps its more flexible? It gives the new server the
+> chance to re-use the existing listen fds, close, drain and/or start new
+> ones. It also addresses the non-REUSEPORT case where you can't bind right
+> away.
 
-Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
--- 
-Florian
+If the flexibility is really worth the complexity, we do not care about it.
+But, SO_REUSEPORT can give enough flexibility we want.
+
+With socket migration, there is no need to reuse listener (fd passing),
+drain children (incoming connections are automatically migrated if there is
+already another listener bind()ed), and of course another listener can
+close itself and migrated children.
+
+If two different approaches resolves the same issue and one does not need
+complexity in userspace, we select the simpler one.
