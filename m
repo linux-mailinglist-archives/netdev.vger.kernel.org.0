@@ -2,177 +2,62 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7382736D80D
-	for <lists+netdev@lfdr.de>; Wed, 28 Apr 2021 15:10:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A7E2736D838
+	for <lists+netdev@lfdr.de>; Wed, 28 Apr 2021 15:24:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239738AbhD1NKn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 28 Apr 2021 09:10:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44304 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239600AbhD1NKn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 28 Apr 2021 09:10:43 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 42FA8C061574
-        for <netdev@vger.kernel.org>; Wed, 28 Apr 2021 06:09:58 -0700 (PDT)
-Received: from dude.hi.pengutronix.de ([2001:67c:670:100:1d::7])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ore@pengutronix.de>)
-        id 1lbjwr-0004x1-9r; Wed, 28 Apr 2021 15:09:49 +0200
-Received: from ore by dude.hi.pengutronix.de with local (Exim 4.92)
-        (envelope-from <ore@pengutronix.de>)
-        id 1lbjwq-0007j5-4p; Wed, 28 Apr 2021 15:09:48 +0200
-From:   Oleksij Rempel <o.rempel@pengutronix.de>
-To:     Shawn Guo <shawnguo@kernel.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Fugang Duan <fugang.duan@nxp.com>
-Cc:     Oleksij Rempel <o.rempel@pengutronix.de>,
-        Randy Dunlap <rdunlap@infradead.org>, kernel@pengutronix.de,
-        netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org, linux-imx@nxp.com,
-        Fabio Estevam <festevam@gmail.com>,
-        David Jander <david@protonic.nl>,
-        Russell King <linux@armlinux.org.uk>,
-        Philippe Schenker <philippe.schenker@toradex.com>
-Subject: [PATCH net-next v1 1/1] net: selftest: fix build issue if INET is disabled
-Date:   Wed, 28 Apr 2021 15:09:46 +0200
-Message-Id: <20210428130947.29649-1-o.rempel@pengutronix.de>
-X-Mailer: git-send-email 2.29.2
+        id S239789AbhD1NZX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 28 Apr 2021 09:25:23 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:31000 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S239634AbhD1NZX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 28 Apr 2021 09:25:23 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1619616277;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=s7lMGZ8yO2dxvEL9CMp1+/UD19dmbYYtHYVrb2uEZ/I=;
+        b=OOZSKF1fgDj+OwQeAw16FQkwrRe9nox/LySx9NlPdfVrr2AxfQ/pdi/uendfDTw4Pr1lto
+        ud0h6C3ylRBAvTcETd4qmzfKfqQ5XpmwCBlTD2cmkmDQK6wRAICN3jXaksdAs592qv8DWt
+        DRq7e5ol1myxAy68f0GvculhNQxELbU=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-369-HmVuaiAgPQ6FkA9zVK_EHw-1; Wed, 28 Apr 2021 09:24:35 -0400
+X-MC-Unique: HmVuaiAgPQ6FkA9zVK_EHw-1
+Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 3E5221007381;
+        Wed, 28 Apr 2021 13:24:34 +0000 (UTC)
+Received: from computer-6.station (unknown [10.40.192.86])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 2AE3D19C59;
+        Wed, 28 Apr 2021 13:24:32 +0000 (UTC)
+From:   Davide Caratti <dcaratti@redhat.com>
+To:     Jakub Kicinski <kuba@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
+Subject: [PATCH net resend 0/2] fix stack OOB read while fragmenting IPv4 packets
+Date:   Wed, 28 Apr 2021 15:23:00 +0200
+Message-Id: <cover.1619615320.git.dcaratti@redhat.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::7
-X-SA-Exim-Mail-From: ore@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In case ethernet driver is enabled and INET is disabled, selftest will
-fail to build.
+- patch 1/2 fixes openvswitch IPv4 fragmentation, that does a stack OOB
+read after commit d52e5a7e7ca4 ("ipv4: lock mtu in fnhe when received
+PMTU < net.ipv4.route.min_pmt")
+- patch 2/2 fixes the same issue in TC 'sch_frag' code
 
-Reported-by: Randy Dunlap <rdunlap@infradead.org>
-Fixes: 3e1e58d64c3d ("net: add generic selftest support")
-Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
----
- drivers/net/ethernet/atheros/Kconfig   |  2 +-
- drivers/net/ethernet/freescale/Kconfig |  2 +-
- include/net/selftests.h                | 19 +++++++++++++++++++
- net/Kconfig                            |  2 +-
- net/core/Makefile                      |  2 +-
- net/dsa/Kconfig                        |  2 +-
- 6 files changed, 24 insertions(+), 5 deletions(-)
+Davide Caratti (2):
+  openvswitch: fix stack OOB read while fragmenting IPv4 packets
+  net/sched: sch_frag: fix stack OOB read while fragmenting IPv4 packets
 
-diff --git a/drivers/net/ethernet/atheros/Kconfig b/drivers/net/ethernet/atheros/Kconfig
-index 6842b74b0696..482c58c4c584 100644
---- a/drivers/net/ethernet/atheros/Kconfig
-+++ b/drivers/net/ethernet/atheros/Kconfig
-@@ -20,8 +20,8 @@ if NET_VENDOR_ATHEROS
- config AG71XX
- 	tristate "Atheros AR7XXX/AR9XXX built-in ethernet mac support"
- 	depends on ATH79
--	select NET_SELFTESTS
- 	select PHYLINK
-+	imply NET_SELFTESTS
- 	help
- 	  If you wish to compile a kernel for AR7XXX/91XXX and enable
- 	  ethernet support, then you should always answer Y to this.
-diff --git a/drivers/net/ethernet/freescale/Kconfig b/drivers/net/ethernet/freescale/Kconfig
-index 3d937b4650b2..2d1abdd58fab 100644
---- a/drivers/net/ethernet/freescale/Kconfig
-+++ b/drivers/net/ethernet/freescale/Kconfig
-@@ -26,8 +26,8 @@ config FEC
- 		   ARCH_MXC || SOC_IMX28 || COMPILE_TEST)
- 	default ARCH_MXC || SOC_IMX28 if ARM
- 	select CRC32
--	select NET_SELFTESTS
- 	select PHYLIB
-+	imply NET_SELFTESTS
- 	imply PTP_1588_CLOCK
- 	help
- 	  Say Y here if you want to use the built-in 10/100 Fast ethernet
-diff --git a/include/net/selftests.h b/include/net/selftests.h
-index 9993b9498cf3..61926c33a022 100644
---- a/include/net/selftests.h
-+++ b/include/net/selftests.h
-@@ -4,9 +4,28 @@
- 
- #include <linux/ethtool.h>
- 
-+#if IS_ENABLED(CONFIG_NET_SELFTESTS)
-+
- void net_selftest(struct net_device *ndev, struct ethtool_test *etest,
- 		  u64 *buf);
- int net_selftest_get_count(void);
- void net_selftest_get_strings(u8 *data);
- 
-+#else
-+
-+static inline void net_selftest(struct net_device *ndev, struct ethtool_test *etest,
-+		  u64 *buf)
-+{
-+}
-+
-+static inline int net_selftest_get_count(void)
-+{
-+	return 0;
-+}
-+
-+static inline void net_selftest_get_strings(u8 *data)
-+{
-+}
-+
-+#endif
- #endif /* _NET_SELFTESTS */
-diff --git a/net/Kconfig b/net/Kconfig
-index 8d955195c069..f5ee7c65e6b4 100644
---- a/net/Kconfig
-+++ b/net/Kconfig
-@@ -431,7 +431,7 @@ config SOCK_VALIDATE_XMIT
- 
- config NET_SELFTESTS
- 	def_tristate PHYLIB
--	depends on PHYLIB
-+	depends on PHYLIB && INET
- 
- config NET_SOCK_MSG
- 	bool
-diff --git a/net/core/Makefile b/net/core/Makefile
-index 1a6168d8f23b..f7f16650fe9e 100644
---- a/net/core/Makefile
-+++ b/net/core/Makefile
-@@ -21,6 +21,7 @@ obj-$(CONFIG_NETPOLL) += netpoll.o
- obj-$(CONFIG_FIB_RULES) += fib_rules.o
- obj-$(CONFIG_TRACEPOINTS) += net-traces.o
- obj-$(CONFIG_NET_DROP_MONITOR) += drop_monitor.o
-+obj-$(CONFIG_NET_SELFTESTS) += selftests.o
- obj-$(CONFIG_NETWORK_PHY_TIMESTAMPING) += timestamping.o
- obj-$(CONFIG_NET_PTP_CLASSIFY) += ptp_classifier.o
- obj-$(CONFIG_CGROUP_NET_PRIO) += netprio_cgroup.o
-@@ -33,7 +34,6 @@ obj-$(CONFIG_NET_DEVLINK) += devlink.o
- obj-$(CONFIG_GRO_CELLS) += gro_cells.o
- obj-$(CONFIG_FAILOVER) += failover.o
- ifeq ($(CONFIG_INET),y)
--obj-$(CONFIG_NET_SELFTESTS) += selftests.o
- obj-$(CONFIG_NET_SOCK_MSG) += skmsg.o
- obj-$(CONFIG_BPF_SYSCALL) += sock_map.o
- endif
-diff --git a/net/dsa/Kconfig b/net/dsa/Kconfig
-index cbc2bd643ab2..183e27b50202 100644
---- a/net/dsa/Kconfig
-+++ b/net/dsa/Kconfig
-@@ -9,7 +9,7 @@ menuconfig NET_DSA
- 	select NET_SWITCHDEV
- 	select PHYLINK
- 	select NET_DEVLINK
--	select NET_SELFTESTS
-+	imply NET_SELFTESTS
- 	help
- 	  Say Y if you want to enable support for the hardware switches supported
- 	  by the Distributed Switch Architecture.
+ net/openvswitch/actions.c | 8 ++++----
+ net/sched/sch_frag.c      | 8 ++++----
+ 2 files changed, 8 insertions(+), 8 deletions(-)
+
 -- 
-2.29.2
+2.30.2
 
