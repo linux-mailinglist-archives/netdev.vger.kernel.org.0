@@ -2,192 +2,159 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AF57136D048
-	for <lists+netdev@lfdr.de>; Wed, 28 Apr 2021 03:28:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2C5D436D04F
+	for <lists+netdev@lfdr.de>; Wed, 28 Apr 2021 03:32:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236554AbhD1B26 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 27 Apr 2021 21:28:58 -0400
-Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:18468 "EHLO
-        mx0b-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S230425AbhD1B25 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 27 Apr 2021 21:28:57 -0400
-Received: from pps.filterd (m0109331.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 13S1OnLE008203;
-        Tue, 27 Apr 2021 18:27:52 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=date : from : to : cc :
- subject : message-id : references : content-type : in-reply-to :
- mime-version; s=facebook; bh=KnItzb03voCc2cbdEiobQpm/+4564AZ4W0meEW0eRwU=;
- b=Cdpe2+jaaMO1REJkK7ecw6RPEuEb3OHVFG0P211Ch2kBhmPhZOlDH4HVd+VpE1vf+dU6
- XZOMNIkeGwAYwnVJj57VmP1QY8f1vNFe4Td23ZkvniJlSP9Xws8Mjw8HBEgDLxzaVnGZ
- 8y/+gT8umUzuuTwgFMlST/8NkA/OaCIMn7o= 
-Received: from mail.thefacebook.com ([163.114.132.120])
-        by mx0a-00082601.pphosted.com with ESMTP id 3860wrsapj-7
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Tue, 27 Apr 2021 18:27:51 -0700
-Received: from NAM11-BN8-obe.outbound.protection.outlook.com (100.104.98.9) by
- o365-in.thefacebook.com (100.104.94.231) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2176.2; Tue, 27 Apr 2021 18:27:39 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=K78yEWvTlSmWoRG0NXJlzRSERA4aNK7YBAvqoX5HUvxV8LymXNC8v1hI0FBC2KmSLyLsSV1N6z1oIGXkyoJDxcvL2srRa2HOeX4jjpQ3OyOBxo3UE+UVWoTdAu3UT5Mi7l0nvgBI5sWQUD1d0GDJ2MX66Gu9hPqjivzC3TavlgJc2SY7PWOue0rA009E+7KgAfHrJkw8Nrju+9Jc9LEbuy7SZ7HcQGbOlCKZA2jr6/w4hZdkuwEfGKAEE1jCxNDCfhk2X+u9LOjmDgGx6IWv7z93naWLC4qKzeUFSwkJDUWdKv7JzTVNNiAyx8t6xbmYwFkw4qT+Hthnnx9xWv/xWQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=KnItzb03voCc2cbdEiobQpm/+4564AZ4W0meEW0eRwU=;
- b=BI0mIAO9+E8av6K84cEw7g7HpiOM6cJUf3vZBc/N0yLTOpvguW0GaQKLrugD3GDgM+fgSbTCE1u9NChdd7UdyPtzLbacsrNTjXSdTnOPtR0r5DZfc21yyZ5dW2mmyUhONsTwBI4S0FbBV8hSy1wJN1jqR3fD80oQ3AdtlCm+YLZaUCu2QSIQ3qotZO7jtT0dAucw5qgeP1yjP3wtidnf+XOeCxiYiXXL1uuJSn5PGc8LTMx93sRB7DF6ZT7Z/afl19QCBMKukbYz+QjxIIFXAlmZUZryBhr7NeQJmtK+0fOE7dhPDF8XEH8e1sZHF4nf/2Bw4ICeQctZuCK13nR0Sw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
- header.d=fb.com; arc=none
-Authentication-Results: akamai.com; dkim=none (message not signed)
- header.d=none;akamai.com; dmarc=none action=none header.from=fb.com;
-Received: from BY5PR15MB3571.namprd15.prod.outlook.com (2603:10b6:a03:1f6::32)
- by SJ0PR15MB4712.namprd15.prod.outlook.com (2603:10b6:a03:37d::20) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4065.26; Wed, 28 Apr
- 2021 01:27:38 +0000
-Received: from BY5PR15MB3571.namprd15.prod.outlook.com
- ([fe80::718a:4142:4c92:732f]) by BY5PR15MB3571.namprd15.prod.outlook.com
- ([fe80::718a:4142:4c92:732f%6]) with mapi id 15.20.4065.027; Wed, 28 Apr 2021
- 01:27:38 +0000
-Date:   Tue, 27 Apr 2021 18:27:34 -0700
-From:   Martin KaFai Lau <kafai@fb.com>
-To:     Jason Baron <jbaron@akamai.com>
-CC:     Kuniyuki Iwashima <kuniyu@amazon.co.jp>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Alexei Starovoitov <ast@kernel.org>,
+        id S236075AbhD1Bdd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 27 Apr 2021 21:33:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60200 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230425AbhD1Bdb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 27 Apr 2021 21:33:31 -0400
+Received: from mail-pj1-x1029.google.com (mail-pj1-x1029.google.com [IPv6:2607:f8b0:4864:20::1029])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 21CFDC061574;
+        Tue, 27 Apr 2021 18:32:46 -0700 (PDT)
+Received: by mail-pj1-x1029.google.com with SMTP id lr7so13751545pjb.2;
+        Tue, 27 Apr 2021 18:32:46 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=qca+IPsUAPrq1jWTPf4EozlEUnBTrV+ZPIqiR+ky1JQ=;
+        b=ORXh/LLbAfU+8/sWugoYarqa7pusbG91xfssYZE9yhK1NLgZReSmJpOGPNHaT0I4HN
+         Yi8vS8GlNvrpBYAmKaJcBUp/HGNPWgGWhahoHUbwDDj1gNpqk99W99UXzS2JUngs+M72
+         6VyOPUZkMqB4MFRVDS6IWXI3KcDdQ4OSW6Xwx2og6T3gVvxJiwE1FPl5GnsjMArIpeFR
+         /3LKgpoTwptbs7396JO31DOUD9izdPyBO0baeqCa6o5LTU5RErtCRVSyv0bY+fQjcK83
+         k/t1OWqhv4gaF0MCzlwQbKx8K6gQ370//hiY5uFx7zxfqh8k1/EuTDrjbyJXPQmfRMZw
+         VW5A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=qca+IPsUAPrq1jWTPf4EozlEUnBTrV+ZPIqiR+ky1JQ=;
+        b=pMkRkZ3MuDi9Q0IyTLn28YI80U4H1rTxsEOImzQRIO8UYrQmxHBZD3s9TqaEypfN3a
+         qP33ozv/l12ZkP9ztnoodwpcVUNX656PvurYLFnCT4O79y1R9S1d7tH3kn68jgETVHx9
+         qCry530AY/DtINNvrUEW5PaRX+u+X8meItJOyEiY29Hb1tWHhnpO9cSU1G4Lrvu97hax
+         jxyuVhznn2jsdJkWwP45QEDFTp2gNqcPJbEF4eS2m7EZMd55fqdT3EGmUKdpdkg0kNK3
+         bpXAHuEESfh022F3beZPV0Xl9kHgFqRRfR/8JRHpRKaQvYkz/tWjipGQc9ZDtn+Wxd1j
+         Cz9A==
+X-Gm-Message-State: AOAM531OR4aXSRPWfSTrNiAyq/NuwOLn33w724lsox9fGPAi1qG9xcE4
+        mSXxgxiTD6VpI1Z84EBgoh4N2tveKJ0=
+X-Google-Smtp-Source: ABdhPJwHb7ifWte6HyI1Zi60rgxvNLQ4KMxTUs9V0ymndIrLF3j8UqP7ZXNJjkdQmEVeVz5bYsb1mw==
+X-Received: by 2002:a17:90b:797:: with SMTP id l23mr9531980pjz.160.1619573565640;
+        Tue, 27 Apr 2021 18:32:45 -0700 (PDT)
+Received: from ast-mbp.dhcp.thefacebook.com ([2620:10d:c090:400::5:2e71])
+        by smtp.gmail.com with ESMTPSA id f1sm3228734pjt.50.2021.04.27.18.32.43
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 27 Apr 2021 18:32:44 -0700 (PDT)
+Date:   Tue, 27 Apr 2021 18:32:42 -0700
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
         Daniel Borkmann <daniel@iogearbox.net>,
         Andrii Nakryiko <andrii@kernel.org>,
-        Benjamin Herrenschmidt <benh@amazon.com>,
-        Kuniyuki Iwashima <kuni1840@gmail.com>, <bpf@vger.kernel.org>,
-        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v4 bpf-next 00/11] Socket migration for SO_REUSEPORT.
-Message-ID: <20210428012734.cbzie3ihf6fbx5kp@kafai-mbp.dhcp.thefacebook.com>
-References: <20210427034623.46528-1-kuniyu@amazon.co.jp>
- <a10fdca5-7772-6edb-cbe6-c3fe66f57391@akamai.com>
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <a10fdca5-7772-6edb-cbe6-c3fe66f57391@akamai.com>
-X-Originating-IP: [2620:10d:c090:400::5:9d7f]
-X-ClientProxiedBy: MWHPR14CA0032.namprd14.prod.outlook.com
- (2603:10b6:300:12b::18) To BY5PR15MB3571.namprd15.prod.outlook.com
- (2603:10b6:a03:1f6::32)
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Kernel Team <kernel-team@fb.com>
+Subject: Re: [PATCH v2 bpf-next 09/16] libbpf: Support for fd_idx
+Message-ID: <20210428013242.2iqeygfpmoyzwvxh@ast-mbp.dhcp.thefacebook.com>
+References: <20210423002646.35043-1-alexei.starovoitov@gmail.com>
+ <20210423002646.35043-10-alexei.starovoitov@gmail.com>
+ <CAEf4BzZ5CJmF45_aBWBHt2jYeLjs2o5VXEA3zfLDvTncW_hjZg@mail.gmail.com>
+ <20210427025309.yma2vy4m4qbk5srv@ast-mbp.dhcp.thefacebook.com>
+ <CAEf4BzbDUwev3Wk7_K=2LDwTR0GN8_So8nDUwa9TfSXS0J+FCg@mail.gmail.com>
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from kafai-mbp.dhcp.thefacebook.com (2620:10d:c090:400::5:9d7f) by MWHPR14CA0032.namprd14.prod.outlook.com (2603:10b6:300:12b::18) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4087.25 via Frontend Transport; Wed, 28 Apr 2021 01:27:36 +0000
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 2b3b3052-21dd-4245-3b1d-08d909e4cefc
-X-MS-TrafficTypeDiagnostic: SJ0PR15MB4712:
-X-Microsoft-Antispam-PRVS: <SJ0PR15MB4712555732E543B0CD2F415AD5409@SJ0PR15MB4712.namprd15.prod.outlook.com>
-X-FB-Source: Internal
-X-MS-Oob-TLC-OOBClassifiers: OLM:9508;
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 7g7Uarnq3x7pSsKeeiWl9/NiO+hvo5QjxwgUi7vZ4khqEILso74SFjY9om9u3o9GshvisrXnVcCKnifKHgSNAbVl5S4SHwKmSXeAARRRhGpHe+yN8gJhHKlfWpd1njyvBUqLfYkdoVqUq0ikuj8mt2hdFjqifCPPfvjqzpGOVHQHFqpM1SJF66geMbhfLOzCwVW/NprD8PdGZP6Xu0DG/+MMVVBzguo78FXImiULBsGgkH2fM7Jhin0JEPlKC1Zb0L1wlpOICdiKtHHzfZd+OT/mKR1LYWePpF2Px8Ts/uaZDoOkuQQpEceku8jNaOhsRpElMAqICs+JJohAeK2nerrXD8Rzhm1Bx0illocdgPEDxdPfuRrA259wKSs2tI1FUzNM9h0Yjcuutx5ielcH+C5gins/zJvTQ8uWOQkfXtRQRBi/vNb4cMfpEmp7Jm6x5Or5DeZgWnfjv+6VFaalq/1xhApxIBNbW9r0bv92i2WSv3S2F8c9tdwA7pkiCAoH/1bFS2tK48Ej9003kxmi1lwLwjjAR5uJDk7X6EYD2AE4xOb19skxmeTs34xkX4NgOCd4WJiDhAZQ5QIxqY/7FfWPjLouSRrlstFaC9BnaDY=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BY5PR15MB3571.namprd15.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(346002)(396003)(39860400002)(366004)(376002)(136003)(1076003)(66556008)(5660300002)(66946007)(316002)(4326008)(66476007)(53546011)(6506007)(54906003)(52116002)(7696005)(2906002)(16526019)(186003)(8676002)(8936002)(478600001)(86362001)(55016002)(38100700002)(9686003)(7416002)(83380400001)(6916009);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData: =?us-ascii?Q?+leGrerUASDrAT+tq4dW1zwUQwQDd+KOJtC/6c6kQlM7627MTNMDjoDAg/7B?=
- =?us-ascii?Q?pkt2KTIli5OoYkyxHGP8HpQUAs5YzABnt2WSEzJMm5hhA7AnEAdKzKzGE3hq?=
- =?us-ascii?Q?3OIBh/DHnXTlk4kXDZHl7U/etutbwTC/JYN4SjE5kwartpC0ijUCuUlrOQNi?=
- =?us-ascii?Q?jxDT3lAthYudQxUPWDmqLzHBDzHNwbQfWS8gXzP03Dg+0IddTKa4meJIYax2?=
- =?us-ascii?Q?/t0+RDqMRa9dwk1EEa3dFJTzGH52o3lBFRL0ybbgB2p7K8mMQt7yDxsInEtC?=
- =?us-ascii?Q?lytYW3a295WRkiFUpRfUEa/sf6KNxa3S9hJFmB6ON7NYKOQD8v+sabafzUfx?=
- =?us-ascii?Q?S6AHTWgTAGnedsYe1f9xVJIQItflOqz4ruvBoeYne4tch5sdosUwRRdfa8Vw?=
- =?us-ascii?Q?avFTUF4oKNSfxi5a9U2Ots374ecF2o5XOTyBtL4KcwfBBGQ06iVLkkbSa43r?=
- =?us-ascii?Q?sdlst1ZGbctuG1Rca68hHzh+gk3yJsuMsdbXssWMHO3tRIfHi+WGVyZuc78J?=
- =?us-ascii?Q?u/+grhLqzpd5igLlmwLm1IsoGKIPVO94HLVrETeQumZIBq+aqann4ptJRBmS?=
- =?us-ascii?Q?9O6Kw6ab7vNJegEV4CCKqC9sKQVA/SyOPu/rfla3i6FDBeEls0PCQxUsgK3s?=
- =?us-ascii?Q?jT5bLpwMvU37AAYAVvBmMz0en4d+ixHUfZofxYAOQtuDTd36ZlQ+ImImMMBh?=
- =?us-ascii?Q?UIGYFVaI5HhFwwkXtyNnZDtrtikd1ssMOxTAk7FICs1N4S81GGCv4lYd4thg?=
- =?us-ascii?Q?+Ebe/xysto8hDwAr2rhx/qd4qVaKgsNS/C1s3AA+/TQ5uHko9hUlcBKnpWKI?=
- =?us-ascii?Q?TBVZdgncoTxVreIIoxJwxxUVjSh/vonbebw5VEczLLoUkYCjv9yc8JiXxYFP?=
- =?us-ascii?Q?+nI/Ui1oYrhNOkI+CpXRB5/2G7y3K4gxmpxduxIvhGaAHJCiehZWmOQKb/6h?=
- =?us-ascii?Q?Cri26bV3Wr2G/IDtSwTOLrwX1Y6/1vydi7OtxTktRAKG1zL/8Bw85VaoJC3o?=
- =?us-ascii?Q?Ylb3Xp5t7uUlmwYsdntIBL7J1g/a751T7t+l384n1eJyYLjm+cC7Yx9h3DMK?=
- =?us-ascii?Q?VUYBmpDfZLO6DgxIj2aB4QzRPlWVLfJ4DGjatblffABvO7gn0XDyXDPlPYzL?=
- =?us-ascii?Q?qFjjQE+BZ/llVHnrWpiLXkwaAIsjwfGVX0fAXT9YNOfAgkT05QJGMP1H0N6S?=
- =?us-ascii?Q?JVIw8ly6NKDlrNuCbuB6zxrvs27mo0uvP2JwW1Ub3tBKWzYQHgK7bA0hxhiy?=
- =?us-ascii?Q?6YOHTrnlhEaESvDO0xMhlJympRbssYnxQR+YJQsrNnX61/W/FmWSclKPlqdQ?=
- =?us-ascii?Q?i6xmX5U0Szsfsz7K3NTLijRKdeIWgwP2GB75li7sZwLGUw=3D=3D?=
-X-MS-Exchange-CrossTenant-Network-Message-Id: 2b3b3052-21dd-4245-3b1d-08d909e4cefc
-X-MS-Exchange-CrossTenant-AuthSource: BY5PR15MB3571.namprd15.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 28 Apr 2021 01:27:38.2993
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: xGT+yeo10qUy23y13sAzyK1oj6kBXfmiMat9sJmPqstBIZTuf7beIvMnr7w/R0da
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ0PR15MB4712
-X-OriginatorOrg: fb.com
-X-Proofpoint-GUID: oS9vsNRjXqYO2BgyMqAaQYLRHOx-AHBU
-X-Proofpoint-ORIG-GUID: oS9vsNRjXqYO2BgyMqAaQYLRHOx-AHBU
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.391,18.0.761
- definitions=2021-04-27_13:2021-04-27,2021-04-27 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 malwarescore=0
- spamscore=0 lowpriorityscore=0 mlxlogscore=999 mlxscore=0 suspectscore=0
- impostorscore=0 phishscore=0 priorityscore=1501 clxscore=1011 bulkscore=0
- adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2104060000 definitions=main-2104280007
-X-FB-Internal: deliver
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAEf4BzbDUwev3Wk7_K=2LDwTR0GN8_So8nDUwa9TfSXS0J+FCg@mail.gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Apr 27, 2021 at 12:38:58PM -0400, Jason Baron wrote:
+On Tue, Apr 27, 2021 at 09:36:54AM -0700, Andrii Nakryiko wrote:
+> On Mon, Apr 26, 2021 at 7:53 PM Alexei Starovoitov
+> <alexei.starovoitov@gmail.com> wrote:
+> >
+> > On Mon, Apr 26, 2021 at 10:14:45AM -0700, Andrii Nakryiko wrote:
+> > > On Thu, Apr 22, 2021 at 5:27 PM Alexei Starovoitov
+> > > <alexei.starovoitov@gmail.com> wrote:
+> > > >
+> > > > From: Alexei Starovoitov <ast@kernel.org>
+> > > >
+> > > > Add support for FD_IDX make libbpf prefer that approach to loading programs.
+> > > >
+> > > > Signed-off-by: Alexei Starovoitov <ast@kernel.org>
+> > > > ---
+> > > >  tools/lib/bpf/bpf.c             |  1 +
+> > > >  tools/lib/bpf/libbpf.c          | 70 +++++++++++++++++++++++++++++----
+> > > >  tools/lib/bpf/libbpf_internal.h |  1 +
+> > > >  3 files changed, 65 insertions(+), 7 deletions(-)
+> > > >
+> > >
 > 
+> [...]
 > 
-> On 4/26/21 11:46 PM, Kuniyuki Iwashima wrote:
-> > The SO_REUSEPORT option allows sockets to listen on the same port and to
-> > accept connections evenly. However, there is a defect in the current
-> > implementation [1]. When a SYN packet is received, the connection is tied
-> > to a listening socket. Accordingly, when the listener is closed, in-flight
-> > requests during the three-way handshake and child sockets in the accept
-> > queue are dropped even if other listeners on the same port could accept
-> > such connections.
-> > 
-> > This situation can happen when various server management tools restart
-> > server (such as nginx) processes. For instance, when we change nginx
-> > configurations and restart it, it spins up new workers that respect the new
-> > configuration and closes all listeners on the old workers, resulting in the
-> > in-flight ACK of 3WHS is responded by RST.
+> > > >         for (i = 0; i < obj->nr_programs; i++) {
+> > > >                 prog = &obj->programs[i];
+> > > >                 if (prog_is_subprog(obj, prog))
+> > > > @@ -7256,10 +7308,14 @@ bpf_object__load_progs(struct bpf_object *obj, int log_level)
+> > > >                         continue;
+> > > >                 }
+> > > >                 prog->log_level |= log_level;
+> > > > +               prog->fd_array = fd_array;
+> > >
+> > > you are not freeing this memory on success, as far as I can see.
+> >
+> > hmm. there is free on success below.
 > 
-> Hi Kuniyuki,
+> right, my bad, I somehow understood as if it was only for error case
 > 
-> I had implemented a different approach to this that I wanted to get your
-> thoughts about. The idea is to use unix sockets and SCM_RIGHTS to pass the
-> listen fd (or any other fd) around. Currently, if you have an 'old' webserver
-> that you want to replace with a 'new' webserver, you would need a separate
-> process to receive the listen fd and then have that process send the fd to
-> the new webserver, if they are not running con-currently. So instead what
-> I'm proposing is a 'delayed close' for a unix socket. That is, one could do:
+> >
+> > > And
+> > > given multiple programs are sharing fd_array, it's a bit problematic
+> > > for prog to have fd_array. This is per-object properly, so let's add
+> > > it at bpf_object level and clean it up on bpf_object__close()? And by
+> > > assigning to obj->fd_array at malloc() site, you won't need to do all
+> > > the error-handling free()s below.
+> >
+> > hmm. that sounds worse.
+> > why add another 8 byte to bpf_object that won't be used
+> > until this last step of bpf_object__load_progs.
+> > And only for the duration of this loading.
+> > It's cheaper to have this alloc here with two free()s below.
 > 
-> 1) bind unix socket with path '/sockets'
-> 2) sendmsg() the listen fd via the unix socket
-> 2) setsockopt() some 'timeout' on the unix socket (maybe 10 seconds or so)
-> 3) exit/close the old webserver and the listen socket
-> 4) start the new webserver
-> 5) create new unix socket and bind to '/sockets' (if has MAY_WRITE file permissions)
-> 6) recvmsg() the listen fd
-> 
-> So the idea is that we set a timeout on the unix socket. If the new process
-> does not start and bind to the unix socket, it simply closes, thus releasing
-> the listen socket. However, if it does bind it can now call recvmsg() and
-> use the listen fd as normal. It can then simply continue to use the old listen
-> fds and/or create new ones and drain the old ones.
-> 
-> Thus, the old and new webservers do not have to run concurrently. This doesn't
-> involve any changes to the tcp layer and can be used to pass any type of fd.
-> not sure if it's actually useful for anything else though.
-We also used to do tcp-listen(/udp) fd transfer because the new process can not
-bind to the same IP:PORT in the old kernel without SO_REUSEPORT.  Some of the
-services listen to many different IP:PORT(s).  Transferring all of them
-was ok-ish but the old and new process do not necessary listen to the same set
-of IP:PORT(s) (e.g. the config may have changed during restart) and it further
-complicates the fd transfer logic in the userspace.
+> So if you care about extra 8 bytes, then it's even more efficient to
+> have just one obj->fd_array rather than N prog->fd_array, no?
 
-It was then moved to SO_REUSEPORT.  The new process can create its listen fds
-without depending on the old process.  It pretty much starts as if there is
-no old process.  There is no need to transfer the fds, simplified the userspace
-logic.  The old and new process can work independently.  The old and new process
-still run concurrently for a brief time period to avoid service disruption.
+I think it's layer breaking when bpf_program__load()->load_program()
+has to reach out to prog->obj to do its work.
+The layers are already a mess due to:
+&prog->obj->maps[prog->obj->rodata_map_idx]
+I wanted to avoid making it uglier.
+
+> And it's
+> also not very clean that prog->fd_array will have a dangling pointer
+> to deallocated memory after bpf_object__load_progs().
+
+prog->reloc_desc is free and zeroed after __relocate.
+prog->insns are freed and _not_ zereod after __load_progs.
+so prog->fd_array won't be the first such pointer.
+I can add zeroing, of course.
+
+> 
+> But that brings the entire question of why use fd_array at all here?
+> Commit description doesn't explain why libbpf has to use fd_array and
+> why it should be preferred. What are the advantages justifying added
+> complexity and extra memory allocation/clean up? It also reduces test
+> coverage of the "old ways" that offer the same capabilities. I think
+> this should be part of the commit description, if we agree that
+> fd_array has to be used outside of the auto-generated loader program.
+
+I can add a knob to it to use it during loader gen for the loader gen
+and for the runner of the loader prog.
+I think it will add more complexity.
+The bpf CI runs on older kernels, so the test coverage of "old ways"
+is not reduced regardless.
+From the kernel pov BPF_PSEUDO_MAP_FD vs BPF_PSEUDO_MAP_IDX there is
+no advantage.
+From the libbpf side patch 9 looked trivial enough _not_ do it conditionally,
+but whatever. I don't mind more 'if'-s.
