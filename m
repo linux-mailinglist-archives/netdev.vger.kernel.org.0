@@ -2,157 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 34FCA36DD1D
-	for <lists+netdev@lfdr.de>; Wed, 28 Apr 2021 18:33:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 811FA36DD26
+	for <lists+netdev@lfdr.de>; Wed, 28 Apr 2021 18:35:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241067AbhD1Qeb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 28 Apr 2021 12:34:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33506 "EHLO
+        id S240995AbhD1QgT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 28 Apr 2021 12:36:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33954 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241053AbhD1Qe3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 28 Apr 2021 12:34:29 -0400
-Received: from mail-yb1-xb33.google.com (mail-yb1-xb33.google.com [IPv6:2607:f8b0:4864:20::b33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CCCACC061574
-        for <netdev@vger.kernel.org>; Wed, 28 Apr 2021 09:33:44 -0700 (PDT)
-Received: by mail-yb1-xb33.google.com with SMTP id q192so21028724ybg.4
-        for <netdev@vger.kernel.org>; Wed, 28 Apr 2021 09:33:44 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=aTy9+SvPIGV5lFvSWx3LUU1Noi5i+O1/6N3XRc6Yp+s=;
-        b=U4cWdJbnMYockksal5W0qWJ2/o3nLv4Lpk4cU+XKGbqMzFEDbp2Bx5blybQ6IenHy/
-         JCNxwlpGYWOUVPfdYVzj/m4OnSC4V7s5jz8MmW2I6akFZKirqRk8ups8VD9olaeIqMTC
-         w50SxBvWF4kkuIsqyKSuw7Kf0MS552kN6OaZgPxsKL5QNsMn7dlMZSbRBW3isDSraZyz
-         3COqcLh12yU4ZJiwgAEhEidLiRAtdm9+6MQzTeRCl0ePVeSnNQaCRLoo2hhKahQ/qczq
-         v5VpyIc/F/X6QHkzATVBJgptzCxjSsO0Me0zur5U//06nWHYkFhxuKazsfyigLDdfXPM
-         pdEA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=aTy9+SvPIGV5lFvSWx3LUU1Noi5i+O1/6N3XRc6Yp+s=;
-        b=mKmLSwslgQVFoT56bQF7LubKjMNg7TXZmyZjz/UdHYwmAAqMb0l5MC9RAEjPyp1SPT
-         pVI80/D+tDFkQMloOBuB/C5GGYYQOS799820w7yWLnyH7z8PcGhczUv2o2jxThOuNeXz
-         PyJJwYOEb1NgaHAQPh27G55Z+Qe8XQUoj0ZGhNoHgxWsYmovMIE+d++gZamvBt1jrR/k
-         MHpIoQ1M3xnVfAGaJm7La5mOTW1DURsLhQdls9xc47D6V0j/IIynuoutWlG2dRPVXa+V
-         k+gMq6WLEqNwk/VDkfJKYA8Np437kBGREVN0ZoqNIwbc6UJvONH9RHFWsvLniCzbAlzc
-         q5Fw==
-X-Gm-Message-State: AOAM531FsZzo5+c/uYCy6daqg9DQsBaVOn9XrOUl5fc1OVkcgiQCTLdJ
-        YDDkDq3QTbXSbORlZJkMGaQ+7hqmemLeMUX3fO888A==
-X-Google-Smtp-Source: ABdhPJyXU6+c2wQUbkUCk7vbS8NF7UX3oML1F9qyhFbsvHN7HWAaB4kvmEzqKL7yK1wJlDeicuytO5opWykcIG4u9sw=
-X-Received: by 2002:a5b:906:: with SMTP id a6mr33493576ybq.446.1619627623685;
- Wed, 28 Apr 2021 09:33:43 -0700 (PDT)
+        with ESMTP id S240862AbhD1QgS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 28 Apr 2021 12:36:18 -0400
+Received: from mail.as397444.net (mail.as397444.net [IPv6:2620:6e:a000:dead:beef:15:bad:f00d])
+        by lindbergh.monkeyblade.net (Postfix) with UTF8SMTPS id 02A28C0613ED
+        for <netdev@vger.kernel.org>; Wed, 28 Apr 2021 09:35:32 -0700 (PDT)
+Received: by mail.as397444.net (Postfix) with UTF8SMTPSA id F386155B76A;
+        Wed, 28 Apr 2021 16:35:28 +0000 (UTC)
+X-DKIM-Note: Keys used to sign are likely public at https://as397444.net/dkim/
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mattcorallo.com;
+        s=1619625664; t=1619627729;
+        bh=m6s62/obytHANW+CMc2arDEQhP2GDonZEh7Iblwfuho=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=FYUYRnT7iSws5HMgqC/ojba7YSdp/0xJnE9/walA/E98T+QEp/qYCdKuZsuzh6ITJ
+         RxaClR/aaPjVaWE22qXLmGE1Y3MImHgU3y695ywGutwBUk/49IpHY3zChDlzB30mJj
+         peWAd1VwlpqqvDZVQ3otYhOQ4ycTJs26u/7Etz0xKZZMg27dz0Qyc9IBIY4RXm/P9/
+         NnL1LsMDPV1ez9iA2Q0huAZ3aKnTp8qdS1u/D8x8zT+ST7MBWTkLXreiidihGVT1M2
+         AhSvYdqeEm0viKot7Gh3ZXYrBhomPyRpRXmwgxh8BtQBy3+dVyaBmWac+51/E0Sldb
+         JSvTm8y8kB8MQ==
+Message-ID: <64829c98-e4eb-6725-0fee-dc3c6681506f@bluematt.me>
+Date:   Wed, 28 Apr 2021 12:35:28 -0400
 MIME-Version: 1.0
-References: <fabd0598-c62e-ea88-f340-050136bb8266@akamai.com> <20210428155203.39974-1-kuniyu@amazon.co.jp>
-In-Reply-To: <20210428155203.39974-1-kuniyu@amazon.co.jp>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Wed, 28 Apr 2021 18:33:32 +0200
-Message-ID: <CANn89iK2Wy5WJB+57Y9JU24boy=bb4YQCk6DWD4BvhsM3ZVSdQ@mail.gmail.com>
-Subject: Re: [PATCH v4 bpf-next 00/11] Socket migration for SO_REUSEPORT.
-To:     Kuniyuki Iwashima <kuniyu@amazon.co.jp>
-Cc:     Jason Baron <jbaron@akamai.com>, andrii@kernel.org,
-        Alexei Starovoitov <ast@kernel.org>,
-        Benjamin Herrenschmidt <benh@amazon.com>,
-        bpf <bpf@vger.kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        David Miller <davem@davemloft.net>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Kuniyuki Iwashima <kuni1840@gmail.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Subject: Re: [PATCH net-next] Reduce IP_FRAG_TIME fragment-reassembly timeout
+ to 1s, from 30s
+Content-Language: en-US
+To:     Eric Dumazet <edumazet@google.com>
+Cc:     Willy Tarreau <w@1wt.eu>, "David S. Miller" <davem@davemloft.net>,
+        netdev <netdev@vger.kernel.org>,
+        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        Keyu Man <kman001@ucr.edu>
+References: <d840ddcf-07a6-a838-abf8-b1d85446138e@bluematt.me>
+ <CANn89i+L2DuD2+EMHzwZ=qYYKo1A9gw=nTTmh20GV_o9ADxe2Q@mail.gmail.com>
+ <0cb19f7e-a9b3-58f8-6119-0736010f1326@bluematt.me>
+ <20210428141319.GA7645@1wt.eu>
+ <055d0512-216c-9661-9dd4-007c46049265@bluematt.me>
+ <CANn89iKfGhNYJVpj4T2MLkomkwPsYWyOof+COVvNFsfVfb7CRQ@mail.gmail.com>
+From:   Matt Corallo <netdev-list@mattcorallo.com>
+In-Reply-To: <CANn89iKfGhNYJVpj4T2MLkomkwPsYWyOof+COVvNFsfVfb7CRQ@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Apr 28, 2021 at 5:52 PM Kuniyuki Iwashima <kuniyu@amazon.co.jp> wrote:
->
-> From:   Jason Baron <jbaron@akamai.com>
-> Date:   Wed, 28 Apr 2021 10:44:12 -0400
-> > On 4/28/21 4:13 AM, Kuniyuki Iwashima wrote:
-> > > From:   Jason Baron <jbaron@akamai.com>
-> > > Date:   Tue, 27 Apr 2021 12:38:58 -0400
-> > >> On 4/26/21 11:46 PM, Kuniyuki Iwashima wrote:
-> > >>> The SO_REUSEPORT option allows sockets to listen on the same port and to
-> > >>> accept connections evenly. However, there is a defect in the current
-> > >>> implementation [1]. When a SYN packet is received, the connection is tied
-> > >>> to a listening socket. Accordingly, when the listener is closed, in-flight
-> > >>> requests during the three-way handshake and child sockets in the accept
-> > >>> queue are dropped even if other listeners on the same port could accept
-> > >>> such connections.
-> > >>>
-> > >>> This situation can happen when various server management tools restart
-> > >>> server (such as nginx) processes. For instance, when we change nginx
-> > >>> configurations and restart it, it spins up new workers that respect the new
-> > >>> configuration and closes all listeners on the old workers, resulting in the
-> > >>> in-flight ACK of 3WHS is responded by RST.
-> > >>
-> > >> Hi Kuniyuki,
-> > >>
-> > >> I had implemented a different approach to this that I wanted to get your
-> > >> thoughts about. The idea is to use unix sockets and SCM_RIGHTS to pass the
-> > >> listen fd (or any other fd) around. Currently, if you have an 'old' webserver
-> > >> that you want to replace with a 'new' webserver, you would need a separate
-> > >> process to receive the listen fd and then have that process send the fd to
-> > >> the new webserver, if they are not running con-currently. So instead what
-> > >> I'm proposing is a 'delayed close' for a unix socket. That is, one could do:
-> > >>
-> > >> 1) bind unix socket with path '/sockets'
-> > >> 2) sendmsg() the listen fd via the unix socket
-> > >> 2) setsockopt() some 'timeout' on the unix socket (maybe 10 seconds or so)
-> > >> 3) exit/close the old webserver and the listen socket
-> > >> 4) start the new webserver
-> > >> 5) create new unix socket and bind to '/sockets' (if has MAY_WRITE file permissions)
-> > >> 6) recvmsg() the listen fd
-> > >>
-> > >> So the idea is that we set a timeout on the unix socket. If the new process
-> > >> does not start and bind to the unix socket, it simply closes, thus releasing
-> > >> the listen socket. However, if it does bind it can now call recvmsg() and
-> > >> use the listen fd as normal. It can then simply continue to use the old listen
-> > >> fds and/or create new ones and drain the old ones.
-> > >>
-> > >> Thus, the old and new webservers do not have to run concurrently. This doesn't
-> > >> involve any changes to the tcp layer and can be used to pass any type of fd.
-> > >> not sure if it's actually useful for anything else though.
-> > >>
-> > >> I'm not sure if this solves your use-case or not but I thought I'd share it.
-> > >> One can also inherit the fds like in systemd's socket activation model, but
-> > >> that again requires another process to hold open the listen fd.
-> > >
-> > > Thank you for sharing code.
-> > >
-> > > It seems bit more crash-tolerant than normal fd passing, but it can still
-> > > suffer if the process dies before passing fds. With this patch set, we can
-> > > migrate children sockets even if the process dies.
-> > >
-> >
-> > I don't think crashing should be much of an issue. The old server can setup the
-> > unix socket patch '/sockets' when it starts up and queue the listen sockets
-> > there from the start. When it dies it will close all its fds, and the new
-> > server can pick anything up any fds that are in the '/sockets' queue.
-> >
-> >
-> > > Also, as Martin said, fd passing tends to make application complicated.
-> > >
-> >
-> > It may be but perhaps its more flexible? It gives the new server the
-> > chance to re-use the existing listen fds, close, drain and/or start new
-> > ones. It also addresses the non-REUSEPORT case where you can't bind right
-> > away.
->
-> If the flexibility is really worth the complexity, we do not care about it.
-> But, SO_REUSEPORT can give enough flexibility we want.
->
-> With socket migration, there is no need to reuse listener (fd passing),
-> drain children (incoming connections are automatically migrated if there is
-> already another listener bind()ed), and of course another listener can
-> close itself and migrated children.
->
-> If two different approaches resolves the same issue and one does not need
-> complexity in userspace, we select the simpler one.
 
-Kernel bloat and complexity is _not_ the simplest choice.
 
-Touching a complex part of TCP stack is quite risky.
+On 4/28/21 11:38, Eric Dumazet wrote:
+> On Wed, Apr 28, 2021 at 4:28 PM Matt Corallo
+> <netdev-list@mattcorallo.com> wrote:
+> I have been working in wifi environments (linux conferences) where RTT
+> could reach 20 sec, and even 30 seconds, and this was in some very
+> rich cities in the USA.
+> 
+> Obviously, when a network is under provisioned by 50x factor, you
+> _need_ more time to complete fragments.
+
+Its also a trade-off - if you're in a hugely under-provisioned environment with bufferblot issues you may have some 
+fragments that need more time for reassembly if they've gotten horribly reordered (though just having 20 second RTT 
+doesn't imply that fragments are going to be re-ordered by 20 seconds, more likely you might see a small fraction of 
+it), but you're also likely to have more *lost* fragments, which can trigger the black-holing behavior here.
+
+If you have some loss in the flow, its very easy to hit 1Mbps of lost fragments and suddenly instead of just giving more 
+time to reassemble, you're just black-holing instead. I'm not claiming I have the right trade-off here, I'd love more 
+input, but at least in my experience trying to just occasionally send fragments on a pretty standard DOCSIS modem, 30s 
+is way off.
+
+> For some reason, the crazy IP reassembly stuff comes every couple of
+> years, and it is now a FAQ.
+> 
+> The Internet has changed for the  lucky ones, but some deployments are
+> using 4Mbps satellite connectivity, shared by hundreds of people.
+
+I'd think this is a great example of a case where you precisely *dont* want such a low threshold for dropping all 
+fragments. Note that in my specific deployment (standard DOCSIS), we're talking about the same speed and network as was 
+available ten years ago, this isn't exactly an uncommon or particularly fancy deployment. The real issue is applications 
+which happily send 8MB of fragments within a few seconds and suddenly find themselves completely black-holed for 30 
+seconds, but this isn't going to just go away.
+
+> I urge application designers to _not_ rely on doomed frags, even in
+> controlled networks.
+
+I'd love to, but we're talking about a default value for fragment reassembly. At least in my subjective experience here, 
+the conservative 30s time takes things from "more time" to "completely blackhole", which feels like the wrong tradeoff. 
+At the end of the day, you can't expect fragments to work super well, indeed, and you assume some amount of loss, the 
+goal is to minimize the loss you see from them.
+
+Even if you have some reordering, you're unlikely to see every fragment reordered (I guess you could imagine a horribly 
+broken qdisc, does such a thing exist in practice?) such that you always need 30s to reassemble. Taking some loss to 
+avoid making it so easy to completely blackhole fragments seems like a reasonable tradeoff.
+
+Matt
