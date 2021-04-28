@@ -2,61 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CB19736D975
-	for <lists+netdev@lfdr.de>; Wed, 28 Apr 2021 16:20:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9DDF936D996
+	for <lists+netdev@lfdr.de>; Wed, 28 Apr 2021 16:28:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239805AbhD1OTo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 28 Apr 2021 10:19:44 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:44582 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230050AbhD1OTn (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 28 Apr 2021 10:19:43 -0400
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
-        (envelope-from <andrew@lunn.ch>)
-        id 1lbl1g-001WIT-Dq; Wed, 28 Apr 2021 16:18:52 +0200
-Date:   Wed, 28 Apr 2021 16:18:52 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Vadym Kochan <vadym.kochan@plvision.eu>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        Taras Chornyi <tchornyi@marvell.com>,
-        linux-kernel@vger.kernel.org,
-        Mickey Rachamim <mickeyr@marvell.com>,
-        Vadym Kochan <vkochan@marvell.com>
-Subject: Re: [PATCH net-next 1/3] net: marvell: prestera: bump supported
- firmware version to 3.0
-Message-ID: <YIluzFlPtSRvS/dR@lunn.ch>
-References: <20210423155933.29787-1-vadym.kochan@plvision.eu>
- <20210423155933.29787-2-vadym.kochan@plvision.eu>
- <YIL6feaar8Y/yOaZ@lunn.ch>
- <20210423170437.GC17656@plvision.eu>
- <YIMLcsstbpY215oJ@lunn.ch>
- <20210428134724.GA405@plvision.eu>
+        id S234156AbhD1O3I (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 28 Apr 2021 10:29:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33588 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229520AbhD1O3I (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 28 Apr 2021 10:29:08 -0400
+Received: from mail.as397444.net (mail.as397444.net [IPv6:2620:6e:a000:dead:beef:15:bad:f00d])
+        by lindbergh.monkeyblade.net (Postfix) with UTF8SMTPS id 4B4A1C061573
+        for <netdev@vger.kernel.org>; Wed, 28 Apr 2021 07:28:23 -0700 (PDT)
+Received: by mail.as397444.net (Postfix) with UTF8SMTPSA id 3F5EE55B235;
+        Wed, 28 Apr 2021 14:28:22 +0000 (UTC)
+X-DKIM-Note: Keys used to sign are likely public at https://as397444.net/dkim/
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mattcorallo.com;
+        s=1619618465; t=1619620102;
+        bh=VCdjVmz5p97uzhJIgNPBAMvTLEF1wAZ6Fhnge8Z/eiY=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=XVCf4g7AOP2l3ZjQ/boX8dKbD74WH/g3co6u3pJTPm5DMeAw6W8kXLJnhNCzhE4gN
+         Z2VOfMfR48jyW6dRiL2pmZNJ9NhktpboV7Wc1hjdiSIN+sLEiDod5NJK8SOJrJOaVg
+         N4eRF77E6xUdVNU/nRzQHgtoFNr24OZyfFGnpjuPeHqI0R2RNO7GEoO8NjzJfJ358W
+         4kbUwsYf1aiDNWgFYGSYqXXB9xZ3NQexT/eDZX6YVJFvbx/235L3DxTbN3WtBS/f9s
+         FDzNjRtVnQaIHrkNE+E+4Htn2fleEPvS/m2GVgnEZkPiZTXdvV3L1XUBcCJsOWzzi5
+         HcspAf9vjOItA==
+Message-ID: <055d0512-216c-9661-9dd4-007c46049265@bluematt.me>
+Date:   Wed, 28 Apr 2021 10:28:22 -0400
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210428134724.GA405@plvision.eu>
+Subject: Re: [PATCH net-next] Reduce IP_FRAG_TIME fragment-reassembly timeout
+ to 1s, from 30s
+Content-Language: en-US
+To:     Willy Tarreau <w@1wt.eu>
+Cc:     Eric Dumazet <edumazet@google.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        netdev <netdev@vger.kernel.org>,
+        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        Keyu Man <kman001@ucr.edu>
+References: <d840ddcf-07a6-a838-abf8-b1d85446138e@bluematt.me>
+ <CANn89i+L2DuD2+EMHzwZ=qYYKo1A9gw=nTTmh20GV_o9ADxe2Q@mail.gmail.com>
+ <0cb19f7e-a9b3-58f8-6119-0736010f1326@bluematt.me>
+ <20210428141319.GA7645@1wt.eu>
+From:   Matt Corallo <netdev-list@mattcorallo.com>
+In-Reply-To: <20210428141319.GA7645@1wt.eu>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> Regarding the distribution issue when the driver version might be released
-> earlier than the firmware, it looks like that the probability of such
-> case is very low because the distributor of the target Linux system will
-> keep track (actually this is how I see it) that driver and firmware
-> versions are aligned.
 
-You really expect Debian, Redhat, openWRT, SuSE to keep a close eye on
-your kernel driver and update their packages at a time you suggest?
 
-I'm also not sure your management port argument is valid. This is an
-enterprise switch, not a TOR. It is probably installed in some broom
-cupboard at a satellite facility. The management port is not likely to
-have its own dedicated link back to the central management
-site. Upgrades are going to be applied over the network, and you have
-a real danger of turning it into a remote brick, needing local access
-to restore it.
+On 4/28/21 10:13, Willy Tarreau wrote:
+> On Wed, Apr 28, 2021 at 10:09:00AM -0400, Matt Corallo wrote:
+> Regardless of retransmits, large RTTs are often an indication of buffer bloat
+> on the path, and this can take some fragments apart, even worse when you mix
+> this with multi-path routing where some fragments may take a short path and
+> others can take a congested one. In this case you'll note that the excessive
+> buffer time can become a non-negligible part of the observed RTT, hence the
+> indirect relation between the two.
 
-I really think you need to support two firmware generations.
+Right, buffer bloat is definitely a concern. Would it make more sense to reduce the default to somewhere closer to 3s?
 
-  Andrew
+More generally, I find this a rather interesting case - obviously breaking *deployed* use-cases of Linux is Really Bad, 
+but at the same time, the internet has changed around us and suddenly other reasonable use-cases of Linux (ie as a 
+router processing real-world consumer flows - in my case a stupid DOCSIS modem dropping 1Mbps from its measly 20Mbps 
+limit) have slowly broken instead.
+
+Matt
