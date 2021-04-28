@@ -2,92 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6F3D036D922
-	for <lists+netdev@lfdr.de>; Wed, 28 Apr 2021 16:03:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 84EED36D943
+	for <lists+netdev@lfdr.de>; Wed, 28 Apr 2021 16:09:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240142AbhD1OAs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 28 Apr 2021 10:00:48 -0400
-Received: from foss.arm.com ([217.140.110.172]:43014 "EHLO foss.arm.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S240119AbhD1OAr (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 28 Apr 2021 10:00:47 -0400
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 5961211B3;
-        Wed, 28 Apr 2021 07:00:02 -0700 (PDT)
-Received: from entos-ampere-02.shanghai.arm.com (entos-ampere-02.shanghai.arm.com [10.169.214.110])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id 65F353F694;
-        Wed, 28 Apr 2021 06:59:56 -0700 (PDT)
-From:   Jia He <justin.he@arm.com>
-To:     Linus Torvalds <torvalds@linux-foundation.org>,
-        Petr Mladek <pmladek@suse.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Sergey Senozhatsky <senozhatsky@chromium.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Luca Coelho <luciano.coelho@intel.com>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Heiko Carstens <hca@linux.ibm.com>,
-        Vasily Gorbik <gor@linux.ibm.com>
-Cc:     Christian Borntraeger <borntraeger@de.ibm.com>,
-        Johannes Berg <johannes.berg@intel.com>,
-        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-s390@vger.kernel.org, Jia He <justin.he@arm.com>
-Subject: [PATCH 4/4] lib/test_printf: Explicitly add components number to %pD and %pd
-Date:   Wed, 28 Apr 2021 21:59:29 +0800
-Message-Id: <20210428135929.27011-4-justin.he@arm.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20210428135929.27011-1-justin.he@arm.com>
-References: <20210428135929.27011-1-justin.he@arm.com>
+        id S231639AbhD1OKC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 28 Apr 2021 10:10:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57536 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230463AbhD1OJs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 28 Apr 2021 10:09:48 -0400
+Received: from mail.as397444.net (mail.as397444.net [IPv6:2620:6e:a000:dead:beef:15:bad:f00d])
+        by lindbergh.monkeyblade.net (Postfix) with UTF8SMTPS id DDAD1C061573
+        for <netdev@vger.kernel.org>; Wed, 28 Apr 2021 07:09:03 -0700 (PDT)
+Received: by mail.as397444.net (Postfix) with UTF8SMTPSA id 7A0EB55B157;
+        Wed, 28 Apr 2021 14:09:00 +0000 (UTC)
+X-DKIM-Note: Keys used to sign are likely public at https://as397444.net/dkim/
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mattcorallo.com;
+        s=1619617264; t=1619618940;
+        bh=kPwfSc6GZgnHMSGESH3gG0Wx7jV1FtRi/+5fwFXQmm4=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=FLBX1OwnVVsPckLrFoL3ZTrbui5NGZnaEbgmb/4jspbMHbV29UM5jTCcHukE0nhSz
+         cQzZlKPZkAjVNrXHOOxdZ6yCxVKSDxOOxVB3A2wUCfhvKaqWth4/VuBDoS8dKRtZPq
+         WkpMdqnFJSw9Acmg4Uo459s3wHxass6GXy8loQ5vYiadGoclRtq87+1zbiu0F2Efzr
+         QWtMfKtwKBtf21BP3Vc6ZanGzdDRqdarOgBVYvPYbbP5tamX6VgQlYPkKrcdiTBhHL
+         1uSpBBm/cbp03pATg5ucW5gQZoUUF7sEFiEyRsxar7z3waOmXCMjjJrFpgedyt0xcd
+         FSIliJVgHxb/Q==
+Message-ID: <0cb19f7e-a9b3-58f8-6119-0736010f1326@bluematt.me>
+Date:   Wed, 28 Apr 2021 10:09:00 -0400
+MIME-Version: 1.0
+Subject: Re: [PATCH net-next] Reduce IP_FRAG_TIME fragment-reassembly timeout
+ to 1s, from 30s
+Content-Language: en-US
+To:     Eric Dumazet <edumazet@google.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        netdev <netdev@vger.kernel.org>,
+        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        Willy Tarreau <w@1wt.eu>, Keyu Man <kman001@ucr.edu>
+References: <d840ddcf-07a6-a838-abf8-b1d85446138e@bluematt.me>
+ <CANn89i+L2DuD2+EMHzwZ=qYYKo1A9gw=nTTmh20GV_o9ADxe2Q@mail.gmail.com>
+From:   Matt Corallo <netdev-list@mattcorallo.com>
+In-Reply-To: <CANn89i+L2DuD2+EMHzwZ=qYYKo1A9gw=nTTmh20GV_o9ADxe2Q@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-After changing the default components number from 1 to 4 for %pD
-and %pd, it would be better to explicitly add the number in test_printf
-cases.
 
-Add a test case of %pd5 to verify if it can be capped by 4 components.
 
-Signed-off-by: Jia He <justin.he@arm.com>
----
- lib/test_printf.c | 14 ++++++++------
- 1 file changed, 8 insertions(+), 6 deletions(-)
+On 4/28/21 08:20, Eric Dumazet wrote:
+> This is going to break many use cases.
+> 
+> I can certainly say that in many cases, we need more than 1 second to
+> complete reassembly.
+> Some Internet users share satellite links with 600 ms RTT, not
+> everybody has fiber links in 2021.
 
-diff --git a/lib/test_printf.c b/lib/test_printf.c
-index 27b964ec723d..899cd55d1c90 100644
---- a/lib/test_printf.c
-+++ b/lib/test_printf.c
-@@ -478,18 +478,20 @@ static struct dentry test_dentry[4] __initdata = {
- static void __init
- dentry(void)
- {
--	test("foo", "%pd", &test_dentry[0]);
-+	test("foo", "%pd1", &test_dentry[0]);
- 	test("foo", "%pd2", &test_dentry[0]);
- 
--	test("(null)", "%pd", NULL);
--	test("(efault)", "%pd", PTR_INVALID);
--	test("(null)", "%pD", NULL);
--	test("(efault)", "%pD", PTR_INVALID);
-+	test("(null)", "%pd1", NULL);
-+	test("(efault)", "%pd1", PTR_INVALID);
-+	test("(null)", "%pD1", NULL);
-+	test("(efault)", "%pD1", PTR_INVALID);
- 
--	test("romeo", "%pd", &test_dentry[3]);
-+	test("romeo", "%pd1", &test_dentry[3]);
- 	test("alfa/romeo", "%pd2", &test_dentry[3]);
- 	test("bravo/alfa/romeo", "%pd3", &test_dentry[3]);
- 	test("/bravo/alfa/romeo", "%pd4", &test_dentry[3]);
-+	test("/bravo/alfa/romeo", "%pd", &test_dentry[3]);
-+	test("/bravo/alfa/romeo", "%pd5", &test_dentry[3]);
- 	test("/bravo/alfa", "%pd4", &test_dentry[2]);
- 
- 	test("bravo/alfa  |bravo/alfa  ", "%-12pd2|%*pd2", &test_dentry[2], -12, &test_dentry[2]);
--- 
-2.17.1
+I'm curious what RTT has to do with it? Frags aren't resent, so there's no RTT you need to wait for, the question is 
+more your available bandwidth and how much packet reordering you see, which even for many sat links isn't zero anymore 
+(better, in-flow packet reordering is becoming more and more rare!).
 
+Even given some material reordering, 30 seconds on a 100Kb is a lot!
+
+> There is a sysctl, exactly for the cases where admins can decide to
+> make the value smaller.
+
+Sadly this doesn't actually solve it in many cases. Because Linux reassembles fragments by default any time conntrack is 
+loaded (disabling this is very nontrivial), anyone with a Linux box in between two hosts ends up breaking flows with any 
+material loss of frags.
+
+More broadly, just because there is a sysctl, doesn't mean the default needs to be sensible for most users. As you note, 
+there's a sysctl, if someone is on a 1Kbps sat link with fragments sent out of order, they can change it :). This 
+constant hasn't been touched since pre-git!
+
+> You can laugh all you want, the sad thing with IP frags is that really
+> some applications still want to use them.
+
+Yes, including my application, which breaks any time the flow *transits* a Linux box (ie not just my end host(s), but 
+any box in between that happens to have conntrack loaded).
+
+> Also, admins willing to use 400 MB of memory instead of 4MB can just
+> change a sysctl.
+> 
+> Again, nothing will prevent reassembly units to be DDOS targets.
+
+Yep, not claiming any differently. As noted in a previous thread you really have to crank up the limits to prevent DDOS.
+
+> At Google, we use 100 MB for /proc/sys/net/ipv4/ipfrag_high_thresh and
+> /proc/sys/net/ipv6/ip6frag_high_thresh,
+> no kernel patch is needed.
+> 
