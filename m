@@ -2,131 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 81CAA36DD8E
-	for <lists+netdev@lfdr.de>; Wed, 28 Apr 2021 18:51:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D67F336DE0F
+	for <lists+netdev@lfdr.de>; Wed, 28 Apr 2021 19:18:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241381AbhD1QwJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 28 Apr 2021 12:52:09 -0400
-Received: from mail-il1-f199.google.com ([209.85.166.199]:51798 "EHLO
-        mail-il1-f199.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241362AbhD1QwD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 28 Apr 2021 12:52:03 -0400
-Received: by mail-il1-f199.google.com with SMTP id i2-20020a056e021b02b029018159d70cffso22288039ilv.18
-        for <netdev@vger.kernel.org>; Wed, 28 Apr 2021 09:51:18 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=2EHzha25OiaVzXnMbSyW5BA4rWrDD90XuiP853UfWsw=;
-        b=nUwR0fHg2GRSGbM2v+aOkNnvlz2I4W0hOheKf3jOq72EEVN+HkSWTMZp4fEsyCE1gx
-         IenGoUOwGcpbblqbZ0x0w1Col5UpOiBXudO+05kI9Q45IEoyjXDZVd60lBg5ExkyD92U
-         IsD324SmsbHdyVgbb+Rmr3K9tx983ekNYbuoO9V7+5md4KDVNUem2dmXIQVgvyQNkMwI
-         P6PTr23aWLTl/es3SXaq6AcZMozYJlYuKoxchppSZ4LPbXkuHF0cQWP6IaN104qKo02A
-         x4nqYsEvMjmlvv0/t8c/MppEEQZwlFqpCHP79yFoFYJXSWQqLeaID8cywCWXMsxIKUgn
-         AFWg==
-X-Gm-Message-State: AOAM533EDe6JunAiaoweWb6o67PMj7secxDzk3DYlReW7+rgVVaVm7Ad
-        hTYJJG2norbRu+ks2FrTBKylE4d/eIaW47kpI+qU1UG8ataY
-X-Google-Smtp-Source: ABdhPJzDBDL15zCcKRMN/8ppzJ60mDtXTi0p4ttkmlOa5hbyQo/rwGSNsHbMkfaOMK3yzqU2J0CD1kcRiJdhOv9vQ5QPNTNkbLX+
+        id S241549AbhD1RT2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 28 Apr 2021 13:19:28 -0400
+Received: from mx0b-002e3701.pphosted.com ([148.163.143.35]:51288 "EHLO
+        mx0b-002e3701.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S229931AbhD1RT2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 28 Apr 2021 13:19:28 -0400
+Received: from pps.filterd (m0150245.ppops.net [127.0.0.1])
+        by mx0b-002e3701.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 13SGSoOD027118;
+        Wed, 28 Apr 2021 16:31:26 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=hpe.com; h=date : from : to : cc :
+ subject : message-id : reply-to : references : mime-version : content-type
+ : in-reply-to; s=pps0720; bh=FuywRiAvN6X4+WNwga978/a8H8a51VQ003aih6ECUsg=;
+ b=hbhMajzKyVgFQ2yCoCX2cRm4QHe8+NaPsEy0hPYhDVVw1HtD6805dBXotO3ZvblMseCZ
+ KOip45qWIdWUcjpvJnz/8E3cPqU19vr3cjuT/uyW5Lqmrl/qPoS/AlVUG3YfNlzplhHp
+ dENaxKNas6IlpUcDN8CLXUamtRt3EM7v/WRzMVTBbDKuwhdThX1nzNQLnxERB/epereK
+ IHfhr1TeCQgm1snqLhGTjBd3LpNFzuUoJmzpFQehn+Nnq4Tgxhvle16TZsz4MzDtQXys
+ V5/vgIJ3V0jTn3tbzSNKlt1o1yXieuH5pAOKmAiOZboLfSz7bleEjX2sWkC2jMZJQ9Je zA== 
+Received: from g4t3426.houston.hpe.com (g4t3426.houston.hpe.com [15.241.140.75])
+        by mx0b-002e3701.pphosted.com with ESMTP id 387a27rt3w-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 28 Apr 2021 16:31:26 +0000
+Received: from g4t3433.houston.hpecorp.net (g4t3433.houston.hpecorp.net [16.208.49.245])
+        by g4t3426.houston.hpe.com (Postfix) with ESMTP id EC1BA4E;
+        Wed, 28 Apr 2021 16:31:25 +0000 (UTC)
+Received: from bougret.labs.hpecorp.net (bougret.labs.hpecorp.net [10.93.238.30])
+        by g4t3433.houston.hpecorp.net (Postfix) with ESMTP id 51F3C4A;
+        Wed, 28 Apr 2021 16:31:25 +0000 (UTC)
+Received: from jt by bougret.labs.hpecorp.net with local (Exim 4.92)
+        (envelope-from <jt@labs.hpe.com>)
+        id 1lbn5w-0007ZI-Jt; Wed, 28 Apr 2021 09:31:24 -0700
+Date:   Wed, 28 Apr 2021 09:31:24 -0700
+From:   Jean Tourrilhes <jean.tourrilhes@hpe.com>
+To:     Ilya Maximets <i.maximets@ovn.org>
+Cc:     Tonghao Zhang <xiangxia.m.yue@gmail.com>,
+        Pravin B Shelar <pshelar@ovn.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, Andy Zhou <azhou@ovn.org>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        ovs dev <dev@openvswitch.org>, William Tu <u9012063@gmail.com>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        Davide Caratti <dcaratti@redhat.com>
+Subject: Re: [PATCH net] openvswitch: meter: remove rate from the bucket size
+ calculation
+Message-ID: <20210428163124.GA28950@labs.hpe.com>
+Reply-To: jean.tourrilhes@hpe.com
+References: <20210421135747.312095-1-i.maximets@ovn.org>
+ <CAMDZJNVQ64NEhdfu3Z_EtnVkA2D1DshPzfur2541wA+jZgX+9Q@mail.gmail.com>
+ <20210428064553.GA19023@labs.hpe.com>
+ <04bd0073-6eb7-6747-a0b1-3c25cca7873a@ovn.org>
 MIME-Version: 1.0
-X-Received: by 2002:a05:6638:3bc:: with SMTP id z28mr2533847jap.133.1619628677452;
- Wed, 28 Apr 2021 09:51:17 -0700 (PDT)
-Date:   Wed, 28 Apr 2021 09:51:17 -0700
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000fcdbf905c10b2f2e@google.com>
-Subject: [syzbot] BUG: corrupted list in team_priority_option_set
-From:   syzbot <syzbot+7deae1e5de1fc51f6c5d@syzkaller.appspotmail.com>
-To:     davem@davemloft.net, jiri@resnulli.us, kuba@kernel.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <04bd0073-6eb7-6747-a0b1-3c25cca7873a@ovn.org>
+Organisation: HP Labs Palo Alto
+Address: HP Labs, MS1184, 1501 Page Mill road, Palo Alto, CA 94304, USA.
+E-mail: jean.tourrilhes@hpe.com
+User-Agent: Mutt/1.10.1 (2018-07-13)
+X-Proofpoint-GUID: -gplV4EL_BNJiJzH-OpYrkM02K7xErJB
+X-Proofpoint-ORIG-GUID: -gplV4EL_BNJiJzH-OpYrkM02K7xErJB
+X-HPE-SCL: -1
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.391,18.0.761
+ definitions=2021-04-28_10:2021-04-28,2021-04-28 signatures=0
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 adultscore=0 bulkscore=0
+ phishscore=0 mlxscore=0 spamscore=0 lowpriorityscore=0 priorityscore=1501
+ malwarescore=0 impostorscore=0 suspectscore=0 mlxlogscore=999
+ clxscore=1011 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2104060000 definitions=main-2104280106
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+On Wed, Apr 28, 2021 at 01:22:12PM +0200, Ilya Maximets wrote:
+> 
+> I didn't test it, but I looked at the implementation in
+> net/sched/act_police.c and net/sched/sch_tbf.c, and they should work
+> in a same way as this patch, i.e. it's a classic token bucket where
+> burst is a burst and nothing else.
 
-syzbot found the following issue on:
+	Actually, act_police.c and sch_tbf.c will behave completely
+differently, even if they are both based on the token bucket
+algorithm.
+	The reason is that sch_tbf.c is applied to a queue, and the
+queue will smooth out traffic and avoid drops. The token bucket is
+used to dequeue the queue, this is sometime called leaky bucket. I've
+personally used sch_tbf.c with burst size barely bigger than the MTU,
+and it works fine.
+	This is why I was suggesting to compare to act_police.c, which
+does not have a queue to smooth out traffic and can only drop
+packets.
+	I believe OVS meters are similar to policers, so that's why
+they are suprising for people used to queues such as TBF and HTB.
 
-HEAD commit:    57fa2369 Merge tag 'cfi-v5.13-rc1' of git://git.kernel.org..
-git tree:       upstream
-console output: https://syzkaller.appspot.com/x/log.txt?x=138843cdd00000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=c37352b2923ef305
-dashboard link: https://syzkaller.appspot.com/bug?extid=7deae1e5de1fc51f6c5d
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=17741ee1d00000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=13b73aedd00000
+	Regards,
 
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+7deae1e5de1fc51f6c5d@syzkaller.appspotmail.com
-
-list_del corruption, ffff8881411f0b80->prev is LIST_POISON2 (dead000000000122)
-------------[ cut here ]------------
-kernel BUG at lib/list_debug.c:48!
-invalid opcode: 0000 [#1] PREEMPT SMP KASAN
-CPU: 0 PID: 9747 Comm: syz-executor132 Not tainted 5.12.0-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-RIP: 0010:__list_del_entry_valid.cold+0x37/0x4a lib/list_debug.c:48
-Code: f2 ff 0f 0b 4c 89 ea 48 89 ee 48 c7 c7 40 53 c2 89 e8 4d ac f2 ff 0f 0b 4c 89 e2 48 89 ee 48 c7 c7 a0 53 c2 89 e8 39 ac f2 ff <0f> 0b 48 89 ee 48 c7 c7 60 54 c2 89 e8 28 ac f2 ff 0f 0b 83 c3 01
-RSP: 0018:ffffc9000b437438 EFLAGS: 00010286
-RAX: 000000000000004e RBX: 00000000ffffffff RCX: 0000000000000000
-RDX: ffff888015a49c40 RSI: ffffffff815c3fc5 RDI: fffff52001686e79
-RBP: ffff8881411f0b80 R08: 000000000000004e R09: 0000000000000000
-R10: ffffffff815bcd5e R11: 0000000000000000 R12: dead000000000122
-R13: ffff88801213bc70 R14: ffff8881411f0b80 R15: 0000000000000000
-FS:  00007ff078be7700(0000) GS:ffff8880b9c00000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 0000000000000000 CR3: 00000000200f1000 CR4: 0000000000350ef0
-Call Trace:
- __list_del_entry include/linux/list.h:132 [inline]
- list_del_rcu include/linux/rculist.h:166 [inline]
- __team_queue_override_port_del drivers/net/team/team.c:819 [inline]
- team_queue_override_port_prio_changed drivers/net/team/team.c:876 [inline]
- team_priority_option_set+0x169/0x2e0 drivers/net/team/team.c:1519
- team_option_set drivers/net/team/team.c:374 [inline]
- team_nl_cmd_options_set+0x6cb/0xc40 drivers/net/team/team.c:2645
- genl_family_rcv_msg_doit+0x228/0x320 net/netlink/genetlink.c:739
- genl_family_rcv_msg net/netlink/genetlink.c:783 [inline]
- genl_rcv_msg+0x328/0x580 net/netlink/genetlink.c:800
- netlink_rcv_skb+0x153/0x420 net/netlink/af_netlink.c:2502
- genl_rcv+0x24/0x40 net/netlink/genetlink.c:811
- netlink_unicast_kernel net/netlink/af_netlink.c:1312 [inline]
- netlink_unicast+0x533/0x7d0 net/netlink/af_netlink.c:1338
- netlink_sendmsg+0x856/0xd90 net/netlink/af_netlink.c:1927
- sock_sendmsg_nosec net/socket.c:654 [inline]
- sock_sendmsg+0xcf/0x120 net/socket.c:674
- ____sys_sendmsg+0x6e8/0x810 net/socket.c:2350
- ___sys_sendmsg+0xf3/0x170 net/socket.c:2404
- __sys_sendmsg+0xe5/0x1b0 net/socket.c:2433
- do_syscall_64+0x3a/0xb0 arch/x86/entry/common.c:47
- entry_SYSCALL_64_after_hwframe+0x44/0xae
-RIP: 0033:0x44afb9
-Code: 28 00 00 00 75 05 48 83 c4 28 c3 e8 01 16 00 00 90 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 b8 ff ff ff f7 d8 64 89 01 48
-RSP: 002b:00007ff078be7308 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
-RAX: ffffffffffffffda RBX: 00000000004d6338 RCX: 000000000044afb9
-RDX: 0000000000000000 RSI: 0000000020000100 RDI: 000000000000000d
-RBP: 00000000004d6330 R08: 0000000000000040 R09: 0000000000000000
-R10: 0000000000000044 R11: 0000000000000246 R12: 00000000004d633c
-R13: 000000000049f534 R14: 0030656c69662f2e R15: 0000000000022000
-Modules linked in:
----[ end trace d7d0cba5daa525c4 ]---
-RIP: 0010:__list_del_entry_valid.cold+0x37/0x4a lib/list_debug.c:48
-Code: f2 ff 0f 0b 4c 89 ea 48 89 ee 48 c7 c7 40 53 c2 89 e8 4d ac f2 ff 0f 0b 4c 89 e2 48 89 ee 48 c7 c7 a0 53 c2 89 e8 39 ac f2 ff <0f> 0b 48 89 ee 48 c7 c7 60 54 c2 89 e8 28 ac f2 ff 0f 0b 83 c3 01
-RSP: 0018:ffffc9000b437438 EFLAGS: 00010286
-RAX: 000000000000004e RBX: 00000000ffffffff RCX: 0000000000000000
-RDX: ffff888015a49c40 RSI: ffffffff815c3fc5 RDI: fffff52001686e79
-RBP: ffff8881411f0b80 R08: 000000000000004e R09: 0000000000000000
-R10: ffffffff815bcd5e R11: 0000000000000000 R12: dead000000000122
-R13: ffff88801213bc70 R14: ffff8881411f0b80 R15: 0000000000000000
-FS:  00007ff078be7700(0000) GS:ffff8880b9c00000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 00007f2cdd4f6020 CR3: 00000000200f1000 CR4: 0000000000350ef0
-
-
----
-This report is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
-
-syzbot will keep track of this issue. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
-syzbot can test patches for this issue, for details see:
-https://goo.gl/tpsmEJ#testing-patches
+	Jean
