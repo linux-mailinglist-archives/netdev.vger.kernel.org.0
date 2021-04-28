@@ -2,44 +2,46 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2F9DD36D598
-	for <lists+netdev@lfdr.de>; Wed, 28 Apr 2021 12:18:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3763436D5AA
+	for <lists+netdev@lfdr.de>; Wed, 28 Apr 2021 12:20:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238486AbhD1KTZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 28 Apr 2021 06:19:25 -0400
-Received: from mga04.intel.com ([192.55.52.120]:9704 "EHLO mga04.intel.com"
+        id S239266AbhD1KVC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 28 Apr 2021 06:21:02 -0400
+Received: from mga05.intel.com ([192.55.52.43]:52251 "EHLO mga05.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S236343AbhD1KTY (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 28 Apr 2021 06:19:24 -0400
-IronPort-SDR: eEHR3xipS7jmHV3goQtnhO60sQSjKCOUqPMGiXuM17dyXusl715syWSE+yzgyWO738KoHviCfe
- HTQR7xe+7BvA==
-X-IronPort-AV: E=McAfee;i="6200,9189,9967"; a="194591499"
+        id S230248AbhD1KVB (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 28 Apr 2021 06:21:01 -0400
+IronPort-SDR: kpadCj3J+AsXrGk2mCT/D00zqIf/qgoNS0WDNvteuL89SLv8N9QyDs/lSqvEepLXSnCTrImKZw
+ 8hQwxNI2QuzA==
+X-IronPort-AV: E=McAfee;i="6200,9189,9967"; a="282043530"
 X-IronPort-AV: E=Sophos;i="5.82,257,1613462400"; 
-   d="scan'208";a="194591499"
+   d="scan'208";a="282043530"
 Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Apr 2021 03:18:39 -0700
-IronPort-SDR: 35eRNRH85RVTLRH73OYtRFxH45vSLn0DOdo8/CCZsSD6++eUPlh3sleW61lx47OALi0ulx8Rt1
- jUYe0CbePGAA==
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Apr 2021 03:20:15 -0700
+IronPort-SDR: dApj3T9INT2w9mW71TQIAdeviU5ltiqx14WUEmw+LwjnFS3O4jIxFpuC/Hd1E4va7S6f4Z9qIy
+ FcX79hJFbAMQ==
 X-IronPort-AV: E=Sophos;i="5.82,257,1613462400"; 
-   d="scan'208";a="423462467"
+   d="scan'208";a="423463379"
 Received: from lingshan-mobl5.ccr.corp.intel.com (HELO [10.254.209.93]) ([10.254.209.93])
-  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Apr 2021 03:18:37 -0700
-Subject: Re: [PATCH 1/2] vDPA/ifcvf: record virtio notify base
+  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Apr 2021 03:20:12 -0700
+Subject: Re: [PATCH 2/2] vDPA/ifcvf: implement doorbell mapping for ifcvf
 To:     Jason Wang <jasowang@redhat.com>, mst@redhat.com
 Cc:     virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
         kvm@vger.kernel.org, linux-kernel@vger.kernel.org
 References: <20210428082133.6766-1-lingshan.zhu@intel.com>
- <20210428082133.6766-2-lingshan.zhu@intel.com>
- <55217869-b456-f3bc-0b5a-6beaf34c19f8@redhat.com>
- <3243eeef-2891-5b79-29cb-bc969802c5dc@intel.com>
- <4cee04f1-a3fc-eaf0-747a-004ca09b06c0@redhat.com>
+ <20210428082133.6766-3-lingshan.zhu@intel.com>
+ <f6d9a424-9025-3eb5-1cb4-0ff22f7bec63@redhat.com>
+ <5052fced-cd9a-e453-5cb2-39cdde60a208@intel.com>
+ <1984491f-cd5e-d4bc-b328-41e2f2e935fd@redhat.com>
+ <ef510c97-1f1c-a121-99db-b659a5f9518c@intel.com>
+ <4e0eda74-04ac-a889-471b-03fe65c65606@redhat.com>
 From:   "Zhu, Lingshan" <lingshan.zhu@intel.com>
-Message-ID: <b9d6d777-0396-4c97-f463-3f85aa4e975e@intel.com>
-Date:   Wed, 28 Apr 2021 18:18:35 +0800
+Message-ID: <f4cb4619-5634-e42d-0629-5c40f6b0dcd1@intel.com>
+Date:   Wed, 28 Apr 2021 18:20:10 +0800
 User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
  Thunderbird/78.9.0
 MIME-Version: 1.0
-In-Reply-To: <4cee04f1-a3fc-eaf0-747a-004ca09b06c0@redhat.com>
+In-Reply-To: <4e0eda74-04ac-a889-471b-03fe65c65606@redhat.com>
 Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: 8bit
 Content-Language: en-US
@@ -49,90 +51,136 @@ X-Mailing-List: netdev@vger.kernel.org
 
 
 
-On 4/28/2021 6:09 PM, Jason Wang wrote:
+On 4/28/2021 6:03 PM, Jason Wang wrote:
 >
-> 在 2021/4/28 下午6:00, Zhu, Lingshan 写道:
+> 在 2021/4/28 下午5:56, Zhu, Lingshan 写道:
 >>
 >>
->> On 4/28/2021 4:39 PM, Jason Wang wrote:
+>> On 4/28/2021 5:21 PM, Jason Wang wrote:
 >>>
->>> 在 2021/4/28 下午4:21, Zhu Lingshan 写道:
->>>> This commit records virtio notify base addr to implemente
->>>> doorbell mapping feature
+>>> 在 2021/4/28 下午4:59, Zhu, Lingshan 写道:
 >>>>
->>>> Signed-off-by: Zhu Lingshan <lingshan.zhu@intel.com>
->>>> ---
->>>>   drivers/vdpa/ifcvf/ifcvf_base.c | 1 +
->>>>   drivers/vdpa/ifcvf/ifcvf_base.h | 1 +
->>>>   2 files changed, 2 insertions(+)
 >>>>
->>>> diff --git a/drivers/vdpa/ifcvf/ifcvf_base.c 
->>>> b/drivers/vdpa/ifcvf/ifcvf_base.c
->>>> index 1a661ab45af5..cc61a5bfc5b1 100644
->>>> --- a/drivers/vdpa/ifcvf/ifcvf_base.c
->>>> +++ b/drivers/vdpa/ifcvf/ifcvf_base.c
->>>> @@ -133,6 +133,7 @@ int ifcvf_init_hw(struct ifcvf_hw *hw, struct 
->>>> pci_dev *pdev)
->>>> &hw->notify_off_multiplier);
->>>>               hw->notify_bar = cap.bar;
->>>>               hw->notify_base = get_cap_addr(hw, &cap);
->>>> +            hw->notify_pa = pci_resource_start(pdev, cap.bar) + 
->>>> cap.offset;
+>>>> On 4/28/2021 4:42 PM, Jason Wang wrote:
+>>>>>
+>>>>> 在 2021/4/28 下午4:21, Zhu Lingshan 写道:
+>>>>>> This commit implements doorbell mapping feature for ifcvf.
+>>>>>> This feature maps the notify page to userspace, to eliminate
+>>>>>> vmexit when kick a vq.
+>>>>>>
+>>>>>> Signed-off-by: Zhu Lingshan <lingshan.zhu@intel.com>
+>>>>>> ---
+>>>>>>   drivers/vdpa/ifcvf/ifcvf_main.c | 18 ++++++++++++++++++
+>>>>>>   1 file changed, 18 insertions(+)
+>>>>>>
+>>>>>> diff --git a/drivers/vdpa/ifcvf/ifcvf_main.c 
+>>>>>> b/drivers/vdpa/ifcvf/ifcvf_main.c
+>>>>>> index e48e6b74fe2e..afcb71bc0f51 100644
+>>>>>> --- a/drivers/vdpa/ifcvf/ifcvf_main.c
+>>>>>> +++ b/drivers/vdpa/ifcvf/ifcvf_main.c
+>>>>>> @@ -413,6 +413,23 @@ static int ifcvf_vdpa_get_vq_irq(struct 
+>>>>>> vdpa_device *vdpa_dev,
+>>>>>>       return vf->vring[qid].irq;
+>>>>>>   }
+>>>>>>   +static struct vdpa_notification_area 
+>>>>>> ifcvf_get_vq_notification(struct vdpa_device *vdpa_dev,
+>>>>>> +                                   u16 idx)
+>>>>>> +{
+>>>>>> +    struct ifcvf_hw *vf = vdpa_to_vf(vdpa_dev);
+>>>>>> +    struct vdpa_notification_area area;
+>>>>>> +
+>>>>>> +    if (vf->notify_pa % PAGE_SIZE) {
+>>>>>> +        area.addr = 0;
+>>>>>> +        area.size = 0;
+>>>>>
+>>>>>
+>>>>> We don't need this since:
+>>>>>
+>>>>> 1) there's a check in the vhost vDPA
+>>>> I think you mean this code block in vdpa.c
+>>>>         notify = ops->get_vq_notification(vdpa, index);
+>>>>         if (notify.addr & (PAGE_SIZE - 1))
+>>>>                 return -EINVAL;
+>>>>
+>>>> This should work, however, I think the parent driver should ensure 
+>>>> it passes a PAGE_SIZE aligned address to userspace, to be robust, 
+>>>> to be reliable.
 >>>
 >>>
->>> To be more generic and avoid future changes, let's use the math 
->>> defined in the virtio spec.
+>>> The point is parent is unaware of whether or not there's a userspace.
+>> when calling this, I think it targets a usersapce program, why kernel 
+>> space need it, so IMHO no harm if we check this to keep the parent 
+>> driver robust.
+>
+>
+> Again, vDPA device is unaware of what driver that is bound. It could 
+> be virtio-vpda, vhost-vdpa or other in the future. It's only the vDPA 
+> bus driver know how it is actually used.
+>
+>
 >>>
->>> You may refer how it is implemented in virtio_pci vdpa driver[1].
->> Are you suggesting every vq keep its own notify_pa? In this case, we 
->> still need to record notify_pa in hw when init_hw, then initialize 
->> vq->notify_pa accrediting to hw->notify_pa.
+>>>
+>>>>> 2) device is unaware of the bound driver, non page aligned 
+>>>>> doorbell doesn't necessarily meant it can be used
+>>>> Yes, non page aligned doorbell can not be used, so there is a check.
+>>>
+>>>
+>>> Typo, what I meant is "it can't be used". That is to say, we should 
+>>> let the vDPA bus driver to decide whether or not it can be used.
+>> If it is not page aligned, there would be extra complexities for 
+>> vhost/qemu, I see it as a hardware defect, 
 >
 >
-> I meant you need to follow how virtio spec did to calculate the 
-> doorbell address per vq:
->
->         cap.offset + queue_notify_off * notify_off_multiplier
->
-> Obviously, you ignore queue_notify_off and notify_off_multiplier here. 
-> This may bring troubles for the existing device IFCVF and future devices.
->
-> If I understand correctly, this device can be probed by virtio-pci 
-> driver which use the above math. There's no reason for using ad-hoc hack.
-sure, when talking about initialize vq->notify_pa, I mean calculate with 
-with notify_base and multiplier, V2 will include this.
+> It is allowed by the virtio spec, isn't it?
+The spec does not require the doorbell to be page size aligned, however 
+it still a hardware defect if non page size aligned notify base present, 
+I will leave a warning message here instead of the 0 value.
 
-Thanks,
+Thanks
 Zhu Lingshan
 >
 > Thanks
 >
 >
+>> why adapt to this kind of defects?
 >>
 >> Thanks
 >> Zhu Lingshan
 >>>
 >>> Thanks
 >>>
->>> [1] 
->>> https://lore.kernel.org/virtualization/20210415073147.19331-5-jasowang@redhat.com/T/
 >>>
->>>
->>>> IFCVF_DBG(pdev, "hw->notify_base = %p\n",
->>>>                     hw->notify_base);
->>>>               break;
->>>> diff --git a/drivers/vdpa/ifcvf/ifcvf_base.h 
->>>> b/drivers/vdpa/ifcvf/ifcvf_base.h
->>>> index 0111bfdeb342..bcca7c1669dd 100644
->>>> --- a/drivers/vdpa/ifcvf/ifcvf_base.h
->>>> +++ b/drivers/vdpa/ifcvf/ifcvf_base.h
->>>> @@ -98,6 +98,7 @@ struct ifcvf_hw {
->>>>       char config_msix_name[256];
->>>>       struct vdpa_callback config_cb;
->>>>       unsigned int config_irq;
->>>> +    phys_addr_t  notify_pa;
->>>>   };
->>>>     struct ifcvf_adapter {
+>>>>
+>>>> Thanks
+>>>> Zhu Lingshan
+>>>>>
+>>>>> Let's leave those polices to the driver.
+>>>>>
+>>>>> Thanks
+>>>>>
+>>>>>
+>>>>>> +    } else {
+>>>>>> +        area.addr = vf->notify_pa;
+>>>>>> +        area.size = PAGE_SIZE;
+>>>>>> +    }
+>>>>>> +
+>>>>>> +    return area;
+>>>>>> +}
+>>>>>> +
+>>>>>>   /*
+>>>>>>    * IFCVF currently does't have on-chip IOMMU, so not
+>>>>>>    * implemented set_map()/dma_map()/dma_unmap()
+>>>>>> @@ -440,6 +457,7 @@ static const struct vdpa_config_ops 
+>>>>>> ifc_vdpa_ops ={
+>>>>>>       .get_config    = ifcvf_vdpa_get_config,
+>>>>>>       .set_config    = ifcvf_vdpa_set_config,
+>>>>>>       .set_config_cb  = ifcvf_vdpa_set_config_cb,
+>>>>>> +    .get_vq_notification = ifcvf_get_vq_notification,
+>>>>>>   };
+>>>>>>     static int ifcvf_probe(struct pci_dev *pdev, const struct 
+>>>>>> pci_device_id *id)
+>>>>>
+>>>>
 >>>
 >>
 >
