@@ -2,164 +2,127 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 05CC536D3B1
-	for <lists+netdev@lfdr.de>; Wed, 28 Apr 2021 10:10:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A465936D3C0
+	for <lists+netdev@lfdr.de>; Wed, 28 Apr 2021 10:14:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237348AbhD1IKW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 28 Apr 2021 04:10:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33690 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236805AbhD1IKT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 28 Apr 2021 04:10:19 -0400
-Received: from ssl.serverraum.org (ssl.serverraum.org [IPv6:2a01:4f8:151:8464::1:2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A03C7C061574;
-        Wed, 28 Apr 2021 01:09:34 -0700 (PDT)
-Received: from ssl.serverraum.org (web.serverraum.org [172.16.0.2])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ssl.serverraum.org (Postfix) with ESMTPSA id 3392E2224F;
-        Wed, 28 Apr 2021 10:09:17 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
-        t=1619597371;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=M9NlOCpW1MZNsl/vA/TRzY5PiytDAsgS7p11KntpwDc=;
-        b=TeuOHOIozerVUFBEq+kXl+E4fsEw1MWqgROl2oA8Sc/xKOT0oXpynCQIkw1papfFwz22RM
-        ZqopdTbGj/RRv3+sDFrM+3v84W6DRuM04o8XbE5Tyx09iWpSYtyaTodlAwmk1PVwQpm/hS
-        zB6aEh6Z4dXpMFJB4kyQVt3Zk/Jvibs=
+        id S237063AbhD1IOr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 28 Apr 2021 04:14:47 -0400
+Received: from smtp-fw-9102.amazon.com ([207.171.184.29]:30260 "EHLO
+        smtp-fw-9102.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229643AbhD1IOp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 28 Apr 2021 04:14:45 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=amazon.co.jp; i=@amazon.co.jp; q=dns/txt;
+  s=amazon201209; t=1619597641; x=1651133641;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=lH6gKKzDnBLSLUiWoNNJ7pa+DrbTroJokx0jp1w2ygo=;
+  b=pJ9gQYtRZZO4HbZ2zvhIiVekNZLY58axq4rYS2S1nMSVXJyRXOlJUiqw
+   C0VMPJOAEF1l1tsdDzJCWGcBuG8RtFAEUgaaa1wrljduRF6idicekj5En
+   3RIhSrr0OwDLNv9iafh9kcNlOziilSl/bq0e9M5bJAJUx09SQguTur2j2
+   w=;
+X-IronPort-AV: E=Sophos;i="5.82,257,1613433600"; 
+   d="scan'208";a="131388202"
+Received: from pdx4-co-svc-p1-lb2-vlan2.amazon.com (HELO email-inbound-relay-2b-55156cd4.us-west-2.amazon.com) ([10.25.36.210])
+  by smtp-border-fw-9102.sea19.amazon.com with ESMTP; 28 Apr 2021 08:14:00 +0000
+Received: from EX13MTAUWB001.ant.amazon.com (pdx1-ws-svc-p6-lb9-vlan2.pdx.amazon.com [10.236.137.194])
+        by email-inbound-relay-2b-55156cd4.us-west-2.amazon.com (Postfix) with ESMTPS id 414CFA212E;
+        Wed, 28 Apr 2021 08:14:00 +0000 (UTC)
+Received: from EX13D04ANC001.ant.amazon.com (10.43.157.89) by
+ EX13MTAUWB001.ant.amazon.com (10.43.161.207) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.2; Wed, 28 Apr 2021 08:13:58 +0000
+Received: from 88665a182662.ant.amazon.com (10.43.160.81) by
+ EX13D04ANC001.ant.amazon.com (10.43.157.89) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.2; Wed, 28 Apr 2021 08:13:47 +0000
+From:   Kuniyuki Iwashima <kuniyu@amazon.co.jp>
+To:     <jbaron@akamai.com>
+CC:     <andrii@kernel.org>, <ast@kernel.org>, <benh@amazon.com>,
+        <bpf@vger.kernel.org>, <daniel@iogearbox.net>,
+        <davem@davemloft.net>, <edumazet@google.com>, <kafai@fb.com>,
+        <kuba@kernel.org>, <kuni1840@gmail.com>, <kuniyu@amazon.co.jp>,
+        <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>
+Subject: Re: [PATCH v4 bpf-next 00/11] Socket migration for SO_REUSEPORT.
+Date:   Wed, 28 Apr 2021 17:13:42 +0900
+Message-ID: <20210428081342.1944-1-kuniyu@amazon.co.jp>
+X-Mailer: git-send-email 2.30.2
+In-Reply-To: <a10fdca5-7772-6edb-cbe6-c3fe66f57391@akamai.com>
+References: <a10fdca5-7772-6edb-cbe6-c3fe66f57391@akamai.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII;
- format=flowed
-Content-Transfer-Encoding: 7bit
-Date:   Wed, 28 Apr 2021 10:09:17 +0200
-From:   Michael Walle <michael@walle.cc>
-To:     Benjamin Herrenschmidt <benh@kernel.crashing.org>
-Cc:     Rob Herring <robh+dt@kernel.org>,
-        QCA ath9k Development <ath9k-devel@qca.qualcomm.com>,
-        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
-        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
-        linux-kernel@vger.kernel.org,
-        linuxppc-dev <linuxppc-dev@lists.ozlabs.org>,
-        netdev <netdev@vger.kernel.org>,
-        "moderated list:ARM/Mediatek SoC support" 
-        <linux-mediatek@lists.infradead.org>,
-        "open list:MEDIA DRIVERS FOR RENESAS - FCP" 
-        <linux-renesas-soc@vger.kernel.org>,
-        "moderated list:ARM/STM32 ARCHITECTURE" 
-        <linux-stm32@st-md-mailman.stormreply.com>,
-        "open list:ARM/Amlogic Meson..." <linux-amlogic@lists.infradead.org>,
-        linux-oxnas@groups.io, linux-omap <linux-omap@vger.kernel.org>,
-        linux-wireless <linux-wireless@vger.kernel.org>,
-        devicetree@vger.kernel.org, linux-staging@lists.linux.dev,
-        Andrew Lunn <andrew@lunn.ch>,
-        Gregory Clement <gregory.clement@bootlin.com>,
-        Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Paul Mackerras <paulus@samba.org>,
-        Andreas Larsson <andreas@gaisler.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Maxime Ripard <mripard@kernel.org>,
-        Chen-Yu Tsai <wens@csie.org>,
-        Jernej Skrabec <jernej.skrabec@siol.net>,
-        Joyce Ooi <joyce.ooi@intel.com>,
-        Chris Snook <chris.snook@gmail.com>,
-        =?UTF-8?Q?Rafa=C5=82_Mi=C5=82ecki?= <rafal@milecki.pl>,
-        "maintainer:BROADCOM BCM7XXX ARM ARCHITECTURE" 
-        <bcm-kernel-feedback-list@broadcom.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Nicolas Ferre <nicolas.ferre@microchip.com>,
-        Claudiu Beznea <claudiu.beznea@microchip.com>,
-        Sunil Goutham <sgoutham@marvell.com>,
-        Fugang Duan <fugang.duan@nxp.com>,
-        Madalin Bucur <madalin.bucur@nxp.com>,
-        Pantelis Antoniou <pantelis.antoniou@gmail.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Li Yang <leoyang.li@nxp.com>,
-        Yisen Zhuang <yisen.zhuang@huawei.com>,
-        Salil Mehta <salil.mehta@huawei.com>,
-        Hauke Mehrtens <hauke@hauke-m.de>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        Vadym Kochan <vkochan@marvell.com>,
-        Taras Chornyi <tchornyi@marvell.com>,
-        Mirko Lindner <mlindner@marvell.com>,
-        Stephen Hemminger <stephen@networkplumber.org>,
-        Felix Fietkau <nbd@nbd.name>, John Crispin <john@phrozen.org>,
-        Sean Wang <sean.wang@mediatek.com>,
-        Mark Lee <Mark-MC.Lee@mediatek.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Bryan Whitehead <bryan.whitehead@microchip.com>,
-        Vladimir Zapolskiy <vz@mleia.com>,
-        Sergei Shtylyov <sergei.shtylyov@gmail.com>,
-        Byungho An <bh74.an@samsung.com>,
-        Kunihiko Hayashi <hayashi.kunihiko@socionext.com>,
-        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@st.com>,
-        Jose Abreu <joabreu@synopsys.com>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Fabio Estevam <festevam@gmail.com>,
-        NXP Linux Team <linux-imx@nxp.com>,
-        Kevin Hilman <khilman@baylibre.com>,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        Jerome Brunet <jbrunet@baylibre.com>,
-        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
-        Vinod Koul <vkoul@kernel.org>,
-        Nobuhiro Iwamatsu <nobuhiro1.iwamatsu@toshiba.co.jp>,
-        Grygorii Strashko <grygorii.strashko@ti.com>,
-        Wingman Kwok <w-kwok2@ti.com>,
-        Murali Karicheri <m-karicheri2@ti.com>,
-        Michal Simek <michal.simek@xilinx.com>,
-        Radhey Shyam Pandey <radhey.shyam.pandey@xilinx.com>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        Lorenzo Bianconi <lorenzo.bianconi83@gmail.com>,
-        Ryder Lee <ryder.lee@mediatek.com>,
-        Stanislaw Gruszka <stf_xl@wp.pl>,
-        Helmut Schaa <helmut.schaa@googlemail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Frank Rowand <frowand.list@gmail.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        =?UTF-8?Q?J=C3=A9r=C3=B4me_Pouiller?= <jerome.pouiller@silabs.com>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>
-Subject: Re: [PATCH net-next v4 2/2] of: net: fix of_get_mac_addr_nvmem() for
- non-platform devices
-In-Reply-To: <3677398ebb77f334abb4899770db633d9658fe82.camel@kernel.crashing.org>
-References: <20210412174718.17382-1-michael@walle.cc>
- <20210412174718.17382-3-michael@walle.cc>
- <730d603b12e590c56770309b4df2bd668f7afbe3.camel@kernel.crashing.org>
- <8157eba9317609294da80472622deb28@walle.cc>
- <CAL_JsqLrx6nFZrKiEtm2a1vDvQGG+FkpGtJCG2osM8hhGo3P=Q@mail.gmail.com>
- <108f268a35843368466004f7fe5f9f88@walle.cc>
- <3677398ebb77f334abb4899770db633d9658fe82.camel@kernel.crashing.org>
-User-Agent: Roundcube Webmail/1.4.11
-Message-ID: <452795c5254b65cfba6e52cfc94d92bd@walle.cc>
-X-Sender: michael@walle.cc
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [10.43.160.81]
+X-ClientProxiedBy: EX13D27UWB003.ant.amazon.com (10.43.161.195) To
+ EX13D04ANC001.ant.amazon.com (10.43.157.89)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Am 2021-04-27 01:44, schrieb Benjamin Herrenschmidt:
-> On Mon, 2021-04-26 at 12:54 +0200, Michael Walle wrote:
->> (2) What do you think of eth_get_mac_address(ndev). That is, the
+From:   Jason Baron <jbaron@akamai.com>
+Date:   Tue, 27 Apr 2021 12:38:58 -0400
+> On 4/26/21 11:46 PM, Kuniyuki Iwashima wrote:
+> > The SO_REUSEPORT option allows sockets to listen on the same port and to
+> > accept connections evenly. However, there is a defect in the current
+> > implementation [1]. When a SYN packet is received, the connection is tied
+> > to a listening socket. Accordingly, when the listener is closed, in-flight
+> > requests during the three-way handshake and child sockets in the accept
+> > queue are dropped even if other listeners on the same port could accept
+> > such connections.
+> > 
+> > This situation can happen when various server management tools restart
+> > server (such as nginx) processes. For instance, when we change nginx
+> > configurations and restart it, it spins up new workers that respect the new
+> > configuration and closes all listeners on the old workers, resulting in the
+> > in-flight ACK of 3WHS is responded by RST.
 > 
-> Not sure what you mean, eth_platform_get_mac_address() takes the
-> address as an argument. I think what you want is a consolidated
-> nvmem_get_mac_address + eth_platform_get_mac_address that takes a
-> device, which would have no requirement of the bus_type at all.
+> Hi Kuniyuki,
+> 
+> I had implemented a different approach to this that I wanted to get your
+> thoughts about. The idea is to use unix sockets and SCM_RIGHTS to pass the
+> listen fd (or any other fd) around. Currently, if you have an 'old' webserver
+> that you want to replace with a 'new' webserver, you would need a separate
+> process to receive the listen fd and then have that process send the fd to
+> the new webserver, if they are not running con-currently. So instead what
+> I'm proposing is a 'delayed close' for a unix socket. That is, one could do:
+> 
+> 1) bind unix socket with path '/sockets'
+> 2) sendmsg() the listen fd via the unix socket
+> 2) setsockopt() some 'timeout' on the unix socket (maybe 10 seconds or so)
+> 3) exit/close the old webserver and the listen socket
+> 4) start the new webserver
+> 5) create new unix socket and bind to '/sockets' (if has MAY_WRITE file permissions)
+> 6) recvmsg() the listen fd
+> 
+> So the idea is that we set a timeout on the unix socket. If the new process
+> does not start and bind to the unix socket, it simply closes, thus releasing
+> the listen socket. However, if it does bind it can now call recvmsg() and
+> use the listen fd as normal. It can then simply continue to use the old listen
+> fds and/or create new ones and drain the old ones.
+> 
+> Thus, the old and new webservers do not have to run concurrently. This doesn't
+> involve any changes to the tcp layer and can be used to pass any type of fd.
+> not sure if it's actually useful for anything else though.
+> 
+> I'm not sure if this solves your use-case or not but I thought I'd share it.
+> One can also inherit the fds like in systemd's socket activation model, but
+> that again requires another process to hold open the listen fd.
 
-Sure. What I meant was the following:
+Thank you for sharing code.
 
-  eth_get_mac_address(struct net_device *ndev)
-vs.
-  eth_get_mac_address(struct device *dev, u8 *mac_buf)
+It seems bit more crash-tolerant than normal fd passing, but it can still
+suffer if the process dies before passing fds. With this patch set, we can
+migrate children sockets even if the process dies.
 
-The first would assume the destination is ndev->dev_addr (which
-is true for most of the calls, but not all).
+Also, as Martin said, fd passing tends to make application complicated.
 
--michael
+If we do not mind these points, your approach could be an option.
+
+
+> 
+> I have a very rough patch (emphasis on rough), that implements this idea that
+> I'm attaching below to explain it better. It would need a bunch of fixups and
+> it's against an older kernel, but hopefully gives this direction a better
+> explanation.
+> 
+> Thanks,
+> 
+> -Jason
