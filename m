@@ -2,116 +2,193 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2838636D423
-	for <lists+netdev@lfdr.de>; Wed, 28 Apr 2021 10:43:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7C13A36D444
+	for <lists+netdev@lfdr.de>; Wed, 28 Apr 2021 10:51:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237110AbhD1Inx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 28 Apr 2021 04:43:53 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:46235 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S237348AbhD1Inu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 28 Apr 2021 04:43:50 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1619599386;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=1W52g62U8eu7kNC+tsNnm2qSHOwqXQwpPJN3IreWZiE=;
-        b=iiQlzkCaf6dNYwl511OZR9Y1a9RX+pK4VcXIzyj1JgT4s2ygaKFAkj/RtMBcLnARQ05hJB
-        2MYRbcZPUYwBqnW1GUDbTyrEblILhr0bFWNIwSZ2jkrE79aVTj7VpQWM2dOP3MkQ624juc
-        BlrvbjG3MPRL7pJs9kMu1mKjbLlVlYk=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-408-hAMRtaRlN_isfdaq7ctq8w-1; Wed, 28 Apr 2021 04:43:02 -0400
-X-MC-Unique: hAMRtaRlN_isfdaq7ctq8w-1
-Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 09BF710054F6;
-        Wed, 28 Apr 2021 08:43:01 +0000 (UTC)
-Received: from wangxiaodeMacBook-Air.local (ovpn-13-52.pek2.redhat.com [10.72.13.52])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 87E205F9C5;
-        Wed, 28 Apr 2021 08:42:55 +0000 (UTC)
-Subject: Re: [PATCH 2/2] vDPA/ifcvf: implement doorbell mapping for ifcvf
-To:     Zhu Lingshan <lingshan.zhu@intel.com>, mst@redhat.com
-Cc:     virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        kvm@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20210428082133.6766-1-lingshan.zhu@intel.com>
- <20210428082133.6766-3-lingshan.zhu@intel.com>
-From:   Jason Wang <jasowang@redhat.com>
-Message-ID: <f6d9a424-9025-3eb5-1cb4-0ff22f7bec63@redhat.com>
-Date:   Wed, 28 Apr 2021 16:42:53 +0800
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
- Gecko/20100101 Thunderbird/78.10.0
+        id S237110AbhD1IwE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 28 Apr 2021 04:52:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43088 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229643AbhD1IwD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 28 Apr 2021 04:52:03 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D82E9C061574
+        for <netdev@vger.kernel.org>; Wed, 28 Apr 2021 01:51:18 -0700 (PDT)
+Received: from pty.hi.pengutronix.de ([2001:67c:670:100:1d::c5])
+        by metis.ext.pengutronix.de with esmtps (TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ore@pengutronix.de>)
+        id 1lbfuf-0003Qd-8A; Wed, 28 Apr 2021 10:51:17 +0200
+Received: from ore by pty.hi.pengutronix.de with local (Exim 4.89)
+        (envelope-from <ore@pengutronix.de>)
+        id 1lbfud-00013v-7s; Wed, 28 Apr 2021 10:51:15 +0200
+Date:   Wed, 28 Apr 2021 10:51:15 +0200
+From:   Oleksij Rempel <o.rempel@pengutronix.de>
+To:     Joakim Zhang <qiangqing.zhang@nxp.com>
+Cc:     Florian Fainelli <f.fainelli@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Fabio Estevam <festevam@gmail.com>,
+        Fugang Duan <fugang.duan@nxp.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Russell King <linux@armlinux.org.uk>,
+        Philippe Schenker <philippe.schenker@toradex.com>,
+        dl-linux-imx <linux-imx@nxp.com>,
+        "kernel@pengutronix.de" <kernel@pengutronix.de>,
+        David Jander <david@protonic.nl>,
+        Shawn Guo <shawnguo@kernel.org>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>,
+        Heiner Kallweit <hkallweit1@gmail.com>
+Subject: Re: [PATCH net-next v3 0/6] provide generic net selftest support
+Message-ID: <20210428085115.mehvsj2vlqmbmib5@pengutronix.de>
+References: <20210419130106.6707-1-o.rempel@pengutronix.de>
+ <DB8PR04MB67951B9C6AB1620E807205F2E6459@DB8PR04MB6795.eurprd04.prod.outlook.com>
+ <20210423043729.tup7nntmmyv6vurm@pengutronix.de>
+ <DB8PR04MB6795479FBF086751D16080E2E6419@DB8PR04MB6795.eurprd04.prod.outlook.com>
+ <6416c580-0df9-7d36-c42d-65293c40aa25@gmail.com>
+ <DB8PR04MB6795AD745C2B27B6AC68497EE6409@DB8PR04MB6795.eurprd04.prod.outlook.com>
 MIME-Version: 1.0
-In-Reply-To: <20210428082133.6766-3-lingshan.zhu@intel.com>
-Content-Type: text/plain; charset=gbk; format=flowed
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-Content-Language: en-US
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
+In-Reply-To: <DB8PR04MB6795AD745C2B27B6AC68497EE6409@DB8PR04MB6795.eurprd04.prod.outlook.com>
+X-Sent-From: Pengutronix Hildesheim
+X-URL:  http://www.pengutronix.de/
+X-IRC:  #ptxdist @freenode
+X-Accept-Language: de,en
+X-Accept-Content-Type: text/plain
+X-Uptime: 10:45:15 up 146 days, 22:51, 47 users,  load average: 0.08, 0.06,
+ 0.07
+User-Agent: NeoMutt/20170113 (1.7.2)
+X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c5
+X-SA-Exim-Mail-From: ore@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Wed, Apr 28, 2021 at 08:06:05AM +0000, Joakim Zhang wrote:
+> 
+> Hi Florian,
+> 
+> > -----Original Message-----
+> > From: Florian Fainelli <f.fainelli@gmail.com>
+> > Sent: 2021å¹´4æœˆ28æ—¥ 0:41
+> > To: Joakim Zhang <qiangqing.zhang@nxp.com>; Oleksij Rempel
+> > <o.rempel@pengutronix.de>
+> > Cc: Shawn Guo <shawnguo@kernel.org>; Sascha Hauer
+> > <s.hauer@pengutronix.de>; Andrew Lunn <andrew@lunn.ch>; Heiner Kallweit
+> > <hkallweit1@gmail.com>; Fugang Duan <fugang.duan@nxp.com>;
+> > kernel@pengutronix.de; netdev@vger.kernel.org;
+> > linux-arm-kernel@lists.infradead.org; linux-kernel@vger.kernel.org;
+> > dl-linux-imx <linux-imx@nxp.com>; Fabio Estevam <festevam@gmail.com>;
+> > David Jander <david@protonic.nl>; Russell King <linux@armlinux.org.uk>;
+> > Philippe Schenker <philippe.schenker@toradex.com>
+> > Subject: Re: [PATCH net-next v3 0/6] provide generic net selftest support
+> > 
+> > 
+> > 
+> > On 4/26/2021 9:48 PM, Joakim Zhang wrote:
+> > >
+> > >> -----Original Message-----
+> > >> From: Oleksij Rempel <o.rempel@pengutronix.de>
+> > >> Sent: 2021å¹´4æœˆ23æ—¥ 12:37
+> > >> To: Joakim Zhang <qiangqing.zhang@nxp.com>
+> > >> Cc: Shawn Guo <shawnguo@kernel.org>; Sascha Hauer
+> > >> <s.hauer@pengutronix.de>; Andrew Lunn <andrew@lunn.ch>; Florian
+> > >> Fainelli <f.fainelli@gmail.com>; Heiner Kallweit
+> > >> <hkallweit1@gmail.com>; Fugang Duan <fugang.duan@nxp.com>;
+> > >> kernel@pengutronix.de; netdev@vger.kernel.org;
+> > >> linux-arm-kernel@lists.infradead.org;
+> > >> linux-kernel@vger.kernel.org; dl-linux-imx <linux-imx@nxp.com>; Fabio
+> > >> Estevam <festevam@gmail.com>; David Jander <david@protonic.nl>;
+> > >> Russell King <linux@armlinux.org.uk>; Philippe Schenker
+> > >> <philippe.schenker@toradex.com>
+> > >> Subject: Re: [PATCH net-next v3 0/6] provide generic net selftest
+> > >> support
+> > >>
+> > >> Hi Joakim,
+> > >>
+> > >> On Fri, Apr 23, 2021 at 03:18:32AM +0000, Joakim Zhang wrote:
+> > >>>
+> > >>> Hi Oleksij,
+> > >>>
+> > >>> I look both stmmac selftest code and this patch set. For stmmac, if
+> > >>> PHY
+> > >> doesn't support loopback, it will fallthrough to MAC loopback.
+> > >>> You provide this generic net selftest support based on PHY loopback,
+> > >>> I have a
+> > >> question, is it possible to extend it also support MAC loopback later?
+> > >>
+> > >> Yes. If you have interest and time to implement it, please do.
+> > >> It should be some kind of generic callback as phy_loopback() and if
+> > >> PHY and MAC loopbacks are supported we need to tests both variants.
+> > > Hi Oleksij,
+> > >
+> > > Yes, I can try to implement it when I am free, but I still have some questions:
+> > > 1. Where we place the generic function? Such as mac_loopback().
+> > > 2. MAC is different from PHY, need program different registers to enable
+> > loopback on different SoCs, that means we need get MAC private data from
+> > "struct net_device".
+> > > So we need a callback for MAC drivers, where we extend this callback? Could
+> > be "struct net_device_ops"? Such as ndo_set_loopback?
+> > 
+> > Even for PHY devices, if we implemented external PHY loopback in the future,
+> > the programming would be different from one vendor to another. I am starting
+> > to wonder if the existing ethtool self-tests are the best API to expose the ability
+> > for an user to perform PHY and MAC loopback testing.
+> > 
+> > From an Ethernet MAC and PHY driver perspective, what I would imagine we
+> > could have for a driver API is:
+> > 
+> > enum ethtool_loopback_mode {
+> > 	ETHTOOL_LOOPBACK_OFF,
+> > 	ETHTOOL_LOOPBACK_PHY_INTERNAL,
+> > 	ETHTOOL_LOOPBACK_PHY_EXTERNAL,
+> > 	ETHTOOL_LOOPBACK_MAC_INTERNAL,
+> > 	ETHTOOL_LOOPBACK_MAC_EXTERNAL,
+> > 	ETHTOOL_LOOPBACK_FIXTURE,
+> > 	__ETHTOOL_LOOPBACK_MAX
+> > };
+> 
+> What's the difference between internal and external loopback for both PHY and MAC? I am not familiar with these concepts. Thanks.
 
-ÔÚ 2021/4/28 ÏÂÎç4:21, Zhu Lingshan Ð´µÀ:
-> This commit implements doorbell mapping feature for ifcvf.
-> This feature maps the notify page to userspace, to eliminate
-> vmexit when kick a vq.
->
-> Signed-off-by: Zhu Lingshan <lingshan.zhu@intel.com>
-> ---
->   drivers/vdpa/ifcvf/ifcvf_main.c | 18 ++++++++++++++++++
->   1 file changed, 18 insertions(+)
->
-> diff --git a/drivers/vdpa/ifcvf/ifcvf_main.c b/drivers/vdpa/ifcvf/ifcvf_main.c
-> index e48e6b74fe2e..afcb71bc0f51 100644
-> --- a/drivers/vdpa/ifcvf/ifcvf_main.c
-> +++ b/drivers/vdpa/ifcvf/ifcvf_main.c
-> @@ -413,6 +413,23 @@ static int ifcvf_vdpa_get_vq_irq(struct vdpa_device *vdpa_dev,
->   	return vf->vring[qid].irq;
->   }
->   
-> +static struct vdpa_notification_area ifcvf_get_vq_notification(struct vdpa_device *vdpa_dev,
-> +							       u16 idx)
-> +{
-> +	struct ifcvf_hw *vf = vdpa_to_vf(vdpa_dev);
-> +	struct vdpa_notification_area area;
-> +
-> +	if (vf->notify_pa % PAGE_SIZE) {
-> +		area.addr = 0;
-> +		area.size = 0;
+For example KSZ9031 PHY. It supports two loopback modes. See page 23:
+https://ww1.microchip.com/downloads/en/DeviceDoc/00002096E.pdf
+
+TI DP83TC811R-Q1 PHY supports 4 modes. See page 27:
+https://www.ti.com/lit/ds/symlink/dp83tc811r-q1.pdf
 
 
-We don't need this since:
+> Best Regards,
+> Joakim Zhang
+> > 	int (*ndo_set_loopback_mode)(struct net_device *dev, enum
+> > ethtool_loopback_mode mode);
+> > 
+> > and within the Ethernet MAC driver you would do something like this:
+> > 
+> > 	switch (mode) {
+> > 	case ETHTOOL_LOOPBACK_PHY_INTERNAL:
+> > 	case ETHTOOL_LOOPBACK_PHY_EXTERNAL:
+> > 	case ETHTOOL_LOOPBACK_OFF:
+> > 		ret = phy_loopback(ndev->phydev, mode);
+> > 		break;
+> > 	/* Other case statements implemented in driver */
+> > 
+> > we would need to change the signature of phy_loopback() to accept being
+> > passed ethtool_loopback_mode so we can support different modes.
+> > 
+> > Whether we want to continue using the self-tests API, or if we implement a
+> > new ethtool command in order to request a loopback operation is up for
+> > discussion.
+> > --
+> > Florian
 
-1) there's a check in the vhost vDPA
-2) device is unaware of the bound driver, non page aligned doorbell 
-doesn't necessarily meant it can be used
-
-Let's leave those polices to the driver.
-
-Thanks
-
-
-> +	} else {
-> +		area.addr = vf->notify_pa;
-> +		area.size = PAGE_SIZE;
-> +	}
-> +
-> +	return area;
-> +}
-> +
->   /*
->    * IFCVF currently does't have on-chip IOMMU, so not
->    * implemented set_map()/dma_map()/dma_unmap()
-> @@ -440,6 +457,7 @@ static const struct vdpa_config_ops ifc_vdpa_ops = {
->   	.get_config	= ifcvf_vdpa_get_config,
->   	.set_config	= ifcvf_vdpa_set_config,
->   	.set_config_cb  = ifcvf_vdpa_set_config_cb,
-> +	.get_vq_notification = ifcvf_get_vq_notification,
->   };
->   
->   static int ifcvf_probe(struct pci_dev *pdev, const struct pci_device_id *id)
-
+-- 
+Pengutronix e.K.                           |                             |
+Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
+31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
+Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
