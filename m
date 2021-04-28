@@ -2,59 +2,62 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DAB0E36D530
-	for <lists+netdev@lfdr.de>; Wed, 28 Apr 2021 11:58:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 20FA836D539
+	for <lists+netdev@lfdr.de>; Wed, 28 Apr 2021 11:59:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238608AbhD1J7E (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 28 Apr 2021 05:59:04 -0400
-Received: from out30-57.freemail.mail.aliyun.com ([115.124.30.57]:41646 "EHLO
-        out30-57.freemail.mail.aliyun.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S238345AbhD1J7D (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 28 Apr 2021 05:59:03 -0400
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R181e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04426;MF=jiapeng.chong@linux.alibaba.com;NM=1;PH=DS;RN=7;SR=0;TI=SMTPD_---0UX3IH4b_1619603887;
-Received: from j63c13417.sqa.eu95.tbsite.net(mailfrom:jiapeng.chong@linux.alibaba.com fp:SMTPD_---0UX3IH4b_1619603887)
+        id S238537AbhD1J76 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 28 Apr 2021 05:59:58 -0400
+Received: from out30-131.freemail.mail.aliyun.com ([115.124.30.131]:44001 "EHLO
+        out30-131.freemail.mail.aliyun.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S238070AbhD1J7z (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 28 Apr 2021 05:59:55 -0400
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R451e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04420;MF=yang.lee@linux.alibaba.com;NM=1;PH=DS;RN=10;SR=0;TI=SMTPD_---0UX3sbtO_1619603946;
+Received: from j63c13417.sqa.eu95.tbsite.net(mailfrom:yang.lee@linux.alibaba.com fp:SMTPD_---0UX3sbtO_1619603946)
           by smtp.aliyun-inc.com(127.0.0.1);
-          Wed, 28 Apr 2021 17:58:17 +0800
-From:   Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
-To:     ralf@linux-mips.org
-Cc:     davem@davemloft.net, kuba@kernel.org, linux-hams@vger.kernel.org,
+          Wed, 28 Apr 2021 17:59:08 +0800
+From:   Yang Li <yang.lee@linux.alibaba.com>
+To:     johannes@sipsolutions.net
+Cc:     davem@davemloft.net, kuba@kernel.org, nathan@kernel.org,
+        ndesaulniers@google.com, linux-wireless@vger.kernel.org,
         netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
-Subject: [PATCH] net: netrom: nr_in: Remove redundant assignment to ns
-Date:   Wed, 28 Apr 2021 17:58:05 +0800
-Message-Id: <1619603885-115604-1-git-send-email-jiapeng.chong@linux.alibaba.com>
+        clang-built-linux@googlegroups.com,
+        Yang Li <yang.lee@linux.alibaba.com>
+Subject: [PATCH] net: wireless: wext_compat.c: Remove redundant assignment to ps
+Date:   Wed, 28 Apr 2021 17:59:05 +0800
+Message-Id: <1619603945-116891-1-git-send-email-yang.lee@linux.alibaba.com>
 X-Mailer: git-send-email 1.8.3.1
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Variable ns is set to 'skb->data[17]' but this value is never read as
-it is overwritten or not used later on, hence it is a redundant
+Variable 'ps' is set to wdev->ps but this value is never read as it is
+overwritten with a new value later on, hence it is a redundant
 assignment and can be removed.
 
 Cleans up the following clang-analyzer warning:
 
-net/netrom/nr_in.c:156:2: warning: Value stored to 'ns' is never read
-[clang-analyzer-deadcode.DeadStores].
+net/wireless/wext-compat.c:1170:7: warning: Value stored to 'ps' during
+its initialization is never read [clang-analyzer-deadcode.DeadStores]
 
 Reported-by: Abaci Robot <abaci@linux.alibaba.com>
-Signed-off-by: Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
+Signed-off-by: Yang Li <yang.lee@linux.alibaba.com>
 ---
- net/netrom/nr_in.c | 1 -
- 1 file changed, 1 deletion(-)
+ net/wireless/wext-compat.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/net/netrom/nr_in.c b/net/netrom/nr_in.c
-index 69e5890..2f084b6 100644
---- a/net/netrom/nr_in.c
-+++ b/net/netrom/nr_in.c
-@@ -153,7 +153,6 @@ static int nr_state3_machine(struct sock *sk, struct sk_buff *skb, int frametype
- 	int queued = 0;
+diff --git a/net/wireless/wext-compat.c b/net/wireless/wext-compat.c
+index a8320dc..50a2330 100644
+--- a/net/wireless/wext-compat.c
++++ b/net/wireless/wext-compat.c
+@@ -1167,7 +1167,7 @@ static int cfg80211_wext_siwpower(struct net_device *dev,
+ {
+ 	struct wireless_dev *wdev = dev->ieee80211_ptr;
+ 	struct cfg80211_registered_device *rdev = wiphy_to_rdev(wdev->wiphy);
+-	bool ps = wdev->ps;
++	bool ps;
+ 	int timeout = wdev->ps_timeout;
+ 	int err;
  
- 	nr = skb->data[18];
--	ns = skb->data[17];
- 
- 	switch (frametype) {
- 	case NR_CONNREQ:
 -- 
 1.8.3.1
 
