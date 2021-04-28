@@ -2,127 +2,152 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A465936D3C0
-	for <lists+netdev@lfdr.de>; Wed, 28 Apr 2021 10:14:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C0B0C36D3D0
+	for <lists+netdev@lfdr.de>; Wed, 28 Apr 2021 10:19:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237063AbhD1IOr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 28 Apr 2021 04:14:47 -0400
-Received: from smtp-fw-9102.amazon.com ([207.171.184.29]:30260 "EHLO
-        smtp-fw-9102.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229643AbhD1IOp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 28 Apr 2021 04:14:45 -0400
+        id S237187AbhD1IU2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 28 Apr 2021 04:20:28 -0400
+Received: from smtp-fw-4101.amazon.com ([72.21.198.25]:39094 "EHLO
+        smtp-fw-4101.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S237012AbhD1IU0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 28 Apr 2021 04:20:26 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
   d=amazon.co.jp; i=@amazon.co.jp; q=dns/txt;
-  s=amazon201209; t=1619597641; x=1651133641;
+  s=amazon201209; t=1619597982; x=1651133982;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=lH6gKKzDnBLSLUiWoNNJ7pa+DrbTroJokx0jp1w2ygo=;
-  b=pJ9gQYtRZZO4HbZ2zvhIiVekNZLY58axq4rYS2S1nMSVXJyRXOlJUiqw
-   C0VMPJOAEF1l1tsdDzJCWGcBuG8RtFAEUgaaa1wrljduRF6idicekj5En
-   3RIhSrr0OwDLNv9iafh9kcNlOziilSl/bq0e9M5bJAJUx09SQguTur2j2
-   w=;
+  bh=j9QWlAsK1jnUHugihgPpWh5yTZzPwnYSGQNZKz7LMek=;
+  b=B0G9aWgpcXbc/bt2hMA2eewi3S8ZhBPwdgphMLlSU0DmygEwCj2R1Pcw
+   Z60cFyfYLW4Cd80uLQdeo3eExGG79KJ5hRx3b1nTbhsR+Qx1h/50Nj9bD
+   3igZCPjE0GLgkb7bN04xnUJctiJrRx5uHoNGfJZdvYTDV2W9ycLA7d5cq
+   s=;
 X-IronPort-AV: E=Sophos;i="5.82,257,1613433600"; 
-   d="scan'208";a="131388202"
-Received: from pdx4-co-svc-p1-lb2-vlan2.amazon.com (HELO email-inbound-relay-2b-55156cd4.us-west-2.amazon.com) ([10.25.36.210])
-  by smtp-border-fw-9102.sea19.amazon.com with ESMTP; 28 Apr 2021 08:14:00 +0000
-Received: from EX13MTAUWB001.ant.amazon.com (pdx1-ws-svc-p6-lb9-vlan2.pdx.amazon.com [10.236.137.194])
-        by email-inbound-relay-2b-55156cd4.us-west-2.amazon.com (Postfix) with ESMTPS id 414CFA212E;
-        Wed, 28 Apr 2021 08:14:00 +0000 (UTC)
+   d="scan'208";a="104432491"
+Received: from iad12-co-svc-p1-lb1-vlan3.amazon.com (HELO email-inbound-relay-2c-2225282c.us-west-2.amazon.com) ([10.43.8.6])
+  by smtp-border-fw-4101.iad4.amazon.com with ESMTP; 28 Apr 2021 08:18:42 +0000
+Received: from EX13MTAUWB001.ant.amazon.com (pdx1-ws-svc-p6-lb9-vlan3.pdx.amazon.com [10.236.137.198])
+        by email-inbound-relay-2c-2225282c.us-west-2.amazon.com (Postfix) with ESMTPS id 2EBAEA2242;
+        Wed, 28 Apr 2021 08:18:40 +0000 (UTC)
 Received: from EX13D04ANC001.ant.amazon.com (10.43.157.89) by
  EX13MTAUWB001.ant.amazon.com (10.43.161.207) with Microsoft SMTP Server (TLS)
- id 15.0.1497.2; Wed, 28 Apr 2021 08:13:58 +0000
-Received: from 88665a182662.ant.amazon.com (10.43.160.81) by
+ id 15.0.1497.2; Wed, 28 Apr 2021 08:18:39 +0000
+Received: from 88665a182662.ant.amazon.com (10.43.160.209) by
  EX13D04ANC001.ant.amazon.com (10.43.157.89) with Microsoft SMTP Server (TLS)
- id 15.0.1497.2; Wed, 28 Apr 2021 08:13:47 +0000
+ id 15.0.1497.2; Wed, 28 Apr 2021 08:18:34 +0000
 From:   Kuniyuki Iwashima <kuniyu@amazon.co.jp>
-To:     <jbaron@akamai.com>
+To:     <zenczykowski@gmail.com>
 CC:     <andrii@kernel.org>, <ast@kernel.org>, <benh@amazon.com>,
         <bpf@vger.kernel.org>, <daniel@iogearbox.net>,
         <davem@davemloft.net>, <edumazet@google.com>, <kafai@fb.com>,
         <kuba@kernel.org>, <kuni1840@gmail.com>, <kuniyu@amazon.co.jp>,
         <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>
 Subject: Re: [PATCH v4 bpf-next 00/11] Socket migration for SO_REUSEPORT.
-Date:   Wed, 28 Apr 2021 17:13:42 +0900
-Message-ID: <20210428081342.1944-1-kuniyu@amazon.co.jp>
+Date:   Wed, 28 Apr 2021 17:18:30 +0900
+Message-ID: <20210428081830.2292-1-kuniyu@amazon.co.jp>
 X-Mailer: git-send-email 2.30.2
-In-Reply-To: <a10fdca5-7772-6edb-cbe6-c3fe66f57391@akamai.com>
-References: <a10fdca5-7772-6edb-cbe6-c3fe66f57391@akamai.com>
+In-Reply-To: <CAHo-Ooz252rnWZ=9k6nO0vjGKFkQDoaLxZ1jxiTomtckq9DbYA@mail.gmail.com>
+References: <CAHo-Ooz252rnWZ=9k6nO0vjGKFkQDoaLxZ1jxiTomtckq9DbYA@mail.gmail.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Originating-IP: [10.43.160.81]
-X-ClientProxiedBy: EX13D27UWB003.ant.amazon.com (10.43.161.195) To
+X-Originating-IP: [10.43.160.209]
+X-ClientProxiedBy: EX13D23UWA001.ant.amazon.com (10.43.160.68) To
  EX13D04ANC001.ant.amazon.com (10.43.157.89)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From:   Jason Baron <jbaron@akamai.com>
-Date:   Tue, 27 Apr 2021 12:38:58 -0400
-> On 4/26/21 11:46 PM, Kuniyuki Iwashima wrote:
-> > The SO_REUSEPORT option allows sockets to listen on the same port and to
-> > accept connections evenly. However, there is a defect in the current
-> > implementation [1]. When a SYN packet is received, the connection is tied
-> > to a listening socket. Accordingly, when the listener is closed, in-flight
-> > requests during the three-way handshake and child sockets in the accept
-> > queue are dropped even if other listeners on the same port could accept
-> > such connections.
-> > 
-> > This situation can happen when various server management tools restart
-> > server (such as nginx) processes. For instance, when we change nginx
-> > configurations and restart it, it spins up new workers that respect the new
-> > configuration and closes all listeners on the old workers, resulting in the
-> > in-flight ACK of 3WHS is responded by RST.
-> 
-> Hi Kuniyuki,
-> 
-> I had implemented a different approach to this that I wanted to get your
-> thoughts about. The idea is to use unix sockets and SCM_RIGHTS to pass the
-> listen fd (or any other fd) around. Currently, if you have an 'old' webserver
-> that you want to replace with a 'new' webserver, you would need a separate
-> process to receive the listen fd and then have that process send the fd to
-> the new webserver, if they are not running con-currently. So instead what
-> I'm proposing is a 'delayed close' for a unix socket. That is, one could do:
-> 
-> 1) bind unix socket with path '/sockets'
-> 2) sendmsg() the listen fd via the unix socket
-> 2) setsockopt() some 'timeout' on the unix socket (maybe 10 seconds or so)
-> 3) exit/close the old webserver and the listen socket
-> 4) start the new webserver
-> 5) create new unix socket and bind to '/sockets' (if has MAY_WRITE file permissions)
-> 6) recvmsg() the listen fd
-> 
-> So the idea is that we set a timeout on the unix socket. If the new process
-> does not start and bind to the unix socket, it simply closes, thus releasing
-> the listen socket. However, if it does bind it can now call recvmsg() and
-> use the listen fd as normal. It can then simply continue to use the old listen
-> fds and/or create new ones and drain the old ones.
-> 
-> Thus, the old and new webservers do not have to run concurrently. This doesn't
-> involve any changes to the tcp layer and can be used to pass any type of fd.
-> not sure if it's actually useful for anything else though.
-> 
-> I'm not sure if this solves your use-case or not but I thought I'd share it.
-> One can also inherit the fds like in systemd's socket activation model, but
-> that again requires another process to hold open the listen fd.
+From:   Maciej Żenczykowski <zenczykowski@gmail.com>
+Date:   Tue, 27 Apr 2021 15:00:12 -0700
+> On Tue, Apr 27, 2021 at 2:55 PM Maciej Żenczykowski
+> <zenczykowski@gmail.com> wrote:
+> > On Mon, Apr 26, 2021 at 8:47 PM Kuniyuki Iwashima <kuniyu@amazon.co.jp> wrote:
+> > > The SO_REUSEPORT option allows sockets to listen on the same port and to
+> > > accept connections evenly. However, there is a defect in the current
+> > > implementation [1]. When a SYN packet is received, the connection is tied
+> > > to a listening socket. Accordingly, when the listener is closed, in-flight
+> > > requests during the three-way handshake and child sockets in the accept
+> > > queue are dropped even if other listeners on the same port could accept
+> > > such connections.
+> > >
+> > > This situation can happen when various server management tools restart
+> > > server (such as nginx) processes. For instance, when we change nginx
+> > > configurations and restart it, it spins up new workers that respect the new
+> > > configuration and closes all listeners on the old workers, resulting in the
+> > > in-flight ACK of 3WHS is responded by RST.
+> >
+> > This is IMHO a userspace bug.
 
-Thank you for sharing code.
+I do not think so.
 
-It seems bit more crash-tolerant than normal fd passing, but it can still
-suffer if the process dies before passing fds. With this patch set, we can
-migrate children sockets even if the process dies.
-
-Also, as Martin said, fd passing tends to make application complicated.
-
-If we do not mind these points, your approach could be an option.
+If the kernel selected another listener for incoming connections, they
+could be accept()ed. There is no room for usersapce to change the behaviour
+without an in-kernel tool, eBPF. A feature that can cause failure
+stochastically due to kernel behaviour cannot be a userspace bug.
 
 
+> >
+> > You should never be closing or creating new SO_REUSEPORT sockets on a
+> > running server (listening port).
+> >
+> > There's at least 3 ways to accomplish this.
+> >
+> > One involves a shim parent process that takes care of creating the
+> > sockets (without close-on-exec),
+> > then fork-exec's the actual server process[es] (which will use the
+> > already opened listening fds),
+> > and can thus re-fork-exec a new child while using the same set of sockets.
+> > Here the old server can terminate before the new one starts.
+> >
+> > (one could even envision systemd being modified to support this...)
+> >
+> > The second involves the old running server fork-execing the new server
+> > and handing off the non-CLOEXEC sockets that way.
 > 
-> I have a very rough patch (emphasis on rough), that implements this idea that
-> I'm attaching below to explain it better. It would need a bunch of fixups and
-> it's against an older kernel, but hopefully gives this direction a better
-> explanation.
+> (this doesn't even need to be fork-exec -- can just be exec -- and is
+> potentially easier)
 > 
-> Thanks,
+> > The third approach involves unix fd passing of sockets to hand off the
+> > listening sockets from the old process/thread(s) to the new
+> > process/thread(s).  Once handed off the old server can stop accept'ing
+> > on the listening sockets and close them (the real copies are in the
+> > child), finish processing any still active connections (or time them
 > 
-> -Jason
+> (this doesn't actually need to be a child, in can be an entirely new
+> parallel instance of the server,
+> potentially running in an entirely new container/cgroup setup, though
+> in the same network namespace)
+> 
+> > out) and terminate.
+> >
+> > Either way you're never creating new SO_REUSEPORT sockets (dup doesn't
+> > count), nor closing the final copy of a given socket.
+
+Indeed each approach can be an option, but it makes application more
+complicated. Also what if the process holding the listener fd died, there
+could be down time.
+
+I do not think every approach works well in everywhere for everyone.
+
+
+> >
+> > This is basically the same thing that was needed not to lose incoming
+> > connections in a pre-SO_REUSEPORT world.
+> > (no SO_REUSEADDR by itself doesn't prevent an incoming SYN from
+> > triggering a RST during the server restart, it just makes the window
+> > when RSTs happen shorter)
+
+SO_REUSEPORT makes each process/listener independent, and we need not pass
+fds. So, it makes application much simpler. Even with SO_REUSEPORT, one
+listener might crash, but it is more tolerant than losing all connections
+at once.
+
+To enjoy such merits, isn't it natural to improve the existing feature in
+this post-SO_REUSEPORT world?
+
+
+> >
+> > This was from day one (I reported to Tom and worked with him on the
+> > very initial distribution function) envisioned to work like this,
+> > and we (Google) have always used it with unix fd handoff to support
+> > transparent restart.
