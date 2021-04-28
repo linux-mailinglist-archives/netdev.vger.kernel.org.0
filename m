@@ -2,112 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 46F0836D07A
-	for <lists+netdev@lfdr.de>; Wed, 28 Apr 2021 04:10:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 46DA436D08B
+	for <lists+netdev@lfdr.de>; Wed, 28 Apr 2021 04:29:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236447AbhD1CLK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 27 Apr 2021 22:11:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40070 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229888AbhD1CLJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 27 Apr 2021 22:11:09 -0400
-Received: from mail-pj1-x102c.google.com (mail-pj1-x102c.google.com [IPv6:2607:f8b0:4864:20::102c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 52E8FC061574;
-        Tue, 27 Apr 2021 19:10:25 -0700 (PDT)
-Received: by mail-pj1-x102c.google.com with SMTP id p17so4039116pjz.3;
-        Tue, 27 Apr 2021 19:10:25 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=zcsDC9Mw8JIr79BrdQ+rOkT4hbkqTfsC+ofCHV93cV8=;
-        b=VlUWOHN0t/FnWnvoXyxxwle1pbAmjAYzYzNzOcDI0rteQ4gSdBIjconQoPVJuqgvez
-         N/6SMbHxEBQZzqbzHGLfTQtIL/cydW9l/PKjKfNqv8y0C0Q6NeX2LTuwdZRKFmvqyFxI
-         97IMHY0zJzIjuM1UXlSN44admD9qX7stOy2HG6cUwelvT1eItG1QN0cCyBSR0g8BiQ6e
-         o06ap34dX/7uLCYIWMUUr5n6Ult9tja0Mujhm7Doz8xQyTfo20UuObL0ZEZy8CKuPKlt
-         2B9lPj9ayA6mgHhLlRVBBbx+CYnBahW1/uRKkQFE6qwYfyVg1HbD568I2/9Inos+rumS
-         Pr2g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=zcsDC9Mw8JIr79BrdQ+rOkT4hbkqTfsC+ofCHV93cV8=;
-        b=QsAd/UdV67L3nihgL3i5KxnqQSYFTtPQtdHhOYLrNc2RTRZle7gZasejP2sV7EwybZ
-         cWlHveuAsD/D93ExlI3CCPRQGOuQhGk/RTjgzaPKTGDsyMJQzMAyiz+5M+gPwbOaRUdV
-         9YBiztkWhLnSHHIpBSzOmlRBa20pOJ4IXK1HgaEfRpX9KNP6rHa16RTdkxMuKNgG0LG/
-         rSxNIQmZhUBoNWLbzptwID62CM2X0X+XyG5N3cH+PajiG+BTYynaVhtn20QckHlYWjUt
-         9vR4Y7epUeBpEsTTycdpoe5tyEWdM445Ci9iBAcgAQ4aN8aG1QL5KNZr5jIROTnDchCo
-         3RFQ==
-X-Gm-Message-State: AOAM531HY8EsZLu+PaP7RgsImzOZLhiercEsnPYFNF9To0LjHvGdc+BE
-        pDzkq5O1XShoA68EN2RDYQY=
-X-Google-Smtp-Source: ABdhPJzYnNQ8OQjCsmw1cVsjtPxl6eOnzg6eNXPdSPaasl7YpuWsORuWWG7bohybX/5AGBPhiNhsVg==
-X-Received: by 2002:a17:902:9f88:b029:ed:2b48:3a2c with SMTP id g8-20020a1709029f88b02900ed2b483a2cmr14542695plq.45.1619575824882;
-        Tue, 27 Apr 2021 19:10:24 -0700 (PDT)
-Received: from ast-mbp.dhcp.thefacebook.com ([2620:10d:c090:400::5:2e71])
-        by smtp.gmail.com with ESMTPSA id j24sm3392237pjy.1.2021.04.27.19.10.23
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 27 Apr 2021 19:10:24 -0700 (PDT)
-Date:   Tue, 27 Apr 2021 19:10:22 -0700
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-To:     John Fastabend <john.fastabend@gmail.com>
-Cc:     davem@davemloft.net, daniel@iogearbox.net, andrii@kernel.org,
-        netdev@vger.kernel.org, bpf@vger.kernel.org, kernel-team@fb.com
-Subject: Re: [PATCH v2 bpf-next 10/16] bpf: Add bpf_btf_find_by_name_kind()
- helper.
-Message-ID: <20210428021022.h3ihowtncydpsahp@ast-mbp.dhcp.thefacebook.com>
-References: <20210423002646.35043-1-alexei.starovoitov@gmail.com>
- <20210423002646.35043-11-alexei.starovoitov@gmail.com>
- <60887b7ba5bba_12319208a5@john-XPS-13-9370.notmuch>
+        id S237781AbhD1C3t (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 27 Apr 2021 22:29:49 -0400
+Received: from mail.as397444.net ([69.59.18.99]:35338 "EHLO mail.as397444.net"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S235901AbhD1C3s (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 27 Apr 2021 22:29:48 -0400
+Received: by mail.as397444.net (Postfix) with UTF8SMTPSA id 530FE559C09;
+        Wed, 28 Apr 2021 02:29:03 +0000 (UTC)
+X-DKIM-Note: Keys used to sign are likely public at https://as397444.net/dkim/
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mattcorallo.com;
+        s=1619575263; t=1619576943;
+        bh=uoElVMvzWf0yTWv6ifdIp3u4Ka8rvsdR/7kJRQft+Kk=;
+        h=Date:To:Cc:From:Subject:From;
+        b=xWFUiR+wsR8dwvp+aF43MOK8jGf+RyUIepieiQrKJtaUtanpyalnkpsN3eDDFCmXy
+         nw+KJeKkAZ/0h47MyHNPlsEI2qKD5OFs7qw3pado16Qr2VB6gR1P8TtK8ZX1BDXxET
+         E+tnBoaylilex6Uj7PYoYXKaNCgl4GzJSnb3mVErslUE1xRWYMv/DaWPr/6yCQ9E7z
+         +sf2RkPlBO0qms2/EELGXtOiZb4RzVvJ+yhAkGlO6MeA3WMq0xXo4i5FA8niBQkaHZ
+         riZQkCAapNUuV2h4uXDBAQM2LfH+RyC74SLxbqwWDSD35hD/TWxK0aE3cBSXY8sw5n
+         FAVySmUG2xvzA==
+Message-ID: <d840ddcf-07a6-a838-abf8-b1d85446138e@bluematt.me>
+Date:   Tue, 27 Apr 2021 22:29:03 -0400
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <60887b7ba5bba_12319208a5@john-XPS-13-9370.notmuch>
+Content-Language: en-US
+To:     "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>
+Cc:     Eric Dumazet <edumazet@google.com>, Willy Tarreau <w@1wt.eu>,
+        Keyu Man <kman001@ucr.edu>
+From:   Matt Corallo <netdev-list@mattcorallo.com>
+Subject: [PATCH net-next] Reduce IP_FRAG_TIME fragment-reassembly timeout to
+ 1s, from 30s
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Apr 27, 2021 at 02:00:43PM -0700, John Fastabend wrote:
-> Alexei Starovoitov wrote:
-> > From: Alexei Starovoitov <ast@kernel.org>
-> > 
-> > Add new helper:
-> > 
-> > long bpf_btf_find_by_name_kind(u32 btf_fd, char *name, u32 kind, int flags)
-> > 	Description
-> > 		Find given name with given type in BTF pointed to by btf_fd.
-> > 		If btf_fd is zero look for the name in vmlinux BTF and in module's BTFs.
-> > 	Return
-> > 		Returns btf_id and btf_obj_fd in lower and upper 32 bits.
-> > 
-> > Signed-off-by: Alexei Starovoitov <ast@kernel.org>
-> > ---
-> 
-> I'm missing some high-level concept on how this would be used? Where does btf_fd come
-> from and how is it used so that it doesn't break sig-check?
+The default IP reassembly timeout of 30 seconds predates git
+history (and cursory web searches turn up nothing related to it).
+The only relevant source cited in net/ipv4/ip_fragment.c is RFC
+791 defining IPv4 in 1981. RFC 791 suggests allowing the timer to
+increase on the receipt of each fragment (which Linux deliberately
+does not do), with a default timeout for each fragment of 15
+seconds. It suggests 15s to cap a 10Kb/s flow to a 150Kb buffer of
+fragments.
 
-you mean that one that is being returned or the one passed in?
-The one that is passed in I only tested locally. No patches use that. Sorry.
-It's to support PROG_EXT. That btf_fd points to BTF of the prog that is being extended.
-The signed extension prog will have the name of subprog covered by the signature,
-but target btf_fd of the prog won't be known at signing time.
-It will be supplied via struct bpf_prog_desc. That's what attach_prog_fd is there for.
-I can remove all that stuff for now.
-The name of target prog doesn't have to be part of the signature.
-All of these details are to be discussed.
-We can make signature as tight as we want or more flexible.
+When Linux receives a fragment, if the total memory used for the
+fragment reassembly buffer (across all senders) exceeds
+net.ipv4.ipfrag_high_thresh (or the equivalent for IPv6), it
+silently drops all future fragments fragments until the timers on
+the original expire.
 
-> A use-case I'm trying to fit into this series is how to pass down a BTF fd/object
-> with the program. 
+All the way in 2021, these numbers feel almost comical. The default
+buffer size for fragmentation reassembly is hard-coded at 4MiB as
+`net->ipv4.fqdir->high_thresh = 4 * 1024 * 1024;` capping a host at
+1.06Mb/s of lost fragments before all fragments received on the
+host are dropped (with independent limits for IPv6).
 
-I'm not sure I follow.
-struct bpf_prog_desc will have more fields that can be populated to tweak
-particular prog before running the loader.
+At 1.06Mb/s of lost fragments, we move from DoS attack threshold to
+real-world scenarios - at moderate loss rates on consumer networks
+today its fairly easy to hit this, causing end hosts with their MTU
+(mis-)configured to fragment to have nearly 10-20 second blocks of
+100% packet loss.
 
-> I know its not doing CO-RE yet but we would want it to use the
-> BTF object being passed down for CO-RE eventually. Will there be someway to do
-> that here? That looks like the btf_fd here.
+Reducing the default fragment timeout to 1sec gives us 32Mb/s of
+fragments before we drop all fragments, which is certainly more in
+line with today's network speeds than 1.06Mb/s, though an optimal
+value may be still lower. Sadly, reducing it further requires a
+change to the sysctl interface, as net.ipv4.ipfrag_time is only
+specified in seconds.
+---
+  include/net/ip.h | 2 +-
+  1 file changed, 1 insertion(+), 1 deletion(-)
 
-I've started hacking on CO-RE. So far I'm thinking to pass spec string to
-the kernel in another section of btf.ext. Similar to line_info and func_info.
-As an orthogonal discussion I think CO-RE should be able to relocate
-against already loaded bpf progs too (and not only kernel and modules).
+diff --git a/include/net/ip.h b/include/net/ip.h
+index 2d6b985d11cc..f1473ac5a27c 100644
+--- a/include/net/ip.h
++++ b/include/net/ip.h
+@@ -135,7 +135,7 @@ struct ip_ra_chain {
+  #define IP_MF        0x2000        /* Flag: "More Fragments"    */
+  #define IP_OFFSET    0x1FFF        /* "Fragment Offset" part    */
+
+-#define IP_FRAG_TIME    (30 * HZ)        /* fragment lifetime    */
++#define IP_FRAG_TIME    (1 * HZ)        /* fragment lifetime    */
+
+  struct msghdr;
+  struct net_device;
+-- 
+2.30.2
