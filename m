@@ -2,56 +2,45 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7F3D236DF65
-	for <lists+netdev@lfdr.de>; Wed, 28 Apr 2021 21:13:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1111C36DF73
+	for <lists+netdev@lfdr.de>; Wed, 28 Apr 2021 21:19:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243688AbhD1TOh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 28 Apr 2021 15:14:37 -0400
-Received: from mail.kernel.org ([198.145.29.99]:33684 "EHLO mail.kernel.org"
+        id S243937AbhD1TU1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 28 Apr 2021 15:20:27 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:45052 "EHLO vps0.lunn.ch"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232310AbhD1TOg (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 28 Apr 2021 15:14:36 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 1A6E6613F1;
-        Wed, 28 Apr 2021 19:13:51 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1619637231;
-        bh=tT66t63JdIpz5yQPVhQuv9m4JujetKOEC9l42sV1tMo=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=gKJmJvCd/7xSOjayOgxjgKRuPikxnm25lQlzziciFQZALjJ2l7UIp6LQVe611ruzv
-         SlFxm4DRSB0yL27OJCHGHItTEkE9Q28VCTxXZZuzV3WXLNQ74JG+7Rkag2QdAO0kDS
-         nmV1nRxKbv/ExLd/6HTNg3LOTJ2mQjTugQtJMSqU5rpwjotlLbdKnmkwqHLDnN9nfb
-         kw32jnw3m+MW7H7Wwh53EPlJt3uQiPccIxhwM2pnPNN0hSwzAeOBkxlKHOTbMsDevD
-         7d42YayW0q3SEUfa31+IDN7o6ml1R3du+MWDAsU+5ZfJca7P3vp9qEcmDnBfMRog4X
-         43vncnfASWyGA==
-Date:   Wed, 28 Apr 2021 12:13:50 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
-Cc:     simon.horman@netronome.com, davem@davemloft.net,
-        oss-drivers@netronome.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] nfp: flower: Remove redundant assignment to mask
-Message-ID: <20210428121350.20d10dcf@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <1619604330-122462-1-git-send-email-jiapeng.chong@linux.alibaba.com>
-References: <1619604330-122462-1-git-send-email-jiapeng.chong@linux.alibaba.com>
+        id S239291AbhD1TU0 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 28 Apr 2021 15:20:26 -0400
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
+        (envelope-from <andrew@lunn.ch>)
+        id 1lbpif-001YKH-04; Wed, 28 Apr 2021 21:19:33 +0200
+Date:   Wed, 28 Apr 2021 21:19:32 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Corentin Labbe <clabbe@baylibre.com>
+Cc:     hkallweit1@gmail.com, linux@armlinux.org.uk, robh+dt@kernel.org,
+        linus.walleij@linaro.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
+Subject: Re: [PATCH] dt-bindings: net: Convert mdio-gpio to yaml
+Message-ID: <YIm1REuYDPUwqSYf@lunn.ch>
+References: <20210428163120.3657234-1-clabbe@baylibre.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210428163120.3657234-1-clabbe@baylibre.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 28 Apr 2021 18:05:30 +0800 Jiapeng Chong wrote:
-> The value stored to mask in the calculations this patch removes is
-> not used, so the calculation and the assignment can be removed.
-> 
-> Cleans up the following clang-analyzer warning:
-> 
-> drivers/net/ethernet/netronome/nfp/flower/offload.c:1230:3: warning:
-> Value stored to 'mask' is never read
-> [clang-analyzer-deadcode.DeadStores].
-> 
-> Reported-by: Abaci Robot <abaci@linux.alibaba.com>
-> Signed-off-by: Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
+> +  gpios:
+> +    minItems: 2
+> +    description: |
+> +      MDC and MDIO lines connected to GPIO controllers are listed in
+> +      the gpios property as described in section VIII.1 in the
+> +      following order: MDC, MDIO.
 
-Seems cleaner to always move ext and mask, in case some code 
-is added later in the function and starts accessing mask.
+You should probably add maxItems: 3, or however you describe this in
+yaml. You often find with x86 machines you don't have GPIOs, just GPI
+and GPO, and you need to combine two to form the MDIO line of the MDIO
+bus.
+
+	Andrew
