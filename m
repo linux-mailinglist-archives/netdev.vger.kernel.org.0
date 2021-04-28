@@ -2,257 +2,199 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 56CF636D354
-	for <lists+netdev@lfdr.de>; Wed, 28 Apr 2021 09:40:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 716CA36D35B
+	for <lists+netdev@lfdr.de>; Wed, 28 Apr 2021 09:42:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236524AbhD1Hk7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 28 Apr 2021 03:40:59 -0400
-Received: from mail-vi1eur05on2055.outbound.protection.outlook.com ([40.107.21.55]:9185
-        "EHLO EUR05-VI1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S229643AbhD1Hk6 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 28 Apr 2021 03:40:58 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=FIdRlkHP/4ZJ6eydb0InchF1x+RtWJOyySV2BwlXZOykKVwgQENXFHe41uXeYBvS8pugM+7G73KSe3xT59/SMalVdmNf96BdkTgiRa0BbDz0L2uanHmbdXWtheQCL/OELggOmmQK2h3FZ38ssIQNfAXH/uCbbKIaMdaZsEZO5K+ea9ZgcbiSGZZ0i11xgcqJniJsCWu6uQqKZ4XIs/fzzAii/Z6PI5mloeLNJsNoO6ObXkzAJ6ulk6TeNuu5WAlwgJ0STsATXpHrXj5TR0Ff9mezHpTTPwrr0K1MTjQaXjiQAsJ4aPptYHosLLhH5ScmMmoP1lxlfHQA8SOmKJzaDg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=HShAn68i0G0TRc94kH1DYWm0JIGZytgBlKlETA4SJVY=;
- b=D5r2cHHtJNVKhu5QVuF0jRszk4lC4v6Nsru3s0QsjOW6dC1KobdwVCl6+843OLu8RbTVBslfB9PMgIY4I8fxNO6lT4rHoI9kJyKmeOrBFwnDJBniWh5JYULyfuUnkJOs0NRZwTiU33d6cjAMT59d5HfjaAHxo9t2RSAflgghoBFjddK8EZsBadVFWJ76BBgyKwnj4V3ZbqlTKzIwx0qA2jTGH89YsJNMgXsTfKCR2OqZ20ue8oM0Lp1z+4jzk0t3vf+ogGX5qOd5ILc6rqWcWNxnRCoUWRZUcin0xsMlLqFWUFNl0H2qcncmj+iUiOf5EJbMZ+SzzgfUK12k4cJ0sw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=HShAn68i0G0TRc94kH1DYWm0JIGZytgBlKlETA4SJVY=;
- b=Rp72JTKJLJo6McPaKu9AkRPx1uKiM4JMIzRxBYik75K7jxoTVxbaeUrH5VgeZwGGFA/Z7uRT4AGwxEtM7fqr/WPpT0hpJSGRbM34KGSdLXwyMmAyZesEjgdv4o0EZcQN41u4MlILfabe4mJ0nVMOFa5AZ/hSQzLLVlmFOUpPJoM=
-Authentication-Results: st.com; dkim=none (message not signed)
- header.d=none;st.com; dmarc=none action=none header.from=nxp.com;
-Received: from DB8PR04MB6795.eurprd04.prod.outlook.com (2603:10a6:10:fa::15)
- by DB8PR04MB6345.eurprd04.prod.outlook.com (2603:10a6:10:106::11) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4065.20; Wed, 28 Apr
- 2021 07:40:11 +0000
-Received: from DB8PR04MB6795.eurprd04.prod.outlook.com
- ([fe80::3400:b139:f681:c8cf]) by DB8PR04MB6795.eurprd04.prod.outlook.com
- ([fe80::3400:b139:f681:c8cf%7]) with mapi id 15.20.4065.027; Wed, 28 Apr 2021
- 07:40:11 +0000
-From:   Joakim Zhang <qiangqing.zhang@nxp.com>
-To:     peppe.cavallaro@st.com, alexandre.torgue@st.com,
-        joabreu@synopsys.com, davem@davemloft.net, kuba@kernel.org,
-        f.fainelli@gmail.com, andrew@lunn.ch
-Cc:     Jisheng.Zhang@synaptics.com, netdev@vger.kernel.org,
-        linux-imx@nxp.com
-Subject: [PATCH V3 net] net: stmmac: fix MAC WoL unwork if PHY doesn't support WoL
-Date:   Wed, 28 Apr 2021 15:41:07 +0800
-Message-Id: <20210428074107.2378-1-qiangqing.zhang@nxp.com>
-X-Mailer: git-send-email 2.17.1
-Content-Type: text/plain
-X-Originating-IP: [119.31.174.71]
-X-ClientProxiedBy: HK2PR02CA0185.apcprd02.prod.outlook.com
- (2603:1096:201:21::21) To DB8PR04MB6795.eurprd04.prod.outlook.com
- (2603:10a6:10:fa::15)
+        id S236962AbhD1Hmw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 28 Apr 2021 03:42:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55792 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231635AbhD1Hmt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 28 Apr 2021 03:42:49 -0400
+Received: from mail-pj1-x1029.google.com (mail-pj1-x1029.google.com [IPv6:2607:f8b0:4864:20::1029])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 222C5C061574;
+        Wed, 28 Apr 2021 00:42:04 -0700 (PDT)
+Received: by mail-pj1-x1029.google.com with SMTP id lr7so14170966pjb.2;
+        Wed, 28 Apr 2021 00:42:04 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=9Vplq7VQABgKTTqEmWaOC7n13jU2sKYjrPpnmA+TaV4=;
+        b=p8bUi3sf5+RLC8fZLrJ/Sc//ayqTXPNd7xBkYxONhCsznzSxggOdEhanOx9Xr15Zlb
+         w5GjnBuyPO5hc/7BgFNgDh9MMpfuqSQYHAU5nA2ycCfvzV35M83LihQJTO20x2tAIA0J
+         SdlK/0o7DEblQ55RrtFnLG3DuqwMk9NsepAOp399XJJPdCnSjCWPcDvfMp2qbNKw/ZR0
+         CNSAW2KEGJnLcNWv1xSWYmAaPaaVY/77zl/+afxwpVvRhrdg9Ux46kbWWPoKvuCbTU5n
+         /cw5HmtGUOoBFlQsvBcxqwm4khXv2IfUR85NjKqGhhYonjnO3ri95by+vhduQqo2vAQz
+         bQ7g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=9Vplq7VQABgKTTqEmWaOC7n13jU2sKYjrPpnmA+TaV4=;
+        b=FSlj+ilVxK1GUvwU3/UAJJRUveu9wVF+4SUxQ9t9z9+ync6fE93NFPwqHGx851Rqct
+         65b3v2HuP2SzSUbEo8SxuRTbSpNOY8d43DhCVPzhGT4qulOX0AQnCGf+xSFj5Liqz2bM
+         wsV0Ol5DpIXg0YwM4D+oZP0PvsqbHjkyceFCpj3C3ByuVVttpjS8yX/w3SMq9w/nwwhM
+         KjC458MFq1FTB+VneV3tUs4ehx9knxAvKTMwvgAVqHxpgNJZxPYdAsYLQCLpZsW765jr
+         143V6Q8Y/VRrIad0995GlRaW3vP/o3g9+A+KVuZc+BGN4T9QiS8DGcoKdxwL8XUTpx9Z
+         rRig==
+X-Gm-Message-State: AOAM532A8rsI6ZkMqzt2x/ztwzbz6sEFZi5mSccAToaveiS8+/dVaPff
+        nFr2Y/i6PY6Ttz2l1dGAntM05vBmYxhwJvza7xY=
+X-Google-Smtp-Source: ABdhPJxP+JfqeNexU/rHuvpt+oJNy4tuQQCNB/dKRKOxvwqbf4PigBJCenGLpswBoQ0v/puyVsHwABFGcNF6g3sVN+M=
+X-Received: by 2002:a17:90a:a613:: with SMTP id c19mr2608425pjq.117.1619595723640;
+ Wed, 28 Apr 2021 00:42:03 -0700 (PDT)
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from localhost.localdomain (119.31.174.71) by HK2PR02CA0185.apcprd02.prod.outlook.com (2603:1096:201:21::21) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4087.27 via Frontend Transport; Wed, 28 Apr 2021 07:40:08 +0000
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: f903ebff-6dc0-4ba1-dced-08d90a18da65
-X-MS-TrafficTypeDiagnostic: DB8PR04MB6345:
-X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <DB8PR04MB63454DAF527765EC88580C8AE6409@DB8PR04MB6345.eurprd04.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:901;
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: NS09fvDNbtaM/x2m1iJXvIrmEE5eGs+gdvCzJMtBUj+2/T6AalvOWLLby9ym9mAfpAge1LM6oadsYTLn3DGlMsYw0GY/EN16YXmECDWrlTOP7+4XkAZVXSiRVklDbgVSl80Bii4/gb5VrTqn98lVPW0QgWFSOPICXN7U4OuZwr/BYuOgkZZfiRsgd3omVhKYWIJ06kdxX8Ya9d8dEBnuCnkZtwtQtkiqm5shuo+3IMYaXBvL2ilyVUD8VZY4yUKC1xZVoPwF72TwI7BTRPqRmyngOKYpxYjGxxXXlf6f2whiOf1XcF0n0i8Q343+6ZJX/OR100p1rrS3PY7uarUapgEX+tO3knTrTmZuHHVSzr3u0eSpEj+mU/VkGVLveNeKiTa/mDpN/DmOFGEHZNR5R4ljMOxXvewvL+j1v/Rr6k51ILhd4m5wlxAsSVVRfrg6m/ov7YrMCjyEbMcGUQNbhXL0BNJvLkP9RMJM28xnSEfYzTG8pfRZP0IpC7BG1JoQlECKigR/kXCjA1cY7oBmjDnAoGVj/CY7KdzHDdXeqNxt5ZcLdGv3ixMVrmrxsymSjFG+iZB7N6+bGP6LcGlUPzdsIdX1WCPFVSJPhO6pz7KXc2W3j9e4Yjjt18ctfa0GvUQ/gFAGLPT3eDLYFA31IoCrwxdXe0hwLcqVOp1gozL0eHHKWKnKyVdTkpFsV8UGJFfdwvZSYgqyG8vLGrDfGKy0T+c7o9VJTSpm53LBYz4=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DB8PR04MB6795.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(346002)(396003)(136003)(39860400002)(376002)(186003)(86362001)(8936002)(6506007)(5660300002)(956004)(66946007)(316002)(16526019)(52116002)(66556008)(66476007)(26005)(1076003)(478600001)(36756003)(38350700002)(8676002)(6486002)(2906002)(83380400001)(2616005)(38100700002)(4326008)(6512007)(69590400013)(309714004);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData: =?us-ascii?Q?G8htX/HnCfvIwf/2mGifrxrZwJj5k/GsE2Otu4q/9iaHIgYuXk6wV7bvXk5T?=
- =?us-ascii?Q?eEa+0jU3FPDATl1EoJqI+Nj+dsj+g+/Y3ErvFsGwcRlQOmg84RVMrLql0/h/?=
- =?us-ascii?Q?io7G/tBDPVz8XI+ZJ5EP4uYBkiw3DrnaLK6Yu54wnQY0GTb8U1TIrn05m+Q5?=
- =?us-ascii?Q?GQYdDm8IoldhuQWDxx3/5o5SxS61Isq4vRclG5UukuFhY6USGlTJRW9hpsuk?=
- =?us-ascii?Q?QWI/7vBozt6DchilgfrXMf+UheqRqh+1bfgkXmWYtphLhWmShS+HnWL8aVN0?=
- =?us-ascii?Q?qIus4mun4KP2hVq0ERo7mz7QQeYHH1uVCzquSzi08YCM0UUE3iWUCOlxqspa?=
- =?us-ascii?Q?6nkZBJBtWverqQKREljTvLzEcWkNOZGOEHfTaaHBp/di1tSM0HHagDvz7EPb?=
- =?us-ascii?Q?9xb2+4tcVc1to35UDQ1UqSjNYQHEnWEyHC1rMeBz9BNq2/IG8/LyHhfRI1Nt?=
- =?us-ascii?Q?QFJ9PL3+PHX3sx1KAWTyqJAx5x1dgg2laerK3q5IadE1DOLpzFNYP+Uk4VsX?=
- =?us-ascii?Q?aMIoaACEPw5C9AaRIsSjIWAVMVJ8uMEmo6G4GNxUn8qmYVGyCMsHldGMNusV?=
- =?us-ascii?Q?eZTXstoAeHuVIAKiIE+Sbg3ZHXl7b5bgpQuouwpDoF0Y234c+N/ZsAePDI+C?=
- =?us-ascii?Q?7xI2ZJz96dzeH50a6yV21GQrmCMV6g+HPFThQa3tm5OT663RxveBcIqDquec?=
- =?us-ascii?Q?PI32CyNqNykUUovtQpV1sTaXk4xt2QtnuOs84d2tKbsrFNFPpxpEvgbHtXKT?=
- =?us-ascii?Q?LMTNWwLcIWJo4dB1PFL6m3TYHO9sUyZuOfuqoPVDZNpL8w5mGX4Rh+jBQQMx?=
- =?us-ascii?Q?1637Q1jRuzh/KBSsByBhSZAYQ9U6wQm/y5Aw9T5M/zECOV7FhRWrMtViqTw3?=
- =?us-ascii?Q?BZEywmQux4LOcCGwHgs1qpmWJseMAa5Sv9neX0r+ko2qGCZwpZAcgQMfqIan?=
- =?us-ascii?Q?mGKEjk7fMtajdxieAhWVl8st6rsfOiJll/1c6qLIAdgoFYPHZ0elfDObJnAH?=
- =?us-ascii?Q?So3neS7dtO24x7f+9pEq0qprC+F0jh5yK3Djp4/0PmcP69Wn0QjVIsSYzZ83?=
- =?us-ascii?Q?k52vyzwgYNeQI5Xy9CB9cib8bc+xciNxxxNrJzxoQbc0wyI+O+44zxkDqxKR?=
- =?us-ascii?Q?R1yk3EF+txGZLzkVHmcZKUE9g8DEev1DY/LFVTLH6mF22Oc00sHcPK+LP4Z2?=
- =?us-ascii?Q?/dBiNrF1+ITYEktjwjWK/D9hXjrQyybAg6Ra0EN6UAzjXVw3LmI/lzRDri28?=
- =?us-ascii?Q?LeqxyNMIMoU8Z8c2mV7OPOdb5EyG6tEKpDneDRYLFQUZwES5HruugxisXCkV?=
- =?us-ascii?Q?ikbDCENOmtSAki+z3OwZdOGg?=
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: f903ebff-6dc0-4ba1-dced-08d90a18da65
-X-MS-Exchange-CrossTenant-AuthSource: DB8PR04MB6795.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 28 Apr 2021 07:40:11.0870
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: Yc+IvOc8Jhpvf/2CrDEwemO+m2h3nJS+Ip0eu75r6P5j8PVEXo6K4fY625V70NJMRue5VmUsD2Hg8yzmjLKrrQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB8PR04MB6345
+References: <cover.1617885385.git.lorenzo@kernel.org> <CAJ8uoz1MOYLzyy7xXq_fmpKDEakxSomzfM76Szjr5gWsqHc9jQ@mail.gmail.com>
+ <YIhXxmXdjQdrrPbT@lore-desk>
+In-Reply-To: <YIhXxmXdjQdrrPbT@lore-desk>
+From:   Magnus Karlsson <magnus.karlsson@gmail.com>
+Date:   Wed, 28 Apr 2021 09:41:52 +0200
+Message-ID: <CAJ8uoz3=RiTLf_MY-8=hZpib8ds8HJFraVpjJs_K0QEzjfbEhA@mail.gmail.com>
+Subject: Re: [PATCH v8 bpf-next 00/14] mvneta: introduce XDP multi-buffer support
+To:     Lorenzo Bianconi <lorenzo@kernel.org>
+Cc:     bpf <bpf@vger.kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        Lorenzo Bianconi <lorenzo.bianconi@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>, shayagr@amazon.com,
+        sameehj@amazon.com, John Fastabend <john.fastabend@gmail.com>,
+        David Ahern <dsahern@kernel.org>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        Eelco Chaudron <echaudro@redhat.com>,
+        Jason Wang <jasowang@redhat.com>,
+        Alexander Duyck <alexander.duyck@gmail.com>,
+        Saeed Mahameed <saeed@kernel.org>,
+        "Fijalkowski, Maciej" <maciej.fijalkowski@intel.com>,
+        Tirthendu <tirthendu.sarkar@intel.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Both get and set WoL will check device_can_wakeup(), if MAC supports PMT,
-it will set device wakeup capability. After commit 1d8e5b0f3f2c ("net:
-stmmac: Support WOL with phy"), device wakeup capability will be overwrite
-in stmmac_init_phy() according to phy's Wol feature. If phy doesn't support
-WoL, then MAC will lose wakeup capability.
+On Tue, Apr 27, 2021 at 8:28 PM Lorenzo Bianconi <lorenzo@kernel.org> wrote:
+>
+> [...]
+>
+> > Took your patches for a test run with the AF_XDP sample xdpsock on an
+> > i40e card and the throughput degradation is between 2 to 6% depending
+> > on the setup and microbenchmark within xdpsock that is executed. And
+> > this is without sending any multi frame packets. Just single frame
+> > ones. Tirtha made changes to the i40e driver to support this new
+> > interface so that is being included in the measurements.
+> >
+> > What performance do you see with the mvneta card? How much are we
+> > willing to pay for this feature when it is not being used or can we in
+> > some way selectively turn it on only when needed?
+>
+> Hi Magnus,
+>
+> Today I carried out some comparison tests between bpf-next and bpf-next +
+> xdp_multibuff series on mvneta running xdp_rxq_info sample. Results are
+> basically aligned:
+>
+> bpf-next:
+> - xdp drop ~ 665Kpps
+> - xdp_tx   ~ 291Kpps
+> - xdp_pass ~ 118Kpps
+>
+> bpf-next + xdp_multibuff:
+> - xdp drop ~ 672Kpps
+> - xdp_tx   ~ 288Kpps
+> - xdp_pass ~ 118Kpps
+>
+> I am not sure if results are affected by the low power CPU, I will run some
+> tests on ixgbe card.
 
-This patch combines WoL capabilities both MAC and PHY from stmmac_get_wol(),
-set wakeup capability and give WoL priority to the PHY in stmmac_set_wol()
-when enable WoL. What PHYs do implement is WAKE_MAGIC, WAKE_UCAST, WAKE_MAGICSECURE
-and WAKE_BCAST.
+Thanks Lorenzo. I made some new runs, this time with i40e driver
+changes as a new data point. Same baseline as before but with patches
+[1] and [2] applied. Note
+that if you use net or net-next and i40e, you need patch [3] too.
 
-Fixes: commit 1d8e5b0f3f2c ("net: stmmac: Support WOL with phy")
-Suggested-by: Andrew Lunn <andrew@lunn.ch>
-Signed-off-by: Joakim Zhang <qiangqing.zhang@nxp.com>
----
-ChangeLogs:
-V1->V2:
-	* combine WoL capabilities both MAC and PHY
-V2->V3:
-	* give WoL priority to the PHY.
----
- .../ethernet/stmicro/stmmac/stmmac_ethtool.c  | 51 ++++++++++++-------
- .../net/ethernet/stmicro/stmmac/stmmac_main.c |  8 +--
- 2 files changed, 34 insertions(+), 25 deletions(-)
+The i40e multi-buffer support will be posted on the mailing list as a
+separate RFC patch so you can reproduce and review.
 
-diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_ethtool.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_ethtool.c
-index c5642985ef95..30358c1892f1 100644
---- a/drivers/net/ethernet/stmicro/stmmac/stmmac_ethtool.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_ethtool.c
-@@ -630,34 +630,46 @@ static void stmmac_get_strings(struct net_device *dev, u32 stringset, u8 *data)
- static void stmmac_get_wol(struct net_device *dev, struct ethtool_wolinfo *wol)
- {
- 	struct stmmac_priv *priv = netdev_priv(dev);
--
--	if (!priv->plat->pmt)
--		return phylink_ethtool_get_wol(priv->phylink, wol);
-+	struct ethtool_wolinfo wol_phy = { .cmd = ETHTOOL_GWOL };
- 
- 	mutex_lock(&priv->lock);
--	if (device_can_wakeup(priv->device)) {
-+	if (priv->plat->pmt) {
- 		wol->supported = WAKE_MAGIC | WAKE_UCAST;
- 		if (priv->hw_cap_support && !priv->dma_cap.pmt_magic_frame)
- 			wol->supported &= ~WAKE_MAGIC;
--		wol->wolopts = priv->wolopts;
- 	}
-+
-+	phylink_ethtool_get_wol(priv->phylink, &wol_phy);
-+
-+	/* Combine WoL capabilities both PHY and MAC */
-+	wol->supported |= wol_phy.supported;
-+	wol->wolopts = priv->wolopts;
-+
- 	mutex_unlock(&priv->lock);
- }
- 
- static int stmmac_set_wol(struct net_device *dev, struct ethtool_wolinfo *wol)
- {
- 	struct stmmac_priv *priv = netdev_priv(dev);
--	u32 support = WAKE_MAGIC | WAKE_UCAST;
-+	struct ethtool_wolinfo wol_phy = { .cmd = ETHTOOL_GWOL };
-+	u32 support = WAKE_MAGIC | WAKE_UCAST | WAKE_MAGICSECURE | WAKE_BCAST;
- 
--	if (!device_can_wakeup(priv->device))
--		return -EOPNOTSUPP;
-+	if (wol->wolopts & ~support)
-+		return -EINVAL;
- 
--	if (!priv->plat->pmt) {
-+	/* First check if can WoL from PHY */
-+	phylink_ethtool_get_wol(priv->phylink, &wol_phy);
-+	if (wol->wolopts & wol_phy.supported) {
- 		int ret = phylink_ethtool_set_wol(priv->phylink, wol);
- 
--		if (!ret)
--			device_set_wakeup_enable(priv->device, !!wol->wolopts);
--		return ret;
-+		if (!ret) {
-+			pr_info("stmmac: phy wakeup enable\n");
-+			device_set_wakeup_capable(priv->device, 1);
-+			device_set_wakeup_enable(priv->device, 1);
-+			goto wolopts_update;
-+		} else {
-+			return ret;
-+		}
- 	}
- 
- 	/* By default almost all GMAC devices support the WoL via
-@@ -666,18 +678,21 @@ static int stmmac_set_wol(struct net_device *dev, struct ethtool_wolinfo *wol)
- 	if ((priv->hw_cap_support) && (!priv->dma_cap.pmt_magic_frame))
- 		wol->wolopts &= ~WAKE_MAGIC;
- 
--	if (wol->wolopts & ~support)
--		return -EINVAL;
--
--	if (wol->wolopts) {
--		pr_info("stmmac: wakeup enable\n");
-+	if (priv->plat->pmt && wol->wolopts) {
-+		pr_info("stmmac: mac wakeup enable\n");
-+		device_set_wakeup_capable(priv->device, 1);
- 		device_set_wakeup_enable(priv->device, 1);
- 		enable_irq_wake(priv->wol_irq);
--	} else {
-+		goto wolopts_update;
-+	}
-+
-+	if (!wol->wolopts) {
-+		device_set_wakeup_capable(priv->device, 0);
- 		device_set_wakeup_enable(priv->device, 0);
- 		disable_irq_wake(priv->wol_irq);
- 	}
- 
-+wolopts_update:
- 	mutex_lock(&priv->lock);
- 	priv->wolopts = wol->wolopts;
- 	mutex_unlock(&priv->lock);
-diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-index c6f24abf6432..d62d8c28463d 100644
---- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-@@ -1076,7 +1076,6 @@ static void stmmac_check_pcs_mode(struct stmmac_priv *priv)
-  */
- static int stmmac_init_phy(struct net_device *dev)
- {
--	struct ethtool_wolinfo wol = { .cmd = ETHTOOL_GWOL };
- 	struct stmmac_priv *priv = netdev_priv(dev);
- 	struct device_node *node;
- 	int ret;
-@@ -1102,9 +1101,6 @@ static int stmmac_init_phy(struct net_device *dev)
- 		ret = phylink_connect_phy(priv->phylink, phydev);
- 	}
- 
--	phylink_ethtool_get_wol(priv->phylink, &wol);
--	device_set_wakeup_capable(priv->device, !!wol.supported);
--
- 	return ret;
- }
- 
-@@ -4787,10 +4783,8 @@ static int stmmac_hw_init(struct stmmac_priv *priv)
- 	if (priv->plat->tx_coe)
- 		dev_info(priv->device, "TX Checksum insertion supported\n");
- 
--	if (priv->plat->pmt) {
-+	if (priv->plat->pmt)
- 		dev_info(priv->device, "Wake-Up On Lan supported\n");
--		device_set_wakeup_capable(priv->device, 1);
--	}
- 
- 	if (priv->dma_cap.tsoen)
- 		dev_info(priv->device, "TSO supported\n");
--- 
-2.17.1
+Note, calculations are performed on non-truncated numbers. So 2 ns
+might be 5 cycles on my 2.1 GHz machine since 2.49 ns * 2.1 GHz =
+5.229 cycles ~ 5 cycles. xdpsock is run in zero-copy mode so it uses
+the zero-copy driver data path in contrast with xdp_rxq_info that uses
+the regular driver data path. Only ran the busy-poll 1-core case this
+time. Reported numbers are the average over 3 runs.
 
+multi-buffer patches without any driver changes:
+
+xdpsock rxdrop 1-core:
+i40e: -4.5% in throughput / +3 ns / +6 cycles
+ice: -1.5% / +1 ns / +2 cycles
+
+xdp_rxq_info -a XDP_DROP
+i40e: -2.5% / +2 ns / +3 cycles
+ice: +6% / -3 ns / -7 cycles
+
+xdp_rxq_info -a XDP_TX
+i40e: -10% / +15 ns / +32 cycles
+ice: -9% / +14 ns / +29 cycles
+
+multi-buffer patches + i40e driver changes from Tirtha:
+
+xdpsock rxdrop 1-core:
+i40e: -3% / +2 ns / +3 cycles
+
+xdp_rxq_info -a XDP_DROP
+i40e: -7.5% / +5 ns / +9 cycles
+
+xdp_rxq_info -a XDP_TX
+i40e: -10% / +15 ns / +32 cycles
+
+Would be great if someone could rerun a similar set of experiments on
+i40e or ice then
+report.
+
+[1] https://lists.osuosl.org/pipermail/intel-wired-lan/Week-of-Mon-20210419/024106.html
+[2] https://lists.osuosl.org/pipermail/intel-wired-lan/Week-of-Mon-20210426/024135.html
+[3] https://lists.osuosl.org/pipermail/intel-wired-lan/Week-of-Mon-20210426/024129.html
+
+> Regards,
+> Lorenzo
+>
+> >
+> > Thanks: Magnus
+> >
+> > > Eelco Chaudron (4):
+> > >   bpf: add multi-buff support to the bpf_xdp_adjust_tail() API
+> > >   bpd: add multi-buffer support to xdp copy helpers
+> > >   bpf: add new frame_length field to the XDP ctx
+> > >   bpf: update xdp_adjust_tail selftest to include multi-buffer
+> > >
+> > > Lorenzo Bianconi (10):
+> > >   xdp: introduce mb in xdp_buff/xdp_frame
+> > >   xdp: add xdp_shared_info data structure
+> > >   net: mvneta: update mb bit before passing the xdp buffer to eBPF layer
+> > >   xdp: add multi-buff support to xdp_return_{buff/frame}
+> > >   net: mvneta: add multi buffer support to XDP_TX
+> > >   net: mvneta: enable jumbo frames for XDP
+> > >   net: xdp: add multi-buff support to xdp_build_skb_from_fram
+> > >   bpf: move user_size out of bpf_test_init
+> > >   bpf: introduce multibuff support to bpf_prog_test_run_xdp()
+> > >   bpf: test_run: add xdp_shared_info pointer in bpf_test_finish
+> > >     signature
+> > >
+> > >  drivers/net/ethernet/marvell/mvneta.c         | 182 ++++++++++--------
+> > >  include/linux/filter.h                        |   7 +
+> > >  include/net/xdp.h                             | 105 +++++++++-
+> > >  include/uapi/linux/bpf.h                      |   1 +
+> > >  net/bpf/test_run.c                            | 109 +++++++++--
+> > >  net/core/filter.c                             | 134 ++++++++++++-
+> > >  net/core/xdp.c                                | 103 +++++++++-
+> > >  tools/include/uapi/linux/bpf.h                |   1 +
+> > >  .../bpf/prog_tests/xdp_adjust_tail.c          | 105 ++++++++++
+> > >  .../selftests/bpf/prog_tests/xdp_bpf2bpf.c    | 127 ++++++++----
+> > >  .../bpf/progs/test_xdp_adjust_tail_grow.c     |  17 +-
+> > >  .../bpf/progs/test_xdp_adjust_tail_shrink.c   |  32 ++-
+> > >  .../selftests/bpf/progs/test_xdp_bpf2bpf.c    |   3 +-
+> > >  13 files changed, 767 insertions(+), 159 deletions(-)
+> > >
+> > > --
+> > > 2.30.2
+> > >
