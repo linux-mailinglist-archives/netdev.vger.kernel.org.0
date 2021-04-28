@@ -2,21 +2,21 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2D10F36D91E
-	for <lists+netdev@lfdr.de>; Wed, 28 Apr 2021 16:03:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6F3D036D922
+	for <lists+netdev@lfdr.de>; Wed, 28 Apr 2021 16:03:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240112AbhD1OAm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 28 Apr 2021 10:00:42 -0400
-Received: from foss.arm.com ([217.140.110.172]:42980 "EHLO foss.arm.com"
+        id S240142AbhD1OAs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 28 Apr 2021 10:00:48 -0400
+Received: from foss.arm.com ([217.140.110.172]:43014 "EHLO foss.arm.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S240085AbhD1OAl (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 28 Apr 2021 10:00:41 -0400
+        id S240119AbhD1OAr (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 28 Apr 2021 10:00:47 -0400
 Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id E0AAF1063;
-        Wed, 28 Apr 2021 06:59:55 -0700 (PDT)
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 5961211B3;
+        Wed, 28 Apr 2021 07:00:02 -0700 (PDT)
 Received: from entos-ampere-02.shanghai.arm.com (entos-ampere-02.shanghai.arm.com [10.169.214.110])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id E2D703F694;
-        Wed, 28 Apr 2021 06:59:49 -0700 (PDT)
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id 65F353F694;
+        Wed, 28 Apr 2021 06:59:56 -0700 (PDT)
 From:   Jia He <justin.he@arm.com>
 To:     Linus Torvalds <torvalds@linux-foundation.org>,
         Petr Mladek <pmladek@suse.com>,
@@ -36,9 +36,9 @@ Cc:     Christian Borntraeger <borntraeger@de.ibm.com>,
         linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
         linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
         linux-s390@vger.kernel.org, Jia He <justin.he@arm.com>
-Subject: [PATCH 3/4] s390/hmcdrv: Remove the redundant directory path in debug message
-Date:   Wed, 28 Apr 2021 21:59:28 +0800
-Message-Id: <20210428135929.27011-3-justin.he@arm.com>
+Subject: [PATCH 4/4] lib/test_printf: Explicitly add components number to %pD and %pd
+Date:   Wed, 28 Apr 2021 21:59:29 +0800
+Message-Id: <20210428135929.27011-4-justin.he@arm.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20210428135929.27011-1-justin.he@arm.com>
 References: <20210428135929.27011-1-justin.he@arm.com>
@@ -46,62 +46,48 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-It would be better to use full file path with '%pD' instead of hard coding.
+After changing the default components number from 1 to 4 for %pD
+and %pd, it would be better to explicitly add the number in test_printf
+cases.
+
+Add a test case of %pd5 to verify if it can be capped by 4 components.
 
 Signed-off-by: Jia He <justin.he@arm.com>
 ---
- drivers/s390/char/hmcdrv_dev.c | 10 +++++-----
- 1 file changed, 5 insertions(+), 5 deletions(-)
+ lib/test_printf.c | 14 ++++++++------
+ 1 file changed, 8 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/s390/char/hmcdrv_dev.c b/drivers/s390/char/hmcdrv_dev.c
-index 20e9cd542e03..cdde75508c8a 100644
---- a/drivers/s390/char/hmcdrv_dev.c
-+++ b/drivers/s390/char/hmcdrv_dev.c
-@@ -137,7 +137,7 @@ static int hmcdrv_dev_open(struct inode *inode, struct file *fp)
- 	if (rc)
- 		module_put(THIS_MODULE);
- 
--	pr_debug("open file '/dev/%pD' with return code %d\n", fp, rc);
-+	pr_debug("open file '%pD' with return code %d\n", fp, rc);
- 	return rc;
- }
- 
-@@ -146,7 +146,7 @@ static int hmcdrv_dev_open(struct inode *inode, struct file *fp)
-  */
- static int hmcdrv_dev_release(struct inode *inode, struct file *fp)
+diff --git a/lib/test_printf.c b/lib/test_printf.c
+index 27b964ec723d..899cd55d1c90 100644
+--- a/lib/test_printf.c
++++ b/lib/test_printf.c
+@@ -478,18 +478,20 @@ static struct dentry test_dentry[4] __initdata = {
+ static void __init
+ dentry(void)
  {
--	pr_debug("closing file '/dev/%pD'\n", fp);
-+	pr_debug("closing file '%pD'\n", fp);
- 	kfree(fp->private_data);
- 	fp->private_data = NULL;
- 	hmcdrv_ftp_shutdown();
-@@ -231,7 +231,7 @@ static ssize_t hmcdrv_dev_read(struct file *fp, char __user *ubuf,
- 	retlen = hmcdrv_dev_transfer((char *) fp->private_data,
- 				     *pos, ubuf, len);
+-	test("foo", "%pd", &test_dentry[0]);
++	test("foo", "%pd1", &test_dentry[0]);
+ 	test("foo", "%pd2", &test_dentry[0]);
  
--	pr_debug("read from file '/dev/%pD' at %lld returns %zd/%zu\n",
-+	pr_debug("read from file '%pD' at %lld returns %zd/%zu\n",
- 		 fp, (long long) *pos, retlen, len);
+-	test("(null)", "%pd", NULL);
+-	test("(efault)", "%pd", PTR_INVALID);
+-	test("(null)", "%pD", NULL);
+-	test("(efault)", "%pD", PTR_INVALID);
++	test("(null)", "%pd1", NULL);
++	test("(efault)", "%pd1", PTR_INVALID);
++	test("(null)", "%pD1", NULL);
++	test("(efault)", "%pD1", PTR_INVALID);
  
- 	if (retlen > 0)
-@@ -248,7 +248,7 @@ static ssize_t hmcdrv_dev_write(struct file *fp, const char __user *ubuf,
- {
- 	ssize_t retlen;
+-	test("romeo", "%pd", &test_dentry[3]);
++	test("romeo", "%pd1", &test_dentry[3]);
+ 	test("alfa/romeo", "%pd2", &test_dentry[3]);
+ 	test("bravo/alfa/romeo", "%pd3", &test_dentry[3]);
+ 	test("/bravo/alfa/romeo", "%pd4", &test_dentry[3]);
++	test("/bravo/alfa/romeo", "%pd", &test_dentry[3]);
++	test("/bravo/alfa/romeo", "%pd5", &test_dentry[3]);
+ 	test("/bravo/alfa", "%pd4", &test_dentry[2]);
  
--	pr_debug("writing file '/dev/%pD' at pos. %lld with length %zd\n",
-+	pr_debug("writing file '%pD' at pos. %lld with length %zd\n",
- 		 fp, (long long) *pos, len);
- 
- 	if (!fp->private_data) { /* first expect a cmd write */
-@@ -272,7 +272,7 @@ static ssize_t hmcdrv_dev_write(struct file *fp, const char __user *ubuf,
- 	if (retlen > 0)
- 		*pos += retlen;
- 
--	pr_debug("write to file '/dev/%pD' returned %zd\n", fp, retlen);
-+	pr_debug("write to file '%pD' returned %zd\n", fp, retlen);
- 
- 	return retlen;
- }
+ 	test("bravo/alfa  |bravo/alfa  ", "%-12pd2|%*pd2", &test_dentry[2], -12, &test_dentry[2]);
 -- 
 2.17.1
 
