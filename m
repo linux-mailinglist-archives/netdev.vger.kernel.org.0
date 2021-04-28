@@ -2,43 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A506B36E0C0
-	for <lists+netdev@lfdr.de>; Wed, 28 Apr 2021 23:10:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BE16D36E0C3
+	for <lists+netdev@lfdr.de>; Wed, 28 Apr 2021 23:10:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232244AbhD1VK5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 28 Apr 2021 17:10:57 -0400
-Received: from mail.kernel.org ([198.145.29.99]:45892 "EHLO mail.kernel.org"
+        id S232573AbhD1VLB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 28 Apr 2021 17:11:01 -0400
+Received: from mail.kernel.org ([198.145.29.99]:45884 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230050AbhD1VKz (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S229691AbhD1VKz (ORCPT <rfc822;netdev@vger.kernel.org>);
         Wed, 28 Apr 2021 17:10:55 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id F0E5A61441;
+Received: by mail.kernel.org (Postfix) with ESMTPS id E9FA96143A;
         Wed, 28 Apr 2021 21:10:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1619644210;
-        bh=YlK2arpaWlpw9mRpWyiecub5pgdbqlhz0GUCbX0ykb4=;
+        bh=nWu+4MC0p0h/TPcQl+GmrsrvoDFvQ6RJs8CvXhH5Iow=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=h8ZyFDzsFUJFJXFRf31uvwDoGplft0GArTcbpHnkv2kox0dSJQ5Ysr7X+ZlJKCsTR
-         pPp3EsqW/crtSTWfhbbX07FUTE8/ZMZzFIIWcZeE2X7xEL3bZ3W97tNODaQk8UBKvQ
-         gmPYHdxg17vfuzuJTPnx2Sle2cR+qQav0Ms0UWxm5gqn6M60bWaL0BDiix7Pu5Qum1
-         /AwOeHhvT5lpDwwRbsltQrzzIfpUOutrFkCYSHFmg4ZOl42iOAj1xsW2B3BwJnQ78J
-         Z+fGoTO5uUYfNL1biKjo7H7cuI8ofMbeWfNUX4GsZ8ICS7ctTYoGRpUf0hT7C7Wapq
-         yYd19gJVdCwrQ==
+        b=FHJ8ddSaCCfv9aYg5skWf5NEQWvEcs/jQuHd+7MEVVEAbO5szoddX31PlG4u7WoWD
+         WRBiltjRlTSaQrxvHnbX2NS4bGKf3vgBjL5k9GMAabGjgReKoXkbCA1I7VOVH13/TV
+         IErmYYFp5NImYE+OS8N2NsNLHpMl1naVxY90iXd4pqDsvMwm9pt/v7jepSbdOH+uSq
+         ubX4ouT9sdNJdU7acDzY5FrlxGK/j4bMsgAioh1RO/n1Ax+cS/b7qU45FJ9UpdLPOy
+         U1VqHCd5EIwUQTZjmSUXmcPFBDLm5fR08WPkI8WK4eZuPBteLSOWGer7IFVcoTaTWE
+         dsNTGkmCAfCXg==
 Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id E539E60A36;
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id DAC3A60A3A;
         Wed, 28 Apr 2021 21:10:09 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH] net: tun: Remove redundant assignment to ret
+Subject: Re: [PATCH] net: netrom: nr_in: Remove redundant assignment to ns
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <161964420993.17892.2389378404589308179.git-patchwork-notify@kernel.org>
+Message-Id: <161964420989.17892.17707045391606271909.git-patchwork-notify@kernel.org>
 Date:   Wed, 28 Apr 2021 21:10:09 +0000
-References: <1619603852-114996-1-git-send-email-yang.lee@linux.alibaba.com>
-In-Reply-To: <1619603852-114996-1-git-send-email-yang.lee@linux.alibaba.com>
-To:     Yang Li <yang.lee@linux.alibaba.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, nathan@kernel.org,
-        ndesaulniers@google.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, clang-built-linux@googlegroups.com
+References: <1619603885-115604-1-git-send-email-jiapeng.chong@linux.alibaba.com>
+In-Reply-To: <1619603885-115604-1-git-send-email-jiapeng.chong@linux.alibaba.com>
+To:     Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
+Cc:     ralf@linux-mips.org, davem@davemloft.net, kuba@kernel.org,
+        linux-hams@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
@@ -47,21 +47,21 @@ Hello:
 
 This patch was applied to netdev/net-next.git (refs/heads/master):
 
-On Wed, 28 Apr 2021 17:57:32 +0800 you wrote:
-> Variable 'ret' is set to zero but this value is never read as it is
-> overwritten with a new value later on, hence it is a redundant
+On Wed, 28 Apr 2021 17:58:05 +0800 you wrote:
+> Variable ns is set to 'skb->data[17]' but this value is never read as
+> it is overwritten or not used later on, hence it is a redundant
 > assignment and can be removed.
 > 
 > Cleans up the following clang-analyzer warning:
 > 
-> drivers/net/tun.c:3008:2: warning: Value stored to 'ret' is never read
-> [clang-analyzer-deadcode.DeadStores]
+> net/netrom/nr_in.c:156:2: warning: Value stored to 'ns' is never read
+> [clang-analyzer-deadcode.DeadStores].
 > 
 > [...]
 
 Here is the summary with links:
-  - net: tun: Remove redundant assignment to ret
-    https://git.kernel.org/netdev/net-next/c/808337bec736
+  - net: netrom: nr_in: Remove redundant assignment to ns
+    https://git.kernel.org/netdev/net-next/c/15c0a64bfcbc
 
 You are awesome, thank you!
 --
