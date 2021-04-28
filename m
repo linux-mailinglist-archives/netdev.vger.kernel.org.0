@@ -2,173 +2,157 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1966836DD07
-	for <lists+netdev@lfdr.de>; Wed, 28 Apr 2021 18:31:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 34FCA36DD1D
+	for <lists+netdev@lfdr.de>; Wed, 28 Apr 2021 18:33:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240790AbhD1QcQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 28 Apr 2021 12:32:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32986 "EHLO
+        id S241067AbhD1Qeb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 28 Apr 2021 12:34:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33506 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229519AbhD1QcO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 28 Apr 2021 12:32:14 -0400
-Received: from mail-wm1-x335.google.com (mail-wm1-x335.google.com [IPv6:2a00:1450:4864:20::335])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 50B63C0613ED
-        for <netdev@vger.kernel.org>; Wed, 28 Apr 2021 09:31:29 -0700 (PDT)
-Received: by mail-wm1-x335.google.com with SMTP id i129so7216658wma.3
-        for <netdev@vger.kernel.org>; Wed, 28 Apr 2021 09:31:29 -0700 (PDT)
+        with ESMTP id S241053AbhD1Qe3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 28 Apr 2021 12:34:29 -0400
+Received: from mail-yb1-xb33.google.com (mail-yb1-xb33.google.com [IPv6:2607:f8b0:4864:20::b33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CCCACC061574
+        for <netdev@vger.kernel.org>; Wed, 28 Apr 2021 09:33:44 -0700 (PDT)
+Received: by mail-yb1-xb33.google.com with SMTP id q192so21028724ybg.4
+        for <netdev@vger.kernel.org>; Wed, 28 Apr 2021 09:33:44 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20150623.gappssmtp.com; s=20150623;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=s37poLb+YU/j8PS1vBOf/p0j3PbxlMcEPm2Cc7PyPFc=;
-        b=lAYP6D/xe5gDXAPQP7KVnwObFqfRXHFY5GwBElU671lGEh2PLg8GkgZQYIEWFZED8n
-         ICkiqNuM1cYoOK846RRK+9QOjGnxHTEqsRwC4h+NRG51WOu20qb1k/cFss7HQrwFVlEa
-         C28uwYS783D4w2SrsBZulhZ6uLoOgfvyDaDy7kyhqotdjC1sCnGD2iV1K7Y/gOJxlacD
-         /IZkgCG35q3uJ961iPnjWviyWb3zd9tdyIIAwbMjBo3rUbrq3HLfGgAIFf81DpKCj4Qz
-         EZPkZGatRmZdkGoLYQHUMFZHyBQbolAsdpewylqJrn0CaDkCBd1PSoWrPazfBj7Jowe3
-         EkQg==
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=aTy9+SvPIGV5lFvSWx3LUU1Noi5i+O1/6N3XRc6Yp+s=;
+        b=U4cWdJbnMYockksal5W0qWJ2/o3nLv4Lpk4cU+XKGbqMzFEDbp2Bx5blybQ6IenHy/
+         JCNxwlpGYWOUVPfdYVzj/m4OnSC4V7s5jz8MmW2I6akFZKirqRk8ups8VD9olaeIqMTC
+         w50SxBvWF4kkuIsqyKSuw7Kf0MS552kN6OaZgPxsKL5QNsMn7dlMZSbRBW3isDSraZyz
+         3COqcLh12yU4ZJiwgAEhEidLiRAtdm9+6MQzTeRCl0ePVeSnNQaCRLoo2hhKahQ/qczq
+         v5VpyIc/F/X6QHkzATVBJgptzCxjSsO0Me0zur5U//06nWHYkFhxuKazsfyigLDdfXPM
+         pdEA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=s37poLb+YU/j8PS1vBOf/p0j3PbxlMcEPm2Cc7PyPFc=;
-        b=pQjSx8EasjsNMEdDKuVMJRWEMlgIHmALmeBEcz108Qk8LenQJuBuKK7L8J0C0jrcEq
-         cJUyg3FJpG4k2Rs+UgjoP4vc7re4HF/vjtr0ufeG5RrgCbrwz3oUh6aFk86Nz+Oz0Z0F
-         NFZAfhpe16tXGxUL89YCOGT2M14hjpk7hZdbe0f/4PsZO3Iz1VAQkPsscYpwxDhnlc14
-         AJdh9kyq8dGEt2Ril4bwWpcYlwMrpFFYkT8NFzqwKvDa2i3OCcdG+r/+KjKe91mvFeRJ
-         +gsbCSJMC44H3QykSm0owtXUoUGBy+GNnaVfqHA+66a3d/QchXdWSwZ92kMR+whdgVjR
-         0DKQ==
-X-Gm-Message-State: AOAM532ew3Hb1iLG0jvS7T7E5cne8lQkbEEVkJxgGOvwdO0jqi3D1iNn
-        ElQU1+3WawendPI9Ml7F9PIztA==
-X-Google-Smtp-Source: ABdhPJzK3CHvftOyllCnQgS/edlWXyrWZ90fvwsLji8SZm5+vWo5D+eg38Vg7Z849JFODpMYYpMe2w==
-X-Received: by 2002:a7b:c74d:: with SMTP id w13mr5753522wmk.25.1619627487898;
-        Wed, 28 Apr 2021 09:31:27 -0700 (PDT)
-Received: from localhost.localdomain (laubervilliers-658-1-213-31.w90-63.abo.wanadoo.fr. [90.63.244.31])
-        by smtp.googlemail.com with ESMTPSA id c15sm380339wrr.3.2021.04.28.09.31.26
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 28 Apr 2021 09:31:27 -0700 (PDT)
-From:   Corentin Labbe <clabbe@baylibre.com>
-To:     andrew@lunn.ch, hkallweit1@gmail.com, linux@armlinux.org.uk,
-        robh+dt@kernel.org, linus.walleij@linaro.org
-Cc:     devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, Corentin Labbe <clabbe@baylibre.com>
-Subject: [PATCH] dt-bindings: net: Convert mdio-gpio to yaml
-Date:   Wed, 28 Apr 2021 16:31:20 +0000
-Message-Id: <20210428163120.3657234-1-clabbe@baylibre.com>
-X-Mailer: git-send-email 2.25.1
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=aTy9+SvPIGV5lFvSWx3LUU1Noi5i+O1/6N3XRc6Yp+s=;
+        b=mKmLSwslgQVFoT56bQF7LubKjMNg7TXZmyZjz/UdHYwmAAqMb0l5MC9RAEjPyp1SPT
+         pVI80/D+tDFkQMloOBuB/C5GGYYQOS799820w7yWLnyH7z8PcGhczUv2o2jxThOuNeXz
+         PyJJwYOEb1NgaHAQPh27G55Z+Qe8XQUoj0ZGhNoHgxWsYmovMIE+d++gZamvBt1jrR/k
+         MHpIoQ1M3xnVfAGaJm7La5mOTW1DURsLhQdls9xc47D6V0j/IIynuoutWlG2dRPVXa+V
+         k+gMq6WLEqNwk/VDkfJKYA8Np437kBGREVN0ZoqNIwbc6UJvONH9RHFWsvLniCzbAlzc
+         q5Fw==
+X-Gm-Message-State: AOAM531FsZzo5+c/uYCy6daqg9DQsBaVOn9XrOUl5fc1OVkcgiQCTLdJ
+        YDDkDq3QTbXSbORlZJkMGaQ+7hqmemLeMUX3fO888A==
+X-Google-Smtp-Source: ABdhPJyXU6+c2wQUbkUCk7vbS8NF7UX3oML1F9qyhFbsvHN7HWAaB4kvmEzqKL7yK1wJlDeicuytO5opWykcIG4u9sw=
+X-Received: by 2002:a5b:906:: with SMTP id a6mr33493576ybq.446.1619627623685;
+ Wed, 28 Apr 2021 09:33:43 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <fabd0598-c62e-ea88-f340-050136bb8266@akamai.com> <20210428155203.39974-1-kuniyu@amazon.co.jp>
+In-Reply-To: <20210428155203.39974-1-kuniyu@amazon.co.jp>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Wed, 28 Apr 2021 18:33:32 +0200
+Message-ID: <CANn89iK2Wy5WJB+57Y9JU24boy=bb4YQCk6DWD4BvhsM3ZVSdQ@mail.gmail.com>
+Subject: Re: [PATCH v4 bpf-next 00/11] Socket migration for SO_REUSEPORT.
+To:     Kuniyuki Iwashima <kuniyu@amazon.co.jp>
+Cc:     Jason Baron <jbaron@akamai.com>, andrii@kernel.org,
+        Alexei Starovoitov <ast@kernel.org>,
+        Benjamin Herrenschmidt <benh@amazon.com>,
+        bpf <bpf@vger.kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        David Miller <davem@davemloft.net>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Kuniyuki Iwashima <kuni1840@gmail.com>,
+        LKML <linux-kernel@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Converts net/mdio-gpio.txt to yaml
+On Wed, Apr 28, 2021 at 5:52 PM Kuniyuki Iwashima <kuniyu@amazon.co.jp> wrote:
+>
+> From:   Jason Baron <jbaron@akamai.com>
+> Date:   Wed, 28 Apr 2021 10:44:12 -0400
+> > On 4/28/21 4:13 AM, Kuniyuki Iwashima wrote:
+> > > From:   Jason Baron <jbaron@akamai.com>
+> > > Date:   Tue, 27 Apr 2021 12:38:58 -0400
+> > >> On 4/26/21 11:46 PM, Kuniyuki Iwashima wrote:
+> > >>> The SO_REUSEPORT option allows sockets to listen on the same port and to
+> > >>> accept connections evenly. However, there is a defect in the current
+> > >>> implementation [1]. When a SYN packet is received, the connection is tied
+> > >>> to a listening socket. Accordingly, when the listener is closed, in-flight
+> > >>> requests during the three-way handshake and child sockets in the accept
+> > >>> queue are dropped even if other listeners on the same port could accept
+> > >>> such connections.
+> > >>>
+> > >>> This situation can happen when various server management tools restart
+> > >>> server (such as nginx) processes. For instance, when we change nginx
+> > >>> configurations and restart it, it spins up new workers that respect the new
+> > >>> configuration and closes all listeners on the old workers, resulting in the
+> > >>> in-flight ACK of 3WHS is responded by RST.
+> > >>
+> > >> Hi Kuniyuki,
+> > >>
+> > >> I had implemented a different approach to this that I wanted to get your
+> > >> thoughts about. The idea is to use unix sockets and SCM_RIGHTS to pass the
+> > >> listen fd (or any other fd) around. Currently, if you have an 'old' webserver
+> > >> that you want to replace with a 'new' webserver, you would need a separate
+> > >> process to receive the listen fd and then have that process send the fd to
+> > >> the new webserver, if they are not running con-currently. So instead what
+> > >> I'm proposing is a 'delayed close' for a unix socket. That is, one could do:
+> > >>
+> > >> 1) bind unix socket with path '/sockets'
+> > >> 2) sendmsg() the listen fd via the unix socket
+> > >> 2) setsockopt() some 'timeout' on the unix socket (maybe 10 seconds or so)
+> > >> 3) exit/close the old webserver and the listen socket
+> > >> 4) start the new webserver
+> > >> 5) create new unix socket and bind to '/sockets' (if has MAY_WRITE file permissions)
+> > >> 6) recvmsg() the listen fd
+> > >>
+> > >> So the idea is that we set a timeout on the unix socket. If the new process
+> > >> does not start and bind to the unix socket, it simply closes, thus releasing
+> > >> the listen socket. However, if it does bind it can now call recvmsg() and
+> > >> use the listen fd as normal. It can then simply continue to use the old listen
+> > >> fds and/or create new ones and drain the old ones.
+> > >>
+> > >> Thus, the old and new webservers do not have to run concurrently. This doesn't
+> > >> involve any changes to the tcp layer and can be used to pass any type of fd.
+> > >> not sure if it's actually useful for anything else though.
+> > >>
+> > >> I'm not sure if this solves your use-case or not but I thought I'd share it.
+> > >> One can also inherit the fds like in systemd's socket activation model, but
+> > >> that again requires another process to hold open the listen fd.
+> > >
+> > > Thank you for sharing code.
+> > >
+> > > It seems bit more crash-tolerant than normal fd passing, but it can still
+> > > suffer if the process dies before passing fds. With this patch set, we can
+> > > migrate children sockets even if the process dies.
+> > >
+> >
+> > I don't think crashing should be much of an issue. The old server can setup the
+> > unix socket patch '/sockets' when it starts up and queue the listen sockets
+> > there from the start. When it dies it will close all its fds, and the new
+> > server can pick anything up any fds that are in the '/sockets' queue.
+> >
+> >
+> > > Also, as Martin said, fd passing tends to make application complicated.
+> > >
+> >
+> > It may be but perhaps its more flexible? It gives the new server the
+> > chance to re-use the existing listen fds, close, drain and/or start new
+> > ones. It also addresses the non-REUSEPORT case where you can't bind right
+> > away.
+>
+> If the flexibility is really worth the complexity, we do not care about it.
+> But, SO_REUSEPORT can give enough flexibility we want.
+>
+> With socket migration, there is no need to reuse listener (fd passing),
+> drain children (incoming connections are automatically migrated if there is
+> already another listener bind()ed), and of course another listener can
+> close itself and migrated children.
+>
+> If two different approaches resolves the same issue and one does not need
+> complexity in userspace, we select the simpler one.
 
-Signed-off-by: Corentin Labbe <clabbe@baylibre.com>
----
-This patch is a part of the work on fixing all DTs on gemini platform.
+Kernel bloat and complexity is _not_ the simplest choice.
 
- .../devicetree/bindings/net/mdio-gpio.txt     | 27 ---------
- .../devicetree/bindings/net/mdio-gpio.yaml    | 56 +++++++++++++++++++
- 2 files changed, 56 insertions(+), 27 deletions(-)
- delete mode 100644 Documentation/devicetree/bindings/net/mdio-gpio.txt
- create mode 100644 Documentation/devicetree/bindings/net/mdio-gpio.yaml
-
-diff --git a/Documentation/devicetree/bindings/net/mdio-gpio.txt b/Documentation/devicetree/bindings/net/mdio-gpio.txt
-deleted file mode 100644
-index 4d91a36c5cf5..000000000000
---- a/Documentation/devicetree/bindings/net/mdio-gpio.txt
-+++ /dev/null
-@@ -1,27 +0,0 @@
--MDIO on GPIOs
--
--Currently defined compatibles:
--- virtual,gpio-mdio
--- microchip,mdio-smi0
--
--MDC and MDIO lines connected to GPIO controllers are listed in the
--gpios property as described in section VIII.1 in the following order:
--
--MDC, MDIO.
--
--Note: Each gpio-mdio bus should have an alias correctly numbered in "aliases"
--node.
--
--Example:
--
--aliases {
--	mdio-gpio0 = &mdio0;
--};
--
--mdio0: mdio {
--	compatible = "virtual,mdio-gpio";
--	#address-cells = <1>;
--	#size-cells = <0>;
--	gpios = <&qe_pio_a 11
--		 &qe_pio_c 6>;
--};
-diff --git a/Documentation/devicetree/bindings/net/mdio-gpio.yaml b/Documentation/devicetree/bindings/net/mdio-gpio.yaml
-new file mode 100644
-index 000000000000..55c629cb5e57
---- /dev/null
-+++ b/Documentation/devicetree/bindings/net/mdio-gpio.yaml
-@@ -0,0 +1,56 @@
-+# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/net/mdio-gpio.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: MDIO on GPIOs
-+
-+maintainers:
-+  - Andrew Lunn <andrew@lunn.ch>
-+  - Florian Fainelli <f.fainelli@gmail.com>
-+  - Heiner Kallweit <hkallweit1@gmail.com>
-+
-+allOf:
-+  - $ref: "mdio.yaml#"
-+
-+properties:
-+  compatible:
-+    enum:
-+      - virtual,mdio-gpio
-+      - microchip,mdio-smi0
-+
-+  "#address-cells":
-+    const: 1
-+
-+  "#size-cells":
-+    const: 0
-+
-+  gpios:
-+    minItems: 2
-+    description: |
-+      MDC and MDIO lines connected to GPIO controllers are listed in
-+      the gpios property as described in section VIII.1 in the
-+      following order: MDC, MDIO.
-+
-+#Note: Each gpio-mdio bus should have an alias correctly numbered in "aliases"
-+#node.
-+unevaluatedProperties: false
-+
-+examples:
-+  - |
-+    aliases {
-+        mdio-gpio0 = &mdio0;
-+    };
-+
-+    mdio0: mdio {
-+      compatible = "virtual,mdio-gpio";
-+      #address-cells = <1>;
-+      #size-cells = <0>;
-+      gpios = <&qe_pio_a 11
-+               &qe_pio_c 6>;
-+      ethphy0: ethernet-phy@0 {
-+        reg = <0>;
-+      };
-+    };
-+...
--- 
-2.26.3
-
+Touching a complex part of TCP stack is quite risky.
