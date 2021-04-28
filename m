@@ -2,106 +2,125 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 90A6E36D453
-	for <lists+netdev@lfdr.de>; Wed, 28 Apr 2021 10:57:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0386436D45A
+	for <lists+netdev@lfdr.de>; Wed, 28 Apr 2021 10:59:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237931AbhD1I5P (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 28 Apr 2021 04:57:15 -0400
-Received: from ssl.serverraum.org ([176.9.125.105]:54951 "EHLO
-        ssl.serverraum.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237781AbhD1I5I (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 28 Apr 2021 04:57:08 -0400
-Received: from mwalle01.fritz.box (unknown [IPv6:2a02:810c:c200:2e91:fa59:71ff:fe9b:b851])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-384) server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by ssl.serverraum.org (Postfix) with ESMTPSA id 569D822258;
-        Wed, 28 Apr 2021 10:56:20 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
-        t=1619600180;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=WcLBw+PUeYywj+WWxtOGbEGLOKsKoAKsCiaukzdxIbk=;
-        b=jDdO3ZebQwHBi0Pbb0OOa+bMFdOWAhcEprk4KDLi5f3TQyQRyUplchsjXfL8lFkIBDUIOu
-        6Ea8uklTLl673jq2h3c/P+OCtc3gmaEMkvkpGRkQO6Cc9dQF2yGdMxpfsx+QVRgGi5KnFE
-        z47Jb2K/aMoyr0uO6tsmx4HqajM9/nI=
-From:   Michael Walle <michael@walle.cc>
-To:     netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     Michael Walle <michael@walle.cc>
-Subject: [PATCH 2/2] MAINTAINERS: move Murali Karicheri to credits
-Date:   Wed, 28 Apr 2021 10:56:07 +0200
-Message-Id: <20210428085607.32075-2-michael@walle.cc>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20210428085607.32075-1-michael@walle.cc>
-References: <20210428085607.32075-1-michael@walle.cc>
+        id S237931AbhD1JAP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 28 Apr 2021 05:00:15 -0400
+Received: from mga04.intel.com ([192.55.52.120]:10439 "EHLO mga04.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S230191AbhD1JAO (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 28 Apr 2021 05:00:14 -0400
+IronPort-SDR: L+MS+lYa6iXp1Eu4UQpRvwQRZZ0LKlKdZahTEW+O7KcF5V9dbC8AqqSJKUcbyhfuVS+zgz0dGo
+ kNf3sX36YEEg==
+X-IronPort-AV: E=McAfee;i="6200,9189,9967"; a="194578168"
+X-IronPort-AV: E=Sophos;i="5.82,257,1613462400"; 
+   d="scan'208";a="194578168"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Apr 2021 01:59:30 -0700
+IronPort-SDR: /bV5FFoRO+Z6/L7jzTEagZTchp/QERVU7eUnbaEtz1zq57djeZbukmJh51NuYDFnfJDkg6smLI
+ ikoeMdXuf1KQ==
+X-IronPort-AV: E=Sophos;i="5.82,257,1613462400"; 
+   d="scan'208";a="423434858"
+Received: from lingshan-mobl5.ccr.corp.intel.com (HELO [10.254.209.93]) ([10.254.209.93])
+  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Apr 2021 01:59:28 -0700
+Subject: Re: [PATCH 2/2] vDPA/ifcvf: implement doorbell mapping for ifcvf
+To:     Jason Wang <jasowang@redhat.com>, mst@redhat.com
+Cc:     virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
+        kvm@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20210428082133.6766-1-lingshan.zhu@intel.com>
+ <20210428082133.6766-3-lingshan.zhu@intel.com>
+ <f6d9a424-9025-3eb5-1cb4-0ff22f7bec63@redhat.com>
+From:   "Zhu, Lingshan" <lingshan.zhu@intel.com>
+Message-ID: <5052fced-cd9a-e453-5cb2-39cdde60a208@intel.com>
+Date:   Wed, 28 Apr 2021 16:59:26 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.9.0
 MIME-Version: 1.0
+In-Reply-To: <f6d9a424-9025-3eb5-1cb4-0ff22f7bec63@redhat.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
+Content-Language: en-US
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-His email bounces with permanent error "550 Invalid recipient". His last
-email on the LKML was from 2020-09-09 and he seems to have left TI.
 
-Signed-off-by: Michael Walle <michael@walle.cc>
----
-His linked in profiles says that, but I guess that shouldn't be in the
-commit message.
 
- CREDITS     |  5 +++++
- MAINTAINERS | 13 -------------
- 2 files changed, 5 insertions(+), 13 deletions(-)
+On 4/28/2021 4:42 PM, Jason Wang wrote:
+>
+> 在 2021/4/28 下午4:21, Zhu Lingshan 写道:
+>> This commit implements doorbell mapping feature for ifcvf.
+>> This feature maps the notify page to userspace, to eliminate
+>> vmexit when kick a vq.
+>>
+>> Signed-off-by: Zhu Lingshan <lingshan.zhu@intel.com>
+>> ---
+>>   drivers/vdpa/ifcvf/ifcvf_main.c | 18 ++++++++++++++++++
+>>   1 file changed, 18 insertions(+)
+>>
+>> diff --git a/drivers/vdpa/ifcvf/ifcvf_main.c 
+>> b/drivers/vdpa/ifcvf/ifcvf_main.c
+>> index e48e6b74fe2e..afcb71bc0f51 100644
+>> --- a/drivers/vdpa/ifcvf/ifcvf_main.c
+>> +++ b/drivers/vdpa/ifcvf/ifcvf_main.c
+>> @@ -413,6 +413,23 @@ static int ifcvf_vdpa_get_vq_irq(struct 
+>> vdpa_device *vdpa_dev,
+>>       return vf->vring[qid].irq;
+>>   }
+>>   +static struct vdpa_notification_area 
+>> ifcvf_get_vq_notification(struct vdpa_device *vdpa_dev,
+>> +                                   u16 idx)
+>> +{
+>> +    struct ifcvf_hw *vf = vdpa_to_vf(vdpa_dev);
+>> +    struct vdpa_notification_area area;
+>> +
+>> +    if (vf->notify_pa % PAGE_SIZE) {
+>> +        area.addr = 0;
+>> +        area.size = 0;
+>
+>
+> We don't need this since:
+>
+> 1) there's a check in the vhost vDPA
+I think you mean this code block in vdpa.c
+         notify = ops->get_vq_notification(vdpa, index);
+         if (notify.addr & (PAGE_SIZE - 1))
+                 return -EINVAL;
 
-diff --git a/CREDITS b/CREDITS
-index b06760f09c66..7ef7b136e71d 100644
---- a/CREDITS
-+++ b/CREDITS
-@@ -1874,6 +1874,11 @@ S: Krosenska' 543
- S: 181 00 Praha 8
- S: Czech Republic
- 
-+N: Murali Karicheri
-+E: m-karicheri2@ti.com
-+D: Keystone NetCP driver
-+D: Keystone PCIe host controller driver
-+
- N: Jan "Yenya" Kasprzak
- E: kas@fi.muni.cz
- D: Author of the COSA/SRP sync serial board driver.
-diff --git a/MAINTAINERS b/MAINTAINERS
-index 981413f41bf3..2cd7b40bb15f 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -14096,13 +14096,6 @@ F:	Documentation/devicetree/bindings/pci/ti-pci.txt
- F:	drivers/pci/controller/cadence/pci-j721e.c
- F:	drivers/pci/controller/dwc/pci-dra7xx.c
- 
--PCI DRIVER FOR TI KEYSTONE
--M:	Murali Karicheri <m-karicheri2@ti.com>
--L:	linux-pci@vger.kernel.org
--L:	linux-arm-kernel@lists.infradead.org (moderated for non-subscribers)
--S:	Maintained
--F:	drivers/pci/controller/dwc/pci-keystone.c
--
- PCI DRIVER FOR V3 SEMICONDUCTOR V360EPC
- M:	Linus Walleij <linus.walleij@linaro.org>
- L:	linux-pci@vger.kernel.org
-@@ -18323,12 +18316,6 @@ S:	Maintained
- F:	sound/soc/codecs/isabelle*
- F:	sound/soc/codecs/lm49453*
- 
--TI NETCP ETHERNET DRIVER
--M:	Murali Karicheri <m-karicheri2@ti.com>
--L:	netdev@vger.kernel.org
--S:	Maintained
--F:	drivers/net/ethernet/ti/netcp*
--
- TI PCM3060 ASoC CODEC DRIVER
- M:	Kirill Marinushkin <kmarinushkin@birdec.com>
- L:	alsa-devel@alsa-project.org (moderated for non-subscribers)
--- 
-2.20.1
+This should work, however, I think the parent driver should ensure it 
+passes a PAGE_SIZE aligned address to userspace, to be robust, to be 
+reliable.
+> 2) device is unaware of the bound driver, non page aligned doorbell 
+> doesn't necessarily meant it can be used
+Yes, non page aligned doorbell can not be used, so there is a check.
+
+Thanks
+Zhu Lingshan
+>
+> Let's leave those polices to the driver.
+>
+> Thanks
+>
+>
+>> +    } else {
+>> +        area.addr = vf->notify_pa;
+>> +        area.size = PAGE_SIZE;
+>> +    }
+>> +
+>> +    return area;
+>> +}
+>> +
+>>   /*
+>>    * IFCVF currently does't have on-chip IOMMU, so not
+>>    * implemented set_map()/dma_map()/dma_unmap()
+>> @@ -440,6 +457,7 @@ static const struct vdpa_config_ops ifc_vdpa_ops = {
+>>       .get_config    = ifcvf_vdpa_get_config,
+>>       .set_config    = ifcvf_vdpa_set_config,
+>>       .set_config_cb  = ifcvf_vdpa_set_config_cb,
+>> +    .get_vq_notification = ifcvf_get_vq_notification,
+>>   };
+>>     static int ifcvf_probe(struct pci_dev *pdev, const struct 
+>> pci_device_id *id)
+>
 
