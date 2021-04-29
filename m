@@ -2,19 +2,19 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1F00E36F212
-	for <lists+netdev@lfdr.de>; Thu, 29 Apr 2021 23:30:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2100436F216
+	for <lists+netdev@lfdr.de>; Thu, 29 Apr 2021 23:30:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237342AbhD2Vaw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 29 Apr 2021 17:30:52 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:46746 "EHLO vps0.lunn.ch"
+        id S236737AbhD2Vbb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 29 Apr 2021 17:31:31 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:46772 "EHLO vps0.lunn.ch"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S233284AbhD2Vav (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 29 Apr 2021 17:30:51 -0400
+        id S233293AbhD2VbY (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 29 Apr 2021 17:31:24 -0400
 Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
         (envelope-from <andrew@lunn.ch>)
-        id 1lcEEQ-001iLp-4X; Thu, 29 Apr 2021 23:29:58 +0200
-Date:   Thu, 29 Apr 2021 23:29:58 +0200
+        id 1lcEEy-001iMK-1T; Thu, 29 Apr 2021 23:30:32 +0200
+Date:   Thu, 29 Apr 2021 23:30:32 +0200
 From:   Andrew Lunn <andrew@lunn.ch>
 To:     DENG Qingfang <dqfext@gmail.com>
 Cc:     "David S. Miller" <davem@davemloft.net>,
@@ -39,22 +39,21 @@ Cc:     "David S. Miller" <davem@davemloft.net>,
         Frank Wunderlich <frank-w@public-files.de>,
         Thomas Gleixner <tglx@linutronix.de>,
         Marc Zyngier <maz@kernel.org>
-Subject: Re: [PATCH net-next 2/4] net: dsa: mt7530: add interrupt support
-Message-ID: <YIslVil/EmynAUxa@lunn.ch>
+Subject: Re: [PATCH net-next 3/4] dt-bindings: net: dsa: add MT7530 interrupt
+ controller binding
+Message-ID: <YIsleJ8K/vad3vFE@lunn.ch>
 References: <20210429062130.29403-1-dqfext@gmail.com>
- <20210429062130.29403-3-dqfext@gmail.com>
+ <20210429062130.29403-4-dqfext@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20210429062130.29403-3-dqfext@gmail.com>
+In-Reply-To: <20210429062130.29403-4-dqfext@gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Apr 29, 2021 at 02:21:28PM +0800, DENG Qingfang wrote:
-> Add support for MT7530 interrupt controller to handle internal PHYs.
-> In order to assign an IRQ number to each PHY, the registration of MDIO bus
-> is also done in this driver.
+On Thu, Apr 29, 2021 at 02:21:29PM +0800, DENG Qingfang wrote:
+> Add device tree binding to support MT7530 interrupt controller.
 > 
 > Signed-off-by: DENG Qingfang <dqfext@gmail.com>
 
