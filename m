@@ -2,109 +2,125 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D4EB436E797
-	for <lists+netdev@lfdr.de>; Thu, 29 Apr 2021 11:07:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2727C36E7A6
+	for <lists+netdev@lfdr.de>; Thu, 29 Apr 2021 11:11:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240343AbhD2JG0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 29 Apr 2021 05:06:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53436 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240322AbhD2JGZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 29 Apr 2021 05:06:25 -0400
-Received: from ssl.serverraum.org (ssl.serverraum.org [IPv6:2a01:4f8:151:8464::1:2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EE7DFC06138B;
-        Thu, 29 Apr 2021 02:05:38 -0700 (PDT)
-Received: from mwalle01.fritz.box (unknown [IPv6:2a02:810c:c200:2e91:fa59:71ff:fe9b:b851])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-384) server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by ssl.serverraum.org (Postfix) with ESMTPSA id BC47D22249;
-        Thu, 29 Apr 2021 11:05:34 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
-        t=1619687134;
+        id S233264AbhD2JMD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 29 Apr 2021 05:12:03 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:36083 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S231467AbhD2JMC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 29 Apr 2021 05:12:02 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1619687476;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=QGlBK//hIFViSV+qyHZn068w4JR3qL4cxAnd+11uHFk=;
-        b=kAaxmuhNpJejecjCHqTyLe/l5gZaCeCVDnjvGr+ZyLwHWs5PpM6zLNyQ2bAaq5D/oYYna0
-        zDglfQyMiECfZlryFGZb8xhdcE4Tx20OQO8BLJxWF5LTjpn5PSuW30ymZPuGKVSDY9ptxE
-        2d2JIclBCHK2t+Y6pApo46V8PirBmmo=
-From:   Michael Walle <michael@walle.cc>
-To:     netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     Jakub Kicinski <kuba@kernel.org>, Michael Walle <michael@walle.cc>
-Subject: [PATCH net v2 2/2] MAINTAINERS: move Murali Karicheri to credits
-Date:   Thu, 29 Apr 2021 11:05:21 +0200
-Message-Id: <20210429090521.554-2-michael@walle.cc>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20210429090521.554-1-michael@walle.cc>
-References: <20210429090521.554-1-michael@walle.cc>
+        bh=7mHkYV6GvGmzf+0JAfgaOq9O6URrv/lDXhBCCexc0WU=;
+        b=YkREO9pEUnikO0oiiQFVUdJcj3xU7g7/ng+odqCq0xMa4NyoJqJ98NgCVjhn5zgN2ZkXVh
+        pG4zasfbxcA1DTe0GMdTdfllJfAE7bSXHXo2Kv/MP0iHisvm9T8wB/ShTbYN9HG/nNm3Xe
+        W8/w5lTw8rXAN5wrAfNaK/OBH1wSNpc=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-322-Gkd90IT6N6q5OYn13yOhog-1; Thu, 29 Apr 2021 05:11:13 -0400
+X-MC-Unique: Gkd90IT6N6q5OYn13yOhog-1
+Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id E1E22107ACC7;
+        Thu, 29 Apr 2021 09:11:11 +0000 (UTC)
+Received: from carbon (unknown [10.36.110.19])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id C8DF016D2A;
+        Thu, 29 Apr 2021 09:10:57 +0000 (UTC)
+Date:   Thu, 29 Apr 2021 11:10:56 +0200
+From:   Jesper Dangaard Brouer <brouer@redhat.com>
+To:     Magnus Karlsson <magnus.karlsson@gmail.com>
+Cc:     magnus.karlsson@intel.com, intel-wired-lan@lists.osuosl.org,
+        anthony.l.nguyen@intel.com, maciej.fijalkowski@intel.com,
+        netdev@vger.kernel.org, brouer@redhat.com,
+        Jakub Kicinski <kuba@kernel.org>,
+        David Miller <davem@davemloft.net>,
+        Hangbin Liu <haliu@redhat.com>
+Subject: Re: [PATCH intel-net] i40e: fix broken XDP support
+Message-ID: <20210429111056.2174ee76@carbon>
+In-Reply-To: <20210426111401.28369-1-magnus.karlsson@gmail.com>
+References: <20210426111401.28369-1-magnus.karlsson@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-His email bounces with permanent error "550 Invalid recipient". His last
-email was from 2020-09-09 on the LKML and he seems to have left TI.
+Hi Tony, (+ Kuba and DaveM),
 
-Signed-off-by: Michael Walle <michael@walle.cc>
----
-changes since v1:
- - rebased to net
+What is the status on this patch[2] that fixes a crash[1] for i40e driver?
 
- CREDITS     |  5 +++++
- MAINTAINERS | 13 -------------
- 2 files changed, 5 insertions(+), 13 deletions(-)
+I'm getting offlist and internal IRC questions to why i40e doesn't
+work, and I noticed that it seems this have not been applied.
 
-diff --git a/CREDITS b/CREDITS
-index cef83b958cbe..80d096dbf262 100644
---- a/CREDITS
-+++ b/CREDITS
-@@ -1874,6 +1874,11 @@ S: Krosenska' 543
- S: 181 00 Praha 8
- S: Czech Republic
- 
-+N: Murali Karicheri
-+E: m-karicheri2@ti.com
-+D: Keystone NetCP driver
-+D: Keystone PCIe host controller driver
-+
- N: Jan "Yenya" Kasprzak
- E: kas@fi.muni.cz
- D: Author of the COSA/SRP sync serial board driver.
-diff --git a/MAINTAINERS b/MAINTAINERS
-index 04f4a2116b35..e264e63f09c0 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -13780,13 +13780,6 @@ F:	Documentation/devicetree/bindings/pci/ti-pci.txt
- F:	drivers/pci/controller/cadence/pci-j721e.c
- F:	drivers/pci/controller/dwc/pci-dra7xx.c
- 
--PCI DRIVER FOR TI KEYSTONE
--M:	Murali Karicheri <m-karicheri2@ti.com>
--L:	linux-pci@vger.kernel.org
--L:	linux-arm-kernel@lists.infradead.org (moderated for non-subscribers)
--S:	Maintained
--F:	drivers/pci/controller/dwc/pci-keystone.c
--
- PCI DRIVER FOR V3 SEMICONDUCTOR V360EPC
- M:	Linus Walleij <linus.walleij@linaro.org>
- L:	linux-pci@vger.kernel.org
-@@ -17974,12 +17967,6 @@ F:	drivers/power/supply/lp8788-charger.c
- F:	drivers/regulator/lp8788-*.c
- F:	include/linux/mfd/lp8788*.h
- 
--TI NETCP ETHERNET DRIVER
--M:	Murali Karicheri <m-karicheri2@ti.com>
--L:	netdev@vger.kernel.org
--S:	Maintained
--F:	drivers/net/ethernet/ti/netcp*
--
- TI PCM3060 ASoC CODEC DRIVER
- M:	Kirill Marinushkin <kmarinushkin@birdec.com>
- L:	alsa-devel@alsa-project.org (moderated for non-subscribers)
+I don't see it in net-next or net tree... would it make sense to route
+this via DaveM, or does it depend on the other fixes for i40e.
+
+[1] https://lore.kernel.org/netdev/20210422170508.22c58226@carbon/
+[2] https://patchwork.kernel.org/project/netdevbpf/patch/20210426111401.28369-1-magnus.karlsson@gmail.com/
+
+(top-post)
+
+On Mon, 26 Apr 2021 13:14:01 +0200
+Magnus Karlsson <magnus.karlsson@gmail.com> wrote:
+
+> From: Magnus Karlsson <magnus.karlsson@intel.com>
+> 
+> Commit 12738ac4754e ("i40e: Fix sparse errors in i40e_txrx.c") broke
+> XDP support in the i40e driver. That commit was fixing a sparse error
+> in the code by introducing a new variable xdp_res instead of
+> overloading this into the skb pointer. The problem is that the code
+> later uses the skb pointer in if statements and these where not
+> extended to also test for the new xdp_res variable. Fix this by adding
+> the correct tests for xdp_res in these places.
+> 
+> The skb pointer was used to store the result of the XDP program by
+> overloading the results in the errror pointer
+> ERR_PTR(-result). Therefore, the allocation failure test that used to
+> only test for !skb now need to be extended to also consider !xdp_res.
+> 
+> i40e_cleanup_headers() had a check that based on the skb value being
+> an error pointer, i.e. a result from the XDP program != XDP_PASS, and
+> if so start to process a new packet immediately, instead of populating
+> skb fields and sending the skb to the stack. This check is not needed
+> anymore, since we have added an explicit test for xdp_res being set
+> and if so just do continue to pick the next packet from the NIC.
+> 
+> v1 -> v2:
+> 
+> * Improved commit message.
+> 
+> * Restored the xdp_res = 0 initialization to its original place
+>   outside the per-packet loop. The original reason to move it inside
+>   the loop was that it was only initialized inside the loop code if
+>   skb was not set. But as skb can only be non-null if we have packets
+>   consisting of multiple frames (skb is set for all frames except the
+>   last one in a packet) and when this is true XDP cannot be active, so
+>   this does not matter. xdp_res == 0 is the same as I40E_XDP_PASS
+>   which is the default action if XDP is not active and it is then true
+>   for every single packet in this case.
+> 
+> Fixes: 12738ac4754e ("i40e: Fix sparse errors in i40e_txrx.c")
+> Acked-by: Jesper Dangaard Brouer <brouer@redhat.com>
+> Tested-by: Jesper Dangaard Brouer <brouer@redhat.com>
+> Reported-by: Jesper Dangaard Brouer <brouer@redhat.com>
+> Reviewed-by: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
+> Signed-off-by: Magnus Karlsson <magnus.karlsson@intel.com>
+> ---
+>  drivers/net/ethernet/intel/i40e/i40e_txrx.c | 8 ++------
+>  1 file changed, 2 insertions(+), 6 deletions(-)
+
 -- 
-2.20.1
+Best regards,
+  Jesper Dangaard Brouer
+  MSc.CS, Principal Kernel Engineer at Red Hat
+  LinkedIn: http://www.linkedin.com/in/brouer
 
