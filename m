@@ -2,26 +2,26 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 267AA36E95C
-	for <lists+netdev@lfdr.de>; Thu, 29 Apr 2021 13:08:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DBE2936E95B
+	for <lists+netdev@lfdr.de>; Thu, 29 Apr 2021 13:08:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240584AbhD2LJg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 29 Apr 2021 07:09:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52464 "EHLO
+        id S237179AbhD2LJd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 29 Apr 2021 07:09:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52462 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233114AbhD2LJc (ORCPT
+        with ESMTP id S232108AbhD2LJc (ORCPT
         <rfc822;netdev@vger.kernel.org>); Thu, 29 Apr 2021 07:09:32 -0400
 Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED950C06138D
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B5007C06138C
         for <netdev@vger.kernel.org>; Thu, 29 Apr 2021 04:08:45 -0700 (PDT)
 Received: from dude.hi.pengutronix.de ([2001:67c:670:100:1d::7])
         by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <ore@pengutronix.de>)
-        id 1lc4X6-00074s-Dv; Thu, 29 Apr 2021 13:08:36 +0200
+        id 1lc4X6-00074t-Dw; Thu, 29 Apr 2021 13:08:36 +0200
 Received: from ore by dude.hi.pengutronix.de with local (Exim 4.92)
         (envelope-from <ore@pengutronix.de>)
-        id 1lc4X4-0000zG-MJ; Thu, 29 Apr 2021 13:08:34 +0200
+        id 1lc4X4-0000zq-Nb; Thu, 29 Apr 2021 13:08:34 +0200
 From:   Oleksij Rempel <o.rempel@pengutronix.de>
 To:     Woojung Huh <woojung.huh@microchip.com>,
         UNGLinuxDriver@microchip.com, Andrew Lunn <andrew@lunn.ch>,
@@ -30,14 +30,13 @@ To:     Woojung Huh <woojung.huh@microchip.com>,
         Vladimir Oltean <olteanv@gmail.com>,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
-Cc:     Oleksij Rempel <o.rempel@pengutronix.de>,
-        Colin Ian King <colin.king@canonical.com>,
-        kernel@pengutronix.de, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Russell King <linux@armlinux.org.uk>,
+Cc:     Oleksij Rempel <o.rempel@pengutronix.de>, kernel@pengutronix.de,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Russell King <linux@armlinux.org.uk>,
         Michael Grzeschik <m.grzeschik@pengutronix.de>
-Subject: [PATCH net-next v1 2/3] net: dsa: ksz: ksz8795_spi_probe: fix possible NULL pointer dereference
-Date:   Thu, 29 Apr 2021 13:08:32 +0200
-Message-Id: <20210429110833.2181-2-o.rempel@pengutronix.de>
+Subject: [PATCH net-next v1 3/3] net: dsa: ksz: ksz8863_smi_probe: set proper return value for ksz_switch_alloc()
+Date:   Thu, 29 Apr 2021 13:08:33 +0200
+Message-Id: <20210429110833.2181-3-o.rempel@pengutronix.de>
 X-Mailer: git-send-email 2.29.2
 In-Reply-To: <20210429110833.2181-1-o.rempel@pengutronix.de>
 References: <20210429110833.2181-1-o.rempel@pengutronix.de>
@@ -51,30 +50,28 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Fix possible NULL pointer dereference in case devm_kzalloc() failed to
-allocate memory
+ksz_switch_alloc() will return NULL only if allocation is failed. So,
+the proper return value is -ENOMEM.
 
-Fixes: cc13e52c3a89 ("net: dsa: microchip: Add Microchip KSZ8863 SPI based driver support")
-Reported-by: Colin Ian King <colin.king@canonical.com>
+Fixes: 60a364760002 ("net: dsa: microchip: Add Microchip KSZ8863 SMI based driver support")
 Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
 ---
- drivers/net/dsa/microchip/ksz8795_spi.c | 3 +++
- 1 file changed, 3 insertions(+)
+ drivers/net/dsa/microchip/ksz8863_smi.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/dsa/microchip/ksz8795_spi.c b/drivers/net/dsa/microchip/ksz8795_spi.c
-index 85ba12aa82d8..ea7550d1b634 100644
---- a/drivers/net/dsa/microchip/ksz8795_spi.c
-+++ b/drivers/net/dsa/microchip/ksz8795_spi.c
-@@ -41,6 +41,9 @@ static int ksz8795_spi_probe(struct spi_device *spi)
- 	int i, ret = 0;
+diff --git a/drivers/net/dsa/microchip/ksz8863_smi.c b/drivers/net/dsa/microchip/ksz8863_smi.c
+index 9fb38e99001a..11293485138c 100644
+--- a/drivers/net/dsa/microchip/ksz8863_smi.c
++++ b/drivers/net/dsa/microchip/ksz8863_smi.c
+@@ -154,7 +154,7 @@ static int ksz8863_smi_probe(struct mdio_device *mdiodev)
  
- 	ksz8 = devm_kzalloc(&spi->dev, sizeof(struct ksz8), GFP_KERNEL);
-+	if (!ksz8)
+ 	dev = ksz_switch_alloc(&mdiodev->dev, ksz8);
+ 	if (!dev)
+-		return -EINVAL;
 +		return -ENOMEM;
-+
- 	ksz8->priv = spi;
  
- 	dev = ksz_switch_alloc(&spi->dev, ksz8);
+ 	for (i = 0; i < ARRAY_SIZE(ksz8863_regmap_config); i++) {
+ 		rc = ksz8863_regmap_config[i];
 -- 
 2.29.2
 
