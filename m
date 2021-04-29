@@ -2,83 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 17B7636E756
-	for <lists+netdev@lfdr.de>; Thu, 29 Apr 2021 10:50:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3ADEE36E76D
+	for <lists+netdev@lfdr.de>; Thu, 29 Apr 2021 10:54:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240113AbhD2ItJ convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Thu, 29 Apr 2021 04:49:09 -0400
-Received: from eu-smtp-delivery-151.mimecast.com ([185.58.86.151]:57652 "EHLO
-        eu-smtp-delivery-151.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S232738AbhD2ItI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 29 Apr 2021 04:49:08 -0400
-Received: from AcuMS.aculab.com (156.67.243.121 [156.67.243.121]) (Using
- TLS) by relay.mimecast.com with ESMTP id
- uk-mta-219-b-Z3yt6wPv-bCo1xGyIVJA-1; Thu, 29 Apr 2021 09:48:18 +0100
-X-MC-Unique: b-Z3yt6wPv-bCo1xGyIVJA-1
-Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) by
- AcuMS.aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) with Microsoft SMTP
- Server (TLS) id 15.0.1497.2; Thu, 29 Apr 2021 09:48:18 +0100
-Received: from AcuMS.Aculab.com ([fe80::994c:f5c2:35d6:9b65]) by
- AcuMS.aculab.com ([fe80::994c:f5c2:35d6:9b65%12]) with mapi id
- 15.00.1497.015; Thu, 29 Apr 2021 09:48:18 +0100
-From:   David Laight <David.Laight@ACULAB.COM>
-To:     'zhouchuangao' <zhouchuangao@vivo.com>,
-        David Howells <dhowells@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        "Jakub Kicinski" <kuba@kernel.org>,
-        "linux-afs@lists.infradead.org" <linux-afs@lists.infradead.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: RE: [PATCH] net/rxrpc: Use BUG_ON instead of if condition followed by
- BUG.
-Thread-Topic: [PATCH] net/rxrpc: Use BUG_ON instead of if condition followed
- by BUG.
-Thread-Index: AQHXPM/tVVdxd6dES0eMiUm+pJEO+6rLLuow
-Date:   Thu, 29 Apr 2021 08:48:18 +0000
-Message-ID: <e7c1b060f1594d21bab96e68c4b53bb3@AcuMS.aculab.com>
-References: <1619683852-2247-1-git-send-email-zhouchuangao@vivo.com>
-In-Reply-To: <1619683852-2247-1-git-send-email-zhouchuangao@vivo.com>
-Accept-Language: en-GB, en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ms-exchange-transport-fromentityheader: Hosted
-x-originating-ip: [10.202.205.107]
+        id S240185AbhD2Ixz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 29 Apr 2021 04:53:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50670 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232400AbhD2Ixx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 29 Apr 2021 04:53:53 -0400
+Received: from mail-pj1-x1036.google.com (mail-pj1-x1036.google.com [IPv6:2607:f8b0:4864:20::1036])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D5C3C06138B;
+        Thu, 29 Apr 2021 01:53:05 -0700 (PDT)
+Received: by mail-pj1-x1036.google.com with SMTP id p17so6366020pjz.3;
+        Thu, 29 Apr 2021 01:53:05 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=JOu/qK5HN825dhzv2XzFqxUs2XZc9mrKG/c5JbhDry8=;
+        b=GDYQ8++4fQq+mZaPkX6MdGs+654lMgCs5gVpuu1KCHnr9edys1E+gvB0jO/KuV14Rk
+         7z6GTwu0hzUIjiNhKS2oBwGJY8tBcMaXotpz9Zfc4JN/JNPqXuQjK9Li6JDPP7qOFIlZ
+         0ZHXxVYkQX5Vrjn5IwDStA4fOhm6llxPmUQ23Zs4MbJgO4kSfqdefcmO0d0V7re2QtGM
+         Z9hYke/bKghRTEMdGUYW6SiF/iEzkaC45EcmeBhoe5KIMjN7wq0BiXUQxps5jzVPohZD
+         3/vVoVKcHYqbTXEyYHE3IIVpHNKF/+qdAaRu6q96dmb2fdzduf892qUUccsC46hXgicq
+         cJ8w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=JOu/qK5HN825dhzv2XzFqxUs2XZc9mrKG/c5JbhDry8=;
+        b=lld7Pzna4CE7GDY7XQYmgQ58SeUQg6P0ciSUaVJVZJ4WSR266IVgl4cDfDZ0JX+LBc
+         Oy6+ZF6sEyuA8kzZXeHZU/XnBG0xPMDrlES2zTn3r4SY2BQU+OV1Xct/tP3wc+w2imAp
+         jO7T8kjgsnVOz/dkjKQ14Od9jlP5TUDIjQu7JvbPrrC6tnvpP6JilYsw/CEe9NThxfKw
+         uuApXfKIznOUZmIjGgvoCwuobe+KbjbMy/xomgdpb73IPwVjoupI6syLOeqz+9Kc47aY
+         qhddHX4UbA/GICjTO27CdRqES8DMEMdEWfAhujsQzJzE549IQ9PpTLhBkW9L04HyByUN
+         OOQg==
+X-Gm-Message-State: AOAM532vkkxmGrFAlsI92NBzNSy2gCLJ7fX1qhHk9JgA8r9Wk9A11kLw
+        yI6ldRw2KwEraA38/WFMioNXa9f8qfSaFy8VP50=
+X-Google-Smtp-Source: ABdhPJympxDsG2Ngi8NPlgJljS6eDQicsW6y9AwP+1/Y3H3kM1jS2J4gWlxALFAcZCZM7OBGOqUI7U6lRHPGArijjTI=
+X-Received: by 2002:a17:90b:1184:: with SMTP id gk4mr8719543pjb.129.1619686385054;
+ Thu, 29 Apr 2021 01:53:05 -0700 (PDT)
 MIME-Version: 1.0
-Authentication-Results: relay.mimecast.com;
-        auth=pass smtp.auth=C51A453 smtp.mailfrom=david.laight@aculab.com
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: aculab.com
-Content-Language: en-US
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8BIT
+References: <20210428135929.27011-1-justin.he@arm.com> <20210428135929.27011-2-justin.he@arm.com>
+ <YIpyZmi1Reh7iXeI@alley>
+In-Reply-To: <YIpyZmi1Reh7iXeI@alley>
+From:   Andy Shevchenko <andy.shevchenko@gmail.com>
+Date:   Thu, 29 Apr 2021 11:52:49 +0300
+Message-ID: <CAHp75Vfa3ATc+-Luka9vJTwoCLAPVm38cciYyBYnWxzNQ1DPrg@mail.gmail.com>
+Subject: Re: [PATCH 2/4] lib/vsprintf.c: Make %p{D,d} mean as much components
+ as possible
+To:     Petr Mladek <pmladek@suse.com>
+Cc:     Jia He <justin.he@arm.com>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Sergey Senozhatsky <senozhatsky@chromium.org>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Luca Coelho <luciano.coelho@intel.com>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Heiko Carstens <hca@linux.ibm.com>,
+        Vasily Gorbik <gor@linux.ibm.com>,
+        Christian Borntraeger <borntraeger@de.ibm.com>,
+        Johannes Berg <johannes.berg@intel.com>,
+        Linux Documentation List <linux-doc@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        "open list:TI WILINK WIRELES..." <linux-wireless@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>, linux-s390@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: zhouchuangao
-> Sent: 29 April 2021 09:11
-> 
-> BUG_ON() uses unlikely in if(), which can be optimized at compile time.
-> 
->               do { if (unlikely(condition)) BUG(); } while (0)
-...
-> diff --git a/net/rxrpc/call_object.c b/net/rxrpc/call_object.c
-> index 4eb91d95..e5deb6f 100644
-> --- a/net/rxrpc/call_object.c
-> +++ b/net/rxrpc/call_object.c
-> @@ -505,8 +505,7 @@ void rxrpc_release_call(struct rxrpc_sock *rx, struct rxrpc_call *call)
->  	ASSERTCMP(call->state, ==, RXRPC_CALL_COMPLETE);
-> 
->  	spin_lock_bh(&call->lock);
-> -	if (test_and_set_bit(RXRPC_CALL_RELEASED, &call->flags))
-> -		BUG();
-> +	BUG_ON(test_and_set_bit(RXRPC_CALL_RELEASED, &call->flags));
+On Thu, Apr 29, 2021 at 11:47 AM Petr Mladek <pmladek@suse.com> wrote:
+>
+> On Wed 2021-04-28 21:59:27, Jia He wrote:
+> > From: Linus Torvalds <torvalds@linux-foundation.org>
+> >
+> > We have '%pD'(no digit following) for printing a filename. It may not be
+> > perfect (by default it only prints one component.
+> >
+> > %pD4 should be more than good enough, but we should make plain "%pD" mean
+> > "as much of the path that is reasonable" rather than "as few components as
+> > possible" (ie 1).
+>
+> Could you please provide link to the discussion where this idea was
+> came from?
 
-Hiding as assignment inside BUG_ON() isn't nice.
+https://lore.kernel.org/lkml/20210427025805.GD3122264@magnolia/
 
-	David
-
--
-Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
-Registration No: 1397386 (Wales)
-
+-- 
+With Best Regards,
+Andy Shevchenko
