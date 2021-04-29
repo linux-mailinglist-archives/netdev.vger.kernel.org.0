@@ -2,164 +2,130 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id ECED436E312
-	for <lists+netdev@lfdr.de>; Thu, 29 Apr 2021 03:50:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8290A36E30F
+	for <lists+netdev@lfdr.de>; Thu, 29 Apr 2021 03:50:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235346AbhD2BvZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 28 Apr 2021 21:51:25 -0400
-Received: from userp2130.oracle.com ([156.151.31.86]:43572 "EHLO
-        userp2130.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229888AbhD2BvY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 28 Apr 2021 21:51:24 -0400
-Received: from pps.filterd (userp2130.oracle.com [127.0.0.1])
-        by userp2130.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 13T1o3Y6048008;
-        Thu, 29 Apr 2021 01:50:29 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=from : to : cc :
- subject : date : message-id : in-reply-to : references; s=corp-2020-01-29;
- bh=7527Ky9YLhXmwVbJhatdnIN6ck4lz56JZBmCdtNblZE=;
- b=h1/f51B4WofEloeAbwqIWhpnc8u7TkGfXcDKDpXHJYPPlFVPodzrpqe8wqFZRmgk+EAi
- 7JSy+mx5Uf45T+uNamvx2UhpjzIq2RQ86DOtEo+MB62sMKnWu1o8CZ0P/nllcwr3ZQ1k
- Rc38ssrtAlz1xmeAkWcFQntAipkufxmQ/h10Pv2pcJcGLMG4o1kUEwdwTmVc+fvW65Qx
- +vD/uTvBU8CokBLZqrzKw6vSSse+KweVFEvgxWfChlQPFhrMJOxy74s1T1/zuRTlN3E9
- jfP+hnvoTIn65A1esDucEbAAelYa5ZQ2RijrTrOwNi0NNvPvzFCLoCWmKvusmGfHWMKn tA== 
-Received: from aserp3020.oracle.com (aserp3020.oracle.com [141.146.126.70])
-        by userp2130.oracle.com with ESMTP id 385aft2rh0-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Thu, 29 Apr 2021 01:50:29 +0000
-Received: from pps.filterd (aserp3020.oracle.com [127.0.0.1])
-        by aserp3020.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 13T1nq8t012550;
-        Thu, 29 Apr 2021 01:50:28 GMT
-Received: from pps.reinject (localhost [127.0.0.1])
-        by aserp3020.oracle.com with ESMTP id 384b59gcde-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Thu, 29 Apr 2021 01:50:28 +0000
-Received: from aserp3020.oracle.com (aserp3020.oracle.com [127.0.0.1])
-        by pps.reinject (8.16.0.36/8.16.0.36) with SMTP id 13T1oRcD014363;
-        Thu, 29 Apr 2021 01:50:27 GMT
-Received: from aserv0122.oracle.com (aserv0122.oracle.com [141.146.126.236])
-        by aserp3020.oracle.com with ESMTP id 384b59gcd6-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Thu, 29 Apr 2021 01:50:27 +0000
-Received: from abhmp0017.oracle.com (abhmp0017.oracle.com [141.146.116.23])
-        by aserv0122.oracle.com (8.14.4/8.14.4) with ESMTP id 13T1oRME001590;
-        Thu, 29 Apr 2021 01:50:27 GMT
-Received: from ban25x6uut24.us.oracle.com (/10.153.73.24)
-        by default (Oracle Beehive Gateway v4.0)
-        with ESMTP ; Wed, 28 Apr 2021 18:50:27 -0700
-From:   Si-Wei Liu <si-wei.liu@oracle.com>
-To:     mst@redhat.com, jasowang@redhat.com, elic@nvidia.com
-Cc:     linux-kernel@vger.kernel.org,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        si-wei.liu@oracle.com
-Subject: [PATCH v3 1/1] vdpa/mlx5: fix feature negotiation across device reset
-Date:   Wed, 28 Apr 2021 21:48:54 -0400
-Message-Id: <1619660934-30910-2-git-send-email-si-wei.liu@oracle.com>
-X-Mailer: git-send-email 1.8.3.1
-In-Reply-To: <1619660934-30910-1-git-send-email-si-wei.liu@oracle.com>
-References: <1619660934-30910-1-git-send-email-si-wei.liu@oracle.com>
-X-Proofpoint-GUID: oh378PwpZ4wZKgXEqgz_qEwXApDWQqJY
-X-Proofpoint-ORIG-GUID: oh378PwpZ4wZKgXEqgz_qEwXApDWQqJY
-X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=9968 signatures=668683
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 impostorscore=0 lowpriorityscore=0
- mlxlogscore=999 malwarescore=0 phishscore=0 priorityscore=1501
- clxscore=1011 spamscore=0 bulkscore=0 suspectscore=0 adultscore=0
- mlxscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2104060000 definitions=main-2104290011
+        id S232702AbhD2Bu7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 28 Apr 2021 21:50:59 -0400
+Received: from mail-dm6nam11on2072.outbound.protection.outlook.com ([40.107.223.72]:56865
+        "EHLO NAM11-DM6-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S229888AbhD2Bu6 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 28 Apr 2021 21:50:58 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=FPw8BbC3ljYN8WtOuWtx6O/sSZYNSWn2Fd0z1Nd6DH2BBDN6d1ULGuWWhhRp+KOdHpwUHr/npj3elu7mpCzeDD/ckMgdFdDNuesrO8CPxd3o464SWyUVaf4qgrlA3SQaMQyVLYjhNavgPp1a19VVxaF0en/bvnhCzWWGg+RWOwfqDFMty1UeHZOYPE/gxyu5EmMA+o06jHIOL7PoDTLnG8FFB93qOe8obyc6P4BEC4leKVhPdGQ75U4mba8/Ox4kx1clv600qO7shdWoX7EWz5MoMMQp/WCHOXDMIdLWI4udBno3My/PpqJqIbbEZdtTM85kUhg+KF73ekQ8gna/Bw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=lRSCMehYLVt0GJPszDu20cIu3siEfVnaffa6xmehWfo=;
+ b=a7vjwD+H9I0cfy3TbQMtv/wwFO8VICrhyxbVTzJQe/h+VtXdgnOav7vBqMApmejBGNdGLvj1Gzr/MAI1sclMdeoLBxj6DIAAXqZfrR/Wf7JPdLtPTXjmgaTTBOchFkeDo/nDdIAgeVjgBlAJOu+H0Z8ynFpR947bHxwiqynVJRrx29QB7pEpYrHv+qTrAfJEa63qvcVDdkHmRpZAlDmcK/CDcepBwOGNCx+Ao15WPFXBbsPZlkyNBAopq7oq4ozi4ok2LQrnkEo5WNkvW6Sj7gpJSEcjbskeoazNfGOrG0SyaOnYnmiDvM0L2Zs0BI+a3DBeLsmjhDucfIHkNVHZ3A==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 216.228.112.34) smtp.rcpttodomain=kernel.org smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=none sp=none pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=lRSCMehYLVt0GJPszDu20cIu3siEfVnaffa6xmehWfo=;
+ b=mXTFFPK5bvWbnjnNfoynOJkwpM9B3esjLdp0msHf8Tf38Ofi7ZLScYcQp1s8OOVSDya/DQYMT+s6YoP6S13noTsQs6QPGGwbc6r0CDnmysw+LPl48tlXLt2vvkYdWfOZ1/FoGogXXSMXGxiIYGEV4HPYJU7QpCUzY0C3mC5g+WaWBqLt3CK84CORnvD24bJ92fum1S++Zbaaol6XKPUxl9VbftsmmH76gv+5uZsaD0HnC1OSQTySWiqyyaOawQLOZ7a08aE/ufXKUh3OXgZ0F/1u0cWz+PCR78FqtY1Psyr9NW8Zgg5rzU8OJYvs5uST4aUnMpAN14u38LRDPPoprQ==
+Received: from BN9PR03CA0130.namprd03.prod.outlook.com (2603:10b6:408:fe::15)
+ by SJ0PR12MB5406.namprd12.prod.outlook.com (2603:10b6:a03:3ae::5) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4065.21; Thu, 29 Apr
+ 2021 01:50:10 +0000
+Received: from BN8NAM11FT056.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:408:fe:cafe::54) by BN9PR03CA0130.outlook.office365.com
+ (2603:10b6:408:fe::15) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4087.29 via Frontend
+ Transport; Thu, 29 Apr 2021 01:50:10 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.112.34)
+ smtp.mailfrom=nvidia.com; kernel.org; dkim=none (message not signed)
+ header.d=none;kernel.org; dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 216.228.112.34 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.112.34; helo=mail.nvidia.com;
+Received: from mail.nvidia.com (216.228.112.34) by
+ BN8NAM11FT056.mail.protection.outlook.com (10.13.177.26) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.20.4087.27 via Frontend Transport; Thu, 29 Apr 2021 01:50:10 +0000
+Received: from [10.20.22.223] (172.20.145.6) by HQMAIL107.nvidia.com
+ (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Thu, 29 Apr
+ 2021 01:50:08 +0000
+Subject: Re: [PATCH net 2/3] net/xfrm: Add inner_ipproto into sec_path
+To:     Jakub Kicinski <kuba@kernel.org>, Saeed Mahameed <saeed@kernel.org>
+CC:     "David S. Miller" <davem@davemloft.net>, <netdev@vger.kernel.org>,
+        "Cc : Steffen Klassert" <steffen.klassert@secunet.com>,
+        Raed Salem <raeds@nvidia.com>
+References: <20210414232540.138232-1-saeed@kernel.org>
+ <20210414232540.138232-3-saeed@kernel.org>
+ <20210415100049.7dde542d@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+From:   Huy Nguyen <huyn@nvidia.com>
+Message-ID: <677729b5-baa5-f6fa-c4ee-1d1417e4779a@nvidia.com>
+Date:   Wed, 28 Apr 2021 20:50:06 -0500
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.10.0
+MIME-Version: 1.0
+In-Reply-To: <20210415100049.7dde542d@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Content-Type: text/plain; charset="utf-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+Content-Language: en-US
+X-Originating-IP: [172.20.145.6]
+X-ClientProxiedBy: HQMAIL111.nvidia.com (172.20.187.18) To
+ HQMAIL107.nvidia.com (172.20.187.13)
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 0e6c26e3-5914-48d4-e7b9-08d90ab11fbb
+X-MS-TrafficTypeDiagnostic: SJ0PR12MB5406:
+X-Microsoft-Antispam-PRVS: <SJ0PR12MB54061FC466B1468EFC72D2B8A25F9@SJ0PR12MB5406.namprd12.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:4502;
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: qglm28yrH3+5jVPLiLcUhsdSWWaX7+s3cTcNQlXo+LaOVkRZ+vs9W42ysqtFGu4RAN7oCmcOTQImnBjfapVLU/85Or3+bPyyJY0VybVOmia+jUqQQg3iNQ4McdjM7bAcosSoZ9tyg1jyJvDDXTjz+e2ybe1qNtESY60OG0hEbvtg8AyG2+mSj9UHfATqXQqP6dAu3Xt6wDgh5fcp1xXgI7dKzzWgECx9Mh5St6MKcQXitL4t4LV5ODN+F0J5v03loui5asACq65kSIzxqQmYpmuy5+0pfVf0jSymiWrm/0Miiz60byUqF9CxBi4TK5Cxm7hZIMdjvzNoA+9YYdGmYjJaYLGfcLg6vhie+bGZYkFqtIW9vrusiD5dVInOPOF6bw9BTlZBgydT3I0rM+9HUFlEiJxaZPNWAWFrKY19dwLgORABeIZs8lAmU1CDwOq6C+OYsyiz7iVaGo9WWJumYMAXrl8maaz+M0GcZi9cgJZd2XDs/XrmyUMqosMQTfQO6j2Ma5wvGoDDxY/CBGVjX6MKdtVUwCe/qH8wd7GCFyjSq8ObPqb9y4n/uIvbHUHGtf7FviA3hwEcJ9Z3GNkvUJVvRBv5X5UjlbmKQLGTdL0jC5BIMJjyKLPImLmfukLjbSULjGoNGR55mDHcbbyDQcGjVFyjrQIR4MvHNZ41Vl5n0dgqUioQWuUMWumPYrg7
+X-Forefront-Antispam-Report: CIP:216.228.112.34;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:schybrid03.nvidia.com;CAT:NONE;SFS:(4636009)(39860400002)(136003)(376002)(396003)(346002)(46966006)(36840700001)(4744005)(16576012)(2906002)(82310400003)(47076005)(316002)(7636003)(70586007)(36860700001)(356005)(31696002)(54906003)(110136005)(83380400001)(36756003)(478600001)(26005)(5660300002)(336012)(2616005)(70206006)(53546011)(186003)(426003)(82740400003)(8676002)(8936002)(86362001)(31686004)(16526019)(36906005)(107886003)(4326008)(43740500002);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 29 Apr 2021 01:50:10.5224
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 0e6c26e3-5914-48d4-e7b9-08d90ab11fbb
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.112.34];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource: BN8NAM11FT056.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ0PR12MB5406
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The mlx_features denotes the capability for which
-set of virtio features is supported by device. In
-principle, this field needs not be cleared during
-virtio device reset, as this capability is static
-and does not change across reset.
+I fixed. Thank you. Saeed will resubmit.
 
-In fact, the current code seems to wrongly assume
-that mlx_features can be reloaded or updated on
-device reset thru the .get_features op. However,
-the userspace VMM may save a copy of previously
-advertised backend feature capability and won't
-need to get it again on reset. In that event, all
-virtio features reset to zero thus getting disabled
-upon device reset. This ends up with guest holding
-a mismatched view of available features with the
-VMM/host's. For instance, the guest may assume
-the presence of tx checksum offload feature across
-reboot, however, since the feature is left disabled
-on reset, frames with bogus partial checksum are
-transmitted on the wire.
-
-The fix is to retain the features capability on
-reset, and get it only once from firmware on the
-vdpa_dev_add path.
-
-Fixes: 1a86b377aa21 ("vdpa/mlx5: Add VDPA driver for supported mlx5 devices")
-Signed-off-by: Si-Wei Liu <si-wei.liu@oracle.com>
-Acked-by: Eli Cohen <elic@nvidia.com>
-Acked-by: Jason Wang <jasowang@redhat.com>
----
- drivers/vdpa/mlx5/net/mlx5_vnet.c | 25 +++++++++++++++----------
- 1 file changed, 15 insertions(+), 10 deletions(-)
-
-diff --git a/drivers/vdpa/mlx5/net/mlx5_vnet.c b/drivers/vdpa/mlx5/net/mlx5_vnet.c
-index 25533db..624f521 100644
---- a/drivers/vdpa/mlx5/net/mlx5_vnet.c
-+++ b/drivers/vdpa/mlx5/net/mlx5_vnet.c
-@@ -1492,16 +1492,8 @@ static u64 mlx_to_vritio_features(u16 dev_features)
- static u64 mlx5_vdpa_get_features(struct vdpa_device *vdev)
- {
- 	struct mlx5_vdpa_dev *mvdev = to_mvdev(vdev);
--	struct mlx5_vdpa_net *ndev = to_mlx5_vdpa_ndev(mvdev);
--	u16 dev_features;
- 
--	dev_features = MLX5_CAP_DEV_VDPA_EMULATION(mvdev->mdev, device_features_bits_mask);
--	ndev->mvdev.mlx_features = mlx_to_vritio_features(dev_features);
--	if (MLX5_CAP_DEV_VDPA_EMULATION(mvdev->mdev, virtio_version_1_0))
--		ndev->mvdev.mlx_features |= BIT_ULL(VIRTIO_F_VERSION_1);
--	ndev->mvdev.mlx_features |= BIT_ULL(VIRTIO_F_ACCESS_PLATFORM);
--	print_features(mvdev, ndev->mvdev.mlx_features, false);
--	return ndev->mvdev.mlx_features;
-+	return mvdev->mlx_features;
- }
- 
- static int verify_min_features(struct mlx5_vdpa_dev *mvdev, u64 features)
-@@ -1783,7 +1775,6 @@ static void mlx5_vdpa_set_status(struct vdpa_device *vdev, u8 status)
- 		teardown_driver(ndev);
- 		mlx5_vdpa_destroy_mr(&ndev->mvdev);
- 		ndev->mvdev.status = 0;
--		ndev->mvdev.mlx_features = 0;
- 		++mvdev->generation;
- 		return;
- 	}
-@@ -1902,6 +1893,19 @@ static int mlx5_get_vq_irq(struct vdpa_device *vdv, u16 idx)
- 	.free = mlx5_vdpa_free,
- };
- 
-+static void query_virtio_features(struct mlx5_vdpa_net *ndev)
-+{
-+	struct mlx5_vdpa_dev *mvdev = &ndev->mvdev;
-+	u16 dev_features;
-+
-+	dev_features = MLX5_CAP_DEV_VDPA_EMULATION(mvdev->mdev, device_features_bits_mask);
-+	mvdev->mlx_features = mlx_to_vritio_features(dev_features);
-+	if (MLX5_CAP_DEV_VDPA_EMULATION(mvdev->mdev, virtio_version_1_0))
-+		mvdev->mlx_features |= BIT_ULL(VIRTIO_F_VERSION_1);
-+	mvdev->mlx_features |= BIT_ULL(VIRTIO_F_ACCESS_PLATFORM);
-+	print_features(mvdev, mvdev->mlx_features, false);
-+}
-+
- static int query_mtu(struct mlx5_core_dev *mdev, u16 *mtu)
- {
- 	u16 hw_mtu;
-@@ -2009,6 +2013,7 @@ static int mlx5_vdpa_dev_add(struct vdpa_mgmt_dev *v_mdev, const char *name)
- 	init_mvqs(ndev);
- 	mutex_init(&ndev->reslock);
- 	config = &ndev->config;
-+	query_virtio_features(ndev);
- 	err = query_mtu(mdev, &ndev->mtu);
- 	if (err)
- 		goto err_mtu;
--- 
-1.8.3.1
-
+On 4/15/2021 12:00 PM, Jakub Kicinski wrote:
+> On Wed, 14 Apr 2021 16:25:39 -0700 Saeed Mahameed wrote:
+>> +static void get_inner_ipproto(struct sk_buff *skb, struct sec_path *sp)
+>> +{
+>> +	const struct ethhdr *eth;
+>> +
+>> +	if (!skb->inner_protocol)
+>> +		return;
+>> +
+>> +	if (skb->inner_protocol_type == ENCAP_TYPE_IPPROTO) {
+>> +		sp->inner_ipproto = skb->inner_protocol;
+>> +		return;
+>> +	}
+>> +
+>> +	if (skb->inner_protocol_type != ENCAP_TYPE_ETHER)
+>> +		return;
+>> +
+>> +	eth = (struct ethhdr *)skb_inner_mac_header(skb);
+>> +
+>> +	switch (eth->h_proto) {
+>> +	case ntohs(ETH_P_IPV6):
+>> +		sp->inner_ipproto = inner_ipv6_hdr(skb)->nexthdr;
+>> +		break;
+>> +	case ntohs(ETH_P_IP):
+>> +		sp->inner_ipproto = inner_ip_hdr(skb)->protocol;
+>> +		break;
+>> +	default:
+>> +		return;
+>> +	}
+>> +}
+> Bunch of sparse warnings here, please check.
