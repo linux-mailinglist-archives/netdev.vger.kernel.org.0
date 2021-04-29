@@ -2,150 +2,217 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CC02E36E982
-	for <lists+netdev@lfdr.de>; Thu, 29 Apr 2021 13:24:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 82F1C36E987
+	for <lists+netdev@lfdr.de>; Thu, 29 Apr 2021 13:26:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231564AbhD2LZT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 29 Apr 2021 07:25:19 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:52083 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S230148AbhD2LZS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 29 Apr 2021 07:25:18 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1619695472;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=2Hrmp60pTQWrZ956xjnp/+jusKgysHgdmxCB+fDAXuY=;
-        b=RdP8Mckq3ByCNAUG27u4muYGU7ARZPTbTq4aRFPP5WDKCfB9RTXkahiBgNGvqIAJUjHYa4
-        +1i6ZKzdDykBHV9UU9Ylv2P2YAFgV775UBA9OUrARFgSYDg1WimIoifRVfXCQBSKlDSq5R
-        0cyv/Aukay9f4anxAULV+jBW+TbZuPo=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-508-cP75KLOLOPOBAS6YB3g0RQ-1; Thu, 29 Apr 2021 07:24:30 -0400
-X-MC-Unique: cP75KLOLOPOBAS6YB3g0RQ-1
-Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com [10.5.11.22])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id A41538189C3;
-        Thu, 29 Apr 2021 11:24:28 +0000 (UTC)
-Received: from krava (unknown [10.40.195.102])
-        by smtp.corp.redhat.com (Postfix) with SMTP id F2265100164C;
-        Thu, 29 Apr 2021 11:24:25 +0000 (UTC)
-Date:   Thu, 29 Apr 2021 13:24:25 +0200
-From:   Jiri Olsa <jolsa@redhat.com>
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Cc:     Jiri Olsa <jolsa@kernel.org>, Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andriin@fb.com>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>
-Subject: Re: [PATCH] bpf: Add deny list of btf ids check for tracing and ext
- programs
-Message-ID: <YIqXaet5A1TqtIOD@krava>
-References: <20210428161802.771519-1-jolsa@kernel.org>
- <CAEf4BzY8m5v0LY7eC1p-_xHg8yZms5HCS6D5AyRL7uFZfbKkKw@mail.gmail.com>
+        id S233240AbhD2L1L (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 29 Apr 2021 07:27:11 -0400
+Received: from mga03.intel.com ([134.134.136.65]:25966 "EHLO mga03.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S230148AbhD2L1K (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 29 Apr 2021 07:27:10 -0400
+IronPort-SDR: bnyy8rVzjFI5xhK0bs8y4Km/MubCcK/VuLQlst4JM8XlCwgrirRcKaIx1E9CPKK5Oy1ksEqBiw
+ 7uVPm8Yq7cAg==
+X-IronPort-AV: E=McAfee;i="6200,9189,9968"; a="197029050"
+X-IronPort-AV: E=Sophos;i="5.82,259,1613462400"; 
+   d="scan'208";a="197029050"
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Apr 2021 04:26:18 -0700
+IronPort-SDR: 6rR9y8kmfinDUbQKppRZ/uP7sAONhZL9QHkj0hsR2petOMhD4RcjAcsVG9avvMqHSm/TJ53V0B
+ 2zgSBYfu6JHQ==
+X-IronPort-AV: E=Sophos;i="5.82,259,1613462400"; 
+   d="scan'208";a="526904265"
+Received: from xli56-mobl.ccr.corp.intel.com (HELO [10.254.211.239]) ([10.254.211.239])
+  by fmsmga001-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Apr 2021 04:26:16 -0700
+Subject: Re: [PATCH 2/2] vDPA/ifcvf: implement doorbell mapping for ifcvf
+To:     Jason Wang <jasowang@redhat.com>, mst@redhat.com
+Cc:     virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
+        kvm@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20210428082133.6766-1-lingshan.zhu@intel.com>
+ <20210428082133.6766-3-lingshan.zhu@intel.com>
+ <f6d9a424-9025-3eb5-1cb4-0ff22f7bec63@redhat.com>
+ <5052fced-cd9a-e453-5cb2-39cdde60a208@intel.com>
+ <1984491f-cd5e-d4bc-b328-41e2f2e935fd@redhat.com>
+ <ef510c97-1f1c-a121-99db-b659a5f9518c@intel.com>
+ <4e0eda74-04ac-a889-471b-03fe65c65606@redhat.com>
+ <f4cb4619-5634-e42d-0629-5c40f6b0dcd1@intel.com>
+ <bca66845-b16d-ee5e-807b-a3570e290813@redhat.com>
+From:   "Zhu, Lingshan" <lingshan.zhu@intel.com>
+Message-ID: <d3bb5231-47cc-86e6-a4b2-a05bd81140a5@intel.com>
+Date:   Thu, 29 Apr 2021 19:26:14 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.9.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAEf4BzY8m5v0LY7eC1p-_xHg8yZms5HCS6D5AyRL7uFZfbKkKw@mail.gmail.com>
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
+In-Reply-To: <bca66845-b16d-ee5e-807b-a3570e290813@redhat.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 8bit
+Content-Language: en-US
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Apr 28, 2021 at 12:41:34PM -0700, Andrii Nakryiko wrote:
-> On Wed, Apr 28, 2021 at 9:19 AM Jiri Olsa <jolsa@kernel.org> wrote:
-> >
-> > The recursion check in __bpf_prog_enter and __bpf_prog_exit
-> > leaves some (not inlined) functions unprotected:
-> >
-> > In __bpf_prog_enter:
-> >   - migrate_disable is called before prog->active is checked
-> >
-> > In __bpf_prog_exit:
-> >   - migrate_enable,rcu_read_unlock_strict are called after
-> >     prog->active is decreased
-> >
-> > When attaching trampoline to them we get panic like:
-> >
-> >   traps: PANIC: double fault, error_code: 0x0
-> >   double fault: 0000 [#1] SMP PTI
-> >   RIP: 0010:__bpf_prog_enter+0x4/0x50
-> >   ...
-> >   Call Trace:
-> >    <IRQ>
-> >    bpf_trampoline_6442466513_0+0x18/0x1000
-> >    migrate_disable+0x5/0x50
-> >    __bpf_prog_enter+0x9/0x50
-> >    bpf_trampoline_6442466513_0+0x18/0x1000
-> >    migrate_disable+0x5/0x50
-> >    __bpf_prog_enter+0x9/0x50
-> >    bpf_trampoline_6442466513_0+0x18/0x1000
-> >    migrate_disable+0x5/0x50
-> >    __bpf_prog_enter+0x9/0x50
-> >    bpf_trampoline_6442466513_0+0x18/0x1000
-> >    migrate_disable+0x5/0x50
-> >    ...
-> >
-> > Fixing this by adding deny list of btf ids for tracing
-> > and ext programs and checking btf id during program
-> > verification. Adding above functions to this list.
-> >
-> > Suggested-by: Alexei Starovoitov <ast@kernel.org>
-> > Signed-off-by: Jiri Olsa <jolsa@kernel.org>
-> > ---
-> >  kernel/bpf/verifier.c | 15 +++++++++++++++
-> >  1 file changed, 15 insertions(+)
-> >
-> > diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
-> > index 2579f6fbb5c3..4ffd64eaffda 100644
-> > --- a/kernel/bpf/verifier.c
-> > +++ b/kernel/bpf/verifier.c
-> > @@ -13112,6 +13112,17 @@ int bpf_check_attach_target(struct bpf_verifier_log *log,
-> >         return 0;
-> >  }
-> >
-> > +BTF_SET_START(btf_id_deny)
-> > +BTF_ID_UNUSED
-> > +#ifdef CONFIG_SMP
-> > +BTF_ID(func, migrate_disable)
-> > +BTF_ID(func, migrate_enable)
-> > +#endif
-> > +#if !defined CONFIG_PREEMPT_RCU && !defined CONFIG_TINY_RCU
-> > +BTF_ID(func, rcu_read_unlock_strict)
-> > +#endif
-> > +BTF_SET_END(btf_id_deny)
-> > +
-> >  static int check_attach_btf_id(struct bpf_verifier_env *env)
-> >  {
-> >         struct bpf_prog *prog = env->prog;
-> > @@ -13171,6 +13182,10 @@ static int check_attach_btf_id(struct bpf_verifier_env *env)
-> >                 ret = bpf_lsm_verify_prog(&env->log, prog);
-> >                 if (ret < 0)
-> >                         return ret;
-> > +       } else if ((prog->type == BPF_PROG_TYPE_TRACING ||
-> > +                   prog->type == BPF_PROG_TYPE_EXT) &&
-> 
-> BPF_PROG_TYP_EXT can only replace other BPF programs/subprograms, it
-> can't replace kernel functions, so the deny list shouldn't be checked
-> for them.
 
-right, will send new version
 
-jirka
+On 4/28/2021 9:08 PM, Jason Wang wrote:
+>
+> 在 2021/4/28 下午6:20, Zhu, Lingshan 写道:
+>>
+>>
+>> On 4/28/2021 6:03 PM, Jason Wang wrote:
+>>>
+>>> 在 2021/4/28 下午5:56, Zhu, Lingshan 写道:
+>>>>
+>>>>
+>>>> On 4/28/2021 5:21 PM, Jason Wang wrote:
+>>>>>
+>>>>> 在 2021/4/28 下午4:59, Zhu, Lingshan 写道:
+>>>>>>
+>>>>>>
+>>>>>> On 4/28/2021 4:42 PM, Jason Wang wrote:
+>>>>>>>
+>>>>>>> 在 2021/4/28 下午4:21, Zhu Lingshan 写道:
+>>>>>>>> This commit implements doorbell mapping feature for ifcvf.
+>>>>>>>> This feature maps the notify page to userspace, to eliminate
+>>>>>>>> vmexit when kick a vq.
+>>>>>>>>
+>>>>>>>> Signed-off-by: Zhu Lingshan <lingshan.zhu@intel.com>
+>>>>>>>> ---
+>>>>>>>>   drivers/vdpa/ifcvf/ifcvf_main.c | 18 ++++++++++++++++++
+>>>>>>>>   1 file changed, 18 insertions(+)
+>>>>>>>>
+>>>>>>>> diff --git a/drivers/vdpa/ifcvf/ifcvf_main.c 
+>>>>>>>> b/drivers/vdpa/ifcvf/ifcvf_main.c
+>>>>>>>> index e48e6b74fe2e..afcb71bc0f51 100644
+>>>>>>>> --- a/drivers/vdpa/ifcvf/ifcvf_main.c
+>>>>>>>> +++ b/drivers/vdpa/ifcvf/ifcvf_main.c
+>>>>>>>> @@ -413,6 +413,23 @@ static int ifcvf_vdpa_get_vq_irq(struct 
+>>>>>>>> vdpa_device *vdpa_dev,
+>>>>>>>>       return vf->vring[qid].irq;
+>>>>>>>>   }
+>>>>>>>>   +static struct vdpa_notification_area 
+>>>>>>>> ifcvf_get_vq_notification(struct vdpa_device *vdpa_dev,
+>>>>>>>> +                                   u16 idx)
+>>>>>>>> +{
+>>>>>>>> +    struct ifcvf_hw *vf = vdpa_to_vf(vdpa_dev);
+>>>>>>>> +    struct vdpa_notification_area area;
+>>>>>>>> +
+>>>>>>>> +    if (vf->notify_pa % PAGE_SIZE) {
+>>>>>>>> +        area.addr = 0;
+>>>>>>>> +        area.size = 0;
+>>>>>>>
+>>>>>>>
+>>>>>>> We don't need this since:
+>>>>>>>
+>>>>>>> 1) there's a check in the vhost vDPA
+>>>>>> I think you mean this code block in vdpa.c
+>>>>>>         notify = ops->get_vq_notification(vdpa, index);
+>>>>>>         if (notify.addr & (PAGE_SIZE - 1))
+>>>>>>                 return -EINVAL;
+>>>>>>
+>>>>>> This should work, however, I think the parent driver should 
+>>>>>> ensure it passes a PAGE_SIZE aligned address to userspace, to be 
+>>>>>> robust, to be reliable.
+>>>>>
+>>>>>
+>>>>> The point is parent is unaware of whether or not there's a userspace.
+>>>> when calling this, I think it targets a usersapce program, why 
+>>>> kernel space need it, so IMHO no harm if we check this to keep the 
+>>>> parent driver robust.
+>>>
+>>>
+>>> Again, vDPA device is unaware of what driver that is bound. It could 
+>>> be virtio-vpda, vhost-vdpa or other in the future. It's only the 
+>>> vDPA bus driver know how it is actually used.
+>>>
+>>>
+>>>>>
+>>>>>
+>>>>>>> 2) device is unaware of the bound driver, non page aligned 
+>>>>>>> doorbell doesn't necessarily meant it can be used
+>>>>>> Yes, non page aligned doorbell can not be used, so there is a check.
+>>>>>
+>>>>>
+>>>>> Typo, what I meant is "it can't be used". That is to say, we 
+>>>>> should let the vDPA bus driver to decide whether or not it can be 
+>>>>> used.
+>>>> If it is not page aligned, there would be extra complexities for 
+>>>> vhost/qemu, I see it as a hardware defect, 
+>>>
+>>>
+>>> It is allowed by the virtio spec, isn't it?
+>> The spec does not require the doorbell to be page size aligned, 
+>> however it still a hardware defect if non page size aligned notify 
+>> base present, I will leave a warning message here instead of the 0 
+>> value.
+>>
+>
+> Another note is that, using PAGE_SIZE is wrong here since it varies 
+> among archs (at most 64K on some one).
+For the page alignment checks, I think this is the point of using 
+PAGE_SIZE, we want the doorbell placed at the page boundary, PAGE_SIZE 
+depends on the arch,
+so I think we don't want to use hard code here. We will pass the 
+notify_pa to upper layer anyway, just print an warning if not PAGE_SIZE 
+aligned.
 
-> 
-> > +                  btf_id_set_contains(&btf_id_deny, btf_id)) {
-> > +               return -EINVAL;
-> >         }
-> >
-> >         key = bpf_trampoline_compute_key(tgt_prog, prog->aux->attach_btf, btf_id);
-> > --
-> > 2.30.2
-> >
-> 
+However I think this may refer to vdpa_notification_area.size, YES, I 
+think use PAGE_SIZE directly is wrong here, this size depends on the 
+device(bar layout) than the arch, so I will add more code to tell which 
+device is probed by the driver, then assign correct value.
+
+Thanks
+>
+> Thanks
+>
+>
+>> Thanks
+>> Zhu Lingshan
+>>>
+>>> Thanks
+>>>
+>>>
+>>>> why adapt to this kind of defects?
+>>>>
+>>>> Thanks
+>>>> Zhu Lingshan
+>>>>>
+>>>>> Thanks
+>>>>>
+>>>>>
+>>>>>>
+>>>>>> Thanks
+>>>>>> Zhu Lingshan
+>>>>>>>
+>>>>>>> Let's leave those polices to the driver.
+>>>>>>>
+>>>>>>> Thanks
+>>>>>>>
+>>>>>>>
+>>>>>>>> +    } else {
+>>>>>>>> +        area.addr = vf->notify_pa;
+>>>>>>>> +        area.size = PAGE_SIZE;
+>>>>>>>> +    }
+>>>>>>>> +
+>>>>>>>> +    return area;
+>>>>>>>> +}
+>>>>>>>> +
+>>>>>>>>   /*
+>>>>>>>>    * IFCVF currently does't have on-chip IOMMU, so not
+>>>>>>>>    * implemented set_map()/dma_map()/dma_unmap()
+>>>>>>>> @@ -440,6 +457,7 @@ static const struct vdpa_config_ops 
+>>>>>>>> ifc_vdpa_ops ={
+>>>>>>>>       .get_config    = ifcvf_vdpa_get_config,
+>>>>>>>>       .set_config    = ifcvf_vdpa_set_config,
+>>>>>>>>       .set_config_cb  = ifcvf_vdpa_set_config_cb,
+>>>>>>>> +    .get_vq_notification = ifcvf_get_vq_notification,
+>>>>>>>>   };
+>>>>>>>>     static int ifcvf_probe(struct pci_dev *pdev, const struct 
+>>>>>>>> pci_device_id *id)
+>>>>>>>
+>>>>>>
+>>>>>
+>>>>
+>>>
+>>
+>
 
