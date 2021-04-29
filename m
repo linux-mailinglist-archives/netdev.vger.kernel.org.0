@@ -2,126 +2,126 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1F91636E750
-	for <lists+netdev@lfdr.de>; Thu, 29 Apr 2021 10:48:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BEE0036E75D
+	for <lists+netdev@lfdr.de>; Thu, 29 Apr 2021 10:51:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240067AbhD2IrX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 29 Apr 2021 04:47:23 -0400
-Received: from mx2.suse.de ([195.135.220.15]:38342 "EHLO mx2.suse.de"
+        id S233500AbhD2IwX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 29 Apr 2021 04:52:23 -0400
+Received: from mga01.intel.com ([192.55.52.88]:11275 "EHLO mga01.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229963AbhD2IrT (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 29 Apr 2021 04:47:19 -0400
-X-Virus-Scanned: by amavisd-new at test-mx.suse.de
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
-        t=1619685991; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=S3QDYnjvvBLgh2dAPtQ9pkVbfHfZNetkQxLpUjGW754=;
-        b=OtSF5u7L+L2LBMnAeCxzUjy4YNgAOoo0IsOcErHs3J8qzcRne5SXyyjiiQ88GBNySNydXZ
-        1n6ud3MbJ7JFIP3WhvO+1/xNL/zKyFgiNX4p6E/fDMPqj4Fux+z8ohPY7CpyFnk4PYh3r6
-        LANFD0TnI07HbOF7nmtvJ/3Vc5z0/MM=
-Received: from relay2.suse.de (unknown [195.135.221.27])
-        by mx2.suse.de (Postfix) with ESMTP id 1F1F3AE56;
-        Thu, 29 Apr 2021 08:46:31 +0000 (UTC)
-Date:   Thu, 29 Apr 2021 10:46:30 +0200
-From:   Petr Mladek <pmladek@suse.com>
-To:     Jia He <justin.he@arm.com>
-Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Sergey Senozhatsky <senozhatsky@chromium.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Luca Coelho <luciano.coelho@intel.com>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Heiko Carstens <hca@linux.ibm.com>,
-        Vasily Gorbik <gor@linux.ibm.com>,
-        Christian Borntraeger <borntraeger@de.ibm.com>,
-        Johannes Berg <johannes.berg@intel.com>,
-        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-s390@vger.kernel.org
-Subject: Re: [PATCH 2/4] lib/vsprintf.c: Make %p{D,d} mean as much components
- as possible
-Message-ID: <YIpyZmi1Reh7iXeI@alley>
-References: <20210428135929.27011-1-justin.he@arm.com>
- <20210428135929.27011-2-justin.he@arm.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210428135929.27011-2-justin.he@arm.com>
+        id S230071AbhD2IwW (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 29 Apr 2021 04:52:22 -0400
+IronPort-SDR: tR7E+yg8w1BFtKqH0r90K1EuGDt84QGjVQMlWHsq6b7XF12k6T8kfmPQyajxstcn7ciqRyhfhJ
+ pBRkrAKN26nA==
+X-IronPort-AV: E=McAfee;i="6200,9189,9968"; a="217684119"
+X-IronPort-AV: E=Sophos;i="5.82,258,1613462400"; 
+   d="scan'208";a="217684119"
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Apr 2021 01:51:36 -0700
+IronPort-SDR: qcW/LsW9NtiGIWvtwl6WLp30JV+yujOUiZhWyY6UgQl/JiQ4FViZ6CkAtlAqmBGnZi33KiGgG2
+ K1ykUCpJEnew==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.82,258,1613462400"; 
+   d="scan'208";a="605198493"
+Received: from mike-ilbpg1.png.intel.com ([10.88.227.76])
+  by orsmga005.jf.intel.com with ESMTP; 29 Apr 2021 01:51:31 -0700
+From:   Michael Sit Wei Hong <michael.wei.hong.sit@intel.com>
+To:     Jose.Abreu@synopsys.com, andrew@lunn.ch, hkallweit1@gmail.com,
+        linux@armlinux.org.uk, kuba@kernel.org, netdev@vger.kernel.org,
+        peppe.cavallaro@st.com, alexandre.torgue@foss.st.com,
+        davem@davemloft.net, mcoquelin.stm32@gmail.com,
+        weifeng.voon@intel.com, boon.leong.ong@intel.com,
+        tee.min.tan@intel.com, vee.khee.wong@linux.intel.com,
+        vee.khee.wong@intel.com, michael.wei.hong.sit@intel.com,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: [PATCH net-next 0/2] Introducing support for DWC xpcs Energy Efficient Ethernet
+Date:   Thu, 29 Apr 2021 16:46:34 +0800
+Message-Id: <20210429084636.24752-1-michael.wei.hong.sit@intel.com>
+X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed 2021-04-28 21:59:27, Jia He wrote:
-> From: Linus Torvalds <torvalds@linux-foundation.org>
-> 
-> We have '%pD'(no digit following) for printing a filename. It may not be
-> perfect (by default it only prints one component.
-> 
-> %pD4 should be more than good enough, but we should make plain "%pD" mean
-> "as much of the path that is reasonable" rather than "as few components as
-> possible" (ie 1).
+The goal of this patch set is to enable EEE in the xpcs so that when
+EEE is enabled, the MAC-->xpcs-->PHY have all the EEE related
+configurations enabled.
 
-Could you please provide link to the discussion where this idea was
-came from?
+Patch 1 adds the functions to enable EEE in the xpcs and sets it to
+transparent mode.
+Patch 2 adds the callbacks to configure the xpcs EEE mode.
 
-It would be great to add and example into the commit message how
-it improved the output.
+The results are tested by checking the lpi counters of the tx and rx
+path of the interface. When EEE is enabled, the lpi counters should
+increament as it enters and exits lpi states.
 
-Also please explain why it is useful/safe to change the behavior
-for all existing users. It seems that you checked them and prevented
-any regression by the other patches in this patchset.
+host@EHL$ ethtool --show-eee enp0s30f4
+EEE Settings for enp0s30f4:
+        EEE status: disabled
+        Tx LPI: disabled
+        Supported EEE link modes:  100baseT/Full
+                                   1000baseT/Full
+        Advertised EEE link modes:  Not reported
+        Link partner advertised EEE link modes:  100baseT/Full
+                                                 1000baseT/Full
+host@EHL$ ethtool -S enp0s30f4 | grep lpi
+     irq_tx_path_in_lpi_mode_n: 0
+     irq_tx_path_exit_lpi_mode_n: 0
+     irq_rx_path_in_lpi_mode_n: 0
+     irq_rx_path_exit_lpi_mode_n: 0
+host@EHL$ ethtool --set-eee enp0s30f4 eee on
+host@EHL$ [  110.265154] intel-eth-pci 0000:00:1e.4 enp0s30f4: Link is Down
+[  112.315155] intel-eth-pci 0000:00:1e.4 enp0s30f4: Link is Up - 1Gbps/Full - flow control off
+[  112.324612] IPv6: ADDRCONF(NETDEV_CHANGE): enp0s30f4: link becomes ready
+host@EHL$ ethtool --show-eee enp0s30f4
+EEE Settings for enp0s30f4:
+        EEE status: enabled - active
+        Tx LPI: 1000000 (us)
+        Supported EEE link modes:  100baseT/Full
+                                   1000baseT/Full
+        Advertised EEE link modes:  100baseT/Full
+                                    1000baseT/Full
+        Link partner advertised EEE link modes:  100baseT/Full
+                                                 1000baseT/Full
+host@EHL$ ethtool -S enp0s30f4 | grep lpi
+     irq_tx_path_in_lpi_mode_n: 6
+     irq_tx_path_exit_lpi_mode_n: 5
+     irq_rx_path_in_lpi_mode_n: 7
+     irq_rx_path_exit_lpi_mode_n: 6
+host@EHL$ ping 192.168.1.1
+PING 192.168.1.1 (192.168.1.1) 56(84) bytes of data.
+64 bytes from 192.168.1.1: icmp_seq=1 ttl=64 time=1.02 ms
+64 bytes from 192.168.1.1: icmp_seq=2 ttl=64 time=0.510 ms
+64 bytes from 192.168.1.1: icmp_seq=3 ttl=64 time=0.489 ms
+64 bytes from 192.168.1.1: icmp_seq=4 ttl=64 time=0.484 ms
+64 bytes from 192.168.1.1: icmp_seq=5 ttl=64 time=0.504 ms
+64 bytes from 192.168.1.1: icmp_seq=6 ttl=64 time=0.466 ms
+64 bytes from 192.168.1.1: icmp_seq=7 ttl=64 time=0.529 ms
+64 bytes from 192.168.1.1: icmp_seq=8 ttl=64 time=0.519 ms
+64 bytes from 192.168.1.1: icmp_seq=9 ttl=64 time=0.518 ms
+64 bytes from 192.168.1.1: icmp_seq=10 ttl=64 time=0.501 ms
 
-Anyway, some regressions are fixed by the followup patches.
-It would break bisection.
+--- 192.168.1.1 ping statistics ---
+10 packets transmitted, 10 received, 0% packet loss, time 9216ms
+rtt min/avg/max/mdev = 0.466/0.553/1.018/0.155 ms
+host@EHL$ ethtool -S enp0s30f4 | grep lpi
+     irq_tx_path_in_lpi_mode_n: 22
+     irq_tx_path_exit_lpi_mode_n: 21
+     irq_rx_path_in_lpi_mode_n: 21
+     irq_rx_path_exit_lpi_mode_n: 20
 
-We either need to prevent the regression before this patch.
-Or the changes have to be done in this patch. For example,
-it would be perfectly fine to update test_printf.c in
-this patch.
+Michael Sit Wei Hong (2):
+  net: pcs: Introducing support for DWC xpcs Energy Efficient Ethernet
+  net: stmmac: Add callbacks for DWC xpcs Energy Efficient Ethernet
 
-> Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
+ .../net/ethernet/stmicro/stmmac/dwmac-intel.c | 11 ++++
+ drivers/net/ethernet/stmicro/stmmac/hwif.h    |  2 +
+ .../ethernet/stmicro/stmmac/stmmac_ethtool.c  |  6 +++
+ drivers/net/pcs/pcs-xpcs.c                    | 51 +++++++++++++++++++
+ include/linux/pcs/pcs-xpcs.h                  |  2 +
+ include/linux/stmmac.h                        |  1 +
+ 6 files changed, 73 insertions(+)
 
-If you want to keep Linus as the author and do more changes, you might
-describe here changes done by you, for example:
+-- 
+2.17.1
 
-[justin.he@arm.com: update documentation and test_printf]
-Signed-off-by: Jia He <justin.he@arm.com>
-
-Or you might make you the author and add
-
-Suggested-by: Linus Torvalds <torvalds@linux-foundation.org>
-
-> ---
->  Documentation/core-api/printk-formats.rst | 3 ++-
->  lib/vsprintf.c                            | 4 ++--
->  2 files changed, 4 insertions(+), 3 deletions(-)
-> 
-> diff --git a/Documentation/core-api/printk-formats.rst b/Documentation/core-api/printk-formats.rst
-> index 9be6de402cb9..aa76cbec0dae 100644
-> --- a/Documentation/core-api/printk-formats.rst
-> +++ b/Documentation/core-api/printk-formats.rst
-
-Plese, update also the pattern:
-
--	%pd{,2,3,4}
--	%pD{,2,3,4}
-+	%pd{1,2,3,4}
-+	%pD{1,2,3,4}
-
-> @@ -413,7 +413,8 @@ dentry names
->  For printing dentry name; if we race with :c:func:`d_move`, the name might
->  be a mix of old and new ones, but it won't oops.  %pd dentry is a safer
->  equivalent of %s dentry->d_name.name we used to use, %pd<n> prints ``n``
-> -last components.  %pD does the same thing for struct file.
-> +last components.  %pD does the same thing for struct file. By default, %p{D,d}
-> +is equal to %p{D,d}4.
->  
->  Passed by reference.
-
-Best Regards,
-Petr
