@@ -2,152 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2739B36E38E
-	for <lists+netdev@lfdr.de>; Thu, 29 Apr 2021 05:16:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 18EE336E3E7
+	for <lists+netdev@lfdr.de>; Thu, 29 Apr 2021 06:00:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236659AbhD2DRL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 28 Apr 2021 23:17:11 -0400
-Received: from smtp-fw-6002.amazon.com ([52.95.49.90]:35080 "EHLO
-        smtp-fw-6002.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232429AbhD2DRG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 28 Apr 2021 23:17:06 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=amazon.co.jp; i=@amazon.co.jp; q=dns/txt;
-  s=amazon201209; t=1619666181; x=1651202181;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=fukReMX57yCvRyMZa3sHIls68y/6z8ZvfyLr2w6V5Ws=;
-  b=N9ubxjCt0IsrPlRdLA8+SsHtRu/NzGh1GfWYVSqBzEFtteWs4ydk6YDr
-   I/VgndarEwrMO5FJK3jSbXvZb7zr5hEkXA7clZbdnVu+nHtM0waW76EFL
-   Nt/NFnv1lNgrSrQFCA6UNjWlqUsMjjg8cfLoHlLhG9kVr5hLzI7COAD0E
-   4=;
-X-IronPort-AV: E=Sophos;i="5.82,258,1613433600"; 
-   d="scan'208";a="109072914"
-Received: from iad12-co-svc-p1-lb1-vlan2.amazon.com (HELO email-inbound-relay-2a-c5104f52.us-west-2.amazon.com) ([10.43.8.2])
-  by smtp-border-fw-6002.iad6.amazon.com with ESMTP; 29 Apr 2021 03:16:19 +0000
-Received: from EX13MTAUWB001.ant.amazon.com (pdx1-ws-svc-p6-lb9-vlan3.pdx.amazon.com [10.236.137.198])
-        by email-inbound-relay-2a-c5104f52.us-west-2.amazon.com (Postfix) with ESMTPS id 23573A1B40;
-        Thu, 29 Apr 2021 03:16:18 +0000 (UTC)
-Received: from EX13D04ANC001.ant.amazon.com (10.43.157.89) by
- EX13MTAUWB001.ant.amazon.com (10.43.161.249) with Microsoft SMTP Server (TLS)
- id 15.0.1497.2; Thu, 29 Apr 2021 03:16:17 +0000
-Received: from 88665a182662.ant.amazon.com (10.43.160.81) by
- EX13D04ANC001.ant.amazon.com (10.43.157.89) with Microsoft SMTP Server (TLS)
- id 15.0.1497.2; Thu, 29 Apr 2021 03:16:12 +0000
-From:   Kuniyuki Iwashima <kuniyu@amazon.co.jp>
-To:     <edumazet@google.com>
-CC:     <andrii@kernel.org>, <ast@kernel.org>, <benh@amazon.com>,
-        <bpf@vger.kernel.org>, <daniel@iogearbox.net>,
-        <davem@davemloft.net>, <jbaron@akamai.com>, <kafai@fb.com>,
-        <kuba@kernel.org>, <kuni1840@gmail.com>, <kuniyu@amazon.co.jp>,
-        <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>
-Subject: Re: [PATCH v4 bpf-next 00/11] Socket migration for SO_REUSEPORT.
-Date:   Thu, 29 Apr 2021 12:16:09 +0900
-Message-ID: <20210429031609.1398-1-kuniyu@amazon.co.jp>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <CANn89iK2Wy5WJB+57Y9JU24boy=bb4YQCk6DWD4BvhsM3ZVSdQ@mail.gmail.com>
-References: <CANn89iK2Wy5WJB+57Y9JU24boy=bb4YQCk6DWD4BvhsM3ZVSdQ@mail.gmail.com>
+        id S238023AbhD2DvM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 28 Apr 2021 23:51:12 -0400
+Received: from smtp39.i.mail.ru ([94.100.177.99]:35630 "EHLO smtp39.i.mail.ru"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S237582AbhD2DvL (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 28 Apr 2021 23:51:11 -0400
+X-Greylist: delayed 54197 seconds by postgrey-1.27 at vger.kernel.org; Wed, 28 Apr 2021 23:51:11 EDT
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=inbox.ru; s=mail3;
+        h=Content-Transfer-Encoding:Content-Type:In-Reply-To:MIME-Version:Date:Message-ID:From:References:Cc:To:Subject:From:Subject:Content-Type:Content-Transfer-Encoding:To:Cc; bh=DEsFHJksFvVB6BVdQdmnm78vaD4lwpdGojFVXp8+0Xc=;
+        b=OCgdmlG/tubEuZNybB7ZNBObUxboUFFumb+25rQVYbBiF/8qL4rjh5ileZ6LhNCO6mnjHqcS+D2pumyj2s4v6qigbC/IF7MWSYvRVLVxqwZQ0sWXFx83O7JWsETnMXyi+XLiQnSf97LCK1Uh+cDxIHpXgBOUWWossJJ9CxOUDQo=;
+Received: by smtp39.i.mail.ru with esmtpa (envelope-from <fido_max@inbox.ru>)
+        id 1lbxh1-0002jH-4a; Thu, 29 Apr 2021 06:50:23 +0300
+Subject: Re: [PATCH 1/1] net: phy: marvell: enable downshift by default
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     netdev@vger.kernel.org, hkallweit1@gmail.com,
+        linux@armlinux.org.uk, davem@davemloft.net, kuba@kernel.org,
+        f.fainelli@gmail.com
+References: <20210428124853.926179-1-fido_max@inbox.ru>
+ <YIm38VYp2CKGdppy@lunn.ch>
+From:   Maxim Kochetkov <fido_max@inbox.ru>
+Message-ID: <bb3efe41-85f5-c57f-1293-0f6fbf610ed6@inbox.ru>
+Date:   Thu, 29 Apr 2021 06:52:08 +0300
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.8.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Originating-IP: [10.43.160.81]
-X-ClientProxiedBy: EX13D30UWC004.ant.amazon.com (10.43.162.4) To
- EX13D04ANC001.ant.amazon.com (10.43.157.89)
+In-Reply-To: <YIm38VYp2CKGdppy@lunn.ch>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+Authentication-Results: smtp39.i.mail.ru; auth=pass smtp.auth=fido_max@inbox.ru smtp.mailfrom=fido_max@inbox.ru
+X-7564579A: 646B95376F6C166E
+X-77F55803: 4F1203BC0FB41BD9ECFD8CE5F0594010C798B26A9CF6FD3F2B2BC7AAFDCADAFC182A05F538085040BC48D8974E97DB6E6D0A1C62C2F853B901107555B94D22DBFFFFF729B48B67A7
+X-7FA49CB5: FF5795518A3D127A4AD6D5ED66289B5278DA827A17800CE728306843C9CFCFEAEA1F7E6F0F101C67BD4B6F7A4D31EC0BCC500DACC3FED6E28638F802B75D45FF8AA50765F790063745D431239A8C7DA08638F802B75D45FF914D58D5BE9E6BC1A93B80C6DEB9DEE97C6FB206A91F05B2AB9C297B352BBEBD65774EEFAE53898142232221D1CC1427D2E47CDBA5A96583C09775C1D3CA48CFA12191B5F2BB8629117882F4460429724CE54428C33FAD30A8DF7F3B2552694AC26CFBAC0749D213D2E47CDBA5A9658378DA827A17800CE73D04F0695778128A9FA2833FD35BB23DF004C90652538430302FCEF25BFAB3454AD6D5ED66289B5278DA827A17800CE7E937145F4808DB80D32BA5DBAC0009BE395957E7521B51C20BC6067A898B09E4090A508E0FED6299176DF2183F8FC7C09F81FD64354FB19DCD04E86FAF290E2D7E9C4E3C761E06A71DD303D21008E29813377AFFFEAFD269A417C69337E82CC2E827F84554CEF50127C277FBC8AE2E8BA83251EDC214901ED5E8D9A59859A8B6A1DCCEB63E2F10FB089D37D7C0E48F6C5571747095F342E88FB05168BE4CE3AF
+X-B7AD71C0: AC4F5C86D027EB782CDD5689AFBDA7A2368A440D3B0F6089093C9A16E5BC824A2A04A2ABAA09D25379311020FFC8D4ADDFE48FF8480683258A7C144763EAA5EA
+X-C1DE0DAB: 0D63561A33F958A5FEE113A4318AB1ADB6A66F48CDFE156DF64D1EE3112F1AEAD59269BC5F550898D99A6476B3ADF6B47008B74DF8BB9EF7333BD3B22AA88B938A852937E12ACA7579F2895567E1D60F410CA545F18667F91A7EA1CDA0B5A7A0
+X-C8649E89: 4E36BF7865823D7055A7F0CF078B5EC49A30900B95165D34F05B761BB9C2AA4431F866ED467B5BE2E5C7ED184E2835E6C123E4BECCE705D2D3C21AF51E596CCF1D7E09C32AA3244C871E1336F0E8B427302C28523586D8FEE3D93501275E802FDCA3B3C10BC03908
+X-D57D3AED: 3ZO7eAau8CL7WIMRKs4sN3D3tLDjz0dLbV79QFUyzQ2Ujvy7cMT6pYYqY16iZVKkSc3dCLJ7zSJH7+u4VD18S7Vl4ZUrpaVfd2+vE6kuoey4m4VkSEu530nj6fImhcD4MUrOEAnl0W826KZ9Q+tr5ycPtXkTV4k65bRjmOUUP8cvGozZ33TWg5HZplvhhXbhDGzqmQDTd6OAevLeAnq3Ra9uf7zvY2zzsIhlcp/Y7m53TZgf2aB4JOg4gkr2biojoCaqxM2e5soDvCoSAAJ9aA==
+X-Mailru-Sender: 11C2EC085EDE56FA9C10FA2967F5AB24359967F59DDB5060AD2B5FD8491466CEF143A866344D9409EE9242D420CFEBFD3DDE9B364B0DF2891A624F84B2C74EDA4239CF2AF0A6D4F80DA7A0AF5A3A8387
+X-Mras: Ok
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Wed, 28 Apr 2021 18:33:32 +0200
-> On Wed, Apr 28, 2021 at 5:52 PM Kuniyuki Iwashima <kuniyu@amazon.co.jp> wrote:
-> >
-> > From:   Jason Baron <jbaron@akamai.com>
-> > Date:   Wed, 28 Apr 2021 10:44:12 -0400
-> > > On 4/28/21 4:13 AM, Kuniyuki Iwashima wrote:
-> > > > From:   Jason Baron <jbaron@akamai.com>
-> > > > Date:   Tue, 27 Apr 2021 12:38:58 -0400
-> > > >> On 4/26/21 11:46 PM, Kuniyuki Iwashima wrote:
-> > > >>> The SO_REUSEPORT option allows sockets to listen on the same port and to
-> > > >>> accept connections evenly. However, there is a defect in the current
-> > > >>> implementation [1]. When a SYN packet is received, the connection is tied
-> > > >>> to a listening socket. Accordingly, when the listener is closed, in-flight
-> > > >>> requests during the three-way handshake and child sockets in the accept
-> > > >>> queue are dropped even if other listeners on the same port could accept
-> > > >>> such connections.
-> > > >>>
-> > > >>> This situation can happen when various server management tools restart
-> > > >>> server (such as nginx) processes. For instance, when we change nginx
-> > > >>> configurations and restart it, it spins up new workers that respect the new
-> > > >>> configuration and closes all listeners on the old workers, resulting in the
-> > > >>> in-flight ACK of 3WHS is responded by RST.
-> > > >>
-> > > >> Hi Kuniyuki,
-> > > >>
-> > > >> I had implemented a different approach to this that I wanted to get your
-> > > >> thoughts about. The idea is to use unix sockets and SCM_RIGHTS to pass the
-> > > >> listen fd (or any other fd) around. Currently, if you have an 'old' webserver
-> > > >> that you want to replace with a 'new' webserver, you would need a separate
-> > > >> process to receive the listen fd and then have that process send the fd to
-> > > >> the new webserver, if they are not running con-currently. So instead what
-> > > >> I'm proposing is a 'delayed close' for a unix socket. That is, one could do:
-> > > >>
-> > > >> 1) bind unix socket with path '/sockets'
-> > > >> 2) sendmsg() the listen fd via the unix socket
-> > > >> 2) setsockopt() some 'timeout' on the unix socket (maybe 10 seconds or so)
-> > > >> 3) exit/close the old webserver and the listen socket
-> > > >> 4) start the new webserver
-> > > >> 5) create new unix socket and bind to '/sockets' (if has MAY_WRITE file permissions)
-> > > >> 6) recvmsg() the listen fd
-> > > >>
-> > > >> So the idea is that we set a timeout on the unix socket. If the new process
-> > > >> does not start and bind to the unix socket, it simply closes, thus releasing
-> > > >> the listen socket. However, if it does bind it can now call recvmsg() and
-> > > >> use the listen fd as normal. It can then simply continue to use the old listen
-> > > >> fds and/or create new ones and drain the old ones.
-> > > >>
-> > > >> Thus, the old and new webservers do not have to run concurrently. This doesn't
-> > > >> involve any changes to the tcp layer and can be used to pass any type of fd.
-> > > >> not sure if it's actually useful for anything else though.
-> > > >>
-> > > >> I'm not sure if this solves your use-case or not but I thought I'd share it.
-> > > >> One can also inherit the fds like in systemd's socket activation model, but
-> > > >> that again requires another process to hold open the listen fd.
-> > > >
-> > > > Thank you for sharing code.
-> > > >
-> > > > It seems bit more crash-tolerant than normal fd passing, but it can still
-> > > > suffer if the process dies before passing fds. With this patch set, we can
-> > > > migrate children sockets even if the process dies.
-> > > >
-> > >
-> > > I don't think crashing should be much of an issue. The old server can setup the
-> > > unix socket patch '/sockets' when it starts up and queue the listen sockets
-> > > there from the start. When it dies it will close all its fds, and the new
-> > > server can pick anything up any fds that are in the '/sockets' queue.
-> > >
-> > >
-> > > > Also, as Martin said, fd passing tends to make application complicated.
-> > > >
-> > >
-> > > It may be but perhaps its more flexible? It gives the new server the
-> > > chance to re-use the existing listen fds, close, drain and/or start new
-> > > ones. It also addresses the non-REUSEPORT case where you can't bind right
-> > > away.
-> >
-> > If the flexibility is really worth the complexity, we do not care about it.
-> > But, SO_REUSEPORT can give enough flexibility we want.
-> >
-> > With socket migration, there is no need to reuse listener (fd passing),
-> > drain children (incoming connections are automatically migrated if there is
-> > already another listener bind()ed), and of course another listener can
-> > close itself and migrated children.
-> >
-> > If two different approaches resolves the same issue and one does not need
-> > complexity in userspace, we select the simpler one.
+28.04.2021 22:30, Andrew Lunn wrote:
+> On Wed, Apr 28, 2021 at 03:48:53PM +0300, Maxim Kochetkov wrote:
+>> Enable downshift for all supported PHYs by default like 88E1116R does.
 > 
-> Kernel bloat and complexity is _not_ the simplest choice.
+> There are two different mechanisms to set to downshift. And i think
+> some of the older PHYs don't support it at all. How did you decide on
+> which method to use for each PHY?
 > 
-> Touching a complex part of TCP stack is quite risky.
+>        Andrew
+> 
 
-Yes, we understand that is not a simple decision and your concern. So many
-reviews are needed to see if our approach is really risky or not.
+When I said "For all supported PHYs" I mean PHYs whith set_phy_tunable 
+defined. So I just added appropriate call of set_downshift found at 
+m88*_set_tunable functions to config_init of each PHY with 
+set_phy_tunable defined.
