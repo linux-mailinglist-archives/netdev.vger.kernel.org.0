@@ -2,98 +2,67 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3ADEE36E76D
-	for <lists+netdev@lfdr.de>; Thu, 29 Apr 2021 10:54:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6BEFB36E794
+	for <lists+netdev@lfdr.de>; Thu, 29 Apr 2021 11:07:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240185AbhD2Ixz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 29 Apr 2021 04:53:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50670 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232400AbhD2Ixx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 29 Apr 2021 04:53:53 -0400
-Received: from mail-pj1-x1036.google.com (mail-pj1-x1036.google.com [IPv6:2607:f8b0:4864:20::1036])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D5C3C06138B;
-        Thu, 29 Apr 2021 01:53:05 -0700 (PDT)
-Received: by mail-pj1-x1036.google.com with SMTP id p17so6366020pjz.3;
-        Thu, 29 Apr 2021 01:53:05 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=JOu/qK5HN825dhzv2XzFqxUs2XZc9mrKG/c5JbhDry8=;
-        b=GDYQ8++4fQq+mZaPkX6MdGs+654lMgCs5gVpuu1KCHnr9edys1E+gvB0jO/KuV14Rk
-         7z6GTwu0hzUIjiNhKS2oBwGJY8tBcMaXotpz9Zfc4JN/JNPqXuQjK9Li6JDPP7qOFIlZ
-         0ZHXxVYkQX5Vrjn5IwDStA4fOhm6llxPmUQ23Zs4MbJgO4kSfqdefcmO0d0V7re2QtGM
-         Z9hYke/bKghRTEMdGUYW6SiF/iEzkaC45EcmeBhoe5KIMjN7wq0BiXUQxps5jzVPohZD
-         3/vVoVKcHYqbTXEyYHE3IIVpHNKF/+qdAaRu6q96dmb2fdzduf892qUUccsC46hXgicq
-         cJ8w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=JOu/qK5HN825dhzv2XzFqxUs2XZc9mrKG/c5JbhDry8=;
-        b=lld7Pzna4CE7GDY7XQYmgQ58SeUQg6P0ciSUaVJVZJ4WSR266IVgl4cDfDZ0JX+LBc
-         Oy6+ZF6sEyuA8kzZXeHZU/XnBG0xPMDrlES2zTn3r4SY2BQU+OV1Xct/tP3wc+w2imAp
-         jO7T8kjgsnVOz/dkjKQ14Od9jlP5TUDIjQu7JvbPrrC6tnvpP6JilYsw/CEe9NThxfKw
-         uuApXfKIznOUZmIjGgvoCwuobe+KbjbMy/xomgdpb73IPwVjoupI6syLOeqz+9Kc47aY
-         qhddHX4UbA/GICjTO27CdRqES8DMEMdEWfAhujsQzJzE549IQ9PpTLhBkW9L04HyByUN
-         OOQg==
-X-Gm-Message-State: AOAM532vkkxmGrFAlsI92NBzNSy2gCLJ7fX1qhHk9JgA8r9Wk9A11kLw
-        yI6ldRw2KwEraA38/WFMioNXa9f8qfSaFy8VP50=
-X-Google-Smtp-Source: ABdhPJympxDsG2Ngi8NPlgJljS6eDQicsW6y9AwP+1/Y3H3kM1jS2J4gWlxALFAcZCZM7OBGOqUI7U6lRHPGArijjTI=
-X-Received: by 2002:a17:90b:1184:: with SMTP id gk4mr8719543pjb.129.1619686385054;
- Thu, 29 Apr 2021 01:53:05 -0700 (PDT)
+        id S240311AbhD2JGX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 29 Apr 2021 05:06:23 -0400
+Received: from ssl.serverraum.org ([176.9.125.105]:42139 "EHLO
+        ssl.serverraum.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233264AbhD2JGW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 29 Apr 2021 05:06:22 -0400
+Received: from mwalle01.fritz.box (unknown [IPv6:2a02:810c:c200:2e91:fa59:71ff:fe9b:b851])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-384) server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by ssl.serverraum.org (Postfix) with ESMTPSA id 1964C22239;
+        Thu, 29 Apr 2021 11:05:33 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
+        t=1619687134;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=ntga0F5jzLwIrsdE1xblJLIehmMydXYFVT1ONFqdDI4=;
+        b=Hsiv9ZLA8T0pOMQMp8jCjFB+D4n5Z+v8yNWzbkzyJsavPaZvfdkLSBnwp4+VDkHBdI+E9p
+        VZ92QdFr7wyFcmeo86i8S1fRh7w5Xes1XbyOXSn5+KawFcydDjh8j5Xu9kidD61pf1QzmL
+        t9emBw7zxsUL6sro49aNxV+Qum6unI8=
+From:   Michael Walle <michael@walle.cc>
+To:     netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     Jakub Kicinski <kuba@kernel.org>, Michael Walle <michael@walle.cc>
+Subject: [PATCH net v2 1/2] MAINTAINERS: remove Wingman Kwok
+Date:   Thu, 29 Apr 2021 11:05:20 +0200
+Message-Id: <20210429090521.554-1-michael@walle.cc>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-References: <20210428135929.27011-1-justin.he@arm.com> <20210428135929.27011-2-justin.he@arm.com>
- <YIpyZmi1Reh7iXeI@alley>
-In-Reply-To: <YIpyZmi1Reh7iXeI@alley>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Thu, 29 Apr 2021 11:52:49 +0300
-Message-ID: <CAHp75Vfa3ATc+-Luka9vJTwoCLAPVm38cciYyBYnWxzNQ1DPrg@mail.gmail.com>
-Subject: Re: [PATCH 2/4] lib/vsprintf.c: Make %p{D,d} mean as much components
- as possible
-To:     Petr Mladek <pmladek@suse.com>
-Cc:     Jia He <justin.he@arm.com>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Sergey Senozhatsky <senozhatsky@chromium.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Luca Coelho <luciano.coelho@intel.com>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Heiko Carstens <hca@linux.ibm.com>,
-        Vasily Gorbik <gor@linux.ibm.com>,
-        Christian Borntraeger <borntraeger@de.ibm.com>,
-        Johannes Berg <johannes.berg@intel.com>,
-        Linux Documentation List <linux-doc@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        "open list:TI WILINK WIRELES..." <linux-wireless@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>, linux-s390@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Apr 29, 2021 at 11:47 AM Petr Mladek <pmladek@suse.com> wrote:
->
-> On Wed 2021-04-28 21:59:27, Jia He wrote:
-> > From: Linus Torvalds <torvalds@linux-foundation.org>
-> >
-> > We have '%pD'(no digit following) for printing a filename. It may not be
-> > perfect (by default it only prints one component.
-> >
-> > %pD4 should be more than good enough, but we should make plain "%pD" mean
-> > "as much of the path that is reasonable" rather than "as few components as
-> > possible" (ie 1).
->
-> Could you please provide link to the discussion where this idea was
-> came from?
+His email bounces with permanent error "550 Invalid recipient". His last
+email on the LKML was from 2015-10-22 on the LKML.
 
-https://lore.kernel.org/lkml/20210427025805.GD3122264@magnolia/
+Signed-off-by: Michael Walle <michael@walle.cc>
+---
+changes since v1:
+ - rebased to net
 
+ MAINTAINERS | 1 -
+ 1 file changed, 1 deletion(-)
+
+diff --git a/MAINTAINERS b/MAINTAINERS
+index 933a6f3c2369..04f4a2116b35 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -17975,7 +17975,6 @@ F:	drivers/regulator/lp8788-*.c
+ F:	include/linux/mfd/lp8788*.h
+ 
+ TI NETCP ETHERNET DRIVER
+-M:	Wingman Kwok <w-kwok2@ti.com>
+ M:	Murali Karicheri <m-karicheri2@ti.com>
+ L:	netdev@vger.kernel.org
+ S:	Maintained
 -- 
-With Best Regards,
-Andy Shevchenko
+2.20.1
+
