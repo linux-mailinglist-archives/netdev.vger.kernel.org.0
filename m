@@ -2,118 +2,124 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0A74E36EE63
-	for <lists+netdev@lfdr.de>; Thu, 29 Apr 2021 18:49:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6493836EE6B
+	for <lists+netdev@lfdr.de>; Thu, 29 Apr 2021 18:55:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240760AbhD2QuU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 29 Apr 2021 12:50:20 -0400
-Received: from out1-smtp.messagingengine.com ([66.111.4.25]:44937 "EHLO
-        out1-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S232724AbhD2QuT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 29 Apr 2021 12:50:19 -0400
-Received: from compute5.internal (compute5.nyi.internal [10.202.2.45])
-        by mailout.nyi.internal (Postfix) with ESMTP id B38245C007C;
-        Thu, 29 Apr 2021 12:49:30 -0400 (EDT)
-Received: from mailfrontend1 ([10.202.2.162])
-  by compute5.internal (MEProxy); Thu, 29 Apr 2021 12:49:30 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:content-type:date:from:in-reply-to
-        :message-id:mime-version:references:subject:to:x-me-proxy
-        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm2; bh=HpsYWI
-        D6hnhQVRcvAfZaZ6lMNhq8mlgwJSwUpnpRD8s=; b=IuXPtcHOKYJfXp3qmU8Vyf
-        e+f2Tnvk7HRqB7GTn1GBHYSBPIhiwKBSr7U2im9Ngb4cPDHRSbj40FiAUSRLEIRx
-        /v7Ay9OBWq3FwVcqUqLpFKGvHuPptBT/vtbuj6UO/wQ/gQ6w1uRvbkfnxptmbknb
-        bokUedB0Eutaan82o0rUFuaVPQrQIDVvcaFViL085jUH9HmJm90GLhgjOI0MZxM1
-        TvMQvAqy6sne9yMJlAvw5dLpMfVQ3jUOytU9RJfUsUj92m5VUCh1cDauo+TJnwrW
-        0Pw9Y8Oz7XxyswLM2ww7LlSQIjyB4FMIsqOsH2yoka5ESqmhGVtP6lDamBpnUx/A
-        ==
-X-ME-Sender: <xms:muOKYOIuusDPhshDJzgzP59CrII6IzLOMbGegrfLvXryWA-hnvFPKA>
-    <xme:muOKYGIes9Fke_mI-rr2ImRuXS-wCUoYmfaRezvpGUOC_MAwE4zS5Uiv26iR2tMoB
-    6AyC4Lm8xSgflo>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduledrvddvgedguddtjecutefuodetggdotefrod
-    ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfgh
-    necuuegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmd
-    enucfjughrpeffhffvuffkfhggtggujgesthdtredttddtvdenucfhrhhomhepkfguohcu
-    ufgthhhimhhmvghluceoihguohhstghhsehiughoshgthhdrohhrgheqnecuggftrfgrth
-    htvghrnheptdffkeekfeduffevgeeujeffjefhtefgueeugfevtdeiheduueeukefhudeh
-    leetnecukfhppeekgedrvddvledrudehfedrudekjeenucevlhhushhtvghrufhiiigvpe
-    dtnecurfgrrhgrmhepmhgrihhlfhhrohhmpehiughoshgthhesihguohhstghhrdhorhhg
-X-ME-Proxy: <xmx:muOKYOtTSCxrggz4jgMZXtJW6fugwnsez37LVCp5TGC2CryZkqq_8w>
-    <xmx:muOKYDZJuEEDezvZELxYwCAT-Qw9eltpGlMTRbaU0_5kru4aAOEpPQ>
-    <xmx:muOKYFZ0SRulzmvY32cBDda9H49H3o0QEGN8p1SjKkwcOxAmh5Z_FQ>
-    <xmx:muOKYEVvcdnb69rTR39vehZZnszpmFLgowSDFaTycwY3zHqxoC5TiQ>
-Received: from localhost (igld-84-229-153-187.inter.net.il [84.229.153.187])
-        by mail.messagingengine.com (Postfix) with ESMTPA;
-        Thu, 29 Apr 2021 12:49:29 -0400 (EDT)
-Date:   Thu, 29 Apr 2021 19:49:25 +0300
-From:   Ido Schimmel <idosch@idosch.org>
-To:     Simon Horman <simon.horman@netronome.com>
-Cc:     Jamal Hadi Salim <jhs@mojatatu.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Jiri Pirko <jiri@mellanox.com>, netdev@vger.kernel.org,
-        oss-drivers@netronome.com,
-        Baowen Zheng <baowen.zheng@corigine.com>,
-        Louis Peens <louis.peens@netronome.com>
-Subject: Re: [RFC net-next] net/flow_offload: allow user to offload tc action
- to net device
-Message-ID: <YIrjlR+eAvvVCnXy@shredder.lan>
-References: <20210429081014.28498-1-simon.horman@netronome.com>
+        id S240803AbhD2Q4D (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 29 Apr 2021 12:56:03 -0400
+Received: from esa.microchip.iphmx.com ([68.232.154.123]:33585 "EHLO
+        esa.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231238AbhD2Q4C (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 29 Apr 2021 12:56:02 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1619715316; x=1651251316;
+  h=subject:to:cc:references:from:message-id:date:
+   mime-version:in-reply-to:content-transfer-encoding;
+  bh=ScWp8ofsYrARe5yBRyhUEWi4uTfNWBn2+W2xJb2CiZM=;
+  b=WYiRkwTsyil0lzN8R/vkv13GwkWqd2FJQJlOno5rjG2UBLR4TJ5XBRlh
+   v00Mdv/nST2Z7wbKqTP8J4zPx36DsMGoKDpUjqdz4Ln2/LkMaZlCuO0Bb
+   ToTi0IpB1WPZ4ErNNGOCnmyQjgoCXrKMkfN0lbjAB19AxNBc2B1X2IPXt
+   4YCttT5F6+6Lko8yUJCmwceKGdqygVt1jCZbMCvIaycuPkaZ7Yq3NMa4U
+   MNw7ew8fEC/Vr4h/i5ccYTjr+8zQnjKmYcQOxlZHx+FTU4hPV8c1p3DKO
+   2KS5DEgneN2fSauNTIpDF9ndOpc5GSWakibKpwPXFg1smrXB7dnCyA9/2
+   A==;
+IronPort-SDR: CJnHrgFd1mS2gYtmha0/lmYBCzIBsfW9GcOBZlk2T7wKu4yryOLJFaPdL4/+lJHntBA4zk2DMB
+ LFlaNrZ2phLO7cow+cmgtjkJVQk2Shmi8ivPOGq6h9MskKJvSdJqFzD6Jo4Toam4VoXARPgr/f
+ ugQAHma/IWZBmF4pdTJ8zB6VrXv1Cjh3LSlxb7XfhUE5aR9CJky6KNS0nBAh7lWr5IGZE2nGJU
+ OR/lF5Xgiuu4ESzOUsW5S9lkkGcs2i/hAd8vtODcmToQRBJEYwnIX+PcXk5LcRBSc2YKkz2ZAG
+ ylE=
+X-IronPort-AV: E=Sophos;i="5.82,259,1613458800"; 
+   d="scan'208";a="53032240"
+Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
+  by esa6.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 29 Apr 2021 09:55:15 -0700
+Received: from chn-vm-ex02.mchp-main.com (10.10.85.144) by
+ chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2176.2; Thu, 29 Apr 2021 09:55:14 -0700
+Received: from [10.171.246.9] (10.10.115.15) by chn-vm-ex02.mchp-main.com
+ (10.10.85.144) with Microsoft SMTP Server id 15.1.2176.2 via Frontend
+ Transport; Thu, 29 Apr 2021 09:55:12 -0700
+Subject: Re: [PATCH] net: macb: Remove redundant assignment to w0
+To:     Jiapeng Chong <jiapeng.chong@linux.alibaba.com>,
+        Rafal Ozieblo <rafalo@cadence.com>
+CC:     <claudiu.beznea@microchip.com>, <davem@davemloft.net>,
+        <kuba@kernel.org>, <linux@armlinux.org.uk>, <palmer@dabbelt.com>,
+        <paul.walmsley@sifive.com>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <linux-riscv@lists.infradead.org>,
+        Michal Simek <michal.simek@xilinx.com>
+References: <1619691982-90657-1-git-send-email-jiapeng.chong@linux.alibaba.com>
+From:   Nicolas Ferre <nicolas.ferre@microchip.com>
+Organization: microchip
+Message-ID: <80a97aa9-0bf4-d6c5-597e-4440b07ecdaf@microchip.com>
+Date:   Thu, 29 Apr 2021 18:55:11 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.7.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210429081014.28498-1-simon.horman@netronome.com>
+In-Reply-To: <1619691982-90657-1-git-send-email-jiapeng.chong@linux.alibaba.com>
+Content-Type: text/plain; charset="windows-1252"; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Apr 29, 2021 at 10:10:14AM +0200, Simon Horman wrote:
-> From: Baowen Zheng <baowen.zheng@corigine.com>
+On 29/04/2021 at 12:26, Jiapeng Chong wrote:
+> Variable w0 is set to zero but these values is not used as it is
+> overwritten later on, hence redundant assignment can be removed.
 > 
-> Allow use of flow_indr_dev_register/flow_indr_dev_setup_offload to offload
-> tc actions independent of flows.
+> Cleans up the following clang-analyzer warning:
 > 
-> The motivation for this work is to prepare for using TC police action
-> instances to provide hardware offload of OVS metering feature - which calls
-> for policers that may be used my multiple flows and whose lifecycle is
-
-s/my/by/
-
-> independent of any flows that use them.
-
-Can you share an example of the tc commands? You might be able to
-achieve what you want by patching NFP to take into account the policer
-index in 'struct flow_action_entry'. Seems that it currently assumes
-that each policer is a new policer.
-
-FTR, I do support the overall plan to offload actions independent of
-flows and to associate stats with actions.
-
+> drivers/net/ethernet/cadence/macb_main.c:3265:3: warning: Value stored
+> to 'w0' is never read [clang-analyzer-deadcode.DeadStores].
 > 
-> This patch includes basic changes to offload drivers to return EOPNOTSUPP
-> if this feature is used - it is not yet supported by any driver.
+> drivers/net/ethernet/cadence/macb_main.c:3251:3: warning: Value stored
+> to 'w0' is never read [clang-analyzer-deadcode.DeadStores].
 > 
-> Signed-off-by: Baowen Zheng <baowen.zheng@corigine.com>
-> Signed-off-by: Louis Peens <louis.peens@netronome.com>
-> Signed-off-by: Simon Horman <simon.horman@netronome.com>
+> Reported-by: Abaci Robot <abaci@linux.alibaba.com>
+> Signed-off-by: Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
 
-[...]
+NACK: there seems to be a massive bug in this code as I have the strong 
+feeling that '=' must be replaces by '|=' in subsequent assignment of 
+w0, W1... otherwise I don't understand the meaning of all this!
 
-> diff --git a/include/net/tc_act/tc_police.h b/include/net/tc_act/tc_police.h
-> index 72649512dcdd..6309519bf9d4 100644
-> --- a/include/net/tc_act/tc_police.h
-> +++ b/include/net/tc_act/tc_police.h
-> @@ -53,6 +53,11 @@ static inline bool is_tcf_police(const struct tc_action *act)
->  	return false;
->  }
->  
-> +static inline u32 tcf_police_index(const struct tc_action *act)
-> +{
-> +	return act->tcfa_index;
-> +}
+I don't know how RX filtering must be done in this controller neither 
+how to test it so if nobody steps in to fix this, I'll probably have to 
+do a patch based on datasheet only.
 
-Any reason this is part of the patch? Looks like nobody is using it.
+Please comment if you have a view on this.
 
-> +
->  static inline u64 tcf_police_rate_bytes_ps(const struct tc_action *act)
->  {
->  	struct tcf_police *police = to_police(act);
+Best regards,
+   Nicolas
+
+> ---
+>   drivers/net/ethernet/cadence/macb_main.c | 2 --
+>   1 file changed, 2 deletions(-)
+> 
+> diff --git a/drivers/net/ethernet/cadence/macb_main.c b/drivers/net/ethernet/cadence/macb_main.c
+> index 0f6a6cb..741b2e3 100644
+> --- a/drivers/net/ethernet/cadence/macb_main.c
+> +++ b/drivers/net/ethernet/cadence/macb_main.c
+> @@ -3248,7 +3248,6 @@ static void gem_prog_cmp_regs(struct macb *bp, struct ethtool_rx_flow_spec *fs)
+>          /* ignore field if any masking set */
+>          if (tp4sp_m->ip4src == 0xFFFFFFFF) {
+>                  /* 1st compare reg - IP source address */
+> -               w0 = 0;
+>                  w1 = 0;
+>                  w0 = tp4sp_v->ip4src;
+>                  w1 = GEM_BFINS(T2DISMSK, 1, w1); /* 32-bit compare */
+> @@ -3262,7 +3261,6 @@ static void gem_prog_cmp_regs(struct macb *bp, struct ethtool_rx_flow_spec *fs)
+>          /* ignore field if any masking set */
+>          if (tp4sp_m->ip4dst == 0xFFFFFFFF) {
+>                  /* 2nd compare reg - IP destination address */
+> -               w0 = 0;
+>                  w1 = 0;
+>                  w0 = tp4sp_v->ip4dst;
+>                  w1 = GEM_BFINS(T2DISMSK, 1, w1); /* 32-bit compare */
+> --
+> 1.8.3.1
+> 
+
+
+-- 
+Nicolas Ferre
