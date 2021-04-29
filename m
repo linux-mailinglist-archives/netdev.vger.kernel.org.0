@@ -2,112 +2,120 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AB34536EDF9
-	for <lists+netdev@lfdr.de>; Thu, 29 Apr 2021 18:16:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1431836EE0F
+	for <lists+netdev@lfdr.de>; Thu, 29 Apr 2021 18:23:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236036AbhD2QRI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 29 Apr 2021 12:17:08 -0400
-Received: from mga11.intel.com ([192.55.52.93]:13478 "EHLO mga11.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S233480AbhD2QRH (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 29 Apr 2021 12:17:07 -0400
-IronPort-SDR: 4lcGCzecOmrAFRztIGs/7k6++Khn+BDxCzEVHdnlQyrmeB6Mfyq9PFvwU3fGcEDctws7Fyvm1o
- /gcprPp9Uslg==
-X-IronPort-AV: E=McAfee;i="6200,9189,9969"; a="193858111"
-X-IronPort-AV: E=Sophos;i="5.82,259,1613462400"; 
-   d="scan'208";a="193858111"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Apr 2021 09:16:20 -0700
-IronPort-SDR: za7ODJ5wimsjzX7ocHYQoMe+Nh5mRVPp5SEN5oQcC+q3xB5XsRVolq7zcVk99U01ldzrsCcNuV
- jmXsBeR7GgDw==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.82,259,1613462400"; 
-   d="scan'208";a="426062676"
-Received: from anguy11-desk2.jf.intel.com ([10.166.244.147])
-  by orsmga007.jf.intel.com with ESMTP; 29 Apr 2021 09:16:19 -0700
-From:   Tony Nguyen <anthony.l.nguyen@intel.com>
-To:     davem@davemloft.net, kuba@kernel.org
-Cc:     Magnus Karlsson <magnus.karlsson@intel.com>,
-        netdev@vger.kernel.org, sassmann@redhat.com,
-        anthony.l.nguyen@intel.com,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        Maciej Fijalkowski <maciej.fijalkowski@intel.com>
-Subject: [PATCH net 1/1] i40e: fix broken XDP support
-Date:   Thu, 29 Apr 2021 09:18:20 -0700
-Message-Id: <20210429161820.827651-1-anthony.l.nguyen@intel.com>
-X-Mailer: git-send-email 2.26.2
+        id S240796AbhD2QX2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 29 Apr 2021 12:23:28 -0400
+Received: from esa.microchip.iphmx.com ([68.232.154.123]:4313 "EHLO
+        esa.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S240730AbhD2QXY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 29 Apr 2021 12:23:24 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1619713358; x=1651249358;
+  h=subject:to:cc:references:from:message-id:date:
+   mime-version:in-reply-to:content-transfer-encoding;
+  bh=7BcdnZisl7B8/PzFL89x7k4XXNQZrdodFVgVdVog5FU=;
+  b=aXam4nK5FHG7bc1QBocED5b46VZHM/JKjvi9NOLOsfuPLyFV2+Tu2KJF
+   9QosMp3M6wtQfYCfKLATtDE/fUTHYFei99TkgO/hXygo5RbrQ25vD6f7M
+   BEl+eIjJCeF073zoUBDnGTxO5Y5l2ctRqHgJXNZ7CJRJMfL1Q4AfmGNdd
+   /d21NoICPtR8K4QXWI2QQva5Ptc892vp2H7ZfQ1dgy5TaACkUn2w21d41
+   j9Hr3YPGyiVVvbdD7dgmNTZS29MmgtdjkISZqkaTMt5QYCfc6WqINfNIU
+   7vc863g72c6M/2VdQr8PWqbojx1kWbGsQBsi5GB9NzOdiZNr/ewspofHy
+   A==;
+IronPort-SDR: 9up+t1yzJJ4pGk6aqPHPwq23SeK79ZZS0/Y/Ik5MOTulOKzh5caNovjBGbxJ6lrde4h5QZmJrQ
+ G73+Fc0cmYnSDDjVoLsU2YXwIrUMjba7jmRXoEesjVW0Q60ssAZUtNzH6Q9iWHH4rUT3nyL+3R
+ Wna9vys0auG6ohc1PqenBrWVDC6VWLhnGT5WJ0I82sPJzhT+fDtLMfo0fttZvYpj/xGIWpcQTN
+ xg1HYukdxQqRdkLC3pEkIDPiA8Fr/Yr5p1A7x76LvkAVhFk/dbR+oH+9VmdG9amUI3uuiwhn1e
+ sn0=
+X-IronPort-AV: E=Sophos;i="5.82,259,1613458800"; 
+   d="scan'208";a="115378716"
+Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
+  by esa2.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 29 Apr 2021 09:22:37 -0700
+Received: from chn-vm-ex04.mchp-main.com (10.10.85.152) by
+ chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2176.2; Thu, 29 Apr 2021 09:22:36 -0700
+Received: from [10.171.246.9] (10.10.115.15) by chn-vm-ex04.mchp-main.com
+ (10.10.85.152) with Microsoft SMTP Server id 15.1.2176.2 via Frontend
+ Transport; Thu, 29 Apr 2021 09:22:34 -0700
+Subject: Re: [PATCH] net: macb: Remove redundant assignment to queue
+To:     Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
+CC:     <claudiu.beznea@microchip.com>, <kuba@kernel.org>,
+        <davem@davemloft.net>, <linux@armlinux.org.uk>,
+        <palmer@dabbelt.com>, <paul.walmsley@sifive.com>,
+        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linux-riscv@lists.infradead.org>
+References: <1619691946-90305-1-git-send-email-jiapeng.chong@linux.alibaba.com>
+From:   Nicolas Ferre <nicolas.ferre@microchip.com>
+Organization: microchip
+Message-ID: <8c969699-6ce3-4731-e33c-2d1b045aafab@microchip.com>
+Date:   Thu, 29 Apr 2021 18:22:33 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.7.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <1619691946-90305-1-git-send-email-jiapeng.chong@linux.alibaba.com>
+Content-Type: text/plain; charset="windows-1252"; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Magnus Karlsson <magnus.karlsson@intel.com>
+On 29/04/2021 at 12:25, Jiapeng Chong wrote:
+> Variable queue is set to bp->queues but these values is not used as it
+> is overwritten later on, hence redundant assignment  can be removed.
+> 
+> Cleans up the following clang-analyzer warning:
+> 
+> drivers/net/ethernet/cadence/macb_main.c:4919:21: warning: Value stored
+> to 'queue' during its initialization is never read
+> [clang-analyzer-deadcode.DeadStores].
+> 
+> drivers/net/ethernet/cadence/macb_main.c:4832:21: warning: Value stored
+> to 'queue' during its initialization is never read
+> [clang-analyzer-deadcode.DeadStores].
+> 
+> Reported-by: Abaci Robot <abaci@linux.alibaba.com>
+> Signed-off-by: Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
 
-Commit 12738ac4754e ("i40e: Fix sparse errors in i40e_txrx.c") broke
-XDP support in the i40e driver. That commit was fixing a sparse error
-in the code by introducing a new variable xdp_res instead of
-overloading this into the skb pointer. The problem is that the code
-later uses the skb pointer in if statements and these where not
-extended to also test for the new xdp_res variable. Fix this by adding
-the correct tests for xdp_res in these places.
+Looks good to me as assignments are done in for loops:
+Acked-by: Nicolas Ferre <nicolas.ferre@microchip.com>
 
-The skb pointer was used to store the result of the XDP program by
-overloading the results in the error pointer
-ERR_PTR(-result). Therefore, the allocation failure test that used to
-only test for !skb now need to be extended to also consider !xdp_res.
+Regards,
+   Nicolas
 
-i40e_cleanup_headers() had a check that based on the skb value being
-an error pointer, i.e. a result from the XDP program != XDP_PASS, and
-if so start to process a new packet immediately, instead of populating
-skb fields and sending the skb to the stack. This check is not needed
-anymore, since we have added an explicit test for xdp_res being set
-and if so just do continue to pick the next packet from the NIC.
+> ---
+>   drivers/net/ethernet/cadence/macb_main.c | 4 ++--
+>   1 file changed, 2 insertions(+), 2 deletions(-)
+> 
+> diff --git a/drivers/net/ethernet/cadence/macb_main.c b/drivers/net/ethernet/cadence/macb_main.c
+> index 0f6a6cb..5693850 100644
+> --- a/drivers/net/ethernet/cadence/macb_main.c
+> +++ b/drivers/net/ethernet/cadence/macb_main.c
+> @@ -4829,7 +4829,7 @@ static int __maybe_unused macb_suspend(struct device *dev)
+>   {
+>          struct net_device *netdev = dev_get_drvdata(dev);
+>          struct macb *bp = netdev_priv(netdev);
+> -       struct macb_queue *queue = bp->queues;
+> +       struct macb_queue *queue;
+>          unsigned long flags;
+>          unsigned int q;
+>          int err;
+> @@ -4916,7 +4916,7 @@ static int __maybe_unused macb_resume(struct device *dev)
+>   {
+>          struct net_device *netdev = dev_get_drvdata(dev);
+>          struct macb *bp = netdev_priv(netdev);
+> -       struct macb_queue *queue = bp->queues;
+> +       struct macb_queue *queue;
+>          unsigned long flags;
+>          unsigned int q;
+>          int err;
+> --
+> 1.8.3.1
+> 
 
-Fixes: 12738ac4754e ("i40e: Fix sparse errors in i40e_txrx.c")
-Acked-by: Jesper Dangaard Brouer <brouer@redhat.com>
-Tested-by: Jesper Dangaard Brouer <brouer@redhat.com>
-Reported-by: Jesper Dangaard Brouer <brouer@redhat.com>
-Reviewed-by: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
-Signed-off-by: Magnus Karlsson <magnus.karlsson@intel.com>
-Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
----
- drivers/net/ethernet/intel/i40e/i40e_txrx.c | 8 ++------
- 1 file changed, 2 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/net/ethernet/intel/i40e/i40e_txrx.c b/drivers/net/ethernet/intel/i40e/i40e_txrx.c
-index 06b4271219b1..70b515049540 100644
---- a/drivers/net/ethernet/intel/i40e/i40e_txrx.c
-+++ b/drivers/net/ethernet/intel/i40e/i40e_txrx.c
-@@ -1961,10 +1961,6 @@ static bool i40e_cleanup_headers(struct i40e_ring *rx_ring, struct sk_buff *skb,
- 				 union i40e_rx_desc *rx_desc)
- 
- {
--	/* XDP packets use error pointer so abort at this point */
--	if (IS_ERR(skb))
--		return true;
--
- 	/* ERR_MASK will only have valid bits if EOP set, and
- 	 * what we are doing here is actually checking
- 	 * I40E_RX_DESC_ERROR_RXE_SHIFT, since it is the zeroth bit in
-@@ -2534,7 +2530,7 @@ static int i40e_clean_rx_irq(struct i40e_ring *rx_ring, int budget)
- 		}
- 
- 		/* exit if we failed to retrieve a buffer */
--		if (!skb) {
-+		if (!xdp_res && !skb) {
- 			rx_ring->rx_stats.alloc_buff_failed++;
- 			rx_buffer->pagecnt_bias++;
- 			break;
-@@ -2547,7 +2543,7 @@ static int i40e_clean_rx_irq(struct i40e_ring *rx_ring, int budget)
- 		if (i40e_is_non_eop(rx_ring, rx_desc))
- 			continue;
- 
--		if (i40e_cleanup_headers(rx_ring, skb, rx_desc)) {
-+		if (xdp_res || i40e_cleanup_headers(rx_ring, skb, rx_desc)) {
- 			skb = NULL;
- 			continue;
- 		}
 -- 
-2.26.2
-
+Nicolas Ferre
