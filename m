@@ -2,107 +2,195 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 51ACF36EA2E
-	for <lists+netdev@lfdr.de>; Thu, 29 Apr 2021 14:15:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6297236EADB
+	for <lists+netdev@lfdr.de>; Thu, 29 Apr 2021 14:49:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235958AbhD2MQg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 29 Apr 2021 08:16:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38908 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231490AbhD2MQf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 29 Apr 2021 08:16:35 -0400
-Received: from mail-oi1-x232.google.com (mail-oi1-x232.google.com [IPv6:2607:f8b0:4864:20::232])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4ECF7C06138B;
-        Thu, 29 Apr 2021 05:15:48 -0700 (PDT)
-Received: by mail-oi1-x232.google.com with SMTP id i81so66270690oif.6;
-        Thu, 29 Apr 2021 05:15:48 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:from:date:message-id:subject:to:cc;
-        bh=7JOIpT+gpkrmnjjclA5CWTgL1Tfw2rNWt1HrwDtAo0o=;
-        b=jsP2RMexicFTW5DTFSLZ1KPpxJ34rjzBbFmTBW2sUIo1YgMHrEPMftm8gsBzUmwzbQ
-         i7tqCNONGzqSYP9bUP5yMh8+awNqVvli7+uEGMCkKE6g3Vfu2V652cyE1u5XiG4su8Ip
-         zJFvb0GzsCgN1bXIu9VNb/1daa7PDfqQvh+nzq0kUZiSUcQgrCgobjlnwYEIOglIKmXt
-         A+YN9B4SefPb0If0GF62yfbzFFfJi/p0nsGHJlfBVMF6z8MnYnGoF0sQOv15DvjmhodH
-         pLulFOMLFhNHPlUgDczQzpu2TZ5MGAVr5eCHGosKZsw8k/0Bbp7ZuuLJ0Fq1o9gADhvp
-         C9BA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:from:date:message-id:subject:to:cc;
-        bh=7JOIpT+gpkrmnjjclA5CWTgL1Tfw2rNWt1HrwDtAo0o=;
-        b=l0JNuGartNdba9dUBR6Kn973kNIFZnCPL1CVs1Mb9R16q4UUeYWrYd0Uq/+QoJmK+B
-         2gayMRVxFsQunE7HvfGAR5PZ6mTWfMeofrjUlO/Vbz8Kv4PXbsoeQOSAwbUYExnfq8Qg
-         OxhKMOnyXa3Dvqtz9lCdhI2QRhL52AhrLFb7BloM1hNGFBofpIUMsz99QuJEddQI5TNu
-         cSTVeJjJe6YusIjCeM9GOJLsbP26VqZuiJHbsWX7X0+nSVW6WTAelYyEIBtpzesV6+rX
-         eaZMl6Fv7oTWg1vbKWIpVq6gDuKFNWx/orvMyYaK7n6e2Aix1t7hbRU8yaGvpnpm1Zwr
-         gpIw==
-X-Gm-Message-State: AOAM533k7A59AdMYwCUF1G3rC1T7ZPLN6KMunVL6qwXIkL4auTAeZnlc
-        /AJPLp6ovnpxFrlC78smqmd8JieNs8zrDPWD2Ns=
-X-Google-Smtp-Source: ABdhPJz+Ux2N/YD6IWPcdk9lo0W8iarZD34+mYqN52kQxdAaACM7v/FrBKVgReBD18iwlf7NvuEqsbMMSSQ/CutNLQY=
-X-Received: by 2002:aca:cf09:: with SMTP id f9mr6624326oig.95.1619698547741;
- Thu, 29 Apr 2021 05:15:47 -0700 (PDT)
+        id S237194AbhD2MuS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 29 Apr 2021 08:50:18 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:51914 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S235908AbhD2MuP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 29 Apr 2021 08:50:15 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1619700568;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=ZoGTuPRO2EGwSyJiMBZSgYGCdRr0zd7f2Yezo+ph2zk=;
+        b=b/AUjoFFgYUGCvJbP1ScvJKW1akjPiwJP7ytc8IDXm28YXcTaESSfxVf+8qNZGcohBKUTz
+        UaZXV0XZhOxg427HYp1FMw75FYYQ2GG45BK0lEX6m0LRPzGJ3R05586XGjzDoy3A3Tz+fK
+        hkqjkNicY4em/JO2eDvhjzEjpU8qswk=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-103-62rkyqggO3aCFq06e6qTvA-1; Thu, 29 Apr 2021 08:49:22 -0400
+X-MC-Unique: 62rkyqggO3aCFq06e6qTvA-1
+Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com [10.5.11.13])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 30AC11051EAC;
+        Thu, 29 Apr 2021 12:49:19 +0000 (UTC)
+Received: from carbon (unknown [10.36.110.19])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 9B15B843EE;
+        Thu, 29 Apr 2021 12:49:13 +0000 (UTC)
+Date:   Thu, 29 Apr 2021 14:49:10 +0200
+From:   Jesper Dangaard Brouer <brouer@redhat.com>
+To:     Magnus Karlsson <magnus.karlsson@gmail.com>
+Cc:     Lorenzo Bianconi <lorenzo@kernel.org>, bpf <bpf@vger.kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        Lorenzo Bianconi <lorenzo.bianconi@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>, shayagr@amazon.com,
+        sameehj@amazon.com, John Fastabend <john.fastabend@gmail.com>,
+        David Ahern <dsahern@kernel.org>,
+        Eelco Chaudron <echaudro@redhat.com>,
+        Jason Wang <jasowang@redhat.com>,
+        Alexander Duyck <alexander.duyck@gmail.com>,
+        Saeed Mahameed <saeed@kernel.org>,
+        "Fijalkowski, Maciej" <maciej.fijalkowski@intel.com>,
+        Tirthendu <tirthendu.sarkar@intel.com>, brouer@redhat.com
+Subject: Re: [PATCH v8 bpf-next 00/14] mvneta: introduce XDP multi-buffer
+ support
+Message-ID: <20210429144910.27aebab2@carbon>
+In-Reply-To: <CAJ8uoz3=RiTLf_MY-8=hZpib8ds8HJFraVpjJs_K0QEzjfbEhA@mail.gmail.com>
+References: <cover.1617885385.git.lorenzo@kernel.org>
+        <CAJ8uoz1MOYLzyy7xXq_fmpKDEakxSomzfM76Szjr5gWsqHc9jQ@mail.gmail.com>
+        <YIhXxmXdjQdrrPbT@lore-desk>
+        <CAJ8uoz3=RiTLf_MY-8=hZpib8ds8HJFraVpjJs_K0QEzjfbEhA@mail.gmail.com>
 MIME-Version: 1.0
-From:   Jason Xing <kerneljasonxing@gmail.com>
-Date:   Thu, 29 Apr 2021 20:15:12 +0800
-Message-ID: <CAL+tcoDuY6D6j6zO9XSzkUCom9jdD4ydidUL5S8Pt-dqd69EGw@mail.gmail.com>
-Subject: soft lockup in __inet_lookup_established() function
-To:     David Miller <davem@davemloft.net>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        dsahern@kernel.org, kuba@kernel.org
-Cc:     netdev <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        liweishi <liweishi@kuaishou.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+On Wed, 28 Apr 2021 09:41:52 +0200
+Magnus Karlsson <magnus.karlsson@gmail.com> wrote:
 
-I've encountered one big issue which causes infinite loop in
-__inet_lookup_established() function until I reboot manually. it's
-happening randomly among thousands of machines with the 4.19 kernel
-running. Once the soft lockup issue is triggered, whatever I try I
-still cannot ping or ssh to the machine anymore until reboot.
+> On Tue, Apr 27, 2021 at 8:28 PM Lorenzo Bianconi <lorenzo@kernel.org> wrote:
+> >
+> > [...]
+> >  
+> > > Took your patches for a test run with the AF_XDP sample xdpsock on an
+> > > i40e card and the throughput degradation is between 2 to 6% depending
+> > > on the setup and microbenchmark within xdpsock that is executed. And
+> > > this is without sending any multi frame packets. Just single frame
+> > > ones. Tirtha made changes to the i40e driver to support this new
+> > > interface so that is being included in the measurements.
+> > >
+> > > What performance do you see with the mvneta card? How much are we
+> > > willing to pay for this feature when it is not being used or can we in
+> > > some way selectively turn it on only when needed?  
+> >
+> > Hi Magnus,
+> >
+> > Today I carried out some comparison tests between bpf-next and bpf-next +
+> > xdp_multibuff series on mvneta running xdp_rxq_info sample. Results are
+> > basically aligned:
+> >
+> > bpf-next:
+> > - xdp drop ~ 665Kpps
+> > - xdp_tx   ~ 291Kpps
+> > - xdp_pass ~ 118Kpps
+> >
+> > bpf-next + xdp_multibuff:
+> > - xdp drop ~ 672Kpps
+> > - xdp_tx   ~ 288Kpps
+> > - xdp_pass ~ 118Kpps
+> >
+> > I am not sure if results are affected by the low power CPU, I will run some
+> > tests on ixgbe card.  
+> 
+> Thanks Lorenzo. I made some new runs, this time with i40e driver
+> changes as a new data point. Same baseline as before but with patches
+> [1] and [2] applied. Note
+> that if you use net or net-next and i40e, you need patch [3] too.
+> 
+> The i40e multi-buffer support will be posted on the mailing list as a
+> separate RFC patch so you can reproduce and review.
+> 
+> Note, calculations are performed on non-truncated numbers. So 2 ns
+> might be 5 cycles on my 2.1 GHz machine since 2.49 ns * 2.1 GHz =
+> 5.229 cycles ~ 5 cycles. xdpsock is run in zero-copy mode so it uses
+> the zero-copy driver data path in contrast with xdp_rxq_info that uses
+> the regular driver data path. Only ran the busy-poll 1-core case this
+> time. Reported numbers are the average over 3 runs.
 
-Does anyone have any clue on how to dig into this part of code?  I
-highly suspect that it has something to do with the corruption of
-nulls_list, so the lookup of sk could never break the infinite loop of
-hashinfo.
+Yes, for i40e the xdpsock zero-copy test uses another code path, this
+is something we need to keep in mind. 
 
-These call traces are totally identical attached below:
-[1048271.465028] watchdog: BUG: soft lockup - CPU#20 stuck for 22s!
-[swapper/20:0]
-[1048271.473669] Modules linked in: vxlan ip6_udp_tunnel udp_tunnel
-udp_diag tcp_diag inet_diag nf_conntrack_netlink nfnetlink
-br_netfilter bridge stp llc xt_statistic xt_nat ipt_MASQUERADE
-ipt_REJECT nf_reject_ipv4 xt_mark xt_addrtype xt_comment xt_conntrack
-...
-[1048271.553597] RIP: 0010:__inet_lookup_established+0x5a/0x190
-...
-[1048271.660309] Call Trace:
-[1048271.663135]  <IRQ>
-[1048271.665432]  tcp_v4_early_demux+0xaa/0x150
-[1048271.669812]  ip_rcv_finish+0x171/0x410
-[1048271.673941]  ip_rcv+0x273/0x362
-[1048271.677360]  ? inet_add_protocol.cold.1+0x1e/0x1e
-[1048271.682354]  __netif_receive_skb_core+0xac2/0xbb0
-[1048271.687351]  ? inet_gro_receive+0x22a/0x2d0
-[1048271.692001]  ? ktime_get_with_offset+0x4d/0xc0
-[1048271.696725]  netif_receive_skb_internal+0x42/0xf0
-[1048271.701717]  napi_gro_receive+0xba/0xe0
-[1048271.705839]  receive_buf+0x165/0xa50 [virtio_net]
-[1048271.710839]  ? receive_buf+0x165/0xa50 [virtio_net]
-[1048271.716053]  ? vring_unmap_one+0x16/0x80
-[1048271.720308]  ? detach_buf+0x69/0x110
-[1048271.724218]  virtnet_poll+0xc0/0x2ea [virtio_net]
-[1048271.729202]  net_rx_action+0x149/0x3b0
-[1048271.733234]  __do_softirq+0xe3/0x30a
-[1048271.737095]  irq_exit+0x100/0x110
-[1048271.740882]  do_IRQ+0x85/0xd0
-[1048271.744143]  common_interrupt+0xf/0xf
-[1048271.748104]  </IRQ>
+Also remember that we designed the central xdp_do_redirect() call to
+delay creation of xdp_frame.  This is something what AF_XDP ZC takes
+advantage of.
+Thus, the cost of xdp_buff to xdp_frame conversion is not covered in
+below tests, and I expect this patchset to increase that cost...
+(UPDATE: below XDP_TX actually does xdp_frame conversion)
 
 
-thanks,
-jason
+> multi-buffer patches without any driver changes:
+
+Thanks you *SO* much Magnus for these superb tests.  I absolutely love
+how comprehensive your test results are.  Thanks you for catching the
+performance regression in this patchset. (I for one know how time
+consuming these kind of tests are, I appreciate your effort, a lot!)
+
+> xdpsock rxdrop 1-core:
+> i40e: -4.5% in throughput / +3 ns / +6 cycles
+> ice: -1.5% / +1 ns / +2 cycles
+> 
+> xdp_rxq_info -a XDP_DROP
+> i40e: -2.5% / +2 ns / +3 cycles
+> ice: +6% / -3 ns / -7 cycles
+> 
+> xdp_rxq_info -a XDP_TX
+> i40e: -10% / +15 ns / +32 cycles
+> ice: -9% / +14 ns / +29 cycles
+
+This is a clear performance regression.
+
+Looking closer at driver i40e_xmit_xdp_tx_ring() actually performs a
+xdp_frame conversion calling xdp_convert_buff_to_frame(xdp).
+
+FYI: We have started an offlist thread on finding the root-cause and
+on IRC with Lorenzo.   The current lead is that, as Alexei so wisely
+pointed out in earlier patches, that struct bit access is not
+efficient...
+
+As I expect we soon need bits for HW RX checksum indication, and
+indication if metadata contains BTF described area, I've asked Lorenzo
+to consider this, and look into introducing a flags member. (Then we
+just have to figure out how to make flags access efficient).
+ 
+
+> multi-buffer patches + i40e driver changes from Tirtha:
+> 
+> xdpsock rxdrop 1-core:
+> i40e: -3% / +2 ns / +3 cycles
+> 
+> xdp_rxq_info -a XDP_DROP
+> i40e: -7.5% / +5 ns / +9 cycles
+> 
+> xdp_rxq_info -a XDP_TX
+> i40e: -10% / +15 ns / +32 cycles
+> 
+> Would be great if someone could rerun a similar set of experiments on
+> i40e or ice then
+> report.
+ 
+> [1] https://lists.osuosl.org/pipermail/intel-wired-lan/Week-of-Mon-20210419/024106.html
+> [2] https://lists.osuosl.org/pipermail/intel-wired-lan/Week-of-Mon-20210426/024135.html
+> [3] https://lists.osuosl.org/pipermail/intel-wired-lan/Week-of-Mon-20210426/024129.html
+
+I'm very happy that you/we all are paying attention to keep XDP
+performance intact, as small 'paper-cuts' like +32 cycles does affect
+XDP in the long run. Happy performance testing everybody :-)
+
+-- 
+Best regards,
+  Jesper Dangaard Brouer
+  MSc.CS, Principal Kernel Engineer at Red Hat
+  LinkedIn: http://www.linkedin.com/in/brouer
+
