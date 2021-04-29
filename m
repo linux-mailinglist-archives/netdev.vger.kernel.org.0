@@ -2,44 +2,45 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8A51736F2AF
-	for <lists+netdev@lfdr.de>; Fri, 30 Apr 2021 00:41:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C128C36F2AD
+	for <lists+netdev@lfdr.de>; Fri, 30 Apr 2021 00:41:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229965AbhD2WlC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 29 Apr 2021 18:41:02 -0400
-Received: from mail.kernel.org ([198.145.29.99]:39932 "EHLO mail.kernel.org"
+        id S229886AbhD2WlB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 29 Apr 2021 18:41:01 -0400
+Received: from mail.kernel.org ([198.145.29.99]:39940 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229832AbhD2Wk6 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S229834AbhD2Wk6 (ORCPT <rfc822;netdev@vger.kernel.org>);
         Thu, 29 Apr 2021 18:40:58 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id 610FE61468;
+Received: by mail.kernel.org (Postfix) with ESMTPS id 684AB6146D;
         Thu, 29 Apr 2021 22:40:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1619736010;
-        bh=c+eXr4EiGx0pNDVRYuXh7BbsN9NwutqoMO3Ik0LVDTQ=;
+        bh=kQFx8Pwf7KAmyZVuDu0CSPZWkOVdAGYFuE4Hv0jweNg=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=gOYqxZA4AtYXLeHdrW9GpUTWcRUcVNBMksCSXbxQz8VF5GVXWgfwiUnqpSuhspWpL
-         m0t+n4pPk+gCDWUTNtU6+CxeXtITCy7sc6dgMNrcbryvFV+Qbyb6iOeuoBYwtTfcyO
-         AMordkPsMzzaLH/eZ30nCkw3CY32mqnmvsFNbCcgBBXAE2f0q2WrLEYx21reOmvjZK
-         K30mOFmdkMqpREs6xvKYxmH7Swmj6BPM4yW+gpyWSmKzXxWI1F9sdo+QASlfL/kVRi
-         XJrFRx+LkWebqFQEsN6OLajNYkna06rnUXwvJcZnE47lqwXaEdtVz7AToYQfcUfK+O
-         XjgE7pb+p1JVg==
+        b=INWBvu5ahgW03E8MPEByClQ1ZkRhxh97IovHaixR/0EfpkHqcQ3k1Nvl9EKjv5Y9Q
+         Dp1V1USB56UNO63fuZhfiwcfL15YpT3UqqT5Svahfw2O6eHmhNIRalmrtp/zFaigHg
+         plwp2TIQUQWKhWUwMdYmMAUTo/b8z0Itt0GHmuQu2C3KxPbNUEt03A0DlUxxysVMPa
+         mEg+KSB41dt1d5wJ5y9iI7CzFA5D0TPq97/5QwX8lDiFbJgFBkVW1Vm+MAIlZC8Cgi
+         Z1ARLaB9sJpNdJ/aZSBakmZVIXWbgdzfN9rDzswapPTbQnIiKS0BnD8C9hiiUCBq9+
+         +OJGAfbXuj/rg==
 Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 52FA160A3A;
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 5E87560BCF;
         Thu, 29 Apr 2021 22:40:10 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH] net: Remove redundant assignment to err
+Subject: Re: [PATCH v2] bridge: Fix possible races between assigning
+ rx_handler_data and setting IFF_BRIDGE_PORT bit
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <161973601033.15907.10908329531191250352.git-patchwork-notify@kernel.org>
+Message-Id: <161973601038.15907.11344410460500659654.git-patchwork-notify@kernel.org>
 Date:   Thu, 29 Apr 2021 22:40:10 +0000
-References: <1619659956-9635-1-git-send-email-yang.lee@linux.alibaba.com>
-In-Reply-To: <1619659956-9635-1-git-send-email-yang.lee@linux.alibaba.com>
-To:     Yang Li <yang.lee@linux.alibaba.com>
-Cc:     davem@davemloft.net, yoshfuji@linux-ipv6.org, dsahern@kernel.org,
-        kuba@kernel.org, nathan@kernel.org, ndesaulniers@google.com,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        clang-built-linux@googlegroups.com
+References: <1619620694-12419-1-git-send-email-zhangzhengming@huawei.com>
+In-Reply-To: <1619620694-12419-1-git-send-email-zhangzhengming@huawei.com>
+To:     zhangzhengming <zhangzhengming@huawei.com>
+Cc:     roopa@nvidia.com, nikolay@nvidia.com, davem@davemloft.net,
+        kuba@kernel.org, bridge@lists.linux-foundation.org,
+        netdev@vger.kernel.org, wangxiaogang3@huawei.com,
+        xuhanbing@huawei.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
@@ -48,21 +49,38 @@ Hello:
 
 This patch was applied to netdev/net.git (refs/heads/master):
 
-On Thu, 29 Apr 2021 09:32:36 +0800 you wrote:
-> Variable 'err' is set to -ENOMEM but this value is never read as it is
-> overwritten with a new value later on, hence the 'If statements' and
-> assignments are redundantand and can be removed.
+On Wed, 28 Apr 2021 22:38:14 +0800 you wrote:
+> From: Zhang Zhengming <zhangzhengming@huawei.com>
 > 
-> Cleans up the following clang-analyzer warning:
+> There is a crash in the function br_get_link_af_size_filtered,
+> as the port_exists(dev) is true and the rx_handler_data of dev is NULL.
+> But the rx_handler_data of dev is correct saved in vmcore.
 > 
-> net/ipv6/seg6.c:126:4: warning: Value stored to 'err' is never read
-> [clang-analyzer-deadcode.DeadStores]
+> The oops looks something like:
+>  ...
+>  pc : br_get_link_af_size_filtered+0x28/0x1c8 [bridge]
+>  ...
+>  Call trace:
+>   br_get_link_af_size_filtered+0x28/0x1c8 [bridge]
+>   if_nlmsg_size+0x180/0x1b0
+>   rtnl_calcit.isra.12+0xf8/0x148
+>   rtnetlink_rcv_msg+0x334/0x370
+>   netlink_rcv_skb+0x64/0x130
+>   rtnetlink_rcv+0x28/0x38
+>   netlink_unicast+0x1f0/0x250
+>   netlink_sendmsg+0x310/0x378
+>   sock_sendmsg+0x4c/0x70
+>   __sys_sendto+0x120/0x150
+>   __arm64_sys_sendto+0x30/0x40
+>   el0_svc_common+0x78/0x130
+>   el0_svc_handler+0x38/0x78
+>   el0_svc+0x8/0xc
 > 
 > [...]
 
 Here is the summary with links:
-  - net: Remove redundant assignment to err
-    https://git.kernel.org/netdev/net/c/1a70f6597d5f
+  - [v2] bridge: Fix possible races between assigning rx_handler_data and setting IFF_BRIDGE_PORT bit
+    https://git.kernel.org/netdev/net/c/59259ff7a81b
 
 You are awesome, thank you!
 --
