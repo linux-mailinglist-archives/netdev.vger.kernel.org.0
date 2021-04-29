@@ -2,23 +2,24 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 71BA936F198
-	for <lists+netdev@lfdr.de>; Thu, 29 Apr 2021 23:12:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B8CB636F19F
+	for <lists+netdev@lfdr.de>; Thu, 29 Apr 2021 23:15:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233380AbhD2VNJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 29 Apr 2021 17:13:09 -0400
-Received: from relay8-d.mail.gandi.net ([217.70.183.201]:38833 "EHLO
-        relay8-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233284AbhD2VNI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 29 Apr 2021 17:13:08 -0400
-X-Originating-IP: 78.45.89.65
+        id S233379AbhD2VP6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 29 Apr 2021 17:15:58 -0400
+Received: from relay10.mail.gandi.net ([217.70.178.230]:53573 "EHLO
+        relay10.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232246AbhD2VP5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 29 Apr 2021 17:15:57 -0400
 Received: from [192.168.1.23] (ip-78-45-89-65.net.upcbroadband.cz [78.45.89.65])
         (Authenticated sender: i.maximets@ovn.org)
-        by relay8-d.mail.gandi.net (Postfix) with ESMTPSA id 5AA0F1BF209;
-        Thu, 29 Apr 2021 21:12:14 +0000 (UTC)
-To:     Ilya Maximets <i.maximets@ovn.org>, jean.tourrilhes@hpe.com,
-        Tonghao Zhang <xiangxia.m.yue@gmail.com>
-Cc:     Pravin B Shelar <pshelar@ovn.org>,
+        by relay10.mail.gandi.net (Postfix) with ESMTPSA id BABC3240007;
+        Thu, 29 Apr 2021 21:15:06 +0000 (UTC)
+Subject: Re: [PATCH net] openvswitch: meter: remove rate from the bucket size
+ calculation
+To:     Ilya Maximets <i.maximets@ovn.org>, jean.tourrilhes@hpe.com
+Cc:     Tonghao Zhang <xiangxia.m.yue@gmail.com>,
+        Pravin B Shelar <pshelar@ovn.org>,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>, Andy Zhou <azhou@ovn.org>,
         Linux Kernel Network Developers <netdev@vger.kernel.org>,
@@ -30,145 +31,60 @@ References: <20210421135747.312095-1-i.maximets@ovn.org>
  <CAMDZJNVQ64NEhdfu3Z_EtnVkA2D1DshPzfur2541wA+jZgX+9Q@mail.gmail.com>
  <20210428064553.GA19023@labs.hpe.com>
  <04bd0073-6eb7-6747-a0b1-3c25cca7873a@ovn.org>
+ <20210428163124.GA28950@labs.hpe.com>
+ <22e48984-e0f3-b7d7-9f65-68e93c846c73@ovn.org>
 From:   Ilya Maximets <i.maximets@ovn.org>
-Subject: Re: [PATCH net] openvswitch: meter: remove rate from the bucket size
- calculation
-Message-ID: <e6d2ed86-9088-7d9a-85c3-a8168d213def@ovn.org>
-Date:   Thu, 29 Apr 2021 23:12:13 +0200
+Message-ID: <94576ef8-76b3-67bc-7b55-c1d9513ec31c@ovn.org>
+Date:   Thu, 29 Apr 2021 23:15:06 +0200
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
  Thunderbird/78.8.1
 MIME-Version: 1.0
-In-Reply-To: <04bd0073-6eb7-6747-a0b1-3c25cca7873a@ovn.org>
+In-Reply-To: <22e48984-e0f3-b7d7-9f65-68e93c846c73@ovn.org>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 4/28/21 1:22 PM, Ilya Maximets wrote:
-> On 4/28/21 8:45 AM, Jean Tourrilhes wrote:
->> On Wed, Apr 28, 2021 at 02:24:10PM +0800, Tonghao Zhang wrote:
->>> Hi Ilya
->>> If we set the burst size too small, the meters of ovs don't work.
+On 4/28/21 8:59 PM, Ilya Maximets wrote:
+> On 4/28/21 6:31 PM, Jean Tourrilhes wrote:
+>> On Wed, Apr 28, 2021 at 01:22:12PM +0200, Ilya Maximets wrote:
+>>>
+>>> I didn't test it, but I looked at the implementation in
+>>> net/sched/act_police.c and net/sched/sch_tbf.c, and they should work
+>>> in a same way as this patch, i.e. it's a classic token bucket where
+>>> burst is a burst and nothing else.
 >>
->> 	Most likely, you need to set the burst size larger.
->> 	A quick Google on finding a good burst size :
->> https://www.juniper.net/documentation/us/en/software/junos/routing-policy/topics/concept/policer-mx-m120-m320-burstsize-determining.html
+>> 	Actually, act_police.c and sch_tbf.c will behave completely
+>> differently, even if they are both based on the token bucket
+>> algorithm.
+>> 	The reason is that sch_tbf.c is applied to a queue, and the
+>> queue will smooth out traffic and avoid drops. The token bucket is
+>> used to dequeue the queue, this is sometime called leaky bucket. I've
+>> personally used sch_tbf.c with burst size barely bigger than the MTU,
+>> and it works fine.
 > 
-> +1.
-> Tonghao, If you're configuring burst size too low, meter will not pass
-> packets.  That's expected behavior.  In your example with 1400B packets
-> and 1500B (12 kbit) burst size there is a very high probability that a
-> lot of packets will be dropped and not pass the meter unless you're
-> sending them in a very precise points in time.  I don't think that anyone
-> will recommend setting burst size so close to the MTU.  The article above
-> suggests using 10x MTU value, but I don't know if that will be enough
-> with high speed devices.
+> Makes sense.  Thanks for the clarification!
 > 
->>
->> 	Now, the interesting question, is the behaviour of OVS
->> different from a standard token bucket, such as a kernel policer ?
+>> 	This is why I was suggesting to compare to act_police.c, which
+>> does not have a queue to smooth out traffic and can only drop
+>> packets.
 > 
-> I didn't test it, but I looked at the implementation in
-> net/sched/act_police.c and net/sched/sch_tbf.c, and they should work
-> in a same way as this patch, i.e. it's a classic token bucket where
-> burst is a burst and nothing else.  These implementations uses burst
-> in nanoseconds instead of bytes, but that doesn't matter (nanoseconds
-> calculated from the rate and burst in bytes specified by user).
-> For example, net/sched/act_police.c works like this:
-> 
->   toks = min_t(s64, now - police->tcfp_t_c, p->tcfp_burst);
->           ^---- calculating how many tokens needs to be added 
->   toks += police->tcfp_toks; <-- also adding all existing tokens
->   if (toks > p->tcfp_burst)
->       toks = p->tcfp_burst;  <-- hard limit of tokens by the burst size
->   toks -= (s64)psched_l2t_ns(&p->rate, qdisc_pkt_len(skb));
->         ^-- spending tokens to pass the packet
->   if (toks >= 0) {           <-- Did we have enough tokens?
->       /* Packet passed. */
->       police->tcfp_t_c = now;
->       police->tcfp_toks = toks;
->   }
-> 
-> net/sched/sch_tbf.c works in almost exactly same way.  So, there is
-> *no algorithmic difference* here.
-> 
-> ---
-> 
-> There is one difference though.  I said that it doesn't matter that
-> tc uses time instead of bytes as a measure for tokens, but it actually
-> does matter because time is calculated based on the configured rate,
-> but applied to the actual rate.  Let me explain:
-> 
-> Assuming configuration "rate 200mbit burst 20K" as in example below.
-> iproute2 will calculate burst using tc_calc_xmittime function:
->   https://github.com/shemminger/iproute2/blob/9f366536edb5158343152604e82b968be46dbf26/tc/tc_core.c#L60
-> 
-> So the burst configuration passed to kernel will be:
-> 
->  TIME_UNITS_PER_SEC(1000000) * (20 * 1024) / (200 * 1024*1024/8) = 781 usec
->          10^-6                     bytes           bytes/sec
-> 
-> That means that burst is not 20K bytes as configured, but any number of
-> bytes in 781 usec window regardless of a line rate.
+> I see.  Unfortunately, due to the fact that act_police.c uses time
+> instead of bytes as a measure for tokens, we will still see a difference
+> in behavior.  Probably, not so big, but it will be there and it will
+> depend on a line rate.
 
-OK.  I found my mistake here.  Even though the burst size is in units of
-time, it doesn't matter because, when tokens are consumed, algorithm
-subtracts time needed to pass a packet with a configured rate (see
-psched_l2t_ns() function).  This evens out the difference.
+I found my mistake in calculations (see another reply).  So, there
+should not be significant difference with OVS meters, indeed.
 
-So, everything is perfectly fine here. :)
-
-Sorry for the noise.
-
-> For example, if traffic goes from 10 Gbps interface, effective burst size
-> will be 10^9 / 8 * 781 * 10^-6 = 97K which is almost 5 times higher than
-> the configured value.  And the difference scales linearly with the increase
-> of the line rate speed.  For 100G interface it will be 970K.
 > 
-> It might be much more noticeable with lower configured rate.
-> For "rate 10mbit burst 20K", real burst interval will be 15.6 msec, which
-> will translate into 1.9M burst size for a 10G line rate, which is almost
-> 100 times larger than configured 20K.  And it will be 19M for a 100Gbps
-> interface, making the average rate triple as high as configured for a
-> policer.
-> 
-> All in all this looks more like an issue of TC and iproute implementation.
-> IMHO, tc command should not allow configuration of burst in bytes just
-> because it can not configure that in kernel and therefore can not guarantee
-> that behavior.  Configuration should be in micro/nanoseconds instead.
-> 
-> CC: Cong, Davide
-> Maybe someone from the TC side can comment on that?
-> 
-> We can try to mimic this behavior in OVS, but I'm not sure if it's correct.
-> Current OVS implementation, unlike TC, guarantees the burst size in bytes.
-> And it's also a completely different kind of difference with OVS meters, so
-> unrelated to the current patch.
-> 
-> Best regards, Ilya Maximets.
-> 
->> 	Here is how to set up a kernel policer :
->> ----------------------------------------------------------
->> # Create a dummy classful discipline to attach filter
->> tc qdisc del dev eth6 root
->> tc qdisc add dev eth6 root handle 1: prio bands 2 priomap  0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
->> tc qdisc add dev eth6 parent 1:1 handle 10: pfifo limit 1000
->> tc qdisc add dev eth6 parent 1:2 handle 20: pfifo limit 1000
->> tc -s qdisc show dev eth6
->> tc -s class show dev eth6
->>
->> # Filter to do hard rate limiting
->> tc filter del dev eth6 parent 1: protocol all prio 1 handle 800::100 u32 
->> tc filter add dev eth6 parent 1: protocol all prio 1 handle 800::100 u32 match u32 0 0 police rate 200mbit burst 20K mtu 10000 drop
->> tc -s filter show dev eth6
->> tc filter change dev eth6 parent 1: protocol all prio 1 handle 800::100 u32 match u32 0 0 police rate 200mbit burst 50K mtu 10000 drop
->> ----------------------------------------------------------
+>> 	I believe OVS meters are similar to policers, so that's why
+>> they are suprising for people used to queues such as TBF and HTB.
 >>
 >> 	Regards,
 >>
 >> 	Jean
 >>
-> 
 
