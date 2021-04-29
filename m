@@ -2,137 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AE31A36EB67
-	for <lists+netdev@lfdr.de>; Thu, 29 Apr 2021 15:37:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CED1C36EB88
+	for <lists+netdev@lfdr.de>; Thu, 29 Apr 2021 15:47:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236023AbhD2NiC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 29 Apr 2021 09:38:02 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:38179 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S233602AbhD2Nh7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 29 Apr 2021 09:37:59 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1619703433;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=oDboRQkOzoCD9h6z3QO2oVzBnaw62Fl9cTjPsbU5PWo=;
-        b=Fdo34O9QXSHI4/QtS3ACSJDIdsoiscQgU4MOLbkm9Q26BQhrbGpmZf2eqCv/wA3gS9qAvG
-        GQBUbimQI3ckWpCad6X8yDx/VmvR/1Cyf3gXTYn3E44oDlXb3NStdVCaIz+/gYpftNT6WF
-        oTk6y7+MUwVIXSp35DsoXSp9y7pZ6l4=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-312-thv4uJWtNTeCgLW6A6SJmA-1; Thu, 29 Apr 2021 09:37:10 -0400
-X-MC-Unique: thv4uJWtNTeCgLW6A6SJmA-1
-Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 856F9102C803;
-        Thu, 29 Apr 2021 13:37:08 +0000 (UTC)
-Received: from carbon (unknown [10.36.110.19])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 7B1E660C17;
-        Thu, 29 Apr 2021 13:36:30 +0000 (UTC)
-Date:   Thu, 29 Apr 2021 15:36:29 +0200
-From:   Jesper Dangaard Brouer <brouer@redhat.com>
-To:     Lorenzo Bianconi <lorenzo@kernel.org>
-Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org,
-        lorenzo.bianconi@redhat.com, davem@davemloft.net, kuba@kernel.org,
-        ast@kernel.org, daniel@iogearbox.net, shayagr@amazon.com,
-        sameehj@amazon.com, john.fastabend@gmail.com, dsahern@kernel.org,
-        echaudro@redhat.com, jasowang@redhat.com,
-        alexander.duyck@gmail.com, saeed@kernel.org,
-        maciej.fijalkowski@intel.com, brouer@redhat.com
-Subject: Re: [PATCH v8 bpf-next 01/14] xdp: introduce mb in
- xdp_buff/xdp_frame
-Message-ID: <20210429153629.1fef2386@carbon>
-In-Reply-To: <eef58418ab78408f4a5fbd3d3b0071f30ece2ccd.1617885385.git.lorenzo@kernel.org>
-References: <cover.1617885385.git.lorenzo@kernel.org>
-        <eef58418ab78408f4a5fbd3d3b0071f30ece2ccd.1617885385.git.lorenzo@kernel.org>
+        id S237370AbhD2Nr5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 29 Apr 2021 09:47:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59044 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S237228AbhD2Nr5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 29 Apr 2021 09:47:57 -0400
+Received: from mail-wr1-x42d.google.com (mail-wr1-x42d.google.com [IPv6:2a00:1450:4864:20::42d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2265FC06138B
+        for <netdev@vger.kernel.org>; Thu, 29 Apr 2021 06:47:10 -0700 (PDT)
+Received: by mail-wr1-x42d.google.com with SMTP id z6so5744231wrm.4
+        for <netdev@vger.kernel.org>; Thu, 29 Apr 2021 06:47:10 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=cloudflare.com; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=cSCwrssqX2KhgRx3xuyar2hPuZ63b3AtaEHTCRmhIXc=;
+        b=wTAiuDH5UMv5Ya0FWEUlLhcPW7viwH7fV6AkJ/q0E0Vssm/QYy0wcB7GRydob+SeGG
+         44xTACzVxOAMMC/rCFbilBJR77daBE//5ihtDXR7y5paPZVXEtsa/n2q5lk4gK8zLV0h
+         khnbe532lM54gi1MSLi5RZAsX4fz8OG//lDTU=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=cSCwrssqX2KhgRx3xuyar2hPuZ63b3AtaEHTCRmhIXc=;
+        b=KR0AlqVDKlTKGff0Xn8GoxzIxtsOJt+rp776itV9y01Cc6/9+T7k3c9IJ9YS5Qcz3h
+         dpEV1UgSupCce5vf7I+2SsqzpdIA4dFnQ7HkPsIlHD2oa7I/uNiU347wrQbWVqWFCI+O
+         Ijq+ce2dP5CqHp9mJJ9i4FpQyEKsPM5dtTYjouNL9KM7SDLJSvtgDEVYvx/zS3mWCPXj
+         xnZiXkcypnDUKBmSygn4bt2GMdgDtoOwEObVVd/PiEjVOLbnxgOCqh3bRfDSC1BtH4uE
+         S2v/alTKLfejvWK1zZeyOKsUOnJtpzHZFMdtZIMmQmi9jN2XEM3DULRFfswPCqPQORUY
+         TXTg==
+X-Gm-Message-State: AOAM530nYnuqi5xcZ8VGBmi8g9JNVOaeY11qiJaLo+24V7MydVCNGfEY
+        yi3aYPcLhGURuqp6wl9UmWtTcA==
+X-Google-Smtp-Source: ABdhPJzSKYwVvCe0MrvvKkpRTpexIHtK/H0uEAX8M1P0xEYdxMhAXAYEXFRC2ukkiQfu4xszWaYxRA==
+X-Received: by 2002:a5d:47ce:: with SMTP id o14mr43756298wrc.236.1619704028842;
+        Thu, 29 Apr 2021 06:47:08 -0700 (PDT)
+Received: from localhost.localdomain (8.7.1.e.3.2.9.3.e.a.2.1.c.2.e.4.f.f.6.2.a.5.a.7.0.b.8.0.1.0.0.2.ip6.arpa. [2001:8b0:7a5a:26ff:4e2c:12ae:3923:e178])
+        by smtp.gmail.com with ESMTPSA id x8sm5105592wru.70.2021.04.29.06.47.07
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 29 Apr 2021 06:47:08 -0700 (PDT)
+From:   Lorenz Bauer <lmb@cloudflare.com>
+To:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>
+Cc:     kernel-team@cloudflare.com, Lorenz Bauer <lmb@cloudflare.com>,
+        netdev@vger.kernel.org, bpf@vger.kernel.org
+Subject: [PATCH bpf-next 0/3] Reduce kmalloc / kfree churn in the verifier
+Date:   Thu, 29 Apr 2021 14:46:53 +0100
+Message-Id: <20210429134656.122225-1-lmb@cloudflare.com>
+X-Mailer: git-send-email 2.27.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu,  8 Apr 2021 14:50:53 +0200
-Lorenzo Bianconi <lorenzo@kernel.org> wrote:
+github.com/cilium/ebpf runs integration tests with libbpf in a vm on CI.
+I recently did some work to increase the code coverage from that, and
+started experiencing OOM-kills in the VM. That led me down a rabbit
+hole looking at verifier memory allocation patterns. I didn't figure out
+what triggered the OOM-kills but refactored some often called memory
+allocation code.
 
-> Introduce multi-buffer bit (mb) in xdp_frame/xdp_buffer data structure
-> in order to specify if this is a linear buffer (mb = 0) or a multi-buffer
-> frame (mb = 1). In the latter case the shared_info area at the end of the
-> first buffer will be properly initialized to link together subsequent
-> buffers.
-> 
-> Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
-> ---
->  include/net/xdp.h | 11 +++++++++--
->  1 file changed, 9 insertions(+), 2 deletions(-)
-> 
-> diff --git a/include/net/xdp.h b/include/net/xdp.h
-> index a5bc214a49d9..842580a61563 100644
-> --- a/include/net/xdp.h
-> +++ b/include/net/xdp.h
-> @@ -73,7 +73,10 @@ struct xdp_buff {
->  	void *data_hard_start;
->  	struct xdp_rxq_info *rxq;
->  	struct xdp_txq_info *txq;
-> -	u32 frame_sz; /* frame size to deduce data_hard_end/reserved tailroom*/
-> +	u32 frame_sz:31; /* frame size to deduce data_hard_end/reserved
-> +			  * tailroom
-> +			  */
-> +	u32 mb:1; /* xdp non-linear buffer */
->  };
->  
->  static __always_inline void
-> @@ -81,6 +84,7 @@ xdp_init_buff(struct xdp_buff *xdp, u32 frame_sz, struct xdp_rxq_info *rxq)
->  {
->  	xdp->frame_sz = frame_sz;
->  	xdp->rxq = rxq;
-> +	xdp->mb = 0;
->  }
->  
->  static __always_inline void
-> @@ -116,7 +120,8 @@ struct xdp_frame {
->  	u16 len;
->  	u16 headroom;
->  	u32 metasize:8;
-> -	u32 frame_sz:24;
-> +	u32 frame_sz:23;
-> +	u32 mb:1; /* xdp non-linear frame */
->  	/* Lifetime of xdp_rxq_info is limited to NAPI/enqueue time,
->  	 * while mem info is valid on remote CPU.
->  	 */
+The key insight is that often times we don't need to do a full kfree /
+kmalloc, but can instead just reallocate. The first patch adds two helpers
+which do just that for the use cases in the verifier, which are sufficiently
+different that they can't use stock krealloc_array and friends.
 
-So, it seems that these bitfield's are the root-cause of the
-performance regression.  Credit to Alexei whom wisely already point
-this out[1] in V2 ;-)
+The series makes bpf_verif_scale about 10% faster in my VM set up, which
+is especially noticeable when running with KASAN enabled.
 
-[1] https://lore.kernel.org/netdev/20200904010705.jm6dnuyj3oq4cpjd@ast-mbp.dhcp.thefacebook.com/
+Lorenz Bauer (3):
+  bpf: verifier: improve function state reallocation
+  bpf: verifier: use copy_array for jmp_history
+  bpf: verifier: allocate idmap scratch in verifier env
 
-
-> @@ -179,6 +184,7 @@ void xdp_convert_frame_to_buff(struct xdp_frame *frame, struct xdp_buff *xdp)
->  	xdp->data_end = frame->data + frame->len;
->  	xdp->data_meta = frame->data - frame->metasize;
->  	xdp->frame_sz = frame->frame_sz;
-> +	xdp->mb = frame->mb;
->  }
->  
->  static inline
-> @@ -205,6 +211,7 @@ int xdp_update_frame_from_buff(struct xdp_buff *xdp,
->  	xdp_frame->headroom = headroom - sizeof(*xdp_frame);
->  	xdp_frame->metasize = metasize;
->  	xdp_frame->frame_sz = xdp->frame_sz;
-> +	xdp_frame->mb = xdp->mb;
->  
->  	return 0;
->  }
+ include/linux/bpf_verifier.h |   8 ++
+ kernel/bpf/verifier.c        | 254 +++++++++++++++++------------------
+ 2 files changed, 128 insertions(+), 134 deletions(-)
 
 -- 
-Best regards,
-  Jesper Dangaard Brouer
-  MSc.CS, Principal Kernel Engineer at Red Hat
-  LinkedIn: http://www.linkedin.com/in/brouer
+2.27.0
 
