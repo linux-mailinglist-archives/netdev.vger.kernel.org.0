@@ -2,65 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9B79E36EC48
-	for <lists+netdev@lfdr.de>; Thu, 29 Apr 2021 16:22:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D6C4D36ECBC
+	for <lists+netdev@lfdr.de>; Thu, 29 Apr 2021 16:50:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240110AbhD2OW4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 29 Apr 2021 10:22:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38790 "EHLO
+        id S240800AbhD2Ou3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 29 Apr 2021 10:50:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45016 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235277AbhD2OWz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 29 Apr 2021 10:22:55 -0400
-Received: from mail-wr1-x431.google.com (mail-wr1-x431.google.com [IPv6:2a00:1450:4864:20::431])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5843CC06138B;
-        Thu, 29 Apr 2021 07:22:09 -0700 (PDT)
-Received: by mail-wr1-x431.google.com with SMTP id k14so17214120wrv.5;
-        Thu, 29 Apr 2021 07:22:09 -0700 (PDT)
+        with ESMTP id S240747AbhD2Ou2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 29 Apr 2021 10:50:28 -0400
+Received: from mail-wm1-x32f.google.com (mail-wm1-x32f.google.com [IPv6:2a00:1450:4864:20::32f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6BF8FC06138B
+        for <netdev@vger.kernel.org>; Thu, 29 Apr 2021 07:49:41 -0700 (PDT)
+Received: by mail-wm1-x32f.google.com with SMTP id f15-20020a05600c4e8fb029013f5599b8a9so9491764wmq.1
+        for <netdev@vger.kernel.org>; Thu, 29 Apr 2021 07:49:41 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:to:cc:references:from:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=qDWlTWZN3YRYxgpxukOp3NqceBd1We39+J5PingM1kw=;
-        b=V3GKt1Y2QrlJVQqxNA27KIVl/j9xHN51tKLu1hVtuTo/97E8TnGBanQiq35H5PmpbX
-         UW+IV242Bi3McG8gOfuYhdZjy1jl9YwgPH4MMzlRsgZAoBTMsWl89zFbADvSO6Nlrpgx
-         mYJBP7PlxCEFCi9XxiyS2l+JwlVXkP8yzErGRFGv9+yAS2AB7owF332pEqr9P6qeAezo
-         /kaCHYRQ2UqT3mUstWFHkqwk7er19ijvbuJsb30yKTmfcf8F3ntk7IiucBIKrgqfr7p6
-         cMuTY5iSrX9dFx0WBPIurzg39PWkzXrTlkOCinKxS9RVl3LeVrrfg9fJV6wpyxKZByg6
-         0EMA==
+        bh=Vf/4RFWT0jjFBhBsGq2YtUf3ZoV1qc5jW+Bh/WyGB0w=;
+        b=cYDnnbpcCvqASAl8qN3wgPuSkl40wXiHwDg53H+H9Ye5g8JC3AHNKPz8x07dhFPkcr
+         3c/MUbEZAHciVmWuxXWX39/MVgBCddmNHiQX70II1dVsy/alAMVQw878e70GBtZHAIvj
+         xXFRMIJKmdAm6V9q1xsyMWweYuJlcj5atqr3FO0Z5Mp2VnDRn6+m7c0ClfFWvAup221y
+         AvMKhmDGacgEy6n79/xJtW94DUKGUgirzbHlHEFtgYC6QShz8vyBx150H4mlS+1Nw+ts
+         p4n3W7ynosMim+hPr/8Gh6I9OXqYvt+YIJhAVule+TnZJDIS/Nx7I+0ERY27QsP2SMqT
+         ShXg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:message-id:date
          :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=qDWlTWZN3YRYxgpxukOp3NqceBd1We39+J5PingM1kw=;
-        b=bxODPCrkVovnEvXNCRrwL3n5qQT76Rhoy3YL0QNCyAKP1kky61y4SyWcXKUBZAcOxH
-         nmjoTlFWoZxXBQ8M+YXYujIrxdlCRB1aIqXRL472/+RBrC0C0Lm2b70ZzuAdyGFUMmVf
-         HRQ5tBlp3UQpUGdfUjI5y1muUfM5C916gZ3NCwJUVBqnHl1NQdHMsJ8LFXX4Ia0rba7p
-         nKtCgmPE+bjR/2afLsgBdAhwCN5rcQt5Vg3lRZrkC0YJTMvCreWOcwSEcaQFyF/QrUnF
-         MEXEUE+YSYGKEMJgU6El7+e/onUPJEtWbHK2z3l7Ag3k+QN5zzDPx8f821kHegw7LigG
-         meVQ==
-X-Gm-Message-State: AOAM531+dgS0R9ReoEIoFo6aXktVXaFhpCMe3NAQCxgpz2WaqCQ/3qVG
-        SK9QSI/AJtctLTUXTVkljrZSExr5bbCcAA==
-X-Google-Smtp-Source: ABdhPJw2A1vmsqY0F3Yn3gwmSWt4UmANo+G+jd0yB9Y/p7/rWIyJ+UIDVp8/gaFchABkQQMljDTxlA==
-X-Received: by 2002:a5d:53c9:: with SMTP id a9mr70098wrw.108.1619706128110;
-        Thu, 29 Apr 2021 07:22:08 -0700 (PDT)
+        bh=Vf/4RFWT0jjFBhBsGq2YtUf3ZoV1qc5jW+Bh/WyGB0w=;
+        b=fUH31a1T3HL4cuFBgvzPRezuWPEcSeGi4rvgJ0YscvrDv9QEKGiMagh9XOxb4BJElD
+         3nkMIl5Y33xv4peXdPwi1yzxg85W0Fr5TtBIp9uCSY1XZXpIPhCybCYM428DA9bhBQYE
+         K1j/ramJV730R5EFVr+fbCijGSLSZkY8rQ3jftCJvRowuQgvbSxsezZlyEQYfeS/T+eS
+         nnj4nbVtRrHtqv5/gibYlxuE+kkWHlm4jt1AGepHqF+WgCWNwPgsC3BueMZ74jZz+pdE
+         Dm76/cBQIAamk9lq9sKgVkHo0INERrM0Z7sEIHxze6Avzig7uy3NdwT8tPLk2mGcBLBT
+         GNjg==
+X-Gm-Message-State: AOAM533JNOKQvxgYaoixbysPCL+8mvxSo3WE7zpu6YKJBWMvr1tegNJo
+        svyKFjW7k+h5iAhOcUEb6MA=
+X-Google-Smtp-Source: ABdhPJwnIdtbvlLNG5VcHwf8jYODpuP5i+R/CTuU+zMUHccANLP8ufmpn4LhoCbjs2Lt5LTBBXuaCg==
+X-Received: by 2002:a1c:2c0a:: with SMTP id s10mr10762926wms.158.1619707780129;
+        Thu, 29 Apr 2021 07:49:40 -0700 (PDT)
 Received: from [192.168.1.122] (cpc159425-cmbg20-2-0-cust403.5-4.cable.virginm.net. [86.7.189.148])
-        by smtp.gmail.com with ESMTPSA id v4sm192184wme.14.2021.04.29.07.22.07
+        by smtp.gmail.com with ESMTPSA id c15sm5375024wrr.3.2021.04.29.07.49.39
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 29 Apr 2021 07:22:07 -0700 (PDT)
-Subject: Re: [PATCH] sfc: adjust efx->xdp_tx_queue_count with the real number
- of initialized queues
-To:     Ignat Korchagin <ignat@cloudflare.com>, habetsm.xilinx@gmail.com,
-        davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org
-Cc:     kernel-team@cloudflare.com, stable@vger.kernel.org
-References: <20210427210938.661700-1-ignat@cloudflare.com>
+        Thu, 29 Apr 2021 07:49:39 -0700 (PDT)
+Subject: Re: ethtool features: tx-udp_tnl-csum-segmentation and
+ tx-udp_tnl-segmentation
+To:     Aya Levin <ayal@nvidia.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jonathan Corbet <corbet@lwn.net>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Saeed Mahameed <saeedm@nvidia.com>
+Cc:     Tariq Toukan <tariqt@nvidia.com>, Moshe Shemesh <moshe@nvidia.com>,
+        Maria Pasechnik <mariap@nvidia.com>
+References: <c4cd5df8-2a16-6c31-8a13-4d36b51ba13b@nvidia.com>
 From:   Edward Cree <ecree.xilinx@gmail.com>
-Message-ID: <a56546ee-87a1-f13d-8b2f-25497828f299@gmail.com>
-Date:   Thu, 29 Apr 2021 15:22:06 +0100
+Message-ID: <77f09431-d80f-e9d0-7e08-3ab7bf4680d8@gmail.com>
+Date:   Thu, 29 Apr 2021 15:49:38 +0100
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
  Thunderbird/78.5.0
 MIME-Version: 1.0
-In-Reply-To: <20210427210938.661700-1-ignat@cloudflare.com>
+In-Reply-To: <c4cd5df8-2a16-6c31-8a13-4d36b51ba13b@nvidia.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-GB
 Content-Transfer-Encoding: 7bit
@@ -68,30 +73,26 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 27/04/2021 22:09, Ignat Korchagin wrote:
-> efx->xdp_tx_queue_count is initially initialized to num_possible_cpus() and is
-> later used to allocate and traverse efx->xdp_tx_queues lookup array. However,
-> we may end up not initializing all the array slots with real queues during
-> probing. This results, for example, in a NULL pointer dereference, when running
-> "# ethtool -S <iface>", similar to below
+On 29/04/2021 10:16, Aya Levin wrote:
+> I see a strange behavior when toggling feature flags:
+> (1) tx-udp_tnl-csum-segmentation
+> (2) tx-udp_tnl-segmentation
 ...
-> diff --git a/drivers/net/ethernet/sfc/efx_channels.c b/drivers/net/ethernet/sfc/efx_channels.c
-> index 1bfeee283ea9..a3ca406a3561 100644
-> --- a/drivers/net/ethernet/sfc/efx_channels.c
-> +++ b/drivers/net/ethernet/sfc/efx_channels.c
-> @@ -914,6 +914,8 @@ int efx_set_channels(struct efx_nic *efx)
->  			}
->  		}
->  	}
-> +	if (xdp_queue_number)
-Wait, why is this guard condition needed?
-What happens if we had nonzero efx->xdp_tx_queue_count initially, but we end up
- with no TXQs available for XDP at all (so xdp_queue_number == 0)?
+> What is the role of each feature flag?
+IIRC, tx-udp_tnl-segmentation controls whether to do TSO on packets that don't
+ have an outer checksum to offload, whereas tx-udp_tnl-csum-segmentation controls
+ the same for packets that _do_ need outer checksum offload.  The difference
+ being whether gso_type is SKB_GSO_UDP_TUNNEL or SKB_GSO_UDP_TUNNEL_CSUM.
+
+To a first approximation there's one feature flag for each SKB_GSO_* bit, and if
+ an skb's gso_type requires a feature that's not enabled on the device, the core
+ will segment that skb in software before handing it to the driver.
+
+Documentation/networking/segmentation-offloads.rst may also be useful to read if
+ you haven't already.
+
+(And note that the kernel's favourite way for hardware to behave is to instead
+ provide GSO_PARTIAL offload / tx-gso-partial, rather than doing protocol-
+ ossified offloads for specific kinds of tunnels.)
 
 -ed
-> +		efx->xdp_tx_queue_count = xdp_queue_number;
->  
->  	rc = netif_set_real_num_tx_queues(efx->net_dev, efx->n_tx_channels);
->  	if (rc)
-> 
-
