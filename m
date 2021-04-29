@@ -2,74 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9767B36F22E
-	for <lists+netdev@lfdr.de>; Thu, 29 Apr 2021 23:39:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3F4EE36F239
+	for <lists+netdev@lfdr.de>; Thu, 29 Apr 2021 23:44:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237397AbhD2Vkf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 29 Apr 2021 17:40:35 -0400
-Received: from mail-ot1-f45.google.com ([209.85.210.45]:40591 "EHLO
-        mail-ot1-f45.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234837AbhD2Vke (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 29 Apr 2021 17:40:34 -0400
-Received: by mail-ot1-f45.google.com with SMTP id g4-20020a9d6b040000b029029debbbb3ecso29740655otp.7;
-        Thu, 29 Apr 2021 14:39:46 -0700 (PDT)
+        id S237482AbhD2Vow (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 29 Apr 2021 17:44:52 -0400
+Received: from mail-ot1-f53.google.com ([209.85.210.53]:39930 "EHLO
+        mail-ot1-f53.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S237337AbhD2Vov (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 29 Apr 2021 17:44:51 -0400
+Received: by mail-ot1-f53.google.com with SMTP id 65-20020a9d03470000b02902808b4aec6dso57951010otv.6;
+        Thu, 29 Apr 2021 14:44:04 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to;
-        bh=ygg2abr5faBENjSA5cFW+vOjsCf4TS2eA4+Ztp3hH6Y=;
-        b=fYPoHL4ALbb59vpT1/hMXJYldzwt6BCzKa31CH6UK97vJq65VC/GRd7+5iNDsV/Quc
-         sRH+w6pYa0LRkHSzNgt4mw9ekdjlsCRIx2J9nt9Jo3yqppG7SmhP8ijpW8EF5mBOvT4o
-         /JnOAhaDa7Lqpp0a24pCJfe7VEQrFbQoSBbXVnYbD3cZFtvELUAgnOnoJ80tSmM5D86l
-         PAuUT6usX519MJJ7COoN7/9tB0/0jWvFb2UZmQqLvONscmL0tcUDelnQeBkdQiyf4qhj
-         yYKSXziJwhrzX2UfjOGiWS/Oi/kTxuWhtB78cTApNXXv9Av1PpemlYkvooI54YwniTxc
-         0Sog==
-X-Gm-Message-State: AOAM533jwbNtLV1eGQsN6A4GNz2bJfCml3+6EqRNCK1lmqWV9fgHYf58
-        NyPlPLQUKE2qrp/jfChz8w==
-X-Google-Smtp-Source: ABdhPJxvyUt/FmdFovkVBDpqigYwZi3sUxtRqVRmJ6uExAHHE86O3Y5qLrUd3IEKj70i6AA79+wgZQ==
-X-Received: by 2002:a05:6830:1ac5:: with SMTP id r5mr1178763otc.34.1619732385868;
-        Thu, 29 Apr 2021 14:39:45 -0700 (PDT)
+        bh=NUjEHeIYS+Jp7nmJYchYeYeVG/hrdkNydZypiWccS9s=;
+        b=kOY/RVEysATDvVco7+Esy/gTMSrzLFnSxaEoshvzDZvGDfsQrxq2og7SCvjue2k/5W
+         YWLyIbS3C08pQLFVHPuKM1s7BwydxlQij3ULFQwxev3StMzp2r/YWgWONPd7kMD02vm6
+         esTkH2pThrXHn9mCJLKR5xwIlOkiyQdHQa5edLieg2taRowmjEdQw/tXfS2xPceKRBxq
+         hDcWQTBpCrC1Mp0FThjIKR4Irt6pXa3irGx9nLi82Uni5N3K1LSCuO68JtlSRatb1U1w
+         AIosgjTuoQQXvucBV71fWWsYHhKJsMThpqc3DOpIdCUEXF9xDAnadAM/wodL0wMLT5LR
+         8bKg==
+X-Gm-Message-State: AOAM530ZkyUd3iiaxddJ41btOOjhlhShzutaorPYXcxOyAZG76e47FMo
+        q6N4P95djq5KxNUNGrQWtA==
+X-Google-Smtp-Source: ABdhPJygXojSe2J50XKBCo08TPZKWp/owhJaMfn7/8jv8UHyFyjpFTCS737KNSxaEN0EW0zI7vvFRw==
+X-Received: by 2002:a9d:46f:: with SMTP id 102mr1145972otc.218.1619732644218;
+        Thu, 29 Apr 2021 14:44:04 -0700 (PDT)
 Received: from robh.at.kernel.org (24-155-109-49.dyn.grandenetworks.net. [24.155.109.49])
-        by smtp.gmail.com with ESMTPSA id k20sm275236ook.26.2021.04.29.14.39.44
+        by smtp.gmail.com with ESMTPSA id q130sm276601oif.40.2021.04.29.14.44.02
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 29 Apr 2021 14:39:45 -0700 (PDT)
-Received: (nullmailer pid 1822853 invoked by uid 1000);
-        Thu, 29 Apr 2021 21:39:43 -0000
-Date:   Thu, 29 Apr 2021 16:39:43 -0500
+        Thu, 29 Apr 2021 14:44:03 -0700 (PDT)
+Received: (nullmailer pid 1828784 invoked by uid 1000);
+        Thu, 29 Apr 2021 21:44:02 -0000
+Date:   Thu, 29 Apr 2021 16:44:02 -0500
 From:   Rob Herring <robh@kernel.org>
-To:     Ezequiel Garcia <ezequiel@collabora.com>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        Rob Herring <robh+dt@kernel.org>,
-        Johan Jonker <jbx6244@gmail.com>, kernel@collabora.com,
-        linux-rockchip@lists.infradead.org,
-        Jose Abreu <joabreu@synopsys.com>,
-        David Wu <david.wu@rock-chips.com>,
-        Peter Geis <pgwipeout@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Kever Yang <kever.yang@rock-chips.com>,
-        Heiko Stuebner <heiko@sntech.de>, netdev@vger.kernel.org,
+To:     patchwork-bot+netdevbpf@kernel.org
+Cc:     Linus Walleij <linus.walleij@linaro.org>, netdev@vger.kernel.org,
+        davem@davemloft.net, andrew@lunn.ch, hkallweit1@gmail.com,
+        linux@armlinux.org.uk, wigyori@uid0.hu, rayknight@me.com,
         devicetree@vger.kernel.org
-Subject: Re: [PATCH 2/3] dt-bindings: net: dwmac: Add Rockchip DWMAC support
-Message-ID: <20210429213943.GA1822801@robh.at.kernel.org>
-References: <20210426024118.18717-1-ezequiel@collabora.com>
- <20210426024118.18717-2-ezequiel@collabora.com>
+Subject: Re: [PATCH 1/3 net-next v4] net: ethernet: ixp4xx: Add DT bindings
+Message-ID: <20210429214402.GA1823812@robh.at.kernel.org>
+References: <20210425003038.2937498-1-linus.walleij@linaro.org>
+ <161940061597.7794.15882879498463210620.git-patchwork-notify@kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20210426024118.18717-2-ezequiel@collabora.com>
+In-Reply-To: <161940061597.7794.15882879498463210620.git-patchwork-notify@kernel.org>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, 25 Apr 2021 23:41:17 -0300, Ezequiel Garcia wrote:
-> Add Rockchip DWMAC controllers, which are based on snps,dwmac.
-> Some of the SoCs require up to eight clocks, so maxItems
-> for clocks and clock-names need to be increased.
+On Mon, Apr 26, 2021 at 01:30:15AM +0000, patchwork-bot+netdevbpf@kernel.org wrote:
+> Hello:
 > 
-> Signed-off-by: Ezequiel Garcia <ezequiel@collabora.com>
-> ---
->  .../devicetree/bindings/net/snps,dwmac.yaml         | 13 +++++++++++--
->  1 file changed, 11 insertions(+), 2 deletions(-)
+> This series was applied to netdev/net-next.git (refs/heads/master):
 > 
+> On Sun, 25 Apr 2021 02:30:36 +0200 you wrote:
+> > This adds device tree bindings for the IXP4xx ethernet
+> > controller with optional MDIO bridge.
+> > 
+> > Cc: Zoltan HERPAI <wigyori@uid0.hu>
+> > Cc: Raylynn Knight <rayknight@me.com>
+> > Cc: devicetree@vger.kernel.org
+> > Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
+> > 
+> > [...]
+> 
+> Here is the summary with links:
+>   - [1/3,net-next,v4] net: ethernet: ixp4xx: Add DT bindings
+>     https://git.kernel.org/netdev/net-next/c/48ac0b5805dd
+>   - [2/3,net-next,v4] net: ethernet: ixp4xx: Retire ancient phy retrieveal
+>     https://git.kernel.org/netdev/net-next/c/3e8047a98553
+>   - [3/3,net-next,v4] net: ethernet: ixp4xx: Support device tree probing
+>     https://git.kernel.org/netdev/net-next/c/95aafe911db6
 
-Acked-by: Rob Herring <robh@kernel.org>
+What happened to net-next being closed during the merge window? Oh 
+well, I'm sure someone is checking the schemas...
+
+Rob
