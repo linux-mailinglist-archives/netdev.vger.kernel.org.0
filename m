@@ -2,68 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 756FD36F2C3
-	for <lists+netdev@lfdr.de>; Fri, 30 Apr 2021 01:00:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9FA9636F2C1
+	for <lists+netdev@lfdr.de>; Fri, 30 Apr 2021 01:00:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229843AbhD2XBC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 29 Apr 2021 19:01:02 -0400
-Received: from mail.kernel.org ([198.145.29.99]:44056 "EHLO mail.kernel.org"
+        id S229757AbhD2XA7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 29 Apr 2021 19:00:59 -0400
+Received: from mail.kernel.org ([198.145.29.99]:44050 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229609AbhD2XA6 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S229573AbhD2XA6 (ORCPT <rfc822;netdev@vger.kernel.org>);
         Thu, 29 Apr 2021 19:00:58 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id D458061476;
+Received: by mail.kernel.org (Postfix) with ESMTPS id BFE6061468;
         Thu, 29 Apr 2021 23:00:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1619737210;
-        bh=VmQwPldmlN2nyv3cnGWLqCsvMgb7xgrToKOX+Ho0tE0=;
+        bh=ZilS3bhB0076Cz+8DUnKVvGYa5xENtraP9I3PdiPgms=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=ckGGHShyvUtvil0ENv0LDYksqTZ1O9GMe1Xd4z+j29OCvu7O6wWM6q3pBhhBDdFX7
-         83/25YrgVQNATilbaA3Ighhvf4MKcr8nYUdMKeJP+gvi37HXgxnb7jxt3SSGXNeYS3
-         xohSNIDMBVq0eLpV7Y/u3f1kzIcqGUGaqlmoLj8mwD81k3z1Z2JNDmOlh1+lZqRFxS
-         purCF0Y4MYPKREOcWhKfbx9Izx8tBHmbjmKqo5BegbTcnmQTcDymVz7QrmprhXa2mu
-         T5rFmCQ+Py9NjlUfSmIVRqMDNkOgFBl3SftTOzpbnH/PPdMd9/A5+84oXZWGk6AlB2
-         gh/DoxNGBhI0w==
+        b=ESxSVRLHzWdiUtM8In9/Dqb+onGH1mTS/Nm2sna+7r2cCvKoLSBnNw+3WqUBDTCNQ
+         CALi4ip80XeQOnUOUPjUVwQxwcQzlSk1ZHv5/FncpJqoisquFiDM+Vsl/knNrFQ2c3
+         Gcc3E0UrHqpMZj3xH6DMzD4eh0ARBMHTa/xd9WkBcFPKFAeVJVJryoi8n/Mly2BRfQ
+         GbDd1J3rj8wYL9nOU3Kwn1JuJVTVNcXizfQpflEo4vbwhCQMIJYUPM1Id6bi5HDxlY
+         /eZ+De5oaWrGSvgEAuvTG+FZnMnZofJtYjTx3EHmpVNGb/lCrB4I6ACJoWPtirSvJJ
+         FEmp6Wa3uq8iQ==
 Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id C888260A3A;
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id B168A60A23;
         Thu, 29 Apr 2021 23:00:10 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH] net: macb: Remove redundant assignment to queue
+Subject: Re: [PATCH net-next v1 1/3] net: dsa: ksz: ksz8863_smi_probe: fix
+ possible NULL pointer dereference
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <161973721081.25365.11886420591596326237.git-patchwork-notify@kernel.org>
+Message-Id: <161973721072.25365.2784091124500418024.git-patchwork-notify@kernel.org>
 Date:   Thu, 29 Apr 2021 23:00:10 +0000
-References: <1619691946-90305-1-git-send-email-jiapeng.chong@linux.alibaba.com>
-In-Reply-To: <1619691946-90305-1-git-send-email-jiapeng.chong@linux.alibaba.com>
-To:     Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
-Cc:     nicolas.ferre@microchip.com, claudiu.beznea@microchip.com,
-        davem@davemloft.net, kuba@kernel.org, linux@armlinux.org.uk,
-        palmer@dabbelt.com, paul.walmsley@sifive.com,
+References: <20210429110833.2181-1-o.rempel@pengutronix.de>
+In-Reply-To: <20210429110833.2181-1-o.rempel@pengutronix.de>
+To:     Oleksij Rempel <o.rempel@pengutronix.de>
+Cc:     woojung.huh@microchip.com, UNGLinuxDriver@microchip.com,
+        andrew@lunn.ch, f.fainelli@gmail.com, vivien.didelot@gmail.com,
+        olteanv@gmail.com, davem@davemloft.net, kuba@kernel.org,
+        colin.king@canonical.com, kernel@pengutronix.de,
         netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-riscv@lists.infradead.org
+        linux@armlinux.org.uk, m.grzeschik@pengutronix.de
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 Hello:
 
-This patch was applied to netdev/net.git (refs/heads/master):
+This series was applied to netdev/net.git (refs/heads/master):
 
-On Thu, 29 Apr 2021 18:25:46 +0800 you wrote:
-> Variable queue is set to bp->queues but these values is not used as it
-> is overwritten later on, hence redundant assignment  can be removed.
+On Thu, 29 Apr 2021 13:08:31 +0200 you wrote:
+> Fix possible NULL pointer dereference in case devm_kzalloc() failed to
+> allocate memory.
 > 
-> Cleans up the following clang-analyzer warning:
-> 
-> drivers/net/ethernet/cadence/macb_main.c:4919:21: warning: Value stored
-> to 'queue' during its initialization is never read
-> [clang-analyzer-deadcode.DeadStores].
+> Fixes: 60a364760002 ("net: dsa: microchip: Add Microchip KSZ8863 SMI based driver support")
+> Reported-by: Colin Ian King <colin.king@canonical.com>
+> Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
 > 
 > [...]
 
 Here is the summary with links:
-  - net: macb: Remove redundant assignment to queue
-    https://git.kernel.org/netdev/net/c/bbf6acea6ecf
+  - [net-next,v1,1/3] net: dsa: ksz: ksz8863_smi_probe: fix possible NULL pointer dereference
+    https://git.kernel.org/netdev/net/c/d27f0201b93c
+  - [net-next,v1,2/3] net: dsa: ksz: ksz8795_spi_probe: fix possible NULL pointer dereference
+    https://git.kernel.org/netdev/net/c/ba46b576a795
+  - [net-next,v1,3/3] net: dsa: ksz: ksz8863_smi_probe: set proper return value for ksz_switch_alloc()
+    https://git.kernel.org/netdev/net/c/d4eecfb28b96
 
 You are awesome, thank you!
 --
