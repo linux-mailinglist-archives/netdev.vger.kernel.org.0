@@ -2,346 +2,202 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 67FEB36F049
-	for <lists+netdev@lfdr.de>; Thu, 29 Apr 2021 21:25:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DF92336F069
+	for <lists+netdev@lfdr.de>; Thu, 29 Apr 2021 21:25:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230185AbhD2TR7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 29 Apr 2021 15:17:59 -0400
-Received: from mx0a-0016f401.pphosted.com ([67.231.148.174]:24468 "EHLO
-        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S239594AbhD2TM2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 29 Apr 2021 15:12:28 -0400
-Received: from pps.filterd (m0045849.ppops.net [127.0.0.1])
-        by mx0a-0016f401.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 13TJ6QMN019652;
-        Thu, 29 Apr 2021 12:11:32 -0700
-Received: from dc5-exch02.marvell.com ([199.233.59.182])
-        by mx0a-0016f401.pphosted.com with ESMTP id 387erumw77-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Thu, 29 Apr 2021 12:11:32 -0700
-Received: from DC5-EXCH01.marvell.com (10.69.176.38) by DC5-EXCH02.marvell.com
- (10.69.176.39) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Thu, 29 Apr
- 2021 12:11:30 -0700
-Received: from lbtlvb-pcie154.il.qlogic.org (10.69.176.80) by
- DC5-EXCH01.marvell.com (10.69.176.38) with Microsoft SMTP Server id
- 15.0.1497.2 via Frontend Transport; Thu, 29 Apr 2021 12:11:27 -0700
-From:   Shai Malin <smalin@marvell.com>
-To:     <netdev@vger.kernel.org>, <linux-nvme@lists.infradead.org>,
-        <sagi@grimberg.me>, <hch@lst.de>, <axboe@fb.com>,
-        <kbusch@kernel.org>
-CC:     =?UTF-8?q?David=20S=20=2E=20Miller=20davem=20=40=20davemloft=20=2E=20net=20=C2=A0--cc=3DJakub=20Kicinski?= 
-        <kuba@kernel.org>, <smalin@marvell.com>, <aelior@marvell.com>,
-        <mkalderon@marvell.com>, <okulkarni@marvell.com>,
-        <pkushwaha@marvell.com>, <malin1024@gmail.com>
-Subject: [RFC PATCH v4 27/27] qedn: Add support of ASYNC
-Date:   Thu, 29 Apr 2021 22:09:26 +0300
-Message-ID: <20210429190926.5086-28-smalin@marvell.com>
-X-Mailer: git-send-email 2.16.6
-In-Reply-To: <20210429190926.5086-1-smalin@marvell.com>
-References: <20210429190926.5086-1-smalin@marvell.com>
+        id S231360AbhD2TYr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 29 Apr 2021 15:24:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48260 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234176AbhD2TUQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 29 Apr 2021 15:20:16 -0400
+Received: from mail-wr1-x430.google.com (mail-wr1-x430.google.com [IPv6:2a00:1450:4864:20::430])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 46047C06138B;
+        Thu, 29 Apr 2021 12:19:28 -0700 (PDT)
+Received: by mail-wr1-x430.google.com with SMTP id t18so10447261wry.1;
+        Thu, 29 Apr 2021 12:19:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:reply-to:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=lneqwX+dzGZ1u826su0AXxbuk9GjDopbRrrh6SBJZ40=;
+        b=ZIWCS7S//pL+fNsSrNILgdQ/tFgW0YSqzLXiSmSWAmGAxDDikw/gf7EDKKXBZDIJ1X
+         AtJ92G20fm+Q1UtXYfcIBK3KyQPIrEq5y5qWwyQv3fWKA388q4U00ympDThqFmZl3x0N
+         hbJz8UBnkjICOp4Xr/qfeNZS9U5mW2rRjGVRkr48cUVRQ+kD6dNdRVRuTqIKEr+of4Uk
+         fhgtKA5Vtu0d3bos/+wUWMWb7uo/kEDmngHEcvDXrNxXQ5ensae4GKCsBXzqWb8Y9H2B
+         PwF8+4B7+d4DTEiDraFFtKUPq3ezYWsP1hw0f2qKP0pRsIE0L0t+GGfUMc2hEnDaF2lO
+         GB5A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:reply-to
+         :references:mime-version:content-disposition:in-reply-to;
+        bh=lneqwX+dzGZ1u826su0AXxbuk9GjDopbRrrh6SBJZ40=;
+        b=XQDFXqbUIVVHbzb94cDqs4r28k5O3UHe6SAdC8fonpMKwv9ppU0UgSeWwZG5hEEnQz
+         dgx3yG04CJvX+cfr4KfLX8eYQ07mVJ+2VbakRa4q+uLIWAze/P8h3lFUDTGj7AGg0z5A
+         r8Hc7zLElf4kUfzoJwK9GAb/eDlW7MfsbqwYUfBwRpEDtZfd7+hvKXxzYgle7CFl8KC3
+         G9feWZfM8SDpxEgpBA3Id5wPbQM7J9brvcHHXWN16vwNzaf92Svi+BDuadqClx6PZHiZ
+         LLtZL+pwFhVGQc6a941QBL7slZLq+qeoNlxparLAWsc3VPGaFb+UhtY2nHoIUw1sltYP
+         iVrw==
+X-Gm-Message-State: AOAM531cNDY0EyRonPI+WMhDBDxv97fFEqXG9TW80hjgTaeM8eP+G68K
+        iTSUOzH32CnpU2CwDF9CFePHqdYUSddmkw==
+X-Google-Smtp-Source: ABdhPJxLQk4sFtSUJ6sqGgMsuG+EBDpzoBTiA6yrFSNV8deC4ucjzl3rqK/tZLPTAD9yAPlfpZO3ZA==
+X-Received: by 2002:adf:d0c9:: with SMTP id z9mr1449899wrh.175.1619723966995;
+        Thu, 29 Apr 2021 12:19:26 -0700 (PDT)
+Received: from pevik ([62.201.25.198])
+        by smtp.gmail.com with ESMTPSA id y11sm1266901wmi.41.2021.04.29.12.19.26
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 29 Apr 2021 12:19:26 -0700 (PDT)
+Date:   Thu, 29 Apr 2021 21:19:24 +0200
+From:   Petr Vorel <petr.vorel@gmail.com>
+To:     Heiko Thiery <heiko.thiery@gmail.com>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Stephen Hemminger <stephen@networkplumber.org>
+Subject: Re: [PATCH] lib/fs: fix issue when {name, open}_to_handle_at() is
+ not implemented
+Message-ID: <YIsGvE6vu7RYkAXi@pevik>
+Reply-To: Petr Vorel <petr.vorel@gmail.com>
+References: <20210422084612.26374-1-heiko.thiery@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Proofpoint-GUID: jZJA06uKBK6Om4KgjLtrVG3eQRAdBkRl
-X-Proofpoint-ORIG-GUID: jZJA06uKBK6Om4KgjLtrVG3eQRAdBkRl
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.391,18.0.761
- definitions=2021-04-29_10:2021-04-28,2021-04-29 signatures=0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210422084612.26374-1-heiko.thiery@gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Prabhakar Kushwaha <pkushwaha@marvell.com>
+Hi,
 
-This patch implement ASYNC request and response event notification
-handling at qedn driver level.
+> With commit d5e6ee0dac64b64e the usage of functions name_to_handle_at() and
+> open_by_handle_at() are introduced. But these function are not available
+> e.g. in uclibc-ng < 1.0.35. To have a backward compatibility check for the
+> availability in the configure script and in case of absence do a direct
+> syscall.
 
-NVME Ofld layer's ASYNC request is treated similar to read with
-fake CCCID. This CCCID used to route ASYNC notification back to
-the NVME ofld layer.
+LGTM, thanks for implementing it.
+I'd consider to check only one of the functions (very unlikely only one will be
+supported).
 
-Acked-by: Igor Russkikh <irusskikh@marvell.com>
-Signed-off-by: Prabhakar Kushwaha <pkushwaha@marvell.com>
-Signed-off-by: Omkar Kulkarni <okulkarni@marvell.com>
-Signed-off-by: Michal Kalderon <mkalderon@marvell.com>
-Signed-off-by: Ariel Elior <aelior@marvell.com>
-Signed-off-by: Shai Malin <smalin@marvell.com>
----
- drivers/nvme/hw/qedn/qedn.h      |   8 ++
- drivers/nvme/hw/qedn/qedn_main.c |   1 +
- drivers/nvme/hw/qedn/qedn_task.c | 156 +++++++++++++++++++++++++++++--
- 3 files changed, 156 insertions(+), 9 deletions(-)
+> Signed-off-by: Heiko Thiery <heiko.thiery@gmail.com>
+> ---
+>  configure | 58 +++++++++++++++++++++++++++++++++++++++++++++++++++++++
+>  lib/fs.c  | 25 ++++++++++++++++++++++++
+>  2 files changed, 83 insertions(+)
 
-diff --git a/drivers/nvme/hw/qedn/qedn.h b/drivers/nvme/hw/qedn/qedn.h
-index fed4252392e0..067dc45027d4 100644
---- a/drivers/nvme/hw/qedn/qedn.h
-+++ b/drivers/nvme/hw/qedn/qedn.h
-@@ -109,6 +109,9 @@
- #define QEDN_TASK_CLEANUP_TMO 3000 /* 3 sec */
- #define QEDN_DRAIN_TMO 1000 /* 1 sec */
- 
-+#define QEDN_MAX_OUTSTAND_ASYNC 32
-+#define QEDN_INVALID_CCCID (-1)
-+
- enum qedn_state {
- 	QEDN_STATE_CORE_PROBED = 0,
- 	QEDN_STATE_CORE_OPEN,
-@@ -196,6 +199,7 @@ struct qedn_ctx {
- 
- enum qedn_task_flags {
- 	QEDN_TASK_IS_ICREQ,
-+	QEDN_TASK_ASYNC,
- 	QEDN_TASK_USED_BY_FW,
- 	QEDN_TASK_WAIT_FOR_CLEANUP,
- };
-@@ -373,6 +377,10 @@ struct qedn_conn_ctx {
- 	struct nvmetcp_icresp_hdr_psh icresp;
- 	struct qedn_icreq_padding *icreq_pad;
- 
-+	DECLARE_BITMAP(async_cccid_idx_map, QEDN_MAX_OUTSTAND_ASYNC);
-+	/* Spinlock for fetching pseudo CCCID for async request */
-+	spinlock_t async_cccid_bitmap_lock;
-+
- 	/* "dummy" socket */
- 	struct socket *sock;
- };
-diff --git a/drivers/nvme/hw/qedn/qedn_main.c b/drivers/nvme/hw/qedn/qedn_main.c
-index 63a4e88d826d..d2575767be47 100644
---- a/drivers/nvme/hw/qedn/qedn_main.c
-+++ b/drivers/nvme/hw/qedn/qedn_main.c
-@@ -328,6 +328,7 @@ static int qedn_create_queue(struct nvme_tcp_ofld_queue *queue, int qid, size_t
- 	atomic_set(&conn_ctx->destroy_conn_indicator, 0);
- 
- 	spin_lock_init(&conn_ctx->conn_state_lock);
-+	spin_lock_init(&conn_ctx->async_cccid_bitmap_lock);
- 
- 	INIT_WORK(&conn_ctx->nvme_req_fp_wq_entry, qedn_nvme_req_fp_wq_handler);
- 	conn_ctx->nvme_req_fp_wq = qedn->nvme_req_fp_wq;
-diff --git a/drivers/nvme/hw/qedn/qedn_task.c b/drivers/nvme/hw/qedn/qedn_task.c
-index 4ae6c0f66258..9ed6bc6c5c8a 100644
---- a/drivers/nvme/hw/qedn/qedn_task.c
-+++ b/drivers/nvme/hw/qedn/qedn_task.c
-@@ -259,10 +259,45 @@ void qedn_common_clear_fw_sgl(struct storage_sgl_task_params *sgl_task_params)
- 	sgl_task_params->num_sges = 0;
- }
- 
--inline void qedn_host_reset_cccid_itid_entry(struct qedn_conn_ctx *conn_ctx,
--					     u16 cccid)
-+inline void qedn_host_reset_cccid_itid_entry(struct qedn_conn_ctx *conn_ctx, u16 cccid, bool async)
- {
- 	conn_ctx->host_cccid_itid[cccid].itid = cpu_to_le16(QEDN_INVALID_ITID);
-+	if (unlikely(async))
-+		clear_bit(cccid - NVME_AQ_DEPTH,
-+			  conn_ctx->async_cccid_idx_map);
-+}
-+
-+static int qedn_get_free_idx(struct qedn_conn_ctx *conn_ctx, unsigned int size)
-+{
-+	int idx;
-+
-+	spin_lock(&conn_ctx->async_cccid_bitmap_lock);
-+	idx = find_first_zero_bit(conn_ctx->async_cccid_idx_map, size);
-+	if (unlikely(idx >= size)) {
-+		idx = -1;
-+		spin_unlock(&conn_ctx->async_cccid_bitmap_lock);
-+		goto err_idx;
-+	}
-+	set_bit(idx, conn_ctx->async_cccid_idx_map);
-+	spin_unlock(&conn_ctx->async_cccid_bitmap_lock);
-+
-+err_idx:
-+
-+	return idx;
-+}
-+
-+int qedn_get_free_async_cccid(struct qedn_conn_ctx *conn_ctx)
-+{
-+	int async_cccid;
-+
-+	async_cccid =
-+		qedn_get_free_idx(conn_ctx, QEDN_MAX_OUTSTAND_ASYNC);
-+	if (unlikely(async_cccid == QEDN_INVALID_CCCID))
-+		pr_err("No available CCCID for Async.\n");
-+	else
-+		async_cccid += NVME_AQ_DEPTH;
-+
-+	return async_cccid;
- }
- 
- inline void qedn_host_set_cccid_itid_entry(struct qedn_conn_ctx *conn_ctx, u16 cccid, u16 itid)
-@@ -363,10 +398,12 @@ void qedn_return_task_to_pool(struct qedn_conn_ctx *conn_ctx,
- 	struct qedn_fp_queue *fp_q = conn_ctx->fp_q;
- 	struct qedn_io_resources *io_resrc;
- 	unsigned long lock_flags;
-+	bool async;
- 
- 	io_resrc = &fp_q->host_resrc;
- 
- 	spin_lock_irqsave(&qedn_task->lock, lock_flags);
-+	async = test_bit(QEDN_TASK_ASYNC, &(qedn_task)->flags);
- 	qedn_task->valid = 0;
- 	qedn_task->flags = 0;
- 	qedn_clear_sgl(conn_ctx->qedn, qedn_task);
-@@ -374,7 +411,7 @@ void qedn_return_task_to_pool(struct qedn_conn_ctx *conn_ctx,
- 
- 	spin_lock(&conn_ctx->task_list_lock);
- 	list_del(&qedn_task->entry);
--	qedn_host_reset_cccid_itid_entry(conn_ctx, qedn_task->cccid);
-+	qedn_host_reset_cccid_itid_entry(conn_ctx, qedn_task->cccid, async);
- 	spin_unlock(&conn_ctx->task_list_lock);
- 
- 	atomic_dec(&conn_ctx->num_active_tasks);
-@@ -447,6 +484,67 @@ qedn_get_task_from_pool_insist(struct qedn_conn_ctx *conn_ctx, u16 cccid)
- 	return qedn_task;
- }
- 
-+void qedn_send_async_event_cmd(struct qedn_task_ctx *qedn_task,
-+			       struct qedn_conn_ctx *conn_ctx)
-+{
-+	struct nvme_tcp_ofld_req *async_req = qedn_task->req;
-+	struct nvme_command *nvme_cmd = &async_req->nvme_cmd;
-+	struct storage_sgl_task_params *sgl_task_params;
-+	struct nvmetcp_task_params task_params;
-+	struct nvmetcp_cmd_capsule_hdr cmd_hdr;
-+	struct nvmetcp_conn_params conn_params;
-+	struct nvmetcp_wqe *chain_sqe;
-+	struct nvmetcp_wqe local_sqe;
-+	int i;
-+
-+	set_bit(QEDN_TASK_ASYNC, &qedn_task->flags);
-+	nvme_cmd->common.command_id = qedn_task->cccid;
-+	qedn_task->task_size = 0;
-+
-+	/* Initialize sgl params */
-+	sgl_task_params = &qedn_task->sgl_task_params;
-+	sgl_task_params->total_buffer_size = 0;
-+	sgl_task_params->num_sges = 0;
-+	sgl_task_params->small_mid_sge = false;
-+
-+	task_params.opq.lo = cpu_to_le32(((u64)(qedn_task)) & 0xffffffff);
-+	task_params.opq.hi = cpu_to_le32(((u64)(qedn_task)) >> 32);
-+
-+	/* Initialize task params */
-+	task_params.context = qedn_task->fw_task_ctx;
-+	task_params.sqe = &local_sqe;
-+	task_params.tx_io_size = 0;
-+	task_params.rx_io_size = 0;
-+	task_params.conn_icid = (u16)conn_ctx->conn_handle;
-+	task_params.itid = qedn_task->itid;
-+	task_params.cq_rss_number = conn_ctx->default_cq;
-+	task_params.send_write_incapsule = 0;
-+
-+	/* Initialize conn params */
-+	conn_params.max_burst_length = QEDN_MAX_IO_SIZE;
-+
-+	/* Internal impl. - async is treated like zero len read */
-+	cmd_hdr.chdr.pdu_type = nvme_tcp_cmd;
-+	cmd_hdr.chdr.flags = 0;
-+	cmd_hdr.chdr.hlen = sizeof(cmd_hdr);
-+	cmd_hdr.chdr.pdo = 0x0;
-+	cmd_hdr.chdr.plen_swapped = cpu_to_le32(__swab32(cmd_hdr.chdr.hlen));
-+
-+	for (i = 0; i < 16; i++)
-+		cmd_hdr.pshdr.raw_swapped[i] = cpu_to_le32(__swab32(((u32 *)nvme_cmd)[i]));
-+
-+	qed_ops->init_read_io(&task_params, &conn_params, &cmd_hdr, &qedn_task->sgl_task_params);
-+
-+	set_bit(QEDN_TASK_USED_BY_FW, &qedn_task->flags);
-+	atomic_inc(&conn_ctx->num_active_fw_tasks);
-+
-+	spin_lock(&conn_ctx->ep.doorbell_lock);
-+	chain_sqe = qed_chain_produce(&conn_ctx->ep.fw_sq_chain);
-+	memcpy(chain_sqe, &local_sqe, sizeof(local_sqe));
-+	qedn_ring_doorbell(conn_ctx);
-+	spin_unlock(&conn_ctx->ep.doorbell_lock);
-+}
-+
- int qedn_send_read_cmd(struct qedn_task_ctx *qedn_task, struct qedn_conn_ctx *conn_ctx)
- {
- 	struct nvme_command *nvme_cmd = &qedn_task->req->nvme_cmd;
-@@ -580,6 +678,24 @@ static void qedn_fetch_request(struct qedn_conn_ctx *qedn_conn)
- 	spin_unlock(&qedn_conn->nvme_req_lock);
- }
- 
-+static void qedn_return_error_req(struct nvme_tcp_ofld_req *req)
-+{
-+	__le16 status = cpu_to_le16(NVME_SC_HOST_PATH_ERROR << 1);
-+	union nvme_result res = {};
-+	struct request *rq;
-+
-+	if (!req)
-+		return;
-+
-+	rq = blk_mq_rq_from_pdu(req);
-+
-+	/* Call request done to compelete the request */
-+	if (req->done)
-+		req->done(req, &res, status);
-+	else
-+		pr_err("request done not set !!!\n");
-+}
-+
- static bool qedn_process_req(struct qedn_conn_ctx *qedn_conn)
- {
- 	struct qedn_task_ctx *qedn_task;
-@@ -595,9 +711,16 @@ static bool qedn_process_req(struct qedn_conn_ctx *qedn_conn)
- 	req = qedn_conn->req;
- 	rq = blk_mq_rq_from_pdu(req);
- 
--	/* Placeholder - async */
-+	if (unlikely(req->async)) {
-+		cccid = qedn_get_free_async_cccid(qedn_conn);
-+		if (cccid == QEDN_INVALID_CCCID) {
-+			qedn_return_error_req(req);
-+			goto doorbell;
-+		}
-+	} else {
-+		cccid = rq->tag;
-+	}
- 
--	cccid = rq->tag;
- 	qedn_task = qedn_get_task_from_pool_insist(qedn_conn, cccid);
- 	if (unlikely(!qedn_task)) {
- 		pr_err("Not able to allocate task context\n");
-@@ -607,7 +730,10 @@ static bool qedn_process_req(struct qedn_conn_ctx *qedn_conn)
- 	req->private_data = qedn_task;
- 	qedn_task->req = req;
- 
--	/* Placeholder - handle (req->async) */
-+	if (unlikely(req->async)) {
-+		qedn_send_async_event_cmd(qedn_task, qedn_conn);
-+		goto doorbell;
-+	}
- 
- 	/* Check if there are physical segments in request to determine the task size.
- 	 * The logic of nvme_tcp_set_sg_null() will be implemented as part of
-@@ -732,14 +858,26 @@ static inline int qedn_comp_valid_task(struct qedn_task_ctx *qedn_task,
- 
- int qedn_process_nvme_cqe(struct qedn_task_ctx *qedn_task, struct nvme_completion *cqe)
- {
-+	struct qedn_conn_ctx *conn_ctx = qedn_task->qedn_conn;
-+	struct nvme_tcp_ofld_req *req;
- 	int rc = 0;
-+	bool async;
-+
-+	async = test_bit(QEDN_TASK_ASYNC, &(qedn_task)->flags);
- 
- 	/* cqe arrives swapped */
- 	qedn_swap_bytes((u32 *)cqe, (sizeof(*cqe) / sizeof(u32)));
- 
--	/* Placeholder - async */
--
--	rc = qedn_comp_valid_task(qedn_task, &cqe->result, cqe->status);
-+	if (unlikely(async)) {
-+		qedn_return_task_to_pool(conn_ctx, qedn_task);
-+		req = qedn_task->req;
-+		if (req->done)
-+			req->done(req, &cqe->result, cqe->status);
-+		else
-+			pr_err("request done not set for async request !!!\n");
-+	} else {
-+		rc = qedn_comp_valid_task(qedn_task, &cqe->result, cqe->status);
-+	}
- 
- 	return rc;
- }
--- 
-2.22.0
+> diff --git a/configure b/configure
+> index 2c363d3b..f1be9977 100755
+> --- a/configure
+> +++ b/configure
+> @@ -202,6 +202,58 @@ EOF
+>      rm -f $TMPDIR/setnstest.c $TMPDIR/setnstest
+>  }
 
+> +check_name_to_handle_at()
+> +{
+> +
+nit: empty line.
+> +    cat >$TMPDIR/name_to_handle_at_test.c <<EOF
+It's interesting it does not require _GNU_SOURCE ? (IMHO this is normally
+required for all glibc, musl, uclibc and binder):
+
+#define _GNU_SOURCE
+> +#include <sys/types.h>
+> +#include <sys/stat.h>
+> +#include <fcntl.h>
+> +int main(int argc, char **argv)
+> +{
+> +	struct file_handle *fhp;
+> +	int mount_id, flags, dirfd;
+> +	char *pathname;
+> +	name_to_handle_at(dirfd, pathname, fhp, &mount_id, flags);
+> +	return 0;
+> +}
+> +EOF
+> +
+> +    if $CC -I$INCLUDE -o $TMPDIR/name_to_handle_at_test $TMPDIR/name_to_handle_at_test.c >/dev/null 2>&1; then
+> +	echo "IP_CONFIG_NAME_TO_HANDLE_AT:=y" >>$CONFIG
+> +	echo "yes"
+> +	echo "CFLAGS += -DHAVE_NAME_TO_HANDLE_AT" >>$CONFIG
+> +    else
+> +	echo "no"
+> +    fi
+> +    rm -f $TMPDIR/name_to_handle_at_test.c $TMPDIR/name_to_handle_at_test
+> +}
+> +
+> +check_open_by_handle_at()
+> +{
+> +
+nit: empty line.
+> +    cat >$TMPDIR/open_by_handle_at_test.c <<EOF
+> +#include <sys/types.h>
+> +#include <sys/stat.h>
+> +#include <fcntl.h>
+> +int main(int argc, char **argv)
+> +{
+> +	struct file_handle *fhp;
+> +	int mount_fd;
+> +	open_by_handle_at(mount_fd, fhp, O_RDONLY);
+> +	return 0;
+> +}
+> +EOF
+> +    if $CC -I$INCLUDE -o $TMPDIR/open_by_handle_at_test $TMPDIR/open_by_handle_at_test.c >/dev/null 2>&1; then
+> +	echo "IP_CONFIG_OPEN_BY_HANDLE_AT:=y" >>$CONFIG
+> +	echo "yes"
+> +	echo "CFLAGS += -DHAVE_OPEN_BY_HANDLE_AT" >>$CONFIG
+> +    else
+> +	echo "no"
+> +    fi
+> +    rm -f $TMPDIR/open_by_handle_at_test.c $TMPDIR/open_by_handle_at_test
+> +}
+> +
+>  check_ipset()
+>  {
+>      cat >$TMPDIR/ipsettest.c <<EOF
+> @@ -492,6 +544,12 @@ fi
+>  echo -n "libc has setns: "
+>  check_setns
+
+> +echo -n "libc has name_to_handle_at: "
+> +check_name_to_handle_at
+> +
+> +echo -n "libc has open_by_handle_at: "
+> +check_open_by_handle_at
+> +
+>  echo -n "SELinux support: "
+>  check_selinux
+
+> diff --git a/lib/fs.c b/lib/fs.c
+> index ee0b130b..c561d85b 100644
+> --- a/lib/fs.c
+> +++ b/lib/fs.c
+> @@ -30,6 +30,31 @@
+>  /* if not already mounted cgroup2 is mounted here for iproute2's use */
+>  #define MNT_CGRP2_PATH  "/var/run/cgroup2"
+
+> +
+> +#if (!defined HAVE_NAME_TO_HANDLE_AT && !defined HAVE_OPEN_BY_HANDLE_AT)
+> +struct file_handle {
+> +	unsigned handle_bytes;
+> +	int handle_type;
+> +	unsigned char f_handle[];
+> +};
+> +#endif
+> +
+> +#ifndef HAVE_NAME_TO_HANDLE_AT
+> +int name_to_handle_at(int dirfd, const char *pathname,
+> +	struct file_handle *handle, int *mount_id, int flags)
+> +{
+> +	return syscall(name_to_handle_at, 5, dirfd, pathname, handle,
+> +	               mount_id, flags);
+> +}
+> +#endif
+> +
+> +#ifndef HAVE_OPEN_BY_HANDLE_AT
+> +int open_by_handle_at(int mount_fd, struct file_handle *handle, int flags)
+> +{
+> +	return syscall(open_by_handle_at, 3, mount_fd, handle, flags);
+> +}
+> +#endif
+> +
+>  /* return mount path of first occurrence of given fstype */
+>  static char *find_fs_mount(const char *fs_to_find)
+>  {
