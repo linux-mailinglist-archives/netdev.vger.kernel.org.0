@@ -2,210 +2,148 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5FAFD36E805
-	for <lists+netdev@lfdr.de>; Thu, 29 Apr 2021 11:32:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AFDDF36E89C
+	for <lists+netdev@lfdr.de>; Thu, 29 Apr 2021 12:22:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232596AbhD2JdV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 29 Apr 2021 05:33:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59396 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230392AbhD2JdV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 29 Apr 2021 05:33:21 -0400
-Received: from mail-pg1-x52d.google.com (mail-pg1-x52d.google.com [IPv6:2607:f8b0:4864:20::52d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C9D42C06138B;
-        Thu, 29 Apr 2021 02:32:34 -0700 (PDT)
-Received: by mail-pg1-x52d.google.com with SMTP id t22so11471269pgu.0;
-        Thu, 29 Apr 2021 02:32:34 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=/wNiFpqOaAKZtxpT+wIYCT15YwckphLit/10ndu05zM=;
-        b=NVsODKg1x8dhR/Trn9fbN1LyN/34bBtqRrhqxjyfL7r/oNvcg0y8ymb11FNO8Mx9Zc
-         2XHl3aWGDi3rlKSM+ezE3gQDLL0V/T4D2S90e+5yt5aEHVBdHkfpltMJj4/cX2NmwT90
-         6DPj46mgaUjf3hFIo6v0lIzj6kmrR2PIpgGHpb/V6d8+GGvZ3ZOm67gvC620YHrtuGZ2
-         IGpxE9CHtLx9ImbB0MIgiDZOepv+7Y6eyC7so99pvqtsJPapRS/bIW7TWFsK+r7CgOym
-         qgt8o9vhmepUMb5uuCeCFmWHSgPeoTFgkwQSfAwZCQmVMw1FFUdSZugM/wlWu1uXTQDt
-         jQPA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=/wNiFpqOaAKZtxpT+wIYCT15YwckphLit/10ndu05zM=;
-        b=gKAoJyFh/GEKVyqCcOHy8316FwuAwA/BV38n3Z4mzyTR7CMZNL7U2avcN+gP4a6yEj
-         8KqFbhKo1UQoPNmqHrkeng+3fV+Ow9h0rerisohC0ndu0GXhlm3xu0uq6Fo31yPZxsun
-         pvv4fl5U6A1stHj5W+tqsttJeo/dVwrMFagUPIBEbpbhBDvzNzDbj0CS+G2TpqBICo5L
-         bNgC0Go3j1dDEUsjW6Gqe3m+SY1guG8+n49OJTmEprRAiaIIT1PFhgH+2tBVurYowfY6
-         OkT7UwiAac2js50Osjakn9mcCPYwC/AbkblE+NqNN7p8KQYKi5Zi9zDpHc5rSf5H2O07
-         BYUw==
-X-Gm-Message-State: AOAM530ULsQwH/L89mzKntx0KVXTKLQcy2JhPinEIDUjE6pNd1JPwttI
-        QPS+YWkilGLnrxa+OQ8wS8hed08K4GxcR0v4WYgsX+W3Wro=
-X-Google-Smtp-Source: ABdhPJwUaOwWjHOoYBhSdQvsUNZUwlRQcBXlmtOw3z2HfS28/S+CegSC4NeUvLbefV1Nrw1ECLOhoaX9GUcIgqyJB/Y=
-X-Received: by 2002:a63:a847:: with SMTP id i7mr30760439pgp.203.1619688754072;
- Thu, 29 Apr 2021 02:32:34 -0700 (PDT)
-MIME-Version: 1.0
-References: <20210429070237.3012-1-rocco.yue@mediatek.com>
-In-Reply-To: <20210429070237.3012-1-rocco.yue@mediatek.com>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Thu, 29 Apr 2021 12:32:17 +0300
-Message-ID: <CAHp75Vc=GMv5dJ1dJYr=B3W6c+nuPCfXa4wxLJOYPTuqrMskFg@mail.gmail.com>
-Subject: Re: [PATCH] rtnetlink: add rtnl_lock debug log
-To:     Rocco Yue <rocco.yue@mediatek.com>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Masahiro Yamada <masahiroy@kernel.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
-        Tetsuo Handa <penguin-kernel@i-love.sakura.ne.jp>,
-        Peter Enderborg <peter.enderborg@sony.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Anshuman Khandual <anshuman.khandual@arm.com>,
-        Vitor Massaru Iha <vitor@massaru.org>,
-        Sedat Dilek <sedat.dilek@gmail.com>,
-        Wei Yang <richard.weiyang@gmail.com>,
-        Cong Wang <cong.wang@bytedance.com>,
-        Di Zhu <zhudi21@huawei.com>,
-        Stephen Hemminger <stephen@networkplumber.org>,
-        Francis Laniel <laniel_francis@privacyrequired.com>,
-        Roopa Prabhu <roopa@cumulusnetworks.com>,
+        id S240416AbhD2KWe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 29 Apr 2021 06:22:34 -0400
+Received: from mailout2.samsung.com ([203.254.224.25]:16574 "EHLO
+        mailout2.samsung.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S239916AbhD2KWd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 29 Apr 2021 06:22:33 -0400
+Received: from epcas2p3.samsung.com (unknown [182.195.41.55])
+        by mailout2.samsung.com (KnoxPortal) with ESMTP id 20210429102145epoutp02e54aea3a3812169394dd25e9263f7044~6TQZkPz-U0350503505epoutp02h
+        for <netdev@vger.kernel.org>; Thu, 29 Apr 2021 10:21:45 +0000 (GMT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mailout2.samsung.com 20210429102145epoutp02e54aea3a3812169394dd25e9263f7044~6TQZkPz-U0350503505epoutp02h
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
+        s=mail20170921; t=1619691705;
+        bh=qvvGTSpuXSrZtizggQL76UqiLnmybbPMcVCYW4PRp8U=;
+        h=From:To:Cc:Subject:Date:References:From;
+        b=OI+QhfWleKdc3NdMtqWVlNv/raS3+0xkQ9/78OuyB9muuNA7NIdUFXnZ2o2L8zl3e
+         y0AVdrFVhak6hZrmzmt/trKbnk1lfv0CHDmmlE6H+3lfTVxnrAB2ofY5AUIcuhF1Ht
+         R7iiroTcXdPVoB/mSG+inMEvIGFh7EeJzM50pCh0=
+Received: from epsnrtp2.localdomain (unknown [182.195.42.163]) by
+        epcas2p1.samsung.com (KnoxPortal) with ESMTP id
+        20210429102145epcas2p1527c0ca6f17df83a2ea754dd54b36dce~6TQY7zRHr0094500945epcas2p1T;
+        Thu, 29 Apr 2021 10:21:45 +0000 (GMT)
+Received: from epsmges2p3.samsung.com (unknown [182.195.40.190]) by
+        epsnrtp2.localdomain (Postfix) with ESMTP id 4FWBPM5nFxz4x9Q3; Thu, 29 Apr
+        2021 10:21:43 +0000 (GMT)
+Received: from epcas2p4.samsung.com ( [182.195.41.56]) by
+        epsmges2p3.samsung.com (Symantec Messaging Gateway) with SMTP id
+        0A.D4.09433.7B88A806; Thu, 29 Apr 2021 19:21:43 +0900 (KST)
+Received: from epsmtrp1.samsung.com (unknown [182.195.40.13]) by
+        epcas2p4.samsung.com (KnoxPortal) with ESMTPA id
+        20210429102143epcas2p4c8747c09a9de28f003c20389c050394a~6TQXNHUkO1667016670epcas2p40;
+        Thu, 29 Apr 2021 10:21:43 +0000 (GMT)
+Received: from epsmgms1p1new.samsung.com (unknown [182.195.42.41]) by
+        epsmtrp1.samsung.com (KnoxPortal) with ESMTP id
+        20210429102143epsmtrp1e70eec154bd490fe7419c00b0a701a1b~6TQXLU3Q22489024890epsmtrp1_;
+        Thu, 29 Apr 2021 10:21:43 +0000 (GMT)
+X-AuditID: b6c32a47-f61ff700000024d9-3f-608a88b7e43d
+Received: from epsmtip2.samsung.com ( [182.195.34.31]) by
+        epsmgms1p1new.samsung.com (Symantec Messaging Gateway) with SMTP id
+        93.23.08637.7B88A806; Thu, 29 Apr 2021 19:21:43 +0900 (KST)
+Received: from ubuntu.dsn.sec.samsung.com (unknown [12.36.155.120]) by
+        epsmtip2.samsung.com (KnoxPortal) with ESMTPA id
+        20210429102143epsmtip2a518c690a833daf0b90c4ca5b2986392~6TQW7ko2V1939219392epsmtip25;
+        Thu, 29 Apr 2021 10:21:43 +0000 (GMT)
+From:   Dongseok Yi <dseok.yi@samsung.com>
+To:     bpf@vger.kernel.org
+Cc:     Dongseok Yi <dseok.yi@samsung.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
         Andrii Nakryiko <andrii@kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        linux-arm Mailing List <linux-arm-kernel@lists.infradead.org>,
-        "moderated list:ARM/Mediatek SoC support" 
-        <linux-mediatek@lists.infradead.org>, wsd_upsream@mediatek.com
-Content-Type: text/plain; charset="UTF-8"
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH bpf] bpf: check for data_len before upgrading mss when 6 to
+ 4
+Date:   Thu, 29 Apr 2021 19:08:23 +0900
+Message-Id: <1619690903-1138-1-git-send-email-dseok.yi@samsung.com>
+X-Mailer: git-send-email 2.7.4
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFvrNKsWRmVeSWpSXmKPExsWy7bCmhe72jq4EgxlHtS2+/57NbPHl5212
+        i89HjrNZLF74jdlizvkWFosr0/4wWjTtWMFk8eLDE0aL5/t6mSwubOtjtbi8aw6bxbEFYhY/
+        D59htnixZAajA5/HlpU3mTwmNr9j99g56y67R9eNS8wem1Z1snn0bVnF6PF5k1wAe1SOTUZq
+        YkpqkUJqXnJ+SmZeuq2Sd3C8c7ypmYGhrqGlhbmSQl5ibqqtkotPgK5bZg7QyUoKZYk5pUCh
+        gMTiYiV9O5ui/NKSVIWM/OISW6XUgpScAkPDAr3ixNzi0rx0veT8XCtDAwMjU6DKhJyM7dPm
+        shUc5qzYcW4hUwPjffYuRg4OCQETiVPzHbsYuTiEBHYwSmzvOMMO4XxilFj6cxILhPONUWLW
+        3CNMXYycYB2LV/+CSuxllFjxYB1Uyw9GiQMvW1lAqtgENCT2v3vBCmKLCIhLLDi2gQmkiFng
+        HLPEpflzGEESwgL+ErMfvGQGsVkEVCV+XPsE1sAr4Cyx7P9vdoh1chI3z3UygzRLCHxll1jb
+        0M0CkXCR2LF5ExuELSzx6vgWqAYpiZf9bVDf1Uu0dsdA9PYwSlzZ9wSq11hi1rN2RpAaZgFN
+        ifW79CHKlSWO3AKrYBbgk+g4/BdqCq9ER5sQhKkkMfFLPMQMCYkXJydDzfOQmH21E+wWIYFY
+        if/vT7NPYJSdhTB+ASPjKkax1ILi3PTUYqMCY+Q42sQIToVa7jsYZ7z9oHeIkYmD8RCjBAez
+        kgjv73WdCUK8KYmVValF+fFFpTmpxYcYTYGhNZFZSjQ5H5iM80riDU2NzMwMLE0tTM2MLJTE
+        eX+m1iUICaQnlqRmp6YWpBbB9DFxcEo1MNneCf2+dpnwtCcxOmp/FV6bC7CK/XJykHbawpi/
+        TuN2j1QWj+tCnbNXqvX8dUQ99E/1K5rpiOheffbSii3FYtGVK89kTkj4bvMXYHitXNbnfmfd
+        g0Ld54cnmyzkYUv6ZLrsy0MDo7uMZqHbmrnszr0vy3Vh0+yYzvd01cc+lUnF6rXnnM6+abyg
+        1Pgt7wfjrS/b+fcmbtO7rpAipbXrpPKH3sOv70b11ATmRS/gKjgQet/9T/OTKi+txbvv5ihu
+        sTqw3N72TVykwBS7F1OLZ6+6l67baMjW9s/Po+GkZbJk4rNe/WUyfLfTpk04nDBLYL/6pMvn
+        fi00ne9Qa2smGZO34KKviZzUkVNTtaLKlViKMxINtZiLihMBRryFlQ4EAAA=
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFlrNLMWRmVeSWpSXmKPExsWy7bCSvO72jq4Eg43buCy+/57NbPHl5212
+        i89HjrNZLF74jdlizvkWFosr0/4wWjTtWMFk8eLDE0aL5/t6mSwubOtjtbi8aw6bxbEFYhY/
+        D59htnixZAajA5/HlpU3mTwmNr9j99g56y67R9eNS8wem1Z1snn0bVnF6PF5k1wAexSXTUpq
+        TmZZapG+XQJXxvZpc9kKDnNW7Di3kKmB8T57FyMnh4SAicTi1b9Yuhi5OIQEdjNKNPffZO1i
+        5ABKSEjs2uwKUSMscb/lCCtEzTdGiak7X7GAJNgENCT2v3vBCmKLCIhLLDi2gQmkiFngFrNE
+        98k5jCAJYQFfiYaZ38G2sQioSvy49gmsgVfAWWLZ/99QV8hJ3DzXyTyBkWcBI8MqRsnUguLc
+        9NxiwwLDvNRyveLE3OLSvHS95PzcTYzg8NTS3MG4fdUHvUOMTByMhxglOJiVRHh/r+tMEOJN
+        SaysSi3Kjy8qzUktPsQozcGiJM57oetkvJBAemJJanZqakFqEUyWiYNTqoHJrCna96D0zSvH
+        ufolTp7banuD5/ObwPZX7w6YanoZvXE7sCnzPKO+xtqfj5UfWDye7XjnVN6Hv3tns7+QT0le
+        9uO01Uafxqe6z47Fql6bHn/g8qPTW5tu8tutzsyIStp4/1l+q+cd1t8x8w2ieQp8Lfouvda+
+        v5x3H4+tierR4Cu/vnmfFbH6kfpTTTVg2l2L6gkxa2esPvW2b4Ig/9cmbeuSXe0vHl+MulRQ
+        vnvBT4XNKUzBO5447Np40aPn9epN1/YdaOf1ml7oqF9cctv6QN26Ta633543ZXdvEfM48D2c
+        T1GqPb2fN+bEtSi5+rDpuqZ34pXjFs4pL3W6p8usPHlR8KkDP0OS+14FnGBhUGIpzkg01GIu
+        Kk4EANEaXsW+AgAA
+X-CMS-MailID: 20210429102143epcas2p4c8747c09a9de28f003c20389c050394a
+X-Msg-Generator: CA
+Content-Type: text/plain; charset="utf-8"
+X-Sendblock-Type: AUTO_CONFIDENTIAL
+CMS-TYPE: 102P
+DLP-Filter: Pass
+X-CFilter-Loop: Reflected
+X-CMS-RootMailID: 20210429102143epcas2p4c8747c09a9de28f003c20389c050394a
+References: <CGME20210429102143epcas2p4c8747c09a9de28f003c20389c050394a@epcas2p4.samsung.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Apr 29, 2021 at 10:21 AM Rocco Yue <rocco.yue@mediatek.com> wrote:
->
-> We often encounter system hangs caused by certain processes
-> holding rtnl_lock for a long time. Even if there is a lock
-> detection mechanism in Linux, it is a bit troublesome and
-> affects the system performance. We hope to add a lightweight
-> debugging mechanism for detecting rtnl_lock.
->
-> Up to now, we have discovered and solved some potential bugs
-> through such debug information of this lightweight rtnl_lock,
-> which is helpful for us.
->
-> When you say Y for RTNL_LOCK_DEBUG, then the kernel will detect
-> if any function hold rtnl_lock too long and some key information
-> will be printed to help identify the issue point.
->
-> i.e: from the following logs, we can clear know that the pid=5546
+tcp_gso_segment check for the size of GROed payload if it is bigger
+than the mss. bpf_skb_proto_6_to_4 increases mss, but the mss can be
+bigger than the size of GROed payload unexpectedly if data_len is not
+big enough.
 
-clearly
+Assume that skb gso_size = 1372 and data_len = 8. bpf_skb_proto_6_to_4
+would increse the gso_size to 1392. tcp_gso_segment will get an error
+with 1380 <= 1392.
 
-> RfxSender_4 process hold rtnl_lock for a long time, causing the
+Check for the size of GROed payload if it is really bigger than target
+mss when increase mss.
 
-holds
+Fixes: 6578171a7ff0 (bpf: add bpf_skb_change_proto helper)
+Signed-off-by: Dongseok Yi <dseok.yi@samsung.com>
+---
+ net/core/filter.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-> system hang. And we can also speculate that the delay operation
-
-to hang
-
-> may be performed in devinet_ioctl(), resulting in rtnl_lock was
-> not released in time.
->
-> <6>[  141.151364] ----------- rtnl_print_btrace start -----------
-
-Can you, please, shrink this to the point?
-
-> <6>[  141.152079] RfxSender_4[5546][R] hold rtnl_lock more than 2 sec,
-> start time: 139129481562
-> <4>[  141.153114]  rtnl_lock+0x88/0xfc
-> <4>[  141.153523]  devinet_ioctl+0x190/0x1268
-> <4>[  141.154007]  inet_ioctl+0x108/0x1f4
-> <4>[  141.154449]  sock_do_ioctl+0x88/0x200
-> <4>[  141.154911]  sock_ioctl+0x4b0/0x884
-> <4>[  141.155367]  do_vfs_ioctl+0x6b0/0xcc4
-> <4>[  141.155830]  __arm64_sys_ioctl+0xc0/0xec
-> <4>[  141.156326]  el0_svc_common+0x130/0x2c0
-> <4>[  141.156810]  el0_svc_handler+0xd0/0xe0
-> <4>[  141.157283]  el0_svc+0x8/0xc
-> <4>[  141.157646] Call trace:
-> <4>[  141.157956]  dump_backtrace+0x0/0x240
-> <4>[  141.158418]  show_stack+0x18/0x24
-> <4>[  141.158836]  rtnl_print_btrace+0x138/0x1cc
-> <4>[  141.159362]  call_timer_fn+0x120/0x47c
-> <4>[  141.159834]  expire_timers+0x28c/0x420
-> <4>[  141.160306]  __run_timers+0x3d0/0x494
-> <4>[  141.160768]  run_timer_softirq+0x24/0x48
-> <4>[  141.161262]  __do_softirq+0x26c/0x968
-> <4>[  141.161725]  irq_exit+0x1f8/0x2b4
-> <4>[  141.162145]  __handle_domain_irq+0xdc/0x15c
-> <4>[  141.162672]  gic_handle_irq+0xe4/0x188
-> <4>[  141.163144]  el1_irq+0x104/0x200
-> <4>[  141.163559]  __const_udelay+0x118/0x1b0
-> <4>[  141.164044]  devinet_ioctl+0x1a0/0x1268
-> <4>[  141.164527]  inet_ioctl+0x108/0x1f4
-> <4>[  141.164968]  sock_do_ioctl+0x88/0x200
-> <4>[  141.165428]  sock_ioctl+0x4b0/0x884
-> <4>[  141.165868]  do_vfs_ioctl+0x6b0/0xcc4
-> <4>[  141.166330]  __arm64_sys_ioctl+0xc0/0xec
-> <4>[  141.166825]  el0_svc_common+0x130/0x2c0
-> <4>[  141.167308]  el0_svc_handler+0xd0/0xe0
-> <4>[  141.167786]  el0_svc+0x8/0xc
-> <6>[  141.168153] ------------ rtnl_print_btrace end -----------
->
-> <6>[  147.321389] rtnl_lock is held by [5546] from
-> [139129481562] to [147321378812]
-
-
-...
-
-> +static struct rtnl_debug_btrace_t rtnl_instance = {
-> +       .task           = NULL,
-> +       .pid            = 0,
-> +       .start_time     = 0,
-> +       .end_time       = 0,
-> +       .nr_entries     = 0,
-
-static assumes all 0:s, what's the point?
-
-> +};
-
-...
-
-> +static void rtnl_print_btrace(struct timer_list *unused)
-> +{
-> +       pr_info("----------- %s start -----------\n", __func__);
-> +       pr_info("%s[%d][%c] hold rtnl_lock more than 2 sec, start time: %llu\n",
-> +               rtnl_instance.task->comm,
-> +               rtnl_instance.pid,
-> +               task_state_to_char(rtnl_instance.task),
-> +               rtnl_instance.start_time);
-> +       stack_trace_print(rtnl_instance.addrs, rtnl_instance.nr_entries, 0);
-
-> +       show_stack(rtnl_instance.task, NULL, KERN_DEBUG);
-
-Unaligned debug level.
-
-> +       pr_info("------------ %s end -----------\n", __func__);
-
-Looking into tons of these, perhaps you need to define pr_fmt(). I
-haven't checked if it's already defined, though.
-
-> +}
-
-...
-
-> +       if (rtnl_instance.end_time - rtnl_instance.start_time > 2000000000ULL) {
-
-Perhaps you should use one of the defined constants from time64.h ?
-
-> +               pr_info("rtnl_lock is held by [%d] from [%llu] to [%llu]\n",
-> +                       rtnl_instance.pid,
-> +                       rtnl_instance.start_time,
-> +                       rtnl_instance.end_time);
-> +       }
-
+diff --git a/net/core/filter.c b/net/core/filter.c
+index 9323d34..3f79e3c 100644
+--- a/net/core/filter.c
++++ b/net/core/filter.c
+@@ -3308,7 +3308,9 @@ static int bpf_skb_proto_6_to_4(struct sk_buff *skb)
+ 		}
+ 
+ 		/* Due to IPv4 header, MSS can be upgraded. */
+-		skb_increase_gso_size(shinfo, len_diff);
++		if (skb->data_len > len_diff)
++			skb_increase_gso_size(shinfo, len_diff);
++
+ 		/* Header must be checked, and gso_segs recomputed. */
+ 		shinfo->gso_type |= SKB_GSO_DODGY;
+ 		shinfo->gso_segs = 0;
 -- 
-With Best Regards,
-Andy Shevchenko
+2.7.4
+
