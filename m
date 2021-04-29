@@ -2,158 +2,125 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F3A5136EE1F
-	for <lists+netdev@lfdr.de>; Thu, 29 Apr 2021 18:29:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AAA3336EE32
+	for <lists+netdev@lfdr.de>; Thu, 29 Apr 2021 18:32:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237244AbhD2QaV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 29 Apr 2021 12:30:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39028 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232004AbhD2QaU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 29 Apr 2021 12:30:20 -0400
-Received: from mx0b-00190b01.pphosted.com (mx0b-00190b01.pphosted.com [IPv6:2620:100:9005:57f::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4565FC06138B;
-        Thu, 29 Apr 2021 09:29:31 -0700 (PDT)
-Received: from pps.filterd (m0122331.ppops.net [127.0.0.1])
-        by mx0b-00190b01.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 13TGJgPG010488;
-        Thu, 29 Apr 2021 17:29:19 +0100
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=akamai.com; h=from : to : cc :
- subject : date : message-id; s=jan2016.eng;
- bh=q1qlMUPUsRC6h1GU/B7aEimtmIRSDfg00PYdYuWupl0=;
- b=T5MVIIuLx8mWbQf7intABVl3jZpmlWIDDvV2vkap2UZ4d24aLSqjemT7i8je5d4dWNa8
- MI/4GHPNcay0Qb/9GSLH/kT1e+S9RFCocZRjCBGXnj374p/aIfcA0QWrpjn68WA1iv2y
- x8rZ2cvDyZ0JPIUlCBpBHoU+QoAb8RY9ci3PIrnJeTH+n3KTH6or4RIC9OHfAv+oqLbO
- pPAAxz7usddP99Ohd0NFvbEu0BR3SirEW7UJgZxc6C63a2cSnrkuccQTpVBuot1A9q8I
- h5NPpSfGZHHFXyNWa3Py1CgXjBXn1l2PJuxmvmT6xvJBHWGHM6FM3b1yGiVJXuLcUd12 Zg== 
-Received: from prod-mail-ppoint3 (a72-247-45-31.deploy.static.akamaitechnologies.com [72.247.45.31] (may be forged))
-        by mx0b-00190b01.pphosted.com with ESMTP id 387r9gf070-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 29 Apr 2021 17:29:19 +0100
-Received: from pps.filterd (prod-mail-ppoint3.akamai.com [127.0.0.1])
-        by prod-mail-ppoint3.akamai.com (8.16.1.2/8.16.1.2) with SMTP id 13TGKHkG025364;
-        Thu, 29 Apr 2021 12:29:07 -0400
-Received: from prod-mail-relay18.dfw02.corp.akamai.com ([172.27.165.172])
-        by prod-mail-ppoint3.akamai.com with ESMTP id 3877g6a8e6-1;
-        Thu, 29 Apr 2021 12:29:07 -0400
-Received: from bos-lpjec.145bw.corp.akamai.com (unknown [172.28.3.71])
-        by prod-mail-relay18.dfw02.corp.akamai.com (Postfix) with ESMTP id 98E92494;
-        Thu, 29 Apr 2021 16:29:06 +0000 (GMT)
-From:   Jason Baron <jbaron@akamai.com>
-To:     pablo@netfilter.org, kadlec@netfilter.org, fw@strlen.de,
-        davem@davemloft.net, kuba@kernel.org
-Cc:     netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
-        netdev@vger.kernel.org
-Subject: [PATCH net-next] netfilter: x_tables: improve limit_mt scalability
-Date:   Thu, 29 Apr 2021 12:26:13 -0400
-Message-Id: <1619713573-32073-1-git-send-email-jbaron@akamai.com>
-X-Mailer: git-send-email 2.7.4
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.391,18.0.761
- definitions=2021-04-29_08:2021-04-28,2021-04-29 signatures=0
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 mlxlogscore=999 mlxscore=0
- suspectscore=0 adultscore=0 bulkscore=0 spamscore=0 phishscore=0
- malwarescore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2104060000 definitions=main-2104290102
-X-Proofpoint-ORIG-GUID: b47GY1V4ZYRDkep61DicW24inoLgTuTO
-X-Proofpoint-GUID: b47GY1V4ZYRDkep61DicW24inoLgTuTO
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.391,18.0.761
- definitions=2021-04-29_08:2021-04-28,2021-04-29 signatures=0
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 phishscore=0 bulkscore=0 adultscore=0
- spamscore=0 clxscore=1011 mlxscore=0 mlxlogscore=999 impostorscore=0
- suspectscore=0 lowpriorityscore=0 priorityscore=1501 malwarescore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2104060000
- definitions=main-2104290102
-X-Agari-Authentication-Results: mx.akamai.com; spf=${SPFResult} (sender IP is 72.247.45.31)
- smtp.mailfrom=jbaron@akamai.com smtp.helo=prod-mail-ppoint3
+        id S240893AbhD2QdD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 29 Apr 2021 12:33:03 -0400
+Received: from esa.microchip.iphmx.com ([68.232.154.123]:45948 "EHLO
+        esa.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S240773AbhD2QdC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 29 Apr 2021 12:33:02 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1619713935; x=1651249935;
+  h=subject:to:cc:references:from:message-id:date:
+   mime-version:in-reply-to:content-transfer-encoding;
+  bh=hqg6GCymKi8MGlWIx2XifSrXyOJ+2DS2KKgnhY+o25c=;
+  b=UoHQ2nLzkRysW3ZiFJoX38bt904ReKYMsJn3UipLVzjgjQhkWeiZGT5l
+   122dWQ4KKl4/7mYkbTFf3CsjGQ5kMeOLvpc2XCkjyTVKjo1JtjSlnTD03
+   Ker3QbCk1ZFlWXXoKbV6W2UfKRuemoBYt8O4GKRGSRVh2ne6owCm3GO6z
+   /DRQoJukNPPGKANL2D4CmtxDPP/0QhbHlGoIwyM4upUAEJ1+eOxiJ1R4r
+   focIX3OvO6jCwtWybgrSvgEXHMDqnlarAslxIzTQcyGggKmmnqdtXX24m
+   DZjiq0w7iH8FCwOlv1qy8iazrHzdcEOgxJAWQwLjQQviZFINVVNNeZGLf
+   g==;
+IronPort-SDR: sa6xaJUC2wpDcfdsfc9/3DuLsY6QIhK+Lij0cF1caQycbtdtzI1AYHt9rqjxJoiAMu7/k52Ys4
+ rI/XO6uGRNC+gdkSSylW13+HJOpdp1e4+kTOX92dyzgjAer3v3yNPCi1KUhJWTKI6Q8QN7VnrH
+ lClRW075l2fIyGZJCne1R1AnVE/eQBkU7L1lCkCCTB3KADR/YzQI71ZVHE2iF9RFmVeu1aPtcN
+ DuuHsCmnX/ij0o27rA0+6GniQZGBxVIwFxQtyjg5cVJoF908gp2la/Ew/njJVS+wp1X18IeQVf
+ Sk8=
+X-IronPort-AV: E=Sophos;i="5.82,259,1613458800"; 
+   d="scan'208";a="112706308"
+Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
+  by esa4.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 29 Apr 2021 09:32:15 -0700
+Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
+ chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2176.2; Thu, 29 Apr 2021 09:32:15 -0700
+Received: from [10.171.246.9] (10.10.115.15) by chn-vm-ex03.mchp-main.com
+ (10.10.85.151) with Microsoft SMTP Server id 15.1.2176.2 via Frontend
+ Transport; Thu, 29 Apr 2021 09:32:13 -0700
+Subject: Re: [PATCH] net: macb: Remove redundant assignment to w0 and queue
+To:     Jakub Kicinski <kuba@kernel.org>,
+        Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
+CC:     <claudiu.beznea@microchip.com>, <davem@davemloft.net>,
+        <linux@armlinux.org.uk>, <palmer@dabbelt.com>,
+        <paul.walmsley@sifive.com>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <linux-riscv@lists.infradead.org>
+References: <1619604188-120341-1-git-send-email-jiapeng.chong@linux.alibaba.com>
+ <20210428122106.2597718a@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+From:   Nicolas Ferre <nicolas.ferre@microchip.com>
+Organization: microchip
+Message-ID: <ac269e45-113c-1fc3-192a-97253633e031@microchip.com>
+Date:   Thu, 29 Apr 2021 18:32:12 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.7.1
+MIME-Version: 1.0
+In-Reply-To: <20210428122106.2597718a@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Content-Type: text/plain; charset="windows-1252"; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-We've seen this spin_lock show up high in profiles. Let's introduce a
-lockless version. I've tested this using pktgen_sample01_simple.sh.
+On 28/04/2021 at 21:21, Jakub Kicinski wrote:
+> EXTERNAL EMAIL: Do not click links or open attachments unless you know the content is safe
+> 
+> On Wed, 28 Apr 2021 18:03:08 +0800 Jiapeng Chong wrote:
+>> diff --git a/drivers/net/ethernet/cadence/macb_main.c b/drivers/net/ethernet/cadence/macb_main.c
+>> index 0f6a6cb..5f1dbc2 100644
+>> --- a/drivers/net/ethernet/cadence/macb_main.c
+>> +++ b/drivers/net/ethernet/cadence/macb_main.c
+>> @@ -3248,7 +3248,6 @@ static void gem_prog_cmp_regs(struct macb *bp, struct ethtool_rx_flow_spec *fs)
+>>        /* ignore field if any masking set */
+>>        if (tp4sp_m->ip4src == 0xFFFFFFFF) {
+>>                /* 1st compare reg - IP source address */
+>> -             w0 = 0;
+>>                w1 = 0;
+>>                w0 = tp4sp_v->ip4src;
+>>                w1 = GEM_BFINS(T2DISMSK, 1, w1); /* 32-bit compare */
+>> @@ -3262,7 +3261,6 @@ static void gem_prog_cmp_regs(struct macb *bp, struct ethtool_rx_flow_spec *fs)
+>>        /* ignore field if any masking set */
+>>        if (tp4sp_m->ip4dst == 0xFFFFFFFF) {
+>>                /* 2nd compare reg - IP destination address */
+>> -             w0 = 0;
+>>                w1 = 0;
+>>                w0 = tp4sp_v->ip4dst;
+>>                w1 = GEM_BFINS(T2DISMSK, 1, w1); /* 32-bit compare */
+> 
+> Looks like this was written like that on purpose.
+> 
+>> @@ -4829,7 +4827,7 @@ static int __maybe_unused macb_suspend(struct device *dev)
+>>   {
+>>        struct net_device *netdev = dev_get_drvdata(dev);
+>>        struct macb *bp = netdev_priv(netdev);
+>> -     struct macb_queue *queue = bp->queues;
+>> +     struct macb_queue *queue;
+>>        unsigned long flags;
+>>        unsigned int q;
+>>        int err;
+>> @@ -4916,7 +4914,7 @@ static int __maybe_unused macb_resume(struct device *dev)
+>>   {
+>>        struct net_device *netdev = dev_get_drvdata(dev);
+>>        struct macb *bp = netdev_priv(netdev);
+>> -     struct macb_queue *queue = bp->queues;
+>> +     struct macb_queue *queue;
+>>        unsigned long flags;
+>>        unsigned int q;
+>>        int err;
+> 
+> This chunk looks good!
+> 
+> Would you mind splitting the patch into two (1 - w0 assignments, and
+> 2 - queue assignments) and reposting? We can merge the latter, the
+> former is up to the driver maintainer to decide.
 
-Signed-off-by: Jason Baron <jbaron@akamai.com>
----
- net/netfilter/xt_limit.c | 46 ++++++++++++++++++++++++++--------------------
- 1 file changed, 26 insertions(+), 20 deletions(-)
+Good move Jakub, thanks for having suggested this as we are highlighting 
+a bug!
 
-diff --git a/net/netfilter/xt_limit.c b/net/netfilter/xt_limit.c
-index 24d4afb9988d..8b4fd27857f2 100644
---- a/net/netfilter/xt_limit.c
-+++ b/net/netfilter/xt_limit.c
-@@ -8,16 +8,14 @@
- #include <linux/slab.h>
- #include <linux/module.h>
- #include <linux/skbuff.h>
--#include <linux/spinlock.h>
- #include <linux/interrupt.h>
- 
- #include <linux/netfilter/x_tables.h>
- #include <linux/netfilter/xt_limit.h>
- 
- struct xt_limit_priv {
--	spinlock_t lock;
- 	unsigned long prev;
--	uint32_t credit;
-+	u32 credit;
- };
- 
- MODULE_LICENSE("GPL");
-@@ -66,22 +64,31 @@ limit_mt(const struct sk_buff *skb, struct xt_action_param *par)
- {
- 	const struct xt_rateinfo *r = par->matchinfo;
- 	struct xt_limit_priv *priv = r->master;
--	unsigned long now = jiffies;
--
--	spin_lock_bh(&priv->lock);
--	priv->credit += (now - xchg(&priv->prev, now)) * CREDITS_PER_JIFFY;
--	if (priv->credit > r->credit_cap)
--		priv->credit = r->credit_cap;
--
--	if (priv->credit >= r->cost) {
--		/* We're not limited. */
--		priv->credit -= r->cost;
--		spin_unlock_bh(&priv->lock);
--		return true;
--	}
--
--	spin_unlock_bh(&priv->lock);
--	return false;
-+	unsigned long now;
-+	u32 old_credit, new_credit, credit_increase = 0;
-+	bool ret;
-+
-+	/* fastpath if there is nothing to update */
-+	if ((READ_ONCE(priv->credit) < r->cost) && (READ_ONCE(priv->prev) == jiffies))
-+		return false;
-+
-+	do {
-+		now = jiffies;
-+		credit_increase += (now - xchg(&priv->prev, now)) * CREDITS_PER_JIFFY;
-+		old_credit = READ_ONCE(priv->credit);
-+		new_credit = old_credit;
-+		new_credit += credit_increase;
-+		if (new_credit > r->credit_cap)
-+			new_credit = r->credit_cap;
-+		if (new_credit >= r->cost) {
-+			ret = true;
-+			new_credit -= r->cost;
-+		} else {
-+			ret = false;
-+		}
-+	} while (cmpxchg(&priv->credit, old_credit, new_credit) != old_credit);
-+
-+	return ret;
- }
- 
- /* Precision saver. */
-@@ -122,7 +129,6 @@ static int limit_mt_check(const struct xt_mtchk_param *par)
- 		r->credit_cap = priv->credit; /* Credits full. */
- 		r->cost = user2credits(r->avg);
- 	}
--	spin_lock_init(&priv->lock);
- 
- 	return 0;
- }
+Best regards,
+   Nicolas
+
 -- 
-2.7.4
-
+Nicolas Ferre
