@@ -2,57 +2,68 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EC14F370375
-	for <lists+netdev@lfdr.de>; Sat,  1 May 2021 00:28:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0F05537037F
+	for <lists+netdev@lfdr.de>; Sat,  1 May 2021 00:30:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231484AbhD3W2w (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 30 Apr 2021 18:28:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40092 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230290AbhD3W2v (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 30 Apr 2021 18:28:51 -0400
-Received: from mail.monkeyblade.net (shards.monkeyblade.net [IPv6:2620:137:e000::1:9])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B39CC06174A;
-        Fri, 30 Apr 2021 15:28:03 -0700 (PDT)
-Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
-        by mail.monkeyblade.net (Postfix) with ESMTPSA id 7EF194F7E7593;
-        Fri, 30 Apr 2021 15:28:01 -0700 (PDT)
-Date:   Fri, 30 Apr 2021 15:28:01 -0700 (PDT)
-Message-Id: <20210430.152801.713225083548143754.davem@davemloft.net>
-To:     michael.wei.hong.sit@intel.com
-Cc:     Jose.Abreu@synopsys.com, andrew@lunn.ch, hkallweit1@gmail.com,
-        linux@armlinux.org.uk, kuba@kernel.org, netdev@vger.kernel.org,
-        peppe.cavallaro@st.com, alexandre.torgue@foss.st.com,
-        mcoquelin.stm32@gmail.com, weifeng.voon@intel.com,
-        boon.leong.ong@intel.com, tee.min.tan@intel.com,
-        vee.khee.wong@linux.intel.com, vee.khee.wong@intel.com,
-        linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net-next 0/2] Introducing support for DWC xpcs Energy
- Efficient Ethernet
-From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20210429084636.24752-1-michael.wei.hong.sit@intel.com>
-References: <20210429084636.24752-1-michael.wei.hong.sit@intel.com>
-X-Mailer: Mew version 6.8 on Emacs 27.1
-Mime-Version: 1.0
-Content-Type: Text/Plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.6.2 (mail.monkeyblade.net [0.0.0.0]); Fri, 30 Apr 2021 15:28:02 -0700 (PDT)
+        id S232200AbhD3WbK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 30 Apr 2021 18:31:10 -0400
+Received: from mail.kernel.org ([198.145.29.99]:39784 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S231790AbhD3WbA (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 30 Apr 2021 18:31:00 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPS id 3176861482;
+        Fri, 30 Apr 2021 22:30:11 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1619821811;
+        bh=hfd720EHKL3KrtuPg+v2ZLEJkDymGK5uGg1H/mVznaw=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=ABCySdkzpnXsvnxC51zqrE7a6JMjoMGPIK48fit/ultd46ng+zJA4NV240MequfMt
+         e+b7W+o56d6YCXBg7lZCxKlZUaNtK8ZcbG8Wp2tbhbzShUk+03AFzt+hiFmd1br3iP
+         kOAMs4nq88hV4fGgRtB8IXDNAXL6YNYbmiKw8espMIvrBoaZigTH32OWDVwcr8iBKX
+         bcpd162baBqxvcKMtJj0fZOfitE6rNxwJ3AHI2uoZ4R1Ey3u8x5wZMtuzRTflILZ15
+         IZRGAovNCLfFRGAkkOVNzkjwd1b77OZfjpnzq6aoiEszh13ok9IXHmKvppnzhhojsg
+         1NQvcblrJl/rQ==
+Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 27F6760A3A;
+        Fri, 30 Apr 2021 22:30:11 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH v2 1/1] net: phy: marvell: enable downshift by default
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <161982181115.1234.13266423683015766676.git-patchwork-notify@kernel.org>
+Date:   Fri, 30 Apr 2021 22:30:11 +0000
+References: <20210430045733.6410-1-fido_max@inbox.ru>
+In-Reply-To: <20210430045733.6410-1-fido_max@inbox.ru>
+To:     Maxim Kochetkov <fido_max@inbox.ru>
+Cc:     netdev@vger.kernel.org, andrew@lunn.ch, hkallweit1@gmail.com,
+        linux@armlinux.org.uk, davem@davemloft.net, kuba@kernel.org,
+        f.fainelli@gmail.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Michael Sit Wei Hong <michael.wei.hong.sit@intel.com>
-Date: Thu, 29 Apr 2021 16:46:34 +0800
+Hello:
 
-> The goal of this patch set is to enable EEE in the xpcs so that when
-> EEE is enabled, the MAC-->xpcs-->PHY have all the EEE related
-> configurations enabled.
+This patch was applied to netdev/net.git (refs/heads/master):
+
+On Fri, 30 Apr 2021 07:57:33 +0300 you wrote:
+> A number of PHYs support the PHY tunable to set and get
+> downshift. However, only 88E1116R enables downshift by default. Extend
+> this default enabled to all the PHYs that support the downshift
+> tunable.
 > 
-> Patch 1 adds the functions to enable EEE in the xpcs and sets it to
-> transparent mode.
-> Patch 2 adds the callbacks to configure the xpcs EEE mode.
+> Signed-off-by: Maxim Kochetkov <fido_max@inbox.ru>
+> 
+> [...]
 
-net-next is closed, please resubit this when it opensd back up.
+Here is the summary with links:
+  - [v2,1/1] net: phy: marvell: enable downshift by default
+    https://git.kernel.org/netdev/net/c/8385b1f0ad0d
 
-Thank you.
+You are awesome, thank you!
+--
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
