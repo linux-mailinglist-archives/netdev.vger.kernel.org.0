@@ -2,90 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 31A6836F41A
-	for <lists+netdev@lfdr.de>; Fri, 30 Apr 2021 04:39:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 01ADA36F421
+	for <lists+netdev@lfdr.de>; Fri, 30 Apr 2021 04:47:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229806AbhD3Cjj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 29 Apr 2021 22:39:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60300 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229577AbhD3Cji (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 29 Apr 2021 22:39:38 -0400
-Received: from mail-pl1-x634.google.com (mail-pl1-x634.google.com [IPv6:2607:f8b0:4864:20::634])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 30193C06138B;
-        Thu, 29 Apr 2021 19:38:51 -0700 (PDT)
-Received: by mail-pl1-x634.google.com with SMTP id a11so4946627plh.3;
-        Thu, 29 Apr 2021 19:38:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-disposition:content-transfer-encoding;
-        bh=jaCub1Sk5luNFcSj2KyJUdoWo/o9f4mzXOf2bkFAbRc=;
-        b=gCndhTw3ouP0rMi0uKkO4yYmc7jRf0minwRX/Kisp3zUqWh+ygE+h+/Me3vzKPW66S
-         nO3Noa7whRSWeksIenMTgmXEprywhUOgoI7ThvhzlAAp5eMieV9d8pBAEIUANrSYLOiN
-         lLb9anH74xTH5vPl/wiZIEtVCCJBTHnSrAKAFtT8KaO4jhs5GhWSXOMXnpR34jHTJ0JQ
-         kV8/2E1wanSSCO7GynRJ9qM612MP4GV5g6WkEw5jv8+4d9uqlzAX2HHHAuej2E7wZE+S
-         +vx9UHNFM0+exkUHL0O9GBKUaYps8YtKhvBsS+DVaBSdTuH/pFyomWBmfCpBD4NdzoT2
-         PzUA==
+        id S229892AbhD3CsG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 29 Apr 2021 22:48:06 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:34568 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S229577AbhD3CsG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 29 Apr 2021 22:48:06 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1619750838;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=hpEdYHozyLkSWC44kvxe4BWSv8TOzx/7mnztZneDEKc=;
+        b=EY3tDJdJzx28HwYB095U8WhYBx8p71P7O2U7a/oCBP8iJV9ESFz2JRTMR/PVSGMTlu8JfP
+        A6RXh+amWqIrKFVMu82Wh1ek462lVhBN8p/tYr+mCKX4hOTXyfGmio5Z01VZdIQc8KDHbw
+        euH32DSctKCJh/h5G16EJ1NbPEEBNSY=
+Received: from mail-lf1-f71.google.com (mail-lf1-f71.google.com
+ [209.85.167.71]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-263-WIeBaoRvOmOXn1pIl75HTg-1; Thu, 29 Apr 2021 22:47:16 -0400
+X-MC-Unique: WIeBaoRvOmOXn1pIl75HTg-1
+Received: by mail-lf1-f71.google.com with SMTP id s8-20020a1977080000b02901ae88fbe012so11720164lfc.7
+        for <netdev@vger.kernel.org>; Thu, 29 Apr 2021 19:47:16 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-disposition
-         :content-transfer-encoding;
-        bh=jaCub1Sk5luNFcSj2KyJUdoWo/o9f4mzXOf2bkFAbRc=;
-        b=XhnPUfzHoi1CTWfCRk0u5607JkdVeGKISd/B0aTdOd7JdsqVGLF0NOTL0S7BA/FWdR
-         nZS2/UChpHViHZIRQBgMFeXudblC0yrHj/8eMKG6RMbEU0PUA1/Vyu+u+DIsW5MKqkPa
-         cxPTMYA5lXxjTXq6V3S1jwRDjy7cZCM31QpIFg5kCQcaEV36qu/O8gUERIc/a9CRbF1A
-         XUK/PM2N85nyEDlUin3DPeHTeUbb/iPz7ubxrunvu9nxBbM+q1h/xTsoZkMj98tTzurS
-         DvdJYrBLFwELnj9daBw0bVJVfTsiU6LxQ9/JfkJgqG79rnj1kBRwwklaxCE37tbgdnvd
-         lyIg==
-X-Gm-Message-State: AOAM5324IiUtm4A7w7fSHKGkWplXjDM6exqHr07D5aGcaImez75vnsno
-        8dlLmRuehixyg81rh0lpOZ4=
-X-Google-Smtp-Source: ABdhPJxoY/Hw8IXQtiW/BgUbYJZMs3c7bERLbztAkvCoMex1EAzOXh7z4+LBt9CcfYAY9pz/zdslhg==
-X-Received: by 2002:a17:90a:a389:: with SMTP id x9mr12546207pjp.232.1619750330653;
-        Thu, 29 Apr 2021 19:38:50 -0700 (PDT)
-Received: from localhost.localdomain ([138.197.212.246])
-        by smtp.gmail.com with ESMTPSA id in1sm8765736pjb.23.2021.04.29.19.38.42
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 29 Apr 2021 19:38:49 -0700 (PDT)
-From:   DENG Qingfang <dqfext@gmail.com>
-To:     David Miller <davem@davemloft.net>
-Cc:     andrew@lunn.ch, f.fainelli@gmail.com, hkallweit1@gmail.com,
-        kuba@kernel.org, Landen.Chao@mediatek.com, matthias.bgg@gmail.com,
-        linux@armlinux.org.uk, sean.wang@mediatek.com,
-        vivien.didelot@gmail.com, olteanv@gmail.com, robh+dt@kernel.org,
-        linus.walleij@linaro.org, gregkh@linuxfoundation.org,
-        sergio.paracuellos@gmail.com, linux-kernel@vger.kernel.org,
-        linux-mediatek@lists.infradead.org, linux-staging@lists.linux.dev,
-        devicetree@vger.kernel.org, netdev@vger.kernel.org,
-        weijie.gao@mediatek.com, gch981213@gmail.com,
-        opensource@vdorst.com, frank-w@public-files.de, tglx@linutronix.de,
-        maz@kernel.org
-Subject: Re: [PATCH net-next 0/4] MT7530 interrupt support
-Date:   Fri, 30 Apr 2021 10:38:39 +0800
-Message-Id: <20210430023839.246447-1-dqfext@gmail.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20210429.170815.956010543291313915.davem@davemloft.net>
-References: <20210429062130.29403-1-dqfext@gmail.com> <20210429.170815.956010543291313915.davem@davemloft.net>
+        h=x-gm-message-state:from:references:mime-version:in-reply-to:date
+         :message-id:subject:to:cc;
+        bh=hpEdYHozyLkSWC44kvxe4BWSv8TOzx/7mnztZneDEKc=;
+        b=QfyWop7nvMmzRz2vvmM4VHk7vTYyzWCiWiX54gxosmd8f9E4/qUarisqG1NP+H4uyg
+         BbSkpUByjqkzsFdL8HZIKzarKYbtOE1YhmTeK/bOo9N2aHaff1jPpiagPxfApHbPZsap
+         LVHaJk9OGpqN3TBAaxXgfj6N9zL9uVNIlyDiBKf+HUok3iswt0c8BBIQN0EDy4YX4HEo
+         VXq7GQckRld+yri4Od74uzs3z+kwezFvjw06jPyArQb7qsP51+eOVW9FZEvK6f0jKn4v
+         coIA/rr+4qUxoOZyck2+A9O2b5/BcYzAoyiRoFZqDP7RdWfRLi79zBbQTIsVmYtXsEuR
+         0LAA==
+X-Gm-Message-State: AOAM531PiLNen/XnQPNIOsJKVh7la6DrbXFTz13nmf10WFlmgTWPkMrt
+        WG/7t+5i07RFZ4kND4mQlRTf8ful3ES6p3MmK980IiE8haQH1Bl1VZyRtik6oZFGaKolklon0DD
+        +3gJ6VDORcRh9dk/ABsZuqORNHO5jZrgk
+X-Received: by 2002:a19:ac44:: with SMTP id r4mr1687885lfc.438.1619750834964;
+        Thu, 29 Apr 2021 19:47:14 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJyWKs6Pdr1iJCtP4FnP0ssobBLG83RYdmxz0DzkVqUGKe1bO+eTQGZxi/6xSNYlrj2fVDZ6i4o6KVPYO8vMfv8=
+X-Received: by 2002:a19:ac44:: with SMTP id r4mr1687872lfc.438.1619750834817;
+ Thu, 29 Apr 2021 19:47:14 -0700 (PDT)
+Received: from 868169051519 named unknown by gmailapi.google.com with
+ HTTPREST; Thu, 29 Apr 2021 19:47:13 -0700
+From:   Marcelo Ricardo Leitner <mleitner@redhat.com>
+References: <20210429081014.28498-1-simon.horman@netronome.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <20210429081014.28498-1-simon.horman@netronome.com>
+Date:   Thu, 29 Apr 2021 19:47:13 -0700
+Message-ID: <CALnP8ZaZQAbvm1girLUSLcFZTKV5MvBMEtN67OiA55OAvsO_1Q@mail.gmail.com>
+Subject: Re: [RFC net-next] net/flow_offload: allow user to offload tc action
+ to net device
+To:     Simon Horman <simon.horman@netronome.com>
+Cc:     Jamal Hadi Salim <jhs@mojatatu.com>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        Jiri Pirko <jiri@mellanox.com>, netdev@vger.kernel.org,
+        oss-drivers@netronome.com,
+        Baowen Zheng <baowen.zheng@corigine.com>,
+        Louis Peens <louis.peens@netronome.com>, dcaratti@redhat.com,
+        ozsh@nvidia.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Apr 29, 2021 at 05:08:15PM -0700, David Miller wrote:
-> 
-> Please fix this:
-> 
-> error: the following would cause module name conflict:
->   drivers/net/phy/mediatek.ko
->   drivers/usb/musb/mediatek.ko
+On Thu, Apr 29, 2021 at 10:10:14AM +0200, Simon Horman wrote:
+> From: Baowen Zheng <baowen.zheng@corigine.com>
+>
+> Allow use of flow_indr_dev_register/flow_indr_dev_setup_offload to offload
+> tc actions independent of flows.
+>
+> The motivation for this work is to prepare for using TC police action
+> instances to provide hardware offload of OVS metering feature - which calls
+> for policers that may be used my multiple flows and whose lifecycle is
+> independent of any flows that use them.
 
-So I still have to rename the PHY driver..
-Andrew, what is your suggestion? Is mediatek_phy.c okay?
+Makes sense to me.
 
-> 
-> 
-> Thanks.
+>
+> This patch includes basic changes to offload drivers to return EOPNOTSUPP
+> if this feature is used - it is not yet supported by any driver.
+
+I miss indications on whether the action is offloaded or not. That's
+really useful for debugging. extacks are nice but they may not be
+logged and are not present in dumps later on.
+
+As the offloading is optional here (it will fill in the extack but not
+error out), seems that it's up to the driver then to ensure that the
+action is offloaded when offloading a flow that uses such action,
+right? With that, all the skip_sw/skip_hw dealing is left to the
+flow/classifier.
+
+  Marcelo
+
