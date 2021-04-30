@@ -2,190 +2,123 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A2F18370342
-	for <lists+netdev@lfdr.de>; Fri, 30 Apr 2021 23:53:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A62D4370347
+	for <lists+netdev@lfdr.de>; Fri, 30 Apr 2021 23:55:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230508AbhD3VyR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 30 Apr 2021 17:54:17 -0400
-Received: from mail-ot1-f53.google.com ([209.85.210.53]:46875 "EHLO
-        mail-ot1-f53.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229915AbhD3VyQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 30 Apr 2021 17:54:16 -0400
-Received: by mail-ot1-f53.google.com with SMTP id d3-20020a9d29030000b029027e8019067fso63837175otb.13;
-        Fri, 30 Apr 2021 14:53:28 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=jllp/+vp6E8x8z18/+vfOIziwd4SDgO/V85o6jom1sI=;
-        b=qK0wDcXL+ozLTenDyvi6ZvIeywrP5e+cbnG1N4d1UTIdQ04HvSS3qVciWAPmq6Am75
-         dcZiPc9vyx9nejc8KcnIw67PgX09aC9gXYX17X8zQz1XyvGMRkTMN+rRBinYaKpz5qvg
-         xPM5DRFW8yoFCgXTZQ1RUhnM30UjjeBas59MC/7pzugAr+RH5K2nzXF7nItMRiD1A22G
-         Em4/T2ssnAAvaOnxYvUVizgC9vUqqdpLSuJBYRMXo9FBTlH02PMacPpgcxeIR2lEF6sY
-         ipP6u+JMfHddnSTr/PGh1T60q9OGJnk+6528RvgKvOQ4oxqDvOY5+p6Ox8xQDC8B2hhI
-         Ehdg==
-X-Gm-Message-State: AOAM533gJdWXTBUytZc4XnAwoyBgVPqs0aCmk+XyEfZCcSRT8ZRlKy4l
-        LaVSh7dM2LqNieJt8cWNlQ==
-X-Google-Smtp-Source: ABdhPJxpXpJm92cnwWYpMkS6YvJ66+iz1HDOHiqhSWqjgFKvOmFbYYcAn1QlpANBkTDIooCLfHjv2w==
-X-Received: by 2002:a05:6830:90b:: with SMTP id v11mr5011259ott.110.1619819606591;
-        Fri, 30 Apr 2021 14:53:26 -0700 (PDT)
-Received: from robh.at.kernel.org (24-155-109-49.dyn.grandenetworks.net. [24.155.109.49])
-        by smtp.gmail.com with ESMTPSA id n17sm1054496oie.11.2021.04.30.14.53.25
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 30 Apr 2021 14:53:26 -0700 (PDT)
-Received: (nullmailer pid 3967618 invoked by uid 1000);
-        Fri, 30 Apr 2021 21:53:25 -0000
-Date:   Fri, 30 Apr 2021 16:53:25 -0500
-From:   Rob Herring <robh@kernel.org>
-To:     Corentin Labbe <clabbe@baylibre.com>
-Cc:     andrew@lunn.ch, hkallweit1@gmail.com, linux@armlinux.org.uk,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: Re: [PATCH v3] dt-bindings: net: Convert mdio-gpio to yaml
-Message-ID: <20210430215325.GA3957879@robh.at.kernel.org>
-References: <20210430182941.915101-1-clabbe@baylibre.com>
+        id S231295AbhD3V4R (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 30 Apr 2021 17:56:17 -0400
+Received: from p3plsmtpa07-06.prod.phx3.secureserver.net ([173.201.192.235]:53662
+        "EHLO p3plsmtpa07-06.prod.phx3.secureserver.net" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S229915AbhD3V4N (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 30 Apr 2021 17:56:13 -0400
+Received: from chrisHP110 ([76.103.216.188])
+        by :SMTPAUTH: with ESMTPA
+        id cb6Zl3LAWLUlzcb6ZlWr3l; Fri, 30 Apr 2021 14:55:24 -0700
+X-CMAE-Analysis: v=2.4 cv=Bewdbph2 c=1 sm=1 tr=0 ts=608c7ccc
+ a=ZkbE6z54K4jjswx6VoHRvg==:117 a=ZkbE6z54K4jjswx6VoHRvg==:17
+ a=kj9zAlcOel0A:10 a=Ikd4Dj_1AAAA:8 a=VwQbUJbxAAAA:8 a=eUCHAjWJAAAA:8
+ a=MYg0ok330wZcJcPOri0A:9 a=CjuIK1q_8ugA:10 a=AjGcO6oz07-iQ99wixmX:22
+ a=e1s5y4BJLze_2YVawdyF:22
+X-SECURESERVER-ACCT: don@thebollingers.org
+From:   "Don Bollinger" <don@thebollingers.org>
+To:     "'Moshe Shemesh'" <moshe@nvidia.com>,
+        "'Michal Kubecek'" <mkubecek@suse.cz>,
+        "'Andrew Lunn'" <andrew@lunn.ch>,
+        "'Jakub Kicinski'" <kuba@kernel.org>, <netdev@vger.kernel.org>
+Cc:     "'Vladyslav Tarasiuk'" <vladyslavt@nvidia.com>
+References: <1619162596-23846-1-git-send-email-moshe@nvidia.com> <1619162596-23846-5-git-send-email-moshe@nvidia.com>
+In-Reply-To: <1619162596-23846-5-git-send-email-moshe@nvidia.com>
+Subject: RE: [PATCH ethtool-next 4/4] ethtool: Update manpages for getmodule (-m) command
+Date:   Fri, 30 Apr 2021 14:55:23 -0700
+Message-ID: <008701d73e0b$85a7d490$90f77db0$@thebollingers.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210430182941.915101-1-clabbe@baylibre.com>
+Content-Type: text/plain;
+        charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+X-Mailer: Microsoft Outlook 15.0
+Thread-Index: AQIoIhiQoNl9y+8EvClCms9DfxFPhwEmLYfGqiKfCwA=
+Content-Language: en-us
+X-CMAE-Envelope: MS4xfLKMO3RwvsXs4b2VpoFGCuheCldGLky/vo7LBCJBwe6diKVl+NxV0LGnEXA83NnjVHItHuuoa4ZlL/Kq1kk5tFVSex5UoMDaREGh+iTmIMTmoh0TVciZ
+ VCt5CbBh4z2N/3gnafQIoeYM/6xKc9xIbob9//Ym0GMQh+uzvVrf4r0N8k2wHMSBIZFljBNhPbiun5ay3trqRqCY1UqAXpVbCrVhEUSraiM8VRVzGw4FOb7y
+ 0qdqDhTQVs0zQ5Z051FEsxje7Gqx/+qvMaSUFXydWOQ6T9OSg6VUBdu4Jwxt6wWF29O97XZ97ED6P9EqZKCIL+3OrdIHLBmN0oVSoMU0FJo=
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Apr 30, 2021 at 06:29:41PM +0000, Corentin Labbe wrote:
-> Converts net/mdio-gpio.txt to yaml
+> From: Moshe Shemesh [mailto:moshe@nvidia.com]
+> Sent: Friday, April 23, 2021 12:23 AM
+> To: Michal Kubecek <mkubecek@suse.cz>; Andrew Lunn
+> <andrew@lunn.ch>; Jakub Kicinski <kuba@kernel.org>; Don Bollinger
+> <don@thebollingers.org>; netdev@vger.kernel.org
+> Cc: Vladyslav Tarasiuk <vladyslavt@nvidia.com>; Moshe Shemesh
+> <moshe@nvidia.com>
+> Subject: [PATCH ethtool-next 4/4] ethtool: Update manpages for getmodule
+> (-m) command
 > 
-> Reviewed-by: Andrew Lunn <andrew@lunn.ch>
-> Signed-off-by: Corentin Labbe <clabbe@baylibre.com>
+> From: Vladyslav Tarasiuk <vladyslavt@nvidia.com>
+> 
+> Add page, bank and i2c parameters and mention change in offset and length
+> treatment if either one of new parameters is specified by the user.
+> 
+> Signed-off-by: Vladyslav Tarasiuk <vladyslavt@nvidia.com>
+> Reviewed-by: Moshe Shemesh <moshe@nvidia.com>
 > ---
-> Changes since v1:
-> - fixes yamllint warning about indent
-> - added maxItems 3
+>  ethtool.8.in | 14 ++++++++++++++
+>  1 file changed, 14 insertions(+)
 > 
-> Changes since v2:
-> - fixed example (gpios need 2 entries)
-> 
->  .../devicetree/bindings/net/mdio-gpio.txt     | 27 ---------
->  .../devicetree/bindings/net/mdio-gpio.yaml    | 57 +++++++++++++++++++
->  2 files changed, 57 insertions(+), 27 deletions(-)
->  delete mode 100644 Documentation/devicetree/bindings/net/mdio-gpio.txt
->  create mode 100644 Documentation/devicetree/bindings/net/mdio-gpio.yaml
-> 
-> diff --git a/Documentation/devicetree/bindings/net/mdio-gpio.txt b/Documentation/devicetree/bindings/net/mdio-gpio.txt
-> deleted file mode 100644
-> index 4d91a36c5cf5..000000000000
-> --- a/Documentation/devicetree/bindings/net/mdio-gpio.txt
-> +++ /dev/null
-> @@ -1,27 +0,0 @@
-> -MDIO on GPIOs
-> -
-> -Currently defined compatibles:
-> -- virtual,gpio-mdio
-> -- microchip,mdio-smi0
-> -
-> -MDC and MDIO lines connected to GPIO controllers are listed in the
-> -gpios property as described in section VIII.1 in the following order:
-> -
-> -MDC, MDIO.
-> -
-> -Note: Each gpio-mdio bus should have an alias correctly numbered in "aliases"
-> -node.
-> -
-> -Example:
-> -
-> -aliases {
-> -	mdio-gpio0 = &mdio0;
-> -};
-> -
-> -mdio0: mdio {
-> -	compatible = "virtual,mdio-gpio";
-> -	#address-cells = <1>;
-> -	#size-cells = <0>;
-> -	gpios = <&qe_pio_a 11
-> -		 &qe_pio_c 6>;
-> -};
-> diff --git a/Documentation/devicetree/bindings/net/mdio-gpio.yaml b/Documentation/devicetree/bindings/net/mdio-gpio.yaml
-> new file mode 100644
-> index 000000000000..183cf248d597
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/net/mdio-gpio.yaml
-> @@ -0,0 +1,57 @@
-> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-> +%YAML 1.2
-> +---
-> +$id: http://devicetree.org/schemas/net/mdio-gpio.yaml#
-> +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> +
-> +title: MDIO on GPIOs
-> +
-> +maintainers:
-> +  - Andrew Lunn <andrew@lunn.ch>
-> +  - Florian Fainelli <f.fainelli@gmail.com>
-> +  - Heiner Kallweit <hkallweit1@gmail.com>
-> +
-> +allOf:
-> +  - $ref: "mdio.yaml#"
-> +
-> +properties:
-> +  compatible:
-> +    enum:
-> +      - virtual,mdio-gpio
-> +      - microchip,mdio-smi0
-> +
-> +  "#address-cells":
-> +    const: 1
-> +
-> +  "#size-cells":
-> +    const: 0
-> +
-> +  gpios:
-> +    minItems: 2
-> +    maxItems: 3
-> +    description: |
-> +      MDC and MDIO lines connected to GPIO controllers are listed in
-> +      the gpios property as described in section VIII.1 in the
-> +      following order: MDC, MDIO.
+> diff --git a/ethtool.8.in b/ethtool.8.in index fe49b66..9516458 100644
+> --- a/ethtool.8.in
+> +++ b/ethtool.8.in
+> @@ -359,6 +359,9 @@ ethtool \- query or control network driver and
+> hardware settings
+>  .B2 hex on off
+>  .BN offset
+>  .BN length
+> +.BN page
+> +.BN bank
+> +.BN i2c
+>  .HP
+>  .B ethtool \-\-show\-priv\-flags
+>  .I devname
+> @@ -1154,6 +1157,17 @@ Changes the number of multi-purpose channels.
+>  Retrieves and if possible decodes the EEPROM from plugin modules, e.g
+> SFP+, QSFP.
+>  If the driver and module support it, the optical diagnostic information
+is also
+> read and decoded.
+> +When either one of
+> +.I page,
+> +.I bank
+> +or
+> +.I i2c
+> +parameters is specified, dumps only of a single page or its portion is
+> +allowed. In such a case .I offset and .I length parameters are treated
+> +relatively to EEPROM page boundaries.
 
-section VIII.1 of what? Might be in DT spec, but if so the section is 
-different for sure.
+You want 'relative', not 'relatively'.
 
-What's the order with 3 lines? In any case, define the order with 
-schema:
+Please spend a few more words on this.  Basically there are two choices.
+Assuming lower memory cannot be accessed when page 2 is specified, the
+offset of the first byte of page 2 is either 0 or 128.  I can't tell which
+of those choices you mean.
 
-minItems:
-items:
-  - description: MDC signal
-  - description: MDIO or ?? signal
-  - description: ?? signal
+Also, based on the code in the other patches, I assume you mean that the
+first byte of page 2 is at offset 0.  I recommend against that.  The specs
+all assume that the first byte ***of the paged area*** of page 2 (or any
+other page) is at 128.  Hundreds of registers are specified in each spec,
+all with offsets in the range 128-255.  The ONLY purpose of this option to
+ethtool is to manage those registers, per those specs.  Forcing every user
+to translate between the spec and the tool is going to be tedious and error
+prone.
 
-> +
-> +#Note: Each gpio-mdio bus should have an alias correctly numbered in "aliases"
-> +#node.
-> +unevaluatedProperties: false
 
-additionalProperties:
-  type: object
 
-To say anything else has to be a child node.
+>  .TP
+>  .B \-\-show\-priv\-flags
+>  Queries the specified network device for its private flags.  The
+> --
+> 2.26.2
 
-> +
-> +examples:
-> +  - |
-> +    aliases {
-> +        mdio-gpio0 = &mdio0;
-> +    };
-> +
-> +    mdio0: mdio {
-> +      compatible = "virtual,mdio-gpio";
-> +      #address-cells = <1>;
-> +      #size-cells = <0>;
-> +      gpios = <&qe_pio_a 11>,
-> +              <&qe_pio_c 6>;
-> +      ethphy0: ethernet-phy@0 {
-> +        reg = <0>;
-> +      };
-> +    };
-> +...
-> -- 
-> 2.26.3
-> 
+Don
+
+
