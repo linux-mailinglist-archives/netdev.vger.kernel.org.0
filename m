@@ -2,253 +2,119 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3029B370119
-	for <lists+netdev@lfdr.de>; Fri, 30 Apr 2021 21:19:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7FA4E370128
+	for <lists+netdev@lfdr.de>; Fri, 30 Apr 2021 21:29:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231756AbhD3TTS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 30 Apr 2021 15:19:18 -0400
-Received: from mail-io1-f72.google.com ([209.85.166.72]:37418 "EHLO
-        mail-io1-f72.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231140AbhD3TTK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 30 Apr 2021 15:19:10 -0400
-Received: by mail-io1-f72.google.com with SMTP id e18-20020a5ed5120000b029041705a6ed5cso1082287iom.4
-        for <netdev@vger.kernel.org>; Fri, 30 Apr 2021 12:18:21 -0700 (PDT)
+        id S231786AbhD3T35 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 30 Apr 2021 15:29:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57218 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230356AbhD3T34 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 30 Apr 2021 15:29:56 -0400
+Received: from mail-wr1-x434.google.com (mail-wr1-x434.google.com [IPv6:2a00:1450:4864:20::434])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E7A2CC06174A;
+        Fri, 30 Apr 2021 12:29:07 -0700 (PDT)
+Received: by mail-wr1-x434.google.com with SMTP id l2so19471380wrm.9;
+        Fri, 30 Apr 2021 12:29:07 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:subject:message-id:reply-to:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=xsfKWu9djAexRf8YYIEh/TvQ8uWgjaR/8FmkkjYHDMQ=;
+        b=G7dPItt9FEhqr9c207tbh+hMSJ00gc44EZ7WniDIsCu+4XmHUjdthA8dOnZ315n+Vc
+         j//+QqSXtoryhIvjCdapYzc1I+XO0SkhgHpAbyQHvdkKjfNfG13vXYtVpvw8IdpaqGhO
+         SeIHzX9KYeogpXfRdm4ludGDoo91u9Sw6vOeTzg3LVCQTw+sn9V+D92mk3vOWAsUGmf3
+         JCCW2kXWLjPFjTwzG9sju6JQUwWtLSZapS036fmfSuU1U8mabp5LIAeTdV59Ykqg+0gy
+         GFOZ1UtKPIK1pk+Jm78QERu959pDCJl3cGcnbblUO6zZTSC8rwAh+Jbok1CNjk4nhust
+         JBjg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=W21MpQbg2r+zNE3j8+vGWPwY3QTKyRcwFXVYnsEsdfk=;
-        b=theYeerPPuTEzpdllIZ8gZlsyGMdM7NH2EqxctZWH0YF7v+AgmBSiAE8csgXcLy/rr
-         GQKUOZwtr7tL0UpAVX05kXlNTRJDcKw1mpOBFIuEd730whEPAGQyUO8dATsMyeKkvFj8
-         VqDvBfso7fGgED9v+HUj6dhfvFNRTg0rEFmV8uLA8NZtzTuwdwA0RJHUi3ID7ASfeL3S
-         UXCtA9LCk41gL3kpWEY6RaUzlzgVpuLaybqaMgE6LVlp+STAK1vJTZmsWdXtqyQN9IYp
-         MGbQT3+iLmYNFs8mpGQ+WkBAJUK9ItHCGzE7fsleektXsZBnre3ZfocIlHinDKLF/z/T
-         t/tQ==
-X-Gm-Message-State: AOAM5306rRm1mQknyHpsgBPX2rJMb+xR4K47I7p0ss0fgzGd7MZVxvMD
-        POV7vrUoG4glT37io67P6P0dp1ZppSF6Rif43OfBCewa63A8
-X-Google-Smtp-Source: ABdhPJwZS0tfegh2Qqjc0QKn+UUcf4HfJCvapdjl8XTuTXzuiIOy0BxLLiudFD2SpuxKFLCBNFeorHCXet+FSN9BdOrQwf79BoUu
+        h=x-gm-message-state:date:from:to:subject:message-id:reply-to
+         :references:mime-version:content-disposition:in-reply-to;
+        bh=xsfKWu9djAexRf8YYIEh/TvQ8uWgjaR/8FmkkjYHDMQ=;
+        b=AZbMUmuR58DPOMX9nSBqQgwmQsK1csDyQVaR/41TsxmBqOd4n1CFLRrUJ73P8dTHgp
+         CZqGrh3wrI/kKRttj4eJoE/yWw7kCtxSkEtulgghWzjTNtv6Fg9DIv7lLYma9YA4iZOe
+         xDxt1X7KyFGJxVM1Soa0rXfPsQjvwuuWtxh8fWqRyJqHS1thHhtX+eigJL+mY/sDtvi4
+         b1fnNTpg0KOx0avHuofhbUnQoWMPQ3M8kXy6bJ4d1J2id6OdQ6TWaKQhQ6+jMwF0c+rt
+         vhTPTikCWvGeO4/iBHM2qsHv7iAYziHDzu9BbILW4qxlrIwMTmVZtu8gQXHwIxxQ2gIC
+         IOWA==
+X-Gm-Message-State: AOAM532DVD9d8aEkhMrusVbECCQ7egLxJLf9tvI+/cfxY0KSxULDUOjh
+        hW+iz3t+TFTk+3iAvb6Wevhczi5g5yXVJw==
+X-Google-Smtp-Source: ABdhPJxSQ7n5LAUvnqoHD3cmKiQNmXUEqzIb8q1m09ms7Ugx7Ty3b1YYgG2C+JW30u8nmzrKMqbmvg==
+X-Received: by 2002:a5d:6085:: with SMTP id w5mr9404523wrt.14.1619810946705;
+        Fri, 30 Apr 2021 12:29:06 -0700 (PDT)
+Received: from pevik ([62.201.25.198])
+        by smtp.gmail.com with ESMTPSA id u2sm13813002wmc.22.2021.04.30.12.29.05
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 30 Apr 2021 12:29:06 -0700 (PDT)
+Date:   Fri, 30 Apr 2021 21:29:03 +0200
+From:   Petr Vorel <petr.vorel@gmail.com>
+To:     Heiko Thiery <heiko.thiery@gmail.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Stephen Hemminger <stephen@networkplumber.org>
+Subject: Re: [PATCH iproute2-next v2] lib/fs: fix issue when
+ {name,open}_to_handle_at() is not implemented
+Message-ID: <YIxaf3hu2mRUbBGn@pevik>
+Reply-To: Petr Vorel <petr.vorel@gmail.com>
+References: <20210430062632.21304-1-heiko.thiery@gmail.com>
+ <YIxVWXqBkkS6l5lB@pevik>
 MIME-Version: 1.0
-X-Received: by 2002:a05:6e02:1526:: with SMTP id i6mr5273750ilu.270.1619810301365;
- Fri, 30 Apr 2021 12:18:21 -0700 (PDT)
-Date:   Fri, 30 Apr 2021 12:18:21 -0700
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <0000000000009dd35c05c135792d@google.com>
-Subject: [syzbot] possible deadlock in sctp_addr_wq_timeout_handler
-From:   syzbot <syzbot+959223586843e69a2674@syzkaller.appspotmail.com>
-To:     akpm@linux-foundation.org, bp@alien8.de, davem@davemloft.net,
-        hpa@zytor.com, jmattson@google.com, joro@8bytes.org,
-        kuba@kernel.org, kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-sctp@vger.kernel.org, marcelo.leitner@gmail.com,
-        mark.rutland@arm.com, masahiroy@kernel.org, mingo@redhat.com,
-        netdev@vger.kernel.org, nhorman@tuxdriver.com, pbonzini@redhat.com,
-        peterz@infradead.org, rafael.j.wysocki@intel.com,
-        rostedt@goodmis.org, seanjc@google.com,
-        syzkaller-bugs@googlegroups.com, tglx@linutronix.de,
-        vkuznets@redhat.com, vyasevich@gmail.com, wanpengli@tencent.com,
-        will@kernel.org, x86@kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YIxVWXqBkkS6l5lB@pevik>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+Hi,
 
-syzbot found the following issue on:
+> > +++ b/lib/fs.c
+> > @@ -30,6 +30,27 @@
+> >  /* if not already mounted cgroup2 is mounted here for iproute2's use */
+> >  #define MNT_CGRP2_PATH  "/var/run/cgroup2"
 
-HEAD commit:    2a1d7946 Merge tag 'for-linus' of git://git.kernel.org/pub..
-git tree:       upstream
-console output: https://syzkaller.appspot.com/x/log.txt?x=159af1c1d00000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=9404cfa686df2c05
-dashboard link: https://syzkaller.appspot.com/bug?extid=959223586843e69a2674
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=11613d71d00000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=12be674dd00000
+> > +
+> > +#ifndef defined HAVE_HANDLE_AT
+> This is also wrong, it must be:
+> #ifndef HAVE_HANDLE_AT
 
-The issue was bisected to:
+> > +struct file_handle {
+> > +	unsigned handle_bytes;
+> > +	int handle_type;
+> > +	unsigned char f_handle[];
+> > +};
+> > +
+> > +int name_to_handle_at(int dirfd, const char *pathname,
+> > +	struct file_handle *handle, int *mount_id, int flags)
+> > +{
+> > +	return syscall(name_to_handle_at, 5, dirfd, pathname, handle,
+> > +	               mount_id, flags);
+> Also I overlooked bogus 5 parameter, why is here? Correct is:
 
-commit 997acaf6b4b59c6a9c259740312a69ea549cc684
-Author: Mark Rutland <mark.rutland@arm.com>
-Date:   Mon Jan 11 15:37:07 2021 +0000
-
-    lockdep: report broken irq restoration
-
-bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=17c36a5dd00000
-final oops:     https://syzkaller.appspot.com/x/report.txt?x=14236a5dd00000
-console output: https://syzkaller.appspot.com/x/log.txt?x=10236a5dd00000
-
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+959223586843e69a2674@syzkaller.appspotmail.com
-Fixes: 997acaf6b4b5 ("lockdep: report broken irq restoration")
-
-======================================================
-WARNING: possible circular locking dependency detected
-5.12.0-rc8-syzkaller #0 Not tainted
-------------------------------------------------------
-syz-executor044/8536 is trying to acquire lock:
-ffff8880183933a0 (slock-AF_INET6){+.-.}-{2:2}, at: spin_lock include/linux/spinlock.h:354 [inline]
-ffff8880183933a0 (slock-AF_INET6){+.-.}-{2:2}, at: sctp_addr_wq_timeout_handler+0x1a1/0x550 net/sctp/protocol.c:666
-
-but task is already holding lock:
-ffffffff8d659620 (&net->sctp.addr_wq_lock){+.-.}-{2:2}, at: spin_lock_bh include/linux/spinlock.h:359 [inline]
-ffffffff8d659620 (&net->sctp.addr_wq_lock){+.-.}-{2:2}, at: sctp_addr_wq_timeout_handler+0x38/0x550 net/sctp/protocol.c:626
-
-which lock already depends on the new lock.
+> 	return syscall(__NR_name_to_handle_at, dfd, pathname, handle,
+> 			   mount_id, flags);
+Uh, one more typo on my side, sorry (dfd => dirfd):
+	return syscall(__NR_name_to_handle_at, dirfd, pathname, handle,
+ 			   mount_id, flags);
 
 
-the existing dependency chain (in reverse order) is:
+Kind regards,
+Petr
 
--> #1 (&net->sctp.addr_wq_lock){+.-.}-{2:2}:
-       __raw_spin_lock_bh include/linux/spinlock_api_smp.h:135 [inline]
-       _raw_spin_lock_bh+0x2f/0x40 kernel/locking/spinlock.c:175
-       spin_lock_bh include/linux/spinlock.h:359 [inline]
-       sctp_destroy_sock+0x204/0x440 net/sctp/socket.c:5028
-       sctp_v6_destroy_sock+0x11/0x20 net/sctp/socket.c:9528
-       sk_common_release+0x64/0x390 net/core/sock.c:3264
-       sctp_close+0x4da/0x940 net/sctp/socket.c:1531
-       inet_release+0x12e/0x280 net/ipv4/af_inet.c:431
-       inet6_release+0x4c/0x70 net/ipv6/af_inet6.c:478
-       __sock_release+0xcd/0x280 net/socket.c:599
-       sock_close+0x18/0x20 net/socket.c:1258
-       __fput+0x288/0x920 fs/file_table.c:280
-       task_work_run+0xdd/0x1a0 kernel/task_work.c:140
-       exit_task_work include/linux/task_work.h:30 [inline]
-       do_exit+0xbfc/0x2a60 kernel/exit.c:825
-       do_group_exit+0x125/0x310 kernel/exit.c:922
-       __do_sys_exit_group kernel/exit.c:933 [inline]
-       __se_sys_exit_group kernel/exit.c:931 [inline]
-       __x64_sys_exit_group+0x3a/0x50 kernel/exit.c:931
-       do_syscall_64+0x2d/0x70 arch/x86/entry/common.c:46
-       entry_SYSCALL_64_after_hwframe+0x44/0xae
-
--> #0 (slock-AF_INET6){+.-.}-{2:2}:
-       check_prev_add kernel/locking/lockdep.c:2937 [inline]
-       check_prevs_add kernel/locking/lockdep.c:3060 [inline]
-       validate_chain kernel/locking/lockdep.c:3675 [inline]
-       __lock_acquire+0x2b14/0x54c0 kernel/locking/lockdep.c:4901
-       lock_acquire kernel/locking/lockdep.c:5511 [inline]
-       lock_acquire+0x1ab/0x740 kernel/locking/lockdep.c:5476
-       __raw_spin_lock include/linux/spinlock_api_smp.h:142 [inline]
-       _raw_spin_lock+0x2a/0x40 kernel/locking/spinlock.c:151
-       spin_lock include/linux/spinlock.h:354 [inline]
-       sctp_addr_wq_timeout_handler+0x1a1/0x550 net/sctp/protocol.c:666
-       call_timer_fn+0x1a5/0x6b0 kernel/time/timer.c:1431
-       expire_timers kernel/time/timer.c:1476 [inline]
-       __run_timers.part.0+0x67c/0xa50 kernel/time/timer.c:1745
-       __run_timers kernel/time/timer.c:1726 [inline]
-       run_timer_softirq+0xb3/0x1d0 kernel/time/timer.c:1758
-       __do_softirq+0x29b/0x9f6 kernel/softirq.c:345
-       invoke_softirq kernel/softirq.c:221 [inline]
-       __irq_exit_rcu kernel/softirq.c:422 [inline]
-       irq_exit_rcu+0x134/0x200 kernel/softirq.c:434
-       sysvec_apic_timer_interrupt+0x93/0xc0 arch/x86/kernel/apic/apic.c:1100
-       asm_sysvec_apic_timer_interrupt+0x12/0x20 arch/x86/include/asm/idtentry.h:632
-       __raw_spin_unlock_irqrestore include/linux/spinlock_api_smp.h:161 [inline]
-       _raw_spin_unlock_irqrestore+0x38/0x70 kernel/locking/spinlock.c:191
-       __debug_check_no_obj_freed lib/debugobjects.c:997 [inline]
-       debug_check_no_obj_freed+0x20c/0x420 lib/debugobjects.c:1018
-       slab_free_hook mm/slub.c:1554 [inline]
-       slab_free_freelist_hook+0x147/0x210 mm/slub.c:1600
-       slab_free mm/slub.c:3161 [inline]
-       kmem_cache_free+0x8a/0x740 mm/slub.c:3177
-       free_fs_struct fs/fs_struct.c:92 [inline]
-       exit_fs+0x123/0x170 fs/fs_struct.c:108
-       do_exit+0xbca/0x2a60 kernel/exit.c:821
-       do_group_exit+0x125/0x310 kernel/exit.c:922
-       __do_sys_exit_group kernel/exit.c:933 [inline]
-       __se_sys_exit_group kernel/exit.c:931 [inline]
-       __x64_sys_exit_group+0x3a/0x50 kernel/exit.c:931
-       do_syscall_64+0x2d/0x70 arch/x86/entry/common.c:46
-       entry_SYSCALL_64_after_hwframe+0x44/0xae
-
-other info that might help us debug this:
-
- Possible unsafe locking scenario:
-
-       CPU0                    CPU1
-       ----                    ----
-  lock(&net->sctp.addr_wq_lock);
-                               lock(slock-AF_INET6);
-                               lock(&net->sctp.addr_wq_lock);
-  lock(slock-AF_INET6);
-
- *** DEADLOCK ***
-
-2 locks held by syz-executor044/8536:
- #0: ffffc90000007d78 ((&net->sctp.addr_wq_timer)){+.-.}-{0:0}, at: lockdep_copy_map include/linux/lockdep.h:35 [inline]
- #0: ffffc90000007d78 ((&net->sctp.addr_wq_timer)){+.-.}-{0:0}, at: call_timer_fn+0xd5/0x6b0 kernel/time/timer.c:1421
- #1: ffffffff8d659620 (&net->sctp.addr_wq_lock){+.-.}-{2:2}, at: spin_lock_bh include/linux/spinlock.h:359 [inline]
- #1: ffffffff8d659620 (&net->sctp.addr_wq_lock){+.-.}-{2:2}, at: sctp_addr_wq_timeout_handler+0x38/0x550 net/sctp/protocol.c:626
-
-stack backtrace:
-CPU: 0 PID: 8536 Comm: syz-executor044 Not tainted 5.12.0-rc8-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-Call Trace:
- <IRQ>
- __dump_stack lib/dump_stack.c:79 [inline]
- dump_stack+0x141/0x1d7 lib/dump_stack.c:120
- check_noncircular+0x25f/0x2e0 kernel/locking/lockdep.c:2128
- check_prev_add kernel/locking/lockdep.c:2937 [inline]
- check_prevs_add kernel/locking/lockdep.c:3060 [inline]
- validate_chain kernel/locking/lockdep.c:3675 [inline]
- __lock_acquire+0x2b14/0x54c0 kernel/locking/lockdep.c:4901
- lock_acquire kernel/locking/lockdep.c:5511 [inline]
- lock_acquire+0x1ab/0x740 kernel/locking/lockdep.c:5476
- __raw_spin_lock include/linux/spinlock_api_smp.h:142 [inline]
- _raw_spin_lock+0x2a/0x40 kernel/locking/spinlock.c:151
- spin_lock include/linux/spinlock.h:354 [inline]
- sctp_addr_wq_timeout_handler+0x1a1/0x550 net/sctp/protocol.c:666
- call_timer_fn+0x1a5/0x6b0 kernel/time/timer.c:1431
- expire_timers kernel/time/timer.c:1476 [inline]
- __run_timers.part.0+0x67c/0xa50 kernel/time/timer.c:1745
- __run_timers kernel/time/timer.c:1726 [inline]
- run_timer_softirq+0xb3/0x1d0 kernel/time/timer.c:1758
- __do_softirq+0x29b/0x9f6 kernel/softirq.c:345
- invoke_softirq kernel/softirq.c:221 [inline]
- __irq_exit_rcu kernel/softirq.c:422 [inline]
- irq_exit_rcu+0x134/0x200 kernel/softirq.c:434
- sysvec_apic_timer_interrupt+0x93/0xc0 arch/x86/kernel/apic/apic.c:1100
- </IRQ>
- asm_sysvec_apic_timer_interrupt+0x12/0x20 arch/x86/include/asm/idtentry.h:632
-RIP: 0010:__raw_spin_unlock_irqrestore include/linux/spinlock_api_smp.h:161 [inline]
-RIP: 0010:_raw_spin_unlock_irqrestore+0x38/0x70 kernel/locking/spinlock.c:191
-Code: 74 24 10 e8 4a f9 53 f8 48 89 ef e8 82 af 54 f8 81 e3 00 02 00 00 75 25 9c 58 f6 c4 02 75 2d 48 85 db 74 01 fb bf 01 00 00 00 <e8> 63 7d 48 f8 65 8b 05 0c 48 fc 76 85 c0 74 0a 5b 5d c3 e8 d0 3c
-RSP: 0018:ffffc9000173fc50 EFLAGS: 00000206
-RAX: 0000000000000002 RBX: 0000000000000200 RCX: 1ffffffff1b89e11
-RDX: 0000000000000000 RSI: 0000000000000001 RDI: 0000000000000001
-RBP: ffffffff9006cf00 R08: 0000000000000001 R09: 0000000000000001
-R10: ffffffff8179e4c8 R11: 000000000000003f R12: 1ffffffff200d9df
-R13: 0000000000000000 R14: dead000000000100 R15: dffffc0000000000
- __debug_check_no_obj_freed lib/debugobjects.c:997 [inline]
- debug_check_no_obj_freed+0x20c/0x420 lib/debugobjects.c:1018
- slab_free_hook mm/slub.c:1554 [inline]
- slab_free_freelist_hook+0x147/0x210 mm/slub.c:1600
- slab_free mm/slub.c:3161 [inline]
- kmem_cache_free+0x8a/0x740 mm/slub.c:3177
- free_fs_struct fs/fs_struct.c:92 [inline]
- exit_fs+0x123/0x170 fs/fs_struct.c:108
- do_exit+0xbca/0x2a60 kernel/exit.c:821
- do_group_exit+0x125/0x310 kernel/exit.c:922
- __do_sys_exit_group kernel/exit.c:933 [inline]
- __se_sys_exit_group kernel/exit.c:931 [inline]
- __x64_sys_exit_group+0x3a/0x50 kernel/exit.c:931
- do_syscall_64+0x2d/0x70 arch/x86/entry/common.c:46
- entry_SYSCALL_64_after_hwframe+0x44/0xae
-RIP: 0033:0x43ea79
-Code: Unable to access opcode bytes at RIP 0x43ea4f.
-RSP: 002b:00007ffdbc348058 EFLAGS: 00000246 ORIG_RAX: 00000000000000e7
-RAX: ffffffffffffffda RBX: 00000000004b0330 RCX: 000000000043ea79
-RDX: 000000000000003c RSI: 00000000000000e7 RDI: 0000000000000000
-RBP: 0000000000000000 R08: ffffffffffffffc0 R09: 0000000000000001
-R10: 0000000000000001 R11: 0000000000000246 R12: 00000000004b0330
-R13: 0000000000000001 R14: 0000000000000000 R15: 0000000000000001
+> > +}
+> > +
+> > +int open_by_handle_at(int mount_fd, struct file_handle *handle, int flags)
+> > +{
+> > +	return syscall(open_by_handle_at, 3, mount_fd, handle, flags);
+> And here 3, correct version is is:
+> 	return syscall(__NR_open_by_handle_at, mount_fd, handle, flags);
 
 
----
-This report is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
+> + adding at the top:
 
-syzbot will keep track of this issue. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
-For information about bisection process see: https://goo.gl/tpsmEJ#bisection
-syzbot can test patches for this issue, for details see:
-https://goo.gl/tpsmEJ#testing-patches
+> #ifndef HAVE_HANDLE_AT
+> # include <sys/syscall.h>
+> #endif
+
+> Kind regards,
+> Petr
