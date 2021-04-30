@@ -2,98 +2,135 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6456E36FFCB
-	for <lists+netdev@lfdr.de>; Fri, 30 Apr 2021 19:42:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C12E936FFE4
+	for <lists+netdev@lfdr.de>; Fri, 30 Apr 2021 19:47:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231153AbhD3RnT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 30 Apr 2021 13:43:19 -0400
-Received: from mail.as397444.net ([69.59.18.99]:43802 "EHLO mail.as397444.net"
+        id S231217AbhD3RsT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 30 Apr 2021 13:48:19 -0400
+Received: from mx2.suse.de ([195.135.220.15]:51692 "EHLO mx2.suse.de"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230387AbhD3RnQ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 30 Apr 2021 13:43:16 -0400
-Received: by mail.as397444.net (Postfix) with UTF8SMTPSA id 99719560E56;
-        Fri, 30 Apr 2021 17:42:26 +0000 (UTC)
-X-DKIM-Note: Keys used to sign are likely public at https://as397444.net/dkim/
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mattcorallo.com;
-        s=1619803264; t=1619804546;
-        bh=nEQgiO0eMVUXCuWCl/hXtBScnQ2Gv/kVFJx8R5WbdVY=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=GXtvhTbMWwrLxW8DpaqvC1SUXWvuT3U7r8dz3OhZx55KHNybNPt6Ipy+SkL0dkjp7
-         SGiiDIor6AItJH5NN3MmMo1k0nUR1/6n7InX5Q99CLmfu9ENcq/V1CVrojx3RjQdnO
-         QP8xnWMPVSHKZQ++RZtHJRQcxOW4aCN1DbT4Mm830m8WZ8uymeP1AhSHZMxzIJsgcV
-         0mFWEF7g7at4thnf0UhWzYQGsIxGklvoY1hQniD4LTyH7QgXToDcY2U11dKPxMYEMz
-         pVwwAercrpc8LfJQefyQSlcp1b9DF8rT7zhurRhAav1M3cLFn3EuZ9sR1HkZ0HyOoT
-         i/B+xJvPoWlAg==
-Message-ID: <c8ad9235-5436-8418-69a9-6c525fd254a4@bluematt.me>
-Date:   Fri, 30 Apr 2021 13:42:26 -0400
-MIME-Version: 1.0
-Subject: Re: [PATCH net-next] Reduce IP_FRAG_TIME fragment-reassembly timeout
- to 1s, from 30s
-Content-Language: en-US
-To:     Eric Dumazet <edumazet@google.com>
-Cc:     Willy Tarreau <w@1wt.eu>, "David S. Miller" <davem@davemloft.net>,
-        netdev <netdev@vger.kernel.org>,
-        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
+        id S229750AbhD3RsR (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 30 Apr 2021 13:48:17 -0400
+X-Virus-Scanned: by amavisd-new at test-mx.suse.de
+Received: from relay2.suse.de (unknown [195.135.221.27])
+        by mx2.suse.de (Postfix) with ESMTP id C7C9EB0BD;
+        Fri, 30 Apr 2021 17:47:25 +0000 (UTC)
+Date:   Fri, 30 Apr 2021 19:47:23 +0200
+From:   Michal =?iso-8859-1?Q?Such=E1nek?= <msuchanek@suse.de>
+To:     Jiri Olsa <jolsa@redhat.com>
+Cc:     Yonghong Song <yhs@fb.com>, linux-kernel@vger.kernel.org,
+        Martin KaFai Lau <kafai@fb.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        Keyu Man <kman001@ucr.edu>
-References: <d840ddcf-07a6-a838-abf8-b1d85446138e@bluematt.me>
- <CANn89i+L2DuD2+EMHzwZ=qYYKo1A9gw=nTTmh20GV_o9ADxe2Q@mail.gmail.com>
- <0cb19f7e-a9b3-58f8-6119-0736010f1326@bluematt.me>
- <20210428141319.GA7645@1wt.eu>
- <055d0512-216c-9661-9dd4-007c46049265@bluematt.me>
- <CANn89iKfGhNYJVpj4T2MLkomkwPsYWyOof+COVvNFsfVfb7CRQ@mail.gmail.com>
- <64829c98-e4eb-6725-0fee-dc3c6681506f@bluematt.me>
- <1baf048d-18e8-3e0c-feee-a01b381b0168@bluematt.me>
- <CANn89iKJDUQuXBueuZWdi17LgFW3yb4LUsH3hzY08+ytJ9QgeA@mail.gmail.com>
-From:   Matt Corallo <netdev-list@mattcorallo.com>
-In-Reply-To: <CANn89iKJDUQuXBueuZWdi17LgFW3yb4LUsH3hzY08+ytJ9QgeA@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+        David Ahern <dsahern@kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Song Liu <songliubraving@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, Jiri Olsa <jolsa@kernel.org>,
+        Jesper Dangaard Brouer <brouer@redhat.com>, jslaby@suse.com
+Subject: Re: linux-next failing build due to missing cubictcp_state symbol
+Message-ID: <20210430174723.GP15381@kitsune.suse.cz>
+References: <316e86f9-35cc-36b0-1594-00a09631c736@fb.com>
+ <20210423175528.GF6564@kitsune.suse.cz>
+ <20210425111545.GL15381@kitsune.suse.cz>
+ <20210426113215.GM15381@kitsune.suse.cz>
+ <20210426121220.GN15381@kitsune.suse.cz>
+ <20210426121401.GO15381@kitsune.suse.cz>
+ <49f84147-bf32-dc59-48e0-f89241cf6264@fb.com>
+ <YIbkR6z6mxdNSzGO@krava>
+ <YIcRlHQWWKbOlcXr@krava>
+ <20210427121237.GK6564@kitsune.suse.cz>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20210427121237.GK6564@kitsune.suse.cz>
+User-Agent: Mutt/1.11.3 (2019-02-01)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+CC another Jiri
 
-
-On 4/30/21 13:09, Eric Dumazet wrote:
-> On Fri, Apr 30, 2021 at 5:52 PM Matt Corallo
-> <netdev-list@mattcorallo.com> wrote:
->>
->> Following up - is there a way forward here?
->>
+On Tue, Apr 27, 2021 at 02:12:37PM +0200, Michal Suchánek wrote:
+> On Mon, Apr 26, 2021 at 09:16:36PM +0200, Jiri Olsa wrote:
+> > On Mon, Apr 26, 2021 at 06:03:19PM +0200, Jiri Olsa wrote:
+> > > On Mon, Apr 26, 2021 at 08:41:49AM -0700, Yonghong Song wrote:
+> > > > 
+> > > > 
+> > > > On 4/26/21 5:14 AM, Michal Suchánek wrote:
+> > > > > On Mon, Apr 26, 2021 at 02:12:20PM +0200, Michal Suchánek wrote:
+> > > > > > On Mon, Apr 26, 2021 at 01:32:15PM +0200, Michal Suchánek wrote:
+> > > > > > > On Sun, Apr 25, 2021 at 01:15:45PM +0200, Michal Suchánek wrote:
+> > > > > > > > On Fri, Apr 23, 2021 at 07:55:28PM +0200, Michal Suchánek wrote:
+> > > > > > > > > On Fri, Apr 23, 2021 at 07:41:29AM -0700, Yonghong Song wrote:
+> > > > > > > > > > 
+> > > > > > > > > > 
+> > > > > > > > > > On 4/23/21 6:05 AM, Michal Suchánek wrote:
+> > > > > > > > > > > Hello,
+> > > > > > > > > > > 
+> > > > > > > > > > > I see this build error in linux-next (config attached).
+> > > > > > > > > > > 
+> > > > > > > > > > > [ 4939s]   LD      vmlinux
+> > > > > > > > > > > [ 4959s]   BTFIDS  vmlinux
+> > > > > > > > > > > [ 4959s] FAILED unresolved symbol cubictcp_state
+> > > > > > > > > > > [ 4960s] make[1]: ***
+> > > > > > > > > > > [/home/abuild/rpmbuild/BUILD/kernel-vanilla-5.12~rc8.next.20210422/linux-5.12-rc8-next-20210422/Makefile:1277:
+> > > > > > > > > > > vmlinux] Error 255
+> > > > > > > > > > > [ 4960s] make: *** [../Makefile:222: __sub-make] Error 2
+> > > 
+> > > this one was reported by Jesper and was fixed by upgrading pahole
+> > > that contains the new function generation fixes (v1.19)
+> > > 
+> > > > > > > > > > 
+> > > > > > > > > > Looks like you have DYNAMIC_FTRACE config option enabled already.
+> > > > > > > > > > Could you try a later version of pahole?
+> > > > > > > > > 
+> > > > > > > > > Is this requireent new?
+> > > > > > > > > 
+> > > > > > > > > I have pahole 1.20, and master does build without problems.
+> > > > > > > > > 
+> > > > > > > > > If newer version is needed can a check be added?
+> > > > > > > > 
+> > > > > > > > With dwarves 1.21 some architectures are fixed and some report other
+> > > > > > > > missing symbol. Definitely an improvenent.
+> > > > > > > > 
+> > > > > > > > I see some new type support was added so it makes sense if that type is
+> > > > > > > > used the new dwarves are needed.
+> > > > > > > 
+> > > > > > > Ok, here is the current failure with dwarves 1.21 on 5.12:
+> > > > > > > 
+> > > > > > > [ 2548s]   LD      vmlinux
+> > > > > > > [ 2557s]   BTFIDS  vmlinux
+> > > > > > > [ 2557s] FAILED unresolved symbol vfs_truncate
+> > > > > > > [ 2558s] make[1]: ***
+> > > > > > > [/home/abuild/rpmbuild/BUILD/kernel-kvmsmall-5.12.0/linux-5.12/Makefile:1213:
+> > > > > > > vmlinux] Error 255
+> > > > 
+> > > > This is PPC64, from attached config:
+> > > >   CONFIG_PPC64=y
+> > > > I don't have environment to cross-compile for PPC64.
+> > > > Jiri, could you take a look? Thanks!
+> > > 
+> > > looks like vfs_truncate did not get into BTF data,
+> > > I'll try to reproduce
+> > 
+> > I can't reproduce the problem, in both cross build and native ppc,
+> > but the .config attached does not see complete, could you pelase
+> > resend?
 > 
-> Tune the sysctls to meet your goals ?
-> 
-> I did the needed work so that you can absolutely decide to use 256GB
-> of ram per host for frags if you want.
-> (Although I have not tested with crazy values like that, maybe some
-> kind of bottleneck will be hit)
+> I can't reproduce outside of the build service either. There is probably
+> some other tool missing that is commonly available and there is no check
+> for it.
 
-Again, this is not a solution universally because this issue appears when transiting a Linux router. This isn't only 
-about end-hosts (or I wouldn't have even bothered with any of this). Sometimes packets flow over a Linux router that you 
-don't have control over, which is true in my case.
+Looks like pahole or some library are miscompiled on ppc64.
 
->> I think the current ease of hitting the black-hole-ing behavior is unacceptable (and often not something that can be
->> changed even with the sysctl knobs due to intermediate hosts), and am happy to do some work to fix it.
->>
->> Someone mentioned in a previous thread randomly evicting fragments instead of dropping all new fragments when we reach
->> saturation, which may be an option. We could also do something in between 1s and 30s, preserving behavior for hosts
->> which see fragments delivered out-of-order by seconds while still reducing the ease of accidentally just black-holing
->> all fragments entirely in more standard internet access deployments.
->>
-> 
-> Give me one implementation, I will give you a DDOS program to defeat it.
-> linux code is public, attackers will simply change their attacks.
-> 
-> There is no generic solution, they are all bad.
-> 
-> If you evict randomly, it will also fail. So why bother ?
+Using the native ppc64 tools is broken and using cross-tools works.
 
-This was never about DDoS attacks - as noted several times this is about it being trivial to have all your fragments 
-blackholed for 30 seconds at a time just because you have some normal run-of-the-mill packet loss.
+Thanks
 
-I agree with you wholeheartedly that there isn't a solution to the DDoS attack issue, I'm not trying to address it. On 
-the other hand, in the face of no attacks or otherwise malicious behavior, I'd expect Linux to not exhibit the complete 
-blackholing of fragments that it does today.
-
-Matt
+Michal
