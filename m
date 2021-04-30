@@ -2,357 +2,170 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 266B3370166
-	for <lists+netdev@lfdr.de>; Fri, 30 Apr 2021 21:42:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9E4DD3701AF
+	for <lists+netdev@lfdr.de>; Fri, 30 Apr 2021 22:05:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232255AbhD3Tms (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 30 Apr 2021 15:42:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60090 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230508AbhD3Tmr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 30 Apr 2021 15:42:47 -0400
-Received: from mail-yb1-xb29.google.com (mail-yb1-xb29.google.com [IPv6:2607:f8b0:4864:20::b29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D5F3EC06174A;
-        Fri, 30 Apr 2021 12:41:58 -0700 (PDT)
-Received: by mail-yb1-xb29.google.com with SMTP id b131so9078448ybg.5;
-        Fri, 30 Apr 2021 12:41:58 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=wSELs6NBgvMIddhFoNrSxwcWgSk/FcA26NAMH1K7Hx4=;
-        b=EB6JvCzUN2/PKBHP9LZUIx2KF5A4+2k9wH1IjMcg3+TH8Zz5PTTD3Ifp5TmiORfNch
-         r7wPB2mRZHwfcPiqDlzDDf9IyI0YVY+7116DLsmA9vBdIhnoMhzT0lnACBlWKmruhhpC
-         BGu//znfBSO8J/MHZz+n2p6oeRXwp//ZjyTDh543jT6iXxjhWxaQwofme/sZvDENxSCC
-         w5j7Y6ThehBrSuVN/FkUTOuaBKsF7/5dzdBYD/0d7ULjd2d/3ymy2xe6UcXt6L8aibBH
-         hIKAABOzsCURWH0/I3UjLYe/qG5GW+khivcRwQbW59aOZE0VIr1kHtvSXz5k8qrfR0IA
-         gLFA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=wSELs6NBgvMIddhFoNrSxwcWgSk/FcA26NAMH1K7Hx4=;
-        b=jY4bffBm5RwZW5QAWAB/oC37mZrt99mSDkinVNcSIxJLHhXlVOf+RJ+iTALKWOCfnR
-         V/lLcEjReDa4vs/Rdl8cv8AjFE5mOBlKmSVFXWmMpAU9uLwO+WX0HJuiYvyfkUgFYMFm
-         QA1g999x0a+XvKAGMhmdvJHYuK1Dk+HWJj531RQU+R/PVsKAzorH0DGTOEov7VLHeX4U
-         BaRY1PDa7j5NH9wwRLRLkG0vf/vebdeMwZ7M8Q/9QNOs0VDSR1omQk+Bt4XDMgT9tIVk
-         OFy4i0RgFpBksiVL1tS7+GmjpAmlpa3Gq+pYrItxL8Xz1l+8hgv7coMIykxj1I/YCZR2
-         hG/w==
-X-Gm-Message-State: AOAM530ZB56shz5+qGBa6q4fIwwyv2uPheUHzL9AA7jU4VoqfXi950Qp
-        LSpW/pkLQ10Q4yUrUiKBpBczP1lekFXWEsOqFxU=
-X-Google-Smtp-Source: ABdhPJzfR0TtXO1ds2g8fSb2y6SlvFoFeumdCmFDdmyZgJ/S1jirzJFnZzREOTRtv54lBb7cmkMy9Ui0De/Or9hBDko=
-X-Received: by 2002:a05:6902:1144:: with SMTP id p4mr9313109ybu.510.1619811718095;
- Fri, 30 Apr 2021 12:41:58 -0700 (PDT)
-MIME-Version: 1.0
-References: <20210428162553.719588-1-memxor@gmail.com> <20210428162553.719588-4-memxor@gmail.com>
-In-Reply-To: <20210428162553.719588-4-memxor@gmail.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Fri, 30 Apr 2021 12:41:47 -0700
-Message-ID: <CAEf4BzYp1uN4E_=0N7DpwkEQOxntP0riz__yUzz3xu=k4yJ4sw@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v5 3/3] libbpf: add selftests for TC-BPF API
-To:     Kumar Kartikeya Dwivedi <memxor@gmail.com>
-Cc:     bpf <bpf@vger.kernel.org>,
-        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>,
+        id S234463AbhD3T6n (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 30 Apr 2021 15:58:43 -0400
+Received: from out01.mta.xmission.com ([166.70.13.231]:52964 "EHLO
+        out01.mta.xmission.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234102AbhD3T6i (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 30 Apr 2021 15:58:38 -0400
+Received: from in02.mta.xmission.com ([166.70.13.52])
+        by out01.mta.xmission.com with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.93)
+        (envelope-from <ebiederm@xmission.com>)
+        id 1lcZGl-00CbjW-SR; Fri, 30 Apr 2021 13:57:47 -0600
+Received: from ip68-227-160-95.om.om.cox.net ([68.227.160.95] helo=fess.xmission.com)
+        by in02.mta.xmission.com with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.93)
+        (envelope-from <ebiederm@xmission.com>)
+        id 1lcZGk-006rml-TA; Fri, 30 Apr 2021 13:57:47 -0600
+From:   ebiederm@xmission.com (Eric W. Biederman)
+To:     Liam Howlett <liam.howlett@oracle.com>
+Cc:     Will Deacon <will@kernel.org>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Julien Grall <julien.grall@arm.com>,
         Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
         Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        Shaun Crampton <shaun@tigera.io>,
-        Networking <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+        "linux-arm-kernel\@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>,
+        "linux-kernel\@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "netdev\@vger.kernel.org" <netdev@vger.kernel.org>,
+        "bpf\@vger.kernel.org" <bpf@vger.kernel.org>
+References: <20210420165001.3790670-1-Liam.Howlett@Oracle.com>
+        <20210420165001.3790670-2-Liam.Howlett@Oracle.com>
+        <20210422124849.GA1521@willie-the-truck>
+        <m1v98egoxf.fsf@fess.ebiederm.org>
+        <20210422192349.ekpinkf3wxnmywe3@revolver>
+        <m1y2d8dfx8.fsf@fess.ebiederm.org>
+        <20210423200126.otleormmjh22joj3@revolver>
+        <m1czud6krk.fsf@fess.ebiederm.org>
+        <20210430184757.mez7ujmyzm43g6z2@revolver>
+Date:   Fri, 30 Apr 2021 14:57:43 -0500
+In-Reply-To: <20210430184757.mez7ujmyzm43g6z2@revolver> (Liam Howlett's
+        message of "Fri, 30 Apr 2021 18:48:08 +0000")
+Message-ID: <m1y2cztuiw.fsf@fess.ebiederm.org>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.1 (gnu/linux)
+MIME-Version: 1.0
+Content-Type: text/plain
+X-XM-SPF: eid=1lcZGk-006rml-TA;;;mid=<m1y2cztuiw.fsf@fess.ebiederm.org>;;;hst=in02.mta.xmission.com;;;ip=68.227.160.95;;;frm=ebiederm@xmission.com;;;spf=neutral
+X-XM-AID: U2FsdGVkX193jyYvw9ExaIXEwhjbHkEscuNo2S9lCZ8=
+X-SA-Exim-Connect-IP: 68.227.160.95
+X-SA-Exim-Mail-From: ebiederm@xmission.com
+X-Spam-Checker-Version: SpamAssassin 3.4.2 (2018-09-13) on sa05.xmission.com
+X-Spam-Level: *
+X-Spam-Status: No, score=1.4 required=8.0 tests=ALL_TRUSTED,BAYES_40,
+        DCC_CHECK_NEGATIVE,T_TM2_M_HEADER_IN_MSG,T_TooManySym_01,
+        T_TooManySym_02,T_TooManySym_03,XMNoVowels,XMSubLong,XM_B_SpammyWords
+        autolearn=disabled version=3.4.2
+X-Spam-Report: * -1.0 ALL_TRUSTED Passed through trusted hosts only via SMTP
+        * -0.0 BAYES_40 BODY: Bayes spam probability is 20 to 40%
+        *      [score: 0.2570]
+        *  0.7 XMSubLong Long Subject
+        *  1.5 XMNoVowels Alpha-numberic number with no vowels
+        *  0.0 T_TM2_M_HEADER_IN_MSG BODY: No description available.
+        * -0.0 DCC_CHECK_NEGATIVE Not listed in DCC
+        *      [sa05 1397; Body=1 Fuz1=1 Fuz2=1]
+        *  0.0 T_TooManySym_01 4+ unique symbols in subject
+        *  0.0 T_TooManySym_03 6+ unique symbols in subject
+        *  0.2 XM_B_SpammyWords One or more commonly used spammy words
+        *  0.0 T_TooManySym_02 5+ unique symbols in subject
+X-Spam-DCC: XMission; sa05 1397; Body=1 Fuz1=1 Fuz2=1 
+X-Spam-Combo: *;Liam Howlett <liam.howlett@oracle.com>
+X-Spam-Relay-Country: 
+X-Spam-Timing: total 404 ms - load_scoreonly_sql: 0.11 (0.0%),
+        signal_user_changed: 11 (2.8%), b_tie_ro: 9 (2.3%), parse: 2.1 (0.5%),
+        extract_message_metadata: 7 (1.6%), get_uri_detail_list: 2.5 (0.6%),
+        tests_pri_-1000: 7 (1.6%), tests_pri_-950: 2.0 (0.5%), tests_pri_-900:
+        1.57 (0.4%), tests_pri_-90: 92 (22.7%), check_bayes: 90 (22.3%),
+        b_tokenize: 11 (2.6%), b_tok_get_all: 8 (2.1%), b_comp_prob: 3.2
+        (0.8%), b_tok_touch_all: 65 (16.0%), b_finish: 0.81 (0.2%),
+        tests_pri_0: 256 (63.3%), check_dkim_signature: 0.65 (0.2%),
+        check_dkim_adsp: 2.5 (0.6%), poll_dns_idle: 0.68 (0.2%), tests_pri_10:
+        2.3 (0.6%), tests_pri_500: 10 (2.4%), rewrite_mail: 0.00 (0.0%)
+Subject: Re: [PATCH 2/3] arm64: signal: sigreturn() and rt_sigreturn() sometime returns the wrong signals
+X-SA-Exim-Version: 4.2.1 (built Sat, 08 Feb 2020 21:53:50 +0000)
+X-SA-Exim-Scanned: Yes (on in02.mta.xmission.com)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Apr 28, 2021 at 9:26 AM Kumar Kartikeya Dwivedi
-<memxor@gmail.com> wrote:
->
-> This adds some basic tests for the low level bpf_tc_* API.
->
-> Reviewed-by: Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com>
-> Signed-off-by: Kumar Kartikeya Dwivedi <memxor@gmail.com>
-> ---
->  .../testing/selftests/bpf/prog_tests/tc_bpf.c | 467 ++++++++++++++++++
->  .../testing/selftests/bpf/progs/test_tc_bpf.c |  12 +
->  2 files changed, 479 insertions(+)
->  create mode 100644 tools/testing/selftests/bpf/prog_tests/tc_bpf.c
->  create mode 100644 tools/testing/selftests/bpf/progs/test_tc_bpf.c
->
-> diff --git a/tools/testing/selftests/bpf/prog_tests/tc_bpf.c b/tools/test=
-ing/selftests/bpf/prog_tests/tc_bpf.c
-> new file mode 100644
-> index 000000000000..40441f4e23e2
-> --- /dev/null
-> +++ b/tools/testing/selftests/bpf/prog_tests/tc_bpf.c
-> @@ -0,0 +1,467 @@
-> +// SPDX-License-Identifier: GPL-2.0
-> +
-> +#include <test_progs.h>
-> +#include <linux/pkt_cls.h>
-> +
-> +#include "test_tc_bpf.skel.h"
-> +
-> +#define LO_IFINDEX 1
-> +
-> +static int test_tc_internal(const struct bpf_tc_hook *hook, int fd)
-> +{
-> +       DECLARE_LIBBPF_OPTS(bpf_tc_opts, opts, .handle =3D 1, .priority =
-=3D 1,
-> +                           .prog_fd =3D fd);
+Liam Howlett <liam.howlett@oracle.com> writes:
 
-we have 100 characters, if needed, use it to keep it on the single line
+> This is way out of scope for what I'm doing.  I'm trying to fix a call
+> to the wrong mm API.  I was trying to clean up any obvious errors in
+> calling functions which were exposed by fixing that error.  If you want
+> this fixed differently, then please go ahead and tackle the problems you
+> see.
 
-> +       struct bpf_prog_info info =3D {};
-> +       int ret;
-> +
-> +       ret =3D bpf_obj_get_info_by_fd(fd, &info, &(__u32){sizeof(info)})=
-;
+I was asked by the arm maintainers to describe what the code should be
+doing here.  I hope I have done that.
 
-as in previous patch, don't do this
+What is very interesting is that the code in __do_page_fault does not
+use find_vma_intersection it uses find_vma.  Which suggests that
+find_vma_intersection may not be the proper mm api.
 
-> +       if (!ASSERT_OK(ret, "bpf_obj_get_info_by_fd"))
-> +               return ret;
-> +
-> +       ret =3D bpf_tc_attach(hook, &opts, 0);
-> +       if (!ASSERT_OK(ret, "bpf_tc_attach"))
-> +               return ret;
-> +
-> +       if (!ASSERT_EQ(opts.handle, 1, "handle set") ||
-> +           !ASSERT_EQ(opts.priority, 1, "priority set") ||
-> +           !ASSERT_EQ(opts.prog_id, info.id, "prog_id set"))
-> +               goto end;
-> +
-> +       DECLARE_LIBBPF_OPTS(bpf_tc_opts, info_opts, .prog_fd =3D fd);
+The logic is:
 
-this is not C89, please move variable declarations to the top
+From __do_page_fault:
+	struct vm_area_struct *vma = find_vma(mm, addr);
 
-> +       ret =3D bpf_tc_query(hook, &info_opts);
-> +       if (!ASSERT_OK(ret, "bpf_tc_query"))
-> +               goto end;
-> +
-> +       DECLARE_LIBBPF_OPTS(bpf_tc_opts, info_opts2, .prog_id =3D info.id=
-);
+	if (unlikely(!vma))
+		return VM_FAULT_BADMAP;
 
-and here
+	/*
+	 * Ok, we have a good vm_area for this memory access, so we can handle
+	 * it.
+	 */
+	if (unlikely(vma->vm_start > addr)) {
+		if (!(vma->vm_flags & VM_GROWSDOWN))
+			return VM_FAULT_BADMAP;
+		if (expand_stack(vma, addr))
+			return VM_FAULT_BADMAP;
+	}
 
-> +       ret =3D bpf_tc_query(hook, &info_opts2);
-> +       if (!ASSERT_OK(ret, "bpf_tc_query"))
-> +               goto end;
-> +
-> +       if (!ASSERT_EQ(opts.handle, 1, "handle set") ||
-> +           !ASSERT_EQ(opts.priority, 1, "priority set") ||
-> +           !ASSERT_EQ(opts.prog_id, info.id, "prog_id set"))
-> +               goto end;
-> +
-> +       opts.prog_id =3D 0;
-> +       ret =3D bpf_tc_attach(hook, &opts, BPF_TC_F_REPLACE);
-> +       if (!ASSERT_OK(ret, "bpf_tc_attach replace mode"))
-> +               return ret;
+	/*
+	 * Check that the permissions on the VMA allow for the fault which
+	 * occurred.
+	 */
+	if (!(vma->vm_flags & vm_flags))
+		return VM_FAULT_BADACCESS;
 
-goto end?
+From do_page_fault:
 
-> +
-> +end:
-> +       opts.prog_fd =3D opts.prog_id =3D 0;
-> +       ret =3D bpf_tc_detach(hook, &opts);
-> +       ASSERT_OK(ret, "bpf_tc_detach");
-> +       return ret;
-> +}
-> +
+	arm64_force_sig_fault(SIGSEGV,
+			      fault == VM_FAULT_BADACCESS ? SEGV_ACCERR : SEGV_MAPERR,
+			      far, inf->name);
 
-[...]
 
-> +
-> +       /* attach */
-> +       ret =3D bpf_tc_attach(NULL, &attach_opts, 0);
-> +       if (!ASSERT_EQ(ret, -EINVAL, "bpf_tc_attach invalid hook =3D NULL=
-"))
-> +               return -EINVAL;
-> +       ret =3D bpf_tc_attach(hook, &attach_opts, 42);
-> +       if (!ASSERT_EQ(ret, -EINVAL, "bpf_tc_attach invalid flags"))
-> +               return -EINVAL;
-> +       attach_opts.prog_fd =3D 0;
-> +       ret =3D bpf_tc_attach(hook, &attach_opts, 0);
-> +       if (!ASSERT_EQ(ret, -EINVAL, "bpf_tc_attach invalid prog_fd unset=
-"))
-> +               return -EINVAL;
-> +       attach_opts.prog_fd =3D fd;
-> +       attach_opts.prog_id =3D 42;
-> +       ret =3D bpf_tc_attach(hook, &attach_opts, 0);
-> +       if (!ASSERT_EQ(ret, -EINVAL, "bpf_tc_attach invalid prog_id set")=
-)
-> +               return -EINVAL;
-> +       attach_opts.prog_id =3D 0;
-> +       attach_opts.handle =3D 0;
-> +       ret =3D bpf_tc_attach(hook, &attach_opts, 0);
-> +       if (!ASSERT_OK(ret, "bpf_tc_attach valid handle unset"))
-> +               return -EINVAL;
-> +       attach_opts.prog_fd =3D attach_opts.prog_id =3D 0;
-> +       ASSERT_OK(bpf_tc_detach(hook, &attach_opts), "bpf_tc_detach");
+Hmm.  If the expand_stack step is skipped. Does is the logic equivalent
+to find_vma_intersection?
 
-this code is quite hard to follow, maybe sprinkle empty lines between
-logical groups of statements (i.e., prepare inputs + call bpf_tc_xxx +
-assert is one group that goes together)
+	static inline struct vm_area_struct *find_vma_intersection(
+        	struct mm_struct * mm,
+                unsigned long start_addr,
+                unsigned long end_addr)
+	{
+		struct vm_area_struct * vma = find_vma(mm,start_addr);
+	
+		if (vma && end_addr <= vma->vm_start)
+			vma = NULL;
+		return vma;
+	}
 
-> +       attach_opts.prog_fd =3D fd;
-> +       attach_opts.handle =3D 1;
-> +       attach_opts.priority =3D 0;
-> +       ret =3D bpf_tc_attach(hook, &attach_opts, 0);
-> +       if (!ASSERT_OK(ret, "bpf_tc_attach valid priority unset"))
-> +               return -EINVAL;
-> +       attach_opts.prog_fd =3D attach_opts.prog_id =3D 0;
-> +       ASSERT_OK(bpf_tc_detach(hook, &attach_opts), "bpf_tc_detach");
-> +       attach_opts.prog_fd =3D fd;
-> +       attach_opts.priority =3D UINT16_MAX + 1;
-> +       ret =3D bpf_tc_attach(hook, &attach_opts, 0);
-> +       if (!ASSERT_EQ(ret, -EINVAL, "bpf_tc_attach invalid priority > UI=
-NT16_MAX"))
-> +               return -EINVAL;
-> +       attach_opts.priority =3D 0;
-> +       attach_opts.handle =3D attach_opts.priority =3D 0;
-> +       ret =3D bpf_tc_attach(hook, &attach_opts, 0);
-> +       if (!ASSERT_OK(ret, "bpf_tc_attach valid both handle and priority=
- unset"))
-> +               return -EINVAL;
-> +       attach_opts.prog_fd =3D attach_opts.prog_id =3D 0;
-> +       ASSERT_OK(bpf_tc_detach(hook, &attach_opts), "bpf_tc_detach");
-> +       ret =3D bpf_tc_attach(hook, NULL, 0);
-> +       if (!ASSERT_EQ(ret, -EINVAL, "bpf_tc_attach invalid opts =3D NULL=
-"))
-> +               return -EINVAL;
-> +
-> +       return 0;
-> +}
-> +
-> +static int test_tc_query(const struct bpf_tc_hook *hook, int fd)
-> +{
-> +       struct test_tc_bpf *skel =3D NULL;
-> +       int new_fd, ret, i =3D 0;
-> +
-> +       skel =3D test_tc_bpf__open_and_load();
-> +       if (!ASSERT_OK_PTR(skel, "test_tc_bpf__open_and_load"))
-> +               return -EINVAL;
-> +
-> +       new_fd =3D bpf_program__fd(skel->progs.cls);
-> +
-> +       /* make sure no other filters are attached */
-> +       ret =3D bpf_tc_query(hook, NULL);
-> +       if (!ASSERT_EQ(ret, -ENOENT, "bpf_tc_query =3D=3D -ENOENT"))
-> +               goto end_destroy;
-> +
-> +       for (i =3D 0; i < 5; i++) {
-> +               DECLARE_LIBBPF_OPTS(bpf_tc_opts, opts, .prog_fd =3D fd);
+Yes. It does look that way.  VM_FAULT_BADMAP is returned when a vma
+covering the specified address is not found.  And VM_FAULT_BADACCESS is
+returned when there is a vma and there is a permission problem.
 
-empty line after variable declaration
+There are also two SIGBUS cases that arm64_notify_segfault does not
+handle.
 
-> +               ret =3D bpf_tc_attach(hook, &opts, 0);
-> +               if (!ASSERT_OK(ret, "bpf_tc_attach"))
-> +                       goto end;
-> +       }
-> +       DECLARE_LIBBPF_OPTS(bpf_tc_opts, opts, .handle =3D 1, .priority =
-=3D 1,
-> +                           .prog_fd =3D new_fd);
-> +       ret =3D bpf_tc_attach(hook, &opts, 0);
-> +       if (!ASSERT_OK(ret, "bpf_tc_attach"))
-> +               goto end;
-> +       i++;
-> +
-> +       ASSERT_EQ(opts.handle, 1, "handle match");
-> +       ASSERT_EQ(opts.priority, 1, "priority match");
-> +       ASSERT_NEQ(opts.prog_id, 0, "prog_id set");
-> +
-> +       opts.prog_fd =3D 0;
-> +       /* search with handle, priority, prog_id */
-> +       ret =3D bpf_tc_query(hook, &opts);
-> +       if (!ASSERT_OK(ret, "bpf_tc_query"))
-> +               goto end;
-> +
-> +       ASSERT_EQ(opts.handle, 1, "handle match");
-> +       ASSERT_EQ(opts.priority, 1, "priority match");
-> +       ASSERT_NEQ(opts.prog_id, 0, "prog_id set");
-> +
-> +       opts.priority =3D opts.prog_fd =3D 0;
-> +       /* search with handle, prog_id */
-> +       ret =3D bpf_tc_query(hook, &opts);
-> +       if (!ASSERT_OK(ret, "bpf_tc_query"))
-> +               goto end;
-> +
-> +       ASSERT_EQ(opts.handle, 1, "handle match");
-> +       ASSERT_EQ(opts.priority, 1, "priority match");
-> +       ASSERT_NEQ(opts.prog_id, 0, "prog_id set");
-> +
-> +       opts.handle =3D opts.prog_fd =3D 0;
-> +       /* search with priority, prog_id */
-> +       ret =3D bpf_tc_query(hook, &opts);
-> +       if (!ASSERT_OK(ret, "bpf_tc_query"))
-> +               goto end;
-> +
-> +       ASSERT_EQ(opts.handle, 1, "handle match");
-> +       ASSERT_EQ(opts.priority, 1, "priority match");
-> +       ASSERT_NEQ(opts.prog_id, 0, "prog_id set");
-> +
-> +       opts.handle =3D opts.priority =3D opts.prog_fd =3D 0;
-> +       /* search with prog_id */
-> +       ret =3D bpf_tc_query(hook, &opts);
-> +       if (!ASSERT_OK(ret, "bpf_tc_query"))
-> +               goto end;
-> +
-> +       ASSERT_EQ(opts.handle, 1, "handle match");
-> +       ASSERT_EQ(opts.priority, 1, "priority match");
-> +       ASSERT_NEQ(opts.prog_id, 0, "prog_id set");
-> +
-> +       while (i !=3D 1) {
-> +               DECLARE_LIBBPF_OPTS(bpf_tc_opts, del_opts, .prog_fd =3D f=
-d);
+So it appears changing arm64_notify_segfault to use
+find_vma_intersection instead of find_vma would be a correct but
+incomplete fix.
 
-empty line here
+I don't see a point in changing sigerturn or rt_sigreturn.
 
-> +               ret =3D bpf_tc_query(hook, &del_opts);
-> +               if (!ASSERT_OK(ret, "bpf_tc_query"))
-> +                       goto end;
-> +               ASSERT_NEQ(del_opts.prog_id, opts.prog_id, "prog_id shoul=
-d not be same");
-> +               ASSERT_NEQ(del_opts.priority, 1, "priority should not be =
-1");
-> +               del_opts.prog_fd =3D del_opts.prog_id =3D 0;
-> +               ret =3D bpf_tc_detach(hook, &del_opts);
-> +               if (!ASSERT_OK(ret, "bpf_tc_detach"))
-> +                       goto end;
-> +               i--;
-> +       }
-> +
-> +       opts.handle =3D opts.priority =3D opts.prog_id =3D 0;
-> +       opts.prog_fd =3D fd;
-> +       ret =3D bpf_tc_query(hook, &opts);
-> +       ASSERT_EQ(ret, -ENOENT, "bpf_tc_query =3D=3D -ENOENT");
-> +
-> +end:
-> +       while (i--) {
-> +               DECLARE_LIBBPF_OPTS(bpf_tc_opts, del_opts, 0);
-
-you get the idea by now
-
-> +               ret =3D bpf_tc_query(hook, &del_opts);
-> +               if (!ASSERT_OK(ret, "bpf_tc_query"))
-> +                       break;
-> +               del_opts.prog_id =3D 0;
-> +               ret =3D bpf_tc_detach(hook, &del_opts);
-> +               if (!ASSERT_OK(ret, "bpf_tc_detach"))
-> +                       break;
-> +       }
-> +       ASSERT_EQ(bpf_tc_query(hook, NULL), -ENOENT, "bpf_tc_query =3D=3D=
- -ENOENT");
-> +end_destroy:
-> +       test_tc_bpf__destroy(skel);
-> +       return ret;
-> +}
-> +
-
-[...]
+Eric
