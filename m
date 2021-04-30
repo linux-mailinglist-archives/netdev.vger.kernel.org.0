@@ -2,47 +2,63 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9C53736F3E2
-	for <lists+netdev@lfdr.de>; Fri, 30 Apr 2021 03:58:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 631D336F3EA
+	for <lists+netdev@lfdr.de>; Fri, 30 Apr 2021 04:05:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229816AbhD3B7i (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 29 Apr 2021 21:59:38 -0400
-Received: from conuserg-08.nifty.com ([210.131.2.75]:49892 "EHLO
-        conuserg-08.nifty.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229577AbhD3B7h (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 29 Apr 2021 21:59:37 -0400
+        id S229846AbhD3CGl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 29 Apr 2021 22:06:41 -0400
+Received: from conuserg-12.nifty.com ([210.131.2.79]:48865 "EHLO
+        conuserg-12.nifty.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229577AbhD3CGk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 29 Apr 2021 22:06:40 -0400
 Received: from localhost.localdomain (133-32-232-101.west.xps.vectant.ne.jp [133.32.232.101]) (authenticated)
-        by conuserg-08.nifty.com with ESMTP id 13U1uZEI031248;
-        Fri, 30 Apr 2021 10:56:35 +0900
-DKIM-Filter: OpenDKIM Filter v2.10.3 conuserg-08.nifty.com 13U1uZEI031248
+        by conuserg-12.nifty.com with ESMTP id 13U23Dpm021584;
+        Fri, 30 Apr 2021 11:03:14 +0900
+DKIM-Filter: OpenDKIM Filter v2.10.3 conuserg-12.nifty.com 13U23Dpm021584
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
-        s=dec2015msa; t=1619747796;
-        bh=P0Z5VUyWOF3igqssAsRaklfkEBW2Xkwtbsajr6qbxy0=;
+        s=dec2015msa; t=1619748196;
+        bh=gbda8k1gb5QKS5gh8B4B++CHlzzHQAOwdbtFLQCvdLk=;
         h=From:To:Cc:Subject:Date:From;
-        b=EDpIzwKkXzPEnRrgl4oxBIpLNMjfaE59msiuW3lZTq3RKFJOBQqEBE9PqxbcZxklA
-         z2JBcok6B3fwUG2NU8h2CAq3sPd/M2K4sULkz7QKBNkGkIPYNhGd0oqpMTk3eArD2J
-         e++YkykMss7ySCxhUCik6/lDYVWzGBc0nJsL5fudZ+07PYVNWFmlebCYU8sfrb3cfQ
-         BoGLsf4uFOvA5hfjz4V2epJWyY5rwsy9LSsZnh/OGIy1tA3uoqOq4BeD6xfBa2wA0q
-         Q/eDcYs/QH+P9paWoc6xcyaUOjvgkYtauJK70G4bsVe4D/2xOInh9mfnfTxxxsjmP6
-         Vo6NOuCAGy04Q==
+        b=Orr5vE45Xt9/3ihl6udKavMFU8B0yC8PfRCPS77DbaTQQFSrrT7E78T7ShFNzASEN
+         YIpzxwW6Yyklep/hYCuQm8MzIdE9HA8sOC/KC9vnzFesHX0H6Kmv9SLt+IwTkg3gd7
+         BlOLD5KrX9EZvhz22hhkivGM9w8EFyt3SjVNoSOVzbOtMGg/AQbh986225wsqj0EAD
+         3ORBPvk3OvzFyNIjqEbMrgfyZ5gdwBQpGiZtF8V5Zvgw0tUJa/T3kQnZ4q5LAwRsAv
+         BAFZWLFCpNjn4sVhrdxp8C5t0mFQMLeFt1hqQwlWu0TfTONUi25KD3aVShb2gFbUKT
+         KPICiVelmpKiA==
 X-Nifty-SrcIP: [133.32.232.101]
 From:   Masahiro Yamada <masahiroy@kernel.org>
 To:     linux-kbuild@vger.kernel.org
 Cc:     Masahiro Yamada <masahiroy@kernel.org>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Matthias Maennich <maennich@google.com>,
-        Matthieu Baerts <matthieu.baerts@tessares.net>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Mat Martineau <mathew.j.martineau@linux.intel.com>,
-        Paul Mackerras <paulus@samba.org>,
-        Shuah Khan <shuah@kernel.org>, linux-kernel@vger.kernel.org,
-        linux-kselftest@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
-        mptcp@lists.linux.dev, netdev@vger.kernel.org
-Subject: [PATCH v2] kbuild: replace LANG=C with LC_ALL=C
-Date:   Fri, 30 Apr 2021 10:56:27 +0900
-Message-Id: <20210430015627.65738-1-masahiroy@kernel.org>
+        Miguel Ojeda <ojeda@kernel.org>, Rob Herring <robh@kernel.org>,
+        Andra Paraschiv <andraprs@amazon.com>,
+        Alexandru Ciobotaru <alcioa@amazon.com>,
+        Alexandru Vasile <lexnv@amazon.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Christian Brauner <christian@brauner.io>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        David Howells <dhowells@redhat.com>,
+        David Woodhouse <dwmw2@infradead.org>,
+        Frank Rowand <frowand.list@gmail.com>,
+        Gabriel Krisman Bertazi <krisman@collabora.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Kees Cook <keescook@chromium.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Michal Marek <michal.lkml@markovi.net>,
+        Rob Herring <robh+dt@kernel.org>,
+        Song Liu <songliubraving@fb.com>,
+        Tomas Winkler <tomas.winkler@intel.com>,
+        Yonghong Song <yhs@fb.com>, bpf@vger.kernel.org,
+        devicetree@vger.kernel.org, keyrings@vger.kernel.org,
+        linux-fsdevel@vger.kernel.org, linux-hardening@vger.kernel.org,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH v2] .gitignore: prefix local generated files with a slash
+Date:   Fri, 30 Apr 2021 11:03:08 +0900
+Message-Id: <20210430020308.66792-1-masahiroy@kernel.org>
 X-Mailer: git-send-email 2.27.0
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -50,126 +66,320 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-LANG gives a weak default to each LC_* in case it is not explicitly
-defined. LC_ALL, if set, overrides all other LC_* variables.
-
-  LANG  <  LC_CTYPE, LC_COLLATE, LC_MONETARY, LC_NUMERIC, ...  <  LC_ALL
-
-This is why documentation such as [1] suggests to set LC_ALL in build
-scripts to get the deterministic result.
-
-LANG=C is not strong enough to override LC_* that may be set by end
-users.
-
-[1]: https://reproducible-builds.org/docs/locales/
+The pattern prefixed with '/' matches files in the same directory,
+but not ones in sub-directories.
 
 Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
-Acked-by: Michael Ellerman <mpe@ellerman.id.au> (powerpc)
-Reviewed-by: Matthias Maennich <maennich@google.com>
-Acked-by: Matthieu Baerts <matthieu.baerts@tessares.net> (mptcp)
+Acked-by: Miguel Ojeda <ojeda@kernel.org>
+Acked-by: Rob Herring <robh@kernel.org>
+Acked-by: Andra Paraschiv <andraprs@amazon.com>
 ---
 
 Changes in v2:
- - rebase
+  - rebase
 
- arch/powerpc/boot/wrapper                          | 2 +-
- scripts/nsdeps                                     | 2 +-
- scripts/recordmcount.pl                            | 2 +-
- scripts/setlocalversion                            | 2 +-
- scripts/tags.sh                                    | 2 +-
- tools/testing/selftests/net/mptcp/mptcp_connect.sh | 2 +-
- usr/gen_initramfs.sh                               | 2 +-
- 7 files changed, 7 insertions(+), 7 deletions(-)
+ Documentation/devicetree/bindings/.gitignore |  4 ++--
+ arch/.gitignore                              |  4 ++--
+ certs/.gitignore                             |  4 ++--
+ drivers/memory/.gitignore                    |  2 +-
+ drivers/tty/vt/.gitignore                    |  6 +++---
+ fs/unicode/.gitignore                        |  4 ++--
+ kernel/.gitignore                            |  2 +-
+ lib/.gitignore                               | 10 +++++-----
+ samples/auxdisplay/.gitignore                |  2 +-
+ samples/binderfs/.gitignore                  |  3 ++-
+ samples/connector/.gitignore                 |  2 +-
+ samples/hidraw/.gitignore                    |  2 +-
+ samples/mei/.gitignore                       |  2 +-
+ samples/nitro_enclaves/.gitignore            |  2 +-
+ samples/pidfd/.gitignore                     |  2 +-
+ samples/seccomp/.gitignore                   |  8 ++++----
+ samples/timers/.gitignore                    |  2 +-
+ samples/vfs/.gitignore                       |  4 ++--
+ samples/watch_queue/.gitignore               |  3 ++-
+ samples/watchdog/.gitignore                  |  2 +-
+ scripts/.gitignore                           | 18 +++++++++---------
+ scripts/basic/.gitignore                     |  2 +-
+ scripts/dtc/.gitignore                       |  4 ++--
+ scripts/gcc-plugins/.gitignore               |  2 +-
+ scripts/genksyms/.gitignore                  |  2 +-
+ scripts/mod/.gitignore                       |  8 ++++----
+ usr/.gitignore                               |  4 ++--
+ 27 files changed, 56 insertions(+), 54 deletions(-)
 
-diff --git a/arch/powerpc/boot/wrapper b/arch/powerpc/boot/wrapper
-index 41fa0a8715e3..cdb796b76e2e 100755
---- a/arch/powerpc/boot/wrapper
-+++ b/arch/powerpc/boot/wrapper
-@@ -191,7 +191,7 @@ if [ -z "$kernel" ]; then
-     kernel=vmlinux
- fi
- 
--LANG=C elfformat="`${CROSS}objdump -p "$kernel" | grep 'file format' | awk '{print $4}'`"
-+LC_ALL=C elfformat="`${CROSS}objdump -p "$kernel" | grep 'file format' | awk '{print $4}'`"
- case "$elfformat" in
-     elf64-powerpcle)	format=elf64lppc	;;
-     elf64-powerpc)	format=elf32ppc	;;
-diff --git a/scripts/nsdeps b/scripts/nsdeps
-index e8ce2a4d704a..04c4b96e95ec 100644
---- a/scripts/nsdeps
-+++ b/scripts/nsdeps
-@@ -44,7 +44,7 @@ generate_deps() {
- 		for source_file in $mod_source_files; do
- 			sed '/MODULE_IMPORT_NS/Q' $source_file > ${source_file}.tmp
- 			offset=$(wc -l ${source_file}.tmp | awk '{print $1;}')
--			cat $source_file | grep MODULE_IMPORT_NS | LANG=C sort -u >> ${source_file}.tmp
-+			cat $source_file | grep MODULE_IMPORT_NS | LC_ALL=C sort -u >> ${source_file}.tmp
- 			tail -n +$((offset +1)) ${source_file} | grep -v MODULE_IMPORT_NS >> ${source_file}.tmp
- 			if ! diff -q ${source_file} ${source_file}.tmp; then
- 				mv ${source_file}.tmp ${source_file}
-diff --git a/scripts/recordmcount.pl b/scripts/recordmcount.pl
-index 867860ea57da..0a7fc9507d6f 100755
---- a/scripts/recordmcount.pl
-+++ b/scripts/recordmcount.pl
-@@ -497,7 +497,7 @@ sub update_funcs
- #
- # Step 2: find the sections and mcount call sites
- #
--open(IN, "LANG=C $objdump -hdr $inputfile|") || die "error running $objdump";
-+open(IN, "LC_ALL=C $objdump -hdr $inputfile|") || die "error running $objdump";
- 
- my $text;
- 
-diff --git a/scripts/setlocalversion b/scripts/setlocalversion
-index bb709eda96cd..db941f6d9591 100755
---- a/scripts/setlocalversion
-+++ b/scripts/setlocalversion
-@@ -126,7 +126,7 @@ scm_version()
- 	fi
- 
- 	# Check for svn and a svn repo.
--	if rev=$(LANG= LC_ALL= LC_MESSAGES=C svn info 2>/dev/null | grep '^Last Changed Rev'); then
-+	if rev=$(LC_ALL=C svn info 2>/dev/null | grep '^Last Changed Rev'); then
- 		rev=$(echo $rev | awk '{print $NF}')
- 		printf -- '-svn%s' "$rev"
- 
-diff --git a/scripts/tags.sh b/scripts/tags.sh
-index fd96734deff1..db8ba411860a 100755
---- a/scripts/tags.sh
-+++ b/scripts/tags.sh
-@@ -326,5 +326,5 @@ esac
- 
- # Remove structure forward declarations.
- if [ -n "$remove_structs" ]; then
--    LANG=C sed -i -e '/^\([a-zA-Z_][a-zA-Z0-9_]*\)\t.*\t\/\^struct \1;.*\$\/;"\tx$/d' $1
-+    LC_ALL=C sed -i -e '/^\([a-zA-Z_][a-zA-Z0-9_]*\)\t.*\t\/\^struct \1;.*\$\/;"\tx$/d' $1
- fi
-diff --git a/tools/testing/selftests/net/mptcp/mptcp_connect.sh b/tools/testing/selftests/net/mptcp/mptcp_connect.sh
-index 9236609731b1..3c4cb72ed8a4 100755
---- a/tools/testing/selftests/net/mptcp/mptcp_connect.sh
-+++ b/tools/testing/selftests/net/mptcp/mptcp_connect.sh
-@@ -274,7 +274,7 @@ check_mptcp_disabled()
- 	ip netns exec ${disabled_ns} sysctl -q net.mptcp.enabled=0
- 
- 	local err=0
--	LANG=C ip netns exec ${disabled_ns} ./mptcp_connect -p 10000 -s MPTCP 127.0.0.1 < "$cin" 2>&1 | \
-+	LC_ALL=C ip netns exec ${disabled_ns} ./mptcp_connect -p 10000 -s MPTCP 127.0.0.1 < "$cin" 2>&1 | \
- 		grep -q "^socket: Protocol not available$" && err=1
- 	ip netns delete ${disabled_ns}
- 
-diff --git a/usr/gen_initramfs.sh b/usr/gen_initramfs.sh
-index 8ae831657e5d..63476bb70b41 100755
---- a/usr/gen_initramfs.sh
-+++ b/usr/gen_initramfs.sh
-@@ -147,7 +147,7 @@ dir_filelist() {
- 	header "$1"
- 
- 	srcdir=$(echo "$1" | sed -e 's://*:/:g')
--	dirlist=$(find "${srcdir}" -printf "%p %m %U %G\n" | LANG=C sort)
-+	dirlist=$(find "${srcdir}" -printf "%p %m %U %G\n" | LC_ALL=C sort)
- 
- 	# If $dirlist is only one line, then the directory is empty
- 	if [  "$(echo "${dirlist}" | wc -l)" -gt 1 ]; then
+diff --git a/Documentation/devicetree/bindings/.gitignore b/Documentation/devicetree/bindings/.gitignore
+index 3a05b99bfa26..a77719968a7e 100644
+--- a/Documentation/devicetree/bindings/.gitignore
++++ b/Documentation/devicetree/bindings/.gitignore
+@@ -1,4 +1,4 @@
+ # SPDX-License-Identifier: GPL-2.0-only
+ *.example.dts
+-processed-schema*.yaml
+-processed-schema*.json
++/processed-schema*.yaml
++/processed-schema*.json
+diff --git a/arch/.gitignore b/arch/.gitignore
+index 4191da401dbb..756c19c34f99 100644
+--- a/arch/.gitignore
++++ b/arch/.gitignore
+@@ -1,3 +1,3 @@
+ # SPDX-License-Identifier: GPL-2.0-only
+-i386
+-x86_64
++/i386/
++/x86_64/
+diff --git a/certs/.gitignore b/certs/.gitignore
+index 6cbd1f1a5837..8c3763f80be3 100644
+--- a/certs/.gitignore
++++ b/certs/.gitignore
+@@ -1,3 +1,3 @@
+ # SPDX-License-Identifier: GPL-2.0-only
+-x509_certificate_list
+-x509_revocation_list
++/x509_certificate_list
++/x509_revocation_list
+diff --git a/drivers/memory/.gitignore b/drivers/memory/.gitignore
+index caedc4c7d2db..5e84bee05ef8 100644
+--- a/drivers/memory/.gitignore
++++ b/drivers/memory/.gitignore
+@@ -1,2 +1,2 @@
+ # SPDX-License-Identifier: GPL-2.0-only
+-ti-emif-asm-offsets.h
++/ti-emif-asm-offsets.h
+diff --git a/drivers/tty/vt/.gitignore b/drivers/tty/vt/.gitignore
+index 3ecf42234d89..0221709b177d 100644
+--- a/drivers/tty/vt/.gitignore
++++ b/drivers/tty/vt/.gitignore
+@@ -1,4 +1,4 @@
+ # SPDX-License-Identifier: GPL-2.0
+-conmakehash
+-consolemap_deftbl.c
+-defkeymap.c
++/conmakehash
++/consolemap_deftbl.c
++/defkeymap.c
+diff --git a/fs/unicode/.gitignore b/fs/unicode/.gitignore
+index 9b2467e77b2d..361294571ab0 100644
+--- a/fs/unicode/.gitignore
++++ b/fs/unicode/.gitignore
+@@ -1,3 +1,3 @@
+ # SPDX-License-Identifier: GPL-2.0-only
+-mkutf8data
+-utf8data.h
++/mkutf8data
++/utf8data.h
+diff --git a/kernel/.gitignore b/kernel/.gitignore
+index 4abc4e033ed8..4dc1ffe9770b 100644
+--- a/kernel/.gitignore
++++ b/kernel/.gitignore
+@@ -1,2 +1,2 @@
+ # SPDX-License-Identifier: GPL-2.0-only
+-kheaders.md5
++/kheaders.md5
+diff --git a/lib/.gitignore b/lib/.gitignore
+index 327cb2c7f2c9..5e7fa54c4536 100644
+--- a/lib/.gitignore
++++ b/lib/.gitignore
+@@ -1,6 +1,6 @@
+ # SPDX-License-Identifier: GPL-2.0-only
+-gen_crc32table
+-gen_crc64table
+-crc32table.h
+-crc64table.h
+-oid_registry_data.c
++/crc32table.h
++/crc64table.h
++/gen_crc32table
++/gen_crc64table
++/oid_registry_data.c
+diff --git a/samples/auxdisplay/.gitignore b/samples/auxdisplay/.gitignore
+index 2ed744c0e741..d023816849bd 100644
+--- a/samples/auxdisplay/.gitignore
++++ b/samples/auxdisplay/.gitignore
+@@ -1,2 +1,2 @@
+ # SPDX-License-Identifier: GPL-2.0-only
+-cfag12864b-example
++/cfag12864b-example
+diff --git a/samples/binderfs/.gitignore b/samples/binderfs/.gitignore
+index eb60241e8087..8fa415a3640b 100644
+--- a/samples/binderfs/.gitignore
++++ b/samples/binderfs/.gitignore
+@@ -1 +1,2 @@
+-binderfs_example
++# SPDX-License-Identifier: GPL-2.0
++/binderfs_example
+diff --git a/samples/connector/.gitignore b/samples/connector/.gitignore
+index d86f2ff9c947..0e26039f39b5 100644
+--- a/samples/connector/.gitignore
++++ b/samples/connector/.gitignore
+@@ -1,2 +1,2 @@
+ # SPDX-License-Identifier: GPL-2.0-only
+-ucon
++/ucon
+diff --git a/samples/hidraw/.gitignore b/samples/hidraw/.gitignore
+index d7a6074ebcf9..5233ab63262e 100644
+--- a/samples/hidraw/.gitignore
++++ b/samples/hidraw/.gitignore
+@@ -1,2 +1,2 @@
+ # SPDX-License-Identifier: GPL-2.0-only
+-hid-example
++/hid-example
+diff --git a/samples/mei/.gitignore b/samples/mei/.gitignore
+index db5e802f041e..fe894bcb6a62 100644
+--- a/samples/mei/.gitignore
++++ b/samples/mei/.gitignore
+@@ -1,2 +1,2 @@
+ # SPDX-License-Identifier: GPL-2.0-only
+-mei-amt-version
++/mei-amt-version
+diff --git a/samples/nitro_enclaves/.gitignore b/samples/nitro_enclaves/.gitignore
+index 827934129c90..6a718eec71f4 100644
+--- a/samples/nitro_enclaves/.gitignore
++++ b/samples/nitro_enclaves/.gitignore
+@@ -1,2 +1,2 @@
+ # SPDX-License-Identifier: GPL-2.0
+-ne_ioctl_sample
++/ne_ioctl_sample
+diff --git a/samples/pidfd/.gitignore b/samples/pidfd/.gitignore
+index eea857fca736..d4cfa3176b1b 100644
+--- a/samples/pidfd/.gitignore
++++ b/samples/pidfd/.gitignore
+@@ -1,2 +1,2 @@
+ # SPDX-License-Identifier: GPL-2.0-only
+-pidfd-metadata
++/pidfd-metadata
+diff --git a/samples/seccomp/.gitignore b/samples/seccomp/.gitignore
+index 4a5a5b7db30b..a6df0da77c5d 100644
+--- a/samples/seccomp/.gitignore
++++ b/samples/seccomp/.gitignore
+@@ -1,5 +1,5 @@
+ # SPDX-License-Identifier: GPL-2.0-only
+-bpf-direct
+-bpf-fancy
+-dropper
+-user-trap
++/bpf-direct
++/bpf-fancy
++/dropper
++/user-trap
+diff --git a/samples/timers/.gitignore b/samples/timers/.gitignore
+index 40510c33cf08..cd9ff7b95383 100644
+--- a/samples/timers/.gitignore
++++ b/samples/timers/.gitignore
+@@ -1,2 +1,2 @@
+ # SPDX-License-Identifier: GPL-2.0-only
+-hpet_example
++/hpet_example
+diff --git a/samples/vfs/.gitignore b/samples/vfs/.gitignore
+index 8fdabf7e5373..79212d91285b 100644
+--- a/samples/vfs/.gitignore
++++ b/samples/vfs/.gitignore
+@@ -1,3 +1,3 @@
+ # SPDX-License-Identifier: GPL-2.0-only
+-test-fsmount
+-test-statx
++/test-fsmount
++/test-statx
+diff --git a/samples/watch_queue/.gitignore b/samples/watch_queue/.gitignore
+index 2aa3c7e56a1a..823b351d3db9 100644
+--- a/samples/watch_queue/.gitignore
++++ b/samples/watch_queue/.gitignore
+@@ -1 +1,2 @@
+-watch_test
++# SPDX-License-Identifier: GPL-2.0-only
++/watch_test
+diff --git a/samples/watchdog/.gitignore b/samples/watchdog/.gitignore
+index 74153b831244..a70a0150ed9f 100644
+--- a/samples/watchdog/.gitignore
++++ b/samples/watchdog/.gitignore
+@@ -1,2 +1,2 @@
+ # SPDX-License-Identifier: GPL-2.0-only
+-watchdog-simple
++/watchdog-simple
+diff --git a/scripts/.gitignore b/scripts/.gitignore
+index a6c11316c969..e83c620ef52c 100644
+--- a/scripts/.gitignore
++++ b/scripts/.gitignore
+@@ -1,11 +1,11 @@
+ # SPDX-License-Identifier: GPL-2.0-only
+-bin2c
+-kallsyms
+-unifdef
+-recordmcount
+-sorttable
+-asn1_compiler
+-extract-cert
+-sign-file
+-insert-sys-cert
++/asn1_compiler
++/bin2c
++/extract-cert
++/insert-sys-cert
++/kallsyms
+ /module.lds
++/recordmcount
++/sign-file
++/sorttable
++/unifdef
+diff --git a/scripts/basic/.gitignore b/scripts/basic/.gitignore
+index 98ae1f509592..961c91c8a884 100644
+--- a/scripts/basic/.gitignore
++++ b/scripts/basic/.gitignore
+@@ -1,2 +1,2 @@
+ # SPDX-License-Identifier: GPL-2.0-only
+-fixdep
++/fixdep
+diff --git a/scripts/dtc/.gitignore b/scripts/dtc/.gitignore
+index 8a8b62bf3d3c..e0b5c1d2464a 100644
+--- a/scripts/dtc/.gitignore
++++ b/scripts/dtc/.gitignore
+@@ -1,3 +1,3 @@
+ # SPDX-License-Identifier: GPL-2.0-only
+-dtc
+-fdtoverlay
++/dtc
++/fdtoverlay
+diff --git a/scripts/gcc-plugins/.gitignore b/scripts/gcc-plugins/.gitignore
+index b04e0f0f033e..5cc385b9eb97 100644
+--- a/scripts/gcc-plugins/.gitignore
++++ b/scripts/gcc-plugins/.gitignore
+@@ -1,2 +1,2 @@
+ # SPDX-License-Identifier: GPL-2.0-only
+-randomize_layout_seed.h
++/randomize_layout_seed.h
+diff --git a/scripts/genksyms/.gitignore b/scripts/genksyms/.gitignore
+index 999af710f83d..0b275abf9405 100644
+--- a/scripts/genksyms/.gitignore
++++ b/scripts/genksyms/.gitignore
+@@ -1,2 +1,2 @@
+ # SPDX-License-Identifier: GPL-2.0-only
+-genksyms
++/genksyms
+diff --git a/scripts/mod/.gitignore b/scripts/mod/.gitignore
+index 07e4a39f90a6..ed2e13b708ce 100644
+--- a/scripts/mod/.gitignore
++++ b/scripts/mod/.gitignore
+@@ -1,5 +1,5 @@
+ # SPDX-License-Identifier: GPL-2.0-only
+-elfconfig.h
+-mk_elfconfig
+-modpost
+-devicetable-offsets.h
++/elfconfig.h
++/mk_elfconfig
++/modpost
++/devicetable-offsets.h
+diff --git a/usr/.gitignore b/usr/.gitignore
+index 935442ed1eb2..8996e7a88902 100644
+--- a/usr/.gitignore
++++ b/usr/.gitignore
+@@ -1,4 +1,4 @@
+ # SPDX-License-Identifier: GPL-2.0-only
+-gen_init_cpio
+-initramfs_data.cpio
++/gen_init_cpio
++/initramfs_data.cpio
+ /initramfs_inc_data
 -- 
 2.27.0
 
