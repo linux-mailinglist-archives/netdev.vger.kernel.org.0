@@ -2,117 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C0B9636F991
-	for <lists+netdev@lfdr.de>; Fri, 30 Apr 2021 13:48:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 14E2F36F997
+	for <lists+netdev@lfdr.de>; Fri, 30 Apr 2021 13:50:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230034AbhD3Lsz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 30 Apr 2021 07:48:55 -0400
-Received: from www262.sakura.ne.jp ([202.181.97.72]:50132 "EHLO
-        www262.sakura.ne.jp" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229875AbhD3Lsz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 30 Apr 2021 07:48:55 -0400
-Received: from fsav303.sakura.ne.jp (fsav303.sakura.ne.jp [153.120.85.134])
-        by www262.sakura.ne.jp (8.15.2/8.15.2) with ESMTP id 13UBm58U016239;
-        Fri, 30 Apr 2021 20:48:05 +0900 (JST)
-        (envelope-from penguin-kernel@i-love.sakura.ne.jp)
-Received: from www262.sakura.ne.jp (202.181.97.72)
- by fsav303.sakura.ne.jp (F-Secure/fsigk_smtp/550/fsav303.sakura.ne.jp);
- Fri, 30 Apr 2021 20:48:05 +0900 (JST)
-X-Virus-Status: clean(F-Secure/fsigk_smtp/550/fsav303.sakura.ne.jp)
-Received: from [192.168.1.9] (M106072142033.v4.enabler.ne.jp [106.72.142.33])
-        (authenticated bits=0)
-        by www262.sakura.ne.jp (8.15.2/8.15.2) with ESMTPSA id 13UBm4Lq016232
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=NO);
-        Fri, 30 Apr 2021 20:48:05 +0900 (JST)
-        (envelope-from penguin-kernel@i-love.sakura.ne.jp)
-Subject: Re: [PATCH] rtnetlink: add rtnl_lock debug log
-To:     Rocco Yue <rocco.yue@mediatek.com>
-Cc:     Peter Enderborg <peter.enderborg@sony.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Anshuman Khandual <anshuman.khandual@arm.com>,
-        Vitor Massaru Iha <vitor@massaru.org>,
-        Sedat Dilek <sedat.dilek@gmail.com>,
-        Wei Yang <richard.weiyang@gmail.com>,
-        Cong Wang <cong.wang@bytedance.com>,
-        Di Zhu <zhudi21@huawei.com>,
-        Stephen Hemminger <stephen@networkplumber.org>,
-        Francis Laniel <laniel_francis@privacyrequired.com>,
-        Roopa Prabhu <roopa@cumulusnetworks.com>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, wsd_upsream@mediatek.com,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Masahiro Yamada <masahiroy@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        peterz@infradead.org
-References: <20210429070237.3012-1-rocco.yue@mediatek.com>
-From:   Tetsuo Handa <penguin-kernel@i-love.sakura.ne.jp>
-Message-ID: <27fa19c9-81b2-3604-033c-b7fe5d14b620@i-love.sakura.ne.jp>
-Date:   Fri, 30 Apr 2021 20:48:02 +0900
-User-Agent: Mozilla/5.0 (Windows NT 6.3; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.10.0
+        id S231869AbhD3Lu7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 30 Apr 2021 07:50:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39630 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231805AbhD3Lu6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 30 Apr 2021 07:50:58 -0400
+Received: from mail-lj1-x22f.google.com (mail-lj1-x22f.google.com [IPv6:2a00:1450:4864:20::22f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A32B6C06174A
+        for <netdev@vger.kernel.org>; Fri, 30 Apr 2021 04:50:09 -0700 (PDT)
+Received: by mail-lj1-x22f.google.com with SMTP id o16so80417987ljp.3
+        for <netdev@vger.kernel.org>; Fri, 30 Apr 2021 04:50:09 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=message-id:date:from:user-agent:mime-version:to:subject
+         :content-transfer-encoding;
+        bh=qThMQBgs0R43oy5MH1AeQfPHa9icvwVKOvzMVn86g84=;
+        b=s09n6Kbw9zst0+L+hS62XABNPd6l5RIahXz16lwnXocUOH/i2H99dOK2l7KAqPpFGC
+         FE2dKycqXmA1TIn/slqyyESs05IvLD/jtCjdhz4bwOpG+tukUM8SFnOK7aq7oQbgeYvU
+         wchKSsEStoO+cPGQWjc4HpfaO8muAHC6Ms/U8O7HNwmS6ZTh9Jj2F4CiOnJFqiEGu7eC
+         3UVUcw4hp5nG0caMVaWavZW0NaDJdZhBI4ta5dizQVH+vOiXErU7Dra2rS1tvSZrJPLa
+         umvMlDvOAEiiuBOASxXbXqYMbWZn8P2cyER1j97/z4+liZSNMIHj/CuJcQ6LkOIf970e
+         MPkw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:message-id:date:from:user-agent:mime-version:to
+         :subject:content-transfer-encoding;
+        bh=qThMQBgs0R43oy5MH1AeQfPHa9icvwVKOvzMVn86g84=;
+        b=qSu6ToqWyavox67nKqPl/hWByfL42RuFCoweKN/SteQFk4gLMGdivfQZjAWCxBpV3e
+         dsDZO6btLTgwFYt75hvM5bkirZSlBA3UT2Sw55qkee1n9VAOoeWLXqk/OoiRI2rfn46C
+         rQEP69fwb2KLQk5w6OxdGF6MUgvs456vMu1SnKfbSPJcC5jICITYxmao+swUD7u3i96d
+         WlMvWdHye90WWKOERADUqLgScqvGFeSVSpQe+rTVyw9Um5wep+kz9ixUa9fwU/hXu6Uj
+         cDVMjv6LL8LuCeE4tA4SVGgdzf6Y+GahzRWdnsav81A4wt5dt30PdHdr/9flBjXYAsDu
+         lN+Q==
+X-Gm-Message-State: AOAM5337PEHkwuyeamVGAZ7tKrsb1O2FycNMf3W3OO/aTnz9NJuFEeDA
+        SpodOYyFLIkeIXoxyVR3jdY=
+X-Google-Smtp-Source: ABdhPJy3Pyf+SuSWXgC6IsxRs4abMf6npKgl1+I0SrM/FqFECUPiXe9UTjsprJAyKVVhlrCt515baA==
+X-Received: by 2002:a2e:98d8:: with SMTP id s24mr3490914ljj.416.1619783408244;
+        Fri, 30 Apr 2021 04:50:08 -0700 (PDT)
+Received: from [192.168.0.91] ([188.242.181.97])
+        by smtp.googlemail.com with ESMTPSA id l25sm267464lfe.188.2021.04.30.04.50.07
+        (version=TLS1 cipher=ECDHE-ECDSA-AES128-SHA bits=128/128);
+        Fri, 30 Apr 2021 04:50:07 -0700 (PDT)
+Message-ID: <608BF122.7050307@gmail.com>
+Date:   Fri, 30 Apr 2021 14:59:30 +0300
+From:   Nikolai Zhubr <zhubr.2@gmail.com>
+User-Agent: Mozilla/5.0 (Windows; U; Windows NT 5.1; ru; rv:1.9.2.4) Gecko/20100608 Thunderbird/3.1
 MIME-Version: 1.0
-In-Reply-To: <20210429070237.3012-1-rocco.yue@mediatek.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
+To:     Chris Snook <chris.snook@gmail.com>, netdev@vger.kernel.org,
+        Johannes Berg <johannes@sipsolutions.net>,
+        nic-devel@qualcomm.com
+Subject: A problem with "ip=..." ipconfig and Atheros alx driver.
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2021/04/29 16:02, Rocco Yue wrote:
-> +static void rtnl_print_btrace(struct timer_list *unused)
-> +{
-> +	pr_info("----------- %s start -----------\n", __func__);
-> +	pr_info("%s[%d][%c] hold rtnl_lock more than 2 sec, start time: %llu\n",
-> +		rtnl_instance.task->comm,
-> +		rtnl_instance.pid,
-> +		task_state_to_char(rtnl_instance.task),
-> +		rtnl_instance.start_time);
-> +	stack_trace_print(rtnl_instance.addrs, rtnl_instance.nr_entries, 0);
+Hello Chris and others,
 
-Do we want to print same traces every 2 seconds? 
+I'm observing a problem with Atheros alx ethernet driver and in-kernel 
+ip4 configuration (using "ip=192.168....." boot parameter).
 
-Since it is possible to stall for e.g. 30 seconds, printing either only upon
-first call to rtnl_print_btrace() for each stalling duration or only upon
-end of stalling duration (i.e. from rtnl_relase_btrace()) is better?
+The problem first showed itself as a huge unexpected delay in bootup as 
+long as "ip=..." was specified (and a real device is present). I've then 
+noticed a timeout counter "Waiting up to 110 more seconds for network" 
+between the "Atheros(R) AR816x/AR817x" message and "eth0: NIC Up: 1 Gbps 
+Full" message. Meanwhile, this ethernet device is fully operational and 
+my cable is perfectly reliable.
 
-> +	show_stack(rtnl_instance.task, NULL, KERN_DEBUG);
+Now, after debugging it a little bit more, I've apparently found the 
+root cause. One can see in net/ipv4/ipconfig.c that ic_open_devs() tries 
+to ensure carrier is physically present. But before opening device(s) 
+and starting wait for the carrier, it calls rtnl_lock(). Now in 
+ethernet/atheros/alx/main.c one can see that at opening, it first calls 
+netif_carrier_off() then schedules alx_link_check() to do actual work, 
+so carrier detection is supposed to happen a bit later. Now looking at 
+this alx_link_check() carefully, first thing is does is rtnl_lock(). 
+Bingo! Double-lock. Effectively actual carrier check in alx is therefore 
+delayed just until ic_open_devs() gave up waiting for it and called 
+rtnl_unlock(). Hence this delay and timeout.
 
-Why KERN_DEBUG ?
+I have checked with clean 4.9.268 and 5.4.115 on real hardware.
+Can't check with 5.12 at the moment because my gcc is somewhat old to 
+compile it, but browsing the code it looks like nothing has changed 
+substantially anyway.
 
-If you retrieve the output via dmesg, KERN_DEBUG would be fine.
-But for syzkaller (which counts on printk() messages being printed to
-consoles), KERN_INFO (or default) is expected.
+Fixing this myself is a bit beyond my capability I'm afraid, but I'd be 
+happy do some testing if someone requests me to.
 
-> +	pr_info("------------ %s end -----------\n", __func__);
-> +}
-> +
-> +static void rtnl_relase_btrace(void)
-> +{
-> +	rtnl_instance.end_time = sched_clock();
-> +
 
-You should del_timer_sync() here than
+Thank you,
 
-> +	if (rtnl_instance.end_time - rtnl_instance.start_time > 2000000000ULL) {
-> +		pr_info("rtnl_lock is held by [%d] from [%llu] to [%llu]\n",
-> +			rtnl_instance.pid,
-> +			rtnl_instance.start_time,
-> +			rtnl_instance.end_time);
-> +	}
-> +
-> +	del_timer(&rtnl_chk_timer);
-
-here in order to make sure that end message is printed only after
-rtnl_print_btrace() messages are printed.
-
-> +}
-> +#endif
-> +
-
+Reagrds,
+Nikolai
