@@ -2,26 +2,26 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7079E36F449
-	for <lists+netdev@lfdr.de>; Fri, 30 Apr 2021 05:12:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E6C4836F452
+	for <lists+netdev@lfdr.de>; Fri, 30 Apr 2021 05:15:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230036AbhD3DMr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 29 Apr 2021 23:12:47 -0400
-Received: from szxga03-in.huawei.com ([45.249.212.189]:3409 "EHLO
+        id S229831AbhD3DP5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 29 Apr 2021 23:15:57 -0400
+Received: from szxga03-in.huawei.com ([45.249.212.189]:3410 "EHLO
         szxga03-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229577AbhD3DMp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 29 Apr 2021 23:12:45 -0400
-Received: from dggeml759-chm.china.huawei.com (unknown [172.30.72.55])
-        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4FWclL5LyFz5vwS;
-        Fri, 30 Apr 2021 11:08:46 +0800 (CST)
+        with ESMTP id S229577AbhD3DPz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 29 Apr 2021 23:15:55 -0400
+Received: from dggeml755-chm.china.huawei.com (unknown [172.30.72.55])
+        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4FWcq10F4yz5wC4;
+        Fri, 30 Apr 2021 11:11:57 +0800 (CST)
 Received: from dggpemm500005.china.huawei.com (7.185.36.74) by
- dggeml759-chm.china.huawei.com (10.1.199.138) with Microsoft SMTP Server
+ dggeml755-chm.china.huawei.com (10.1.199.136) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
- 15.1.2176.2; Fri, 30 Apr 2021 11:11:55 +0800
+ 15.1.2176.2; Fri, 30 Apr 2021 11:15:03 +0800
 Received: from [127.0.0.1] (10.69.30.204) by dggpemm500005.china.huawei.com
  (7.185.36.74) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id 15.1.2176.2; Fri, 30 Apr
- 2021 11:11:55 +0800
+ 2021 11:15:01 +0800
 Subject: Re: [PATCH net v4 1/2] net: sched: fix packet stuck problem for
  lockless qdisc
 From:   Yunsheng Lin <linyunsheng@huawei.com>
@@ -52,12 +52,13 @@ References: <1618535809-11952-1-git-send-email-linyunsheng@huawei.com>
  <20210421084428.xbjgoi4r2d6t65gy@lion.mk-sys.cz>
  <b3dacf14-0fb6-0cad-8b85-f5c8d7cd97ef@huawei.com>
  <a6abb3d8-f857-14e1-4212-a12df36027cf@huawei.com>
-Message-ID: <e90e662d-ace1-1f32-6050-861db0a7e976@huawei.com>
-Date:   Fri, 30 Apr 2021 11:11:55 +0800
+ <e90e662d-ace1-1f32-6050-861db0a7e976@huawei.com>
+Message-ID: <f06355b4-2b00-fc52-4d9d-9c866436e559@huawei.com>
+Date:   Fri, 30 Apr 2021 11:15:01 +0800
 User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:52.0) Gecko/20100101
  Thunderbird/52.2.0
 MIME-Version: 1.0
-In-Reply-To: <a6abb3d8-f857-14e1-4212-a12df36027cf@huawei.com>
+In-Reply-To: <e90e662d-ace1-1f32-6050-861db0a7e976@huawei.com>
 Content-Type: text/plain; charset="utf-8"
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -69,32 +70,41 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2021/4/23 17:42, Yunsheng Lin wrote:
-> On 2021/4/21 17:25, Yunsheng Lin wrote:
->> On 2021/4/21 16:44, Michal Kubecek wrote:
+On 2021/4/30 11:11, Yunsheng Lin wrote:
+> On 2021/4/23 17:42, Yunsheng Lin wrote:
+>> On 2021/4/21 17:25, Yunsheng Lin wrote:
+>>> On 2021/4/21 16:44, Michal Kubecek wrote:
+>>>
+>>>>
+>>>> I'll try running some tests also on other architectures, including arm64
+>>>> and s390x (to catch potential endinanity issues).
 >>
+>> I tried debugging nperf in arm64, with the below patch:
+>>
+>> Any idea what went wrong here?
+>>
+>> Also, Would you mind running netperf to see if there is similar issue
+>> in your system?
+> 
+> Hi, Michal
+>     I was able to reproduce the fluctuation for one thread TCP_STREAM test,
+
+I was *not* able
+Sorry for the typo.
+
+> So I am assuming it may more related to test environment or nperf issue.
+> 
+>    I plan to send v5 with netdev queue stopped handling after the golden
+> holiday in china. If there is any issue with patchset, please let me know,
+> thanks.
+> 
+>>
+>>>>
+>>>> Michal
+>>>>
+>>>> .
+>>>>
 >>>
->>> I'll try running some tests also on other architectures, including arm64
->>> and s390x (to catch potential endinanity issues).
-> 
-> I tried debugging nperf in arm64, with the below patch:
->
-> Any idea what went wrong here?
-> 
-> Also, Would you mind running netperf to see if there is similar issue
-> in your system?
-
-Hi, Michal
-    I was able to reproduce the fluctuation for one thread TCP_STREAM test,
-So I am assuming it may more related to test environment or nperf issue.
-
-   I plan to send v5 with netdev queue stopped handling after the golden
-holiday in china. If there is any issue with patchset, please let me know,
-thanks.
-
-> 
->>>
->>> Michal
 >>>
 >>> .
 >>>
