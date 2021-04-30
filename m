@@ -2,69 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2B7D436FCDB
-	for <lists+netdev@lfdr.de>; Fri, 30 Apr 2021 16:50:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BC01136FCE7
+	for <lists+netdev@lfdr.de>; Fri, 30 Apr 2021 16:54:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233473AbhD3Os2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 30 Apr 2021 10:48:28 -0400
-Received: from szxga08-in.huawei.com ([45.249.212.255]:3349 "EHLO
-        szxga08-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233274AbhD3OsK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 30 Apr 2021 10:48:10 -0400
-Received: from dggeml710-chm.china.huawei.com (unknown [172.30.72.54])
-        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4FWw8l3Krzz19K95;
-        Fri, 30 Apr 2021 22:43:19 +0800 (CST)
-Received: from dggpemm500008.china.huawei.com (7.185.36.136) by
- dggeml710-chm.china.huawei.com (10.3.17.140) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
- 15.1.2176.2; Fri, 30 Apr 2021 22:47:19 +0800
-Received: from localhost (10.174.242.151) by dggpemm500008.china.huawei.com
- (7.185.36.136) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2176.2; Fri, 30 Apr
- 2021 22:47:18 +0800
-From:   wangyunjian <wangyunjian@huawei.com>
-To:     <kuba@kernel.org>, <davem@davemloft.net>
-CC:     <amitkarwar@gmail.com>, <siva8118@gmail.com>,
-        <linux-wireless@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <dingxiaoxiong@huawei.com>, Yunjian Wang <wangyunjian@huawei.com>
-Subject: [PATCH net] rsi: Add a NULL check in rsi_core_xmit
-Date:   Fri, 30 Apr 2021 22:46:56 +0800
-Message-ID: <1619794016-27348-1-git-send-email-wangyunjian@huawei.com>
-X-Mailer: git-send-email 1.9.5.msysgit.1
+        id S230379AbhD3Ovb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 30 Apr 2021 10:51:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52012 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230175AbhD3Ova (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 30 Apr 2021 10:51:30 -0400
+Received: from mail-ej1-x629.google.com (mail-ej1-x629.google.com [IPv6:2a00:1450:4864:20::629])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 196AFC06174A
+        for <netdev@vger.kernel.org>; Fri, 30 Apr 2021 07:50:42 -0700 (PDT)
+Received: by mail-ej1-x629.google.com with SMTP id w3so105705531ejc.4
+        for <netdev@vger.kernel.org>; Fri, 30 Apr 2021 07:50:42 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=tessares-net.20150623.gappssmtp.com; s=20150623;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=gUJ9FjOlvILDnVEQgM4Qbo77GgjrqL2BnpZ7tigxVZ0=;
+        b=02NjxWl1uAiB2g4T571RZEMwkOCQKfYKrRqNaBtjlhHE6I1FnZPZmD9I6THnLBpmyr
+         oFobaPK6IC31wBg397dTT5Ps8uQ/pIJswFwPerWhFxR78+lqNliPcbVUeISUAul+mNUV
+         rlHWVkT5LhSlzRZEt1SMSxNhkvWpbBHUrUxzMm5wHHNRH+036dRiG6Fd7UCE6hTPCV7H
+         97FQWd0ubsOoEI7lx1FuTfOUA7KnWarxKTgy8mEBjWzIXHQ8wKI+gOsW9EOemeLfkMuu
+         0FPukCpSFeWamv/ydodo66xIXiksXqDGyBaBcZ4yDlKrZdJh94yU7QIUb42fVJLhW1Rq
+         XMOg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=gUJ9FjOlvILDnVEQgM4Qbo77GgjrqL2BnpZ7tigxVZ0=;
+        b=V9Fx/xFQ/YazAj3k4BudVayYmrKWh3dSI+XXIHNpFtZPR4LufYNmHfykINVT1J6Xp0
+         35w7xSBPtJzqCo7+wJZAdQTxvzgtsQVIRRYsR7nQOtD3lrkHOAJym88fCcEAMjlASRXp
+         0OCG4c8i0aZATpcwYNd3vsZPWr+NG81twrlevAVnesRI9wtuRN9axyNxda/zQ0ucGm/c
+         WX9ZT27+phdJXuG5WPT9xuxyP/B4ACJAsf+odfpLOWuAiK9aL8QBXqC9qYLeET7LSpul
+         CxWRJBMPbk2jmxITmqrrHRO238sKrSCEfxQ84O4SgxOhx+vCsfVRy5HOXysnOhuJEsq9
+         3VMQ==
+X-Gm-Message-State: AOAM533Xi3mjEww7K0neoMyO33uYBHd9kSWC+fzaANjbj5rcaq3cCuJ3
+        L+rMkaMQtA7BDHlbEXil/bsHhThi9v3dLap9/l8=
+X-Google-Smtp-Source: ABdhPJw819dLYiycp1o390l//8YnEK3p7mcejJzC1czwPpI4E/6+E93csILPyOhmQCj5HOuukod1Fw==
+X-Received: by 2002:a17:906:f41:: with SMTP id h1mr4872178ejj.399.1619794240719;
+        Fri, 30 Apr 2021 07:50:40 -0700 (PDT)
+Received: from tsr-lap-08.nix.tessares.net ([2a02:578:85b0:e00:b92a:fcbd:82a0:9dba])
+        by smtp.gmail.com with ESMTPSA id w19sm1348926edd.52.2021.04.30.07.50.40
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 30 Apr 2021 07:50:40 -0700 (PDT)
+Subject: Re: [PATCH iproute2] mptcp: make sure flag signal is set when add
+ addr with port
+To:     David Ahern <dsahern@gmail.com>, David Ahern <dsahern@kernel.org>
+Cc:     mptcp@lists.linux.dev, Paolo Abeni <pabeni@redhat.com>,
+        Jianguo Wu <wujianguo106@163.com>, netdev@vger.kernel.org
+References: <ea7d8eb1-5484-09dc-aa53-cf839b93bc73@163.com>
+ <6ec00dc5-de95-566d-f292-d43a3f5cf6cb@tessares.net>
+ <0544c818-1537-7a7e-0a86-8d0c28aa4797@gmail.com>
+From:   Matthieu Baerts <matthieu.baerts@tessares.net>
+Message-ID: <0005ef27-7304-152b-58e8-b5e0cc87b492@tessares.net>
+Date:   Fri, 30 Apr 2021 16:50:39 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.8.1
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.174.242.151]
-X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
- dggpemm500008.china.huawei.com (7.185.36.136)
-X-CFilter-Loop: Reflected
+In-Reply-To: <0544c818-1537-7a7e-0a86-8d0c28aa4797@gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-GB
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Yunjian Wang <wangyunjian@huawei.com>
+On 30/04/2021 16:27, David Ahern wrote:
+> On 4/30/21 3:35 AM, Matthieu Baerts wrote:
+>> On 23/04/2021 12:24, Jianguo Wu wrote:
+>>> From: Jianguo Wu <wujianguo@chinatelecom.cn>
+>>>
+>>> When add address with port, it is mean to send an ADD_ADDR to remote,
+>>> so it must have flag signal set.
+>>>
+>>> Fixes: 42fbca91cd61 ("mptcp: add support for port based endpoint")
+>>> Signed-off-by: Jianguo Wu <wujianguo@chinatelecom.cn>
+>>
+>> I see on patchwork[1] that this patch is marked as "Accepted". But I
+>> cannot find it in 'main' branches from iproute2-next.git and
+>> iproute2.git repos.
+>>
+>> Did I miss it somewhere?
+> 
+> no idea what happened
+> 
+>>
+>> If it is not too late, here is a ACK from MPTCP team:
+>>
+>> Acked-by: Matthieu Baerts <matthieu.baerts@tessares.net>
+>>
+> 
+> I'll add the Ack and apply.
 
-The skb may be NULL in rsi_core_xmit(). Add a check to avoid
-dereferencing null pointer.
+Thank you for your help!
 
-Addresses-Coverity: ("Dereference after null check")
-Fixes: dad0d04fa7ba ("rsi: Add RS9113 wireless driver")
-Signed-off-by: Yunjian Wang <wangyunjian@huawei.com>
----
- drivers/net/wireless/rsi/rsi_91x_core.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/net/wireless/rsi/rsi_91x_core.c b/drivers/net/wireless/rsi/rsi_91x_core.c
-index a48e616e0fb9..436e7b30d159 100644
---- a/drivers/net/wireless/rsi/rsi_91x_core.c
-+++ b/drivers/net/wireless/rsi/rsi_91x_core.c
-@@ -492,5 +492,6 @@ void rsi_core_xmit(struct rsi_common *common, struct sk_buff *skb)
- xmit_fail:
- 	rsi_dbg(ERR_ZONE, "%s: Failed to queue packet\n", __func__);
- 	/* Dropping pkt here */
--	ieee80211_free_txskb(common->priv->hw, skb);
-+	if (skb)
-+		ieee80211_free_txskb(common->priv->hw, skb);
- }
+Cheers,
+Matt
 -- 
-2.19.1
-
+Tessares | Belgium | Hybrid Access Solutions
+www.tessares.net
