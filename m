@@ -2,46 +2,42 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7FCA2370380
-	for <lists+netdev@lfdr.de>; Sat,  1 May 2021 00:30:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4A23737037D
+	for <lists+netdev@lfdr.de>; Sat,  1 May 2021 00:30:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232255AbhD3WbP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 30 Apr 2021 18:31:15 -0400
-Received: from mail.kernel.org ([198.145.29.99]:39780 "EHLO mail.kernel.org"
+        id S232087AbhD3WbD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 30 Apr 2021 18:31:03 -0400
+Received: from mail.kernel.org ([198.145.29.99]:39760 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231439AbhD3WbA (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 30 Apr 2021 18:31:00 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id 2A00F6147F;
+        id S230290AbhD3Wa7 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 30 Apr 2021 18:30:59 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPS id 0E0626145B;
         Fri, 30 Apr 2021 22:30:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1619821811;
-        bh=XVCO9O9G7bisl1YNGCySOUbejBlFNAz4x2iboi+HPMM=;
+        bh=Myr4XOwmHT+IHQx0Mj/iR8KB1OmmVSvQVlZp9jSYxgk=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=P9ap/x9ZZ85fjGARq/R5Mx/7yINZ5m2vDn0crZ0pRnL67E9R3C8D1iy1Gz0Y+0L8a
-         qrjt/ByO8Es0bUMCdCVDrOfxD0GNXFNx0gVkj4JtGt2Hfv1D7RON4QgUd0nRhGyGQ1
-         VBR8n1K7TXqFHx0Avk6V3wz/rER4D/zkhXG2u5I5FL7j6ZG9oCtA6MAbvAGvCZj0gD
-         pdE5JD+n+P2IsoPe4Z2BeEX20jpxW5RQtiQ1x9HWGlDp6nmBEFZgKAJ50l0WhcO++V
-         pvC1W0678QKrRs+6jDm85TsI/nsYyAyjv07iSpwkbaroO9+FgHbKcck0eWyI1Wa8Zn
-         ibXsMIlvrPnrA==
+        b=n99OsmUSsUH17QtL9U0ZM1Rx3n5jXvoa22Jn9aIFdWSXRhDHnPqJr66TBnRdJpWbi
+         jTPh5OrzdBzWfI6MIg2c/4H8iXWQKocRTlYPmAG3FfIHH3JVUKeXqgBv9WXF/ltMp2
+         9e5Z0LeEU8J6ZXL3HYu6puqm7zEdKWWnGUTvM6W5Vf+fPHH3ExFeNabzitYugDXWG0
+         +tcgnQqBiZGuwlhP79FWcCU+xWfERevkzrh3bEo/2+Q2CwFdBV/fekRAqsyJOv7Rg5
+         I7fTC5MyS8aytd2Ca9G8NVrRAfQa4fC2d/h4eYBueXvJQ0WqvB26OtQxxU5eB+uzqY
+         0CBfR04vypBbg==
 Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 1D1D160CD1;
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 0179E60A3A;
         Fri, 30 Apr 2021 22:30:11 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH] net: stmmac: Remove duplicate declaration of stmmac_priv
+Subject: Re: [PATCH] afs, rxrpc: Add Marc Dionne as co-maintainer
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <161982181111.1234.7541800919565959093.git-patchwork-notify@kernel.org>
+Message-Id: <161982181100.1234.5819018643280872365.git-patchwork-notify@kernel.org>
 Date:   Fri, 30 Apr 2021 22:30:11 +0000
-References: <20210430031047.34888-1-wanjiabing@vivo.com>
-In-Reply-To: <20210430031047.34888-1-wanjiabing@vivo.com>
-To:     Wan Jiabing <wanjiabing@vivo.com>
-Cc:     peppe.cavallaro@st.com, alexandre.torgue@foss.st.com,
-        joabreu@synopsys.com, davem@davemloft.net, kuba@kernel.org,
-        mcoquelin.stm32@gmail.com, netdev@vger.kernel.org,
-        linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        kael_w@yeah.net
+References: <20210430175009.14795-1-marc.dionne@auristor.com>
+In-Reply-To: <20210430175009.14795-1-marc.dionne@auristor.com>
+To:     Marc Dionne <marc.dionne@auristor.com>
+Cc:     dhowells@redhat.com, linux-afs@lists.infradead.org,
+        netdev@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
@@ -50,19 +46,17 @@ Hello:
 
 This patch was applied to netdev/net.git (refs/heads/master):
 
-On Fri, 30 Apr 2021 11:10:47 +0800 you wrote:
-> In commit f4da56529da60 ("net: stmmac: Add support for external
-> trigger timestamping"), struct stmmac_priv was declared at line 507
-> which caused duplicate struct declarations.
-> Remove later duplicate declaration here.
+On Fri, 30 Apr 2021 14:50:09 -0300 you wrote:
+> Add Marc Dionne as a co-maintainer for kafs and rxrpc.
 > 
-> Signed-off-by: Wan Jiabing <wanjiabing@vivo.com>
-> 
-> [...]
+> Signed-off-by: Marc Dionne <marc.dionne@auristor.com>
+> ---
+>  MAINTAINERS | 2 ++
+>  1 file changed, 2 insertions(+)
 
 Here is the summary with links:
-  - net: stmmac: Remove duplicate declaration of stmmac_priv
-    https://git.kernel.org/netdev/net/c/f18c51b6513c
+  - afs, rxrpc: Add Marc Dionne as co-maintainer
+    https://git.kernel.org/netdev/net/c/c5197b4ec932
 
 You are awesome, thank you!
 --
