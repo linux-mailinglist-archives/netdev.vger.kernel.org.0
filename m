@@ -2,90 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9B7A6370063
-	for <lists+netdev@lfdr.de>; Fri, 30 Apr 2021 20:21:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AD8E1370067
+	for <lists+netdev@lfdr.de>; Fri, 30 Apr 2021 20:22:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231373AbhD3SW0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 30 Apr 2021 14:22:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42372 "EHLO
+        id S231194AbhD3SXg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 30 Apr 2021 14:23:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42638 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229750AbhD3SWZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 30 Apr 2021 14:22:25 -0400
-Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3FC67C06174A;
-        Fri, 30 Apr 2021 11:21:37 -0700 (PDT)
-From:   Thomas Gleixner <tglx@linutronix.de>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1619806893;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=As7DtcWhMuF7h0TJSZIn85h3WNKtXg9d7v6tEvOH+qs=;
-        b=Hf0zeuoMznsXlwihwhVMhTEAKd/4k0Ku0M8qkgHH8iMN7iFVDrrBrlgDLNn/uPoy1iKACk
-        iV7CRZB9Ietru5dVJrPzai9l+ANGERnoM8JgXjnkJPawpmserZobzznAl4wU8HbP20NjTi
-        gRqE9n6dM5ioAwOCZzVGZkF7OsPPc/k3SqU4YMn9gzpCgcbhffPUGSRy5PXGDSRcu5/oUG
-        wMHNT2SxUnZSEpx3ujEh29oxbC6yg30BKCWoswhigidBvafirSYlgeZ/dMOPKhz0vEmMTg
-        dznmUDpTXBgikHUhP3rSy7pyiXwMs922CziEhTbkikOCwWL8a0FjSqJ788N/7g==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1619806893;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=As7DtcWhMuF7h0TJSZIn85h3WNKtXg9d7v6tEvOH+qs=;
-        b=FfdE0kUFkRqEf4ebx700jPou/iScTJY9te1G3qeOnRcZC57twD9Fxky/GZRsh+TKE1KvJx
-        INh75Tmvp3C5AmBA==
-To:     Nitesh Lal <nilal@redhat.com>
-Cc:     Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        "frederic\@kernel.org" <frederic@kernel.org>,
-        "juri.lelli\@redhat.com" <juri.lelli@redhat.com>,
-        Marcelo Tosatti <mtosatti@redhat.com>, abelits@marvell.com,
-        Robin Murphy <robin.murphy@arm.com>,
-        "linux-kernel\@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-api\@vger.kernel.org" <linux-api@vger.kernel.org>,
-        "bhelgaas\@google.com" <bhelgaas@google.com>,
-        "linux-pci\@vger.kernel.org" <linux-pci@vger.kernel.org>,
-        "rostedt\@goodmis.org" <rostedt@goodmis.org>,
-        "mingo\@kernel.org" <mingo@kernel.org>,
-        "peterz\@infradead.org" <peterz@infradead.org>,
-        "davem\@davemloft.net" <davem@davemloft.net>,
-        "akpm\@linux-foundation.org" <akpm@linux-foundation.org>,
-        "sfr\@canb.auug.org.au" <sfr@canb.auug.org.au>,
-        "stephen\@networkplumber.org" <stephen@networkplumber.org>,
-        "rppt\@linux.vnet.ibm.com" <rppt@linux.vnet.ibm.com>,
-        "jinyuqi\@huawei.com" <jinyuqi@huawei.com>,
-        "zhangshaokun\@hisilicon.com" <zhangshaokun@hisilicon.com>,
-        netdev@vger.kernel.org, chris.friesen@windriver.com
-Subject: Re: [Patch v4 1/3] lib: Restrict cpumask_local_spread to houskeeping CPUs
-In-Reply-To: <CAFki+LmmRyvOkWoNNLk5JCwtaTnabyaRUKxnS+wyAk_kj8wzyw@mail.gmail.com>
-References: <20200625223443.2684-1-nitesh@redhat.com> <3e9ce666-c9cd-391b-52b6-3471fe2be2e6@arm.com> <20210127121939.GA54725@fuller.cnet> <87r1m5can2.fsf@nanos.tec.linutronix.de> <20210128165903.GB38339@fuller.cnet> <87h7n0de5a.fsf@nanos.tec.linutronix.de> <20210204181546.GA30113@fuller.cnet> <cfa138e9-38e3-e566-8903-1d64024c917b@redhat.com> <20210204190647.GA32868@fuller.cnet> <d8884413-84b4-b204-85c5-810342807d21@redhat.com> <87y2g26tnt.fsf@nanos.tec.linutronix.de> <d0aed683-87ae-91a2-d093-de3f5d8a8251@redhat.com> <7780ae60-efbd-2902-caaa-0249a1f277d9@redhat.com> <07c04bc7-27f0-9c07-9f9e-2d1a450714ef@redhat.com> <20210406102207.0000485c@intel.com> <1a044a14-0884-eedb-5d30-28b4bec24b23@redhat.com> <20210414091100.000033cf@intel.com> <54ecc470-b205-ea86-1fc3-849c5b144b3b@redhat.com> <CAFki+Lm0W_brLu31epqD3gAV+WNKOJfVDfX2M8ZM__aj3nv9uA@mail.gmail.com> <87czucfdtf.ffs@nanos.tec.linutronix.de> <CAFki+LmmRyvOkWoNNLk5JCwtaTnabyaRUKxnS+wyAk_kj8wzyw@mail.gmail.com>
-Date:   Fri, 30 Apr 2021 20:21:33 +0200
-Message-ID: <87sg37eiqa.ffs@nanos.tec.linutronix.de>
+        with ESMTP id S229750AbhD3SXf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 30 Apr 2021 14:23:35 -0400
+Received: from mail-qk1-x72d.google.com (mail-qk1-x72d.google.com [IPv6:2607:f8b0:4864:20::72d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D985BC06174A;
+        Fri, 30 Apr 2021 11:22:46 -0700 (PDT)
+Received: by mail-qk1-x72d.google.com with SMTP id o27so2794440qkj.9;
+        Fri, 30 Apr 2021 11:22:46 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=pO4WyCI7L+HylreCdCSUwmGNqXA8ms97nyfShddenPk=;
+        b=BWssw5nLYaDqjgQ8pCuDpp6JdHAFJUHs/5Omh8KDdE75h5wW4P4u9B1A41IECeoNg1
+         RqCrj3nxm6ymW9m5Lq+jDd+0BzyZwGW7piwQzziQgmSdRUzX1VgAFOrle8I9w0eCcAue
+         7+tfRZJqKYHsQ3FkQY82mi4QRkYXoxkp6eOnieC6Qp+C07NUZpSCULe0g3v9Qjx1AAN4
+         Iu+oyNWOBmT7M3SNtS4XM5s/Z3tXhoWTyuMoxkbpzlHR+rvJDjg9qWc9XPOBvc9fRgKN
+         gqrLx4Z8Zm4bX1osUpmffs585cfOZqqr9reJ2GJ32eQcm8DbMJJQb9GY0NpF5shjGvR7
+         IeAQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=pO4WyCI7L+HylreCdCSUwmGNqXA8ms97nyfShddenPk=;
+        b=rKkXrcLiDiOux7U5ri4Ga1X6d6CTXcoiW9uXnk/gNo/JHsQ5UhI0+ctTZaNkA/nAYc
+         Y0oXp9fA0nhw35bIKKozpwvuxFi9ANrDguLCCf0syIHBpvqOJvcDnWn57iIXHabgo+Ll
+         ZsDo1/jjjh5TwP8UBo2KU8iMt4icd5IegdE8WqWELlkYKH8zAqMCchxdwFQ9er7XLkcH
+         KxEfgQtm7SitH/J8aq0U79h0QbLKPMurl1PKX5JZr6bIFiwH24sVQ7TeorrRiqxy8Aap
+         IIcoG3AiqNQH/YN4jzARndsfIxsmxQGSFkG/zKbPne8vuvgLw/z/iINmeKSTOhZ5ztaf
+         8R1A==
+X-Gm-Message-State: AOAM533avHHw7uAb59ZIyaJQUyw+39iUXAeSG45NKuW5PQLiU62XAGaP
+        Ca9Rc3vmzRJs3jOx/BpS0p8=
+X-Google-Smtp-Source: ABdhPJxjgLHvmhl0db7yfrhs9qcNgdB1Pf8HT4ViItJDcH6IEoTe8zt24oG69N4M6JXkC/i5/ooVcA==
+X-Received: by 2002:a37:c57:: with SMTP id 84mr6919409qkm.340.1619806966092;
+        Fri, 30 Apr 2021 11:22:46 -0700 (PDT)
+Received: from horizon.localdomain ([2001:1284:f013:14fb:c088:46f:2a8:ad2])
+        by smtp.gmail.com with ESMTPSA id u64sm2093652qkc.127.2021.04.30.11.22.45
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 30 Apr 2021 11:22:45 -0700 (PDT)
+Received: by horizon.localdomain (Postfix, from userid 1000)
+        id 6C25CC07AE; Fri, 30 Apr 2021 15:22:43 -0300 (-03)
+Date:   Fri, 30 Apr 2021 15:22:43 -0300
+From:   Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
+To:     Xin Long <lucien.xin@gmail.com>
+Cc:     network dev <netdev@vger.kernel.org>, linux-sctp@vger.kernel.org,
+        davem@davemloft.net, kuba@kernel.org, jere.leppanen@nokia.com,
+        Alexander Sverdlin <alexander.sverdlin@nokia.com>
+Subject: Re: [PATCH net 0/3] sctp: always send a chunk with the asoc that it
+ belongs to
+Message-ID: <YIxK8wOflRb7wzF+@horizon.localdomain>
+References: <cover.1619806333.git.lucien.xin@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <cover.1619806333.git.lucien.xin@gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Nitesh,
+On Sat, May 01, 2021 at 02:15:54AM +0800, Xin Long wrote:
+> Currently when processing a duplicate COOKIE-ECHO chunk, a new temp
+> asoc would be created, then it creates the chunks with the new asoc.
+> However, later on it uses the old asoc to send these chunks, which
+> has caused quite a few issues.
+> 
+> This patchset is to fix this and make sure that the COOKIE-ACK and
+> SHUTDOWN chunks are created with the same asoc that will be used to
+> send them out.
+> 
+> Xin Long (3):
+>   sctp: do asoc update earlier in sctp_sf_do_dupcook_a
+>   Revert "sctp: Fix bundling of SHUTDOWN with COOKIE-ACK"
+>   sctp: do asoc update earlier in sctp_sf_do_dupcook_b
 
-On Fri, Apr 30 2021 at 12:14, Nitesh Lal wrote:
-> Based on this analysis and the fact that with your re-work the interrupts
-> seems to be naturally spread across the CPUs, will it be safe to revert
-> Jesse's patch
->
-> e2e64a932 genirq: Set initial affinity in irq_set_affinity_hint()
->
-> as it overwrites the previously set IRQ affinity mask for some of the
-> devices?
-
-That's a good question. My gut feeling says yes.
-
-> IMHO if we think that this patch is still solving some issue other than
-> what Jesse has mentioned then perhaps we should reproduce that and fix it
-> directly from the request_irq code path.
-
-Makes sense.
-
-Thanks,
-
-        tglx
+Thanks folks.
+Acked-by: Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
