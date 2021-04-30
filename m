@@ -2,77 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 48B9E370336
-	for <lists+netdev@lfdr.de>; Fri, 30 Apr 2021 23:49:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E47D1370339
+	for <lists+netdev@lfdr.de>; Fri, 30 Apr 2021 23:50:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231313AbhD3VuB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 30 Apr 2021 17:50:01 -0400
-Received: from outgoing-auth-1.mit.edu ([18.9.28.11]:56210 "EHLO
-        outgoing.mit.edu" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S229915AbhD3Vt7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 30 Apr 2021 17:49:59 -0400
-Received: from cwcc.thunk.org (pool-72-74-133-215.bstnma.fios.verizon.net [72.74.133.215])
-        (authenticated bits=0)
-        (User authenticated as tytso@ATHENA.MIT.EDU)
-        by outgoing.mit.edu (8.14.7/8.12.4) with ESMTP id 13ULmu1e024684
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 30 Apr 2021 17:48:56 -0400
-Received: by cwcc.thunk.org (Postfix, from userid 15806)
-        id E6B1F15C39C4; Fri, 30 Apr 2021 17:48:55 -0400 (EDT)
-Date:   Fri, 30 Apr 2021 17:48:55 -0400
-From:   "Theodore Ts'o" <tytso@mit.edu>
-To:     Jiri Kosina <jikos@kernel.org>
-Cc:     ksummit@lists.linux.dev, linux-kernel@vger.kernel.org,
-        linux-block@vger.kernel.org, linux-fsdevel@vger.kernel.org,
-        linux-mm@kvack.org, netdev@vger.kernel.org,
-        linux-arch@vger.kernel.org, linux-api@vger.kernel.org
-Subject: Re: Maintainers / Kernel Summit 2021 planning kick-off
-Message-ID: <YIx7R6tmcRRCl/az@mit.edu>
-References: <YH2hs6EsPTpDAqXc@mit.edu>
- <nycvar.YFH.7.76.2104281228350.18270@cbobk.fhfr.pm>
+        id S231267AbhD3Vu7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 30 Apr 2021 17:50:59 -0400
+Received: from mail.kernel.org ([198.145.29.99]:54096 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229915AbhD3Vu6 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 30 Apr 2021 17:50:58 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPS id 47B946105A;
+        Fri, 30 Apr 2021 21:50:09 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1619819409;
+        bh=miG+q2c09nliVQBuE8bGiLgfU/PPdRkcr8VnkO3Dbgc=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=KUPsi3VDWBKQASaNCGYZDkStesqGqnV9LL3iOXBdrRYESqaLHrADp2kIYzoKc0csk
+         zYbQFhiCjwawvrFYSX8fLmLf90Xry2UKDFRuqkzrkM5DOkPlYGqBz+NrBGdDVlA5pE
+         MLZng4wzK8gxpHSNDeHWcQOfd/a0Fi3/yucoHOCRfI0n8Q2KvtPEIYBAY6ygCkE0jy
+         BbRFqbrooNXEoisme+OKUGJ3UT0apxAhgTccZKM9fw2rgcjjeTQgk8Xm7GHqDHhbFG
+         TulUvvXTUXqo3Lxje1QjR4LjZjQMa71FP4BN9UINwPGhwtGYp6pfL1eTMM7NZSphZh
+         5urGLKPHp4CnA==
+Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 375B760A23;
+        Fri, 30 Apr 2021 21:50:09 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <nycvar.YFH.7.76.2104281228350.18270@cbobk.fhfr.pm>
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net] net: stmmac: cleared __FPE_REMOVING bit in
+ stmmac_fpe_start_wq()
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <161981940922.13877.7364921069521536310.git-patchwork-notify@kernel.org>
+Date:   Fri, 30 Apr 2021 21:50:09 +0000
+References: <20210429230104.16977-1-mohammad.athari.ismail@intel.com>
+In-Reply-To: <20210429230104.16977-1-mohammad.athari.ismail@intel.com>
+To:     Ismail@ci.codeaurora.org,
+        Mohammad Athari <mohammad.athari.ismail@intel.com>
+Cc:     peppe.cavallaro@st.com, alexandre.torgue@st.com,
+        joabreu@synopsys.com, davem@davemloft.net, kuba@kernel.org,
+        mcoquelin.stm32@gmail.com, boon.leong.ong@intel.com,
+        weifeng.voon@intel.com, vee.khee.wong@intel.com,
+        tee.min.tan@intel.com, netdev@vger.kernel.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Apr 28, 2021 at 12:29:52PM +0200, Jiri Kosina wrote:
-> On Mon, 19 Apr 2021, Theodore Ts'o wrote:
+Hello:
+
+This patch was applied to netdev/net.git (refs/heads/master):
+
+On Fri, 30 Apr 2021 07:01:04 +0800 you wrote:
+> From: Mohammad Athari Bin Ismail <mohammad.athari.ismail@intel.com>
 > 
-> > This year, the Maintainers and Kernel Summit is currently planned to
-> > be held in Dublin, Ireland, September 27 -- 29th.  
+> An issue found when network interface is down and up again, FPE handshake
+> fails to trigger. This is due to __FPE_REMOVING bit remains being set in
+> stmmac_fpe_stop_wq() but not cleared in stmmac_fpe_start_wq(). This
+> cause FPE workqueue task, stmmac_fpe_lp_task() not able to be executed.
 > 
-> Given the fact that OSS is being relocated from Dublin to Washington [1], 
-> is Kernel Summit following that direction?
-> 
-> [1] https://www.linuxfoundation.org/en/press-release/the-linux-foundation-announces-open-source-summit-embedded-linux-conference-2021-will-move-from-dublin-ireland-to-seattle-washington/
+> [...]
 
-Apologies for the delay in responding; I wasiting for the LPC to post
-its announcement that the LPC will be going 100% virtual:
+Here is the summary with links:
+  - [net] net: stmmac: cleared __FPE_REMOVING bit in stmmac_fpe_start_wq()
+    https://git.kernel.org/netdev/net/c/db7c691d7f4d
 
-   https://www.linuxplumbersconf.org/blog/2021/index.php/2021/04/30/linux-plumbers-goes-fully-virtual/
+You are awesome, thank you!
+--
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
 
-As the LPC planning committee stated,
 
-   "Unfortunately, the safety protocols imposed by event venues in the
-   US require masks and social distancing which make it impossible to
-   hold the interactive part of Plumbers (the Microconferences)."
-
-The Maintainer's Summit is even more interactive and discussion
-focused than most of the Microconferences.  In addition, for the last
-few years, the Kernel Summit is run as a track at the LPC.  As a
-result, both the Maintainer's and Kernel Summit will be held virtually
-this year, using the LPC infrastructure, and will not be colocated
-with OSS to Seattle.  We'll make sure the dates (plus some buffer for
-travel) won't overlap to avoid creating conflicts for those who are
-planning to attend OSS in Seattle.
-
-I know we're all really hungry for some in-person meetups and
-discussions, but at least for LPC, Kernel Summit, and Maintainer's
-Summit, we're going to have to wait for another year,
-
-Cheers,
-
-					- Ted
