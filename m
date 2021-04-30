@@ -2,105 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BC01136FCE7
-	for <lists+netdev@lfdr.de>; Fri, 30 Apr 2021 16:54:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 26E2636FD2C
+	for <lists+netdev@lfdr.de>; Fri, 30 Apr 2021 17:05:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230379AbhD3Ovb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 30 Apr 2021 10:51:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52012 "EHLO
+        id S231631AbhD3PBM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 30 Apr 2021 11:01:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53546 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230175AbhD3Ova (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 30 Apr 2021 10:51:30 -0400
-Received: from mail-ej1-x629.google.com (mail-ej1-x629.google.com [IPv6:2a00:1450:4864:20::629])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 196AFC06174A
-        for <netdev@vger.kernel.org>; Fri, 30 Apr 2021 07:50:42 -0700 (PDT)
-Received: by mail-ej1-x629.google.com with SMTP id w3so105705531ejc.4
-        for <netdev@vger.kernel.org>; Fri, 30 Apr 2021 07:50:42 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=tessares-net.20150623.gappssmtp.com; s=20150623;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=gUJ9FjOlvILDnVEQgM4Qbo77GgjrqL2BnpZ7tigxVZ0=;
-        b=02NjxWl1uAiB2g4T571RZEMwkOCQKfYKrRqNaBtjlhHE6I1FnZPZmD9I6THnLBpmyr
-         oFobaPK6IC31wBg397dTT5Ps8uQ/pIJswFwPerWhFxR78+lqNliPcbVUeISUAul+mNUV
-         rlHWVkT5LhSlzRZEt1SMSxNhkvWpbBHUrUxzMm5wHHNRH+036dRiG6Fd7UCE6hTPCV7H
-         97FQWd0ubsOoEI7lx1FuTfOUA7KnWarxKTgy8mEBjWzIXHQ8wKI+gOsW9EOemeLfkMuu
-         0FPukCpSFeWamv/ydodo66xIXiksXqDGyBaBcZ4yDlKrZdJh94yU7QIUb42fVJLhW1Rq
-         XMOg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=gUJ9FjOlvILDnVEQgM4Qbo77GgjrqL2BnpZ7tigxVZ0=;
-        b=V9Fx/xFQ/YazAj3k4BudVayYmrKWh3dSI+XXIHNpFtZPR4LufYNmHfykINVT1J6Xp0
-         35w7xSBPtJzqCo7+wJZAdQTxvzgtsQVIRRYsR7nQOtD3lrkHOAJym88fCcEAMjlASRXp
-         0OCG4c8i0aZATpcwYNd3vsZPWr+NG81twrlevAVnesRI9wtuRN9axyNxda/zQ0ucGm/c
-         WX9ZT27+phdJXuG5WPT9xuxyP/B4ACJAsf+odfpLOWuAiK9aL8QBXqC9qYLeET7LSpul
-         CxWRJBMPbk2jmxITmqrrHRO238sKrSCEfxQ84O4SgxOhx+vCsfVRy5HOXysnOhuJEsq9
-         3VMQ==
-X-Gm-Message-State: AOAM533Xi3mjEww7K0neoMyO33uYBHd9kSWC+fzaANjbj5rcaq3cCuJ3
-        L+rMkaMQtA7BDHlbEXil/bsHhThi9v3dLap9/l8=
-X-Google-Smtp-Source: ABdhPJw819dLYiycp1o390l//8YnEK3p7mcejJzC1czwPpI4E/6+E93csILPyOhmQCj5HOuukod1Fw==
-X-Received: by 2002:a17:906:f41:: with SMTP id h1mr4872178ejj.399.1619794240719;
-        Fri, 30 Apr 2021 07:50:40 -0700 (PDT)
-Received: from tsr-lap-08.nix.tessares.net ([2a02:578:85b0:e00:b92a:fcbd:82a0:9dba])
-        by smtp.gmail.com with ESMTPSA id w19sm1348926edd.52.2021.04.30.07.50.40
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 30 Apr 2021 07:50:40 -0700 (PDT)
-Subject: Re: [PATCH iproute2] mptcp: make sure flag signal is set when add
- addr with port
-To:     David Ahern <dsahern@gmail.com>, David Ahern <dsahern@kernel.org>
-Cc:     mptcp@lists.linux.dev, Paolo Abeni <pabeni@redhat.com>,
-        Jianguo Wu <wujianguo106@163.com>, netdev@vger.kernel.org
-References: <ea7d8eb1-5484-09dc-aa53-cf839b93bc73@163.com>
- <6ec00dc5-de95-566d-f292-d43a3f5cf6cb@tessares.net>
- <0544c818-1537-7a7e-0a86-8d0c28aa4797@gmail.com>
-From:   Matthieu Baerts <matthieu.baerts@tessares.net>
-Message-ID: <0005ef27-7304-152b-58e8-b5e0cc87b492@tessares.net>
-Date:   Fri, 30 Apr 2021 16:50:39 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.8.1
+        with ESMTP id S232070AbhD3PAo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 30 Apr 2021 11:00:44 -0400
+Received: from sipsolutions.net (s3.sipsolutions.net [IPv6:2a01:4f8:191:4433::2])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ADC60C06137B;
+        Fri, 30 Apr 2021 07:59:10 -0700 (PDT)
+Received: by sipsolutions.net with esmtpsa (TLS1.3:ECDHE_SECP256R1__RSA_PSS_RSAE_SHA256__AES_256_GCM:256)
+        (Exim 4.94)
+        (envelope-from <johannes@sipsolutions.net>)
+        id 1lcUbe-00293F-0B; Fri, 30 Apr 2021 16:59:02 +0200
+Message-ID: <573f85365f81b2505c90fd6e3e003faf48067abe.camel@sipsolutions.net>
+Subject: Re: [PATCH net] rsi: Add a NULL check in rsi_core_xmit
+From:   Johannes Berg <johannes@sipsolutions.net>
+To:     wangyunjian <wangyunjian@huawei.com>, kuba@kernel.org,
+        davem@davemloft.net
+Cc:     amitkarwar@gmail.com, siva8118@gmail.com,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        dingxiaoxiong@huawei.com
+Date:   Fri, 30 Apr 2021 16:59:00 +0200
+In-Reply-To: <1619794016-27348-1-git-send-email-wangyunjian@huawei.com> (sfid-20210430_164755_644415_C818D374)
+References: <1619794016-27348-1-git-send-email-wangyunjian@huawei.com>
+         (sfid-20210430_164755_644415_C818D374)
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.38.4 (3.38.4-1.fc33) 
 MIME-Version: 1.0
-In-Reply-To: <0544c818-1537-7a7e-0a86-8d0c28aa4797@gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-GB
 Content-Transfer-Encoding: 7bit
+X-malware-bazaar: not-scanned
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 30/04/2021 16:27, David Ahern wrote:
-> On 4/30/21 3:35 AM, Matthieu Baerts wrote:
->> On 23/04/2021 12:24, Jianguo Wu wrote:
->>> From: Jianguo Wu <wujianguo@chinatelecom.cn>
->>>
->>> When add address with port, it is mean to send an ADD_ADDR to remote,
->>> so it must have flag signal set.
->>>
->>> Fixes: 42fbca91cd61 ("mptcp: add support for port based endpoint")
->>> Signed-off-by: Jianguo Wu <wujianguo@chinatelecom.cn>
->>
->> I see on patchwork[1] that this patch is marked as "Accepted". But I
->> cannot find it in 'main' branches from iproute2-next.git and
->> iproute2.git repos.
->>
->> Did I miss it somewhere?
+On Fri, 2021-04-30 at 22:46 +0800, wangyunjian wrote:
+> From: Yunjian Wang <wangyunjian@huawei.com>
 > 
-> no idea what happened
-> 
->>
->> If it is not too late, here is a ACK from MPTCP team:
->>
->> Acked-by: Matthieu Baerts <matthieu.baerts@tessares.net>
->>
-> 
-> I'll add the Ack and apply.
+> The skb may be NULL in rsi_core_xmit().
 
-Thank you for your help!
+How so?
 
-Cheers,
-Matt
--- 
-Tessares | Belgium | Hybrid Access Solutions
-www.tessares.net
+Static checkers are good. Coverity is one of the better ones, in my
+experience. But blindly believing static checkers still isn't good.
+
+I see why the static checker is confused, but really, _you_ should have
+done that work, not me.
+
+johannes
+
