@@ -2,204 +2,326 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7CAAC36F84A
-	for <lists+netdev@lfdr.de>; Fri, 30 Apr 2021 12:07:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7C0FD36F84C
+	for <lists+netdev@lfdr.de>; Fri, 30 Apr 2021 12:07:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229559AbhD3KIC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 30 Apr 2021 06:08:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45292 "EHLO
+        id S230106AbhD3KIE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 30 Apr 2021 06:08:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45302 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229524AbhD3KIB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 30 Apr 2021 06:08:01 -0400
-Received: from mail-wm1-x331.google.com (mail-wm1-x331.google.com [IPv6:2a00:1450:4864:20::331])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A6E7C06174A
-        for <netdev@vger.kernel.org>; Fri, 30 Apr 2021 03:07:13 -0700 (PDT)
-Received: by mail-wm1-x331.google.com with SMTP id i21-20020a05600c3555b029012eae2af5d4so1387414wmq.4
-        for <netdev@vger.kernel.org>; Fri, 30 Apr 2021 03:07:13 -0700 (PDT)
+        with ESMTP id S229524AbhD3KID (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 30 Apr 2021 06:08:03 -0400
+Received: from mail-wr1-x42e.google.com (mail-wr1-x42e.google.com [IPv6:2a00:1450:4864:20::42e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 542B8C06174A
+        for <netdev@vger.kernel.org>; Fri, 30 Apr 2021 03:07:15 -0700 (PDT)
+Received: by mail-wr1-x42e.google.com with SMTP id x5so19631241wrv.13
+        for <netdev@vger.kernel.org>; Fri, 30 Apr 2021 03:07:15 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id;
-        bh=wAAGefM9sm57xiN8JQJSPXwevk+dd6E4rB1SsM48CbU=;
-        b=Llp3Dr743bzV60MTDHCrO3FxpemA4WuzUbDP+bvDBtekrEk5qOnHD2iBnyVRdA1V33
-         ENaPaiDhf63nPz3+zSXhwxXQeJd+tlN1CJ9gg98ucDHuWWoDqc7LhP6+TBg20U2b3pNG
-         25dLavMX1/FeWqvCqol6GS8HH5rqv4qv6H2R3Fjnhg9xo0IIA23pohHF8TyAm97FwED3
-         Gu9/m828PIRwe3jfASUwXayMoTIQ9nNgP813lOFK/Xoo4HSXdIqBzHje4OUvQjo/Ux3t
-         rmQJO42RloFFA/bHJJTlYeT0BDeskx0pC4ksgRF5oR2MHn/m4q+ydpGK8gDnhZhr/J+i
-         NBbA==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references;
+        bh=PDnfVuA/JjrNJVnGCOpMCSMgyBp4BBB6tbf0UxNJ/kE=;
+        b=LoTVZ8D7BEz3yq3hBHaLdUYIjRe2HkhxmZZQtVf+Ljobzl3EEYoWXht3ninBE0plDI
+         VlYk2FX/dDzdVy7mbHRueAA0xXYIQYHtmdZxe1Ljr7YhZfWJQqAIclUwmMECDN8v0uei
+         iItyCxk5saOW0GvKFl77pYGDEIVtKDCyHVCGHPKR2OrCYfFUz61i0nGJ8MeHI8hVqVO0
+         dNeNVPUODgbXmGVIEWfvLDDSs891AlteEMQpWYSlgE0nZ10kz3yHlhz21EJobpFJGFHh
+         lf3Afffy22hXGxFHxoXpOwCEU/3P/KE7BotnAy14t9w9+vZH0a8Zo5CicY7Cd5c2Dc1e
+         vCuQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=wAAGefM9sm57xiN8JQJSPXwevk+dd6E4rB1SsM48CbU=;
-        b=hRWg+6mWYj1Qboi+jxC1ipN+1Z+ID+9uOlwpHaIG5UZ+or56icKPv8PPYSpijOcBDH
-         jN2bbvcRrdfBvFNdOTvY971JesKRi0idv6ISGROG7DMMG7Ait3etuepB2/b4hkFBzA9P
-         yg0nJKnd8uQhW4IT79xSCynNy+/VITC9jc96Q+y3TLScrLbHIGF1zfgPCVeF4LrxZeuE
-         BSpAygX6qq9WmLAnHTq/PriRRcOWyd5Yn62E/4WQNNlTZLDhEY7pDfMxjg0fm7pD23f4
-         eoBuJ8cwD/Vg1zqwlVvDF/JTP+rksvEOiR9QE6i5aJwUhnbbwGCeI+8ihFcBMqbgd7+j
-         1I4w==
-X-Gm-Message-State: AOAM531WFEr4xn6wJXz6v2U1M7zF0rS/MxAUizL1c1DTeAV1mgHatQzr
-        wKIiFX9CzaXCsFtI8t0E6O2v+g==
-X-Google-Smtp-Source: ABdhPJxw86oLMz/XYV0lthPwKxtBCHZ9hTpK4WiXhlfrjF5G+/0OnGaJyDhZgpZS7xqcitNHj/2DVg==
-X-Received: by 2002:a1c:540b:: with SMTP id i11mr15822473wmb.40.1619777231980;
-        Fri, 30 Apr 2021 03:07:11 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references;
+        bh=PDnfVuA/JjrNJVnGCOpMCSMgyBp4BBB6tbf0UxNJ/kE=;
+        b=bKLBpPDFJbV9T6m6A1u9t+/YxSA8ERcLp4Bpw7jd+XBiB37caPMgHBvA8+Mn8ca6qc
+         lU3KpEeebSJyyD+RRPZKh+BEddisHQoqfi8uGhyBCQbFvxgkj9ldWAGy1ZCHX/XN4D8a
+         E47v++f4kE+ssV5Q7kGzIWtbmJnt0ddmhIHydfIemBUQpUCvXZv4cn0LqyYmGZKMMfrt
+         tSYHrreXQQFmRShye45s+RcMbGwXBphazVkH3rSTym2/ImbbufacIH93Uz0Bblr8fgD5
+         A5QlQ+9gN7k4SWJ28GrjdMrDeK2qVsKJ60UbjvPFd8I4OzYOwJ6deLOY8fulMp1cFQ6n
+         tXJQ==
+X-Gm-Message-State: AOAM530mNrsrRvJwauhXEcVnXOwHBvc5t3GW1kaqR3rybhf2HJu4ENkJ
+        G3IYcZp6C2MTTxMbAHL3l7pvchIHIP2ttRRn
+X-Google-Smtp-Source: ABdhPJxTdVoNcnHiBB1W/YXmHOtVq0J77k7fIQNm7fMRvBR1p4eVCejkZpOK9DNhdNO6ivtt54NIfg==
+X-Received: by 2002:a5d:674c:: with SMTP id l12mr5619361wrw.357.1619777233992;
+        Fri, 30 Apr 2021 03:07:13 -0700 (PDT)
 Received: from localhost.localdomain ([2a01:e0a:82c:5f0:f8f5:7ac7:d0f:4a85])
-        by smtp.gmail.com with ESMTPSA id a15sm2192069wrx.9.2021.04.30.03.07.11
+        by smtp.gmail.com with ESMTPSA id a15sm2192069wrx.9.2021.04.30.03.07.13
         (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Fri, 30 Apr 2021 03:07:11 -0700 (PDT)
+        Fri, 30 Apr 2021 03:07:13 -0700 (PDT)
 From:   Loic Poulain <loic.poulain@linaro.org>
 To:     oliver@neukum.org
 Cc:     netdev@vger.kernel.org, linux-usb@vger.kernel.org, kuba@kernel.org,
         bjorn@mork.no, Loic Poulain <loic.poulain@linaro.org>
-Subject: [RFC net-next 1/2] usb: class: cdc-wdm: add control type
-Date:   Fri, 30 Apr 2021 12:16:22 +0200
-Message-Id: <1619777783-24116-1-git-send-email-loic.poulain@linaro.org>
+Subject: [RFC net-next 2/2] usb: class: cdc-wdm: WWAN framework integration
+Date:   Fri, 30 Apr 2021 12:16:23 +0200
+Message-Id: <1619777783-24116-2-git-send-email-loic.poulain@linaro.org>
 X-Mailer: git-send-email 2.7.4
+In-Reply-To: <1619777783-24116-1-git-send-email-loic.poulain@linaro.org>
+References: <1619777783-24116-1-git-send-email-loic.poulain@linaro.org>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add type parameter to usb_cdc_wdm_register function in order to
-specify which control protocol the cdc-wdm channel is transporting.
-It will be required for exposing the channel(s) through WWAN framework.
+The WWAN framework provides a unified way to handle WWAN/modems and
+control port(s). It has initially been introduced to support MHI/PCI
+modems, offering the same control protocols as the USB variants,
+such as MBIM, QMI, AT... The WWAN framework exposes these control
+protocols as character devices, similarly to cdc-wdm, but in a
+bus agnostic fashion.
+
+It would then make sense to migrate cdc-wdm to this unified framework
+and register the USB modem control endpoints as standard WWAN control
+ports.
+
+Exposing cdc-wdm through WWAN framework normally maintains backward
+compatibility, e.g:
+    $ qmicli --device-open-qmi -d /dev/wwan0p1QMI --dms-get-ids
+instead of
+    $ qmicli --device-open-qmi -d /dev/cdc-wdm0 --dms-get-ids
+
+However, some tools may rely on cdc-wdm driver/device name for device
+detection. It is then safer to keep the 'legacy' cdc-wdm character
+device to prevent any breakage. This is handled in this change by
+API mutual exclusion, only one access method can be used at a time,
+either cdc-wdm chardev or WWAN API.
+
+Note that unknown channel types (other than MBIM, AT or MBIM) are not
+registered to the WWAN framework.
 
 Signed-off-by: Loic Poulain <loic.poulain@linaro.org>
 ---
- drivers/net/usb/cdc_mbim.c       |  1 +
- drivers/net/usb/huawei_cdc_ncm.c |  1 +
- drivers/net/usb/qmi_wwan.c       |  3 ++-
- drivers/usb/class/cdc-wdm.c      | 13 +++++++++----
- include/linux/usb/cdc-wdm.h      | 16 +++++++++++++++-
- 5 files changed, 28 insertions(+), 6 deletions(-)
+ drivers/usb/class/cdc-wdm.c | 171 +++++++++++++++++++++++++++++++++++++++++++-
+ 1 file changed, 170 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/usb/cdc_mbim.c b/drivers/net/usb/cdc_mbim.c
-index 5db6627..63b134b 100644
---- a/drivers/net/usb/cdc_mbim.c
-+++ b/drivers/net/usb/cdc_mbim.c
-@@ -168,6 +168,7 @@ static int cdc_mbim_bind(struct usbnet *dev, struct usb_interface *intf)
- 		subdriver = usb_cdc_wdm_register(ctx->control,
- 						 &dev->status->desc,
- 						 le16_to_cpu(ctx->mbim_desc->wMaxControlMessage),
-+						 USB_CDC_WDM_MBIM,
- 						 cdc_mbim_wdm_manage_power);
- 	if (IS_ERR(subdriver)) {
- 		ret = PTR_ERR(subdriver);
-diff --git a/drivers/net/usb/huawei_cdc_ncm.c b/drivers/net/usb/huawei_cdc_ncm.c
-index a87f0da..388a46b 100644
---- a/drivers/net/usb/huawei_cdc_ncm.c
-+++ b/drivers/net/usb/huawei_cdc_ncm.c
-@@ -96,6 +96,7 @@ static int huawei_cdc_ncm_bind(struct usbnet *usbnet_dev,
- 		subdriver = usb_cdc_wdm_register(ctx->control,
- 						 &usbnet_dev->status->desc,
- 						 1024, /* wMaxCommand */
-+						 USB_CDC_WDM_AT,
- 						 huawei_cdc_ncm_wdm_manage_power);
- 	if (IS_ERR(subdriver)) {
- 		ret = PTR_ERR(subdriver);
-diff --git a/drivers/net/usb/qmi_wwan.c b/drivers/net/usb/qmi_wwan.c
-index 17a0505..fa38471 100644
---- a/drivers/net/usb/qmi_wwan.c
-+++ b/drivers/net/usb/qmi_wwan.c
-@@ -724,7 +724,8 @@ static int qmi_wwan_register_subdriver(struct usbnet *dev)
- 
- 	/* register subdriver */
- 	subdriver = usb_cdc_wdm_register(info->control, &dev->status->desc,
--					 4096, &qmi_wwan_cdc_wdm_manage_power);
-+					 4096, USB_CDC_WDM_QMI,
-+					 &qmi_wwan_cdc_wdm_manage_power);
- 	if (IS_ERR(subdriver)) {
- 		dev_err(&info->control->dev, "subdriver registration failed\n");
- 		rv = PTR_ERR(subdriver);
 diff --git a/drivers/usb/class/cdc-wdm.c b/drivers/usb/class/cdc-wdm.c
-index 508b1c3..b59f146 100644
+index b59f146..7b798b5 100644
 --- a/drivers/usb/class/cdc-wdm.c
 +++ b/drivers/usb/class/cdc-wdm.c
-@@ -106,6 +106,8 @@ struct wdm_device {
+@@ -23,6 +23,7 @@
+ #include <linux/poll.h>
+ #include <linux/usb.h>
+ #include <linux/usb/cdc.h>
++#include <linux/wwan.h>
+ #include <asm/byteorder.h>
+ #include <asm/unaligned.h>
+ #include <linux/usb/cdc-wdm.h>
+@@ -55,6 +56,7 @@ MODULE_DEVICE_TABLE (usb, wdm_ids);
+ #define WDM_SUSPENDING		8
+ #define WDM_RESETTING		9
+ #define WDM_OVERFLOW		10
++#define WDM_WWAN_IN_USE		11
  
- 	struct list_head	device_list;
+ #define WDM_MAX			16
+ 
+@@ -108,6 +110,7 @@ struct wdm_device {
  	int			(*manage_power)(struct usb_interface *, int);
-+
-+	enum usb_cdc_wdm_type	type;
+ 
+ 	enum usb_cdc_wdm_type	type;
++	struct wwan_port	*wwanp;
  };
  
  static struct usb_driver wdm_driver;
-@@ -836,7 +838,8 @@ static void service_interrupt_work(struct work_struct *work)
- /* --- hotplug --- */
+@@ -203,7 +206,23 @@ static void wdm_in_callback(struct urb *urb)
+ 	if (desc->rerr == 0 && status != -EPIPE)
+ 		desc->rerr = status;
  
- static int wdm_create(struct usb_interface *intf, struct usb_endpoint_descriptor *ep,
--		u16 bufsize, int (*manage_power)(struct usb_interface *, int))
-+		      u16 bufsize, enum usb_cdc_wdm_type type,
-+		      int (*manage_power)(struct usb_interface *, int))
- {
- 	int rv = -ENOMEM;
- 	struct wdm_device *desc;
-@@ -853,6 +856,7 @@ static int wdm_create(struct usb_interface *intf, struct usb_endpoint_descriptor
- 	/* this will be expanded and needed in hardware endianness */
- 	desc->inum = cpu_to_le16((u16)intf->cur_altsetting->desc.bInterfaceNumber);
- 	desc->intf = intf;
-+	desc->type = type;
- 	INIT_WORK(&desc->rxwork, wdm_rxwork);
- 	INIT_WORK(&desc->service_outs_intr, service_interrupt_work);
+-	if (length + desc->length > desc->wMaxCommand) {
++	if (test_bit(WDM_WWAN_IN_USE, &desc->flags)) {
++		struct wwan_port *port = desc->wwanp;
++		struct sk_buff *skb;
++
++		/* Forward data to WWAN port */
++		skb = alloc_skb(length, GFP_ATOMIC);
++		if (skb) {
++			memcpy(skb_put(skb, length), desc->inbuf, length);
++			wwan_port_rx(port, skb);
++		} else {
++			dev_err(&desc->intf->dev,
++				"Unable to alloc skb, response discarded\n");
++		}
++
++		/* inbuf has been copied, it is safe to check for outstanding data */
++		schedule_work(&desc->service_outs_intr);
++	} else if (length + desc->length > desc->wMaxCommand) {
+ 		/* The buffer would overflow */
+ 		set_bit(WDM_OVERFLOW, &desc->flags);
+ 	} else {
+@@ -699,6 +718,11 @@ static int wdm_open(struct inode *inode, struct file *file)
+ 		goto out;
+ 	file->private_data = desc;
  
-@@ -977,7 +981,7 @@ static int wdm_probe(struct usb_interface *intf, const struct usb_device_id *id)
- 		goto err;
- 	ep = &iface->endpoint[0].desc;
++	if (test_bit(WDM_WWAN_IN_USE, &desc->flags)) {
++		rv = -EBUSY;
++		goto out;
++	}
++
+ 	rv = usb_autopm_get_interface(desc->intf);
+ 	if (rv < 0) {
+ 		dev_err(&desc->intf->dev, "Error autopm - %d\n", rv);
+@@ -794,6 +818,146 @@ static struct usb_class_driver wdm_class = {
+ 	.minor_base =	WDM_MINOR_BASE,
+ };
  
--	rv = wdm_create(intf, ep, maxcom, &wdm_manage_power);
-+	rv = wdm_create(intf, ep, maxcom, USB_CDC_WDM_UNKNOWN, &wdm_manage_power);
- 
- err:
- 	return rv;
-@@ -988,6 +992,7 @@ static int wdm_probe(struct usb_interface *intf, const struct usb_device_id *id)
-  * @intf: usb interface the subdriver will associate with
-  * @ep: interrupt endpoint to monitor for notifications
-  * @bufsize: maximum message size to support for read/write
-+ * @type: Type/protocol of the transported data (MBIM, QMI...)
-  * @manage_power: call-back invoked during open and release to
-  *                manage the device's power
-  * Create WDM usb class character device and associate it with intf
-@@ -1005,12 +1010,12 @@ static int wdm_probe(struct usb_interface *intf, const struct usb_device_id *id)
-  */
- struct usb_driver *usb_cdc_wdm_register(struct usb_interface *intf,
- 					struct usb_endpoint_descriptor *ep,
--					int bufsize,
-+					int bufsize, enum usb_cdc_wdm_type type,
- 					int (*manage_power)(struct usb_interface *, int))
- {
- 	int rv;
- 
--	rv = wdm_create(intf, ep, bufsize, manage_power);
-+	rv = wdm_create(intf, ep, bufsize, type, manage_power);
- 	if (rv < 0)
- 		goto err;
- 
-diff --git a/include/linux/usb/cdc-wdm.h b/include/linux/usb/cdc-wdm.h
-index 9b895f9..ba9702d 100644
---- a/include/linux/usb/cdc-wdm.h
-+++ b/include/linux/usb/cdc-wdm.h
-@@ -14,9 +14,23 @@
- 
- #include <uapi/linux/usb/cdc-wdm.h>
- 
-+/**
-+ * enum usb_cdc_wdm_type - CDC WDM endpoint type
-+ * @USB_CDC_WDM_UNKNOWN: Unknown type
-+ * @USB_CDC_WDM_MBIM: Mobile Broadband Interface Model control
-+ * @USB_CDC_WDM_QMI: Qualcomm Modem Interface for modem control
-+ * @USB_CDC_WDM_AT: AT commands interface
-+ */
-+enum usb_cdc_wdm_type {
-+	USB_CDC_WDM_UNKNOWN,
-+	USB_CDC_WDM_MBIM,
-+	USB_CDC_WDM_QMI,
-+	USB_CDC_WDM_AT
++/* --- WWAN framework integration --- */
++#ifdef CONFIG_WWAN
++static int wdm_wwan_port_start(struct wwan_port *port)
++{
++	struct wdm_device *desc = wwan_port_get_drvdata(port);
++
++	/* The interface is both exposed via the WWAN framework and as a
++	 * legacy usbmisc chardev. If chardev is already open, just fail
++	 * to prevent concurrent usage. Otherwise, switch to WWAN mode.
++	 */
++	mutex_lock(&wdm_mutex);
++	if (desc->count) {
++		mutex_unlock(&wdm_mutex);
++		return -EBUSY;
++	}
++	set_bit(WDM_WWAN_IN_USE, &desc->flags);
++	mutex_unlock(&wdm_mutex);
++
++	desc->manage_power(desc->intf, 1);
++
++	/* Start getting events */
++	usb_submit_urb(desc->validity, GFP_KERNEL);
++
++	/* tx is allowed */
++	wwan_port_txon(port);
++
++	return 0;
++}
++
++static void wdm_wwan_port_stop(struct wwan_port *port)
++{
++	struct wdm_device *desc = wwan_port_get_drvdata(port);
++
++	/* Stop all transfers and disable WWAN mode */
++	kill_urbs(desc);
++	desc->manage_power(desc->intf, 0);
++	clear_bit(WDM_READ, &desc->flags);
++	clear_bit(WDM_WWAN_IN_USE, &desc->flags);
++}
++
++static void wdm_wwan_port_tx_complete(struct urb *urb)
++{
++	struct sk_buff *skb = urb->context;
++	struct wwan_port *port = skb_shinfo(skb)->destructor_arg;
++
++	/* Allow new command transfer */
++	wwan_port_txon(port);
++	kfree_skb(skb);
++}
++
++static int wdm_wwan_port_tx(struct wwan_port *port, struct sk_buff *skb)
++{
++	struct wdm_device *desc = wwan_port_get_drvdata(port);
++	struct usb_interface *intf = desc->intf;
++	struct usb_ctrlrequest *req = desc->orq;
++	int rv;
++
++	rv = usb_autopm_get_interface(intf);
++	if (rv)
++		return rv;
++
++	usb_fill_control_urb(
++		desc->command,
++		interface_to_usbdev(intf),
++		usb_sndctrlpipe(interface_to_usbdev(intf), 0),
++		(unsigned char *)req,
++		skb->data,
++		skb->len,
++		wdm_wwan_port_tx_complete,
++		skb
++	);
++
++	req->bRequestType = (USB_DIR_OUT | USB_TYPE_CLASS | USB_RECIP_INTERFACE);
++	req->bRequest = USB_CDC_SEND_ENCAPSULATED_COMMAND;
++	req->wValue = 0;
++	req->wIndex = desc->inum;
++	req->wLength = cpu_to_le16(skb->len);
++
++	skb_shinfo(skb)->destructor_arg = port;
++
++	rv = usb_submit_urb(desc->command, GFP_KERNEL);
++	if (!rv) /* One transfer at a time, stop TX until URB completion */
++		wwan_port_txoff(port);
++
++	usb_autopm_put_interface(intf);
++
++	return rv;
++}
++
++static struct wwan_port_ops wdm_wwan_port_ops = {
++	.start = wdm_wwan_port_start,
++	.stop = wdm_wwan_port_stop,
++	.tx = wdm_wwan_port_tx,
 +};
 +
- extern struct usb_driver *usb_cdc_wdm_register(struct usb_interface *intf,
- 					struct usb_endpoint_descriptor *ep,
--					int bufsize,
-+					int bufsize, enum usb_cdc_wdm_type type,
- 					int (*manage_power)(struct usb_interface *, int));
++static void wdm_wwan_init(struct wdm_device *desc)
++{
++	struct usb_interface *intf = desc->intf;
++	struct wwan_port *port;
++
++	switch (desc->type) {
++	case USB_CDC_WDM_MBIM:
++		port = wwan_create_port(&intf->dev, WWAN_PORT_MBIM,
++					&wdm_wwan_port_ops, desc);
++		break;
++	case USB_CDC_WDM_QMI:
++		port = wwan_create_port(&intf->dev, WWAN_PORT_QMI,
++					&wdm_wwan_port_ops, desc);
++		break;
++	case USB_CDC_WDM_AT:
++		port = wwan_create_port(&intf->dev, WWAN_PORT_AT,
++					&wdm_wwan_port_ops, desc);
++		break;
++	default:
++		dev_info(&intf->dev, "Unknown control protocol\n");
++		return;
++	}
++
++	if (IS_ERR(port)) {
++		dev_err(&intf->dev, "%s: Unable to create WWAN port\n",
++			dev_name(intf->usb_dev));
++		return;
++	}
++
++	desc->wwanp = port;
++}
++
++static void wdm_wwan_deinit(struct wdm_device *desc)
++{
++	if (!desc->wwanp)
++		return;
++
++	wwan_remove_port(desc->wwanp);
++	desc->wwanp = NULL;
++}
++#else /* CONFIG_WWAN */
++static void wdm_wwan_init(struct wdm_device *desc) {}
++static void wdm_wwan_deinit(struct wdm_device *desc) {}
++#endif /* CONFIG_WWAN */
++
+ /* --- error handling --- */
+ static void wdm_rxwork(struct work_struct *work)
+ {
+@@ -937,6 +1101,9 @@ static int wdm_create(struct usb_interface *intf, struct usb_endpoint_descriptor
+ 		goto err;
+ 	else
+ 		dev_info(&intf->dev, "%s: USB WDM device\n", dev_name(intf->usb_dev));
++
++	wdm_wwan_init(desc);
++
+ out:
+ 	return rv;
+ err:
+@@ -1034,6 +1201,8 @@ static void wdm_disconnect(struct usb_interface *intf)
+ 	desc = wdm_find_device(intf);
+ 	mutex_lock(&wdm_mutex);
  
- #endif /* __LINUX_USB_CDC_WDM_H */
++	wdm_wwan_deinit(desc);
++
+ 	/* the spinlock makes sure no new urbs are generated in the callbacks */
+ 	spin_lock_irqsave(&desc->iuspin, flags);
+ 	set_bit(WDM_DISCONNECTING, &desc->flags);
 -- 
 2.7.4
 
