@@ -2,75 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 93EB0370021
-	for <lists+netdev@lfdr.de>; Fri, 30 Apr 2021 20:04:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0DF4D37004B
+	for <lists+netdev@lfdr.de>; Fri, 30 Apr 2021 20:16:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230106AbhD3SF0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 30 Apr 2021 14:05:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38628 "EHLO
+        id S231210AbhD3SQ6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 30 Apr 2021 14:16:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41150 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229750AbhD3SFZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 30 Apr 2021 14:05:25 -0400
-Received: from mail.as397444.net (mail.as397444.net [IPv6:2620:6e:a000:dead:beef:15:bad:f00d])
-        by lindbergh.monkeyblade.net (Postfix) with UTF8SMTPS id 3CFE6C06174A
-        for <netdev@vger.kernel.org>; Fri, 30 Apr 2021 11:04:36 -0700 (PDT)
-Received: by mail.as397444.net (Postfix) with UTF8SMTPSA id ED152560F27;
-        Fri, 30 Apr 2021 18:04:34 +0000 (UTC)
-X-DKIM-Note: Keys used to sign are likely public at https://as397444.net/dkim/
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mattcorallo.com;
-        s=1619804463; t=1619805875;
-        bh=mFJeWBQ+m/iHru+MxuTAG3KIYRmtlS5/vzSEyKJAV7k=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=q5iednsrYZGxMtocQD0PgF0ewA2uPu77vBPStkGSXDt1PlJXESBg22f+kIWZLk/VG
-         ITyyC1GvPllmyjBpq4tjeM1r/F58CSLN+ptttf3ofK/b26C9ClfGggxfbC5Xban7Ih
-         BZM/zx0F9CpdorpXf9P7ECWTUlr6m4TBMFCCB/avoaS62MLk1TnWXlNjXHaqH2odNS
-         M5MmHFRNaHUB5F1yUGOuugDCUMY+qREnqQbYMjraRsA7DkXgnyaFi+MiJnm+MPBIbd
-         jDpAONfI042c3K5TYjnpA33ZOQFH86T5TquK36hZ+/ziiN8UmA8jAg6V1Ob1kTq323
-         +kv1wERt4NluQ==
-Message-ID: <f7d0a759-a8ab-2524-4939-095544d12913@bluematt.me>
-Date:   Fri, 30 Apr 2021 14:04:34 -0400
-MIME-Version: 1.0
-Subject: Re: [PATCH net-next] Reduce IP_FRAG_TIME fragment-reassembly timeout
- to 1s, from 30s
-Content-Language: en-US
-To:     Eric Dumazet <edumazet@google.com>
-Cc:     Willy Tarreau <w@1wt.eu>, "David S. Miller" <davem@davemloft.net>,
-        netdev <netdev@vger.kernel.org>,
-        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        Keyu Man <kman001@ucr.edu>
-References: <d840ddcf-07a6-a838-abf8-b1d85446138e@bluematt.me>
- <CANn89i+L2DuD2+EMHzwZ=qYYKo1A9gw=nTTmh20GV_o9ADxe2Q@mail.gmail.com>
- <0cb19f7e-a9b3-58f8-6119-0736010f1326@bluematt.me>
- <20210428141319.GA7645@1wt.eu>
- <055d0512-216c-9661-9dd4-007c46049265@bluematt.me>
- <CANn89iKfGhNYJVpj4T2MLkomkwPsYWyOof+COVvNFsfVfb7CRQ@mail.gmail.com>
- <64829c98-e4eb-6725-0fee-dc3c6681506f@bluematt.me>
- <1baf048d-18e8-3e0c-feee-a01b381b0168@bluematt.me>
- <CANn89iKJDUQuXBueuZWdi17LgFW3yb4LUsH3hzY08+ytJ9QgeA@mail.gmail.com>
- <c8ad9235-5436-8418-69a9-6c525fd254a4@bluematt.me>
- <CANn89iKJmbr_otzWrC19q5A_gGVRjMKso46=vT6=B9vUC5kgqA@mail.gmail.com>
- <df6fdff3-f307-c631-44e7-15fda817662f@bluematt.me>
-From:   Matt Corallo <netdev-list@mattcorallo.com>
-In-Reply-To: <df6fdff3-f307-c631-44e7-15fda817662f@bluematt.me>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+        with ESMTP id S229990AbhD3SQz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 30 Apr 2021 14:16:55 -0400
+Received: from mail-pf1-x431.google.com (mail-pf1-x431.google.com [IPv6:2607:f8b0:4864:20::431])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F3E68C06174A;
+        Fri, 30 Apr 2021 11:16:06 -0700 (PDT)
+Received: by mail-pf1-x431.google.com with SMTP id j6so9665452pfh.5;
+        Fri, 30 Apr 2021 11:16:06 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id;
+        bh=KmcqyDJ2VQg7X8R17cfIVf5UMZAY471KiYxjT85/AL0=;
+        b=syhubJjb8+KFZFHqnzoHcpUub+lubOVyLGgEktYGQLSKv9kEu+N6xqWwMkpYyqrhz7
+         8f/PwiU9Yufz4u//G2HRzJEDh3wUC97DEBYxhRTPWqy1cUnHg06q8jNpYomUBGSSfukQ
+         3jQlGwPviYJtAyFMd713IL4T8lBfXjDSSd8fvIET8TBk4BY63JlxglyqyDGf66dfB5g1
+         Y4wIabdINlMHajA7qoXnUz4VruLN2TNUEii8XSqsdEc9VjduejiMiGrIHGTxdMxgBfyJ
+         YDb36xTRj7t0YTkDNf1J/7VM1VhiCti5JbWOBhz0S8nCOtwiPF+lAc1ngm8ekyomnEM/
+         IY/A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=KmcqyDJ2VQg7X8R17cfIVf5UMZAY471KiYxjT85/AL0=;
+        b=VTaW6CZPAf0gguVAFZIFkxqPZXvZG1bSMGJxtjjNb+FVHAih0Fckhj1inKr1oZ70dG
+         B9qlnvrBxxUYUselySt6DFUq+kD8qppuOIYUIHPYZ+0QU6tF+barnpfdLtqxAt+0ahzE
+         UA+8UYCiI+xyClpUuuv9AUrUXZhHNs9WHJBIX55iMDF5Me4y8HnNZ5Vj0yMupC6K+NXo
+         DDR3FXbt7Z43aAn3q756CPRLaoZJ1Q6CkRLUDaEvi98jZ+VvsR3iI7gltCyKT8ulRPOH
+         S8xHlckKI9b2ViRoxjBG1jtkgvXDBnjfqhs7nkgzlM35nV9Tub3CCm4V3j2v0iuFcHc7
+         LkZg==
+X-Gm-Message-State: AOAM530L0vonF3w9gyJ4UJe1+eoAS4s+71kaNK9qyahCG93vWhf5mNp+
+        8BiC+ycstsV6Gy91YJ42GzocZk2Xb4J6Tbcb
+X-Google-Smtp-Source: ABdhPJyU/RsvMVmlYmuNWDrQfOJdUhkBbNlCMGMfSIuGvat4II0f5y4IeKMNYL1e7l97ao9D2ilMkA==
+X-Received: by 2002:a63:ff66:: with SMTP id s38mr5685615pgk.154.1619806566189;
+        Fri, 30 Apr 2021 11:16:06 -0700 (PDT)
+Received: from localhost ([209.132.188.80])
+        by smtp.gmail.com with ESMTPSA id t10sm8968166pju.18.2021.04.30.11.16.04
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Fri, 30 Apr 2021 11:16:05 -0700 (PDT)
+From:   Xin Long <lucien.xin@gmail.com>
+To:     network dev <netdev@vger.kernel.org>, linux-sctp@vger.kernel.org
+Cc:     davem@davemloft.net, kuba@kernel.org,
+        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
+        jere.leppanen@nokia.com,
+        Alexander Sverdlin <alexander.sverdlin@nokia.com>
+Subject: [PATCH net 0/3] sctp: always send a chunk with the asoc that it belongs to
+Date:   Sat,  1 May 2021 02:15:54 +0800
+Message-Id: <cover.1619806333.git.lucien.xin@gmail.com>
+X-Mailer: git-send-email 2.1.0
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 4/30/21 13:53, Matt Corallo wrote:
-> 
-> Buffer bloat exists, but so do networks that will happily drop 1Mbps of packets. The first has always been true, the 
-> second only more recently has become more and more common (both due to network speed and application behavior).
+Currently when processing a duplicate COOKIE-ECHO chunk, a new temp
+asoc would be created, then it creates the chunks with the new asoc.
+However, later on it uses the old asoc to send these chunks, which
+has caused quite a few issues.
 
-It may be worth noting, to further highlight the tradeoffs made here - that, given a constant amount of memory allocated 
-for fragment reassembly, *under* estimating the timeout will result in only loss of some % of packets which were 
-reordered in excess of the timeout, whereas *over* estimating the timeout results in complete blackhole for up to the 
-timeout in the face of material packet loss.
+This patchset is to fix this and make sure that the COOKIE-ACK and
+SHUTDOWN chunks are created with the same asoc that will be used to
+send them out.
 
-This asymmetry is why I suggested possibly random eviction could be useful as a different set of trade-offs, but I'm 
-certainly not qualified to make that determination.
+Xin Long (3):
+  sctp: do asoc update earlier in sctp_sf_do_dupcook_a
+  Revert "sctp: Fix bundling of SHUTDOWN with COOKIE-ACK"
+  sctp: do asoc update earlier in sctp_sf_do_dupcook_b
 
-Thanks again for your time and consideration,
-Matt
+ include/net/sctp/command.h |  1 -
+ net/sctp/sm_sideeffect.c   | 26 ------------------------
+ net/sctp/sm_statefuns.c    | 50 ++++++++++++++++++++++++++++++++++++----------
+ 3 files changed, 39 insertions(+), 38 deletions(-)
+
+-- 
+2.1.0
+
