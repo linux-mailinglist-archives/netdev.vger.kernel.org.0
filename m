@@ -2,112 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DAF4B3704FF
-	for <lists+netdev@lfdr.de>; Sat,  1 May 2021 04:21:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D54A8370514
+	for <lists+netdev@lfdr.de>; Sat,  1 May 2021 05:09:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231254AbhEACWg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 30 Apr 2021 22:22:36 -0400
-Received: from mga02.intel.com ([134.134.136.20]:39491 "EHLO mga02.intel.com"
+        id S231455AbhEADJr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 30 Apr 2021 23:09:47 -0400
+Received: from mail.kernel.org ([198.145.29.99]:41316 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230508AbhEACWf (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 30 Apr 2021 22:22:35 -0400
-IronPort-SDR: HH/KKVWXGV33XBRlA566Hpa1GRlCMMS+qGFtKRZDJU4GtjO2BkP8bz9Juey/u0nzKJM4Kv1QM6
- Qp+xizNgHaaA==
-X-IronPort-AV: E=McAfee;i="6200,9189,9970"; a="184541737"
-X-IronPort-AV: E=Sophos;i="5.82,264,1613462400"; 
-   d="scan'208";a="184541737"
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Apr 2021 19:21:46 -0700
-IronPort-SDR: up+4B6cGqINpHOFiCvGSgCTCBH4t2C4586MGhDuo2WWqiBBS84WvP1j909tWdrSVmYAFKIORCF
- /P8gAY3KbxZw==
-X-IronPort-AV: E=Sophos;i="5.82,264,1613462400"; 
-   d="scan'208";a="387594007"
-Received: from jbrandeb-mobl4.amr.corp.intel.com (HELO localhost) ([10.209.64.230])
-  by orsmga003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Apr 2021 19:21:45 -0700
-Date:   Fri, 30 Apr 2021 19:21:45 -0700
-From:   Jesse Brandeburg <jesse.brandeburg@intel.com>
-To:     Nitesh Lal <nilal@redhat.com>
-Cc:     Thomas Gleixner <tglx@linutronix.de>,
-        "frederic@kernel.org" <frederic@kernel.org>,
-        "juri.lelli@redhat.com" <juri.lelli@redhat.com>,
-        Marcelo Tosatti <mtosatti@redhat.com>, abelits@marvell.com,
-        Robin Murphy <robin.murphy@arm.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-api@vger.kernel.org" <linux-api@vger.kernel.org>,
-        "bhelgaas@google.com" <bhelgaas@google.com>,
-        "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>,
-        "rostedt@goodmis.org" <rostedt@goodmis.org>,
-        "mingo@kernel.org" <mingo@kernel.org>,
-        "peterz@infradead.org" <peterz@infradead.org>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "akpm@linux-foundation.org" <akpm@linux-foundation.org>,
-        "sfr@canb.auug.org.au" <sfr@canb.auug.org.au>,
-        "stephen@networkplumber.org" <stephen@networkplumber.org>,
-        "rppt@linux.vnet.ibm.com" <rppt@linux.vnet.ibm.com>,
-        "jinyuqi@huawei.com" <jinyuqi@huawei.com>,
-        "zhangshaokun@hisilicon.com" <zhangshaokun@hisilicon.com>,
-        netdev@vger.kernel.org, chris.friesen@windriver.com
-Subject: Re: [Patch v4 1/3] lib: Restrict cpumask_local_spread to
- houskeeping CPUs
-Message-ID: <20210430192145.00000e23@intel.com>
-In-Reply-To: <CAFki+L=_dd+JgAR12_eBPX0kZO2_6=1dGdgkwHE=u=K6chMeLQ@mail.gmail.com>
-References: <20200625223443.2684-1-nitesh@redhat.com>
-        <20210128165903.GB38339@fuller.cnet>
-        <87h7n0de5a.fsf@nanos.tec.linutronix.de>
-        <20210204181546.GA30113@fuller.cnet>
-        <cfa138e9-38e3-e566-8903-1d64024c917b@redhat.com>
-        <20210204190647.GA32868@fuller.cnet>
-        <d8884413-84b4-b204-85c5-810342807d21@redhat.com>
-        <87y2g26tnt.fsf@nanos.tec.linutronix.de>
-        <d0aed683-87ae-91a2-d093-de3f5d8a8251@redhat.com>
-        <7780ae60-efbd-2902-caaa-0249a1f277d9@redhat.com>
-        <07c04bc7-27f0-9c07-9f9e-2d1a450714ef@redhat.com>
-        <20210406102207.0000485c@intel.com>
-        <1a044a14-0884-eedb-5d30-28b4bec24b23@redhat.com>
-        <20210414091100.000033cf@intel.com>
-        <54ecc470-b205-ea86-1fc3-849c5b144b3b@redhat.com>
-        <CAFki+Lm0W_brLu31epqD3gAV+WNKOJfVDfX2M8ZM__aj3nv9uA@mail.gmail.com>
-        <87czucfdtf.ffs@nanos.tec.linutronix.de>
-        <CAFki+LmmRyvOkWoNNLk5JCwtaTnabyaRUKxnS+wyAk_kj8wzyw@mail.gmail.com>
-        <87sg37eiqa.ffs@nanos.tec.linutronix.de>
-        <CAFki+L=_dd+JgAR12_eBPX0kZO2_6=1dGdgkwHE=u=K6chMeLQ@mail.gmail.com>
-X-Mailer: Claws Mail 3.12.0 (GTK+ 2.24.28; i686-w64-mingw32)
+        id S230298AbhEADJq (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 30 Apr 2021 23:09:46 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 6F4A8613EF;
+        Sat,  1 May 2021 03:08:57 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1619838537;
+        bh=IPvsqj1rwJQC0V7kcMnrTPKpOgZbh2yhHLoUzTDKe3Q=;
+        h=From:To:Cc:Subject:Date:From;
+        b=mAlmK/WvmsMWU7zZCaJAqbg/v4GS0JWmoi7LcT6egM4Lpl6JOrM9ALT9Qnqy0y/Hm
+         NmegUv4GvRt3uZLgK9bJxfp9Ql6aeoZx/nlgFcfewowOaAqVgGnf+L6CkgO4IeSCcZ
+         ZZXwCrUfdbAyP++MURnxKV+vuDa48nPlfyQupFqgAqHmKzOIjj8Q8U4qM/VrHFliQm
+         cya0yx7d+KHqi+GTTZz2+fDv63637GDB4D0n9ONJNAf1ZEq5Jv8v6kLYPnWc5YuAa3
+         NyE1W1W8m9nrTo+/xVtjwsBFx3Zafi+rCWdcwNUCv24Ghmal5H9w8Wc0sdibddvk4C
+         7w/oLvjoQ+qxg==
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     stephen@networkplumber.org, dsahern@gmail.com
+Cc:     netdev@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>
+Subject: [PACTH iproute2] ip: align the name of the 'nohandler' stat
+Date:   Fri, 30 Apr 2021 20:08:54 -0700
+Message-Id: <20210501030854.529712-1-kuba@kernel.org>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Nitesh Lal wrote:
+Before:
 
-> On Fri, Apr 30, 2021 at 2:21 PM Thomas Gleixner <tglx@linutronix.de> wrote:
-> >
-> > Nitesh,
-> >
-> > On Fri, Apr 30 2021 at 12:14, Nitesh Lal wrote:
-> > > Based on this analysis and the fact that with your re-work the interrupts
-> > > seems to be naturally spread across the CPUs, will it be safe to revert
-> > > Jesse's patch
-> > >
-> > > e2e64a932 genirq: Set initial affinity in irq_set_affinity_hint()
-> > >
-> > > as it overwrites the previously set IRQ affinity mask for some of the
-> > > devices?
-> >
-> > That's a good question. My gut feeling says yes.
-> >
-> 
-> Jesse do you want to send the revert for the patch?
-> 
-> Also, I think it was you who suggested cc'ing
-> intel-wired-lan ml as that allows intel folks, to do some initial
-> testing?
-> If so, we can do that here (IMHO).
+    RX: bytes  packets  errors  dropped missed  mcast
+    8848233056 8548168  0       0       0       0
+    RX errors: length   crc     frame   fifo    overrun   nohandler
+               0        0       0       0       0       101
+    TX: bytes  packets  errors  dropped carrier collsns compressed
+    1142925945 4683483  0       0       0       0       101
+    TX errors: aborted  fifo   window heartbeat transns
+               0        0       0       0       14
 
-Patch sent here:
-https://lore.kernel.org/lkml/20210501021832.743094-1-jesse.brandeburg@intel.com/T/#u
+After:
 
-Any testing appreciated!
+    RX: bytes  packets  errors  dropped missed  mcast
+    8848297833 8548461  0       0       0       0
+    RX errors: length   crc     frame   fifo    overrun nohandler
+               0        0       0       0       0       101
+    TX: bytes  packets  errors  dropped carrier collsns compressed
+    1143049820 4683865  0       0       0       0       101
+    TX errors: aborted  fifo   window heartbeat transns
+               0        0       0       0       14
 
-Jesse
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+---
+ ip/ipaddress.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/ip/ipaddress.c b/ip/ipaddress.c
+index cfb24f5c1e34..8783b70d81e2 100644
+--- a/ip/ipaddress.c
++++ b/ip/ipaddress.c
+@@ -757,7 +757,7 @@ static void __print_link_stats(FILE *fp, struct rtattr *tb[])
+ 		if (show_stats > 1) {
+ 			fprintf(fp, "%s", _SL_);
+ 			fprintf(fp, "    RX errors: length   crc     frame   fifo    overrun%s%s",
+-				s->rx_nohandler ? "   nohandler" : "", _SL_);
++				s->rx_nohandler ? " nohandler" : "", _SL_);
+ 			fprintf(fp, "               ");
+ 			print_num(fp, 8, s->rx_length_errors);
+ 			print_num(fp, 7, s->rx_crc_errors);
+-- 
+2.31.1
+
