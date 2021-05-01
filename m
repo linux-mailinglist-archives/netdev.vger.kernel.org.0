@@ -2,58 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 799EA37063D
-	for <lists+netdev@lfdr.de>; Sat,  1 May 2021 09:43:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1DC48370646
+	for <lists+netdev@lfdr.de>; Sat,  1 May 2021 09:59:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231710AbhEAHny (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 1 May 2021 03:43:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46418 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229510AbhEAHnx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 1 May 2021 03:43:53 -0400
-Received: from mail-ej1-x643.google.com (mail-ej1-x643.google.com [IPv6:2a00:1450:4864:20::643])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 568F0C06174A
-        for <netdev@vger.kernel.org>; Sat,  1 May 2021 00:43:03 -0700 (PDT)
-Received: by mail-ej1-x643.google.com with SMTP id zg3so496730ejb.8
-        for <netdev@vger.kernel.org>; Sat, 01 May 2021 00:43:03 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:reply-to:from:date:message-id:subject:to;
-        bh=5lD39euqnLLWALUOK+cga3/qrcq4Set5HCzS7aBLz9o=;
-        b=qDszxcyeUcWKLN0RmfkCyfKzqhPM9X1T9D1GSX2ohCQFJWbDBFPrYN+2/10N6dv5gU
-         r90+cfiqxg5x4NUuj84WMyA1nToyGfXOOOUbwRC7PbodPE+sTnp+zGweIYcK6BIVpLS+
-         nyD9AApHHK6X79rc5E+8H28sWZyaSJ2n5R3wSKWklJGSIhk/PY34D7PvOuEof8TwLrMb
-         B7hVZRrBzNyfesf38XK/tS+U241cxLkdawIHGPBue/qDRr37KmF+lyJB2BITcYbtzr7x
-         r0G495YZduLh38SaGDPKLhia6sXMTOgohHzkUipS7EMu9/wX7u9be/9HfuZJHy74poez
-         F5ig==
+        id S231640AbhEAH7F (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 1 May 2021 03:59:05 -0400
+Received: from mail-io1-f69.google.com ([209.85.166.69]:57265 "EHLO
+        mail-io1-f69.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230195AbhEAH7E (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 1 May 2021 03:59:04 -0400
+Received: by mail-io1-f69.google.com with SMTP id y20-20020a6bd8140000b02903e6787c4986so174972iob.23
+        for <netdev@vger.kernel.org>; Sat, 01 May 2021 00:58:15 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
-         :subject:to;
-        bh=5lD39euqnLLWALUOK+cga3/qrcq4Set5HCzS7aBLz9o=;
-        b=lLCqpoBDzyF6ABuIJ9pTvlPJjp0lsXOXwzWlvM3aDHq74C84ezX7MlyVSVWC1dcoVs
-         oP9Fee2igARkdJUJkgrq+RkqRBPpv+qplWU9/pDZrJyltVrH3BhhU0jsd5ZFwVSPBbzC
-         MaJ0+pM+PAiyN/teybC6G0tujTWaVFG9/ooabNAPZ3pPrUZcb7DTYh/z8w+x0xoIvVSB
-         9D2Psa2HHNc8g4Z2n5wfx0ljs2whEmZT/bRgiMdM795DBCuUA3OoNMkrmACGwCELdH4g
-         M7cR1rR6gLZW4ON6oFY0o+4KwTZVlArmi3gtJSP/t1ZiOWkF1IKk38raWwWf40lkqdJU
-         Cbdg==
-X-Gm-Message-State: AOAM5323bk9KuVnCCqoktRxzkaF5srmvfO0JKRkn3MVxaZcT9faYv4BW
-        aAzdUrqWMB2eVd2BOOC44FoMorL1H90gqjL0xno=
-X-Google-Smtp-Source: ABdhPJwTNypY30m/8w06HskxKpJsnxDh6RbjA3ZvinKsJoxSsy5Vy5T8+084yhAEBflP8ayFsZMgA4c3s9tUkBcaohs=
-X-Received: by 2002:a17:907:3342:: with SMTP id yr2mr8131397ejb.325.1619854981776;
- Sat, 01 May 2021 00:43:01 -0700 (PDT)
+        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
+        bh=V6CoVXrou85PCbE3OFabws+tjrhLI+Hm1V8ygTXVsoU=;
+        b=lLA3B3PrtCbTd8vn/rWRqXzRXW3kghd628JxKSxGO7BheUiZldkE4f2Shgmn9SjCEV
+         nYE1Tdk99QmbFWdSHZKrWKrjDcLp8vtKAuJ5Ev1HrvzCNjyn41ZkjwHNSJkdWzdcu/mJ
+         7eynC2ZWqsdKvGrhbdVfr2VNrkAAr6iwpT7zVX78qrv+my9xrqCd9zZV5W0yAS6yviK9
+         BfumNCgSNG/5OyHPFImOr5Fc0v6GZs5DBxBhl22Lo832prBNji+9ZzKQWgda0e4pQc3U
+         NR4bVL5bgNznlhNuowd8q0culuxEYwfe76IY0sYOyP3303lS8E2e3oabL/24hmh9omz6
+         ueTA==
+X-Gm-Message-State: AOAM531WADEMzA3K8mgyRukv7ugbBla0PZwFFXJUaLFOWT2Gk8R53y5c
+        JM1VDuGNsHAKb/GeCiPxFBcH63s4rq9H6ySxZWxk7H8k6EAe
+X-Google-Smtp-Source: ABdhPJypGJw5aoqBi/5x0cHc2iY+k3seJpZ4P/QqUK4QubnvK3hhK2CpLUim2n7SOWCDfXODH67Onwsg9Dd2RWI+McF0WO+31iFt
 MIME-Version: 1.0
-Received: by 2002:a17:907:6284:0:0:0:0 with HTTP; Sat, 1 May 2021 00:43:01
- -0700 (PDT)
-Reply-To: nascointt@hotmail.com
-From:   Nayef Abu Sakran <josemarpinheiro14@gmail.com>
-Date:   Sat, 1 May 2021 08:43:01 +0100
-Message-ID: <CAPJCG53uUkG=OF0_yE7AkzU9ODkSPrDTqzpW9NZGLKxWZYU8sQ@mail.gmail.com>
-Subject: YES PLS
-To:     undisclosed-recipients:;
+X-Received: by 2002:a05:6e02:1c24:: with SMTP id m4mr7566857ilh.279.1619855895319;
+ Sat, 01 May 2021 00:58:15 -0700 (PDT)
+Date:   Sat, 01 May 2021 00:58:15 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <0000000000003a5d4c05c140175f@google.com>
+Subject: [syzbot] linux-next test error: WARNING in __nf_unregister_net_hook
+From:   syzbot <syzbot+dcccba8a1e41a38cb9df@syzkaller.appspotmail.com>
+To:     coreteam@netfilter.org, davem@davemloft.net, fw@strlen.de,
+        kadlec@netfilter.org, kuba@kernel.org,
+        linux-kernel@vger.kernel.org, linux-next@vger.kernel.org,
+        netdev@vger.kernel.org, netfilter-devel@vger.kernel.org,
+        pablo@netfilter.org, sfr@canb.auug.org.au,
+        syzkaller-bugs@googlegroups.com
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Did you received the mail i send to you?
+Hello,
+
+syzbot found the following issue on:
+
+HEAD commit:    74f961f4 Add linux-next specific files for 20210430
+git tree:       linux-next
+console output: https://syzkaller.appspot.com/x/log.txt?x=156e6f15d00000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=acf3aa1c9f3e62f8
+dashboard link: https://syzkaller.appspot.com/bug?extid=dcccba8a1e41a38cb9df
+
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+dcccba8a1e41a38cb9df@syzkaller.appspotmail.com
+
+------------[ cut here ]------------
+hook not found, pf 3 num 0
+WARNING: CPU: 0 PID: 224 at net/netfilter/core.c:480 __nf_unregister_net_hook+0x1eb/0x610 net/netfilter/core.c:480
+Modules linked in:
+CPU: 0 PID: 224 Comm: kworker/u4:5 Not tainted 5.12.0-next-20210430-syzkaller #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+Workqueue: netns cleanup_net
+RIP: 0010:__nf_unregister_net_hook+0x1eb/0x610 net/netfilter/core.c:480
+Code: 0f b6 14 02 48 89 c8 83 e0 07 83 c0 03 38 d0 7c 08 84 d2 0f 85 11 04 00 00 8b 53 1c 89 ee 48 c7 c7 c0 4d 6e 8a e8 e8 5b 8a 01 <0f> 0b e9 e5 00 00 00 e8 99 dd 2c fa 44 8b 3c 24 4c 89 f8 48 c1 e0
+RSP: 0018:ffffc900015bfbc0 EFLAGS: 00010286
+RAX: 0000000000000000 RBX: ffff8880243de500 RCX: 0000000000000000
+RDX: ffff888012df3900 RSI: ffffffff815cc9f5 RDI: fffff520002b7f6a
+RBP: 0000000000000003 R08: 0000000000000000 R09: 0000000000000000
+R10: ffffffff815c685e R11: 0000000000000000 R12: ffff88802e9c0f20
+R13: 0000000000000000 R14: ffff888019fb2180 R15: 0000000000000001
+FS:  0000000000000000(0000) GS:ffff8880b9c00000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 00007fc78cbbe010 CR3: 0000000012d10000 CR4: 00000000001506f0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+Call Trace:
+ nf_unregister_net_hook net/netfilter/core.c:502 [inline]
+ nf_unregister_net_hooks+0x117/0x160 net/netfilter/core.c:576
+ arpt_unregister_table_pre_exit+0x67/0x80 net/ipv4/netfilter/arp_tables.c:1565
+ ops_pre_exit_list net/core/net_namespace.c:165 [inline]
+ cleanup_net+0x451/0xb10 net/core/net_namespace.c:583
+ process_one_work+0x98d/0x1600 kernel/workqueue.c:2275
+ worker_thread+0x64c/0x1120 kernel/workqueue.c:2421
+ kthread+0x3b1/0x4a0 kernel/kthread.c:313
+ ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:294
+
+
+---
+This report is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
+
+syzbot will keep track of this issue. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
