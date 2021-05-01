@@ -2,66 +2,68 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AC57437079E
-	for <lists+netdev@lfdr.de>; Sat,  1 May 2021 17:03:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8609D3707A5
+	for <lists+netdev@lfdr.de>; Sat,  1 May 2021 17:14:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231547AbhEAPER (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 1 May 2021 11:04:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56224 "EHLO
+        id S231415AbhEAPPC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 1 May 2021 11:15:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58550 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229979AbhEAPEN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 1 May 2021 11:04:13 -0400
-Received: from mail-oi1-x233.google.com (mail-oi1-x233.google.com [IPv6:2607:f8b0:4864:20::233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2488BC06174A;
-        Sat,  1 May 2021 08:03:23 -0700 (PDT)
-Received: by mail-oi1-x233.google.com with SMTP id i11so1111456oig.8;
-        Sat, 01 May 2021 08:03:23 -0700 (PDT)
+        with ESMTP id S229979AbhEAPPB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 1 May 2021 11:15:01 -0400
+Received: from mail-oi1-x22c.google.com (mail-oi1-x22c.google.com [IPv6:2607:f8b0:4864:20::22c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E5EFCC06174A
+        for <netdev@vger.kernel.org>; Sat,  1 May 2021 08:14:10 -0700 (PDT)
+Received: by mail-oi1-x22c.google.com with SMTP id d25so1147222oij.5
+        for <netdev@vger.kernel.org>; Sat, 01 May 2021 08:14:10 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:to:cc:references:from:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=itk308xolWb0TLt+lcTt/sNiGEmO6nGlr+yjY4aHcG8=;
-        b=VsEAGg0soEemdmWiBYXZRWG7VDRwPSt6mUXRz6PnzT/xNhAV0JMhWs3rFu+iPyvdVn
-         Vo1H5dzkB8c1kwQBkEmlVAyWpb48HkqRKQ9yYcw228a5CqT0m0iCMneEvKklwtbLMQ9k
-         gncMjWdmbfOnG/z1KfxkfaMQ/0QORjYlGNSD/rzTp0iCAM8XW5bvqVQLDHt+n3/AhQ2n
-         9W/rbaS8kNRebCnlnahVin2eIbvE1Ndz4BqeyDi7QI+7JTzNIHu5VsproNaJJUsMe2oh
-         5vVnJp7uWwCPEHbqrMo++4jecDjedpP1T9Jd4TaCO7yI2mWY8cA6O5lS9sQNtf4SKrkB
-         dX6g==
+        bh=Kp7nWn5Dxctnsf0KQuBlxqeSl/DC/mqgRcuLP/PyRb0=;
+        b=uQVA8B8qpJZl5oC3BUNti5uMJ//S1rA9YV4LSfNLshK69HpdcHhmE0x+fhI28h0MRh
+         E71MJEZUhAXCdiEI9b/NkwYvmSTLzcliFUb2iQ0EkvcbDC3gksl99IelkUZA/CzzirDs
+         uDcivaETLLJ9YlK+qm1PRmFPDmLvbG1oZnKT2qiWyn8lU7wB9PUlU5zWqWi4yaTfq5yY
+         V9X/eRqulkRlrFZt5w8TuY5+sgID9I6N97h9fGRxImBidOsVZBwlpJv284liW5qwfwYB
+         duPKA4PG8XCfjq7nynXBdBolj2DcPLMWZfVd76bFM+TvpqaoDOkjeIjG8wda8E/eRHCP
+         nvZw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:message-id:date
          :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=itk308xolWb0TLt+lcTt/sNiGEmO6nGlr+yjY4aHcG8=;
-        b=gZs7rVk4VvP7Dh2zSRq8NCB1Z+ztky86pRFFXBDonUzYSQiLWzY71UqgNShtWsI0QZ
-         SHozzbORw+6/ekWhPzSg6nGdJt30CFJhgYFRpozP6+9vAcbkJzLc9f7/wJLEojEX4pAX
-         D0efXMgMmUA9ju+9x897QQdzcahyu+MCbpcEKR+aOfJMqq0+u6+xYAFiVof+H8f81iDA
-         FrApIVRQLsQempubu/GnzyBPi5Rjn2LpfSc58LhL19mRc0AMQ5OBOqT08ApCQ1jiXZN+
-         EldyEFke4CJK2u0l7greNblAQdbIx+oeESOLXb65qK1b6NFrSsS+MmvaLAhf1MYg2L/V
-         UXyw==
-X-Gm-Message-State: AOAM530Y+7YLOJ+zAlqcJsfiMw9PGHmmT61z0XPvhlswnatGTTibbxay
-        RWOC7qeAfsFSK6wROJgAIxY=
-X-Google-Smtp-Source: ABdhPJxsBQLkvy27UcxQcVwVGxnqY77rTdX5OVIyxse6VjmSrB20S/ow+QAxXqo8CKfJDSFYBGW14w==
-X-Received: by 2002:aca:bc42:: with SMTP id m63mr14592740oif.96.1619881402530;
-        Sat, 01 May 2021 08:03:22 -0700 (PDT)
+        bh=Kp7nWn5Dxctnsf0KQuBlxqeSl/DC/mqgRcuLP/PyRb0=;
+        b=KlIWrGMUyvCaz+zM2kUheHHLYFnpxgU/LKlJ+jB9UDGmcQCyqhmuq+Oy1Oh01ktQ2I
+         KoEsogmT6yIJWa2p+IQslYcUHQWg5LtuNkb+CPwljXLZ+eQltHuMttvdTwyakUerChW4
+         pdubemwhfpTfztBNZ3gGK0p7mvvm7OLj4D9rxyXwE7XAiFfPRghjRjiOwKK07U/jfvcr
+         cj/rSWngbARLZay5ZRk+FN61wbmJhmtCZ36+kib3bGwqx8mUPMDtNDNaoMUk2kH/MGc6
+         V8acYxdmmlovrm7aMJnSlWjuEbxZTbGWWJxMSfdyuUJcVxeDG/mYWUeFuW0tqdWSagzF
+         L9Aw==
+X-Gm-Message-State: AOAM5300iNzpHB0JV7ulbqVAdf4F6gdCmN4In4dvXlgFNmbuKHsWY33y
+        lp+fV2iWjofxQbp15t1Qln0=
+X-Google-Smtp-Source: ABdhPJxmrKpXmgD4Zi0bJT/clsK3ozoxMgWO1uK2p40jNSu/VKTJfEmsellaG4aiyh8OD3MHZGRloQ==
+X-Received: by 2002:aca:1e07:: with SMTP id m7mr15338476oic.107.1619882050445;
+        Sat, 01 May 2021 08:14:10 -0700 (PDT)
 Received: from Davids-MacBook-Pro.local ([8.48.134.33])
-        by smtp.googlemail.com with ESMTPSA id q130sm1513986oif.40.2021.05.01.08.03.21
+        by smtp.googlemail.com with ESMTPSA id k7sm1042680ood.36.2021.05.01.08.14.08
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 01 May 2021 08:03:22 -0700 (PDT)
-Subject: Re: [PATCH iproute2-next v2] lib/fs: fix issue when
- {name,open}_to_handle_at() is not implemented
-To:     Heiko Thiery <heiko.thiery@gmail.com>, netdev@vger.kernel.org
-Cc:     linux-kernel@vger.kernel.org,
+        Sat, 01 May 2021 08:14:09 -0700 (PDT)
+Subject: Re: [iproute2-next] seg6: add counters support for SRv6 Behaviors
+To:     Paolo Lungaroni <paolo.lungaroni@uniroma2.it>,
+        David Ahern <dsahern@kernel.org>, netdev@vger.kernel.org
+Cc:     Jakub Kicinski <kuba@kernel.org>,
         Stephen Hemminger <stephen@networkplumber.org>,
-        Petr Vorel <petr.vorel@gmail.com>
-References: <20210430062632.21304-1-heiko.thiery@gmail.com>
+        Stefano Salsano <stefano.salsano@uniroma2.it>,
+        Ahmed Abdelsalam <ahabdels.dev@gmail.com>,
+        Andrea Mayer <andrea.mayer@uniroma2.it>
+References: <20210427155543.32268-1-paolo.lungaroni@uniroma2.it>
 From:   David Ahern <dsahern@gmail.com>
-Message-ID: <0daa2b24-e326-05d2-c219-8a7ade7376e0@gmail.com>
-Date:   Sat, 1 May 2021 09:03:20 -0600
+Message-ID: <44091450-1b0d-664f-07e6-7eff48ca92c7@gmail.com>
+Date:   Sat, 1 May 2021 09:14:08 -0600
 User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
  Gecko/20100101 Thunderbird/78.10.0
 MIME-Version: 1.0
-In-Reply-To: <20210430062632.21304-1-heiko.thiery@gmail.com>
+In-Reply-To: <20210427155543.32268-1-paolo.lungaroni@uniroma2.it>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -69,37 +71,20 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 4/30/21 12:26 AM, Heiko Thiery wrote:
-> With commit d5e6ee0dac64b64e the usage of functions name_to_handle_at() and
-
-that is a change to ss:
-
-d5e6ee0dac64 ss: introduce cgroup2 cache and helper functions
-
-
-> open_by_handle_at() are introduced. But these function are not available
-> e.g. in uclibc-ng < 1.0.35. To have a backward compatibility check for the
-> availability in the configure script and in case of absence do a direct
-> syscall.
+On 4/27/21 9:55 AM, Paolo Lungaroni wrote:
+> @@ -932,6 +997,11 @@ static int parse_encap_seg6local(struct rtattr *rta, size_t len, int *argcp,
+>  			if (!oif)
+>  				exit(nodev(*argv));
+>  			ret = rta_addattr32(rta, len, SEG6_LOCAL_OIF, oif);
+> +		} else if (strcmp(*argv, "count") == 0) {
+> +			if (counters_ok++)
+> +				duparg2("count", *argv);
+> +			ret = seg6local_fill_counters(rta, len,
+> +						      SEG6_LOCAL_COUNTERS);
+>  		} else if (strcmp(*argv, "srh") == 0) {
+>  			NEXT_ARG();
+>  			if (srh_ok++)
 > 
 
-When you find the proper commit add a Fixes line before the Signed-off-by:
-
-Fixes: <id> ("subject line")
-> Signed-off-by: Heiko Thiery <heiko.thiery@gmail.com>
-> ---
-
-make sure you cc the author of the original commit.
-
-> v2:
->  - small correction to subject
->  - removed IP_CONFIG_HANDLE_AT:=y option since it is not required
->  - fix indentation in check function
->  - removed empty lines (thanks to Petr Vorel)
->  - add #define _GNU_SOURCE in check (thanks to Petr Vorel)
->  - check only for name_to_handle_at (thanks to Peter Vorel)
-
-you have 3 responses to this commit. Please send an updated patch with
-all the changes and the the above comments addressed.
-
-Thanks,
+change looks fine. Can you send a v2 with the help and route.8 man page
+updates? Thanks,
