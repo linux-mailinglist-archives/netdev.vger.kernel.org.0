@@ -2,96 +2,124 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EE031370451
-	for <lists+netdev@lfdr.de>; Sat,  1 May 2021 02:11:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A93183704F8
+	for <lists+netdev@lfdr.de>; Sat,  1 May 2021 04:18:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233153AbhEAALG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 30 Apr 2021 20:11:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33976 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233120AbhEAAKx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 30 Apr 2021 20:10:53 -0400
-Received: from mail-pg1-x530.google.com (mail-pg1-x530.google.com [IPv6:2607:f8b0:4864:20::530])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AEEC0C06174A;
-        Fri, 30 Apr 2021 17:10:04 -0700 (PDT)
-Received: by mail-pg1-x530.google.com with SMTP id m37so7906292pgb.8;
-        Fri, 30 Apr 2021 17:10:04 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=message-id:subject:from:to:cc:date:in-reply-to:references
-         :user-agent:mime-version:content-transfer-encoding;
-        bh=v6iX4wiVzn0CF0AR8f9+wiH67gWfwkDuxVsnuyMU9ao=;
-        b=QYVsbJTr7ice6Yurwsp+f0783kQ3AiQnSc6Xc8n+XR924Cj2LWvIPogDcBiMmpo2Gz
-         XYOhpUET9TWlIovXH0G0+y+2T6sFHV86QC1Y7jHnbrjcVjFHmZDgXRZj+haxPfKHwug4
-         MSg82LZ4kj1HD/GRh27on3ag+c+e7SuhWHpAGjqYlsQnpQ8dD/cHfRREwbVVxzy0ZVBv
-         OrpM988RT3eT46Iky57tapKHnVqlnGJKiZ//M7qvaeyx2F56+cgil/0fjpAgzpEnM4ic
-         +jpq+ut4fmceBtA8GrXGyYSVRK9CaG1Q9xvkw88doYRo+0Zrcq4xyZUYe3bcmzdmYprA
-         ultA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
-         :references:user-agent:mime-version:content-transfer-encoding;
-        bh=v6iX4wiVzn0CF0AR8f9+wiH67gWfwkDuxVsnuyMU9ao=;
-        b=KdYtR1XhnT2Lg9s8CDhoF+cSDqlKXlK+rmau11swI4e7mdeNHgkldwZlKnvw2tnGer
-         g+SYvVW34G3m2/V7S0jYtUFfr7ghQxQhoHWotUoG9+yh6r5hoousfm4MMut0d49MxG0b
-         1pWd56WSRf1IdxFQnTihJxjKbt1js7TjJGiXJUd+WpZ/aW8V2nEcF092hYt0HMoc4MoG
-         flJm2/a8qRzwfds+6QcmVTo+b/nQap5Su9lQxk314fJSe3GXuvKQkiY3cjxy95Qav3IF
-         6vHj7bP+1c77708Q0yGrGuw8SvyvvCj/1TS3cXs1X/iNY3akauZY9RIGM4RvP5jYDqui
-         ll+Q==
-X-Gm-Message-State: AOAM533dNWDpMiIkIypvtwISVBgjxP28PF7tysQ7IZ/v1oZt81CWQsaU
-        gwuFWrf/FvIih82c4NOlqBI=
-X-Google-Smtp-Source: ABdhPJy6ogV528OF9EBbdDXDiXjNuOt7DXwKoMOX9SVQ/DB16Jl86H49Kb5c+AJLs2bXMqqo80lPhQ==
-X-Received: by 2002:a63:4652:: with SMTP id v18mr7142249pgk.386.1619827804247;
-        Fri, 30 Apr 2021 17:10:04 -0700 (PDT)
-Received: from ?IPv6:2601:646:8100:c5c1:bacc:5f54:da58:762d? ([2601:646:8100:c5c1:bacc:5f54:da58:762d])
-        by smtp.gmail.com with ESMTPSA id 1sm2884019pjx.46.2021.04.30.17.10.02
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 30 Apr 2021 17:10:03 -0700 (PDT)
-Message-ID: <8e420732d2aabccca8b5e932b589ce90d9f70d6b.camel@gmail.com>
-Subject: Re: [BUG] ethernet:enic: A use after free bug in
- enic_hard_start_xmit
-From:   Govindarajulu Varadarajan <govind.varadar@gmail.com>
-To:     lyl2019@mail.ustc.edu.cn, benve@cisco.com, davem@davemloft.net,
-        kuba@kernel.org
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Date:   Fri, 30 Apr 2021 17:10:02 -0700
-In-Reply-To: <65becad9.62766.17911406ff0.Coremail.lyl2019@mail.ustc.edu.cn>
-References: <65becad9.62766.17911406ff0.Coremail.lyl2019@mail.ustc.edu.cn>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.38.4 (3.38.4-1.fc33) 
+        id S231509AbhEACTk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 30 Apr 2021 22:19:40 -0400
+Received: from mga09.intel.com ([134.134.136.24]:20878 "EHLO mga09.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S230508AbhEACTj (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 30 Apr 2021 22:19:39 -0400
+IronPort-SDR: TlVpk4yjaAuBYCWXl5h9M0tlKyTXtHw/uK3ya+YKpa+4JNznusyHHgEYSA7VXYHoK8M5KgyVvh
+ JL2dZ5eZ69yg==
+X-IronPort-AV: E=McAfee;i="6200,9189,9970"; a="197508593"
+X-IronPort-AV: E=Sophos;i="5.82,264,1613462400"; 
+   d="scan'208";a="197508593"
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Apr 2021 19:18:50 -0700
+IronPort-SDR: JlpZ7xyrmFpR/5vTZHzOHISvtpryqsXmldHmo04zipfTYW/bB4m2M5kAjy/pZyyKFydt34Y8NK
+ 5ziTmsOj11yQ==
+X-IronPort-AV: E=Sophos;i="5.82,264,1613462400"; 
+   d="scan'208";a="467070538"
+Received: from jbrandeb-saw1.jf.intel.com ([10.166.28.56])
+  by orsmga001-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Apr 2021 19:18:50 -0700
+From:   Jesse Brandeburg <jesse.brandeburg@intel.com>
+To:     Thomas Gleixner <tglx@linutronix.de>
+Cc:     Ingo Molnar <mingo@kernel.org>, linux-kernel@vger.kernel.org,
+        intel-wired-lan@lists.osuosl.org, jbrandeb@kernel.org,
+        "frederic@kernel.org" <frederic@kernel.org>,
+        "juri.lelli@redhat.com" <juri.lelli@redhat.com>,
+        Marcelo Tosatti <mtosatti@redhat.com>, abelits@marvell.com,
+        Robin Murphy <robin.murphy@arm.com>,
+        "linux-api@vger.kernel.org" <linux-api@vger.kernel.org>,
+        "bhelgaas@google.com" <bhelgaas@google.com>,
+        "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>,
+        "rostedt@goodmis.org" <rostedt@goodmis.org>,
+        "peterz@infradead.org" <peterz@infradead.org>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "akpm@linux-foundation.org" <akpm@linux-foundation.org>,
+        "sfr@canb.auug.org.au" <sfr@canb.auug.org.au>,
+        "stephen@networkplumber.org" <stephen@networkplumber.org>,
+        "rppt@linux.vnet.ibm.com" <rppt@linux.vnet.ibm.com>,
+        "jinyuqi@huawei.com" <jinyuqi@huawei.com>,
+        "zhangshaokun@hisilicon.com" <zhangshaokun@hisilicon.com>,
+        netdev@vger.kernel.org, chris.friesen@windriver.com,
+        Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        Nitesh Lal <nilal@redhat.com>
+Subject: [PATCH tip:irq/core v1] genirq: remove auto-set of the mask when setting the hint
+Date:   Fri, 30 Apr 2021 19:18:32 -0700
+Message-Id: <20210501021832.743094-1-jesse.brandeburg@intel.com>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 2021-04-27 at 10:55 +0800, lyl2019@mail.ustc.edu.cn wrote:
-> Hi, maintainers.
->     Our code analyzer reported a uaf bug, but it is a little
-> difficult for me to fix it directly.
-> 
-> File: drivers/net/ethernet/cisco/enic/enic_main.c
-> In enic_hard_start_xmit, it calls enic_queue_wq_skb(). Inside
-> enic_queue_wq_skb, if some error happens, the skb will be freed
-> by dev_kfree_skb(skb). But the freed skb is still used in 
-> skb_tx_timestamp(skb).
-> 
-> ```
->         enic_queue_wq_skb(enic, wq, skb);// skb could freed here
-> 
->         if (vnic_wq_desc_avail(wq) < MAX_SKB_FRAGS + ENIC_DESC_MAX_SPLITS)
->                 netif_tx_stop_queue(txq);
->         skb_tx_timestamp(skb); // freed skb is used here.
-> ```
-> Bug introduced by fb7516d42478e ("enic: add sw timestamp support").
+It was pointed out by Nitesh that the original work I did in 2014
+to automatically set the interrupt affinity when requesting a
+mask is no longer necessary. The kernel has moved on and no
+longer has the original problem, BUT the original patch
+introduced a subtle bug when booting a system with reserved or
+excluded CPUs. Drivers calling this function with a mask value
+that included a CPU that was currently or in the future
+unavailable would generally not update the hint.
 
-Thank you for reporting this.
+I'm sure there are a million ways to solve this, but the simplest
+one is to just remove a little code that tries to force the
+affinity, as Nitesh has shown it fixes the bug and doesn't seem
+to introduce immediate side effects.
 
-One solution is to make enic_queue_wq_skb() return error and goto spin_unlock()
-incase of error.
+While I'm here, introduce a kernel-doc for the hint function.
 
-Would you like to send the fix for this?
+Ref: https://lore.kernel.org/lkml/CAFki+L=_dd+JgAR12_eBPX0kZO2_6=1dGdgkwHE=u=K6chMeLQ@mail.gmail.com/
+Cc: netdev@vger.kernel.org
+Fixes: 4fe7ffb7e17c ("genirq: Fix null pointer reference in irq_set_affinity_hint()")
+Fixes: e2e64a932556 ("genirq: Set initial affinity in irq_set_affinity_hint()")
+Reported-by: Nitesh Lal <nilal@redhat.com>
+Signed-off-by: Jesse Brandeburg <jesse.brandeburg@intel.com>
+---
 
---
-Govind
+!!! NOTE: Compile tested only, would appreciate feedback
+
+---
+ kernel/irq/manage.c | 13 ++++++++++---
+ 1 file changed, 10 insertions(+), 3 deletions(-)
+
+diff --git a/kernel/irq/manage.c b/kernel/irq/manage.c
+index e976c4927b25..a31df64662d5 100644
+--- a/kernel/irq/manage.c
++++ b/kernel/irq/manage.c
+@@ -456,6 +456,16 @@ int __irq_set_affinity(unsigned int irq, const struct cpumask *mask, bool force)
+ 	return ret;
+ }
+ 
++/**
++ * 	irq_set_affinity_hint - set the hint for an irq
++ *	@irq:	Interrupt for which to set the hint
++ *	@m:	Mask to indicate which CPUs to suggest for the interrupt, use
++ *		NULL here to indicate to clear the value.
++ *
++ *	Use this function to recommend which CPU should handle the
++ *	interrupt to any userspace that uses /proc/irq/nn/smp_affinity_hint
++ *	in order to align interrupts. Pass NULL as the mask to clear the hint.
++ */
+ int irq_set_affinity_hint(unsigned int irq, const struct cpumask *m)
+ {
+ 	unsigned long flags;
+@@ -465,9 +475,6 @@ int irq_set_affinity_hint(unsigned int irq, const struct cpumask *m)
+ 		return -EINVAL;
+ 	desc->affinity_hint = m;
+ 	irq_put_desc_unlock(desc, flags);
+-	/* set the initial affinity to prevent every interrupt being on CPU0 */
+-	if (m)
+-		__irq_set_affinity(irq, m, false);
+ 	return 0;
+ }
+ EXPORT_SYMBOL_GPL(irq_set_affinity_hint);
+
+base-commit: 765822e1569a37aab5e69736c52d4ad4a289eba6
+-- 
+2.30.2
 
