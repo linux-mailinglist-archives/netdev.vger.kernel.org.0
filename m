@@ -2,83 +2,211 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 624ED3707F4
-	for <lists+netdev@lfdr.de>; Sat,  1 May 2021 18:49:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0FF4A3707F1
+	for <lists+netdev@lfdr.de>; Sat,  1 May 2021 18:45:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231342AbhEAQuP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 1 May 2021 12:50:15 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:37642 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S230195AbhEAQuO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 1 May 2021 12:50:14 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1619887763;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=Jw5wwGEd83lT9BKsEvFCA/28f/uk1ukSk6MUFzJ/Sjo=;
-        b=G/sOcmUo2GtX3X3z3g3uqEdfJYc3HuM5qDduZfIGsTJLGaU5VuX9Zyi9/wuBaWFriZT96b
-        42am4NoeBj+JdRgOXR8J/7/LWzqe3/SNksyzMTNAh2g0asPsypsufJrOizGbtoiChIkdUF
-        tjvJyCaVD+Fp2KPNV7ZI3G1lIsgsR30=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-39-g5FEuM2TMUK9p0MJmGPGNQ-1; Sat, 01 May 2021 12:49:21 -0400
-X-MC-Unique: g5FEuM2TMUK9p0MJmGPGNQ-1
-Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id B9F8C8186E1;
-        Sat,  1 May 2021 16:49:20 +0000 (UTC)
-Received: from localhost.localdomain (ovpn-112-28.ams2.redhat.com [10.36.112.28])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id E65E92B1CD;
-        Sat,  1 May 2021 16:49:19 +0000 (UTC)
-From:   Andrea Claudi <aclaudi@redhat.com>
-To:     netdev@vger.kernel.org
-Cc:     stephen@networkplumber.org, dsahern@gmail.com
-Subject: [PATCH iproute2] tc: q_ets: drop dead code from argument parsing
-Date:   Sat,  1 May 2021 18:44:35 +0200
-Message-Id: <a98f8ff492c5be9f06a6ad6522371230c5721ee7.1619887263.git.aclaudi@redhat.com>
+        id S231670AbhEAQqG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 1 May 2021 12:46:06 -0400
+Received: from mx2.suse.de ([195.135.220.15]:41618 "EHLO mx2.suse.de"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S231517AbhEAQqG (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 1 May 2021 12:46:06 -0400
+X-Virus-Scanned: by amavisd-new at test-mx.suse.de
+Received: from relay2.suse.de (unknown [195.135.221.27])
+        by mx2.suse.de (Postfix) with ESMTP id 218F2AF4E;
+        Sat,  1 May 2021 16:45:15 +0000 (UTC)
+Subject: Re: [RFC PATCH v4 15/27] nvme-tcp-offload: Add Timeout and ASYNC
+ Support
+To:     Shai Malin <smalin@marvell.com>, netdev@vger.kernel.org,
+        linux-nvme@lists.infradead.org, sagi@grimberg.me, hch@lst.de,
+        axboe@fb.com, kbusch@kernel.org
+Cc:     "David S . Miller davem @ davemloft . net --cc=Jakub Kicinski" 
+        <kuba@kernel.org>, aelior@marvell.com, mkalderon@marvell.com,
+        okulkarni@marvell.com, pkushwaha@marvell.com, malin1024@gmail.com
+References: <20210429190926.5086-1-smalin@marvell.com>
+ <20210429190926.5086-16-smalin@marvell.com>
+From:   Hannes Reinecke <hare@suse.de>
+Message-ID: <d762b4f0-c048-f9bd-a58b-fdbf3804e6a7@suse.de>
+Date:   Sat, 1 May 2021 18:45:13 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.8.0
 MIME-Version: 1.0
+In-Reply-To: <20210429190926.5086-16-smalin@marvell.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
 Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Checking for nbands to be at least 1 at this point is useless. Indeed:
-- ets requires "bands", "quanta" or "strict" to be specified
-- if "bands" is specified, nbands cannot be negative, see parse_nbands()
-- if "strict" is specified, nstrict cannot be negative, see
-  parse_nbands()
-- if "quantum" is specified, nquanta cannot be negative, see
-  parse_quantum()
-- if "bands" is not specified, nbands is set to nstrict+nquanta
-- the previous if statement takes care of the case when none of them are
-  specified and nbands is 0, terminating execution.
+On 4/29/21 9:09 PM, Shai Malin wrote:
+> In this patch, we present the nvme-tcp-offload timeout support
+> nvme_tcp_ofld_timeout() and ASYNC support
+> nvme_tcp_ofld_submit_async_event().
+> 
+> Acked-by: Igor Russkikh <irusskikh@marvell.com>
+> Signed-off-by: Prabhakar Kushwaha <pkushwaha@marvell.com>
+> Signed-off-by: Omkar Kulkarni <okulkarni@marvell.com>
+> Signed-off-by: Michal Kalderon <mkalderon@marvell.com>
+> Signed-off-by: Ariel Elior <aelior@marvell.com>
+> Signed-off-by: Shai Malin <smalin@marvell.com>
+> ---
+>   drivers/nvme/host/tcp-offload.c | 85 ++++++++++++++++++++++++++++++++-
+>   drivers/nvme/host/tcp-offload.h |  2 +
+>   2 files changed, 86 insertions(+), 1 deletion(-)
+> 
+> diff --git a/drivers/nvme/host/tcp-offload.c b/drivers/nvme/host/tcp-offload.c
+> index 0cdf5a432208..1d62f921f109 100644
+> --- a/drivers/nvme/host/tcp-offload.c
+> +++ b/drivers/nvme/host/tcp-offload.c
+> @@ -133,6 +133,26 @@ void nvme_tcp_ofld_req_done(struct nvme_tcp_ofld_req *req,
+>   		nvme_complete_rq(rq);
+>   }
+>   
+> +/**
+> + * nvme_tcp_ofld_async_req_done() - NVMeTCP Offload request done callback
+> + * function for async request. Pointed to by nvme_tcp_ofld_req->done.
+> + * Handles both NVME_TCP_F_DATA_SUCCESS flag and NVMe CQ.
+> + * @req:	NVMeTCP offload request to complete.
+> + * @result:     The nvme_result.
+> + * @status:     The completion status.
+> + *
+> + * API function that allows the vendor specific offload driver to report request
+> + * completions to the common offload layer.
+> + */
+> +void nvme_tcp_ofld_async_req_done(struct nvme_tcp_ofld_req *req,
+> +				  union nvme_result *result, __le16 status)
+> +{
+> +	struct nvme_tcp_ofld_queue *queue = req->queue;
+> +	struct nvme_tcp_ofld_ctrl *ctrl = queue->ctrl;
+> +
+> +	nvme_complete_async_event(&ctrl->nctrl, status, result);
+> +}
+> +
+>   struct nvme_tcp_ofld_dev *
+>   nvme_tcp_ofld_lookup_dev(struct nvme_tcp_ofld_ctrl *ctrl)
+>   {
+> @@ -719,7 +739,23 @@ void nvme_tcp_ofld_map_data(struct nvme_command *c, u32 data_len)
+>   
+>   static void nvme_tcp_ofld_submit_async_event(struct nvme_ctrl *arg)
+>   {
+> -	/* Placeholder - submit_async_event */
+> +	struct nvme_tcp_ofld_ctrl *ctrl = to_tcp_ofld_ctrl(arg);
+> +	struct nvme_tcp_ofld_queue *queue = &ctrl->queues[0];
+> +	struct nvme_tcp_ofld_dev *dev = queue->dev;
+> +	struct nvme_tcp_ofld_ops *ops = dev->ops;
+> +
+> +	ctrl->async_req.nvme_cmd.common.opcode = nvme_admin_async_event;
+> +	ctrl->async_req.nvme_cmd.common.command_id = NVME_AQ_BLK_MQ_DEPTH;
+> +	ctrl->async_req.nvme_cmd.common.flags |= NVME_CMD_SGL_METABUF;
+> +
+> +	nvme_tcp_ofld_set_sg_null(&ctrl->async_req.nvme_cmd);
+> +
+> +	ctrl->async_req.async = true;
+> +	ctrl->async_req.queue = queue;
+> +	ctrl->async_req.last = true;
+> +	ctrl->async_req.done = nvme_tcp_ofld_async_req_done;
+> +
+> +	ops->send_req(&ctrl->async_req);
+>   }
+>   
+>   static void
+> @@ -1024,6 +1060,51 @@ static int nvme_tcp_ofld_poll(struct blk_mq_hw_ctx *hctx)
+>   	return ops->poll_queue(queue);
+>   }
+>   
+> +static void nvme_tcp_ofld_complete_timed_out(struct request *rq)
+> +{
+> +	struct nvme_tcp_ofld_req *req = blk_mq_rq_to_pdu(rq);
+> +	struct nvme_ctrl *nctrl = &req->queue->ctrl->nctrl;
+> +
+> +	nvme_tcp_ofld_stop_queue(nctrl, nvme_tcp_ofld_qid(req->queue));
+> +	if (blk_mq_request_started(rq) && !blk_mq_request_completed(rq)) {
+> +		nvme_req(rq)->status = NVME_SC_HOST_ABORTED_CMD;
+> +		blk_mq_complete_request(rq);
+> +	}
+> +}
+> +
+> +static enum blk_eh_timer_return nvme_tcp_ofld_timeout(struct request *rq, bool reserved)
+> +{
+> +	struct nvme_tcp_ofld_req *req = blk_mq_rq_to_pdu(rq);
+> +	struct nvme_tcp_ofld_ctrl *ctrl = req->queue->ctrl;
+> +
+> +	dev_warn(ctrl->nctrl.device,
+> +		 "queue %d: timeout request %#x type %d\n",
+> +		 nvme_tcp_ofld_qid(req->queue), rq->tag, req->nvme_cmd.common.opcode);
+> +
+> +	if (ctrl->nctrl.state != NVME_CTRL_LIVE) {
+> +		/*
+> +		 * If we are resetting, connecting or deleting we should
+> +		 * complete immediately because we may block controller
+> +		 * teardown or setup sequence
+> +		 * - ctrl disable/shutdown fabrics requests
+> +		 * - connect requests
+> +		 * - initialization admin requests
+> +		 * - I/O requests that entered after unquiescing and
+> +		 *   the controller stopped responding
+> +		 *
+> +		 * All other requests should be cancelled by the error
+> +		 * recovery work, so it's fine that we fail it here.
+> +		 */
+> +		nvme_tcp_ofld_complete_timed_out(rq);
+> +
+> +		return BLK_EH_DONE;
+> +	}
 
-Thus nbands cannot be < 1 at this point and this code cannot be executed.
+And this particular error code has been causing _so_ _many_ issues 
+during testing, that I'd rather get rid of it altogether.
+But probably not your fault, your just copying what tcp and rdma is doing.
 
-Signed-off-by: Andrea Claudi <aclaudi@redhat.com>
----
- tc/q_ets.c | 5 -----
- 1 file changed, 5 deletions(-)
+> +
+> +	nvme_tcp_ofld_error_recovery(&ctrl->nctrl);
+> +
+> +	return BLK_EH_RESET_TIMER;
+> +}
+> +
+>   static struct blk_mq_ops nvme_tcp_ofld_mq_ops = {
+>   	.queue_rq	= nvme_tcp_ofld_queue_rq,
+>   	.commit_rqs     = nvme_tcp_ofld_commit_rqs,
+> @@ -1031,6 +1112,7 @@ static struct blk_mq_ops nvme_tcp_ofld_mq_ops = {
+>   	.init_request	= nvme_tcp_ofld_init_request,
+>   	.exit_request	= nvme_tcp_ofld_exit_request,
+>   	.init_hctx	= nvme_tcp_ofld_init_hctx,
+> +	.timeout	= nvme_tcp_ofld_timeout,
+>   	.map_queues	= nvme_tcp_ofld_map_queues,
+>   	.poll		= nvme_tcp_ofld_poll,
+>   };
+> @@ -1041,6 +1123,7 @@ static struct blk_mq_ops nvme_tcp_ofld_admin_mq_ops = {
+>   	.init_request	= nvme_tcp_ofld_init_request,
+>   	.exit_request	= nvme_tcp_ofld_exit_request,
+>   	.init_hctx	= nvme_tcp_ofld_init_admin_hctx,
+> +	.timeout	= nvme_tcp_ofld_timeout,
+>   };
+>   
+>   static const struct nvme_ctrl_ops nvme_tcp_ofld_ctrl_ops = {
+> diff --git a/drivers/nvme/host/tcp-offload.h b/drivers/nvme/host/tcp-offload.h
+> index d82645fcf9da..275a7e2d9d8a 100644
+> --- a/drivers/nvme/host/tcp-offload.h
+> +++ b/drivers/nvme/host/tcp-offload.h
+> @@ -110,6 +110,8 @@ struct nvme_tcp_ofld_ctrl {
+>   	/* Connectivity params */
+>   	struct nvme_tcp_ofld_ctrl_con_params conn_params;
+>   
+> +	struct nvme_tcp_ofld_req async_req;
+> +
+>   	/* Vendor specific driver context */
+>   	void *private_data;
+>   };
+> 
+So:
 
-diff --git a/tc/q_ets.c b/tc/q_ets.c
-index e7903d50..7380bb2f 100644
---- a/tc/q_ets.c
-+++ b/tc/q_ets.c
-@@ -147,11 +147,6 @@ parse_priomap:
- 		explain();
- 		return -1;
- 	}
--	if (nbands < 1) {
--		fprintf(stderr, "The number of \"bands\" must be >= 1\n");
--		explain();
--		return -1;
--	}
- 	if (nstrict + nquanta > nbands) {
- 		fprintf(stderr, "Not enough total bands to cover all the strict bands and quanta\n");
- 		explain();
+Reviewed-by: Hannes Reinecke <hare@suse.de>
+
+Cheers,
+
+Hannes
 -- 
-2.30.2
-
+Dr. Hannes Reinecke                Kernel Storage Architect
+hare@suse.de                              +49 911 74053 688
+SUSE Software Solutions GmbH, Maxfeldstr. 5, 90409 Nürnberg
+HRB 36809 (AG Nürnberg), Geschäftsführer: Felix Imendörffer
