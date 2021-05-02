@@ -2,99 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E9619370F13
-	for <lists+netdev@lfdr.de>; Sun,  2 May 2021 22:41:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0DE05370F1E
+	for <lists+netdev@lfdr.de>; Sun,  2 May 2021 22:47:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232410AbhEBUmW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 2 May 2021 16:42:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42682 "EHLO
+        id S232540AbhEBUsb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 2 May 2021 16:48:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44048 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232338AbhEBUmV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 2 May 2021 16:42:21 -0400
-Received: from mail-pj1-x1029.google.com (mail-pj1-x1029.google.com [IPv6:2607:f8b0:4864:20::1029])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D58AC06174A;
-        Sun,  2 May 2021 13:41:29 -0700 (PDT)
-Received: by mail-pj1-x1029.google.com with SMTP id h14-20020a17090aea8eb02901553e1cc649so4630223pjz.0;
-        Sun, 02 May 2021 13:41:29 -0700 (PDT)
+        with ESMTP id S232421AbhEBUsa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 2 May 2021 16:48:30 -0400
+Received: from mail-wm1-x343.google.com (mail-wm1-x343.google.com [IPv6:2a00:1450:4864:20::343])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 495EDC06138B
+        for <netdev@vger.kernel.org>; Sun,  2 May 2021 13:47:38 -0700 (PDT)
+Received: by mail-wm1-x343.google.com with SMTP id 4-20020a05600c26c4b0290146e1feccd8so2364111wmv.1
+        for <netdev@vger.kernel.org>; Sun, 02 May 2021 13:47:38 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id;
-        bh=aw7aqZtKf2/M8s/erFYFqJ+AMQB8zXKf4LYmpiXo9ec=;
-        b=SR6sxRm253n01t8fVsBSF1AEFl8xqkI6TUbCyiKYvNou9gKLZ1D669rj0XFnXYuQeL
-         uspVNsRbdlh7EVV/Og6eEg9dwtH3nLQ5aIICWTKxyOEauPQA5hyZVpiYCwXzPg7WQIFo
-         yMWxsWC5Qlsd1zhYfyb3jqPlGuxSfAYblFvUMJc4XfCk12GX1JTfLm4yLMn7NKqgLWBu
-         PTbyh3KR4GRCpnG7tmOnoFoMFY6zYLgG4+WNxioWwRjlhCRHHoYSx3zKg3GDtucJ/V2M
-         OAf994t0cQ+6nSu8IAD6wCh2LubruGyZFjnasufhHEJq+RjGNPOTnY6sM6njfVQEUB6n
-         35+w==
+        d=philpotter-co-uk.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=wyv+AJDBJXfhuMypHrWLPCa+O4wXV6R5dC9sAiCj6jQ=;
+        b=vRTAnhmLzGTF3e54S3YA4hpD2xQkBbcb4rqSbD7lTazG2v+3IQW0RleaTDBJm7Xdb3
+         edcqbawqjf2eE+rBYnk+IO7tShE13i9muy7hlfoKaBVK+f5+qz6TwOTUAksaDLUqWD61
+         llW4ytwxccbIvYMa68eoTlJHH3Pq797KE9wPfLYJhnq9+D4O28Bh3iNUpScCfeNxYwbL
+         ELdhi+b0kO5av/rRMV/bQpHye9bom4VzPSgTHr4zg0yRVxDmmHJqWjje+vm+AOmugTTA
+         kEPkbN1gp918Y/xQIruPBaLO108KLgaQbGd6PlYrDUAsMugh7tNDWQXJLUvVCjybuRCh
+         3M4Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=aw7aqZtKf2/M8s/erFYFqJ+AMQB8zXKf4LYmpiXo9ec=;
-        b=FEuvWGJL67UCm/VVwrTrGf+X/cXfFyYw+IK+RRaMJrB513A8q667huf6HTNPW2lY6s
-         HuAfDVz64PSMnao1kIIkfqqZmyecmB+dLekM+UA9y4HmNdiigX1Z07SNq61EU+vU/ESB
-         so1uOuBdYcUzC3t0rYZfpWwLhiQLw4ZyE78ayNb/1ZuIpXLOMWY47Rcsm0oEvPNMOc19
-         tfjeIM2W7iymJ0WYXvX19bGBfdPsFLEAclBY1J6k+PXbf5jyMxcmV6xMxURWniPolAhX
-         OosP14F8LeOYmdb/JJtnE/qOhazjtknqGjjJ/9meBmLz3ZIHHr1wUiDu5ZB+Ol2N2lZg
-         ZmNg==
-X-Gm-Message-State: AOAM530amR7RuK4V6Q2WMSCtGEDrWcpN5liT4l4pleD7HPfmR4JJfad1
-        tcKe1MfLeaB4RpX0BVHiBGPOb1YvnvstjXbx
-X-Google-Smtp-Source: ABdhPJwYzrTy+/LFPBAjW8mW9FLZ74lsmX+UxXXoqCWVSjbefsb2kzGU28eYKFZ8NKRpWGJD0n/H6A==
-X-Received: by 2002:a17:90b:17d1:: with SMTP id me17mr14343030pjb.143.1619988088402;
-        Sun, 02 May 2021 13:41:28 -0700 (PDT)
-Received: from localhost ([209.132.188.80])
-        by smtp.gmail.com with ESMTPSA id j23sm7431086pfh.179.2021.05.02.13.41.27
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Sun, 02 May 2021 13:41:27 -0700 (PDT)
-From:   Xin Long <lucien.xin@gmail.com>
-To:     network dev <netdev@vger.kernel.org>, linux-sctp@vger.kernel.org
-Cc:     davem@davemloft.net, kuba@kernel.org,
-        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
-Subject: [PATCH net] sctp: fix a SCTP_MIB_CURRESTAB leak in sctp_sf_do_dupcook_b
-Date:   Mon,  3 May 2021 04:41:20 +0800
-Message-Id: <98b2f435ec48fba6c9bbb63908c887f15f67a98d.1619988080.git.lucien.xin@gmail.com>
-X-Mailer: git-send-email 2.1.0
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=wyv+AJDBJXfhuMypHrWLPCa+O4wXV6R5dC9sAiCj6jQ=;
+        b=AnfZIlmGfCm8OAEcUJj3nqL0TknCGpUSgAbByyZhyZZz9IIU9lci/H/OdaKjYFbIv/
+         EOgw6fbTL8sZ7/mHXT/9kIbbLaDf/UCzXI9yQFIOX7COMM5Ha49vX+c/YrRMIj4o+tL6
+         fnafTLUaeHIv+GWtl/xAda3uPcvDzfGn0vP88xgz4zVJ9hCndo2aUoo3D7hn7n+qEuVY
+         A1jpYf4zEvMKzgurg6dbyldc5D5DDqeWMjelQltYRXeVIO/8BWboeslMIAL25vcNooSu
+         qYZr9GlsPqnBYh7FCegGIBR7YmtjvTffE0fvA7tAdD2EU/KD+RtokrDR1KMNGiAG4vwl
+         3sXw==
+X-Gm-Message-State: AOAM533mtUqfYYILdaAUyyVYJ9SD4/5rklJVcFl5Qdcpkdum17hw4JY0
+        dzvrc9AzkoNrLvZ8q8ygliZxbQ==
+X-Google-Smtp-Source: ABdhPJyu66cJfXZj/Vt8WfjO80X/+35rK+agDRc+Ljfkw/+5LIyZdHIlexZAbPIVifBUqnmcUZzxoQ==
+X-Received: by 2002:a05:600c:220e:: with SMTP id z14mr18315796wml.0.1619988456731;
+        Sun, 02 May 2021 13:47:36 -0700 (PDT)
+Received: from equinox (2.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.a.1.e.e.d.f.d.0.b.8.0.1.0.0.2.ip6.arpa. [2001:8b0:dfde:e1a0::2])
+        by smtp.gmail.com with ESMTPSA id c8sm19286846wmr.48.2021.05.02.13.47.35
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 02 May 2021 13:47:36 -0700 (PDT)
+Date:   Sun, 2 May 2021 21:47:34 +0100
+From:   Phillip Potter <phil@philpotter.co.uk>
+To:     Florian Westphal <fw@strlen.de>
+Cc:     kvalo@codeaurora.org, davem@davemloft.net, kuba@kernel.org,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, ath9k-devel@qca.qualcomm.com
+Subject: Re: [PATCH] ath9k: ath9k_htc_rx_msg: return when sk_buff is too small
+Message-ID: <YI8P5pp6b87OEoDo@equinox>
+References: <20210502202545.1405-1-phil@philpotter.co.uk>
+ <20210502202827.GG975@breakpoint.cc>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210502202827.GG975@breakpoint.cc>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Normally SCTP_MIB_CURRESTAB is always incremented once asoc enter into
-ESTABLISHED from the state < ESTABLISHED and decremented when the asoc
-is being deleted.
+On Sun, May 02, 2021 at 10:28:27PM +0200, Florian Westphal wrote:
+> Phillip Potter <phil@philpotter.co.uk> wrote:
+> > At the start of ath9k_htc_rx_msg, we check to see if the skb pointer is
+> > valid, but what we don't do is check if it is large enough to contain a
+> > valid struct htc_frame_hdr. We should check for this and return, as the
+> > buffer is invalid in this case. Fixes a KMSAN-found uninit-value bug
+> > reported by syzbot at:
+> > https://syzkaller.appspot.com/bug?id=7dccb7d9ad4251df1c49f370607a49e1f09644ee
+> > 
+> > Reported-by: syzbot+e4534e8c1c382508312c@syzkaller.appspotmail.com
+> > Signed-off-by: Phillip Potter <phil@philpotter.co.uk>
+> > ---
+> >  drivers/net/wireless/ath/ath9k/htc_hst.c | 2 +-
+> >  1 file changed, 1 insertion(+), 1 deletion(-)
+> > 
+> > diff --git a/drivers/net/wireless/ath/ath9k/htc_hst.c b/drivers/net/wireless/ath/ath9k/htc_hst.c
+> > index 510e61e97dbc..9dbfff7a388e 100644
+> > --- a/drivers/net/wireless/ath/ath9k/htc_hst.c
+> > +++ b/drivers/net/wireless/ath/ath9k/htc_hst.c
+> > @@ -403,7 +403,7 @@ void ath9k_htc_rx_msg(struct htc_target *htc_handle,
+> >  	struct htc_endpoint *endpoint;
+> >  	__be16 *msg_id;
+> >  
+> > -	if (!htc_handle || !skb)
+> > +	if (!htc_handle || !skb || !pskb_may_pull(skb, sizeof(struct htc_frame_hdr)))
+> >  		return;
+> 
+> This leaks the skb.
 
-However, in sctp_sf_do_dupcook_b(), the asoc's state can be changed to
-ESTABLISHED from the state >= ESTABLISHED where it shouldn't increment
-SCTP_MIB_CURRESTAB. Otherwise, one asoc may increment MIB_CURRESTAB
-multiple times but only decrement once at the end.
+Dear Florian,
 
-I was able to reproduce it by using scapy to do the 4-way shakehands,
-after that I replayed the COOKIE-ECHO chunk with 'peer_vtag' field
-changed to different values, and SCTP_MIB_CURRESTAB was incremented
-multiple times and never went back to 0 even when the asoc was freed.
+Thank you, and apologies, I shall resend. Not sure how I missed that.
 
-This patch is to fix it by only incrementing SCTP_MIB_CURRESTAB when
-the state < ESTABLISHED in sctp_sf_do_dupcook_b().
-
-Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
-Reported-by: Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
-Signed-off-by: Xin Long <lucien.xin@gmail.com>
----
- net/sctp/sm_statefuns.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
-
-diff --git a/net/sctp/sm_statefuns.c b/net/sctp/sm_statefuns.c
-index 5fc3f3a..fd1e319 100644
---- a/net/sctp/sm_statefuns.c
-+++ b/net/sctp/sm_statefuns.c
-@@ -1953,7 +1953,8 @@ static enum sctp_disposition sctp_sf_do_dupcook_b(
- 
- 	sctp_add_cmd_sf(commands, SCTP_CMD_NEW_STATE,
- 			SCTP_STATE(SCTP_STATE_ESTABLISHED));
--	SCTP_INC_STATS(net, SCTP_MIB_CURRESTAB);
-+	if (asoc->state < SCTP_STATE_ESTABLISHED)
-+		SCTP_INC_STATS(net, SCTP_MIB_CURRESTAB);
- 	sctp_add_cmd_sf(commands, SCTP_CMD_HB_TIMERS_START, SCTP_NULL());
- 
- 	/* Update the content of current association.  */
--- 
-2.1.0
-
+Regards,
+Phil
