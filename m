@@ -2,113 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D9759370ACB
-	for <lists+netdev@lfdr.de>; Sun,  2 May 2021 10:40:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AC654370AD7
+	for <lists+netdev@lfdr.de>; Sun,  2 May 2021 11:08:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230480AbhEBIj1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 2 May 2021 04:39:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56140 "EHLO
+        id S229812AbhEBJFd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 2 May 2021 05:05:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33484 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229988AbhEBIj0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 2 May 2021 04:39:26 -0400
-Received: from mail-ot1-x333.google.com (mail-ot1-x333.google.com [IPv6:2607:f8b0:4864:20::333])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D282DC06174A;
-        Sun,  2 May 2021 01:38:35 -0700 (PDT)
-Received: by mail-ot1-x333.google.com with SMTP id f75-20020a9d03d10000b0290280def9ab76so2418665otf.12;
-        Sun, 02 May 2021 01:38:35 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=7/KTtjV7bJwA8G3GwppRxcxSa6k7CMAcgX+cDACvfCs=;
-        b=k32FaUCCahjIPW4a/dG+KH3fEBtYc3zsZXeezvTnLvzvEqrwkzpjnC6xQkHzsZpXzL
-         LLaOq9dmzkepvOXAUWI1eLCq+MxwOygNSS/o4YwjMFYIpdSU4ZDYa31Vo4UytZlJv8J7
-         GvsKofuAXqM2RvU5BJbbmSy4odKnwEqMnTbsoaVkWQOSotjqQfQ/zWnoH+I7tVHdpcN6
-         GSc6AQcxZfITzNWR3Atl5J3d3lAloy8fDN1pEfY9AFUs5emzBNiMJw5S+Adc/5BPiJkl
-         PjNxInT2IiucPvN6ip4tmynars0Ltu4T5T7NRvmgZJxyX6qKsU6JIsM2Uc41Kv1qrwj8
-         zoAg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=7/KTtjV7bJwA8G3GwppRxcxSa6k7CMAcgX+cDACvfCs=;
-        b=EtuK5H7GvU97tFHqOg7e8KQ87GxrftjCoT2dK2r/ZxmL5nG6FDyiC85hTtLSGdBhKK
-         cDkHaCL7oTk2FSckcnH69Ju96zKAI0RpKzGVix/rZN7M/GlJ9FH9zFNtgGph+fPMuEap
-         fCnO7a9gV6JtWPVvBhxDkxr/pc3vNC5qfLo/23bE+PiZ4eO9mgxA0OrBftYTYTyqnS4H
-         n6lSHMIzHtkYKsthyjEg3ZReLIbsD39jWe+oOMub2gGGmQkYMEvDaZb+38K6oEhBmtHY
-         9x+g5pzZdVrLHfuzaz18uVNaFuKwO6HvlikCBSn4Iq3xHvZ078CWFgCgpeLRk0LfTekq
-         XnHw==
-X-Gm-Message-State: AOAM533Kg3xARzDR+GjS77KFAMCwp0kDM1tAAbvq4ipz+AXbVIVnKsyV
-        1JvQYrcCB5csz7MIpOoCKGfQTJQjxIMorKyNkiQ=
-X-Google-Smtp-Source: ABdhPJxmZOy0OdB29QArXCoRua4Ymo+mZkvf76wfIWnTK6MqlNz2U8ch3RWGS5fvnvhqq9SrIQwckl4aFfy5MtfsuKY=
-X-Received: by 2002:a9d:6f05:: with SMTP id n5mr10337939otq.203.1619944715242;
- Sun, 02 May 2021 01:38:35 -0700 (PDT)
-MIME-Version: 1.0
-References: <20210430062632.21304-1-heiko.thiery@gmail.com> <0daa2b24-e326-05d2-c219-8a7ade7376e0@gmail.com>
-In-Reply-To: <0daa2b24-e326-05d2-c219-8a7ade7376e0@gmail.com>
-From:   Heiko Thiery <heiko.thiery@gmail.com>
-Date:   Sun, 2 May 2021 10:38:24 +0200
-Message-ID: <CAEyMn7ZtziLf__KOGWJfY5OUDoaHSN8jopbKJeK9ZSD1NsZDjw@mail.gmail.com>
-Subject: Re: [PATCH iproute2-next v2] lib/fs: fix issue when
- {name,open}_to_handle_at() is not implemented
-To:     David Ahern <dsahern@gmail.com>
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Stephen Hemminger <stephen@networkplumber.org>,
-        Petr Vorel <petr.vorel@gmail.com>
+        with ESMTP id S229655AbhEBJFc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 2 May 2021 05:05:32 -0400
+Received: from sipsolutions.net (s3.sipsolutions.net [IPv6:2a01:4f8:191:4433::2])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A856AC06174A
+        for <netdev@vger.kernel.org>; Sun,  2 May 2021 02:04:41 -0700 (PDT)
+Received: by sipsolutions.net with esmtpsa (TLS1.3:ECDHE_SECP256R1__RSA_PSS_RSAE_SHA256__AES_256_GCM:256)
+        (Exim 4.94)
+        (envelope-from <johannes@sipsolutions.net>)
+        id 1ld81l-002t7L-Ok; Sun, 02 May 2021 11:04:38 +0200
+Message-ID: <2784fc9d11a97ae4734d12058a6e0e6564ac9309.camel@sipsolutions.net>
+Subject: Re: A problem with "ip=..." ipconfig and Atheros alx driver.
+From:   Johannes Berg <johannes@sipsolutions.net>
+To:     Nikolai Zhubr <zhubr.2@gmail.com>
+Cc:     Chris Snook <chris.snook@gmail.com>, netdev@vger.kernel.org
+Date:   Sun, 02 May 2021 11:04:36 +0200
+In-Reply-To: <608D5CA3.7020700@gmail.com> (sfid-20210501_154106_642617_08B34215)
+References: <608BF122.7050307@gmail.com>
+                         (sfid-20210430_135009_123201_5C9D80DA) <419eea59adc7af954f98ac81ec41a7be9cc0d9bb.camel@sipsolutions.net>
+                 <608C3B2C.8040005@gmail.com>
+         (sfid-20210430_190603_013225_96A76113) <acd09ebe17b438fad20d4863dfece84144b5e027.camel@sipsolutions.net>
+         <608C9A57.5010102@gmail.com> <608D5CA3.7020700@gmail.com>
+         (sfid-20210501_154106_642617_08B34215)
 Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.38.4 (3.38.4-1.fc33) 
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+X-malware-bazaar: not-scanned
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi David,
+On Sat, 2021-05-01 at 16:50 +0300, Nikolai Zhubr wrote:
+> Hi Johannes,
+> 
+> 01.05.2021 3:01, I wrote:
+> [...]
+> > > https://p.sipsolutions.net/5adbe659fb061f06.txt
+> > 
+> > Is it supposed to work correctly for unmodified 5.12 kernel? Because it
+> 
+> Success! I've found an apparently missing mutex_unlock() in alx_probe() 
+> just before the "return 0" line.
+> 
 
-Am Sa., 1. Mai 2021 um 17:03 Uhr schrieb David Ahern <dsahern@gmail.com>:
->
-> On 4/30/21 12:26 AM, Heiko Thiery wrote:
-> > With commit d5e6ee0dac64b64e the usage of functions name_to_handle_at() and
->
-> that is a change to ss:
->
-> d5e6ee0dac64 ss: introduce cgroup2 cache and helper functions
->
->
-> > open_by_handle_at() are introduced. But these function are not available
-> > e.g. in uclibc-ng < 1.0.35. To have a backward compatibility check for the
-> > availability in the configure script and in case of absence do a direct
-> > syscall.
-> >
->
-> When you find the proper commit add a Fixes line before the Signed-off-by:
+D'oh, right, missed that place.
 
-What do you mean with finding the right commit? This (d5e6ee0dac64) is
-the commit that introduced the usage of the missing functions. Or have
-I overlooked something?
+> With that inserted, your patch indeed 
+> fixes the 120 s boot delay here. And the link apparenly also works fine 
+> after boot, in normal operation.
+> Can it be somehow reviewed and submitted unstream please?
+> I'd like it also ported to 4.xx then. (Maybe I can port myself though)
 
->
-> Fixes: <id> ("subject line")
-> > Signed-off-by: Heiko Thiery <heiko.thiery@gmail.com>
-> > ---
->
-> make sure you cc the author of the original commit.
+Well I don't think anyone's going to still backport such a patch to a
+4.x kernel, but of course you can.
 
-Ok.
+I guess I can see about making it a real patch, should only take a
+little while to audit (again) the hardware access paths wrt. locking.
 
->
-> > v2:
-> >  - small correction to subject
-> >  - removed IP_CONFIG_HANDLE_AT:=y option since it is not required
-> >  - fix indentation in check function
-> >  - removed empty lines (thanks to Petr Vorel)
-> >  - add #define _GNU_SOURCE in check (thanks to Petr Vorel)
-> >  - check only for name_to_handle_at (thanks to Peter Vorel)
->
-> you have 3 responses to this commit. Please send an updated patch with
-> all the changes and the the above comments addressed.
+johannes
 
-I will implement the comments and send a new version.
-
-> Thanks,
-
-Thanks,
--- 
-Heiko
