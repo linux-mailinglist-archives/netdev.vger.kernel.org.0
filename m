@@ -2,62 +2,58 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2A7B5370FAE
-	for <lists+netdev@lfdr.de>; Mon,  3 May 2021 01:10:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2CBD4370FAA
+	for <lists+netdev@lfdr.de>; Mon,  3 May 2021 01:10:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232633AbhEBXK7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 2 May 2021 19:10:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46138 "EHLO
+        id S232401AbhEBXKy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 2 May 2021 19:10:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46140 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232630AbhEBXI3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 2 May 2021 19:08:29 -0400
-Received: from mail-ej1-x629.google.com (mail-ej1-x629.google.com [IPv6:2a00:1450:4864:20::629])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1EF61C061756;
-        Sun,  2 May 2021 16:07:35 -0700 (PDT)
-Received: by mail-ej1-x629.google.com with SMTP id f24so5193351ejc.6;
-        Sun, 02 May 2021 16:07:35 -0700 (PDT)
+        with ESMTP id S232628AbhEBXI2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 2 May 2021 19:08:28 -0400
+Received: from mail-ed1-x52c.google.com (mail-ed1-x52c.google.com [IPv6:2a00:1450:4864:20::52c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 12DD8C06138E
+        for <netdev@vger.kernel.org>; Sun,  2 May 2021 16:07:36 -0700 (PDT)
+Received: by mail-ed1-x52c.google.com with SMTP id y26so4292271eds.4
+        for <netdev@vger.kernel.org>; Sun, 02 May 2021 16:07:36 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=8BSDZrcoNzp9syAi7bEm0jAyw49NztLzfWnEeA37gIc=;
-        b=ZDYVD871lhik5K5mVNlJ99tXYD5swZCiTQt7fWVrl1VA0OiS3x31eEOPDElraz5kTn
-         rCGWJGcUqJ5VS5bhx205wn3ZpFvujHyc2AUR/c+kWWS4YcXs5rJ/BrEYrk8V9DyXdsy1
-         9/URq5N2nvLCkj92PL9H4ZYdCLmdFDsXVYMwR8WESX1xYBNLed7QHNAXrKSt3MLfO3Yg
-         I8kdwh0OQQqwHbsXqq9CzWlur6FU/fQMD4PcnBy67PkWsr2Btw+zolYjZl4dkWDgEGxy
-         Gfuipwf1O0TA1brqtCA7vwo+vUIzY4fBVTytW+B/hwTl9UTBT54I5NlojhixfHwysPrB
-         o4ig==
+        bh=AVRK6rDw0HAKRUaSyc4SRgJocC+PbJLDYnd+ncbat3s=;
+        b=V3kPFNzyuy0yo9Yya9m6XmQcHZgLhJmpjIoQfpIY9ssP4jkVJkudDGYKScAfMHHvZ6
+         8q+a5U5lW/ruXgU8tK1UGlaf/u+xIkoRjIbFcnSOV9Eog7NRG+AkdWPDaBTpf8G0r0tK
+         ViVIlghMVdygJ7wSYWRMOujIr6ZOeUj4APJnpPeDF/t8gPmPpvoNKfNlF2xrH6w4NhtE
+         k4Z92NwtSE8Bg+xtNaeuw1LENW8AenLeaeMosGHG3EKkXLJ71H9HLtuiIG6kYaDcyQoj
+         uO8ml21iDctVNYZ4JY6EPflvt1/0E0o/bO0bZcgWcx7kVl459Xxi3iQqVA9OmfG5H2CV
+         swfQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=8BSDZrcoNzp9syAi7bEm0jAyw49NztLzfWnEeA37gIc=;
-        b=fbxPgit75rk6Rpbo72VxeWB7NNoaCtRIDiDIWAD3u29DpF2qWS/YZwyOsOXMXYbCTm
-         wqFJQglK/Mz0lHuaL3e9cmmVTd/LrqB6zPkx8hy1hwGvLpYRfjz8GyNYUuCGAR3S+yRC
-         TgldirM/haOp9ao/O6XYZ4HlZKY8AunGMTkAzgQsnwP3pqK9zLV4ibW6DtBub46i27JF
-         jjae6O3ipnPesSe2Bfr2Mg+V5VZV55TW8Mcdm1px0EoxV1Sca0JKjWcuLbZDeDhTQK0m
-         Bx72AY2s7UZQWRB4QpJ++i5ngLIogjrTFly3gXoBOMAtaLszTDbY3xs+3+DueZLc9sC7
-         YsjA==
-X-Gm-Message-State: AOAM530hBYIOya3ZBsWsxym2ePeZ6L+tP2KDnllUwKx39ATF3KXHuUL6
-        3n3ozwYSWPcknjvwn9IhziI=
-X-Google-Smtp-Source: ABdhPJzi2VmcYnM6N+fKMgtDA2WTfH7iLLgMyoqSsXw+7wVpjnYuiTPoD4yV1wmed0+wjdvuNruycg==
-X-Received: by 2002:a17:907:2623:: with SMTP id aq3mr13691136ejc.262.1619996853770;
-        Sun, 02 May 2021 16:07:33 -0700 (PDT)
+        bh=AVRK6rDw0HAKRUaSyc4SRgJocC+PbJLDYnd+ncbat3s=;
+        b=J+2vzmqqHWuZwDMjskheitnnhrqKjqVFbM2Docv/XzRo7mAN3F8iSk+sMWKsS3vdnd
+         z1PiCGBnI6h9OC0WyNyzWlRF6LAqJ8YzKWchfUNht/HU37xGKWacG3a5j35fQoLyotOU
+         6Nox4mzNXiHDxHuhsstgpr/BfJzuJadTxu2dP5gq+ddEph4bqT6YlCEdDIpuWRm5B4qj
+         +3rbqSomtlIjYe8NpF05opRADW4H7TRslZZ5sOgOgq6SwMQiLyJVcoIrnt/+1sGfmgv5
+         L/J0A1LjylphzGMup4LinyhSeOHPDVsKORCg8HH3n+EAY8Wc5wl+qcFf6i4JNW1gqxAg
+         F+/g==
+X-Gm-Message-State: AOAM533XMDrVR2AEg5y/Mv+5hBiY2kwlX2M2hgoEqPqihi/sFntCr0tc
+        nH4YD0utLfhxLAgzSRq2ZMcz1IIhC/NEDg==
+X-Google-Smtp-Source: ABdhPJwLZIZ8RiH2IETbnd+vwjU72wKj/HGUUd0y99xXlr61x7D4UaZhnDyZMhm2vw5tTi+tFQCJRg==
+X-Received: by 2002:a05:6402:26ce:: with SMTP id x14mr11377415edd.216.1619996854760;
+        Sun, 02 May 2021 16:07:34 -0700 (PDT)
 Received: from Ansuel-xps.localdomain (93-35-189-2.ip56.fastwebnet.it. [93.35.189.2])
         by smtp.googlemail.com with ESMTPSA id z17sm10003874ejc.69.2021.05.02.16.07.33
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 02 May 2021 16:07:33 -0700 (PDT)
+        Sun, 02 May 2021 16:07:34 -0700 (PDT)
 From:   Ansuel Smith <ansuelsmth@gmail.com>
 To:     Florian Fainelli <f.fainelli@gmail.com>
-Cc:     Ansuel Smith <ansuelsmth@gmail.com>, Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: [RFC PATCH net-next v2 17/17] net: phy: add qca8k driver for qca8k switch internal PHY
-Date:   Mon,  3 May 2021 01:07:09 +0200
-Message-Id: <20210502230710.30676-17-ansuelsmth@gmail.com>
+Cc:     Ansuel Smith <ansuelsmth@gmail.com>,
+        Russell King <linux@armlinux.org.uk>, netdev@vger.kernel.org
+Subject: [RFC PATCH net-next v2 00/17] Multiple improvement to qca8k stability
+Date:   Mon,  3 May 2021 01:07:10 +0200
+Message-Id: <20210502230710.30676-18-ansuelsmth@gmail.com>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20210502230710.30676-1-ansuelsmth@gmail.com>
 References: <20210502230710.30676-1-ansuelsmth@gmail.com>
@@ -67,231 +63,76 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add initial support for qca8k internal PHYs. The internal PHYs requires
-special mmd and debug values to be set based on the switch revision
-passwd using the dev_flags. Supports output of idle, receive and eee_wake
-errors stats.
-Some debug values sets can't be translated as the documentation lacks any
-reference about them.
+Currently qca8337 switch are widely used on ipq8064 based router.
+On these particular router it was notice a very unstable switch with
+port not link detected as link with unknown speed, port dropping
+randomly and general unreliability. Lots of testing and comparison
+between this dsa driver and the original qsdk driver showed lack of some
+additional delay and values. A main difference arised from the original
+driver and the dsa one. The original driver didn't use MASTER regs to
+read phy status and the dedicated mdio driver worked correctly. Now that
+the dsa driver actually use these regs, it was found that these special
+read/write operation required mutual exclusion to normal
+qca8k_read/write operation. The add of mutex for these operation fixed
+the random port dropping and now only the actual linked port randomly
+dropped. Adding additional delay for set_page operation and fixing a bug
+in the mdio dedicated driver fixed also this problem. The current driver
+requires also more time to apply vlan switch. All of these changes and
+tweak permit a now very stable and reliable dsa driver and 0 port
+dropping. This series is currently tested by at least 5 user with
+different routers and all reports positive results and no problems.
 
-Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
----
- drivers/net/phy/Kconfig  |   7 ++
- drivers/net/phy/Makefile |   1 +
- drivers/net/phy/qca8k.c  | 174 +++++++++++++++++++++++++++++++++++++++
- 3 files changed, 182 insertions(+)
+Changes v2:
+- Implemented phy driver for internal PHYs
+  I'm testing cable test functions as I found some documentation that
+  actually declare regs about it. Problem is that it doesn't actually
+  work. It seems that the value set are ignored by the phy.
+- Made the rgmii delay configurable
+- Reordered patch
+- Split mdio patches to more specific ones
+- Reworked mdio driver to use readl/writel instead of regmap
+- Reworked the entire driver to make it aware of any read/write error.
+- Added phy generic patch to pass flags with phylink_connect_phy
+  function
+
+A decision about the extra mdio delay is still to be taken but I
+preferred to push a v2 since there is a new driver and more changes than
+v0.
+
+Ansuel Smith (17):
+  net: mdio: ipq8064: clean whitespaces in define
+  net: mdio: ipq8064: switch to write/readl function
+  net: mdio: ipq8064: enlarge sleep after read/write operation
+  net: dsa: qca8k: rework read/write/set_page to provide error
+  net: dsa: qca8k: add support for qca8327 switch
+  devicetree: net: dsa: qca8k: Document new compatible qca8327
+  net: dsa: qca8k: add priority tweak to qca8337 switch
+  net: dsa: qca8k: add GLOBAL_FC settings needed for qca8327
+  net: dsa: qca8k: add support for switch rev
+  net: dsa: qca8k: make rgmii delay configurable
+  net: dsa: qca8k: clear MASTER_EN after phy read/write
+  net: dsa: qca8k: dsa: qca8k: protect MASTER busy_wait with mdio mutex
+  net: dsa: qca8k: enlarge mdio delay and timeout
+  net: phy: phylink: permit to pass dev_flags to phylink_connect_phy
+  net: dsa: slave: pass dev_flags also to internal PHY
+  net: dsa: qca8k: pass switch_revision info to phy dev_flags
+  net: phy: add qca8k driver for qca8k switch internal PHY
+
+ .../devicetree/bindings/net/dsa/qca8k.txt     |   1 +
+ drivers/net/dsa/qca8k.c                       | 649 ++++++++++++++----
+ drivers/net/dsa/qca8k.h                       |  54 +-
+ drivers/net/ethernet/cadence/macb_main.c      |   2 +-
+ .../net/ethernet/stmicro/stmmac/stmmac_main.c |   2 +-
+ drivers/net/mdio/mdio-ipq8064.c               |  64 +-
+ drivers/net/phy/Kconfig                       |   7 +
+ drivers/net/phy/Makefile                      |   1 +
+ drivers/net/phy/phylink.c                     |  12 +-
+ drivers/net/phy/qca8k.c                       | 174 +++++
+ include/linux/phylink.h                       |   2 +-
+ net/dsa/slave.c                               |   6 +-
+ 12 files changed, 772 insertions(+), 202 deletions(-)
  create mode 100644 drivers/net/phy/qca8k.c
 
-diff --git a/drivers/net/phy/Kconfig b/drivers/net/phy/Kconfig
-index 698bea312adc..cdf01613eb37 100644
---- a/drivers/net/phy/Kconfig
-+++ b/drivers/net/phy/Kconfig
-@@ -245,6 +245,13 @@ config QSEMI_PHY
- 	help
- 	  Currently supports the qs6612
- 
-+config QCA8K_PHY
-+	tristate "Qualcomm Atheros AR833x Internal PHYs"
-+	help
-+	  This PHY is for the internal PHYs present on the QCA833x switch.
-+
-+	  Currently supports the AR8334, AR8337 model
-+
- config REALTEK_PHY
- 	tristate "Realtek PHYs"
- 	help
-diff --git a/drivers/net/phy/Makefile b/drivers/net/phy/Makefile
-index a13e402074cf..5f3cfd5606bb 100644
---- a/drivers/net/phy/Makefile
-+++ b/drivers/net/phy/Makefile
-@@ -72,6 +72,7 @@ obj-$(CONFIG_MICROSEMI_PHY)	+= mscc/
- obj-$(CONFIG_NATIONAL_PHY)	+= national.o
- obj-$(CONFIG_NXP_TJA11XX_PHY)	+= nxp-tja11xx.o
- obj-$(CONFIG_QSEMI_PHY)		+= qsemi.o
-+obj-$(CONFIG_QCA8K_PHY)		+= qca8k.o
- obj-$(CONFIG_REALTEK_PHY)	+= realtek.o
- obj-$(CONFIG_RENESAS_PHY)	+= uPD60620.o
- obj-$(CONFIG_ROCKCHIP_PHY)	+= rockchip.o
-diff --git a/drivers/net/phy/qca8k.c b/drivers/net/phy/qca8k.c
-new file mode 100644
-index 000000000000..514250bb9e71
---- /dev/null
-+++ b/drivers/net/phy/qca8k.c
-@@ -0,0 +1,174 @@
-+// SPDX-License-Identifier: GPL-2.0+
-+#include <linux/kernel.h>
-+#include <linux/mii.h>
-+#include <linux/phy.h>
-+#include <linux/module.h>
-+#include <linux/bitfield.h>
-+#include <linux/etherdevice.h>
-+#include <linux/ethtool_netlink.h>
-+
-+#define QCA8K_DEVFLAGS_REVISION_MASK		GENMASK(2, 0)
-+
-+#define QCA8K_PHY_ID_MASK			0xffffffff
-+#define QCA8K_PHY_ID_QCA8327			0x004dd034
-+#define QCA8K_PHY_ID_QCA8337			0x004dd036
-+
-+#define MDIO_AZ_DEBUG				0x800d
-+
-+#define MDIO_DBG_ANALOG_TEST			0x0
-+#define MDIO_DBG_SYSTEM_CONTROL_MODE		0x5
-+#define MDIO_DBG_CONTROL_FEATURE_CONF		0x3d
-+
-+/* QCA specific MII registers */
-+#define MII_ATH_DBG_ADDR			0x1d
-+#define MII_ATH_DBG_DATA			0x1e
-+
-+/* QCA specific MII registers access function */
-+static void qca8k_phy_dbg_write(struct mii_bus *bus, int phy_addr, u16 dbg_addr, u16 dbg_data)
-+{
-+	mutex_lock_nested(&bus->mdio_lock, MDIO_MUTEX_NESTED);
-+	bus->write(bus, phy_addr, MII_ATH_DBG_ADDR, dbg_addr);
-+	bus->write(bus, phy_addr, MII_ATH_DBG_DATA, dbg_data);
-+	mutex_unlock(&bus->mdio_lock);
-+}
-+
-+enum stat_access_type {
-+	PHY,
-+	MMD
-+};
-+
-+struct qca8k_hw_stat {
-+	const char *string;
-+	u8 reg;
-+	u32 mask;
-+	enum stat_access_type access_type;
-+};
-+
-+static struct qca8k_hw_stat qca8k_hw_stats[] = {
-+	{ "phy_idle_errors", 0xa, GENMASK(7, 0), PHY},
-+	{ "phy_receive_errors", 0x15, GENMASK(15, 0), PHY},
-+	{ "eee_wake_errors", 0x16, GENMASK(15, 0), MMD},
-+};
-+
-+struct qca8k_phy_priv {
-+	u8 switch_revision;
-+	u64 stats[ARRAY_SIZE(qca8k_hw_stats)];
-+};
-+
-+static int qca8k_get_sset_count(struct phy_device *phydev)
-+{
-+	return ARRAY_SIZE(qca8k_hw_stats);
-+}
-+
-+static void qca8k_get_strings(struct phy_device *phydev, u8 *data)
-+{
-+	int i;
-+
-+	for (i = 0; i < ARRAY_SIZE(qca8k_hw_stats); i++) {
-+		strscpy(data + i * ETH_GSTRING_LEN,
-+			qca8k_hw_stats[i].string, ETH_GSTRING_LEN);
-+	}
-+}
-+
-+static u64 qca8k_get_stat(struct phy_device *phydev, int i)
-+{
-+	struct qca8k_hw_stat stat = qca8k_hw_stats[i];
-+	struct qca8k_phy_priv *priv = phydev->priv;
-+	int val;
-+	u64 ret;
-+
-+	if (stat.access_type == MMD)
-+		val = phy_read_mmd(phydev, MDIO_MMD_PCS, stat.reg);
-+	else
-+		val = phy_read(phydev, stat.reg);
-+
-+	if (val < 0) {
-+		ret = U64_MAX;
-+	} else {
-+		val = val & stat.mask;
-+		priv->stats[i] += val;
-+		ret = priv->stats[i];
-+	}
-+
-+	return ret;
-+}
-+
-+static void qca8k_get_stats(struct phy_device *phydev,
-+			    struct ethtool_stats *stats, u64 *data)
-+{
-+	int i;
-+
-+	for (i = 0; i < ARRAY_SIZE(qca8k_hw_stats); i++)
-+		data[i] = qca8k_get_stat(phydev, i);
-+}
-+
-+static int qca8k_config_init(struct phy_device *phydev)
-+{
-+	struct qca8k_phy_priv *priv = phydev->priv;
-+	struct mii_bus *bus = phydev->mdio.bus;
-+	int phy_addr = phydev->mdio.addr;
-+
-+	priv->switch_revision = phydev->dev_flags & QCA8K_DEVFLAGS_REVISION_MASK;
-+
-+	switch (priv->switch_revision) {
-+	case 1:
-+		/* For 100M waveform */
-+		qca8k_phy_dbg_write(bus, phy_addr, MDIO_DBG_ANALOG_TEST, 0x02ea);
-+		/* Turn on Gigabit clock */
-+		qca8k_phy_dbg_write(bus, phy_addr, MDIO_DBG_CONTROL_FEATURE_CONF, 0x68a0);
-+		break;
-+
-+	case 2:
-+		phy_write_mmd(phydev, MDIO_MMD_AN, MDIO_AN_EEE_ADV, 0x0);
-+		fallthrough;
-+	case 4:
-+		phy_write_mmd(phydev, MDIO_MMD_PCS, MDIO_AZ_DEBUG, 0x803f);
-+		qca8k_phy_dbg_write(bus, phy_addr, MDIO_DBG_CONTROL_FEATURE_CONF, 0x6860);
-+		qca8k_phy_dbg_write(bus, phy_addr, MDIO_DBG_SYSTEM_CONTROL_MODE, 0x2c46);
-+		qca8k_phy_dbg_write(bus, phy_addr, 0x3c, 0x6000);
-+		break;
-+	}
-+
-+	return 0;
-+}
-+
-+static int qca8k_probe(struct phy_device *phydev)
-+{
-+	struct qca8k_phy_priv *priv;
-+
-+	priv = devm_kzalloc(&phydev->mdio.dev, sizeof(*priv), GFP_KERNEL);
-+	if (!priv)
-+		return -ENOMEM;
-+
-+	phydev->priv = priv;
-+
-+	return 0;
-+}
-+
-+static struct phy_driver qca8k_drivers[] = {
-+	{
-+		.phy_id = QCA8K_PHY_ID_QCA8337,
-+		.phy_id_mask = QCA8K_PHY_ID_MASK,
-+		.name = "QCA PHY 8337",
-+		/* PHY_GBIT_FEATURES */
-+		.probe = qca8k_probe,
-+		.flags = PHY_IS_INTERNAL,
-+		.config_init = qca8k_config_init,
-+		.soft_reset = genphy_soft_reset,
-+		.get_sset_count = qca8k_get_sset_count,
-+		.get_strings = qca8k_get_strings,
-+		.get_stats = qca8k_get_stats,
-+	},
-+};
-+
-+module_phy_driver(qca8k_drivers);
-+
-+static struct mdio_device_id __maybe_unused qca8k_tbl[] = {
-+	{ QCA8K_PHY_ID_QCA8337, QCA8K_PHY_ID_MASK },
-+	{ }
-+};
-+
-+MODULE_DEVICE_TABLE(mdio, qca8k_tbl);
-+MODULE_DESCRIPTION("Qualcomm QCA8k PHY driver");
-+MODULE_AUTHOR("Ansuel Smith");
-+MODULE_LICENSE("GPL");
 -- 
 2.30.2
 
