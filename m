@@ -2,58 +2,58 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0DDD6370DEE
+	by mail.lfdr.de (Postfix) with ESMTP id 59913370DEF
 	for <lists+netdev@lfdr.de>; Sun,  2 May 2021 18:25:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232399AbhEBQZ5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 2 May 2021 12:25:57 -0400
-Received: from out5-smtp.messagingengine.com ([66.111.4.29]:37879 "EHLO
+        id S232418AbhEBQ0A (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 2 May 2021 12:26:00 -0400
+Received: from out5-smtp.messagingengine.com ([66.111.4.29]:60527 "EHLO
         out5-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S232372AbhEBQZ4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 2 May 2021 12:25:56 -0400
-Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-        by mailout.nyi.internal (Postfix) with ESMTP id 71F305C0139;
-        Sun,  2 May 2021 12:25:04 -0400 (EDT)
+        by vger.kernel.org with ESMTP id S232405AbhEBQZ7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 2 May 2021 12:25:59 -0400
+Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
+        by mailout.nyi.internal (Postfix) with ESMTP id 8F3825C0130;
+        Sun,  2 May 2021 12:25:07 -0400 (EDT)
 Received: from mailfrontend2 ([10.202.2.163])
-  by compute3.internal (MEProxy); Sun, 02 May 2021 12:25:04 -0400
+  by compute4.internal (MEProxy); Sun, 02 May 2021 12:25:07 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
         messagingengine.com; h=cc:content-transfer-encoding:date:from
         :in-reply-to:message-id:mime-version:references:subject:to
         :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
-        fm2; bh=bpqUHuy2SMOV6yzr3J1D6H0SgL+BModvT7aDQWC3IYE=; b=lkHRZvZU
-        +muQdpmsNwxqmK7P5tAWf2rEIzp2Qaf0kM5LA1JWXYsHYWaAHS5DY0fjobq8o+p5
-        AJqU/00K1Fb/g5qp5gB8QSlM/O228vJiWCqqPZQs2vS2XrzYBRTgO7gpSdgTIMx6
-        AZtCn1tZsnOjcqf/4bjn/SnEnlGt8C7lPPf9rn8ISre0IuF3n2TudqFtO+GWyH9K
-        Xpw8TKYEABTE2Dhmm79J/6UMUoHiVKb+kNSTD35QXfZz2RfwgosMisyEAHV/Pvyu
-        9JAOiIdCIKUk844+uIgK5RuvlJEtsdnyz8cWi8ihC+0+hm/LlMwvxKrZdKVJnHfn
-        mdNQaoZWE8OOEw==
-X-ME-Sender: <xms:YNKOYIdGE9mGoHVwuuMdiQ2ZRMNBzETzLQVLWHBTT3YL_DjTLk6cdA>
-    <xme:YNKOYKNt_ByyhtUI177fEQSJVZXagGHNBFTaQYLqeH63sT5W4pIapPUFzUUSkwF7V
-    ub4_SzbYmM8ovc>
+        fm2; bh=zFhWYlNdj4CYC0fKjhu+t1LBc1kg5QzS9fgNiP0VKMo=; b=ILNa6o92
+        j1DSn0+49bczp3dDuDbNh0RC0wgp+B0A4YLA3n8NFyKQHw4Wr/inxp8pTog2OjF9
+        ZRXk18D+awoMZc0h0JOfxzQ2KBS1fK7MitVMU/zc6km95PXfgcoSlJ5jwlA0XXzy
+        l3vrqAbRbWHtQqgzgSNhQ/LmspycQILqA3XUEYZeYu9U4QQPvLV5Q0kxgWoWtsQ/
+        UnJ1D5LvHmeSRzbS6WGroGP7ZByvJFvvgbJNWlye1oSLMYh0rju7qhUOHnAzrqlS
+        DrEtQilTN64zYrDhv8J9mturmERJ+BYgmQzCwo7hcW2hgJ2yj+a0VFzWZecCP5B2
+        qKi9vpwPiERskQ==
+X-ME-Sender: <xms:Y9KOYCyXQifvr45x8deHKOKIOj1p7uZ9HRWjkaO1aWwTw57mpn_7pA>
+    <xme:Y9KOYOQBslfgcJuyP804FGlg9Qyxq7jkg9vPFUOE3BY7yWlr9Q1Lr5KPwPkEwjuUT
+    RdJTWvovUMBNTw>
 X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduledrvdefvddgtdejucetufdoteggodetrfdotf
     fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
     uceurghilhhouhhtmecufedttdenucenucfjughrpefhvffufffkofgjfhgggfestdekre
     dtredttdenucfhrhhomhepkfguohcuufgthhhimhhmvghluceoihguohhstghhsehiugho
     shgthhdrohhrgheqnecuggftrfgrthhtvghrnhepudetieevffffveelkeeljeffkefhke
     ehgfdtffethfelvdejgffghefgveejkefhnecukfhppeduleefrdegjedrudeihedrvdeh
-    udenucevlhhushhtvghrufhiiigvpeefnecurfgrrhgrmhepmhgrihhlfhhrohhmpehiug
+    udenucevlhhushhtvghrufhiiigvpedunecurfgrrhgrmhepmhgrihhlfhhrohhmpehiug
     hoshgthhesihguohhstghhrdhorhhg
-X-ME-Proxy: <xmx:YNKOYJh4n4Wlb1AHB99lw-apBU9ixuxJdDDFSfZrDspww_vvrR3jvQ>
-    <xmx:YNKOYN9UQmys_GFJ6J4n3Cki5LTU3LDW1zY6A0B7SuhIhTCqAUtlxw>
-    <xmx:YNKOYEtBVoyCisR5ognTMEofiQJJnXeUX824xL89Zhylbm_uz3_CnA>
-    <xmx:YNKOYIhbC4X5WgQwFpWiQBJXGQ1ZrJHB-hXMrw8k-Z1VU1NZXEw_cA>
+X-ME-Proxy: <xmx:Y9KOYEX-DbKFC8KjFKoJWZs78nPk0cXckr7E3h6MEQGR8xa5af_QLg>
+    <xmx:Y9KOYIit5uR9M1ftDngLgSo-r__Y-316blLwmRgct6hYbKEgkwpJIw>
+    <xmx:Y9KOYEDXw9tLpIupbzDUpv-FS4Sykfv3KnHwoVKnyhF_zJ2Klp0ztw>
+    <xmx:Y9KOYG0fdCjM5qZCSWX1JigkUQ3V1qctTRz9D9-nK_EOsFUk3v2Ucw>
 Received: from shredder.mellanox.com (unknown [193.47.165.251])
         by mail.messagingengine.com (Postfix) with ESMTPA;
-        Sun,  2 May 2021 12:25:01 -0400 (EDT)
+        Sun,  2 May 2021 12:25:04 -0400 (EDT)
 From:   Ido Schimmel <idosch@idosch.org>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, kuba@kernel.org, dsahern@gmail.com,
         petrm@nvidia.com, roopa@nvidia.com, nikolay@nvidia.com,
         ssuryaextr@gmail.com, mlxsw@nvidia.com,
         Ido Schimmel <idosch@nvidia.com>
-Subject: [RFC PATCH net-next 09/10] selftests: forwarding: Add test for custom multipath hash with IPv4 GRE
-Date:   Sun,  2 May 2021 19:22:56 +0300
-Message-Id: <20210502162257.3472453-10-idosch@idosch.org>
+Subject: [RFC PATCH net-next 10/10] selftests: forwarding: Add test for custom multipath hash with IPv6 GRE
+Date:   Sun,  2 May 2021 19:22:57 +0300
+Message-Id: <20210502162257.3472453-11-idosch@idosch.org>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20210502162257.3472453-1-idosch@idosch.org>
 References: <20210502162257.3472453-1-idosch@idosch.org>
@@ -73,69 +73,69 @@ Each time set a different field and make sure traffic is only
 distributed when the field is changed in the packet stream.
 
 The test only verifies the behavior of IPv4/IPv6 overlays on top of an
-IPv4 underlay network. A subsequent patch will do the same with an IPv6
+IPv6 underlay network. The previous patch verified the same with an IPv4
 underlay network.
 
 Example output:
 
- # ./gre_custom_multipath_hash.sh
+ # ./ip6gre_custom_multipath_hash.sh
  TEST: ping                                                          [ OK ]
  TEST: ping6                                                         [ OK ]
  INFO: Running IPv4 overlay custom multipath hash tests
  TEST: Multipath hash field: Inner source IP (balanced)              [ OK ]
- INFO: Packets sent on path1 / path2: 6601 / 6001
+ INFO: Packets sent on path1 / path2: 6602 / 6002
  TEST: Multipath hash field: Inner source IP (unbalanced)            [ OK ]
- INFO: Packets sent on path1 / path2: 0 / 12600
+ INFO: Packets sent on path1 / path2: 1 / 12601
  TEST: Multipath hash field: Inner destination IP (balanced)         [ OK ]
- INFO: Packets sent on path1 / path2: 6802 / 5802
+ INFO: Packets sent on path1 / path2: 6802 / 5801
  TEST: Multipath hash field: Inner destination IP (unbalanced)       [ OK ]
- INFO: Packets sent on path1 / path2: 12601 / 1
+ INFO: Packets sent on path1 / path2: 12602 / 3
  TEST: Multipath hash field: Inner source port (balanced)            [ OK ]
- INFO: Packets sent on path1 / path2: 16430 / 16344
+ INFO: Packets sent on path1 / path2: 16431 / 16344
  TEST: Multipath hash field: Inner source port (unbalanced)          [ OK ]
- INFO: Packets sent on path1 / path2: 0 / 32772
+ INFO: Packets sent on path1 / path2: 0 / 32773
  TEST: Multipath hash field: Inner destination port (balanced)       [ OK ]
- INFO: Packets sent on path1 / path2: 16430 / 16343
+ INFO: Packets sent on path1 / path2: 16431 / 16344
  TEST: Multipath hash field: Inner destination port (unbalanced)     [ OK ]
- INFO: Packets sent on path1 / path2: 0 / 32772
+ INFO: Packets sent on path1 / path2: 2 / 32772
  INFO: Running IPv6 overlay custom multipath hash tests
  TEST: Multipath hash field: Inner source IP (balanced)              [ OK ]
- INFO: Packets sent on path1 / path2: 6702 / 5900
+ INFO: Packets sent on path1 / path2: 6704 / 5902
  TEST: Multipath hash field: Inner source IP (unbalanced)            [ OK ]
- INFO: Packets sent on path1 / path2: 0 / 12601
+ INFO: Packets sent on path1 / path2: 1 / 12600
  TEST: Multipath hash field: Inner destination IP (balanced)         [ OK ]
- INFO: Packets sent on path1 / path2: 5751 / 6851
+ INFO: Packets sent on path1 / path2: 5751 / 6852
  TEST: Multipath hash field: Inner destination IP (unbalanced)       [ OK ]
- INFO: Packets sent on path1 / path2: 12602 / 1
+ INFO: Packets sent on path1 / path2: 12602 / 0
  TEST: Multipath hash field: Inner flowlabel (balanced)              [ OK ]
- INFO: Packets sent on path1 / path2: 8364 / 8065
+ INFO: Packets sent on path1 / path2: 8272 / 8181
  TEST: Multipath hash field: Inner flowlabel (unbalanced)            [ OK ]
- INFO: Packets sent on path1 / path2: 12601 / 0
+ INFO: Packets sent on path1 / path2: 3 / 12602
  TEST: Multipath hash field: Inner source port (balanced)            [ OK ]
- INFO: Packets sent on path1 / path2: 16425 / 16349
+ INFO: Packets sent on path1 / path2: 16424 / 16351
  TEST: Multipath hash field: Inner source port (unbalanced)          [ OK ]
- INFO: Packets sent on path1 / path2: 1 / 32770
+ INFO: Packets sent on path1 / path2: 3 / 32774
  TEST: Multipath hash field: Inner destination port (balanced)       [ OK ]
- INFO: Packets sent on path1 / path2: 16425 / 16349
+ INFO: Packets sent on path1 / path2: 16425 / 16350
  TEST: Multipath hash field: Inner destination port (unbalanced)     [ OK ]
- INFO: Packets sent on path1 / path2: 2 / 32770
+ INFO: Packets sent on path1 / path2: 2 / 32773
 
 Signed-off-by: Ido Schimmel <idosch@nvidia.com>
 ---
- .../forwarding/gre_custom_multipath_hash.sh   | 456 ++++++++++++++++++
- 1 file changed, 456 insertions(+)
- create mode 100755 tools/testing/selftests/net/forwarding/gre_custom_multipath_hash.sh
+ .../ip6gre_custom_multipath_hash.sh           | 458 ++++++++++++++++++
+ 1 file changed, 458 insertions(+)
+ create mode 100755 tools/testing/selftests/net/forwarding/ip6gre_custom_multipath_hash.sh
 
-diff --git a/tools/testing/selftests/net/forwarding/gre_custom_multipath_hash.sh b/tools/testing/selftests/net/forwarding/gre_custom_multipath_hash.sh
+diff --git a/tools/testing/selftests/net/forwarding/ip6gre_custom_multipath_hash.sh b/tools/testing/selftests/net/forwarding/ip6gre_custom_multipath_hash.sh
 new file mode 100755
-index 000000000000..e381083d8609
+index 000000000000..8436f182d6a6
 --- /dev/null
-+++ b/tools/testing/selftests/net/forwarding/gre_custom_multipath_hash.sh
-@@ -0,0 +1,456 @@
++++ b/tools/testing/selftests/net/forwarding/ip6gre_custom_multipath_hash.sh
+@@ -0,0 +1,458 @@
 +#!/bin/bash
 +# SPDX-License-Identifier: GPL-2.0
 +#
-+# Test traffic distribution when there are multiple paths between an IPv4 GRE
++# Test traffic distribution when there are multiple paths between an IPv6 GRE
 +# tunnel. The tunnel carries IPv4 and IPv6 traffic between multiple hosts.
 +# Multiple routes are in the underlay network. With the default multipath
 +# policy, SW2 will only look at the outer IP addresses, hence only a single
@@ -148,59 +148,59 @@ index 000000000000..e381083d8609
 +# |   2001:db8:1::{2-fd}/64 |      |
 +# +-------------------------|------+
 +#                           |
-+# +-------------------------|------------------+
-+# | SW1                     |                  |
-+# |                    $ol1 +                  |
-+# |         198.51.100.1/24                    |
-+# |        2001:db8:1::1/64                    |
-+# |                                            |
-+# |   + g1 (gre)                               |
-+# |     loc=192.0.2.1                          |
-+# |     rem=192.0.2.2 --.                      |
-+# |     tos=inherit     |                      |
-+# |                     v                      |
-+# |                     + $ul1                 |
-+# |                     | 192.0.2.17/28        |
-+# +---------------------|----------------------+
++# +-------------------------|-------------------+
++# | SW1                     |                   |
++# |                    $ol1 +                   |
++# |         198.51.100.1/24                     |
++# |        2001:db8:1::1/64                     |
++# |                                             |
++# |+ g1 (ip6gre)                                |
++# |  loc=2001:db8:3::1                          |
++# |  rem=2001:db8:3::2 -.                       |
++# |     tos=inherit     |                       |
++# |                     v                       |
++# |                     + $ul1                  |
++# |                     | 2001:db8:10::1/64     |
++# +---------------------|-----------------------+
 +#                       |
-+# +---------------------|----------------------+
-+# | SW2                 |                      |
-+# |               $ul21 +                      |
-+# |       192.0.2.18/28 |                      |
-+# |                     |                      |
-+# !   __________________+___                   |
-+# |  /                      \                  |
-+# |  |                      |                  |
-+# |  + $ul22.111 (vlan)     + $ul22.222 (vlan) |
-+# |  | 192.0.2.33/28        | 192.0.2.49/28    |
-+# |  |                      |                  |
-+# +--|----------------------|------------------+
++# +---------------------|-----------------------+
++# | SW2                 |                       |
++# |               $ul21 +                       |
++# |   2001:db8:10::2/64 |                       |
++# |                     |                       |
++# !   __________________+___                    |
++# |  /                      \                   |
++# |  |                      |                   |
++# |  + $ul22.111 (vlan)     + $ul22.222 (vlan)  |
++# |  | 2001:db8:11::1/64    | 2001:db8:12::1/64 |
++# |  |                      |                   |
++# +--|----------------------|-------------------+
 +#    |                      |
-+# +--|----------------------|------------------+
-+# |  |                      |                  |
-+# |  + $ul32.111 (vlan)     + $ul32.222 (vlan) |
-+# |  | 192.0.2.34/28        | 192.0.2.50/28    |
-+# |  |                      |                  |
-+# |  \__________________+___/                  |
-+# |                     |                      |
-+# |                     |                      |
-+# |               $ul31 +                      |
-+# |       192.0.2.65/28 |                  SW3 |
-+# +---------------------|----------------------+
++# +--|----------------------|-------------------+
++# |  |                      |                   |
++# |  + $ul32.111 (vlan)     + $ul32.222 (vlan)  |
++# |  | 2001:db8:11::2/64    | 2001:db8:12::2/64 |
++# |  |                      |                   |
++# |  \__________________+___/                   |
++# |                     |                       |
++# |                     |                       |
++# |               $ul31 +                       |
++# |   2001:db8:13::1/64 |                   SW3 |
++# +---------------------|-----------------------+
 +#                       |
-+# +---------------------|----------------------+
-+# |                     + $ul4                 |
-+# |                     ^ 192.0.2.66/28        |
-+# |                     |                      |
-+# |   + g2 (gre)        |                      |
-+# |     loc=192.0.2.2   |                      |
-+# |     rem=192.0.2.1 --'                      |
-+# |     tos=inherit                            |
-+# |                                            |
-+# |                    $ol4 +                  |
-+# |          203.0.113.1/24 |                  |
-+# |        2001:db8:2::1/64 |              SW4 |
-+# +-------------------------|------------------+
++# +---------------------|-----------------------+
++# |                     + $ul4                  |
++# |                     ^ 2001:db8:13::2/64     |
++# |                     |                       |
++# |+ g2 (ip6gre)        |                       |
++# |  loc=2001:db8:3::2  |                       |
++# |  rem=2001:db8:3::1 -'                       |
++# |  tos=inherit                                |
++# |                                             |
++# |                    $ol4 +                   |
++# |          203.0.113.1/24 |                   |
++# |        2001:db8:2::1/64 |               SW4 |
++# +-------------------------|-------------------+
 +#                           |
 +# +-------------------------|------+
 +# |                         |      |
@@ -235,11 +235,12 @@ index 000000000000..e381083d8609
 +sw1_create()
 +{
 +	simple_if_init $ol1 198.51.100.1/24 2001:db8:1::1/64
-+	__simple_if_init $ul1 v$ol1 192.0.2.17/28
++	__simple_if_init $ul1 v$ol1 2001:db8:10::1/64
 +
-+	tunnel_create g1 gre 192.0.2.1 192.0.2.2 tos inherit dev v$ol1
-+	__simple_if_init g1 v$ol1 192.0.2.1/32
-+	ip route add vrf v$ol1 192.0.2.2/32 via 192.0.2.18
++	tunnel_create g1 ip6gre 2001:db8:3::1 2001:db8:3::2 tos inherit \
++		dev v$ol1
++	__simple_if_init g1 v$ol1 2001:db8:3::1/128
++	ip route add vrf v$ol1 2001:db8:3::2/128 via 2001:db8:10::2
 +
 +	ip route add vrf v$ol1 203.0.113.0/24 dev g1
 +	ip -6 route add vrf v$ol1 2001:db8:2::/64 dev g1
@@ -250,49 +251,49 @@ index 000000000000..e381083d8609
 +	ip -6 route del vrf v$ol1 2001:db8:2::/64
 +	ip route del vrf v$ol1 203.0.113.0/24
 +
-+	ip route del vrf v$ol1 192.0.2.2/32
-+	__simple_if_fini g1 192.0.2.1/32
++	ip route del vrf v$ol1 2001:db8:3::2/128
++	__simple_if_fini g1 2001:db8:3::1/128
 +	tunnel_destroy g1
 +
-+	__simple_if_fini $ul1 192.0.2.17/28
++	__simple_if_fini $ul1 2001:db8:10::1/64
 +	simple_if_fini $ol1 198.51.100.1/24 2001:db8:1::1/64
 +}
 +
 +sw2_create()
 +{
-+	simple_if_init $ul21 192.0.2.18/28
++	simple_if_init $ul21 2001:db8:10::2/64
 +	__simple_if_init $ul22 v$ul21
-+	vlan_create $ul22 111 v$ul21 192.0.2.33/28
-+	vlan_create $ul22 222 v$ul21 192.0.2.49/28
++	vlan_create $ul22 111 v$ul21 2001:db8:11::1/64
++	vlan_create $ul22 222 v$ul21 2001:db8:12::1/64
 +
-+	ip route add vrf v$ul21 192.0.2.1/32 via 192.0.2.17
-+	ip route add vrf v$ul21 192.0.2.2/32 \
-+	   nexthop via 192.0.2.34 \
-+	   nexthop via 192.0.2.50
++	ip -6 route add vrf v$ul21 2001:db8:3::1/128 via 2001:db8:10::1
++	ip -6 route add vrf v$ul21 2001:db8:3::2/128 \
++	   nexthop via 2001:db8:11::2 \
++	   nexthop via 2001:db8:12::2
 +}
 +
 +sw2_destroy()
 +{
-+	ip route del vrf v$ul21 192.0.2.2/32
-+	ip route del vrf v$ul21 192.0.2.1/32
++	ip -6 route del vrf v$ul21 2001:db8:3::2/128
++	ip -6 route del vrf v$ul21 2001:db8:3::1/128
 +
 +	vlan_destroy $ul22 222
 +	vlan_destroy $ul22 111
 +	__simple_if_fini $ul22
-+	simple_if_fini $ul21 192.0.2.18/28
++	simple_if_fini $ul21 2001:db8:10::2/64
 +}
 +
 +sw3_create()
 +{
-+	simple_if_init $ul31 192.0.2.65/28
++	simple_if_init $ul31 2001:db8:13::1/64
 +	__simple_if_init $ul32 v$ul31
-+	vlan_create $ul32 111 v$ul31 192.0.2.34/28
-+	vlan_create $ul32 222 v$ul31 192.0.2.50/28
++	vlan_create $ul32 111 v$ul31 2001:db8:11::2/64
++	vlan_create $ul32 222 v$ul31 2001:db8:12::2/64
 +
-+	ip route add vrf v$ul31 192.0.2.2/32 via 192.0.2.66
-+	ip route add vrf v$ul31 192.0.2.1/32 \
-+	   nexthop via 192.0.2.33 \
-+	   nexthop via 192.0.2.49
++	ip -6 route add vrf v$ul31 2001:db8:3::2/128 via 2001:db8:13::2
++	ip -6 route add vrf v$ul31 2001:db8:3::1/128 \
++	   nexthop via 2001:db8:11::1 \
++	   nexthop via 2001:db8:12::1
 +
 +	tc qdisc add dev $ul32 clsact
 +	tc filter add dev $ul32 ingress pref 111 prot 802.1Q \
@@ -305,23 +306,24 @@ index 000000000000..e381083d8609
 +{
 +	tc qdisc del dev $ul32 clsact
 +
-+	ip route del vrf v$ul31 192.0.2.1/32
-+	ip route del vrf v$ul31 192.0.2.2/32
++	ip -6 route del vrf v$ul31 2001:db8:3::1/128
++	ip -6 route del vrf v$ul31 2001:db8:3::2/128
 +
 +	vlan_destroy $ul32 222
 +	vlan_destroy $ul32 111
 +	__simple_if_fini $ul32
-+	simple_if_fini $ul31 192.0.2.65/28
++	simple_if_fini $ul31 2001:db8:13::1/64
 +}
 +
 +sw4_create()
 +{
 +	simple_if_init $ol4 203.0.113.1/24 2001:db8:2::1/64
-+	__simple_if_init $ul4 v$ol4 192.0.2.66/28
++	__simple_if_init $ul4 v$ol4 2001:db8:13::2/64
 +
-+	tunnel_create g2 gre 192.0.2.2 192.0.2.1 tos inherit dev v$ol4
-+	__simple_if_init g2 v$ol4 192.0.2.2/32
-+	ip route add vrf v$ol4 192.0.2.1/32 via 192.0.2.65
++	tunnel_create g2 ip6gre 2001:db8:3::2 2001:db8:3::1 tos inherit \
++		dev v$ol4
++	__simple_if_init g2 v$ol4 2001:db8:3::2/128
++	ip -6 route add vrf v$ol4 2001:db8:3::1/128 via 2001:db8:13::1
 +
 +	ip route add vrf v$ol4 198.51.100.0/24 dev g2
 +	ip -6 route add vrf v$ol4 2001:db8:1::/64 dev g2
@@ -332,11 +334,11 @@ index 000000000000..e381083d8609
 +	ip -6 route del vrf v$ol4 2001:db8:1::/64
 +	ip route del vrf v$ol4 198.51.100.0/24
 +
-+	ip route del vrf v$ol4 192.0.2.1/32
-+	__simple_if_fini g2 192.0.2.2/32
++	ip -6 route del vrf v$ol4 2001:db8:3::1/128
++	__simple_if_fini g2 2001:db8:3::2/128
 +	tunnel_destroy g2
 +
-+	__simple_if_fini $ul4 192.0.2.66/28
++	__simple_if_fini $ul4 2001:db8:13::2/64
 +	simple_if_fini $ol4 203.0.113.1/24 2001:db8:2::1/64
 +}
 +
@@ -508,19 +510,19 @@ index 000000000000..e381083d8609
 +	sysctl_set net.ipv4.neigh.default.gc_thresh2 1024
 +	sysctl_set net.ipv4.neigh.default.gc_thresh3 1024
 +
-+	sysctl_set net.ipv4.fib_multipath_hash_fields 6
++	sysctl_set net.ipv6.fib_multipath_hash_fields 6
 +	custom_hash_test "Inner source IP" "balanced" send_src_ipv4
 +	custom_hash_test "Inner source IP" "unbalanced" send_dst_ipv4
 +
-+	sysctl_set net.ipv4.fib_multipath_hash_fields 7
++	sysctl_set net.ipv6.fib_multipath_hash_fields 7
 +	custom_hash_test "Inner destination IP" "balanced" send_dst_ipv4
 +	custom_hash_test "Inner destination IP" "unbalanced" send_src_ipv4
 +
-+	sysctl_set net.ipv4.fib_multipath_hash_fields 10
++	sysctl_set net.ipv6.fib_multipath_hash_fields 10
 +	custom_hash_test "Inner source port" "balanced" send_src_udp4
 +	custom_hash_test "Inner source port" "unbalanced" send_dst_udp4
 +
-+	sysctl_set net.ipv4.fib_multipath_hash_fields 11
++	sysctl_set net.ipv6.fib_multipath_hash_fields 11
 +	custom_hash_test "Inner destination port" "balanced" send_dst_udp4
 +	custom_hash_test "Inner destination port" "unbalanced" send_src_udp4
 +
@@ -539,23 +541,23 @@ index 000000000000..e381083d8609
 +	sysctl_set net.ipv6.neigh.default.gc_thresh2 1024
 +	sysctl_set net.ipv6.neigh.default.gc_thresh3 1024
 +
-+	sysctl_set net.ipv4.fib_multipath_hash_fields 6
++	sysctl_set net.ipv6.fib_multipath_hash_fields 6
 +	custom_hash_test "Inner source IP" "balanced" send_src_ipv6
 +	custom_hash_test "Inner source IP" "unbalanced" send_dst_ipv6
 +
-+	sysctl_set net.ipv4.fib_multipath_hash_fields 7
++	sysctl_set net.ipv6.fib_multipath_hash_fields 7
 +	custom_hash_test "Inner destination IP" "balanced" send_dst_ipv6
 +	custom_hash_test "Inner destination IP" "unbalanced" send_src_ipv6
 +
-+	sysctl_set net.ipv4.fib_multipath_hash_fields 9
++	sysctl_set net.ipv6.fib_multipath_hash_fields 9
 +	custom_hash_test "Inner flowlabel" "balanced" send_flowlabel
 +	custom_hash_test "Inner flowlabel" "unbalanced" send_src_ipv6
 +
-+	sysctl_set net.ipv4.fib_multipath_hash_fields 10
++	sysctl_set net.ipv6.fib_multipath_hash_fields 10
 +	custom_hash_test "Inner source port" "balanced" send_src_udp6
 +	custom_hash_test "Inner source port" "unbalanced" send_dst_udp6
 +
-+	sysctl_set net.ipv4.fib_multipath_hash_fields 11
++	sysctl_set net.ipv6.fib_multipath_hash_fields 11
 +	custom_hash_test "Inner destination port" "balanced" send_dst_udp6
 +	custom_hash_test "Inner destination port" "unbalanced" send_src_udp6
 +
@@ -573,12 +575,12 @@ index 000000000000..e381083d8609
 +	# Each time set a different field and make sure traffic is only
 +	# distributed when the field is changed in the packet stream.
 +
-+	sysctl_set net.ipv4.fib_multipath_hash_policy 3
++	sysctl_set net.ipv6.fib_multipath_hash_policy 3
 +
 +	custom_hash_v4
 +	custom_hash_v6
 +
-+	sysctl_restore net.ipv4.fib_multipath_hash_policy
++	sysctl_restore net.ipv6.fib_multipath_hash_policy
 +}
 +
 +trap cleanup EXIT
