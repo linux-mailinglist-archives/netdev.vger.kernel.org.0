@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1EC26370CCD
-	for <lists+netdev@lfdr.de>; Sun,  2 May 2021 16:10:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 96636370CF6
+	for <lists+netdev@lfdr.de>; Sun,  2 May 2021 16:10:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233570AbhEBOHc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 2 May 2021 10:07:32 -0400
-Received: from mail.kernel.org ([198.145.29.99]:52140 "EHLO mail.kernel.org"
+        id S233788AbhEBOIG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 2 May 2021 10:08:06 -0400
+Received: from mail.kernel.org ([198.145.29.99]:51998 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S233595AbhEBOGu (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 2 May 2021 10:06:50 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 24E8B613D3;
-        Sun,  2 May 2021 14:05:46 +0000 (UTC)
+        id S232724AbhEBOHT (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 2 May 2021 10:07:19 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 73751613F0;
+        Sun,  2 May 2021 14:06:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1619964346;
+        s=k20201202; t=1619964368;
         bh=i6nxWaGnI13Ya4iWXKJbLda0atge26fqRNEacbktChY=;
         h=From:To:Cc:Subject:Date:From;
-        b=gbq8J25jy/bgKRWqPDQ3YZp4QQAbTBdlKszTx+rSTllv5utz7CcXo3OgQ6Q9sHA8O
-         3Qb2i2bUqZrUeisnH4spfLIP6oq6a6ZSwYLpgnPiDm5u9hMFjlMoYTG0VIakl/+S5l
-         c2ICpp444Blwbw5Lztfg4E7f6WwGe7oHbFWxmP2SEmWin1M+BrHzNOKw1wQSLsFxb6
-         NZ68hatevQacr5Zf+tM8n+ME4pl/QjE/C5BwHf0Qkb8Wcmd9E8LTmfFeslEH1UQd9h
-         nzk/oIF9rDAXcWrAnZlBLngVjViDSTjbr2ioeEj1lzsKqGD9ulwVd1p64QWOUnSXrl
-         xTkJQGS6OSx+w==
+        b=qj2103Egyq5iEHEphZvShYxxC2x6xov0VahYi4tBVyW+gjEOdZ+lJ5Dyc6eX2x0qr
+         5Q82Nz9Gydya7o2JInAMDuOCPbAwDBMyMyyOs3kxTNtJ6dujlOBLhsxgPE1z8fJzpB
+         GHhXurSyRgelw5PT+bZIInLXvcGH6GUAzGbNX4rE3QZCzY3w+2eFVtsxfCT+d5Dc1w
+         B8W6hZqs+GPy6jhOVrdKMVDSbE7qgNqkabYDP3mmM3Ap9hLtACY9ehvK1tGH/NO26T
+         xjgKK+60ECQdC2o92n5PpJCpvcNIspgVfDUdWfd4RCXgbOlTX6+VowTR7BQNMVeQWr
+         gv4noZkXUQ2pg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     karthik alapati <mail@karthek.com>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.14 01/16] staging: wimax/i2400m: fix byte-order issue
-Date:   Sun,  2 May 2021 10:05:29 -0400
-Message-Id: <20210502140544.2720138-1-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 4.9 01/12] staging: wimax/i2400m: fix byte-order issue
+Date:   Sun,  2 May 2021 10:05:55 -0400
+Message-Id: <20210502140606.2720323-1-sashal@kernel.org>
 X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
 X-stable: review
