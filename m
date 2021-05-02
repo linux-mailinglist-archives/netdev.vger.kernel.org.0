@@ -2,63 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 26B62370FA0
-	for <lists+netdev@lfdr.de>; Mon,  3 May 2021 01:09:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 66ECA370FA5
+	for <lists+netdev@lfdr.de>; Mon,  3 May 2021 01:10:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232885AbhEBXIr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 2 May 2021 19:08:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46070 "EHLO
+        id S232934AbhEBXIw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 2 May 2021 19:08:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46082 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232598AbhEBXIV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 2 May 2021 19:08:21 -0400
-Received: from mail-ej1-x633.google.com (mail-ej1-x633.google.com [IPv6:2a00:1450:4864:20::633])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D3BDFC06138B;
-        Sun,  2 May 2021 16:07:28 -0700 (PDT)
-Received: by mail-ej1-x633.google.com with SMTP id u21so5161121ejo.13;
-        Sun, 02 May 2021 16:07:28 -0700 (PDT)
+        with ESMTP id S232682AbhEBXIX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 2 May 2021 19:08:23 -0400
+Received: from mail-ej1-x629.google.com (mail-ej1-x629.google.com [IPv6:2a00:1450:4864:20::629])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8D94EC06174A;
+        Sun,  2 May 2021 16:07:30 -0700 (PDT)
+Received: by mail-ej1-x629.google.com with SMTP id b25so5208124eju.5;
+        Sun, 02 May 2021 16:07:30 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=7yfjEimD/alqFUQxL7Bgq063b16AI+9B8ShVavcH1Hc=;
-        b=a/6UaBMkhmwiJFHf9X2E+gio3vBrU0dgkO7yn5mR0pzNV292ogvloz6b0A1qLraHFC
-         N9OpSE6t46kH/sL0Xq+9kEcCvMYUsqbGugVWB5Sm6D5I/o36Az9X8s4xhqZ64+27Hws4
-         ruR9T+jnVbudvZaRpSROT7pkwY5Rfs/FY9Jt/YvmsrOZo9CSOmrPBDupnwdOoGtk6/9O
-         DLeuy9pdJ+fmahhYQAXqn+GI4/Rmu7J2bV4le815GG1csnv78hOBQwGFPGYLVvwB2DYc
-         4VVPIXjJ5CVUEKehUvpS6ioBVmNAYVEMXNQqJMIVz8hWN8nPV0RaIMWpQhyUzbj47wxH
-         BMVA==
+        bh=6S33qsxdfzNRrx5uD8qxn/D0pG+Cha3VUrhtZ9or8eA=;
+        b=GMSR8+IT91Jetc9jxJURyS2Y1Pi+DiRUCKLIv/RIKiopbaBxWxJnyptWU7mxkXsxFq
+         FrAJPAQlrQxqBl7u5oVE9H3dGC2mRlngx+NtgMOgFgbHRb1WuH9oUUbWBSOP+lBYCExE
+         iy4Zwka0zFPUwu7eZB5RXcmIAS1hKfv28U3eI+cTYOOZ1Cz8uc11eoasg1pny9d9DW8f
+         UHYphsL8RdWcS+VxDgZpdOvt1LFRAfdk6Xu5SmsSyp7lQTG+rjlBfIOmiCpuA39ldnoM
+         Qv46NdGn0trY954ptxAoTWQa5TIsmdeh+o1leLp87cYTZj7u94jaXCUNWkKOSvd+EiS9
+         4Nsw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=7yfjEimD/alqFUQxL7Bgq063b16AI+9B8ShVavcH1Hc=;
-        b=NErPumd71vJfbeo7qObN9JKz7S43OrfUxwcmAqOY3A8u0IGnr7ZBVz6/kBmyW0v7E4
-         7/JO6AZvs37bnk443zZPrP2d4mWVZuneHycKkjt8lNjPKHBUn6Js8gom9cCJhUDqO9XY
-         VETqR6Pms/0VF//9HtHwP3ay8he8x7Mxt3l/yiTvpNNrCBdqF0ZUf2rx8M0bsD9rbIag
-         LOA8mNCmpBfKJuqjWiqcwWEJgwRil4R38KZGuZQ4XT6TZrSF0DZqsysXeRYefdSGmyQg
-         RtDZivJQpF7FD4hX7aTT3RNdWnUC0l+rQiT1NWH3wWFN9yCGsNQ+dshMksgSVoNR648u
-         oXRg==
-X-Gm-Message-State: AOAM533b41TlDjssVwpNfD4ucP+XQ6jRXwGsyoaPJ1xEyqz/Qf+U46YM
-        HBuLs2RDGWhYtgQEdu45GVY=
-X-Google-Smtp-Source: ABdhPJzKDAb9QoWIQGTn4G7vYMOskmFuwspJ9SACsUqiY9upYUUWHkHftEdyHUU2WBgwIJ/lfSf4aA==
-X-Received: by 2002:a17:906:a403:: with SMTP id l3mr14474769ejz.251.1619996847562;
-        Sun, 02 May 2021 16:07:27 -0700 (PDT)
+        bh=6S33qsxdfzNRrx5uD8qxn/D0pG+Cha3VUrhtZ9or8eA=;
+        b=SyvswEbv/UqiN4zTfreiCCuyb87bK6FVaLVocyhvbexo5fHoFaFBSb0J6aKJ3smFyL
+         yRmNTmGpZNKjmBBKQKnlWcLtFmmEFRZEyK/chnDZSb1T7G/9vi+tNRH9suO6i+J0tthr
+         TGYYVnF1YMcneYAvJlSU/1vaXkR46T8pZl/S+yKPzrTuqs5jK84dRnA9PLNskvTCsgfP
+         8bB7JJm8PbaGZ4OsIwwhg+xzcd6vH2h3FjHe0rgD7VqHSNXDk9txtBEuYHGaTeB9kNmV
+         HANrXIIa62oq5GVxzBm3M95rxLhkHeqSkhGEVoWkMnPwu4cskogTi69ahbTE/7jRkZRj
+         9q2w==
+X-Gm-Message-State: AOAM531BxJ95Qw6UdRNygmq7FJczOheBq6jo5rB9fUDg6JW/9XhSL5s0
+        itmePJ9cJKq35uG6G8Ji40E=
+X-Google-Smtp-Source: ABdhPJx9KOBGhGLbtuv3/swOFbNxuNnCdUmC/zZOPQWFwhcwpiAZV4wYqcVzl5GN6v1KJUPQtEjJ7w==
+X-Received: by 2002:a17:906:c09:: with SMTP id s9mr14070974ejf.145.1619996849203;
+        Sun, 02 May 2021 16:07:29 -0700 (PDT)
 Received: from Ansuel-xps.localdomain (93-35-189-2.ip56.fastwebnet.it. [93.35.189.2])
-        by smtp.googlemail.com with ESMTPSA id z17sm10003874ejc.69.2021.05.02.16.07.26
+        by smtp.googlemail.com with ESMTPSA id z17sm10003874ejc.69.2021.05.02.16.07.27
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 02 May 2021 16:07:27 -0700 (PDT)
+        Sun, 02 May 2021 16:07:28 -0700 (PDT)
 From:   Ansuel Smith <ansuelsmth@gmail.com>
 To:     Florian Fainelli <f.fainelli@gmail.com>
-Cc:     Ansuel Smith <ansuelsmth@gmail.com>, Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
+Cc:     Ansuel Smith <ansuelsmth@gmail.com>,
+        Nicolas Ferre <nicolas.ferre@microchip.com>,
+        Claudiu Beznea <claudiu.beznea@microchip.com>,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Russell King <linux@armlinux.org.uk>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [RFC PATCH net-next v2 13/17] net: dsa: qca8k: enlarge mdio delay and timeout
-Date:   Mon,  3 May 2021 01:07:05 +0200
-Message-Id: <20210502230710.30676-13-ansuelsmth@gmail.com>
+        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Jose Abreu <joabreu@synopsys.com>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org
+Subject: [RFC PATCH net-next v2 14/17] net: phy: phylink: permit to pass dev_flags to phylink_connect_phy
+Date:   Mon,  3 May 2021 01:07:06 +0200
+Message-Id: <20210502230710.30676-14-ansuelsmth@gmail.com>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20210502230710.30676-1-ansuelsmth@gmail.com>
 References: <20210502230710.30676-1-ansuelsmth@gmail.com>
@@ -68,35 +78,128 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-- Enlarge set page delay to QDSK source
-- Enlarge mdio MASTER timeout busy wait
+Add support for phylink_connect_phy to pass dev_flags to the PHY driver.
+Change any user of phylink_connect_phy to pass 0 as dev_flags by
+default.
 
 Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
 ---
- drivers/net/dsa/qca8k.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/net/ethernet/cadence/macb_main.c          |  2 +-
+ drivers/net/ethernet/stmicro/stmmac/stmmac_main.c |  2 +-
+ drivers/net/phy/phylink.c                         | 12 +++++++-----
+ include/linux/phylink.h                           |  2 +-
+ net/dsa/slave.c                                   |  2 +-
+ 5 files changed, 11 insertions(+), 9 deletions(-)
 
-diff --git a/drivers/net/dsa/qca8k.c b/drivers/net/dsa/qca8k.c
-index 9a1b28bcaff0..7f72504f003a 100644
---- a/drivers/net/dsa/qca8k.c
-+++ b/drivers/net/dsa/qca8k.c
-@@ -140,6 +140,7 @@ qca8k_set_page(struct mii_bus *bus, u16 page)
+diff --git a/drivers/net/ethernet/cadence/macb_main.c b/drivers/net/ethernet/cadence/macb_main.c
+index 0f6a6cb7e98d..459243c08b0c 100644
+--- a/drivers/net/ethernet/cadence/macb_main.c
++++ b/drivers/net/ethernet/cadence/macb_main.c
+@@ -834,7 +834,7 @@ static int macb_phylink_connect(struct macb *bp)
+ 		}
+ 
+ 		/* attach the mac to the phy */
+-		ret = phylink_connect_phy(bp->phylink, phydev);
++		ret = phylink_connect_phy(bp->phylink, phydev, 0);
  	}
  
- 	qca8k_current_page = page;
-+	usleep_range(1000, 2000);
- 	return 0;
+ 	if (ret) {
+diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
+index 4749bd0af160..ece84bb64b37 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
++++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
+@@ -1099,7 +1099,7 @@ static int stmmac_init_phy(struct net_device *dev)
+ 			return -ENODEV;
+ 		}
+ 
+-		ret = phylink_connect_phy(priv->phylink, phydev);
++		ret = phylink_connect_phy(priv->phylink, phydev, 0);
+ 	}
+ 
+ 	phylink_ethtool_get_wol(priv->phylink, &wol);
+diff --git a/drivers/net/phy/phylink.c b/drivers/net/phy/phylink.c
+index dc2800beacc3..95f6a10e90ef 100644
+--- a/drivers/net/phy/phylink.c
++++ b/drivers/net/phy/phylink.c
+@@ -1018,7 +1018,7 @@ static int phylink_bringup_phy(struct phylink *pl, struct phy_device *phy,
  }
  
-@@ -625,7 +626,7 @@ qca8k_mdio_busy_wait(struct qca8k_priv *priv, u32 reg, u32 mask)
+ static int phylink_attach_phy(struct phylink *pl, struct phy_device *phy,
+-			      phy_interface_t interface)
++			      phy_interface_t interface, u32 flags)
+ {
+ 	if (WARN_ON(pl->cfg_link_an_mode == MLO_AN_FIXED ||
+ 		    (pl->cfg_link_an_mode == MLO_AN_INBAND &&
+@@ -1028,13 +1028,14 @@ static int phylink_attach_phy(struct phylink *pl, struct phy_device *phy,
+ 	if (pl->phydev)
+ 		return -EBUSY;
  
- 	qca8k_split_addr(reg, &r1, &r2, &page);
+-	return phy_attach_direct(pl->netdev, phy, 0, interface);
++	return phy_attach_direct(pl->netdev, phy, flags, interface);
+ }
  
--	timeout = jiffies + msecs_to_jiffies(20);
-+	timeout = jiffies + msecs_to_jiffies(2000);
+ /**
+  * phylink_connect_phy() - connect a PHY to the phylink instance
+  * @pl: a pointer to a &struct phylink returned from phylink_create()
+  * @phy: a pointer to a &struct phy_device.
++ * @flags: PHY-specific flags to communicate to the PHY device driver
+  *
+  * Connect @phy to the phylink instance specified by @pl by calling
+  * phy_attach_direct(). Configure the @phy according to the MAC driver's
+@@ -1046,7 +1047,8 @@ static int phylink_attach_phy(struct phylink *pl, struct phy_device *phy,
+  *
+  * Returns 0 on success or a negative errno.
+  */
+-int phylink_connect_phy(struct phylink *pl, struct phy_device *phy)
++int phylink_connect_phy(struct phylink *pl, struct phy_device *phy,
++			u32 flags)
+ {
+ 	int ret;
  
- 	/* loop until the busy flag has cleared */
- 	do {
+@@ -1056,7 +1058,7 @@ int phylink_connect_phy(struct phylink *pl, struct phy_device *phy)
+ 		pl->link_config.interface = pl->link_interface;
+ 	}
+ 
+-	ret = phylink_attach_phy(pl, phy, pl->link_interface);
++	ret = phylink_attach_phy(pl, phy, pl->link_interface, flags);
+ 	if (ret < 0)
+ 		return ret;
+ 
+@@ -2207,7 +2209,7 @@ static int phylink_sfp_connect_phy(void *upstream, struct phy_device *phy)
+ 		return ret;
+ 
+ 	interface = pl->link_config.interface;
+-	ret = phylink_attach_phy(pl, phy, interface);
++	ret = phylink_attach_phy(pl, phy, interface, 0);
+ 	if (ret < 0)
+ 		return ret;
+ 
+diff --git a/include/linux/phylink.h b/include/linux/phylink.h
+index d81a714cfbbd..cd563ba67ca0 100644
+--- a/include/linux/phylink.h
++++ b/include/linux/phylink.h
+@@ -437,7 +437,7 @@ struct phylink *phylink_create(struct phylink_config *, struct fwnode_handle *,
+ void phylink_set_pcs(struct phylink *, struct phylink_pcs *pcs);
+ void phylink_destroy(struct phylink *);
+ 
+-int phylink_connect_phy(struct phylink *, struct phy_device *);
++int phylink_connect_phy(struct phylink *, struct phy_device *, u32 flags);
+ int phylink_of_phy_connect(struct phylink *, struct device_node *, u32 flags);
+ void phylink_disconnect_phy(struct phylink *);
+ 
+diff --git a/net/dsa/slave.c b/net/dsa/slave.c
+index 992fcab4b552..8ecfcb553ac1 100644
+--- a/net/dsa/slave.c
++++ b/net/dsa/slave.c
+@@ -1718,7 +1718,7 @@ static int dsa_slave_phy_connect(struct net_device *slave_dev, int addr)
+ 		return -ENODEV;
+ 	}
+ 
+-	return phylink_connect_phy(dp->pl, slave_dev->phydev);
++	return phylink_connect_phy(dp->pl, slave_dev->phydev, 0);
+ }
+ 
+ static int dsa_slave_phy_setup(struct net_device *slave_dev)
 -- 
 2.30.2
 
