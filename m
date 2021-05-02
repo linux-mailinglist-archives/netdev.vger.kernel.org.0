@@ -2,36 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CBB36370B4A
-	for <lists+netdev@lfdr.de>; Sun,  2 May 2021 13:25:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 15178370B4B
+	for <lists+netdev@lfdr.de>; Sun,  2 May 2021 13:26:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230222AbhEBLZx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 2 May 2021 07:25:53 -0400
-Received: from mx2.suse.de ([195.135.220.15]:41118 "EHLO mx2.suse.de"
+        id S230354AbhEBL1J (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 2 May 2021 07:27:09 -0400
+Received: from mx2.suse.de ([195.135.220.15]:41264 "EHLO mx2.suse.de"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229676AbhEBLZw (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 2 May 2021 07:25:52 -0400
+        id S229988AbhEBL1F (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 2 May 2021 07:27:05 -0400
 X-Virus-Scanned: by amavisd-new at test-mx.suse.de
 Received: from relay2.suse.de (unknown [195.135.221.27])
-        by mx2.suse.de (Postfix) with ESMTP id 95723AE38;
-        Sun,  2 May 2021 11:25:00 +0000 (UTC)
-Subject: Re: [RFC PATCH v4 06/27] qed: Add NVMeTCP Offload IO Level FW
- Initializations
+        by mx2.suse.de (Postfix) with ESMTP id EBD6CAD22;
+        Sun,  2 May 2021 11:26:12 +0000 (UTC)
+Subject: Re: [RFC PATCH v4 07/27] qed: Add IP services APIs support
 To:     Shai Malin <smalin@marvell.com>, netdev@vger.kernel.org,
         linux-nvme@lists.infradead.org, sagi@grimberg.me, hch@lst.de,
         axboe@fb.com, kbusch@kernel.org
 Cc:     "David S . Miller davem @ davemloft . net --cc=Jakub Kicinski" 
         <kuba@kernel.org>, aelior@marvell.com, mkalderon@marvell.com,
-        okulkarni@marvell.com, pkushwaha@marvell.com, malin1024@gmail.com
+        okulkarni@marvell.com, pkushwaha@marvell.com, malin1024@gmail.com,
+        Nikolay Assa <nassa@marvell.com>
 References: <20210429190926.5086-1-smalin@marvell.com>
- <20210429190926.5086-7-smalin@marvell.com>
+ <20210429190926.5086-8-smalin@marvell.com>
 From:   Hannes Reinecke <hare@suse.de>
-Message-ID: <88d052a4-4a91-b5e7-5d53-1fb2a1507909@suse.de>
-Date:   Sun, 2 May 2021 13:24:59 +0200
+Message-ID: <8b17f15c-4776-1744-8183-fb783b7a4c97@suse.de>
+Date:   Sun, 2 May 2021 13:26:11 +0200
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
  Thunderbird/78.8.0
 MIME-Version: 1.0
-In-Reply-To: <20210429190926.5086-7-smalin@marvell.com>
+In-Reply-To: <20210429190926.5086-8-smalin@marvell.com>
 Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Language: en-US
 Content-Transfer-Encoding: 8bit
@@ -40,548 +40,312 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 On 4/29/21 9:09 PM, Shai Malin wrote:
-> This patch introduces the NVMeTCP FW initializations which is used
-> to initialize the IO level configuration into a per IO HW
-> resource ("task") as part of the IO path flow.
+> From: Nikolay Assa <nassa@marvell.com>
 > 
-> This includes:
-> - Write IO FW initialization
-> - Read IO FW initialization.
-> - IC-Req and IC-Resp FW exchange.
-> - FW Cleanup flow (Flush IO).
+> This patch introduces APIs which the NVMeTCP Offload device (qedn)
+> will use through the paired net-device (qede).
+> It includes APIs for:
+> - ipv4/ipv6 routing
+> - get VLAN from net-device
+> - TCP ports reservation
 > 
 > Acked-by: Igor Russkikh <irusskikh@marvell.com>
+> Signed-off-by: Nikolay Assa <nassa@marvell.com>
 > Signed-off-by: Prabhakar Kushwaha <pkushwaha@marvell.com>
 > Signed-off-by: Omkar Kulkarni <okulkarni@marvell.com>
-> Signed-off-by: Shai Malin <smalin@marvell.com>
 > Signed-off-by: Michal Kalderon <mkalderon@marvell.com>
 > Signed-off-by: Ariel Elior <aelior@marvell.com>
+> Signed-off-by: Shai Malin <smalin@marvell.com>
 > ---
->   drivers/net/ethernet/qlogic/qed/Makefile      |   5 +-
->   drivers/net/ethernet/qlogic/qed/qed_nvmetcp.c |   7 +-
->   .../qlogic/qed/qed_nvmetcp_fw_funcs.c         | 372 ++++++++++++++++++
->   .../qlogic/qed/qed_nvmetcp_fw_funcs.h         |  43 ++
->   include/linux/qed/nvmetcp_common.h            |   3 +
->   include/linux/qed/qed_nvmetcp_if.h            |  17 +
->   6 files changed, 445 insertions(+), 2 deletions(-)
->   create mode 100644 drivers/net/ethernet/qlogic/qed/qed_nvmetcp_fw_funcs.c
->   create mode 100644 drivers/net/ethernet/qlogic/qed/qed_nvmetcp_fw_funcs.h
+>   .../qlogic/qed/qed_nvmetcp_ip_services.c      | 239 ++++++++++++++++++
+>   .../linux/qed/qed_nvmetcp_ip_services_if.h    |  29 +++
+>   2 files changed, 268 insertions(+)
+>   create mode 100644 drivers/net/ethernet/qlogic/qed/qed_nvmetcp_ip_services.c
+>   create mode 100644 include/linux/qed/qed_nvmetcp_ip_services_if.h
 > 
-> diff --git a/drivers/net/ethernet/qlogic/qed/Makefile b/drivers/net/ethernet/qlogic/qed/Makefile
-> index 7cb0db67ba5b..0d9c2fe0245d 100644
-> --- a/drivers/net/ethernet/qlogic/qed/Makefile
-> +++ b/drivers/net/ethernet/qlogic/qed/Makefile
-> @@ -28,7 +28,10 @@ qed-$(CONFIG_QED_ISCSI) += qed_iscsi.o
->   qed-$(CONFIG_QED_LL2) += qed_ll2.o
->   qed-$(CONFIG_QED_OOO) += qed_ooo.o
->   
-> -qed-$(CONFIG_QED_NVMETCP) += qed_nvmetcp.o
-> +qed-$(CONFIG_QED_NVMETCP) +=	\
-> +	qed_nvmetcp.o		\
-> +	qed_nvmetcp_fw_funcs.o	\
-> +	qed_nvmetcp_ip_services.o
->   
->   qed-$(CONFIG_QED_RDMA) +=	\
->   	qed_iwarp.o		\
-> diff --git a/drivers/net/ethernet/qlogic/qed/qed_nvmetcp.c b/drivers/net/ethernet/qlogic/qed/qed_nvmetcp.c
-> index 1e2eb6dcbd6e..434363f8b5c0 100644
-> --- a/drivers/net/ethernet/qlogic/qed/qed_nvmetcp.c
-> +++ b/drivers/net/ethernet/qlogic/qed/qed_nvmetcp.c
-> @@ -27,6 +27,7 @@
->   #include "qed_mcp.h"
->   #include "qed_sp.h"
->   #include "qed_reg_addr.h"
-> +#include "qed_nvmetcp_fw_funcs.h"
->   
->   static int qed_nvmetcp_async_event(struct qed_hwfn *p_hwfn, u8 fw_event_code,
->   				   u16 echo, union event_ring_data *data,
-> @@ -848,7 +849,11 @@ static const struct qed_nvmetcp_ops qed_nvmetcp_ops_pass = {
->   	.remove_src_tcp_port_filter = &qed_llh_remove_src_tcp_port_filter,
->   	.add_dst_tcp_port_filter = &qed_llh_add_dst_tcp_port_filter,
->   	.remove_dst_tcp_port_filter = &qed_llh_remove_dst_tcp_port_filter,
-> -	.clear_all_filters = &qed_llh_clear_all_filters
-> +	.clear_all_filters = &qed_llh_clear_all_filters,
-> +	.init_read_io = &init_nvmetcp_host_read_task,
-> +	.init_write_io = &init_nvmetcp_host_write_task,
-> +	.init_icreq_exchange = &init_nvmetcp_init_conn_req_task,
-> +	.init_task_cleanup = &init_cleanup_task_nvmetcp
->   };
->   
->   const struct qed_nvmetcp_ops *qed_get_nvmetcp_ops(void)
-> diff --git a/drivers/net/ethernet/qlogic/qed/qed_nvmetcp_fw_funcs.c b/drivers/net/ethernet/qlogic/qed/qed_nvmetcp_fw_funcs.c
+> diff --git a/drivers/net/ethernet/qlogic/qed/qed_nvmetcp_ip_services.c b/drivers/net/ethernet/qlogic/qed/qed_nvmetcp_ip_services.c
 > new file mode 100644
-> index 000000000000..8485ad678284
+> index 000000000000..2904b1a0830a
 > --- /dev/null
-> +++ b/drivers/net/ethernet/qlogic/qed/qed_nvmetcp_fw_funcs.c
-> @@ -0,0 +1,372 @@
+> +++ b/drivers/net/ethernet/qlogic/qed/qed_nvmetcp_ip_services.c
+> @@ -0,0 +1,239 @@
 > +// SPDX-License-Identifier: (GPL-2.0-only OR BSD-3-Clause)
-> +/* Copyright 2021 Marvell. All rights reserved. */
+> +/*
+> + * Copyright 2021 Marvell. All rights reserved.
+> + */
 > +
-> +#include <linux/kernel.h>
-> +#include <linux/module.h>
-> +#include <linux/pci.h>
-> +#include <linux/kernel.h>
-> +#include <linux/list.h>
-> +#include <linux/mm.h>
 > +#include <linux/types.h>
 > +#include <asm/byteorder.h>
-> +#include <linux/qed/common_hsi.h>
-> +#include <linux/qed/storage_common.h>
-> +#include <linux/qed/nvmetcp_common.h>
-> +#include <linux/qed/qed_nvmetcp_if.h>
-> +#include "qed_nvmetcp_fw_funcs.h"
+> +#include <asm/param.h>
+> +#include <linux/delay.h>
+> +#include <linux/pci.h>
+> +#include <linux/dma-mapping.h>
+> +#include <linux/etherdevice.h>
+> +#include <linux/kernel.h>
+> +#include <linux/stddef.h>
+> +#include <linux/errno.h>
 > +
-> +#define NVMETCP_NUM_SGES_IN_CACHE 0x4
+> +#include <net/tcp.h>
 > +
-> +bool nvmetcp_is_slow_sgl(u16 num_sges, bool small_mid_sge)
+> +#include <linux/qed/qed_nvmetcp_ip_services_if.h>
+> +
+> +#define QED_IP_RESOL_TIMEOUT  4
+> +
+> +int qed_route_ipv4(struct sockaddr_storage *local_addr,
+> +		   struct sockaddr_storage *remote_addr,
+> +		   struct sockaddr *hardware_address,
+> +		   struct net_device **ndev)
 > +{
-> +	return (num_sges > SCSI_NUM_SGES_SLOW_SGL_THR && small_mid_sge);
-> +}
+> +	struct neighbour *neigh = NULL;
+> +	__be32 *loc_ip, *rem_ip;
+> +	struct rtable *rt;
+> +	int rc = -ENXIO;
+> +	int retry;
 > +
-> +void init_scsi_sgl_context(struct scsi_sgl_params *ctx_sgl_params,
-> +			   struct scsi_cached_sges *ctx_data_desc,
-> +			   struct storage_sgl_task_params *sgl_params)
-> +{
-> +	u8 num_sges_to_init = (u8)(sgl_params->num_sges > NVMETCP_NUM_SGES_IN_CACHE ?
-> +				   NVMETCP_NUM_SGES_IN_CACHE : sgl_params->num_sges);
-> +	u8 sge_index;
-> +
-> +	/* sgl params */
-> +	ctx_sgl_params->sgl_addr.lo = cpu_to_le32(sgl_params->sgl_phys_addr.lo);
-> +	ctx_sgl_params->sgl_addr.hi = cpu_to_le32(sgl_params->sgl_phys_addr.hi);
-> +	ctx_sgl_params->sgl_total_length = cpu_to_le32(sgl_params->total_buffer_size);
-> +	ctx_sgl_params->sgl_num_sges = cpu_to_le16(sgl_params->num_sges);
-> +
-> +	for (sge_index = 0; sge_index < num_sges_to_init; sge_index++) {
-> +		ctx_data_desc->sge[sge_index].sge_addr.lo =
-> +			cpu_to_le32(sgl_params->sgl[sge_index].sge_addr.lo);
-> +		ctx_data_desc->sge[sge_index].sge_addr.hi =
-> +			cpu_to_le32(sgl_params->sgl[sge_index].sge_addr.hi);
-> +		ctx_data_desc->sge[sge_index].sge_len =
-> +			cpu_to_le32(sgl_params->sgl[sge_index].sge_len);
+> +	loc_ip = &((struct sockaddr_in *)local_addr)->sin_addr.s_addr;
+> +	rem_ip = &((struct sockaddr_in *)remote_addr)->sin_addr.s_addr;
+> +	*ndev = NULL;
+> +	rt = ip_route_output(&init_net, *rem_ip, *loc_ip, 0/*tos*/, 0/*oif*/);
+> +	if (IS_ERR(rt)) {
+> +		pr_err("lookup route failed\n");
+> +		rc = PTR_ERR(rt);
+> +		goto return_err;
 > +	}
+> +
+> +	neigh = dst_neigh_lookup(&rt->dst, rem_ip);
+> +	if (!neigh) {
+> +		rc = -ENOMEM;
+> +		ip_rt_put(rt);
+> +		goto return_err;
+> +	}
+> +
+> +	*ndev = rt->dst.dev;
+> +	ip_rt_put(rt);
+> +
+> +	/* If not resolved, kick-off state machine towards resolution */
+> +	if (!(neigh->nud_state & NUD_VALID))
+> +		neigh_event_send(neigh, NULL);
+> +
+> +	/* query neighbor until resolved or timeout */
+> +	retry = QED_IP_RESOL_TIMEOUT;
+> +	while (!(neigh->nud_state & NUD_VALID) && retry > 0) {
+> +		msleep(1000);
+> +		retry--;
+> +	}
+> +
+> +	if (neigh->nud_state & NUD_VALID) {
+> +		/* copy resolved MAC address */
+> +		neigh_ha_snapshot(hardware_address->sa_data, neigh, *ndev);
+> +
+> +		hardware_address->sa_family = (*ndev)->type;
+> +		rc = 0;
+> +	}
+> +
+> +	neigh_release(neigh);
+> +	if (!(*loc_ip)) {
+> +		*loc_ip = inet_select_addr(*ndev, *rem_ip, RT_SCOPE_UNIVERSE);
+> +		local_addr->ss_family = AF_INET;
+> +	}
+> +
+> +return_err:
+> +
+> +	return rc;
 > +}
+> +EXPORT_SYMBOL(qed_route_ipv4);
 > +
-> +static inline u32 calc_rw_task_size(struct nvmetcp_task_params *task_params,
-> +				    enum nvmetcp_task_type task_type)
+> +int qed_route_ipv6(struct sockaddr_storage *local_addr,
+> +		   struct sockaddr_storage *remote_addr,
+> +		   struct sockaddr *hardware_address,
+> +		   struct net_device **ndev)
 > +{
-> +	u32 io_size;
+> +	struct neighbour *neigh = NULL;
+> +	struct dst_entry *dst;
+> +	struct flowi6 fl6;
+> +	int rc = -ENXIO;
+> +	int retry;
 > +
-> +	if (task_type == NVMETCP_TASK_TYPE_HOST_WRITE)
-> +		io_size = task_params->tx_io_size;
-> +	else
-> +		io_size = task_params->rx_io_size;
+> +	memset(&fl6, 0, sizeof(fl6));
+> +	fl6.saddr = ((struct sockaddr_in6 *)local_addr)->sin6_addr;
+> +	fl6.daddr = ((struct sockaddr_in6 *)remote_addr)->sin6_addr;
 > +
-> +	if (unlikely(!io_size))
-> +		return 0;
-> +
-> +	return io_size;
-> +}
-> +
-> +static inline void init_sqe(struct nvmetcp_task_params *task_params,
-> +			    struct storage_sgl_task_params *sgl_task_params,
-> +			    enum nvmetcp_task_type task_type)
-> +{
-> +	if (!task_params->sqe)
-> +		return;
-> +
-> +	memset(task_params->sqe, 0, sizeof(*task_params->sqe));
-> +	task_params->sqe->task_id = cpu_to_le16(task_params->itid);
-> +
-> +	switch (task_type) {
-> +	case NVMETCP_TASK_TYPE_HOST_WRITE: {
-> +		u32 buf_size = 0;
-> +		u32 num_sges = 0;
-> +
-> +		SET_FIELD(task_params->sqe->contlen_cdbsize,
-> +			  NVMETCP_WQE_CDB_SIZE_OR_NVMETCP_CMD, 1);
-> +		SET_FIELD(task_params->sqe->flags, NVMETCP_WQE_WQE_TYPE,
-> +			  NVMETCP_WQE_TYPE_NORMAL);
-> +		if (task_params->tx_io_size) {
-> +			if (task_params->send_write_incapsule)
-> +				buf_size = calc_rw_task_size(task_params, task_type);
-> +
-> +			if (nvmetcp_is_slow_sgl(sgl_task_params->num_sges,
-> +						sgl_task_params->small_mid_sge))
-> +				num_sges = NVMETCP_WQE_NUM_SGES_SLOWIO;
-> +			else
-> +				num_sges = min((u16)sgl_task_params->num_sges,
-> +					       (u16)SCSI_NUM_SGES_SLOW_SGL_THR);
+> +	dst = ip6_route_output(&init_net, NULL, &fl6);
+> +	if (!dst || dst->error) {
+> +		if (dst) {
+> +			dst_release(dst);
+> +			pr_err("lookup route failed %d\n", dst->error);
 > +		}
-> +		SET_FIELD(task_params->sqe->flags, NVMETCP_WQE_NUM_SGES, num_sges);
-> +		SET_FIELD(task_params->sqe->contlen_cdbsize, NVMETCP_WQE_CONT_LEN, buf_size);
-> +	} break;
 > +
-> +	case NVMETCP_TASK_TYPE_HOST_READ: {
-> +		SET_FIELD(task_params->sqe->flags, NVMETCP_WQE_WQE_TYPE,
-> +			  NVMETCP_WQE_TYPE_NORMAL);
-> +		SET_FIELD(task_params->sqe->contlen_cdbsize,
-> +			  NVMETCP_WQE_CDB_SIZE_OR_NVMETCP_CMD, 1);
-> +	} break;
+> +		goto out;
+> +	}
 > +
-> +	case NVMETCP_TASK_TYPE_INIT_CONN_REQUEST: {
-> +		SET_FIELD(task_params->sqe->flags, NVMETCP_WQE_WQE_TYPE,
-> +			  NVMETCP_WQE_TYPE_MIDDLE_PATH);
+> +	neigh = dst_neigh_lookup(dst, &fl6.daddr);
+> +	if (neigh) {
+> +		*ndev = ip6_dst_idev(dst)->dev;
 > +
-> +		if (task_params->tx_io_size) {
-> +			SET_FIELD(task_params->sqe->contlen_cdbsize, NVMETCP_WQE_CONT_LEN,
-> +				  task_params->tx_io_size);
-> +			SET_FIELD(task_params->sqe->flags, NVMETCP_WQE_NUM_SGES,
-> +				  min((u16)sgl_task_params->num_sges,
-> +				      (u16)SCSI_NUM_SGES_SLOW_SGL_THR));
+> +		/* If not resolved, kick-off state machine towards resolution */
+> +		if (!(neigh->nud_state & NUD_VALID))
+> +			neigh_event_send(neigh, NULL);
+> +
+> +		/* query neighbor until resolved or timeout */
+> +		retry = QED_IP_RESOL_TIMEOUT;
+> +		while (!(neigh->nud_state & NUD_VALID) && retry > 0) {
+> +			msleep(1000);
+> +			retry--;
 > +		}
-> +	} break;
 > +
-> +	case NVMETCP_TASK_TYPE_CLEANUP:
-> +		SET_FIELD(task_params->sqe->flags, NVMETCP_WQE_WQE_TYPE,
-> +			  NVMETCP_WQE_TYPE_TASK_CLEANUP);
+> +		if (neigh->nud_state & NUD_VALID) {
+> +			neigh_ha_snapshot((u8 *)hardware_address->sa_data, neigh, *ndev);
 > +
-> +	default:
-> +		break;
-> +	}
-> +}
-> +
-> +/* The following function initializes of NVMeTCP task params */
-> +static inline void
-> +init_nvmetcp_task_params(struct e5_nvmetcp_task_context *context,
-> +			 struct nvmetcp_task_params *task_params,
-> +			 enum nvmetcp_task_type task_type)
-> +{
-> +	context->ystorm_st_context.state.cccid = task_params->host_cccid;
-> +	SET_FIELD(context->ustorm_st_context.error_flags, USTORM_NVMETCP_TASK_ST_CTX_NVME_TCP, 1);
-> +	context->ustorm_st_context.nvme_tcp_opaque_lo = cpu_to_le32(task_params->opq.lo);
-> +	context->ustorm_st_context.nvme_tcp_opaque_hi = cpu_to_le32(task_params->opq.hi);
-> +}
-> +
-> +/* The following function initializes default values to all tasks */
-> +static inline void
-> +init_default_nvmetcp_task(struct nvmetcp_task_params *task_params, void *pdu_header,
-> +			  enum nvmetcp_task_type task_type)
-> +{
-> +	struct e5_nvmetcp_task_context *context = task_params->context;
-> +	const u8 val_byte = context->mstorm_ag_context.cdu_validation;
-> +	u8 dw_index;
-> +
-> +	memset(context, 0, sizeof(*context));
-> +
-> +	init_nvmetcp_task_params(context, task_params,
-> +				 (enum nvmetcp_task_type)task_type);
-> +
-> +	if (task_type == NVMETCP_TASK_TYPE_HOST_WRITE ||
-> +	    task_type == NVMETCP_TASK_TYPE_HOST_READ) {
-> +		for (dw_index = 0; dw_index < QED_NVMETCP_CMD_HDR_SIZE / 4; dw_index++)
-> +			context->ystorm_st_context.pdu_hdr.task_hdr.reg[dw_index] =
-> +				cpu_to_le32(((u32 *)pdu_header)[dw_index]);
-> +	} else {
-> +		for (dw_index = 0; dw_index < QED_NVMETCP_CMN_HDR_SIZE / 4; dw_index++)
-> +			context->ystorm_st_context.pdu_hdr.task_hdr.reg[dw_index] =
-> +				cpu_to_le32(((u32 *)pdu_header)[dw_index]);
-> +	}
-> +
-
-And this is what I meant. You are twiddling with the bytes already, so 
-why bother with a separate struct at all?
-
-> +	/* M-Storm Context: */
-> +	context->mstorm_ag_context.cdu_validation = val_byte;
-> +	context->mstorm_st_context.task_type = (u8)(task_type);
-> +	context->mstorm_ag_context.task_cid = cpu_to_le16(task_params->conn_icid);
-> +
-> +	/* Ustorm Context: */
-> +	SET_FIELD(context->ustorm_ag_context.flags1, E5_USTORM_NVMETCP_TASK_AG_CTX_R2T2RECV, 1);
-> +	context->ustorm_st_context.task_type = (u8)(task_type);
-> +	context->ustorm_st_context.cq_rss_number = task_params->cq_rss_number;
-> +	context->ustorm_ag_context.icid = cpu_to_le16(task_params->conn_icid);
-> +}
-> +
-> +/* The following function initializes the U-Storm Task Contexts */
-> +static inline void
-> +init_ustorm_task_contexts(struct ustorm_nvmetcp_task_st_ctx *ustorm_st_context,
-> +			  struct e5_ustorm_nvmetcp_task_ag_ctx *ustorm_ag_context,
-> +			  u32 remaining_recv_len,
-> +			  u32 expected_data_transfer_len, u8 num_sges,
-> +			  bool tx_dif_conn_err_en)
-> +{
-> +	/* Remaining data to be received in bytes. Used in validations*/
-> +	ustorm_st_context->rem_rcv_len = cpu_to_le32(remaining_recv_len);
-> +	ustorm_ag_context->exp_data_acked = cpu_to_le32(expected_data_transfer_len);
-> +	ustorm_st_context->exp_data_transfer_len = cpu_to_le32(expected_data_transfer_len);
-> +	SET_FIELD(ustorm_st_context->reg1.reg1_map, NVMETCP_REG1_NUM_SGES, num_sges);
-> +	SET_FIELD(ustorm_ag_context->flags2, E5_USTORM_NVMETCP_TASK_AG_CTX_DIF_ERROR_CF_EN,
-> +		  tx_dif_conn_err_en ? 1 : 0);
-> +}
-> +
-> +/* The following function initializes Local Completion Contexts: */
-> +static inline void
-> +set_local_completion_context(struct e5_nvmetcp_task_context *context)
-> +{
-> +	SET_FIELD(context->ystorm_st_context.state.flags,
-> +		  YSTORM_NVMETCP_TASK_STATE_LOCAL_COMP, 1);
-> +	SET_FIELD(context->ustorm_st_context.flags,
-> +		  USTORM_NVMETCP_TASK_ST_CTX_LOCAL_COMP, 1);
-> +}
-> +
-> +/* Common Fastpath task init function: */
-> +static inline void
-> +init_rw_nvmetcp_task(struct nvmetcp_task_params *task_params,
-> +		     enum nvmetcp_task_type task_type,
-> +		     struct nvmetcp_conn_params *conn_params, void *pdu_header,
-> +		     struct storage_sgl_task_params *sgl_task_params)
-> +{
-> +	struct e5_nvmetcp_task_context *context = task_params->context;
-> +	u32 task_size = calc_rw_task_size(task_params, task_type);
-> +	u32 exp_data_transfer_len = conn_params->max_burst_length;
-> +	bool slow_io = false;
-> +	u8 num_sges = 0;
-> +
-> +	init_default_nvmetcp_task(task_params, pdu_header, task_type);
-> +
-> +	/* Tx/Rx: */
-> +	if (task_params->tx_io_size) {
-> +		/* if data to transmit: */
-> +		init_scsi_sgl_context(&context->ystorm_st_context.state.sgl_params,
-> +				      &context->ystorm_st_context.state.data_desc,
-> +				      sgl_task_params);
-> +		slow_io = nvmetcp_is_slow_sgl(sgl_task_params->num_sges,
-> +					      sgl_task_params->small_mid_sge);
-> +		num_sges =
-> +			(u8)(!slow_io ? min((u32)sgl_task_params->num_sges,
-> +					    (u32)SCSI_NUM_SGES_SLOW_SGL_THR) :
-> +					    NVMETCP_WQE_NUM_SGES_SLOWIO);
-> +		if (slow_io) {
-> +			SET_FIELD(context->ystorm_st_context.state.flags,
-> +				  YSTORM_NVMETCP_TASK_STATE_SLOW_IO, 1);
+> +			hardware_address->sa_family = (*ndev)->type;
+> +			rc = 0;
 > +		}
-> +	} else if (task_params->rx_io_size) {
-> +		/* if data to receive: */
-> +		init_scsi_sgl_context(&context->mstorm_st_context.sgl_params,
-> +				      &context->mstorm_st_context.data_desc,
-> +				      sgl_task_params);
-> +		num_sges =
-> +			(u8)(!nvmetcp_is_slow_sgl(sgl_task_params->num_sges,
-> +						  sgl_task_params->small_mid_sge) ?
-> +						  min((u32)sgl_task_params->num_sges,
-> +						      (u32)SCSI_NUM_SGES_SLOW_SGL_THR) :
-> +						      NVMETCP_WQE_NUM_SGES_SLOWIO);
-> +		context->mstorm_st_context.rem_task_size = cpu_to_le32(task_size);
+> +
+> +		neigh_release(neigh);
+> +
+> +		if (ipv6_addr_any(&fl6.saddr)) {
+> +			if (ipv6_dev_get_saddr(dev_net(*ndev), *ndev,
+> +					       &fl6.daddr, 0, &fl6.saddr)) {
+> +				pr_err("Unable to find source IP address\n");
+> +				goto out;
+> +			}
+> +
+> +			local_addr->ss_family = AF_INET6;
+> +			((struct sockaddr_in6 *)local_addr)->sin6_addr =
+> +								fl6.saddr;
+> +		}
 > +	}
 > +
-> +	/* Ustorm context: */
-> +	if (exp_data_transfer_len > task_size)
-> +		/* The size of the transmitted task*/
-> +		exp_data_transfer_len = task_size;
-> +	init_ustorm_task_contexts(&context->ustorm_st_context,
-> +				  &context->ustorm_ag_context,
-> +				  /* Remaining Receive length is the Task Size */
-> +				  task_size,
-> +				  /* The size of the transmitted task */
-> +				  exp_data_transfer_len,
-> +				  /* num_sges */
-> +				  num_sges,
-> +				  false);
+> +	dst_release(dst);
 > +
-> +	/* Set exp_data_acked */
-> +	if (task_type == NVMETCP_TASK_TYPE_HOST_WRITE) {
-> +		if (task_params->send_write_incapsule)
-> +			context->ustorm_ag_context.exp_data_acked = task_size;
-> +		else
-> +			context->ustorm_ag_context.exp_data_acked = 0;
-> +	} else if (task_type == NVMETCP_TASK_TYPE_HOST_READ) {
-> +		context->ustorm_ag_context.exp_data_acked = 0;
+> +out:
+> +
+> +	return rc;
+> +}
+> +EXPORT_SYMBOL(qed_route_ipv6);
+> +
+> +void qed_vlan_get_ndev(struct net_device **ndev, u16 *vlan_id)
+> +{
+> +	if (is_vlan_dev(*ndev)) {
+> +		*vlan_id = vlan_dev_vlan_id(*ndev);
+> +		*ndev = vlan_dev_real_dev(*ndev);
+> +	}
+> +}
+> +EXPORT_SYMBOL(qed_vlan_get_ndev);
+> +
+> +struct pci_dev *qed_validate_ndev(struct net_device *ndev)
+> +{
+> +	struct pci_dev *pdev = NULL;
+> +	struct net_device *upper;
+> +
+> +	for_each_pci_dev(pdev) {
+> +		if (pdev && pdev->driver &&
+> +		    !strcmp(pdev->driver->name, "qede")) {
+> +			upper = pci_get_drvdata(pdev);
+> +			if (upper->ifindex == ndev->ifindex)
+> +				return pdev;
+> +		}
 > +	}
 > +
-> +	context->ustorm_ag_context.exp_cont_len = 0;
-> +
-> +	init_sqe(task_params, sgl_task_params, task_type);
+> +	return NULL;
 > +}
+> +EXPORT_SYMBOL(qed_validate_ndev);
 > +
-> +static void
-> +init_common_initiator_read_task(struct nvmetcp_task_params *task_params,
-> +				struct nvmetcp_conn_params *conn_params,
-> +				struct nvmetcp_cmd_capsule_hdr *cmd_pdu_header,
-> +				struct storage_sgl_task_params *sgl_task_params)
+> +__be16 qed_get_in_port(struct sockaddr_storage *sa)
 > +{
-> +	init_rw_nvmetcp_task(task_params, NVMETCP_TASK_TYPE_HOST_READ,
-> +			     conn_params, cmd_pdu_header, sgl_task_params);
+> +	return sa->ss_family == AF_INET
+> +		? ((struct sockaddr_in *)sa)->sin_port
+> +		: ((struct sockaddr_in6 *)sa)->sin6_port;
 > +}
+> +EXPORT_SYMBOL(qed_get_in_port);
 > +
-> +void init_nvmetcp_host_read_task(struct nvmetcp_task_params *task_params,
-> +				 struct nvmetcp_conn_params *conn_params,
-> +				 struct nvmetcp_cmd_capsule_hdr *cmd_pdu_header,
-> +				 struct storage_sgl_task_params *sgl_task_params)
+> +int qed_fetch_tcp_port(struct sockaddr_storage local_ip_addr,
+> +		       struct socket **sock, u16 *port)
 > +{
-> +	init_common_initiator_read_task(task_params, conn_params,
-> +					(void *)cmd_pdu_header, sgl_task_params);
-> +}
+> +	struct sockaddr_storage sa;
+> +	int rc = 0;
 > +
-> +static void
-> +init_common_initiator_write_task(struct nvmetcp_task_params *task_params,
-> +				 struct nvmetcp_conn_params *conn_params,
-> +				 struct nvmetcp_cmd_capsule_hdr *cmd_pdu_header,
-> +				 struct storage_sgl_task_params *sgl_task_params)
+> +	rc = sock_create(local_ip_addr.ss_family, SOCK_STREAM, IPPROTO_TCP, sock);
+> +	if (rc) {
+> +		pr_warn("failed to create socket: %d\n", rc);
+> +		goto err;
+> +	}
+> +
+> +	(*sock)->sk->sk_allocation = GFP_KERNEL;
+> +	sk_set_memalloc((*sock)->sk);
+> +
+> +	rc = kernel_bind(*sock, (struct sockaddr *)&local_ip_addr,
+> +			 sizeof(local_ip_addr));
+> +
+> +	if (rc) {
+> +		pr_warn("failed to bind socket: %d\n", rc);
+> +		goto err_sock;
+> +	}
+> +
+> +	rc = kernel_getsockname(*sock, (struct sockaddr *)&sa);
+> +	if (rc < 0) {
+> +		pr_warn("getsockname() failed: %d\n", rc);
+> +		goto err_sock;
+> +	}
+> +
+> +	*port = ntohs(qed_get_in_port(&sa));
+> +
+> +	return 0;
+> +
+> +err_sock:
+> +	sock_release(*sock);
+> +	sock = NULL;
+> +err:
+> +
+> +	return rc;
+> +}
+> +EXPORT_SYMBOL(qed_fetch_tcp_port);
+> +
+> +void qed_return_tcp_port(struct socket *sock)
 > +{
-> +	init_rw_nvmetcp_task(task_params, NVMETCP_TASK_TYPE_HOST_WRITE,
-> +			     conn_params, cmd_pdu_header, sgl_task_params);
+> +	if (sock && sock->sk) {
+> +		tcp_set_state(sock->sk, TCP_CLOSE);
+> +		sock_release(sock);
+> +	}
 > +}
-> +
-> +void init_nvmetcp_host_write_task(struct nvmetcp_task_params *task_params,
-> +				  struct nvmetcp_conn_params *conn_params,
-> +				  struct nvmetcp_cmd_capsule_hdr *cmd_pdu_header,
-> +				  struct storage_sgl_task_params *sgl_task_params)
-> +{
-> +	init_common_initiator_write_task(task_params, conn_params,
-> +					 (void *)cmd_pdu_header,
-> +					 sgl_task_params);
-> +}
-> +
-> +static void
-> +init_common_login_request_task(struct nvmetcp_task_params *task_params,
-> +			       void *login_req_pdu_header,
-> +			       struct storage_sgl_task_params *tx_sgl_task_params,
-> +			       struct storage_sgl_task_params *rx_sgl_task_params)
-> +{
-> +	struct e5_nvmetcp_task_context *context = task_params->context;
-> +
-> +	init_default_nvmetcp_task(task_params, (void *)login_req_pdu_header,
-> +				  NVMETCP_TASK_TYPE_INIT_CONN_REQUEST);
-> +
-> +	/* Ustorm Context: */
-> +	init_ustorm_task_contexts(&context->ustorm_st_context,
-> +				  &context->ustorm_ag_context,
-> +
-> +				  /* Remaining Receive length is the Task Size */
-> +				  task_params->rx_io_size ?
-> +				  rx_sgl_task_params->total_buffer_size : 0,
-> +
-> +				  /* The size of the transmitted task */
-> +				  task_params->tx_io_size ?
-> +				  tx_sgl_task_params->total_buffer_size : 0,
-> +				  0, /* num_sges */
-> +				  0); /* tx_dif_conn_err_en */
-> +
-> +	/* SGL context: */
-> +	if (task_params->tx_io_size)
-> +		init_scsi_sgl_context(&context->ystorm_st_context.state.sgl_params,
-> +				      &context->ystorm_st_context.state.data_desc,
-> +				      tx_sgl_task_params);
-> +	if (task_params->rx_io_size)
-> +		init_scsi_sgl_context(&context->mstorm_st_context.sgl_params,
-> +				      &context->mstorm_st_context.data_desc,
-> +				      rx_sgl_task_params);
-> +
-> +	context->mstorm_st_context.rem_task_size =
-> +		cpu_to_le32(task_params->rx_io_size ?
-> +				 rx_sgl_task_params->total_buffer_size : 0);
-> +
-> +	init_sqe(task_params, tx_sgl_task_params, NVMETCP_TASK_TYPE_INIT_CONN_REQUEST);
-> +}
-> +
-> +/* The following function initializes Login task in Host mode: */
-> +void init_nvmetcp_init_conn_req_task(struct nvmetcp_task_params *task_params,
-> +				     struct nvmetcp_init_conn_req_hdr *init_conn_req_pdu_hdr,
-> +				     struct storage_sgl_task_params *tx_sgl_task_params,
-> +				     struct storage_sgl_task_params *rx_sgl_task_params)
-> +{
-> +	init_common_login_request_task(task_params, init_conn_req_pdu_hdr,
-> +				       tx_sgl_task_params, rx_sgl_task_params);
-> +}
-> +
-> +void init_cleanup_task_nvmetcp(struct nvmetcp_task_params *task_params)
-> +{
-> +	init_sqe(task_params, NULL, NVMETCP_TASK_TYPE_CLEANUP);
-> +}
-> diff --git a/drivers/net/ethernet/qlogic/qed/qed_nvmetcp_fw_funcs.h b/drivers/net/ethernet/qlogic/qed/qed_nvmetcp_fw_funcs.h
+> +EXPORT_SYMBOL(qed_return_tcp_port);
+> diff --git a/include/linux/qed/qed_nvmetcp_ip_services_if.h b/include/linux/qed/qed_nvmetcp_ip_services_if.h
 > new file mode 100644
-> index 000000000000..3a8c74356c4c
+> index 000000000000..3604aee53796
 > --- /dev/null
-> +++ b/drivers/net/ethernet/qlogic/qed/qed_nvmetcp_fw_funcs.h
-> @@ -0,0 +1,43 @@
+> +++ b/include/linux/qed/qed_nvmetcp_ip_services_if.h
+> @@ -0,0 +1,29 @@
 > +/* SPDX-License-Identifier: (GPL-2.0-only OR BSD-3-Clause) */
-> +/* Copyright 2021 Marvell. All rights reserved. */
+> +/*
+> + * Copyright 2021 Marvell. All rights reserved.
+> + */
 > +
-> +#ifndef _QED_NVMETCP_FW_FUNCS_H
-> +#define _QED_NVMETCP_FW_FUNCS_H
+> +#ifndef _QED_IP_SERVICES_IF_H
+> +#define _QED_IP_SERVICES_IF_H
 > +
-> +#include <linux/kernel.h>
-> +#include <linux/module.h>
-> +#include <linux/pci.h>
-> +#include <linux/kernel.h>
-> +#include <linux/list.h>
-> +#include <linux/mm.h>
 > +#include <linux/types.h>
-> +#include <asm/byteorder.h>
-> +#include <linux/qed/common_hsi.h>
-> +#include <linux/qed/storage_common.h>
-> +#include <linux/qed/nvmetcp_common.h>
-> +#include <linux/qed/qed_nvmetcp_if.h>
+> +#include <net/route.h>
+> +#include <net/ip6_route.h>
+> +#include <linux/inetdevice.h>
 > +
-> +#if IS_ENABLED(CONFIG_QED_NVMETCP)
+> +int qed_route_ipv4(struct sockaddr_storage *local_addr,
+> +		   struct sockaddr_storage *remote_addr,
+> +		   struct sockaddr *hardware_address,
+> +		   struct net_device **ndev);
+> +int qed_route_ipv6(struct sockaddr_storage *local_addr,
+> +		   struct sockaddr_storage *remote_addr,
+> +		   struct sockaddr *hardware_address,
+> +		   struct net_device **ndev);
+> +void qed_vlan_get_ndev(struct net_device **ndev, u16 *vlan_id);
+> +struct pci_dev *qed_validate_ndev(struct net_device *ndev);
+> +void qed_return_tcp_port(struct socket *sock);
+> +int qed_fetch_tcp_port(struct sockaddr_storage local_ip_addr,
+> +		       struct socket **sock, u16 *port);
+> +__be16 qed_get_in_port(struct sockaddr_storage *sa);
 > +
-> +void init_nvmetcp_host_read_task(struct nvmetcp_task_params *task_params,
-> +				 struct nvmetcp_conn_params *conn_params,
-> +				 struct nvmetcp_cmd_capsule_hdr *cmd_pdu_header,
-> +				 struct storage_sgl_task_params *sgl_task_params);
-> +
-> +void init_nvmetcp_host_write_task(struct nvmetcp_task_params *task_params,
-> +				  struct nvmetcp_conn_params *conn_params,
-> +				  struct nvmetcp_cmd_capsule_hdr *cmd_pdu_header,
-> +				  struct storage_sgl_task_params *sgl_task_params);
-> +
-> +void init_nvmetcp_init_conn_req_task(struct nvmetcp_task_params *task_params,
-> +				     struct nvmetcp_init_conn_req_hdr *init_conn_req_pdu_hdr,
-> +				     struct storage_sgl_task_params *tx_sgl_task_params,
-> +				     struct storage_sgl_task_params *rx_sgl_task_params);
-> +
-> +void init_cleanup_task_nvmetcp(struct nvmetcp_task_params *task_params);
-> +
-> +#else /* IS_ENABLED(CONFIG_QED_NVMETCP) */
-> +
-> +#endif /* IS_ENABLED(CONFIG_QED_NVMETCP) */
-> +
-> +#endif /* _QED_NVMETCP_FW_FUNCS_H */
-> diff --git a/include/linux/qed/nvmetcp_common.h b/include/linux/qed/nvmetcp_common.h
-> index dda7a785c321..c0023bb185dd 100644
-> --- a/include/linux/qed/nvmetcp_common.h
-> +++ b/include/linux/qed/nvmetcp_common.h
-> @@ -9,6 +9,9 @@
->   #define NVMETCP_SLOW_PATH_LAYER_CODE (6)
->   #define NVMETCP_WQE_NUM_SGES_SLOWIO (0xf)
->   
-> +#define QED_NVMETCP_CMD_HDR_SIZE 72
-> +#define QED_NVMETCP_CMN_HDR_SIZE 24
-> +
->   /* NVMeTCP firmware function init parameters */
->   struct nvmetcp_spe_func_init {
->   	__le16 half_way_close_timeout;
-> diff --git a/include/linux/qed/qed_nvmetcp_if.h b/include/linux/qed/qed_nvmetcp_if.h
-> index 04e90dc42c12..d971be84f804 100644
-> --- a/include/linux/qed/qed_nvmetcp_if.h
-> +++ b/include/linux/qed/qed_nvmetcp_if.h
-> @@ -220,6 +220,23 @@ struct qed_nvmetcp_ops {
->   	void (*remove_dst_tcp_port_filter)(struct qed_dev *cdev, u16 dest_port);
->   
->   	void (*clear_all_filters)(struct qed_dev *cdev);
-> +
-> +	void (*init_read_io)(struct nvmetcp_task_params *task_params,
-> +			     struct nvmetcp_conn_params *conn_params,
-> +			     struct nvmetcp_cmd_capsule_hdr *cmd_pdu_header,
-> +			     struct storage_sgl_task_params *sgl_task_params);
-> +
-> +	void (*init_write_io)(struct nvmetcp_task_params *task_params,
-> +			      struct nvmetcp_conn_params *conn_params,
-> +			      struct nvmetcp_cmd_capsule_hdr *cmd_pdu_header,
-> +			      struct storage_sgl_task_params *sgl_task_params);
-> +
-> +	void (*init_icreq_exchange)(struct nvmetcp_task_params *task_params,
-> +				    struct nvmetcp_init_conn_req_hdr *init_conn_req_pdu_hdr,
-> +				    struct storage_sgl_task_params *tx_sgl_task_params,
-> +				    struct storage_sgl_task_params *rx_sgl_task_params);
-> +
-> +	void (*init_task_cleanup)(struct nvmetcp_task_params *task_params);
->   };
->   
->   const struct qed_nvmetcp_ops *qed_get_nvmetcp_ops(void);
+> +#endif /* _QED_IP_SERVICES_IF_H */
 > 
+Reviewed-by: Hannes Reinecke <hare@suse.de>
+
 Cheers,
 
 Hannes
