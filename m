@@ -2,67 +2,67 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5153637214E
-	for <lists+netdev@lfdr.de>; Mon,  3 May 2021 22:30:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 971143721B4
+	for <lists+netdev@lfdr.de>; Mon,  3 May 2021 22:40:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229633AbhECUbH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 3 May 2021 16:31:07 -0400
-Received: from mail.kernel.org ([198.145.29.99]:35888 "EHLO mail.kernel.org"
+        id S229835AbhECUlL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 3 May 2021 16:41:11 -0400
+Received: from mail.kernel.org ([198.145.29.99]:46902 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229472AbhECUbD (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 3 May 2021 16:31:03 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id A6DF661208;
-        Mon,  3 May 2021 20:30:09 +0000 (UTC)
+        id S229773AbhECUlE (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 3 May 2021 16:41:04 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPS id 4723361208;
+        Mon,  3 May 2021 20:40:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1620073809;
-        bh=WND7bRnxiucv/kfzIV93/0SYl1x0FDVvOnTtfjsQoPY=;
+        s=k20201202; t=1620074410;
+        bh=2U5ByCSN/QJbDn6BbSQe/eCwcabxI7EWCIWmEPCWY80=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=n9/lP1krF4cC24+y4M7yMb80vssvd+mlgNDZnxmmLP7hJHFDlHAke/IuRd/3KPVV7
-         a8fIUfWJvzn7VfMAL36XpKJqWI9D4KLFxCltpXBJ/vN2vdpa9fKgiwoTatErsyWy6q
-         ypF9Vj/9/mIGNPec/FGXFPQX1Xw1woZmOVLBpJkXnh5y8hUzl9Ui96Iuc/esXYWWsV
-         mfjSDUDiyv+xacnLpLvYhBi17dmhgQCzRTJaDTlv2B7CoeLgMMO+EgFORK84w/x+kA
-         1KGl+0vkyqa1GKeSpLmTsFRpQeLr1XoaHhOQNvXHwpG6snAe1RVdHoveswPeXH6XM0
-         fIi0xBzkGtsHw==
+        b=FeUoPIKZKIMBrZZ5xZv45tUFJOpnmCOVdJKRzTy30eJylwMO1v5lGgfScCs0frU53
+         x91jHYBEshrFRboNksLFKueiwvItoahdQ9QAvp6B/reHd31KlDs4VbIsZXeb254ECX
+         uUwvJJpNGI8cMg+7xBBhRgj1SQHpBCPrM1vhYuZ/sRKlS6pPdoZrKcTQGB+STFK5aq
+         N2Sl6vRPAuU69XT9NrNeMkVNnipGbGHZmRbKyuDtawh8GblX7rt/7xkHOacpvqcJJu
+         pe7WeAKoe2CSL07MgwykhS+52GZw5WB4XW/d6njjPz/G/+jDmj34IedlezMKzbzQwN
+         nP3N4R7ugYaNw==
 Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 9668A60A22;
-        Mon,  3 May 2021 20:30:09 +0000 (UTC)
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 3914560A22;
+        Mon,  3 May 2021 20:40:10 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH v2] ethernet:enic: Fix a use after free bug in
- enic_hard_start_xmit
+Subject: Re: [PATCH net 0/2] sctp: fix the incorrect revert
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <162007380961.28407.4171328445002886340.git-patchwork-notify@kernel.org>
-Date:   Mon, 03 May 2021 20:30:09 +0000
-References: <20210502115818.3523-1-lyl2019@mail.ustc.edu.cn>
-In-Reply-To: <20210502115818.3523-1-lyl2019@mail.ustc.edu.cn>
-To:     Lv Yunlong <lyl2019@mail.ustc.edu.cn>
-Cc:     benve@cisco.com, _govind@gmx.com, davem@davemloft.net,
-        kuba@kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
+Message-Id: <162007441022.32677.15333763026236456281.git-patchwork-notify@kernel.org>
+Date:   Mon, 03 May 2021 20:40:10 +0000
+References: <cover.1619987699.git.lucien.xin@gmail.com>
+In-Reply-To: <cover.1619987699.git.lucien.xin@gmail.com>
+To:     Xin Long <lucien.xin@gmail.com>
+Cc:     netdev@vger.kernel.org, linux-sctp@vger.kernel.org,
+        davem@davemloft.net, kuba@kernel.org, marcelo.leitner@gmail.com,
+        jere.leppanen@nokia.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 Hello:
 
-This patch was applied to netdev/net.git (refs/heads/master):
+This series was applied to netdev/net.git (refs/heads/master):
 
-On Sun,  2 May 2021 04:58:18 -0700 you wrote:
-> In enic_hard_start_xmit, it calls enic_queue_wq_skb(). Inside
-> enic_queue_wq_skb, if some error happens, the skb will be freed
-> by dev_kfree_skb(skb). But the freed skb is still used in
-> skb_tx_timestamp(skb).
+On Mon,  3 May 2021 04:36:57 +0800 you wrote:
+> commit 35b4f24415c8 ("sctp: do asoc update earlier in
+> sctp_sf_do_dupcook_a") only keeps the SHUTDOWN and
+> COOKIE-ACK with the same asoc, not transport.
 > 
-> My patch makes enic_queue_wq_skb() return error and goto spin_unlock()
-> incase of error. The solution is provided by Govind.
-> See https://lkml.org/lkml/2021/4/30/961.
+> So instead of revert commit 145cb2f7177d ("sctp: Fix bundling
+> of SHUTDOWN with COOKIE-ACK"), we should revert 12dfd78e3a74
+> ("sctp: Fix SHUTDOWN CTSN Ack in the peer restart case").
 > 
 > [...]
 
 Here is the summary with links:
-  - [v2] ethernet:enic: Fix a use after free bug in enic_hard_start_xmit
-    https://git.kernel.org/netdev/net/c/643001b47adc
+  - [net,1/2] Revert "Revert "sctp: Fix bundling of SHUTDOWN with COOKIE-ACK""
+    https://git.kernel.org/netdev/net/c/22008f560bd3
+  - [net,2/2] Revert "sctp: Fix SHUTDOWN CTSN Ack in the peer restart case"
+    https://git.kernel.org/netdev/net/c/7aa4e54739be
 
 You are awesome, thank you!
 --
