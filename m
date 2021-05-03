@@ -2,160 +2,124 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7348A371F68
-	for <lists+netdev@lfdr.de>; Mon,  3 May 2021 20:17:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D3CA7371F77
+	for <lists+netdev@lfdr.de>; Mon,  3 May 2021 20:21:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229637AbhECSSF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 3 May 2021 14:18:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44852 "EHLO
+        id S229721AbhECSWK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 3 May 2021 14:22:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45766 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229590AbhECSSE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 3 May 2021 14:18:04 -0400
-Received: from mail-pl1-x636.google.com (mail-pl1-x636.google.com [IPv6:2607:f8b0:4864:20::636])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 14590C061763;
-        Mon,  3 May 2021 11:17:11 -0700 (PDT)
-Received: by mail-pl1-x636.google.com with SMTP id y2so3284124plr.5;
-        Mon, 03 May 2021 11:17:11 -0700 (PDT)
+        with ESMTP id S229712AbhECSWJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 3 May 2021 14:22:09 -0400
+Received: from mail-wr1-x431.google.com (mail-wr1-x431.google.com [IPv6:2a00:1450:4864:20::431])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 74DC0C061761;
+        Mon,  3 May 2021 11:21:13 -0700 (PDT)
+Received: by mail-wr1-x431.google.com with SMTP id d11so6577099wrw.8;
+        Mon, 03 May 2021 11:21:13 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:mime-version:content-disposition
-         :user-agent;
-        bh=ucp+ihN6hQxRjYkxoaafJPKetZ1CYqMAuBiTi7jMjhA=;
-        b=ZhF6lJuzR3JLR458T3ilx06rtxz9gP/PfEMWkwVyR+Qlq2G8G1nCJPiwzReEcA7hBn
-         bD5DwPlpllPWhrV5E9WiUDbOtbXJyM+wnWS3nmQ0/oee7KOtovRCS3XzhziJB8SJNJo7
-         7Or4fifn3qzjSO4qPIRELpdlI/SAblb3kRvQu0SLWMKLw1JE5l71a5mw//VbP30oRnZU
-         JRQ9W5veZn38NoNqDO1Y8JdiW4bIrRiOkuQe4ebM455ukOeAnCzWSZuzthj6E9qiaj5H
-         J6xybguZjLxItAJb7Gfw4ktPozr5n4A+ji0vVyxDIm6r8N2WT4uBR3cnSYoRApizxEln
-         iaCQ==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=JH9uEbFZLY261RSwVYxFlsQtuJncx5cqZ11oI51lAM0=;
+        b=RsH1aj2SWOf7/OWs6Lj6sH6NuMbg63P1+KsTqkyzR1WEWHEMpxniHYsHrBMf4mwO0S
+         aB0cEatMVEkWzFNyCiWSQGetrUetLHNO6RR/K3+JVfZYObmqUE0BBEYnsvCpzUbcHEDP
+         eje01Z1hETfrHhLD/G8M3eclFKeJ5rQ5tULTYcAV309yYrdZRlj99WNZEmWETTs3J1oz
+         yAKOGjFaRC+9HE9Avcs2txy1M7xdI2mNzzMFLNIYEZ9LjTbqasnlV4pfSTQd+s60nq3W
+         HWoQV78p5AsqZ/dQ1L5u313GH94nBiWYZhIAAFX47FDAYShixu6AP6Jvxk9De89/SdY8
+         NkEw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
-         :content-disposition:user-agent;
-        bh=ucp+ihN6hQxRjYkxoaafJPKetZ1CYqMAuBiTi7jMjhA=;
-        b=Te7+HPaDdY61UFNE19aAcNhBEbsOXNNN95OGOsIaA/Mk+NUGTEj6ohuttLUx01pIXv
-         x0JBbenbNyU27eWHzBzOZI8/OZfgiEHuz8qj5uah3BMDrY5IxaB/ozJ2+xM902vksRQ7
-         mcvr6IztLaRa++uoHajS7C5CfhNF+H8hsg0DztwndJncgRoAatEvdSfkMMa2seyD0F7d
-         aSJfv9j4XYrqVySrx4AqNrwqJbO4bL/kLur+7gOLphYUSL8WVKCpPsUlvQFZFuOCpVdL
-         IspDqdKUrQmJH5ZRSJ2b0csY49heZ5oU75mv4YQl31hA3fdd862fwD0uUMkhwExPvr9C
-         bN+g==
-X-Gm-Message-State: AOAM5321jUpYrA6wlm8tqhVTOqaSon5RrIdjldBXv+YCO64pGyOxqP98
-        vFHa/hlfrrm/X8KF1lExa7Y=
-X-Google-Smtp-Source: ABdhPJwo/bOQcrq1AHdmQkPm9m99u5hnC1pnoyiZy0MSQYs45OW7juak/uN7/d2bbcxrzTtlr9PjTw==
-X-Received: by 2002:a17:902:a415:b029:e7:137b:ef9c with SMTP id p21-20020a170902a415b02900e7137bef9cmr21786958plq.28.1620065830593;
-        Mon, 03 May 2021 11:17:10 -0700 (PDT)
-Received: from localhost ([157.45.98.61])
-        by smtp.gmail.com with ESMTPSA id g16sm9954666pfu.45.2021.05.03.11.17.09
-        (version=TLS1_2 cipher=ECDHE-ECDSA-CHACHA20-POLY1305 bits=256/256);
-        Mon, 03 May 2021 11:17:10 -0700 (PDT)
-Date:   Mon, 3 May 2021 23:47:06 +0530
-From:   Shubhankar Kuranagatti <shubhankarvk@gmail.com>
-To:     pshelar@ovn.org
-Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
-        dev@openvswitch.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] net: openswitch: flow_netlink.c: Fix indentation errors
-Message-ID: <20210503181706.vd5onvgptqd7squ2@kewl-virtual-machine>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=JH9uEbFZLY261RSwVYxFlsQtuJncx5cqZ11oI51lAM0=;
+        b=DLsL7qb6kvG04ldRAyzsjQ9AQQDvEmTGeyHkOMKENCfed2PPzk7BJfiEd/sED8LWJS
+         GBBTWUYREZJ93R0V4qzyo16JkT8O245+1j7TPvUeKUHDJB6zLCHPnqzDJ/GdM+cMH2+R
+         FbFFmP65fFH423YkQxye2Gf5B7TVdLWy126GJ+lvcD3zEJuvnaOLRVwpXgWDoMP+zbix
+         y0lGRD/jPWn5ewhcckj0ckdkP6R9Z9b8TwUTB+DszoiuRL5KFbw855HhyQd47gLTJZQX
+         DUlxpzzKVDqktNb4z1uIhUqZTUJ3obqvqq7rdJAbtmbwzUPhHdrF0K/FcWWkxDZQxg9C
+         WVHA==
+X-Gm-Message-State: AOAM533O+V+MQ/ehaiWIPqy9xxqF0AYLHDrETACGg1u6I1laK+c0XXap
+        aRvu6K0mfe6fp2SeH98CLWnL4HNM2TiKz82H39Q=
+X-Google-Smtp-Source: ABdhPJz1nRQ6kJzh7PewOUUDY4/llzeUg1g/85JQFPFE81/cAxRnMCa9uKpEY5nUNYP8vftC4K6q38CMskJBbjTfX2U=
+X-Received: by 2002:adf:dc4f:: with SMTP id m15mr26720403wrj.420.1620066072241;
+ Mon, 03 May 2021 11:21:12 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: NeoMutt/20171215
+References: <20210503102323.17804-1-msuchanek@suse.de>
+In-Reply-To: <20210503102323.17804-1-msuchanek@suse.de>
+From:   Lijun Pan <lijunp213@gmail.com>
+Date:   Mon, 3 May 2021 13:21:00 -0500
+Message-ID: <CAOhMmr701LecfuNM+EozqbiTxFvDiXjFdY2aYeKJYaXq9kqVDg@mail.gmail.com>
+Subject: Re: [PATCH] ibmvnic: remove default label from to_string switch
+To:     Michal Suchanek <msuchanek@suse.de>
+Cc:     netdev@vger.kernel.org, Michael Ellerman <mpe@ellerman.id.au>,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        Paul Mackerras <paulus@samba.org>,
+        Dany Madden <drt@linux.ibm.com>,
+        Sukadev Bhattiprolu <sukadev@linux.ibm.com>,
+        Thomas Falcon <tlfalcon@linux.ibm.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        linuxppc-dev@lists.ozlabs.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Every subsequent line starts with a * of block comment
-The closing */ is shifted to a new line
-New line added after declaration
-The repeasted word 'is' is omitted from comment block
-This is done to maintain code uniformity
+On Mon, May 3, 2021 at 5:54 AM Michal Suchanek <msuchanek@suse.de> wrote:
+>
+> This way the compiler warns when a new value is added to the enum but
+> not the string transation like:
 
-Signed-off-by: Shubhankar Kuranagatti <shubhankarvk@gmail.com>
----
- net/openvswitch/flow_netlink.c | 24 +++++++++++++++---------
- 1 file changed, 15 insertions(+), 9 deletions(-)
+s/transation/translation/
 
-diff --git a/net/openvswitch/flow_netlink.c b/net/openvswitch/flow_netlink.c
-index fd1f809e9bc1..b774d93860ab 100644
---- a/net/openvswitch/flow_netlink.c
-+++ b/net/openvswitch/flow_netlink.c
-@@ -156,7 +156,8 @@ static bool match_validate(const struct sw_flow_match *match,
- 	u64 mask_allowed = key_attrs;  /* At most allow all key attributes */
- 
- 	/* The following mask attributes allowed only if they
--	 * pass the validation tests. */
-+	 * pass the validation tests.
-+	 */
- 	mask_allowed &= ~((1 << OVS_KEY_ATTR_IPV4)
- 			| (1 << OVS_KEY_ATTR_CT_ORIG_TUPLE_IPV4)
- 			| (1 << OVS_KEY_ATTR_IPV6)
-@@ -2019,6 +2020,7 @@ static int __ovs_nla_put_key(const struct sw_flow_key *swkey,
- 				goto nla_put_failure;
- 	} else {
- 		u16 upper_u16;
-+
- 		upper_u16 = !is_mask ? 0 : 0xffff;
- 
- 		if (nla_put_u32(skb, OVS_KEY_ATTR_IN_PORT,
-@@ -2060,11 +2062,11 @@ static int __ovs_nla_put_key(const struct sw_flow_key *swkey,
- 
- 		if (swkey->eth.type == htons(ETH_P_802_2)) {
- 			/*
--			* Ethertype 802.2 is represented in the netlink with omitted
--			* OVS_KEY_ATTR_ETHERTYPE in the flow key attribute, and
--			* 0xffff in the mask attribute.  Ethertype can also
--			* be wildcarded.
--			*/
-+			 * Ethertype 802.2 is represented in the netlink with omitted
-+			 * OVS_KEY_ATTR_ETHERTYPE in the flow key attribute, and
-+			 * 0xffff in the mask attribute.  Ethertype can also
-+			 * be wildcarded.
-+			 */
- 			if (is_mask && output->eth.type)
- 				if (nla_put_be16(skb, OVS_KEY_ATTR_ETHERTYPE,
- 							output->eth.type))
-@@ -2329,7 +2331,8 @@ static void __ovs_nla_free_flow_actions(struct rcu_head *head)
- }
- 
- /* Schedules 'sf_acts' to be freed after the next RCU grace period.
-- * The caller must hold rcu_read_lock for this to be sensible. */
-+ * The caller must hold rcu_read_lock for this to be sensible.
-+ */
- void ovs_nla_free_flow_actions_rcu(struct sw_flow_actions *sf_acts)
- {
- 	call_rcu(&sf_acts->rcu, __ovs_nla_free_flow_actions);
-@@ -2446,6 +2449,7 @@ static int validate_and_copy_sample(struct net *net, const struct nlattr *attr,
- 	memset(attrs, 0, sizeof(attrs));
- 	nla_for_each_nested(a, attr, rem) {
- 		int type = nla_type(a);
-+
- 		if (!type || type > OVS_SAMPLE_ATTR_MAX || attrs[type])
- 			return -EINVAL;
- 		attrs[type] = a;
-@@ -3184,13 +3188,14 @@ static int __ovs_nla_copy_actions(struct net *net, const struct nlattr *attr,
- 
- 		case OVS_ACTION_ATTR_POP_MPLS: {
- 			__be16  proto;
-+
- 			if (vlan_tci & htons(VLAN_CFI_MASK) ||
- 			    !eth_p_mpls(eth_type))
- 				return -EINVAL;
- 
- 			/* Disallow subsequent L2.5+ set actions and mpls_pop
- 			 * actions once the last MPLS label in the packet is
--			 * is popped as there is no check here to ensure that
-+			 * popped as there is no check here to ensure that
- 			 * the new eth type is valid and thus set actions could
- 			 * write off the end of the packet or otherwise corrupt
- 			 * it.
-@@ -3255,7 +3260,8 @@ static int __ovs_nla_copy_actions(struct net *net, const struct nlattr *attr,
- 
- 		case OVS_ACTION_ATTR_PUSH_ETH:
- 			/* Disallow pushing an Ethernet header if one
--			 * is already present */
-+			 * is already present
-+			 */
- 			if (mac_proto != MAC_PROTO_NONE)
- 				return -EINVAL;
- 			mac_proto = MAC_PROTO_ETHERNET;
--- 
-2.17.1
+This trick works.
+Since the original code does not generate gcc warnings/errors, should
+this patch be sent to net-next as an improvement?
 
+>
+> drivers/net/ethernet/ibm/ibmvnic.c: In function 'adapter_state_to_string':
+> drivers/net/ethernet/ibm/ibmvnic.c:832:2: warning: enumeration value 'VNIC_FOOBAR' not handled in switch [-Wswitch]
+>   switch (state) {
+>   ^~~~~~
+> drivers/net/ethernet/ibm/ibmvnic.c: In function 'reset_reason_to_string':
+> drivers/net/ethernet/ibm/ibmvnic.c:1935:2: warning: enumeration value 'VNIC_RESET_FOOBAR' not handled in switch [-Wswitch]
+>   switch (reason) {
+>   ^~~~~~
+>
+> Signed-off-by: Michal Suchanek <msuchanek@suse.de>
+> ---
+
+Acked-by: Lijun Pan <lijunp213@gmail.com>
+
+>  drivers/net/ethernet/ibm/ibmvnic.c | 6 ++----
+>  1 file changed, 2 insertions(+), 4 deletions(-)
+>
+> diff --git a/drivers/net/ethernet/ibm/ibmvnic.c b/drivers/net/ethernet/ibm/ibmvnic.c
+> index 5788bb956d73..4d439413f6d9 100644
+> --- a/drivers/net/ethernet/ibm/ibmvnic.c
+> +++ b/drivers/net/ethernet/ibm/ibmvnic.c
+> @@ -846,9 +846,8 @@ static const char *adapter_state_to_string(enum vnic_state state)
+>                 return "REMOVING";
+>         case VNIC_REMOVED:
+>                 return "REMOVED";
+> -       default:
+> -               return "UNKNOWN";
+>         }
+> +       return "UNKNOWN";
+>  }
+>
+>  static int ibmvnic_login(struct net_device *netdev)
+> @@ -1946,9 +1945,8 @@ static const char *reset_reason_to_string(enum ibmvnic_reset_reason reason)
+>                 return "TIMEOUT";
+>         case VNIC_RESET_CHANGE_PARAM:
+>                 return "CHANGE_PARAM";
+> -       default:
+> -               return "UNKNOWN";
+>         }
+> +       return "UNKNOWN";
+>  }
+>
+>  /*
+> --
+> 2.26.2
+>
