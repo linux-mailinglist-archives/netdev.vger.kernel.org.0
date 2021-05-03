@@ -2,80 +2,129 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E8CD3371DA4
-	for <lists+netdev@lfdr.de>; Mon,  3 May 2021 19:02:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B942A371DA6
+	for <lists+netdev@lfdr.de>; Mon,  3 May 2021 19:02:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233888AbhECRBm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 3 May 2021 13:01:42 -0400
-Received: from mail.kernel.org ([198.145.29.99]:43308 "EHLO mail.kernel.org"
+        id S233993AbhECRBw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 3 May 2021 13:01:52 -0400
+Received: from mx2.suse.de ([195.135.220.15]:46994 "EHLO mx2.suse.de"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S234069AbhECQ5R (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 3 May 2021 12:57:17 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 91E1461176;
-        Mon,  3 May 2021 16:47:37 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1620060464;
-        bh=GJ7TwwZNdhpalyTS0v9ThEIBUeLJlxiXzIDExLIL4Io=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=fP/kEM4vPdbXkP5KGinPqzG+3HwMtnPYhCbeK0uejBILfqskCNQVqMXfND6ZptX0r
-         PY7/l72hEv6AvFotwH1oWthetWLATIXHPeEFl7ejRR/ryhvc7C4NOa8NR0yhK6xoTr
-         llFtXjZCxedI4bBP0SVsHUl1vVAPsklnRFTZz18qTFN3pYnfYwT/lR1xwG7jJCVE0Z
-         MkAuQE61VKXb+3jtEY1/Ma19/MDPjNgKjkSEEoxbGEtoTviLEDtMWiW86sp8RBisZa
-         gtR4sUzOrw6KNDdzRnQusgfYv2rn49Pbgdm6Zd9k3e7voanT3ZCTMegGJOpSmST0XD
-         DD2PKI0g4ZoMg==
-Date:   Mon, 3 May 2021 22:17:32 +0530
-From:   Manivannan Sadhasivam <mani@kernel.org>
-To:     Dan Carpenter <dan.carpenter@oracle.com>
-Cc:     Marc Kleine-Budde <mkl@pengutronix.de>,
-        Thomas Kopp <thomas.kopp@microchip.com>,
-        Wolfgang Grandegger <wg@grandegger.com>,
+        id S234825AbhECQ72 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 3 May 2021 12:59:28 -0400
+X-Virus-Scanned: by amavisd-new at test-mx.suse.de
+Received: from relay2.suse.de (unknown [195.135.221.27])
+        by mx2.suse.de (Postfix) with ESMTP id 7A1B4AEA3;
+        Mon,  3 May 2021 16:58:33 +0000 (UTC)
+Date:   Mon, 3 May 2021 18:58:31 +0200
+From:   Michal =?iso-8859-1?Q?Such=E1nek?= <msuchanek@suse.de>
+To:     Jiri Olsa <jolsa@redhat.com>
+Cc:     Jiri Slaby <jirislaby@kernel.org>, Yonghong Song <yhs@fb.com>,
+        linux-kernel@vger.kernel.org, Martin KaFai Lau <kafai@fb.com>,
         "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, linux-can@vger.kernel.org,
-        netdev@vger.kernel.org, kernel-janitors@vger.kernel.org
-Subject: Re: [PATCH net] can: mcp251xfd: fix an error pointer dereference in
- probe
-Message-ID: <20210503164732.GB3958@thinkpad>
-References: <YJANZf13Qxd5Mhr1@mwanda>
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        David Ahern <dsahern@kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Song Liu <songliubraving@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, Jiri Olsa <jolsa@kernel.org>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        dwarves@vger.kernel.org, Arnaldo Carvalho de Melo <acme@redhat.com>
+Subject: Re: linux-next failing build due to missing cubictcp_state symbol
+Message-ID: <20210503165831.GR15381@kitsune.suse.cz>
+References: <YIbkR6z6mxdNSzGO@krava>
+ <YIcRlHQWWKbOlcXr@krava>
+ <20210427121237.GK6564@kitsune.suse.cz>
+ <20210430174723.GP15381@kitsune.suse.cz>
+ <3d148516-0472-8f0a-085b-94d68c5cc0d5@suse.com>
+ <6c14f3c8-7474-9f3f-b4a6-2966cb19e1ed@kernel.org>
+ <4e051459-8532-7b61-c815-f3435767f8a0@kernel.org>
+ <cbaf50c3-c85d-9239-0b37-c88e8cbed8c8@kernel.org>
+ <YI/LgjLxo9VCN/d+@krava>
+ <20210503164656.GO6564@kitsune.suse.cz>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=iso-8859-1
 Content-Disposition: inline
-In-Reply-To: <YJANZf13Qxd5Mhr1@mwanda>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20210503164656.GO6564@kitsune.suse.cz>
+User-Agent: Mutt/1.11.3 (2019-02-01)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, May 03, 2021 at 05:49:09PM +0300, Dan Carpenter wrote:
-> When we converted this code to use dev_err_probe() we accidentally
-> removed a return.  It means that if devm_clk_get() it will lead to
-> an Oops when we call clk_get_rate() on the next line.
+On Mon, May 03, 2021 at 06:46:56PM +0200, Michal Suchánek wrote:
+> On Mon, May 03, 2021 at 12:08:02PM +0200, Jiri Olsa wrote:
+> > On Mon, May 03, 2021 at 10:59:44AM +0200, Jiri Slaby wrote:
+> > > CCing pahole people.
+> > > 
+> > > On 03. 05. 21, 9:59, Jiri Slaby wrote:
+> > > > On 03. 05. 21, 8:11, Jiri Slaby wrote:
+> > > > > > > > > > looks like vfs_truncate did not get into BTF data,
+> > > > > > > > > > I'll try to reproduce
+> > > > > > 
+> > > > > > _None_ of the functions are generated by pahole -J from
+> > > > > > debuginfo on ppc64. debuginfo appears to be correct. Neither
+> > > > > > pahole -J fs/open.o works correctly. collect_functions in
+> > > > > > dwarves seems to be defunct on ppc64... "functions" array is
+> > > > > > bogus (so find_function -- the bsearch -- fails).
+> > > > > 
+> > > > > It's not that bogus. I forgot an asterisk:
+> > > > > > #0  find_function (btfe=0x100269f80, name=0x10024631c
+> > > > > > "stream_open") at
+> > > > > > /usr/src/debug/dwarves-1.21-1.1.ppc64/btf_encoder.c:350
+> > > > > > (gdb) p (*functions)@84
+> > > > > > $5 = {{name = 0x7ffff68e0922 ".__se_compat_sys_ftruncate", addr
+> > > > > > = 75232, size = 72, sh_addr = 65536, generated = false}, {
+> > > > > >     name = 0x7ffff68e019e ".__se_compat_sys_open", addr = 80592,
+> > > > > > size = 216, sh_addr = 65536, generated = false}, {
+> > > > > >     name = 0x7ffff68e0076 ".__se_compat_sys_openat", addr =
+> > > > > > 80816, size = 232, sh_addr = 65536, generated = false}, {
+> > > > > >     name = 0x7ffff68e0908 ".__se_compat_sys_truncate", addr =
+> > > > > > 74304, size = 100, sh_addr = 65536, generated = false}, {
+> > > > > ...
+> > > > > >     name = 0x7ffff68e0808 ".stream_open", addr = 65824, size =
+> > > > > > 72, sh_addr = 65536, generated = false}, {
+> > > > > ...
+> > > > > >     name = 0x7ffff68e0751 ".vfs_truncate", addr = 73392, size =
+> > > > > > 544, sh_addr = 65536, generated = false}}
+> > > > > 
+> > > > > The dot makes the difference, of course. The question is why is it
+> > > > > there? I keep looking into it. Only if someone has an immediate
+> > > > > idea...
+> > > > 
+> > > > Well, .vfs_truncate is in .text (and contains an ._mcount call). And
+> > > > vfs_truncate is in .opd (w/o an ._mcount call). Since setup_functions
+> > > > excludes all functions without the ._mcount call, is_ftrace_func later
+> > > > returns false for such functions and they are filtered before the BTF
+> > > > processing.
+> > > > 
+> > > > Technically, get_vmlinux_addrs looks at a list of functions between
+> > > > __start_mcount_loc and __stop_mcount_loc and considers only the listed.
+> > > > 
+> > > > I don't know what the correct fix is (exclude .opd functions from the
+> > > > filter?). Neither why cross compiler doesn't fail, nor why ebi v2 avoids
+> > > > this too.
+> > > 
+> > > Attaching a patch for pahole which fixes the issue, but I have no idea
+> > > whether it is the right fix at all.
+> > 
+> > hi,
+> > we're considering to disable ftrace filter completely,
+> > I guess that would solve this issue for ppc as well
+> > 
+> >   https://lore.kernel.org/bpf/20210501001653.x3b4rk4vk4iqv3n7@kafai-mbp.dhcp.thefacebook.com/
+> > 
+> Just disabling the ftrace filter in pahole does not seem to fix it.
 > 
-> Fixes: cf8ee6de2543 ("can: mcp251xfd: mcp251xfd_probe(): use dev_err_probe() to simplify error handling")
-> Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
+> Is there some other place where it should be disabled?
 
-Reviewed-by: Manivannan Sadhasivam <mani@kernel.org>
+Nevermind, purging the system dwarves resolved the problem. Although
+kbuild detects pahole as /usr/local/bin/pahole the system binaries or
+libraries are still used for something.
 
-Thanks,
-Mani
+Thanks
 
-> ---
->  drivers/net/can/spi/mcp251xfd/mcp251xfd-core.c | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
-> 
-> diff --git a/drivers/net/can/spi/mcp251xfd/mcp251xfd-core.c b/drivers/net/can/spi/mcp251xfd/mcp251xfd-core.c
-> index 970dc570e7a5..f122976e90da 100644
-> --- a/drivers/net/can/spi/mcp251xfd/mcp251xfd-core.c
-> +++ b/drivers/net/can/spi/mcp251xfd/mcp251xfd-core.c
-> @@ -2885,8 +2885,8 @@ static int mcp251xfd_probe(struct spi_device *spi)
->  
->  	clk = devm_clk_get(&spi->dev, NULL);
->  	if (IS_ERR(clk))
-> -		dev_err_probe(&spi->dev, PTR_ERR(clk),
-> -			      "Failed to get Oscillator (clock)!\n");
-> +		return dev_err_probe(&spi->dev, PTR_ERR(clk),
-> +				     "Failed to get Oscillator (clock)!\n");
->  	freq = clk_get_rate(clk);
->  
->  	/* Sanity check */
-> -- 
-> 2.30.2
-> 
+Michal
