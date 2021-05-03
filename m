@@ -2,423 +2,769 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3E5E83717A8
-	for <lists+netdev@lfdr.de>; Mon,  3 May 2021 17:14:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1BCC13717CF
+	for <lists+netdev@lfdr.de>; Mon,  3 May 2021 17:23:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230343AbhECPPI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 3 May 2021 11:15:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59572 "EHLO
+        id S230376AbhECPYZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 3 May 2021 11:24:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33466 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230344AbhECPPC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 3 May 2021 11:15:02 -0400
-Received: from mail-ej1-x632.google.com (mail-ej1-x632.google.com [IPv6:2a00:1450:4864:20::632])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B5B8CC061763
-        for <netdev@vger.kernel.org>; Mon,  3 May 2021 08:14:07 -0700 (PDT)
-Received: by mail-ej1-x632.google.com with SMTP id a4so8428415ejk.1
-        for <netdev@vger.kernel.org>; Mon, 03 May 2021 08:14:07 -0700 (PDT)
+        with ESMTP id S230283AbhECPYY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 3 May 2021 11:24:24 -0400
+Received: from mail-ed1-x530.google.com (mail-ed1-x530.google.com [IPv6:2a00:1450:4864:20::530])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B9A9C06174A
+        for <netdev@vger.kernel.org>; Mon,  3 May 2021 08:23:31 -0700 (PDT)
+Received: by mail-ed1-x530.google.com with SMTP id c22so6729060edn.7
+        for <netdev@vger.kernel.org>; Mon, 03 May 2021 08:23:31 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc:content-transfer-encoding;
-        bh=I6Yz0MiB9DqWtAIt8cEZyoWmC3wUfK1gU71tCr+eIA0=;
-        b=OzmNJi8+l2rcCf+QElluUg72elStvTccLVnpGBQzH1y8NmdkrESN9dP7MVyznVMbQg
-         vtKsuw4KNICAujxAzKtkXbwZYbvARXRaS0hqEbW4QnUR1Zk+/MVHGyJmeEM/8yHqOVYk
-         N25Vq/TSePxvxq/J/DwoPwT7TuyiPdBvr3eH6bWr24LZ6NMncy2UzHqroSP2oOSPd5mb
-         xV5Hk0NkJwSyQJeGQoE39rub0wgfPvtOZUBTsVeagsg4as2EcyA9Ei8+e/SsRNOcQ5Jl
-         llWY0ZIEgsc8MS/vJK2z3HMKEJjQ2nRd4Yu7n+Ar7RWpiiMgZAqjyoHZThRWm9cKckCy
-         FHOw==
+        bh=mhiheSMs7OSMvCD1QxQ3wnla1tB2TT653C/4XbpCzMw=;
+        b=Er4WCmw6Q/xDsDR4H0Z3kYrGG1EYTbfNWD1RXnjTZUQlkr8Q+RqEgJBDsiuLbSCBDD
+         cHs0sSEaMTairK5N4rvTURdPmyisQRvEN7u+wJMqQ60bVNcAb6qMMVrzPllGAdEnqPMn
+         PQqjEhLcmQj5VZaqQQMIVN0sW+h/Qpcxmstf1cIW2Vwtsc/evC1nGTztVrGyouhwAJsI
+         /1abWF1cPx3WZ1VFXfvPmSdzSg3xeyOgKIazBZx5FnokJ2eXuxoRA+iffgvvYa5H9rpK
+         I/UdbO5ljZuVYBU61eDNxpS2FfwZR5wVOtoSCNqIwFwsROCjYYo4n/kNX2Q/gNngROEC
+         HjQQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc:content-transfer-encoding;
-        bh=I6Yz0MiB9DqWtAIt8cEZyoWmC3wUfK1gU71tCr+eIA0=;
-        b=ZqoqH/NqKmRYS8WrJPlEZuNOtsFe1RROWO5MmkMaGvIqZ+C0ej0oVmNmDMTqwqBX8G
-         0vHZs4u0qzMT4mQLsUECqAQGx2zw6zg/7gnkl/5afhc7c5esgDMgkQgKSzloTUeik1xR
-         WVIXA1nsataIHm/F1J1tz7BZqWurlfR+4Ht8Aj0Ax7PmFmgP0jFZegC+q/1P6pdhmwWR
-         0Gd7FsHduLYwAXsjleKR62vPY9aePRb5/ifduY4evSR/955pBQ1ccAB5ZN/7km37nnf7
-         BDYicY6c9IJwDO7gi38B3ax0ynpwbt/m3eqCnA3WzmX2oRkKOqtnjdBHsK2PcXkOt7TU
-         Ib3Q==
-X-Gm-Message-State: AOAM530WDJhNZnb0HRiW5Cagt90y4IN9G5r+n+jEhi6ioIlh5Nl5U0SO
-        xE04AyDvjiyF6hgpxdKZLx+6TzTIPGKnM90TvD4=
-X-Google-Smtp-Source: ABdhPJw43atncMZl7sdrEzoIxV5A3MS77bhKRpE9ny+kn5VRjCyI+1T17u81SfHRsqu3WlWwoDaJU83gTtCQzX4iHRk=
-X-Received: by 2002:a17:906:4c5a:: with SMTP id d26mr17122437ejw.353.1620054846176;
- Mon, 03 May 2021 08:14:06 -0700 (PDT)
+        bh=mhiheSMs7OSMvCD1QxQ3wnla1tB2TT653C/4XbpCzMw=;
+        b=RQTibk2oGwpDzX4wsCygp9Y6drhpvIvkiNpj/laMGF7Ttfng50AEoTLJ4l1eP4TOxC
+         CsEX0gI/4F3ZJ3D0oxkAIL2JVeW445+M9ESTny5ZIHOV2kokvKt/3a5yQF1EQ2zhmSYC
+         CNelM6DOYaeuhADowJA5TKld7gYXWqYMUvhLBqd6Tgz5m3fDmjcJS0yP48kjDRp6FrDs
+         wGJBjc4+BuZ39VabNCZJbjiZC5vlenzVC5F0h7bzWhjdd7AJrVUxmXfxaALY1hVdUnNY
+         iAM88Y/d+1EJ8gtbs+9lT9rvI7RQHqFV4E14vWhZ7QRaXVpp9ILItEQFXWlfIBK6xaDw
+         qyQg==
+X-Gm-Message-State: AOAM532ir4bMKP3lZUIoT9ewFQQF/RoQDl9sJIm33+IcarZeoCUwpcay
+        5DgQU4H4nRgA9m39d1B4skmBsMJaMIAcT1PveWAR+0d1xms=
+X-Google-Smtp-Source: ABdhPJyOu5sZ+Qm1u8BtQLfUf8wjc0dQSEaDhHZoqeKR93QrBlwfFTdD8igxwlyunpItD3qPZB0LDDJ4SxWso+yJEt8=
+X-Received: by 2002:a05:6402:138f:: with SMTP id b15mr20611085edv.121.1620055409569;
+ Mon, 03 May 2021 08:23:29 -0700 (PDT)
 MIME-Version: 1.0
-References: <20210429190926.5086-1-smalin@marvell.com> <abf99c45-c896-b135-56c5-601e7e6ffa61@suse.de>
-In-Reply-To: <abf99c45-c896-b135-56c5-601e7e6ffa61@suse.de>
+References: <20210429190926.5086-1-smalin@marvell.com> <20210429190926.5086-2-smalin@marvell.com>
+ <64cf4404-31a1-2979-0745-dfa0636a7d1a@suse.de>
+In-Reply-To: <64cf4404-31a1-2979-0745-dfa0636a7d1a@suse.de>
 From:   Shai Malin <malin1024@gmail.com>
-Date:   Mon, 3 May 2021 18:13:54 +0300
-Message-ID: <CAKKgK4wp4ps2Qk6_aFhw3VZYU7oEPf-y5iOZQ8g7ELbhFFajBg@mail.gmail.com>
-Subject: Re: [RFC PATCH v4 00/27] NVMeTCP Offload ULP and QEDN Device Driver
+Date:   Mon, 3 May 2021 18:23:18 +0300
+Message-ID: <CAKKgK4ztZYfUtaKp9-MRqdJzDf571AqxD9RgPSdtBkZ0G-mzog@mail.gmail.com>
+Subject: Re: [RFC PATCH v4 01/27] qed: Add NVMeTCP Offload PF Level FW and HW HSI
 To:     Hannes Reinecke <hare@suse.de>
 Cc:     Shai Malin <smalin@marvell.com>, netdev@vger.kernel.org,
         linux-nvme@lists.infradead.org, davem@davemloft.net,
         kuba@kernel.org, sagi@grimberg.me, hch@lst.de, axboe@fb.com,
         kbusch@kernel.org, Ariel Elior <aelior@marvell.com>,
         Michal Kalderon <mkalderon@marvell.com>, okulkarni@marvell.com,
-        pkushwaha@marvell.com
+        pkushwaha@marvell.com, Dean Balandin <dbalandin@marvell.com>
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 5/1/21 7:47 PM, Hannes Reinecke wrote:
-> On 4/29/21 9:08 PM, Shai Malin wrote:
-> > With the goal of enabling a generic infrastructure that allows NVMe/TCP
-> > offload devices like NICs to seamlessly plug into the NVMe-oF stack, th=
-is
-> > patch series introduces the nvme-tcp-offload ULP host layer, which will
-> > be a new transport type called "tcp-offload" and will serve as an
-> > abstraction layer to work with vendor specific nvme-tcp offload drivers=
-.
+On 5/1/21 7:50 PM, Hannes Reinecke wrote:
+> On 4/29/21 9:09 PM, Shai Malin wrote:
+> > This patch introduces the NVMeTCP device and PF level HSI and HSI
+> > functionality in order to initialize and interact with the HW device.
 > >
-> > NVMeTCP offload is a full offload of the NVMeTCP protocol, this include=
-s
-> > both the TCP level and the NVMeTCP level.
+> > This patch is based on the qede, qedr, qedi, qedf drivers HSI.
 > >
-> > The nvme-tcp-offload transport can co-exist with the existing tcp and
-> > other transports. The tcp offload was designed so that stack changes ar=
-e
-> > kept to a bare minimum: only registering new transports.
-> > All other APIs, ops etc. are identical to the regular tcp transport.
-> > Representing the TCP offload as a new transport allows clear and manage=
-able
-> > differentiation between the connections which should use the offload pa=
-th
-> > and those that are not offloaded (even on the same device).
-> >
-> >
-> > The nvme-tcp-offload layers and API compared to nvme-tcp and nvme-rdma:
-> >
-> > * NVMe layer: *
-> >
-> >         [ nvme/nvme-fabrics/blk-mq ]
-> >               |
-> >          (nvme API and blk-mq API)
-> >               |
-> >               |
-> > * Vendor agnostic transport layer: *
-> >
-> >        [ nvme-rdma ] [ nvme-tcp ] [ nvme-tcp-offload ]
-> >               |        |             |
-> >             (Verbs)
-> >               |        |             |
-> >               |     (Socket)
-> >               |        |             |
-> >               |        |        (nvme-tcp-offload API)
-> >               |        |             |
-> >               |        |             |
-> > * Vendor Specific Driver: *
-> >
-> >               |        |             |
-> >             [ qedr ]
-> >                        |             |
-> >                     [ qede ]
-> >                                      |
-> >                                    [ qedn ]
-> >
-> >
-> > Performance:
-> > =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
-> > With this implementation on top of the Marvell qedn driver (using the
-> > Marvell FastLinQ NIC), we were able to demonstrate the following CPU
-> > utilization improvement:
-> >
-> > On AMD EPYC 7402, 2.80GHz, 28 cores:
-> > - For 16K queued read IOs, 16jobs, 4qd (50Gbps line rate):
-> >    Improved the CPU utilization from 15.1% with NVMeTCP SW to 4.7% with
-> >    NVMeTCP offload.
-> >
-> > On Intel(R) Xeon(R) Gold 5122 CPU, 3.60GHz, 16 cores:
-> > - For 512K queued read IOs, 16jobs, 4qd (25Gbps line rate):
-> >    Improved the CPU utilization from 16.3% with NVMeTCP SW to 1.1% with
-> >    NVMeTCP offload.
-> >
-> > In addition, we were able to demonstrate the following latency improvem=
-ent:
-> > - For 200K read IOPS (16 jobs, 16 qd, with fio rate limiter):
-> >    Improved the average latency from 105 usec with NVMeTCP SW to 39 use=
-c
-> >    with NVMeTCP offload.
-> >
-> >    Improved the 99.99 tail latency from 570 usec with NVMeTCP SW to 91 =
-usec
-> >    with NVMeTCP offload.
-> >
-> > The end-to-end offload latency was measured from fio while running agai=
-nst
-> > back end of null device.
-> >
-> >
-> > Upstream plan:
-> > =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
-> > Following this RFC, the series will be sent in a modular way so that ch=
-anges
-> > in each part will not impact the previous part.
-> >
-> > - Part 1 (Patches 1-7):
-> >    The qed infrastructure, will be sent to 'netdev@vger.kernel.org'.
-> >
-> > - Part 2 (Patch 8-15):
-> >    The nvme-tcp-offload patches, will be sent to
-> >    'linux-nvme@lists.infradead.org'.
-> >
-> > - Part 3 (Packet 16-27):
-> >    The qedn patches, will be sent to 'linux-nvme@lists.infradead.org'.
-> >
-> >
-> > Queue Initialization Design:
-> > =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D
-> > The nvme-tcp-offload ULP module shall register with the existing
-> > nvmf_transport_ops (.name =3D "tcp_offload"), nvme_ctrl_ops and blk_mq_=
-ops.
-> > The nvme-tcp-offload vendor driver shall register to nvme-tcp-offload U=
-LP
-> > with the following ops:
-> > - claim_dev() - in order to resolve the route to the target according t=
-o
-> >                  the paired net_dev.
-> > - create_queue() - in order to create offloaded nvme-tcp queue.
-> >
-> > The nvme-tcp-offload ULP module shall manage all the controller level
-> > functionalities, call claim_dev and based on the return values shall ca=
-ll
-> > the relevant module create_queue in order to create the admin queue and
-> > the IO queues.
-> >
-> >
-> > IO-path Design:
-> > =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
-> > The nvme-tcp-offload shall work at the IO-level - the nvme-tcp-offload
-> > ULP module shall pass the request (the IO) to the nvme-tcp-offload vend=
-or
-> > driver and later, the nvme-tcp-offload vendor driver returns the reques=
-t
-> > completion (the IO completion).
-> > No additional handling is needed in between; this design will reduce th=
-e
-> > CPU utilization as we will describe below.
-> >
-> > The nvme-tcp-offload vendor driver shall register to nvme-tcp-offload U=
-LP
-> > with the following IO-path ops:
-> > - init_req()
-> > - send_req() - in order to pass the request to the handling of the
-> >                 offload driver that shall pass it to the vendor specifi=
-c device.
-> > - poll_queue()
-> >
-> > Once the IO completes, the nvme-tcp-offload vendor driver shall call
-> > command.done() that will invoke the nvme-tcp-offload ULP layer to
-> > complete the request.
-> >
-> >
-> > TCP events:
-> > =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
-> > The Marvell FastLinQ NIC HW engine handle all the TCP re-transmissions
-> > and OOO events.
-> >
-> >
-> > Teardown and errors:
-> > =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
-> > In case of NVMeTCP queue error the nvme-tcp-offload vendor driver shall
-> > call the nvme_tcp_ofld_report_queue_err.
-> > The nvme-tcp-offload vendor driver shall register to nvme-tcp-offload U=
-LP
-> > with the following teardown ops:
-> > - drain_queue()
-> > - destroy_queue()
-> >
-> >
-> > The Marvell FastLinQ NIC HW engine:
-> > =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
-> > The Marvell NIC HW engine is capable of offloading the entire TCP/IP
-> > stack and managing up to 64K connections per PF, already implemented an=
-d
-> > upstream use cases for this include iWARP (by the Marvell qedr driver)
-> > and iSCSI (by the Marvell qedi driver).
-> > In addition, the Marvell NIC HW engine offloads the NVMeTCP queue layer
-> > and is able to manage the IO level also in case of TCP re-transmissions
-> > and OOO events.
-> > The HW engine enables direct data placement (including the data digest =
-CRC
-> > calculation and validation) and direct data transmission (including dat=
-a
-> > digest CRC calculation).
-> >
-> >
-> > The Marvell qedn driver:
-> > =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D
-> > The new driver will be added under "drivers/nvme/hw" and will be enable=
-d
-> > by the Kconfig "Marvell NVM Express over Fabrics TCP offload".
-> > As part of the qedn init, the driver will register as a pci device driv=
-er
-> > and will work with the Marvell fastlinQ NIC.
-> > As part of the probe, the driver will register to the nvme_tcp_offload
-> > (ULP) and to the qed module (qed_nvmetcp_ops) - similar to other
-> > "qed_*_ops" which are used by the qede, qedr, qedf and qedi device
-> > drivers.
-> >
-> >
-> > QEDN Future work:
-> > =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
-> > - Support extended HW resources.
-> > - Digest support.
-> > - Devlink support for device configuration and TCP offload configuratio=
-ns.
-> > - Statistics
-> >
-> >
-> > Long term future work:
-> > =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
-> > - The nvme-tcp-offload ULP target abstraction layer.
-> > - The Marvell nvme-tcp-offload "qednt" target driver.
-> >
-> >
-> > Changes since RFC v1:
-> > =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
-> > - Fix nvme_tcp_ofld_ops return values.
-> > - Remove NVMF_TRTYPE_TCP_OFFLOAD.
-> > - Add nvme_tcp_ofld_poll() implementation.
-> > - Fix nvme_tcp_ofld_queue_rq() to check map_sg() and send_req() return
-> >    values.
-> >
-> > Changes since RFC v2:
-> > =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
-> > - Add qedn - Marvell's NVMeTCP HW offload vendor driver init and probe
-> >    (patches 8-11).
-> > - Fixes in controller and queue level (patches 3-6).
-> >
-> > Changes since RFC v3:
-> > =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
-> > - Add the full implementation of the nvme-tcp-offload layer including t=
-he
-> >    new ops: setup_ctrl(), release_ctrl(), commit_rqs() and new flows (A=
-SYNC
-> >    and timeout).
-> > - Add nvme-tcp-offload device maximums: max_hw_sectors, max_segments.
-> > - Add nvme-tcp-offload layer design and optimization changes.
-> > - Add the qedn full implementation for the conn level, IO path and erro=
-r
-> >    handling.
-> > - Add qed support for the new AHP HW.
-> >
-> >
-> > Arie Gershberg (3):
-> >    nvme-fabrics: Move NVMF_ALLOWED_OPTS and NVMF_REQUIRED_OPTS
-> >      definitions
-> >    nvme-tcp-offload: Add controller level implementation
-> >    nvme-tcp-offload: Add controller level error recovery implementation
-> >
-> > Dean Balandin (3):
-> >    nvme-tcp-offload: Add device scan implementation
-> >    nvme-tcp-offload: Add queue level implementation
-> >    nvme-tcp-offload: Add IO level implementation
-> >
-> > Nikolay Assa (2):
-> >    qed: Add IP services APIs support
-> >    qedn: Add qedn_claim_dev API support
-> >
-> > Omkar Kulkarni (1):
-> >    qed: Add qed-NVMeTCP personality
-> >
-> > Prabhakar Kushwaha (6):
-> >    qed: Add support of HW filter block
-> >    qedn: Add connection-level slowpath functionality
-> >    qedn: Add support of configuring HW filter block
-> >    qedn: Add support of Task and SGL
-> >    qedn: Add support of NVME ICReq & ICResp
-> >    qedn: Add support of ASYNC
-> >
-> > Shai Malin (12):
-> >    qed: Add NVMeTCP Offload PF Level FW and HW HSI
-> >    qed: Add NVMeTCP Offload Connection Level FW and HW HSI
-> >    qed: Add NVMeTCP Offload IO Level FW and HW HSI
-> >    qed: Add NVMeTCP Offload IO Level FW Initializations
-> >    nvme-tcp-offload: Add nvme-tcp-offload - NVMeTCP HW offload ULP
-> >    nvme-tcp-offload: Add Timeout and ASYNC Support
-> >    qedn: Add qedn - Marvell's NVMeTCP HW offload vendor driver
-> >    qedn: Add qedn probe
-> >    qedn: Add IRQ and fast-path resources initializations
-> >    qedn: Add IO level nvme_req and fw_cq workqueues
-> >    qedn: Add IO level fastpath functionality
-> >    qedn: Add Connection and IO level recovery flows
-> >
-> >   MAINTAINERS                                   |   10 +
-> >   drivers/net/ethernet/qlogic/Kconfig           |    3 +
-> >   drivers/net/ethernet/qlogic/qed/Makefile      |    5 +
-> >   drivers/net/ethernet/qlogic/qed/qed.h         |   16 +
-> >   drivers/net/ethernet/qlogic/qed/qed_cxt.c     |   32 +
-> >   drivers/net/ethernet/qlogic/qed/qed_cxt.h     |    1 +
-> >   drivers/net/ethernet/qlogic/qed/qed_dev.c     |  151 +-
-> >   drivers/net/ethernet/qlogic/qed/qed_hsi.h     |    4 +-
-> >   drivers/net/ethernet/qlogic/qed/qed_ll2.c     |   31 +-
-> >   drivers/net/ethernet/qlogic/qed/qed_mcp.c     |    3 +
-> >   drivers/net/ethernet/qlogic/qed/qed_mng_tlv.c |    3 +-
-> >   drivers/net/ethernet/qlogic/qed/qed_nvmetcp.c |  868 +++++++++++
-> >   drivers/net/ethernet/qlogic/qed/qed_nvmetcp.h |  114 ++
-> >   .../qlogic/qed/qed_nvmetcp_fw_funcs.c         |  372 +++++
-> >   .../qlogic/qed/qed_nvmetcp_fw_funcs.h         |   43 +
-> >   .../qlogic/qed/qed_nvmetcp_ip_services.c      |  239 +++
-> >   drivers/net/ethernet/qlogic/qed/qed_ooo.c     |    5 +-
-> >   drivers/net/ethernet/qlogic/qed/qed_sp.h      |    5 +
-> >   .../net/ethernet/qlogic/qed/qed_sp_commands.c |    1 +
-> >   drivers/nvme/Kconfig                          |    1 +
-> >   drivers/nvme/Makefile                         |    1 +
-> >   drivers/nvme/host/Kconfig                     |   16 +
-> >   drivers/nvme/host/Makefile                    |    3 +
-> >   drivers/nvme/host/fabrics.c                   |    7 -
-> >   drivers/nvme/host/fabrics.h                   |    7 +
-> >   drivers/nvme/host/tcp-offload.c               | 1330 ++++++++++++++++=
+> > Acked-by: Igor Russkikh <irusskikh@marvell.com>
+> > Signed-off-by: Dean Balandin <dbalandin@marvell.com>
+> > Signed-off-by: Prabhakar Kushwaha <pkushwaha@marvell.com>
+> > Signed-off-by: Omkar Kulkarni <okulkarni@marvell.com>
+> > Signed-off-by: Shai Malin <smalin@marvell.com>
+> > Signed-off-by: Michal Kalderon <mkalderon@marvell.com>
+> > Signed-off-by: Ariel Elior <aelior@marvell.com>
+> > ---
+> >   drivers/net/ethernet/qlogic/Kconfig           |   3 +
+> >   drivers/net/ethernet/qlogic/qed/Makefile      |   2 +
+> >   drivers/net/ethernet/qlogic/qed/qed.h         |   3 +
+> >   drivers/net/ethernet/qlogic/qed/qed_hsi.h     |   1 +
+> >   drivers/net/ethernet/qlogic/qed/qed_nvmetcp.c | 282 +++++++++++++++++=
 +
-> >   drivers/nvme/host/tcp-offload.h               |  209 +++
-> >   drivers/nvme/hw/Kconfig                       |    9 +
-> >   drivers/nvme/hw/Makefile                      |    3 +
-> >   drivers/nvme/hw/qedn/Makefile                 |    4 +
-> >   drivers/nvme/hw/qedn/qedn.h                   |  435 ++++++
-> >   drivers/nvme/hw/qedn/qedn_conn.c              |  999 +++++++++++++
-> >   drivers/nvme/hw/qedn/qedn_main.c              | 1153 ++++++++++++++
-> >   drivers/nvme/hw/qedn/qedn_task.c              |  977 ++++++++++++
-> >   include/linux/qed/common_hsi.h                |    1 +
-> >   include/linux/qed/nvmetcp_common.h            |  616 ++++++++
-> >   include/linux/qed/qed_if.h                    |   22 +
-> >   include/linux/qed/qed_nvmetcp_if.h            |  244 +++
-> >   .../linux/qed/qed_nvmetcp_ip_services_if.h    |   29 +
-> >   39 files changed, 7947 insertions(+), 25 deletions(-)
+> >   drivers/net/ethernet/qlogic/qed/qed_nvmetcp.h |  51 ++++
+> >   drivers/net/ethernet/qlogic/qed/qed_sp.h      |   2 +
+> >   include/linux/qed/common_hsi.h                |   1 +
+> >   include/linux/qed/nvmetcp_common.h            |  54 ++++
+> >   include/linux/qed/qed_if.h                    |  22 ++
+> >   include/linux/qed/qed_nvmetcp_if.h            |  72 +++++
+> >   11 files changed, 493 insertions(+)
 > >   create mode 100644 drivers/net/ethernet/qlogic/qed/qed_nvmetcp.c
 > >   create mode 100644 drivers/net/ethernet/qlogic/qed/qed_nvmetcp.h
-> >   create mode 100644 drivers/net/ethernet/qlogic/qed/qed_nvmetcp_fw_fun=
-cs.c
-> >   create mode 100644 drivers/net/ethernet/qlogic/qed/qed_nvmetcp_fw_fun=
-cs.h
-> >   create mode 100644 drivers/net/ethernet/qlogic/qed/qed_nvmetcp_ip_ser=
-vices.c
-> >   create mode 100644 drivers/nvme/host/tcp-offload.c
-> >   create mode 100644 drivers/nvme/host/tcp-offload.h
-> >   create mode 100644 drivers/nvme/hw/Kconfig
-> >   create mode 100644 drivers/nvme/hw/Makefile
-> >   create mode 100644 drivers/nvme/hw/qedn/Makefile
-> >   create mode 100644 drivers/nvme/hw/qedn/qedn.h
-> >   create mode 100644 drivers/nvme/hw/qedn/qedn_conn.c
-> >   create mode 100644 drivers/nvme/hw/qedn/qedn_main.c
-> >   create mode 100644 drivers/nvme/hw/qedn/qedn_task.c
 > >   create mode 100644 include/linux/qed/nvmetcp_common.h
 > >   create mode 100644 include/linux/qed/qed_nvmetcp_if.h
-> >   create mode 100644 include/linux/qed/qed_nvmetcp_ip_services_if.h
 > >
-> I would structure this patchset slightly different, in putting the
-> NVMe-oF implementation at the start of the patchset; this will be where
-> you get most of the comment, and any change there will potentially
-> reflect back on the driver implementation, too.
+> > diff --git a/drivers/net/ethernet/qlogic/Kconfig b/drivers/net/ethernet=
+/qlogic/Kconfig
+> > index 6b5ddb07ee83..98f430905ffa 100644
+> > --- a/drivers/net/ethernet/qlogic/Kconfig
+> > +++ b/drivers/net/ethernet/qlogic/Kconfig
+> > @@ -110,6 +110,9 @@ config QED_RDMA
+> >   config QED_ISCSI
+> >       bool
+> >
+> > +config QED_NVMETCP
+> > +     bool
+> > +
+> >   config QED_FCOE
+> >       bool
+> >
+> > diff --git a/drivers/net/ethernet/qlogic/qed/Makefile b/drivers/net/eth=
+ernet/qlogic/qed/Makefile
+> > index 8251755ec18c..7cb0db67ba5b 100644
+> > --- a/drivers/net/ethernet/qlogic/qed/Makefile
+> > +++ b/drivers/net/ethernet/qlogic/qed/Makefile
+> > @@ -28,6 +28,8 @@ qed-$(CONFIG_QED_ISCSI) +=3D qed_iscsi.o
+> >   qed-$(CONFIG_QED_LL2) +=3D qed_ll2.o
+> >   qed-$(CONFIG_QED_OOO) +=3D qed_ooo.o
+> >
+> > +qed-$(CONFIG_QED_NVMETCP) +=3D qed_nvmetcp.o
+> > +
+> >   qed-$(CONFIG_QED_RDMA) +=3D   \
+> >       qed_iwarp.o             \
+> >       qed_rdma.o              \
+> > diff --git a/drivers/net/ethernet/qlogic/qed/qed.h b/drivers/net/ethern=
+et/qlogic/qed/qed.h
+> > index a20cb8a0c377..91d4635009ab 100644
+> > --- a/drivers/net/ethernet/qlogic/qed/qed.h
+> > +++ b/drivers/net/ethernet/qlogic/qed/qed.h
+> > @@ -240,6 +240,7 @@ enum QED_FEATURE {
+> >       QED_VF,
+> >       QED_RDMA_CNQ,
+> >       QED_ISCSI_CQ,
+> > +     QED_NVMETCP_CQ =3D QED_ISCSI_CQ,
+> >       QED_FCOE_CQ,
+> >       QED_VF_L2_QUE,
+> >       QED_MAX_FEATURES,
+> > @@ -592,6 +593,7 @@ struct qed_hwfn {
+> >       struct qed_ooo_info             *p_ooo_info;
+> >       struct qed_rdma_info            *p_rdma_info;
+> >       struct qed_iscsi_info           *p_iscsi_info;
+> > +     struct qed_nvmetcp_info         *p_nvmetcp_info;
+> >       struct qed_fcoe_info            *p_fcoe_info;
+> >       struct qed_pf_params            pf_params;
+> >
+> > @@ -828,6 +830,7 @@ struct qed_dev {
+> >               struct qed_eth_cb_ops           *eth;
+> >               struct qed_fcoe_cb_ops          *fcoe;
+> >               struct qed_iscsi_cb_ops         *iscsi;
+> > +             struct qed_nvmetcp_cb_ops       *nvmetcp;
+> >       } protocol_ops;
+> >       void                            *ops_cookie;
+> >
+> > diff --git a/drivers/net/ethernet/qlogic/qed/qed_hsi.h b/drivers/net/et=
+hernet/qlogic/qed/qed_hsi.h
+> > index 559df9f4d656..24472f6a83c2 100644
+> > --- a/drivers/net/ethernet/qlogic/qed/qed_hsi.h
+> > +++ b/drivers/net/ethernet/qlogic/qed/qed_hsi.h
+> > @@ -20,6 +20,7 @@
+> >   #include <linux/qed/fcoe_common.h>
+> >   #include <linux/qed/eth_common.h>
+> >   #include <linux/qed/iscsi_common.h>
+> > +#include <linux/qed/nvmetcp_common.h>
+> >   #include <linux/qed/iwarp_common.h>
+> >   #include <linux/qed/rdma_common.h>
+> >   #include <linux/qed/roce_common.h>
+> > diff --git a/drivers/net/ethernet/qlogic/qed/qed_nvmetcp.c b/drivers/ne=
+t/ethernet/qlogic/qed/qed_nvmetcp.c
+> > new file mode 100644
+> > index 000000000000..da3b5002d216
+> > --- /dev/null
+> > +++ b/drivers/net/ethernet/qlogic/qed/qed_nvmetcp.c
+> > @@ -0,0 +1,282 @@
+> > +// SPDX-License-Identifier: (GPL-2.0-only OR BSD-3-Clause)
+> > +/* Copyright 2021 Marvell. All rights reserved. */
+> > +
+> > +#include <linux/types.h>
+> > +#include <asm/byteorder.h>
+> > +#include <asm/param.h>
+> > +#include <linux/delay.h>
+> > +#include <linux/dma-mapping.h>
+> > +#include <linux/etherdevice.h>
+> > +#include <linux/kernel.h>
+> > +#include <linux/log2.h>
+> > +#include <linux/module.h>
+> > +#include <linux/pci.h>
+> > +#include <linux/stddef.h>
+> > +#include <linux/string.h>
+> > +#include <linux/errno.h>
+> > +#include <linux/list.h>
+> > +#include <linux/qed/qed_nvmetcp_if.h>
+> > +#include "qed.h"
+> > +#include "qed_cxt.h"
+> > +#include "qed_dev_api.h"
+> > +#include "qed_hsi.h"
+> > +#include "qed_hw.h"
+> > +#include "qed_int.h"
+> > +#include "qed_nvmetcp.h"
+> > +#include "qed_ll2.h"
+> > +#include "qed_mcp.h"
+> > +#include "qed_sp.h"
+> > +#include "qed_reg_addr.h"
+> > +
+> > +static int qed_nvmetcp_async_event(struct qed_hwfn *p_hwfn, u8 fw_even=
+t_code,
+> > +                                u16 echo, union event_ring_data *data,
+> > +                                u8 fw_return_code)
+> > +{
+> > +     if (p_hwfn->p_nvmetcp_info->event_cb) {
+> > +             struct qed_nvmetcp_info *p_nvmetcp =3D p_hwfn->p_nvmetcp_=
+info;
+> > +
+> > +             return p_nvmetcp->event_cb(p_nvmetcp->event_context,
+> > +                                      fw_event_code, data);
+> > +     } else {
+> > +             DP_NOTICE(p_hwfn, "nvmetcp async completion is not set\n"=
+);
+> > +
+> > +             return -EINVAL;
+> > +     }
+> > +}
+> > +
+> > +static int qed_sp_nvmetcp_func_start(struct qed_hwfn *p_hwfn,
+> > +                                  enum spq_mode comp_mode,
+> > +                                  struct qed_spq_comp_cb *p_comp_addr,
+> > +                                  void *event_context,
+> > +                                  nvmetcp_event_cb_t async_event_cb)
+> > +{
+> > +     struct nvmetcp_init_ramrod_params *p_ramrod =3D NULL;
+> > +     struct qed_nvmetcp_pf_params *p_params =3D NULL;
+> > +     struct scsi_init_func_queues *p_queue =3D NULL;
+> > +     struct nvmetcp_spe_func_init *p_init =3D NULL;
+> > +     struct qed_sp_init_data init_data =3D {};
+> > +     struct qed_spq_entry *p_ent =3D NULL;
+> > +     int rc =3D 0;
+> > +     u16 val;
+> > +     u8 i;
+> > +
+> > +     /* Get SPQ entry */
+> > +     init_data.cid =3D qed_spq_get_cid(p_hwfn);
+> > +     init_data.opaque_fid =3D p_hwfn->hw_info.opaque_fid;
+> > +     init_data.comp_mode =3D comp_mode;
+> > +     init_data.p_comp_data =3D p_comp_addr;
+> > +
+> > +     rc =3D qed_sp_init_request(p_hwfn, &p_ent,
+> > +                              NVMETCP_RAMROD_CMD_ID_INIT_FUNC,
+> > +                              PROTOCOLID_NVMETCP, &init_data);
+> > +     if (rc)
+> > +             return rc;
+> > +
+> > +     p_ramrod =3D &p_ent->ramrod.nvmetcp_init;
+> > +     p_init =3D &p_ramrod->nvmetcp_init_spe;
+> > +     p_params =3D &p_hwfn->pf_params.nvmetcp_pf_params;
+> > +     p_queue =3D &p_init->q_params;
+> > +
+> > +     p_init->num_sq_pages_in_ring =3D p_params->num_sq_pages_in_ring;
+> > +     p_init->num_r2tq_pages_in_ring =3D p_params->num_r2tq_pages_in_ri=
+ng;
+> > +     p_init->num_uhq_pages_in_ring =3D p_params->num_uhq_pages_in_ring=
+;
+> > +     p_init->ll2_rx_queue_id =3D RESC_START(p_hwfn, QED_LL2_RAM_QUEUE)=
+ +
+> > +                                     p_params->ll2_ooo_queue_id;
+> > +
+> > +     SET_FIELD(p_init->flags, NVMETCP_SPE_FUNC_INIT_NVMETCP_MODE, 1);
+> > +
+> > +     p_init->func_params.log_page_size =3D ilog2(PAGE_SIZE);
+> > +     p_init->func_params.num_tasks =3D cpu_to_le16(p_params->num_tasks=
+);
+> > +     p_init->debug_flags =3D p_params->debug_mode;
+> > +
+> > +     DMA_REGPAIR_LE(p_queue->glbl_q_params_addr,
+> > +                    p_params->glbl_q_params_addr);
+> > +
+> > +     p_queue->cq_num_entries =3D cpu_to_le16(QED_NVMETCP_FW_CQ_SIZE);
+> > +     p_queue->num_queues =3D p_params->num_queues;
+> > +     val =3D RESC_START(p_hwfn, QED_CMDQS_CQS);
+> > +     p_queue->queue_relative_offset =3D cpu_to_le16((u16)val);
+> > +     p_queue->cq_sb_pi =3D p_params->gl_rq_pi;
+> > +
+> > +     for (i =3D 0; i < p_params->num_queues; i++) {
+> > +             val =3D qed_get_igu_sb_id(p_hwfn, i);
+> > +             p_queue->cq_cmdq_sb_num_arr[i] =3D cpu_to_le16(val);
+> > +     }
+> > +
+> > +     SET_FIELD(p_queue->q_validity,
+> > +               SCSI_INIT_FUNC_QUEUES_CMD_VALID, 0);
+> > +     p_queue->cmdq_num_entries =3D 0;
+> > +     p_queue->bdq_resource_id =3D (u8)RESC_START(p_hwfn, QED_BDQ);
+> > +
+> > +     /* p_ramrod->tcp_init.min_rto =3D cpu_to_le16(p_params->min_rto);=
+ */
+> > +     p_ramrod->tcp_init.two_msl_timer =3D cpu_to_le32(QED_TCP_TWO_MSL_=
+TIMER);
+> > +     p_ramrod->tcp_init.tx_sws_timer =3D cpu_to_le16(QED_TCP_SWS_TIMER=
+);
+> > +     p_init->half_way_close_timeout =3D cpu_to_le16(QED_TCP_HALF_WAY_C=
+LOSE_TIMEOUT);
+> > +     p_ramrod->tcp_init.max_fin_rt =3D QED_TCP_MAX_FIN_RT;
+> > +
+> > +     SET_FIELD(p_ramrod->nvmetcp_init_spe.params,
+> > +               NVMETCP_SPE_FUNC_INIT_MAX_SYN_RT, QED_TCP_MAX_FIN_RT);
+> > +
+> > +     p_hwfn->p_nvmetcp_info->event_context =3D event_context;
+> > +     p_hwfn->p_nvmetcp_info->event_cb =3D async_event_cb;
+> > +
+> > +     qed_spq_register_async_cb(p_hwfn, PROTOCOLID_NVMETCP,
+> > +                               qed_nvmetcp_async_event);
+> > +
+> > +     return qed_spq_post(p_hwfn, p_ent, NULL);
+> > +}
+> > +
+> > +static int qed_sp_nvmetcp_func_stop(struct qed_hwfn *p_hwfn,
+> > +                                 enum spq_mode comp_mode,
+> > +                                 struct qed_spq_comp_cb *p_comp_addr)
+> > +{
+> > +     struct qed_spq_entry *p_ent =3D NULL;
+> > +     struct qed_sp_init_data init_data;
+> > +     int rc;
+> > +
+> > +     /* Get SPQ entry */
+> > +     memset(&init_data, 0, sizeof(init_data));
+> > +     init_data.cid =3D qed_spq_get_cid(p_hwfn);
+> > +     init_data.opaque_fid =3D p_hwfn->hw_info.opaque_fid;
+> > +     init_data.comp_mode =3D comp_mode;
+> > +     init_data.p_comp_data =3D p_comp_addr;
+> > +
+> > +     rc =3D qed_sp_init_request(p_hwfn, &p_ent,
+> > +                              NVMETCP_RAMROD_CMD_ID_DESTROY_FUNC,
+> > +                              PROTOCOLID_NVMETCP, &init_data);
+> > +     if (rc)
+> > +             return rc;
+> > +
+> > +     rc =3D qed_spq_post(p_hwfn, p_ent, NULL);
+> > +
+> > +     qed_spq_unregister_async_cb(p_hwfn, PROTOCOLID_NVMETCP);
+> > +
+> > +     return rc;
+> > +}
+> > +
+> > +static int qed_fill_nvmetcp_dev_info(struct qed_dev *cdev,
+> > +                                  struct qed_dev_nvmetcp_info *info)
+> > +{
+> > +     struct qed_hwfn *hwfn =3D QED_AFFIN_HWFN(cdev);
+> > +     int rc;
+> > +
+> > +     memset(info, 0, sizeof(*info));
+> > +     rc =3D qed_fill_dev_info(cdev, &info->common);
+> > +
+> > +     info->port_id =3D MFW_PORT(hwfn);
+> > +     info->num_cqs =3D FEAT_NUM(hwfn, QED_NVMETCP_CQ);
+> > +
+> > +     return rc;
+> > +}
+> > +
+> > +static void qed_register_nvmetcp_ops(struct qed_dev *cdev,
+> > +                                  struct qed_nvmetcp_cb_ops *ops,
+> > +                                  void *cookie)
+> > +{
+> > +     cdev->protocol_ops.nvmetcp =3D ops;
+> > +     cdev->ops_cookie =3D cookie;
+> > +}
+> > +
+> > +static int qed_nvmetcp_stop(struct qed_dev *cdev)
+> > +{
+> > +     int rc;
+> > +
+> > +     if (!(cdev->flags & QED_FLAG_STORAGE_STARTED)) {
+> > +             DP_NOTICE(cdev, "nvmetcp already stopped\n");
+> > +
+> > +             return 0;
+> > +     }
+> > +
+> > +     if (!hash_empty(cdev->connections)) {
+> > +             DP_NOTICE(cdev,
+> > +                       "Can't stop nvmetcp - not all connections were =
+returned\n");
+> > +
+> > +             return -EINVAL;
+> > +     }
+> > +
+> > +     /* Stop the nvmetcp */
+> > +     rc =3D qed_sp_nvmetcp_func_stop(QED_AFFIN_HWFN(cdev), QED_SPQ_MOD=
+E_EBLOCK,
+> > +                                   NULL);
+> > +     cdev->flags &=3D ~QED_FLAG_STORAGE_STARTED;
+> > +
+> > +     return rc;
+> > +}
+> > +
+> > +static int qed_nvmetcp_start(struct qed_dev *cdev,
+> > +                          struct qed_nvmetcp_tid *tasks,
+> > +                          void *event_context,
+> > +                          nvmetcp_event_cb_t async_event_cb)
+> > +{
+> > +     struct qed_tid_mem *tid_info;
+> > +     int rc;
+> > +
+> > +     if (cdev->flags & QED_FLAG_STORAGE_STARTED) {
+> > +             DP_NOTICE(cdev, "nvmetcp already started;\n");
+> > +
+> > +             return 0;
+> > +     }
+> > +
+> > +     rc =3D qed_sp_nvmetcp_func_start(QED_AFFIN_HWFN(cdev),
+> > +                                    QED_SPQ_MODE_EBLOCK, NULL,
+> > +                                    event_context, async_event_cb);
+> > +     if (rc) {
+> > +             DP_NOTICE(cdev, "Failed to start nvmetcp\n");
+> > +
+> > +             return rc;
+> > +     }
+> > +
+> > +     cdev->flags |=3D QED_FLAG_STORAGE_STARTED;
+> > +     hash_init(cdev->connections);
+> > +
+> > +     if (!tasks)
+> > +             return 0;
+> > +
+> > +     tid_info =3D kzalloc(sizeof(*tid_info), GFP_KERNEL);
+> > +
+> > +     if (!tid_info) {
+> > +             qed_nvmetcp_stop(cdev);
+> > +
+> > +             return -ENOMEM;
+> > +     }
+> > +
+> > +     rc =3D qed_cxt_get_tid_mem_info(QED_AFFIN_HWFN(cdev), tid_info);
+> > +     if (rc) {
+> > +             DP_NOTICE(cdev, "Failed to gather task information\n");
+> > +             qed_nvmetcp_stop(cdev);
+> > +             kfree(tid_info);
+> > +
+> > +             return rc;
+> > +     }
+> > +
+> > +     /* Fill task information */
+> > +     tasks->size =3D tid_info->tid_size;
+> > +     tasks->num_tids_per_block =3D tid_info->num_tids_per_block;
+> > +     memcpy(tasks->blocks, tid_info->blocks,
+> > +            MAX_TID_BLOCKS_NVMETCP * sizeof(u8 *));
+> > +
+> > +     kfree(tid_info);
+> > +
+> > +     return 0;
+> > +}
+> > +
+> > +static const struct qed_nvmetcp_ops qed_nvmetcp_ops_pass =3D {
+> > +     .common =3D &qed_common_ops_pass,
+> > +     .ll2 =3D &qed_ll2_ops_pass,
+> > +     .fill_dev_info =3D &qed_fill_nvmetcp_dev_info,
+> > +     .register_ops =3D &qed_register_nvmetcp_ops,
+> > +     .start =3D &qed_nvmetcp_start,
+> > +     .stop =3D &qed_nvmetcp_stop,
+> > +
+> > +     /* Placeholder - Connection level ops */
+> > +};
+> > +
+> > +const struct qed_nvmetcp_ops *qed_get_nvmetcp_ops(void)
+> > +{
+> > +     return &qed_nvmetcp_ops_pass;
+> > +}
+> > +EXPORT_SYMBOL(qed_get_nvmetcp_ops);
+> > +
+> > +void qed_put_nvmetcp_ops(void)
+> > +{
+> > +}
+> > +EXPORT_SYMBOL(qed_put_nvmetcp_ops);
+> > diff --git a/drivers/net/ethernet/qlogic/qed/qed_nvmetcp.h b/drivers/ne=
+t/ethernet/qlogic/qed/qed_nvmetcp.h
+> > new file mode 100644
+> > index 000000000000..774b46ade408
+> > --- /dev/null
+> > +++ b/drivers/net/ethernet/qlogic/qed/qed_nvmetcp.h
+> > @@ -0,0 +1,51 @@
+> > +/* SPDX-License-Identifier: (GPL-2.0-only OR BSD-3-Clause) */
+> > +/* Copyright 2021 Marvell. All rights reserved. */
+> > +
+> > +#ifndef _QED_NVMETCP_H
+> > +#define _QED_NVMETCP_H
+> > +
+> > +#include <linux/types.h>
+> > +#include <linux/list.h>
+> > +#include <linux/slab.h>
+> > +#include <linux/spinlock.h>
+> > +#include <linux/qed/tcp_common.h>
+> > +#include <linux/qed/qed_nvmetcp_if.h>
+> > +#include <linux/qed/qed_chain.h>
+> > +#include "qed.h"
+> > +#include "qed_hsi.h"
+> > +#include "qed_mcp.h"
+> > +#include "qed_sp.h"
+> > +
+> > +#define QED_NVMETCP_FW_CQ_SIZE (4 * 1024)
+> > +
+> > +/* tcp parameters */
+> > +#define QED_TCP_TWO_MSL_TIMER 4000
+> > +#define QED_TCP_HALF_WAY_CLOSE_TIMEOUT 10
+> > +#define QED_TCP_MAX_FIN_RT 2
+> > +#define QED_TCP_SWS_TIMER 5000
+> > +
+> > +struct qed_nvmetcp_info {
+> > +     spinlock_t lock; /* Connection resources. */
+> > +     struct list_head free_list;
+> > +     u16 max_num_outstanding_tasks;
+> > +     void *event_context;
+> > +     nvmetcp_event_cb_t event_cb;
+> > +};
+> > +
+> > +#if IS_ENABLED(CONFIG_QED_NVMETCP)
+> > +int qed_nvmetcp_alloc(struct qed_hwfn *p_hwfn);
+> > +void qed_nvmetcp_setup(struct qed_hwfn *p_hwfn);
+> > +void qed_nvmetcp_free(struct qed_hwfn *p_hwfn);
+> > +
+> > +#else /* IS_ENABLED(CONFIG_QED_NVMETCP) */
+> > +static inline int qed_nvmetcp_alloc(struct qed_hwfn *p_hwfn)
+> > +{
+> > +     return -EINVAL;
+> > +}
+> > +
+> > +static inline void qed_nvmetcp_setup(struct qed_hwfn *p_hwfn) {}
+> > +static inline void qed_nvmetcp_free(struct qed_hwfn *p_hwfn) {}
+> > +
+> > +#endif /* IS_ENABLED(CONFIG_QED_NVMETCP) */
+> > +
+> > +#endif
+> > diff --git a/drivers/net/ethernet/qlogic/qed/qed_sp.h b/drivers/net/eth=
+ernet/qlogic/qed/qed_sp.h
+> > index 993f1357b6fc..525159e747a5 100644
+> > --- a/drivers/net/ethernet/qlogic/qed/qed_sp.h
+> > +++ b/drivers/net/ethernet/qlogic/qed/qed_sp.h
+> > @@ -100,6 +100,8 @@ union ramrod_data {
+> >       struct iscsi_spe_conn_mac_update iscsi_conn_mac_update;
+> >       struct iscsi_spe_conn_termination iscsi_conn_terminate;
+> >
+> > +     struct nvmetcp_init_ramrod_params nvmetcp_init;
+> > +
+> >       struct vf_start_ramrod_data vf_start;
+> >       struct vf_stop_ramrod_data vf_stop;
+> >   };
+> > diff --git a/include/linux/qed/common_hsi.h b/include/linux/qed/common_=
+hsi.h
+> > index 977807e1be53..59c5e5866607 100644
+> > --- a/include/linux/qed/common_hsi.h
+> > +++ b/include/linux/qed/common_hsi.h
+> > @@ -703,6 +703,7 @@ enum mf_mode {
+> >   /* Per-protocol connection types */
+> >   enum protocol_type {
+> >       PROTOCOLID_ISCSI,
+> > +     PROTOCOLID_NVMETCP =3D PROTOCOLID_ISCSI,
+> >       PROTOCOLID_FCOE,
+> >       PROTOCOLID_ROCE,
+> >       PROTOCOLID_CORE,
 >
-> Something to consider for the next round.
+> Why not a separate Protocol ID?
+> Don't you expect iSCSI and NVMe-TCP to be run at the same time?
 
-Will do. Thanks.
+PROTOCOLID determines the FW resource layout, which is the same for iSCSI
+and NVMeTCP.
+I will change PROTOCOLID_NVMETCP and PROTOCOLID_ISCSI to
+PROTOCOLID_TCP_ULP.
+iSCSI and NVMeTCP can run concurrently on the device, but not on the same P=
+F.
+Both iSCSI and NVMeTCP PFs will use PROTOCOLID_TCP_ULP
+
+>
+> > diff --git a/include/linux/qed/nvmetcp_common.h b/include/linux/qed/nvm=
+etcp_common.h
+> > new file mode 100644
+> > index 000000000000..e9ccfc07041d
+> > --- /dev/null
+> > +++ b/include/linux/qed/nvmetcp_common.h
+> > @@ -0,0 +1,54 @@
+> > +/* SPDX-License-Identifier: (GPL-2.0-only OR BSD-3-Clause) */
+> > +/* Copyright 2021 Marvell. All rights reserved. */
+> > +
+> > +#ifndef __NVMETCP_COMMON__
+> > +#define __NVMETCP_COMMON__
+> > +
+> > +#include "tcp_common.h"
+> > +
+> > +/* NVMeTCP firmware function init parameters */
+> > +struct nvmetcp_spe_func_init {
+> > +     __le16 half_way_close_timeout;
+> > +     u8 num_sq_pages_in_ring;
+> > +     u8 num_r2tq_pages_in_ring;
+> > +     u8 num_uhq_pages_in_ring;
+> > +     u8 ll2_rx_queue_id;
+> > +     u8 flags;
+> > +#define NVMETCP_SPE_FUNC_INIT_COUNTERS_EN_MASK 0x1
+> > +#define NVMETCP_SPE_FUNC_INIT_COUNTERS_EN_SHIFT 0
+> > +#define NVMETCP_SPE_FUNC_INIT_NVMETCP_MODE_MASK 0x1
+> > +#define NVMETCP_SPE_FUNC_INIT_NVMETCP_MODE_SHIFT 1
+> > +#define NVMETCP_SPE_FUNC_INIT_RESERVED0_MASK 0x3F
+> > +#define NVMETCP_SPE_FUNC_INIT_RESERVED0_SHIFT 2
+> > +     u8 debug_flags;
+> > +     __le16 reserved1;
+> > +     u8 params;
+> > +#define NVMETCP_SPE_FUNC_INIT_MAX_SYN_RT_MASK        0xF
+> > +#define NVMETCP_SPE_FUNC_INIT_MAX_SYN_RT_SHIFT       0
+> > +#define NVMETCP_SPE_FUNC_INIT_RESERVED1_MASK 0xF
+> > +#define NVMETCP_SPE_FUNC_INIT_RESERVED1_SHIFT        4
+> > +     u8 reserved2[5];
+> > +     struct scsi_init_func_params func_params;
+> > +     struct scsi_init_func_queues q_params;
+> > +};
+> > +
+> > +/* NVMeTCP init params passed by driver to FW in NVMeTCP init ramrod. =
+*/
+> > +struct nvmetcp_init_ramrod_params {
+> > +     struct nvmetcp_spe_func_init nvmetcp_init_spe;
+> > +     struct tcp_init_params tcp_init;
+> > +};
+> > +
+> > +/* NVMeTCP Ramrod Command IDs */
+> > +enum nvmetcp_ramrod_cmd_id {
+> > +     NVMETCP_RAMROD_CMD_ID_UNUSED =3D 0,
+> > +     NVMETCP_RAMROD_CMD_ID_INIT_FUNC =3D 1,
+> > +     NVMETCP_RAMROD_CMD_ID_DESTROY_FUNC =3D 2,
+> > +     MAX_NVMETCP_RAMROD_CMD_ID
+> > +};
+> > +
+> > +struct nvmetcp_glbl_queue_entry {
+> > +     struct regpair cq_pbl_addr;
+> > +     struct regpair reserved;
+> > +};
+> > +
+> > +#endif /* __NVMETCP_COMMON__ */
+> > diff --git a/include/linux/qed/qed_if.h b/include/linux/qed/qed_if.h
+> > index 68d17a4fbf20..524f57821ba2 100644
+> > --- a/include/linux/qed/qed_if.h
+> > +++ b/include/linux/qed/qed_if.h
+> > @@ -542,6 +542,26 @@ struct qed_iscsi_pf_params {
+> >       u8 bdq_pbl_num_entries[3];
+> >   };
+> >
+> > +struct qed_nvmetcp_pf_params {
+> > +     u64 glbl_q_params_addr;
+> > +     u16 cq_num_entries;
+> > +
+> > +     u16 num_cons;
+> > +     u16 num_tasks;
+> > +
+> > +     u8 num_sq_pages_in_ring;
+> > +     u8 num_r2tq_pages_in_ring;
+> > +     u8 num_uhq_pages_in_ring;
+> > +
+> > +     u8 num_queues;
+> > +     u8 gl_rq_pi;
+> > +     u8 gl_cmd_pi;
+> > +     u8 debug_mode;
+> > +     u8 ll2_ooo_queue_id;
+> > +
+> > +     u16 min_rto;
+> > +};
+> > +
+> >   struct qed_rdma_pf_params {
+> >       /* Supplied to QED during resource allocation (may affect the ILT=
+ and
+> >        * the doorbell BAR).
+> > @@ -560,6 +580,7 @@ struct qed_pf_params {
+> >       struct qed_eth_pf_params eth_pf_params;
+> >       struct qed_fcoe_pf_params fcoe_pf_params;
+> >       struct qed_iscsi_pf_params iscsi_pf_params;
+> > +     struct qed_nvmetcp_pf_params nvmetcp_pf_params;
+> >       struct qed_rdma_pf_params rdma_pf_params;
+> >   };
+> >
+> > @@ -662,6 +683,7 @@ enum qed_sb_type {
+> >   enum qed_protocol {
+> >       QED_PROTOCOL_ETH,
+> >       QED_PROTOCOL_ISCSI,
+> > +     QED_PROTOCOL_NVMETCP =3D QED_PROTOCOL_ISCSI,
+> >       QED_PROTOCOL_FCOE,
+> >   };
+> >
+> > diff --git a/include/linux/qed/qed_nvmetcp_if.h b/include/linux/qed/qed=
+_nvmetcp_if.h
+> > new file mode 100644
+> > index 000000000000..abc1f41862e3
+> > --- /dev/null
+> > +++ b/include/linux/qed/qed_nvmetcp_if.h
+> > @@ -0,0 +1,72 @@
+> > +/* SPDX-License-Identifier: (GPL-2.0-only OR BSD-3-Clause) */
+> > +/* Copyright 2021 Marvell. All rights reserved. */
+> > +
+> > +#ifndef _QED_NVMETCP_IF_H
+> > +#define _QED_NVMETCP_IF_H
+> > +#include <linux/types.h>
+> > +#include <linux/qed/qed_if.h>
+> > +
+> > +#define QED_NVMETCP_MAX_IO_SIZE      0x800000
+> > +
+> > +typedef int (*nvmetcp_event_cb_t) (void *context,
+> > +                                u8 fw_event_code, void *fw_handle);
+> > +
+> > +struct qed_dev_nvmetcp_info {
+> > +     struct qed_dev_info common;
+> > +
+> > +     u8 port_id;  /* Physical port */
+> > +     u8 num_cqs;
+> > +};
+> > +
+> > +#define MAX_TID_BLOCKS_NVMETCP (512)
+> > +struct qed_nvmetcp_tid {
+> > +     u32 size;               /* In bytes per task */
+> > +     u32 num_tids_per_block;
+> > +     u8 *blocks[MAX_TID_BLOCKS_NVMETCP];
+> > +};
+> > +
+> > +struct qed_nvmetcp_cb_ops {
+> > +     struct qed_common_cb_ops common;
+> > +};
+> > +
+> > +/**
+> > + * struct qed_nvmetcp_ops - qed NVMeTCP operations.
+> > + * @common:          common operations pointer
+> > + * @ll2:             light L2 operations pointer
+> > + * @fill_dev_info:   fills NVMeTCP specific information
+> > + *                   @param cdev
+> > + *                   @param info
+> > + *                   @return 0 on success, otherwise error value.
+> > + * @register_ops:    register nvmetcp operations
+> > + *                   @param cdev
+> > + *                   @param ops - specified using qed_nvmetcp_cb_ops
+> > + *                   @param cookie - driver private
+> > + * @start:           nvmetcp in FW
+> > + *                   @param cdev
+> > + *                   @param tasks - qed will fill information about ta=
+sks
+> > + *                   return 0 on success, otherwise error value.
+> > + * @stop:            nvmetcp in FW
+> > + *                   @param cdev
+> > + *                   return 0 on success, otherwise error value.
+> > + */
+> > +struct qed_nvmetcp_ops {
+> > +     const struct qed_common_ops *common;
+> > +
+> > +     const struct qed_ll2_ops *ll2;
+> > +
+> > +     int (*fill_dev_info)(struct qed_dev *cdev,
+> > +                          struct qed_dev_nvmetcp_info *info);
+> > +
+> > +     void (*register_ops)(struct qed_dev *cdev,
+> > +                          struct qed_nvmetcp_cb_ops *ops, void *cookie=
+);
+> > +
+> > +     int (*start)(struct qed_dev *cdev,
+> > +                  struct qed_nvmetcp_tid *tasks,
+> > +                  void *event_context, nvmetcp_event_cb_t async_event_=
+cb);
+> > +
+> > +     int (*stop)(struct qed_dev *cdev);
+> > +};
+> > +
+> > +const struct qed_nvmetcp_ops *qed_get_nvmetcp_ops(void);
+> > +void qed_put_nvmetcp_ops(void);
+> > +#endif
+> >
+> As mentioned, please rearrange the patchset to have the NVMe-TCP patches
+> first, then the driver specific bits.
+
+Sure.
 
 >
 > Cheers,
