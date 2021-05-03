@@ -2,129 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2D4BF371749
-	for <lists+netdev@lfdr.de>; Mon,  3 May 2021 16:58:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CBC6C371799
+	for <lists+netdev@lfdr.de>; Mon,  3 May 2021 17:11:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230085AbhECO6x (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 3 May 2021 10:58:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55790 "EHLO
+        id S230256AbhECPL4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 3 May 2021 11:11:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58886 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230087AbhECO6v (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 3 May 2021 10:58:51 -0400
-Received: from mail-pg1-x534.google.com (mail-pg1-x534.google.com [IPv6:2607:f8b0:4864:20::534])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5AD0DC061761
-        for <netdev@vger.kernel.org>; Mon,  3 May 2021 07:57:58 -0700 (PDT)
-Received: by mail-pg1-x534.google.com with SMTP id s22so3810429pgk.6
-        for <netdev@vger.kernel.org>; Mon, 03 May 2021 07:57:58 -0700 (PDT)
+        with ESMTP id S229717AbhECPL4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 3 May 2021 11:11:56 -0400
+Received: from mail-ej1-x634.google.com (mail-ej1-x634.google.com [IPv6:2a00:1450:4864:20::634])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F0E9C06174A
+        for <netdev@vger.kernel.org>; Mon,  3 May 2021 08:11:03 -0700 (PDT)
+Received: by mail-ej1-x634.google.com with SMTP id b25so8403432eju.5
+        for <netdev@vger.kernel.org>; Mon, 03 May 2021 08:11:03 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=networkplumber-org.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=2/OgfIPTbAC9NLUVtSRA/mfV9EgOxXzgWwld4I4WlBw=;
-        b=snXsHpO1bZgbEBk2EQKrvB9pcvXblmJcHXAPCDM0Xlz1x+vECdDr54U1weiTipJIPI
-         P4JgbZGeG5D5IE/fRqsvm6hpZDjKJ/tQzzZpWaF6PVjEC+wXlceHKITmxHBjzP4j2kLQ
-         e9mPSqp8inCosOzTj/DsZUFczfal5EdjKjfvwnrWx/o2M5rbZ3BQ5eD0uW7KQGBBvoaE
-         6G3HrrW++kA8ovo0B9vy7bNgvWFUejeO4dhKvKyDvbXuMmXatEuddbcbki7PulT2jR0x
-         4eDIqMmFjmYG4JURO2KzGepmcdSRW917fBKtunXG5WAJvPk5FY3uutYRUjhG0MJpBNFe
-         dA4A==
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id;
+        bh=4+ew7dZb9FMAVqtXeVf7poHhKtI7f056i1LgA/myspo=;
+        b=kE1b4bFJu4J4wsmLxPPyXekwIoNGcOe3dIgvcqel++88WYz0TR5J9rgvGn9PTRQ0zG
+         VDeWQ1lTOuy1ZVMavhNr6S7goKlfNqs29DWaYWhaCom671bvlj9DtuT9OPpr4JPzbyJU
+         itAQHdy1zSKd1bY5MZwvGzf48Wz6X29YDB62qTawGlkFr/MFU3/EW7Si+vCy/zY0wG6n
+         XLeB6jdeAukBSfgl+O6VRstuvLYsyk80l5vlc8+1I+YDcfiG6bFoVZnl7MPAhyToOeeg
+         yjTypAdWs7HVRPUwmkGJg2hTUNC/mEd+kXRqPSTw0bz6v4OZaPqN0ujeHChVrEKfd7V3
+         TXcQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=2/OgfIPTbAC9NLUVtSRA/mfV9EgOxXzgWwld4I4WlBw=;
-        b=KjOQRTlchJoQB2Gr4dQXmIgfLF5BArEoaGQdUTF/G2AVeWN+4VPSF5gVGQ0Y7lFFV+
-         Rvu5r4XtahHlBNnfmsl4Lh/z/XqdO8v9tqO6LN7sGyPdTDVypKZKhTRH78wLfFunXIps
-         16MarwvMq46s6qWtzNCoe/pwXoD7UxmF4HtBjxAWtVvt7rETJYj/gjyWMIEkxQzOS9Xm
-         oVA24ss4Tfhfg5CokDjxO1Y1/meUUbEX41BExZHMe16wv+BPylAaX1X6tns1wE3g4rI2
-         Qqc41Vz2cYaeQTB3dAi+sWDDPmUozuQAWOFaqMrPIzOrGZQH5/YvHMvU6sDY1kjqjz/K
-         jxGw==
-X-Gm-Message-State: AOAM533mY0Y96t9cG+41v78MKC/eOgpB0xSvN1NpOrCfCaO3LHQZu1qv
-        bIhZBe4xpR4iwXjQM4+NlZ/pxw==
-X-Google-Smtp-Source: ABdhPJyD5QY2SKDOECrRjVUrKOnuVdqLTtt3tkpqIhwvi3aTrpGCAj2kht428eTLNkijTLrEqu/4vA==
-X-Received: by 2002:a65:5b8e:: with SMTP id i14mr18045251pgr.324.1620053877901;
-        Mon, 03 May 2021 07:57:57 -0700 (PDT)
-Received: from hermes.local (76-14-218-44.or.wavecable.com. [76.14.218.44])
-        by smtp.gmail.com with ESMTPSA id k20sm9173139pfa.34.2021.05.03.07.57.57
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=4+ew7dZb9FMAVqtXeVf7poHhKtI7f056i1LgA/myspo=;
+        b=UvsheJb5zhNrTg9xP/r/fHPJ0dUX3Q8taknIqrHEiQWyB8I01e8j8G58vGf0QJC9h2
+         8m1GEg7oWgK5wci0ywU3rFCqtZ9WPmc+0NtTSarmJK6Lt/X0LlvSF4C61qMIU4oQJOnI
+         c4kJQrQWLsGvzXzCzO6BYfmdSnjPrZmlb+41Ai6ANbbPI5pI8MqPY7DuH4aplOFOTzaJ
+         qFBgXIfx9ZTLCeDQdSRApy9dlDmVWDpDlBlEPX7Nu3vMP1eDkC21zB82hDGZXVuuVzQP
+         fMxMYJdztwJwHRZVVjVT7L+O7gUAmAoY0Jnh3wk6Lrc7vdIFo1rX9CSA3huxruSVQ7jG
+         e/sg==
+X-Gm-Message-State: AOAM530CaFmEChxslJKQlHabyF85eL8KoknKz8xofw6K9lVSmIwDsD34
+        APmJYE4SoXDlHjEoNzwR3as=
+X-Google-Smtp-Source: ABdhPJxlfErqDZXNreptMO8KpddrR9I1BsDAhq2zc+sgVfLFr7tvce7y6DMj7z/Db9PWAek51ZYKzg==
+X-Received: by 2002:a17:906:28cd:: with SMTP id p13mr17262790ejd.336.1620054661931;
+        Mon, 03 May 2021 08:11:01 -0700 (PDT)
+Received: from LABNL-ITC-SW01.tmt.telital.com (static-82-85-31-68.clienti.tiscali.it. [82.85.31.68])
+        by smtp.gmail.com with ESMTPSA id r18sm11102982ejd.106.2021.05.03.08.11.00
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 03 May 2021 07:57:57 -0700 (PDT)
-Date:   Mon, 3 May 2021 07:57:39 -0700
-From:   Stephen Hemminger <stephen@networkplumber.org>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     dsahern@gmail.com, netdev@vger.kernel.org
-Subject: Re: [PACTH iproute2-next] ip: dynamically size columns when
- printing stats
-Message-ID: <20210503075739.46654252@hermes.local>
-In-Reply-To: <20210501031059.529906-1-kuba@kernel.org>
-References: <20210501031059.529906-1-kuba@kernel.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+        Mon, 03 May 2021 08:11:01 -0700 (PDT)
+From:   Daniele Palmas <dnlplm@gmail.com>
+To:     =?UTF-8?q?Bj=C3=B8rn=20Mork?= <bjorn@mork.no>
+Cc:     Subash Abhinov Kasiviswanathan <subashab@codeaurora.org>,
+        netdev@vger.kernel.org, "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Daniele Palmas <dnlplm@gmail.com>
+Subject: [PATCH 1/1] Documentation: ABI: sysfs-class-net-qmi: document pass-through file
+Date:   Mon,  3 May 2021 17:10:50 +0200
+Message-Id: <20210503151050.2570-1-dnlplm@gmail.com>
+X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 30 Apr 2021 20:10:59 -0700
-Jakub Kicinski <kuba@kernel.org> wrote:
+Add documentation for /sys/class/net/<iface>/qmi/pass_through
 
-> This change makes ip -s -s output size the columns
-> automatically. I often find myself using json
-> output because the normal output is unreadable.
-> Even on a laptop after 2 days of uptime byte
-> and packet counters almost overflow their columns,
-> let alone a busy server.
-> 
-> For max readability switch to right align.
-> 
-> Before:
-> 
->     RX: bytes  packets  errors  dropped missed  mcast
->     8227918473 8617683  0       0       0       0
->     RX errors: length   crc     frame   fifo    overrun
->                0        0       0       0       0
->     TX: bytes  packets  errors  dropped carrier collsns
->     691937917  4727223  0       0       0       0
->     TX errors: aborted  fifo   window heartbeat transns
->                0        0       0       0       10
-> 
-> After:
-> 
->     RX:  bytes packets errors dropped  missed   mcast
->     8228633710 8618408      0       0       0       0
->     RX errors:  length    crc   frame    fifo overrun
->                      0      0       0       0       0
->     TX:  bytes packets errors dropped carrier collsns
->      692006303 4727740      0       0       0       0
->     TX errors: aborted   fifo  window heartbt transns
->                      0      0       0       0      10
-> 
-> More importantly, with large values before:
-> 
->     RX: bytes  packets  errors  dropped overrun mcast
->     126570234447969 15016149200 0       0       0       0
->     RX errors: length   crc     frame   fifo    missed
->                0        0       0       0       0
->     TX: bytes  packets  errors  dropped carrier collsns
->     126570234447969 15016149200 0       0       0       0
->     TX errors: aborted  fifo   window heartbeat transns
->                0        0       0       0       10
-> 
-> Note that in this case we have full shift by a column,
-> e.g. the value under "dropped" is actually for "errors" etc.
-> 
-> After:
-> 
->     RX:       bytes     packets errors dropped  missed   mcast
->     126570234447969 15016149200      0       0       0       0
->     RX errors:           length    crc   frame    fifo overrun
->                               0      0       0       0       0
->     TX:       bytes     packets errors dropped carrier collsns
->     126570234447969 15016149200      0       0       0       0
->     TX errors:          aborted   fifo  window heartbt transns
->                               0      0       0       0      10
-> 
-> Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Daniele Palmas <dnlplm@gmail.com>
+---
+ Documentation/ABI/testing/sysfs-class-net-qmi | 16 ++++++++++++++++
+ 1 file changed, 16 insertions(+)
 
-Looks good to me.
+diff --git a/Documentation/ABI/testing/sysfs-class-net-qmi b/Documentation/ABI/testing/sysfs-class-net-qmi
+index ed79f5893421..47e6b9732337 100644
+--- a/Documentation/ABI/testing/sysfs-class-net-qmi
++++ b/Documentation/ABI/testing/sysfs-class-net-qmi
+@@ -58,3 +58,19 @@ Description:
+ 
+ 		Indicates the mux id associated to the qmimux network interface
+ 		during its creation.
++
++What:		/sys/class/net/<iface>/qmi/pass_through
++Date:		January 2021
++KernelVersion:	5.12
++Contact:	Subash Abhinov Kasiviswanathan <subashab@codeaurora.org>
++Description:
++		Boolean.  Default: 'N'
++
++		Set this to 'Y' to enable 'pass-through' mode, allowing packets
++		in MAP format to be passed on to the stack.
++
++		Normally the rmnet driver (CONFIG_RMNET) is then used to process
++		and demultiplex these packets.
++
++		'Pass-through' mode can be enabled when the device is in
++		'raw-ip' mode only.
+-- 
+2.17.1
 
-Maybe good time to refactor the code to make it table driven rather
-than individual statistic items.
