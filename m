@@ -2,85 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6E44B37170E
-	for <lists+netdev@lfdr.de>; Mon,  3 May 2021 16:49:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 504CB371711
+	for <lists+netdev@lfdr.de>; Mon,  3 May 2021 16:49:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229924AbhECOt5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 3 May 2021 10:49:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53688 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229949AbhECOtz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 3 May 2021 10:49:55 -0400
-Received: from mail-oi1-x22b.google.com (mail-oi1-x22b.google.com [IPv6:2607:f8b0:4864:20::22b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 378AFC06174A
-        for <netdev@vger.kernel.org>; Mon,  3 May 2021 07:49:02 -0700 (PDT)
-Received: by mail-oi1-x22b.google.com with SMTP id d21so3536326oic.11
-        for <netdev@vger.kernel.org>; Mon, 03 May 2021 07:49:02 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=lKpuIpEw/RycTQ8Ocq7F02Px0k5oqlFXMXYs1gVgBW0=;
-        b=ECAv+gqW9A4vejSCj3Ll2BDOmG7EnLKSeSnFwk/uZDINiDqB0iKGxCy12pRQRTEouQ
-         hnRF9esLrZNSYiP5qSK7qI0FRNM/RVolAdOk1AkY4FtLov5bt58VmKRJEBGJN7nJBnsR
-         61jaUCPIausoNErrGqpgTsp2WMyCVFINFnC6mAJZdmj7+DTTXlQ9I8/Q8rjTciysIYEF
-         5T/WRAvsc+kPVIukdOivpzLxYP4LwNCuQE9KGxFPopCnjKt5cJi6yGJnFtjMcpTzYhIj
-         EMRXV0/921Es68ZEOPT+NyHlUqkDIdLC+WyRgFOQ+/pkOYVoRQFSEaylIe4TiHRRwt/v
-         nuTg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=lKpuIpEw/RycTQ8Ocq7F02Px0k5oqlFXMXYs1gVgBW0=;
-        b=iFx6sPRNWlp/K2R4v9aYJOl7rAQRkFASrTn/43KtgQeTBWzIgb8gmXHkVO72ZLHclA
-         L9aX4GuvsnTXUd2XNvSF2+QDJ/fUaJOgTQveBigpNRIrygAdeyHC3zpseyVYjUrqLEBX
-         iLHt7peKhgQhQJK13kRd/w5M5OrddkRBjzOd5Yy0KmBY0xwSAnh/XdWsMRx3SymJBNhZ
-         C4N17+WdyUFSgWLkFVsiaXghlxf4FlZYlSD+0j44cVYT1P4sfVUl+8ZUqZaMZ/a58Nmr
-         9AH4hacNJq4u3R9yFN4jNBSQAslSKXqVMrfFPUhRukFgui8rolAZnVnyFJXPd5b1hgsg
-         MUyQ==
-X-Gm-Message-State: AOAM531rKc/yt1XlZGH4xVagDsDFIBMZybg/jM0ghkCbKyzi2NKkE45N
-        ajZAFKzIdd02MB/D0lUAjAGxL7ll0NdEWA==
-X-Google-Smtp-Source: ABdhPJwh9whmhOt1aT9LxOHxvjthINkj+s85qqo7spgJ7nYRHH2OF05k27t3+NR1OYKn2PCHeLW3NA==
-X-Received: by 2002:aca:bb06:: with SMTP id l6mr13733881oif.121.1620053341713;
-        Mon, 03 May 2021 07:49:01 -0700 (PDT)
-Received: from Davids-MacBook-Pro.local ([8.48.134.33])
-        by smtp.googlemail.com with ESMTPSA id r124sm607243oig.38.2021.05.03.07.49.00
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 03 May 2021 07:49:01 -0700 (PDT)
-Subject: Re: [PATCH iproute2 0/2] dcb: some misc fixes
-To:     Andrea Claudi <aclaudi@redhat.com>, netdev@vger.kernel.org,
-        Petr Machata <me@pmachata.org>
-Cc:     stephen@networkplumber.org
-References: <cover.1619886883.git.aclaudi@redhat.com>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <40f5d824-d297-e040-2978-9b73fac13bc2@gmail.com>
-Date:   Mon, 3 May 2021 08:49:00 -0600
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
- Gecko/20100101 Thunderbird/78.10.0
+        id S229903AbhECOue (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 3 May 2021 10:50:34 -0400
+Received: from aserp2120.oracle.com ([141.146.126.78]:50638 "EHLO
+        aserp2120.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229596AbhECOue (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 3 May 2021 10:50:34 -0400
+Received: from pps.filterd (aserp2120.oracle.com [127.0.0.1])
+        by aserp2120.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 143Ei4dM009417;
+        Mon, 3 May 2021 14:49:21 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
+ : subject : message-id : mime-version : content-type; s=corp-2020-01-29;
+ bh=SoiMkEpKlhR/SPzQZKWhuYHOGqyO7f6ekQE/KJ2Xfeo=;
+ b=rhN7qTDtQVfJR+e8ttEzU75oUxrD1Bm1dNxIacJuZBx9ORUwfIJVvmyv4PQvZ+byUWgt
+ W4iCGFwheqBa1EIFWkBMHO48jSNXbDdsOcMHQcN57Q/PlRBuEsssuEqRbVhHFzK+E8TG
+ vp3ihpGtlG6rrNv9K4Vg3qubLJgRJUTylyOSkwcONI+KEuO8uDu6yNgrSwia9fk9IpAT
+ 5CjnpF8CyMg4qCay0begB/1HugJBwFg2+2y1JmgNXH4F75vXGDny/HqG5/lSjdPK2wy7
+ L6y9j1YgXq5mgnAGa22OjCkucE9OAvODOwpvg2szltRLPMw8b1LK4n4gRf+MfdXjcg7S gg== 
+Received: from userp3020.oracle.com (userp3020.oracle.com [156.151.31.79])
+        by aserp2120.oracle.com with ESMTP id 388xxmuuww-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Mon, 03 May 2021 14:49:21 +0000
+Received: from pps.filterd (userp3020.oracle.com [127.0.0.1])
+        by userp3020.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 143EfHWQ139249;
+        Mon, 3 May 2021 14:49:20 GMT
+Received: from pps.reinject (localhost [127.0.0.1])
+        by userp3020.oracle.com with ESMTP id 389grqtc54-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Mon, 03 May 2021 14:49:20 +0000
+Received: from userp3020.oracle.com (userp3020.oracle.com [127.0.0.1])
+        by pps.reinject (8.16.0.36/8.16.0.36) with SMTP id 143Egu4q161043;
+        Mon, 3 May 2021 14:49:20 GMT
+Received: from userv0122.oracle.com (userv0122.oracle.com [156.151.31.75])
+        by userp3020.oracle.com with ESMTP id 389grqtc4n-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Mon, 03 May 2021 14:49:20 +0000
+Received: from abhmp0003.oracle.com (abhmp0003.oracle.com [141.146.116.9])
+        by userv0122.oracle.com (8.14.4/8.14.4) with ESMTP id 143EnHSX032020;
+        Mon, 3 May 2021 14:49:17 GMT
+Received: from mwanda (/102.36.221.92)
+        by default (Oracle Beehive Gateway v4.0)
+        with ESMTP ; Mon, 03 May 2021 14:49:16 +0000
+Date:   Mon, 3 May 2021 17:49:09 +0300
+From:   Dan Carpenter <dan.carpenter@oracle.com>
+To:     Marc Kleine-Budde <mkl@pengutronix.de>
+Cc:     Manivannan Sadhasivam <mani@kernel.org>,
+        Thomas Kopp <thomas.kopp@microchip.com>,
+        Wolfgang Grandegger <wg@grandegger.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, linux-can@vger.kernel.org,
+        netdev@vger.kernel.org, kernel-janitors@vger.kernel.org
+Subject: [PATCH net] can: mcp251xfd: fix an error pointer dereference in probe
+Message-ID: <YJANZf13Qxd5Mhr1@mwanda>
 MIME-Version: 1.0
-In-Reply-To: <cover.1619886883.git.aclaudi@redhat.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+X-Mailer: git-send-email haha only kidding
+X-Proofpoint-GUID: X_RwcsY3xP1R8gQHmDq5FQLLSFZox1Rz
+X-Proofpoint-ORIG-GUID: X_RwcsY3xP1R8gQHmDq5FQLLSFZox1Rz
+X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=9973 signatures=668683
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 malwarescore=0 spamscore=0
+ suspectscore=0 phishscore=0 clxscore=1011 lowpriorityscore=0
+ mlxlogscore=999 priorityscore=1501 impostorscore=0 mlxscore=0 adultscore=0
+ bulkscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2104060000 definitions=main-2105030102
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 5/1/21 10:39 AM, Andrea Claudi wrote:
-> This series fixes two issues on dcb code:
-> - patch 1 fixes an incorrect return value in dcb_cmd_app_show() if an
->   incorrect argument is provided;
-> - patch 2 is a trivial fix for a memory leak when "dcb help" is
->   executed.
-> 
-> Andrea Claudi (2):
->   dcb: fix return value on dcb_cmd_app_show
->   dcb: fix memory leak
-> 
->  dcb/dcb.c     | 3 ++-
->  dcb/dcb_app.c | 2 +-
->  2 files changed, 3 insertions(+), 2 deletions(-)
-> 
+When we converted this code to use dev_err_probe() we accidentally
+removed a return.  It means that if devm_clk_get() it will lead to
+an Oops when we call clk_get_rate() on the next line.
 
-Always cc author of Fixes commit
+Fixes: cf8ee6de2543 ("can: mcp251xfd: mcp251xfd_probe(): use dev_err_probe() to simplify error handling")
+Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
+---
+ drivers/net/can/spi/mcp251xfd/mcp251xfd-core.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/net/can/spi/mcp251xfd/mcp251xfd-core.c b/drivers/net/can/spi/mcp251xfd/mcp251xfd-core.c
+index 970dc570e7a5..f122976e90da 100644
+--- a/drivers/net/can/spi/mcp251xfd/mcp251xfd-core.c
++++ b/drivers/net/can/spi/mcp251xfd/mcp251xfd-core.c
+@@ -2885,8 +2885,8 @@ static int mcp251xfd_probe(struct spi_device *spi)
+ 
+ 	clk = devm_clk_get(&spi->dev, NULL);
+ 	if (IS_ERR(clk))
+-		dev_err_probe(&spi->dev, PTR_ERR(clk),
+-			      "Failed to get Oscillator (clock)!\n");
++		return dev_err_probe(&spi->dev, PTR_ERR(clk),
++				     "Failed to get Oscillator (clock)!\n");
+ 	freq = clk_get_rate(clk);
+ 
+ 	/* Sanity check */
+-- 
+2.30.2
+
