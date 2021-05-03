@@ -2,162 +2,138 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DFB44371296
-	for <lists+netdev@lfdr.de>; Mon,  3 May 2021 10:47:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 373893712A0
+	for <lists+netdev@lfdr.de>; Mon,  3 May 2021 10:49:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232988AbhECIs2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 3 May 2021 04:48:28 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:39464 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S230364AbhECIs1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 3 May 2021 04:48:27 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1620031654;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=oNh3VIIaagnprujVXdPtNBa4jPKLHbvzqtglqUzkcjA=;
-        b=e8RC2eL+gnIHgBWKOfx+Hl9RYkeKrrYo7MUxRfcsI1bb2zm01SWe7udILlPhPmH+L6IE1h
-        TCg0jyyWlhPi24bWNYZIweJXrCFs4a9ofidjuvD9PJc0aYFwrZSqY6fDGQd1905vSDLIYG
-        LS2GmVgq0j6RcEMYA96HrKjQYpkBKzQ=
-Received: from mail-wr1-f71.google.com (mail-wr1-f71.google.com
- [209.85.221.71]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-413--XUtK-NxNyWetHaMnSMd5Q-1; Mon, 03 May 2021 04:47:32 -0400
-X-MC-Unique: -XUtK-NxNyWetHaMnSMd5Q-1
-Received: by mail-wr1-f71.google.com with SMTP id q18-20020adfc5120000b029010c2bdd72adso3519042wrf.16
-        for <netdev@vger.kernel.org>; Mon, 03 May 2021 01:47:32 -0700 (PDT)
+        id S232906AbhECIuI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 3 May 2021 04:50:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58996 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230490AbhECIuH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 3 May 2021 04:50:07 -0400
+Received: from mail-lj1-x231.google.com (mail-lj1-x231.google.com [IPv6:2a00:1450:4864:20::231])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D30D8C06174A
+        for <netdev@vger.kernel.org>; Mon,  3 May 2021 01:49:14 -0700 (PDT)
+Received: by mail-lj1-x231.google.com with SMTP id a36so5860318ljq.8
+        for <netdev@vger.kernel.org>; Mon, 03 May 2021 01:49:14 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=waldekranz-com.20150623.gappssmtp.com; s=20150623;
+        h=from:to:cc:subject:in-reply-to:references:date:message-id
+         :mime-version;
+        bh=0EouFmRQtyp54q5lT4y8klpGIjEEoNDqsvWAVDSXz2M=;
+        b=2Sah5MchUNI+6kq0vaRQ8pt8pxvRkS+n++D5YC/Co5K9MsXsDzST2/1zZdu2yrOXyb
+         7+sijzb5l3bg3zREnVHc4xXYSBY/9W/bXW43Rx2834kYR7foUvAQ+S3Mqxgookz0Mb5I
+         Fpgwi7MAZvEZtLUTjpDJ4+cd/q1I6rMlxypZR3bbU8WRVf2VjLI2JSqxpIGs40v+B0z+
+         8M8GjPCKFmsw8PJEgV30WhCscYk0Ca9MX6xVbvwFSr7/hhMt5SjDIKUP1A60e+qhh8zq
+         f5XL27XkmJfZZDcB3uTiBHWRy5we1spEbGZPnv+ESPYKkJ09r2v7dI2by8s740hgnCIQ
+         iWvA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=oNh3VIIaagnprujVXdPtNBa4jPKLHbvzqtglqUzkcjA=;
-        b=sDmeGkUC0KG/NQm5B+y2IXe1klVpYPg/39jRet5gkRun71Sy/r8wnKSNZasTsFXi1L
-         Rx2mUEZgGjsF6HUrauXHeeiF2OVg5i7wDdHh0KTL/XPOskxdvthUSF8iJ1pNGEhAx+/A
-         Ea5ZGT6KAWGNxHSeJNTwM22e3ErE2Hh1IhsS8kQ37Gh1b8m3HWHbe8ESwriQ5R0K/lGs
-         Gwp7yHE4tmObJS1GZvAm4TKkvGmkL31d2lMp11Ulujbsuh+T63bYt5z+24aTAoleDmCj
-         qrM8jMJ3wph5iq1dRi0VeornE5Bs5CAOJu8ScBmPGBTDIL6oxcZoAyRCDmOR3stBIZQx
-         sPCQ==
-X-Gm-Message-State: AOAM532NzhZVYJpYJRvL8y3tmb8Ie/BSQUjZ8v86YDKJ3nuDpZqyQmkA
-        ya/z0jLkPJsdZaCj1bG2iAwJSwHUQLxTcxju3HBYpC+WuRXoQQOkr8tdnLNJxPDWURfKDi4opIx
-        0KDQXqsKQCxKKgF8/
-X-Received: by 2002:adf:f00a:: with SMTP id j10mr23036889wro.231.1620031651547;
-        Mon, 03 May 2021 01:47:31 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJxvQn7ZILmdzPLig2hPkrpiOMpynXsLhaYHpmRxuCUep9NSoCwjLciJspeYLkl3+SmLIr8RrA==
-X-Received: by 2002:adf:f00a:: with SMTP id j10mr23036877wro.231.1620031651405;
-        Mon, 03 May 2021 01:47:31 -0700 (PDT)
-Received: from redhat.com ([2a10:800a:cdef:0:114d:2085:61e4:7b41])
-        by smtp.gmail.com with ESMTPSA id i20sm20091020wmq.29.2021.05.03.01.47.29
+        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
+         :message-id:mime-version;
+        bh=0EouFmRQtyp54q5lT4y8klpGIjEEoNDqsvWAVDSXz2M=;
+        b=UjFPCWwM09L9OxBPL/D8wrIa+1TbSHCNIiIgW+KfEtAv9U3abohvNBVjCsadYQ4mgJ
+         c5meR3vt/xtbSEVXWjETyO4Zbqkgc/lt9fOSvnV68eFoHTgNfIlYWZAZDMRaSIJKGrpz
+         yJGLpp1nPesT+I/bGsacK0TA6ZMrJcXNrR1dT7LWwBb/KanSlhx0lVWhnpf0lMPSZU0X
+         8XLYf6GsHx1udZyzHVOD8XbTycxvHL3Pzt3lCWNWaV/HMSHk3dz5LmLi8pCn5nYZUHlH
+         XHpxocWRqK1w5CMPFfFGIfNtNM7Ca75UrE0wCtSHLKT8trfXVy9hY1/W3D9qRH7H5fqH
+         5Gmg==
+X-Gm-Message-State: AOAM5334nFWQZsqapLAoh4N4s1BMAYBjoawxUh41ovpSXYP0bFl2TEog
+        LMtrEfjRE4vWKzEBI6Z1oUPG5A==
+X-Google-Smtp-Source: ABdhPJwb8mrvJ4wwAtb4SslFBBY5HE5cOf6SFDqbzqVHpcpVFp6sLQs8rhg6nGMcZyhzkc6/hmxqQA==
+X-Received: by 2002:a2e:a373:: with SMTP id i19mr4477066ljn.49.1620031753376;
+        Mon, 03 May 2021 01:49:13 -0700 (PDT)
+Received: from wkz-x280 (static-193-12-47-89.cust.tele2.se. [193.12.47.89])
+        by smtp.gmail.com with ESMTPSA id g9sm1208312lja.134.2021.05.03.01.49.12
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 03 May 2021 01:47:30 -0700 (PDT)
-Date:   Mon, 3 May 2021 04:47:28 -0400
-From:   "Michael S. Tsirkin" <mst@redhat.com>
-To:     Zhu Lingshan <lingshan.zhu@intel.com>
-Cc:     jasowang@redhat.com, lulu@redhat.com, sgarzare@redhat.com,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        kvm@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH V4 2/3] vDPA/ifcvf: enable Intel C5000X-PL virtio-block
- for vDPA
-Message-ID: <20210503043801-mutt-send-email-mst@kernel.org>
-References: <20210419063326.3748-1-lingshan.zhu@intel.com>
- <20210419063326.3748-3-lingshan.zhu@intel.com>
+        Mon, 03 May 2021 01:49:12 -0700 (PDT)
+From:   Tobias Waldekranz <tobias@waldekranz.com>
+To:     Ido Schimmel <idosch@idosch.org>
+Cc:     davem@davemloft.net, kuba@kernel.org, andrew@lunn.ch,
+        vivien.didelot@gmail.com, f.fainelli@gmail.com, olteanv@gmail.com,
+        roopa@nvidia.com, nikolay@nvidia.com, jiri@resnulli.us,
+        stephen@networkplumber.org, netdev@vger.kernel.org,
+        bridge@lists.linux-foundation.org
+Subject: Re: [RFC net-next 2/9] net: bridge: Disambiguate offload_fwd_mark
+In-Reply-To: <YI6+kQxjCcnYmwkx@shredder>
+References: <20210426170411.1789186-1-tobias@waldekranz.com> <20210426170411.1789186-3-tobias@waldekranz.com> <YI6+kQxjCcnYmwkx@shredder>
+Date:   Mon, 03 May 2021 10:49:12 +0200
+Message-ID: <87h7jknqwn.fsf@waldekranz.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210419063326.3748-3-lingshan.zhu@intel.com>
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Apr 19, 2021 at 02:33:25PM +0800, Zhu Lingshan wrote:
-> This commit enabled Intel FPGA SmartNIC C5000X-PL virtio-block
-> for vDPA.
-> 
-> Signed-off-by: Zhu Lingshan <lingshan.zhu@intel.com>
-> Reviewed-by: Stefano Garzarella <sgarzare@redhat.com>
-> Acked-by: Jason Wang <jasowang@redhat.com>
-> ---
->  drivers/vdpa/ifcvf/ifcvf_base.h |  8 +++++++-
->  drivers/vdpa/ifcvf/ifcvf_main.c | 19 ++++++++++++++++++-
->  2 files changed, 25 insertions(+), 2 deletions(-)
-> 
-> diff --git a/drivers/vdpa/ifcvf/ifcvf_base.h b/drivers/vdpa/ifcvf/ifcvf_base.h
-> index 1c04cd256fa7..0111bfdeb342 100644
-> --- a/drivers/vdpa/ifcvf/ifcvf_base.h
-> +++ b/drivers/vdpa/ifcvf/ifcvf_base.h
-> @@ -15,6 +15,7 @@
->  #include <linux/pci_regs.h>
->  #include <linux/vdpa.h>
->  #include <uapi/linux/virtio_net.h>
-> +#include <uapi/linux/virtio_blk.h>
->  #include <uapi/linux/virtio_config.h>
->  #include <uapi/linux/virtio_pci.h>
->  
-> @@ -28,7 +29,12 @@
->  #define C5000X_PL_SUBSYS_VENDOR_ID	0x8086
->  #define C5000X_PL_SUBSYS_DEVICE_ID	0x0001
->  
-> -#define IFCVF_SUPPORTED_FEATURES \
-> +#define C5000X_PL_BLK_VENDOR_ID		0x1AF4
+On Sun, May 02, 2021 at 18:00, Ido Schimmel <idosch@idosch.org> wrote:
+> On Mon, Apr 26, 2021 at 07:04:04PM +0200, Tobias Waldekranz wrote:
+>> - skb->cb->offload_fwd_mark becomes skb->cb->src_hwdom. There is a
+>>   slight change here: Whereas previously this was only set for
+>>   offloaded packets, we now always track the incoming hwdom. As all
+>>   uses where already gated behind checks of skb->offload_fwd_mark,
+>>   this will not introduce any functional change, but it paves the way
+>>   for future changes where the ingressing hwdom must be known both for
+>>   offloaded and non-offloaded frames.
+>
+> [...]
+>
+>> @@ -43,15 +43,15 @@ int nbp_switchdev_mark_set(struct net_bridge_port *p)
+>>  void nbp_switchdev_frame_mark(const struct net_bridge_port *p,
+>>  			      struct sk_buff *skb)
+>>  {
+>> -	if (skb->offload_fwd_mark && !WARN_ON_ONCE(!p->offload_fwd_mark))
+>> -		BR_INPUT_SKB_CB(skb)->offload_fwd_mark = p->offload_fwd_mark;
+>> +	if (p->hwdom)
+>> +		BR_INPUT_SKB_CB(skb)->src_hwdom = p->hwdom;
+>>  }
+>
+> I assume you are referring to this change? "src_hwdom" sounds weird if
+> it's expected to be valid for non-offloaded frames.
 
+Perhaps "non-offloaded" was a sloppy description on my part. I was
+trying to describe frames that originate from a switchdev, but have not
+been forwarded by hardware; e.g. STP BPDUs, IGMP reports, etc. So
+nbp_switchdev_frame_mark now basically says: "If this skb came in from a
+switchdev, make sure to note which one".
 
-Come on this is just PCI_VENDOR_ID_REDHAT_QUMRANET right?
+> Can you elaborate about "future changes where the ingressing hwdom must
+> be known both for offloaded and non-offloaded frames"?
 
+Typical example: The switchdev has a fixed configuration to trap STP
+BPDUs, but STP is not running on the bridge and the group_fwd_mask
+allows them to be forwarded. Say we have this setup:
 
+      br0
+    /  |  \
+swp0 swp1 swp2
 
-> +#define C5000X_PL_BLK_DEVICE_ID		0x1001
+A BPDU comes in on swp0 and is trapped to the CPU; the driver does not
+set skb->offload_fwd_mark. The bridge determines that the frame should
+be forwarded to swp{1,2}. It is imperative that forward offloading is
+_not_ allowed in this case, as the source hwdom is already "poisoned".
 
-0x1001 is a transitional blk device from virtio spec too right? Let's add these to virtio_ids.h?
+Recording the source hwdom allows this case to be handled properly.
 
-> +#define C5000X_PL_BLK_SUBSYS_VENDOR_ID	0x8086
-> +#define C5000X_PL_BLK_SUBSYS_DEVICE_ID	0x0002
+> Probably best to split this change to a different patch given the rest
+> of the changes are mechanical.
 
-VIRTIO_ID_BLOCK?
+Right, but I think the change in name to warrants a change in
+semantics. It is being renamed to src_hwdom because it now holds just
+that information. Again, there is no functional change introduced by
+this since nbp_switchdev_allowed_egress always checks for the presence
+of skb->offload_fwd_mark anyway. But if you feel strongly about it, I
+will split it up.
 
-> +
-> +#define IFCVF_NET_SUPPORTED_FEATURES \
->  		((1ULL << VIRTIO_NET_F_MAC)			| \
->  		 (1ULL << VIRTIO_F_ANY_LAYOUT)			| \
->  		 (1ULL << VIRTIO_F_VERSION_1)			| \
-> diff --git a/drivers/vdpa/ifcvf/ifcvf_main.c b/drivers/vdpa/ifcvf/ifcvf_main.c
-> index 66927ec81fa5..9a4a6df91f08 100644
-> --- a/drivers/vdpa/ifcvf/ifcvf_main.c
-> +++ b/drivers/vdpa/ifcvf/ifcvf_main.c
-> @@ -168,10 +168,23 @@ static struct ifcvf_hw *vdpa_to_vf(struct vdpa_device *vdpa_dev)
->  
->  static u64 ifcvf_vdpa_get_features(struct vdpa_device *vdpa_dev)
->  {
-> +	struct ifcvf_adapter *adapter = vdpa_to_adapter(vdpa_dev);
->  	struct ifcvf_hw *vf = vdpa_to_vf(vdpa_dev);
-> +	struct pci_dev *pdev = adapter->pdev;
-> +
->  	u64 features;
->  
-> -	features = ifcvf_get_features(vf) & IFCVF_SUPPORTED_FEATURES;
-> +	switch (vf->dev_type) {
-> +	case VIRTIO_ID_NET:
-> +		features = ifcvf_get_features(vf) & IFCVF_NET_SUPPORTED_FEATURES;
-> +		break;
-> +	case VIRTIO_ID_BLOCK:
-> +		features = ifcvf_get_features(vf);
-> +		break;
-> +	default:
-> +		features = 0;
-> +		IFCVF_ERR(pdev, "VIRTIO ID %u not supported\n", vf->dev_type);
-> +	}
->  
->  	return features;
->  }
-> @@ -514,6 +527,10 @@ static struct pci_device_id ifcvf_pci_ids[] = {
->  			 C5000X_PL_DEVICE_ID,
->  			 C5000X_PL_SUBSYS_VENDOR_ID,
->  			 C5000X_PL_SUBSYS_DEVICE_ID) },
-> +	{ PCI_DEVICE_SUB(C5000X_PL_BLK_VENDOR_ID,
-> +			 C5000X_PL_BLK_DEVICE_ID,
-> +			 C5000X_PL_BLK_SUBSYS_VENDOR_ID,
-> +			 C5000X_PL_BLK_SUBSYS_DEVICE_ID) },
->  
->  	{ 0 },
->  };
-> -- 
-> 2.27.0
-
+>>  
+>>  bool nbp_switchdev_allowed_egress(const struct net_bridge_port *p,
+>>  				  const struct sk_buff *skb)
+>>  {
+>>  	return !skb->offload_fwd_mark ||
+>> -	       BR_INPUT_SKB_CB(skb)->offload_fwd_mark != p->offload_fwd_mark;
+>> +	       BR_INPUT_SKB_CB(skb)->src_hwdom != p->hwdom;
+>>  }
+>>  
+>>  /* Flags that can be offloaded to hardware */
+>> -- 
+>> 2.25.1
+>> 
