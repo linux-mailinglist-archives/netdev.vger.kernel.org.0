@@ -2,70 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E0E7F3721BB
-	for <lists+netdev@lfdr.de>; Mon,  3 May 2021 22:41:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5A5503721CC
+	for <lists+netdev@lfdr.de>; Mon,  3 May 2021 22:45:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230032AbhECUl1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 3 May 2021 16:41:27 -0400
-Received: from mail.kernel.org ([198.145.29.99]:46938 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229931AbhECUlE (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 3 May 2021 16:41:04 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id 5C87661244;
-        Mon,  3 May 2021 20:40:10 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1620074410;
-        bh=SIGGcbZNnoVNPQobUG6p/oD03o9TdcRVfYOzyFG+Acc=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=rusvzxJvJp3Xak2yaUafUhih6+Dz444CP7pOtzxPkmN4pcS9BH/xQ9TX2Tut95MLG
-         R8L4T9bntnK2/VyKPVzxICpEDp/GxNzkKQRLSwrAIYYWukldpg07dQQYEfbS/gLLtx
-         kbKGLqWk04lfjsChMkk5Sh4enxOUpYEx7fUDLo8ae0iTGWPyDoazgQFn00ciqpcR31
-         POASQi4eNRgD9nDPqN0GSkLnp5riJGWjSRiPxzCbk0W5Auschya9sMuVqyHiKUTA8U
-         V0rqjOQEsuQ173bIeQS7ek3MX6RFRtjAjfgoFKv6EIsbBuah8Z9BpA9PdV2pXfUGT/
-         1omL/IoUKWteA==
-Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 4C47060ACA;
-        Mon,  3 May 2021 20:40:10 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net] sctp: fix a SCTP_MIB_CURRESTAB leak in
- sctp_sf_do_dupcook_b
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <162007441030.32677.12037671567310177974.git-patchwork-notify@kernel.org>
-Date:   Mon, 03 May 2021 20:40:10 +0000
-References: <98b2f435ec48fba6c9bbb63908c887f15f67a98d.1619988080.git.lucien.xin@gmail.com>
-In-Reply-To: <98b2f435ec48fba6c9bbb63908c887f15f67a98d.1619988080.git.lucien.xin@gmail.com>
-To:     Xin Long <lucien.xin@gmail.com>
-Cc:     netdev@vger.kernel.org, linux-sctp@vger.kernel.org,
-        davem@davemloft.net, kuba@kernel.org, marcelo.leitner@gmail.com
+        id S229747AbhECUqp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 3 May 2021 16:46:45 -0400
+Received: from shards.monkeyblade.net ([23.128.96.9]:44716 "EHLO
+        mail.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229497AbhECUqp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 3 May 2021 16:46:45 -0400
+Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
+        by mail.monkeyblade.net (Postfix) with ESMTPSA id 4D3194D0B0F95;
+        Mon,  3 May 2021 13:45:45 -0700 (PDT)
+Date:   Mon, 03 May 2021 13:45:39 -0700 (PDT)
+Message-Id: <20210503.134539.1344269109528145336.davem@davemloft.net>
+To:     shubhankarvk@gmail.com
+Cc:     kuba@kernel.org, ast@kernel.org, daniel@iogearbox.net,
+        andrii@kernel.org, kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
+        john.fastabend@gmail.com, kpsingh@kernel.org, willemb@google.com,
+        xie.he.0141@gmail.com, edumazet@google.com,
+        john.ogness@linutronix.de, eyal.birger@gmail.com,
+        wanghai38@huawei.com, colin.king@canonical.com,
+        tannerlove@google.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, bpf@vger.kernel.org
+Subject: Re: [PATCH] net: packet: af_packet.c: Add new line after
+ declaration
+From:   David Miller <davem@davemloft.net>
+In-Reply-To: <20210503170309.63r2mtupzn5ne6zt@kewl-virtual-machine>
+References: <20210503170309.63r2mtupzn5ne6zt@kewl-virtual-machine>
+X-Mailer: Mew version 6.8 on Emacs 27.1
+Mime-Version: 1.0
+Content-Type: Text/Plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.6.2 (mail.monkeyblade.net [0.0.0.0]); Mon, 03 May 2021 13:45:49 -0700 (PDT)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+From: Shubhankar Kuranagatti <shubhankarvk@gmail.com>
+Date: Mon, 3 May 2021 22:33:09 +0530
 
-This patch was applied to netdev/net.git (refs/heads/master):
-
-On Mon,  3 May 2021 04:41:20 +0800 you wrote:
-> Normally SCTP_MIB_CURRESTAB is always incremented once asoc enter into
-> ESTABLISHED from the state < ESTABLISHED and decremented when the asoc
-> is being deleted.
+> New line added after declaration
+> Tabs have been used instead of spaces for indentation
+> Each subsequent line of block commment start with a *
+> This is done to maintain code uniformity
 > 
-> However, in sctp_sf_do_dupcook_b(), the asoc's state can be changed to
-> ESTABLISHED from the state >= ESTABLISHED where it shouldn't increment
-> SCTP_MIB_CURRESTAB. Otherwise, one asoc may increment MIB_CURRESTAB
-> multiple times but only decrement once at the end.
-> 
-> [...]
+> Signed-off-by: Shubhankar Kuranagatti <shubhankarvk@gmail.com>
 
-Here is the summary with links:
-  - [net] sctp: fix a SCTP_MIB_CURRESTAB leak in sctp_sf_do_dupcook_b
-    https://git.kernel.org/netdev/net/c/f282df039126
-
-You are awesome, thank you!
---
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+Please resubmit this when net-next opens back up, thank you.
