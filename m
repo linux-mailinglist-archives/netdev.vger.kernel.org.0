@@ -2,55 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 45185372341
-	for <lists+netdev@lfdr.de>; Tue,  4 May 2021 00:54:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CB5C1372348
+	for <lists+netdev@lfdr.de>; Tue,  4 May 2021 00:55:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229595AbhECWzL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 3 May 2021 18:55:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50000 "EHLO
+        id S229822AbhECW4r (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 3 May 2021 18:56:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50340 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229497AbhECWzK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 3 May 2021 18:55:10 -0400
-Received: from mail-yb1-xb32.google.com (mail-yb1-xb32.google.com [IPv6:2607:f8b0:4864:20::b32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 012CFC061574;
-        Mon,  3 May 2021 15:54:17 -0700 (PDT)
-Received: by mail-yb1-xb32.google.com with SMTP id g38so9690218ybi.12;
-        Mon, 03 May 2021 15:54:16 -0700 (PDT)
+        with ESMTP id S229594AbhECW4p (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 3 May 2021 18:56:45 -0400
+Received: from mail-yb1-xb2d.google.com (mail-yb1-xb2d.google.com [IPv6:2607:f8b0:4864:20::b2d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CAA92C061574;
+        Mon,  3 May 2021 15:55:50 -0700 (PDT)
+Received: by mail-yb1-xb2d.google.com with SMTP id i4so9738096ybe.2;
+        Mon, 03 May 2021 15:55:50 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc:content-transfer-encoding;
-        bh=WUJhnxU6cwZ9hrzXgR8muBFpzaHvi5sAFLcV3wkgF3M=;
-        b=TjJ4eGQzGiwcO9sJ752saSyPqLTYLms8meeqnrv5fV4QqUdOIp7MBYP/JEQx4Pz6/n
-         EcttZdv/5RP+EeMcZcZYZ8aqRpUqaf3v5hC/kDtfqQyzcDN0eneLtXbrFYEvXRTM3GdC
-         i1yokvUrF9coS3s0VpQonfCLbry/I5jiKT9vBGIKjoUFUkH9qkU3neu/O+4F8jrnxhx2
-         EiXCp2J5ZyrwKRgSyXEPaCXpR03yoHAQluatlHXLpOMFF6Lj8rDigeFlclulYDjDEIRv
-         bhiEKRhWmi7Vywb5cv1zitET6qQG9mKxGvkO9kcJGKxkTotAb8prVuPjRSXDuDvgboBe
-         +00g==
+        bh=wyY0OfQXGahpoa5vil7fICAmZECAfuR7jBxXJCJUZKU=;
+        b=qIibAh+RTZMO/AU/olHKk9REU2NXDiP2UwOA98vzIs9hTl3a9JoP2vsnhKuriBY2Qe
+         FEK2lNgFhVW+0DoEXtWTD/Rzf7WFINOPL1g5o2zuwOPJVWrelGQVy9ryMPC0ixdOcGuV
+         yHSi1RPrVH+rSuDESRa2WOW5eZ4l5WzcPqd5T4X+3qMYb9Svs/z4jhmeCkJ49nBN9T5d
+         UR52rJKilGGu2DTEu1c1xIBV5j9enRlST7PjjpUkj8lbYCFthSoNqPKmWcPkOh13wluX
+         3fb3G6pNDl8XkSN41HtwsMYWmnZ2QEk5JWPmm9bYmvC+vR6f5K6EsHOwoZ66tZZGR7tl
+         kH7w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc:content-transfer-encoding;
-        bh=WUJhnxU6cwZ9hrzXgR8muBFpzaHvi5sAFLcV3wkgF3M=;
-        b=a3kRaYMeTZMma+EHRD4gLn0shCKpXZrAUYWpLPdTH67Qc4EpuW7txI+Ey1FEsD3/oY
-         vTnFxw4rqVfDNhhwlcanm16wXRRYq5dL6sOvH5fBt1ghpkWFPvMaz7EoW08G3MuIbW3i
-         GqEXvFlEcw1hheYlT1uvF4K8wkhuCh9ocaynvxBRn6XeUIqipH/Z4oQot6h6aM7QeytV
-         t+0afcM5SDSM39tGp+upWVgy2BwBRqBn+xk1YIBLAGO7w/HSSPWuiPxuaMmdHVWgjtwN
-         mC/XhaMj8L5s2zXkbUojnmy5yEYbWB1YYMwXdphSgv+c+EvTj0kK6zbxuqUZT4vP/Eu6
-         u5fg==
-X-Gm-Message-State: AOAM532YzdVa51N03oq9Eua8FzWhdH8YGPjgMBQDcFXjpFO0xLnTB9p3
-        4LbPwb/uipes9RlWATVeN5Q7DJk13Soh186SUuo=
-X-Google-Smtp-Source: ABdhPJyUYveOBaseVZmAJWokM5yu5X0xqHdOUJHWQNingr8yYWjDlBRKFoNO1vx0Gx6LoUWmbqH94GAyNi4MCKah4qI=
-X-Received: by 2002:a25:3357:: with SMTP id z84mr29830750ybz.260.1620082456347;
- Mon, 03 May 2021 15:54:16 -0700 (PDT)
+        bh=wyY0OfQXGahpoa5vil7fICAmZECAfuR7jBxXJCJUZKU=;
+        b=Ak0d+n9Hn28wSJURZAb+I6Kxq7dtNpYqWJw0wllJ08GZcQHvRyST4X/fiWHK/4QXXk
+         4v5Uqb/rQEaOV6cloNWZH/2nLUISsmJjzJfyjTl8ZpYk8+tXMa12Ah9LzP0iaYFtZQ3Q
+         Wkl57XJj7fadpLVkeVKUyDh/YtlUt6/GrXQMuuRsrh10AkvTpbZRhteFnB5G+FWx01je
+         PcLzsHVGzP0XZa4/ctUGQCMYpvVMbi3+eQ1K4xUxxVAH8IlaPefCjgzqluNqeXS2B7JF
+         /Ozr9uBV6yVegLFXhijy80p5Vzmy93KNWjKp8jLgY1YdkjYN5ksc5CY6eoSENRc5Qx3W
+         KzjQ==
+X-Gm-Message-State: AOAM533mg8yQ3an5qr+S1QjRLI5sbZAFZuPBANjkPajQygp3gToVbwNQ
+        tNjItFS43KD8wD/dpf7fHgq5esiwMO0yISk8B00=
+X-Google-Smtp-Source: ABdhPJwmF/CN/jZYQPRG95IAWBJy/X6VruB5qpnmta9yGbBuYIcPIUZxLqkLiMoZJYv+Epeus+DVB22l1V+s24cU3/M=
+X-Received: by 2002:a25:7507:: with SMTP id q7mr30445068ybc.27.1620082550094;
+ Mon, 03 May 2021 15:55:50 -0700 (PDT)
 MIME-Version: 1.0
-References: <20210428162553.719588-1-memxor@gmail.com> <20210428162553.719588-3-memxor@gmail.com>
- <CAEf4BzYhOQu1A-iK_D-gzcxfZj4BfDXoJ5=8zzHL8qO-URfRiA@mail.gmail.com> <20210501063246.iqhw5sdvx4iwllng@apollo>
-In-Reply-To: <20210501063246.iqhw5sdvx4iwllng@apollo>
+References: <20210428162553.719588-1-memxor@gmail.com> <20210428162553.719588-4-memxor@gmail.com>
+ <CAEf4BzYp1uN4E_=0N7DpwkEQOxntP0riz__yUzz3xu=k4yJ4sw@mail.gmail.com> <20210501063436.fcts6od3ua2mxojl@apollo>
+In-Reply-To: <20210501063436.fcts6od3ua2mxojl@apollo>
 From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Mon, 3 May 2021 15:54:05 -0700
-Message-ID: <CAEf4BzbGsXzT0V49FmqsaoORYpO-S1Y9yfPaR0MyoYFdCg+4wQ@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v5 2/3] libbpf: add low level TC-BPF API
+Date:   Mon, 3 May 2021 15:55:39 -0700
+Message-ID: <CAEf4BzaZLEHF-Sg3H7Q5ERxPhw++ok0samjj9C4ET2ttXqztGQ@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v5 3/3] libbpf: add selftests for TC-BPF API
 To:     Kumar Kartikeya Dwivedi <memxor@gmail.com>
 Cc:     bpf <bpf@vger.kernel.org>,
         =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>,
@@ -72,160 +72,101 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Apr 30, 2021 at 11:32 PM Kumar Kartikeya Dwivedi
+On Fri, Apr 30, 2021 at 11:34 PM Kumar Kartikeya Dwivedi
 <memxor@gmail.com> wrote:
 >
-> On Sat, May 01, 2021 at 01:05:40AM IST, Andrii Nakryiko wrote:
+> On Sat, May 01, 2021 at 01:11:47AM IST, Andrii Nakryiko wrote:
 > > On Wed, Apr 28, 2021 at 9:26 AM Kumar Kartikeya Dwivedi
 > > <memxor@gmail.com> wrote:
 > > >
-> > > This adds functions that wrap the netlink API used for adding,
-> > > manipulating, and removing traffic control filters.
-> > >
-> > > An API summary:
-> > >
-> > > A bpf_tc_hook represents a location where a TC-BPF filter can be
-> > > attached. This means that creating a hook leads to creation of the
-> > > backing qdisc, while destruction either removes all filters attached =
-to
-> > > a hook, or destroys qdisc if requested explicitly (as discussed below=
-).
-> > >
-> > > The TC-BPF API functions operate on this bpf_tc_hook to attach, repla=
-ce,
-> > > query, and detach tc filters.
-> > >
-> > > All functions return 0 on success, and a negative error code on failu=
-re.
-> > >
-
-[...]
-
+> > > This adds some basic tests for the low level bpf_tc_* API.
 > > >
 > > > Reviewed-by: Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com>
 > > > Signed-off-by: Kumar Kartikeya Dwivedi <memxor@gmail.com>
 > > > ---
-> >
-> > API looks good to me (except the flags field that just stands out).
-> > But I'll defer to Daniel to make the final call.
-> >
-> > >  tools/lib/bpf/libbpf.h   |  41 ++++
-> > >  tools/lib/bpf/libbpf.map |   5 +
-> > >  tools/lib/bpf/netlink.c  | 463 +++++++++++++++++++++++++++++++++++++=
-+-
-> > >  3 files changed, 508 insertions(+), 1 deletion(-)
+> > >  .../testing/selftests/bpf/prog_tests/tc_bpf.c | 467 ++++++++++++++++=
+++
+> > >  .../testing/selftests/bpf/progs/test_tc_bpf.c |  12 +
+> > >  2 files changed, 479 insertions(+)
+> > >  create mode 100644 tools/testing/selftests/bpf/prog_tests/tc_bpf.c
+> > >  create mode 100644 tools/testing/selftests/bpf/progs/test_tc_bpf.c
 > > >
-> > > diff --git a/tools/lib/bpf/libbpf.h b/tools/lib/bpf/libbpf.h
-> > > index bec4e6a6e31d..3de701f46a33 100644
-> > > --- a/tools/lib/bpf/libbpf.h
-> > > +++ b/tools/lib/bpf/libbpf.h
-> > > @@ -775,6 +775,47 @@ LIBBPF_API int bpf_linker__add_file(struct bpf_l=
-inker *linker, const char *filen
-> > >  LIBBPF_API int bpf_linker__finalize(struct bpf_linker *linker);
-> > >  LIBBPF_API void bpf_linker__free(struct bpf_linker *linker);
-> > >
-> > > +enum bpf_tc_attach_point {
-> > > +       BPF_TC_INGRESS =3D 1 << 0,
-> > > +       BPF_TC_EGRESS  =3D 1 << 1,
-> > > +       BPF_TC_CUSTOM  =3D 1 << 2,
-> > > +};
-> > > +
-> > > +enum bpf_tc_attach_flags {
-> > > +       BPF_TC_F_REPLACE =3D 1 << 0,
-> > > +};
-> > > +
-> > > +struct bpf_tc_hook {
-> > > +       size_t sz;
-> > > +       int ifindex;
-> > > +       enum bpf_tc_attach_point attach_point;
-> > > +       __u32 parent;
-> > > +       size_t :0;
-> > > +};
-> > > +
-> > > +#define bpf_tc_hook__last_field parent
-> > > +
-> > > +struct bpf_tc_opts {
-> > > +       size_t sz;
-> > > +       int prog_fd;
-> > > +       __u32 prog_id;
-> > > +       __u32 handle;
-> > > +       __u32 priority;
-> > > +       size_t :0;
-> > > +};
-> > > +
-> > > +#define bpf_tc_opts__last_field priority
-> > > +
-> > > +LIBBPF_API int bpf_tc_hook_create(struct bpf_tc_hook *hook, int flag=
-s);
-> > > +LIBBPF_API int bpf_tc_hook_destroy(struct bpf_tc_hook *hook);
-> > > +LIBBPF_API int bpf_tc_attach(const struct bpf_tc_hook *hook,
-> > > +                            struct bpf_tc_opts *opts,
-> > > +                            int flags);
-> >
-> > why didn't you put flags into bpf_tc_opts? they are clearly optional
-> > and fit into "opts" paradigm...
-> >
->
-> I can move this into opts, but during previous discussion it was kept out=
-side
-> opts by Daniel, so I kept that unchanged.
-
-for bpf_tc_attach() I see no reason to keep flags separate. For
-bpf_tc_hook_create()... for extensibility it would need it's own opts
-for hook creation. But if flags is 99% the only thing we'll need, then
-we can always add extra bpf_tc_hook_create_opts() later.
-
->
-> > > +LIBBPF_API int bpf_tc_detach(const struct bpf_tc_hook *hook,
-> > > +                            const struct bpf_tc_opts *opts);
-> > > +LIBBPF_API int bpf_tc_query(const struct bpf_tc_hook *hook,
-> > > +                           struct bpf_tc_opts *opts);
-> > > +
-> > >  #ifdef __cplusplus
-> > >  } /* extern "C" */
-> > >  #endif
 
 [...]
 
-> > > +               return -EINVAL;
-> > > +
-> > > +       return tc_qdisc_create_excl(hook, flags);
-> > > +}
-> > > +
-> > > +static int tc_cls_detach(const struct bpf_tc_hook *hook,
-> > > +                        const struct bpf_tc_opts *opts, bool flush);
-> > > +
-> > > +int bpf_tc_hook_destroy(struct bpf_tc_hook *hook)
-> > > +{
-> > > +       if (!hook || !OPTS_VALID(hook, bpf_tc_hook) ||
-> > > +           OPTS_GET(hook, ifindex, 0) <=3D 0)
-> > > +               return -EINVAL;
-> > > +
-> > > +       switch ((int)OPTS_GET(hook, attach_point, 0)) {
 > >
-> > int casting. Did the compiler complain about that or what?
+> > > +
+> > > +       /* attach */
+> > > +       ret =3D bpf_tc_attach(NULL, &attach_opts, 0);
+> > > +       if (!ASSERT_EQ(ret, -EINVAL, "bpf_tc_attach invalid hook =3D =
+NULL"))
+> > > +               return -EINVAL;
+> > > +       ret =3D bpf_tc_attach(hook, &attach_opts, 42);
+> > > +       if (!ASSERT_EQ(ret, -EINVAL, "bpf_tc_attach invalid flags"))
+> > > +               return -EINVAL;
+> > > +       attach_opts.prog_fd =3D 0;
+> > > +       ret =3D bpf_tc_attach(hook, &attach_opts, 0);
+> > > +       if (!ASSERT_EQ(ret, -EINVAL, "bpf_tc_attach invalid prog_fd u=
+nset"))
+> > > +               return -EINVAL;
+> > > +       attach_opts.prog_fd =3D fd;
+> > > +       attach_opts.prog_id =3D 42;
+> > > +       ret =3D bpf_tc_attach(hook, &attach_opts, 0);
+> > > +       if (!ASSERT_EQ(ret, -EINVAL, "bpf_tc_attach invalid prog_id s=
+et"))
+> > > +               return -EINVAL;
+> > > +       attach_opts.prog_id =3D 0;
+> > > +       attach_opts.handle =3D 0;
+> > > +       ret =3D bpf_tc_attach(hook, &attach_opts, 0);
+> > > +       if (!ASSERT_OK(ret, "bpf_tc_attach valid handle unset"))
+> > > +               return -EINVAL;
+> > > +       attach_opts.prog_fd =3D attach_opts.prog_id =3D 0;
+> > > +       ASSERT_OK(bpf_tc_detach(hook, &attach_opts), "bpf_tc_detach")=
+;
+> >
+> > this code is quite hard to follow, maybe sprinkle empty lines between
+> > logical groups of statements (i.e., prepare inputs + call bpf_tc_xxx +
+> > assert is one group that goes together)
 > >
 >
-> It complains on -Wswitch, as we switch on values apart from the enum valu=
-es, but
-> I'll see if I can remove it.
+> I agree it looks bad. I can also just make a new opts for each combinatio=
+n, and
+> name it that way. Maybe that will look much better.
 
-ah, because of BPF_TC_INGRESS|BPF_TC_EGRESS? That sucks, of course. An
-alternative I guess is just declaring BPF_TC_INGRESS_EGRESS =3D
-BPF_TC_INGRESS | BPF_TC_EGRESS, but I don't know how awful that would
-be.
+It probably would be just more code to read. Try to space it out with
+empty lines into logical groups, that should be enough.
 
 >
-> > > +               case BPF_TC_INGRESS:
-> > > +               case BPF_TC_EGRESS:
-> > > +                       return tc_cls_detach(hook, NULL, true);
-> > > +               case BPF_TC_INGRESS|BPF_TC_EGRESS:
-> > > +                       return tc_qdisc_delete(hook);
-> > > +               case BPF_TC_CUSTOM:
-> > > +                       return -EOPNOTSUPP;
-> > > +               default:
-> > > +                       return -EINVAL;
-> > > +       }
+> > > +       attach_opts.prog_fd =3D fd;
+> > > +       attach_opts.handle =3D 1;
+> > > +       attach_opts.priority =3D 0;
+> > > +       ret =3D bpf_tc_attach(hook, &attach_opts, 0);
+> > > +       if (!ASSERT_OK(ret, "bpf_tc_attach valid priority unset"))
+> > > +               return -EINVAL;
+> > > +       attach_opts.prog_fd =3D attach_opts.prog_id =3D 0;
+> > > +       ASSERT_OK(bpf_tc_detach(hook, &attach_opts), "bpf_tc_detach")=
+;
+> > > +       attach_opts.prog_fd =3D fd;
+> > > +       attach_opts.priority =3D UINT16_MAX + 1;
+> > > +       ret =3D bpf_tc_attach(hook, &attach_opts, 0);
+> > > +       if (!ASSERT_EQ(ret, -EINVAL, "bpf_tc_attach invalid priority =
+> UINT16_MAX"))
+> > > +               return -EINVAL;
+> > > +       attach_opts.priority =3D 0;
+> > > +       attach_opts.handle =3D attach_opts.priority =3D 0;
+> > > +       ret =3D bpf_tc_attach(hook, &attach_opts, 0);
+> > > +       if (!ASSERT_OK(ret, "bpf_tc_attach valid both handle and prio=
+rity unset"))
+> > > +               return -EINVAL;
+> > > +       attach_opts.prog_fd =3D attach_opts.prog_id =3D 0;
+> > > +       ASSERT_OK(bpf_tc_detach(hook, &attach_opts), "bpf_tc_detach")=
+;
+> > > +       ret =3D bpf_tc_attach(hook, NULL, 0);
+> > > +       if (!ASSERT_EQ(ret, -EINVAL, "bpf_tc_attach invalid opts =3D =
+NULL"))
+> > > +               return -EINVAL;
+> > > +
+> > > +       return 0;
 > > > +}
 > > > +
 
