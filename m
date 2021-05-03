@@ -2,76 +2,125 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E9D81371217
-	for <lists+netdev@lfdr.de>; Mon,  3 May 2021 09:39:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5BBEA371231
+	for <lists+netdev@lfdr.de>; Mon,  3 May 2021 09:59:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233019AbhECHjv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 3 May 2021 03:39:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43540 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232957AbhECHjp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 3 May 2021 03:39:45 -0400
-Received: from mail-pl1-x636.google.com (mail-pl1-x636.google.com [IPv6:2607:f8b0:4864:20::636])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F59FC061760
-        for <netdev@vger.kernel.org>; Mon,  3 May 2021 00:38:37 -0700 (PDT)
-Received: by mail-pl1-x636.google.com with SMTP id y2so2352789plr.5
-        for <netdev@vger.kernel.org>; Mon, 03 May 2021 00:38:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=IYFsPOhEkozhRMhOWjWI11yqPrz5tjAXd8GPZbpcT4M=;
-        b=XqxfYNYp/5H+2wt1W9YwZzLSm1v8EPSM0AF/OLqW8tYNoPa2nC1qTrcdw5io1BkLrP
-         nJ1QcJjJ9Hr1xbg0PLokqNUqbqIw5jUioZMJRH9vzkrp6e8g7BkLpNk0yPAm6lkja999
-         EoG52EM8Mjl1xUrcgAo1lCOWGh1E9IumHHYQPqyPmgKAXJ6NrLeb8XRxmdvtoyl2I2j1
-         QBWNTBpfWP0fuEklUdXJ6j7UqIGhBKkcWx6E9YITZ20/73KAYku7EJ+drOtDV+db2wgq
-         URszJ3yN0Yt3V12XVsGJX2fBkujF6uOhcUT3VmBpHSwKxCiFs2pFpuSZfu0hfygsN0rk
-         RB5g==
+        id S232937AbhECIAe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 3 May 2021 04:00:34 -0400
+Received: from mail-ej1-f46.google.com ([209.85.218.46]:34519 "EHLO
+        mail-ej1-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229817AbhECIAc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 3 May 2021 04:00:32 -0400
+Received: by mail-ej1-f46.google.com with SMTP id a4so6542638ejk.1;
+        Mon, 03 May 2021 00:59:39 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=IYFsPOhEkozhRMhOWjWI11yqPrz5tjAXd8GPZbpcT4M=;
-        b=Xun5hheq7u01ds1p1E5h1qe9oa2F1HKW8QaHnOIGjPWsJ5dkH9HlxPcS4L5Er1OJZu
-         ZGLBOVh9x6CCsTTiljb2Nn2rnVm4+uFSyJMvCGE36/Na/aOLhra/pqUgnpWdAoKyE8Jx
-         NqQb/0yJZDQE4+C7dO/W/7pdQvG//5RgHlbYvotvraQT00TmR5zsaFWjSCggGieygtxL
-         4W+52a451pbC3mcG6mmonuySVnyFtTzDaRMtoFBcSIOggCeSdXsRgA+dp4xcH2ZhxLZw
-         rNRps4Qskyi1Im+QTCNFXUqqn5tp7Zx/BZsKAIHGmgjSXRINv+1RtRdjRbwnTfu+GYdU
-         uk5w==
-X-Gm-Message-State: AOAM532myizN7uVIG65jUSRExbIzVYyh77Ki0jlaNGjAEyieR5Y8E/8U
-        8GqDUf2fDBuLT856UV+klwV609DbaEk3FkC/S8b6qxGQQ67bZQ==
-X-Google-Smtp-Source: ABdhPJyFYRXBJAZ5sIncasHAQHWFRQjul8zYGS09rVBKOVpFVSk8arNYcmBT7NZ+2TrxLzf2ZHb9Kls4ePKD0u2UMco=
-X-Received: by 2002:a17:90a:19d2:: with SMTP id 18mr3681020pjj.205.1620027516686;
- Mon, 03 May 2021 00:38:36 -0700 (PDT)
+        h=x-gm-message-state:subject:from:to:cc:references:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=5wQ58QmE9rd2XQ2cySSLGBm/LraaVfP/exkFVcgYCBo=;
+        b=czHH6Y9Yv16rQcpHt/8cv7o1GALW6ggM/m7sqI7fvovTQaS3ajLvIiC7pr4rI0h7IY
+         oQrbE+ZNl4SOMjDWo8Oi7upRb6fikb5ECbLwXybYlYHeOturg/UEH63erQ+ZsBvtoQ9L
+         IdgWNeIYpeS8880NN/ogI5P1g+gx8wKizd9aPmK9vQH8jjuzWKflc8HsnoA5GGI2gg0h
+         tWCZpRinNlZzXyB2cRKhpAE4Oz1m9r+5TatXCEsfERiw94GJdrWlwpvL9ku4NccQhZ1E
+         rhjrQa8vvrsXEMDJiYSBZLWrb064edShb8ywRQJ5j677dwxJSNBeXLEYsy2qBPn3yxkb
+         rR6Q==
+X-Gm-Message-State: AOAM533b8fys9zA+k/QhnvC73+UrbVahH+QExFEYTJ9K1/tGodJqxOGy
+        3aPEWJoRUH4jXv4fzp8X8zCDfjc+kM6ufg==
+X-Google-Smtp-Source: ABdhPJzZn5P+RvRABpxkhWuS8v8YFl2b/lIXQbQ+OWi7dMXF7ZzEpJw0BrP/34q8QDEp358leOt85Q==
+X-Received: by 2002:a17:906:5855:: with SMTP id h21mr15685833ejs.522.1620028778847;
+        Mon, 03 May 2021 00:59:38 -0700 (PDT)
+Received: from ?IPv6:2a0b:e7c0:0:107::70f? ([2a0b:e7c0:0:107::70f])
+        by smtp.gmail.com with ESMTPSA id a22sm11793899edu.14.2021.05.03.00.59.37
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 03 May 2021 00:59:38 -0700 (PDT)
+Subject: Re: linux-next failing build due to missing cubictcp_state symbol
+From:   Jiri Slaby <jirislaby@kernel.org>
+To:     =?UTF-8?Q?Michal_Such=c3=a1nek?= <msuchanek@suse.de>,
+        Jiri Olsa <jolsa@redhat.com>
+Cc:     Yonghong Song <yhs@fb.com>, linux-kernel@vger.kernel.org,
+        Martin KaFai Lau <kafai@fb.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        David Ahern <dsahern@kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Song Liu <songliubraving@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, Jiri Olsa <jolsa@kernel.org>,
+        Jesper Dangaard Brouer <brouer@redhat.com>
+References: <316e86f9-35cc-36b0-1594-00a09631c736@fb.com>
+ <20210423175528.GF6564@kitsune.suse.cz>
+ <20210425111545.GL15381@kitsune.suse.cz>
+ <20210426113215.GM15381@kitsune.suse.cz>
+ <20210426121220.GN15381@kitsune.suse.cz>
+ <20210426121401.GO15381@kitsune.suse.cz>
+ <49f84147-bf32-dc59-48e0-f89241cf6264@fb.com> <YIbkR6z6mxdNSzGO@krava>
+ <YIcRlHQWWKbOlcXr@krava> <20210427121237.GK6564@kitsune.suse.cz>
+ <20210430174723.GP15381@kitsune.suse.cz>
+ <3d148516-0472-8f0a-085b-94d68c5cc0d5@suse.com>
+ <6c14f3c8-7474-9f3f-b4a6-2966cb19e1ed@kernel.org>
+Message-ID: <4e051459-8532-7b61-c815-f3435767f8a0@kernel.org>
+Date:   Mon, 3 May 2021 09:59:37 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.9.1
 MIME-Version: 1.0
-References: <1619777783-24116-1-git-send-email-loic.poulain@linaro.org>
- <1619777783-24116-2-git-send-email-loic.poulain@linaro.org>
- <bf02f5ecf84b7eaaa05768edd933a321f701e79f.camel@suse.com> <87a6pek9tn.fsf@miraculix.mork.no>
-In-Reply-To: <87a6pek9tn.fsf@miraculix.mork.no>
-From:   Loic Poulain <loic.poulain@linaro.org>
-Date:   Mon, 3 May 2021 09:47:12 +0200
-Message-ID: <CAMZdPi89yOStvH8Z9ZwMkLzUB9QgBBzL1xxkUkSz3mwZ8+1nZA@mail.gmail.com>
-Subject: Re: [RFC net-next 2/2] usb: class: cdc-wdm: WWAN framework integration
-To:     =?UTF-8?Q?Bj=C3=B8rn_Mork?= <bjorn@mork.no>,
-        Oliver Neukum <oneukum@suse.com>
-Cc:     Network Development <netdev@vger.kernel.org>,
-        USB <linux-usb@vger.kernel.org>, Jakub Kicinski <kuba@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <6c14f3c8-7474-9f3f-b4a6-2966cb19e1ed@kernel.org>
+Content-Type: text/plain; charset=iso-8859-2; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, 1 May 2021 at 12:49, Bj=C3=B8rn Mork <bjorn@mork.no> wrote:
->
-> Oliver Neukum <oneukum@suse.com> writes:
->
-> > This absolutely makes sense,
->
-> +1
+On 03. 05. 21, 8:11, Jiri Slaby wrote:
+>>>>>> looks like vfs_truncate did not get into BTF data,
+>>>>>> I'll try to reproduce
+>>
+>> _None_ of the functions are generated by pahole -J from debuginfo on 
+>> ppc64. debuginfo appears to be correct. Neither pahole -J fs/open.o 
+>> works correctly. collect_functions in dwarves seems to be defunct on 
+>> ppc64... "functions" array is bogus (so find_function -- the bsearch 
+>> -- fails).
+> 
+> It's not that bogus. I forgot an asterisk:
+>> #0  find_function (btfe=0x100269f80, name=0x10024631c "stream_open") 
+>> at /usr/src/debug/dwarves-1.21-1.1.ppc64/btf_encoder.c:350
+>> (gdb) p (*functions)@84
+>> $5 = {{name = 0x7ffff68e0922 ".__se_compat_sys_ftruncate", addr = 
+>> 75232, size = 72, sh_addr = 65536, generated = false}, {
+>>     name = 0x7ffff68e019e ".__se_compat_sys_open", addr = 80592, size 
+>> = 216, sh_addr = 65536, generated = false}, {
+>>     name = 0x7ffff68e0076 ".__se_compat_sys_openat", addr = 80816, 
+>> size = 232, sh_addr = 65536, generated = false}, {
+>>     name = 0x7ffff68e0908 ".__se_compat_sys_truncate", addr = 74304, 
+>> size = 100, sh_addr = 65536, generated = false}, {
+> ...
+>>     name = 0x7ffff68e0808 ".stream_open", addr = 65824, size = 72, 
+>> sh_addr = 65536, generated = false}, {
+> ...
+>>     name = 0x7ffff68e0751 ".vfs_truncate", addr = 73392, size = 544, 
+>> sh_addr = 65536, generated = false}}
+> 
+> The dot makes the difference, of course. The question is why is it 
+> there? I keep looking into it. Only if someone has an immediate idea...
 
-Ok, thanks, then I'll resubmit a proper patch set with comments
-addressed once the merge window is closed and net-next open.
+Well, .vfs_truncate is in .text (and contains an ._mcount call). And 
+vfs_truncate is in .opd (w/o an ._mcount call). Since setup_functions 
+excludes all functions without the ._mcount call, is_ftrace_func later 
+returns false for such functions and they are filtered before the BTF 
+processing.
 
-Thanks,
-Loic
+Technically, get_vmlinux_addrs looks at a list of functions between 
+__start_mcount_loc and __stop_mcount_loc and considers only the listed.
+
+I don't know what the correct fix is (exclude .opd functions from the 
+filter?). Neither why cross compiler doesn't fail, nor why ebi v2 avoids 
+this too.
+
+regards,
+-- 
+js
