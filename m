@@ -2,105 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 56C253716BE
-	for <lists+netdev@lfdr.de>; Mon,  3 May 2021 16:39:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 64F973716DC
+	for <lists+netdev@lfdr.de>; Mon,  3 May 2021 16:44:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229844AbhECOkA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 3 May 2021 10:40:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51332 "EHLO
+        id S229727AbhECOpk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 3 May 2021 10:45:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52646 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229835AbhECOjx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 3 May 2021 10:39:53 -0400
-Received: from mail-pj1-x102d.google.com (mail-pj1-x102d.google.com [IPv6:2607:f8b0:4864:20::102d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3CA74C06174A
-        for <netdev@vger.kernel.org>; Mon,  3 May 2021 07:38:59 -0700 (PDT)
-Received: by mail-pj1-x102d.google.com with SMTP id fa21-20020a17090af0d5b0290157eb6b590fso2122398pjb.5
-        for <netdev@vger.kernel.org>; Mon, 03 May 2021 07:38:59 -0700 (PDT)
+        with ESMTP id S229657AbhECOpj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 3 May 2021 10:45:39 -0400
+Received: from mail-oi1-x22e.google.com (mail-oi1-x22e.google.com [IPv6:2607:f8b0:4864:20::22e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 52CDAC06174A;
+        Mon,  3 May 2021 07:44:46 -0700 (PDT)
+Received: by mail-oi1-x22e.google.com with SMTP id v24so5592567oiv.9;
+        Mon, 03 May 2021 07:44:46 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=networkplumber-org.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:subject:message-id:mime-version
-         :content-transfer-encoding;
-        bh=vjb5OlJU5KO9wV7Kf98GvS3+OXOkFCW5y7GCkAscuH8=;
-        b=DFb0hQLU+jysXjCeONQGeNykhyukdf4l6N00RX+2GhhMLhs+PF6J8Slo7qoi4XpffP
-         DMkVtIgpgY1o9KuadUTmVuQuC2ihusI3YHT1OFQDBD1+hmxSHM/vdgPrBHTqY99wPltU
-         mxZlV5lb9jNIAnftOx1X86Ca+mEN2ZP5sqCEABKitYlepMr1sUngthjWzv25HbAeHcgb
-         aM8HE0Ku6/IqnPJ7he6b+tb0tgxEfTMuJEQcUd+aVnUwQT6c4Orr6h6535Swg+JBqQvg
-         dfd3GmpBF5mwn7aSoOuZqirzS3rYytpVfct+JxHoa7RW9CwH6VBNDD/XoYfyHoUmpPKe
-         8RMw==
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=6dkv1diytowCkvVVBDe3P56VdfrlcPPTRc/t0hgxBUs=;
+        b=gKJpHRFyBXao+qZ4Tt4X8Fz6f/f7n0hpHarXlfd1k8R+G4OB/+ibnU3L+PAnBRQyFA
+         u8Dh+ZsXDgV3+LDcaSuqFMmuiDTYyPWeOIKx5/73cGBbSNJT/wNFcAcoL2G61G7TwwEg
+         pGIDSlpCX/B0SDqDQUnCtiIaAr4FhqU6HqXlqXW3UTI1nTZTSwyKVYUhC6AWDHK6PpFo
+         8ngdzo3ri0MYZ3X7Laca2KrB07am+yKyDZI6kHZRcIb+4QqEfCvdbnRBzF7qla9OXxw4
+         4WbY5vmCmOxf8Au5zKmpeqXpmoeCf/4b0mP6Em7YNBIjJIjpCpRBU6/ypO7bjd+hH1dz
+         XiQQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:subject:message-id:mime-version
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=vjb5OlJU5KO9wV7Kf98GvS3+OXOkFCW5y7GCkAscuH8=;
-        b=ByQbv1uZT/X0cijPh//Ld8m0WIQRl3swll3QXxXZfmCAq47JfcIW2cZyKbuO/5I1FP
-         dB5M1WWQPkQt+c3VY6WfVB7a3P43EL+7rKV6SI1Ii8x+s3gvX8DIqXNeEs7782GVF1l0
-         WInAyPJ4DPvywzpyoGWxOGLxELbyn7ckpTxn1DZf5ZG2f4gwlN8i1cwOvBKKSwo4zZdr
-         gwEMx2NGN+o1GH0O1J7sk9ok1ZvpfY4XKOez3P/T9sfjbGJyP3+QT0lNT6PSff4JxROe
-         vSBjdQDDcFxoaYib8PRnYTBbEB9VrJfYmhx4fmgs+Kwr7KWRdaMpFhbX8Q/EvBTAii0m
-         DrlA==
-X-Gm-Message-State: AOAM5325l79ZowjO/UmDLm5J91thsFLy/wYl56xVtTxCruMtCnOClxhY
-        Fy1TPC14jr62r8kKHMEyoY5HHshH5s+FuA==
-X-Google-Smtp-Source: ABdhPJxz+4VbE2PyHjNBQ3OPFxL3hIGbipn4qeQ2FCAKXuxKy2CtRPcQ9+w170P7bGTl+XmBLbDybg==
-X-Received: by 2002:a17:902:a60f:b029:ee:cc8c:f891 with SMTP id u15-20020a170902a60fb02900eecc8cf891mr8259308plq.39.1620052738268;
-        Mon, 03 May 2021 07:38:58 -0700 (PDT)
-Received: from hermes.local (76-14-218-44.or.wavecable.com. [76.14.218.44])
-        by smtp.gmail.com with ESMTPSA id n25sm9176616pff.154.2021.05.03.07.38.57
-        for <netdev@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 03 May 2021 07:38:57 -0700 (PDT)
-Date:   Mon, 3 May 2021 07:38:49 -0700
-From:   Stephen Hemminger <stephen@networkplumber.org>
-To:     netdev@vger.kernel.org
-Subject: Fw: [Bug 212921] New: ECMP not working for local sockets
-Message-ID: <20210503073849.27f9b4c0@hermes.local>
+        bh=6dkv1diytowCkvVVBDe3P56VdfrlcPPTRc/t0hgxBUs=;
+        b=USC1xwadicJfWnwyia9PRn3dLyqVJouGUoZAZnGrQyBt2JzuARn/8Xg84dO5DTnYAQ
+         Ie+3tNX8bzTAqpI/UE4wLUe3luFmX08yJSWxClv8u5ajt4cqB8+Hvt7wnicEYYXWsNgH
+         o8cSdVRv8pGubuC35KI6AI+zI4t9Y3r3VsnQhlhsJ2ne55WzfV5t3eb6dO6QIrFrx6nq
+         FsqMFp/0JQ3s63G1M4V6jlZacWZcySSE+Bejzh39LefxNEbuqZe51jaXOmlYoyK3zmCS
+         1Y8m1uzBf1dgT1l83A6b/I/kORQoH7ju+EmEuzhs+SUCSa8fPcWT8iW+aafJicQrasFb
+         mFeA==
+X-Gm-Message-State: AOAM531qNmg0WzR426IwBvV8DLowN4EFjF3Dl7f1U7yCHfb5bIj9Wyh9
+        uSLIbLl9Y0wWOuhjqnhwFjc=
+X-Google-Smtp-Source: ABdhPJwWs4dF9JkdG0wp3no7YgV70u43/cyLduOygM7cE3NXALRe0dsmwywxq4FjenXK+Q9W0VyPrQ==
+X-Received: by 2002:aca:488f:: with SMTP id v137mr3865337oia.173.1620053085795;
+        Mon, 03 May 2021 07:44:45 -0700 (PDT)
+Received: from Davids-MacBook-Pro.local ([8.48.134.33])
+        by smtp.googlemail.com with ESMTPSA id d62sm2752650oia.37.2021.05.03.07.44.44
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 03 May 2021 07:44:45 -0700 (PDT)
+Subject: Re: [PATCH iproute2-next v2 0/2] Add copy-on-fork to get sys command
+To:     Gal Pressman <galpress@amazon.com>
+Cc:     linux-rdma@vger.kernel.org, netdev@vger.kernel.org,
+        Yossi Leybovich <sleybo@amazon.com>,
+        Alexander Matushevsky <matua@amazon.com>,
+        Leon Romanovsky <leonro@nvidia.com>,
+        Jason Gunthorpe <jgg@nvidia.com>
+References: <20210429064803.58458-1-galpress@amazon.com>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <bc278121-ed27-597b-cbc7-38129a58b7e1@gmail.com>
+Date:   Mon, 3 May 2021 08:44:43 -0600
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
+ Gecko/20100101 Thunderbird/78.10.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+In-Reply-To: <20210429064803.58458-1-galpress@amazon.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On 4/29/21 12:48 AM, Gal Pressman wrote:
+> This is the userspace part for the new copy-on-fork attribute added to
+> the get sys netlink command.
+> 
+> The new attribute indicates that the kernel copies DMA pages on fork,
+> hence fork support through madvise and MADV_DONTFORK is not needed.
+> 
+> Kernel series was merged:
+> https://lore.kernel.org/linux-rdma/20210418121025.66849-1-galpress@amazon.com/
+> 
+> Changelog -
+> v1->v2: https://lore.kernel.org/linux-rdma/20210428114231.96944-1-galpress@amazon.com/
+> * Rebase kernel headers
+> * Print attributes on the same line
+> * Simplify if statement
+> 
+> Thanks
+> 
+> Gal Pressman (2):
+>   rdma: update uapi headers
+>   rdma: Add copy-on-fork to get sys command
+> 
+>  rdma/include/uapi/rdma/rdma_netlink.h |  3 +++
+>  rdma/sys.c                            | 11 ++++++++++-
+>  2 files changed, 13 insertions(+), 1 deletion(-)
+> 
 
-
-Begin forwarded message:
-
-Date: Sun, 02 May 2021 07:10:44 +0000
-From: bugzilla-daemon@bugzilla.kernel.org
-To: stephen@networkplumber.org
-Subject: [Bug 212921] New: ECMP not working for local sockets
-
-
-https://bugzilla.kernel.org/show_bug.cgi?id=212921
-
-            Bug ID: 212921
-           Summary: ECMP not working for local sockets
-           Product: Networking
-           Version: 2.5
-    Kernel Version: 5.8.0-50-generic
-          Hardware: All
-                OS: Linux
-              Tree: Mainline
-            Status: NEW
-          Severity: normal
-          Priority: P1
-         Component: IPV4
-          Assignee: stephen@networkplumber.org
-          Reporter: nitin.i.joy@gmail.com
-        Regression: No
-
-When you're creating local TCP sockets in a Linux machine, the connections to
-the same destination IP are not load-balanced across multiple interfaces when
-ECMP path is set. Even when net.ipv4.fib_multipath_hash_policy is set to L4
-hash, multiple interfaces are never used for same destination. 
-
-I tried working around the issue by setting two route table entries with same
-metric using `ip route append` command. In this case, the connections get
-load-balanced across multiple interfaces for 5-10 seconds, after which all
-future connections will choose one of the interfaces. There is no configuration
-that can disable this behavior. I tried disabling tcp_metrics_nosave
-
--- 
-You may reply to this email to add a comment.
-
-You are receiving this mail because:
-You are the assignee for the bug.
+applied to iproute2-next
