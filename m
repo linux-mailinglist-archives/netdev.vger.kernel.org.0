@@ -2,125 +2,159 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5BBEA371231
-	for <lists+netdev@lfdr.de>; Mon,  3 May 2021 09:59:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6DD3F371233
+	for <lists+netdev@lfdr.de>; Mon,  3 May 2021 09:59:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232937AbhECIAe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 3 May 2021 04:00:34 -0400
-Received: from mail-ej1-f46.google.com ([209.85.218.46]:34519 "EHLO
-        mail-ej1-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229817AbhECIAc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 3 May 2021 04:00:32 -0400
-Received: by mail-ej1-f46.google.com with SMTP id a4so6542638ejk.1;
-        Mon, 03 May 2021 00:59:39 -0700 (PDT)
+        id S232981AbhECIAt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 3 May 2021 04:00:49 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:45182 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S229817AbhECIAt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 3 May 2021 04:00:49 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1620028795;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=Bl/2ZSTX8uMrXqSmi7rgld0irgeLphGdm6TYit7LvXQ=;
+        b=bVt+XJLo+T9U64cvYnmqoo68EaZLbh4spSkG9iDEYgbV5KG9Sv7S/nE22iHUui9bsKJWXK
+        s1ZCwHoPwHhj0/9L9nrvU+vP7XKwaCkhuhbNyU3tYRNxjk38a56tXyv24pEu9jXFvaowai
+        +zDlbd8JPtmyi9n2XNEsyG2vf+Z+hLY=
+Received: from mail-wr1-f70.google.com (mail-wr1-f70.google.com
+ [209.85.221.70]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-577-C3GpxyChN3ClCzRSOoWyLQ-1; Mon, 03 May 2021 03:59:53 -0400
+X-MC-Unique: C3GpxyChN3ClCzRSOoWyLQ-1
+Received: by mail-wr1-f70.google.com with SMTP id 93-20020adf83660000b029010d6b1e0949so3451217wrd.3
+        for <netdev@vger.kernel.org>; Mon, 03 May 2021 00:59:53 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:from:to:cc:references:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=5wQ58QmE9rd2XQ2cySSLGBm/LraaVfP/exkFVcgYCBo=;
-        b=czHH6Y9Yv16rQcpHt/8cv7o1GALW6ggM/m7sqI7fvovTQaS3ajLvIiC7pr4rI0h7IY
-         oQrbE+ZNl4SOMjDWo8Oi7upRb6fikb5ECbLwXybYlYHeOturg/UEH63erQ+ZsBvtoQ9L
-         IdgWNeIYpeS8880NN/ogI5P1g+gx8wKizd9aPmK9vQH8jjuzWKflc8HsnoA5GGI2gg0h
-         tWCZpRinNlZzXyB2cRKhpAE4Oz1m9r+5TatXCEsfERiw94GJdrWlwpvL9ku4NccQhZ1E
-         rhjrQa8vvrsXEMDJiYSBZLWrb064edShb8ywRQJ5j677dwxJSNBeXLEYsy2qBPn3yxkb
-         rR6Q==
-X-Gm-Message-State: AOAM533b8fys9zA+k/QhnvC73+UrbVahH+QExFEYTJ9K1/tGodJqxOGy
-        3aPEWJoRUH4jXv4fzp8X8zCDfjc+kM6ufg==
-X-Google-Smtp-Source: ABdhPJzZn5P+RvRABpxkhWuS8v8YFl2b/lIXQbQ+OWi7dMXF7ZzEpJw0BrP/34q8QDEp358leOt85Q==
-X-Received: by 2002:a17:906:5855:: with SMTP id h21mr15685833ejs.522.1620028778847;
-        Mon, 03 May 2021 00:59:38 -0700 (PDT)
-Received: from ?IPv6:2a0b:e7c0:0:107::70f? ([2a0b:e7c0:0:107::70f])
-        by smtp.gmail.com with ESMTPSA id a22sm11793899edu.14.2021.05.03.00.59.37
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 03 May 2021 00:59:38 -0700 (PDT)
-Subject: Re: linux-next failing build due to missing cubictcp_state symbol
-From:   Jiri Slaby <jirislaby@kernel.org>
-To:     =?UTF-8?Q?Michal_Such=c3=a1nek?= <msuchanek@suse.de>,
-        Jiri Olsa <jolsa@redhat.com>
-Cc:     Yonghong Song <yhs@fb.com>, linux-kernel@vger.kernel.org,
-        Martin KaFai Lau <kafai@fb.com>,
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=Bl/2ZSTX8uMrXqSmi7rgld0irgeLphGdm6TYit7LvXQ=;
+        b=GaqzmBoyBvv+2iQYXFkUTq57e4CPSmZs08W35S//y8oHfspQOqD2NGZRZqQ3LkdsAF
+         6di3TsGG2Z0/4avB0mDvbdFYC4Bqp5ItZTPyRcltGhqswcqEj8rHz3PG+XqYiNH/dhak
+         IXCdL8hSyyQ6WfK05/2lh8+lDO+g6DvPKZZjbRPceUffGUysIoIlpfvFyRQvW4kKUXRj
+         ouFx2W1kKnDmWUawjQhuiFLqHGI75WWL8S+BBysRTnKkpKLUJWBDzSFVs9QaKJOPoGxi
+         b1J7CHJWzdOXbqWAY47ZxcIeSdqWXVgqdqAFy5oXfpI+DEPCEuW3snmmwVvScmOHW5xU
+         gkKg==
+X-Gm-Message-State: AOAM532B+2A5cmeszPaeD1CyRobjYflYVcWUIS9menm0/8pTXE8hI9P8
+        RRCHZdrl92t727QPoGMEibVPD2HoHGRM5PGoZ84Q8OSaWkCJgRTM/KxxhCt6nxrVvGKzxjXHQhC
+        1J8gv/p3B1qIpgrs2
+X-Received: by 2002:adf:ffc4:: with SMTP id x4mr22751597wrs.415.1620028792119;
+        Mon, 03 May 2021 00:59:52 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJyCffXa6+dAVz5L8aMFmIueQzxjfgmT/aHs6Ms5LyRCC+jspoSf9j339dcA7DinKdFvbJu8Fw==
+X-Received: by 2002:adf:ffc4:: with SMTP id x4mr22751582wrs.415.1620028791994;
+        Mon, 03 May 2021 00:59:51 -0700 (PDT)
+Received: from redhat.com ([2a10:800a:cdef:0:114d:2085:61e4:7b41])
+        by smtp.gmail.com with ESMTPSA id u2sm12707675wmm.5.2021.05.03.00.59.50
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 03 May 2021 00:59:51 -0700 (PDT)
+Date:   Mon, 3 May 2021 03:59:49 -0400
+From:   "Michael S. Tsirkin" <mst@redhat.com>
+To:     Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+Cc:     netdev@vger.kernel.org, Jason Wang <jasowang@redhat.com>,
         "David S. Miller" <davem@davemloft.net>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>,
         Jakub Kicinski <kuba@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Song Liu <songliubraving@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, Jiri Olsa <jolsa@kernel.org>,
-        Jesper Dangaard Brouer <brouer@redhat.com>
-References: <316e86f9-35cc-36b0-1594-00a09631c736@fb.com>
- <20210423175528.GF6564@kitsune.suse.cz>
- <20210425111545.GL15381@kitsune.suse.cz>
- <20210426113215.GM15381@kitsune.suse.cz>
- <20210426121220.GN15381@kitsune.suse.cz>
- <20210426121401.GO15381@kitsune.suse.cz>
- <49f84147-bf32-dc59-48e0-f89241cf6264@fb.com> <YIbkR6z6mxdNSzGO@krava>
- <YIcRlHQWWKbOlcXr@krava> <20210427121237.GK6564@kitsune.suse.cz>
- <20210430174723.GP15381@kitsune.suse.cz>
- <3d148516-0472-8f0a-085b-94d68c5cc0d5@suse.com>
- <6c14f3c8-7474-9f3f-b4a6-2966cb19e1ed@kernel.org>
-Message-ID: <4e051459-8532-7b61-c815-f3435767f8a0@kernel.org>
-Date:   Mon, 3 May 2021 09:59:37 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.9.1
+        virtualization@lists.linux-foundation.org,
+        Ido Schimmel <idosch@nvidia.com>
+Subject: Re: [PATCH net-next] virtio-net: fix use-after-free in
+ skb_gro_receive
+Message-ID: <20210503035920-mutt-send-email-mst@kernel.org>
+References: <20210422151620.58204-1-xuanzhuo@linux.alibaba.com>
 MIME-Version: 1.0
-In-Reply-To: <6c14f3c8-7474-9f3f-b4a6-2966cb19e1ed@kernel.org>
-Content-Type: text/plain; charset=iso-8859-2; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210422151620.58204-1-xuanzhuo@linux.alibaba.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 03. 05. 21, 8:11, Jiri Slaby wrote:
->>>>>> looks like vfs_truncate did not get into BTF data,
->>>>>> I'll try to reproduce
->>
->> _None_ of the functions are generated by pahole -J from debuginfo on 
->> ppc64. debuginfo appears to be correct. Neither pahole -J fs/open.o 
->> works correctly. collect_functions in dwarves seems to be defunct on 
->> ppc64... "functions" array is bogus (so find_function -- the bsearch 
->> -- fails).
+On Thu, Apr 22, 2021 at 11:16:20PM +0800, Xuan Zhuo wrote:
+> When "headroom" > 0, the actual allocated memory space is the entire
+> page, so the address of the page should be used when passing it to
+> build_skb().
 > 
-> It's not that bogus. I forgot an asterisk:
->> #0  find_function (btfe=0x100269f80, name=0x10024631c "stream_open") 
->> at /usr/src/debug/dwarves-1.21-1.1.ppc64/btf_encoder.c:350
->> (gdb) p (*functions)@84
->> $5 = {{name = 0x7ffff68e0922 ".__se_compat_sys_ftruncate", addr = 
->> 75232, size = 72, sh_addr = 65536, generated = false}, {
->>     name = 0x7ffff68e019e ".__se_compat_sys_open", addr = 80592, size 
->> = 216, sh_addr = 65536, generated = false}, {
->>     name = 0x7ffff68e0076 ".__se_compat_sys_openat", addr = 80816, 
->> size = 232, sh_addr = 65536, generated = false}, {
->>     name = 0x7ffff68e0908 ".__se_compat_sys_truncate", addr = 74304, 
->> size = 100, sh_addr = 65536, generated = false}, {
-> ...
->>     name = 0x7ffff68e0808 ".stream_open", addr = 65824, size = 72, 
->> sh_addr = 65536, generated = false}, {
-> ...
->>     name = 0x7ffff68e0751 ".vfs_truncate", addr = 73392, size = 544, 
->> sh_addr = 65536, generated = false}}
+> BUG: KASAN: use-after-free in skb_gro_receive (net/core/skbuff.c:4260)
+> Write of size 16 at addr ffff88811619fffc by task kworker/u9:0/534
+> CPU: 2 PID: 534 Comm: kworker/u9:0 Not tainted 5.12.0-rc7-custom-16372-gb150be05b806 #3382
+> Hardware name: QEMU MSN2700, BIOS rel-1.13.0-0-gf21b5a4aeb02-prebuilt.qemu.org 04/01/2014
+> Workqueue: xprtiod xs_stream_data_receive_workfn [sunrpc]
+> Call Trace:
+>  <IRQ>
+> dump_stack (lib/dump_stack.c:122)
+> print_address_description.constprop.0 (mm/kasan/report.c:233)
+> kasan_report.cold (mm/kasan/report.c:400 mm/kasan/report.c:416)
+> skb_gro_receive (net/core/skbuff.c:4260)
+> tcp_gro_receive (net/ipv4/tcp_offload.c:266 (discriminator 1))
+> tcp4_gro_receive (net/ipv4/tcp_offload.c:316)
+> inet_gro_receive (net/ipv4/af_inet.c:1545 (discriminator 2))
+> dev_gro_receive (net/core/dev.c:6075)
+> napi_gro_receive (net/core/dev.c:6168 net/core/dev.c:6198)
+> receive_buf (drivers/net/virtio_net.c:1151) virtio_net
+> virtnet_poll (drivers/net/virtio_net.c:1415 drivers/net/virtio_net.c:1519) virtio_net
+> __napi_poll (net/core/dev.c:6964)
+> net_rx_action (net/core/dev.c:7033 net/core/dev.c:7118)
+> __do_softirq (./arch/x86/include/asm/jump_label.h:25 ./include/linux/jump_label.h:200 ./include/trace/events/irq.h:142 kernel/softirq.c:346)
+> irq_exit_rcu (kernel/softirq.c:221 kernel/softirq.c:422 kernel/softirq.c:434)
+> common_interrupt (arch/x86/kernel/irq.c:240 (discriminator 14))
+> </IRQ>
 > 
-> The dot makes the difference, of course. The question is why is it 
-> there? I keep looking into it. Only if someone has an immediate idea...
+> Fixes: fb32856b16ad ("virtio-net: page_to_skb() use build_skb when there's sufficient tailroom")
+> Signed-off-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+> Reported-by: Ido Schimmel <idosch@nvidia.com>
+> Tested-by: Ido Schimmel <idosch@nvidia.com>
 
-Well, .vfs_truncate is in .text (and contains an ._mcount call). And 
-vfs_truncate is in .opd (w/o an ._mcount call). Since setup_functions 
-excludes all functions without the ._mcount call, is_ftrace_func later 
-returns false for such functions and they are filtered before the BTF 
-processing.
+Acked-by: Michael S. Tsirkin <mst@redhat.com>
 
-Technically, get_vmlinux_addrs looks at a list of functions between 
-__start_mcount_loc and __stop_mcount_loc and considers only the listed.
+> ---
+>  drivers/net/virtio_net.c | 12 +++++++++---
+>  1 file changed, 9 insertions(+), 3 deletions(-)
+> 
+> diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
+> index 74d2d49264f3..7fda2ae4c40f 100644
+> --- a/drivers/net/virtio_net.c
+> +++ b/drivers/net/virtio_net.c
+> @@ -387,7 +387,7 @@ static struct sk_buff *page_to_skb(struct virtnet_info *vi,
+>  	unsigned int copy, hdr_len, hdr_padded_len;
+>  	struct page *page_to_free = NULL;
+>  	int tailroom, shinfo_size;
+> -	char *p, *hdr_p;
+> +	char *p, *hdr_p, *buf;
+>  
+>  	p = page_address(page) + offset;
+>  	hdr_p = p;
+> @@ -403,11 +403,15 @@ static struct sk_buff *page_to_skb(struct virtnet_info *vi,
+>  	 * space are aligned.
+>  	 */
+>  	if (headroom) {
+> -		/* The actual allocated space size is PAGE_SIZE. */
+> +		/* Buffers with headroom use PAGE_SIZE as alloc size,
+> +		 * see add_recvbuf_mergeable() + get_mergeable_buf_len()
+> +		 */
+>  		truesize = PAGE_SIZE;
+>  		tailroom = truesize - len - offset;
+> +		buf = page_address(page);
+>  	} else {
+>  		tailroom = truesize - len;
+> +		buf = p;
+>  	}
+>  
+>  	len -= hdr_len;
+> @@ -416,11 +420,13 @@ static struct sk_buff *page_to_skb(struct virtnet_info *vi,
+>  
+>  	shinfo_size = SKB_DATA_ALIGN(sizeof(struct skb_shared_info));
+>  
+> +	/* copy small packet so we can reuse these pages */
+>  	if (!NET_IP_ALIGN && len > GOOD_COPY_LEN && tailroom >= shinfo_size) {
+> -		skb = build_skb(p, truesize);
+> +		skb = build_skb(buf, truesize);
+>  		if (unlikely(!skb))
+>  			return NULL;
+>  
+> +		skb_reserve(skb, p - buf);
+>  		skb_put(skb, len);
+>  		goto ok;
+>  	}
+> -- 
+> 2.31.0
 
-I don't know what the correct fix is (exclude .opd functions from the 
-filter?). Neither why cross compiler doesn't fail, nor why ebi v2 avoids 
-this too.
-
-regards,
--- 
-js
