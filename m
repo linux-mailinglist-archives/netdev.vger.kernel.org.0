@@ -2,207 +2,255 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 387DB371E1A
-	for <lists+netdev@lfdr.de>; Mon,  3 May 2021 19:11:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 57D03371E28
+	for <lists+netdev@lfdr.de>; Mon,  3 May 2021 19:12:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234940AbhECRKm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 3 May 2021 13:10:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56070 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234647AbhECRId (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 3 May 2021 13:08:33 -0400
-Received: from mail-pl1-x634.google.com (mail-pl1-x634.google.com [IPv6:2607:f8b0:4864:20::634])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2BBBFC0611C5;
-        Mon,  3 May 2021 10:03:18 -0700 (PDT)
-Received: by mail-pl1-x634.google.com with SMTP id v13so3159091ple.9;
-        Mon, 03 May 2021 10:03:18 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:mime-version:content-disposition
-         :user-agent;
-        bh=thS6ndoj0noR+neEiHTdxxqCnhRUvAsfo5u9ppo6dyU=;
-        b=WX7VbMEUSPf2+kDLLqaWJ1uI4LmljVvxO+QSaTmOo5WcqclIzR8jhpcupucHiAjwFh
-         M20VnIN+9vUFL0qnIwz0plZGPzyGGov73MQ8xidR7/dHggS8BYsqcdEFAEFN55p5lQ2w
-         eVQeoapNsrAWrkw3BUaQ57WLmMRGHb3LCmxsXrV3qxkwL37R4mm/kTjNQAirjW3+NqEJ
-         1Bb5RthtPH4gCY2xMk4mzvxtKyDJNtFiUlsKK0D/J6iEqjdHQ+pm3IFBfDl+dBcwndwe
-         /NfGUBFTtKokH6H7ORUdv5N2PUpdAHDyqVsNqggbPwVspGEj1P61o6+pklbdA3jiZjg4
-         Cmxg==
+        id S233368AbhECRNK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 3 May 2021 13:13:10 -0400
+Received: from mail-io1-f71.google.com ([209.85.166.71]:51854 "EHLO
+        mail-io1-f71.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S235209AbhECRLQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 3 May 2021 13:11:16 -0400
+Received: by mail-io1-f71.google.com with SMTP id h7-20020a5d9e070000b029041a1f6bccc8so3759562ioh.18
+        for <netdev@vger.kernel.org>; Mon, 03 May 2021 10:10:22 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
-         :content-disposition:user-agent;
-        bh=thS6ndoj0noR+neEiHTdxxqCnhRUvAsfo5u9ppo6dyU=;
-        b=s2j5KsJh0g8rOX7wnh+y5A0T9/zpihq8kn2V+dSK42MM2Iwe0bmEJ+fE9O38ZOKemg
-         kC4E5+Bxl0NnTjBk8NqyrV3vlfohdQh6KNc0F5WZWOrKfZacA4sbG5f9qqVcbOcxCH+E
-         2PCSYWPZ8etEiIWtd0gSajL4xMm/LDuBfZ0BuL2mah47FW47pooiOo7StnfMcOVeoMKj
-         Rox2QFyOOGSC0pahXJM4N6Q2ye+hsa67wynFve/WrNB9dPDYc5owoqPD0u261MGxZ3U1
-         W4yn2YtXV+/R30jcT5IMvhTISNuaz4VWG2AvJZH5CUdnzVkEq70+k+04pYfuqp1J9O5D
-         fFmQ==
-X-Gm-Message-State: AOAM531BzWEl+N2f0Sftsr50zoiYcf0pCQpC3oTszFIFPeobf6ihx1sy
-        gqpzf9hXDPklCz7ganpVYmU=
-X-Google-Smtp-Source: ABdhPJzpVuqbVFTV7qY2OGCZtymeAdI6jHs68knYvjB4cM1F4MHHLnADIkcixvBHuqGWVSCamnuh8A==
-X-Received: by 2002:a17:902:c407:b029:ec:aeb7:667f with SMTP id k7-20020a170902c407b02900ecaeb7667fmr21521208plk.9.1620061398266;
-        Mon, 03 May 2021 10:03:18 -0700 (PDT)
-Received: from localhost ([157.45.29.210])
-        by smtp.gmail.com with ESMTPSA id z29sm122686pga.52.2021.05.03.10.03.17
-        (version=TLS1_2 cipher=ECDHE-ECDSA-CHACHA20-POLY1305 bits=256/256);
-        Mon, 03 May 2021 10:03:17 -0700 (PDT)
-Date:   Mon, 3 May 2021 22:33:09 +0530
-From:   Shubhankar Kuranagatti <shubhankarvk@gmail.com>
-To:     davem@davemloft.net
-Cc:     kuba@kernel.org, ast@kernel.org, daniel@iogearbox.net,
-        andrii@kernel.org, kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
-        john.fastabend@gmail.com, kpsingh@kernel.org, willemb@google.com,
-        xie.he.0141@gmail.com, edumazet@google.com,
-        john.ogness@linutronix.de, eyal.birger@gmail.com,
-        wanghai38@huawei.com, colin.king@canonical.com,
-        shubhankarvk@gmail.com, tannerlove@google.com,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        bpf@vger.kernel.org
-Subject: [PATCH] net: packet: af_packet.c: Add new line after declaration
-Message-ID: <20210503170309.63r2mtupzn5ne6zt@kewl-virtual-machine>
+        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
+        bh=bbtdet35GJncXf6HuQljM3K3BSHxsXNzF8nGYSgpYPc=;
+        b=NLC1jvLYb2PnNodyybfkPuDmA1DPiEolLPYyWnjFr2hqKnenTbsuuA90QV8PgrM7l4
+         J4E9uPprer4FZeHBm9tyeunSbLGXhRHvCOxvtOP79MMB6Qx6OI6skqDNqJ9CZUb2X+q0
+         mdygbVfzQxAtHpa11SP1bPyXflUxdTZjlt9821VlA5AmvsGX1XwTsqcpiMZ+P4hIzZ9l
+         kZtNiQGqBAC2vlcvqoGgUP4EQfP2gsyTuY9rUCl5moOmdILrDTmM3sH5Ieita1AA6TQA
+         ClUtahYOiYHFFciQJ/i66WZRpfeht+sjwi+E64Gz7ss1VfbKnFxaK+ShKb9xqTrGwX48
+         41OA==
+X-Gm-Message-State: AOAM5305iY1QdBr4jhKr8qfvzi7LuRdNHrPfvCgQgnFLrY09ipbuei4W
+        FnsuO/o4uckH/x++flaUPTFNef9lmXs8OvjEz95jPkf11JsU
+X-Google-Smtp-Source: ABdhPJyPfDmZUGFCsSTAecryuEH4YJJUgG94HgLuqCezcYoWziffSuQTjjtc/dEiMvxbd4f4decMO38w/PIZOfvv9y53NwqLJmLK
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: NeoMutt/20171215
+X-Received: by 2002:a6b:ed11:: with SMTP id n17mr7080502iog.171.1620061822198;
+ Mon, 03 May 2021 10:10:22 -0700 (PDT)
+Date:   Mon, 03 May 2021 10:10:22 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <0000000000006d297505c1700970@google.com>
+Subject: [syzbot] BUG: sleeping function called from invalid context in __ipv6_dev_mc_dec
+From:   syzbot <syzbot+7d941e89dd48bcf42573@syzkaller.appspotmail.com>
+To:     andrii@kernel.org, ap420073@gmail.com, ast@kernel.org,
+        avagin@gmail.com, bpf@vger.kernel.org, cong.wang@bytedance.com,
+        daniel@iogearbox.net, davem@davemloft.net, dsahern@kernel.org,
+        hawk@kernel.org, john.fastabend@gmail.com, kafai@fb.com,
+        kpsingh@kernel.org, kuba@kernel.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, roopa@cumulusnetworks.com,
+        songliubraving@fb.com, syzkaller-bugs@googlegroups.com, yhs@fb.com,
+        yoshfuji@linux-ipv6.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-New line added after declaration
-Tabs have been used instead of spaces for indentation
-Each subsequent line of block commment start with a *
-This is done to maintain code uniformity
+Hello,
 
-Signed-off-by: Shubhankar Kuranagatti <shubhankarvk@gmail.com>
+syzbot found the following issue on:
+
+HEAD commit:    95aafe91 net: ethernet: ixp4xx: Support device tree probing
+git tree:       net-next
+console output: https://syzkaller.appspot.com/x/log.txt?x=14fad3e1d00000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=7668018815a66138
+dashboard link: https://syzkaller.appspot.com/bug?extid=7d941e89dd48bcf42573
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=103edf15d00000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=1592b9d5d00000
+
+The issue was bisected to:
+
+commit f185de28d9ae6c978135993769352e523ee8df06
+Author: Taehee Yoo <ap420073@gmail.com>
+Date:   Thu Mar 25 16:16:56 2021 +0000
+
+    mld: add new workqueues for process mld events
+
+bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=145ba3f5d00000
+final oops:     https://syzkaller.appspot.com/x/report.txt?x=165ba3f5d00000
+console output: https://syzkaller.appspot.com/x/log.txt?x=125ba3f5d00000
+
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+7d941e89dd48bcf42573@syzkaller.appspotmail.com
+Fixes: f185de28d9ae ("mld: add new workqueues for process mld events")
+
+BUG: sleeping function called from invalid context at kernel/locking/mutex.c:928
+in_atomic(): 0, irqs_disabled(): 0, non_block: 0, pid: 9825, name: syz-executor943
+2 locks held by syz-executor943/9825:
+ #0: ffffffff8d6730a8 (rtnl_mutex){+.+.}-{3:3}, at: rtnl_lock net/core/rtnetlink.c:72 [inline]
+ #0: ffffffff8d6730a8 (rtnl_mutex){+.+.}-{3:3}, at: rtnetlink_rcv_msg+0x3f9/0xad0 net/core/rtnetlink.c:5559
+ #1: ffffffff8bf74520 (rcu_read_lock){....}-{1:2}, at: nla_ok include/net/netlink.h:1159 [inline]
+ #1: ffffffff8bf74520 (rcu_read_lock){....}-{1:2}, at: do_setlink+0x27d0/0x3af0 net/core/rtnetlink.c:2868
+Preemption disabled at:
+[<0000000000000000>] 0x0
+CPU: 0 PID: 9825 Comm: syz-executor943 Not tainted 5.12.0-rc7-syzkaller #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+Call Trace:
+ __dump_stack lib/dump_stack.c:79 [inline]
+ dump_stack+0x141/0x1d7 lib/dump_stack.c:120
+ ___might_sleep.cold+0x1f1/0x237 kernel/sched/core.c:8328
+ __mutex_lock_common kernel/locking/mutex.c:928 [inline]
+ __mutex_lock+0xa9/0x1120 kernel/locking/mutex.c:1096
+ __ipv6_dev_mc_dec+0x5f/0x340 net/ipv6/mcast.c:965
+ addrconf_leave_solict net/ipv6/addrconf.c:2182 [inline]
+ addrconf_leave_solict net/ipv6/addrconf.c:2174 [inline]
+ __ipv6_ifa_notify+0x5b6/0xa90 net/ipv6/addrconf.c:6099
+ ipv6_ifa_notify net/ipv6/addrconf.c:6122 [inline]
+ ipv6_del_addr+0x463/0xae0 net/ipv6/addrconf.c:1294
+ addrconf_verify_rtnl+0xdbc/0x1220 net/ipv6/addrconf.c:4489
+ inet6_set_iftoken net/ipv6/addrconf.c:5757 [inline]
+ inet6_set_link_af+0x53c/0xc40 net/ipv6/addrconf.c:5833
+ do_setlink+0x290d/0x3af0 net/core/rtnetlink.c:2875
+ __rtnl_newlink+0xdcf/0x1710 net/core/rtnetlink.c:3385
+ rtnl_newlink+0x64/0xa0 net/core/rtnetlink.c:3500
+ rtnetlink_rcv_msg+0x44e/0xad0 net/core/rtnetlink.c:5562
+ netlink_rcv_skb+0x153/0x420 net/netlink/af_netlink.c:2502
+ netlink_unicast_kernel net/netlink/af_netlink.c:1312 [inline]
+ netlink_unicast+0x533/0x7d0 net/netlink/af_netlink.c:1338
+ netlink_sendmsg+0x856/0xd90 net/netlink/af_netlink.c:1927
+ sock_sendmsg_nosec net/socket.c:654 [inline]
+ sock_sendmsg+0xcf/0x120 net/socket.c:674
+ ____sys_sendmsg+0x6e8/0x810 net/socket.c:2350
+ ___sys_sendmsg+0xf3/0x170 net/socket.c:2404
+ __sys_sendmsg+0xe5/0x1b0 net/socket.c:2433
+ do_syscall_64+0x2d/0x70 arch/x86/entry/common.c:46
+ entry_SYSCALL_64_after_hwframe+0x44/0xae
+RIP: 0033:0x443869
+Code: 28 00 00 00 75 05 48 83 c4 28 c3 e8 41 15 00 00 90 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 c0 ff ff ff f7 d8 64 89 01 48
+RSP: 002b:00007ffc4ce9e848 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
+RAX: ffffffffffffffda RBX: 00007ffc4ce9e870 RCX: 0000000000443869
+RDX: 0000000000000000 RSI: 0000000020000000 RDI: 0000000000000003
+RBP: 0000000000000000 R08: 000000000000000d R09: 000000000000000d
+R10: 000000000000000d R11: 0000000000000246 R12: 00007ffc4ce9e860
+R13: 00000000000f4240 R14: 0000000000014fb2 R15: 00007ffc4ce9e854
+
+=============================
+[ BUG: Invalid wait context ]
+5.12.0-rc7-syzkaller #0 Tainted: G        W        
+-----------------------------
+syz-executor943/9825 is trying to lock:
+ffff8880188a3530 (&idev->mc_lock){+.+.}-{3:3}, at: __ipv6_dev_mc_dec+0x5f/0x340 net/ipv6/mcast.c:965
+other info that might help us debug this:
+context-{4:4}
+2 locks held by syz-executor943/9825:
+ #0: ffffffff8d6730a8 (rtnl_mutex){+.+.}-{3:3}, at: rtnl_lock net/core/rtnetlink.c:72 [inline]
+ #0: ffffffff8d6730a8 (rtnl_mutex){+.+.}-{3:3}, at: rtnetlink_rcv_msg+0x3f9/0xad0 net/core/rtnetlink.c:5559
+ #1: ffffffff8bf74520 (rcu_read_lock){....}-{1:2}, at: nla_ok include/net/netlink.h:1159 [inline]
+ #1: ffffffff8bf74520 (rcu_read_lock){....}-{1:2}, at: do_setlink+0x27d0/0x3af0 net/core/rtnetlink.c:2868
+stack backtrace:
+CPU: 0 PID: 9825 Comm: syz-executor943 Tainted: G        W         5.12.0-rc7-syzkaller #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+Call Trace:
+ __dump_stack lib/dump_stack.c:79 [inline]
+ dump_stack+0x141/0x1d7 lib/dump_stack.c:120
+ print_lock_invalid_wait_context kernel/locking/lockdep.c:4552 [inline]
+ check_wait_context kernel/locking/lockdep.c:4613 [inline]
+ __lock_acquire.cold+0x219/0x3b4 kernel/locking/lockdep.c:4851
+ lock_acquire kernel/locking/lockdep.c:5511 [inline]
+ lock_acquire+0x1ab/0x740 kernel/locking/lockdep.c:5476
+ __mutex_lock_common kernel/locking/mutex.c:949 [inline]
+ __mutex_lock+0x139/0x1120 kernel/locking/mutex.c:1096
+ __ipv6_dev_mc_dec+0x5f/0x340 net/ipv6/mcast.c:965
+ addrconf_leave_solict net/ipv6/addrconf.c:2182 [inline]
+ addrconf_leave_solict net/ipv6/addrconf.c:2174 [inline]
+ __ipv6_ifa_notify+0x5b6/0xa90 net/ipv6/addrconf.c:6099
+ ipv6_ifa_notify net/ipv6/addrconf.c:6122 [inline]
+ ipv6_del_addr+0x463/0xae0 net/ipv6/addrconf.c:1294
+ addrconf_verify_rtnl+0xdbc/0x1220 net/ipv6/addrconf.c:4489
+ inet6_set_iftoken net/ipv6/addrconf.c:5757 [inline]
+ inet6_set_link_af+0x53c/0xc40 net/ipv6/addrconf.c:5833
+ do_setlink+0x290d/0x3af0 net/core/rtnetlink.c:2875
+ __rtnl_newlink+0xdcf/0x1710 net/core/rtnetlink.c:3385
+ rtnl_newlink+0x64/0xa0 net/core/rtnetlink.c:3500
+ rtnetlink_rcv_msg+0x44e/0xad0 net/core/rtnetlink.c:5562
+ netlink_rcv_skb+0x153/0x420 net/netlink/af_netlink.c:2502
+ netlink_unicast_kernel net/netlink/af_netlink.c:1312 [inline]
+ netlink_unicast+0x533/0x7d0 net/netlink/af_netlink.c:1338
+ netlink_sendmsg+0x856/0xd90 net/netlink/af_netlink.c:1927
+ sock_sendmsg_nosec net/socket.c:654 [inline]
+ sock_sendmsg+0xcf/0x120 net/socket.c:674
+ ____sys_sendmsg+0x6e8/0x810 net/socket.c:2350
+ ___sys_sendmsg+0xf3/0x170 net/socket.c:2404
+ __sys_sendmsg+0xe5/0x1b0 net/socket.c:2433
+ do_syscall_64+0x2d/0x70 arch/x86/entry/common.c:46
+ entry_SYSCALL_64_after_hwframe+0x44/0xae
+RIP: 0033:0x443869
+Code: 28 00 00 00 75 05 48 83 c4 28 c3 e8 41 15 00 00 90 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 c0 ff ff ff f7 d8 64 89 01 48
+RSP: 002b:00007ffc4ce9e848 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
+RAX: ffffffffffffffda RBX: 00007ffc4ce9e870 RCX: 0000000000443869
+RDX: 0000000000000000 RSI: 0000000020000000 RDI: 0000000000000003
+RBP: 0000000000000000 R08: 000000000000000d R09: 000000000000000d
+R10: 000000000000000d R11: 0000000000000246 R12: 00007ffc4ce9e860
+R13: 00000000000f4240 R14: 0000000000014fb2 R15: 00007ffc4ce9e854
+BUG: sleeping function called from invalid context at include/linux/sched/mm.h:197
+in_atomic(): 0, irqs_disabled(): 0, non_block: 0, pid: 9825, name: syz-executor943
+INFO: lockdep is turned off.
+Preemption disabled at:
+[<ffffffff87026ff3>] local_bh_disable include/linux/bottom_half.h:19 [inline]
+[<ffffffff87026ff3>] netif_addr_lock_bh include/linux/netdevice.h:4549 [inline]
+[<ffffffff87026ff3>] __dev_mc_del net/core/dev_addr_lists.c:814 [inline]
+[<ffffffff87026ff3>] dev_mc_del+0x63/0x110 net/core/dev_addr_lists.c:833
+CPU: 0 PID: 9825 Comm: syz-executor943 Tainted: G        W         5.12.0-rc7-syzkaller #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+Call Trace:
+ __dump_stack lib/dump_stack.c:79 [inline]
+ dump_stack+0x141/0x1d7 lib/dump_stack.c:120
+ ___might_sleep.cold+0x1f1/0x237 kernel/sched/core.c:8328
+ might_alloc include/linux/sched/mm.h:197 [inline]
+ slab_pre_alloc_hook mm/slab.h:497 [inline]
+ slab_alloc_node mm/slub.c:2826 [inline]
+ slab_alloc mm/slub.c:2915 [inline]
+ kmem_cache_alloc_trace+0x263/0x2a0 mm/slub.c:2932
+ kmalloc include/linux/slab.h:554 [inline]
+ kzalloc include/linux/slab.h:684 [inline]
+ mld_add_delrec net/ipv6/mcast.c:737 [inline]
+ igmp6_leave_group net/ipv6/mcast.c:2629 [inline]
+ igmp6_group_dropped+0x4f7/0xe90 net/ipv6/mcast.c:717
+ __ipv6_dev_mc_dec+0x25d/0x340 net/ipv6/mcast.c:973
+ addrconf_leave_solict net/ipv6/addrconf.c:2182 [inline]
+ addrconf_leave_solict net/ipv6/addrconf.c:2174 [inline]
+ __ipv6_ifa_notify+0x5b6/0xa90 net/ipv6/addrconf.c:6099
+ ipv6_ifa_notify net/ipv6/addrconf.c:6122 [inline]
+ ipv6_del_addr+0x463/0xae0 net/ipv6/addrconf.c:1294
+ addrconf_verify_rtnl+0xdbc/0x1220 net/ipv6/addrconf.c:4489
+ inet6_set_iftoken net/ipv6/addrconf.c:5757 [inline]
+ inet6_set_link_af+0x53c/0xc40 net/ipv6/addrconf.c:5833
+ do_setlink+0x290d/0x3af0 net/core/rtnetlink.c:2875
+ __rtnl_newlink+0xdcf/0x1710 net/core/rtnetlink.c:3385
+ rtnl_newlink+0x64/0xa0 net/core/rtnetlink.c:3500
+ rtnetlink_rcv_msg+0x44e/0xad0 net/core/rtnetlink.c:5562
+ netlink_rcv_skb+0x153/0x420 net/netlink/af_netlink.c:2502
+ netlink_unicast_kernel net/netlink/af_netlink.c:1312 [inline]
+ netlink_unicast+0x533/0x7d0 net/netlink/af_netlink.c:1338
+ netlink_sendmsg+0x856/0xd90 net/netlink/af_netlink.c:1927
+ sock_sendmsg_nosec net/socket.c:654 [inline]
+ sock_sendmsg+0xcf/0x120 net/socket.c:674
+ ____sys_sendmsg+0x6e8/0x810 net/socket.c:2350
+ ___sys_sendmsg+0xf3/0x170 net/socket.c:2404
+ __sys_sendmsg+0xe5/0x1b0 net/socket.c:2433
+ do_syscall_64+0x2d/0x70 arch/x86/entry/common.c:46
+ entry_SYSCALL_64_after_hwframe+0x44/0xae
+RIP: 0033:0x443869
+Code: 28 00 00 00 75 05 48 83 c4 28 c3 e8 41 15 00 00 90 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 c0 ff ff ff f7 d8 64 89 01 48
+RSP: 002b:00007ffc4ce9e848 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
+RAX: ffffffffffffffda RBX: 00007ffc4ce9e870 RCX: 0000000000443869
+RDX: 0000000000000000 RSI: 0000000020000000 RDI: 0000000000000003
+RBP: 0000000000000000 R08: 000000000000000d R09: 000000000000000d
+R10: 000000000000000d R11: 0000000000000246 R12: 00007ffc4ce9e860
+R13: 00000000000f4240 R14: 0000000000014fb2 R15: 00007ffc4ce9e854
+__nla_validate_parse: 52 callbacks suppressed
+netlink: 4 bytes leftover after parsing attributes in process `syz-executor943'.
+
+
 ---
- net/packet/af_packet.c | 43 +++++++++++++++++++++++++-----------------
- 1 file changed, 26 insertions(+), 17 deletions(-)
+This report is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
 
-diff --git a/net/packet/af_packet.c b/net/packet/af_packet.c
-index e24b2841c643..8b6417afb12a 100644
---- a/net/packet/af_packet.c
-+++ b/net/packet/af_packet.c
-@@ -93,20 +93,20 @@
- #include "internal.h"
- 
- /*
--   Assumptions:
--   - If the device has no dev->header_ops->create, there is no LL header
--     visible above the device. In this case, its hard_header_len should be 0.
--     The device may prepend its own header internally. In this case, its
--     needed_headroom should be set to the space needed for it to add its
--     internal header.
--     For example, a WiFi driver pretending to be an Ethernet driver should
--     set its hard_header_len to be the Ethernet header length, and set its
--     needed_headroom to be (the real WiFi header length - the fake Ethernet
--     header length).
--   - packet socket receives packets with pulled ll header,
--     so that SOCK_RAW should push it back.
--
--On receive:
-+ * Assumptions:
-+ * - If the device has no dev->header_ops->create, there is no LL header
-+ *   visible above the device. In this case, its hard_header_len should be 0.
-+ *   The device may prepend its own header internally. In this case, its
-+ *   needed_headroom should be set to the space needed for it to add its
-+ *   internal header.
-+ *   For example, a WiFi driver pretending to be an Ethernet driver should
-+ *   set its hard_header_len to be the Ethernet header length, and set its
-+ *   needed_headroom to be (the real WiFi header length - the fake Ethernet
-+ *   header length).
-+ * - packet socket receives packets with pulled ll header,
-+ *   so that SOCK_RAW should push it back.
-+
-+ On receive:
- -----------
- 
- Incoming, dev_has_header(dev) == true
-@@ -781,6 +781,7 @@ static void prb_close_block(struct tpacket_kbdq_core *pkc1,
- 		 * blocks. See prb_retire_rx_blk_timer_expired().
- 		 */
- 		struct timespec64 ts;
-+
- 		ktime_get_real_ts64(&ts);
- 		h1->ts_last_pkt.ts_sec = ts.tv_sec;
- 		h1->ts_last_pkt.ts_nsec	= ts.tv_nsec;
-@@ -1075,6 +1076,7 @@ static void *packet_current_rx_frame(struct packet_sock *po,
- 					    int status, unsigned int len)
- {
- 	char *curr = NULL;
-+
- 	switch (po->tp_version) {
- 	case TPACKET_V1:
- 	case TPACKET_V2:
-@@ -1106,6 +1108,7 @@ static void *prb_lookup_block(const struct packet_sock *po,
- static int prb_previous_blk_num(struct packet_ring_buffer *rb)
- {
- 	unsigned int prev;
-+
- 	if (rb->prb_bdqc.kactive_blk_num)
- 		prev = rb->prb_bdqc.kactive_blk_num-1;
- 	else
-@@ -1119,6 +1122,7 @@ static void *__prb_previous_block(struct packet_sock *po,
- 					 int status)
- {
- 	unsigned int previous = prb_previous_blk_num(rb);
-+
- 	return prb_lookup_block(po, rb, previous, status);
- }
- 
-@@ -1152,6 +1156,7 @@ static void *packet_previous_frame(struct packet_sock *po,
- 		int status)
- {
- 	unsigned int previous = rb->head ? rb->head - 1 : rb->frame_max;
-+
- 	return packet_lookup_frame(po, rb, previous, status);
- }
- 
-@@ -2112,6 +2117,7 @@ static int packet_rcv(struct sk_buff *skb, struct net_device *dev,
- 
- 	if (skb_shared(skb)) {
- 		struct sk_buff *nskb = skb_clone(skb, GFP_ATOMIC);
-+
- 		if (nskb == NULL)
- 			goto drop_n_acct;
- 
-@@ -2248,6 +2254,7 @@ static int tpacket_rcv(struct sk_buff *skb, struct net_device *dev,
- 				  po->tp_reserve;
- 	} else {
- 		unsigned int maclen = skb_network_offset(skb);
-+
- 		netoff = TPACKET_ALIGN(po->tp_hdrlen +
- 				       (maclen < 16 ? 16 : maclen)) +
- 				       po->tp_reserve;
-@@ -2841,9 +2848,9 @@ static int tpacket_snd(struct packet_sock *po, struct msghdr *msg)
- }
- 
- static struct sk_buff *packet_alloc_skb(struct sock *sk, size_t prepad,
--				        size_t reserve, size_t len,
--				        size_t linear, int noblock,
--				        int *err)
-+					size_t reserve, size_t len,
-+					size_t linear, int noblock,
-+					int *err)
- {
- 	struct sk_buff *skb;
- 
-@@ -3695,6 +3702,7 @@ packet_setsockopt(struct socket *sock, int level, int optname, sockptr_t optval,
- 	{
- 		struct packet_mreq_max mreq;
- 		int len = optlen;
-+
- 		memset(&mreq, 0, sizeof(mreq));
- 		if (len < sizeof(struct packet_mreq))
- 			return -EINVAL;
-@@ -4583,6 +4591,7 @@ static void *packet_seq_start(struct seq_file *seq, loff_t *pos)
- static void *packet_seq_next(struct seq_file *seq, void *v, loff_t *pos)
- {
- 	struct net *net = seq_file_net(seq);
-+
- 	return seq_hlist_next_rcu(v, &net->packet.sklist, pos);
- }
- 
--- 
-2.17.1
-
+syzbot will keep track of this issue. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+For information about bisection process see: https://goo.gl/tpsmEJ#bisection
+syzbot can test patches for this issue, for details see:
+https://goo.gl/tpsmEJ#testing-patches
