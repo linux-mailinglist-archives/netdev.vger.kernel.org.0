@@ -2,85 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 935C83716A4
-	for <lists+netdev@lfdr.de>; Mon,  3 May 2021 16:30:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 56C253716BE
+	for <lists+netdev@lfdr.de>; Mon,  3 May 2021 16:39:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229715AbhECObd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 3 May 2021 10:31:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49472 "EHLO
+        id S229844AbhECOkA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 3 May 2021 10:40:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51332 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229721AbhECOb2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 3 May 2021 10:31:28 -0400
-Received: from mail.as397444.net (mail.as397444.net [IPv6:2620:6e:a000:dead:beef:15:bad:f00d])
-        by lindbergh.monkeyblade.net (Postfix) with UTF8SMTPS id 5DA4DC06174A
-        for <netdev@vger.kernel.org>; Mon,  3 May 2021 07:30:33 -0700 (PDT)
-Received: by mail.as397444.net (Postfix) with UTF8SMTPSA id DBE86567A1D;
-        Mon,  3 May 2021 14:30:31 +0000 (UTC)
-X-DKIM-Note: Keys used to sign are likely public at https://as397444.net/dkim/
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mattcorallo.com;
-        s=1620050464; t=1620052231;
-        bh=xR+taIqVTqdoezKf0Cn70l4t09waj7N8danorsao6y8=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=l3/bqHB0ZKQ33suOhKqQi/kefUoW9+onCVjHEgrZvGWO7DW3SZYgoJ69t7vLdhrKv
-         LpHJNdagp/ctd3VPu3Q8KNuJ4883CPVnGyuw0vvOyJqpWK/rIeVMvriaxhU6kP6mWO
-         7VjhBtr9xTfb/am117XNuvpKfTuQqW39g8ojhm0fyGbitXt01VU0zG1ORWN4UBCIk/
-         xxAKOWpzUQDCl0dXwNIBXIBVDTIu//gEgBOLGB7SDz6T/wgjxSWNtVWHzD1AspXd5Z
-         7IYFJWCHkJR36aDOuoVkjxm5fkVAQFyZ5ve2STYv1rUy/5TBqJ6V7urlEW4aBBEst2
-         qDc8S+XD1mmQg==
-Message-ID: <9d2b9d8c-e1b7-af7b-e881-79d2c664aac7@bluematt.me>
-Date:   Mon, 3 May 2021 10:30:31 -0400
+        with ESMTP id S229835AbhECOjx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 3 May 2021 10:39:53 -0400
+Received: from mail-pj1-x102d.google.com (mail-pj1-x102d.google.com [IPv6:2607:f8b0:4864:20::102d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3CA74C06174A
+        for <netdev@vger.kernel.org>; Mon,  3 May 2021 07:38:59 -0700 (PDT)
+Received: by mail-pj1-x102d.google.com with SMTP id fa21-20020a17090af0d5b0290157eb6b590fso2122398pjb.5
+        for <netdev@vger.kernel.org>; Mon, 03 May 2021 07:38:59 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=networkplumber-org.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:subject:message-id:mime-version
+         :content-transfer-encoding;
+        bh=vjb5OlJU5KO9wV7Kf98GvS3+OXOkFCW5y7GCkAscuH8=;
+        b=DFb0hQLU+jysXjCeONQGeNykhyukdf4l6N00RX+2GhhMLhs+PF6J8Slo7qoi4XpffP
+         DMkVtIgpgY1o9KuadUTmVuQuC2ihusI3YHT1OFQDBD1+hmxSHM/vdgPrBHTqY99wPltU
+         mxZlV5lb9jNIAnftOx1X86Ca+mEN2ZP5sqCEABKitYlepMr1sUngthjWzv25HbAeHcgb
+         aM8HE0Ku6/IqnPJ7he6b+tb0tgxEfTMuJEQcUd+aVnUwQT6c4Orr6h6535Swg+JBqQvg
+         dfd3GmpBF5mwn7aSoOuZqirzS3rYytpVfct+JxHoa7RW9CwH6VBNDD/XoYfyHoUmpPKe
+         8RMw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:subject:message-id:mime-version
+         :content-transfer-encoding;
+        bh=vjb5OlJU5KO9wV7Kf98GvS3+OXOkFCW5y7GCkAscuH8=;
+        b=ByQbv1uZT/X0cijPh//Ld8m0WIQRl3swll3QXxXZfmCAq47JfcIW2cZyKbuO/5I1FP
+         dB5M1WWQPkQt+c3VY6WfVB7a3P43EL+7rKV6SI1Ii8x+s3gvX8DIqXNeEs7782GVF1l0
+         WInAyPJ4DPvywzpyoGWxOGLxELbyn7ckpTxn1DZf5ZG2f4gwlN8i1cwOvBKKSwo4zZdr
+         gwEMx2NGN+o1GH0O1J7sk9ok1ZvpfY4XKOez3P/T9sfjbGJyP3+QT0lNT6PSff4JxROe
+         vSBjdQDDcFxoaYib8PRnYTBbEB9VrJfYmhx4fmgs+Kwr7KWRdaMpFhbX8Q/EvBTAii0m
+         DrlA==
+X-Gm-Message-State: AOAM5325l79ZowjO/UmDLm5J91thsFLy/wYl56xVtTxCruMtCnOClxhY
+        Fy1TPC14jr62r8kKHMEyoY5HHshH5s+FuA==
+X-Google-Smtp-Source: ABdhPJxz+4VbE2PyHjNBQ3OPFxL3hIGbipn4qeQ2FCAKXuxKy2CtRPcQ9+w170P7bGTl+XmBLbDybg==
+X-Received: by 2002:a17:902:a60f:b029:ee:cc8c:f891 with SMTP id u15-20020a170902a60fb02900eecc8cf891mr8259308plq.39.1620052738268;
+        Mon, 03 May 2021 07:38:58 -0700 (PDT)
+Received: from hermes.local (76-14-218-44.or.wavecable.com. [76.14.218.44])
+        by smtp.gmail.com with ESMTPSA id n25sm9176616pff.154.2021.05.03.07.38.57
+        for <netdev@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 03 May 2021 07:38:57 -0700 (PDT)
+Date:   Mon, 3 May 2021 07:38:49 -0700
+From:   Stephen Hemminger <stephen@networkplumber.org>
+To:     netdev@vger.kernel.org
+Subject: Fw: [Bug 212921] New: ECMP not working for local sockets
+Message-ID: <20210503073849.27f9b4c0@hermes.local>
 MIME-Version: 1.0
-Subject: Re: [PATCH net-next] Reduce IP_FRAG_TIME fragment-reassembly timeout
- to 1s, from 30s
-Content-Language: en-US
-To:     Eric Dumazet <edumazet@google.com>
-Cc:     Willy Tarreau <w@1wt.eu>, "David S. Miller" <davem@davemloft.net>,
-        netdev <netdev@vger.kernel.org>,
-        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        Keyu Man <kman001@ucr.edu>
-References: <d840ddcf-07a6-a838-abf8-b1d85446138e@bluematt.me>
- <CANn89i+L2DuD2+EMHzwZ=qYYKo1A9gw=nTTmh20GV_o9ADxe2Q@mail.gmail.com>
- <0cb19f7e-a9b3-58f8-6119-0736010f1326@bluematt.me>
- <20210428141319.GA7645@1wt.eu>
- <055d0512-216c-9661-9dd4-007c46049265@bluematt.me>
- <CANn89iKfGhNYJVpj4T2MLkomkwPsYWyOof+COVvNFsfVfb7CRQ@mail.gmail.com>
- <64829c98-e4eb-6725-0fee-dc3c6681506f@bluematt.me>
- <1baf048d-18e8-3e0c-feee-a01b381b0168@bluematt.me>
- <CANn89iKJDUQuXBueuZWdi17LgFW3yb4LUsH3hzY08+ytJ9QgeA@mail.gmail.com>
- <c8ad9235-5436-8418-69a9-6c525fd254a4@bluematt.me>
- <CANn89iKJmbr_otzWrC19q5A_gGVRjMKso46=vT6=B9vUC5kgqA@mail.gmail.com>
- <df6fdff3-f307-c631-44e7-15fda817662f@bluematt.me>
- <f7d0a759-a8ab-2524-4939-095544d12913@bluematt.me>
-From:   Matt Corallo <netdev-list@mattcorallo.com>
-In-Reply-To: <f7d0a759-a8ab-2524-4939-095544d12913@bluematt.me>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-At the risk of being obnoxious here - that's a "no" to reconsidering the tradeoffs picked 20 years ago?
 
-I don't want to waste time if the answer is a complete "no", but if it isn't I'm happy to try to figure out what exactly 
-the right tradeoffs are here, and spend time implementing things.
 
-Thanks,
-Matt
+Begin forwarded message:
 
-On 4/30/21 14:04, Matt Corallo wrote:
-> On 4/30/21 13:53, Matt Corallo wrote:
->>
->> Buffer bloat exists, but so do networks that will happily drop 1Mbps of packets. The first has always been true, the 
->> second only more recently has become more and more common (both due to network speed and application behavior).
-> 
-> It may be worth noting, to further highlight the tradeoffs made here - that, given a constant amount of memory allocated 
-> for fragment reassembly, *under* estimating the timeout will result in only loss of some % of packets which were 
-> reordered in excess of the timeout, whereas *over* estimating the timeout results in complete blackhole for up to the 
-> timeout in the face of material packet loss.
-> 
-> This asymmetry is why I suggested possibly random eviction could be useful as a different set of trade-offs, but I'm 
-> certainly not qualified to make that determination.
-> 
-> Thanks again for your time and consideration,
-> Matt
+Date: Sun, 02 May 2021 07:10:44 +0000
+From: bugzilla-daemon@bugzilla.kernel.org
+To: stephen@networkplumber.org
+Subject: [Bug 212921] New: ECMP not working for local sockets
+
+
+https://bugzilla.kernel.org/show_bug.cgi?id=212921
+
+            Bug ID: 212921
+           Summary: ECMP not working for local sockets
+           Product: Networking
+           Version: 2.5
+    Kernel Version: 5.8.0-50-generic
+          Hardware: All
+                OS: Linux
+              Tree: Mainline
+            Status: NEW
+          Severity: normal
+          Priority: P1
+         Component: IPV4
+          Assignee: stephen@networkplumber.org
+          Reporter: nitin.i.joy@gmail.com
+        Regression: No
+
+When you're creating local TCP sockets in a Linux machine, the connections to
+the same destination IP are not load-balanced across multiple interfaces when
+ECMP path is set. Even when net.ipv4.fib_multipath_hash_policy is set to L4
+hash, multiple interfaces are never used for same destination. 
+
+I tried working around the issue by setting two route table entries with same
+metric using `ip route append` command. In this case, the connections get
+load-balanced across multiple interfaces for 5-10 seconds, after which all
+future connections will choose one of the interfaces. There is no configuration
+that can disable this behavior. I tried disabling tcp_metrics_nosave
+
+-- 
+You may reply to this email to add a comment.
+
+You are receiving this mail because:
+You are the assignee for the bug.
