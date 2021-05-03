@@ -2,93 +2,129 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6E86537171B
-	for <lists+netdev@lfdr.de>; Mon,  3 May 2021 16:53:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2D4BF371749
+	for <lists+netdev@lfdr.de>; Mon,  3 May 2021 16:58:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229899AbhECOy3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 3 May 2021 10:54:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54716 "EHLO
+        id S230085AbhECO6x (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 3 May 2021 10:58:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55790 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229649AbhECOyZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 3 May 2021 10:54:25 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E3DC5C06174A
-        for <netdev@vger.kernel.org>; Mon,  3 May 2021 07:53:31 -0700 (PDT)
-Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <mkl@pengutronix.de>)
-        id 1ldZwi-0005np-TW; Mon, 03 May 2021 16:53:16 +0200
-Received: from pengutronix.de (unknown [IPv6:2a03:f580:87bc:d400:1b0:e062:be12:b9c6])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (Client did not present a certificate)
-        (Authenticated sender: mkl-all@blackshift.org)
-        by smtp.blackshift.org (Postfix) with ESMTPSA id AEA9061B32F;
-        Mon,  3 May 2021 14:53:10 +0000 (UTC)
-Date:   Mon, 3 May 2021 16:53:09 +0200
-From:   Marc Kleine-Budde <mkl@pengutronix.de>
-To:     Dan Carpenter <dan.carpenter@oracle.com>
-Cc:     Manivannan Sadhasivam <mani@kernel.org>,
-        Thomas Kopp <thomas.kopp@microchip.com>,
-        Wolfgang Grandegger <wg@grandegger.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, linux-can@vger.kernel.org,
-        netdev@vger.kernel.org, kernel-janitors@vger.kernel.org
-Subject: Re: [PATCH net] can: mcp251xfd: fix an error pointer dereference in
- probe
-Message-ID: <20210503145309.fhij36vze4d5xrte@pengutronix.de>
-References: <YJANZf13Qxd5Mhr1@mwanda>
+        with ESMTP id S230087AbhECO6v (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 3 May 2021 10:58:51 -0400
+Received: from mail-pg1-x534.google.com (mail-pg1-x534.google.com [IPv6:2607:f8b0:4864:20::534])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5AD0DC061761
+        for <netdev@vger.kernel.org>; Mon,  3 May 2021 07:57:58 -0700 (PDT)
+Received: by mail-pg1-x534.google.com with SMTP id s22so3810429pgk.6
+        for <netdev@vger.kernel.org>; Mon, 03 May 2021 07:57:58 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=networkplumber-org.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=2/OgfIPTbAC9NLUVtSRA/mfV9EgOxXzgWwld4I4WlBw=;
+        b=snXsHpO1bZgbEBk2EQKrvB9pcvXblmJcHXAPCDM0Xlz1x+vECdDr54U1weiTipJIPI
+         P4JgbZGeG5D5IE/fRqsvm6hpZDjKJ/tQzzZpWaF6PVjEC+wXlceHKITmxHBjzP4j2kLQ
+         e9mPSqp8inCosOzTj/DsZUFczfal5EdjKjfvwnrWx/o2M5rbZ3BQ5eD0uW7KQGBBvoaE
+         6G3HrrW++kA8ovo0B9vy7bNgvWFUejeO4dhKvKyDvbXuMmXatEuddbcbki7PulT2jR0x
+         4eDIqMmFjmYG4JURO2KzGepmcdSRW917fBKtunXG5WAJvPk5FY3uutYRUjhG0MJpBNFe
+         dA4A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=2/OgfIPTbAC9NLUVtSRA/mfV9EgOxXzgWwld4I4WlBw=;
+        b=KjOQRTlchJoQB2Gr4dQXmIgfLF5BArEoaGQdUTF/G2AVeWN+4VPSF5gVGQ0Y7lFFV+
+         Rvu5r4XtahHlBNnfmsl4Lh/z/XqdO8v9tqO6LN7sGyPdTDVypKZKhTRH78wLfFunXIps
+         16MarwvMq46s6qWtzNCoe/pwXoD7UxmF4HtBjxAWtVvt7rETJYj/gjyWMIEkxQzOS9Xm
+         oVA24ss4Tfhfg5CokDjxO1Y1/meUUbEX41BExZHMe16wv+BPylAaX1X6tns1wE3g4rI2
+         Qqc41Vz2cYaeQTB3dAi+sWDDPmUozuQAWOFaqMrPIzOrGZQH5/YvHMvU6sDY1kjqjz/K
+         jxGw==
+X-Gm-Message-State: AOAM533mY0Y96t9cG+41v78MKC/eOgpB0xSvN1NpOrCfCaO3LHQZu1qv
+        bIhZBe4xpR4iwXjQM4+NlZ/pxw==
+X-Google-Smtp-Source: ABdhPJyD5QY2SKDOECrRjVUrKOnuVdqLTtt3tkpqIhwvi3aTrpGCAj2kht428eTLNkijTLrEqu/4vA==
+X-Received: by 2002:a65:5b8e:: with SMTP id i14mr18045251pgr.324.1620053877901;
+        Mon, 03 May 2021 07:57:57 -0700 (PDT)
+Received: from hermes.local (76-14-218-44.or.wavecable.com. [76.14.218.44])
+        by smtp.gmail.com with ESMTPSA id k20sm9173139pfa.34.2021.05.03.07.57.57
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 03 May 2021 07:57:57 -0700 (PDT)
+Date:   Mon, 3 May 2021 07:57:39 -0700
+From:   Stephen Hemminger <stephen@networkplumber.org>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     dsahern@gmail.com, netdev@vger.kernel.org
+Subject: Re: [PACTH iproute2-next] ip: dynamically size columns when
+ printing stats
+Message-ID: <20210503075739.46654252@hermes.local>
+In-Reply-To: <20210501031059.529906-1-kuba@kernel.org>
+References: <20210501031059.529906-1-kuba@kernel.org>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="uffqkjhbb2ctxi46"
-Content-Disposition: inline
-In-Reply-To: <YJANZf13Qxd5Mhr1@mwanda>
-X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
-X-SA-Exim-Mail-From: mkl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Fri, 30 Apr 2021 20:10:59 -0700
+Jakub Kicinski <kuba@kernel.org> wrote:
 
---uffqkjhbb2ctxi46
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+> This change makes ip -s -s output size the columns
+> automatically. I often find myself using json
+> output because the normal output is unreadable.
+> Even on a laptop after 2 days of uptime byte
+> and packet counters almost overflow their columns,
+> let alone a busy server.
+> 
+> For max readability switch to right align.
+> 
+> Before:
+> 
+>     RX: bytes  packets  errors  dropped missed  mcast
+>     8227918473 8617683  0       0       0       0
+>     RX errors: length   crc     frame   fifo    overrun
+>                0        0       0       0       0
+>     TX: bytes  packets  errors  dropped carrier collsns
+>     691937917  4727223  0       0       0       0
+>     TX errors: aborted  fifo   window heartbeat transns
+>                0        0       0       0       10
+> 
+> After:
+> 
+>     RX:  bytes packets errors dropped  missed   mcast
+>     8228633710 8618408      0       0       0       0
+>     RX errors:  length    crc   frame    fifo overrun
+>                      0      0       0       0       0
+>     TX:  bytes packets errors dropped carrier collsns
+>      692006303 4727740      0       0       0       0
+>     TX errors: aborted   fifo  window heartbt transns
+>                      0      0       0       0      10
+> 
+> More importantly, with large values before:
+> 
+>     RX: bytes  packets  errors  dropped overrun mcast
+>     126570234447969 15016149200 0       0       0       0
+>     RX errors: length   crc     frame   fifo    missed
+>                0        0       0       0       0
+>     TX: bytes  packets  errors  dropped carrier collsns
+>     126570234447969 15016149200 0       0       0       0
+>     TX errors: aborted  fifo   window heartbeat transns
+>                0        0       0       0       10
+> 
+> Note that in this case we have full shift by a column,
+> e.g. the value under "dropped" is actually for "errors" etc.
+> 
+> After:
+> 
+>     RX:       bytes     packets errors dropped  missed   mcast
+>     126570234447969 15016149200      0       0       0       0
+>     RX errors:           length    crc   frame    fifo overrun
+>                               0      0       0       0       0
+>     TX:       bytes     packets errors dropped carrier collsns
+>     126570234447969 15016149200      0       0       0       0
+>     TX errors:          aborted   fifo  window heartbt transns
+>                               0      0       0       0      10
+> 
+> Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 
-On 03.05.2021 17:49:09, Dan Carpenter wrote:
-> When we converted this code to use dev_err_probe() we accidentally
-> removed a return.  It means that if devm_clk_get() it will lead to
-> an Oops when we call clk_get_rate() on the next line.
->=20
-> Fixes: cf8ee6de2543 ("can: mcp251xfd: mcp251xfd_probe(): use dev_err_prob=
-e() to simplify error handling")
-> Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
+Looks good to me.
 
-Good catch, found that yesterday, too, but haven't posted it here.
-
-Marc
---=20
-Pengutronix e.K.                 | Marc Kleine-Budde           |
-Embedded Linux                   | https://www.pengutronix.de  |
-Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
-Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
-
---uffqkjhbb2ctxi46
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEK3kIWJt9yTYMP3ehqclaivrt76kFAmCQDlMACgkQqclaivrt
-76kzcQf9HuBx3N3HU3kNHeC2hmvSIgDptYkjb2HwaKINxHVyP5uFUHgPCYDiC5RO
-D9Qf4lBPSEhSyYv3V2OuNNwkjmA8qHrkitYJ2FCrfULPo3YU/FlVRLBt6xlQnInr
-g3avJ5LHm3LxxF7yoDcIsrDtd5ocVWvvqI0uHCjC2WUCM92XyX+6Zb3WF2r29it1
-FljJTQoEOFCZrzUDIdJHYiHxmW8ZtOo8kmtUYf++eCMHCgIjAY9KJWU6D54ojY48
-P3mAW40JQGKmQK+DUb/3iooiNRaelv8pa8WbQXCBnbqCAJZDhGoU4fKB4JU/L5Kg
-5heBqtMwKqpIQ7uzTiOcbZaHvjgi4Q==
-=Pojn
------END PGP SIGNATURE-----
-
---uffqkjhbb2ctxi46--
+Maybe good time to refactor the code to make it table driven rather
+than individual statistic items.
