@@ -2,154 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 958BA372329
-	for <lists+netdev@lfdr.de>; Tue,  4 May 2021 00:45:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2012337232D
+	for <lists+netdev@lfdr.de>; Tue,  4 May 2021 00:47:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229623AbhECWqf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 3 May 2021 18:46:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48104 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229499AbhECWqf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 3 May 2021 18:46:35 -0400
-Received: from mail-yb1-xb36.google.com (mail-yb1-xb36.google.com [IPv6:2607:f8b0:4864:20::b36])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7243CC061574;
-        Mon,  3 May 2021 15:45:40 -0700 (PDT)
-Received: by mail-yb1-xb36.google.com with SMTP id h202so671159ybg.11;
-        Mon, 03 May 2021 15:45:40 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=Dd8PPqagotgsii7UGnjmNKQl6bRsvX0ze6s7JjbKli0=;
-        b=oyy0BG6+W6Wi3N6AcIPX5xbAs56cy5LMsWEOoBCXovAX88vgneteKVCw1+UzC1DbN1
-         bpvrzWrXpGfqSjKZfk7hqdoI24gHICsZEzLp0ebJwoQ6eRp17acloCD5RlJvkIp93+FX
-         /2TOFJ6dEAnFgnspL65Do0LXGVm+xqc2I3fwHK/+BBu7vm6XzT3JgWUQCFs0UvWLbAZI
-         lsjNle3aKfspJtEE9gTLnOX8Sy/lL9SCbjcWUHuM/hhhgh0JUDs5WEcmo9++Z5TE52/p
-         6t1FhYrcoctAAfYplW1BngIegI3I9v6sxgknmskG/U8mrGTYpYOLirG8Akcq6p3VKNug
-         YlKA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=Dd8PPqagotgsii7UGnjmNKQl6bRsvX0ze6s7JjbKli0=;
-        b=VfC7ni70/r0NhH0J18rIr5FtY3erji8MjvVrFUEzUol+nDMaR+gFwHLdeuJcDTmCLA
-         t+XeFl6S245hnVevlsOB/3CLQ+knwpfuLiohkLk+aw2pLmJXGKrLu5k0e3ai0ZnwXZAm
-         vpk7BTQFy6c+xrYE7LBw72ebpPTnfnZFsFGsQDbrS04l8r3BwlXq71Ib8rMJeNL8fU0r
-         b7Vb0ch9rvLlHrD0SN3BC7WVxjbVJ+MB7CleGkCcjY3X5GKemNEy+5LHlyneVPn1morl
-         zeRw5NWkWQpGHY22CqetjxpAedhkvNhjm91pVf6tdj3Yu6hQeKw2gHrInYuAYBTKq7Vk
-         liZw==
-X-Gm-Message-State: AOAM530HH4E1mD2zWDIX5imAwazyYk1Bxwv0RsdV1KtD2X4hw2je22Dw
-        0udYcCcWPr6ao/CeurKT2vjOi55WNUK/5kZkTrE=
-X-Google-Smtp-Source: ABdhPJzgnoRkbWzA4Pc9UbEpW/9etOdJ/+Ai6oHTGRxvYWC+MvJRvpKI2z92viU/IkzjPPFwpf2L19I4aNuBSNGYByE=
-X-Received: by 2002:a25:1455:: with SMTP id 82mr29921123ybu.403.1620081939643;
- Mon, 03 May 2021 15:45:39 -0700 (PDT)
+        id S229596AbhECWsb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 3 May 2021 18:48:31 -0400
+Received: from www62.your-server.de ([213.133.104.62]:38900 "EHLO
+        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229497AbhECWsa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 3 May 2021 18:48:30 -0400
+Received: from 30.101.7.85.dynamic.wline.res.cust.swisscom.ch ([85.7.101.30] helo=localhost)
+        by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92.3)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1ldhLg-000CIn-9n; Tue, 04 May 2021 00:47:32 +0200
+From:   Daniel Borkmann <daniel@iogearbox.net>
+To:     davem@davemloft.net
+Cc:     kuba@kernel.org, daniel@iogearbox.net, ast@kernel.org,
+        andrii.nakryiko@gmail.com, netdev@vger.kernel.org,
+        bpf@vger.kernel.org
+Subject: pull-request: bpf 2021-05-04
+Date:   Tue,  4 May 2021 00:47:31 +0200
+Message-Id: <20210503224731.6963-1-daniel@iogearbox.net>
+X-Mailer: git-send-email 2.21.0
 MIME-Version: 1.0
-References: <20210430134754.179242-1-jolsa@kernel.org>
-In-Reply-To: <20210430134754.179242-1-jolsa@kernel.org>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Mon, 3 May 2021 15:45:28 -0700
-Message-ID: <CAEf4BzbEjvccUDabpTiPOiXK=vfcmHaXjeaTL8gCr08=6fBqhg@mail.gmail.com>
-Subject: Re: [RFC] bpf: Fix crash on mm_init trampoline attachment
-To:     Jiri Olsa <jolsa@kernel.org>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andriin@fb.com>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.103.2/26159/Mon May  3 13:09:38 2021)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Apr 30, 2021 at 6:48 AM Jiri Olsa <jolsa@kernel.org> wrote:
->
-> There are 2 mm_init functions in kernel.
->
-> One in kernel/fork.c:
->   static struct mm_struct *mm_init(struct mm_struct *mm,
->                                    struct task_struct *p,
->                                    struct user_namespace *user_ns)
->
-> And another one in init/main.c:
->   static void __init mm_init(void)
->
-> The BTF data will get the first one, which is most likely
-> (in my case) mm_init from init/main.c without arguments.
->
-> Then in runtime when we want to attach to 'mm_init' the
-> kalsyms contains address of the one from kernel/fork.c.
->
-> So we have function model with no arguments and using it
-> to attach function with 3 arguments.. as result the trampoline
-> will not save function's arguments and we get crash because
-> trampoline changes argument registers:
->
->   BUG: unable to handle page fault for address: 0000607d87a1d558
->   #PF: supervisor write access in kernel mode
->   #PF: error_code(0x0002) - not-present page
->   PGD 0 P4D 0
->   Oops: 0002 [#1] SMP PTI
->   CPU: 6 PID: 936 Comm: systemd Not tainted 5.12.0-rc4qemu+ #191
->   RIP: 0010:mm_init+0x223/0x2a0
->   ...
->   Call Trace:
->    ? bpf_trampoline_6442453476_0+0x3b/0x1000
->    dup_mm+0x66/0x5f0
->    ? __lock_task_sighand+0x3a/0x70
->    copy_process+0x17d0/0x1b50
->    kernel_clone+0x97/0x3c0
->    __do_sys_clone+0x60/0x80
->    do_syscall_64+0x33/0x40
->    entry_SYSCALL_64_after_hwframe+0x44/0xae
->   RIP: 0033:0x7f1dc9b3201f
->
-> I think there might be more cases like this, but I don't have
-> an idea yet how to solve this in generic way. The rename in
-> this change fix it for this instance.
+Hi David, hi Jakub,
 
-Just retroactively renaming functions and waiting for someone else to
-report similar issues is probably not the best strategy. Should
-resolve_btfids detect all name duplicates and emit warnings for them?
-It would be good to also remove such name-conflicting FUNCs from BTF
-(though currently it's not easy). And fail if such a function is
-referenced from .BTF_ids section.
+The following pull-request contains BPF updates for your *net* tree.
 
-Thoughts?
+We've added 5 non-merge commits during the last 4 day(s) which contain
+a total of 6 files changed, 52 insertions(+), 30 deletions(-).
 
->
-> Signed-off-by: Jiri Olsa <jolsa@kernel.org>
-> ---
->  init/main.c | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
->
-> diff --git a/init/main.c b/init/main.c
-> index 53b278845b88..bc1bfe57daf7 100644
-> --- a/init/main.c
-> +++ b/init/main.c
-> @@ -818,7 +818,7 @@ static void __init report_meminit(void)
->  /*
->   * Set up kernel memory allocators
->   */
-> -static void __init mm_init(void)
-> +static void __init init_mem(void)
->  {
->         /*
->          * page_ext requires contiguous pages,
-> @@ -905,7 +905,7 @@ asmlinkage __visible void __init __no_sanitize_address start_kernel(void)
->         vfs_caches_init_early();
->         sort_main_extable();
->         trap_init();
-> -       mm_init();
-> +       init_mem();
+The main changes are:
 
-nit: given trap_init and ftrace_init, mem_init probably would be a better name?
+1) Fix libbpf overflow when processing BPF ring buffer in case of extreme
+   application behavior, from Brendan Jackman.
 
->
->         ftrace_init();
->
-> --
-> 2.30.2
->
+2) Fix potential data leakage of uninitialized BPF stack under speculative
+   execution, from Daniel Borkmann.
+
+3) Fix off-by-one when validating xsk pool chunks, from Xuan Zhuo.
+
+4) Fix snprintf BPF selftest with a pid filter to avoid racing its output
+   test buffer, from Florent Revest.
+
+Please consider pulling these changes from:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf.git
+
+Thanks a lot!
+
+Also thanks to reporters, reviewers and testers of commits in this pull-request:
+
+Alexei Starovoitov, Andrii Nakryiko, John Fastabend, Magnus Karlsson, 
+Piotr Krysiuk
+
+----------------------------------------------------------------
+
+The following changes since commit d4eecfb28b963493a8701f271789ff04e92ae205:
+
+  net: dsa: ksz: ksz8863_smi_probe: set proper return value for ksz_switch_alloc() (2021-04-29 15:54:35 -0700)
+
+are available in the Git repository at:
+
+  https://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf.git 
+
+for you to fetch changes up to ac31565c21937eee9117e43c9cd34f557f6f1cb8:
+
+  xsk: Fix for xp_aligned_validate_desc() when len == chunk_size (2021-05-04 00:28:06 +0200)
+
+----------------------------------------------------------------
+Brendan Jackman (1):
+      libbpf: Fix signed overflow in ringbuf_process_ring
+
+Daniel Borkmann (2):
+      bpf: Fix masking negation logic upon negative dst register
+      bpf: Fix leakage of uninitialized bpf stack under speculation
+
+Florent Revest (1):
+      selftests/bpf: Fix the snprintf test
+
+Xuan Zhuo (1):
+      xsk: Fix for xp_aligned_validate_desc() when len == chunk_size
+
+ include/linux/bpf_verifier.h                      |  5 ++--
+ kernel/bpf/verifier.c                             | 33 ++++++++++++-----------
+ net/xdp/xsk_queue.h                               |  7 +++--
+ tools/lib/bpf/ringbuf.c                           | 30 ++++++++++++++-------
+ tools/testing/selftests/bpf/prog_tests/snprintf.c |  2 ++
+ tools/testing/selftests/bpf/progs/test_snprintf.c |  5 ++++
+ 6 files changed, 52 insertions(+), 30 deletions(-)
