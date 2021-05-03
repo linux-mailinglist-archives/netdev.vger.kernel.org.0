@@ -2,204 +2,314 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BE30E3712CA
-	for <lists+netdev@lfdr.de>; Mon,  3 May 2021 10:59:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E19F2371326
+	for <lists+netdev@lfdr.de>; Mon,  3 May 2021 11:44:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233020AbhECJAl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 3 May 2021 05:00:41 -0400
-Received: from mail-ed1-f42.google.com ([209.85.208.42]:45718 "EHLO
-        mail-ed1-f42.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231531AbhECJAl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 3 May 2021 05:00:41 -0400
-Received: by mail-ed1-f42.google.com with SMTP id d14so5383803edc.12;
-        Mon, 03 May 2021 01:59:47 -0700 (PDT)
+        id S233082AbhECJpV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 3 May 2021 05:45:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42778 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231523AbhECJpT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 3 May 2021 05:45:19 -0400
+Received: from mail-lj1-x22e.google.com (mail-lj1-x22e.google.com [IPv6:2a00:1450:4864:20::22e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C7AD2C06174A
+        for <netdev@vger.kernel.org>; Mon,  3 May 2021 02:44:24 -0700 (PDT)
+Received: by mail-lj1-x22e.google.com with SMTP id l22so6007098ljc.9
+        for <netdev@vger.kernel.org>; Mon, 03 May 2021 02:44:24 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=waldekranz-com.20150623.gappssmtp.com; s=20150623;
+        h=from:to:cc:subject:in-reply-to:references:date:message-id
+         :mime-version;
+        bh=OlAv0gf5bGxBurvHZprInL95fFgxTXP2KAM4AC8pLhg=;
+        b=xersm7JQIv8QZcgdIjcRe6PWmqUDbX9BDIfmXKuKzlYHQ+mgluo7pU7+ek/O8YSve0
+         MAaf4p7mkH55JLriXHZTOtICyNB2sL2kbjNISfy7o/XtChWQUTHfLgKCpY7m4oxe9ICp
+         zvGhprdspo2PfExLRD9R2afJZXZUuaTSRFu/HAfYRUcCgZGNROeXL+y8f+YGbslFkHge
+         SCI3xpMj/njv7hFo02Xg/SdqXSz17doh/OQf/kktdwmI/yFsWBtMrBQZmLvfOULtRE/H
+         FQOmkflquF6xWNQ3aVMPD+YIMg3PVMOaEv76cE976hVItBGptQqB4Kab35Gz0lmYeasJ
+         Z5nw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:from:to:cc:references:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language;
-        bh=ylNixxPElN4FOLfZxMBmuRN5VwI+oDqntB6I0UOtU8A=;
-        b=k7SLplqDezicLt8YgTF6HXDf5V7Y6CIk8I7NNVKUQ3XtVYBl1CCECEG+0QV7Cl+oNT
-         Ex9yLwkwqv1kJTbBNH29pbKg6nzqGg0CyFfPv088aIsEvIpzdhElKnkE0lF+Y2d4qmJ/
-         7hkun4r8Llw6CmMWPoUK5alfTlv79nKujM725jlOINU8dIgKSmKginzaRhU9mx2Bg6+a
-         f39Sa3uKMy3N0DJAgeCJ16Yul8gFgyreHctBgVTwE9NBiNAQCDpKNrkQ/3SdM4wJ+lqb
-         wVbad8eAWMwCzbIo1VR6kxB9qB8tOaT5mUhfs5FJ74dGsxyK+44iOMoJFvOLxTaXoCQX
-         EClA==
-X-Gm-Message-State: AOAM533T0v24xPFXL0vFGLeIEsJwELygdMXRSrX9MIiH8UDZgQVC4QmB
-        ebDMlhcPNMqOHiVH3NYO7nzVEpR7l9o4FQ==
-X-Google-Smtp-Source: ABdhPJx/VVHKuVSufgVvuNjBbHQVncDD1fuAh+kpFIXqB7Q71x1EYP/w33M7SvD6vcFqXHWyN9TA+g==
-X-Received: by 2002:a05:6402:b88:: with SMTP id cf8mr18803891edb.227.1620032386776;
-        Mon, 03 May 2021 01:59:46 -0700 (PDT)
-Received: from ?IPv6:2a0b:e7c0:0:107::70f? ([2a0b:e7c0:0:107::70f])
-        by smtp.gmail.com with ESMTPSA id c12sm13207764edx.54.2021.05.03.01.59.45
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 03 May 2021 01:59:46 -0700 (PDT)
-Subject: Re: linux-next failing build due to missing cubictcp_state symbol
-From:   Jiri Slaby <jirislaby@kernel.org>
-To:     =?UTF-8?Q?Michal_Such=c3=a1nek?= <msuchanek@suse.de>,
-        Jiri Olsa <jolsa@redhat.com>
-Cc:     Yonghong Song <yhs@fb.com>, linux-kernel@vger.kernel.org,
-        Martin KaFai Lau <kafai@fb.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Song Liu <songliubraving@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, Jiri Olsa <jolsa@kernel.org>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        dwarves@vger.kernel.org, Arnaldo Carvalho de Melo <acme@redhat.com>
-References: <316e86f9-35cc-36b0-1594-00a09631c736@fb.com>
- <20210423175528.GF6564@kitsune.suse.cz>
- <20210425111545.GL15381@kitsune.suse.cz>
- <20210426113215.GM15381@kitsune.suse.cz>
- <20210426121220.GN15381@kitsune.suse.cz>
- <20210426121401.GO15381@kitsune.suse.cz>
- <49f84147-bf32-dc59-48e0-f89241cf6264@fb.com> <YIbkR6z6mxdNSzGO@krava>
- <YIcRlHQWWKbOlcXr@krava> <20210427121237.GK6564@kitsune.suse.cz>
- <20210430174723.GP15381@kitsune.suse.cz>
- <3d148516-0472-8f0a-085b-94d68c5cc0d5@suse.com>
- <6c14f3c8-7474-9f3f-b4a6-2966cb19e1ed@kernel.org>
- <4e051459-8532-7b61-c815-f3435767f8a0@kernel.org>
-Message-ID: <cbaf50c3-c85d-9239-0b37-c88e8cbed8c8@kernel.org>
-Date:   Mon, 3 May 2021 10:59:44 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.9.1
+        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
+         :message-id:mime-version;
+        bh=OlAv0gf5bGxBurvHZprInL95fFgxTXP2KAM4AC8pLhg=;
+        b=cInWqMqUEK98mQOIzKbrBncUGQyxYZHoeZv5ucs8dBYMPQsYOMSn2m1anYIlcY1rNb
+         chlHin0lZ2Nzwmyh+iQOOHFe+iyeeyd3Q1YbZ9y/EWYi9Oz8CstlHlyLhKTJFZwP9OvI
+         AnTb5wTGAuo4HMqEV0IthMnSjEctX2+Dn5q1h8E7OI9T0LBqSN1EhakYwVmX61juiCR2
+         AKooZhCsdtcNnVw8zWUDlpgj3Qa1/YcQtM8KYSDBKB+FWkKTtJRoOITmuzZ3vG105AIR
+         IS5U0ZyNU5+F1kgCPnzendLgx2mYFQ2A6ZUlPCWbNSWJjNNVSfOWgOFEvQRUp/qx0OoK
+         GG9A==
+X-Gm-Message-State: AOAM531rmAgBP4IcTdFSV10erS3OoKKyMXCqlSvkKOdNCZN8WNzZHYxz
+        5AVOLkY3eDAI3WQqj1dFzhfECQ==
+X-Google-Smtp-Source: ABdhPJzDa81hKW+JWHxylLqY7xOMFOJFj6TF/4FA8SjOr+8RHkH9n+kYChH7vxWDF7Mf3SIIzpnaFQ==
+X-Received: by 2002:a05:651c:33a:: with SMTP id b26mr12749954ljp.220.1620035063182;
+        Mon, 03 May 2021 02:44:23 -0700 (PDT)
+Received: from wkz-x280 (static-193-12-47-89.cust.tele2.se. [193.12.47.89])
+        by smtp.gmail.com with ESMTPSA id n22sm1087863lfu.144.2021.05.03.02.44.22
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 03 May 2021 02:44:22 -0700 (PDT)
+From:   Tobias Waldekranz <tobias@waldekranz.com>
+To:     Ido Schimmel <idosch@idosch.org>
+Cc:     davem@davemloft.net, kuba@kernel.org, andrew@lunn.ch,
+        vivien.didelot@gmail.com, f.fainelli@gmail.com, olteanv@gmail.com,
+        roopa@nvidia.com, nikolay@nvidia.com, jiri@resnulli.us,
+        stephen@networkplumber.org, netdev@vger.kernel.org,
+        bridge@lists.linux-foundation.org
+Subject: Re: [RFC net-next 0/9] net: bridge: Forward offloading
+In-Reply-To: <YI6+JXDG/4K30G5L@shredder>
+References: <20210426170411.1789186-1-tobias@waldekranz.com> <YI6+JXDG/4K30G5L@shredder>
+Date:   Mon, 03 May 2021 11:44:21 +0200
+Message-ID: <87bl9snocq.fsf@waldekranz.com>
 MIME-Version: 1.0
-In-Reply-To: <4e051459-8532-7b61-c815-f3435767f8a0@kernel.org>
-Content-Type: multipart/mixed;
- boundary="------------730411CEEE03A22CBB5BD79E"
-Content-Language: en-US
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This is a multi-part message in MIME format.
---------------730411CEEE03A22CBB5BD79E
-Content-Type: text/plain; charset=iso-8859-2; format=flowed
-Content-Transfer-Encoding: 8bit
+On Sun, May 02, 2021 at 17:58, Ido Schimmel <idosch@idosch.org> wrote:
+> On Mon, Apr 26, 2021 at 07:04:02PM +0200, Tobias Waldekranz wrote:
+>> ## Overview
+>> 
+>>    vlan1   vlan2
+>>        \   /
+>>    .-----------.
+>>    |    br0    |
+>>    '-----------'
+>>    /   /   \   \
+>> swp0 swp1 swp2 eth0
+>>   :   :   :
+>>   (hwdom 1)
+>> 
+>> Up to this point, switchdevs have been trusted with offloading
+>> forwarding between bridge ports, e.g. forwarding a unicast from swp0
+>> to swp1 or flooding a broadcast from swp2 to swp1 and swp0. This
+>> series extends forward offloading to include some new classes of
+>> traffic:
+>> 
+>> - Locally originating flows, i.e. packets that ingress on br0 that are
+>>   to be forwarded to one or several of the ports swp{0,1,2}. Notably
+>>   this also includes routed flows, e.g. a packet ingressing swp0 on
+>>   VLAN 1 which is then routed over to VLAN 2 by the CPU and then
+>>   forwarded to swp1 is "locally originating" from br0's point of view.
+>> 
+>> - Flows originating from "foreign" interfaces, i.e. an interface that
+>>   is not offloaded by a particular switchdev instance. This includes
+>>   ports belonging to other switchdev instances. A typical example
+>>   would be flows from eth0 towards swp{0,1,2}.
+>> 
+>> The bridge still looks up its FDB/MDB as usual and then notifies the
+>> switchdev driver that a particular skb should be offloaded if it
+>> matches one of the classes above. It does so by using the _accel
+>> version of dev_queue_xmit, supplying its own netdev as the
+>> "subordinate" device. The driver can react to the presence of the
+>> subordinate in its .ndo_select_queue in what ever way it needs to make
+>> sure to forward the skb in much the same way that it would for packets
+>> ingressing on regular ports.
+>> 
+>> Hardware domains to which a particular skb has been forwarded are
+>> recorded so that duplicates are avoided.
+>> 
+>> The main performance benefit is thus seen on multicast flows. Imagine
+>> for example that:
+>> 
+>> - An IP camera is connected to swp0 (VLAN 1)
+>> 
+>> - The CPU is acting as a multicast router, routing the group from VLAN
+>>   1 to VLAN 2.
+>> 
+>> - There are subscribers for the group in question behind both swp1 and
+>>   swp2 (VLAN 2).
+>
+> IIUC, this falls under the first use case ("Locally originating flows").
+> Do you have a need for this optimization in the forwarding case? Asking
+> because it might allow us to avoid unnecessary modifications to the
+> forwarding path. I have yet to look at the code, so maybe it's not a big
+> deal.
 
-CCing pahole people.
+Routed multicast is the most pressing issue. But being able to avoid
+issues with learning on flows from the CPU (locally originating and from
+foreign interfaces) is a close second. Yes you can handle the second
+issue by syncing FDBs but it means lots of extra traffic over an already
+congested interface (MDIO).
 
-On 03. 05. 21, 9:59, Jiri Slaby wrote:
-> On 03. 05. 21, 8:11, Jiri Slaby wrote:
->>>>>>> looks like vfs_truncate did not get into BTF data,
->>>>>>> I'll try to reproduce
->>>
->>> _None_ of the functions are generated by pahole -J from debuginfo on 
->>> ppc64. debuginfo appears to be correct. Neither pahole -J fs/open.o 
->>> works correctly. collect_functions in dwarves seems to be defunct on 
->>> ppc64... "functions" array is bogus (so find_function -- the bsearch 
->>> -- fails).
->>
->> It's not that bogus. I forgot an asterisk:
->>> #0  find_function (btfe=0x100269f80, name=0x10024631c "stream_open") 
->>> at /usr/src/debug/dwarves-1.21-1.1.ppc64/btf_encoder.c:350
->>> (gdb) p (*functions)@84
->>> $5 = {{name = 0x7ffff68e0922 ".__se_compat_sys_ftruncate", addr = 
->>> 75232, size = 72, sh_addr = 65536, generated = false}, {
->>>     name = 0x7ffff68e019e ".__se_compat_sys_open", addr = 80592, size 
->>> = 216, sh_addr = 65536, generated = false}, {
->>>     name = 0x7ffff68e0076 ".__se_compat_sys_openat", addr = 80816, 
->>> size = 232, sh_addr = 65536, generated = false}, {
->>>     name = 0x7ffff68e0908 ".__se_compat_sys_truncate", addr = 74304, 
->>> size = 100, sh_addr = 65536, generated = false}, {
->> ...
->>>     name = 0x7ffff68e0808 ".stream_open", addr = 65824, size = 72, 
->>> sh_addr = 65536, generated = false}, {
->> ...
->>>     name = 0x7ffff68e0751 ".vfs_truncate", addr = 73392, size = 544, 
->>> sh_addr = 65536, generated = false}}
->>
->> The dot makes the difference, of course. The question is why is it 
->> there? I keep looking into it. Only if someone has an immediate idea...
-> 
-> Well, .vfs_truncate is in .text (and contains an ._mcount call). And 
-> vfs_truncate is in .opd (w/o an ._mcount call). Since setup_functions 
-> excludes all functions without the ._mcount call, is_ftrace_func later 
-> returns false for such functions and they are filtered before the BTF 
-> processing.
-> 
-> Technically, get_vmlinux_addrs looks at a list of functions between 
-> __start_mcount_loc and __stop_mcount_loc and considers only the listed.
-> 
-> I don't know what the correct fix is (exclude .opd functions from the 
-> filter?). Neither why cross compiler doesn't fail, nor why ebi v2 avoids 
-> this too.
+The overhead is pretty small in this version, and with Nikolay's
+suggestions about hiding it behind a static key, it should go down to 0
+in v1.
 
-Attaching a patch for pahole which fixes the issue, but I have no idea 
-whether it is the right fix at all.
+>> With this offloading in place, the bridge need only send a single skb
+>> to the driver, which will send it to the hardware marked in such a way
+>> that the switch will perform the multicast replication according to
+>> the MDB configuration. Naturally, the number of saved skb_clones
+>> increase linearly with the number of subscribed ports.
+>
+> Yes, this is clear. FWIW, Spectrum has something similar. You can send
+> packets as either "data" or "control". Data packets are injected via the
+> CPU port and forwarded according to the hardware database. Control
+> packets are sent as-is via the specified front panel port, bypassing the
+> hardware data path. mlxsw is always sending packets as "control".
 
-> regards,-- 
-js
-suse labs
+Marvell has the same concept, but they call "data" "forward" and
+"control" "from CPU". mv88e6xxx has thus far also been limited to only
+sending control frames. I imagine that many chips will be able to make
+use of this acceleration.
 
---------------730411CEEE03A22CBB5BD79E
-Content-Type: text/x-patch; charset=UTF-8;
- name="ppc64-opd-fix.patch"
-Content-Transfer-Encoding: 7bit
-Content-Disposition: attachment;
- filename="ppc64-opd-fix.patch"
+>> As an extra benefit, on mv88e6xxx, this also allows the switch to
+>> perform source address learning on these flows, which avoids having to
+>> sync dynamic FDB entries over slow configuration interfaces like MDIO
+>> to avoid flows directed towards the CPU being flooded as unknown
+>> unicast by the switch.
+>
+> Since you are not syncing FDBs, it is possible that you are needlessly
+> flooding locally generated packets. This optimization avoids it.
 
-From: Jiri Slaby <jslaby@suse.cz>
-Subject: ppc64: .opd section fix
-Patch-mainline: submitted 2021/05/03
+Since the switchdev driver muxes incoming frames to the right port
+netdev, the bridge will know the correct port to use on egress. It is
+more that return traffic towards the CPU will be flooded by the switch
+as unknown unicast.
 
-Functions in the .opd section should be considered valid too. Otherwise,
-pahole cannot produce a .BTF section from vmlinux and kernel build
-fails on ppc64.
----
- btf_encoder.c |   18 +++++++++++++++++-
- 1 file changed, 17 insertions(+), 1 deletion(-)
+.-----.   .--------.
+| CPU +---0 Switch 1--- A
+'-----'   | (fdb)  2--- B
+          '--------'
 
---- a/btf_encoder.c
-+++ b/btf_encoder.c
-@@ -31,6 +31,8 @@ struct funcs_layout {
- 	unsigned long mcount_start;
- 	unsigned long mcount_stop;
- 	unsigned long mcount_sec_idx;
-+	unsigned long opd_start;
-+	unsigned long opd_stop;
- };
- 
- struct elf_function {
-@@ -271,11 +273,24 @@ static int is_ftrace_func(struct elf_fun
- 	return start <= addrs[r] && addrs[r] < end;
- }
- 
-+static int is_opd_func(struct elf_function *func, struct funcs_layout *fl)
-+{
-+	return fl->opd_start <= func->addr && func->addr < fl->opd_stop;
-+}
-+
- static int setup_functions(struct btf_elf *btfe, struct funcs_layout *fl)
- {
- 	__u64 *addrs, count, i;
- 	int functions_valid = 0;
- 	bool kmod = false;
-+	GElf_Shdr shdr;
-+	Elf_Scn *sec;
-+
-+	sec = elf_section_by_name(btfe->elf, &btfe->ehdr, &shdr, ".opd", NULL);
-+	if (sec) {
-+		fl->opd_start = shdr.sh_addr;
-+		fl->opd_stop = shdr.sh_addr + shdr.sh_size;
-+	}
- 
- 	/*
- 	 * Check if we are processing vmlinux image and
-@@ -322,7 +337,8 @@ static int setup_functions(struct btf_el
- 			func->addr += func->sh_addr;
- 
- 		/* Make sure function is within ftrace addresses. */
--		if (is_ftrace_func(func, addrs, count)) {
-+		if (is_opd_func(func, fl) ||
-+				is_ftrace_func(func, addrs, count)) {
- 			/*
- 			 * We iterate over sorted array, so we can easily skip
- 			 * not valid item and move following valid field into
+If a ping is sent from CPU to A, A's reply will also be flooded to B
+because the CPU's SA has never been seen on a "forward"/"data" packet
+and therefore has never been added to the FDB.
 
---------------730411CEEE03A22CBB5BD79E--
+>> 
+>> 
+>> ## RFC
+>> 
+>> - In general, what do you think about this idea?
+>
+> Looks sane to me
+
+Glad to hear it, thanks!
+
+>> - hwdom. What do you think about this terminology? Personally I feel
+>>   that we had too many things called offload_fwd_mark, and that as the
+>>   use of the bridge internal ID (nbp->offload_fwd_mark) expands, it
+>>   might be useful to have a separate term for it.
+>
+> Sounds OK
+>
+>> 
+>> - .dfwd_{add,del}_station. Am I stretching this abstraction too far,
+>>   and if so do you have any suggestion/preference on how to signal the
+>>   offloading from the bridge down to the switchdev driver?
+>
+> I was not aware of this interface before the RFC, but your use case
+> seems to fit the kdoc: "Called by upper layer devices to accelerate
+> switching or other station functionality into hardware".
+>
+> Do you expect this optimization to only work when physical netdevs are
+> enslaved to the bridge? What about LAG/VLANs?
+
+LAGs should definitely work once the .ndo_dfwd_{add,del}_station helpers
+are in place.
+
+Stacked VLANs could also be made to work. But they may require some
+extra work.
+
+In v1, the bridge will always send offloaded frames with the VLAN
+information intact, even if the port is configured to egress the VID
+untagged. This is needed so that the driver can determine the correct
+VID to use in cases where multiple VIDs are set to egress untagged.
+
+If any kind of VID translation takes place I think things get very
+sticky. Then again, that is maybe not all that defined without this
+change applied either?
+
+What is the typical use-case for using an "external" stacked VLAN device
+over configuring the VLAN inside the bridge?
+
+>> 
+>> - The way that flooding is implemented in br_forward.c (lazily cloning
+>>   skbs) means that you have to mark the forwarding as completed very
+>>   early (right after should_deliver in maybe_deliver) in order to
+>>   avoid duplicates. Is there some way to move this decision point to a
+>>   later stage that I am missing?
+>> 
+>> - BR_MULTICAST_TO_UNICAST. Right now, I expect that this series is not
+>>   compatible with unicast-to-multicast being used on a port. Then
+>>   again, I think that this would also be broken for regular switchdev
+>>   bridge offloading as this flag is not offloaded to the switchdev
+>>   port, so there is no way for the driver to refuse it. Any ideas on
+>>   how to handle this?
+>> 
+>> 
+>> ## mv88e6xxx Specifics
+>> 
+>> Since we are now only receiving a single skb for both unicast and
+>> multicast flows, we can tag the packets with the FORWARD command
+>> instead of FROM_CPU. The swich(es) will then forward the packet in
+>> accordance with its ATU, VTU, STU, and PVT configuration - just like
+>> for packets ingressing on user ports.
+>> 
+>> Crucially, FROM_CPU is still used for:
+>> 
+>> - Ports in standalone mode.
+>> 
+>> - Flows that are trapped to the CPU and software-forwarded by a
+>>   bridge. Note that these flows match neither of the classes discussed
+>>   in the overview.
+>> 
+>> - Packets that are sent directly to a port netdev without going
+>>   through the bridge, e.g. lldpd sending out PDU via an AF_PACKET
+>>   socket.
+>> 
+>> We thus have a pretty clean separation where the data plane uses
+>> FORWARDs and the control plane uses TO_/FROM_CPU.
+>> 
+>> The barrier between different bridges is enforced by port based VLANs
+>> on mv88e6xxx, which in essence is a mapping from a source device/port
+>> pair to an allowed set of egress ports. In order to have a FORWARD
+>> frame (which carries a _source_ device/port) correctly mapped by the
+>> PVT, we must use a unique pair for each bridge.
+>> 
+>> Fortunately, there is typically lots of unused address space in most
+>> switch trees. When was the last time you saw an mv88e6xxx product
+>> using more than 4 chips? Even if you found one with 16 (!) devices,
+>> you would still have room to allocate 16*16 virtual ports to software
+>> bridges.
+>> 
+>> Therefore, the mv88e6xxx driver will allocate a virtual device/port
+>> pair to each bridge that it offloads. All members of the same bridge
+>> are then configured to allow packets from this virtual port in their
+>> PVTs.
+>> 
+>> Tobias Waldekranz (9):
+>>   net: dfwd: Constrain existing users to macvlan subordinates
+>>   net: bridge: Disambiguate offload_fwd_mark
+>>   net: bridge: switchdev: Recycle unused hwdoms
+>>   net: bridge: switchdev: Forward offloading
+>>   net: dsa: Track port PVIDs
+>>   net: dsa: Forward offloading
+>>   net: dsa: mv88e6xxx: Allocate a virtual DSA port for each bridge
+>>   net: dsa: mv88e6xxx: Map virtual bridge port in PVT
+>>   net: dsa: mv88e6xxx: Forward offloading
+>> 
+>>  MAINTAINERS                                   |   1 +
+>>  drivers/net/dsa/mv88e6xxx/Makefile            |   1 +
+>>  drivers/net/dsa/mv88e6xxx/chip.c              |  61 ++++++-
+>>  drivers/net/dsa/mv88e6xxx/dst.c               | 160 ++++++++++++++++++
+>>  drivers/net/dsa/mv88e6xxx/dst.h               |  14 ++
+>>  .../net/ethernet/intel/fm10k/fm10k_netdev.c   |   3 +
+>>  drivers/net/ethernet/intel/i40e/i40e_main.c   |   3 +
+>>  drivers/net/ethernet/intel/ixgbe/ixgbe_main.c |   3 +
+>>  include/linux/dsa/mv88e6xxx.h                 |  13 ++
+>>  include/net/dsa.h                             |  13 ++
+>>  net/bridge/br_forward.c                       |  11 +-
+>>  net/bridge/br_if.c                            |   4 +-
+>>  net/bridge/br_private.h                       |  54 +++++-
+>>  net/bridge/br_switchdev.c                     | 141 +++++++++++----
+>>  net/dsa/port.c                                |  16 +-
+>>  net/dsa/slave.c                               |  36 +++-
+>>  net/dsa/tag_dsa.c                             |  33 +++-
+>>  17 files changed, 510 insertions(+), 57 deletions(-)
+>>  create mode 100644 drivers/net/dsa/mv88e6xxx/dst.c
+>>  create mode 100644 drivers/net/dsa/mv88e6xxx/dst.h
+>>  create mode 100644 include/linux/dsa/mv88e6xxx.h
+>> 
+>> -- 
+>> 2.25.1
+>> 
