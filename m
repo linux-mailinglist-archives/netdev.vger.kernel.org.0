@@ -2,53 +2,61 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 57DBE3713D5
-	for <lists+netdev@lfdr.de>; Mon,  3 May 2021 12:53:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EA6DC37151B
+	for <lists+netdev@lfdr.de>; Mon,  3 May 2021 14:14:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233464AbhECKxw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 3 May 2021 06:53:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57798 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230246AbhECKxs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 3 May 2021 06:53:48 -0400
-Received: from Chamillionaire.breakpoint.cc (Chamillionaire.breakpoint.cc [IPv6:2a0a:51c0:0:12e:520::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 01794C06174A;
-        Mon,  3 May 2021 03:52:55 -0700 (PDT)
-Received: from fw by Chamillionaire.breakpoint.cc with local (Exim 4.92)
-        (envelope-from <fw@strlen.de>)
-        id 1ldWC1-0004ub-Qd; Mon, 03 May 2021 12:52:49 +0200
-Date:   Mon, 3 May 2021 12:52:49 +0200
-From:   Florian Westphal <fw@strlen.de>
-To:     syzbot <syzbot+0d9ff6eeee8f4b6e2aed@syzkaller.appspotmail.com>
-Cc:     ast@kernel.org, coreteam@netfilter.org, daniel@iogearbox.net,
-        davem@davemloft.net, fw@strlen.de, kadlec@netfilter.org,
-        kuba@kernel.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, netfilter-devel@vger.kernel.org,
-        pablo@netfilter.org, syzkaller-bugs@googlegroups.com
-Subject: Re: [syzbot] bpf-next test error: WARNING in __nf_unregister_net_hook
-Message-ID: <20210503105249.GI975@breakpoint.cc>
-References: <000000000000b361bf05c16429a5@google.com>
+        id S233541AbhECMPW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 3 May 2021 08:15:22 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:50796 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229594AbhECMPW (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 3 May 2021 08:15:22 -0400
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
+        (envelope-from <andrew@lunn.ch>)
+        id 1ldXSt-002Hrd-A5; Mon, 03 May 2021 14:14:19 +0200
+Date:   Mon, 3 May 2021 14:14:19 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     LABBE Corentin <clabbe@baylibre.com>
+Cc:     Rob Herring <robh@kernel.org>, hkallweit1@gmail.com,
+        linux@armlinux.org.uk, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
+Subject: Re: [PATCH v3] dt-bindings: net: Convert mdio-gpio to yaml
+Message-ID: <YI/pG3GSIpse+OEo@lunn.ch>
+References: <20210430182941.915101-1-clabbe@baylibre.com>
+ <20210430215325.GA3957879@robh.at.kernel.org>
+ <YI+WPRAAbtmP9LC0@Red>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <000000000000b361bf05c16429a5@google.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <YI+WPRAAbtmP9LC0@Red>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-syzbot <syzbot+0d9ff6eeee8f4b6e2aed@syzkaller.appspotmail.com> wrote:
-> Hello,
+> > What's the order with 3 lines? In any case, define the order with 
+> > schema:
+> > 
+> > minItems:
+> > items:
+> >   - description: MDC signal
+> >   - description: MDIO or ?? signal
+> >   - description: ?? signal
+> > 
 > 
-> syzbot found the following issue on:
+> I dont know what to write in the third line, I added the "maxItems: 3" by request of Andrew Lunn.
+> But I have no example at hand.
 > 
-> HEAD commit:    9d31d233 Merge tag 'net-next-5.13' of git://git.kernel.org..
-> git tree:       bpf-next
-> console output: https://syzkaller.appspot.com/x/log.txt?x=102b70d9d00000
-> kernel config:  https://syzkaller.appspot.com/x/.config?x=57b4b78935781045
-> dashboard link: https://syzkaller.appspot.com/bug?extid=0d9ff6eeee8f4b6e2aed
-> 
-> IMPORTANT: if you fix the issue, please add the following tag to the commit:
-> Reported-by: syzbot+0d9ff6eeee8f4b6e2aed@syzkaller.appspotmail.com
+> Andrew could you give me an example of:	"You often find with x86 machines you don't have GPIOs, just GPI
+> and GPO, and you need to combine two to form the MDIO line of the MDIO bus."
+> Or could I drop the "maxItems: 3" until a board need it.
 
-#syz dup: linux-next test error: WARNING in __nf_unregister_net_hook
+The code gets the GPIOs via index. The index are defined in
+include/linux/gpio-mdio.h as:
+
+#define MDIO_GPIO_MDC	0
+#define MDIO_GPIO_MDIO	1
+#define MDIO_GPIO_MDO	2
+
+So you can describe them MDC, MDIO, MDO.
+
+   Andrew
