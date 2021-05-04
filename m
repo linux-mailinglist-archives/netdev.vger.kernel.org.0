@@ -2,118 +2,126 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7DA0D372BE4
-	for <lists+netdev@lfdr.de>; Tue,  4 May 2021 16:20:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D0A8B372C07
+	for <lists+netdev@lfdr.de>; Tue,  4 May 2021 16:29:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231555AbhEDOVF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 4 May 2021 10:21:05 -0400
-Received: from mga11.intel.com ([192.55.52.93]:8795 "EHLO mga11.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231393AbhEDOVE (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 4 May 2021 10:21:04 -0400
-IronPort-SDR: Dl+3wmrQTGKQe1LSktxUyMlLjxVjrBAjRjgTlp4lf+7Hz/U36bQFiAl6QINunNaDc6f1k9wvso
- 5CxQGuo7vbhQ==
-X-IronPort-AV: E=McAfee;i="6200,9189,9974"; a="194850852"
-X-IronPort-AV: E=Sophos;i="5.82,272,1613462400"; 
-   d="scan'208";a="194850852"
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 May 2021 07:19:53 -0700
-IronPort-SDR: qkkek3nBW/8NP07FnHrQYnmKgZfSSISUdWCRAkwIrf5d8HXsXJ2e3cGRvxkM0XktglkpQAVGCE
- lLuF3QqPa6Wg==
-X-IronPort-AV: E=Sophos;i="5.82,272,1613462400"; 
-   d="scan'208";a="406127072"
-Received: from smile.fi.intel.com (HELO smile) ([10.237.68.40])
-  by orsmga002-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 May 2021 07:19:49 -0700
-Received: from andy by smile with local (Exim 4.94)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1ldvtq-009YfE-5z; Tue, 04 May 2021 17:19:46 +0300
-Date:   Tue, 4 May 2021 17:19:46 +0300
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Frieder Schrempf <frieder.schrempf@kontron.de>
-Cc:     Timo =?iso-8859-1?B?U2NobPzfbGVy?= <schluessler@krause.de>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
-        linux-can@vger.kernel.org, Wolfgang Grandegger <wg@grandegger.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Mark Brown <broonie@kernel.org>,
-        Vincent Mailhol <mailhol.vincent@wanadoo.fr>,
-        Oliver Hartkopp <socketcan@hartkopp.net>,
-        Tim Harvey <tharvey@gateworks.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: Null pointer dereference in mcp251x driver when resuming from
- sleep
-Message-ID: <YJFYAisb9xFUt15W@smile.fi.intel.com>
-References: <d031629f-4a28-70cd-4f27-e1866c7e1b3f@kontron.de>
- <YI/+OP4z787Tmd05@smile.fi.intel.com>
- <YI//GqCv0nkvtQ54@smile.fi.intel.com>
- <YJAAn+H9nQl425QN@smile.fi.intel.com>
- <66f07d90-e459-325c-8d5d-9f255a0d8c8f@kontron.de>
+        id S231610AbhEDOaU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 4 May 2021 10:30:20 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:36853 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S230463AbhEDOaT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 4 May 2021 10:30:19 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1620138564;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=/C/wTNOTCb+yGfszfpaIVYIq+8oCD0tOIWtXOH684UQ=;
+        b=OyYxFR1j4KehwpRmCFywOBvwaMw7Wjd+nQjQMIkoj9XLuyv8ZWbNmAJJgLM3MiaLrIfNGE
+        kqciXjRUoEWLoKb+m9Pe2/74WvEVCg1V49XSXt/Jhx+drdOTe7EYCwKHM0pBwDmdAGsrMy
+        h8pzs4ltdFGoaXhUGRbCXmM0cv1Qkag=
+Received: from mail-ej1-f70.google.com (mail-ej1-f70.google.com
+ [209.85.218.70]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-544-O_3XoLbWMR-V6-nJ1cLLMw-1; Tue, 04 May 2021 10:29:22 -0400
+X-MC-Unique: O_3XoLbWMR-V6-nJ1cLLMw-1
+Received: by mail-ej1-f70.google.com with SMTP id z15-20020a170906074fb029038ca4d43d48so3194525ejb.17
+        for <netdev@vger.kernel.org>; Tue, 04 May 2021 07:29:22 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=/C/wTNOTCb+yGfszfpaIVYIq+8oCD0tOIWtXOH684UQ=;
+        b=ZKSWBHSD9U0SzTthcb5ayhdJFFoKCWmE3EV+FX8yVvGwS8fQnofHDE2SJp+UGS1VJl
+         +hfPqZ+UuOWtwLEFOGO+DZHaGn3TtBi1EaxdlD0MrESI5txA9nHcwVFF00yY+ON0/xkw
+         XJrmTzlnmlZUTn4wlDof1EWsTHICFtnRQRPWy+jn18SU9Use4HSzPBjZ1yrXdV32gBiS
+         I/bbWvC2F64G9a8G4V7O0bUEdCjuBcjKWsprwQobv+H+ZZQbdkquKmIJBUKSYyQVocIF
+         b8RmOnNxUfgODFQovDzP+6SX6b9kLkTNI9FlmeHRjGJXOkQDFGuWTETABWJCC4CKNEaj
+         /Kdg==
+X-Gm-Message-State: AOAM533mIm659K4Iey94XDS0R2oZkTp6ovbFn4nvYg53aYfsMajr8cps
+        FIHRuNeHPRc0qsISydNvEfJjcdx4uZalQ2j2IQYO90WDvljxw1rLooDXPVXhUW1acQ9mjUGLMa4
+        puJrCwVzqoK2DUvXwJeuawtgK4vd/W7aL
+X-Received: by 2002:a17:906:9a02:: with SMTP id ai2mr22704485ejc.279.1620138561161;
+        Tue, 04 May 2021 07:29:21 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJyBQGqUZtw6piWjtshZQhonbqeKOMWr75L9XDey1rFpJCXv1AQK+Jw5/m9KuadTFtTp9gtXISJlA+uPKf1wTjE=
+X-Received: by 2002:a17:906:9a02:: with SMTP id ai2mr22704467ejc.279.1620138560926;
+ Tue, 04 May 2021 07:29:20 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <66f07d90-e459-325c-8d5d-9f255a0d8c8f@kontron.de>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+References: <20210501021832.743094-1-jesse.brandeburg@intel.com> <16d8ca67-30c6-bb4b-8946-79de8629156e@arm.com>
+In-Reply-To: <16d8ca67-30c6-bb4b-8946-79de8629156e@arm.com>
+From:   Nitesh Lal <nilal@redhat.com>
+Date:   Tue, 4 May 2021 10:29:09 -0400
+Message-ID: <CAFki+L=D8aS_jub0KHAkfsnvvJ_w8_mMYbaHeZ-GkQF1s_0WDQ@mail.gmail.com>
+Subject: Re: [PATCH tip:irq/core v1] genirq: remove auto-set of the mask when
+ setting the hint
+To:     Robin Murphy <robin.murphy@arm.com>
+Cc:     Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@kernel.org>, linux-kernel@vger.kernel.org,
+        intel-wired-lan@lists.osuosl.org, jbrandeb@kernel.org,
+        "frederic@kernel.org" <frederic@kernel.org>,
+        "juri.lelli@redhat.com" <juri.lelli@redhat.com>,
+        Marcelo Tosatti <mtosatti@redhat.com>, abelits@marvell.com,
+        "linux-api@vger.kernel.org" <linux-api@vger.kernel.org>,
+        "bhelgaas@google.com" <bhelgaas@google.com>,
+        "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>,
+        "rostedt@goodmis.org" <rostedt@goodmis.org>,
+        "peterz@infradead.org" <peterz@infradead.org>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "akpm@linux-foundation.org" <akpm@linux-foundation.org>,
+        "sfr@canb.auug.org.au" <sfr@canb.auug.org.au>,
+        "stephen@networkplumber.org" <stephen@networkplumber.org>,
+        "rppt@linux.vnet.ibm.com" <rppt@linux.vnet.ibm.com>,
+        "jinyuqi@huawei.com" <jinyuqi@huawei.com>,
+        "zhangshaokun@hisilicon.com" <zhangshaokun@hisilicon.com>,
+        netdev@vger.kernel.org, chris.friesen@windriver.com,
+        Marc Zyngier <maz@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, May 04, 2021 at 03:54:00PM +0200, Frieder Schrempf wrote:
-> On 03.05.21 15:54, Andy Shevchenko wrote:
-> > On Mon, May 03, 2021 at 04:48:10PM +0300, Andy Shevchenko wrote:
-> > > On Mon, May 03, 2021 at 04:44:24PM +0300, Andy Shevchenko wrote:
-> > > > On Mon, May 03, 2021 at 03:11:40PM +0200, Frieder Schrempf wrote:
-> > > > > Hi,
-> > > > > 
-> > > > > with kernel 5.10.x and 5.12.x I'm getting a null pointer dereference
-> > > > > exception from the mcp251x driver when I resume from sleep (see trace
-> > > > > below).
-> > > > > 
-> > > > > As far as I can tell this was working fine with 5.4. As I currently don't
-> > > > > have the time to do further debugging/bisecting, for now I want to at least
-> > > > > report this here.
-> > > > > 
-> > > > > Maybe there is someone around who could already give a wild guess for what
-> > > > > might cause this just by looking at the trace/code!?
-> > > > 
-> > > > Does revert of c7299fea6769 ("spi: Fix spi device unregister flow") help?
-> > > 
-> > > Other than that, bisecting will take not more than 3-4 iterations only:
-> > > % git log --oneline v5.4..v5.10.34 -- drivers/net/can/spi/mcp251x.c
-> > > 3292c4fc9ce2 can: mcp251x: fix support for half duplex SPI host controllers
-> > > e0e25001d088 can: mcp251x: add support for half duplex controllers
-> > > 74fa565b63dc can: mcp251x: Use readx_poll_timeout() helper
-> > > 2d52dabbef60 can: mcp251x: add GPIO support
-> > > cfc24a0aa7a1 can: mcp251x: sort include files alphabetically
-> > > df561f6688fe treewide: Use fallthrough pseudo-keyword
-> > 
-> > > 8ce8c0abcba3 can: mcp251x: only reset hardware as required
-> > 
-> > And only smoking gun by analyzing the code is the above. So, for the first I
-> > would simply check before that commit and immediately after (15-30 minutes of
-> > work). (I would do it myself if I had a hardware at hand...)
-> 
-> Thanks for pointing that out. Indeed when I revert this commit it works fine
-> again.
-> 
-> When I look at the change I see that queue_work(priv->wq,
-> &priv->restart_work) is called in two cases, when the interface is brought
-> up after resume and now also when the device is only powered up after resume
-> but the interface stays down.
-> 
-> The latter is a problem if the device was never brought up before, as the
-> workqueue is only allocated and initialized in mcp251x_open().
-> 
-> To me it looks like a proper fix would be to just move the workqueue init to
-> the probe function to make sure it is available when resuming even if the
-> interface was never up before.
-> 
-> I will try this and send a patch if it looks good.
+On Tue, May 4, 2021 at 8:15 AM Robin Murphy <robin.murphy@arm.com> wrote:
+>
+> On 2021-05-01 03:18, Jesse Brandeburg wrote:
+> > It was pointed out by Nitesh that the original work I did in 2014
+> > to automatically set the interrupt affinity when requesting a
+> > mask is no longer necessary. The kernel has moved on and no
+> > longer has the original problem, BUT the original patch
+> > introduced a subtle bug when booting a system with reserved or
+> > excluded CPUs. Drivers calling this function with a mask value
+> > that included a CPU that was currently or in the future
+> > unavailable would generally not update the hint.
+> >
+> > I'm sure there are a million ways to solve this, but the simplest
+> > one is to just remove a little code that tries to force the
+> > affinity, as Nitesh has shown it fixes the bug and doesn't seem
+> > to introduce immediate side effects.
+>
+> Unfortunately, I think there are quite a few other drivers now relying
+> on this behaviour, since they are really using irq_set_affinity_hint()
+> as a proxy for irq_set_affinity().
 
-Sounds like a plan!
+That's true.
 
--- 
-With Best Regards,
-Andy Shevchenko
+> Partly since the latter isn't
+> exported to modules, but also I have a vague memory of it being said
+> that it's nice to update the user-visible hint to match when the
+> affinity does have to be forced to something specific.
 
+If you see the downside of it we are forcing the affinity to match the hint
+mask without considering the default SMP affinity mask.
+
+Also, we are repeating things here. First, we set certain mask for a device
+IRQ via request_irq code path which does consider the default SMP mask but
+then we are letting the driver over-write it.
+
+If we want to set the IRQ mask in a certain way then it should be done at
+the time of initial setup itself.
+
+Do you know about a workload/use case that can show the benefit of
+this behavior? As then we can try fixing it in the right way.
+
+--
+Thanks
+Nitesh
 
