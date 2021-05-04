@@ -2,143 +2,120 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 42FA9373281
-	for <lists+netdev@lfdr.de>; Wed,  5 May 2021 00:34:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D99CF373275
+	for <lists+netdev@lfdr.de>; Wed,  5 May 2021 00:34:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233266AbhEDWdH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 4 May 2021 18:33:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52854 "EHLO
+        id S233243AbhEDWbx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 4 May 2021 18:31:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52922 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233489AbhEDWcO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 4 May 2021 18:32:14 -0400
-Received: from mail-ed1-x52e.google.com (mail-ed1-x52e.google.com [IPv6:2a00:1450:4864:20::52e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E427C061347
-        for <netdev@vger.kernel.org>; Tue,  4 May 2021 15:30:04 -0700 (PDT)
-Received: by mail-ed1-x52e.google.com with SMTP id i24so12269338edy.8
-        for <netdev@vger.kernel.org>; Tue, 04 May 2021 15:30:04 -0700 (PDT)
+        with ESMTP id S233230AbhEDWat (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 4 May 2021 18:30:49 -0400
+Received: from mail-lf1-x12b.google.com (mail-lf1-x12b.google.com [IPv6:2a00:1450:4864:20::12b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B4ACEC061343
+        for <netdev@vger.kernel.org>; Tue,  4 May 2021 15:29:53 -0700 (PDT)
+Received: by mail-lf1-x12b.google.com with SMTP id h4so8004957lfv.0
+        for <netdev@vger.kernel.org>; Tue, 04 May 2021 15:29:53 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=KUAJ+qUJsKFxC40+sC4pRLEBQbI2R1YOPprjQqwepXQ=;
-        b=iuU9AzfDP9LszbhJR09QWc/91FvJPzbC3Dj0/Lv4o3lBOZFANhEEV3calwtNwAxZwi
-         6A1WYs+GJIY4BZmETVrN4o5CqYFRG3oi4FmD6yfSbWAv+7lbR3zxz1RHAYqgJ1E5jLmZ
-         XrykMnr6NvHZsMYhvY9BEjhOo+CzMjEpCcVBD/gGYcanz1I0ewZkk9bLhg+N9Wb9J4Mi
-         ksBLsMwhyIqQWKDNgHqDlPXfArZjpuw3li/TKTRkl9BakuOEv+Do/swKknJP23FkjXHI
-         oedSFrfVdmFKctM3wg1JGnSzQmzcc6jVuEDhTOnnWwSZ5aVPlbY6qHFIP7ZD1WIkO+Ku
-         tAbA==
+        d=waldekranz-com.20150623.gappssmtp.com; s=20150623;
+        h=from:to:subject:in-reply-to:references:date:message-id:mime-version;
+        bh=dQBiEe1w/Wbleue4r5yuQeIdpsQf7Sq0aXc76H99xao=;
+        b=iIufQxxW8hySWIa22QbcxyqBs5YEgAI0TzCsFn+ytIXv5e7I5oEBMqVSt2Kcxl4K6P
+         o2h10ypehs0O6e58uG8pxTjkP7KZjKLQ1RzkCne3i8EJxYHYCuueIwt0c0mBjSUut2xA
+         cngewEY7xVeBS3XtBiGVPuLuqPpC5+rMCMiEBwLoplnA/nytJPdAFc08+Ut+RgXd5B3f
+         Lzx71XERAyoXpczck4cTyikyu6Pu3v/isgjWJq3FRuYq6gDgeVckMdHeIaxLNiwDCcZe
+         CvDH8Eao1l09zROQx9F0oiUDqbqTIkhiF9pEtJklM4FRBlZ7lGEp5ay1jDNwkc8WSkR8
+         Gp6w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=KUAJ+qUJsKFxC40+sC4pRLEBQbI2R1YOPprjQqwepXQ=;
-        b=k/bdKnbpNgUzYvA4KFXD02sHslTcSxUxJ7uuuPgCk50XIbLTG255Aak9c8VbsXqIee
-         b/EFM3mhyjTYrlRrEwr6P0wzjQbYMQWqn8yY82baqyJE6+C1QwFGJIJP78DsRbdQV6w8
-         JqCWkMeSmObKC3Kh43/gNAuBNqyzAqy9E/gnsr0UWgI7ZH00Dx5EMLM5hG2a7QZ985jd
-         jFp2aPJyw2QrUop4iLJnsBoj2iiZpqPH6i837HZhkiGP2zuScQo2WVr2F6M5q0V+GUm2
-         ZXRfn6Ua03ClcMQaV/QF97LiuzSgZEj3qDau88jwQsKuvYyqJeg1f76lhj2ODxhd/Iqv
-         CybA==
-X-Gm-Message-State: AOAM531MqG+RVgg/pmh0FxyGqewSPIggCmEuVN2EsCT31ArQNvbMBxig
-        nifC5SIygB3H8+umEbN5JT0=
-X-Google-Smtp-Source: ABdhPJxKhX2IJbP7e5XHse2905QtgvgGQy+OvGAEaAu8oorSscgMU+yDaoH0xEpn5t7s3kIrATM0Nw==
-X-Received: by 2002:a50:eb82:: with SMTP id y2mr28309588edr.190.1620167403226;
-        Tue, 04 May 2021 15:30:03 -0700 (PDT)
-Received: from Ansuel-xps.localdomain (93-35-189-2.ip56.fastwebnet.it. [93.35.189.2])
-        by smtp.googlemail.com with ESMTPSA id q12sm2052946ejy.91.2021.05.04.15.30.02
+        h=x-gm-message-state:from:to:subject:in-reply-to:references:date
+         :message-id:mime-version;
+        bh=dQBiEe1w/Wbleue4r5yuQeIdpsQf7Sq0aXc76H99xao=;
+        b=ayaCpmcKVan0p9SBGtUlaeUwFTKMP6jSNRAdP02easeY/Zg1Xh/3JR92M10h75InbC
+         toyejh5IYQp/Xe7RbLMyRk08VHq+RvckglwALvQsS02y6KrZhFLvAOb3lMiAFCJSZV7G
+         hUg5tohdm+nPwkbM27eEGFz++9ZOLzL53xIgl7KkZL7qywB/QvUTcMdWhMH9yjPZGvmX
+         QHGwRi/FUZblwYjrtl15unmn1ZLLwznRajoqe+ocAKWVXCq5M2PcLL2slMPkTxm7vGsq
+         SKkk3qzadwOd0G3qotNc19m4hhTKW5QEkvI+r6aBzTnB8uURtT9NiQIBr6/DqjBN3F6p
+         d8Ow==
+X-Gm-Message-State: AOAM530rbMaDo6qxg7iu/k41Rz8pgIL06Ygr/yjdDgYWPePPLebKkw3C
+        27O/gFG0Zu8Om6q+YcIgnoWBLnrY8hGyvw==
+X-Google-Smtp-Source: ABdhPJxRxLdubDJWaJg/UlteggEmdsQrkIcrzJbwJZMWZFEkixU+yJP3eFRtZaAKkQfQOpT+MXjXQQ==
+X-Received: by 2002:a05:6512:21cc:: with SMTP id d12mr17574280lft.512.1620167392186;
+        Tue, 04 May 2021 15:29:52 -0700 (PDT)
+Received: from wkz-x280 (h-90-88.A259.priv.bahnhof.se. [212.85.90.88])
+        by smtp.gmail.com with ESMTPSA id r3sm1082273ljc.32.2021.05.04.15.29.51
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 04 May 2021 15:30:02 -0700 (PDT)
-From:   Ansuel Smith <ansuelsmth@gmail.com>
-To:     Florian Fainelli <f.fainelli@gmail.com>
-Cc:     Ansuel Smith <ansuelsmth@gmail.com>,
-        Russell King <linux@armlinux.org.uk>, netdev@vger.kernel.org
-Subject: [RFC PATCH next-next v3 00/20] Multiple improvement to qca8k stability
-Date:   Wed,  5 May 2021 00:29:15 +0200
-Message-Id: <20210504222915.17206-21-ansuelsmth@gmail.com>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20210504222915.17206-1-ansuelsmth@gmail.com>
-References: <20210504222915.17206-1-ansuelsmth@gmail.com>
+        Tue, 04 May 2021 15:29:51 -0700 (PDT)
+From:   Tobias Waldekranz <tobias@waldekranz.com>
+To:     "Huang\, Joseph" <Joseph.Huang@garmin.com>,
+        Nikolay Aleksandrov <nikolay@nvidia.com>,
+        Roopa Prabhu <roopa@nvidia.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "bridge\@lists.linux-foundation.org" 
+        <bridge@lists.linux-foundation.org>,
+        "netdev\@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel\@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Ido Schimmel <idosch@idosch.org>
+Subject: Re: [PATCH net 0/6] bridge: Fix snooping in multi-bridge config with switchdev
+In-Reply-To: <685c25c2423c451480c0ad2cf78877be@garmin.com>
+References: <20210504182259.5042-1-Joseph.Huang@garmin.com> <6fd5711c-8d53-d72b-995d-1caf77047ecf@nvidia.com> <685c25c2423c451480c0ad2cf78877be@garmin.com>
+Date:   Wed, 05 May 2021 00:29:51 +0200
+Message-ID: <87v97ym8tc.fsf@waldekranz.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Currently qca8337 switch are widely used on ipq8064 based router.
-On these particular router it was notice a very unstable switch with
-port not link detected as link with unknown speed, port dropping
-randomly and general unreliability. Lots of testing and comparison
-between this dsa driver and the original qsdk driver showed lack of some
-additional delay and values. A main difference arised from the original
-driver and the dsa one. The original driver didn't use MASTER regs to
-read phy status and the dedicated mdio driver worked correctly. Now that
-the dsa driver actually use these regs, it was found that these special
-read/write operation required mutual exclusion to normal
-qca8k_read/write operation. The add of mutex for these operation fixed
-the random port dropping and now only the actual linked port randomly
-dropped. Adding additional delay for set_page operation and fixing a bug
-in the mdio dedicated driver fixed also this problem. The current driver
-requires also more time to apply vlan switch. All of these changes and
-tweak permit a now very stable and reliable dsa driver and 0 port
-dropping. This series is currently tested by at least 5 user with
-different routers and all reports positive results and no problems.
+On Tue, May 04, 2021 at 20:37, "Huang, Joseph" <Joseph.Huang@garmin.com> wrote:
+>> Hi,
+>> This patch-set is inappropriate for -net, if at all. It's quite late over here and I'll
+>> review the rest later, but I can say from a quick peek that patch 02 is
+>> unacceptable for it increases the complexity with 1 order of magnitude of all
+>> add/del call paths and some of them can be invoked on user packets. A lot of
+>> this functionality should be "hidden" in the driver or done by a user-space
+>> daemon/helper.
+>> Most of the flooding behaviour changes must be hidden behind some new
+>> option otherwise they'll break user setups that rely on the current. I'll review
+>> the patches in detail over the following few days, net-next is closed anyway.
+>> 
+>> Cheers,
+>>  Nik
+>
+> Hi Nik,
+>
+> Thanks for your quick response!
+> Once you have a chance to review the set, please let me know how I can improve them to make them acceptable. These are real problems and we do need to fix them.
 
-Changes v3:
-- Revert mdio writel changes (use regmap with REGCACHE disabled)
-- Split propagate error patch to 4 different patch
-Changes v2:
-- Implemented phy driver for internal PHYs
-  I'm testing cable test functions as I found some documentation that
-  actually declare regs about it. Problem is that it doesn't actually
-  work. It seems that the value set are ignored by the phy.
-- Made the rgmii delay configurable
-- Reordered patch
-- Split mdio patches to more specific ones
-- Reworked mdio driver to use readl/writel instead of regmap
-- Reworked the entire driver to make it aware of any read/write error.
-- Added phy generic patch to pass flags with phylink_connect_phy
-  function
+If I may make a suggestion: I also work with mv88e6xxx systems, and we
+have the same issues with known multicast not being flooded to router
+ports. Knowing that chipset, I see what you are trying to do.
 
-A decision about the extra mdio delay is still to be taken but I
-preferred to push a v2 since there is a new driver and more changes than
-v0.
+But other chips may work differently. Imagine for example a switch where
+there is a separate vector of router ports that the hardware can OR in
+after looking up the group in the ATU. This implementation would render
+the performance gains possible on that device useless. As another
+example, you could imagine a device where an ATU operation exists that
+sets a bit in the vector of every group in a particular database;
+instead of having to update each entry individually.
 
-Ansuel Smith (20):
-  net: mdio: ipq8064: clean whitespaces in define
-  net: mdio: ipq8064: add regmap config to disable REGCACHE
-  net: mdio: ipq8064: enlarge sleep after read/write operation
-  net: dsa: qca8k: handle qca8k_set_page errors
-  net: dsa: qca8k: handle error with qca8k_read operation
-  net: dsa: qca8k: handle error with qca8k_write operation
-  net: dsa: qca8k: handle error with qca8k_rmw operation
-  net: dsa: qca8k: add support for qca8327 switch
-  devicetree: net: dsa: qca8k: Document new compatible qca8327
-  net: dsa: qca8k: add priority tweak to qca8337 switch
-  net: dsa: qca8k: add GLOBAL_FC settings needed for qca8327
-  net: dsa: qca8k: add support for switch rev
-  net: dsa: qca8k: make rgmii delay configurable
-  net: dsa: qca8k: clear MASTER_EN after phy read/write
-  net: dsa: qca8k: dsa: qca8k: protect MASTER busy_wait with mdio mutex
-  net: dsa: qca8k: enlarge mdio delay and timeout
-  net: phy: phylink: permit to pass dev_flags to phylink_connect_phy
-  net: dsa: slave: pass dev_flags also to internal PHY
-  net: dsa: qca8k: pass switch_revision info to phy dev_flags
-  net: phy: add qca8k driver for qca8k switch internal PHY
+I think we (mv88e6xxx) will have to accept that we need to add the
+proper scaffolding to manage this on the driver side. That way the
+bridge can stay generic. The bridge could just provide some MDB iterator
+to save us from having to cache all the configured groups.
 
- .../devicetree/bindings/net/dsa/qca8k.txt     |   1 +
- drivers/net/dsa/qca8k.c                       | 602 ++++++++++++++----
- drivers/net/dsa/qca8k.h                       |  54 +-
- drivers/net/ethernet/cadence/macb_main.c      |   2 +-
- .../net/ethernet/stmicro/stmmac/stmmac_main.c |   2 +-
- drivers/net/mdio/mdio-ipq8064.c               |  58 +-
- drivers/net/phy/Kconfig                       |   7 +
- drivers/net/phy/Makefile                      |   1 +
- drivers/net/phy/phylink.c                     |  12 +-
- drivers/net/phy/qca8k.c                       | 174 +++++
- include/linux/phylink.h                       |   2 +-
- net/dsa/slave.c                               |   6 +-
- 12 files changed, 756 insertions(+), 165 deletions(-)
- create mode 100644 drivers/net/phy/qca8k.c
+So basically:
 
--- 
-2.30.2
+- In mv88e6xxx, maintain a per-switch vector of router ports.
 
+- When a ports router state is toggled:
+  1. Update the vector.
+  2. Ask the bridge to iterate through all applicable groups and update
+     the corresponding ATU entries.
+
+- When a new MDB entry is updated, make sure to also OR in the current
+  vector of router ports in the DPV of the ATU entry.
+
+
+I would be happy to help out with testing of this!
