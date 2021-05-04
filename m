@@ -2,122 +2,117 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 83611372E45
-	for <lists+netdev@lfdr.de>; Tue,  4 May 2021 18:52:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 34093372E71
+	for <lists+netdev@lfdr.de>; Tue,  4 May 2021 19:05:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231197AbhEDQx2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 4 May 2021 12:53:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33872 "EHLO
+        id S231948AbhEDRGZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 4 May 2021 13:06:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36772 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230086AbhEDQx0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 4 May 2021 12:53:26 -0400
-Received: from mail-ed1-x530.google.com (mail-ed1-x530.google.com [IPv6:2a00:1450:4864:20::530])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 31D15C061574
-        for <netdev@vger.kernel.org>; Tue,  4 May 2021 09:52:31 -0700 (PDT)
-Received: by mail-ed1-x530.google.com with SMTP id b17so8229200ede.0
-        for <netdev@vger.kernel.org>; Tue, 04 May 2021 09:52:31 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=S9An/4KRHHEsRc5JqJ5HmbiRGmmXFpeFAxk37d4lG3o=;
-        b=JnTnb3mxA44OvVQIzk+R8P4FSWgmymxIlQgaZrM5XfJKjdc1LgMnlXYZ9wurxzHOgn
-         n7FA3GnEijzxTPelFi01qADd97BkT5KSApS6HtTHrZvwODq8IxOB0ThWwwmfZm6QH4FR
-         +k81HqBGpcg1yN3A3WO1mP71H9b24xdxeKWCGtzvIe9VtZg23tBem1VLkGwqnIjO/soy
-         vuv73x7vGvHwyBywyHdB6w6fAmf+fydTzdAk6CAomHUdHrilU5hj1eRlXc8Jp194blxO
-         yu7sa0pIqqAcRTsIUt96s+D8LIvSkxBuRnvjBHCg7LybnKS5/1bRv+qAdPdUtROvgVfO
-         SrtQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=S9An/4KRHHEsRc5JqJ5HmbiRGmmXFpeFAxk37d4lG3o=;
-        b=DTSjVZtZLQCZVc/XWL28Otu5mljeXBKdwDVEBTTALBCn1fiaRV35XExx/Q5V2nCzvc
-         62msTCyHuUuikcNjR70RljRcPwNBdXLK1Y2XTPEablEMWB3VF7B6SJcSDfp2en/aVAHV
-         e4aV5Gc1Sp8yJO3AscFz23CoVwPqX2HhuBD/Ff22lORP1fgq51YfrhvcVZYHsrkTHrGo
-         Z7fkqIaCf2IdvuTeRODWPIMEtEZVVE6Zo1rhCuK9o0X8zESQvnt06CX6EB8NNqOwypdC
-         b4qxWDm8YS5ZtrrG0JAyBdYLO+WEwOHmGo6h5rxkWrjTcUjNabqDrgYoIkniOyWEzbZ/
-         mcnQ==
-X-Gm-Message-State: AOAM533QWLhvaoP1T1wqH2uRKe7RTusp00F9oE1HjZstrDtZ0zgMisfD
-        gg2MWrXOW5mLfVeAaLOaV8ZvvH8XjKjh+oDnuUY=
-X-Google-Smtp-Source: ABdhPJzYXgIMgrBymTxMB6fabBb7YbN947QvsDWyG1TaFm+4dWIALaoRGSJSHnebMz/rK2613adXOPpK8Su4CoWJMyw=
-X-Received: by 2002:a05:6402:1a2f:: with SMTP id be15mr26955492edb.207.1620147149831;
- Tue, 04 May 2021 09:52:29 -0700 (PDT)
+        with ESMTP id S230449AbhEDRGZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 4 May 2021 13:06:25 -0400
+Received: from ssl.serverraum.org (ssl.serverraum.org [IPv6:2a01:4f8:151:8464::1:2])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 52424C061574;
+        Tue,  4 May 2021 10:05:30 -0700 (PDT)
+Received: from mwalle01.fritz.box (unknown [IPv6:2a02:810c:c200:2e91:fa59:71ff:fe9b:b851])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-384) server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by ssl.serverraum.org (Postfix) with ESMTPSA id AEC572224F;
+        Tue,  4 May 2021 19:05:24 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
+        t=1620147925;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=P86yv15f5mdm2USC11n29XyVm3m0pHGOL8lHax5UfAo=;
+        b=Fi1Uy/OfiVn/WtcWORzbuNlvppU4ai3v/qDfJlNJBckhlDecjfVcfpyJc3sj2SXidmVhPj
+        ht8G4bRsQVTp3YSO2PgHA0w58vhaJwua9fvjmT9lSu4mpO8xu2X8rJJuC8k3Hy2ry6jPzm
+        meV87A6vQxvBIpjazxkqzSpP6hzjS6k=
+From:   Michael Walle <michael@walle.cc>
+To:     xiaoliang.yang_1@nxp.com
+Cc:     Arvid.Brodin@xdin.com, UNGLinuxDriver@microchip.com,
+        alexandre.belloni@bootlin.com, allan.nielsen@microchip.com,
+        andre.guedes@linux.intel.com, claudiu.manoil@nxp.com,
+        colin.king@canonical.com, davem@davemloft.net, idosch@mellanox.com,
+        ivan.khoronzhuk@linaro.org, jiri@mellanox.com,
+        joergen.andreasen@microchip.com, leoyang.li@nxp.com,
+        linux-kernel@vger.kernel.org, m-karicheri2@ti.com,
+        michael.chan@broadcom.com, mingkai.hu@nxp.com,
+        netdev@vger.kernel.org, po.liu@nxp.com, saeedm@mellanox.com,
+        vinicius.gomes@intel.com, vladimir.oltean@nxp.com,
+        yuehaibing@huawei.com, michael@walle.cc,
+        Vladimir Oltean <olteanv@gmail.com>
+Subject: Re: [net-next] net: dsa: felix: disable always guard band bit for TAS config
+Date:   Tue,  4 May 2021 19:05:14 +0200
+Message-Id: <20210504170514.10729-1-michael@walle.cc>
+X-Mailer: git-send-email 2.20.1
+In-Reply-To: <20210419102530.20361-1-xiaoliang.yang_1@nxp.com>
+References: <20210419102530.20361-1-xiaoliang.yang_1@nxp.com>
 MIME-Version: 1.0
-References: <20210429190926.5086-1-smalin@marvell.com> <20210429190926.5086-17-smalin@marvell.com>
- <4c17c44e-a08a-93cc-5ccf-51045cba0f0f@suse.de>
-In-Reply-To: <4c17c44e-a08a-93cc-5ccf-51045cba0f0f@suse.de>
-From:   Shai Malin <malin1024@gmail.com>
-Date:   Tue, 4 May 2021 19:52:18 +0300
-Message-ID: <CAKKgK4wDV_BEsE1kkH2vxreeuaOnv=1+vvX7J3F7oTzzO-_PKA@mail.gmail.com>
-Subject: Re: [RFC PATCH v4 16/27] qedn: Add qedn - Marvell's NVMeTCP HW
- offload vendor driver
-To:     Hannes Reinecke <hare@suse.de>
-Cc:     Shai Malin <smalin@marvell.com>, netdev@vger.kernel.org,
-        linux-nvme@lists.infradead.org, davem@davemloft.net,
-        kuba@kernel.org, sagi@grimberg.me, hch@lst.de, axboe@fb.com,
-        kbusch@kernel.org, Ariel Elior <aelior@marvell.com>,
-        Michal Kalderon <mkalderon@marvell.com>, okulkarni@marvell.com,
-        pkushwaha@marvell.com, Arie Gershberg <agershberg@marvell.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 5/2/21 2:27 PM, Hannes Reinecke wrote:
-> On 4/29/21 9:09 PM, Shai Malin wrote:
-> > This patch will present the skeleton of the qedn driver.
-> > The new driver will be added under "drivers/nvme/hw/qedn" and will be
-> > enabled by the Kconfig "Marvell NVM Express over Fabrics TCP offload".
-> >
-> > The internal implementation:
-> > - qedn.h:
-> >    Includes all common structs to be used by the qedn vendor driver.
-> >
-> > - qedn_main.c
-> >    Includes the qedn_init and qedn_cleanup implementation.
-> >    As part of the qedn init, the driver will register as a pci device a=
-nd
-> >    will work with the Marvell fastlinQ NICs.
-> >    As part of the probe, the driver will register to the nvme_tcp_offlo=
-ad
-> >    (ULP).
-> >
-> > Acked-by: Igor Russkikh <irusskikh@marvell.com>
-> > Signed-off-by: Arie Gershberg <agershberg@marvell.com>
-> > Signed-off-by: Prabhakar Kushwaha <pkushwaha@marvell.com>
-> > Signed-off-by: Omkar Kulkarni <okulkarni@marvell.com>
-> > Signed-off-by: Michal Kalderon <mkalderon@marvell.com>
-> > Signed-off-by: Ariel Elior <aelior@marvell.com>
-> > Signed-off-by: Shai Malin <smalin@marvell.com>
-> > ---
-> >   MAINTAINERS                      |  10 ++
-> >   drivers/nvme/Kconfig             |   1 +
-> >   drivers/nvme/Makefile            |   1 +
-> >   drivers/nvme/hw/Kconfig          |   8 ++
-> >   drivers/nvme/hw/Makefile         |   3 +
-> >   drivers/nvme/hw/qedn/Makefile    |   5 +
-> >   drivers/nvme/hw/qedn/qedn.h      |  19 +++
-> >   drivers/nvme/hw/qedn/qedn_main.c | 201 ++++++++++++++++++++++++++++++=
-+
-> >   8 files changed, 248 insertions(+)
-> >   create mode 100644 drivers/nvme/hw/Kconfig
-> >   create mode 100644 drivers/nvme/hw/Makefile
-> >   create mode 100644 drivers/nvme/hw/qedn/Makefile
-> >   create mode 100644 drivers/nvme/hw/qedn/qedn.h
-> >   create mode 100644 drivers/nvme/hw/qedn/qedn_main.c
-> > Reviewed-by: Hannes Reinecke <hare@suse.de>
+Hi,
 
-Thanks.
+> ALWAYS_GUARD_BAND_SCH_Q bit in TAS config register is descripted as
+> this:
+> 	0: Guard band is implemented for nonschedule queues to schedule
+> 	   queues transition.
+> 	1: Guard band is implemented for any queue to schedule queue
+> 	   transition.
+> 
+> The driver set guard band be implemented for any queue to schedule queue
+> transition before, which will make each GCL time slot reserve a guard
+> band time that can pass the max SDU frame. Because guard band time could
+> not be set in tc-taprio now, it will use about 12000ns to pass 1500B max
+> SDU. This limits each GCL time interval to be more than 12000ns.
+> 
+> This patch change the guard band to be only implemented for nonschedule
+> queues to schedule queues transition, so that there is no need to reserve
+> guard band on each GCL. Users can manually add guard band time for each
+> schedule queues in their configuration if they want.
 
->
-> Cheers,
->
-> Hannes
-> --
-> Dr. Hannes Reinecke                Kernel Storage Architect
-> hare@suse.de                              +49 911 74053 688
-> SUSE Software Solutions GmbH, Maxfeldstr. 5, 90409 N=C3=BCrnberg
-> HRB 36809 (AG N=C3=BCrnberg), Gesch=C3=A4ftsf=C3=BChrer: Felix Imend=C3=
-=B6rffer
+
+As explained in another mail in this thread, all queues are marked as
+scheduled. So this is actually a no-op, correct? It doesn't matter if
+it set or not set for now. Dunno why we even care for this bit then.
+
+> Signed-off-by: Xiaoliang Yang <xiaoliang.yang_1@nxp.com>
+> ---
+>  drivers/net/dsa/ocelot/felix_vsc9959.c | 8 ++++++--
+>  1 file changed, 6 insertions(+), 2 deletions(-)
+> 
+> diff --git a/drivers/net/dsa/ocelot/felix_vsc9959.c b/drivers/net/dsa/ocelot/felix_vsc9959.c
+> index 789fe08cae50..2473bebe48e6 100644
+> --- a/drivers/net/dsa/ocelot/felix_vsc9959.c
+> +++ b/drivers/net/dsa/ocelot/felix_vsc9959.c
+> @@ -1227,8 +1227,12 @@ static int vsc9959_qos_port_tas_set(struct ocelot *ocelot, int port,
+>  	if (taprio->num_entries > VSC9959_TAS_GCL_ENTRY_MAX)
+>  		return -ERANGE;
+>  
+> -	ocelot_rmw(ocelot, QSYS_TAS_PARAM_CFG_CTRL_PORT_NUM(port) |
+> -		   QSYS_TAS_PARAM_CFG_CTRL_ALWAYS_GUARD_BAND_SCH_Q,
+> +	/* Set port num and disable ALWAYS_GUARD_BAND_SCH_Q, which means set
+> +	 * guard band to be implemented for nonschedule queues to schedule
+> +	 * queues transition.
+> +	 */
+> +	ocelot_rmw(ocelot,
+> +		   QSYS_TAS_PARAM_CFG_CTRL_PORT_NUM(port),
+>  		   QSYS_TAS_PARAM_CFG_CTRL_PORT_NUM_M |
+>  		   QSYS_TAS_PARAM_CFG_CTRL_ALWAYS_GUARD_BAND_SCH_Q,
+>  		   QSYS_TAS_PARAM_CFG_CTRL);
+
+Anyway, I don't think this the correct place for this:
+ (1) it isn't per port, but a global bit, but here its done per port.
+ (2) rmw, I presume is read-modify-write. and there is one bit CONFIG_CHAGE
+     which is set by software and cleared by hardware. What happens if it
+	 will be cleared right after we read it. Then it will be set again, no?
+
+So if we really care about this bit, shouldn't this be moved to switch
+initialization then?
+
+-michael
