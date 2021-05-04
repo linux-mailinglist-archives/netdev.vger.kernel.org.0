@@ -2,102 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8FAF337243B
-	for <lists+netdev@lfdr.de>; Tue,  4 May 2021 03:22:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8B1FB372465
+	for <lists+netdev@lfdr.de>; Tue,  4 May 2021 04:15:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229712AbhEDBX2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 3 May 2021 21:23:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53760 "EHLO
+        id S229670AbhEDCQZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 3 May 2021 22:16:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36908 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229497AbhEDBX2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 3 May 2021 21:23:28 -0400
-Received: from warlock.wand.net.nz (warlock.cms.waikato.ac.nz [IPv6:2001:df0:4:4000::250:15])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 579DDC061574
-        for <netdev@vger.kernel.org>; Mon,  3 May 2021 18:22:34 -0700 (PDT)
-Received: from [209.85.210.170] (helo=mail-pf1-f170.google.com)
-        by warlock.wand.net.nz with esmtpsa (TLS1.2:RSA_AES_128_CBC_SHA1:128)
-        (Exim 4.80)
-        (envelope-from <rsanger@wand.net.nz>)
-        id 1ldjlg-00004v-Go
-        for netdev@vger.kernel.org; Tue, 04 May 2021 13:22:32 +1200
-Received: by mail-pf1-f170.google.com with SMTP id q2so5768257pfh.13
-        for <netdev@vger.kernel.org>; Mon, 03 May 2021 18:22:29 -0700 (PDT)
-X-Gm-Message-State: AOAM5313vpRQoPy0eSMN3KTjrac2CinbkV0jYi4E0Te+6whtFL3bifsx
-        4YgXvzhToBvItkDSyMAvu05NrvsASaX4gvW8GUc=
-X-Google-Smtp-Source: ABdhPJxEGHxCZxvdhQ2LIAv7CUfLVIFNW6e2PsNqOonAtrAAkvS9JNe4SDhSogKTU7p2fvZUL/A5HFLMJZ9WkVpReYI=
-X-Received: by 2002:a65:41c6:: with SMTP id b6mr4469144pgq.135.1620091348813;
- Mon, 03 May 2021 18:22:28 -0700 (PDT)
+        with ESMTP id S229656AbhEDCQY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 3 May 2021 22:16:24 -0400
+Received: from mail-oi1-x233.google.com (mail-oi1-x233.google.com [IPv6:2607:f8b0:4864:20::233])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 65277C061574
+        for <netdev@vger.kernel.org>; Mon,  3 May 2021 19:15:30 -0700 (PDT)
+Received: by mail-oi1-x233.google.com with SMTP id u16so7355842oiu.7
+        for <netdev@vger.kernel.org>; Mon, 03 May 2021 19:15:30 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=lfbgDuxKTwgH6ohD48mm150RxYqlMXrihVa/Lv86vb4=;
+        b=CUZMnLCw1L6m0suU9DV5ujQmSPUc8xFb3m+Xfj/b/R2wJErP+S/gznepnlec+w1YOS
+         FyC3GA8+UA7UK4GjYVpjRGcocIJMI5i64WtluyLdinTAuaQg0uXCXPMJkddA42LUs2GZ
+         B/hBbFOBbOfqp9M868m11GRnL9LiHNdSlmqIhqwcqO0eZ2xjXcRTTr/tx3WrqU/zto37
+         0i+kcOAoauv72f/Y8+fowa0ve7n1hHBICVsOmF93fg9T560hj+FShuWAbTLnIV5Ts1hJ
+         k+nCS3c9hejlAo9aMsS0IZ1peDJcbGRmH2JRZLwf+aXmAaZ/sYMCQ66J3P/b3tMK/0Kd
+         G7Fw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=lfbgDuxKTwgH6ohD48mm150RxYqlMXrihVa/Lv86vb4=;
+        b=pWZUPNHtgoClahrK/ISgKZpOpPqS/uL5X6OLEggjL1siRmdE6bzkBE2kYJZfus8B48
+         aG0GQhNrJiJsBe+eOV5wGEJSzsQ9cWHuKoZmcpk2Bz0Eo7qEzL+P8nxvKOIbOZfSCOEk
+         AqBm0HJIg7or/+itjeHNbmfA8xeKGe5Jo9MASNPjWzkK26Eu8fd4mv2/+NsRQbEsFijN
+         +9DYX5pNcz0Zm7cQCHlloTGMhQbXBKC2jKvJMfwZqH5a2dk18XsNJ/q6XSDo1k/WsZeS
+         SGldZI+7s2kiZKsgL+teYLgzXKBqOEoEZ9NmQUFIQHysiQEMSKaBfmaXESDJCTUOxtGs
+         +puA==
+X-Gm-Message-State: AOAM531QQ5txryTGEUgvTNsp914BdMdr/uSQGl36NIb5wJcLSzLVTxcg
+        gPvZp3VscmpbhQwkqSPS9D6qildUqPWHaA==
+X-Google-Smtp-Source: ABdhPJyot+mfEMsewQP8umXzihYlkseVXUta6MGeFugLloN7U2iq7l8+1C6hGzXeIMi9Il9uWkG6DQ==
+X-Received: by 2002:a05:6808:1392:: with SMTP id c18mr1223635oiw.176.1620094529724;
+        Mon, 03 May 2021 19:15:29 -0700 (PDT)
+Received: from Davids-MacBook-Pro.local ([8.48.134.33])
+        by smtp.googlemail.com with ESMTPSA id a21sm366145oop.20.2021.05.03.19.15.28
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 03 May 2021 19:15:29 -0700 (PDT)
+Subject: Re: [PACTH iproute2-next] ip: dynamically size columns when printing
+ stats
+To:     Jakub Kicinski <kuba@kernel.org>,
+        Stephen Hemminger <stephen@networkplumber.org>
+Cc:     netdev@vger.kernel.org
+References: <20210501031059.529906-1-kuba@kernel.org>
+ <20210503075739.46654252@hermes.local>
+ <20210503090059.2cea3840@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <be91d0cd-6233-3c8d-e310-a1b7fc842b48@gmail.com>
+ <20210503122242.6ae77bde@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <3737927a-7352-5a07-e19a-6b09470734a5@gmail.com>
+Date:   Mon, 3 May 2021 20:15:27 -0600
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
+ Gecko/20100101 Thunderbird/78.10.0
 MIME-Version: 1.0
-References: <1620085579-5646-1-git-send-email-rsanger@wand.net.nz> <CA+FuTSeDTYMZzT3n3tfm9KPCRx_ObWU-HaU4JxZCSCm_8sf2XA@mail.gmail.com>
-In-Reply-To: <CA+FuTSeDTYMZzT3n3tfm9KPCRx_ObWU-HaU4JxZCSCm_8sf2XA@mail.gmail.com>
-From:   Richard Sanger <rsanger@wand.net.nz>
-Date:   Tue, 4 May 2021 13:22:17 +1200
-X-Gmail-Original-Message-ID: <CAN6QFNzj9+Y3W2eYTpHzVVjy_sYN+9d_Sa99HgQ0KgKyNmpeNw@mail.gmail.com>
-Message-ID: <CAN6QFNzj9+Y3W2eYTpHzVVjy_sYN+9d_Sa99HgQ0KgKyNmpeNw@mail.gmail.com>
-Subject: Re: [PATCH] net: packetmmap: fix only tx timestamp on request
-To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Cc:     Network Development <netdev@vger.kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>
-Content-Type: text/plain; charset="UTF-8"
-Received-SPF: softfail client-ip=209.85.210.170; envelope-from=rsanger@wand.net.nz; helo=mail-pf1-f170.google.com
+In-Reply-To: <20210503122242.6ae77bde@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Willem,
+On 5/3/21 1:22 PM, Jakub Kicinski wrote:
+> On Mon, 3 May 2021 11:16:41 -0600 David Ahern wrote:
+>> On 5/3/21 10:00 AM, Jakub Kicinski wrote:
+>>> On Mon, 3 May 2021 07:57:39 -0700 Stephen Hemminger wrote:  
+>>>> Maybe good time to refactor the code to make it table driven rather
+>>>> than individual statistic items.  
+>>>
+>>> 🤔 should be doable.
+>>>
+>>> Can I do it on top or before making the change to the columns?
+>>>   
+>>
+>> I think it can be a follow on change. This one is clearly an improvement
+>> for large numbers.
+> 
+> Fun little discrepancy b/w JSON and plain on what's printed with -s 
+> vs -s -s: JSON output prints rx_over_errors where plain would print
+> rx_missed_errors. I will change plain to follow JSON, since presumably
+> we should worry more about breaking machine-readable format.
+> 
 
-This is to match up with the documented behaviour; see the timestamping section
-at the bottom of
-https://www.kernel.org/doc/html/latest/networking/packet_mmap.html
+you mean from this commit?
 
-If no call to setsockopt(fd, SOL_PACKET, PACKET_TIMESTAMP, ...) is made then
-the tx path ring should not return timestamps, or timestamp flags set in
-tp_status.
+commit b8663da04939dd5de223ca0de23e466ce0a372f7
+Author: Jakub Kicinski <kuba@kernel.org>
+Date:   Wed Sep 16 12:42:49 2020 -0700
 
-As noted in b9c32fb27170
-("packet: if hw/sw ts enabled in rx/tx ring, report which ts we got")
-this is to retain backwards compatibility with old code.
-
-However, currently, a timestamp can be returned without setting
-PACKET_TIMESTAMP, in the case that skb->tstamp includes a timestamp.
-I only noticed this recently due to:
-aa4e689ed1 (veth: add software timestamping)
-which means skb->tstamp now includes a timestamp.
-
-The issue this bug causes for old/non-timestamp aware code is that tp_status
-may incorrectly have the TP_STATUS_TS_SOFTWARE flag set, so the documented
-check (tp_status == TP_STATUS_AVAILABLE) that a frame in the ring is free fails.
-Causing such code to hang infinitely.
-
-This patch corrects the behaviour for the tx path. But, doesn't change the
-behaviour on the rx path. The rx path still includes a timestamp (hence
-the patch always sets the SOF_TIMESTAMPING_SOFTWARE flag on rx).
-
-Thanks,
-Richard
-
-
-On Tue, May 4, 2021 at 12:36 PM Willem de Bruijn
-<willemdebruijn.kernel@gmail.com> wrote:
->
-> On Mon, May 3, 2021 at 8:04 PM Richard Sanger <rsanger@wand.net.nz> wrote:
-> >
-> > The packetmmap tx ring should only return timestamps if requested,
-> > as documented. This allows compatibility with non-timestamp aware
-> > user-space code which checks tp_status == TP_STATUS_AVAILABLE;
-> > not expecting additional timestamp flags to be set.
->
-> This is an established interface.
->
-> Passing the status goes back to 2013, since commit b9c32fb27170
-> ("packet: if hw/sw ts enabled in rx/tx ring, report which ts we got").
->
-> Passing a timestamp itself in tp_sec/tp_usec goes back to before git,
-> probably to the introduction of the ring.
->
-> I don't think we can change this now. That will likely break
-> applications that have come to expect current behavior.
->
-> Is it documented somewhere that the ring works differently? Or are you
-> referring to the general SO_TIMESTAMPING behavior, which is a separate
-> timestamp interface.
+    ip: promote missed packets to the -s row
