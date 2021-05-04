@@ -2,102 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CC194372737
-	for <lists+netdev@lfdr.de>; Tue,  4 May 2021 10:28:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 335C23727B7
+	for <lists+netdev@lfdr.de>; Tue,  4 May 2021 11:03:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230087AbhEDI3k (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 4 May 2021 04:29:40 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:39914 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S229927AbhEDI3j (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 4 May 2021 04:29:39 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1620116925;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=oCGIoq+q2yEHekhzcWTEQd9G0dS+82wyYCm9Ec+BzMk=;
-        b=ErFG8OWZC8YRJNaNUppDIMmp0RK1aTjlnofg6enNHgefvAU0+6PsEmjMXOapvHc/C6shdQ
-        I/xKl4pZkU20gBB8pSwYvy496yY0frhKdGCSIyJLDf4FkskbPgQ10bCpOedCvPi/Bwyetc
-        3wgGTeoKpiRBonVENNi+YDt/mF+eN0k=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-532-O1LMVxDONsGykzhE3i_Ffw-1; Tue, 04 May 2021 04:28:42 -0400
-X-MC-Unique: O1LMVxDONsGykzhE3i_Ffw-1
-Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 741838030D5;
-        Tue,  4 May 2021 08:28:39 +0000 (UTC)
-Received: from carbon (unknown [10.36.110.19])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 091EA1A866;
-        Tue,  4 May 2021 08:28:28 +0000 (UTC)
-Date:   Tue, 4 May 2021 10:28:27 +0200
-From:   Jesper Dangaard Brouer <brouer@redhat.com>
-To:     Kurt Kanzenbach <kurt@linutronix.de>
-Cc:     brouer@redhat.com, Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
-        "David S. Miller" <davem@davemloft.net>,
+        id S230058AbhEDJEH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 4 May 2021 05:04:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42420 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230023AbhEDJEG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 4 May 2021 05:04:06 -0400
+Received: from baptiste.telenet-ops.be (baptiste.telenet-ops.be [IPv6:2a02:1800:120:4::f00:13])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C034C061574
+        for <netdev@vger.kernel.org>; Tue,  4 May 2021 02:03:12 -0700 (PDT)
+Received: from ramsan.of.borg ([IPv6:2a02:1810:ac12:ed20:1ca1:e52f:3ec5:3ac5])
+        by baptiste.telenet-ops.be with bizsmtp
+        id 0Z35250023aEpPb01Z356l; Tue, 04 May 2021 11:03:08 +0200
+Received: from rox.of.borg ([192.168.97.57])
+        by ramsan.of.borg with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.93)
+        (envelope-from <geert@linux-m68k.org>)
+        id 1ldqxM-002izR-Lk; Tue, 04 May 2021 11:03:04 +0200
+Received: from geert by rox.of.borg with local (Exim 4.93)
+        (envelope-from <geert@linux-m68k.org>)
+        id 1ldqxM-00H6vk-2r; Tue, 04 May 2021 11:03:04 +0200
+From:   Geert Uytterhoeven <geert+renesas@glider.be>
+To:     Sergei Shtylyov <sergei.shtylyov@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Sven Auhagen <sven.auhagen@voleatech.de>,
-        intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org,
-        bpf@vger.kernel.org,
-        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
-        Lorenzo Bianconi <lorenzo@kernel.org>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Richard Cochran <richardcochran@gmail.com>,
-        Alexander Duyck <alexander.duyck@gmail.com>,
-        Tyler S <tylerjstachecki@gmail.com>,
-        Maciej Fijalkowski <maciej.fijalkowski@intel.com>
-Subject: Re: [PATCH net v4] igb: Fix XDP with PTP enabled
-Message-ID: <20210504102827.342f6302@carbon>
-In-Reply-To: <20210503072800.79936-1-kurt@linutronix.de>
-References: <20210503072800.79936-1-kurt@linutronix.de>
+        Rob Herring <robh+dt@kernel.org>,
+        Adam Ford <aford173@gmail.com>
+Cc:     netdev@vger.kernel.org, linux-renesas-soc@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Geert Uytterhoeven <geert+renesas@glider.be>
+Subject: [PATCH] dt-bindings: net: renesas,etheravb: Fix optional second clock name
+Date:   Tue,  4 May 2021 11:03:00 +0200
+Message-Id: <b3d91c9f70a15792ad19c87e4ea35fc876600fae.1620118901.git.geert+renesas@glider.be>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon,  3 May 2021 09:28:00 +0200
-Kurt Kanzenbach <kurt@linutronix.de> wrote:
+If the optional "clock-names" property is present, but the optional TXC
+reference clock is not, "make dtbs_check" complains:
 
-> When using native XDP with the igb driver, the XDP frame data doesn't point to
-> the beginning of the packet. It's off by 16 bytes. Everything works as expected
-> with XDP skb mode.
-> 
-> Actually these 16 bytes are used to store the packet timestamps. Therefore, pull
-> the timestamp before executing any XDP operations and adjust all other code
-> accordingly. The igc driver does it like that as well.
-> 
-> Tested with Intel i210 card and AF_XDP sockets.
-> 
-> Fixes: 9cbc948b5a20 ("igb: add XDP support")
-> Signed-off-by: Kurt Kanzenbach <kurt@linutronix.de>
+    ethernet@e6800000: clock-names: ['fck'] is too short
 
-Thanks for fixing this!
+Fix this by declaring that a single clock name is valid.
+While at it, drop the superfluous upper limit on the number of clocks,
+as it is implied by the list of descriptions.
 
-Acked-by: Jesper Dangaard Brouer <brouer@redhat.com>
+Fixes: 6f43735b6da64bd4 ("dt-bindings: net: renesas,etheravb: Add additional clocks")
+Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
+---
+ Documentation/devicetree/bindings/net/renesas,etheravb.yaml | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-I expect that we/I will (soon) play with getting this area that is
-stored in front of the packet (the XDP data_meta area) described via
-BTF.  This way both xdp_frame and AF_XDP can get structured access (e.g.
-to the PTP timestamp in this case).
-
-I'll be adding my notes on this project here:
- https://github.com/xdp-project/xdp-project/blob/master/areas/tsn/
-
-Looking forward to collaborate on this with you :-)
+diff --git a/Documentation/devicetree/bindings/net/renesas,etheravb.yaml b/Documentation/devicetree/bindings/net/renesas,etheravb.yaml
+index fe72a5598addf89c..005868f703a6e2cd 100644
+--- a/Documentation/devicetree/bindings/net/renesas,etheravb.yaml
++++ b/Documentation/devicetree/bindings/net/renesas,etheravb.yaml
+@@ -51,12 +51,12 @@ properties:
+ 
+   clocks:
+     minItems: 1
+-    maxItems: 2
+     items:
+       - description: AVB functional clock
+       - description: Optional TXC reference clock
+ 
+   clock-names:
++    minItems: 1
+     items:
+       - const: fck
+       - const: refclk
 -- 
-Best regards,
-  Jesper Dangaard Brouer
-  MSc.CS, Principal Kernel Engineer at Red Hat
-  LinkedIn: http://www.linkedin.com/in/brouer
+2.25.1
 
