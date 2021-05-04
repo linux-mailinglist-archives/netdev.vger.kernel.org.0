@@ -2,43 +2,48 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B45E037306C
-	for <lists+netdev@lfdr.de>; Tue,  4 May 2021 21:10:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A19F937306F
+	for <lists+netdev@lfdr.de>; Tue,  4 May 2021 21:10:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232102AbhEDTLG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 4 May 2021 15:11:06 -0400
-Received: from mail.kernel.org ([198.145.29.99]:37644 "EHLO mail.kernel.org"
+        id S232240AbhEDTLH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 4 May 2021 15:11:07 -0400
+Received: from mail.kernel.org ([198.145.29.99]:37640 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231777AbhEDTLF (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S231694AbhEDTLF (ORCPT <rfc822;netdev@vger.kernel.org>);
         Tue, 4 May 2021 15:11:05 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id 35D34610E9;
+Received: by mail.kernel.org (Postfix) with ESMTPS id 2CC5061182;
         Tue,  4 May 2021 19:10:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1620155410;
-        bh=mvcICgCpSJJpdePB6+Sc/K+HkLVUN9fo5vLs4TITIK0=;
+        bh=r2bSYkSM5y7N1co+6dpHXHQ0FQC9UWRYwRDO8hODpVI=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=sZH+j8j+WrDkdM1BOt/cwYd6BWv/28aPXTpKtJlvPTBYZsEJcwzQx1AcJ4qWy88W2
-         Aqh9aszMIihOp4dC1+fJyxkbJtXj5Edwr+bJSUGb+Yf3HaxnZMBht6zJ+Vu/4fb56S
-         bx7eYOp/eTsQOwo67vzoUqp3xSDlL0LSBrKWEgBqV7w2LIHvQCs81NjT7lK29QJoc5
-         5i3zsqRDS1KojoTrYx0EmeOuAQ9rBF0EsD4ztOU6V0ZkfeLwyuc70aHEoLcEnBVHmX
-         OF9wgoT1IZXmzmekFfoEudWSqAx9yukQcEpkKSDjOsTHqFMlI+ZcCGMhKLOlj2z0Bk
-         0n6mFwBKas/eA==
+        b=GtmbjyJUBl/3R/+W2hipJXES4NoqnN4VlBYbbP8Tqtvq4Ynadn/CRfiirdVFLNH4O
+         OyJPg88kMZIM96DPK+YxVfFUOEik36EJG6vTproyfkR4FIoPm0vQV/X1fRf8jMnT11
+         /eIJkikl0vCjcaXPVJ3gnDsfxaY46vL/+WxVPJIKWP5wboOkCGQVRz+LHTazoLD0B7
+         ih4OWpppyqIxDT9ZD97iGWnp3rhfLNVDC/NbVtPGfyH3V7ipcCqP+QHaLOyDsWsher
+         sICY4HMsb4LybN9OYbG3MFaL71+oMlwuibakpt/XcVHrHFRey996wrPYzdVbqAZmT+
+         BZT7f4PVfcQsQ==
 Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 25E2560A22;
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 1A73A609F5;
         Tue,  4 May 2021 19:10:10 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH] net/nfc: fix use-after-free llcp_sock_bind/connect
+Subject: Re: [PATCH net 1/1] net: stmmac: Clear receive all(RA) bit when
+ promiscuous mode is off
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <162015541015.23495.4578937039249917498.git-patchwork-notify@kernel.org>
+Message-Id: <162015541010.23495.12824554221267903248.git-patchwork-notify@kernel.org>
 Date:   Tue, 04 May 2021 19:10:10 +0000
-References: <20210504071646.28665-1-orcohen@paloaltonetworks.com>
-In-Reply-To: <20210504071646.28665-1-orcohen@paloaltonetworks.com>
-To:     Or Cohen <orcohen@paloaltonetworks.com>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
-        nixiaoming@huawei.com, matthieu.baerts@tessares.net,
-        mkl@pengutronix.de, nmarkus@paloaltonetworks.com
+References: <20210504154241.1165-1-ramesh.Babu.B@intel.com>
+In-Reply-To: <20210504154241.1165-1-ramesh.Babu.B@intel.com>
+To:     Ramesh Babu B <ramesh.babu.b@intel.com>
+Cc:     peppe.cavallaro@st.com, alexandre.torgue@st.com,
+        joabreu@synopsys.com, davem@davemloft.net, kuba@kernel.org,
+        mcoquelin.stm32@gmail.com, netdev@vger.kernel.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        boon.leong.ong@intel.com, weifeng.voon@intel.com,
+        vee.khee.wong@intel.com, ramesh.Babu.B@intel.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
@@ -47,28 +52,19 @@ Hello:
 
 This patch was applied to netdev/net.git (refs/heads/master):
 
-On Tue,  4 May 2021 10:16:46 +0300 you wrote:
-> Commits 8a4cd82d ("nfc: fix refcount leak in llcp_sock_connect()")
-> and c33b1cc62 ("nfc: fix refcount leak in llcp_sock_bind()")
-> fixed a refcount leak bug in bind/connect but introduced a
-> use-after-free if the same local is assigned to 2 different sockets.
+On Tue,  4 May 2021 21:12:41 +0530 you wrote:
+> From: Ramesh Babu B <ramesh.babu.b@intel.com>
 > 
-> This can be triggered by the following simple program:
->     int sock1 = socket( AF_NFC, SOCK_STREAM, NFC_SOCKPROTO_LLCP );
->     int sock2 = socket( AF_NFC, SOCK_STREAM, NFC_SOCKPROTO_LLCP );
->     memset( &addr, 0, sizeof(struct sockaddr_nfc_llcp) );
->     addr.sa_family = AF_NFC;
->     addr.nfc_protocol = NFC_PROTO_NFC_DEP;
->     bind( sock1, (struct sockaddr*) &addr, sizeof(struct sockaddr_nfc_llcp) )
->     bind( sock2, (struct sockaddr*) &addr, sizeof(struct sockaddr_nfc_llcp) )
->     close(sock1);
->     close(sock2);
+> In promiscuous mode Receive All bit is set in GMAC packet filter register,
+> but outside promiscuous mode Receive All bit is not cleared,
+> which resulted in all network packets are received when toggle (ON/OFF)
+> the promiscuous mode.
 > 
 > [...]
 
 Here is the summary with links:
-  - net/nfc: fix use-after-free llcp_sock_bind/connect
-    https://git.kernel.org/netdev/net/c/c61760e6940d
+  - [net,1/1] net: stmmac: Clear receive all(RA) bit when promiscuous mode is off
+    https://git.kernel.org/netdev/net/c/4c7a94286ef7
 
 You are awesome, thank you!
 --
