@@ -2,188 +2,215 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6F65F3723ED
-	for <lists+netdev@lfdr.de>; Tue,  4 May 2021 02:44:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B2E273723F6
+	for <lists+netdev@lfdr.de>; Tue,  4 May 2021 02:50:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229637AbhEDApT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 3 May 2021 20:45:19 -0400
-Received: from mga09.intel.com ([134.134.136.24]:52303 "EHLO mga09.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229499AbhEDApS (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 3 May 2021 20:45:18 -0400
-IronPort-SDR: 6k3QdDPQX9LEJQd2R64k7n5P6MJxL09vUnjiGncnTpsedpxHGa/l9RoWRhUQObdKcoS1IGGVhY
- dUyrM2e7gY+Q==
-X-IronPort-AV: E=McAfee;i="6200,9189,9973"; a="197960764"
-X-IronPort-AV: E=Sophos;i="5.82,271,1613462400"; 
-   d="scan'208";a="197960764"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 May 2021 17:44:23 -0700
-IronPort-SDR: E86MsvZchussIBx4X+jpqyKSD4GTrX8gfw0fznrIyc6OXl6k8myChHT3ytDFiyaMuRgawEf6pm
- 9H3JjEFZrs0A==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.82,271,1613462400"; 
-   d="scan'208";a="538984671"
-Received: from orsmsx605.amr.corp.intel.com ([10.22.229.18])
-  by orsmga004.jf.intel.com with ESMTP; 03 May 2021 17:44:23 -0700
-Received: from orsmsx604.amr.corp.intel.com (10.22.229.17) by
- ORSMSX605.amr.corp.intel.com (10.22.229.18) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2106.2; Mon, 3 May 2021 17:44:23 -0700
-Received: from orsedg603.ED.cps.intel.com (10.7.248.4) by
- orsmsx604.amr.corp.intel.com (10.22.229.17) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2106.2
- via Frontend Transport; Mon, 3 May 2021 17:44:23 -0700
-Received: from NAM11-CO1-obe.outbound.protection.outlook.com (104.47.56.174)
- by edgegateway.intel.com (134.134.137.100) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2106.2; Mon, 3 May 2021 17:44:23 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=NRDC6K+6SEV/l+gAVDYcuK5NRE7fXYCupRg61vPuw5YYIS49CIXXFb4F0kNZquBc1M2/FyuKIpzugP1bOQau60FOuZlwBE3e0cFmpmOTgtbH28BUHsZFuylsB0ByqVeY9es625AY9l9/3Tat4S09CC/8qIiHStTOKno7SecREtH8RsfjpH6kJLXc8qpidaH3Je4+0u6dFooJXdo6R0eWwb02P2L1EtXWtDLZ66O7cbZN/t6D6NbEDCHbEdyksQpVlgyym0hb1RhrqWlBkSUQ5BxCu9PaenrCZAu3Mtaw0AaggM+rdGqRlxk2b/0j726brX5q58Q9MJblCaVOuI/ywg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=dy2hj31n9eSl2TxDEjRPbZyCuANpXCwbKg28nch0bSk=;
- b=DOqHa3HbrlISJy3myXLKW3OE36qK5cVpHz134uWuIpRKWAL6MSPX8tBhmGu98aIRk+Yujr3P9q85sWJwJpSAVbVfwt2c2cXbCD47Rq3NCO1wW8c2ZKbGDMvWFGckj4bjeQRt1vcaiy35m0khxBZjbk71FpVawhGLLuvOwX+qskZQKZJfCTAi+gongaXjzcG0aCF9F/J5gtlaxRInVZM7dZpqrd0hkt4FNiDV3oXK9dj5wqQa7dUEoOuTtKWGx1n96jOpERmclNSb7/rlXNRbmBUyGi3IBpbg3Gd2+SpIQ2z9J1FSpe5EQlHKHEQoKbSRhcgeIR02Epn6QSwuHiQdaw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=intel.onmicrosoft.com;
- s=selector2-intel-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=dy2hj31n9eSl2TxDEjRPbZyCuANpXCwbKg28nch0bSk=;
- b=Tru8ViHJiPLgrMut9m9iNiDsY0BCAIHY98KbTcl2pYr/RTvc/jpLnbp3sb73HzlGyhJj6w4QRi8LJzfUTkZwPoKY9WphKxvpZSAcnLobdDS4fWfQ0FzRd3G0l4SHsB3wTgy+Z/6scDTjzKMP16Fr7G7vh1leGD55SDdwHl09Gu0=
-Received: from SN6PR11MB3229.namprd11.prod.outlook.com (2603:10b6:805:ba::28)
- by SA0PR11MB4720.namprd11.prod.outlook.com (2603:10b6:806:72::8) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4087.38; Tue, 4 May
- 2021 00:44:19 +0000
-Received: from SN6PR11MB3229.namprd11.prod.outlook.com
- ([fe80::7ca2:37ff:9cbd:c87c]) by SN6PR11MB3229.namprd11.prod.outlook.com
- ([fe80::7ca2:37ff:9cbd:c87c%6]) with mapi id 15.20.4087.044; Tue, 4 May 2021
- 00:44:19 +0000
-From:   "Nguyen, Anthony L" <anthony.l.nguyen@intel.com>
-To:     "liwei.song@windriver.com" <liwei.song@windriver.com>,
-        "intel-wired-lan@lists.osuosl.org" <intel-wired-lan@lists.osuosl.org>,
-        "Brandeburg, Jesse" <jesse.brandeburg@intel.com>
-CC:     "davem@davemloft.net" <davem@davemloft.net>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "Venkataramanan, Anirudh" <anirudh.venkataramanan@intel.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH] ice: set the value of global config lock timeout longer
-Thread-Topic: [PATCH] ice: set the value of global config lock timeout longer
-Thread-Index: AQHXNP7PFMlVALdkmU2CbzZRHsc87Kq+BJEAgAA9yoCAApragIARteCA
-Date:   Tue, 4 May 2021 00:44:19 +0000
-Message-ID: <fa7cd362645763d382719f8ab0e72f429156444b.camel@intel.com>
-References: <20210419093106.6487-1-liwei.song@windriver.com>
-         <7d85412de58342e4469efdfdc6196925ce770993.camel@intel.com>
-         <fca32ba9-ad20-0994-de7c-b3bf8425a07b@windriver.com>
-         <8d6eb1116cac38c764fce754a9fa272ac4509bbb.camel@intel.com>
-In-Reply-To: <8d6eb1116cac38c764fce754a9fa272ac4509bbb.camel@intel.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-mailer: Evolution 3.28.5 (3.28.5-3.fc28) 
-authentication-results: windriver.com; dkim=none (message not signed)
- header.d=none;windriver.com; dmarc=none action=none header.from=intel.com;
-x-originating-ip: [134.134.136.204]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: fba62573-162a-4864-69d9-08d90e95c0c4
-x-ms-traffictypediagnostic: SA0PR11MB4720:
-x-ld-processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <SA0PR11MB47207BD8789E210EA8CB2CE6C65A9@SA0PR11MB4720.namprd11.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:9508;
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: 5yPYc7fEPd7osvUrIFecTDhEgLqupWdoxC2vDM9P0Dw5s63Y8u/CxfbFqVIgTqihTDlFj5PCK0r3s5V8evDaRnOCLIzYS0ICTODoZaafFQVBFxfEAQTaAWRcsfEDx1b6wgOUlOCUt+W7dXx3wSWCjnEMvu2X4x7RZqzCaKbG3LBia4Sza9peKtnBsUKd/Iv3gEq2qa1O59b27L51T3adr52tcv9cIbTbmERUn/3dvsaU1u0kUYZ73JPq6S1QCivEAYPUAHr97cK+zcNoHkRG+QF0g2ub8d952X3m1AiENSqCQryD69iIZoBL1RYJqxAFVA7dBjlHlrStSF7a3AVRgbt9Xbdede3PNoq/lRdHTaxKlD348upfiiu6b3DwNY2gUL6gWsiJavN6bGGQJ9mLDMAZxy8p4iPVno7iF8XzbCAW9+KSuUa40hMxf42p/TUyqiql07V5CmGkC1nM6+lUjfpQmApej5X0K8pWGAn9F08zmr10xtqXesWWbnMIFcPvTvxvWGqoKoWqMHoZ/31FCKthFXLp+nMjFfi37n7H1XZyEgB0p9mSWzCPsAM65BTat9au9/FavmViiSEl3mG5VKnhZJBiXSnz+qCut1SrVGBbkHKZ3mODScar+Ay7ZWrkrtUYHKoEK94I7pHy29YDeWVfeAXJICqSSb3vKX1WGr8=
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SN6PR11MB3229.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(136003)(366004)(39860400002)(346002)(376002)(396003)(64756008)(186003)(6636002)(2616005)(86362001)(66446008)(6506007)(66476007)(4326008)(53546011)(26005)(66946007)(76116006)(66556008)(2906002)(71200400001)(122000001)(478600001)(83380400001)(54906003)(5660300002)(36756003)(316002)(8936002)(8676002)(6486002)(38100700002)(110136005)(6512007)(91956017)(99106002)(148743002);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata: =?utf-8?B?NWppUUJ2R2xYQjdpS09QVnZTRzVaczczRDBEQlh3bzI4L013Ym5FTmFqMHZ3?=
- =?utf-8?B?WTlKTU4yVTFtUDl6a3FRVFdVQ0dWZjlWQzl4aFFKanJyYi9wRWFKSFNWYVVk?=
- =?utf-8?B?ZnU5a1BJZVRZSlMwZnc1d0FoU2QyZUk1aStUc2FMcGlvOHQvWmdjK09UZm9S?=
- =?utf-8?B?L1F5SW5PZlBtS1BXdDdjWFJndTVReUd2aFVTZ005bVM3VXFCaC9ZUWlxSGJP?=
- =?utf-8?B?OHZzTUZkZ1hiK1BoRHZIQ0VUVnRoZmpTZElEZ0V6SWRITGRwRnR4VjBEWGI3?=
- =?utf-8?B?MG03UVVwQ3NDVnJ3NlE0dEFKd0FTN21RL0F4d3dpL3gwb1BZYzJzaHpuTU1V?=
- =?utf-8?B?cytOWjhqNWxaSWdGWnVBdjhMUDkydnV5UnpRb1loOGZCbmNoTWZyK05HMXdH?=
- =?utf-8?B?TTNwVkNScXl4UVNMVTYvN0tSVUdlWWdoSVhWOFRBaDFieTNMLzN2NHhXNTRC?=
- =?utf-8?B?YWZ6dis4YXhEV2JLM3ZoRzR3UlRkSEkrS0JCbVlsWFpBUXoyZ3FzaWlKVFYy?=
- =?utf-8?B?cUdZUS94MDFRd3ZRYjlOUnUreC9JRXdLSlBBVkVqK1JQZEpONHQvcUJVYkxG?=
- =?utf-8?B?TjA4WENmczhUOUV5THJnc2FKTzExQkdzVkNFUGZycWJKRGVaWkc1VFlUcXNB?=
- =?utf-8?B?ZlZKbHdIVnpSNkJUN0U3K3BUSklnSVdBTU1xbm85dnAzOSs2MW16VHpxZ3Y1?=
- =?utf-8?B?TXlOTFlHdlJvS0dxZEl4dXQ0Ty9CM0xPNFgxVHp3bFZMME5DKy8yc1B5eFIz?=
- =?utf-8?B?WUZQVnllNTNmNThlZVEyZm03TncxbW1JNUhKbk5VSGRNd0dQRG56ejNHaFc5?=
- =?utf-8?B?VkxITlBGTW9NOWVwZFlJUXk3MkpxYlVsb0pVazFjTzNDMjZaNUlUTlFFQm5Z?=
- =?utf-8?B?STVYdWhISG9ZOXQxN2kweTFSbWlRYThUYlpTQkxnNFpWNWlFSzlQb3JVTncy?=
- =?utf-8?B?NzBYd3YrT0xXUHkrYW4vQm1mMmcwaGFRazNjZU83MmlyTmhXVDJJWmloV1FP?=
- =?utf-8?B?Zkg3cC8wUHZVMVQzSDJRZGhvTHhoN3Z5UmZBNUozOUpiOTdVZVZZajdvQk5o?=
- =?utf-8?B?VXhXQVRkTWtpbTlza3RuYlJDWVR1ZmRIQzgwNjJmbkR6K0ptOWEwS0JzUXNT?=
- =?utf-8?B?Wkp3Y0JrV0w2eitBWU9HZ1pwYWhHZGJGUDcwbHlkaEZKZUhQNHljajRTcDJI?=
- =?utf-8?B?OFdYWlQzL1p3TFJJSUxITUJGdUxBT3EyNG9EeG5YeTcrb1dNek5WeE5kdkk4?=
- =?utf-8?B?MXpTbEFtZHphMUJNWXFNMSs0SW15TEtwQmVtY1ZWNmFYaUFJNGNYTGtONCtT?=
- =?utf-8?B?YUM1WUl4c3ZtOE01bnpOdDFxQ2RRcDNMZHNPR2ZBQkdzbVBXYklKbWt2TzMv?=
- =?utf-8?B?OFpUWjNmTDV6QWI2N3VIQzJwbXpkV0xpMmc0WDBlQkUwemVxZmgzdnlONUp1?=
- =?utf-8?B?SVNnaE56dTVWVFJTa1ZJNVcwMnBmcnlFNXVpbW1rSXEvVldwZjgwVzhsb2tt?=
- =?utf-8?B?WkhxQXBLSEtqV2M2VHBLMHVxd3YvUmxnWUxyOURGVGJra0JTZi81NGUrQjRC?=
- =?utf-8?B?ZTRoYlNCc1d0eWhqb3J3a1piZ1dIVEFDQ24rbk5Ka1ZPbm5Pc3RJanp6c1JJ?=
- =?utf-8?B?UWJtb040dmRSRDgxcml3Zm1HZkN6TW5ER2xFWm1wMlR5dHdnUURKd2tUMUUw?=
- =?utf-8?B?SzRTaVBzUFY0ckZFQ2lNYURSUVAweXA5TkpZNlRhR0VKU0pkQjhnWWsya2pO?=
- =?utf-8?Q?iC3/dEBhVH1fkLfX5EqxIRi30+QZMwqWnKgqu9+?=
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <ACD98A0E4378E14ABB0D673C8B8E3C81@namprd11.prod.outlook.com>
-Content-Transfer-Encoding: base64
+        id S229633AbhEDAvY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 3 May 2021 20:51:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46846 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229497AbhEDAvX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 3 May 2021 20:51:23 -0400
+Received: from mail-pg1-x543.google.com (mail-pg1-x543.google.com [IPv6:2607:f8b0:4864:20::543])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 04A79C061574;
+        Mon,  3 May 2021 17:50:28 -0700 (PDT)
+Received: by mail-pg1-x543.google.com with SMTP id s22so5163183pgk.6;
+        Mon, 03 May 2021 17:50:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=NbtRKPIgnx4ziqmpluE9KAPXup6DKcajzjr0GhOhvFo=;
+        b=UzEmuQyW4u4neQv/rHfBETpjWQWnJ0bDPbOOU3Nr+z15nIQlDPu/z/u8YJxZqAg1XI
+         to/AN4BS4g+7JkaT1xoVyMshvvl28V9xsxvhPfE17plykR7ThmvIYIAkvyz+cq3NCnaD
+         y1fVSmaai+9b8k9C10WBdB2RE6bpPQRpNWR8uoODluClQv7Lzjfb5320PfHwzW3i3Fsg
+         FKWMJMgtIcBaimnMgCmaZ4Em3ecXvHjBc4EG09hrZHzXXesnXEIs+FQoiXdzd3Cyy1Vv
+         kT4P9pr0sUU6re8Y3/UfHeabnrp7rGvf9fF3orexfGpsbGNjtf4qQvv+9f6KLxZclZsk
+         clyA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=NbtRKPIgnx4ziqmpluE9KAPXup6DKcajzjr0GhOhvFo=;
+        b=k/fxCfUji/cM29RsQffBD/5mFjaw5jFvcKGUgc9C0Hm2hGzRkzAPOQkbwZnXlVZjmr
+         kolrD0KOudEiZG/TMlts1q2hIW+Yrb72tj9HPRiBwh24H+lgoKVR1Iftc4M06GzLlEZi
+         96W3TGcaXjwFXm7+YyXEewa9JygspRQsPwy45lHc/l8DylJ4zXqYzLvIBLycEX81YPL5
+         9TaejUjkCv2ZZDFIMur7eu8MfakYL83nSLBqbi89yvKVcj/ocrGft0tg2PG2+Pvj6mgb
+         aZJd5EjBnicd9itMxVsxlBVzDQ8P0YApxz+R3kT6XJJYeN9y0F0Fbkk2ttDuPYsh5Eyb
+         Oi4g==
+X-Gm-Message-State: AOAM5334CTs7ok6dxHgSVHFkmxYjpYLVJfXuj+eERWgakxYmCdlziLsB
+        646U5MBgosse42lWnyfSu2uu+rLLov439g==
+X-Google-Smtp-Source: ABdhPJyHbHujyl1D2FhIoCUCkZJeMSOObuUb5cCyUtPFGmGEI9lg9XlLMD4HSeRT5YDTKNGzukaBBw==
+X-Received: by 2002:a63:ed4d:: with SMTP id m13mr4661438pgk.433.1620089428189;
+        Mon, 03 May 2021 17:50:28 -0700 (PDT)
+Received: from localhost ([47.8.22.213])
+        by smtp.gmail.com with ESMTPSA id h22sm10221815pfn.55.2021.05.03.17.50.27
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 03 May 2021 17:50:27 -0700 (PDT)
+From:   Kumar Kartikeya Dwivedi <memxor@gmail.com>
+To:     bpf@vger.kernel.org
+Cc:     Kumar Kartikeya Dwivedi <memxor@gmail.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
+        Shaun Crampton <shaun@tigera.io>, netdev@vger.kernel.org
+Subject: [PATCH bpf-next v6 0/3] Add TC-BPF API
+Date:   Tue,  4 May 2021 06:20:20 +0530
+Message-Id: <20210504005023.1240974-1-memxor@gmail.com>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: SN6PR11MB3229.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: fba62573-162a-4864-69d9-08d90e95c0c4
-X-MS-Exchange-CrossTenant-originalarrivaltime: 04 May 2021 00:44:19.5889
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: z4tSyzUH8VFGWgPz66gJq5NafkLNqUm2YvxxBFa2HOsymtO6GihHy+QXCERm9t9TdmQXMTGY8IXzJv4oSyTgKJMLE0x3vNOMvQq/4J+M+qY=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA0PR11MB4720
-X-OriginatorOrg: intel.com
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-T24gVGh1LCAyMDIxLTA0LTIyIGF0IDExOjE2IC0wNzAwLCBUb255IE5ndXllbiB3cm90ZToNCj4g
-T24gV2VkLCAyMDIxLTA0LTIxIGF0IDEwOjI5ICswODAwLCBMaXdlaSBTb25nIHdyb3RlOg0KPiA+
-IA0KPiA+IE9uIDQvMjEvMjEgMDY6NDgsIE5ndXllbiwgQW50aG9ueSBMIHdyb3RlOg0KPiA+ID4g
-T24gTW9uLCAyMDIxLTA0LTE5IGF0IDE3OjMxICswODAwLCBMaXdlaSBTb25nIHdyb3RlOg0KPiA+
-ID4gPiBJdCBtYXkgbmVlZCBob2xkIEdsb2JhbCBDb25maWcgTG9jayBhIGxvbmdlciB0aW1lIHdo
-ZW4gZG93bmxvYWQNCj4gPiA+ID4gRERQDQo+ID4gPiA+IHBhY2thZ2UgZmlsZSwgZXh0ZW5kIHRo
-ZSB0aW1lb3V0IHZhbHVlIHRvIDUwMDBtcyB0byBlbnN1cmUgdGhhdA0KPiA+ID4gPiBkb3dubG9h
-ZCBjYW4gYmUgZmluaXNoZWQgYmVmb3JlIG90aGVyIEFRIGNvbW1hbmQgZ290IHRpbWUgdG8NCj4g
-PiA+ID4gcnVuLA0KPiA+ID4gPiB0aGlzIHdpbGwgZml4IHRoZSBpc3N1ZSBiZWxvdyB3aGVuIHBy
-b2JlIHRoZSBkZXZpY2UsIDUwMDBtcyBpcw0KPiA+ID4gPiBhDQo+ID4gPiA+IHRlc3QNCj4gPiA+
-ID4gdmFsdWUgdGhhdCB3b3JrIHdpdGggYm90aCBCYWNrcGxhbmUgYW5kIEJyZWFrb3V0Q2FibGUg
-TlZNDQo+ID4gPiA+IGltYWdlOg0KPiA+ID4gPiANCj4gPiA+ID4gaWNlIDAwMDA6ZjQ6MDAuMDog
-VlNJIDEyIGZhaWxlZCBsYW4gcXVldWUgY29uZmlnLCBlcnJvcg0KPiA+ID4gPiBJQ0VfRVJSX0NG
-Rw0KPiA+ID4gPiBpY2UgMDAwMDpmNDowMC4wOiBGYWlsZWQgdG8gZGVsZXRlIFZTSSAxMiBpbiBG
-VyAtIGVycm9yOg0KPiA+ID4gPiBJQ0VfRVJSX0FRX1RJTUVPVVQNCj4gPiA+ID4gaWNlIDAwMDA6
-ZjQ6MDAuMDogcHJvYmUgZmFpbGVkIGR1ZSB0byBzZXR1cCBQRiBzd2l0Y2g6IC0xMg0KPiA+ID4g
-PiBpY2U6IHByb2JlIG9mIDAwMDA6ZjQ6MDAuMCBmYWlsZWQgd2l0aCBlcnJvciAtMTINCj4gPiA+
-IA0KPiA+ID4gSGkgTGl3ZWksDQo+ID4gPiANCj4gPiA+IFdlIGhhdmVuJ3QgZW5jb3VudGVyZWQg
-dGhpcyBpc3N1ZSBiZWZvcmUuIENhbiB5b3UgcHJvdmlkZSBzb21lDQo+ID4gPiBtb3JlDQo+ID4g
-PiBpbmZvIG9uIHlvdXIgc2V0dXAgb3IgaG93IHlvdSdyZSBjb21pbmcgYWNyb3NzIHRoaXMgaXNz
-dWU/DQo+ID4gPiANCj4gPiA+IFBlcmhhcHMsIGxzcGNpIG91dHB1dCBhbmQgc29tZSBtb3JlIG9m
-IHRoZSBkbWVzZyBsb2c/IFdlJ2QgbGlrZQ0KPiA+ID4gdG8NCj4gPiA+IHRyeQ0KPiA+ID4gdG8g
-cmVwcm9kdWNlIHRoaXMgc28gd2UgY2FuIGludmVzaXRnYXRlIGl0IGZ1cnRoZXIuDQo+ID4gDQo+
-ID4gSGkgVG9ueSwNCj4gPiANCj4gPiBNeSBib2FyZCBpcyBJZGF2aWxsZSBJQ0UtRCBwbGF0Zm9y
-bSwgaXQgY2FuIGJlIHJlcHJvZHVjZWQgd2hlbg0KPiA+IHRoZXJlIGlzIG5vIFFTRlAgVHJhbnNj
-ZWl2ZXIgTW9kdWxlIHNldHVwIG9uIGl0LCBpdCBpcyBub3QNCj4gPiBoYXBwZW5lZCBvbiBlYWNo
-ICJtb2Rwcm9iZSBpY2UiLCBhYm91dCAxLzggcmF0ZSB0byBnb3QgdGhhdA0KPiA+IGVycm9yIG1l
-c3NhZ2Ugd2hlbiBJIGxvb3AgcnVuICJtb2Rwcm9iZSAtciBpY2UgJiYgbW9kcHJvYmUgaWNlIi4N
-Cj4gPiB0aGUgcG9ydCB0eXBlIGlzIEJhY2twbGFuZSwgYW5kIEkgaGF2ZW4ndCByZXByb2R1Y2UN
-Cj4gPiBpdCB3aXRoIEJyZWFrb3V0IG1vZGUuIA0KPiANCj4gSGkgTGl3ZWksIA0KPiANCj4gVGhh
-bmtzIGZvciB0aGUgYWRkaXRpb25hbCBpbmZvcm1hdGlvbi4gSSd2ZSBwcm92aWRlZCB0aGlzIHRv
-IG91cg0KPiB2YWxpZGF0aW9uIHRlYW0gYW5kIGFza2VkIHRoZXkgdHJ5IHRvIHJlcHJvZHVjZSBz
-byB3ZSBjYW4gbG9vayBpbnRvDQo+IGl0IGZ1cnRoZXIuDQoNCkhpIExpd2VpLA0KDQpXZSB3ZXJl
-IGFibGUgdG8gcmVwcm9kdWNlIHRoZSBpc3N1ZS4gV2UgZm91bmQgdGhhdCB0aGlzIGRvZXNuJ3Qg
-b2NjdXINCm9uIG5ld2VyIE5WTXMsIGhvd2V2ZXIsIGl0IHdpbGwgc3RpbGwgYmUgYXdoaWxlIHVu
-dGlsIHRob3NlIG5ld2VyIG9uZXMNCmFyZSBhdmFpbGFibGUuDQoNCkluIHRoZSBpbnRlcmltLCBJ
-J20gZ29pbmcgdG8gaGF2ZSB0aGlzIHBhdGNoIHRlc3RlZCB0byBlbnN1cmUgaXQNCmRvZXNuJ3Qg
-Y2F1c2UgYW55IGlzc3Vlcy4gSWYgc28sIHdlJ2xsIHVzZSB0aGlzIHZhbHVlIHVudGlsIHRoZSBu
-ZXcNCk5WTXMgYmVjb21lIGF2YWlsYWJsZS4NCg0KVGhhbmtzLA0KVG9ueQ0K
+This is the sixth version of the TC-BPF series.
+
+It adds a simple API that uses netlink to attach the tc filter and its bpf
+classifier program. Currently, a user needs to shell out to the tc command line
+to be able to create filters and attach SCHED_CLS programs as classifiers. With
+the help of this API, it will be possible to use libbpf for doing all parts of
+bpf program setup and attach.
+
+Changelog contains details of patchset evolution.
+
+In an effort to keep discussion focused, this series doesn't have the high level
+TC-BPF API. It was clear that there is a need for a bpf_link API in the kernel,
+hence that will be submitted as a separate patchset based on this.
+
+The individual commit messages contain more details, and also a brief summary of
+the API.
+
+Changelog:
+----------
+v5 -> v6
+v5: https://lore.kernel.org/bpf/20210428162553.719588-1-memxor@gmail.com
+
+ * Address all comments from Andrii.
+ * Reorganize selftest to make logical separation between each test's set up
+   and clean up more clear to the reader. Also add a common way to test
+   different combination of opts.
+ * Cleanup the commit message a bit.
+ * Fix instances of ret < 0 && ret == -ENOENT pattern everywhere.
+ * Use C89 declaration syntax.
+ * Drop PRIu32.
+ * Move flags to bpf_tc_opts and bpf_tc_hook.
+ * Other misc comments.
+
+v4 -> v5
+v4: https://lore.kernel.org/bpf/20210423150600.498490-1-memxor@gmail.com
+
+ * Added bpf_tc_hook to represent the attach location of a filter.
+ * Removed the bpf_tc_ctx context object, refactored code to not assume shared
+   open socket across operations on the same ctx.
+ * Add a helper libbpf_nl_send_recv that wraps socket creation, sending and
+   receiving the netlink message.
+ * Extended netlink code to cut short message processing using BPF_NL_DONE. This
+   is used in a few places to return early to the user and discard remaining
+   data.
+ * selftests rewrite and expansion, considering API is looking more solid now.
+ * Documented the API assumptions and behaviour in the commit that adds it,
+   along with a few basic usage examples.
+ * Dropped documentation from libbpf.h.
+ * Relax some restrictions on bpf_tc_query to make it more useful (e.g. to
+   detect if any filters exist).
+ * Incorporate other minor suggestions from previous review (Andrii and Daniel).
+
+v3 -> v4
+v3: https://lore.kernel.org/bpf/20210420193740.124285-1-memxor@gmail.com
+
+ * Added a concept of bpf_tc_ctx context structure representing the attach point.
+   The qdisc setup and delete is tied to this object's lifetime if it succeeds
+   in creating the clsact qdisc when the attach point is BPF_TC_INGRESS or
+   BPF_TC_EGRESS. Qdisc is only deleted when there are no filters attached to
+   it.
+ * Refactored all API functions to take ctx.
+ * Removed bpf_tc_info, bpf_tc_attach_id, instead reused bpf_tc_opts for filling
+   in attributes in various API functions (including query).
+ * Explicitly documented the expectation of each function regarding the opts
+   fields set. Added some small notes for the defaults chosen by the API.
+ * Rename bpf_tc_get_info to bpf_tc_query
+ * Keep the netlink socket open in the context structure to save on open/close
+   cycles for each operation.
+ * Miscellaneous adjustments due to keeping the socket open.
+ * Rewrote the tests, and also added tests for testing all preconditions of the
+   TC-BPF API.
+ * We now use bpf skeleton in examples and tests.
+
+v2 -> v3
+v2: https://lore.kernel.org/bpf/20210419121811.117400-1-memxor@gmail.com
+
+ * bpf_tc_cls_* -> bpf_tc_* rename
+ * bpf_tc_attach_id now only consists of handle and priority, the two variables
+   that user may or may not set.
+ * bpf_tc_replace has been dropped, instead a replace bool is introduced in
+   bpf_tc_opts for the same purpose.
+ * bpf_tc_get_info now takes attach_id for filling in filter details during
+   lookup instead of requiring user to do so. This also allows us to remove the
+   fd parameter, as no matching is needed as long as we have all attributes
+   necessary to identify a specific filter.
+ * A little bit of code simplification taking into account the change above.
+ * priority and protocol are now __u16 members in user facing API structs to
+   reflect actual size.
+ * Patch updating pkt_cls.h header has been removed, as it is unused now.
+ * protocol and chain_index options have been dropped in bpf_tc_opts,
+   protocol is always set to ETH_P_ALL, while chain_index is set as 0 by
+   default in the kernel. This also means removal of chain_index from
+   bpf_tc_attach_id, as it is unconditionally always 0.
+ * bpf_tc_cls_change has been dropped
+ * selftest now uses ASSERT_* macros
+
+v1-> v2
+v1: https://lore.kernel.org/bpf/20210325120020.236504-1-memxor@gmail.com
+
+ * netlink helpers have been renamed to object_action style.
+ * attach_id now only contains attributes that are not explicitly set. Only
+   the bare minimum info is kept in it.
+ * protocol is now an optional and always set to ETH_P_ALL.
+ * direct-action mode is always set.
+ * skip_sw and skip_hw options have also been removed.
+ * bpf_tc_cls_info struct now also returns the bpf program tag and id, as
+   available in the netlink response. This came up as a requirement during
+   discussion with people wanting to use this functionality.
+ * support for attaching SCHED_ACT programs has been dropped, as it isn't
+   useful without any support for binding loaded actions to a classifier.
+ * the distinction between dev and block API has been dropped, there is now
+   a single set of functions and user has to pass the special ifindex value
+   to indicate operation on a shared filter block on their own.
+ * The high level API returning a bpf_link is gone. This was already non-
+   functional for pinning and typical ownership semantics. Instead, a separate
+   patchset will be sent adding a bpf_link API for attaching SCHED_CLS progs to
+   the kernel, and its corresponding libbpf API.
+ * The clsact qdisc is now setup automatically in a best-effort fashion whenever
+   user passes in the clsact ingress or egress parent id. This is done with
+   exclusive mode, such that if an ingress or clsact qdisc is already set up,
+   we skip the setup and move on with filter creation.
+ * Other minor changes that came up during the course of discussion and rework.
+
+Kumar Kartikeya Dwivedi (3):
+  libbpf: add netlink helpers
+  libbpf: add low level TC-BPF API
+  libbpf: add selftests for TC-BPF API
+
+ tools/lib/bpf/libbpf.h                        |  42 ++
+ tools/lib/bpf/libbpf.map                      |   5 +
+ tools/lib/bpf/netlink.c                       | 586 ++++++++++++++++--
+ tools/lib/bpf/nlattr.h                        |  48 ++
+ .../testing/selftests/bpf/prog_tests/tc_bpf.c | 544 ++++++++++++++++
+ .../testing/selftests/bpf/progs/test_tc_bpf.c |  12 +
+ 6 files changed, 1173 insertions(+), 64 deletions(-)
+ create mode 100644 tools/testing/selftests/bpf/prog_tests/tc_bpf.c
+ create mode 100644 tools/testing/selftests/bpf/progs/test_tc_bpf.c
+
+-- 
+2.30.2
+
