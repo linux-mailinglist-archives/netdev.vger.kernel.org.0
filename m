@@ -2,69 +2,65 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C1748372A2B
-	for <lists+netdev@lfdr.de>; Tue,  4 May 2021 14:35:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EC2B3372A87
+	for <lists+netdev@lfdr.de>; Tue,  4 May 2021 14:59:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230246AbhEDMgE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 4 May 2021 08:36:04 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:52312 "EHLO vps0.lunn.ch"
+        id S230449AbhEDNAa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 4 May 2021 09:00:30 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:52332 "EHLO vps0.lunn.ch"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230110AbhEDMgE (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 4 May 2021 08:36:04 -0400
+        id S230445AbhEDNA3 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 4 May 2021 09:00:29 -0400
 Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
         (envelope-from <andrew@lunn.ch>)
-        id 1lduGY-002Tme-0l; Tue, 04 May 2021 14:35:06 +0200
-Date:   Tue, 4 May 2021 14:35:06 +0200
+        id 1ldue9-002Trl-LL; Tue, 04 May 2021 14:59:29 +0200
+Date:   Tue, 4 May 2021 14:59:29 +0200
 From:   Andrew Lunn <andrew@lunn.ch>
 To:     Don Bollinger <don@thebollingers.org>
 Cc:     'Moshe Shemesh' <moshe@nvidia.com>,
         'Michal Kubecek' <mkubecek@suse.cz>,
         'Jakub Kicinski' <kuba@kernel.org>, netdev@vger.kernel.org,
         'Vladyslav Tarasiuk' <vladyslavt@nvidia.com>
-Subject: Re: [PATCH ethtool-next 2/4] ethtool: Refactor human-readable module
- EEPROM output
-Message-ID: <YJE/etYozqB7GZaK@lunn.ch>
+Subject: Re: [PATCH ethtool-next 0/4] Extend module EEPROM API
+Message-ID: <YJFFMWslomZHIoYG@lunn.ch>
 References: <1619162596-23846-1-git-send-email-moshe@nvidia.com>
- <1619162596-23846-3-git-send-email-moshe@nvidia.com>
- <008601d73e09$211d11e0$635735a0$@thebollingers.org>
+ <008301d73e03$1196abb0$34c40310$@thebollingers.org>
+ <YIx9UaSckIraOQCC@lunn.ch>
+ <008e01d73e0e$5d6a70c0$183f5240$@thebollingers.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <008601d73e09$211d11e0$635735a0$@thebollingers.org>
+In-Reply-To: <008e01d73e0e$5d6a70c0$183f5240$@thebollingers.org>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Don
+> Here we go again...  It is my experience that there are far more
+> capabilities in these devices than will ever be captured in ethtool.  Module
+> vendors can provide additional value to their customers by putting
+> innovative features into their modules, and providing software applications
+> to take advantage of those features.  These features don't necessarily
+> impact the network stack.  They may be used to draw additional diagnostic
+> data from the devices, or to enable management features like flashing
+> colored lights built into custom modules.  I've written code to do these and
+> more things which are unique to one vendor, and valued by their customers.
 
-Please trim the text of the email when replying. Standard netiquette
-best practices.
+Sorry, but not going to happen. Ethernet PHYs can have lots of
+addition registers on stop of what 802.3 specifies. Vendors do add
+additional functionality. And we do support some of it, like
+configuring downshift, energy detect power down, cable diagnostics in
+a generic manor. And we are open to adding more such features. People
+can contribute code which multiple vendors might implement. We then
+have well documented APIs which are the same across different vendors.
 
-> > -#define PAG01H_UPPER_OFFSET			(0x01 * 0x80)
-> > +#define PAG01H_UPPER_OFFSET			(0x02 * 0x80)
-> > 
-> >  /* Supported Link Length (Page 1) */
-> > -#define QSFP_DD_SMF_LEN_OFFSET
-> > 	(PAG01H_UPPER_OFFSET + 0x84)
-> > -#define QSFP_DD_OM5_LEN_OFFSET
-> > 	(PAG01H_UPPER_OFFSET + 0x85)
-> > -#define QSFP_DD_OM4_LEN_OFFSET
-> > 	(PAG01H_UPPER_OFFSET + 0x86)
-> > -#define QSFP_DD_OM3_LEN_OFFSET
-> > 	(PAG01H_UPPER_OFFSET + 0x87)
-> > -#define QSFP_DD_OM2_LEN_OFFSET
-> > 	(PAG01H_UPPER_OFFSET + 0x88)
-> > +#define QSFP_DD_SMF_LEN_OFFSET			0x4
-> > +#define QSFP_DD_OM5_LEN_OFFSET			0x5
-> > +#define QSFP_DD_OM4_LEN_OFFSET			0x6
-> > +#define QSFP_DD_OM3_LEN_OFFSET			0x7
-> > +#define QSFP_DD_OM2_LEN_OFFSET			0x8
-> 
-> I see here you have switched from offsets from the beginning of flat linear
-> memory to offsets within the upper half page.  I recommend actually using
-> the values in the spec, which are offset from the base of the page.
+For LEDs you should be using the Linux LED class drivers. The Ethernet
+PHYs are slowly moving that way. Very slowly :-(
 
-I agree with this. Being able to easily map between spec and code is
-important.
+Both MAC and Ethernet PHY drivers have tunables. I would suggest using
+this concept, but applied to SFPs. This is how most of the additional
+PHY features are supported. But first you need to add an SFP driver
+framework, which matches on the fields in the EEPROM to load the
+driver specific to an SFP. That then gives you a place to add such
+code.
 
 	Andrew
