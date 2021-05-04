@@ -2,130 +2,161 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 55F863729EC
-	for <lists+netdev@lfdr.de>; Tue,  4 May 2021 14:15:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E6ECC372A1D
+	for <lists+netdev@lfdr.de>; Tue,  4 May 2021 14:32:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230326AbhEDMQ1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 4 May 2021 08:16:27 -0400
-Received: from foss.arm.com ([217.140.110.172]:57392 "EHLO foss.arm.com"
+        id S230348AbhEDMcr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 4 May 2021 08:32:47 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:52298 "EHLO vps0.lunn.ch"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230253AbhEDMQZ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 4 May 2021 08:16:25 -0400
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id B1595ED1;
-        Tue,  4 May 2021 05:15:30 -0700 (PDT)
-Received: from [10.57.59.124] (unknown [10.57.59.124])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id EE4C13F73B;
-        Tue,  4 May 2021 05:15:26 -0700 (PDT)
-Subject: Re: [PATCH tip:irq/core v1] genirq: remove auto-set of the mask when
- setting the hint
-To:     Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        Thomas Gleixner <tglx@linutronix.de>
-Cc:     Ingo Molnar <mingo@kernel.org>, linux-kernel@vger.kernel.org,
-        intel-wired-lan@lists.osuosl.org, jbrandeb@kernel.org,
-        "frederic@kernel.org" <frederic@kernel.org>,
-        "juri.lelli@redhat.com" <juri.lelli@redhat.com>,
-        Marcelo Tosatti <mtosatti@redhat.com>, abelits@marvell.com,
-        "linux-api@vger.kernel.org" <linux-api@vger.kernel.org>,
-        "bhelgaas@google.com" <bhelgaas@google.com>,
-        "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>,
-        "rostedt@goodmis.org" <rostedt@goodmis.org>,
-        "peterz@infradead.org" <peterz@infradead.org>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "akpm@linux-foundation.org" <akpm@linux-foundation.org>,
-        "sfr@canb.auug.org.au" <sfr@canb.auug.org.au>,
-        "stephen@networkplumber.org" <stephen@networkplumber.org>,
-        "rppt@linux.vnet.ibm.com" <rppt@linux.vnet.ibm.com>,
-        "jinyuqi@huawei.com" <jinyuqi@huawei.com>,
-        "zhangshaokun@hisilicon.com" <zhangshaokun@hisilicon.com>,
-        netdev@vger.kernel.org, chris.friesen@windriver.com,
-        Nitesh Lal <nilal@redhat.com>, Marc Zyngier <maz@kernel.org>
-References: <20210501021832.743094-1-jesse.brandeburg@intel.com>
-From:   Robin Murphy <robin.murphy@arm.com>
-Message-ID: <16d8ca67-30c6-bb4b-8946-79de8629156e@arm.com>
-Date:   Tue, 4 May 2021 13:15:22 +0100
-User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:78.0) Gecko/20100101
- Thunderbird/78.10.0
+        id S230110AbhEDMcq (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 4 May 2021 08:32:46 -0400
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
+        (envelope-from <andrew@lunn.ch>)
+        id 1lduD8-002Tjq-Qa; Tue, 04 May 2021 14:31:34 +0200
+Date:   Tue, 4 May 2021 14:31:34 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Colin Foster <colin.foster@in-advantage.com>
+Cc:     Rob Herring <robh+dt@kernel.org>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        "supporter:OCELOT ETHERNET SWITCH DRIVER" 
+        <UNGLinuxDriver@microchip.com>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Russell King <linux@armlinux.org.uk>,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        "open list:OCELOT ETHERNET SWITCH DRIVER" <netdev@vger.kernel.org>
+Subject: Re: [RFC PATCH vN net-next 2/2] net: mscc: ocelot: add support for
+ VSC75XX SPI control
+Message-ID: <YJE+prMCIMiQm26Z@lunn.ch>
+References: <20210504051130.1207550-1-colin.foster@in-advantage.com>
+ <20210504051130.1207550-2-colin.foster@in-advantage.com>
 MIME-Version: 1.0
-In-Reply-To: <20210501021832.743094-1-jesse.brandeburg@intel.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-GB
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210504051130.1207550-2-colin.foster@in-advantage.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2021-05-01 03:18, Jesse Brandeburg wrote:
-> It was pointed out by Nitesh that the original work I did in 2014
-> to automatically set the interrupt affinity when requesting a
-> mask is no longer necessary. The kernel has moved on and no
-> longer has the original problem, BUT the original patch
-> introduced a subtle bug when booting a system with reserved or
-> excluded CPUs. Drivers calling this function with a mask value
-> that included a CPU that was currently or in the future
-> unavailable would generally not update the hint.
+On Mon, May 03, 2021 at 10:11:27PM -0700, Colin Foster wrote:
+> Add support for control for VSC75XX chips over SPI control. Starting with the
+> VSC9959 code, this will utilize a spi bus instead of PCIe or memory-mapped IO to
+> control the chip.
+
+Hi Colin
+
+Please fix your subject line for the next version. vN should of been
+v1. The number is important so we can tell revisions apart.
+
 > 
-> I'm sure there are a million ways to solve this, but the simplest
-> one is to just remove a little code that tries to force the
-> affinity, as Nitesh has shown it fixes the bug and doesn't seem
-> to introduce immediate side effects.
-
-Unfortunately, I think there are quite a few other drivers now relying 
-on this behaviour, since they are really using irq_set_affinity_hint() 
-as a proxy for irq_set_affinity(). Partly since the latter isn't 
-exported to modules, but also I have a vague memory of it being said 
-that it's nice to update the user-visible hint to match when the 
-affinity does have to be forced to something specific.
-
-Robin.
-
-> While I'm here, introduce a kernel-doc for the hint function.
-> 
-> Ref: https://lore.kernel.org/lkml/CAFki+L=_dd+JgAR12_eBPX0kZO2_6=1dGdgkwHE=u=K6chMeLQ@mail.gmail.com/
-> Cc: netdev@vger.kernel.org
-> Fixes: 4fe7ffb7e17c ("genirq: Fix null pointer reference in irq_set_affinity_hint()")
-> Fixes: e2e64a932556 ("genirq: Set initial affinity in irq_set_affinity_hint()")
-> Reported-by: Nitesh Lal <nilal@redhat.com>
-> Signed-off-by: Jesse Brandeburg <jesse.brandeburg@intel.com>
+> Signed-off-by: Colin Foster <colin.foster@in-advantage.com>
 > ---
-> 
-> !!! NOTE: Compile tested only, would appreciate feedback
-> 
-> ---
->   kernel/irq/manage.c | 13 ++++++++++---
->   1 file changed, 10 insertions(+), 3 deletions(-)
-> 
-> diff --git a/kernel/irq/manage.c b/kernel/irq/manage.c
-> index e976c4927b25..a31df64662d5 100644
-> --- a/kernel/irq/manage.c
-> +++ b/kernel/irq/manage.c
-> @@ -456,6 +456,16 @@ int __irq_set_affinity(unsigned int irq, const struct cpumask *mask, bool force)
->   	return ret;
->   }
->   
-> +/**
-> + * 	irq_set_affinity_hint - set the hint for an irq
-> + *	@irq:	Interrupt for which to set the hint
-> + *	@m:	Mask to indicate which CPUs to suggest for the interrupt, use
-> + *		NULL here to indicate to clear the value.
-> + *
-> + *	Use this function to recommend which CPU should handle the
-> + *	interrupt to any userspace that uses /proc/irq/nn/smp_affinity_hint
-> + *	in order to align interrupts. Pass NULL as the mask to clear the hint.
+>  arch/arm/boot/dts/rpi-vsc7512-spi-overlay.dts |  124 ++
+>  drivers/net/dsa/ocelot/Kconfig                |   11 +
+>  drivers/net/dsa/ocelot/Makefile               |    5 +
+>  drivers/net/dsa/ocelot/felix_vsc7512_spi.c    | 1214 +++++++++++++++++
+>  include/soc/mscc/ocelot.h                     |   15 +
+
+Please split this patch up. The DT overlay will probably be merged via
+ARM SOC, not netdev. You also need to document the device tree
+binding, as a separate patch.
+
+> +	fragment@3 {
+> +		target = <&spi0>;
+> +		__overlay__ {
+> +			#address-cells = <1>;
+> +			#size-cells = <0>;
+> +			cs-gpios = <&gpio 8 1>;
+> +			status = "okay";
+> +
+> +			vsc7512: vsc7512@0{
+> +				compatible = "mscc,vsc7512";
+> +				spi-max-frequency = <250000>;
+> +				reg = <0>;
+> +
+> +				ports {
+> +					#address-cells = <1>;
+> +					#size-cells = <0>;
+> +
+> +					port@0 {
+> +						reg = <0>;
+> +						ethernet = <&ethernet>;
+> +						phy-mode = "internal";
+> +
+> +						fixed-link {
+> +							speed = <1000>;
+> +							full-duplex;
+> +						};
+> +					};
+> +
+> +					port@1 {
+> +						reg = <1>;
+> +						label = "swp1";
+> +						status = "disabled";
+> +					};
+> +
+> +					port@2 {
+> +						reg = <2>;
+> +						label = "swp2";
+> +						status = "disabled";
+> +					};
+
+I'm surprised all the ports are disabled. I could understand that for
+a DTSI file, but a DTS overlay?
+
+> +++ b/drivers/net/dsa/ocelot/felix_vsc7512_spi.c
+> @@ -0,0 +1,1214 @@
+> +// SPDX-License-Identifier: (GPL-2.0 OR MIT)
+> +/* Copyright 2017 Microsemi Corporation
+> + * Copyright 2018-2019 NXP Semiconductors
 > + */
->   int irq_set_affinity_hint(unsigned int irq, const struct cpumask *m)
->   {
->   	unsigned long flags;
-> @@ -465,9 +475,6 @@ int irq_set_affinity_hint(unsigned int irq, const struct cpumask *m)
->   		return -EINVAL;
->   	desc->affinity_hint = m;
->   	irq_put_desc_unlock(desc, flags);
-> -	/* set the initial affinity to prevent every interrupt being on CPU0 */
-> -	if (m)
-> -		__irq_set_affinity(irq, m, false);
->   	return 0;
->   }
->   EXPORT_SYMBOL_GPL(irq_set_affinity_hint);
-> 
-> base-commit: 765822e1569a37aab5e69736c52d4ad4a289eba6
-> 
+> +#include <soc/mscc/ocelot_qsys.h>
+> +#include <soc/mscc/ocelot_vcap.h>
+> +#include <soc/mscc/ocelot_ptp.h>
+> +#include <soc/mscc/ocelot_sys.h>
+> +#include <soc/mscc/ocelot.h>
+> +#include <linux/spi/spi.h>
+> +#include <linux/packing.h>
+> +#include <linux/pcs-lynx.h>
+> +#include <net/pkt_sched.h>
+> +#include <linux/iopoll.h>
+> +#include <linux/kconfig.h>
+> +#include <linux/mdio.h>
+> +#include "felix.h"
+> +
+> +#define VSC7512_TAS_GCL_ENTRY_MAX 63
+> +
+> +// Note: These addresses and offsets are all shifted down
+> +// by two. This is because the SPI protocol needs them to
+> +// be before they get sent out.
+> +//
+> +// An alternative is to keep them standardized, but then
+> +// a separate spi_bus regmap would need to be defined.
+> +//
+> +// That might be optimal though. The 'Read' protocol of
+> +// the VSC driver might be much quicker if we add padding
+> +// bytes, which I don't think regmap supports.
+
+C style comments please.
+
+> +static void vsc7512_phylink_validate(struct ocelot *ocelot, int port,
+> +				     unsigned long *supported,
+> +				     struct phylink_link_state *state)
+> +{
+> +	struct ocelot_port *ocelot_port = ocelot->ports[port];
+> +	__ETHTOOL_DECLARE_LINK_MODE_MASK(mask) = {
+> +		0,
+> +	};
+
+This function seems out of place. Why would SPI access change what the
+ports are capable of doing? Please split this up into more
+patches. Keep the focus of this patch as being adding SPI support.
+
+	 Andrew
