@@ -2,146 +2,232 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8FC06372FA2
-	for <lists+netdev@lfdr.de>; Tue,  4 May 2021 20:18:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 894B7372FC1
+	for <lists+netdev@lfdr.de>; Tue,  4 May 2021 20:30:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232231AbhEDSTd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 4 May 2021 14:19:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53438 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232049AbhEDSTc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 4 May 2021 14:19:32 -0400
-Received: from mail-wr1-x42d.google.com (mail-wr1-x42d.google.com [IPv6:2a00:1450:4864:20::42d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C3145C061574;
-        Tue,  4 May 2021 11:18:36 -0700 (PDT)
-Received: by mail-wr1-x42d.google.com with SMTP id h4so10404775wrt.12;
-        Tue, 04 May 2021 11:18:36 -0700 (PDT)
+        id S232314AbhEDSbN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 4 May 2021 14:31:13 -0400
+Received: from mx0a-000eb902.pphosted.com ([205.220.165.212]:40272 "EHLO
+        mx0a-000eb902.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S232183AbhEDSbK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 4 May 2021 14:31:10 -0400
+X-Greylist: delayed 400 seconds by postgrey-1.27 at vger.kernel.org; Tue, 04 May 2021 14:31:10 EDT
+Received: from pps.filterd (m0220294.ppops.net [127.0.0.1])
+        by mx0a-000eb902.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 144I9h13023800;
+        Tue, 4 May 2021 13:23:30 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=garmin.com; h=from : to : cc :
+ subject : date : message-id : in-reply-to : references : mime-version :
+ content-transfer-encoding : content-type; s=pps1;
+ bh=s+HR9JQYUp+nkFXI9Gvgl9YT5FYywAz7O3lXDrLaiW4=;
+ b=YkOXwF5hEivWTNou1MWiJYjCLjERdMwVvsGE0GDe3g7ZrIqtpOS2ujLHsteNUKXoPmm8
+ QphcZ9+xRXBsqoJVhh/6GYh8eTj6En5ciZAnaoa9In9En8Sgi6gGbu6OQEsGvRh/svP7
+ oim/hWNbka6C4ZXmOU5zddhacH50hpPxDsktHZ7RfExgWt77DrXktB0RlE94FlPu5uLX
+ 76PIB9qIPpjsXkN7of0/u+gRQ/VlvXPy//avdjTbzICLrnIwROEqofM8rUM+TjYx2L0q
+ 0AGItmZLcn9VToUO+0zGULEpmyNbmgCCnnXOVMVGEvYm/QCVz3zj5vkfcrZYTZMrvXoJ Yw== 
+Received: from nam04-dm6-obe.outbound.protection.outlook.com (mail-dm6nam08lp2041.outbound.protection.outlook.com [104.47.73.41])
+        by mx0a-000eb902.pphosted.com with ESMTP id 38awtsha9v-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 04 May 2021 13:23:30 -0500
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=ibg76+Y18BtrvXFRUEDdzWD8SWhE1yb9TNJPOBAkKqKgGPCA6IMgXDp/M6L01FOnh4ACbKfqeeyIfnEtbApRXwPG+MOi6ltyoq5CuLkceHpwoFSieeVvKxcBEENDjdnqoeXj6+NHB8nod6VmmdLexm+0eL1wcYAcsnWxkn9e3BfBLENwVOnCaPQMcoCuOACgfwnnT49Dc3ySxn1WCzHmhwUJtA89APLSaNJGzHnavArgLoMFvLvvJVVDj0JtN6mnRZCi22xzLCJoYD6eBT/6jPxoiYo1uNCzdusbhFzAGBtPara8wxZN9OeNgt/AhxSxbKOimSTx/kAiqOXtF5k1mg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=s+HR9JQYUp+nkFXI9Gvgl9YT5FYywAz7O3lXDrLaiW4=;
+ b=N2XCsfkmv9wpB3wxDSEpIEGoXfSQrdalU1VaSVmRQLwU4tR76PiQGosOE5rD4WLeIs+b1uh2xto0pbxsJjbVN6it0CYIU3U4eRs3ETyjAFrNzxtVnl3VlAXjqiPxJ2WyDgpTUbW1R744fW+RWkNvhThbrC1kq8imOrWBAjLN8OSa6IP92LFPA1PoGRR9MZXJxzhNar3TEJiXdBZ/hUgZsddyWzG4G0D07yXLsgDwh/49Jdz3i0dtXE2uIBJKDu7iQUg+xDnxlKXeHZPeOnjljJCPXTo5OB+Rp47J+O8iOBbtcqGXCYifEZGq+UDA5WN+hUYMhz2xDKBBea03gqdUng==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 204.77.163.244) smtp.rcpttodomain=nvidia.com smtp.mailfrom=garmin.com;
+ dmarc=pass (p=quarantine sp=quarantine pct=100) action=none
+ header.from=garmin.com; dkim=none (message not signed); arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=PD5o2x4hC2GrLVKj0hWBxU0ZJAM2QadXrf4CT3uKJY0=;
-        b=NicJKt0aAFERTlInOdfuxj8quLQnDuiKaczfIeDGyaDx25gGyIx+I2b1lQ4kjQN8Np
-         Sn65HSVLpPprv37w3QDmXoGjgtU1KM/mM8KvEfVIdwXJKmQeDhF4DBauv6EZ5TTXvNAa
-         Z4QuwhBSjjvEjyhtFc105g8362ipAaxCdxqSplA0VhBLug1ilfKjKBjHb/Cn6AzUEpEx
-         iR87RMamzHaQnT+H5nYCaHU1nyGvCgJX3L6JV+IPLRNbQgjn6gMr8JR6zfP8zcIxzjBg
-         dOT0kPz+bQBySRunKAGy0kLlyBQ++nnuJCcrtoToSggSjYK8RFc/n+89WaDqs05GoBGs
-         YqoQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=PD5o2x4hC2GrLVKj0hWBxU0ZJAM2QadXrf4CT3uKJY0=;
-        b=MJO2rDr6GGZaIpsXlVu1Ruzj0HxQ1JQvUNUg54VapSGL9Iq/AMp3nkI1SkYY5EeT1u
-         q0wpVjfu6llaiKnFhsiD0NVFlJVNbURgUfTElJ9e09Rl9xAFnmfPM32c2XJ9R3zsVdNJ
-         bguOv6LT3f6qeNVzggdtnr1xGJyFmOE5KOM8T4XocjEL3l6xH1pMHCoeCviZ0DwAFHS5
-         9CZZNhSBMBXjO3vdSA+1fNwcvKnBSxMxRCiaay+uUoxCiA4Jnffhd+aqT7sh4a/kmSb1
-         sgDe19Jvsxw6Mx9Fop0XuSsUqSlK8rAguBVWGJfpwe5emhTE4sCa5i1Ev+U/e5jyDRne
-         ZldQ==
-X-Gm-Message-State: AOAM533xQQdJiY9xzXt4hsN3zzJNF1QERzMTrIXUmyN0lhBorSyTfuLC
-        816N6aclIx1dPpkyaWvaGfM=
-X-Google-Smtp-Source: ABdhPJw6AN3YjhvdFUKGQS4mdGLgJA9ItQB8xfXkmTTu9QrFlJQ+fp3YvQZmhopirc+hRKnEjI7OjA==
-X-Received: by 2002:a5d:590a:: with SMTP id v10mr33403207wrd.306.1620152315506;
-        Tue, 04 May 2021 11:18:35 -0700 (PDT)
-Received: from skbuf ([86.127.41.210])
-        by smtp.gmail.com with ESMTPSA id c5sm16513668wrs.73.2021.05.04.11.18.33
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 04 May 2021 11:18:35 -0700 (PDT)
-Date:   Tue, 4 May 2021 21:18:33 +0300
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Michael Walle <michael@walle.cc>
-Cc:     xiaoliang.yang_1@nxp.com, Arvid.Brodin@xdin.com,
-        UNGLinuxDriver@microchip.com, alexandre.belloni@bootlin.com,
-        allan.nielsen@microchip.com, andre.guedes@linux.intel.com,
-        claudiu.manoil@nxp.com, colin.king@canonical.com,
-        davem@davemloft.net, idosch@mellanox.com,
-        ivan.khoronzhuk@linaro.org, jiri@mellanox.com,
-        joergen.andreasen@microchip.com, leoyang.li@nxp.com,
-        linux-kernel@vger.kernel.org, m-karicheri2@ti.com,
-        michael.chan@broadcom.com, mingkai.hu@nxp.com,
-        netdev@vger.kernel.org, po.liu@nxp.com, saeedm@mellanox.com,
-        vinicius.gomes@intel.com, vladimir.oltean@nxp.com,
-        yuehaibing@huawei.com
-Subject: Re: [net-next] net: dsa: felix: disable always guard band bit for
- TAS config
-Message-ID: <20210504181833.w2pecbp2qpuiactv@skbuf>
-References: <20210419102530.20361-1-xiaoliang.yang_1@nxp.com>
- <20210504170514.10729-1-michael@walle.cc>
+ d=garmin.onmicrosoft.com; s=selector1-garmin-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=s+HR9JQYUp+nkFXI9Gvgl9YT5FYywAz7O3lXDrLaiW4=;
+ b=g49CpVfLImxCyAS1317l0pX7EFpLEjsFQwJqZGvJ/DDLLngZ98HCRE9X6syHezoPBZ5i0HQReiMX+kJvSMcmUZ9jKJ+aUnO85/vF4NeZcE3f5z8qDbNmM/09M72MRcJEgdfF/te0MD4e2gQuKFY78A6NyLUvyynnftT65ldsTk5c7ZjY+Rbbwo3dyEgWEMunZQp/KEop8uOJU/0+cOh2cwTSkrGfGv7YFwexl0RUt1h6291iNGV8Ha7LNLvfERk+tC/GAwR88aueJVXlK0w99hsX654E5whKZFC30G4mPMUsfXTr9VL5VdrYDuwZKzt//OZBpz2UuytUi1iOe3TboQ==
+Received: from DM5PR12CA0072.namprd12.prod.outlook.com (2603:10b6:3:103::34)
+ by CO6PR04MB7747.namprd04.prod.outlook.com (2603:10b6:5:35b::11) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4087.43; Tue, 4 May
+ 2021 18:23:27 +0000
+Received: from DM6NAM10FT005.eop-nam10.prod.protection.outlook.com
+ (2603:10b6:3:103:cafe::ea) by DM5PR12CA0072.outlook.office365.com
+ (2603:10b6:3:103::34) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4087.27 via Frontend
+ Transport; Tue, 4 May 2021 18:23:27 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 204.77.163.244)
+ smtp.mailfrom=garmin.com; nvidia.com; dkim=none (message not signed)
+ header.d=none;nvidia.com; dmarc=pass action=none header.from=garmin.com;
+Received-SPF: Pass (protection.outlook.com: domain of garmin.com designates
+ 204.77.163.244 as permitted sender) receiver=protection.outlook.com;
+ client-ip=204.77.163.244; helo=edgetransport.garmin.com;
+Received: from edgetransport.garmin.com (204.77.163.244) by
+ DM6NAM10FT005.mail.protection.outlook.com (10.13.152.87) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.4087.27 via Frontend Transport; Tue, 4 May 2021 18:23:26 +0000
+Received: from OLAWPA-EXMB4.ad.garmin.com (10.5.144.25) by
+ olawpa-edge1.garmin.com (10.60.4.227) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id
+ 15.1.2106.2; Tue, 4 May 2021 13:21:43 -0500
+Received: from huangjoseph-vm1.ad.garmin.com (10.5.84.15) by
+ OLAWPA-EXMB4.ad.garmin.com (10.5.144.25) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
+ 15.1.2242.4; Tue, 4 May 2021 13:23:25 -0500
+From:   Joseph Huang <Joseph.Huang@garmin.com>
+To:     Roopa Prabhu <roopa@nvidia.com>,
+        Nikolay Aleksandrov <nikolay@nvidia.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        <bridge@lists.linux-foundation.org>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+CC:     Joseph Huang <Joseph.Huang@garmin.com>
+Subject: [PATCH 6/6] bridge: Always multicast_flood Reports
+Date:   Tue, 4 May 2021 14:22:59 -0400
+Message-ID: <20210504182259.5042-7-Joseph.Huang@garmin.com>
+X-Mailer: git-send-email 2.29.2
+In-Reply-To: <20210504182259.5042-1-Joseph.Huang@garmin.com>
+References: <20210504182259.5042-1-Joseph.Huang@garmin.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210504170514.10729-1-michael@walle.cc>
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: OLAWPA-EXMB2.ad.garmin.com (10.5.144.24) To
+ OLAWPA-EXMB4.ad.garmin.com (10.5.144.25)
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 55dd95ce-3845-4e18-4f60-08d90f29b5f6
+X-MS-TrafficTypeDiagnostic: CO6PR04MB7747:
+X-Microsoft-Antispam-PRVS: <CO6PR04MB7747EC623AD0F1651EA35A5CFB5A9@CO6PR04MB7747.namprd04.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:7219;
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: /J9bcrp1w7TI+xXe4b+VXEYX/i6pKdtqnRB83bQHHvdkNqW1Mskc3MstCZEZkbRc7RHvinlGmmUQwdENw2LRI3zApuczIUFqRYeBHwtszp9NiaLTsuN29eLFDiHPx5iIEDqXyDi4wY7gj0UI7h3qr2ioDugw7+86yTppLtEkZTNm8kGXJUMWJIUukCkL0jgeVqPJVjq10QBMNuBckg4RYx/a14p7vjPz9HzDaeb6YvKVvgHkJzgT2Aq1DLT9s68TnGT8jcDMe+WDpprSYvPl2fowwMoEKm9IOusRt6ahLgfAoUAJgih3CNTk+bmF2QolR/6IGTH5BFTDpN6jhZ6Ip3Q+tMJGlDiujrumQ6ErYYfz1lDab8zmldAhXMfI7TRuoX5gPr95+kT/4pO5XI/uSA9tqT6+PTBb4MlkrTro7msWnjRn+zW1NEizVjMd6uo7iGDRq8MFGfiRTCne53XfJ9WLJ2oyIjsdgcde0TndsvmjtKpJyr0NaZne5Eruz6kNS5KJPa8djLgOxvhCsYSltnTi2PIw+itcctHA6q+iA3Z1hrUcQrG1rbMHRkxQfg644nBEM0VDYk+LnCHrv8maN6Ema8r7jjG/I68/+qzVn+jhuoUgn15u9Ws/U9aH1mjuurkR8cd7fKhtnuDmQGsquVZPUzwNC8zheCXLwW3yxNY=
+X-Forefront-Antispam-Report: CIP:204.77.163.244;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:edgetransport.garmin.com;PTR:extedge.garmin.com;CAT:NONE;SFS:(396003)(136003)(39860400002)(346002)(376002)(46966006)(36840700001)(36756003)(8676002)(2906002)(7696005)(7636003)(110136005)(107886003)(47076005)(5660300002)(70206006)(8936002)(4326008)(86362001)(83380400001)(356005)(478600001)(66574015)(336012)(36860700001)(82310400003)(26005)(82740400003)(2616005)(70586007)(316002)(1076003)(426003)(6666004)(186003);DIR:OUT;SFP:1102;
+X-OriginatorOrg: garmin.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 04 May 2021 18:23:26.9390
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 55dd95ce-3845-4e18-4f60-08d90f29b5f6
+X-MS-Exchange-CrossTenant-Id: 38d0d425-ba52-4c0a-a03e-2a65c8e82e2d
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=38d0d425-ba52-4c0a-a03e-2a65c8e82e2d;Ip=[204.77.163.244];Helo=[edgetransport.garmin.com]
+X-MS-Exchange-CrossTenant-AuthSource: DM6NAM10FT005.eop-nam10.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CO6PR04MB7747
+X-Proofpoint-GUID: q5A2TvumHL--EkTtLClzzAkS-xBxjDEO
+X-Proofpoint-ORIG-GUID: q5A2TvumHL--EkTtLClzzAkS-xBxjDEO
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.391,18.0.761
+ definitions=2021-05-04_12:2021-05-04,2021-05-04 signatures=0
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 lowpriorityscore=0
+ priorityscore=1501 mlxscore=0 spamscore=0 adultscore=0 bulkscore=0
+ phishscore=0 malwarescore=0 impostorscore=0 mlxlogscore=999 clxscore=1015
+ suspectscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2104060000 definitions=main-2105040121
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Michael,
+Modify the forwarding path so that IGMPv1/2/MLDv1 Reports are always
+flooded by br_multicast_flood, regardless of the check done
+by br_multicast_querier_exists.
 
-On Tue, May 04, 2021 at 07:05:14PM +0200, Michael Walle wrote:
-> Hi,
-> 
-> > ALWAYS_GUARD_BAND_SCH_Q bit in TAS config register is descripted as
-> > this:
-> > 	0: Guard band is implemented for nonschedule queues to schedule
-> > 	   queues transition.
-> > 	1: Guard band is implemented for any queue to schedule queue
-> > 	   transition.
-> > 
-> > The driver set guard band be implemented for any queue to schedule queue
-> > transition before, which will make each GCL time slot reserve a guard
-> > band time that can pass the max SDU frame. Because guard band time could
-> > not be set in tc-taprio now, it will use about 12000ns to pass 1500B max
-> > SDU. This limits each GCL time interval to be more than 12000ns.
-> > 
-> > This patch change the guard band to be only implemented for nonschedule
-> > queues to schedule queues transition, so that there is no need to reserve
-> > guard band on each GCL. Users can manually add guard band time for each
-> > schedule queues in their configuration if they want.
-> 
-> 
-> As explained in another mail in this thread, all queues are marked as
-> scheduled. So this is actually a no-op, correct? It doesn't matter if
-> it set or not set for now. Dunno why we even care for this bit then.
+This patch fixes the problems where after a system boots up, the first
+couple of Reports are not handled properly in that:
 
-It matters because ALWAYS_GUARD_BAND_SCH_Q reduces the available throughput when set.
+1) the Report from the Host is being flooded (via br_flood) to all
+   bridge ports, and
+2) if the mrouter port's mcast_flood is disabled, the Reports received
+   from other hosts will not be forwarded to the Querier.
 
-> > Signed-off-by: Xiaoliang Yang <xiaoliang.yang_1@nxp.com>
-> > ---
-> >  drivers/net/dsa/ocelot/felix_vsc9959.c | 8 ++++++--
-> >  1 file changed, 6 insertions(+), 2 deletions(-)
-> > 
-> > diff --git a/drivers/net/dsa/ocelot/felix_vsc9959.c b/drivers/net/dsa/ocelot/felix_vsc9959.c
-> > index 789fe08cae50..2473bebe48e6 100644
-> > --- a/drivers/net/dsa/ocelot/felix_vsc9959.c
-> > +++ b/drivers/net/dsa/ocelot/felix_vsc9959.c
-> > @@ -1227,8 +1227,12 @@ static int vsc9959_qos_port_tas_set(struct ocelot *ocelot, int port,
-> >  	if (taprio->num_entries > VSC9959_TAS_GCL_ENTRY_MAX)
-> >  		return -ERANGE;
-> >  
-> > -	ocelot_rmw(ocelot, QSYS_TAS_PARAM_CFG_CTRL_PORT_NUM(port) |
-> > -		   QSYS_TAS_PARAM_CFG_CTRL_ALWAYS_GUARD_BAND_SCH_Q,
-> > +	/* Set port num and disable ALWAYS_GUARD_BAND_SCH_Q, which means set
-> > +	 * guard band to be implemented for nonschedule queues to schedule
-> > +	 * queues transition.
-> > +	 */
-> > +	ocelot_rmw(ocelot,
-> > +		   QSYS_TAS_PARAM_CFG_CTRL_PORT_NUM(port),
-> >  		   QSYS_TAS_PARAM_CFG_CTRL_PORT_NUM_M |
-> >  		   QSYS_TAS_PARAM_CFG_CTRL_ALWAYS_GUARD_BAND_SCH_Q,
-> >  		   QSYS_TAS_PARAM_CFG_CTRL);
-> 
-> Anyway, I don't think this the correct place for this:
->  (1) it isn't per port, but a global bit, but here its done per port.
+Signed-off-by: Joseph Huang <Joseph.Huang@garmin.com>
+---
+ net/bridge/br_device.c    | 5 +++--
+ net/bridge/br_input.c     | 5 +++--
+ net/bridge/br_multicast.c | 3 +++
+ net/bridge/br_private.h   | 3 +++
+ 4 files changed, 12 insertions(+), 4 deletions(-)
 
-I don't understand. According to the documentation, selecting the port
-whose time-aware shaper you are configuring is done through
-QSYS::TAS_PARAM_CFG_CTRL.PORT_NUM.
+diff --git a/net/bridge/br_device.c b/net/bridge/br_device.c
+index e8b626cc6bfd..ff75ba242f38 100644
+--- a/net/bridge/br_device.c
++++ b/net/bridge/br_device.c
+@@ -88,8 +88,9 @@ netdev_tx_t br_dev_xmit(struct sk_buff *skb, struct net_device *dev)
+ 		}
+ 
+ 		mdst = br_mdb_get(br, skb, vid);
+-		if ((mdst || BR_INPUT_SKB_CB_MROUTERS_ONLY(skb)) &&
+-		    br_multicast_querier_exists(br, eth_hdr(skb), mdst))
++		if (((mdst || BR_INPUT_SKB_CB_MROUTERS_ONLY(skb)) &&
++		    br_multicast_querier_exists(br, eth_hdr(skb), mdst)) ||
++		    BR_INPUT_SKB_CB_FORCE_MC_FLOOD(skb))
+ 			br_multicast_flood(mdst, skb, false, true);
+ 		else
+ 			br_flood(br, skb, BR_PKT_MULTICAST, false, true);
+diff --git a/net/bridge/br_input.c b/net/bridge/br_input.c
+index 8875e953ac53..572d7f20477f 100644
+--- a/net/bridge/br_input.c
++++ b/net/bridge/br_input.c
+@@ -129,8 +129,9 @@ int br_handle_frame_finish(struct net *net, struct sock *sk, struct sk_buff *skb
+ 	switch (pkt_type) {
+ 	case BR_PKT_MULTICAST:
+ 		mdst = br_mdb_get(br, skb, vid);
+-		if ((mdst || BR_INPUT_SKB_CB_MROUTERS_ONLY(skb)) &&
+-		    br_multicast_querier_exists(br, eth_hdr(skb), mdst)) {
++		if (((mdst || BR_INPUT_SKB_CB_MROUTERS_ONLY(skb)) &&
++		    br_multicast_querier_exists(br, eth_hdr(skb), mdst)) ||
++		    BR_INPUT_SKB_CB_FORCE_MC_FLOOD(skb)) {
+ 			if ((mdst && mdst->host_joined) ||
+ 			    br_multicast_is_router(br)) {
+ 				local_rcv = true;
+diff --git a/net/bridge/br_multicast.c b/net/bridge/br_multicast.c
+index b7d9c491abe0..dfdbe19f3e93 100644
+--- a/net/bridge/br_multicast.c
++++ b/net/bridge/br_multicast.c
+@@ -3231,6 +3231,7 @@ static int br_multicast_ipv4_rcv(struct net_bridge *br,
+ 	case IGMP_HOST_MEMBERSHIP_REPORT:
+ 	case IGMPV2_HOST_MEMBERSHIP_REPORT:
+ 		BR_INPUT_SKB_CB(skb)->mrouters_only = 1;
++		BR_INPUT_SKB_CB(skb)->force_mc_flood = 1;
+ 		err = br_ip4_multicast_add_group(br, port, ih->group, vid, src,
+ 						 true);
+ 		break;
+@@ -3294,6 +3295,7 @@ static int br_multicast_ipv6_rcv(struct net_bridge *br,
+ 	case ICMPV6_MGM_REPORT:
+ 		src = eth_hdr(skb)->h_source;
+ 		BR_INPUT_SKB_CB(skb)->mrouters_only = 1;
++		BR_INPUT_SKB_CB(skb)->force_mc_flood = 1;
+ 		err = br_ip6_multicast_add_group(br, port, &mld->mld_mca, vid,
+ 						 src, true);
+ 		break;
+@@ -3325,6 +3327,7 @@ int br_multicast_rcv(struct net_bridge *br, struct net_bridge_port *port,
+ 	BR_INPUT_SKB_CB(skb)->igmp = 0;
+ 	BR_INPUT_SKB_CB(skb)->mrouters_only = 0;
+ 	BR_INPUT_SKB_CB(skb)->force_flood = 0;
++	BR_INPUT_SKB_CB(skb)->force_mc_flood = 0;
+ 
+ 	if (!br_opt_get(br, BROPT_MULTICAST_ENABLED))
+ 		return 0;
+diff --git a/net/bridge/br_private.h b/net/bridge/br_private.h
+index 59af599d48eb..6d4f20d7f482 100644
+--- a/net/bridge/br_private.h
++++ b/net/bridge/br_private.h
+@@ -492,6 +492,7 @@ struct br_input_skb_cb {
+ 	u8 igmp;
+ 	u8 mrouters_only:1;
+ 	u8 force_flood:1;
++	u8 force_mc_flood:1;
+ #endif
+ 	u8 proxyarp_replied:1;
+ 	u8 src_port_isolated:1;
+@@ -512,9 +513,11 @@ struct br_input_skb_cb {
+ #ifdef CONFIG_BRIDGE_IGMP_SNOOPING
+ # define BR_INPUT_SKB_CB_MROUTERS_ONLY(__skb)	(BR_INPUT_SKB_CB(__skb)->mrouters_only)
+ # define BR_INPUT_SKB_CB_FORCE_FLOOD(__skb)		(BR_INPUT_SKB_CB(__skb)->force_flood)
++# define BR_INPUT_SKB_CB_FORCE_MC_FLOOD(__skb)	(BR_INPUT_SKB_CB(__skb)->force_mc_flood)
+ #else
+ # define BR_INPUT_SKB_CB_MROUTERS_ONLY(__skb)	(0)
+ # define BR_INPUT_SKB_CB_FORCE_FLOOD(__skb)		(0)
++# define BR_INPUT_SKB_CB_FORCE_MC_FLOOD(__skb)	(0)
+ #endif
+ 
+ #define br_printk(level, br, format, args...)	\
+-- 
+2.17.1
 
->  (2) rmw, I presume is read-modify-write. and there is one bit CONFIG_CHAGE
->      which is set by software and cleared by hardware. What happens if it
-> 	 will be cleared right after we read it. Then it will be set again, no?
-> 
-> So if we really care about this bit, shouldn't this be moved to switch
-> initialization then?
-
-May I know what drew your attention to this patch? Is there something wrong?
