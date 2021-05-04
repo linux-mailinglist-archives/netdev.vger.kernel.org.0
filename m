@@ -2,67 +2,66 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F03E237247E
-	for <lists+netdev@lfdr.de>; Tue,  4 May 2021 04:40:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A7065372484
+	for <lists+netdev@lfdr.de>; Tue,  4 May 2021 04:46:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229697AbhEDClP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 3 May 2021 22:41:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42228 "EHLO
+        id S229714AbhEDCrS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 3 May 2021 22:47:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43522 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229499AbhEDClO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 3 May 2021 22:41:14 -0400
-Received: from mail-ot1-x336.google.com (mail-ot1-x336.google.com [IPv6:2607:f8b0:4864:20::336])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C5C16C061574
-        for <netdev@vger.kernel.org>; Mon,  3 May 2021 19:40:20 -0700 (PDT)
-Received: by mail-ot1-x336.google.com with SMTP id g15-20020a9d128f0000b02902a7d7a7bb6eso255043otg.9
-        for <netdev@vger.kernel.org>; Mon, 03 May 2021 19:40:20 -0700 (PDT)
+        with ESMTP id S229488AbhEDCrQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 3 May 2021 22:47:16 -0400
+Received: from mail-oi1-x22b.google.com (mail-oi1-x22b.google.com [IPv6:2607:f8b0:4864:20::22b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 42B62C061574
+        for <netdev@vger.kernel.org>; Mon,  3 May 2021 19:46:21 -0700 (PDT)
+Received: by mail-oi1-x22b.google.com with SMTP id l6so7451318oii.1
+        for <netdev@vger.kernel.org>; Mon, 03 May 2021 19:46:21 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=subject:from:to:cc:references:message-id:date:user-agent
+        h=subject:to:cc:references:from:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=tNIp3orXfPodlfXi3Yb0NNE7Op3g69xIG1ULLs8ziTM=;
-        b=ddSvDHYGhRjTbncRm7mRjadHMFZ2YshBDM9uAa8ERpcvRuNSSyulsv57rx93nXGaiF
-         7R8S1hbFgjaYeuKZ9xBfPrVOrWUwMrxHmlzKwB9A1Nl4evuQQTxFZ8FgXz/WuZnJvV3u
-         FBr8HqnUjAiMzYLizGuVuo2hIE+3OsReWNM0y466UmfOqua7KUKOo2lZySjlPYYj4Ii9
-         v4CQZPA+5MReSLS/ZSR5a+2d18MmDL9e8b2XzrRa2kf+x0o9zlFS79LHDCUXUHH/AHgb
-         Xdq0/Xrc9kKPiZOSnTvC9QVJpGLzCKwCKVN4IDw0XyPMpZNclqH9+rSWWI6qXDOhEjVe
-         JlFA==
+        bh=S7qLXy0Cp35c7iOiovjxFCoLBgp6iuh/PTLreyG0USU=;
+        b=SxZkTao+C3WXuAKjRARoF2CYos+njserHzRCXdFPajXezjGon9pL0+W8IJFC2nQc21
+         QMh05B/M8HNmTBfOTr2+ZJMnA9vsOoW7C1YA2ByffobrPeLEH/hbhr2OGDeXbDldvrr7
+         SR2WIuvUGfXd8fPagP+7ShV71zbGeWeZX2rMs3V6ciXUzfZp2i0jZiXORW5bf6NZRYs2
+         E3C+kWyrgfCriMD79lY+o4s6nObs6ysNN3P8KfiI1pfzIR11FP4qXoluxMhi+U9ZIt0A
+         3wuRcjHo/uNJ/7eSokCkVAvDkUYVJUbhzBfjXFkTXQ0+gzyhcZah9sbfwSl9ETqVcgY4
+         Em+w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:from:to:cc:references:message-id:date
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
          :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=tNIp3orXfPodlfXi3Yb0NNE7Op3g69xIG1ULLs8ziTM=;
-        b=HMEkCaIKS98TsAPlfim5c+NwiIEGu3PtCwRPMO5H8yRCBjDYuezSE2+vwPIoz8S7Ev
-         1/Z4HtAMy+Sib1mHWoPj/KsF/uyISAR+fAiK7HWEmbeGFYS822rD4uxaqVWiCpfExvSi
-         EgdFxI+erZ0uUw3psFTwxnHaiSixoohPmZc2m/8DR1q8OhXC1eqgDGit5G3JjT+klZmg
-         PZNdF+XzeBuzhi1WVmjClC8IGLoumK7GsEl0ER5w2y7q/PlIeeQAxbdWoCzxHS5D46VJ
-         HfB78GKee1IL6pSGKIX0NfpunSPueIArworZgbK996Jo/gNmRJfM7ckonFODql6YW0Pt
-         V17w==
-X-Gm-Message-State: AOAM533GObxedpSckfki4boUmMzjIgx+CjznzYmXdhGP+Wz8IiwYHwzl
-        UdKPJ2+2OIT0tQDr4YVGBAY=
-X-Google-Smtp-Source: ABdhPJwWJE1kADlTKGRf0AxvkZmjsrCf/pCZDHK/ZSdK463TKa/3bSSDyQJrOksefm2WrSdGCc/ZRA==
-X-Received: by 2002:a05:6830:108c:: with SMTP id y12mr17677662oto.276.1620096020156;
-        Mon, 03 May 2021 19:40:20 -0700 (PDT)
+        bh=S7qLXy0Cp35c7iOiovjxFCoLBgp6iuh/PTLreyG0USU=;
+        b=uIOlnA+3qg1IuL7adntg2cPmLFczxH+dpiExbw2vOx0sQI2esUGezWRqIGsSn4OkGh
+         cJRf1k2xoJ8A+gzUKgHRukAZ/Wn4YE0YUZ4fpwaaJhtuOBiE+VVz1YPBLdlnBb47Ijzy
+         GeSRaSAKhvv1KQPOGiCGdqOoORffm2BtIkKL9mL+zMlb9wR1ESGuvHV4hMcBjN8ysLtH
+         ZlR6dydR/IeQ84gpwHGi7YeGMxr7adjQr3Wvk+Pm/O9pm2u+FOskEet95nPthEU5KmvK
+         zj1r6yOwzGsZyQcD4z+3YwvIvSvxz05yATpVsBIpbwN+A8hJLF2wjdLS38RjHZM3w7OV
+         gyDA==
+X-Gm-Message-State: AOAM53108Arf7JYp2jR/NsEBCe8FL9tC373AEavnSsNShqfhNKC65k9d
+        MF8UTdfs86rIU7WIFOvZLKvOfQlUSXaw5Q==
+X-Google-Smtp-Source: ABdhPJwQYs+aGV96iy5Ho7zVjknYSjYW5ZqNWgw/7Gp7Gpyvsta4ElxXImsDuE5qy983TGU3NjyMLQ==
+X-Received: by 2002:aca:f008:: with SMTP id o8mr16174085oih.106.1620096380727;
+        Mon, 03 May 2021 19:46:20 -0700 (PDT)
 Received: from Davids-MacBook-Pro.local ([8.48.134.33])
-        by smtp.googlemail.com with ESMTPSA id o6sm483695ote.14.2021.05.03.19.40.18
+        by smtp.googlemail.com with ESMTPSA id y6sm464697otk.42.2021.05.03.19.46.19
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 03 May 2021 19:40:19 -0700 (PDT)
-Subject: Re: [RFC PATCH net-next 03/10] ipv4: Add custom multipath hash policy
-From:   David Ahern <dsahern@gmail.com>
+        Mon, 03 May 2021 19:46:20 -0700 (PDT)
+Subject: Re: [RFC PATCH net-next 07/10] ipv6: Add custom multipath hash policy
 To:     Ido Schimmel <idosch@idosch.org>, netdev@vger.kernel.org
 Cc:     davem@davemloft.net, kuba@kernel.org, petrm@nvidia.com,
         roopa@nvidia.com, nikolay@nvidia.com, ssuryaextr@gmail.com,
         mlxsw@nvidia.com, Ido Schimmel <idosch@nvidia.com>
 References: <20210502162257.3472453-1-idosch@idosch.org>
- <20210502162257.3472453-4-idosch@idosch.org>
- <7cfadc51-2d4a-f7ed-f762-eb001b0c2b32@gmail.com>
-Message-ID: <beb58830-de0e-cb47-0a5c-6109be737fb5@gmail.com>
-Date:   Mon, 3 May 2021 20:40:18 -0600
+ <20210502162257.3472453-8-idosch@idosch.org>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <1b0c0460-914c-ffa2-ae42-af0ea12ad596@gmail.com>
+Date:   Mon, 3 May 2021 20:46:18 -0600
 User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
  Gecko/20100101 Thunderbird/78.10.0
 MIME-Version: 1.0
-In-Reply-To: <7cfadc51-2d4a-f7ed-f762-eb001b0c2b32@gmail.com>
+In-Reply-To: <20210502162257.3472453-8-idosch@idosch.org>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -70,23 +69,136 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 5/3/21 8:38 PM, David Ahern wrote:
-> On 5/2/21 10:22 AM, Ido Schimmel wrote:
->> diff --git a/Documentation/networking/ip-sysctl.rst b/Documentation/networking/ip-sysctl.rst
->> index 8ab61f4edf02..549601494694 100644
->> --- a/Documentation/networking/ip-sysctl.rst
->> +++ b/Documentation/networking/ip-sysctl.rst
->> @@ -99,6 +99,8 @@ fib_multipath_hash_policy - INTEGER
->>  	- 0 - Layer 3
->>  	- 1 - Layer 4
->>  	- 2 - Layer 3 or inner Layer 3 if present
->> +	- 3 - Custom multipath hash. Fields used for multipath hash calculation
->> +	  are determined by fib_multipath_hash_fields sysctl
->>  
-> 
-> If you default the fields to L3, then seems like the custom option is a
-> more generic case of '0'.
-> 
+On 5/2/21 10:22 AM, Ido Schimmel wrote:
+> diff --git a/net/ipv6/route.c b/net/ipv6/route.c
+> index 9935e18146e5..b4c65c5baf35 100644
+> --- a/net/ipv6/route.c
+> +++ b/net/ipv6/route.c
+> @@ -2326,6 +2326,125 @@ static void ip6_multipath_l3_keys(const struct sk_buff *skb,
+>  	}
+>  }
+>  
+> +static u32 rt6_multipath_custom_hash_outer(const struct net *net,
+> +					   const struct sk_buff *skb,
+> +					   bool *p_has_inner)
+> +{
+> +	unsigned long *hash_fields = ip6_multipath_hash_fields(net);
+> +	struct flow_keys keys, hash_keys;
+> +
+> +	if (!net->ipv6.sysctl.multipath_hash_fields_need_outer)
+> +		return 0;
+> +
+> +	memset(&hash_keys, 0, sizeof(hash_keys));
+> +	skb_flow_dissect_flow_keys(skb, &keys, FLOW_DISSECTOR_F_STOP_AT_ENCAP);
+> +
+> +	hash_keys.control.addr_type = FLOW_DISSECTOR_KEY_IPV6_ADDRS;
+> +	if (FIB_MULTIPATH_HASH_TEST_FIELD(SRC_IP, hash_fields))
+> +		hash_keys.addrs.v6addrs.src = keys.addrs.v6addrs.src;
+> +	if (FIB_MULTIPATH_HASH_TEST_FIELD(DST_IP, hash_fields))
+> +		hash_keys.addrs.v6addrs.dst = keys.addrs.v6addrs.dst;
+> +	if (FIB_MULTIPATH_HASH_TEST_FIELD(IP_PROTO, hash_fields))
+> +		hash_keys.basic.ip_proto = keys.basic.ip_proto;
+> +	if (FIB_MULTIPATH_HASH_TEST_FIELD(FLOWLABEL, hash_fields))
+> +		hash_keys.tags.flow_label = keys.tags.flow_label;
+> +	if (FIB_MULTIPATH_HASH_TEST_FIELD(SRC_PORT, hash_fields))
+> +		hash_keys.ports.src = keys.ports.src;
+> +	if (FIB_MULTIPATH_HASH_TEST_FIELD(DST_PORT, hash_fields))
+> +		hash_keys.ports.dst = keys.ports.dst;
+> +
+> +	*p_has_inner = !!(keys.control.flags & FLOW_DIS_ENCAPSULATION);
+> +	return flow_hash_from_keys(&hash_keys);
+> +}
+> +
+> +static u32 rt6_multipath_custom_hash_inner(const struct net *net,
+> +					   const struct sk_buff *skb,
+> +					   bool has_inner)
+> +{
+> +	unsigned long *hash_fields = ip6_multipath_hash_fields(net);
+> +	struct flow_keys keys, hash_keys;
+> +
+> +	/* We assume the packet carries an encapsulation, but if none was
+> +	 * encountered during dissection of the outer flow, then there is no
+> +	 * point in calling the flow dissector again.
+> +	 */
+> +	if (!has_inner)
+> +		return 0;
+> +
+> +	if (!net->ipv6.sysctl.multipath_hash_fields_need_inner)
+> +		return 0;
+> +
+> +	memset(&hash_keys, 0, sizeof(hash_keys));
+> +	skb_flow_dissect_flow_keys(skb, &keys, 0);
+> +
+> +	if (!(keys.control.flags & FLOW_DIS_ENCAPSULATION))
+> +		return 0;
+> +
+> +	if (keys.control.addr_type == FLOW_DISSECTOR_KEY_IPV4_ADDRS) {
+> +		hash_keys.control.addr_type = FLOW_DISSECTOR_KEY_IPV4_ADDRS;
+> +		if (FIB_MULTIPATH_HASH_TEST_FIELD(INNER_SRC_IP, hash_fields))
+> +			hash_keys.addrs.v4addrs.src = keys.addrs.v4addrs.src;
+> +		if (FIB_MULTIPATH_HASH_TEST_FIELD(INNER_DST_IP, hash_fields))
+> +			hash_keys.addrs.v4addrs.dst = keys.addrs.v4addrs.dst;
+> +	} else if (keys.control.addr_type == FLOW_DISSECTOR_KEY_IPV6_ADDRS) {
+> +		hash_keys.control.addr_type = FLOW_DISSECTOR_KEY_IPV6_ADDRS;
+> +		if (FIB_MULTIPATH_HASH_TEST_FIELD(INNER_SRC_IP, hash_fields))
+> +			hash_keys.addrs.v6addrs.src = keys.addrs.v6addrs.src;
+> +		if (FIB_MULTIPATH_HASH_TEST_FIELD(INNER_DST_IP, hash_fields))
+> +			hash_keys.addrs.v6addrs.dst = keys.addrs.v6addrs.dst;
+> +		if (FIB_MULTIPATH_HASH_TEST_FIELD(INNER_FLOWLABEL, hash_fields))
+> +			hash_keys.tags.flow_label = keys.tags.flow_label;
+> +	}
+> +
+> +	if (FIB_MULTIPATH_HASH_TEST_FIELD(INNER_IP_PROTO, hash_fields))
+> +		hash_keys.basic.ip_proto = keys.basic.ip_proto;
+> +	if (FIB_MULTIPATH_HASH_TEST_FIELD(INNER_SRC_PORT, hash_fields))
+> +		hash_keys.ports.src = keys.ports.src;
+> +	if (FIB_MULTIPATH_HASH_TEST_FIELD(INNER_DST_PORT, hash_fields))
+> +		hash_keys.ports.dst = keys.ports.dst;
+> +
+> +	return flow_hash_from_keys(&hash_keys);
+> +}
+> +
+> +static u32 rt6_multipath_custom_hash_skb(const struct net *net,
+> +					 const struct sk_buff *skb)
+> +{
+> +	u32 mhash, mhash_inner;
+> +	bool has_inner = true;
+> +
+> +	mhash = rt6_multipath_custom_hash_outer(net, skb, &has_inner);
+> +	mhash_inner = rt6_multipath_custom_hash_inner(net, skb, has_inner);
+> +
+> +	return jhash_2words(mhash, mhash_inner, 0);
+> +}
+> +
+> +static u32 rt6_multipath_custom_hash_fl6(const struct net *net,
+> +					 const struct flowi6 *fl6)
+> +{
+> +	unsigned long *hash_fields = ip6_multipath_hash_fields(net);
+> +	struct flow_keys hash_keys;
+> +
+> +	if (!net->ipv6.sysctl.multipath_hash_fields_need_outer)
+> +		return 0;
+> +
+> +	memset(&hash_keys, 0, sizeof(hash_keys));
+> +	hash_keys.control.addr_type = FLOW_DISSECTOR_KEY_IPV6_ADDRS;
+> +	if (FIB_MULTIPATH_HASH_TEST_FIELD(SRC_IP, hash_fields))
+> +		hash_keys.addrs.v6addrs.src = fl6->saddr;
+> +	if (FIB_MULTIPATH_HASH_TEST_FIELD(DST_IP, hash_fields))
+> +		hash_keys.addrs.v6addrs.dst = fl6->daddr;
+> +	if (FIB_MULTIPATH_HASH_TEST_FIELD(IP_PROTO, hash_fields))
+> +		hash_keys.basic.ip_proto = fl6->flowi6_proto;
+> +	if (FIB_MULTIPATH_HASH_TEST_FIELD(FLOWLABEL, hash_fields))
+> +		hash_keys.tags.flow_label = (__force u32)flowi6_get_flowlabel(fl6);
+> +	if (FIB_MULTIPATH_HASH_TEST_FIELD(SRC_PORT, hash_fields))
+> +		hash_keys.ports.src = fl6->fl6_sport;
+> +	if (FIB_MULTIPATH_HASH_TEST_FIELD(DST_PORT, hash_fields))
+> +		hash_keys.ports.dst = fl6->fl6_dport;
+> +
+> +	return flow_hash_from_keys(&hash_keys);
+> +}
+> +
 
-Actually this is the more generic case of all of them, so all of them
-could be implemented using this custom field selection.
+given the amount of duplication with IPv4, should be able to use inline
+macros and the flowi_uli union to make some common helpers without
+impacting performance.
+
