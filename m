@@ -2,164 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 25A06372FDB
-	for <lists+netdev@lfdr.de>; Tue,  4 May 2021 20:38:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 10A41372FEE
+	for <lists+netdev@lfdr.de>; Tue,  4 May 2021 20:49:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231835AbhEDSj2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 4 May 2021 14:39:28 -0400
-Received: from ssl.serverraum.org ([176.9.125.105]:42901 "EHLO
-        ssl.serverraum.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230086AbhEDSj1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 4 May 2021 14:39:27 -0400
-Received: from ssl.serverraum.org (web.serverraum.org [172.16.0.2])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ssl.serverraum.org (Postfix) with ESMTPSA id AFCC92224F;
-        Tue,  4 May 2021 20:38:29 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
-        t=1620153511;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=0ruN1QyPa5pgzTAYW8qLgIogd+nOCmxbmXWTOvYv6Kc=;
-        b=ceJkiKjZIahSfr0KijAN7qNEH/jCOpLKquM9/3RINl3bo1izvtbgLUC7s7vNjCYc3+u7LH
-        4t+PvcRX44a2hH+UseSAW4o0+iXulDQ9OTGX4RwCgMAaNMfbcgCAJyr/UVLZZS0zNh0LBT
-        xRNiHXhYPWr34v4IJ7Qpd/t1Qss/sxo=
+        id S231726AbhEDSuF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 4 May 2021 14:50:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60192 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231715AbhEDSuE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 4 May 2021 14:50:04 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D7528C061574
+        for <netdev@vger.kernel.org>; Tue,  4 May 2021 11:49:08 -0700 (PDT)
+Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <mkl@pengutronix.de>)
+        id 1le06N-0001tO-A3; Tue, 04 May 2021 20:48:59 +0200
+Received: from pengutronix.de (unknown [IPv6:2a03:f580:87bc:d400:4880:7cee:6dec:c8f9])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (Client did not present a certificate)
+        (Authenticated sender: mkl-all@blackshift.org)
+        by smtp.blackshift.org (Postfix) with ESMTPSA id 5BC2E61BEE7;
+        Tue,  4 May 2021 18:48:55 +0000 (UTC)
+Date:   Tue, 4 May 2021 20:48:54 +0200
+From:   Marc Kleine-Budde <mkl@pengutronix.de>
+To:     Schrempf Frieder <frieder.schrempf@kontron.de>
+Cc:     Vincent Mailhol <mailhol.vincent@wanadoo.fr>,
+        Oliver Hartkopp <socketcan@hartkopp.net>,
+        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
+        Timo =?utf-8?B?U2NobMO8w59sZXI=?= <schluessler@krause.de>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Tim Harvey <tharvey@gateworks.com>, stable@vger.kernel.org,
+        linux-can@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] can: mcp251x: Fix resume from sleep before interface was
+ brought up
+Message-ID: <20210504184854.urgotqioxtjwbqqs@pengutronix.de>
+References: <bd466d82-db03-38b1-0a13-86aa124680ea@kontron.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII;
- format=flowed
-Content-Transfer-Encoding: 7bit
-Date:   Tue, 04 May 2021 20:38:29 +0200
-From:   Michael Walle <michael@walle.cc>
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     xiaoliang.yang_1@nxp.com, Arvid.Brodin@xdin.com,
-        UNGLinuxDriver@microchip.com, alexandre.belloni@bootlin.com,
-        allan.nielsen@microchip.com, andre.guedes@linux.intel.com,
-        claudiu.manoil@nxp.com, colin.king@canonical.com,
-        davem@davemloft.net, idosch@mellanox.com,
-        ivan.khoronzhuk@linaro.org, jiri@mellanox.com,
-        joergen.andreasen@microchip.com, leoyang.li@nxp.com,
-        linux-kernel@vger.kernel.org, m-karicheri2@ti.com,
-        michael.chan@broadcom.com, mingkai.hu@nxp.com,
-        netdev@vger.kernel.org, po.liu@nxp.com, saeedm@mellanox.com,
-        vinicius.gomes@intel.com, vladimir.oltean@nxp.com,
-        yuehaibing@huawei.com
-Subject: Re: [net-next] net: dsa: felix: disable always guard band bit for TAS
- config
-In-Reply-To: <20210504181833.w2pecbp2qpuiactv@skbuf>
-References: <20210419102530.20361-1-xiaoliang.yang_1@nxp.com>
- <20210504170514.10729-1-michael@walle.cc>
- <20210504181833.w2pecbp2qpuiactv@skbuf>
-User-Agent: Roundcube Webmail/1.4.11
-Message-ID: <c7618025da6723418c56a54fe4683bd7@walle.cc>
-X-Sender: michael@walle.cc
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="v3vthzpowlfzvmol"
+Content-Disposition: inline
+In-Reply-To: <bd466d82-db03-38b1-0a13-86aa124680ea@kontron.de>
+X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
+X-SA-Exim-Mail-From: mkl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Vladimir,
 
-Am 2021-05-04 20:18, schrieb Vladimir Oltean:
-> On Tue, May 04, 2021 at 07:05:14PM +0200, Michael Walle wrote:
->> Hi,
->> 
->> > ALWAYS_GUARD_BAND_SCH_Q bit in TAS config register is descripted as
->> > this:
->> > 	0: Guard band is implemented for nonschedule queues to schedule
->> > 	   queues transition.
->> > 	1: Guard band is implemented for any queue to schedule queue
->> > 	   transition.
->> >
->> > The driver set guard band be implemented for any queue to schedule queue
->> > transition before, which will make each GCL time slot reserve a guard
->> > band time that can pass the max SDU frame. Because guard band time could
->> > not be set in tc-taprio now, it will use about 12000ns to pass 1500B max
->> > SDU. This limits each GCL time interval to be more than 12000ns.
->> >
->> > This patch change the guard band to be only implemented for nonschedule
->> > queues to schedule queues transition, so that there is no need to reserve
->> > guard band on each GCL. Users can manually add guard band time for each
->> > schedule queues in their configuration if they want.
->> 
->> 
->> As explained in another mail in this thread, all queues are marked as
->> scheduled. So this is actually a no-op, correct? It doesn't matter if
->> it set or not set for now. Dunno why we even care for this bit then.
-> 
-> It matters because ALWAYS_GUARD_BAND_SCH_Q reduces the available
-> throughput when set.
+--v3vthzpowlfzvmol
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Ahh, I see now. All queues are "scheduled" but the guard band only 
-applies
-for "non-scheduled" -> "scheduled" transitions. So the guard band is 
-never
-applied, right? Is that really what we want?
+On 04.05.2021 18:01:48, Schrempf Frieder wrote:
+> Since 8ce8c0abcba3 the driver queues work via priv->restart_work when
+> resuming after suspend, even when the interface was not previously
+> enabled. This causes a null dereference error as the workqueue is
+> only allocated and initialized in mcp251x_open().
+>=20
+> To fix this we move the workqueue init to mcp251x_can_probe() as
+> there is no reason to do it later and repeat it whenever
+> mcp251x_open() is called.
+>=20
+> Fixes: 8ce8c0abcba3 ("can: mcp251x: only reset hardware as required")
+> Cc: stable@vger.kernel.org
+> Signed-off-by: Frieder Schrempf <frieder.schrempf@kontron.de>
 
->> > Signed-off-by: Xiaoliang Yang <xiaoliang.yang_1@nxp.com>
->> > ---
->> >  drivers/net/dsa/ocelot/felix_vsc9959.c | 8 ++++++--
->> >  1 file changed, 6 insertions(+), 2 deletions(-)
->> >
->> > diff --git a/drivers/net/dsa/ocelot/felix_vsc9959.c b/drivers/net/dsa/ocelot/felix_vsc9959.c
->> > index 789fe08cae50..2473bebe48e6 100644
->> > --- a/drivers/net/dsa/ocelot/felix_vsc9959.c
->> > +++ b/drivers/net/dsa/ocelot/felix_vsc9959.c
->> > @@ -1227,8 +1227,12 @@ static int vsc9959_qos_port_tas_set(struct ocelot *ocelot, int port,
->> >  	if (taprio->num_entries > VSC9959_TAS_GCL_ENTRY_MAX)
->> >  		return -ERANGE;
->> >
->> > -	ocelot_rmw(ocelot, QSYS_TAS_PARAM_CFG_CTRL_PORT_NUM(port) |
->> > -		   QSYS_TAS_PARAM_CFG_CTRL_ALWAYS_GUARD_BAND_SCH_Q,
->> > +	/* Set port num and disable ALWAYS_GUARD_BAND_SCH_Q, which means set
->> > +	 * guard band to be implemented for nonschedule queues to schedule
->> > +	 * queues transition.
->> > +	 */
->> > +	ocelot_rmw(ocelot,
->> > +		   QSYS_TAS_PARAM_CFG_CTRL_PORT_NUM(port),
->> >  		   QSYS_TAS_PARAM_CFG_CTRL_PORT_NUM_M |
->> >  		   QSYS_TAS_PARAM_CFG_CTRL_ALWAYS_GUARD_BAND_SCH_Q,
->> >  		   QSYS_TAS_PARAM_CFG_CTRL);
->> 
->> Anyway, I don't think this the correct place for this:
->>  (1) it isn't per port, but a global bit, but here its done per port.
-> 
-> I don't understand. According to the documentation, selecting the port
-> whose time-aware shaper you are configuring is done through
-> QSYS::TAS_PARAM_CFG_CTRL.PORT_NUM.
+Added to linux-can/testing.
 
-According to the LS1028A RM:
+Thanks,
+Marc
 
-   PORT_NUM
-   Specifies the port number to which the TAS_PARAMS register 
-configurations
-   (CFG_REG_1 to CFG_REG_5, TIME_INTERVAL and GATE_STATE) need to be 
-applied.
+--=20
+Pengutronix e.K.                 | Marc Kleine-Budde           |
+Embedded Linux                   | https://www.pengutronix.de  |
+Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
+Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
 
-I guess this work together with CONFIG_CHANGE and applies the mentions 
-registers
-in an atomic way (or at a given time). There is no mention of the
-ALWAYS_GUARD_BAND_SCH_Q bit nor the register TAS_PARAM_CFG_CTRL.
+--v3vthzpowlfzvmol
+Content-Type: application/pgp-signature; name="signature.asc"
 
-But the ALWAYS_GUARD_BAND_SCH_Q mention its "Global configuration". That
-together with the fact that it can't be read back (unless I'm missing
-something), led me to the conclusion that this bit is global for the 
-whole
-switch. I may be wrong.
+-----BEGIN PGP SIGNATURE-----
 
-But in any case, (2) is more severe IMHO.
+iQEzBAABCgAdFiEEK3kIWJt9yTYMP3ehqclaivrt76kFAmCRlxMACgkQqclaivrt
+76nZFQf9EALD3jMJEXRfahZ9zzZjCS+oJe2TkoDOtMQx/TPnhe//XQfoRoRfvstv
+e6AiN8Ir407VR6BSQaTTq6LaBd6VaoviRlywrUzbnKBzv4w2nvriWy250ML5KcST
+8N+6lgvPhNOQP190kAUvYzy98mzWEbEMTIkknMnvz+wEz2JV70zD/AZAiTGUpQmE
+fX+lc6RPC10zyX3QIXP6Um2yRit63INe4OFlzLv1dhfSeG89NTM+FcDnI2Nqeoqc
+v4eTX2gC+k5kFNkI1xYdilv6w93gAB/YE10K0SwdjVxe7QdHsqVUy8eMpi+cDabH
+9kZM4iWDNmeE4ayU2C3VZ+1hX/ANOw==
+=thfL
+-----END PGP SIGNATURE-----
 
->>  (2) rmw, I presume is read-modify-write. and there is one bit 
->> CONFIG_CHAGE
->>      which is set by software and cleared by hardware. What happens if 
->> it
->> 	 will be cleared right after we read it. Then it will be set again, 
->> no?
->> 
->> So if we really care about this bit, shouldn't this be moved to switch
->> initialization then?
-> 
-> May I know what drew your attention to this patch? Is there something 
-> wrong?
-
--michael
+--v3vthzpowlfzvmol--
