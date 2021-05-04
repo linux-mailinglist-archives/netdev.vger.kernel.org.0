@@ -2,121 +2,148 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 38DA1373087
-	for <lists+netdev@lfdr.de>; Tue,  4 May 2021 21:12:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B4ADD37309E
+	for <lists+netdev@lfdr.de>; Tue,  4 May 2021 21:17:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232503AbhEDTNk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 4 May 2021 15:13:40 -0400
-Received: from mx0a-001b2d01.pphosted.com ([148.163.156.1]:21186 "EHLO
-        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S232209AbhEDTNh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 4 May 2021 15:13:37 -0400
-Received: from pps.filterd (m0098394.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 144J2eau017279;
-        Tue, 4 May 2021 15:12:24 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
- : date : message-id; s=pp1;
- bh=W/DDofSv+SSI5N7+3mGgxYdQHMS5JRW9elxDZ9ZXkok=;
- b=pRnWiQvl3fyBOLfv3h0K/Kc9Kt4pjSo9TeMOUITFuaqzebePi3AhsHEGNDwtVDN+2OjC
- Xza8Qr0eOCa2NVlc5AX2uFDdTQF8mg89C+apDvIxFT0BSk2awYjqfbUcC6t+VbTzqkld
- 6gUCsnkBAC0m9LoPrgUNQgrswjf0vMdWxu5HkLpSIgdGmcNWrNvMriR68Lzddw+3NlFb
- ygPR+f4g6bovo4WgRUoRqpmmkGbw3/L5SwB4ofVmjFP4OBRfkMNLb+cv5vZz/9G/j+Fc
- EYA1+jBqGH/RI9g14jtYBRRcWpXN1JfhPopNwawiuXR0Qd1yO0Wj0XWfzROX/PY0AvBp Lg== 
-Received: from ppma03wdc.us.ibm.com (ba.79.3fa9.ip4.static.sl-reverse.com [169.63.121.186])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 38b99t616a-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 04 May 2021 15:12:23 -0400
-Received: from pps.filterd (ppma03wdc.us.ibm.com [127.0.0.1])
-        by ppma03wdc.us.ibm.com (8.16.0.43/8.16.0.43) with SMTP id 144J7ShL012422;
-        Tue, 4 May 2021 19:12:22 GMT
-Received: from b01cxnp22034.gho.pok.ibm.com (b01cxnp22034.gho.pok.ibm.com [9.57.198.24])
-        by ppma03wdc.us.ibm.com with ESMTP id 38aym44k1j-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 04 May 2021 19:12:22 +0000
-Received: from b01ledav006.gho.pok.ibm.com (b01ledav006.gho.pok.ibm.com [9.57.199.111])
-        by b01cxnp22034.gho.pok.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 144JCM7Y41877976
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 4 May 2021 19:12:22 GMT
-Received: from b01ledav006.gho.pok.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id F20DAAC05B;
-        Tue,  4 May 2021 19:12:21 +0000 (GMT)
-Received: from b01ledav006.gho.pok.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 41021AC05E;
-        Tue,  4 May 2021 19:12:21 +0000 (GMT)
-Received: from ltcalpine2-lp16.aus.stglabs.ibm.com (unknown [9.40.193.182])
-        by b01ledav006.gho.pok.ibm.com (Postfix) with ESMTP;
-        Tue,  4 May 2021 19:12:21 +0000 (GMT)
-From:   Dany Madden <drt@linux.ibm.com>
-To:     davem@davemloft.net, kuba@kernel.org
-Cc:     drt@linux.ibm.com, sukadev@linux.ibm.com, tlfalcon@linux.ibm.com,
-        mpe@ellerman.id.au, benh@kernel.crashing.org, paulus@samba.org,
-        netdev@vger.kernel.org, linuxppc-dev@lists.ozlabs.org
-Subject: [PATCH net v3] ibmvnic: Continue with reset if set link down failed
-Date:   Tue,  4 May 2021 15:11:42 -0400
-Message-Id: <20210504191142.2872696-1-drt@linux.ibm.com>
-X-Mailer: git-send-email 2.18.2
-X-TM-AS-GCONF: 00
-X-Proofpoint-ORIG-GUID: KEU1bcz2c0iIzLtgR32U2QCCkATpsV0g
-X-Proofpoint-GUID: KEU1bcz2c0iIzLtgR32U2QCCkATpsV0g
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.391,18.0.761
- definitions=2021-05-04_12:2021-05-04,2021-05-04 signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 impostorscore=0
- mlxlogscore=999 suspectscore=0 mlxscore=0 bulkscore=0 malwarescore=0
- phishscore=0 priorityscore=1501 clxscore=1015 spamscore=0
- lowpriorityscore=0 adultscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.12.0-2104060000 definitions=main-2105040125
+        id S232292AbhEDTSk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 4 May 2021 15:18:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38496 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232082AbhEDTSj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 4 May 2021 15:18:39 -0400
+Received: from mail-ej1-x62a.google.com (mail-ej1-x62a.google.com [IPv6:2a00:1450:4864:20::62a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6312DC061574;
+        Tue,  4 May 2021 12:17:43 -0700 (PDT)
+Received: by mail-ej1-x62a.google.com with SMTP id f24so14885189ejc.6;
+        Tue, 04 May 2021 12:17:43 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=o/YSgyoStELVjmwvVjY4WityzMhKVw/+pPPsl07P0wA=;
+        b=QQ4FJRoTLq3jR8e6Rys7S0/eyU7qiTDxmTstOxeY0MLFeLxcqBBqM0o/0cDON6pRUV
+         4qHk+m5N5Fw+xsCy/5dKTVasE6SJe8dR7Wrk3TW7fauwlK26u0A//xsnPogiLhRaFfzP
+         fXW1xNh0zaF/MEMa1vEvCdZDnPNsmP54PFfhauz2Ob5z03al0wmXNzJ0lPwqWbAcv3mJ
+         6U25GbDwn3O+MlCup2kP9y/Im50l1lV5XAc5ughsts6NGQTAx7rpix8VQ/XNgIRHWQi/
+         jcyMJ7sTIoamkTxtALkKv/iVFpdrLrlIrlL3pJLEq7n1tALP4Pmo3/PwhRkrX7XvlhUs
+         z+HA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=o/YSgyoStELVjmwvVjY4WityzMhKVw/+pPPsl07P0wA=;
+        b=i66Clq390WKf0MnlqqOY6l/Swfo7A0SyCxA/TwYNrXV0zYVkELMPykCFlxoMOJXVG6
+         MrmJ2BPOjkiO859wxAKoqk3ENzPH+G0H4vRQPSGeSIcJukAajNWZZnN7iBYi+P3WxrE9
+         VhlMre+ly/EwCOTxkGPj4RhdG/u6wz0v2vmYVx6ISgiqbZkU7KUx7Rj6Fp5JLwC1DwSv
+         UtankVyzP7hkocuHOQLfdZjath3UL1k+0FBHIOTZStr2L4kNIEoDSH/k37cWHBjJohcc
+         8JLmMJdLF6kRvdGuS3mf4kaBVcgkon1wuZmXATq7VYPR8qbL9ZqpLH2A5ClXSanXV8G+
+         x7wg==
+X-Gm-Message-State: AOAM531GgJwaGEj0UgNubO8ELoy5VMjkQezgYGwFMY4j9ITxlahTeYJZ
+        2QWc81+Vv0Yih8lfNKr8IGA=
+X-Google-Smtp-Source: ABdhPJx9hKET6uKlNJAPMjx6REVTSM5pk2Kuya7T+YEUEScYmsfsXcvnk+IeKD2BaZsT0GgPGVpOEA==
+X-Received: by 2002:a17:906:2287:: with SMTP id p7mr23238378eja.377.1620155862013;
+        Tue, 04 May 2021 12:17:42 -0700 (PDT)
+Received: from skbuf ([86.127.41.210])
+        by smtp.gmail.com with ESMTPSA id lc1sm1833882ejb.39.2021.05.04.12.17.40
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 04 May 2021 12:17:41 -0700 (PDT)
+Date:   Tue, 4 May 2021 22:17:39 +0300
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Michael Walle <michael@walle.cc>
+Cc:     xiaoliang.yang_1@nxp.com, Arvid.Brodin@xdin.com,
+        UNGLinuxDriver@microchip.com, alexandre.belloni@bootlin.com,
+        allan.nielsen@microchip.com, andre.guedes@linux.intel.com,
+        claudiu.manoil@nxp.com, colin.king@canonical.com,
+        davem@davemloft.net, idosch@mellanox.com,
+        ivan.khoronzhuk@linaro.org, jiri@mellanox.com,
+        joergen.andreasen@microchip.com, leoyang.li@nxp.com,
+        linux-kernel@vger.kernel.org, m-karicheri2@ti.com,
+        michael.chan@broadcom.com, mingkai.hu@nxp.com,
+        netdev@vger.kernel.org, po.liu@nxp.com, saeedm@mellanox.com,
+        vinicius.gomes@intel.com, vladimir.oltean@nxp.com,
+        yuehaibing@huawei.com
+Subject: Re: [net-next] net: dsa: felix: disable always guard band bit for
+ TAS config
+Message-ID: <20210504191739.73oejybqb6z7dlxr@skbuf>
+References: <20210419102530.20361-1-xiaoliang.yang_1@nxp.com>
+ <20210504170514.10729-1-michael@walle.cc>
+ <20210504181833.w2pecbp2qpuiactv@skbuf>
+ <c7618025da6723418c56a54fe4683bd7@walle.cc>
+ <20210504185040.ftkub3ropuacmyel@skbuf>
+ <ccb40b7fd18b51ecfc3f849a47378c54@walle.cc>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <ccb40b7fd18b51ecfc3f849a47378c54@walle.cc>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When ibmvnic gets a FATAL error message from the vnicserver, it marks
-the Command Respond Queue (CRQ) inactive and resets the adapter. If this
-FATAL reset fails and a transmission timeout reset follows, the CRQ is
-still inactive, ibmvnic's attempt to set link down will also fail. If
-ibmvnic abandons the reset because of this failed set link down and this
-is the last reset in the workqueue, then this adapter will be left in an
-inoperable state.
+On Tue, May 04, 2021 at 09:08:00PM +0200, Michael Walle wrote:
+> > > > > As explained in another mail in this thread, all queues are marked as
+> > > > > scheduled. So this is actually a no-op, correct? It doesn't matter if
+> > > > > it set or not set for now. Dunno why we even care for this bit then.
+> > > >
+> > > > It matters because ALWAYS_GUARD_BAND_SCH_Q reduces the available
+> > > > throughput when set.
+> > > 
+> > > Ahh, I see now. All queues are "scheduled" but the guard band only
+> > > applies
+> > > for "non-scheduled" -> "scheduled" transitions. So the guard band is
+> > > never
+> > > applied, right? Is that really what we want?
+> > 
+> > Xiaoliang explained that yes, this is what we want. If the end user
+> > wants a guard band they can explicitly add a "sched-entry 00" in the
+> > tc-taprio config.
+> 
+> You're disabling the guard band, then. I figured, but isn't that
+> suprising for the user? Who else implements taprio? Do they do it in the
+> same way? I mean this behavior is passed right to the userspace and have
+> a direct impact on how it is configured. Of course a user can add it
+> manually, but I'm not sure that is what we want here. At least it needs
+> to be documented somewhere. Or maybe it should be a switchable option.
+> 
+> Consider the following:
+> sched-entry S 01 25000
+> sched-entry S fe 175000
+> basetime 0
+> 
+> Doesn't guarantee, that queue 0 is available at the beginning of
+> the cycle, in the worst case it takes up to
+> <begin of cycle> + ~12.5us until the frame makes it through (given
+> gigabit and 1518b frames).
+> 
+> Btw. there are also other implementations which don't need a guard
+> band (because they are store-and-forward and cound the remaining
+> bytes). So yes, using a guard band and scheduling is degrading the
+> performance.
 
-Instead, make the driver ignore this link down failure and continue to
-free and re-register CRQ so that the adapter has an opportunity to
-recover.
+What is surprising for the user, and I mentioned this already in another
+thread on this patch, is that the Felix switch overruns the time gate (a
+packet taking 2 us to transmit will start transmission even if there is
+only 1 us left of its time slot, delaying the packets from the next time
+slot by 1 us). I guess that this is why the ALWAYS_GUARD_BAND_SCH_Q bit
+exists, as a way to avoid these overruns, but it is a bit of a poor tool
+for that job. Anyway, right now we disable it and live with the overruns.
 
-Fixes: ed651a10875f ("ibmvnic: Updated reset handling")
-Signed-off-by: Dany Madden <drt@linux.ibm.com>
-Reviewed-by: Rick Lindsley <ricklind@linux.ibm.com>
-Reviewed-by: Sukadev Bhattiprolu <sukadev@linux.ibm.com>
----
-Changes in V2:
-- Update description to clarify background for the patch
-- Include Reviewed-by tags
-Changes in V3:
-- Add comment above the code change
----
- drivers/net/ethernet/ibm/ibmvnic.c | 11 +++++++++--
- 1 file changed, 9 insertions(+), 2 deletions(-)
+FWIW, the ENETC does not overrun the time gate, the SJA1105 does. You
+can't really tell just by looking at the driver code, just by testing.
+It's a bit of a crapshoot.
 
-diff --git a/drivers/net/ethernet/ibm/ibmvnic.c b/drivers/net/ethernet/ibm/ibmvnic.c
-index 5788bb956d73..9e005a08d43b 100644
---- a/drivers/net/ethernet/ibm/ibmvnic.c
-+++ b/drivers/net/ethernet/ibm/ibmvnic.c
-@@ -2017,8 +2017,15 @@ static int do_reset(struct ibmvnic_adapter *adapter,
- 			rtnl_unlock();
- 			rc = set_link_state(adapter, IBMVNIC_LOGICAL_LNK_DN);
- 			rtnl_lock();
--			if (rc)
--				goto out;
-+
-+			/* Attempted to set the link down. It could fail if the
-+			 * vnicserver has already torn down the CRQ. We will
-+			 * note it and continue with reset to reinit the CRQ.
-+			 */
-+			if (rc) {
-+				netdev_dbg(netdev,
-+					   "Setting link down failed rc=%d. Continue anyway\n", rc);
-+			}
- 
- 			if (adapter->state == VNIC_OPEN) {
- 				/* When we dropped rtnl, ibmvnic_open() got
--- 
-2.18.2
+> > Sorry, I don't understand what you mean to say here.
+> 
+> I doubt that ALWAYS_GUARD_BAND_SCH_Q is a per-port setting. But that is
+> only a guess. One would have to check with the IP vendor.
 
+Probably not, but I'm not sure that this is relevant one way or another,
+as the driver unconditionally clears it regardless of port (or unconditionally
+set it, before Xiaoliang's patch).
+
+> > > > May I know what drew your attention to this patch? Is there something
+> > > > wrong?
+> 
+> See private mail.
+
+Responded. I'm really curious if this change makes any difference at all
+to your use case.
