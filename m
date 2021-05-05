@@ -2,37 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4FD3C374131
-	for <lists+netdev@lfdr.de>; Wed,  5 May 2021 18:45:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D5DF2374130
+	for <lists+netdev@lfdr.de>; Wed,  5 May 2021 18:45:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234711AbhEEQgX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 5 May 2021 12:36:23 -0400
-Received: from mail.kernel.org ([198.145.29.99]:53688 "EHLO mail.kernel.org"
+        id S234997AbhEEQgV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 5 May 2021 12:36:21 -0400
+Received: from mail.kernel.org ([198.145.29.99]:53082 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S234680AbhEEQeR (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 5 May 2021 12:34:17 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 25F53613C3;
-        Wed,  5 May 2021 16:32:40 +0000 (UTC)
+        id S234691AbhEEQeS (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 5 May 2021 12:34:18 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 9FA87613F1;
+        Wed,  5 May 2021 16:32:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1620232361;
-        bh=/94M8KiblIaUrZKqYBzIDx+7TnqLs5agloGDDvSS1u4=;
+        s=k20201202; t=1620232362;
+        bh=JvFCuhW0EsPeygLYdplgOPy/K9J0AYj2Z5oqtympZDc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=TnJ72++JNnLSwh0dcEIM4K5jmrRToLMKeDd6FJwn0LOiuiqCeD3bdJJtN7icKuyiZ
-         LaRnCPGoelF5cuCGwC+4vucPpsGYh9IAA3w3KHU+//JseBgwegR/LeOFOU4SIocc0t
-         s0/D/oYXZoog5oqOGhirzuy1oLz1ImnOCYZgh8XaQTxwECFJIa4FOy/Ib17woYcfIW
-         MA6E5dd70cdNrJP8H2Kt3x1ffTsjxeo4SuYZOV9Gv1gYtyHxhFfC0FuLuT6vif344T
-         b+0vk4VRTYr74ZVXtoD7DGdTvlNeGHor2sdQZ2me7AWvqMPE5iQLkN4GLGKDXG5WzL
-         AGsOsdrkXr7tw==
+        b=IpBNgv+I48l3Bzr0+nb098lMzZBy6FkQSGtqzWg+0gsRC94Qr0oe69xODmkGHAaE8
+         W1F9ASsacrgh4/h6lnwr5x5BDDDkchebbD/a74chKlEuS5/FEEI6QoswY0QRkeyOoE
+         3QatZ8fWF2o0GYKvmfBSpgm+LRR5B4wg7Aq/NlUbXEtZBhbe+mMPuADxAVx3gCa8Xy
+         x1+BH5xrxy5BwVo/WzKwKgrGapxbC50E0XXo2yN0FkhjqUDzWFpPpAGbnQtukmfc7V
+         Bd3WyxuagY10dxOPVkErJCq6rDPdiSVwyJO6PDKY8DnRhBsfyjjoiCTLKzeBoiZNCH
+         ihyrTmRYYKkVw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Po-Hao Huang <phhuang@realtek.com>,
-        Ping-Ke Shih <pkshih@realtek.com>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        Sasha Levin <sashal@kernel.org>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.12 055/116] rtw88: 8822c: add LC calibration for RTL8822C
-Date:   Wed,  5 May 2021 12:30:23 -0400
-Message-Id: <20210505163125.3460440-55-sashal@kernel.org>
+Cc:     Felix Fietkau <nbd@nbd.name>, Sasha Levin <sashal@kernel.org>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org
+Subject: [PATCH AUTOSEL 5.12 056/116] mt76: mt7615: fix key set/delete issues
+Date:   Wed,  5 May 2021 12:30:24 -0400
+Message-Id: <20210505163125.3460440-56-sashal@kernel.org>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20210505163125.3460440-1-sashal@kernel.org>
 References: <20210505163125.3460440-1-sashal@kernel.org>
@@ -44,165 +43,255 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Po-Hao Huang <phhuang@realtek.com>
+From: Felix Fietkau <nbd@nbd.name>
 
-[ Upstream commit 7ae7784ec2a812c07d2ca91a6538ef2470154fb6 ]
+[ Upstream commit 730d6d0da8d8f5905faafe645a5b3c08ac3f5a8f ]
 
-Fix power tracking issue by replacing unnecessary IQ calibration
-with LC calibration.
-When thermal difference exceeds limitation, let RF circuit adjsut
-its characteristic to fit in current environment.
+There were multiple issues in the current key set/remove code:
+- deleting a key with the previous key index deletes the current key
+- BIP key would only be uploaded correctly initially and corrupted on rekey
 
-Signed-off-by: Po-Hao Huang <phhuang@realtek.com>
-Signed-off-by: Ping-Ke Shih <pkshih@realtek.com>
-Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
-Link: https://lore.kernel.org/r/20210319054218.3319-6-pkshih@realtek.com
+Rework the code to better keep track of multiple keys and check for the
+key index before deleting the current key
+
+Signed-off-by: Felix Fietkau <nbd@nbd.name>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/realtek/rtw88/main.h     |  2 ++
- drivers/net/wireless/realtek/rtw88/phy.c      | 14 ++++++++++
- drivers/net/wireless/realtek/rtw88/phy.h      |  1 +
- drivers/net/wireless/realtek/rtw88/reg.h      |  5 ++++
- drivers/net/wireless/realtek/rtw88/rtw8822c.c | 27 +++++++++++++++++--
- 5 files changed, 47 insertions(+), 2 deletions(-)
+ drivers/net/wireless/mediatek/mt76/mt76.h     |  1 +
+ .../net/wireless/mediatek/mt76/mt7615/mac.c   | 97 ++++++++++---------
+ .../net/wireless/mediatek/mt76/mt7615/main.c  | 18 ++--
+ 3 files changed, 65 insertions(+), 51 deletions(-)
 
-diff --git a/drivers/net/wireless/realtek/rtw88/main.h b/drivers/net/wireless/realtek/rtw88/main.h
-index 35afea91fd29..92b9cf1f9525 100644
---- a/drivers/net/wireless/realtek/rtw88/main.h
-+++ b/drivers/net/wireless/realtek/rtw88/main.h
-@@ -1166,6 +1166,7 @@ struct rtw_chip_info {
- 	bool en_dis_dpd;
- 	u16 dpd_ratemask;
- 	u8 iqk_threshold;
-+	u8 lck_threshold;
- 	const struct rtw_pwr_track_tbl *pwr_track_tbl;
+diff --git a/drivers/net/wireless/mediatek/mt76/mt76.h b/drivers/net/wireless/mediatek/mt76/mt76.h
+index 8bf45497cfca..36a430f09f64 100644
+--- a/drivers/net/wireless/mediatek/mt76/mt76.h
++++ b/drivers/net/wireless/mediatek/mt76/mt76.h
+@@ -222,6 +222,7 @@ struct mt76_wcid {
  
- 	u8 bfer_su_max_num;
-@@ -1534,6 +1535,7 @@ struct rtw_dm_info {
- 	u32 rrsr_mask_min;
- 	u8 thermal_avg[RTW_RF_PATH_MAX];
- 	u8 thermal_meter_k;
-+	u8 thermal_meter_lck;
- 	s8 delta_power_index[RTW_RF_PATH_MAX];
- 	s8 delta_power_index_last[RTW_RF_PATH_MAX];
- 	u8 default_ofdm_index;
-diff --git a/drivers/net/wireless/realtek/rtw88/phy.c b/drivers/net/wireless/realtek/rtw88/phy.c
-index e114ddecac09..0211a702bb38 100644
---- a/drivers/net/wireless/realtek/rtw88/phy.c
-+++ b/drivers/net/wireless/realtek/rtw88/phy.c
-@@ -2219,6 +2219,20 @@ s8 rtw_phy_pwrtrack_get_pwridx(struct rtw_dev *rtwdev,
- }
- EXPORT_SYMBOL(rtw_phy_pwrtrack_get_pwridx);
+ 	u16 idx;
+ 	u8 hw_key_idx;
++	u8 hw_key_idx2;
  
-+bool rtw_phy_pwrtrack_need_lck(struct rtw_dev *rtwdev)
-+{
-+	struct rtw_dm_info *dm_info = &rtwdev->dm_info;
-+	u8 delta_lck;
-+
-+	delta_lck = abs(dm_info->thermal_avg[0] - dm_info->thermal_meter_lck);
-+	if (delta_lck >= rtwdev->chip->lck_threshold) {
-+		dm_info->thermal_meter_lck = dm_info->thermal_avg[0];
-+		return true;
-+	}
-+	return false;
-+}
-+EXPORT_SYMBOL(rtw_phy_pwrtrack_need_lck);
-+
- bool rtw_phy_pwrtrack_need_iqk(struct rtw_dev *rtwdev)
+ 	u8 sta:1;
+ 	u8 ext_phy:1;
+diff --git a/drivers/net/wireless/mediatek/mt76/mt7615/mac.c b/drivers/net/wireless/mediatek/mt76/mt7615/mac.c
+index 59fdd0fc2ad4..72bdc6579763 100644
+--- a/drivers/net/wireless/mediatek/mt76/mt7615/mac.c
++++ b/drivers/net/wireless/mediatek/mt76/mt7615/mac.c
+@@ -1033,7 +1033,7 @@ EXPORT_SYMBOL_GPL(mt7615_mac_set_rates);
+ static int
+ mt7615_mac_wtbl_update_key(struct mt7615_dev *dev, struct mt76_wcid *wcid,
+ 			   struct ieee80211_key_conf *key,
+-			   enum mt7615_cipher_type cipher,
++			   enum mt7615_cipher_type cipher, u16 cipher_mask,
+ 			   enum set_key_cmd cmd)
  {
- 	struct rtw_dm_info *dm_info = &rtwdev->dm_info;
-diff --git a/drivers/net/wireless/realtek/rtw88/phy.h b/drivers/net/wireless/realtek/rtw88/phy.h
-index a4fcfb878550..a0742a69446d 100644
---- a/drivers/net/wireless/realtek/rtw88/phy.h
-+++ b/drivers/net/wireless/realtek/rtw88/phy.h
-@@ -55,6 +55,7 @@ u8 rtw_phy_pwrtrack_get_delta(struct rtw_dev *rtwdev, u8 path);
- s8 rtw_phy_pwrtrack_get_pwridx(struct rtw_dev *rtwdev,
- 			       struct rtw_swing_table *swing_table,
- 			       u8 tbl_path, u8 therm_path, u8 delta);
-+bool rtw_phy_pwrtrack_need_lck(struct rtw_dev *rtwdev);
- bool rtw_phy_pwrtrack_need_iqk(struct rtw_dev *rtwdev);
- void rtw_phy_config_swing_table(struct rtw_dev *rtwdev,
- 				struct rtw_swing_table *swing_table);
-diff --git a/drivers/net/wireless/realtek/rtw88/reg.h b/drivers/net/wireless/realtek/rtw88/reg.h
-index ea518aa78552..819af34dac34 100644
---- a/drivers/net/wireless/realtek/rtw88/reg.h
-+++ b/drivers/net/wireless/realtek/rtw88/reg.h
-@@ -652,8 +652,13 @@
- #define RF_TXATANK	0x64
- #define RF_TRXIQ	0x66
- #define RF_RXIQGEN	0x8d
-+#define RF_SYN_PFD	0xb0
- #define RF_XTALX2	0xb8
-+#define RF_SYN_CTRL	0xbb
- #define RF_MALSEL	0xbe
-+#define RF_SYN_AAC	0xc9
-+#define RF_AAC_CTRL	0xca
-+#define RF_FAST_LCK	0xcc
- #define RF_RCKD		0xde
- #define RF_TXADBG	0xde
- #define RF_LUTDBG	0xdf
-diff --git a/drivers/net/wireless/realtek/rtw88/rtw8822c.c b/drivers/net/wireless/realtek/rtw88/rtw8822c.c
-index dd560c28abb2..448922cb2e63 100644
---- a/drivers/net/wireless/realtek/rtw88/rtw8822c.c
-+++ b/drivers/net/wireless/realtek/rtw88/rtw8822c.c
-@@ -1126,6 +1126,7 @@ static void rtw8822c_pwrtrack_init(struct rtw_dev *rtwdev)
- 
- 	dm_info->pwr_trk_triggered = false;
- 	dm_info->thermal_meter_k = rtwdev->efuse.thermal_meter_k;
-+	dm_info->thermal_meter_lck = rtwdev->efuse.thermal_meter_k;
- }
- 
- static void rtw8822c_phy_set_param(struct rtw_dev *rtwdev)
-@@ -2108,6 +2109,26 @@ static void rtw8822c_false_alarm_statistics(struct rtw_dev *rtwdev)
- 	rtw_write32_set(rtwdev, REG_RX_BREAK, BIT_COM_RX_GCK_EN);
- }
- 
-+static void rtw8822c_do_lck(struct rtw_dev *rtwdev)
-+{
-+	u32 val;
+ 	u32 addr = mt7615_mac_wtbl_addr(dev, wcid->idx) + 30 * 4;
+@@ -1050,22 +1050,22 @@ mt7615_mac_wtbl_update_key(struct mt7615_dev *dev, struct mt76_wcid *wcid,
+ 			memcpy(data + 16, key->key + 24, 8);
+ 			memcpy(data + 24, key->key + 16, 8);
+ 		} else {
+-			if (cipher != MT_CIPHER_BIP_CMAC_128 && wcid->cipher)
+-				memmove(data + 16, data, 16);
+-			if (cipher != MT_CIPHER_BIP_CMAC_128 || !wcid->cipher)
++			if (cipher_mask == BIT(cipher))
+ 				memcpy(data, key->key, key->keylen);
+-			else if (cipher == MT_CIPHER_BIP_CMAC_128)
++			else if (cipher != MT_CIPHER_BIP_CMAC_128)
++				memcpy(data, key->key, 16);
++			if (cipher == MT_CIPHER_BIP_CMAC_128)
+ 				memcpy(data + 16, key->key, 16);
+ 		}
+ 	} else {
+-		if (wcid->cipher & ~BIT(cipher)) {
+-			if (cipher != MT_CIPHER_BIP_CMAC_128)
+-				memmove(data, data + 16, 16);
++		if (cipher == MT_CIPHER_BIP_CMAC_128)
+ 			memset(data + 16, 0, 16);
+-		} else {
++		else if (cipher_mask)
++			memset(data, 0, 16);
++		if (!cipher_mask)
+ 			memset(data, 0, sizeof(data));
+-		}
+ 	}
 +
-+	rtw_write_rf(rtwdev, RF_PATH_A, RF_SYN_CTRL, RFREG_MASK, 0x80010);
-+	rtw_write_rf(rtwdev, RF_PATH_A, RF_SYN_PFD, RFREG_MASK, 0x1F0FA);
-+	fsleep(1);
-+	rtw_write_rf(rtwdev, RF_PATH_A, RF_AAC_CTRL, RFREG_MASK, 0x80000);
-+	rtw_write_rf(rtwdev, RF_PATH_A, RF_SYN_AAC, RFREG_MASK, 0x80001);
-+	read_poll_timeout(rtw_read_rf, val, val != 0x1, 1000, 100000,
-+			  true, rtwdev, RF_PATH_A, RF_AAC_CTRL, 0x1000);
-+	rtw_write_rf(rtwdev, RF_PATH_A, RF_SYN_PFD, RFREG_MASK, 0x1F0F8);
-+	rtw_write_rf(rtwdev, RF_PATH_B, RF_SYN_CTRL, RFREG_MASK, 0x80010);
-+
-+	rtw_write_rf(rtwdev, RF_PATH_A, RF_FAST_LCK, RFREG_MASK, 0x0f000);
-+	rtw_write_rf(rtwdev, RF_PATH_A, RF_FAST_LCK, RFREG_MASK, 0x4f000);
-+	fsleep(1);
-+	rtw_write_rf(rtwdev, RF_PATH_A, RF_FAST_LCK, RFREG_MASK, 0x0f000);
-+}
-+
- static void rtw8822c_do_iqk(struct rtw_dev *rtwdev)
+ 	mt76_wr_copy(dev, addr, data, sizeof(data));
+ 
+ 	return 0;
+@@ -1073,7 +1073,7 @@ mt7615_mac_wtbl_update_key(struct mt7615_dev *dev, struct mt76_wcid *wcid,
+ 
+ static int
+ mt7615_mac_wtbl_update_pk(struct mt7615_dev *dev, struct mt76_wcid *wcid,
+-			  enum mt7615_cipher_type cipher,
++			  enum mt7615_cipher_type cipher, u16 cipher_mask,
+ 			  int keyidx, enum set_key_cmd cmd)
  {
- 	struct rtw_iqk_para para = {0};
-@@ -3538,11 +3559,12 @@ static void __rtw8822c_pwr_track(struct rtw_dev *rtwdev)
+ 	u32 addr = mt7615_mac_wtbl_addr(dev, wcid->idx), w0, w1;
+@@ -1083,20 +1083,23 @@ mt7615_mac_wtbl_update_pk(struct mt7615_dev *dev, struct mt76_wcid *wcid,
  
- 	rtw_phy_config_swing_table(rtwdev, &swing_table);
- 
-+	if (rtw_phy_pwrtrack_need_lck(rtwdev))
-+		rtw8822c_do_lck(rtwdev);
+ 	w0 = mt76_rr(dev, addr);
+ 	w1 = mt76_rr(dev, addr + 4);
+-	if (cmd == SET_KEY) {
+-		w0 |= MT_WTBL_W0_RX_KEY_VALID |
+-		      FIELD_PREP(MT_WTBL_W0_RX_IK_VALID,
+-				 cipher == MT_CIPHER_BIP_CMAC_128);
+-		if (cipher != MT_CIPHER_BIP_CMAC_128 ||
+-		    !wcid->cipher)
+-			w0 |= FIELD_PREP(MT_WTBL_W0_KEY_IDX, keyidx);
+-	}  else {
+-		if (!(wcid->cipher & ~BIT(cipher)))
+-			w0 &= ~(MT_WTBL_W0_RX_KEY_VALID |
+-				MT_WTBL_W0_KEY_IDX);
+-		if (cipher == MT_CIPHER_BIP_CMAC_128)
+-			w0 &= ~MT_WTBL_W0_RX_IK_VALID;
 +
- 	for (i = 0; i < rtwdev->hal.rf_path_num; i++)
- 		rtw8822c_pwr_track_path(rtwdev, &swing_table, i);
++	if (cipher_mask)
++		w0 |= MT_WTBL_W0_RX_KEY_VALID;
++	else
++		w0 &= ~(MT_WTBL_W0_RX_KEY_VALID | MT_WTBL_W0_KEY_IDX);
++	if (cipher_mask & BIT(MT_CIPHER_BIP_CMAC_128))
++		w0 |= MT_WTBL_W0_RX_IK_VALID;
++	else
++		w0 &= ~MT_WTBL_W0_RX_IK_VALID;
++
++	if (cmd == SET_KEY &&
++	    (cipher != MT_CIPHER_BIP_CMAC_128 ||
++	     cipher_mask == BIT(cipher))) {
++		w0 &= ~MT_WTBL_W0_KEY_IDX;
++		w0 |= FIELD_PREP(MT_WTBL_W0_KEY_IDX, keyidx);
+ 	}
++
+ 	mt76_wr(dev, MT_WTBL_RICR0, w0);
+ 	mt76_wr(dev, MT_WTBL_RICR1, w1);
  
--	if (rtw_phy_pwrtrack_need_iqk(rtwdev))
--		rtw8822c_do_iqk(rtwdev);
+@@ -1109,24 +1112,25 @@ mt7615_mac_wtbl_update_pk(struct mt7615_dev *dev, struct mt76_wcid *wcid,
+ 
+ static void
+ mt7615_mac_wtbl_update_cipher(struct mt7615_dev *dev, struct mt76_wcid *wcid,
+-			      enum mt7615_cipher_type cipher,
++			      enum mt7615_cipher_type cipher, u16 cipher_mask,
+ 			      enum set_key_cmd cmd)
+ {
+ 	u32 addr = mt7615_mac_wtbl_addr(dev, wcid->idx);
+ 
+-	if (cmd == SET_KEY) {
+-		if (cipher != MT_CIPHER_BIP_CMAC_128 || !wcid->cipher)
+-			mt76_rmw(dev, addr + 2 * 4, MT_WTBL_W2_KEY_TYPE,
+-				 FIELD_PREP(MT_WTBL_W2_KEY_TYPE, cipher));
+-	} else {
+-		if (cipher != MT_CIPHER_BIP_CMAC_128 &&
+-		    wcid->cipher & BIT(MT_CIPHER_BIP_CMAC_128))
+-			mt76_rmw(dev, addr + 2 * 4, MT_WTBL_W2_KEY_TYPE,
+-				 FIELD_PREP(MT_WTBL_W2_KEY_TYPE,
+-					    MT_CIPHER_BIP_CMAC_128));
+-		else if (!(wcid->cipher & ~BIT(cipher)))
+-			mt76_clear(dev, addr + 2 * 4, MT_WTBL_W2_KEY_TYPE);
++	if (!cipher_mask) {
++		mt76_clear(dev, addr + 2 * 4, MT_WTBL_W2_KEY_TYPE);
++		return;
+ 	}
++
++	if (cmd != SET_KEY)
++		return;
++
++	if (cipher == MT_CIPHER_BIP_CMAC_128 &&
++	    cipher_mask & ~BIT(MT_CIPHER_BIP_CMAC_128))
++		return;
++
++	mt76_rmw(dev, addr + 2 * 4, MT_WTBL_W2_KEY_TYPE,
++		 FIELD_PREP(MT_WTBL_W2_KEY_TYPE, cipher));
  }
  
- static void rtw8822c_pwr_track(struct rtw_dev *rtwdev)
-@@ -4351,6 +4373,7 @@ struct rtw_chip_info rtw8822c_hw_spec = {
- 	.dpd_ratemask = DIS_DPD_RATEALL,
- 	.pwr_track_tbl = &rtw8822c_rtw_pwr_track_tbl,
- 	.iqk_threshold = 8,
-+	.lck_threshold = 8,
- 	.bfer_su_max_num = 2,
- 	.bfer_mu_max_num = 1,
- 	.rx_ldpc = true,
+ int __mt7615_mac_wtbl_set_key(struct mt7615_dev *dev,
+@@ -1135,25 +1139,30 @@ int __mt7615_mac_wtbl_set_key(struct mt7615_dev *dev,
+ 			      enum set_key_cmd cmd)
+ {
+ 	enum mt7615_cipher_type cipher;
++	u16 cipher_mask = wcid->cipher;
+ 	int err;
+ 
+ 	cipher = mt7615_mac_get_cipher(key->cipher);
+ 	if (cipher == MT_CIPHER_NONE)
+ 		return -EOPNOTSUPP;
+ 
+-	mt7615_mac_wtbl_update_cipher(dev, wcid, cipher, cmd);
+-	err = mt7615_mac_wtbl_update_key(dev, wcid, key, cipher, cmd);
++	if (cmd == SET_KEY)
++		cipher_mask |= BIT(cipher);
++	else
++		cipher_mask &= ~BIT(cipher);
++
++	mt7615_mac_wtbl_update_cipher(dev, wcid, cipher, cipher_mask, cmd);
++	err = mt7615_mac_wtbl_update_key(dev, wcid, key, cipher, cipher_mask,
++					 cmd);
+ 	if (err < 0)
+ 		return err;
+ 
+-	err = mt7615_mac_wtbl_update_pk(dev, wcid, cipher, key->keyidx, cmd);
++	err = mt7615_mac_wtbl_update_pk(dev, wcid, cipher, cipher_mask,
++					key->keyidx, cmd);
+ 	if (err < 0)
+ 		return err;
+ 
+-	if (cmd == SET_KEY)
+-		wcid->cipher |= BIT(cipher);
+-	else
+-		wcid->cipher &= ~BIT(cipher);
++	wcid->cipher = cipher_mask;
+ 
+ 	return 0;
+ }
+diff --git a/drivers/net/wireless/mediatek/mt76/mt7615/main.c b/drivers/net/wireless/mediatek/mt76/mt7615/main.c
+index 25faf486d279..1aa6928f88fc 100644
+--- a/drivers/net/wireless/mediatek/mt76/mt7615/main.c
++++ b/drivers/net/wireless/mediatek/mt76/mt7615/main.c
+@@ -337,7 +337,8 @@ static int mt7615_set_key(struct ieee80211_hw *hw, enum set_key_cmd cmd,
+ 	struct mt7615_sta *msta = sta ? (struct mt7615_sta *)sta->drv_priv :
+ 				  &mvif->sta;
+ 	struct mt76_wcid *wcid = &msta->wcid;
+-	int idx = key->keyidx, err;
++	int idx = key->keyidx, err = 0;
++	u8 *wcid_keyidx = &wcid->hw_key_idx;
+ 
+ 	/* The hardware does not support per-STA RX GTK, fallback
+ 	 * to software mode for these.
+@@ -352,6 +353,7 @@ static int mt7615_set_key(struct ieee80211_hw *hw, enum set_key_cmd cmd,
+ 	/* fall back to sw encryption for unsupported ciphers */
+ 	switch (key->cipher) {
+ 	case WLAN_CIPHER_SUITE_AES_CMAC:
++		wcid_keyidx = &wcid->hw_key_idx2;
+ 		key->flags |= IEEE80211_KEY_FLAG_GENERATE_MMIE;
+ 		break;
+ 	case WLAN_CIPHER_SUITE_TKIP:
+@@ -369,12 +371,13 @@ static int mt7615_set_key(struct ieee80211_hw *hw, enum set_key_cmd cmd,
+ 
+ 	mt7615_mutex_acquire(dev);
+ 
+-	if (cmd == SET_KEY) {
+-		key->hw_key_idx = wcid->idx;
+-		wcid->hw_key_idx = idx;
+-	} else if (idx == wcid->hw_key_idx) {
+-		wcid->hw_key_idx = -1;
+-	}
++	if (cmd == SET_KEY)
++		*wcid_keyidx = idx;
++	else if (idx == *wcid_keyidx)
++		*wcid_keyidx = -1;
++	else
++		goto out;
++
+ 	mt76_wcid_key_setup(&dev->mt76, wcid,
+ 			    cmd == SET_KEY ? key : NULL);
+ 
+@@ -383,6 +386,7 @@ static int mt7615_set_key(struct ieee80211_hw *hw, enum set_key_cmd cmd,
+ 	else
+ 		err = __mt7615_mac_wtbl_set_key(dev, wcid, key, cmd);
+ 
++out:
+ 	mt7615_mutex_release(dev);
+ 
+ 	return err;
 -- 
 2.30.2
 
