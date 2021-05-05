@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6F00C3735B5
-	for <lists+netdev@lfdr.de>; Wed,  5 May 2021 09:41:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 05D523735D2
+	for <lists+netdev@lfdr.de>; Wed,  5 May 2021 09:48:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231234AbhEEHlF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 5 May 2021 03:41:05 -0400
-Received: from new3-smtp.messagingengine.com ([66.111.4.229]:37727 "EHLO
-        new3-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S229741AbhEEHlC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 5 May 2021 03:41:02 -0400
-Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-        by mailnew.nyi.internal (Postfix) with ESMTP id C325A58095A;
-        Wed,  5 May 2021 03:40:05 -0400 (EDT)
+        id S231494AbhEEHtg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 5 May 2021 03:49:36 -0400
+Received: from out5-smtp.messagingengine.com ([66.111.4.29]:48045 "EHLO
+        out5-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S229741AbhEEHtf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 5 May 2021 03:49:35 -0400
+Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
+        by mailout.nyi.internal (Postfix) with ESMTP id 92C195C0060;
+        Wed,  5 May 2021 03:48:38 -0400 (EDT)
 Received: from mailfrontend1 ([10.202.2.162])
-  by compute3.internal (MEProxy); Wed, 05 May 2021 03:40:05 -0400
+  by compute4.internal (MEProxy); Wed, 05 May 2021 03:48:38 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
         messagingengine.com; h=cc:content-type:date:from:in-reply-to
         :message-id:mime-version:references:subject:to:x-me-proxy
-        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm2; bh=XGAZ/H
-        Ub1ggaRYimKsJOVdJMZycWod7347H73fuhCGY=; b=D1N5qqeiHaEaEHhEL6jiu3
-        P2uWIqjr3JjFcPYiEWhGcBB1JNfiecYZ9VQCVuiWLasYA+oHBAwkRbcdDVgK3O03
-        SIlP5iPe9TQ30STXOA3auIpgr+GCw9p1Feye6FiqDkMh7RnL3PeTdy3aRYzZeLiB
-        nqLvUOS5a6tLdULj9C31IJMF3ckKKWRw9Vt2o9WHuEgH1EU9XvMxedPjg1DUVxLC
-        oerpeLFfd5rFAgYhj8QsB8HKysyzQJ0+42fq74EhgGyox6a+iZASx/D5fVFq9ANw
-        /xqpZk9jSFoPIDSTEFMP6RXkV+217vJpcmnn4fyCgENncJL9lkrlA3OtsCekKEfA
+        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm2; bh=zgsZ4A
+        3r4kNcbuxwkWZ1xKUX08B1TYZFKdCXUD8zP+c=; b=XBtZT5dG+vqLqfO7QyGRVt
+        hSb0EHAW2EXVQoVtgHHtWewvpWH5KoKQFWnUkPCQLpRt9BfZBsIGNJQU28AjdMop
+        sX718zc/l913iB0Py1DoYmyZwjAaJ2kYmkB284vBB3i/SQqSmVmymwQXc4SUxtC/
+        yn2xo1JnN6akD8Re2cds2JFXo/GskJc+ZPPRrGNjQUBUCzHtdeI6PwJLWiRqMmxC
+        PGq1KJnFZygLRaKH6YTkgGV5SoFcPiyW2Z/N6m6FRBPCnvggQDNUcp7kKtcC5NL4
+        0SQ6U9DOrDdjyft8n+Fac6SqC3ziluf9WMj4btoeeSiVn3iaiQZpbmpORy2tqeuw
         ==
-X-ME-Sender: <xms:00uSYHUihf4d1QjKyA07Xr7-UqoXKAHac00JGV1BWzWGmkcypb_cmg>
-    <xme:00uSYPnldn2lqww0jFJqBtshsyysPUv8naP8SWpUo5M07Y6Ybp0bJ0DLLYESW8G61
-    nuXDf3XVH9EioI>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduledrvdefjedguddujecutefuodetggdotefrod
+X-ME-Sender: <xms:1k2SYJeHh16eS23c3_hbVqIU4GI9bC1YAgPNqxZfQrRdprvGULo4Ag>
+    <xme:1k2SYHOBsDy-5mSFbdZlfrQkvc2ln4KzvSaiOh6-QOjKxXnz2L9j3vcd5uHFMHdl6
+    eomCPUvUtGx6Y0>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduledrvdefjedguddukecutefuodetggdotefrod
     ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfgh
     necuuegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmd
     enucfjughrpeffhffvuffkfhggtggujgesthdtredttddtvdenucfhrhhomhepkfguohcu
@@ -38,113 +38,112 @@ X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduledrvdefjedguddujecutefuodetgg
     htvghrnheptdffkeekfeduffevgeeujeffjefhtefgueeugfevtdeiheduueeukefhudeh
     leetnecukfhppeekgedrvddvledrudehfedrudekjeenucevlhhushhtvghrufhiiigvpe
     dtnecurfgrrhgrmhepmhgrihhlfhhrohhmpehiughoshgthhesihguohhstghhrdhorhhg
-X-ME-Proxy: <xmx:00uSYDb5KSWqMLYB8WYrKAOQV2kK7nEMxeUkrHE1Z53CAOZpwb1iwQ>
-    <xmx:00uSYCUMcV9uah9CDZ_aidGfKYXtASMVabQdsHmpszKtwkmIgo5JZQ>
-    <xmx:00uSYBkua7gJK8pX1x_tH33qv3xiXSHk-w9k_Q4-YrGnYk3uxUcrTA>
-    <xmx:1UuSYCiApZvkqH-2B5PQh7GX7dY1mhzxxUGxrGZfeCZNXIHL1zzcMQ>
+X-ME-Proxy: <xmx:1k2SYCjI2HLOEY75Uj3b2SsTDWje4HVpfFJP_vqBArxNcMXs5l_Xmw>
+    <xmx:1k2SYC-V5CNkqhG3FZlfVkKvRsBwmSdjMjg25Eb8KcaEMPJp_DVItQ>
+    <xmx:1k2SYFuD8ytOK2FEE4Pz5itmB-3UfGAhVR2yJw6F-2ygD1Ia-ZswOw>
+    <xmx:1k2SYJgAUsuEsdj5A-y9v0nC1DJ_hW9VQMcQ6-MFF9ZQ9t1AnteLYQ>
 Received: from localhost (igld-84-229-153-187.inter.net.il [84.229.153.187])
         by mail.messagingengine.com (Postfix) with ESMTPA;
-        Wed,  5 May 2021 03:40:02 -0400 (EDT)
-Date:   Wed, 5 May 2021 10:39:58 +0300
+        Wed,  5 May 2021 03:48:37 -0400 (EDT)
+Date:   Wed, 5 May 2021 10:48:34 +0300
 From:   Ido Schimmel <idosch@idosch.org>
-To:     Tobias Waldekranz <tobias@waldekranz.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, andrew@lunn.ch,
-        vivien.didelot@gmail.com, f.fainelli@gmail.com, olteanv@gmail.com,
-        roopa@nvidia.com, nikolay@nvidia.com, jiri@resnulli.us,
-        stephen@networkplumber.org, netdev@vger.kernel.org,
-        bridge@lists.linux-foundation.org
-Subject: Re: [RFC net-next 2/9] net: bridge: Disambiguate offload_fwd_mark
-Message-ID: <YJJLzr5sJ2FYZRZ4@shredder.lan>
-References: <20210426170411.1789186-1-tobias@waldekranz.com>
- <20210426170411.1789186-3-tobias@waldekranz.com>
- <YI6+kQxjCcnYmwkx@shredder>
- <87h7jknqwn.fsf@waldekranz.com>
+To:     David Ahern <dsahern@gmail.com>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
+        petrm@nvidia.com, roopa@nvidia.com, nikolay@nvidia.com,
+        ssuryaextr@gmail.com, mlxsw@nvidia.com,
+        Ido Schimmel <idosch@nvidia.com>
+Subject: Re: [RFC PATCH net-next 02/10] ipv4: Add a sysctl to control
+ multipath hash fields
+Message-ID: <YJJN0igwJEC6HoC2@shredder.lan>
+References: <20210502162257.3472453-1-idosch@idosch.org>
+ <20210502162257.3472453-3-idosch@idosch.org>
+ <3664a338-40ad-9379-0a4c-ec2bd99681dd@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <87h7jknqwn.fsf@waldekranz.com>
+In-Reply-To: <3664a338-40ad-9379-0a4c-ec2bd99681dd@gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, May 03, 2021 at 10:49:12AM +0200, Tobias Waldekranz wrote:
-> On Sun, May 02, 2021 at 18:00, Ido Schimmel <idosch@idosch.org> wrote:
-> > On Mon, Apr 26, 2021 at 07:04:04PM +0200, Tobias Waldekranz wrote:
-> >> - skb->cb->offload_fwd_mark becomes skb->cb->src_hwdom. There is a
-> >>   slight change here: Whereas previously this was only set for
-> >>   offloaded packets, we now always track the incoming hwdom. As all
-> >>   uses where already gated behind checks of skb->offload_fwd_mark,
-> >>   this will not introduce any functional change, but it paves the way
-> >>   for future changes where the ingressing hwdom must be known both for
-> >>   offloaded and non-offloaded frames.
-> >
-> > [...]
-> >
-> >> @@ -43,15 +43,15 @@ int nbp_switchdev_mark_set(struct net_bridge_port *p)
-> >>  void nbp_switchdev_frame_mark(const struct net_bridge_port *p,
-> >>  			      struct sk_buff *skb)
-> >>  {
-> >> -	if (skb->offload_fwd_mark && !WARN_ON_ONCE(!p->offload_fwd_mark))
-> >> -		BR_INPUT_SKB_CB(skb)->offload_fwd_mark = p->offload_fwd_mark;
-> >> +	if (p->hwdom)
-> >> +		BR_INPUT_SKB_CB(skb)->src_hwdom = p->hwdom;
-> >>  }
-> >
-> > I assume you are referring to this change? "src_hwdom" sounds weird if
-> > it's expected to be valid for non-offloaded frames.
+On Mon, May 03, 2021 at 08:33:40PM -0600, David Ahern wrote:
+> On 5/2/21 10:22 AM, Ido Schimmel wrote:
+> > From: Ido Schimmel <idosch@nvidia.com>
+> > 
+> > A subsequent patch will add a new multipath hash policy where the packet
+> > fields used for multipath hash calculation are determined by user space.
+> > This patch adds a sysctl that allows user space to set these fields.
+> > 
+> > The packet fields are represented using a bitmap and are common between
+> > IPv4 and IPv6 to allow user space to use the same numbering across both
+> > protocols. For example, to hash based on standard 5-tuple:
+> > 
+> >  # sysctl -w net.ipv4.fib_multipath_hash_fields=0-2,4-5
+> >  net.ipv4.fib_multipath_hash_fields = 0-2,4-5
+> > 
+> > More fields can be added in the future, if needed.
+> > 
+> > The 'need_outer' and 'need_inner' variables are set in the control path
+> > to indicate whether dissection of the outer or inner flow is needed.
+> > They will be used by a subsequent patch to allow the data path to avoid
+> > dissection of the outer or inner flow when not needed.
+> > 
+> > Signed-off-by: Ido Schimmel <idosch@nvidia.com>
+> > ---
+> >  Documentation/networking/ip-sysctl.rst | 29 ++++++++++++++++
+> >  include/net/ip_fib.h                   | 46 ++++++++++++++++++++++++++
+> >  include/net/netns/ipv4.h               |  4 +++
+> >  net/ipv4/fib_frontend.c                | 24 ++++++++++++++
+> >  net/ipv4/sysctl_net_ipv4.c             | 32 ++++++++++++++++++
+> >  5 files changed, 135 insertions(+)
+> > 
+> > diff --git a/Documentation/networking/ip-sysctl.rst b/Documentation/networking/ip-sysctl.rst
+> > index c2ecc9894fd0..8ab61f4edf02 100644
+> > --- a/Documentation/networking/ip-sysctl.rst
+> > +++ b/Documentation/networking/ip-sysctl.rst
+> > @@ -100,6 +100,35 @@ fib_multipath_hash_policy - INTEGER
+> >  	- 1 - Layer 4
+> >  	- 2 - Layer 3 or inner Layer 3 if present
+> >  
+> > +fib_multipath_hash_fields - list of comma separated ranges
+> > +	When fib_multipath_hash_policy is set to 3 (custom multipath hash), the
+> > +	fields used for multipath hash calculation are determined by this
+> > +	sysctl.
+> > +
+> > +	The format used for both input and output is a comma separated list of
+> > +	ranges (e.g., "0-2" for source IP, destination IP and IP protocol).
+> > +	Writing to the file will clear all previous ranges and update the
+> > +	current list with the input.
+> > +
+> > +	Possible fields are:
+> > +
+> > +	== ============================
+> > +	 0 Source IP address
+> > +	 1 Destination IP address
+> > +	 2 IP protocol
+> > +	 3 Unused
+> > +	 4 Source port
+> > +	 5 Destination port
+> > +	 6 Inner source IP address
+> > +	 7 Inner destination IP address
+> > +	 8 Inner IP protocol
+> > +	 9 Inner Flow Label
+> > +	10 Inner source port
+> > +	11 Inner destination port
+> > +	== ============================
+> > +
+> > +	Default: 0-2 (source IP, destination IP and IP protocol)
 > 
-> Perhaps "non-offloaded" was a sloppy description on my part. I was
-> trying to describe frames that originate from a switchdev, but have not
-> been forwarded by hardware; e.g. STP BPDUs, IGMP reports, etc. So
-> nbp_switchdev_frame_mark now basically says: "If this skb came in from a
-> switchdev, make sure to note which one".
-> 
-> > Can you elaborate about "future changes where the ingressing hwdom must
-> > be known both for offloaded and non-offloaded frames"?
-> 
-> Typical example: The switchdev has a fixed configuration to trap STP
-> BPDUs, but STP is not running on the bridge and the group_fwd_mask
-> allows them to be forwarded. Say we have this setup:
-> 
->       br0
->     /  |  \
-> swp0 swp1 swp2
-> 
-> A BPDU comes in on swp0 and is trapped to the CPU; the driver does not
-> set skb->offload_fwd_mark. The bridge determines that the frame should
-> be forwarded to swp{1,2}. It is imperative that forward offloading is
-> _not_ allowed in this case, as the source hwdom is already "poisoned".
-> 
-> Recording the source hwdom allows this case to be handled properly.
+> since you are already requiring a name to id conversion, why not just
+> use a bitmask here as the input? if the value is a 32-bit bitmask do you
+> need bitmap_zalloc and its overhead?
 
-OK, thanks for the explanation. If it is allowed, then the packet will
-be transmitted from swp0, from which it was received.
+A bitmask was what I originally planned to use, but a bitmap seemed to
+provide a better user interface. In practice, it is probably not a big
+deal given that most people will just put the relevant value in
+/etc/sysctl.d/ and forget about it. Will try the bitmask option.
 
-> 
-> > Probably best to split this change to a different patch given the rest
-> > of the changes are mechanical.
-> 
-> Right, but I think the change in name to warrants a change in
-> semantics. It is being renamed to src_hwdom because it now holds just
-> that information. Again, there is no functional change introduced by
-> this since nbp_switchdev_allowed_egress always checks for the presence
-> of skb->offload_fwd_mark anyway. But if you feel strongly about it, I
-> will split it up.
+> Also, you could implement the current default using this scheme since
+> you have the default fields as the current L3 policy.
 
-If you put the explanation above in the changelog, then it should be
-fine to keep it as one patch.
-
-> 
-> >>  
-> >>  bool nbp_switchdev_allowed_egress(const struct net_bridge_port *p,
-> >>  				  const struct sk_buff *skb)
-> >>  {
-> >>  	return !skb->offload_fwd_mark ||
-> >> -	       BR_INPUT_SKB_CB(skb)->offload_fwd_mark != p->offload_fwd_mark;
-> >> +	       BR_INPUT_SKB_CB(skb)->src_hwdom != p->hwdom;
-> >>  }
-> >>  
-> >>  /* Flags that can be offloaded to hardware */
-> >> -- 
-> >> 2.25.1
-> >> 
+Will reply in patch #3.
