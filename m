@@ -2,37 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 29C3C374537
-	for <lists+netdev@lfdr.de>; Wed,  5 May 2021 19:50:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 33CA437453B
+	for <lists+netdev@lfdr.de>; Wed,  5 May 2021 19:50:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237626AbhEEREM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 5 May 2021 13:04:12 -0400
-Received: from mail.kernel.org ([198.145.29.99]:49728 "EHLO mail.kernel.org"
+        id S237760AbhEERER (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 5 May 2021 13:04:17 -0400
+Received: from mail.kernel.org ([198.145.29.99]:46458 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S237122AbhEEQ5U (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 5 May 2021 12:57:20 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 484C76198E;
-        Wed,  5 May 2021 16:39:26 +0000 (UTC)
+        id S236683AbhEEQ6J (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 5 May 2021 12:58:09 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 8A056619A8;
+        Wed,  5 May 2021 16:39:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1620232767;
-        bh=Eg/G/UjjFFu407dQzUK3rl62N3J47c9o9i1w6JqNAWA=;
+        s=k20201202; t=1620232776;
+        bh=hRkWyVwECxJrACDvgrt+TQxmgiORLhFnvePP7UIObDw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=cPqmf2zLuas0GpCMgUssGfQzMKsyJbWo7W5qnWYVUWfJ0/Cl3wmPlJUR9bFrvh4NB
-         OkGOH7gYWWEkxo7KolQr09OYrwA3u1SkCqNwQ/TtgqGlyysEdOpCeFr3krR6SOVBmo
-         u4d2vP1OEDmhn6l5+qfMdjmT4+MGdWoref8+/F86WC5hx35Qad6O3XHs12RJxfgGq+
-         Q172cnvH4ohQqZcAK7Nygl8oMLz0ojALFvy1xh33Qp+fdaV6X3cLeFO7kgAuFNtJs6
-         ZO68kbl5eCoG5k8N1tjNisi080WSqcgcWPVZjdWkCRhYnr2HQOy8qlOdFV/G0Ft5hF
-         bSWdew+OklPFA==
+        b=duiIkXNocQ8r9Q3vXPxll2yqda78pkZT/zdGzcOuEC5TepxFeCXY4hw42iZT6Rto2
+         93jN9BGiqHpAcVmQBvg/eVrKKQewLRgOS2byb4hmNaqe0Xwe/8xmGprtdRHaAjqdkY
+         5WhCx5UfO2JHszHAqsqtr6D+q2ECAr7TPmFT9SvEr62zGMlakGKZ9ndQiVAi9JOFCy
+         pA7L7BphYx69QnQDBEIusW6fcOL4Z30LfcCOlVsqpZ430C5kAgbTskeXinzwepe5Hs
+         RKqlgBDhRy8UE8scSpjuLmQJyETOVOwRkU1zvFKl0KrnqssRPZDWxHd8kyXPFnU/Vt
+         bGsHa59o3KTIw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     David Bauer <mail@david-bauer.net>, Felix Fietkau <nbd@nbd.name>,
+Cc:     Yonghong Song <yhs@fb.com>, Alexei Starovoitov <ast@kernel.org>,
+        Andrii Nakryiko <andrii@kernel.org>,
         Sasha Levin <sashal@kernel.org>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org
-Subject: [PATCH AUTOSEL 5.4 21/46] mt76: mt76x0: disable GTK offloading
-Date:   Wed,  5 May 2021 12:38:31 -0400
-Message-Id: <20210505163856.3463279-21-sashal@kernel.org>
+        linux-kselftest@vger.kernel.org, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, clang-built-linux@googlegroups.com
+Subject: [PATCH AUTOSEL 5.4 27/46] selftests: Set CC to clang in lib.mk if LLVM is set
+Date:   Wed,  5 May 2021 12:38:37 -0400
+Message-Id: <20210505163856.3463279-27-sashal@kernel.org>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20210505163856.3463279-1-sashal@kernel.org>
 References: <20210505163856.3463279-1-sashal@kernel.org>
@@ -44,44 +44,40 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: David Bauer <mail@david-bauer.net>
+From: Yonghong Song <yhs@fb.com>
 
-[ Upstream commit 4b36cc6b390f18dbc59a45fb4141f90d7dfe2b23 ]
+[ Upstream commit 26e6dd1072763cd5696b75994c03982dde952ad9 ]
 
-When operating two VAP on a MT7610 with encryption (PSK2, SAE, OWE),
-only the first one to be created will transmit properly encrypteded
-frames.
+selftests/bpf/Makefile includes lib.mk. With the following command
+  make -j60 LLVM=1 LLVM_IAS=1  <=== compile kernel
+  make -j60 -C tools/testing/selftests/bpf LLVM=1 LLVM_IAS=1 V=1
+some files are still compiled with gcc. This patch
+fixed lib.mk issue which sets CC to gcc in all cases.
 
-All subsequently created VAPs will sent out frames with the payload left
-unencrypted, breaking multicast traffic (ICMP6 NDP) and potentially
-disclosing information to a third party.
-
-Disable GTK offloading and encrypt these frames in software to
-circumvent this issue. THis only seems to be necessary on MT7610 chips,
-as MT7612 is not affected from our testing.
-
-Signed-off-by: David Bauer <mail@david-bauer.net>
-Signed-off-by: Felix Fietkau <nbd@nbd.name>
+Signed-off-by: Yonghong Song <yhs@fb.com>
+Signed-off-by: Alexei Starovoitov <ast@kernel.org>
+Acked-by: Andrii Nakryiko <andrii@kernel.org>
+Link: https://lore.kernel.org/bpf/20210413153413.3027426-1-yhs@fb.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/mediatek/mt76/mt76x02_util.c | 4 ++++
+ tools/testing/selftests/lib.mk | 4 ++++
  1 file changed, 4 insertions(+)
 
-diff --git a/drivers/net/wireless/mediatek/mt76/mt76x02_util.c b/drivers/net/wireless/mediatek/mt76/mt76x02_util.c
-index de0d6f21c621..075871f52bad 100644
---- a/drivers/net/wireless/mediatek/mt76/mt76x02_util.c
-+++ b/drivers/net/wireless/mediatek/mt76/mt76x02_util.c
-@@ -450,6 +450,10 @@ int mt76x02_set_key(struct ieee80211_hw *hw, enum set_key_cmd cmd,
- 	    !(key->flags & IEEE80211_KEY_FLAG_PAIRWISE))
- 		return -EOPNOTSUPP;
+diff --git a/tools/testing/selftests/lib.mk b/tools/testing/selftests/lib.mk
+index 3ed0134a764d..67386aa3f31d 100644
+--- a/tools/testing/selftests/lib.mk
++++ b/tools/testing/selftests/lib.mk
+@@ -1,6 +1,10 @@
+ # This mimics the top-level Makefile. We do it explicitly here so that this
+ # Makefile can operate with or without the kbuild infrastructure.
++ifneq ($(LLVM),)
++CC := clang
++else
+ CC := $(CROSS_COMPILE)gcc
++endif
  
-+	/* MT76x0 GTK offloading does not work with more than one VIF */
-+	if (is_mt76x0(dev) && !(key->flags & IEEE80211_KEY_FLAG_PAIRWISE))
-+		return -EOPNOTSUPP;
-+
- 	msta = sta ? (struct mt76x02_sta *)sta->drv_priv : NULL;
- 	wcid = msta ? &msta->wcid : &mvif->group_wcid;
- 
+ ifeq (0,$(MAKELEVEL))
+     ifeq ($(OUTPUT),)
 -- 
 2.30.2
 
