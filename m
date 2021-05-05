@@ -2,36 +2,38 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F121B3741B9
-	for <lists+netdev@lfdr.de>; Wed,  5 May 2021 18:46:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0D2E53741B4
+	for <lists+netdev@lfdr.de>; Wed,  5 May 2021 18:46:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234992AbhEEQko (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 5 May 2021 12:40:44 -0400
-Received: from mail.kernel.org ([198.145.29.99]:39198 "EHLO mail.kernel.org"
+        id S234915AbhEEQkk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 5 May 2021 12:40:40 -0400
+Received: from mail.kernel.org ([198.145.29.99]:39262 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S234226AbhEEQjB (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 5 May 2021 12:39:01 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 8E05861584;
-        Wed,  5 May 2021 16:33:51 +0000 (UTC)
+        id S235078AbhEEQjC (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 5 May 2021 12:39:02 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id EA70261476;
+        Wed,  5 May 2021 16:33:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1620232432;
-        bh=RCxLgN7/gkXsKhym5ThqqgbVTx9xWZPHnifZLnamMSs=;
+        s=k20201202; t=1620232434;
+        bh=UimeJS6hq2lUy+unWCGlr0f/LHC0pS+MIX4eyMbSJdc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=hCRXPAVVo91idZGYVRactZBDhC/7TPoPCX1qWMhvrOwAcOTnze8m8Y9aqbasAK9rG
-         BCInBF7lgkCDFTTTxeqE5MVsYES1aY95slQ6/hKVhidnanhkZDQt59ra+NnJ7FmaXm
-         k8074hIaMrzroFDLBK5HyXkYH1UC2sxErqaE40Sy3v+44va2IIGKQ5YBt06FehWfpX
-         0L+K2kciJE6qNqKRq3qk8Fx1qFqmrwYXeFu+oP3sDkoe+5fsYbhJTG6PIdP50x1BzL
-         YVAmjU1w5TGc1m+ytC02J6RNrsrfX5UQUp9KZ9S/EkrsI9LrHZz1t06R9BOYE7oI0Y
-         TmLsnb6/JtBfg==
+        b=f5PEkUlmH4WAukq9VHUT8lGwWqHFo2WVWCFcTPvG6OWj4DnDbITdcCLwcGC9p92ht
+         RhyEznHMoPxWCd4wVIxc0vdE4EGjCciFiBfuwYEskADBxeuhrOOvfj2Z+FppYugzfU
+         2xurSN+Or6dg3q1nHnua3feUADLp4z5gtLcvO6rjfx3rbBw2L3edpUnOED7LyMBfaJ
+         MHorS8WKHefLGn1HhzkpGRx+8MTUl8uerjB9fLhOApcFeQdIq+jvMkYfWsl8v4w8wH
+         q07wgYCTy/vmfIBJCEhAQJjj8wZdFZgsiiLvHF1UrFMEiT45OiprzX9QPAJe0VyzBI
+         WI2ANKAuM6/qg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Stefan Assmann <sassmann@kpanic.de>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
-        Sasha Levin <sashal@kernel.org>,
-        intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.12 104/116] iavf: remove duplicate free resources calls
-Date:   Wed,  5 May 2021 12:31:12 -0400
-Message-Id: <20210505163125.3460440-104-sashal@kernel.org>
+Cc:     Felix Fietkau <nbd@nbd.name>,
+        Ilya Lipnitskiy <ilya.lipnitskiy@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org
+Subject: [PATCH AUTOSEL 5.12 105/116] net: ethernet: mtk_eth_soc: fix RX VLAN offload
+Date:   Wed,  5 May 2021 12:31:13 -0400
+Message-Id: <20210505163125.3460440-105-sashal@kernel.org>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20210505163125.3460440-1-sashal@kernel.org>
 References: <20210505163125.3460440-1-sashal@kernel.org>
@@ -43,34 +45,48 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Stefan Assmann <sassmann@kpanic.de>
+From: Felix Fietkau <nbd@nbd.name>
 
-[ Upstream commit 1a0e880b028f97478dc689e2900b312741d0d772 ]
+[ Upstream commit 3f57d8c40fea9b20543cab4da12f4680d2ef182c ]
 
-Both iavf_free_all_tx_resources() and iavf_free_all_rx_resources() have
-already been called in the very same function.
-Remove the duplicate calls.
+The VLAN ID in the rx descriptor is only valid if the RX_DMA_VTAG bit is
+set. Fixes frames wrongly marked with VLAN tags.
 
-Signed-off-by: Stefan Assmann <sassmann@kpanic.de>
-Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
+Signed-off-by: Felix Fietkau <nbd@nbd.name>
+[Ilya: fix commit message]
+Signed-off-by: Ilya Lipnitskiy <ilya.lipnitskiy@gmail.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/intel/iavf/iavf_main.c | 2 --
- 1 file changed, 2 deletions(-)
+ drivers/net/ethernet/mediatek/mtk_eth_soc.c | 2 +-
+ drivers/net/ethernet/mediatek/mtk_eth_soc.h | 1 +
+ 2 files changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/intel/iavf/iavf_main.c b/drivers/net/ethernet/intel/iavf/iavf_main.c
-index dc5b3c06d1e0..ebd08543791b 100644
---- a/drivers/net/ethernet/intel/iavf/iavf_main.c
-+++ b/drivers/net/ethernet/intel/iavf/iavf_main.c
-@@ -3899,8 +3899,6 @@ static void iavf_remove(struct pci_dev *pdev)
+diff --git a/drivers/net/ethernet/mediatek/mtk_eth_soc.c b/drivers/net/ethernet/mediatek/mtk_eth_soc.c
+index 01d3ee4b5829..bcd5e7ae8482 100644
+--- a/drivers/net/ethernet/mediatek/mtk_eth_soc.c
++++ b/drivers/net/ethernet/mediatek/mtk_eth_soc.c
+@@ -1319,7 +1319,7 @@ static int mtk_poll_rx(struct napi_struct *napi, int budget,
+ 		skb->protocol = eth_type_trans(skb, netdev);
  
- 	iounmap(hw->hw_addr);
- 	pci_release_regions(pdev);
--	iavf_free_all_tx_resources(adapter);
--	iavf_free_all_rx_resources(adapter);
- 	iavf_free_queues(adapter);
- 	kfree(adapter->vf_res);
- 	spin_lock_bh(&adapter->mac_vlan_list_lock);
+ 		if (netdev->features & NETIF_F_HW_VLAN_CTAG_RX &&
+-		    RX_DMA_VID(trxd.rxd3))
++		    (trxd.rxd2 & RX_DMA_VTAG))
+ 			__vlan_hwaccel_put_tag(skb, htons(ETH_P_8021Q),
+ 					       RX_DMA_VID(trxd.rxd3));
+ 		skb_record_rx_queue(skb, 0);
+diff --git a/drivers/net/ethernet/mediatek/mtk_eth_soc.h b/drivers/net/ethernet/mediatek/mtk_eth_soc.h
+index fd3cec8f06ba..c47272100615 100644
+--- a/drivers/net/ethernet/mediatek/mtk_eth_soc.h
++++ b/drivers/net/ethernet/mediatek/mtk_eth_soc.h
+@@ -296,6 +296,7 @@
+ #define RX_DMA_LSO		BIT(30)
+ #define RX_DMA_PLEN0(_x)	(((_x) & 0x3fff) << 16)
+ #define RX_DMA_GET_PLEN0(_x)	(((_x) >> 16) & 0x3fff)
++#define RX_DMA_VTAG		BIT(15)
+ 
+ /* QDMA descriptor rxd3 */
+ #define RX_DMA_VID(_x)		((_x) & 0xfff)
 -- 
 2.30.2
 
