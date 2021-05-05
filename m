@@ -2,120 +2,152 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B8C3237333C
-	for <lists+netdev@lfdr.de>; Wed,  5 May 2021 02:35:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D65AF37333E
+	for <lists+netdev@lfdr.de>; Wed,  5 May 2021 02:36:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231350AbhEEAg3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 4 May 2021 20:36:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52154 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231146AbhEEAg1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 4 May 2021 20:36:27 -0400
-Received: from mail-ed1-x535.google.com (mail-ed1-x535.google.com [IPv6:2a00:1450:4864:20::535])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AED73C061574;
-        Tue,  4 May 2021 17:35:30 -0700 (PDT)
-Received: by mail-ed1-x535.google.com with SMTP id s6so1003367edu.10;
-        Tue, 04 May 2021 17:35:30 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=GQcBXhiG4WSKbf/NKH+KIteUYu6u/x6SNCEh0wAhXc4=;
-        b=MIPpoTfg07W36wb7bopairhQEaQzQYki7Tpcwd8BU+s7fyNlDmnJpkewhI9gD3wVlo
-         QkkfmJPdI7MeQBQnqt2zirp41ojwrtpuelnJT3Uwgk3UGLKwfBdDmJLfPIZtJqzifFSv
-         rMoSIyTtVygXCpVHDJNBpvRXaFoqvvuL9JBjZjf/FD3tlLptBV6+dJ8RpSGFT5gWgKkn
-         TdW1vEJgtdLk+DgqtAITpHO8gheN5qjVZiz0kxazHQkbTx28RTTFR7QdAnaRIQ3p1dCf
-         D3LigiZZemA+zx6H1VwgfuBICIZnDpvH3T2YuIFBUeHk9Dh7uGLqSnXHrkMYax55wfMB
-         9wSA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=GQcBXhiG4WSKbf/NKH+KIteUYu6u/x6SNCEh0wAhXc4=;
-        b=SLgiXPDNx1boVktndxvboGsvp92NhDxXvb77JvwJIYmCAZ3fQcRmJ9sP0LT4Zg7Qg4
-         Go72iyYKBzGelUGIwUJQpqWShqE8NFJxZ+0KMtVOeG9JHEdVrX2i3xglPWgchwQb89bN
-         IN+mc+3l67I/QLKkRr71L6Mma/oj/k2UakN0ir8mY3DHZtLJbBagDzla9EtQIdbHh2f+
-         gJqulyUJb5th5PSALvd7JJX7p3AHo0J36WQP3QnTQQ6s3WtW2y2JiyWNkIla5sUmiSQK
-         o+9AbDB16kP72BFNCGEFljoeZrqKJohYBrxxJC1YqBa/uzNwmUyCsRF61jSSmRmYGnFw
-         mFbg==
-X-Gm-Message-State: AOAM531Djo+57lAN3Ztpsz3n/HTooSMPhvsle/ayoIDTMLPFM4UZa8sI
-        62KXWAH8W21OzNsOXpj065w=
-X-Google-Smtp-Source: ABdhPJzJ28LwP1ruNR/6xg95ajBMTXpp2+a15spYOqcq7u3I/Ju4F8LD2joilelT7IoSnEVB/LmYpg==
-X-Received: by 2002:a05:6402:36d:: with SMTP id s13mr29337677edw.103.1620174929306;
-        Tue, 04 May 2021 17:35:29 -0700 (PDT)
-Received: from Ansuel-xps.localdomain (93-35-189-2.ip56.fastwebnet.it. [93.35.189.2])
-        by smtp.gmail.com with ESMTPSA id ne17sm2103286ejc.56.2021.05.04.17.35.28
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 04 May 2021 17:35:28 -0700 (PDT)
-Date:   Wed, 5 May 2021 02:35:25 +0200
-From:   Ansuel Smith <ansuelsmth@gmail.com>
-To:     Florian Fainelli <f.fainelli@gmail.com>
-Cc:     Nicolas Ferre <nicolas.ferre@microchip.com>,
-        Claudiu Beznea <claudiu.beznea@microchip.com>,
+        id S231441AbhEEAhQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 4 May 2021 20:37:16 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:53392 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S231146AbhEEAhP (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 4 May 2021 20:37:15 -0400
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
+        (envelope-from <andrew@lunn.ch>)
+        id 1le5WR-002Yub-CZ; Wed, 05 May 2021 02:36:15 +0200
+Date:   Wed, 5 May 2021 02:36:15 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Ansuel Smith <ansuelsmth@gmail.com>
+Cc:     Florian Fainelli <f.fainelli@gmail.com>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Jose Abreu <joabreu@synopsys.com>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org
-Subject: Re: [RFC PATCH net-next v3 17/20] net: phy: phylink: permit to pass
- dev_flags to phylink_connect_phy
-Message-ID: <YJHoTYfa03Yq5NwZ@Ansuel-xps.localdomain>
+        Russell King <linux@armlinux.org.uk>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [RFC PATCH net-next v3 05/20] net: dsa: qca8k: handle error with
+ qca8k_read operation
+Message-ID: <YJHof4mwG7xYRc8f@lunn.ch>
 References: <20210504222915.17206-1-ansuelsmth@gmail.com>
- <20210504222915.17206-17-ansuelsmth@gmail.com>
- <79cd97fe-02e8-4373-75a5-78ad0179c42b@gmail.com>
+ <20210504222915.17206-5-ansuelsmth@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <79cd97fe-02e8-4373-75a5-78ad0179c42b@gmail.com>
+In-Reply-To: <20210504222915.17206-5-ansuelsmth@gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, May 04, 2021 at 03:33:36PM -0700, Florian Fainelli wrote:
-> On 5/4/21 3:29 PM, Ansuel Smith wrote:
-> > Add support for phylink_connect_phy to pass dev_flags to the PHY driver.
-> > Change any user of phylink_connect_phy to pass 0 as dev_flags by
-> > default.
-> > 
-> > Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
+On Wed, May 05, 2021 at 12:28:59AM +0200, Ansuel Smith wrote:
+> qca8k_read can fail. Rework any user to handle error values and
+> correctly return.
 > 
-> I do not think that this patch and the next one are necessary at all,
-> because phylink_of_phy_connect() already supports passing a dev_flags.
+> Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
+> ---
+>  drivers/net/dsa/qca8k.c | 90 +++++++++++++++++++++++++++++++----------
+>  1 file changed, 69 insertions(+), 21 deletions(-)
 > 
-> That means that you should be representing the switch's internal MDIO
-> bus in the Device Tree and then describe how each port of the switch
-> connects to the internal PHY on that same bus. Once you do that the
-> logic in net/dsa/slave.c will call phylink_of_phy_connect() and all you
-> will have to do is implement dsa_switch_ops::get_phy_flags. Can you try
-> that?
+> diff --git a/drivers/net/dsa/qca8k.c b/drivers/net/dsa/qca8k.c
+> index 411b42d38819..cde68ed6856b 100644
+> --- a/drivers/net/dsa/qca8k.c
+> +++ b/drivers/net/dsa/qca8k.c
+> @@ -146,12 +146,13 @@ qca8k_set_page(struct mii_bus *bus, u16 page)
+>  static u32
+>  qca8k_read(struct qca8k_priv *priv, u32 reg)
+>  {
+> +	struct mii_bus *bus = priv->bus;
+>  	u16 r1, r2, page;
+>  	u32 val;
+>  
+>  	qca8k_split_addr(reg, &r1, &r2, &page);
+>  
+> -	mutex_lock_nested(&priv->bus->mdio_lock, MDIO_MUTEX_NESTED);
+> +	mutex_lock_nested(&bus->mdio_lock, MDIO_MUTEX_NESTED);
+>  
+>  	val = qca8k_set_page(priv->bus, page);
+>  	if (val < 0)
+> @@ -160,8 +161,7 @@ qca8k_read(struct qca8k_priv *priv, u32 reg)
+>  	val = qca8k_mii_read32(priv->bus, 0x10 | r2, r1);
+>  
+>  exit:
+> -	mutex_unlock(&priv->bus->mdio_lock);
+> -
+> +	mutex_unlock(&bus->mdio_lock);
+>  	return val;
 
-I did some testing. Just to make sure I'm correctly implementing this I'm
-using the phy-handle binding and the phy-mode set to internal. It does
-work with a quick test but I think with this implementation we would be
-back to this problem [0].
-(I'm declaring the phy_port to the top mdio driver like it was done
-before [0])
+This change does not have anything to do with the commit message.
 
-I was thinking if a good solution would be to register a internal mdio driver
-in the qca8k code so that it can use the MASTER reg.
-(it's late here so I could be very confused about this)
+>  }
+>  
+> @@ -226,8 +226,13 @@ static int
+>  qca8k_regmap_read(void *ctx, uint32_t reg, uint32_t *val)
+>  {
+>  	struct qca8k_priv *priv = (struct qca8k_priv *)ctx;
+> +	int ret;
+>  
+> -	*val = qca8k_read(priv, reg);
+> +	ret = qca8k_read(priv, reg);
+> +	if (ret < 0)
+> +		return ret;
+> +
+> +	*val = ret;
+>  
+>  	return 0;
+>  }
+> @@ -280,15 +285,17 @@ static int
+>  qca8k_busy_wait(struct qca8k_priv *priv, u32 reg, u32 mask)
+>  {
+>  	unsigned long timeout;
+> +	u32 val;
+>  
+>  	timeout = jiffies + msecs_to_jiffies(20);
+>  
+>  	/* loop until the busy flag has cleared */
+>  	do {
+> -		u32 val = qca8k_read(priv, reg);
+> -		int busy = val & mask;
+> +		val = qca8k_read(priv, reg);
+> +		if (val < 0)
+> +			continue;
+>  
+> -		if (!busy)
+> +		if (!(val & mask))
+>  			break;
+>  		cond_resched();
 
-I think that using this solution we would be able to better describe the phy
-by declaring them INSIDE the switch node instead of declaring them
-outside in the top mdio node. The internal mdio driver would register
-with this new mdio node inside the switch node and use the custom mdio
-read/write that use the MASTER reg.
+Maybe there is a patch doing this already, but it would be good to
+make use of include/linux/iopoll.h
 
-[0] http://patchwork.ozlabs.org/project/netdev/patch/20190319195419.12746-3-chunkeey@gmail.com/
+>  qca8k_fdb_next(struct qca8k_priv *priv, struct qca8k_fdb *fdb, int port)
+>  {
+> -	int ret;
+> +	int ret, ret_read;
+>  
+>  	qca8k_fdb_write(priv, fdb->vid, fdb->port_mask, fdb->mac, fdb->aging);
+>  	ret = qca8k_fdb_access(priv, QCA8K_FDB_NEXT, port);
+> -	if (ret >= 0)
+> -		qca8k_fdb_read(priv, fdb);
+> +	if (ret >= 0) {
+> +		ret_read = qca8k_fdb_read(priv, fdb);
+> +		if (ret_read < 0)
+> +			return ret_read;
+> +	}
+>  
+>  	return ret;
+>  }
 
-> -- 
-> Florian
+This is oddly structured. Why not:
+
+qca8k_fdb_next(struct qca8k_priv *priv, struct qca8k_fdb *fdb, int port)
+{
+	int ret;
+
+	qca8k_fdb_write(priv, fdb->vid, fdb->port_mask, fdb->mac, fdb->aging);
+
+	ret = qca8k_fdb_access(priv, QCA8K_FDB_NEXT, port);
+	if (ret < 0)
+		return ret;
+
+	return qca8k_fdb_read(priv, fdb);
+}
+
+	Andrew
