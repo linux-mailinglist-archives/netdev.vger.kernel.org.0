@@ -2,109 +2,123 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 037D33746E4
-	for <lists+netdev@lfdr.de>; Wed,  5 May 2021 19:53:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5E2E83746FC
+	for <lists+netdev@lfdr.de>; Wed,  5 May 2021 19:53:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236458AbhEERcP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 5 May 2021 13:32:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50498 "EHLO
+        id S236708AbhEERgr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 5 May 2021 13:36:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50096 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240230AbhEERbn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 5 May 2021 13:31:43 -0400
-Received: from mail-pl1-x632.google.com (mail-pl1-x632.google.com [IPv6:2607:f8b0:4864:20::632])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8935CC049545
-        for <netdev@vger.kernel.org>; Wed,  5 May 2021 09:58:41 -0700 (PDT)
-Received: by mail-pl1-x632.google.com with SMTP id e2so1427727plh.8
-        for <netdev@vger.kernel.org>; Wed, 05 May 2021 09:58:41 -0700 (PDT)
+        with ESMTP id S229821AbhEERc7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 5 May 2021 13:32:59 -0400
+Received: from mail-lf1-x12a.google.com (mail-lf1-x12a.google.com [IPv6:2a00:1450:4864:20::12a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E0B3C04BE41;
+        Wed,  5 May 2021 10:02:46 -0700 (PDT)
+Received: by mail-lf1-x12a.google.com with SMTP id c11so3559929lfi.9;
+        Wed, 05 May 2021 10:02:46 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
+        h=date:from:to:cc:subject:message-id:mime-version
          :content-transfer-encoding;
-        bh=qtQrR5pj/ogcL3/YBIIjQKtTJ2qDM4voCRxl7aNUJ9k=;
-        b=tmjpxzPhQtGLs56o87bIdbDI2+st2rR/L8dgwgDPUTCaSjAVpmx+7+FZ6+JHsaGLVp
-         r3QS4C+FK1RlzgeFtljR+I+sYkqM5Jk/vW/dF6WCMozKvqgvO27RfF2wqR1iFiWPOv6T
-         rldHpWXsfWSJ/eR1LcHZgg7DoInYIwtX3pDik7axmMKrXwlQ4fHpzgTMsBJ7z08cBcRn
-         n1Vk00N6AOzKNRfGmy3rUDoDFFYQjwKaQ0rooVBlelqfr/3XEw8aF5Lh7+3c0DMfjSd2
-         GCeGcSzn0E/QYvTcWCbMaLPhfaRGOtsTrkwPyzQZu0GgZn/1uZnnXT8D8Gq5KFhgNQ/2
-         C/Nw==
+        bh=YSt2n6tg1L8D8NfOV5h6bZa4yblTsEFW9SIkP8Zz44c=;
+        b=U/jQhSoJlxhMF4no9yg1cUK0jtF9uHZLjTBkrKe6tGAQHYiVfh3EJACbomUnHQ5zO5
+         fj2dK0vAl6CsxLqlqtHimm05p6vNDYFclT20TRsbo69v0dWVTDwqgb9EqSe551PuKJNu
+         n2469YPr7jLXrPqkx/EojzOQ2/G04tOrY8JZdaWzU4ZSJqPqLjd4n/E2ORUz05TUyIDl
+         ZqYHyUX/uNZOC67SWPPTgs6MNL/uCI8dMR8QF+ORrqs14rhjvngDO1bgBOt+0kZcPjr8
+         tn+zOxLwErIQ+r3ZCReIBuxceUTJvZUUT+WaHl0QsP41CuIbKa/yqdl1RPFY3Hwxj4eo
+         ZTnQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
          :content-transfer-encoding;
-        bh=qtQrR5pj/ogcL3/YBIIjQKtTJ2qDM4voCRxl7aNUJ9k=;
-        b=lwXQPXXcGlgVN8OPJKaS96O3HcyfN8xdDGJfhl+mz5bhj4q0LgV6t7GXsGT4Q5XbjM
-         UeIb64XihgRcJNb3AOuRbxCIJ7RcuHHxNE2uVwG4wQqvnBvGTh5tDUK+VA84wChuNLiu
-         0jSyEVhWjLAKscYGnPd7RDjlAFgD/6XwZhP9+4As2d5kpx3W74/VtJgNdjHANwvNlT4Y
-         /XYi9RtQAmoGvlq6THjYRpSHYCT/IDzcejJRP7S9xLmeIoutM5Y/6kKE+FyztZWSvhF6
-         1ll7YlsXiMQv0KN7HJKMaQ1ZrrYSPXlXlywimDdzF6IL/n1kigZ//vJbmxLz2Ye1XOA8
-         RJWA==
-X-Gm-Message-State: AOAM531cFYuIdG6aIQIXBlYqaBzl934DxXMUe+q998vyav3delCDSYfS
-        TG51kXpLzvKW0VJcdDct+5c=
-X-Google-Smtp-Source: ABdhPJyvRrkli6d9svfQtfLEAfd+DTu8PR0guPnREa/0BQg3MValPCLdgihy6GtFvM5NFBv/4aafRw==
-X-Received: by 2002:a17:90b:b05:: with SMTP id bf5mr36384995pjb.123.1620233921037;
-        Wed, 05 May 2021 09:58:41 -0700 (PDT)
-Received: from athina.mtv.corp.google.com ([2620:15c:211:0:3fb8:c336:5d98:38cb])
-        by smtp.gmail.com with ESMTPSA id n18sm6504720pgj.71.2021.05.05.09.58.39
+        bh=YSt2n6tg1L8D8NfOV5h6bZa4yblTsEFW9SIkP8Zz44c=;
+        b=C48PiYnat7URei/wDVsbfRQ8wi76KcVxT6qM2DtTqsH3eWxGplY+Phh7CgPeX0iUCt
+         dFI8J/i47lkyGovo+7Q3BKRM1LR3NeaYfIPK8S8CEEtZCMGIA0YrFsfykseU6/xcHIsb
+         epcV+R29PQYY09KE03b93+opd2T7pKKuF1aKwY5bEjXDPdcwbV+4vxm/p8KkJ7pvCu7a
+         pfV7+pneWEzxt6bAJiCX6dbiW9TNinygR6TE71nHRCXjtF1V2pZUT/e2U9dUe81B2UHh
+         TMAySFErhLFUkh9BiBU9LuWp2Yn/n+CuS4mYehkPLxypueLpU4JoXeS0yYJXktF+Nb5N
+         tCpg==
+X-Gm-Message-State: AOAM533Fm0J45WYlE1yvSDv7Gdx0b9Xr4UsEkEk1y/MZT7Gxf4IzX03A
+        aYI0i6T7VJPP8oJ0BuC0Wu8=
+X-Google-Smtp-Source: ABdhPJxyJD7PYRXhpF8nXrPAT1q+3x3hASqqSJLHr3jBDbPpUPySoxwpFhKmXhFpFO4Ws4ii2TTFHg==
+X-Received: by 2002:a05:6512:33c4:: with SMTP id d4mr11423548lfg.536.1620234164982;
+        Wed, 05 May 2021 10:02:44 -0700 (PDT)
+Received: from localhost.localdomain ([94.103.226.84])
+        by smtp.gmail.com with ESMTPSA id m2sm664151lfo.23.2021.05.05.10.02.44
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 05 May 2021 09:58:40 -0700 (PDT)
-From:   =?UTF-8?q?Maciej=20=C5=BBenczykowski?= <zenczykowski@gmail.com>
-To:     =?UTF-8?q?Maciej=20=C5=BBenczykowski?= <maze@google.com>,
-        "David S . Miller" <davem@davemloft.net>
-Cc:     Linux Network Development Mailing List <netdev@vger.kernel.org>,
-        Nucca Chen <nuccachen@google.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        David Ahern <dsahern@gmail.com>,
-        Jakub Kicinski <jakub.kicinski@netronome.com>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        Jiri Pirko <jiri@mellanox.com>, Jiri Pirko <jiri@resnulli.us>
-Subject: [PATCH] net: fix nla_strcmp to handle more then one trailing null character
-Date:   Wed,  5 May 2021 09:58:31 -0700
-Message-Id: <20210505165831.875497-1-zenczykowski@gmail.com>
-X-Mailer: git-send-email 2.31.1.527.g47e6f16901-goog
+        Wed, 05 May 2021 10:02:44 -0700 (PDT)
+Date:   Wed, 5 May 2021 20:02:42 +0300
+From:   Pavel Skripkin <paskripkin@gmail.com>
+To:     ralf@linux-mips.org, davem@davemloft.net, kuba@kernel.org
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: GPF in net sybsystem
+Message-ID: <20210505200242.31d58452@gmail.com>
+X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-suse-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Maciej Żenczykowski <maze@google.com>
+Hi, netdev developers!
 
-Android userspace has been using TCA_KIND with a char[IFNAMESIZ]
-many-null-terminated buffer containing the string 'bpf'.
+I've spent some time debugging this bug
+https://syzkaller.appspot.com/bug?id=c670fb9da2ce08f7b5101baa9426083b39ee9f90
+and, I believe, I found the root case:
 
-This works on 4.19 and ceases to work on 5.10.
+static int nr_accept(struct socket *sock, struct socket *newsock, int flags,
+		     bool kern)
+{
+....
+	for (;;) {
+		prepare_to_wait(sk_sleep(sk), &wait, TASK_INTERRUPTIBLE);
+		...
+		if (!signal_pending(current)) {
+			release_sock(sk);
+			schedule();
+			lock_sock(sk);
+			continue;
+		}
+		...
+	}
+...
+}
 
-I'm not entirely sure what fixes tag to use, but I think the issue
-was likely introduced in the below mentioned 5.4 commit.
+When calling process will be scheduled, another proccess can release
+this socket and set sk->sk_wq to NULL. (In this case nr_release()
+will call sock_orphan(sk)). In this case GPF will happen in
+prepare_to_wait().
 
-Reported-by: Nucca Chen <nuccachen@google.com>
-Cc: Cong Wang <xiyou.wangcong@gmail.com>
-Cc: David Ahern <dsahern@gmail.com>
-Cc: David S. Miller <davem@davemloft.net>
-Cc: Jakub Kicinski <jakub.kicinski@netronome.com>
-Cc: Jamal Hadi Salim <jhs@mojatatu.com>
-Cc: Jiri Pirko <jiri@mellanox.com>
-Cc: Jiri Pirko <jiri@resnulli.us>
-Fixes: 62794fc4fbf5 ("net_sched: add max len check for TCA_KIND")
-Change-Id: I66dc281f165a2858fc29a44869a270a2d698a82b
----
- lib/nlattr.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+I came up with this patch, but im not an expect in netdev sybsystem and
+im not sure about this one:
 
-diff --git a/lib/nlattr.c b/lib/nlattr.c
-index 5b6116e81f9f..1d051ef66afe 100644
---- a/lib/nlattr.c
-+++ b/lib/nlattr.c
-@@ -828,7 +828,7 @@ int nla_strcmp(const struct nlattr *nla, const char *str)
- 	int attrlen = nla_len(nla);
- 	int d;
- 
--	if (attrlen > 0 && buf[attrlen - 1] == '\0')
-+	while (attrlen > 0 && buf[attrlen - 1] == '\0')
- 		attrlen--;
- 
- 	d = attrlen - len;
--- 
-2.31.1.527.g47e6f16901-goog
+diff --git a/net/netrom/af_netrom.c b/net/netrom/af_netrom.c
+index 6d16e1ab1a8a..89ceddea48e8 100644
+--- a/net/netrom/af_netrom.c
++++ b/net/netrom/af_netrom.c
+@@ -803,6 +803,10 @@ static int nr_accept(struct socket *sock, struct socket *newsock, int flags,
+ 			release_sock(sk);
+ 			schedule();
+ 			lock_sock(sk);
++			if (sock_flag(sk, SOCK_DEAD)) {
++				err = -ECONNABORTED;
++				goto out_release;
++			}
+ 			continue;
+ 		}
+ 		err = -ERESTARTSYS;
 
+I look forward to hearing your perspective on this :)
+
+
+BTW, I found similar code in:
+
+1) net/ax25/af_ax25.c
+2) net/rose/af_rose.c
+
+
+I hope, this will help!
+
+With regards,
+Pavel Skripkin
