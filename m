@@ -2,213 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8248937492E
-	for <lists+netdev@lfdr.de>; Wed,  5 May 2021 22:15:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 164E837493D
+	for <lists+netdev@lfdr.de>; Wed,  5 May 2021 22:20:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233993AbhEEUQC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 5 May 2021 16:16:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59250 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233979AbhEEUP6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 5 May 2021 16:15:58 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 715ABC061574
-        for <netdev@vger.kernel.org>; Wed,  5 May 2021 13:15:01 -0700 (PDT)
-Received: from ptx.hi.pengutronix.de ([2001:67c:670:100:1d::c0])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1leNv4-0007fA-5f; Wed, 05 May 2021 22:14:54 +0200
-Received: from ukl by ptx.hi.pengutronix.de with local (Exim 4.92)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1leNv2-0006m5-Sc; Wed, 05 May 2021 22:14:52 +0200
-From:   =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
-        <u.kleine-koenig@pengutronix.de>
-To:     "David S . Miller" <davem@davemloft.net>,
-        Jens Axboe <axboe@kernel.dk>, Jakub Kicinski <kuba@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>
-Cc:     sparclinux@vger.kernel.org, linux-block@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        kernel@pengutronix.de
-Subject: [PATCH] sparc/vio: make remove callback return void
-Date:   Wed,  5 May 2021 22:14:49 +0200
-Message-Id: <20210505201449.195627-1-u.kleine-koenig@pengutronix.de>
-X-Mailer: git-send-email 2.30.2
+        id S234108AbhEEUVZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 5 May 2021 16:21:25 -0400
+Received: from mail.kernel.org ([198.145.29.99]:40198 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S234027AbhEEUVY (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 5 May 2021 16:21:24 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id E8EA7613D8;
+        Wed,  5 May 2021 20:20:27 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1620246028;
+        bh=z8VC0srcx82bOMsnWf+lvtroe+Ov7KDlN6HSXpf4o60=;
+        h=From:To:Cc:Subject:Date:From;
+        b=ejnywMT/sM6UhDzRqDSit309HLMgyZr/LnjHzerLvv8xZiZMyu81Kbt0QBBAV06Zo
+         SmWH0xbCSdGqNb+gkezueg5nksTC5PPbE0DwUfT8b3T0UnXdYQe5JiEeqlT92F1TEo
+         slgWlfLoauzW69eZZT6S0IMY6RfsaqlwV9Pa/ln0AxutYQpEObTJ+3kasaxX4gQnUg
+         zCN4JKoMmUAkuS7haE+tChPv0PbRaD81xRCwfkheazfXyBUSqGOM7eLljmCVHa16o2
+         MuZTeJaIMT2wz4hRtVyBg8lO9iKuQxnLHbkjHQJYnpo3g34NgZ5zBFk9YPI3bAFwLE
+         8stCxJGzKT6ng==
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     saeedm@nvidia.com, eric.dumazet@gmail.com
+Cc:     netdev@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH net] mlx5e: add add missing BH locking around napi_schdule()
+Date:   Wed,  5 May 2021 13:20:26 -0700
+Message-Id: <20210505202026.778635-1-kuba@kernel.org>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c0
-X-SA-Exim-Mail-From: ukl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The driver core ignores the return value of struct bus_type::remove()
-because there is only little that can be done. To simplify the quest to
-make this function return void, let struct vio_driver::remove() return
-void, too. All users already unconditionally return 0, this commit makes
-it obvious that returning an error code is a bad idea and should prevent
-that future driver authors consider returning an error code.
+It's not correct to call napi_schedule() in pure process
+context. Because we use __raise_softirq_irqoff() we require
+callers to be in a context which will eventually lead to
+softirq handling (hardirq, bh disabled, etc.).
 
-Note there are two nominally different implementations for a vio bus:
-one in arch/sparc/kernel/vio.c and the other in
-arch/powerpc/platforms/pseries/vio.c. This patch only addresses the
-former.
+With code as is users will see:
 
-Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
+ NOHZ tick-stop error: Non-RCU local softirq work is pending, handler #08!!!
+
+Fixes: a8dd7ac12fc3 ("net/mlx5e: Generalize RQ activation")
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 ---
- arch/sparc/include/asm/vio.h       | 2 +-
- arch/sparc/kernel/ds.c             | 6 ------
- arch/sparc/kernel/vio.c            | 4 ++--
- drivers/block/sunvdc.c             | 3 +--
- drivers/net/ethernet/sun/ldmvsw.c  | 4 +---
- drivers/net/ethernet/sun/sunvnet.c | 3 +--
- drivers/tty/vcc.c                  | 4 +---
- 7 files changed, 7 insertions(+), 19 deletions(-)
+We may want to patch net-next once it opens to switch
+from __raise_softirq_irqoff() to raise_softirq_irqoff().
+The irq_count() check is probably negligable and we'd need
+to split the hardirq / non-hardirq paths completely to
+keep the current behaviour. Plus what's hardirq is murky
+with RT enabled..
 
-diff --git a/arch/sparc/include/asm/vio.h b/arch/sparc/include/asm/vio.h
-index 059f0eb678e0..8a1a83bbb6d5 100644
---- a/arch/sparc/include/asm/vio.h
-+++ b/arch/sparc/include/asm/vio.h
-@@ -362,7 +362,7 @@ struct vio_driver {
- 	struct list_head		node;
- 	const struct vio_device_id	*id_table;
- 	int (*probe)(struct vio_dev *dev, const struct vio_device_id *id);
--	int (*remove)(struct vio_dev *dev);
-+	void (*remove)(struct vio_dev *dev);
- 	void (*shutdown)(struct vio_dev *dev);
- 	unsigned long			driver_data;
- 	struct device_driver		driver;
-diff --git a/arch/sparc/kernel/ds.c b/arch/sparc/kernel/ds.c
-index 522e5b51050c..4a5bdb0df779 100644
---- a/arch/sparc/kernel/ds.c
-+++ b/arch/sparc/kernel/ds.c
-@@ -1236,11 +1236,6 @@ static int ds_probe(struct vio_dev *vdev, const struct vio_device_id *id)
- 	return err;
- }
- 
--static int ds_remove(struct vio_dev *vdev)
--{
--	return 0;
--}
--
- static const struct vio_device_id ds_match[] = {
- 	{
- 		.type = "domain-services-port",
-@@ -1251,7 +1246,6 @@ static const struct vio_device_id ds_match[] = {
- static struct vio_driver ds_driver = {
- 	.id_table	= ds_match,
- 	.probe		= ds_probe,
--	.remove		= ds_remove,
- 	.name		= "ds",
- };
- 
-diff --git a/arch/sparc/kernel/vio.c b/arch/sparc/kernel/vio.c
-index 4f57056ed463..348a88691219 100644
---- a/arch/sparc/kernel/vio.c
-+++ b/arch/sparc/kernel/vio.c
-@@ -105,10 +105,10 @@ static int vio_device_remove(struct device *dev)
- 		 * routines to do so at the moment. TBD
- 		 */
- 
--		return drv->remove(vdev);
-+		drv->remove(vdev);
- 	}
- 
--	return 1;
-+	return 0;
- }
- 
- static ssize_t devspec_show(struct device *dev,
-diff --git a/drivers/block/sunvdc.c b/drivers/block/sunvdc.c
-index 39aeebc6837d..1547d4345ad8 100644
---- a/drivers/block/sunvdc.c
-+++ b/drivers/block/sunvdc.c
-@@ -1071,7 +1071,7 @@ static int vdc_port_probe(struct vio_dev *vdev, const struct vio_device_id *id)
- 	return err;
- }
- 
--static int vdc_port_remove(struct vio_dev *vdev)
-+static void vdc_port_remove(struct vio_dev *vdev)
+Eric WDYT?
+
+ drivers/net/ethernet/mellanox/mlx5/core/en_main.c | 7 +++++--
+ 1 file changed, 5 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
+index bca832cdc4cb..11e50f5b3a1e 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
+@@ -889,10 +889,13 @@ int mlx5e_open_rq(struct mlx5e_params *params, struct mlx5e_rq_param *param,
+ void mlx5e_activate_rq(struct mlx5e_rq *rq)
  {
- 	struct vdc_port *port = dev_get_drvdata(&vdev->dev);
- 
-@@ -1094,7 +1094,6 @@ static int vdc_port_remove(struct vio_dev *vdev)
- 
- 		kfree(port);
- 	}
--	return 0;
+ 	set_bit(MLX5E_RQ_STATE_ENABLED, &rq->state);
+-	if (rq->icosq)
++	if (rq->icosq) {
+ 		mlx5e_trigger_irq(rq->icosq);
+-	else
++	} else {
++		local_bh_disable();
+ 		napi_schedule(rq->cq.napi);
++		local_bh_enable();
++	}
  }
  
- static void vdc_requeue_inflight(struct vdc_port *port)
-diff --git a/drivers/net/ethernet/sun/ldmvsw.c b/drivers/net/ethernet/sun/ldmvsw.c
-index 01ea0d6f8819..50bd4e3b0af9 100644
---- a/drivers/net/ethernet/sun/ldmvsw.c
-+++ b/drivers/net/ethernet/sun/ldmvsw.c
-@@ -404,7 +404,7 @@ static int vsw_port_probe(struct vio_dev *vdev, const struct vio_device_id *id)
- 	return err;
- }
- 
--static int vsw_port_remove(struct vio_dev *vdev)
-+static void vsw_port_remove(struct vio_dev *vdev)
- {
- 	struct vnet_port *port = dev_get_drvdata(&vdev->dev);
- 	unsigned long flags;
-@@ -430,8 +430,6 @@ static int vsw_port_remove(struct vio_dev *vdev)
- 
- 		free_netdev(port->dev);
- 	}
--
--	return 0;
- }
- 
- static void vsw_cleanup(void)
-diff --git a/drivers/net/ethernet/sun/sunvnet.c b/drivers/net/ethernet/sun/sunvnet.c
-index 96b883f965f6..58ee89223951 100644
---- a/drivers/net/ethernet/sun/sunvnet.c
-+++ b/drivers/net/ethernet/sun/sunvnet.c
-@@ -510,7 +510,7 @@ static int vnet_port_probe(struct vio_dev *vdev, const struct vio_device_id *id)
- 	return err;
- }
- 
--static int vnet_port_remove(struct vio_dev *vdev)
-+static void vnet_port_remove(struct vio_dev *vdev)
- {
- 	struct vnet_port *port = dev_get_drvdata(&vdev->dev);
- 
-@@ -533,7 +533,6 @@ static int vnet_port_remove(struct vio_dev *vdev)
- 
- 		kfree(port);
- 	}
--	return 0;
- }
- 
- static const struct vio_device_id vnet_port_match[] = {
-diff --git a/drivers/tty/vcc.c b/drivers/tty/vcc.c
-index 0a3a71e14df4..0c9b291ef307 100644
---- a/drivers/tty/vcc.c
-+++ b/drivers/tty/vcc.c
-@@ -668,7 +668,7 @@ static int vcc_probe(struct vio_dev *vdev, const struct vio_device_id *id)
-  *
-  * Return: status of removal
-  */
--static int vcc_remove(struct vio_dev *vdev)
-+static void vcc_remove(struct vio_dev *vdev)
- {
- 	struct vcc_port *port = dev_get_drvdata(&vdev->dev);
- 
-@@ -703,8 +703,6 @@ static int vcc_remove(struct vio_dev *vdev)
- 		kfree(port->domain);
- 		kfree(port);
- 	}
--
--	return 0;
- }
- 
- static const struct vio_device_id vcc_match[] = {
+ void mlx5e_deactivate_rq(struct mlx5e_rq *rq)
 -- 
-2.30.2
+2.31.1
 
