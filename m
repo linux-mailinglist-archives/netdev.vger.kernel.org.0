@@ -2,188 +2,242 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F324F374978
-	for <lists+netdev@lfdr.de>; Wed,  5 May 2021 22:28:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0B81F374989
+	for <lists+netdev@lfdr.de>; Wed,  5 May 2021 22:39:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234751AbhEEU30 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 5 May 2021 16:29:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34038 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234158AbhEEU3V (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 5 May 2021 16:29:21 -0400
-Received: from mail-wm1-x32d.google.com (mail-wm1-x32d.google.com [IPv6:2a00:1450:4864:20::32d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E38B6C06174A
-        for <netdev@vger.kernel.org>; Wed,  5 May 2021 13:28:23 -0700 (PDT)
-Received: by mail-wm1-x32d.google.com with SMTP id n205so2167053wmf.1
-        for <netdev@vger.kernel.org>; Wed, 05 May 2021 13:28:23 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20150623.gappssmtp.com; s=20150623;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=Yx57mU4aQc2ITOlbPXwjrloHYYT8kysHbI0JwKKxnZY=;
-        b=AUzbJDgtPrlzxA7QPdXC27JKGKfhevz4Jhux8iYpvWnmAlQ6qIEXxoJ4xJ30cgHDTt
-         Uc/888YOgW43DHWzxl1rdVdoiBzP6vdalF550RHG1QRXKjAANYqM/Xt7wo9ma/T4kwPU
-         6kNdPs8z5iabEtHJxQDb8YCil7ip8tq7YV5PxgpjaU6Xw6opTaA1v99BoB4Qz3twVJ9f
-         TpjHwFtZrkZ1vabTYJBZV+w5PDZI6jYU72zxSVis6n7DmXFXxRkNYgjPbKd7YbrG/Fiu
-         GbHouzmxcn4FMtYrtLqf87JiNz3HhMQjHniYZ5W/SvoBEH60Nd9JDtB9dgc7e7+txJBB
-         WfHg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=Yx57mU4aQc2ITOlbPXwjrloHYYT8kysHbI0JwKKxnZY=;
-        b=h0CR9r4j0REphi/rGBRrhGZwQVV1j+AaQGRO/8b8A4Mj+1d0JMgb+UJxLxRRdb2sxf
-         0TcJ43EwtdPCcY2uKxrpf5D1oG2WSqqJMs3a6SNcpKrtgdoDkYWHUfAhp3TdZTiNzmYV
-         xSeN4oQ36JrjI71QomQ40+7QtQdxJOu/0/mx4XWS44QxNpyf3e6W4ZGHuvUx9P+EyUxk
-         JWcbOBDBNw4HheRPdDQmTnSlHwW41s/ZgOf1ldxfgkeH5broR7EQReUCKWdjMywSalZU
-         tG1meaWkOaArjVdzzUsVOOvzqWJ/L70upvjtEnDvdkCfCQQgiX3ihQDIiFWsriqcb8pE
-         lc8g==
-X-Gm-Message-State: AOAM532QDC240oapvwO8PBI0/VaGCGf5vMdbyHr6CpkAP4w5e+DUB9+V
-        g8mYO3/428G8dFmNH0NFMbMKVA==
-X-Google-Smtp-Source: ABdhPJzd9O9OZv0JGCmTqFcm74RTrrRCeFAHixyv7Gv+80vKt5uI49Ph8bX6vnJNdFFd93xoKs6F6A==
-X-Received: by 2002:a1c:e345:: with SMTP id a66mr11648751wmh.109.1620246502622;
-        Wed, 05 May 2021 13:28:22 -0700 (PDT)
-Received: from localhost.localdomain (laubervilliers-658-1-213-31.w90-63.abo.wanadoo.fr. [90.63.244.31])
-        by smtp.googlemail.com with ESMTPSA id q20sm8713972wmq.2.2021.05.05.13.28.21
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 05 May 2021 13:28:22 -0700 (PDT)
-From:   Corentin Labbe <clabbe@baylibre.com>
-To:     andrew@lunn.ch, hkallweit1@gmail.com, linux@armlinux.org.uk,
-        robh+dt@kernel.org
-Cc:     devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, Corentin Labbe <clabbe@baylibre.com>
-Subject: [PATCH v5] dt-bindings: net: Convert mdio-gpio to yaml
-Date:   Wed,  5 May 2021 20:28:15 +0000
-Message-Id: <20210505202815.2665920-1-clabbe@baylibre.com>
-X-Mailer: git-send-email 2.25.1
+        id S234987AbhEEUkD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 5 May 2021 16:40:03 -0400
+Received: from mail.kernel.org ([198.145.29.99]:46990 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S234675AbhEEUkC (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 5 May 2021 16:40:02 -0400
+Received: from gandalf.local.home (cpe-66-24-58-225.stny.res.rr.com [66.24.58.225])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 37678613E3;
+        Wed,  5 May 2021 20:39:04 +0000 (UTC)
+Date:   Wed, 5 May 2021 16:38:55 -0400
+From:   Steven Rostedt <rostedt@goodmis.org>
+To:     LKML <linux-kernel@vger.kernel.org>
+Cc:     Stefan Hajnoczi <stefanha@redhat.com>,
+        Stefano Garzarella <sgarzare@redhat.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        Jason Wang <jasowang@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, kvm@vger.kernel.org,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
+        Joel Fernandes <joelaf@google.com>,
+        Linux Trace Devel <linux-trace-devel@vger.kernel.org>
+Subject: [RFC][PATCH] vhost/vsock: Add vsock_list file to map cid with vhost
+ tasks
+Message-ID: <20210505163855.32dad8e7@gandalf.local.home>
+X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Converts net/mdio-gpio.txt to yaml
+The new trace-cmd 3.0 (which is almost ready to be released) allows for
+tracing between host and guests with timestamp synchronization such that
+the events on the host and the guest can be interleaved in the proper order
+that they occur. KernelShark now has a plugin that visualizes this
+interaction.
 
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
-Signed-off-by: Corentin Labbe <clabbe@baylibre.com>
+The implementation requires that the guest has a vsock CID assigned, and on
+the guest a "trace-cmd agent" is running, that will listen on a port for
+the CID. The on the host a "trace-cmd record -A guest@cid:port -e events"
+can be called and the host will connect to the guest agent through the
+cid/port pair and have the agent enable tracing on behalf of the host and
+send the trace data back down to it.
+
+The problem is that there is no sure fire way to find the CID for a guest.
+Currently, the user must know the cid, or we have a hack that looks for the
+qemu process and parses the --guest-cid parameter from it. But this is
+prone to error and does not work on other implementation (was told that
+crosvm does not use qemu).
+
+As I can not find a way to discover CIDs assigned to guests via any kernel
+interface, I decided to create this one. Note, I'm not attached to it. If
+there's a better way to do this, I would love to have it. But since I'm not
+an expert in the networking layer nor virtio, I decided to stick to what I
+know and add a debugfs interface that simply lists all the registered CIDs
+and the worker task that they are associated with. The worker task at
+least has the PID of the task it represents.
+
+Now I can find the cid / host process in charge of the guest pair:
+
+  # cat /sys/kernel/debug/vsock_list
+  3	vhost-1954:2002
+
+  # ps aux | grep 1954
+  qemu        1954  9.9 21.3 1629092 796148 ?      Sl   16:22   0:58  /usr/bin/qemu-kvm -name guest=Fedora21,debug-threads=on -S -object secret,id=masterKey0,format=raw,file=/var/lib/libvirt/qemu/domain-1-Fedora21/master-key.aes -machine pc-1.2,accel=kvm,usb=off,dump-guest-core=off -cpu qemu64 -m 1000 -overcommit mem-lock=off -smp 2,sockets=2,cores=1,threads=1 -uuid 1eefeeb0-3ac7-07c1-926e-236908313b4c -no-user-config -nodefaults -chardev socket,id=charmonitor,fd=32,server,nowait -mon chardev=charmonitor,id=monitor,mode=control -rtc base=utc -no-shutdown -boot strict=on -device piix3-usb-uhci,id=usb,bus=pci.0,addr=0x1.0x2 -device virtio-serial-pci,id=virtio-serial0,bus=pci.0,addr=0x6 -blockdev {"driver":"host_device","filename":"/dev/mapper/vg_bxtest-GuestFedora","node-name":"libvirt-1-storage","auto-read-only":true,"discard":"unmap"} -blockdev {"node-name":"libvirt-1-format","read-only":false,"driver":"raw","file":"libvirt-1-storage"} -device ide-hd,bus=ide.0,unit=0,drive=libvirt-1-
+ format,id=ide0-0-0,bootindex=1 -netdev tap,fd=34,id=hostnet0 -device rtl8139,netdev=hostnet0,id=net0,mac=52:54:00:9f:e9:d5,bus=pci.0,addr=0x3 -netdev tap,fd=35,id=hostnet1 -device virtio-net-pci,netdev=hostnet1,id=net1,mac=52:54:00:ec:dc:6e,bus=pci.0,addr=0x5 -chardev pty,id=charserial0 -device isa-serial,chardev=charserial0,id=serial0 -chardev pipe,id=charchannel0,path=/var/lib/trace-cmd/virt/Fedora21/trace-pipe-cpu0 -device virtserialport,bus=virtio-serial0.0,nr=1,chardev=charchannel0,id=channel0,name=trace-pipe-cpu0 -chardev pipe,id=charchannel1,path=/var/lib/trace-cmd/virt/Fedora21/trace-pipe-cpu1 -device virtserialport,bus=virtio-serial0.0,nr=2,chardev=charchannel1,id=channel1,name=trace-pipe-cpu1 -vnc 127.0.0.1:0 -device cirrus-vga,id=video0,bus=pci.0,addr=0x2 -device virtio-balloon-pci,id=balloon0,bus=pci.0,addr=0x4 -sandbox on,obsolete=deny,elevateprivileges=deny,spawn=deny,resourcecontrol=deny -device vhost-vsock-pci,id=vsock0,guest-cid=3,vhostfd=16,bus=pci.0,addr=0x7 -msg 
+ timestamp=on
+  root        2000  0.0  0.0      0     0 ?        S    16:22   0:00 [kvm-pit/1954]
+  root        2002  0.0  0.0      0     0 ?        S    16:22   0:00 [vhost-1954]
+
+
+This is just an example of what I'm looking for. Just a way to find what
+process is using what cid.
+
+Signed-off-by: Steven Rostedt (VMware) <rostedt@goodmis.org>
 ---
-Changes since v1:
-- fixes yamllint warning about indent
-- added maxItems 3
-
-Changes since v2:
-- fixed example (gpios need 2 entries)
-
-Changes since v3:
-- fixed gpios description
-- added additionalProperties/type: object
-
-Changes since v4:
-- fixed maintainers list
-
- .../devicetree/bindings/net/mdio-gpio.txt     | 27 ---------
- .../devicetree/bindings/net/mdio-gpio.yaml    | 58 +++++++++++++++++++
- 2 files changed, 58 insertions(+), 27 deletions(-)
- delete mode 100644 Documentation/devicetree/bindings/net/mdio-gpio.txt
- create mode 100644 Documentation/devicetree/bindings/net/mdio-gpio.yaml
-
-diff --git a/Documentation/devicetree/bindings/net/mdio-gpio.txt b/Documentation/devicetree/bindings/net/mdio-gpio.txt
-deleted file mode 100644
-index 4d91a36c5cf5..000000000000
---- a/Documentation/devicetree/bindings/net/mdio-gpio.txt
-+++ /dev/null
-@@ -1,27 +0,0 @@
--MDIO on GPIOs
--
--Currently defined compatibles:
--- virtual,gpio-mdio
--- microchip,mdio-smi0
--
--MDC and MDIO lines connected to GPIO controllers are listed in the
--gpios property as described in section VIII.1 in the following order:
--
--MDC, MDIO.
--
--Note: Each gpio-mdio bus should have an alias correctly numbered in "aliases"
--node.
--
--Example:
--
--aliases {
--	mdio-gpio0 = &mdio0;
--};
--
--mdio0: mdio {
--	compatible = "virtual,mdio-gpio";
--	#address-cells = <1>;
--	#size-cells = <0>;
--	gpios = <&qe_pio_a 11
--		 &qe_pio_c 6>;
--};
-diff --git a/Documentation/devicetree/bindings/net/mdio-gpio.yaml b/Documentation/devicetree/bindings/net/mdio-gpio.yaml
-new file mode 100644
-index 000000000000..7c15a508af5b
---- /dev/null
-+++ b/Documentation/devicetree/bindings/net/mdio-gpio.yaml
-@@ -0,0 +1,58 @@
-+# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/net/mdio-gpio.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
+diff --git a/drivers/vhost/vsock.c b/drivers/vhost/vsock.c
+index 5e78fb719602..4f03b25b23c1 100644
+--- a/drivers/vhost/vsock.c
++++ b/drivers/vhost/vsock.c
+@@ -15,6 +15,7 @@
+ #include <linux/virtio_vsock.h>
+ #include <linux/vhost.h>
+ #include <linux/hashtable.h>
++#include <linux/debugfs.h>
+ 
+ #include <net/af_vsock.h>
+ #include "vhost.h"
+@@ -900,6 +901,128 @@ static struct miscdevice vhost_vsock_misc = {
+ 	.fops = &vhost_vsock_fops,
+ };
+ 
++static struct dentry *vsock_file;
 +
-+title: MDIO on GPIOs
++struct vsock_file_iter {
++	struct hlist_node	*node;
++	int			index;
++};
 +
-+maintainers:
-+  - Andrew Lunn <andrew@lunn.ch>
-+  - Heiner Kallweit <hkallweit1@gmail.com>
-+  - Russell King <linux@armlinux.org.uk>
 +
-+allOf:
-+  - $ref: "mdio.yaml#"
++static void *vsock_next(struct seq_file *m, void *v, loff_t *pos)
++{
++	struct vsock_file_iter *iter = v;
++	struct vhost_vsock *vsock;
 +
-+properties:
-+  compatible:
-+    enum:
-+      - virtual,mdio-gpio
-+      - microchip,mdio-smi0
++	if (pos)
++		(*pos)++;
 +
-+  "#address-cells":
-+    const: 1
++	if (iter->index >= (int)HASH_SIZE(vhost_vsock_hash))
++		return NULL;
 +
-+  "#size-cells":
-+    const: 0
++	if (iter->node)
++		iter->node = rcu_dereference_raw(hlist_next_rcu(iter->node));
 +
-+  gpios:
-+    minItems: 2
-+    maxItems: 3
-+    items:
-+      - description: MDC
-+      - description: MDIO
-+      - description: MDO
++	for (;;) {
++		if (iter->node) {
++			vsock = hlist_entry_safe(rcu_dereference_raw(iter->node),
++						 struct vhost_vsock, hash);
++			if (vsock->guest_cid)
++				break;
++			iter->node = rcu_dereference_raw(hlist_next_rcu(iter->node));
++			continue;
++		}
++		iter->index++;
++		if (iter->index >= HASH_SIZE(vhost_vsock_hash))
++			return NULL;
 +
-+#Note: Each gpio-mdio bus should have an alias correctly numbered in "aliases"
-+#node.
-+additionalProperties:
-+  type: object
++		iter->node = rcu_dereference_raw(hlist_first_rcu(&vhost_vsock_hash[iter->index]));
++	}
++	return iter;
++}
 +
-+examples:
-+  - |
-+    aliases {
-+        mdio-gpio0 = &mdio0;
-+    };
++static void *vsock_start(struct seq_file *m, loff_t *pos)
++{
++	struct vsock_file_iter *iter = m->private;
++	loff_t l = 0;
++	void *t;
 +
-+    mdio0: mdio {
-+      compatible = "virtual,mdio-gpio";
-+      #address-cells = <1>;
-+      #size-cells = <0>;
-+      gpios = <&qe_pio_a 11>,
-+              <&qe_pio_c 6>;
-+      ethphy0: ethernet-phy@0 {
-+        reg = <0>;
-+      };
-+    };
-+...
--- 
-2.26.3
-
++	rcu_read_lock();
++
++	iter->index = -1;
++	iter->node = NULL;
++	t = vsock_next(m, iter, NULL);
++
++	for (; iter->index < HASH_SIZE(vhost_vsock_hash) && l < *pos;
++	     t = vsock_next(m, iter, &l))
++		;
++
++	return t;
++}
++
++static void vsock_stop(struct seq_file *m, void *p)
++{
++	rcu_read_unlock();
++}
++
++static int vsock_show(struct seq_file *m, void *v)
++{
++	struct vsock_file_iter *iter = v;
++	struct vhost_vsock *vsock;
++	struct task_struct *worker;
++
++	if (!iter || iter->index >= HASH_SIZE(vhost_vsock_hash))
++		return 0;
++
++	vsock = hlist_entry_safe(rcu_dereference_raw(iter->node), struct vhost_vsock, hash);
++	worker = vsock->dev.worker;
++	seq_printf(m, "%d\t", vsock->guest_cid);
++
++	if (worker)
++		seq_printf(m, "%s:%d\n", worker->comm, worker->pid);
++	else
++		seq_puts(m, "(no task)\n");
++
++	return 0;
++}
++
++static const struct seq_operations vsock_file_seq_ops = {
++	.start		= vsock_start,
++	.next		= vsock_next,
++	.stop		= vsock_stop,
++	.show		= vsock_show,
++};
++
++static int vsock_file_open(struct inode *inode, struct file *file)
++{
++	struct vsock_file_iter *iter;
++	struct seq_file *m;
++	int ret;
++
++	iter = kzalloc(sizeof(*iter), GFP_KERNEL);
++	if (!iter)
++		return -ENOMEM;
++
++	ret = seq_open(file, &vsock_file_seq_ops);
++	if (ret) {
++		kfree(iter);
++		return ret;
++	}
++
++	m = file->private_data;
++	m->private = iter;
++
++	return 0;
++}
++
++static const struct file_operations vsock_file_fops = {
++	.owner		= THIS_MODULE,
++	.open		= vsock_file_open,
++	.release	= seq_release_private,
++	.read		= seq_read,
++	.llseek		= seq_lseek,
++};
++
+ static int __init vhost_vsock_init(void)
+ {
+ 	int ret;
+@@ -908,12 +1031,15 @@ static int __init vhost_vsock_init(void)
+ 				  VSOCK_TRANSPORT_F_H2G);
+ 	if (ret < 0)
+ 		return ret;
++	vsock_file = debugfs_create_file("vsock_list", 0400,
++					 NULL, NULL, &vsock_file_fops);
+ 	return misc_register(&vhost_vsock_misc);
+ };
+ 
+ static void __exit vhost_vsock_exit(void)
+ {
+ 	misc_deregister(&vhost_vsock_misc);
++	debugfs_remove(vsock_file);
+ 	vsock_core_unregister(&vhost_transport.transport);
+ };
+ 
