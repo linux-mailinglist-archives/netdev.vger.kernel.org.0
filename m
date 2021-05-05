@@ -2,101 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A167D3749BC
-	for <lists+netdev@lfdr.de>; Wed,  5 May 2021 22:55:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5BFD63749ED
+	for <lists+netdev@lfdr.de>; Wed,  5 May 2021 23:09:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234269AbhEEU4M (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 5 May 2021 16:56:12 -0400
-Received: from www62.your-server.de ([213.133.104.62]:54246 "EHLO
-        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231224AbhEEU4L (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 5 May 2021 16:56:11 -0400
-Received: from sslproxy05.your-server.de ([78.46.172.2])
-        by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92.3)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1leOY3-000GTl-Hv; Wed, 05 May 2021 22:55:11 +0200
-Received: from [85.7.101.30] (helo=linux.home)
-        by sslproxy05.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1leOY3-000Xhw-9R; Wed, 05 May 2021 22:55:11 +0200
-Subject: Re: [PATCH bpf] bpf: check for data_len before upgrading mss when 6
- to 4
-To:     Dongseok Yi <dseok.yi@samsung.com>, bpf@vger.kernel.org
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, willemdebruijn.kernel@gmail.com
-References: <CGME20210429102143epcas2p4c8747c09a9de28f003c20389c050394a@epcas2p4.samsung.com>
- <1619690903-1138-1-git-send-email-dseok.yi@samsung.com>
-From:   Daniel Borkmann <daniel@iogearbox.net>
-Message-ID: <8c2ea41a-3fc5-d560-16e5-bf706949d857@iogearbox.net>
-Date:   Wed, 5 May 2021 22:55:10 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
+        id S233532AbhEEVKU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 5 May 2021 17:10:20 -0400
+Received: from mx2.suse.de ([195.135.220.15]:42220 "EHLO mx2.suse.de"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S233512AbhEEVKT (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 5 May 2021 17:10:19 -0400
+X-Virus-Scanned: by amavisd-new at test-mx.suse.de
+Received: from relay2.suse.de (unknown [195.135.221.27])
+        by mx2.suse.de (Postfix) with ESMTP id 4F1F5AF4E;
+        Wed,  5 May 2021 21:09:20 +0000 (UTC)
+Received: by lion.mk-sys.cz (Postfix, from userid 1000)
+        id E219D602DC; Wed,  5 May 2021 23:09:19 +0200 (CEST)
+Date:   Wed, 5 May 2021 23:09:19 +0200
+From:   Michal Kubecek <mkubecek@suse.cz>
+To:     Fernando Fernandez Mancera <ffmancera@riseup.net>
+Cc:     netdev@vger.kernel.org, atenart@kernel.org
+Subject: Re: [PATCH net] ethtool: fix missing NLM_F_MULTI flag when dumping
+Message-ID: <20210505210919.ronrecenr3qrfuuf@lion.mk-sys.cz>
+References: <20210504224714.7632-1-ffmancera@riseup.net>
 MIME-Version: 1.0
-In-Reply-To: <1619690903-1138-1-git-send-email-dseok.yi@samsung.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.103.2/26161/Wed May  5 13:06:38 2021)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210504224714.7632-1-ffmancera@riseup.net>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 4/29/21 12:08 PM, Dongseok Yi wrote:
-> tcp_gso_segment check for the size of GROed payload if it is bigger
-> than the mss. bpf_skb_proto_6_to_4 increases mss, but the mss can be
-> bigger than the size of GROed payload unexpectedly if data_len is not
-> big enough.
+On Wed, May 05, 2021 at 12:47:14AM +0200, Fernando Fernandez Mancera wrote:
+> When dumping the ethtool information from all the interfaces, the
+> netlink reply should contain the NLM_F_MULTI flag. This flag allows
+> userspace tools to identify that multiple messages are expected.
 > 
-> Assume that skb gso_size = 1372 and data_len = 8. bpf_skb_proto_6_to_4
-> would increse the gso_size to 1392. tcp_gso_segment will get an error
-> with 1380 <= 1392.
-> 
-> Check for the size of GROed payload if it is really bigger than target
-> mss when increase mss.
-> 
-> Fixes: 6578171a7ff0 (bpf: add bpf_skb_change_proto helper)
-> Signed-off-by: Dongseok Yi <dseok.yi@samsung.com>
+> Link: https://bugzilla.redhat.com/1953847
+> Fixes: 365f9ae ("ethtool: fix genlmsg_put() failure handling in ethnl_default_dumpit()")
+
+For the record, the issue was not introduced by this commit, this commit
+only moved the genlmsg_put() call from ethnl_default_dumpit() into
+ethnl_default_dump_one() but genlmsg_put() was called with zero flags
+since the code was introduced by commit 728480f12442 ("ethtool: default
+handlers for GET requests").
+
+But as the patch has been applied already, it doesn't matter any more.
+
+Michal
+
+> Signed-off-by: Fernando Fernandez Mancera <ffmancera@riseup.net>
 > ---
->   net/core/filter.c | 4 +++-
->   1 file changed, 3 insertions(+), 1 deletion(-)
+>  net/ethtool/netlink.c | 3 ++-
+>  1 file changed, 2 insertions(+), 1 deletion(-)
 > 
-> diff --git a/net/core/filter.c b/net/core/filter.c
-> index 9323d34..3f79e3c 100644
-> --- a/net/core/filter.c
-> +++ b/net/core/filter.c
-> @@ -3308,7 +3308,9 @@ static int bpf_skb_proto_6_to_4(struct sk_buff *skb)
->   		}
->   
->   		/* Due to IPv4 header, MSS can be upgraded. */
-> -		skb_increase_gso_size(shinfo, len_diff);
-> +		if (skb->data_len > len_diff)
-
-Could you elaborate some more on what this has to do with data_len specifically
-here? I'm not sure I follow exactly your above commit description. Are you saying
-that you're hitting in tcp_gso_segment():
-
-         [...]
-         mss = skb_shinfo(skb)->gso_size;
-         if (unlikely(skb->len <= mss))
-                 goto out;
-         [...]
-
-Please provide more context on the bug, thanks!
-
-> +			skb_increase_gso_size(shinfo, len_diff);
-> +
->   		/* Header must be checked, and gso_segs recomputed. */
->   		shinfo->gso_type |= SKB_GSO_DODGY;
->   		shinfo->gso_segs = 0;
+> diff --git a/net/ethtool/netlink.c b/net/ethtool/netlink.c
+> index 290012d0d11d..88d8a0243f35 100644
+> --- a/net/ethtool/netlink.c
+> +++ b/net/ethtool/netlink.c
+> @@ -387,7 +387,8 @@ static int ethnl_default_dump_one(struct sk_buff *skb, struct net_device *dev,
+>  	int ret;
+>  
+>  	ehdr = genlmsg_put(skb, NETLINK_CB(cb->skb).portid, cb->nlh->nlmsg_seq,
+> -			   &ethtool_genl_family, 0, ctx->ops->reply_cmd);
+> +			   &ethtool_genl_family, NLM_F_MULTI,
+> +			   ctx->ops->reply_cmd);
+>  	if (!ehdr)
+>  		return -EMSGSIZE;
+>  
+> -- 
+> 2.20.1
 > 
-
