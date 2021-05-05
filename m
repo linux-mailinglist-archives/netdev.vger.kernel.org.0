@@ -2,201 +2,200 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 250CA37369F
-	for <lists+netdev@lfdr.de>; Wed,  5 May 2021 10:50:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7E1443736AB
+	for <lists+netdev@lfdr.de>; Wed,  5 May 2021 10:59:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232236AbhEEIvd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 5 May 2021 04:51:33 -0400
-Received: from out5-smtp.messagingengine.com ([66.111.4.29]:54749 "EHLO
-        out5-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S232144AbhEEIvc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 5 May 2021 04:51:32 -0400
-Received: from compute1.internal (compute1.nyi.internal [10.202.2.41])
-        by mailout.nyi.internal (Postfix) with ESMTP id F22415C0138;
-        Wed,  5 May 2021 04:50:35 -0400 (EDT)
-Received: from mailfrontend2 ([10.202.2.163])
-  by compute1.internal (MEProxy); Wed, 05 May 2021 04:50:35 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:content-type:date:from:in-reply-to
-        :message-id:mime-version:references:subject:to:x-me-proxy
-        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm2; bh=a0uiHL
-        uUs1PiRBzRoMM6D+kcIrhyTQN6pwXX94QsXdM=; b=BXB45fg88oAD5l+gs+p8G4
-        mmt0aTOBmgIki10ix+hxeki2Ej5K9go7aEeC8Eiv+wRvy56lXluXxiYVPSwpezni
-        IsGG7hBm7q12n47VYgC7uKvJXzef7+fHuxeEJptrY+PQ2S/K7Yv77dy7I0sqx/OO
-        iqZ+/NnychNbAqc0ZSgUXW7vsK5LlY/WSQJd4c/DS/Kj9bZKx0GMfqXZ8sSBK9Df
-        MmhepsZW75YdDhKAbYJsSkSLwyH78iazJOntYLORPZiBTAajOlflDdY8qwrPbu4d
-        QJwYoCS+kDPhYVFNEy0wyAz96Qz82g6JQBxiBnuzCR2tINxaqGxBL77idIUu+2vA
-        ==
-X-ME-Sender: <xms:W1ySYN0bxtCMpiEryP8UosjkVRYRhb0rT8Ngh-aPFIipNkWb_QR0Wg>
-    <xme:W1ySYEGHFH_QR3Lpm3uWiBE5w5FVWB2QWj1xjI96Dcy0BbqX5MceN6yeMx1T5Y6-5
-    l-t4Ls8jpQoO9U>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduledrvdefkedgtdegucetufdoteggodetrfdotf
-    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
-    cujfgurhepfffhvffukfhfgggtuggjsehttdertddttddvnecuhfhrohhmpefkughoucfu
-    tghhihhmmhgvlhcuoehiughoshgthhesihguohhstghhrdhorhhgqeenucggtffrrghtth
-    gvrhhnpedtffekkeefudffveegueejffejhfetgfeuuefgvedtieehudeuueekhfduheel
-    teenucfkphepkeegrddvvdelrdduheefrddukeejnecuvehluhhsthgvrhfuihiivgeptd
-    enucfrrghrrghmpehmrghilhhfrhhomhepihguohhstghhsehiughoshgthhdrohhrgh
-X-ME-Proxy: <xmx:W1ySYN5UjpIMunUgvwiyyxFeKL0AqwdiOm4ryLXOPohe08bTE783AA>
-    <xmx:W1ySYK0CZUzMMuOAuH2fPkVPI8_MHJSiwz-so1Be4Em2oTyG3S4R3g>
-    <xmx:W1ySYAFWKQFUsxR9c-5wpiDyAhf6G3abdL8D9TVZ2W6iKzzM_JcQgA>
-    <xmx:W1ySYF4yFrqpCD2QQCbywg8G7H8Dd-Jm7q0Mv_rvwFlsXAH2kAk3wg>
-Received: from localhost (igld-84-229-153-187.inter.net.il [84.229.153.187])
-        by mail.messagingengine.com (Postfix) with ESMTPA;
-        Wed,  5 May 2021 04:50:35 -0400 (EDT)
-Date:   Wed, 5 May 2021 11:50:31 +0300
-From:   Ido Schimmel <idosch@idosch.org>
-To:     David Ahern <dsahern@gmail.com>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
-        petrm@nvidia.com, roopa@nvidia.com, nikolay@nvidia.com,
-        ssuryaextr@gmail.com, mlxsw@nvidia.com,
-        Ido Schimmel <idosch@nvidia.com>
-Subject: Re: [RFC PATCH net-next 07/10] ipv6: Add custom multipath hash policy
-Message-ID: <YJJcV1Jp7r6j7hKP@shredder.lan>
-References: <20210502162257.3472453-1-idosch@idosch.org>
- <20210502162257.3472453-8-idosch@idosch.org>
- <1b0c0460-914c-ffa2-ae42-af0ea12ad596@gmail.com>
+        id S232098AbhEEJAu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 5 May 2021 05:00:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49154 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229529AbhEEJAt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 5 May 2021 05:00:49 -0400
+Received: from mail-pf1-x42b.google.com (mail-pf1-x42b.google.com [IPv6:2607:f8b0:4864:20::42b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A06BCC061574
+        for <netdev@vger.kernel.org>; Wed,  5 May 2021 01:59:52 -0700 (PDT)
+Received: by mail-pf1-x42b.google.com with SMTP id x188so1510301pfd.7
+        for <netdev@vger.kernel.org>; Wed, 05 May 2021 01:59:52 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=gY4F/r0AdwO28c3xYtDSW8z1XYoPCg+2V0qeMXB9ExQ=;
+        b=Xwbe2kRTOxPQNTDKsNPzdcYNUm0MHvBg9BidS+oOeXFe1HW1ge/0U/0OU4SWDmSXH2
+         2z2EclXZydwFYFlTpB/dC50V8WaSgwjRglzyRR3WF978/N6yscxV+bwFuCYGm++k/k1r
+         o6Su7Ru8cZPIBci9VYeSEGfAx2RzLjMTbCwS9jL8AjX8rLFjZZS2vmtATlmJluHCASkw
+         VENabznQvid85s9G8HWpcOD0xRJ15IQjKgCkYGZSWAlMXy9lgb4bxbOiAsxhawF8X6Lk
+         jlbUnAAg8tVdqSjyUpdsiNUbBUjB+n/5qrdAn3Ez2CJNf/FOMF5WCyyAoaGrat1nTh7V
+         qavA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=gY4F/r0AdwO28c3xYtDSW8z1XYoPCg+2V0qeMXB9ExQ=;
+        b=QfHgXTrbsCaMn78E/d+wNNFdHfBWwKt3sVCcvCtUnZY910b3JAE61avS6qq6icRESq
+         /WI4cYmETcXXONgb8o4+U/0ydkmcJgg43xzu+kGwYMSuRD//H/5SQp5d+AYq/9L7JW9j
+         C93IZVVz3+nlMkRROK+kTQEzSxfnxMMujadVvZi5uLImcwhUTj1h72R98KeGi2WkAlN6
+         EPuftSpdrOpdUo7A2SyJLyjmqIY7UWqHRXNQrmZShJAr3kr5Py4xY2IFj7Y0AN2vyswH
+         pd+Xskz9f+p4MnwQI8mhrP4wM4qPlPRy74TPgQjO1S7JdLM4H2evfqJ+89xELXooufV8
+         HpKQ==
+X-Gm-Message-State: AOAM532U83+cnMvJq2f57RYXjRg1oxOfOvsO/xBR8OSG6m586zb80ncJ
+        tDohg/FaqYDuKCSV+wzQwfY=
+X-Google-Smtp-Source: ABdhPJynJ1dGj2fbTjIk0JqMDUn02YfkkpFT8KaDmNGjv+rMWeor46GgSgD983Kb4Y5xDKaD5vJaPw==
+X-Received: by 2002:a05:6a00:a86:b029:203:6bc9:3f14 with SMTP id b6-20020a056a000a86b02902036bc93f14mr28164699pfl.22.1620205192108;
+        Wed, 05 May 2021 01:59:52 -0700 (PDT)
+Received: from f3 ([2405:6580:97e0:3100:72f0:fef2:7302:7def])
+        by smtp.gmail.com with ESMTPSA id g29sm15360285pfq.148.2021.05.05.01.59.49
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 05 May 2021 01:59:50 -0700 (PDT)
+Date:   Wed, 5 May 2021 17:59:46 +0900
+From:   Benjamin Poirier <benjamin.poirier@gmail.com>
+To:     Coiby Xu <coiby.xu@gmail.com>
+Cc:     linux-staging@lists.linux.dev, netdev@vger.kernel.org
+Subject: Re: About improving the qlge Ethernet driver by following
+ drivers/staging/qlge/TODO
+Message-ID: <YJJegiK9mMvAEQwU@f3>
+References: <20210504131421.mijffwcruql2fupn@Rk>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: multipart/signed; micalg=pgp-sha256;
+        protocol="application/pgp-signature"; boundary="F0Jzq68Ii7tXulWL"
 Content-Disposition: inline
-In-Reply-To: <1b0c0460-914c-ffa2-ae42-af0ea12ad596@gmail.com>
+In-Reply-To: <20210504131421.mijffwcruql2fupn@Rk>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, May 03, 2021 at 08:46:18PM -0600, David Ahern wrote:
-> On 5/2/21 10:22 AM, Ido Schimmel wrote:
-> > diff --git a/net/ipv6/route.c b/net/ipv6/route.c
-> > index 9935e18146e5..b4c65c5baf35 100644
-> > --- a/net/ipv6/route.c
-> > +++ b/net/ipv6/route.c
-> > @@ -2326,6 +2326,125 @@ static void ip6_multipath_l3_keys(const struct sk_buff *skb,
-> >  	}
-> >  }
-> >  
-> > +static u32 rt6_multipath_custom_hash_outer(const struct net *net,
-> > +					   const struct sk_buff *skb,
-> > +					   bool *p_has_inner)
-> > +{
-> > +	unsigned long *hash_fields = ip6_multipath_hash_fields(net);
-> > +	struct flow_keys keys, hash_keys;
-> > +
-> > +	if (!net->ipv6.sysctl.multipath_hash_fields_need_outer)
-> > +		return 0;
-> > +
-> > +	memset(&hash_keys, 0, sizeof(hash_keys));
-> > +	skb_flow_dissect_flow_keys(skb, &keys, FLOW_DISSECTOR_F_STOP_AT_ENCAP);
-> > +
-> > +	hash_keys.control.addr_type = FLOW_DISSECTOR_KEY_IPV6_ADDRS;
-> > +	if (FIB_MULTIPATH_HASH_TEST_FIELD(SRC_IP, hash_fields))
-> > +		hash_keys.addrs.v6addrs.src = keys.addrs.v6addrs.src;
-> > +	if (FIB_MULTIPATH_HASH_TEST_FIELD(DST_IP, hash_fields))
-> > +		hash_keys.addrs.v6addrs.dst = keys.addrs.v6addrs.dst;
-> > +	if (FIB_MULTIPATH_HASH_TEST_FIELD(IP_PROTO, hash_fields))
-> > +		hash_keys.basic.ip_proto = keys.basic.ip_proto;
-> > +	if (FIB_MULTIPATH_HASH_TEST_FIELD(FLOWLABEL, hash_fields))
-> > +		hash_keys.tags.flow_label = keys.tags.flow_label;
-> > +	if (FIB_MULTIPATH_HASH_TEST_FIELD(SRC_PORT, hash_fields))
-> > +		hash_keys.ports.src = keys.ports.src;
-> > +	if (FIB_MULTIPATH_HASH_TEST_FIELD(DST_PORT, hash_fields))
-> > +		hash_keys.ports.dst = keys.ports.dst;
-> > +
-> > +	*p_has_inner = !!(keys.control.flags & FLOW_DIS_ENCAPSULATION);
-> > +	return flow_hash_from_keys(&hash_keys);
-> > +}
-> > +
-> > +static u32 rt6_multipath_custom_hash_inner(const struct net *net,
-> > +					   const struct sk_buff *skb,
-> > +					   bool has_inner)
-> > +{
-> > +	unsigned long *hash_fields = ip6_multipath_hash_fields(net);
-> > +	struct flow_keys keys, hash_keys;
-> > +
-> > +	/* We assume the packet carries an encapsulation, but if none was
-> > +	 * encountered during dissection of the outer flow, then there is no
-> > +	 * point in calling the flow dissector again.
-> > +	 */
-> > +	if (!has_inner)
-> > +		return 0;
-> > +
-> > +	if (!net->ipv6.sysctl.multipath_hash_fields_need_inner)
-> > +		return 0;
-> > +
-> > +	memset(&hash_keys, 0, sizeof(hash_keys));
-> > +	skb_flow_dissect_flow_keys(skb, &keys, 0);
-> > +
-> > +	if (!(keys.control.flags & FLOW_DIS_ENCAPSULATION))
-> > +		return 0;
-> > +
-> > +	if (keys.control.addr_type == FLOW_DISSECTOR_KEY_IPV4_ADDRS) {
-> > +		hash_keys.control.addr_type = FLOW_DISSECTOR_KEY_IPV4_ADDRS;
-> > +		if (FIB_MULTIPATH_HASH_TEST_FIELD(INNER_SRC_IP, hash_fields))
-> > +			hash_keys.addrs.v4addrs.src = keys.addrs.v4addrs.src;
-> > +		if (FIB_MULTIPATH_HASH_TEST_FIELD(INNER_DST_IP, hash_fields))
-> > +			hash_keys.addrs.v4addrs.dst = keys.addrs.v4addrs.dst;
-> > +	} else if (keys.control.addr_type == FLOW_DISSECTOR_KEY_IPV6_ADDRS) {
-> > +		hash_keys.control.addr_type = FLOW_DISSECTOR_KEY_IPV6_ADDRS;
-> > +		if (FIB_MULTIPATH_HASH_TEST_FIELD(INNER_SRC_IP, hash_fields))
-> > +			hash_keys.addrs.v6addrs.src = keys.addrs.v6addrs.src;
-> > +		if (FIB_MULTIPATH_HASH_TEST_FIELD(INNER_DST_IP, hash_fields))
-> > +			hash_keys.addrs.v6addrs.dst = keys.addrs.v6addrs.dst;
-> > +		if (FIB_MULTIPATH_HASH_TEST_FIELD(INNER_FLOWLABEL, hash_fields))
-> > +			hash_keys.tags.flow_label = keys.tags.flow_label;
-> > +	}
-> > +
-> > +	if (FIB_MULTIPATH_HASH_TEST_FIELD(INNER_IP_PROTO, hash_fields))
-> > +		hash_keys.basic.ip_proto = keys.basic.ip_proto;
-> > +	if (FIB_MULTIPATH_HASH_TEST_FIELD(INNER_SRC_PORT, hash_fields))
-> > +		hash_keys.ports.src = keys.ports.src;
-> > +	if (FIB_MULTIPATH_HASH_TEST_FIELD(INNER_DST_PORT, hash_fields))
-> > +		hash_keys.ports.dst = keys.ports.dst;
-> > +
-> > +	return flow_hash_from_keys(&hash_keys);
-> > +}
-> > +
-> > +static u32 rt6_multipath_custom_hash_skb(const struct net *net,
-> > +					 const struct sk_buff *skb)
-> > +{
-> > +	u32 mhash, mhash_inner;
-> > +	bool has_inner = true;
-> > +
-> > +	mhash = rt6_multipath_custom_hash_outer(net, skb, &has_inner);
-> > +	mhash_inner = rt6_multipath_custom_hash_inner(net, skb, has_inner);
-> > +
-> > +	return jhash_2words(mhash, mhash_inner, 0);
-> > +}
-> > +
-> > +static u32 rt6_multipath_custom_hash_fl6(const struct net *net,
-> > +					 const struct flowi6 *fl6)
-> > +{
-> > +	unsigned long *hash_fields = ip6_multipath_hash_fields(net);
-> > +	struct flow_keys hash_keys;
-> > +
-> > +	if (!net->ipv6.sysctl.multipath_hash_fields_need_outer)
-> > +		return 0;
-> > +
-> > +	memset(&hash_keys, 0, sizeof(hash_keys));
-> > +	hash_keys.control.addr_type = FLOW_DISSECTOR_KEY_IPV6_ADDRS;
-> > +	if (FIB_MULTIPATH_HASH_TEST_FIELD(SRC_IP, hash_fields))
-> > +		hash_keys.addrs.v6addrs.src = fl6->saddr;
-> > +	if (FIB_MULTIPATH_HASH_TEST_FIELD(DST_IP, hash_fields))
-> > +		hash_keys.addrs.v6addrs.dst = fl6->daddr;
-> > +	if (FIB_MULTIPATH_HASH_TEST_FIELD(IP_PROTO, hash_fields))
-> > +		hash_keys.basic.ip_proto = fl6->flowi6_proto;
-> > +	if (FIB_MULTIPATH_HASH_TEST_FIELD(FLOWLABEL, hash_fields))
-> > +		hash_keys.tags.flow_label = (__force u32)flowi6_get_flowlabel(fl6);
-> > +	if (FIB_MULTIPATH_HASH_TEST_FIELD(SRC_PORT, hash_fields))
-> > +		hash_keys.ports.src = fl6->fl6_sport;
-> > +	if (FIB_MULTIPATH_HASH_TEST_FIELD(DST_PORT, hash_fields))
-> > +		hash_keys.ports.dst = fl6->fl6_dport;
-> > +
-> > +	return flow_hash_from_keys(&hash_keys);
-> > +}
-> > +
-> 
-> given the amount of duplication with IPv4, should be able to use inline
-> macros and the flowi_uli union to make some common helpers without
-> impacting performance.
 
-OK, will try to create some common helpers
+--F0Jzq68Ii7tXulWL
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+
+On 2021-05-04 21:14 +0800, Coiby Xu wrote:
+> Hi Benjamin,
+>=20
+> As you have known, I'm working on improving drivers/staging/qlge. I'm
+> not sure if I correctly understand some TODO items. Since you wrote the T=
+ODO
+> list, could you explain some of the items or comment on the
+> corresponding fix for me?
+>=20
+> > * while in that area, using two 8k buffers to store one 9k frame is a p=
+oor
+> >   choice of buffer size.
+>=20
+> Currently, LARGE_BUFFER_MAX_SIZE is defined as 8192. How about we simply
+> changing LARGE_BUFFER_MAX_SIZE to 4096? This is what
+> drivers/net/ethernet/intel/e1000 does for jumbo frame right now.
+
+I think that frags of 4096 would be better for allocations than the
+current scheme. However, I don't know if simply changing that define is
+the only thing to do.
+
+BTW, e1000 was written long ago and not updated much, so it's not the
+reference I would look at generally. Sadly I don't do much kernel
+development anymore so I don't know which one to recommend either :/ If
+I had to guess, I'd say ixgbe is a device of a similar vintage whose
+driver has seen a lot better work.
+
+>=20
+> > * in the "chain of large buffers" case, the driver uses an skb allocate=
+d with
+> >   head room but only puts data in the frags.
+>=20
+> Do you suggest implementing the copybreak feature which exists for e1000 =
+for
+> this driver, i.e., allocing a sk_buff and coping the header buffer into i=
+t?
+
+No. From the "chain of large buffers" quote, I think I was referring to:
+
+\ qlge_refill_sb
+	skb =3D __netdev_alloc_skb(qdev->ndev, SMALL_BUFFER_SIZE, gfp);
+
+\ qlge_build_rx_skb
+		[...]
+		/*
+		 * The data is in a chain of large buffers
+		[...]
+			skb_fill_page_desc(skb, i,
+					   lbq_desc->p.pg_chunk.page,
+					   lbq_desc->p.pg_chunk.offset, size);
+		[...]
+		__pskb_pull_tail(skb, hlen);
+
+So out of SMALL_BUFFER_SIZE, only hlen is used. Since SMALL_BUFFER_SIZE
+is only 256, I'm not sure now if this really has any impact. In fact it
+seems in line with ex. what ixgbe does (IXGBE_RX_HDR_SIZE).
+
+However, in the same area, there is also
+			skb =3D netdev_alloc_skb(qdev->ndev, length);
+			[...]
+			skb_fill_page_desc(skb, 0, lbq_desc->p.pg_chunk.page,
+					   lbq_desc->p.pg_chunk.offset,
+					   length);
+
+Why is the skb allocated with "length" size? Something like
+	skb =3D napi_alloc_skb(&rx_ring->napi, SMALL_BUFFER_SIZE);
+would be better I think. The head only needs enough space for the
+subsequent hlen pull.
+
+BTW, it looks like commit f8c047be5401 ("staging: qlge: use qlge_*
+prefix to avoid namespace clashes with other qlogic drivers") missed
+some structures like struct rx_ring. Defines like SMALL_BUFFER_SIZE
+should also have a prefix.
+
+>=20
+> > * fix weird line wrapping (all over, ex. the ql_set_routing_reg() calls=
+ in
+> >   qlge_set_multicast_list()).
+>=20
+> This issue of weird line wrapping is supposed to be all over. But I can
+> only find the ql_set_routing_reg() calls in qlge_set_multicast_list have
+> this problem,
+>=20
+> 			if (qlge_set_routing_reg
+> 			    (qdev, RT_IDX_PROMISCUOUS_SLOT, RT_IDX_VALID, 1)) {
+>=20
+> I can't find other places where functions calls put square and arguments
+> in the new line. Could you give more hints?
+
+Here are other examples of what I would call weird line wrapping:
+
+	status =3D qlge_validate_flash(qdev,
+				     sizeof(struct flash_params_8000) /
+				   sizeof(u16),
+				   "8000");
+
+	status =3D qlge_wait_reg_rdy(qdev,
+				   XGMAC_ADDR, XGMAC_ADDR_RDY, XGMAC_ADDR_XME);
+
+[...]
+
+I put that item towards the end of the TODO list because I think the
+misshapen formatting and the ridiculous overuse of () in expressions
+serve a useful purpose. They clearly point to the code that hasn't yet
+been rewritten; they make it easy to know what code to audit. Because of
+that, I strongly think it would be better to tackle the TODO list
+(roughly) in order.
+
+--F0Jzq68Ii7tXulWL
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAABCAAdFiEEkvpDtefvZykbqQVOaJBbS33YWS0FAmCSXoIACgkQaJBbS33Y
+WS031w/+MRfhCowqa/U5DcH5RwPMSfkCSw53RLYIDtHN83ul7JQbz6eUckBmvV0Z
+MUMAc78ea/KD9Fps5n9ZjIwjHdmplpkV4I811VKWW6lcFJUTrbCtwwrxRI3hl31v
+yRsfX4A2jV7TQrqdGV+Nt29wuaaGB69q77rEooVwf8fjBvXIpUobvb9abON0bkig
+Q/W6qFijExDww5yVIymVv+p8++swlG/QALUZxep3xX2n/oaVDxv/lKlsr2jpV2d9
+ui71KTt1CG2zVONv35hr7yeR/lS2+mlWOE8UZFEXTw9OOWmt7tBJdez265omuog8
+mS4qmqBI7AFcAGzvaNyPxR84/uFY4Bql+u9or36DQ3SBSCxQn3/BHklBYY8ITbC8
+vTLRtabuIFwBlD20m2YEyKKzTBMvDgq9/eVGQcwxFYNEQb7Ux5BQXBXksNQpJMTI
+k5aN88oott1M9eLZnTLe4Uz5Wt54bacmqqwkiiEs+hF4HzVRQlCv4CdxCpt3FANd
+YyRDlNuNp0Pfw1koveDMQR2luMV38GqCuCjUQnVS+/88FmUMdOMUKYrCNu1U5D2Z
+LnsUAri98yJ2zfm1Jdhpqb6yM2V0K/ZRxgxclxjPi9Cu9/QLIaM34JrOdyHsPAhv
+YsydUgNgZ5vHwT0hpuM3VmeOdNQKm4LIgxk2NhVnX+DomB9HzzQ=
+=FCdF
+-----END PGP SIGNATURE-----
+
+--F0Jzq68Ii7tXulWL--
