@@ -2,114 +2,270 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3342837478F
-	for <lists+netdev@lfdr.de>; Wed,  5 May 2021 20:05:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C539C3747BF
+	for <lists+netdev@lfdr.de>; Wed,  5 May 2021 20:06:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235254AbhEER6w (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 5 May 2021 13:58:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55632 "EHLO
+        id S235570AbhEESFM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 5 May 2021 14:05:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57366 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234772AbhEER6Z (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 5 May 2021 13:58:25 -0400
-Received: from mail-qt1-x832.google.com (mail-qt1-x832.google.com [IPv6:2607:f8b0:4864:20::832])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DFF5CC061346
-        for <netdev@vger.kernel.org>; Wed,  5 May 2021 10:31:18 -0700 (PDT)
-Received: by mail-qt1-x832.google.com with SMTP id j17so1810104qtx.6
-        for <netdev@vger.kernel.org>; Wed, 05 May 2021 10:31:18 -0700 (PDT)
+        with ESMTP id S235639AbhEESED (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 5 May 2021 14:04:03 -0400
+Received: from mail-ed1-x530.google.com (mail-ed1-x530.google.com [IPv6:2a00:1450:4864:20::530])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EFC0CC0610E9
+        for <netdev@vger.kernel.org>; Wed,  5 May 2021 10:52:29 -0700 (PDT)
+Received: by mail-ed1-x530.google.com with SMTP id h10so3020807edt.13
+        for <netdev@vger.kernel.org>; Wed, 05 May 2021 10:52:29 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=uHFuH/MiPv3sQBSV0I3IV5ZN4VvzTdrTxOiwRGaLFbE=;
-        b=Bp3OQ70qGDqkTvg2oKI398CcTVYi8f4fyZ26+hqAL6RfOG76hCygOAT9Vm7k0tA4uZ
-         X3oqGx2MjN3it00DyfJ9YHtW/eNFwx36vv7uZ097k4FJy55zhHOaMsykqFzf9zOz/9wq
-         iSdghZOnxMuTZDXlHQTY7H+QEbcejjaHDJheINkKPzIiVsVFhXz+bzWRGoV5sJdoKlEu
-         glDrbD81AwEg00+YLPEPDd09kLh1juEWvTlyEdb05kveelmj65bll6JFxUpeGyDb9FBl
-         +qS3QaskiIfDCr8eUji/GsgwRd+ascNpR8eJ12IbNNkLjBwo84bW7dS5gZRl/YHD2TJW
-         FHhg==
+         :cc:content-transfer-encoding;
+        bh=R8dasBlS/Y7b20YlP5Fv5XJkDkpsZKVL54qsW+OQ24E=;
+        b=F1PXH6urbmUO8odDmWIWLM0qMnkm8zo67lORvOQeJi2O5InMMFtc1pyISkNg5mTybr
+         KuAYzZ05UK3Zv1KnEbljcBoUdJ2d1OjtMoEthJPgDUNeNCpWcgPFvfUQ5TgGdipqxoM+
+         1yqVebUPm9DXzzS8p54sNIcqKFOKowMmEbyU9BvOjxc9l2I5d9lb/gbXhEPi0Zr4SYc9
+         4o/gFn3tsC8cpkHtgy2OqDU55PwpTymovX69ElP375i17O8FjNHIrZX0MF25LHSq/bXB
+         ClK+VUmREdidBHRV7G8A0YqOPKLsJrXZQDgajFbPDzb+CybFjw+Vyf+co8JuJTK85NUF
+         /bUA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=uHFuH/MiPv3sQBSV0I3IV5ZN4VvzTdrTxOiwRGaLFbE=;
-        b=HJGtZrIAW//MZ1ai+izksRPg2W7K5X16oBrptg9OXtTkv8aOZPR+qVmbVsfxDsk5IB
-         WmLMnujQ8ULh/rjEg1nfe43zqYhjoGCa9vgq6wXm0MMmKDMrnxH526S3PmKh53y4JX34
-         0g3DZpP5MYEY4tLeRhZHiXFupxLKTVbLzOa5HVnQugUUJ2Ni9FZVwdsUy4JsT5kVbnCr
-         qIyt7eLzMvLX1UfLr2u7ru9vg9vIPs+kN3frdSP27DeDa/msVTIHE9t3P/I1osn0jbXU
-         Xnf/s+RmjX9GKPpo2lHOzuNwcDmoeAZmo6PcdWk9pxLXWDq8Y5vrn6BytXuSDGZq1d4q
-         FqmQ==
-X-Gm-Message-State: AOAM532P2ILzv+uPfsCBsNrCqFFPhRfy+9XGs0V5Z6CaM01CBJ11htzj
-        95ZsJ4sHutb6q+2AE/gUNOOGhj/ZHqrxvNnHxnQ=
-X-Google-Smtp-Source: ABdhPJzUkgvGiD0PKqlH3mI+D5s/XYWVv4yfjXtcrF8JIM0nsHVVw7B6w4UlgjmSosJmvXm3oiT4DUZV+ix071MEwAw=
-X-Received: by 2002:ac8:1014:: with SMTP id z20mr28168320qti.65.1620235877957;
- Wed, 05 May 2021 10:31:17 -0700 (PDT)
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=R8dasBlS/Y7b20YlP5Fv5XJkDkpsZKVL54qsW+OQ24E=;
+        b=AhWFtiiO0yBwpVzxZarM4zkqQBgTl5Wx+ddi6+juPKaeTgU3Tk40v0U1gnzACBqBhf
+         /AFGIwDQKHxJqjhqEsKtJVhktWGtG8WSmEvHusVYmRXaiGXoDXV3EfHbsCO8Qlh0vk96
+         tTLQlt4j0MUErIM+1wuwNy0IWbnW4VRyK+53mQCMy8KGfMWVIZCq+rC6Y0paiDOjc4k8
+         rMQebpzBiqPnrxq6xiGFONiprWusl/vas2CW9Fy3jv3/UyRpBvgdUxijb+fpO6u//RKH
+         BdIzsPg6+cta8WyDQv6nnpnfFQcaR3cz9+7KwOtSXYONHSMO4p7ZwcQFMjMfqcFMA60U
+         L+xA==
+X-Gm-Message-State: AOAM533wfMLwZOHAEYV4NDor+KkRzqh1440O02lo4R/xjmIhBDY/6Qhl
+        bQ2143HBl+8cknPIZOiFXX9jWVP3Nf03tqGODFg=
+X-Google-Smtp-Source: ABdhPJz4JwjMZV/Sf0GCdNN5q/WIZPPtnegN1KJ4hxF3Qa4bcDXVsL/M0JX3MlyxDjGnVCpLNgG8ZK3BuJu1my0oAuk=
+X-Received: by 2002:a05:6402:35c4:: with SMTP id z4mr240575edc.362.1620237148599;
+ Wed, 05 May 2021 10:52:28 -0700 (PDT)
 MIME-Version: 1.0
-References: <cover.1620223174.git.pabeni@redhat.com> <e5d4bacef76ef439b6eb8e7f4973161ca131dfee.1620223174.git.pabeni@redhat.com>
- <CAF=yD-+BAMU+ETz9MV--MR5NuCE9VrtNezDB3mAiBQR+5puZvQ@mail.gmail.com> <d6665869966936b79305de87aaddd052379038c4.camel@redhat.com>
-In-Reply-To: <d6665869966936b79305de87aaddd052379038c4.camel@redhat.com>
-From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Date:   Wed, 5 May 2021 13:30:41 -0400
-Message-ID: <CAF=yD-++8zxVKThLnPMdDOcR5Q+2dStne4=EKeKCD7pVyEc8UA@mail.gmail.com>
-Subject: Re: [PATCH net 1/4] net: fix double-free on fraglist GSO skbs
-To:     Paolo Abeni <pabeni@redhat.com>
-Cc:     Network Development <netdev@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Steffen Klassert <steffen.klassert@secunet.com>,
-        Willem de Bruijn <willemb@google.com>,
-        Miaohe Lin <linmiaohe@huawei.com>
+References: <20210429190926.5086-1-smalin@marvell.com> <20210429190926.5086-11-smalin@marvell.com>
+ <02a740cd-e765-1197-9c5d-78ce602ba7a1@suse.de>
+In-Reply-To: <02a740cd-e765-1197-9c5d-78ce602ba7a1@suse.de>
+From:   Shai Malin <malin1024@gmail.com>
+Date:   Wed, 5 May 2021 20:52:16 +0300
+Message-ID: <CAKKgK4yg0oBu37U2mW8AXngtcLKity4=-pARZ6Oyq0BgtGEchQ@mail.gmail.com>
+Subject: Re: [RFC PATCH v4 10/27] nvme-tcp-offload: Add device scan implementation
+To:     Hannes Reinecke <hare@suse.de>
+Cc:     Shai Malin <smalin@marvell.com>, netdev@vger.kernel.org,
+        davem@davemloft.net, kuba@kernel.org,
+        linux-nvme@lists.infradead.org, sagi@grimberg.me, hch@lst.de,
+        axboe@fb.com, kbusch@kernel.org, Ariel Elior <aelior@marvell.com>,
+        Michal Kalderon <mkalderon@marvell.com>, okulkarni@marvell.com,
+        pkushwaha@marvell.com, Dean Balandin <dbalandin@marvell.com>
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, May 5, 2021 at 1:28 PM Paolo Abeni <pabeni@redhat.com> wrote:
->
-> On Wed, 2021-05-05 at 12:13 -0400, Willem de Bruijn wrote:
-> > On Wed, May 5, 2021 at 11:37 AM Paolo Abeni <pabeni@redhat.com> wrote:
-> > > While segmenting a SKB_GSO_FRAGLIST GSO packet, if the destructor
-> > > callback is available, the skb destructor is invoked on each
-> > > aggregated packet via skb_release_head_state().
-> > >
-> > > Such field (and the pairer skb->sk) is left untouched, so the same
-> > > destructor is invoked again when the segmented skbs are freed, leading
-> > > to double-free/UaF of the relevant socket.
+On 5/1/21 3:25 PM, Hannes Reinecke wrote:
+> On 4/29/21 9:09 PM, Shai Malin wrote:
+> > From: Dean Balandin <dbalandin@marvell.com>
 > >
-> > Similar to skb_segment, should the destructor be swapped with the last
-> > segment and callback delayed, instead of called immediately as part of
-> > segmentation?
+> > As part of create_ctrl(), it scans the registered devices and calls
+> > the claim_dev op on each of them, to find the first devices that matche=
+s
+> > the connection params. Once the correct devices is found (claim_dev
+> > returns true), we raise the refcnt of that device and return that devic=
+e
+> > as the device to be used for ctrl currently being created.
 > >
-> >         /* Following permits correct backpressure, for protocols
-> >          * using skb_set_owner_w().
-> >          * Idea is to tranfert ownership from head_skb to last segment.
-> >          */
-> >         if (head_skb->destructor == sock_wfree) {
-> >                 swap(tail->truesize, head_skb->truesize);
-> >                 swap(tail->destructor, head_skb->destructor);
-> >                 swap(tail->sk, head_skb->sk);
-> >         }
->
-> My understanding is that one assumption in the original
-> SKB_GSO_FRAGLIST implementation was that SKB_GSO_FRAGLIST skbs are not
-> owned by any socket.
->
-> AFAICS the above assumption was true until:
->
-> commit c75fb320d482a5ce6e522378d137fd2c3bf79225
-> Author: Paolo Abeni <pabeni@redhat.com>
-> Date:   Fri Apr 9 13:04:37 2021 +0200
->
->     veth: use skb_orphan_partial instead of skb_orphan
->
-> after that, if the skb is owned, skb->destructor is sock_efree(), so
-> the above code should not trigger.
+> > Acked-by: Igor Russkikh <irusskikh@marvell.com>
+> > Signed-off-by: Dean Balandin <dbalandin@marvell.com>
+> > Signed-off-by: Prabhakar Kushwaha <pkushwaha@marvell.com>
+> > Signed-off-by: Omkar Kulkarni <okulkarni@marvell.com>
+> > Signed-off-by: Michal Kalderon <mkalderon@marvell.com>
+> > Signed-off-by: Ariel Elior <aelior@marvell.com>
+> > Signed-off-by: Shai Malin <smalin@marvell.com>
+> > ---
+> >   drivers/nvme/host/tcp-offload.c | 94 ++++++++++++++++++++++++++++++++=
++
+> >   1 file changed, 94 insertions(+)
+> >
+> > diff --git a/drivers/nvme/host/tcp-offload.c b/drivers/nvme/host/tcp-of=
+fload.c
+> > index 711232eba339..aa7cc239abf2 100644
+> > --- a/drivers/nvme/host/tcp-offload.c
+> > +++ b/drivers/nvme/host/tcp-offload.c
+> > @@ -13,6 +13,11 @@
+> >   static LIST_HEAD(nvme_tcp_ofld_devices);
+> >   static DECLARE_RWSEM(nvme_tcp_ofld_devices_rwsem);
+> >
+> > +static inline struct nvme_tcp_ofld_ctrl *to_tcp_ofld_ctrl(struct nvme_=
+ctrl *nctrl)
+> > +{
+> > +     return container_of(nctrl, struct nvme_tcp_ofld_ctrl, nctrl);
+> > +}
+> > +
+> >   /**
+> >    * nvme_tcp_ofld_register_dev() - NVMeTCP Offload Library registratio=
+n
+> >    * function.
+> > @@ -98,6 +103,94 @@ void nvme_tcp_ofld_req_done(struct nvme_tcp_ofld_re=
+q *req,
+> >       /* Placeholder - complete request with/without error */
+> >   }
+> >
+> > +struct nvme_tcp_ofld_dev *
+> > +nvme_tcp_ofld_lookup_dev(struct nvme_tcp_ofld_ctrl *ctrl)
+> > +{
+> > +     struct nvme_tcp_ofld_dev *dev;
+> > +
+> > +     down_read(&nvme_tcp_ofld_devices_rwsem);
+> > +     list_for_each_entry(dev, &nvme_tcp_ofld_devices, entry) {
+> > +             if (dev->ops->claim_dev(dev, &ctrl->conn_params)) {
+> > +                     /* Increase driver refcnt */
+> > +                     if (!try_module_get(dev->ops->module)) {
+> > +                             pr_err("try_module_get failed\n");
+> > +                             dev =3D NULL;
+> > +                     }
+> > +
+> > +                     goto out;
+> > +             }
+> > +     }
+> > +
+> > +     dev =3D NULL;
+> > +out:
+> > +     up_read(&nvme_tcp_ofld_devices_rwsem);
+> > +
+> > +     return dev;
+> > +}
+> > +
+> > +static int nvme_tcp_ofld_setup_ctrl(struct nvme_ctrl *nctrl, bool new)
+> > +{
+> > +     /* Placeholder - validates inputs and creates admin and IO queues=
+ */
+> > +
+> > +     return 0;
+> > +}
+> > +
+> > +static struct nvme_ctrl *
+> > +nvme_tcp_ofld_create_ctrl(struct device *ndev, struct nvmf_ctrl_option=
+s *opts)
+> > +{
+> > +     struct nvme_tcp_ofld_ctrl *ctrl;
+> > +     struct nvme_tcp_ofld_dev *dev;
+> > +     struct nvme_ctrl *nctrl;
+> > +     int rc =3D 0;
+> > +
+> > +     ctrl =3D kzalloc(sizeof(*ctrl), GFP_KERNEL);
+> > +     if (!ctrl)
+> > +             return ERR_PTR(-ENOMEM);
+> > +
+> > +     nctrl =3D &ctrl->nctrl;
+> > +
+> > +     /* Init nvme_tcp_ofld_ctrl and nvme_ctrl params based on received=
+ opts */
+> > +
+> > +     /* Find device that can reach the dest addr */
+> > +     dev =3D nvme_tcp_ofld_lookup_dev(ctrl);
+> > +     if (!dev) {
+> > +             pr_info("no device found for addr %s:%s.\n",
+> > +                     opts->traddr, opts->trsvcid);
+> > +             rc =3D -EINVAL;
+> > +             goto out_free_ctrl;
+> > +     }
+> > +
+> > +     ctrl->dev =3D dev;
+> > +
+> > +     if (ctrl->dev->ops->max_hw_sectors)
+> > +             nctrl->max_hw_sectors =3D ctrl->dev->ops->max_hw_sectors;
+> > +     if (ctrl->dev->ops->max_segments)
+> > +             nctrl->max_segments =3D ctrl->dev->ops->max_segments;
+> > +
+> > +     /* Init queues */
+> > +
+> > +     /* Call nvme_init_ctrl */
+> > +
+> > +     rc =3D ctrl->dev->ops->setup_ctrl(ctrl, true);
+> > +     if (rc)
+> > +             goto out_module_put;
+> > +
+> > +     rc =3D nvme_tcp_ofld_setup_ctrl(nctrl, true);
+> > +     if (rc)
+> > +             goto out_uninit_ctrl;
+> > +
+> > +     return nctrl;
+> > +
+> > +out_uninit_ctrl:
+> > +     ctrl->dev->ops->release_ctrl(ctrl);
+> > +out_module_put:
+> > +     module_put(dev->ops->module);
+> > +out_free_ctrl:
+> > +     kfree(ctrl);
+> > +
+> > +     return ERR_PTR(rc);
+> > +}
+> > +
+> >   static struct nvmf_transport_ops nvme_tcp_ofld_transport =3D {
+> >       .name           =3D "tcp_offload",
+> >       .module         =3D THIS_MODULE,
+> > @@ -107,6 +200,7 @@ static struct nvmf_transport_ops nvme_tcp_ofld_tran=
+sport =3D {
+> >                         NVMF_OPT_RECONNECT_DELAY | NVMF_OPT_HDR_DIGEST =
+|
+> >                         NVMF_OPT_DATA_DIGEST | NVMF_OPT_NR_POLL_QUEUES =
+|
+> >                         NVMF_OPT_TOS,
+> > +     .create_ctrl    =3D nvme_tcp_ofld_create_ctrl,
+> >   };
+> >
+> >   static int __init nvme_tcp_ofld_init_module(void)
+> >
+> I wonder if we shouldn't take the approach from Martin Belanger, and
+> introduce a new option 'host_iface' to select the interface to use.
+> That is, _if_ the nvme-tcp offload driver would present itself as a
+> network interface; one might argue that it would put too much
+> restriction on the implementations.
 
-Okay, great.
+We should add the new option 'host_iface' also to nvme-tcp-offload and
+each vendor-specific driver shall register with this to nvme_tcp_ofld_ops.
 
-> More importantly SKB_GSO_FRAGLIST can only be applied if the inner-
-> most protocol is UDP, so
-> commit 432c856fcf45c468fffe2e5029cb3f95c7dc9475
-> and d6a4a10411764cf1c3a5dad4f06c5ebe5194488b should not be relevant.
+> But if it does not present itself as a network interface, how do we
+> address it? And if it does, wouldn't we be better off to specify the
+> interface directly, and not try to imply the interface from the IP addres=
+s?
 
-I think the first does apply, as it applies to any protocol that uses
-sock_wfree, not just tcp_wfree? Anyway, the point is moot indeed.
+Specifically for the Marvell qedn driver, we are pairing between the net-de=
+vice
+(qede) and the offload-device (qedn) on each port.
+
+The usage for the user is:
+Assign IP to the net-device (from any existing linux tool):
+
+    ip addr add 100.100.0.101/24 dev p1p1
+
+This IP will be used by both net-device (qede) and offload-device (qedn).
+In order to connect from "sw" nvme-tcp through the net-device (qede):
+
+    nvme connect -t tcp -s 4420 -a 100.100.0.100 -n testnqn
+
+In order to connect from "offload" nvme-tcp through the offload-device (qed=
+n):
+
+    nvme connect -t tcp_offload -s 4420 -a 100.100.0.100 -n testnqn
+
+A suggestion (by Hannes Reinecke), as a future enhancement, and in
+order to simplify the usage, we suggest modifying nvme-cli with a new flag
+that will determine if "-t tcp" should be the regular nvme-tcp (which will
+be the default) or nvme-tcp-offload.
+For exmaple:
+
+    nvme connect -t tcp -s 4420 -a 100.100.0.100 -n testnqn -[new flag]
+
+>
+> Cheers,
+>
+> Hannes
+> --
+> Dr. Hannes Reinecke                Kernel Storage Architect
+> hare@suse.de                              +49 911 74053 688
+> SUSE Software Solutions GmbH, Maxfeldstr. 5, 90409 N=C3=BCrnberg
+> HRB 36809 (AG N=C3=BCrnberg), Gesch=C3=A4ftsf=C3=BChrer: Felix Imend=C3=
+=B6rffer
