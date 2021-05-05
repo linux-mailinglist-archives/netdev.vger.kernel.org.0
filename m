@@ -2,37 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 83080374195
-	for <lists+netdev@lfdr.de>; Wed,  5 May 2021 18:46:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 46BB1374197
+	for <lists+netdev@lfdr.de>; Wed,  5 May 2021 18:46:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235164AbhEEQkA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 5 May 2021 12:40:00 -0400
-Received: from mail.kernel.org ([198.145.29.99]:54830 "EHLO mail.kernel.org"
+        id S234191AbhEEQkF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 5 May 2021 12:40:05 -0400
+Received: from mail.kernel.org ([198.145.29.99]:55176 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S234843AbhEEQhW (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 5 May 2021 12:37:22 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 495786144C;
-        Wed,  5 May 2021 16:33:30 +0000 (UTC)
+        id S234398AbhEEQhq (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 5 May 2021 12:37:46 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 13375615FF;
+        Wed,  5 May 2021 16:33:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1620232411;
-        bh=9yRxJ3VaWxPObwoymsEDUnFiROCK5q5GXBmdx7K/05M=;
+        s=k20201202; t=1620232414;
+        bh=o+vXLCwrGRdUFyTL8oKuaI1v7wtRrNgfYd2+jq2f8JQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ZaIL0seYU2tiDBqSRe6b2nU9slvlen+xFM90w8rRiqL2+jcFlKfVvG4b0dnsZgRIo
-         invzlDpucHPyv4zqD/VhRsPduw6u6He9l79C6+oFX+nxIbKKujQ7/x4QWNPSQGgVj9
-         S+Eu0uvyZuSUodpQTLv+LteBL7bKjVFY+LMmUX2GpcWFqKBvVDbAAWJihAsFm4V1oQ
-         0dSDl0hQS8MSLcidHZ5y7tQKukLNIFkEwWWPw7ilcXOiQpEWIGw10DfK742vnWTp/8
-         fmo9ySy4qY9TbkJn4MmD76MTHyHanlNI05ddpegc1zdN6muPYrms05cuyCjGkXb4Zm
-         IggP0MxBvUKRA==
+        b=aS9n8A6DX7+m6bon9U9KG1eBhgBd/pRAfKhWH1VNkKzgh56puPz44ZJDekBIOPQwB
+         vZGsb3D2iGGXcx64kdZ0dJ8TDuCW/W4Q56NfzwzHlGkHFA//UmNwsMUot+4qf5jh3y
+         +/9dQ1YzLS7F5JyPAH3E3bpuZlbm+mQSpGEtkBqB6T0U37r9r8juZAvfiLCHriSXyc
+         Qd4iD4RgeCF9mcXPOD7bt2VeAukBM7GSONDvOUeCMx5j0TdnLtTKMyl8XNrlWTXwEp
+         NwD1GRNwZc960+O5QDvkPcauaZ64T5RegH0a/0j9CpdFQ0RaHvnaqrfVpZAUXLgJZD
+         DOUxoRSh71Xyw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Emmanuel Grumbach <emmanuel.grumbach@intel.com>,
-        Luca Coelho <luciano.coelho@intel.com>,
-        Johannes Berg <johannes.berg@intel.com>,
-        Sasha Levin <sashal@kernel.org>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.12 089/116] mac80211: properly drop the connection in case of invalid CSA IE
-Date:   Wed,  5 May 2021 12:30:57 -0400
-Message-Id: <20210505163125.3460440-89-sashal@kernel.org>
+Cc:     "Gustavo A. R. Silva" <gustavoars@kernel.org>,
+        kernel test robot <lkp@intel.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.12 091/116] ethtool: ioctl: Fix out-of-bounds warning in store_link_ksettings_for_user()
+Date:   Wed,  5 May 2021 12:30:59 -0400
+Message-Id: <20210505163125.3460440-91-sashal@kernel.org>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20210505163125.3460440-1-sashal@kernel.org>
 References: <20210505163125.3460440-1-sashal@kernel.org>
@@ -44,44 +43,47 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Emmanuel Grumbach <emmanuel.grumbach@intel.com>
+From: "Gustavo A. R. Silva" <gustavoars@kernel.org>
 
-[ Upstream commit 253907ab8bc0818639af382f6398810fa1f022b3 ]
+[ Upstream commit c1d9e34e11281a8ba1a1c54e4db554232a461488 ]
 
-In case the frequency is invalid, ieee80211_parse_ch_switch_ie
-will fail and we may not even reach the check in
-ieee80211_sta_process_chanswitch. Drop the connection
-in case ieee80211_parse_ch_switch_ie failed, but still
-take into account the CSA mode to remember not to send
-a deauth frame in case if it is forbidden to.
+Fix the following out-of-bounds warning:
 
-Signed-off-by: Emmanuel Grumbach <emmanuel.grumbach@intel.com>
-Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
-Link: https://lore.kernel.org/r/iwlwifi.20210409123755.34712ef96a0a.I75d7ad7f1d654e8b0aa01cd7189ff00a510512b3@changeid
-Signed-off-by: Johannes Berg <johannes.berg@intel.com>
+net/ethtool/ioctl.c:492:2: warning: 'memcpy' offset [49, 84] from the object at 'link_usettings' is out of the bounds of referenced subobject 'base' with type 'struct ethtool_link_settings' at offset 0 [-Warray-bounds]
+
+The problem is that the original code is trying to copy data into a
+some struct members adjacent to each other in a single call to
+memcpy(). This causes a legitimate compiler warning because memcpy()
+overruns the length of &link_usettings.base. Fix this by directly
+using &link_usettings and _from_ as destination and source addresses,
+instead.
+
+This helps with the ongoing efforts to globally enable -Warray-bounds
+and get us closer to being able to tighten the FORTIFY_SOURCE routines
+on memcpy().
+
+Link: https://github.com/KSPP/linux/issues/109
+Reported-by: kernel test robot <lkp@intel.com>
+Signed-off-by: Gustavo A. R. Silva <gustavoars@kernel.org>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/mac80211/mlme.c | 7 ++-----
- 1 file changed, 2 insertions(+), 5 deletions(-)
+ net/ethtool/ioctl.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/net/mac80211/mlme.c b/net/mac80211/mlme.c
-index 4a8f1b8ce768..0fe91dc9817e 100644
---- a/net/mac80211/mlme.c
-+++ b/net/mac80211/mlme.c
-@@ -1405,11 +1405,8 @@ ieee80211_sta_process_chanswitch(struct ieee80211_sub_if_data *sdata,
- 		ch_switch.delay = csa_ie.max_switch_time;
- 	}
+diff --git a/net/ethtool/ioctl.c b/net/ethtool/ioctl.c
+index 771688e1b0da..2603966da904 100644
+--- a/net/ethtool/ioctl.c
++++ b/net/ethtool/ioctl.c
+@@ -489,7 +489,7 @@ store_link_ksettings_for_user(void __user *to,
+ {
+ 	struct ethtool_link_usettings link_usettings;
  
--	if (res < 0) {
--		ieee80211_queue_work(&local->hw,
--				     &ifmgd->csa_connection_drop_work);
--		return;
--	}
-+	if (res < 0)
-+		goto lock_and_drop_connection;
- 
- 	if (beacon && sdata->vif.csa_active && !ifmgd->csa_waiting_bcn) {
- 		if (res)
+-	memcpy(&link_usettings.base, &from->base, sizeof(link_usettings));
++	memcpy(&link_usettings, from, sizeof(link_usettings));
+ 	bitmap_to_arr32(link_usettings.link_modes.supported,
+ 			from->link_modes.supported,
+ 			__ETHTOOL_LINK_MODE_MASK_NBITS);
 -- 
 2.30.2
 
