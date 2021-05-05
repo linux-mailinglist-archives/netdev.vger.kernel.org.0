@@ -2,37 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CD4FD3743CC
-	for <lists+netdev@lfdr.de>; Wed,  5 May 2021 19:47:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 24C6D3743CD
+	for <lists+netdev@lfdr.de>; Wed,  5 May 2021 19:47:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235738AbhEEQwA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 5 May 2021 12:52:00 -0400
-Received: from mail.kernel.org ([198.145.29.99]:50936 "EHLO mail.kernel.org"
+        id S235779AbhEEQwK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 5 May 2021 12:52:10 -0400
+Received: from mail.kernel.org ([198.145.29.99]:49322 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S234614AbhEEQru (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 5 May 2021 12:47:50 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id E624361954;
-        Wed,  5 May 2021 16:36:59 +0000 (UTC)
+        id S235892AbhEEQsi (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 5 May 2021 12:48:38 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 7796961951;
+        Wed,  5 May 2021 16:37:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1620232621;
-        bh=EYWBTJda0F6zMNnuHeE7/4rKHkgRRO3h1/YDuq1xrtE=;
+        s=k20201202; t=1620232622;
+        bh=kEnxKvRvXtsSjAMGQKobqwfi53MrIc8FrAhY6aWVDy8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=GLklRGjsU4pMeTfUue6CFAkXFNhoKiFe8xBo1D1t+M74ltVHfRWqMpLbNnN/yCWeL
-         0BKs1bMOj76U9xxJfJj5qlTr7Wr21pHIQy493M64+2+SAta46/eRyTw536zyj2uDOp
-         xNItLBCwLnj0Jk8uDfSjuaWVbWYp5VPI1fnnd/Rlw8rqtcUH3OWHcppwZIOEI+fTL2
-         uh448gLP2FBPDzUMPIzjCBe+Wwk+T3CEALs53jssH2rVlB/+xQGvEj11Z4XcHWnjEx
-         Nm+DoAeP8GW7tZh2QYbDs2oQh9Tce12J62ImPuyAErRIRhrL0YL874LNi+tHrZklw5
-         zExrjqZZxLMzQ==
+        b=hNTf6Yucars99Tk/uKFOJXxofKIJlXjAuXWgFmWLlyC11LMd+/GMQ30krnQ24UUcH
+         nbJgnRDBjWHLBpNsyne9H3im/+qVKFgXahNlD3aXWHYNBGuqdtw9p5qI3chAVpuOZL
+         VYssesrUsyGA49tPfA92igVFwQUD09FxbkT5EQq8PtkOtz2sD894dqzb6jq3Mp3h9H
+         8TmxR3DATYYAWstUJ3WrNWsdLde9TaCnCWBQxeUtNvKcxvHCwB0oUaG7MlhM3J2yXg
+         fo6D1BrL2tK7WEkIsv27EcnR+MZtQY5fS9Z7zsgF6Lc6tVDMNhfUb8efHOXtKuWzFU
+         bsGVVnGAj9onQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Maxim Mikityanskiy <maximmi@mellanox.com>,
-        Saeed Mahameed <saeedm@nvidia.com>,
-        Tariq Toukan <tariqt@nvidia.com>,
+Cc:     Jonathan McDowell <noodles@earth.li>,
+        "David S . Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org,
-        linux-rdma@vger.kernel.org, bpf@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.10 08/85] net/mlx5e: Use net_prefetchw instead of prefetchw in MPWQE TX datapath
-Date:   Wed,  5 May 2021 12:35:31 -0400
-Message-Id: <20210505163648.3462507-8-sashal@kernel.org>
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org
+Subject: [PATCH AUTOSEL 5.10 09/85] net: stmmac: Set FIFO sizes for ipq806x
+Date:   Wed,  5 May 2021 12:35:32 -0400
+Message-Id: <20210505163648.3462507-9-sashal@kernel.org>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20210505163648.3462507-1-sashal@kernel.org>
 References: <20210505163648.3462507-1-sashal@kernel.org>
@@ -44,43 +44,42 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Maxim Mikityanskiy <maximmi@mellanox.com>
+From: Jonathan McDowell <noodles@earth.li>
 
-[ Upstream commit 991b2654605b455a94dac73e14b23480e7e20991 ]
+[ Upstream commit e127906b68b49ddb3ecba39ffa36a329c48197d3 ]
 
-Commit e20f0dbf204f ("net/mlx5e: RX, Add a prefetch command for small
-L1_CACHE_BYTES") switched to using net_prefetchw at all places in mlx5e.
-In the same time frame, commit 5af75c747e2a ("net/mlx5e: Enhanced TX
-MPWQE for SKBs") added one more usage of prefetchw. When these two
-changes were merged, this new occurrence of prefetchw wasn't replaced
-with net_prefetchw.
+Commit eaf4fac47807 ("net: stmmac: Do not accept invalid MTU values")
+started using the TX FIFO size to verify what counts as a valid MTU
+request for the stmmac driver.  This is unset for the ipq806x variant.
+Looking at older patches for this it seems the RX + TXs buffers can be
+up to 8k, so set appropriately.
 
-This commit fixes this last occurrence of prefetchw in
-mlx5e_tx_mpwqe_session_start, making the same change that was done in
-mlx5e_xdp_mpwqe_session_start.
+(I sent this as an RFC patch in June last year, but received no replies.
+I've been running with this on my hardware (a MikroTik RB3011) since
+then with larger MTUs to support both the internal qca8k switch and
+VLANs with no problems. Without the patch it's impossible to set the
+larger MTU required to support this.)
 
-Signed-off-by: Maxim Mikityanskiy <maximmi@mellanox.com>
-Reviewed-by: Saeed Mahameed <saeedm@nvidia.com>
-Reviewed-by: Tariq Toukan <tariqt@nvidia.com>
-Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
+Signed-off-by: Jonathan McDowell <noodles@earth.li>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/mellanox/mlx5/core/en_tx.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/ethernet/stmicro/stmmac/dwmac-ipq806x.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_tx.c b/drivers/net/ethernet/mellanox/mlx5/core/en_tx.c
-index 38a23d209b33..373668068071 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_tx.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_tx.c
-@@ -486,7 +486,7 @@ static void mlx5e_tx_mpwqe_session_start(struct mlx5e_txqsq *sq,
+diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac-ipq806x.c b/drivers/net/ethernet/stmicro/stmmac/dwmac-ipq806x.c
+index bf3250e0e59c..749585fe6fc9 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/dwmac-ipq806x.c
++++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-ipq806x.c
+@@ -352,6 +352,8 @@ static int ipq806x_gmac_probe(struct platform_device *pdev)
+ 	plat_dat->bsp_priv = gmac;
+ 	plat_dat->fix_mac_speed = ipq806x_gmac_fix_mac_speed;
+ 	plat_dat->multicast_filter_bins = 0;
++	plat_dat->tx_fifo_size = 8192;
++	plat_dat->rx_fifo_size = 8192;
  
- 	pi = mlx5e_txqsq_get_next_pi(sq, MLX5E_TX_MPW_MAX_WQEBBS);
- 	wqe = MLX5E_TX_FETCH_WQE(sq, pi);
--	prefetchw(wqe->data);
-+	net_prefetchw(wqe->data);
- 
- 	*session = (struct mlx5e_tx_mpwqe) {
- 		.wqe = wqe,
+ 	err = stmmac_dvr_probe(&pdev->dev, plat_dat, &stmmac_res);
+ 	if (err)
 -- 
 2.30.2
 
