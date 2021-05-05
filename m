@@ -2,39 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5749437418C
-	for <lists+netdev@lfdr.de>; Wed,  5 May 2021 18:45:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 26DA9374190
+	for <lists+netdev@lfdr.de>; Wed,  5 May 2021 18:45:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235077AbhEEQjB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 5 May 2021 12:39:01 -0400
-Received: from mail.kernel.org ([198.145.29.99]:54520 "EHLO mail.kernel.org"
+        id S235252AbhEEQjF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 5 May 2021 12:39:05 -0400
+Received: from mail.kernel.org ([198.145.29.99]:53294 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S234783AbhEEQhE (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S235101AbhEEQhE (ORCPT <rfc822;netdev@vger.kernel.org>);
         Wed, 5 May 2021 12:37:04 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 11A5661413;
-        Wed,  5 May 2021 16:33:22 +0000 (UTC)
+Received: by mail.kernel.org (Postfix) with ESMTPSA id ABC846145E;
+        Wed,  5 May 2021 16:33:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1620232404;
-        bh=DPhJxbCGTKtKEJllav8XGEl/X87ke2S8d3c5qt4sdl0=;
+        s=k20201202; t=1620232405;
+        bh=8vdi0o9dKNdzAyIYJMghwa/S09pJ00H4wLWn9brOe8A=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=kCyAccX6DVbT+DHqjwPvZ28pBCio+VZZm2Qqi34l5oMi4t1qMLczWrlIwD3+z+MJh
-         3xpr9aHUvcUmVuYAIySsn0fetIFHqSvpEVw+n0bYfIPzaDa7pKV10ws2WHwI/3zRVT
-         mBb3kJIYCo0/9Dr9C4v7aYXysfOhy6a9dSkGf1MDql7RNA818BYxpVUIMDpAPcqFRy
-         sL/UFbZGbScHwDvpDoMxdh7CtxqIj4A7rh9qhnbmu9AxKEANk+IlVzCTsAi/L3zlzt
-         uTTSeD06DZPSxxHwVFX/vtwZ+XkbJIwKskouqDG7V6aKmac4UagErf5iSWGltbYnUZ
-         NH+GaUo3okLCQ==
+        b=ZTZEol7yG9uvWjOuhD/hofEHFcylLsvvt4UlUcv/0Kylc1FYBOdkuExuHXwTCYWzP
+         1QtJLpqbnCLirafiXB5MxsS4rVemM5KFixXForLeQEIchb57GAoMfQ3hlvdzOPX74O
+         Jggi4ahzXqIQkJZA4HkIhm8t9WhGsxrgeVb9iaTdg99wzmftqTraLG+Uq55QIiJiLw
+         F80eW8R6j2xi3GZ9KNugUvr0rpjHcdD2fk7gxRZyRs84SbZnltA/s1iuGsZYiysfRb
+         Yw7AUUr0+0/zqLUjsBjq8JmTAbCDwKmL9SMoCrZYBc1E2edAAHFtkCjIs1f8YOPtW3
+         +5aF8kh4EzTcw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     "Gustavo A. R. Silva" <gustavoars@kernel.org>,
         kernel test robot <lkp@intel.com>,
-        Kees Cook <keescook@chromium.org>,
-        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
         "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, linux-sctp@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.12 084/116] sctp: Fix out-of-bounds warning in sctp_process_asconf_param()
-Date:   Wed,  5 May 2021 12:30:52 -0400
-Message-Id: <20210505163125.3460440-84-sashal@kernel.org>
+        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.12 085/116] flow_dissector: Fix out-of-bounds warning in __skb_flow_bpf_to_target()
+Date:   Wed,  5 May 2021 12:30:53 -0400
+Message-Id: <20210505163125.3460440-85-sashal@kernel.org>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20210505163125.3460440-1-sashal@kernel.org>
 References: <20210505163125.3460440-1-sashal@kernel.org>
@@ -48,11 +46,17 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: "Gustavo A. R. Silva" <gustavoars@kernel.org>
 
-[ Upstream commit e5272ad4aab347dde5610c0aedb786219e3ff793 ]
+[ Upstream commit 1e3d976dbb23b3fce544752b434bdc32ce64aabc ]
 
 Fix the following out-of-bounds warning:
 
-net/sctp/sm_make_chunk.c:3150:4: warning: 'memcpy' offset [17, 28] from the object at 'addr' is out of the bounds of referenced subobject 'v4' with type 'struct sockaddr_in' at offset 0 [-Warray-bounds]
+net/core/flow_dissector.c:835:3: warning: 'memcpy' offset [33, 48] from the object at 'flow_keys' is out of the bounds of referenced subobject 'ipv6_src' with type '__u32[4]' {aka 'unsigned int[4]'} at offset 16 [-Warray-bounds]
+
+The problem is that the original code is trying to copy data into a
+couple of struct members adjacent to each other in a single call to
+memcpy().  So, the compiler legitimately complains about it. As these
+are just a couple of members, fix this by copying each one of them in
+separate calls to memcpy().
 
 This helps with the ongoing efforts to globally enable -Warray-bounds
 and get us closer to being able to tighten the FORTIFY_SOURCE routines
@@ -61,27 +65,29 @@ on memcpy().
 Link: https://github.com/KSPP/linux/issues/109
 Reported-by: kernel test robot <lkp@intel.com>
 Signed-off-by: Gustavo A. R. Silva <gustavoars@kernel.org>
-Reviewed-by: Kees Cook <keescook@chromium.org>
-Acked-by: Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/sctp/sm_make_chunk.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ net/core/flow_dissector.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
-diff --git a/net/sctp/sm_make_chunk.c b/net/sctp/sm_make_chunk.c
-index f77484df097b..da4ce0947c3a 100644
---- a/net/sctp/sm_make_chunk.c
-+++ b/net/sctp/sm_make_chunk.c
-@@ -3147,7 +3147,7 @@ static __be16 sctp_process_asconf_param(struct sctp_association *asoc,
- 		 * primary.
- 		 */
- 		if (af->is_any(&addr))
--			memcpy(&addr.v4, sctp_source(asconf), sizeof(addr));
-+			memcpy(&addr, sctp_source(asconf), sizeof(addr));
+diff --git a/net/core/flow_dissector.c b/net/core/flow_dissector.c
+index a96a4f5de0ce..3f36b04d86a0 100644
+--- a/net/core/flow_dissector.c
++++ b/net/core/flow_dissector.c
+@@ -828,8 +828,10 @@ static void __skb_flow_bpf_to_target(const struct bpf_flow_keys *flow_keys,
+ 		key_addrs = skb_flow_dissector_target(flow_dissector,
+ 						      FLOW_DISSECTOR_KEY_IPV6_ADDRS,
+ 						      target_container);
+-		memcpy(&key_addrs->v6addrs, &flow_keys->ipv6_src,
+-		       sizeof(key_addrs->v6addrs));
++		memcpy(&key_addrs->v6addrs.src, &flow_keys->ipv6_src,
++		       sizeof(key_addrs->v6addrs.src));
++		memcpy(&key_addrs->v6addrs.dst, &flow_keys->ipv6_dst,
++		       sizeof(key_addrs->v6addrs.dst));
+ 		key_control->addr_type = FLOW_DISSECTOR_KEY_IPV6_ADDRS;
+ 	}
  
- 		if (security_sctp_bind_connect(asoc->ep->base.sk,
- 					       SCTP_PARAM_SET_PRIMARY,
 -- 
 2.30.2
 
