@@ -2,221 +2,169 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0939E37356F
-	for <lists+netdev@lfdr.de>; Wed,  5 May 2021 09:16:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 093A33735A6
+	for <lists+netdev@lfdr.de>; Wed,  5 May 2021 09:33:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231767AbhEEHRK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 5 May 2021 03:17:10 -0400
-Received: from mail-vi1eur05on2105.outbound.protection.outlook.com ([40.107.21.105]:24607
-        "EHLO EUR05-VI1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S229482AbhEEHRG (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 5 May 2021 03:17:06 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=ZuAZbw+dWFO9AUgPAEUqs3TW3gwdau4FAwczh8Pjfg5ut0oU2zXl2mOKK9sbm2LvZ+fq4OWJLD2nVlZtp5r8wXbm8dkVKNczhN7A12Pc+TESdX0v8yPXXkKKM05VL3qQ8xBIP2MjDmMCdhvm1+vFY8dUCbr1oZjeNLqYCQt/XeBJ6WHO36WqkbDeBuFwcOAw1xiCWj3cG5SN7NJ0ADCS4D9nn67IKbeQb6FRymRbRzhLBPrjudFJFbKQoIuAwBu+TUMD9b3vsRhTb6aY5zR84FIOglxkgr0gTgozZ2Gv/iCOw5SoLgi9IorOAEchwQ/pImYiQJAVWiCol+uyRTdp8w==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Cg9rmdFCTOIB7WTfLbkh2B8I2UtSTFm5id2jLVgc+Cc=;
- b=mDEC+1G5IrggiBD2mhUOvUAUeh1gvnoUJOI9YQ3Tth1VYDfMO0sfkpy+kTXsZke9tJuhRVojpD4WRfJu6USknVn7pmAOMH7emzQvWTxEJg14xWbhozMo+QVOZVdJLchpwRyuMPkliuk+68d2kagaoG8kgd9lLm2ODZaim3Mf3nKfPWIr9s0bqXZ8yrtyB/z1dJXqoCmdvdzySxE/I07a3QHeccNWjfIoHreVi7r+ZrRjssKCKWAknoiHpeevGxKxPPOtWHPeZKmH05MNzlsQw5ktN+Jl/TaO0XCjiXMafAgXRe3irCHtwWVdKLXuTqrMAoXkXY1V2usDw/lTzsLc/Q==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=kontron.de; dmarc=pass action=none header.from=kontron.de;
- dkim=pass header.d=kontron.de; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mysnt.onmicrosoft.com;
- s=selector2-mysnt-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Cg9rmdFCTOIB7WTfLbkh2B8I2UtSTFm5id2jLVgc+Cc=;
- b=ZkUhzOtxZdKpqcNmbY7bC8MXU9modnR5skemD+4AO9J1tap3rUx+07NL6HZOkQUHCNmwlfbhmnNNo/CEFz6EytX5PMOlLfHY7R63Np5JakKSY8uxDZi3MgOk/AAdxV1lZxat+mpb6Txi41CpD8YQt3C+4STHQ4GLhQrFGMp8VLQ=
-Authentication-Results: vger.kernel.org; dkim=none (message not signed)
- header.d=none;vger.kernel.org; dmarc=none action=none header.from=kontron.de;
-Received: from AM0PR10MB2963.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:208:157::14)
- by AM8PR10MB3985.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:20b:1e2::8) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4108.25; Wed, 5 May
- 2021 07:14:17 +0000
-Received: from AM0PR10MB2963.EURPRD10.PROD.OUTLOOK.COM
- ([fe80::3d8a:f56b:3a0c:8a87]) by AM0PR10MB2963.EURPRD10.PROD.OUTLOOK.COM
- ([fe80::3d8a:f56b:3a0c:8a87%7]) with mapi id 15.20.4108.024; Wed, 5 May 2021
- 07:14:17 +0000
-From:   Frieder Schrempf <frieder.schrempf@kontron.de>
-Subject: [PATCH v2] can: mcp251x: Fix resume from sleep before interface was
- brought up
-To:     Marc Kleine-Budde <mkl@pengutronix.de>,
-        Vincent Mailhol <mailhol.vincent@wanadoo.fr>,
-        Oliver Hartkopp <socketcan@hartkopp.net>,
-        Frieder Schrempf <frieder.schrempf@kontron.de>,
-        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
-        =?UTF-8?Q?Timo_Schl=c3=bc=c3=9fler?= <schluessler@krause.de>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Tim Harvey <tharvey@gateworks.com>
-Cc:     stable@vger.kernel.org, linux-can@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Message-ID: <17d5d714-b468-482f-f37a-482e3d6df84e@kontron.de>
-Date:   Wed, 5 May 2021 09:14:15 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.7.1
-Content-Type: text/plain; charset=windows-1252
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [46.142.67.208]
-X-ClientProxiedBy: AM6PR01CA0069.eurprd01.prod.exchangelabs.com
- (2603:10a6:20b:e0::46) To AM0PR10MB2963.EURPRD10.PROD.OUTLOOK.COM
- (2603:10a6:208:157::14)
+        id S231797AbhEEHe2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 5 May 2021 03:34:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58278 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230490AbhEEHe1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 5 May 2021 03:34:27 -0400
+Received: from mail-pj1-x102d.google.com (mail-pj1-x102d.google.com [IPv6:2607:f8b0:4864:20::102d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 33977C061574;
+        Wed,  5 May 2021 00:33:30 -0700 (PDT)
+Received: by mail-pj1-x102d.google.com with SMTP id t2-20020a17090ae502b029015b0fbfbc50so362803pjy.3;
+        Wed, 05 May 2021 00:33:30 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=BUAPIm3iMwQwqfPMRN4i1+zE77O5pOfChKH66VkGfDQ=;
+        b=X6iJm4caK45zSkCB2gggbLhoLyOSqpO8rHWLIIeInanGflnr+kFjAs9aPsUoLn98//
+         7IpQrcXnJbXQQhAvOUQlj5dh6lfQPUYYwXv+9nwmeXz+XSMDPAPa9kqT8rilOaYRqWaq
+         dnkrdiitxMsyQL90rv4Zn/fvMCT4I5twS9hlt6B1rB6FAUulizW2lJNl8sAPTFj+VIle
+         S7PugNCz4lg135XAQf+JMLHsXi+h4aPFuAuVIRBWbDdtT7nia0RssiKT6kWQbuG3M15a
+         p4qcP3pxYhQnRmBCF/EZ0GJ5UZkThA/X312M1JUf60iK4V34W5YJB/KD3mG3HA8GKHiR
+         1nAw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=BUAPIm3iMwQwqfPMRN4i1+zE77O5pOfChKH66VkGfDQ=;
+        b=OZz/3WKplbOFcUg3SZhaf2bgN1AdVaEJQtTsdS/IRJ4SPtBDP4MsZULUN81aPGDE+B
+         Xzt5VGvt37wibgvbwOBwWqzCuCIGU3sH7a6cxcuoTSZig4oe2HfaCIZii8qe/TBcdvAy
+         Z4Sa4p1zRK+27jSXE5KLAZ61dJZYmC141bYKQ5cN6cCE87EEeetIQrcqgJKAsryz1Q+R
+         l4o1dgLcOJlLQJPu82HXnNNixa5DZN700OqCSUtBJe2SAaWkjRoga160AKMZnTGIrsdP
+         qBHvpiinBXAfzA4ufxW87mJoLpBBSFyPH3L7rw0qxNwF23c7+Nz2grTzJtvqTvP/v8+5
+         zbEw==
+X-Gm-Message-State: AOAM532YPzVCxxmWW8zijQbM7tzVJI0rvoXEBMyG1/iW9gpE79gSAExD
+        pS630dH5IlYuGNBkJ0J91xU=
+X-Google-Smtp-Source: ABdhPJwbIYGzwJWIyFRWmHnr6CcLzKGuX5QhmS2n/xsVtiDUDoFnFYkrdqDisYJUhoFa5YGQnVB4gw==
+X-Received: by 2002:a17:90a:1b0b:: with SMTP id q11mr33576413pjq.181.1620200009686;
+        Wed, 05 May 2021 00:33:29 -0700 (PDT)
+Received: from edumazet1.svl.corp.google.com ([2620:15c:2c4:201:3f07:f342:703:2279])
+        by smtp.gmail.com with ESMTPSA id r32sm5488839pgm.49.2021.05.05.00.33.28
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 05 May 2021 00:33:28 -0700 (PDT)
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+To:     Pablo Neira Ayuso <pablo@netfilter.org>,
+        Jozsef Kadlecsik <kadlec@blackhole.kfki.hu>,
+        Florian Westphal <fw@strlen.de>
+Cc:     netfilter-devel@vger.kernel.org, netdev <netdev@vger.kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        syzbot <syzkaller@googlegroups.com>
+Subject: [PATCH net] netfilter: nfnetlink: add a missing rcu_read_unlock()
+Date:   Wed,  5 May 2021 00:33:24 -0700
+Message-Id: <20210505073324.1985884-1-eric.dumazet@gmail.com>
+X-Mailer: git-send-email 2.31.1.527.g47e6f16901-goog
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from [192.168.10.27] (46.142.67.208) by AM6PR01CA0069.eurprd01.prod.exchangelabs.com (2603:10a6:20b:e0::46) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4087.27 via Frontend Transport; Wed, 5 May 2021 07:14:16 +0000
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: e3ed74d2-67f0-416d-a0b1-08d90f95651b
-X-MS-TrafficTypeDiagnostic: AM8PR10MB3985:
-X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <AM8PR10MB39858C454751DF6B45345EF8E9599@AM8PR10MB3985.EURPRD10.PROD.OUTLOOK.COM>
-X-MS-Oob-TLC-OOBClassifiers: OLM:8882;
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: JeHTPD0TZREsyWfxDG+l4gLqaZWW8xQSv3FCE2vmbcroH3S6a+TOLdZhKhqJDuy3J+nmGZ0tAaLAX90lk3r7H9UpzKWis2DPsizfbpjHuHI+NSG5IdkYDh74dRj+q8sogPKKYuppZdo2DF15UDCdMCx7lTlXe4nErIitWKzGS3mm/89VyvaDd7kX3LSFAUDwhAzIjAWjY5kkFCwodQddYLfNHW03Y7BEya3+UOdXumtw0vM43LPGzpE4LkKwfj/VUkHdbwL06JvezCXJ+6Dy5bzLhZB7g1lKRuq7YR+ii0EvoXAaKJG1iubKjuXK/tcMXFtX3m9QAZM/qz/tPeC52TOTAS+aLeeyrVrSichJ+qialQar+SQ5l9+fP6voCMxF0rp0J8wkGttI++75DJONyjo3/lviCGGYl/n6AU60YLq8fYlIy4AORRg/jKOv1ajAYiBbtj/FbTfYou2cM7airj0xc/JYl0RslA8R0Z6zY4vw79yhvp/ErBKG4hdfRPjeDKc3quDg0rEE7Ojy8+TAVCFpg30DPd5SIKLhFuVv0/w/o/NAUqPRMklbXPpKQ+5FPUGb1Eo0T2s/VE2jYDp3NNCdm+ygIvjOHDDPn7Wpyvqs4lI59ARFNt4zzuH9LGQJOjLg3/LdnZQUqprUgOFqpg==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM0PR10MB2963.EURPRD10.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(4636009)(136003)(396003)(346002)(366004)(376002)(39850400004)(956004)(2616005)(16576012)(5660300002)(83380400001)(36756003)(8936002)(6486002)(7416002)(316002)(478600001)(186003)(44832011)(4326008)(2906002)(31696002)(86362001)(31686004)(16526019)(8676002)(38100700002)(26005)(66946007)(66476007)(66556008)(110136005)(43740500002);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData: =?Windows-1252?Q?G55Ni1hdVu3nVsEnF7lXehaGe2J3ahXENh9WfcrTdIWoanpYHIMo7LYC?=
- =?Windows-1252?Q?dm7HqZ19aY5SfbGe3X/3K5Pss+uubSJ/9Fr/3YJlr8GwyYaejeqXZ3b+?=
- =?Windows-1252?Q?cqQalaaSEkLBvH2L4ZpjKmeH3TSy3sbWmPChct2fx49+jJ91Gq0tei47?=
- =?Windows-1252?Q?wpLzBCNdvzeOHE5LQYsYR7lcdkjLnRW20OzW9qNM93zy2spiGr4Kzb8n?=
- =?Windows-1252?Q?30c+mOAUFWRv+X+BgGOyQoMGY657MD64Meg9tMHF6EWMHNFcJcNud3Ri?=
- =?Windows-1252?Q?tncw79iPDxFRY23MK54W41eQC1qtiUPqaaM7Tcw2wMPwhIlu6Qrcyjfv?=
- =?Windows-1252?Q?HmrHutKrpY8dBc5+2t44XR/efP4Ncap24hxrv6BEeq5AUG68V+OTUqys?=
- =?Windows-1252?Q?VZmCGx2mWilv3j+F7649Zd9VCVmP1fge6Q3KtNRpBachGvD/GN3V0qac?=
- =?Windows-1252?Q?aH+FyslhM200hQpkihuRmc0oR9XvpC9R9M/eTUksoaW3LH8+4CmecWDo?=
- =?Windows-1252?Q?sBmaKU0gXDyLqJJWhn6KqtNwC3nLqhAptb5dNY4lRs0igjTZ2eQWGgQa?=
- =?Windows-1252?Q?ZQRZjM4imrTr84xOZpAuotWy58hWT7G6hxQ3eZm0xFQCx7fk8ZJvveCs?=
- =?Windows-1252?Q?Ua1fkVJxsM5Jutcu1VowVPGdbxsjht6TzO2YG+2Gru43NbUXhTwuL9vz?=
- =?Windows-1252?Q?6tegBpJfL0qCVyfjUmanO2uEdQRqX2B5ksCgeXfGMA0fBvyLFJyXVzWB?=
- =?Windows-1252?Q?iVCEjT/zB7KdnB5yzS13wzmEvttRwdPMbC3hijH2c4nXGKG1VtmKE3dR?=
- =?Windows-1252?Q?QAl9Y+hnGZ9/xS5Bghihgodlcz7yy4XAej+97u2Rmjv/69bJ9gzC/bFW?=
- =?Windows-1252?Q?KiIqZpRg6RymyDylQoHi/oySh3tWmlM1l/Flh5KY4RXyZbHekhwx5Esj?=
- =?Windows-1252?Q?8aFV8lLH+1hwlFyNRXgOiFk9nEKjwE/cnKJockXsWhaeN5GP1sWNRxdU?=
- =?Windows-1252?Q?AUl22f+F0IH4ImvQ2t84l554pre+lIxE7pBEBp7yOMEUtTRCUNUpN1ps?=
- =?Windows-1252?Q?jMR0r1pzcAJj7cNUYAVybfGs9SToUNoPmGducPBbS17NqhO0dLBYbjMn?=
- =?Windows-1252?Q?9PIrIyGFRmjrbV4K1Aiw161LYyQlOJE31JYwPDFVsL3RUzV17oulpkuT?=
- =?Windows-1252?Q?KQLZ2RPCs03zfBckobXIDhQATXSTkrp/ABTTEpVF1aE0eHx8I4SURZO7?=
- =?Windows-1252?Q?5yvNpEbNXCaUA0AzL3mWaXphmDQeABlst4A1swlt/8KpiWloulS3UVBJ?=
- =?Windows-1252?Q?GK/yZ4rbKvYApew8hDYpqWusX06ehq2egkfTbOiu16L7U0sjdWEIBZii?=
- =?Windows-1252?Q?YVLYPYdC/dHx7TU8MPY4r4mPYgfijW7K3yqeuZIWEnWzUKxqp0yOvz4q?=
-X-OriginatorOrg: kontron.de
-X-MS-Exchange-CrossTenant-Network-Message-Id: e3ed74d2-67f0-416d-a0b1-08d90f95651b
-X-MS-Exchange-CrossTenant-AuthSource: AM0PR10MB2963.EURPRD10.PROD.OUTLOOK.COM
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 05 May 2021 07:14:17.2088
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 8c9d3c97-3fd9-41c8-a2b1-646f3942daf1
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 1P33E6h2qh62ZJ2wYU6cC0MBobvLK/FyTySKFXxsid8AGn2pHoAo5g4s9mUyYHUhnU8ZGk3C1SE4chD+3mhtZuJ9zFLALodpPkGD2cy4OWM=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM8PR10MB3985
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Frieder Schrempf <frieder.schrempf@kontron.de>
+From: Eric Dumazet <edumazet@google.com>
 
-Since 8ce8c0abcba3 the driver queues work via priv->restart_work when
-resuming after suspend, even when the interface was not previously
-enabled. This causes a null dereference error as the workqueue is
-only allocated and initialized in mcp251x_open().
+Reported by syzbot :
+BUG: sleeping function called from invalid context at include/linux/sched/mm.h:201
+in_atomic(): 0, irqs_disabled(): 0, non_block: 0, pid: 26899, name: syz-executor.5
+1 lock held by syz-executor.5/26899:
+ #0: ffffffff8bf797a0 (rcu_read_lock){....}-{1:2}, at: nfnetlink_get_subsys net/netfilter/nfnetlink.c:148 [inline]
+ #0: ffffffff8bf797a0 (rcu_read_lock){....}-{1:2}, at: nfnetlink_rcv_msg+0x1da/0x1300 net/netfilter/nfnetlink.c:226
+Preemption disabled at:
+[<ffffffff8917799e>] preempt_schedule_irq+0x3e/0x90 kernel/sched/core.c:5533
+CPU: 1 PID: 26899 Comm: syz-executor.5 Not tainted 5.12.0-next-20210504-syzkaller #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+Call Trace:
+ __dump_stack lib/dump_stack.c:79 [inline]
+ dump_stack+0x141/0x1d7 lib/dump_stack.c:120
+ ___might_sleep.cold+0x1f1/0x237 kernel/sched/core.c:8338
+ might_alloc include/linux/sched/mm.h:201 [inline]
+ slab_pre_alloc_hook mm/slab.h:500 [inline]
+ slab_alloc_node mm/slub.c:2845 [inline]
+ kmem_cache_alloc_node+0x33d/0x3e0 mm/slub.c:2960
+ __alloc_skb+0x20b/0x340 net/core/skbuff.c:413
+ alloc_skb include/linux/skbuff.h:1107 [inline]
+ nlmsg_new include/net/netlink.h:953 [inline]
+ netlink_ack+0x1ed/0xaa0 net/netlink/af_netlink.c:2437
+ netlink_rcv_skb+0x33d/0x420 net/netlink/af_netlink.c:2508
+ nfnetlink_rcv+0x1ac/0x420 net/netfilter/nfnetlink.c:650
+ netlink_unicast_kernel net/netlink/af_netlink.c:1312 [inline]
+ netlink_unicast+0x533/0x7d0 net/netlink/af_netlink.c:1338
+ netlink_sendmsg+0x856/0xd90 net/netlink/af_netlink.c:1927
+ sock_sendmsg_nosec net/socket.c:654 [inline]
+ sock_sendmsg+0xcf/0x120 net/socket.c:674
+ ____sys_sendmsg+0x6e8/0x810 net/socket.c:2350
+ ___sys_sendmsg+0xf3/0x170 net/socket.c:2404
+ __sys_sendmsg+0xe5/0x1b0 net/socket.c:2433
+ do_syscall_64+0x3a/0xb0 arch/x86/entry/common.c:47
+ entry_SYSCALL_64_after_hwframe+0x44/0xae
+RIP: 0033:0x4665f9
+Code: ff ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 40 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 bc ff ff ff f7 d8 64 89 01 48
+RSP: 002b:00007fa8a03ee188 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
+RAX: ffffffffffffffda RBX: 000000000056bf60 RCX: 00000000004665f9
+RDX: 0000000000000000 RSI: 0000000020000480 RDI: 0000000000000004
+RBP: 00000000004bfce1 R08: 0000000000000000 R09: 0000000000000000
+R10: 0000000000000000 R11: 0000000000000246 R12: 000000000056bf60
+R13: 00007fffe864480f R14: 00007fa8a03ee300 R15: 0000000000022000
 
-To fix this we move the workqueue init to mcp251x_can_probe() as
-there is no reason to do it later and repeat it whenever
-mcp251x_open() is called.
+================================================
+WARNING: lock held when returning to user space!
+5.12.0-next-20210504-syzkaller #0 Tainted: G        W
+------------------------------------------------
+syz-executor.5/26899 is leaving the kernel with locks still held!
+1 lock held by syz-executor.5/26899:
+ #0: ffffffff8bf797a0 (rcu_read_lock){....}-{1:2}, at: nfnetlink_get_subsys net/netfilter/nfnetlink.c:148 [inline]
+ #0: ffffffff8bf797a0 (rcu_read_lock){....}-{1:2}, at: nfnetlink_rcv_msg+0x1da/0x1300 net/netfilter/nfnetlink.c:226
+------------[ cut here ]------------
+WARNING: CPU: 0 PID: 26899 at kernel/rcu/tree_plugin.h:359 rcu_note_context_switch+0xfd/0x16e0 kernel/rcu/tree_plugin.h:359
+Modules linked in:
+CPU: 0 PID: 26899 Comm: syz-executor.5 Tainted: G        W         5.12.0-next-20210504-syzkaller #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+RIP: 0010:rcu_note_context_switch+0xfd/0x16e0 kernel/rcu/tree_plugin.h:359
+Code: 48 89 fa 48 c1 ea 03 0f b6 14 02 48 89 f8 83 e0 07 83 c0 03 38 d0 7c 08 84 d2 0f 85 2e 0d 00 00 8b bd cc 03 00 00 85 ff 7e 02 <0f> 0b 65 48 8b 2c 25 00 f0 01 00 48 8d bd cc 03 00 00 48 b8 00 00
+RSP: 0000:ffffc90002fffdb0 EFLAGS: 00010002
+RAX: 0000000000000007 RBX: ffff8880b9c36080 RCX: ffffffff8dc99bac
+RDX: 0000000000000000 RSI: 0000000000000008 RDI: 0000000000000001
+RBP: ffff88808b9d1c80 R08: 0000000000000000 R09: ffffffff8dc96917
+R10: fffffbfff1b92d22 R11: 0000000000000000 R12: 0000000000000000
+R13: ffff88808b9d1c80 R14: ffff88808b9d1c80 R15: ffffc90002ff8000
+FS:  00007fa8a03ee700(0000) GS:ffff8880b9c00000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 00007f09896ed000 CR3: 0000000032070000 CR4: 00000000001526f0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+Call Trace:
+ __schedule+0x214/0x23e0 kernel/sched/core.c:5044
+ schedule+0xcf/0x270 kernel/sched/core.c:5226
+ exit_to_user_mode_loop kernel/entry/common.c:162 [inline]
+ exit_to_user_mode_prepare+0x13e/0x280 kernel/entry/common.c:208
+ irqentry_exit_to_user_mode+0x5/0x40 kernel/entry/common.c:314
+ asm_sysvec_reschedule_ipi+0x12/0x20 arch/x86/include/asm/idtentry.h:637
+RIP: 0033:0x4665f9
 
-Fixes: 8ce8c0abcba3 ("can: mcp251x: only reset hardware as required")
-Cc: stable@vger.kernel.org
-Signed-off-by: Frieder Schrempf <frieder.schrempf@kontron.de>
-Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Fixes: 50f2db9e368f ("netfilter: nfnetlink: consolidate callback types")
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+Cc: Pablo Neira Ayuso <pablo@netfilter.org>
+Reported-by: syzbot <syzkaller@googlegroups.com>
 ---
-Changes in v2:
-  * Remove the out_clean label in mcp251x_open()
-  * Add Andy's R-b tag
-  * Add 'From' tag
+ net/netfilter/nfnetlink.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-Hi Marc, I'm sending a v2 mainly because I noticed that v1 is missing
-the 'From' tag and as my company's mailserver always sends my name
-reversed this causes incorrect author information in git. So if possible
-you could fix this up. If this is too much work, just leave it as is.
-Thanks! 
----
- drivers/net/can/spi/mcp251x.c | 26 ++++++++++++++------------
- 1 file changed, 14 insertions(+), 12 deletions(-)
-
-diff --git a/drivers/net/can/spi/mcp251x.c b/drivers/net/can/spi/mcp251x.c
-index a57da43680d8..6f888b771589 100644
---- a/drivers/net/can/spi/mcp251x.c
-+++ b/drivers/net/can/spi/mcp251x.c
-@@ -956,8 +956,6 @@ static int mcp251x_stop(struct net_device *net)
- 
- 	priv->force_quit = 1;
- 	free_irq(spi->irq, priv);
--	destroy_workqueue(priv->wq);
--	priv->wq = NULL;
- 
- 	mutex_lock(&priv->mcp_lock);
- 
-@@ -1224,15 +1222,6 @@ static int mcp251x_open(struct net_device *net)
- 		goto out_close;
- 	}
- 
--	priv->wq = alloc_workqueue("mcp251x_wq", WQ_FREEZABLE | WQ_MEM_RECLAIM,
--				   0);
--	if (!priv->wq) {
--		ret = -ENOMEM;
--		goto out_clean;
--	}
--	INIT_WORK(&priv->tx_work, mcp251x_tx_work_handler);
--	INIT_WORK(&priv->restart_work, mcp251x_restart_work_handler);
--
- 	ret = mcp251x_hw_wake(spi);
- 	if (ret)
- 		goto out_free_wq;
-@@ -1252,7 +1241,6 @@ static int mcp251x_open(struct net_device *net)
- 
- out_free_wq:
- 	destroy_workqueue(priv->wq);
--out_clean:
- 	free_irq(spi->irq, priv);
- 	mcp251x_hw_sleep(spi);
- out_close:
-@@ -1373,6 +1361,15 @@ static int mcp251x_can_probe(struct spi_device *spi)
- 	if (ret)
- 		goto out_clk;
- 
-+	priv->wq = alloc_workqueue("mcp251x_wq", WQ_FREEZABLE | WQ_MEM_RECLAIM,
-+				   0);
-+	if (!priv->wq) {
-+		ret = -ENOMEM;
-+		goto out_clk;
-+	}
-+	INIT_WORK(&priv->tx_work, mcp251x_tx_work_handler);
-+	INIT_WORK(&priv->restart_work, mcp251x_restart_work_handler);
-+
- 	priv->spi = spi;
- 	mutex_init(&priv->mcp_lock);
- 
-@@ -1417,6 +1414,8 @@ static int mcp251x_can_probe(struct spi_device *spi)
- 	return 0;
- 
- error_probe:
-+	destroy_workqueue(priv->wq);
-+	priv->wq = NULL;
- 	mcp251x_power_enable(priv->power, 0);
- 
- out_clk:
-@@ -1438,6 +1437,9 @@ static int mcp251x_can_remove(struct spi_device *spi)
- 
- 	mcp251x_power_enable(priv->power, 0);
- 
-+	destroy_workqueue(priv->wq);
-+	priv->wq = NULL;
-+
- 	clk_disable_unprepare(priv->clk);
- 
- 	free_candev(net);
+diff --git a/net/netfilter/nfnetlink.c b/net/netfilter/nfnetlink.c
+index d7a9628b6cee50783dc033f17bc6492abe0d176d..e8dbd8379027e32cf3440624e8bb8622df1328a9 100644
+--- a/net/netfilter/nfnetlink.c
++++ b/net/netfilter/nfnetlink.c
+@@ -295,6 +295,7 @@ static int nfnetlink_rcv_msg(struct sk_buff *skb, struct nlmsghdr *nlh,
+ 			nfnl_unlock(subsys_id);
+ 			break;
+ 		default:
++			rcu_read_unlock();
+ 			err = -EINVAL;
+ 			break;
+ 		}
 -- 
-2.25.1
-
+2.31.1.527.g47e6f16901-goog
 
