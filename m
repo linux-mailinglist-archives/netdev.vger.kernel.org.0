@@ -2,171 +2,126 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 681A3374B4A
-	for <lists+netdev@lfdr.de>; Thu,  6 May 2021 00:35:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 094F3374B4E
+	for <lists+netdev@lfdr.de>; Thu,  6 May 2021 00:36:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232382AbhEEWf5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 5 May 2021 18:35:57 -0400
-Received: from lpdvacalvio01.broadcom.com ([192.19.229.182]:54230 "EHLO
-        relay.smtp-ext.broadcom.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S229712AbhEEWf5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 5 May 2021 18:35:57 -0400
-Received: from localhost.swdvt.lab.broadcom.net (dhcp-10-13-253-90.swdvt.lab.broadcom.net [10.13.253.90])
-        by relay.smtp-ext.broadcom.com (Postfix) with ESMTP id 9EDC42432F;
-        Wed,  5 May 2021 15:34:59 -0700 (PDT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 relay.smtp-ext.broadcom.com 9EDC42432F
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=broadcom.com;
-        s=dkimrelay; t=1620254099;
-        bh=cjqBGI479MYoJIBLrdrFVz+pwMJtnMC7DhP1sSeHWH8=;
-        h=From:To:Cc:Subject:Date:From;
-        b=J+pYEqGzUvNPYBEoRedtNzP1fW0xixaOzqR6seHPAAWjmNiYn7rDQr6pjsGuuWdq+
-         rtOFBOseCiNpa8Tnvb6+AaPBL8WUnRflKNDskPgB9kEyZTRNlp11kvCWKNm/syGyrt
-         lScpKrEVHAvya2mB+wnGiN4aKo6cWx3EWIzCRtvM=
-From:   Michael Chan <michael.chan@broadcom.com>
-To:     davem@davemloft.net
-Cc:     netdev@vger.kernel.org, kuba@kernel.org, gospo@broadcom.com
-Subject: [PATCH net] bnxt_en: Fix and improve .ndo_features_check().
-Date:   Wed,  5 May 2021 18:34:59 -0400
-Message-Id: <1620254099-5270-1-git-send-email-michael.chan@broadcom.com>
-X-Mailer: git-send-email 1.8.3.1
+        id S233481AbhEEWhj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 5 May 2021 18:37:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34242 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232579AbhEEWhi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 5 May 2021 18:37:38 -0400
+Received: from mail-io1-xd36.google.com (mail-io1-xd36.google.com [IPv6:2607:f8b0:4864:20::d36])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 77B26C06174A
+        for <netdev@vger.kernel.org>; Wed,  5 May 2021 15:36:40 -0700 (PDT)
+Received: by mail-io1-xd36.google.com with SMTP id p11so3098356iob.9
+        for <netdev@vger.kernel.org>; Wed, 05 May 2021 15:36:40 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=A5yTMFAu5PQsqsLYoETACnPdjv/EWrNXFjZpRnoGVc4=;
+        b=lVsrHbFc0939vNdUid2cZ2fr99h4kHZIfKGRJDOgCrIhNh9XofgTSyIuGJZg0d7o3H
+         mCQGXtgFKGJQ46r8aMAOX7EECWZ0lKfBfO4LmEtak8E38ZTgFbxYAJoLYBE130akWGMM
+         6VNF6AYaIRu+fHtEVfOPQUGJqPRfWM2/9waq+topQUC1s2pByK1hYvUp6Qfn5HLT/w30
+         uMrXeJSxYnduuMLQHn6gRAsYu+Dhb5mbxA90gsqzMT7pVK/FRheiJ8UJoyHB0hbCsoP1
+         Vy2JyM3Qe5NNH0TO5ckUyzDTaalXcOX649iiVoae4XX0lUBtYsmutEOQOY7lmfds0lxu
+         55Yg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=A5yTMFAu5PQsqsLYoETACnPdjv/EWrNXFjZpRnoGVc4=;
+        b=kchX7axkeuUUtVpg5RoalPOhE1TbJ05MeD/rfVO9uiyFUFtqK6m7oOI5aA2goE0x/M
+         6kFtJ3+HgF0sZ7f1TpvpBMv3QNfVg2YrmEK4AuXn605ihBJT/r702NBtP2xr9L4CJ3XK
+         MoNcuL1aPHrE/Cyicz5EASBtYTnvJvNROuuztBDot0s86BZVdpoZ6CsXVgzvv3Uq+SYa
+         Cdke9l8dgS1sv0JkfRSye66dKv36/HJ5tWyj3b4lfEWMMwmPdqTzYqbjO50A8ZL8NhdJ
+         Zq0RTCjWj1aJREiyEKoGmnk4mb1SnKtai6o/u/X4f3lnB862BgpY5w4E0w77Ch9ua1Ji
+         HQNg==
+X-Gm-Message-State: AOAM5306OUEMWwP/BBc2QAvSOe09WJzpAjwq8U4zX+YazY/sQOBoFHSX
+        bz/+W3xNQy+0GwEwJOkr9Qp1hw==
+X-Google-Smtp-Source: ABdhPJzc8yQhQ6tcpCvw7VnovW6xB/ySmSY4y/2nRFN3KI/fUs6X02O+SPFSCzdSbC/4a1e7e1Lbfg==
+X-Received: by 2002:a6b:d918:: with SMTP id r24mr665545ioc.25.1620254199959;
+        Wed, 05 May 2021 15:36:39 -0700 (PDT)
+Received: from presto.localdomain (c-73-185-129-58.hsd1.mn.comcast.net. [73.185.129.58])
+        by smtp.gmail.com with ESMTPSA id n23sm248957ion.53.2021.05.05.15.36.38
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 05 May 2021 15:36:39 -0700 (PDT)
+From:   Alex Elder <elder@linaro.org>
+To:     davem@davemloft.net, kuba@kernel.org
+Cc:     bjorn.andersson@linaro.org, evgreen@chromium.org,
+        cpratapa@codeaurora.org, subashab@codeaurora.org, elder@kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH net] net: ipa: fix inter-EE IRQ register definitions
+Date:   Wed,  5 May 2021 17:36:36 -0500
+Message-Id: <20210505223636.232527-1-elder@linaro.org>
+X-Mailer: git-send-email 2.27.0
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Jakub Kicinski pointed out that we need to handle ipv6 extension headers
-and to explicitly check for supported tunnel types in
-.ndo_features_check().
+In gsi_irq_setup(), two registers are written with the intention of
+disabling inter-EE channel and event IRQs.
 
-For ipv6 extension headers, the hardware supports up to 2 ext. headers
-and each must be <= 64 bytes.  For tunneled packets, the supported
-packets are UDP with supported VXLAN and Geneve ports, GRE, and IPIP.
+But the wrong registers are used (and defined); the ones used are
+read-only registers that indicate whether the interrupt condition is
+present.
 
-Reviewed-by: Edwin Peer <edwin.peer@broadcom.com>
-Reviewed-by: Pavan Chebbi <pavan.chebbi@broadcom.com>
-Fixes: 1698d600b361 ("bnxt_en: Implement .ndo_features_check().")
-Signed-off-by: Michael Chan <michael.chan@broadcom.com>
+Define the mask registers instead of the status registers, and use
+them to disable the inter-EE interrupt types.
+
+Fixes: 46f748ccaf01 ("net: ipa: explicitly disallow inter-EE interrupts")
+Signed-off-by: Alex Elder <elder@linaro.org>
 ---
- drivers/net/ethernet/broadcom/bnxt/bnxt.c | 93 ++++++++++++++++++-----
- 1 file changed, 76 insertions(+), 17 deletions(-)
+ drivers/net/ipa/gsi.c     |  4 ++--
+ drivers/net/ipa/gsi_reg.h | 16 ++++++++--------
+ 2 files changed, 10 insertions(+), 10 deletions(-)
 
-diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt.c b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-index 39ac9e2f5118..c489089671fb 100644
---- a/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-+++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-@@ -10785,37 +10785,96 @@ static int bnxt_set_features(struct net_device *dev, netdev_features_t features)
- 	return rc;
+diff --git a/drivers/net/ipa/gsi.c b/drivers/net/ipa/gsi.c
+index 9f06663cef263..e374079603cf7 100644
+--- a/drivers/net/ipa/gsi.c
++++ b/drivers/net/ipa/gsi.c
+@@ -211,8 +211,8 @@ static void gsi_irq_setup(struct gsi *gsi)
+ 	iowrite32(0, gsi->virt + GSI_CNTXT_SRC_IEOB_IRQ_MSK_OFFSET);
+ 
+ 	/* The inter-EE registers are in the non-adjusted address range */
+-	iowrite32(0, gsi->virt_raw + GSI_INTER_EE_SRC_CH_IRQ_OFFSET);
+-	iowrite32(0, gsi->virt_raw + GSI_INTER_EE_SRC_EV_CH_IRQ_OFFSET);
++	iowrite32(0, gsi->virt_raw + GSI_INTER_EE_SRC_CH_IRQ_MSK_OFFSET);
++	iowrite32(0, gsi->virt_raw + GSI_INTER_EE_SRC_EV_CH_IRQ_MSK_OFFSET);
+ 
+ 	iowrite32(0, gsi->virt + GSI_CNTXT_GSI_IRQ_EN_OFFSET);
  }
+diff --git a/drivers/net/ipa/gsi_reg.h b/drivers/net/ipa/gsi_reg.h
+index b4ac0258d6e10..cb42c5ae86fa2 100644
+--- a/drivers/net/ipa/gsi_reg.h
++++ b/drivers/net/ipa/gsi_reg.h
+@@ -53,15 +53,15 @@
+ #define GSI_EE_REG_ADJUST			0x0000d000	/* IPA v4.5+ */
  
-+/* For UDP, we can only handle 1 Vxlan port and 1 Geneve port. */
-+static bool bnxt_udp_check(struct bnxt *bp, struct udphdr *uh)
-+{
-+	__be16 udp_port = uh->dest;
-+
-+	return udp_port == bp->vxlan_port || udp_port == bp->nge_port;
-+}
-+
-+static bool bnxt_exthdr_check(struct bnxt *bp, struct sk_buff *skb, int nw_off,
-+			      u8 *nextproto)
-+{
-+	struct ipv6hdr *ip6h = (struct ipv6hdr *)(skb->data + nw_off);
-+	int hdr_count = 0;
-+	u8 nexthdr;
-+	int start;
-+
-+	/* Check that there are at most 2 IPv6 extension headers, no
-+	 * fragment header, and each is <= 64 bytes.
-+	 */
-+	start = nw_off + sizeof(*ip6h);
-+	nexthdr = ip6h->nexthdr;
-+	while (ipv6_ext_hdr(nexthdr)) {
-+		struct ipv6_opt_hdr _hdr, *hp;
-+		int hdrlen;
-+
-+		if (hdr_count >= 3 || nexthdr == NEXTHDR_NONE ||
-+		    nexthdr == NEXTHDR_FRAGMENT)
-+			return false;
-+		hp = skb_header_pointer(skb, start, sizeof(_hdr), &_hdr);
-+		if (!hp)
-+			return false;
-+		if (nexthdr == NEXTHDR_AUTH)
-+			hdrlen = ipv6_authlen(hp);
-+		else
-+			hdrlen = ipv6_optlen(hp);
-+
-+		if (hdrlen > 64)
-+			return false;
-+		nexthdr = hp->nexthdr;
-+		start += hdrlen;
-+		hdr_count++;
-+	}
-+	if (nextproto)
-+		*nextproto = nexthdr;
-+	return true;
-+}
-+
-+static bool bnxt_tunl_check(struct bnxt *bp, struct sk_buff *skb, u8 l4_proto)
-+{
-+	switch (l4_proto) {
-+	case IPPROTO_UDP:
-+		return bnxt_udp_check(bp, udp_hdr(skb));
-+	case IPPROTO_GRE:
-+	case IPPROTO_IPIP:
-+		return true;
-+	case IPPROTO_IPV6:
-+		/* Check ext headers of inner ipv6 */
-+		return bnxt_exthdr_check(bp, skb, skb_inner_network_offset(skb),
-+					 NULL);
-+	}
-+	return false;
-+}
-+
- static netdev_features_t bnxt_features_check(struct sk_buff *skb,
- 					     struct net_device *dev,
- 					     netdev_features_t features)
- {
--	struct bnxt *bp;
--	__be16 udp_port;
-+	struct bnxt *bp = netdev_priv(dev);
- 	u8 l4_proto = 0;
+ /* The two inter-EE IRQ register offsets are relative to gsi->virt_raw */
+-#define GSI_INTER_EE_SRC_CH_IRQ_OFFSET \
+-			GSI_INTER_EE_N_SRC_CH_IRQ_OFFSET(GSI_EE_AP)
+-#define GSI_INTER_EE_N_SRC_CH_IRQ_OFFSET(ee) \
+-			(0x0000c018 + 0x1000 * (ee))
++#define GSI_INTER_EE_SRC_CH_IRQ_MSK_OFFSET \
++			GSI_INTER_EE_N_SRC_CH_IRQ_MSK_OFFSET(GSI_EE_AP)
++#define GSI_INTER_EE_N_SRC_CH_IRQ_MSK_OFFSET(ee) \
++			(0x0000c020 + 0x1000 * (ee))
  
- 	features = vlan_features_check(skb, features);
--	if (!skb->encapsulation)
--		return features;
--
- 	switch (vlan_get_protocol(skb)) {
- 	case htons(ETH_P_IP):
-+		if (!skb->encapsulation)
-+			return features;
- 		l4_proto = ip_hdr(skb)->protocol;
--		break;
-+		if (!bnxt_tunl_check(bp, skb, l4_proto))
-+			goto disable_offload;
-+		return features;
- 	case htons(ETH_P_IPV6):
--		l4_proto = ipv6_hdr(skb)->nexthdr;
--		break;
--	default:
-+		if (!bnxt_exthdr_check(bp, skb, skb_network_offset(skb),
-+				       &l4_proto))
-+			goto disable_offload;
-+		if (skb->encapsulation &&
-+		    !bnxt_tunl_check(bp, skb, l4_proto))
-+			goto disable_offload;
- 		return features;
- 	}
+-#define GSI_INTER_EE_SRC_EV_CH_IRQ_OFFSET \
+-			GSI_INTER_EE_N_SRC_EV_CH_IRQ_OFFSET(GSI_EE_AP)
+-#define GSI_INTER_EE_N_SRC_EV_CH_IRQ_OFFSET(ee) \
+-			(0x0000c01c + 0x1000 * (ee))
++#define GSI_INTER_EE_SRC_EV_CH_IRQ_MSK_OFFSET \
++			GSI_INTER_EE_N_SRC_EV_CH_IRQ_MSK_OFFSET(GSI_EE_AP)
++#define GSI_INTER_EE_N_SRC_EV_CH_IRQ_MSK_OFFSET(ee) \
++			(0x0000c024 + 0x1000 * (ee))
  
--	if (l4_proto != IPPROTO_UDP)
--		return features;
--
--	bp = netdev_priv(dev);
--	/* For UDP, we can only handle 1 Vxlan port and 1 Geneve port. */
--	udp_port = udp_hdr(skb)->dest;
--	if (udp_port == bp->vxlan_port || udp_port == bp->nge_port)
--		return features;
-+disable_offload:
- 	return features & ~(NETIF_F_CSUM_MASK | NETIF_F_GSO_MASK);
- }
+ /* All other register offsets are relative to gsi->virt */
  
 -- 
-2.18.1
+2.27.0
 
