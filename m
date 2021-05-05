@@ -2,38 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 46C8D37420C
-	for <lists+netdev@lfdr.de>; Wed,  5 May 2021 18:46:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A302F374213
+	for <lists+netdev@lfdr.de>; Wed,  5 May 2021 18:46:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235321AbhEEQnt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 5 May 2021 12:43:49 -0400
-Received: from mail.kernel.org ([198.145.29.99]:40554 "EHLO mail.kernel.org"
+        id S235365AbhEEQn5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 5 May 2021 12:43:57 -0400
+Received: from mail.kernel.org ([198.145.29.99]:37174 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S235375AbhEEQlq (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S235382AbhEEQlq (ORCPT <rfc822;netdev@vger.kernel.org>);
         Wed, 5 May 2021 12:41:46 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id A761F6162E;
-        Wed,  5 May 2021 16:34:35 +0000 (UTC)
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 445D261463;
+        Wed,  5 May 2021 16:34:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1620232476;
-        bh=DNyrzPIYnIKT/yacSx+rHOBrxPl3lZ0BfgEYN9f/8NQ=;
+        s=k20201202; t=1620232478;
+        bh=AavGADOsZ2avaRn0K1KqrtaIz1J3axuxe+z8UCtXzOA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ry5eK3u8YkypB0E2Qa+SVEU047np5oONWopS/hP9OpH8F5wcijS2zmZFzpXJfunHu
-         ThrqAnKWZb7luw5OIbawJsmELWbqNTdRyoGS35X0zYh8x6Q07JZERTH8hcqfq+u3D6
-         dbqkcGUFJDWHLgyTIY19wIEiX9MBw3qM6Gp3OhjmfsCKPV5OtMyziEsDBXin5NTDya
-         GaAhDMeAOqwN4Q7QEbBs42vLB5RCZKRbcuUbMPYn3TUgSjohNzmcJldEHJ/yTvDwpx
-         R7b5OWUXc7NJltmO5FQ5HVFJtF5r80Nx72ymKSL53/6t9KhNimcszWBaJknlmKQIVt
-         8NiqeIAswALGw==
+        b=R35jfxBecrp2T2D3uXJosmsj44xS+AHxxXhhh3UlkMXHk9U8zI3lYPzEAwe02ljau
+         roS+PgELePzeTgVrJieZU9a2eMqMPmrK2eNDE8YYysDJ7l4hTbm28aLyNDtwNYhf+j
+         3ObfRhAtu44dGvcQjJDY6qU4kBzccmwRhM7EybHA/ZNMXMLKgOn70G0T0lV1MzJKFK
+         lb4x6kayLZlwojCfrJYRP/58J1Nhh5Kszg8+kbLEhAHugRBaC0UqFJnX/u6/tHiUfY
+         iYuCqW3jqiBD9TmB4DnFQM3TKORPdJ5Skeri8BAuE8V1EGfn8leuFnRcE5z5aVC8eX
+         yP/qfRIHoxmKg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Vladimir Oltean <vladimir.oltean@nxp.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Ido Schimmel <idosch@nvidia.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org,
-        linux-doc@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.11 016/104] Documentation: networking: switchdev: fix command for static FDB entries
-Date:   Wed,  5 May 2021 12:32:45 -0400
-Message-Id: <20210505163413.3461611-16-sashal@kernel.org>
+Cc:     Ayush Garg <ayush.garg@samsung.com>,
+        Marcel Holtmann <marcel@holtmann.org>,
+        Sasha Levin <sashal@kernel.org>,
+        linux-bluetooth@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.11 017/104] Bluetooth: Fix incorrect status handling in LE PHY UPDATE event
+Date:   Wed,  5 May 2021 12:32:46 -0400
+Message-Id: <20210505163413.3461611-17-sashal@kernel.org>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20210505163413.3461611-1-sashal@kernel.org>
 References: <20210505163413.3461611-1-sashal@kernel.org>
@@ -45,85 +43,33 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Vladimir Oltean <vladimir.oltean@nxp.com>
+From: Ayush Garg <ayush.garg@samsung.com>
 
-[ Upstream commit 787a4109f46847975ffae7d528a55c6b768ef0aa ]
+[ Upstream commit 87df8bcccd2cede62dfb97dc3d4ca1fe66cb4f83 ]
 
-The "bridge fdb add" command provided in the switchdev documentation is
-junk now, not only because it is syntactically incorrect and rejected by
-the iproute2 bridge program, but also because it was not updated in
-light of Arkadi Sharshevsky's radical switchdev refactoring in commit
-29ab586c3d83 ("net: switchdev: Remove bridge bypass support from
-switchdev"). Try to explain what the intended usage pattern is with the
-new kernel implementation.
+Skip updation of tx and rx PHYs values, when PHY Update
+event's status is not successful.
 
-Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
-Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
-Reviewed-by: Ido Schimmel <idosch@nvidia.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Ayush Garg <ayush.garg@samsung.com>
+Signed-off-by: Marcel Holtmann <marcel@holtmann.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- Documentation/networking/switchdev.rst | 47 +++++++++++++++++++-------
- 1 file changed, 35 insertions(+), 12 deletions(-)
+ net/bluetooth/hci_event.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/Documentation/networking/switchdev.rst b/Documentation/networking/switchdev.rst
-index ddc3f35775dc..650553cdec79 100644
---- a/Documentation/networking/switchdev.rst
-+++ b/Documentation/networking/switchdev.rst
-@@ -181,18 +181,41 @@ To offloading L2 bridging, the switchdev driver/device should support:
- Static FDB Entries
- ^^^^^^^^^^^^^^^^^^
+diff --git a/net/bluetooth/hci_event.c b/net/bluetooth/hci_event.c
+index 67668be3461e..b3872c7a64e1 100644
+--- a/net/bluetooth/hci_event.c
++++ b/net/bluetooth/hci_event.c
+@@ -5911,7 +5911,7 @@ static void hci_le_phy_update_evt(struct hci_dev *hdev, struct sk_buff *skb)
  
--The switchdev driver should implement ndo_fdb_add, ndo_fdb_del and ndo_fdb_dump
--to support static FDB entries installed to the device.  Static bridge FDB
--entries are installed, for example, using iproute2 bridge cmd::
--
--	bridge fdb add ADDR dev DEV [vlan VID] [self]
--
--The driver should use the helper switchdev_port_fdb_xxx ops for ndo_fdb_xxx
--ops, and handle add/delete/dump of SWITCHDEV_OBJ_ID_PORT_FDB object using
--switchdev_port_obj_xxx ops.
--
--XXX: what should be done if offloading this rule to hardware fails (for
--example, due to full capacity in hardware tables) ?
-+A driver which implements the ``ndo_fdb_add``, ``ndo_fdb_del`` and
-+``ndo_fdb_dump`` operations is able to support the command below, which adds a
-+static bridge FDB entry::
-+
-+        bridge fdb add dev DEV ADDRESS [vlan VID] [self] static
-+
-+(the "static" keyword is non-optional: if not specified, the entry defaults to
-+being "local", which means that it should not be forwarded)
-+
-+The "self" keyword (optional because it is implicit) has the role of
-+instructing the kernel to fulfill the operation through the ``ndo_fdb_add``
-+implementation of the ``DEV`` device itself. If ``DEV`` is a bridge port, this
-+will bypass the bridge and therefore leave the software database out of sync
-+with the hardware one.
-+
-+To avoid this, the "master" keyword can be used::
-+
-+        bridge fdb add dev DEV ADDRESS [vlan VID] master static
-+
-+The above command instructs the kernel to search for a master interface of
-+``DEV`` and fulfill the operation through the ``ndo_fdb_add`` method of that.
-+This time, the bridge generates a ``SWITCHDEV_FDB_ADD_TO_DEVICE`` notification
-+which the port driver can handle and use it to program its hardware table. This
-+way, the software and the hardware database will both contain this static FDB
-+entry.
-+
-+Note: for new switchdev drivers that offload the Linux bridge, implementing the
-+``ndo_fdb_add`` and ``ndo_fdb_del`` bridge bypass methods is strongly
-+discouraged: all static FDB entries should be added on a bridge port using the
-+"master" flag. The ``ndo_fdb_dump`` is an exception and can be implemented to
-+visualize the hardware tables, if the device does not have an interrupt for
-+notifying the operating system of newly learned/forgotten dynamic FDB
-+addresses. In that case, the hardware FDB might end up having entries that the
-+software FDB does not, and implementing ``ndo_fdb_dump`` is the only way to see
-+them.
+ 	BT_DBG("%s status 0x%2.2x", hdev->name, ev->status);
  
- Note: by default, the bridge does not filter on VLAN and only bridges untagged
- traffic.  To enable VLAN support, turn on VLAN filtering::
+-	if (!ev->status)
++	if (ev->status)
+ 		return;
+ 
+ 	hci_dev_lock(hdev);
 -- 
 2.30.2
 
