@@ -2,37 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0B86F374199
+	by mail.lfdr.de (Postfix) with ESMTP id F0AF537419C
 	for <lists+netdev@lfdr.de>; Wed,  5 May 2021 18:46:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234553AbhEEQkH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 5 May 2021 12:40:07 -0400
-Received: from mail.kernel.org ([198.145.29.99]:53512 "EHLO mail.kernel.org"
+        id S234342AbhEEQkK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 5 May 2021 12:40:10 -0400
+Received: from mail.kernel.org ([198.145.29.99]:37174 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S234332AbhEEQiG (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 5 May 2021 12:38:06 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 619DE61444;
-        Wed,  5 May 2021 16:33:34 +0000 (UTC)
+        id S234530AbhEEQiJ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 5 May 2021 12:38:09 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 9E3D761462;
+        Wed,  5 May 2021 16:33:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1620232415;
-        bh=+Lb80RiCQ4DsnEB3+qdr0F/sCYz07DzZ2ogEYRtlZ3I=;
+        s=k20201202; t=1620232416;
+        bh=l6JtpswOXURGtwYZ5hYYWOergdQEDDoc8UI/xd6dLdg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=tebqgzFsaxWJlJq2CV0drSB0CgtAeMmnlm58RjySLlbmTZW6jv60hiXs+tbtRU5nR
-         m9BbG+B0w2RPdW7fiVKEo76ic5ajZErda9PmQzZJL1o0LAbicTNosWQT0bmpFnO6wa
-         36TeC6WyNeWu1ZECGyeLIP7ixsb/FASScvu5uV55fbbm3ldsBJm0/EySFekfzjpzQi
-         3Bup/dA0oWjHiGQvg+FJDglz78Q0Gash2tMqDIgotB9qLSHiowbCZcgPBHR1Y7n8KC
-         fz/7aDFtBnhHDSMFFbZXkVxPk1lS3pjE4S5/U+Tu1aUhiyFclbLEc+BXSsOPcvIPXg
-         2dUBSzzB7x2Xw==
+        b=aKPpwxkJff/IxUzdXzdC9ixUW53zu4rEEWcvylTtXxlY+LRmIkSxoYI1XHXcHsyDE
+         rSktGxhiJcKRRscn9ZFElo/W1n/z5zvFl2ElHclAmWv2k1lVtJvCsr0DkJRDvsmhnP
+         ZBCCUkbVrXw+AyM2AtuWblsIhfokts2OpHpmFSkZvjQRl52McDHh2VocsYUhIJ6Wik
+         qLa3x5x+Mlp9AXLabiQtPLIVTAAgjUSybGPAQ1/kM3ktoH3Rq8kRG6Q62OdEgT7R+7
+         K7qCNrNVHkqj2tiBeEu5B5kRx94cG3e1eF7AYg87e0DAJVMhZigJs3HF9DQbeHezb3
+         dvV352BjjWWnw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Du Cheng <ducheng2@gmail.com>,
-        syzbot+d50710fd0873a9c6b40c@syzkaller.appspotmail.com,
-        Cong Wang <cong.wang@bytedance.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.12 092/116] net: sched: tapr: prevent cycle_time == 0 in parse_taprio_schedule
-Date:   Wed,  5 May 2021 12:31:00 -0400
-Message-Id: <20210505163125.3460440-92-sashal@kernel.org>
+Cc:     Yaqi Chen <chendotjs@gmail.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Yonghong Song <yhs@fb.com>, Sasha Levin <sashal@kernel.org>,
+        netdev@vger.kernel.org, bpf@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.12 093/116] samples/bpf: Fix broken tracex1 due to kprobe argument change
+Date:   Wed,  5 May 2021 12:31:01 -0400
+Message-Id: <20210505163125.3460440-93-sashal@kernel.org>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20210505163125.3460440-1-sashal@kernel.org>
 References: <20210505163125.3460440-1-sashal@kernel.org>
@@ -44,43 +43,46 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Du Cheng <ducheng2@gmail.com>
+From: Yaqi Chen <chendotjs@gmail.com>
 
-[ Upstream commit ed8157f1ebf1ae81a8fa2653e3f20d2076fad1c9 ]
+[ Upstream commit 137733d08f4ab14a354dacaa9a8fc35217747605 ]
 
-There is a reproducible sequence from the userland that will trigger a WARN_ON()
-condition in taprio_get_start_time, which causes kernel to panic if configured
-as "panic_on_warn". Catch this condition in parse_taprio_schedule to
-prevent this condition.
+>From commit c0bbbdc32feb ("__netif_receive_skb_core: pass skb by
+reference"), the first argument passed into __netif_receive_skb_core
+has changed to reference of a skb pointer.
 
-Reported as bug on syzkaller:
-https://syzkaller.appspot.com/bug?extid=d50710fd0873a9c6b40c
+This commit fixes by using bpf_probe_read_kernel.
 
-Reported-by: syzbot+d50710fd0873a9c6b40c@syzkaller.appspotmail.com
-Signed-off-by: Du Cheng <ducheng2@gmail.com>
-Acked-by: Cong Wang <cong.wang@bytedance.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Yaqi Chen <chendotjs@gmail.com>
+Signed-off-by: Alexei Starovoitov <ast@kernel.org>
+Acked-by: Yonghong Song <yhs@fb.com>
+Link: https://lore.kernel.org/bpf/20210416154803.37157-1-chendotjs@gmail.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/sched/sch_taprio.c | 6 ++++++
- 1 file changed, 6 insertions(+)
+ samples/bpf/tracex1_kern.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/net/sched/sch_taprio.c b/net/sched/sch_taprio.c
-index 8287894541e3..909c798b7403 100644
---- a/net/sched/sch_taprio.c
-+++ b/net/sched/sch_taprio.c
-@@ -901,6 +901,12 @@ static int parse_taprio_schedule(struct taprio_sched *q, struct nlattr **tb,
+diff --git a/samples/bpf/tracex1_kern.c b/samples/bpf/tracex1_kern.c
+index 3f4599c9a202..ef30d2b353b0 100644
+--- a/samples/bpf/tracex1_kern.c
++++ b/samples/bpf/tracex1_kern.c
+@@ -26,7 +26,7 @@
+ SEC("kprobe/__netif_receive_skb_core")
+ int bpf_prog1(struct pt_regs *ctx)
+ {
+-	/* attaches to kprobe netif_receive_skb,
++	/* attaches to kprobe __netif_receive_skb_core,
+ 	 * looks for packets on loobpack device and prints them
+ 	 */
+ 	char devname[IFNAMSIZ];
+@@ -35,7 +35,7 @@ int bpf_prog1(struct pt_regs *ctx)
+ 	int len;
  
- 		list_for_each_entry(entry, &new->entries, list)
- 			cycle = ktime_add_ns(cycle, entry->interval);
-+
-+		if (!cycle) {
-+			NL_SET_ERR_MSG(extack, "'cycle_time' can never be 0");
-+			return -EINVAL;
-+		}
-+
- 		new->cycle_time = cycle;
- 	}
+ 	/* non-portable! works for the given kernel only */
+-	skb = (struct sk_buff *) PT_REGS_PARM1(ctx);
++	bpf_probe_read_kernel(&skb, sizeof(skb), (void *)PT_REGS_PARM1(ctx));
+ 	dev = _(skb->dev);
+ 	len = _(skb->len);
  
 -- 
 2.30.2
