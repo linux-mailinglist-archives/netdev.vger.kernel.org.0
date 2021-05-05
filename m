@@ -2,85 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C60B437366B
-	for <lists+netdev@lfdr.de>; Wed,  5 May 2021 10:39:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8190C37366E
+	for <lists+netdev@lfdr.de>; Wed,  5 May 2021 10:42:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231844AbhEEIki (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 5 May 2021 04:40:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44626 "EHLO
+        id S232036AbhEEInY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 5 May 2021 04:43:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45226 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231430AbhEEIkh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 5 May 2021 04:40:37 -0400
-Received: from mout-p-202.mailbox.org (mout-p-202.mailbox.org [IPv6:2001:67c:2050::465:202])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B0BDDC061574
-        for <netdev@vger.kernel.org>; Wed,  5 May 2021 01:39:41 -0700 (PDT)
-Received: from smtp1.mailbox.org (smtp1.mailbox.org [IPv6:2001:67c:2050:105:465:1:1:0])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mout-p-202.mailbox.org (Postfix) with ESMTPS id 4FZqrp66c4zQk1d;
-        Wed,  5 May 2021 10:39:38 +0200 (CEST)
-X-Virus-Scanned: amavisd-new at heinlein-support.de
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=pmachata.org;
-        s=MBO0001; t=1620203977;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=26ji62X+HEHeeLTbUwspE0nMgVw9SoHaWqg5Pn2tGIU=;
-        b=bvaDpANSckAXrs7iHoKodLvRKHgHgcEy4z9c7KByndu+CHaDfFXNR6IxCN8e/eoHRgTkn7
-        qJF3NmNMHVKjDtDxnTJsouJYsIMIYz2r1sZVUr68XWUV+WfSNCdCbAONgnZ2yLQvMiGxX+
-        zLlKQJlM0aXDRg5Cf4HIeDIR0yVu4ClnfH4MqFEV1J0Fv7yOtxs9VrysXcohBrHcXR+yiW
-        tcYY9PrCb1wKvAs2w7kMxIZWTunB8AucA6t8dgG5K7aXpX6zuKHt6VR3y6GApKom1w/R0Y
-        ZaQZWkwBRmGIMpayqjb8rLCul+/c9WshvDkh3unVYcq0kEPZAF1Jr72GxY9Kcg==
-Received: from smtp1.mailbox.org ([80.241.60.240])
-        by spamfilter01.heinlein-hosting.de (spamfilter01.heinlein-hosting.de [80.241.56.115]) (amavisd-new, port 10030)
-        with ESMTP id i2GpFXRbDm4i; Wed,  5 May 2021 10:39:35 +0200 (CEST)
-References: <cover.1619886883.git.aclaudi@redhat.com>
- <d2475b23f31e8cb1eb19d51d8bb10866a06a418c.1619886883.git.aclaudi@redhat.com>
-From:   Petr Machata <me@pmachata.org>
-To:     Andrea Claudi <aclaudi@redhat.com>
-Cc:     netdev@vger.kernel.org, stephen@networkplumber.org,
-        dsahern@gmail.com
-Subject: Re: [PATCH iproute2 1/2] dcb: fix return value on dcb_cmd_app_show
-In-reply-to: <d2475b23f31e8cb1eb19d51d8bb10866a06a418c.1619886883.git.aclaudi@redhat.com>
-Date:   Wed, 05 May 2021 10:39:33 +0200
-Message-ID: <877dkd60ca.fsf@nvidia.com>
+        with ESMTP id S230490AbhEEInV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 5 May 2021 04:43:21 -0400
+Received: from perceval.ideasonboard.com (perceval.ideasonboard.com [IPv6:2001:4b98:dc2:55:216:3eff:fef7:d647])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 38448C061574;
+        Wed,  5 May 2021 01:42:23 -0700 (PDT)
+Received: from [192.168.0.20] (cpc89244-aztw30-2-0-cust3082.18-1.cable.virginm.net [86.31.172.11])
+        by perceval.ideasonboard.com (Postfix) with ESMTPSA id 19B89549;
+        Wed,  5 May 2021 10:42:20 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=ideasonboard.com;
+        s=mail; t=1620204140;
+        bh=qmu9oxq4GfKWLVnwiqcpJds5vjoid5EI4o9dBr9EVPM=;
+        h=Reply-To:Subject:To:Cc:References:From:Date:In-Reply-To:From;
+        b=qxh75Rjxr8ZmKGBIcckODbfKvLXdXVplxdvjE/RVGoiG0btFoH42rcMeCQCRXxRo5
+         HpMWhLPXm/qvwRsx2MPtYCuBu9jxHxE49ufKELSGoZfVdSgtqWaffjEFAx7wQLafXF
+         W3o2h8fje6PkcTF1O82xdCiQcIkS0CNreXrp00/Q=
+Reply-To: kieran.bingham+renesas@ideasonboard.com
+Subject: Re: [PATCH 2/3] Fix spelling error from "elemination" to
+ "elimination"
+To:     Sean Gloumeau <sajgloumeau@gmail.com>,
+        Jiri Kosina <trivial@kernel.org>
+Cc:     David Woodhouse <dwmw2@infradead.org>,
+        Richard Weinberger <richard@nod.at>,
+        linux-mtd@lists.infradead.org, Rasesh Mody <rmody@marvell.com>,
+        Sudarsana Kalluru <skalluru@marvell.com>,
+        GR-Linux-NIC-Dev@marvell.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Sean Gloumeau <sajgloumeau@protonmail.com>
+References: <cover.1620185393.git.sajgloumeau@gmail.com>
+ <f1220eaedbc71ee8d19e35b894c21c161e7a33fc.1620185393.git.sajgloumeau@gmail.com>
+From:   Kieran Bingham <kieran.bingham+renesas@ideasonboard.com>
+Organization: Ideas on Board
+Message-ID: <72b39028-f340-1cc7-40e0-0efadb57d729@ideasonboard.com>
+Date:   Wed, 5 May 2021 09:42:17 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.7.1
 MIME-Version: 1.0
-Content-Type: text/plain
-X-MBO-SPAM-Probability: 
-X-Rspamd-Score: -3.45 / 15.00 / 15.00
-X-Rspamd-Queue-Id: EFFCF1404
-X-Rspamd-UID: c4699e
+In-Reply-To: <f1220eaedbc71ee8d19e35b894c21c161e7a33fc.1620185393.git.sajgloumeau@gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-GB
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hi Sean,
 
-Andrea Claudi <aclaudi@redhat.com> writes:
+On 05/05/2021 05:16, Sean Gloumeau wrote:
+> Spelling error "elemination" amended to "elimination".
+> 
+> Signed-off-by: Sean Gloumeau <sajgloumeau@gmail.com>
 
-> dcb_cmd_app_show() is supposed to return EINVAL if an incorrect argument
-> is provided.
->
-> Fixes: 8e9bed1493f5 ("dcb: Add a subtool for the DCB APP object")
-> Signed-off-by: Andrea Claudi <aclaudi@redhat.com>
+Reviewed-by: Kieran Bingham <kieran.bingham+renesas@ideasonboard.com>
+
 > ---
->  dcb/dcb_app.c | 2 +-
+>  fs/jffs2/debug.c | 2 +-
 >  1 file changed, 1 insertion(+), 1 deletion(-)
->
-> diff --git a/dcb/dcb_app.c b/dcb/dcb_app.c
-> index c4816bc2..28f40614 100644
-> --- a/dcb/dcb_app.c
-> +++ b/dcb/dcb_app.c
-> @@ -667,7 +667,7 @@ static int dcb_cmd_app_show(struct dcb *dcb, const char *dev, int argc, char **a
->  out:
->  	close_json_object();
->  	dcb_app_table_fini(&tab);
-> -	return 0;
-> +	return ret;
->  }
+> 
+> diff --git a/fs/jffs2/debug.c b/fs/jffs2/debug.c
+> index 9d26b1b9fc01..027e4f84df28 100644
+> --- a/fs/jffs2/debug.c
+> +++ b/fs/jffs2/debug.c
+> @@ -354,7 +354,7 @@ __jffs2_dbg_acct_paranoia_check_nolock(struct jffs2_sb_info *c,
+>  	}
 >  
->  static int dcb_cmd_app_flush(struct dcb *dcb, const char *dev, int argc, char **argv)
+>  #if 0
+> -	/* This should work when we implement ref->__totlen elemination */
+> +	/* This should work when we implement ref->__totlen elimination */
 
-Nice catch. Looks good,
+I wonder if anyone has worked on or is working on eliminating that
+ref->__totlen so that this code isn't left as dead-code.
 
-Reviewed-by: Petr Machata <me@pmachata.org>
+
+>  	if (my_dirty_size != jeb->dirty_size + jeb->wasted_size) {
+>  		JFFS2_ERROR("Calculated dirty+wasted size %#08x != stored dirty + wasted size %#08x\n",
+>  			my_dirty_size, jeb->dirty_size + jeb->wasted_size);
+> 
+
