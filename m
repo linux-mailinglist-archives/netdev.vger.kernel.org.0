@@ -2,37 +2,39 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 33CA437453B
-	for <lists+netdev@lfdr.de>; Wed,  5 May 2021 19:50:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 893E1374541
+	for <lists+netdev@lfdr.de>; Wed,  5 May 2021 19:50:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237760AbhEERER (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 5 May 2021 13:04:17 -0400
-Received: from mail.kernel.org ([198.145.29.99]:46458 "EHLO mail.kernel.org"
+        id S237918AbhEEREd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 5 May 2021 13:04:33 -0400
+Received: from mail.kernel.org ([198.145.29.99]:47764 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S236683AbhEEQ6J (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 5 May 2021 12:58:09 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 8A056619A8;
-        Wed,  5 May 2021 16:39:35 +0000 (UTC)
+        id S237163AbhEEQ6f (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 5 May 2021 12:58:35 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id DAC7A6199D;
+        Wed,  5 May 2021 16:39:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1620232776;
-        bh=hRkWyVwECxJrACDvgrt+TQxmgiORLhFnvePP7UIObDw=;
+        s=k20201202; t=1620232781;
+        bh=r6QK2tuwxB6yE1ciwfwI0uFWnWCYmDri6WWzgDK9XHM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=duiIkXNocQ8r9Q3vXPxll2yqda78pkZT/zdGzcOuEC5TepxFeCXY4hw42iZT6Rto2
-         93jN9BGiqHpAcVmQBvg/eVrKKQewLRgOS2byb4hmNaqe0Xwe/8xmGprtdRHaAjqdkY
-         5WhCx5UfO2JHszHAqsqtr6D+q2ECAr7TPmFT9SvEr62zGMlakGKZ9ndQiVAi9JOFCy
-         pA7L7BphYx69QnQDBEIusW6fcOL4Z30LfcCOlVsqpZ430C5kAgbTskeXinzwepe5Hs
-         RKqlgBDhRy8UE8scSpjuLmQJyETOVOwRkU1zvFKl0KrnqssRPZDWxHd8kyXPFnU/Vt
-         bGsHa59o3KTIw==
+        b=FcCOC60j8aSr2kMzjFwlFl7bwIT37CFcJRNrC2UFXSbgSMMIm4xlP/WP8ngl9dp6Y
+         iLnP7cbSawOVLvnjQ9jAbif0bHeHfX/kDxMOjYscGJPB/+syVvOPdI9MVdNoOIq/r8
+         +wEPAfAUwvUs+34C2IXCwlZmGC3iqUtT2Mwx0cE34HVzCRJvWklTUvhT/2cmWj2vkO
+         9CwwitMKjuMqTI+PvTv388Q9XjL+A7Bh8AWu2vhJdfTLBWEP+nWE9rJBRkDCNFbmZh
+         jrBBDjU4wVhgTI6+HLtbgNCXBXpdjb8hBMQMHKM5mI9NdsU6PFFwGkDrvJ1OziHJZa
+         VSx6o4u0qRVJA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Yonghong Song <yhs@fb.com>, Alexei Starovoitov <ast@kernel.org>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Sasha Levin <sashal@kernel.org>,
-        linux-kselftest@vger.kernel.org, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, clang-built-linux@googlegroups.com
-Subject: [PATCH AUTOSEL 5.4 27/46] selftests: Set CC to clang in lib.mk if LLVM is set
-Date:   Wed,  5 May 2021 12:38:37 -0400
-Message-Id: <20210505163856.3463279-27-sashal@kernel.org>
+Cc:     "Gustavo A. R. Silva" <gustavoars@kernel.org>,
+        kernel test robot <lkp@intel.com>,
+        Kees Cook <keescook@chromium.org>,
+        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>, linux-sctp@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.4 30/46] sctp: Fix out-of-bounds warning in sctp_process_asconf_param()
+Date:   Wed,  5 May 2021 12:38:40 -0400
+Message-Id: <20210505163856.3463279-30-sashal@kernel.org>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20210505163856.3463279-1-sashal@kernel.org>
 References: <20210505163856.3463279-1-sashal@kernel.org>
@@ -44,40 +46,42 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Yonghong Song <yhs@fb.com>
+From: "Gustavo A. R. Silva" <gustavoars@kernel.org>
 
-[ Upstream commit 26e6dd1072763cd5696b75994c03982dde952ad9 ]
+[ Upstream commit e5272ad4aab347dde5610c0aedb786219e3ff793 ]
 
-selftests/bpf/Makefile includes lib.mk. With the following command
-  make -j60 LLVM=1 LLVM_IAS=1  <=== compile kernel
-  make -j60 -C tools/testing/selftests/bpf LLVM=1 LLVM_IAS=1 V=1
-some files are still compiled with gcc. This patch
-fixed lib.mk issue which sets CC to gcc in all cases.
+Fix the following out-of-bounds warning:
 
-Signed-off-by: Yonghong Song <yhs@fb.com>
-Signed-off-by: Alexei Starovoitov <ast@kernel.org>
-Acked-by: Andrii Nakryiko <andrii@kernel.org>
-Link: https://lore.kernel.org/bpf/20210413153413.3027426-1-yhs@fb.com
+net/sctp/sm_make_chunk.c:3150:4: warning: 'memcpy' offset [17, 28] from the object at 'addr' is out of the bounds of referenced subobject 'v4' with type 'struct sockaddr_in' at offset 0 [-Warray-bounds]
+
+This helps with the ongoing efforts to globally enable -Warray-bounds
+and get us closer to being able to tighten the FORTIFY_SOURCE routines
+on memcpy().
+
+Link: https://github.com/KSPP/linux/issues/109
+Reported-by: kernel test robot <lkp@intel.com>
+Signed-off-by: Gustavo A. R. Silva <gustavoars@kernel.org>
+Reviewed-by: Kees Cook <keescook@chromium.org>
+Acked-by: Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- tools/testing/selftests/lib.mk | 4 ++++
- 1 file changed, 4 insertions(+)
+ net/sctp/sm_make_chunk.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/tools/testing/selftests/lib.mk b/tools/testing/selftests/lib.mk
-index 3ed0134a764d..67386aa3f31d 100644
---- a/tools/testing/selftests/lib.mk
-+++ b/tools/testing/selftests/lib.mk
-@@ -1,6 +1,10 @@
- # This mimics the top-level Makefile. We do it explicitly here so that this
- # Makefile can operate with or without the kbuild infrastructure.
-+ifneq ($(LLVM),)
-+CC := clang
-+else
- CC := $(CROSS_COMPILE)gcc
-+endif
+diff --git a/net/sctp/sm_make_chunk.c b/net/sctp/sm_make_chunk.c
+index d5eda966a706..4ffb9116b6f2 100644
+--- a/net/sctp/sm_make_chunk.c
++++ b/net/sctp/sm_make_chunk.c
+@@ -3134,7 +3134,7 @@ static __be16 sctp_process_asconf_param(struct sctp_association *asoc,
+ 		 * primary.
+ 		 */
+ 		if (af->is_any(&addr))
+-			memcpy(&addr.v4, sctp_source(asconf), sizeof(addr));
++			memcpy(&addr, sctp_source(asconf), sizeof(addr));
  
- ifeq (0,$(MAKELEVEL))
-     ifeq ($(OUTPUT),)
+ 		if (security_sctp_bind_connect(asoc->ep->base.sk,
+ 					       SCTP_PARAM_SET_PRIMARY,
 -- 
 2.30.2
 
