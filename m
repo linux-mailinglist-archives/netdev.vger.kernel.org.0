@@ -2,36 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BC28D3743E6
-	for <lists+netdev@lfdr.de>; Wed,  5 May 2021 19:47:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D40F93743E3
+	for <lists+netdev@lfdr.de>; Wed,  5 May 2021 19:47:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236147AbhEEQxI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 5 May 2021 12:53:08 -0400
-Received: from mail.kernel.org ([198.145.29.99]:59570 "EHLO mail.kernel.org"
+        id S236117AbhEEQxA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 5 May 2021 12:53:00 -0400
+Received: from mail.kernel.org ([198.145.29.99]:50934 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S236455AbhEEQts (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S236454AbhEEQts (ORCPT <rfc822;netdev@vger.kernel.org>);
         Wed, 5 May 2021 12:49:48 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 25BE761943;
-        Wed,  5 May 2021 16:37:26 +0000 (UTC)
+Received: by mail.kernel.org (Postfix) with ESMTPSA id A331961963;
+        Wed,  5 May 2021 16:37:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1620232647;
-        bh=VKeAXufu+JKwURS07EgCNsjOOr56TVTihAdZ+HK1ZI8=;
+        s=k20201202; t=1620232648;
+        bh=Lt+URxBBXzUcfXFGG6KrShrvFrnTkyGyo5vMW23ouGs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Brvc0ZqawMarUviwrwVLuokoyW+GgeLqI2xEUKi/4DSWIRg8G1CWt6bG12BIeA5aL
-         eVJ8cRgG4ImniSSVl28MsKQvHq5iZS2p4GVaGyD+7k8L4VQ0Z8XfR3pDWOYHmmz6Ze
-         gmlRHU8MehLG5Op8sMWxKpMLBvKw1/hLrJ7vraJWtKjZ83FPtgnygxgsIV6ltp+PYt
-         OxJ4F9u00oA5R1MvFCk/fPLezo8obWCY5UtJc3IhUTUv/62Zbs9jnOKcB2wkznL39G
-         dE8XQoWmvgK5qfhlHfzsRuTw4baLyT+ROGnoGxzOmmS+Gl7ngBA5wn04hS7V8qIloo
-         E13wlYPKHZgfA==
+        b=tFFL/Io7hLNmLt/efzW6kOEUyuUsxqt2INy+KxfrYYzuhKwnlkhxWB5eU3XZuOq8P
+         n+hK3ZCggjPSuu1aQIKKmQ+H0l4fQr0tAmKGxd7KJvUU0vjO9FiTjSnoZjk+dFqdQT
+         hTftR1f0myIIyRmHGrR2VpBuOlPG9VF9tUVRpzK4/IdigbURDRaNOc18t+O16YQBOR
+         BQr6CjtaX8r3nKO13hPGRvtFcqyZVThJdXku72e9IhbmsRxZkQ/uBUBaB000gGMCfh
+         jItScqFZWUX+s5dmUaszOVSUputkXBBnp5ClsXAg33wGSOAXo2jc5vhuH8lcrAf7aN
+         HQ1DD1J9PvomQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Guangbin Huang <huangguangbin2@huawei.com>,
+Cc:     Yunsheng Lin <linyunsheng@huawei.com>,
+        Barry Song <song.bao.hua@hisilicon.com>,
         Huazhong Tan <tanhuazhong@huawei.com>,
         "David S . Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.10 26/85] net: hns3: remediate a potential overflow risk of bd_num_list
-Date:   Wed,  5 May 2021 12:35:49 -0400
-Message-Id: <20210505163648.3462507-26-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.10 27/85] net: hns3: add handling for xmit skb with recursive fraglist
+Date:   Wed,  5 May 2021 12:35:50 -0400
+Message-Id: <20210505163648.3462507-27-sashal@kernel.org>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20210505163648.3462507-1-sashal@kernel.org>
 References: <20210505163648.3462507-1-sashal@kernel.org>
@@ -43,111 +44,295 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Guangbin Huang <huangguangbin2@huawei.com>
+From: Yunsheng Lin <linyunsheng@huawei.com>
 
-[ Upstream commit a2ee6fd28a190588e142ad8ea9d40069cd3c9f98 ]
+[ Upstream commit d5d5e0193ee8f88efbbc7f1471087255657bc19a ]
 
-The array size of bd_num_list is a fixed value, it may have potential
-overflow risk when array size of hclge_dfx_bd_offset_list is greater
-than that fixed value. So modify bd_num_list as a pointer and allocate
-memory for it according to array size of hclge_dfx_bd_offset_list.
+Currently hns3 driver only handle the xmit skb with one level of
+fraglist skb, add handling for multi level by calling hns3_tx_bd_num()
+recursively when calculating bd num and calling hns3_fill_skb_to_desc()
+recursively when filling tx desc.
 
-Signed-off-by: Guangbin Huang <huangguangbin2@huawei.com>
+When the skb has a fraglist level of 24, the skb is simply dropped and
+stats.max_recursion_level is added to record the error. Move the stat
+handling from hns3_nic_net_xmit() to hns3_nic_maybe_stop_tx() in order
+to handle different error stat and add the 'max_recursion_level' and
+'hw_limitation' stat.
+
+Note that the max recursive level as 24 is chose according to below:
+commit 48a1df65334b ("skbuff: return -EMSGSIZE in skb_to_sgvec to
+prevent overflow").
+
+And that we are not able to find a testcase to verify the recursive
+fraglist case, so Fixes tag is not provided.
+
+Reported-by: Barry Song <song.bao.hua@hisilicon.com>
+Signed-off-by: Yunsheng Lin <linyunsheng@huawei.com>
 Signed-off-by: Huazhong Tan <tanhuazhong@huawei.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- .../hisilicon/hns3/hns3pf/hclge_main.c        | 27 ++++++++++++++-----
- 1 file changed, 20 insertions(+), 7 deletions(-)
+ .../net/ethernet/hisilicon/hns3/hns3_enet.c   | 115 +++++++++++-------
+ .../net/ethernet/hisilicon/hns3/hns3_enet.h   |   2 +
+ .../ethernet/hisilicon/hns3/hns3_ethtool.c    |   2 +
+ 3 files changed, 78 insertions(+), 41 deletions(-)
 
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
-index b856dbe4db73..98190aa90781 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
-+++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
-@@ -10845,7 +10845,6 @@ static int hclge_get_64_bit_regs(struct hclge_dev *hdev, u32 regs_num,
- #define REG_LEN_PER_LINE	(REG_NUM_PER_LINE * sizeof(u32))
- #define REG_SEPARATOR_LINE	1
- #define REG_NUM_REMAIN_MASK	3
--#define BD_LIST_MAX_NUM		30
- 
- int hclge_query_bd_num_cmd_send(struct hclge_dev *hdev, struct hclge_desc *desc)
- {
-@@ -10939,15 +10938,19 @@ static int hclge_get_dfx_reg_len(struct hclge_dev *hdev, int *len)
- {
- 	u32 dfx_reg_type_num = ARRAY_SIZE(hclge_dfx_bd_offset_list);
- 	int data_len_per_desc, bd_num, i;
--	int bd_num_list[BD_LIST_MAX_NUM];
-+	int *bd_num_list;
- 	u32 data_len;
- 	int ret;
- 
-+	bd_num_list = kcalloc(dfx_reg_type_num, sizeof(int), GFP_KERNEL);
-+	if (!bd_num_list)
-+		return -ENOMEM;
-+
- 	ret = hclge_get_dfx_reg_bd_num(hdev, bd_num_list, dfx_reg_type_num);
- 	if (ret) {
- 		dev_err(&hdev->pdev->dev,
- 			"Get dfx reg bd num fail, status is %d.\n", ret);
--		return ret;
-+		goto out;
- 	}
- 
- 	data_len_per_desc = sizeof_field(struct hclge_desc, data);
-@@ -10958,6 +10961,8 @@ static int hclge_get_dfx_reg_len(struct hclge_dev *hdev, int *len)
- 		*len += (data_len / REG_LEN_PER_LINE + 1) * REG_LEN_PER_LINE;
- 	}
- 
-+out:
-+	kfree(bd_num_list);
- 	return ret;
+diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c b/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c
+index a362516a3185..8ef7896dbc95 100644
+--- a/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c
++++ b/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c
+@@ -1192,23 +1192,21 @@ static unsigned int hns3_skb_bd_num(struct sk_buff *skb, unsigned int *bd_size,
  }
  
-@@ -10965,16 +10970,20 @@ static int hclge_get_dfx_reg(struct hclge_dev *hdev, void *data)
+ static unsigned int hns3_tx_bd_num(struct sk_buff *skb, unsigned int *bd_size,
+-				   u8 max_non_tso_bd_num)
++				   u8 max_non_tso_bd_num, unsigned int bd_num,
++				   unsigned int recursion_level)
  {
- 	u32 dfx_reg_type_num = ARRAY_SIZE(hclge_dfx_bd_offset_list);
- 	int bd_num, bd_num_max, buf_len, i;
--	int bd_num_list[BD_LIST_MAX_NUM];
- 	struct hclge_desc *desc_src;
-+	int *bd_num_list;
- 	u32 *reg = data;
- 	int ret;
- 
-+	bd_num_list = kcalloc(dfx_reg_type_num, sizeof(int), GFP_KERNEL);
-+	if (!bd_num_list)
-+		return -ENOMEM;
++#define HNS3_MAX_RECURSION_LEVEL	24
 +
- 	ret = hclge_get_dfx_reg_bd_num(hdev, bd_num_list, dfx_reg_type_num);
- 	if (ret) {
- 		dev_err(&hdev->pdev->dev,
- 			"Get dfx reg bd num fail, status is %d.\n", ret);
--		return ret;
-+		goto out;
+ 	struct sk_buff *frag_skb;
+-	unsigned int bd_num = 0;
+ 
+ 	/* If the total len is within the max bd limit */
+-	if (likely(skb->len <= HNS3_MAX_BD_SIZE && !skb_has_frag_list(skb) &&
++	if (likely(skb->len <= HNS3_MAX_BD_SIZE && !recursion_level &&
++		   !skb_has_frag_list(skb) &&
+ 		   skb_shinfo(skb)->nr_frags < max_non_tso_bd_num))
+ 		return skb_shinfo(skb)->nr_frags + 1U;
+ 
+-	/* The below case will always be linearized, return
+-	 * HNS3_MAX_BD_NUM_TSO + 1U to make sure it is linearized.
+-	 */
+-	if (unlikely(skb->len > HNS3_MAX_TSO_SIZE ||
+-		     (!skb_is_gso(skb) && skb->len >
+-		      HNS3_MAX_NON_TSO_SIZE(max_non_tso_bd_num))))
+-		return HNS3_MAX_TSO_BD_NUM + 1U;
++	if (unlikely(recursion_level >= HNS3_MAX_RECURSION_LEVEL))
++		return UINT_MAX;
+ 
+ 	bd_num = hns3_skb_bd_num(skb, bd_size, bd_num);
+ 
+@@ -1216,7 +1214,8 @@ static unsigned int hns3_tx_bd_num(struct sk_buff *skb, unsigned int *bd_size,
+ 		return bd_num;
+ 
+ 	skb_walk_frags(skb, frag_skb) {
+-		bd_num = hns3_skb_bd_num(frag_skb, bd_size, bd_num);
++		bd_num = hns3_tx_bd_num(frag_skb, bd_size, max_non_tso_bd_num,
++					bd_num, recursion_level + 1);
+ 		if (bd_num > HNS3_MAX_TSO_BD_NUM)
+ 			return bd_num;
  	}
+@@ -1276,6 +1275,43 @@ void hns3_shinfo_pack(struct skb_shared_info *shinfo, __u32 *size)
+ 		size[i] = skb_frag_size(&shinfo->frags[i]);
+ }
  
- 	bd_num_max = bd_num_list[0];
-@@ -10983,8 +10992,10 @@ static int hclge_get_dfx_reg(struct hclge_dev *hdev, void *data)
- 
- 	buf_len = sizeof(*desc_src) * bd_num_max;
- 	desc_src = kzalloc(buf_len, GFP_KERNEL);
--	if (!desc_src)
--		return -ENOMEM;
-+	if (!desc_src) {
-+		ret = -ENOMEM;
-+		goto out;
++static int hns3_skb_linearize(struct hns3_enet_ring *ring,
++			      struct sk_buff *skb,
++			      u8 max_non_tso_bd_num,
++			      unsigned int bd_num)
++{
++	/* 'bd_num == UINT_MAX' means the skb' fraglist has a
++	 * recursion level of over HNS3_MAX_RECURSION_LEVEL.
++	 */
++	if (bd_num == UINT_MAX) {
++		u64_stats_update_begin(&ring->syncp);
++		ring->stats.over_max_recursion++;
++		u64_stats_update_end(&ring->syncp);
++		return -ENOMEM;
 +	}
++
++	/* The skb->len has exceeded the hw limitation, linearization
++	 * will not help.
++	 */
++	if (skb->len > HNS3_MAX_TSO_SIZE ||
++	    (!skb_is_gso(skb) && skb->len >
++	     HNS3_MAX_NON_TSO_SIZE(max_non_tso_bd_num))) {
++		u64_stats_update_begin(&ring->syncp);
++		ring->stats.hw_limitation++;
++		u64_stats_update_end(&ring->syncp);
++		return -ENOMEM;
++	}
++
++	if (__skb_linearize(skb)) {
++		u64_stats_update_begin(&ring->syncp);
++		ring->stats.sw_err_cnt++;
++		u64_stats_update_end(&ring->syncp);
++		return -ENOMEM;
++	}
++
++	return 0;
++}
++
+ static int hns3_nic_maybe_stop_tx(struct hns3_enet_ring *ring,
+ 				  struct net_device *netdev,
+ 				  struct sk_buff *skb)
+@@ -1285,7 +1321,7 @@ static int hns3_nic_maybe_stop_tx(struct hns3_enet_ring *ring,
+ 	unsigned int bd_size[HNS3_MAX_TSO_BD_NUM + 1U];
+ 	unsigned int bd_num;
  
- 	for (i = 0; i < dfx_reg_type_num; i++) {
- 		bd_num = bd_num_list[i];
-@@ -11000,6 +11011,8 @@ static int hclge_get_dfx_reg(struct hclge_dev *hdev, void *data)
+-	bd_num = hns3_tx_bd_num(skb, bd_size, max_non_tso_bd_num);
++	bd_num = hns3_tx_bd_num(skb, bd_size, max_non_tso_bd_num, 0, 0);
+ 	if (unlikely(bd_num > max_non_tso_bd_num)) {
+ 		if (bd_num <= HNS3_MAX_TSO_BD_NUM && skb_is_gso(skb) &&
+ 		    !hns3_skb_need_linearized(skb, bd_size, bd_num,
+@@ -1294,16 +1330,11 @@ static int hns3_nic_maybe_stop_tx(struct hns3_enet_ring *ring,
+ 			goto out;
+ 		}
+ 
+-		if (__skb_linearize(skb))
++		if (hns3_skb_linearize(ring, skb, max_non_tso_bd_num,
++				       bd_num))
+ 			return -ENOMEM;
+ 
+ 		bd_num = hns3_tx_bd_count(skb->len);
+-		if ((skb_is_gso(skb) && bd_num > HNS3_MAX_TSO_BD_NUM) ||
+-		    (!skb_is_gso(skb) &&
+-		     bd_num > max_non_tso_bd_num)) {
+-			trace_hns3_over_max_bd(skb);
+-			return -ENOMEM;
+-		}
+ 
+ 		u64_stats_update_begin(&ring->syncp);
+ 		ring->stats.tx_copy++;
+@@ -1327,6 +1358,10 @@ static int hns3_nic_maybe_stop_tx(struct hns3_enet_ring *ring,
+ 		return bd_num;
  	}
  
- 	kfree(desc_src);
-+out:
-+	kfree(bd_num_list);
- 	return ret;
++	u64_stats_update_begin(&ring->syncp);
++	ring->stats.tx_busy++;
++	u64_stats_update_end(&ring->syncp);
++
+ 	return -EBUSY;
  }
  
+@@ -1374,6 +1409,7 @@ static int hns3_fill_skb_to_desc(struct hns3_enet_ring *ring,
+ 				 struct sk_buff *skb, enum hns_desc_type type)
+ {
+ 	unsigned int size = skb_headlen(skb);
++	struct sk_buff *frag_skb;
+ 	int i, ret, bd_num = 0;
+ 
+ 	if (size) {
+@@ -1398,6 +1434,15 @@ static int hns3_fill_skb_to_desc(struct hns3_enet_ring *ring,
+ 		bd_num += ret;
+ 	}
+ 
++	skb_walk_frags(skb, frag_skb) {
++		ret = hns3_fill_skb_to_desc(ring, frag_skb,
++					    DESC_TYPE_FRAGLIST_SKB);
++		if (unlikely(ret < 0))
++			return ret;
++
++		bd_num += ret;
++	}
++
+ 	return bd_num;
+ }
+ 
+@@ -1428,8 +1473,6 @@ netdev_tx_t hns3_nic_net_xmit(struct sk_buff *skb, struct net_device *netdev)
+ 	struct hns3_enet_ring *ring = &priv->ring[skb->queue_mapping];
+ 	struct netdev_queue *dev_queue;
+ 	int pre_ntu, next_to_use_head;
+-	struct sk_buff *frag_skb;
+-	int bd_num = 0;
+ 	bool doorbell;
+ 	int ret;
+ 
+@@ -1445,15 +1488,8 @@ netdev_tx_t hns3_nic_net_xmit(struct sk_buff *skb, struct net_device *netdev)
+ 	ret = hns3_nic_maybe_stop_tx(ring, netdev, skb);
+ 	if (unlikely(ret <= 0)) {
+ 		if (ret == -EBUSY) {
+-			u64_stats_update_begin(&ring->syncp);
+-			ring->stats.tx_busy++;
+-			u64_stats_update_end(&ring->syncp);
+ 			hns3_tx_doorbell(ring, 0, true);
+ 			return NETDEV_TX_BUSY;
+-		} else if (ret == -ENOMEM) {
+-			u64_stats_update_begin(&ring->syncp);
+-			ring->stats.sw_err_cnt++;
+-			u64_stats_update_end(&ring->syncp);
+ 		}
+ 
+ 		hns3_rl_err(netdev, "xmit error: %d!\n", ret);
+@@ -1466,21 +1502,14 @@ netdev_tx_t hns3_nic_net_xmit(struct sk_buff *skb, struct net_device *netdev)
+ 	if (unlikely(ret < 0))
+ 		goto fill_err;
+ 
++	/* 'ret < 0' means filling error, 'ret == 0' means skb->len is
++	 * zero, which is unlikely, and 'ret > 0' means how many tx desc
++	 * need to be notified to the hw.
++	 */
+ 	ret = hns3_fill_skb_to_desc(ring, skb, DESC_TYPE_SKB);
+-	if (unlikely(ret < 0))
++	if (unlikely(ret <= 0))
+ 		goto fill_err;
+ 
+-	bd_num += ret;
+-
+-	skb_walk_frags(skb, frag_skb) {
+-		ret = hns3_fill_skb_to_desc(ring, frag_skb,
+-					    DESC_TYPE_FRAGLIST_SKB);
+-		if (unlikely(ret < 0))
+-			goto fill_err;
+-
+-		bd_num += ret;
+-	}
+-
+ 	pre_ntu = ring->next_to_use ? (ring->next_to_use - 1) :
+ 					(ring->desc_num - 1);
+ 	ring->desc[pre_ntu].tx.bdtp_fe_sc_vld_ra_ri |=
+@@ -1491,7 +1520,7 @@ netdev_tx_t hns3_nic_net_xmit(struct sk_buff *skb, struct net_device *netdev)
+ 	dev_queue = netdev_get_tx_queue(netdev, ring->queue_index);
+ 	doorbell = __netdev_tx_sent_queue(dev_queue, skb->len,
+ 					  netdev_xmit_more());
+-	hns3_tx_doorbell(ring, bd_num, doorbell);
++	hns3_tx_doorbell(ring, ret, doorbell);
+ 
+ 	return NETDEV_TX_OK;
+ 
+@@ -1656,11 +1685,15 @@ static void hns3_nic_get_stats64(struct net_device *netdev,
+ 			tx_drop += ring->stats.tx_l4_proto_err;
+ 			tx_drop += ring->stats.tx_l2l3l4_err;
+ 			tx_drop += ring->stats.tx_tso_err;
++			tx_drop += ring->stats.over_max_recursion;
++			tx_drop += ring->stats.hw_limitation;
+ 			tx_errors += ring->stats.sw_err_cnt;
+ 			tx_errors += ring->stats.tx_vlan_err;
+ 			tx_errors += ring->stats.tx_l4_proto_err;
+ 			tx_errors += ring->stats.tx_l2l3l4_err;
+ 			tx_errors += ring->stats.tx_tso_err;
++			tx_errors += ring->stats.over_max_recursion;
++			tx_errors += ring->stats.hw_limitation;
+ 		} while (u64_stats_fetch_retry_irq(&ring->syncp, start));
+ 
+ 		/* fetch the rx stats */
+diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3_enet.h b/drivers/net/ethernet/hisilicon/hns3/hns3_enet.h
+index 1c81dea0da1e..398686b15a82 100644
+--- a/drivers/net/ethernet/hisilicon/hns3/hns3_enet.h
++++ b/drivers/net/ethernet/hisilicon/hns3/hns3_enet.h
+@@ -359,6 +359,8 @@ struct ring_stats {
+ 			u64 tx_l4_proto_err;
+ 			u64 tx_l2l3l4_err;
+ 			u64 tx_tso_err;
++			u64 over_max_recursion;
++			u64 hw_limitation;
+ 		};
+ 		struct {
+ 			u64 rx_pkts;
+diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c b/drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c
+index 6b07b2771172..c0aa3be0cdfb 100644
+--- a/drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c
++++ b/drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c
+@@ -39,6 +39,8 @@ static const struct hns3_stats hns3_txq_stats[] = {
+ 	HNS3_TQP_STAT("l4_proto_err", tx_l4_proto_err),
+ 	HNS3_TQP_STAT("l2l3l4_err", tx_l2l3l4_err),
+ 	HNS3_TQP_STAT("tso_err", tx_tso_err),
++	HNS3_TQP_STAT("over_max_recursion", over_max_recursion),
++	HNS3_TQP_STAT("hw_limitation", hw_limitation),
+ };
+ 
+ #define HNS3_TXQ_STATS_COUNT ARRAY_SIZE(hns3_txq_stats)
 -- 
 2.30.2
 
