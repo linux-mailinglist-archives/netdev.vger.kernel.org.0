@@ -2,37 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E188D37413F
-	for <lists+netdev@lfdr.de>; Wed,  5 May 2021 18:45:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A24E6374144
+	for <lists+netdev@lfdr.de>; Wed,  5 May 2021 18:45:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234293AbhEEQgq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 5 May 2021 12:36:46 -0400
-Received: from mail.kernel.org ([198.145.29.99]:54092 "EHLO mail.kernel.org"
+        id S234218AbhEEQgu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 5 May 2021 12:36:50 -0400
+Received: from mail.kernel.org ([198.145.29.99]:52900 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S234353AbhEEQet (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 5 May 2021 12:34:49 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id E281A61431;
-        Wed,  5 May 2021 16:32:47 +0000 (UTC)
+        id S234744AbhEEQew (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 5 May 2021 12:34:52 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 6978861436;
+        Wed,  5 May 2021 16:32:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1620232369;
-        bh=7U3Eu1nbACgWo40+zxsXj+FE03qpmbDIZzfbifnV4Xc=;
+        s=k20201202; t=1620232370;
+        bh=a6ayTyQFJO7D2HeeSEFr9P03nh0rXIxRKuFcNLp5WPQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=pNQ+PrhRh1gtrOaFBY4p6l2AEwwS6lVdSnWxseSfd3rk/RzyRZaIZeblww9wL1pSg
-         wr6OSR9CJR/QzxYkQdTDI87ieyePYGR2h/J8anx1HAmI65OkfhYzb063DjTRb9mU2L
-         7+svtO3+3DxOUfCgc5/Qg84eDSWe4E8bs4AAZphp+1BQKNM+HU8tD7n5rKVns/T7HQ
-         64KKmb+Ej37rAkOHEgiXe1sVkFJMO+hDPUQ++dAN3iNf6YS2x3ronq0CSYAnd6IJSr
-         gDSZmt6H5UxT8jG8qNr01YmBm07GdZ0iQgYlKb98I/G9mNXHZMOZps5kUQHGPSzrkU
-         Pjish/QM/Izmw==
+        b=B8n07rh88O1ehnOa/M8LSbDEZrIollaq+DzEfHYl29dWdQS/yG3v3JkqEYimcZg82
+         nzeOeDMvw2r+T4KUkqrJLz0BBdByoTrIyqbl6V7yOeeJi1Jq0yc83ql2rTz2ylSuEx
+         fqc6E4pS2QP7m19G2iSUMXz2tokYdAHe8B/bSBC10cWGq/yyTQ+oER63dtFErccPv6
+         s1i61Ld5mVQWfTcWO6YE/tJwlZSMCdsrHGZ4MoDP7Z4tXUC2FDap6TBiXlmxPrqcyz
+         y3/+87b7ubol0iMzxPBzY8L9C3GbAMN2+2wwfIjw1GIrdwLuiyZ7VRHfmfBmccEGUY
+         pYIdixf0wXYFw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Lorenzo Bianconi <lorenzo@kernel.org>,
-        Felix Fietkau <nbd@nbd.name>, Sasha Levin <sashal@kernel.org>,
+Cc:     Felix Fietkau <nbd@nbd.name>, Sasha Levin <sashal@kernel.org>,
         linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
         linux-arm-kernel@lists.infradead.org,
         linux-mediatek@lists.infradead.org
-Subject: [PATCH AUTOSEL 5.12 060/116] mt76: mt7915: always check return value from mt7915_mcu_alloc_wtbl_req
-Date:   Wed,  5 May 2021 12:30:28 -0400
-Message-Id: <20210505163125.3460440-60-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.12 061/116] mt76: mt7915: fix key set/delete issue
+Date:   Wed,  5 May 2021 12:30:29 -0400
+Message-Id: <20210505163125.3460440-61-sashal@kernel.org>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20210505163125.3460440-1-sashal@kernel.org>
 References: <20210505163125.3460440-1-sashal@kernel.org>
@@ -44,66 +43,74 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Lorenzo Bianconi <lorenzo@kernel.org>
+From: Felix Fietkau <nbd@nbd.name>
 
-[ Upstream commit 45f93e368211fbbd247e1ece254ffb121e20fa10 ]
+[ Upstream commit 1da4fd48d28436f8b690cdc2879603dede6d8355 ]
 
-As done for mt76_connac_mcu_alloc_wtbl_req, even if this is not a real
-bug since mt7915_mcu_alloc_wtbl_req routine can fails just if nskb is NULL,
-always check return value from mt7915_mcu_alloc_wtbl_req in order to avoid
-possible future mistake.
+Deleting a key with the previous key index deletes the current key
+Rework the code to better keep track of multiple keys and check for the
+key index before deleting the current key
 
-Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
 Signed-off-by: Felix Fietkau <nbd@nbd.name>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/mediatek/mt76/mt7915/mcu.c | 12 ++++++++++++
- 1 file changed, 12 insertions(+)
+ .../net/wireless/mediatek/mt76/mt7915/main.c  | 25 +++++++++++++------
+ 1 file changed, 18 insertions(+), 7 deletions(-)
 
-diff --git a/drivers/net/wireless/mediatek/mt76/mt7915/mcu.c b/drivers/net/wireless/mediatek/mt76/mt7915/mcu.c
-index 195929242b72..12281e4cf817 100644
---- a/drivers/net/wireless/mediatek/mt76/mt7915/mcu.c
-+++ b/drivers/net/wireless/mediatek/mt76/mt7915/mcu.c
-@@ -1188,6 +1188,9 @@ mt7915_mcu_sta_ba(struct mt7915_dev *dev,
+diff --git a/drivers/net/wireless/mediatek/mt76/mt7915/main.c b/drivers/net/wireless/mediatek/mt76/mt7915/main.c
+index d4969b2e1ffb..33590ff6e281 100644
+--- a/drivers/net/wireless/mediatek/mt76/mt7915/main.c
++++ b/drivers/net/wireless/mediatek/mt76/mt7915/main.c
+@@ -317,7 +317,9 @@ static int mt7915_set_key(struct ieee80211_hw *hw, enum set_key_cmd cmd,
+ 	struct mt7915_sta *msta = sta ? (struct mt7915_sta *)sta->drv_priv :
+ 				  &mvif->sta;
+ 	struct mt76_wcid *wcid = &msta->wcid;
++	u8 *wcid_keyidx = &wcid->hw_key_idx;
+ 	int idx = key->keyidx;
++	int err = 0;
  
- 	wtbl_hdr = mt7915_mcu_alloc_wtbl_req(dev, msta, WTBL_SET, sta_wtbl,
- 					     &skb);
-+	if (IS_ERR(wtbl_hdr))
-+		return PTR_ERR(wtbl_hdr);
+ 	/* The hardware does not support per-STA RX GTK, fallback
+ 	 * to software mode for these.
+@@ -332,6 +334,7 @@ static int mt7915_set_key(struct ieee80211_hw *hw, enum set_key_cmd cmd,
+ 	/* fall back to sw encryption for unsupported ciphers */
+ 	switch (key->cipher) {
+ 	case WLAN_CIPHER_SUITE_AES_CMAC:
++		wcid_keyidx = &wcid->hw_key_idx2;
+ 		key->flags |= IEEE80211_KEY_FLAG_GENERATE_MMIE;
+ 		break;
+ 	case WLAN_CIPHER_SUITE_TKIP:
+@@ -347,16 +350,24 @@ static int mt7915_set_key(struct ieee80211_hw *hw, enum set_key_cmd cmd,
+ 		return -EOPNOTSUPP;
+ 	}
+ 
+-	if (cmd == SET_KEY) {
+-		key->hw_key_idx = wcid->idx;
+-		wcid->hw_key_idx = idx;
+-	} else if (idx == wcid->hw_key_idx) {
+-		wcid->hw_key_idx = -1;
+-	}
++	mutex_lock(&dev->mt76.mutex);
 +
- 	mt7915_mcu_wtbl_ba_tlv(skb, params, enable, tx, sta_wtbl, wtbl_hdr);
- 
- 	ret = mt76_mcu_skb_send_msg(&dev->mt76, skb,
-@@ -1704,6 +1707,9 @@ int mt7915_mcu_sta_update_hdr_trans(struct mt7915_dev *dev,
- 		return -ENOMEM;
- 
- 	wtbl_hdr = mt7915_mcu_alloc_wtbl_req(dev, msta, WTBL_SET, NULL, &skb);
-+	if (IS_ERR(wtbl_hdr))
-+		return PTR_ERR(wtbl_hdr);
++	if (cmd == SET_KEY)
++		*wcid_keyidx = idx;
++	else if (idx == *wcid_keyidx)
++		*wcid_keyidx = -1;
++	else
++		goto out;
 +
- 	mt7915_mcu_wtbl_hdr_trans_tlv(skb, vif, sta, NULL, wtbl_hdr);
+ 	mt76_wcid_key_setup(&dev->mt76, wcid,
+ 			    cmd == SET_KEY ? key : NULL);
  
- 	return mt76_mcu_skb_send_msg(&dev->mt76, skb, MCU_EXT_CMD(WTBL_UPDATE),
-@@ -1728,6 +1734,9 @@ int mt7915_mcu_add_smps(struct mt7915_dev *dev, struct ieee80211_vif *vif,
- 
- 	wtbl_hdr = mt7915_mcu_alloc_wtbl_req(dev, msta, WTBL_SET, sta_wtbl,
- 					     &skb);
-+	if (IS_ERR(wtbl_hdr))
-+		return PTR_ERR(wtbl_hdr);
+-	return mt7915_mcu_add_key(dev, vif, msta, key, cmd);
++	err = mt7915_mcu_add_key(dev, vif, msta, key, cmd);
 +
- 	mt7915_mcu_wtbl_smps_tlv(skb, sta, sta_wtbl, wtbl_hdr);
- 
- 	return mt76_mcu_skb_send_msg(&dev->mt76, skb,
-@@ -2253,6 +2262,9 @@ int mt7915_mcu_add_sta(struct mt7915_dev *dev, struct ieee80211_vif *vif,
- 
- 	wtbl_hdr = mt7915_mcu_alloc_wtbl_req(dev, msta, WTBL_RESET_AND_SET,
- 					     sta_wtbl, &skb);
-+	if (IS_ERR(wtbl_hdr))
-+		return PTR_ERR(wtbl_hdr);
++out:
++	mutex_unlock(&dev->mt76.mutex);
 +
- 	if (enable) {
- 		mt7915_mcu_wtbl_generic_tlv(skb, vif, sta, sta_wtbl, wtbl_hdr);
- 		mt7915_mcu_wtbl_hdr_trans_tlv(skb, vif, sta, sta_wtbl, wtbl_hdr);
++	return err;
+ }
+ 
+ static int mt7915_config(struct ieee80211_hw *hw, u32 changed)
 -- 
 2.30.2
 
