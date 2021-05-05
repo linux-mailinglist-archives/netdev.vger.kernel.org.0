@@ -2,93 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CBD423732E6
-	for <lists+netdev@lfdr.de>; Wed,  5 May 2021 01:51:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2C9D23732F1
+	for <lists+netdev@lfdr.de>; Wed,  5 May 2021 02:01:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230500AbhEDXuN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 4 May 2021 19:50:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41946 "EHLO
+        id S231160AbhEEACD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 4 May 2021 20:02:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44540 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229563AbhEDXuM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 4 May 2021 19:50:12 -0400
-Received: from mail-yb1-xb4a.google.com (mail-yb1-xb4a.google.com [IPv6:2607:f8b0:4864:20::b4a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D10D8C06174A
-        for <netdev@vger.kernel.org>; Tue,  4 May 2021 16:49:15 -0700 (PDT)
-Received: by mail-yb1-xb4a.google.com with SMTP id j63-20020a25d2420000b02904d9818b80e8so326965ybg.14
-        for <netdev@vger.kernel.org>; Tue, 04 May 2021 16:49:15 -0700 (PDT)
+        with ESMTP id S231147AbhEEACD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 4 May 2021 20:02:03 -0400
+Received: from mail-pg1-x52c.google.com (mail-pg1-x52c.google.com [IPv6:2607:f8b0:4864:20::52c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CAFBCC061574
+        for <netdev@vger.kernel.org>; Tue,  4 May 2021 17:01:07 -0700 (PDT)
+Received: by mail-pg1-x52c.google.com with SMTP id d29so487667pgd.4
+        for <netdev@vger.kernel.org>; Tue, 04 May 2021 17:01:07 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=date:message-id:mime-version:subject:from:to:cc;
-        bh=ZdSRGJLzb4KjpNs25266npb7NX9+fIrv6tE6wKvXYkQ=;
-        b=TbcwiLSGdUbbez0BgZKkedibJSJsyIkWQCaGjpCvgPzp1faOhRee83iTV3WJ1tkt0P
-         1NtcurmNCHILH6lbYDiAUMltldG88Al9R+PiAixGpalQSiYQIi8zHHeVVbb6H/h+XthT
-         fOqHea9tWE3GfNXtmJhLP/Z6xzK8AfvRefkcihq34e5gxYWRODFANVtlEaWL+20nCXMw
-         f4jJbQMjX569oq4jYirvY5sKDN/CuQcWPFK1G2Q5qUNDSPSngoRvGqdycVb03MlblhZD
-         /tZJLUdbpbiQvBIdMjgkfZqv0XF4g11pCPetHasOOyie0YssKHVdN6Btkzl9fUSPTsK7
-         tvIg==
+        d=pensando.io; s=google;
+        h=from:to:cc:subject:date:message-id;
+        bh=4qybi5aiyECmcRN0sICrxQM/k6gdBjFkSlqlduJd4Sw=;
+        b=GIIGe+PMEH35TnT/H/6U9f8Ga90pcO8q+xS9Vo91Yv+ToAztVStKtY6VEZZkkhd5Vk
+         nq/vH3AURt0IUU3bGLeWdZTGQW+8Gyk2YYBdJ4b3NNeYpxa02claxuD4IYKQUdqtR3aH
+         yIkOz+mZrQnGjKzwyGA12DGSMgT2W3zqUC09n5Fsg/pZDxrxQb6PaUJTC4jTaFp85DBC
+         84bfk/8rWKn2PWZHrriaQk5iuUMvYwVIpJYN5QY1efgIBQq1hOyhEkMUyNlD8pfFmY+L
+         Wl8VorIukhM9LOyo++ZIG91EnGjkMZ6YpN8kr97ImQAvY/c335Ow73depjAWzSyQ6B10
+         jfbA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
-        bh=ZdSRGJLzb4KjpNs25266npb7NX9+fIrv6tE6wKvXYkQ=;
-        b=VHPdJzoE1UVsZ8i8NJb9bxFuJMREMqd8lObPXA2MCdg6vrG2/OQzNKVexQclNxT8Tp
-         +LcNJ58Nt/6f7ZbD+GiMOC5exhTMDcMC/ufnzbF8mRNpgrEAS4yD/kYTF8GJqXtSfSBB
-         nTQMdgOhM+E0kAkqoekJA9VmWPvbpa34rX/3IJIFdt8+RYHjM8jcHygCeowMpMRYQuoq
-         RvNIrFf3gX6wweDfObEenXsGayIs7TOMtL04h5HHAQbOhdpvWPSALKgmsWKWYb2FtZ3C
-         Nwas/Q3zLvjm0iNlncro6bGQyZhP2Bf8aWKM+RSZbojpX4/+UVATSVAvJevVDaKBSkOC
-         B1yg==
-X-Gm-Message-State: AOAM5305vJYfQPM+DIxugdl1qPvpq7ZjxVoZYEjHAqRhI/WZSGjM2NFA
-        aGfKrXf0nsjdL5aaOekFoYIrsgxDVumu
-X-Google-Smtp-Source: ABdhPJyUv29soiibo57/StwdT9oVQMlRMvGiEoQ0bn2rIkk4rM06sZg1XXWYdzwYlLtQ7azM31DxhCn5528F
-X-Received: from irogers.svl.corp.google.com ([2620:15c:2cd:202:6f05:c90a:7892:8680])
- (user=irogers job=sendgmr) by 2002:a25:6c8a:: with SMTP id
- h132mr38310085ybc.454.1620172154818; Tue, 04 May 2021 16:49:14 -0700 (PDT)
-Date:   Tue,  4 May 2021 16:49:10 -0700
-Message-Id: <20210504234910.976501-1-irogers@google.com>
-Mime-Version: 1.0
-X-Mailer: git-send-email 2.31.1.607.g51e8a6a459-goog
-Subject: [PATCH] libbpf: Add NULL check to add_dummy_ksym_var
-From:   Ian Rogers <irogers@google.com>
-To:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     Ian Rogers <irogers@google.com>,
-        Stanislav Fomichev <sdf@google.com>,
-        Petar Penkov <ppenkov@google.com>
-Content-Type: text/plain; charset="UTF-8"
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=4qybi5aiyECmcRN0sICrxQM/k6gdBjFkSlqlduJd4Sw=;
+        b=ZOpzBfS7ajNv2ZRATKGZ3qJEZawvlcOou84zh3AQcoTWG0LbXi5/oIau2vHw9hxx/u
+         hcpsQflbVPRr1sTvyreFFemrS8WJi0r5CMkIR7OpFtOPmfmbhUrrcRJ/MLc6+piOjMKD
+         l7sLK2rohnOh/p+6TonvsfI/AEvbnBMM43rVtB9afTVieD753KCZuDhqyKqyVBtTTYgn
+         Pz+YrDX8wL4wPMLzAo4oFTsLJZsMWeGDQf0j2S7X2AvCmXI9WooO5u+cDFFJvtjDlplm
+         8YEwgFltRKLcPgtHezcN//uUgLoq4u+JLXKTiqZm1K1agE8FuOaB/+LDRknYWTFpRL74
+         PB1A==
+X-Gm-Message-State: AOAM531KmbMOsaC1aN5+EYPQyhh+aDwa4sywLEUZrUJbR+mY7BJFvVVp
+        O1GTl5XTfYdRinH8u2SWWV9zP7J0eEsBSw==
+X-Google-Smtp-Source: ABdhPJxmdB4ENWpCghiaAqFqmMKO52mY18Lqx6RWFDz0MMUmDkuLONWBH8wKIxBOS+U5Lg81y8wDiQ==
+X-Received: by 2002:a17:90b:38f:: with SMTP id ga15mr30860515pjb.196.1620172867042;
+        Tue, 04 May 2021 17:01:07 -0700 (PDT)
+Received: from driver-dev1.pensando.io ([12.226.153.42])
+        by smtp.gmail.com with ESMTPSA id u129sm13297127pfb.8.2021.05.04.17.01.05
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 04 May 2021 17:01:06 -0700 (PDT)
+From:   Shannon Nelson <snelson@pensando.io>
+To:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org
+Cc:     drivers@pensando.io, Shannon Nelson <snelson@pensando.io>
+Subject: [PATCH v2 net] ionic: fix ptp support config breakage
+Date:   Tue,  4 May 2021 17:00:59 -0700
+Message-Id: <20210505000059.59760-1-snelson@pensando.io>
+X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Avoids a segv if btf isn't present. Seen on the call path
-__bpf_object__open calling bpf_object__collect_externs.
+Driver link failed with undefined references in some
+kernel config variations.
 
-Fixes: 5bd022ec01f0 (libbpf: Support extern kernel function)
-Suggested-by: Stanislav Fomichev <sdf@google.com>
-Suggested-by: Petar Penkov <ppenkov@google.com>
-Signed-off-by: Ian Rogers <irogers@google.com>
+v2 - added Fixes tag
+
+Fixes: 61db421da31b ("ionic: link in the new hw timestamp code")
+Reported-by: kernel test robot <lkp@intel.com>
+Signed-off-by: Shannon Nelson <snelson@pensando.io>
 ---
- tools/lib/bpf/libbpf.c | 3 +++
- 1 file changed, 3 insertions(+)
+ drivers/net/ethernet/pensando/ionic/Makefile    | 3 +--
+ drivers/net/ethernet/pensando/ionic/ionic_phc.c | 3 +++
+ 2 files changed, 4 insertions(+), 2 deletions(-)
 
-diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
-index de9a5b0118fe..97d9a1c2d680 100644
---- a/tools/lib/bpf/libbpf.c
-+++ b/tools/lib/bpf/libbpf.c
-@@ -3216,6 +3216,9 @@ static int add_dummy_ksym_var(struct btf *btf)
- 	const struct btf_var_secinfo *vs;
- 	const struct btf_type *sec;
+diff --git a/drivers/net/ethernet/pensando/ionic/Makefile b/drivers/net/ethernet/pensando/ionic/Makefile
+index 4e7642a2d25f..61c40169cb1f 100644
+--- a/drivers/net/ethernet/pensando/ionic/Makefile
++++ b/drivers/net/ethernet/pensando/ionic/Makefile
+@@ -5,5 +5,4 @@ obj-$(CONFIG_IONIC) := ionic.o
  
-+	if (!btf)
-+		return 0;
+ ionic-y := ionic_main.o ionic_bus_pci.o ionic_devlink.o ionic_dev.o \
+ 	   ionic_debugfs.o ionic_lif.o ionic_rx_filter.o ionic_ethtool.o \
+-	   ionic_txrx.o ionic_stats.o ionic_fw.o
+-ionic-$(CONFIG_PTP_1588_CLOCK) += ionic_phc.o
++	   ionic_txrx.o ionic_stats.o ionic_fw.o ionic_phc.o
+diff --git a/drivers/net/ethernet/pensando/ionic/ionic_phc.c b/drivers/net/ethernet/pensando/ionic/ionic_phc.c
+index a87c87e86aef..30c78808c45a 100644
+--- a/drivers/net/ethernet/pensando/ionic/ionic_phc.c
++++ b/drivers/net/ethernet/pensando/ionic/ionic_phc.c
+@@ -1,6 +1,8 @@
+ // SPDX-License-Identifier: GPL-2.0
+ /* Copyright(c) 2017 - 2021 Pensando Systems, Inc */
+ 
++#if IS_ENABLED(CONFIG_PTP_1588_CLOCK)
 +
- 	sec_btf_id = btf__find_by_name_kind(btf, KSYMS_SEC,
- 					    BTF_KIND_DATASEC);
- 	if (sec_btf_id < 0)
+ #include <linux/netdevice.h>
+ #include <linux/etherdevice.h>
+ 
+@@ -613,3 +615,4 @@ void ionic_lif_free_phc(struct ionic_lif *lif)
+ 	devm_kfree(lif->ionic->dev, lif->phc);
+ 	lif->phc = NULL;
+ }
++#endif /* IS_ENABLED(CONFIG_PTP_1588_CLOCK) */
 -- 
-2.31.1.607.g51e8a6a459-goog
+2.17.1
 
