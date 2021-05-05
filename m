@@ -2,37 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C20D037449C
-	for <lists+netdev@lfdr.de>; Wed,  5 May 2021 19:48:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 133EF37450B
+	for <lists+netdev@lfdr.de>; Wed,  5 May 2021 19:49:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235920AbhEEQ6m (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 5 May 2021 12:58:42 -0400
-Received: from mail.kernel.org ([198.145.29.99]:45068 "EHLO mail.kernel.org"
+        id S236021AbhEERDZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 5 May 2021 13:03:25 -0400
+Received: from mail.kernel.org ([198.145.29.99]:46066 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S235183AbhEEQzn (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 5 May 2021 12:55:43 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 8B6E461466;
-        Wed,  5 May 2021 16:38:59 +0000 (UTC)
+        id S236218AbhEEQ4A (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 5 May 2021 12:56:00 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 4E89961444;
+        Wed,  5 May 2021 16:39:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1620232740;
-        bh=KxTA4Pe5ZqmmeTFkVKxLQ/p2oFd3clQegf7PnmWxRNk=;
+        s=k20201202; t=1620232743;
+        bh=vI5LWT6H714BA7fXwBiqMpEcxeof87DXV4W9TPRXmZI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=oZK6bFKD85Wy7jhugUObXhsiazxAnao/7H6R1EaTRFR2JnsUunsjXsOkFaB5fvQIP
-         mLzENgjINXsoPjdgOz9bF3usFzK1Y1Klo1q4ELg1UJCV78X1phd6VadQlnY3a4l0Zr
-         Rgk6pi2o1Te9PwBvrxpFlGLFGDOX474jdJ0d0gSNSexyP4nrX4rtuS2iesZw00xK2G
-         s1LP/a4hzyYCxEMVOhZlvHbXlIsyqPx2VO6zVG0zU+g8gdmUSd8Ww3q98sUwJ+dkMs
-         RXbvb17d+fEjypSdl2hNnaD8DOTo/xLxGX1d/xcyM3FnEJAcEMA3yK41e50rw/q8Xj
-         0ywhGQq5MhoXg==
+        b=CyK3mkzJCkySCvTdT5nJZ7iEMilhPgbfoBNEcztMQ7JmdpBH8+MDy6yhfpSzZKy5Q
+         LB1w47qP3gqfVPw69vWSNpJpzZrUODB+/ldaXmBmV2GSwiY2Kv3g2aUWb/BFsGEXND
+         VrZ369LRLtuPeZgXPanYhy2d3GKQCkkU0yrdaKHKk1it42EUllP6Ql/XOvB/YWomGC
+         +xNe4v+10AR0K40NmzOtU0BTThru6yk5A66cMhSwNuc2cfC/aui031c370HCwRypuZ
+         NPi760H8FIGSkQQ4bf58fv1povNwxEB46rd9w2Jh8X4tv2bt+4X5VDn/dyGpivztww
+         fNn9apUY0CaLg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Hoang Le <hoang.h.le@dektech.com.au>,
-        Jon Maloy <jmaloy@redhat.com>,
+Cc:     Jonathan McDowell <noodles@earth.li>,
         "David S . Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org,
-        tipc-discussion@lists.sourceforge.net
-Subject: [PATCH AUTOSEL 5.4 02/46] tipc: convert dest node's address to network order
-Date:   Wed,  5 May 2021 12:38:12 -0400
-Message-Id: <20210505163856.3463279-2-sashal@kernel.org>
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org
+Subject: [PATCH AUTOSEL 5.4 04/46] net: stmmac: Set FIFO sizes for ipq806x
+Date:   Wed,  5 May 2021 12:38:14 -0400
+Message-Id: <20210505163856.3463279-4-sashal@kernel.org>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20210505163856.3463279-1-sashal@kernel.org>
 References: <20210505163856.3463279-1-sashal@kernel.org>
@@ -44,39 +44,42 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Hoang Le <hoang.h.le@dektech.com.au>
+From: Jonathan McDowell <noodles@earth.li>
 
-[ Upstream commit 1980d37565061ab44bdc2f9e4da477d3b9752e81 ]
+[ Upstream commit e127906b68b49ddb3ecba39ffa36a329c48197d3 ]
 
-(struct tipc_link_info)->dest is in network order (__be32), so we must
-convert the value to network order before assigning. The problem detected
-by sparse:
+Commit eaf4fac47807 ("net: stmmac: Do not accept invalid MTU values")
+started using the TX FIFO size to verify what counts as a valid MTU
+request for the stmmac driver.  This is unset for the ipq806x variant.
+Looking at older patches for this it seems the RX + TXs buffers can be
+up to 8k, so set appropriately.
 
-net/tipc/netlink_compat.c:699:24: warning: incorrect type in assignment (different base types)
-net/tipc/netlink_compat.c:699:24:    expected restricted __be32 [usertype] dest
-net/tipc/netlink_compat.c:699:24:    got int
+(I sent this as an RFC patch in June last year, but received no replies.
+I've been running with this on my hardware (a MikroTik RB3011) since
+then with larger MTUs to support both the internal qca8k switch and
+VLANs with no problems. Without the patch it's impossible to set the
+larger MTU required to support this.)
 
-Acked-by: Jon Maloy <jmaloy@redhat.com>
-Signed-off-by: Hoang Le <hoang.h.le@dektech.com.au>
+Signed-off-by: Jonathan McDowell <noodles@earth.li>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/tipc/netlink_compat.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/ethernet/stmicro/stmmac/dwmac-ipq806x.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/net/tipc/netlink_compat.c b/net/tipc/netlink_compat.c
-index 11be9a84f8de..561ea834f732 100644
---- a/net/tipc/netlink_compat.c
-+++ b/net/tipc/netlink_compat.c
-@@ -673,7 +673,7 @@ static int tipc_nl_compat_link_dump(struct tipc_nl_compat_msg *msg,
- 	if (err)
- 		return err;
+diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac-ipq806x.c b/drivers/net/ethernet/stmicro/stmmac/dwmac-ipq806x.c
+index 826626e870d5..0f56f8e33691 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/dwmac-ipq806x.c
++++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-ipq806x.c
+@@ -351,6 +351,8 @@ static int ipq806x_gmac_probe(struct platform_device *pdev)
+ 	plat_dat->bsp_priv = gmac;
+ 	plat_dat->fix_mac_speed = ipq806x_gmac_fix_mac_speed;
+ 	plat_dat->multicast_filter_bins = 0;
++	plat_dat->tx_fifo_size = 8192;
++	plat_dat->rx_fifo_size = 8192;
  
--	link_info.dest = nla_get_flag(link[TIPC_NLA_LINK_DEST]);
-+	link_info.dest = htonl(nla_get_flag(link[TIPC_NLA_LINK_DEST]));
- 	link_info.up = htonl(nla_get_flag(link[TIPC_NLA_LINK_UP]));
- 	nla_strlcpy(link_info.str, link[TIPC_NLA_LINK_NAME],
- 		    TIPC_MAX_LINK_NAME);
+ 	err = stmmac_dvr_probe(&pdev->dev, plat_dat, &stmmac_res);
+ 	if (err)
 -- 
 2.30.2
 
