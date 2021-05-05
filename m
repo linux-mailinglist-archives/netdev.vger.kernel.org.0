@@ -2,40 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 020BA374523
-	for <lists+netdev@lfdr.de>; Wed,  5 May 2021 19:50:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3E9E137452A
+	for <lists+netdev@lfdr.de>; Wed,  5 May 2021 19:50:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237180AbhEERED (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 5 May 2021 13:04:03 -0400
-Received: from mail.kernel.org ([198.145.29.99]:44938 "EHLO mail.kernel.org"
+        id S237299AbhEEREG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 5 May 2021 13:04:06 -0400
+Received: from mail.kernel.org ([198.145.29.99]:44944 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S237102AbhEEQ5T (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S237114AbhEEQ5T (ORCPT <rfc822;netdev@vger.kernel.org>);
         Wed, 5 May 2021 12:57:19 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 71136619A2;
-        Wed,  5 May 2021 16:39:17 +0000 (UTC)
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 520A861412;
+        Wed,  5 May 2021 16:39:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1620232758;
-        bh=gpsENFJFQlAg8tfJQFpKGzd/hBl01D39MzOVUetkRYo=;
+        s=k20201202; t=1620232760;
+        bh=oIhCG2ho6VV6y69Wpbc6slEAsiC9IjKPO5oQ593WBJU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Hw5MSwR6aOaDvpB3Jg0MccwXdGBVpMNjCfKkl/SIJu3WVH6yAC7dEyYtguajkEHb5
-         K7/Zbra2VtTI3m1ihBbH9fPGC27xmqANTVOyr37qRd9UnURuOQcdjHtyn3pES5HEG9
-         U8iBJqiiwqY3IT+K89Wldl52lEdALfRtTgzSF4L/qkh/WijZt+QTv7pYcSLIOSAJes
-         BKcsk5chFaJUWrBW1Ntb59RS/UDle6WkvzqBYfMD2xFNUJ31YHPaMWSCRfa3YH29v0
-         OqzLuPFa1jBLFwVxKxUXkSG1A9lF5CLlF+VRS4LzHSCZ0HRg6b4rp+xDronelIuRk1
-         wTQ9F7z/sJ8qg==
+        b=t0qX9nwSwvPx9tDaphzXyd7BR7kgrB0mOADuaOhS05cRAjygjhgTtpwAaFCSwAVbo
+         6mTyq5gdqocd4y9aEs40KDrH2JkZ42I4PFnWsyn8BoAEoPD+HNerz0xT1rRMTo/XVI
+         yYCvwkFViuUZyJZe2vUswItSHHiP1m1PCUMDgKSfqI9cKhegVVFQdazr0F64o3e7St
+         7zylR5FMM3egrzR6XYNy6OPe+qspUNN52Q6XeNOlQdtLyxHZHFZ1bUKCGUeclyyqvN
+         5nOqYBdJgLanvZL4uZi7l9JtwCrqCzR+DB43BE/mVQXXp4WuGlskuAEl5IP1Ph2KHd
+         ntbt52H/3I2/Q==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Archie Pusaka <apusaka@chromium.org>,
-        syzbot+abfc0f5e668d4099af73@syzkaller.appspotmail.com,
-        Alain Michaud <alainm@chromium.org>,
-        Abhishek Pandit-Subedi <abhishekpandit@chromium.org>,
-        Guenter Roeck <groeck@chromium.org>,
-        Marcel Holtmann <marcel@holtmann.org>,
-        Sasha Levin <sashal@kernel.org>,
-        linux-bluetooth@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.4 15/46] Bluetooth: check for zapped sk before connecting
-Date:   Wed,  5 May 2021 12:38:25 -0400
-Message-Id: <20210505163856.3463279-15-sashal@kernel.org>
+Cc:     Eric Dumazet <edumazet@google.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.4 16/46] ip6_vti: proper dev_{hold|put} in ndo_[un]init methods
+Date:   Wed,  5 May 2021 12:38:26 -0400
+Message-Id: <20210505163856.3463279-16-sashal@kernel.org>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20210505163856.3463279-1-sashal@kernel.org>
 References: <20210505163856.3463279-1-sashal@kernel.org>
@@ -47,67 +42,96 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Archie Pusaka <apusaka@chromium.org>
+From: Eric Dumazet <edumazet@google.com>
 
-[ Upstream commit 3af70b39fa2d415dc86c370e5b24ddb9fdacbd6f ]
+[ Upstream commit 40cb881b5aaa0b69a7d93dec8440d5c62dae299f ]
 
-There is a possibility of receiving a zapped sock on
-l2cap_sock_connect(). This could lead to interesting crashes, one
-such case is tearing down an already tore l2cap_sock as is happened
-with this call trace:
+After adopting CONFIG_PCPU_DEV_REFCNT=n option, syzbot was able to trigger
+a warning [1]
 
-__dump_stack lib/dump_stack.c:15 [inline]
-dump_stack+0xc4/0x118 lib/dump_stack.c:56
-register_lock_class kernel/locking/lockdep.c:792 [inline]
-register_lock_class+0x239/0x6f6 kernel/locking/lockdep.c:742
-__lock_acquire+0x209/0x1e27 kernel/locking/lockdep.c:3105
-lock_acquire+0x29c/0x2fb kernel/locking/lockdep.c:3599
-__raw_spin_lock_bh include/linux/spinlock_api_smp.h:137 [inline]
-_raw_spin_lock_bh+0x38/0x47 kernel/locking/spinlock.c:175
-spin_lock_bh include/linux/spinlock.h:307 [inline]
-lock_sock_nested+0x44/0xfa net/core/sock.c:2518
-l2cap_sock_teardown_cb+0x88/0x2fb net/bluetooth/l2cap_sock.c:1345
-l2cap_chan_del+0xa3/0x383 net/bluetooth/l2cap_core.c:598
-l2cap_chan_close+0x537/0x5dd net/bluetooth/l2cap_core.c:756
-l2cap_chan_timeout+0x104/0x17e net/bluetooth/l2cap_core.c:429
-process_one_work+0x7e3/0xcb0 kernel/workqueue.c:2064
-worker_thread+0x5a5/0x773 kernel/workqueue.c:2196
-kthread+0x291/0x2a6 kernel/kthread.c:211
-ret_from_fork+0x4e/0x80 arch/x86/entry/entry_64.S:604
+Issue here is that:
 
-Signed-off-by: Archie Pusaka <apusaka@chromium.org>
-Reported-by: syzbot+abfc0f5e668d4099af73@syzkaller.appspotmail.com
-Reviewed-by: Alain Michaud <alainm@chromium.org>
-Reviewed-by: Abhishek Pandit-Subedi <abhishekpandit@chromium.org>
-Reviewed-by: Guenter Roeck <groeck@chromium.org>
-Signed-off-by: Marcel Holtmann <marcel@holtmann.org>
+- all dev_put() should be paired with a corresponding prior dev_hold().
+
+- A driver doing a dev_put() in its ndo_uninit() MUST also
+  do a dev_hold() in its ndo_init(), only when ndo_init()
+  is returning 0.
+
+Otherwise, register_netdevice() would call ndo_uninit()
+in its error path and release a refcount too soon.
+
+Therefore, we need to move dev_hold() call from
+vti6_tnl_create2() to vti6_dev_init_gen()
+
+[1]
+WARNING: CPU: 0 PID: 15951 at lib/refcount.c:31 refcount_warn_saturate+0xbf/0x1e0 lib/refcount.c:31
+Modules linked in:
+CPU: 0 PID: 15951 Comm: syz-executor.3 Not tainted 5.12.0-rc4-syzkaller #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+RIP: 0010:refcount_warn_saturate+0xbf/0x1e0 lib/refcount.c:31
+Code: 1d 6a 5a e8 09 31 ff 89 de e8 8d 1a ab fd 84 db 75 e0 e8 d4 13 ab fd 48 c7 c7 a0 e1 c1 89 c6 05 4a 5a e8 09 01 e8 2e 36 fb 04 <0f> 0b eb c4 e8 b8 13 ab fd 0f b6 1d 39 5a e8 09 31 ff 89 de e8 58
+RSP: 0018:ffffc90001eaef28 EFLAGS: 00010282
+RAX: 0000000000000000 RBX: 0000000000000000 RCX: 0000000000000000
+RDX: 0000000000040000 RSI: ffffffff815c51f5 RDI: fffff520003d5dd7
+RBP: 0000000000000004 R08: 0000000000000000 R09: 0000000000000000
+R10: ffffffff815bdf8e R11: 0000000000000000 R12: ffff88801bb1c568
+R13: ffff88801f69e800 R14: 00000000ffffffff R15: ffff888050889d40
+FS:  00007fc79314e700(0000) GS:ffff8880b9c00000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 00007f1c1ff47108 CR3: 0000000020fd5000 CR4: 00000000001506f0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+Call Trace:
+ __refcount_dec include/linux/refcount.h:344 [inline]
+ refcount_dec include/linux/refcount.h:359 [inline]
+ dev_put include/linux/netdevice.h:4135 [inline]
+ vti6_dev_uninit+0x31a/0x360 net/ipv6/ip6_vti.c:297
+ register_netdevice+0xadf/0x1500 net/core/dev.c:10308
+ vti6_tnl_create2+0x1b5/0x400 net/ipv6/ip6_vti.c:190
+ vti6_newlink+0x9d/0xd0 net/ipv6/ip6_vti.c:1020
+ __rtnl_newlink+0x1062/0x1710 net/core/rtnetlink.c:3443
+ rtnl_newlink+0x64/0xa0 net/core/rtnetlink.c:3491
+ rtnetlink_rcv_msg+0x44e/0xad0 net/core/rtnetlink.c:5553
+ netlink_rcv_skb+0x153/0x420 net/netlink/af_netlink.c:2502
+ netlink_unicast_kernel net/netlink/af_netlink.c:1312 [inline]
+ netlink_unicast+0x533/0x7d0 net/netlink/af_netlink.c:1338
+ netlink_sendmsg+0x856/0xd90 net/netlink/af_netlink.c:1927
+ sock_sendmsg_nosec net/socket.c:654 [inline]
+ sock_sendmsg+0xcf/0x120 net/socket.c:674
+ ____sys_sendmsg+0x331/0x810 net/socket.c:2350
+ ___sys_sendmsg+0xf3/0x170 net/socket.c:2404
+ __sys_sendmmsg+0x195/0x470 net/socket.c:2490
+ __do_sys_sendmmsg net/socket.c:2519 [inline]
+ __se_sys_sendmmsg net/socket.c:2516 [inline]
+ __x64_sys_sendmmsg+0x99/0x100 net/socket.c:2516
+
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/bluetooth/l2cap_sock.c | 8 ++++++++
- 1 file changed, 8 insertions(+)
+ net/ipv6/ip6_vti.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/net/bluetooth/l2cap_sock.c b/net/bluetooth/l2cap_sock.c
-index 8648c5211ebe..e693fee08623 100644
---- a/net/bluetooth/l2cap_sock.c
-+++ b/net/bluetooth/l2cap_sock.c
-@@ -179,9 +179,17 @@ static int l2cap_sock_connect(struct socket *sock, struct sockaddr *addr,
- 	struct l2cap_chan *chan = l2cap_pi(sk)->chan;
- 	struct sockaddr_l2 la;
- 	int len, err = 0;
-+	bool zapped;
+diff --git a/net/ipv6/ip6_vti.c b/net/ipv6/ip6_vti.c
+index cc6180e08a4f..01ddb0f70c57 100644
+--- a/net/ipv6/ip6_vti.c
++++ b/net/ipv6/ip6_vti.c
+@@ -192,7 +192,6 @@ static int vti6_tnl_create2(struct net_device *dev)
  
- 	BT_DBG("sk %p", sk);
+ 	strcpy(t->parms.name, dev->name);
  
-+	lock_sock(sk);
-+	zapped = sock_flag(sk, SOCK_ZAPPED);
-+	release_sock(sk);
-+
-+	if (zapped)
-+		return -EINVAL;
-+
- 	if (!addr || alen < offsetofend(struct sockaddr, sa_family) ||
- 	    addr->sa_family != AF_BLUETOOTH)
- 		return -EINVAL;
+-	dev_hold(dev);
+ 	vti6_tnl_link(ip6n, t);
+ 
+ 	return 0;
+@@ -921,6 +920,7 @@ static inline int vti6_dev_init_gen(struct net_device *dev)
+ 	dev->tstats = netdev_alloc_pcpu_stats(struct pcpu_sw_netstats);
+ 	if (!dev->tstats)
+ 		return -ENOMEM;
++	dev_hold(dev);
+ 	return 0;
+ }
+ 
 -- 
 2.30.2
 
