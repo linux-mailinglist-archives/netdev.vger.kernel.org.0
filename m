@@ -2,181 +2,193 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B807737351A
-	for <lists+netdev@lfdr.de>; Wed,  5 May 2021 08:54:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 41DE0373544
+	for <lists+netdev@lfdr.de>; Wed,  5 May 2021 08:59:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231253AbhEEGzk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 5 May 2021 02:55:40 -0400
-Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:50478 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S229482AbhEEGzj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 5 May 2021 02:55:39 -0400
-Received: from pps.filterd (m0044010.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 1456p7B4004911;
-        Tue, 4 May 2021 23:54:24 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=date : from : to : cc :
- subject : message-id : references : content-type : in-reply-to :
- mime-version; s=facebook; bh=92wK79h1yjyq8+eBNcYyYKAiSTXACcmP1TGuqzvPBW8=;
- b=RjnAC3RzLeteDBY/pREPI/nTNKSYAjfXqp9lZ6AcPJVOwTQnqArw60p+ax8stB5rdCZ/
- 1RDSCzYJloayb8VFJISBoDdgscu4Yz2A01MWZoFyD52c/GyaW/eHJMlOaIaEMR+8kMw9
- RbYJSOPpBOEQYAQrnC+9tUJhbdCBi4gV4yk= 
-Received: from mail.thefacebook.com ([163.114.132.120])
-        by mx0a-00082601.pphosted.com with ESMTP id 38bebdj08d-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Tue, 04 May 2021 23:54:23 -0700
-Received: from NAM10-MW2-obe.outbound.protection.outlook.com (100.104.98.9) by
- o365-in.thefacebook.com (100.104.94.229) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2176.2; Tue, 4 May 2021 23:54:23 -0700
+        id S231637AbhEEHAJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 5 May 2021 03:00:09 -0400
+Received: from mail-bn8nam12on2082.outbound.protection.outlook.com ([40.107.237.82]:13408
+        "EHLO NAM12-BN8-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S229647AbhEEHAI (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 5 May 2021 03:00:08 -0400
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=HrfSrCAYyaC8j6Or8n9kMaMWk20kxr3o1ACfcR815BUvcjwbakH64FVCvh2eK4n7SzWW0ODFfSm5vv83ofGuY3Ok+eKXXhed7NZHzgQLB8nbqAmWXKbtIjXI1HbztV3pO6gpDgThlDz65cQyMMbpE4qAY5rXy8PzbuB1XIRpGkwWXf2eDS0ZaPuyKfY6mY3gWoIZUbEEEqawmU47FT3QjjHqJ7ycTjQ35qulVD8HcjYZm37m+qhFAtptJBKjOtcRfuTfigdHIsKLNFmUHVKo917ULxV9ZmdN2mEkgB3+ngA5xlLh2MBBFlnb02jzpK0Nf7/z2uRwlptRwSTLQmbstw==
+ b=WxPpOx3lybsKAjchAQLjNNoyFHget8gEL4ucbgZJQfzKgxGZcdiVB7HD6/GmN+B4sly5Z9vRpMQitfvU2tbtKqJzgvOzwHGxIWi3Z0UyaJK08hIU4xmtP96SaLeA8uqengPD9dpvAo+fQH8CBzXKGbePtCdry2sm++vx36hXbPD7+XVPEKte7hY8dUwl1j5bMDpKW44XzITrsYvJQPxbHFCOPprhTjnLGduUwanZH97eHZbx9RinUlThoQAxnHl2rz/Ie/zqP4xAm/xigO9TZNHEJeja5s2GaF1zZuPfxUlUEdaoOmnGZIBGBfDtwKYbntJdTqCvdZ7LQmtIGhmOWA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=92wK79h1yjyq8+eBNcYyYKAiSTXACcmP1TGuqzvPBW8=;
- b=SBxMWWEStAbR39KSxRR0GTzuf8FIDVRPpEdMDKviGZonHkhx/1XNxQHlnOH0ylPnpf0fnxuM1gMRhw8p/X2z8SnUy6yVQ5K01GrbSPybgTV42XPsgibwz9kc2CRwBDacwWK4tYHsSHTdq4q6SiTmhHP6wd5eRmL96tLrcoUR/GrCo71YHbnmryZYNgRv/1ovIssxAGXtygMtoutCrdtvTbvbFl2nk4dQm4/QrNLCjUa9ujwjBzDDEIbpjydhvg51IYKiaRvMOHzk4iK0mU/p5lZBstNu+Brgpkje12YqBSBd530bMWlaeP6xKCTQI/E94MCQSvunvfqW2tZKBYo8yw==
+ bh=JJPQsgqSsyU9F8LNj0Jm/Hbf/xDkIyb1qqa7PtUw34s=;
+ b=NId7RkNlTxnqGtpfbJX8pBj8u7uJoQjM0wytfLFkrYk9BxIjsyauOCepjipLYECDAR/SbAq34FDo+OfFdFXYsmMYdQAeGW5ygUG9OO7A+wEdfccgP33ueuCJB7FEcJQtAnqK+yJVSeO4OH60N8a42kjeFe6aZmrkW3y91r5Z0IOAY7cQyZs4CU8Eqi84o0AIxLx5LsLthomg0QI0k6akUxeqaMfUuUNFOmbredd6C8G5JY0Umr49M+GDt1oXEEpVLltENvirVuwrYq6Ec5iQpT7vUbv/KV0cEDcrZ9Hhhte869uxG/GqOD+zrolzdvmxn47TNUXW8VHCVAr0zgpoFQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
- header.d=fb.com; arc=none
-Authentication-Results: amazon.co.jp; dkim=none (message not signed)
- header.d=none;amazon.co.jp; dmarc=none action=none header.from=fb.com;
-Received: from BY5PR15MB3571.namprd15.prod.outlook.com (2603:10b6:a03:1f6::32)
- by BY5PR15MB3716.namprd15.prod.outlook.com (2603:10b6:a03:1b4::22) with
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=JJPQsgqSsyU9F8LNj0Jm/Hbf/xDkIyb1qqa7PtUw34s=;
+ b=CGtiF6idCjcY2ISsyMtKq3cI+EfETdmz1cRiByUNMzLUA1gGQ+bqKy4lRMS44SMKJwO7PE/ixlSsp8BNGzJjgIHNzTbOlkq6ik+Qx5fIC2ioFoHGRFejTw6Uzzloq57z9KckbO0OacJEiVK0PXlxQCZmRv/7gFTkYoEeJ4n3h7bRB2MXzYJbv3aVv6t3ZszcQqEhdKvT4wMbXk/q9FHiKWDcCyQI+gaYTZV8Y0bnmjnbpPaEJy4d4tw+gaXTxoRY51d8M1SB5AcJjvzpoplnzAnw+OtQFMNovyk2bs6fi/sz8j5NYVKSLt5yOLnHkv6wxnLvgSAD+Qz9OSDtWf4ijA==
+Authentication-Results: idosch.org; dkim=none (message not signed)
+ header.d=none;idosch.org; dmarc=none action=none header.from=nvidia.com;
+Received: from DM4PR12MB5278.namprd12.prod.outlook.com (2603:10b6:5:39e::17)
+ by DM4PR12MB5247.namprd12.prod.outlook.com (2603:10b6:5:39b::8) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4087.25; Wed, 5 May
- 2021 06:54:22 +0000
-Received: from BY5PR15MB3571.namprd15.prod.outlook.com
- ([fe80::718a:4142:4c92:732f]) by BY5PR15MB3571.namprd15.prod.outlook.com
- ([fe80::718a:4142:4c92:732f%6]) with mapi id 15.20.4087.044; Wed, 5 May 2021
- 06:54:22 +0000
-Date:   Tue, 4 May 2021 23:54:18 -0700
-From:   Martin KaFai Lau <kafai@fb.com>
-To:     Kuniyuki Iwashima <kuniyu@amazon.co.jp>, <edumazet@google.com>,
-        <jbaron@akamai.com>
-CC:     <andrii@kernel.org>, <ast@kernel.org>, <benh@amazon.com>,
-        <bpf@vger.kernel.org>, <daniel@iogearbox.net>,
-        <davem@davemloft.net>, <kuba@kernel.org>, <kuni1840@gmail.com>,
-        <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>
-Subject: Re: [PATCH v4 bpf-next 00/11] Socket migration for SO_REUSEPORT.
-Message-ID: <20210505065418.uqfmyy5es3y5zw2d@kafai-mbp.dhcp.thefacebook.com>
-References: <CANn89iK2Wy5WJB+57Y9JU24boy=bb4YQCk6DWD4BvhsM3ZVSdQ@mail.gmail.com>
- <20210429031609.1398-1-kuniyu@amazon.co.jp>
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <20210429031609.1398-1-kuniyu@amazon.co.jp>
-X-Originating-IP: [2620:10d:c090:400::5:5bbb]
-X-ClientProxiedBy: MW4PR03CA0009.namprd03.prod.outlook.com
- (2603:10b6:303:8f::14) To BY5PR15MB3571.namprd15.prod.outlook.com
- (2603:10b6:a03:1f6::32)
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4108.25; Wed, 5 May
+ 2021 06:59:11 +0000
+Received: from DM4PR12MB5278.namprd12.prod.outlook.com
+ ([fe80::d556:5155:7243:5f0f]) by DM4PR12MB5278.namprd12.prod.outlook.com
+ ([fe80::d556:5155:7243:5f0f%6]) with mapi id 15.20.4087.044; Wed, 5 May 2021
+ 06:59:11 +0000
+Subject: Re: [PATCH net 0/6] bridge: Fix snooping in multi-bridge config with
+ switchdev
+To:     "Huang, Joseph" <Joseph.Huang@garmin.com>,
+        Tobias Waldekranz <tobias@waldekranz.com>,
+        Roopa Prabhu <roopa@nvidia.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "bridge@lists.linux-foundation.org" 
+        <bridge@lists.linux-foundation.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Ido Schimmel <idosch@idosch.org>
+References: <20210504182259.5042-1-Joseph.Huang@garmin.com>
+ <6fd5711c-8d53-d72b-995d-1caf77047ecf@nvidia.com>
+ <685c25c2423c451480c0ad2cf78877be@garmin.com> <87v97ym8tc.fsf@waldekranz.com>
+ <82693dbedd524f94b5a6223f0287525c@garmin.com>
+From:   Nikolay Aleksandrov <nikolay@nvidia.com>
+Message-ID: <a610666e-c7e4-28cd-ab89-fa2e02ec31de@nvidia.com>
+Date:   Wed, 5 May 2021 09:59:04 +0300
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.8.1
+In-Reply-To: <82693dbedd524f94b5a6223f0287525c@garmin.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [213.179.129.39]
+X-ClientProxiedBy: ZR0P278CA0070.CHEP278.PROD.OUTLOOK.COM
+ (2603:10a6:910:21::21) To DM4PR12MB5278.namprd12.prod.outlook.com
+ (2603:10b6:5:39e::17)
 MIME-Version: 1.0
 X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from kafai-mbp.dhcp.thefacebook.com (2620:10d:c090:400::5:5bbb) by MW4PR03CA0009.namprd03.prod.outlook.com (2603:10b6:303:8f::14) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4108.25 via Frontend Transport; Wed, 5 May 2021 06:54:20 +0000
+Received: from [10.21.241.230] (213.179.129.39) by ZR0P278CA0070.CHEP278.PROD.OUTLOOK.COM (2603:10a6:910:21::21) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4108.25 via Frontend Transport; Wed, 5 May 2021 06:59:08 +0000
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: c989ac5d-565d-4650-bd7c-08d90f929c5f
-X-MS-TrafficTypeDiagnostic: BY5PR15MB3716:
-X-Microsoft-Antispam-PRVS: <BY5PR15MB37168388762152615EC71751D5599@BY5PR15MB3716.namprd15.prod.outlook.com>
-X-FB-Source: Internal
+X-MS-Office365-Filtering-Correlation-Id: 72d0c79f-7124-4a2b-c07b-08d90f934918
+X-MS-TrafficTypeDiagnostic: DM4PR12MB5247:
+X-MS-Exchange-Transport-Forked: True
+X-Microsoft-Antispam-PRVS: <DM4PR12MB5247613B3D4BEB390C4E13FEDF599@DM4PR12MB5247.namprd12.prod.outlook.com>
 X-MS-Oob-TLC-OOBClassifiers: OLM:10000;
 X-MS-Exchange-SenderADCheck: 1
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: r6QaAWDowuFuSeOlibLSCz7prVmkpWOnYu9ragfC7lS/ngBzU1GbWGLLAZF9PolvxBqqtdmvF6Xc86yMXIlXVAaj/dF6tWeTfaYmAtK9zYtjIuz99wI4ROdk9ube5BY9jcMlNgcDVRTfEFTCMVwQ1zUQDMcdyE0CxIs6BMYIKuRs1dFtw9fc4TysWaQJ8j3Voueo9+DjSw33BtiW9z8ungZJmYo5qKTh4mun3qUUdFqiMxaunKXsyWCY5EUj6k29EYMKPI5fHgbyPRzOsaAYpPkc7OveHF/A1c6If48hCwAUR5QQWZ0XcXuhsY0LqiKPPERBOkg1sa0UMLCVNHguasmN2ZhayZIZ7RP0AkoyUGclu/nMb7YxKle2MJyYe/Y3czt86DZlkSZZq90H9jltFFkaxt+qEGuhovMk9xBuFQNvRAvpcXdOVoTW2cTIv+mmqN+2aOITtHo10YF1OfEpltjWVsE5YddJCHYoJ4PUF8TBSdb/1c0vx797gy7NSTJykYYs8KBy5psIqJjTUYwn34TxnLUXyzp2Qk1cNf/xSx2k3Aj7H133ExVz8O14EHQtzryEsheOwyMAmHm/yittFGTjU+TKEomtO4hcHsuG/30=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BY5PR15MB3571.namprd15.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(396003)(136003)(346002)(39860400002)(366004)(376002)(316002)(6506007)(52116002)(7696005)(86362001)(186003)(38100700002)(7416002)(2906002)(55016002)(9686003)(66476007)(5660300002)(16526019)(4326008)(1076003)(83380400001)(66556008)(478600001)(8676002)(66946007)(8936002);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData: =?us-ascii?Q?NW5fZ4mNdLFPLWWUHpgLyn269jV83DwStsGKgnyyYAFo3mxOJuMrq9w4cLr3?=
- =?us-ascii?Q?kzawfRI2B4bUMr6YXJTfNIzao9KTNt/O4HQGOnlb4uIzAZ5LCI7Sjh1qJddE?=
- =?us-ascii?Q?7V62JyGi0r9hPUZM0uS3mtJq4hbVg5c8HMGfuR+riwxcN2Y5wHy1zqgTEzS7?=
- =?us-ascii?Q?+mV65oKM0dpLSqUsEAuHBfLrwJJZ37KEYd8B40QurIgPU5ZU4j5/M6tjESee?=
- =?us-ascii?Q?TwZcJHN0xYKoPe/JISIpPyuj9e5i5Z/rqabFdMmTovCHEi8OZeBkxv+sTMmS?=
- =?us-ascii?Q?oh8h/1LA3Z/+1abE0+GObMnSCMhoSxXO5KmVUYfViiNhvbQijP9xvpo4axqw?=
- =?us-ascii?Q?oMzZkVA1hTwCGPkiZ/yUhG8e3PAb3ThtB79xtwfdUf7RRV8dOuf213lIRmfl?=
- =?us-ascii?Q?kHhUEm2ig5G2vEmrv8XFhxc/ZvHctKFcEIQ9EWU9e5rSW85rXjpwQ1NsgdsT?=
- =?us-ascii?Q?gZm/glj3SoyXvstcNlEJPy7vnCYCw8cim38SF4A3sIdj/2Ilj3J6CcPpcIXR?=
- =?us-ascii?Q?yIXggwz2Zo7IpbaBhKhIQWaTqU7lXY04w2Iglf2OCGaf+LR0wQ2D5Xh2z1kM?=
- =?us-ascii?Q?xIYKD/nol4WSfZyaM+2AKHkRRFJcKwOyQDgy/xDM9dsCIaxVCPHFwR47ZHv7?=
- =?us-ascii?Q?m5EgueP9xoZOCJO7WrbiE7OWi5hJb59nQZ/0Kuetw4RtTCGOkWl81v7oQGbS?=
- =?us-ascii?Q?Tg81fzj5cJxomRHObBNoes3a5/FLWmz39JPHUIhZ6Dov7gpNvLOBm0eDksKo?=
- =?us-ascii?Q?ecQVWZ9aIURE9Gmc3Q+ocQrXKNKU927jRTahOZX1JwyW9h9ReizCmRiGo54s?=
- =?us-ascii?Q?Jo95NF3H2VyPsqLN95kOnR4DjMpoTlLwe1insYWEjNLwK4cilABBz9znya55?=
- =?us-ascii?Q?epDn6h7qkzu/miyxY26b8+gg4HzpAUwEftOed/f6StqDV3W10k2ggi6hdwr3?=
- =?us-ascii?Q?RXPqVtKSVvq3VD2nQK28dE1gGn32CM72k3BjGYqQyo0iGZ+NMaMnvCQmxPNo?=
- =?us-ascii?Q?QhDR7u0buGyRZJoBTE1MfgnyzSBdcNQUQVIGBWvfCDyDGHNaRxkaFp/YrEJt?=
- =?us-ascii?Q?VdW/U1+eJmRxkhXRMbGDU4MyG1oI3KjIIhna6emcoZlUaqPX+ay+NxVz/7PJ?=
- =?us-ascii?Q?8U+QtEqm+AmV9wj7NpUMS8GFdSBgTqfOZOlP6xUuOG613ToRykUbQfjaMiko?=
- =?us-ascii?Q?1Z+6yZ8R1PlaYKK4xcQr2jOhiCMR/qV3rv5nIOym+/yRSCt4Z0QvLBlQo13n?=
- =?us-ascii?Q?+qNTm18XsD6q5NtZg1W4/XDvgf/HAGcb2U9BxeyS34pQYL/K0hNFR9pNArF0?=
- =?us-ascii?Q?yKGvcDDs4o/9dEKYlkm10RmlV8ck4x6/M8nBTlSM3jLJbQ=3D=3D?=
-X-MS-Exchange-CrossTenant-Network-Message-Id: c989ac5d-565d-4650-bd7c-08d90f929c5f
-X-MS-Exchange-CrossTenant-AuthSource: BY5PR15MB3571.namprd15.prod.outlook.com
+X-Microsoft-Antispam-Message-Info: qGAe5C3/jjkrbCar4HgR5Cyv6Ox9j0aZPmrHSeJ0L3lVvBt+LUgHxMmOlG7acWncrsXNtizgC41MewothVrY/De+U5v6PlMaSmEjX+YQPjYjiGUTGFMcFNZbl49weo8q8Na4+jm2/7ADwhSAbZr/6HEhndWI9tXM7R6VXgwNVrbfaMWifzEF6Dqjb7ypQgYUNlg5jAPhDafUtolJXucPD90XSuaGtiPGcGyAMXamMAR2kYykzeqUUFL2TUbP91gHIhekEPpk+qBdFRu3I5gd3y40WS+95Z58MV20cRpyvHUCkgiSskkbggR3QEy+nDziI1A6EhyAe5r5del24w3Yx5ps2kCpD4w+WK2aSgxUfodJnXqbjUFWcybeZMcRESl9SA/6m34PML3BqrnlWjYTY7b1Am6R2ADkzaY0ZOhVPVMGfjTcTAw9oIvl191MrLWmniGuKe8E4MzEIjMoPSslYZ2hzb4Jofvp1G7wTJ1/OJ5h043swonzHob/KtdBqpx//95AF6BaZ84PNbeeY/7ucl+enGtQom32nYAh+05z+dQ2DfLm1vLfLL6CeUxzzQ4ztdaH8j813QWfwvjRI1mkfoD3QsrkbMQGWgZMVDnan1tQfUlsLb/vj0JqKDm2k5dxa1YXsLJp8iN+SNvg8UHUoo5GO+g840RUue4iW3olVtIR0Pur4NUiOLWJFjdYpIzfgg/2oBXmNDdQ/iAro4ttjA==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM4PR12MB5278.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(376002)(136003)(39860400002)(396003)(346002)(86362001)(956004)(36756003)(316002)(921005)(66574015)(2616005)(16576012)(31696002)(8676002)(16526019)(186003)(31686004)(110136005)(66476007)(66946007)(66556008)(5660300002)(6486002)(2906002)(6666004)(478600001)(38100700002)(26005)(8936002)(53546011)(83380400001)(43740500002)(45980500001);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData: =?utf-8?B?ZVpwWUpvK1JlUjZmRWVuSjd2NDRDUXdNQkFpSmhjY3JWUlBrRjJaSXArOGZk?=
+ =?utf-8?B?QW5lOW5oSk9ocm43NFRNdUpUeFdSK2xLbHowNUMwQlEyR1FhSmN0Z2E2Zmsy?=
+ =?utf-8?B?QUFFRVU3Y0ptMHpuM0dFZzZSRWovdWJKV1pSTGNyRlp5TjJWOElNWkZXZFBV?=
+ =?utf-8?B?Vk1UbS9tcHpid3ZQSmVYRnc1Z1NNWWJzWFZia3RtbXIzcGRuU3hvM1FpVllp?=
+ =?utf-8?B?U2N3bmZQUWFra2I3M0MvV0hDWTVZcHdPdy92SDNuaFFRNitRazREaW80SGZL?=
+ =?utf-8?B?S1VOYTU0bVB0bmJzYzgzTys3U3JVbmgxbGYrenF6cGhBbW5tVDR0azRlV2RW?=
+ =?utf-8?B?ZTBXNjl4VDNoSGhMMVQ1K2ZsZzRWTlNmY0hOcmZhWFkzZjBySmVETFFqSEZo?=
+ =?utf-8?B?U3VXOHhUNGdTamo1SU53UUdFanRsTE50UU1vbnF2SmRLV29YTVlLZXo5eW9B?=
+ =?utf-8?B?YjJwMTRwRDhXclZzcUVCMDFFZ0thdFZReWlKcGxPbXpqL0VGb0g2b1RzeHZi?=
+ =?utf-8?B?SmliOUNqSlJ2UVlnNlpiZU9lOGpJSTVwRGhQcmhrbmVvcmxsdm41Ykc4VUwv?=
+ =?utf-8?B?dkZlWEM5WDVGZWIwWENJUnRIN01HdVJMdUtETHNIaGVQMWVrZFc0eVlDYXh3?=
+ =?utf-8?B?YWdrUEJhM3pOL3ByaWtMQ1p1RmZHdU5zZHByZDF4K1FzM2hEZHpOMjFmUDg5?=
+ =?utf-8?B?dEpLUFZXcDhoZ1pVRnRaNDlCQVZRYWNtNmFuejdlSlFKZi9oUStjOUFrOXp6?=
+ =?utf-8?B?MVgwMzZOdk5UTDJZUHUwQ3lyaVVNcUtLNGtwUWpSSEZVQ004ckEwT2oweGw2?=
+ =?utf-8?B?MkpPOVlWbDg3WmFvcmtPWHZWN1NCak43VEh3enBQTHFSVmxIOGFnNDYyYi9Z?=
+ =?utf-8?B?bG0vcXpHc0VKVlF2Q1VxamtrNWpWNGJRbzllQVY2Z2c1MFgrUnZLQ3dLdUl4?=
+ =?utf-8?B?TExYNDJrb1AxWVFjNUw4bm9BWmdTSGpOUzZDWDExaWVIV3h2TW1kQXhqVTFD?=
+ =?utf-8?B?SjEzYUd2ZG1KdzhHUGhSU3FGT2R5eGoxSVVkMEg3eGRscDhJWjlmZEdLNHlN?=
+ =?utf-8?B?eVVYeHMrSFlueW9GdjhGQ2VBcUJ1QW9ycjg4b0M4ZHZVTkRDSitRMHdBNjhK?=
+ =?utf-8?B?VDVYcTBLcWcvZWlpMlA4WS9iMnFqT25FTThlazNMWlhMckx2TzdHTE90cWlV?=
+ =?utf-8?B?K3QyRkxtSWUwQnM5Tzd5MmVzN1VCT21Rd1NXem1wTUtEWlpSeGRXYUtCNFZM?=
+ =?utf-8?B?NG9rU2hHNitPUU9xSTc4M2hKVlRjUTZIVmhoS3laU2ZwVUdNVlFyaml0Q0VX?=
+ =?utf-8?B?SjBKV3pHOVNaVTVybTdWRnRwanYwU1BrVjBuTVpFSWdaRmk3TldmUnZzMk9L?=
+ =?utf-8?B?WXJxYVAyQ1h1QnJZcWp0WEF2bkFxVVJMZU1UWEx4Qkw3czQyOFVRK0ZtRndP?=
+ =?utf-8?B?WWZOZjFKQ2VkY0JFbURYNk05TlVDSWFaRjRsOHZpcCtvUktwZ3h1NTZ3VVU1?=
+ =?utf-8?B?TnczVGNsMmx0dWpwT2lIbEpVaklCcU1ycGFNTTVYYktpMzBuQkRMZjkxTVNW?=
+ =?utf-8?B?TWlWSlNvZXF1MXh1SXU4TUtmOVcxM2pncFJudituK0l2QnNlNVJEZUhCZVNF?=
+ =?utf-8?B?cmhwRUxuY2RGSFdGSkFSRTRXUDI1c2ZDUjdJS0xGWWdFcExwUXo3VXFrVFVX?=
+ =?utf-8?B?a29xOUF5N29UQXdoRTh3MFJFODY3MFphdnpPcXU5Yjl6M21ZdUdmbGRMdFB5?=
+ =?utf-8?Q?akoX/BXgbJcxviVeTVPz205W12H4BtwwGr688dr?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 72d0c79f-7124-4a2b-c07b-08d90f934918
+X-MS-Exchange-CrossTenant-AuthSource: DM4PR12MB5278.namprd12.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 05 May 2021 06:54:21.9633
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 05 May 2021 06:59:11.2605
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 13X8DarATIzpYBghXRbbUfXM5ZFIbI/63wjEX9gSlG3la3LN2vBTOkpfvP/8z20Y
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BY5PR15MB3716
-X-OriginatorOrg: fb.com
-X-Proofpoint-ORIG-GUID: 6sLbz50zmzH8521vnR0dZkG6bVOH22_i
-X-Proofpoint-GUID: 6sLbz50zmzH8521vnR0dZkG6bVOH22_i
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.391,18.0.761
- definitions=2021-05-05_02:2021-05-04,2021-05-05 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 malwarescore=0 mlxscore=0
- spamscore=0 clxscore=1015 priorityscore=1501 lowpriorityscore=0
- suspectscore=0 phishscore=0 mlxlogscore=999 impostorscore=0 bulkscore=0
- adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2104060000 definitions=main-2105050048
-X-FB-Internal: deliver
+X-MS-Exchange-CrossTenant-UserPrincipalName: Sut2f9K360sXqB6CuWwebdMRTnyK8qPGoaBnbw6sN1PYU++EJHQa4sEKu7n29Mci0NTDfn9A97mnJd0aBLBJmw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM4PR12MB5247
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Apr 29, 2021 at 12:16:09PM +0900, Kuniyuki Iwashima wrote:
-[ ... ]
-
-> > > > It may be but perhaps its more flexible? It gives the new server the
-> > > > chance to re-use the existing listen fds, close, drain and/or start new
-> > > > ones. It also addresses the non-REUSEPORT case where you can't bind right
-> > > > away.
-
-> > > If the flexibility is really worth the complexity, we do not care about it.
-> > > But, SO_REUSEPORT can give enough flexibility we want.
-> > >
-> > > With socket migration, there is no need to reuse listener (fd passing),
-> > > drain children (incoming connections are automatically migrated if there is
-> > > already another listener bind()ed), and of course another listener can
-> > > close itself and migrated children.
-> > >
-> > > If two different approaches resolves the same issue and one does not need
-> > > complexity in userspace, we select the simpler one.
-
-> > 
-> > Kernel bloat and complexity is _not_ the simplest choice.
-> > 
-> > Touching a complex part of TCP stack is quite risky.
-
+On 05/05/2021 02:26, Huang, Joseph wrote:
+>> If I may make a suggestion: I also work with mv88e6xxx systems, and we
+>> have the same issues with known multicast not being flooded to router
+>> ports. Knowing that chipset, I see what you are trying to do.
+>>
+>> But other chips may work differently. Imagine for example a switch where
+>> there is a separate vector of router ports that the hardware can OR in after
+>> looking up the group in the ATU. This implementation would render the
+>> performance gains possible on that device useless. As another example, you
+>> could imagine a device where an ATU operation exists that sets a bit in the
+>> vector of every group in a particular database; instead of having to update
+>> each entry individually.
+>>
+>> I think we (mv88e6xxx) will have to accept that we need to add the proper
+>> scaffolding to manage this on the driver side. That way the bridge can stay
+>> generic. The bridge could just provide some MDB iterator to save us from
+>> having to cache all the configured groups.
+>>
+>> So basically:
+>>
+>> - In mv88e6xxx, maintain a per-switch vector of router ports.
+>>
+>> - When a ports router state is toggled:
+>>   1. Update the vector.
+>>   2. Ask the bridge to iterate through all applicable groups and update
+>>      the corresponding ATU entries.
+>>
+>> - When a new MDB entry is updated, make sure to also OR in the current
+>>   vector of router ports in the DPV of the ATU entry.
+>>
+>>
+>> I would be happy to help out with testing of this!
 > 
-> Yes, we understand that is not a simple decision and your concern. So many
-> reviews are needed to see if our approach is really risky or not.
+> Thanks for the suggestion/offer!
+> 
+> What patch 0002 does is that:
+> 
+> - When an mrouter port is added/deleted, it iterates over the list of mdb's
+>   to add/delete that port to/from the group in the hardware (I think this is
+>   what your bullet #2 does as well, except that one is done in the bridge,
+>   and the other is done in the driver)
+> 
+> - When a group is added/deleted, it iterates over the list of mrouter ports
+>   to add/delete the switchdev programming
+> 
+> I think what Nik is objecting to is that with this approach, there's now
+> a for-loop in the call paths (thus it "increases the complexity with 1 order
+> of magnitude), however I can't think of a way to avoid the looping (whether
+> done inside the bridge or in the driver) but still achieve the same result
+> (for Marvell at least).
+> 
 
-If fd passing is sufficient for a set of use cases, it is great.
+Note that I did not say to avoid it in the switchdev driver. :)
+I said it should be in the driver or in some user-space helper, but it mustn't
+affect non-switchdev software use cases so much.
 
-However, it does not work well for everyone.  We are not saying
-the SO_REUSEPORT(+ optional bpf) is better in all cases also.
+You can check how mlxsw[1] deals with mdbs and router ports.
 
-After SO_REUSEPORT was added, some people had moved from fd-passing
-to SO_REUSEPORT instead and have one bpf policy to select for both
-TCP and UDP sk.
+[1] drivers/net/ethernet/mellanox/mlxsw/spectrum_switchdev.c
 
-Since SO_REUSEPORT was first added, there has been multiple contributions
-from different people and companies.  For example, first adding bpf
-support to UDP, then to TCP, then a much more flexible way to select sk
-from reuseport_array, and then sock_map/sock_hash support.  That is another
-perspective showing that people find it useful.  Each of the contributions
-changed the kernel code also for practical use cases.
+> I suspect that other SOHO switches might have this problem as well (Broadcom
+> comes to mind).
+> 
+> Thanks,
+> Joseph
+> 
 
-This set is an extension/improvement to address a lacking in SO_REUSEPORT
-when some of the sk is closed.  Patch 2 to 4 are the prep work
-in sock_reuseport.c and they have the most changes in this set.
-Patch 5 to 7 are the changes in tcp.  The code has been structured
-to be as isolated as possible.  It will be most useful to at least
-review and getting feedback in this part.  The remaining is bpf
-related.
