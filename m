@@ -2,26 +2,26 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D641E373754
-	for <lists+netdev@lfdr.de>; Wed,  5 May 2021 11:22:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4CC1D37375D
+	for <lists+netdev@lfdr.de>; Wed,  5 May 2021 11:23:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232674AbhEEJXG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 5 May 2021 05:23:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53776 "EHLO
+        id S232269AbhEEJXc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 5 May 2021 05:23:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53568 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233042AbhEEJWQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 5 May 2021 05:22:16 -0400
+        with ESMTP id S232355AbhEEJW6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 5 May 2021 05:22:58 -0400
 Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 73AB7C06135D
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D6F5FC06137A
         for <netdev@vger.kernel.org>; Wed,  5 May 2021 02:20:40 -0700 (PDT)
 Received: from dude.hi.pengutronix.de ([2001:67c:670:100:1d::7])
         by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <ore@pengutronix.de>)
-        id 1leDhn-0005Xh-1r; Wed, 05 May 2021 11:20:31 +0200
+        id 1leDhn-0005Xi-2A; Wed, 05 May 2021 11:20:31 +0200
 Received: from ore by dude.hi.pengutronix.de with local (Exim 4.92)
         (envelope-from <ore@pengutronix.de>)
-        id 1leDhj-0002gv-Vu; Wed, 05 May 2021 11:20:27 +0200
+        id 1leDhk-0002hV-0b; Wed, 05 May 2021 11:20:28 +0200
 From:   Oleksij Rempel <o.rempel@pengutronix.de>
 To:     Woojung Huh <woojung.huh@microchip.com>,
         UNGLinuxDriver@microchip.com, Andrew Lunn <andrew@lunn.ch>,
@@ -30,13 +30,14 @@ To:     Woojung Huh <woojung.huh@microchip.com>,
         Vladimir Oltean <olteanv@gmail.com>,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
-Cc:     Oleksij Rempel <o.rempel@pengutronix.de>, kernel@pengutronix.de,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Russell King <linux@armlinux.org.uk>,
+Cc:     Oleksij Rempel <linux@rempel-privat.de>,
+        Oleksij Rempel <o.rempel@pengutronix.de>,
+        kernel@pengutronix.de, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Russell King <linux@armlinux.org.uk>,
         Michael Grzeschik <m.grzeschik@pengutronix.de>
-Subject: [RFC PATCH v1 6/9] net: phy: micrel: ksz8081 add MDI-X support
-Date:   Wed,  5 May 2021 11:20:22 +0200
-Message-Id: <20210505092025.8785-7-o.rempel@pengutronix.de>
+Subject: [RFC PATCH v1 7/9] net: dsa: microchip: ksz8795: add LINK_MD register support
+Date:   Wed,  5 May 2021 11:20:23 +0200
+Message-Id: <20210505092025.8785-8-o.rempel@pengutronix.de>
 X-Mailer: git-send-email 2.29.2
 In-Reply-To: <20210505092025.8785-1-o.rempel@pengutronix.de>
 References: <20210505092025.8785-1-o.rempel@pengutronix.de>
@@ -50,132 +51,100 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add support for MDI-X status and configuration
+From: Oleksij Rempel <linux@rempel-privat.de>
+
+Add mapping for LINK_MD register to enable cable testing functionality.
 
 Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
 ---
- drivers/net/phy/micrel.c | 89 ++++++++++++++++++++++++++++++++++++++++
- 1 file changed, 89 insertions(+)
+ drivers/net/dsa/microchip/ksz8795.c     | 23 +++++++++++++++++++++++
+ drivers/net/dsa/microchip/ksz8795_reg.h |  5 +++--
+ 2 files changed, 26 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/phy/micrel.c b/drivers/net/phy/micrel.c
-index ea30cd6bd7bc..47fa8b02630a 100644
---- a/drivers/net/phy/micrel.c
-+++ b/drivers/net/phy/micrel.c
-@@ -68,11 +68,17 @@
+diff --git a/drivers/net/dsa/microchip/ksz8795.c b/drivers/net/dsa/microchip/ksz8795.c
+index 0ddaf2547f18..fb47be0c2154 100644
+--- a/drivers/net/dsa/microchip/ksz8795.c
++++ b/drivers/net/dsa/microchip/ksz8795.c
+@@ -6,6 +6,7 @@
+  *	Tristram Ha <Tristram.Ha@microchip.com>
+  */
  
- /* PHY Control 1 */
- #define MII_KSZPHY_CTRL_1			0x1e
-+#define KSZ8081_CTRL1_MDIX_STAT			BIT(4)
++#include <linux/bitfield.h>
+ #include <linux/delay.h>
+ #include <linux/export.h>
+ #include <linux/gpio.h>
+@@ -728,6 +729,7 @@ static void ksz8_r_phy(struct ksz_device *dev, u16 phy, u16 reg, u16 *val)
+ 	struct ksz8 *ksz8 = dev->priv;
+ 	u8 restart, speed, ctrl, link;
+ 	const u8 *regs = ksz8->regs;
++	u8 val1, val2;
+ 	int processed = true;
+ 	u16 data = 0;
+ 	u8 p = phy;
+@@ -816,6 +818,23 @@ static void ksz8_r_phy(struct ksz_device *dev, u16 phy, u16 reg, u16 *val)
+ 		if (data & ~PHY_AUTO_NEG_802_3)
+ 			data |= PHY_REMOTE_ACKNOWLEDGE_NOT;
+ 		break;
++
++	case PHY_REG_LINK_MD:
++		ksz_pread8(dev, p, REG_PORT_LINK_MD_CTRL, &val1);
++		ksz_pread8(dev, p, REG_PORT_LINK_MD_RESULT, &val2);
++		if (val1 & PORT_START_CABLE_DIAG)
++			data |= PHY_START_CABLE_DIAG;
++
++		if (val1 & PORT_CABLE_10M_SHORT)
++			data |= PHY_CABLE_10M_SHORT;
++
++		data |= FIELD_PREP(PHY_CABLE_DIAG_RESULT_M,
++				FIELD_GET(PORT_CABLE_DIAG_RESULT_M, val1));
++
++		data |= FIELD_PREP(PHY_CABLE_FAULT_COUNTER_M,
++				(FIELD_GET(PORT_CABLE_FAULT_COUNTER_H, val1) << 8) |
++				FIELD_GET(PORT_CABLE_FAULT_COUNTER_L, val2));
++		break;
+ 	default:
+ 		processed = false;
+ 		break;
+@@ -927,6 +946,10 @@ static void ksz8_w_phy(struct ksz_device *dev, u16 phy, u16 reg, u16 val)
+ 		if (data != ctrl)
+ 			ksz_pwrite8(dev, p, regs[P_LOCAL_CTRL], data);
+ 		break;
++	case PHY_REG_LINK_MD:
++		if (val & PHY_START_CABLE_DIAG)
++			ksz_port_cfg(dev, p, REG_PORT_LINK_MD_CTRL, PORT_START_CABLE_DIAG, true);
++		break;
+ 	default:
+ 		break;
+ 	}
+diff --git a/drivers/net/dsa/microchip/ksz8795_reg.h b/drivers/net/dsa/microchip/ksz8795_reg.h
+index f925ddee5238..a32355624f31 100644
+--- a/drivers/net/dsa/microchip/ksz8795_reg.h
++++ b/drivers/net/dsa/microchip/ksz8795_reg.h
+@@ -249,7 +249,7 @@
+ #define REG_PORT_4_LINK_MD_CTRL		0x4A
  
- /* PHY Control 2 / PHY Control (if no PHY Control 1) */
- #define MII_KSZPHY_CTRL_2			0x1f
- #define MII_KSZPHY_CTRL				MII_KSZPHY_CTRL_2
- /* bitmap of PHY register to set interrupt mode */
-+#define KSZ8081_CTRL2_HP_MDIX			BIT(15)
-+#define KSZ8081_CTRL2_MDI_MDI_X_SELECT		BIT(14)
-+#define KSZ8081_CTRL2_DISABLE_AUTO_MDIX		BIT(13)
-+#define KSZ8081_CTRL2_FORCE_LINK		BIT(11)
-+#define KSZ8081_CTRL2_POWER_SAVING		BIT(10)
- #define KSZPHY_CTRL_INT_ACTIVE_HIGH		BIT(9)
- #define KSZPHY_RMII_REF_CLK_SEL			BIT(7)
- #define KSZ886X_CTRL_MDIX_STAT			BIT(4)
-@@ -436,6 +442,87 @@ static int ksz8081_config_init(struct phy_device *phydev)
- 	return kszphy_config_init(phydev);
- }
+ #define PORT_CABLE_10M_SHORT		BIT(7)
+-#define PORT_CABLE_DIAG_RESULT_M	0x3
++#define PORT_CABLE_DIAG_RESULT_M	GENMASK(6, 5)
+ #define PORT_CABLE_DIAG_RESULT_S	5
+ #define PORT_CABLE_STAT_NORMAL		0
+ #define PORT_CABLE_STAT_OPEN		1
+@@ -753,13 +753,14 @@
+ #define PHY_REG_LINK_MD			0x1D
  
-+static int ksz8081_config_mdix(struct phy_device *phydev, u8 ctrl)
-+{
-+	u16 val;
-+
-+	switch (ctrl) {
-+	case ETH_TP_MDI:
-+		val = KSZ8081_CTRL2_DISABLE_AUTO_MDIX;
-+		break;
-+	case ETH_TP_MDI_X:
-+		val = KSZ8081_CTRL2_DISABLE_AUTO_MDIX |
-+			KSZ8081_CTRL2_MDI_MDI_X_SELECT;
-+		break;
-+	case ETH_TP_MDI_AUTO:
-+		val = 0;
-+		break;
-+	default:
-+		return 0;
-+	}
-+
-+	return phy_modify(phydev, MII_KSZPHY_CTRL_2,
-+			  KSZ8081_CTRL2_HP_MDIX |
-+			  KSZ8081_CTRL2_MDI_MDI_X_SELECT |
-+			  KSZ8081_CTRL2_DISABLE_AUTO_MDIX,
-+			  KSZ8081_CTRL2_HP_MDIX | val);
-+}
-+
-+static int ksz8081_config_aneg(struct phy_device *phydev)
-+{
-+	int ret;
-+
-+	ret = genphy_config_aneg(phydev);
-+	if (ret)
-+		return ret;
-+
-+	/* The MDI-X configuration is automatically changed by the PHY after
-+	 * switching from autoneg off to on. So, take MDI-X configuration under
-+	 * own control and set it after autoneg configuration was done.
-+	 */
-+	return ksz8081_config_mdix(phydev, phydev->mdix_ctrl);
-+}
-+
-+static int ksz8081_mdix_update(struct phy_device *phydev)
-+{
-+	int ret;
-+
-+	ret = phy_read(phydev, MII_KSZPHY_CTRL_2);
-+	if (ret < 0)
-+		return ret;
-+
-+	if (ret & KSZ8081_CTRL2_DISABLE_AUTO_MDIX) {
-+		if (ret & KSZ8081_CTRL2_MDI_MDI_X_SELECT)
-+			phydev->mdix_ctrl = ETH_TP_MDI_X;
-+		else
-+			phydev->mdix_ctrl = ETH_TP_MDI;
-+	} else {
-+		phydev->mdix_ctrl = ETH_TP_MDI_AUTO;
-+	}
-+
-+	ret = phy_read(phydev, MII_KSZPHY_CTRL_1);
-+	if (ret < 0)
-+		return ret;
-+
-+	if (ret & KSZ8081_CTRL1_MDIX_STAT)
-+		phydev->mdix = ETH_TP_MDI;
-+	else
-+		phydev->mdix = ETH_TP_MDI_X;
-+
-+	return 0;
-+}
-+
-+static int ksz8081_read_status(struct phy_device *phydev)
-+{
-+	int ret;
-+
-+	ret = ksz8081_mdix_update(phydev);
-+	if (ret < 0)
-+		return ret;
-+
-+	return genphy_read_status(phydev);
-+}
-+
- static int ksz8061_config_init(struct phy_device *phydev)
- {
- 	int ret;
-@@ -1423,6 +1510,8 @@ static struct phy_driver ksphy_driver[] = {
- 	.probe		= kszphy_probe,
- 	.config_init	= ksz8081_config_init,
- 	.soft_reset	= genphy_soft_reset,
-+	.config_aneg	= ksz8081_config_aneg,
-+	.read_status	= ksz8081_read_status,
- 	.config_intr	= kszphy_config_intr,
- 	.handle_interrupt = kszphy_handle_interrupt,
- 	.get_sset_count = kszphy_get_sset_count,
+ #define PHY_START_CABLE_DIAG		BIT(15)
++#define PHY_CABLE_DIAG_RESULT_M		GENMASK(14, 13)
+ #define PHY_CABLE_DIAG_RESULT		0x6000
+ #define PHY_CABLE_STAT_NORMAL		0x0000
+ #define PHY_CABLE_STAT_OPEN		0x2000
+ #define PHY_CABLE_STAT_SHORT		0x4000
+ #define PHY_CABLE_STAT_FAILED		0x6000
+ #define PHY_CABLE_10M_SHORT		BIT(12)
+-#define PHY_CABLE_FAULT_COUNTER		0x01FF
++#define PHY_CABLE_FAULT_COUNTER_M	GENMASK(8, 0)
+ 
+ #define PHY_REG_PHY_CTRL		0x1F
+ 
 -- 
 2.29.2
 
