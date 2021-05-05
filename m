@@ -2,40 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9BEDB374224
-	for <lists+netdev@lfdr.de>; Wed,  5 May 2021 18:47:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4974E374227
+	for <lists+netdev@lfdr.de>; Wed,  5 May 2021 18:47:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235145AbhEEQph (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 5 May 2021 12:45:37 -0400
-Received: from mail.kernel.org ([198.145.29.99]:39198 "EHLO mail.kernel.org"
+        id S235071AbhEEQpm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 5 May 2021 12:45:42 -0400
+Received: from mail.kernel.org ([198.145.29.99]:39658 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S235511AbhEEQmG (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 5 May 2021 12:42:06 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 9063061627;
-        Wed,  5 May 2021 16:34:52 +0000 (UTC)
+        id S235050AbhEEQnQ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 5 May 2021 12:43:16 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 4611F6191B;
+        Wed,  5 May 2021 16:34:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1620232493;
-        bh=1Tj8L1ZaYES/mLH5ILY14A6ccbafPhdoBV0lV+yee9w=;
+        s=k20201202; t=1620232498;
+        bh=0WFPPBJ9mm4YAuImocx6Z48TEVG4TPd96yLMMVLY/Gg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Civs3S6ozlZwbd7eJ5q0tm4gUAJ/QtaPv/VSMWw7wfI5c3qXHBsK2gSAvRxSDWQ9y
-         PowPXPNJ8AyaSz1VVSFXL0WCbDeAyUY0//AN61CR+aCg/Y+J1AelFkrqnCpIafSSsG
-         MY0Ex53eRgeqTyraJgDq2RPOVj4Jo38GaI/S2epcuGDtcyIGfpPqiRB5xiYcjfmFBh
-         kakwZLR+ny+gMOo/vQtTdxxWAXX9lM60OJfhx0p8+i9sLFl5oBisKxYek7hyT4BLc8
-         tYgkY74pLPD1yrraYWUFYUzwu71lZ91+ZxVnZE1UJpFy38eS4/rITg7SmCJrrEkY2j
-         c2e3o3DUteQ7w==
+        b=fXoHLKs2ogkBiYQRzNxeDLeN2teIAHt9l22FjhcUB5D+a2D4Kwsty2cuVa2xXWj80
+         YjY1jlqn/Je34q/2V0xHnSuwqEzRQ15SrwgN5r2VPoE89ZlLXrH5t19349W7UdYBKH
+         BP7OyoNrdzcr2sqXoCtqk5Q3fuJZHp6m7/4tK0lUMZxJKRUOc+nOmHCRAfn49ZYAlD
+         6cgpoYN2BR4dm9v+SxbDcqL58A8wqHWd2xjGCbmGkr1Y4at9gXMwMenpLDzWHGZbgD
+         wydLW0Ft3GM1gWz0n3UZacs3H9uZecwui7HSHWEq6TKlZ3GJtblgb7sFZ0BFQDE/D1
+         kciykuKuzbb4A==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Archie Pusaka <apusaka@chromium.org>,
-        syzbot+abfc0f5e668d4099af73@syzkaller.appspotmail.com,
-        Alain Michaud <alainm@chromium.org>,
-        Abhishek Pandit-Subedi <abhishekpandit@chromium.org>,
-        Guenter Roeck <groeck@chromium.org>,
-        Marcel Holtmann <marcel@holtmann.org>,
-        Sasha Levin <sashal@kernel.org>,
-        linux-bluetooth@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.11 028/104] Bluetooth: check for zapped sk before connecting
-Date:   Wed,  5 May 2021 12:32:57 -0400
-Message-Id: <20210505163413.3461611-28-sashal@kernel.org>
+Cc:     Guangbin Huang <huangguangbin2@huawei.com>,
+        Huazhong Tan <tanhuazhong@huawei.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.11 031/104] net: hns3: remediate a potential overflow risk of bd_num_list
+Date:   Wed,  5 May 2021 12:33:00 -0400
+Message-Id: <20210505163413.3461611-31-sashal@kernel.org>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20210505163413.3461611-1-sashal@kernel.org>
 References: <20210505163413.3461611-1-sashal@kernel.org>
@@ -47,67 +43,111 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Archie Pusaka <apusaka@chromium.org>
+From: Guangbin Huang <huangguangbin2@huawei.com>
 
-[ Upstream commit 3af70b39fa2d415dc86c370e5b24ddb9fdacbd6f ]
+[ Upstream commit a2ee6fd28a190588e142ad8ea9d40069cd3c9f98 ]
 
-There is a possibility of receiving a zapped sock on
-l2cap_sock_connect(). This could lead to interesting crashes, one
-such case is tearing down an already tore l2cap_sock as is happened
-with this call trace:
+The array size of bd_num_list is a fixed value, it may have potential
+overflow risk when array size of hclge_dfx_bd_offset_list is greater
+than that fixed value. So modify bd_num_list as a pointer and allocate
+memory for it according to array size of hclge_dfx_bd_offset_list.
 
-__dump_stack lib/dump_stack.c:15 [inline]
-dump_stack+0xc4/0x118 lib/dump_stack.c:56
-register_lock_class kernel/locking/lockdep.c:792 [inline]
-register_lock_class+0x239/0x6f6 kernel/locking/lockdep.c:742
-__lock_acquire+0x209/0x1e27 kernel/locking/lockdep.c:3105
-lock_acquire+0x29c/0x2fb kernel/locking/lockdep.c:3599
-__raw_spin_lock_bh include/linux/spinlock_api_smp.h:137 [inline]
-_raw_spin_lock_bh+0x38/0x47 kernel/locking/spinlock.c:175
-spin_lock_bh include/linux/spinlock.h:307 [inline]
-lock_sock_nested+0x44/0xfa net/core/sock.c:2518
-l2cap_sock_teardown_cb+0x88/0x2fb net/bluetooth/l2cap_sock.c:1345
-l2cap_chan_del+0xa3/0x383 net/bluetooth/l2cap_core.c:598
-l2cap_chan_close+0x537/0x5dd net/bluetooth/l2cap_core.c:756
-l2cap_chan_timeout+0x104/0x17e net/bluetooth/l2cap_core.c:429
-process_one_work+0x7e3/0xcb0 kernel/workqueue.c:2064
-worker_thread+0x5a5/0x773 kernel/workqueue.c:2196
-kthread+0x291/0x2a6 kernel/kthread.c:211
-ret_from_fork+0x4e/0x80 arch/x86/entry/entry_64.S:604
-
-Signed-off-by: Archie Pusaka <apusaka@chromium.org>
-Reported-by: syzbot+abfc0f5e668d4099af73@syzkaller.appspotmail.com
-Reviewed-by: Alain Michaud <alainm@chromium.org>
-Reviewed-by: Abhishek Pandit-Subedi <abhishekpandit@chromium.org>
-Reviewed-by: Guenter Roeck <groeck@chromium.org>
-Signed-off-by: Marcel Holtmann <marcel@holtmann.org>
+Signed-off-by: Guangbin Huang <huangguangbin2@huawei.com>
+Signed-off-by: Huazhong Tan <tanhuazhong@huawei.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/bluetooth/l2cap_sock.c | 8 ++++++++
- 1 file changed, 8 insertions(+)
+ .../hisilicon/hns3/hns3pf/hclge_main.c        | 27 ++++++++++++++-----
+ 1 file changed, 20 insertions(+), 7 deletions(-)
 
-diff --git a/net/bluetooth/l2cap_sock.c b/net/bluetooth/l2cap_sock.c
-index f1b1edd0b697..c99d65ef13b1 100644
---- a/net/bluetooth/l2cap_sock.c
-+++ b/net/bluetooth/l2cap_sock.c
-@@ -179,9 +179,17 @@ static int l2cap_sock_connect(struct socket *sock, struct sockaddr *addr,
- 	struct l2cap_chan *chan = l2cap_pi(sk)->chan;
- 	struct sockaddr_l2 la;
- 	int len, err = 0;
-+	bool zapped;
+diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
+index 67764d930435..1c13cf34ae9f 100644
+--- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
++++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
+@@ -11284,7 +11284,6 @@ static int hclge_get_64_bit_regs(struct hclge_dev *hdev, u32 regs_num,
+ #define REG_LEN_PER_LINE	(REG_NUM_PER_LINE * sizeof(u32))
+ #define REG_SEPARATOR_LINE	1
+ #define REG_NUM_REMAIN_MASK	3
+-#define BD_LIST_MAX_NUM		30
  
- 	BT_DBG("sk %p", sk);
+ int hclge_query_bd_num_cmd_send(struct hclge_dev *hdev, struct hclge_desc *desc)
+ {
+@@ -11378,15 +11377,19 @@ static int hclge_get_dfx_reg_len(struct hclge_dev *hdev, int *len)
+ {
+ 	u32 dfx_reg_type_num = ARRAY_SIZE(hclge_dfx_bd_offset_list);
+ 	int data_len_per_desc, bd_num, i;
+-	int bd_num_list[BD_LIST_MAX_NUM];
++	int *bd_num_list;
+ 	u32 data_len;
+ 	int ret;
  
-+	lock_sock(sk);
-+	zapped = sock_flag(sk, SOCK_ZAPPED);
-+	release_sock(sk);
++	bd_num_list = kcalloc(dfx_reg_type_num, sizeof(int), GFP_KERNEL);
++	if (!bd_num_list)
++		return -ENOMEM;
 +
-+	if (zapped)
-+		return -EINVAL;
+ 	ret = hclge_get_dfx_reg_bd_num(hdev, bd_num_list, dfx_reg_type_num);
+ 	if (ret) {
+ 		dev_err(&hdev->pdev->dev,
+ 			"Get dfx reg bd num fail, status is %d.\n", ret);
+-		return ret;
++		goto out;
+ 	}
+ 
+ 	data_len_per_desc = sizeof_field(struct hclge_desc, data);
+@@ -11397,6 +11400,8 @@ static int hclge_get_dfx_reg_len(struct hclge_dev *hdev, int *len)
+ 		*len += (data_len / REG_LEN_PER_LINE + 1) * REG_LEN_PER_LINE;
+ 	}
+ 
++out:
++	kfree(bd_num_list);
+ 	return ret;
+ }
+ 
+@@ -11404,16 +11409,20 @@ static int hclge_get_dfx_reg(struct hclge_dev *hdev, void *data)
+ {
+ 	u32 dfx_reg_type_num = ARRAY_SIZE(hclge_dfx_bd_offset_list);
+ 	int bd_num, bd_num_max, buf_len, i;
+-	int bd_num_list[BD_LIST_MAX_NUM];
+ 	struct hclge_desc *desc_src;
++	int *bd_num_list;
+ 	u32 *reg = data;
+ 	int ret;
+ 
++	bd_num_list = kcalloc(dfx_reg_type_num, sizeof(int), GFP_KERNEL);
++	if (!bd_num_list)
++		return -ENOMEM;
 +
- 	if (!addr || alen < offsetofend(struct sockaddr, sa_family) ||
- 	    addr->sa_family != AF_BLUETOOTH)
- 		return -EINVAL;
+ 	ret = hclge_get_dfx_reg_bd_num(hdev, bd_num_list, dfx_reg_type_num);
+ 	if (ret) {
+ 		dev_err(&hdev->pdev->dev,
+ 			"Get dfx reg bd num fail, status is %d.\n", ret);
+-		return ret;
++		goto out;
+ 	}
+ 
+ 	bd_num_max = bd_num_list[0];
+@@ -11422,8 +11431,10 @@ static int hclge_get_dfx_reg(struct hclge_dev *hdev, void *data)
+ 
+ 	buf_len = sizeof(*desc_src) * bd_num_max;
+ 	desc_src = kzalloc(buf_len, GFP_KERNEL);
+-	if (!desc_src)
+-		return -ENOMEM;
++	if (!desc_src) {
++		ret = -ENOMEM;
++		goto out;
++	}
+ 
+ 	for (i = 0; i < dfx_reg_type_num; i++) {
+ 		bd_num = bd_num_list[i];
+@@ -11439,6 +11450,8 @@ static int hclge_get_dfx_reg(struct hclge_dev *hdev, void *data)
+ 	}
+ 
+ 	kfree(desc_src);
++out:
++	kfree(bd_num_list);
+ 	return ret;
+ }
+ 
 -- 
 2.30.2
 
