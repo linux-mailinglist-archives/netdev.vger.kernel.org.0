@@ -2,86 +2,143 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4275F373F57
-	for <lists+netdev@lfdr.de>; Wed,  5 May 2021 18:14:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 12D03373FE1
+	for <lists+netdev@lfdr.de>; Wed,  5 May 2021 18:31:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233861AbhEEQPO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 5 May 2021 12:15:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33586 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233838AbhEEQPK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 5 May 2021 12:15:10 -0400
-Received: from mail-qk1-x731.google.com (mail-qk1-x731.google.com [IPv6:2607:f8b0:4864:20::731])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 81E2CC061574
-        for <netdev@vger.kernel.org>; Wed,  5 May 2021 09:14:13 -0700 (PDT)
-Received: by mail-qk1-x731.google.com with SMTP id o27so2026490qkj.9
-        for <netdev@vger.kernel.org>; Wed, 05 May 2021 09:14:13 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=JxTHlbm4WKHqk+xGKq+ygsRkmHxeCfrcVr5ByQaa41M=;
-        b=h0VOH/ZUw2e16TvQANv0GphYyvJ8+yl9RqR+2ftE3tX3EEY6e7BchvwpJmQd3r3OBX
-         QR9E4uL7ES3DKcmBjEVktml+uO2UAcwxStw/9VaC5iamWRCTAjjkdkh+f0Thc4WrBDqQ
-         hLcHc3r5Okk5Zcwi3qTws548DgLqW2IVixVSMbmVnJc0Uzda2Aypg81c3vpCTOviF49Q
-         sFJDzBdYo1trdAZdvDQfTabSyGnF/yErJoDPaURnaQ/Z+7/c3U2ZEJnoNeCg9KzJxxrO
-         kcWS9ryoK4vDjV9TCjWQeJOHmJBXmHI/u6G7TqHLQEr37RB20vNE03Xub91fPYw0xQHt
-         uwpQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=JxTHlbm4WKHqk+xGKq+ygsRkmHxeCfrcVr5ByQaa41M=;
-        b=buCJidRzFNIkXLEzKF1Qo5h9CyHXSdZFH5g+tAVfqVaOVDG1GKzJ7hMXgmjg1BbXb6
-         bcWoN7mjH9vqdXskSjg+AU9rcPPP9pPBIxX3/T5v+zq11WcypNkiSrLdr9K1ta49VIZR
-         Wg3V1oYY/nUFMa9g18IZbYXxMYaTrWubmYlAoRkwYgQLvB2Sp5KT7MdV7wY+aukNla4O
-         P1QOnq159jbU67Xf5OdEzwJ9LZR0kWhTs1bxyNCZcStOQbC8TcPKjredyebRECgSoltL
-         Rn4C2WZRrnsihMaQO8equwxQjHSBD9sr8MZZvIVMaAzttk3wguNp7B6QkSiXMOxcf6e/
-         g3+g==
-X-Gm-Message-State: AOAM530nLDgfCVXBZocu1dOATxqt3q7tdsDqiF772zTpyTKnLImnnf3G
-        0tBqT54v1F7K7mtMG+uirJ3a9T92RMX48OYAeIBWXsqD
-X-Google-Smtp-Source: ABdhPJzvQUMFQ68GJSiVBLIk11yM06dI9TWbbrCIQ78+oz9XkgD6vBBkgDVWhORJCzeTTRLlLrFr1ZDCiuVt/05+4fg=
-X-Received: by 2002:a37:9d86:: with SMTP id g128mr19643402qke.141.1620231252690;
- Wed, 05 May 2021 09:14:12 -0700 (PDT)
+        id S234139AbhEEQca (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 5 May 2021 12:32:30 -0400
+Received: from mail.kernel.org ([198.145.29.99]:51860 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S234119AbhEEQcY (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 5 May 2021 12:32:24 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 9AD9061176;
+        Wed,  5 May 2021 16:31:26 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1620232287;
+        bh=GC0JSQP6TWY1b0lfwONIKL+869Qk61wRxyZRS4vVIz8=;
+        h=From:To:Cc:Subject:Date:From;
+        b=b0Sw1VTBifF255lbkOLmJaO5Tt+/31rE0B7vguzYdVrcW3p1Gt5Wf8gFNSXLR1Aza
+         FuhxhWAAWKmc5BbDth5eWD9yQQaEvi/wJbHzytWljJG80A/gtZVXY6JMsNA0J88Cop
+         5D7TcQg7TjVDS6auIt5uESbJE7ubUa1vDVNRktKqwwkmSDFMweg2+r/3qfmn+LGOUq
+         mJD6PxT/4Zp3y9eIMlpALYLDaX8L3QfpY8SsmQld2mlMeMkBSswnDrPXlLjWvd6xG/
+         1Gr8w9HitkGy458yAeDQyOrLS0z+6NFaILVSYyMDaz7smVmShOgIswIqZz64bn+why
+         toCXgwTisQUHg==
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     Pradeep Kumar Chitrapu <pradeepc@codeaurora.org>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        Sasha Levin <sashal@kernel.org>, ath11k@lists.infradead.org,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.12 001/116] ath11k: fix thermal temperature read
+Date:   Wed,  5 May 2021 12:29:29 -0400
+Message-Id: <20210505163125.3460440-1-sashal@kernel.org>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-References: <cover.1620223174.git.pabeni@redhat.com> <e5d4bacef76ef439b6eb8e7f4973161ca131dfee.1620223174.git.pabeni@redhat.com>
-In-Reply-To: <e5d4bacef76ef439b6eb8e7f4973161ca131dfee.1620223174.git.pabeni@redhat.com>
-From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Date:   Wed, 5 May 2021 12:13:36 -0400
-Message-ID: <CAF=yD-+BAMU+ETz9MV--MR5NuCE9VrtNezDB3mAiBQR+5puZvQ@mail.gmail.com>
-Subject: Re: [PATCH net 1/4] net: fix double-free on fraglist GSO skbs
-To:     Paolo Abeni <pabeni@redhat.com>
-Cc:     Network Development <netdev@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Steffen Klassert <steffen.klassert@secunet.com>,
-        Willem de Bruijn <willemb@google.com>,
-        Miaohe Lin <linmiaohe@huawei.com>
-Content-Type: text/plain; charset="UTF-8"
+X-stable: review
+X-Patchwork-Hint: Ignore
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, May 5, 2021 at 11:37 AM Paolo Abeni <pabeni@redhat.com> wrote:
->
-> While segmenting a SKB_GSO_FRAGLIST GSO packet, if the destructor
-> callback is available, the skb destructor is invoked on each
-> aggregated packet via skb_release_head_state().
->
-> Such field (and the pairer skb->sk) is left untouched, so the same
-> destructor is invoked again when the segmented skbs are freed, leading
-> to double-free/UaF of the relevant socket.
+From: Pradeep Kumar Chitrapu <pradeepc@codeaurora.org>
 
-Similar to skb_segment, should the destructor be swapped with the last
-segment and callback delayed, instead of called immediately as part of
-segmentation?
+[ Upstream commit e3de5bb7ac1a4cb262f8768924fd3ef6182b10bb ]
 
-        /* Following permits correct backpressure, for protocols
-         * using skb_set_owner_w().
-         * Idea is to tranfert ownership from head_skb to last segment.
-         */
-        if (head_skb->destructor == sock_wfree) {
-                swap(tail->truesize, head_skb->truesize);
-                swap(tail->destructor, head_skb->destructor);
-                swap(tail->sk, head_skb->sk);
-        }
+Fix dangling pointer in thermal temperature event which causes
+incorrect temperature read.
+
+Tested-on: IPQ8074 AHB WLAN.HK.2.4.0.1-00041-QCAHKSWPL_SILICONZ-1
+
+Signed-off-by: Pradeep Kumar Chitrapu <pradeepc@codeaurora.org>
+Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
+Link: https://lore.kernel.org/r/20210218182708.8844-1-pradeepc@codeaurora.org
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/net/wireless/ath/ath11k/wmi.c | 53 +++++++++++----------------
+ 1 file changed, 21 insertions(+), 32 deletions(-)
+
+diff --git a/drivers/net/wireless/ath/ath11k/wmi.c b/drivers/net/wireless/ath/ath11k/wmi.c
+index cccfd3bd4d27..ca5cda890d58 100644
+--- a/drivers/net/wireless/ath/ath11k/wmi.c
++++ b/drivers/net/wireless/ath/ath11k/wmi.c
+@@ -5417,31 +5417,6 @@ int ath11k_wmi_pull_fw_stats(struct ath11k_base *ab, struct sk_buff *skb,
+ 	return 0;
+ }
+ 
+-static int
+-ath11k_pull_pdev_temp_ev(struct ath11k_base *ab, u8 *evt_buf,
+-			 u32 len, const struct wmi_pdev_temperature_event *ev)
+-{
+-	const void **tb;
+-	int ret;
+-
+-	tb = ath11k_wmi_tlv_parse_alloc(ab, evt_buf, len, GFP_ATOMIC);
+-	if (IS_ERR(tb)) {
+-		ret = PTR_ERR(tb);
+-		ath11k_warn(ab, "failed to parse tlv: %d\n", ret);
+-		return ret;
+-	}
+-
+-	ev = tb[WMI_TAG_PDEV_TEMPERATURE_EVENT];
+-	if (!ev) {
+-		ath11k_warn(ab, "failed to fetch pdev temp ev");
+-		kfree(tb);
+-		return -EPROTO;
+-	}
+-
+-	kfree(tb);
+-	return 0;
+-}
+-
+ size_t ath11k_wmi_fw_stats_num_vdevs(struct list_head *head)
+ {
+ 	struct ath11k_fw_stats_vdev *i;
+@@ -6849,23 +6824,37 @@ ath11k_wmi_pdev_temperature_event(struct ath11k_base *ab,
+ 				  struct sk_buff *skb)
+ {
+ 	struct ath11k *ar;
+-	struct wmi_pdev_temperature_event ev = {0};
++	const void **tb;
++	const struct wmi_pdev_temperature_event *ev;
++	int ret;
++
++	tb = ath11k_wmi_tlv_parse_alloc(ab, skb->data, skb->len, GFP_ATOMIC);
++	if (IS_ERR(tb)) {
++		ret = PTR_ERR(tb);
++		ath11k_warn(ab, "failed to parse tlv: %d\n", ret);
++		return;
++	}
+ 
+-	if (ath11k_pull_pdev_temp_ev(ab, skb->data, skb->len, &ev) != 0) {
+-		ath11k_warn(ab, "failed to extract pdev temperature event");
++	ev = tb[WMI_TAG_PDEV_TEMPERATURE_EVENT];
++	if (!ev) {
++		ath11k_warn(ab, "failed to fetch pdev temp ev");
++		kfree(tb);
+ 		return;
+ 	}
+ 
+ 	ath11k_dbg(ab, ATH11K_DBG_WMI,
+-		   "pdev temperature ev temp %d pdev_id %d\n", ev.temp, ev.pdev_id);
++		   "pdev temperature ev temp %d pdev_id %d\n", ev->temp, ev->pdev_id);
+ 
+-	ar = ath11k_mac_get_ar_by_pdev_id(ab, ev.pdev_id);
++	ar = ath11k_mac_get_ar_by_pdev_id(ab, ev->pdev_id);
+ 	if (!ar) {
+-		ath11k_warn(ab, "invalid pdev id in pdev temperature ev %d", ev.pdev_id);
++		ath11k_warn(ab, "invalid pdev id in pdev temperature ev %d", ev->pdev_id);
++		kfree(tb);
+ 		return;
+ 	}
+ 
+-	ath11k_thermal_event_temperature(ar, ev.temp);
++	ath11k_thermal_event_temperature(ar, ev->temp);
++
++	kfree(tb);
+ }
+ 
+ static void ath11k_fils_discovery_event(struct ath11k_base *ab,
+-- 
+2.30.2
+
