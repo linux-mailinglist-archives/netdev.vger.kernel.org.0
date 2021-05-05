@@ -2,73 +2,117 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5BFD63749ED
-	for <lists+netdev@lfdr.de>; Wed,  5 May 2021 23:09:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CC8BD374A06
+	for <lists+netdev@lfdr.de>; Wed,  5 May 2021 23:18:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233532AbhEEVKU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 5 May 2021 17:10:20 -0400
-Received: from mx2.suse.de ([195.135.220.15]:42220 "EHLO mx2.suse.de"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S233512AbhEEVKT (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 5 May 2021 17:10:19 -0400
-X-Virus-Scanned: by amavisd-new at test-mx.suse.de
-Received: from relay2.suse.de (unknown [195.135.221.27])
-        by mx2.suse.de (Postfix) with ESMTP id 4F1F5AF4E;
-        Wed,  5 May 2021 21:09:20 +0000 (UTC)
-Received: by lion.mk-sys.cz (Postfix, from userid 1000)
-        id E219D602DC; Wed,  5 May 2021 23:09:19 +0200 (CEST)
-Date:   Wed, 5 May 2021 23:09:19 +0200
-From:   Michal Kubecek <mkubecek@suse.cz>
-To:     Fernando Fernandez Mancera <ffmancera@riseup.net>
-Cc:     netdev@vger.kernel.org, atenart@kernel.org
-Subject: Re: [PATCH net] ethtool: fix missing NLM_F_MULTI flag when dumping
-Message-ID: <20210505210919.ronrecenr3qrfuuf@lion.mk-sys.cz>
-References: <20210504224714.7632-1-ffmancera@riseup.net>
+        id S229900AbhEEVTe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 5 May 2021 17:19:34 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:54115 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S229893AbhEEVT3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 5 May 2021 17:19:29 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1620249512;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=klrjlzRftn/OLDoz6CbNP764fYwi7ksJGFLpycvEPzA=;
+        b=gQVC3B/+ZbXPhjFaPK7GJG69wGySeumFE4HgJLJufjmLdLXLtCW39lXwJigrk9VtLTUiXy
+        6FhMxjZddLho2Qz6KvMMeR1oAukcV5X19WInQ3cecUDMonGLxOadEyuYXgAhO2iXU4ivH6
+        opPksVU57/4Gw9Lu8P/g8l3dB7vTldI=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-159-BsUKAOmOP5CS8yXUw9pwDw-1; Wed, 05 May 2021 17:18:28 -0400
+X-MC-Unique: BsUKAOmOP5CS8yXUw9pwDw-1
+Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com [10.5.11.22])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 89AC18042A8;
+        Wed,  5 May 2021 21:18:26 +0000 (UTC)
+Received: from krava (unknown [10.40.192.93])
+        by smtp.corp.redhat.com (Postfix) with SMTP id 09A5B10246F1;
+        Wed,  5 May 2021 21:18:23 +0000 (UTC)
+Date:   Wed, 5 May 2021 23:18:23 +0200
+From:   Jiri Olsa <jolsa@redhat.com>
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     Andrii Nakryiko <andrii.nakryiko@gmail.com>,
+        Jiri Olsa <jolsa@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andriin@fb.com>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>
+Subject: Re: [RFC] bpf: Fix crash on mm_init trampoline attachment
+Message-ID: <YJMLn/xaybHKyA+r@krava>
+References: <20210430134754.179242-1-jolsa@kernel.org>
+ <CAEf4BzbEjvccUDabpTiPOiXK=vfcmHaXjeaTL8gCr08=6fBqhg@mail.gmail.com>
+ <YJFM/iLKb1EWCYEx@krava>
+ <CAEf4BzbY24gFqCORLiAFpSjrv_TUPMwvGzn96hGtk+eYVDnbSQ@mail.gmail.com>
+ <CAADnVQKE-jXi22mrOvEX_PpjK5vxNrb6m6-G71iP5ih+R5svqA@mail.gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20210504224714.7632-1-ffmancera@riseup.net>
+In-Reply-To: <CAADnVQKE-jXi22mrOvEX_PpjK5vxNrb6m6-G71iP5ih+R5svqA@mail.gmail.com>
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, May 05, 2021 at 12:47:14AM +0200, Fernando Fernandez Mancera wrote:
-> When dumping the ethtool information from all the interfaces, the
-> netlink reply should contain the NLM_F_MULTI flag. This flag allows
-> userspace tools to identify that multiple messages are expected.
+On Tue, May 04, 2021 at 09:42:49PM -0700, Alexei Starovoitov wrote:
+> On Tue, May 4, 2021 at 5:36 PM Andrii Nakryiko
+> <andrii.nakryiko@gmail.com> wrote:
+> >
+> > On Tue, May 4, 2021 at 6:32 AM Jiri Olsa <jolsa@redhat.com> wrote:
+> > >
+> > > On Mon, May 03, 2021 at 03:45:28PM -0700, Andrii Nakryiko wrote:
+> > > > On Fri, Apr 30, 2021 at 6:48 AM Jiri Olsa <jolsa@kernel.org> wrote:
+> > > > >
+> > > > > There are 2 mm_init functions in kernel.
+> > > > >
+> > > > > One in kernel/fork.c:
+> > > > >   static struct mm_struct *mm_init(struct mm_struct *mm,
+> > > > >                                    struct task_struct *p,
+> > > > >                                    struct user_namespace *user_ns)
+> > > > >
+> > > > > And another one in init/main.c:
+> > > > >   static void __init mm_init(void)
+> > > > >
+> > > > > The BTF data will get the first one, which is most likely
+> > > > > (in my case) mm_init from init/main.c without arguments.
 > 
-> Link: https://bugzilla.redhat.com/1953847
-> Fixes: 365f9ae ("ethtool: fix genlmsg_put() failure handling in ethnl_default_dumpit()")
+> did you hack pahole in some way to get to this point?
+> I don't see this with pahole master.
+> mm_init in BTF matches the one in init/main.c. The void one.
+> Do you have two static mm_init-s in BTF somehow?
 
-For the record, the issue was not introduced by this commit, this commit
-only moved the genlmsg_put() call from ethnl_default_dumpit() into
-ethnl_default_dump_one() but genlmsg_put() was called with zero flags
-since the code was introduced by commit 728480f12442 ("ethtool: default
-handlers for GET requests").
+I have only one mm_init in BTF from init/main.c like you,
+but the address in kallsyms is for the mm_init from kernel/fork.c
 
-But as the patch has been applied already, it doesn't matter any more.
+so we attach mm_init from kernel/fork.c with prototype from init/main.c
 
-Michal
+I'm seeing same problem also for 'receive_buf' function, which I did not post
 
-> Signed-off-by: Fernando Fernandez Mancera <ffmancera@riseup.net>
-> ---
->  net/ethtool/netlink.c | 3 ++-
->  1 file changed, 2 insertions(+), 1 deletion(-)
 > 
-> diff --git a/net/ethtool/netlink.c b/net/ethtool/netlink.c
-> index 290012d0d11d..88d8a0243f35 100644
-> --- a/net/ethtool/netlink.c
-> +++ b/net/ethtool/netlink.c
-> @@ -387,7 +387,8 @@ static int ethnl_default_dump_one(struct sk_buff *skb, struct net_device *dev,
->  	int ret;
->  
->  	ehdr = genlmsg_put(skb, NETLINK_CB(cb->skb).portid, cb->nlh->nlmsg_seq,
-> -			   &ethtool_genl_family, 0, ctx->ops->reply_cmd);
-> +			   &ethtool_genl_family, NLM_F_MULTI,
-> +			   ctx->ops->reply_cmd);
->  	if (!ehdr)
->  		return -EMSGSIZE;
->  
-> -- 
-> 2.20.1
+> In general it's possible to have different static funcs with the same
+> name in kallsyms. I found 3 'seq_start' in my .config.
+> So renaming static funcs is not an option.
+> The simplest approach for now is to avoid emitting BTF
+> if there is more than one func (that will prevent attaching because
+> there won't be any BTF for that func).
+
+sounds good.. will prepare the pahole change
+
+> Long term I think BTF can store the .text offset and the verifier
+> can avoid kallsym lookup.
+> We do store insn_off in bpf_func_info for bpf progs.
+> Something like this could be done for kernel and module funcs.
+> But that's long term.
 > 
+
+ok, will check on this
+
+jirka
+
