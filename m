@@ -2,54 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E370137347F
-	for <lists+netdev@lfdr.de>; Wed,  5 May 2021 06:56:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E52BB373494
+	for <lists+netdev@lfdr.de>; Wed,  5 May 2021 07:14:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231650AbhEEE5j (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 5 May 2021 00:57:39 -0400
-Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:37180 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S231126AbhEEE5i (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 5 May 2021 00:57:38 -0400
-Received: from pps.filterd (m0001303.ppops.net [127.0.0.1])
-        by m0001303.ppops.net (8.16.0.43/8.16.0.43) with SMTP id 1454qZvh032097;
-        Tue, 4 May 2021 21:56:24 -0700
+        id S231265AbhEEFPa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 5 May 2021 01:15:30 -0400
+Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:62758 "EHLO
+        mx0b-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S229465AbhEEFP3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 5 May 2021 01:15:29 -0400
+Received: from pps.filterd (m0109332.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 1455DnuX010110;
+        Tue, 4 May 2021 22:14:14 -0700
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=date : from : to : cc :
  subject : message-id : references : content-type : in-reply-to :
- mime-version; s=facebook; bh=xvpMG4JIQlIgu2rKqGX7vOrsZHBwVtcSgaZ41eG3jfI=;
- b=cmMX2YHu+6CO8D/3c3OTYfmb6TMKpSNvFNyK7wyUFr/zavNBLmgR90+vnpmXFKNlcZIa
- 8YX44leODvuidwfrxNl2eSiAzMwWXmWB9fnbUYbRbCir07+tdxMB4UTVaYX9UiPv1wl6
- UVgxd7jYlSJt9oWNwSIz6XdyJZfof+BjfMs= 
+ mime-version; s=facebook; bh=sPev1atoLTo2uG5Dnjfy5JyLb4Mc9qvBwF6AA0RKHBE=;
+ b=gBCDY9uDoPIFeILQPwI1FBqsg6V5bhWdY88t8FyGTK+UmUoyqiCx2175tLgWfvNT70su
+ 6uD4TpSzv/LKuDvnN4H5/0hOREjUyUeefZOMVk1E2VWaIjleHOZ2VjEoRIlq3n/AbPMA
+ KWzkGUsNpHUqSwqUKZwYjyR0jMrF7ttREJI= 
 Received: from mail.thefacebook.com ([163.114.132.120])
-        by m0001303.ppops.net with ESMTP id 38beb1hmyv-2
+        by mx0a-00082601.pphosted.com with ESMTP id 38bedqsp6e-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Tue, 04 May 2021 21:56:24 -0700
-Received: from NAM11-CO1-obe.outbound.protection.outlook.com (100.104.98.9) by
- o365-in.thefacebook.com (100.104.94.230) with Microsoft SMTP Server
+        Tue, 04 May 2021 22:14:13 -0700
+Received: from NAM12-MW2-obe.outbound.protection.outlook.com (100.104.98.9) by
+ o365-in.thefacebook.com (100.104.94.198) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2176.2; Tue, 4 May 2021 21:56:23 -0700
+ 15.1.2176.2; Tue, 4 May 2021 22:14:12 -0700
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=CTnB8NcjpgSLfl3I+vsyMje4zaWnB9AhhdNt4qwanttiPXf1KbmjVq55+JzlPuOwDqD/uQ5S+uJQdxhzkQekPkXP7PTFaJ8Yu/X95xnk2M/GPyh4blMASY9903BrVyR+xoMhMFH7ChG0mjkEM1mdYfsEs32xpKAlmQR7gM1rOGF19POs+bHy2DtM7JBrltkDWyEoRC4yOPq/zzYcO5Gq+UDrID2pEhGLOlM1DBfT4nsVt8IwXqSIYqiGfWnFccer6D4/SKkpND2xtvGOvsRHDiPDZFP0oJd/jfAJX2M/xMCqC5e/lx4bCl7Dv9rqYosG0/g64MWNk2+/f6JATueQZg==
+ b=TGE3wwKSitrXur45pTRZ0Q9Vj8+x6FJIOybpaXSrc1m7PhPQQlmlPDeehan/wiADyYqUtoALEI0YpKRdl6K/HuxWK9+b2+qtpCFQC9XuFDhVgKizwyIz8qf48yoj2j17dahRUa5C6+oPTPZqXN/Jh9Xl8UpsMwEf/u6fczEXbufisk5cGFGaipNh2JnKDe9GLgzVKIq1iT0mR0Vh4oQsCY2MMlNsTZZbGooMqxvwHSmy4tNOu1HJbKU71VfkRneqITtFMFFx0R3O220oPZqxSeq4At4emwZR4mVXhsWRKcznWvZRLCm/ypt0eXKoSUoe4QSJP8EQ0Nney+xawzriwA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=xvpMG4JIQlIgu2rKqGX7vOrsZHBwVtcSgaZ41eG3jfI=;
- b=Ubkz5n5s5V1kyg84yvTgJsKbenv8EQ9sCexsSwSMvqQPbrrd6NhoEUVFHc/CQe5isuaUaD1qNGExg9HtYvt9ZAxlyQY8HbKGAXMG082p6bCxh3GW9oog4vWfbEibotTEem5yC57oBQXTkp/BS42oV56p2JZNHwbV8OCBniwNEUue3E9NqPj2LiGI1gCHVmyYsMbcd+PinvHJ7zjJg42yruSWwdGOcCv/fCfAKK4YNAgDr/vfQNo1T4yh7ReJxeunkX0vM4zgqLLYDks7EcnXjLH5loax4KXsGnObN4exSY9NDfPlcv+1BMf0CJlQDfLUwk8tM/mLwqO+qMdQRFNSDQ==
+ bh=sPev1atoLTo2uG5Dnjfy5JyLb4Mc9qvBwF6AA0RKHBE=;
+ b=FjlT5/zScK87KcUtXwY/hs5ihsE0jZIvwcNds8xKxfP3ctEkjy7cHEcnJBrVE/ESuFrDr1LMXxMHDeNe0vGnk615xtwqDfENoS2lsSxgxDt82wEZ/n3a+mK6UDLA9crJCOQrZgZ33Qi3T1vcrrQ4BAVxVPm026/s8nn+Wwy5sdzHgueRgmZxhVlTYtB4fLH7Nh8zqTcoo3HJOtF6YzRPrHFsdeWhxqI/xH/jGLIbpBpNJdCgoNfjE/QROivo3YEIW+4qeiw06Jd9HyeeELx+bFWCdzgj2q6q+tlQDGZHKt3K439XnnVS0LqAAuZ6pAGiDMz0s8+OypsBVRUlVx1QmQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
  header.d=fb.com; arc=none
 Authentication-Results: amazon.co.jp; dkim=none (message not signed)
  header.d=none;amazon.co.jp; dmarc=none action=none header.from=fb.com;
 Received: from BY5PR15MB3571.namprd15.prod.outlook.com (2603:10b6:a03:1f6::32)
- by BYAPR15MB2245.namprd15.prod.outlook.com (2603:10b6:a02:89::32) with
+ by BYAPR15MB3256.namprd15.prod.outlook.com (2603:10b6:a03:10f::24) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4108.25; Wed, 5 May
- 2021 04:56:21 +0000
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4087.40; Wed, 5 May
+ 2021 05:14:11 +0000
 Received: from BY5PR15MB3571.namprd15.prod.outlook.com
  ([fe80::718a:4142:4c92:732f]) by BY5PR15MB3571.namprd15.prod.outlook.com
  ([fe80::718a:4142:4c92:732f%6]) with mapi id 15.20.4087.044; Wed, 5 May 2021
- 04:56:21 +0000
-Date:   Tue, 4 May 2021 21:56:18 -0700
+ 05:14:11 +0000
+Date:   Tue, 4 May 2021 22:14:08 -0700
 From:   Martin KaFai Lau <kafai@fb.com>
 To:     Kuniyuki Iwashima <kuniyu@amazon.co.jp>
 CC:     "David S . Miller" <davem@davemloft.net>,
@@ -61,172 +61,151 @@ CC:     "David S . Miller" <davem@davemloft.net>,
         Benjamin Herrenschmidt <benh@amazon.com>,
         Kuniyuki Iwashima <kuni1840@gmail.com>, <bpf@vger.kernel.org>,
         <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v4 bpf-next 06/11] tcp: Migrate TCP_NEW_SYN_RECV requests
- at retransmitting SYN+ACKs.
-Message-ID: <20210505045618.flihfg3hcesdyfak@kafai-mbp.dhcp.thefacebook.com>
+Subject: Re: [PATCH v4 bpf-next 11/11] bpf: Test
+ BPF_SK_REUSEPORT_SELECT_OR_MIGRATE.
+Message-ID: <20210505051408.5q6xmafbogghkrfz@kafai-mbp.dhcp.thefacebook.com>
 References: <20210427034623.46528-1-kuniyu@amazon.co.jp>
- <20210427034623.46528-7-kuniyu@amazon.co.jp>
+ <20210427034623.46528-12-kuniyu@amazon.co.jp>
 Content-Type: text/plain; charset="us-ascii"
 Content-Disposition: inline
-In-Reply-To: <20210427034623.46528-7-kuniyu@amazon.co.jp>
+In-Reply-To: <20210427034623.46528-12-kuniyu@amazon.co.jp>
 X-Originating-IP: [2620:10d:c090:400::5:5bbb]
-X-ClientProxiedBy: MWHPR2001CA0017.namprd20.prod.outlook.com
- (2603:10b6:301:15::27) To BY5PR15MB3571.namprd15.prod.outlook.com
+X-ClientProxiedBy: MW4PR04CA0242.namprd04.prod.outlook.com
+ (2603:10b6:303:88::7) To BY5PR15MB3571.namprd15.prod.outlook.com
  (2603:10b6:a03:1f6::32)
 MIME-Version: 1.0
 X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from kafai-mbp.dhcp.thefacebook.com (2620:10d:c090:400::5:5bbb) by MWHPR2001CA0017.namprd20.prod.outlook.com (2603:10b6:301:15::27) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4108.24 via Frontend Transport; Wed, 5 May 2021 04:56:20 +0000
+Received: from kafai-mbp.dhcp.thefacebook.com (2620:10d:c090:400::5:5bbb) by MW4PR04CA0242.namprd04.prod.outlook.com (2603:10b6:303:88::7) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4108.24 via Frontend Transport; Wed, 5 May 2021 05:14:10 +0000
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 3d51b9e2-646d-4fa1-5a95-08d90f82207b
-X-MS-TrafficTypeDiagnostic: BYAPR15MB2245:
-X-Microsoft-Antispam-PRVS: <BYAPR15MB2245D562FF47FFCDB66FCC60D5599@BYAPR15MB2245.namprd15.prod.outlook.com>
+X-MS-Office365-Filtering-Correlation-Id: 72d84b36-6b3b-4ddc-67d1-08d90f849e29
+X-MS-TrafficTypeDiagnostic: BYAPR15MB3256:
+X-Microsoft-Antispam-PRVS: <BYAPR15MB325685BF1A6D63450930121CD5599@BYAPR15MB3256.namprd15.prod.outlook.com>
 X-FB-Source: Internal
-X-MS-Oob-TLC-OOBClassifiers: OLM:7219;
+X-MS-Oob-TLC-OOBClassifiers: OLM:6430;
 X-MS-Exchange-SenderADCheck: 1
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: KaD6R4eguuQ04a24QUMYZtolQcFMBD6vNmpfZyDb64PJqB2SI7FxPmpVfZL8kSzZkYXmVdGfrT0RG4n6xQKedAMr/fjMFopj/091P2ufICq2zuNrzVNFJ6fTg0QEdzO8U5iLOtqfQz/DEN6SVa+PxiLkaxqITwCAyHUT1zmWeRj+c5YrZmEbQylrFTRx5LIcdPQTqpUs1KtVpFyfE2qSE1O7DyAIx+xar448WQsrj7xrmYktEmD4yYJ3wfaUo0tHokhuOV+t+DuZdk96HyynlFFvXBrh11hQCzZofnY+VfCGaBkMZnF803RoiFNeWpjmE0yfncTu1lIXo4umPlkBB7Rr4/tc/yUiruQi0cX5JrvS1i85hsViUQQuKdZhpIaamNYTf0mn78dcGj19C0gxT8njnsPeN2ZDRvTqqdU0oJqorxtokqH00d7a29/xiQWsx22/o3bTH6+4pbzoaxH3MFm73mMzkCBF5QR0ccBbdiwN0TFDzQ4KE67go+4O+So1vlGMd9s//R4Sngr+P7jtPq690bbWuceO0++455ArRxE1SCcHsO7kvvdQveCYzh1XTZ7VtDuRtpePCdccOPkb/A==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BY5PR15MB3571.namprd15.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(346002)(376002)(136003)(366004)(396003)(39860400002)(86362001)(8936002)(16526019)(8676002)(4326008)(7416002)(316002)(83380400001)(54906003)(478600001)(186003)(66946007)(1076003)(6506007)(66556008)(6916009)(52116002)(2906002)(9686003)(38100700002)(55016002)(7696005)(66476007)(5660300002);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData: =?us-ascii?Q?iFNi6SOdhYwKtyednmyxKFJQEqA+r6LSWWQGwMcOWDQR+VkMBIjSeb4C0B9g?=
- =?us-ascii?Q?B5L3snTr3pAsjrmzMO3LxouQ41N5y0ZwasjHlNWDI7Pm9KvGVeC2+kdoiUQe?=
- =?us-ascii?Q?NzpK62WQQHJeLSN1tDL7UiZxZHujxYB/508l6pp4tCvWSTKuUIp4sEepBMfs?=
- =?us-ascii?Q?dDBfC8aUKNOA03xtyc75yiCSCiOAc/9s8BviWRPpZ4E/fV8poJB6CjubkDXf?=
- =?us-ascii?Q?epmvh5Wtm01CezGxSL1cGtk8BjoNaNVpmfNiehi0xuV/nilKQiV/exaUM7P8?=
- =?us-ascii?Q?6A2vBMutkXnne1yKEXkHx+jTHJoQCAOeFYzbrfDBJtLEopTiio8bJ3bo5OOC?=
- =?us-ascii?Q?7nWzbwmwsZigw2sAVcnWkNJ6DBy0Nfef9gdwPiK5exi75PgxER2BvYBEhhec?=
- =?us-ascii?Q?b5TDh1kIPQOjNBTQ/6LIbGUtBO2NvgDR5WoE7iK/480bUsPNTauQ/biTP1bH?=
- =?us-ascii?Q?2TLijAxYQHQBCNKUkWbm/jmihEsk9Dh7odxcQF21PFJE+I1oHRAkaH3NhdXA?=
- =?us-ascii?Q?QYGLYvqKiEqFfbjqtpNfXyIG/kwitebsiFgOhi7zTx3JfviTCty9D5hfeJtQ?=
- =?us-ascii?Q?/PdHnTrhlYXI1CMe2iZdjKvTVZOQ9LZjPQpGisRbDumGleD0XE4L9A0D5VTT?=
- =?us-ascii?Q?/xzwSTDt1IH/hqjKsVVs7fRFpWqdDrqgWPhQJon17NJ2TJ6CjohsvKF9Dx9l?=
- =?us-ascii?Q?qo0M4C6KuPFvGhzfLwXgoqbxYp3zgGQsmP6S5tzWTqgaVcbxjYv6XzGf46eI?=
- =?us-ascii?Q?z8l0vwV458ZH2UXXJlgBZYCzBmg/+46YEtuTeOFhpdmERtPmDoHSisC7FqbT?=
- =?us-ascii?Q?2h+k/YZGMjDpZ1Ig5y6eh+cPlEYm15MIP1UdpHGWTwQR8d/pGttEzzIy/zyF?=
- =?us-ascii?Q?kZtcMg1sSNLRLcD15nXP3KgU2ZXQwb4jJeNrqgVVQIdfEqAa5pBb/AlXn92O?=
- =?us-ascii?Q?aIMBQl37pCN4nRq6/lnOIgFh90uFBr8kk0gXgUrs6e/NfcgIyidMMlgz3NCV?=
- =?us-ascii?Q?Kue0sqTMbF/ID9+fqsregw73DNDjvKjwhC84ErQClqCwlNtyGBgI6+OBlzPr?=
- =?us-ascii?Q?RZV/aA7fBNJxUIXyF3W+risWS/xHHGguiNCdjCv+yb/BBt5L5gI9tJB6Uymz?=
- =?us-ascii?Q?My/d4c09Si/4T8Z+yDy46g8L0dD+LusuPADhzmlWq78n+uhha2B19L9mdSSE?=
- =?us-ascii?Q?2CkMwJMvrqTrrSoUEUT79MQrEmbmtJpzGTHh9pzSJNfEXB6j9S7eSLdLPTi2?=
- =?us-ascii?Q?TPpJfE8vKXrGcKiIv9a8iMI916nJeYfwSDeo3sUeCUfA91VFVMaN3xtHwDU/?=
- =?us-ascii?Q?pTexIhdOi/pVMyW+x817FD9+s5bQdQLQSMbyOcwQrAHfhg=3D=3D?=
-X-MS-Exchange-CrossTenant-Network-Message-Id: 3d51b9e2-646d-4fa1-5a95-08d90f82207b
+X-Microsoft-Antispam-Message-Info: dsQqUOC0PbA+i14ASL/sp7YoR8xxSXmEF6iSaSv1Jt7j4ruhOd0SyGS7dQkLsdYAhXYXmYKj5mWlSnuhNxPqDgSB7oZ8mmi3+CRLAzJc2tfAxYNIAB0Xwjro5ATap5KhfX9xgOAcM7IoJuq6bHTZ4DXGlYWiO0v0gAbOBxHOGX1Sf4CxNkCTG2179mC8wP/CBNjNBnP/P3v2j4WcUfLbkCEXJjJXmCenodDR6ijMmKRv7zzodoCcQSaW0V18ViaEBMXD54Qmvl1xH6iMk0PzY13jlTXBjwxVdMJh5RoUT9i6kno/60MEKY7BBJL0rro+ZDNnhyvH/qkmi/lLOmUvaK+XHAqAB5UEKDSlP9NJ7lMNCGbuetSTMEDvDAbVOR6vUmUyjfXM6ggQqxHCwcAgAYR71pxJAh5voBC0XKNGbI4OPCQsckcK9RktGkKWbCIyKIy64RbbYWMdE8o4wo/tyZj6gWa7iyTmktM60JoxO3oJoDO2n7P20U/rK60ptLtgH40NtMzElUi0iirVQEWb+M3fvOMKLBJSiEjd/ERcCR0uZZjQ13/8VVkw/igsOfznZDnKEdMAAOtQ59SvHxwq1F0E5dttc7kCQr5+rGa6hJM=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BY5PR15MB3571.namprd15.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(346002)(366004)(39860400002)(396003)(376002)(136003)(16526019)(4326008)(7416002)(6506007)(2906002)(186003)(316002)(54906003)(478600001)(55016002)(38100700002)(6916009)(5660300002)(1076003)(66556008)(66476007)(7696005)(9686003)(86362001)(8676002)(52116002)(8936002)(66946007);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData: =?us-ascii?Q?EvHhTAh3O6fbkvgj3ljIdXyZWqPSllRVT47ufAUb91LO0aiA9iRzJKYDUx8y?=
+ =?us-ascii?Q?i7ij7SJjOCOJwXoafOn7fCdrSWppufssM+qzEjUmcBDLKM9lWFNM+RHJPUDO?=
+ =?us-ascii?Q?bSh+W2FfJtNyZqIR6ktsvcvneI1WPkINMpQja6LUP4tcJwzV8q2+6ySBQlQ0?=
+ =?us-ascii?Q?006rRgnPcX3b/Mugin9WUgPYTpPw5JBgogecH/LZKtdRIitCYRqQUxgSlYuy?=
+ =?us-ascii?Q?/94DPW5dZz3umGTBTFGYvGM97silxV569jMYPcbaS+C94Q2vabycHFplmQdv?=
+ =?us-ascii?Q?JVG5fq0Czn9FfCDqbLa1KS4RdEEviYcFMF1WW7EXQzyi46odt0vGtiHo95+e?=
+ =?us-ascii?Q?8sz8/uy+ZaRnM0F0GsC9MA1BdKG8zApTctRpe7PqB3QimsW2sk9iQdDcQOX2?=
+ =?us-ascii?Q?ecneNElGXZxp6Rc4z9CEvKPy7Pd55d58YxJHGuCEgcJBT2IYhoe0wDjcsg1A?=
+ =?us-ascii?Q?7dHaXm4RQJx2xzT8QrnnziTBfeYYuteN1Nm3XnNWAux6OdwkeAFKr+P4ojGM?=
+ =?us-ascii?Q?l1N8TxtOFi/ly7PlFB9luQ8lx+UO+QYMUjh1MgAcdVs3Tp9uq9I351louTSX?=
+ =?us-ascii?Q?lknNwGxXxdImubX/FzEL9iBL3hyUszDK9Lwh4U5FrLQNqcsyWyTQP3ptRWtn?=
+ =?us-ascii?Q?4m2u6r9eSpbbh/GwG3STxPpVvXtu61u3NryfcaTgCcvF9XWqFW+Iexfl8BnK?=
+ =?us-ascii?Q?Si5sEM4944HlRHGjwX5Kd+UbRVswn/m3T35iXY1twL5c/8UxjO63lKtEnqZB?=
+ =?us-ascii?Q?4m3gMYbWymQHPn5HXHFMbv1M0npbPNkDZUhpfkYdhCKYBB0M1VPeMYXlqXZs?=
+ =?us-ascii?Q?4hZNUr4i+y0dA4PuvEEmeASyKqd3djxrslOVkbqHpFdAsC950OB+VTqzk27C?=
+ =?us-ascii?Q?T8SCmlEZfVR9Acbqm/awIT+0mv//dGngos5eWje0aFMSFjgEWYs9z21Hdw21?=
+ =?us-ascii?Q?uIbnMzqTqhmvubTXiTLAjM4uzh8K7EFtk8YXxIIu7DlTFvHeRkdEpcLJWhcb?=
+ =?us-ascii?Q?TR67v8+DdFFgmIMOBtgVmLWJye00+qCGy1TIO8VMZjRJNSsi2myukBFu3y1s?=
+ =?us-ascii?Q?+I9MYTxv92Bi2RU26TiYyM9210gDh1EbtHJTkTj/bjeUXJ/V6PSXvfX4AT1A?=
+ =?us-ascii?Q?XD7XhirfAZ0HalKVg7oyrL6RzsgaHk+EycafoNceBQXqubfRlnuA6Z2mPozi?=
+ =?us-ascii?Q?0nzBg1LoWPItm3Bcl3bqGqGe55vV62oe5qdSX2N16b0JBP9OmQT4NqcJzrxU?=
+ =?us-ascii?Q?bjFC7Vz0nUS5UMSNS0D52pfafs1QG585pE9PWSd++C/JFLORD+XuZWBXMlAj?=
+ =?us-ascii?Q?pSAsrMkSI+A5vRB0Xxjf8z//iirnSQ7nWkTsSPysngSqyQ=3D=3D?=
+X-MS-Exchange-CrossTenant-Network-Message-Id: 72d84b36-6b3b-4ddc-67d1-08d90f849e29
 X-MS-Exchange-CrossTenant-AuthSource: BY5PR15MB3571.namprd15.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 05 May 2021 04:56:21.7694
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 05 May 2021 05:14:11.4828
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: MiuSgWfHYOruTuideCiQi8Jk54dTL9ApHFqinkvl/21jFlKoRYM8sZrYsTuWATDn
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR15MB2245
+X-MS-Exchange-CrossTenant-UserPrincipalName: 8y2EFGSWKHHZyEBPRvAUVOxCs7DqSPIIOD17sJBowJp+K1qo9niglFzEHbZ/ZXNi
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR15MB3256
 X-OriginatorOrg: fb.com
-X-Proofpoint-ORIG-GUID: 6F7ECIgvgVbeQ9jTy4JHEzbcIvInKbJm
-X-Proofpoint-GUID: 6F7ECIgvgVbeQ9jTy4JHEzbcIvInKbJm
+X-Proofpoint-ORIG-GUID: vLsHl0i9P2Odro6OcBmtGnQ4-NhQP_HH
+X-Proofpoint-GUID: vLsHl0i9P2Odro6OcBmtGnQ4-NhQP_HH
 X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.391,18.0.761
  definitions=2021-05-05_01:2021-05-04,2021-05-05 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 mlxscore=0 bulkscore=0
- suspectscore=0 clxscore=1015 malwarescore=0 phishscore=0 adultscore=0
- priorityscore=1501 spamscore=0 mlxlogscore=999 impostorscore=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 phishscore=0
+ priorityscore=1501 mlxscore=0 suspectscore=0 malwarescore=0 clxscore=1015
+ bulkscore=0 impostorscore=0 spamscore=0 mlxlogscore=999 adultscore=0
  lowpriorityscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2104060000 definitions=main-2105050033
+ engine=8.12.0-2104060000 definitions=main-2105050035
 X-FB-Internal: deliver
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Apr 27, 2021 at 12:46:18PM +0900, Kuniyuki Iwashima wrote:
+On Tue, Apr 27, 2021 at 12:46:23PM +0900, Kuniyuki Iwashima wrote:
 [ ... ]
 
-> diff --git a/net/core/request_sock.c b/net/core/request_sock.c
-> index 82cf9fbe2668..08c37ecd923b 100644
-> --- a/net/core/request_sock.c
-> +++ b/net/core/request_sock.c
-> @@ -151,6 +151,7 @@ struct request_sock *reqsk_clone(struct request_sock *req, struct sock *sk)
->  	memcpy(&nreq_sk->sk_dontcopy_end, &req_sk->sk_dontcopy_end,
->  	       req->rsk_ops->obj_size - offsetof(struct sock, sk_dontcopy_end));
->  
-> +	sk_node_init(&nreq_sk->sk_node);
-This belongs to patch 5.
-"rsk_refcnt" also needs to be 0 instead of staying uninitialized
-after reqsk_clone() returned.
-
->  	nreq_sk->sk_tx_queue_mapping = req_sk->sk_tx_queue_mapping;
->  #ifdef CONFIG_XPS
->  	nreq_sk->sk_rx_queue_mapping = req_sk->sk_rx_queue_mapping;
-> diff --git a/net/ipv4/inet_connection_sock.c b/net/ipv4/inet_connection_sock.c
-> index 851992405826..dc984d1f352e 100644
-> --- a/net/ipv4/inet_connection_sock.c
-> +++ b/net/ipv4/inet_connection_sock.c
-> @@ -695,10 +695,20 @@ int inet_rtx_syn_ack(const struct sock *parent, struct request_sock *req)
->  }
->  EXPORT_SYMBOL(inet_rtx_syn_ack);
->  
-> +static void reqsk_queue_migrated(struct request_sock_queue *queue,
-> +				 const struct request_sock *req)
+> diff --git a/tools/testing/selftests/bpf/progs/test_migrate_reuseport.c b/tools/testing/selftests/bpf/progs/test_migrate_reuseport.c
+> new file mode 100644
+> index 000000000000..d7136dc29fa2
+> --- /dev/null
+> +++ b/tools/testing/selftests/bpf/progs/test_migrate_reuseport.c
+> @@ -0,0 +1,51 @@
+> +// SPDX-License-Identifier: GPL-2.0
+> +/*
+> + * Check if we can migrate child sockets.
+> + *
+> + *   1. If reuse_md->migrating_sk is NULL (SYN packet),
+> + *        return SK_PASS without selecting a listener.
+> + *   2. If reuse_md->migrating_sk is not NULL (socket migration),
+> + *        select a listener (reuseport_map[migrate_map[cookie]])
+> + *
+> + * Author: Kuniyuki Iwashima <kuniyu@amazon.co.jp>
+> + */
+> +
+> +#include <stddef.h>
+> +#include <linux/bpf.h>
+> +#include <bpf/bpf_helpers.h>
+> +
+> +struct {
+> +	__uint(type, BPF_MAP_TYPE_REUSEPORT_SOCKARRAY);
+> +	__uint(max_entries, 256);
+> +	__type(key, int);
+> +	__type(value, __u64);
+> +} reuseport_map SEC(".maps");
+> +
+> +struct {
+> +	__uint(type, BPF_MAP_TYPE_HASH);
+> +	__uint(max_entries, 256);
+> +	__type(key, __u64);
+> +	__type(value, int);
+> +} migrate_map SEC(".maps");
+> +
+> +SEC("sk_reuseport/migrate")
+> +int prog_migrate_reuseport(struct sk_reuseport_md *reuse_md)
 > +{
-> +	if (req->num_timeout == 0)
-> +		atomic_inc(&queue->young);
-> +	atomic_inc(&queue->qlen);
+> +	int *key, flags = 0;
+> +	__u64 cookie;
+> +
+> +	if (!reuse_md->migrating_sk)
+> +		return SK_PASS;
+> +
+
+It will be useful to check if it is migrating a child sk or
+a reqsk by testing the migrating_sk->state for TCP_ESTABLISHED
+and TCP_NEW_SYN_RECV.  skb can be further tested to check if it is
+selecting for the final ACK.  Global variables can then be
+incremented and the user prog can check that, for example,
+it is indeed testing the TCP_NEW_SYN_RECV code path...etc.
+
+It will also become a good example for others on how migrating_sk
+can be used.
+
+
+> +	cookie = bpf_get_socket_cookie(reuse_md->sk);
+> +
+> +	key = bpf_map_lookup_elem(&migrate_map, &cookie);
+> +	if (!key)
+> +		return SK_DROP;
+> +
+> +	bpf_sk_select_reuseport(reuse_md, &reuseport_map, key, flags);
+> +
+> +	return SK_PASS;
 > +}
 > +
->  static void reqsk_migrate_reset(struct request_sock *req)
->  {
-> +	req->saved_syn = NULL;
-> +	inet_rsk(req)->ireq_opt = NULL;
->  #if IS_ENABLED(CONFIG_IPV6)
-> -	inet_rsk(req)->ipv6_opt = NULL;
-> +	inet_rsk(req)->pktopts = NULL;
->  #endif
->  }
->  
-> @@ -741,16 +751,37 @@ EXPORT_SYMBOL(inet_csk_reqsk_queue_drop_and_put);
->  
->  static void reqsk_timer_handler(struct timer_list *t)
->  {
-> -	struct request_sock *req = from_timer(req, t, rsk_timer);
-> -	struct sock *sk_listener = req->rsk_listener;
-> -	struct net *net = sock_net(sk_listener);
-> -	struct inet_connection_sock *icsk = inet_csk(sk_listener);
-> -	struct request_sock_queue *queue = &icsk->icsk_accept_queue;
-> +	struct request_sock *req = from_timer(req, t, rsk_timer), *nreq = NULL, *oreq = req;
-nit. This line is too long.
-Lets move the new "*nreq" and "*oreg" to a new line and keep the current
-"*req" line as is:
-	struct request_sock *req = from_timer(req, t, rsk_timer);
-	struct request_sock *oreq = req, *nreq = NULL;
-
-> +	struct sock *sk_listener = req->rsk_listener, *nsk = NULL;
-"*nsk" can be moved into the following "!= TCP_LISTEN" case below.
-Keep the current "*sk_listener" line as is.
-
-> +	struct inet_connection_sock *icsk;
-> +	struct request_sock_queue *queue;
-> +	struct net *net;
->  	int max_syn_ack_retries, qlen, expire = 0, resend = 0;
->  
-> -	if (inet_sk_state_load(sk_listener) != TCP_LISTEN)
-> -		goto drop;
-> +	if (inet_sk_state_load(sk_listener) != TCP_LISTEN) {
-
-		struct sock *nsk;
-
-> +		nsk = reuseport_migrate_sock(sk_listener, req_to_sk(req), NULL);
-> +		if (!nsk)
-> +			goto drop;
-> +
-> +		nreq = reqsk_clone(req, nsk);
-> +		if (!nreq)
-> +			goto drop;
-> +
-> +		/* The new timer for the cloned req can decrease the 2
-> +		 * by calling inet_csk_reqsk_queue_drop_and_put(), so
-> +		 * hold another count to prevent use-after-free and
-> +		 * call reqsk_put() just before return.
-> +		 */
-> +		refcount_set(&nreq->rsk_refcnt, 2 + 1);
-> +		timer_setup(&nreq->rsk_timer, reqsk_timer_handler, TIMER_PINNED);
-> +		reqsk_queue_migrated(&inet_csk(nsk)->icsk_accept_queue, req);
-> +
-> +		req = nreq;
-> +		sk_listener = nsk;
-> +	}
+> +char _license[] SEC("license") = "GPL";
+> -- 
+> 2.30.2
+> 
