@@ -2,123 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5E2E83746FC
+	by mail.lfdr.de (Postfix) with ESMTP id B75113746FD
 	for <lists+netdev@lfdr.de>; Wed,  5 May 2021 19:53:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236708AbhEERgr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 5 May 2021 13:36:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50096 "EHLO
+        id S236122AbhEERgw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 5 May 2021 13:36:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50470 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229821AbhEERc7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 5 May 2021 13:32:59 -0400
-Received: from mail-lf1-x12a.google.com (mail-lf1-x12a.google.com [IPv6:2a00:1450:4864:20::12a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E0B3C04BE41;
-        Wed,  5 May 2021 10:02:46 -0700 (PDT)
-Received: by mail-lf1-x12a.google.com with SMTP id c11so3559929lfi.9;
-        Wed, 05 May 2021 10:02:46 -0700 (PDT)
+        with ESMTP id S237443AbhEEReS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 5 May 2021 13:34:18 -0400
+Received: from mail-vs1-xe2d.google.com (mail-vs1-xe2d.google.com [IPv6:2607:f8b0:4864:20::e2d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E91DC0612F0;
+        Wed,  5 May 2021 10:04:59 -0700 (PDT)
+Received: by mail-vs1-xe2d.google.com with SMTP id o192so1461504vsd.7;
+        Wed, 05 May 2021 10:04:59 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:mime-version
-         :content-transfer-encoding;
-        bh=YSt2n6tg1L8D8NfOV5h6bZa4yblTsEFW9SIkP8Zz44c=;
-        b=U/jQhSoJlxhMF4no9yg1cUK0jtF9uHZLjTBkrKe6tGAQHYiVfh3EJACbomUnHQ5zO5
-         fj2dK0vAl6CsxLqlqtHimm05p6vNDYFclT20TRsbo69v0dWVTDwqgb9EqSe551PuKJNu
-         n2469YPr7jLXrPqkx/EojzOQ2/G04tOrY8JZdaWzU4ZSJqPqLjd4n/E2ORUz05TUyIDl
-         ZqYHyUX/uNZOC67SWPPTgs6MNL/uCI8dMR8QF+ORrqs14rhjvngDO1bgBOt+0kZcPjr8
-         tn+zOxLwErIQ+r3ZCReIBuxceUTJvZUUT+WaHl0QsP41CuIbKa/yqdl1RPFY3Hwxj4eo
-         ZTnQ==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=sYEeOLVMdJz3if+0nTi25SGNzwSnRfdV3Io7PzqsWAY=;
+        b=igcImynuA/M1TcZ0veapxdQTiMFWzZpPDNGijnqz53FHtrk+RhzQg/KD+3pS94sV03
+         3u9cW7hVGJOEH4684M2VPAGDCc9l0mDuRVB686o0tRkjzJtjislOCjxCUXITCPRCs0mQ
+         NJq4VIHhxtSpVbUn46731dHY/JGMm2KTuJXhB8DwvuYCzyXvSLx6Ml2tjyGYYOHhJNdW
+         x/nx4luIpOWWA+oQzZCi4yCZSIO8RKVgsk+u5zNFi2s5si8e2JZigPtwOcAMWeKKffMs
+         Ft8LQdrmOrjDVAX/+qeLjqVTcVsptF7C52S7WIE39qvLCylWvvHRmBPIQZIoAw54fKgs
+         FUxA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
-         :content-transfer-encoding;
-        bh=YSt2n6tg1L8D8NfOV5h6bZa4yblTsEFW9SIkP8Zz44c=;
-        b=C48PiYnat7URei/wDVsbfRQ8wi76KcVxT6qM2DtTqsH3eWxGplY+Phh7CgPeX0iUCt
-         dFI8J/i47lkyGovo+7Q3BKRM1LR3NeaYfIPK8S8CEEtZCMGIA0YrFsfykseU6/xcHIsb
-         epcV+R29PQYY09KE03b93+opd2T7pKKuF1aKwY5bEjXDPdcwbV+4vxm/p8KkJ7pvCu7a
-         pfV7+pneWEzxt6bAJiCX6dbiW9TNinygR6TE71nHRCXjtF1V2pZUT/e2U9dUe81B2UHh
-         TMAySFErhLFUkh9BiBU9LuWp2Yn/n+CuS4mYehkPLxypueLpU4JoXeS0yYJXktF+Nb5N
-         tCpg==
-X-Gm-Message-State: AOAM533Fm0J45WYlE1yvSDv7Gdx0b9Xr4UsEkEk1y/MZT7Gxf4IzX03A
-        aYI0i6T7VJPP8oJ0BuC0Wu8=
-X-Google-Smtp-Source: ABdhPJxyJD7PYRXhpF8nXrPAT1q+3x3hASqqSJLHr3jBDbPpUPySoxwpFhKmXhFpFO4Ws4ii2TTFHg==
-X-Received: by 2002:a05:6512:33c4:: with SMTP id d4mr11423548lfg.536.1620234164982;
-        Wed, 05 May 2021 10:02:44 -0700 (PDT)
-Received: from localhost.localdomain ([94.103.226.84])
-        by smtp.gmail.com with ESMTPSA id m2sm664151lfo.23.2021.05.05.10.02.44
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=sYEeOLVMdJz3if+0nTi25SGNzwSnRfdV3Io7PzqsWAY=;
+        b=C4h3V6bFw2KJhSEBhh9Fla6CyKtwZ2hnCyV9OKlBhXw5LLQRdJMftOjKcp5Ioimxqn
+         OqYs6tlCJQ5r3Oz8erXNRoT/0q+fFUTGDfOov3QOFjECRZbm9R3g5OF3jbuQwbR7d8JF
+         +Zxkxz62v4ktwYVPc5h0FlIAo67xzMNNJtLvSJ06bfUHdIsEQt5e2nu+2RK8Genp4SiQ
+         gv1dJk/1b8l/HQgC/lifh7uM5Zrx3HgdhB401heDJrDNMUCVl2cHTYzCFlmzNDIFBK83
+         Vo1pD4r+PHAG21oiPUEJkRXIklQ9q6eKPOUKnikyP06ez+peu06jBt8wm2YscGMhIlOD
+         /Jow==
+X-Gm-Message-State: AOAM531MaE2WqO0SnTGMZglX6W4VpJZNfRjKpcVMkYs6vL0N1VSJP0Q7
+        Z/h/7qtsnzUKDsx0Y63ggpw=
+X-Google-Smtp-Source: ABdhPJwuXxIGNqXTCgID7QEFwCSKqjed/v4wtKtvUbJildsk5rUhoLuZWOxxHZaE0snfuWxSWyGkhg==
+X-Received: by 2002:a67:f5cc:: with SMTP id t12mr33833vso.9.1620234298716;
+        Wed, 05 May 2021 10:04:58 -0700 (PDT)
+Received: from localhost.localdomain ([65.48.163.91])
+        by smtp.gmail.com with ESMTPSA id r12sm2224099vsf.2.2021.05.05.10.04.57
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 05 May 2021 10:02:44 -0700 (PDT)
-Date:   Wed, 5 May 2021 20:02:42 +0300
-From:   Pavel Skripkin <paskripkin@gmail.com>
-To:     ralf@linux-mips.org, davem@davemloft.net, kuba@kernel.org
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: GPF in net sybsystem
-Message-ID: <20210505200242.31d58452@gmail.com>
-X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-suse-linux-gnu)
+        Wed, 05 May 2021 10:04:58 -0700 (PDT)
+From:   Sean Gloumeau <sajgloumeau@gmail.com>
+To:     Jiri Kosina <trivial@kernel.org>
+Cc:     Sean Gloumeau <sajgloumeau@gmail.com>, kbingham@kernel.org,
+        David Woodhouse <dwmw2@infradead.org>,
+        Richard Weinberger <richard@nod.at>,
+        linux-mtd@lists.infradead.org, Rasesh Mody <rmody@marvell.com>,
+        Sudarsana Kalluru <skalluru@marvell.com>,
+        GR-Linux-NIC-Dev@marvell.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Sean Gloumeau <sajgloumeau@protonmail.com>
+Subject: [PATCH v2] Add entries for words with stem "eleminat"
+Date:   Wed,  5 May 2021 13:04:50 -0400
+Message-Id: <b636dedea2c2ed230bb3d53f45a523eb0f5dfbc0.1620233954.git.sajgloumeau@gmail.com>
+X-Mailer: git-send-email 2.31.1
+In-Reply-To: <6a526dbf75f6445f3711df0a201a48f8ac3149cd.1620185393.git.sajgloumeau@gmail.com>
+References: <6a526dbf75f6445f3711df0a201a48f8ac3149cd.1620185393.git.sajgloumeau@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi, netdev developers!
+Entries are added to spelling.txt in order to prevent spelling mistakes
+involving words with stem "eliminat" from occurring again.
 
-I've spent some time debugging this bug
-https://syzkaller.appspot.com/bug?id=c670fb9da2ce08f7b5101baa9426083b39ee9f90
-and, I believe, I found the root case:
+Signed-off-by: Sean Gloumeau <sajgloumeau@gmail.com>
+---
+ scripts/spelling.txt | 3 +++
+ 1 file changed, 3 insertions(+)
 
-static int nr_accept(struct socket *sock, struct socket *newsock, int flags,
-		     bool kern)
-{
-....
-	for (;;) {
-		prepare_to_wait(sk_sleep(sk), &wait, TASK_INTERRUPTIBLE);
-		...
-		if (!signal_pending(current)) {
-			release_sock(sk);
-			schedule();
-			lock_sock(sk);
-			continue;
-		}
-		...
-	}
-...
-}
+diff --git a/scripts/spelling.txt b/scripts/spelling.txt
+index 7b6a01291598..4400f71a100c 100644
+--- a/scripts/spelling.txt
++++ b/scripts/spelling.txt
+@@ -547,6 +547,9 @@ efficently||efficiently
+ ehther||ether
+ eigth||eight
+ elementry||elementary
++eleminate||eliminate
++eleminating||eliminating
++elemination||elimination
+ eletronic||electronic
+ embeded||embedded
+ enabledi||enabled
+-- 
+2.31.1
 
-When calling process will be scheduled, another proccess can release
-this socket and set sk->sk_wq to NULL. (In this case nr_release()
-will call sock_orphan(sk)). In this case GPF will happen in
-prepare_to_wait().
-
-I came up with this patch, but im not an expect in netdev sybsystem and
-im not sure about this one:
-
-diff --git a/net/netrom/af_netrom.c b/net/netrom/af_netrom.c
-index 6d16e1ab1a8a..89ceddea48e8 100644
---- a/net/netrom/af_netrom.c
-+++ b/net/netrom/af_netrom.c
-@@ -803,6 +803,10 @@ static int nr_accept(struct socket *sock, struct socket *newsock, int flags,
- 			release_sock(sk);
- 			schedule();
- 			lock_sock(sk);
-+			if (sock_flag(sk, SOCK_DEAD)) {
-+				err = -ECONNABORTED;
-+				goto out_release;
-+			}
- 			continue;
- 		}
- 		err = -ERESTARTSYS;
-
-I look forward to hearing your perspective on this :)
-
-
-BTW, I found similar code in:
-
-1) net/ax25/af_ax25.c
-2) net/rose/af_rose.c
-
-
-I hope, this will help!
-
-With regards,
-Pavel Skripkin
