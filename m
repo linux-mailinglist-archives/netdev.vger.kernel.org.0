@@ -2,26 +2,26 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 16D5B37375F
-	for <lists+netdev@lfdr.de>; Wed,  5 May 2021 11:23:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4669E373759
+	for <lists+netdev@lfdr.de>; Wed,  5 May 2021 11:22:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232432AbhEEJXg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 5 May 2021 05:23:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53718 "EHLO
+        id S232987AbhEEJXZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 5 May 2021 05:23:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53554 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232759AbhEEJW6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 5 May 2021 05:22:58 -0400
+        with ESMTP id S232623AbhEEJWo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 5 May 2021 05:22:44 -0400
 Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F1973C06137E
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B24CC061364
         for <netdev@vger.kernel.org>; Wed,  5 May 2021 02:20:40 -0700 (PDT)
 Received: from dude.hi.pengutronix.de ([2001:67c:670:100:1d::7])
         by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <ore@pengutronix.de>)
-        id 1leDhn-0005Xb-1o; Wed, 05 May 2021 11:20:31 +0200
+        id 1leDhn-0005Xc-1w; Wed, 05 May 2021 11:20:31 +0200
 Received: from ore by dude.hi.pengutronix.de with local (Exim 4.92)
         (envelope-from <ore@pengutronix.de>)
-        id 1leDhj-0002dm-QQ; Wed, 05 May 2021 11:20:27 +0200
+        id 1leDhj-0002eR-RX; Wed, 05 May 2021 11:20:27 +0200
 From:   Oleksij Rempel <o.rempel@pengutronix.de>
 To:     Woojung Huh <woojung.huh@microchip.com>,
         UNGLinuxDriver@microchip.com, Andrew Lunn <andrew@lunn.ch>,
@@ -31,11 +31,12 @@ To:     Woojung Huh <woojung.huh@microchip.com>,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
 Cc:     Michael Grzeschik <m.grzeschik@pengutronix.de>,
+        Oleksij Rempel <o.rempel@pengutronix.de>,
         kernel@pengutronix.de, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org, Russell King <linux@armlinux.org.uk>
-Subject: [RFC PATCH v1 1/9] net: phy: micrel: move phy reg offsets to common header
-Date:   Wed,  5 May 2021 11:20:17 +0200
-Message-Id: <20210505092025.8785-2-o.rempel@pengutronix.de>
+Subject: [RFC PATCH v1 2/9] net: dsa: microchip: ksz8795: add phylink support
+Date:   Wed,  5 May 2021 11:20:18 +0200
+Message-Id: <20210505092025.8785-3-o.rempel@pengutronix.de>
 X-Mailer: git-send-email 2.29.2
 In-Reply-To: <20210505092025.8785-1-o.rempel@pengutronix.de>
 References: <20210505092025.8785-1-o.rempel@pengutronix.de>
@@ -51,271 +52,111 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Michael Grzeschik <m.grzeschik@pengutronix.de>
 
-Some micrel devices share the same phy register defines. This patch
-moves them to one common header so other drivers can reuse them.
+This patch adds the phylink support to the ksz8795 driver, since
+phylib is obsolete for dsa drivers.
 
 Signed-off-by: Michael Grzeschik <m.grzeschik@pengutronix.de>
+Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
 ---
- drivers/net/dsa/microchip/ksz8795.c     |  1 +
- drivers/net/dsa/microchip/ksz8795_reg.h | 62 ----------------------
- drivers/net/ethernet/micrel/ksz884x.c   | 70 +------------------------
- include/linux/micrel_phy.h              | 63 ++++++++++++++++++++++
- 4 files changed, 65 insertions(+), 131 deletions(-)
+ drivers/net/dsa/microchip/ksz8795.c | 73 +++++++++++++++++++++++++++++
+ 1 file changed, 73 insertions(+)
 
 diff --git a/drivers/net/dsa/microchip/ksz8795.c b/drivers/net/dsa/microchip/ksz8795.c
-index ad509a57a945..4ca352fbe81c 100644
+index 4ca352fbe81c..0ddaf2547f18 100644
 --- a/drivers/net/dsa/microchip/ksz8795.c
 +++ b/drivers/net/dsa/microchip/ksz8795.c
-@@ -15,6 +15,7 @@
- #include <linux/phy.h>
- #include <linux/etherdevice.h>
- #include <linux/if_bridge.h>
-+#include <linux/micrel_phy.h>
+@@ -18,6 +18,7 @@
+ #include <linux/micrel_phy.h>
  #include <net/dsa.h>
  #include <net/switchdev.h>
++#include <linux/phylink.h>
  
-diff --git a/drivers/net/dsa/microchip/ksz8795_reg.h b/drivers/net/dsa/microchip/ksz8795_reg.h
-index c2e52c40a54c..f925ddee5238 100644
---- a/drivers/net/dsa/microchip/ksz8795_reg.h
-+++ b/drivers/net/dsa/microchip/ksz8795_reg.h
-@@ -744,68 +744,6 @@
+ #include "ksz_common.h"
+ #include "ksz8795_reg.h"
+@@ -1420,11 +1421,83 @@ static int ksz8_setup(struct dsa_switch *ds)
+ 	return 0;
+ }
  
- #define PORT_ACL_FORCE_DLR_MISS		BIT(0)
- 
--#ifndef PHY_REG_CTRL
--#define PHY_REG_CTRL			0
--
--#define PHY_RESET			BIT(15)
--#define PHY_LOOPBACK			BIT(14)
--#define PHY_SPEED_100MBIT		BIT(13)
--#define PHY_AUTO_NEG_ENABLE		BIT(12)
--#define PHY_POWER_DOWN			BIT(11)
--#define PHY_MII_DISABLE			BIT(10)
--#define PHY_AUTO_NEG_RESTART		BIT(9)
--#define PHY_FULL_DUPLEX			BIT(8)
--#define PHY_COLLISION_TEST_NOT		BIT(7)
--#define PHY_HP_MDIX			BIT(5)
--#define PHY_FORCE_MDIX			BIT(4)
--#define PHY_AUTO_MDIX_DISABLE		BIT(3)
--#define PHY_REMOTE_FAULT_DISABLE	BIT(2)
--#define PHY_TRANSMIT_DISABLE		BIT(1)
--#define PHY_LED_DISABLE			BIT(0)
--
--#define PHY_REG_STATUS			1
--
--#define PHY_100BT4_CAPABLE		BIT(15)
--#define PHY_100BTX_FD_CAPABLE		BIT(14)
--#define PHY_100BTX_CAPABLE		BIT(13)
--#define PHY_10BT_FD_CAPABLE		BIT(12)
--#define PHY_10BT_CAPABLE		BIT(11)
--#define PHY_MII_SUPPRESS_CAPABLE_NOT	BIT(6)
--#define PHY_AUTO_NEG_ACKNOWLEDGE	BIT(5)
--#define PHY_REMOTE_FAULT		BIT(4)
--#define PHY_AUTO_NEG_CAPABLE		BIT(3)
--#define PHY_LINK_STATUS			BIT(2)
--#define PHY_JABBER_DETECT_NOT		BIT(1)
--#define PHY_EXTENDED_CAPABILITY		BIT(0)
--
--#define PHY_REG_ID_1			2
--#define PHY_REG_ID_2			3
--
--#define PHY_REG_AUTO_NEGOTIATION	4
--
--#define PHY_AUTO_NEG_NEXT_PAGE_NOT	BIT(15)
--#define PHY_AUTO_NEG_REMOTE_FAULT_NOT	BIT(13)
--#define PHY_AUTO_NEG_SYM_PAUSE		BIT(10)
--#define PHY_AUTO_NEG_100BT4		BIT(9)
--#define PHY_AUTO_NEG_100BTX_FD		BIT(8)
--#define PHY_AUTO_NEG_100BTX		BIT(7)
--#define PHY_AUTO_NEG_10BT_FD		BIT(6)
--#define PHY_AUTO_NEG_10BT		BIT(5)
--#define PHY_AUTO_NEG_SELECTOR		0x001F
--#define PHY_AUTO_NEG_802_3		0x0001
--
--#define PHY_REG_REMOTE_CAPABILITY	5
--
--#define PHY_REMOTE_NEXT_PAGE_NOT	BIT(15)
--#define PHY_REMOTE_ACKNOWLEDGE_NOT	BIT(14)
--#define PHY_REMOTE_REMOTE_FAULT_NOT	BIT(13)
--#define PHY_REMOTE_SYM_PAUSE		BIT(10)
--#define PHY_REMOTE_100BTX_FD		BIT(8)
--#define PHY_REMOTE_100BTX		BIT(7)
--#define PHY_REMOTE_10BT_FD		BIT(6)
--#define PHY_REMOTE_10BT			BIT(5)
--#endif
--
- #define KSZ8795_ID_HI			0x0022
- #define KSZ8795_ID_LO			0x1550
- #define KSZ8863_ID_LO			0x1430
-diff --git a/drivers/net/ethernet/micrel/ksz884x.c b/drivers/net/ethernet/micrel/ksz884x.c
-index 9ed264ed7070..481426d0bda7 100644
---- a/drivers/net/ethernet/micrel/ksz884x.c
-+++ b/drivers/net/ethernet/micrel/ksz884x.c
-@@ -25,6 +25,7 @@
- #include <linux/crc32.h>
- #include <linux/sched.h>
- #include <linux/slab.h>
-+#include <linux/micrel_phy.h>
- 
- 
- /* DMA Registers */
-@@ -271,84 +272,15 @@
- 
- #define KS884X_PHY_CTRL_OFFSET		0x00
- 
--/* Mode Control Register */
--#define PHY_REG_CTRL			0
--
--#define PHY_RESET			0x8000
--#define PHY_LOOPBACK			0x4000
--#define PHY_SPEED_100MBIT		0x2000
--#define PHY_AUTO_NEG_ENABLE		0x1000
--#define PHY_POWER_DOWN			0x0800
--#define PHY_MII_DISABLE			0x0400
--#define PHY_AUTO_NEG_RESTART		0x0200
--#define PHY_FULL_DUPLEX			0x0100
--#define PHY_COLLISION_TEST		0x0080
--#define PHY_HP_MDIX			0x0020
--#define PHY_FORCE_MDIX			0x0010
--#define PHY_AUTO_MDIX_DISABLE		0x0008
--#define PHY_REMOTE_FAULT_DISABLE	0x0004
--#define PHY_TRANSMIT_DISABLE		0x0002
--#define PHY_LED_DISABLE			0x0001
--
- #define KS884X_PHY_STATUS_OFFSET	0x02
- 
--/* Mode Status Register */
--#define PHY_REG_STATUS			1
--
--#define PHY_100BT4_CAPABLE		0x8000
--#define PHY_100BTX_FD_CAPABLE		0x4000
--#define PHY_100BTX_CAPABLE		0x2000
--#define PHY_10BT_FD_CAPABLE		0x1000
--#define PHY_10BT_CAPABLE		0x0800
--#define PHY_MII_SUPPRESS_CAPABLE	0x0040
--#define PHY_AUTO_NEG_ACKNOWLEDGE	0x0020
--#define PHY_REMOTE_FAULT		0x0010
--#define PHY_AUTO_NEG_CAPABLE		0x0008
--#define PHY_LINK_STATUS			0x0004
--#define PHY_JABBER_DETECT		0x0002
--#define PHY_EXTENDED_CAPABILITY		0x0001
--
- #define KS884X_PHY_ID_1_OFFSET		0x04
- #define KS884X_PHY_ID_2_OFFSET		0x06
- 
--/* PHY Identifier Registers */
--#define PHY_REG_ID_1			2
--#define PHY_REG_ID_2			3
--
- #define KS884X_PHY_AUTO_NEG_OFFSET	0x08
- 
--/* Auto-Negotiation Advertisement Register */
--#define PHY_REG_AUTO_NEGOTIATION	4
--
--#define PHY_AUTO_NEG_NEXT_PAGE		0x8000
--#define PHY_AUTO_NEG_REMOTE_FAULT	0x2000
--/* Not supported. */
--#define PHY_AUTO_NEG_ASYM_PAUSE		0x0800
--#define PHY_AUTO_NEG_SYM_PAUSE		0x0400
--#define PHY_AUTO_NEG_100BT4		0x0200
--#define PHY_AUTO_NEG_100BTX_FD		0x0100
--#define PHY_AUTO_NEG_100BTX		0x0080
--#define PHY_AUTO_NEG_10BT_FD		0x0040
--#define PHY_AUTO_NEG_10BT		0x0020
--#define PHY_AUTO_NEG_SELECTOR		0x001F
--#define PHY_AUTO_NEG_802_3		0x0001
--
--#define PHY_AUTO_NEG_PAUSE  (PHY_AUTO_NEG_SYM_PAUSE | PHY_AUTO_NEG_ASYM_PAUSE)
--
- #define KS884X_PHY_REMOTE_CAP_OFFSET	0x0A
- 
--/* Auto-Negotiation Link Partner Ability Register */
--#define PHY_REG_REMOTE_CAPABILITY	5
--
--#define PHY_REMOTE_NEXT_PAGE		0x8000
--#define PHY_REMOTE_ACKNOWLEDGE		0x4000
--#define PHY_REMOTE_REMOTE_FAULT		0x2000
--#define PHY_REMOTE_SYM_PAUSE		0x0400
--#define PHY_REMOTE_100BTX_FD		0x0100
--#define PHY_REMOTE_100BTX		0x0080
--#define PHY_REMOTE_10BT_FD		0x0040
--#define PHY_REMOTE_10BT			0x0020
--
- /* P1VCT */
- #define KS884X_P1VCT_P			0x04F0
- #define KS884X_P1PHYCTRL_P		0x04F2
-diff --git a/include/linux/micrel_phy.h b/include/linux/micrel_phy.h
-index 416ee6dd2574..ee23acc4d551 100644
---- a/include/linux/micrel_phy.h
-+++ b/include/linux/micrel_phy.h
-@@ -45,4 +45,67 @@
- #define MICREL_KSZ9021_RGMII_CLK_CTRL_PAD_SCEW	0x104
- #define MICREL_KSZ9021_RGMII_RX_DATA_PAD_SCEW	0x105
- 
-+#define PHY_REG_CTRL			0
++static int ksz_get_state(struct dsa_switch *ds, int port,
++					  struct phylink_link_state *state)
++{
++	struct ksz_device *dev = ds->priv;
++	struct ksz8 *ksz8 = dev->priv;
++	const u8 *regs = ksz8->regs;
++	u8 speed, link;
 +
-+#define PHY_RESET			BIT(15)
-+#define PHY_LOOPBACK			BIT(14)
-+#define PHY_SPEED_100MBIT		BIT(13)
-+#define PHY_AUTO_NEG_ENABLE		BIT(12)
-+#define PHY_POWER_DOWN			BIT(11)
-+#define PHY_MII_DISABLE			BIT(10)
-+#define PHY_AUTO_NEG_RESTART		BIT(9)
-+#define PHY_FULL_DUPLEX			BIT(8)
-+#define PHY_COLLISION_TEST_NOT		BIT(7)
-+#define PHY_HP_MDIX			BIT(5)
-+#define PHY_FORCE_MDIX			BIT(4)
-+#define PHY_AUTO_MDIX_DISABLE		BIT(3)
-+#define PHY_REMOTE_FAULT_DISABLE	BIT(2)
-+#define PHY_TRANSMIT_DISABLE		BIT(1)
-+#define PHY_LED_DISABLE			BIT(0)
++	ksz_pread8(dev, port, regs[P_LINK_STATUS], &link);
++	ksz_pread8(dev, port, regs[P_SPEED_STATUS], &speed);
 +
-+#define PHY_REG_STATUS			1
++	state->link = !!(link & PORT_STAT_LINK_GOOD);
++	if (state->link) {
++		state->speed =
++			(speed & PORT_STAT_SPEED_100MBIT) ? SPEED_100 : SPEED_10;
++		state->duplex =
++			(speed & PORT_STAT_FULL_DUPLEX) ? DUPLEX_FULL : DUPLEX_HALF;
++	}
 +
-+#define PHY_100BT4_CAPABLE		BIT(15)
-+#define PHY_100BTX_FD_CAPABLE		BIT(14)
-+#define PHY_100BTX_CAPABLE		BIT(13)
-+#define PHY_10BT_FD_CAPABLE		BIT(12)
-+#define PHY_10BT_CAPABLE		BIT(11)
-+#define PHY_MII_SUPPRESS_CAPABLE_NOT	BIT(6)
-+#define PHY_AUTO_NEG_ACKNOWLEDGE	BIT(5)
-+#define PHY_REMOTE_FAULT		BIT(4)
-+#define PHY_AUTO_NEG_CAPABLE		BIT(3)
-+#define PHY_LINK_STATUS			BIT(2)
-+#define PHY_JABBER_DETECT_NOT		BIT(1)
-+#define PHY_EXTENDED_CAPABILITY		BIT(0)
++	return 0;
++}
 +
-+#define PHY_REG_ID_1			2
-+#define PHY_REG_ID_2			3
++static void ksz_validate(struct dsa_switch *ds, int port,
++			       unsigned long *supported,
++			       struct phylink_link_state *state)
++{
++	__ETHTOOL_DECLARE_LINK_MODE_MASK(mask) = { 0, };
++	struct ksz_device *dev = ds->priv;
 +
-+#define PHY_REG_AUTO_NEGOTIATION	4
++	if (port == dev->cpu_port) {
++		if ((state->interface != PHY_INTERFACE_MODE_RMII) &&
++		   (state->interface != PHY_INTERFACE_MODE_MII))
++			goto unsupported;
++	} else if (port > dev->port_cnt) {
++		bitmap_zero(supported, __ETHTOOL_LINK_MODE_MASK_NBITS);
++		dev_err(ds->dev, "Unsupported port: %i\n", port);
++		return;
++	} else {
++		if (state->interface != PHY_INTERFACE_MODE_INTERNAL)
++			goto unsupported;
++	}
 +
-+#define PHY_AUTO_NEG_NEXT_PAGE_NOT	BIT(15)
-+#define PHY_AUTO_NEG_REMOTE_FAULT_NOT	BIT(13)
-+#define PHY_AUTO_NEG_ASYM_PAUSE		BIT(11)
-+#define PHY_AUTO_NEG_SYM_PAUSE		BIT(10)
-+#define PHY_AUTO_NEG_100BT4		BIT(9)
-+#define PHY_AUTO_NEG_100BTX_FD		BIT(8)
-+#define PHY_AUTO_NEG_100BTX		BIT(7)
-+#define PHY_AUTO_NEG_10BT_FD		BIT(6)
-+#define PHY_AUTO_NEG_10BT		BIT(5)
-+#define PHY_AUTO_NEG_SELECTOR		0x001F
-+#define PHY_AUTO_NEG_802_3		0x0001
++	/* Allow all the expected bits */
++	phylink_set_port_modes(mask);
++	phylink_set(mask, Autoneg);
 +
-+#define PHY_AUTO_NEG_PAUSE  (PHY_AUTO_NEG_SYM_PAUSE | PHY_AUTO_NEG_ASYM_PAUSE)
++	phylink_set(mask, Pause);
++	/* Silicon Errata Sheet (DS80000830A): Asym_Pause limit to port 2 */
++	if (port || !ksz_is_ksz88x3(dev))
++		phylink_set(mask, Asym_Pause);
 +
-+#define PHY_REG_REMOTE_CAPABILITY	5
++	/* 10M and 100M are only supported */
++	phylink_set(mask, 10baseT_Half);
++	phylink_set(mask, 10baseT_Full);
++	phylink_set(mask, 100baseT_Half);
++	phylink_set(mask, 100baseT_Full);
 +
-+#define PHY_REMOTE_NEXT_PAGE_NOT	BIT(15)
-+#define PHY_REMOTE_ACKNOWLEDGE_NOT	BIT(14)
-+#define PHY_REMOTE_REMOTE_FAULT_NOT	BIT(13)
-+#define PHY_REMOTE_SYM_PAUSE		BIT(10)
-+#define PHY_REMOTE_100BTX_FD		BIT(8)
-+#define PHY_REMOTE_100BTX		BIT(7)
-+#define PHY_REMOTE_10BT_FD		BIT(6)
-+#define PHY_REMOTE_10BT			BIT(5)
++	bitmap_and(supported, supported, mask,
++		   __ETHTOOL_LINK_MODE_MASK_NBITS);
++	bitmap_and(state->advertising, state->advertising, mask,
++		   __ETHTOOL_LINK_MODE_MASK_NBITS);
 +
- #endif /* _MICREL_PHY_H */
++	return;
++
++unsupported:
++	bitmap_zero(supported, __ETHTOOL_LINK_MODE_MASK_NBITS);
++	dev_err(ds->dev, "Unsupported interface: %d, port: %d\n",
++		state->interface, port);
++}
++
+ static const struct dsa_switch_ops ksz8_switch_ops = {
+ 	.get_tag_protocol	= ksz8_get_tag_protocol,
+ 	.setup			= ksz8_setup,
+ 	.phy_read		= ksz_phy_read16,
+ 	.phy_write		= ksz_phy_write16,
++	.phylink_validate	= ksz_validate,
++	.phylink_mac_link_state	= ksz_get_state,
+ 	.phylink_mac_link_down	= ksz_mac_link_down,
+ 	.port_enable		= ksz_enable_port,
+ 	.get_strings		= ksz8_get_strings,
 -- 
 2.29.2
 
