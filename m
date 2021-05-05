@@ -2,210 +2,282 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E52BB373494
-	for <lists+netdev@lfdr.de>; Wed,  5 May 2021 07:14:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0C1E83734B4
+	for <lists+netdev@lfdr.de>; Wed,  5 May 2021 07:22:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231265AbhEEFPa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 5 May 2021 01:15:30 -0400
-Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:62758 "EHLO
-        mx0b-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S229465AbhEEFP3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 5 May 2021 01:15:29 -0400
-Received: from pps.filterd (m0109332.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 1455DnuX010110;
-        Tue, 4 May 2021 22:14:14 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=date : from : to : cc :
- subject : message-id : references : content-type : in-reply-to :
- mime-version; s=facebook; bh=sPev1atoLTo2uG5Dnjfy5JyLb4Mc9qvBwF6AA0RKHBE=;
- b=gBCDY9uDoPIFeILQPwI1FBqsg6V5bhWdY88t8FyGTK+UmUoyqiCx2175tLgWfvNT70su
- 6uD4TpSzv/LKuDvnN4H5/0hOREjUyUeefZOMVk1E2VWaIjleHOZ2VjEoRIlq3n/AbPMA
- KWzkGUsNpHUqSwqUKZwYjyR0jMrF7ttREJI= 
-Received: from mail.thefacebook.com ([163.114.132.120])
-        by mx0a-00082601.pphosted.com with ESMTP id 38bedqsp6e-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Tue, 04 May 2021 22:14:13 -0700
-Received: from NAM12-MW2-obe.outbound.protection.outlook.com (100.104.98.9) by
- o365-in.thefacebook.com (100.104.94.198) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2176.2; Tue, 4 May 2021 22:14:12 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=TGE3wwKSitrXur45pTRZ0Q9Vj8+x6FJIOybpaXSrc1m7PhPQQlmlPDeehan/wiADyYqUtoALEI0YpKRdl6K/HuxWK9+b2+qtpCFQC9XuFDhVgKizwyIz8qf48yoj2j17dahRUa5C6+oPTPZqXN/Jh9Xl8UpsMwEf/u6fczEXbufisk5cGFGaipNh2JnKDe9GLgzVKIq1iT0mR0Vh4oQsCY2MMlNsTZZbGooMqxvwHSmy4tNOu1HJbKU71VfkRneqITtFMFFx0R3O220oPZqxSeq4At4emwZR4mVXhsWRKcznWvZRLCm/ypt0eXKoSUoe4QSJP8EQ0Nney+xawzriwA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=sPev1atoLTo2uG5Dnjfy5JyLb4Mc9qvBwF6AA0RKHBE=;
- b=FjlT5/zScK87KcUtXwY/hs5ihsE0jZIvwcNds8xKxfP3ctEkjy7cHEcnJBrVE/ESuFrDr1LMXxMHDeNe0vGnk615xtwqDfENoS2lsSxgxDt82wEZ/n3a+mK6UDLA9crJCOQrZgZ33Qi3T1vcrrQ4BAVxVPm026/s8nn+Wwy5sdzHgueRgmZxhVlTYtB4fLH7Nh8zqTcoo3HJOtF6YzRPrHFsdeWhxqI/xH/jGLIbpBpNJdCgoNfjE/QROivo3YEIW+4qeiw06Jd9HyeeELx+bFWCdzgj2q6q+tlQDGZHKt3K439XnnVS0LqAAuZ6pAGiDMz0s8+OypsBVRUlVx1QmQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
- header.d=fb.com; arc=none
-Authentication-Results: amazon.co.jp; dkim=none (message not signed)
- header.d=none;amazon.co.jp; dmarc=none action=none header.from=fb.com;
-Received: from BY5PR15MB3571.namprd15.prod.outlook.com (2603:10b6:a03:1f6::32)
- by BYAPR15MB3256.namprd15.prod.outlook.com (2603:10b6:a03:10f::24) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4087.40; Wed, 5 May
- 2021 05:14:11 +0000
-Received: from BY5PR15MB3571.namprd15.prod.outlook.com
- ([fe80::718a:4142:4c92:732f]) by BY5PR15MB3571.namprd15.prod.outlook.com
- ([fe80::718a:4142:4c92:732f%6]) with mapi id 15.20.4087.044; Wed, 5 May 2021
- 05:14:11 +0000
-Date:   Tue, 4 May 2021 22:14:08 -0700
-From:   Martin KaFai Lau <kafai@fb.com>
-To:     Kuniyuki Iwashima <kuniyu@amazon.co.jp>
-CC:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Benjamin Herrenschmidt <benh@amazon.com>,
-        Kuniyuki Iwashima <kuni1840@gmail.com>, <bpf@vger.kernel.org>,
-        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v4 bpf-next 11/11] bpf: Test
- BPF_SK_REUSEPORT_SELECT_OR_MIGRATE.
-Message-ID: <20210505051408.5q6xmafbogghkrfz@kafai-mbp.dhcp.thefacebook.com>
-References: <20210427034623.46528-1-kuniyu@amazon.co.jp>
- <20210427034623.46528-12-kuniyu@amazon.co.jp>
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <20210427034623.46528-12-kuniyu@amazon.co.jp>
-X-Originating-IP: [2620:10d:c090:400::5:5bbb]
-X-ClientProxiedBy: MW4PR04CA0242.namprd04.prod.outlook.com
- (2603:10b6:303:88::7) To BY5PR15MB3571.namprd15.prod.outlook.com
- (2603:10b6:a03:1f6::32)
+        id S231752AbhEEFXw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 5 May 2021 01:23:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58268 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231388AbhEEFXv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 5 May 2021 01:23:51 -0400
+Received: from mail-lj1-x234.google.com (mail-lj1-x234.google.com [IPv6:2a00:1450:4864:20::234])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 15C3CC061574;
+        Tue,  4 May 2021 22:22:55 -0700 (PDT)
+Received: by mail-lj1-x234.google.com with SMTP id s25so914541lji.0;
+        Tue, 04 May 2021 22:22:54 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=I9Y/yp+q451c1G9V1HjAAuASbzFos41wdSkhh22mJrM=;
+        b=OGQyZNQEp57ynybRHUJIyF981Gi0/xBVLN3xAiO8WkzepB1TjzOK/NPkTgVJNkNx4t
+         7/jYtRDq2TROp0MMICm5+2ZP5K/7d710ZfIvNlDaIOB3OPgKGmlF9Oq0vsUo39Hhi4Hc
+         fkxJ8N0OryQ+gwRA4Lka9iihbC7HY0EEcaVcWpt78/DKBp5dBYYHOgbnyixQr9ThOZp7
+         aSFfw9our/j5RmUKhwH560yySls9A8UvtHI4ooQ57aLFvdkIdAX+QzAggxzwCkfVhUQC
+         ttGtp5SjPytfBVzBl+U78qwSW7LUiGrO88ZTN6pkabGDKIiABqq0B2d8LuSaeqgGwyfK
+         B2AA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=I9Y/yp+q451c1G9V1HjAAuASbzFos41wdSkhh22mJrM=;
+        b=Q15WNjGc6pF4mYQPG+Tf4AcZs/BZuI9y821y343YP02NBwMcSFm/jxXGzr7CcrIDYt
+         VKM/xedrHqU5Qom5AFHE5ai/AUQSld5MHBpe+IjKU7DthegacR9BohLOKe0DArJdgoNL
+         fdTg4wLg4tZiI+PhVHzBkwdTe22RwUb4MpA5A00gtLPniUiWsoq6x1y0HYLEfE3rOXaY
+         stPYi2xf9dHzWa+YS9dMRKXX4A5qrf8U60midng9GizmIGt4bThlYnvQx0vDojL4TT9a
+         sQ0FAAMn75lPv4KIXCf8ZPz1eruIzwOHkG79LLXnygCOjneqJYG5iLrMX0RX8cxpF/Td
+         rDDg==
+X-Gm-Message-State: AOAM533Ib50QVywX8BAtghbW45HBj5UCSCmlbwo7Ct/94pD0xGf6tG8Q
+        tZLUR7SduxBauc14f9H6iWnadKDl2lt1mGYgrt4=
+X-Google-Smtp-Source: ABdhPJzI1EwLElx4VbExzACEToz/l9OLPB4uSMIGVplZ+YH2da2/jcHNsqIS/o07liZIJSwsQ0Vi2ABf4S2LefuH5BY=
+X-Received: by 2002:a2e:a489:: with SMTP id h9mr10049668lji.21.1620192173535;
+ Tue, 04 May 2021 22:22:53 -0700 (PDT)
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from kafai-mbp.dhcp.thefacebook.com (2620:10d:c090:400::5:5bbb) by MW4PR04CA0242.namprd04.prod.outlook.com (2603:10b6:303:88::7) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4108.24 via Frontend Transport; Wed, 5 May 2021 05:14:10 +0000
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 72d84b36-6b3b-4ddc-67d1-08d90f849e29
-X-MS-TrafficTypeDiagnostic: BYAPR15MB3256:
-X-Microsoft-Antispam-PRVS: <BYAPR15MB325685BF1A6D63450930121CD5599@BYAPR15MB3256.namprd15.prod.outlook.com>
-X-FB-Source: Internal
-X-MS-Oob-TLC-OOBClassifiers: OLM:6430;
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: dsQqUOC0PbA+i14ASL/sp7YoR8xxSXmEF6iSaSv1Jt7j4ruhOd0SyGS7dQkLsdYAhXYXmYKj5mWlSnuhNxPqDgSB7oZ8mmi3+CRLAzJc2tfAxYNIAB0Xwjro5ATap5KhfX9xgOAcM7IoJuq6bHTZ4DXGlYWiO0v0gAbOBxHOGX1Sf4CxNkCTG2179mC8wP/CBNjNBnP/P3v2j4WcUfLbkCEXJjJXmCenodDR6ijMmKRv7zzodoCcQSaW0V18ViaEBMXD54Qmvl1xH6iMk0PzY13jlTXBjwxVdMJh5RoUT9i6kno/60MEKY7BBJL0rro+ZDNnhyvH/qkmi/lLOmUvaK+XHAqAB5UEKDSlP9NJ7lMNCGbuetSTMEDvDAbVOR6vUmUyjfXM6ggQqxHCwcAgAYR71pxJAh5voBC0XKNGbI4OPCQsckcK9RktGkKWbCIyKIy64RbbYWMdE8o4wo/tyZj6gWa7iyTmktM60JoxO3oJoDO2n7P20U/rK60ptLtgH40NtMzElUi0iirVQEWb+M3fvOMKLBJSiEjd/ERcCR0uZZjQ13/8VVkw/igsOfznZDnKEdMAAOtQ59SvHxwq1F0E5dttc7kCQr5+rGa6hJM=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BY5PR15MB3571.namprd15.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(346002)(366004)(39860400002)(396003)(376002)(136003)(16526019)(4326008)(7416002)(6506007)(2906002)(186003)(316002)(54906003)(478600001)(55016002)(38100700002)(6916009)(5660300002)(1076003)(66556008)(66476007)(7696005)(9686003)(86362001)(8676002)(52116002)(8936002)(66946007);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData: =?us-ascii?Q?EvHhTAh3O6fbkvgj3ljIdXyZWqPSllRVT47ufAUb91LO0aiA9iRzJKYDUx8y?=
- =?us-ascii?Q?i7ij7SJjOCOJwXoafOn7fCdrSWppufssM+qzEjUmcBDLKM9lWFNM+RHJPUDO?=
- =?us-ascii?Q?bSh+W2FfJtNyZqIR6ktsvcvneI1WPkINMpQja6LUP4tcJwzV8q2+6ySBQlQ0?=
- =?us-ascii?Q?006rRgnPcX3b/Mugin9WUgPYTpPw5JBgogecH/LZKtdRIitCYRqQUxgSlYuy?=
- =?us-ascii?Q?/94DPW5dZz3umGTBTFGYvGM97silxV569jMYPcbaS+C94Q2vabycHFplmQdv?=
- =?us-ascii?Q?JVG5fq0Czn9FfCDqbLa1KS4RdEEviYcFMF1WW7EXQzyi46odt0vGtiHo95+e?=
- =?us-ascii?Q?8sz8/uy+ZaRnM0F0GsC9MA1BdKG8zApTctRpe7PqB3QimsW2sk9iQdDcQOX2?=
- =?us-ascii?Q?ecneNElGXZxp6Rc4z9CEvKPy7Pd55d58YxJHGuCEgcJBT2IYhoe0wDjcsg1A?=
- =?us-ascii?Q?7dHaXm4RQJx2xzT8QrnnziTBfeYYuteN1Nm3XnNWAux6OdwkeAFKr+P4ojGM?=
- =?us-ascii?Q?l1N8TxtOFi/ly7PlFB9luQ8lx+UO+QYMUjh1MgAcdVs3Tp9uq9I351louTSX?=
- =?us-ascii?Q?lknNwGxXxdImubX/FzEL9iBL3hyUszDK9Lwh4U5FrLQNqcsyWyTQP3ptRWtn?=
- =?us-ascii?Q?4m2u6r9eSpbbh/GwG3STxPpVvXtu61u3NryfcaTgCcvF9XWqFW+Iexfl8BnK?=
- =?us-ascii?Q?Si5sEM4944HlRHGjwX5Kd+UbRVswn/m3T35iXY1twL5c/8UxjO63lKtEnqZB?=
- =?us-ascii?Q?4m3gMYbWymQHPn5HXHFMbv1M0npbPNkDZUhpfkYdhCKYBB0M1VPeMYXlqXZs?=
- =?us-ascii?Q?4hZNUr4i+y0dA4PuvEEmeASyKqd3djxrslOVkbqHpFdAsC950OB+VTqzk27C?=
- =?us-ascii?Q?T8SCmlEZfVR9Acbqm/awIT+0mv//dGngos5eWje0aFMSFjgEWYs9z21Hdw21?=
- =?us-ascii?Q?uIbnMzqTqhmvubTXiTLAjM4uzh8K7EFtk8YXxIIu7DlTFvHeRkdEpcLJWhcb?=
- =?us-ascii?Q?TR67v8+DdFFgmIMOBtgVmLWJye00+qCGy1TIO8VMZjRJNSsi2myukBFu3y1s?=
- =?us-ascii?Q?+I9MYTxv92Bi2RU26TiYyM9210gDh1EbtHJTkTj/bjeUXJ/V6PSXvfX4AT1A?=
- =?us-ascii?Q?XD7XhirfAZ0HalKVg7oyrL6RzsgaHk+EycafoNceBQXqubfRlnuA6Z2mPozi?=
- =?us-ascii?Q?0nzBg1LoWPItm3Bcl3bqGqGe55vV62oe5qdSX2N16b0JBP9OmQT4NqcJzrxU?=
- =?us-ascii?Q?bjFC7Vz0nUS5UMSNS0D52pfafs1QG585pE9PWSd++C/JFLORD+XuZWBXMlAj?=
- =?us-ascii?Q?pSAsrMkSI+A5vRB0Xxjf8z//iirnSQ7nWkTsSPysngSqyQ=3D=3D?=
-X-MS-Exchange-CrossTenant-Network-Message-Id: 72d84b36-6b3b-4ddc-67d1-08d90f849e29
-X-MS-Exchange-CrossTenant-AuthSource: BY5PR15MB3571.namprd15.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 05 May 2021 05:14:11.4828
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 8y2EFGSWKHHZyEBPRvAUVOxCs7DqSPIIOD17sJBowJp+K1qo9niglFzEHbZ/ZXNi
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR15MB3256
-X-OriginatorOrg: fb.com
-X-Proofpoint-ORIG-GUID: vLsHl0i9P2Odro6OcBmtGnQ4-NhQP_HH
-X-Proofpoint-GUID: vLsHl0i9P2Odro6OcBmtGnQ4-NhQP_HH
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.391,18.0.761
- definitions=2021-05-05_01:2021-05-04,2021-05-05 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 phishscore=0
- priorityscore=1501 mlxscore=0 suspectscore=0 malwarescore=0 clxscore=1015
- bulkscore=0 impostorscore=0 spamscore=0 mlxlogscore=999 adultscore=0
- lowpriorityscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2104060000 definitions=main-2105050035
-X-FB-Internal: deliver
+References: <CAADnVQKo+efxMvgrqYqVvUEgiz_GXgBVOt4ddPTw_mLuvr2HUw@mail.gmail.com>
+ <CAEf4BzZifOFHr4gozUuSFTh7rTWu2cE_-L4H1shLV5OKyQ92uw@mail.gmail.com>
+ <CAADnVQ+h78QijAjbkNqAWn+TAFxrd6vE=mXqWRcy815hkTFvOw@mail.gmail.com>
+ <CAEf4BzZOmCgmbYDUGA-s5AF6XJFkT1xKinY3Jax3Zm2OLNmguA@mail.gmail.com>
+ <20210426223449.5njjmcjpu63chqbb@ast-mbp.dhcp.thefacebook.com>
+ <CAEf4BzYZX9YJcoragK20cvQvr_tPTWYBQSRh7diKc1KoCtu4Dg@mail.gmail.com>
+ <20210427022231.pbgtrdbxpgdx2zrw@ast-mbp.dhcp.thefacebook.com>
+ <CAEf4BzZOwTp4vQxvCSXaS4-94fz_eZ7Q4n6uQfkAnMQnLRaTbQ@mail.gmail.com>
+ <20210428045545.egqvhyulr4ybbad6@ast-mbp.dhcp.thefacebook.com>
+ <CAEf4BzZo7_r-hsNvJt3w3kyrmmBJj7ghGY8+k4nvKF0KLjma=w@mail.gmail.com> <20210504044204.kpt6t5kaomj7oivq@ast-mbp>
+In-Reply-To: <20210504044204.kpt6t5kaomj7oivq@ast-mbp>
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Date:   Tue, 4 May 2021 22:22:42 -0700
+Message-ID: <CAADnVQ+WV8xZqJfWx8em5Ch8aKA8xcPqR0wT0BdFf9M==W5_FQ@mail.gmail.com>
+Subject: Re: bpf libraries and static variables. Was: [PATCH v2 bpf-next 2/6]
+ libbpf: rename static variables during linking
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Cc:     Yonghong Song <yhs@fb.com>, Andrii Nakryiko <andrii@kernel.org>,
+        bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@fb.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Kernel Team <kernel-team@fb.com>,
+        Lorenz Bauer <lmb@cloudflare.com>,
+        John Fastabend <john.fastabend@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Apr 27, 2021 at 12:46:23PM +0900, Kuniyuki Iwashima wrote:
-[ ... ]
+On Mon, May 3, 2021 at 9:42 PM Alexei Starovoitov
+<alexei.starovoitov@gmail.com> wrote:
+>
+> On Wed, Apr 28, 2021 at 12:33:36PM -0700, Andrii Nakryiko wrote:
+> > > At least I'm only starting to grasp the complexity of the problem.
+> >
+> > I did and didn't find anything satisfactory. But I think we are coming
+> > at this from two different angles, which is why we can't agree on
+> > anything. So just a reminder, static is about two properties:
+> >     1) access protection
+> >     2) naming collisions.
+> >
+> > I'm trying to let name collisions on BPF side happen and be allowed
+> > *while* also allowing access to those same name-collisioned entities
+> > (maps and vars, both) from user-space in some non-random fashion. That
+> > inevitably requires some compromises/conventions on the user-space
+> > side. Such an approach preserves both 1) and 2).
+> >
+> > You are trying to enforce unique names (or at least aliases) for
+> > static variables, if I understand correctly, which preserves 1) at the
+> > expense of 2). It seems to be a similar idea with custom SEC(), though
+> > you ignored my request to elaborate on how you see that used, so I'm
+> > guessing here a bit.
+> >
+> > But I think we can get just 1) with global variables with custom
+> > visibilities. E.g., just marking map/variable as __hidden would
+> > disallow extern'ing it from other files. That's obviously limiting for
+> > extern'ing within the library, so we can keep digging deeper and
+> > define __internal (STV_INTERNAL) that would be "upgraded" to
+> > STV_HIDDEN after the initial linking pass. So you'd compile your BPF
+> > library with __internal, but your lib.bpf.o will have those global
+> > variables as STV_HIDDEN and thus inaccessible from other libraries and
+> > BPF app itself.
+> >
+> > So if we are ok breaking existing static variable users, then just
+> > dropping statics from BPF skeleton and supporting extra __hidden and
+> > __internal semantics for variables and maps would bypass these issues.
+> > I wanted statics mostly for property 2), but if I can't get it, then
+> > I'd drop statics from skeletons altogether.
+> >
+> > If I could drop statics for skeletons that were statically linked,
+> > that wouldn't be a regression. It's impossible to do right now, but we
+> > can also add a new SHT_NOTE section, which we can use to detect
+> > statically linked vs Clang-generated .bpf.o. Certainly more ELF
+> > fussing around than I'd like, but not the end of the world either.
+> >
+> > Thoughts? Did that summarize the issue well enough?
+>
+> Background for all:
+>
+> Until Nov 2019 libbpf didn't support global variables, so bpf programs
+> contained code like 'static volatile const int var = 1;'
+> Then the skeleton was introduced which went through BTF of a given
+> datasec and emitted all variables from that section into .skel.h.
+> It didn't bother filtering static vs global variables, so
+> static vars in *.bpf.c world became visible into user space *.c world.
+> While libbpf supported single bpf.o file such extern-ing of statics
+> was fine, but with support of linking multiple *.bpf.o there
+> is a question of what to do with static variables with the same names
+> in different files.
+>
+> Consider the following scenario:
+> One bpf developer creates a library conntrack. It has
+> impl.bpf.c
+> ct_api.bpf.c
+> and corresponding user space ct.c that uses skel.h to access
+> data in these two bpf files.
+>
+> Another bpf developer creates a library for lru. It has
+> impl.bpf.c
+> lru_api.bpf.c
+> and corresponding user space lru.c.
+>
+> Now the 3rd developer is writing its main.bpf.c and wants to use these libs.
+>
+> The libs should be usable in pre-compiled form. The availability of
+> the source code is nice, but it shouldn't be mandatory.
+>
+> So there is libct.a (with user space) and libct.bpf.a (with bpf code)
+> and liblru.a (user) and liblru.bpf.a (bpf code).
+>
+> The developer should be able to link
+> main.bpf.o liblru.bpf.a libct.bpf.a
+> into final_main.bpf.o
+> And link main.o liblru.a libct.a with user space bits into a.out.
+>
+> The lru.skel.h and ct.skel.h used by these libs were generated
+> out of corresponding *.bpf.o and independent of each other.
+> There should be no need to recompile user space lru.c and ct.c after
+> linking of final_main.bpf.o and generating final skeleton.
+>
+> I think all three developers should be able to use static variables
+> in their .bpf.c files without worrying about conflicts across three
+> projects.
+> They can use global vars with __attribute__("hidden"),
+> but it's not equivalent to static. The linker will complain of
+> redefinition if the same name is used across multiple files
+> or multiple libs.
+> So doing 'int var __attribute__("hidden");' in libct.bpf.a and
+> in liblru.bpf.a will prevent linking together.
+> That's traditional static linking semantics.
+>
+> Using file name as a prefix for static vars doesn't work in general,
+> since file names can be the same.
+> What can work is the library name. The library name is guaranteed to be
+> unique in the final linking phase.
+> I think we can use it to namespace static variables across
+> three sets of bpf programs.
+> Also I think it's ok to require a single developer to enforce
+> uniqueness of static vars within a project.
+>
+> In other words 'static int a;' in impl.bpf.c will conflict
+> with 'static int a;' in ct_api.bpf.c
+> But the static variable in ct_api.bpf.c will not conflict
+> with the same variable in lru_api.bpf.c and will not conflict
+> with such var in main.bpf.c because they're in a different namespaces.
+>
+> Here are few ways for the programmer to indicate the library namespaces:
+>
+> - similar to 'char license[]' use 'char library[]="lru";' in *.bpf.c
+> The static linker will handle this reserved name specially just like
+> it does 'license' and 'version'.
+>
+> - #pragma clang attribute push (__attribute__((annotate("lib=lru"))), apply_to = variable)
+>
+> - #pragma comment(lib, "lru")
+>
+> I think it's important to define namespaces within *.bpf.c.
+> Defining them outside on linker command line or linker script is cumbersome.
+>
+> I think combining *.o into .a can happen with traditional 'ar'. No need for
+> extra checks for now.
+> The linking of main.bpf.o liblru.bpf.a libct.bpf.a
+> will fail if static vars with the same name are present within the same library.
+> The library namespaces will prevent name conflicts across libs and main.bpf.o
+> If namespace is not specified it means it's empty, so the existing
+> hacks of 'static volatile const int var;' will continue working.
+>
+> The skeleton can have library name as anon struct in skel.h.
+> All vars can be prefixed too, but scoping them into single struct is cleaner.
+>
+> I think it doesn't hurt if final_main.skel.h includes all bpf vars from lru and
+> ct libraries, but I think it's cleaner to omit them.
+>
+> It's not clear to me yet how final_main__open() and final_main__load() skeleton
+> methods will work since lru and ct libs might need their specific initialization
+> that is done by user space lru.c and ct.c.
+> Also the whole scheme should work with upcoming light skeleton too.
+> The design for bpf libraries should accommodate signed libraries.
+>
+> All of the above is up for discussion. I'd love to hear what golang folks
+> are thinking, since above proposal is C centric.
 
-> diff --git a/tools/testing/selftests/bpf/progs/test_migrate_reuseport.c b/tools/testing/selftests/bpf/progs/test_migrate_reuseport.c
-> new file mode 100644
-> index 000000000000..d7136dc29fa2
-> --- /dev/null
-> +++ b/tools/testing/selftests/bpf/progs/test_migrate_reuseport.c
-> @@ -0,0 +1,51 @@
-> +// SPDX-License-Identifier: GPL-2.0
-> +/*
-> + * Check if we can migrate child sockets.
-> + *
-> + *   1. If reuse_md->migrating_sk is NULL (SYN packet),
-> + *        return SK_PASS without selecting a listener.
-> + *   2. If reuse_md->migrating_sk is not NULL (socket migration),
-> + *        select a listener (reuseport_map[migrate_map[cookie]])
-> + *
-> + * Author: Kuniyuki Iwashima <kuniyu@amazon.co.jp>
-> + */
-> +
-> +#include <stddef.h>
-> +#include <linux/bpf.h>
-> +#include <bpf/bpf_helpers.h>
-> +
-> +struct {
-> +	__uint(type, BPF_MAP_TYPE_REUSEPORT_SOCKARRAY);
-> +	__uint(max_entries, 256);
-> +	__type(key, int);
-> +	__type(value, __u64);
-> +} reuseport_map SEC(".maps");
-> +
-> +struct {
-> +	__uint(type, BPF_MAP_TYPE_HASH);
-> +	__uint(max_entries, 256);
-> +	__type(key, __u64);
-> +	__type(value, int);
-> +} migrate_map SEC(".maps");
-> +
-> +SEC("sk_reuseport/migrate")
-> +int prog_migrate_reuseport(struct sk_reuseport_md *reuse_md)
-> +{
-> +	int *key, flags = 0;
-> +	__u64 cookie;
-> +
-> +	if (!reuse_md->migrating_sk)
-> +		return SK_PASS;
-> +
+I want to clarify a few things that were brought up in offline discussions.
+There are several options:
+1. don't emit statics at all.
+That will break some skeleton users and doesn't solve the name conflict issue.
+The library authors would need to be careful and use a unique enough
+prefix for all global vars (including attribute("hidden") ones).
+That's no different with traditional static linking in C.
+bpf static linker already rejects linking if file1.bpf.c is trying to
+'extern int foo()'
+when it was '__hidden int foo();' in file2.bpf.c
+That's safer than traditional linker and the same approach can be
+applied to vars.
+So externing of __hidden vars won't be possible, but they will name conflict.
 
-It will be useful to check if it is migrating a child sk or
-a reqsk by testing the migrating_sk->state for TCP_ESTABLISHED
-and TCP_NEW_SYN_RECV.  skb can be further tested to check if it is
-selecting for the final ACK.  Global variables can then be
-incremented and the user prog can check that, for example,
-it is indeed testing the TCP_NEW_SYN_RECV code path...etc.
+2. emit statics when they don't conflict and fail skel gen where there
+is a naming conflict.
+That helps a bit, but library authors still have to be careful with
+both static and global names.
+Which is more annoying than traditional C.
 
-It will also become a good example for others on how migrating_sk
-can be used.
+3. do #2 style of failing skel gen if there is a naming conflict, but
+also introduce namespacing concept, so that both global and static
+vars can be automatically namespaced.
+That's the proposal above.
+This way, I'm guessing, some libraries will use namespaces to avoid
+prefixing everything.
+The folks that hate namespaces and #pragmas will do manual prefixes for
+both static and global vars.
 
+For approaches
+char library[]="lru";'
+and
+#pragma comment(lib, "lru")
+the scope of namespace is the whole .bpf.c file.
+The clang/llvm already support it, so the job of name mangling would
+belong to linker.
 
-> +	cookie = bpf_get_socket_cookie(reuse_md->sk);
-> +
-> +	key = bpf_map_lookup_elem(&migrate_map, &cookie);
-> +	if (!key)
-> +		return SK_DROP;
-> +
-> +	bpf_sk_select_reuseport(reuse_md, &reuseport_map, key, flags);
-> +
-> +	return SK_PASS;
-> +}
-> +
-> +char _license[] SEC("license") = "GPL";
-> -- 
-> 2.30.2
-> 
+For __attribute__((annotate("lib=lru"))) the scope could be any number
+of lines in C files between pragma push/pop and can be nested.
+This attribute is supported by clang, but not in the bpf backend.
+The llvm would prefix both global and static names
+in elf file and in btf.
+If another file.bpf.c needs to call a function from namespace "lru"
+it would need to prefix such a call.
+The skel gen job would be #2 above (emit both static and globals if
+they don't conflict).
+Such namespacing concept would be the closest to c++ namespaces.
+
+If I understood what folks were saying no one is excited about namespaces in C.
+So probably #3 is out and sounds like 1 is prefered?
+So don't emit statics ?
+
+Daniel, Lorenz, John,
+
+what's your take ?
