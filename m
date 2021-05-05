@@ -2,37 +2,38 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CD185374138
-	for <lists+netdev@lfdr.de>; Wed,  5 May 2021 18:45:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A9E8837413C
+	for <lists+netdev@lfdr.de>; Wed,  5 May 2021 18:45:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234691AbhEEQgd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 5 May 2021 12:36:33 -0400
-Received: from mail.kernel.org ([198.145.29.99]:52820 "EHLO mail.kernel.org"
+        id S235040AbhEEQgn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 5 May 2021 12:36:43 -0400
+Received: from mail.kernel.org ([198.145.29.99]:53868 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S234421AbhEEQeo (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 5 May 2021 12:34:44 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id AEBE26142F;
-        Wed,  5 May 2021 16:32:44 +0000 (UTC)
+        id S234439AbhEEQeq (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 5 May 2021 12:34:46 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 4B05E613F9;
+        Wed,  5 May 2021 16:32:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1620232365;
-        bh=2Htp6dURzsP1SUR5ARGfwS+oapd+HszsASpsqXB1VAQ=;
+        s=k20201202; t=1620232367;
+        bh=Lg8lKjSCJjYMIeB/wHTWH+FcGtxaZ7xHRqQ8l346B6k=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=UKNfqUGZAOteBUPVKX43aCiuaFtQXA2wVVROhoLRb2eCnF8US4yPTMblMRuqJQitW
-         XL5DZ22wArEshn5dXw/8EdPIxUFBpdStHYZE5cmGY4VUYSpinTQpt1F9DVlE3NJ84i
-         zC4v0b0eXhCYeVDQMo+byP5YnIK78JD20tw23JWFO19LVYuqN1593KpHDI77xsW3yV
-         7ctik/5asmUtGP00gPPs5GHusKS9zUVR2YCq9G9dIidQvgSzpWIWDuXQB05C8fpuON
-         gmVzZ2/FnqVNHfJ0/ml+Nen6i6p5BsmOMvZ3naqaDC6mnUnYsb+ItiqmbUP9ZqC3fP
-         eLrPxCRgzgRNg==
+        b=YFCkDYhf/3WVYUjJQtfyZgORE2RKWe7l4g82NsBB38K4+kmhPwIddDqZZ91eOzPgi
+         GPAL+r3+b9JF5akleg9bj7yBqHvxRHXoKzvIrjRusmcA23esSt/LzU71yLS3mPKQC3
+         LmTjSj5bBjyhvWH5Igi/tyeVXgk32EhX+KkmzKgb7Nig6bDebFxm1q4ByLkMK3xhQD
+         CxExOsSTqcQZNdNgud1IEBjCD3MUkxBDQgUMTNYotpu+gw4jzdK9GuPgeWdaBD/vhB
+         O5RZi1XLGrnWfoI45F0O0jqe6ghnhNtKFuk8ux7oC1LaqBVL0Y10YBEVY3LWHSoWZU
+         DNNRD9lKRL2YQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     David Bauer <mail@david-bauer.net>, Felix Fietkau <nbd@nbd.name>,
-        Sasha Levin <sashal@kernel.org>,
+Cc:     Lorenzo Bianconi <lorenzo@kernel.org>,
+        Dan Carpenter <dan.carpenter@oracle.com>,
+        Felix Fietkau <nbd@nbd.name>, Sasha Levin <sashal@kernel.org>,
         linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
         linux-arm-kernel@lists.infradead.org,
         linux-mediatek@lists.infradead.org
-Subject: [PATCH AUTOSEL 5.12 058/116] mt76: mt76x0: disable GTK offloading
-Date:   Wed,  5 May 2021 12:30:26 -0400
-Message-Id: <20210505163125.3460440-58-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.12 059/116] mt76: connac: always check return value from mt76_connac_mcu_alloc_wtbl_req
+Date:   Wed,  5 May 2021 12:30:27 -0400
+Message-Id: <20210505163125.3460440-59-sashal@kernel.org>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20210505163125.3460440-1-sashal@kernel.org>
 References: <20210505163125.3460440-1-sashal@kernel.org>
@@ -44,44 +45,52 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: David Bauer <mail@david-bauer.net>
+From: Lorenzo Bianconi <lorenzo@kernel.org>
 
-[ Upstream commit 4b36cc6b390f18dbc59a45fb4141f90d7dfe2b23 ]
+[ Upstream commit baa3afb39e94965f4ca5b5d3d274379504b8fa24 ]
 
-When operating two VAP on a MT7610 with encryption (PSK2, SAE, OWE),
-only the first one to be created will transmit properly encrypteded
-frames.
+Even if this is not a real bug since mt76_connac_mcu_alloc_wtbl_req routine
+can fails just if nskb is NULL , always check return value from
+mt76_connac_mcu_alloc_wtbl_req in order to avoid possible future
+mistake.
 
-All subsequently created VAPs will sent out frames with the payload left
-unencrypted, breaking multicast traffic (ICMP6 NDP) and potentially
-disclosing information to a third party.
-
-Disable GTK offloading and encrypt these frames in software to
-circumvent this issue. THis only seems to be necessary on MT7610 chips,
-as MT7612 is not affected from our testing.
-
-Signed-off-by: David Bauer <mail@david-bauer.net>
+Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
+Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
 Signed-off-by: Felix Fietkau <nbd@nbd.name>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/mediatek/mt76/mt76x02_util.c | 4 ++++
- 1 file changed, 4 insertions(+)
+ drivers/net/wireless/mediatek/mt76/mt7615/mcu.c      | 3 +++
+ drivers/net/wireless/mediatek/mt76/mt76_connac_mcu.c | 3 +++
+ 2 files changed, 6 insertions(+)
 
-diff --git a/drivers/net/wireless/mediatek/mt76/mt76x02_util.c b/drivers/net/wireless/mediatek/mt76/mt76x02_util.c
-index ab671e21f882..02db5d66735d 100644
---- a/drivers/net/wireless/mediatek/mt76/mt76x02_util.c
-+++ b/drivers/net/wireless/mediatek/mt76/mt76x02_util.c
-@@ -447,6 +447,10 @@ int mt76x02_set_key(struct ieee80211_hw *hw, enum set_key_cmd cmd,
- 	    !(key->flags & IEEE80211_KEY_FLAG_PAIRWISE))
- 		return -EOPNOTSUPP;
+diff --git a/drivers/net/wireless/mediatek/mt76/mt7615/mcu.c b/drivers/net/wireless/mediatek/mt76/mt7615/mcu.c
+index 631596fc2f36..4ecbd5406e2a 100644
+--- a/drivers/net/wireless/mediatek/mt76/mt7615/mcu.c
++++ b/drivers/net/wireless/mediatek/mt76/mt7615/mcu.c
+@@ -1040,6 +1040,9 @@ mt7615_mcu_sta_ba(struct mt7615_dev *dev,
  
-+	/* MT76x0 GTK offloading does not work with more than one VIF */
-+	if (is_mt76x0(dev) && !(key->flags & IEEE80211_KEY_FLAG_PAIRWISE))
-+		return -EOPNOTSUPP;
+ 	wtbl_hdr = mt76_connac_mcu_alloc_wtbl_req(&dev->mt76, &msta->wcid,
+ 						  WTBL_SET, sta_wtbl, &skb);
++	if (IS_ERR(wtbl_hdr))
++		return PTR_ERR(wtbl_hdr);
 +
- 	msta = sta ? (struct mt76x02_sta *)sta->drv_priv : NULL;
- 	wcid = msta ? &msta->wcid : &mvif->group_wcid;
+ 	mt76_connac_mcu_wtbl_ba_tlv(&dev->mt76, skb, params, enable, tx,
+ 				    sta_wtbl, wtbl_hdr);
  
+diff --git a/drivers/net/wireless/mediatek/mt76/mt76_connac_mcu.c b/drivers/net/wireless/mediatek/mt76/mt76_connac_mcu.c
+index 6cbccfb05f8b..cd92ff915da5 100644
+--- a/drivers/net/wireless/mediatek/mt76/mt76_connac_mcu.c
++++ b/drivers/net/wireless/mediatek/mt76/mt76_connac_mcu.c
+@@ -833,6 +833,9 @@ int mt76_connac_mcu_add_sta_cmd(struct mt76_phy *phy,
+ 	wtbl_hdr = mt76_connac_mcu_alloc_wtbl_req(dev, wcid,
+ 						  WTBL_RESET_AND_SET,
+ 						  sta_wtbl, &skb);
++	if (IS_ERR(wtbl_hdr))
++		return PTR_ERR(wtbl_hdr);
++
+ 	if (enable) {
+ 		mt76_connac_mcu_wtbl_generic_tlv(dev, skb, vif, sta, sta_wtbl,
+ 						 wtbl_hdr);
 -- 
 2.30.2
 
