@@ -2,41 +2,40 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B1381374579
-	for <lists+netdev@lfdr.de>; Wed,  5 May 2021 19:50:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9966237457B
+	for <lists+netdev@lfdr.de>; Wed,  5 May 2021 19:50:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238457AbhEERGD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 5 May 2021 13:06:03 -0400
-Received: from mail.kernel.org ([198.145.29.99]:49692 "EHLO mail.kernel.org"
+        id S238498AbhEERGF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 5 May 2021 13:06:05 -0400
+Received: from mail.kernel.org ([198.145.29.99]:60718 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S237886AbhEERBh (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 5 May 2021 13:01:37 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 788F461A33;
-        Wed,  5 May 2021 16:40:48 +0000 (UTC)
+        id S237912AbhEERBk (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 5 May 2021 13:01:40 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id A8F2461A46;
+        Wed,  5 May 2021 16:40:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1620232849;
-        bh=2OMhfOSE2hc5YlXeGMX+M4+Zqe3M8J8R/W0DHF6u5ok=;
+        s=k20201202; t=1620232855;
+        bh=3Ec7oHhQ5JY1adY4PY5OOnAqLf6BRopmE2HlCmNmsGo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=sUqRWnRz+bAOXrWpVhUfiZwowItzIFW5gKFpN2HTAU3XyyhHA4956zb8PCBDa3z8q
-         DRUp3LfYB7lr5i9TmdbUq8DUDhaVcGfYzvM9cH8rRNii55zHvDIT0VjIZZCHWn4/Rk
-         s/Se8NMMyI+d9YNd8jCRAg9Sgn9iYmuTVeR6JEtpuGMjSkdzlZE9LzxNa6IYYtvtF5
-         oqmO742FW8aKcE7j1u9G0g/5Qrc3nVMxy16iy660bl9rR8rAherh7DHFh3Gm2P6ZUn
-         lesA+R8hCs9XT3aCujDNx91fhkhyVUIC8tgJwngEP9QHEWpaWtRQCV8zhz0vJ0V6qM
-         p7FnjdKoW74RQ==
+        b=pvBxbmqwcokcRpPslK4H5e6DxHxpjodLwuDgmtdJ0heJLwsP7rYHhFkwubbAMO/oi
+         g0siZxdJcsPCNfIM6DRoAz02eKjXu3D90SpfDaXSNqgFpWp/H10eD/R49trAd6g68e
+         VZzldqvET17+qldK5UdHW0T6MRoemcUlsVJg6kgKDfe+0V3lOyOAdpNqheHY2PhaCD
+         sCnmYGv7VGAfSNqGlwVml3ywGRuXWY3AMqWtXoy6J5t7v2HIro26Z4tYUnzIBF71+o
+         zs32f76eYZL28Fjeg57lkRI/SUIOuGy+kUexv56fL6u2123jIMkeuJo7PcG5coQUae
+         hjrybPyGuHHnw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Felix Fietkau <nbd@nbd.name>,
-        Ilya Lipnitskiy <ilya.lipnitskiy@gmail.com>,
+Cc:     Hoang Le <hoang.h.le@dektech.com.au>,
+        Jon Maloy <jmaloy@redhat.com>,
         "David S . Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org
-Subject: [PATCH AUTOSEL 4.19 31/32] net: ethernet: mtk_eth_soc: fix RX VLAN offload
-Date:   Wed,  5 May 2021 12:40:03 -0400
-Message-Id: <20210505164004.3463707-31-sashal@kernel.org>
+        tipc-discussion@lists.sourceforge.net
+Subject: [PATCH AUTOSEL 4.14 02/25] tipc: convert dest node's address to network order
+Date:   Wed,  5 May 2021 12:40:28 -0400
+Message-Id: <20210505164051.3464020-2-sashal@kernel.org>
 X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20210505164004.3463707-1-sashal@kernel.org>
-References: <20210505164004.3463707-1-sashal@kernel.org>
+In-Reply-To: <20210505164051.3464020-1-sashal@kernel.org>
+References: <20210505164051.3464020-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -45,48 +44,39 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Felix Fietkau <nbd@nbd.name>
+From: Hoang Le <hoang.h.le@dektech.com.au>
 
-[ Upstream commit 3f57d8c40fea9b20543cab4da12f4680d2ef182c ]
+[ Upstream commit 1980d37565061ab44bdc2f9e4da477d3b9752e81 ]
 
-The VLAN ID in the rx descriptor is only valid if the RX_DMA_VTAG bit is
-set. Fixes frames wrongly marked with VLAN tags.
+(struct tipc_link_info)->dest is in network order (__be32), so we must
+convert the value to network order before assigning. The problem detected
+by sparse:
 
-Signed-off-by: Felix Fietkau <nbd@nbd.name>
-[Ilya: fix commit message]
-Signed-off-by: Ilya Lipnitskiy <ilya.lipnitskiy@gmail.com>
+net/tipc/netlink_compat.c:699:24: warning: incorrect type in assignment (different base types)
+net/tipc/netlink_compat.c:699:24:    expected restricted __be32 [usertype] dest
+net/tipc/netlink_compat.c:699:24:    got int
+
+Acked-by: Jon Maloy <jmaloy@redhat.com>
+Signed-off-by: Hoang Le <hoang.h.le@dektech.com.au>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/mediatek/mtk_eth_soc.c | 2 +-
- drivers/net/ethernet/mediatek/mtk_eth_soc.h | 1 +
- 2 files changed, 2 insertions(+), 1 deletion(-)
+ net/tipc/netlink_compat.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/mediatek/mtk_eth_soc.c b/drivers/net/ethernet/mediatek/mtk_eth_soc.c
-index b72a4fad7bc8..59f3dce3ab1d 100644
---- a/drivers/net/ethernet/mediatek/mtk_eth_soc.c
-+++ b/drivers/net/ethernet/mediatek/mtk_eth_soc.c
-@@ -1041,7 +1041,7 @@ static int mtk_poll_rx(struct napi_struct *napi, int budget,
- 		skb->protocol = eth_type_trans(skb, netdev);
+diff --git a/net/tipc/netlink_compat.c b/net/tipc/netlink_compat.c
+index 99c69489bb44..9aa0d789d25e 100644
+--- a/net/tipc/netlink_compat.c
++++ b/net/tipc/netlink_compat.c
+@@ -662,7 +662,7 @@ static int tipc_nl_compat_link_dump(struct tipc_nl_compat_msg *msg,
+ 	if (err)
+ 		return err;
  
- 		if (netdev->features & NETIF_F_HW_VLAN_CTAG_RX &&
--		    RX_DMA_VID(trxd.rxd3))
-+		    (trxd.rxd2 & RX_DMA_VTAG))
- 			__vlan_hwaccel_put_tag(skb, htons(ETH_P_8021Q),
- 					       RX_DMA_VID(trxd.rxd3));
- 		skb_record_rx_queue(skb, 0);
-diff --git a/drivers/net/ethernet/mediatek/mtk_eth_soc.h b/drivers/net/ethernet/mediatek/mtk_eth_soc.h
-index 46819297fc3e..cb6b27861afa 100644
---- a/drivers/net/ethernet/mediatek/mtk_eth_soc.h
-+++ b/drivers/net/ethernet/mediatek/mtk_eth_soc.h
-@@ -285,6 +285,7 @@
- #define RX_DMA_DONE		BIT(31)
- #define RX_DMA_PLEN0(_x)	(((_x) & 0x3fff) << 16)
- #define RX_DMA_GET_PLEN0(_x)	(((_x) >> 16) & 0x3fff)
-+#define RX_DMA_VTAG		BIT(15)
- 
- /* QDMA descriptor rxd3 */
- #define RX_DMA_VID(_x)		((_x) & 0xfff)
+-	link_info.dest = nla_get_flag(link[TIPC_NLA_LINK_DEST]);
++	link_info.dest = htonl(nla_get_flag(link[TIPC_NLA_LINK_DEST]));
+ 	link_info.up = htonl(nla_get_flag(link[TIPC_NLA_LINK_UP]));
+ 	nla_strlcpy(link_info.str, link[TIPC_NLA_LINK_NAME],
+ 		    TIPC_MAX_LINK_NAME);
 -- 
 2.30.2
 
