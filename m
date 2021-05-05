@@ -2,109 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A891237473C
-	for <lists+netdev@lfdr.de>; Wed,  5 May 2021 19:53:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3342837478F
+	for <lists+netdev@lfdr.de>; Wed,  5 May 2021 20:05:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234553AbhEERwG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 5 May 2021 13:52:06 -0400
-Received: from conssluserg-01.nifty.com ([210.131.2.80]:52091 "EHLO
-        conssluserg-01.nifty.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235138AbhEERvh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 5 May 2021 13:51:37 -0400
-Received: from mail-pj1-f46.google.com (mail-pj1-f46.google.com [209.85.216.46]) (authenticated)
-        by conssluserg-01.nifty.com with ESMTP id 145Ho7xR027133;
-        Thu, 6 May 2021 02:50:07 +0900
-DKIM-Filter: OpenDKIM Filter v2.10.3 conssluserg-01.nifty.com 145Ho7xR027133
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
-        s=dec2015msa; t=1620237007;
-        bh=jvguRX8pqZ4XJCYrxdDcZZ1jIBmYyFi1DYiU2rFpI+Y=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=g8v3452gN8HaY+3KgC7mg7IEMQEerT886lesiQ1r8/d0W1p4gS6kMxU8C9A/AgNsc
-         4BqbErAbLtcOu/6o4aQd6nH+hNpSzMarCyqxdV6c+502rITlc8wHMIjEF/g5SnrqTn
-         5Lu+vBoxlC0O5LS7DrQfhTyudOyP5URKBYS2EPTUaxGNJzvAjW+FHIFA5buPeP9itZ
-         1SbdmcqgX23H+/1g0Yj9WmLTXKIcOUr4I9iAwMHg4oSlVsMM/CU+6Dzyr5zL2qJSH8
-         sD48jJq2vZKch0zuYbexhyEioo1Zfg/1aBYyv20rTNZLOTiGMMoQtUPVGuDMmicqGg
-         iSg69+xvxX+Dg==
-X-Nifty-SrcIP: [209.85.216.46]
-Received: by mail-pj1-f46.google.com with SMTP id gj14so1231987pjb.5;
-        Wed, 05 May 2021 10:50:07 -0700 (PDT)
-X-Gm-Message-State: AOAM533qZoZhWSjvsN8NPC2DfuR77N+87QqjuuDm8KasFqHwWAaBSnig
-        PXP4XAy+JXYnJPLQlqplLX9VJZSMFM6j6vrtOwE=
-X-Google-Smtp-Source: ABdhPJwOlYfRNDTIvaamvhcY4mlQDjji6m4TpH8m4X/qsM5m/Jz/mF2aR5QVqUmET8K1YE+Ov90kjSkFJG3e6YThBA0=
-X-Received: by 2002:a17:902:32b:b029:ee:fa93:9551 with SMTP id
- 40-20020a170902032bb02900eefa939551mr216769pld.47.1620237006584; Wed, 05 May
- 2021 10:50:06 -0700 (PDT)
+        id S235254AbhEER6w (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 5 May 2021 13:58:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55632 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234772AbhEER6Z (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 5 May 2021 13:58:25 -0400
+Received: from mail-qt1-x832.google.com (mail-qt1-x832.google.com [IPv6:2607:f8b0:4864:20::832])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DFF5CC061346
+        for <netdev@vger.kernel.org>; Wed,  5 May 2021 10:31:18 -0700 (PDT)
+Received: by mail-qt1-x832.google.com with SMTP id j17so1810104qtx.6
+        for <netdev@vger.kernel.org>; Wed, 05 May 2021 10:31:18 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=uHFuH/MiPv3sQBSV0I3IV5ZN4VvzTdrTxOiwRGaLFbE=;
+        b=Bp3OQ70qGDqkTvg2oKI398CcTVYi8f4fyZ26+hqAL6RfOG76hCygOAT9Vm7k0tA4uZ
+         X3oqGx2MjN3it00DyfJ9YHtW/eNFwx36vv7uZ097k4FJy55zhHOaMsykqFzf9zOz/9wq
+         iSdghZOnxMuTZDXlHQTY7H+QEbcejjaHDJheINkKPzIiVsVFhXz+bzWRGoV5sJdoKlEu
+         glDrbD81AwEg00+YLPEPDd09kLh1juEWvTlyEdb05kveelmj65bll6JFxUpeGyDb9FBl
+         +qS3QaskiIfDCr8eUji/GsgwRd+ascNpR8eJ12IbNNkLjBwo84bW7dS5gZRl/YHD2TJW
+         FHhg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=uHFuH/MiPv3sQBSV0I3IV5ZN4VvzTdrTxOiwRGaLFbE=;
+        b=HJGtZrIAW//MZ1ai+izksRPg2W7K5X16oBrptg9OXtTkv8aOZPR+qVmbVsfxDsk5IB
+         WmLMnujQ8ULh/rjEg1nfe43zqYhjoGCa9vgq6wXm0MMmKDMrnxH526S3PmKh53y4JX34
+         0g3DZpP5MYEY4tLeRhZHiXFupxLKTVbLzOa5HVnQugUUJ2Ni9FZVwdsUy4JsT5kVbnCr
+         qIyt7eLzMvLX1UfLr2u7ru9vg9vIPs+kN3frdSP27DeDa/msVTIHE9t3P/I1osn0jbXU
+         Xnf/s+RmjX9GKPpo2lHOzuNwcDmoeAZmo6PcdWk9pxLXWDq8Y5vrn6BytXuSDGZq1d4q
+         FqmQ==
+X-Gm-Message-State: AOAM532P2ILzv+uPfsCBsNrCqFFPhRfy+9XGs0V5Z6CaM01CBJ11htzj
+        95ZsJ4sHutb6q+2AE/gUNOOGhj/ZHqrxvNnHxnQ=
+X-Google-Smtp-Source: ABdhPJzUkgvGiD0PKqlH3mI+D5s/XYWVv4yfjXtcrF8JIM0nsHVVw7B6w4UlgjmSosJmvXm3oiT4DUZV+ix071MEwAw=
+X-Received: by 2002:ac8:1014:: with SMTP id z20mr28168320qti.65.1620235877957;
+ Wed, 05 May 2021 10:31:17 -0700 (PDT)
 MIME-Version: 1.0
-References: <20210424114841.394239-1-masahiroy@kernel.org> <2f8ccc46-16a1-e0fe-7cb0-0912295153ee@tessares.net>
-In-Reply-To: <2f8ccc46-16a1-e0fe-7cb0-0912295153ee@tessares.net>
-From:   Masahiro Yamada <masahiroy@kernel.org>
-Date:   Thu, 6 May 2021 02:49:26 +0900
-X-Gmail-Original-Message-ID: <CAK7LNASz11t3YQ509CYbpLDFOmo7eJkT78KKQjCqLR-FKKLZnA@mail.gmail.com>
-Message-ID: <CAK7LNASz11t3YQ509CYbpLDFOmo7eJkT78KKQjCqLR-FKKLZnA@mail.gmail.com>
-Subject: Re: [PATCH] kbuild: replace LANG=C with LC_ALL=C
-To:     Matthieu Baerts <matthieu.baerts@tessares.net>
-Cc:     Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+References: <cover.1620223174.git.pabeni@redhat.com> <e5d4bacef76ef439b6eb8e7f4973161ca131dfee.1620223174.git.pabeni@redhat.com>
+ <CAF=yD-+BAMU+ETz9MV--MR5NuCE9VrtNezDB3mAiBQR+5puZvQ@mail.gmail.com> <d6665869966936b79305de87aaddd052379038c4.camel@redhat.com>
+In-Reply-To: <d6665869966936b79305de87aaddd052379038c4.camel@redhat.com>
+From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Date:   Wed, 5 May 2021 13:30:41 -0400
+Message-ID: <CAF=yD-++8zxVKThLnPMdDOcR5Q+2dStne4=EKeKCD7pVyEc8UA@mail.gmail.com>
+Subject: Re: [PATCH net 1/4] net: fix double-free on fraglist GSO skbs
+To:     Paolo Abeni <pabeni@redhat.com>
+Cc:     Network Development <netdev@vger.kernel.org>,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Mat Martineau <mathew.j.martineau@linux.intel.com>,
-        Matthias Maennich <maennich@google.com>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Paul Mackerras <paulus@samba.org>,
-        Shuah Khan <shuah@kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        "open list:KERNEL SELFTEST FRAMEWORK" 
-        <linux-kselftest@vger.kernel.org>,
-        linuxppc-dev <linuxppc-dev@lists.ozlabs.org>, mptcp@lists.01.org,
-        Networking <netdev@vger.kernel.org>
+        Steffen Klassert <steffen.klassert@secunet.com>,
+        Willem de Bruijn <willemb@google.com>,
+        Miaohe Lin <linmiaohe@huawei.com>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Apr 27, 2021 at 4:30 AM Matthieu Baerts
-<matthieu.baerts@tessares.net> wrote:
+On Wed, May 5, 2021 at 1:28 PM Paolo Abeni <pabeni@redhat.com> wrote:
 >
-> Hi,
+> On Wed, 2021-05-05 at 12:13 -0400, Willem de Bruijn wrote:
+> > On Wed, May 5, 2021 at 11:37 AM Paolo Abeni <pabeni@redhat.com> wrote:
+> > > While segmenting a SKB_GSO_FRAGLIST GSO packet, if the destructor
+> > > callback is available, the skb destructor is invoked on each
+> > > aggregated packet via skb_release_head_state().
+> > >
+> > > Such field (and the pairer skb->sk) is left untouched, so the same
+> > > destructor is invoked again when the segmented skbs are freed, leading
+> > > to double-free/UaF of the relevant socket.
+> >
+> > Similar to skb_segment, should the destructor be swapped with the last
+> > segment and callback delayed, instead of called immediately as part of
+> > segmentation?
+> >
+> >         /* Following permits correct backpressure, for protocols
+> >          * using skb_set_owner_w().
+> >          * Idea is to tranfert ownership from head_skb to last segment.
+> >          */
+> >         if (head_skb->destructor == sock_wfree) {
+> >                 swap(tail->truesize, head_skb->truesize);
+> >                 swap(tail->destructor, head_skb->destructor);
+> >                 swap(tail->sk, head_skb->sk);
+> >         }
 >
-> Thank you for the patch!
+> My understanding is that one assumption in the original
+> SKB_GSO_FRAGLIST implementation was that SKB_GSO_FRAGLIST skbs are not
+> owned by any socket.
 >
-> On 24/04/2021 13:48, Masahiro Yamada wrote:
-> > LANG gives a weak default to each LC_* in case it is not explicitly
-> > defined. LC_ALL, if set, overrides all other LC_* variables.
-> >
-> >   LANG  <  LC_CTYPE, LC_COLLATE, LC_MONETARY, LC_NUMERIC, ...  <  LC_ALL
-> >
-> > This is why documentation such as [1] suggests to set LC_ALL in build
-> > scripts to get the deterministic result.
-> >
-> > LANG=C is not strong enough to override LC_* that may be set by end
-> > users.
-> >
-> > [1]: https://reproducible-builds.org/docs/locales/
-> >
-> > Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
-> > ---
-> >
-> >  arch/powerpc/boot/wrapper                          | 2 +-
-> >  scripts/nsdeps                                     | 2 +-
-> >  scripts/recordmcount.pl                            | 2 +-
-> >  scripts/setlocalversion                            | 2 +-
-> >  scripts/tags.sh                                    | 2 +-
-> >  tools/testing/selftests/net/mptcp/mptcp_connect.sh | 2 +-
+> AFAICS the above assumption was true until:
 >
-> Acked-by: Matthieu Baerts <matthieu.baerts@tessares.net> (mptcp)
+> commit c75fb320d482a5ce6e522378d137fd2c3bf79225
+> Author: Paolo Abeni <pabeni@redhat.com>
+> Date:   Fri Apr 9 13:04:37 2021 +0200
 >
-> Cheers,
-> Matt
-> --
-> Tessares | Belgium | Hybrid Access Solutions
-> www.tessares.net
+>     veth: use skb_orphan_partial instead of skb_orphan
+>
+> after that, if the skb is owned, skb->destructor is sock_efree(), so
+> the above code should not trigger.
 
+Okay, great.
 
-Applied to linux-kbuild.
+> More importantly SKB_GSO_FRAGLIST can only be applied if the inner-
+> most protocol is UDP, so
+> commit 432c856fcf45c468fffe2e5029cb3f95c7dc9475
+> and d6a4a10411764cf1c3a5dad4f06c5ebe5194488b should not be relevant.
 
-
--- 
-Best Regards
-Masahiro Yamada
+I think the first does apply, as it applies to any protocol that uses
+sock_wfree, not just tcp_wfree? Anyway, the point is moot indeed.
