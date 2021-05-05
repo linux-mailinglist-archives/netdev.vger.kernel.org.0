@@ -2,95 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0977737342E
-	for <lists+netdev@lfdr.de>; Wed,  5 May 2021 06:17:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E8556373475
+	for <lists+netdev@lfdr.de>; Wed,  5 May 2021 06:43:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231608AbhEEESQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 5 May 2021 00:18:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43910 "EHLO
+        id S231567AbhEEEoA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 5 May 2021 00:44:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49476 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230515AbhEEESP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 5 May 2021 00:18:15 -0400
-Received: from mail-vs1-xe2f.google.com (mail-vs1-xe2f.google.com [IPv6:2607:f8b0:4864:20::e2f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E6DF5C061574;
-        Tue,  4 May 2021 21:17:18 -0700 (PDT)
-Received: by mail-vs1-xe2f.google.com with SMTP id r18so440837vso.12;
-        Tue, 04 May 2021 21:17:18 -0700 (PDT)
+        with ESMTP id S229895AbhEEEn7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 5 May 2021 00:43:59 -0400
+Received: from mail-lf1-x136.google.com (mail-lf1-x136.google.com [IPv6:2a00:1450:4864:20::136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D3DCC061574;
+        Tue,  4 May 2021 21:43:02 -0700 (PDT)
+Received: by mail-lf1-x136.google.com with SMTP id z9so705798lfu.8;
+        Tue, 04 May 2021 21:43:02 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=yWX4oJR4tsVyMxcW0RBqF75Bbh7IX1sBST4dlvOh10c=;
-        b=BU15yE000ZMck7FNXICtJ8wCfvnd/OqEMt2y7fs0fgXB8jz6BMI9XncK8Wm/vA24hM
-         Soo22Kl2m1o3f+upRMDBPSQHybt+vqYeO9O/0zk/ACLiaMQMGk6A9GN3bJu6n2dz+yLd
-         Z/104QxKWbFDgVuwSNqIdfUnuT5N31x5zb+E17SXd4TjkDdxTdCDk+2JT94LrOOanasW
-         jnpyntDjnbun4D/cAmeeJDZ8JRtiMnnycyQdkG1e09PT8vp6mzi/y9MQXtTTXHQBY7i/
-         LQ2+v5ZHwGuD8oXkNNyJf+IplJ2Y+3huT+smNNupNX5GJSHAbroY4delkfRhym3Nm02a
-         8o8A==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=i6tfWMiqn6tTusu+83OD8TRFhIHM3EtAwOkc3hLLH0g=;
+        b=XktYorfIIBfBLTBr5zmtIeIvOzwJojU7pduKcNznDQdlv0kcRrBH2a6sKjf7Me15gO
+         MEU0EVh7GGFr31PXSGqAw8T/jRCMgfoFft73Mr8bC59gHHbwba0NMZOWtHRGQIEq1hLY
+         bXW7RweE1fOsEeAGSsFiZsv83INrYCLRjJVZE6QMts0tCKjAApvUZae8jqLDbXI5TQAm
+         DEWyYCOriUUUYmuISjQucr6HmYC98sikOD0lLpYYsYGpFuoa+RM1w9Il9X98KDXu+o+G
+         zc7ufPY1cLiyUgeg1zI3wekirkzqrf7fJs5KvbTo+62a+QDdheurRlUkou0oh/sUTO3S
+         hr4A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=yWX4oJR4tsVyMxcW0RBqF75Bbh7IX1sBST4dlvOh10c=;
-        b=rdzkbGNJpmOVbF4EB0ikhBbPQrK8rlRaKseKBMJ+oFGb2QgeG4nDJ0aq+1M4u0V3Tx
-         aBifhnE7YsyGRZAY8gGLqBNxp3DWxIXGGzZP6tHC5Z4KPYLf5gAjr+i+tPNuitQZ3Pwt
-         cA4B7SZPP/yveChF8Y752YT2QBBOkDBFSc0WRwJ8PS2oCEz7bnxYCrY8lTWBuNDh4hAz
-         qepPK0ulTirq7Xo376N6zpjzZH9YWG7z06WMOpbnQLvRhOvVXLIlhWcCITeiMGHoLGan
-         lZ5bwfaMwtD2HTIj2886RQMJx0svSiRZLnhK6royWP+OKczk6Fsupi6gk0XLoRAg0XdG
-         G7TA==
-X-Gm-Message-State: AOAM533ZdTvebSLAw2qeVctVQqGvteLmBn3pJOg2wbezTCVMmek/W1m0
-        1fweT+wIj8KmnQrm8l4Kg6E=
-X-Google-Smtp-Source: ABdhPJzAO4Suv/5mO4UkLcEyRpoSuJrEA15sGU511QPNtZLmxb5ZLx27qzPkXhqP3OK3EQYSgvZnZA==
-X-Received: by 2002:a67:8008:: with SMTP id b8mr1139349vsd.13.1620188238228;
-        Tue, 04 May 2021 21:17:18 -0700 (PDT)
-Received: from localhost.localdomain ([65.48.163.91])
-        by smtp.gmail.com with ESMTPSA id o35sm594070uae.3.2021.05.04.21.17.16
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 04 May 2021 21:17:17 -0700 (PDT)
-From:   Sean Gloumeau <sajgloumeau@gmail.com>
-To:     Jiri Kosina <trivial@kernel.org>
-Cc:     kbingham@kernel.org, David Woodhouse <dwmw2@infradead.org>,
-        Richard Weinberger <richard@nod.at>,
-        linux-mtd@lists.infradead.org, Rasesh Mody <rmody@marvell.com>,
-        Sudarsana Kalluru <skalluru@marvell.com>,
-        GR-Linux-NIC-Dev@marvell.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Sean Gloumeau <sajgloumeau@protonmail.com>,
-        Sean Gloumeau <sajgloumeau@gmail.com>
-Subject: [PATCH 3/3] Add entries for words with stem "eleminat"
-Date:   Wed,  5 May 2021 00:17:08 -0400
-Message-Id: <6a526dbf75f6445f3711df0a201a48f8ac3149cd.1620185393.git.sajgloumeau@gmail.com>
-X-Mailer: git-send-email 2.31.1
-In-Reply-To: <cover.1620185393.git.sajgloumeau@gmail.com>
-References: <cover.1620185393.git.sajgloumeau@gmail.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=i6tfWMiqn6tTusu+83OD8TRFhIHM3EtAwOkc3hLLH0g=;
+        b=lgvjHRBc+NGbiSXlKjcU6KDefuv7CKcTEZvquN6nrZyKEzZk1UFrifpM4p9RzfrYYa
+         5O+q7l8I8r9R02+A1xTOo+BOnUbBxtkTjORndewEq2pdKJpjb8Lyaoz1isnB2xNO0OV4
+         t0aBNu1wj/V747S0EnTUcOjKNmobhwAhmyWfwTObyausCC1dJRm/FRkc7TdaRaoLo90F
+         wowZu0u4W9Iz93gcky48S4Mjfk2hpTx8/30b919ivcuSkBz1QwY2FkyFDAs1eg9baStL
+         uo1Anns2eOgyRtHC1Cjd34iNtHvM6htoFsT7KNDJyg96P1Zsl4MlgfDH8uow1yVVQN6S
+         licw==
+X-Gm-Message-State: AOAM530qxHq4buHR5J3wplDLYORMZsLOjLqQeqlunhF6pS+GOeZBtcTz
+        s2lH+d8xp0PpQoPsiVMk0Vxe6fQ+R5yXOl0sKPQ=
+X-Google-Smtp-Source: ABdhPJyOptnjgcBivEYhyOXQI3+huGmMZOpKV2bxRJc7Jd726yTpLneY9I2VH7UeyuCQbom7C2aTKuhNY1l2vzkQlf8=
+X-Received: by 2002:ac2:5b1a:: with SMTP id v26mr6672147lfn.534.1620189780883;
+ Tue, 04 May 2021 21:43:00 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20210430134754.179242-1-jolsa@kernel.org> <CAEf4BzbEjvccUDabpTiPOiXK=vfcmHaXjeaTL8gCr08=6fBqhg@mail.gmail.com>
+ <YJFM/iLKb1EWCYEx@krava> <CAEf4BzbY24gFqCORLiAFpSjrv_TUPMwvGzn96hGtk+eYVDnbSQ@mail.gmail.com>
+In-Reply-To: <CAEf4BzbY24gFqCORLiAFpSjrv_TUPMwvGzn96hGtk+eYVDnbSQ@mail.gmail.com>
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Date:   Tue, 4 May 2021 21:42:49 -0700
+Message-ID: <CAADnVQKE-jXi22mrOvEX_PpjK5vxNrb6m6-G71iP5ih+R5svqA@mail.gmail.com>
+Subject: Re: [RFC] bpf: Fix crash on mm_init trampoline attachment
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Cc:     Jiri Olsa <jolsa@redhat.com>, Jiri Olsa <jolsa@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andriin@fb.com>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Entries are added to spelling.txt in order to prevent spelling mistakes
-involving words with stem "eliminat" from occurring again.
+On Tue, May 4, 2021 at 5:36 PM Andrii Nakryiko
+<andrii.nakryiko@gmail.com> wrote:
+>
+> On Tue, May 4, 2021 at 6:32 AM Jiri Olsa <jolsa@redhat.com> wrote:
+> >
+> > On Mon, May 03, 2021 at 03:45:28PM -0700, Andrii Nakryiko wrote:
+> > > On Fri, Apr 30, 2021 at 6:48 AM Jiri Olsa <jolsa@kernel.org> wrote:
+> > > >
+> > > > There are 2 mm_init functions in kernel.
+> > > >
+> > > > One in kernel/fork.c:
+> > > >   static struct mm_struct *mm_init(struct mm_struct *mm,
+> > > >                                    struct task_struct *p,
+> > > >                                    struct user_namespace *user_ns)
+> > > >
+> > > > And another one in init/main.c:
+> > > >   static void __init mm_init(void)
+> > > >
+> > > > The BTF data will get the first one, which is most likely
+> > > > (in my case) mm_init from init/main.c without arguments.
 
-Signed-off-by: Sean Gloumeau <sajgloumeau@gmail.com>
----
- scripts/spelling.txt | 3 +++
- 1 file changed, 3 insertions(+)
+did you hack pahole in some way to get to this point?
+I don't see this with pahole master.
+mm_init in BTF matches the one in init/main.c. The void one.
+Do you have two static mm_init-s in BTF somehow?
 
-diff --git a/scripts/spelling.txt b/scripts/spelling.txt
-index 7b6a01291598..e657be5aa2a9 100644
---- a/scripts/spelling.txt
-+++ b/scripts/spelling.txt
-@@ -548,6 +548,9 @@ ehther||ether
- eigth||eight
- elementry||elementary
- eletronic||electronic
-+eleminate||eliminate
-+eleminating||eliminating
-+elemination||elimination
- embeded||embedded
- enabledi||enabled
- enbale||enable
--- 
-2.31.1
-
+In general it's possible to have different static funcs with the same
+name in kallsyms. I found 3 'seq_start' in my .config.
+So renaming static funcs is not an option.
+The simplest approach for now is to avoid emitting BTF
+if there is more than one func (that will prevent attaching because
+there won't be any BTF for that func).
+Long term I think BTF can store the .text offset and the verifier
+can avoid kallsym lookup.
+We do store insn_off in bpf_func_info for bpf progs.
+Something like this could be done for kernel and module funcs.
+But that's long term.
