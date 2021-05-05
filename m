@@ -2,37 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A1F1B37403C
-	for <lists+netdev@lfdr.de>; Wed,  5 May 2021 18:34:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C926637403F
+	for <lists+netdev@lfdr.de>; Wed,  5 May 2021 18:34:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234092AbhEEQd2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 5 May 2021 12:33:28 -0400
-Received: from mail.kernel.org ([198.145.29.99]:52820 "EHLO mail.kernel.org"
+        id S234387AbhEEQde (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 5 May 2021 12:33:34 -0400
+Received: from mail.kernel.org ([198.145.29.99]:52900 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S234235AbhEEQc4 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 5 May 2021 12:32:56 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 7FEF66140F;
-        Wed,  5 May 2021 16:31:58 +0000 (UTC)
+        id S234164AbhEEQc5 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 5 May 2021 12:32:57 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id DC94D613CB;
+        Wed,  5 May 2021 16:31:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1620232319;
-        bh=ozxYQK2I4m6WXRH/vrM28MgAhUkooC2xtMvHqQPFQho=;
+        s=k20201202; t=1620232320;
+        bh=A6XwZIRj3cPG/0PWTLC7UH8xv/Ij3Tu1pDZ73764Tu0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=OI7/M76apy0hG2Q4Jxx1onZbb9bEK5CrexJEBt/+UaSOeYnxLvsY6ZjRRcuATMT9F
-         qkLDnfjhL10KpIzcQ9XRoMOJerupex+BoeZZe1+8CA0ZmJsGrNVW1dDVBrM5OJ+58g
-         vFKAWJqXsc4/IZmNpWgaTmX0XJovrKzAtB662b2HCYN4FeF6V7HhGmZVGykonlvGlx
-         MRcYy4GpaJqbZVYzuF4AGCZ7YAQgO1cVyFQYakVOxLVQ4w1/faucXnTJy3QNa8cMR2
-         Pz9G1o8gVlav+/gvOhD1ZMlR1SiQyD73J+vC60Rrn4hN5EnnlXp2idnE677lnt+szT
-         uQGaqcXdKi9zg==
+        b=k46O2w9FYw8DctVTYru2my1PPfEezZz22VenBXeJqTFzu5ntBDURi/i3xVAPKfh+N
+         uYHD9luTGOmM7a8vvLX1+umN4Kj9wu0Griqb+s+bzGMNGyJClR0AaFMZAV2LdKP08S
+         WHK4gwMhPEQCkV/KiYJjaoVkqgB7+IzzFE+OaZfN/aIqXiFYZGt8TXYWlgW2xF6uMF
+         lX9lI+hYX6KZu09RWegRshPpsuy3glO36k/oKdpkYJzQ9/CWNY8JlZmUgqo+WvpfnR
+         BUY2ZJgjdIEhwB2C/eoEh+LIWKpev0LoEviQX+GGL8M9Jo440J0W8Af3w6TIr2UPmc
+         VKbFui5tRoNUg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>,
-        syzbot <syzbot+fadfba6a911f6bf71842@syzkaller.appspotmail.com>,
-        Marcel Holtmann <marcel@holtmann.org>,
-        Sasha Levin <sashal@kernel.org>,
-        linux-bluetooth@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.12 025/116] Bluetooth: initialize skb_queue_head at l2cap_chan_create()
-Date:   Wed,  5 May 2021 12:29:53 -0400
-Message-Id: <20210505163125.3460440-25-sashal@kernel.org>
+Cc:     Vladimir Oltean <vladimir.oltean@nxp.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.12 026/116] net/sched: cls_flower: use ntohs for struct flow_dissector_key_ports
+Date:   Wed,  5 May 2021 12:29:54 -0400
+Message-Id: <20210505163125.3460440-26-sashal@kernel.org>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20210505163125.3460440-1-sashal@kernel.org>
 References: <20210505163125.3460440-1-sashal@kernel.org>
@@ -44,41 +42,106 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
+From: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-[ Upstream commit be8597239379f0f53c9710dd6ab551bbf535bec6 ]
+[ Upstream commit 6215afcb9a7e35cef334dc0ae7f998cc72c8465f ]
 
-syzbot is hitting "INFO: trying to register non-static key." message [1],
-for "struct l2cap_chan"->tx_q.lock spinlock is not yet initialized when
-l2cap_chan_del() is called due to e.g. timeout.
+A make W=1 build complains that:
 
-Since "struct l2cap_chan"->lock mutex is initialized at l2cap_chan_create()
-immediately after "struct l2cap_chan" is allocated using kzalloc(), let's
-as well initialize "struct l2cap_chan"->{tx_q,srej_q}.lock spinlocks there.
+net/sched/cls_flower.c:214:20: warning: cast from restricted __be16
+net/sched/cls_flower.c:214:20: warning: incorrect type in argument 1 (different base types)
+net/sched/cls_flower.c:214:20:    expected unsigned short [usertype] val
+net/sched/cls_flower.c:214:20:    got restricted __be16 [usertype] dst
 
-[1] https://syzkaller.appspot.com/bug?extid=fadfba6a911f6bf71842
+This is because we use htons on struct flow_dissector_key_ports members
+src and dst, which are defined as __be16, so they are already in network
+byte order, not host. The byte swap function for the other direction
+should have been used.
 
-Reported-and-tested-by: syzbot <syzbot+fadfba6a911f6bf71842@syzkaller.appspotmail.com>
-Signed-off-by: Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
-Signed-off-by: Marcel Holtmann <marcel@holtmann.org>
+Because htons and ntohs do the same thing (either both swap, or none
+does), this change has no functional effect except to silence the
+warnings.
+
+Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/bluetooth/l2cap_core.c | 2 ++
- 1 file changed, 2 insertions(+)
+ net/sched/cls_flower.c | 36 ++++++++++++++++++------------------
+ 1 file changed, 18 insertions(+), 18 deletions(-)
 
-diff --git a/net/bluetooth/l2cap_core.c b/net/bluetooth/l2cap_core.c
-index db6a4b2d0d77..53ddbee459b9 100644
---- a/net/bluetooth/l2cap_core.c
-+++ b/net/bluetooth/l2cap_core.c
-@@ -451,6 +451,8 @@ struct l2cap_chan *l2cap_chan_create(void)
- 	if (!chan)
- 		return NULL;
+diff --git a/net/sched/cls_flower.c b/net/sched/cls_flower.c
+index c69a4ba9c33f..3035f96c6e6c 100644
+--- a/net/sched/cls_flower.c
++++ b/net/sched/cls_flower.c
+@@ -209,16 +209,16 @@ static bool fl_range_port_dst_cmp(struct cls_fl_filter *filter,
+ 				  struct fl_flow_key *key,
+ 				  struct fl_flow_key *mkey)
+ {
+-	__be16 min_mask, max_mask, min_val, max_val;
++	u16 min_mask, max_mask, min_val, max_val;
  
-+	skb_queue_head_init(&chan->tx_q);
-+	skb_queue_head_init(&chan->srej_q);
- 	mutex_init(&chan->lock);
+-	min_mask = htons(filter->mask->key.tp_range.tp_min.dst);
+-	max_mask = htons(filter->mask->key.tp_range.tp_max.dst);
+-	min_val = htons(filter->key.tp_range.tp_min.dst);
+-	max_val = htons(filter->key.tp_range.tp_max.dst);
++	min_mask = ntohs(filter->mask->key.tp_range.tp_min.dst);
++	max_mask = ntohs(filter->mask->key.tp_range.tp_max.dst);
++	min_val = ntohs(filter->key.tp_range.tp_min.dst);
++	max_val = ntohs(filter->key.tp_range.tp_max.dst);
  
- 	/* Set default lock nesting level */
+ 	if (min_mask && max_mask) {
+-		if (htons(key->tp_range.tp.dst) < min_val ||
+-		    htons(key->tp_range.tp.dst) > max_val)
++		if (ntohs(key->tp_range.tp.dst) < min_val ||
++		    ntohs(key->tp_range.tp.dst) > max_val)
+ 			return false;
+ 
+ 		/* skb does not have min and max values */
+@@ -232,16 +232,16 @@ static bool fl_range_port_src_cmp(struct cls_fl_filter *filter,
+ 				  struct fl_flow_key *key,
+ 				  struct fl_flow_key *mkey)
+ {
+-	__be16 min_mask, max_mask, min_val, max_val;
++	u16 min_mask, max_mask, min_val, max_val;
+ 
+-	min_mask = htons(filter->mask->key.tp_range.tp_min.src);
+-	max_mask = htons(filter->mask->key.tp_range.tp_max.src);
+-	min_val = htons(filter->key.tp_range.tp_min.src);
+-	max_val = htons(filter->key.tp_range.tp_max.src);
++	min_mask = ntohs(filter->mask->key.tp_range.tp_min.src);
++	max_mask = ntohs(filter->mask->key.tp_range.tp_max.src);
++	min_val = ntohs(filter->key.tp_range.tp_min.src);
++	max_val = ntohs(filter->key.tp_range.tp_max.src);
+ 
+ 	if (min_mask && max_mask) {
+-		if (htons(key->tp_range.tp.src) < min_val ||
+-		    htons(key->tp_range.tp.src) > max_val)
++		if (ntohs(key->tp_range.tp.src) < min_val ||
++		    ntohs(key->tp_range.tp.src) > max_val)
+ 			return false;
+ 
+ 		/* skb does not have min and max values */
+@@ -783,16 +783,16 @@ static int fl_set_key_port_range(struct nlattr **tb, struct fl_flow_key *key,
+ 		       TCA_FLOWER_UNSPEC, sizeof(key->tp_range.tp_max.src));
+ 
+ 	if (mask->tp_range.tp_min.dst && mask->tp_range.tp_max.dst &&
+-	    htons(key->tp_range.tp_max.dst) <=
+-	    htons(key->tp_range.tp_min.dst)) {
++	    ntohs(key->tp_range.tp_max.dst) <=
++	    ntohs(key->tp_range.tp_min.dst)) {
+ 		NL_SET_ERR_MSG_ATTR(extack,
+ 				    tb[TCA_FLOWER_KEY_PORT_DST_MIN],
+ 				    "Invalid destination port range (min must be strictly smaller than max)");
+ 		return -EINVAL;
+ 	}
+ 	if (mask->tp_range.tp_min.src && mask->tp_range.tp_max.src &&
+-	    htons(key->tp_range.tp_max.src) <=
+-	    htons(key->tp_range.tp_min.src)) {
++	    ntohs(key->tp_range.tp_max.src) <=
++	    ntohs(key->tp_range.tp_min.src)) {
+ 		NL_SET_ERR_MSG_ATTR(extack,
+ 				    tb[TCA_FLOWER_KEY_PORT_SRC_MIN],
+ 				    "Invalid source port range (min must be strictly smaller than max)");
 -- 
 2.30.2
 
