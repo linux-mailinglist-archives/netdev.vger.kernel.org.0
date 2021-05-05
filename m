@@ -2,122 +2,147 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EF2043735D5
-	for <lists+netdev@lfdr.de>; Wed,  5 May 2021 09:51:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3B9993735EB
+	for <lists+netdev@lfdr.de>; Wed,  5 May 2021 09:59:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231797AbhEEHwW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 5 May 2021 03:52:22 -0400
-Received: from mail-il1-f200.google.com ([209.85.166.200]:53094 "EHLO
-        mail-il1-f200.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231650AbhEEHwV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 5 May 2021 03:52:21 -0400
-Received: by mail-il1-f200.google.com with SMTP id s2-20020a056e0210c2b0290196bac26c2cso872207ilj.19
-        for <netdev@vger.kernel.org>; Wed, 05 May 2021 00:51:25 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=Gx9YBfhAApSMSPzOqe5EH8EB6gM0L8yCq0gPlS464UU=;
-        b=CUZMgBke2HxIZpHHJ4msD+AFV0YGIHw6sIjNE39taQnZSMo7z4foc3AZJwXTf42wXn
-         Su+Ze22rK/3bS8wjnkgRPIXmiBLGd44NyeErzTPuDJTnnRkR+zI5YwgjxTkPVat72AkN
-         kP4Wk9MOovxVXrHvRjTArd0IiC7DNJgqFnqLG6RWvKgF3Q6wZ7Kiu93ROcwh64zzV/5Q
-         Ag0Gir4ck2PbdwIhir9Ml7CeKmKX0xqGd9zxtk0kHK3Vzs/v7LZRdkyd0NNCMtqToGca
-         S6FLPbgNipggnDXRCpItjlU5oUfi2iklgb07hBANp8dKlv9MOnZMvIE5uuu9+GncIOuL
-         ajXQ==
-X-Gm-Message-State: AOAM533BWcAa+hCCoNtnwjy/WbfEaD/McKEs4gYpisBRuxDD/umjByik
-        AJKelXiI0TPmZW9RpospsGLri7BNZpDGx7unzBJgNa88N0hN
-X-Google-Smtp-Source: ABdhPJzdPNhHyMYBHXL0JYjztH6zmVszihIm7f31Ad1OxlScuoLTx+WgrjzQGen0TAtJceQS5ifexN+o1oId6QQk5R66/IpAVim5
+        id S231946AbhEEIAW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 5 May 2021 04:00:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35616 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231858AbhEEIAW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 5 May 2021 04:00:22 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C6D1C061574
+        for <netdev@vger.kernel.org>; Wed,  5 May 2021 00:59:26 -0700 (PDT)
+Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <mkl@pengutronix.de>)
+        id 1leCR9-0003tb-Fo; Wed, 05 May 2021 09:59:15 +0200
+Received: from pengutronix.de (unknown [IPv6:2a03:f580:87bc:d400:96db:da04:b018:e517])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (Client did not present a certificate)
+        (Authenticated sender: mkl-all@blackshift.org)
+        by smtp.blackshift.org (Postfix) with ESMTPSA id D423361CF6D;
+        Wed,  5 May 2021 07:51:28 +0000 (UTC)
+Date:   Wed, 5 May 2021 09:51:27 +0200
+From:   Marc Kleine-Budde <mkl@pengutronix.de>
+To:     Frieder Schrempf <frieder.schrempf@kontron.de>
+Cc:     Vincent Mailhol <mailhol.vincent@wanadoo.fr>,
+        Oliver Hartkopp <socketcan@hartkopp.net>,
+        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
+        Timo =?utf-8?B?U2NobMO8w59sZXI=?= <schluessler@krause.de>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Tim Harvey <tharvey@gateworks.com>, stable@vger.kernel.org,
+        linux-can@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2] can: mcp251x: Fix resume from sleep before interface
+ was brought up
+Message-ID: <20210505075127.yrx474t5dkpxxdmt@pengutronix.de>
+References: <17d5d714-b468-482f-f37a-482e3d6df84e@kontron.de>
 MIME-Version: 1.0
-X-Received: by 2002:a92:a301:: with SMTP id a1mr23649432ili.41.1620201084819;
- Wed, 05 May 2021 00:51:24 -0700 (PDT)
-Date:   Wed, 05 May 2021 00:51:24 -0700
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000201e3405c19076a4@google.com>
-Subject: [syzbot] WARNING: suspicious RCU usage in nf_ct_iterate_cleanup (2)
-From:   syzbot <syzbot+86efe6206c1373c8a7cc@syzkaller.appspotmail.com>
-To:     ap420073@gmail.com, christian.brauner@ubuntu.com,
-        daniel@iogearbox.net, davem@davemloft.net, edumazet@google.com,
-        gnault@redhat.com, kuba@kernel.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, serge@hallyn.com,
-        syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="yznx7xbbfo6rpzze"
+Content-Disposition: inline
+In-Reply-To: <17d5d714-b468-482f-f37a-482e3d6df84e@kontron.de>
+X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
+X-SA-Exim-Mail-From: mkl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
 
-syzbot found the following issue on:
+--yznx7xbbfo6rpzze
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-HEAD commit:    d2b6f8a1 Merge tag 'xfs-5.13-merge-3' of git://git.kernel...
-git tree:       upstream
-console output: https://syzkaller.appspot.com/x/log.txt?x=120f2da3d00000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=65c207250bba4efe
-dashboard link: https://syzkaller.appspot.com/bug?extid=86efe6206c1373c8a7cc
+On 05.05.2021 09:14:15, Frieder Schrempf wrote:
+> From: Frieder Schrempf <frieder.schrempf@kontron.de>
+>=20
+> Since 8ce8c0abcba3 the driver queues work via priv->restart_work when
+> resuming after suspend, even when the interface was not previously
+> enabled. This causes a null dereference error as the workqueue is
+> only allocated and initialized in mcp251x_open().
+>=20
+> To fix this we move the workqueue init to mcp251x_can_probe() as
+> there is no reason to do it later and repeat it whenever
+> mcp251x_open() is called.
+>=20
+> Fixes: 8ce8c0abcba3 ("can: mcp251x: only reset hardware as required")
+> Cc: stable@vger.kernel.org
+> Signed-off-by: Frieder Schrempf <frieder.schrempf@kontron.de>
+> Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+> ---
+> Changes in v2:
+>   * Remove the out_clean label in mcp251x_open()
+>   * Add Andy's R-b tag
+>   * Add 'From' tag
+>=20
+> Hi Marc, I'm sending a v2 mainly because I noticed that v1 is missing
+> the 'From' tag and as my company's mailserver always sends my name
+> reversed this causes incorrect author information in git. So if possible
+> you could fix this up. If this is too much work, just leave it as is.
+> Thanks!
 
-Unfortunately, I don't have any reproducer for this issue yet.
+Done.
 
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+86efe6206c1373c8a7cc@syzkaller.appspotmail.com
+I've also squashed this fixup:
 
-=============================
-WARNING: suspicious RCU usage
-5.12.0-syzkaller #0 Not tainted
------------------------------
-kernel/sched/core.c:8304 Illegal context switch in RCU-bh read-side critical section!
+| --- a/drivers/net/can/spi/mcp251x.c
+| +++ b/drivers/net/can/spi/mcp251x.c
+| @@ -1224,13 +1224,13 @@ static int mcp251x_open(struct net_device *net)
+| =20
+|         ret =3D mcp251x_hw_wake(spi);
+|         if (ret)
+| -               goto out_free_wq;
+| +               goto out_free_irq;
+|         ret =3D mcp251x_setup(net, spi);
+|         if (ret)
+| -               goto out_free_wq;
+| +               goto out_free_irq;
+|         ret =3D mcp251x_set_normal_mode(spi);
+|         if (ret)
+| -               goto out_free_wq;
+| +               goto out_free_irq;
+| =20
+|         can_led_event(net, CAN_LED_EVENT_OPEN);
+| =20
+| @@ -1239,8 +1239,7 @@ static int mcp251x_open(struct net_device *net)
+| =20
+|         return 0;
+| =20
+| -out_free_wq:
+| -       destroy_workqueue(priv->wq);
+| +out_free_irq:
+|         free_irq(spi->irq, priv);
+|         mcp251x_hw_sleep(spi);
+|  out_close:
 
-other info that might help us debug this:
+Marc
 
+--=20
+Pengutronix e.K.                 | Marc Kleine-Budde           |
+Embedded Linux                   | https://www.pengutronix.de  |
+Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
+Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
 
-rcu_scheduler_active = 2, debug_locks = 0
-3 locks held by kworker/u4:7/11790:
- #0: 
-ffff888011e93138
- (
-(wq_completion)netns
-){+.+.}-{0:0}
-, at: arch_atomic64_set arch/x86/include/asm/atomic64_64.h:34 [inline]
-, at: atomic64_set include/asm-generic/atomic-instrumented.h:856 [inline]
-, at: atomic_long_set include/asm-generic/atomic-long.h:41 [inline]
-, at: set_work_data kernel/workqueue.c:616 [inline]
-, at: set_work_pool_and_clear_pending kernel/workqueue.c:643 [inline]
-, at: process_one_work+0x871/0x1600 kernel/workqueue.c:2246
- #1: 
-ffffc90002377da8
- (
-net_cleanup_work
-){+.+.}-{0:0}
-, at: process_one_work+0x8a5/0x1600 kernel/workqueue.c:2250
- #2: 
-ffffffff8d672190
- (
-pernet_ops_rwsem
-){++++}-{3:3}
-, at: cleanup_net+0x9b/0xb10 net/core/net_namespace.c:557
+--yznx7xbbfo6rpzze
+Content-Type: application/pgp-signature; name="signature.asc"
 
-stack backtrace:
-CPU: 1 PID: 11790 Comm: kworker/u4:7 Not tainted 5.12.0-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-Workqueue: netns cleanup_net
-Call Trace:
- __dump_stack lib/dump_stack.c:79 [inline]
- dump_stack+0x141/0x1d7 lib/dump_stack.c:120
- ___might_sleep+0x229/0x2c0 kernel/sched/core.c:8304
- get_next_corpse net/netfilter/nf_conntrack_core.c:2223 [inline]
- nf_ct_iterate_cleanup+0x16d/0x450 net/netfilter/nf_conntrack_core.c:2245
- nf_conntrack_cleanup_net_list+0x81/0x250 net/netfilter/nf_conntrack_core.c:2432
- ops_exit_list+0x10d/0x160 net/core/net_namespace.c:178
- cleanup_net+0x4ea/0xb10 net/core/net_namespace.c:595
- process_one_work+0x98d/0x1600 kernel/workqueue.c:2275
- worker_thread+0x64c/0x1120 kernel/workqueue.c:2421
- kthread+0x3b1/0x4a0 kernel/kthread.c:313
- ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:294
+-----BEGIN PGP SIGNATURE-----
 
+iQEzBAABCgAdFiEEK3kIWJt9yTYMP3ehqclaivrt76kFAmCSTnwACgkQqclaivrt
+76kv9wf7BAMTVYzAMRMbokLYHE5LYSL7ixmtjQKCiMJLQBD31lk6piZ1ZIvmYW2m
+FR9JeZD1IaatAbLyV3Whw8G6no+qvzVJCrgV8sR5zKuhYmYLHFeHmmAuf1LX7nzq
+wd9uWnlGlkNN6b//r7euI/ccZmHsLYsl3sRVx2deVtBY2ed3/8KU4JhSGQH4U7FO
+Ac66BmV6yGIwoymO5u7zRhx0m+B3eMY/02v+E2L/qXEYcJrNiFjWU7EcEm5lPP9f
+e98fYjC9rwmHk3afaLFKP3XYLOsPYcbo/lSjoArNvqc0KZYV6VD2dEqd89EhCxGB
+d4pDmDGLYg0n8IyI+2XPrF3rw0Xaog==
+=YDVe
+-----END PGP SIGNATURE-----
 
----
-This report is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
-
-syzbot will keep track of this issue. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+--yznx7xbbfo6rpzze--
