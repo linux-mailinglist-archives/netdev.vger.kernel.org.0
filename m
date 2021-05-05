@@ -2,225 +2,249 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2E775373BA8
-	for <lists+netdev@lfdr.de>; Wed,  5 May 2021 14:46:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7F11F373B67
+	for <lists+netdev@lfdr.de>; Wed,  5 May 2021 14:35:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232079AbhEEMqy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 5 May 2021 08:46:54 -0400
-Received: from mx0a-00169c01.pphosted.com ([67.231.148.124]:65424 "EHLO
-        mx0b-00169c01.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S230034AbhEEMqx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 5 May 2021 08:46:53 -0400
-X-Greylist: delayed 4521 seconds by postgrey-1.27 at vger.kernel.org; Wed, 05 May 2021 08:46:53 EDT
-Received: from pps.filterd (m0048493.ppops.net [127.0.0.1])
-        by mx0a-00169c01.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 145BQ5f8020501
-        for <netdev@vger.kernel.org>; Wed, 5 May 2021 04:30:36 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=paloaltonetworks.com;
- h=mime-version : references : in-reply-to : from : date : message-id :
- subject : to : cc : content-type : content-transfer-encoding;
- s=PPS12012017; bh=rwYfyngqP9AVg99ir4kUARqe7BGAG17ajRsR7qsLqc8=;
- b=IqznPDne0LBl0RVt6y69eyGWrI7t6VXUdfec59Bns6DNQqYtiYUSv1olooGrGoWhcOi8
- pxJJH8wV/CXBKqBrpHPIDdtH9Lyc7kPrnk3XoAzPrB1q1l4DqhmhutuhxccgPWPCcwTo
- sfjnRB6076SBzfV2G+MPs1SXoMtWypO50Qwh1k0pP4KlwdrvrsQfQPhhnjQnVOpOkA5K
- ZbG5emsY01Fb6HOv6avEG9foXhqekoWE2OgrJMtYwxHMd0R9AtjL2ll8tRSO1RAv+b9k
- g2oHZ3BCG62gqIfORCym2XuUOvg47491TURWBBaV8zxbn/q/UUcGLVDk+klPLoO13L65 YA== 
-Received: from mail-wm1-f71.google.com (mail-wm1-f71.google.com [209.85.128.71])
-        by mx0a-00169c01.pphosted.com with ESMTP id 38bebbv06r-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-        for <netdev@vger.kernel.org>; Wed, 05 May 2021 04:30:36 -0700
-Received: by mail-wm1-f71.google.com with SMTP id o18-20020a1ca5120000b02901333a56d46eso1494254wme.8
-        for <netdev@vger.kernel.org>; Wed, 05 May 2021 04:30:36 -0700 (PDT)
+        id S233470AbhEEMgj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 5 May 2021 08:36:39 -0400
+Received: from mail-mw2nam12on2091.outbound.protection.outlook.com ([40.107.244.91]:39360
+        "EHLO NAM12-MW2-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S229793AbhEEMgi (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 5 May 2021 08:36:38 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=hGkVmW7kZvUaeAdUOq/5beiH1RxaBlZ1/D6gdF890eLjES7iNJ2LHhyGwXpyKop7dtuQ/cWJsm9jjY+ATV6ZNZuUmUZcMg/UkgudsueXK2LoB1UqONFOO4qrIYuvg17Cau6anSn5x65UYRu+F9De76ja2Q6DFjUSUM/2Ny8Nzm7BX1cIWOitdGDUhpin2wM+bn2xvswlf84Wl4NvfJPranEXF4TbvEmXmqHTSUUHgmu7izA/csMKKmK6tgzbiHXkDhyCjRmo9lK+URDXU4mE4veHcIqy7dTEd7iBR7CdYrN1ioPWTg3+APxzUvnNhvhNyqjoY3IPD0S1g2ssEIWJ9Q==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=mXiYWElifnbbh7KYKuP2vjLQ6iAsPirdtwryjRoPTbo=;
+ b=a5YIiqlgny8J5cG35pqM8YCSR4R5w0c/bzEnU1a0lUdfHC1lcpVblMmjtfgrqDiPI65jOI3YXd4hYUoqo2kuCNMfuuAIIlosW9JkhdpXjN6DigqZkejI7V3/iN7pVRgLXPz/5lOVJ+92Fs+ZqL+fyKJmf8iNrMHZbfV5P2jmH4l/jBn2CKwdh7NxxTcTzM9S8p2kugejF/rcZIJ1wx36T9O1hrvrMDp5xBAqh8p8kq1H2H5W4zQT8R9fM7J9zTyiezd5/8Yhy2+aX9Q8WUpVldBdLHz3k/tFU1ah7FQYPlqwfxtXDsuVoTg9AP+cjZs2KKoACgekMup1oCWgETRY6g==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=in-advantage.com; dmarc=pass action=none
+ header.from=in-advantage.com; dkim=pass header.d=in-advantage.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=paloaltonetworks-com.20150623.gappssmtp.com; s=20150623;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=rwYfyngqP9AVg99ir4kUARqe7BGAG17ajRsR7qsLqc8=;
-        b=dQ9hmxlAPtp99pdX7bL6juVpy/FGwPFHBt9FCu0Pfphxc0wWzMBTrlIzU2olB82XYt
-         WiIoMfY06CQ0HT22EO2vaMpzT7jju4s+77ohkgn2YXH5vs51xTYYcEk06hLEUmpT/CnF
-         VlLECYAFjBQt6DA5rvj6NejaKDaOy59PGgkGOWGWeQkZTy+ruGQdoSlNX8sWqbDkFd+4
-         R5kTS4HBMofXmd7/XAH3gZtt0TqtAcMHfhEtlLZd2mQ/r9BAE7pdGhl24d+R3KKPgwpQ
-         zA857POiJpM9ogtdqsrd1hdx091YpZsI1gfVhHn9un8fRUNGEO/SdpqtLSKvrfOdKlXk
-         HZEQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=rwYfyngqP9AVg99ir4kUARqe7BGAG17ajRsR7qsLqc8=;
-        b=X2g++oIVmyOA43GkplA2zqkmn0Lfvy1KSVIHnp+f+MgdXJNQte21EFE3AFQZNXcNYS
-         +6xHGYpk57SFeXi/hP55AUdykGI/DJgfZLz/7/59AWen0Valahag7V6B3s1/WjJAJ8an
-         ihAv4LcyUkF7xSppmbeGVSmNULAJi0ZWO6IbW3dznEourQFtZbBOmO0IC0ouQ3RAwEXM
-         k1NFangUw4ly6YmieHdAIgjMDqq1YONz+toFOHcKnSa17W9XOLdlwyptdgfxkib5+Gwg
-         FjBhxLJxhxXOo0imtWGeGxLIRp9YHOFn1Qy2u120+vZ9m5qgPF0PoEORpAXNI/rygp+h
-         yiVg==
-X-Gm-Message-State: AOAM5306Sg0rf0xcr1w5NPgIg3fIddmqs47OVF0eeRcwzGp35C1Cgg0a
-        yGN54GMGCBH8m4nyLEP74x/JWTWZqvpUlOjI9h455l44iv9WDMQABc3mp01EjF5i3W33ffrIczN
-        8U9lSvepal/vc0SvQn4rFIeWK6az+DuuU
-X-Received: by 2002:a1c:cc0b:: with SMTP id h11mr9468328wmb.87.1620214234217;
-        Wed, 05 May 2021 04:30:34 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJw4r/d5P1Ye2Cm7CbINexMkAuEEHm4Inr7+l5TKr96OZhvD2+HLMOeuOVzYBdk2Kj7VG3sanK9DRF+ilvxnjNs=
-X-Received: by 2002:a1c:cc0b:: with SMTP id h11mr9468289wmb.87.1620214233791;
- Wed, 05 May 2021 04:30:33 -0700 (PDT)
+ d=inadvantage.onmicrosoft.com; s=selector2-inadvantage-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=mXiYWElifnbbh7KYKuP2vjLQ6iAsPirdtwryjRoPTbo=;
+ b=xYZj6wq2zJWr/nCUJSxKhAONJzb245bezQTD2EmTguh9fkTis3tW1qm3H/kQ35aOJ/sYz9p1hscTeyFruACKrsZ9xFpz2MH1AzkJi+uVEhsN97A5zhhoWO+BCDD4MkvTV+fZ08LrQxWSdoRWlk0nQkRA6dAluEZSuPQ8dU+uOck=
+Authentication-Results: nxp.com; dkim=none (message not signed)
+ header.d=none;nxp.com; dmarc=none action=none header.from=in-advantage.com;
+Received: from MWHSPR01MB355.namprd10.prod.outlook.com (2603:10b6:301:6c::37)
+ by MWHPR1001MB2256.namprd10.prod.outlook.com (2603:10b6:301:31::26) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4087.26; Wed, 5 May
+ 2021 12:35:39 +0000
+Received: from MWHSPR01MB355.namprd10.prod.outlook.com
+ ([fe80::c559:f270:c9b5:a928]) by MWHSPR01MB355.namprd10.prod.outlook.com
+ ([fe80::c559:f270:c9b5:a928%6]) with mapi id 15.20.4065.039; Wed, 5 May 2021
+ 12:35:39 +0000
+Date:   Wed, 5 May 2021 05:35:32 -0700
+From:   Colin Foster <colin.foster@in-advantage.com>
+To:     Vladimir Oltean <vladimir.oltean@nxp.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>, Rob Herring <robh+dt@kernel.org>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        "supporter:OCELOT ETHERNET SWITCH DRIVER" 
+        <UNGLinuxDriver@microchip.com>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Russell King <linux@armlinux.org.uk>,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        "open list:OCELOT ETHERNET SWITCH DRIVER" <netdev@vger.kernel.org>
+Subject: Re: [RFC PATCH vN net-next 2/2] net: mscc: ocelot: add support for
+ VSC75XX SPI control
+Message-ID: <20210505123532.GA1738454@euler>
+References: <20210504051130.1207550-1-colin.foster@in-advantage.com>
+ <20210504051130.1207550-2-colin.foster@in-advantage.com>
+ <YJE+prMCIMiQm26Z@lunn.ch>
+ <20210504125942.nx5b6j2cy34qyyhm@skbuf>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210504125942.nx5b6j2cy34qyyhm@skbuf>
+X-Originating-IP: [67.185.175.147]
+X-ClientProxiedBy: MWHPR19CA0007.namprd19.prod.outlook.com
+ (2603:10b6:300:d4::17) To MWHSPR01MB355.namprd10.prod.outlook.com
+ (2603:10b6:301:6c::37)
 MIME-Version: 1.0
-References: <20210504071525.28342-1-orcohen@paloaltonetworks.com>
- <YJEB6+K0RaPg8KD6@unreal> <CAM6JnLe=ZoHrpX8_i=_s5P-Q4h=mZxU=RN5pQuHbxq8pdZhYRQ@mail.gmail.com>
- <YJIjN6MTRdQ7Bvcp@unreal> <CABV_C9OJ6v1deEknc+V3cJaT+CPjmzg6Wb06_Rsey3AXqOBNYg@mail.gmail.com>
-In-Reply-To: <CABV_C9OJ6v1deEknc+V3cJaT+CPjmzg6Wb06_Rsey3AXqOBNYg@mail.gmail.com>
-From:   Nadav Markus <nmarkus@paloaltonetworks.com>
-Date:   Wed, 5 May 2021 14:30:23 +0300
-Message-ID: <CABV_C9PBdCunuSXQUqULXUCR8+Ymq9i=_A6+KSNF95F34xZBEA@mail.gmail.com>
-Subject: Re: [PATCH] net/nfc: fix use-after-free llcp_sock_bind/connect
-To:     Leon Romanovsky <leon@kernel.org>
-Cc:     Or Cohen <orcohen@paloaltonetworks.com>, davem@davemloft.net,
-        netdev@vger.kernel.org, kuba@kernel.org,
-        Xiaoming Ni <nixiaoming@huawei.com>,
-        matthieu.baerts@tessares.net, mkl@pengutronix.de
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Proofpoint-ORIG-GUID: uRW3qzWvGFUtX-Mv5rL-MtlwDXBFgssD
-X-Proofpoint-GUID: uRW3qzWvGFUtX-Mv5rL-MtlwDXBFgssD
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.391,18.0.761
- definitions=2021-05-05_06:2021-05-05,2021-05-05 signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_spam_notspam policy=outbound_spam score=0 bulkscore=0
- impostorscore=0 mlxlogscore=999 suspectscore=0 spamscore=0 mlxscore=0
- priorityscore=1501 clxscore=1015 malwarescore=0 phishscore=0 adultscore=0
- lowpriorityscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2104060000 definitions=main-2105050086
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from euler (67.185.175.147) by MWHPR19CA0007.namprd19.prod.outlook.com (2603:10b6:300:d4::17) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4108.24 via Frontend Transport; Wed, 5 May 2021 12:35:38 +0000
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 1760409c-270b-4087-2e21-08d90fc249da
+X-MS-TrafficTypeDiagnostic: MWHPR1001MB2256:
+X-Microsoft-Antispam-PRVS: <MWHPR1001MB22563B871AA3F170D2DD2D2DA4599@MWHPR1001MB2256.namprd10.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:10000;
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: EakdpluwboLTiS7Hv1P0tzN1OevHcyhMPRXF2Uo2k7Z/zvMhg+zR+U96taVLnBZlldBgxiXL+fNuPDXPoCWutaH+6wpvBCkUKoulZFNefYgvA39OGWvzU1mj0+xHLxmv+p791s//GuE7ZXPoH/Jwusnm+d4H5X8e9oeibch1mr75fSPGcwaX8bt6ObXLd05E8nkbeSs7sGGzBRsOxiWABcDLTR7ZjspBYFw706o6QCiWrYOup+JiFnSqYrd+ZMGVF4mK2mlTS986zqv98uVbX20dOkapowpzV5Ut0jVc3a1Qm5Sft3SpQdEwE7gxZidrLDEBcK/oBWZl9Qk2qNehuf9PbXjxBbbXR9DoGTvwQRP+oE86+1II8BxhdjR0eqRgQ1XGpFjEBnU81JL3qXTEQR/nNJdiOb2fIdvPArUTY0NF3v9gSns7LJqMVlOaw7GroYzD6STR9fGYvrrFy+pJvKRgohAdoO1EamKGJxTS/gYsxireGLG6icDmD03Z9njfvYBtLp7BSZcGfpSk9OlCIdyA3HsiWckycuaL/r86ww8wMEW35HqEGsca4y9h3H2+IVNzDy5rSHAm+kgNxnrDoH8Y9W2ox+ZCBCU3+XSzq3As5gRTnVkTHoCrMsHV3kp6aQ9k0Sk1YtvwFWGKtuVuXA==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MWHSPR01MB355.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(396003)(366004)(39830400003)(346002)(376002)(136003)(478600001)(38350700002)(55016002)(9686003)(44832011)(2906002)(956004)(38100700002)(6666004)(186003)(8676002)(8936002)(16526019)(9576002)(316002)(86362001)(26005)(4326008)(66946007)(66476007)(66556008)(6916009)(7416002)(5660300002)(33656002)(54906003)(33716001)(6496006)(52116002)(83380400001)(1076003);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData: =?us-ascii?Q?+01grl+yWr/+8ByuBZDTVqn0bXcqWVbWfG224qKtJx4TSPtx2ugjNyzMGnfH?=
+ =?us-ascii?Q?un9NOxVX+8NAvD78L5IycB+Bmpep6R+k0pWxGFmclTJuckgNSeQgQLUz0ed3?=
+ =?us-ascii?Q?bPKR9kEoxXv3KchKAacgCOa+Qx7g2SMIUdmmHhjGukX2vVr+pE2pKjAHLDxV?=
+ =?us-ascii?Q?+GGXqsxwpxpOsMQtRjUiPXn2YvxuPzdmPzMPgm22jTWdtWMcWAc2DACkWPCz?=
+ =?us-ascii?Q?5sp4NJXymanFHPjgpL/R1+Rq/gxjprJ08W3LZkt6fHCHsadDYBIuPtqkeeat?=
+ =?us-ascii?Q?XlgL80A2Kse4o6D29MqE9rm/S9diLGW8xfImkxDNWhp86nn/jT7duxzm5aoJ?=
+ =?us-ascii?Q?AHcbjTj5N8UyYSGP/qb6kp1qXqP0rVnAxPuR3Ghnxel0vVDrQsNZSXbe8SUW?=
+ =?us-ascii?Q?RBTtFPqoW38FvxRt8ghQSPBkiZiZYdI/BqM/Hv89TdGAUVAi8uFFFF1iOROj?=
+ =?us-ascii?Q?2pFJYak9yNOie6C24fz+fYfo2bgvLcIntUuN6ZVWPSb1C0858HQ56CgtfPGL?=
+ =?us-ascii?Q?xAkD/NvXpzzKep9uVG9IRltb3DbIUv5SUUo8dlqb/QD8tTgUR11q32645nKT?=
+ =?us-ascii?Q?elDBC0S6qT87h2DpUeb0vogF3aSD/fl/YfAD7D0EWWweSKc4ZDLX89lh1niR?=
+ =?us-ascii?Q?6rIrXmgzl4/fwXVc/DD0PAv282YnV8tYt1Hx37LhjhaXhTw7g8qz4UgraK/N?=
+ =?us-ascii?Q?22zgndgVnZs2tDGjBbiWi0fnXXbrpywoWfuTj5cpo5/8Q/Hc4VGK2DRa8E0r?=
+ =?us-ascii?Q?Lcv4wIgGtll498v1kbRTjax5rS1E323ugTbny8UREWs0erEekVjQTM8eWp3C?=
+ =?us-ascii?Q?kIM4WkdVrunKT/fQUAIsBQLk1Pz5knw5TdmzAw5GPj1rHlloNw29Mp7iRVyl?=
+ =?us-ascii?Q?bpL34ZlmqgrxaH/2ItdPUq9KV7oitOt1erlugykJHWdS62vB9/nhJzAcjBnQ?=
+ =?us-ascii?Q?vWpuhjrBqbw1rX80KLTGau7H9FyCgjKRVmR47hN94y1Fv9qDFTiIBeAnNt+z?=
+ =?us-ascii?Q?m0yw/Q6hmf7IsbWMT+X8iMEOmx4XMVVxE+eBC1DE7Iur0H7clt3+X1+vwHPa?=
+ =?us-ascii?Q?tQrXFc1ltxf4pApqGrSsqUMnKNVLZcXwjGUHiRAadpMGVEqQHkSWNHbrVoyd?=
+ =?us-ascii?Q?Zns0iOsPUFeuhKK+T7lHytp8qbB/ncj6PcZSVNTEwgCxgIuelSiaVlGPQpz9?=
+ =?us-ascii?Q?MV/bA1T3GO1/58kMPg6Y3ZnpFLoRhs3VZUs1QhGqBC4FpDOn+N0zs4RrhGEA?=
+ =?us-ascii?Q?VR4cL8KAYn5A/mjuTXQPe+qVUMlSNmXUgXaMjHCA02cobVYrmir18VeKne0E?=
+ =?us-ascii?Q?+cqCZIB2k/CoCqaAwSqmPDy3?=
+X-OriginatorOrg: in-advantage.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 1760409c-270b-4087-2e21-08d90fc249da
+X-MS-Exchange-CrossTenant-AuthSource: MWHSPR01MB355.namprd10.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 05 May 2021 12:35:39.1310
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 48e842ca-fbd8-4633-a79d-0c955a7d3aae
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: PyG753LZswfoUsot6xDzDUYne7Z7vWOd24Zs5b+2VjvJQ7nw2574IzCGsuYhUB7Ebu346acY500He1hG4CHSwNVFDeUVAPfyK82u3BQGauU=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MWHPR1001MB2256
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, May 5, 2021 at 12:35 PM Nadav Markus
-<nmarkus@paloaltonetworks.com> wrote:
->
->
->
-> On Wed, May 5, 2021 at 7:46 AM Leon Romanovsky <leon@kernel.org> wrote:
->>
->> On Tue, May 04, 2021 at 07:01:01PM +0300, Or Cohen wrote:
->> > Hi, can you please elaborate?
->> >
->> > We don't understand why using kref_get_unless_zero will solve the prob=
-lem.
->>
->> Please don't reply in top-posting format.
->> ------
->>
->> The rationale behind _put()/_get() wrappers over kref is to allow
->> delayed release after all consumers are gone.
->>
->> In order to make it happen, the developer should ensure that consumers
->> don't have an access to the kref-ed struct. This is done with
->> kref_get_unless_zero().
->>
->> In your case, you simply increment some counter without checking if
->> nfc_llcp_local_get() actually succeeded.
->
->
-> Hi Leon - as far as we understand, the underlying issue is not incrementi=
-ng the kref counter without checking if the function nfc_llcp_local_get suc=
-ceeded or not. The function itself increments the reference count.
->
-> The issue is that the nfc_llcp_local_put might be called twice on the llc=
-p_sock->local field, however only one reference (the one that was gotten vi=
-a nfc_llcp_local_get) is incremented. llcp_local_put will be called in two =
-locations. The first one is just inside the bind function, if nfc_llcp_get_=
-local_ssap fails. The second one is called unconditionally, at the socket d=
-estruction, at the function nfc_llcp_sock_free.
->
-> Hence, our proposed solution is to prevent the second nfc_llcp_local_put =
-from attempting to decrement the kref count, by setting local to NULL. This=
- makes sense, as we immediately do so after decrementing the single ref cou=
-nt we took when calling nfc_llcp_local_get. Since we are under the sock loc=
-k, this also should be race safe, as no one should access the llcp_sock->lo=
-cal field without this lock's protection.
->>
->>
->> For example, what protection do you have from races between llcp_sock_bi=
-nd(),
->> nfc_llcp_sock_free() and llcp_sock_connect()?
->
->
-> As we replied, the llcp_sock->local field is protected under the lock soc=
-k, as far as we understand.
->>
->>
->> So in case you have some lock outside, it is unclear how use-after-free
->> is possible, because nfc_llcp_find_local() should return NULL.
->> In case, no lock exists, except reducing race window, you didn't fix any=
-thing
->> and didn't sanitize lcp_sock too.
->
->
-> We don't quite get what race are we talking about here - our trigger prog=
-ram doesn't even utilize threads. All it has to do is to cause nfc_llcp_loc=
-al_get to fail - this can be seen clearly in our original trigger program. =
-To clarify, the two sockets that are created there point to the same nfc_ll=
-cp_local struct (via their local field). The destruction of the first socke=
-t causes the reference count of the pointed object to drop to zero (since t=
-he code increments the ref count of the object from 1 to 2, but dercements =
-it twice). The second socket later attempts to decrement the ref count of t=
-he same (already freed) nfc_llcp_local object, causing a kernel crash.
->>
->>
->> Thanks
->>
->> >
->> > On Tue, May 4, 2021 at 11:12 AM Leon Romanovsky <leon@kernel.org> wrot=
-e:
->> > >
->> > > On Tue, May 04, 2021 at 10:15:25AM +0300, Or Cohen wrote:
->> > > > Commits 8a4cd82d ("nfc: fix refcount leak in llcp_sock_connect()")
->> > > > and c33b1cc62 ("nfc: fix refcount leak in llcp_sock_bind()")
->> > > > fixed a refcount leak bug in bind/connect but introduced a
->> > > > use-after-free if the same local is assigned to 2 different socket=
-s.
->> > > >
->> > > > This can be triggered by the following simple program:
->> > > >     int sock1 =3D socket( AF_NFC, SOCK_STREAM, NFC_SOCKPROTO_LLCP =
-);
->> > > >     int sock2 =3D socket( AF_NFC, SOCK_STREAM, NFC_SOCKPROTO_LLCP =
-);
->> > > >     memset( &addr, 0, sizeof(struct sockaddr_nfc_llcp) );
->> > > >     addr.sa_family =3D AF_NFC;
->> > > >     addr.nfc_protocol =3D NFC_PROTO_NFC_DEP;
->> > > >     bind( sock1, (struct sockaddr*) &addr, sizeof(struct sockaddr_=
-nfc_llcp) )
->> > > >     bind( sock2, (struct sockaddr*) &addr, sizeof(struct sockaddr_=
-nfc_llcp) )
->> > > >     close(sock1);
->> > > >     close(sock2);
->> > > >
->> > > > Fix this by assigning NULL to llcp_sock->local after calling
->> > > > nfc_llcp_local_put.
->> > > >
->> > > > This addresses CVE-2021-23134.
->> > > >
->> > > > Reported-by: Or Cohen <orcohen@paloaltonetworks.com>
->> > > > Reported-by: Nadav Markus <nmarkus@paloaltonetworks.com>
->> > > > Fixes: c33b1cc62 ("nfc: fix refcount leak in llcp_sock_bind()")
->> > > > Signed-off-by: Or Cohen <orcohen@paloaltonetworks.com>
->> > > > ---
->> > > >
->> > > >  net/nfc/llcp_sock.c | 4 ++++
->> > > >  1 file changed, 4 insertions(+)
->> > > >
->> > > > diff --git a/net/nfc/llcp_sock.c b/net/nfc/llcp_sock.c
->> > > > index a3b46f888803..53dbe733f998 100644
->> > > > --- a/net/nfc/llcp_sock.c
->> > > > +++ b/net/nfc/llcp_sock.c
->> > > > @@ -109,12 +109,14 @@ static int llcp_sock_bind(struct socket *soc=
-k, struct sockaddr *addr, int alen)
->> > > >                                         GFP_KERNEL);
->> > > >       if (!llcp_sock->service_name) {
->> > > >               nfc_llcp_local_put(llcp_sock->local);
->> > > > +             llcp_sock->local =3D NULL;
->> > >
->> > > This "_put() -> set to NULL" pattern can't be correct.
->> > >
->> > > You need to fix nfc_llcp_local_get() to use kref_get_unless_zero()
->> > > and prevent any direct use of llcp_sock->local without taking kref
->> > > first. The nfc_llcp_local_put() isn't right either.
->> > >
->> > > Thanks
+Hi Vladimir and Andrew,
 
-I am resending this as the original contained HTML by mistake.
+On Tue, May 04, 2021 at 12:59:43PM +0000, Vladimir Oltean wrote:
+> On Tue, May 04, 2021 at 02:31:34PM +0200, Andrew Lunn wrote:
+> > On Mon, May 03, 2021 at 10:11:27PM -0700, Colin Foster wrote:
+> > > Add support for control for VSC75XX chips over SPI control. Starting with the
+> > > VSC9959 code, this will utilize a spi bus instead of PCIe or memory-mapped IO to
+> > > control the chip.
+> > 
+> > Hi Colin
+> > 
+> > Please fix your subject line for the next version. vN should of been
+> > v1. The number is important so we can tell revisions apart.
+> 
+> Yes, it was my indication to use --subject-prefix="[PATCH vN net-next]",
+> I was expecting Colin to replace N with 1, 2, 3 etc but I didn't make
+> that clear enough :)
+> 
+
+Ha. Yes, I suppose I took that too literally. I'll fix it in vO :)
+
+> > > 
+> > > Signed-off-by: Colin Foster <colin.foster@in-advantage.com>
+> > > ---
+> > >  arch/arm/boot/dts/rpi-vsc7512-spi-overlay.dts |  124 ++
+> > >  drivers/net/dsa/ocelot/Kconfig                |   11 +
+> > >  drivers/net/dsa/ocelot/Makefile               |    5 +
+> > >  drivers/net/dsa/ocelot/felix_vsc7512_spi.c    | 1214 +++++++++++++++++
+> > >  include/soc/mscc/ocelot.h                     |   15 +
+> > 
+> > Please split this patch up. The DT overlay will probably be merged via
+> > ARM SOC, not netdev. You also need to document the device tree
+> > binding, as a separate patch.
+
+I will take this out of the patch, though the feedback is helpful. I
+suspect that the end result will be an example in
+Documentation/devicetree/bindings/net/dsa/ocelot.txt because there isn't
+any commercial hardware available with this functionality, as far as I
+know. (If there is I'd love to get my hands on it!)
+
+> > 
+> > > +	fragment@3 {
+> > > +		target = <&spi0>;
+> > > +		__overlay__ {
+> > > +			#address-cells = <1>;
+> > > +			#size-cells = <0>;
+> > > +			cs-gpios = <&gpio 8 1>;
+> > > +			status = "okay";
+> > > +
+> > > +			vsc7512: vsc7512@0{
+> > > +				compatible = "mscc,vsc7512";
+> > > +				spi-max-frequency = <250000>;
+> > > +				reg = <0>;
+> > > +
+> > > +				ports {
+> > > +					#address-cells = <1>;
+> > > +					#size-cells = <0>;
+> > > +
+> > > +					port@0 {
+> > > +						reg = <0>;
+> > > +						ethernet = <&ethernet>;
+> > > +						phy-mode = "internal";
+> 
+> Additionally, being a completely off-chip switch, are you sure that the
+> phy-mode is "internal"?
+
+No, I'm not sure. I don't remember my justification but I had come
+across something that made me believe that there needed to be at least
+one "internal phy-mode" for DSA to work. This might actually make sense,
+however, since it would be the port internal to the on-chip processor.
+
+My hope was that I would've been able to test this with actual hardware
+a couple weeks ago and see everything in action. Unfortunately there 
+seems to be a hardware issue on my setup I'll need EE support to
+troubleshoot.
+
+When the hardware is finally communicating, I plan to do this type of
+functional verification. I've been in charge of writing the interface
+layer of this chip family in the past, but I have coworkers who are
+familiar with the actual operation who's advice I'll seek.
+
+> 
+> > > +						fixed-link {
+> > > +							speed = <1000>;
+> > > +							full-duplex;
+> > > +						};
+> > > +					};
+> > > +
+> > > +					port@1 {
+> > > +						reg = <1>;
+> > > +						label = "swp1";
+> > > +						status = "disabled";
+> > > +					};
+> > > +
+> > > +					port@2 {
+> > > +						reg = <2>;
+> > > +						label = "swp2";
+> > > +						status = "disabled";
+> > > +					};
+> > > +static void vsc7512_phylink_validate(struct ocelot *ocelot, int port,
+> > > +				     unsigned long *supported,
+> > > +				     struct phylink_link_state *state)
+> > > +{
+> > > +	struct ocelot_port *ocelot_port = ocelot->ports[port];
+> > > +	__ETHTOOL_DECLARE_LINK_MODE_MASK(mask) = {
+> > > +		0,
+> > > +	};
+> > 
+> > This function seems out of place. Why would SPI access change what the
+> > ports are capable of doing? Please split this up into more
+> > patches. Keep the focus of this patch as being adding SPI support.
+> 
+> What is going on is that this is just the way in which the drivers are
+> structured. Colin is not really "adding SPI support" to any of the
+> existing DSA switches that are supported (VSC9953, VSC9959) as much as
+> "adding support for a new switch which happens to be controlled over
+> SPI" (VSC7512).
+> The layering is as follows:
+> - drivers/net/dsa/ocelot/felix_vsc7512_spi.c: deals with the most
+>   hardware specific SoC support. The regmap is defined here, so are the
+>   port capabilities.
+> - drivers/net/dsa/ocelot/felix.c: common integration with DSA
+> - drivers/net/ethernet/mscc/ocelot*.c: the SoC-independent hardware
+>   support.
+> 
+> I'm not actually sure that splitting the port PHY mode support in a
+> separate patch is possible while keeping functional intermediate
+> results. But I do agree about the rest, splitting the device tree
+> changes, etc.
