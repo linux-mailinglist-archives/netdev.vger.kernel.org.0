@@ -2,26 +2,26 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4CC1D37375D
-	for <lists+netdev@lfdr.de>; Wed,  5 May 2021 11:23:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B42F9373757
+	for <lists+netdev@lfdr.de>; Wed,  5 May 2021 11:22:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232269AbhEEJXc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 5 May 2021 05:23:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53568 "EHLO
+        id S232402AbhEEJXO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 5 May 2021 05:23:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53552 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232355AbhEEJW6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 5 May 2021 05:22:58 -0400
+        with ESMTP id S232923AbhEEJWS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 5 May 2021 05:22:18 -0400
 Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D6F5FC06137A
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 747A6C061361
         for <netdev@vger.kernel.org>; Wed,  5 May 2021 02:20:40 -0700 (PDT)
 Received: from dude.hi.pengutronix.de ([2001:67c:670:100:1d::7])
         by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <ore@pengutronix.de>)
-        id 1leDhn-0005Xi-2A; Wed, 05 May 2021 11:20:31 +0200
+        id 1leDhn-0005Xj-1t; Wed, 05 May 2021 11:20:31 +0200
 Received: from ore by dude.hi.pengutronix.de with local (Exim 4.92)
         (envelope-from <ore@pengutronix.de>)
-        id 1leDhk-0002hV-0b; Wed, 05 May 2021 11:20:28 +0200
+        id 1leDhk-0002jB-1i; Wed, 05 May 2021 11:20:28 +0200
 From:   Oleksij Rempel <o.rempel@pengutronix.de>
 To:     Woojung Huh <woojung.huh@microchip.com>,
         UNGLinuxDriver@microchip.com, Andrew Lunn <andrew@lunn.ch>,
@@ -30,14 +30,13 @@ To:     Woojung Huh <woojung.huh@microchip.com>,
         Vladimir Oltean <olteanv@gmail.com>,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
-Cc:     Oleksij Rempel <linux@rempel-privat.de>,
-        Oleksij Rempel <o.rempel@pengutronix.de>,
-        kernel@pengutronix.de, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Russell King <linux@armlinux.org.uk>,
+Cc:     Oleksij Rempel <o.rempel@pengutronix.de>, kernel@pengutronix.de,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Russell King <linux@armlinux.org.uk>,
         Michael Grzeschik <m.grzeschik@pengutronix.de>
-Subject: [RFC PATCH v1 7/9] net: dsa: microchip: ksz8795: add LINK_MD register support
-Date:   Wed,  5 May 2021 11:20:23 +0200
-Message-Id: <20210505092025.8785-8-o.rempel@pengutronix.de>
+Subject: [RFC PATCH v1 8/9] net: phy: micrel: ksz886x/ksz8081: add cabletest support
+Date:   Wed,  5 May 2021 11:20:24 +0200
+Message-Id: <20210505092025.8785-9-o.rempel@pengutronix.de>
 X-Mailer: git-send-email 2.29.2
 In-Reply-To: <20210505092025.8785-1-o.rempel@pengutronix.de>
 References: <20210505092025.8785-1-o.rempel@pengutronix.de>
@@ -51,100 +50,269 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Oleksij Rempel <linux@rempel-privat.de>
+This patch support for cable test for the ksz886x switches and the
+ksz8081 PHY.
 
-Add mapping for LINK_MD register to enable cable testing functionality.
+The patch was tested on a KSZ8873RLL switch with following results:
+
+- port 1:
+  - cannot detect any distance
+  - provides inverted values
+    (Errata: DS80000830A: "LinkMD does not work on Port 1",
+     http://ww1.microchip.com/downloads/en/DeviceDoc/KSZ8873-Errata-DS80000830A.pdf)
+    - Reports "short" on open or ok.
+    - Reports "ok" on short.
+
+- port 2:
+  - can detect distance
+  - can detect open on each wire of pair A (wire 1 and 2)
+  - can detect open only on one wire of pair B (only wire 3)
+  - can detect short between wires of a pair (wires 1 + 2 or 3 + 6)
+  - short between pairs is detected as open.
+    For example short between wires 2 + 3 is detected as open.
+
+In order to work around the errata for port 1, the ksz8795 switch driver
+should be extended to provide proper device tree support for the related
+PHY nodes. So we can set a DT property to mark the port 1 as affected by
+the errata.
 
 Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
----
- drivers/net/dsa/microchip/ksz8795.c     | 23 +++++++++++++++++++++++
- drivers/net/dsa/microchip/ksz8795_reg.h |  5 +++--
- 2 files changed, 26 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/dsa/microchip/ksz8795.c b/drivers/net/dsa/microchip/ksz8795.c
-index 0ddaf2547f18..fb47be0c2154 100644
---- a/drivers/net/dsa/microchip/ksz8795.c
-+++ b/drivers/net/dsa/microchip/ksz8795.c
-@@ -6,6 +6,7 @@
-  *	Tristram Ha <Tristram.Ha@microchip.com>
+---
+
+- added PHY_POLL_CABLE_TEST to make it work in interrupt mode
+---
+ drivers/net/phy/micrel.c | 177 +++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 177 insertions(+)
+
+diff --git a/drivers/net/phy/micrel.c b/drivers/net/phy/micrel.c
+index 47fa8b02630a..f0ca7b53bcf9 100644
+--- a/drivers/net/phy/micrel.c
++++ b/drivers/net/phy/micrel.c
+@@ -20,6 +20,7 @@
   */
  
-+#include <linux/bitfield.h>
- #include <linux/delay.h>
- #include <linux/export.h>
- #include <linux/gpio.h>
-@@ -728,6 +729,7 @@ static void ksz8_r_phy(struct ksz_device *dev, u16 phy, u16 reg, u16 *val)
- 	struct ksz8 *ksz8 = dev->priv;
- 	u8 restart, speed, ctrl, link;
- 	const u8 *regs = ksz8->regs;
-+	u8 val1, val2;
- 	int processed = true;
- 	u16 data = 0;
- 	u8 p = phy;
-@@ -816,6 +818,23 @@ static void ksz8_r_phy(struct ksz_device *dev, u16 phy, u16 reg, u16 *val)
- 		if (data & ~PHY_AUTO_NEG_802_3)
- 			data |= PHY_REMOTE_ACKNOWLEDGE_NOT;
- 		break;
+ #include <linux/bitfield.h>
++#include <linux/ethtool_netlink.h>
+ #include <linux/kernel.h>
+ #include <linux/module.h>
+ #include <linux/phy.h>
+@@ -66,6 +67,18 @@
+ #define	KSZPHY_INTCS_STATUS			(KSZPHY_INTCS_LINK_DOWN_STATUS |\
+ 						 KSZPHY_INTCS_LINK_UP_STATUS)
+ 
++/* LinkMD Control/Status */
++#define KSZ8081_LMD				0x1d
++#define KSZ8081_LMD_ENABLE_TEST			BIT(15)
++#define KSZ8081_LMD_STAT_NORMAL			0
++#define KSZ8081_LMD_STAT_OPEN			1
++#define KSZ8081_LMD_STAT_SHORT			2
++#define KSZ8081_LMD_STAT_FAIL			3
++#define KSZ8081_LMD_STAT_MASK			GENMASK(14, 13)
++/* Short cable (<10 meter) has been detected by LinkMD */
++#define KSZ8081_LMD_SHORT_INDICATOR		BIT(12)
++#define KSZ8081_LMD_DELTA_TIME_MASK		GENMASK(8, 0)
 +
-+	case PHY_REG_LINK_MD:
-+		ksz_pread8(dev, p, REG_PORT_LINK_MD_CTRL, &val1);
-+		ksz_pread8(dev, p, REG_PORT_LINK_MD_RESULT, &val2);
-+		if (val1 & PORT_START_CABLE_DIAG)
-+			data |= PHY_START_CABLE_DIAG;
+ /* PHY Control 1 */
+ #define MII_KSZPHY_CTRL_1			0x1e
+ #define KSZ8081_CTRL1_MDIX_STAT			BIT(4)
+@@ -1399,6 +1412,164 @@ static int kszphy_probe(struct phy_device *phydev)
+ 	return 0;
+ }
+ 
++static int ksz886x_cable_test_start(struct phy_device *phydev)
++{
++	/* If autoneg is enabled, we won't be able to test cross pair
++	 * short. In this case, the PHY will "detect" a link and
++	 * confuse the internal state machine - disable auto neg here.
++	 * If autoneg is disabled, we should set the speed to 10mbit.
++	 */
++	return phy_clear_bits(phydev, MII_BMCR, BMCR_ANENABLE | BMCR_SPEED100);
++}
 +
-+		if (val1 & PORT_CABLE_10M_SHORT)
-+			data |= PHY_CABLE_10M_SHORT;
++static int ksz886x_cable_test_result_trans(u16 status)
++{
++	switch (FIELD_GET(KSZ8081_LMD_STAT_MASK, status)) {
++	case KSZ8081_LMD_STAT_NORMAL:
++		return ETHTOOL_A_CABLE_RESULT_CODE_OK;
++	case KSZ8081_LMD_STAT_SHORT:
++		return ETHTOOL_A_CABLE_RESULT_CODE_SAME_SHORT;
++	case KSZ8081_LMD_STAT_OPEN:
++		return ETHTOOL_A_CABLE_RESULT_CODE_OPEN;
++	case KSZ8081_LMD_STAT_FAIL:
++		/* fall through */
++	default:
++		return ETHTOOL_A_CABLE_RESULT_CODE_UNSPEC;
++	}
++}
 +
-+		data |= FIELD_PREP(PHY_CABLE_DIAG_RESULT_M,
-+				FIELD_GET(PORT_CABLE_DIAG_RESULT_M, val1));
++static bool ksz886x_cable_test_failed(u16 status)
++{
++	return FIELD_GET(KSZ8081_LMD_STAT_MASK, status) ==
++		KSZ8081_LMD_STAT_FAIL;
++}
 +
-+		data |= FIELD_PREP(PHY_CABLE_FAULT_COUNTER_M,
-+				(FIELD_GET(PORT_CABLE_FAULT_COUNTER_H, val1) << 8) |
-+				FIELD_GET(PORT_CABLE_FAULT_COUNTER_L, val2));
++static bool ksz886x_cable_test_fault_length_valid(u16 status)
++{
++	switch (FIELD_GET(KSZ8081_LMD_STAT_MASK, status)) {
++	case KSZ8081_LMD_STAT_OPEN:
++		/* fall through */
++	case KSZ8081_LMD_STAT_SHORT:
++		return true;
++	}
++	return false;
++}
++
++static int ksz886x_cable_test_fault_length(u16 status)
++{
++	int dt;
++
++	/* According to the data sheet the distance to the fault is
++	 * DELTA_TIME * 0.4 meters.
++	 */
++	dt = FIELD_GET(KSZ8081_LMD_DELTA_TIME_MASK, status);
++
++	return (dt * 400) / 10;
++}
++
++static int ksz886x_cable_test_wait_for_completion(struct phy_device *phydev)
++{
++	int val, ret;
++
++	ret = phy_read_poll_timeout(phydev, KSZ8081_LMD, val,
++				    !(val & KSZ8081_LMD_ENABLE_TEST),
++				    30000, 100000, true);
++
++	return ret < 0 ? ret : 0;
++}
++
++static int ksz886x_cable_test_one_pair(struct phy_device *phydev, int pair)
++{
++	static const int ethtool_pair[] = {
++		ETHTOOL_A_CABLE_PAIR_A,
++		ETHTOOL_A_CABLE_PAIR_B,
++	};
++	int ret, val, mdix;
++
++	/* There is no way to choice the pair, like we do one ksz9031.
++	 * We can workaround this limitation by using the MDI-X functionality.
++	 */
++	if (pair == 0)
++		mdix = ETH_TP_MDI;
++	else
++		mdix = ETH_TP_MDI_X;
++
++	switch (phydev->phy_id & MICREL_PHY_ID_MASK) {
++	case PHY_ID_KSZ8081:
++		ret = ksz8081_config_mdix(phydev, mdix);
 +		break;
- 	default:
- 		processed = false;
- 		break;
-@@ -927,6 +946,10 @@ static void ksz8_w_phy(struct ksz_device *dev, u16 phy, u16 reg, u16 val)
- 		if (data != ctrl)
- 			ksz_pwrite8(dev, p, regs[P_LOCAL_CTRL], data);
- 		break;
-+	case PHY_REG_LINK_MD:
-+		if (val & PHY_START_CABLE_DIAG)
-+			ksz_port_cfg(dev, p, REG_PORT_LINK_MD_CTRL, PORT_START_CABLE_DIAG, true);
++	case PHY_ID_KSZ886X:
++		ret = ksz886x_config_mdix(phydev, mdix);
 +		break;
- 	default:
- 		break;
- 	}
-diff --git a/drivers/net/dsa/microchip/ksz8795_reg.h b/drivers/net/dsa/microchip/ksz8795_reg.h
-index f925ddee5238..a32355624f31 100644
---- a/drivers/net/dsa/microchip/ksz8795_reg.h
-+++ b/drivers/net/dsa/microchip/ksz8795_reg.h
-@@ -249,7 +249,7 @@
- #define REG_PORT_4_LINK_MD_CTRL		0x4A
- 
- #define PORT_CABLE_10M_SHORT		BIT(7)
--#define PORT_CABLE_DIAG_RESULT_M	0x3
-+#define PORT_CABLE_DIAG_RESULT_M	GENMASK(6, 5)
- #define PORT_CABLE_DIAG_RESULT_S	5
- #define PORT_CABLE_STAT_NORMAL		0
- #define PORT_CABLE_STAT_OPEN		1
-@@ -753,13 +753,14 @@
- #define PHY_REG_LINK_MD			0x1D
- 
- #define PHY_START_CABLE_DIAG		BIT(15)
-+#define PHY_CABLE_DIAG_RESULT_M		GENMASK(14, 13)
- #define PHY_CABLE_DIAG_RESULT		0x6000
- #define PHY_CABLE_STAT_NORMAL		0x0000
- #define PHY_CABLE_STAT_OPEN		0x2000
- #define PHY_CABLE_STAT_SHORT		0x4000
- #define PHY_CABLE_STAT_FAILED		0x6000
- #define PHY_CABLE_10M_SHORT		BIT(12)
--#define PHY_CABLE_FAULT_COUNTER		0x01FF
-+#define PHY_CABLE_FAULT_COUNTER_M	GENMASK(8, 0)
- 
- #define PHY_REG_PHY_CTRL		0x1F
- 
++	default:
++		ret = -ENODEV;
++	}
++
++	if (ret)
++		return ret;
++
++	/* Now we are ready to fire. This command will send a 100ns pulse
++	 * to the pair.
++	 */
++	ret = phy_write(phydev, KSZ8081_LMD, KSZ8081_LMD_ENABLE_TEST);
++	if (ret)
++		return ret;
++
++	ret = ksz886x_cable_test_wait_for_completion(phydev);
++	if (ret)
++		return ret;
++
++	val = phy_read(phydev, KSZ8081_LMD);
++	if (val < 0)
++		return val;
++
++	if (ksz886x_cable_test_failed(val))
++		return -EAGAIN;
++
++	ret = ethnl_cable_test_result(phydev, ethtool_pair[pair],
++				      ksz886x_cable_test_result_trans(val));
++	if (ret)
++		return ret;
++
++	if (!ksz886x_cable_test_fault_length_valid(val))
++		return 0;
++
++	return ethnl_cable_test_fault_length(phydev, ethtool_pair[pair],
++					     ksz886x_cable_test_fault_length(val));
++}
++
++static int ksz886x_cable_test_get_status(struct phy_device *phydev,
++					 bool *finished)
++{
++	unsigned long pair_mask = 0x3;
++	int retries = 20;
++	int pair, ret;
++
++	*finished = false;
++
++	/* Try harder if link partner is active */
++	while (pair_mask && retries--) {
++		for_each_set_bit(pair, &pair_mask, 4) {
++			ret = ksz886x_cable_test_one_pair(phydev, pair);
++			if (ret == -EAGAIN)
++				continue;
++			if (ret < 0)
++				return ret;
++			clear_bit(pair, &pair_mask);
++		}
++		/* If link partner is in autonegotiation mode it will send 2ms
++		 * of FLPs with at least 6ms of silence.
++		 * Add 2ms sleep to have better chances to hit this silence.
++		 */
++		if (pair_mask)
++			msleep(2);
++	}
++
++	*finished = true;
++
++	return 0;
++}
++
+ static struct phy_driver ksphy_driver[] = {
+ {
+ 	.phy_id		= PHY_ID_KS8737,
+@@ -1505,6 +1676,7 @@ static struct phy_driver ksphy_driver[] = {
+ 	.phy_id		= PHY_ID_KSZ8081,
+ 	.name		= "Micrel KSZ8081 or KSZ8091",
+ 	.phy_id_mask	= MICREL_PHY_ID_MASK,
++	.flags		= PHY_POLL_CABLE_TEST,
+ 	/* PHY_BASIC_FEATURES */
+ 	.driver_data	= &ksz8081_type,
+ 	.probe		= kszphy_probe,
+@@ -1519,6 +1691,8 @@ static struct phy_driver ksphy_driver[] = {
+ 	.get_stats	= kszphy_get_stats,
+ 	.suspend	= kszphy_suspend,
+ 	.resume		= kszphy_resume,
++	.cable_test_start	= ksz886x_cable_test_start,
++	.cable_test_get_status	= ksz886x_cable_test_get_status,
+ }, {
+ 	.phy_id		= PHY_ID_KSZ8061,
+ 	.name		= "Micrel KSZ8061",
+@@ -1607,11 +1781,14 @@ static struct phy_driver ksphy_driver[] = {
+ 	.phy_id_mask	= MICREL_PHY_ID_MASK,
+ 	.name		= "Micrel KSZ8851 Ethernet MAC or KSZ886X Switch",
+ 	/* PHY_BASIC_FEATURES */
++	.flags		= PHY_POLL_CABLE_TEST,
+ 	.config_init	= kszphy_config_init,
+ 	.config_aneg	= ksz886x_config_aneg,
+ 	.read_status	= ksz886x_read_status,
+ 	.suspend	= genphy_suspend,
+ 	.resume		= ksz886x_resume,
++	.cable_test_start	= ksz886x_cable_test_start,
++	.cable_test_get_status	= ksz886x_cable_test_get_status,
+ }, {
+ 	.name		= "Micrel KSZ87XX Switch",
+ 	/* PHY_BASIC_FEATURES */
 -- 
 2.29.2
 
