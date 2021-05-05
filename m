@@ -2,64 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 62DCC3749A6
-	for <lists+netdev@lfdr.de>; Wed,  5 May 2021 22:49:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A167D3749BC
+	for <lists+netdev@lfdr.de>; Wed,  5 May 2021 22:55:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229966AbhEEUuN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 5 May 2021 16:50:13 -0400
-Received: from mail.kernel.org ([198.145.29.99]:59392 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229575AbhEEUuM (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 5 May 2021 16:50:12 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id B2405613BA;
-        Wed,  5 May 2021 20:49:15 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1620247755;
-        bh=fIBnzCoLd7WFpaxwVmmrRv7I6zOzGgD4l9SQolYykqw=;
-        h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
-        b=SGV+dXVMsmxu7ZS5APC452PYA81R0UlZ9lE8ZEgbaJ4JzcKvWsTEaH3GEWKyOO23v
-         94NvIGUiXFq0Z2rV7lPpFGnwXkOkCIqZK7fsfOOgnixrW81XOR1LC5agd2nM6DEHFp
-         MSY7iCrQ+iszzeH7lsCUhbVUfW0QLEGHrN1hI99l+FnTY8Px2ytmrVLQ+lf8OO/xXl
-         E3azMDLxbPkbF4onk5bfVoyR2VDdbgfc++jQBH2PCw/Lj2J78iCvM6pwmZ+g6g78XL
-         yfoignsYM3122879hHRGG0lsZX8Xt5o+injOhz8nLSM58maLJqfDjl7V1k6FH+3tzI
-         7hRJgze6IrDFA==
-Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 9CF59609E8;
-        Wed,  5 May 2021 20:49:15 +0000 (UTC)
-Subject: Re: [GIT PULL] virtio,vhost,vdpa: features, fixes
-From:   pr-tracker-bot@kernel.org
-In-Reply-To: <20210505161135-mutt-send-email-mst@kernel.org>
-References: <20210505161135-mutt-send-email-mst@kernel.org>
-X-PR-Tracked-List-Id: <kvm.vger.kernel.org>
-X-PR-Tracked-Message-Id: <20210505161135-mutt-send-email-mst@kernel.org>
-X-PR-Tracked-Remote: https://git.kernel.org/pub/scm/linux/kernel/git/mst/vhost.git tags/for_linus
-X-PR-Tracked-Commit-Id: d7bce85aa7b92b5de8f69b3bcedfe51d7b1aabe1
-X-PR-Merge-Tree: torvalds/linux.git
-X-PR-Merge-Refname: refs/heads/master
-X-PR-Merge-Commit-Id: 16bb86b5569cb7489367101f6ed69b25682b47db
-Message-Id: <162024775557.12235.13272630963086835800.pr-tracker-bot@kernel.org>
-Date:   Wed, 05 May 2021 20:49:15 +0000
-To:     "Michael S. Tsirkin" <mst@redhat.com>
-Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
-        kvm@vger.kernel.org, virtualization@lists.linux-foundation.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        elic@nvidia.com, jasowang@redhat.com, lingshan.zhu@intel.com,
-        liu.xiang@zlingsmart.com, lkp@intel.com, mgurtovoy@nvidia.com,
-        mst@redhat.com, parav@nvidia.com, sgarzare@redhat.com,
-        stable@vger.kernel.org, xieyongji@bytedance.com
+        id S234269AbhEEU4M (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 5 May 2021 16:56:12 -0400
+Received: from www62.your-server.de ([213.133.104.62]:54246 "EHLO
+        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231224AbhEEU4L (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 5 May 2021 16:56:11 -0400
+Received: from sslproxy05.your-server.de ([78.46.172.2])
+        by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92.3)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1leOY3-000GTl-Hv; Wed, 05 May 2021 22:55:11 +0200
+Received: from [85.7.101.30] (helo=linux.home)
+        by sslproxy05.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1leOY3-000Xhw-9R; Wed, 05 May 2021 22:55:11 +0200
+Subject: Re: [PATCH bpf] bpf: check for data_len before upgrading mss when 6
+ to 4
+To:     Dongseok Yi <dseok.yi@samsung.com>, bpf@vger.kernel.org
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, willemdebruijn.kernel@gmail.com
+References: <CGME20210429102143epcas2p4c8747c09a9de28f003c20389c050394a@epcas2p4.samsung.com>
+ <1619690903-1138-1-git-send-email-dseok.yi@samsung.com>
+From:   Daniel Borkmann <daniel@iogearbox.net>
+Message-ID: <8c2ea41a-3fc5-d560-16e5-bf706949d857@iogearbox.net>
+Date:   Wed, 5 May 2021 22:55:10 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
+MIME-Version: 1.0
+In-Reply-To: <1619690903-1138-1-git-send-email-dseok.yi@samsung.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.103.2/26161/Wed May  5 13:06:38 2021)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The pull request you sent on Wed, 5 May 2021 16:11:35 -0400:
+On 4/29/21 12:08 PM, Dongseok Yi wrote:
+> tcp_gso_segment check for the size of GROed payload if it is bigger
+> than the mss. bpf_skb_proto_6_to_4 increases mss, but the mss can be
+> bigger than the size of GROed payload unexpectedly if data_len is not
+> big enough.
+> 
+> Assume that skb gso_size = 1372 and data_len = 8. bpf_skb_proto_6_to_4
+> would increse the gso_size to 1392. tcp_gso_segment will get an error
+> with 1380 <= 1392.
+> 
+> Check for the size of GROed payload if it is really bigger than target
+> mss when increase mss.
+> 
+> Fixes: 6578171a7ff0 (bpf: add bpf_skb_change_proto helper)
+> Signed-off-by: Dongseok Yi <dseok.yi@samsung.com>
+> ---
+>   net/core/filter.c | 4 +++-
+>   1 file changed, 3 insertions(+), 1 deletion(-)
+> 
+> diff --git a/net/core/filter.c b/net/core/filter.c
+> index 9323d34..3f79e3c 100644
+> --- a/net/core/filter.c
+> +++ b/net/core/filter.c
+> @@ -3308,7 +3308,9 @@ static int bpf_skb_proto_6_to_4(struct sk_buff *skb)
+>   		}
+>   
+>   		/* Due to IPv4 header, MSS can be upgraded. */
+> -		skb_increase_gso_size(shinfo, len_diff);
+> +		if (skb->data_len > len_diff)
 
-> https://git.kernel.org/pub/scm/linux/kernel/git/mst/vhost.git tags/for_linus
+Could you elaborate some more on what this has to do with data_len specifically
+here? I'm not sure I follow exactly your above commit description. Are you saying
+that you're hitting in tcp_gso_segment():
 
-has been merged into torvalds/linux.git:
-https://git.kernel.org/torvalds/c/16bb86b5569cb7489367101f6ed69b25682b47db
+         [...]
+         mss = skb_shinfo(skb)->gso_size;
+         if (unlikely(skb->len <= mss))
+                 goto out;
+         [...]
 
-Thank you!
+Please provide more context on the bug, thanks!
 
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/prtracker.html
+> +			skb_increase_gso_size(shinfo, len_diff);
+> +
+>   		/* Header must be checked, and gso_segs recomputed. */
+>   		shinfo->gso_type |= SKB_GSO_DODGY;
+>   		shinfo->gso_segs = 0;
+> 
+
