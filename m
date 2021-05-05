@@ -2,97 +2,194 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 60DF9373C53
-	for <lists+netdev@lfdr.de>; Wed,  5 May 2021 15:25:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AA28E373C5B
+	for <lists+netdev@lfdr.de>; Wed,  5 May 2021 15:27:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233545AbhEEN0l convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Wed, 5 May 2021 09:26:41 -0400
-Received: from us-smtp-delivery-44.mimecast.com ([205.139.111.44]:28489 "EHLO
-        us-smtp-delivery-44.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S231774AbhEEN0k (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 5 May 2021 09:26:40 -0400
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-300-FAzjf175OqW2qSZ0s4nKyw-1; Wed, 05 May 2021 09:25:39 -0400
-X-MC-Unique: FAzjf175OqW2qSZ0s4nKyw-1
-Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com [10.5.11.15])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 4978E91164;
-        Wed,  5 May 2021 13:25:38 +0000 (UTC)
-Received: from krava.redhat.com (unknown [10.40.195.238])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id E32FE5D703;
-        Wed,  5 May 2021 13:25:35 +0000 (UTC)
-From:   Jiri Olsa <jolsa@kernel.org>
-To:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andriin@fb.com>
-Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>
-Subject: [PATCH] bpf: Forbid trampoline attach for functions with variable arguments
-Date:   Wed,  5 May 2021 15:25:29 +0200
-Message-Id: <20210505132529.401047-1-jolsa@kernel.org>
+        id S232696AbhEEN2W (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 5 May 2021 09:28:22 -0400
+Received: from m12-15.163.com ([220.181.12.15]:38139 "EHLO m12-15.163.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S231696AbhEEN2U (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 5 May 2021 09:28:20 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
+        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=47ptq
+        WA6x7aSpz7bIxK9lp4WhZFobeKJyXA87JbvZq0=; b=Q6SSO8Djky+uWZZkOHPaj
+        319cddPhbzFHr5xS7fT6fpiCS+8olkkTITtJTierVGeKGnw40m0EZvSMoQTPRLIh
+        5amosyX11/3WETOY64Q9siDwotRNRK8yn1xukD1jjs19U80yPtSA5tl+yh8rCm07
+        2oAqwCUep23jFJwvHevXQ8=
+Received: from mjs-Inspiron-3668.www.tendawifi.com (unknown [61.152.208.136])
+        by smtp11 (Coremail) with SMTP id D8CowADHgHTvnJJgblwaCA--.60121S4;
+        Wed, 05 May 2021 21:26:21 +0800 (CST)
+From:   meijusan <meijusan@163.com>
+To:     davem@davemloft.net, yoshfuji@linux-ipv6.org, dsahern@kernel.org,
+        kuba@kernel.org
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        meijusan <meijusan@163.com>
+Subject: [PATCH] net/ipv4/ip_fragment:fix missing Flags reserved bit set in iphdr
+Date:   Wed,  5 May 2021 21:25:57 +0800
+Message-Id: <20210505132557.197964-1-meijusan@163.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
-Authentication-Results: relay.mimecast.com;
-        auth=pass smtp.auth=CUSA124A263 smtp.mailfrom=jolsa@kernel.org
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: kernel.org
-Content-Transfer-Encoding: 8BIT
-Content-Type: text/plain; charset=WINDOWS-1252
+Content-Transfer-Encoding: 8bit
+X-CM-TRANSID: D8CowADHgHTvnJJgblwaCA--.60121S4
+X-Coremail-Antispam: 1Uf129KBjvJXoWxAFykXrW8ZFWDZrWkur4xtFb_yoW7Jr18p3
+        Z8K395Ja1xJrnrAwn7JrW3Aw4Skw1vka4akr4FyayrA34qyryFqF92gFyYqF45GrW5Zr13
+        try3t3y5Wr1DX37anT9S1TB71UUUUU7qnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+        9KBjDUYxBIdaVFxhVjvjDU0xZFpf9x07jNjjgUUUUU=
+X-Originating-IP: [61.152.208.136]
+X-CM-SenderInfo: xphly3xvdqqiywtou0bp/xtbB0h2JHlUMbalqOgAAsV
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-We can't currently allow to attach functions with variable arguments.
-The problem is that we should save all the registers for arguments,
-which is probably doable, but if caller uses more than 6 arguments,
-we need stack data, which will be wrong, because of the extra stack
-frame we do in bpf trampoline, so we could crash.
+ip frag with the iphdr flags reserved bit set,via router,ip frag reasm or
+fragment,causing the reserved bit is reset to zero.
 
-Also currently there's malformed trampoline code generated for such
-functions at the moment as described in:
-  https://lore.kernel.org/bpf/20210429212834.82621-1-jolsa@kernel.org/
+Keep reserved bit set is not modified in ip frag  defrag or fragment.
 
-Signed-off-by: Jiri Olsa <jolsa@kernel.org>
+Signed-off-by: meijusan <meijusan@163.com>
 ---
- kernel/bpf/btf.c | 13 +++++++++++++
- 1 file changed, 13 insertions(+)
+ include/net/ip.h       |  3 ++-
+ net/ipv4/ip_fragment.c |  9 +++++++++
+ net/ipv4/ip_output.c   | 14 ++++++++++++++
+ 3 files changed, 25 insertions(+), 1 deletion(-)
 
-diff --git a/kernel/bpf/btf.c b/kernel/bpf/btf.c
-index 0600ed325fa0..161511bb3e51 100644
---- a/kernel/bpf/btf.c
-+++ b/kernel/bpf/btf.c
-@@ -5206,6 +5206,13 @@ int btf_distill_func_proto(struct bpf_verifier_log *log,
- 	m->ret_size = ret;
+diff --git a/include/net/ip.h b/include/net/ip.h
+index e20874059f82..ae0c75fca61d 100644
+--- a/include/net/ip.h
++++ b/include/net/ip.h
+@@ -134,7 +134,7 @@ struct ip_ra_chain {
+ #define IP_DF		0x4000		/* Flag: "Don't Fragment"	*/
+ #define IP_MF		0x2000		/* Flag: "More Fragments"	*/
+ #define IP_OFFSET	0x1FFF		/* "Fragment Offset" part	*/
+-
++#define IP_EVIL	0x8000		/* Flag: "reserve bit"	*/
+ #define IP_FRAG_TIME	(30 * HZ)		/* fragment lifetime	*/
  
- 	for (i = 0; i < nargs; i++) {
-+		if (i == nargs - 1 && args[i].type == 0) {
-+			bpf_log(log,
-+				"The function %s with variable args is unsupported.\n",
-+				tname);
-+			return -EINVAL;
-+
-+		}
- 		ret = __get_type_size(btf, args[i].type, &t);
- 		if (ret < 0) {
- 			bpf_log(log,
-@@ -5213,6 +5220,12 @@ int btf_distill_func_proto(struct bpf_verifier_log *log,
- 				tname, i, btf_kind_str[BTF_INFO_KIND(t->info)]);
- 			return -EINVAL;
- 		}
-+		if (ret == 0) {
-+			bpf_log(log,
-+				"The function %s has malformed void argument.\n",
-+				tname);
-+			return -EINVAL;
-+		}
- 		m->arg_size[i] = ret;
+ struct msghdr;
+@@ -194,6 +194,7 @@ struct ip_frag_state {
+ 	int		offset;
+ 	int		ptr;
+ 	__be16		not_last_frag;
++	bool		ip_evil;
+ };
+ 
+ void ip_frag_init(struct sk_buff *skb, unsigned int hlen, unsigned int ll_rs,
+diff --git a/net/ipv4/ip_fragment.c b/net/ipv4/ip_fragment.c
+index cfeb8890f94e..52eb53007c48 100644
+--- a/net/ipv4/ip_fragment.c
++++ b/net/ipv4/ip_fragment.c
+@@ -62,6 +62,7 @@ struct ipq {
+ 	struct inet_frag_queue q;
+ 
+ 	u8		ecn; /* RFC3168 support */
++	bool		ip_evil; /*frag with evil bit set */
+ 	u16		max_df_size; /* largest frag with DF set seen */
+ 	int             iif;
+ 	unsigned int    rid;
+@@ -88,6 +89,7 @@ static void ip4_frag_init(struct inet_frag_queue *q, const void *a)
+ 
+ 	q->key.v4 = *key;
+ 	qp->ecn = 0;
++	qp->ip_evil = false;
+ 	qp->peer = q->fqdir->max_dist ?
+ 		inet_getpeer_v4(net->ipv4.peers, key->saddr, key->vif, 1) :
+ 		NULL;
+@@ -278,6 +280,7 @@ static int ip_frag_queue(struct ipq *qp, struct sk_buff *skb)
+ 	unsigned int fragsize;
+ 	int err = -ENOENT;
+ 	u8 ecn;
++	bool  ip_evil;
+ 
+ 	if (qp->q.flags & INET_FRAG_COMPLETE)
+ 		goto err;
+@@ -295,6 +298,7 @@ static int ip_frag_queue(struct ipq *qp, struct sk_buff *skb)
+ 	offset &= IP_OFFSET;
+ 	offset <<= 3;		/* offset is in 8-byte chunks */
+ 	ihl = ip_hdrlen(skb);
++	ip_evil = flags & IP_EVIL ?  true : false;
+ 
+ 	/* Determine the position of this fragment. */
+ 	end = offset + skb->len - skb_network_offset(skb) - ihl;
+@@ -350,6 +354,7 @@ static int ip_frag_queue(struct ipq *qp, struct sk_buff *skb)
+ 	qp->q.stamp = skb->tstamp;
+ 	qp->q.meat += skb->len;
+ 	qp->ecn |= ecn;
++	qp->ip_evil = ip_evil;
+ 	add_frag_mem_limit(qp->q.fqdir, skb->truesize);
+ 	if (offset == 0)
+ 		qp->q.flags |= INET_FRAG_FIRST_IN;
+@@ -451,6 +456,10 @@ static int ip_frag_reasm(struct ipq *qp, struct sk_buff *skb,
+ 		iph->frag_off = 0;
  	}
- 	m->nr_args = nargs;
+ 
++	/*when ip or bridge forward, keep the origin evil bit set*/
++	if (qp->ip_evil)
++		iph->frag_off |= htons(IP_EVIL);
++
+ 	ip_send_check(iph);
+ 
+ 	__IP_INC_STATS(net, IPSTATS_MIB_REASMOKS);
+diff --git a/net/ipv4/ip_output.c b/net/ipv4/ip_output.c
+index c3efc7d658f6..d9ab750f9110 100644
+--- a/net/ipv4/ip_output.c
++++ b/net/ipv4/ip_output.c
+@@ -610,6 +610,8 @@ void ip_fraglist_init(struct sk_buff *skb, struct iphdr *iph,
+ 	skb->len = first_len;
+ 	iph->tot_len = htons(first_len);
+ 	iph->frag_off = htons(IP_MF);
++	if (ntohs(iph->frag_off) & IP_EVIL)
++		iph->frag_off |= htons(IP_EVIL);
+ 	ip_send_check(iph);
+ }
+ EXPORT_SYMBOL(ip_fraglist_init);
+@@ -631,6 +633,7 @@ void ip_fraglist_prepare(struct sk_buff *skb, struct ip_fraglist_iter *iter)
+ 	unsigned int hlen = iter->hlen;
+ 	struct iphdr *iph = iter->iph;
+ 	struct sk_buff *frag;
++	bool ip_evil;
+ 
+ 	frag = iter->frag;
+ 	frag->ip_summed = CHECKSUM_NONE;
+@@ -638,6 +641,8 @@ void ip_fraglist_prepare(struct sk_buff *skb, struct ip_fraglist_iter *iter)
+ 	__skb_push(frag, hlen);
+ 	skb_reset_network_header(frag);
+ 	memcpy(skb_network_header(frag), iph, hlen);
++	if (ntohs(iph->frag_off) & IP_EVIL)
++		ip_evil = true;
+ 	iter->iph = ip_hdr(frag);
+ 	iph = iter->iph;
+ 	iph->tot_len = htons(frag->len);
+@@ -646,6 +651,10 @@ void ip_fraglist_prepare(struct sk_buff *skb, struct ip_fraglist_iter *iter)
+ 	iph->frag_off = htons(iter->offset >> 3);
+ 	if (frag->next)
+ 		iph->frag_off |= htons(IP_MF);
++
++	if (ip_evil)
++		iph->frag_off |= htons(IP_EVIL);
++
+ 	/* Ready, complete checksum */
+ 	ip_send_check(iph);
+ }
+@@ -667,6 +676,7 @@ void ip_frag_init(struct sk_buff *skb, unsigned int hlen,
+ 
+ 	state->offset = (ntohs(iph->frag_off) & IP_OFFSET) << 3;
+ 	state->not_last_frag = iph->frag_off & htons(IP_MF);
++	state->ip_evil = (ntohs(iph->frag_off) & IP_EVIL) ? true : false;
+ }
+ EXPORT_SYMBOL(ip_frag_init);
+ 
+@@ -752,6 +762,10 @@ struct sk_buff *ip_frag_next(struct sk_buff *skb, struct ip_frag_state *state)
+ 	 */
+ 	if (state->left > 0 || state->not_last_frag)
+ 		iph->frag_off |= htons(IP_MF);
++
++	if (state->ip_evil)
++		iph->frag_off |= htons(IP_EVIL);
++
+ 	state->ptr += len;
+ 	state->offset += len;
+ 
 -- 
-2.30.2
+2.25.1
 
