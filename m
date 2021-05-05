@@ -2,37 +2,38 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 22DC2374207
-	for <lists+netdev@lfdr.de>; Wed,  5 May 2021 18:46:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 46C8D37420C
+	for <lists+netdev@lfdr.de>; Wed,  5 May 2021 18:46:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233899AbhEEQne (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 5 May 2021 12:43:34 -0400
-Received: from mail.kernel.org ([198.145.29.99]:39944 "EHLO mail.kernel.org"
+        id S235321AbhEEQnt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 5 May 2021 12:43:49 -0400
+Received: from mail.kernel.org ([198.145.29.99]:40554 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S235246AbhEEQlZ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 5 May 2021 12:41:25 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id C72816162C;
-        Wed,  5 May 2021 16:34:32 +0000 (UTC)
+        id S235375AbhEEQlq (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 5 May 2021 12:41:46 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id A761F6162E;
+        Wed,  5 May 2021 16:34:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1620232473;
-        bh=kEnxKvRvXtsSjAMGQKobqwfi53MrIc8FrAhY6aWVDy8=;
+        s=k20201202; t=1620232476;
+        bh=DNyrzPIYnIKT/yacSx+rHOBrxPl3lZ0BfgEYN9f/8NQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=s4uhSiNC+GznCk73llR6yihMjGkXNUOLEkOW2ir8q11AlTC6zN7wGcOhsKPU0jhF6
-         UTMhrYnKVEsVAzHe9fPtOnGExrjV7CtfAnaLcd1twT8tx+OPtgSKr27/QZ/Oc/4rCf
-         zjDzu2+lK1GLo4H9+5vGSUQk4gbNxVrCmGpFClHTG3f4LoNSbxriA43z+4V8aBQ7vR
-         CTxramiUY7GVW1SBax5ogwqZf9td2nncN1I7KLWekoQarD9W3SRk6YMU+GarcGfPNM
-         siQGujq0GBYzpaXlOD+iQfJVQTIo9/0jVGRtJnw6OM3wj5tWy38Qil1M65kSyZG0dm
-         7HFt4/f3OzO2Q==
+        b=ry5eK3u8YkypB0E2Qa+SVEU047np5oONWopS/hP9OpH8F5wcijS2zmZFzpXJfunHu
+         ThrqAnKWZb7luw5OIbawJsmELWbqNTdRyoGS35X0zYh8x6Q07JZERTH8hcqfq+u3D6
+         dbqkcGUFJDWHLgyTIY19wIEiX9MBw3qM6Gp3OhjmfsCKPV5OtMyziEsDBXin5NTDya
+         GaAhDMeAOqwN4Q7QEbBs42vLB5RCZKRbcuUbMPYn3TUgSjohNzmcJldEHJ/yTvDwpx
+         R7b5OWUXc7NJltmO5FQ5HVFJtF5r80Nx72ymKSL53/6t9KhNimcszWBaJknlmKQIVt
+         8NiqeIAswALGw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Jonathan McDowell <noodles@earth.li>,
+Cc:     Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Ido Schimmel <idosch@nvidia.com>,
         "David S . Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org,
-        linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org
-Subject: [PATCH AUTOSEL 5.11 014/104] net: stmmac: Set FIFO sizes for ipq806x
-Date:   Wed,  5 May 2021 12:32:43 -0400
-Message-Id: <20210505163413.3461611-14-sashal@kernel.org>
+        linux-doc@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.11 016/104] Documentation: networking: switchdev: fix command for static FDB entries
+Date:   Wed,  5 May 2021 12:32:45 -0400
+Message-Id: <20210505163413.3461611-16-sashal@kernel.org>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20210505163413.3461611-1-sashal@kernel.org>
 References: <20210505163413.3461611-1-sashal@kernel.org>
@@ -44,42 +45,85 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jonathan McDowell <noodles@earth.li>
+From: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-[ Upstream commit e127906b68b49ddb3ecba39ffa36a329c48197d3 ]
+[ Upstream commit 787a4109f46847975ffae7d528a55c6b768ef0aa ]
 
-Commit eaf4fac47807 ("net: stmmac: Do not accept invalid MTU values")
-started using the TX FIFO size to verify what counts as a valid MTU
-request for the stmmac driver.  This is unset for the ipq806x variant.
-Looking at older patches for this it seems the RX + TXs buffers can be
-up to 8k, so set appropriately.
+The "bridge fdb add" command provided in the switchdev documentation is
+junk now, not only because it is syntactically incorrect and rejected by
+the iproute2 bridge program, but also because it was not updated in
+light of Arkadi Sharshevsky's radical switchdev refactoring in commit
+29ab586c3d83 ("net: switchdev: Remove bridge bypass support from
+switchdev"). Try to explain what the intended usage pattern is with the
+new kernel implementation.
 
-(I sent this as an RFC patch in June last year, but received no replies.
-I've been running with this on my hardware (a MikroTik RB3011) since
-then with larger MTUs to support both the internal qca8k switch and
-VLANs with no problems. Without the patch it's impossible to set the
-larger MTU required to support this.)
-
-Signed-off-by: Jonathan McDowell <noodles@earth.li>
+Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+Reviewed-by: Ido Schimmel <idosch@nvidia.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/stmicro/stmmac/dwmac-ipq806x.c | 2 ++
- 1 file changed, 2 insertions(+)
+ Documentation/networking/switchdev.rst | 47 +++++++++++++++++++-------
+ 1 file changed, 35 insertions(+), 12 deletions(-)
 
-diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac-ipq806x.c b/drivers/net/ethernet/stmicro/stmmac/dwmac-ipq806x.c
-index bf3250e0e59c..749585fe6fc9 100644
---- a/drivers/net/ethernet/stmicro/stmmac/dwmac-ipq806x.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-ipq806x.c
-@@ -352,6 +352,8 @@ static int ipq806x_gmac_probe(struct platform_device *pdev)
- 	plat_dat->bsp_priv = gmac;
- 	plat_dat->fix_mac_speed = ipq806x_gmac_fix_mac_speed;
- 	plat_dat->multicast_filter_bins = 0;
-+	plat_dat->tx_fifo_size = 8192;
-+	plat_dat->rx_fifo_size = 8192;
+diff --git a/Documentation/networking/switchdev.rst b/Documentation/networking/switchdev.rst
+index ddc3f35775dc..650553cdec79 100644
+--- a/Documentation/networking/switchdev.rst
++++ b/Documentation/networking/switchdev.rst
+@@ -181,18 +181,41 @@ To offloading L2 bridging, the switchdev driver/device should support:
+ Static FDB Entries
+ ^^^^^^^^^^^^^^^^^^
  
- 	err = stmmac_dvr_probe(&pdev->dev, plat_dat, &stmmac_res);
- 	if (err)
+-The switchdev driver should implement ndo_fdb_add, ndo_fdb_del and ndo_fdb_dump
+-to support static FDB entries installed to the device.  Static bridge FDB
+-entries are installed, for example, using iproute2 bridge cmd::
+-
+-	bridge fdb add ADDR dev DEV [vlan VID] [self]
+-
+-The driver should use the helper switchdev_port_fdb_xxx ops for ndo_fdb_xxx
+-ops, and handle add/delete/dump of SWITCHDEV_OBJ_ID_PORT_FDB object using
+-switchdev_port_obj_xxx ops.
+-
+-XXX: what should be done if offloading this rule to hardware fails (for
+-example, due to full capacity in hardware tables) ?
++A driver which implements the ``ndo_fdb_add``, ``ndo_fdb_del`` and
++``ndo_fdb_dump`` operations is able to support the command below, which adds a
++static bridge FDB entry::
++
++        bridge fdb add dev DEV ADDRESS [vlan VID] [self] static
++
++(the "static" keyword is non-optional: if not specified, the entry defaults to
++being "local", which means that it should not be forwarded)
++
++The "self" keyword (optional because it is implicit) has the role of
++instructing the kernel to fulfill the operation through the ``ndo_fdb_add``
++implementation of the ``DEV`` device itself. If ``DEV`` is a bridge port, this
++will bypass the bridge and therefore leave the software database out of sync
++with the hardware one.
++
++To avoid this, the "master" keyword can be used::
++
++        bridge fdb add dev DEV ADDRESS [vlan VID] master static
++
++The above command instructs the kernel to search for a master interface of
++``DEV`` and fulfill the operation through the ``ndo_fdb_add`` method of that.
++This time, the bridge generates a ``SWITCHDEV_FDB_ADD_TO_DEVICE`` notification
++which the port driver can handle and use it to program its hardware table. This
++way, the software and the hardware database will both contain this static FDB
++entry.
++
++Note: for new switchdev drivers that offload the Linux bridge, implementing the
++``ndo_fdb_add`` and ``ndo_fdb_del`` bridge bypass methods is strongly
++discouraged: all static FDB entries should be added on a bridge port using the
++"master" flag. The ``ndo_fdb_dump`` is an exception and can be implemented to
++visualize the hardware tables, if the device does not have an interrupt for
++notifying the operating system of newly learned/forgotten dynamic FDB
++addresses. In that case, the hardware FDB might end up having entries that the
++software FDB does not, and implementing ``ndo_fdb_dump`` is the only way to see
++them.
+ 
+ Note: by default, the bridge does not filter on VLAN and only bridges untagged
+ traffic.  To enable VLAN support, turn on VLAN filtering::
 -- 
 2.30.2
 
