@@ -2,39 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8A3B137412D
-	for <lists+netdev@lfdr.de>; Wed,  5 May 2021 18:45:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CD185374138
+	for <lists+netdev@lfdr.de>; Wed,  5 May 2021 18:45:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234977AbhEEQgQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 5 May 2021 12:36:16 -0400
-Received: from mail.kernel.org ([198.145.29.99]:53704 "EHLO mail.kernel.org"
+        id S234691AbhEEQgd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 5 May 2021 12:36:33 -0400
+Received: from mail.kernel.org ([198.145.29.99]:52820 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S234689AbhEEQeS (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 5 May 2021 12:34:18 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 11F4E61411;
-        Wed,  5 May 2021 16:32:42 +0000 (UTC)
+        id S234421AbhEEQeo (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 5 May 2021 12:34:44 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id AEBE26142F;
+        Wed,  5 May 2021 16:32:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1620232364;
-        bh=4vldGFku7LwfIJmSZA2/UFDmjoW0JxY2jQPXpMy7jIM=;
+        s=k20201202; t=1620232365;
+        bh=2Htp6dURzsP1SUR5ARGfwS+oapd+HszsASpsqXB1VAQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=HkwUGybAl+27ZYg3NjrD64Rkd0pY/Q2CyVCOmY3sUx3TXpp3elGcl0BACkP8OUa8W
-         EKXC/xdIA4jV7A88J0lrYF9iTn+WB2jbEVMDOl3arm9CiJtVYzq4ExV4DX+Tc37huG
-         yQCJIrIiPYV7RStYrxoofVwzNdwpwgdVNPhAi5oT5nD8sU7PXgatYWNZaHn1gTJcRY
-         mf/YWUwhd+xxiVNE1s8M1LcjRDk8tHwZmaMHa/7zn1+L6INyDesUfrAt7Cdrw4sKVd
-         EizrUTn/E4XRkErKdYYAlnKctfMGLpo1Cm7py2EacoJBlbwhxOvt4dYkIFGZkllYqc
-         koOfDvhjmFGvw==
+        b=UKNfqUGZAOteBUPVKX43aCiuaFtQXA2wVVROhoLRb2eCnF8US4yPTMblMRuqJQitW
+         XL5DZ22wArEshn5dXw/8EdPIxUFBpdStHYZE5cmGY4VUYSpinTQpt1F9DVlE3NJ84i
+         zC4v0b0eXhCYeVDQMo+byP5YnIK78JD20tw23JWFO19LVYuqN1593KpHDI77xsW3yV
+         7ctik/5asmUtGP00gPPs5GHusKS9zUVR2YCq9G9dIidQvgSzpWIWDuXQB05C8fpuON
+         gmVzZ2/FnqVNHfJ0/ml+Nen6i6p5BsmOMvZ3naqaDC6mnUnYsb+ItiqmbUP9ZqC3fP
+         eLrPxCRgzgRNg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Sander Vanheule <sander@svanheule.net>,
-        Georgi Vlaev <georgi.vlaev@konsulko.com>,
-        Stijn Segers <foss@volatilesystems.org>,
-        Felix Fietkau <nbd@nbd.name>, Sasha Levin <sashal@kernel.org>,
+Cc:     David Bauer <mail@david-bauer.net>, Felix Fietkau <nbd@nbd.name>,
+        Sasha Levin <sashal@kernel.org>,
         linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
         linux-arm-kernel@lists.infradead.org,
         linux-mediatek@lists.infradead.org
-Subject: [PATCH AUTOSEL 5.12 057/116] mt76: mt7615: support loading EEPROM for MT7613BE
-Date:   Wed,  5 May 2021 12:30:25 -0400
-Message-Id: <20210505163125.3460440-57-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.12 058/116] mt76: mt76x0: disable GTK offloading
+Date:   Wed,  5 May 2021 12:30:26 -0400
+Message-Id: <20210505163125.3460440-58-sashal@kernel.org>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20210505163125.3460440-1-sashal@kernel.org>
 References: <20210505163125.3460440-1-sashal@kernel.org>
@@ -46,36 +44,44 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Sander Vanheule <sander@svanheule.net>
+From: David Bauer <mail@david-bauer.net>
 
-[ Upstream commit 858ebf446bee7d5077bd99488aae617908c3f4fe ]
+[ Upstream commit 4b36cc6b390f18dbc59a45fb4141f90d7dfe2b23 ]
 
-EEPROM blobs for MT7613BE radios start with (little endian) 0x7663,
-which is also the PCI device ID for this device. The EEPROM is required
-for the radio to work at useful power levels, otherwise only the lowest
-power level is available.
+When operating two VAP on a MT7610 with encryption (PSK2, SAE, OWE),
+only the first one to be created will transmit properly encrypteded
+frames.
 
-Suggested-by: Georgi Vlaev <georgi.vlaev@konsulko.com>
-Tested-by: Stijn Segers <foss@volatilesystems.org>
-Signed-off-by: Sander Vanheule <sander@svanheule.net>
+All subsequently created VAPs will sent out frames with the payload left
+unencrypted, breaking multicast traffic (ICMP6 NDP) and potentially
+disclosing information to a third party.
+
+Disable GTK offloading and encrypt these frames in software to
+circumvent this issue. THis only seems to be necessary on MT7610 chips,
+as MT7612 is not affected from our testing.
+
+Signed-off-by: David Bauer <mail@david-bauer.net>
 Signed-off-by: Felix Fietkau <nbd@nbd.name>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/mediatek/mt76/mt7615/eeprom.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/net/wireless/mediatek/mt76/mt76x02_util.c | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-diff --git a/drivers/net/wireless/mediatek/mt76/mt7615/eeprom.c b/drivers/net/wireless/mediatek/mt76/mt7615/eeprom.c
-index 2eab23898c77..6dbaaf95ee38 100644
---- a/drivers/net/wireless/mediatek/mt76/mt7615/eeprom.c
-+++ b/drivers/net/wireless/mediatek/mt76/mt7615/eeprom.c
-@@ -86,6 +86,7 @@ static int mt7615_check_eeprom(struct mt76_dev *dev)
- 	switch (val) {
- 	case 0x7615:
- 	case 0x7622:
-+	case 0x7663:
- 		return 0;
- 	default:
- 		return -EINVAL;
+diff --git a/drivers/net/wireless/mediatek/mt76/mt76x02_util.c b/drivers/net/wireless/mediatek/mt76/mt76x02_util.c
+index ab671e21f882..02db5d66735d 100644
+--- a/drivers/net/wireless/mediatek/mt76/mt76x02_util.c
++++ b/drivers/net/wireless/mediatek/mt76/mt76x02_util.c
+@@ -447,6 +447,10 @@ int mt76x02_set_key(struct ieee80211_hw *hw, enum set_key_cmd cmd,
+ 	    !(key->flags & IEEE80211_KEY_FLAG_PAIRWISE))
+ 		return -EOPNOTSUPP;
+ 
++	/* MT76x0 GTK offloading does not work with more than one VIF */
++	if (is_mt76x0(dev) && !(key->flags & IEEE80211_KEY_FLAG_PAIRWISE))
++		return -EOPNOTSUPP;
++
+ 	msta = sta ? (struct mt76x02_sta *)sta->drv_priv : NULL;
+ 	wcid = msta ? &msta->wcid : &mvif->group_wcid;
+ 
 -- 
 2.30.2
 
