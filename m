@@ -2,70 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A3E8C373650
-	for <lists+netdev@lfdr.de>; Wed,  5 May 2021 10:33:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EBC1A373666
+	for <lists+netdev@lfdr.de>; Wed,  5 May 2021 10:38:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231783AbhEEIek (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 5 May 2021 04:34:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43230 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231637AbhEEIej (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 5 May 2021 04:34:39 -0400
-Received: from mout-p-202.mailbox.org (mout-p-202.mailbox.org [IPv6:2001:67c:2050::465:202])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 06AD2C061574
-        for <netdev@vger.kernel.org>; Wed,  5 May 2021 01:33:42 -0700 (PDT)
-Received: from smtp2.mailbox.org (smtp2.mailbox.org [80.241.60.241])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mout-p-202.mailbox.org (Postfix) with ESMTPS id 4FZqjw2PDhzQjjH;
-        Wed,  5 May 2021 10:33:40 +0200 (CEST)
-X-Virus-Scanned: amavisd-new at heinlein-support.de
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=pmachata.org;
-        s=MBO0001; t=1620203618;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=ldyIEM9S3rBLGYaGiOpt4m5tQk0mOAd/+4lmVBcFNHU=;
-        b=USpMREweQoZlHlouX1JG3RRHzMl4Ckw+btngJhtzaSdphEHOVwy+FhPvpbSstTzR8HFeP2
-        8xwTgw8Bb2Hf7PRwJaRB7V/GQY5byrs43LlbTw4qyvW2xJhvN9hfFpP+NPONRoTU7o96a6
-        X2yQoEWDq+KoXL5XzV3egK8WX4HSSfs9pcKbMOwetsX1t5yQVhyKKNjBB42bbPbJTFAJ6N
-        D0g9HfMtTEceXHOjsZF/aagi0JF5+iNl1HfM59/5mPr+7pDJT1RHzYZrIf5KeMVT7nx5FW
-        2tbKvj35oDRhEstX3v2VRSWdKwvlNk/RHLBls/1Ss0TxFpguy6qQSWhTIHC9IA==
-Received: from smtp2.mailbox.org ([80.241.60.241])
-        by spamfilter03.heinlein-hosting.de (spamfilter03.heinlein-hosting.de [80.241.56.117]) (amavisd-new, port 10030)
-        with ESMTP id nFIyf34tr-Q1; Wed,  5 May 2021 10:33:37 +0200 (CEST)
-References: <cover.1619886883.git.aclaudi@redhat.com>
- <0d19dbb485632ecfbbc09e04e8151f7157e6960b.1619886883.git.aclaudi@redhat.com>
-From:   Petr Machata <me@pmachata.org>
-To:     Andrea Claudi <aclaudi@redhat.com>
-Cc:     netdev@vger.kernel.org, stephen@networkplumber.org,
-        dsahern@gmail.com
-Subject: Re: [PATCH iproute2 2/2] dcb: fix memory leak
-In-reply-to: <0d19dbb485632ecfbbc09e04e8151f7157e6960b.1619886883.git.aclaudi@redhat.com>
-Date:   Wed, 05 May 2021 10:33:34 +0200
-Message-ID: <87a6p960m9.fsf@nvidia.com>
+        id S232004AbhEEIjs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 5 May 2021 04:39:48 -0400
+Received: from perceval.ideasonboard.com ([213.167.242.64]:40504 "EHLO
+        perceval.ideasonboard.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230490AbhEEIjr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 5 May 2021 04:39:47 -0400
+Received: from [192.168.0.20] (cpc89244-aztw30-2-0-cust3082.18-1.cable.virginm.net [86.31.172.11])
+        by perceval.ideasonboard.com (Postfix) with ESMTPSA id C9ECC2CF;
+        Wed,  5 May 2021 10:38:48 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=ideasonboard.com;
+        s=mail; t=1620203929;
+        bh=QdqoNvph4DT3PiPWxxcQ72QkJnI2p554Kaxscdfp82U=;
+        h=Reply-To:Subject:To:Cc:References:From:Date:In-Reply-To:From;
+        b=bbUUuwfLhb1szjyCIUvFrBFEhlODc5k1bWnH2TVW94jpf0mwsDMV7rXVF4wGJfn1S
+         /okzETMj9agF17aPlIIGk/IpfBXHaHGBj5He3hfsJBZQMpPZjnpaB0yun2OU66MZWg
+         urOqPldpCQZXlBSgNzlqjGUWZmC6kM7IYpGLqxdE=
+Reply-To: kieran.bingham+renesas@ideasonboard.com
+Subject: Re: [PATCH 1/3] Fix spelling error from "eleminate" to "eliminate"
+To:     Sean Gloumeau <sajgloumeau@gmail.com>,
+        Jiri Kosina <trivial@kernel.org>
+Cc:     David Woodhouse <dwmw2@infradead.org>,
+        Richard Weinberger <richard@nod.at>,
+        linux-mtd@lists.infradead.org, Rasesh Mody <rmody@marvell.com>,
+        Sudarsana Kalluru <skalluru@marvell.com>,
+        GR-Linux-NIC-Dev@marvell.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Sean Gloumeau <sajgloumeau@protonmail.com>
+References: <cover.1620185393.git.sajgloumeau@gmail.com>
+ <21caf628a8aeec21ea9d3f06c95f712a7e7ce7fa.1620185393.git.sajgloumeau@gmail.com>
+From:   Kieran Bingham <kieran.bingham+renesas@ideasonboard.com>
+Organization: Ideas on Board
+Message-ID: <3fc4016e-53a9-fd30-3073-5b8955f49be9@ideasonboard.com>
+Date:   Wed, 5 May 2021 09:38:46 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.7.1
 MIME-Version: 1.0
-Content-Type: text/plain
-X-MBO-SPAM-Probability: 
-X-Rspamd-Score: -3.45 / 15.00 / 15.00
-X-Rspamd-Queue-Id: 4D2C11821
-X-Rspamd-UID: a92c9f
+In-Reply-To: <21caf628a8aeec21ea9d3f06c95f712a7e7ce7fa.1620185393.git.sajgloumeau@gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-GB
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hi Sean,
 
-Andrea Claudi <aclaudi@redhat.com> writes:
+Thank you for the patch,
 
-> main() dinamically allocates dcb, but when dcb_help() is called it
-> returns without freeing it.
->
-> Fix this using a goto, as it is already done in the same function.
->
-> Fixes: 67033d1c1c8a ("Add skeleton of a new tool, dcb")
-> Signed-off-by: Andrea Claudi <aclaudi@redhat.com>
+On 05/05/2021 05:15, Sean Gloumeau wrote:
+> Spelling error "eleminate" amended to "eliminate".
 
-Thanks!
+Reviewed-by: Kieran Bingham <kieran.bingham+renesas@ideasonboard.com>
 
-Reviewed-by: Petr Machata <me@pmachata.org>
+> Signed-off-by: Sean Gloumeau <sajgloumeau@gmail.com>
+> ---
+>  drivers/net/ethernet/brocade/bna/bnad.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/drivers/net/ethernet/brocade/bna/bnad.c b/drivers/net/ethernet/brocade/bna/bnad.c
+> index 7e4e831d720f..ba47777d9cff 100644
+> --- a/drivers/net/ethernet/brocade/bna/bnad.c
+> +++ b/drivers/net/ethernet/brocade/bna/bnad.c
+> @@ -1764,7 +1764,7 @@ bnad_dim_timeout(struct timer_list *t)
+>  		}
+>  	}
+>  
+> -	/* Check for BNAD_CF_DIM_ENABLED, does not eleminate a race */
+> +	/* Check for BNAD_CF_DIM_ENABLED, does not eliminate a race */
+>  	if (test_bit(BNAD_RF_DIM_TIMER_RUNNING, &bnad->run_flags))
+>  		mod_timer(&bnad->dim_timer,
+>  			  jiffies + msecs_to_jiffies(BNAD_DIM_TIMER_FREQ));>
+
