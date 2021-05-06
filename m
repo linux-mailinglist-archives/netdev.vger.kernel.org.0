@@ -2,131 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3897B37555F
-	for <lists+netdev@lfdr.de>; Thu,  6 May 2021 16:04:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 18D4C375565
+	for <lists+netdev@lfdr.de>; Thu,  6 May 2021 16:09:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234489AbhEFOF2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 6 May 2021 10:05:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41722 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234356AbhEFOF0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 6 May 2021 10:05:26 -0400
-Received: from mail-pl1-x629.google.com (mail-pl1-x629.google.com [IPv6:2607:f8b0:4864:20::629])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E6625C061574
-        for <netdev@vger.kernel.org>; Thu,  6 May 2021 07:04:27 -0700 (PDT)
-Received: by mail-pl1-x629.google.com with SMTP id s20so3432413plr.13
-        for <netdev@vger.kernel.org>; Thu, 06 May 2021 07:04:27 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=5Q/jAIUUETZ32rVCOA5mR3xBrCuSgTX/aYv4ZeRDb0w=;
-        b=R0Ww9Ai4OYysA4ls9utTA4PoFHUeNR0J15J53BB3yiUqXDUFn5tKqtxRqNUwxBoe08
-         uQhbC6hii3WV4BKsqu1wGQhG0PdlbqxSviK3AH6gwNFn5Xgp5SBXw3He06l+MXMAJ05H
-         QO1/SRStttr7XIlD6QwNiw/cSfQxJZ5ufthh5uU0s/ZvNSMI5/rkjcm94YRs+QGT1v0t
-         7RXOvCgqGJ0G+ckCW8WgxQOuk0Z1ENJcsbzsZdN+FMRVpPShS6R9WR1akuw1JJgszMUI
-         9/PpiK4S/L0x70Gnp0X2HbUqOlsvycn1431kn5KyUXOq4aWX5rxilW+at3j5vsq99Bve
-         S2xw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=5Q/jAIUUETZ32rVCOA5mR3xBrCuSgTX/aYv4ZeRDb0w=;
-        b=nAB7hTSjkFeEuyoqwy9B2/pAPgGVSXkmvcmBfHD3XKGe4ALPZJzYbQ4B1uj16hgRWY
-         6bLLnC7vwwMyQhYDAqMypWSMsj69Qd/L/3sGWoBgs9KTHi7900tqShgEDfvQSSRnxdzl
-         gbCenEn76/g57acW3sUfqfu06wcY6+y5ZeIojR7LX5qBDTMyy22ODcUVLEW6/6AX9JqE
-         x8Plk9JvZmPraMAg5lAQWRR3Msp4syDXKgqGSQ7Ec3B11loZGHV6wroXI43ZGg0HWUxa
-         60uHsc5hELr3/TrWFBOK5F1L7gppGkbuHG7rMKL1F64EvEnWq+83RaHtXYvFlSFC7X/s
-         BG+w==
-X-Gm-Message-State: AOAM531u0+Ost8E2b9IPm+kkLKBZLtmCKveNGSk0lxHrdBLcsKswboEH
-        wLbyIPEtBejrFgYAwuYN4qcup5Pbv25HbHTLpPE=
-X-Google-Smtp-Source: ABdhPJwaOPdCHa9QooT+dWqBlHYZlqjje+CE5T3SrjFX0Kt5rYssslrN+0llf4xu6kq3oMJ5Pu5nc9LShDaP6QTa6s0=
-X-Received: by 2002:a17:902:8d98:b029:eb:43c2:d294 with SMTP id
- v24-20020a1709028d98b02900eb43c2d294mr4569992plo.49.1620309867453; Thu, 06
- May 2021 07:04:27 -0700 (PDT)
-MIME-Version: 1.0
-References: <20210506231158.250926-1-yanjun.zhu@intel.com> <CAJ8uoz2gd8xKd46Fq8numxS25Q68Gv-jtLqbWywLaztFCf=_jg@mail.gmail.com>
- <CAD=hENdVrb18vxnUrSZvgMnFo5EoJAJdSKSm4Q2kFLHHSoUbpQ@mail.gmail.com>
-In-Reply-To: <CAD=hENdVrb18vxnUrSZvgMnFo5EoJAJdSKSm4Q2kFLHHSoUbpQ@mail.gmail.com>
-From:   Magnus Karlsson <magnus.karlsson@gmail.com>
-Date:   Thu, 6 May 2021 16:04:16 +0200
-Message-ID: <CAJ8uoz3f+GqGoVnmYh2Y0fBG44CgES+4MXGCuCDriVx5QYsMJA@mail.gmail.com>
-Subject: Re: [PATCH 1/1] samples: bpf: fix the compiling error
-To:     Zhu Yanjun <zyjzyj2000@gmail.com>
-Cc:     Zhu Yanjun <yanjun.zhu@intel.com>,
-        Mariusz Dudek <mariuszx.dudek@intel.com>,
-        Network Development <netdev@vger.kernel.org>,
-        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn@kernel.org>,
-        "Karlsson, Magnus" <magnus.karlsson@intel.com>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>
+        id S234489AbhEFOKY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 6 May 2021 10:10:24 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:58643 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S234002AbhEFOKX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 6 May 2021 10:10:23 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1620310164;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=Q9h6o9ctEHc8iY8TpOG1bBkRBecU/A/rUbR2Rl7sVlc=;
+        b=UoRZ/IqBoypFakqovrQqm3swdSyJvGlAQIBZp706LSK2asqqwFAQwOIkZZvmjFIYRcXaig
+        obQ2BVCUwX5BfYY6x9rd+UT514Cv0JHwlVU5/5RqM7Eil7OfFyY4LsXiInOBZpoaf8++7U
+        yVm78qBPkIrLWz5nyC7rPuZ52fWMvAc=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-150-lKQauTevPp6sFzeJ1LyBoA-1; Thu, 06 May 2021 10:09:21 -0400
+X-MC-Unique: lKQauTevPp6sFzeJ1LyBoA-1
+Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com [10.5.11.22])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 4B388C73A3;
+        Thu,  6 May 2021 14:09:20 +0000 (UTC)
+Received: from [10.10.110.34] (unknown [10.10.110.34])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id EC71610016FD;
+        Thu,  6 May 2021 14:09:18 +0000 (UTC)
+Message-ID: <24356aa7737d5d0bbf9481bbba89b4248811ebce.camel@gapps.redhat.com>
+Subject: Re: [PATCH V2 07/16] net: iosm: mbim control device
+From:   Dan Williams <dcbw@gapps.redhat.com>
+To:     "Kumar, M Chetan" <m.chetan.kumar@intel.com>,
+        Loic Poulain <loic.poulain@linaro.org>
+Cc:     Network Development <netdev@vger.kernel.org>,
+        "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>,
+        "johannes@sipsolutions.net" <johannes@sipsolutions.net>,
+        "Sudi, Krishna C" <krishna.c.sudi@intel.com>,
+        linuxwwan <linuxwwan@intel.com>
+Date:   Thu, 06 May 2021 09:09:18 -0500
+In-Reply-To: <fd6b57f1e3b1444383ad5387de36e1cc@intel.com>
+References: <20210420161310.16189-1-m.chetan.kumar@intel.com>
+         <20210420161310.16189-8-m.chetan.kumar@intel.com>
+         <CAMZdPi8h7ubOvUBaF2wh87UBwzJz3GpQ3gZwSXy0miV7Aw2NXw@mail.gmail.com>
+         <fd6b57f1e3b1444383ad5387de36e1cc@intel.com>
 Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.38.4 (3.38.4-1.fc33) 
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, May 6, 2021 at 3:51 PM Zhu Yanjun <zyjzyj2000@gmail.com> wrote:
->
-> On Thu, May 6, 2021 at 8:54 PM Magnus Karlsson
-> <magnus.karlsson@gmail.com> wrote:
-> >
-> > On Thu, May 6, 2021 at 8:47 AM Zhu Yanjun <yanjun.zhu@intel.com> wrote:
-> > >
-> > > From: Zhu Yanjun <zyjzyj2000@gmail.com>
-> > >
-> > > When compiling, the following error will appear.
-> > >
-> > > "
-> > > samples/bpf//xdpsock_user.c:27:10: fatal error: sys/capability.h:
-> > >  No such file or directory
-> > > "
-> >
-> > On my system, I get a compilation error if I include
-> > linux/capability.h as it does not have capget().
->
-> Thanks. Can you run "rpm -qf /xxx/xxx/sys/capability.h" to check which
-> software provides sys/capability.h?
-> Now I am on CentOS Linux release 8.3.2011.
+On Thu, 2021-05-06 at 10:44 +0000, Kumar, M Chetan wrote:
+> Hi Loic,
+> 
+> > > 
+> > > Implements a char device for MBIM protocol communication &
+> > > provides a
+> > > simple IOCTL for max transfer buffer size configuration.
+> > > 
+> > > Signed-off-by: M Chetan Kumar <m.chetan.kumar@intel.com>
+> > 
+> > Now that the initial wwan framework support landed, could you
+> > migrate to it
+> > for creating the MBIM 'WWAN port' instead of creating yet another
+> > char
+> > driver? I see you introduced an IOCTL for packet size, I see no
+> > objection to
+> > add that in the wwan core.
+> > 
+> 
+> Sure, we have started the migration to MBIM 'WWAN port'. The next
+> version of patch
+> would contain these adaptations.
+> 
+> If wwan core supports IOCTL for packet size, then we shall remove
+> that piece of
+> implementation in driver code.
 
-I do not have CentOS, but it is likely called libcap-dev or
-libcap-devel. If that does not work, Google/Baidu it.
+There has got to be a better way to do that than an ioctl. ioctls are
+not looked on favorably these days. Usually it's sysfs files or netlink
+config instead.
 
-> Thanks a lot.
-> Zhu Yanjun
->
->
-> >
-> > NAME
-> >        capget, capset - set/get capabilities of thread(s)
-> >
-> > SYNOPSIS
-> >        #include <sys/capability.h>
-> >
-> >        int capget(cap_user_header_t hdrp, cap_user_data_t datap);
-> >
-> > Have you installed libcap? It contains the sys/capability.h header
-> > file that you need.
-> >
-> > > Now capability.h is in linux directory.
-> > >
-> > > Fixes: 3627d9702d78 ("samples/bpf: Sample application for eBPF load and socket creation split")
-> > > Signed-off-by: Zhu Yanjun <zyjzyj2000@gmail.com>
-> > > ---
-> > >  samples/bpf/xdpsock_user.c | 2 +-
-> > >  1 file changed, 1 insertion(+), 1 deletion(-)
-> > >
-> > > diff --git a/samples/bpf/xdpsock_user.c b/samples/bpf/xdpsock_user.c
-> > > index aa696854be78..44200aa694cb 100644
-> > > --- a/samples/bpf/xdpsock_user.c
-> > > +++ b/samples/bpf/xdpsock_user.c
-> > > @@ -24,7 +24,7 @@
-> > >  #include <stdio.h>
-> > >  #include <stdlib.h>
-> > >  #include <string.h>
-> > > -#include <sys/capability.h>
-> > > +#include <linux/capability.h>
-> > >  #include <sys/mman.h>
-> > >  #include <sys/resource.h>
-> > >  #include <sys/socket.h>
-> > > --
-> > > 2.27.0
-> > >
+Dan
+
