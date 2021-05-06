@@ -2,130 +2,194 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 672A43755F9
-	for <lists+netdev@lfdr.de>; Thu,  6 May 2021 16:54:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A085737561C
+	for <lists+netdev@lfdr.de>; Thu,  6 May 2021 17:00:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234919AbhEFOzH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 6 May 2021 10:55:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52934 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234759AbhEFOzE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 6 May 2021 10:55:04 -0400
-Received: from mail-il1-x131.google.com (mail-il1-x131.google.com [IPv6:2607:f8b0:4864:20::131])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 062A6C061574
-        for <netdev@vger.kernel.org>; Thu,  6 May 2021 07:54:05 -0700 (PDT)
-Received: by mail-il1-x131.google.com with SMTP id v13so4977344ilj.8
-        for <netdev@vger.kernel.org>; Thu, 06 May 2021 07:54:04 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=huUXHgZjNKj4ozdUIZOT3gjlkDIS/nxHdiapttMvJR0=;
-        b=TRnZOpMxzdOGLu0C2rWhGuX6oAe6r6sH9zZytMv7jQGjrSQDQAJ4GVYp1RPHXqnTFO
-         e+Eok8y1qFdtf9w3AM+VrLSeSi5t52qUyKYlXeP6bsc+z8PrKN7lFAELJ0TaC1fnE4c+
-         s3e7+Lk2neu5hLy50ZhAxabvTTpoEZmnOqYnPApe8X2KiCLU5vYo8jtP4rwZQSkfTjJ1
-         EOKeK/0elhhhLdvy1Syt1mfCWz8LYX0n80AWUlYUl5llvBSEoKS34E8GbqE8M7UVvAe+
-         ASQ9ji0Y0JQlP+ZlmIlJlbOk9gLoXoTZ3Qk3PGzJX8t7m7pn8s0TVZvorqFouu5D8I7b
-         soXw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=huUXHgZjNKj4ozdUIZOT3gjlkDIS/nxHdiapttMvJR0=;
-        b=ZpNSpT6k67618Mn5DnHcrgrUOgNYbCKBdjrR4ukPs6OpBV4g8v+3F2own7VKJIcbJV
-         JAz8TQaslhxY6ASTv8B6gpYYYFLKVFGzTHMEmVkEr7OmS1pHf+3UVomPEoH7P0QKr7B7
-         eaMY6jHQTNgjLu+i5d6eDJmZz/2WqOli9u8acichiPcWsVLvFEJZSBsNfmsQ1D50yeOA
-         ecdFPpoP0mDKM498IkiTnc7LYrERZ7Q5GyJtvla0S8sDnGIrVf1GzLDdQ9qNTqVQ/+Jw
-         c+G37v6qQZXANg4USVMqYhHS/kctbnmriYFwpuDJD/M1HDLKZAx4YT6ZUkRLDUQ6Z38m
-         eBog==
-X-Gm-Message-State: AOAM530aLfiAit/NY9Q/XLThYUEiYBE5Za4TuEonwJ2Ub85O6ktmXcZY
-        IDLErCSdYuTiC6F9cCqvLgy1NFgFTjkuyKhWGCMWR+dXe/k=
-X-Google-Smtp-Source: ABdhPJy7mZA5zjdjgw2xdwF76Aa/SliHmaRnrlROZreO0xphMT5bnzv8WTdXsFEQ7GhtEfLmVr2TxTHZMPXyL9TXecQ=
-X-Received: by 2002:a92:c78b:: with SMTP id c11mr4657617ilk.249.1620312844498;
- Thu, 06 May 2021 07:54:04 -0700 (PDT)
+        id S234995AbhEFPBl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 6 May 2021 11:01:41 -0400
+Received: from m12-11.163.com ([220.181.12.11]:47165 "EHLO m12-11.163.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S235008AbhEFPBi (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 6 May 2021 11:01:38 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
+        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=ClSwa
+        n6SM+8zC9QsxPq4sN4EIGEeUwrSpnXtb/5CeI8=; b=psLRBtEOzR4fnVHFBiwnR
+        Flm8HClg2wsB0isu8qp+16c3jOFam/rfRF+9FUaSNuJpx3R/3XbwBsxaixwzU3/p
+        2UF6gFktDGj2nM5OJFuqV5ujt+juS/WiQyQYV47+8EtzyZ+DCplQx7SAwQi+B+Gx
+        aszMTljbazC3wqtzKAjMFA=
+Received: from mjs-Inspiron-3668.www.tendawifi.com (unknown [61.152.154.80])
+        by smtp7 (Coremail) with SMTP id C8CowAAXZ688BJRgsn00bA--.15323S4;
+        Thu, 06 May 2021 22:59:16 +0800 (CST)
+From:   meijusan <meijusan@163.com>
+To:     davem@davemloft.net, yoshfuji@linux-ipv6.org, dsahern@kernel.org,
+        kuba@kernel.org
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        meijusan <meijusan@163.com>
+Subject: [PATCH] net/ipv4/ip_fragment:fix missing Flags reserved bit set in iphdr
+Date:   Thu,  6 May 2021 22:59:05 +0800
+Message-Id: <20210506145905.3884-1-meijusan@163.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-References: <421cc86c-b66f-b372-32f7-21e59f9a98bc@kontron.de>
-In-Reply-To: <421cc86c-b66f-b372-32f7-21e59f9a98bc@kontron.de>
-From:   Dave Taht <dave.taht@gmail.com>
-Date:   Thu, 6 May 2021 07:53:51 -0700
-Message-ID: <CAA93jw6bWOU3wX5tubkTzOFxDMWXdgmBqnGPAnzZKVVFQTEUDQ@mail.gmail.com>
-Subject: Re: i.MX8MM Ethernet TX Bandwidth Fluctuations
-To:     Frieder Schrempf <frieder.schrempf@kontron.de>
-Cc:     NXP Linux Team <linux-imx@nxp.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
+X-CM-TRANSID: C8CowAAXZ688BJRgsn00bA--.15323S4
+X-Coremail-Antispam: 1Uf129KBjvJXoWxAFykXrW8ZFWDZrWkur4xtFb_yoW7Jr1fp3
+        Z8K395Ja18JrnrAwn7JrWayw4Skw1vka4akr4Fy3yrA34qyryFqF92gFyYqF45Gr45Zr13
+        try3t3y5Wr4DX37anT9S1TB71UUUUbUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+        9KBjDUYxBIdaVFxhVjvjDU0xZFpf9x07jNMa5UUUUU=
+X-Originating-IP: [61.152.154.80]
+X-CM-SenderInfo: xphly3xvdqqiywtou0bp/1tbiFgWKHl44P6QkcwAAst
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-I am a big fan of bql - is that implemented on this driver?
+ip frag with the iphdr flags reserved bit set,via router,ip frag reasm or
+fragment,causing the reserved bit is reset to zero.
 
-cd /sys/class/net/your_device_name/queues/tx-0/byte_queue_limits/
-cat limit
+Keep reserved bit set is not modified in ip frag  defrag or fragment.
 
-see also bqlmon from github
+Signed-off-by: meijusan <meijusan@163.com>
+---
+ include/net/ip.h       |  3 ++-
+ net/ipv4/ip_fragment.c |  9 +++++++++
+ net/ipv4/ip_output.c   | 14 ++++++++++++++
+ 3 files changed, 25 insertions(+), 1 deletion(-)
 
-is fq_codel running on the ethernet interface? the iperf bidir test
-does much better with that in place rather than a fifo. tc -s qdisc
-show dev your_device
+diff --git a/include/net/ip.h b/include/net/ip.h
+index e20874059f82..ae0c75fca61d 100644
+--- a/include/net/ip.h
++++ b/include/net/ip.h
+@@ -134,7 +134,7 @@ struct ip_ra_chain {
+ #define IP_DF		0x4000		/* Flag: "Don't Fragment"	*/
+ #define IP_MF		0x2000		/* Flag: "More Fragments"	*/
+ #define IP_OFFSET	0x1FFF		/* "Fragment Offset" part	*/
+-
++#define IP_EVIL	0x8000		/* Flag: "reserve bit"	*/
+ #define IP_FRAG_TIME	(30 * HZ)		/* fragment lifetime	*/
+ 
+ struct msghdr;
+@@ -194,6 +194,7 @@ struct ip_frag_state {
+ 	int		offset;
+ 	int		ptr;
+ 	__be16		not_last_frag;
++	bool		ip_evil;
+ };
+ 
+ void ip_frag_init(struct sk_buff *skb, unsigned int hlen, unsigned int ll_rs,
+diff --git a/net/ipv4/ip_fragment.c b/net/ipv4/ip_fragment.c
+index cfeb8890f94e..52eb53007c48 100644
+--- a/net/ipv4/ip_fragment.c
++++ b/net/ipv4/ip_fragment.c
+@@ -62,6 +62,7 @@ struct ipq {
+ 	struct inet_frag_queue q;
+ 
+ 	u8		ecn; /* RFC3168 support */
++	bool		ip_evil; /*frag with evil bit set */
+ 	u16		max_df_size; /* largest frag with DF set seen */
+ 	int             iif;
+ 	unsigned int    rid;
+@@ -88,6 +89,7 @@ static void ip4_frag_init(struct inet_frag_queue *q, const void *a)
+ 
+ 	q->key.v4 = *key;
+ 	qp->ecn = 0;
++	qp->ip_evil = false;
+ 	qp->peer = q->fqdir->max_dist ?
+ 		inet_getpeer_v4(net->ipv4.peers, key->saddr, key->vif, 1) :
+ 		NULL;
+@@ -278,6 +280,7 @@ static int ip_frag_queue(struct ipq *qp, struct sk_buff *skb)
+ 	unsigned int fragsize;
+ 	int err = -ENOENT;
+ 	u8 ecn;
++	bool  ip_evil;
+ 
+ 	if (qp->q.flags & INET_FRAG_COMPLETE)
+ 		goto err;
+@@ -295,6 +298,7 @@ static int ip_frag_queue(struct ipq *qp, struct sk_buff *skb)
+ 	offset &= IP_OFFSET;
+ 	offset <<= 3;		/* offset is in 8-byte chunks */
+ 	ihl = ip_hdrlen(skb);
++	ip_evil = flags & IP_EVIL ?  true : false;
+ 
+ 	/* Determine the position of this fragment. */
+ 	end = offset + skb->len - skb_network_offset(skb) - ihl;
+@@ -350,6 +354,7 @@ static int ip_frag_queue(struct ipq *qp, struct sk_buff *skb)
+ 	qp->q.stamp = skb->tstamp;
+ 	qp->q.meat += skb->len;
+ 	qp->ecn |= ecn;
++	qp->ip_evil = ip_evil;
+ 	add_frag_mem_limit(qp->q.fqdir, skb->truesize);
+ 	if (offset == 0)
+ 		qp->q.flags |= INET_FRAG_FIRST_IN;
+@@ -451,6 +456,10 @@ static int ip_frag_reasm(struct ipq *qp, struct sk_buff *skb,
+ 		iph->frag_off = 0;
+ 	}
+ 
++	/*when ip or bridge forward, keep the origin evil bit set*/
++	if (qp->ip_evil)
++		iph->frag_off |= htons(IP_EVIL);
++
+ 	ip_send_check(iph);
+ 
+ 	__IP_INC_STATS(net, IPSTATS_MIB_REASMOKS);
+diff --git a/net/ipv4/ip_output.c b/net/ipv4/ip_output.c
+index 3aab53beb4ea..a8a9a0af29b2 100644
+--- a/net/ipv4/ip_output.c
++++ b/net/ipv4/ip_output.c
+@@ -610,6 +610,8 @@ void ip_fraglist_init(struct sk_buff *skb, struct iphdr *iph,
+ 	skb->len = first_len;
+ 	iph->tot_len = htons(first_len);
+ 	iph->frag_off = htons(IP_MF);
++	if (ntohs(iph->frag_off) & IP_EVIL)
++		iph->frag_off |= htons(IP_EVIL);
+ 	ip_send_check(iph);
+ }
+ EXPORT_SYMBOL(ip_fraglist_init);
+@@ -631,6 +633,7 @@ void ip_fraglist_prepare(struct sk_buff *skb, struct ip_fraglist_iter *iter)
+ 	unsigned int hlen = iter->hlen;
+ 	struct iphdr *iph = iter->iph;
+ 	struct sk_buff *frag;
++	bool ip_evil = false;
+ 
+ 	frag = iter->frag;
+ 	frag->ip_summed = CHECKSUM_NONE;
+@@ -638,6 +641,8 @@ void ip_fraglist_prepare(struct sk_buff *skb, struct ip_fraglist_iter *iter)
+ 	__skb_push(frag, hlen);
+ 	skb_reset_network_header(frag);
+ 	memcpy(skb_network_header(frag), iph, hlen);
++	if (ntohs(iph->frag_off) & IP_EVIL)
++		ip_evil = true;
+ 	iter->iph = ip_hdr(frag);
+ 	iph = iter->iph;
+ 	iph->tot_len = htons(frag->len);
+@@ -646,6 +651,10 @@ void ip_fraglist_prepare(struct sk_buff *skb, struct ip_fraglist_iter *iter)
+ 	iph->frag_off = htons(iter->offset >> 3);
+ 	if (frag->next)
+ 		iph->frag_off |= htons(IP_MF);
++
++	if (ip_evil)
++		iph->frag_off |= htons(IP_EVIL);
++
+ 	/* Ready, complete checksum */
+ 	ip_send_check(iph);
+ }
+@@ -667,6 +676,7 @@ void ip_frag_init(struct sk_buff *skb, unsigned int hlen,
+ 
+ 	state->offset = (ntohs(iph->frag_off) & IP_OFFSET) << 3;
+ 	state->not_last_frag = iph->frag_off & htons(IP_MF);
++	state->ip_evil = (ntohs(iph->frag_off) & IP_EVIL) ? true : false;
+ }
+ EXPORT_SYMBOL(ip_frag_init);
+ 
+@@ -752,6 +762,10 @@ struct sk_buff *ip_frag_next(struct sk_buff *skb, struct ip_frag_state *state)
+ 	 */
+ 	if (state->left > 0 || state->not_last_frag)
+ 		iph->frag_off |= htons(IP_MF);
++
++	if (state->ip_evil)
++		iph->frag_off |= htons(IP_EVIL);
++
+ 	state->ptr += len;
+ 	state->offset += len;
+ 
+-- 
+2.25.1
 
-Also I tend to run tests using the flent tool, which will yield more
-data. Install netperf and irtt on the target, flent, netperf, irtt on
-the test driver box...
-
-flent -H the-target-ip -x --socket-stats -t whateveryouaretesting rrul
-# the meanest bidir test there
-
-flent-gui *.gz
-
-On Thu, May 6, 2021 at 7:47 AM Frieder Schrempf
-<frieder.schrempf@kontron.de> wrote:
->
-> Hi,
->
-> we observed some weird phenomenon with the Ethernet on our i.MX8M-Mini bo=
-ards. It happens quite often that the measured bandwidth in TX direction dr=
-ops from its expected/nominal value to something like 50% (for 100M) or ~67=
-% (for 1G) connections.
->
-> So far we reproduced this with two different hardware designs using two d=
-ifferent PHYs (RGMII VSC8531 and RMII KSZ8081), two different kernel versio=
-ns (v5.4 and v5.10) and link speeds of 100M and 1G.
->
-> To measure the throughput we simply run iperf3 on the target (with a shor=
-t p2p connection to the host PC) like this:
->
->         iperf3 -c 192.168.1.10 --bidir
->
-> But even something more simple like this can be used to get the info (wit=
-h 'nc -l -p 1122 > /dev/null' running on the host):
->
->         dd if=3D/dev/zero bs=3D10M count=3D1 | nc 192.168.1.10 1122
->
-> The results fluctuate between each test run and are sometimes 'good' (e.g=
-. ~90 MBit/s for 100M link) and sometimes 'bad' (e.g. ~45 MBit/s for 100M l=
-ink).
-> There is nothing else running on the system in parallel. Some more info i=
-s also available in this post: [1].
->
-> If there's anyone around who has an idea on what might be the reason for =
-this, please let me know!
-> Or maybe someone would be willing to do a quick test on his own hardware.=
- That would also be highly appreciated!
->
-> Thanks and best regards
-> Frieder
->
-> [1]: https://community.nxp.com/t5/i-MX-Processors/i-MX8MM-Ethernet-TX-Ban=
-dwidth-Fluctuations/m-p/1242467#M170563
-
-
-
---=20
-Latest Podcast:
-https://www.linkedin.com/feed/update/urn:li:activity:6791014284936785920/
-
-Dave T=C3=A4ht CTO, TekLibre, LLC
