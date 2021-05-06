@@ -2,155 +2,137 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BD98E3757F9
-	for <lists+netdev@lfdr.de>; Thu,  6 May 2021 17:55:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 842F037591F
+	for <lists+netdev@lfdr.de>; Thu,  6 May 2021 19:20:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235178AbhEFP4k (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 6 May 2021 11:56:40 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:53295 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S235136AbhEFP4j (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 6 May 2021 11:56:39 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1620316541;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=cpTdnOAK/KKCv/bT7+AufTXsf9CDVRdAzsKCtsVHRRk=;
-        b=N1Y35uY0wEBescUoNEYwOxalM7r0oNPhq7tQgTFh6SA5cYiVe4NtTyRZ1Zc6Jf2AEqSQyy
-        D9GNq7WJ04/IjEXsE7BMCHBSptqmq/AIS+w3E4yYuD+rRMzmzPBqqiVzg6R/x4YeVarL2B
-        EZm9rvIpiYpM+J4Z+O35Mp/IuCjaLs4=
-Received: from mail-wm1-f72.google.com (mail-wm1-f72.google.com
- [209.85.128.72]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-567-ORp37RddOlSrYrMSaZW_Kg-1; Thu, 06 May 2021 11:55:39 -0400
-X-MC-Unique: ORp37RddOlSrYrMSaZW_Kg-1
-Received: by mail-wm1-f72.google.com with SMTP id b16-20020a7bc2500000b029014587f5376dso2388319wmj.1
-        for <netdev@vger.kernel.org>; Thu, 06 May 2021 08:55:39 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
-         :references:user-agent:mime-version:content-transfer-encoding;
-        bh=cpTdnOAK/KKCv/bT7+AufTXsf9CDVRdAzsKCtsVHRRk=;
-        b=JTMNUEjxekDk+/Z5TOA2J0xNS2Vshy7Hbxn2i1ZVecRUf//x5gSFAbzG+6jS+KONd+
-         ZqVDgnMHyjFGZwQ7k01cRo8xQXjH9h4nlYdjQsucuegdoo4qYi61x/k2B/RRKZ8ypUhN
-         BpZcnfkJGsGNfR/w3F/7J9XSxN7/8QoaU1VdmFNuBbg//zltID5lXWlOTKTaa+6Bkuxk
-         i6PJHyMSIVaqjZxOJgMr+mKSfSbskld3n6Ll7iY5XSETprsQGy4qj1Y1buagiiq00QW7
-         cXhxjBcsyp0k28HLD8uTiLyRXsVgMn6MSFf2n08Vvx7vbtnFVDRtlZTLd2MrFldgn89k
-         ySgA==
-X-Gm-Message-State: AOAM5313pb02w5NKlnmPieHzfkK6rIRg5Xv5TxYEXjDV/yxTHYKRarih
-        x2hVQBSLorlZK5mewLdHPazTrYy3acUN6sz01SYOfyhiVgTiAIJ2LyfBPDSWf0C8PkBKQbSlklK
-        GJ9qBVKEzapP0ET7E
-X-Received: by 2002:adf:e811:: with SMTP id o17mr6254229wrm.71.1620316538141;
-        Thu, 06 May 2021 08:55:38 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJztzaPB6zOP1m5NZGZy0plckLtI8JcS+Pg8SAFR+NW9NONOl/PUy2T31mVnDNVKw2MB7UbJgw==
-X-Received: by 2002:adf:e811:: with SMTP id o17mr6254199wrm.71.1620316537936;
-        Thu, 06 May 2021 08:55:37 -0700 (PDT)
-Received: from gerbillo.redhat.com (146-241-108-140.dyn.eolo.it. [146.241.108.140])
-        by smtp.gmail.com with ESMTPSA id s5sm4006200wmh.37.2021.05.06.08.55.37
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 06 May 2021 08:55:37 -0700 (PDT)
-Message-ID: <78da518b491d0ad87380786dddf465c98706a865.camel@redhat.com>
-Subject: Re: [PATCH net 1/4] net: fix double-free on fraglist GSO skbs
-From:   Paolo Abeni <pabeni@redhat.com>
-To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     Network Development <netdev@vger.kernel.org>,
-        Steffen Klassert <steffen.klassert@secunet.com>,
-        Willem de Bruijn <willemb@google.com>,
-        Miaohe Lin <linmiaohe@huawei.com>
-Date:   Thu, 06 May 2021 17:55:36 +0200
-In-Reply-To: <CAF=yD-+XLDTzzBsPsMW-s9t0Ur3ux8w93VOAyHJ91E_cZLQS7w@mail.gmail.com>
-References: <cover.1620223174.git.pabeni@redhat.com>
-         <e5d4bacef76ef439b6eb8e7f4973161ca131dfee.1620223174.git.pabeni@redhat.com>
-         <CAF=yD-+BAMU+ETz9MV--MR5NuCE9VrtNezDB3mAiBQR+5puZvQ@mail.gmail.com>
-         <d6665869966936b79305de87aaddd052379038c4.camel@redhat.com>
-         <CAF=yD-++8zxVKThLnPMdDOcR5Q+2dStne4=EKeKCD7pVyEc8UA@mail.gmail.com>
-         <5276af7f06b4fd72e549e3b5aebdf41bef1a3784.camel@redhat.com>
-         <CAF=yD-+XLDTzzBsPsMW-s9t0Ur3ux8w93VOAyHJ91E_cZLQS7w@mail.gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.36.5 (3.36.5-2.fc32) 
+        id S236223AbhEFRVt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 6 May 2021 13:21:49 -0400
+Received: from mail-db8eur05on2060.outbound.protection.outlook.com ([40.107.20.60]:2977
+        "EHLO EUR05-DB8-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S236203AbhEFRVq (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 6 May 2021 13:21:46 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=Poiq28IA9F5S1WopkTZhJmXb9bTakgs4kcxXorYJlUULalBEJW7ie74RX21h+EBZwycmbIuLlY6m1OrM+fVHo7NvBNhMBcfiKQ0zZr67UV5qSSm3xc07tG9cXoRdI+Pz5Pp9Ae1pW0wv6pNU6oCh6IzqupBPUjnGM4QT4MhXYaNjMJovzA69QCXBDhC5qnhfWKrVpntMLzxXqTmi/j5NXR9c1H5TaWUTXJln6lP1CQWTCqdy+0KQALHbTAqR3GpxsAUXUFkzXCcSvuNlb79YFxNyLpcVAOXOLNJxzIYZLbtdqpwTUqyfYkBFtGGenuEccXSoqMCR8kgdlPcOWroIGQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=Yl9e2iqd6M+ePoj94fZ9acHuCEm8qFeJi9EkFW6QIz0=;
+ b=UInTE92FO5Nx7W/yCRutoJCcpJ5j22RcAZIqSJG9WsEvLf2VNqRYqt1ayRXp/IpUA8WWEwVCeZ645YyLGYJzvWhZGaEGVVK5Kg7+qSD9igD/v/lZqYVibrlWr2PEHRDEgTi7IXksnspSqwfQuAHFuAlz1UQPefHdPZ6owIl2C7KzhnKJRc5e9mGRndho78unDbHvsy7YpepqdYT8Gr7ypni0PlP6bvE2IbqfAdMMhypbKtGmkd1ZiKq3yFYFcAyd2UoDpeKB7EsXq2B46SLtFusbh3l6XNsDbwPgjJ/amBqkoa8Zbt16oD8gyZLaxxTxRFUDHkxaXbadaHW/yVwkyw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=oss.nxp.com; dmarc=pass action=none header.from=oss.nxp.com;
+ dkim=pass header.d=oss.nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=NXP1.onmicrosoft.com;
+ s=selector2-NXP1-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=Yl9e2iqd6M+ePoj94fZ9acHuCEm8qFeJi9EkFW6QIz0=;
+ b=UN0A6odiT3Q0U1Gs+nRGGGxCDlFXwjJi1uKDyrU5Hb607K1xORjp1FDkUyuaZFwHw2s9GBz4N+CTqXssWq17JFBKeObZFyIAEfCshVBrdUWiKuXjt4Y+5qvuQ1UCoSEwnfiJNK+97PgfXCZAPYF9maLy01TMoScv1qaoulmCIUE=
+Authentication-Results: davemloft.net; dkim=none (message not signed)
+ header.d=none;davemloft.net; dmarc=none action=none header.from=oss.nxp.com;
+Received: from DU2PR04MB8807.eurprd04.prod.outlook.com (2603:10a6:10:2e2::23)
+ by DU2PR04MB8581.eurprd04.prod.outlook.com (2603:10a6:10:2d8::18) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4108.26; Thu, 6 May
+ 2021 17:20:45 +0000
+Received: from DU2PR04MB8807.eurprd04.prod.outlook.com
+ ([fe80::88ab:35ac:f0f5:2387]) by DU2PR04MB8807.eurprd04.prod.outlook.com
+ ([fe80::88ab:35ac:f0f5:2387%6]) with mapi id 15.20.4108.027; Thu, 6 May 2021
+ 17:20:45 +0000
+From:   Yannick Vignon <yannick.vignon@oss.nxp.com>
+To:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Antoine Tenart <atenart@kernel.org>,
+        Wei Wang <weiwan@google.com>, Taehee Yoo <ap420073@gmail.com>,
+        Alexander Lobakin <alobakin@pm.me>, netdev@vger.kernel.org,
+        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Jose Abreu <joabreu@synopsys.com>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Joakim Zhang <qiangqing.zhang@nxp.com>,
+        sebastien.laveze@oss.nxp.com
+Cc:     Yannick Vignon <yannick.vignon@nxp.com>
+Subject: [RFC PATCH net-next v1 0/2] Threaded NAPI configurability
+Date:   Thu,  6 May 2021 19:20:19 +0200
+Message-Id: <20210506172021.7327-1-yannick.vignon@oss.nxp.com>
+X-Mailer: git-send-email 2.17.1
+Content-Type: text/plain
+X-Originating-IP: [81.1.10.98]
+X-ClientProxiedBy: AM3PR07CA0129.eurprd07.prod.outlook.com
+ (2603:10a6:207:8::15) To DU2PR04MB8807.eurprd04.prod.outlook.com
+ (2603:10a6:10:2e2::23)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from sopdpuats09.ea.freescale.net (81.1.10.98) by AM3PR07CA0129.eurprd07.prod.outlook.com (2603:10a6:207:8::15) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4129.9 via Frontend Transport; Thu, 6 May 2021 17:20:44 +0000
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 214d6f20-5e6b-4fbf-0577-08d910b3485a
+X-MS-TrafficTypeDiagnostic: DU2PR04MB8581:
+X-MS-Exchange-SharedMailbox-RoutingAgent-Processed: True
+X-MS-Exchange-Transport-Forked: True
+X-Microsoft-Antispam-PRVS: <DU2PR04MB858186FEE9FC4598485F72E9D2589@DU2PR04MB8581.eurprd04.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:8273;
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: 3XLpVX+J8JL1ee0Zz5dBnjJUXtnwbhmYQVF+yNwm7nQaU1WeEAVEkEZDr8YDVqyu2HCzOl2LNNaHRafyucvUGTsR3fqO7HhiN3WOf5K2kdkG0EItYHIBWpr5gTy7b2rARxm5a61mEoNi7WLi0CjfgYC5svJurm57LdIFVDwaJunvI8zYk1LaiAnyyQLqAJvE9fM/5EPVZInoJWx7iAT8E3HCUV8uwBPU9zxUwYaEuDdbFmeWL7odUQakCEsIqmi0uis8BoJelQb6EOZ0BVRdNfAY9xifnotCXSMr8GebQJtV5ktw8brb6MUL8tDN/BeyBdAwCt0ByMT7hivMXk4PCLmlZ1rmRjO3OoXcaE7eeGb5rfEVjDvzuTF75wJdzdu/jWDEiKnm4vdXrLCVFhMwdQKDW/gkYlg9XVE6gmBBEI2uJqLo838CM1J0Kmmi1gYD/YVJVhRSIxOMtmsrWCktalDK1fKx11FrwWBF0PriPfuMGw3+ejJy0RFs1qAzqVzeEH03L3ENKQ72elmrgMvpxrVRCUwusCtbR+nkhVizZnq4brQ3gtSOnTUyvZ90T6ndLjlifIrdJXnw18NAFYJYkrhu877w0B1YhrexuLiCvRsDxli5aDRnV0m2jHet8vdLYq/+sxyuncIwQOWb5dEqVfvxFoAxWIYKsC+DDLqRg4o=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DU2PR04MB8807.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(396003)(136003)(366004)(346002)(376002)(39860400002)(86362001)(83380400001)(8676002)(16526019)(6486002)(4744005)(7416002)(1076003)(6506007)(478600001)(26005)(6666004)(921005)(44832011)(186003)(6512007)(6636002)(2906002)(4326008)(38350700002)(66476007)(5660300002)(316002)(956004)(2616005)(52116002)(8936002)(66946007)(66556008)(38100700002)(110136005);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData: =?us-ascii?Q?JxiMoa3sMB4hXG5vViaFHAJTc3Zlr/7dA+p9GDYs3Vwa6PQg7kJBIdBbvKan?=
+ =?us-ascii?Q?4Z8kEBsP0nxFGvjOqaI1gWJ1OI4KBVwsz8fwHy3DjdKPkaGWZw2bJvrs/wHx?=
+ =?us-ascii?Q?uKZ+iFE9cNh2f6sGjfDDwEFJ46IkMTwY32VyWnfOPUpjn2pzr+XYhpF3oDx9?=
+ =?us-ascii?Q?Xwq7rSImNthNlUvt35bg5xKVAGiGSjN8zjY3QnpzN+fdlHDH2ctEOx5y2ajx?=
+ =?us-ascii?Q?SgUCAj+fq5Hv+pJ5HvpNS4iRQsaXlQX3gvK91havIJu6VkBRfuYIkWb8D3mg?=
+ =?us-ascii?Q?eyzXppSK0fYk8K3SUpVHMfwD/fD6jHripG/e0/fwGY05j5dCtVn+M7T+Ze9e?=
+ =?us-ascii?Q?8G97lQZ/vMgM/5JMkLVafb0CDNZHReWrhp8eXCpqMAff/BgL5M4y4zjP4kSA?=
+ =?us-ascii?Q?aN4qAmANvW5U7Kq6Xyl3ukJh41EtXCMrQ1+CO6qNln0gSCGnX2mpgp7/e525?=
+ =?us-ascii?Q?ztWbLWT56u3Rlr3eXRhPmm0V90EMqdUZntT4QDhkg/2nnoNv0z3vzv8sEiax?=
+ =?us-ascii?Q?S9lD/GCz1fwozfvfq2zDex1M2E9EBZBimeteFFMxz5YbrD9dSMn5UZ1JG/gD?=
+ =?us-ascii?Q?O8kkKmlv8ciJot53MhCzG6pHzu//NYQ9guXXgikddD5AxvADixVGmkeQ21zu?=
+ =?us-ascii?Q?xTUG3bUD8Omy+vcGhi+nH7kdWq43bCxyjQ4M0eXVPH5r3KQabyI+Ifm0PR33?=
+ =?us-ascii?Q?S1gST/JfnL4sgUQiLQtPLPMQuU7FzCsU9le+U1fBvA2lOfsa3rtoDMMGjQgW?=
+ =?us-ascii?Q?z7ODI3iLSzp87eT6MdvVYs67u5LBGiRyCC/s7X7rMThyKq22zL5agCHJG7Tg?=
+ =?us-ascii?Q?8dpTxqK1eGH3bn7M5c28/D3OV4siHIKlaeSTRu/s1+hGqocfn7TaFkpgR1EJ?=
+ =?us-ascii?Q?pUyEuq/iT9t0Vi7qDEGt0JT+uXIor1cjHW2sFUQ+8UE8SJBNsZAtfYoZJrnT?=
+ =?us-ascii?Q?8HTTtlIG0pllNIiELrh/Z0SV1xwrjX5NRMvf3+oxaEo5MGuxzWflZglkt3wL?=
+ =?us-ascii?Q?VTJS3gec8IwdHg/buj/xdivobN6wePwha4536a9hsexdBOd+Ymos+nE2UiVY?=
+ =?us-ascii?Q?UU/8PRUDadYmcIETM/YVNLQLJuJv47Ga9bvKfuR5xgaJ+arit/eTwexnmNNP?=
+ =?us-ascii?Q?r2o1/7SrCtGMTBDukXsfHjTeivuM4aWYiIA/d0oeOe+3kBhpSyLb0IzqB8vA?=
+ =?us-ascii?Q?TQYZUY5xO65uofI0o6W4kWLDT/jPLUvvKRjBPWjq1MxgdLIqQYRrLDrO5bZ0?=
+ =?us-ascii?Q?DRylTYTpF3USJ+lLGdeocQ6g7ouC9lQm0t8pEgLHpdXzVW0hdIIgcrbEFdpm?=
+ =?us-ascii?Q?R3KKycXuxiu/Hw/fPnZVdxAY?=
+X-OriginatorOrg: oss.nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 214d6f20-5e6b-4fbf-0577-08d910b3485a
+X-MS-Exchange-CrossTenant-AuthSource: DU2PR04MB8807.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 06 May 2021 17:20:45.0915
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: zMuH1if2owqcWtIHnn8TZQg6/QrXbBTZfopAWaU44ZYEUEznAJEFrwEahpB8fN9k4sZJY17z6MuPdvHVfCwGtg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DU2PR04MB8581
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 2021-05-06 at 10:32 -0400, Willem de Bruijn wrote:
-> On Thu, May 6, 2021 at 7:07 AM Paolo Abeni <pabeni@redhat.com> wrote:
-> > On Wed, 2021-05-05 at 13:30 -0400, Willem de Bruijn wrote:
-> > > On Wed, May 5, 2021 at 1:28 PM Paolo Abeni <pabeni@redhat.com> wrote:
-> > > > On Wed, 2021-05-05 at 12:13 -0400, Willem de Bruijn wrote:
-> > > > > On Wed, May 5, 2021 at 11:37 AM Paolo Abeni <pabeni@redhat.com> wrote:
-> > > > > > While segmenting a SKB_GSO_FRAGLIST GSO packet, if the destructor
-> > > > > > callback is available, the skb destructor is invoked on each
-> > > > > > aggregated packet via skb_release_head_state().
-> > > > > > 
-> > > > > > Such field (and the pairer skb->sk) is left untouched, so the same
-> > > > > > destructor is invoked again when the segmented skbs are freed, leading
-> > > > > > to double-free/UaF of the relevant socket.
-> > > > > 
-> > > > > Similar to skb_segment, should the destructor be swapped with the last
-> > > > > segment and callback delayed, instead of called immediately as part of
-> > > > > segmentation?
-> > > > > 
-> > > > >         /* Following permits correct backpressure, for protocols
-> > > > >          * using skb_set_owner_w().
-> > > > >          * Idea is to tranfert ownership from head_skb to last segment.
-> > > > >          */
-> > > > >         if (head_skb->destructor == sock_wfree) {
-> > > > >                 swap(tail->truesize, head_skb->truesize);
-> > > > >                 swap(tail->destructor, head_skb->destructor);
-> > > > >                 swap(tail->sk, head_skb->sk);
-> > > > >         }
-> > > > 
-> > > > My understanding is that one assumption in the original
-> > > > SKB_GSO_FRAGLIST implementation was that SKB_GSO_FRAGLIST skbs are not
-> > > > owned by any socket.
-> > > > 
-> > > > AFAICS the above assumption was true until:
-> > > > 
-> > > > commit c75fb320d482a5ce6e522378d137fd2c3bf79225
-> > > > Author: Paolo Abeni <pabeni@redhat.com>
-> > > > Date:   Fri Apr 9 13:04:37 2021 +0200
-> > > > 
-> > > >     veth: use skb_orphan_partial instead of skb_orphan
-> > > > 
-> > > > after that, if the skb is owned, skb->destructor is sock_efree(), so
-> > > > the above code should not trigger.
-> > > 
-> > > Okay, great.
-> > > 
-> > > > More importantly SKB_GSO_FRAGLIST can only be applied if the inner-
-> > > > most protocol is UDP, so
-> > > > commit 432c856fcf45c468fffe2e5029cb3f95c7dc9475
-> > > > and d6a4a10411764cf1c3a5dad4f06c5ebe5194488b should not be relevant.
-> > > 
-> > > I think the first does apply, as it applies to any protocol that uses
-> > > sock_wfree, not just tcp_wfree? Anyway, the point is moot indeed.
-> > 
-> > If we want to be safe about future possible sock_wfree users, I think
-> > the approach here should be different: in skb_segment(), tail-
-> > > destructor is expected to be NULL, while skb_segment_list(), all the
-> > list skbs can be owned by the same socket. Possibly we could open-
-> > code skb_release_head_state(), omitting the skb orphaning part
-> > for sock_wfree() destructor.
-> > 
-> > Note that the this is not currently needed - sock_wfree destructor
-> > can't reach there.
-> > 
-> > Given all the above, I'm unsure if you are fine with (or at least do
-> > not oppose to) the code proposed in this patch?
-> 
-> Yes. Thanks for clarifying, Paolo.
+From: Yannick Vignon <yannick.vignon@nxp.com>
 
-Thank you for reviewing!
+The purpose of these 2 patches is to be able to configure the scheduling
+properties (e.g. affinity, priority...) of the NAPI threads more easily
+at run-time, based on the hardware queues each thread is handling.
+The main goal is really to expose which thread does what, as the current
+naming doesn't exactly make that clear.
 
-@David, @Jakub: I see this series is already archived as "change
-requested", should I repost?
+Posting this as an RFC in case people have different opinions on how to
+do that.
 
-Thanks!
+Yannick Vignon (2):
+  net: add name field to napi struct
+  net: stmmac: use specific name for each NAPI instance
 
-Paolo
+ .../net/ethernet/stmicro/stmmac/stmmac_main.c | 21 ++++++----
+ include/linux/netdevice.h                     | 42 ++++++++++++++++++-
+ net/core/dev.c                                | 20 +++++++--
+ 3 files changed, 69 insertions(+), 14 deletions(-)
+
+-- 
+2.17.1
 
