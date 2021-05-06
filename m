@@ -2,66 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 077143755E3
-	for <lists+netdev@lfdr.de>; Thu,  6 May 2021 16:48:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8D73D3755E6
+	for <lists+netdev@lfdr.de>; Thu,  6 May 2021 16:48:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234922AbhEFOtC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 6 May 2021 10:49:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51538 "EHLO
+        id S234943AbhEFOtr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 6 May 2021 10:49:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51712 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234897AbhEFOtA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 6 May 2021 10:49:00 -0400
-Received: from mail-wr1-x434.google.com (mail-wr1-x434.google.com [IPv6:2a00:1450:4864:20::434])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC7FFC061574
-        for <netdev@vger.kernel.org>; Thu,  6 May 2021 07:48:01 -0700 (PDT)
-Received: by mail-wr1-x434.google.com with SMTP id h4so5908584wrt.12
-        for <netdev@vger.kernel.org>; Thu, 06 May 2021 07:48:01 -0700 (PDT)
+        with ESMTP id S234888AbhEFOtq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 6 May 2021 10:49:46 -0400
+Received: from mail-ot1-x332.google.com (mail-ot1-x332.google.com [IPv6:2607:f8b0:4864:20::332])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D7E8C061574
+        for <netdev@vger.kernel.org>; Thu,  6 May 2021 07:48:47 -0700 (PDT)
+Received: by mail-ot1-x332.google.com with SMTP id i23-20020a9d68d70000b02902dc19ed4c15so1081019oto.0
+        for <netdev@vger.kernel.org>; Thu, 06 May 2021 07:48:47 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:reply-to:from:date:message-id:subject:to
-         :content-transfer-encoding;
-        bh=DJDV+Y41njtBMouQ+LQv+c2L8v93bl/qtqGa2Hrunps=;
-        b=Ra4HyOKgid8u+4Wf76nYiujpw09+Yzl8gV57OrguOOl9RwrQD5D2aDtCFr3s0d1xU6
-         CkqDL+RD54qFBaT76aTMAStfJRR+91I1ZZ56c1h0MExXDuLLrsIpHPfK9jYqnu/AHpkJ
-         v5RYxNuNb3IBb2zh3bnEoUD2Q/SOUC2RD4s6MpHf2rlLmgr71Mm88Uoue4KWr/1HSJ9o
-         2p8tTQ+77EoxQYVNIPJkCpuOTAItDLvIKqVZVCCRA87XG+cWdUID3hO6f4xftGe9Nf+N
-         N51hx81j1mD5RZ+InGWUs+v3sAsWBFh1Oez/uarV/kIv+VXM32/O2/LZ0J2hRiUr32Hg
-         XUlg==
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=Fe7jNPFfSsCqGs5oTprFnGolYz7sqrUXv7Jhv2L/+FI=;
+        b=X7SjCSmHEvxa9Df0E2xcKxEbUbLo90uiRTfrM6koRM+5UV8sQ1FE8UP1MXosiAUVKz
+         s+277uysDu8VyKAGscO+MSouCRdGvJYDu4Btrjf53bqG0qvkx3qxeXF3HXG3eICcwkqE
+         rxAJ41cjLGKntgF4xfoswl2KRWujClYaHVhrClAGHaWeqkP+RMp70jRGOU2TOoNV9dcO
+         A6g7hT4d9wGbnP+1oRDLYjKTbTQDnGXCDKi8GtfSLsQ6C5BX6iANU0KUbRXdCVVD11nb
+         1eMlGWmfdj8YhM8hbiIxGPneHohbd1NXigcXICN9j8/8woq+PM3Zte1gsSQqjJQgIRH4
+         OT1g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
-         :subject:to:content-transfer-encoding;
-        bh=DJDV+Y41njtBMouQ+LQv+c2L8v93bl/qtqGa2Hrunps=;
-        b=cxAAQIrlvoX7p720uzG45A2Ou0gEMU5P9CAxOyfi1gqVV2RmCedUGNAgWIehB1fL+Z
-         WIsq+HW+W9ELEGh6WZAMEVkqzEZiIxx63ICWe6cgNdpo4xFUywXm+HY22qpX+7FTh69l
-         b3kyqMkG7LJF33PyM1FHOA2G3krUOL8l4qNDvteLN5Fu9DWMvPlSyX29yfE3aATyrKOi
-         qmz9EIunig07Xkqse5KP4n/+ss33PEmBMz8ZHda893XT6i+Jt0/mJzYoh42/Zun1k+w3
-         gQWAT7/waCnilmyZaNmrz1jW8L0uPYIspCxihYqVfaJ8Gr8OnjUDwfRL7THotKo1D7kR
-         6YOw==
-X-Gm-Message-State: AOAM5314t/PrtWPXVxWS4QrTMxSVRHoF9+SQ4jl4ZTu1G0ub3KiuGs1D
-        HgT3/TJySODscG5mgExbIs8NRtMF3REzkN2fPQ==
-X-Google-Smtp-Source: ABdhPJwbdc2Uew0YVYNQ8kZ+GdBLAP/pBiilOYCTCRLTILjU3drp0fJcEgw4NstMdtqfgiTFqe/QeSzk5CWm1+wtaqM=
-X-Received: by 2002:a5d:4ac6:: with SMTP id y6mr5718630wrs.414.1620312480510;
- Thu, 06 May 2021 07:48:00 -0700 (PDT)
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=Fe7jNPFfSsCqGs5oTprFnGolYz7sqrUXv7Jhv2L/+FI=;
+        b=B4S6AN6aue+uH0LcRhOCqTzslA7Ngd8F26bX7rv3WzMyIEnUw+9CwN2041EMWFHs1W
+         PFu39tWHrjc32ZLKHX192cHiLZ731X++1yMyPhlQQEtGo3Abz7tmLsDsuAv7MTZfYJUf
+         5bwELhPf4jbsLhPxvrgByRn+jlkAfUvqJAnrKBS2R477RsbCL1ZkvQJtmVC/vITu3i6K
+         67MH74WX0bs4h5FxvI1eHMN7JHl7AzX6M/YBptwFL2WgvTTLDBFjh7vOI58hMy5dXlBZ
+         GnfZPWfxUAmqSpLbf5OQsGwZeyUifyN9qGamDw1wqOdPOs7HiCS9M/yrq7RRT0HxfqDq
+         nUPw==
+X-Gm-Message-State: AOAM532R/I0PFILdHNwhqPvzR0qBCR2pcHDZakNQJIxPOMd8PzSCPmG4
+        /MbEbgBSTk5JOh1cRAEorkQ=
+X-Google-Smtp-Source: ABdhPJwviF3l55ZDGYvZFApZcqRB30prdquXgbSDzPO6asxNSF0Olse+VOM0o5IFG134F3Nt+ea7Pw==
+X-Received: by 2002:a9d:1ac:: with SMTP id e41mr4012524ote.166.1620312526580;
+        Thu, 06 May 2021 07:48:46 -0700 (PDT)
+Received: from Davids-MacBook-Pro.local ([2601:282:800:dc80:73:7507:ad79:a013])
+        by smtp.googlemail.com with ESMTPSA id r17sm544835oos.39.2021.05.06.07.48.46
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 06 May 2021 07:48:46 -0700 (PDT)
+Subject: Re: [PATCH iproute2 1/2] dcb: fix return value on dcb_cmd_app_show
+To:     Andrea Claudi <aclaudi@redhat.com>, netdev@vger.kernel.org
+Cc:     stephen@networkplumber.org
+References: <cover.1619886883.git.aclaudi@redhat.com>
+ <d2475b23f31e8cb1eb19d51d8bb10866a06a418c.1619886883.git.aclaudi@redhat.com>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <b5c67f0c-1b9f-bdf7-f9e1-1759b276410f@gmail.com>
+Date:   Thu, 6 May 2021 08:48:45 -0600
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
+ Gecko/20100101 Thunderbird/78.10.1
 MIME-Version: 1.0
-Received: by 2002:a7b:c94b:0:0:0:0:0 with HTTP; Thu, 6 May 2021 07:47:59 -0700 (PDT)
-Reply-To: 12345officialnicole@gmail.com
-From:   Official <charlesmilitary1@gmail.com>
-Date:   Thu, 6 May 2021 14:47:59 +0000
-Message-ID: <CAOp08_LDAd5a+_XVxoENrLQdZWg9VAA9vya_NRFY+_9vExWXFg@mail.gmail.com>
-Subject: =?UTF-8?B?6ri06riJ7ZWcIOuLteuzgCDrtoDtg4Hrk5zrpr3ri4jri6QuLi7nt4rmgKXjga7ov5Q=?=
-        =?UTF-8?B?5L+h44KS44GK6aGY44GE44GX44G+44GZ?=
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <d2475b23f31e8cb1eb19d51d8bb10866a06a418c.1619886883.git.aclaudi@redhat.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-My good friend, I hope you're doing well =E2=80=98=E2=80=98and'' did you re=
-ceive my
-previous e-mail?  I have something important and profitable to discuss
-with you, I would like to visit your country as soon as possible,
-please reply to this email for more details about myself.
-Regards
-Ms. Official Nicole
+On 5/1/21 10:39 AM, Andrea Claudi wrote:
+> dcb_cmd_app_show() is supposed to return EINVAL if an incorrect argument
+> is provided.
+> 
+> Fixes: 8e9bed1493f5 ("dcb: Add a subtool for the DCB APP object")
+> Signed-off-by: Andrea Claudi <aclaudi@redhat.com>
+> ---
+>  dcb/dcb_app.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+
+applied both
+
