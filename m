@@ -2,104 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6D5E4375B90
-	for <lists+netdev@lfdr.de>; Thu,  6 May 2021 21:17:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B7FC4375BA4
+	for <lists+netdev@lfdr.de>; Thu,  6 May 2021 21:20:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235061AbhEFTSo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 6 May 2021 15:18:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55920 "EHLO
+        id S233074AbhEFTVu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 6 May 2021 15:21:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56616 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234967AbhEFTSo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 6 May 2021 15:18:44 -0400
-Received: from mail-yb1-xb33.google.com (mail-yb1-xb33.google.com [IPv6:2607:f8b0:4864:20::b33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9AB7CC061574
-        for <netdev@vger.kernel.org>; Thu,  6 May 2021 12:17:45 -0700 (PDT)
-Received: by mail-yb1-xb33.google.com with SMTP id v39so8824489ybd.4
-        for <netdev@vger.kernel.org>; Thu, 06 May 2021 12:17:45 -0700 (PDT)
+        with ESMTP id S230375AbhEFTVt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 6 May 2021 15:21:49 -0400
+Received: from mail-ed1-x534.google.com (mail-ed1-x534.google.com [IPv6:2a00:1450:4864:20::534])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3CA03C061574
+        for <netdev@vger.kernel.org>; Thu,  6 May 2021 12:20:50 -0700 (PDT)
+Received: by mail-ed1-x534.google.com with SMTP id g14so7428798edy.6
+        for <netdev@vger.kernel.org>; Thu, 06 May 2021 12:20:50 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
+        d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=QclDf77LIiW0upUXkpsT86hXbxWCopYW5TwaC6su47Y=;
-        b=GOb9kZs73uaPsp33dduSI8yYEhhAtY7k25WlDCzCv0BQjSh3Howvq/dBH7Ue/FibeT
-         JkSYdNbOmcSNz49iGQa8zL9HQ8nfJUnWEOUDEei32EgzjaUP45Lik9aoMs1Mm8n9B1sQ
-         XS6+QjhkJit8tTKc5ZsYwa6wymdrZgPN4wqLd9F1Z1u8yjoN3m0INYMMUjGfQ4J1eOqM
-         nULe8I2+icxxQhZ/IRP40mA6GXpKixujg1efqUgqal2r4GOgkebPn2Cqkkixsh0RgXR7
-         lsiHGqSeB9ZEiG2H5htPdQ8UCuB+lFRTsg2nCP3iq0NDHOtKEHqU96ftjz5OwfADzjlF
-         hdLA==
+        bh=+2pqN67PwfFE8bqIfQM3MOdZ3t468sO3rqqBqkpbJVs=;
+        b=CNMrVTogZVxEGhlLNRXp3swMaVHSL8OC5OJQD6bV4HDGSNBMOtCFo3+x44UIqfaALl
+         pRyVsAsfDEYcqB3o9pb5DEZkA7copWEPaAsTMW3xI5RzaiVxG+9YXtynW1D00JBNGJWw
+         9/unxpSCffgt9TP37ARbBXQzvXhXPIREyw6hzSEmbpreffITwSdNj/gc6yL664eubvFd
+         +47m4qwxStPBiXL80KWJfkHrxVZ7wqlhhDnuKDcw/JlVuyh9bwBto78wKZI+PDLAgPBa
+         bRKqPcayti2dQtENKa55I1E4RmuCV9JuHdp9pxwHuoTlaHy66Z28AC/H3D2y5u25foAc
+         RmhA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=QclDf77LIiW0upUXkpsT86hXbxWCopYW5TwaC6su47Y=;
-        b=Qjlu2mT/TroJEbEZlqY8/jtC2N1OMqCsFmbZS4lU4oFmbmQ3YV4X58tfW98kPpNA8S
-         1GW/a/xP97bW/xDjCeOsciQ1u2SyItVOpuCdPpbUi4/XLzZWidgVa1+BAqMYW1EOeWmQ
-         kzjrZFqDi0F0I0ElSvlX/zORfG5n5VZgkVeVSafq2iMmTCnqM7GWZvEJKkN5sQoSzLVV
-         LGoLlkRuNNNdRDGdpg/fBVhE7i3eU1ux6NHjL3muqOpvFWV/AK/Xxmv/imKzBDvUOGpU
-         nsVMohAuKIsYhFtm8DkdFOabyxOOV4v8vf1Vq/bFn+071tZB3y3til6c13y8zIJuxQ3I
-         dzDg==
-X-Gm-Message-State: AOAM532bVFgm2I79flACK35/jY1yW2D5TbsS/ohcbRb34TQMRUov96Nd
-        WenPPi7FJfi7JrmzssJCfRuNnqrJ++/SM5nPOFIemQp+IMc=
-X-Google-Smtp-Source: ABdhPJwgRjnkSawzCUC8Vbp72YYeApLRPYNhomRMCiQv+tKKqqwKIpeC2mIIsX91hcMF+1GEktUSJZLPE0jLTi1WnIc=
-X-Received: by 2002:a05:6902:1001:: with SMTP id w1mr2947193ybt.234.1620328664341;
- Thu, 06 May 2021 12:17:44 -0700 (PDT)
+        bh=+2pqN67PwfFE8bqIfQM3MOdZ3t468sO3rqqBqkpbJVs=;
+        b=cq90rFkyfsoLvsc00CSgVhcehmVYu6FaQM9KrRRHTdCeSbZbqkvTAlmBoDECkh1OC2
+         AR8mKKUbhabFqSGDykLRvXiYE6MSBDSV10C8sXMPlkLS7KZDnc9hxE9YGs1SxwXqohb2
+         Lt+O0Q2JEWUtkUDjEZkCV/VKgTdIXvtUe8WZfn7VeQDxnHSmYq9D/Xl9ExBoA77YttJq
+         3yHNGKkLhPWevr2r30RWL1AOo6we7RlMU9N0pFG1gpcF9A5qzplJBRTpvWbaLlWZm3l6
+         xXSSXlKZdbxEzWe2hrjrhqEs6npNRdpBo7YWVn+SmCx3i0+m43Vde+eZBoTgXc1efPXP
+         5WDg==
+X-Gm-Message-State: AOAM532ML+9Fwzxx/1MgQnW6797SzClM/ONpoj9p2WkU5G+cl9t+An7/
+        oNT4xxE7mcHYF9KdK6pJcR7cUZ1VLIn9fsXZcbg9T5ZyObE=
+X-Google-Smtp-Source: ABdhPJyKGMF4BoBriAJYo0sWo6HTtsv00R9fczkeOdBsJOGI+8rrBMlpkBFwqxpmgkt7SVw2FB/N0zTOLaEJy0dxbeQ=
+X-Received: by 2002:aa7:cb84:: with SMTP id r4mr7114791edt.187.1620328848711;
+ Thu, 06 May 2021 12:20:48 -0700 (PDT)
 MIME-Version: 1.0
-References: <20210506190617.2252059-1-arjunroy.kdev@gmail.com>
-In-Reply-To: <20210506190617.2252059-1-arjunroy.kdev@gmail.com>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Thu, 6 May 2021 21:17:32 +0200
-Message-ID: <CANn89iJeEKGDeOSz2OuZ4feZBFWf5A20Ab3gQ9q5VshRzSzZnA@mail.gmail.com>
-Subject: Re: [net v2] tcp: Specify cmsgbuf is user pointer for receive zerocopy.
-To:     Arjun Roy <arjunroy.kdev@gmail.com>
-Cc:     David Miller <davem@davemloft.net>,
-        netdev <netdev@vger.kernel.org>, Arjun Roy <arjunroy@google.com>,
-        Soheil Hassas Yeganeh <soheil@google.com>
+References: <421cc86c-b66f-b372-32f7-21e59f9a98bc@kontron.de>
+In-Reply-To: <421cc86c-b66f-b372-32f7-21e59f9a98bc@kontron.de>
+From:   Adam Ford <aford173@gmail.com>
+Date:   Thu, 6 May 2021 14:20:37 -0500
+Message-ID: <CAHCN7xJCUtmi1eOftFq0mg28SFyt2a34q3Vy8c0fvOs5wHC-yg@mail.gmail.com>
+Subject: Re: i.MX8MM Ethernet TX Bandwidth Fluctuations
+To:     Frieder Schrempf <frieder.schrempf@kontron.de>
+Cc:     NXP Linux Team <linux-imx@nxp.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, May 6, 2021 at 9:06 PM Arjun Roy <arjunroy.kdev@gmail.com> wrote:
+On Thu, May 6, 2021 at 9:51 AM Frieder Schrempf
+<frieder.schrempf@kontron.de> wrote:
 >
-> From: Arjun Roy <arjunroy@google.com>
+> Hi,
 >
-> A prior change (1f466e1f15cf) introduces separate handling for
-> ->msg_control depending on whether the pointer is a kernel or user
-> pointer. However, while tcp receive zerocopy is using this field, it
-> is not properly annotating that the buffer in this case is a user
-> pointer. This can cause faults when the improper mechanism is used
-> within put_cmsg().
+> we observed some weird phenomenon with the Ethernet on our i.MX8M-Mini boards. It happens quite often that the measured bandwidth in TX direction drops from its expected/nominal value to something like 50% (for 100M) or ~67% (for 1G) connections.
 >
-> This patch simply annotates tcp receive zerocopy's use as explicitly
-> being a user pointer.
+> So far we reproduced this with two different hardware designs using two different PHYs (RGMII VSC8531 and RMII KSZ8081), two different kernel versions (v5.4 and v5.10) and link speeds of 100M and 1G.
 >
-> Fixes: 7eeba1706eba ("tcp: Add receive timestamp support for receive zerocopy.")
-> Signed-off-by: Arjun Roy <arjunroy@google.com>
+> To measure the throughput we simply run iperf3 on the target (with a short p2p connection to the host PC) like this:
+>
+>         iperf3 -c 192.168.1.10 --bidir
+>
+> But even something more simple like this can be used to get the info (with 'nc -l -p 1122 > /dev/null' running on the host):
+>
+>         dd if=/dev/zero bs=10M count=1 | nc 192.168.1.10 1122
+>
+> The results fluctuate between each test run and are sometimes 'good' (e.g. ~90 MBit/s for 100M link) and sometimes 'bad' (e.g. ~45 MBit/s for 100M link).
+> There is nothing else running on the system in parallel. Some more info is also available in this post: [1].
+>
+> If there's anyone around who has an idea on what might be the reason for this, please let me know!
+> Or maybe someone would be willing to do a quick test on his own hardware. That would also be highly appreciated!
 
-Reviewed-by: Eric Dumazet <edumazet@google.com>
+I have seen a similar regression on linux-next on both Mini and Nano.
+I thought I broke something, but it returned to normal after a reboot.
+  However, with a 1Gb connection, I was running at ~450 Mbs which is
+consistent with what you were seeing with a 100Mb link.
 
+adam
 
-> ---
 >
-> Changelog since v1:
-> - Updated "Fixes" tag and commit message to properly account for which
->   commit introduced buggy behaviour.
+> Thanks and best regards
+> Frieder
 >
->  net/ipv4/tcp.c | 1 +
->  1 file changed, 1 insertion(+)
+> [1]: https://community.nxp.com/t5/i-MX-Processors/i-MX8MM-Ethernet-TX-Bandwidth-Fluctuations/m-p/1242467#M170563
 >
-> diff --git a/net/ipv4/tcp.c b/net/ipv4/tcp.c
-> index e14fd0c50c10..f1c1f9e3de72 100644
-> --- a/net/ipv4/tcp.c
-> +++ b/net/ipv4/tcp.c
-> @@ -2039,6 +2039,7 @@ static void tcp_zc_finalize_rx_tstamp(struct sock *sk,
->                 (__kernel_size_t)zc->msg_controllen;
->         cmsg_dummy.msg_flags = in_compat_syscall()
->                 ? MSG_CMSG_COMPAT : 0;
-> +       cmsg_dummy.msg_control_is_user = true;
->         zc->msg_flags = 0;
->         if (zc->msg_control == msg_control_addr &&
->             zc->msg_controllen == cmsg_dummy.msg_controllen) {
-> --
-> 2.31.1.607.g51e8a6a459-goog
->
+> _______________________________________________
+> linux-arm-kernel mailing list
+> linux-arm-kernel@lists.infradead.org
+> http://lists.infradead.org/mailman/listinfo/linux-arm-kernel
