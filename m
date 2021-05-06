@@ -2,84 +2,66 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 252883755E1
-	for <lists+netdev@lfdr.de>; Thu,  6 May 2021 16:46:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 077143755E3
+	for <lists+netdev@lfdr.de>; Thu,  6 May 2021 16:48:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234926AbhEFOrv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 6 May 2021 10:47:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51240 "EHLO
+        id S234922AbhEFOtC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 6 May 2021 10:49:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51538 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234882AbhEFOro (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 6 May 2021 10:47:44 -0400
-Received: from mail-oi1-x229.google.com (mail-oi1-x229.google.com [IPv6:2607:f8b0:4864:20::229])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 09734C061574
-        for <netdev@vger.kernel.org>; Thu,  6 May 2021 07:46:45 -0700 (PDT)
-Received: by mail-oi1-x229.google.com with SMTP id v24so5699140oiv.9
-        for <netdev@vger.kernel.org>; Thu, 06 May 2021 07:46:45 -0700 (PDT)
+        with ESMTP id S234897AbhEFOtA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 6 May 2021 10:49:00 -0400
+Received: from mail-wr1-x434.google.com (mail-wr1-x434.google.com [IPv6:2a00:1450:4864:20::434])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC7FFC061574
+        for <netdev@vger.kernel.org>; Thu,  6 May 2021 07:48:01 -0700 (PDT)
+Received: by mail-wr1-x434.google.com with SMTP id h4so5908584wrt.12
+        for <netdev@vger.kernel.org>; Thu, 06 May 2021 07:48:01 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=AysahfEni+wUr8Lln4oVGNY9wuIa3qppcoTpN4tVNRY=;
-        b=vJ1dxDQxwlb2SnbfwRTdLdBXjnRCDTPnPyk+Ur0PBHTaP2TNVyZfTzyqOcl33Brjh8
-         lktRe0oocBb9uvf7e+OAdxFJLFIVeWSAoTJeymPX1rF/t+5DmPRXiSlIPjEBcevc+ywk
-         YqGh9OjPKSV5cK6Fjrz7dAWvbuqUB51elNTfRrxMR/aiHZ881TzTuHut7CtYeN8o/svH
-         v5RqsDurpi8V0jP/Tb62ozDb/QAQMeyM6Wf4GTqQ1BG/qltmWA1qAyVcVkn56XGfde9r
-         Ak2ShJgU+T+aUN6cUUg9SJz3z4UnQCBajHHzVgMI72aeDCj0opexWFyP+brS2InwTvjS
-         nRHw==
+        h=mime-version:reply-to:from:date:message-id:subject:to
+         :content-transfer-encoding;
+        bh=DJDV+Y41njtBMouQ+LQv+c2L8v93bl/qtqGa2Hrunps=;
+        b=Ra4HyOKgid8u+4Wf76nYiujpw09+Yzl8gV57OrguOOl9RwrQD5D2aDtCFr3s0d1xU6
+         CkqDL+RD54qFBaT76aTMAStfJRR+91I1ZZ56c1h0MExXDuLLrsIpHPfK9jYqnu/AHpkJ
+         v5RYxNuNb3IBb2zh3bnEoUD2Q/SOUC2RD4s6MpHf2rlLmgr71Mm88Uoue4KWr/1HSJ9o
+         2p8tTQ+77EoxQYVNIPJkCpuOTAItDLvIKqVZVCCRA87XG+cWdUID3hO6f4xftGe9Nf+N
+         N51hx81j1mD5RZ+InGWUs+v3sAsWBFh1Oez/uarV/kIv+VXM32/O2/LZ0J2hRiUr32Hg
+         XUlg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=AysahfEni+wUr8Lln4oVGNY9wuIa3qppcoTpN4tVNRY=;
-        b=tF3eu3nB5dr/AioAQQfG05r1dwFEOxk2iAvVybL3RdSFiylUBnOV7NqHqrcZrj+kKu
-         NbYyo+jENzlUaq6qL/RLaRC3DwADqw2zNWEuI+TSoA5xMRZMxEbnLjaS+gD2kwtaKYPy
-         2oS7Q/kJmYLcfpuF+OUQxLD7AhXEDH5Pyj3Zi0wha7VRAskgjE90q23WXv/2XNXm2B9R
-         +0ElWHP4hkP1ciazuN0Hl8O7/3P1eiMtnI/UuyXiGaXDv4md+a80tRPCspoPCBbP4CzC
-         M7ldPrwtxIhWiVWbNW4ZhsBWDcNoTWIc3f+Yur4nuJyC3gmdsR54OtpesYfpv6cOM1kv
-         2Alw==
-X-Gm-Message-State: AOAM533oBy11erpQ+nED/mtfRaN6CujJySLeOXBaRnDgd7WgspdsKtVI
-        rCmE1WFHxBzumjfEsQgWMcqp2bueBtI=
-X-Google-Smtp-Source: ABdhPJwnIreIULShBKU8nPn3uS6jacpONqwXSkR0HaU2Yn6cemup3igMGEE/jJayUlEkSBBAXDiKMw==
-X-Received: by 2002:aca:4ec7:: with SMTP id c190mr11436852oib.32.1620312404560;
-        Thu, 06 May 2021 07:46:44 -0700 (PDT)
-Received: from Davids-MacBook-Pro.local ([2601:282:800:dc80:73:7507:ad79:a013])
-        by smtp.googlemail.com with ESMTPSA id r14sm628455oth.3.2021.05.06.07.46.43
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 06 May 2021 07:46:44 -0700 (PDT)
-Subject: Re: [PATCH iproute2] lib: bpf_legacy: avoid to pass invalid argument
- to close()
-To:     Andrea Claudi <aclaudi@redhat.com>, netdev@vger.kernel.org
-Cc:     stephen@networkplumber.org
-References: <a401273d9c2e965d11c07cab76016d350b4f0b2c.1619887571.git.aclaudi@redhat.com>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <54b95593-ea0e-dd20-ead6-3babab7b42bc@gmail.com>
-Date:   Thu, 6 May 2021 08:46:43 -0600
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
- Gecko/20100101 Thunderbird/78.10.1
+        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
+         :subject:to:content-transfer-encoding;
+        bh=DJDV+Y41njtBMouQ+LQv+c2L8v93bl/qtqGa2Hrunps=;
+        b=cxAAQIrlvoX7p720uzG45A2Ou0gEMU5P9CAxOyfi1gqVV2RmCedUGNAgWIehB1fL+Z
+         WIsq+HW+W9ELEGh6WZAMEVkqzEZiIxx63ICWe6cgNdpo4xFUywXm+HY22qpX+7FTh69l
+         b3kyqMkG7LJF33PyM1FHOA2G3krUOL8l4qNDvteLN5Fu9DWMvPlSyX29yfE3aATyrKOi
+         qmz9EIunig07Xkqse5KP4n/+ss33PEmBMz8ZHda893XT6i+Jt0/mJzYoh42/Zun1k+w3
+         gQWAT7/waCnilmyZaNmrz1jW8L0uPYIspCxihYqVfaJ8Gr8OnjUDwfRL7THotKo1D7kR
+         6YOw==
+X-Gm-Message-State: AOAM5314t/PrtWPXVxWS4QrTMxSVRHoF9+SQ4jl4ZTu1G0ub3KiuGs1D
+        HgT3/TJySODscG5mgExbIs8NRtMF3REzkN2fPQ==
+X-Google-Smtp-Source: ABdhPJwbdc2Uew0YVYNQ8kZ+GdBLAP/pBiilOYCTCRLTILjU3drp0fJcEgw4NstMdtqfgiTFqe/QeSzk5CWm1+wtaqM=
+X-Received: by 2002:a5d:4ac6:: with SMTP id y6mr5718630wrs.414.1620312480510;
+ Thu, 06 May 2021 07:48:00 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <a401273d9c2e965d11c07cab76016d350b4f0b2c.1619887571.git.aclaudi@redhat.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Received: by 2002:a7b:c94b:0:0:0:0:0 with HTTP; Thu, 6 May 2021 07:47:59 -0700 (PDT)
+Reply-To: 12345officialnicole@gmail.com
+From:   Official <charlesmilitary1@gmail.com>
+Date:   Thu, 6 May 2021 14:47:59 +0000
+Message-ID: <CAOp08_LDAd5a+_XVxoENrLQdZWg9VAA9vya_NRFY+_9vExWXFg@mail.gmail.com>
+Subject: =?UTF-8?B?6ri06riJ7ZWcIOuLteuzgCDrtoDtg4Hrk5zrpr3ri4jri6QuLi7nt4rmgKXjga7ov5Q=?=
+        =?UTF-8?B?5L+h44KS44GK6aGY44GE44GX44G+44GZ?=
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 5/1/21 11:05 AM, Andrea Claudi wrote:
-> In function bpf_obj_open, if bpf_fetch_prog_arg() return an error, we
-> end up in the out: path with a negative value for fd, and pass it to
-> close.
-> 
-> Avoid this checking for fd to be positive.
-> 
-> Fixes: 32e93fb7f66d ("{f,m}_bpf: allow for sharing maps")
-> Signed-off-by: Andrea Claudi <aclaudi@redhat.com>
-> ---
->  lib/bpf_legacy.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-
-applied
-
+My good friend, I hope you're doing well =E2=80=98=E2=80=98and'' did you re=
+ceive my
+previous e-mail?  I have something important and profitable to discuss
+with you, I would like to visit your country as soon as possible,
+please reply to this email for more details about myself.
+Regards
+Ms. Official Nicole
