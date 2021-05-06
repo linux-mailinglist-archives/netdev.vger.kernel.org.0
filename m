@@ -2,98 +2,155 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C68303755CB
-	for <lists+netdev@lfdr.de>; Thu,  6 May 2021 16:41:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B02BA3755CC
+	for <lists+netdev@lfdr.de>; Thu,  6 May 2021 16:42:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234882AbhEFOmt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 6 May 2021 10:42:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50128 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234694AbhEFOmq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 6 May 2021 10:42:46 -0400
-Received: from mail-ot1-x32e.google.com (mail-ot1-x32e.google.com [IPv6:2607:f8b0:4864:20::32e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BEFDCC061574
-        for <netdev@vger.kernel.org>; Thu,  6 May 2021 07:41:45 -0700 (PDT)
-Received: by mail-ot1-x32e.google.com with SMTP id u25-20020a0568302319b02902ac3d54c25eso5083912ote.1
-        for <netdev@vger.kernel.org>; Thu, 06 May 2021 07:41:45 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=bzaU7wPABkJIdBC657+8ohKvMkzFviJtl3hyZNnP51U=;
-        b=ACBsZZtwC7LQLVCSnP5r1Xcik2D+jJJRSwkgnyQmRqklk+/2d5wuDc3anWsQ/oS7+L
-         lZQVBDIpBsLw+hJxGqNcqDQwtagvCPiI5nd2jveDudIXs/cuwftaNngkLwkES6onJkHz
-         trM0S7+/kWJrJqAcNx8IXzsXVEjwPFDusMoMlz7R6dVAgK0hg5X2r0NaPiWzGaRW9Vki
-         tkAs36QCeKhsxd+jtBtRcQe00U19SvwiR2y3gH1Nh6BqHs5hwLssbcAhH7bvr4lv65Er
-         f1U1jvhsYpPQ2Ar4G1f3K8rAoT1oBvGXnx4qcd/AQCofhcE6s2mcLTA2fjd9eYtkc5Zc
-         EDbw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=bzaU7wPABkJIdBC657+8ohKvMkzFviJtl3hyZNnP51U=;
-        b=hgsiDzTkCtSXblEZLjCEGng/M7NbcZLU6BZDhNApiMzvaQNz/Lg0cBmRS3y4v4q0cN
-         FJns1IclxqmrOaE4J18qrNouarN0gEq7/sHRppP5LlEJcjdSW2sRFD6dgSXSfNKqHvsp
-         kgWC3CvaXKS4pzl4ZLh/QreO8T4e57tRy4f2fNo98nTmdJ9ZQKOK/oKBmDimVMQnWVLM
-         L2vLKDkcLIut7TPOHmD6iWzdZnGgGCB5l/6z4UEUUVVQdr0M8u6l6TFUxTwmK1Awv8Ww
-         dOndKKL1fwN0Ijc9e91uxcU2X2DU8juHVWVg07PZIdUZD8DEMddnJwDOcx9baDZhIQTX
-         zkZA==
-X-Gm-Message-State: AOAM533Ns82Qt3nLHPmyVOktWXI54ZsDAXBFckiqtcdElBatD0KDHOA0
-        wAZcnQcwqf5tqhjv4aQ0kN7c8xoSrgM=
-X-Google-Smtp-Source: ABdhPJw/Z/fFp+JR/ZbDX7B0EnEjXZF85WfWQZ7uMhCVbluywG16Bf6D/BOBj6gXIbtievd6SZ5zzQ==
-X-Received: by 2002:a9d:77c7:: with SMTP id w7mr3965551otl.131.1620312105056;
-        Thu, 06 May 2021 07:41:45 -0700 (PDT)
-Received: from Davids-MacBook-Pro.local ([2601:282:800:dc80:73:7507:ad79:a013])
-        by smtp.googlemail.com with ESMTPSA id g16sm533260oof.43.2021.05.06.07.41.44
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 06 May 2021 07:41:44 -0700 (PDT)
-Subject: Re: [PACTH iproute2] ip: align the name of the 'nohandler' stat
-To:     Jakub Kicinski <kuba@kernel.org>, stephen@networkplumber.org
-Cc:     netdev@vger.kernel.org
-References: <20210501030854.529712-1-kuba@kernel.org>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <59b67304-8d62-2ee1-6150-8fc6e0579d79@gmail.com>
-Date:   Thu, 6 May 2021 08:41:43 -0600
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
- Gecko/20100101 Thunderbird/78.10.1
+        id S234907AbhEFOm6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 6 May 2021 10:42:58 -0400
+Received: from ssl.serverraum.org ([176.9.125.105]:46997 "EHLO
+        ssl.serverraum.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234694AbhEFOmw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 6 May 2021 10:42:52 -0400
+Received: from ssl.serverraum.org (web.serverraum.org [172.16.0.2])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ssl.serverraum.org (Postfix) with ESMTPSA id D20892224B;
+        Thu,  6 May 2021 16:41:51 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
+        t=1620312112;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=GuA+4sdxtI/hmbjVq0gs21HsQjNMUl4w3yNrwMHelvY=;
+        b=suCseM4bfzq/SZtMdL0bB6+YBUWFiltAu8P0KUiNA+3Drf/Om7pUpKABkLJ22IfZpVypJ0
+        9ZA6E7ehkh6GfoDCL2EXx2ZZM3FaKmJ9bgI56NsdJGLI/Y/6F3r2K8ujvH5kjOYJyMQ4uY
+        7c//1SnULrOVGD66kZ51XuYUEBSHUAA=
 MIME-Version: 1.0
-In-Reply-To: <20210501030854.529712-1-kuba@kernel.org>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
+Content-Type: text/plain; charset=US-ASCII;
+ format=flowed
 Content-Transfer-Encoding: 7bit
+Date:   Thu, 06 May 2021 16:41:51 +0200
+From:   Michael Walle <michael@walle.cc>
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Xiaoliang Yang <xiaoliang.yang_1@nxp.com>,
+        UNGLinuxDriver@microchip.com, alexandre.belloni@bootlin.com,
+        allan.nielsen@microchip.com,
+        Claudiu Manoil <claudiu.manoil@nxp.com>, davem@davemloft.net,
+        idosch@mellanox.com, joergen.andreasen@microchip.com,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        Po Liu <po.liu@nxp.com>, vinicius.gomes@intel.com
+Subject: Re: [net-next] net: dsa: felix: disable always guard band bit for TAS
+ config
+In-Reply-To: <20210506135007.ul3gpdecq427tvgr@skbuf>
+References: <20210419102530.20361-1-xiaoliang.yang_1@nxp.com>
+ <20210504170514.10729-1-michael@walle.cc>
+ <20210504181833.w2pecbp2qpuiactv@skbuf>
+ <c7618025da6723418c56a54fe4683bd7@walle.cc>
+ <20210504185040.ftkub3ropuacmyel@skbuf>
+ <ccb40b7fd18b51ecfc3f849a47378c54@walle.cc>
+ <20210504191739.73oejybqb6z7dlxr@skbuf>
+ <d933eef300cb1e1db7d36ca2cb876ef6@walle.cc>
+ <20210504213259.l5rbnyhxrrbkykyg@skbuf>
+ <efe5ac03ceddc8ff472144b5fe9fd046@walle.cc>
+ <20210506135007.ul3gpdecq427tvgr@skbuf>
+User-Agent: Roundcube Webmail/1.4.11
+Message-ID: <879df38ab1fb6d8fb8f371bfd5e8c213@walle.cc>
+X-Sender: michael@walle.cc
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 4/30/21 9:08 PM, Jakub Kicinski wrote:
-> Before:
+Am 2021-05-06 15:50, schrieb Vladimir Oltean:
+> On Thu, May 06, 2021 at 03:25:07PM +0200, Michael Walle wrote:
+>> Am 2021-05-04 23:33, schrieb Vladimir Oltean:
+>> > [ trimmed the CC list, as this is most likely spam for most people ]
+>> >
+>> > On Tue, May 04, 2021 at 10:23:11PM +0200, Michael Walle wrote:
+>> > > Am 2021-05-04 21:17, schrieb Vladimir Oltean:
+>> > > > On Tue, May 04, 2021 at 09:08:00PM +0200, Michael Walle wrote:
+>> > > > > > > > > As explained in another mail in this thread, all queues are marked as
+>> > > > > > > > > scheduled. So this is actually a no-op, correct? It doesn't matter if
+>> > > > > > > > > it set or not set for now. Dunno why we even care for this bit then.
+>> > > > > > > >
+>> > > > > > > > It matters because ALWAYS_GUARD_BAND_SCH_Q reduces the available
+>> > > > > > > > throughput when set.
+>> > > > > > >
+>> > > > > > > Ahh, I see now. All queues are "scheduled" but the guard band only
+>> > > > > > > applies
+>> > > > > > > for "non-scheduled" -> "scheduled" transitions. So the guard band is
+>> > > > > > > never
+>> > > > > > > applied, right? Is that really what we want?
+>> > > > > >
+>> > > > > > Xiaoliang explained that yes, this is what we want. If the end user
+>> > > > > > wants a guard band they can explicitly add a "sched-entry 00" in the
+>> > > > > > tc-taprio config.
+>> > > > >
+>> > > > > You're disabling the guard band, then. I figured, but isn't that
+>> > > > > suprising for the user? Who else implements taprio? Do they do it in
+>> > > > > the
+>> > > > > same way? I mean this behavior is passed right to the userspace and
+>> > > > > have
+>> > > > > a direct impact on how it is configured. Of course a user can add it
+>> > > > > manually, but I'm not sure that is what we want here. At least it
+>> > > > > needs
+>> > > > > to be documented somewhere. Or maybe it should be a switchable option.
+>> > > > >
+>> > > > > Consider the following:
+>> > > > > sched-entry S 01 25000
+>> > > > > sched-entry S fe 175000
+>> > > > > basetime 0
+>> > > > >
+>> > > > > Doesn't guarantee, that queue 0 is available at the beginning of
+>> > > > > the cycle, in the worst case it takes up to
+>> > > > > <begin of cycle> + ~12.5us until the frame makes it through (given
+>> > > > > gigabit and 1518b frames).
+>> > > > >
+>> > > > > Btw. there are also other implementations which don't need a guard
+>> > > > > band (because they are store-and-forward and cound the remaining
+>> > > > > bytes). So yes, using a guard band and scheduling is degrading the
+>> > > > > performance.
+>> > > >
+>> > > > What is surprising for the user, and I mentioned this already in another
+>> > > > thread on this patch, is that the Felix switch overruns the time gate (a
+>> > > > packet taking 2 us to transmit will start transmission even if there is
+>> > > > only 1 us left of its time slot, delaying the packets from the next time
+>> > > > slot by 1 us). I guess that this is why the ALWAYS_GUARD_BAND_SCH_Q bit
+>> > > > exists, as a way to avoid these overruns, but it is a bit of a poor tool
+>> > > > for that job. Anyway, right now we disable it and live with the
+>> > > > overruns.
+>> > >
+>> > > We are talking about the same thing here. Why is that a poor tool?
+>> >
+>> > It is a poor tool because it revolves around the idea of "scheduled
+>> > queues" and "non-scheduled queues".
+>> >
+>> > Consider the following tc-taprio schedule:
+>> >
+>> > 	sched-entry S 81 2000 # TC 7 and 0 open, all others closed
+>> > 	sched-entry S 82 2000 # TC 7 and 1 open, all others closed
+>> > 	sched-entry S 84 2000 # TC 7 and 2 open, all others closed
+>> > 	sched-entry S 88 2000 # TC 7 and 3 open, all others closed
+>> > 	sched-entry S 90 2000 # TC 7 and 4 open, all others closed
+>> > 	sched-entry S a0 2000 # TC 7 and 5 open, all others closed
+>> > 	sched-entry S c0 2000 # TC 7 and 6 open, all others closed
+>> >
+>> > Otherwise said, traffic class 7 should be able to send any time it
+>> > wishes.
+>> 
+>> What is the use case behind that? TC7 (with the highest priority)
+>> may always take precedence of the other TCs, thus what is the point
+>> of having a dedicated window for the others.
 > 
->     RX: bytes  packets  errors  dropped missed  mcast
->     8848233056 8548168  0       0       0       0
->     RX errors: length   crc     frame   fifo    overrun   nohandler
->                0        0       0       0       0       101
->     TX: bytes  packets  errors  dropped carrier collsns compressed
->     1142925945 4683483  0       0       0       0       101
->     TX errors: aborted  fifo   window heartbeat transns
->                0        0       0       0       14
-> 
-> After:
-> 
->     RX: bytes  packets  errors  dropped missed  mcast
->     8848297833 8548461  0       0       0       0
->     RX errors: length   crc     frame   fifo    overrun nohandler
->                0        0       0       0       0       101
->     TX: bytes  packets  errors  dropped carrier collsns compressed
->     1143049820 4683865  0       0       0       0       101
->     TX errors: aborted  fifo   window heartbeat transns
->                0        0       0       0       14
-> 
-> Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-> ---
->  ip/ipaddress.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
+> Worst case latency is obviously better for an intermittent stream (not
+> more than one packet in flight at a time) in TC7 than it is for any
+> stream in TC6-TC0. But intermittent streams in TC6-TC0 also have their
+> own worst case guarantees (assuming that 2000 ns is enough to fit one
+> TC 7 frame and one frame from the TC6-TC0 range).
 
-applied
+Oh and I missed that, TC0-TC6 probably won't work because that gate is
+too narrow (12.5us guard band) unless of course you set MAXSDU to a
+smaller value. Which would IMHO be the correct thing to do here.
 
+-michael
