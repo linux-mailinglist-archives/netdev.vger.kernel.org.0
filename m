@@ -2,315 +2,1704 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1B68D375A31
-	for <lists+netdev@lfdr.de>; Thu,  6 May 2021 20:31:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6B1DB375A3A
+	for <lists+netdev@lfdr.de>; Thu,  6 May 2021 20:34:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234295AbhEFSb6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 6 May 2021 14:31:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45380 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231839AbhEFSb5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 6 May 2021 14:31:57 -0400
-Received: from mail-wr1-x42d.google.com (mail-wr1-x42d.google.com [IPv6:2a00:1450:4864:20::42d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B6800C061574
-        for <netdev@vger.kernel.org>; Thu,  6 May 2021 11:30:58 -0700 (PDT)
-Received: by mail-wr1-x42d.google.com with SMTP id m9so6655171wrx.3
-        for <netdev@vger.kernel.org>; Thu, 06 May 2021 11:30:58 -0700 (PDT)
+        id S234729AbhEFSff (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 6 May 2021 14:35:35 -0400
+Received: from mail-eopbgr760107.outbound.protection.outlook.com ([40.107.76.107]:6880
+        "EHLO NAM02-CY1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S234161AbhEFSfb (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 6 May 2021 14:35:31 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=Ss6oQo9Akk1mDQ5D8AIlOvtDa2cZUMsloZBxWoUNitED/XgDoA63wq++JlGA34xioPkKX6KOc7ZvV+MbnleRRjCR81ynGrnJD+E7zyDdA6EdoDNQA1r7F0+ck2VGvLUcydqie/+9eTn2KHwhKFrKCxVzMmNq4uBR/ShYu0IvutXK3SkxCJtySuKYBMxN5EhHDwnP9x+jTSpGVvu1NgDa8SXTuBskFck/hrgJjicyHA8j78Ip7g15Vi4b9Hmll5T3kUn1++FFA6TnqO3/i+eDbWa9iAaMzaY2nYZTnfRfu9ZC6T6+tlHNjRdLLG1KN4w7tNp/fyM2NZulxcUqfvbvxA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=5x2OJ3oO4QrPrwUJ9DpHi09f7GmwPg9Khz1XI4OJ10g=;
+ b=RTkeYdcSZtf2+Sx7kWoW4vizGOBX2Bt+PFG3fzxMwBqv1d6iJuYxTPcbvMnPuOVUHfTD5VPsbSbbfdos94NhozoLy4bQ1z5IUYuwhru79UwUWpLv1mZvH1Ykx8+hF2sIsFPXqMPKpPMXGzMkdh5LtsWV5ElEGh5YGN5hFp2uViPzjFzFaiKr6OlBgHmnDSWI9maEe6KyxvF7m8u0WyIV2c/GMvu/pXHxhfX1yGCN/Jf00B1/3SFBEU0fEgV0iYvUXz8cYnBcV5Vii5aRi19JGizMs25DbJyki7vF1ly7Q7pNNE+hBzDcneEkSKxeyGHLZbz2bhvkhYJJfTeO74RDSQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=in-advantage.com; dmarc=pass action=none
+ header.from=in-advantage.com; dkim=pass header.d=in-advantage.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=ksCpVjzE8B2NTPSP4Wi75wXSihfiCsXhJC5aBCMrAIk=;
-        b=WPi/K7QsWD9eLlStP2qNicKPDx2iabTrfozbW86KcUfeOaADHUZN1LcyqyXzioiCjY
-         59Ei7URvHOfr9Y8SJYNESf9EtRXqHUzPM21njScTw269oRjUHbuewkxvypDY5zVzN9RL
-         2iHbHqTOuzkMgVt8JmpGvKsoqtLl6eEoyk4Asj2zFaVQIcwVkzQkyIRSXObrrsv4AUVi
-         AEklxeyMqPbnikz9WMsUHwcqHxzTRvllG7WYfRk/8j7bEeSkSccnoR2/LYw25M7QwSWj
-         haVTpqp21kQkoAnOynqnPrse+IOgmsMq4xKOHwKB8zuHlZlPvRibRvwd5BW4VJBbQP7P
-         TE7A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=ksCpVjzE8B2NTPSP4Wi75wXSihfiCsXhJC5aBCMrAIk=;
-        b=uDBewHuEqTrP8UIOGYxuLpVeAN32p61IL5XLxBadnbKMazIFI8rgXVA7/u2B4iX4Bw
-         zS3IIduQgiAlNOGIF+xbR0fef0xQbIDmozsSodoUZYxPBmW/xcEvOZznkT8UqR4aELi0
-         tVCPjAEYhXxg3z3WofztKXz5VEPFY+YR8I0T18mDvzSVAZXZ6nQ0JpareqEB7wmMv4+9
-         UscOoRkMiITeQnsFLWC5Q3+gNQSBaZaxIrdki1LR2Wimvt2Sh1Hb5nZCnz8T+sbYhfba
-         Hib9p1bEOsr3IdKSrirA1zQngetYE/RVJ+kvImMh1Gcm5+VKkh5LwdNnI3erpaphEQmu
-         QNcA==
-X-Gm-Message-State: AOAM531XLP4fKbtS6bQrY3LJiaJQaPIWxJwkIfwoE8JoXahK2XvPflCn
-        iwNrGbM8uALSkbdR68SPCglJfpMGpVNZBQ==
-X-Google-Smtp-Source: ABdhPJzm7qur5FGyZ5GxJjcNeRpijkR/AgNe2Ft9bjYr/VjfEJyllkI6Bh6609citTjIw2cyrOyOwQ==
-X-Received: by 2002:a05:6000:1549:: with SMTP id 9mr7020085wry.367.1620325857024;
-        Thu, 06 May 2021 11:30:57 -0700 (PDT)
-Received: from ubuntu.localdomain ([85.254.75.219])
-        by smtp.googlemail.com with ESMTPSA id x8sm5391790wrs.25.2021.05.06.11.30.56
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 06 May 2021 11:30:56 -0700 (PDT)
-From:   Toms Atteka <cpp.code.lv@gmail.com>
-To:     netdev@vger.kernel.org
-Cc:     Toms Atteka <cpp.code.lv@gmail.com>
-Subject: [PATCH net-next] net: openvswitch: IPv6: Add IPv6 extension header support
-Date:   Thu,  6 May 2021 11:30:53 -0700
-Message-Id: <20210506183053.24430-1-cpp.code.lv@gmail.com>
-X-Mailer: git-send-email 2.25.1
-MIME-Version: 1.0
+ d=inadvantage.onmicrosoft.com; s=selector2-inadvantage-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=5x2OJ3oO4QrPrwUJ9DpHi09f7GmwPg9Khz1XI4OJ10g=;
+ b=b6ud3tR3EeVCLzSbNv8UwdRIaIh4zCKQG9thx7NbbIQBLPiDMcKImjni/mIKqMNSuwzc3fAF15DRCRfs1rtOziQzZLv35erOLXI1LGbdM7dNkCgaj2Hj2l+yB8mDZUbuxOMoViGbNieO37CyKaJlDSUQmP/cVew9pVgW0DQNyIQ=
+Authentication-Results: gmail.com; dkim=none (message not signed)
+ header.d=none;gmail.com; dmarc=none action=none header.from=in-advantage.com;
+Received: from DM5PR1001MB2345.namprd10.prod.outlook.com (2603:10b6:4:2d::31)
+ by DM5PR1001MB2347.namprd10.prod.outlook.com (2603:10b6:4:2e::38) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4087.44; Thu, 6 May
+ 2021 18:34:29 +0000
+Received: from DM5PR1001MB2345.namprd10.prod.outlook.com
+ ([fe80::403c:b2d2:c1ae:3a7d]) by DM5PR1001MB2345.namprd10.prod.outlook.com
+ ([fe80::403c:b2d2:c1ae:3a7d%6]) with mapi id 15.20.4065.039; Thu, 6 May 2021
+ 18:34:29 +0000
+Date:   Thu, 6 May 2021 11:34:18 -0700
+From:   Colin Foster <colin.foster@in-advantage.com>
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     Rob Herring <robh+dt@kernel.org>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        "supporter:OCELOT ETHERNET SWITCH DRIVER" 
+        <UNGLinuxDriver@microchip.com>, Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Russell King <linux@armlinux.org.uk>,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        "open list:OCELOT ETHERNET SWITCH DRIVER" <netdev@vger.kernel.org>
+Subject: Re: [RFC PATCH vN net-next 2/2] net: mscc: ocelot: add support for
+ VSC75XX SPI control
+Message-ID: <20210506183418.GA10838@MSI.localdomain>
+References: <20210504051130.1207550-1-colin.foster@in-advantage.com>
+ <20210504051130.1207550-2-colin.foster@in-advantage.com>
+ <20210506102204.wuwwnoarn5r5cun2@skbuf>
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <20210506102204.wuwwnoarn5r5cun2@skbuf>
+X-Originating-IP: [96.93.101.165]
+X-ClientProxiedBy: MWHPR2201CA0046.namprd22.prod.outlook.com
+ (2603:10b6:301:16::20) To DM5PR1001MB2345.namprd10.prod.outlook.com
+ (2603:10b6:4:2d::31)
+MIME-Version: 1.0
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from MSI.localdomain (96.93.101.165) by MWHPR2201CA0046.namprd22.prod.outlook.com (2603:10b6:301:16::20) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4108.25 via Frontend Transport; Thu, 6 May 2021 18:34:26 +0000
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: c041b3ea-63cb-4b44-5a83-08d910bd9442
+X-MS-TrafficTypeDiagnostic: DM5PR1001MB2347:
+X-Microsoft-Antispam-PRVS: <DM5PR1001MB234772309D780E87DF8C61AEA4589@DM5PR1001MB2347.namprd10.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:9508;
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: ZhTf7YWPXIqIpI5oq/rSsOWZ6hY001JPBS6pLed8huSCpkfevm+bwWHqtngXNBwSs/wG+Ar0C9YzSTPGZpjYgeRlR6eO+KxwTiUgqpTaeidkfuIf5aA2qE/Grm48Zz8ytsOCnCQ6muWUO3QMJsE6xTJisaF2a6bkibYJNoIFJpurzWdHCkjj6+DztTna7+bCyanhhnV0THgSVtUe3FFjsa6o1hY8Uml0QIRebHOfKuIuTMnNOx9SJGjyO5/GcSXTBr/kZa+SIHvME5C2Bw989Oj3/6mG+z9trtcxwsrmBNYxfjZqd7ZwVN7FdC8U4IKjq0OS6YAoan7XRWeHwN5trYHy3NMsGDyf1pIk7DLJ0Nb1hdxVzFZ1kFgR95SN2qSZY48HKtGF9qwPQJ7E1Bu/7bc9EVwUW90uea8NVlcHVU9aDnrgn+VBGAYVvF1PYhXwHFhhNP8VYewW9JzG5+AvYn7dEhD7IHLsXkBMTfQAr0Z9q+sB07XxT0B8wIzi33OBwDYbiHNeJLaJZ1N1z45fbihp7UCTsFaawUGoVVk2AwVOH/RiFdSTjsiX2xUhAqUpho0pUk/YrQQeGItnkyxLJ5/VNxGvDSRG2PMkeIAdChsgBUHORNvGblrx3KOAUf7uM0BjYeQOtWt6KfTKG1/xRB3hx/LY4Y5IHMUVf1gqbgVNJS+f+eqNch532Zvz2CEuw+tUcw2O00DfuUqqr7olKJ+0JagDhGbtSmI8yT6bQZ4=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM5PR1001MB2345.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(376002)(346002)(136003)(366004)(396003)(39830400003)(966005)(5660300002)(30864003)(9686003)(4326008)(33656002)(6916009)(956004)(316002)(44832011)(66556008)(38350700002)(8676002)(2906002)(8936002)(54906003)(1076003)(6506007)(6666004)(186003)(26005)(7416002)(52116002)(7696005)(16526019)(83380400001)(55016002)(66946007)(66476007)(38100700002)(86362001)(478600001)(579004)(559001);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData: =?utf-8?B?YnFQQXp3K0wzTG8rVzNYYlBtK0FOR1Q1MlJQZTB5bjd3RWRUSE5GV1hiOWkr?=
+ =?utf-8?B?WU5IZjJpU0lTRXZmZlRoY1JaQmtVTm50QmhuWHBKdHBETlE3YjFYM2F0TUlr?=
+ =?utf-8?B?NFBvQ1NTSG9adEd4WUFuclBkS1JpdS9EWVFIdXpGM2J3cXp3bmk4MFFDVVNH?=
+ =?utf-8?B?clJwYVhvZHhCdnlSMWRYOFg1QWlSdDhsOFhtd3JsaEdjS2RQZ2luYkhQZzI3?=
+ =?utf-8?B?LzFiRWNlNXNJK0JheSs0MzVzMyt3b0ZOY0l4cGd3WmlHQWVVMzRGckVCdmxY?=
+ =?utf-8?B?aFpIaEVrUHR6V1cvMFh4aVcwbEo1ejU3cStFRXRmeXhna1hjSjhaemVKUjhE?=
+ =?utf-8?B?TDk2azk3a2cyVnlrVytxVU9Ec0JEbm04TzlDSjJ5bE1Ya2o2ejZwMXEzbTB0?=
+ =?utf-8?B?MW5xamtYR0F2dG1oUEtGV0pMaG5XVDF3UXppYzZXM1RRWXVHM0JtQ1FpbXZO?=
+ =?utf-8?B?ck5IUWU2VHlHcmFwNjlucHQ3OVNQUjdZdDBJOUk0dE9qdGNEWVRtb0I4Zlk5?=
+ =?utf-8?B?dFZEcjUxanhqN01NL0hBQk1BM2pnc0piaUJtWUJtaVBmZG5YZlhwUXZZVENC?=
+ =?utf-8?B?cjdFdVdadkh1NXcwVitwZG9Zam9nQVFJdHB2UVRWQXRFWDRhZS9ndWZsaHhR?=
+ =?utf-8?B?VytGcVowZVo2d2Z2RGN1NCt1c1RGWGs2ZFk1T3JGYjRUR1k3RHNNL3JpU3p4?=
+ =?utf-8?B?SUNKWlZKdjhXMlFMZzUyb3V6cUphY3dVZTRGWEdUMjZJVDhmcFBoc3JVQnJP?=
+ =?utf-8?B?V2wrRlZsa3MxMER4QVZUL002K20yRHNpK2tMWVowM3lyMGtiRm4wQTFod25B?=
+ =?utf-8?B?ZmZYQjI1TGxMNmVkS2dKVHhVOHpmRytxazhTU2I0SWRpMlZ0OGlQTDRQdFA1?=
+ =?utf-8?B?THBYazlSMmdTTmlXNHozRDB6V0FCa1FTeUw3R3pPeTIrd0JabjRqck1qZzRr?=
+ =?utf-8?B?RHlRQUdzZWEwZXZrNFJWRzJjSnJPVTcvWlRQNWh3UXpBQWZqc1kyTVpVOUNv?=
+ =?utf-8?B?V1ZidlExTEtIVXRtS2N1YXYwc3VSQ3Z3MlFxZjR1ZTVhU3ZUM1kybU1yZFlz?=
+ =?utf-8?B?MlFZZkZuZG9GT2lPdHBuZ1hqSWlBQlBiSFpWdFFCUTZYZStpenhpRVZwY1l0?=
+ =?utf-8?B?UFhQYklrckd1RWM0d29EcEZXU2lFdzkwUm1OQ3J5MjRVVGZyWlJzYjczcmJi?=
+ =?utf-8?B?Y1dCR3ZrUTFZeE9aRHlGR3lRcVFodXZKZ1o4ampOQ2dFdFFMN2Iyb0pGb0Jx?=
+ =?utf-8?B?bXA1NXJuQTViVEFUZ3l4VEpkZGFSbVhQMUEyS2JRaVF4TUs3M1lUU2ZGYmZG?=
+ =?utf-8?B?Z0k1WldHNHJjYTF6THVycW5KdjRCRUh2ZDdQTzd6dFN4UUJqQUgrQTVkQyt2?=
+ =?utf-8?B?T2JLbzVEdnoyTS9VZ3doTHFqNFV1SStmanlRd0VhaS9pT0h1TjdBNzkwNWUr?=
+ =?utf-8?B?dDgxVDFkQkQ1WGp0TVQ0YzJ3aG1aWjFuUTdGeHppcC8raDlEZFh5M1lrVERC?=
+ =?utf-8?B?eERIUWZ2QnZHNGNCOGkwT1B5SXFMdU4vY0ovaGttb1d1blpmck5LYnROZGk0?=
+ =?utf-8?B?ZmJpdENFOU9hS2FBV3lSL0drRlBYSFdoSkszM2NJY0lLTkFseGo5dkVLMWE5?=
+ =?utf-8?B?aWlPWEc4RXFGUi9LSDNaUWtNZkYvUTlmUjJyenZEWWFnVk9FYUM0NFVCVzJr?=
+ =?utf-8?B?YnRRSmx5M0RJUm95NmwzNnFHSERoYWdwUFpCV0dEU1QzZjBuWmdoWXhsTHBR?=
+ =?utf-8?Q?1IdwW1eoqY6PdKBL2RR1f/VBWSQKW2/mEvQdtas?=
+X-OriginatorOrg: in-advantage.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: c041b3ea-63cb-4b44-5a83-08d910bd9442
+X-MS-Exchange-CrossTenant-AuthSource: DM5PR1001MB2345.namprd10.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 06 May 2021 18:34:29.0515
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 48e842ca-fbd8-4633-a79d-0c955a7d3aae
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: w0fbODvbNTxAILDVhmjk1BjPOwQoybh9ibKey6/zr13gh6O4qjDOlivY2QgJVmW8uZ87iGQaHaGmFVVwtpv9fp+u0ZnqUwsmpEfb+oMEqEc=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM5PR1001MB2347
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-IPv6 extension headers carry optional internet layer information
-and are placed between the fixed header and the upper-layer
-protocol header.
+Vladimir, Thank you very much for the feedback. I appreciate your time
+and your patience when dealing with my many blunders. This is a large
+learning experience for me.
 
-This change adds a new OpenFlow field OFPXMT_OFB_IPV6_EXTHDR and
-packets can be filtered using ipv6_ext flag.
+On Thu, May 06, 2021 at 01:22:04PM +0300, Vladimir Oltean wrote:
+> On Mon, May 03, 2021 at 10:11:27PM -0700, Colin Foster wrote:
+> > Add support for control for VSC75XX chips over SPI control. Starting with the
+> > VSC9959 code, this will utilize a spi bus instead of PCIe or memory-mapped IO to
+> > control the chip.
+> > 
+> > Signed-off-by: Colin Foster <colin.foster@in-advantage.com>
+> > ---
+> >  arch/arm/boot/dts/rpi-vsc7512-spi-overlay.dts |  124 ++
+> >  drivers/net/dsa/ocelot/Kconfig                |   11 +
+> >  drivers/net/dsa/ocelot/Makefile               |    5 +
+> >  drivers/net/dsa/ocelot/felix_vsc7512_spi.c    | 1214 +++++++++++++++++
+> >  include/soc/mscc/ocelot.h                     |   15 +
+> >  5 files changed, 1369 insertions(+)
+> >  create mode 100644 arch/arm/boot/dts/rpi-vsc7512-spi-overlay.dts
+> >  create mode 100644 drivers/net/dsa/ocelot/felix_vsc7512_spi.c
+> > 
+> > diff --git a/drivers/net/dsa/ocelot/Kconfig b/drivers/net/dsa/ocelot/Kconfig
+> > index 932b6b6fe817..2db147ce9fe7 100644
+> > --- a/drivers/net/dsa/ocelot/Kconfig
+> > +++ b/drivers/net/dsa/ocelot/Kconfig
+> > @@ -14,6 +14,17 @@ config NET_DSA_MSCC_FELIX
+> >  	  This driver supports the VSC9959 (Felix) switch, which is embedded as
+> >  	  a PCIe function of the NXP LS1028A ENETC RCiEP.
+> >  
+> > +config NET_DSA_MSCC_FELIX_SPI
+> > +	tristate "Ocelot / Felix Ethernet SPI switch support"
+> > +	depends on NET_DSA && SPI
+> > +	depends on NET_VENDOR_MICROSEMI
+> > +	select MSCC_OCELOT_SWITCH_LIB
+> > +	select NET_DSA_TAG_OCELOT_8021Q
+> > +	select NET_DSA_TAG_OCELOT
+> > +	select PCS_LYNX
+> 
+> You most probably don't need to select PCS_LYNX (that's an NXP thing).
+> For that reason, you might want to call your module NET_DSA_MSCC_OCELOT_SPI.
+> The "felix" name is just the name of the common DSA driver and of the
+> VSC9959 chip. VSC7512 is probably called Ocelot-1 according to Microchip
+> marketing.
 
-Tested-at: https://github.com/TomCodeLV/ovs/actions/runs/504185214
-Signed-off-by: Toms Atteka <cpp.code.lv@gmail.com>
----
- include/uapi/linux/openvswitch.h |   1 +
- net/openvswitch/flow.c           | 141 +++++++++++++++++++++++++++++++
- net/openvswitch/flow.h           |  14 +++
- net/openvswitch/flow_netlink.c   |   5 +-
- 4 files changed, 160 insertions(+), 1 deletion(-)
+Thank you. I couldn't find where "Felix" and "Seville" actually came
+from. My next RFC submission will include these changes.
 
-diff --git a/include/uapi/linux/openvswitch.h b/include/uapi/linux/openvswitch.h
-index 8d16744edc31..a19812b6631a 100644
---- a/include/uapi/linux/openvswitch.h
-+++ b/include/uapi/linux/openvswitch.h
-@@ -420,6 +420,7 @@ struct ovs_key_ipv6 {
- 	__u8   ipv6_tclass;
- 	__u8   ipv6_hlimit;
- 	__u8   ipv6_frag;	/* One of OVS_FRAG_TYPE_*. */
-+	__u16  ipv6_exthdr;
- };
- 
- struct ovs_key_tcp {
-diff --git a/net/openvswitch/flow.c b/net/openvswitch/flow.c
-index e586424d8b04..f72c26721e3e 100644
---- a/net/openvswitch/flow.c
-+++ b/net/openvswitch/flow.c
-@@ -239,6 +239,145 @@ static bool icmphdr_ok(struct sk_buff *skb)
- 				  sizeof(struct icmphdr));
- }
- 
-+/**
-+ * Parses packet and sets IPv6 extension header flags.
-+ *
-+ * skb          buffer where extension header data starts in packet
-+ * nh           ipv6 header
-+ * ext_hdrs     flags are stored here
-+ *
-+ * OFPIEH12_UNREP is set if more than one of a given IPv6 extension header
-+ * is unexpectedly encountered. (Two destination options headers may be
-+ * expected and would not cause this bit to be set.)
-+ *
-+ * OFPIEH12_UNSEQ is set if IPv6 extension headers were not in the order
-+ * preferred (but not required) by RFC 2460:
-+ *
-+ * When more than one extension header is used in the same packet, it is
-+ * recommended that those headers appear in the following order:
-+ *      IPv6 header
-+ *      Hop-by-Hop Options header
-+ *      Destination Options header
-+ *      Routing header
-+ *      Fragment header
-+ *      Authentication header
-+ *      Encapsulating Security Payload header
-+ *      Destination Options header
-+ *      upper-layer header
-+ */
-+static void get_ipv6_ext_hdrs(struct sk_buff *skb, struct ipv6hdr *nh, u16 *ext_hdrs)
-+{
-+	int next_type = nh->nexthdr;
-+	unsigned int start = skb_network_offset(skb) + sizeof(struct ipv6hdr);
-+	int dest_options_header_count = 0;
-+
-+	*ext_hdrs = 0;
-+
-+	while (ipv6_ext_hdr(next_type)) {
-+		struct ipv6_opt_hdr _hdr, *hp;
-+
-+		switch (next_type) {
-+		case IPPROTO_NONE:
-+			*ext_hdrs |= OFPIEH12_NONEXT;
-+			/* stop parsing */
-+			return;
-+
-+		case IPPROTO_ESP:
-+			if (*ext_hdrs & OFPIEH12_ESP)
-+				*ext_hdrs |= OFPIEH12_UNREP;
-+			if ((*ext_hdrs & ~(OFPIEH12_HOP |
-+					   OFPIEH12_DEST |
-+					   OFPIEH12_ROUTER |
-+					   IPPROTO_FRAGMENT |
-+					   OFPIEH12_AUTH |
-+					   OFPIEH12_UNREP)) ||
-+			    dest_options_header_count >= 2)
-+				*ext_hdrs |= OFPIEH12_UNSEQ;
-+			*ext_hdrs |= OFPIEH12_ESP;
-+			break;
-+
-+		case IPPROTO_AH:
-+			if (*ext_hdrs & OFPIEH12_AUTH)
-+				*ext_hdrs |= OFPIEH12_UNREP;
-+			if ((*ext_hdrs & ~(OFPIEH12_HOP |
-+					   OFPIEH12_DEST |
-+					   OFPIEH12_ROUTER |
-+					   IPPROTO_FRAGMENT |
-+					   OFPIEH12_UNREP)) ||
-+			    dest_options_header_count >= 2)
-+				*ext_hdrs |= OFPIEH12_UNSEQ;
-+			*ext_hdrs |= OFPIEH12_AUTH;
-+			break;
-+
-+		case IPPROTO_DSTOPTS:
-+			if (dest_options_header_count == 0) {
-+				if (*ext_hdrs & ~(OFPIEH12_HOP |
-+						  OFPIEH12_UNREP))
-+					*ext_hdrs |= OFPIEH12_UNSEQ;
-+				*ext_hdrs |= OFPIEH12_DEST;
-+			} else if (dest_options_header_count == 1) {
-+				if (*ext_hdrs & ~(OFPIEH12_HOP |
-+						  OFPIEH12_DEST |
-+						  OFPIEH12_ROUTER |
-+						  OFPIEH12_FRAG |
-+						  OFPIEH12_AUTH |
-+						  OFPIEH12_ESP |
-+						  OFPIEH12_UNREP))
-+					*ext_hdrs |= OFPIEH12_UNSEQ;
-+			} else {
-+				*ext_hdrs |= OFPIEH12_UNREP;
-+			}
-+			dest_options_header_count++;
-+			break;
-+
-+		case IPPROTO_FRAGMENT:
-+			if (*ext_hdrs & OFPIEH12_FRAG)
-+				*ext_hdrs |= OFPIEH12_UNREP;
-+			if ((*ext_hdrs & ~(OFPIEH12_HOP |
-+					   OFPIEH12_DEST |
-+					   OFPIEH12_ROUTER |
-+					   OFPIEH12_UNREP)) ||
-+			    dest_options_header_count >= 2)
-+				*ext_hdrs |= OFPIEH12_UNSEQ;
-+			*ext_hdrs |= OFPIEH12_FRAG;
-+			break;
-+
-+		case IPPROTO_ROUTING:
-+			if (*ext_hdrs & OFPIEH12_ROUTER)
-+				*ext_hdrs |= OFPIEH12_UNREP;
-+			if ((*ext_hdrs & ~(OFPIEH12_HOP |
-+					   OFPIEH12_DEST |
-+					   OFPIEH12_UNREP)) ||
-+			    dest_options_header_count >= 2)
-+				*ext_hdrs |= OFPIEH12_UNSEQ;
-+			*ext_hdrs |= OFPIEH12_ROUTER;
-+			break;
-+
-+		case IPPROTO_HOPOPTS:
-+			if (*ext_hdrs & OFPIEH12_HOP)
-+				*ext_hdrs |= OFPIEH12_UNREP;
-+			/* OFPIEH12_HOP is set to 1 if a hop-by-hop IPv6
-+			 * extension header is present as the first extension
-+			 * header in the pac	ket.
-+			 */
-+			if (*ext_hdrs == 0)
-+				*ext_hdrs |= OFPIEH12_HOP;
-+			else
-+				*ext_hdrs |= OFPIEH12_UNSEQ;
-+			break;
-+
-+		default:
-+			return;
-+		}
-+
-+		hp = skb_header_pointer(skb, start, sizeof(_hdr), &_hdr);
-+		if (!hp)
-+			break;
-+		next_type = hp->nexthdr;
-+		start += ipv6_optlen(hp);
-+	}
-+}
-+
- static int parse_ipv6hdr(struct sk_buff *skb, struct sw_flow_key *key)
- {
- 	unsigned short frag_off;
-@@ -254,6 +393,8 @@ static int parse_ipv6hdr(struct sk_buff *skb, struct sw_flow_key *key)
- 
- 	nh = ipv6_hdr(skb);
- 
-+	get_ipv6_ext_hdrs(skb, nh, &key->ipv6.exthdrs);
-+
- 	key->ip.proto = NEXTHDR_NONE;
- 	key->ip.tos = ipv6_get_dsfield(nh);
- 	key->ip.ttl = nh->hop_limit;
-diff --git a/net/openvswitch/flow.h b/net/openvswitch/flow.h
-index 758a8c77f736..e7a8eafae272 100644
---- a/net/openvswitch/flow.h
-+++ b/net/openvswitch/flow.h
-@@ -32,6 +32,19 @@ enum sw_flow_mac_proto {
- #define SW_FLOW_KEY_INVALID	0x80
- #define MPLS_LABEL_DEPTH       3
- 
-+/* Bit definitions for IPv6 Extension Header pseudo-field. */
-+enum ofp12_ipv6exthdr_flags {
-+	OFPIEH12_NONEXT = 1 << 0,   /* "No next header" encountered. */
-+	OFPIEH12_ESP    = 1 << 1,   /* Encrypted Sec Payload header present. */
-+	OFPIEH12_AUTH   = 1 << 2,   /* Authentication header present. */
-+	OFPIEH12_DEST   = 1 << 3,   /* 1 or 2 dest headers present. */
-+	OFPIEH12_FRAG   = 1 << 4,   /* Fragment header present. */
-+	OFPIEH12_ROUTER = 1 << 5,   /* Router header present. */
-+	OFPIEH12_HOP    = 1 << 6,   /* Hop-by-hop header present. */
-+	OFPIEH12_UNREP  = 1 << 7,   /* Unexpected repeats encountered. */
-+	OFPIEH12_UNSEQ  = 1 << 8    /* Unexpected sequencing encountered. */
-+};
-+
- /* Store options at the end of the array if they are less than the
-  * maximum size. This allows us to get the benefits of variable length
-  * matching for small options.
-@@ -121,6 +134,7 @@ struct sw_flow_key {
- 				struct in6_addr dst;	/* IPv6 destination address. */
- 			} addr;
- 			__be32 label;			/* IPv6 flow label. */
-+			u16 exthdrs;			/* IPv6 extension header flags */
- 			union {
- 				struct {
- 					struct in6_addr src;
-diff --git a/net/openvswitch/flow_netlink.c b/net/openvswitch/flow_netlink.c
-index fd1f809e9bc1..681cd9ddda4a 100644
---- a/net/openvswitch/flow_netlink.c
-+++ b/net/openvswitch/flow_netlink.c
-@@ -367,7 +367,7 @@ size_t ovs_key_attr_size(void)
- 		+ nla_total_size(4)   /* OVS_KEY_ATTR_VLAN */
- 		+ nla_total_size(0)   /* OVS_KEY_ATTR_ENCAP */
- 		+ nla_total_size(2)   /* OVS_KEY_ATTR_ETHERTYPE */
--		+ nla_total_size(40)  /* OVS_KEY_ATTR_IPV6 */
-+		+ nla_total_size(42)  /* OVS_KEY_ATTR_IPV6 */
- 		+ nla_total_size(2)   /* OVS_KEY_ATTR_ICMPV6 */
- 		+ nla_total_size(28); /* OVS_KEY_ATTR_ND */
- }
-@@ -1585,6 +1585,8 @@ static int ovs_key_from_nlattrs(struct net *net, struct sw_flow_match *match,
- 				ipv6_key->ipv6_hlimit, is_mask);
- 		SW_FLOW_KEY_PUT(match, ip.frag,
- 				ipv6_key->ipv6_frag, is_mask);
-+		SW_FLOW_KEY_PUT(match, ipv6.exthdrs,
-+				ipv6_key->ipv6_exthdr, is_mask);
- 		SW_FLOW_KEY_MEMCPY(match, ipv6.addr.src,
- 				ipv6_key->ipv6_src,
- 				sizeof(match->key->ipv6.addr.src),
-@@ -2113,6 +2115,7 @@ static int __ovs_nla_put_key(const struct sw_flow_key *swkey,
- 		ipv6_key->ipv6_tclass = output->ip.tos;
- 		ipv6_key->ipv6_hlimit = output->ip.ttl;
- 		ipv6_key->ipv6_frag = output->ip.frag;
-+		ipv6_key->ipv6_exthdr = output->ipv6.exthdrs;
- 	} else if (swkey->eth.type == htons(ETH_P_NSH)) {
- 		if (nsh_key_to_nlattr(&output->nsh, is_mask, skb))
- 			goto nla_put_failure;
+> 
+> > +	help
+> > +	  This driver supports the VSC75XX chips when controlled through SPI.
+> > +
+> 
+> Better mention which VSC75XX chips, that XX is pretty unspecific.
 
-base-commit: 5d869070569a23aa909c6e7e9d010fc438a492ef
--- 
-2.25.1
+Agreed (and I agree with the next several suggestions)
 
+> 
+> >  config NET_DSA_MSCC_SEVILLE
+> >  	tristate "Ocelot / Seville Ethernet switch support"
+> >  	depends on NET_DSA
+> > diff --git a/drivers/net/dsa/ocelot/Makefile b/drivers/net/dsa/ocelot/Makefile
+> > index f6dd131e7491..f2c9c52ba76c 100644
+> > --- a/drivers/net/dsa/ocelot/Makefile
+> > +++ b/drivers/net/dsa/ocelot/Makefile
+> > @@ -1,11 +1,16 @@
+> >  # SPDX-License-Identifier: GPL-2.0-only
+> >  obj-$(CONFIG_NET_DSA_MSCC_FELIX) += mscc_felix.o
+> > +obj-$(CONFIG_NET_DSA_MSCC_FELIX_SPI) += mscc_felix_spi.o
+> >  obj-$(CONFIG_NET_DSA_MSCC_SEVILLE) += mscc_seville.o
+> >  
+> >  mscc_felix-objs := \
+> >  	felix.o \
+> >  	felix_vsc9959.o
+> >  
+> > +mscc_felix_spi-objs := \
+> > +	felix.o \
+> > +	felix_vsc7512_spi.o
+> > +
+> >  mscc_seville-objs := \
+> >  	felix.o \
+> >  	seville_vsc9953.o
+> > diff --git a/drivers/net/dsa/ocelot/felix_vsc7512_spi.c b/drivers/net/dsa/ocelot/felix_vsc7512_spi.c
+> > new file mode 100644
+> > index 000000000000..1cb5758b752c
+> > --- /dev/null
+> > +++ b/drivers/net/dsa/ocelot/felix_vsc7512_spi.c
+> 
+> ocelot_vsc7512_spi.c maybe?
+> 
+> > @@ -0,0 +1,1214 @@
+> > +// SPDX-License-Identifier: (GPL-2.0 OR MIT)
+> > +/* Copyright 2017 Microsemi Corporation
+> > + * Copyright 2018-2019 NXP Semiconductors
+> > + */
+> > +#include <soc/mscc/ocelot_qsys.h>
+> > +#include <soc/mscc/ocelot_vcap.h>
+> > +#include <soc/mscc/ocelot_ptp.h>
+> > +#include <soc/mscc/ocelot_sys.h>
+> > +#include <soc/mscc/ocelot.h>
+> > +#include <linux/spi/spi.h>
+> > +#include <linux/packing.h>
+> > +#include <linux/pcs-lynx.h>
+> > +#include <net/pkt_sched.h>
+> > +#include <linux/iopoll.h>
+> > +#include <linux/kconfig.h>
+> > +#include <linux/mdio.h>
+> > +#include "felix.h"
+> 
+> Not sure if all the includes are needed, please remove the ones that
+> aren't.
+> 
+> > +
+> > +#define VSC7512_TAS_GCL_ENTRY_MAX 63
+> 
+> VSC7512 to my knowledge does not have a TSN time-aware shaper, so you
+> can delete.
+> 
+> > +
+> > +// Note: These addresses and offsets are all shifted down
+> > +// by two. This is because the SPI protocol needs them to
+> > +// be before they get sent out.
+> > +//
+> > +// An alternative is to keep them standardized, but then
+> > +// a separate spi_bus regmap would need to be defined.
+> > +//
+> > +// That might be optimal though. The 'Read' protocol of
+> > +// the VSC driver might be much quicker if we add padding
+> > +// bytes, which I don't think regmap supports.
+> > +static const u32 vsc7512_ana_regmap[] = {
+> > +	REG(ANA_ADVLEARN,			0x2400),
+> > +	REG(ANA_VLANMASK,			0x2401),
+> > +	REG_RESERVED(ANA_PORT_B_DOMAIN),
+> > +	REG(ANA_ANAGEFIL,			0x2403),
+> > +	REG(ANA_ANEVENTS,			0x2404),
+> > +	REG(ANA_STORMLIMIT_BURST,		0x2405),
+> > +	REG(ANA_STORMLIMIT_CFG,			0x2406),
+> > +	REG(ANA_ISOLATED_PORTS,			0x240a),
+> > +	REG(ANA_COMMUNITY_PORTS,		0x240b),
+> > +	REG(ANA_AUTOAGE,			0x240c),
+> > +	REG(ANA_MACTOPTIONS,			0x240d),
+> > +	REG(ANA_LEARNDISC,			0x240e),
+> > +	REG(ANA_AGENCTRL,			0x240f),
+> > +	REG(ANA_MIRRORPORTS,			0x2410),
+> > +	REG(ANA_EMIRRORPORTS,			0x2411),
+> > +	REG(ANA_FLOODING,			0x2412),
+> > +	REG(ANA_FLOODING_IPMC,			0x2413),
+> > +	REG(ANA_SFLOW_CFG,			0x2414),
+> > +	REG(ANA_PORT_MODE,			0x2420),
+> > +	REG(ANA_PGID_PGID,			0x2300),
+> > +	REG(ANA_TABLES_ANMOVED,			0x22cc),
+> > +	REG(ANA_TABLES_MACHDATA,		0x22cd),
+> > +	REG(ANA_TABLES_MACLDATA,		0x22ce),
+> > +	REG(ANA_TABLES_MACACCESS,		0x22cf),
+> > +	REG(ANA_TABLES_MACTINDX,		0x22d0),
+> > +	REG(ANA_TABLES_VLANACCESS,		0x22d1),
+> > +	REG(ANA_TABLES_VLANTIDX,		0x22d2),
+> > +	REG(ANA_TABLES_ENTRYLIM,		0x22c0),
+> > +	REG(ANA_TABLES_PTP_ID_HIGH,		0x22d5),
+> > +	REG(ANA_TABLES_PTP_ID_LOW,		0x22d6),
+> > +	REG(ANA_PORT_VLAN_CFG,			0x1c00),
+> > +	REG(ANA_PORT_DROP_CFG,			0x1c01),
+> > +	REG(ANA_PORT_QOS_CFG,			0x1c02),
+> > +	REG(ANA_PORT_VCAP_CFG,			0x1c03),
+> > +	REG(ANA_PORT_VCAP_S1_KEY_CFG,		0x1c04),
+> > +	REG(ANA_PORT_VCAP_S2_CFG,		0x1c07),
+> > +	REG(ANA_PORT_PCP_DEI_MAP,		0x1c08),
+> > +	REG(ANA_PORT_CPU_FWD_CFG,		0x1c18),
+> > +	REG(ANA_PORT_CPU_FWD_BPDU_CFG,		0x1c19),
+> > +	REG(ANA_PORT_CPU_FWD_GARP_CFG,		0x1c1a),
+> > +	REG(ANA_PORT_CPU_FWD_CCM_CFG,		0x1c1b),
+> > +	REG(ANA_PORT_PORT_CFG,			0x1c1c),
+> > +	REG(ANA_PORT_POL_CFG,			0x1c1d),
+> > +	REG(ANA_PORT_PTP_CFG,			0x1c1e),
+> > +	REG(ANA_PORT_PTP_DLY1_CFG,		0x1c1f),
+> > +	REG(ANA_PORT_PTP_DLY2_CFG,		0x1c20),
+> > +	REG(ANA_PFC_PFC_CFG,			0x2200),
+> > +	REG_RESERVED(ANA_PFC_PFC_TIMER),
+> > +	REG_RESERVED(ANA_IPT_OAM_MEP_CFG),
+> > +	REG_RESERVED(ANA_IPT_IPT),
+> > +	REG_RESERVED(ANA_PPT_PPT),
+> > +	REG_RESERVED(ANA_FID_MAP_FID_MAP),
+> > +	REG(ANA_AGGR_CFG,			0x242d),
+> > +	REG(ANA_CPUQ_CFG,			0x242e),
+> > +	REG_RESERVED(ANA_CPUQ_CFG2),
+> > +	REG(ANA_CPUQ_8021_CFG,			0x242f),
+> > +	REG(ANA_DSCP_CFG,			0x2440),
+> > +	REG(ANA_DSCP_REWR_CFG,			0x2480),
+> > +	REG(ANA_VCAP_RNG_TYPE_CFG,		0x2490),
+> > +	REG(ANA_VCAP_RNG_VAL_CFG,		0x2498),
+> > +	REG_RESERVED(ANA_VRAP_CFG),
+> > +	REG_RESERVED(ANA_VRAP_HDR_DATA),
+> > +	REG_RESERVED(ANA_VRAP_HDR_MASK),
+> > +	REG(ANA_DISCARD_CFG,			0x24a3),
+> > +	REG(ANA_FID_CFG,			0x24a4),
+> > +	REG(ANA_POL_PIR_CFG,			0x1000),
+> > +	REG(ANA_POL_CIR_CFG,			0x1001),
+> > +	REG(ANA_POL_MODE_CFG,			0x1002),
+> > +	REG(ANA_POL_PIR_STATE,			0x1003),
+> > +	REG(ANA_POL_CIR_STATE,			0x1004),
+> > +	REG_RESERVED(ANA_POL_STATE),
+> > +	REG(ANA_POL_FLOWC,			0x22e0),
+> > +	REG(ANA_POL_HYST,			0x22fb),
+> > +	REG_RESERVED(ANA_POL_MISC_CFG),
+> > +};
+> > +
+> > +static const u32 vsc7512_qs_regmap[] = {
+> > +	REG(QS_XTR_GRP_CFG,			0x0000),
+> > +	REG(QS_XTR_RD,				0x0002),
+> > +	REG(QS_XTR_FRM_PRUNING,			0x004),
+> > +	REG(QS_XTR_FLUSH,			0x0006),
+> > +	REG(QS_XTR_DATA_PRESENT,		0x0007),
+> > +
+> > +	REG(QS_INJ_GRP_CFG,			0x0009),
+> > +	REG(QS_INJ_WR,				0x000b),
+> > +	REG(QS_INJ_CTRL,			0x000d),
+> > +	REG(QS_INJ_STATUS,			0x000f),
+> > +	REG(QS_INJ_ERR,				0x0010),
+> > +	REG_RESERVED(QS_INH_DBG),
+> > +};
+> > +
+> > +static const u32 vsc7512_vcap_regmap[] = {
+> > +	REG(VCAP_CORE_UPDATE_CTRL,		0x000000),
+> > +	REG(VCAP_CORE_MV_CFG,			0x000001),
+> > +	REG(VCAP_CACHE_ENTRY_DAT,		0x000002),
+> > +	REG(VCAP_CACHE_MASK_DAT,		0x000042),
+> > +	REG(VCAP_CACHE_ACTION_DAT,		0x000082),
+> > +	REG(VCAP_CACHE_CNT_DAT,			0x0000c2),
+> > +	REG(VCAP_CACHE_TG_DAT,			0x0000e2),
+> > +	REG(VCAP_CONST_VCAP_VER,		0x0000e6),
+> > +	REG(VCAP_CONST_ENTRY_WIDTH,		0x0000e7),
+> > +	REG(VCAP_CONST_ENTRY_CNT,		0x0000e8),
+> > +	REG(VCAP_CONST_ENTRY_SWCNT,		0x0000e9),
+> > +	REG(VCAP_CONST_ENTRY_TG_WIDTH,		0x0000ea),
+> > +	REG(VCAP_CONST_ACTION_DEF_CNT,		0x0000eb),
+> > +	REG(VCAP_CONST_ACTION_WIDTH,		0x0000ec),
+> > +	REG(VCAP_CONST_CNT_WIDTH,		0x0000ed),
+> > +	REG(VCAP_CONST_CORE_CNT,		0x0000ee),
+> > +	REG(VCAP_CONST_IF_CNT,			0x0000ef),
+> > +};
+> > +
+> > +static const u32 vsc7512_qsys_regmap[] = {
+> > +	REG(QSYS_PORT_MODE,			0x4480),
+> > +	REG(QSYS_SWITCH_PORT_MODE,		0x448d),
+> > +	REG(QSYS_STAT_CNT_CFG,			0x4499),
+> > +	REG(QSYS_EEE_CFG,			0x449a),
+> > +	REG(QSYS_EEE_THRES,			0x44a5),
+> > +	REG(QSYS_IGR_NO_SHARING,		0x44a6),
+> > +	REG(QSYS_EGR_NO_SHARING,		0x44a7),
+> > +	REG(QSYS_SW_STATUS,			0x44a8),
+> > +	REG(QSYS_EXT_CPU_CFG,			0x44b4),
+> > +	REG_RESERVED(QSYS_PAD_CFG),
+> > +	REG(QSYS_CPU_GROUP_MAP,			0x44b6),
+> > +	REG_RESERVED(QSYS_QMAP),
+> > +	REG_RESERVED(QSYS_ISDX_SGRP),
+> > +	REG_RESERVED(QSYS_TIMED_FRAME_ENTRY),
+> > +	REG(QSYS_TFRM_MISC,			0x44c4),
+> > +	REG(QSYS_TFRM_PORT_DLY,			0x44c5),
+> > +	REG(QSYS_TFRM_TIMER_CFG_1,		0x44c6),
+> > +	REG(QSYS_TFRM_TIMER_CFG_2,		0x44c7),
+> > +	REG(QSYS_TFRM_TIMER_CFG_3,		0x44c8),
+> > +	REG(QSYS_TFRM_TIMER_CFG_4,		0x44c9),
+> > +	REG(QSYS_TFRM_TIMER_CFG_5,		0x44ca),
+> > +	REG(QSYS_TFRM_TIMER_CFG_6,		0x44cb),
+> > +	REG(QSYS_TFRM_TIMER_CFG_7,		0x44cc),
+> > +	REG(QSYS_TFRM_TIMER_CFG_8,		0x44cd),
+> > +	REG(QSYS_RED_PROFILE,			0x44ce),
+> > +	REG(QSYS_RES_QOS_MODE,			0x44de),
+> > +	REG(QSYS_RES_CFG,			0x4800),
+> > +	REG(QSYS_RES_STAT,			0x4801),
+> > +	REG(QSYS_EGR_DROP_MODE,			0x44df),
+> > +	REG(QSYS_EQ_CTRL,			0x44e0),
+> > +	REG_RESERVED(QSYS_EVENTS_CORE),
+> > +	REG(QSYS_CIR_CFG,			0x0000),
+> > +	REG(QSYS_EIR_CFG,			0x0001),
+> > +	REG(QSYS_SE_CFG,			0x0002),
+> > +	REG(QSYS_SE_DWRR_CFG,			0x0003),
+> > +	REG_RESERVED(QSYS_SE_CONNECT),
+> > +	REG(QSYS_SE_DLB_SENSE,			0x0010),
+> > +	REG(QSYS_CIR_STATE,			0x0011),
+> > +	REG(QSYS_EIR_STATE,			0x0012),
+> > +	REG_RESERVED(QSYS_SE_STATE),
+> > +	REG(QSYS_HSCH_MISC_CFG,			0x44e2),
+> > +};
+> > +
+> > +static const u32 vsc7512_rew_regmap[] = {
+> > +	REG(REW_PORT_VLAN_CFG,			0x000),
+> > +	REG(REW_TAG_CFG,			0x001),
+> > +	REG(REW_PORT_CFG,			0x002),
+> > +	REG(REW_DSCP_CFG,			0x003),
+> > +	REG(REW_PCP_DEI_QOS_MAP_CFG,		0x004),
+> > +	REG(REW_PTP_CFG,			0x014),
+> > +	REG(REW_PTP_DLY1_CFG,			0x015),
+> > +	REG(REW_RED_TAG_CFG,			0x016),
+> > +	REG(REW_DSCP_REMAP_DP1_CFG,		0x104),
+> > +	REG(REW_DSCP_REMAP_CFG,			0x144),
+> > +	REG_RESERVED(REW_STAT_CFG),
+> > +	REG_RESERVED(REW_REW_STICKY),
+> > +	REG_RESERVED(REW_PPT),
+> > +};
+> > +
+> > +static const u32 vsc7512_sys_regmap[] = {
+> > +	REG(SYS_COUNT_RX_OCTETS,		0x000),
+> > +	REG(SYS_COUNT_RX_MULTICAST,		0x002),
+> > +	REG(SYS_COUNT_RX_SHORTS,		0x004),
+> > +	REG(SYS_COUNT_RX_FRAGMENTS,		0x005),
+> > +	REG(SYS_COUNT_RX_JABBERS,		0x006),
+> > +	REG(SYS_COUNT_RX_64,			0x009),
+> > +	REG(SYS_COUNT_RX_65_127,		0x00a),
+> > +	REG(SYS_COUNT_RX_128_255,		0x00b),
+> > +	REG(SYS_COUNT_RX_256_1023,		0x00c),
+> > +	REG(SYS_COUNT_RX_1024_1526,		0x00d),
+> > +	REG(SYS_COUNT_RX_1527_MAX,		0x00e),
+> > +	REG(SYS_COUNT_RX_LONGS,			0x011),
+> > +	REG(SYS_COUNT_TX_OCTETS,		0x080),
+> > +	REG(SYS_COUNT_TX_COLLISION,		0x084),
+> > +	REG(SYS_COUNT_TX_DROPS,			0x085),
+> > +	REG(SYS_COUNT_TX_64,			0x087),
+> > +	REG(SYS_COUNT_TX_65_127,		0x088),
+> > +	REG(SYS_COUNT_TX_128_511,		0x089),
+> > +	REG(SYS_COUNT_TX_512_1023,		0x08a),
+> > +	REG(SYS_COUNT_TX_1024_1526,		0x08b),
+> > +	REG(SYS_COUNT_TX_1527_MAX,		0x08c),
+> > +	REG(SYS_COUNT_TX_AGING,			0x09e),
+> > +	REG(SYS_RESET_CFG,			0x142),
+> > +	REG(SYS_VLAN_ETYPE_CFG,			0x144),
+> > +	REG(SYS_PORT_MODE,			0x145),
+> > +	REG(SYS_FRONT_PORT_MODE,		0x152),
+> > +	REG(SYS_FRM_AGING,			0x15d),
+> > +	REG(SYS_STAT_CFG,			0x15e),
+> > +	REG_RESERVED(SYS_MISC_CFG),
+> > +	REG(SYS_REW_MAC_HIGH_CFG,		0x16c),
+> > +	REG(SYS_REW_MAC_LOW_CFG,		0x177),
+> > +	REG(SYS_PAUSE_CFG,			0x182),
+> > +	REG(SYS_PAUSE_TOT_CFG,			0x18e),
+> > +	REG(SYS_ATOP,				0x18f),
+> > +	REG(SYS_ATOP_TOT_CFG,			0x19b),
+> > +	REG(SYS_MAC_FC_CFG,			0x19c),
+> > +	REG(SYS_MMGT,				0x1a7),
+> > +	REG_RESERVED(SYS_MMGT_FAST),
+> > +	REG_RESERVED(SYS_EVENTS_DIF),
+> > +	REG_RESERVED(SYS_EVENTS_CORE),
+> > +	REG_RESERVED(SYS_CNT),
+> > +	REG(SYS_PTP_STATUS,			0x1ae),
+> > +	REG(SYS_PTP_TXSTAMP,			0x1af),
+> > +	REG(SYS_PTP_NXT,			0x1b0),
+> > +	REG(SYS_PTP_CFG,			0x1b1),
+> > +	REG_RESERVED(SYS_CM_ADDR),
+> > +	REG_RESERVED(SYS_CM_DATA_WR),
+> > +	REG_RESERVED(SYS_CM_DATA_RD),
+> > +	REG_RESERVED(SYS_CM_OP),
+> > +	REG_RESERVED(SYS_CM_DATA),
+> > +};
+> > +
+> > +static const u32 vsc7512_ptp_regmap[] = {
+> > +	REG(PTP_PIN_CFG,			0x000000),
+> > +	REG(PTP_PIN_TOD_SEC_MSB,		0x000001),
+> > +	REG(PTP_PIN_TOD_SEC_LSB,		0x000002),
+> > +	REG(PTP_PIN_TOD_NSEC,			0x000003),
+> > +	REG(PTP_PIN_WF_HIGH_PERIOD,		0x000005),
+> > +	REG(PTP_PIN_WF_LOW_PERIOD,		0x000006),
+> > +	REG(PTP_CFG_MISC,			0x000028),
+> > +	REG(PTP_CLK_CFG_ADJ_CFG,		0x000029),
+> > +	REG(PTP_CLK_CFG_ADJ_FREQ,		0x00002a),
+> > +};
+> > +
+> > +static const u32 vsc7512_gcb_regmap[] = {
+> > +	REG(GCB_SOFT_RST,			0xc002),
+> > +};
+> > +
+> > +static const u32 vsc7512_dev_gmii_regmap[] = {
+> > +	REG(DEV_CLOCK_CFG,			0x0),
+> > +	REG(DEV_PORT_MISC,			0x1),
+> > +	REG(DEV_EEE_CFG,			0x3),
+> > +	REG(DEV_RX_PATH_DELAY,			0x4),
+> > +	REG(DEV_TX_PATH_DELAY,			0x5),
+> > +	REG(DEV_PTP_PREDICT_CFG,		0x6),
+> > +	REG(DEV_MAC_ENA_CFG,			0x7),
+> > +	REG(DEV_MAC_MODE_CFG,			0x8),
+> > +	REG(DEV_MAC_MAXLEN_CFG,			0x9),
+> > +	REG(DEV_MAC_TAGS_CFG,			0xa),
+> > +	REG(DEV_MAC_ADV_CHK_CFG,		0xb),
+> > +	REG(DEV_MAC_IFG_CFG,			0xc),
+> > +	REG(DEV_MAC_HDX_CFG,			0xd),
+> > +	REG(DEV_MAC_DBG_CFG,			0xe),
+> > +	REG(DEV_MAC_FC_MAC_LOW_CFG,		0xf),
+> > +	REG(DEV_MAC_FC_MAC_HIGH_CFG,		0x10),
+> > +	REG(DEV_MAC_STICKY,			0x11),
+> > +	REG_RESERVED(PCS1G_CFG),
+> > +	REG_RESERVED(PCS1G_MODE_CFG),
+> > +	REG_RESERVED(PCS1G_SD_CFG),
+> > +	REG_RESERVED(PCS1G_ANEG_CFG),
+> > +	REG_RESERVED(PCS1G_ANEG_NP_CFG),
+> > +	REG_RESERVED(PCS1G_LB_CFG),
+> > +	REG_RESERVED(PCS1G_DBG_CFG),
+> > +	REG_RESERVED(PCS1G_CDET_CFG),
+> > +	REG_RESERVED(PCS1G_ANEG_STATUS),
+> > +	REG_RESERVED(PCS1G_ANEG_NP_STATUS),
+> > +	REG_RESERVED(PCS1G_LINK_STATUS),
+> > +	REG_RESERVED(PCS1G_LINK_DOWN_CNT),
+> > +	REG_RESERVED(PCS1G_STICKY),
+> > +	REG_RESERVED(PCS1G_DEBUG_STATUS),
+> > +	REG_RESERVED(PCS1G_LPI_CFG),
+> > +	REG_RESERVED(PCS1G_LPI_WAKE_ERROR_CNT),
+> > +	REG_RESERVED(PCS1G_LPI_STATUS),
+> > +	REG_RESERVED(PCS1G_TSTPAT_MODE_CFG),
+> > +	REG_RESERVED(PCS1G_TSTPAT_STATUS),
+> > +	REG_RESERVED(DEV_PCS_FX100_CFG),
+> > +	REG_RESERVED(DEV_PCS_FX100_STATUS),
+> > +};
+> > +
+> > +static const u32 vsc7512_cpu_org_regmap[] = {
+> > +	REG(DEV_CPUORG_IF_CTRL,			0x0000),
+> > +	REG(DEV_CPUORG_IF_CFGSTAT,		0x0001),
+> > +	REG(DEV_CPUORG_ORG_CFG,			0x0002),
+> > +	REG(DEV_CPUORG_ERR_CNTS,		0x0003),
+> > +	REG(DEV_CPUORG_TIMEOUT_CFG,		0x0004),
+> > +	REG(DEV_CPUORG_GPR,			0x0005),
+> > +	REG(DEV_CPUORG_MAILBOX_SET,		0x0006),
+> > +	REG(DEV_CPUORG_MAILBOX_CLR,		0x0007),
+> > +	REG(DEV_CPUORG_MAILBOX,			0x0008),
+> > +	REG(DEV_CPUORG_SEMA_CFG,		0x0009),
+> > +	REG(DEV_CPUORG_SEMA0,			0x000a),
+> > +	REG(DEV_CPUORG_SEMA0_OWNER,		0x000b),
+> > +	REG(DEV_CPUORG_SEMA1,			0x000c),
+> > +	REG(DEV_CPUORG_SEMA1_OWNER,		0x000d),
+> > +};
+> 
+> I know I changed my mind, but if the regmap is the same as for
+> drivers/net/ethernet/mscc/ocelot_vsc7514.c, just divided by 4, then it
+> makes a lot more sense to implement the custom regmap accessors and
+> reuse the regmaps from there.
+
+I agree. My initial thought was the regmap could utilize consecutive
+reads / writes, and that wasn't logic I wanted to recreate. I don't
+think the ocelot driver could benefit from async SPI transfers, so that
+might be a moot point.
+
+> 
+> > +static const u32 *vsc7512_regmap[TARGET_MAX] = {
+> > +	[ANA] = vsc7512_ana_regmap,
+> > +	[QS] = vsc7512_qs_regmap,
+> > +	[QSYS] = vsc7512_qsys_regmap,
+> > +	[REW] = vsc7512_rew_regmap,
+> > +	[SYS] = vsc7512_sys_regmap,
+> > +	[S0] = vsc7512_vcap_regmap,
+> > +	[S1] = vsc7512_vcap_regmap,
+> > +	[S2] = vsc7512_vcap_regmap,
+> > +	[PTP] = vsc7512_ptp_regmap,
+> > +	[GCB] = vsc7512_gcb_regmap,
+> > +	[DEV_GMII] = vsc7512_dev_gmii_regmap,
+> > +	[DEV_CPUORG] = vsc7512_cpu_org_regmap,
+> > +};
+> > +
+> > +static int vsc7512_soft_rst_status(struct ocelot *ocelot)
+> > +{
+> > +	int val;
+> > +
+> > +	ocelot_field_read(ocelot, GCB_SOFT_RST_SWC_RST, &val);
+> > +
+> > +	return val;
+> > +}
+> > +
+> > +#define VSC7512_INIT_TIMEOUT 50000
+> > +#define VSC7512_GCB_RST_SLEEP 100
+> > +
+> > +static int vsc7512_reset(struct ocelot *ocelot)
+> > +{
+> > +	int val, err;
+> > +
+> > +	ocelot_field_write(ocelot, GCB_SOFT_RST_SWC_RST, 1);
+> > +
+> > +	err = readx_poll_timeout(vsc7512_soft_rst_status, ocelot, val, !val,
+> > +				 VSC7512_GCB_RST_SLEEP, VSC7512_INIT_TIMEOUT);
+> > +	if (err) {
+> > +		dev_err(ocelot->dev, "timeout: switch core reset\n");
+> > +		return err;
+> > +	}
+> > +
+> > +	return 0;
+> > +}
+> 
+> I'm surprised that the reset procedure for VSC7512 is different than
+> what is implemented in ocelot_reset() for VSC7514.
+
+I will look more into this and repair as needed. I'm also considering
+the ability to use a GPIO as an external reset, which might negate any
+reset procedure the MIPS would be doing.
+
+> 
+> > +static u16 vsc7512_wm_enc(u16 value)
+> > +{
+> > +	WARN_ON(value >= 16 * BIT(8));
+> > +
+> > +	if (value >= BIT(8))
+> > +		return BIT(8) | (value / 16);
+> > +
+> > +	return value;
+> > +}
+> 
+> Don't duplicate, just EXPORT_SYMBOL(ocelot_wm_enc) and call here.
+
+I'll consider this moving forward.
+
+> 
+> > +static const struct ocelot_ops vsc7512_ops = {
+> > +	.reset		= vsc7512_reset,
+> > +	.wm_enc		= vsc7512_wm_enc,
+> 
+> You must be working on an old kernel or something. There's also a
+> watermark decode function which you can reuse from ocelot (ocelot_wm_dec).
+
+Yes, my proof-of-concept was from a 5.10 kernel. I brought it up to
+mainline before submitting the patch and must have missed this. Per the
+documentation, I'll base my next submission entirely on the latest 5.12
+release.
+
+> 
+> > +	.port_to_netdev	= felix_port_to_netdev,
+> > +	.netdev_to_port	= felix_netdev_to_port,
+> > +};
+> > +
+> > +/* Addresses are relative to the SPI device's base address, downshifted by 2*/
+> > +static const struct resource vsc7512_target_io_res[TARGET_MAX] = {
+> > +	[ANA] = {
+> > +		.start	= 0x1c620000,
+> > +		.end	= 0x1c623fff,
+> > +		.name	= "ana",
+> > +	},
+> > +	[QS] = {
+> > +		.start	= 0x1c420000,
+> > +		.end	= 0x1c42003f,
+> > +		.name	= "qs",
+> > +	},
+> > +	[QSYS] = {
+> > +		.start	= 0x1c600000,
+> > +		.end	= 0x1c607fff,
+> > +		.name	= "qsys",
+> > +	},
+> > +	[REW] = {
+> > +		.start	= 0x1c40c000,
+> > +		.end	= 0x1c40ffff,
+> > +		.name	= "rew",
+> > +	},
+> > +	[SYS] = {
+> > +		.start	= 0x1c404000,
+> > +		.end	= 0x1c407fff,
+> > +		.name	= "sys",
+> > +	},
+> > +	[S0] = {
+> > +		.start	= 0x1c410000,
+> > +		.end	= 0x1c4100ff,
+> > +		.name	= "s0",
+> > +	},
+> > +	[S1] = {
+> > +		.start	= 0x1c414000,
+> > +		.end	= 0x1c4140ff,
+> > +		.name	= "s1",
+> > +	},
+> > +	[S2] = {
+> > +		.start	= 0x1c418000,
+> > +		.end	= 0x1c4180ff,
+> > +		.name	= "s2",
+> > +	},
+> > +	[GCB] =	{
+> > +		.start	= 0x1c41c000,
+> > +		.end	= 0x1c41c07f,
+> > +		.name	= "devcpu_gcb",
+> > +	},
+> > +	[DEV_CPUORG] = {
+> > +		.start	= 0x1c400000,
+> > +		.end	= 0x1c4000ff,
+> > +		.name	= "devcpu_org",
+> > +	},
+> > +};
+> > +
+> > +static const struct resource vsc7512_port_io_res[] = {
+> > +	{
+> > +		.start	= 0x1c478000,
+> > +		.end	= 0x1c47bfff,
+> > +		.name	= "port0",
+> > +	},
+> > +	{
+> > +		.start	= 0x1c47c000,
+> > +		.end	= 0x1c47ffff,
+> > +		.name	= "port1",
+> > +	},
+> > +	{
+> > +		.start	= 0x1c480000,
+> > +		.end	= 0x1c483fff,
+> > +		.name	= "port2",
+> > +	},
+> > +	{
+> > +		.start	= 0x1c484000,
+> > +		.end	= 0x1c487fff,
+> > +		.name	= "port3",
+> > +	},
+> > +	{
+> > +		.start	= 0x1c488000,
+> > +		.end	= 0x1c48bfff,
+> > +		.name	= "port4",
+> > +	},
+> > +	{
+> > +		.start	= 0x1c48c000,
+> > +		.end	= 0x1c48ffff,
+> > +		.name	= "port5",
+> > +	},
+> > +};
+> > +
+> > +static const struct reg_field vsc7512_regfields[REGFIELD_MAX] = {
+> > +	[ANA_ADVLEARN_VLAN_CHK] = REG_FIELD(ANA_ADVLEARN, 11, 11),
+> > +	[ANA_ADVLEARN_LEARN_MIRROR] = REG_FIELD(ANA_ADVLEARN, 0, 10),
+> > +	[ANA_ANEVENTS_MSTI_DROP] = REG_FIELD(ANA_ANEVENTS, 27, 27),
+> > +	[ANA_ANEVENTS_ACLKILL] = REG_FIELD(ANA_ANEVENTS, 26, 26),
+> > +	[ANA_ANEVENTS_ACLUSED] = REG_FIELD(ANA_ANEVENTS, 25, 25),
+> > +	[ANA_ANEVENTS_AUTOAGE] = REG_FIELD(ANA_ANEVENTS, 24, 24),
+> > +	[ANA_ANEVENTS_VS2TTL1] = REG_FIELD(ANA_ANEVENTS, 23, 23),
+> > +	[ANA_ANEVENTS_STORM_DROP] = REG_FIELD(ANA_ANEVENTS, 22, 22),
+> > +	[ANA_ANEVENTS_LEARN_DROP] = REG_FIELD(ANA_ANEVENTS, 21, 21),
+> > +	[ANA_ANEVENTS_AGED_ENTRY] = REG_FIELD(ANA_ANEVENTS, 20, 20),
+> > +	[ANA_ANEVENTS_CPU_LEARN_FAILED] = REG_FIELD(ANA_ANEVENTS, 19, 19),
+> > +	[ANA_ANEVENTS_AUTO_LEARN_FAILED] = REG_FIELD(ANA_ANEVENTS, 18, 18),
+> > +	[ANA_ANEVENTS_LEARN_REMOVE] = REG_FIELD(ANA_ANEVENTS, 17, 17),
+> > +	[ANA_ANEVENTS_AUTO_LEARNED] = REG_FIELD(ANA_ANEVENTS, 16, 16),
+> > +	[ANA_ANEVENTS_AUTO_MOVED] = REG_FIELD(ANA_ANEVENTS, 15, 15),
+> > +	[ANA_ANEVENTS_DROPPED] = REG_FIELD(ANA_ANEVENTS, 14, 14),
+> > +	[ANA_ANEVENTS_CLASSIFIED_DROP] = REG_FIELD(ANA_ANEVENTS, 13, 13),
+> > +	[ANA_ANEVENTS_CLASSIFIED_COPY] = REG_FIELD(ANA_ANEVENTS, 12, 12),
+> > +	[ANA_ANEVENTS_VLAN_DISCARD] = REG_FIELD(ANA_ANEVENTS, 11, 11),
+> > +	[ANA_ANEVENTS_FWD_DISCARD] = REG_FIELD(ANA_ANEVENTS, 10, 10),
+> > +	[ANA_ANEVENTS_MULTICAST_FLOOD] = REG_FIELD(ANA_ANEVENTS, 9, 9),
+> > +	[ANA_ANEVENTS_UNICAST_FLOOD] = REG_FIELD(ANA_ANEVENTS, 8, 8),
+> > +	[ANA_ANEVENTS_DEST_KNOWN] = REG_FIELD(ANA_ANEVENTS, 7, 7),
+> > +	[ANA_ANEVENTS_BUCKET3_MATCH] = REG_FIELD(ANA_ANEVENTS, 6, 6),
+> > +	[ANA_ANEVENTS_BUCKET2_MATCH] = REG_FIELD(ANA_ANEVENTS, 5, 5),
+> > +	[ANA_ANEVENTS_BUCKET1_MATCH] = REG_FIELD(ANA_ANEVENTS, 4, 4),
+> > +	[ANA_ANEVENTS_BUCKET0_MATCH] = REG_FIELD(ANA_ANEVENTS, 3, 3),
+> > +	[ANA_ANEVENTS_CPU_OPERATION] = REG_FIELD(ANA_ANEVENTS, 2, 2),
+> > +	[ANA_ANEVENTS_DMAC_LOOKUP] = REG_FIELD(ANA_ANEVENTS, 1, 1),
+> > +	[ANA_ANEVENTS_SMAC_LOOKUP] = REG_FIELD(ANA_ANEVENTS, 0, 0),
+> > +	[ANA_TABLES_MACACCESS_B_DOM] = REG_FIELD(ANA_TABLES_MACACCESS, 18, 18),
+> > +	[ANA_TABLES_MACTINDX_BUCKET] = REG_FIELD(ANA_TABLES_MACTINDX, 10, 11),
+> > +	[ANA_TABLES_MACTINDX_M_INDEX] = REG_FIELD(ANA_TABLES_MACTINDX, 0, 9),
+> > +	[GCB_SOFT_RST_SWC_RST] = REG_FIELD(GCB_SOFT_RST, 0, 0),
+> > +	[QSYS_TIMED_FRAME_ENTRY_TFRM_VLD] = REG_FIELD(QSYS_TIMED_FRAME_ENTRY, 20, 20),
+> > +	[QSYS_TIMED_FRAME_ENTRY_TFRM_FP] = REG_FIELD(QSYS_TIMED_FRAME_ENTRY, 8, 19),
+> > +	[QSYS_TIMED_FRAME_ENTRY_TFRM_PORTNO] = REG_FIELD(QSYS_TIMED_FRAME_ENTRY, 4, 7),
+> > +	[QSYS_TIMED_FRAME_ENTRY_TFRM_TM_SEL] = REG_FIELD(QSYS_TIMED_FRAME_ENTRY, 1, 3),
+> > +	[QSYS_TIMED_FRAME_ENTRY_TFRM_TM_T] = REG_FIELD(QSYS_TIMED_FRAME_ENTRY, 0, 0),
+> > +	[SYS_RESET_CFG_CORE_ENA] = REG_FIELD(SYS_RESET_CFG, 2, 2),
+> > +	[SYS_RESET_CFG_MEM_ENA] = REG_FIELD(SYS_RESET_CFG, 1, 1),
+> > +	[SYS_RESET_CFG_MEM_INIT] = REG_FIELD(SYS_RESET_CFG, 0, 0),
+> > +	/* Replicated per number of ports (12), register size 4 per port */
+> > +	[QSYS_SWITCH_PORT_MODE_PORT_ENA] = REG_FIELD_ID(QSYS_SWITCH_PORT_MODE, 14, 14, 12, 4),
+> > +	[QSYS_SWITCH_PORT_MODE_SCH_NEXT_CFG] = REG_FIELD_ID(QSYS_SWITCH_PORT_MODE, 11, 13, 12, 4),
+> > +	[QSYS_SWITCH_PORT_MODE_YEL_RSRVD] = REG_FIELD_ID(QSYS_SWITCH_PORT_MODE, 10, 10, 12, 4),
+> > +	[QSYS_SWITCH_PORT_MODE_INGRESS_DROP_MODE] = REG_FIELD_ID(QSYS_SWITCH_PORT_MODE, 9, 9, 12, 4),
+> > +	[QSYS_SWITCH_PORT_MODE_TX_PFC_ENA] = REG_FIELD_ID(QSYS_SWITCH_PORT_MODE, 1, 8, 12, 4),
+> > +	[QSYS_SWITCH_PORT_MODE_TX_PFC_MODE] = REG_FIELD_ID(QSYS_SWITCH_PORT_MODE, 0, 0, 12, 4),
+> > +	[SYS_PORT_MODE_DATA_WO_TS] = REG_FIELD_ID(SYS_PORT_MODE, 5, 6, 12, 4),
+> > +	[SYS_PORT_MODE_INCL_INJ_HDR] = REG_FIELD_ID(SYS_PORT_MODE, 3, 4, 12, 4),
+> > +	[SYS_PORT_MODE_INCL_XTR_HDR] = REG_FIELD_ID(SYS_PORT_MODE, 1, 2, 12, 4),
+> > +	[SYS_PORT_MODE_INCL_HDR_ERR] = REG_FIELD_ID(SYS_PORT_MODE, 0, 0, 12, 4),
+> > +	[SYS_PAUSE_CFG_PAUSE_START] = REG_FIELD_ID(SYS_PAUSE_CFG, 10, 18, 12, 4),
+> > +	[SYS_PAUSE_CFG_PAUSE_STOP] = REG_FIELD_ID(SYS_PAUSE_CFG, 1, 9, 12, 4),
+> > +	[SYS_PAUSE_CFG_PAUSE_ENA] = REG_FIELD_ID(SYS_PAUSE_CFG, 0, 1, 12, 4),
+> > +};
+> > +
+> > +static const struct ocelot_stat_layout vsc7512_stats_layout[] = {
+> > +	{ .offset = 0x00,	.name = "rx_octets", },
+> > +	{ .offset = 0x01,	.name = "rx_unicast", },
+> > +	{ .offset = 0x02,	.name = "rx_multicast", },
+> > +	{ .offset = 0x03,	.name = "rx_broadcast", },
+> > +	{ .offset = 0x04,	.name = "rx_shorts", },
+> > +	{ .offset = 0x05,	.name = "rx_fragments", },
+> > +	{ .offset = 0x06,	.name = "rx_jabbers", },
+> > +	{ .offset = 0x07,	.name = "rx_crc_align_errs", },
+> > +	{ .offset = 0x08,	.name = "rx_sym_errs", },
+> > +	{ .offset = 0x09,	.name = "rx_frames_below_65_octets", },
+> > +	{ .offset = 0x0A,	.name = "rx_frames_65_to_127_octets", },
+> > +	{ .offset = 0x0B,	.name = "rx_frames_128_to_255_octets", },
+> > +	{ .offset = 0x0C,	.name = "rx_frames_256_to_511_octets", },
+> > +	{ .offset = 0x0D,	.name = "rx_frames_512_to_1023_octets", },
+> > +	{ .offset = 0x0E,	.name = "rx_frames_1024_to_1526_octets", },
+> > +	{ .offset = 0x0F,	.name = "rx_frames_over_1526_octets", },
+> > +	{ .offset = 0x10,	.name = "rx_pause", },
+> > +	{ .offset = 0x11,	.name = "rx_control", },
+> > +	{ .offset = 0x12,	.name = "rx_longs", },
+> > +	{ .offset = 0x13,	.name = "rx_classified_drops", },
+> > +	{ .offset = 0x14,	.name = "rx_red_prio_0", },
+> > +	{ .offset = 0x15,	.name = "rx_red_prio_1", },
+> > +	{ .offset = 0x16,	.name = "rx_red_prio_2", },
+> > +	{ .offset = 0x17,	.name = "rx_red_prio_3", },
+> > +	{ .offset = 0x18,	.name = "rx_red_prio_4", },
+> > +	{ .offset = 0x19,	.name = "rx_red_prio_5", },
+> > +	{ .offset = 0x1A,	.name = "rx_red_prio_6", },
+> > +	{ .offset = 0x1B,	.name = "rx_red_prio_7", },
+> > +	{ .offset = 0x1C,	.name = "rx_yellow_prio_0", },
+> > +	{ .offset = 0x1D,	.name = "rx_yellow_prio_1", },
+> > +	{ .offset = 0x1E,	.name = "rx_yellow_prio_2", },
+> > +	{ .offset = 0x1F,	.name = "rx_yellow_prio_3", },
+> > +	{ .offset = 0x20,	.name = "rx_yellow_prio_4", },
+> > +	{ .offset = 0x21,	.name = "rx_yellow_prio_5", },
+> > +	{ .offset = 0x22,	.name = "rx_yellow_prio_6", },
+> > +	{ .offset = 0x23,	.name = "rx_yellow_prio_7", },
+> > +	{ .offset = 0x24,	.name = "rx_green_prio_0", },
+> > +	{ .offset = 0x25,	.name = "rx_green_prio_1", },
+> > +	{ .offset = 0x26,	.name = "rx_green_prio_2", },
+> > +	{ .offset = 0x27,	.name = "rx_green_prio_3", },
+> > +	{ .offset = 0x28,	.name = "rx_green_prio_4", },
+> > +	{ .offset = 0x29,	.name = "rx_green_prio_5", },
+> > +	{ .offset = 0x2A,	.name = "rx_green_prio_6", },
+> > +	{ .offset = 0x2B,	.name = "rx_green_prio_7", },
+> > +	{ .offset = 0x40,	.name = "tx_octets", },
+> > +	{ .offset = 0x41,	.name = "tx_unicast", },
+> > +	{ .offset = 0x42,	.name = "tx_multicast", },
+> > +	{ .offset = 0x43,	.name = "tx_broadcast", },
+> > +	{ .offset = 0x44,	.name = "tx_collision", },
+> > +	{ .offset = 0x45,	.name = "tx_drops", },
+> > +	{ .offset = 0x46,	.name = "tx_pause", },
+> > +	{ .offset = 0x47,	.name = "tx_frames_below_65_octets", },
+> > +	{ .offset = 0x48,	.name = "tx_frames_65_to_127_octets", },
+> > +	{ .offset = 0x49,	.name = "tx_frames_128_255_octets", },
+> > +	{ .offset = 0x4A,	.name = "tx_frames_256_511_octets", },
+> > +	{ .offset = 0x4B,	.name = "tx_frames_512_1023_octets", },
+> > +	{ .offset = 0x4C,	.name = "tx_frames_1024_1526_octets", },
+> > +	{ .offset = 0x4D,	.name = "tx_frames_over_1526_octets", },
+> > +	{ .offset = 0x4E,	.name = "tx_yellow_prio_0", },
+> > +	{ .offset = 0x4F,	.name = "tx_yellow_prio_1", },
+> > +	{ .offset = 0x50,	.name = "tx_yellow_prio_2", },
+> > +	{ .offset = 0x51,	.name = "tx_yellow_prio_3", },
+> > +	{ .offset = 0x52,	.name = "tx_yellow_prio_4", },
+> > +	{ .offset = 0x53,	.name = "tx_yellow_prio_5", },
+> > +	{ .offset = 0x54,	.name = "tx_yellow_prio_6", },
+> > +	{ .offset = 0x55,	.name = "tx_yellow_prio_7", },
+> > +	{ .offset = 0x56,	.name = "tx_green_prio_0", },
+> > +	{ .offset = 0x57,	.name = "tx_green_prio_1", },
+> > +	{ .offset = 0x58,	.name = "tx_green_prio_2", },
+> > +	{ .offset = 0x59,	.name = "tx_green_prio_3", },
+> > +	{ .offset = 0x5A,	.name = "tx_green_prio_4", },
+> > +	{ .offset = 0x5B,	.name = "tx_green_prio_5", },
+> > +	{ .offset = 0x5C,	.name = "tx_green_prio_6", },
+> > +	{ .offset = 0x5D,	.name = "tx_green_prio_7", },
+> > +	{ .offset = 0x5E,	.name = "tx_aged", },
+> > +	{ .offset = 0x80,	.name = "drop_local", },
+> > +	{ .offset = 0x81,	.name = "drop_tail", },
+> > +	{ .offset = 0x82,	.name = "drop_yellow_prio_0", },
+> > +	{ .offset = 0x83,	.name = "drop_yellow_prio_1", },
+> > +	{ .offset = 0x84,	.name = "drop_yellow_prio_2", },
+> > +	{ .offset = 0x85,	.name = "drop_yellow_prio_3", },
+> > +	{ .offset = 0x86,	.name = "drop_yellow_prio_4", },
+> > +	{ .offset = 0x87,	.name = "drop_yellow_prio_5", },
+> > +	{ .offset = 0x88,	.name = "drop_yellow_prio_6", },
+> > +	{ .offset = 0x89,	.name = "drop_yellow_prio_7", },
+> > +	{ .offset = 0x8A,	.name = "drop_green_prio_0", },
+> > +	{ .offset = 0x8B,	.name = "drop_green_prio_1", },
+> > +	{ .offset = 0x8C,	.name = "drop_green_prio_2", },
+> > +	{ .offset = 0x8D,	.name = "drop_green_prio_3", },
+> > +	{ .offset = 0x8E,	.name = "drop_green_prio_4", },
+> > +	{ .offset = 0x8F,	.name = "drop_green_prio_5", },
+> > +	{ .offset = 0x90,	.name = "drop_green_prio_6", },
+> > +	{ .offset = 0x91,	.name = "drop_green_prio_7", },
+> > +};
+> > +
+> > +struct felix_spi_data {
+> > +	struct regmap *map;
+> > +	struct felix felix;
+> > +};
+> > +
+> > +/* TODO: The regmap has overlaps for DEVCPU_ORG and other peripherals. I believe
+> > + * this is handled with a page register, and should hopefully be easy to use
+> > + * with the existing regmap_config with regmap_range_cfg
+> > + */
+> 
+> Rule of thumb: if you don't need a new regmap (in this case DEVCPU_ORG)
+> and you're not even sure about how to access it, then just don't add it
+> (at least not now).
+
+Makes sense. Thank you for the feedback.
+
+> 
+> > +static const struct regmap_config felix_spi_regmap_config = {
+> > +	.reg_bits = 24,
+> > +	.reg_stride = 1,
+> > +	.val_bits = 32,
+> > +
+> > +	.write_flag_mask = BIT(7),
+> > +	.max_register = 0x3fffffff,
+> > +	.use_single_write = true,
+> > +	.use_single_read = true,
+> > +	.can_multi_write = false,
+> > +
+> > +	.reg_format_endian = REGMAP_ENDIAN_BIG,
+> > +	.val_format_endian = REGMAP_ENDIAN_NATIVE,
+> > +};
+> > +
+> > +#define VSC7512_BYTE_ORDER_LE 0x00000000
+> > +#define VSC7512_BYTE_ORDER_BE 0x81818181
+> > +#define VSC7512_BIT_ORDER_MSB 0x00000000
+> > +#define VSC7512_BIT_ORDER_LSB 0x42424242
+> > +
+> > +static int felix_spi_init_bus(struct spi_device *spi,
+> > +			      struct felix_spi_data *felix_spi)
+> > +{
+> > +	int err;
+> > +	u32 val, check;
+> > +
+> > +	val = 0;
+> > +
+> > +#ifdef __LITTLE_ENDIAN
+> > +	val |= VSC7512_BYTE_ORDER_LE;
+> > +#else
+> > +	val |= VSC7512_BYTE_ORDER_BE;
+> > +#endif
+> > +
+> > +	// Hard code this write to set up the interface. After this is done,
+> > +	// ocelot_read interface should be able to be used.
+> > +	err = regmap_write(felix_spi->map, (0x71000000 >> 2) & 0x3fffff, val);
+> > +	if (err < 0) {
+> > +		dev_err(&spi->dev, "error %d configuring SPI interface\n", err);
+> > +		return err;
+> > +	}
+> > +
+> > +	val = 0x00000000;
+> > +	err = regmap_write(felix_spi->map, (0x71000004 >> 2) & 0x3fffff, val);
+> 
+> I think the last parameter of regmap_write doesn't have to be a
+> variable, it can be a constant (zero in this case), so you can remove
+> "val = 0" and just pass 0 as last argument.
+> 
+> > +	if (err < 0) {
+> > +		dev_err(&spi->dev, "error %d writing padding bytes\n", err);
+> > +		return err;
+> > +	}
+> > +
+> > +	check = val | 0x02000000;
+> 
+> val is always zero here, no? so "check" is always 0x02000000. It's also
+> pretty constant, no need to keep it in a variable.
+
+This will hopefully make more sense on my next RFC. It is as far as my
+"functional hardware testing" had gotten, since I was having
+communication issues with the chip. I suspect impedance mismatch due to
+internal FPGA pull-ups.  Nevertheless:
+
+The least significant nibble here is the number of padding bytes on a
+read operation. We can either run the SPI bus at a low frequency (which
+is the hard-coded frequency below), manually add a delay between address
+and the next clock cycle for the read, or insert a number of padding
+bytes between the address and the value. This is outlined in the VSC7512
+Rev 4.2 datasheet, section 4.5.2.
+
+I think the best results would depend on the underlying SPI hardware,
+but I would like to run at the max_speed_hz rate and have the regmap
+handle the delays / padding for me. I'm making up numbers here, but if
+the bus runs at 1.25MHz, we might need two padding bytes. In that case,
+val would start out at 0x00000002 and when we read back, we would see
+that value read back, plus the indication that we read the value over
+the SPI bus (0x02000000).
+
+This will be built into the new regmap. When using the generic SPI
+regmap this was not possible, so the number of padding bytes was always
+zero, and the bus speed always had to be 500KHz regardless of how fast
+the bus could be operated.
+
+> 
+> > +
+> > +	err = regmap_read(felix_spi->map, (0x71000004 >> 2) & 0x3fffff, &val);
+> > +	if (err < 0) {
+> > +		dev_err(&spi->dev, "Error %d writing padding bytes\n", err);
+> > +		return err;
+> > +	} else if (check != val) {
+> > +		dev_err(&spi->dev,
+> > +			"Error configuring SPI bus. V: 0x%08x != 0x%08x\n", val,
+> > +			check);
+> > +		return -ENODEV;
+> > +	}
+> 
+> Care to explain what you are accessing? Why are you AND-ing the address
+> with 0x3fffffff? Whose address is it anyway?
+
+Right wrong or indifferent, it is the calculation from the VSC7512
+datasheet, Rev 4.2, section 4.5.2. This is done before the ocelot
+regmaps could be used, so this configuration I suspect will have to be
+hard-coded to some degree. 
+
+I'll clear this up. Either with a #define to clarify that the math is
+actually the SPI address for DEVCPU_ORG:IF_CTRL, or use the
+vsc7512_regmap[DEVCPU_ORG] and vsc7512_target_io_res[DEVCPU_ORG]
+addresses that are already defined.
+
+> 
+> > +
+> > +	return err;
+> > +}
+> > +
+> > +static void vsc7512_phylink_validate(struct ocelot *ocelot, int port,
+> > +				     unsigned long *supported,
+> > +				     struct phylink_link_state *state)
+> > +{
+> > +	struct ocelot_port *ocelot_port = ocelot->ports[port];
+> > +	__ETHTOOL_DECLARE_LINK_MODE_MASK(mask) = {
+> > +		0,
+> > +	};
+> > +
+> > +	if (state->interface != PHY_INTERFACE_MODE_NA &&
+> > +	    state->interface != ocelot_port->phy_mode) {
+> > +		bitmap_zero(supported, __ETHTOOL_LINK_MODE_MASK_NBITS);
+> > +		return;
+> > +	}
+> > +
+> > +	phylink_set_port_modes(mask);
+> > +	phylink_set(mask, Autoneg);
+> > +	phylink_set(mask, Pause);
+> > +	phylink_set(mask, Asym_Pause);
+> > +	phylink_set(mask, 10baseT_Half);
+> > +	phylink_set(mask, 10baseT_Full);
+> > +	phylink_set(mask, 100baseT_Half);
+> > +	phylink_set(mask, 100baseT_Full);
+> > +	phylink_set(mask, 1000baseT_Half);
+> > +	phylink_set(mask, 1000baseT_Full);
+> > +
+> > +	if (state->interface == PHY_INTERFACE_MODE_INTERNAL ||
+> > +	    state->interface == PHY_INTERFACE_MODE_INTERNAL ||
+> > +	    state->interface == PHY_INTERFACE_MODE_INTERNAL) {
+> > +		phylink_set(mask, 2500baseT_Full);
+> > +		phylink_set(mask, 2500baseX_Full);
+> > +	}
+> > +
+> > +	bitmap_and(supported, supported, mask, __ETHTOOL_LINK_MODE_MASK_NBITS);
+> > +	bitmap_and(state->advertising, state->advertising, mask,
+> > +		   __ETHTOOL_LINK_MODE_MASK_NBITS);
+> > +}
+> > +
+> > +static int vsc7512_prevalidate_phy_mode(struct ocelot *ocelot, int port,
+> > +					phy_interface_t phy_mode)
+> > +{
+> > +	switch (phy_mode) {
+> > +	case PHY_INTERFACE_MODE_INTERNAL:
+> > +		// TODO: I don't know what ports would not be supported
+> > +		// internally.
+> > +		return 0;
+> 
+> PHY_INTERFACE_MODE_INTERNAL means that the MAC is not wired to pinout on
+> the SoC, but connected to an internal PHY or to another on-chip MAC.
+> I don't really understand the comment.
+> 
+> > +	case PHY_INTERFACE_MODE_SGMII:
+> > +	case PHY_INTERFACE_MODE_QSGMII:
+> > +	case PHY_INTERFACE_MODE_USXGMII:
+> 
+> Sure it supports USXGMII? I think one of the reasons NXP integrated
+> their own PCS on the parts with a licensed Microchip switch was to get
+> USXGMII support.
+
+I am not. This is something I'll have to look into. I should've pulled
+the logic from ocelot_vsc7514.c instead of the felix for this function.
+This applies to the surrounding comments as well.
+
+> 
+> > +	case PHY_INTERFACE_MODE_2500BASEX:
+> > +		if (port == 4 || port == 5)
+> > +			return -EOPNOTSUPP;
+> 
+> Is this copy-paste or is it correct?
+
+Copy-paste
+
+> 
+> > +		return 0;
+> > +	default:
+> > +		return -EOPNOTSUPP;
+> > +	}
+> > +}
+> > +
+> > +static int vsc7512_port_setup_tc(struct dsa_switch *ds, int port,
+> > +				 enum tc_setup_type type, void *type_data)
+> > +{
+> > +	return -EOPNOTSUPP;
+> > +}
+> > +
+> > +static void vsc7512_sched_speed_set(struct ocelot *ocelot, int port, u32 speed)
+> > +{
+> > +	u8 tas_speed;
+> > +
+> > +	switch (speed) {
+> > +	case SPEED_10:
+> > +		tas_speed = OCELOT_SPEED_10;
+> > +		break;
+> > +
+> > +	case SPEED_100:
+> > +		tas_speed = OCELOT_SPEED_100;
+> > +		break;
+> > +
+> > +	case SPEED_1000:
+> > +		tas_speed = OCELOT_SPEED_1000;
+> > +		break;
+> > +
+> > +	case SPEED_2500:
+> > +		tas_speed = OCELOT_SPEED_2500;
+> > +		break;
+> > +
+> > +	default:
+> > +		tas_speed = OCELOT_SPEED_1000;
+> > +		break;
+> > +	}
+> > +
+> > +	ocelot_rmw_rix(ocelot, QSYS_TAG_CONFIG_LINK_SPEED(tas_speed),
+> > +		       QSYS_TAG_CONFIG_LINK_SPEED_M, QSYS_TAG_CONFIG, port);
+> > +}
+> 
+> If vsc7512_port_setup_tc returns -EOPNOTSUPP (i.e. it doesn't offload
+> tc-taprio) then vsc7512_sched_speed_set is pointless.
+> 
+> Also, VSC7512 has TSN?
+
+This is outside my level of understanding at the moment, so I can't
+respond with any confidence. I'll research.
+
+> 
+> > +
+> > +static const struct vcap_field vsc7512_vcap_es0_keys[] = {
+> > +	[VCAP_ES0_EGR_PORT]                     = { 0,   4 },
+> > +	[VCAP_ES0_IGR_PORT]                     = { 4,   4 },
+> > +	[VCAP_ES0_RSV]                          = { 8,   2 },
+> > +	[VCAP_ES0_L2_MC]                        = { 10,  1 },
+> > +	[VCAP_ES0_L2_BC]                        = { 11,  1 },
+> > +	[VCAP_ES0_VID]                          = { 12, 12 },
+> > +	[VCAP_ES0_DP]                           = { 24,  1 },
+> > +	[VCAP_ES0_PCP]                          = { 25,  3 },
+> > +};
+> 
+> Align with tabs please, to be consistent.
+> 
+> > +
+> > +static const struct vcap_field vsc7512_vcap_es0_actions[]   = {
+> > +	[VCAP_ES0_ACT_PUSH_OUTER_TAG]           = { 0,   2 },
+> > +	[VCAP_ES0_ACT_PUSH_INNER_TAG]           = { 2,   1 },
+> > +	[VCAP_ES0_ACT_TAG_A_TPID_SEL]           = { 3,   2 },
+> > +	[VCAP_ES0_ACT_TAG_A_VID_SEL]            = { 5,   1 },
+> > +	[VCAP_ES0_ACT_TAG_A_PCP_SEL]            = { 6,   2 },
+> > +	[VCAP_ES0_ACT_TAG_A_DEI_SEL]            = { 8,   2 },
+> > +	[VCAP_ES0_ACT_TAG_B_TPID_SEL]           = { 10,  2 },
+> > +	[VCAP_ES0_ACT_TAG_B_VID_SEL]            = { 12,  1 },
+> > +	[VCAP_ES0_ACT_TAG_B_PCP_SEL]            = { 13,  2 },
+> > +	[VCAP_ES0_ACT_TAG_B_DEI_SEL]            = { 15,  2 },
+> > +	[VCAP_ES0_ACT_VID_A_VAL]                = { 17, 12 },
+> > +	[VCAP_ES0_ACT_PCP_A_VAL]                = { 29,  3 },
+> > +	[VCAP_ES0_ACT_DEI_A_VAL]                = { 32,  1 },
+> > +	[VCAP_ES0_ACT_VID_B_VAL]                = { 33, 12 },
+> > +	[VCAP_ES0_ACT_PCP_B_VAL]                = { 45,  3 },
+> > +	[VCAP_ES0_ACT_DEI_B_VAL]                = { 48,  1 },
+> > +	[VCAP_ES0_ACT_RSV]                      = { 49, 24 },
+> > +	[VCAP_ES0_ACT_HIT_STICKY]               = { 73,  1 },
+> > +};
+> > +
+> > +static const struct vcap_field vsc7512_vcap_is1_keys[] = {
+> > +	[VCAP_IS1_HK_TYPE]                      = { 0,    1 },
+> > +	[VCAP_IS1_HK_LOOKUP]                    = { 1,    2 },
+> > +	[VCAP_IS1_HK_IGR_PORT_MASK]             = { 3,   12 },
+> > +	[VCAP_IS1_HK_RSV]                       = { 15,   9 },
+> > +	[VCAP_IS1_HK_OAM_Y1731]                 = { 24,   1 },
+> > +	[VCAP_IS1_HK_L2_MC]                     = { 25,   1 },
+> > +	[VCAP_IS1_HK_L2_BC]                     = { 26,   1 },
+> > +	[VCAP_IS1_HK_IP_MC]                     = { 27,   1 },
+> > +	[VCAP_IS1_HK_VLAN_TAGGED]               = { 28,   1 },
+> > +	[VCAP_IS1_HK_VLAN_DBL_TAGGED]           = { 29,   1 },
+> > +	[VCAP_IS1_HK_TPID]                      = { 30,   1 },
+> > +	[VCAP_IS1_HK_VID]                       = { 31,  12 },
+> > +	[VCAP_IS1_HK_DEI]                       = { 43,   1 },
+> > +	[VCAP_IS1_HK_PCP]                       = { 44,   3 },
+> > +	/* Specific Fields for IS1 Half Key S1_NORMAL */
+> > +	[VCAP_IS1_HK_L2_SMAC]                   = { 47,  48 },
+> > +	[VCAP_IS1_HK_ETYPE_LEN]                 = { 95,   1 },
+> > +	[VCAP_IS1_HK_ETYPE]                     = { 96,  16 },
+> > +	[VCAP_IS1_HK_IP_SNAP]                   = { 112,  1 },
+> > +	[VCAP_IS1_HK_IP4]                       = { 113,  1 },
+> > +	/* Layer-3 Information */
+> > +	[VCAP_IS1_HK_L3_FRAGMENT]               = { 114,  1 },
+> > +	[VCAP_IS1_HK_L3_FRAG_OFS_GT0]           = { 115,  1 },
+> > +	[VCAP_IS1_HK_L3_OPTIONS]                = { 116,  1 },
+> > +	[VCAP_IS1_HK_L3_DSCP]                   = { 117,  6 },
+> > +	[VCAP_IS1_HK_L3_IP4_SIP]                = { 123, 32 },
+> > +	/* Layer-4 Information */
+> > +	[VCAP_IS1_HK_TCP_UDP]                   = { 155,  1 },
+> > +	[VCAP_IS1_HK_TCP]                       = { 156,  1 },
+> > +	[VCAP_IS1_HK_L4_SPORT]                  = { 157, 16 },
+> > +	[VCAP_IS1_HK_L4_RNG]                    = { 173,  8 },
+> > +	/* Specific Fields for IS1 Half Key S1_5TUPLE_IP4 */
+> > +	[VCAP_IS1_HK_IP4_INNER_TPID]            = { 47,   1 },
+> > +	[VCAP_IS1_HK_IP4_INNER_VID]             = { 48,  12 },
+> > +	[VCAP_IS1_HK_IP4_INNER_DEI]             = { 60,   1 },
+> > +	[VCAP_IS1_HK_IP4_INNER_PCP]             = { 61,   3 },
+> > +	[VCAP_IS1_HK_IP4_IP4]                   = { 64,   1 },
+> > +	[VCAP_IS1_HK_IP4_L3_FRAGMENT]           = { 65,   1 },
+> > +	[VCAP_IS1_HK_IP4_L3_FRAG_OFS_GT0]       = { 66,   1 },
+> > +	[VCAP_IS1_HK_IP4_L3_OPTIONS]            = { 67,   1 },
+> > +	[VCAP_IS1_HK_IP4_L3_DSCP]               = { 68,   6 },
+> > +	[VCAP_IS1_HK_IP4_L3_IP4_DIP]            = { 74,  32 },
+> > +	[VCAP_IS1_HK_IP4_L3_IP4_SIP]            = { 106, 32 },
+> > +	[VCAP_IS1_HK_IP4_L3_PROTO]              = { 138,  8 },
+> > +	[VCAP_IS1_HK_IP4_TCP_UDP]               = { 146,  1 },
+> > +	[VCAP_IS1_HK_IP4_TCP]                   = { 147,  1 },
+> > +	[VCAP_IS1_HK_IP4_L4_RNG]                = { 148,  8 },
+> > +	[VCAP_IS1_HK_IP4_IP_PAYLOAD_S1_5TUPLE]  = { 156, 32 },
+> > +};
+> > +
+> > +static const struct vcap_field vsc7512_vcap_is1_actions[] = {
+> > +	[VCAP_IS1_ACT_DSCP_ENA]                 = { 0,   1 },
+> > +	[VCAP_IS1_ACT_DSCP_VAL]                 = { 1,   6 },
+> > +	[VCAP_IS1_ACT_QOS_ENA]                  = { 7,   1 },
+> > +	[VCAP_IS1_ACT_QOS_VAL]                  = { 8,   3 },
+> > +	[VCAP_IS1_ACT_DP_ENA]                   = { 11,  1 },
+> > +	[VCAP_IS1_ACT_DP_VAL]                   = { 12,  1 },
+> > +	[VCAP_IS1_ACT_PAG_OVERRIDE_MASK]        = { 13,  8 },
+> > +	[VCAP_IS1_ACT_PAG_VAL]                  = { 21,  8 },
+> > +	[VCAP_IS1_ACT_RSV]                      = { 29,  9 },
+> > +	/* The fields below are incorrectly shifted by 2 in the manual */
+> > +	[VCAP_IS1_ACT_VID_REPLACE_ENA]          = { 38,  1 },
+> > +	[VCAP_IS1_ACT_VID_ADD_VAL]              = { 39, 12 },
+> > +	[VCAP_IS1_ACT_FID_SEL]                  = { 51,  2 },
+> > +	[VCAP_IS1_ACT_FID_VAL]                  = { 53, 13 },
+> > +	[VCAP_IS1_ACT_PCP_DEI_ENA]              = { 66,  1 },
+> > +	[VCAP_IS1_ACT_PCP_VAL]                  = { 67,  3 },
+> > +	[VCAP_IS1_ACT_DEI_VAL]                  = { 70,  1 },
+> > +	[VCAP_IS1_ACT_VLAN_POP_CNT_ENA]         = { 71,  1 },
+> > +	[VCAP_IS1_ACT_VLAN_POP_CNT]             = { 72,  2 },
+> > +	[VCAP_IS1_ACT_CUSTOM_ACE_TYPE_ENA]      = { 74,  4 },
+> > +	[VCAP_IS1_ACT_HIT_STICKY]               = { 78,  1 },
+> > +};
+> > +
+> > +static const struct vcap_field vsc7512_vcap_is2_keys[] = {
+> > +	/* Common: 46 bits */
+> > +	[VCAP_IS2_TYPE]                         = { 0,    4 },
+> > +	[VCAP_IS2_HK_FIRST]                     = { 4,    1 },
+> > +	[VCAP_IS2_HK_PAG]                       = { 5,    8 },
+> > +	[VCAP_IS2_HK_IGR_PORT_MASK]             = { 13,  12 },
+> > +	[VCAP_IS2_HK_RSV2]                      = { 25,   1 },
+> > +	[VCAP_IS2_HK_HOST_MATCH]                = { 26,   1 },
+> > +	[VCAP_IS2_HK_L2_MC]                     = { 27,   1 },
+> > +	[VCAP_IS2_HK_L2_BC]                     = { 28,   1 },
+> > +	[VCAP_IS2_HK_VLAN_TAGGED]               = { 29,   1 },
+> > +	[VCAP_IS2_HK_VID]                       = { 30,  12 },
+> > +	[VCAP_IS2_HK_DEI]                       = { 42,   1 },
+> > +	[VCAP_IS2_HK_PCP]                       = { 43,   3 },
+> > +	/* MAC_ETYPE / MAC_LLC / MAC_SNAP / OAM common */
+> > +	[VCAP_IS2_HK_L2_DMAC]                   = { 46,  48 },
+> > +	[VCAP_IS2_HK_L2_SMAC]                   = { 94,  48 },
+> > +	/* MAC_ETYPE (TYPE=000) */
+> > +	[VCAP_IS2_HK_MAC_ETYPE_ETYPE]           = { 142, 16 },
+> > +	[VCAP_IS2_HK_MAC_ETYPE_L2_PAYLOAD0]     = { 158, 16 },
+> > +	[VCAP_IS2_HK_MAC_ETYPE_L2_PAYLOAD1]     = { 174,  8 },
+> > +	[VCAP_IS2_HK_MAC_ETYPE_L2_PAYLOAD2]     = { 182,  3 },
+> > +	/* MAC_LLC (TYPE=001) */
+> > +	[VCAP_IS2_HK_MAC_LLC_L2_LLC]            = { 142, 40 },
+> > +	/* MAC_SNAP (TYPE=010) */
+> > +	[VCAP_IS2_HK_MAC_SNAP_L2_SNAP]          = { 142, 40 },
+> > +	/* MAC_ARP (TYPE=011) */
+> > +	[VCAP_IS2_HK_MAC_ARP_SMAC]              = { 46,  48 },
+> > +	[VCAP_IS2_HK_MAC_ARP_ADDR_SPACE_OK]     = { 94,   1 },
+> > +	[VCAP_IS2_HK_MAC_ARP_PROTO_SPACE_OK]    = { 95,   1 },
+> > +	[VCAP_IS2_HK_MAC_ARP_LEN_OK]            = { 96,   1 },
+> > +	[VCAP_IS2_HK_MAC_ARP_TARGET_MATCH]      = { 97,   1 },
+> > +	[VCAP_IS2_HK_MAC_ARP_SENDER_MATCH]      = { 98,   1 },
+> > +	[VCAP_IS2_HK_MAC_ARP_OPCODE_UNKNOWN]    = { 99,   1 },
+> > +	[VCAP_IS2_HK_MAC_ARP_OPCODE]            = { 100,  2 },
+> > +	[VCAP_IS2_HK_MAC_ARP_L3_IP4_DIP]        = { 102, 32 },
+> > +	[VCAP_IS2_HK_MAC_ARP_L3_IP4_SIP]        = { 134, 32 },
+> > +	[VCAP_IS2_HK_MAC_ARP_DIP_EQ_SIP]        = { 166,  1 },
+> > +	/* IP4_TCP_UDP / IP4_OTHER common */
+> > +	[VCAP_IS2_HK_IP4]                       = { 46,   1 },
+> > +	[VCAP_IS2_HK_L3_FRAGMENT]               = { 47,   1 },
+> > +	[VCAP_IS2_HK_L3_FRAG_OFS_GT0]           = { 48,   1 },
+> > +	[VCAP_IS2_HK_L3_OPTIONS]                = { 49,   1 },
+> > +	[VCAP_IS2_HK_IP4_L3_TTL_GT0]            = { 50,   1 },
+> > +	[VCAP_IS2_HK_L3_TOS]                    = { 51,   8 },
+> > +	[VCAP_IS2_HK_L3_IP4_DIP]                = { 59,  32 },
+> > +	[VCAP_IS2_HK_L3_IP4_SIP]                = { 91,  32 },
+> > +	[VCAP_IS2_HK_DIP_EQ_SIP]                = { 123,  1 },
+> > +	/* IP4_TCP_UDP (TYPE=100) */
+> > +	[VCAP_IS2_HK_TCP]                       = { 124,  1 },
+> > +	[VCAP_IS2_HK_L4_DPORT]                  = { 125, 16 },
+> > +	[VCAP_IS2_HK_L4_SPORT]                  = { 141, 16 },
+> > +	[VCAP_IS2_HK_L4_RNG]                    = { 157,  8 },
+> > +	[VCAP_IS2_HK_L4_SPORT_EQ_DPORT]         = { 165,  1 },
+> > +	[VCAP_IS2_HK_L4_SEQUENCE_EQ0]           = { 166,  1 },
+> > +	[VCAP_IS2_HK_L4_FIN]                    = { 167,  1 },
+> > +	[VCAP_IS2_HK_L4_SYN]                    = { 168,  1 },
+> > +	[VCAP_IS2_HK_L4_RST]                    = { 169,  1 },
+> > +	[VCAP_IS2_HK_L4_PSH]                    = { 170,  1 },
+> > +	[VCAP_IS2_HK_L4_ACK]                    = { 171,  1 },
+> > +	[VCAP_IS2_HK_L4_URG]                    = { 172,  1 },
+> > +	[VCAP_IS2_HK_L4_1588_DOM]               = { 173,  8 },
+> > +	[VCAP_IS2_HK_L4_1588_VER]               = { 181,  4 },
+> > +	/* IP4_OTHER (TYPE=101) */
+> > +	[VCAP_IS2_HK_IP4_L3_PROTO]              = { 124,  8 },
+> > +	[VCAP_IS2_HK_L3_PAYLOAD]                = { 132, 56 },
+> > +	/* IP6_STD (TYPE=110) */
+> > +	[VCAP_IS2_HK_IP6_L3_TTL_GT0]            = { 46,   1 },
+> > +	[VCAP_IS2_HK_L3_IP6_SIP]                = { 47, 128 },
+> > +	[VCAP_IS2_HK_IP6_L3_PROTO]              = { 175,  8 },
+> > +	/* OAM (TYPE=111) */
+> > +	[VCAP_IS2_HK_OAM_MEL_FLAGS]             = { 142,  7 },
+> > +	[VCAP_IS2_HK_OAM_VER]                   = { 149,  5 },
+> > +	[VCAP_IS2_HK_OAM_OPCODE]                = { 154,  8 },
+> > +	[VCAP_IS2_HK_OAM_FLAGS]                 = { 162,  8 },
+> > +	[VCAP_IS2_HK_OAM_MEPID]                 = { 170, 16 },
+> > +	[VCAP_IS2_HK_OAM_CCM_CNTS_EQ0]          = { 186,  1 },
+> > +	[VCAP_IS2_HK_OAM_IS_Y1731]              = { 187,  1 },
+> > +};
+> > +
+> > +static const struct vcap_field vsc7512_vcap_is2_actions[] = {
+> > +	[VCAP_IS2_ACT_HIT_ME_ONCE]              = { 0,   1 },
+> > +	[VCAP_IS2_ACT_CPU_COPY_ENA]             = { 1,   1 },
+> > +	[VCAP_IS2_ACT_CPU_QU_NUM]               = { 2,   3 },
+> > +	[VCAP_IS2_ACT_MASK_MODE]                = { 5,   2 },
+> > +	[VCAP_IS2_ACT_MIRROR_ENA]               = { 7,   1 },
+> > +	[VCAP_IS2_ACT_LRN_DIS]                  = { 8,   1 },
+> > +	[VCAP_IS2_ACT_POLICE_ENA]               = { 9,   1 },
+> > +	[VCAP_IS2_ACT_POLICE_IDX]               = { 10,  9 },
+> > +	[VCAP_IS2_ACT_POLICE_VCAP_ONLY]         = { 19,  1 },
+> > +	[VCAP_IS2_ACT_PORT_MASK]                = { 20, 11 },
+> > +	[VCAP_IS2_ACT_REW_OP]                   = { 31,  9 },
+> > +	[VCAP_IS2_ACT_SMAC_REPLACE_ENA]         = { 40,  1 },
+> > +	[VCAP_IS2_ACT_RSV]                      = { 41,  2 },
+> > +	[VCAP_IS2_ACT_ACL_ID]                   = { 43,  6 },
+> > +	[VCAP_IS2_ACT_HIT_CNT]                  = { 49, 32 },
+> > +};
+> > +
+> > +static struct vcap_props vsc7512_vcap_props[] = {
+> > +	[VCAP_ES0] = {
+> > +		.action_type_width = 0,
+> > +		.action_table = {
+> > +			[ES0_ACTION_TYPE_NORMAL] = {
+> > +				.width = 73,
+> > +				.count = 1,
+> > +			},
+> > +		},
+> > +		.target = S0,
+> > +		.keys = vsc7512_vcap_es0_keys,
+> > +		.actions = vsc7512_vcap_es0_actions,
+> > +	},
+> > +	[VCAP_IS1] = {
+> > +		.action_type_width = 0,
+> > +		.action_table = {
+> > +			[IS1_ACTION_TYPE_NORMAL] = {
+> > +				.width = 78,
+> > +				.count = 4,
+> > +			},
+> > +		},
+> > +		.target = S1,
+> > +		.keys = vsc7512_vcap_is1_keys,
+> > +		.actions = vsc7512_vcap_is1_actions,
+> > +	},
+> > +	[VCAP_IS2] = {
+> > +		.action_type_width = 1,
+> > +		.action_table = {
+> > +			[IS2_ACTION_TYPE_NORMAL] = {
+> > +				.width = 49,
+> > +				.count = 2,
+> > +			},
+> > +			[IS2_ACTION_TYPE_SMAC_SIP] = {
+> > +				.width = 6,
+> > +				.count = 4,
+> > +			},
+> > +		},
+> > +		.target = S2,
+> > +		.keys = vsc7512_vcap_is2_keys,
+> > +		.actions = vsc7512_vcap_is2_actions,
+> > +	},
+> > +};
+> > +
+> > +static struct regmap *vsc7512_regmap_init(struct ocelot *ocelot,
+> > +					  struct resource *res, u32 *offset)
+> > +{
+> > +	struct felix *felix = ocelot_to_felix(ocelot);
+> > +	struct felix_spi_data *felix_spi = container_of(felix, struct
+> > +			felix_spi_data, felix);
+> > +
+> > +	// Use offset instead of res, since we don't have MMIO for SPI
+> > +	*offset = res->start;
+> > +	return felix_spi->map;
+> > +}
+> > +
+> > +static const struct felix_info felix_spi_info = {
+> > +	.target_io_res =		vsc7512_target_io_res,
+> > +	.port_io_res =			vsc7512_port_io_res,
+> > +	.imdio_res =			NULL,
+> > +	.regfields =			vsc7512_regfields,
+> > +	.map =				vsc7512_regmap,
+> > +	.ops =				&vsc7512_ops,
+> > +	.stats_layout =			vsc7512_stats_layout,
+> > +	.num_stats =			ARRAY_SIZE(vsc7512_stats_layout),
+> > +
+> > +	.vcap =				vsc7512_vcap_props,
+> > +
+> > +	// Not sure about these
+> > +	.num_mact_rows =		2048,
+> 
+> Chapter 3.9.1. MAC table
+> The analyzer contains a MAC table with 4096 entries containing
+> information about stations learned by the device. The table is organized
+> as a hash table with four buckets and 1024 rows. Each row is indexed by
+> an 10-bit hash value, which is calculated based on the station’s (MAC,
+> VID) pair, as shown in the following illustration.
+> 
+> So... 1024, not 2048.
+
+Thank you.
+
+> 
+> > +	.num_ports =			6,
+> 
+> Confused, Microchip says it's a 10 port switch:
+> https://www.microchip.com/wwwproducts/en/VSC7512
+
+Yes, a copy issue from the 9959 driver.
+
+> 
+> > +	.num_tx_queues =		OCELOT_NUM_TC,
+> > +	.switch_pci_bar =		0,
+> > +	.imdio_pci_bar =		0,
+> 
+> In hindsight, these have nothing to do in struct felix_info. And they
+> are only used in felix_pci_probe for vsc9959. Could you please send
+> one more patch, before this one but part of the same series, removing
+> switch_pci_bar and imdio_pci_bar from struct felix_info, and replacing
+> their use with some constants VSC9959_SWITCH_PCI_BAR, VSC9959_IMDIO_PCI_BAR?
+> These represent the organization of hardware blocks within PCIe PF
+> 0000:00:00.5 (the switch) on NXP LS1028A.
+
+Thank you. I will gladly do this.
+
+> 
+> > +
+> > +	// Force ocelot->ptp to 0
+> > +	.ptp_caps =			NULL,
+> 
+> Comment is weird, this is not forcing anything to anything.
+> 
+> > +
+> > +	// No need for this?
+> > +	.mdio_bus_alloc =		NULL,
+> > +	.mdio_bus_free =		NULL,
+> 
+> Yes, no need for this => just delete the NULL pointer initializers.
+> 
+> > +	.phylink_validate =		vsc7512_phylink_validate,
+> > +	.prevalidate_phy_mode =		vsc7512_prevalidate_phy_mode,
+> > +	.port_setup_tc =		vsc7512_port_setup_tc,
+> > +	.port_sched_speed_set =		vsc7512_sched_speed_set,
+> > +	.init_regmap =			vsc7512_regmap_init,
+> 
+> Please align the "=" character too, like this:
+
+Yes, I'll work to be more consistent.
+
+> 
+> 	.prevalidate_phy_mode		= vsc7512_prevalidate_phy_mode,
+> 
+> > +};
+> > +
+> > +static int felix_spi_probe(struct spi_device *spi)
+> > +{
+> > +	struct dsa_switch *ds;
+> > +	struct ocelot *ocelot;
+> > +	struct felix *felix;
+> > +	int err;
+> > +	struct felix_spi_data *felix_spi;
+> 
+> As part of the networking coding style, please keep variable declaration
+> in decreasing order of line length.
+
+I must've missed this convention. Thank you.
+
+> 
+> > +
+> > +	pr_info("felix_spi: CS: %d M: %d, BPW: %d, MaxSpeed: %d\n",
+> > +		spi->chip_select, spi->mode, spi->bits_per_word,
+> > +		spi->max_speed_hz);
+> 
+> I find it weird and confusing that you print the bits_per_word and
+> max_speed_hz and then you change them immediately afterwards. What's the
+> user going to think?
+> 
+> Also, please don't hardcode the SPIfrequency in the driver, DT exists
+> for that.
+
+More discussion from above. The bus operating frequency and the
+communication protocol must be coordinated (Figures 61-63 of the VSC7512
+datasheet, Rev 4.2)
+
+This first implementation forced 500KHz in order to ensure we'd be in
+the "SI_CLK Slow" mode. I believe this was necessary for regmap_init_spi
+to have a fighting chance to work. Address shifting and conditional
+padding bytes / delays appear to be outside the realm of the standard
+regmap_spi.
+
+Version 2 of the RFC patch will have custom read / wrtie addressing, and
+should therefore be able to support padding bytes on reads. This, in
+turn, should support any bus frequency up to the maximum supported
+frequency by the chip itself.
+
+> 
+> > +	felix_spi = devm_kzalloc(&spi->dev, sizeof(struct felix_spi_data),
+> > +				 GFP_KERNEL);
+> > +
+> > +	if (!felix_spi)
+> > +		return -ENOMEM;
+> > +
+> > +	dev_set_drvdata(&spi->dev, felix_spi);
+> > +
+> > +	spi->bits_per_word = 8;
+> > +
+> > +	/* TODO: There are a couple of goals to achieve. Step 1: Get the device
+> > +	 * working in slow SPI mode with a fixed bit and byte order. Fixing this
+> > +	 * should allow devm_regmap_init_spi to be used directly, though there
+> > +	 * are penalties incurred. Specifically the bus is running much slower
+> > +	 * than it could, hindering performance.
+> > +	 *
+> > +	 * Operating at a faster SPI rate could boost performance significantly
+> > +	 * with fixed delays or padding bytes. Especially on consecutive reads.
+> > +	 *
+> > +	 * Ideally the SPI bus would be configured to run at the configured
+> > +	 * speed / fastest speed possible with consecutive reads / writes
+> > +	 * enabled, if supported. For reads, we would have to reason about the
+> > +	 * speed vs the delay time or the number of padding bytes.
+> > +	 */
+> > +
+> > +	spi->max_speed_hz = 500000;
+> > +	err = spi_setup(spi);
+> > +	if (err < 0) {
+> > +		dev_err(&spi->dev, "Error %d initializing SPI\n", err);
+> > +		return err;
+> > +	}
+> > +
+> > +	felix_spi->map = devm_regmap_init_spi(spi, &felix_spi_regmap_config);
+> > +
+> > +	if (IS_ERR(felix_spi->map)) {
+> > +		dev_err(&spi->dev, "regmap init failed\n");
+> > +		return PTR_ERR(felix_spi->map);
+> > +	}
+> > +
+> > +	err = felix_spi_init_bus(spi, felix_spi);
+> > +	if (err < 0) {
+> > +		dev_err(&spi->dev, "device init failed: %d\n", err);
+> > +		return err;
+> > +	}
+> > +
+> > +	felix = &felix_spi->felix;
+> > +
+> > +	ocelot = &felix->ocelot;
+> > +	ocelot->dev = &spi->dev;
+> > +
+> > +	// Not sure about this
+> > +	ocelot->num_flooding_pgids = OCELOT_NUM_TC;
+> 
+> In general when you're not sure, use git blame and see why the property
+> was added and why. In this case, see commit 3c7b51bd39b2 ("net: dsa:
+> felix: allow flooding for all traffic classes") and then edd2410b165e
+> ("net: mscc: ocelot: fix dropping of unknown IPv4 multicast on Seville").
+> In this case, num_flooding_pgids should most likely be 1.
+
+Thank you.
+
+> 
+> > +
+> > +	felix->info = &felix_spi_info;
+> > +
+> > +	ocelot->ptp = 0;
+> 
+> ocelot, as a member structure of felix, is zero-initialized because it
+> is allocated with kzalloc. So this doesn't do anything.
+> 
+> > +
+> > +	ds = kzalloc(sizeof(*ds), GFP_KERNEL);
+> > +	if (!ds) {
+> > +		err = -ENOMEM;
+> > +		dev_err(&spi->dev, "Failed to allocate DSA switch\n");
+> > +		goto err_alloc_ds;
+> > +	}
+> > +
+> > +	ds->dev = &spi->dev;
+> > +	ds->num_ports = felix->info->num_ports;
+> > +	ds->num_tx_queues = felix->info->num_tx_queues;
+> > +	ds->ops = &felix_switch_ops;
+> > +	ds->priv = ocelot;
+> > +
+> > +	err = dsa_register_switch(ds);
+> > +	if (err) {
+> > +		dev_err(&spi->dev, "Failed to register DSA switch: %d\n", err);
+> > +		goto err_register_ds;
+> > +	}
+> > +
+> > +	return 0;
+> > +
+> > +err_register_ds:
+> > +	kfree(ds);
+> > +err_alloc_ds:
+> > +	kfree(felix);
+> > +	return err;
+> > +}
+> > +
+> > +static int felix_spi_remove(struct spi_device *pdev)
+> > +{
+> > +	struct felix *felix;
+> > +
+> > +	felix = spi_get_drvdata(pdev);
+> > +
+> > +	return 0;
+> > +}
+> 
+> You got bored of writing code here? :)
+
+A bad habit of mine. I'm trying to test the code as I'm writing it.
+Communication doesn't work, so I can't get past probe. I'm excited for
+the day I can see this memory leak in action.
+
+I'll repair this for RFC V2, regardless of whether I can test it.
+
+> 
+> > +
+> > +const struct of_device_id vsc7512_of_match[] = { { .compatible =
+> > +							   "mscc,vsc7512" },
+> > +						 {} };
+> > +MODULE_DEVICE_TABLE(of, vsc7512_of_match);
+> 
+> Indentation is very odd.
+> 
+> > +
+> > +static struct spi_driver felix_vsc7512_spi_driver = {
+> > +	.driver = {
+> > +			.name = "vsc7512",
+> > +			.of_match_table = of_match_ptr(vsc7512_of_match),
+> > +		},
+> > +	.probe = felix_spi_probe,
+> > +	.remove = felix_spi_remove,
+> > +};
+> > +module_spi_driver(felix_vsc7512_spi_driver);
+> > +
+> > +MODULE_DESCRIPTION("Felix Switch SPI driver");
+> > +MODULE_LICENSE("GPL v2");
+> > diff --git a/include/soc/mscc/ocelot.h b/include/soc/mscc/ocelot.h
+> > index ad45c1af4be9..8b6e0574f294 100644
+> > --- a/include/soc/mscc/ocelot.h
+> > +++ b/include/soc/mscc/ocelot.h
+> > @@ -127,6 +127,7 @@ enum ocelot_target {
+> >  	PTP,
+> >  	GCB,
+> >  	DEV_GMII,
+> > +	DEV_CPUORG,
+> >  	TARGET_MAX,
+> >  };
+> >  
+> > @@ -444,6 +445,20 @@ enum ocelot_reg {
+> >  	PCS1G_TSTPAT_STATUS,
+> >  	DEV_PCS_FX100_CFG,
+> >  	DEV_PCS_FX100_STATUS,
+> > +	DEV_CPUORG_IF_CTRL = DEV_CPUORG << TARGET_OFFSET,
+> > +	DEV_CPUORG_IF_CFGSTAT,
+> > +	DEV_CPUORG_ORG_CFG,
+> > +	DEV_CPUORG_ERR_CNTS,
+> > +	DEV_CPUORG_TIMEOUT_CFG,
+> > +	DEV_CPUORG_GPR,
+> > +	DEV_CPUORG_MAILBOX_SET,
+> > +	DEV_CPUORG_MAILBOX_CLR,
+> > +	DEV_CPUORG_MAILBOX,
+> > +	DEV_CPUORG_SEMA_CFG,
+> > +	DEV_CPUORG_SEMA0,
+> > +	DEV_CPUORG_SEMA0_OWNER,
+> > +	DEV_CPUORG_SEMA1,
+> > +	DEV_CPUORG_SEMA1_OWNER,
+> >  };
+> >  
+> >  enum ocelot_regfield {
+> > -- 
+> > 2.25.1
+> > 
