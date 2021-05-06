@@ -2,78 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 33C97375101
-	for <lists+netdev@lfdr.de>; Thu,  6 May 2021 10:41:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0945F375122
+	for <lists+netdev@lfdr.de>; Thu,  6 May 2021 10:54:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233794AbhEFImq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 6 May 2021 04:42:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53992 "EHLO
+        id S233881AbhEFIzV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 6 May 2021 04:55:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56800 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231880AbhEFImp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 6 May 2021 04:42:45 -0400
-Received: from mail-lf1-x131.google.com (mail-lf1-x131.google.com [IPv6:2a00:1450:4864:20::131])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A910AC061574
-        for <netdev@vger.kernel.org>; Thu,  6 May 2021 01:41:46 -0700 (PDT)
-Received: by mail-lf1-x131.google.com with SMTP id c3so6643694lfs.7
-        for <netdev@vger.kernel.org>; Thu, 06 May 2021 01:41:46 -0700 (PDT)
+        with ESMTP id S233464AbhEFIzU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 6 May 2021 04:55:20 -0400
+Received: from mail-ot1-x332.google.com (mail-ot1-x332.google.com [IPv6:2607:f8b0:4864:20::332])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 77D15C061574
+        for <netdev@vger.kernel.org>; Thu,  6 May 2021 01:54:22 -0700 (PDT)
+Received: by mail-ot1-x332.google.com with SMTP id 65-20020a9d03470000b02902808b4aec6dso4257624otv.6
+        for <netdev@vger.kernel.org>; Thu, 06 May 2021 01:54:22 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
+        d=aleksander-es.20150623.gappssmtp.com; s=20150623;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=vqoqqwG/Sm/7StgZJFZzPWzpMUimMU/fZ4yBiGhx1bU=;
-        b=lyzebzklAgUpuJEr2Z4nZzaqEiO3LAfi5JsJfB0R6bBQLR35qmIDQh9zSxuSnHbyCp
-         eLkefy3UQF+/VZbkyyv5cx7gRtBB/m8iVbu/hBBlneq4fcJGzoPAbumxhR1EKrUUYK2A
-         LfNCwDeG+0Gt8ULhLKh6O5Oe1+/zaa7pbmUIGyefaVBePre/XWKma88cqYzw+5s77aDC
-         y7caWjLCUPfPrHPj78cHXdXoSU0a41LbqSUWt/nUPc4RbcxqdynW6k0nbJTSigcLtpzq
-         bd2gPOf3bseZfwm0wYAcyD5gCv/ByJpRBAmT+SIG5h1Lq4lSc1XwpSrsH+lpYe/Beg4o
-         XBaQ==
+        bh=q4IHGEooq3P+sjgPfLgE2uimjvqOzdAedwdUmuZ41V8=;
+        b=uJJTlMSh7CgDeLRxaWJ8I8PMnOxkDVU2RFx1QH1Xvf8aFDPZdpShEznsc8E50kHXma
+         eC9IeTznEp+vZSPfrfo5RHOVZ4Tv7D1PurJXkO0maUUB+oA+BfQV9y1VBWwa/1Mr7KA6
+         kIi/CRVtXaIjiuTr9PNgQBbjsYeeueE5KzhXllDGVEYKoEZvc7iNPtvTM9TZ+VykonJT
+         MQdxlqmkO/nRNXglkAgkw3qczqAnDwfvPjZyxawOILCrOwPP54Wn1tM/i6Ior6QFJGhH
+         eYse/vk1yEuhgFXJb+veFSY6Zv22aD5N1oK2EnX7MD9NrsCeRPpmF3soZ+fyLyofKKwy
+         pG2Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=vqoqqwG/Sm/7StgZJFZzPWzpMUimMU/fZ4yBiGhx1bU=;
-        b=S9GH9+crSnjVKq7Vt8X8HTlc26+t6X2ndeTFu00VQINtWYW6QMInaHDYMjJmQNXFpA
-         t1rdUf8BhPz81R8nzVEO9AYbs5yBk+xhSBVea+s/Bb9sBSF7tYP843PtIwo6DU6Y04uv
-         n155NIagBzVuFxmz7XDf+PX0xtDW6+jV+yLF5RVkqGa/XhJl5CJc1ZRs5xLlaZ/Gp5Ad
-         qpjrzU+SJXBacU7WRkHPSFzKhpGouqeiqEUwEQJrp7xuVjhnh/O6PytKVGkHGg9SC2uR
-         ybTp7J/tBUESRhQTD0RBtGlftws+XaqRWfNXMiO9lDcNxSLeU7yKbKLqTEvaz/0opYHr
-         EUyQ==
-X-Gm-Message-State: AOAM530pnBqNy4GD0PR70Y6E8QvkOJA/mmiTtb3gps7Orhm/EDuf5KhP
-        hNzZ9IQJ7wJJuPfWUb81vXxv3ThmAwMUYSN4mR8YoQ==
-X-Google-Smtp-Source: ABdhPJwpbPqssKuUoKhLJ2Oxg5Y9MSO0cU6Ssng9STHq/8W/zGsIgP+MVZxC4Aj8oKr6eiPaX8kqmim4zEJkNJNvy+0=
-X-Received: by 2002:a05:6512:149:: with SMTP id m9mr2045704lfo.157.1620290505124;
- Thu, 06 May 2021 01:41:45 -0700 (PDT)
+        bh=q4IHGEooq3P+sjgPfLgE2uimjvqOzdAedwdUmuZ41V8=;
+        b=CGXIR0J885WwTgazDAR8oOoXn9qx9tzM43NqIII5RIWUyIlgioRQcDWQ6IeqELH9bZ
+         D93sHR97WYzhQDtwp6WlV5Qy5oHcW1l326AqJyPngnbEJFzKC9eDmrO9LlREAINBtHkN
+         ovjbd0ayLs5G6E1b4cwDT5E1xbJOJV9BwqDUVCqQsakenLXZz9c1iRzaFkBim3WpMveE
+         eAX6yPcCjMEHe5+xGMQJmZbcYcA53e1UHTgDMBJOl7ScfSx4VY4YyUMZVx0TLTWidMS+
+         KS+VZp15DdyuW73VfFzYnM/H0PV6X7xBeJwegMYANRsZZWqztpV7Oz38peStgB766w3k
+         8Lww==
+X-Gm-Message-State: AOAM533LSv2Yt3/oOe+if5Ru61ik1iDLprIID5qj3IC/N0AQcvseaQ5L
+        Icgd+hfFEtdwMotl2JpIObn7pESaVabMtMadqoTDdg==
+X-Google-Smtp-Source: ABdhPJyMzBmLsV7xvM80Kz3lnaTIUFkGGFrPTmL/AhZCqEZIIGjeeb6BxiiigwqQx3JIgmsfavOPMPgmSt4NrCy+anM=
+X-Received: by 2002:a9d:10a:: with SMTP id 10mr2698527otu.188.1620291261869;
+ Thu, 06 May 2021 01:54:21 -0700 (PDT)
 MIME-Version: 1.0
-References: <20210429192326.1148440-1-clabbe@baylibre.com>
-In-Reply-To: <20210429192326.1148440-1-clabbe@baylibre.com>
-From:   Linus Walleij <linus.walleij@linaro.org>
-Date:   Thu, 6 May 2021 10:41:34 +0200
-Message-ID: <CACRpkdY7dC=QXdnshHK7ByTE8NkThiDm7sZSZrH07F7GBiMM5w@mail.gmail.com>
-Subject: Re: [PATCH v2] dt-bindings: net: Convert mdio-gpio to yaml
-To:     Corentin Labbe <clabbe@baylibre.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Rob Herring <robh+dt@kernel.org>,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>
+References: <20210420161310.16189-1-m.chetan.kumar@intel.com>
+In-Reply-To: <20210420161310.16189-1-m.chetan.kumar@intel.com>
+From:   Aleksander Morgado <aleksander@aleksander.es>
+Date:   Thu, 6 May 2021 10:54:10 +0200
+Message-ID: <CAAP7ucLwXqvc8sNpm8NtowFnKxcWKAwqwJEE89s9eME1YgCowQ@mail.gmail.com>
+Subject: Re: [PATCH V2 00/16] net: iosm: PCIe Driver for Intel M.2 Modem
+To:     M Chetan Kumar <m.chetan.kumar@intel.com>,
+        Loic Poulain <loic.poulain@linaro.org>
+Cc:     Network Development <netdev@vger.kernel.org>,
+        linux-wireless@vger.kernel.org, johannes@sipsolutions.net,
+        krishna.c.sudi@intel.com, linuxwwan@intel.com
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Apr 29, 2021 at 9:24 PM Corentin Labbe <clabbe@baylibre.com> wrote:
+Hey,
 
-> Converts net/mdio-gpio.txt to yaml
+On Tue, Apr 20, 2021 at 6:14 PM M Chetan Kumar <m.chetan.kumar@intel.com> wrote:
 >
-> Signed-off-by: Corentin Labbe <clabbe@baylibre.com>
+> The IOSM (IPC over Shared Memory) driver is a PCIe host driver implemented
+> for linux or chrome platform for data exchange over PCIe interface between
+> Host platform & Intel M.2 Modem. The driver exposes interface conforming to
+> the MBIM protocol. Any front end application ( eg: Modem Manager) could
+> easily manage the MBIM interface to enable data communication towards WWAN.
+>
+> Intel M.2 modem uses 2 BAR regions. The first region is dedicated to Doorbell
+> register for IRQs and the second region is used as scratchpad area for book
+> keeping modem execution stage details along with host system shared memory
+> region context details. The upper edge of the driver exposes the control and
+> data channels for user space application interaction. At lower edge these data
+> and control channels are associated to pipes. The pipes are lowest level
+> interfaces used over PCIe as a logical channel for message exchange. A single
+> channel maps to UL and DL pipe and are initialized on device open.
+>
+> On UL path, driver copies application sent data to SKBs associate it with
+> transfer descriptor and puts it on to ring buffer for DMA transfer. Once
+> information has been updated in shared memory region, host gives a Doorbell
+> to modem to perform DMA and modem uses MSI to communicate back to host.
+> For receiving data in DL path, SKBs are pre-allocated during pipe open and
+> transfer descriptors are given to modem for DMA transfer.
+>
+> The driver exposes two types of ports, namely "wwanctrl", a char device node
+> which is used for MBIM control operation and "INMx",(x = 0,1,2..7) network
+> interfaces for IP data communication.
 
-This v2 looks good to me, I suppose you will need to wait for
-net-next to open and resend it with "net-next" in the subject
-though.
-Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
+Is there any plan to integrate this driver in the new "wwan" subsystem
+so that the character device for MBIM control is exposed in the same
+format (i.e. same name rules and such) as with the MHI driver?
 
-Yours,
-Linus Walleij
+-- 
+Aleksander
+https://aleksander.es
