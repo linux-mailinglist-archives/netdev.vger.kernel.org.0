@@ -2,42 +2,42 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E6CD8375920
-	for <lists+netdev@lfdr.de>; Thu,  6 May 2021 19:20:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 27162375921
+	for <lists+netdev@lfdr.de>; Thu,  6 May 2021 19:21:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236232AbhEFRVx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 6 May 2021 13:21:53 -0400
-Received: from mail-db8eur05on2062.outbound.protection.outlook.com ([40.107.20.62]:20320
+        id S236246AbhEFRWB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 6 May 2021 13:22:01 -0400
+Received: from mail-db8eur05on2067.outbound.protection.outlook.com ([40.107.20.67]:60321
         "EHLO EUR05-DB8-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S236203AbhEFRVw (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 6 May 2021 13:21:52 -0400
+        id S236227AbhEFRVz (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 6 May 2021 13:21:55 -0400
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=AbMz/jQxlMszd6reARiIV4C4COD7R1/wHfFPXAT6GMGPvroGWZzOlwqx5amaYPbd6jaetsvMMxBWy2kYnOpvkjlPkPxmEm6in8iAHl7tbpYNbqIDZR6I9RK600iGFFnn/pxCC+pQZxZsD5CyN8Aqvy3lJlKMGnMt9P6BqV4WRmdyMQQUq7j+ggY0qW3IbOvlvp07CYHntc5sDZw9zI4TFUcz6lSfukpfs4+Pd2ArrZSWBEsSMT2dvpGxQIQTsk3klOYAIUpK/51iC56BU0tfOm4CRarogLGneMpOUKsjsJ8+kyonWB/h+HNz7htxqqpXJIBHWmbzmys2xWCTc0JvWQ==
+ b=ROy51RX9mjDf4rxrxL6gQovS7ymnnT0wTjysBSFED6Wpa2t2XIhCMvkX55MgU2/UQEaK+oRJSt/cgYX4vdV5R9GgJcw8TV2CZtX+vine9hyI9RhFYcbys65gx2HFcdX082f7wWZS0L6SHQ1+ATIKhNpZAkHodxB5UTQE9ClwEQxgOmHJF8DcjcowtKedqYPDm2z+lol/5VpZfupIQnhUG/428GQroVnt0tsIGg40prnVbJelzjDKe+Eh1HzhnaqJ0mMs9VtyRqNY+zP8oZhIbiaGyZk2M6dspxLTjzBz70rvFTGDWkUQ0oO7e4gr40ZhuZOK23HrxuNGwcnExX1Jtw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=kexEp/w8W58wMrD3tB2Y5op678Z7vfG6jGXWaN+pm9E=;
- b=gwmuzhf2Jo9E1/dja2WF8yUTZmgwnavfrb+G9rs6Wlyen/vMmyAl6vdenFPA0P2vIOn5aI4qzTYyiMc30mxLSV2q3YFbninG00udAgwZMyr6DbvyF3M+pusxuYKmceTt0r1CW+QwA0nTZdG59rhh2LYFY4yMS0as3uX4r7Jb6RGkhvyt8pMG7LYm4sl1msyIr9Qc4Gj2foZKohoSyZjaTMP0Y5ojOiQ8TrPXF2O4gzV42lSRR2yq6XiaSMwQjMeSQARiWFL46eSqYD/FU/sFHN+Oz3eQ23Fwu2amgYI92rEnAPuAlrCcU5ArrekaKRoHzLJvdXmcvfzzVvoJgdpR7g==
+ bh=1MdlXwYz8ajePunYC8vhqddXMAXF2mb+NHXWyp4/LhA=;
+ b=ebVupohZgqcDjgwEzrluK3FBqBxqEjusrBDRW3yldTHIbpC56nt5mp8JvdI5oT4KEyO6eeUOc06zFH2GWLlBc52884MbFQ4G68poTb7rL8Oh8s5ovYpKuN92vj4eSi+P8LyNt++2I2YZ+g7ekCQ0cKdH69Q+QuHSy5TCyMwKae/FfifIn3J8bWTZK5lQaj+rwuwuyXN2NoaoF8CjA4dvDdf0V8FMTCok//a4EIQ9DhECt7VT+lmrTUVqxvI+ngm3xNzAPY6w8/hiq/t2rBKPjqlKzxJFRBaOWvWcGYNggKHXiqDzGkZrzzUmnyPsuXic2dkMqZJoZeao64OM/EiO2A==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=oss.nxp.com; dmarc=pass action=none header.from=oss.nxp.com;
  dkim=pass header.d=oss.nxp.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=NXP1.onmicrosoft.com;
  s=selector2-NXP1-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=kexEp/w8W58wMrD3tB2Y5op678Z7vfG6jGXWaN+pm9E=;
- b=VWj6Q+kG4ljUJ9sl7/1wh86AGDYS8FN/Dv68OjXwalYegQfQmLAGtl6UcArhH1Uu0g+1Rsdh7+YfJmAaSN8McchiU52gIKrhDvTjYj6r9IkVD3KOKJEY303KHtsSth3X4T9NYruYZWW2bKoIbOwuvBGCu9lFiGg11b9aTpQ8hpA=
+ bh=1MdlXwYz8ajePunYC8vhqddXMAXF2mb+NHXWyp4/LhA=;
+ b=NYWV8Y7F0QpVbT5DPF9GSwedJnENIF9e30P7gzMSh3iYqt1kvzXsKy0NlEfPhbDFgwqL8XWWDdy5MS7ZM+dkeK7af9+NcQ36W3prcILHthxISf5KZe5kU3b+XJyYJK9K8rgjKgsfuFIBEdlFPioAiyl7QsgbIypZUkj6KkZfrA0=
 Authentication-Results: davemloft.net; dkim=none (message not signed)
  header.d=none;davemloft.net; dmarc=none action=none header.from=oss.nxp.com;
 Received: from DU2PR04MB8807.eurprd04.prod.outlook.com (2603:10a6:10:2e2::23)
  by DU2PR04MB8581.eurprd04.prod.outlook.com (2603:10a6:10:2d8::18) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4108.26; Thu, 6 May
- 2021 17:20:51 +0000
+ 2021 17:20:55 +0000
 Received: from DU2PR04MB8807.eurprd04.prod.outlook.com
  ([fe80::88ab:35ac:f0f5:2387]) by DU2PR04MB8807.eurprd04.prod.outlook.com
  ([fe80::88ab:35ac:f0f5:2387%6]) with mapi id 15.20.4108.027; Thu, 6 May 2021
- 17:20:51 +0000
+ 17:20:55 +0000
 From:   Yannick Vignon <yannick.vignon@oss.nxp.com>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
@@ -52,9 +52,9 @@ To:     "David S. Miller" <davem@davemloft.net>,
         Joakim Zhang <qiangqing.zhang@nxp.com>,
         sebastien.laveze@oss.nxp.com
 Cc:     Yannick Vignon <yannick.vignon@nxp.com>
-Subject: [RFC PATCH net-next v1 1/2] net: add name field to napi struct
-Date:   Thu,  6 May 2021 19:20:20 +0200
-Message-Id: <20210506172021.7327-2-yannick.vignon@oss.nxp.com>
+Subject: [RFC PATCH net-next v1 2/2] net: stmmac: use specific name for each NAPI instance
+Date:   Thu,  6 May 2021 19:20:21 +0200
+Message-Id: <20210506172021.7327-3-yannick.vignon@oss.nxp.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20210506172021.7327-1-yannick.vignon@oss.nxp.com>
 References: <20210506172021.7327-1-yannick.vignon@oss.nxp.com>
@@ -65,51 +65,51 @@ X-ClientProxiedBy: AM3PR07CA0129.eurprd07.prod.outlook.com
  (2603:10a6:10:2e2::23)
 MIME-Version: 1.0
 X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from sopdpuats09.ea.freescale.net (81.1.10.98) by AM3PR07CA0129.eurprd07.prod.outlook.com (2603:10a6:207:8::15) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4129.9 via Frontend Transport; Thu, 6 May 2021 17:20:50 +0000
+Received: from sopdpuats09.ea.freescale.net (81.1.10.98) by AM3PR07CA0129.eurprd07.prod.outlook.com (2603:10a6:207:8::15) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4129.9 via Frontend Transport; Thu, 6 May 2021 17:20:54 +0000
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 6ccc853e-eb8a-414b-3799-08d910b34c33
+X-MS-Office365-Filtering-Correlation-Id: 749f218d-d331-478e-6df9-08d910b34eb1
 X-MS-TrafficTypeDiagnostic: DU2PR04MB8581:
 X-MS-Exchange-SharedMailbox-RoutingAgent-Processed: True
 X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <DU2PR04MB85810662B1462E03D6D38CB5D2589@DU2PR04MB8581.eurprd04.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:2887;
+X-Microsoft-Antispam-PRVS: <DU2PR04MB8581A39867B122AE217C6C06D2589@DU2PR04MB8581.eurprd04.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:2399;
 X-MS-Exchange-SenderADCheck: 1
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: /wB+v7b6PbZgR3ALJHdNxwq1zoJ/efzahr1FtgQ6E2NE7WsfLQLcnmU3ifClaWece3Z+Jb0YiknVX2mE8oOGJlOlaIJ/4yn8RfQzKNtnrYzpgYEBK7/GTd0QcCxGGWeC5CkmYuNiUUV5BubDCY2DfhCq5a86Sm0ZuqtnwMOHOEBXzIdo9YXxi4RRkyba9Obkgck2O47q1ppg28aNMdcI+QckPb9PheRcH0t2wbMSv9tyd8boi9eInlZkVFmQ1LFygHUxKZOgUWUsIbM0VypYV4C7omLibBhAhCnNRYbdht4NzNop6hQnkT29DZZy2RkUF+lTWHqcLAAmj9v4P4eHB7h695cYNAcGgDrGRawQGSou1aNd+hkCTr0yTJIdSmsQxVQ31eKe+llaW13DPsfzFnBDfxQJYI9lOqx9sX+AhAmNbEydOLDhiIe0Gz/XPdipwZJIMgZJBgg4KUhOx6fF5W3fBKcY+zZNrNtXPgL56414Y1fG+78uv0xB2VWhgdgkCBszXUdugf4VtDRqtjfFN92pKqWuqGKwaVaCpHnoX37MvmzTLyxj55/bPJagKO3k8Pnl02FaLnzwATpPpxydMuGaLZvgnqkhLJGAMArVQlo+/+Z/Ir/ABZaOZgwsTDiPgMs8huinZ9GFT1QDaruCyKTsW4FLFMMZVl2hTHa1Qw4=
+X-Microsoft-Antispam-Message-Info: C4CVacFzudJOMXfW9kFF/jiq0T4EUczh4oQgFU2Bx334Dd70lfTLenrIxFh0a9WdWkec9Fl1AyHBmmOCfutcKKDncCpEuL2WVC3BfDztmh8NSqcqvb221GjGUuZ6Dt4J/1ExVr6xUnFhM+IJXtR9whPsJe2uCu78A2vwO9YnbSQagav1Z40kqmglJcYAWA4rfvStDZNvTVuXB3t8tkUc6DhMJtJU1iKvqcmaGlsq+SrEptZRAfh6KIshCBvo17IDmwVWNk8lRVLuOEjhBUys0slzUr/oTkvNTG3rGju1dAoxy0V+gnlvHBvivMWFggbvPCUDBzQPMSGRhtJv/2psu7Bk2294rYdb5ziLt/FGFOAoMwdq+lCBZl5DYLh0o3pnyO0zaY3VDNK556m1VkrLtX0MmxptG6jlENvTYV/mZf/QURb6KudN6vsPvsVzfphb/oyHbRi9kRV0ktslKT1uEGj0ktHxzbLUcupJSdPeLmDXPtXhguWIcglRi8dD42Qd0A4V8j4mh3/t3OvN/K1LIqaXf20QoeA7AVSOkrjx9Bn5chBEfxy0Av6V7XY6cxlS3VWNnZPJpbYuE+DT48X0X/pPMKdp4AJ3ZnNAgXhrR7QrGNXNjJWHLUAJwfWCH0IMH0j2UTeFHE9KFz9k5FTM8q7nI1MBHUrb7eN65z4d8vw=
 X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DU2PR04MB8807.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(396003)(136003)(366004)(346002)(376002)(39860400002)(86362001)(83380400001)(8676002)(16526019)(6486002)(7416002)(1076003)(6506007)(478600001)(26005)(6666004)(921005)(44832011)(186003)(6512007)(6636002)(2906002)(4326008)(38350700002)(66476007)(5660300002)(316002)(956004)(2616005)(52116002)(8936002)(66946007)(66556008)(38100700002)(110136005);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData: =?us-ascii?Q?BwnXRCAQcFZZyQH/CG0LIl0ZTtq2my9FyhVW86LKUdzMkaeWzMQBfTZsWtAr?=
- =?us-ascii?Q?0822mFH30KDb98U8QG1qEDe+NBgJCHsGXhKWBXMOCDAc1qw74wa/CITcip+d?=
- =?us-ascii?Q?vfV3GumLEoYY9gz+TOaHpXK07L52cEywmDuj4N0PfgaXMV5s4PN0pD+atvol?=
- =?us-ascii?Q?nYnHsWhlntp6KE9t0793x+NcOYAPlTjAVp9SIGKueBWm717x4THVWLqVpzpc?=
- =?us-ascii?Q?Eytmxjbprhreh7uVW2+fkEB9pIjlE7Cjj3Y2h0vwH7XR6Z4FL5FNeWkVKq17?=
- =?us-ascii?Q?egHTx7KtipkVR/KsuhLp9q7NlaFWcFRM5QgSv2XWL5eLRB8rd103Kql6OKqw?=
- =?us-ascii?Q?WQhO9yPUB1jtiKfCKHQj4lEt2s+i8wwXhrHgVoU9NK8H7zS7VDCvZwBIByVg?=
- =?us-ascii?Q?lK6pVYnUtvTwRiwSXqV9VN1BU8pDbRsvOZLlmrV0QrZPpUNSw8kSXSowa6G4?=
- =?us-ascii?Q?GXAK/KPj4sSXBIVcPLy8WViohHoTjMjry6ubuQ8xKig8J9AMLwexTbkab//a?=
- =?us-ascii?Q?g/ztOeaVcABF5y6FU/wlILkxkEcbrS5peoLw6L/aAR6OCi2SH+wVAdFT2KdI?=
- =?us-ascii?Q?7Gj9y5LUZdJGa0xWvwgggZNYF0w5aSTxWfINBnqjCtg7WUvdDYzel3T0SPs2?=
- =?us-ascii?Q?Dm2N5U4KiYK0GqBkLLUjoSbqqceCn6kFnUz8A7A3FMGODNR3NJjXzTzWPUck?=
- =?us-ascii?Q?T4hMvST+Xltkyk2iD90hJ73nE2/IT0V0OufUPjW9DkT/lYV7FbEPirLRvnVj?=
- =?us-ascii?Q?bH4cPG97dW4rFpMkNo1VRpSoxHM9lP1Pul/v8HlS5b9o/Bsfwp5Uegxb+UmD?=
- =?us-ascii?Q?y3a0Wzoxl/20v89suSjmKJJXryxdrKNZhgnJ8NOndw5994VtNw58QPFNR6Dd?=
- =?us-ascii?Q?hCr/dC/3UnQKfhpKApnYx+Nh2SLvBUScfMKDeeJ+ujBjrmP82Vqs/XXWk5uj?=
- =?us-ascii?Q?iwA9T5MbRF4+AYhKsyuF0Yafs7oDqPNoGU3/xJiXrAJw1G3gm0z6GvzN4Mej?=
- =?us-ascii?Q?a4i9hCebjDw5RiBNEqtravVzsSuVztxuDP3wvTFeVmpjWa5kO0vtw/gS8xKJ?=
- =?us-ascii?Q?dPXcaGwn550htGJCrdd8RyZxe0u2VIPijpODtWfHpcDiWzJY1ciFEumKnj6w?=
- =?us-ascii?Q?Wn4oCMKPGqvC9Qm+Y7FwZ9zaiC8YTHfiA79Gs2wOflrMxSOSPYFRW0iMpB19?=
- =?us-ascii?Q?JO3dnhofVlLnfPJFeU2K+vM5ODfIR5/YHMq+qYF/Be/ewX7sAig2HPlRQ+sf?=
- =?us-ascii?Q?dQP3D8wM0ntDj5ZcmupL1TIr98zs9WMunpPuwIOfDkehMOM+hBl1ts5WZfBZ?=
- =?us-ascii?Q?0EkCiJdA+HVcNP0MCdLlmZN3?=
+X-MS-Exchange-AntiSpam-MessageData: =?us-ascii?Q?ROIHFAhxuIua0bD59KGcPNkacXriXKA4AEn3Vdg5fyhvLbkL37A+7G87thsk?=
+ =?us-ascii?Q?7b/257HfUHK2YbiNW+1ajtLwuzfRZBXc6ZZ13ZQNjMy+tV44YR5vuR/uUQQa?=
+ =?us-ascii?Q?OQquJly3iuIBkpPxMQC+DkIm2V45KAi7+1Iw8+ygaQ5nx2dcocnR13o9oUKL?=
+ =?us-ascii?Q?1Vunqtz6oVYAyfV0sA9v2ATPjoPyL8KmiZeTfH+HlRdqcxI1EnqexZdckZ1v?=
+ =?us-ascii?Q?n2hA3iRiTA6e+5dRoS8bst7PjAqSXbp8jf7XSQmQZJJ0vDu0m22wxCYXH8Mi?=
+ =?us-ascii?Q?HiU/Kd2aQ1LPIFMBSwu8vAmhCQflJmZ7YlGWgJIWkn5LAEBMSLkjrofdoujb?=
+ =?us-ascii?Q?Ih7ax4dIIzs7HkIO1CLMOKz7E74XNltCLGROpsmnmPGYuqgsEq9q85MdC/Vw?=
+ =?us-ascii?Q?P7NIE0c70MFiNT5Z/SqynV10CH+NyZBJmTGmBOEPQ81n+LI2zLzYSvD8jwKA?=
+ =?us-ascii?Q?b6YUYSPmxrTYsuBiHbVwDcko/c6JPc0yW26REzbEOtNCMe0JGFQye6xei1Go?=
+ =?us-ascii?Q?Rtkh1CSzNgWnenbHbB3XxVIjROyg6+091TCUw3DU27crxI/wvCtkiNi63fKA?=
+ =?us-ascii?Q?nVySgPbmxpyT1SGvlysRhq02D2u43WDEfwplGcWiqgcsX8GSmXE8I3X/E7oP?=
+ =?us-ascii?Q?ITd5kxasA/Yf3+aHrz0no7Care2QLoRMovmOn8ymOk2e/Q61ii1yBqaL/94T?=
+ =?us-ascii?Q?qnBK96KyWTyUSgeXuf4JTT3IeK6T3xh3cUhJqLMt7p2BJoK3/KRgOSSFiNGg?=
+ =?us-ascii?Q?VTub3+P8/d+VeI6bgrS+QBQt1+xVCJ6BAMJYy1lsZoNxISVUWSmFqazaAbOi?=
+ =?us-ascii?Q?PypFCzFYT3NqthZC8RZnB4GNz6cTc6itwEJk/cezGUfI7ru0jiiIWPQkwkIh?=
+ =?us-ascii?Q?3ALL8GlJZhV7gUp7ybCrMArjCnHNpGt6wiqCcAKWTSMTUz45rsm6mOrzXbXM?=
+ =?us-ascii?Q?1SvKK6dNw7z0MhynZlxE/TLo7IldKhNZGWKbEgJNYSy4gRPQxI+4HgrdMyuW?=
+ =?us-ascii?Q?SA+vrikC9wp9Ek1QdWZefYubx0BBdV9oRgiyKc8l3KfzqFwwpQDt9TQeCAc4?=
+ =?us-ascii?Q?umHvNFqcWaxcidt+rPSQDZF4IghLkiChxYixu7k97Uu9C2UM2d/rhbj7r1O6?=
+ =?us-ascii?Q?dRNp9XufMH8ESqIQF8gdJB8bvVnzCJh2LhK7VQqi8zPZoG5NuXiUcrqdxJtf?=
+ =?us-ascii?Q?amyZdcE4NctjQHURSkP7shD9orH+4Gvj1DNbuKPsA9Z8zX20R2HrAfOlLXqb?=
+ =?us-ascii?Q?/nQFfwsRCkFucNuG8ofkMUEqGZTWTc7py3b5CR3HQjqiQvbtkO9kF0GnpEhF?=
+ =?us-ascii?Q?BVhQBRwYS2f4Ng5wS2JZpCZu?=
 X-OriginatorOrg: oss.nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 6ccc853e-eb8a-414b-3799-08d910b34c33
+X-MS-Exchange-CrossTenant-Network-Message-Id: 749f218d-d331-478e-6df9-08d910b34eb1
 X-MS-Exchange-CrossTenant-AuthSource: DU2PR04MB8807.eurprd04.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 06 May 2021 17:20:51.4884
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 06 May 2021 17:20:55.6321
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: trHrPUHrX7fxI5VBCXQiOq8VTGSQoaV29r29CNqvEFddeqTXJ5ymAu57+ovu91CIYma5N5pQ00cBvyj5SfCXQg==
+X-MS-Exchange-CrossTenant-UserPrincipalName: ijt8DUgXZDvngb81WJ2ZGiDqseF+soXiC8dWjfRn7yF825iPv48cIJiN/GPaIxlltli1rnCagYc8ScUaxGJX/Q==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: DU2PR04MB8581
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
@@ -117,155 +117,58 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Yannick Vignon <yannick.vignon@nxp.com>
 
-An interesting possibility offered by the new thread NAPI code is to
-fine-tune the affinities and priorities of different NAPI instances. In a
-real-time networking context, this makes it possible to ensure packets
-received in a high-priority queue are always processed, and with low
-latency.
-
-However, the way the NAPI threads are named does not really expose which
-one is responsible for a given queue. Assigning a more explicit name to
-NAPI instances can make that determination much easier.
+Use the newly introduced name field of the NAPI struct to identify which
+queue each NAPI instance works on.
 
 Signed-off-by: Yannick Vignon <yannick.vignon@nxp.com>
 ---
- include/linux/netdevice.h | 42 +++++++++++++++++++++++++++++++++++++--
- net/core/dev.c            | 20 +++++++++++++++----
- 2 files changed, 56 insertions(+), 6 deletions(-)
+ .../net/ethernet/stmicro/stmmac/stmmac_main.c | 21 ++++++++++++-------
+ 1 file changed, 13 insertions(+), 8 deletions(-)
 
-diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
-index 5cbc950b34df..01fa9d342383 100644
---- a/include/linux/netdevice.h
-+++ b/include/linux/netdevice.h
-@@ -318,6 +318,8 @@ struct gro_list {
-  */
- #define GRO_HASH_BUCKETS	8
- 
-+
-+#define NAPINAMSIZ		8
- /*
-  * Structure for NAPI scheduling similar to tasklet but with weighting
-  */
-@@ -348,6 +350,7 @@ struct napi_struct {
- 	struct hlist_node	napi_hash_node;
- 	unsigned int		napi_id;
- 	struct task_struct	*thread;
-+	char			name[NAPINAMSIZ];
- };
- 
- enum {
-@@ -2445,6 +2448,21 @@ static inline void *netdev_priv(const struct net_device *dev)
-  */
- #define NAPI_POLL_WEIGHT 64
- 
-+/**
-+ *	netif_napi_add_named - initialize a NAPI context
-+ *	@dev:  network device
-+ *	@napi: NAPI context
-+ *	@poll: polling function
-+ *	@weight: default weight
-+ *	@name: napi instance name
-+ *
-+ * netif_napi_add_named() must be used to initialize a NAPI context prior to calling
-+ * *any* of the other NAPI-related functions.
-+ */
-+void netif_napi_add_named(struct net_device *dev, struct napi_struct *napi,
-+		    int (*poll)(struct napi_struct *, int), int weight,
-+		    const char *name);
-+
- /**
-  *	netif_napi_add - initialize a NAPI context
-  *	@dev:  network device
-@@ -2458,6 +2476,27 @@ static inline void *netdev_priv(const struct net_device *dev)
- void netif_napi_add(struct net_device *dev, struct napi_struct *napi,
- 		    int (*poll)(struct napi_struct *, int), int weight);
- 
-+/**
-+ *	netif_tx_napi_add_named - initialize a NAPI context
-+ *	@dev:  network device
-+ *	@napi: NAPI context
-+ *	@poll: polling function
-+ *	@weight: default weight
-+ *	@name: napi instance name
-+ *
-+ * This variant of netif_napi_add_named() should be used from drivers using NAPI
-+ * to exclusively poll a TX queue.
-+ * This will avoid we add it into napi_hash[], thus polluting this hash table.
-+ */
-+static inline void netif_tx_napi_add_named(struct net_device *dev,
-+				     struct napi_struct *napi,
-+				     int (*poll)(struct napi_struct *, int),
-+				     int weight, const char *name)
-+{
-+	set_bit(NAPI_STATE_NO_BUSY_POLL, &napi->state);
-+	netif_napi_add_named(dev, napi, poll, weight, name);
-+}
-+
- /**
-  *	netif_tx_napi_add - initialize a NAPI context
-  *	@dev:  network device
-@@ -2474,8 +2513,7 @@ static inline void netif_tx_napi_add(struct net_device *dev,
- 				     int (*poll)(struct napi_struct *, int),
- 				     int weight)
+diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
+index e0b7eebcb512..d7fc3eddb7b7 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
++++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
+@@ -6615,6 +6615,7 @@ static void stmmac_napi_add(struct net_device *dev)
  {
--	set_bit(NAPI_STATE_NO_BUSY_POLL, &napi->state);
--	netif_napi_add(dev, napi, poll, weight);
-+	netif_tx_napi_add_named(dev, napi, poll, weight, NULL);
- }
+ 	struct stmmac_priv *priv = netdev_priv(dev);
+ 	u32 queue, maxq;
++	char name[NAPINAMSIZ];
  
- /**
-diff --git a/net/core/dev.c b/net/core/dev.c
-index 222b1d322c96..bc70f545cc5a 100644
---- a/net/core/dev.c
-+++ b/net/core/dev.c
-@@ -1563,8 +1563,8 @@ static int napi_kthread_create(struct napi_struct *n)
- 	 * TASK_INTERRUPTIBLE mode to avoid the blocked task
- 	 * warning and work with loadavg.
- 	 */
--	n->thread = kthread_run(napi_threaded_poll, n, "napi/%s-%d",
--				n->dev->name, n->napi_id);
-+	n->thread = kthread_run(napi_threaded_poll, n, "napi/%s-%s",
-+				n->dev->name, n->name);
- 	if (IS_ERR(n->thread)) {
- 		err = PTR_ERR(n->thread);
- 		pr_err("kthread_run failed with err %d\n", err);
-@@ -6844,8 +6844,9 @@ int dev_set_threaded(struct net_device *dev, bool threaded)
- }
- EXPORT_SYMBOL(dev_set_threaded);
+ 	maxq = max(priv->plat->rx_queues_to_use, priv->plat->tx_queues_to_use);
  
--void netif_napi_add(struct net_device *dev, struct napi_struct *napi,
--		    int (*poll)(struct napi_struct *, int), int weight)
-+void netif_napi_add_named(struct net_device *dev, struct napi_struct *napi,
-+			  int (*poll)(struct napi_struct *, int), int weight,
-+			  const char *name)
- {
- 	if (WARN_ON(test_and_set_bit(NAPI_STATE_LISTED, &napi->state)))
- 		return;
-@@ -6871,6 +6872,10 @@ void netif_napi_add(struct net_device *dev, struct napi_struct *napi,
- 	set_bit(NAPI_STATE_NPSVC, &napi->state);
- 	list_add_rcu(&napi->dev_list, &dev->napi_list);
- 	napi_hash_add(napi);
-+	if (name)
-+		strncpy(napi->name, name, NAPINAMSIZ);
-+	else
-+		snprintf(napi->name, NAPINAMSIZ, "%d", napi->napi_id);
- 	/* Create kthread for this napi if dev->threaded is set.
- 	 * Clear dev->threaded if kthread creation failed so that
- 	 * threaded mode will not be enabled in napi_enable().
-@@ -6878,6 +6883,13 @@ void netif_napi_add(struct net_device *dev, struct napi_struct *napi,
- 	if (dev->threaded && napi_kthread_create(napi))
- 		dev->threaded = 0;
- }
-+EXPORT_SYMBOL(netif_napi_add_named);
-+
-+void netif_napi_add(struct net_device *dev, struct napi_struct *napi,
-+		    int (*poll)(struct napi_struct *, int), int weight)
-+{
-+	netif_napi_add_named(dev, napi, poll, weight, NULL);
-+}
- EXPORT_SYMBOL(netif_napi_add);
+@@ -6626,19 +6627,23 @@ static void stmmac_napi_add(struct net_device *dev)
+ 		spin_lock_init(&ch->lock);
  
- void napi_disable(struct napi_struct *n)
+ 		if (queue < priv->plat->rx_queues_to_use) {
+-			netif_napi_add(dev, &ch->rx_napi, stmmac_napi_poll_rx,
+-				       NAPI_POLL_WEIGHT);
++			snprintf(name, NAPINAMSIZ, "rx-%d", queue);
++			netif_napi_add_named(dev, &ch->rx_napi,
++					     stmmac_napi_poll_rx,
++					     NAPI_POLL_WEIGHT, name);
+ 		}
+ 		if (queue < priv->plat->tx_queues_to_use) {
+-			netif_tx_napi_add(dev, &ch->tx_napi,
+-					  stmmac_napi_poll_tx,
+-					  NAPI_POLL_WEIGHT);
++			snprintf(name, NAPINAMSIZ, "tx-%d", queue);
++			netif_tx_napi_add_named(dev, &ch->tx_napi,
++						stmmac_napi_poll_tx,
++						NAPI_POLL_WEIGHT, name);
+ 		}
+ 		if (queue < priv->plat->rx_queues_to_use &&
+ 		    queue < priv->plat->tx_queues_to_use) {
+-			netif_napi_add(dev, &ch->rxtx_napi,
+-				       stmmac_napi_poll_rxtx,
+-				       NAPI_POLL_WEIGHT);
++			snprintf(name, NAPINAMSIZ, "rxtx-%d", queue);
++			netif_napi_add_named(dev, &ch->rxtx_napi,
++					     stmmac_napi_poll_rxtx,
++					     NAPI_POLL_WEIGHT, name);
+ 		}
+ 	}
+ }
 -- 
 2.17.1
 
