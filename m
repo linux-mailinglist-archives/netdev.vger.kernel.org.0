@@ -2,228 +2,175 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7285A375A1E
-	for <lists+netdev@lfdr.de>; Thu,  6 May 2021 20:22:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CFE58375A2A
+	for <lists+netdev@lfdr.de>; Thu,  6 May 2021 20:28:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233273AbhEFSXU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 6 May 2021 14:23:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43486 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231839AbhEFSXT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 6 May 2021 14:23:19 -0400
-Received: from mail-ed1-x52d.google.com (mail-ed1-x52d.google.com [IPv6:2a00:1450:4864:20::52d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 77DD5C061574
-        for <netdev@vger.kernel.org>; Thu,  6 May 2021 11:22:20 -0700 (PDT)
-Received: by mail-ed1-x52d.google.com with SMTP id h10so7232587edt.13
-        for <netdev@vger.kernel.org>; Thu, 06 May 2021 11:22:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=BRQHRkFwEmoQQH23N9E0XGi4S2KTprSInvxvTybpRDo=;
-        b=cupWVeZ/u7+KYnd0pZbmw0V8kpVJFidtNQmJJndcFVQDm7Mz9sH12+Lvq5d+q2lORZ
-         askoFNLFB+ul/jNYyOaXg2Tc8PAwEkqUta+zAbfyeEtDr204q+upO7tiLAh5wdB9o0aH
-         Yb9MtWshSqoRLpE7C2Uc8CPKDNJXhWVFj2EP7zwBz1bdSM1Xiz30uMjFperBXrK3WRdL
-         TvwUA8q18G7J4cNgZYHBhFczEjy1UgA0lCqYBSYOIHI9yjJU+kALAz20Y3jyLLnqIuWg
-         SSOWEKIM2+jJSkFl8wOFPlyNTFJ8/0LbyLSHTGF3hAHXE3YCmz0LpQKySvdn/GYfM0XB
-         2x/w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=BRQHRkFwEmoQQH23N9E0XGi4S2KTprSInvxvTybpRDo=;
-        b=VTcbE7DyXC67cJ7/fuS6gmJwbLgdamR+vantgRR0V4KD9s9S+zhxcfaHeFqMkbPNd3
-         dcD6VF2dYZm6BGqv2rvxF4gRgGVW8nCgLebt6zJFimFN8JfiTqMfA9+uCNafZW+Q1Uyj
-         AWgnSXddTG3q+YX0L/LEyWCjGEqEnJXQdUT9RvExBxshvQ7RaqRC7xhLF1J8LZhF55gU
-         KjNaeF/Zw0LwT4/C5SdufTSWNP8zZq+l8m8ckGliNK+F7gxM6VGeYJ/WAQ2JYUBbR7g4
-         pMOad4Zcd3aVHmXbcD7dDrDxM17vCSz9t7H/iV+pQbOhxGpxM/knBXkpSIartOWMxorf
-         T6xQ==
-X-Gm-Message-State: AOAM533SDpoPuUOwy0fNE4YJsIed77DRqIwXPDmwmlLe/B13bzMqtsff
-        XJGeg4wFZsLC8aammVFrTtrQoiLb1TLPdUjg
-X-Google-Smtp-Source: ABdhPJygFqbS2Q4RS+eJRhQXtma6ENXH0qg1gp4BjMtugMSUuSUL/AiBbxee0YuofQuNPytNP9B30g==
-X-Received: by 2002:a05:6402:5111:: with SMTP id m17mr6949270edd.343.1620325338529;
-        Thu, 06 May 2021 11:22:18 -0700 (PDT)
-Received: from mail-wr1-f54.google.com (mail-wr1-f54.google.com. [209.85.221.54])
-        by smtp.gmail.com with ESMTPSA id g17sm2844772edv.47.2021.05.06.11.22.16
-        for <netdev@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 06 May 2021 11:22:17 -0700 (PDT)
-Received: by mail-wr1-f54.google.com with SMTP id l2so6606178wrm.9
-        for <netdev@vger.kernel.org>; Thu, 06 May 2021 11:22:16 -0700 (PDT)
-X-Received: by 2002:a05:6000:188b:: with SMTP id a11mr6776251wri.275.1620325335877;
- Thu, 06 May 2021 11:22:15 -0700 (PDT)
+        id S233878AbhEFS3y (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 6 May 2021 14:29:54 -0400
+Received: from ssl.serverraum.org ([176.9.125.105]:45079 "EHLO
+        ssl.serverraum.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231839AbhEFS3x (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 6 May 2021 14:29:53 -0400
+Received: from ssl.serverraum.org (web.serverraum.org [172.16.0.2])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ssl.serverraum.org (Postfix) with ESMTPSA id 915862224F;
+        Thu,  6 May 2021 20:28:51 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
+        t=1620325733;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=G4NjkewuS5h+EDcBum9bUFzNWZeSg5k9RUwf4q572yQ=;
+        b=WL24tYFsBqhnNFM2CpuJK9mRDZU6xgFFjZBI227QVFo3n2gOBE+BUivzxUROyRaVJBK92n
+        hBbkhLykL1gtOEsOzJ9Sy/kcN6vDCDPIzjUAg+UyndawwM4SjxxH/0u+YJO9vgOrQRxZcv
+        n9/YM9JKoK3a2VPTjjb3c3C3fKaDMUQ=
 MIME-Version: 1.0
-References: <CGME20210429102143epcas2p4c8747c09a9de28f003c20389c050394a@epcas2p4.samsung.com>
- <1619690903-1138-1-git-send-email-dseok.yi@samsung.com> <8c2ea41a-3fc5-d560-16e5-bf706949d857@iogearbox.net>
- <02bf01d74211$0ff4aed0$2fde0c70$@samsung.com> <CA+FuTScC96R5o24c-sbY-CEV4EYOVFepFR85O4uGtCLwOjnzEw@mail.gmail.com>
- <02c801d7421f$65287a90$2f796fb0$@samsung.com>
-In-Reply-To: <02c801d7421f$65287a90$2f796fb0$@samsung.com>
-From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Date:   Thu, 6 May 2021 14:21:37 -0400
-X-Gmail-Original-Message-ID: <CA+FuTScUJwqEpYim0hG27k39p_yEyzuW2A8RFKuBndctgKjWZw@mail.gmail.com>
-Message-ID: <CA+FuTScUJwqEpYim0hG27k39p_yEyzuW2A8RFKuBndctgKjWZw@mail.gmail.com>
-Subject: Re: [PATCH bpf] bpf: check for data_len before upgrading mss when 6
- to 4
-To:     Dongseok Yi <dseok.yi@samsung.com>
-Cc:     Daniel Borkmann <daniel@iogearbox.net>, bpf <bpf@vger.kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Network Development <netdev@vger.kernel.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII;
+ format=flowed
+Content-Transfer-Encoding: 7bit
+Date:   Thu, 06 May 2021 20:28:51 +0200
+From:   Michael Walle <michael@walle.cc>
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Xiaoliang Yang <xiaoliang.yang_1@nxp.com>,
+        UNGLinuxDriver@microchip.com, alexandre.belloni@bootlin.com,
+        allan.nielsen@microchip.com,
+        Claudiu Manoil <claudiu.manoil@nxp.com>, davem@davemloft.net,
+        idosch@mellanox.com, joergen.andreasen@microchip.com,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        Po Liu <po.liu@nxp.com>, vinicius.gomes@intel.com
+Subject: Re: [net-next] net: dsa: felix: disable always guard band bit for TAS
+ config
+In-Reply-To: <20210506150718.on5ivo3zqpsf6uab@skbuf>
+References: <20210504181833.w2pecbp2qpuiactv@skbuf>
+ <c7618025da6723418c56a54fe4683bd7@walle.cc>
+ <20210504185040.ftkub3ropuacmyel@skbuf>
+ <ccb40b7fd18b51ecfc3f849a47378c54@walle.cc>
+ <20210504191739.73oejybqb6z7dlxr@skbuf>
+ <d933eef300cb1e1db7d36ca2cb876ef6@walle.cc>
+ <20210504213259.l5rbnyhxrrbkykyg@skbuf>
+ <efe5ac03ceddc8ff472144b5fe9fd046@walle.cc>
+ <20210506135007.ul3gpdecq427tvgr@skbuf>
+ <879df38ab1fb6d8fb8f371bfd5e8c213@walle.cc>
+ <20210506150718.on5ivo3zqpsf6uab@skbuf>
+User-Agent: Roundcube Webmail/1.4.11
+Message-ID: <6e6342e1d412f5356a38c2d61ff97a0e@walle.cc>
+X-Sender: michael@walle.cc
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, May 5, 2021 at 10:27 PM Dongseok Yi <dseok.yi@samsung.com> wrote:
->
-> On Wed, May 05, 2021 at 09:45:37PM -0400, Willem de Bruijn wrote:
-> > On Wed, May 5, 2021 at 8:45 PM Dongseok Yi <dseok.yi@samsung.com> wrote:
-> > >
-> > > On Wed, May 05, 2021 at 10:55:10PM +0200, Daniel Borkmann wrote:
-> > > > On 4/29/21 12:08 PM, Dongseok Yi wrote:
-> > > > > tcp_gso_segment check for the size of GROed payload if it is bigger
-> > > > > than the mss. bpf_skb_proto_6_to_4 increases mss, but the mss can be
-> > > > > bigger than the size of GROed payload unexpectedly if data_len is not
-> > > > > big enough.
-> > > > >
-> > > > > Assume that skb gso_size = 1372 and data_len = 8. bpf_skb_proto_6_to_4
-> >
-> > Is this a typo and is this intended to read skb->data_len = 1380?
->
-> This is not a typo. I intended skb->data_len = 8.
->
-> >
-> > The issue is that payload length (1380) is greater than mss with ipv6
-> > (1372), but less than mss with ipv4 (1392).
-> >
-> > I don't understand data_len = 8 or why the patch compares
-> > skb->data_len to len_diff (20).
->
-> skb_gro_receive():
->         unsigned int len = skb_gro_len(skb);
->         [...]
-> done:
->         NAPI_GRO_CB(p)->count++;
->         p->data_len += len;
->
-> head_skb's data_len is the sum of skb_gro_len for each skb of the frags.
-> data_len could be 8 if server sent a small size packet and it is GROed
-> to head_skb.
->
-> Please let me know if I am missing something.
+Am 2021-05-06 17:07, schrieb Vladimir Oltean:
+> On Thu, May 06, 2021 at 04:41:51PM +0200, Michael Walle wrote:
+>> Am 2021-05-06 15:50, schrieb Vladimir Oltean:
+>> > On Thu, May 06, 2021 at 03:25:07PM +0200, Michael Walle wrote:
+>> > > Am 2021-05-04 23:33, schrieb Vladimir Oltean:
+>> > > > [ trimmed the CC list, as this is most likely spam for most people ]
+>> > > >
+>> > > > On Tue, May 04, 2021 at 10:23:11PM +0200, Michael Walle wrote:
+>> > > > > Am 2021-05-04 21:17, schrieb Vladimir Oltean:
+>> > > > > > On Tue, May 04, 2021 at 09:08:00PM +0200, Michael Walle wrote:
+>> > > > > > > > > > > As explained in another mail in this thread, all queues are marked as
+>> > > > > > > > > > > scheduled. So this is actually a no-op, correct? It doesn't matter if
+>> > > > > > > > > > > it set or not set for now. Dunno why we even care for this bit then.
+>> > > > > > > > > >
+>> > > > > > > > > > It matters because ALWAYS_GUARD_BAND_SCH_Q reduces the available
+>> > > > > > > > > > throughput when set.
+>> > > > > > > > >
+>> > > > > > > > > Ahh, I see now. All queues are "scheduled" but the guard band only
+>> > > > > > > > > applies
+>> > > > > > > > > for "non-scheduled" -> "scheduled" transitions. So the guard band is
+>> > > > > > > > > never
+>> > > > > > > > > applied, right? Is that really what we want?
+>> > > > > > > >
+>> > > > > > > > Xiaoliang explained that yes, this is what we want. If the end user
+>> > > > > > > > wants a guard band they can explicitly add a "sched-entry 00" in the
+>> > > > > > > > tc-taprio config.
+>> > > > > > >
+>> > > > > > > You're disabling the guard band, then. I figured, but isn't that
+>> > > > > > > suprising for the user? Who else implements taprio? Do they do it in
+>> > > > > > > the
+>> > > > > > > same way? I mean this behavior is passed right to the userspace and
+>> > > > > > > have
+>> > > > > > > a direct impact on how it is configured. Of course a user can add it
+>> > > > > > > manually, but I'm not sure that is what we want here. At least it
+>> > > > > > > needs
+>> > > > > > > to be documented somewhere. Or maybe it should be a switchable option.
+>> > > > > > >
+>> > > > > > > Consider the following:
+>> > > > > > > sched-entry S 01 25000
+>> > > > > > > sched-entry S fe 175000
+>> > > > > > > basetime 0
+>> > > > > > >
+>> > > > > > > Doesn't guarantee, that queue 0 is available at the beginning of
+>> > > > > > > the cycle, in the worst case it takes up to
+>> > > > > > > <begin of cycle> + ~12.5us until the frame makes it through (given
+>> > > > > > > gigabit and 1518b frames).
+>> > > > > > >
+>> > > > > > > Btw. there are also other implementations which don't need a guard
+>> > > > > > > band (because they are store-and-forward and cound the remaining
+>> > > > > > > bytes). So yes, using a guard band and scheduling is degrading the
+>> > > > > > > performance.
+>> > > > > >
+>> > > > > > What is surprising for the user, and I mentioned this already in another
+>> > > > > > thread on this patch, is that the Felix switch overruns the time gate (a
+>> > > > > > packet taking 2 us to transmit will start transmission even if there is
+>> > > > > > only 1 us left of its time slot, delaying the packets from the next time
+>> > > > > > slot by 1 us). I guess that this is why the ALWAYS_GUARD_BAND_SCH_Q bit
+>> > > > > > exists, as a way to avoid these overruns, but it is a bit of a poor tool
+>> > > > > > for that job. Anyway, right now we disable it and live with the
+>> > > > > > overruns.
+>> > > > >
+>> > > > > We are talking about the same thing here. Why is that a poor tool?
+>> > > >
+>> > > > It is a poor tool because it revolves around the idea of "scheduled
+>> > > > queues" and "non-scheduled queues".
+>> > > >
+>> > > > Consider the following tc-taprio schedule:
+>> > > >
+>> > > > 	sched-entry S 81 2000 # TC 7 and 0 open, all others closed
+>> > > > 	sched-entry S 82 2000 # TC 7 and 1 open, all others closed
+>> > > > 	sched-entry S 84 2000 # TC 7 and 2 open, all others closed
+>> > > > 	sched-entry S 88 2000 # TC 7 and 3 open, all others closed
+>> > > > 	sched-entry S 90 2000 # TC 7 and 4 open, all others closed
+>> > > > 	sched-entry S a0 2000 # TC 7 and 5 open, all others closed
+>> > > > 	sched-entry S c0 2000 # TC 7 and 6 open, all others closed
+>> > > >
+>> > > > Otherwise said, traffic class 7 should be able to send any time it
+>> > > > wishes.
+>> > >
+>> > > What is the use case behind that? TC7 (with the highest priority)
+>> > > may always take precedence of the other TCs, thus what is the point
+>> > > of having a dedicated window for the others.
+>> >
+>> > Worst case latency is obviously better for an intermittent stream (not
+>> > more than one packet in flight at a time) in TC7 than it is for any
+>> > stream in TC6-TC0. But intermittent streams in TC6-TC0 also have their
+>> > own worst case guarantees (assuming that 2000 ns is enough to fit one
+>> > TC 7 frame and one frame from the TC6-TC0 range).
+>> 
+>> Oh and I missed that, TC0-TC6 probably won't work because that gate is
+>> too narrow (12.5us guard band) unless of course you set MAXSDU to a
+>> smaller value. Which would IMHO be the correct thing to do here.
+> 
+> I'm not sure that this is exactly true. I know that I tested once, and
+> the switch is happy to send a packet as long as the time window is 33 
+> ns
+> or larger (Idon't . Can't remember if the ALWAYS_GUARD_BAND_SCH_Q bit 
+> was set or
+> not, and I'm traveling right now so I don't have an LS1028A board handy
+> to re-test.
 
-This is my understanding of the data path. This is a forwarding path
-for TCP traffic.
+I've just double checked with a 5.12 kernel (that is with
+ALWAYS_GUARD_BAND_SCH_Q bit still set). TC7 works perfectly fine at
+line rate. Frames in TC0-TC6 aren't forwarded.
 
-GRO is enabled and will coalesce multiple segments into a single large
-packet. In bad cases, the coalesced packet payload is > MSS, but < MSS
-+ 20.
+Clearing that bit manually (ie. devmem 0x1fc20f698 32 0x0; btw the
+schedule is on swp1, so this will also prove that bit is global ;))
+will make TC0-6 work. But it will also happily forward 1518b frames.
 
-Somewhere between GRO and GSO you have a BPF program that converts the
-IPv6 address to IPv4.
+Behavior as expected. Please feel free to confirm, though.
 
-There is no concept of head_skb at the time of this BPF program. It is
-a single SKB, with an skb linear part and multiple data items in the
-frags (no frag_list).
-
-When entering the GSO stack, this single skb now has a payload length
-< MSS. So it would just make a valid TCP packet on its own?
-
-skb_gro_len is only relevant inside the GRO stack. It internally casts
-the skb->cb[] to NAPI_GRO_CB. This field is a scratch area that may be
-reused for other purposes later by other layers of the datapath. It is
-not safe to read this inside bpf_skb_proto_6_to_4.
-
-
-> >
-> > One simple solution if this packet no longer needs to be segmented
-> > might be to reset the gso_type completely.
->
-> I am not sure gso_type can be cleared even when GSO is needed.
->
-> >
-> > In general, I would advocate using BPF_F_ADJ_ROOM_FIXED_GSO. When
-> > converting from IPv6 to IPv4, fixed gso will end up building packets
-> > that are slightly below the MTU. That opportunity cost is negligible
-> > (especially with TSO). Unfortunately, I see that that flag is
-> > available for bpf_skb_adjust_room but not for bpf_skb_proto_6_to_4.
-> >
-> >
-> > > > > would increse the gso_size to 1392. tcp_gso_segment will get an error
-> > > > > with 1380 <= 1392.
-> > > > >
-> > > > > Check for the size of GROed payload if it is really bigger than target
-> > > > > mss when increase mss.
-> > > > >
-> > > > > Fixes: 6578171a7ff0 (bpf: add bpf_skb_change_proto helper)
-> > > > > Signed-off-by: Dongseok Yi <dseok.yi@samsung.com>
-> > > > > ---
-> > > > >   net/core/filter.c | 4 +++-
-> > > > >   1 file changed, 3 insertions(+), 1 deletion(-)
-> > > > >
-> > > > > diff --git a/net/core/filter.c b/net/core/filter.c
-> > > > > index 9323d34..3f79e3c 100644
-> > > > > --- a/net/core/filter.c
-> > > > > +++ b/net/core/filter.c
-> > > > > @@ -3308,7 +3308,9 @@ static int bpf_skb_proto_6_to_4(struct sk_buff *skb)
-> > > > >             }
-> > > > >
-> > > > >             /* Due to IPv4 header, MSS can be upgraded. */
-> > > > > -           skb_increase_gso_size(shinfo, len_diff);
-> > > > > +           if (skb->data_len > len_diff)
-> > > >
-> > > > Could you elaborate some more on what this has to do with data_len specifically
-> > > > here? I'm not sure I follow exactly your above commit description. Are you saying
-> > > > that you're hitting in tcp_gso_segment():
-> > > >
-> > > >          [...]
-> > > >          mss = skb_shinfo(skb)->gso_size;
-> > > >          if (unlikely(skb->len <= mss))
-> > > >                  goto out;
-> > > >          [...]
-> > >
-> > > Yes, right
-> > >
-> > > >
-> > > > Please provide more context on the bug, thanks!
-> > >
-> > > tcp_gso_segment():
-> > >         [...]
-> > >         __skb_pull(skb, thlen);
-> > >
-> > >         mss = skb_shinfo(skb)->gso_size;
-> > >         if (unlikely(skb->len <= mss))
-> > >         [...]
-> > >
-> > > skb->len will have total GROed TCP payload size after __skb_pull.
-> > > skb->len <= mss will not be happened in a normal GROed situation. But
-> > > bpf_skb_proto_6_to_4 would upgrade MSS by increasing gso_size, it can
-> > > hit an error condition.
-> > >
-> > > We should ensure the following condition.
-> > > total GROed TCP payload > the original mss + (IPv6 size - IPv4 size)
-> > >
-> > > Due to
-> > > total GROed TCP payload = the original mss + skb->data_len
-> > > IPv6 size - IPv4 size = len_diff
-> > >
-> > > Finally, we can get the condition.
-> > > skb->data_len > len_diff
-> > >
-> > > >
-> > > > > +                   skb_increase_gso_size(shinfo, len_diff);
-> > > > > +
-> > > > >             /* Header must be checked, and gso_segs recomputed. */
-> > > > >             shinfo->gso_type |= SKB_GSO_DODGY;
-> > > > >             shinfo->gso_segs = 0;
-> > > > >
-> > >
-> > >
->
+-michael
