@@ -2,175 +2,315 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CFE58375A2A
-	for <lists+netdev@lfdr.de>; Thu,  6 May 2021 20:28:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1B68D375A31
+	for <lists+netdev@lfdr.de>; Thu,  6 May 2021 20:31:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233878AbhEFS3y (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 6 May 2021 14:29:54 -0400
-Received: from ssl.serverraum.org ([176.9.125.105]:45079 "EHLO
-        ssl.serverraum.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231839AbhEFS3x (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 6 May 2021 14:29:53 -0400
-Received: from ssl.serverraum.org (web.serverraum.org [172.16.0.2])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ssl.serverraum.org (Postfix) with ESMTPSA id 915862224F;
-        Thu,  6 May 2021 20:28:51 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
-        t=1620325733;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=G4NjkewuS5h+EDcBum9bUFzNWZeSg5k9RUwf4q572yQ=;
-        b=WL24tYFsBqhnNFM2CpuJK9mRDZU6xgFFjZBI227QVFo3n2gOBE+BUivzxUROyRaVJBK92n
-        hBbkhLykL1gtOEsOzJ9Sy/kcN6vDCDPIzjUAg+UyndawwM4SjxxH/0u+YJO9vgOrQRxZcv
-        n9/YM9JKoK3a2VPTjjb3c3C3fKaDMUQ=
+        id S234295AbhEFSb6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 6 May 2021 14:31:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45380 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231839AbhEFSb5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 6 May 2021 14:31:57 -0400
+Received: from mail-wr1-x42d.google.com (mail-wr1-x42d.google.com [IPv6:2a00:1450:4864:20::42d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B6800C061574
+        for <netdev@vger.kernel.org>; Thu,  6 May 2021 11:30:58 -0700 (PDT)
+Received: by mail-wr1-x42d.google.com with SMTP id m9so6655171wrx.3
+        for <netdev@vger.kernel.org>; Thu, 06 May 2021 11:30:58 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=ksCpVjzE8B2NTPSP4Wi75wXSihfiCsXhJC5aBCMrAIk=;
+        b=WPi/K7QsWD9eLlStP2qNicKPDx2iabTrfozbW86KcUfeOaADHUZN1LcyqyXzioiCjY
+         59Ei7URvHOfr9Y8SJYNESf9EtRXqHUzPM21njScTw269oRjUHbuewkxvypDY5zVzN9RL
+         2iHbHqTOuzkMgVt8JmpGvKsoqtLl6eEoyk4Asj2zFaVQIcwVkzQkyIRSXObrrsv4AUVi
+         AEklxeyMqPbnikz9WMsUHwcqHxzTRvllG7WYfRk/8j7bEeSkSccnoR2/LYw25M7QwSWj
+         haVTpqp21kQkoAnOynqnPrse+IOgmsMq4xKOHwKB8zuHlZlPvRibRvwd5BW4VJBbQP7P
+         TE7A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=ksCpVjzE8B2NTPSP4Wi75wXSihfiCsXhJC5aBCMrAIk=;
+        b=uDBewHuEqTrP8UIOGYxuLpVeAN32p61IL5XLxBadnbKMazIFI8rgXVA7/u2B4iX4Bw
+         zS3IIduQgiAlNOGIF+xbR0fef0xQbIDmozsSodoUZYxPBmW/xcEvOZznkT8UqR4aELi0
+         tVCPjAEYhXxg3z3WofztKXz5VEPFY+YR8I0T18mDvzSVAZXZ6nQ0JpareqEB7wmMv4+9
+         UscOoRkMiITeQnsFLWC5Q3+gNQSBaZaxIrdki1LR2Wimvt2Sh1Hb5nZCnz8T+sbYhfba
+         Hib9p1bEOsr3IdKSrirA1zQngetYE/RVJ+kvImMh1Gcm5+VKkh5LwdNnI3erpaphEQmu
+         QNcA==
+X-Gm-Message-State: AOAM531XLP4fKbtS6bQrY3LJiaJQaPIWxJwkIfwoE8JoXahK2XvPflCn
+        iwNrGbM8uALSkbdR68SPCglJfpMGpVNZBQ==
+X-Google-Smtp-Source: ABdhPJzm7qur5FGyZ5GxJjcNeRpijkR/AgNe2Ft9bjYr/VjfEJyllkI6Bh6609citTjIw2cyrOyOwQ==
+X-Received: by 2002:a05:6000:1549:: with SMTP id 9mr7020085wry.367.1620325857024;
+        Thu, 06 May 2021 11:30:57 -0700 (PDT)
+Received: from ubuntu.localdomain ([85.254.75.219])
+        by smtp.googlemail.com with ESMTPSA id x8sm5391790wrs.25.2021.05.06.11.30.56
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 06 May 2021 11:30:56 -0700 (PDT)
+From:   Toms Atteka <cpp.code.lv@gmail.com>
+To:     netdev@vger.kernel.org
+Cc:     Toms Atteka <cpp.code.lv@gmail.com>
+Subject: [PATCH net-next] net: openvswitch: IPv6: Add IPv6 extension header support
+Date:   Thu,  6 May 2021 11:30:53 -0700
+Message-Id: <20210506183053.24430-1-cpp.code.lv@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII;
- format=flowed
-Content-Transfer-Encoding: 7bit
-Date:   Thu, 06 May 2021 20:28:51 +0200
-From:   Michael Walle <michael@walle.cc>
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     Vladimir Oltean <vladimir.oltean@nxp.com>,
-        Xiaoliang Yang <xiaoliang.yang_1@nxp.com>,
-        UNGLinuxDriver@microchip.com, alexandre.belloni@bootlin.com,
-        allan.nielsen@microchip.com,
-        Claudiu Manoil <claudiu.manoil@nxp.com>, davem@davemloft.net,
-        idosch@mellanox.com, joergen.andreasen@microchip.com,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        Po Liu <po.liu@nxp.com>, vinicius.gomes@intel.com
-Subject: Re: [net-next] net: dsa: felix: disable always guard band bit for TAS
- config
-In-Reply-To: <20210506150718.on5ivo3zqpsf6uab@skbuf>
-References: <20210504181833.w2pecbp2qpuiactv@skbuf>
- <c7618025da6723418c56a54fe4683bd7@walle.cc>
- <20210504185040.ftkub3ropuacmyel@skbuf>
- <ccb40b7fd18b51ecfc3f849a47378c54@walle.cc>
- <20210504191739.73oejybqb6z7dlxr@skbuf>
- <d933eef300cb1e1db7d36ca2cb876ef6@walle.cc>
- <20210504213259.l5rbnyhxrrbkykyg@skbuf>
- <efe5ac03ceddc8ff472144b5fe9fd046@walle.cc>
- <20210506135007.ul3gpdecq427tvgr@skbuf>
- <879df38ab1fb6d8fb8f371bfd5e8c213@walle.cc>
- <20210506150718.on5ivo3zqpsf6uab@skbuf>
-User-Agent: Roundcube Webmail/1.4.11
-Message-ID: <6e6342e1d412f5356a38c2d61ff97a0e@walle.cc>
-X-Sender: michael@walle.cc
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Am 2021-05-06 17:07, schrieb Vladimir Oltean:
-> On Thu, May 06, 2021 at 04:41:51PM +0200, Michael Walle wrote:
->> Am 2021-05-06 15:50, schrieb Vladimir Oltean:
->> > On Thu, May 06, 2021 at 03:25:07PM +0200, Michael Walle wrote:
->> > > Am 2021-05-04 23:33, schrieb Vladimir Oltean:
->> > > > [ trimmed the CC list, as this is most likely spam for most people ]
->> > > >
->> > > > On Tue, May 04, 2021 at 10:23:11PM +0200, Michael Walle wrote:
->> > > > > Am 2021-05-04 21:17, schrieb Vladimir Oltean:
->> > > > > > On Tue, May 04, 2021 at 09:08:00PM +0200, Michael Walle wrote:
->> > > > > > > > > > > As explained in another mail in this thread, all queues are marked as
->> > > > > > > > > > > scheduled. So this is actually a no-op, correct? It doesn't matter if
->> > > > > > > > > > > it set or not set for now. Dunno why we even care for this bit then.
->> > > > > > > > > >
->> > > > > > > > > > It matters because ALWAYS_GUARD_BAND_SCH_Q reduces the available
->> > > > > > > > > > throughput when set.
->> > > > > > > > >
->> > > > > > > > > Ahh, I see now. All queues are "scheduled" but the guard band only
->> > > > > > > > > applies
->> > > > > > > > > for "non-scheduled" -> "scheduled" transitions. So the guard band is
->> > > > > > > > > never
->> > > > > > > > > applied, right? Is that really what we want?
->> > > > > > > >
->> > > > > > > > Xiaoliang explained that yes, this is what we want. If the end user
->> > > > > > > > wants a guard band they can explicitly add a "sched-entry 00" in the
->> > > > > > > > tc-taprio config.
->> > > > > > >
->> > > > > > > You're disabling the guard band, then. I figured, but isn't that
->> > > > > > > suprising for the user? Who else implements taprio? Do they do it in
->> > > > > > > the
->> > > > > > > same way? I mean this behavior is passed right to the userspace and
->> > > > > > > have
->> > > > > > > a direct impact on how it is configured. Of course a user can add it
->> > > > > > > manually, but I'm not sure that is what we want here. At least it
->> > > > > > > needs
->> > > > > > > to be documented somewhere. Or maybe it should be a switchable option.
->> > > > > > >
->> > > > > > > Consider the following:
->> > > > > > > sched-entry S 01 25000
->> > > > > > > sched-entry S fe 175000
->> > > > > > > basetime 0
->> > > > > > >
->> > > > > > > Doesn't guarantee, that queue 0 is available at the beginning of
->> > > > > > > the cycle, in the worst case it takes up to
->> > > > > > > <begin of cycle> + ~12.5us until the frame makes it through (given
->> > > > > > > gigabit and 1518b frames).
->> > > > > > >
->> > > > > > > Btw. there are also other implementations which don't need a guard
->> > > > > > > band (because they are store-and-forward and cound the remaining
->> > > > > > > bytes). So yes, using a guard band and scheduling is degrading the
->> > > > > > > performance.
->> > > > > >
->> > > > > > What is surprising for the user, and I mentioned this already in another
->> > > > > > thread on this patch, is that the Felix switch overruns the time gate (a
->> > > > > > packet taking 2 us to transmit will start transmission even if there is
->> > > > > > only 1 us left of its time slot, delaying the packets from the next time
->> > > > > > slot by 1 us). I guess that this is why the ALWAYS_GUARD_BAND_SCH_Q bit
->> > > > > > exists, as a way to avoid these overruns, but it is a bit of a poor tool
->> > > > > > for that job. Anyway, right now we disable it and live with the
->> > > > > > overruns.
->> > > > >
->> > > > > We are talking about the same thing here. Why is that a poor tool?
->> > > >
->> > > > It is a poor tool because it revolves around the idea of "scheduled
->> > > > queues" and "non-scheduled queues".
->> > > >
->> > > > Consider the following tc-taprio schedule:
->> > > >
->> > > > 	sched-entry S 81 2000 # TC 7 and 0 open, all others closed
->> > > > 	sched-entry S 82 2000 # TC 7 and 1 open, all others closed
->> > > > 	sched-entry S 84 2000 # TC 7 and 2 open, all others closed
->> > > > 	sched-entry S 88 2000 # TC 7 and 3 open, all others closed
->> > > > 	sched-entry S 90 2000 # TC 7 and 4 open, all others closed
->> > > > 	sched-entry S a0 2000 # TC 7 and 5 open, all others closed
->> > > > 	sched-entry S c0 2000 # TC 7 and 6 open, all others closed
->> > > >
->> > > > Otherwise said, traffic class 7 should be able to send any time it
->> > > > wishes.
->> > >
->> > > What is the use case behind that? TC7 (with the highest priority)
->> > > may always take precedence of the other TCs, thus what is the point
->> > > of having a dedicated window for the others.
->> >
->> > Worst case latency is obviously better for an intermittent stream (not
->> > more than one packet in flight at a time) in TC7 than it is for any
->> > stream in TC6-TC0. But intermittent streams in TC6-TC0 also have their
->> > own worst case guarantees (assuming that 2000 ns is enough to fit one
->> > TC 7 frame and one frame from the TC6-TC0 range).
->> 
->> Oh and I missed that, TC0-TC6 probably won't work because that gate is
->> too narrow (12.5us guard band) unless of course you set MAXSDU to a
->> smaller value. Which would IMHO be the correct thing to do here.
-> 
-> I'm not sure that this is exactly true. I know that I tested once, and
-> the switch is happy to send a packet as long as the time window is 33 
-> ns
-> or larger (Idon't . Can't remember if the ALWAYS_GUARD_BAND_SCH_Q bit 
-> was set or
-> not, and I'm traveling right now so I don't have an LS1028A board handy
-> to re-test.
+IPv6 extension headers carry optional internet layer information
+and are placed between the fixed header and the upper-layer
+protocol header.
 
-I've just double checked with a 5.12 kernel (that is with
-ALWAYS_GUARD_BAND_SCH_Q bit still set). TC7 works perfectly fine at
-line rate. Frames in TC0-TC6 aren't forwarded.
+This change adds a new OpenFlow field OFPXMT_OFB_IPV6_EXTHDR and
+packets can be filtered using ipv6_ext flag.
 
-Clearing that bit manually (ie. devmem 0x1fc20f698 32 0x0; btw the
-schedule is on swp1, so this will also prove that bit is global ;))
-will make TC0-6 work. But it will also happily forward 1518b frames.
+Tested-at: https://github.com/TomCodeLV/ovs/actions/runs/504185214
+Signed-off-by: Toms Atteka <cpp.code.lv@gmail.com>
+---
+ include/uapi/linux/openvswitch.h |   1 +
+ net/openvswitch/flow.c           | 141 +++++++++++++++++++++++++++++++
+ net/openvswitch/flow.h           |  14 +++
+ net/openvswitch/flow_netlink.c   |   5 +-
+ 4 files changed, 160 insertions(+), 1 deletion(-)
 
-Behavior as expected. Please feel free to confirm, though.
+diff --git a/include/uapi/linux/openvswitch.h b/include/uapi/linux/openvswitch.h
+index 8d16744edc31..a19812b6631a 100644
+--- a/include/uapi/linux/openvswitch.h
++++ b/include/uapi/linux/openvswitch.h
+@@ -420,6 +420,7 @@ struct ovs_key_ipv6 {
+ 	__u8   ipv6_tclass;
+ 	__u8   ipv6_hlimit;
+ 	__u8   ipv6_frag;	/* One of OVS_FRAG_TYPE_*. */
++	__u16  ipv6_exthdr;
+ };
+ 
+ struct ovs_key_tcp {
+diff --git a/net/openvswitch/flow.c b/net/openvswitch/flow.c
+index e586424d8b04..f72c26721e3e 100644
+--- a/net/openvswitch/flow.c
++++ b/net/openvswitch/flow.c
+@@ -239,6 +239,145 @@ static bool icmphdr_ok(struct sk_buff *skb)
+ 				  sizeof(struct icmphdr));
+ }
+ 
++/**
++ * Parses packet and sets IPv6 extension header flags.
++ *
++ * skb          buffer where extension header data starts in packet
++ * nh           ipv6 header
++ * ext_hdrs     flags are stored here
++ *
++ * OFPIEH12_UNREP is set if more than one of a given IPv6 extension header
++ * is unexpectedly encountered. (Two destination options headers may be
++ * expected and would not cause this bit to be set.)
++ *
++ * OFPIEH12_UNSEQ is set if IPv6 extension headers were not in the order
++ * preferred (but not required) by RFC 2460:
++ *
++ * When more than one extension header is used in the same packet, it is
++ * recommended that those headers appear in the following order:
++ *      IPv6 header
++ *      Hop-by-Hop Options header
++ *      Destination Options header
++ *      Routing header
++ *      Fragment header
++ *      Authentication header
++ *      Encapsulating Security Payload header
++ *      Destination Options header
++ *      upper-layer header
++ */
++static void get_ipv6_ext_hdrs(struct sk_buff *skb, struct ipv6hdr *nh, u16 *ext_hdrs)
++{
++	int next_type = nh->nexthdr;
++	unsigned int start = skb_network_offset(skb) + sizeof(struct ipv6hdr);
++	int dest_options_header_count = 0;
++
++	*ext_hdrs = 0;
++
++	while (ipv6_ext_hdr(next_type)) {
++		struct ipv6_opt_hdr _hdr, *hp;
++
++		switch (next_type) {
++		case IPPROTO_NONE:
++			*ext_hdrs |= OFPIEH12_NONEXT;
++			/* stop parsing */
++			return;
++
++		case IPPROTO_ESP:
++			if (*ext_hdrs & OFPIEH12_ESP)
++				*ext_hdrs |= OFPIEH12_UNREP;
++			if ((*ext_hdrs & ~(OFPIEH12_HOP |
++					   OFPIEH12_DEST |
++					   OFPIEH12_ROUTER |
++					   IPPROTO_FRAGMENT |
++					   OFPIEH12_AUTH |
++					   OFPIEH12_UNREP)) ||
++			    dest_options_header_count >= 2)
++				*ext_hdrs |= OFPIEH12_UNSEQ;
++			*ext_hdrs |= OFPIEH12_ESP;
++			break;
++
++		case IPPROTO_AH:
++			if (*ext_hdrs & OFPIEH12_AUTH)
++				*ext_hdrs |= OFPIEH12_UNREP;
++			if ((*ext_hdrs & ~(OFPIEH12_HOP |
++					   OFPIEH12_DEST |
++					   OFPIEH12_ROUTER |
++					   IPPROTO_FRAGMENT |
++					   OFPIEH12_UNREP)) ||
++			    dest_options_header_count >= 2)
++				*ext_hdrs |= OFPIEH12_UNSEQ;
++			*ext_hdrs |= OFPIEH12_AUTH;
++			break;
++
++		case IPPROTO_DSTOPTS:
++			if (dest_options_header_count == 0) {
++				if (*ext_hdrs & ~(OFPIEH12_HOP |
++						  OFPIEH12_UNREP))
++					*ext_hdrs |= OFPIEH12_UNSEQ;
++				*ext_hdrs |= OFPIEH12_DEST;
++			} else if (dest_options_header_count == 1) {
++				if (*ext_hdrs & ~(OFPIEH12_HOP |
++						  OFPIEH12_DEST |
++						  OFPIEH12_ROUTER |
++						  OFPIEH12_FRAG |
++						  OFPIEH12_AUTH |
++						  OFPIEH12_ESP |
++						  OFPIEH12_UNREP))
++					*ext_hdrs |= OFPIEH12_UNSEQ;
++			} else {
++				*ext_hdrs |= OFPIEH12_UNREP;
++			}
++			dest_options_header_count++;
++			break;
++
++		case IPPROTO_FRAGMENT:
++			if (*ext_hdrs & OFPIEH12_FRAG)
++				*ext_hdrs |= OFPIEH12_UNREP;
++			if ((*ext_hdrs & ~(OFPIEH12_HOP |
++					   OFPIEH12_DEST |
++					   OFPIEH12_ROUTER |
++					   OFPIEH12_UNREP)) ||
++			    dest_options_header_count >= 2)
++				*ext_hdrs |= OFPIEH12_UNSEQ;
++			*ext_hdrs |= OFPIEH12_FRAG;
++			break;
++
++		case IPPROTO_ROUTING:
++			if (*ext_hdrs & OFPIEH12_ROUTER)
++				*ext_hdrs |= OFPIEH12_UNREP;
++			if ((*ext_hdrs & ~(OFPIEH12_HOP |
++					   OFPIEH12_DEST |
++					   OFPIEH12_UNREP)) ||
++			    dest_options_header_count >= 2)
++				*ext_hdrs |= OFPIEH12_UNSEQ;
++			*ext_hdrs |= OFPIEH12_ROUTER;
++			break;
++
++		case IPPROTO_HOPOPTS:
++			if (*ext_hdrs & OFPIEH12_HOP)
++				*ext_hdrs |= OFPIEH12_UNREP;
++			/* OFPIEH12_HOP is set to 1 if a hop-by-hop IPv6
++			 * extension header is present as the first extension
++			 * header in the pac	ket.
++			 */
++			if (*ext_hdrs == 0)
++				*ext_hdrs |= OFPIEH12_HOP;
++			else
++				*ext_hdrs |= OFPIEH12_UNSEQ;
++			break;
++
++		default:
++			return;
++		}
++
++		hp = skb_header_pointer(skb, start, sizeof(_hdr), &_hdr);
++		if (!hp)
++			break;
++		next_type = hp->nexthdr;
++		start += ipv6_optlen(hp);
++	}
++}
++
+ static int parse_ipv6hdr(struct sk_buff *skb, struct sw_flow_key *key)
+ {
+ 	unsigned short frag_off;
+@@ -254,6 +393,8 @@ static int parse_ipv6hdr(struct sk_buff *skb, struct sw_flow_key *key)
+ 
+ 	nh = ipv6_hdr(skb);
+ 
++	get_ipv6_ext_hdrs(skb, nh, &key->ipv6.exthdrs);
++
+ 	key->ip.proto = NEXTHDR_NONE;
+ 	key->ip.tos = ipv6_get_dsfield(nh);
+ 	key->ip.ttl = nh->hop_limit;
+diff --git a/net/openvswitch/flow.h b/net/openvswitch/flow.h
+index 758a8c77f736..e7a8eafae272 100644
+--- a/net/openvswitch/flow.h
++++ b/net/openvswitch/flow.h
+@@ -32,6 +32,19 @@ enum sw_flow_mac_proto {
+ #define SW_FLOW_KEY_INVALID	0x80
+ #define MPLS_LABEL_DEPTH       3
+ 
++/* Bit definitions for IPv6 Extension Header pseudo-field. */
++enum ofp12_ipv6exthdr_flags {
++	OFPIEH12_NONEXT = 1 << 0,   /* "No next header" encountered. */
++	OFPIEH12_ESP    = 1 << 1,   /* Encrypted Sec Payload header present. */
++	OFPIEH12_AUTH   = 1 << 2,   /* Authentication header present. */
++	OFPIEH12_DEST   = 1 << 3,   /* 1 or 2 dest headers present. */
++	OFPIEH12_FRAG   = 1 << 4,   /* Fragment header present. */
++	OFPIEH12_ROUTER = 1 << 5,   /* Router header present. */
++	OFPIEH12_HOP    = 1 << 6,   /* Hop-by-hop header present. */
++	OFPIEH12_UNREP  = 1 << 7,   /* Unexpected repeats encountered. */
++	OFPIEH12_UNSEQ  = 1 << 8    /* Unexpected sequencing encountered. */
++};
++
+ /* Store options at the end of the array if they are less than the
+  * maximum size. This allows us to get the benefits of variable length
+  * matching for small options.
+@@ -121,6 +134,7 @@ struct sw_flow_key {
+ 				struct in6_addr dst;	/* IPv6 destination address. */
+ 			} addr;
+ 			__be32 label;			/* IPv6 flow label. */
++			u16 exthdrs;			/* IPv6 extension header flags */
+ 			union {
+ 				struct {
+ 					struct in6_addr src;
+diff --git a/net/openvswitch/flow_netlink.c b/net/openvswitch/flow_netlink.c
+index fd1f809e9bc1..681cd9ddda4a 100644
+--- a/net/openvswitch/flow_netlink.c
++++ b/net/openvswitch/flow_netlink.c
+@@ -367,7 +367,7 @@ size_t ovs_key_attr_size(void)
+ 		+ nla_total_size(4)   /* OVS_KEY_ATTR_VLAN */
+ 		+ nla_total_size(0)   /* OVS_KEY_ATTR_ENCAP */
+ 		+ nla_total_size(2)   /* OVS_KEY_ATTR_ETHERTYPE */
+-		+ nla_total_size(40)  /* OVS_KEY_ATTR_IPV6 */
++		+ nla_total_size(42)  /* OVS_KEY_ATTR_IPV6 */
+ 		+ nla_total_size(2)   /* OVS_KEY_ATTR_ICMPV6 */
+ 		+ nla_total_size(28); /* OVS_KEY_ATTR_ND */
+ }
+@@ -1585,6 +1585,8 @@ static int ovs_key_from_nlattrs(struct net *net, struct sw_flow_match *match,
+ 				ipv6_key->ipv6_hlimit, is_mask);
+ 		SW_FLOW_KEY_PUT(match, ip.frag,
+ 				ipv6_key->ipv6_frag, is_mask);
++		SW_FLOW_KEY_PUT(match, ipv6.exthdrs,
++				ipv6_key->ipv6_exthdr, is_mask);
+ 		SW_FLOW_KEY_MEMCPY(match, ipv6.addr.src,
+ 				ipv6_key->ipv6_src,
+ 				sizeof(match->key->ipv6.addr.src),
+@@ -2113,6 +2115,7 @@ static int __ovs_nla_put_key(const struct sw_flow_key *swkey,
+ 		ipv6_key->ipv6_tclass = output->ip.tos;
+ 		ipv6_key->ipv6_hlimit = output->ip.ttl;
+ 		ipv6_key->ipv6_frag = output->ip.frag;
++		ipv6_key->ipv6_exthdr = output->ipv6.exthdrs;
+ 	} else if (swkey->eth.type == htons(ETH_P_NSH)) {
+ 		if (nsh_key_to_nlattr(&output->nsh, is_mask, skb))
+ 			goto nla_put_failure;
 
--michael
+base-commit: 5d869070569a23aa909c6e7e9d010fc438a492ef
+-- 
+2.25.1
+
