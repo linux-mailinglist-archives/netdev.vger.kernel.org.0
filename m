@@ -2,353 +2,220 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2D6A13752D8
-	for <lists+netdev@lfdr.de>; Thu,  6 May 2021 13:14:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 847E83752E9
+	for <lists+netdev@lfdr.de>; Thu,  6 May 2021 13:16:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234712AbhEFLPs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 6 May 2021 07:15:48 -0400
-Received: from smtp03.smtpout.orange.fr ([80.12.242.125]:22248 "EHLO
-        smtp.smtpout.orange.fr" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234639AbhEFLPo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 6 May 2021 07:15:44 -0400
-Received: from tomoyo.flets-east.jp ([153.202.107.157])
-        by mwinf5d58 with ME
-        id 1PEF250013PnFJp03PEjvD; Thu, 06 May 2021 13:14:45 +0200
-X-ME-Helo: tomoyo.flets-east.jp
-X-ME-Auth: bWFpbGhvbC52aW5jZW50QHdhbmFkb28uZnI=
-X-ME-Date: Thu, 06 May 2021 13:14:45 +0200
-X-ME-IP: 153.202.107.157
-From:   Vincent Mailhol <mailhol.vincent@wanadoo.fr>
-To:     Marc Kleine-Budde <mkl@pengutronix.de>, linux-can@vger.kernel.org
-Cc:     Oliver Hartkopp <socketcan@hartkopp.net>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Vincent Mailhol <mailhol.vincent@wanadoo.fr>
-Subject: [RFC PATCH v1 1/1] can: netlink: add interface for CAN-FD Transmitter Delay Compensation (TDC)
-Date:   Thu,  6 May 2021 20:14:12 +0900
-Message-Id: <20210506111412.1665835-2-mailhol.vincent@wanadoo.fr>
-X-Mailer: git-send-email 2.26.3
-In-Reply-To: <20210506111412.1665835-1-mailhol.vincent@wanadoo.fr>
-References: <20210506111412.1665835-1-mailhol.vincent@wanadoo.fr>
+        id S234779AbhEFLRX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 6 May 2021 07:17:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60314 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234706AbhEFLRW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 6 May 2021 07:17:22 -0400
+Received: from mail-wr1-x42a.google.com (mail-wr1-x42a.google.com [IPv6:2a00:1450:4864:20::42a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B7DBCC061574;
+        Thu,  6 May 2021 04:16:23 -0700 (PDT)
+Received: by mail-wr1-x42a.google.com with SMTP id t18so5184019wry.1;
+        Thu, 06 May 2021 04:16:23 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=ERhyj95+NOCNMd8Kepbci4Mf8xE+AkD2ybfN97GxMe0=;
+        b=fzFC8kJtD+pqznq8Qhi7k52XMSfVehiDyWrPSUyTmpkYNWIcMF+a0iGaSfgZZ3qwkk
+         T6zp2bey6Yl0hbK48qDN0HXEPsjPo8/AwaROnfCiwZzAFxB2peTp06aN6Yb/JGW0k5oN
+         28gF46kwDQ/slhJhKvLjD3QdS72Gnp2dDD66QPpaPSAzi2pc0GAtA6/cSNuUL9g6osM/
+         mK37ec5yng9sFFaYn4409RnxpoxRDXpl18FQq7DM29Cqz2bbN20g4tERNuTl/4GHzUad
+         V9YdWtSdJ/BGnmkxI/QYCk4pBKleOeEpF7f/qQvYeRM1OKGCPpwjTU2Anw6P2uVOQSPd
+         8URg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=ERhyj95+NOCNMd8Kepbci4Mf8xE+AkD2ybfN97GxMe0=;
+        b=iGMh/lehAOC9+Fxj24U6/uJvjLktsaDqzXGOMB73DzLu8AgtHq6ecjP6MN+tRZ3CY6
+         iW6qkXpgcgbPSbx6MwXVW4m6WBYQwB2Z8WLBbifE/cG4w8jTDdzt/pMkbmS5wtG+PuMP
+         Wrf6gVLzZdPK3f55CU5tMTp+BFFLZSw2r9ugHUmEb5Y5S0Ra4Q9RScOmShMKp40EK9Yo
+         YdnlBwlc5AOB52TSPiAamqYduzxg5reuCknmxSuWlgN1GN8DCWprBFsdHd259VgcyoPf
+         6XNmiApaaBiF4E+jBZ6+8ptrBpQYyOrrGZTpdpizZyXrLMnYjuUYC7WXF1ZcRyi1FyYA
+         Lp7w==
+X-Gm-Message-State: AOAM5339pGQtu4CaYhM7Kr9ynDvwlbODN3vN5ksjvB/i/Nv/whyUGC/R
+        6bLmkHBLsBj2QrZTyjsVfk4=
+X-Google-Smtp-Source: ABdhPJxF3GT693uMSqRescLpsII83+/XfFM8g9d9zZPERlwj4zFZzM1CU3JH7o2i8n4nHLkOVRvPQA==
+X-Received: by 2002:a5d:408f:: with SMTP id o15mr4264885wrp.89.1620299782453;
+        Thu, 06 May 2021 04:16:22 -0700 (PDT)
+Received: from skbuf ([86.127.41.210])
+        by smtp.gmail.com with ESMTPSA id y21sm9476897wmc.46.2021.05.06.04.16.21
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 06 May 2021 04:16:22 -0700 (PDT)
+Date:   Thu, 6 May 2021 14:16:20 +0300
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Ansuel Smith <ansuelsmth@gmail.com>
+Cc:     Florian Fainelli <f.fainelli@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Russell King <linux@armlinux.org.uk>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [RFC PATCH net-next v3 10/20] net: dsa: qca8k: add priority
+ tweak to qca8337 switch
+Message-ID: <20210506111620.vqvlvvd57c6yliua@skbuf>
+References: <20210504222915.17206-1-ansuelsmth@gmail.com>
+ <20210504222915.17206-10-ansuelsmth@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210504222915.17206-10-ansuelsmth@gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add the netlink interface for TDC parameters of struct can_tdc_const
-and can_tdc.
+On Wed, May 05, 2021 at 12:29:04AM +0200, Ansuel Smith wrote:
+> The port 5 of the ar8337 have some problem in flood condition. The
+> original legacy driver had some specific buffer and priority settings
+> for the different port suggested by the QCA switch team. Add this
+> missing settings to improve switch stability under load condition.
+> The packet priority tweak and the rx delay is specific to qca8337.
+> Limit this changes to qca8337 as now we also support 8327 switch.
+> 
+> Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
+> ---
+>  drivers/net/dsa/qca8k.c | 54 +++++++++++++++++++++++++++++++++++++++--
+>  drivers/net/dsa/qca8k.h | 24 ++++++++++++++++++
+>  2 files changed, 76 insertions(+), 2 deletions(-)
+> 
+> diff --git a/drivers/net/dsa/qca8k.c b/drivers/net/dsa/qca8k.c
+> index 17c6fd4afa7d..9e034c445085 100644
+> --- a/drivers/net/dsa/qca8k.c
+> +++ b/drivers/net/dsa/qca8k.c
+> @@ -783,7 +783,12 @@ static int
+>  qca8k_setup(struct dsa_switch *ds)
+>  {
+>  	struct qca8k_priv *priv = (struct qca8k_priv *)ds->priv;
+> +	const struct qca8k_match_data *data;
+>  	int ret, i;
+> +	u32 mask;
+> +
+> +	/* get the switches ID from the compatible */
+> +	data = of_device_get_match_data(priv->dev);
+>  
+>  	/* Make sure that port 0 is the cpu port */
+>  	if (!dsa_is_cpu_port(ds, 0)) {
+> @@ -889,6 +894,45 @@ qca8k_setup(struct dsa_switch *ds)
+>  		}
+>  	}
+>  
+> +	if (data->id == QCA8K_ID_QCA8337) {
+> +		for (i = 0; i < QCA8K_NUM_PORTS; i++) {
+> +			switch (i) {
+> +			/* The 2 CPU port and port 5 requires some different
+> +			 * priority than any other ports.
+> +			 */
+> +			case 0:
+> +			case 5:
+> +			case 6:
+> +				mask = QCA8K_PORT_HOL_CTRL0_EG_PRI0(0x3) |
+> +					QCA8K_PORT_HOL_CTRL0_EG_PRI1(0x4) |
+> +					QCA8K_PORT_HOL_CTRL0_EG_PRI2(0x4) |
+> +					QCA8K_PORT_HOL_CTRL0_EG_PRI3(0x4) |
+> +					QCA8K_PORT_HOL_CTRL0_EG_PRI4(0x6) |
+> +					QCA8K_PORT_HOL_CTRL0_EG_PRI5(0x8) |
+> +					QCA8K_PORT_HOL_CTRL0_EG_PORT(0x1e);
+> +				break;
+> +			default:
+> +				mask = QCA8K_PORT_HOL_CTRL0_EG_PRI0(0x3) |
+> +					QCA8K_PORT_HOL_CTRL0_EG_PRI1(0x4) |
+> +					QCA8K_PORT_HOL_CTRL0_EG_PRI2(0x6) |
+> +					QCA8K_PORT_HOL_CTRL0_EG_PRI3(0x8) |
+> +					QCA8K_PORT_HOL_CTRL0_EG_PORT(0x19);
+> +			}
+> +			qca8k_write(priv, QCA8K_REG_PORT_HOL_CTRL0(i), mask);
+> +
+> +			mask = QCA8K_PORT_HOL_CTRL1_ING(0x6) |
+> +			QCA8K_PORT_HOL_CTRL1_EG_PRI_BUF_EN |
+> +			QCA8K_PORT_HOL_CTRL1_EG_PORT_BUF_EN |
+> +			QCA8K_PORT_HOL_CTRL1_WRED_EN;
+> +			qca8k_rmw(priv, QCA8K_REG_PORT_HOL_CTRL1(i),
+> +				  QCA8K_PORT_HOL_CTRL1_ING_BUF |
+> +				  QCA8K_PORT_HOL_CTRL1_EG_PRI_BUF_EN |
+> +				  QCA8K_PORT_HOL_CTRL1_EG_PORT_BUF_EN |
+> +				  QCA8K_PORT_HOL_CTRL1_WRED_EN,
+> +				  mask);
+> +		}
 
-Contrary to the can_bittiming(_const) structures for which there is
-just a single IFLA_CAN(_DATA)_BITTMING(_CONST) entry per structure,
-here, we create a nested entry IFLA_CAN_TDC. Within this nested entry,
-additional IFLA_CAN_TDC_TDC* entries are added for each of the TDC
-parameters of the newly introduced struct can_tdc_const and struct
-can_tdc.
+What is this actually doing and why is it needed?
 
-For struct can_tdc_const, these are:
-        IFLA_CAN_TDC_TDCV_MAX
-        IFLA_CAN_TDC_TDCO_MAX
-        IFLA_CAN_TDC_TDCF_MAX
+> +	}
+> +
+>  	/* Setup our port MTUs to match power on defaults */
+>  	for (i = 0; i < QCA8K_NUM_PORTS; i++)
+>  		priv->port_mtu[i] = ETH_FRAME_LEN + ETH_FCS_LEN;
+> @@ -909,9 +953,13 @@ static void
+>  qca8k_phylink_mac_config(struct dsa_switch *ds, int port, unsigned int mode,
+>  			 const struct phylink_link_state *state)
+>  {
+> +	const struct qca8k_match_data *data;
+>  	struct qca8k_priv *priv = ds->priv;
+>  	u32 reg, val;
+>  
+> +	/* get the switches ID from the compatible */
+> +	data = of_device_get_match_data(priv->dev);
+> +
+>  	switch (port) {
+>  	case 0: /* 1st CPU port */
+>  		if (state->interface != PHY_INTERFACE_MODE_RGMII &&
+> @@ -962,8 +1010,10 @@ qca8k_phylink_mac_config(struct dsa_switch *ds, int port, unsigned int mode,
+>  			    QCA8K_PORT_PAD_RGMII_EN |
+>  			    QCA8K_PORT_PAD_RGMII_TX_DELAY(QCA8K_MAX_DELAY) |
+>  			    QCA8K_PORT_PAD_RGMII_RX_DELAY(QCA8K_MAX_DELAY));
+> -		qca8k_write(priv, QCA8K_REG_PORT5_PAD_CTRL,
+> -			    QCA8K_PORT_PAD_RGMII_RX_DELAY_EN);
+> +		/* QCA8337 requires to set rgmii rx delay */
+> +		if (data->id == QCA8K_ID_QCA8337)
+> +			qca8k_write(priv, QCA8K_REG_PORT5_PAD_CTRL,
+> +				    QCA8K_PORT_PAD_RGMII_RX_DELAY_EN);
 
-For struct can_tdc, these are:
-        IFLA_CAN_TDC_TDCV
-        IFLA_CAN_TDC_TDCO
-        IFLA_CAN_TDC_TDCF
+Why are we looking at an RGMII delay change in a patch about "priority
+tweaks"? This patch is very confusing.
 
-This is done so that changes can be applied in the future to the
-structures without breaking the netlink interface.
-
-All the new parameters are defined as u32. This arbitrary choice is
-done to mimic the other bittiming values with are also all of type
-u32. An u16 would have been sufficient to hold the TDC values.
-
-This patch is the third and last one to introduce TDC in the
-kernel. It completes below series:
-  - commit 289ea9e4ae59 ("can: add new CAN FD bittiming parameters:
-    Transmitter Delay Compensation (TDC)")
-  - commit c25cc7993243 ("can: bittiming: add calculation for CAN FD
-    Transmitter Delay Compensation (TDC)")
-
-Reference: https://lore.kernel.org/linux-can/20210224002008.4158-1-mailhol.vincent@wanadoo.fr/T/#t
-
-Signed-off-by: Vincent Mailhol <mailhol.vincent@wanadoo.fr>
----
- drivers/net/can/dev/Makefile      |   1 +
- drivers/net/can/dev/netlink-tdc.c | 122 ++++++++++++++++++++++++++++++
- drivers/net/can/dev/netlink-tdc.h |  18 +++++
- drivers/net/can/dev/netlink.c     |  15 +++-
- include/uapi/linux/can/netlink.h  |  28 ++++++-
- 5 files changed, 179 insertions(+), 5 deletions(-)
- create mode 100644 drivers/net/can/dev/netlink-tdc.c
- create mode 100644 drivers/net/can/dev/netlink-tdc.h
-
-diff --git a/drivers/net/can/dev/Makefile b/drivers/net/can/dev/Makefile
-index 3e2e207861fc..41f2ef9594fe 100644
---- a/drivers/net/can/dev/Makefile
-+++ b/drivers/net/can/dev/Makefile
-@@ -5,6 +5,7 @@ can-dev-y			+= bittiming.o
- can-dev-y			+= dev.o
- can-dev-y			+= length.o
- can-dev-y			+= netlink.o
-+can-dev-y			+= netlink-tdc.o
- can-dev-y			+= rx-offload.o
- can-dev-y                       += skb.o
- 
-diff --git a/drivers/net/can/dev/netlink-tdc.c b/drivers/net/can/dev/netlink-tdc.c
-new file mode 100644
-index 000000000000..b8bd47a956d8
---- /dev/null
-+++ b/drivers/net/can/dev/netlink-tdc.c
-@@ -0,0 +1,122 @@
-+// SPDX-License-Identifier: GPL-2.0-only
-+/*
-+ * Copyright (C) 2021 Vincent Mailhol <mailhol.vincent@wanadoo.fr>
-+ */
-+
-+#include <linux/can/dev.h>
-+
-+#include "netlink-tdc.h"
-+
-+static const struct nla_policy can_tdc_policy[IFLA_CAN_TDC_MAX + 1] = {
-+	[IFLA_CAN_TDC_TDCV_MAX] = { .type = NLA_U32 },
-+	[IFLA_CAN_TDC_TDCO_MAX] = { .type = NLA_U32 },
-+	[IFLA_CAN_TDC_TDCF_MAX] = { .type = NLA_U32 },
-+	[IFLA_CAN_TDC_TDCV] = { .type = NLA_U32 },
-+	[IFLA_CAN_TDC_TDCO] = { .type = NLA_U32 },
-+	[IFLA_CAN_TDC_TDCF] = { .type = NLA_U32 },
-+};
-+
-+size_t can_tdc_get_size(const struct net_device *dev)
-+{
-+	struct can_priv *priv = netdev_priv(dev);
-+	size_t size = nla_total_size(0) /* IFLA_CAN_TDC */;
-+
-+	if (priv->tdc_const) {
-+		size += nla_total_size(sizeof(u32));	/* IFLA_CAN_TDCV_MAX */
-+		size += nla_total_size(sizeof(u32));	/* IFLA_CAN_TDCO_MAX */
-+		size += nla_total_size(sizeof(u32));	/* IFLA_CAN_TDCF_MAX */
-+	}
-+	if (priv->tdc.tdco) {
-+		size += nla_total_size(sizeof(u32));	/* IFLA_CAN_TDCV */
-+		size += nla_total_size(sizeof(u32));	/* IFLA_CAN_TDCO */
-+		size += nla_total_size(sizeof(u32));	/* IFLA_CAN_TDCF */
-+	}
-+
-+	return size;
-+}
-+
-+int can_tdc_changelink(struct net_device *dev, const struct nlattr *nla,
-+		       struct netlink_ext_ack *extack)
-+{
-+	struct nlattr *tb[IFLA_CAN_TDC_MAX + 1];
-+	struct can_priv *priv = netdev_priv(dev);
-+	struct can_tdc *tdc = &priv->tdc;
-+	const struct can_tdc_const *tdc_const = priv->tdc_const;
-+	int err;
-+
-+	if (!tdc_const)
-+		return -EOPNOTSUPP;
-+
-+	if (dev->flags & IFF_UP)
-+		return -EBUSY;
-+
-+	err = nla_parse_nested(tb, IFLA_CAN_TDC_MAX, nla,
-+			       can_tdc_policy, extack);
-+	if (err)
-+		return err;
-+
-+	if (tb[IFLA_CAN_TDC_TDCV]) {
-+		u32 tdcv = nla_get_u32(tb[IFLA_CAN_TDC_TDCV]);
-+
-+		if (tdcv && !tdc_const->tdcv_max)
-+			return -EOPNOTSUPP;
-+
-+		if (tdcv > tdc_const->tdcv_max)
-+			return -EINVAL;
-+
-+		tdc->tdcv = tdcv;
-+	}
-+
-+	if (tb[IFLA_CAN_TDC_TDCO]) {
-+		u32 tdco = nla_get_u32(tb[IFLA_CAN_TDC_TDCO]);
-+
-+		if (tdco && !tdc_const->tdco_max)
-+			return -EOPNOTSUPP;
-+
-+		if (tdco > tdc_const->tdco_max)
-+			return -EINVAL;
-+
-+		tdc->tdco = tdco;
-+	}
-+
-+	if (tb[IFLA_CAN_TDC_TDCF]) {
-+		u32 tdcf = nla_get_u32(tb[IFLA_CAN_TDC_TDCF]);
-+
-+		if (tdcf && !tdc_const->tdcf_max)
-+			return -EOPNOTSUPP;
-+
-+		if (tdcf > tdc_const->tdcf_max)
-+			return -EINVAL;
-+
-+		tdc->tdcf = tdcf;
-+	}
-+
-+	return 0;
-+}
-+
-+int can_tdc_fill_info(struct sk_buff *skb, const struct net_device *dev)
-+{
-+	struct nlattr *nest;
-+	struct can_priv *priv = netdev_priv(dev);
-+	struct can_tdc *tdc = &priv->tdc;
-+	const struct can_tdc_const *tdc_const = priv->tdc_const;
-+
-+	if (!tdc_const)
-+		return 0;
-+
-+	nest = nla_nest_start(skb, IFLA_CAN_TDC);
-+	if (!nest)
-+		return -EMSGSIZE;
-+
-+	if (nla_put_u32(skb, IFLA_CAN_TDC_TDCV_MAX, tdc_const->tdcv_max) ||
-+	    nla_put_u32(skb, IFLA_CAN_TDC_TDCO_MAX, tdc_const->tdco_max) ||
-+	    nla_put_u32(skb, IFLA_CAN_TDC_TDCF_MAX, tdc_const->tdcf_max) ||
-+	    nla_put_u32(skb, IFLA_CAN_TDC_TDCV, tdc->tdcv) ||
-+	    nla_put_u32(skb, IFLA_CAN_TDC_TDCO, tdc->tdco) ||
-+	    nla_put_u32(skb, IFLA_CAN_TDC_TDCF, tdc->tdcf))
-+		return -EMSGSIZE;
-+
-+	nla_nest_end(skb, nest);
-+
-+	return 0;
-+}
-diff --git a/drivers/net/can/dev/netlink-tdc.h b/drivers/net/can/dev/netlink-tdc.h
-new file mode 100644
-index 000000000000..28ad3d7a58e2
---- /dev/null
-+++ b/drivers/net/can/dev/netlink-tdc.h
-@@ -0,0 +1,18 @@
-+/* SPDX-License-Identifier: GPL-2.0-only */
-+/*
-+ * Copyright (C) 2021 Vincent Mailhol <mailhol.vincent@wanadoo.fr>
-+ */
-+
-+#ifndef _CAN_NETLINK_TDC_H
-+#define _CAN_NETLINK_TDC_H
-+
-+#include <net/netlink.h>
-+
-+size_t can_tdc_get_size(const struct net_device *dev);
-+
-+int can_tdc_changelink(struct net_device *dev, const struct nlattr *nla,
-+		       struct netlink_ext_ack *extack);
-+
-+int can_tdc_fill_info(struct sk_buff *skb, const struct net_device *dev);
-+
-+#endif /* !_CAN_NETLINK_TDC_H */
-diff --git a/drivers/net/can/dev/netlink.c b/drivers/net/can/dev/netlink.c
-index e38c2566aff4..3f4394fda155 100644
---- a/drivers/net/can/dev/netlink.c
-+++ b/drivers/net/can/dev/netlink.c
-@@ -6,6 +6,7 @@
- 
- #include <linux/can/dev.h>
- #include <net/rtnetlink.h>
-+#include "netlink-tdc.h"
- 
- static const struct nla_policy can_policy[IFLA_CAN_MAX + 1] = {
- 	[IFLA_CAN_STATE] = { .type = NLA_U32 },
-@@ -19,6 +20,7 @@ static const struct nla_policy can_policy[IFLA_CAN_MAX + 1] = {
- 	[IFLA_CAN_DATA_BITTIMING] = { .len = sizeof(struct can_bittiming) },
- 	[IFLA_CAN_DATA_BITTIMING_CONST]	= { .len = sizeof(struct can_bittiming_const) },
- 	[IFLA_CAN_TERMINATION] = { .type = NLA_U16 },
-+	[IFLA_CAN_TDC] = { .type = NLA_NESTED },
- };
- 
- static int can_validate(struct nlattr *tb[], struct nlattr *data[],
-@@ -46,7 +48,7 @@ static int can_validate(struct nlattr *tb[], struct nlattr *data[],
- 			return -EOPNOTSUPP;
- 	}
- 
--	if (data[IFLA_CAN_DATA_BITTIMING]) {
-+	if (data[IFLA_CAN_DATA_BITTIMING] || data[IFLA_CAN_TDC]) {
- 		if (!is_can_fd || !data[IFLA_CAN_BITTIMING])
- 			return -EOPNOTSUPP;
- 	}
-@@ -220,6 +222,12 @@ static int can_changelink(struct net_device *dev, struct nlattr *tb[],
- 		priv->termination = termval;
- 	}
- 
-+	if (data[IFLA_CAN_TDC]) {
-+		err = can_tdc_changelink(dev, data[IFLA_CAN_TDC], extack);
-+		if (err)
-+			return err;
-+	}
-+
- 	return 0;
- }
- 
-@@ -254,6 +262,7 @@ static size_t can_get_size(const struct net_device *dev)
- 		size += nla_total_size(sizeof(*priv->data_bitrate_const) *
- 				       priv->data_bitrate_const_cnt);
- 	size += sizeof(priv->bitrate_max);			/* IFLA_CAN_BITRATE_MAX */
-+	size += can_tdc_get_size(dev);
- 
- 	return size;
- }
-@@ -315,7 +324,9 @@ static int can_fill_info(struct sk_buff *skb, const struct net_device *dev)
- 
- 	    (nla_put(skb, IFLA_CAN_BITRATE_MAX,
- 		     sizeof(priv->bitrate_max),
--		     &priv->bitrate_max))
-+		     &priv->bitrate_max)) ||
-+
-+	    (can_tdc_fill_info(skb, dev))
- 	    )
- 
- 		return -EMSGSIZE;
-diff --git a/include/uapi/linux/can/netlink.h b/include/uapi/linux/can/netlink.h
-index f730d443b918..fd669db7afcf 100644
---- a/include/uapi/linux/can/netlink.h
-+++ b/include/uapi/linux/can/netlink.h
-@@ -134,12 +134,34 @@ enum {
- 	IFLA_CAN_BITRATE_CONST,
- 	IFLA_CAN_DATA_BITRATE_CONST,
- 	IFLA_CAN_BITRATE_MAX,
--	__IFLA_CAN_MAX
--};
-+	IFLA_CAN_TDC,
- 
--#define IFLA_CAN_MAX	(__IFLA_CAN_MAX - 1)
-+	/* add new constants above here */
-+	__IFLA_CAN_MAX,
-+	IFLA_CAN_MAX = __IFLA_CAN_MAX - 1
-+};
- 
- /* u16 termination range: 1..65535 Ohms */
- #define CAN_TERMINATION_DISABLED 0
- 
-+/*
-+ * CAN FD Transmitter Delay Compensation (TDC)
-+ *
-+ * Please refer to struct can_tdc_const and can_tdc in
-+ * include/linux/can/bittiming.h for further details.
-+ */
-+enum {
-+	IFLA_CAN_TDC_UNSPEC,
-+	IFLA_CAN_TDC_TDCV_MAX,	/* u32 */
-+	IFLA_CAN_TDC_TDCO_MAX,	/* u32 */
-+	IFLA_CAN_TDC_TDCF_MAX,	/* u32 */
-+	IFLA_CAN_TDC_TDCV,	/* u32 */
-+	IFLA_CAN_TDC_TDCO,	/* u32 */
-+	IFLA_CAN_TDC_TDCF,	/* u32 */
-+
-+	/* add new constants above here */
-+	__IFLA_CAN_TDC,
-+	IFLA_CAN_TDC_MAX = __IFLA_CAN_TDC - 1
-+};
-+
- #endif /* !_UAPI_CAN_NETLINK_H */
--- 
-2.26.3
-
+>  		break;
+>  	case PHY_INTERFACE_MODE_SGMII:
+>  	case PHY_INTERFACE_MODE_1000BASEX:
+> diff --git a/drivers/net/dsa/qca8k.h b/drivers/net/dsa/qca8k.h
+> index 86e8d479c9f9..34c5522e7202 100644
+> --- a/drivers/net/dsa/qca8k.h
+> +++ b/drivers/net/dsa/qca8k.h
+> @@ -166,6 +166,30 @@
+>  #define   QCA8K_PORT_LOOKUP_STATE			GENMASK(18, 16)
+>  #define   QCA8K_PORT_LOOKUP_LEARN			BIT(20)
+>  
+> +#define QCA8K_REG_PORT_HOL_CTRL0(_i)			(0x970 + (_i) * 0x8)
+> +#define   QCA8K_PORT_HOL_CTRL0_EG_PRI0_BUF		GENMASK(3, 0)
+> +#define   QCA8K_PORT_HOL_CTRL0_EG_PRI0(x)		((x) << 0)
+> +#define   QCA8K_PORT_HOL_CTRL0_EG_PRI1_BUF		GENMASK(7, 4)
+> +#define   QCA8K_PORT_HOL_CTRL0_EG_PRI1(x)		((x) << 4)
+> +#define   QCA8K_PORT_HOL_CTRL0_EG_PRI2_BUF		GENMASK(11, 8)
+> +#define   QCA8K_PORT_HOL_CTRL0_EG_PRI2(x)		((x) << 8)
+> +#define   QCA8K_PORT_HOL_CTRL0_EG_PRI3_BUF		GENMASK(15, 12)
+> +#define   QCA8K_PORT_HOL_CTRL0_EG_PRI3(x)		((x) << 12)
+> +#define   QCA8K_PORT_HOL_CTRL0_EG_PRI4_BUF		GENMASK(19, 16)
+> +#define   QCA8K_PORT_HOL_CTRL0_EG_PRI4(x)		((x) << 16)
+> +#define   QCA8K_PORT_HOL_CTRL0_EG_PRI5_BUF		GENMASK(23, 20)
+> +#define   QCA8K_PORT_HOL_CTRL0_EG_PRI5(x)		((x) << 20)
+> +#define   QCA8K_PORT_HOL_CTRL0_EG_PORT_BUF		GENMASK(29, 24)
+> +#define   QCA8K_PORT_HOL_CTRL0_EG_PORT(x)		((x) << 24)
+> +
+> +#define QCA8K_REG_PORT_HOL_CTRL1(_i)			(0x974 + (_i) * 0x8)
+> +#define   QCA8K_PORT_HOL_CTRL1_ING_BUF			GENMASK(3, 0)
+> +#define   QCA8K_PORT_HOL_CTRL1_ING(x)			((x) << 0)
+> +#define   QCA8K_PORT_HOL_CTRL1_EG_PRI_BUF_EN		BIT(6)
+> +#define   QCA8K_PORT_HOL_CTRL1_EG_PORT_BUF_EN		BIT(7)
+> +#define   QCA8K_PORT_HOL_CTRL1_WRED_EN			BIT(8)
+> +#define   QCA8K_PORT_HOL_CTRL1_EG_MIRROR_EN		BIT(16)
+> +
+>  /* Pkt edit registers */
+>  #define QCA8K_EGRESS_VLAN(x)				(0x0c70 + (4 * (x / 2)))
+>  
+> -- 
+> 2.30.2
+> 
