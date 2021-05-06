@@ -2,90 +2,155 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CC2273757F3
-	for <lists+netdev@lfdr.de>; Thu,  6 May 2021 17:53:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BD98E3757F9
+	for <lists+netdev@lfdr.de>; Thu,  6 May 2021 17:55:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235180AbhEFPyS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 6 May 2021 11:54:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38326 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235136AbhEFPyR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 6 May 2021 11:54:17 -0400
-Received: from mail-lj1-x233.google.com (mail-lj1-x233.google.com [IPv6:2a00:1450:4864:20::233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C567C061574
-        for <netdev@vger.kernel.org>; Thu,  6 May 2021 08:53:18 -0700 (PDT)
-Received: by mail-lj1-x233.google.com with SMTP id w15so7668723ljo.10
-        for <netdev@vger.kernel.org>; Thu, 06 May 2021 08:53:18 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=TlMZm8qP69Al3Joqv9S9RHvuIC1TNczNv8/63HOy14Y=;
-        b=lU3c1d7i09G+aqfTgWg1p5jY0d7KLboFsL12CXrnwzUymoZyXDdekJ8KVpDrAiNRwA
-         2vzcj0FeHDZpPNagY7v431D648vK72uvlMPVsZNFcT5tQ8+m37cr3ItPmmnOanXdAm1Z
-         efte8mlzUJUZ9WWHL1pbiX5EyqZ0x4GsYIHPh1BCUBOOh35PgpdO143EaO259nRQnJIP
-         w3RU1S/TWKg9dPXdDARBaLUxJsMyBm7pI8oOXPMC9jWfzmEfTCBjLDk87xGZgb27yAu+
-         gzER+n20W3T25AEbaaTZTLPWv+gxyhKBZFj79M7J+LTPm8zwlrVeDOGJQJc9x66JJNd7
-         4Stg==
+        id S235178AbhEFP4k (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 6 May 2021 11:56:40 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:53295 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S235136AbhEFP4j (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 6 May 2021 11:56:39 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1620316541;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=cpTdnOAK/KKCv/bT7+AufTXsf9CDVRdAzsKCtsVHRRk=;
+        b=N1Y35uY0wEBescUoNEYwOxalM7r0oNPhq7tQgTFh6SA5cYiVe4NtTyRZ1Zc6Jf2AEqSQyy
+        D9GNq7WJ04/IjEXsE7BMCHBSptqmq/AIS+w3E4yYuD+rRMzmzPBqqiVzg6R/x4YeVarL2B
+        EZm9rvIpiYpM+J4Z+O35Mp/IuCjaLs4=
+Received: from mail-wm1-f72.google.com (mail-wm1-f72.google.com
+ [209.85.128.72]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-567-ORp37RddOlSrYrMSaZW_Kg-1; Thu, 06 May 2021 11:55:39 -0400
+X-MC-Unique: ORp37RddOlSrYrMSaZW_Kg-1
+Received: by mail-wm1-f72.google.com with SMTP id b16-20020a7bc2500000b029014587f5376dso2388319wmj.1
+        for <netdev@vger.kernel.org>; Thu, 06 May 2021 08:55:39 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=TlMZm8qP69Al3Joqv9S9RHvuIC1TNczNv8/63HOy14Y=;
-        b=k0iHfCWuFvepQX7HKA4fkhhfcZp7AXNbOQTUPM3jc+Izg/clzY2Iznhe92t44C0Dre
-         Ai5UI2iMl/CZg5c3Yr66Eo59XOQ5/m+OAQyQUU7XjG27o2gDQf9X4T/09ASABpeJX4ru
-         dxifG5/rsGZicmvA+L9HA1C7SQAjAsKMMGYV21wwaQaQX4QEkpz0EUtziFZSr+3bygp8
-         wOpwk5ogT100NI3VQlqwIMHnRwvvmTq2vvIOVfg0uyxTHKj01Xa9p1Z4lY4p5q1CaQKa
-         HW9+pmZ32uS+bVbS3N/+DITmxYtEs4glfARL9NsxJoRM034ZLwCr6gbvBUN12URomsE1
-         0qxA==
-X-Gm-Message-State: AOAM531eUa1bNzZoc5tT7+uI6/mUon00YvL2pJADTYGSAPOzeujOBk/p
-        kkjF0kzEtbaK+x4hP5rh85CQ+phFl/7hLRvOJkw=
-X-Google-Smtp-Source: ABdhPJyfG/oQ4khtx01U4GR6pJzAxrVuvV7s54Mk/7PqjTTGIOCe3gO/wmM1FXbH9acTYEJHieJ7neNSbRDN/353v2M=
-X-Received: by 2002:a2e:8e66:: with SMTP id t6mr4079729ljk.481.1620316397211;
- Thu, 06 May 2021 08:53:17 -0700 (PDT)
-MIME-Version: 1.0
-References: <20210505180808.20505-1-cpp.code.lv@gmail.com> <202105060934.AXpcx9gB-lkp@intel.com>
-In-Reply-To: <202105060934.AXpcx9gB-lkp@intel.com>
-From:   Cpp Code <cpp.code.lv@gmail.com>
-Date:   Thu, 6 May 2021 08:53:06 -0700
-Message-ID: <CAASuNyXeRdD-KzQiXZGsFdj4y38v1mXC8K+gJ3B3wOqfoeBvBQ@mail.gmail.com>
-Subject: Re: [PATCH] net-next: openvswitch: IPv6: Add IPv6 extension header support
-To:     kernel test robot <lkp@intel.com>
-Cc:     netdev@vger.kernel.org, kbuild-all@lists.01.org
+        h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
+         :references:user-agent:mime-version:content-transfer-encoding;
+        bh=cpTdnOAK/KKCv/bT7+AufTXsf9CDVRdAzsKCtsVHRRk=;
+        b=JTMNUEjxekDk+/Z5TOA2J0xNS2Vshy7Hbxn2i1ZVecRUf//x5gSFAbzG+6jS+KONd+
+         ZqVDgnMHyjFGZwQ7k01cRo8xQXjH9h4nlYdjQsucuegdoo4qYi61x/k2B/RRKZ8ypUhN
+         BpZcnfkJGsGNfR/w3F/7J9XSxN7/8QoaU1VdmFNuBbg//zltID5lXWlOTKTaa+6Bkuxk
+         i6PJHyMSIVaqjZxOJgMr+mKSfSbskld3n6Ll7iY5XSETprsQGy4qj1Y1buagiiq00QW7
+         cXhxjBcsyp0k28HLD8uTiLyRXsVgMn6MSFf2n08Vvx7vbtnFVDRtlZTLd2MrFldgn89k
+         ySgA==
+X-Gm-Message-State: AOAM5313pb02w5NKlnmPieHzfkK6rIRg5Xv5TxYEXjDV/yxTHYKRarih
+        x2hVQBSLorlZK5mewLdHPazTrYy3acUN6sz01SYOfyhiVgTiAIJ2LyfBPDSWf0C8PkBKQbSlklK
+        GJ9qBVKEzapP0ET7E
+X-Received: by 2002:adf:e811:: with SMTP id o17mr6254229wrm.71.1620316538141;
+        Thu, 06 May 2021 08:55:38 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJztzaPB6zOP1m5NZGZy0plckLtI8JcS+Pg8SAFR+NW9NONOl/PUy2T31mVnDNVKw2MB7UbJgw==
+X-Received: by 2002:adf:e811:: with SMTP id o17mr6254199wrm.71.1620316537936;
+        Thu, 06 May 2021 08:55:37 -0700 (PDT)
+Received: from gerbillo.redhat.com (146-241-108-140.dyn.eolo.it. [146.241.108.140])
+        by smtp.gmail.com with ESMTPSA id s5sm4006200wmh.37.2021.05.06.08.55.37
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 06 May 2021 08:55:37 -0700 (PDT)
+Message-ID: <78da518b491d0ad87380786dddf465c98706a865.camel@redhat.com>
+Subject: Re: [PATCH net 1/4] net: fix double-free on fraglist GSO skbs
+From:   Paolo Abeni <pabeni@redhat.com>
+To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     Network Development <netdev@vger.kernel.org>,
+        Steffen Klassert <steffen.klassert@secunet.com>,
+        Willem de Bruijn <willemb@google.com>,
+        Miaohe Lin <linmiaohe@huawei.com>
+Date:   Thu, 06 May 2021 17:55:36 +0200
+In-Reply-To: <CAF=yD-+XLDTzzBsPsMW-s9t0Ur3ux8w93VOAyHJ91E_cZLQS7w@mail.gmail.com>
+References: <cover.1620223174.git.pabeni@redhat.com>
+         <e5d4bacef76ef439b6eb8e7f4973161ca131dfee.1620223174.git.pabeni@redhat.com>
+         <CAF=yD-+BAMU+ETz9MV--MR5NuCE9VrtNezDB3mAiBQR+5puZvQ@mail.gmail.com>
+         <d6665869966936b79305de87aaddd052379038c4.camel@redhat.com>
+         <CAF=yD-++8zxVKThLnPMdDOcR5Q+2dStne4=EKeKCD7pVyEc8UA@mail.gmail.com>
+         <5276af7f06b4fd72e549e3b5aebdf41bef1a3784.camel@redhat.com>
+         <CAF=yD-+XLDTzzBsPsMW-s9t0Ur3ux8w93VOAyHJ91E_cZLQS7w@mail.gmail.com>
 Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.36.5 (3.36.5-2.fc32) 
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-sorry, wrong git tree.
+On Thu, 2021-05-06 at 10:32 -0400, Willem de Bruijn wrote:
+> On Thu, May 6, 2021 at 7:07 AM Paolo Abeni <pabeni@redhat.com> wrote:
+> > On Wed, 2021-05-05 at 13:30 -0400, Willem de Bruijn wrote:
+> > > On Wed, May 5, 2021 at 1:28 PM Paolo Abeni <pabeni@redhat.com> wrote:
+> > > > On Wed, 2021-05-05 at 12:13 -0400, Willem de Bruijn wrote:
+> > > > > On Wed, May 5, 2021 at 11:37 AM Paolo Abeni <pabeni@redhat.com> wrote:
+> > > > > > While segmenting a SKB_GSO_FRAGLIST GSO packet, if the destructor
+> > > > > > callback is available, the skb destructor is invoked on each
+> > > > > > aggregated packet via skb_release_head_state().
+> > > > > > 
+> > > > > > Such field (and the pairer skb->sk) is left untouched, so the same
+> > > > > > destructor is invoked again when the segmented skbs are freed, leading
+> > > > > > to double-free/UaF of the relevant socket.
+> > > > > 
+> > > > > Similar to skb_segment, should the destructor be swapped with the last
+> > > > > segment and callback delayed, instead of called immediately as part of
+> > > > > segmentation?
+> > > > > 
+> > > > >         /* Following permits correct backpressure, for protocols
+> > > > >          * using skb_set_owner_w().
+> > > > >          * Idea is to tranfert ownership from head_skb to last segment.
+> > > > >          */
+> > > > >         if (head_skb->destructor == sock_wfree) {
+> > > > >                 swap(tail->truesize, head_skb->truesize);
+> > > > >                 swap(tail->destructor, head_skb->destructor);
+> > > > >                 swap(tail->sk, head_skb->sk);
+> > > > >         }
+> > > > 
+> > > > My understanding is that one assumption in the original
+> > > > SKB_GSO_FRAGLIST implementation was that SKB_GSO_FRAGLIST skbs are not
+> > > > owned by any socket.
+> > > > 
+> > > > AFAICS the above assumption was true until:
+> > > > 
+> > > > commit c75fb320d482a5ce6e522378d137fd2c3bf79225
+> > > > Author: Paolo Abeni <pabeni@redhat.com>
+> > > > Date:   Fri Apr 9 13:04:37 2021 +0200
+> > > > 
+> > > >     veth: use skb_orphan_partial instead of skb_orphan
+> > > > 
+> > > > after that, if the skb is owned, skb->destructor is sock_efree(), so
+> > > > the above code should not trigger.
+> > > 
+> > > Okay, great.
+> > > 
+> > > > More importantly SKB_GSO_FRAGLIST can only be applied if the inner-
+> > > > most protocol is UDP, so
+> > > > commit 432c856fcf45c468fffe2e5029cb3f95c7dc9475
+> > > > and d6a4a10411764cf1c3a5dad4f06c5ebe5194488b should not be relevant.
+> > > 
+> > > I think the first does apply, as it applies to any protocol that uses
+> > > sock_wfree, not just tcp_wfree? Anyway, the point is moot indeed.
+> > 
+> > If we want to be safe about future possible sock_wfree users, I think
+> > the approach here should be different: in skb_segment(), tail-
+> > > destructor is expected to be NULL, while skb_segment_list(), all the
+> > list skbs can be owned by the same socket. Possibly we could open-
+> > code skb_release_head_state(), omitting the skb orphaning part
+> > for sock_wfree() destructor.
+> > 
+> > Note that the this is not currently needed - sock_wfree destructor
+> > can't reach there.
+> > 
+> > Given all the above, I'm unsure if you are fine with (or at least do
+> > not oppose to) the code proposed in this patch?
+> 
+> Yes. Thanks for clarifying, Paolo.
 
+Thank you for reviewing!
 
-On Wed, May 5, 2021 at 7:03 PM kernel test robot <lkp@intel.com> wrote:
->
-> Hi Toms,
->
-> Thank you for the patch! Perhaps something to improve:
->
-> [auto build test WARNING on net/master]
-> [also build test WARNING on ipsec/master ipvs/master net-next/master linus/master v5.12 next-20210505]
-> [If your patch is applied to the wrong git tree, kindly drop us a note.
-> And when submitting patch, we suggest to use '--base' as documented in
-> https://git-scm.com/docs/git-format-patch]
->
-> url:    https://github.com/0day-ci/linux/commits/Toms-Atteka/net-next-openvswitch-IPv6-Add-IPv6-extension-header-support/20210506-021045
-> base:   https://git.kernel.org/pub/scm/linux/kernel/git/davem/net.git 4c7a94286ef7ac7301d633f17519fb1bb89d7550
-> config: x86_64-allyesconfig (attached as .config)
-> compiler: gcc-9 (Debian 9.3.0-22) 9.3.0
->
-> If you fix the issue, kindly add following tag as appropriate
-> Reported-by: kernel test robot <lkp@intel.com>
->
->
-> cocci warnings: (new ones prefixed by >>)
-> >> net/openvswitch/flow.c:378:2-3: Unneeded semicolon
->
-> Please review and possibly fold the followup patch.
->
-> ---
-> 0-DAY CI Kernel Test Service, Intel Corporation
-> https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+@David, @Jakub: I see this series is already archived as "change
+requested", should I repost?
+
+Thanks!
+
+Paolo
+
