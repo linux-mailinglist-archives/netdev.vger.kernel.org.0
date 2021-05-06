@@ -2,246 +2,562 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A904B374D83
-	for <lists+netdev@lfdr.de>; Thu,  6 May 2021 04:27:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AFCFB374DA0
+	for <lists+netdev@lfdr.de>; Thu,  6 May 2021 04:38:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231493AbhEFC2t (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 5 May 2021 22:28:49 -0400
-Received: from mailout3.samsung.com ([203.254.224.33]:53958 "EHLO
-        mailout3.samsung.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231273AbhEFC2s (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 5 May 2021 22:28:48 -0400
-Received: from epcas2p4.samsung.com (unknown [182.195.41.56])
-        by mailout3.samsung.com (KnoxPortal) with ESMTP id 20210506022749epoutp03d8a1cf830cc4b867c23af7551523b487~8WTl0dOCG2451224512epoutp03j
-        for <netdev@vger.kernel.org>; Thu,  6 May 2021 02:27:49 +0000 (GMT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mailout3.samsung.com 20210506022749epoutp03d8a1cf830cc4b867c23af7551523b487~8WTl0dOCG2451224512epoutp03j
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
-        s=mail20170921; t=1620268069;
-        bh=u/oFc+RysAcbNw7YBahwmspRG76JwCdAvRU5YZymBtQ=;
-        h=From:To:Cc:In-Reply-To:Subject:Date:References:From;
-        b=mv72/qx6upbyf+Ci1uVmZupfffIgESs0Yx2cPbh6PLqRedP0DDybU17fFGDHp2WsK
-         OYlRrCJQRwI37I4NCC7JXYObRGD8l36dgvzwCMV19r7XGIQrECL/faENtmUTv199MZ
-         Bd1IMuNag5zEPyA9RLqmze721vp0tUCuqgc3g9ig=
-Received: from epsnrtp1.localdomain (unknown [182.195.42.162]) by
-        epcas2p1.samsung.com (KnoxPortal) with ESMTP id
-        20210506022748epcas2p1610e9e45315dba4e420e0e5ec7537405~8WTlPMEpu1397613976epcas2p1B;
-        Thu,  6 May 2021 02:27:48 +0000 (GMT)
-Received: from epsmges2p2.samsung.com (unknown [182.195.40.189]) by
-        epsnrtp1.localdomain (Postfix) with ESMTP id 4FbHYG2K7Zz4x9Py; Thu,  6 May
-        2021 02:27:46 +0000 (GMT)
-Received: from epcas2p1.samsung.com ( [182.195.41.53]) by
-        epsmges2p2.samsung.com (Symantec Messaging Gateway) with SMTP id
-        A7.6F.09694.12453906; Thu,  6 May 2021 11:27:45 +0900 (KST)
-Received: from epsmtrp1.samsung.com (unknown [182.195.40.13]) by
-        epcas2p1.samsung.com (KnoxPortal) with ESMTPA id
-        20210506022744epcas2p1207466493a0e0da9d4ee6c14e1182242~8WThDuF8-1656616566epcas2p10;
-        Thu,  6 May 2021 02:27:44 +0000 (GMT)
-Received: from epsmgms1p2.samsung.com (unknown [182.195.42.42]) by
-        epsmtrp1.samsung.com (KnoxPortal) with ESMTP id
-        20210506022744epsmtrp11024c10fdd7d1a791bd0e1c772001a60~8WThCwYcr2275722757epsmtrp1a;
-        Thu,  6 May 2021 02:27:44 +0000 (GMT)
-X-AuditID: b6c32a46-e17ff700000025de-73-609354217f03
-Received: from epsmtip1.samsung.com ( [182.195.34.30]) by
-        epsmgms1p2.samsung.com (Symantec Messaging Gateway) with SMTP id
-        E6.85.08163.F1453906; Thu,  6 May 2021 11:27:43 +0900 (KST)
-Received: from KORDO035731 (unknown [12.36.185.47]) by epsmtip1.samsung.com
-        (KnoxPortal) with ESMTPA id
-        20210506022743epsmtip10680df7c93430fe8d7f9f3eff2744b4d~8WTgzxUwN2316123161epsmtip1S;
-        Thu,  6 May 2021 02:27:43 +0000 (GMT)
-From:   "Dongseok Yi" <dseok.yi@samsung.com>
-To:     "'Willem de Bruijn'" <willemdebruijn.kernel@gmail.com>
-Cc:     "'Daniel Borkmann'" <daniel@iogearbox.net>,
-        "'bpf'" <bpf@vger.kernel.org>,
-        "'Alexei Starovoitov'" <ast@kernel.org>,
-        "'Andrii Nakryiko'" <andrii@kernel.org>,
-        "'Martin KaFai Lau'" <kafai@fb.com>,
-        "'Song Liu'" <songliubraving@fb.com>,
-        "'Yonghong Song'" <yhs@fb.com>,
-        "'John Fastabend'" <john.fastabend@gmail.com>,
-        "'KP Singh'" <kpsingh@kernel.org>,
-        "'David S. Miller'" <davem@davemloft.net>,
-        "'Jakub Kicinski'" <kuba@kernel.org>,
-        "'Network Development'" <netdev@vger.kernel.org>,
-        "'linux-kernel'" <linux-kernel@vger.kernel.org>
-In-Reply-To: <CA+FuTScC96R5o24c-sbY-CEV4EYOVFepFR85O4uGtCLwOjnzEw@mail.gmail.com>
-Subject: RE: [PATCH bpf] bpf: check for data_len before upgrading mss when 6
- to 4
-Date:   Thu, 6 May 2021 11:27:43 +0900
-Message-ID: <02c801d7421f$65287a90$2f796fb0$@samsung.com>
+        id S231545AbhEFCjM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 5 May 2021 22:39:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59144 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231473AbhEFCjL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 5 May 2021 22:39:11 -0400
+Received: from mail-pj1-x1043.google.com (mail-pj1-x1043.google.com [IPv6:2607:f8b0:4864:20::1043])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A1583C061574;
+        Wed,  5 May 2021 19:38:14 -0700 (PDT)
+Received: by mail-pj1-x1043.google.com with SMTP id j6-20020a17090adc86b02900cbfe6f2c96so2646655pjv.1;
+        Wed, 05 May 2021 19:38:14 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=VQqQrvDxn6WO/Max1SD+ArxUngt22Nt4TxL7sAPGkdg=;
+        b=f9Z+UmcIW3tLNUnzMbo9aUwWzxlMJgBn4uYNTwttX46FVlWYy2dmPGR0R36H5XXNwD
+         qIDy8VVOyJyoYqMiXXqS7if39zE6/5TbkyT1bqflmPAdHZfrlLI+6BUbBsF4YD9n2DA2
+         PMYN6GUGMYZ69HlC60ELY4I19/O9w+XXvPDJl6KjXJ+NJtErUdSoe42eaML/1r+dLdHV
+         t+bJOBvu1PhqY+CvL+vazBX04m2N5rNGJOaMsDpH2EQ6riwa3yqt/j7ayJ3FFO/NJiIP
+         rvqd5vNtFt6eYus8ppcBdeRor0nePbYX+49tkVgw6dzKM8NYUX/AVPQEbtdBGVWveB5l
+         drJA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=VQqQrvDxn6WO/Max1SD+ArxUngt22Nt4TxL7sAPGkdg=;
+        b=c1lwIquNMUqFb8rma2zAoDUQmKjk7C258hJa8uHgX4kqB7cyWkZL0NZPZ4b6JunDFQ
+         HX4Fut8YrW30d16QP1UieXr9cUf8AZbs0SS+Hxhm0yAze41vS4UUUwqkyMxmItvIZKrv
+         EoASbnSTSa1BegorQ/3+gpQEH0/7x4GXUcGxZAAv9jPz0wz6B6ZZripY9NzUOMrpTNMK
+         FHGSX6CUC/ZhAkpsueZuVDAFUA0KNlQJYjMJNf90YYSpcS1MPbNNCCLLaY/pLUJBBsof
+         As13AgNWSVjQfz8GnUXF+6DqHpdW2WTgdPvYrd1LEVlHQt1di7irLW+afk/5D4m2kmgh
+         IraA==
+X-Gm-Message-State: AOAM533PBGsoTwPtj3L4zSqKOlw6BR7rjJJNcoGI0ZlCf41N/Uy0AAVI
+        5aBZA+yrpyyoDlBIt3SnBAU=
+X-Google-Smtp-Source: ABdhPJzfC32W3Hrxh3tWfAwReJb1P3Q4Yj9H9q0N6iEXI0MM++2iArlOwJVEvIiBrBxzBb5E1Otaxg==
+X-Received: by 2002:a17:90a:7781:: with SMTP id v1mr1935098pjk.34.1620268693912;
+        Wed, 05 May 2021 19:38:13 -0700 (PDT)
+Received: from localhost ([2405:204:a229:cb52:a08c:9598:67ac:7e57])
+        by smtp.gmail.com with ESMTPSA id 31sm459975pgw.3.2021.05.05.19.38.10
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 05 May 2021 19:38:13 -0700 (PDT)
+Date:   Thu, 6 May 2021 08:07:53 +0530
+From:   Kumar Kartikeya Dwivedi <memxor@gmail.com>
+To:     Daniel Borkmann <daniel@iogearbox.net>
+Cc:     bpf@vger.kernel.org,
+        Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        Shaun Crampton <shaun@tigera.io>, netdev@vger.kernel.org
+Subject: Re: [PATCH bpf-next v6 2/3] libbpf: add low level TC-BPF API
+Message-ID: <20210506023753.7hkzo3xxrqighcm2@apollo>
+References: <20210504005023.1240974-1-memxor@gmail.com>
+ <20210504005023.1240974-3-memxor@gmail.com>
+ <eb6aada2-0de8-3adf-4b69-898a1c31c4e6@iogearbox.net>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-Mailer: Microsoft Outlook 16.0
-Content-Language: ko
-Thread-Index: AQKypHYW3xad5/j2XvChPebQmKG2owG+YoocAqFpyMsBZavlXQIxNaIYqN8+O7A=
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFtrFJsWRmVeSWpSXmKPExsWy7bCmqa5iyOQEg9NdEhbff89mtvjy8za7
-        xecjx9ksFi/8xmwx53wLi0XTjhVMFi8+PGG0eL6vl8niwrY+VovLu+awWRxbIGbx8/AZZovF
-        PzcAVSyZwejA57Fl5U0mj4nN79g9ds66y+7RdeMSs8emVZ1sHp83yQWwReXYZKQmpqQWKaTm
-        JeenZOal2yp5B8c7x5uaGRjqGlpamCsp5CXmptoqufgE6Lpl5gBdq6RQlphTChQKSCwuVtK3
-        synKLy1JVcjILy6xVUotSMkpMDQs0CtOzC0uzUvXS87PtTI0MDAyBapMyMm4cr2PuWCBUsW5
-        HSsYGxgnSnYxcnJICJhIPF47k72LkYtDSGAHo8SsGQvYQBJCAp8YJea9d4VIfGaUODtpOjtM
-        R+u0LYwQiV2MEn/XTWCBcF4wSmxd0QpWxSagJfFmVjsriC0iYCXxf/YJsDizwDwWibZTIiA2
-        p0CgxO5ZP5hBbGGBYImnk5qYuhg5OFgEVCQ2XHUBCfMKWEp0b97MDmELSpyc+YQFYoy8xPa3
-        c5ghDlKQ+Pl0GStEXERidmcbM8RaP4nHjz5CHX2BQ+Lb2giQ8RICLhIHlrBAhIUlXh3fAlUi
-        JfGyv40doqReorU7BuQrCYEeRokr+55A1RtLzHrWzghSwyygKbF+lz5EubLEkVtQh/FJdBz+
-        CzWFV6KjTQjCVJKY+CUeYoaExIuTk1kmMCrNQvLVLCRfzULyySyEVQsYWVYxiqUWFOempxYb
-        FRghx/MmRnAi1nLbwTjl7Qe9Q4xMHIyHGCU4mJVEeAvW9icI8aYkVlalFuXHF5XmpBYfYjQF
-        BvNEZinR5HxgLsgriTc0NTIzM7A0tTA1M7JQEuf9mVqXICSQnliSmp2aWpBaBNPHxMEp1cBk
-        t3RFp/ouzwIxxXMHhPPuKmzuYvXbpxp7miMhzG/WWdesJ7+4jl/U1ZGYVGAwx9H2rfPJEM3X
-        jxvYe2xEHuczS7UzTH/RlaoaqXvIdpHM3x0H3zLOSb853TRfgDH19+MPEX4+OXJvZs99u1Ty
-        2NQdAapvWp/dm3nUyJrTdkP61WiZZy/Ktk0Q40/2c+N4sjV+9pIdZetuswh6/q1Ouy9wIPbk
-        JsOZb+WtZV6s9Z0acnjpdJsnW040NbZdsVphrr/76sNCw/dKQQXv/nVLzfs50XahQ/+2k99/
-        rF7A+/dfoj/z+xvLryakHv4VFuOu1lYqmcgpPUVGxlhkw94e3wm83BW/bc9+lV115MYeGdFa
-        JZbijERDLeai4kQA79dojU0EAAA=
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFlrBIsWRmVeSWpSXmKPExsWy7bCSnK5CyOQEg/fqFt9/z2a2+PLzNrvF
-        5yPH2SwWL/zGbDHnfAuLRdOOFUwWLz48YbR4vq+XyeLCtj5Wi8u75rBZHFsgZvHz8Blmi8U/
-        NwBVLJnB6MDnsWXlTSaPic3v2D12zrrL7tF14xKzx6ZVnWwenzfJBbBFcdmkpOZklqUW6dsl
-        cGVcud7HXLBAqeLcjhWMDYwTJbsYOTkkBEwkWqdtYQSxhQR2MErs73LoYuQAiktI7NrsClEi
-        LHG/5QhrFyMXUMkzoJLVm1lAEmwCWhJvZrWzgtgiAlYS/2efYAcpYhZYwSJxoOM9O0THXiaJ
-        K1c/g1VxCgRK7J71gxnEFgay+//dYgTZxiKgIrHhqgtImFfAUqJ782Z2CFtQ4uTMJ2DLmAW0
-        JXoftjJC2PIS29/OYYa4TkHi59NlrBBxEYnZnW3MEAf5STx+9JF9AqPwLCSjZiEZNQvJqFlI
-        2hcwsqxilEwtKM5Nzy02LDDKSy3XK07MLS7NS9dLzs/dxAiOTC2tHYx7Vn3QO8TIxMF4iFGC
-        g1lJhLdgbX+CEG9KYmVValF+fFFpTmrxIUZpDhYlcd4LXSfjhQTSE0tSs1NTC1KLYLJMHJxS
-        DUzunKIp6Y2Mia6LOrPfOtxWNebcetf1TuWCtGqjiwzTps7cV+mb5fpkY3UEK+uU7mlqbb8/
-        bluz4+SvfVl+PK+vvzG9GzT/vOTfDdYO7FeNfte1J+3WUNv2VcU+1D1tk5z0pFuO1Yxf120z
-        a35h91cvy/6WEuf9JuuyadzTPV9POijOr/Jcx2/17Zc1FoXXtva93GzvvmN78pF4rxuiilPv
-        iGg/Ob7EKdHtSnnJjFuVwkrqBzbdUWgQ7mmdb8HGLxJ1ri5x85pp/OdCrrClbpQMjm248mid
-        2bYU84Wtk9lYJjPyas24EdPJ9mBuot35y1PNeAJv1c7kPur7bOrLlQfmLvxRKhce/vClbEed
-        QpMSS3FGoqEWc1FxIgAgod7UOwMAAA==
-X-CMS-MailID: 20210506022744epcas2p1207466493a0e0da9d4ee6c14e1182242
-X-Msg-Generator: CA
-Content-Type: text/plain; charset="utf-8"
-X-Sendblock-Type: AUTO_CONFIDENTIAL
-CMS-TYPE: 102P
-DLP-Filter: Pass
-X-CFilter-Loop: Reflected
-X-CMS-RootMailID: 20210429102143epcas2p4c8747c09a9de28f003c20389c050394a
-References: <CGME20210429102143epcas2p4c8747c09a9de28f003c20389c050394a@epcas2p4.samsung.com>
-        <1619690903-1138-1-git-send-email-dseok.yi@samsung.com>
-        <8c2ea41a-3fc5-d560-16e5-bf706949d857@iogearbox.net>
-        <02bf01d74211$0ff4aed0$2fde0c70$@samsung.com>
-        <CA+FuTScC96R5o24c-sbY-CEV4EYOVFepFR85O4uGtCLwOjnzEw@mail.gmail.com>
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <eb6aada2-0de8-3adf-4b69-898a1c31c4e6@iogearbox.net>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, May 05, 2021 at 09:45:37PM -0400, Willem de Bruijn wrote:
-> On Wed, May 5, 2021 at 8:45 PM Dongseok Yi <dseok.yi@samsung.com> wrote:
+On Thu, May 06, 2021 at 03:12:01AM IST, Daniel Borkmann wrote:
+> On 5/4/21 2:50 AM, Kumar Kartikeya Dwivedi wrote:
+> > This adds functions that wrap the netlink API used for adding,
+> > manipulating, and removing traffic control filters.
 > >
-> > On Wed, May 05, 2021 at 10:55:10PM +0200, Daniel Borkmann wrote:
-> > > On 4/29/21 12:08 PM, Dongseok Yi wrote:
-> > > > tcp_gso_segment check for the size of GROed payload if it is bigger
-> > > > than the mss. bpf_skb_proto_6_to_4 increases mss, but the mss can be
-> > > > bigger than the size of GROed payload unexpectedly if data_len is not
-> > > > big enough.
-> > > >
-> > > > Assume that skb gso_size = 1372 and data_len = 8. bpf_skb_proto_6_to_4
-> 
-> Is this a typo and is this intended to read skb->data_len = 1380?
+> > An API summary:
+>
+> Looks better, few minor comments below:
+>
+> > A bpf_tc_hook represents a location where a TC-BPF filter can be
+> > attached. This means that creating a hook leads to creation of the
+> > backing qdisc, while destruction either removes all filters attached to
+> > a hook, or destroys qdisc if requested explicitly (as discussed below).
+> >
+> > The TC-BPF API functions operate on this bpf_tc_hook to attach, replace,
+> > query, and detach tc filters.
+> >
+> > All functions return 0 on success, and a negative error code on failure.
+> >
+> > bpf_tc_hook_create - Create a hook
+> > Parameters:
+> > 	@hook - Cannot be NULL, ifindex > 0, attach_point must be set to
+> > 		proper enum constant. Note that parent must be unset when
+> > 		attach_point is one of BPF_TC_INGRESS or BPF_TC_EGRESS. Note
+> > 		that as an exception BPF_TC_INGRESS|BPF_TC_EGRESS is also a
+> > 		valid value for attach_point.
+> >
+> > 		Returns -EOPNOTSUPP when hook has attach_point as BPF_TC_CUSTOM.
+> >
+> > 		hook's flags member can be BPF_TC_F_REPLACE, which
+> > 		creates qdisc in non-exclusive mode (i.e. an existing
+> > 		qdisc will be replaced instead of this function failing
+> > 		with -EEXIST).
+>
+> Why supporting BPF_TC_F_REPLACE here? It's not changing any qdisc parameters
+> given clsact doesn't have any, no? Iow, what effect are you expecting on this
+> with BPF_TC_F_REPLACE & why supporting it? I'd probably just require flags to
+> be 0 here, and if hook exists return sth like -EEXIST.
+>
 
-This is not a typo. I intended skb->data_len = 8.
+Ok, will change.
 
-> 
-> The issue is that payload length (1380) is greater than mss with ipv6
-> (1372), but less than mss with ipv4 (1392).
-> 
-> I don't understand data_len = 8 or why the patch compares
-> skb->data_len to len_diff (20).
+> > bpf_tc_hook_destroy - Destroy the hook
+> > Parameters:
+> >          @hook - Cannot be NULL. The behaviour depends on value of
+> > 		attach_point.
+> >
+> > 		If BPF_TC_INGRESS, all filters attached to the ingress
+> > 		hook will be detached.
+> > 		If BPF_TC_EGRESS, all filters attached to the egress hook
+> > 		will be detached.
+> > 		If BPF_TC_INGRESS|BPF_TC_EGRESS, the clsact qdisc will be
+> > 		deleted, also detaching all filters.
+> >
+> > 		As before, parent must be unset for these attach_points,
+> > 		and set for BPF_TC_CUSTOM. flags must also be unset.
+> >
+> > 		It is advised that if the qdisc is operated on by many programs,
+> > 		then the program at least check that there are no other existing
+> > 		filters before deleting the clsact qdisc. An example is shown
+> > 		below:
+> >
+> > 		DECLARE_LIBBPF_OPTS(bpf_tc_hook, .ifindex = if_nametoindex("lo"),
+> > 				    .attach_point = BPF_TC_INGRESS);
+> > 		/* set opts as NULL, as we're not really interested in
+> > 		 * getting any info for a particular filter, but just
+> > 	 	 * detecting its presence.
+> > 		 */
+> > 		r = bpf_tc_query(&hook, NULL);
+> > 		if (r == -ENOENT) {
+> > 			/* no filters */
+> > 			hook.attach_point = BPF_TC_INGRESS|BPF_TC_EGREESS;
+> > 			return bpf_tc_hook_destroy(&hook);
+> > 		} else {
+> > 			/* failed or r == 0, the latter means filters do exist */
+> > 			return r;
+> > 		}
+> >
+> > 		Note that there is a small race between checking for no
+> > 		filters and deleting the qdisc. This is currently unavoidable.
+> >
+> > 		Returns -EOPNOTSUPP when hook has attach_point as BPF_TC_CUSTOM.
+> >
+> > bpf_tc_attach - Attach a filter to a hook
+> > Parameters:
+> > 	@hook - Cannot be NULL. Represents the hook the filter will be
+> > 		attached to. Requirements for ifindex and attach_point are
+> > 		same as described in bpf_tc_hook_create, but BPF_TC_CUSTOM
+> > 		is also supported.  In that case, parent must be set to the
+> > 		handle where the filter will be attached (using TC_H_MAKE).
+> > 		flags member must be unset.
+> >
+> > 		E.g. To set parent to 1:16 like in tc command line,
+> > 		     the equivalent would be TC_H_MAKE(1 << 16, 16)
+>
+> Small nit: I wonder whether from libbpf side we should just support a more
+> user friendly TC_H_MAKE, so you'd have: BPF_TC_CUSTOM + BPF_TC_PARENT(1, 16).
+>
 
-skb_gro_receive():
-        unsigned int len = skb_gro_len(skb);
-        [...]
-done:
-        NAPI_GRO_CB(p)->count++;
-        p->data_len += len;
+Something like this was there in v1. I'll add this macro again (I guess the most surprising part of
+TC_H_MAKE is that it won't shift the major number).
 
-head_skb's data_len is the sum of skb_gro_len for each skb of the frags.
-data_len could be 8 if server sent a small size packet and it is GROed
-to head_skb.
+> > 	@opts - Cannot be NULL.
+> >
+> > 		The following opts are optional:
+> > 			handle - The handle of the filter
+> > 			priority - The priority of the filter
+> > 				   Must be >= 0 and <= UINT16_MAX
+>
+> It should probably be mentioned that if they are not specified, then they
+> are auto-allocated from kernel.
 
-Please let me know if I am missing something.
+Right, I'll add a small note.
 
-> 
-> One simple solution if this packet no longer needs to be segmented
-> might be to reset the gso_type completely.
+>
+> > 		The following opts must be set:
+> > 			prog_fd - The fd of the loaded SCHED_CLS prog
+> > 		The following opts must be unset:
+> > 			prog_id - The ID of the BPF prog
+> > 		The following opts are optional:
+> > 			flags - Currently only BPF_TC_F_REPLACE is
+> > 				allowed. It allows replacing an existing
+> > 				filter instead of failing with -EEXIST.
+> >
+> > 		The following opts will be filled by bpf_tc_attach on a
+> > 		successful attach operation if they are unset:
+> > 			handle - The handle of the attached filter
+> > 			priority - The priority of the attached filter
+> > 			prog_id - The ID of the attached SCHED_CLS prog
+> >
+> > 		This way, the user can know what the auto allocated
+> > 		values for optional opts like handle and priority are
+> > 		for the newly attached filter, if they were unset.
+> >
+> > 		Note that some other attributes are set to some default
+> > 		values listed below (this holds for all bpf_tc_* APIs):
+> > 			protocol - ETH_P_ALL
+> > 			mode - direct action
+> > 			chain index - 0
+> > 			class ID - 0 (this can be set by writing to the
+> > 			skb->tc_classid field from the BPF program)
+> >
+> > bpf_tc_detach
+> > Parameters:
+> > 	@hook: Cannot be NULL. Represents the hook the filter will be
+> > 		detached from. Requirements are same as described above
+> > 		in bpf_tc_attach.
+> >
+> > 	@opts:	Cannot be NULL.
+> >
+> > 		The following opts must be set:
+> > 			handle
+> > 			priority
+> > 		The following opts must be unset:
+> > 			prog_fd
+> > 			prog_id
+> > 			flags
+> >
+> > bpf_tc_query
+> > Parameters:
+> > 	@hook: Cannot be NULL. Represents the hook where the filter
+> > 	       lookup will be performed. Requires are same as described
+> > 	       above in bpf_tc_attach.
+> >
+> > 	@opts: Can be NULL.
+>
+> Shouldn't it be: Cannot be NULL?
+>
 
-I am not sure gso_type can be cleared even when GSO is needed.
+This allows you to check the existence of a filter. If set to NULL we skip writing anything to opts,
+but we still return -ENOENT or 0 depending on whether atleast one filter exists (based on the
+default attributes that we choose). This is used in multiple places in the test, to determine
+whether no filters exists.
 
-> 
-> In general, I would advocate using BPF_F_ADJ_ROOM_FIXED_GSO. When
-> converting from IPv6 to IPv4, fixed gso will end up building packets
-> that are slightly below the MTU. That opportunity cost is negligible
-> (especially with TSO). Unfortunately, I see that that flag is
-> available for bpf_skb_adjust_room but not for bpf_skb_proto_6_to_4.
-> 
-> 
-> > > > would increse the gso_size to 1392. tcp_gso_segment will get an error
-> > > > with 1380 <= 1392.
-> > > >
-> > > > Check for the size of GROed payload if it is really bigger than target
-> > > > mss when increase mss.
-> > > >
-> > > > Fixes: 6578171a7ff0 (bpf: add bpf_skb_change_proto helper)
-> > > > Signed-off-by: Dongseok Yi <dseok.yi@samsung.com>
-> > > > ---
-> > > >   net/core/filter.c | 4 +++-
-> > > >   1 file changed, 3 insertions(+), 1 deletion(-)
-> > > >
-> > > > diff --git a/net/core/filter.c b/net/core/filter.c
-> > > > index 9323d34..3f79e3c 100644
-> > > > --- a/net/core/filter.c
-> > > > +++ b/net/core/filter.c
-> > > > @@ -3308,7 +3308,9 @@ static int bpf_skb_proto_6_to_4(struct sk_buff *skb)
-> > > >             }
-> > > >
-> > > >             /* Due to IPv4 header, MSS can be upgraded. */
-> > > > -           skb_increase_gso_size(shinfo, len_diff);
-> > > > +           if (skb->data_len > len_diff)
-> > >
-> > > Could you elaborate some more on what this has to do with data_len specifically
-> > > here? I'm not sure I follow exactly your above commit description. Are you saying
-> > > that you're hitting in tcp_gso_segment():
-> > >
-> > >          [...]
-> > >          mss = skb_shinfo(skb)->gso_size;
-> > >          if (unlikely(skb->len <= mss))
-> > >                  goto out;
-> > >          [...]
-> >
-> > Yes, right
-> >
-> > >
-> > > Please provide more context on the bug, thanks!
-> >
-> > tcp_gso_segment():
-> >         [...]
-> >         __skb_pull(skb, thlen);
-> >
-> >         mss = skb_shinfo(skb)->gso_size;
-> >         if (unlikely(skb->len <= mss))
-> >         [...]
-> >
-> > skb->len will have total GROed TCP payload size after __skb_pull.
-> > skb->len <= mss will not be happened in a normal GROed situation. But
-> > bpf_skb_proto_6_to_4 would upgrade MSS by increasing gso_size, it can
-> > hit an error condition.
-> >
-> > We should ensure the following condition.
-> > total GROed TCP payload > the original mss + (IPv6 size - IPv4 size)
-> >
-> > Due to
-> > total GROed TCP payload = the original mss + skb->data_len
-> > IPv6 size - IPv4 size = len_diff
-> >
-> > Finally, we can get the condition.
-> > skb->data_len > len_diff
-> >
-> > >
-> > > > +                   skb_increase_gso_size(shinfo, len_diff);
-> > > > +
-> > > >             /* Header must be checked, and gso_segs recomputed. */
-> > > >             shinfo->gso_type |= SKB_GSO_DODGY;
-> > > >             shinfo->gso_segs = 0;
-> > > >
-> >
-> >
+> > 	       The following opts are optional:
+> > 			handle
+> > 			priority
+> > 			prog_fd
+> > 			prog_id
+>
+> What is the use case to set prog_fd here?
+>
 
+It allows you to search with the prog_id of the program represented by fd. It's just a convenience
+thing, we end up doing a call to get the prog_id for you, and since the parameter is already there,
+it seemed ok to support this.
+
+> > 	       The following opts must be unset:
+> > 			flags
+> >
+> > 	       However, only one of prog_fd and prog_id must be
+> > 	       set. Setting both leads to an error. Setting none is
+> > 	       allowed.
+> >
+> > 	       The following fields will be filled by bpf_tc_query on a
+> > 	       successful lookup if they are unset:
+> > 			handle
+> > 			priority
+> > 			prog_id
+> >
+> > 	       Based on the specified optional parameters, the matching
+> > 	       data for the first matching filter is filled in and 0 is
+> > 	       returned. When setting prog_fd, the prog_id will be
+> > 	       matched against prog_id of the loaded SCHED_CLS prog
+> > 	       represented by prog_fd.
+> >
+> > 	       To uniquely identify a filter, e.g. to detect its presence,
+> > 	       it is recommended to set both handle and priority fields.
+>
+> What if prog_id is not unique, but part of multiple instances? Do we need
+> to support this case?
+
+We return the first filter that matches on the prog_id. I think it is worthwhile to support this, as
+long as the kernel's sequence of returning filters is stable (which it is), we keep returning the
+same filter's handle/priority, so you can essentially pop filters attached to a hook one by one by
+passing in unset opts and getting its details (or setting one of the parameters and making the
+lookup domain smaller).
+
+In simple words, setting one of the parameters that will be filled leads to only returning an entry
+that matches them. This is similar to what tc filter show's dump allows you to do.
+
+>
+> Why not just bpf_tc_query() with non-NULL hook and non-NULL opts where
+> handle and priority is required to be set, and rest must be 0?
+>
+
+There is also a usecase for us where we need to query the existing filter on a hook without knowing
+its handle/priority. Shaun also mentioned something similar, where they then go on to check the tag
+they get from the returned prog_id to determine what to do next.
+
+> > Some usage examples (using bpf skeleton infrastructure):
+> >
+> > BPF program (test_tc_bpf.c):
+> >
+> > 	#include <linux/bpf.h>
+> > 	#include <bpf/bpf_helpers.h>
+> >
+> > 	SEC("classifier")
+> > 	int cls(struct __sk_buff *skb)
+> > 	{
+> > 		return 0;
+> > 	}
+> >
+> > Userspace loader:
+> >
+> > 	DECLARE_LIBBPF_OPTS(bpf_tc_opts, opts, 0);
+> > 	struct test_tc_bpf *skel = NULL;
+> > 	int fd, r;
+> >
+> > 	skel = test_tc_bpf__open_and_load();
+> > 	if (!skel)
+> > 		return -ENOMEM;
+> >
+> > 	fd = bpf_program__fd(skel->progs.cls);
+> >
+> > 	DECLARE_LIBBPF_OPTS(bpf_tc_hook, hook, .ifindex =
+> > 			    if_nametoindex("lo"), .attach_point =
+> > 			    BPF_TC_INGRESS);
+> > 	/* Create clsact qdisc */
+> > 	r = bpf_tc_hook_create(&hook);
+> > 	if (r < 0)
+> > 		goto end;
+> >
+> > 	DECLARE_LIBBPF_OPTS(bpf_tc_opts, opts, .prog_fd = fd);
+>
+> Given we had DECLARE_LIBBPF_OPTS earlier, can't we just set:
+> opts.prog_fd = fd here?
+
+Right, will fix.
+
+>
+> > 	r = bpf_tc_attach(&hook, &opts);
+> > 	if (r < 0)
+> > 		goto end;
+> > 	/* Print the auto allocated handle and priority */
+> > 	printf("Handle=%u", opts.handle);
+> > 	printf("Priority=%u", opts.priority);
+> >
+> > 	opts.prog_fd = opts.prog_id = 0;
+> > 	bpf_tc_detach(&hook, &opts);
+>
+> Here we detach ...
+>
+> > end:
+> > 	test_tc_bpf__destroy(skel);
+> >
+> > This is equivalent to doing the following using tc command line:
+> >    # tc qdisc add dev lo clsact
+> >    # tc filter add dev lo ingress bpf obj foo.o sec classifier da
+>
+> ... so this is not equivalent to your tc cmdline description.
+>
+
+I'll add a tc filter del.
+
+> > Another example replacing a filter (extending prior example):
+> >
+> > 	/* We can also choose both (or one), let's try replacing an
+> > 	 * existing filter.
+> > 	 */
+> > 	DECLARE_LIBBPF_OPTS(bpf_tc_opts, replace_opts, .handle =
+> > 			    opts.handle, .priority = opts.priority,
+> > 			    .prog_fd = fd);
+> > 	r = bpf_tc_attach(&hook, &replace_opts);
+> > 	if (r == -EEXIST) {
+> > 		/* Expected, now use BPF_TC_F_REPLACE to replace it */
+> > 		replace_opts.flags = BPF_TC_F_REPLACE;
+> > 		return bpf_tc_attach(&hook, &replace_opts);
+> > 	} else if (r < 0) {
+> > 		return r;
+> > 	}
+> > 	/* There must be no existing filter with these
+> > 	 * attributes, so cleanup and return an error.
+> > 	 */
+> > 	replace_opts.flags = replace_opts.prog_fd = replace_opts.prog_id = 0;
+> > 	bpf_tc_detach(&hook, &replace_opts);
+> > 	return -1;
+> >
+> > To obtain info of a particular filter:
+> >
+> > 	/* Find info for filter with handle 1 and priority 50 */
+> > 	DECLARE_LIBBPF_OPTS(bpf_tc_opts, info_opts, .handle = 1,
+> > 			    .priority = 50);
+> > 	r = bpf_tc_query(&hook, &info_opts);
+> > 	if (r == -ENOENT)
+> > 		printf("Filter not found");
+> > 	else if (r < 0)
+> > 		return r;
+> > 	printf("Prog ID: %u", info_opts.prog_id);
+> > 	return 0;
+> >
+> > We can also match using prog_id to find the same filter:
+> >
+> > 	DECLARE_LIBBPF_OPTS(bpf_tc_opts, info_opts2, .prog_id =
+> > 			    info_opts.prog_id);
+> > 	r = bpf_tc_query(&hook, &info_opts2);
+> > 	if (r == -ENOENT)
+> > 		printf("Filter not found");
+> > 	else if (r < 0)
+> > 		return r;
+> > 	/* If we know there's only one filter for this loaded prog,
+> > 	 * it is safe to assert that the handle and priority are
+> > 	 * as expected.
+> > 	 */
+> > 	assert(info_opts2.handle == 1);
+> > 	assert(info_opts2.priority == 50);
+>
+> What if a given prog_id is attached to multiple instances?
+>
+
+The first match is returned.
+
+> > 	return 0;
+> >
+> > Reviewed-by: Toke Høiland-Jørgensen <toke@redhat.com>
+> > Signed-off-by: Kumar Kartikeya Dwivedi <memxor@gmail.com>
+> > ---
+> >   tools/lib/bpf/libbpf.h   |  42 ++++
+> >   tools/lib/bpf/libbpf.map |   5 +
+> >   tools/lib/bpf/netlink.c  | 473 ++++++++++++++++++++++++++++++++++++++-
+> >   3 files changed, 519 insertions(+), 1 deletion(-)
+> >
+> > diff --git a/tools/lib/bpf/libbpf.h b/tools/lib/bpf/libbpf.h
+> > index bec4e6a6e31d..09d1a4fb10f9 100644
+> > --- a/tools/lib/bpf/libbpf.h
+> > +++ b/tools/lib/bpf/libbpf.h
+> > @@ -775,6 +775,48 @@ LIBBPF_API int bpf_linker__add_file(struct bpf_linker *linker, const char *filen
+> >   LIBBPF_API int bpf_linker__finalize(struct bpf_linker *linker);
+> >   LIBBPF_API void bpf_linker__free(struct bpf_linker *linker);
+> > +enum bpf_tc_attach_point {
+> > +	BPF_TC_INGRESS = 1 << 0,
+> > +	BPF_TC_EGRESS  = 1 << 1,
+> > +	BPF_TC_CUSTOM  = 1 << 2,
+> > +};
+> > +
+> > +enum bpf_tc_flags {
+> > +	BPF_TC_F_REPLACE = 1 << 0,
+> > +};
+> > +
+> > +struct bpf_tc_hook {
+> > +	size_t sz;
+> > +	int ifindex;
+> > +	int flags;
+>
+> nit: __u32 flags; (or rather dropping as discussed)
+>
+
+I'll drop it for now.
+
+> > +	enum bpf_tc_attach_point attach_point;
+> > +	__u32 parent;
+> > +	size_t :0;
+> > +};
+> > +
+> > +#define bpf_tc_hook__last_field parent
+> > +
+> > +struct bpf_tc_opts {
+> > +	size_t sz;
+> > +	int prog_fd;
+> > +	int flags;
+>
+> nit: __u32 flags;
+>
+
+Ok.
+
+> > +	__u32 prog_id;
+> > +	__u32 handle;
+> > +	__u32 priority;
+> > +	size_t :0;
+> > +};
+> > +
+> > +#define bpf_tc_opts__last_field priority
+> > +
+> > +LIBBPF_API int bpf_tc_hook_create(struct bpf_tc_hook *hook);
+> > +LIBBPF_API int bpf_tc_hook_destroy(struct bpf_tc_hook *hook);
+> > +LIBBPF_API int bpf_tc_attach(const struct bpf_tc_hook *hook,
+> > +			     struct bpf_tc_opts *opts);
+> > +LIBBPF_API int bpf_tc_detach(const struct bpf_tc_hook *hook,
+> > +			     const struct bpf_tc_opts *opts);
+> > +LIBBPF_API int bpf_tc_query(const struct bpf_tc_hook *hook,
+> > +			    struct bpf_tc_opts *opts);
+> > +
+> >   #ifdef __cplusplus
+> >   } /* extern "C" */
+> >   #endif
+> > diff --git a/tools/lib/bpf/libbpf.map b/tools/lib/bpf/libbpf.map
+> > index b9b29baf1df8..6c96729050dc 100644
+> > --- a/tools/lib/bpf/libbpf.map
+> > +++ b/tools/lib/bpf/libbpf.map
+> > @@ -361,4 +361,9 @@ LIBBPF_0.4.0 {
+> >   		bpf_linker__new;
+> >   		bpf_map__inner_map;
+> >   		bpf_object__set_kversion;
+> > +		bpf_tc_attach;
+> > +		bpf_tc_detach;
+> > +		bpf_tc_hook_create;
+> > +		bpf_tc_hook_destroy;
+> > +		bpf_tc_query;
+> >   } LIBBPF_0.3.0;
+> > diff --git a/tools/lib/bpf/netlink.c b/tools/lib/bpf/netlink.c
+> > index 8a01d9eed5f9..95c87f87a178 100644
+> > --- a/tools/lib/bpf/netlink.c
+> > +++ b/tools/lib/bpf/netlink.c
+> > @@ -4,7 +4,10 @@
+> >   #include <stdlib.h>
+> >   #include <memory.h>
+> >   #include <unistd.h>
+> > +#include <arpa/inet.h>
+> >   #include <linux/bpf.h>
+> > +#include <linux/if_ether.h>
+> > +#include <linux/pkt_cls.h>
+> >   #include <linux/rtnetlink.h>
+> >   #include <sys/socket.h>
+> >   #include <errno.h>
+> > @@ -73,6 +76,12 @@ static int libbpf_netlink_open(__u32 *nl_pid)
+> >   	return ret;
+> >   }
+> > +enum {
+> > +	BPF_NL_CONT,
+> > +	BPF_NL_NEXT,
+> > +	BPF_NL_DONE,
+>
+> nit: I don't think we need BPF_ prefix here given it's not specific to BPF.
+>
+
+Ok, will rename.
+
+> > +};
+> > +
+> >   static int bpf_netlink_recv(int sock, __u32 nl_pid, int seq,
+> >   			    __dump_nlmsg_t _fn, libbpf_dump_nlmsg_t fn,
+> >   			    void *cookie)
+> > @@ -84,6 +93,7 @@ static int bpf_netlink_recv(int sock, __u32 nl_pid, int seq,
+> >   	int len, ret;
+> >   	while (multipart) {
+> > +start:
+> >   		multipart = false;
+> >   		len = recv(sock, buf, sizeof(buf), 0);
+> >   		if (len < 0) {
+> [...]
+
+--
+Kartikeya
