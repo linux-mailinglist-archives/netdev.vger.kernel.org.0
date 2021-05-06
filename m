@@ -2,70 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6D6D6375D24
-	for <lists+netdev@lfdr.de>; Fri,  7 May 2021 00:22:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 08CCD375D35
+	for <lists+netdev@lfdr.de>; Fri,  7 May 2021 00:35:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230386AbhEFWXR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 6 May 2021 18:23:17 -0400
-Received: from mail.kernel.org ([198.145.29.99]:50580 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230149AbhEFWXQ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 6 May 2021 18:23:16 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 8F537613B5;
-        Thu,  6 May 2021 22:22:17 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1620339737;
-        bh=Pl4Nc2bJYjn/SVHW8muq4kyY44aB+yCSVGCuxuNvFUc=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=eH95wkZAXB7soK9mkx2OkK7vqeNuvyUwwWthib0NEkfMqZ+tit+3r5hylLj3cmHFj
-         KasxWTjgo2SAX2kUrlpETL1M4Iy3+USdmagh84MNK+0lTSJtkLuGuX3Suuh5gxACUq
-         XYL6eGZyKRI+CW83YEBK2lzJWHJCHX2HSUzSkDXmExXjlyZyAieqxsESh2RoupPO61
-         bU3b/5vpApVa3Hb2xZIMobViRChPwMSbISCzb93KXZqEz1VlhMKub9vmqXhaD6ua8w
-         yHiD+/Ne9MjfR6qfFW6zOwXcwjazhSLpBbQUnruBiw8TbDHLDElu6z/ERymX7NlIlP
-         IvrzhvRN6g1hQ==
-Date:   Thu, 6 May 2021 15:22:16 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Toms Atteka <cpp.code.lv@gmail.com>
-Cc:     netdev@vger.kernel.org
-Subject: Re: [PATCH net-next] net: openvswitch: IPv6: Add IPv6 extension
- header support
-Message-ID: <20210506152216.6f31a7cd@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20210506183053.24430-1-cpp.code.lv@gmail.com>
-References: <20210506183053.24430-1-cpp.code.lv@gmail.com>
+        id S230462AbhEFWgg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 6 May 2021 18:36:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43214 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230231AbhEFWgf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 6 May 2021 18:36:35 -0400
+Received: from mail-pj1-x102e.google.com (mail-pj1-x102e.google.com [IPv6:2607:f8b0:4864:20::102e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 24A7AC061574
+        for <netdev@vger.kernel.org>; Thu,  6 May 2021 15:35:37 -0700 (PDT)
+Received: by mail-pj1-x102e.google.com with SMTP id p17so4107939pjz.3
+        for <netdev@vger.kernel.org>; Thu, 06 May 2021 15:35:37 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=04GW86lDPR4GDfEJrkYeSR17wXpHPmu4c6UoEnvjWnw=;
+        b=DkwTCST9DLmhZSbB6vrmjtnWuavrJni0dJ2o6/5BV89PS2/6OxBAcCLwMrSytgdbPl
+         BvECCH/VOgLjliRgjq3U5P+w3FcNEEjTRGrBlOfwnVZXNH9g4YO5mVoMSPPGa1iJqJWM
+         MnEbCYp+CLVFkzjABdq/nMglkTi2ynhGFxc+WaxoSC4+NNGswcUb9DcFhkDsLOvjXS1F
+         +1WaO+cfWQMFAvEEFfFgWk/mBaiz8MNCQTwf9Z1bPLC9cNaWNVe4JBaXhmXyGSlXVp3f
+         85K2026eqmwpFAmzEGWKPRiMqt1aObVSELHemS/1DKdY2OdjLj5KbezN56SqR3byrhxt
+         s57A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=04GW86lDPR4GDfEJrkYeSR17wXpHPmu4c6UoEnvjWnw=;
+        b=ZbuQygMUjYG4EAIyxl9FC7RpZbcXHiNiSgKWj9DTu+VFEnTMNAb7jKJpXKuhm25Ljj
+         kkrxK+07x08T3gacaQjHfKviYUzdViCZUQ4JgLPU6EUIC38T2ROrTSrRu76Wy0Vyv8kd
+         NHRPxCA471T7OsFuw8DdRr/vbJ3AzBkEVSTMzbXVechFqKw5i4s4metxBCMb+WsQXbZL
+         ZvuhIXgj3n5rmzHY/rOeuXcpVHMHXtcWnupebPiMTTRrWClJOZ14zpK7hZ5souZUSCPA
+         bD6s14zpu4t0dbiWrFrNnJkga4IKi3ay8m9pygrQbH9GcYwt0MXMUFA1QoKmQOfGqS1b
+         eKaQ==
+X-Gm-Message-State: AOAM530Mbmxzo47qxujNFxMhpgwVCkcuJ8a5I+zvtIIR89gz4Fxg0gnw
+        lXDE63SSqkAUzJqj3633edg=
+X-Google-Smtp-Source: ABdhPJxwOi0K57qhp9RGbZfDUhl4+rOenG9p2RLCSzuBDneUHIjhe3xPmgzRSAznzR5kCFAwPxH1Qw==
+X-Received: by 2002:a17:90a:fa0e:: with SMTP id cm14mr20097526pjb.59.1620340536667;
+        Thu, 06 May 2021 15:35:36 -0700 (PDT)
+Received: from phantasmagoria.svl.corp.google.com ([2620:15c:2c4:201:2e8b:9dfe:8d6b:7429])
+        by smtp.gmail.com with ESMTPSA id 16sm10574095pjk.15.2021.05.06.15.35.35
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 06 May 2021 15:35:35 -0700 (PDT)
+From:   Arjun Roy <arjunroy.kdev@gmail.com>
+To:     davem@davemloft.net, netdev@vger.kernel.org
+Cc:     arjunroy@google.com, edumazet@google.com, soheil@google.com,
+        kuba@kernel.org
+Subject: [net v3] tcp: Specify cmsgbuf is user pointer for receive zerocopy.
+Date:   Thu,  6 May 2021 15:35:30 -0700
+Message-Id: <20210506223530.2266456-1-arjunroy.kdev@gmail.com>
+X-Mailer: git-send-email 2.31.1.607.g51e8a6a459-goog
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu,  6 May 2021 11:30:53 -0700 Toms Atteka wrote:
-> +/**
-> + * Parses packet and sets IPv6 extension header flags.
-> + *
-> + * skb          buffer where extension header data starts in packet
-> + * nh           ipv6 header
-> + * ext_hdrs     flags are stored here
+From: Arjun Roy <arjunroy@google.com>
 
-This is not a valid kdoc comment. Please fix.
+A prior change (1f466e1f15cf) introduces separate handling for
+->msg_control depending on whether the pointer is a kernel or user
+pointer. However, while tcp receive zerocopy is using this field, it
+is not properly annotating that the buffer in this case is a user
+pointer. This can cause faults when the improper mechanism is used
+within put_cmsg().
 
-> + * OFPIEH12_UNREP is set if more than one of a given IPv6 extension header
-> + * is unexpectedly encountered. (Two destination options headers may be
-> + * expected and would not cause this bit to be set.)
-> + *
-> + * OFPIEH12_UNSEQ is set if IPv6 extension headers were not in the order
-> + * preferred (but not required) by RFC 2460:
-> + *
-> + * When more than one extension header is used in the same packet, it is
-> + * recommended that those headers appear in the following order:
-> + *      IPv6 header
-> + *      Hop-by-Hop Options header
-> + *      Destination Options header
-> + *      Routing header
-> + *      Fragment header
-> + *      Authentication header
-> + *      Encapsulating Security Payload header
-> + *      Destination Options header
-> + *      upper-layer header
-> + */
-> +static void get_ipv6_ext_hdrs(struct sk_buff *skb, struct ipv6hdr *nh, u16 *ext_hdrs)
+This patch simply annotates tcp receive zerocopy's use as explicitly
+being a user pointer.
+
+Fixes: 7eeba1706eba ("tcp: Add receive timestamp support for receive zerocopy.")
+Signed-off-by: Arjun Roy <arjunroy@google.com>
+Reviewed-by: Eric Dumazet <edumazet@google.com>
+Cc: Jakub Kicinski <kuba@kernel.org>
+
+---
+
+Changelog since v1:
+- Updated "Fixes" tag and commit message to properly account for which
+  commit introduced buggy behaviour.
+
+ net/ipv4/tcp.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+Changelog since v2:
+- Updated CC list. Added review-by annotation.
+
+diff --git a/net/ipv4/tcp.c b/net/ipv4/tcp.c
+index e14fd0c50c10..f1c1f9e3de72 100644
+--- a/net/ipv4/tcp.c
++++ b/net/ipv4/tcp.c
+@@ -2039,6 +2039,7 @@ static void tcp_zc_finalize_rx_tstamp(struct sock *sk,
+ 		(__kernel_size_t)zc->msg_controllen;
+ 	cmsg_dummy.msg_flags = in_compat_syscall()
+ 		? MSG_CMSG_COMPAT : 0;
++	cmsg_dummy.msg_control_is_user = true;
+ 	zc->msg_flags = 0;
+ 	if (zc->msg_control == msg_control_addr &&
+ 	    zc->msg_controllen == cmsg_dummy.msg_controllen) {
+-- 
+2.31.1.607.g51e8a6a459-goog
+
