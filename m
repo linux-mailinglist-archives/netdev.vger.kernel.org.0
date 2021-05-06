@@ -2,89 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5048F3759B0
-	for <lists+netdev@lfdr.de>; Thu,  6 May 2021 19:49:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6C8DE3759D2
+	for <lists+netdev@lfdr.de>; Thu,  6 May 2021 19:56:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236328AbhEFRus (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 6 May 2021 13:50:48 -0400
-Received: from mail-wr1-f47.google.com ([209.85.221.47]:42923 "EHLO
-        mail-wr1-f47.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236042AbhEFRuq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 6 May 2021 13:50:46 -0400
-Received: by mail-wr1-f47.google.com with SMTP id l2so6514715wrm.9;
-        Thu, 06 May 2021 10:49:47 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=jZ25V5gFIEZP6ukMOMeThXYzSrrigmzcHYTAxDcrK/U=;
-        b=I1EK5mDmaGnPJvraVOO4uFF9dQq9tIL8q4OVfm0aAaFGRa4tmDA6HnVwZlUAYdWy/6
-         WcL7+2luZAQrYOCOsABrqJUYRZcwg720obSCly2ENPdJ8rsFT9cCOR3yYiXJ7EF2xN5R
-         jrlJqOLFK3Eo7D9lymwXWX+HnXrXZaf6GmpiY0jpQb4cl8OCEnKcxCglCyXSBaH+4p8h
-         +NMYwfM6m+fc3FFFN9E4VhXmk9sC2zXfpx9ez1QUcbTbMHYjayrYJcbfTqNkKwQqLKtQ
-         WSozBJQuXnxkkAmGnzPl0pQrT9dxG8Z+8q/n5JY4JNQpHjPfN/sj8Jl3NFRKYgHsmvuV
-         s4Lw==
-X-Gm-Message-State: AOAM531qzRlFDwlYmSAlqmQutJaWOz8hbn8UR6ika7rt5Aaqih3oNd31
-        Hh2giWhFGgBfzqJeubiAAus=
-X-Google-Smtp-Source: ABdhPJzBkXQU5DP6oTLnvIh+SGwU7/JXq8VhmyBRi8o090ybLqDZ2Blt2FLC/CgcT/I/qdZgf9IDcQ==
-X-Received: by 2002:adf:d0cd:: with SMTP id z13mr6883154wrh.373.1620323387206;
-        Thu, 06 May 2021 10:49:47 -0700 (PDT)
-Received: from liuwe-devbox-debian-v2 ([51.145.34.42])
-        by smtp.gmail.com with ESMTPSA id u2sm5530127wmm.5.2021.05.06.10.49.46
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 06 May 2021 10:49:46 -0700 (PDT)
-Date:   Thu, 6 May 2021 17:49:45 +0000
-From:   Wei Liu <wei.liu@kernel.org>
-To:     "Andrea Parri (Microsoft)" <parri.andrea@gmail.com>
-Cc:     linux-kernel@vger.kernel.org, kys@microsoft.com,
-        haiyangz@microsoft.com, sthemmin@microsoft.com, wei.liu@kernel.org,
-        davem@davemloft.net, kuba@kernel.org, jejb@linux.ibm.com,
-        martin.petersen@oracle.com, linux-hyperv@vger.kernel.org,
-        netdev@vger.kernel.org, linux-scsi@vger.kernel.org,
-        mikelley@microsoft.com, Andres Beltran <lkmlabelt@gmail.com>
-Subject: Re: [PATCH hyperv-next] Drivers: hv: vmbus: Copy packets sent by
- Hyper-V out of the ring buffer
-Message-ID: <20210506174945.5vp72zn44uu7xkd5@liuwe-devbox-debian-v2>
-References: <20210408161439.341988-1-parri.andrea@gmail.com>
+        id S236323AbhEFR5S (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 6 May 2021 13:57:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37638 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S236400AbhEFR5M (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 6 May 2021 13:57:12 -0400
+Received: from laurent.telenet-ops.be (laurent.telenet-ops.be [IPv6:2a02:1800:110:4::f00:19])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2763BC06138D
+        for <netdev@vger.kernel.org>; Thu,  6 May 2021 10:56:03 -0700 (PDT)
+Received: from ramsan.of.borg ([IPv6:2a02:1810:ac12:ed20:f434:20f9:aa9e:b80c])
+        by laurent.telenet-ops.be with bizsmtp
+        id 1Vvy2500U0ZPnBx01VvyXi; Thu, 06 May 2021 19:56:02 +0200
+Received: from rox.of.borg ([192.168.97.57])
+        by ramsan.of.borg with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.93)
+        (envelope-from <geert@linux-m68k.org>)
+        id 1leiEA-003NT5-31; Thu, 06 May 2021 19:55:58 +0200
+Received: from geert by rox.of.borg with local (Exim 4.93)
+        (envelope-from <geert@linux-m68k.org>)
+        id 1leiE9-00HHNK-Bk; Thu, 06 May 2021 19:55:57 +0200
+From:   Geert Uytterhoeven <geert+renesas@glider.be>
+To:     Sergei Shtylyov <sergei.shtylyov@gmail.com>,
+        Fabrizio Castro <fabrizio.castro.jz@renesas.com>,
+        Wolfgang Grandegger <wg@grandegger.com>,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Ulrich Hecht <uli+renesas@fpond.eu>
+Cc:     linux-can@vger.kernel.org, linux-renesas-soc@vger.kernel.org,
+        devicetree@vger.kernel.org, netdev@vger.kernel.org,
+        Geert Uytterhoeven <geert+renesas@glider.be>
+Subject: [PATCH 0/2] dt-bindings: can: renesas: Convert to json-schema
+Date:   Thu,  6 May 2021 19:55:52 +0200
+Message-Id: <cover.1620323639.git.geert+renesas@glider.be>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210408161439.341988-1-parri.andrea@gmail.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Apr 08, 2021 at 06:14:39PM +0200, Andrea Parri (Microsoft) wrote:
-> From: Andres Beltran <lkmlabelt@gmail.com>
-> 
-> Pointers to ring-buffer packets sent by Hyper-V are used within the
-> guest VM. Hyper-V can send packets with erroneous values or modify
-> packet fields after they are processed by the guest. To defend
-> against these scenarios, return a copy of the incoming VMBus packet
-> after validating its length and offset fields in hv_pkt_iter_first().
-> In this way, the packet can no longer be modified by the host.
-> 
-> Signed-off-by: Andres Beltran <lkmlabelt@gmail.com>
-> Co-developed-by: Andrea Parri (Microsoft) <parri.andrea@gmail.com>
-> Signed-off-by: Andrea Parri (Microsoft) <parri.andrea@gmail.com>
-> ---
->  drivers/hv/channel.c              |  9 ++--
->  drivers/hv/hv_fcopy.c             |  1 +
->  drivers/hv/hv_kvp.c               |  1 +
->  drivers/hv/hyperv_vmbus.h         |  2 +-
->  drivers/hv/ring_buffer.c          | 82 ++++++++++++++++++++++++++-----
->  drivers/net/hyperv/hyperv_net.h   |  7 +++
->  drivers/net/hyperv/netvsc.c       |  2 +
->  drivers/net/hyperv/rndis_filter.c |  2 +
->  drivers/scsi/storvsc_drv.c        | 10 ++++
->  include/linux/hyperv.h            | 48 +++++++++++++++---
->  net/vmw_vsock/hyperv_transport.c  |  4 +-
->  11 files changed, 143 insertions(+), 25 deletions(-)
+	Hi all,
 
-In theory this patch needs acks from network and scsi maintainers, but
-the changes are so small and specific to Hyper-V drivers. In the
-interest of making progress, I will be picking up this patch shortly
-unless I hear objections.
+This patch series converts the DT bindings for the Renesas R-Car CAN and
+CAN FD controllers found in Renesas SoCs to json-schema.
 
+Thanks for your comments!
 
-Wei.
+Geert Uytterhoeven (2):
+  dt-bindings: can: rcar_can: Convert to json-schema
+  dt-bindings: can: rcar_canfd: Convert to json-schema
+
+ .../devicetree/bindings/net/can/rcar_can.txt  |  80 ----------
+ .../bindings/net/can/rcar_canfd.txt           | 107 --------------
+ .../bindings/net/can/renesas,rcar-can.yaml    | 139 ++++++++++++++++++
+ .../bindings/net/can/renesas,rcar-canfd.yaml  | 122 +++++++++++++++
+ 4 files changed, 261 insertions(+), 187 deletions(-)
+ delete mode 100644 Documentation/devicetree/bindings/net/can/rcar_can.txt
+ delete mode 100644 Documentation/devicetree/bindings/net/can/rcar_canfd.txt
+ create mode 100644 Documentation/devicetree/bindings/net/can/renesas,rcar-can.yaml
+ create mode 100644 Documentation/devicetree/bindings/net/can/renesas,rcar-canfd.yaml
+
+-- 
+2.25.1
+
