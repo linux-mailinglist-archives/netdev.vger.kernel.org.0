@@ -2,297 +2,198 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 07B57374C02
-	for <lists+netdev@lfdr.de>; Thu,  6 May 2021 01:36:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0F281374C7D
+	for <lists+netdev@lfdr.de>; Thu,  6 May 2021 02:45:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229997AbhEEXhq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 5 May 2021 19:37:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47734 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229602AbhEEXhp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 5 May 2021 19:37:45 -0400
-Received: from mail-qt1-x831.google.com (mail-qt1-x831.google.com [IPv6:2607:f8b0:4864:20::831])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE7C8C061574
-        for <netdev@vger.kernel.org>; Wed,  5 May 2021 16:36:47 -0700 (PDT)
-Received: by mail-qt1-x831.google.com with SMTP id o1so2680839qta.1
-        for <netdev@vger.kernel.org>; Wed, 05 May 2021 16:36:47 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=zy4vxZEs9D5ZkvyoT5fFdYLZaXKfmxS3Ig3++IgAX0w=;
-        b=KMAtz4JWy0PrUo4bDeM8f2oF6XxPghNCN4azNKreG6CSdWnPZUMA6uE5alIQvEFsUO
-         /OJJClUFxFwsyCkHEsk3tUvVWlJLjnfO3kHgfMyhSpoqCHFeEOdnGCeYfOTb5+3mtD/O
-         M268POtPdul2gx1ipEh2YB054jTw+xq89fgoXUZ9Vf2cPT7cOo9h37yvoYE1nKQvipHX
-         pkny7MzYAA/55ZTSfFnslCWCWM80qR1X6Xy28AHGoHgMMZJJnZoZ9HlMjnWHGd5mB1xK
-         l+CJ6ee4erS50Dz1pHe+WzzktSLmcplyFlLacaiWM7gBMR8xN271XKDTqtjMqSAnubSN
-         7SjQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=zy4vxZEs9D5ZkvyoT5fFdYLZaXKfmxS3Ig3++IgAX0w=;
-        b=KShEKBMNjHFf/6yDujwqxrUm1vTE2J1wCqhwqVaaLSXCgqin7oOy3ZRaU3rtMuSMoW
-         C9wgPC8k9l+XNgDqNDnbgEFVG/6XYHiBnW84YPal1lqPys8MfSM0Bi/I7hQleyNBGlJJ
-         VACQslU01CCy+W8nqfTJtWcLwu7jPL2qZAxmXmbNRrYTMSJROWjONdOGEfcVmadVnsm2
-         wD4IXunowt7UObOpT6keoHAKP99XAaKXotMFyJEpmc5Nbh8R1efZiA2BXwnGHs1Q6GlU
-         2zy9XinFX/adnDwyYIMxL5jk6fYX3X+Awz44kQaijsr6gPtze4UJO2N8M+Vi+8jt4Wt8
-         w5SA==
-X-Gm-Message-State: AOAM5307hodMidoDT0Q9R4pIFqv3IqQy/s1a1nKB9zmazjvzawvKnKBY
-        /E4wIc4F43f08sKMmEEOpv9NPWIcbxNe4g==
-X-Google-Smtp-Source: ABdhPJwnIKVCH8IhBqVVjeK/LbvPoht+sxHzC7RnOfINV8Db+RavQbnFXlmddo3shOpirJLA1Kz1WA==
-X-Received: by 2002:ac8:7f53:: with SMTP id g19mr1169694qtk.249.1620257806677;
-        Wed, 05 May 2021 16:36:46 -0700 (PDT)
-Received: from unknown.attlocal.net ([2600:1700:65a0:ab60:65fe:be14:6eed:46f])
-        by smtp.gmail.com with ESMTPSA id k15sm711527qtg.68.2021.05.05.16.36.45
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 05 May 2021 16:36:46 -0700 (PDT)
-From:   Cong Wang <xiyou.wangcong@gmail.com>
-To:     netdev@vger.kernel.org
-Cc:     Cong Wang <cong.wang@bytedance.com>,
-        syzbot+7d941e89dd48bcf42573@syzkaller.appspotmail.com,
-        Taehee Yoo <ap420073@gmail.com>
-Subject: [Patch net] rtnetlink: use rwsem to protect rtnl_af_ops list
-Date:   Wed,  5 May 2021 16:36:42 -0700
-Message-Id: <20210505233642.13661-1-xiyou.wangcong@gmail.com>
-X-Mailer: git-send-email 2.25.1
+        id S229921AbhEFAqK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 5 May 2021 20:46:10 -0400
+Received: from mailout1.samsung.com ([203.254.224.24]:34400 "EHLO
+        mailout1.samsung.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229866AbhEFAqJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 5 May 2021 20:46:09 -0400
+Received: from epcas2p1.samsung.com (unknown [182.195.41.53])
+        by mailout1.samsung.com (KnoxPortal) with ESMTP id 20210506004510epoutp0110016774ba88323bfc2b0e23922b0a21~8U5_cJSM42231322313epoutp01d
+        for <netdev@vger.kernel.org>; Thu,  6 May 2021 00:45:10 +0000 (GMT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mailout1.samsung.com 20210506004510epoutp0110016774ba88323bfc2b0e23922b0a21~8U5_cJSM42231322313epoutp01d
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
+        s=mail20170921; t=1620261910;
+        bh=CiOK3qGZ7nBWoEAHSm+8G1elh3nIWvLZdgFSdlkXHcE=;
+        h=From:To:Cc:In-Reply-To:Subject:Date:References:From;
+        b=gvxJMo7d1beHIupqu5lrZmc9blb3ljuNP6jauNtfhsDDpfIcYbrbvpLQ4nRKRn6gw
+         BntHVRfJrdLcs6mVT3LSmJbXo1r2ESqmHfy2pwEwf2wSuPaSONdAtVaje6flra2NNn
+         h/QaFUHY39PMp86Ma8aHHCWRivzJ7FBIyOVNUkgY=
+Received: from epsnrtp2.localdomain (unknown [182.195.42.163]) by
+        epcas2p2.samsung.com (KnoxPortal) with ESMTP id
+        20210506004510epcas2p2b2d6f174318e9894fc6b022182bd4c93~8U59x0lO-1290612906epcas2p2k;
+        Thu,  6 May 2021 00:45:10 +0000 (GMT)
+Received: from epsmges2p1.samsung.com (unknown [182.195.40.188]) by
+        epsnrtp2.localdomain (Postfix) with ESMTP id 4FbFGr6TBCz4x9QJ; Thu,  6 May
+        2021 00:45:08 +0000 (GMT)
+Received: from epcas2p1.samsung.com ( [182.195.41.53]) by
+        epsmges2p1.samsung.com (Symantec Messaging Gateway) with SMTP id
+        3A.CF.09604.41C33906; Thu,  6 May 2021 09:45:08 +0900 (KST)
+Received: from epsmtrp1.samsung.com (unknown [182.195.40.13]) by
+        epcas2p1.samsung.com (KnoxPortal) with ESMTPA id
+        20210506004508epcas2p18bf556bc66604f19e3613badc48e5831~8U5763EJr2032920329epcas2p1e;
+        Thu,  6 May 2021 00:45:08 +0000 (GMT)
+Received: from epsmgms1p2.samsung.com (unknown [182.195.42.42]) by
+        epsmtrp1.samsung.com (KnoxPortal) with ESMTP id
+        20210506004508epsmtrp1ff420a29a508c8a748ca8e7a68e547db~8U575_u9x0403004030epsmtrp1j;
+        Thu,  6 May 2021 00:45:08 +0000 (GMT)
+X-AuditID: b6c32a45-38939a8000002584-0f-60933c1449ee
+Received: from epsmtip1.samsung.com ( [182.195.34.30]) by
+        epsmgms1p2.samsung.com (Symantec Messaging Gateway) with SMTP id
+        C9.46.08163.41C33906; Thu,  6 May 2021 09:45:08 +0900 (KST)
+Received: from KORDO035731 (unknown [12.36.185.47]) by epsmtip1.samsung.com
+        (KnoxPortal) with ESMTPA id
+        20210506004507epsmtip1cab4cc63a47d8d01d1d811ad76a2c1a4~8U57rMT1Y0420704207epsmtip1T;
+        Thu,  6 May 2021 00:45:07 +0000 (GMT)
+From:   "Dongseok Yi" <dseok.yi@samsung.com>
+To:     "'Daniel Borkmann'" <daniel@iogearbox.net>, <bpf@vger.kernel.org>
+Cc:     "'Alexei Starovoitov'" <ast@kernel.org>,
+        "'Andrii Nakryiko'" <andrii@kernel.org>,
+        "'Martin KaFai Lau'" <kafai@fb.com>,
+        "'Song Liu'" <songliubraving@fb.com>,
+        "'Yonghong Song'" <yhs@fb.com>,
+        "'John Fastabend'" <john.fastabend@gmail.com>,
+        "'KP Singh'" <kpsingh@kernel.org>,
+        "'David S. Miller'" <davem@davemloft.net>,
+        "'Jakub Kicinski'" <kuba@kernel.org>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <willemdebruijn.kernel@gmail.com>
+In-Reply-To: <8c2ea41a-3fc5-d560-16e5-bf706949d857@iogearbox.net>
+Subject: RE: [PATCH bpf] bpf: check for data_len before upgrading mss when 6
+ to 4
+Date:   Thu, 6 May 2021 09:45:07 +0900
+Message-ID: <02bf01d74211$0ff4aed0$2fde0c70$@samsung.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
+X-Mailer: Microsoft Outlook 16.0
+Content-Language: ko
+Thread-Index: AQKypHYW3xad5/j2XvChPebQmKG2owG+YoocAqFpyMuo+9TVEA==
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFtrDJsWRmVeSWpSXmKPExsWy7bCmqa6IzeQEg4+ztS2+/57NbPHl5212
+        i89HjrNZLF74jdlizvkWFoumHSuYLF58eMJo8XxfL5PFhW19rBaXd81hszi2QMzi5+EzzBaL
+        f24Aqlgyg9GBz2PLyptMHhOb37F77Jx1l92j68YlZo9NqzrZPD5vkgtgi8qxyUhNTEktUkjN
+        S85PycxLt1XyDo53jjc1MzDUNbS0MFdSyEvMTbVVcvEJ0HXLzAG6VkmhLDGnFCgUkFhcrKRv
+        Z1OUX1qSqpCRX1xiq5RakJJTYGhYoFecmFtcmpeul5yfa2VoYGBkClSZkJNx4+oDxoK5IhVH
+        Fl9nb2DczN/FyMkhIWAiseNSA0sXIxeHkMAORomrv54yQzifGCV6Xs1mA6kSEvjMKPH0tz5M
+        x/H9s1khinYxSuzYsIUdwnnBKNGw6RcLSBWbgJbEm1ntQFUcHCICrhJHP8aAhJkFTjNLPHti
+        AGJzCjhKHJ/8iRnEFhYIlng6qYkJxGYRUJF49mgOK4jNK2ApcfzwV2YIW1Di5MwnLBBz5CW2
+        v53DDHGQgsTPp8tYIeIiErM728DiIgJOEtcuH2EEuU1C4AqHxMo3v1khGlwkfh1/ygZhC0u8
+        Og7yAIgtJfGyv40d5GYJgXqJ1u4YiN4eRokr+yAWSwgYS8x61s4IUsMsoCmxfpc+RLmyxJFb
+        UKfxSXQc/gs1hVeio00IwlSSmPglHmKGhMSLk5NZJjAqzULy1ywkf81C8ssshFULGFlWMYql
+        FhTnpqcWGxUYIsf0JkZwMtZy3cE4+e0HvUOMTByMhxglOJiVRHgL1vYnCPGmJFZWpRblxxeV
+        5qQWH2I0BYb0RGYp0eR8YD7IK4k3NDUyMzOwNLUwNTOyUBLn/ZlalyAkkJ5YkpqdmlqQWgTT
+        x8TBKdXAZFMe+FnjWKb9qokqbs+W/qw8eNz/mGxbC3vSjp2LxYS5T7OYX5K71OOf2Nd59OG7
+        adrCm+I56ooNta8l7P1g9nH2/ALr4tMHBGXXrgw9pycr4LRDk13NfZ2XwX25O+yyHFm9r9an
+        7ZzJ9yk3rHxG9STfv4nP//F0HnuS/J7xXS+jhvm6x5sfyr55dP+enWSeziT+1q/H7UvVTztv
+        npvb8j7JIlMiUfvT2n8vnmcudXnWLblnr/3B6JfhyS5/pyXomM6+bPLw9QbXUxFR9Ycf1zxJ
+        NY4xVvrNIRId2xez/1zo8R3SnufPZtyaysCa2BT8JaDxqOIiofzCTPm/QTtMUicsOuyRrlvp
+        UpcVXP9DiaU4I9FQi7moOBEALna7V08EAAA=
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFlrFIsWRmVeSWpSXmKPExsWy7bCSnK6IzeQEg1vr2Cy+/57NbPHl5212
+        i89HjrNZLF74jdlizvkWFoumHSuYLF58eMJo8XxfL5PFhW19rBaXd81hszi2QMzi5+EzzBaL
+        f24Aqlgyg9GBz2PLyptMHhOb37F77Jx1l92j68YlZo9NqzrZPD5vkgtgi+KySUnNySxLLdK3
+        S+DKuHH1AWPBXJGKI4uvszcwbubvYuTkkBAwkTi+fzZrFyMXh5DADkaJZxuvsncxcgAlJCR2
+        bXaFqBGWuN9yBKrmGaPElO4eZpAEm4CWxJtZ7awg9SIC7hLbjheD1DALXGWW2LBxBVTDKUaJ
+        lTt/soM0cAo4Shyf/AmsWVggUKL/3y1GEJtFQEXi2aM5rCA2r4ClxPHDX5khbEGJkzOfsIDY
+        zALaEr0PWxkhbHmJ7W/nMENcpyDx8+kyVoi4iMTszjawuIiAk8S1y0cYJzAKz0IyahaSUbOQ
+        jJqFpH0BI8sqRsnUguLc9NxiwwKjvNRyveLE3OLSvHS95PzcTYzg6NTS2sG4Z9UHvUOMTByM
+        hxglOJiVRHgL1vYnCPGmJFZWpRblxxeV5qQWH2KU5mBREue90HUyXkggPbEkNTs1tSC1CCbL
+        xMEp1cDkYZCmb9/wZ5eb9D8es0+iER8WFGX8WRSdLr5gmf9WDu0HLy1f8m05nBmuMIP/sZS6
+        qojBJIdF6oVPS3frMVknx5e2vOYq9QypYEn5c5rr4DnTldkl18y+3HSb2XZKWSXknOyBrw1B
+        7rMtbv0N/bRsdkjtk0+/n35wMDG3Wf32ldkilu7Z8mfmZDsksgTsCc6zn3PQlvOV3MF0dZP9
+        K/NrYy77xCdzH7pYXf737sp13QdLJyzbZciUmXa+4urpLqXg0tmzlP/ocegW1l/61qCUW5m9
+        fu4imU3850uN9hV1ZNW1Niq90uIqu3vmb7dnL4totF/yl+mFV06nPrO/Z8Cp+uFyxdlLbaLB
+        036Vr1JiKc5INNRiLipOBABIWw+cPQMAAA==
+X-CMS-MailID: 20210506004508epcas2p18bf556bc66604f19e3613badc48e5831
+X-Msg-Generator: CA
+Content-Type: text/plain; charset="utf-8"
+X-Sendblock-Type: AUTO_CONFIDENTIAL
+CMS-TYPE: 102P
+DLP-Filter: Pass
+X-CFilter-Loop: Reflected
+X-CMS-RootMailID: 20210429102143epcas2p4c8747c09a9de28f003c20389c050394a
+References: <CGME20210429102143epcas2p4c8747c09a9de28f003c20389c050394a@epcas2p4.samsung.com>
+        <1619690903-1138-1-git-send-email-dseok.yi@samsung.com>
+        <8c2ea41a-3fc5-d560-16e5-bf706949d857@iogearbox.net>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Cong Wang <cong.wang@bytedance.com>
+On Wed, May 05, 2021 at 10:55:10PM +0200, Daniel Borkmann wrote:
+> On 4/29/21 12:08 PM, Dongseok Yi wrote:
+> > tcp_gso_segment check for the size of GROed payload if it is bigger
+> > than the mss. bpf_skb_proto_6_to_4 increases mss, but the mss can be
+> > bigger than the size of GROed payload unexpectedly if data_len is not
+> > big enough.
+> >
+> > Assume that skb gso_size = 1372 and data_len = 8. bpf_skb_proto_6_to_4
+> > would increse the gso_size to 1392. tcp_gso_segment will get an error
+> > with 1380 <= 1392.
+> >
+> > Check for the size of GROed payload if it is really bigger than target
+> > mss when increase mss.
+> >
+> > Fixes: 6578171a7ff0 (bpf: add bpf_skb_change_proto helper)
+> > Signed-off-by: Dongseok Yi <dseok.yi@samsung.com>
+> > ---
+> >   net/core/filter.c | 4 +++-
+> >   1 file changed, 3 insertions(+), 1 deletion(-)
+> >
+> > diff --git a/net/core/filter.c b/net/core/filter.c
+> > index 9323d34..3f79e3c 100644
+> > --- a/net/core/filter.c
+> > +++ b/net/core/filter.c
+> > @@ -3308,7 +3308,9 @@ static int bpf_skb_proto_6_to_4(struct sk_buff *skb)
+> >   		}
+> >
+> >   		/* Due to IPv4 header, MSS can be upgraded. */
+> > -		skb_increase_gso_size(shinfo, len_diff);
+> > +		if (skb->data_len > len_diff)
+> 
+> Could you elaborate some more on what this has to do with data_len specifically
+> here? I'm not sure I follow exactly your above commit description. Are you saying
+> that you're hitting in tcp_gso_segment():
+> 
+>          [...]
+>          mss = skb_shinfo(skb)->gso_size;
+>          if (unlikely(skb->len <= mss))
+>                  goto out;
+>          [...]
 
-We use RTNL lock and RCU read lock to protect the global
-list rtnl_af_ops, however, this forces the af_ops readers
-being in atomic context while iterating this list,
-particularly af_ops->set_link_af(). This was not a problem
-until we begin to take mutex lock down the path in
-__ipv6_dev_mc_dec().
+Yes, right
 
-Convert RTNL+RCU to rwsemaphore, so that we can block on
-the reader side while still allowing parallel readers.
+> 
+> Please provide more context on the bug, thanks!
 
-Reported-and-tested-by: syzbot+7d941e89dd48bcf42573@syzkaller.appspotmail.com
-Fixes: 63ed8de4be81 ("mld: add mc_lock for protecting per-interface mld data")
-Cc: Taehee Yoo <ap420073@gmail.com>
-Signed-off-by: Cong Wang <cong.wang@bytedance.com>
----
- net/core/rtnetlink.c | 68 +++++++++++++++++++++-----------------------
- 1 file changed, 33 insertions(+), 35 deletions(-)
+tcp_gso_segment():
+        [...]
+	__skb_pull(skb, thlen);
 
-diff --git a/net/core/rtnetlink.c b/net/core/rtnetlink.c
-index 714d5fa38546..624ee5ab4183 100644
---- a/net/core/rtnetlink.c
-+++ b/net/core/rtnetlink.c
-@@ -538,12 +538,13 @@ static size_t rtnl_link_get_size(const struct net_device *dev)
- }
- 
- static LIST_HEAD(rtnl_af_ops);
-+static DECLARE_RWSEM(af_ops_sem);
- 
- static const struct rtnl_af_ops *rtnl_af_lookup(const int family)
- {
- 	const struct rtnl_af_ops *ops;
- 
--	list_for_each_entry_rcu(ops, &rtnl_af_ops, list) {
-+	list_for_each_entry(ops, &rtnl_af_ops, list) {
- 		if (ops->family == family)
- 			return ops;
- 	}
-@@ -559,9 +560,9 @@ static const struct rtnl_af_ops *rtnl_af_lookup(const int family)
-  */
- void rtnl_af_register(struct rtnl_af_ops *ops)
- {
--	rtnl_lock();
--	list_add_tail_rcu(&ops->list, &rtnl_af_ops);
--	rtnl_unlock();
-+	down_write(&af_ops_sem);
-+	list_add_tail(&ops->list, &rtnl_af_ops);
-+	up_write(&af_ops_sem);
- }
- EXPORT_SYMBOL_GPL(rtnl_af_register);
- 
-@@ -571,11 +572,9 @@ EXPORT_SYMBOL_GPL(rtnl_af_register);
-  */
- void rtnl_af_unregister(struct rtnl_af_ops *ops)
- {
--	rtnl_lock();
--	list_del_rcu(&ops->list);
--	rtnl_unlock();
--
--	synchronize_rcu();
-+	down_write(&af_ops_sem);
-+	list_del(&ops->list);
-+	up_write(&af_ops_sem);
- }
- EXPORT_SYMBOL_GPL(rtnl_af_unregister);
- 
-@@ -588,15 +587,15 @@ static size_t rtnl_link_get_af_size(const struct net_device *dev,
- 	/* IFLA_AF_SPEC */
- 	size = nla_total_size(sizeof(struct nlattr));
- 
--	rcu_read_lock();
--	list_for_each_entry_rcu(af_ops, &rtnl_af_ops, list) {
-+	down_read(&af_ops_sem);
-+	list_for_each_entry(af_ops, &rtnl_af_ops, list) {
- 		if (af_ops->get_link_af_size) {
- 			/* AF_* + nested data */
- 			size += nla_total_size(sizeof(struct nlattr)) +
- 				af_ops->get_link_af_size(dev, ext_filter_mask);
- 		}
- 	}
--	rcu_read_unlock();
-+	up_read(&af_ops_sem);
- 
- 	return size;
- }
-@@ -1603,7 +1602,7 @@ static int rtnl_fill_link_af(struct sk_buff *skb,
- 	if (!af_spec)
- 		return -EMSGSIZE;
- 
--	list_for_each_entry_rcu(af_ops, &rtnl_af_ops, list) {
-+	list_for_each_entry(af_ops, &rtnl_af_ops, list) {
- 		struct nlattr *af;
- 		int err;
- 
-@@ -1811,10 +1810,10 @@ static int rtnl_fill_ifinfo(struct sk_buff *skb,
- 	    nla_put(skb, IFLA_PERM_ADDRESS, dev->addr_len, dev->perm_addr))
- 		goto nla_put_failure;
- 
--	rcu_read_lock();
-+	down_read(&af_ops_sem);
- 	if (rtnl_fill_link_af(skb, dev, ext_filter_mask))
--		goto nla_put_failure_rcu;
--	rcu_read_unlock();
-+		goto nla_put_failure_sem;
-+	up_read(&af_ops_sem);
- 
- 	if (rtnl_fill_prop_list(skb, dev))
- 		goto nla_put_failure;
-@@ -1822,8 +1821,8 @@ static int rtnl_fill_ifinfo(struct sk_buff *skb,
- 	nlmsg_end(skb, nlh);
- 	return 0;
- 
--nla_put_failure_rcu:
--	rcu_read_unlock();
-+nla_put_failure_sem:
-+	up_read(&af_ops_sem);
- nla_put_failure:
- 	nlmsg_cancel(skb, nlh);
- 	return -EMSGSIZE;
-@@ -2274,27 +2273,27 @@ static int validate_linkmsg(struct net_device *dev, struct nlattr *tb[])
- 		nla_for_each_nested(af, tb[IFLA_AF_SPEC], rem) {
- 			const struct rtnl_af_ops *af_ops;
- 
--			rcu_read_lock();
-+			down_read(&af_ops_sem);
- 			af_ops = rtnl_af_lookup(nla_type(af));
- 			if (!af_ops) {
--				rcu_read_unlock();
-+				up_read(&af_ops_sem);
- 				return -EAFNOSUPPORT;
- 			}
- 
- 			if (!af_ops->set_link_af) {
--				rcu_read_unlock();
-+				up_read(&af_ops_sem);
- 				return -EOPNOTSUPP;
- 			}
- 
- 			if (af_ops->validate_link_af) {
- 				err = af_ops->validate_link_af(dev, af);
- 				if (err < 0) {
--					rcu_read_unlock();
-+					up_read(&af_ops_sem);
- 					return err;
- 				}
- 			}
- 
--			rcu_read_unlock();
-+			up_read(&af_ops_sem);
- 		}
- 	}
- 
-@@ -2868,17 +2867,16 @@ static int do_setlink(const struct sk_buff *skb,
- 		nla_for_each_nested(af, tb[IFLA_AF_SPEC], rem) {
- 			const struct rtnl_af_ops *af_ops;
- 
--			rcu_read_lock();
--
-+			down_read(&af_ops_sem);
- 			BUG_ON(!(af_ops = rtnl_af_lookup(nla_type(af))));
- 
- 			err = af_ops->set_link_af(dev, af, extack);
- 			if (err < 0) {
--				rcu_read_unlock();
-+				up_read(&af_ops_sem);
- 				goto errout;
- 			}
- 
--			rcu_read_unlock();
-+			up_read(&af_ops_sem);
- 			status |= DO_SETLINK_NOTIFY;
- 		}
- 	}
-@@ -5204,8 +5202,8 @@ static int rtnl_fill_statsinfo(struct sk_buff *skb, struct net_device *dev,
- 		if (!attr)
- 			goto nla_put_failure;
- 
--		rcu_read_lock();
--		list_for_each_entry_rcu(af_ops, &rtnl_af_ops, list) {
-+		down_read(&af_ops_sem);
-+		list_for_each_entry(af_ops, &rtnl_af_ops, list) {
- 			if (af_ops->fill_stats_af) {
- 				struct nlattr *af;
- 				int err;
-@@ -5213,7 +5211,7 @@ static int rtnl_fill_statsinfo(struct sk_buff *skb, struct net_device *dev,
- 				af = nla_nest_start_noflag(skb,
- 							   af_ops->family);
- 				if (!af) {
--					rcu_read_unlock();
-+					up_read(&af_ops_sem);
- 					goto nla_put_failure;
- 				}
- 				err = af_ops->fill_stats_af(skb, dev);
-@@ -5221,14 +5219,14 @@ static int rtnl_fill_statsinfo(struct sk_buff *skb, struct net_device *dev,
- 				if (err == -ENODATA) {
- 					nla_nest_cancel(skb, af);
- 				} else if (err < 0) {
--					rcu_read_unlock();
-+					up_read(&af_ops_sem);
- 					goto nla_put_failure;
- 				}
- 
- 				nla_nest_end(skb, af);
- 			}
- 		}
--		rcu_read_unlock();
-+		up_read(&af_ops_sem);
- 
- 		nla_nest_end(skb, attr);
- 
-@@ -5297,8 +5295,8 @@ static size_t if_nlmsg_stats_size(const struct net_device *dev,
- 		/* for IFLA_STATS_AF_SPEC */
- 		size += nla_total_size(0);
- 
--		rcu_read_lock();
--		list_for_each_entry_rcu(af_ops, &rtnl_af_ops, list) {
-+		down_read(&af_ops_sem);
-+		list_for_each_entry(af_ops, &rtnl_af_ops, list) {
- 			if (af_ops->get_stats_af_size) {
- 				size += nla_total_size(
- 					af_ops->get_stats_af_size(dev));
-@@ -5307,7 +5305,7 @@ static size_t if_nlmsg_stats_size(const struct net_device *dev,
- 				size += nla_total_size(0);
- 			}
- 		}
--		rcu_read_unlock();
-+		up_read(&af_ops_sem);
- 	}
- 
- 	return size;
--- 
-2.25.1
+        mss = skb_shinfo(skb)->gso_size;
+        if (unlikely(skb->len <= mss))
+        [...]
+
+skb->len will have total GROed TCP payload size after __skb_pull.
+skb->len <= mss will not be happened in a normal GROed situation. But
+bpf_skb_proto_6_to_4 would upgrade MSS by increasing gso_size, it can
+hit an error condition.
+
+We should ensure the following condition.
+total GROed TCP payload > the original mss + (IPv6 size - IPv4 size)
+
+Due to
+total GROed TCP payload = the original mss + skb->data_len
+IPv6 size - IPv4 size = len_diff
+
+Finally, we can get the condition.
+skb->data_len > len_diff
+
+> 
+> > +			skb_increase_gso_size(shinfo, len_diff);
+> > +
+> >   		/* Header must be checked, and gso_segs recomputed. */
+> >   		shinfo->gso_type |= SKB_GSO_DODGY;
+> >   		shinfo->gso_segs = 0;
+> >
+
 
