@@ -2,154 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 83194374DD4
-	for <lists+netdev@lfdr.de>; Thu,  6 May 2021 05:11:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 900C8374DDF
+	for <lists+netdev@lfdr.de>; Thu,  6 May 2021 05:17:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232519AbhEFDMl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 5 May 2021 23:12:41 -0400
-Received: from mga14.intel.com ([192.55.52.115]:36219 "EHLO mga14.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230078AbhEFDMk (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 5 May 2021 23:12:40 -0400
-IronPort-SDR: mRvMXsoBxE+05dHRknEuSHO3Bxz49gUtSD+aMYVuaNM8yLpCzwPfSIptQ/MSN3Q7xlV+0xI5L8
- 1hgzH32tXBDw==
-X-IronPort-AV: E=McAfee;i="6200,9189,9975"; a="197999382"
-X-IronPort-AV: E=Sophos;i="5.82,276,1613462400"; 
-   d="scan'208";a="197999382"
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 May 2021 20:11:41 -0700
-IronPort-SDR: ud5s9b3VcWvCVf93UfKRxL2GW59wh8d2FKeG6xK+FOzLX8BnG9ofQo8FgD040JaPNg4ehydTAx
- Jr32T1v3TE3g==
-X-IronPort-AV: E=Sophos;i="5.82,276,1613462400"; 
-   d="scan'208";a="469246591"
-Received: from lingshan-mobl5.ccr.corp.intel.com (HELO [10.254.209.97]) ([10.254.209.97])
-  by orsmga001-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 May 2021 20:11:39 -0700
-Subject: Re: [PATCH V4 2/3] vDPA/ifcvf: enable Intel C5000X-PL virtio-block
- for vDPA
-To:     "Michael S. Tsirkin" <mst@redhat.com>
-Cc:     jasowang@redhat.com, lulu@redhat.com, sgarzare@redhat.com,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        kvm@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20210419063326.3748-1-lingshan.zhu@intel.com>
- <20210419063326.3748-3-lingshan.zhu@intel.com>
- <20210503043801-mutt-send-email-mst@kernel.org>
-From:   "Zhu, Lingshan" <lingshan.zhu@intel.com>
-Message-ID: <bb4b9fe1-3a4e-f88a-5258-c9b2c63ed203@intel.com>
-Date:   Thu, 6 May 2021 11:11:36 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.10.0
+        id S231304AbhEFDSg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 5 May 2021 23:18:36 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:59650 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S229796AbhEFDSg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 5 May 2021 23:18:36 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1620271058;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=mHcgWqiBds5lBtditwajbBOEjZ3IZCTkxDstlE/eLZI=;
+        b=AF/jtVFXxAfeuNk7RSln6Ub7VTH5fBYAj/Bd5z18bmSPjs2yxI0EEASW6R4nPi93AwQ1D3
+        LhUs2t64mejMzX7wCYuhrnPT8KCA/iHIKbuGybH5ufTi4ruFf1aXr/5KajPBGZ+VTZy/gc
+        hk1RpHuLK17m2U+KbfFmGXyLyXZOPgc=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-500-hfWxXVjoNJ6ug_c-ehhd0g-1; Wed, 05 May 2021 23:17:35 -0400
+X-MC-Unique: hfWxXVjoNJ6ug_c-ehhd0g-1
+Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 1E2E71006C80;
+        Thu,  6 May 2021 03:17:34 +0000 (UTC)
+Received: from wangxiaodeMacBook-Air.local (ovpn-13-159.pek2.redhat.com [10.72.13.159])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id CD130BA6F;
+        Thu,  6 May 2021 03:17:28 +0000 (UTC)
+Subject: Re: [PATCH] vhost-iotlb: fix vhost_iotlb_del_range() documentation
+To:     Stefano Garzarella <sgarzare@redhat.com>,
+        virtualization@lists.linux-foundation.org
+Cc:     netdev@vger.kernel.org, "Michael S. Tsirkin" <mst@redhat.com>,
+        linux-kernel@vger.kernel.org, kvm@vger.kernel.org
+References: <20210504135444.158716-1-sgarzare@redhat.com>
+From:   Jason Wang <jasowang@redhat.com>
+Message-ID: <93e4cb04-105e-e853-e2b6-d95435ca55f2@redhat.com>
+Date:   Thu, 6 May 2021 11:17:27 +0800
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
+ Gecko/20100101 Thunderbird/78.10.0
 MIME-Version: 1.0
-In-Reply-To: <20210503043801-mutt-send-email-mst@kernel.org>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
+In-Reply-To: <20210504135444.158716-1-sgarzare@redhat.com>
+Content-Type: text/plain; charset=gbk; format=flowed
+Content-Transfer-Encoding: 8bit
 Content-Language: en-US
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 
-
-On 5/3/2021 4:47 PM, Michael S. Tsirkin wrote:
-> On Mon, Apr 19, 2021 at 02:33:25PM +0800, Zhu Lingshan wrote:
->> This commit enabled Intel FPGA SmartNIC C5000X-PL virtio-block
->> for vDPA.
->>
->> Signed-off-by: Zhu Lingshan <lingshan.zhu@intel.com>
->> Reviewed-by: Stefano Garzarella <sgarzare@redhat.com>
->> Acked-by: Jason Wang <jasowang@redhat.com>
->> ---
->>   drivers/vdpa/ifcvf/ifcvf_base.h |  8 +++++++-
->>   drivers/vdpa/ifcvf/ifcvf_main.c | 19 ++++++++++++++++++-
->>   2 files changed, 25 insertions(+), 2 deletions(-)
->>
->> diff --git a/drivers/vdpa/ifcvf/ifcvf_base.h b/drivers/vdpa/ifcvf/ifcvf_base.h
->> index 1c04cd256fa7..0111bfdeb342 100644
->> --- a/drivers/vdpa/ifcvf/ifcvf_base.h
->> +++ b/drivers/vdpa/ifcvf/ifcvf_base.h
->> @@ -15,6 +15,7 @@
->>   #include <linux/pci_regs.h>
->>   #include <linux/vdpa.h>
->>   #include <uapi/linux/virtio_net.h>
->> +#include <uapi/linux/virtio_blk.h>
->>   #include <uapi/linux/virtio_config.h>
->>   #include <uapi/linux/virtio_pci.h>
->>   
->> @@ -28,7 +29,12 @@
->>   #define C5000X_PL_SUBSYS_VENDOR_ID	0x8086
->>   #define C5000X_PL_SUBSYS_DEVICE_ID	0x0001
->>   
->> -#define IFCVF_SUPPORTED_FEATURES \
->> +#define C5000X_PL_BLK_VENDOR_ID		0x1AF4
+ÔÚ 2021/5/4 ÏÂÎç9:54, Stefano Garzarella Ð´µÀ:
+> Trivial change for the vhost_iotlb_del_range() documentation,
+> fixing the function name in the comment block.
 >
-> Come on this is just PCI_VENDOR_ID_REDHAT_QUMRANET right?
-Hi Michael,
-
-I will re-use the predefined macro in next patches
-
-#define C5000X_PL_BLK_VENDOR_ID	  PCI_VENDOR_ID_REDHAT_QUMRANET
-#define C5000X_PL_BLK_SUBSYS_DEVICE_ID	VIRTIO_ID_BLOCK?
-
-to keep the readabilities in probe().
-
+> Discovered with `make C=2 M=drivers/vhost`:
+> ../drivers/vhost/iotlb.c:92: warning: expecting prototype for vring_iotlb_del_range(). Prototype was for vhost_iotlb_del_range() instead
 >
->
->
->> +#define C5000X_PL_BLK_DEVICE_ID		0x1001
-> 0x1001 is a transitional blk device from virtio spec too right? Let's add these to virtio_ids.h?
-will update virtio_ids.h in next patchset.
+> Signed-off-by: Stefano Garzarella <sgarzare@redhat.com>
+> ---
 
-Thanks
-Zhu Lingshan
+
+Acked-by: Jason Wang <jasowang@redhat.com>
+
+
+>   drivers/vhost/iotlb.c | 2 +-
+>   1 file changed, 1 insertion(+), 1 deletion(-)
 >
->> +#define C5000X_PL_BLK_SUBSYS_VENDOR_ID	0x8086
->> +#define C5000X_PL_BLK_SUBSYS_DEVICE_ID	0x0002
-> VIRTIO_ID_BLOCK?
->
->> +
->> +#define IFCVF_NET_SUPPORTED_FEATURES \
->>   		((1ULL << VIRTIO_NET_F_MAC)			| \
->>   		 (1ULL << VIRTIO_F_ANY_LAYOUT)			| \
->>   		 (1ULL << VIRTIO_F_VERSION_1)			| \
->> diff --git a/drivers/vdpa/ifcvf/ifcvf_main.c b/drivers/vdpa/ifcvf/ifcvf_main.c
->> index 66927ec81fa5..9a4a6df91f08 100644
->> --- a/drivers/vdpa/ifcvf/ifcvf_main.c
->> +++ b/drivers/vdpa/ifcvf/ifcvf_main.c
->> @@ -168,10 +168,23 @@ static struct ifcvf_hw *vdpa_to_vf(struct vdpa_device *vdpa_dev)
->>   
->>   static u64 ifcvf_vdpa_get_features(struct vdpa_device *vdpa_dev)
->>   {
->> +	struct ifcvf_adapter *adapter = vdpa_to_adapter(vdpa_dev);
->>   	struct ifcvf_hw *vf = vdpa_to_vf(vdpa_dev);
->> +	struct pci_dev *pdev = adapter->pdev;
->> +
->>   	u64 features;
->>   
->> -	features = ifcvf_get_features(vf) & IFCVF_SUPPORTED_FEATURES;
->> +	switch (vf->dev_type) {
->> +	case VIRTIO_ID_NET:
->> +		features = ifcvf_get_features(vf) & IFCVF_NET_SUPPORTED_FEATURES;
->> +		break;
->> +	case VIRTIO_ID_BLOCK:
->> +		features = ifcvf_get_features(vf);
->> +		break;
->> +	default:
->> +		features = 0;
->> +		IFCVF_ERR(pdev, "VIRTIO ID %u not supported\n", vf->dev_type);
->> +	}
->>   
->>   	return features;
->>   }
->> @@ -514,6 +527,10 @@ static struct pci_device_id ifcvf_pci_ids[] = {
->>   			 C5000X_PL_DEVICE_ID,
->>   			 C5000X_PL_SUBSYS_VENDOR_ID,
->>   			 C5000X_PL_SUBSYS_DEVICE_ID) },
->> +	{ PCI_DEVICE_SUB(C5000X_PL_BLK_VENDOR_ID,
->> +			 C5000X_PL_BLK_DEVICE_ID,
->> +			 C5000X_PL_BLK_SUBSYS_VENDOR_ID,
->> +			 C5000X_PL_BLK_SUBSYS_DEVICE_ID) },
->>   
->>   	{ 0 },
->>   };
->> -- 
->> 2.27.0
+> diff --git a/drivers/vhost/iotlb.c b/drivers/vhost/iotlb.c
+> index 0fd3f87e913c..0582079e4bcc 100644
+> --- a/drivers/vhost/iotlb.c
+> +++ b/drivers/vhost/iotlb.c
+> @@ -83,7 +83,7 @@ int vhost_iotlb_add_range(struct vhost_iotlb *iotlb,
+>   EXPORT_SYMBOL_GPL(vhost_iotlb_add_range);
+>   
+>   /**
+> - * vring_iotlb_del_range - delete overlapped ranges from vhost IOTLB
+> + * vhost_iotlb_del_range - delete overlapped ranges from vhost IOTLB
+>    * @iotlb: the IOTLB
+>    * @start: start of the IOVA range
+>    * @last: last of IOVA range
 
