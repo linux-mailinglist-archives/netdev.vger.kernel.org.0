@@ -2,154 +2,207 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 30C05375CDA
-	for <lists+netdev@lfdr.de>; Thu,  6 May 2021 23:31:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D4630375D02
+	for <lists+netdev@lfdr.de>; Thu,  6 May 2021 23:53:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230118AbhEFVcE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 6 May 2021 17:32:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57334 "EHLO
+        id S230231AbhEFVyi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 6 May 2021 17:54:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34050 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229572AbhEFVcC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 6 May 2021 17:32:02 -0400
-Received: from mail-pj1-x1033.google.com (mail-pj1-x1033.google.com [IPv6:2607:f8b0:4864:20::1033])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B56D0C061574
-        for <netdev@vger.kernel.org>; Thu,  6 May 2021 14:31:02 -0700 (PDT)
-Received: by mail-pj1-x1033.google.com with SMTP id t2-20020a17090a0242b0290155433387beso3503490pje.1
-        for <netdev@vger.kernel.org>; Thu, 06 May 2021 14:31:02 -0700 (PDT)
+        with ESMTP id S229572AbhEFVyh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 6 May 2021 17:54:37 -0400
+Received: from mail-wr1-x42a.google.com (mail-wr1-x42a.google.com [IPv6:2a00:1450:4864:20::42a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E84ECC061574;
+        Thu,  6 May 2021 14:53:38 -0700 (PDT)
+Received: by mail-wr1-x42a.google.com with SMTP id n2so7163381wrm.0;
+        Thu, 06 May 2021 14:53:38 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=Oi0cbQgZBeAaMyDsOGCoO5zmgMdqr13FVdu0cslMJoo=;
-        b=q92HRA5fnJS5ovtTq5u3B+idyfSj1tx1ycmExaqbnNZsZdQzOUb34x73o6TMzfOvvA
-         ZTzMCKx3ud4Jv7KkjMefcAtqxTKckJ6ODPngPV6HZV6qeE/5uYQi9KwSndZSOD6649Pw
-         tT8UUTKRzb/WpBmzaHIXyYxPil1ROXsEhl5Kq+OeVl5jN63Gs+Iv71jrfrPuz+Tv8769
-         06R3IpXuoJ6RV2C5F5DdA6R35YH8dJQvs3B0guJTKnfLHsWgxmbzMyg/3fHUd5+Gz5dw
-         z7aM7JEtgOfdKO6smhYkQUsBUog82njHzcGtybKbKF9WDjQQVqtTqCNJWaHdq0cob15A
-         sp7g==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=ehzMC3baDkP+yU9cvxxvTEPGYM2hhUOxxcM3hdvysfQ=;
+        b=O8fOTg6dQISM5IB3x5hG/4Ine6HRgFqc+NBNViVxZ43acOatagnfhGfS558F1a0+OR
+         o2KqG/rq33CaR04gu4YlrviliC2BiWzJcF2bwcAh9zGYdx9cXswU+1f6L3F1sTfNZ7y8
+         I6JTenvJNTZ3JN/ASPkxtN17EYDXW8ljGJK7icLWTc8cmomvl1Rni08L0b6QcTzcJUtL
+         R5ioemMnUDYssVXI5rl06+90nH5mopZh3ma6qJ5K/ARMKvRbcJVKiS2pYoK6RDpFrK6i
+         ikTQ45dJf6cn51hVetLv119JCN+IJ71kTmZ2fUA87LCfwjihT5o622DM5Zs/54qluQSO
+         vbTA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=Oi0cbQgZBeAaMyDsOGCoO5zmgMdqr13FVdu0cslMJoo=;
-        b=FSRhoZT3Mel+6Sgps1ci2yOexSKzRg6QfqyqE4HrdaVdV6ggEW5pZTKHmjcOvRtlYO
-         SMWaDayu+KpgtKGZSt6qix4S5MDGDdaTrCdOTC5cRXcbleAoOJhy8wx6Ok4AubkFNlRV
-         6ol0dTRQ1mecAB07qIQWs68A0rts8hDzGp2wdm9y5fmzsmTuX0ZQgD13j9b56VXECJOk
-         n5YAPD0mxBzOe/t9vBgU1K8b0pU4Rd3SvO/1KLWeggy6FqBCvYbdMUTXcOVp4SH/Ys0x
-         7aPyHzKa6gajczRGGPPqKZsTeMCsPYTw6TLgTabHQSu8V+w/oNC2OBwz182jOSbjbIpi
-         S+/Q==
-X-Gm-Message-State: AOAM530BD8/dLBmInI0xxiwjSuRa9QGhkvIeLZAT2wmTzHo8BauEMhf7
-        R3L/D5vXf2Hmo/ZLA9JwQZRC2BeV4ueWYzMAO6k=
-X-Google-Smtp-Source: ABdhPJx1onXeA5lLqu0EEqJoSzsewWkaS+RNRx4eFoJQYJcFkeGF1dc0xHCCrxny5oFyImg4dWbBYu4ZWqUt6IIRqbs=
-X-Received: by 2002:a17:902:d386:b029:ee:bf5f:c037 with SMTP id
- e6-20020a170902d386b02900eebf5fc037mr6490522pld.31.1620336662190; Thu, 06 May
- 2021 14:31:02 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=ehzMC3baDkP+yU9cvxxvTEPGYM2hhUOxxcM3hdvysfQ=;
+        b=MwMyw8ncMH0fr2OtNUe5fNd5ZRjrHHkF3YG0LkSMdVeZaocQ3fAFB+OdEdnqelNu2L
+         bD/l0gM5OBsiiGstXLT/8hj+koXYRRRAfWtM/dFhUEgdJ/Zk+QCFTje2sssc5Y0O8Tid
+         MgxisTQ2qz76HR/92FSbpjsZuKL5xGQWzzK0Epm7pspJ30zQnbU+WXnVYdhr5eSIz1+9
+         1eLySB9GgBpuFdbtW4ynjLCdIv5WmAaZd4uuceH8W+1MbYUYA2QvyI2INlcHMI56G78b
+         5EVa4TrFM974EpoFYDFbWKmIqZZJZk+xkR2/JSllsV280TUyhSwJRHWCjbX9xRbSWgc6
+         PbZA==
+X-Gm-Message-State: AOAM530LTx5Gd4mWMW1dd0vSxkpm7ZWaVWTNihxjaDLl2xYsTvEQyjUB
+        uu8XgSdaKxUFXfahflSLELU=
+X-Google-Smtp-Source: ABdhPJxbyUBN+2bcDAAjZ8tiJSW+nRnLSqUlAXqZmoWd7Hvg/o3j8V3cRAnJpHby/P3r7OChV+iTaQ==
+X-Received: by 2002:a5d:6687:: with SMTP id l7mr8153408wru.235.1620338017483;
+        Thu, 06 May 2021 14:53:37 -0700 (PDT)
+Received: from Ansuel-xps.localdomain (93-35-189-2.ip56.fastwebnet.it. [93.35.189.2])
+        by smtp.gmail.com with ESMTPSA id c5sm6089071wrs.73.2021.05.06.14.53.36
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 06 May 2021 14:53:36 -0700 (PDT)
+Date:   Thu, 6 May 2021 23:53:36 +0200
+From:   Ansuel Smith <ansuelsmth@gmail.com>
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     Florian Fainelli <f.fainelli@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Russell King <linux@armlinux.org.uk>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [RFC PATCH net-next v3 13/20] net: dsa: qca8k: make rgmii delay
+ configurable
+Message-ID: <YJRlYAOtFHaaIguW@Ansuel-xps.localdomain>
+References: <20210504222915.17206-1-ansuelsmth@gmail.com>
+ <20210504222915.17206-13-ansuelsmth@gmail.com>
+ <20210506111033.w4v4jj3amwhyj4r3@skbuf>
 MIME-Version: 1.0
-References: <20210505233642.13661-1-xiyou.wangcong@gmail.com> <d7581cb6-a795-42a3-346a-07ccfa8fc8ce@gmail.com>
-In-Reply-To: <d7581cb6-a795-42a3-346a-07ccfa8fc8ce@gmail.com>
-From:   Cong Wang <xiyou.wangcong@gmail.com>
-Date:   Thu, 6 May 2021 14:30:51 -0700
-Message-ID: <CAM_iQpX9N5UswtQPAe__baUm4hU3vKZ5tQFyAE61qHAQSfcbWQ@mail.gmail.com>
-Subject: Re: [Patch net] rtnetlink: use rwsem to protect rtnl_af_ops list
-To:     Taehee Yoo <ap420073@gmail.com>
-Cc:     Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        Cong Wang <cong.wang@bytedance.com>,
-        syzbot <syzbot+7d941e89dd48bcf42573@syzkaller.appspotmail.com>
-Content-Type: multipart/mixed; boundary="0000000000002ae66c05c1b0073d"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210506111033.w4v4jj3amwhyj4r3@skbuf>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---0000000000002ae66c05c1b0073d
-Content-Type: text/plain; charset="UTF-8"
-
-On Thu, May 6, 2021 at 5:26 AM Taehee Yoo <ap420073@gmail.com> wrote:
+On Thu, May 06, 2021 at 02:10:33PM +0300, Vladimir Oltean wrote:
+> On Wed, May 05, 2021 at 12:29:07AM +0200, Ansuel Smith wrote:
+> > The legacy qsdk code used a different delay instead of the max value.
+> > Qsdk use 1 ps for rx and 2 ps for tx. Make these values configurable
+> > using the standard rx/tx-internal-delay-ps ethernet binding and apply
+> > qsdk values by default. The connected gmac doesn't add any delay so no
+> > additional delay is added to tx/rx.
+> > 
+> > Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
+> > ---
+> >  drivers/net/dsa/qca8k.c | 51 +++++++++++++++++++++++++++++++++++++++--
+> >  drivers/net/dsa/qca8k.h | 11 +++++----
+> >  2 files changed, 55 insertions(+), 7 deletions(-)
+> > 
+> > diff --git a/drivers/net/dsa/qca8k.c b/drivers/net/dsa/qca8k.c
+> > index 22334d416f53..cb9b44769e92 100644
+> > --- a/drivers/net/dsa/qca8k.c
+> > +++ b/drivers/net/dsa/qca8k.c
+> > @@ -779,6 +779,47 @@ qca8k_setup_mdio_bus(struct qca8k_priv *priv)
+> >  	return 0;
+> >  }
+> >  
+> > +static int
+> > +qca8k_setup_of_rgmii_delay(struct qca8k_priv *priv)
+> > +{
+> > +	struct device_node *ports, *port;
+> > +	u32 val;
+> > +
+> > +	ports = of_get_child_by_name(priv->dev->of_node, "ports");
+> 
+> Consider falling back to searching for the "ethernet-ports" name too,
+> DSA should now support both.
 >
-> On 5/6/21 8:36 AM, Cong Wang wrote:
->  > From: Cong Wang <cong.wang@bytedance.com>
->  >
->
-> Hi Cong,
-> Thank you so much for fixing it!
->
->  > We use RTNL lock and RCU read lock to protect the global
->  > list rtnl_af_ops, however, this forces the af_ops readers
->  > being in atomic context while iterating this list,
->  > particularly af_ops->set_link_af(). This was not a problem
->  > until we begin to take mutex lock down the path in
->  > __ipv6_dev_mc_dec().
->  >
->  > Convert RTNL+RCU to rwsemaphore, so that we can block on
->  > the reader side while still allowing parallel readers.
->  >
->  > Reported-and-tested-by:
-> syzbot+7d941e89dd48bcf42573@syzkaller.appspotmail.com
->  > Fixes: 63ed8de4be81 ("mld: add mc_lock for protecting per-interface
-> mld data")
->  > Cc: Taehee Yoo <ap420073@gmail.com>
->  > Signed-off-by: Cong Wang <cong.wang@bytedance.com>
->
-> I have been testing this patch and I found a warning
 
-Ah, good catch! I clearly missed that code path.
+The function qca8k_setup_mdio_bus also checks for ports node. Should I
+also there the fallback correct?
 
-Can you help test the attached patch? syzbot is happy with it at least,
-my CI bot is down so I can't run selftests for now.
-
-Thanks.
-
---0000000000002ae66c05c1b0073d
-Content-Type: text/x-patch; charset="US-ASCII"; name="rtnetlink.diff"
-Content-Disposition: attachment; filename="rtnetlink.diff"
-Content-Transfer-Encoding: base64
-Content-ID: <f_kodeljbw0>
-X-Attachment-Id: f_kodeljbw0
-
-Y29tbWl0IDJlNWE5M2NiNjFkNzE2NzI1NTAxZDNhNDk5OWFiY2M5MjA3ZGUzYTUKQXV0aG9yOiBD
-b25nIFdhbmcgPGNvbmcud2FuZ0BieXRlZGFuY2UuY29tPgpEYXRlOiAgIFRodSBNYXkgNiAxMjoz
-ODo1MyAyMDIxIC0wNzAwCgogICAgcnRuZXRsaW5rOiBhdm9pZCBSQ1UgcmVhZCBsb2NrIHdoZW4g
-aG9sZGluZyBSVE5MCiAgICAKICAgIFNpZ25lZC1vZmYtYnk6IENvbmcgV2FuZyA8Y29uZy53YW5n
-QGJ5dGVkYW5jZS5jb20+CgpkaWZmIC0tZ2l0IGEvbmV0L2NvcmUvcnRuZXRsaW5rLmMgYi9uZXQv
-Y29yZS9ydG5ldGxpbmsuYwppbmRleCA3MTRkNWZhMzg1NDYuLjA0YjRmMGYyYTNkMiAxMDA2NDQK
-LS0tIGEvbmV0L2NvcmUvcnRuZXRsaW5rLmMKKysrIGIvbmV0L2NvcmUvcnRuZXRsaW5rLmMKQEAg
-LTU0Myw3ICs1NDMsOSBAQCBzdGF0aWMgY29uc3Qgc3RydWN0IHJ0bmxfYWZfb3BzICpydG5sX2Fm
-X2xvb2t1cChjb25zdCBpbnQgZmFtaWx5KQogewogCWNvbnN0IHN0cnVjdCBydG5sX2FmX29wcyAq
-b3BzOwogCi0JbGlzdF9mb3JfZWFjaF9lbnRyeV9yY3Uob3BzLCAmcnRubF9hZl9vcHMsIGxpc3Qp
-IHsKKwlBU1NFUlRfUlROTCgpOworCisJbGlzdF9mb3JfZWFjaF9lbnRyeShvcHMsICZydG5sX2Fm
-X29wcywgbGlzdCkgewogCQlpZiAob3BzLT5mYW1pbHkgPT0gZmFtaWx5KQogCQkJcmV0dXJuIG9w
-czsKIAl9CkBAIC0yMjc0LDI3ICsyMjc2LDE4IEBAIHN0YXRpYyBpbnQgdmFsaWRhdGVfbGlua21z
-ZyhzdHJ1Y3QgbmV0X2RldmljZSAqZGV2LCBzdHJ1Y3QgbmxhdHRyICp0YltdKQogCQlubGFfZm9y
-X2VhY2hfbmVzdGVkKGFmLCB0YltJRkxBX0FGX1NQRUNdLCByZW0pIHsKIAkJCWNvbnN0IHN0cnVj
-dCBydG5sX2FmX29wcyAqYWZfb3BzOwogCi0JCQlyY3VfcmVhZF9sb2NrKCk7CiAJCQlhZl9vcHMg
-PSBydG5sX2FmX2xvb2t1cChubGFfdHlwZShhZikpOwotCQkJaWYgKCFhZl9vcHMpIHsKLQkJCQly
-Y3VfcmVhZF91bmxvY2soKTsKKwkJCWlmICghYWZfb3BzKQogCQkJCXJldHVybiAtRUFGTk9TVVBQ
-T1JUOwotCQkJfQogCi0JCQlpZiAoIWFmX29wcy0+c2V0X2xpbmtfYWYpIHsKLQkJCQlyY3VfcmVh
-ZF91bmxvY2soKTsKKwkJCWlmICghYWZfb3BzLT5zZXRfbGlua19hZikKIAkJCQlyZXR1cm4gLUVP
-UE5PVFNVUFA7Ci0JCQl9CiAKIAkJCWlmIChhZl9vcHMtPnZhbGlkYXRlX2xpbmtfYWYpIHsKIAkJ
-CQllcnIgPSBhZl9vcHMtPnZhbGlkYXRlX2xpbmtfYWYoZGV2LCBhZik7Ci0JCQkJaWYgKGVyciA8
-IDApIHsKLQkJCQkJcmN1X3JlYWRfdW5sb2NrKCk7CisJCQkJaWYgKGVyciA8IDApCiAJCQkJCXJl
-dHVybiBlcnI7Ci0JCQkJfQogCQkJfQotCi0JCQlyY3VfcmVhZF91bmxvY2soKTsKIAkJfQogCX0K
-IApAQCAtMjg2OCwxNyArMjg2MSwxMiBAQCBzdGF0aWMgaW50IGRvX3NldGxpbmsoY29uc3Qgc3Ry
-dWN0IHNrX2J1ZmYgKnNrYiwKIAkJbmxhX2Zvcl9lYWNoX25lc3RlZChhZiwgdGJbSUZMQV9BRl9T
-UEVDXSwgcmVtKSB7CiAJCQljb25zdCBzdHJ1Y3QgcnRubF9hZl9vcHMgKmFmX29wczsKIAotCQkJ
-cmN1X3JlYWRfbG9jaygpOwotCiAJCQlCVUdfT04oIShhZl9vcHMgPSBydG5sX2FmX2xvb2t1cChu
-bGFfdHlwZShhZikpKSk7CiAKIAkJCWVyciA9IGFmX29wcy0+c2V0X2xpbmtfYWYoZGV2LCBhZiwg
-ZXh0YWNrKTsKLQkJCWlmIChlcnIgPCAwKSB7Ci0JCQkJcmN1X3JlYWRfdW5sb2NrKCk7CisJCQlp
-ZiAoZXJyIDwgMCkKIAkJCQlnb3RvIGVycm91dDsKLQkJCX0KIAotCQkJcmN1X3JlYWRfdW5sb2Nr
-KCk7CiAJCQlzdGF0dXMgfD0gRE9fU0VUTElOS19OT1RJRlk7CiAJCX0KIAl9CmRpZmYgLS1naXQg
-YS9uZXQvaXB2NC9kZXZpbmV0LmMgYi9uZXQvaXB2NC9kZXZpbmV0LmMKaW5kZXggMmUzNWY2OGRh
-NDBhLi41MGRlZWZmNDhjOGIgMTAwNjQ0Ci0tLSBhL25ldC9pcHY0L2RldmluZXQuYworKysgYi9u
-ZXQvaXB2NC9kZXZpbmV0LmMKQEAgLTE5NTUsNyArMTk1NSw3IEBAIHN0YXRpYyBpbnQgaW5ldF92
-YWxpZGF0ZV9saW5rX2FmKGNvbnN0IHN0cnVjdCBuZXRfZGV2aWNlICpkZXYsCiAJc3RydWN0IG5s
-YXR0ciAqYSwgKnRiW0lGTEFfSU5FVF9NQVgrMV07CiAJaW50IGVyciwgcmVtOwogCi0JaWYgKGRl
-diAmJiAhX19pbl9kZXZfZ2V0X3JjdShkZXYpKQorCWlmIChkZXYgJiYgIV9faW5fZGV2X2dldF9y
-dG5sKGRldikpCiAJCXJldHVybiAtRUFGTk9TVVBQT1JUOwogCiAJZXJyID0gbmxhX3BhcnNlX25l
-c3RlZF9kZXByZWNhdGVkKHRiLCBJRkxBX0lORVRfTUFYLCBubGEsCkBAIC0xOTgxLDcgKzE5ODEs
-NyBAQCBzdGF0aWMgaW50IGluZXRfdmFsaWRhdGVfbGlua19hZihjb25zdCBzdHJ1Y3QgbmV0X2Rl
-dmljZSAqZGV2LAogc3RhdGljIGludCBpbmV0X3NldF9saW5rX2FmKHN0cnVjdCBuZXRfZGV2aWNl
-ICpkZXYsIGNvbnN0IHN0cnVjdCBubGF0dHIgKm5sYSwKIAkJCSAgICBzdHJ1Y3QgbmV0bGlua19l
-eHRfYWNrICpleHRhY2spCiB7Ci0Jc3RydWN0IGluX2RldmljZSAqaW5fZGV2ID0gX19pbl9kZXZf
-Z2V0X3JjdShkZXYpOworCXN0cnVjdCBpbl9kZXZpY2UgKmluX2RldiA9IF9faW5fZGV2X2dldF9y
-dG5sKGRldik7CiAJc3RydWN0IG5sYXR0ciAqYSwgKnRiW0lGTEFfSU5FVF9NQVgrMV07CiAJaW50
-IHJlbTsKIAo=
---0000000000002ae66c05c1b0073d--
+> > +	if (!ports)
+> > +		return -EINVAL;
+> > +
+> > +	/* Assume only one port with rgmii-id mode */
+> > +	for_each_available_child_of_node(ports, port) {
+> > +		if (!of_property_match_string(port, "phy-mode", "rgmii-id"))
+> > +			continue;
+> > +
+> > +		if (of_property_read_u32(port, "rx-internal-delay-ps", &val))
+> > +			val = 2;
+> > +
+> > +		if (val > QCA8K_MAX_DELAY) {
+> > +			dev_err(priv->dev, "rgmii rx delay is limited to more than 3ps, setting to the max value");
+> > +			priv->rgmii_rx_delay = 3;
+> 
+> ?!
+> 3 picoseconds is not a lot of clock skew for a 125/25/2.5 MHz clock. 3 nanoseconds maybe?
+> 
+> > +		} else {
+> > +			priv->rgmii_rx_delay = val;
+> > +		}
+> > +
+> > +		if (of_property_read_u32(port, "rx-internal-delay-ps", &val))
+> > +			val = 1;
+> > +
+> > +		if (val > QCA8K_MAX_DELAY) {
+> > +			dev_err(priv->dev, "rgmii tx delay is limited to more than 3ps, setting to the max value");
+> > +			priv->rgmii_tx_delay = 3;
+> > +		} else {
+> > +			priv->rgmii_rx_delay = val;
+> > +		}
+> > +	}
+> > +
+> > +	of_node_put(ports);
+> > +
+> > +	return 0;
+> > +}
+> > +
+> >  static int
+> >  qca8k_setup(struct dsa_switch *ds)
+> >  {
+> > @@ -808,6 +849,10 @@ qca8k_setup(struct dsa_switch *ds)
+> >  	if (ret)
+> >  		return ret;
+> >  
+> > +	ret = qca8k_setup_of_rgmii_delay(priv);
+> > +	if (ret)
+> > +		return ret;
+> > +
+> >  	/* Enable CPU Port */
+> >  	ret = qca8k_reg_set(priv, QCA8K_REG_GLOBAL_FW_CTRL0,
+> >  			    QCA8K_GLOBAL_FW_CTRL0_CPU_PORT_EN);
+> > @@ -1018,8 +1063,10 @@ qca8k_phylink_mac_config(struct dsa_switch *ds, int port, unsigned int mode,
+> >  		 */
+> >  		qca8k_write(priv, reg,
+> >  			    QCA8K_PORT_PAD_RGMII_EN |
+> > -			    QCA8K_PORT_PAD_RGMII_TX_DELAY(QCA8K_MAX_DELAY) |
+> > -			    QCA8K_PORT_PAD_RGMII_RX_DELAY(QCA8K_MAX_DELAY));
+> > +			    QCA8K_PORT_PAD_RGMII_TX_DELAY(priv->rgmii_tx_delay) |
+> > +			    QCA8K_PORT_PAD_RGMII_RX_DELAY(priv->rgmii_rx_delay) |
+> > +			    QCA8K_PORT_PAD_RGMII_TX_DELAY_EN |
+> > +			    QCA8K_PORT_PAD_RGMII_RX_DELAY_EN);
+> >  		/* QCA8337 requires to set rgmii rx delay */
+> >  		if (data->id == QCA8K_ID_QCA8337)
+> >  			qca8k_write(priv, QCA8K_REG_PORT5_PAD_CTRL,
+> > diff --git a/drivers/net/dsa/qca8k.h b/drivers/net/dsa/qca8k.h
+> > index 0b503f78bf92..80830bb42736 100644
+> > --- a/drivers/net/dsa/qca8k.h
+> > +++ b/drivers/net/dsa/qca8k.h
+> > @@ -36,12 +36,11 @@
+> >  #define QCA8K_REG_PORT5_PAD_CTRL			0x008
+> >  #define QCA8K_REG_PORT6_PAD_CTRL			0x00c
+> >  #define   QCA8K_PORT_PAD_RGMII_EN			BIT(26)
+> > -#define   QCA8K_PORT_PAD_RGMII_TX_DELAY(x)		\
+> > -						((0x8 + (x & 0x3)) << 22)
+> > -#define   QCA8K_PORT_PAD_RGMII_RX_DELAY(x)		\
+> > -						((0x10 + (x & 0x3)) << 20)
+> > -#define   QCA8K_MAX_DELAY				3
+> > +#define   QCA8K_PORT_PAD_RGMII_TX_DELAY(x)		((x) << 22)
+> > +#define   QCA8K_PORT_PAD_RGMII_RX_DELAY(x)		((x) << 20)
+> > +#define	  QCA8K_PORT_PAD_RGMII_TX_DELAY_EN		BIT(25)
+> >  #define   QCA8K_PORT_PAD_RGMII_RX_DELAY_EN		BIT(24)
+> > +#define   QCA8K_MAX_DELAY				3
+> >  #define   QCA8K_PORT_PAD_SGMII_EN			BIT(7)
+> >  #define QCA8K_REG_PWS					0x010
+> >  #define   QCA8K_PWS_SERDES_AEN_DIS			BIT(7)
+> > @@ -251,6 +250,8 @@ struct qca8k_match_data {
+> >  
+> >  struct qca8k_priv {
+> >  	u8 switch_revision;
+> > +	u8 rgmii_tx_delay;
+> > +	u8 rgmii_rx_delay;
+> >  	struct regmap *regmap;
+> >  	struct mii_bus *bus;
+> >  	struct ar8xxx_port_status port_sts[QCA8K_NUM_PORTS];
+> > -- 
+> > 2.30.2
+> > 
