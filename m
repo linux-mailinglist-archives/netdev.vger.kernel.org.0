@@ -2,269 +2,130 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4A8B93755F4
-	for <lists+netdev@lfdr.de>; Thu,  6 May 2021 16:51:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 672A43755F9
+	for <lists+netdev@lfdr.de>; Thu,  6 May 2021 16:54:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234962AbhEFOwn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 6 May 2021 10:52:43 -0400
-Received: from esa.microchip.iphmx.com ([68.232.153.233]:56627 "EHLO
-        esa.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234759AbhEFOwk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 6 May 2021 10:52:40 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1620312703; x=1651848703;
-  h=message-id:subject:from:to:cc:date:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=7xfUVt67baauwCjjZDw8mvwRHXCq289bgSvRukAo4yQ=;
-  b=2tgP5BbFbJh1d31GlrSbtUqEVZDlN9nmB1DzuXCC50wMh1D6u3pEvf0N
-   +BLnTbGNcX+WWFCpxJF/Z0ROvy+hTYLu7/OidvIhQJEfv0lNkq45Zin3H
-   BqpgNvE20jHeIZV+gAkR0OF1ndImgAnfmO0DysBlhjyLUcv+QedVzYsW6
-   4aY83kUm72cBWsIRhbRSwGCw5sCk3dX6IXcDj3+zjk1h2giQdZ/lQ1jzX
-   HRiKAFZQC9jH5cMJuHEN/DtconyD17cQNdGlQWyN872Tn6WWKEuOS1H6m
-   XWTDvk7LvQw7P6yeGYVPi4s6aRmWd6O7W4GN5Ry8a5HqS0/R6KPZOkdyt
-   w==;
-IronPort-SDR: Ub1fvDXej12gwIhShN4HUC/i9DjD/k+wpdd5YFLcF0RkwYsZnVhDSWlRLnoYJhPV+4d2lwkgcA
- Q8sxFviFL4UG6SO3co2/NwJpNYHuI7iAH+HsCzWIOH9ZzdzsPLtEhlNUlcNEac3WwcOcHXTSmU
- 4It1Ag3+uavymTF61iep0+xen4wIq7+84NEueqnhmVPeM9Kp+qfrDxf/1KcoO6L1ojOm2Nf0vr
- spBj5CaWObkwCyVFPNqmL+Lw9ZL1jb8v++ZwSaSLeq6glUFN/QwZ7RCanNGO5WxqbgfSNQkILy
- E+E=
-X-IronPort-AV: E=Sophos;i="5.82,277,1613458800"; 
-   d="scan'208";a="119193429"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa5.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 06 May 2021 07:51:42 -0700
-Received: from chn-vm-ex04.mchp-main.com (10.10.85.152) by
- chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2176.2; Thu, 6 May 2021 07:51:41 -0700
-Received: from W1064L-TARAKESH.mchp-main.com (10.10.115.15) by
- chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server id
- 15.1.2176.2 via Frontend Transport; Thu, 6 May 2021 07:51:37 -0700
-Message-ID: <ab9da4b759dec9ab69bac791300a6a8977ee7cc2.camel@microchip.com>
-Subject: Re: [PATCH v2 net-next 9/9] net: dsa: microchip: add support for
- vlan operations
-From:   Prasanna Vengateshan <prasanna.vengateshan@microchip.com>
-To:     Vladimir Oltean <olteanv@gmail.com>
-CC:     <andrew@lunn.ch>, <netdev@vger.kernel.org>, <robh+dt@kernel.org>,
-        <UNGLinuxDriver@microchip.com>, <hkallweit1@gmail.com>,
-        <linux@armlinux.org.uk>, <davem@davemloft.net>, <kuba@kernel.org>,
-        <linux-kernel@vger.kernel.org>, <vivien.didelot@gmail.com>,
-        <f.fainelli@gmail.com>, <devicetree@vger.kernel.org>
-Date:   Thu, 6 May 2021 20:21:35 +0530
-In-Reply-To: <20210422190351.qdv2xlnxghmfpjqj@skbuf>
-References: <20210422094257.1641396-1-prasanna.vengateshan@microchip.com>
-         <20210422094257.1641396-10-prasanna.vengateshan@microchip.com>
-         <20210422190351.qdv2xlnxghmfpjqj@skbuf>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.38.1-1 
+        id S234919AbhEFOzH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 6 May 2021 10:55:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52934 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234759AbhEFOzE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 6 May 2021 10:55:04 -0400
+Received: from mail-il1-x131.google.com (mail-il1-x131.google.com [IPv6:2607:f8b0:4864:20::131])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 062A6C061574
+        for <netdev@vger.kernel.org>; Thu,  6 May 2021 07:54:05 -0700 (PDT)
+Received: by mail-il1-x131.google.com with SMTP id v13so4977344ilj.8
+        for <netdev@vger.kernel.org>; Thu, 06 May 2021 07:54:04 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=huUXHgZjNKj4ozdUIZOT3gjlkDIS/nxHdiapttMvJR0=;
+        b=TRnZOpMxzdOGLu0C2rWhGuX6oAe6r6sH9zZytMv7jQGjrSQDQAJ4GVYp1RPHXqnTFO
+         e+Eok8y1qFdtf9w3AM+VrLSeSi5t52qUyKYlXeP6bsc+z8PrKN7lFAELJ0TaC1fnE4c+
+         s3e7+Lk2neu5hLy50ZhAxabvTTpoEZmnOqYnPApe8X2KiCLU5vYo8jtP4rwZQSkfTjJ1
+         EOKeK/0elhhhLdvy1Syt1mfCWz8LYX0n80AWUlYUl5llvBSEoKS34E8GbqE8M7UVvAe+
+         ASQ9ji0Y0JQlP+ZlmIlJlbOk9gLoXoTZ3Qk3PGzJX8t7m7pn8s0TVZvorqFouu5D8I7b
+         soXw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=huUXHgZjNKj4ozdUIZOT3gjlkDIS/nxHdiapttMvJR0=;
+        b=ZpNSpT6k67618Mn5DnHcrgrUOgNYbCKBdjrR4ukPs6OpBV4g8v+3F2own7VKJIcbJV
+         JAz8TQaslhxY6ASTv8B6gpYYYFLKVFGzTHMEmVkEr7OmS1pHf+3UVomPEoH7P0QKr7B7
+         eaMY6jHQTNgjLu+i5d6eDJmZz/2WqOli9u8acichiPcWsVLvFEJZSBsNfmsQ1D50yeOA
+         ecdFPpoP0mDKM498IkiTnc7LYrERZ7Q5GyJtvla0S8sDnGIrVf1GzLDdQ9qNTqVQ/+Jw
+         c+G37v6qQZXANg4USVMqYhHS/kctbnmriYFwpuDJD/M1HDLKZAx4YT6ZUkRLDUQ6Z38m
+         eBog==
+X-Gm-Message-State: AOAM530aLfiAit/NY9Q/XLThYUEiYBE5Za4TuEonwJ2Ub85O6ktmXcZY
+        IDLErCSdYuTiC6F9cCqvLgy1NFgFTjkuyKhWGCMWR+dXe/k=
+X-Google-Smtp-Source: ABdhPJy7mZA5zjdjgw2xdwF76Aa/SliHmaRnrlROZreO0xphMT5bnzv8WTdXsFEQ7GhtEfLmVr2TxTHZMPXyL9TXecQ=
+X-Received: by 2002:a92:c78b:: with SMTP id c11mr4657617ilk.249.1620312844498;
+ Thu, 06 May 2021 07:54:04 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <421cc86c-b66f-b372-32f7-21e59f9a98bc@kontron.de>
+In-Reply-To: <421cc86c-b66f-b372-32f7-21e59f9a98bc@kontron.de>
+From:   Dave Taht <dave.taht@gmail.com>
+Date:   Thu, 6 May 2021 07:53:51 -0700
+Message-ID: <CAA93jw6bWOU3wX5tubkTzOFxDMWXdgmBqnGPAnzZKVVFQTEUDQ@mail.gmail.com>
+Subject: Re: i.MX8MM Ethernet TX Bandwidth Fluctuations
+To:     Frieder Schrempf <frieder.schrempf@kontron.de>
+Cc:     NXP Linux Team <linux-imx@nxp.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Vladimir,
+I am a big fan of bql - is that implemented on this driver?
 
-On Thu, 2021-04-22 at 22:03 +0300, Vladimir Oltean wrote:
-> EXTERNAL EMAIL: Do not click links or open attachments unless you know the
-> content is safe
-> 
-> On Thu, Apr 22, 2021 at 03:12:57PM +0530, Prasanna Vengateshan wrote:
-> > Support for VLAN add, del, prepare and filtering operations.
-> > 
-> > It aligns with latest update of removing switchdev
-> > transactional logic from VLAN objects
-> 
-> Maybe more in the commit message about what the patch does, as opposed
-> to mentioning that you had to rebase it, would be helpful.
-Sure.
+cd /sys/class/net/your_device_name/queues/tx-0/byte_queue_limits/
+cat limit
 
-> 
-> > 
-> > Signed-off-by: Prasanna Vengateshan <prasanna.vengateshan@microchip.com>
-> > ---
-> >  drivers/net/dsa/microchip/lan937x_main.c | 214 +++++++++++++++++++++++
-> >  1 file changed, 214 insertions(+)
-> > 
-> > diff --git a/drivers/net/dsa/microchip/lan937x_main.c
-> > b/drivers/net/dsa/microchip/lan937x_main.c
-> > index 7f6183dc0e31..35f3456c3506 100644
-> 
-> > +
-> > +             rc = lan937x_cfg(dev, REG_SW_LUE_CTRL_0, SW_VLAN_ENABLE,
-> > true);
-> 
-> How about this bit?
+see also bqlmon from github
 
-> 
-> I see one bit is per port and the other is global.
-> Just FYI, you can have this configuration:
-> 
-> ip link add br0 type bridge vlan_filtering 0
-> ip link add br1 type bridge vlan_filtering 1
-> ip link set swp0 master br0
-> ip link set swp1 master br0
-> ip link set swp2 master br1
-> ip link set swp3 master br1
-> 
-> Do the swp0 and swp1 ports remain VLAN-unaware after you touch this
-> REG_SW_LUE_CTRL_0 bit?
-vlan aware is global, so ds->vlan_filtering_is_global needs to be true if VLAN
-aware is global, will fix this in the next version
+is fq_codel running on the ethernet interface? the iperf bidir test
+does much better with that in place rather than a fifo. tc -s qdisc
+show dev your_device
 
-> 
-> > +     } else {
-> > +             rc = lan937x_cfg(dev, REG_SW_LUE_CTRL_0, SW_VLAN_ENABLE,
-> > false);
-> > +             if (rc < 0)
-> > +                     return rc;
-> > +
-> > +             rc = lan937x_port_cfg(dev, port, REG_PORT_LUE_CTRL,
-> > +                                   PORT_VLAN_LOOKUP_VID_0, false);
-> > +     }
-> > +
-> > +     return rc;
-> > +}
-> > +
-> > +static int lan937x_port_vlan_add(struct dsa_switch *ds, int port,
-> > +                              const struct switchdev_obj_port_vlan *vlan,
-> > +                              struct netlink_ext_ack *extack)
-> > +{
-> > +     bool untagged = vlan->flags & BRIDGE_VLAN_INFO_UNTAGGED;
-> > +     struct ksz_device *dev = ds->priv;
-> > +     u32 vlan_table[3];
-> 
-> Maybe a structure would be nicer to read than an u32 array?
-Okay, will make a structure.
+Also I tend to run tests using the flent tool, which will yield more
+data. Install netperf and irtt on the target, flent, netperf, irtt on
+the test driver box...
 
-> 
-> > +     int rc;
-> > +
-> > +     rc = lan937x_get_vlan_table(dev, vlan->vid, vlan_table);
-> > +     if (rc < 0) {
-> > +             dev_err(dev->dev, "Failed to get vlan table\n");
-> 
-> One of the reasons for which the extack exists is so that you can report
-> errors to user space and not to the console.
-Sure, will add it for port_vlan_del() as well
+flent -H the-target-ip -x --socket-stats -t whateveryouaretesting rrul
+# the meanest bidir test there
 
-> 
->                 NL_SET_ERR_MSG_MOD(extack, "Failed to get vlan table");
-> 
-> > +             return rc;
-> > +     }
-> > +
-> > +     vlan_table[0] = VLAN_VALID | (vlan->vid & VLAN_FID_M);
-> > +
-> > +     /* set/clear switch port when updating vlan table registers */
-> > +     if (untagged)
-> > +             vlan_table[1] |= BIT(port);
-> > +     else
-> > +             vlan_table[1] &= ~BIT(port);
-> > +     vlan_table[1] &= ~(BIT(dev->cpu_port));
-> > +
-> > +     vlan_table[2] |= BIT(port) | BIT(dev->cpu_port);
-> 
-> What's the business with the CPU port here? Does DSA not call
-> .port_vlan_add for the CPU port separately?
-Calls for CPU port as well. This is to be removed.
+flent-gui *.gz
 
-> 
-> > +
-> > +     rc = lan937x_set_vlan_table(dev, vlan->vid, vlan_table);
-> > +     if (rc < 0) {
-> > +             dev_err(dev->dev, "Failed to set vlan table\n");
-> > +             return rc;
-> > +     }
-> > +
-> > +     /* change PVID */
-> > +     if (vlan->flags & BRIDGE_VLAN_INFO_PVID) {
-> > +             rc = lan937x_pwrite16(dev, port, REG_PORT_DEFAULT_VID, vlan-
-> > >vid);
-> > +
-> > +             if (rc < 0) {
-> > +                     dev_err(dev->dev, "Failed to set pvid\n");
-> > +                     return rc;
-> > +             }
-> > +     }
-> > +
-> > +     return 0;
-> > +}
-> > +
-> > +static int lan937x_port_vlan_del(struct dsa_switch *ds, int port,
-> > +                              const struct switchdev_obj_port_vlan *vlan)
-> > +{
-> > +     bool untagged = vlan->flags & BRIDGE_VLAN_INFO_UNTAGGED;
-> > +     struct ksz_device *dev = ds->priv;
-> > +     u32 vlan_table[3];
-> > +     u16 pvid;
-> > +     int rc;
-> > +
-> > +     lan937x_pread16(dev, port, REG_PORT_DEFAULT_VID, &pvid);
-> > +     pvid &= 0xFFF;
-> > +
-> > +     rc = lan937x_get_vlan_table(dev, vlan->vid, vlan_table);
-> > +
-> > +     if (rc < 0) {
-> > +             dev_err(dev->dev, "Failed to get vlan table\n");
-> > +             return rc;
-> > +     }
-> > +     /* clear switch port number */
-> > +     vlan_table[2] &= ~BIT(port);
-> > +
-> > +     if (pvid == vlan->vid)
-> > +             pvid = 1;
-> 
-> According to Documentation/networking/switchdev.rst:
-> 
-> When the bridge has VLAN filtering enabled and a PVID is not configured on the
-> ingress port, untagged and 802.1p tagged packets must be dropped. When the
-> bridge
-> has VLAN filtering enabled and a PVID exists on the ingress port, untagged and
-> priority-tagged packets must be accepted and forwarded according to the
-> bridge's port membership of the PVID VLAN. When the bridge has VLAN filtering
-> disabled, the presence/lack of a PVID should not influence the packet
-> forwarding decision.
-> 
-> So please don't reset the pvid.
-Will remove it in the next rev.
-
-> 
-> > +
-> > +     if (untagged)
-> > +             vlan_table[1] &= ~BIT(port);
-> > +
-> > +     rc = lan937x_set_vlan_table(dev, vlan->vid, vlan_table);
-> > +     if (rc < 0) {
-> > +             dev_err(dev->dev, "Failed to set vlan table\n");
-> > +             return rc;
-> > +     }
-> > +
-> > +     rc = lan937x_pwrite16(dev, port, REG_PORT_DEFAULT_VID, pvid);
-> > +
-> > +     if (rc < 0) {
-> > +             dev_err(dev->dev, "Failed to set pvid\n");
-> > +             return rc;
-> > +     }
-> > +
-> > +     return 0;
-> > +}
-> > +
-> >  static u8 lan937x_get_fid(u16 vid)
-> >  {
-> >       if (vid > ALU_FID_SIZE)
-> > @@ -955,6 +1166,9 @@ const struct dsa_switch_ops lan937x_switch_ops = {
-> >       .port_bridge_flags      = lan937x_port_bridge_flags,
-> >       .port_stp_state_set     = lan937x_port_stp_state_set,
-> >       .port_fast_age          = ksz_port_fast_age,
-> > +     .port_vlan_filtering    = lan937x_port_vlan_filtering,
-> > +     .port_vlan_add          = lan937x_port_vlan_add,
-> > +     .port_vlan_del          = lan937x_port_vlan_del,
-> >       .port_fdb_dump          = lan937x_port_fdb_dump,
-> >       .port_fdb_add           = lan937x_port_fdb_add,
-> >       .port_fdb_del           = lan937x_port_fdb_del,
-> > --
-> > 2.27.0
-> > 
+On Thu, May 6, 2021 at 7:47 AM Frieder Schrempf
+<frieder.schrempf@kontron.de> wrote:
+>
+> Hi,
+>
+> we observed some weird phenomenon with the Ethernet on our i.MX8M-Mini bo=
+ards. It happens quite often that the measured bandwidth in TX direction dr=
+ops from its expected/nominal value to something like 50% (for 100M) or ~67=
+% (for 1G) connections.
+>
+> So far we reproduced this with two different hardware designs using two d=
+ifferent PHYs (RGMII VSC8531 and RMII KSZ8081), two different kernel versio=
+ns (v5.4 and v5.10) and link speeds of 100M and 1G.
+>
+> To measure the throughput we simply run iperf3 on the target (with a shor=
+t p2p connection to the host PC) like this:
+>
+>         iperf3 -c 192.168.1.10 --bidir
+>
+> But even something more simple like this can be used to get the info (wit=
+h 'nc -l -p 1122 > /dev/null' running on the host):
+>
+>         dd if=3D/dev/zero bs=3D10M count=3D1 | nc 192.168.1.10 1122
+>
+> The results fluctuate between each test run and are sometimes 'good' (e.g=
+. ~90 MBit/s for 100M link) and sometimes 'bad' (e.g. ~45 MBit/s for 100M l=
+ink).
+> There is nothing else running on the system in parallel. Some more info i=
+s also available in this post: [1].
+>
+> If there's anyone around who has an idea on what might be the reason for =
+this, please let me know!
+> Or maybe someone would be willing to do a quick test on his own hardware.=
+ That would also be highly appreciated!
+>
+> Thanks and best regards
+> Frieder
+>
+> [1]: https://community.nxp.com/t5/i-MX-Processors/i-MX8MM-Ethernet-TX-Ban=
+dwidth-Fluctuations/m-p/1242467#M170563
 
 
+
+--=20
+Latest Podcast:
+https://www.linkedin.com/feed/update/urn:li:activity:6791014284936785920/
+
+Dave T=C3=A4ht CTO, TekLibre, LLC
