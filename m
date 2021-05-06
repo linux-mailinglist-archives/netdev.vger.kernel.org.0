@@ -2,67 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B3AE8375D6D
-	for <lists+netdev@lfdr.de>; Fri,  7 May 2021 01:30:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A73CD375D6E
+	for <lists+netdev@lfdr.de>; Fri,  7 May 2021 01:30:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232268AbhEFXbQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 6 May 2021 19:31:16 -0400
-Received: from mail.kernel.org ([198.145.29.99]:52030 "EHLO mail.kernel.org"
+        id S232314AbhEFXbS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 6 May 2021 19:31:18 -0400
+Received: from mail.kernel.org ([198.145.29.99]:52066 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231802AbhEFXbI (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 6 May 2021 19:31:08 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id D6F95613B5;
-        Thu,  6 May 2021 23:30:09 +0000 (UTC)
+        id S232023AbhEFXbJ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 6 May 2021 19:31:09 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPS id B86A8613C5;
+        Thu,  6 May 2021 23:30:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1620343809;
-        bh=mZ+MIQdIM3mzSl3Io6Yg/GSU0sdnx0Cwcr96d5Tp+ds=;
+        s=k20201202; t=1620343810;
+        bh=x7/wx9HWRSPKx/bubp51BiTSg6K5xZJp6IGBy1QwZ6g=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=kEI5Uhr/dk+s28rxK9rFJWwsXTtJjW84Ae5WI0udMOnnDkoyoya6FyTFM7a4dE7iW
-         7ST+ZVNsoNZmx+QmXMFsNfOGwEJYtcUGoP1gwddiGcjwR2El2tgP3tIeSS3jHLZ1Iq
-         8h6dgF9alOWzP2RLxc17VyK3tqfB+NYWLmo/i9pTiHksvHWgBLb+Yku/M3yyGsj18O
-         SgF0yRlfbX8MkuJJgZdoNTBT3gghmXhRIKgUUUVArDrJdqYM27qpkIIDBFWM+41d7f
-         kAaVWj9YusUERsTl+krHQp+ipaMg5HeKsLLlydIf1+wT+D38n8H6uXUHQYmDXQF6ua
-         B7VAiG/Q4iCgA==
+        b=cNv5RTpwcaCORdDmRcX7HWzV789/KnbWU+l+30TIl6W7rLLuxLBtGbwknf8nxPXHa
+         Jun2h/aQs5eK1i0BNWk3C2OG2m7rMvQPwa1Q13fechXhVeCiSGlBTT6UGV3xQLquk2
+         AUvR+A4qtMUf3okHm0O+ElPAv07z+AJolgRlwKJKEze48oMssGvVvN8kSrNVBejk4E
+         /eetjrjek5kGoS3XqypqDVvlaj2i4aeEyJ9Eu2asUGw1Zh/9iv+EaUq6QVRAxHMZ9c
+         kDUzDAKjNt16wemdxJQI0JtNpHCyeFzhmroKJGuE4Ioj49RhPaY6gp3vuTvjh9Xc51
+         D2WCehOjbSrAg==
 Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id C66F260982;
-        Thu,  6 May 2021 23:30:09 +0000 (UTC)
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id B34D5609E8;
+        Thu,  6 May 2021 23:30:10 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH bpf] samples/bpf: consider frame size in tx_only of xdpsock
- sample
+Subject: Re: pull-request: can 2021-05-06
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <162034380980.14975.13507815656502362582.git-patchwork-notify@kernel.org>
-Date:   Thu, 06 May 2021 23:30:09 +0000
-References: <20210506124349.6666-1-magnus.karlsson@gmail.com>
-In-Reply-To: <20210506124349.6666-1-magnus.karlsson@gmail.com>
-To:     Magnus Karlsson <magnus.karlsson@gmail.com>
-Cc:     magnus.karlsson@intel.com, bjorn@kernel.org, ast@kernel.org,
-        daniel@iogearbox.net, netdev@vger.kernel.org,
-        jonathan.lemon@gmail.com, bpf@vger.kernel.org,
-        maciej.fijalkowski@intel.com
+Message-Id: <162034381072.14975.11606577164704929804.git-patchwork-notify@kernel.org>
+Date:   Thu, 06 May 2021 23:30:10 +0000
+References: <20210506074015.1300591-1-mkl@pengutronix.de>
+In-Reply-To: <20210506074015.1300591-1-mkl@pengutronix.de>
+To:     Marc Kleine-Budde <mkl@pengutronix.de>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
+        linux-can@vger.kernel.org, kernel@pengutronix.de
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 Hello:
 
-This patch was applied to bpf/bpf.git (refs/heads/master):
+This pull request was applied to netdev/net.git (refs/heads/master):
 
-On Thu,  6 May 2021 14:43:49 +0200 you wrote:
-> From: Magnus Karlsson <magnus.karlsson@intel.com>
+On Thu,  6 May 2021 09:40:11 +0200 you wrote:
+> Hello Jakub, hello David,
 > 
-> Fix the tx_only micro-benchmark in xdpsock to take frame size into
-> consideration. It was hardcoded to the default value of frame_size
-> which is 4K. Changing this on the command line to 2K made half of the
-> packets illegal as they were outside the umem and were therefore
-> discarded by the kernel.
+> this is a pull request of 4 patches for net/master.
+> 
+> The first two patches target the mcp251xfd driver. Dan Carpenter's
+> patch fixes a NULL pointer dereference in the probe function's error
+> path. A patch by me adds the missing can_rx_offload_del() in error
+> path of the probe function.
 > 
 > [...]
 
 Here is the summary with links:
-  - [bpf] samples/bpf: consider frame size in tx_only of xdpsock sample
-    https://git.kernel.org/bpf/bpf/c/3b80d106e110
+  - pull-request: can 2021-05-06
+    https://git.kernel.org/netdev/net/c/9f3c3b423567
+  - [net,2/4] can: mcp251xfd: mcp251xfd_probe(): add missing can_rx_offload_del() in error path
+    https://git.kernel.org/netdev/net/c/4376ea42db8b
+  - [net,3/4] can: mcp251x: fix resume from sleep before interface was brought up
+    https://git.kernel.org/netdev/net/c/03c427147b2d
+  - [net,4/4] can: m_can: m_can_tx_work_queue(): fix tx_skb race condition
+    https://git.kernel.org/netdev/net/c/e04b2cfe6107
 
 You are awesome, thank you!
 --
