@@ -2,313 +2,223 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D04063759CA
-	for <lists+netdev@lfdr.de>; Thu,  6 May 2021 19:56:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 63F7E3759F2
+	for <lists+netdev@lfdr.de>; Thu,  6 May 2021 20:05:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236366AbhEFR5E (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 6 May 2021 13:57:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37570 "EHLO
+        id S235351AbhEFSGg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 6 May 2021 14:06:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39778 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236361AbhEFR5D (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 6 May 2021 13:57:03 -0400
-Received: from albert.telenet-ops.be (albert.telenet-ops.be [IPv6:2a02:1800:110:4::f00:1a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F0D0BC061574
-        for <netdev@vger.kernel.org>; Thu,  6 May 2021 10:56:03 -0700 (PDT)
-Received: from ramsan.of.borg ([IPv6:2a02:1810:ac12:ed20:f434:20f9:aa9e:b80c])
-        by albert.telenet-ops.be with bizsmtp
-        id 1Vvy250070ZPnBx06Vvyre; Thu, 06 May 2021 19:56:02 +0200
-Received: from rox.of.borg ([192.168.97.57])
-        by ramsan.of.borg with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.93)
-        (envelope-from <geert@linux-m68k.org>)
-        id 1leiEA-003NT7-0r; Thu, 06 May 2021 19:55:58 +0200
-Received: from geert by rox.of.borg with local (Exim 4.93)
-        (envelope-from <geert@linux-m68k.org>)
-        id 1leiE9-00HHNW-Eb; Thu, 06 May 2021 19:55:57 +0200
-From:   Geert Uytterhoeven <geert+renesas@glider.be>
-To:     Sergei Shtylyov <sergei.shtylyov@gmail.com>,
-        Fabrizio Castro <fabrizio.castro.jz@renesas.com>,
-        Wolfgang Grandegger <wg@grandegger.com>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Ulrich Hecht <uli+renesas@fpond.eu>
-Cc:     linux-can@vger.kernel.org, linux-renesas-soc@vger.kernel.org,
-        devicetree@vger.kernel.org, netdev@vger.kernel.org,
-        Geert Uytterhoeven <geert+renesas@glider.be>
-Subject: [PATCH 2/2] dt-bindings: can: rcar_canfd: Convert to json-schema
-Date:   Thu,  6 May 2021 19:55:54 +0200
-Message-Id: <905134c87f72e2d8e37c309e0ce28ecd7d4f3992.1620323639.git.geert+renesas@glider.be>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <cover.1620323639.git.geert+renesas@glider.be>
-References: <cover.1620323639.git.geert+renesas@glider.be>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        with ESMTP id S236323AbhEFSGe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 6 May 2021 14:06:34 -0400
+Received: from mail-qv1-xf49.google.com (mail-qv1-xf49.google.com [IPv6:2607:f8b0:4864:20::f49])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD701C061574
+        for <netdev@vger.kernel.org>; Thu,  6 May 2021 11:05:34 -0700 (PDT)
+Received: by mail-qv1-xf49.google.com with SMTP id y18-20020a0cd9920000b02901c32e3e18f7so4762925qvj.15
+        for <netdev@vger.kernel.org>; Thu, 06 May 2021 11:05:34 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=date:message-id:mime-version:subject:from:to:cc;
+        bh=FEVlr4g3tZJxsFx0Sj9mnajiW44wOc9m7hmf42oy47c=;
+        b=GOsjaWZqj/DzQeS+SFfhECtFoAUJji0FqqSZ8YEmeFnIKfmVyRiqowRmeRo+f8qK3h
+         D7hBXUFDze4vtxESUTQz9sFcw/DOEcwOoowczIwoRq1zxeeT45kLxc/+7z0Xgyo93wGg
+         vNSBZSZdOafv6VyHV4sRKpM23nZBL9B4EWB3wCcMjlaq2Xs0onQKbCBYge8PUoaGx/y+
+         XcumHKkTtXQAgogXE6VPQrmokvQgY/zli6rJz8UGHPuNSXf//hwBPCfk12ua4sbocFZz
+         /r29jNIcCGDGnc/wyVlhSLMBxCxuh281UUDxu3R260HFIf8o0BkXRkYclivyqJXo9Rtx
+         HptQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
+        bh=FEVlr4g3tZJxsFx0Sj9mnajiW44wOc9m7hmf42oy47c=;
+        b=QHThtByqXntnL2AoaMIog5oIeYYVWB7ontOHfLXGfm+TsURtta05eMT9/QncgyLO8L
+         wxoc0tMx8N9l0Uj/n5Cl/hgEdS6dd3qforx6JF8AP0T9tDVbd5JfbH+tgSSDmQ0VmNz4
+         Zz/ct5+HOZTyzDS1QkckVRHDYkpYBrRjTdg8sXiWt3U1TbM8wWgZML+/4J5fBScrdu8W
+         r2F/xAf0XC2hFq1OOlTqqN+0FuPRiky4KIIlFkDdqqfMYFsyL+3ihEFdycpFgmd3I7LQ
+         Q1I1f+k+l/d5sW5No3KY93+OqHrud1xu3/L7BRIRrQwI6VwcTm+GWaHyefoIFmZM0BbA
+         rWEw==
+X-Gm-Message-State: AOAM5319O5x8D2QBkdchjJSa81rCOBa5nuhRHFIugfytpvo8d7d6mJeJ
+        N7kQGCOk7U4XyELzLADA2aTNwc4=
+X-Google-Smtp-Source: ABdhPJzW8aLod+t5Wz6FHaDNS3U/7RtSC8JVgIJTc47WnDgAJ4hoM8Cv6QFeoutcaXsivgtAgT4A584=
+X-Received: from wdu0.mtv.corp.google.com ([2620:15c:211:201:61b:49c:e610:2968])
+ (user=wdu job=sendgmr) by 2002:a0c:fa8e:: with SMTP id o14mr5605862qvn.45.1620324333501;
+ Thu, 06 May 2021 11:05:33 -0700 (PDT)
+Date:   Thu,  6 May 2021 11:05:29 -0700
+Message-Id: <20210506180530.3418576-1-wdu@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.31.1.607.g51e8a6a459-goog
+Subject: [PATCH v1] mac80211_hwsim: add concurrent channels scanning support
+ over virtio
+From:   Weilun Du <wdu@google.com>
+To:     Johannes Berg <johannes@sipsolutions.net>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     Weilun Du <wdu@google.com>, kernel-team@android.com,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Convert the Renesas R-Car CAN FD Controller Device Tree binding
-documentation to json-schema.
+This fixed the crash when setting channels to 2 or more when
+communicating over virtio.
 
-Document missing properties.
-The CANFD clock needs to be configured for the maximum frequency on
-R-Car V3M and V3H, too.
-Update the example to match reality.
-
-Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
+Signed-off-by: Weilun Du <wdu@google.com>
 ---
-I have listed Fabrizio as the maintainer, as Ramesh is no longer
-available.  Fabrizio: Please scream if this is inappropriate ;-)
----
- .../bindings/net/can/rcar_canfd.txt           | 107 ---------------
- .../bindings/net/can/renesas,rcar-canfd.yaml  | 122 ++++++++++++++++++
- 2 files changed, 122 insertions(+), 107 deletions(-)
- delete mode 100644 Documentation/devicetree/bindings/net/can/rcar_canfd.txt
- create mode 100644 Documentation/devicetree/bindings/net/can/renesas,rcar-canfd.yaml
+ drivers/net/wireless/mac80211_hwsim.c | 48 +++++++++++++++++++++------
+ 1 file changed, 38 insertions(+), 10 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/net/can/rcar_canfd.txt b/Documentation/devicetree/bindings/net/can/rcar_canfd.txt
-deleted file mode 100644
-index 248c4ed97a0a078e..0000000000000000
---- a/Documentation/devicetree/bindings/net/can/rcar_canfd.txt
-+++ /dev/null
-@@ -1,107 +0,0 @@
--Renesas R-Car CAN FD controller Device Tree Bindings
------------------------------------------------------
--
--Required properties:
--- compatible: Must contain one or more of the following:
--  - "renesas,rcar-gen3-canfd" for R-Car Gen3 and RZ/G2 compatible controllers.
--  - "renesas,r8a774a1-canfd" for R8A774A1 (RZ/G2M) compatible controller.
--  - "renesas,r8a774b1-canfd" for R8A774B1 (RZ/G2N) compatible controller.
--  - "renesas,r8a774c0-canfd" for R8A774C0 (RZ/G2E) compatible controller.
--  - "renesas,r8a774e1-canfd" for R8A774E1 (RZ/G2H) compatible controller.
--  - "renesas,r8a7795-canfd" for R8A7795 (R-Car H3) compatible controller.
--  - "renesas,r8a7796-canfd" for R8A7796 (R-Car M3-W) compatible controller.
--  - "renesas,r8a77965-canfd" for R8A77965 (R-Car M3-N) compatible controller.
--  - "renesas,r8a77970-canfd" for R8A77970 (R-Car V3M) compatible controller.
--  - "renesas,r8a77980-canfd" for R8A77980 (R-Car V3H) compatible controller.
--  - "renesas,r8a77990-canfd" for R8A77990 (R-Car E3) compatible controller.
--  - "renesas,r8a77995-canfd" for R8A77995 (R-Car D3) compatible controller.
--
--  When compatible with the generic version, nodes must list the
--  SoC-specific version corresponding to the platform first, followed by the
--  family-specific and/or generic versions.
--
--- reg: physical base address and size of the R-Car CAN FD register map.
--- interrupts: interrupt specifiers for the Channel & Global interrupts
--- clocks: phandles and clock specifiers for 3 clock inputs.
--- clock-names: 3 clock input name strings: "fck", "canfd", "can_clk".
--- pinctrl-0: pin control group to be used for this controller.
--- pinctrl-names: must be "default".
--
--Required child nodes:
--The controller supports two channels and each is represented as a child node.
--The name of the child nodes are "channel0" and "channel1" respectively. Each
--child node supports the "status" property only, which is used to
--enable/disable the respective channel.
--
--Required properties for R8A774A1, R8A774B1, R8A774C0, R8A774E1, R8A7795,
--R8A7796, R8A77965, R8A77990, and R8A77995:
--In the denoted SoCs, canfd clock is a div6 clock and can be used by both CAN
--and CAN FD controller at the same time. It needs to be scaled to maximum
--frequency if any of these controllers use it. This is done using the below
--properties:
--
--- assigned-clocks: phandle of canfd clock.
--- assigned-clock-rates: maximum frequency of this clock.
--
--Optional property:
--The controller can operate in either CAN FD only mode (default) or
--Classical CAN only mode. The mode is global to both the channels. In order to
--enable the later, define the following optional property.
-- - renesas,no-can-fd: puts the controller in Classical CAN only mode.
--
--Example
---------
--
--SoC common .dtsi file:
--
--		canfd: can@e66c0000 {
--			compatible = "renesas,r8a7795-canfd",
--				     "renesas,rcar-gen3-canfd";
--			reg = <0 0xe66c0000 0 0x8000>;
--			interrupts = <GIC_SPI 29 IRQ_TYPE_LEVEL_HIGH>,
--				   <GIC_SPI 30 IRQ_TYPE_LEVEL_HIGH>;
--			clocks = <&cpg CPG_MOD 914>,
--			       <&cpg CPG_CORE R8A7795_CLK_CANFD>,
--			       <&can_clk>;
--			clock-names = "fck", "canfd", "can_clk";
--			assigned-clocks = <&cpg CPG_CORE R8A7795_CLK_CANFD>;
--			assigned-clock-rates = <40000000>;
--			power-domains = <&cpg>;
--			status = "disabled";
--
--			channel0 {
--				status = "disabled";
--			};
--
--			channel1 {
--				status = "disabled";
--			};
--		};
--
--Board specific .dts file:
--
--E.g. below enables Channel 1 alone in the board in Classical CAN only mode.
--
--&canfd {
--	pinctrl-0 = <&canfd1_pins>;
--	pinctrl-names = "default";
--	renesas,no-can-fd;
--	status = "okay";
--
--	channel1 {
--		status = "okay";
--	};
--};
--
--E.g. below enables Channel 0 alone in the board using External clock
--as fCAN clock.
--
--&canfd {
--	pinctrl-0 = <&canfd0_pins>, <&can_clk_pins>;
--	pinctrl-names = "default";
--	status = "okay";
--
--	channel0 {
--		status = "okay";
--	};
--};
-diff --git a/Documentation/devicetree/bindings/net/can/renesas,rcar-canfd.yaml b/Documentation/devicetree/bindings/net/can/renesas,rcar-canfd.yaml
-new file mode 100644
-index 0000000000000000..0b33ba9ccb47d1ab
---- /dev/null
-+++ b/Documentation/devicetree/bindings/net/can/renesas,rcar-canfd.yaml
-@@ -0,0 +1,122 @@
-+# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/net/can/renesas,rcar-canfd.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
+diff --git a/drivers/net/wireless/mac80211_hwsim.c b/drivers/net/wireless/mac80211_hwsim.c
+index 51ce767eaf88..0c44ec0ab03f 100644
+--- a/drivers/net/wireless/mac80211_hwsim.c
++++ b/drivers/net/wireless/mac80211_hwsim.c
+@@ -626,6 +626,7 @@ struct mac80211_hwsim_data {
+ 	u32 ciphers[ARRAY_SIZE(hwsim_ciphers)];
+ 
+ 	struct mac_address addresses[2];
++	struct ieee80211_chanctx_conf *chanctx;
+ 	int channels, idx;
+ 	bool use_chanctx;
+ 	bool destroy_on_close;
+@@ -1257,7 +1258,8 @@ static inline u16 trans_tx_rate_flags_ieee2hwsim(struct ieee80211_tx_rate *rate)
+ 
+ static void mac80211_hwsim_tx_frame_nl(struct ieee80211_hw *hw,
+ 				       struct sk_buff *my_skb,
+-				       int dst_portid)
++				       int dst_portid,
++				       struct ieee80211_channel *channel)
+ {
+ 	struct sk_buff *skb;
+ 	struct mac80211_hwsim_data *data = hw->priv;
+@@ -1312,7 +1314,7 @@ static void mac80211_hwsim_tx_frame_nl(struct ieee80211_hw *hw,
+ 	if (nla_put_u32(skb, HWSIM_ATTR_FLAGS, hwsim_flags))
+ 		goto nla_put_failure;
+ 
+-	if (nla_put_u32(skb, HWSIM_ATTR_FREQ, data->channel->center_freq))
++	if (nla_put_u32(skb, HWSIM_ATTR_FREQ, channel->center_freq))
+ 		goto nla_put_failure;
+ 
+ 	/* We get the tx control (rate and retries) info*/
+@@ -1659,7 +1661,7 @@ static void mac80211_hwsim_tx(struct ieee80211_hw *hw,
+ 	_portid = READ_ONCE(data->wmediumd);
+ 
+ 	if (_portid || hwsim_virtio_enabled)
+-		return mac80211_hwsim_tx_frame_nl(hw, skb, _portid);
++		return mac80211_hwsim_tx_frame_nl(hw, skb, _portid, channel);
+ 
+ 	/* NO wmediumd detected, perfect medium simulation */
+ 	data->tx_pkts++;
+@@ -1770,7 +1772,7 @@ static void mac80211_hwsim_tx_frame(struct ieee80211_hw *hw,
+ 	mac80211_hwsim_monitor_rx(hw, skb, chan);
+ 
+ 	if (_pid || hwsim_virtio_enabled)
+-		return mac80211_hwsim_tx_frame_nl(hw, skb, _pid);
++		return mac80211_hwsim_tx_frame_nl(hw, skb, _pid, chan);
+ 
+ 	mac80211_hwsim_tx_frame_no_nl(hw, skb, chan);
+ 	dev_kfree_skb(skb);
+@@ -2509,6 +2511,11 @@ static int mac80211_hwsim_croc(struct ieee80211_hw *hw,
+ static int mac80211_hwsim_add_chanctx(struct ieee80211_hw *hw,
+ 				      struct ieee80211_chanctx_conf *ctx)
+ {
++	struct mac80211_hwsim_data *hwsim = hw->priv;
 +
-+title: Renesas R-Car CAN FD Controller
++	mutex_lock(&hwsim->mutex);
++	hwsim->chanctx = ctx;
++	mutex_unlock(&hwsim->mutex);
+ 	hwsim_set_chanctx_magic(ctx);
+ 	wiphy_dbg(hw->wiphy,
+ 		  "add channel context control: %d MHz/width: %d/cfreqs:%d/%d MHz\n",
+@@ -2520,6 +2527,11 @@ static int mac80211_hwsim_add_chanctx(struct ieee80211_hw *hw,
+ static void mac80211_hwsim_remove_chanctx(struct ieee80211_hw *hw,
+ 					  struct ieee80211_chanctx_conf *ctx)
+ {
++	struct mac80211_hwsim_data *hwsim = hw->priv;
 +
-+maintainers:
-+  - Fabrizio Castro <fabrizio.castro.jz@renesas.com>
++	mutex_lock(&hwsim->mutex);
++	hwsim->chanctx = NULL;
++	mutex_unlock(&hwsim->mutex);
+ 	wiphy_dbg(hw->wiphy,
+ 		  "remove channel context control: %d MHz/width: %d/cfreqs:%d/%d MHz\n",
+ 		  ctx->def.chan->center_freq, ctx->def.width,
+@@ -2532,6 +2544,11 @@ static void mac80211_hwsim_change_chanctx(struct ieee80211_hw *hw,
+ 					  struct ieee80211_chanctx_conf *ctx,
+ 					  u32 changed)
+ {
++	struct mac80211_hwsim_data *hwsim = hw->priv;
 +
-+allOf:
-+  - $ref: can-controller.yaml#
++	mutex_lock(&hwsim->mutex);
++	hwsim->chanctx = ctx;
++	mutex_unlock(&hwsim->mutex);
+ 	hwsim_check_chanctx_magic(ctx);
+ 	wiphy_dbg(hw->wiphy,
+ 		  "change channel context control: %d MHz/width: %d/cfreqs:%d/%d MHz\n",
+@@ -3124,6 +3141,7 @@ static int mac80211_hwsim_new_radio(struct genl_info *info,
+ 		hw->wiphy->max_remain_on_channel_duration = 1000;
+ 		data->if_combination.radar_detect_widths = 0;
+ 		data->if_combination.num_different_channels = data->channels;
++		data->chanctx = NULL;
+ 	} else {
+ 		data->if_combination.num_different_channels = 1;
+ 		data->if_combination.radar_detect_widths =
+@@ -3633,6 +3651,7 @@ static int hwsim_cloned_frame_received_nl(struct sk_buff *skb_2,
+ 	int frame_data_len;
+ 	void *frame_data;
+ 	struct sk_buff *skb = NULL;
++	struct ieee80211_channel *channel = NULL;
+ 
+ 	if (!info->attrs[HWSIM_ATTR_ADDR_RECEIVER] ||
+ 	    !info->attrs[HWSIM_ATTR_FRAME] ||
+@@ -3659,6 +3678,17 @@ static int hwsim_cloned_frame_received_nl(struct sk_buff *skb_2,
+ 	if (!data2)
+ 		goto out;
+ 
++	if (data2->use_chanctx) {
++		if (data2->tmp_chan)
++			channel = data2->tmp_chan;
++		else if (data2->chanctx)
++			channel = data2->chanctx->def.chan;
++	} else {
++		channel = data2->channel;
++	}
++	if (!channel)
++		goto out;
 +
-+properties:
-+  compatible:
-+    oneOf:
-+      - items:
-+          - enum:
-+              - renesas,r8a774a1-canfd     # RZ/G2M
-+              - renesas,r8a774b1-canfd     # RZ/G2N
-+              - renesas,r8a774c0-canfd     # RZ/G2E
-+              - renesas,r8a774e1-canfd     # RZ/G2H
-+              - renesas,r8a7795-canfd      # R-Car H3
-+              - renesas,r8a7796-canfd      # R-Car M3-W
-+              - renesas,r8a77965-canfd     # R-Car M3-N
-+              - renesas,r8a77970-canfd     # R-Car V3M
-+              - renesas,r8a77980-canfd     # R-Car V3H
-+              - renesas,r8a77990-canfd     # R-Car E3
-+              - renesas,r8a77995-canfd     # R-Car D3
-+          - const: renesas,rcar-gen3-canfd # R-Car Gen3 and RZ/G2
-+
-+  reg:
-+    maxItems: 1
-+
-+  interrupts:
-+    items:
-+      - description: Channel interrupt
-+      - description: Global interrupt
-+
-+  clocks:
-+    maxItems: 3
-+
-+  clock-names:
-+    items:
-+      - const: fck
-+      - const: canfd
-+      - const: can_clk
-+
-+  power-domains:
-+    maxItems: 1
-+
-+  resets:
-+    maxItems: 1
-+
-+  renesas,no-can-fd:
-+    $ref: /schemas/types.yaml#/definitions/flag
-+    description:
-+      The controller can operate in either CAN FD only mode (default) or
-+      Classical CAN only mode.  The mode is global to both the channels.
-+      Specify this property to put the controller in Classical CAN only mode.
-+
-+  assigned-clocks:
-+    description:
-+      Reference to the CANFD clock.  The CANFD clock is a div6 clock and can be
-+      used by both CAN (if present) and CAN FD controllers at the same time.
-+      It needs to be scaled to maximum frequency if any of these controllers
-+      use it.
-+
-+  assigned-clock-rates:
-+    description: Maximum frequency of the CANFD clock.
-+
-+patternProperties:
-+  "^channel[01]$":
-+    type: object
-+    description:
-+      The controller supports two channels and each is represented as a child
-+      node.  Each child node supports the "status" property only, which
-+      is used to enable/disable the respective channel.
-+
-+required:
-+  - compatible
-+  - reg
-+  - interrupts
-+  - clocks
-+  - clock-names
-+  - power-domains
-+  - resets
-+  - assigned-clocks
-+  - assigned-clock-rates
-+  - channel0
-+  - channel1
-+
-+unevaluatedProperties: false
-+
-+examples:
-+  - |
-+    #include <dt-bindings/clock/r8a7795-cpg-mssr.h>
-+    #include <dt-bindings/interrupt-controller/arm-gic.h>
-+    #include <dt-bindings/power/r8a7795-sysc.h>
-+
-+    canfd: can@e66c0000 {
-+            compatible = "renesas,r8a7795-canfd",
-+                         "renesas,rcar-gen3-canfd";
-+            reg = <0xe66c0000 0x8000>;
-+            interrupts = <GIC_SPI 29 IRQ_TYPE_LEVEL_HIGH>,
-+                         <GIC_SPI 30 IRQ_TYPE_LEVEL_HIGH>;
-+            clocks = <&cpg CPG_MOD 914>,
-+                     <&cpg CPG_CORE R8A7795_CLK_CANFD>,
-+                     <&can_clk>;
-+            clock-names = "fck", "canfd", "can_clk";
-+            assigned-clocks = <&cpg CPG_CORE R8A7795_CLK_CANFD>;
-+            assigned-clock-rates = <40000000>;
-+            power-domains = <&sysc R8A7795_PD_ALWAYS_ON>;
-+            resets = <&cpg 914>;
-+
-+            channel0 {
-+            };
-+
-+            channel1 {
-+            };
-+    };
+ 	if (!hwsim_virtio_enabled) {
+ 		if (hwsim_net_get_netgroup(genl_info_net(info)) !=
+ 		    data2->netgroup)
+@@ -3670,7 +3700,7 @@ static int hwsim_cloned_frame_received_nl(struct sk_buff *skb_2,
+ 
+ 	/* check if radio is configured properly */
+ 
+-	if (data2->idle || !data2->started)
++	if ((data2->idle && !data2->tmp_chan) || !data2->started)
+ 		goto out;
+ 
+ 	/* A frame is received from user space */
+@@ -3683,18 +3713,16 @@ static int hwsim_cloned_frame_received_nl(struct sk_buff *skb_2,
+ 		mutex_lock(&data2->mutex);
+ 		rx_status.freq = nla_get_u32(info->attrs[HWSIM_ATTR_FREQ]);
+ 
+-		if (rx_status.freq != data2->channel->center_freq &&
+-		    (!data2->tmp_chan ||
+-		     rx_status.freq != data2->tmp_chan->center_freq)) {
++		if (rx_status.freq != channel->center_freq) {
+ 			mutex_unlock(&data2->mutex);
+ 			goto out;
+ 		}
+ 		mutex_unlock(&data2->mutex);
+ 	} else {
+-		rx_status.freq = data2->channel->center_freq;
++		rx_status.freq = channel->center_freq;
+ 	}
+ 
+-	rx_status.band = data2->channel->band;
++	rx_status.band = channel->band;
+ 	rx_status.rate_idx = nla_get_u32(info->attrs[HWSIM_ATTR_RX_RATE]);
+ 	rx_status.signal = nla_get_u32(info->attrs[HWSIM_ATTR_SIGNAL]);
+ 
 -- 
-2.25.1
+2.31.1.607.g51e8a6a459-goog
 
