@@ -2,128 +2,279 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1E03737519E
-	for <lists+netdev@lfdr.de>; Thu,  6 May 2021 11:38:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4BB513751C4
+	for <lists+netdev@lfdr.de>; Thu,  6 May 2021 11:45:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234074AbhEFJjM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 6 May 2021 05:39:12 -0400
-Received: from aserp2130.oracle.com ([141.146.126.79]:55024 "EHLO
-        aserp2130.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229898AbhEFJjK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 6 May 2021 05:39:10 -0400
-Received: from pps.filterd (aserp2130.oracle.com [127.0.0.1])
-        by aserp2130.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 1469Nm4e144761;
-        Thu, 6 May 2021 09:37:44 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
- : subject : message-id : mime-version : content-type : in-reply-to;
- s=corp-2020-01-29; bh=DfoZg/EJyv1J1Ur8oyCVj6Lob9E6npm7TWUpZvwlkdQ=;
- b=lotbw+IA/+4rSHD6IZu2S4D7pxOWbwT5HIrrTNB02T/TZZUHfDkXVkYsM6MLg36ZfXQE
- c65iPl+ZEipn3RcxGlVmBy1rXRoHoo2OY0RM+/PfabyOnkGO0wi8FAuD2GkuHQy+kdIt
- wvel42TBu/TQVTwGujS0OjBZzjj7EPfdk4zzb+r9gTLfMF3F8/KnbWf/ptNp9Nu4dRh3
- Axzht2zd89DDNCtBkgAaAKUd/Df2Jr7vGYRe6KaZci5zEl1EKW7brh6b3VAhv37F818+
- W60rurQ9boV9HG//P7UniPpeX9FJDBRkidSM/auSHoGDEgmF9RY4Xz7wsUthJlp+BiZo WA== 
-Received: from aserp3030.oracle.com (aserp3030.oracle.com [141.146.126.71])
-        by aserp2130.oracle.com with ESMTP id 38begjcc5y-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Thu, 06 May 2021 09:37:44 +0000
-Received: from pps.filterd (aserp3030.oracle.com [127.0.0.1])
-        by aserp3030.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 1469PiuQ004949;
-        Thu, 6 May 2021 09:37:44 GMT
-Received: from pps.reinject (localhost [127.0.0.1])
-        by aserp3030.oracle.com with ESMTP id 38bewsgfkk-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Thu, 06 May 2021 09:37:44 +0000
-Received: from aserp3030.oracle.com (aserp3030.oracle.com [127.0.0.1])
-        by pps.reinject (8.16.0.36/8.16.0.36) with SMTP id 1469bhYi045611;
-        Thu, 6 May 2021 09:37:43 GMT
-Received: from aserv0122.oracle.com (aserv0122.oracle.com [141.146.126.236])
-        by aserp3030.oracle.com with ESMTP id 38bewsgfkb-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Thu, 06 May 2021 09:37:43 +0000
-Received: from abhmp0007.oracle.com (abhmp0007.oracle.com [141.146.116.13])
-        by aserv0122.oracle.com (8.14.4/8.14.4) with ESMTP id 1469besP015292;
-        Thu, 6 May 2021 09:37:40 GMT
-Received: from kadam (/102.36.221.92)
-        by default (Oracle Beehive Gateway v4.0)
-        with ESMTP ; Thu, 06 May 2021 02:37:40 -0700
-Date:   Thu, 6 May 2021 12:37:31 +0300
-From:   Dan Carpenter <dan.carpenter@oracle.com>
-To:     kbuild@lists.01.org, meijusan <meijusan@163.com>,
-        davem@davemloft.net, yoshfuji@linux-ipv6.org, dsahern@kernel.org,
-        kuba@kernel.org
-Cc:     lkp@intel.com, kbuild-all@lists.01.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, meijusan <meijusan@163.com>
-Subject: Re: [PATCH] net/ipv4/ip_fragment:fix missing Flags reserved bit set
- in iphdr
-Message-ID: <202105060033.tDmPYOCg-lkp@intel.com>
+        id S234252AbhEFJqM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 6 May 2021 05:46:12 -0400
+Received: from mail-eopbgr130057.outbound.protection.outlook.com ([40.107.13.57]:59406
+        "EHLO EUR01-HE1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S231194AbhEFJqK (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 6 May 2021 05:46:10 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=Su+VyK+1rozM21/ZAoej5vWrxrYL4IXL+tFttme75GW3wXFi7gPyWcTlcskGLL4v7vc4D3qbvriKFGHHj0Jghkzq2g2aPRNXzBnEUJUedbnjuFN/oCiYnS/+58UiUfOYnTG7bQ7jwiJxP8SWTuAA8mb8Exuso+KiUYc1IuVu76SK7B7q7kdYWA8eZIcKeNHwzNApzyvl9rERObcYOoUD9XW0hFK2ygZAMqUAqNXFVK3Rplri5ZB2e3gcH+RHAvoS/jHjF8ENXXmo5zrLbYLDkn+W63G3bWhVDJ9YqxTYtaaV4+J0cwrQhlgmgVE20bJMgx0d4ytt0r+xZ1F8zmABdA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=793kS7m6f8a/Te7vVE17ZBu3r6kU/j0zqWP3OIxUR/s=;
+ b=X/e6bl356rQ2ateI6PmjT99VyErl1k+3wIJgDVO7XymP5GHrmlkQMBsYGAZMGev+wV9e+yWCuGhYaLC+LB8YweXJgCXMH8HiZMIywDuO9P/xzsfCRbQJVN6KCkacpw54oHypzaGXevhutswkJqbb1jeKzG8KUB/CjZyWRAVG/39kyWdW5TdReoJXTsrik5hR9/Sc0t/LKjtwGmmFnTbRbfRwLHQbcwvPqzRPIQZQ80bPLBfbcpLBhkPwqbTb2o2ILo3dHETe9qNp6++z+AlYRsjw8OW1NRhhpwbFJmFAVcDPohgT33p/3zDMnFQYGZ/rFmAWKORQmcfuV5OiYnTAhw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=oss.nxp.com; dmarc=pass action=none header.from=oss.nxp.com;
+ dkim=pass header.d=oss.nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=NXP1.onmicrosoft.com;
+ s=selector2-NXP1-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=793kS7m6f8a/Te7vVE17ZBu3r6kU/j0zqWP3OIxUR/s=;
+ b=gqPN5dFVKF0Mjvt2zueS66p6XJpR2KHAyHm3d8EiuQskkYs2FBpz5L08HowHimVT0N81liwtGKl0R6+MZo1cOESfjPS23k6E53lINsd7TVBFZFShLJ+yckE5YOLeqmvV3mguEGbJ6XQWyrt0qWa47LCpzptsEMI6+7gODnT9Bg0=
+Authentication-Results: mojatatu.com; dkim=none (message not signed)
+ header.d=none;mojatatu.com; dmarc=none action=none header.from=oss.nxp.com;
+Received: from DU2PR04MB8807.eurprd04.prod.outlook.com (2603:10a6:10:2e2::23)
+ by DU2PR04MB8838.eurprd04.prod.outlook.com (2603:10a6:10:2e1::16) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4108.26; Thu, 6 May
+ 2021 09:45:10 +0000
+Received: from DU2PR04MB8807.eurprd04.prod.outlook.com
+ ([fe80::88ab:35ac:f0f5:2387]) by DU2PR04MB8807.eurprd04.prod.outlook.com
+ ([fe80::88ab:35ac:f0f5:2387%6]) with mapi id 15.20.4108.027; Thu, 6 May 2021
+ 09:45:09 +0000
+From:   Yannick Vignon <yannick.vignon@oss.nxp.com>
+To:     Jamal Hadi Salim <jhs@mojatatu.com>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        Joakim Zhang <qiangqing.zhang@nxp.com>,
+        sebastien.laveze@oss.nxp.com
+Cc:     Yannick Vignon <yannick.vignon@nxp.com>
+Subject: [RFC PATCH net v1] net: taprio offload: enforce qdisc to netdev queue mapping
+Date:   Thu,  6 May 2021 11:44:13 +0200
+Message-Id: <20210506094413.27586-1-yannick.vignon@oss.nxp.com>
+X-Mailer: git-send-email 2.17.1
+Content-Type: text/plain
+X-Originating-IP: [81.1.10.98]
+X-ClientProxiedBy: AM0PR02CA0194.eurprd02.prod.outlook.com
+ (2603:10a6:20b:28e::31) To DU2PR04MB8807.eurprd04.prod.outlook.com
+ (2603:10a6:10:2e2::23)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210505132557.197964-1-meijusan@163.com>
-User-Agent: Mutt/1.9.4 (2018-02-28)
-X-Proofpoint-GUID: Ko1rMzgzYzMquw8bURs27wahlO4y6lad
-X-Proofpoint-ORIG-GUID: Ko1rMzgzYzMquw8bURs27wahlO4y6lad
-X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=9975 signatures=668683
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 clxscore=1011 malwarescore=0
- mlxlogscore=999 lowpriorityscore=0 bulkscore=0 spamscore=0 adultscore=0
- impostorscore=0 priorityscore=1501 suspectscore=0 mlxscore=0 phishscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2104060000
- definitions=main-2105060065
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from sopdpuats09.ea.freescale.net (81.1.10.98) by AM0PR02CA0194.eurprd02.prod.outlook.com (2603:10a6:20b:28e::31) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4108.25 via Frontend Transport; Thu, 6 May 2021 09:45:08 +0000
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 87965869-675d-43b6-2dbc-08d91073a328
+X-MS-TrafficTypeDiagnostic: DU2PR04MB8838:
+X-MS-Exchange-SharedMailbox-RoutingAgent-Processed: True
+X-MS-Exchange-Transport-Forked: True
+X-Microsoft-Antispam-PRVS: <DU2PR04MB8838538679127F96AE4D04BAD2589@DU2PR04MB8838.eurprd04.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:4303;
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: nBw8Dr+MdKzJd7RRgsAW9iaUVmUCiRbSUmtG2kqgTb7fNNk34Wmuw8u11G1EEftJhXrW4TgTd33in2QBIvqEwTrLvdm0QVk8ftSozjsrb5OWwfyi32zPYqHeZZ5CnMi2S4Zf/Ljoz4ywYzDBoy0vO7nHDsPJNseSgvZnZTptMA2Az09HjzUy70tklDPshK0rWd+sb7gAibhnR7IOy7PwJqWKZHHWHjakPFqGsyKDGx3TnTbRVpqQM/6GZCt/yrLv1TROA9KRAqWWlF13SoGNlykmI4ctqebrY/pQpgZrCaDBwgO8/LmCyvFNDyHpx/o8d6E2eTTOy3kHNS5zlJTTA78u6AXGFn5FJH+YmLTQNt2eHRXapcAXTRGXi6Ny58uhM8W9svHRqZm1VnN3S3Dopr7mfLGU6mWwywRZFw3jdMqTdX9hlFgRPalQ3rQwbWnyvL0XLAZdQMBjvIs8EqWUDqbz1xpZ+yYVyuehGfYgLJPPr6rYDtpbv54BSFp2+Z96VyuasY8VR9fog8yWX9sFuZNzrCw0Si0yBXn5AVIp88GlxIpbZrVsNMWUlkuQRVu+mPruivGlAjxnC0S0EZ5J7dhrFxrtK+S+k/G5iq/dTVLJqhC8cfwv9iMjFLGEVgnA1S/4p+uUdIaWiBox3hCzj6ye/IHRW6h5Cz/5qlBnLFE=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DU2PR04MB8807.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(346002)(39860400002)(376002)(366004)(136003)(396003)(6506007)(4326008)(6636002)(316002)(1076003)(52116002)(5660300002)(186003)(16526019)(66556008)(66476007)(8936002)(6486002)(8676002)(110136005)(6512007)(2906002)(6666004)(44832011)(26005)(66946007)(2616005)(956004)(38100700002)(83380400001)(38350700002)(86362001)(478600001);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData: =?us-ascii?Q?jr0Dc2OFp/A7QU1dAv7KFNRidRYI4FE8EjZ/t2MHtg8yDSZ5bDP47vpgz0WT?=
+ =?us-ascii?Q?ZOlEIt/fo9eoLZan4PRS4oZCloBbYiWx2fdQB0AWh0Z5tpb/A3Za4HeLfd/b?=
+ =?us-ascii?Q?Vklsb+BP7V7blcgbuOg8nXxhv7PUfP8BZFNTx4SWhJHP5M6TGN6vfyw8NDe/?=
+ =?us-ascii?Q?f61YQR4GeqwkJl0TJ6VcwCguXfzPu0wj97PFfzFxbRmTCH1fGI1JghjemVpq?=
+ =?us-ascii?Q?iOTv2yXMWSOU9yTbTqU5ayoKPkLtFgZDAaPi/QDsmYTy4Wh238Xlx5uA55u8?=
+ =?us-ascii?Q?3q9wmoh/X2T3nGcOMGFnMNveF/V8AzozE3y6PwGhX4/uQZPJ3Sjy0aPyDM+s?=
+ =?us-ascii?Q?YfsMfpFT9YgHfEYt9jFQPtbISvLgeBezxJClgoYJA/K1SL5648D/2TsrVGPl?=
+ =?us-ascii?Q?Jp28JPeta14Dt4Est9zlbNW0u89ulMECAiLL9iSUGQX6uhdaSSqhRTFev6Vt?=
+ =?us-ascii?Q?1vYZKmjCW23PaoMlgCo0B9Fn3o5trp2a+NQ6r134UpsNEcimkHcLoHbQHpJv?=
+ =?us-ascii?Q?PaEf3c3znug/510tYrMXvbTX4JO6pwxHGv8QPBbFzb/zC3A9a2VQHkP62/Qb?=
+ =?us-ascii?Q?jSrTMh2re6aUx8zaF2XZZN/augXqKO/Q13XpsBlztRHa4dCgXVBQdz5rf2IJ?=
+ =?us-ascii?Q?hQzPsDxhutKu/GfGO5N8jyLkigcdoY04MGBAQrDziVFuu2yMewKo11R2RVjR?=
+ =?us-ascii?Q?p9W4fRdSBBpMsFPOv5DAyTcrRErDQHkqw33srGGcTq51qijHruWfDBwKQN4S?=
+ =?us-ascii?Q?+2P42Sxswxi46tA/R9uqD3BR7g5Btj8GyOyNTWq/EAaQqUhQehC8lOyGZa53?=
+ =?us-ascii?Q?gBTN33QAjLLe4bbHiNVHurcNXdXvG0H5oAaf09HQOXTYN1zUh5BSO1EUm2al?=
+ =?us-ascii?Q?KXaPOxLjUgIKhEV8iaPnKb9sLAAH8ZZyDQHbv30ESDWz/gK5OJAA7+lZ3nR0?=
+ =?us-ascii?Q?5BOXQ1/RPw0UR27OBxs5vyMqVbH+OebCfo096v5226YW8O0GhOHOQDS6p9kS?=
+ =?us-ascii?Q?VRp7V9+w82is0XnHiSHU/O/LLXCGNKYSN8kxhCiq7puY+ySgLtJVgZwMHYrR?=
+ =?us-ascii?Q?4UtOFzn/ynSUroLiDaqkErxtkj46IMyI2a7JG9taUz8G/rm0+huoshRRdVRo?=
+ =?us-ascii?Q?KkuLSuZs3d8dw/JSpdp+oVnKqLVxyVdfGovwIcABL7O2kxuuRq6x270qrqIw?=
+ =?us-ascii?Q?T2mBiMY2xARBeOC4TX+cfxF3G4XT0OsCawTOJva4fBL2a6hrGfoXEU5oRleN?=
+ =?us-ascii?Q?SZHijmkznU1NSN/hGtWirZ83adsiSJdr1Sx3I5EiPp8Mwt21mjs5vkAGBiFK?=
+ =?us-ascii?Q?6eQ0mPsvyNh0+X3d4ePb1oHs?=
+X-OriginatorOrg: oss.nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 87965869-675d-43b6-2dbc-08d91073a328
+X-MS-Exchange-CrossTenant-AuthSource: DU2PR04MB8807.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 06 May 2021 09:45:09.7653
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: Jx3CsxYnDOr8UZG+lyy3Q7z6PofFcfchLOMVoBRdSLkdyF4eF05YD6Q3lZ8hDjFeYbGkuG7C1YE09bym07YBzw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DU2PR04MB8838
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi meijusan,
+From: Yannick Vignon <yannick.vignon@nxp.com>
 
-url:    https://github.com/0day-ci/linux/commits/meijusan/net-ipv4-ip_fragment-fix-missing-Flags-reserved-bit-set-in-iphdr/20210505-212826
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/horms/ipvs.git master
-config: i386-randconfig-m021-20210505 (attached as .config)
-compiler: gcc-9 (Debian 9.3.0-22) 9.3.0
+Even though the taprio qdisc is designed for multiqueue devices, all the
+queues still point to the same top-level taprio qdisc. This works and is
+probably required for software taprio, but at least with offload taprio,
+it has an undesirable side effect: because the whole qdisc is run when a
+packet has to be sent, it allows packets in a best-effort class to be
+processed in the context of a task sending higher priority traffic. If
+there are packets left in the qdisc after that first run, the NET_TX
+softirq is raised and gets executed immediately in the same process
+context. As with any other softirq, it runs up to 10 times and for up to
+2ms, during which the calling process is waiting for the sendmsg call (or
+similar) to return. In my use case, that calling process is a real-time
+task scheduled to send a packet every 2ms, so the long sendmsg calls are
+leading to missed timeslots.
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
-Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
+By attaching each netdev queue to its own qdisc, as it is done with
+the "classic" mq qdisc, each traffic class can be processed independently
+without touching the other classes. A high-priority process can then send
+packets without getting stuck in the sendmsg call anymore.
 
-smatch warnings:
-net/ipv4/ip_output.c:655 ip_fraglist_prepare() error: uninitialized symbol 'ip_evil'.
+Signed-off-by: Yannick Vignon <yannick.vignon@nxp.com>
+---
 
-vim +/ip_evil +655 net/ipv4/ip_output.c
-
-c8b17be0b7a45d Pablo Neira Ayuso 2019-05-29  631  void ip_fraglist_prepare(struct sk_buff *skb, struct ip_fraglist_iter *iter)
-c8b17be0b7a45d Pablo Neira Ayuso 2019-05-29  632  {
-c8b17be0b7a45d Pablo Neira Ayuso 2019-05-29  633  	unsigned int hlen = iter->hlen;
-c8b17be0b7a45d Pablo Neira Ayuso 2019-05-29  634  	struct iphdr *iph = iter->iph;
-c8b17be0b7a45d Pablo Neira Ayuso 2019-05-29  635  	struct sk_buff *frag;
-c6cde148fcd3bf meijusan          2021-05-05  636  	bool ip_evil;
-c8b17be0b7a45d Pablo Neira Ayuso 2019-05-29  637  
-c8b17be0b7a45d Pablo Neira Ayuso 2019-05-29  638  	frag = iter->frag;
-c8b17be0b7a45d Pablo Neira Ayuso 2019-05-29  639  	frag->ip_summed = CHECKSUM_NONE;
-c8b17be0b7a45d Pablo Neira Ayuso 2019-05-29  640  	skb_reset_transport_header(frag);
-c8b17be0b7a45d Pablo Neira Ayuso 2019-05-29  641  	__skb_push(frag, hlen);
-c8b17be0b7a45d Pablo Neira Ayuso 2019-05-29  642  	skb_reset_network_header(frag);
-c8b17be0b7a45d Pablo Neira Ayuso 2019-05-29  643  	memcpy(skb_network_header(frag), iph, hlen);
-c6cde148fcd3bf meijusan          2021-05-05  644  	if (ntohs(iph->frag_off) & IP_EVIL)
-c6cde148fcd3bf meijusan          2021-05-05  645  		ip_evil = true;
-
-"ip_evil" is never set to false.
-
-c8b17be0b7a45d Pablo Neira Ayuso 2019-05-29  646  	iter->iph = ip_hdr(frag);
-c8b17be0b7a45d Pablo Neira Ayuso 2019-05-29  647  	iph = iter->iph;
-c8b17be0b7a45d Pablo Neira Ayuso 2019-05-29  648  	iph->tot_len = htons(frag->len);
-c8b17be0b7a45d Pablo Neira Ayuso 2019-05-29  649  	ip_copy_metadata(frag, skb);
-c8b17be0b7a45d Pablo Neira Ayuso 2019-05-29  650  	iter->offset += skb->len - hlen;
-c8b17be0b7a45d Pablo Neira Ayuso 2019-05-29  651  	iph->frag_off = htons(iter->offset >> 3);
-c8b17be0b7a45d Pablo Neira Ayuso 2019-05-29  652  	if (frag->next)
-c8b17be0b7a45d Pablo Neira Ayuso 2019-05-29  653  		iph->frag_off |= htons(IP_MF);
-c6cde148fcd3bf meijusan          2021-05-05  654  
-c6cde148fcd3bf meijusan          2021-05-05 @655  	if (ip_evil)
-c6cde148fcd3bf meijusan          2021-05-05  656  		iph->frag_off |= htons(IP_EVIL);
-c6cde148fcd3bf meijusan          2021-05-05  657  
-c8b17be0b7a45d Pablo Neira Ayuso 2019-05-29  658  	/* Ready, complete checksum */
-c8b17be0b7a45d Pablo Neira Ayuso 2019-05-29  659  	ip_send_check(iph);
-c8b17be0b7a45d Pablo Neira Ayuso 2019-05-29  660  }
+This patch fixes an issue I observed while verifying the behavior of the
+taprio qdisc in a real-time networking situation.
+I am sending it as an RFC as I am not completely sure this is the right
+way of fixing the problem. In particular, I am wondering if implementing
+separate taprio qdiscs for the software and accelerated cases wouldn't 
+be a better solution, but that would require changes to the iproute2 
+package as well, and would break backwards compatibility.
 
 ---
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+ net/sched/sch_taprio.c | 85 ++++++++++++++++++++++--------------------
+ 1 file changed, 45 insertions(+), 40 deletions(-)
+
+diff --git a/net/sched/sch_taprio.c b/net/sched/sch_taprio.c
+index 5c91df52b8c2..0bfb03052429 100644
+--- a/net/sched/sch_taprio.c
++++ b/net/sched/sch_taprio.c
+@@ -438,6 +438,11 @@ static int taprio_enqueue(struct sk_buff *skb, struct Qdisc *sch,
+ 	struct Qdisc *child;
+ 	int queue;
+ 
++	if (unlikely(FULL_OFFLOAD_IS_ENABLED(q->flags))) {
++		WARN_ONCE(1, "Trying to enqueue skb into the root of a taprio qdisc configured with full offload\n");
++		return qdisc_drop(skb, sch, to_free);
++	}
++
+ 	queue = skb_get_queue_mapping(skb);
+ 
+ 	child = q->qdiscs[queue];
+@@ -529,23 +534,7 @@ static struct sk_buff *taprio_peek_soft(struct Qdisc *sch)
+ 
+ static struct sk_buff *taprio_peek_offload(struct Qdisc *sch)
+ {
+-	struct taprio_sched *q = qdisc_priv(sch);
+-	struct net_device *dev = qdisc_dev(sch);
+-	struct sk_buff *skb;
+-	int i;
+-
+-	for (i = 0; i < dev->num_tx_queues; i++) {
+-		struct Qdisc *child = q->qdiscs[i];
+-
+-		if (unlikely(!child))
+-			continue;
+-
+-		skb = child->ops->peek(child);
+-		if (!skb)
+-			continue;
+-
+-		return skb;
+-	}
++	WARN_ONCE(1, "Trying to peek into the root of a taprio qdisc configured with full offload\n");
+ 
+ 	return NULL;
+ }
+@@ -654,27 +643,7 @@ static struct sk_buff *taprio_dequeue_soft(struct Qdisc *sch)
+ 
+ static struct sk_buff *taprio_dequeue_offload(struct Qdisc *sch)
+ {
+-	struct taprio_sched *q = qdisc_priv(sch);
+-	struct net_device *dev = qdisc_dev(sch);
+-	struct sk_buff *skb;
+-	int i;
+-
+-	for (i = 0; i < dev->num_tx_queues; i++) {
+-		struct Qdisc *child = q->qdiscs[i];
+-
+-		if (unlikely(!child))
+-			continue;
+-
+-		skb = child->ops->dequeue(child);
+-		if (unlikely(!skb))
+-			continue;
+-
+-		qdisc_bstats_update(sch, skb);
+-		qdisc_qstats_backlog_dec(sch, skb);
+-		sch->q.qlen--;
+-
+-		return skb;
+-	}
++	WARN_ONCE(1, "Trying to dequeue from the root of a taprio qdisc configured with full offload\n");
+ 
+ 	return NULL;
+ }
+@@ -1759,6 +1728,37 @@ static int taprio_init(struct Qdisc *sch, struct nlattr *opt,
+ 	return taprio_change(sch, opt, extack);
+ }
+ 
++static void taprio_attach(struct Qdisc *sch)
++{
++	struct taprio_sched *q = qdisc_priv(sch);
++	struct net_device *dev = qdisc_dev(sch);
++	unsigned int ntx;
++
++	/* Attach underlying qdisc */
++	for (ntx = 0; ntx < dev->num_tx_queues; ntx++) {
++		struct Qdisc *qdisc = q->qdiscs[ntx];
++		struct Qdisc *old;
++
++		if (FULL_OFFLOAD_IS_ENABLED(q->flags)) {
++			qdisc->flags |= TCQ_F_ONETXQUEUE | TCQ_F_NOPARENT;
++			old = dev_graft_qdisc(qdisc->dev_queue, qdisc);
++			if (ntx < dev->real_num_tx_queues)
++				qdisc_hash_add(qdisc, false);
++		} else {
++			old = dev_graft_qdisc(qdisc->dev_queue, sch);
++			qdisc_refcount_inc(sch);
++		}
++		if (old)
++			qdisc_put(old);
++	}
++
++	/* access to the child qdiscs is not needed in offload mode */
++	if (FULL_OFFLOAD_IS_ENABLED(q->flags)) {
++		kfree(q->qdiscs);
++		q->qdiscs = NULL;
++	}
++}
++
+ static struct netdev_queue *taprio_queue_get(struct Qdisc *sch,
+ 					     unsigned long cl)
+ {
+@@ -1785,8 +1785,12 @@ static int taprio_graft(struct Qdisc *sch, unsigned long cl,
+ 	if (dev->flags & IFF_UP)
+ 		dev_deactivate(dev);
+ 
+-	*old = q->qdiscs[cl - 1];
+-	q->qdiscs[cl - 1] = new;
++	if (FULL_OFFLOAD_IS_ENABLED(q->flags)) {
++		*old = dev_graft_qdisc(dev_queue, new);
++	} else {
++		*old = q->qdiscs[cl - 1];
++		q->qdiscs[cl - 1] = new;
++	}
+ 
+ 	if (new)
+ 		new->flags |= TCQ_F_ONETXQUEUE | TCQ_F_NOPARENT;
+@@ -2020,6 +2024,7 @@ static struct Qdisc_ops taprio_qdisc_ops __read_mostly = {
+ 	.change		= taprio_change,
+ 	.destroy	= taprio_destroy,
+ 	.reset		= taprio_reset,
++	.attach		= taprio_attach,
+ 	.peek		= taprio_peek,
+ 	.dequeue	= taprio_dequeue,
+ 	.enqueue	= taprio_enqueue,
+-- 
+2.17.1
 
