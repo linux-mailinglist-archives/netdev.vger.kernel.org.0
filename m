@@ -2,75 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A73CD375D6E
-	for <lists+netdev@lfdr.de>; Fri,  7 May 2021 01:30:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0E1EA375D75
+	for <lists+netdev@lfdr.de>; Fri,  7 May 2021 01:32:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232314AbhEFXbS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 6 May 2021 19:31:18 -0400
-Received: from mail.kernel.org ([198.145.29.99]:52066 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232023AbhEFXbJ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 6 May 2021 19:31:09 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id B86A8613C5;
-        Thu,  6 May 2021 23:30:10 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1620343810;
-        bh=x7/wx9HWRSPKx/bubp51BiTSg6K5xZJp6IGBy1QwZ6g=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=cNv5RTpwcaCORdDmRcX7HWzV789/KnbWU+l+30TIl6W7rLLuxLBtGbwknf8nxPXHa
-         Jun2h/aQs5eK1i0BNWk3C2OG2m7rMvQPwa1Q13fechXhVeCiSGlBTT6UGV3xQLquk2
-         AUvR+A4qtMUf3okHm0O+ElPAv07z+AJolgRlwKJKEze48oMssGvVvN8kSrNVBejk4E
-         /eetjrjek5kGoS3XqypqDVvlaj2i4aeEyJ9Eu2asUGw1Zh/9iv+EaUq6QVRAxHMZ9c
-         kDUzDAKjNt16wemdxJQI0JtNpHCyeFzhmroKJGuE4Ioj49RhPaY6gp3vuTvjh9Xc51
-         D2WCehOjbSrAg==
-Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id B34D5609E8;
-        Thu,  6 May 2021 23:30:10 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        id S232410AbhEFXc6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 6 May 2021 19:32:58 -0400
+Received: from www62.your-server.de ([213.133.104.62]:33950 "EHLO
+        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231976AbhEFXc5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 6 May 2021 19:32:57 -0400
+Received: from sslproxy05.your-server.de ([78.46.172.2])
+        by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92.3)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1lenTG-0002pG-OF; Fri, 07 May 2021 01:31:54 +0200
+Received: from [85.7.101.30] (helo=linux.home)
+        by sslproxy05.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1lenTG-000KXC-G4; Fri, 07 May 2021 01:31:54 +0200
+Subject: Re: [PATCH] bpf: Forbid trampoline attach for functions with variable
+ arguments
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>,
+        Jiri Olsa <jolsa@kernel.org>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Andrii Nakryiko <andriin@fb.com>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>
+References: <20210505132529.401047-1-jolsa@kernel.org>
+ <CAEf4BzazQgrPVqKOGP8z=MPZhjZHCZDdcWQB0xBuudXbxXwaXg@mail.gmail.com>
+From:   Daniel Borkmann <daniel@iogearbox.net>
+Message-ID: <c21b54a6-8d6e-f76d-e6c1-95abd8544d9d@iogearbox.net>
+Date:   Fri, 7 May 2021 01:31:54 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: pull-request: can 2021-05-06
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <162034381072.14975.11606577164704929804.git-patchwork-notify@kernel.org>
-Date:   Thu, 06 May 2021 23:30:10 +0000
-References: <20210506074015.1300591-1-mkl@pengutronix.de>
-In-Reply-To: <20210506074015.1300591-1-mkl@pengutronix.de>
-To:     Marc Kleine-Budde <mkl@pengutronix.de>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
-        linux-can@vger.kernel.org, kernel@pengutronix.de
+In-Reply-To: <CAEf4BzazQgrPVqKOGP8z=MPZhjZHCZDdcWQB0xBuudXbxXwaXg@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.103.2/26162/Thu May  6 13:11:07 2021)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
-
-This pull request was applied to netdev/net.git (refs/heads/master):
-
-On Thu,  6 May 2021 09:40:11 +0200 you wrote:
-> Hello Jakub, hello David,
+On 5/5/21 8:45 PM, Andrii Nakryiko wrote:
+> On Wed, May 5, 2021 at 6:42 AM Jiri Olsa <jolsa@kernel.org> wrote:
+>>
+>> We can't currently allow to attach functions with variable arguments.
+>> The problem is that we should save all the registers for arguments,
+>> which is probably doable, but if caller uses more than 6 arguments,
+>> we need stack data, which will be wrong, because of the extra stack
+>> frame we do in bpf trampoline, so we could crash.
+>>
+>> Also currently there's malformed trampoline code generated for such
+>> functions at the moment as described in:
+>>    https://lore.kernel.org/bpf/20210429212834.82621-1-jolsa@kernel.org/
+>>
+>> Signed-off-by: Jiri Olsa <jolsa@kernel.org>
+>> ---
 > 
-> this is a pull request of 4 patches for net/master.
+> LGTM.
 > 
-> The first two patches target the mcp251xfd driver. Dan Carpenter's
-> patch fixes a NULL pointer dereference in the probe function's error
-> path. A patch by me adds the missing can_rx_offload_del() in error
-> path of the probe function.
+> Acked-by: Andrii Nakryiko <andrii@kernel.org>
 > 
-> [...]
+>>   kernel/bpf/btf.c | 13 +++++++++++++
+>>   1 file changed, 13 insertions(+)
+>>
+>> diff --git a/kernel/bpf/btf.c b/kernel/bpf/btf.c
+>> index 0600ed325fa0..161511bb3e51 100644
+>> --- a/kernel/bpf/btf.c
+>> +++ b/kernel/bpf/btf.c
+>> @@ -5206,6 +5206,13 @@ int btf_distill_func_proto(struct bpf_verifier_log *log,
+>>          m->ret_size = ret;
+>>
+>>          for (i = 0; i < nargs; i++) {
+>> +               if (i == nargs - 1 && args[i].type == 0) {
+>> +                       bpf_log(log,
+>> +                               "The function %s with variable args is unsupported.\n",
+>> +                               tname);
+>> +                       return -EINVAL;
+>> +
 
-Here is the summary with links:
-  - pull-request: can 2021-05-06
-    https://git.kernel.org/netdev/net/c/9f3c3b423567
-  - [net,2/4] can: mcp251xfd: mcp251xfd_probe(): add missing can_rx_offload_del() in error path
-    https://git.kernel.org/netdev/net/c/4376ea42db8b
-  - [net,3/4] can: mcp251x: fix resume from sleep before interface was brought up
-    https://git.kernel.org/netdev/net/c/03c427147b2d
-  - [net,4/4] can: m_can: m_can_tx_work_queue(): fix tx_skb race condition
-    https://git.kernel.org/netdev/net/c/e04b2cfe6107
+(Jiri, fyi, I removed this extra newline while applying. Please scan for such
+things before submitting.)
 
-You are awesome, thank you!
---
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
+>> +               }
+>>                  ret = __get_type_size(btf, args[i].type, &t);
+>>                  if (ret < 0) {
+>>                          bpf_log(log,
+>> @@ -5213,6 +5220,12 @@ int btf_distill_func_proto(struct bpf_verifier_log *log,
+>>                                  tname, i, btf_kind_str[BTF_INFO_KIND(t->info)]);
+>>                          return -EINVAL;
+>>                  }
+>> +               if (ret == 0) {
+>> +                       bpf_log(log,
+>> +                               "The function %s has malformed void argument.\n",
+>> +                               tname);
+>> +                       return -EINVAL;
+>> +               }
+>>                  m->arg_size[i] = ret;
+>>          }
+>>          m->nr_args = nargs;
+>> --
+>> 2.30.2
+>>
 
