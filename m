@@ -2,118 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CD677374E4B
-	for <lists+netdev@lfdr.de>; Thu,  6 May 2021 06:17:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6E150374E4D
+	for <lists+netdev@lfdr.de>; Thu,  6 May 2021 06:19:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231283AbhEFESJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 6 May 2021 00:18:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52348 "EHLO
+        id S231852AbhEFETy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 6 May 2021 00:19:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52730 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229622AbhEFESI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 6 May 2021 00:18:08 -0400
-Received: from mail-pf1-x430.google.com (mail-pf1-x430.google.com [IPv6:2607:f8b0:4864:20::430])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 98F4AC061574;
-        Wed,  5 May 2021 21:17:11 -0700 (PDT)
-Received: by mail-pf1-x430.google.com with SMTP id k19so4189240pfu.5;
-        Wed, 05 May 2021 21:17:11 -0700 (PDT)
+        with ESMTP id S229622AbhEFETy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 6 May 2021 00:19:54 -0400
+Received: from mail-pl1-x62e.google.com (mail-pl1-x62e.google.com [IPv6:2607:f8b0:4864:20::62e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BC09FC061574
+        for <netdev@vger.kernel.org>; Wed,  5 May 2021 21:18:55 -0700 (PDT)
+Received: by mail-pl1-x62e.google.com with SMTP id y2so2728456plr.5
+        for <netdev@vger.kernel.org>; Wed, 05 May 2021 21:18:55 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:mime-version:content-disposition;
-        bh=cUcH8PCyuKxxWH0B21SELBwroBtwWU2e6ZCH9Q1x7rE=;
-        b=rp9odEzzlhnx82O9YcW7k9uR9NfXdvb8wb3fXQaAUW/G7/OCn0xVyOc+rSHAWTCy0x
-         L8wkrb3OuMMIuFtrNFY6YqiGj+w31uHljZ22HNp6nADLSBPoDdCb0fjFBQrig2DRGNNR
-         z650tScq37rJkRw5OB7QjC02w+qHh2nSCYD8gt12iXvTXS9DApBoJ2xMQPtovv3Hll1/
-         oHDnc1/zjNvo7Ea3VI/3lm2PR1BCzlBIhoEUbWU4a0nBqSZxap8U0kMwu+b/x3iu5TIu
-         D1r85ZZ5jEUFuDWTElSv4mOvLs5b7oAHNpfBkt/2KJDlvsThNFHHIZo/UsPnJhF57+At
-         xjww==
+        d=pensando.io; s=google;
+        h=from:to:cc:subject:date:message-id;
+        bh=C4KhZ3DrUUzWqJZEQziV98f6gtuOT6tZYyDzY1e0Zac=;
+        b=rXegKbmoxZF0za8v0uTAdaq4pYRplqlmCKfAwKKAw9JyYo2AzNOerCFk324WNx0sSU
+         VFUK3hDQ43ACol17uZgVX8npt959gTY+qufEKx74LuWERlbQK4xnz+CdVrgrTVDFx7l6
+         vD7bG8xbSbNlC/KZa48fOmsZ9OPL4mr7lMjpvILfHQgWCn7PTD/V2WLliqYAfDL0h1sM
+         9KCFw0DSb7Hzn1QdiUettOcs/LWWlWIbVyZOKESpo3eorbn+fttiqxsqcM5kGeb/2JKy
+         Dh2/EInLbRWe2dqUAaRF7YHx8r0RR3xiYoqjlYsgVFYVl03nglEi55U5i1GbIcy3StZt
+         Hzdw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
-         :content-disposition;
-        bh=cUcH8PCyuKxxWH0B21SELBwroBtwWU2e6ZCH9Q1x7rE=;
-        b=dXoMVZyN0dBi2TeoJmXsvmb99WlvWxL/UBkQxOfFJoyILfKVvqKk+dHo4IsUjk8kN4
-         CMWWZALYId6dwiBVT1k1erw4Ci8thtu3AYFQQ9beg8K1ROHe1tsAC+G2cj+lqw93wNDI
-         ko489SndFiVSz6XJBPEFe6BfpQupFnFFrvTxGdAv80UB9Y9Cue4b7CTQjCtrvF6TuSRH
-         43TBk7Nl3eEHpbwSi42qS4bv3T3NxowIBV+0sHaoRaagl//HpmVmOZS+iWdUHJ8GKYP3
-         YtZkLMtp8rKAnzl0aSDF0JNppDQsXgZ8RhPqlQI+qyGjceAMqObZnpKfOA4b56PJMSXm
-         TZLQ==
-X-Gm-Message-State: AOAM531H4N9XWR4+9oV36S7fr1680Cpzb8HSvdnFTIC1OAVfalosZgpY
-        eLIyu58Vp4TKN4o13bIjk0O5mCapNA8=
-X-Google-Smtp-Source: ABdhPJxWiCMxR3OdZ8ocwtGr+7peeUVDXrYe/IuxOxB3UAgxPnUzqRhQM1QGrXneL5YZIbXVcbAd9g==
-X-Received: by 2002:a62:ee09:0:b029:211:1113:2e7c with SMTP id e9-20020a62ee090000b029021111132e7cmr2262101pfi.49.1620274630665;
-        Wed, 05 May 2021 21:17:10 -0700 (PDT)
-Received: from user ([2001:4490:4409:27b0:f9dc:322b:84de:6680])
-        by smtp.gmail.com with ESMTPSA id m188sm672343pfm.167.2021.05.05.21.17.07
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=C4KhZ3DrUUzWqJZEQziV98f6gtuOT6tZYyDzY1e0Zac=;
+        b=uL8VxH7wN9GI10AKFXALe0TektEKcDMC8Aae7YObd9g1/BJx+SkZ8CJeMXJy5YoZNY
+         NNpV4em8lAkiZ9E40YM/rXf2zBLhqBGFvY2sqSZ5my2aeQNZ8v2C+NGmNLksJZzJRKjm
+         CpwsjlC40vX5l6jeBFllCOmiAmJEzMlHwAj8HFDiE4BfVU4tR1k3tZWI/wjBSA2ZFahW
+         6Hj8nK0/Qm+FLwNIphoR4TE1HDvexWmbdbF7pY89supqIU48qIylnX3Vcs6C+YJ+OyxS
+         y2VWbFyCx5yr2onLoU1adD8YueysxhI8CU3KfF26TngTNIL4BM6YSXEJLalNBEimh0xJ
+         kYZQ==
+X-Gm-Message-State: AOAM530FmYGV95ZpgU/Az32WaYuaTBj4Y9QOX16k1abM0JaFn4fdBMOX
+        H8mF8zHbU5gIbegenfPbX1UTo1ordB5vvg==
+X-Google-Smtp-Source: ABdhPJzo/ZUmWPOyW75bHYiJPX0/N3lTfcbImmVdwKMzVm+h/bvpBa35i4TtE+uVLChBJ+NTn4vSMA==
+X-Received: by 2002:a17:902:e9d1:b029:ed:1bde:8e4 with SMTP id 17-20020a170902e9d1b02900ed1bde08e4mr2662412plk.6.1620274735096;
+        Wed, 05 May 2021 21:18:55 -0700 (PDT)
+Received: from driver-dev1.pensando.io ([12.226.153.42])
+        by smtp.gmail.com with ESMTPSA id i126sm674177pfc.20.2021.05.05.21.18.54
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 05 May 2021 21:17:09 -0700 (PDT)
-Date:   Thu, 6 May 2021 09:47:03 +0530
-From:   Saurav Girepunje <saurav.girepunje@gmail.com>
-To:     johannes@sipsolutions.net, davem@davemloft.net, kuba@kernel.org,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     saurav.girepunje@hotmail.com
-Subject: [PATCH] net: mac80211: remove unused local variable
-Message-ID: <20210506041703.GA5681@user>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+        Wed, 05 May 2021 21:18:54 -0700 (PDT)
+From:   Shannon Nelson <snelson@pensando.io>
+To:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org
+Cc:     drivers@pensando.io, Shannon Nelson <snelson@pensando.io>,
+        Allen Hubbe <allenbh@pensando.io>
+Subject: [PATCH v3 net] ionic: fix ptp support config breakage
+Date:   Wed,  5 May 2021 21:18:46 -0700
+Message-Id: <20210506041846.62502-1-snelson@pensando.io>
+X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In ieee80211_process_addba_request() first argument is never
-used.
+Driver link failed with undefined references in some
+kernel config variations.
 
-Signed-off-by: Saurav Girepunje <saurav.girepunje@gmail.com>
+Fixes: 61db421da31b ("ionic: link in the new hw timestamp code")
+Reported-by: kernel test robot <lkp@intel.com>
+Cc: Allen Hubbe <allenbh@pensando.io>
+Signed-off-by: Shannon Nelson <snelson@pensando.io>
 ---
- net/mac80211/agg-rx.c      | 3 +--
- net/mac80211/ieee80211_i.h | 3 +--
- net/mac80211/iface.c       | 4 ++--
- 3 files changed, 4 insertions(+), 6 deletions(-)
 
-diff --git a/net/mac80211/agg-rx.c b/net/mac80211/agg-rx.c
-index cce28e3b2232..3075570e7968 100644
---- a/net/mac80211/agg-rx.c
-+++ b/net/mac80211/agg-rx.c
-@@ -471,8 +471,7 @@ static void __ieee80211_start_rx_ba_session(struct sta_info *sta,
- 	mutex_unlock(&sta->ampdu_mlme.mtx);
+v3 - put version notes below ---, added Allen's Cc
+v2 - added Fixes tag
+
+ drivers/net/ethernet/pensando/ionic/Makefile    | 3 +--
+ drivers/net/ethernet/pensando/ionic/ionic_phc.c | 3 +++
+ 2 files changed, 4 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/net/ethernet/pensando/ionic/Makefile b/drivers/net/ethernet/pensando/ionic/Makefile
+index 4e7642a2d25f..61c40169cb1f 100644
+--- a/drivers/net/ethernet/pensando/ionic/Makefile
++++ b/drivers/net/ethernet/pensando/ionic/Makefile
+@@ -5,5 +5,4 @@ obj-$(CONFIG_IONIC) := ionic.o
+ 
+ ionic-y := ionic_main.o ionic_bus_pci.o ionic_devlink.o ionic_dev.o \
+ 	   ionic_debugfs.o ionic_lif.o ionic_rx_filter.o ionic_ethtool.o \
+-	   ionic_txrx.o ionic_stats.o ionic_fw.o
+-ionic-$(CONFIG_PTP_1588_CLOCK) += ionic_phc.o
++	   ionic_txrx.o ionic_stats.o ionic_fw.o ionic_phc.o
+diff --git a/drivers/net/ethernet/pensando/ionic/ionic_phc.c b/drivers/net/ethernet/pensando/ionic/ionic_phc.c
+index a87c87e86aef..30c78808c45a 100644
+--- a/drivers/net/ethernet/pensando/ionic/ionic_phc.c
++++ b/drivers/net/ethernet/pensando/ionic/ionic_phc.c
+@@ -1,6 +1,8 @@
+ // SPDX-License-Identifier: GPL-2.0
+ /* Copyright(c) 2017 - 2021 Pensando Systems, Inc */
+ 
++#if IS_ENABLED(CONFIG_PTP_1588_CLOCK)
++
+ #include <linux/netdevice.h>
+ #include <linux/etherdevice.h>
+ 
+@@ -613,3 +615,4 @@ void ionic_lif_free_phc(struct ionic_lif *lif)
+ 	devm_kfree(lif->ionic->dev, lif->phc);
+ 	lif->phc = NULL;
  }
-
--void ieee80211_process_addba_request(struct ieee80211_local *local,
--				     struct sta_info *sta,
-+void ieee80211_process_addba_request(struct sta_info *sta,
- 				     struct ieee80211_mgmt *mgmt,
- 				     size_t len)
- {
-diff --git a/net/mac80211/ieee80211_i.h b/net/mac80211/ieee80211_i.h
-index 8fcbaa1eedf3..9e3e5aaddaf6 100644
---- a/net/mac80211/ieee80211_i.h
-+++ b/net/mac80211/ieee80211_i.h
-@@ -1859,8 +1859,7 @@ void ieee80211_process_addba_resp(struct ieee80211_local *local,
- 				  struct sta_info *sta,
- 				  struct ieee80211_mgmt *mgmt,
- 				  size_t len);
--void ieee80211_process_addba_request(struct ieee80211_local *local,
--				     struct sta_info *sta,
-+void ieee80211_process_addba_request(struct sta_info *sta,
- 				     struct ieee80211_mgmt *mgmt,
- 				     size_t len);
-
-diff --git a/net/mac80211/iface.c b/net/mac80211/iface.c
-index 7032a2b59249..4fe599bf9f9c 100644
---- a/net/mac80211/iface.c
-+++ b/net/mac80211/iface.c
-@@ -1351,8 +1351,8 @@ static void ieee80211_iface_work(struct work_struct *work)
- 			if (sta) {
- 				switch (mgmt->u.action.u.addba_req.action_code) {
- 				case WLAN_ACTION_ADDBA_REQ:
--					ieee80211_process_addba_request(
--							local, sta, mgmt, len);
-+					ieee80211_process_addba_request(sta,
-+									mgmt, len);
- 					break;
- 				case WLAN_ACTION_ADDBA_RESP:
- 					ieee80211_process_addba_resp(local, sta,
---
-2.25.1
++#endif /* IS_ENABLED(CONFIG_PTP_1588_CLOCK) */
+-- 
+2.17.1
 
