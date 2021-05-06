@@ -2,266 +2,202 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6D928374EC6
-	for <lists+netdev@lfdr.de>; Thu,  6 May 2021 07:06:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 78BF6374ED6
+	for <lists+netdev@lfdr.de>; Thu,  6 May 2021 07:20:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230294AbhEFFHs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 6 May 2021 01:07:48 -0400
-Received: from mail-eopbgr150070.outbound.protection.outlook.com ([40.107.15.70]:58678
-        "EHLO EUR01-DB5-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S229562AbhEFFHq (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 6 May 2021 01:07:46 -0400
+        id S232712AbhEFFVw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 6 May 2021 01:21:52 -0400
+Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:26204 "EHLO
+        mx0b-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S229622AbhEFFVv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 6 May 2021 01:21:51 -0400
+Received: from pps.filterd (m0109332.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 1465EMh8020801;
+        Wed, 5 May 2021 22:20:33 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=date : from : to : cc :
+ subject : message-id : references : content-type : in-reply-to :
+ content-transfer-encoding : mime-version; s=facebook;
+ bh=1qMYZueYU7w3ZqKEKX0EYTOPmWEDY3wKkuX8+k9W4e8=;
+ b=oqiJa96CNOvD35ioYlPQBkTFakkKsKpEUprwxVXOxH4csukX4HW8TRp0F0GcbR2xKMOX
+ 7fwn0a15/n1oyA2ZcB94swYX6nd4a1b22H98Hqc8n0b6YTl2SjSA86cn9Rc/RU+mB1hP
+ oTTji1vxB2DYtekzuYxx5FhpxsBeaHiCAPk= 
+Received: from maileast.thefacebook.com ([163.114.130.16])
+        by mx0a-00082601.pphosted.com with ESMTP id 38bedqyy9v-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
+        Wed, 05 May 2021 22:20:33 -0700
+Received: from NAM02-BN1-obe.outbound.protection.outlook.com (100.104.31.183)
+ by o365-in.thefacebook.com (100.104.36.101) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2176.2; Wed, 5 May 2021 22:20:32 -0700
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=BR0WqujsLoRN7RkiLGtaU5VOhYLR1Yk2M1y8Nt3cnKJQygpTdU5laMe732UEYkk3HHEncq0MbYEETXiJgqps9aqmGWw0hOhA/mnvej11eIbi/k3DfHWtUBJ2m8yuDeh4MPJPswvOCkjE2eb8LebVyHxmyHBKGYWDmddcfg5XjNbETyuhxh3G6hAmcCDLIyxP8l7aC3kyVfuE1lvq7+nKyDSNyVSguN7VpYF6P8tb7pIk0rxDvy9X2bnuC6CpDRiC0zFRGPhrrPLfsaHezZ4fBe3cC9WQbwf4FmeGOKqWPLvgZkgRGcHZzFV7tpnvXgMA+0uYmc2uFQI9+mvRE8wdwA==
+ b=TJin1cNfYVGYgsXrdKXo+3XmCF3Mpm09vrjpt/6UjT3E4pgSi9lCptsvxv5KsbRmVYuqyINo53rLnrvE3Xz3cYtHIfjkFTFTzH2xWzZBWr+YMgzbNJ40ESz/uvqhDbqV1sSBlGnF2YP+EElUU2PWCf7k4e9+d2J7o5l19EWnsIVFPjmK3YRcGjv0pDJKOB7g5DQVdXFxjj7wI2/Bf34F6iF4B/+MfvS0/fgKzZfg/49yTGkGd3xwDzKMg4ywSORfcCHWsQ1I304ngZeH4YPpK31YYSGukGZ5bk5fVvcsI44VS9dgKCYV1o/n1po98FWPRBhAJ6eoC064PPu00/uoaA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=TLL1z06Fsdjj21dhD1TXEFI2ldYzFLSzFCYLpLWe2dw=;
- b=gq/rFOZ8oRxfK/aLFhHriJJ1Ig8dGo1D+2PRYNZMnSxAuqfPepji45zEnHm74aTK9EJIrCZSQSk16QdR0X5OYvv0DvNSQe5dCNqvt2t80PUN1Rbdh0kiKUzHzoFYra7u8rfqkcnorE4PV2vXeyZPtJ5lRN+S9R2EC9psF6pAq2PJn6QdWQKJipJsHEtjKAmR6ewx7SHR7pooRoNG6sZ5Hopn3A+X41k0NOfibNk8JbGkri2hoJt/2OY5PUryfXd3dDarHTU9ouCK+ujallLIItZ42QrpB/3wodr2DwpP/B4YvwfBbpTVS/cAU2PYLpRSdYak5ZC22Qd5xnn2swB6ZQ==
+ bh=iv6F55c7aVrtS+LvourjSfgOWSH3rM82vJiP2EQRw+k=;
+ b=FTbkzDSXcdoGfszbLupcCMiptD2ne1tHYomfnwU1lGXuijw4iE2oit+sBpSiQFacVKIPGvnlxWH4eUDPD91zL9wHpjJ8ejakaCaVVEeHqYWgxptOgaAt06aVp17IwxGsFgxULhWEze7+SxybWmFpWDqjlsfGUmTRYAWLY/dLYqv6XX7SpFU+uUtdZaSo9FIpSXig+rLdi7I/nYfrug57GZbYacO9RWcyVVg+qkjlEtnJmcDqWrlSJfMlc19ZXLKx8I+dQokgBGb6Lj6faVyR6XDoHXnJlneqt9d22NCaFEGkr1smqlAxcXqQm30rXo9wLMU3RPER33lImuRpM2f6rA==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=TLL1z06Fsdjj21dhD1TXEFI2ldYzFLSzFCYLpLWe2dw=;
- b=nX3qGvI1MWXNPzrJLzw/Io9EEUlIQFWHKcuev+WT5segPnf5AHeAp77Gz/LfqvVog2Z15XSWnNiaqU6fmAQh9hWpWfNLZ3niAWyhS/wbWvlvmxJbMmfQT+bV0wTBGkL7Lb5TyAmp0HmDOQ5GPRcvsperFcquv68eN5uoCwEfMLQ=
-Authentication-Results: st.com; dkim=none (message not signed)
- header.d=none;st.com; dmarc=none action=none header.from=nxp.com;
-Received: from DB8PR04MB6795.eurprd04.prod.outlook.com (2603:10a6:10:fa::15)
- by DB3PR0402MB3706.eurprd04.prod.outlook.com (2603:10a6:8:5::13) with
+ smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
+ header.d=fb.com; arc=none
+Authentication-Results: suse.de; dkim=none (message not signed)
+ header.d=none;suse.de; dmarc=none action=none header.from=fb.com;
+Received: from BY5PR15MB3571.namprd15.prod.outlook.com (2603:10b6:a03:1f6::32)
+ by BYAPR15MB2887.namprd15.prod.outlook.com (2603:10b6:a03:f9::17) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4087.44; Thu, 6 May
- 2021 05:06:46 +0000
-Received: from DB8PR04MB6795.eurprd04.prod.outlook.com
- ([fe80::3400:b139:f681:c8cf]) by DB8PR04MB6795.eurprd04.prod.outlook.com
- ([fe80::3400:b139:f681:c8cf%9]) with mapi id 15.20.4108.025; Thu, 6 May 2021
- 05:06:46 +0000
-From:   Joakim Zhang <qiangqing.zhang@nxp.com>
-To:     peppe.cavallaro@st.com, alexandre.torgue@st.com,
-        joabreu@synopsys.com, davem@davemloft.net, kuba@kernel.org,
-        f.fainelli@gmail.com, andrew@lunn.ch
-Cc:     Jisheng.Zhang@synaptics.com, netdev@vger.kernel.org,
-        linux-imx@nxp.com
-Subject: [PATCH V4 net] net: stmmac: Fix MAC WoL not working if PHY does not support WoL
-Date:   Thu,  6 May 2021 13:06:58 +0800
-Message-Id: <20210506050658.9624-1-qiangqing.zhang@nxp.com>
-X-Mailer: git-send-email 2.17.1
-Content-Type: text/plain
-X-Originating-IP: [119.31.174.71]
-X-ClientProxiedBy: SGXP274CA0016.SGPP274.PROD.OUTLOOK.COM (2603:1096:4:b8::28)
- To DB8PR04MB6795.eurprd04.prod.outlook.com (2603:10a6:10:fa::15)
-MIME-Version: 1.0
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4087.43; Thu, 6 May
+ 2021 05:20:30 +0000
+Received: from BY5PR15MB3571.namprd15.prod.outlook.com
+ ([fe80::718a:4142:4c92:732f]) by BY5PR15MB3571.namprd15.prod.outlook.com
+ ([fe80::718a:4142:4c92:732f%6]) with mapi id 15.20.4108.026; Thu, 6 May 2021
+ 05:20:29 +0000
+Date:   Wed, 5 May 2021 22:20:26 -0700
+From:   Martin KaFai Lau <kafai@fb.com>
+To:     Michal =?utf-8?B?U3VjaMOhbmVr?= <msuchanek@suse.de>
+CC:     Jiri Slaby <jirislaby@kernel.org>, Jiri Olsa <jolsa@redhat.com>,
+        Yonghong Song <yhs@fb.com>, <linux-kernel@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        David Ahern <dsahern@kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Song Liu <songliubraving@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>, <netdev@vger.kernel.org>,
+        <bpf@vger.kernel.org>, Jiri Olsa <jolsa@kernel.org>,
+        Jesper Dangaard Brouer <brouer@redhat.com>
+Subject: Re: linux-next failing build due to missing cubictcp_state symbol
+Message-ID: <20210506052026.z5zwxnr453bqlsju@kafai-mbp.dhcp.thefacebook.com>
+References: <20210423175528.GF6564@kitsune.suse.cz>
+ <20210425111545.GL15381@kitsune.suse.cz>
+ <20210426113215.GM15381@kitsune.suse.cz>
+ <20210426121220.GN15381@kitsune.suse.cz>
+ <20210426121401.GO15381@kitsune.suse.cz>
+ <49f84147-bf32-dc59-48e0-f89241cf6264@fb.com>
+ <YIbkR6z6mxdNSzGO@krava>
+ <YIcRlHQWWKbOlcXr@krava>
+ <20210505135612.GZ6564@kitsune.suse.cz>
+ <5a225970-32a2-1617-b264-bc40a2179618@kernel.org>
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Disposition: inline
+In-Reply-To: <5a225970-32a2-1617-b264-bc40a2179618@kernel.org>
+X-Originating-IP: [2620:10d:c090:400::5:910f]
+X-ClientProxiedBy: MW4PR04CA0154.namprd04.prod.outlook.com
+ (2603:10b6:303:85::9) To BY5PR15MB3571.namprd15.prod.outlook.com
+ (2603:10b6:a03:1f6::32)
 X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from localhost.localdomain (119.31.174.71) by SGXP274CA0016.SGPP274.PROD.OUTLOOK.COM (2603:1096:4:b8::28) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4108.25 via Frontend Transport; Thu, 6 May 2021 05:06:43 +0000
+Received: from kafai-mbp.dhcp.thefacebook.com (2620:10d:c090:400::5:910f) by MW4PR04CA0154.namprd04.prod.outlook.com (2603:10b6:303:85::9) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4108.25 via Frontend Transport; Thu, 6 May 2021 05:20:28 +0000
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 4e21fd0b-f2a9-4ac4-4a07-08d9104cbf31
-X-MS-TrafficTypeDiagnostic: DB3PR0402MB3706:
+X-MS-Office365-Filtering-Correlation-Id: a4afefd7-ce58-4fce-2e7a-08d9104ea9e7
+X-MS-TrafficTypeDiagnostic: BYAPR15MB2887:
 X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <DB3PR0402MB3706DC7744778643C52FB21AE6589@DB3PR0402MB3706.eurprd04.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:1079;
+X-Microsoft-Antispam-PRVS: <BYAPR15MB28871DAE1B29510CAD1F181DD5589@BYAPR15MB2887.namprd15.prod.outlook.com>
+X-FB-Source: Internal
+X-MS-Oob-TLC-OOBClassifiers: OLM:6790;
 X-MS-Exchange-SenderADCheck: 1
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: wrsERhQ0p8dxqfPsLHJpyk733NuRC5mlWa2JPqYvW4vQzPBKAjdh0Hb9CiDGaJBT5K71JdeDjDcrDxl5ifK+h2GxQuS/k+sL1WQJfte+DqOrk/c+EAnIrBMV5TmEq3bfdWpQ/NY8XRpIPcennA++UidGHVAMvmTdnWQPCVD9lRAzmJFHF1/wwK9F85StR2cM7+PCcGlW9Sg76zdRJKhTm76EeSCNnmRe2BIdCyWpyiw3kjZ1y5vaDsiqZ3UWUlu/AifVW/UNI4ztdRPoU7IDAhHEogC0znxwoNWLh30o3jm5F42LePW2HJwXzaTtqLjdI3A/yzKna913UxMtYBSdgPJFYlgAugSvw8j8m0JcPrdY7pYrZRx0gcoIcrCPd2/vnEStO2GRq0iNVBn6u/ESZLFsdicY0F4WSECMcKyypAjIiV7IEmdJnCTbuwxB7qfSnETUP6zZHbzv1zkJ6BPFPj7vLzEyicbaXx3/SyfkK938s2g3XLDPrwjbv70qkeSj4nbDGjdWH0al6i5acmuYdwDZb9//FZ1H4LMo3obPT3wdlNQ+CBOcBvpS2b++9HraYzBchf3t1iyAWwu0rtuhkSc1bPMBiQyoF9fvWyH7SpuO5z7McMYTC/EBYS3O1pzrulDq+KwsfnuMl3ny/Se9Kee6AoD0KsU+iBn93HsOpC9DUkB7lKBcOrkyxg28ZNBLhz+ZLnMPKljorFrBVZwXXw==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DB8PR04MB6795.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(39860400002)(346002)(396003)(376002)(366004)(136003)(36756003)(52116002)(38350700002)(6666004)(38100700002)(86362001)(5660300002)(8676002)(4326008)(16526019)(2616005)(186003)(956004)(1076003)(6512007)(6506007)(83380400001)(316002)(478600001)(66946007)(66476007)(2906002)(26005)(6486002)(8936002)(66556008)(69590400013)(309714004);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData: =?us-ascii?Q?oFFTnw3QVlXh3geqyhslaUhTRNy9C8b7GZpDXQIrXo94q4BepXPNZ5I+LBmg?=
- =?us-ascii?Q?dW8pprO5zMNVD1Vo5ANwYXUgwVtB7PPPWAV3uKbjwoC3hdQSP7k8+8QDky4Z?=
- =?us-ascii?Q?1180iODxdV6u0qq8E/kaO2WspFO/aivzi9CIaXTelJgfDCkupDTGAl5LMkAZ?=
- =?us-ascii?Q?hm/sRtp2kXes15sfzXWMO22/RIF2HTyQT2oYeH6Va7x+d/NRLTjmFJjLwh7D?=
- =?us-ascii?Q?8/hw+uNprB9x9bqizxB2yIGGwmn7XHkcpKcQIff1lIgrUMzrps7ez/FXUwsE?=
- =?us-ascii?Q?6k3N4CtPVt3LfqkzSZr/rOx0i2y8SidfCia760l5vx4ioYspn4m1eWsnIg5I?=
- =?us-ascii?Q?cUkxXYLwBnD2pU+0c+7ie+n1zo1KQp4jNjyYLyXkZSc4f9u8mdCJPVbklQjY?=
- =?us-ascii?Q?KrVYIzNjSQykqXLm8Nv2fQx6M5vvv+TymWbDTO9ZJ1BwSU2Ikz941MUU3/Gk?=
- =?us-ascii?Q?pfo6Tj87p9s1wqSfjKdi+s/K7hQYWDkeZs1sgvsevOwYHFcdyxH+uODv46W4?=
- =?us-ascii?Q?1iT2fRvefCKp5lkzA62WA5HBVV9b6HoRUIZcVp8wg0x9reIGhbp3ulPcTKEY?=
- =?us-ascii?Q?PepYR917fo6K5ir6w3El1ajrognHPdMALAdqFejkG0pxwyrf7tAA9H4CvOK4?=
- =?us-ascii?Q?64md7U1OXpegXSaCmxQ9BqjsZDjPzeSAZGVYhhTRmQ0M6BsgtjK9LY8SBgBu?=
- =?us-ascii?Q?lyQXRljTVemG8OgxpqdbXc3RBP/PkdH2ZCTv/I7m0cm1clVbns/metEGXfGD?=
- =?us-ascii?Q?qgFiY73sj9kSnmVBW/bEtJD3hZv68Nl3YmGtpjZTxhzaw8eMH79hAmYwr/dN?=
- =?us-ascii?Q?A+QjhzP7NBAof4T019lC4/z3wl6VsJSR3lPCucDcFvAHJydGKh+oz34jldgt?=
- =?us-ascii?Q?Hh9FLmj5nG1oDqI5nOz/Slhy5Tm8ZANmNuX0yVF1a/YYbobMDon7jMs4vUSN?=
- =?us-ascii?Q?pokhght1VXPGilg47qYy7SLd0ftk0L2tIjlbZ8GbdOnXrzQ6i2KjJVon042C?=
- =?us-ascii?Q?5gkn9cS3dLeBJ+qvGzXK4wC0wjJIk7q1/BvwDPrX9h1rMK+qGFQMJTfA9OlE?=
- =?us-ascii?Q?cVkPLOWD9Ron0pUM73quK1ki6ZzckTT9fQxWtqbzi8vbgkGbQ5y/ptcPhCNw?=
- =?us-ascii?Q?cNMLwgFWRm/1oMA3h+vgpo9DaJXH+CJ2+cDQCkU60k6oGHd5T6iVEtMDwXh2?=
- =?us-ascii?Q?cdH7wjlPu/iwJRnVgsFES15aIH8AzS7Wn+Ri0+FeXW7nBXKC7NSyF8NtHnsr?=
- =?us-ascii?Q?rYZMNZ94a1V7b0GqIThtvXC8FkJg21LqbHDq96unp6+gB5kqZn1Vv7niK7hL?=
- =?us-ascii?Q?f3f5XOys34sap+dnfyt/TCLk?=
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 4e21fd0b-f2a9-4ac4-4a07-08d9104cbf31
-X-MS-Exchange-CrossTenant-AuthSource: DB8PR04MB6795.eurprd04.prod.outlook.com
+X-Microsoft-Antispam-Message-Info: b0D352h/cRGfd4LDvoxv8y4J/CJHDDEiRIX3G09tsEt5xke61rQnDeRJ9nbU+iFvuqOnVl27UIRbzKdIb8cOxdAJ7I3cAeB0XS0Dhgpd5+J/Fp0UlXjwDJzORQbLe9CbP0lk2FGN0wTxVgpq4Cs7DwxtnbWUTBIzdmfxZl6QcHNjh9nxh+9jA/G1XDu3eA/3sReX2U/joZvSuFLnMjRtsPRoKrlmDOeL3AaoV+AXjh0j+d10afRLTq5vAOkzimIs4Cmz+Kcoma8tRXI+Ueq3ocDnlFlZMGeHz57HNnby2+W9zzFPQ7yRJsKQxWJduXfMHvp0ZbWNnVou1ZAkPRYEl4M+buxP8kuFXe28Gm11AC0ol+OqobUQB8+p1GlW/xkEKLhjtsMe2fJQWYIx2/EhMiJx1xTMPgr59Gdm+XshqK6Z2/vXOT46VazlMZ09HhyKVe/U86AquLk8Kg4VOnkyWVUEHuylVO6MOpJY0RCQhbhW6GtRCSTfua44fE4RT46eyyC8Spf9hHe2d8Zh68rZdlykFptNKXlXGlxT7sPazQFvCQ5GX/M69oYFVhkoHBRvPD0DwrBuTVCFtXe0MXj2Ym7biB2xXbAsnfs8I+nOU97Bty0pKJ+BYeQ85hv7vULe+1s6uit3j3JL4pT7D/H8Bl4eZAHkM9v3dFryBKhaj1Y=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BY5PR15MB3571.namprd15.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(396003)(346002)(39860400002)(136003)(376002)(54906003)(52116002)(86362001)(66556008)(55016002)(66476007)(316002)(8936002)(7696005)(7416002)(9686003)(5660300002)(16526019)(478600001)(66946007)(66574015)(83380400001)(6916009)(53546011)(2906002)(1076003)(4326008)(186003)(6506007)(966005)(38100700002)(8676002);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData: =?iso-8859-1?Q?9rQuq+TOSS8GMrvuj0XL4cr8ZeS4d4S7R5C0RwU0VEJb+F9fUlP1dEXSxD?=
+ =?iso-8859-1?Q?5BFVf0nelzgrXCoYq5EV8yupft7ap8n2QrJTQOKXPH5VvxciWNUxzSUuNp?=
+ =?iso-8859-1?Q?y+k08Blfv7baJhE2eEAIJGacly59nTQgvg+Fl7nIgL6WjUBA8dvihIgIjg?=
+ =?iso-8859-1?Q?LBDZrgs5muSdJFeKoUvsAvod4koKQDAdtc8Xg6R585DM8mfazleB/auUQr?=
+ =?iso-8859-1?Q?CZ6fF36Y8tUhpHv8s8lH21WteNtoknOQx4IgcXPm5ldVWyZg898+q3TuG8?=
+ =?iso-8859-1?Q?UpQ9a1eEQDNzHkIRjZIU3mj0rpqQyFcXSWcKpPgRmuEOqGeIgmRs6hogCs?=
+ =?iso-8859-1?Q?qNRTxP5CtghftQgyUVAhuXaN+Wf4WNtfcSHFEOaGfuiXcxRmmqJT61fNbJ?=
+ =?iso-8859-1?Q?CCqoCRfSvyXAPrqSr4p/HTkNcf1TJ2nCLLIjPnm5N7SDvlZHS+vw0oxrh4?=
+ =?iso-8859-1?Q?fofxaEmmSWUC0nxxYg5SAWEuoCh3IZuKp8ebGflzqfyptr2QznDlFdV3VS?=
+ =?iso-8859-1?Q?yjXKE6beQJvCoWFlWie6sMN7uVcQRjlhdtcZj4q+UGg3PvlEvBEKluO+pG?=
+ =?iso-8859-1?Q?eFZ6xQw64jY25KNrkrb8DzBmcXPEv6vsyx7r6ZHKWLQ1k/G7BGoqGH+KL8?=
+ =?iso-8859-1?Q?jCD8cGGIij7JmsP66Y3o1r1AhChr4EknAfMxwwJ7m6sIJyn/Io2dR+Gecp?=
+ =?iso-8859-1?Q?7wNGHJHlZUvtyyyk743FbPDqKtq1sz4Sh4qrbIogPGRPmdeZGijS8Ie9QL?=
+ =?iso-8859-1?Q?SRIo42IsSKAm6/n0kPwlqs1fjYlGn9Z5q9a/iLtP4g7kdekuLMRVYMsfVx?=
+ =?iso-8859-1?Q?+lZ8KWTaHp1MLQT1L98cKQES9qbUoILCogaN1F08zTtMpZaDdm/WMs+EyX?=
+ =?iso-8859-1?Q?LCzSzkzNZlY/s0JYXyMk7dqYqOXY5z+ACf0mB2E5L0edlLpRvDv8BFUYOb?=
+ =?iso-8859-1?Q?8jx3UUUxOcupm5G8Ro71kDAmQSDQwgpsCQHlgyp14B/QT1SkLJCaeoGaVb?=
+ =?iso-8859-1?Q?KIvHhQr83sg/ExO/OzjZu/nsbLld5q+cWjug4mnf8q23rdiMnwx6ATLPP5?=
+ =?iso-8859-1?Q?9udxM+iA+Mvp4k+nCFDVU0la3Kg6fniEHBlKoVPdO1OsF9sm2k/Z3N2w84?=
+ =?iso-8859-1?Q?Hx83pgq05ITe+gwkwTYHIG3KIMOBddrfcPRy7ExvkTp5XyoQcPxD3AsmOi?=
+ =?iso-8859-1?Q?QeMTxE6/QSf9MeS6Pv9a2Y7WvFzVaT2yCUFGC3dv45MPTMwikVtJKFO/6O?=
+ =?iso-8859-1?Q?tqK6oE49zOmJ3Dc3qOSidleW3EDG7JJkhTBO9DYHdZp8Vyxrc3sG0RD8uT?=
+ =?iso-8859-1?Q?DrJMD0gE6VP6hplRKhjODRHKLuDjILlf0+IXMWOAiSZTu+vVYo+BFqAJ6v?=
+ =?iso-8859-1?Q?JJmtsRwsi7Kkc5gLQnaW84gqQqhCiUrA=3D=3D?=
+X-MS-Exchange-CrossTenant-Network-Message-Id: a4afefd7-ce58-4fce-2e7a-08d9104ea9e7
+X-MS-Exchange-CrossTenant-AuthSource: BY5PR15MB3571.namprd15.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 06 May 2021 05:06:46.2904
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 06 May 2021 05:20:29.5898
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-Id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: qCMolOvA2tknKAIMf2FULHUHRI1Ap3o13oJrAKD6CM4DGzOJiajuhHHwR0niGFnyfCO8jUjcpSGyX/1HnYM6fg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB3PR0402MB3706
+X-MS-Exchange-CrossTenant-UserPrincipalName: FCBW2TwFmVM1jzHf4AxZwpsIJ14y/UDqpdFQdSqC3ZrIDnYstCbjFFeT/PifYYcJ
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR15MB2887
+X-OriginatorOrg: fb.com
+X-Proofpoint-ORIG-GUID: TlfFeK2wm3rdFxR2fLBgx9YSTvlNY970
+X-Proofpoint-GUID: TlfFeK2wm3rdFxR2fLBgx9YSTvlNY970
+Content-Transfer-Encoding: 8bit
+X-Proofpoint-UnRewURL: 0 URL was un-rewritten
+MIME-Version: 1.0
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.391,18.0.761
+ definitions=2021-05-06_03:2021-05-05,2021-05-06 signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 phishscore=0
+ priorityscore=1501 mlxscore=0 suspectscore=0 malwarescore=0 clxscore=1011
+ bulkscore=0 impostorscore=0 spamscore=0 mlxlogscore=999 adultscore=0
+ lowpriorityscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2104060000 definitions=main-2105060034
+X-FB-Internal: deliver
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Both get and set WoL will check device_can_wakeup(), if MAC supports PMT,
-it will set device wakeup capability. After commit 1d8e5b0f3f2c ("net:
-stmmac: Support WOL with phy"), device wakeup capability will be overwrite
-in stmmac_init_phy() according to phy's Wol feature. If phy doesn't support
-WoL, then MAC will lose wakeup capability.
+On Thu, May 06, 2021 at 06:31:57AM +0200, Jiri Slaby wrote:
+> On 05. 05. 21, 15:56, Michal Suchánek wrote:
+> > On Mon, Apr 26, 2021 at 09:16:36PM +0200, Jiri Olsa wrote:
+> > > On Mon, Apr 26, 2021 at 06:03:19PM +0200, Jiri Olsa wrote:
+> > > > On Mon, Apr 26, 2021 at 08:41:49AM -0700, Yonghong Song wrote:
+> > > > > 
+> > > > > 
+> > > > > On 4/26/21 5:14 AM, Michal Suchánek wrote:
+> > > > > > On Mon, Apr 26, 2021 at 02:12:20PM +0200, Michal Suchánek wrote:
+> > > > > > > On Mon, Apr 26, 2021 at 01:32:15PM +0200, Michal Suchánek wrote:
+> > > > > > > > On Sun, Apr 25, 2021 at 01:15:45PM +0200, Michal Suchánek wrote:
+> > > > > > > > > On Fri, Apr 23, 2021 at 07:55:28PM +0200, Michal Suchánek wrote:
+> > > > > > > > > > On Fri, Apr 23, 2021 at 07:41:29AM -0700, Yonghong Song wrote:
+> > > > > > > > > > > 
+> > > > > > > > > > > 
+> > > > > > > > > > > On 4/23/21 6:05 AM, Michal Suchánek wrote:
+> > > > > > > > > > > > Hello,
+> > > > > > > > > > > > 
+> > > > > > > > > > > > I see this build error in linux-next (config attached).
+> > > > > > > > > > > > 
+> > > > > > > > > > > > [ 4939s]   LD      vmlinux
+> > > > > > > > > > > > [ 4959s]   BTFIDS  vmlinux
+> > > > > > > > > > > > [ 4959s] FAILED unresolved symbol cubictcp_state
+> > > > > > > > > > > > [ 4960s] make[1]: ***
+> > > > > > > > > > > > [/home/abuild/rpmbuild/BUILD/kernel-vanilla-5.12~rc8.next.20210422/linux-5.12-rc8-next-20210422/Makefile:1277:
+> > > > > > > > > > > > vmlinux] Error 255
+> > > > > > > > > > > > [ 4960s] make: *** [../Makefile:222: __sub-make] Error 2
+> > > > 
+> > > > this one was reported by Jesper and was fixed by upgrading pahole
+> > > > that contains the new function generation fixes (v1.19)
+> > 
+> > It needs pahole 1.21 here, 1.19 was not sufficient. Even then it
+> > regressed again after 5.12 on arm64:
+> 
+> Could you try against devel:tools? I've removed the ftrace filter from
+> dwarves there (sr#890247 to factory).
+> 
+> >    LD      vmlinux
+> > ld: warning: -z relro ignored
+> >    BTFIDS  vmlinux
+> > FAILED unresolved symbol cubictcp_state
+> > make[1]: *** [/home/abuild/rpmbuild/BUILD/kernel-vanilla-5.12.0.13670.g5e321ded302d/linux-5.12-13670-g5e321ded302d/Makefile:1196: vmlinux] Error 255
+> > make: *** [../Makefile:215: __sub-make] Error 2
+> > 
+> > Any idea what might be wrong with arm64?
+Can you also try this pahole patch which removes the ftrace filter:
+https://lore.kernel.org/dwarves/20210506015824.2335125-1-kafai@fb.com/
 
-This patch combines WoL capabilities both MAC and PHY from stmmac_get_wol(),
-set wakeup capability and give WoL priority to the PHY in stmmac_set_wol()
-when enable WoL. What PHYs do implement is WAKE_MAGIC, WAKE_UCAST, WAKE_MAGICSECURE
-and WAKE_BCAST.
-
-Fixes: commit 1d8e5b0f3f2c ("net: stmmac: Support WOL with phy")
-Suggested-by: Andrew Lunn <andrew@lunn.ch>
-Signed-off-by: Joakim Zhang <qiangqing.zhang@nxp.com>
----
-ChangeLogs:
-V1->V2:
-	* combine WoL capabilities both MAC and PHY.
-V2->V3:
-	* give WoL priority to the PHY.
-V3->V4:
-	* improve patch subject, unwork->not working
-	* Reverse christmas tree for variable definition
-	* return -EOPNOTSUPP not -EINVAL when pass wolopts
-	* enable wol sources the PHY actually supports, and let the MAC
-	implement the rest.
----
- .../ethernet/stmicro/stmmac/stmmac_ethtool.c  | 55 ++++++++++++-------
- .../net/ethernet/stmicro/stmmac/stmmac_main.c |  8 +--
- 2 files changed, 37 insertions(+), 26 deletions(-)
-
-diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_ethtool.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_ethtool.c
-index c5642985ef95..6d09908dec1f 100644
---- a/drivers/net/ethernet/stmicro/stmmac/stmmac_ethtool.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_ethtool.c
-@@ -629,35 +629,49 @@ static void stmmac_get_strings(struct net_device *dev, u32 stringset, u8 *data)
- /* Currently only support WOL through Magic packet. */
- static void stmmac_get_wol(struct net_device *dev, struct ethtool_wolinfo *wol)
- {
-+	struct ethtool_wolinfo wol_phy = { .cmd = ETHTOOL_GWOL };
- 	struct stmmac_priv *priv = netdev_priv(dev);
- 
--	if (!priv->plat->pmt)
--		return phylink_ethtool_get_wol(priv->phylink, wol);
--
- 	mutex_lock(&priv->lock);
--	if (device_can_wakeup(priv->device)) {
-+	if (priv->plat->pmt) {
- 		wol->supported = WAKE_MAGIC | WAKE_UCAST;
- 		if (priv->hw_cap_support && !priv->dma_cap.pmt_magic_frame)
- 			wol->supported &= ~WAKE_MAGIC;
--		wol->wolopts = priv->wolopts;
- 	}
-+
-+	phylink_ethtool_get_wol(priv->phylink, &wol_phy);
-+
-+	/* Combine WoL capabilities both PHY and MAC */
-+	wol->supported |= wol_phy.supported;
-+	wol->wolopts = priv->wolopts;
-+
- 	mutex_unlock(&priv->lock);
- }
- 
- static int stmmac_set_wol(struct net_device *dev, struct ethtool_wolinfo *wol)
- {
-+	u32 support = WAKE_MAGIC | WAKE_UCAST | WAKE_MAGICSECURE | WAKE_BCAST;
-+	struct ethtool_wolinfo wol_phy = { .cmd = ETHTOOL_GWOL };
- 	struct stmmac_priv *priv = netdev_priv(dev);
--	u32 support = WAKE_MAGIC | WAKE_UCAST;
-+	int ret;
- 
--	if (!device_can_wakeup(priv->device))
-+	if (wol->wolopts & ~support)
- 		return -EOPNOTSUPP;
- 
--	if (!priv->plat->pmt) {
--		int ret = phylink_ethtool_set_wol(priv->phylink, wol);
--
--		if (!ret)
--			device_set_wakeup_enable(priv->device, !!wol->wolopts);
--		return ret;
-+	/* First check if can WoL from PHY */
-+	phylink_ethtool_get_wol(priv->phylink, &wol_phy);
-+	if (wol->wolopts & wol_phy.supported) {
-+		wol->wolopts &= wol_phy.supported;
-+		ret = phylink_ethtool_set_wol(priv->phylink, wol);
-+
-+		if (!ret) {
-+			pr_info("stmmac: phy wakeup enable\n");
-+			device_set_wakeup_capable(priv->device, 1);
-+			device_set_wakeup_enable(priv->device, 1);
-+			goto wolopts_update;
-+		} else {
-+			return ret;
-+		}
- 	}
- 
- 	/* By default almost all GMAC devices support the WoL via
-@@ -666,18 +680,21 @@ static int stmmac_set_wol(struct net_device *dev, struct ethtool_wolinfo *wol)
- 	if ((priv->hw_cap_support) && (!priv->dma_cap.pmt_magic_frame))
- 		wol->wolopts &= ~WAKE_MAGIC;
- 
--	if (wol->wolopts & ~support)
--		return -EINVAL;
--
--	if (wol->wolopts) {
--		pr_info("stmmac: wakeup enable\n");
-+	if (priv->plat->pmt && wol->wolopts) {
-+		pr_info("stmmac: mac wakeup enable\n");
-+		device_set_wakeup_capable(priv->device, 1);
- 		device_set_wakeup_enable(priv->device, 1);
- 		enable_irq_wake(priv->wol_irq);
--	} else {
-+		goto wolopts_update;
-+	}
-+
-+	if (!wol->wolopts) {
-+		device_set_wakeup_capable(priv->device, 0);
- 		device_set_wakeup_enable(priv->device, 0);
- 		disable_irq_wake(priv->wol_irq);
- 	}
- 
-+wolopts_update:
- 	mutex_lock(&priv->lock);
- 	priv->wolopts = wol->wolopts;
- 	mutex_unlock(&priv->lock);
-diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-index c6f24abf6432..d62d8c28463d 100644
---- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-@@ -1076,7 +1076,6 @@ static void stmmac_check_pcs_mode(struct stmmac_priv *priv)
-  */
- static int stmmac_init_phy(struct net_device *dev)
- {
--	struct ethtool_wolinfo wol = { .cmd = ETHTOOL_GWOL };
- 	struct stmmac_priv *priv = netdev_priv(dev);
- 	struct device_node *node;
- 	int ret;
-@@ -1102,9 +1101,6 @@ static int stmmac_init_phy(struct net_device *dev)
- 		ret = phylink_connect_phy(priv->phylink, phydev);
- 	}
- 
--	phylink_ethtool_get_wol(priv->phylink, &wol);
--	device_set_wakeup_capable(priv->device, !!wol.supported);
--
- 	return ret;
- }
- 
-@@ -4787,10 +4783,8 @@ static int stmmac_hw_init(struct stmmac_priv *priv)
- 	if (priv->plat->tx_coe)
- 		dev_info(priv->device, "TX Checksum insertion supported\n");
- 
--	if (priv->plat->pmt) {
-+	if (priv->plat->pmt)
- 		dev_info(priv->device, "Wake-Up On Lan supported\n");
--		device_set_wakeup_capable(priv->device, 1);
--	}
- 
- 	if (priv->dma_cap.tsoen)
- 		dev_info(priv->device, "TSO supported\n");
--- 
-2.17.1
-
+I have just cross compiled with aarch64-linux-gcc together with the
+above pahole patch.
