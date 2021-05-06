@@ -2,92 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6F0E9375A52
-	for <lists+netdev@lfdr.de>; Thu,  6 May 2021 20:43:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 49F7D375A6F
+	for <lists+netdev@lfdr.de>; Thu,  6 May 2021 20:50:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236445AbhEFSoO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 6 May 2021 14:44:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48106 "EHLO
+        id S233770AbhEFSvz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 6 May 2021 14:51:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49908 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236483AbhEFSoG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 6 May 2021 14:44:06 -0400
-Received: from mail-pf1-x436.google.com (mail-pf1-x436.google.com [IPv6:2607:f8b0:4864:20::436])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 80355C06138A
-        for <netdev@vger.kernel.org>; Thu,  6 May 2021 11:43:06 -0700 (PDT)
-Received: by mail-pf1-x436.google.com with SMTP id 10so5938742pfl.1
-        for <netdev@vger.kernel.org>; Thu, 06 May 2021 11:43:06 -0700 (PDT)
+        with ESMTP id S229622AbhEFSvx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 6 May 2021 14:51:53 -0400
+Received: from mail-wr1-x42c.google.com (mail-wr1-x42c.google.com [IPv6:2a00:1450:4864:20::42c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 38686C061574
+        for <netdev@vger.kernel.org>; Thu,  6 May 2021 11:50:54 -0700 (PDT)
+Received: by mail-wr1-x42c.google.com with SMTP id a4so6699396wrr.2
+        for <netdev@vger.kernel.org>; Thu, 06 May 2021 11:50:54 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=9WHV64Q9OCDtMSUOAG1jY5VbXZzKskf+t8Seao2K3m0=;
-        b=t3UcXXX+iDSGlTkcadXwM8/p7PtGZn/hmdeZ5MyDHpiwe1DBqf518B3K/OOkp1oT0a
-         TjiX6RalJ4eGuOc9gLS9mR8eZNx5R25Pha5zwhTzxX8Smg5i+EOPxyS2oeshGyJQPRbN
-         wEKQJhnS46tVOUcO9E1Okfj99QggCOLb1KLaXWeBcQ1KPGKn5MKMtTXFoQ0ZF3tWGfdg
-         UtsxB9/bHu0QOGQWj3UKnYD12len0dOIlaZ8LkPV9fGVUFAIN8j7+QuaBH41kopL/Tsu
-         Hd+9be92b/DOKDWYGBo3k4M/Q+0sHEMOJM27RHpW/4/tl09KPM29xZWQpzb2AhXDjfFb
-         sJRg==
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=WM4s9yl6xXVA0FpRxfm/TR7P2RTq06SULrlWBV/Om1Q=;
+        b=Dlk0u/4Nf5cjyBFgYY30fGnfGc0GEokj5cA5vWXYwzISehsvdcvtaL/Td1NygSb0XQ
+         a2CB40PEPiYu9oa8seucY6IYlaBUl1BPAaW9MEa5AXivniCAgqc3KW90KC2s69FHSS1h
+         iOYvF3VjuouIWygGj8WGx3okBmIZZNizzvRNW9j0PD4M+f8/BVY9JjKsszwCxsx322CP
+         v6iL3MhRCmWGq0/emnDc2gKxSvgPzO2Ko81D02RD2WLHZq4Z0VRj2CUNs6TMShWRo3Lq
+         Is2wtE6rZ9QPOfmU/1ojR+EK/IBLAroSkN+O3NZugaj3fYu47PE0VqjqmnIfm5xjtEqI
+         73NQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=9WHV64Q9OCDtMSUOAG1jY5VbXZzKskf+t8Seao2K3m0=;
-        b=iycq36TGLUrW3T7EyUDZh9hxSj2eyl/BxLA2Uaij0BrXv6edvvJuRyg8bC8e13lNi6
-         lQWfdzP+b8IofYBsz6HWsKFkIasRT5642vTeZP8RfLW3xqixCXTjQS8NpdNFyszFqa6g
-         KCWJEsTR5D+gPLzC6X/lVVNtar55/mijHccdpPiA0TO8O/7nrVj0sLvKEkn01cmRuGCC
-         XIUg2IWuTskHsrpeGjQbSzFQHg1BAmpauPq6PXmANmNDSbRZPHvjPiieKTjkVDUz3Kp8
-         XceVbqyuOYGTk6C/Vh8LtYvnZywLumN2x1lhbtZIkzpY1FriCtTWDqPc0RcD9RkBJs8Y
-         xknA==
-X-Gm-Message-State: AOAM533wSp/jE107MfVO8NHtgbn1qRBCZ21vrER1JHJO2iQK2NgI9wi1
-        WHdmeLaOI4hEJ6NmyfuWUMtd9+gyxe4=
-X-Google-Smtp-Source: ABdhPJyXpTyLnxclCrXixwNRWwQ9hgCArlegLHEnOXiXpNC6T6Fs4hEzwz63hB5CYkRIDHxRx9xxpw==
-X-Received: by 2002:a63:3d87:: with SMTP id k129mr5696112pga.57.1620326586067;
-        Thu, 06 May 2021 11:43:06 -0700 (PDT)
-Received: from phantasmagoria.svl.corp.google.com ([2620:15c:2c4:201:2e8b:9dfe:8d6b:7429])
-        by smtp.gmail.com with ESMTPSA id a13sm2432011pgm.43.2021.05.06.11.43.04
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 06 May 2021 11:43:05 -0700 (PDT)
-From:   Arjun Roy <arjunroy.kdev@gmail.com>
-To:     davem@davemloft.net, netdev@vger.kernel.org
-Cc:     arjunroy@google.com, edumazet@google.com, soheil@google.com
-Subject: [net] tcp: Specify cmsgbuf is user pointer for receive zerocopy.
-Date:   Thu,  6 May 2021 11:43:00 -0700
-Message-Id: <20210506184300.2241623-1-arjunroy.kdev@gmail.com>
-X-Mailer: git-send-email 2.31.1.607.g51e8a6a459-goog
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=WM4s9yl6xXVA0FpRxfm/TR7P2RTq06SULrlWBV/Om1Q=;
+        b=Epn31nuGrnj+n/IUy9yUOtDMHwyQG1mrS1zwT9s/dQoKCnSTZ1d763QMyUyyj+WGVf
+         jDh2JLpOpOQ6Z7oA7CKLBomNPPCsjtpznlX94Qt4eSYJCntidERmaet4Cw6f+zWImI5K
+         3CtYoe2u8UwzVqdQDk6F7BOopB3tNMVU/IBEcweDRQjK0JPBgpqeV7fDRfkfvRb072jU
+         EILaElMko+spVbNI4ixLneykBhsHGwe8wXX+4fpBrdOTeKhkIaTUnH5+rPZR4StjCacZ
+         dB8zWsSu4YDkjXSEUSE4IK4pyjh3Zm+rjYv/Q82rvHZ7CFgKP7IPOYL3Bz6zS9WQXvys
+         zw3A==
+X-Gm-Message-State: AOAM531OrN9CC4/OxYCP3SGX5ps6lAIbRvxSoft7NL3TjmK1vZkNTYtx
+        NTLTVcyN9+F0NXGSj3CEBzc2M2hBQdZBrLLpBYp8JA==
+X-Google-Smtp-Source: ABdhPJz/Aoq1r92RIE/Ig/ybB6CNUmsO6M74EmunXhnktMFZzJnAXlfh3zHnFNH4ZhXLk5DKzHL1RUQU5eA12q3ZD7s=
+X-Received: by 2002:a05:6000:1290:: with SMTP id f16mr7213124wrx.52.1620327052421;
+ Thu, 06 May 2021 11:50:52 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20210506184300.2241623-1-arjunroy.kdev@gmail.com>
+In-Reply-To: <20210506184300.2241623-1-arjunroy.kdev@gmail.com>
+From:   Soheil Hassas Yeganeh <soheil@google.com>
+Date:   Thu, 6 May 2021 14:50:16 -0400
+Message-ID: <CACSApvaVXdNAg+nqDgngPdBbBbP9T0=BXt5NPEDjiBsitPiMcg@mail.gmail.com>
+Subject: Re: [net] tcp: Specify cmsgbuf is user pointer for receive zerocopy.
+To:     Arjun Roy <arjunroy.kdev@gmail.com>
+Cc:     David Miller <davem@davemloft.net>,
+        netdev <netdev@vger.kernel.org>, Arjun Roy <arjunroy@google.com>,
+        Eric Dumazet <edumazet@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Arjun Roy <arjunroy@google.com>
+On Thu, May 6, 2021 at 2:43 PM Arjun Roy <arjunroy.kdev@gmail.com> wrote:
+>
+> From: Arjun Roy <arjunroy@google.com>
+>
+> A prior change introduces separate handling for ->msg_control
+> depending on whether the pointer is a kernel or user pointer. However,
+> it does not update tcp receive zerocopy (which uses a user pointer),
+> which can cause faults when the improper mechanism is used.
+>
+> This patch simply annotates tcp receive zerocopy's use as explicitly
+> being a user pointer.
+>
+> Fixes: 1f466e1f15cf ("net: cleanly handle kernel vs user buffers for ->msg_control")
+> Signed-off-by: Arjun Roy <arjunroy@google.com>
 
-A prior change introduces separate handling for ->msg_control
-depending on whether the pointer is a kernel or user pointer. However,
-it does not update tcp receive zerocopy (which uses a user pointer),
-which can cause faults when the improper mechanism is used.
+Acked-by: Soheil Hassas Yeganeh <soheil@google.com>
 
-This patch simply annotates tcp receive zerocopy's use as explicitly
-being a user pointer.
+Thank you for the fix!
 
-Fixes: 1f466e1f15cf ("net: cleanly handle kernel vs user buffers for ->msg_control")
-Signed-off-by: Arjun Roy <arjunroy@google.com>
----
- net/ipv4/tcp.c | 1 +
- 1 file changed, 1 insertion(+)
-
-diff --git a/net/ipv4/tcp.c b/net/ipv4/tcp.c
-index e14fd0c50c10..f1c1f9e3de72 100644
---- a/net/ipv4/tcp.c
-+++ b/net/ipv4/tcp.c
-@@ -2039,6 +2039,7 @@ static void tcp_zc_finalize_rx_tstamp(struct sock *sk,
- 		(__kernel_size_t)zc->msg_controllen;
- 	cmsg_dummy.msg_flags = in_compat_syscall()
- 		? MSG_CMSG_COMPAT : 0;
-+	cmsg_dummy.msg_control_is_user = true;
- 	zc->msg_flags = 0;
- 	if (zc->msg_control == msg_control_addr &&
- 	    zc->msg_controllen == cmsg_dummy.msg_controllen) {
--- 
-2.31.1.607.g51e8a6a459-goog
-
+> ---
+>  net/ipv4/tcp.c | 1 +
+>  1 file changed, 1 insertion(+)
+>
+> diff --git a/net/ipv4/tcp.c b/net/ipv4/tcp.c
+> index e14fd0c50c10..f1c1f9e3de72 100644
+> --- a/net/ipv4/tcp.c
+> +++ b/net/ipv4/tcp.c
+> @@ -2039,6 +2039,7 @@ static void tcp_zc_finalize_rx_tstamp(struct sock *sk,
+>                 (__kernel_size_t)zc->msg_controllen;
+>         cmsg_dummy.msg_flags = in_compat_syscall()
+>                 ? MSG_CMSG_COMPAT : 0;
+> +       cmsg_dummy.msg_control_is_user = true;
+>         zc->msg_flags = 0;
+>         if (zc->msg_control == msg_control_addr &&
+>             zc->msg_controllen == cmsg_dummy.msg_controllen) {
+> --
+> 2.31.1.607.g51e8a6a459-goog
+>
