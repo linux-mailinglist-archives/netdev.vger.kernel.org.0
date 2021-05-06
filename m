@@ -2,142 +2,144 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id ED3D0375570
-	for <lists+netdev@lfdr.de>; Thu,  6 May 2021 16:13:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0C3FF375582
+	for <lists+netdev@lfdr.de>; Thu,  6 May 2021 16:21:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234630AbhEFOOo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 6 May 2021 10:14:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43772 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233737AbhEFOOn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 6 May 2021 10:14:43 -0400
-Received: from mail-oo1-xc31.google.com (mail-oo1-xc31.google.com [IPv6:2607:f8b0:4864:20::c31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 61E52C061574
-        for <netdev@vger.kernel.org>; Thu,  6 May 2021 07:13:44 -0700 (PDT)
-Received: by mail-oo1-xc31.google.com with SMTP id i20-20020a4a8d940000b02901bc71746525so1280544ook.2
-        for <netdev@vger.kernel.org>; Thu, 06 May 2021 07:13:44 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=y1cqDzeI1snfFPIZd/YEXkNc/co5zes8QE8iPZ//qc8=;
-        b=fNCJkZjFEQUvjqJoZANpns1oDhHCiqpAtqBStAOEnqrixfDn4nSdgZ8LZ6NTi7jfdS
-         +2cm8rLkk+CbmlTJxq5GOY44etULO/CrrrsJybVw/BGoa+4e44Nisc0tLIvZk5R822+1
-         3wgWxkBxVgjQB0YLF7AVFU+PBLYy4YVH5rdPnqVAJ79xfGNj3pNVuEKNQ964Scrtc6Ey
-         P/QHGenyW0cFkDgpmzLPvmbKoJI3+xck8nAtjFzty5rIQl5+AdX4kdtLSLoMjG6Bs7Rb
-         IegbDT+F7x4HS5YEpdbKdTvEUcBh25E7x4dCydUqO8joniDfMFsBQk5dV7dxpJGt466o
-         yujA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=y1cqDzeI1snfFPIZd/YEXkNc/co5zes8QE8iPZ//qc8=;
-        b=l8XQNnQKr7BxVSYy7G0eRh9sMzGy7cZ9yiSGWLy7Un2sSye4ZtIUsnCIQKsR7zUd/X
-         LYRvENsmYKpZ5r3y+ShcB4UXkK6QWHlfcWZXa72cJsHmX3QtCr0xUDpyfGT3DtyhuAqa
-         Nxu7yXRdfWLvmLJn9BeOsBNwEGiXrWFH61NiQ2wTK71eP+mEHajMLnHvAhF6+N/Zsw6D
-         4WkyhupIirinqrv+YzxbUykdlEAX3tO8URImhevg4661j4/BOvDGJoPEjlbXIYeUlQLt
-         2GQVZrT5En71E2FTtPRHLwykV2SzjPncw9oC7xcJIQS7xH8/br3K89tE1sdEeWyfknx1
-         lQSg==
-X-Gm-Message-State: AOAM5315HRj2fBrJ1ODAoeLMTm0v/8DjamO0s/CrdvQo3ChoMkpHiyx8
-        f4f3ik+bMiVOH+sHuIesxlgxhcnCzubqdJuBvUE=
-X-Google-Smtp-Source: ABdhPJwA6dDXOPSo7O3LHIdCsuUZPUMtkFSGvp7aQlaFQh/ys51IEnozdA0XyZdxDDjhmkDv7bpIL3Pjdr6/OaCldWA=
-X-Received: by 2002:a4a:107:: with SMTP id 7mr888955oor.49.1620310423795; Thu,
- 06 May 2021 07:13:43 -0700 (PDT)
+        id S234653AbhEFOV7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 6 May 2021 10:21:59 -0400
+Received: from ssl.serverraum.org ([176.9.125.105]:57553 "EHLO
+        ssl.serverraum.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234002AbhEFOV7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 6 May 2021 10:21:59 -0400
+Received: from ssl.serverraum.org (web.serverraum.org [172.16.0.2])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ssl.serverraum.org (Postfix) with ESMTPSA id 1B3ED2224B;
+        Thu,  6 May 2021 16:20:59 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
+        t=1620310859;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=Y/yU/utlCxeBkgHRjpQvGfxDuh18wji/GyOpNJch9Tg=;
+        b=TbEmmQZ51d09fE7MyhMV8SuWNjLHN1yK49qhMzXFYsFBcM7TwLOMOqAukbyapWA1mmVQ/p
+        qcIFeEzEKIZjP/hf8Gpc3ECSQtFT7st2LYz45W07aegs2xZOOGyZlKYEl1iZcGtQ4aD1Dj
+        rYwFc2xBp22QY6JM1B9j/xLwP2FYHxI=
 MIME-Version: 1.0
-References: <20210506231158.250926-1-yanjun.zhu@intel.com> <CAJ8uoz2gd8xKd46Fq8numxS25Q68Gv-jtLqbWywLaztFCf=_jg@mail.gmail.com>
- <CAD=hENdVrb18vxnUrSZvgMnFo5EoJAJdSKSm4Q2kFLHHSoUbpQ@mail.gmail.com> <CAJ8uoz3f+GqGoVnmYh2Y0fBG44CgES+4MXGCuCDriVx5QYsMJA@mail.gmail.com>
-In-Reply-To: <CAJ8uoz3f+GqGoVnmYh2Y0fBG44CgES+4MXGCuCDriVx5QYsMJA@mail.gmail.com>
-From:   Zhu Yanjun <zyjzyj2000@gmail.com>
-Date:   Thu, 6 May 2021 22:13:32 +0800
-Message-ID: <CAD=hENfr57bDReESv7Ogqi7kuqXXdB28HyhD4L2Ld=S8UDdQ5g@mail.gmail.com>
-Subject: Re: [PATCH 1/1] samples: bpf: fix the compiling error
-To:     Magnus Karlsson <magnus.karlsson@gmail.com>
-Cc:     Zhu Yanjun <yanjun.zhu@intel.com>,
-        Mariusz Dudek <mariuszx.dudek@intel.com>,
-        Network Development <netdev@vger.kernel.org>,
-        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn@kernel.org>,
-        "Karlsson, Magnus" <magnus.karlsson@intel.com>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII;
+ format=flowed
+Content-Transfer-Encoding: 7bit
+Date:   Thu, 06 May 2021 16:20:59 +0200
+From:   Michael Walle <michael@walle.cc>
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Xiaoliang Yang <xiaoliang.yang_1@nxp.com>,
+        UNGLinuxDriver@microchip.com, alexandre.belloni@bootlin.com,
+        allan.nielsen@microchip.com,
+        Claudiu Manoil <claudiu.manoil@nxp.com>, davem@davemloft.net,
+        idosch@mellanox.com, joergen.andreasen@microchip.com,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        Po Liu <po.liu@nxp.com>, vinicius.gomes@intel.com
+Subject: Re: [net-next] net: dsa: felix: disable always guard band bit for TAS
+ config
+In-Reply-To: <20210506135007.ul3gpdecq427tvgr@skbuf>
+References: <20210419102530.20361-1-xiaoliang.yang_1@nxp.com>
+ <20210504170514.10729-1-michael@walle.cc>
+ <20210504181833.w2pecbp2qpuiactv@skbuf>
+ <c7618025da6723418c56a54fe4683bd7@walle.cc>
+ <20210504185040.ftkub3ropuacmyel@skbuf>
+ <ccb40b7fd18b51ecfc3f849a47378c54@walle.cc>
+ <20210504191739.73oejybqb6z7dlxr@skbuf>
+ <d933eef300cb1e1db7d36ca2cb876ef6@walle.cc>
+ <20210504213259.l5rbnyhxrrbkykyg@skbuf>
+ <efe5ac03ceddc8ff472144b5fe9fd046@walle.cc>
+ <20210506135007.ul3gpdecq427tvgr@skbuf>
+User-Agent: Roundcube Webmail/1.4.11
+Message-ID: <0e909d9f9cc245d433ee7b02df5bafe0@walle.cc>
+X-Sender: michael@walle.cc
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, May 6, 2021 at 10:04 PM Magnus Karlsson
-<magnus.karlsson@gmail.com> wrote:
->
-> On Thu, May 6, 2021 at 3:51 PM Zhu Yanjun <zyjzyj2000@gmail.com> wrote:
-> >
-> > On Thu, May 6, 2021 at 8:54 PM Magnus Karlsson
-> > <magnus.karlsson@gmail.com> wrote:
-> > >
-> > > On Thu, May 6, 2021 at 8:47 AM Zhu Yanjun <yanjun.zhu@intel.com> wrote:
-> > > >
-> > > > From: Zhu Yanjun <zyjzyj2000@gmail.com>
-> > > >
-> > > > When compiling, the following error will appear.
-> > > >
-> > > > "
-> > > > samples/bpf//xdpsock_user.c:27:10: fatal error: sys/capability.h:
-> > > >  No such file or directory
-> > > > "
-> > >
-> > > On my system, I get a compilation error if I include
-> > > linux/capability.h as it does not have capget().
-> >
-> > Thanks. Can you run "rpm -qf /xxx/xxx/sys/capability.h" to check which
-> > software provides sys/capability.h?
-> > Now I am on CentOS Linux release 8.3.2011.
->
-> I do not have CentOS, but it is likely called libcap-dev or
-> libcap-devel. If that does not work, Google/Baidu it.
+Am 2021-05-06 15:50, schrieb Vladimir Oltean:
+> On Thu, May 06, 2021 at 03:25:07PM +0200, Michael Walle wrote:
+>> Am 2021-05-04 23:33, schrieb Vladimir Oltean:
+>> > [ trimmed the CC list, as this is most likely spam for most people ]
+>> >
+>> > On Tue, May 04, 2021 at 10:23:11PM +0200, Michael Walle wrote:
+[..]
 
-Thanks. On centos8.3, libcap-devel can be installed by "dnf install
-libcap-devel".
-Then this problem is fixed.
+>> > With the ALWAYS_GUARD_BAND_SCH_Q bit, there will be hiccups in packet
+>> > transmission for TC 7. For example, at the end of every time slot,
+>> > the hardware will insert a guard band for TC 7 because there is a
+>> > scheduled-queue-to-scheduled-queue transition, and it has been told to
+>> > do that. But a packet with TC 7 should be transmitted at any time,
+>> > because that's what we told the port to do!
+>> >
+>> > Alternatively, we could tell the switch that TC 7 is "scheduled", and
+>> > the others are "not scheduled". Then it would implement the guard band
+>> > at the end of TCs 0-6, but it wouldn't for packets sent in TC 7. But
+>> > when you look at the overall schedule I described above, it kinds looks
+>> > like TCs 0-6 are the ones that are "scheduled" and TC 7 looks like the
+>> > one which isn't "scheduled" but can send at any time it pleases.
+>> >
+>> > Odd, just odd. It's clear that someone had something in mind, it's just
+>> > not clear what. I would actually appreciate if somebody from Microchip
+>> > could chime in and say "no, you're wrong", and then explain.
+>> 
+>> If I had to make a bet, the distinction between "scheduled" and
+>> "non-scheduled" is there to have more control for some traffic classes
+>> you trust and where you can engineer the traffic, so you don't really
+>> need the guard band and between arbitrary traffic where you can't 
+>> really
+>> say anything about and thus need the guard band.
+> 
+> I still don't know if I understand properly. You mean that "scheduled"
+> traffic is traffic sent synchronized with the switch's schedule, and
+> which does not need guard banding at the end of its time slot because
+> the sender is playing nice?
 
-So please ignore this commit.
+Yes exactly. If you have a low level application that might be a
+reasonable optimization.
 
-Zhu Yanjun
+> Yes, but then, do you gain anything at all by disabling that guard band
+> and allowing the sender to overrun if they want to? I still don't see
+> why overruns are permitted by the switch in certain configurations.
 
->
-> > Thanks a lot.
-> > Zhu Yanjun
-> >
-> >
-> > >
-> > > NAME
-> > >        capget, capset - set/get capabilities of thread(s)
-> > >
-> > > SYNOPSIS
-> > >        #include <sys/capability.h>
-> > >
-> > >        int capget(cap_user_header_t hdrp, cap_user_data_t datap);
-> > >
-> > > Have you installed libcap? It contains the sys/capability.h header
-> > > file that you need.
-> > >
-> > > > Now capability.h is in linux directory.
-> > > >
-> > > > Fixes: 3627d9702d78 ("samples/bpf: Sample application for eBPF load and socket creation split")
-> > > > Signed-off-by: Zhu Yanjun <zyjzyj2000@gmail.com>
-> > > > ---
-> > > >  samples/bpf/xdpsock_user.c | 2 +-
-> > > >  1 file changed, 1 insertion(+), 1 deletion(-)
-> > > >
-> > > > diff --git a/samples/bpf/xdpsock_user.c b/samples/bpf/xdpsock_user.c
-> > > > index aa696854be78..44200aa694cb 100644
-> > > > --- a/samples/bpf/xdpsock_user.c
-> > > > +++ b/samples/bpf/xdpsock_user.c
-> > > > @@ -24,7 +24,7 @@
-> > > >  #include <stdio.h>
-> > > >  #include <stdlib.h>
-> > > >  #include <string.h>
-> > > > -#include <sys/capability.h>
-> > > > +#include <linux/capability.h>
-> > > >  #include <sys/mman.h>
-> > > >  #include <sys/resource.h>
-> > > >  #include <sys/socket.h>
-> > > > --
-> > > > 2.27.0
-> > > >
+First, I suspect that this shouldn't happen, because as in you words,
+the sender is playing nice and won't send outside its allocated time
+frame.
+Second, you don't waste the (possible) deadtime for the guard band
+which might make sense esp. for smaller windows.
+
+Consider the following gate timings:
+
+(1) gate open event
+(2)-(3) guard band
+(3) gate close event
+
+       (1)                 (2)      (3)
+        _________ ... ______________
+______|                    |_______|________
+
+
+And the following timings for a frame:
+
+(A)           ___... ___
+_____________|          |___________________
+
+(B)                   ___... ___
+_____________________|          |___________
+
+(C)                          ____
+____________________________|    |__________
+
+
+(A) and (B) can be send if there is a guard band, (C) can only
+be send if there is no guard band. But in the case of (C) you
+have to trust the sender to stop sending before reaching (3).
+For (B) you don't have to trust the sender because the end of the
+frame cannot be later than (3).
+
+-michael
