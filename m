@@ -2,24 +2,24 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9743737699F
+	by mail.lfdr.de (Postfix) with ESMTP id DF7A53769A0
 	for <lists+netdev@lfdr.de>; Fri,  7 May 2021 19:48:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229601AbhEGRsq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 7 May 2021 13:48:46 -0400
-Received: from mail.netfilter.org ([217.70.188.207]:49090 "EHLO
+        id S229603AbhEGRsu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 7 May 2021 13:48:50 -0400
+Received: from mail.netfilter.org ([217.70.188.207]:49098 "EHLO
         mail.netfilter.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229446AbhEGRsp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 7 May 2021 13:48:45 -0400
+        with ESMTP id S229602AbhEGRsr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 7 May 2021 13:48:47 -0400
 Received: from localhost.localdomain (unknown [90.77.255.23])
-        by mail.netfilter.org (Postfix) with ESMTPSA id AE0E76414C;
-        Fri,  7 May 2021 19:46:58 +0200 (CEST)
+        by mail.netfilter.org (Postfix) with ESMTPSA id 73EF764150;
+        Fri,  7 May 2021 19:47:00 +0200 (CEST)
 From:   Pablo Neira Ayuso <pablo@netfilter.org>
 To:     netfilter-devel@vger.kernel.org
 Cc:     davem@davemloft.net, netdev@vger.kernel.org, kuba@kernel.org
-Subject: [PATCH net 1/8] netfilter: xt_SECMARK: add new revision to fix structure layout
-Date:   Fri,  7 May 2021 19:47:32 +0200
-Message-Id: <20210507174739.1850-2-pablo@netfilter.org>
+Subject: [PATCH net 2/8] netfilter: arptables: use pernet ops struct during unregister
+Date:   Fri,  7 May 2021 19:47:33 +0200
+Message-Id: <20210507174739.1850-3-pablo@netfilter.org>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20210507174739.1850-1-pablo@netfilter.org>
 References: <20210507174739.1850-1-pablo@netfilter.org>
@@ -29,166 +29,76 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This extension breaks when trying to delete rules, add a new revision to
-fix this.
+From: Florian Westphal <fw@strlen.de>
 
-Fixes: 5e6874cdb8de ("[SECMARK]: Add xtables SECMARK target")
-Signed-off-by: Phil Sutter <phil@nwl.cc>
+Like with iptables and ebtables, hook unregistration has to use the
+pernet ops struct, not the template.
+
+This triggered following splat:
+  hook not found, pf 3 num 0
+  WARNING: CPU: 0 PID: 224 at net/netfilter/core.c:480 __nf_unregister_net_hook+0x1eb/0x610 net/netfilter/core.c:480
+[..]
+ nf_unregister_net_hook net/netfilter/core.c:502 [inline]
+ nf_unregister_net_hooks+0x117/0x160 net/netfilter/core.c:576
+ arpt_unregister_table_pre_exit+0x67/0x80 net/ipv4/netfilter/arp_tables.c:1565
+
+Fixes: f9006acc8dfe5 ("netfilter: arp_tables: pass table pointer via nf_hook_ops")
+Reported-by: syzbot+dcccba8a1e41a38cb9df@syzkaller.appspotmail.com
+Signed-off-by: Florian Westphal <fw@strlen.de>
 Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
 ---
- include/uapi/linux/netfilter/xt_SECMARK.h |  6 ++
- net/netfilter/xt_SECMARK.c                | 88 ++++++++++++++++++-----
- 2 files changed, 75 insertions(+), 19 deletions(-)
+ include/linux/netfilter_arp/arp_tables.h | 3 +--
+ net/ipv4/netfilter/arp_tables.c          | 5 ++---
+ net/ipv4/netfilter/arptable_filter.c     | 2 +-
+ 3 files changed, 4 insertions(+), 6 deletions(-)
 
-diff --git a/include/uapi/linux/netfilter/xt_SECMARK.h b/include/uapi/linux/netfilter/xt_SECMARK.h
-index 1f2a708413f5..beb2cadba8a9 100644
---- a/include/uapi/linux/netfilter/xt_SECMARK.h
-+++ b/include/uapi/linux/netfilter/xt_SECMARK.h
-@@ -20,4 +20,10 @@ struct xt_secmark_target_info {
- 	char secctx[SECMARK_SECCTX_MAX];
- };
- 
-+struct xt_secmark_target_info_v1 {
-+	__u8 mode;
-+	char secctx[SECMARK_SECCTX_MAX];
-+	__u32 secid;
-+};
-+
- #endif /*_XT_SECMARK_H_target */
-diff --git a/net/netfilter/xt_SECMARK.c b/net/netfilter/xt_SECMARK.c
-index 75625d13e976..498a0bf6f044 100644
---- a/net/netfilter/xt_SECMARK.c
-+++ b/net/netfilter/xt_SECMARK.c
-@@ -24,10 +24,9 @@ MODULE_ALIAS("ip6t_SECMARK");
- static u8 mode;
- 
- static unsigned int
--secmark_tg(struct sk_buff *skb, const struct xt_action_param *par)
-+secmark_tg(struct sk_buff *skb, const struct xt_secmark_target_info_v1 *info)
- {
- 	u32 secmark = 0;
--	const struct xt_secmark_target_info *info = par->targinfo;
- 
- 	switch (mode) {
- 	case SECMARK_MODE_SEL:
-@@ -41,7 +40,7 @@ secmark_tg(struct sk_buff *skb, const struct xt_action_param *par)
- 	return XT_CONTINUE;
+diff --git a/include/linux/netfilter_arp/arp_tables.h b/include/linux/netfilter_arp/arp_tables.h
+index 2aab9612f6ab..4f9a4b3c5892 100644
+--- a/include/linux/netfilter_arp/arp_tables.h
++++ b/include/linux/netfilter_arp/arp_tables.h
+@@ -53,8 +53,7 @@ int arpt_register_table(struct net *net, const struct xt_table *table,
+ 			const struct arpt_replace *repl,
+ 			const struct nf_hook_ops *ops);
+ void arpt_unregister_table(struct net *net, const char *name);
+-void arpt_unregister_table_pre_exit(struct net *net, const char *name,
+-				    const struct nf_hook_ops *ops);
++void arpt_unregister_table_pre_exit(struct net *net, const char *name);
+ extern unsigned int arpt_do_table(struct sk_buff *skb,
+ 				  const struct nf_hook_state *state,
+ 				  struct xt_table *table);
+diff --git a/net/ipv4/netfilter/arp_tables.c b/net/ipv4/netfilter/arp_tables.c
+index cf20316094d0..c53f14b94356 100644
+--- a/net/ipv4/netfilter/arp_tables.c
++++ b/net/ipv4/netfilter/arp_tables.c
+@@ -1556,13 +1556,12 @@ int arpt_register_table(struct net *net,
+ 	return ret;
  }
  
--static int checkentry_lsm(struct xt_secmark_target_info *info)
-+static int checkentry_lsm(struct xt_secmark_target_info_v1 *info)
+-void arpt_unregister_table_pre_exit(struct net *net, const char *name,
+-				    const struct nf_hook_ops *ops)
++void arpt_unregister_table_pre_exit(struct net *net, const char *name)
  {
- 	int err;
+ 	struct xt_table *table = xt_find_table(net, NFPROTO_ARP, name);
  
-@@ -73,15 +72,15 @@ static int checkentry_lsm(struct xt_secmark_target_info *info)
- 	return 0;
+ 	if (table)
+-		nf_unregister_net_hooks(net, ops, hweight32(table->valid_hooks));
++		nf_unregister_net_hooks(net, table->ops, hweight32(table->valid_hooks));
+ }
+ EXPORT_SYMBOL(arpt_unregister_table_pre_exit);
+ 
+diff --git a/net/ipv4/netfilter/arptable_filter.c b/net/ipv4/netfilter/arptable_filter.c
+index b8f45e9bbec8..6922612df456 100644
+--- a/net/ipv4/netfilter/arptable_filter.c
++++ b/net/ipv4/netfilter/arptable_filter.c
+@@ -54,7 +54,7 @@ static int __net_init arptable_filter_table_init(struct net *net)
+ 
+ static void __net_exit arptable_filter_net_pre_exit(struct net *net)
+ {
+-	arpt_unregister_table_pre_exit(net, "filter", arpfilter_ops);
++	arpt_unregister_table_pre_exit(net, "filter");
  }
  
--static int secmark_tg_check(const struct xt_tgchk_param *par)
-+static int
-+secmark_tg_check(const char *table, struct xt_secmark_target_info_v1 *info)
- {
--	struct xt_secmark_target_info *info = par->targinfo;
- 	int err;
- 
--	if (strcmp(par->table, "mangle") != 0 &&
--	    strcmp(par->table, "security") != 0) {
-+	if (strcmp(table, "mangle") != 0 &&
-+	    strcmp(table, "security") != 0) {
- 		pr_info_ratelimited("only valid in \'mangle\' or \'security\' table, not \'%s\'\n",
--				    par->table);
-+				    table);
- 		return -EINVAL;
- 	}
- 
-@@ -116,25 +115,76 @@ static void secmark_tg_destroy(const struct xt_tgdtor_param *par)
- 	}
- }
- 
--static struct xt_target secmark_tg_reg __read_mostly = {
--	.name       = "SECMARK",
--	.revision   = 0,
--	.family     = NFPROTO_UNSPEC,
--	.checkentry = secmark_tg_check,
--	.destroy    = secmark_tg_destroy,
--	.target     = secmark_tg,
--	.targetsize = sizeof(struct xt_secmark_target_info),
--	.me         = THIS_MODULE,
-+static int secmark_tg_check_v0(const struct xt_tgchk_param *par)
-+{
-+	struct xt_secmark_target_info *info = par->targinfo;
-+	struct xt_secmark_target_info_v1 newinfo = {
-+		.mode	= info->mode,
-+	};
-+	int ret;
-+
-+	memcpy(newinfo.secctx, info->secctx, SECMARK_SECCTX_MAX);
-+
-+	ret = secmark_tg_check(par->table, &newinfo);
-+	info->secid = newinfo.secid;
-+
-+	return ret;
-+}
-+
-+static unsigned int
-+secmark_tg_v0(struct sk_buff *skb, const struct xt_action_param *par)
-+{
-+	const struct xt_secmark_target_info *info = par->targinfo;
-+	struct xt_secmark_target_info_v1 newinfo = {
-+		.secid	= info->secid,
-+	};
-+
-+	return secmark_tg(skb, &newinfo);
-+}
-+
-+static int secmark_tg_check_v1(const struct xt_tgchk_param *par)
-+{
-+	return secmark_tg_check(par->table, par->targinfo);
-+}
-+
-+static unsigned int
-+secmark_tg_v1(struct sk_buff *skb, const struct xt_action_param *par)
-+{
-+	return secmark_tg(skb, par->targinfo);
-+}
-+
-+static struct xt_target secmark_tg_reg[] __read_mostly = {
-+	{
-+		.name		= "SECMARK",
-+		.revision	= 0,
-+		.family		= NFPROTO_UNSPEC,
-+		.checkentry	= secmark_tg_check_v0,
-+		.destroy	= secmark_tg_destroy,
-+		.target		= secmark_tg_v0,
-+		.targetsize	= sizeof(struct xt_secmark_target_info),
-+		.me		= THIS_MODULE,
-+	},
-+	{
-+		.name		= "SECMARK",
-+		.revision	= 1,
-+		.family		= NFPROTO_UNSPEC,
-+		.checkentry	= secmark_tg_check_v1,
-+		.destroy	= secmark_tg_destroy,
-+		.target		= secmark_tg_v1,
-+		.targetsize	= sizeof(struct xt_secmark_target_info_v1),
-+		.usersize	= offsetof(struct xt_secmark_target_info_v1, secid),
-+		.me		= THIS_MODULE,
-+	},
- };
- 
- static int __init secmark_tg_init(void)
- {
--	return xt_register_target(&secmark_tg_reg);
-+	return xt_register_targets(secmark_tg_reg, ARRAY_SIZE(secmark_tg_reg));
- }
- 
- static void __exit secmark_tg_exit(void)
- {
--	xt_unregister_target(&secmark_tg_reg);
-+	xt_unregister_targets(secmark_tg_reg, ARRAY_SIZE(secmark_tg_reg));
- }
- 
- module_init(secmark_tg_init);
+ static void __net_exit arptable_filter_net_exit(struct net *net)
 -- 
 2.30.2
 
