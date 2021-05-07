@@ -2,245 +2,342 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id ED13C376131
-	for <lists+netdev@lfdr.de>; Fri,  7 May 2021 09:35:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 51E1937618B
+	for <lists+netdev@lfdr.de>; Fri,  7 May 2021 09:56:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235202AbhEGHgU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 7 May 2021 03:36:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48946 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233280AbhEGHgT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 7 May 2021 03:36:19 -0400
-Received: from ssl.serverraum.org (ssl.serverraum.org [IPv6:2a01:4f8:151:8464::1:2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7EB23C061574;
-        Fri,  7 May 2021 00:35:19 -0700 (PDT)
-Received: from ssl.serverraum.org (web.serverraum.org [172.16.0.2])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ssl.serverraum.org (Postfix) with ESMTPSA id D20BA2224B;
-        Fri,  7 May 2021 09:35:12 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
-        t=1620372915;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=xxzUiiFuJ/9Edm/UU/hesO2aF750sfl0VQkiGiRSOrM=;
-        b=ARtBpiG2s/alm7WolB54kzz7ze/VXFEy11dW09cq102bbar3Vu/JhnMAK8M9YJE86/yOui
-        zJvCvYD/UGiouodhZYpW+dJ+IhWBA3zDKkGmEu48zBvb20ii8889ejTS23ajWZvLU/f4WT
-        JB4n9mPb9PT9oOqW76C+D7K1q+yYlnM=
+        id S229936AbhEGH55 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 7 May 2021 03:57:57 -0400
+Received: from mo4-p01-ob.smtp.rzone.de ([81.169.146.164]:15088 "EHLO
+        mo4-p01-ob.smtp.rzone.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229528AbhEGH54 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 7 May 2021 03:57:56 -0400
+X-Greylist: delayed 361 seconds by postgrey-1.27 at vger.kernel.org; Fri, 07 May 2021 03:57:55 EDT
+ARC-Seal: i=1; a=rsa-sha256; t=1620373852; cv=none;
+    d=strato.com; s=strato-dkim-0002;
+    b=EmF4u6As1PHEISxdNFI4jU7WPILLDE5C8yIJTjZZ1pdjoF/zpdrkehlbAg1YJImEy4
+    4ji6pVwd4os6MxoWVMegwADeLUTeNkNftsfpoz1RWvcHc1IrbC3nEiMyvEYYs/G2eAKX
+    qv1c1XuKLubvorT0PBcQqhvhN1e50ZrQwI7nzuLROIBH51xaMQ/NLekJrpJnNflNrZ+S
+    5la8A/+411xktgR3gZK6K3bJbPvIh4fffidg1SoQBSK2i9OJ4q/yVU58mJoKB1y5txt7
+    mWL9s9LfziP379i9ml4u4zV3YkrakLxQUHhha4sjbqksVg6I/Y9v9+LTJ6QcqPuz6t7Q
+    wwpg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; t=1620373852;
+    s=strato-dkim-0002; d=strato.com;
+    h=Subject:References:In-Reply-To:Message-ID:Cc:To:From:Date:Cc:Date:
+    From:Subject:Sender;
+    bh=aWaFeFmxl5jkUfo7FyMQPvZTp2BJ/IbPpLpICP9/B3Y=;
+    b=P1SeOHE8NGiyV0hsOVSh63JEU4+oI5levh8fLw5eK1eMb0AWdPEVmsu7VB43eM1wW/
+    fYRtxEf3QiDDN1JrOPZVNd8XTkNsSZFTCujkuI5XrgQmx/0+VLIAnNZP9nmozaXVStTX
+    qhtuaMgNlntPNFMKTLba5YWRuoTkzXrwldU2ZILV8BhtwpcRSglX7hEhCSpNIawIwEpT
+    bpiclobprFuTiQlPxIFsnD6ogIdEb3MGDiJp4MVBmexNEVLNrManASV4Sq5p/sBmumkk
+    S7E2uDlbgY0IEYs8eKTv+pqwvhMDz12pLpac2yVa3ynbbFAoOHxrJiJxzpZMpQ0Ki/kc
+    GELA==
+ARC-Authentication-Results: i=1; strato.com;
+    dkim=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1620373852;
+    s=strato-dkim-0002; d=fpond.eu;
+    h=Subject:References:In-Reply-To:Message-ID:Cc:To:From:Date:Cc:Date:
+    From:Subject:Sender;
+    bh=aWaFeFmxl5jkUfo7FyMQPvZTp2BJ/IbPpLpICP9/B3Y=;
+    b=jcyPeVcCvzmDZdMjm+RBUHIP2wnmn9WFc45n1srY/kvI80lb9XC+HH5zL/b7FH1fUx
+    y2tXnnGWNFZGYN99+W1ZWI6UA9rlU+0sAMxKclFgDLZd/K1bR8F3ATYsHYJ3z/09cUKQ
+    bJpK1uA67T6Ce2xwoGy1wuM1UTLdESNnYKMPS/cPn6lWO0CDmj74AdNBkUKJweehmgaj
+    i9lWPecPAx7AKwRr6HBDEOXhQnaVvB/ZjbY1hzOGFIEGQjBEdTQsgFhQ54+x0gX33HMC
+    r3dJinXBfeybTBs2KZluROVLkrhx+NSDllGmmBq3mbETLlAETajoMPGQ0XNuYMuH+yWI
+    Bosg==
+Authentication-Results: strato.com;
+    dkim=none
+X-RZG-AUTH: ":OWANVUa4dPFUgKR/3dpvnYP0Np73amq+g13rqGzvv3qxio1R8fCv/x28jVM="
+X-RZG-CLASS-ID: mo00
+Received: from oxapp06-01.back.ox.d0m.de
+    by smtp-ox.front (RZmta 47.25.6 AUTH)
+    with ESMTPSA id 30a8b7x477op3aH
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (curve X9_62_prime256v1 with 256 ECDH bits, eq. 3072 bits RSA))
+        (Client did not present a certificate);
+    Fri, 7 May 2021 09:50:51 +0200 (CEST)
+Date:   Fri, 7 May 2021 09:50:51 +0200 (CEST)
+From:   Ulrich Hecht <uli@fpond.eu>
+To:     Geert Uytterhoeven <geert+renesas@glider.be>,
+        Sergei Shtylyov <sergei.shtylyov@gmail.com>,
+        Fabrizio Castro <fabrizio.castro.jz@renesas.com>,
+        Wolfgang Grandegger <wg@grandegger.com>,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>
+Cc:     linux-can@vger.kernel.org, linux-renesas-soc@vger.kernel.org,
+        devicetree@vger.kernel.org, netdev@vger.kernel.org
+Message-ID: <1705465210.1034725.1620373851891@webmail.strato.com>
+In-Reply-To: <561c35648e22a3c1e3b5477ae27fd1a50da7fe98.1620323639.git.geert+renesas@glider.be>
+References: <cover.1620323639.git.geert+renesas@glider.be>
+ <561c35648e22a3c1e3b5477ae27fd1a50da7fe98.1620323639.git.geert+renesas@glider.be>
+Subject: Re: [PATCH 1/2] dt-bindings: can: rcar_can: Convert to json-schema
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII;
- format=flowed
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Date:   Fri, 07 May 2021 09:35:12 +0200
-From:   Michael Walle <michael@walle.cc>
-To:     Xiaoliang Yang <xiaoliang.yang_1@nxp.com>
-Cc:     Vladimir Oltean <vladimir.oltean@nxp.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        UNGLinuxDriver@microchip.com, alexandre.belloni@bootlin.com,
-        allan.nielsen@microchip.com,
-        Claudiu Manoil <claudiu.manoil@nxp.com>, davem@davemloft.net,
-        idosch@mellanox.com, joergen.andreasen@microchip.com,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        Po Liu <po.liu@nxp.com>, vinicius.gomes@intel.com
-Subject: Re: [EXT] Re: [net-next] net: dsa: felix: disable always guard band
- bit for TAS config
-In-Reply-To: <DB8PR04MB5785A6A773FEA4F3E0E77698F0579@DB8PR04MB5785.eurprd04.prod.outlook.com>
-References: <20210419102530.20361-1-xiaoliang.yang_1@nxp.com>
- <20210504170514.10729-1-michael@walle.cc>
- <20210504181833.w2pecbp2qpuiactv@skbuf>
- <c7618025da6723418c56a54fe4683bd7@walle.cc>
- <20210504185040.ftkub3ropuacmyel@skbuf>
- <ccb40b7fd18b51ecfc3f849a47378c54@walle.cc>
- <20210504191739.73oejybqb6z7dlxr@skbuf>
- <d933eef300cb1e1db7d36ca2cb876ef6@walle.cc>
- <20210504213259.l5rbnyhxrrbkykyg@skbuf>
- <efe5ac03ceddc8ff472144b5fe9fd046@walle.cc>
- <DB8PR04MB5785A6A773FEA4F3E0E77698F0579@DB8PR04MB5785.eurprd04.prod.outlook.com>
-User-Agent: Roundcube Webmail/1.4.11
-Message-ID: <2898c3ae1319756e13b95da2b74ccacc@walle.cc>
-X-Sender: michael@walle.cc
+X-Priority: 3
+Importance: Normal
+X-Mailer: Open-Xchange Mailer v7.10.4-Rev22
+X-Originating-Client: open-xchange-appsuite
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Xiaoliang,
 
-Am 2021-05-07 09:16, schrieb Xiaoliang Yang:
-> On 2021-05-06 21:25, Michael Walle <michael@walle.cc> wrote:
->> Am 2021-05-04 23:33, schrieb Vladimir Oltean:
->> > [ trimmed the CC list, as this is most likely spam for most people ]
->> >
->> > On Tue, May 04, 2021 at 10:23:11PM +0200, Michael Walle wrote:
->> >> Am 2021-05-04 21:17, schrieb Vladimir Oltean:
->> >> > On Tue, May 04, 2021 at 09:08:00PM +0200, Michael Walle wrote:
->> >> > > > > > > As explained in another mail in this thread, all queues
->> >> > > > > > > are marked as scheduled. So this is actually a no-op,
->> >> > > > > > > correct? It doesn't matter if it set or not set for now. Dunno why
->> we even care for this bit then.
->> >> > > > > >
->> >> > > > > > It matters because ALWAYS_GUARD_BAND_SCH_Q reduces the
->> >> > > > > > available throughput when set.
->> >> > > > >
->> >> > > > > Ahh, I see now. All queues are "scheduled" but the guard band
->> >> > > > > only applies for "non-scheduled" -> "scheduled" transitions.
->> >> > > > > So the guard band is never applied, right? Is that really
->> >> > > > > what we want?
->> >> > > >
->> >> > > > Xiaoliang explained that yes, this is what we want. If the end
->> >> > > > user wants a guard band they can explicitly add a "sched-entry
->> >> > > > 00" in the tc-taprio config.
->> >> > >
->> >> > > You're disabling the guard band, then. I figured, but isn't that
->> >> > > suprising for the user? Who else implements taprio? Do they do it
->> >> > > in the same way? I mean this behavior is passed right to the
->> >> > > userspace and have a direct impact on how it is configured. Of
->> >> > > course a user can add it manually, but I'm not sure that is what
->> >> > > we want here. At least it needs to be documented somewhere. Or
->> >> > > maybe it should be a switchable option.
->> >> > >
->> >> > > Consider the following:
->> >> > > sched-entry S 01 25000
->> >> > > sched-entry S fe 175000
->> >> > > basetime 0
->> >> > >
->> >> > > Doesn't guarantee, that queue 0 is available at the beginning of
->> >> > > the cycle, in the worst case it takes up to <begin of cycle> +
->> >> > > ~12.5us until the frame makes it through (given gigabit and 1518b
->> >> > > frames).
->> >> > >
->> >> > > Btw. there are also other implementations which don't need a
->> >> > > guard band (because they are store-and-forward and cound the
->> >> > > remaining bytes). So yes, using a guard band and scheduling is
->> >> > > degrading the performance.
->> >> >
->> >> > What is surprising for the user, and I mentioned this already in
->> >> > another thread on this patch, is that the Felix switch overruns the
->> >> > time gate (a packet taking 2 us to transmit will start transmission
->> >> > even if there is only 1 us left of its time slot, delaying the
->> >> > packets from the next time slot by 1 us). I guess that this is why
->> >> > the ALWAYS_GUARD_BAND_SCH_Q bit exists, as a way to avoid these
->> >> > overruns, but it is a bit of a poor tool for that job. Anyway,
->> >> > right now we disable it and live with the overruns.
->> >>
->> >> We are talking about the same thing here. Why is that a poor tool?
->> >
->> > It is a poor tool because it revolves around the idea of "scheduled
->> > queues" and "non-scheduled queues".
->> >
->> > Consider the following tc-taprio schedule:
->> >
->> >       sched-entry S 81 2000 # TC 7 and 0 open, all others closed
->> >       sched-entry S 82 2000 # TC 7 and 1 open, all others closed
->> >       sched-entry S 84 2000 # TC 7 and 2 open, all others closed
->> >       sched-entry S 88 2000 # TC 7 and 3 open, all others closed
->> >       sched-entry S 90 2000 # TC 7 and 4 open, all others closed
->> >       sched-entry S a0 2000 # TC 7 and 5 open, all others closed
->> >       sched-entry S c0 2000 # TC 7 and 6 open, all others closed
->> >
->> > Otherwise said, traffic class 7 should be able to send any time it
->> > wishes.
->> 
->> What is the use case behind that? TC7 (with the highest priority) may 
->> always
->> take precedence of the other TCs, thus what is the point of having a 
->> dedicated
->> window for the others.
->> 
->> Anyway, I've tried it and there are no hiccups. I've meassured the 
->> delta
->> between the start of successive packets and they are always ~12370ns 
->> for a
->> 1518b frame. TC7 is open all the time, which makes sense. It only 
->> happens if
->> you actually close the gate, eg. you have a sched-entry where a TC7 
->> bit is not
->> set. In this case, I can see a difference between 
->> ALWAYS_GUARD_BAND_SCH_Q
->> set and not set. If it is set, there is up to a ~12.5us delay added 
->> (of course it
->> depends on when the former frame was scheduled).
->> 
->> It seems that also needs to be 1->0 transition.
->> 
->> You've already mentioned that the switch violates the Qbv standard.
->> What makes you think so? IMHO before that patch, it wasn't violated.
->> Now it likely is (still have to confirm that). How can this be 
->> reasonable?
->> 
->> If you have a look at the initial commit message, it is about making 
->> it possible
->> to have a smaller gate window, but that is not possible because of the 
->> current
->> guard band of ~12.5us. It seems to be a shortcut for not having the 
->> MAXSDU
->> (and thus the length of the guard band) configurable. Yes (static) 
->> guard bands
->> will have a performance impact, also described in [1]. You are trading 
->> the
->> correctness of the TAS for performance. And it is the sole purpose of 
->> Qbv to
->> have a determisitc way (in terms of timing) of sending the frames.
->> 
->> And telling the user, hey, we know we violate the Qbv standard, please 
->> insert
->> the guard bands yourself if you really need them is not a real 
->> solution. As
->> already mentioned, (1) it is not documented anywhere, (2) can't be 
->> shared
->> among other switches (unless they do the same workaround) and (3) what 
->> am
->> I supposed to do for TSN compliance testing. Modifying the schedule 
->> that is
->> about to be checked (and thus given by the compliance suite)?
->> 
-> I disable the always guard band bit because each gate control list
-> needs to reserve a guard band slot, which affects performance. The
-> user does not need to set a guard band for each queue transmission.
-> For example, "sched-entry S 01 2000 sched-entry S fe 98000". Queue 0
-> is protected traffic and has smaller frames, so there is no need to
-> reserve a guard band during the open time of queue 0. The user can add
-> the following guard band before protected traffic: "sched-entry S 00
-> 25000 sched-entry S 01 2000 sched-entry S fe 73000"
+> On 05/06/2021 7:55 PM Geert Uytterhoeven <geert+renesas@glider.be> wrote:
+> 
+>  
+> Convert the Renesas R-Car CAN Controller Device Tree binding
+> documentation to json-schema.
+> 
+> Document missing properties.
+> Update the example to match reality.
+> 
+> Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
+> ---
+> I have listed Sergei as the maintainer, as he wrote the original driver
+> and bindings.  Sergei: Please scream if this is inappropriate ;-)
+> ---
+>  .../devicetree/bindings/net/can/rcar_can.txt  |  80 ----------
+>  .../bindings/net/can/renesas,rcar-can.yaml    | 139 ++++++++++++++++++
+>  2 files changed, 139 insertions(+), 80 deletions(-)
+>  delete mode 100644 Documentation/devicetree/bindings/net/can/rcar_can.txt
+>  create mode 100644 Documentation/devicetree/bindings/net/can/renesas,rcar-can.yaml
+> 
+> diff --git a/Documentation/devicetree/bindings/net/can/rcar_can.txt b/Documentation/devicetree/bindings/net/can/rcar_can.txt
+> deleted file mode 100644
+> index 90ac4fef23f5255c..0000000000000000
+> --- a/Documentation/devicetree/bindings/net/can/rcar_can.txt
+> +++ /dev/null
+> @@ -1,80 +0,0 @@
+> -Renesas R-Car CAN controller Device Tree Bindings
+> --------------------------------------------------
+> -
+> -Required properties:
+> -- compatible: "renesas,can-r8a7742" if CAN controller is a part of R8A7742 SoC.
+> -	      "renesas,can-r8a7743" if CAN controller is a part of R8A7743 SoC.
+> -	      "renesas,can-r8a7744" if CAN controller is a part of R8A7744 SoC.
+> -	      "renesas,can-r8a7745" if CAN controller is a part of R8A7745 SoC.
+> -	      "renesas,can-r8a77470" if CAN controller is a part of R8A77470 SoC.
+> -	      "renesas,can-r8a774a1" if CAN controller is a part of R8A774A1 SoC.
+> -	      "renesas,can-r8a774b1" if CAN controller is a part of R8A774B1 SoC.
+> -	      "renesas,can-r8a774c0" if CAN controller is a part of R8A774C0 SoC.
+> -	      "renesas,can-r8a774e1" if CAN controller is a part of R8A774E1 SoC.
+> -	      "renesas,can-r8a7778" if CAN controller is a part of R8A7778 SoC.
+> -	      "renesas,can-r8a7779" if CAN controller is a part of R8A7779 SoC.
+> -	      "renesas,can-r8a7790" if CAN controller is a part of R8A7790 SoC.
+> -	      "renesas,can-r8a7791" if CAN controller is a part of R8A7791 SoC.
+> -	      "renesas,can-r8a7792" if CAN controller is a part of R8A7792 SoC.
+> -	      "renesas,can-r8a7793" if CAN controller is a part of R8A7793 SoC.
+> -	      "renesas,can-r8a7794" if CAN controller is a part of R8A7794 SoC.
+> -	      "renesas,can-r8a7795" if CAN controller is a part of R8A7795 SoC.
+> -	      "renesas,can-r8a7796" if CAN controller is a part of R8A77960 SoC.
+> -	      "renesas,can-r8a77961" if CAN controller is a part of R8A77961 SoC.
+> -	      "renesas,can-r8a77965" if CAN controller is a part of R8A77965 SoC.
+> -	      "renesas,can-r8a77990" if CAN controller is a part of R8A77990 SoC.
+> -	      "renesas,can-r8a77995" if CAN controller is a part of R8A77995 SoC.
+> -	      "renesas,rcar-gen1-can" for a generic R-Car Gen1 compatible device.
+> -	      "renesas,rcar-gen2-can" for a generic R-Car Gen2 or RZ/G1
+> -	      compatible device.
+> -	      "renesas,rcar-gen3-can" for a generic R-Car Gen3 or RZ/G2
+> -	      compatible device.
+> -	      When compatible with the generic version, nodes must list the
+> -	      SoC-specific version corresponding to the platform first
+> -	      followed by the generic version.
+> -
+> -- reg: physical base address and size of the R-Car CAN register map.
+> -- interrupts: interrupt specifier for the sole interrupt.
+> -- clocks: phandles and clock specifiers for 3 CAN clock inputs.
+> -- clock-names: 3 clock input name strings: "clkp1", "clkp2", and "can_clk".
+> -- pinctrl-0: pin control group to be used for this controller.
+> -- pinctrl-names: must be "default".
+> -
+> -Required properties for R8A774A1, R8A774B1, R8A774C0, R8A774E1, R8A7795,
+> -R8A77960, R8A77961, R8A77965, R8A77990, and R8A77995:
+> -For the denoted SoCs, "clkp2" can be CANFD clock. This is a div6 clock and can
+> -be used by both CAN and CAN FD controller at the same time. It needs to be
+> -scaled to maximum frequency if any of these controllers use it. This is done
+> -using the below properties:
+> -
+> -- assigned-clocks: phandle of clkp2(CANFD) clock.
+> -- assigned-clock-rates: maximum frequency of this clock.
+> -
+> -Optional properties:
+> -- renesas,can-clock-select: R-Car CAN Clock Source Select. Valid values are:
+> -			    <0x0> (default) : Peripheral clock (clkp1)
+> -			    <0x1> : Peripheral clock (clkp2)
+> -			    <0x3> : External input clock
+> -
+> -Example
+> --------
+> -
+> -SoC common .dtsi file:
+> -
+> -	can0: can@e6e80000 {
+> -		compatible = "renesas,can-r8a7791", "renesas,rcar-gen2-can";
+> -		reg = <0 0xe6e80000 0 0x1000>;
+> -		interrupts = <0 186 IRQ_TYPE_LEVEL_HIGH>;
+> -		clocks = <&mstp9_clks R8A7791_CLK_RCAN0>,
+> -			 <&cpg_clocks R8A7791_CLK_RCAN>, <&can_clk>;
+> -		clock-names = "clkp1", "clkp2", "can_clk";
+> -		status = "disabled";
+> -	};
+> -
+> -Board specific .dts file:
+> -
+> -&can0 {
+> -	pinctrl-0 = <&can0_pins>;
+> -	pinctrl-names = "default";
+> -	status = "okay";
+> -};
+> diff --git a/Documentation/devicetree/bindings/net/can/renesas,rcar-can.yaml b/Documentation/devicetree/bindings/net/can/renesas,rcar-can.yaml
+> new file mode 100644
+> index 0000000000000000..fadc871fd6b0eada
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/net/can/renesas,rcar-can.yaml
+> @@ -0,0 +1,139 @@
+> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+> +%YAML 1.2
+> +---
+> +$id: http://devicetree.org/schemas/net/can/renesas,rcar-can.yaml#
+> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> +
+> +title: Renesas R-Car CAN Controller
+> +
+> +maintainers:
+> +  - Sergei Shtylyov <sergei.shtylyov@gmail.com>
+> +
+> +properties:
+> +  compatible:
+> +    oneOf:
+> +      - items:
+> +          - enum:
+> +              - renesas,can-r8a7778      # R-Car M1-A
+> +              - renesas,can-r8a7779      # R-Car H1
+> +          - const: renesas,rcar-gen1-can # R-Car Gen1
+> +
+> +      - items:
+> +          - enum:
+> +              - renesas,can-r8a7742      # RZ/G1H
+> +              - renesas,can-r8a7743      # RZ/G1M
+> +              - renesas,can-r8a7744      # RZ/G1N
+> +              - renesas,can-r8a7745      # RZ/G1E
+> +              - renesas,can-r8a77470     # RZ/G1C
+> +              - renesas,can-r8a7790      # R-Car H2
+> +              - renesas,can-r8a7791      # R-Car M2-W
+> +              - renesas,can-r8a7792      # R-Car V2H
+> +              - renesas,can-r8a7793      # R-Car M2-N
+> +              - renesas,can-r8a7794      # R-Car E2
+> +          - const: renesas,rcar-gen2-can # R-Car Gen2 and RZ/G1
+> +
+> +      - items:
+> +          - enum:
+> +              - renesas,can-r8a774a1     # RZ/G2M
+> +              - renesas,can-r8a774b1     # RZ/G2N
+> +              - renesas,can-r8a774c0     # RZ/G2E
+> +              - renesas,can-r8a774e1     # RZ/G2H
+> +              - renesas,can-r8a7795      # R-Car H3
+> +              - renesas,can-r8a7796      # R-Car M3-W
+> +              - renesas,can-r8a77961     # R-Car M3-W+
+> +              - renesas,can-r8a77965     # R-Car M3-N
+> +              - renesas,can-r8a77990     # R-Car E3
+> +              - renesas,can-r8a77995     # R-Car D3
+> +          - const: renesas,rcar-gen3-can # R-Car Gen3 and RZ/G2
+> +
+> +  reg:
+> +    maxItems: 1
+> +
+> +  interrupts:
+> +    maxItems: 1
+> +
+> +  clocks:
+> +    maxItems: 3
+> +
+> +  clock-names:
+> +    items:
+> +      - const: clkp1
+> +      - const: clkp2
+> +      - const: can_clk
+> +
+> +  power-domains:
+> +    maxItems: 1
+> +
+> +  resets:
+> +    maxItems: 1
+> +
+> +  renesas,can-clock-select:
+> +    $ref: /schemas/types.yaml#/definitions/uint32
+> +    enum: [ 0, 1, 3 ]
+> +    default: 0
+> +    description: |
+> +      R-Car CAN Clock Source Select.  Valid values are:
+> +        <0x0> (default) : Peripheral clock (clkp1)
+> +        <0x1> : Peripheral clock (clkp2)
+> +        <0x3> : External input clock
+> +
+> +  assigned-clocks:
+> +    description:
+> +      Reference to the clkp2 (CANFD) clock.
+> +      On R-Car Gen3 and RZ/G2 SoCs, "clkp2" is the CANFD clock.  This is a div6
+> +      clock and can be used by both CAN and CAN FD controllers at the same
+> +      time.  It needs to be scaled to maximum frequency if any of these
+> +      controllers use it.
+> +
+> +  assigned-clock-rates:
+> +    description: Maximum frequency of the CANFD clock.
+> +
+> +required:
+> +  - compatible
+> +  - reg
+> +  - interrupts
+> +  - clocks
+> +  - clock-names
+> +  - power-domains
+> +
+> +allOf:
+> +  - $ref: can-controller.yaml#
+> +
+> +  - if:
+> +      not:
+> +        properties:
+> +          compatible:
+> +            contains:
+> +              const: renesas,rcar-gen1-can
+> +    then:
+> +      required:
+> +        - resets
+> +
+> +  - if:
+> +      properties:
+> +        compatible:
+> +          contains:
+> +            const: renesas,rcar-gen3-can
+> +    then:
+> +      required:
+> +        - assigned-clocks
+> +        - assigned-clock-rates
+> +
+> +unevaluatedProperties: false
+> +
+> +examples:
+> +  - |
+> +    #include <dt-bindings/clock/r8a7791-cpg-mssr.h>
+> +    #include <dt-bindings/interrupt-controller/arm-gic.h>
+> +    #include <dt-bindings/power/r8a7791-sysc.h>
+> +
+> +    can0: can@e6e80000 {
+> +            compatible = "renesas,can-r8a7791", "renesas,rcar-gen2-can";
+> +            reg = <0xe6e80000 0x1000>;
+> +            interrupts = <GIC_SPI 186 IRQ_TYPE_LEVEL_HIGH>;
+> +            clocks = <&cpg CPG_MOD 916>,
+> +                     <&cpg CPG_CORE R8A7791_CLK_RCAN>, <&can_clk>;
+> +            clock-names = "clkp1", "clkp2", "can_clk";
+> +            power-domains = <&sysc R8A7791_PD_ALWAYS_ON>;
+> +            resets = <&cpg 916>;
+> +    };
+> -- 
+> 2.25.1
 
-Again, you're passing the handling of the guard band to the user,
-which is an implementation detail for this switch (unless there is
-a new switch for it on the qdisc IMHO). And (1), (2) and (3) from
-above is still valid.
+Reviewed-by: Ulrich Hecht <uli+renesas@fpond.eu>
 
-Consider the entry
-  sched-entry S 01 2000
-  sched-entry S 02 20000
-
-A user assumes that TC0 is open for 2us. But with your change
-it is bascially open for 2us + 12.5us. And even worse, it is not
-deterministic. A frame in the subsequent queue (ie TC1) can be
-scheduled anywhere beteeen 0us and 12.5us after opening the gate,
-depending on wether there is still a frame transmitting on TC0.
-
-> I checked other devices such as ENETC and it can calculate how long
-> the frame transmission will take and determine whether to transmit
-> before the gate is closed. The VSC9959 device does not have this
-> hardware function. If we implement guard bands on each queue, we need
-> to reserve a 12.5us guard band for each GCL, even if it only needs to
-> send a small packet. This confuses customers.
-
-How about getting it right and working on how we can set the MAXSDU
-per queue and thus making the guard band smaller?
-
-> actually, I'm not sure if this will violate the Qbv standard. I looked
-> up the Qbv standard spec, and found it only introduce the guard band
-> before protected window (Annex Q (informative)Traffic scheduling). It
-> allows to design the schedule to accommodate the intended pattern of
-> transmission without overrunning the next gate-close event for the
-> traffic classes concerned.
-
-Vladimir already quoted "IEEE 802.1Q-2018 clause 8.6.8.4". I didn't
-check it, though.
-
-A static guard band is one of the options you have to fulfill that.
-Granted, it is not that efficient, but it is how the switch handles
-it.
-
--michael
+CU
+Uli
