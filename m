@@ -2,103 +2,129 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C134A375DF1
-	for <lists+netdev@lfdr.de>; Fri,  7 May 2021 02:40:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 09D7B375E06
+	for <lists+netdev@lfdr.de>; Fri,  7 May 2021 02:49:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233765AbhEGAll (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 6 May 2021 20:41:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42474 "EHLO
+        id S229867AbhEGAtp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 6 May 2021 20:49:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44270 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229769AbhEGAlk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 6 May 2021 20:41:40 -0400
-Received: from mail-pf1-x432.google.com (mail-pf1-x432.google.com [IPv6:2607:f8b0:4864:20::432])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF19BC061574;
-        Thu,  6 May 2021 17:40:41 -0700 (PDT)
-Received: by mail-pf1-x432.google.com with SMTP id k19so6426375pfu.5;
-        Thu, 06 May 2021 17:40:41 -0700 (PDT)
+        with ESMTP id S229650AbhEGAto (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 6 May 2021 20:49:44 -0400
+Received: from mail-pf1-x42f.google.com (mail-pf1-x42f.google.com [IPv6:2607:f8b0:4864:20::42f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 942C7C061574
+        for <netdev@vger.kernel.org>; Thu,  6 May 2021 17:48:45 -0700 (PDT)
+Received: by mail-pf1-x42f.google.com with SMTP id h11so6627860pfn.0
+        for <netdev@vger.kernel.org>; Thu, 06 May 2021 17:48:45 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=Y+6aCk5HTju9cPmZgMXn1TZ8gh0W3uhsXC9LAK6Kp7A=;
-        b=owv7fsRKClwXIjkpRj88urdJdXTVrES++rIXjWgWg76GtHdJ+/PZNnLDmYpVV4pp5a
-         HVVWi6UBRem5+I8n5i0chKSGXksst7baqneIMAdnO1QGat9kbqXP17kFBXx8iYbqgUqk
-         ojo9mOaptutjkYGRJZPZoGxigZy7bgrsiP6OVj7pzSD5+5kVNHRbQd9F69mhnbXqqMsf
-         WhaehLCYZ8FXqLrEgx0uxw1lWHWo+e9QmAiFlgg0YzY+rQZC/htX4JRdj1T8FWY77ahx
-         iAnvA5qYTMptr1l5IAkLJLMp8hhCi/hyG2zeS+0EleJLf//E69FppbKgH8WGMNBywOxL
-         AAtw==
+        d=pensando.io; s=google;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-transfer-encoding:content-language;
+        bh=KXmyP+9gf7JW+NByBVKkUA1UdyWmqKq2FyoGZCOgUaM=;
+        b=2MHOKqsip+t0GYheak3XDbsMRhqZ9A6yl4rU0oStES7z+6iC6Sg4jpGsurNi3Z7nWt
+         g4Cm+vGKWEKUAn4CM/00TVA7KKsCLL5MFHI6s5c2f1mFVhW3pnHUfjr6GS6vz39pLTHw
+         4wQc1gq+sFiS/GYX0m+ZrYZFO9CP9uutWGNXEwAq9qfiQRSuS3iSrDofEJvZL8fBN1u2
+         bw1bhdwz9nycaouMLzj9lDrVk4L59ntZJVMYht8eteOCXpRCejliLEg67moiAxfKmW6n
+         1EJ8u5Igiq2EciY4uKUerdhtqCPFsAiwS/EREVdyguZPbIHGqF30OVY24ddYkscrdVcS
+         rKBg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=Y+6aCk5HTju9cPmZgMXn1TZ8gh0W3uhsXC9LAK6Kp7A=;
-        b=U3KRAirMr3zBl+KX0msTa4pJ5LohGsRPeNcqqnSgb3hUszr3cVw+kNR/p/OX1jHxjp
-         HlCTeiTX6K5QH+B/FzkuXj6bwUyxrerADulmS5AP1875JPOMPyqSx1o++L8fOpnEUATg
-         8TYAycpIocD+fjbfNesCHzfhWNI8jDNeQQY3ovsFd4c+oHPG/herVmab3UsDkIwshHpK
-         LtJ8fE7AGCE2jhwa4xCTxwgqTwumWbDd9pjIoXRnzB88gVOMGPsH37Oqn1LgAf0zXOQh
-         OPj5zakXP2MOFp/gUhce6QxPGr2hLJl3wKT2sQXQPIWPCm6qUh51uP9T5klflppSUzHl
-         fTpw==
-X-Gm-Message-State: AOAM530Yw/+t15+uG6LXKItKzwPdar2lO7EpCur5YoDQNZIPBjRAOFvw
-        YJmpJI89oYlYN7348ArqyxPvUKpwMG4OJSTlg8A=
-X-Google-Smtp-Source: ABdhPJzFlMqZ0efn8khSNXFAAH59ahct1SnfrFEr0/AkR4YUJa8sDs/6M899Sz6QFsBXgVgame/L2nVab7SsT/6bVZQ=
-X-Received: by 2002:a65:45c3:: with SMTP id m3mr6909587pgr.179.1620348041346;
- Thu, 06 May 2021 17:40:41 -0700 (PDT)
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-transfer-encoding
+         :content-language;
+        bh=KXmyP+9gf7JW+NByBVKkUA1UdyWmqKq2FyoGZCOgUaM=;
+        b=RYgqKfh6GBS+rVwQruGhHkU0qcxFdYyc32t3X6KzUVkNA3FS7yiu2LnIuj9F4U2TfA
+         dcGvgs4AeJNeWw+fPwkk/WYXBphxnr9tU3V7ChGWewrRQPIIB7Fo0qe/lN9+0qGihGmx
+         OGykgdyOyhMhrnHkIBAtjkEVmP5S1vT+vMg7iPPXgGesLhc7KNPpAjKrHYlFw1radcJY
+         qHHx5jelavtGeB7QHAATPY7tIPH3/gJmsSysutozWfvTg0y4VjxBM42rzG5msTZHkSJz
+         bbrlpg45ePBove2dcMJccEgDpoAWjRr/YFaTnyckuF9VKcap9MFRgtnvJE2viqHw//1Y
+         qwQQ==
+X-Gm-Message-State: AOAM533QGq3LGDaB5D4zgJBp/UwdZzx/TnJRcW9Nh6n8ElIyNAJ8xyv/
+        H4j3PtcTnQcqRHSxN8bBiBBiPw==
+X-Google-Smtp-Source: ABdhPJy586FDOMh0R8EdJ1PNcUeuAeYQpjKr72XitX+7+rfYz28v3P+rFAuAKAhcScFRRJgUcuUsGg==
+X-Received: by 2002:a63:da0a:: with SMTP id c10mr7125479pgh.255.1620348524981;
+        Thu, 06 May 2021 17:48:44 -0700 (PDT)
+Received: from Shannons-MacBook-Pro.local ([50.53.47.17])
+        by smtp.gmail.com with ESMTPSA id 5sm3145550pfi.43.2021.05.06.17.48.43
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 06 May 2021 17:48:44 -0700 (PDT)
+Subject: Re: [PATCH v3 net] ionic: fix ptp support config breakage
+To:     Randy Dunlap <rdunlap@infradead.org>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, drivers@pensando.io,
+        Allen Hubbe <allenbh@pensando.io>
+References: <20210506041846.62502-1-snelson@pensando.io>
+ <20210506171529.0d95c9da@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <b3099289-0ae4-7a4f-6739-55f788418eb8@infradead.org>
+From:   Shannon Nelson <snelson@pensando.io>
+Message-ID: <d412627d-467d-8e19-f4b6-2899afa1845d@pensando.io>
+Date:   Thu, 6 May 2021 17:48:43 -0700
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
+ Gecko/20100101 Thunderbird/78.10.1
 MIME-Version: 1.0
-References: <20210505200242.31d58452@gmail.com>
-In-Reply-To: <20210505200242.31d58452@gmail.com>
-From:   Cong Wang <xiyou.wangcong@gmail.com>
-Date:   Thu, 6 May 2021 17:40:30 -0700
-Message-ID: <CAM_iQpUSek_wYBCbnuDRF8AB5vTVPppsLaeYa9jt2dqidYSWhg@mail.gmail.com>
-Subject: Re: GPF in net sybsystem
-To:     Pavel Skripkin <paskripkin@gmail.com>
-Cc:     Ralf Baechle <ralf@linux-mips.org>,
-        David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <b3099289-0ae4-7a4f-6739-55f788418eb8@infradead.org>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
+Content-Language: en-US
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, May 5, 2021 at 10:36 AM Pavel Skripkin <paskripkin@gmail.com> wrote:
+On 5/6/21 5:21 PM, Randy Dunlap wrote:
+> On 5/6/21 5:15 PM, Jakub Kicinski wrote:
+>> On Wed,  5 May 2021 21:18:46 -0700 Shannon Nelson wrote:
+>>> Driver link failed with undefined references in some
+>>> kernel config variations.
+>> This is really vague and the patch is not very obvious.
+>>
+>>>   ionic-y := ionic_main.o ionic_bus_pci.o ionic_devlink.o ionic_dev.o \
+>>>   	   ionic_debugfs.o ionic_lif.o ionic_rx_filter.o ionic_ethtool.o \
+>>> -	   ionic_txrx.o ionic_stats.o ionic_fw.o
+>>> -ionic-$(CONFIG_PTP_1588_CLOCK) += ionic_phc.o
+>>> +	   ionic_txrx.o ionic_stats.o ionic_fw.o ionic_phc.o
+>> So we'd replace a build dependency..
+>>
+>>> diff --git a/drivers/net/ethernet/pensando/ionic/ionic_phc.c b/drivers/net/ethernet/pensando/ionic/ionic_phc.c
+>>> index a87c87e86aef..30c78808c45a 100644
+>>> --- a/drivers/net/ethernet/pensando/ionic/ionic_phc.c
+>>> +++ b/drivers/net/ethernet/pensando/ionic/ionic_phc.c
+>>> @@ -1,6 +1,8 @@
+>>>   // SPDX-License-Identifier: GPL-2.0
+>>>   /* Copyright(c) 2017 - 2021 Pensando Systems, Inc */
+>>>   
+>>> +#if IS_ENABLED(CONFIG_PTP_1588_CLOCK)
+>>> +
+>>>   #include <linux/netdevice.h>
+>>>   #include <linux/etherdevice.h>
+>>>   
+>>> @@ -613,3 +615,4 @@ void ionic_lif_free_phc(struct ionic_lif *lif)
+>>>   	devm_kfree(lif->ionic->dev, lif->phc);
+>>>   	lif->phc = NULL;
+>>>   }
+>>> +#endif /* IS_ENABLED(CONFIG_PTP_1588_CLOCK) */
+>> .. with an ifdef around an entire file? Does not feel very clean.
+>>
+>> The construct of using:
+>>
+>> 	drv-$(CONFIG_PTP_1588_CLOCK) += ptp.o
+>>
+>> seems relatively common, why does it now work here?
+>>
+>> Maybe the config in question has PTP as a module and ionic built in?
+>> Then you should add depends on PTP_1588_CLOCK || !PTP_1588_CLOCK.
+>>
+>> Maybe somehow the "ionic-y" confuses kbuild and it should be ionic-objs?
+>>
+>> At the very least we need a better explanation in the commit message.
+>>
+> I'll take a look if someone can point me to the .config file.
 >
-> Hi, netdev developers!
->
-> I've spent some time debugging this bug
-> https://syzkaller.appspot.com/bug?id=c670fb9da2ce08f7b5101baa9426083b39ee9f90
-> and, I believe, I found the root case:
->
-> static int nr_accept(struct socket *sock, struct socket *newsock, int flags,
->                      bool kern)
-> {
-> ....
->         for (;;) {
->                 prepare_to_wait(sk_sleep(sk), &wait, TASK_INTERRUPTIBLE);
->                 ...
->                 if (!signal_pending(current)) {
->                         release_sock(sk);
->                         schedule();
->                         lock_sock(sk);
->                         continue;
->                 }
->                 ...
->         }
-> ...
-> }
->
-> When calling process will be scheduled, another proccess can release
-> this socket and set sk->sk_wq to NULL. (In this case nr_release()
-> will call sock_orphan(sk)). In this case GPF will happen in
-> prepare_to_wait().
 
-Are you sure?
+These are the notes I got from kernel test robot:
+https://lore.kernel.org/lkml/202105041020.efEaBOYC-lkp@intel.com/
+https://lore.kernel.org/lkml/202105041154.GrLZmjGh-lkp@intel.com/
+https://lore.kernel.org/lkml/202105041634.paURyDp0-lkp@intel.com/
+https://lore.kernel.org/lkml/202105050636.UXXDl7m2-lkp@intel.com/
 
-How could another process release this socket when its fd is still
-refcnt'ed? That is, accept() still does not return yet at the point of
-schedule().
+sln
 
-Also, the above pattern is pretty common in networking subsystem,
-see sk_wait_event(), so how come it is only problematic for netrom?
-
-Thanks.
