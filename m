@@ -2,24 +2,24 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D3A8E37624D
-	for <lists+netdev@lfdr.de>; Fri,  7 May 2021 10:47:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 36C0B37624E
+	for <lists+netdev@lfdr.de>; Fri,  7 May 2021 10:47:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236420AbhEGIsp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 7 May 2021 04:48:45 -0400
-Received: from inva020.nxp.com ([92.121.34.13]:59638 "EHLO inva020.nxp.com"
+        id S236427AbhEGIsu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 7 May 2021 04:48:50 -0400
+Received: from inva020.nxp.com ([92.121.34.13]:59670 "EHLO inva020.nxp.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230302AbhEGIsp (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 7 May 2021 04:48:45 -0400
+        id S236422AbhEGIsq (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 7 May 2021 04:48:46 -0400
 Received: from inva020.nxp.com (localhost [127.0.0.1])
-        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id C0CEE1A09FD;
-        Fri,  7 May 2021 10:47:44 +0200 (CEST)
+        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id 484B81A19CC;
+        Fri,  7 May 2021 10:47:46 +0200 (CEST)
 Received: from invc005.ap-rdc01.nxp.com (invc005.ap-rdc01.nxp.com [165.114.16.14])
-        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id E4A271A19BF;
-        Fri,  7 May 2021 10:47:41 +0200 (CEST)
+        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id 2B3AE1A19C3;
+        Fri,  7 May 2021 10:47:43 +0200 (CEST)
 Received: from localhost.localdomain (mega.ap.freescale.net [10.192.208.232])
-        by invc005.ap-rdc01.nxp.com (Postfix) with ESMTP id 3F4CA4029F;
-        Fri,  7 May 2021 10:47:38 +0200 (CEST)
+        by invc005.ap-rdc01.nxp.com (Postfix) with ESMTP id 53074402CF;
+        Fri,  7 May 2021 10:47:39 +0200 (CEST)
 From:   Yangbo Lu <yangbo.lu@nxp.com>
 To:     netdev@vger.kernel.org
 Cc:     Yangbo Lu <yangbo.lu@nxp.com>,
@@ -27,108 +27,384 @@ Cc:     Yangbo Lu <yangbo.lu@nxp.com>,
         Richard Cochran <richardcochran@gmail.com>,
         Claudiu Manoil <claudiu.manoil@nxp.com>,
         Jakub Kicinski <kuba@kernel.org>
-Subject: [net-next 0/6] ptp: support virtual clocks for multiple domains
-Date:   Fri,  7 May 2021 16:57:50 +0800
-Message-Id: <20210507085756.20427-1-yangbo.lu@nxp.com>
+Subject: [net-next 1/6] ptp: add ptp virtual clock driver framework
+Date:   Fri,  7 May 2021 16:57:51 +0800
+Message-Id: <20210507085756.20427-2-yangbo.lu@nxp.com>
 X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20210507085756.20427-1-yangbo.lu@nxp.com>
+References: <20210507085756.20427-1-yangbo.lu@nxp.com>
 X-Virus-Scanned: ClamAV using ClamSMTP
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-PTP hardware clock user space API, together with SO_TIMESTAMPING socket
-options presents a standardized method for developing PTP user space
-programs.
+This patch is to add ptp virtual clock driver framework. The main purpose
+is to support PTP multiple domains over multiple PTP virtual clocks with
+only single physical clock.
 
-Current ptp driver exposes only one /dev/ptpN device which is the time
-source for hardware timestamping. No matter the /dev/ptpN device is
-registered by a physical clock or a virtual clock utilizing timecounter,
-there is only one.
+What has the patch exported,
 
-This patch-set provides a way to support PTP virtual clocks for multiple
-domains:
+- ptp_vclock_cc structure for specifying cyclecounter information that ptp
+  virtual clocks will use. When registering ptp clock for physical clock,
+  the ptp virtual clock will be valid to register if the pointer of
+  ptp_vclock_cc structure is provided in ptp_clock_info of physical clock.
 
-- Register PTP virtual clock with specified domain via sysfs. No number
-  limitation. Or remove them via sysfs if not needs them.
+- ptp_vclock_register/ptp_vclock_unregister APIs for ptp virtual clock
+  register/unregister for specified domain number. They are private for ptp
+  driver.
 
-- The domain that ptp clock serves could be changed via sysfs too.
+- ptp_clock_domain_tstamp API to convert hardware time stamp to domain time
+  stamp.
 
-- Regarding network timestamp, the additional work to support domain is
-  parsing PTP packet domain number, and convert hardware timestamp to
-  domain time before transmitting it to upper stack. (If no ptp device
-  serves the domain, just use the hardware timestamp. No conversion.)
+- ptp_get_pclock_info API for device driver to get ptp_clock_info pointer
+  of physical clock from cyclecounter pointer of ptp virtual clock.
 
-So actually, the ptp virtual clock driver exposes more /dev/ptpN
-devices for using. The timestamp conversion to domain time is handled in
-driver. No user space API changing to support multiple domains.
-And single domain PTP user space application could be ran multiple times
-in background for multiple domains synchronization verification.
-
-For example, we have ptp virtual clocks ptp1, ptp2, and ptp3 registered
-for domain 1, 2 and 3 on board1. We could run ptp4l for 3 domains
-synchronization on board1.
-
-  ptp4l -i eno0 -p/dev/ptp1 -m --domainNumber=1 --priority1=127 > domain1-master.log 2>&1 &
-  ptp4l -i eno0 -p/dev/ptp2 -m --domainNumber=2 --priority1=127 > domain2-master.log 2>&1 &
-  ptp4l -i eno0 -p/dev/ptp3 -m --domainNumber=3 --priority1=128 > domain3-slave.log 2>&1 &
-
-On board2 which is connected to board1 in back-to-back way, we have ptp
-virtual clocks ptp1, ptp2, and ptp3 registered for domain 1, 2 and 3.
-We could run ptp4l for 3 domains synchronization with board1 on board2.
-
-  ptp4l -i eno0 -p/dev/ptp1 -m --domainNumber=1 --priority1=128 > domain1-slave.log 2>&1 &
-  ptp4l -i eno0 -p/dev/ptp2 -m --domainNumber=2 --priority1=128 > domain2-slave.log 2>&1 &
-  ptp4l -i eno0 -p/dev/ptp3 -m --domainNumber=3 --priority1=127 > domain3-master.log 2>&1 &
-
-But this patch-set is not perfect. And there is still much work to do,
-such as,
-
-- Make changing on physical clock transparent to virtual clocks.
-  The virtual clock is based on free running physical clock. If physical
-  clock has to be changed, how to make the change transparent to all
-  virtual clocks? Actually the frequency adjustmend on physical clock
-  may be hidden by updating virtual clocks in opposite direction at same
-  time. Considering the ppb values adjusted, the code execution delay
-  will be little enough to ignore. But it's hard to hide clock stepping,
-  by now I think the workaround may be inhibiting physical clock stepping
-  when run user space ptp application.
-
-- User space API for PTP virtual clock registering/removing, for user
-  space PTP application.
-
-- Make common function for ptp domain parsing so that any driver could
-  use it.
-
-- We may consider some reworking on this ptp virtual clock driver, so that
-  current ptp device drivers with timecounter used may convert to use it.
-
-Yangbo Lu (6):
-  ptp: add ptp virtual clock driver framework
-  ptp: support virtual clock and domain via sysfs
-  ptp_qoriq: export ptp clock reading function for cyclecounter
-  enetc_ptp: support ptp virtual clock
-  enetc: store ptp device pointer
-  enetc: support PTP domain timestamp conversion
-
- Documentation/ABI/testing/sysfs-ptp           |  25 +++
- MAINTAINERS                                   |   6 +
- drivers/net/ethernet/freescale/enetc/enetc.c  |  37 +++-
- drivers/net/ethernet/freescale/enetc/enetc.h  |   1 +
- .../net/ethernet/freescale/enetc/enetc_pf.c   |   5 +
- .../net/ethernet/freescale/enetc/enetc_ptp.c  |  11 ++
- .../net/ethernet/freescale/enetc/enetc_vf.c   |   5 +
- drivers/ptp/Makefile                          |   2 +-
- drivers/ptp/ptp_private.h                     |  25 +++
- drivers/ptp/ptp_qoriq.c                       |  15 ++
- drivers/ptp/ptp_sysfs.c                       | 122 ++++++++++++
- drivers/ptp/ptp_vclock.c                      | 176 ++++++++++++++++++
- include/linux/fsl/ptp_qoriq.h                 |   1 +
- include/linux/ptp_clock_kernel.h              |  51 +++++
- 14 files changed, 478 insertions(+), 4 deletions(-)
+Signed-off-by: Yangbo Lu <yangbo.lu@nxp.com>
+---
+ MAINTAINERS                      |   6 ++
+ drivers/ptp/Makefile             |   2 +-
+ drivers/ptp/ptp_private.h        |  25 +++++
+ drivers/ptp/ptp_vclock.c         | 176 +++++++++++++++++++++++++++++++
+ include/linux/ptp_clock_kernel.h |  51 +++++++++
+ 5 files changed, 259 insertions(+), 1 deletion(-)
  create mode 100644 drivers/ptp/ptp_vclock.c
 
-
-base-commit: 9d31d2338950293ec19d9b095fbaa9030899dcb4
+diff --git a/MAINTAINERS b/MAINTAINERS
+index 4796ccf9f871..9f9280b29e47 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -14733,6 +14733,12 @@ F:	drivers/net/phy/dp83640*
+ F:	drivers/ptp/*
+ F:	include/linux/ptp_cl*
+ 
++PTP VIRTUAL CLOCK SUPPORT
++M:	Yangbo Lu <yangbo.lu@nxp.com>
++L:	netdev@vger.kernel.org
++S:	Maintained
++F:	drivers/ptp/ptp_vclock.c
++
+ PTRACE SUPPORT
+ M:	Oleg Nesterov <oleg@redhat.com>
+ S:	Maintained
+diff --git a/drivers/ptp/Makefile b/drivers/ptp/Makefile
+index db5aef3bddc6..3c75d7de7793 100644
+--- a/drivers/ptp/Makefile
++++ b/drivers/ptp/Makefile
+@@ -3,7 +3,7 @@
+ # Makefile for PTP 1588 clock support.
+ #
+ 
+-ptp-y					:= ptp_clock.o ptp_chardev.o ptp_sysfs.o
++ptp-y					:= ptp_clock.o ptp_chardev.o ptp_sysfs.o ptp_vclock.o
+ obj-$(CONFIG_PTP_1588_CLOCK)		+= ptp.o
+ obj-$(CONFIG_PTP_1588_CLOCK_DTE)	+= ptp_dte.o
+ obj-$(CONFIG_PTP_1588_CLOCK_INES)	+= ptp_ines.o
+diff --git a/drivers/ptp/ptp_private.h b/drivers/ptp/ptp_private.h
+index 6b97155148f1..9ff0afc57a7f 100644
+--- a/drivers/ptp/ptp_private.h
++++ b/drivers/ptp/ptp_private.h
+@@ -48,6 +48,29 @@ struct ptp_clock {
+ 	struct kthread_delayed_work aux_work;
+ };
+ 
++#define cc_to_vclock(d) container_of((d), struct ptp_vclock, cc)
++#define dw_to_vclock(d) container_of((d), struct ptp_vclock, refresh_work)
++#define info_to_vclock(d) container_of((d), struct ptp_vclock, info)
++
++struct ptp_vclock {
++	struct ptp_clock *pclock;
++	struct ptp_clock_info info;
++	struct ptp_clock *clock;
++	struct cyclecounter cc;
++	struct timecounter tc;
++	spinlock_t lock;	/* protects tc/cc */
++	struct delayed_work refresh_work;
++	unsigned long refresh_interval;
++	u32 mult;
++	u32 mult_num;
++	u32 mult_dem;
++};
++
++struct domain_tstamp {
++	u64 tstamp;
++	u8 domain;
++};
++
+ /*
+  * The function queue_cnt() is safe for readers to call without
+  * holding q->lock. Readers use this function to verify that the queue
+@@ -89,4 +112,6 @@ extern const struct attribute_group *ptp_groups[];
+ int ptp_populate_pin_groups(struct ptp_clock *ptp);
+ void ptp_cleanup_pin_groups(struct ptp_clock *ptp);
+ 
++struct ptp_vclock *ptp_vclock_register(struct ptp_clock *pclock, u8 domain);
++void ptp_vclock_unregister(struct ptp_vclock *vclock);
+ #endif
+diff --git a/drivers/ptp/ptp_vclock.c b/drivers/ptp/ptp_vclock.c
+new file mode 100644
+index 000000000000..765acc0f7576
+--- /dev/null
++++ b/drivers/ptp/ptp_vclock.c
+@@ -0,0 +1,176 @@
++// SPDX-License-Identifier: GPL-2.0-or-later
++/*
++ * PTP virtual clock driver
++ *
++ * Copyright 2021 NXP
++ */
++#include <linux/slab.h>
++#include "ptp_private.h"
++
++static int ptp_vclock_adjfine(struct ptp_clock_info *ptp, long scaled_ppm)
++{
++	struct ptp_vclock *vclock = info_to_vclock(ptp);
++	unsigned long flags;
++	s64 mult_adj;
++
++	mult_adj = (s64)scaled_ppm * vclock->mult_num;
++	mult_adj = div_s64(mult_adj, vclock->mult_dem);
++
++	spin_lock_irqsave(&vclock->lock, flags);
++	timecounter_read(&vclock->tc);
++	vclock->cc.mult = vclock->mult + mult_adj;
++	spin_unlock_irqrestore(&vclock->lock, flags);
++
++	return 0;
++}
++
++static int ptp_vclock_adjtime(struct ptp_clock_info *ptp, s64 delta)
++{
++	struct ptp_vclock *vclock = info_to_vclock(ptp);
++	unsigned long flags;
++
++	spin_lock_irqsave(&vclock->lock, flags);
++	timecounter_adjtime(&vclock->tc, delta);
++	spin_unlock_irqrestore(&vclock->lock, flags);
++
++	return 0;
++}
++
++static int ptp_vclock_gettime(struct ptp_clock_info *ptp,
++			      struct timespec64 *ts)
++{
++	struct ptp_vclock *vclock = info_to_vclock(ptp);
++	unsigned long flags;
++	u64 ns;
++
++	spin_lock_irqsave(&vclock->lock, flags);
++	ns = timecounter_read(&vclock->tc);
++	spin_unlock_irqrestore(&vclock->lock, flags);
++	*ts = ns_to_timespec64(ns);
++
++	return 0;
++}
++
++static int ptp_vclock_settime(struct ptp_clock_info *ptp,
++			      const struct timespec64 *ts)
++{
++	struct ptp_vclock *vclock = info_to_vclock(ptp);
++	u64 ns = timespec64_to_ns(ts);
++	unsigned long flags;
++
++	spin_lock_irqsave(&vclock->lock, flags);
++	timecounter_init(&vclock->tc, &vclock->cc, ns);
++	spin_unlock_irqrestore(&vclock->lock, flags);
++
++	return 0;
++}
++
++static const struct ptp_clock_info ptp_vclock_info = {
++	.owner		= THIS_MODULE,
++	.name		= "ptp vclock",
++	.adjfine	= ptp_vclock_adjfine,
++	.adjtime	= ptp_vclock_adjtime,
++	.gettime64	= ptp_vclock_gettime,
++	.settime64	= ptp_vclock_settime,
++	.max_adj	= 32000000,
++};
++
++static void ptp_vclock_refresh(struct work_struct *work)
++{
++	struct delayed_work *dw = to_delayed_work(work);
++	struct ptp_vclock *vclock = dw_to_vclock(dw);
++	struct timespec64 ts;
++
++	ptp_vclock_gettime(&vclock->info, &ts);
++	schedule_delayed_work(&vclock->refresh_work, vclock->refresh_interval);
++}
++
++static int ptp_clock_find_domain_tstamp(struct device *dev, void *data)
++{
++	struct ptp_clock *ptp = dev_get_drvdata(dev);
++	struct ptp_clock_info *info = ptp->info;
++	struct domain_tstamp *domain_ts = data;
++	struct ptp_vclock *vclock;
++	unsigned long flags;
++
++	if (!info->is_vclock)
++		return 0;
++
++	/* Convert to domain tstamp if there is a domain matched */
++	if (info->domain == domain_ts->domain) {
++		vclock = info_to_vclock(info);
++		spin_lock_irqsave(&vclock->lock, flags);
++		domain_ts->tstamp = timecounter_cyc2time(&vclock->tc, domain_ts->tstamp);
++		spin_unlock_irqrestore(&vclock->lock, flags);
++		/* For break. Not error. */
++		return -EINVAL;
++	}
++
++	return 0;
++}
++
++void ptp_clock_domain_tstamp(struct device *dev, u64 *tstamp, u8 domain)
++{
++	struct domain_tstamp domain_ts;
++
++	domain_ts.tstamp = *tstamp;
++	domain_ts.domain = domain;
++
++	device_for_each_child(dev, &domain_ts, ptp_clock_find_domain_tstamp);
++	*tstamp = domain_ts.tstamp;
++}
++EXPORT_SYMBOL(ptp_clock_domain_tstamp);
++
++struct ptp_clock_info *ptp_get_pclock_info(const struct cyclecounter *cc)
++{
++	struct ptp_vclock *vclock = cc_to_vclock(cc);
++
++	return vclock->pclock->info;
++}
++EXPORT_SYMBOL(ptp_get_pclock_info);
++
++struct ptp_vclock *ptp_vclock_register(struct ptp_clock *pclock, u8 domain)
++{
++	struct ptp_vclock_cc *vclock_cc = pclock->info->vclock_cc;
++	struct ptp_vclock *vclock;
++
++	vclock = kzalloc(sizeof(*vclock), GFP_KERNEL);
++	if (!vclock)
++		return NULL;
++
++	vclock->pclock = pclock;
++
++	vclock->info = ptp_vclock_info;
++	vclock->info.vclock_cc = vclock_cc;
++	vclock->info.is_vclock = true;
++	vclock->info.domain = domain;
++
++	vclock->cc = vclock_cc->cc;
++	vclock->mult = vclock_cc->cc.mult;
++	vclock->refresh_interval = vclock_cc->refresh_interval;
++	vclock->mult_num = vclock_cc->mult_num;
++	vclock->mult_dem = vclock_cc->mult_dem;
++
++	spin_lock_init(&vclock->lock);
++
++	vclock->clock = ptp_clock_register(&vclock->info, pclock->dev.parent);
++	if (IS_ERR_OR_NULL(vclock->clock)) {
++		kfree(vclock);
++		return NULL;
++	}
++
++	timecounter_init(&vclock->tc, &vclock->cc,
++			 ktime_to_ns(ktime_get_real()));
++
++	INIT_DELAYED_WORK(&vclock->refresh_work, ptp_vclock_refresh);
++	schedule_delayed_work(&vclock->refresh_work, vclock->refresh_interval);
++
++	return vclock;
++}
++
++void ptp_vclock_unregister(struct ptp_vclock *vclock)
++{
++	cancel_delayed_work_sync(&vclock->refresh_work);
++	ptp_clock_unregister(vclock->clock);
++	kfree(vclock);
++}
+diff --git a/include/linux/ptp_clock_kernel.h b/include/linux/ptp_clock_kernel.h
+index 0d47fd33b228..b2823af9b150 100644
+--- a/include/linux/ptp_clock_kernel.h
++++ b/include/linux/ptp_clock_kernel.h
+@@ -48,6 +48,32 @@ struct ptp_system_timestamp {
+ 	struct timespec64 post_ts;
+ };
+ 
++/**
++ * struct ptp_vclock_cc - ptp virtual clock cycle counter info
++ *
++ * @cc:               cyclecounter structure
++ * @refresh_interval: time interval to refresh time counter, to avoid 64-bit
++ *                    overflow during delta conversion. For example, with
++ *                    cc.mult value 2^28,  there are 36 bits left of cycle
++ *                    counter. With 1 ns counter resolution, the overflow time
++ *                    is 2^36 ns which is 68.7 s. The refresh_interval may be
++ *                    (60 * HZ) less than 68.7 s.
++ * @mult_num:         parameter for cc.mult adjustment calculation, see below
++ * @mult_dem:         parameter for cc.mult adjustment calculation, see below
++ *
++ * scaled_ppm to adjustment(mult_adj) of cc.mult
++ *
++ * mult_adj = mult * (ppb / 10^9)
++ *          = mult * (scaled_ppm * 1000 / 2^16) / 10^9
++ *          = scaled_ppm * mult_num / mult_dem
++ */
++struct ptp_vclock_cc {
++	struct cyclecounter cc;
++	unsigned long refresh_interval;
++	u32 mult_num;
++	u32 mult_dem;
++};
++
+ /**
+  * struct ptp_clock_info - describes a PTP hardware clock
+  *
+@@ -157,6 +183,11 @@ struct ptp_clock_info {
+ 	int (*verify)(struct ptp_clock_info *ptp, unsigned int pin,
+ 		      enum ptp_pin_function func, unsigned int chan);
+ 	long (*do_aux_work)(struct ptp_clock_info *ptp);
++
++	/* For virtual clock */
++	struct ptp_vclock_cc *vclock_cc;
++	u8 domain;
++	bool is_vclock;
+ };
+ 
+ struct ptp_clock;
+@@ -286,6 +317,21 @@ int ptp_schedule_worker(struct ptp_clock *ptp, unsigned long delay);
+  */
+ void ptp_cancel_worker_sync(struct ptp_clock *ptp);
+ 
++/**
++ * ptp_get_pclock_info() - get ptp_clock_info pointer of physical clock
++ *
++ * @cc:     cyclecounter pointer of ptp virtual clock.
++ */
++struct ptp_clock_info *ptp_get_pclock_info(const struct cyclecounter *cc);
++
++/**
++ * ptp_clock_domain_tstamp() - convert to domain time stamp
++ *
++ * @dev:     device pointer of current ptp clock.
++ * @tstamp:  time stamp pointer to hardware time stamp
++ * @domain:  domain number to convert
++ */
++void ptp_clock_domain_tstamp(struct device *dev, u64 *tstamp, u8 domain);
+ #else
+ static inline struct ptp_clock *ptp_clock_register(struct ptp_clock_info *info,
+ 						   struct device *parent)
+@@ -306,6 +352,11 @@ static inline int ptp_schedule_worker(struct ptp_clock *ptp,
+ static inline void ptp_cancel_worker_sync(struct ptp_clock *ptp)
+ { }
+ 
++static inline struct ptp_clock_info *ptp_get_pclock_info(const struct cyclecounter *cc);
++{ return NULL; }
++
++void ptp_clock_domain_tstamp(struct device *dev, u64 *tstamp, u8 domain)
++{ }
+ #endif
+ 
+ static inline void ptp_read_system_prets(struct ptp_system_timestamp *sts)
 -- 
 2.25.1
 
