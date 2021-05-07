@@ -2,184 +2,76 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A000A375E1C
-	for <lists+netdev@lfdr.de>; Fri,  7 May 2021 02:55:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AA6DD375E1E
+	for <lists+netdev@lfdr.de>; Fri,  7 May 2021 02:56:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233960AbhEGA4X (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 6 May 2021 20:56:23 -0400
-Received: from mail.kernel.org ([198.145.29.99]:36592 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S233933AbhEGA4W (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 6 May 2021 20:56:22 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id C0ECC60E0B;
-        Fri,  7 May 2021 00:55:23 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1620348924;
-        bh=UHb+b8Utq3FEk+G1NJBR8QnH4sblAOkzaEo9Ly3sZ98=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=Dqx7G95qVK47QhE/LaWgm/iV/bmFTrTeAKAZ09h1imOu3LLMO2/fTiNbYmt4MccDQ
-         /+su66musEHXpTbzaajb0XkcOTbCfykW0FOZ8SNxnpBmM6nR6ghYTNdiyCKAAtICob
-         odfhXFY7yx9t/4xtefPpWo7pA2yp3i1QXSX1PaRhku84GAV9BUvh1n3KOTKa8gZC5+
-         hUURVTyAJDXoIqhrxqGBdaptPorC9gps90YkKGFjZE5tSedF1pleqh5aA2cmS72Drt
-         ROEXSHxSG80hQvdas1y6UfslHy8iOAi665e4QQ6zFBq3cxthrbIplOqb97Bl+xhDBn
-         7avvrYOQiJSZA==
-Date:   Thu, 6 May 2021 17:55:22 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Joakim Zhang <qiangqing.zhang@nxp.com>
-Cc:     peppe.cavallaro@st.com, alexandre.torgue@st.com,
-        joabreu@synopsys.com, davem@davemloft.net, f.fainelli@gmail.com,
-        andrew@lunn.ch, Jisheng.Zhang@synaptics.com,
-        netdev@vger.kernel.org, linux-imx@nxp.com
-Subject: Re: [PATCH V4 net] net: stmmac: Fix MAC WoL not working if PHY does
- not support WoL
-Message-ID: <20210506175522.49a2ad5b@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20210506050658.9624-1-qiangqing.zhang@nxp.com>
-References: <20210506050658.9624-1-qiangqing.zhang@nxp.com>
+        id S233638AbhEGA5K (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 6 May 2021 20:57:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45916 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229775AbhEGA5I (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 6 May 2021 20:57:08 -0400
+Received: from mail-pg1-x532.google.com (mail-pg1-x532.google.com [IPv6:2607:f8b0:4864:20::532])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AB325C061574;
+        Thu,  6 May 2021 17:56:09 -0700 (PDT)
+Received: by mail-pg1-x532.google.com with SMTP id m124so5928723pgm.13;
+        Thu, 06 May 2021 17:56:09 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=eiiCTLBNGzLRswAdPwMX6fL/gq+Y+ZACW6akpcYV5kI=;
+        b=E3BKBScA5g+gJGlPlx0bd6Ze9xav/sG22OYgxSX7OVdiw+IJi9vQd0cwCd9xXCiIRJ
+         icasbylYWd91ux4hGwDSPjkaGdnzEv/pCE0rLIvvxk9mI5Vj3tAB4IHPhskRCtps/GxB
+         RzQJDFDv98GjyNqffNNzQQzjXJbohKhgpSX4n4xwDYEIWN0I0MMx/yBlfF7Pzg/+AY3a
+         4dpNnivxUSWlZPiFSKzfkDYMG7VzZkeO5OnAIgw5/S/8gi3/AObgLr9MRUGR7EGO0ux3
+         iZltmGdrFJbAkoe+pL+mhBfGoIjHAF6ZPgC0TKjue8Do2rWiQmY2I4hel/rXOFzje7ls
+         3IYA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=eiiCTLBNGzLRswAdPwMX6fL/gq+Y+ZACW6akpcYV5kI=;
+        b=INAfS//ad/M9udgO3qK9V4/gFxouag8+A7+AoZAUmY7pLQD/GVZZpQ43Pvp3chbJk8
+         zLmSJ/XGcIL0Hh34x/i+PRZ74YZf9ipaHfSp+cPeqvOsC4pSkZvyqKsovs31F9CoF3NZ
+         okQuBOTxE5kk6neXd9cGl+anEdznd2Yy65aZWT50G4vQTS0xu+RLa4gMKujXOKfJEiO1
+         CVEp1KkIb3SPrsMd4D0CPrRpEytCazmBOwQ7VzZ17/MlVyeTTM+mtybfsD7k2SSltwL1
+         8KIn+X0HTTX+rGwD/NdhttbE5CqUx6JOL8wJ4PZUFoDDn5yeQYYIyOiaoxPlaXr2LgqV
+         l7tA==
+X-Gm-Message-State: AOAM530qvuD1fYm3VUrwcUHTeOpXoygL2vfKIX7xIT88IgjUfLqP9h4N
+        CxFXmaXjYSE8KlcMDlA7Jqt/T2RrGAnZ9rSMNOU=
+X-Google-Smtp-Source: ABdhPJzBVaoST0gIuvWIRWALeAurd9wqrXOwkpAqTj5u4z6JA+ZJNkS6N0Qv6lL7hQcNWAA57RoXY69FPBL4ItujmGw=
+X-Received: by 2002:a63:d014:: with SMTP id z20mr6899440pgf.428.1620348969065;
+ Thu, 06 May 2021 17:56:09 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+References: <20210426025001.7899-1-xiyou.wangcong@gmail.com>
+ <20210426025001.7899-4-xiyou.wangcong@gmail.com> <87o8doui7s.fsf@cloudflare.com>
+In-Reply-To: <87o8doui7s.fsf@cloudflare.com>
+From:   Cong Wang <xiyou.wangcong@gmail.com>
+Date:   Thu, 6 May 2021 17:55:58 -0700
+Message-ID: <CAM_iQpXVKNZE=P06s1C2tWHPuDoecRTqauo1xKchwxWO5YBcUg@mail.gmail.com>
+Subject: Re: [Patch bpf-next v3 03/10] af_unix: implement ->psock_update_sk_prot()
+To:     Jakub Sitnicki <jakub@cloudflare.com>
+Cc:     Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>, Jiang Wang <jiang.wang@bytedance.com>,
+        Xiongchun Duan <duanxiongchun@bytedance.com>,
+        Dongdong Wang <wangdongdong.6@bytedance.com>,
+        Cong Wang <cong.wang@bytedance.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Lorenz Bauer <lmb@cloudflare.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu,  6 May 2021 13:06:58 +0800 Joakim Zhang wrote:
-> Both get and set WoL will check device_can_wakeup(), if MAC supports PMT,
-> it will set device wakeup capability. After commit 1d8e5b0f3f2c ("net:
-> stmmac: Support WOL with phy"), device wakeup capability will be overwrite
-> in stmmac_init_phy() according to phy's Wol feature. If phy doesn't support
-> WoL, then MAC will lose wakeup capability.
+On Thu, May 6, 2021 at 6:04 AM Jakub Sitnicki <jakub@cloudflare.com> wrote:
+> I think we also need unhash so that socket gets removed from sockmap
+> on disconnect, that is connect(fd, {sa_family=AF_UNSPEC, ...}, ...).
 
-Let's take a step back. Can we get a minimal fix for losing the config
-in stmmac_init_phy(), and then extend the support for WoL for devices
-which do support wake up themselves?
+Excellent catch! I thought disconnect is not supported for AF_UNIX
+as there is not ->disconnect() in af_unix.c, but after reading
+unix_dgram_connect() again, it is actually supported. Let me think
+about how to handle this properly here.
 
-> This patch combines WoL capabilities both MAC and PHY from stmmac_get_wol(),
-> set wakeup capability and give WoL priority to the PHY in stmmac_set_wol()
-> when enable WoL. What PHYs do implement is WAKE_MAGIC, WAKE_UCAST, WAKE_MAGICSECURE
-> and WAKE_BCAST.
-> 
-> Fixes: commit 1d8e5b0f3f2c ("net: stmmac: Support WOL with phy")
-
-Please remove "commit" from the fixes tag.
-
-> Suggested-by: Andrew Lunn <andrew@lunn.ch>
-> Signed-off-by: Joakim Zhang <qiangqing.zhang@nxp.com>
-
-> diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_ethtool.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_ethtool.c
-> index c5642985ef95..6d09908dec1f 100644
-> --- a/drivers/net/ethernet/stmicro/stmmac/stmmac_ethtool.c
-> +++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_ethtool.c
-> @@ -629,35 +629,49 @@ static void stmmac_get_strings(struct net_device *dev, u32 stringset, u8 *data)
->  /* Currently only support WOL through Magic packet. */
->  static void stmmac_get_wol(struct net_device *dev, struct ethtool_wolinfo *wol)
->  {
-> +	struct ethtool_wolinfo wol_phy = { .cmd = ETHTOOL_GWOL };
->  	struct stmmac_priv *priv = netdev_priv(dev);
->  
-> -	if (!priv->plat->pmt)
-> -		return phylink_ethtool_get_wol(priv->phylink, wol);
-> -
->  	mutex_lock(&priv->lock);
-> -	if (device_can_wakeup(priv->device)) {
-
-Why remove the device_can_wakeup() check?
-
-> +	if (priv->plat->pmt) {
->  		wol->supported = WAKE_MAGIC | WAKE_UCAST;
->  		if (priv->hw_cap_support && !priv->dma_cap.pmt_magic_frame)
->  			wol->supported &= ~WAKE_MAGIC;
-> -		wol->wolopts = priv->wolopts;
->  	}
-> +
-> +	phylink_ethtool_get_wol(priv->phylink, &wol_phy);
-> +
-> +	/* Combine WoL capabilities both PHY and MAC */
-> +	wol->supported |= wol_phy.supported;
-> +	wol->wolopts = priv->wolopts;
-> +
->  	mutex_unlock(&priv->lock);
->  }
->  
->  static int stmmac_set_wol(struct net_device *dev, struct ethtool_wolinfo *wol)
->  {
-> +	u32 support = WAKE_MAGIC | WAKE_UCAST | WAKE_MAGICSECURE | WAKE_BCAST;
-
-Why this list?
-
-> +	struct ethtool_wolinfo wol_phy = { .cmd = ETHTOOL_GWOL };
->  	struct stmmac_priv *priv = netdev_priv(dev);
-> -	u32 support = WAKE_MAGIC | WAKE_UCAST;
-
-This list was the list of what the MAC supported, right?
-
-> +	int ret;
->  
-> -	if (!device_can_wakeup(priv->device))
-
-Why remove this check?
-
-> +	if (wol->wolopts & ~support)
->  		return -EOPNOTSUPP;
->  
-> -	if (!priv->plat->pmt) {
-> -		int ret = phylink_ethtool_set_wol(priv->phylink, wol);
-> -
-> -		if (!ret)
-> -			device_set_wakeup_enable(priv->device, !!wol->wolopts);
-> -		return ret;
-> +	/* First check if can WoL from PHY */
-> +	phylink_ethtool_get_wol(priv->phylink, &wol_phy);
-> +	if (wol->wolopts & wol_phy.supported) {
-
-So if _any_ requests match PHY capabilities we'd use PHY?
-I think the check should be:
-
-	if ((wol->woltops & wol_phy.supported) == wol->woltops)
-
-That said I'm not 100% sure what the semantics for WoL are.
-
-> +		wol->wolopts &= wol_phy.supported;
-> +		ret = phylink_ethtool_set_wol(priv->phylink, wol);
-> +
-> +		if (!ret) {
-> +			pr_info("stmmac: phy wakeup enable\n");
-> +			device_set_wakeup_capable(priv->device, 1);
-> +			device_set_wakeup_enable(priv->device, 1);
-> +			goto wolopts_update;
-> +		} else {
-> +			return ret;
-> +		}
->  	}
->  
->  	/* By default almost all GMAC devices support the WoL via
-> @@ -666,18 +680,21 @@ static int stmmac_set_wol(struct net_device *dev, struct ethtool_wolinfo *wol)
->  	if ((priv->hw_cap_support) && (!priv->dma_cap.pmt_magic_frame))
->  		wol->wolopts &= ~WAKE_MAGIC;
->  
-> -	if (wol->wolopts & ~support)
-> -		return -EINVAL;
-
-Now you seem to not validate against MAC capabilities anywhere.
-
-> -	if (wol->wolopts) {
-> -		pr_info("stmmac: wakeup enable\n");
-> +	if (priv->plat->pmt && wol->wolopts) {
-> +		pr_info("stmmac: mac wakeup enable\n");
-> +		device_set_wakeup_capable(priv->device, 1);
->  		device_set_wakeup_enable(priv->device, 1);
->  		enable_irq_wake(priv->wol_irq);
-> -	} else {
-> +		goto wolopts_update;
-> +	}
-> +
-> +	if (!wol->wolopts) {
-> +		device_set_wakeup_capable(priv->device, 0);
->  		device_set_wakeup_enable(priv->device, 0);
->  		disable_irq_wake(priv->wol_irq);
->  	}
->  
-> +wolopts_update:
->  	mutex_lock(&priv->lock);
->  	priv->wolopts = wol->wolopts;
->  	mutex_unlock(&priv->lock);
-
+Thanks.
