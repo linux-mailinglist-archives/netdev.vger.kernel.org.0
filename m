@@ -2,98 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D993437693D
-	for <lists+netdev@lfdr.de>; Fri,  7 May 2021 19:04:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D6B9F37699D
+	for <lists+netdev@lfdr.de>; Fri,  7 May 2021 19:48:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237155AbhEGRFy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 7 May 2021 13:05:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34760 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229492AbhEGRFx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 7 May 2021 13:05:53 -0400
-Received: from mail-lf1-x129.google.com (mail-lf1-x129.google.com [IPv6:2a00:1450:4864:20::129])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9BCC3C061574;
-        Fri,  7 May 2021 10:04:52 -0700 (PDT)
-Received: by mail-lf1-x129.google.com with SMTP id h4so13765696lfv.0;
-        Fri, 07 May 2021 10:04:52 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=As0+QF4TLvCwMjWlGqhQacwhIi2kfiM2nw4uGB7p4N8=;
-        b=XaS8GacFeLZ9LdipAnAd9lmHMU5Bram4sJAXmI5tjXjuePToDyszeoER9rBD1jP5FD
-         G/iFhdBDQYXfUfAdNRXVue+92PkBxExlxzlSXIbYo5gqqtqGDsjTtDaFXVQqCrSIAbbV
-         f3NeLSg8WA1QDhql50+sz3vsfJEUQNRZsEEIfJKcSV6tjmaovZZhN60fod42kmSrf9Au
-         LqzSdMGedlwI88yfdk95tBQIGuo5dRYgbseIbv7i0Ndt+EbBOBQEgnzKpzHzY5BV6NYP
-         WttdkufC4r8Fn7J9E+XuKfSdQBYuu8smQs6s5t4/CuGKQyuOjhmqLJa9g5rtp8UaDJrJ
-         JeZA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=As0+QF4TLvCwMjWlGqhQacwhIi2kfiM2nw4uGB7p4N8=;
-        b=VxKWhT7hTcehdIawdjHsjksmwKHybNu+kfxLzhy2LuyuktpsYPGRxGNvzNx7obOaaG
-         tjdtVd2NVS7T3L4vgbr4AasjtNJyjoy1KKUFFV49Uq1DeBqoBa4CDcnhI2yF4uhsIDyf
-         Sz/1BYanamzMWYgblnJega0mgPrgg27+CK4QDkZV2PvC0r1jJRcOwHvWcW1XYwlF1RmV
-         r6otACSbOElMF5GHQdT7+Vu9IDEoFZeBATuZxHuz7Pc50luTPSyFDp3mxHhMafZyxGnX
-         gdQeAlPiICkF/pSo5mvwYeCv0r+agjMvs8E3V9Y+Kp8iyckdJBN/fLqTPpsViBJhlMNr
-         KfhA==
-X-Gm-Message-State: AOAM533xINdyl2rLs1034YX5pisnTMQt1W6zCs6HVdByYQ28tg+j9K4+
-        rpRW77X4LuyA+IIUG6MUvga6MKahPfUxl7pmHcQ=
-X-Google-Smtp-Source: ABdhPJyNW4Va1Nx97/p0bkdWKZm1kMh8BbHdHom7nIdyBuEQj8avc+yZs0hyZEoSNPZlzEZ4Hw9AXU9VHivTMhxw+dc=
-X-Received: by 2002:a19:5508:: with SMTP id n8mr7115859lfe.542.1620407091091;
- Fri, 07 May 2021 10:04:51 -0700 (PDT)
+        id S229579AbhEGRsp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 7 May 2021 13:48:45 -0400
+Received: from mail.netfilter.org ([217.70.188.207]:49084 "EHLO
+        mail.netfilter.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229542AbhEGRso (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 7 May 2021 13:48:44 -0400
+Received: from localhost.localdomain (unknown [90.77.255.23])
+        by mail.netfilter.org (Postfix) with ESMTPSA id 67A456414B;
+        Fri,  7 May 2021 19:46:57 +0200 (CEST)
+From:   Pablo Neira Ayuso <pablo@netfilter.org>
+To:     netfilter-devel@vger.kernel.org
+Cc:     davem@davemloft.net, netdev@vger.kernel.org, kuba@kernel.org
+Subject: [PATCH net 0/8] Netfilter fixes for net
+Date:   Fri,  7 May 2021 19:47:31 +0200
+Message-Id: <20210507174739.1850-1-pablo@netfilter.org>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-References: <CAOWid-c4Nk717xUah19B=z=2DtztbtU=_4=fQdfhqpfNJYN2gw@mail.gmail.com>
- <CAKMK7uFEhyJChERFQ_DYFU4UCA2Ox4wTkds3+GeyURH5xNMTCA@mail.gmail.com>
- <CAOWid-fL0=OM2XiOH+NFgn_e2L4Yx8sXA-+HicUb9bzhP0t8Bw@mail.gmail.com>
- <YJUBer3wWKSAeXe7@phenom.ffwll.local> <CAOWid-dmRsZUjF3cJ8+mx5FM9ksNQ_P9xY3jqxFiFMvN29SaLw@mail.gmail.com>
- <YJVnO+TCRW83S6w4@phenom.ffwll.local> <CADnq5_Pvtj1vb0bak_gUkv9J3+vfsMZxVKTKYeUvwQCajAWoVQ@mail.gmail.com>
- <YJVqL4c6SJc8wdkK@phenom.ffwll.local> <CADnq5_PHjiHy=Su_1VKr5ycdnXN-OuSXw0X_TeNqSj+TJs2MGA@mail.gmail.com>
- <CADnq5_OjaPw5iF_82bjNPt6v-7OcRmXmXECcN+Gdg1NcucJiHA@mail.gmail.com> <YJVwtS9XJlogZRqv@phenom.ffwll.local>
-In-Reply-To: <YJVwtS9XJlogZRqv@phenom.ffwll.local>
-From:   Kenny Ho <y2kenny@gmail.com>
-Date:   Fri, 7 May 2021 13:04:39 -0400
-Message-ID: <CAOWid-fRgjuY46KA-HBbEfhfwsWvDyhkp+iwZq=wA1h+Uix32g@mail.gmail.com>
-Subject: Re: [RFC] Add BPF_PROG_TYPE_CGROUP_IOCTL
-To:     Daniel Vetter <daniel@ffwll.ch>
-Cc:     Alex Deucher <alexdeucher@gmail.com>,
-        Song Liu <songliubraving@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>,
-        DRI Development <dri-devel@lists.freedesktop.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Kenny Ho <Kenny.Ho@amd.com>,
-        "open list:CONTROL GROUP (CGROUP)" <cgroups@vger.kernel.org>,
-        Brian Welty <brian.welty@intel.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        amd-gfx list <amd-gfx@lists.freedesktop.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Linux-Fsdevel <linux-fsdevel@vger.kernel.org>,
-        Alexander Viro <viro@zeniv.linux.org.uk>,
-        Network Development <netdev@vger.kernel.org>,
-        KP Singh <kpsingh@chromium.org>, Yonghong Song <yhs@fb.com>,
-        bpf <bpf@vger.kernel.org>, Dave Airlie <airlied@gmail.com>,
-        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        Alex Deucher <alexander.deucher@amd.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, May 7, 2021 at 12:54 PM Daniel Vetter <daniel@ffwll.ch> wrote:
->
-> SRIOV is kinda by design vendor specific. You set up the VF endpoint, it
-> shows up, it's all hw+fw magic. Nothing for cgroups to manage here at all.
-Right, so in theory you just use the device cgroup with the VF endpoints.
+Hi,
 
-> All I meant is that for the container/cgroups world starting out with
-> time-sharing feels like the best fit, least because your SRIOV designers
-> also seem to think that's the best first cut for cloud-y computing.
-> Whether it's virtualized or containerized is a distinction that's getting
-> ever more blurry, with virtualization become a lot more dynamic and
-> container runtimes als possibly using hw virtualization underneath.
-I disagree.  By the same logic, the existence of CU mask would imply
-it being the preferred way for sub-device control per process.
+The following patchset contains Netfilter fixes for your net tree:
 
-Kenny
+1) Add SECMARK revision 1 to fix incorrect layout that prevents
+   from remove rule with this target, from Phil Sutter.
+
+2) Fix pernet exit path spat in arptables, from Florian Westphal.
+
+3) Missing rcu_read_unlock() for unknown nfnetlink callbacks,
+   reported by syzbot, from Eric Dumazet.
+
+4) Missing check for skb_header_pointer() NULL pointer in
+   nfnetlink_osf.
+
+5) Remove BUG_ON() after skb_header_pointer() from packet path
+   in several conntrack helper and the TCP tracker.
+
+6) Fix memleak in the new object error path of userdata.
+
+7) Avoid overflows in nft_hash_buckets(), reported by syzbot,
+   also from Eric.
+
+8) Avoid overflows in 32bit arches, from Eric.
+
+Please, pull these changes from:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/pablo/nf.git
+
+Thanks!
+
+----------------------------------------------------------------
+
+The following changes since commit bd1af6b5fffd36c12997bd48d61d39dc5796fa7b:
+
+  Documentation: ABI: sysfs-class-net-qmi: document pass-through file (2021-05-03 13:40:17 -0700)
+
+are available in the Git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/pablo/nf.git HEAD
+
+for you to fetch changes up to 6c8774a94e6ad26f29ef103c8671f55c255c6201:
+
+  netfilter: nftables: avoid potential overflows on 32bit arches (2021-05-07 10:01:39 +0200)
+
+----------------------------------------------------------------
+Eric Dumazet (3):
+      netfilter: nfnetlink: add a missing rcu_read_unlock()
+      netfilter: nftables: avoid overflows in nft_hash_buckets()
+      netfilter: nftables: avoid potential overflows on 32bit arches
+
+Florian Westphal (1):
+      netfilter: arptables: use pernet ops struct during unregister
+
+Pablo Neira Ayuso (4):
+      netfilter: xt_SECMARK: add new revision to fix structure layout
+      netfilter: nfnetlink_osf: Fix a missing skb_header_pointer() NULL check
+      netfilter: remove BUG_ON() after skb_header_pointer()
+      netfilter: nftables: Fix a memleak from userdata error path in new objects
+
+ include/linux/netfilter_arp/arp_tables.h  |  3 +-
+ include/uapi/linux/netfilter/xt_SECMARK.h |  6 +++
+ net/ipv4/netfilter/arp_tables.c           |  5 +-
+ net/ipv4/netfilter/arptable_filter.c      |  2 +-
+ net/netfilter/nf_conntrack_ftp.c          |  5 +-
+ net/netfilter/nf_conntrack_h323_main.c    |  3 +-
+ net/netfilter/nf_conntrack_irc.c          |  5 +-
+ net/netfilter/nf_conntrack_pptp.c         |  4 +-
+ net/netfilter/nf_conntrack_proto_tcp.c    |  6 ++-
+ net/netfilter/nf_conntrack_sane.c         |  5 +-
+ net/netfilter/nf_tables_api.c             | 11 ++--
+ net/netfilter/nfnetlink.c                 |  1 +
+ net/netfilter/nfnetlink_osf.c             |  2 +
+ net/netfilter/nft_set_hash.c              | 20 ++++---
+ net/netfilter/xt_SECMARK.c                | 88 ++++++++++++++++++++++++-------
+ 15 files changed, 124 insertions(+), 42 deletions(-)
