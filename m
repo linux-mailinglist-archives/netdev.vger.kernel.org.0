@@ -2,48 +2,48 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9776337668C
-	for <lists+netdev@lfdr.de>; Fri,  7 May 2021 16:01:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D4F1F376694
+	for <lists+netdev@lfdr.de>; Fri,  7 May 2021 16:02:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237388AbhEGOCZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 7 May 2021 10:02:25 -0400
-Received: from mailout2.w1.samsung.com ([210.118.77.12]:25738 "EHLO
+        id S237417AbhEGOCk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 7 May 2021 10:02:40 -0400
+Received: from mailout2.w1.samsung.com ([210.118.77.12]:25768 "EHLO
         mailout2.w1.samsung.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237358AbhEGOCQ (ORCPT
+        with ESMTP id S237362AbhEGOCQ (ORCPT
         <rfc822;netdev@vger.kernel.org>); Fri, 7 May 2021 10:02:16 -0400
 Received: from eucas1p2.samsung.com (unknown [182.198.249.207])
-        by mailout2.w1.samsung.com (KnoxPortal) with ESMTP id 20210507140114euoutp022b7e65dada78c92a276ba77b47f4a927~8zaUL5QSX1827318273euoutp028
-        for <netdev@vger.kernel.org>; Fri,  7 May 2021 14:01:14 +0000 (GMT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mailout2.w1.samsung.com 20210507140114euoutp022b7e65dada78c92a276ba77b47f4a927~8zaUL5QSX1827318273euoutp028
+        by mailout2.w1.samsung.com (KnoxPortal) with ESMTP id 20210507140115euoutp02109267570b056211c0847dc666aaa370~8zaUfFaQz1987119871euoutp02n
+        for <netdev@vger.kernel.org>; Fri,  7 May 2021 14:01:15 +0000 (GMT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mailout2.w1.samsung.com 20210507140115euoutp02109267570b056211c0847dc666aaa370~8zaUfFaQz1987119871euoutp02n
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
-        s=mail20170921; t=1620396074;
-        bh=w5Gqb7BvvRqY4m23FGJR7afb4SpYR8lKibM76Y7ezp4=;
+        s=mail20170921; t=1620396075;
+        bh=27homzhxtOgQquKIw/0+3LoypE6+9O9g4fIKMDgjxBE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=aw5vk52c7z9pLQiiTQ4mlRKEekhUsmGTRgzQpkBInDIpWIpM9xGLNOYPaDxuiL++o
-         92nzi4/HwuPu5yhHNUsAxuGGjmIPAye5R63UWCL7hdV9LoyO2Fwfm8qQEkwOftp0ct
-         9fctFMFihZLDyqArzUesbHCKokXtbuNzA/YSNSRU=
-Received: from eusmges3new.samsung.com (unknown [203.254.199.245]) by
+        b=gxsd1cuWhqwR5wOy3zM4kgFoivTnwQLJHz+/lanV2uOIG7Q02aySASmjeoueQ3mDd
+         NcOLJGlNpqYpW+LDSySiodPmadM1KperOq6ZP1CYNImByFCg3y2O3Vn61Z4/viyrp3
+         hoDrqht7LC63IGccQCoFf35RvYy33BWylPfgwyuo=
+Received: from eusmges1new.samsung.com (unknown [203.254.199.242]) by
         eucas1p2.samsung.com (KnoxPortal) with ESMTP id
-        20210507140114eucas1p285a6ad2380d7418ba21a1c21a8f68ca4~8zaTs3TaP2197721977eucas1p2i;
+        20210507140114eucas1p296246a65a9378a29407a8fecd389be22~8zaT7fwaE1975719757eucas1p2V;
         Fri,  7 May 2021 14:01:14 +0000 (GMT)
-Received: from eucas1p1.samsung.com ( [182.198.249.206]) by
-        eusmges3new.samsung.com (EUCPMTA) with SMTP id D0.8B.09439.A2845906; Fri,  7
+Received: from eucas1p2.samsung.com ( [182.198.249.207]) by
+        eusmges1new.samsung.com (EUCPMTA) with SMTP id C6.CD.09452.A2845906; Fri,  7
         May 2021 15:01:14 +0100 (BST)
 Received: from eusmtrp1.samsung.com (unknown [182.198.249.138]) by
         eucas1p1.samsung.com (KnoxPortal) with ESMTPA id
-        20210507140113eucas1p13dc9798741a7ecad721f07efe543b56d~8zaTKkjs31878618786eucas1p1u;
+        20210507140113eucas1p135a114200d194a8fa9d52987b7725fa4~8zaTeVBbc1676016760eucas1p1j;
         Fri,  7 May 2021 14:01:13 +0000 (GMT)
 Received: from eusmgms2.samsung.com (unknown [182.198.249.180]) by
         eusmtrp1.samsung.com (KnoxPortal) with ESMTP id
-        20210507140113eusmtrp13055df521d5f448f9c44ea1cdae0b74b~8zaTJlxRk3079830798eusmtrp1a;
+        20210507140113eusmtrp16d88a8e1a5a2d0bf57d96ce0051b291f~8zaTdeq8G3079830798eusmtrp1d;
         Fri,  7 May 2021 14:01:13 +0000 (GMT)
-X-AuditID: cbfec7f5-c03ff700000024df-20-6095482a822a
-Received: from eusmtip1.samsung.com ( [203.254.199.221]) by
-        eusmgms2.samsung.com (EUCPMTA) with SMTP id 52.49.08696.92845906; Fri,  7
+X-AuditID: cbfec7f2-ab7ff700000024ec-fd-6095482ac8d1
+Received: from eusmtip2.samsung.com ( [203.254.199.222]) by
+        eusmgms2.samsung.com (EUCPMTA) with SMTP id 94.49.08696.92845906; Fri,  7
         May 2021 15:01:13 +0100 (BST)
-Received: from localhost (unknown [106.120.51.46]) by eusmtip1.samsung.com
+Received: from localhost (unknown [106.120.51.46]) by eusmtip2.samsung.com
         (KnoxPortal) with ESMTPA id
-        20210507140113eusmtip1276118451be30072731a98b2f327ad83~8zaS5v88o3070530705eusmtip1H;
+        20210507140113eusmtip21f63e086457492f0b38ebb264ea5ed88~8zaTORvp02651326513eusmtip2Z;
         Fri,  7 May 2021 14:01:13 +0000 (GMT)
 From:   =?UTF-8?q?=C5=81ukasz=20Stelmach?= <l.stelmach@samsung.com>
 To:     Andrew Lunn <andrew@lunn.ch>, jim.cromie@gmail.com,
@@ -62,84 +62,151 @@ Cc:     =?UTF-8?q?Bart=C5=82omiej=20=C5=BBolnierkiewicz?=
         Marek Szyprowski <m.szyprowski@samsung.com>,
         =?UTF-8?q?=C5=81ukasz=20Stelmach?= <l.stelmach@samsung.com>,
         Rob Herring <robh@kernel.org>
-Subject: [PATCH net-next v12 1/3] dt-bindings: vendor-prefixes: Add asix
- prefix
-Date:   Fri,  7 May 2021 16:01:08 +0200
-Message-Id: <20210507140110.6323-2-l.stelmach@samsung.com>
+Subject: [PATCH net-next v12 2/3] dt-bindings: net: Add bindings for
+ AX88796C SPI Ethernet Adapter
+Date:   Fri,  7 May 2021 16:01:09 +0200
+Message-Id: <20210507140110.6323-3-l.stelmach@samsung.com>
 X-Mailer: git-send-email 2.26.2
 In-Reply-To: <20210507140110.6323-1-l.stelmach@samsung.com>
 MIME-Version: 1.0
 Organization: Samsung R&D Institute Poland
 Content-Transfer-Encoding: 8bit
-X-Brightmail-Tracker: H4sIAAAAAAAAA02Se0xTdxTH/d1He8usuxQzT3DBrMFMWaROjftNiEJmlpssPrYsm4+oVHpH
-        dYCmlcl8BASljvCYPGLXNoEq8pIJthRrg3PpirhUW17WR+SRlEECM8B4BDChs71d5n/ne87n
-        +zvfk/wYUtZLRzPHMk/xmkxlulwUQbU9WPBsiOMqUza2TFHY2+8k8W19M41N3osUrnJ5aHxt
-        Qk9j36uXNC71j5PY620R4662Eho/d9YjbPH7aNzrMImw3vsbgZ2V9xD+1dUvxg+q38OX7rnE
-        ONBuFyfJuF5fN8m1NjwnuLuGfjFnafxJxFlrcri79mmCK2ltRNy0JWYvcyAiUcWnH/uB1yi2
-        p0Son5jyiZMLouy/Z2uIXLRAFyKGAXYL9D6OKkQRjIytR5A/00EIYgZB4JY1LKYRWOf6xIVI
-        EnLYKszhQR2CYYeRFsQoAmNtbogSsclQeuNhaLCSHSChWTeEgoJkBxEMjN4kg1QU+yXkuRdD
-        DopdC0UvdKJgKim7DQL2b4V1a0BXd0cUrCVsAgz90x/CpWwk/PnLMBWs32XjoCnvaagm3/D5
-        NiMpeD0ScLkThEN3Qk33GaEdBWOdreFr3gd3eRElIDlQXrY1mBLYIgRtpnlKYBLgpWcxlIxk
-        10OzQyG0k6FnwEoK1hXw7FWkEGAFlLVdDbelcLlAJtCxcKu0PfxgNBSP1aOfkdzw1imGt+Ib
-        /t9VjchGtIrP0mak8drNmfzpeK0yQ5uVmRafeiLDgt78O/dS56wd1Y9NxTsRwSAnAoaUr5S6
-        r5WnyKQq5Y9neM2JI5qsdF7rRKsZSr5K6rA1HZGxacpT/Pc8f5LX/DclGEl0LoEGU8926kRH
-        z37+6MN9I68n7hdUH/4ryXwuupLTDi9vSqq4GLt04T6wxzfZaMXh6x8U537qN+YE9t/+TLWG
-        Y+zE8iR1QuwOxdNDQw3S/eRXfv5h+uZDRDX3otVsmi9zFrvaF1/LPjo33rH9a7v55o3s7+ZK
-        LlypargTUE04RnYrVDNVHXu7Y3yfjHyz6zQ6r6+Y7dFbkeXKzrmpAs3S5Hz7MMru+2KPkVud
-        cbDndwXsMvtdqCVxIPJ88iWWrrU1PKotmBpctizHFGNfO351fnSyx3Ncui7xYFfqdftinXXQ
-        4dvwx+6j6r7USFeVQf2E2vKObpskr2xp8nKRaodmY5ec0qqVH8eRGq3yX64rVODmAwAA
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFnrGIsWRmVeSWpSXmKPExsVy+t/xu7qaHlMTDL7PkbU4f/cQs8XGGetZ
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFrrCKsWRmVeSWpSXmKPExsWy7djP87paHlMTDC7PELE4f/cQs8XGGetZ
+        Leacb2GxmH/kHKvFovczWC2uvb3DatH/+DWzxfnzG9gtLmzrY7W4eWgFo8Wmx9dYLS7vmsNm
+        MeP8PiaLQ1P3MlqsPXKX3eLYAjGL1r1H2C3+79nB7iDkcfnaRWaPLStvMnnsnHWX3WPTqk42
+        j81L6j127vjM5NG3ZRWjx+dNcgEcUVw2Kak5mWWpRfp2CVwZV4+ZFZwXrljQ+5OpgXEKfxcj
+        J4eEgIlEc/8f1i5GLg4hgRWMEtu29jFDOF8YJU43tLBAOJ8ZJd4f72OBadl5fj8ziC0ksJxR
+        YvksUYii54wSJ1/8YgJJsAk4SvQvPQE2V0TgHrPE+vYHjCAOs8B9Rol7z1eDtQsLpEg83PEY
+        KMHBwSKgKrF1TzZImFfASuLjl7WsENvkJdqXb2cDsTkFrCUefLrLDlEjKHFy5hOwi/gFtCTW
+        NF0Hs5mB6pu3zgb7QULgMKdE48V2JohBLhLv3y1jhLCFJV4d38IOYctInJ7cwwJyg4RAvcTk
+        SWYQvT3AwJjzA+pla4k7536xgdQwC2hKrN+lDxF2lPh7ayEbRCufxI23ghAn8ElM2jadGSLM
+        K9HRJgRRrSKxrn8P1EApid5XKxgnMCrNQvLMLCQPzELYtYCReRWjeGppcW56arFhXmq5XnFi
+        bnFpXrpecn7uJkZgwjv97/inHYxzX33UO8TIxMF4iFGCg1lJhPf0oskJQrwpiZVVqUX58UWl
+        OanFhxilOViUxHlXzV4TLySQnliSmp2aWpBaBJNl4uCUamCaIF6svdVdf+kP0R0BG1VzefdO
+        jtqxW2xPxuLNG2Ku79a9x9v2ZcL8zx+ZVBk/zC3Xuhp1U2D9Ob/LeZmyAlzZUbqBX2cx7Dos
+        bH5xxXTJhfeTPS3ELl4LEeB1nfk2rr9+wSp9/2e8cx2Fs5X3sW/sDHe+aLIuqLnzK+fHFxO+
+        zVjizGdlN6u/71jLSubXHSf/ZCiwfVi5efLFBwVT93x/WXvzUfKjumkmp1Ke2/uecGXedkCX
+        reFu0rYVJ+y9vi2VUj23/xVDhWKq4dpLchZuOgbm/M5vryYdXeDSvvrr0USjX65NT77IVJ44
+        nzOpUYTnYmfwC58Vk6+80b7zUS76bkbMXW7L0sVx+77Ofl48XYmlOCPRUIu5qDgRAOiuHZTn
+        AwAA
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFnrKIsWRmVeSWpSXmKPExsVy+t/xe7qaHlMTDO49MLA4f/cQs8XGGetZ
         Leacb2GxmH/kHKvFovczWC2uvb3DatH/+DWzxfnzG9gtLmzrY7W4eWgFo8Wmx9dYLS7vmsNm
         MeP8PiaLQ1P3MlqsPXKX3eLYAjGL1r1H2C3+79nB7iDkcfnaRWaPLStvMnnsnHWX3WPTqk42
         j81L6j127vjM5NG3ZRWjx+dNcgEcUXo2RfmlJakKGfnFJbZK0YYWRnqGlhZ6RiaWeobG5rFW
-        RqZK+nY2Kak5mWWpRfp2CXoZV+c0MxX8ZKt483UJUwPjT9YuRk4OCQETia1TFjJ1MXJxCAks
-        ZZRYd3MtkMMBlJCSWDk3HaJGWOLPtS42iJqnjBLbpxxhBkmwCThK9C89wQqSEBF4wyzRdO8t
-        O4jDLHCfUeLXpxeMIFXCAv4Sb+5OYAGxWQRUJXputbOBbOAVsJL4vyMcYoO8RPvy7WwgNqeA
-        tcSDT3fZQWwhoJKJmzqZQGxeAUGJkzOfsIC0MguoS6yfJwQS5hfQkljTdB1sOjPQmOats5kn
-        MArNQtIxC6FjFpKqBYzMqxhFUkuLc9Nzi430ihNzi0vz0vWS83M3MQIjfNuxn1t2MK589VHv
-        ECMTB+MhRgkOZiUR3tOLJicI8aYkVlalFuXHF5XmpBYfYjQFemwis5Rocj4wxeSVxBuaGZga
-        mphZGphamhkrifOaHFkTLySQnliSmp2aWpBaBNPHxMEp1cAkwCG445pTp1K2j0LZnok3FqTF
-        njBee3O2C+O33/WNezc2XNLeeMl83Y2ZLy8XTtp+5WXxjjd5c9tOnuKf+WPby41XXkhN7u/9
-        PblbcvIlkZXp4Q/OzbPcuvOd28+EB33xb8Q/mizpfDWv5glrit3JbQcn7P928tH6Y6pRfzsv
-        Gx/clh1vePnDqpA7M00fOS5nWDUvedmjvW7HxDTFNF9675l5nD//Qqrz3u3f5yw40cb2mpU/
-        SftUlOvR631alz9UrheX2/Bsqif31YWGh/U3PPLUZc4+qPwza98zaafFU5+WrBLj25O8+OXC
-        i4JsXOpaTJK5zxXDr375elzCxZO/t0xC/IJsT6lOukrG/4MZ1leVWIozEg21mIuKEwEwghdX
-        eQMAAA==
-X-CMS-MailID: 20210507140113eucas1p13dc9798741a7ecad721f07efe543b56d
+        RqZK+nY2Kak5mWWpRfp2CXoZV4+ZFZwXrljQ+5OpgXEKfxcjJ4eEgInEzvP7mbsYuTiEBJYy
+        SlztnQTkcAAlpCRWzk2HqBGW+HOtiw2i5imjRPvdu4wgCTYBR4n+pSdYQRIiAm+YJZruvWUH
+        cZgF7jNK/Pr0AqxKWCBJYta9DhaQqSwCqhJb92SDhHkFrCQ+flnLCrFBXqJ9+XY2EJtTwFri
+        wae77CC2EFDNxE2dTBD1ghInZz4BG8MsoC6xfp4QSJhfQEtiTdN1FhCbGWhM89bZzBMYhWYh
+        6ZiF0DELSdUCRuZVjCKppcW56bnFRnrFibnFpXnpesn5uZsYgfG97djPLTsYV776qHeIkYmD
+        8RCjBAezkgjv6UWTE4R4UxIrq1KL8uOLSnNSiw8xmgI9NpFZSjQ5H5hg8kriDc0MTA1NzCwN
+        TC3NjJXEeU2OrIkXEkhPLEnNTk0tSC2C6WPi4JRqYJJlfnx1wzqGlXW3L7DqxCxg3jxDemvP
+        qyamySpy+Q9vZD9m397WGK8+64Th7XmapXpW5RNeX6zaqmZu07rxxMxglt+1InN2CHIohL1+
+        VG67jY2b+1D1ZNXjnPOvHesyO5XfnaZ47U3s1LdLDswKk5H5pMpTKJEuu30P/+Ly09VNhik3
+        o629F93ofdKdstGTi2W2xt8pEx50PA4WEpHWMRUM+e/YmHVeuHgBj8qFFe5PctLiBA4u2sAk
+        xh257tABy7xvhvHbZqz6/Hb7jRP/rzWG7G29zrM9/9LNldM8n79eLFXXclOfq0ou5pbz4hLb
+        ILYpOR8fHq/m+Wh65IWg+Lvl6T+rPb7POKtauTe2rUaJpTgj0VCLuag4EQCermsweAMAAA==
+X-CMS-MailID: 20210507140113eucas1p135a114200d194a8fa9d52987b7725fa4
 X-Msg-Generator: CA
 Content-Type: text/plain; charset="utf-8"
-X-RootMTR: 20210507140113eucas1p13dc9798741a7ecad721f07efe543b56d
+X-RootMTR: 20210507140113eucas1p135a114200d194a8fa9d52987b7725fa4
 X-EPHeader: CA
 CMS-TYPE: 201P
-X-CMS-RootMailID: 20210507140113eucas1p13dc9798741a7ecad721f07efe543b56d
+X-CMS-RootMailID: 20210507140113eucas1p135a114200d194a8fa9d52987b7725fa4
 References: <20210507140110.6323-1-l.stelmach@samsung.com>
-        <CGME20210507140113eucas1p13dc9798741a7ecad721f07efe543b56d@eucas1p1.samsung.com>
+        <CGME20210507140113eucas1p135a114200d194a8fa9d52987b7725fa4@eucas1p1.samsung.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add the prefix for ASIX Electronics Corporation.
+Add bindings for AX88796C SPI Ethernet Adapter.
 
 Signed-off-by: Łukasz Stelmach <l.stelmach@samsung.com>
-Reviewed-by: Krzysztof Kozlowski <krzk@kernel.org>
-Acked-by: Rob Herring <robh@kernel.org>
+Reviewed-by: Rob Herring <robh@kernel.org>
+Acked-by: Krzysztof Kozlowski <krzk@kernel.org>
 ---
- Documentation/devicetree/bindings/vendor-prefixes.yaml | 2 ++
- 1 file changed, 2 insertions(+)
+ .../bindings/net/asix,ax88796c.yaml           | 73 +++++++++++++++++++
+ 1 file changed, 73 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/net/asix,ax88796c.yaml
 
-diff --git a/Documentation/devicetree/bindings/vendor-prefixes.yaml b/Documentation/devicetree/bindings/vendor-prefixes.yaml
-index 99a72a480d32..06c32644a9c8 100644
---- a/Documentation/devicetree/bindings/vendor-prefixes.yaml
-+++ b/Documentation/devicetree/bindings/vendor-prefixes.yaml
-@@ -131,6 +131,8 @@ patternProperties:
-     description: Asahi Kasei Corp.
-   "^asc,.*":
-     description: All Sensors Corporation
-+  "^asix,.*":
-+    description: ASIX Electronics Corporation
-   "^aspeed,.*":
-     description: ASPEED Technology Inc.
-   "^asus,.*":
+diff --git a/Documentation/devicetree/bindings/net/asix,ax88796c.yaml b/Documentation/devicetree/bindings/net/asix,ax88796c.yaml
+new file mode 100644
+index 000000000000..699ebf452479
+--- /dev/null
++++ b/Documentation/devicetree/bindings/net/asix,ax88796c.yaml
+@@ -0,0 +1,73 @@
++# SPDX-License-Identifier: GPL-2.0-only OR BSD-2-Clause
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/net/asix,ax88796c.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: ASIX AX88796C SPI Ethernet Adapter
++
++maintainers:
++  - Łukasz Stelmach <l.stelmach@samsung.com>
++
++description: |
++  ASIX AX88796C is an Ethernet controller with a built in PHY. This
++  describes SPI mode of the chip.
++
++  The node for this driver must be a child node of an SPI controller,
++  hence all mandatory properties described in
++  ../spi/spi-controller.yaml must be specified.
++
++allOf:
++  - $ref: ethernet-controller.yaml#
++
++properties:
++  compatible:
++    const: asix,ax88796c
++
++  reg:
++    maxItems: 1
++
++  spi-max-frequency:
++    maximum: 40000000
++
++  interrupts:
++    maxItems: 1
++
++  reset-gpios:
++    description:
++      A GPIO line handling reset of the chip. As the line is active low,
++      it should be marked GPIO_ACTIVE_LOW.
++    maxItems: 1
++
++  local-mac-address: true
++
++  mac-address: true
++
++required:
++  - compatible
++  - reg
++  - spi-max-frequency
++  - interrupts
++  - reset-gpios
++
++additionalProperties: false
++
++examples:
++  # Artik5 eval board
++  - |
++    #include <dt-bindings/interrupt-controller/irq.h>
++    #include <dt-bindings/gpio/gpio.h>
++    spi0 {
++        #address-cells = <1>;
++        #size-cells = <0>;
++
++        ethernet@0 {
++            compatible = "asix,ax88796c";
++            reg = <0x0>;
++            local-mac-address = [00 00 00 00 00 00]; /* Filled in by a bootloader */
++            interrupt-parent = <&gpx2>;
++            interrupts = <0 IRQ_TYPE_LEVEL_LOW>;
++            spi-max-frequency = <40000000>;
++            reset-gpios = <&gpe0 2 GPIO_ACTIVE_LOW>;
++        };
++    };
 -- 
 2.26.2
 
