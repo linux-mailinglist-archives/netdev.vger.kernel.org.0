@@ -2,129 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 09D7B375E06
-	for <lists+netdev@lfdr.de>; Fri,  7 May 2021 02:49:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BA75C375E0E
+	for <lists+netdev@lfdr.de>; Fri,  7 May 2021 02:51:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229867AbhEGAtp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 6 May 2021 20:49:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44270 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229650AbhEGAto (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 6 May 2021 20:49:44 -0400
-Received: from mail-pf1-x42f.google.com (mail-pf1-x42f.google.com [IPv6:2607:f8b0:4864:20::42f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 942C7C061574
-        for <netdev@vger.kernel.org>; Thu,  6 May 2021 17:48:45 -0700 (PDT)
-Received: by mail-pf1-x42f.google.com with SMTP id h11so6627860pfn.0
-        for <netdev@vger.kernel.org>; Thu, 06 May 2021 17:48:45 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=pensando.io; s=google;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-transfer-encoding:content-language;
-        bh=KXmyP+9gf7JW+NByBVKkUA1UdyWmqKq2FyoGZCOgUaM=;
-        b=2MHOKqsip+t0GYheak3XDbsMRhqZ9A6yl4rU0oStES7z+6iC6Sg4jpGsurNi3Z7nWt
-         g4Cm+vGKWEKUAn4CM/00TVA7KKsCLL5MFHI6s5c2f1mFVhW3pnHUfjr6GS6vz39pLTHw
-         4wQc1gq+sFiS/GYX0m+ZrYZFO9CP9uutWGNXEwAq9qfiQRSuS3iSrDofEJvZL8fBN1u2
-         bw1bhdwz9nycaouMLzj9lDrVk4L59ntZJVMYht8eteOCXpRCejliLEg67moiAxfKmW6n
-         1EJ8u5Igiq2EciY4uKUerdhtqCPFsAiwS/EREVdyguZPbIHGqF30OVY24ddYkscrdVcS
-         rKBg==
+        id S232391AbhEGAwx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 6 May 2021 20:52:53 -0400
+Received: from mail-ot1-f41.google.com ([209.85.210.41]:34754 "EHLO
+        mail-ot1-f41.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229650AbhEGAwv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 6 May 2021 20:52:51 -0400
+Received: by mail-ot1-f41.google.com with SMTP id u25-20020a0568302319b02902ac3d54c25eso6594516ote.1;
+        Thu, 06 May 2021 17:51:52 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-transfer-encoding
-         :content-language;
-        bh=KXmyP+9gf7JW+NByBVKkUA1UdyWmqKq2FyoGZCOgUaM=;
-        b=RYgqKfh6GBS+rVwQruGhHkU0qcxFdYyc32t3X6KzUVkNA3FS7yiu2LnIuj9F4U2TfA
-         dcGvgs4AeJNeWw+fPwkk/WYXBphxnr9tU3V7ChGWewrRQPIIB7Fo0qe/lN9+0qGihGmx
-         OGykgdyOyhMhrnHkIBAtjkEVmP5S1vT+vMg7iPPXgGesLhc7KNPpAjKrHYlFw1radcJY
-         qHHx5jelavtGeB7QHAATPY7tIPH3/gJmsSysutozWfvTg0y4VjxBM42rzG5msTZHkSJz
-         bbrlpg45ePBove2dcMJccEgDpoAWjRr/YFaTnyckuF9VKcap9MFRgtnvJE2viqHw//1Y
-         qwQQ==
-X-Gm-Message-State: AOAM533QGq3LGDaB5D4zgJBp/UwdZzx/TnJRcW9Nh6n8ElIyNAJ8xyv/
-        H4j3PtcTnQcqRHSxN8bBiBBiPw==
-X-Google-Smtp-Source: ABdhPJy586FDOMh0R8EdJ1PNcUeuAeYQpjKr72XitX+7+rfYz28v3P+rFAuAKAhcScFRRJgUcuUsGg==
-X-Received: by 2002:a63:da0a:: with SMTP id c10mr7125479pgh.255.1620348524981;
-        Thu, 06 May 2021 17:48:44 -0700 (PDT)
-Received: from Shannons-MacBook-Pro.local ([50.53.47.17])
-        by smtp.gmail.com with ESMTPSA id 5sm3145550pfi.43.2021.05.06.17.48.43
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 06 May 2021 17:48:44 -0700 (PDT)
-Subject: Re: [PATCH v3 net] ionic: fix ptp support config breakage
-To:     Randy Dunlap <rdunlap@infradead.org>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, drivers@pensando.io,
-        Allen Hubbe <allenbh@pensando.io>
-References: <20210506041846.62502-1-snelson@pensando.io>
- <20210506171529.0d95c9da@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <b3099289-0ae4-7a4f-6739-55f788418eb8@infradead.org>
-From:   Shannon Nelson <snelson@pensando.io>
-Message-ID: <d412627d-467d-8e19-f4b6-2899afa1845d@pensando.io>
-Date:   Thu, 6 May 2021 17:48:43 -0700
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
- Gecko/20100101 Thunderbird/78.10.1
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=1oMvkH7lap0BqARISWBdTYXD6qDV6VvBmCGhELos5RA=;
+        b=LeVdO+1vythN/hMsLuJuDQgYZSsZTqR0LyoZtvVvDltmUuJJ55PoLbxm1lvZ+bkbb0
+         iZ0JGjYwN+3HuWrzlvJGTh9njWUmTRnzBGuWeZ5hoSgEW5pVQfGnViNEf6FU7xRUH9ws
+         9aQ7rvd8tRItR1k69+Wsj+F00seP46aHS7uKDxgZ/aAXUdtVkPoxQVSPZ+HWFNZj3q9e
+         oOjSMhQQ37uTYHxVh4rjTscfXOq627YT7sOl0ZvWTAGyDzqnAK++ADZPz4kIaQ91bi6o
+         WjaAU5K8bGfX7h7uZO8FQQKsGHDyDMDtGeHNKvu1V/w220pEOZhS40DPGbWXJ84SSqDJ
+         bw3A==
+X-Gm-Message-State: AOAM530wQvWrSYo5T91e2hYCT/cpYLlMlxFLmI9uKXMskIQZUx13xHkn
+        s4Tuq/lEF7D2O3k8T16stg==
+X-Google-Smtp-Source: ABdhPJxJslynABDD4IZSwF0YWJ1VdRqG6Gcl3L0tfHmjUr8H5+oGA09wMWF2ZkTEKw6cHpqwOnK2bg==
+X-Received: by 2002:a05:6830:4111:: with SMTP id w17mr6095717ott.99.1620348712375;
+        Thu, 06 May 2021 17:51:52 -0700 (PDT)
+Received: from robh.at.kernel.org (24-155-109-49.dyn.grandenetworks.net. [24.155.109.49])
+        by smtp.gmail.com with ESMTPSA id r124sm720449oig.38.2021.05.06.17.51.51
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 06 May 2021 17:51:51 -0700 (PDT)
+Received: (nullmailer pid 1096458 invoked by uid 1000);
+        Fri, 07 May 2021 00:51:50 -0000
+Date:   Thu, 6 May 2021 19:51:50 -0500
+From:   Rob Herring <robh@kernel.org>
+To:     Corentin Labbe <clabbe@baylibre.com>
+Cc:     andrew@lunn.ch, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, hkallweit1@gmail.com,
+        devicetree@vger.kernel.org, robh+dt@kernel.org,
+        linux@armlinux.org.uk
+Subject: Re: [PATCH v5] dt-bindings: net: Convert mdio-gpio to yaml
+Message-ID: <20210507005150.GA1096383@robh.at.kernel.org>
+References: <20210505202815.2665920-1-clabbe@baylibre.com>
 MIME-Version: 1.0
-In-Reply-To: <b3099289-0ae4-7a4f-6739-55f788418eb8@infradead.org>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
-Content-Language: en-US
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210505202815.2665920-1-clabbe@baylibre.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 5/6/21 5:21 PM, Randy Dunlap wrote:
-> On 5/6/21 5:15 PM, Jakub Kicinski wrote:
->> On Wed,  5 May 2021 21:18:46 -0700 Shannon Nelson wrote:
->>> Driver link failed with undefined references in some
->>> kernel config variations.
->> This is really vague and the patch is not very obvious.
->>
->>>   ionic-y := ionic_main.o ionic_bus_pci.o ionic_devlink.o ionic_dev.o \
->>>   	   ionic_debugfs.o ionic_lif.o ionic_rx_filter.o ionic_ethtool.o \
->>> -	   ionic_txrx.o ionic_stats.o ionic_fw.o
->>> -ionic-$(CONFIG_PTP_1588_CLOCK) += ionic_phc.o
->>> +	   ionic_txrx.o ionic_stats.o ionic_fw.o ionic_phc.o
->> So we'd replace a build dependency..
->>
->>> diff --git a/drivers/net/ethernet/pensando/ionic/ionic_phc.c b/drivers/net/ethernet/pensando/ionic/ionic_phc.c
->>> index a87c87e86aef..30c78808c45a 100644
->>> --- a/drivers/net/ethernet/pensando/ionic/ionic_phc.c
->>> +++ b/drivers/net/ethernet/pensando/ionic/ionic_phc.c
->>> @@ -1,6 +1,8 @@
->>>   // SPDX-License-Identifier: GPL-2.0
->>>   /* Copyright(c) 2017 - 2021 Pensando Systems, Inc */
->>>   
->>> +#if IS_ENABLED(CONFIG_PTP_1588_CLOCK)
->>> +
->>>   #include <linux/netdevice.h>
->>>   #include <linux/etherdevice.h>
->>>   
->>> @@ -613,3 +615,4 @@ void ionic_lif_free_phc(struct ionic_lif *lif)
->>>   	devm_kfree(lif->ionic->dev, lif->phc);
->>>   	lif->phc = NULL;
->>>   }
->>> +#endif /* IS_ENABLED(CONFIG_PTP_1588_CLOCK) */
->> .. with an ifdef around an entire file? Does not feel very clean.
->>
->> The construct of using:
->>
->> 	drv-$(CONFIG_PTP_1588_CLOCK) += ptp.o
->>
->> seems relatively common, why does it now work here?
->>
->> Maybe the config in question has PTP as a module and ionic built in?
->> Then you should add depends on PTP_1588_CLOCK || !PTP_1588_CLOCK.
->>
->> Maybe somehow the "ionic-y" confuses kbuild and it should be ionic-objs?
->>
->> At the very least we need a better explanation in the commit message.
->>
-> I'll take a look if someone can point me to the .config file.
->
+On Wed, 05 May 2021 20:28:15 +0000, Corentin Labbe wrote:
+> Converts net/mdio-gpio.txt to yaml
+> 
+> Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+> Signed-off-by: Corentin Labbe <clabbe@baylibre.com>
+> ---
+> Changes since v1:
+> - fixes yamllint warning about indent
+> - added maxItems 3
+> 
+> Changes since v2:
+> - fixed example (gpios need 2 entries)
+> 
+> Changes since v3:
+> - fixed gpios description
+> - added additionalProperties/type: object
+> 
+> Changes since v4:
+> - fixed maintainers list
+> 
+>  .../devicetree/bindings/net/mdio-gpio.txt     | 27 ---------
+>  .../devicetree/bindings/net/mdio-gpio.yaml    | 58 +++++++++++++++++++
+>  2 files changed, 58 insertions(+), 27 deletions(-)
+>  delete mode 100644 Documentation/devicetree/bindings/net/mdio-gpio.txt
+>  create mode 100644 Documentation/devicetree/bindings/net/mdio-gpio.yaml
+> 
 
-These are the notes I got from kernel test robot:
-https://lore.kernel.org/lkml/202105041020.efEaBOYC-lkp@intel.com/
-https://lore.kernel.org/lkml/202105041154.GrLZmjGh-lkp@intel.com/
-https://lore.kernel.org/lkml/202105041634.paURyDp0-lkp@intel.com/
-https://lore.kernel.org/lkml/202105050636.UXXDl7m2-lkp@intel.com/
-
-sln
-
+Applied, thanks!
