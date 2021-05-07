@@ -2,119 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D07DB37681A
-	for <lists+netdev@lfdr.de>; Fri,  7 May 2021 17:34:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8608637681C
+	for <lists+netdev@lfdr.de>; Fri,  7 May 2021 17:35:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237961AbhEGPfD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 7 May 2021 11:35:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42750 "EHLO
+        id S237969AbhEGPgD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 7 May 2021 11:36:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42974 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237940AbhEGPe7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 7 May 2021 11:34:59 -0400
-Received: from mail-lj1-x230.google.com (mail-lj1-x230.google.com [IPv6:2a00:1450:4864:20::230])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC38EC061574;
-        Fri,  7 May 2021 08:33:59 -0700 (PDT)
-Received: by mail-lj1-x230.google.com with SMTP id a36so12067501ljq.8;
-        Fri, 07 May 2021 08:33:59 -0700 (PDT)
+        with ESMTP id S236209AbhEGPf6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 7 May 2021 11:35:58 -0400
+Received: from mail-pj1-x1035.google.com (mail-pj1-x1035.google.com [IPv6:2607:f8b0:4864:20::1035])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7064CC061574
+        for <netdev@vger.kernel.org>; Fri,  7 May 2021 08:34:58 -0700 (PDT)
+Received: by mail-pj1-x1035.google.com with SMTP id gq14-20020a17090b104eb029015be008ab0fso5441668pjb.1
+        for <netdev@vger.kernel.org>; Fri, 07 May 2021 08:34:58 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
+        d=gateworks-com.20150623.gappssmtp.com; s=20150623;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=XItf2h9hovNafxela2Mfpgx6zd0s5dzNeA3YTSrq32g=;
-        b=Jx5khNbbvbtn/U6yoK/8cw0ezIGuOk20VXL3g5Xc+1PO4u0/c7u9JdhS4Sh0A/238X
-         qJDK3CmCrhsUw3kxgGmtVLKOVBpamJ+mgC++QhBm/huNDdpJjfnji8KQgSRdH6dR/6qw
-         gnnCzv+ZkzfWEd8q02n4o5Q1u7vF1VZJ4e7OS4bTosSeDlXkdzxCU2dg/3t0bFiexOvm
-         +Fns9n/UTIMVSeDR8FrwK2UMk0Co9GksoDN716frVRknDfq407ihSlg/RkoHgqcpmhWB
-         9MxoWewWjLjGhCFj5Iy5vQfpMUzUk5ghM0z3CRFvwHCE5bR6RTjPI1mbzhQOqVqQKwNY
-         QLzw==
+        bh=JjLxc1gE4zTEm+ur3BD5goxnNP9vlhrdsXVrtbr+H6U=;
+        b=myz7+8s0Nf4RRZaK13lgfJyCZnBRGRctGGS3QSVCaGIhgG6znUyUpJfwFjXSdAjphS
+         86NlcJvEwVVcbR9aprZa051RGPk95cp/H1RQUcJ4OgwyxC4vMIot3fkw/9ueUxj9IMDW
+         ECDOJxxY8ykgSo60NGk6PGgeqiNm/9Mily52nXdmVLoSAriBKG3tTssS1UvjoUl4NYgu
+         60JGZD226BCiBBdDBDbalJyL+WZZYj2qA9FCNWg28Iv69YtxjTAu183nawyMs5txZM8z
+         aHo8BMmDFHaaS9RfPb8Yc5IRmx7NkBaov0D1RS60ZcxqVFQs5VVEtBwy8Welhbb4zK72
+         zgww==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=XItf2h9hovNafxela2Mfpgx6zd0s5dzNeA3YTSrq32g=;
-        b=uZvJncYILcHBNHK2Is+inA99tNyMUoWrSM40NBXlz+jIemrDV0xtli0ZsGIk6SBjMf
-         swNS6PwmE62sodExhoU0X+5ciCs5pI49NnIIuQv0LHEKDSom/znGwB/o8GiUdq1AhiLS
-         iGBwpAktrCQZ0UN1ULrNLjcBAUdNPuIBMnBPL4DoY108au2rjhUrn+FBJQrvAjOg4czT
-         2i6D0X5tUvs8o69X1anUAeRjCv/QfPucccdZ+J1zdDMBRVczVveaLzeiAYwp5cZCg92/
-         tSLc55AIcsejN/n8E8RByN+dwMEAwcBR1GVhBfxAzaNhqMSj6geoE/TnqIFu9ShJVNko
-         v9NA==
-X-Gm-Message-State: AOAM532IkOyFSeeH194xLEjxZOUwdbAoycWNRzD+IAzbxoTsSXcbchae
-        /6hP6CuN4QJwKHWyu8uUMBZv+ieLpHcZrtOB8Ps=
-X-Google-Smtp-Source: ABdhPJx/cIdx8NpTK9Kf5ak04J3JS36S0jqI9UthXLBwNn3zr8xJh29JWdymKYR7PnpZPh/rQLr7Hj7zbOpXNv/R8KY=
-X-Received: by 2002:a2e:bf1f:: with SMTP id c31mr8218857ljr.30.1620401638215;
- Fri, 07 May 2021 08:33:58 -0700 (PDT)
+        bh=JjLxc1gE4zTEm+ur3BD5goxnNP9vlhrdsXVrtbr+H6U=;
+        b=aUKq+uiHqotjs+vemwGENGnBqIffHZJVvwxBwA/Mm5wWPMe/oamBlo+xFmMZUbMF4m
+         jNZyYI7YfywIvfoJQ9jzKsERJHwsCYKYpWbKXnmqoz7PK19upTPQIJtr10CZNrbQggIm
+         t+PfLGw9WQSJyUUWe4Uiu7A4IJ4IBeRXRHXycKI6tG8jZupZ8vBbdDsnhGDNgf/dTN1n
+         C0TmqV8mNFWQZWjNS1p4XvMUt/u/7sMGOJsw8osf6SUmaMuhb5YDOrRVCRlqu/1YmRve
+         nqQrNp7fdj24xJbhblKjudNmtrC+5jJuMq9V13Y+zYb/p4ytZVMyzlUuiUceAtRSweAT
+         zvJg==
+X-Gm-Message-State: AOAM530PaaJQDBrgMcRUrMB4M2JKnd1u+tSpHu29NKROjOR1KPWF9HWI
+        s8Hm7AuoWyrzTUtu/gF9P0KxM/tP9j6TdXZNBPZKew==
+X-Google-Smtp-Source: ABdhPJzAJhJKcj+oqzprYDBQpQBsBeYhgXEh360O1Z359JNkGBKerpZ8jsZKimV1hWcT3U0c/x+AGq9gfN3Zi4v2lzk=
+X-Received: by 2002:a17:90a:a60b:: with SMTP id c11mr10947257pjq.125.1620401697927;
+ Fri, 07 May 2021 08:34:57 -0700 (PDT)
 MIME-Version: 1.0
-References: <CAOWid-czZphRz6Y-H3OcObKCH=bLLC3=bOZaSB-6YBE56+Qzrg@mail.gmail.com>
- <20201103210418.q7hddyl7rvdplike@ast-mbp.dhcp.thefacebook.com>
- <CAOWid-djQ_NRfCbOTnZQ-A8Pr7jMP7KuZEJDSsvzWkdw7qc=yA@mail.gmail.com>
- <20201103232805.6uq4zg3gdvw2iiki@ast-mbp.dhcp.thefacebook.com>
- <YBgU9Vu0BGV8kCxD@phenom.ffwll.local> <CAOWid-eXMqcNpjFxbcuUDU7Y-CCYJRNT_9mzqFYm1jeCPdADGQ@mail.gmail.com>
- <YBqEbHyIjUjgk+es@phenom.ffwll.local> <CAOWid-c4Nk717xUah19B=z=2DtztbtU=_4=fQdfhqpfNJYN2gw@mail.gmail.com>
- <CAKMK7uFEhyJChERFQ_DYFU4UCA2Ox4wTkds3+GeyURH5xNMTCA@mail.gmail.com>
- <CAOWid-fL0=OM2XiOH+NFgn_e2L4Yx8sXA-+HicUb9bzhP0t8Bw@mail.gmail.com> <YJUBer3wWKSAeXe7@phenom.ffwll.local>
-In-Reply-To: <YJUBer3wWKSAeXe7@phenom.ffwll.local>
-From:   Kenny Ho <y2kenny@gmail.com>
-Date:   Fri, 7 May 2021 11:33:46 -0400
-Message-ID: <CAOWid-dmRsZUjF3cJ8+mx5FM9ksNQ_P9xY3jqxFiFMvN29SaLw@mail.gmail.com>
-Subject: Re: [RFC] Add BPF_PROG_TYPE_CGROUP_IOCTL
-To:     Daniel Vetter <daniel@ffwll.ch>
-Cc:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        Dave Airlie <airlied@gmail.com>, Kenny Ho <Kenny.Ho@amd.com>,
-        Alexander Viro <viro@zeniv.linux.org.uk>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>, bpf <bpf@vger.kernel.org>,
-        Network Development <netdev@vger.kernel.org>,
-        Linux-Fsdevel <linux-fsdevel@vger.kernel.org>,
-        "open list:CONTROL GROUP (CGROUP)" <cgroups@vger.kernel.org>,
-        Alex Deucher <alexander.deucher@amd.com>,
-        amd-gfx list <amd-gfx@lists.freedesktop.org>,
-        DRI Development <dri-devel@lists.freedesktop.org>,
-        Brian Welty <brian.welty@intel.com>
+References: <421cc86c-b66f-b372-32f7-21e59f9a98bc@kontron.de> <CAHCN7xJCUtmi1eOftFq0mg28SFyt2a34q3Vy8c0fvOs5wHC-yg@mail.gmail.com>
+In-Reply-To: <CAHCN7xJCUtmi1eOftFq0mg28SFyt2a34q3Vy8c0fvOs5wHC-yg@mail.gmail.com>
+From:   Tim Harvey <tharvey@gateworks.com>
+Date:   Fri, 7 May 2021 08:34:47 -0700
+Message-ID: <CAJ+vNU2_VQRYzJKnHkLpJUYY7KZNGC8_fHj_7VcUdvHkbzFWGQ@mail.gmail.com>
+Subject: Re: i.MX8MM Ethernet TX Bandwidth Fluctuations
+To:     Adam Ford <aford173@gmail.com>,
+        Frieder Schrempf <frieder.schrempf@kontron.de>
+Cc:     NXP Linux Team <linux-imx@nxp.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, May 7, 2021 at 4:59 AM Daniel Vetter <daniel@ffwll.ch> wrote:
+On Thu, May 6, 2021 at 12:20 PM Adam Ford <aford173@gmail.com> wrote:
 >
-> Hm I missed that. I feel like time-sliced-of-a-whole gpu is the easier gpu
-> cgroups controler to get started, since it's much closer to other cgroups
-> that control bandwidth of some kind. Whether it's i/o bandwidth or compute
-> bandwidht is kinda a wash.
-sriov/time-sliced-of-a-whole gpu does not really need a cgroup
-interface since each slice appears as a stand alone device.  This is
-already in production (not using cgroup) with users.  The cgroup
-proposal has always been parallel to that in many sense: 1) spatial
-partitioning as an independent but equally valid use case as time
-sharing, 2) sub-device resource control as opposed to full device
-control motivated by the workload characterization paper.  It was
-never about time vs space in terms of use cases but having new API for
-users to be able to do spatial subdevice partitioning.
+> On Thu, May 6, 2021 at 9:51 AM Frieder Schrempf
+> <frieder.schrempf@kontron.de> wrote:
+> >
+> > Hi,
+> >
+> > we observed some weird phenomenon with the Ethernet on our i.MX8M-Mini boards. It happens quite often that the measured bandwidth in TX direction drops from its expected/nominal value to something like 50% (for 100M) or ~67% (for 1G) connections.
+> >
+> > So far we reproduced this with two different hardware designs using two different PHYs (RGMII VSC8531 and RMII KSZ8081), two different kernel versions (v5.4 and v5.10) and link speeds of 100M and 1G.
+> >
+> > To measure the throughput we simply run iperf3 on the target (with a short p2p connection to the host PC) like this:
+> >
+> >         iperf3 -c 192.168.1.10 --bidir
+> >
+> > But even something more simple like this can be used to get the info (with 'nc -l -p 1122 > /dev/null' running on the host):
+> >
+> >         dd if=/dev/zero bs=10M count=1 | nc 192.168.1.10 1122
+> >
+> > The results fluctuate between each test run and are sometimes 'good' (e.g. ~90 MBit/s for 100M link) and sometimes 'bad' (e.g. ~45 MBit/s for 100M link).
+> > There is nothing else running on the system in parallel. Some more info is also available in this post: [1].
+> >
+> > If there's anyone around who has an idea on what might be the reason for this, please let me know!
+> > Or maybe someone would be willing to do a quick test on his own hardware. That would also be highly appreciated!
+>
+> I have seen a similar regression on linux-next on both Mini and Nano.
+> I thought I broke something, but it returned to normal after a reboot.
+>   However, with a 1Gb connection, I was running at ~450 Mbs which is
+> consistent with what you were seeing with a 100Mb link.
+>
+> adam
+>
 
-> CU mask feels a lot more like an isolation/guaranteed forward progress
-> kind of thing, and I suspect that's always going to be a lot more gpu hw
-> specific than anything we can reasonably put into a general cgroups
-> controller.
-The first half is correct but I disagree with the conclusion.  The
-analogy I would use is multi-core CPU.  The capability of individual
-CPU cores, core count and core arrangement may be hw specific but
-there are general interfaces to support selection of these cores.  CU
-mask may be hw specific but spatial partitioning as an idea is not.
-Most gpu vendors have the concept of sub-device compute units (EU, SE,
-etc.); OpenCL has the concept of subdevice in the language.  I don't
-see any obstacle for vendors to implement spatial partitioning just
-like many CPU vendors support the idea of multi-core.
+Frieder,
 
-> Also for the time slice cgroups thing, can you pls give me pointers to
-> these old patches that had it, and how it's done? I very obviously missed
-> that part.
-I think you misunderstood what I wrote earlier.  The original proposal
-was about spatial partitioning of subdevice resources not time sharing
-using cgroup (since time sharing is already supported elsewhere.)
+I've noticed this as well on our designs with IMX8MN+DP83867 and
+IMX8MM+KSZ9897S. I also notice it with IMX8MN+DP83867. I have noticed
+it on all kernels I've tested and it appears to latch back and forth
+every few times I run a 10s iperf3 between 50% and 100% line speed.
 
-Kenny
+I have no idea what it is but glad you are asking and hope someone
+knows how to fix it!
+
+Best Regards,
+
+Tim
