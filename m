@@ -2,335 +2,501 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4E033376565
-	for <lists+netdev@lfdr.de>; Fri,  7 May 2021 14:43:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 19FC83765D3
+	for <lists+netdev@lfdr.de>; Fri,  7 May 2021 15:13:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236662AbhEGMoq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 7 May 2021 08:44:46 -0400
-Received: from ssl.serverraum.org ([176.9.125.105]:44379 "EHLO
-        ssl.serverraum.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230349AbhEGMoo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 7 May 2021 08:44:44 -0400
-Received: from ssl.serverraum.org (web.serverraum.org [172.16.0.2])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ssl.serverraum.org (Postfix) with ESMTPSA id 9A2812224D;
-        Fri,  7 May 2021 14:43:42 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
-        t=1620391423;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=uT0RuTKvzHOAe4V80zynebT/XtjkDrMnkIsyyR2Nt2Y=;
-        b=agj/DMbYdpQVdTYblwOECJkssFj3fmO91Yff8cX9xzKliaDdMliedrrLC8rqldVQZLMMO/
-        qkxQYrwTFDs5G+o7YuM/4tVKMJdxgYwEsZXNmyNlzFtpfBgFGdCuYTTNZkaJaBAaAF1bNp
-        tQIpRi1nAMgMye8YlqT/Amf/a/0BSkY=
+        id S236752AbhEGNOh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 7 May 2021 09:14:37 -0400
+Received: from mx0a-0016f401.pphosted.com ([67.231.148.174]:64604 "EHLO
+        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S229492AbhEGNOf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 7 May 2021 09:14:35 -0400
+Received: from pps.filterd (m0045849.ppops.net [127.0.0.1])
+        by mx0a-0016f401.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 147DAbJv011208;
+        Fri, 7 May 2021 06:13:12 -0700
+Received: from nam11-bn8-obe.outbound.protection.outlook.com (mail-bn8nam11lp2173.outbound.protection.outlook.com [104.47.58.173])
+        by mx0a-0016f401.pphosted.com with ESMTP id 38cspj2byy-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Fri, 07 May 2021 06:13:11 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=g9igpkX7OGYCpdK7yMoT3B6+T5xhsc9s5daIR5j9kjvF77qMkevlYh+njxTn4w/adfkeeD+VyzIRSogflUNqsqAUj4OdVrZlBdsECslpmvKvcy+cQ9W0wl+MxXaXI0I2PEBu/7yKEh70uVpuUmAHQU13ZDF1ODYX17+57kP1YA+ICd1ASJGPU3JOJ8sNAOdlkobjHZg2yTeXIzwEKRb0kmzF7tPP4ReClvKa2r+d8T1hnmukFULHeOm4j/buPV+GEnlUj4JrVLFzBCoqpCFA3gs2OS2RMgdQ7Cz8R+55q3+ZtNF/UZh/olaPyEQfPdUAwkW4VoPM64bn/vvU3yhv4Q==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=WoMajpv4COt+q0II6JZZyajP91il/XYKSM9zgn4ldVA=;
+ b=VXwjzkBWHaq9L56z1Zr6BLh/ymcqwJ73rYBfyDJLHPHV+faE6NWRUxm6mu0L3S7/4vAAbMDRG24VQBvO1FmKRQ9nmTVKXdkwIxwDkJtTnuMGKbap2EJCQum7/kOdZFVYZ9YNGD9jDrfAUOZYdo/lSXZHww6aq8Idsz81b5e8XzJZrNm9W0sa8iZ0C7lfgrky9tx8meLRrmLtO+IRFSDjqAjtQjabIGKFxMDz4yJGxjss925yoBVmF4F8QwoeZtQsyVXpk7C+yqkQAL02LrOOKWKGhaZ78uxvjx2lBpCjOan15BI+ooLERGYnzt1+sjRWHkwnoEIa/AdqDti3Ox6Vpg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=marvell.com; dmarc=pass action=none header.from=marvell.com;
+ dkim=pass header.d=marvell.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=marvell.onmicrosoft.com; s=selector1-marvell-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=WoMajpv4COt+q0II6JZZyajP91il/XYKSM9zgn4ldVA=;
+ b=B9YjRdPqA4a1Kzj+S54KtNf1EnW8wFCV8B9R4ibso/AC0+l3/1FMEN4eE5zjwLJhjGOXtCvdpZsfPlkd869pfXGdO2fNa+8aLYLOD0QLKIpXRURrF2m0R4teNQBNxgDFka1mYCdS03KNjZPGSk8L3iyMDmwCGfZdQ3YtJ9IzjAc=
+Received: from SJ0PR18MB3882.namprd18.prod.outlook.com (2603:10b6:a03:2c8::13)
+ by SJ0PR18MB4060.namprd18.prod.outlook.com (2603:10b6:a03:2e4::5) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4108.25; Fri, 7 May
+ 2021 13:13:08 +0000
+Received: from SJ0PR18MB3882.namprd18.prod.outlook.com
+ ([fe80::b1ea:9f42:9756:3703]) by SJ0PR18MB3882.namprd18.prod.outlook.com
+ ([fe80::b1ea:9f42:9756:3703%7]) with mapi id 15.20.4108.030; Fri, 7 May 2021
+ 13:13:08 +0000
+From:   Shai Malin <smalin@marvell.com>
+To:     Hannes Reinecke <hare@suse.com>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "linux-nvme@lists.infradead.org" <linux-nvme@lists.infradead.org>,
+        Sagi Grimberg <sagi@grimberg.me>,
+        Christoph Hellwig <hch@lst.de>,
+        Keith Busch <kbusch@kernel.org>, "axboe@fb.com" <axboe@fb.com>,
+        Ariel Elior <aelior@marvell.com>,
+        Michal Kalderon <mkalderon@marvell.com>,
+        Omkar Kulkarni <okulkarni@marvell.com>,
+        Prabhakar Kushwaha <pkushwaha@marvell.com>,
+        "malin1024@gmail.com" <malin1024@gmail.com>
+Subject: Re: [RFC PATCH v4 11/27] nvme-tcp-offload: Add controller level
+ implementation
+Thread-Topic: [RFC PATCH v4 11/27] nvme-tcp-offload: Add controller level
+ implementation
+Thread-Index: AddDPZJyYiyJ3KwfRmiOhnI7/GNBnA==
+Date:   Fri, 7 May 2021 13:13:07 +0000
+Message-ID: <SJ0PR18MB3882D394624BAC7D57DCC846CC579@SJ0PR18MB3882.namprd18.prod.outlook.com>
+Accept-Language: he-IL, en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: suse.com; dkim=none (message not signed)
+ header.d=none;suse.com; dmarc=none action=none header.from=marvell.com;
+x-originating-ip: [2a10:8004:1a16:0:c90:fbbe:53e6:80f3]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: e484eb74-b777-48c2-c728-08d91159db8b
+x-ms-traffictypediagnostic: SJ0PR18MB4060:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <SJ0PR18MB406093F38B32DC0850B28F4CCC579@SJ0PR18MB4060.namprd18.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:80;
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: Y+HqmDL3z+Bi+sgIG1TqQxLy3BSAcEQtdoFEFe3ZBLiZJvl1rHKYusw8R0EFQSjY/+HJjqBXwV26Xc6LT/cUQYkf4p73VKtF/3VmeWnRIBlMqEPUo+Ae1AICOkWzIZIP3Y7bS21fsGKa9tojODB4RtJFUkPrghyxT4uiPndcAsCRCyreuMwI4khRSgjBThDmnvd0zrcACSKcArsnFalPxF1ip/EIQFLxDQiOysTQu1PYi5bvdwZtxEwoSbOaaCPtUKDCV2m/lOHcA7p9+ZsKXrOiet+SNFrLsz0JU+tE0kDlVZ8L1eBQEdjLyrrsI/45bhpsSGnQjADHlcmUY74zVt3fFOeapQkWQeVTOWKDDr4bt9i3dIQjgcbpLLY0mPJIAi37Jbc4lLO3ozKqVxkw6c6EQa3IGmj/h9Xwh59I01bIjj/UmFr0U91YGGiTFfrKfENybJcwUv6CdKuaNCP8RiZkMok8n0k02aE5StLtHWBmLEO5mAfMW4DluElGluA4o1/h+bpMktSo7dDr5oJP+skjecPgjgaUcE+Ud7KHn6xDqStkgn5J3UwJt5Bh3+LxSd5zPPMlnwmnuyFtGCtqBAe7o535wkeFRu4zKQjnE1RLDt6Xpj1lSJDpBDKb39Csz6JUka396j6Le9Tkr7dT7c4/pyqsxvL5Gyg0OIjCeBQh6gDNFhd09FkvJjV8pTtr
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SJ0PR18MB3882.namprd18.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(136003)(39860400002)(366004)(346002)(376002)(396003)(76116006)(30864003)(9686003)(86362001)(966005)(5660300002)(8936002)(66574015)(38100700002)(66556008)(54906003)(66946007)(53546011)(64756008)(66446008)(83380400001)(66476007)(122000001)(316002)(6916009)(6506007)(52536014)(33656002)(71200400001)(4326008)(7696005)(186003)(55016002)(8676002)(7416002)(2906002)(478600001)(579004);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata: =?utf-8?B?cDZ3RCtneGVCc0FHaHJ5ZGp2RlZnTXVNUGJ2U0ZiNUZNUHJYOVNmUTBIS2V1?=
+ =?utf-8?B?TDR2eDNjSXdyS3lzNlNmRHFTMWhleUdKSEFJVDc1M21ZVHpueURtK1BnK0VN?=
+ =?utf-8?B?eUlHV0pScDdWOU1ZT3RqbU52VGIwbktGdHNIaDBjVnFSMnNWRC9KcG02ZHVI?=
+ =?utf-8?B?b3hsMVZLU05BcW9EbFNZNHYrcXByamFNamY5WHZjVzNXRGZUQ0hsSVZkUFh1?=
+ =?utf-8?B?Y0pyeStuSVBiS1FFTDl6OSs2eFBNZUx5L1NGSnBBaFJqWWt5Um9OL052MFV6?=
+ =?utf-8?B?Zm03U3ltM3lTWGdWejdMOWlFZVJKT0lJM3Z3TnFvOEMvc3JUL1JaWEw0RWJF?=
+ =?utf-8?B?SVhNREJuK0VaYmV2bEFXSWpmKzV6dkFTcWk2aXdKellqOU1TbXg1R1RsNGpU?=
+ =?utf-8?B?TmxodjlLMUxwZFU1UkVUeWxpNVJVLzI2T2dpU0g0ekxqTkh2SmM0T1hDeFA3?=
+ =?utf-8?B?d3NNMzFDaHRTQlJLVy9qa3ZIaWk3dDI4ZnZXMEJpUjFwTi9NYXgvcDY4NEdn?=
+ =?utf-8?B?NTA0eCtPZjhpaHd1UWxUZXB6MkVocWR5WE1vWkFBQUZTMHV5bmc1WHlSQnJJ?=
+ =?utf-8?B?eTQxWkVzU1c0NS9zS3lzOTgxWlZ5bTcwTHVNRER6dDhvNkdIbFd3ZVlaWGow?=
+ =?utf-8?B?Q1NFa3I3MkhyK25jbDFHNTIzUDRPK21uY0h6YUlmYVpRY3pwakFSQ3VNWlhI?=
+ =?utf-8?B?aFh1NHZlM3NybjBJRXRuRWdiVjhoS21qY1grQXkxem5MNmhJLzY0QTcwdlZ6?=
+ =?utf-8?B?M05MUHUzdXMyMSt5YUJKdGNLRkZJYkRUSTkwV28xT3JlYTB2dnQ5UStIZ2Vm?=
+ =?utf-8?B?aWtMN3NicXEzUkVqMmcrOTJDY3Y2MkxCclZVbXI3NzF6am9zZ1RLZDY3d0NO?=
+ =?utf-8?B?RHI2MnFzSTZqbktOblhYMW9YcTdQalZOenRPd1FiemZIUU5CQlFkZTB6UTg3?=
+ =?utf-8?B?bUg5eXhkeHlLV0pzUDFrc0ZCSnlDaVhhdVcvQmlqK1dIRmMvQXljRkpYUng0?=
+ =?utf-8?B?bTl6T2ZGckZZeVV4SWVnKzQzMGxkY0lxSDIxSS84eHV1Q1JMaElIU0ovZVpQ?=
+ =?utf-8?B?NHhaRzQvamtxaFM1cEZreGVzbXZaQjE0QUp4OHZzYWZ0cnB3ZmdBZ3JlZEM3?=
+ =?utf-8?B?dUxkMjhOL21TYVlOaVFROVZXQjB1VWYrNEFsMTlwS3JyYU5Cem8zQ3V0SWJl?=
+ =?utf-8?B?dXpOdUVwdWt4QkVyWG5iU0FlNWI5RkYvNmVzMWF5L0RsOVVUOU5CNW1pK1FK?=
+ =?utf-8?B?UWZ2Z3grZFlTMDErdDg0a3JLV25HMUJLbnMvSUNMQXZWT0s5Yml0SnJ1QThY?=
+ =?utf-8?B?TFV5QzlRWTlTTkV4N1ZVa3VoNzdXSFFLZTZ1aEFiNUZVK1E3dCt5U1YwaHlC?=
+ =?utf-8?B?N25Nc05wNnVSWkhuekFIQ0NRY01KcDN5Y2tkZUdsU2dKbkc1WnNFT0UzUytn?=
+ =?utf-8?B?QnRURUpranR3aG5sNmJVdWhheE5mVXVBQVA2L0thWk9IakVObmw2VDJlY0Rs?=
+ =?utf-8?B?WlBBZ0lreitxeEVQdkxkZ3FwQkVtelpTKzdobU9jZElobjN0NFR1REFNcFI5?=
+ =?utf-8?B?enJVS21wbVBHRVc5Y0t6OEFGSWNhdElZbDZVZVRIb21EMlcrV25qd2dEUWh2?=
+ =?utf-8?B?ZmQxMXByQTI2M1NIa3RLQ3I3Q2tSblVDeFVPSk5zMmNYTEVNS3JSMEpCMjNJ?=
+ =?utf-8?B?TENQZEJ5ZjkySmpHaGhzak8xNnZlbGJmQ2I2MVNERTFqNkh3L0kyOXhhZUNU?=
+ =?utf-8?B?WlJocitvVlBYZUNQMHVUQmlZdGVzcHhCSHg0aVlrNDBMMHducjhoVFI3dGNF?=
+ =?utf-8?Q?P/BY70V2uUoBOFf9xM0G2vfvKwn+0u2FT4LlM=3D?=
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8;
- format=flowed
-Content-Transfer-Encoding: 8bit
-Date:   Fri, 07 May 2021 14:43:42 +0200
-From:   Michael Walle <michael@walle.cc>
-To:     Vladimir Oltean <vladimir.oltean@nxp.com>
-Cc:     Xiaoliang Yang <xiaoliang.yang_1@nxp.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        UNGLinuxDriver@microchip.com, alexandre.belloni@bootlin.com,
-        allan.nielsen@microchip.com,
-        Claudiu Manoil <claudiu.manoil@nxp.com>, davem@davemloft.net,
-        idosch@mellanox.com, joergen.andreasen@microchip.com,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        Po Liu <po.liu@nxp.com>, vinicius.gomes@intel.com
-Subject: Re: [net-next] net: dsa: felix: disable always guard band bit for TAS
- config
-In-Reply-To: <20210507121909.ojzlsiexficjjjun@skbuf>
-References: <c7618025da6723418c56a54fe4683bd7@walle.cc>
- <20210504185040.ftkub3ropuacmyel@skbuf>
- <ccb40b7fd18b51ecfc3f849a47378c54@walle.cc>
- <20210504191739.73oejybqb6z7dlxr@skbuf>
- <d933eef300cb1e1db7d36ca2cb876ef6@walle.cc>
- <20210504213259.l5rbnyhxrrbkykyg@skbuf>
- <efe5ac03ceddc8ff472144b5fe9fd046@walle.cc>
- <DB8PR04MB5785A6A773FEA4F3E0E77698F0579@DB8PR04MB5785.eurprd04.prod.outlook.com>
- <2898c3ae1319756e13b95da2b74ccacc@walle.cc>
- <DB8PR04MB5785D01D2F9091FB9267D515F0579@DB8PR04MB5785.eurprd04.prod.outlook.com>
- <20210507121909.ojzlsiexficjjjun@skbuf>
-User-Agent: Roundcube Webmail/1.4.11
-Message-ID: <d2241bed63e3b36d6a46f517f697d4bd@walle.cc>
-X-Sender: michael@walle.cc
+X-OriginatorOrg: marvell.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: SJ0PR18MB3882.namprd18.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: e484eb74-b777-48c2-c728-08d91159db8b
+X-MS-Exchange-CrossTenant-originalarrivaltime: 07 May 2021 13:13:07.9263
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 70e1fb47-1155-421d-87fc-2e58f638b6e0
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: DvQLEB5DqTl5fu/71BndDEzgyY0tAcdN5UWbmJKGbyJ72DKicvwiZwTBSNMTezIX9y/VFh1r4RJJqVVkT4nnjQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ0PR18MB4060
+X-Proofpoint-GUID: Co0omCawBDzGhS9-XsB4LFj-7ZSpI5k4
+X-Proofpoint-ORIG-GUID: Co0omCawBDzGhS9-XsB4LFj-7ZSpI5k4
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.391,18.0.761
+ definitions=2021-05-07_04:2021-05-06,2021-05-07 signatures=0
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Am 2021-05-07 14:19, schrieb Vladimir Oltean:
-> On Fri, May 07, 2021 at 11:09:24AM +0000, Xiaoliang Yang wrote:
->> Hi Michael,
->> 
->> On 2021-05-07 15:35, Michael Walle <michael@walle.cc> wrote:
->> > Am 2021-05-07 09:16, schrieb Xiaoliang Yang:
->> > > On 2021-05-06 21:25, Michael Walle <michael@walle.cc> wrote:
->> > >> Am 2021-05-04 23:33, schrieb Vladimir Oltean:
->> > >> > [ trimmed the CC list, as this is most likely spam for most people ]
->> > >> >
->> > >> > On Tue, May 04, 2021 at 10:23:11PM +0200, Michael Walle wrote:
->> > >> >> Am 2021-05-04 21:17, schrieb Vladimir Oltean:
->> > >> >> > On Tue, May 04, 2021 at 09:08:00PM +0200, Michael Walle wrote:
->> > >> >> > > > > > > As explained in another mail in this thread, all
->> > >> >> > > > > > > queues are marked as scheduled. So this is actually a
->> > >> >> > > > > > > no-op, correct? It doesn't matter if it set or not set
->> > >> >> > > > > > > for now. Dunno why we even care for this bit then.
->> > >> >> > > > > >
->> > >> >> > > > > > It matters because ALWAYS_GUARD_BAND_SCH_Q reduces the
->> > >> >> > > > > > available throughput when set.
->> > >> >> > > > >
->> > >> >> > > > > Ahh, I see now. All queues are "scheduled" but the guard
->> > >> >> > > > > band only applies for "non-scheduled" -> "scheduled" transitions.
->> > >> >> > > > > So the guard band is never applied, right? Is that really
->> > >> >> > > > > what we want?
->> > >> >> > > >
->> > >> >> > > > Xiaoliang explained that yes, this is what we want. If the
->> > >> >> > > > end user wants a guard band they can explicitly add a
->> > >> >> > > > "sched-entry 00" in the tc-taprio config.
->> > >> >> > >
->> > >> >> > > You're disabling the guard band, then. I figured, but isn't
->> > >> >> > > that suprising for the user? Who else implements taprio? Do
->> > >> >> > > they do it in the same way? I mean this behavior is passed
->> > >> >> > > right to the userspace and have a direct impact on how it is
->> > >> >> > > configured. Of course a user can add it manually, but I'm not
->> > >> >> > > sure that is what we want here. At least it needs to be
->> > >> >> > > documented somewhere. Or maybe it should be a switchable option.
->> > >> >> > >
->> > >> >> > > Consider the following:
->> > >> >> > > sched-entry S 01 25000
->> > >> >> > > sched-entry S fe 175000
->> > >> >> > > basetime 0
->> > >> >> > >
->> > >> >> > > Doesn't guarantee, that queue 0 is available at the beginning
->> > >> >> > > of the cycle, in the worst case it takes up to <begin of
->> > >> >> > > cycle> + ~12.5us until the frame makes it through (given
->> > >> >> > > gigabit and 1518b frames).
->> > >> >> > >
->> > >> >> > > Btw. there are also other implementations which don't need a
->> > >> >> > > guard band (because they are store-and-forward and cound the
->> > >> >> > > remaining bytes). So yes, using a guard band and scheduling is
->> > >> >> > > degrading the performance.
->> > >> >> >
->> > >> >> > What is surprising for the user, and I mentioned this already in
->> > >> >> > another thread on this patch, is that the Felix switch overruns
->> > >> >> > the time gate (a packet taking 2 us to transmit will start
->> > >> >> > transmission even if there is only 1 us left of its time slot,
->> > >> >> > delaying the packets from the next time slot by 1 us). I guess
->> > >> >> > that this is why the ALWAYS_GUARD_BAND_SCH_Q bit exists, as a
->> > >> >> > way to avoid these overruns, but it is a bit of a poor tool for
->> > >> >> > that job. Anyway, right now we disable it and live with the overruns.
->> > >> >>
->> > >> >> We are talking about the same thing here. Why is that a poor tool?
->> > >> >
->> > >> > It is a poor tool because it revolves around the idea of "scheduled
->> > >> > queues" and "non-scheduled queues".
->> > >> >
->> > >> > Consider the following tc-taprio schedule:
->> > >> >
->> > >> >       sched-entry S 81 2000 # TC 7 and 0 open, all others closed
->> > >> >       sched-entry S 82 2000 # TC 7 and 1 open, all others closed
->> > >> >       sched-entry S 84 2000 # TC 7 and 2 open, all others closed
->> > >> >       sched-entry S 88 2000 # TC 7 and 3 open, all others closed
->> > >> >       sched-entry S 90 2000 # TC 7 and 4 open, all others closed
->> > >> >       sched-entry S a0 2000 # TC 7 and 5 open, all others closed
->> > >> >       sched-entry S c0 2000 # TC 7 and 6 open, all others closed
->> > >> >
->> > >> > Otherwise said, traffic class 7 should be able to send any time it
->> > >> > wishes.
->> > >>
->> > >> What is the use case behind that? TC7 (with the highest priority) may
->> > >> always take precedence of the other TCs, thus what is the point of
->> > >> having a dedicated window for the others.
->> > >>
->> > >> Anyway, I've tried it and there are no hiccups. I've meassured the
->> > >> delta between the start of successive packets and they are always
->> > >> ~12370ns for a 1518b frame. TC7 is open all the time, which makes
->> > >> sense. It only happens if you actually close the gate, eg. you have a
->> > >> sched-entry where a TC7 bit is not set. In this case, I can see a
->> > >> difference between ALWAYS_GUARD_BAND_SCH_Q set and not set. If it is
->> > >> set, there is up to a ~12.5us delay added (of course it depends on
->> > >> when the former frame was scheduled).
->> > >>
->> > >> It seems that also needs to be 1->0 transition.
->> > >>
->> > >> You've already mentioned that the switch violates the Qbv standard.
->> > >> What makes you think so? IMHO before that patch, it wasn't violated.
->> > >> Now it likely is (still have to confirm that). How can this be
->> > >> reasonable?
->> > >>
->> > >> If you have a look at the initial commit message, it is about making
->> > >> it possible to have a smaller gate window, but that is not possible
->> > >> because of the current guard band of ~12.5us. It seems to be a
->> > >> shortcut for not having the MAXSDU (and thus the length of the guard
->> > >> band) configurable. Yes (static) guard bands will have a performance
->> > >> impact, also described in [1]. You are trading the correctness of the
->> > >> TAS for performance. And it is the sole purpose of Qbv to have a
->> > >> determisitc way (in terms of timing) of sending the frames.
->> > >>
->> > >> And telling the user, hey, we know we violate the Qbv standard,
->> > >> please insert the guard bands yourself if you really need them is not
->> > >> a real solution. As already mentioned, (1) it is not documented
->> > >> anywhere, (2) can't be shared among other switches (unless they do
->> > >> the same workaround) and (3) what am I supposed to do for TSN
->> > >> compliance testing. Modifying the schedule that is about to be
->> > >> checked (and thus given by the compliance suite)?
->> > >>
->> > > I disable the always guard band bit because each gate control list
->> > > needs to reserve a guard band slot, which affects performance. The
->> > > user does not need to set a guard band for each queue transmission.
->> > > For example, "sched-entry S 01 2000 sched-entry S fe 98000". Queue 0
->> > > is protected traffic and has smaller frames, so there is no need to
->> > > reserve a guard band during the open time of queue 0. The user can add
->> > > the following guard band before protected traffic: "sched-entry S 00
->> > > 25000 sched-entry S 01 2000 sched-entry S fe 73000"
->> >
->> > Again, you're passing the handling of the guard band to the user, which is an
->> > implementation detail for this switch (unless there is a new switch for it on the
->> > qdisc IMHO). And (1), (2) and (3) from above is still valid.
->> >
->> > Consider the entry
->> >   sched-entry S 01 2000
->> >   sched-entry S 02 20000
->> >
->> > A user assumes that TC0 is open for 2us. But with your change it is bascially
->> > open for 2us + 12.5us. And even worse, it is not deterministic. A frame in the
->> > subsequent queue (ie TC1) can be scheduled anywhere beteeen 0us and
->> > 12.5us after opening the gate, depending on wether there is still a frame
->> > transmitting on TC0.
->> >
->> After my change, user need to add a GCL at first: "sched-entry S 00 
->> 12500".
->> Before the change, your example need to be set as " sched-entry S 01
->> 14500 sched-entry S 02 20000", TC0 is open for 2us, and TC1 is only
->> open for 20us-12.5us. This also need to add guard band time for user.
->> So if we do not have this patch, GCL entry will also have a different
->> set with other devices.
->> 
->> > > I checked other devices such as ENETC and it can calculate how long
->> > > the frame transmission will take and determine whether to transmit
->> > > before the gate is closed. The VSC9959 device does not have this
->> > > hardware function. If we implement guard bands on each queue, we need
->> > > to reserve a 12.5us guard band for each GCL, even if it only needs to
->> > > send a small packet. This confuses customers.
->> >
->> > How about getting it right and working on how we can set the MAXSDU per
->> > queue and thus making the guard band smaller?
->> >
->> Of course, if we can set maxSDU for each queue, then users can set the
->> guard band of each queue. I added this patch to set the guard band by
->> adding GCL, which is another way to make the guard band configurable
->> for users. But there is no way to set per queue maxSDU now. Do you
->> have any ideas on how to set the MAXSDU per queue?
->> 
->> > > actually, I'm not sure if this will violate the Qbv standard. I looked
->> > > up the Qbv standard spec, and found it only introduce the guard band
->> > > before protected window (Annex Q (informative)Traffic scheduling). It
->> > > allows to design the schedule to accommodate the intended pattern of
->> > > transmission without overrunning the next gate-close event for the
->> > > traffic classes concerned.
->> >
->> > Vladimir already quoted "IEEE 802.1Q-2018 clause 8.6.8.4". I didn't check it,
->> > though.
->> >
-> 
-> That clause says:
-> 
-> In addition to the other checks carried out by the transmission
-> selection algorithm, a frame on a traffic class queue is not available
-> for transmission [as required for tests (a) and (b) in 8.6.8] if the
-> transmission gate is in the closed state or if there is insufficient
-> time available to transmit the entirety of that frame before the next
-> gate-close event (3.97) associated with that queue. A per-traffic class
-> counter, TransmissionOverrun (12.29.1.1.2), is incremented if the
-> implementation detects that a frame from a given queue is still being
-> transmitted by the MAC when the gate-close event for that queue occurs.
-> 
-> NOTE 1—It is assumed that the implementation has knowledge of the
-> transmission overheads that are involved in transmitting a frame on a
-> given Port and can therefore determine how long the transmission of a
-> frame will take. However, there can be reasons why the frame size, and
-> therefore the length of time needed for its transmission, is unknown;
-> for example, where cut-through is supported, or where frame preemption
-> is supported and there is no way of telling in advance how many times a
-> given frame will be preempted before its transmission is complete. It 
-> is
-> desirable that the schedule for such traffic is designed to accommodate
-> the intended pattern of transmission without overrunning the next
-> gate-close event for the traffic classes concerned.
-> 
-> NOTE 2— It is assumed that the implementation can determine the time at
-> which the next gate-close event will occur from the sequence of gate
-> events. In the normal case, this can be achieved by inspecting the
-> sequence of gate operations in OperControlList (8.6.9.4.19) and
-> associated variables. However, when a new configuration is about to be
-> installed, it would be necessary to inspect the contents of both the
-> OperControlList and the AdminControlList (8.6.9.4.2) and associated
-> variables in order to determine the time of the next gate-close event,
-> as the gating cycle for the new configuration may differ in size and
-> phasing from the old cycle.
-> A per-traffic class queue queueMaxSDU parameter defines the maximum
-> service data unit size for each queue; frames that exceed queueMaxSDU
-> are discarded [item b8) in 6.5.2]. The value of queueMaxSDU for each
-> queue is configurable by management (12.29); its default value is the
-> maximum SDU size supported by the MAC procedures employed on the LAN to
-> which the frame is to be relayed [item b3) in 6.5.2].
-> 
-> NOTE 3—The use of PFC is likely to interfere with a traffic schedule,
-> because PFC is transmitted by a higher layer entity (see Clause 36).
-> 
->> > A static guard band is one of the options you have to fulfill that.
->> > Granted, it is not that efficient, but it is how the switch handles it.
->> >
->> I'm still not sure if guard band is required for each queue. Maybe
->> this patch need revert if it's required. Then there will be a fixed
->> non-configurable guard band for each queue, and the user needs to
->> calculate the guard band into gate opening time every time when
->> designing a schedule. Maybe it's better to revert it and add MAXSDU
->> per queue set.
-> 
-> I think we can universally agree on the fact that overruns at the end 
-> of
-> the time slot should be avoided: if there isn't enough time to send it
-> within your time slot, don't send it (unless you can count it, but none
-> of the devices I know count the overruns). Devices like the ENETC 
-> handle
-> this on a per-packet basis and shouldn't require any further
-> configuration. Devices like Felix need the per-queue max SDU from the
-> user - if that isn's specified in the netlink message they'll have to
-> default to the interface's MTU.
-> Devices like the SJA1105 are more interesting, they have no knob
-> whatsoever to avoid overruns. Additionally, there is a user-visible
-> restriction there that two gate events on different ports can never 
-> fire
-> at the same time. So, the option of automatically having the driver
-> shorten the GCL entries and add MTU-sized guard bands by itself kind of
-> falls flat on its face - it will make for a pretty unusable device,
-> considering that the user already has to calculate the lengths and
-> base-time offsets properly in order to avoid gates opening/closing at
-> the same time.
-> On the other hand, I do understand the need for uniform behavior (or at
-> least predictable, if we can't have uniformity), I'm just not sure what
-> is, realistically speaking, our best option. As outrageous as it sounds
-> to Michael, I think we shouldn't completely exclude the option that the
-> TSN compliance suite adapts itself to real-life hardware, that is by 
-> far
-> the options with the least amount of limitations, all things 
-> considered.
-
-Haha, I kinda hate compliance suites anyway, so no offence taken ;)
-
-IMHO for the devices that supports it, we should have that uniform
-behavior. If the SJA1105 is inherently broken in this regard, then I
-agree there is no need to make it behave the same in all circumstances.
-Also the SJA1105 was one of the first devices which supported Qbv, no?
-I'd presume newer devices will get better at the scheduling.
-
-Btw. because the entries in the CGL are likely constrained (and some
-customers always for how much they can use) it should be taken into
-consideration when the driver will automatically add some entries.
-
--michael
+DQpPbiA1LzEvMjEgNzoyNyBQTSwgSGFubmVzIFJlaW5lY2tlIHdyb3RlOg0KPiBPbiA0LzI5LzIx
+IDk6MDkgUE0sIFNoYWkgTWFsaW4gd3JvdGU6DQo+ID4gRnJvbTogQXJpZSBHZXJzaGJlcmcgPGFn
+ZXJzaGJlcmdAbWFydmVsbC5jb20+DQo+ID4NCj4gPiBJbiB0aGlzIHBhdGNoIHdlIGltcGxlbWVu
+dCBjb250cm9sbGVyIGxldmVsIGZ1bmN0aW9uYWxpdHkgaW5jbHVkaW5nOg0KPiA+IC0gY3JlYXRl
+X2N0cmwuDQo+ID4gLSBkZWxldGVfY3RybC4NCj4gPiAtIGZyZWVfY3RybC4NCj4gPg0KPiA+IFRo
+ZSBpbXBsZW1lbnRhdGlvbiBpcyBzaW1pbGFyIHRvIG90aGVyIG52bWUgZmFicmljcyBtb2R1bGVz
+LCB0aGUgbWFpbg0KPiA+IGRpZmZlcmVuY2UgYmVpbmcgdGhhdCB0aGUgbnZtZS10Y3Atb2ZmbG9h
+ZCBVTFAgY2FsbHMgdGhlIHZlbmRvciBzcGVjaWZpYw0KPiA+IGNsYWltX2RldigpIG9wIHdpdGgg
+dGhlIGdpdmVuIFRDUC9JUCBwYXJhbWV0ZXJzIHRvIGRldGVybWluZSB3aGljaCBkZXZpY2UNCj4g
+PiB3aWxsIGJlIHVzZWQgZm9yIHRoaXMgY29udHJvbGxlci4NCj4gPiBPbmNlIGZvdW5kLCB0aGUg
+dmVuZG9yIHNwZWNpZmljIGRldmljZSBhbmQgY29udHJvbGxlciB3aWxsIGJlIHBhaXJlZCBhbmQN
+Cj4gPiBrZXB0IGluIGEgY29udHJvbGxlciBsaXN0IG1hbmFnZWQgYnkgdGhlIFVMUC4NCj4gPg0K
+PiA+IEFja2VkLWJ5OiBJZ29yIFJ1c3NraWtoIDxpcnVzc2tpa2hAbWFydmVsbC5jb20+DQo+ID4g
+U2lnbmVkLW9mZi1ieTogQXJpZSBHZXJzaGJlcmcgPGFnZXJzaGJlcmdAbWFydmVsbC5jb20+DQo+
+ID4gU2lnbmVkLW9mZi1ieTogUHJhYmhha2FyIEt1c2h3YWhhIDxwa3VzaHdhaGFAbWFydmVsbC5j
+b20+DQo+ID4gU2lnbmVkLW9mZi1ieTogT21rYXIgS3Vsa2FybmkgPG9rdWxrYXJuaUBtYXJ2ZWxs
+LmNvbT4NCj4gPiBTaWduZWQtb2ZmLWJ5OiBNaWNoYWwgS2FsZGVyb24gPG1rYWxkZXJvbkBtYXJ2
+ZWxsLmNvbT4NCj4gPiBTaWduZWQtb2ZmLWJ5OiBBcmllbCBFbGlvciA8YWVsaW9yQG1hcnZlbGwu
+Y29tPg0KPiA+IFNpZ25lZC1vZmYtYnk6IFNoYWkgTWFsaW4gPHNtYWxpbkBtYXJ2ZWxsLmNvbT4N
+Cj4gPiAtLS0NCj4gPiAgIGRyaXZlcnMvbnZtZS9ob3N0L3RjcC1vZmZsb2FkLmMgfCA0NjcNCj4g
+KysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKy0NCj4gPiAgIDEgZmlsZSBjaGFuZ2VkLCA0
+NTkgaW5zZXJ0aW9ucygrKSwgOCBkZWxldGlvbnMoLSkNCj4gPg0KPiA+IGRpZmYgLS1naXQgYS9k
+cml2ZXJzL252bWUvaG9zdC90Y3Atb2ZmbG9hZC5jIGIvZHJpdmVycy9udm1lL2hvc3QvdGNwLW9m
+ZmxvYWQuYw0KPiA+IGluZGV4IGFhN2NjMjM5YWJmMi4uNTllMTk1NWUwMmVjIDEwMDY0NA0KPiA+
+IC0tLSBhL2RyaXZlcnMvbnZtZS9ob3N0L3RjcC1vZmZsb2FkLmMNCj4gPiArKysgYi9kcml2ZXJz
+L252bWUvaG9zdC90Y3Atb2ZmbG9hZC5jDQo+ID4gQEAgLTEyLDYgKzEyLDEwIEBADQo+ID4NCj4g
+PiAgIHN0YXRpYyBMSVNUX0hFQUQobnZtZV90Y3Bfb2ZsZF9kZXZpY2VzKTsNCj4gPiAgIHN0YXRp
+YyBERUNMQVJFX1JXU0VNKG52bWVfdGNwX29mbGRfZGV2aWNlc19yd3NlbSk7DQo+ID4gK3N0YXRp
+YyBMSVNUX0hFQUQobnZtZV90Y3Bfb2ZsZF9jdHJsX2xpc3QpOw0KPiA+ICtzdGF0aWMgREVDTEFS
+RV9SV1NFTShudm1lX3RjcF9vZmxkX2N0cmxfcndzZW0pOw0KPiA+ICtzdGF0aWMgc3RydWN0IGJs
+a19tcV9vcHMgbnZtZV90Y3Bfb2ZsZF9hZG1pbl9tcV9vcHM7DQo+ID4gK3N0YXRpYyBzdHJ1Y3Qg
+YmxrX21xX29wcyBudm1lX3RjcF9vZmxkX21xX29wczsNCj4gPg0KPiA+ICAgc3RhdGljIGlubGlu
+ZSBzdHJ1Y3QgbnZtZV90Y3Bfb2ZsZF9jdHJsICp0b190Y3Bfb2ZsZF9jdHJsKHN0cnVjdCBudm1l
+X2N0cmwNCj4gKm5jdHJsKQ0KPiA+ICAgew0KPiA+IEBAIC0xMjgsMjggKzEzMiw0MzAgQEAgbnZt
+ZV90Y3Bfb2ZsZF9sb29rdXBfZGV2KHN0cnVjdA0KPiBudm1lX3RjcF9vZmxkX2N0cmwgKmN0cmwp
+DQo+ID4gICAJcmV0dXJuIGRldjsNCj4gPiAgIH0NCj4gPg0KPiA+ICtzdGF0aWMgc3RydWN0IGJs
+a19tcV90YWdfc2V0ICoNCj4gPiArbnZtZV90Y3Bfb2ZsZF9hbGxvY190YWdzZXQoc3RydWN0IG52
+bWVfY3RybCAqbmN0cmwsIGJvb2wgYWRtaW4pDQo+ID4gK3sNCj4gPiArCXN0cnVjdCBudm1lX3Rj
+cF9vZmxkX2N0cmwgKmN0cmwgPSB0b190Y3Bfb2ZsZF9jdHJsKG5jdHJsKTsNCj4gPiArCXN0cnVj
+dCBibGtfbXFfdGFnX3NldCAqc2V0Ow0KPiA+ICsJaW50IHJjOw0KPiA+ICsNCj4gPiArCWlmIChh
+ZG1pbikgew0KPiA+ICsJCXNldCA9ICZjdHJsLT5hZG1pbl90YWdfc2V0Ow0KPiA+ICsJCW1lbXNl
+dChzZXQsIDAsIHNpemVvZigqc2V0KSk7DQo+ID4gKwkJc2V0LT5vcHMgPSAmbnZtZV90Y3Bfb2Zs
+ZF9hZG1pbl9tcV9vcHM7DQo+ID4gKwkJc2V0LT5xdWV1ZV9kZXB0aCA9IE5WTUVfQVFfTVFfVEFH
+X0RFUFRIOw0KPiA+ICsJCXNldC0+cmVzZXJ2ZWRfdGFncyA9IE5WTUZfUkVTRVJWRURfVEFHUzsN
+Cj4gPiArCQlzZXQtPm51bWFfbm9kZSA9IG5jdHJsLT5udW1hX25vZGU7DQo+ID4gKwkJc2V0LT5m
+bGFncyA9IEJMS19NUV9GX0JMT0NLSU5HOw0KPiA+ICsJCXNldC0+Y21kX3NpemUgPSBzaXplb2Yo
+c3RydWN0IG52bWVfdGNwX29mbGRfcmVxKTsNCj4gPiArCQlzZXQtPmRyaXZlcl9kYXRhID0gY3Ry
+bDsNCj4gPiArCQlzZXQtPm5yX2h3X3F1ZXVlcyA9IDE7DQo+ID4gKwkJc2V0LT50aW1lb3V0ID0g
+TlZNRV9BRE1JTl9USU1FT1VUOw0KPiA+ICsJfSBlbHNlIHsNCj4gPiArCQlzZXQgPSAmY3RybC0+
+dGFnX3NldDsNCj4gPiArCQltZW1zZXQoc2V0LCAwLCBzaXplb2YoKnNldCkpOw0KPiA+ICsJCXNl
+dC0+b3BzID0gJm52bWVfdGNwX29mbGRfbXFfb3BzOw0KPiA+ICsJCXNldC0+cXVldWVfZGVwdGgg
+PSBuY3RybC0+c3FzaXplICsgMTsNCj4gPiArCQlzZXQtPnJlc2VydmVkX3RhZ3MgPSBOVk1GX1JF
+U0VSVkVEX1RBR1M7DQo+ID4gKwkJc2V0LT5udW1hX25vZGUgPSBuY3RybC0+bnVtYV9ub2RlOw0K
+PiA+ICsJCXNldC0+ZmxhZ3MgPSBCTEtfTVFfRl9TSE9VTERfTUVSR0UgfA0KPiBCTEtfTVFfRl9C
+TE9DS0lORzsNCj4gPiArCQlzZXQtPmNtZF9zaXplID0gc2l6ZW9mKHN0cnVjdCBudm1lX3RjcF9v
+ZmxkX3JlcSk7DQo+ID4gKwkJc2V0LT5kcml2ZXJfZGF0YSA9IGN0cmw7DQo+ID4gKwkJc2V0LT5u
+cl9od19xdWV1ZXMgPSBuY3RybC0+cXVldWVfY291bnQgLSAxOw0KPiA+ICsJCXNldC0+dGltZW91
+dCA9IE5WTUVfSU9fVElNRU9VVDsNCj4gPiArCQlzZXQtPm5yX21hcHMgPSBuY3RybC0+b3B0cy0+
+bnJfcG9sbF9xdWV1ZXMgPw0KPiBIQ1RYX01BWF9UWVBFUyA6IDI7DQo+ID4gKwl9DQo+ID4gKw0K
+PiA+ICsJcmMgPSBibGtfbXFfYWxsb2NfdGFnX3NldChzZXQpOw0KPiA+ICsJaWYgKHJjKQ0KPiA+
+ICsJCXJldHVybiBFUlJfUFRSKHJjKTsNCj4gPiArDQo+ID4gKwlyZXR1cm4gc2V0Ow0KPiA+ICt9
+DQo+ID4gKw0KPiA+ICtzdGF0aWMgaW50IG52bWVfdGNwX29mbGRfY29uZmlndXJlX2FkbWluX3F1
+ZXVlKHN0cnVjdCBudm1lX2N0cmwgKm5jdHJsLA0KPiA+ICsJCQkJCSAgICAgICBib29sIG5ldykN
+Cj4gPiArew0KPiA+ICsJaW50IHJjOw0KPiA+ICsNCj4gPiArCS8qIFBsYWNlaG9sZGVyIC0gYWxs
+b2NfYWRtaW5fcXVldWUgKi8NCj4gPiArCWlmIChuZXcpIHsNCj4gPiArCQluY3RybC0+YWRtaW5f
+dGFnc2V0ID0NCj4gPiArCQkJCW52bWVfdGNwX29mbGRfYWxsb2NfdGFnc2V0KG5jdHJsLCB0cnVl
+KTsNCj4gPiArCQlpZiAoSVNfRVJSKG5jdHJsLT5hZG1pbl90YWdzZXQpKSB7DQo+ID4gKwkJCXJj
+ID0gUFRSX0VSUihuY3RybC0+YWRtaW5fdGFnc2V0KTsNCj4gPiArCQkJbmN0cmwtPmFkbWluX3Rh
+Z3NldCA9IE5VTEw7DQo+ID4gKwkJCWdvdG8gb3V0X2ZyZWVfcXVldWU7DQo+ID4gKwkJfQ0KPiA+
+ICsNCj4gPiArCQluY3RybC0+ZmFicmljc19xID0gYmxrX21xX2luaXRfcXVldWUobmN0cmwtPmFk
+bWluX3RhZ3NldCk7DQo+ID4gKwkJaWYgKElTX0VSUihuY3RybC0+ZmFicmljc19xKSkgew0KPiA+
+ICsJCQlyYyA9IFBUUl9FUlIobmN0cmwtPmZhYnJpY3NfcSk7DQo+ID4gKwkJCW5jdHJsLT5mYWJy
+aWNzX3EgPSBOVUxMOw0KPiA+ICsJCQlnb3RvIG91dF9mcmVlX3RhZ3NldDsNCj4gPiArCQl9DQo+
+ID4gKw0KPiA+ICsJCW5jdHJsLT5hZG1pbl9xID0gYmxrX21xX2luaXRfcXVldWUobmN0cmwtPmFk
+bWluX3RhZ3NldCk7DQo+ID4gKwkJaWYgKElTX0VSUihuY3RybC0+YWRtaW5fcSkpIHsNCj4gPiAr
+CQkJcmMgPSBQVFJfRVJSKG5jdHJsLT5hZG1pbl9xKTsNCj4gPiArCQkJbmN0cmwtPmFkbWluX3Eg
+PSBOVUxMOw0KPiA+ICsJCQlnb3RvIG91dF9jbGVhbnVwX2ZhYnJpY3NfcTsNCj4gPiArCQl9DQo+
+ID4gKwl9DQo+ID4gKw0KPiA+ICsJLyogUGxhY2Vob2xkZXIgLSBudm1lX3RjcF9vZmxkX3N0YXJ0
+X3F1ZXVlICovDQo+ID4gKw0KPiA+ICsJcmMgPSBudm1lX2VuYWJsZV9jdHJsKG5jdHJsKTsNCj4g
+PiArCWlmIChyYykNCj4gPiArCQlnb3RvIG91dF9zdG9wX3F1ZXVlOw0KPiA+ICsNCj4gPiArCWJs
+a19tcV91bnF1aWVzY2VfcXVldWUobmN0cmwtPmFkbWluX3EpOw0KPiA+ICsNCj4gPiArCXJjID0g
+bnZtZV9pbml0X2lkZW50aWZ5KG5jdHJsKTsNCj4gPiArCWlmIChyYykNCj4gPiArCQlnb3RvIG91
+dF9xdWllc2NlX3F1ZXVlOw0KPiA+ICsNCj4gPiArCXJldHVybiAwOw0KPiA+ICsNCj4gPiArb3V0
+X3F1aWVzY2VfcXVldWU6DQo+ID4gKwlibGtfbXFfcXVpZXNjZV9xdWV1ZShuY3RybC0+YWRtaW5f
+cSk7DQo+ID4gKwlibGtfc3luY19xdWV1ZShuY3RybC0+YWRtaW5fcSk7DQo+ID4gKw0KPiA+ICtv
+dXRfc3RvcF9xdWV1ZToNCj4gPiArCS8qIFBsYWNlaG9sZGVyIC0gc3RvcCBvZmZsb2FkIHF1ZXVl
+ICovDQo+ID4gKwludm1lX2NhbmNlbF9hZG1pbl90YWdzZXQobmN0cmwpOw0KPiA+ICsNCj4gPiAr
+b3V0X2NsZWFudXBfZmFicmljc19xOg0KPiA+ICsJaWYgKG5ldykNCj4gPiArCQlibGtfY2xlYW51
+cF9xdWV1ZShuY3RybC0+ZmFicmljc19xKTsNCj4gPiArb3V0X2ZyZWVfdGFnc2V0Og0KPiA+ICsJ
+aWYgKG5ldykNCj4gPiArCQlibGtfbXFfZnJlZV90YWdfc2V0KG5jdHJsLT5hZG1pbl90YWdzZXQp
+Ow0KPiA+ICtvdXRfZnJlZV9xdWV1ZToNCj4gPiArCS8qIFBsYWNlaG9sZGVyIC0gZnJlZSBhZG1p
+biBxdWV1ZSAqLw0KPiA+ICsNCj4gPiArCXJldHVybiByYzsNCj4gPiArfQ0KPiA+ICsNCj4gPiAr
+c3RhdGljIGludA0KPiA+ICtudm1lX3RjcF9vZmxkX2NvbmZpZ3VyZV9pb19xdWV1ZXMoc3RydWN0
+IG52bWVfY3RybCAqbmN0cmwsIGJvb2wgbmV3KQ0KPiA+ICt7DQo+ID4gKwlpbnQgcmM7DQo+ID4g
+Kw0KPiA+ICsJLyogUGxhY2Vob2xkZXIgLSBhbGxvY19pb19xdWV1ZXMgKi8NCj4gPiArDQo+ID4g
+KwlpZiAobmV3KSB7DQo+ID4gKwkJbmN0cmwtPnRhZ3NldCA9IG52bWVfdGNwX29mbGRfYWxsb2Nf
+dGFnc2V0KG5jdHJsLCBmYWxzZSk7DQo+ID4gKwkJaWYgKElTX0VSUihuY3RybC0+dGFnc2V0KSkg
+ew0KPiA+ICsJCQlyYyA9IFBUUl9FUlIobmN0cmwtPnRhZ3NldCk7DQo+ID4gKwkJCW5jdHJsLT50
+YWdzZXQgPSBOVUxMOw0KPiA+ICsJCQlnb3RvIG91dF9mcmVlX2lvX3F1ZXVlczsNCj4gPiArCQl9
+DQo+ID4gKw0KPiA+ICsJCW5jdHJsLT5jb25uZWN0X3EgPSBibGtfbXFfaW5pdF9xdWV1ZShuY3Ry
+bC0+dGFnc2V0KTsNCj4gPiArCQlpZiAoSVNfRVJSKG5jdHJsLT5jb25uZWN0X3EpKSB7DQo+ID4g
+KwkJCXJjID0gUFRSX0VSUihuY3RybC0+Y29ubmVjdF9xKTsNCj4gPiArCQkJbmN0cmwtPmNvbm5l
+Y3RfcSA9IE5VTEw7DQo+ID4gKwkJCWdvdG8gb3V0X2ZyZWVfdGFnX3NldDsNCj4gPiArCQl9DQo+
+ID4gKwl9DQo+ID4gKw0KPiA+ICsJLyogUGxhY2Vob2xkZXIgLSBzdGFydF9pb19xdWV1ZXMgKi8N
+Cj4gPiArDQo+ID4gKwlpZiAoIW5ldykgew0KPiA+ICsJCW52bWVfc3RhcnRfcXVldWVzKG5jdHJs
+KTsNCj4gPiArCQlpZiAoIW52bWVfd2FpdF9mcmVlemVfdGltZW91dChuY3RybCwgTlZNRV9JT19U
+SU1FT1VUKSkgew0KPiA+ICsJCQkvKg0KPiA+ICsJCQkgKiBJZiB3ZSB0aW1lZCBvdXQgd2FpdGlu
+ZyBmb3IgZnJlZXplIHdlIGFyZSBsaWtlbHkgdG8NCj4gPiArCQkJICogYmUgc3R1Y2suICBGYWls
+IHRoZSBjb250cm9sbGVyIGluaXRpYWxpemF0aW9uIGp1c3QNCj4gPiArCQkJICogdG8gYmUgc2Fm
+ZS4NCj4gPiArCQkJICovDQo+ID4gKwkJCXJjID0gLUVOT0RFVjsNCj4gPiArCQkJZ290byBvdXRf
+d2FpdF9mcmVlemVfdGltZWRfb3V0Ow0KPiA+ICsJCX0NCj4gPiArCQlibGtfbXFfdXBkYXRlX25y
+X2h3X3F1ZXVlcyhuY3RybC0+dGFnc2V0LCBuY3RybC0NCj4gPnF1ZXVlX2NvdW50IC0gMSk7DQo+
+ID4gKwkJbnZtZV91bmZyZWV6ZShuY3RybCk7DQo+ID4gKwl9DQo+ID4gKw0KPiA+ICsJcmV0dXJu
+IDA7DQo+ID4gKw0KPiA+ICtvdXRfd2FpdF9mcmVlemVfdGltZWRfb3V0Og0KPiA+ICsJbnZtZV9z
+dG9wX3F1ZXVlcyhuY3RybCk7DQo+ID4gKwludm1lX3N5bmNfaW9fcXVldWVzKG5jdHJsKTsNCj4g
+PiArDQo+ID4gKwkvKiBQbGFjZWhvbGRlciAtIFN0b3AgSU8gcXVldWVzICovDQo+ID4gKw0KPiA+
+ICsJaWYgKG5ldykNCj4gPiArCQlibGtfY2xlYW51cF9xdWV1ZShuY3RybC0+Y29ubmVjdF9xKTsN
+Cj4gPiArb3V0X2ZyZWVfdGFnX3NldDoNCj4gPiArCWlmIChuZXcpDQo+ID4gKwkJYmxrX21xX2Zy
+ZWVfdGFnX3NldChuY3RybC0+dGFnc2V0KTsNCj4gPiArb3V0X2ZyZWVfaW9fcXVldWVzOg0KPiA+
+ICsJLyogUGxhY2Vob2xkZXIgLSBmcmVlX2lvX3F1ZXVlcyAqLw0KPiA+ICsNCj4gPiArCXJldHVy
+biByYzsNCj4gPiArfQ0KPiA+ICsNCj4gPiAgIHN0YXRpYyBpbnQgbnZtZV90Y3Bfb2ZsZF9zZXR1
+cF9jdHJsKHN0cnVjdCBudm1lX2N0cmwgKm5jdHJsLCBib29sIG5ldykNCj4gPiAgIHsNCj4gPiAt
+CS8qIFBsYWNlaG9sZGVyIC0gdmFsaWRhdGVzIGlucHV0cyBhbmQgY3JlYXRlcyBhZG1pbiBhbmQg
+SU8gcXVldWVzICovDQo+ID4gKwlzdHJ1Y3QgbnZtZl9jdHJsX29wdGlvbnMgKm9wdHMgPSBuY3Ry
+bC0+b3B0czsNCj4gPiArCWludCByYzsNCj4gPiArDQo+ID4gKwlyYyA9IG52bWVfdGNwX29mbGRf
+Y29uZmlndXJlX2FkbWluX3F1ZXVlKG5jdHJsLCBuZXcpOw0KPiA+ICsJaWYgKHJjKQ0KPiA+ICsJ
+CXJldHVybiByYzsNCj4gPiArDQo+ID4gKwlpZiAobmN0cmwtPmljZG9mZikgew0KPiA+ICsJCWRl
+dl9lcnIobmN0cmwtPmRldmljZSwgImljZG9mZiBpcyBub3Qgc3VwcG9ydGVkIVxuIik7DQo+ID4g
+KwkJcmMgPSAtRUlOVkFMOw0KPiA+ICsJCWdvdG8gZGVzdHJveV9hZG1pbjsNCj4gPiArCX0NCj4g
+PiArDQo+ID4gKwlpZiAob3B0cy0+cXVldWVfc2l6ZSA+IG5jdHJsLT5zcXNpemUgKyAxKQ0KPiA+
+ICsJCWRldl93YXJuKG5jdHJsLT5kZXZpY2UsDQo+ID4gKwkJCSAicXVldWVfc2l6ZSAlenUgPiBj
+dHJsIHNxc2l6ZSAldSwgY2xhbXBpbmcgZG93blxuIiwNCj4gPiArCQkJIG9wdHMtPnF1ZXVlX3Np
+emUsIG5jdHJsLT5zcXNpemUgKyAxKTsNCj4gPiArDQo+ID4gKwlpZiAobmN0cmwtPnNxc2l6ZSAr
+IDEgPiBuY3RybC0+bWF4Y21kKSB7DQo+ID4gKwkJZGV2X3dhcm4obmN0cmwtPmRldmljZSwNCj4g
+PiArCQkJICJzcXNpemUgJXUgPiBjdHJsIG1heGNtZCAldSwgY2xhbXBpbmcgZG93blxuIiwNCj4g
+PiArCQkJIG5jdHJsLT5zcXNpemUgKyAxLCBuY3RybC0+bWF4Y21kKTsNCj4gPiArCQluY3RybC0+
+c3FzaXplID0gbmN0cmwtPm1heGNtZCAtIDE7DQo+ID4gKwl9DQo+ID4gKw0KPiA+ICsJaWYgKG5j
+dHJsLT5xdWV1ZV9jb3VudCA+IDEpIHsNCj4gPiArCQlyYyA9IG52bWVfdGNwX29mbGRfY29uZmln
+dXJlX2lvX3F1ZXVlcyhuY3RybCwgbmV3KTsNCj4gPiArCQlpZiAocmMpDQo+ID4gKwkJCWdvdG8g
+ZGVzdHJveV9hZG1pbjsNCj4gPiArCX0NCj4gPiArDQo+ID4gKwlpZiAoIW52bWVfY2hhbmdlX2N0
+cmxfc3RhdGUobmN0cmwsIE5WTUVfQ1RSTF9MSVZFKSkgew0KPiA+ICsJCS8qDQo+ID4gKwkJICog
+c3RhdGUgY2hhbmdlIGZhaWx1cmUgaXMgb2sgaWYgd2Ugc3RhcnRlZCBjdHJsIGRlbGV0ZSwNCj4g
+PiArCQkgKiB1bmxlc3Mgd2UncmUgZHVyaW5nIGNyZWF0aW9uIG9mIGEgbmV3IGNvbnRyb2xsZXIg
+dG8NCj4gPiArCQkgKiBhdm9pZCByYWNlcyB3aXRoIHRlYXJkb3duIGZsb3cuDQo+ID4gKwkJICov
+DQo+ID4gKwkJV0FSTl9PTl9PTkNFKG5jdHJsLT5zdGF0ZSAhPSBOVk1FX0NUUkxfREVMRVRJTkcg
+JiYNCj4gPiArCQkJICAgICBuY3RybC0+c3RhdGUgIT0gTlZNRV9DVFJMX0RFTEVUSU5HX05PSU8p
+Ow0KPiA+ICsJCVdBUk5fT05fT05DRShuZXcpOw0KPiA+ICsJCXJjID0gLUVJTlZBTDsNCj4gPiAr
+CQlnb3RvIGRlc3Ryb3lfaW87DQo+ID4gKwl9DQo+ID4gKw0KPiA+ICsJbnZtZV9zdGFydF9jdHJs
+KG5jdHJsKTsNCj4gPiArDQo+ID4gKwlyZXR1cm4gMDsNCj4gPiArDQo+ID4gK2Rlc3Ryb3lfaW86
+DQo+ID4gKwkvKiBQbGFjZWhvbGRlciAtIHN0b3AgYW5kIGRlc3Ryb3kgaW8gcXVldWVzKi8NCj4g
+PiArZGVzdHJveV9hZG1pbjoNCj4gPiArCS8qIFBsYWNlaG9sZGVyIC0gc3RvcCBhbmQgZGVzdHJv
+eSBhZG1pbiBxdWV1ZSovDQo+ID4gKw0KPiA+ICsJcmV0dXJuIHJjOw0KPiA+ICt9DQo+ID4gKw0K
+PiA+ICtzdGF0aWMgaW50DQo+ID4gK252bWVfdGNwX29mbGRfY2hlY2tfZGV2X29wdHMoc3RydWN0
+IG52bWZfY3RybF9vcHRpb25zICpvcHRzLA0KPiA+ICsJCQkgICAgIHN0cnVjdCBudm1lX3RjcF9v
+ZmxkX29wcyAqb2ZsZF9vcHMpDQo+ID4gK3sNCj4gPiArCXVuc2lnbmVkIGludCBudm1lX3RjcF9v
+ZmxkX29wdF9tYXNrID0gTlZNRl9BTExPV0VEX09QVFMgfA0KPiA+ICsJCQlvZmxkX29wcy0+YWxs
+b3dlZF9vcHRzIHwgb2ZsZF9vcHMtPnJlcXVpcmVkX29wdHM7DQo+ID4gKwlpZiAob3B0cy0+bWFz
+ayAmIH5udm1lX3RjcF9vZmxkX29wdF9tYXNrKSB7DQo+ID4gKwkJcHJfd2FybigiT25lIG9yIG1v
+cmUgb2YgdGhlIG52bWYgb3B0aW9ucyBpc24ndCBzdXBwb3J0ZWQgYnkNCj4gJXMuXG4iLA0KPiA+
+ICsJCQlvZmxkX29wcy0+bmFtZSk7DQo+ID4gKw0KPiA+ICsJCXJldHVybiAtRUlOVkFMOw0KPiA+
+ICsJfQ0KPiA+ICsNCj4gPiArCXJldHVybiAwOw0KPiA+ICt9DQo+ID4gKw0KPiANCj4gSSdkIHJh
+dGhlciBzcGVjaWZ5IHRoZSBvcHRpb25zIGRpcmVjdGx5OyB0aGF0J3MgaG93IGFsbCB0aGUgb3Ro
+ZXINCj4gdHJhbnNwb3J0cyBkbyBpdC4NCg0KQXMgaXQgd2FzIG1lbnRpb25lZCBpbiBwYXRjaCA5
+IC0gIiBudm1lLWZhYnJpY3M6IE1vdmUgDQpOVk1GX0FMTE9XRURfT1BUUyBhbmQgTlZNRl9SRVFV
+SVJFRF9PUFRTIGRlZmluaXRpb25zIjoNCg0KRGlmZmVyZW50IEhXIGRldmljZXMgdGhhdCBhcmUg
+b2ZmbG9hZGluZyB0aGUgTlZNZVRDUCBtaWdodCBoYXZlIGRpZmZlcmVudA0KbGltaXRhdGlvbnMg
+b2YgdGhlIGFsbG93ZWQgb3B0aW9ucy4NCkZvciBleGFtcGxlLCBhIGRldmljZSB0aGF0IGRvZXMg
+bm90IHN1cHBvcnQgYWxsIHRoZSBxdWV1ZSB0eXBlcy4NCldpdGggdGNwIGFuZCByZG1hLCBvbmx5
+IHRoZSBudm1lLXRjcCBhbmQgbnZtZS1yZG1hIGxheWVycyBoYW5kbGUgdGhvc2UNCmF0dHJpYnV0
+ZXMgYW5kIHRoZSBIVyBkZXZpY2VzIGRvIG5vdCBjcmVhdGUgYW55IGxpbWl0YXRpb25zIGZvciB0
+aGUgYWxsb3dlZA0Kb3B0aW9ucy4NCg0KQW4gYWx0ZXJuYXRpdmUgZGVzaWduIGNvdWxkIGJlIHRv
+IGFkZCBzZXBhcmF0ZSBmaWVsZHMgaW4gbnZtZV90Y3Bfb2ZsZF9vcHMgDQpzdWNoIGFzIG1heF9o
+d19zZWN0b3JzIGFuZCBtYXhfc2VnbWVudHMgdGhhdCB3ZSBhbHJlYWR5IGhhdmUgaW4gdGhpcyBz
+ZXJpZXMuDQoNCldoaWNoIHdvdWxkIHlvdSBwcmVmZXI/DQoNCj4gDQo+ID4gK3N0YXRpYyB2b2lk
+IG52bWVfdGNwX29mbGRfZnJlZV9jdHJsKHN0cnVjdCBudm1lX2N0cmwgKm5jdHJsKQ0KPiA+ICt7
+DQo+ID4gKwlzdHJ1Y3QgbnZtZV90Y3Bfb2ZsZF9jdHJsICpjdHJsID0gdG9fdGNwX29mbGRfY3Ry
+bChuY3RybCk7DQo+ID4gKwlzdHJ1Y3QgbnZtZV90Y3Bfb2ZsZF9kZXYgKmRldiA9IGN0cmwtPmRl
+djsNCj4gPiArDQo+ID4gKwlpZiAobGlzdF9lbXB0eSgmY3RybC0+bGlzdCkpDQo+ID4gKwkJZ290
+byBmcmVlX2N0cmw7DQo+ID4gKw0KPiA+ICsJZG93bl93cml0ZSgmbnZtZV90Y3Bfb2ZsZF9jdHJs
+X3J3c2VtKTsNCj4gPiArCWN0cmwtPmRldi0+b3BzLT5yZWxlYXNlX2N0cmwoY3RybCk7DQo+ID4g
+KwlsaXN0X2RlbCgmY3RybC0+bGlzdCk7DQo+ID4gKwl1cF93cml0ZSgmbnZtZV90Y3Bfb2ZsZF9j
+dHJsX3J3c2VtKTsNCj4gPiArDQo+ID4gKwludm1mX2ZyZWVfb3B0aW9ucyhuY3RybC0+b3B0cyk7
+DQo+ID4gK2ZyZWVfY3RybDoNCj4gPiArCW1vZHVsZV9wdXQoZGV2LT5vcHMtPm1vZHVsZSk7DQo+
+ID4gKwlrZnJlZShjdHJsLT5xdWV1ZXMpOw0KPiA+ICsJa2ZyZWUoY3RybCk7DQo+ID4gK30NCj4g
+PiArDQo+ID4gK3N0YXRpYyB2b2lkIG52bWVfdGNwX29mbGRfc3VibWl0X2FzeW5jX2V2ZW50KHN0
+cnVjdCBudm1lX2N0cmwgKmFyZykNCj4gPiArew0KPiA+ICsJLyogUGxhY2Vob2xkZXIgLSBzdWJt
+aXRfYXN5bmNfZXZlbnQgKi8NCj4gPiArfQ0KPiA+ICsNCj4gPiArc3RhdGljIHZvaWQNCj4gPiAr
+bnZtZV90Y3Bfb2ZsZF90ZWFyZG93bl9hZG1pbl9xdWV1ZShzdHJ1Y3QgbnZtZV9jdHJsICpjdHJs
+LCBib29sDQo+IHJlbW92ZSkNCj4gPiArew0KPiA+ICsJLyogUGxhY2Vob2xkZXIgLSB0ZWFyZG93
+bl9hZG1pbl9xdWV1ZSAqLw0KPiA+ICt9DQo+ID4gKw0KPiA+ICtzdGF0aWMgdm9pZA0KPiA+ICtu
+dm1lX3RjcF9vZmxkX3RlYXJkb3duX2lvX3F1ZXVlcyhzdHJ1Y3QgbnZtZV9jdHJsICpuY3RybCwg
+Ym9vbCByZW1vdmUpDQo+ID4gK3sNCj4gPiArCS8qIFBsYWNlaG9sZGVyIC0gdGVhcmRvd25faW9f
+cXVldWVzICovDQo+ID4gK30NCj4gPiArDQo+ID4gK3N0YXRpYyB2b2lkDQo+ID4gK252bWVfdGNw
+X29mbGRfdGVhcmRvd25fY3RybChzdHJ1Y3QgbnZtZV9jdHJsICpuY3RybCwgYm9vbCBzaHV0ZG93
+bikNCj4gPiArew0KPiA+ICsJLyogUGxhY2Vob2xkZXIgLSBlcnJfd29yayBhbmQgY29ubmVjdF93
+b3JrICovDQo+ID4gKwludm1lX3RjcF9vZmxkX3RlYXJkb3duX2lvX3F1ZXVlcyhuY3RybCwgc2h1
+dGRvd24pOw0KPiA+ICsJYmxrX21xX3F1aWVzY2VfcXVldWUobmN0cmwtPmFkbWluX3EpOw0KPiA+
+ICsJaWYgKHNodXRkb3duKQ0KPiA+ICsJCW52bWVfc2h1dGRvd25fY3RybChuY3RybCk7DQo+ID4g
+KwllbHNlDQo+ID4gKwkJbnZtZV9kaXNhYmxlX2N0cmwobmN0cmwpOw0KPiA+ICsJbnZtZV90Y3Bf
+b2ZsZF90ZWFyZG93bl9hZG1pbl9xdWV1ZShuY3RybCwgc2h1dGRvd24pOw0KPiA+ICt9DQo+ID4g
+Kw0KPiA+ICtzdGF0aWMgdm9pZCBudm1lX3RjcF9vZmxkX2RlbGV0ZV9jdHJsKHN0cnVjdCBudm1l
+X2N0cmwgKm5jdHJsKQ0KPiA+ICt7DQo+ID4gKwludm1lX3RjcF9vZmxkX3RlYXJkb3duX2N0cmwo
+bmN0cmwsIHRydWUpOw0KPiA+ICt9DQo+ID4gKw0KPiA+ICtzdGF0aWMgaW50DQo+ID4gK252bWVf
+dGNwX29mbGRfaW5pdF9yZXF1ZXN0KHN0cnVjdCBibGtfbXFfdGFnX3NldCAqc2V0LA0KPiA+ICsJ
+CQkgICBzdHJ1Y3QgcmVxdWVzdCAqcnEsDQo+ID4gKwkJCSAgIHVuc2lnbmVkIGludCBoY3R4X2lk
+eCwNCj4gPiArCQkJICAgdW5zaWduZWQgaW50IG51bWFfbm9kZSkNCj4gPiArew0KPiA+ICsJc3Ry
+dWN0IG52bWVfdGNwX29mbGRfcmVxICpyZXEgPSBibGtfbXFfcnFfdG9fcGR1KHJxKTsNCj4gPiAr
+CXN0cnVjdCBudm1lX3RjcF9vZmxkX2N0cmwgKmN0cmwgPSBzZXQtPmRyaXZlcl9kYXRhOw0KPiA+
+ICsNCj4gPiArCS8qIFBsYWNlaG9sZGVyIC0gaW5pdCByZXF1ZXN0ICovDQo+ID4gKw0KPiA+ICsJ
+cmVxLT5kb25lID0gbnZtZV90Y3Bfb2ZsZF9yZXFfZG9uZTsNCj4gPiArCWN0cmwtPmRldi0+b3Bz
+LT5pbml0X3JlcShyZXEpOw0KPiA+DQo+ID4gICAJcmV0dXJuIDA7DQo+ID4gICB9DQo+ID4NCj4g
+PiArc3RhdGljIGJsa19zdGF0dXNfdA0KPiA+ICtudm1lX3RjcF9vZmxkX3F1ZXVlX3JxKHN0cnVj
+dCBibGtfbXFfaHdfY3R4ICpoY3R4LA0KPiA+ICsJCSAgICAgICBjb25zdCBzdHJ1Y3QgYmxrX21x
+X3F1ZXVlX2RhdGEgKmJkKQ0KPiA+ICt7DQo+ID4gKwkvKiBDYWxsIG52bWVfc2V0dXBfY21kKC4u
+LikgKi8NCj4gPiArDQo+ID4gKwkvKiBDYWxsIG9wcy0+c2VuZF9yZXEoLi4uKSAqLw0KPiA+ICsN
+Cj4gPiArCXJldHVybiBCTEtfU1RTX09LOw0KPiA+ICt9DQo+ID4gKw0KPiA+ICtzdGF0aWMgc3Ry
+dWN0IGJsa19tcV9vcHMgbnZtZV90Y3Bfb2ZsZF9tcV9vcHMgPSB7DQo+ID4gKwkucXVldWVfcnEJ
+PSBudm1lX3RjcF9vZmxkX3F1ZXVlX3JxLA0KPiA+ICsJLmluaXRfcmVxdWVzdAk9IG52bWVfdGNw
+X29mbGRfaW5pdF9yZXF1ZXN0LA0KPiA+ICsJLyoNCj4gPiArCSAqIEFsbCBhZGRpdGlvbmFsIG9w
+cyB3aWxsIGJlIGFsc28gaW1wbGVtZW50ZWQgYW5kIHJlZ2lzdGVyZWQgc2ltaWxhciB0bw0KPiA+
+ICsJICogdGNwLmMNCj4gPiArCSAqLw0KPiA+ICt9Ow0KPiA+ICsNCj4gPiArc3RhdGljIHN0cnVj
+dCBibGtfbXFfb3BzIG52bWVfdGNwX29mbGRfYWRtaW5fbXFfb3BzID0gew0KPiA+ICsJLnF1ZXVl
+X3JxCT0gbnZtZV90Y3Bfb2ZsZF9xdWV1ZV9ycSwNCj4gPiArCS5pbml0X3JlcXVlc3QJPSBudm1l
+X3RjcF9vZmxkX2luaXRfcmVxdWVzdCwNCj4gPiArCS8qDQo+ID4gKwkgKiBBbGwgYWRkaXRpb25h
+bCBvcHMgd2lsbCBiZSBhbHNvIGltcGxlbWVudGVkIGFuZCByZWdpc3RlcmVkIHNpbWlsYXIgdG8N
+Cj4gPiArCSAqIHRjcC5jDQo+ID4gKwkgKi8NCj4gPiArfTsNCj4gPiArDQo+ID4gK3N0YXRpYyBj
+b25zdCBzdHJ1Y3QgbnZtZV9jdHJsX29wcyBudm1lX3RjcF9vZmxkX2N0cmxfb3BzID0gew0KPiA+
+ICsJLm5hbWUJCQk9ICJ0Y3Bfb2ZmbG9hZCIsDQo+ID4gKwkubW9kdWxlCQkJPSBUSElTX01PRFVM
+RSwNCj4gPiArCS5mbGFncwkJCT0gTlZNRV9GX0ZBQlJJQ1MsDQo+ID4gKwkucmVnX3JlYWQzMgkJ
+PSBudm1mX3JlZ19yZWFkMzIsDQo+ID4gKwkucmVnX3JlYWQ2NAkJPSBudm1mX3JlZ19yZWFkNjQs
+DQo+ID4gKwkucmVnX3dyaXRlMzIJCT0gbnZtZl9yZWdfd3JpdGUzMiwNCj4gPiArCS5mcmVlX2N0
+cmwJCT0gbnZtZV90Y3Bfb2ZsZF9mcmVlX2N0cmwsDQo+ID4gKwkuc3VibWl0X2FzeW5jX2V2ZW50
+CT0gbnZtZV90Y3Bfb2ZsZF9zdWJtaXRfYXN5bmNfZXZlbnQsDQo+ID4gKwkuZGVsZXRlX2N0cmwJ
+CT0gbnZtZV90Y3Bfb2ZsZF9kZWxldGVfY3RybCwNCj4gPiArCS5nZXRfYWRkcmVzcwkJPSBudm1m
+X2dldF9hZGRyZXNzLA0KPiA+ICt9Ow0KPiA+ICsNCj4gPiArc3RhdGljIGJvb2wNCj4gPiArbnZt
+ZV90Y3Bfb2ZsZF9leGlzdGluZ19jb250cm9sbGVyKHN0cnVjdCBudm1mX2N0cmxfb3B0aW9ucyAq
+b3B0cykNCj4gPiArew0KPiA+ICsJc3RydWN0IG52bWVfdGNwX29mbGRfY3RybCAqY3RybDsNCj4g
+PiArCWJvb2wgZm91bmQgPSBmYWxzZTsNCj4gPiArDQo+ID4gKwlkb3duX3JlYWQoJm52bWVfdGNw
+X29mbGRfY3RybF9yd3NlbSk7DQo+ID4gKwlsaXN0X2Zvcl9lYWNoX2VudHJ5KGN0cmwsICZudm1l
+X3RjcF9vZmxkX2N0cmxfbGlzdCwgbGlzdCkgew0KPiA+ICsJCWZvdW5kID0gbnZtZl9pcF9vcHRp
+b25zX21hdGNoKCZjdHJsLT5uY3RybCwgb3B0cyk7DQo+ID4gKwkJaWYgKGZvdW5kKQ0KPiA+ICsJ
+CQlicmVhazsNCj4gPiArCX0NCj4gPiArCXVwX3JlYWQoJm52bWVfdGNwX29mbGRfY3RybF9yd3Nl
+bSk7DQo+ID4gKw0KPiA+ICsJcmV0dXJuIGZvdW5kOw0KPiA+ICt9DQo+ID4gKw0KPiA+ICAgc3Rh
+dGljIHN0cnVjdCBudm1lX2N0cmwgKg0KPiA+ICAgbnZtZV90Y3Bfb2ZsZF9jcmVhdGVfY3RybChz
+dHJ1Y3QgZGV2aWNlICpuZGV2LCBzdHJ1Y3QgbnZtZl9jdHJsX29wdGlvbnMNCj4gKm9wdHMpDQo+
+ID4gICB7DQo+ID4gKwlzdHJ1Y3QgbnZtZV90Y3Bfb2ZsZF9xdWV1ZSAqcXVldWU7DQo+ID4gICAJ
+c3RydWN0IG52bWVfdGNwX29mbGRfY3RybCAqY3RybDsNCj4gPiAgIAlzdHJ1Y3QgbnZtZV90Y3Bf
+b2ZsZF9kZXYgKmRldjsNCj4gPiAgIAlzdHJ1Y3QgbnZtZV9jdHJsICpuY3RybDsNCj4gPiAtCWlu
+dCByYyA9IDA7DQo+ID4gKwlpbnQgaSwgcmMgPSAwOw0KPiA+DQo+ID4gICAJY3RybCA9IGt6YWxs
+b2Moc2l6ZW9mKCpjdHJsKSwgR0ZQX0tFUk5FTCk7DQo+ID4gICAJaWYgKCFjdHJsKQ0KPiA+ICAg
+CQlyZXR1cm4gRVJSX1BUUigtRU5PTUVNKTsNCj4gPg0KPiA+ICsJSU5JVF9MSVNUX0hFQUQoJmN0
+cmwtPmxpc3QpOw0KPiA+ICAgCW5jdHJsID0gJmN0cmwtPm5jdHJsOw0KPiA+ICsJbmN0cmwtPm9w
+dHMgPSBvcHRzOw0KPiA+ICsJbmN0cmwtPnF1ZXVlX2NvdW50ID0gb3B0cy0+bnJfaW9fcXVldWVz
+ICsgb3B0cy0+bnJfd3JpdGVfcXVldWVzICsNCj4gPiArCQkJICAgICBvcHRzLT5ucl9wb2xsX3F1
+ZXVlcyArIDE7DQo+ID4gKwluY3RybC0+c3FzaXplID0gb3B0cy0+cXVldWVfc2l6ZSAtIDE7DQo+
+ID4gKwluY3RybC0+a2F0byA9IG9wdHMtPmthdG87DQo+ID4gKwlpZiAoIShvcHRzLT5tYXNrICYg
+TlZNRl9PUFRfVFJTVkNJRCkpIHsNCj4gPiArCQlvcHRzLT50cnN2Y2lkID0NCj4gPiArCQkJa3N0
+cmR1cChfX3N0cmluZ2lmeShOVk1FX1RDUF9ESVNDX1BPUlQpLA0KPiBHRlBfS0VSTkVMKTsNCj4g
+PiArCQlpZiAoIW9wdHMtPnRyc3ZjaWQpIHsNCj4gPiArCQkJcmMgPSAtRU5PTUVNOw0KPiA+ICsJ
+CQlnb3RvIG91dF9mcmVlX2N0cmw7DQo+ID4gKwkJfQ0KPiA+ICsJCW9wdHMtPm1hc2sgfD0gTlZN
+Rl9PUFRfVFJTVkNJRDsNCj4gPiArCX0NCj4gPg0KPiA+IC0JLyogSW5pdCBudm1lX3RjcF9vZmxk
+X2N0cmwgYW5kIG52bWVfY3RybCBwYXJhbXMgYmFzZWQgb24gcmVjZWl2ZWQgb3B0cw0KPiAqLw0K
+PiA+ICsJcmMgPSBpbmV0X3B0b25fd2l0aF9zY29wZSgmaW5pdF9uZXQsIEFGX1VOU1BFQywgb3B0
+cy0+dHJhZGRyLA0KPiA+ICsJCQkJICBvcHRzLT50cnN2Y2lkLA0KPiA+ICsJCQkJICAmY3RybC0+
+Y29ubl9wYXJhbXMucmVtb3RlX2lwX2FkZHIpOw0KPiA+ICsJaWYgKHJjKSB7DQo+ID4gKwkJcHJf
+ZXJyKCJtYWxmb3JtZWQgYWRkcmVzcyBwYXNzZWQ6ICVzOiVzXG4iLA0KPiA+ICsJCSAgICAgICBv
+cHRzLT50cmFkZHIsIG9wdHMtPnRyc3ZjaWQpOw0KPiA+ICsJCWdvdG8gb3V0X2ZyZWVfY3RybDsN
+Cj4gPiArCX0NCj4gPiArDQo+ID4gKwlpZiAob3B0cy0+bWFzayAmIE5WTUZfT1BUX0hPU1RfVFJB
+RERSKSB7DQo+ID4gKwkJcmMgPSBpbmV0X3B0b25fd2l0aF9zY29wZSgmaW5pdF9uZXQsIEFGX1VO
+U1BFQywNCj4gPiArCQkJCQkgIG9wdHMtPmhvc3RfdHJhZGRyLCBOVUxMLA0KPiA+ICsJCQkJCSAg
+JmN0cmwtPmNvbm5fcGFyYW1zLmxvY2FsX2lwX2FkZHIpOw0KPiA+ICsJCWlmIChyYykgew0KPiA+
+ICsJCQlwcl9lcnIoIm1hbGZvcm1lZCBzcmMgYWRkcmVzcyBwYXNzZWQ6ICVzXG4iLA0KPiA+ICsJ
+CQkgICAgICAgb3B0cy0+aG9zdF90cmFkZHIpOw0KPiA+ICsJCQlnb3RvIG91dF9mcmVlX2N0cmw7
+DQo+ID4gKwkJfQ0KPiA+ICsJfQ0KPiA+ICsNCj4gPiArCWlmICghb3B0cy0+ZHVwbGljYXRlX2Nv
+bm5lY3QgJiYNCj4gPiArCSAgICBudm1lX3RjcF9vZmxkX2V4aXN0aW5nX2NvbnRyb2xsZXIob3B0
+cykpIHsNCj4gPiArCQlyYyA9IC1FQUxSRUFEWTsNCj4gPiArCQlnb3RvIG91dF9mcmVlX2N0cmw7
+DQo+ID4gKwl9DQo+ID4NCj4gPiAgIAkvKiBGaW5kIGRldmljZSB0aGF0IGNhbiByZWFjaCB0aGUg
+ZGVzdCBhZGRyICovDQo+ID4gICAJZGV2ID0gbnZtZV90Y3Bfb2ZsZF9sb29rdXBfZGV2KGN0cmwp
+Ow0KPiBBcyBtZW50aW9uZWQgaW4gbXkgcHJldmlvdXMgY29tbWVudDogVGhpcyBpcyBub3QgbmVj
+ZXNzYXJpbHkgdW5pcXVlLg0KPiBUaGVyZSBpcyBubyBndWFyYW50ZWUgdGhhdCBhIHNwZWNpZmlj
+IGhvc3QgaXAvdGFyZ2V0IGlwIGNvbWJpbmF0aW9uIHdpbGwNCj4gZGV2b2x2ZSBvbnRvIGEgc2lu
+Z2xlIGludGVyZmFjZTsgaW4gZmFjdCwgZ2l2ZW4gdGhhdCB0aGlzIGlzIGFuIG9mZmxvYWQNCj4g
+Y2FyZCB3aGljaCBtaWdodCBoYW5kbGUgb25seSBzcGVjaWZpYyBwcm90b2NvbHMgSSBmdWxseSBl
+eHBlY3QgdG8gaGF2ZQ0KPiBzZXZlcmFsIGludGVyZmFjZXMgdGhyb3VnaCB3aGljaCB0aGUgdGFy
+Z2V0IGlwIGFkZHJlc3MgY2FuIGJlIHJlYWNoZWQuDQo+IA0KPiBPbmUgY291bGQgaW1wbGVtZW50
+IHNvbWUgc29ydCBvZiBwcmlvcml0aXNhdGlvbiBzdWNoIHRoYXQgb2ZmbG9hZA0KPiBlbmdpbmVz
+IHNob3VsZCBiZSBwcmVmZXJyZWQsIGJ1dCBpbiB0aGUgZW5kIGl0J3MgYSBwb2xpY3kgZGVjaXNp
+b24gYW5kDQo+IG5vdCBzb21ldGhpbmcgd2Ugc2hvdWxkIGltcG9zZSBmcm9tIHRoZSBkcml2ZXIg
+c2lkZS4NCj4gDQo+IEknZCByYXRoZXIgYmUgYWJsZSB0byBzcGVjaWZ5IGFuIGludGVyZmFjZSBk
+aXJlY3RseSwgYW5kIHRpZSBzcGVjaWZpYw0KPiBob3N0IGlwL3RhcmdldCBpcCBjb25uZWN0aW9u
+cyAoaWUgaG9zdF90cmFkZHIvdHJhZGRyIGNvbWJpbmF0aW9ucykgdG8NCj4gdGhhdCBpbnRlcmZh
+Y2UuIFRoYXQgd2F5IHdlIGRvbid0IGltcG9zZSByZXN0cmljdGlvbnMgb24gdGhlIGFkbWluLA0K
+PiBhbmQgcmVtb3ZlIGFtYmlndWl0eSB3aGVuIGNyZWF0aW5nIHRoZSBjb250cm9sbGVyIGZyb20g
+dXNlcnNwYWNlLg0KDQpJIGFncmVlIGFuZCBJIGJlbGlldmUgaXQgd2FzIGRpc2N1c3NlZCBvbjoN
+ClBhdGNoIDg6ICJudm1lLXRjcC1vZmZsb2FkOiBBZGQgbnZtZS10Y3Atb2ZmbG9hZCAtIE5WTWVU
+Q1AgSFcgb2ZmbG9hZCBVTFAiDQpQYXRjaCAxMDogIiBudm1lLXRjcC1vZmZsb2FkOiBBZGQgZGV2
+aWNlIHNjYW4gaW1wbGVtZW50YXRpb24iDQoNCkp1c3QgdG8gY2xhcmlmeSwgbnZtZS10Y3Atb2Zm
+bG9hZCBzdXBwb3J0cyB0aGUgaG9zdF90cmFkZHIgb3B0aW9uLg0KDQo+IA0KPiA+IEBAIC0xNjAs
+NiArNTY2LDEwIEBAIG52bWVfdGNwX29mbGRfY3JlYXRlX2N0cmwoc3RydWN0IGRldmljZSAqbmRl
+diwgc3RydWN0DQo+IG52bWZfY3RybF9vcHRpb25zICpvcHRzKQ0KPiA+ICAgCQlnb3RvIG91dF9m
+cmVlX2N0cmw7DQo+ID4gICAJfQ0KPiA+DQo+ID4gKwlyYyA9IG52bWVfdGNwX29mbGRfY2hlY2tf
+ZGV2X29wdHMob3B0cywgZGV2LT5vcHMpOw0KPiA+ICsJaWYgKHJjKQ0KPiA+ICsJCWdvdG8gb3V0
+X21vZHVsZV9wdXQ7DQo+ID4gKw0KPiA+ICAgCWN0cmwtPmRldiA9IGRldjsNCj4gPg0KPiA+ICAg
+CWlmIChjdHJsLT5kZXYtPm9wcy0+bWF4X2h3X3NlY3RvcnMpDQo+ID4gQEAgLTE2NywyMiArNTc3
+LDU1IEBAIG52bWVfdGNwX29mbGRfY3JlYXRlX2N0cmwoc3RydWN0IGRldmljZSAqbmRldiwNCj4g
+c3RydWN0IG52bWZfY3RybF9vcHRpb25zICpvcHRzKQ0KPiA+ICAgCWlmIChjdHJsLT5kZXYtPm9w
+cy0+bWF4X3NlZ21lbnRzKQ0KPiA+ICAgCQluY3RybC0+bWF4X3NlZ21lbnRzID0gY3RybC0+ZGV2
+LT5vcHMtPm1heF9zZWdtZW50czsNCj4gPg0KPiA+IC0JLyogSW5pdCBxdWV1ZXMgKi8NCj4gPiAr
+CWN0cmwtPnF1ZXVlcyA9IGtjYWxsb2MobmN0cmwtPnF1ZXVlX2NvdW50LA0KPiA+ICsJCQkgICAg
+ICAgc2l6ZW9mKHN0cnVjdCBudm1lX3RjcF9vZmxkX3F1ZXVlKSwNCj4gPiArCQkJICAgICAgIEdG
+UF9LRVJORUwpOw0KPiA+ICsJaWYgKCFjdHJsLT5xdWV1ZXMpIHsNCj4gPiArCQlyYyA9IC1FTk9N
+RU07DQo+ID4gKwkJZ290byBvdXRfbW9kdWxlX3B1dDsNCj4gPiArCX0NCj4gPg0KPiA+IC0JLyog
+Q2FsbCBudm1lX2luaXRfY3RybCAqLw0KPiA+ICsJZm9yIChpID0gMDsgaSA8IG5jdHJsLT5xdWV1
+ZV9jb3VudDsgKytpKSB7DQo+ID4gKwkJcXVldWUgPSAmY3RybC0+cXVldWVzW2ldOw0KPiA+ICsJ
+CXF1ZXVlLT5jdHJsID0gY3RybDsNCj4gPiArCQlxdWV1ZS0+ZGV2ID0gZGV2Ow0KPiA+ICsJCXF1
+ZXVlLT5yZXBvcnRfZXJyID0gbnZtZV90Y3Bfb2ZsZF9yZXBvcnRfcXVldWVfZXJyOw0KPiA+ICsJ
+fQ0KPiA+ICsNCj4gDQo+IFdoYXQgZG9lcyB0aGlzICdyZXBvcnRfZXJyJyBjYWxsYmFjayBkbz8N
+Cj4gTWF5YmUgaXQncyBlYXNpZXIgdG8gdW5kZXJzdGFuZCB3aGVuIGl0J3MgaW50cm9kdWNlZCBh
+bG9uZ3NpZGUgd2l0aCB0aGUNCj4gY29kZSBoYW5kbGluZyBpdC4NCg0KbnZtZS10Y3Atb2ZmbG9h
+ZCBleHBvc2UgdGhlIGZvbGxvd2luZyAyIG9wdGlvbnMgZnJvbSB3aGljaCB0aGUgdmVuZG9yIA0K
+ZHJpdmVyIGNhbiByZXBvcnQgZXJyb3JzOg0KICAxLiBDYWxsaW5nIG52bWVfdGNwX29mbGRfZXJy
+b3JfcmVjb3ZlcnkoKQ0KICAyLiBDYWxsaW5nIHJlcG9ydF9lcnIoKSBmcm9tIHRoZSBjb250ZXh0
+IG9mIHRoZSBzcGVjaWZpYyBxdWV1ZS4NCg0KVGhlIHFlZG4gZHJpdmVyIGlzIGN1cnJlbnRseSB1
+c2luZyBvbmx5IHRoZSBmaXJzdCBvcHRpb24uDQoNCj4gDQo+ID4gKwlyYyA9IG52bWVfaW5pdF9j
+dHJsKG5jdHJsLCBuZGV2LCAmbnZtZV90Y3Bfb2ZsZF9jdHJsX29wcywgMCk7DQo+ID4gKwlpZiAo
+cmMpDQo+ID4gKwkJZ290byBvdXRfZnJlZV9xdWV1ZXM7DQo+ID4gKw0KPiA+ICsJaWYgKCFudm1l
+X2NoYW5nZV9jdHJsX3N0YXRlKG5jdHJsLCBOVk1FX0NUUkxfQ09OTkVDVElORykpIHsNCj4gPiAr
+CQlXQVJOX09OX09OQ0UoMSk7DQo+ID4gKwkJcmMgPSAtRUlOVFI7DQo+ID4gKwkJZ290byBvdXRf
+dW5pbml0X2N0cmw7DQo+ID4gKwl9DQo+ID4NCj4gPiAgIAlyYyA9IGN0cmwtPmRldi0+b3BzLT5z
+ZXR1cF9jdHJsKGN0cmwsIHRydWUpOw0KPiA+ICAgCWlmIChyYykNCj4gPiAtCQlnb3RvIG91dF9t
+b2R1bGVfcHV0Ow0KPiA+ICsJCWdvdG8gb3V0X3VuaW5pdF9jdHJsOw0KPiA+DQo+ID4gICAJcmMg
+PSBudm1lX3RjcF9vZmxkX3NldHVwX2N0cmwobmN0cmwsIHRydWUpOw0KPiA+ICAgCWlmIChyYykN
+Cj4gPiAtCQlnb3RvIG91dF91bmluaXRfY3RybDsNCj4gPiArCQlnb3RvIG91dF9yZWxlYXNlX2N0
+cmw7DQo+ID4gKw0KPiA+ICsJZGV2X2luZm8obmN0cmwtPmRldmljZSwgIm5ldyBjdHJsOiBOUU4g
+XCIlc1wiLCBhZGRyICVwSVNwXG4iLA0KPiA+ICsJCSBvcHRzLT5zdWJzeXNucW4sICZjdHJsLT5j
+b25uX3BhcmFtcy5yZW1vdGVfaXBfYWRkcik7DQo+ID4gKw0KPiA+ICsJZG93bl93cml0ZSgmbnZt
+ZV90Y3Bfb2ZsZF9jdHJsX3J3c2VtKTsNCj4gPiArCWxpc3RfYWRkX3RhaWwoJmN0cmwtPmxpc3Qs
+ICZudm1lX3RjcF9vZmxkX2N0cmxfbGlzdCk7DQo+ID4gKwl1cF93cml0ZSgmbnZtZV90Y3Bfb2Zs
+ZF9jdHJsX3J3c2VtKTsNCj4gPg0KPiA+ICAgCXJldHVybiBuY3RybDsNCj4gPg0KPiA+IC1vdXRf
+dW5pbml0X2N0cmw6DQo+ID4gK291dF9yZWxlYXNlX2N0cmw6DQo+ID4gICAJY3RybC0+ZGV2LT5v
+cHMtPnJlbGVhc2VfY3RybChjdHJsKTsNCj4gPiArb3V0X3VuaW5pdF9jdHJsOg0KPiA+ICsJbnZt
+ZV91bmluaXRfY3RybChuY3RybCk7DQo+ID4gKwludm1lX3B1dF9jdHJsKG5jdHJsKTsNCj4gPiAr
+b3V0X2ZyZWVfcXVldWVzOg0KPiA+ICsJa2ZyZWUoY3RybC0+cXVldWVzKTsNCj4gPiAgIG91dF9t
+b2R1bGVfcHV0Og0KPiA+ICAgCW1vZHVsZV9wdXQoZGV2LT5vcHMtPm1vZHVsZSk7DQo+ID4gICBv
+dXRfZnJlZV9jdHJsOg0KPiA+IEBAIC0yMTIsNyArNjU1LDE1IEBAIHN0YXRpYyBpbnQgX19pbml0
+IG52bWVfdGNwX29mbGRfaW5pdF9tb2R1bGUodm9pZCkNCj4gPg0KPiA+ICAgc3RhdGljIHZvaWQg
+X19leGl0IG52bWVfdGNwX29mbGRfY2xlYW51cF9tb2R1bGUodm9pZCkNCj4gPiAgIHsNCj4gPiAr
+CXN0cnVjdCBudm1lX3RjcF9vZmxkX2N0cmwgKmN0cmw7DQo+ID4gKw0KPiA+ICAgCW52bWZfdW5y
+ZWdpc3Rlcl90cmFuc3BvcnQoJm52bWVfdGNwX29mbGRfdHJhbnNwb3J0KTsNCj4gPiArDQo+ID4g
+Kwlkb3duX3dyaXRlKCZudm1lX3RjcF9vZmxkX2N0cmxfcndzZW0pOw0KPiA+ICsJbGlzdF9mb3Jf
+ZWFjaF9lbnRyeShjdHJsLCAmbnZtZV90Y3Bfb2ZsZF9jdHJsX2xpc3QsIGxpc3QpDQo+ID4gKwkJ
+bnZtZV9kZWxldGVfY3RybCgmY3RybC0+bmN0cmwpOw0KPiA+ICsJdXBfd3JpdGUoJm52bWVfdGNw
+X29mbGRfY3RybF9yd3NlbSk7DQo+ID4gKwlmbHVzaF93b3JrcXVldWUobnZtZV9kZWxldGVfd3Ep
+Ow0KPiA+ICAgfQ0KPiA+DQo+ID4gICBtb2R1bGVfaW5pdChudm1lX3RjcF9vZmxkX2luaXRfbW9k
+dWxlKTsNCj4gPg0KPiBDaGVlcnMsDQo+IA0KPiBIYW5uZXMNCj4gLS0NCj4gRHIuIEhhbm5lcyBS
+ZWluZWNrZSAgICAgICAgICAgICAgICBLZXJuZWwgU3RvcmFnZSBBcmNoaXRlY3QNCj4gaGFyZUBz
+dXNlLmRlICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgKzQ5IDkxMSA3NDA1MyA2ODgNCj4g
+U1VTRSBTb2Z0d2FyZSBTb2x1dGlvbnMgR21iSCwgTWF4ZmVsZHN0ci4gNSwgOTA0MDkgTsO8cm5i
+ZXJnDQo+IEhSQiAzNjgwOSAoQUcgTsO8cm5iZXJnKSwgR2VzY2jDpGZ0c2bDvGhyZXI6IEZlbGl4
+IEltZW5kw7ZyZmZlcg0KPiANCj4gX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX19fX18NCj4gTGludXgtbnZtZSBtYWlsaW5nIGxpc3QNCj4gTGludXgtbnZtZUBsaXN0
+cy5pbmZyYWRlYWQub3JnDQo+IGh0dHBzOi8vdXJsZGVmZW5zZS5wcm9vZnBvaW50LmNvbS92Mi91
+cmw/dT1odHRwLQ0KPiAzQV9fbGlzdHMuaW5mcmFkZWFkLm9yZ19tYWlsbWFuX2xpc3RpbmZvX2xp
+bnV4LQ0KPiAyRG52bWUmZD1Ed0lHYVEmYz1uS2pXZWMyYjZSMG1PeVBhejd4dGZRJnI9Z0xfTzdt
+TXQ0VTgtDQo+IEJReUplTmg5N0x3bFdNV2I2TG5Bb2FPQnFtZXdsYk0mbT03ajF3eTFsNFhKekxL
+VTdOMlV6ZmVqTFcwQjZuDQo+IHdTNURNMXZwXzc0YzU3WSZzPUR2MXctWVR3YmtQSlh6c1VhUXVv
+VnhQbDk4SXNkUkJJREZaYURTcUFLMncmZT0NCg==
