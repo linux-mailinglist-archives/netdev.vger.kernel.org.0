@@ -2,102 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C1017376CE3
-	for <lists+netdev@lfdr.de>; Sat,  8 May 2021 00:36:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AB261376CEA
+	for <lists+netdev@lfdr.de>; Sat,  8 May 2021 00:46:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229791AbhEGWhq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 7 May 2021 18:37:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51326 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229470AbhEGWhp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 7 May 2021 18:37:45 -0400
-Received: from mail-ua1-x931.google.com (mail-ua1-x931.google.com [IPv6:2607:f8b0:4864:20::931])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B10BC061574;
-        Fri,  7 May 2021 15:36:45 -0700 (PDT)
-Received: by mail-ua1-x931.google.com with SMTP id x9so3322184uao.3;
-        Fri, 07 May 2021 15:36:45 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=b7SX7qLCM1WLkyOXKXr7x2SnRM68jsAlaH9i3EjxTDc=;
-        b=PfdS5NDIy+rUTOaYBNbyqSuOAALBBPWIDfjQhcZ3p6xEqWrFtZerDWhiWcjfOmGF4Q
-         a04JdapesIUE+i9QusAv3VxUCbRlS/LGrPa/HmdWSO0DTGUXMf+WuhqXDX/aMIgqDFCu
-         wTVDLNSBM25FTa0aV1N3yF+TuuUzcfCJNSoT9cmFyB5PIySIzWdQp/XwrFkWhXqOcYt/
-         fxo7Kvu57PP2Ht74jd2nQ5Xvsn41i3PdKxUPEH1hjOkA7ZRVwVW/3vOIvsqEMxyfAtq1
-         nhCYydI5u6iio/kQ/NbNSgRjJZxGf5Gpybdo1cuiEHKSddaPJJ9EbZFR/IBnNPJ8m84B
-         nEcQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=b7SX7qLCM1WLkyOXKXr7x2SnRM68jsAlaH9i3EjxTDc=;
-        b=Qjx3ftkC/bIPNy7TCUuTc+1zHoHsM7va2E7Eu1CdeWDiKwwAuGz+T/8V+ECpr41EIr
-         N6VAIQmVcZev/+2OLfb1iv7K9JOvZL0bycCKIHmJWW6lRh61zYZfImrBnjlPqmMSr3sd
-         1rDnXeiNX416s4wvhuxR8SOP0dPHYUdJAZgDIEjhbI/iGYHLGKjCxKmvM17cvAjg2fCx
-         YJ/SPvevxUvVi+7j+mf3y1Nn3mjMsGpDqRtGyx4+Xn5BXM3U2d3X5nq8rvQrmRlw98Cx
-         uzu3tAA3b0+hjeosxMfGpt3lnEFsKdvnfRc0HB0InBJzkuMHI5fXfJ3eI1Gg4dM60fD4
-         EHng==
-X-Gm-Message-State: AOAM533RiUYiPODQifJkHkbVukOfbsGtsE1aJaAO1gxE9o07QrDO5Od3
-        t3WzkxPArfTmHMbRFbuxAxCQhsNi+9P9jG0uoQnoalRJM8bk6g==
-X-Google-Smtp-Source: ABdhPJx+oBo9o19LC6Z3dtB4RSeSDPSsS5tIrSvFxY/Wl+yAd922f/5bf7jlOwDjkNDpICJ8uZd0tey5XVUAXGyhofA=
-X-Received: by 2002:a9f:376a:: with SMTP id a39mr12020731uae.12.1620427004379;
- Fri, 07 May 2021 15:36:44 -0700 (PDT)
+        id S229880AbhEGWrb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 7 May 2021 18:47:31 -0400
+Received: from mail.kernel.org ([198.145.29.99]:35620 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229839AbhEGWr2 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 7 May 2021 18:47:28 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id B417160FDC;
+        Fri,  7 May 2021 22:46:25 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1620427586;
+        bh=iNUlywIIsXPvy+R138QnRgbKwIc6HeLDnARtMppsCdk=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=pLh2r/wqJuH7V3hmGogEgzgnDMPA0DYm9AewC0QhoOyPJL1m2h3Ld9+dTEf7Q6Zah
+         mdUBjvcuAZ5jGuULiHw4bD60pv/AV6Fw1OMWogEz2lOCrCl7wyLWBWmTeKMq2nraYs
+         uEgNA7v5Jb3J3FlMIC+ASqeXbZpuwplMZCXULKrLzsio+Q8uQ4DT01pKyxlLD/JBLg
+         ISH9mSG8Qqe8FHh6SG5lrzyZpC4MOvt7Cp43EXtMpdumVze2cU6EoMoJzAHNky7hhv
+         SGberu7+Po/sxyk5jmQwCfUrmTfYMKa7aMwUJ7pyk31Dh/bDMkdkM/LAmaDT39STnj
+         JqfyUCGkOumEQ==
+Date:   Fri, 7 May 2021 15:46:24 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Joakim Zhang <qiangqing.zhang@nxp.com>,
+        "andrew@lunn.ch" <andrew@lunn.ch>
+Cc:     "peppe.cavallaro@st.com" <peppe.cavallaro@st.com>,
+        "alexandre.torgue@st.com" <alexandre.torgue@st.com>,
+        "joabreu@synopsys.com" <joabreu@synopsys.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "f.fainelli@gmail.com" <f.fainelli@gmail.com>,
+        "Jisheng.Zhang@synaptics.com" <Jisheng.Zhang@synaptics.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        dl-linux-imx <linux-imx@nxp.com>
+Subject: Re: [PATCH V4 net] net: stmmac: Fix MAC WoL not working if PHY does
+ not support WoL
+Message-ID: <20210507154624.31186614@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <DB8PR04MB6795107C0B25B2E199FE0A0EE6579@DB8PR04MB6795.eurprd04.prod.outlook.com>
+References: <20210506050658.9624-1-qiangqing.zhang@nxp.com>
+        <20210506175522.49a2ad5b@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <DB8PR04MB6795107C0B25B2E199FE0A0EE6579@DB8PR04MB6795.eurprd04.prod.outlook.com>
 MIME-Version: 1.0
-References: <20210407080118.1916040-1-mkl@pengutronix.de> <20210407080118.1916040-7-mkl@pengutronix.de>
- <CAPgEAj6N9d=s1a-P_P0mBe1aV2tQBQ4m6shvbPcPvX7W1NNzJw@mail.gmail.com>
- <a46b95e3-4238-a930-6de3-360f86beaf52@pengutronix.de> <20210507072521.3y652xz2kmibjo7d@pengutronix.de>
-In-Reply-To: <20210507072521.3y652xz2kmibjo7d@pengutronix.de>
-From:   Drew Fustini <pdp7pdp7@gmail.com>
-Date:   Fri, 7 May 2021 15:36:32 -0700
-Message-ID: <CAEf4M_Dg5u=b+fYwXDUMRGSXeXHuo-bXZmzoAs2bW0kFncMSQg@mail.gmail.com>
-Subject: Re: [net-next 6/6] can: mcp251xfd: mcp251xfd_regmap_crc_read(): work
- around broken CRC on TBC register
-To:     Marc Kleine-Budde <mkl@pengutronix.de>
-Cc:     Drew Fustini <drew@beagleboard.org>, netdev@vger.kernel.org,
-        "linux-can@vger.kernel.org" <linux-can@vger.kernel.org>,
-        Will C <will@macchina.cc>, menschel.p@posteo.de
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, May 7, 2021 at 12:56 AM Marc Kleine-Budde <mkl@pengutronix.de> wrote:
->
-> On 22.04.2021 09:18:54, Marc Kleine-Budde wrote:
-> > On 4/21/21 9:58 PM, Drew Fustini wrote:
-> > > I am encountering similar error with the 5.10 raspberrypi kernel on
-> > > RPi 4 with MCP2518FD:
-> > >
-> > >   mcp251xfd spi0.0 can0: CRC read error at address 0x0010 (length=4,
-> > > data=00 ad 58 67, CRC=0xbbfd) retrying
-> >
-> > What's the situation you see these errors?
-> >
-> > I'm not particular happy with that patch, as it only works around that one
-> > particular bit flip issue. If you really hammer the register, the driver will
-> > still notice CRC errors that can be explained by other bits flipping. Consider
-> > this as the first order approximation of a higher order problem :) - the root
-> > cause is still unknown.
-> >
-> > > Would it be possible for you to pull these patches into a v5.10 branch
-> > > in your linux-rpi repo [1]?
-> >
-> > Here you are:
-> >
-> > https://github.com/marckleinebudde/linux-rpi/tree/v5.10-rpi/backport-performance-improvements
-> >
-> > I've included the UINC performance enhancements, too. The branch is compiled
-> > tested only, though. I'll send a pull request to the rpi kernel after I've
-> > testing feedback from you.
->
-> Drew, Patrick, have you tested this branch? If so I'll send a pull
-> request to the raspi kernel.
+On Fri, 7 May 2021 10:59:12 +0000 Joakim Zhang wrote:
+> > On Thu,  6 May 2021 13:06:58 +0800 Joakim Zhang wrote:  
+> > > Both get and set WoL will check device_can_wakeup(), if MAC supports
+> > > PMT, it will set device wakeup capability. After commit 1d8e5b0f3f2c ("net:
+> > > stmmac: Support WOL with phy"), device wakeup capability will be
+> > > overwrite in stmmac_init_phy() according to phy's Wol feature. If phy
+> > > doesn't support WoL, then MAC will lose wakeup capability.  
+> > 
+> > Let's take a step back. Can we get a minimal fix for losing the config in
+> > stmmac_init_phy(), and then extend the support for WoL for devices which do
+> > support wake up themselves?  
+> 
+> Sure, please review the V1, I think this is a minimal fix, then we
+> can extend this as a new feature.
+> https://www.spinics.net/lists/netdev/msg733531.html
 
-Thank you for following up.
+Something like that, yes (you can pull the get_wol call into the same
+if block).
 
-I need to build it and send it to the friend who was testing to check
-if the CRC errors go away.  He is testing CANFD with a 2021 Ford F150
-truck.  I will follow up here once I know the results.
+Andrew, would that be acceptable to you? As limited as the either/or
+approach is it should not break any existing users, and the fix needs
+to go to longterm 5.10. We could make the improvements in net-next?
 
--Drew
+> > >  static int stmmac_set_wol(struct net_device *dev, struct
+> > > ethtool_wolinfo *wol)  {
+> > > +	u32 support = WAKE_MAGIC | WAKE_UCAST | WAKE_MAGICSECURE |
+> > > +WAKE_BCAST;  
+> > 
+> > Why this list?  
+> 
+> Please see comments from Andrew: https://lore.kernel.org/netdev/YIgBJQi1H+f2VGWf@lunn.ch/T/#m00f11a84c1c43b3b4047dffcdfce57d534565a96
+> "What PHYs do implement is WAKE_MAGIC, WAKE_MAGICSEC, WAKE_UCAST, and WAKE_BCAST. So there is a clear overlap with what the MAC can do."
+> 
+> So this list is cover all the WoL sources both PHY and STMMAC.
+
+I don't think that's what Andrew meant, although again, I'm not 100%
+sure of expected WoL semantics.
+
+
