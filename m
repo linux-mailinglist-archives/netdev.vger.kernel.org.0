@@ -2,137 +2,172 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 646E1376D7C
-	for <lists+netdev@lfdr.de>; Sat,  8 May 2021 01:48:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4160C376D7E
+	for <lists+netdev@lfdr.de>; Sat,  8 May 2021 01:52:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230151AbhEGXqj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 7 May 2021 19:46:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38138 "EHLO
+        id S230089AbhEGXwe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 7 May 2021 19:52:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39420 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229970AbhEGXqi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 7 May 2021 19:46:38 -0400
-Received: from mail-qt1-x833.google.com (mail-qt1-x833.google.com [IPv6:2607:f8b0:4864:20::833])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 05CE0C061574;
-        Fri,  7 May 2021 16:45:36 -0700 (PDT)
-Received: by mail-qt1-x833.google.com with SMTP id o1so7907523qta.1;
-        Fri, 07 May 2021 16:45:36 -0700 (PDT)
+        with ESMTP id S229959AbhEGXwc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 7 May 2021 19:52:32 -0400
+Received: from mail-wm1-x333.google.com (mail-wm1-x333.google.com [IPv6:2a00:1450:4864:20::333])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5EEB7C061574;
+        Fri,  7 May 2021 16:51:30 -0700 (PDT)
+Received: by mail-wm1-x333.google.com with SMTP id n84so6112075wma.0;
+        Fri, 07 May 2021 16:51:30 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=sender:date:from:to:cc:subject:message-id:references:mime-version
+        h=date:from:to:cc:subject:message-id:references:mime-version
          :content-disposition:in-reply-to;
-        bh=rk5ZF5O3eDY1kMqyU3TfWHx2sPsSACItLLAgyKze1w4=;
-        b=WRCthpiWBtHfvBKo/T251l8U1FYDhxXo7foPARg3JjejHTmSQOooowsVGhiLNOMcQq
-         SEsxajIMgeAvkewvQIU3xgrOHNPR0Z9w1zSYWr8ZUs70zgkyMRMXPTpFsGKP4SdyAs1h
-         gYDTlKwwBVwPfauLYsM/53bjt3mahmc4GsVenCC96iwSpELZA/54Bf6QYhKIYwdbb5z2
-         AHAhzCo2p1w9E/No1NNALqOx7P42N3Pl5AwOysmoxj/mh3p8uYsuFodkyDeZIk0AsCsU
-         MYajtRBmN8d9BC+YYXawJbrQNPVvtBq3Yp3ek+8RBg3AlU9ogvuprYYPRsriM88vgmM3
-         SzVw==
+        bh=7lVXSAj+hX9zk03LgsIMs6yxVeKScziSr3n1M5BEuEM=;
+        b=fd6Ip474EzPy06x9xC7FQfUxwtoPdS5GcI1iW9MG82HHsr45tEFa2mcE1O6KA+QOjS
+         EujZ663a1HZYUL6eKTGaVzCZuhsR63zkFgQv535s7Eubkzz7SsN8+ecigD9lnbhBOthR
+         WyyHqFlI+AwdqeN+jRxCooJoqdiMuKTdNXsVgVKzhpGa9hMMiZF2LQAXSbUKjj35h6Lz
+         ibmHUK5PNMgceYS7LXPnPqJy10UJ7pIoXUQAKkJ3WYN8m+tpdwurbuua7U6VZeaVoS8T
+         M4bELm4vP+B1V8oe3L7vJPwN9XeLO6h3a0aFksXgif7OU657Lfeg85r6htSQgSYmkwzZ
+         ZSHQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
-         :references:mime-version:content-disposition:in-reply-to;
-        bh=rk5ZF5O3eDY1kMqyU3TfWHx2sPsSACItLLAgyKze1w4=;
-        b=Lc98UuAgRdI5t1E/0ConFTVDSgK/Ao7nxdbffvWgnrvuz++emiLEOT+kN+OEopUoJg
-         Dd+jaCh9hAkHVbFgTFnQ7o6UxcZrUrptxQLvjxdlQ717u3l6vB51QdkqpyCroEkEEO8F
-         uB1k81OtO5UHgtOJdsvLBbbpBRPD3geLiv10myyhNGND4fl2kf5a2dmv+luM7wY6aISx
-         tqlRIJjUs05n76Y2pJtvmqhN8bNjp32WSsx0V7EdjCdqW62NUca1lbPEkqlMHNE2DZPO
-         Teji3UhECt/hBX4aK7c4B5HHI1lHr7PrDZs8V8bTxnjXH6ebSSsLyhzcSoucCgC/vgkC
-         Y2Wg==
-X-Gm-Message-State: AOAM532cdmM9/FvpcMd9cxmqzfZyacu/d2KFSC6EsMAWWkLCyqm0J/Kt
-        pjt7iiheLetBQ0xHbLf/0jA=
-X-Google-Smtp-Source: ABdhPJzjTDnhrKBnwYTKzTK+SPBDjhjdMBkHM07M5oIZGhHtKq0iDeDFE/rmPDemNN2JQXfuLxum5Q==
-X-Received: by 2002:ac8:7cb0:: with SMTP id z16mr12236002qtv.157.1620431135577;
-        Fri, 07 May 2021 16:45:35 -0700 (PDT)
-Received: from localhost (dhcp-6c-ae-f6-dc-d8-61.cpe.echoes.net. [199.96.183.179])
-        by smtp.gmail.com with ESMTPSA id 2sm4492640qko.28.2021.05.07.16.45.34
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=7lVXSAj+hX9zk03LgsIMs6yxVeKScziSr3n1M5BEuEM=;
+        b=UX4ysbJJIc+/2ordNjo47s2F/fGdrHvlsR8w7EfD1y7iJ8cMf8/k4RnCpQ1x86wv/5
+         Rh3YAz6Xk8mOEG6ERgDrOd4lmEAUeJjhfSMx4LpVhposeXa8H+5xBF1aRNVJBytE4NlM
+         9CxuMWoIpZTWUqQjTORwnsb0dMZ8/VIzUcsD5Qc4kzlNE3kXkdm1I1eM4/FXN1jQofmS
+         s2aRa5el7wHD4V8Pg0WESb75L2le2f8TIsCohHLnK26M+LZd/dGT48Iw35jSeMajmlT/
+         r6gDiafpRWby5g9w8inyXYS+g1YO6Dym7A5TYjD6has5kUNIfrQn5QWL7bDebxpWX9/o
+         pxuQ==
+X-Gm-Message-State: AOAM532aUi47GQKWzt8kg2hKtaMB+L+YMBCtmyQRlOP1V+kcFD+17rBx
+        EGxUGwTuA1cNX2XPe7r+C84=
+X-Google-Smtp-Source: ABdhPJzCvy+qKlCAdbxyYkwUhERvLwURHe5/XDYNzuaonjsAoez/t15MmbPW3t/9vLrMycxHCWAOeA==
+X-Received: by 2002:a05:600c:4fd0:: with SMTP id o16mr23967215wmq.137.1620431488695;
+        Fri, 07 May 2021 16:51:28 -0700 (PDT)
+Received: from Ansuel-xps.localdomain (93-35-189-2.ip56.fastwebnet.it. [93.35.189.2])
+        by smtp.gmail.com with ESMTPSA id i13sm9805712wrs.12.2021.05.07.16.51.27
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 07 May 2021 16:45:34 -0700 (PDT)
-Sender: Tejun Heo <htejun@gmail.com>
-Date:   Fri, 7 May 2021 19:45:33 -0400
-From:   Tejun Heo <tj@kernel.org>
-To:     Alex Deucher <alexdeucher@gmail.com>
-Cc:     Daniel Vetter <daniel@ffwll.ch>, Kenny Ho <y2kenny@gmail.com>,
-        Song Liu <songliubraving@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>,
-        DRI Development <dri-devel@lists.freedesktop.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Kenny Ho <Kenny.Ho@amd.com>,
-        "open list:CONTROL GROUP (CGROUP)" <cgroups@vger.kernel.org>,
-        Brian Welty <brian.welty@intel.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        amd-gfx list <amd-gfx@lists.freedesktop.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Linux-Fsdevel <linux-fsdevel@vger.kernel.org>,
-        Alexander Viro <viro@zeniv.linux.org.uk>,
-        Network Development <netdev@vger.kernel.org>,
-        KP Singh <kpsingh@chromium.org>, Yonghong Song <yhs@fb.com>,
-        bpf <bpf@vger.kernel.org>, Dave Airlie <airlied@gmail.com>,
-        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        Alex Deucher <alexander.deucher@amd.com>
-Subject: Re: [RFC] Add BPF_PROG_TYPE_CGROUP_IOCTL
-Message-ID: <YJXRHXIykyEBdnTF@slm.duckdns.org>
-References: <YJVnO+TCRW83S6w4@phenom.ffwll.local>
- <CADnq5_Pvtj1vb0bak_gUkv9J3+vfsMZxVKTKYeUvwQCajAWoVQ@mail.gmail.com>
- <YJVqL4c6SJc8wdkK@phenom.ffwll.local>
- <CADnq5_PHjiHy=Su_1VKr5ycdnXN-OuSXw0X_TeNqSj+TJs2MGA@mail.gmail.com>
- <CADnq5_OjaPw5iF_82bjNPt6v-7OcRmXmXECcN+Gdg1NcucJiHA@mail.gmail.com>
- <YJVwtS9XJlogZRqv@phenom.ffwll.local>
- <YJWWByISHSPqF+aN@slm.duckdns.org>
- <CADnq5_Mwd-xHZQ4pt34=FPk2Gq3ij1FNHWsEz1LdS7_Dyo00iQ@mail.gmail.com>
- <YJWqIVnX9giaKMTG@slm.duckdns.org>
- <CADnq5_PudV4ufQW=DqrDow_vvMQDCJVxjqZeXeTvM=6Xp+a_RQ@mail.gmail.com>
+        Fri, 07 May 2021 16:51:28 -0700 (PDT)
+Date:   Sat, 8 May 2021 01:51:08 +0200
+From:   Ansuel Smith <ansuelsmth@gmail.com>
+To:     Russell King - ARM Linux admin <linux@armlinux.org.uk>
+Cc:     Vladimir Oltean <olteanv@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [RFC PATCH net-next v3 19/20] net: dsa: qca8k: pass
+ switch_revision info to phy dev_flags
+Message-ID: <YJXSbGzL040gnugV@Ansuel-xps.localdomain>
+References: <20210504222915.17206-1-ansuelsmth@gmail.com>
+ <20210504222915.17206-19-ansuelsmth@gmail.com>
+ <20210506112458.yhgbpifebusc2eal@skbuf>
+ <YJXMit3YfBXKM98j@Ansuel-xps.localdomain>
+ <20210507233353.GE1336@shell.armlinux.org.uk>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <CADnq5_PudV4ufQW=DqrDow_vvMQDCJVxjqZeXeTvM=6Xp+a_RQ@mail.gmail.com>
+In-Reply-To: <20210507233353.GE1336@shell.armlinux.org.uk>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+On Sat, May 08, 2021 at 12:33:53AM +0100, Russell King - ARM Linux admin wrote:
+> On Sat, May 08, 2021 at 01:26:02AM +0200, Ansuel Smith wrote:
+> > On Thu, May 06, 2021 at 02:24:58PM +0300, Vladimir Oltean wrote:
+> > > On Wed, May 05, 2021 at 12:29:13AM +0200, Ansuel Smith wrote:
+> > > > Define get_phy_flags to pass switch_Revision needed to tweak the
+> > > > internal PHY with debug values based on the revision.
+> > > > 
+> > > > Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
+> > > > ---
+> > > >  drivers/net/dsa/qca8k.c | 19 +++++++++++++++++++
+> > > >  1 file changed, 19 insertions(+)
+> > > > 
+> > > > diff --git a/drivers/net/dsa/qca8k.c b/drivers/net/dsa/qca8k.c
+> > > > index b4cd891ad35d..237e09bb1425 100644
+> > > > --- a/drivers/net/dsa/qca8k.c
+> > > > +++ b/drivers/net/dsa/qca8k.c
+> > > > @@ -1654,6 +1654,24 @@ qca8k_port_vlan_del(struct dsa_switch *ds, int port,
+> > > >  	return ret;
+> > > >  }
+> > > >  
+> > > > +static u32 qca8k_get_phy_flags(struct dsa_switch *ds, int port)
+> > > > +{
+> > > > +	struct qca8k_priv *priv = ds->priv;
+> > > > +
+> > > > +	pr_info("revision from phy %d", priv->switch_revision);
+> > > 
+> > > Log spam.
+> > > 
+> > > > +	/* Communicate to the phy internal driver the switch revision.
+> > > > +	 * Based on the switch revision different values needs to be
+> > > > +	 * set to the dbg and mmd reg on the phy.
+> > > > +	 * The first 2 bit are used to communicate the switch revision
+> > > > +	 * to the phy driver.
+> > > > +	 */
+> > > > +	if (port > 0 && port < 6)
+> > > > +		return priv->switch_revision;
+> > > > +
+> > > > +	return 0;
+> > > > +}
+> > > > +
+> > > >  static enum dsa_tag_protocol
+> > > >  qca8k_get_tag_protocol(struct dsa_switch *ds, int port,
+> > > >  		       enum dsa_tag_protocol mp)
+> > > > @@ -1687,6 +1705,7 @@ static const struct dsa_switch_ops qca8k_switch_ops = {
+> > > >  	.phylink_mac_config	= qca8k_phylink_mac_config,
+> > > >  	.phylink_mac_link_down	= qca8k_phylink_mac_link_down,
+> > > >  	.phylink_mac_link_up	= qca8k_phylink_mac_link_up,
+> > > > +	.get_phy_flags		= qca8k_get_phy_flags,
+> > > >  };
+> > > >  
+> > > >  static int qca8k_read_switch_id(struct qca8k_priv *priv)
+> > > > -- 
+> > > > 2.30.2
+> > > > 
+> > > 
+> > > Florian, I think at one point you said that a correct user of
+> > > phydev->dev_flags should first check the PHY revision and not apply
+> > > dev_flags in blind, since they are namespaced to each PHY driver?
+> > > It sounds a bit circular to pass the PHY revision to the PHY through
+> > > phydev->dev_flags, either that or I'm missing some piece.
+> > 
+> > Just to make sure. This is the SWITCH revision not the PHY revision. It
+> > was pointed out in old version that I should get this value from the PHY
+> > regs but they are different values. This is why the dsa driver needs to
+> > use the dev_flags to pass the SWITCH revision to the phy driver. Am I
+> > implementing this in the wrong way and I should declare something to
+> > pass this value in a more standard way? (anyway i'm pushing v4 so i
+> > don't know if we should continue that there)
+> 
+> Vladimir is confused - it is not PHY revision at all, but the PHY
+> identifiers.
+> 
+> What was actually suggested was checking the PHY identifiers before
+> passing PHY-driver specific flags, so that we didn't end up setting
+> driver private flags that are intending for one driver, but end up
+> actually binding a different driver, and mis-interpreting the flags.
+> 
+> This is one of the problems of the current scheme: it's just a
+> meaningless opaque u32 variable with no defined structure to it that
+> the various PHY drivers themselves use in whatever way they see fit.
+> That is only fine to use _if_ you know for certain which driver is
+> going to bind ahead of time.
+>
 
-On Fri, May 07, 2021 at 06:30:56PM -0400, Alex Deucher wrote:
-> Maybe we are speaking past each other.  I'm not following.  We got
-> here because a device specific cgroup didn't make sense.  With my
-> Linux user hat on, that makes sense.  I don't want to write code to a
-> bunch of device specific interfaces if I can avoid it.  But as for
-> temporal vs spatial partitioning of the GPU, the argument seems to be
-> a sort of hand-wavy one that both spatial and temporal partitioning
-> make sense on CPUs, but only temporal partitioning makes sense on
-> GPUs.  I'm trying to understand that assertion.  There are some GPUs
+The problem here was find a way to pass data from the dsa driver to the
+phy driver. In this specific case the phy driver is an internal phy
+present in the switch so it won't appear on anything else. Aside from
+this I agree that it seems wrong that random values are used without
+some type of rules or definition but I think that try to address this
+problem is too much for this already large series. In theory this should
+be safe to use as this driver would only be used by qca8k dsa driver.
 
-Spatial partitioning as implemented in cpuset isn't a desirable model. It's
-there partly because it has historically been there. It doesn't really
-require dynamic hierarchical distribution of anything and is more of a way
-to batch-update per-task configuration, which is how it's actually
-implemented. It's broken too in that it interferes with per-task affinity
-settings. So, not exactly a good example to follow. In addition, this sort
-of partitioning requires more hardware knowledge and GPUs are worse than
-CPUs in that hardwares differ more.
-
-Features like this are trivial to implement from userland side by making
-per-process settings inheritable and restricting who can update the
-settings.
-
-> that can more easily be temporally partitioned and some that can be
-> more easily spatially partitioned.  It doesn't seem any different than
-> CPUs.
-
-Right, it doesn't really matter how the resource is distributed. What
-matters is how granular and generic the distribution can be. If gpus can
-implement work-conserving proportional distribution, that's something which
-is widely useful and inherently requires dynamic scheduling from kernel
-side. If it's about setting per-vendor affinities, this is way too much
-cgroup interface for a feature which can be easily implemented outside
-cgroup. Just do per-process (or whatever handles gpus use) and confine their
-configurations from cgroup side however way.
-
-While the specific theme changes a bit, we're basically having the same
-discussion with the same conclusion over the past however many months.
-Hopefully, the point is clear by now.
-
-Thanks.
-
--- 
-tejun
+> As I mentioned in direct reply to your patch, there was discussions
+> about this back in February, but they seem to have stalled.
+> 
+> -- 
+> RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+> FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
