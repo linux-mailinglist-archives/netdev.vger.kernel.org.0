@@ -2,121 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 60B54376CDF
-	for <lists+netdev@lfdr.de>; Sat,  8 May 2021 00:31:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C1017376CE3
+	for <lists+netdev@lfdr.de>; Sat,  8 May 2021 00:36:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229839AbhEGWcL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 7 May 2021 18:32:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50114 "EHLO
+        id S229791AbhEGWhq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 7 May 2021 18:37:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51326 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229470AbhEGWcJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 7 May 2021 18:32:09 -0400
-Received: from mail-ot1-x32d.google.com (mail-ot1-x32d.google.com [IPv6:2607:f8b0:4864:20::32d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4BB5DC061574;
-        Fri,  7 May 2021 15:31:08 -0700 (PDT)
-Received: by mail-ot1-x32d.google.com with SMTP id i23-20020a9d68d70000b02902dc19ed4c15so5234086oto.0;
-        Fri, 07 May 2021 15:31:08 -0700 (PDT)
+        with ESMTP id S229470AbhEGWhp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 7 May 2021 18:37:45 -0400
+Received: from mail-ua1-x931.google.com (mail-ua1-x931.google.com [IPv6:2607:f8b0:4864:20::931])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B10BC061574;
+        Fri,  7 May 2021 15:36:45 -0700 (PDT)
+Received: by mail-ua1-x931.google.com with SMTP id x9so3322184uao.3;
+        Fri, 07 May 2021 15:36:45 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=I0YWXNTKMAQEd6z039aM9XkewcEru+auENvSRDSVALM=;
-        b=ZLVjAoadVZr1dEm4/yvhnrf8/J/nef7G15JbUbGrTvaphSPPg1NYoxyWbrvVrYSS1h
-         zIa96XTY8P0hpQ+yNemDEgMJuSG/c4WCmiNe6Nc+iCnLydkMAsdGrWvIm/17ma5Z4yM/
-         YzsvyYwW+WiotmISk+eiR/i8Cd7aUBrZpHgxnpBYVJ84BXnaaMaWQ2eKqxevUizYrrdW
-         YbtS/h3evHXgpLsmcR18uUbQaKsFRYpehUV3Ng/5C9YykCWFXuYzVQL41A0Sr+comc9P
-         aI9Yzg1U+9hzWSAs+VHaET9OhHIE/EcNaIBsMQFPLcf6+DcdHyLoOGNPJ3nmswEFT8wv
-         svyQ==
+        bh=b7SX7qLCM1WLkyOXKXr7x2SnRM68jsAlaH9i3EjxTDc=;
+        b=PfdS5NDIy+rUTOaYBNbyqSuOAALBBPWIDfjQhcZ3p6xEqWrFtZerDWhiWcjfOmGF4Q
+         a04JdapesIUE+i9QusAv3VxUCbRlS/LGrPa/HmdWSO0DTGUXMf+WuhqXDX/aMIgqDFCu
+         wTVDLNSBM25FTa0aV1N3yF+TuuUzcfCJNSoT9cmFyB5PIySIzWdQp/XwrFkWhXqOcYt/
+         fxo7Kvu57PP2Ht74jd2nQ5Xvsn41i3PdKxUPEH1hjOkA7ZRVwVW/3vOIvsqEMxyfAtq1
+         nhCYydI5u6iio/kQ/NbNSgRjJZxGf5Gpybdo1cuiEHKSddaPJJ9EbZFR/IBnNPJ8m84B
+         nEcQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=I0YWXNTKMAQEd6z039aM9XkewcEru+auENvSRDSVALM=;
-        b=Vfinu1tiKSfbT2HgkuLUh/RNaRjLZOTXwYIq9dUy+oHugPYJ/nn4t7XtwX5n6cZ0VP
-         AtT/ErTwnq+bWVZw+IAm1x2MLe3AJttM+jqk3R+Xzd5ITsR3SU9caFF1a4wfE7dVbRri
-         /Mn1vdPM0tSie4yW97HpK0dsCBxPrI2cBTnU+/ATQWc+ZVM9fuJC2PLap2hXXtKVeCLt
-         7ybj5YOpsDR2SITck9vpG6HdH9fUg1zgiaq/Ea7FbH2AcWjpFSQL3cWM48AsKi9ODrQn
-         iRCrLKR8AsY7dEaQuNQfr4/0w1PIpVnq/c7nyLj0BXp9J27G4buKDJC1eCDLrgaWBECi
-         gbcw==
-X-Gm-Message-State: AOAM531rHP/CKo+Zq5PKlXzvqN3YZkijNA8/eGWxA+N49gOfcoKS1mx+
-        TQ6oTARKtljW7QHcX3T06zfwi162wPk5YDqI6lEmUvvX
-X-Google-Smtp-Source: ABdhPJz6COeoWlO2jYoVGMFtMym8VH6Ykqhm4Rnoo8nk0d6rsnG/F5mHf4daWpwa7y0jBo0WQH9c2O2bb827AYiZUvk=
-X-Received: by 2002:a05:6830:1f12:: with SMTP id u18mr10532939otg.132.1620426667759;
- Fri, 07 May 2021 15:31:07 -0700 (PDT)
+        bh=b7SX7qLCM1WLkyOXKXr7x2SnRM68jsAlaH9i3EjxTDc=;
+        b=Qjx3ftkC/bIPNy7TCUuTc+1zHoHsM7va2E7Eu1CdeWDiKwwAuGz+T/8V+ECpr41EIr
+         N6VAIQmVcZev/+2OLfb1iv7K9JOvZL0bycCKIHmJWW6lRh61zYZfImrBnjlPqmMSr3sd
+         1rDnXeiNX416s4wvhuxR8SOP0dPHYUdJAZgDIEjhbI/iGYHLGKjCxKmvM17cvAjg2fCx
+         YJ/SPvevxUvVi+7j+mf3y1Nn3mjMsGpDqRtGyx4+Xn5BXM3U2d3X5nq8rvQrmRlw98Cx
+         uzu3tAA3b0+hjeosxMfGpt3lnEFsKdvnfRc0HB0InBJzkuMHI5fXfJ3eI1Gg4dM60fD4
+         EHng==
+X-Gm-Message-State: AOAM533RiUYiPODQifJkHkbVukOfbsGtsE1aJaAO1gxE9o07QrDO5Od3
+        t3WzkxPArfTmHMbRFbuxAxCQhsNi+9P9jG0uoQnoalRJM8bk6g==
+X-Google-Smtp-Source: ABdhPJx+oBo9o19LC6Z3dtB4RSeSDPSsS5tIrSvFxY/Wl+yAd922f/5bf7jlOwDjkNDpICJ8uZd0tey5XVUAXGyhofA=
+X-Received: by 2002:a9f:376a:: with SMTP id a39mr12020731uae.12.1620427004379;
+ Fri, 07 May 2021 15:36:44 -0700 (PDT)
 MIME-Version: 1.0
-References: <YJUBer3wWKSAeXe7@phenom.ffwll.local> <CAOWid-dmRsZUjF3cJ8+mx5FM9ksNQ_P9xY3jqxFiFMvN29SaLw@mail.gmail.com>
- <YJVnO+TCRW83S6w4@phenom.ffwll.local> <CADnq5_Pvtj1vb0bak_gUkv9J3+vfsMZxVKTKYeUvwQCajAWoVQ@mail.gmail.com>
- <YJVqL4c6SJc8wdkK@phenom.ffwll.local> <CADnq5_PHjiHy=Su_1VKr5ycdnXN-OuSXw0X_TeNqSj+TJs2MGA@mail.gmail.com>
- <CADnq5_OjaPw5iF_82bjNPt6v-7OcRmXmXECcN+Gdg1NcucJiHA@mail.gmail.com>
- <YJVwtS9XJlogZRqv@phenom.ffwll.local> <YJWWByISHSPqF+aN@slm.duckdns.org>
- <CADnq5_Mwd-xHZQ4pt34=FPk2Gq3ij1FNHWsEz1LdS7_Dyo00iQ@mail.gmail.com> <YJWqIVnX9giaKMTG@slm.duckdns.org>
-In-Reply-To: <YJWqIVnX9giaKMTG@slm.duckdns.org>
-From:   Alex Deucher <alexdeucher@gmail.com>
-Date:   Fri, 7 May 2021 18:30:56 -0400
-Message-ID: <CADnq5_PudV4ufQW=DqrDow_vvMQDCJVxjqZeXeTvM=6Xp+a_RQ@mail.gmail.com>
-Subject: Re: [RFC] Add BPF_PROG_TYPE_CGROUP_IOCTL
-To:     Tejun Heo <tj@kernel.org>
-Cc:     Daniel Vetter <daniel@ffwll.ch>, Kenny Ho <y2kenny@gmail.com>,
-        Song Liu <songliubraving@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>,
-        DRI Development <dri-devel@lists.freedesktop.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Kenny Ho <Kenny.Ho@amd.com>,
-        "open list:CONTROL GROUP (CGROUP)" <cgroups@vger.kernel.org>,
-        Brian Welty <brian.welty@intel.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        amd-gfx list <amd-gfx@lists.freedesktop.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Linux-Fsdevel <linux-fsdevel@vger.kernel.org>,
-        Alexander Viro <viro@zeniv.linux.org.uk>,
-        Network Development <netdev@vger.kernel.org>,
-        KP Singh <kpsingh@chromium.org>, Yonghong Song <yhs@fb.com>,
-        bpf <bpf@vger.kernel.org>, Dave Airlie <airlied@gmail.com>,
-        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        Alex Deucher <alexander.deucher@amd.com>
+References: <20210407080118.1916040-1-mkl@pengutronix.de> <20210407080118.1916040-7-mkl@pengutronix.de>
+ <CAPgEAj6N9d=s1a-P_P0mBe1aV2tQBQ4m6shvbPcPvX7W1NNzJw@mail.gmail.com>
+ <a46b95e3-4238-a930-6de3-360f86beaf52@pengutronix.de> <20210507072521.3y652xz2kmibjo7d@pengutronix.de>
+In-Reply-To: <20210507072521.3y652xz2kmibjo7d@pengutronix.de>
+From:   Drew Fustini <pdp7pdp7@gmail.com>
+Date:   Fri, 7 May 2021 15:36:32 -0700
+Message-ID: <CAEf4M_Dg5u=b+fYwXDUMRGSXeXHuo-bXZmzoAs2bW0kFncMSQg@mail.gmail.com>
+Subject: Re: [net-next 6/6] can: mcp251xfd: mcp251xfd_regmap_crc_read(): work
+ around broken CRC on TBC register
+To:     Marc Kleine-Budde <mkl@pengutronix.de>
+Cc:     Drew Fustini <drew@beagleboard.org>, netdev@vger.kernel.org,
+        "linux-can@vger.kernel.org" <linux-can@vger.kernel.org>,
+        Will C <will@macchina.cc>, menschel.p@posteo.de
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, May 7, 2021 at 4:59 PM Tejun Heo <tj@kernel.org> wrote:
+On Fri, May 7, 2021 at 12:56 AM Marc Kleine-Budde <mkl@pengutronix.de> wrote:
 >
-> Hello,
+> On 22.04.2021 09:18:54, Marc Kleine-Budde wrote:
+> > On 4/21/21 9:58 PM, Drew Fustini wrote:
+> > > I am encountering similar error with the 5.10 raspberrypi kernel on
+> > > RPi 4 with MCP2518FD:
+> > >
+> > >   mcp251xfd spi0.0 can0: CRC read error at address 0x0010 (length=4,
+> > > data=00 ad 58 67, CRC=0xbbfd) retrying
+> >
+> > What's the situation you see these errors?
+> >
+> > I'm not particular happy with that patch, as it only works around that one
+> > particular bit flip issue. If you really hammer the register, the driver will
+> > still notice CRC errors that can be explained by other bits flipping. Consider
+> > this as the first order approximation of a higher order problem :) - the root
+> > cause is still unknown.
+> >
+> > > Would it be possible for you to pull these patches into a v5.10 branch
+> > > in your linux-rpi repo [1]?
+> >
+> > Here you are:
+> >
+> > https://github.com/marckleinebudde/linux-rpi/tree/v5.10-rpi/backport-performance-improvements
+> >
+> > I've included the UINC performance enhancements, too. The branch is compiled
+> > tested only, though. I'll send a pull request to the rpi kernel after I've
+> > testing feedback from you.
 >
-> On Fri, May 07, 2021 at 03:55:39PM -0400, Alex Deucher wrote:
-> > The problem is temporal partitioning on GPUs is much harder to enforce
-> > unless you have a special case like SR-IOV.  Spatial partitioning, on
-> > AMD GPUs at least, is widely available and easily enforced.  What is
-> > the point of implementing temporal style cgroups if no one can enforce
-> > it effectively?
->
-> So, if generic fine-grained partitioning can't be implemented, the right
-> thing to do is stopping pushing for full-blown cgroup interface for it. The
-> hardware simply isn't capable of being managed in a way which allows generic
-> fine-grained hierarchical scheduling and there's no point in bloating the
-> interface with half baked hardware dependent features.
->
-> This isn't to say that there's no way to support them, but what have been
-> being proposed is way too generic and ambitious in terms of interface while
-> being poorly developed on the internal abstraction and mechanism front. If
-> the hardware can't do generic, either implement the barest minimum interface
-> (e.g. be a part of misc controller) or go driver-specific - the feature is
-> hardware specific anyway. I've repeated this multiple times in these
-> discussions now but it'd be really helpful to try to minimize the interace
-> while concentrating more on internal abstractions and actual control
-> mechanisms.
+> Drew, Patrick, have you tested this branch? If so I'll send a pull
+> request to the raspi kernel.
 
-Maybe we are speaking past each other.  I'm not following.  We got
-here because a device specific cgroup didn't make sense.  With my
-Linux user hat on, that makes sense.  I don't want to write code to a
-bunch of device specific interfaces if I can avoid it.  But as for
-temporal vs spatial partitioning of the GPU, the argument seems to be
-a sort of hand-wavy one that both spatial and temporal partitioning
-make sense on CPUs, but only temporal partitioning makes sense on
-GPUs.  I'm trying to understand that assertion.  There are some GPUs
-that can more easily be temporally partitioned and some that can be
-more easily spatially partitioned.  It doesn't seem any different than
-CPUs.
+Thank you for following up.
 
-Alex
+I need to build it and send it to the friend who was testing to check
+if the CRC errors go away.  He is testing CANFD with a 2021 Ford F150
+truck.  I will follow up here once I know the results.
+
+-Drew
