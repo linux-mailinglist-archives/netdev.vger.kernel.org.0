@@ -2,103 +2,316 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0C90A375EAF
-	for <lists+netdev@lfdr.de>; Fri,  7 May 2021 04:06:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 248C1375EBD
+	for <lists+netdev@lfdr.de>; Fri,  7 May 2021 04:12:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233612AbhEGCHp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 6 May 2021 22:07:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33266 "EHLO
+        id S234350AbhEGCNH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 6 May 2021 22:13:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34462 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231288AbhEGCHp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 6 May 2021 22:07:45 -0400
-Received: from mail-lf1-x132.google.com (mail-lf1-x132.google.com [IPv6:2a00:1450:4864:20::132])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 67330C061574;
-        Thu,  6 May 2021 19:06:45 -0700 (PDT)
-Received: by mail-lf1-x132.google.com with SMTP id c3so10606096lfs.7;
-        Thu, 06 May 2021 19:06:45 -0700 (PDT)
+        with ESMTP id S230019AbhEGCNG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 6 May 2021 22:13:06 -0400
+Received: from mail-pf1-x441.google.com (mail-pf1-x441.google.com [IPv6:2607:f8b0:4864:20::441])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 81038C061574;
+        Thu,  6 May 2021 19:12:07 -0700 (PDT)
+Received: by mail-pf1-x441.google.com with SMTP id i190so6495642pfc.12;
+        Thu, 06 May 2021 19:12:07 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=RusZqf2ICrM5fo1RSYd7Qden8l8w86x5qFZgmckN64E=;
-        b=D3bvz8i81tQkrtuQ+d1bkqIKoTdXAZWYYo6Jfm6wspflRIADJqkHwK3Tng54nv8L8j
-         kIUQ4Gd1GX0Mm3MGVRY/Cv0CqOQ2b/SwKrjuqKQ2ZLb42V5VpGDH8k9zdxW5F8jvJyfa
-         oLTIlByZ21h77IN3GiYOi8DRoH5svGBcNiKp/hCtXMH1J7nhMihzdzDioSOcRJ0RARol
-         OVt144Jx1rzUTkCU0vW3daSLf0owrtC0yAdtvCT57MQoOyn7OYD0UppOnItgNU2aQ3lA
-         twFeOWFtx02nENFd16Y5AUuwOe/mWTYJiHeGA8pGRIoA8ogpgcLuy5gafsmAh3Y1WSVg
-         /i3g==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=woV0wfis6Vgu/oe2Wn7/IaCbTJSmSO5eOeZoubzs3Z0=;
+        b=sAuu+8O4+6LTbW60qp+nv5TMbRD1Qd8N/3wL4UVKl4Vdkf03y1xAtcdVDp7sKSreQn
+         Ds+V+hOKLAjazSfS+/JksfS7idhnxTfRBn/D+EOw5jmqqbqGKXqkxBN/++zFisY593yy
+         Udm3Ed8TJDtSMiU5zNTYPeI6uzcKYF9hmceSq4z7YpfwyYst6hijBwAHt6NAhMJLUJyL
+         xIHxGDrieVb0u/vxF3TEhoyHEdxZL9nGdQCSNPI/OUrIgg9wQsf1G4cfzxhS7/+rQmtz
+         1GP9K1PMn8BHHlXsXKBwc/DGmWOWGx2TrQgxEaM0/w4MEsLI86rINm45BlrJ6MNDZbxv
+         DJcg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=RusZqf2ICrM5fo1RSYd7Qden8l8w86x5qFZgmckN64E=;
-        b=dzuxIb/VclAj0yuogmf83ZBHjsGXgzGOAb+4ttOOxilWONS43VClxKPlgYsfkFF4u5
-         2k/Yu3C2OHTXpIbSRL0NbPiM6/TIB6teAXptwnX/A8a4nHCnKs4fcTAzotN3wNKZCrLE
-         8aUXNhEITHqlpU/dCNAhzO8NQ+pbyDARoePv7bF4fWaElOBEkXUBQHJx6YNSnqNT3StM
-         UepwSojD7kTtujo8O8Wpcc7nDmFR9LqB5GpMpAMf7aqiPl/P9ydH/TeUOhXRt4oxeCDq
-         Wb8tR2aCGLb/mPI1PBRtb67qXvduxNg65AoBuGRenGLjXTenPEc4QBtz8D91M65H4Acz
-         1TRw==
-X-Gm-Message-State: AOAM532XhTld0J+XddjiBblcuDXrtcRo36oLpmTsO/aFgzmROe1slAJq
-        ZfheZ+YJVDtHfYxUr+U+ZMlfcRx7lLRh1XFfvk4=
-X-Google-Smtp-Source: ABdhPJy6fE0F0maDDYRJg2QRG950fLRhaA0QiW7C6vG6nsHx3tC0UfW9AmOOCNLGEB8W9gmuKKolcqYX/UZkgFF0HoM=
-X-Received: by 2002:a05:6512:c04:: with SMTP id z4mr4820989lfu.167.1620353203882;
- Thu, 06 May 2021 19:06:43 -0700 (PDT)
-MIME-Version: 1.0
-References: <CAOWid-d=a1Q3R92s7GrzxWhXx7_dc8NQvQg7i7RYTVv3+jHxkQ@mail.gmail.com>
- <20201103053244.khibmr66p7lhv7ge@ast-mbp.dhcp.thefacebook.com>
- <CAOWid-eQSPru0nm8+Xo3r6C0pJGq+5r8mzM8BL2dgNn2c9mt2Q@mail.gmail.com>
- <CAADnVQKuoZDB-Xga5STHdGSxvSP=B6jQ40kLdpL1u+J98bv65A@mail.gmail.com>
- <CAOWid-czZphRz6Y-H3OcObKCH=bLLC3=bOZaSB-6YBE56+Qzrg@mail.gmail.com>
- <20201103210418.q7hddyl7rvdplike@ast-mbp.dhcp.thefacebook.com>
- <CAOWid-djQ_NRfCbOTnZQ-A8Pr7jMP7KuZEJDSsvzWkdw7qc=yA@mail.gmail.com>
- <20201103232805.6uq4zg3gdvw2iiki@ast-mbp.dhcp.thefacebook.com>
- <YBgU9Vu0BGV8kCxD@phenom.ffwll.local> <CAOWid-eXMqcNpjFxbcuUDU7Y-CCYJRNT_9mzqFYm1jeCPdADGQ@mail.gmail.com>
- <YBqEbHyIjUjgk+es@phenom.ffwll.local> <CAOWid-c4Nk717xUah19B=z=2DtztbtU=_4=fQdfhqpfNJYN2gw@mail.gmail.com>
- <CAKMK7uFEhyJChERFQ_DYFU4UCA2Ox4wTkds3+GeyURH5xNMTCA@mail.gmail.com>
-In-Reply-To: <CAKMK7uFEhyJChERFQ_DYFU4UCA2Ox4wTkds3+GeyURH5xNMTCA@mail.gmail.com>
-From:   Kenny Ho <y2kenny@gmail.com>
-Date:   Thu, 6 May 2021 22:06:32 -0400
-Message-ID: <CAOWid-fL0=OM2XiOH+NFgn_e2L4Yx8sXA-+HicUb9bzhP0t8Bw@mail.gmail.com>
-Subject: Re: [RFC] Add BPF_PROG_TYPE_CGROUP_IOCTL
-To:     Daniel Vetter <daniel@ffwll.ch>
-Cc:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        Dave Airlie <airlied@gmail.com>, Kenny Ho <Kenny.Ho@amd.com>,
-        Alexander Viro <viro@zeniv.linux.org.uk>,
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=woV0wfis6Vgu/oe2Wn7/IaCbTJSmSO5eOeZoubzs3Z0=;
+        b=Nw1fkSSPd0V/RRTzxLAkdXVJhCpbWABN1wikvMlBPNEWnJE32OOt16O3ZM9Xq5hUrt
+         3Xi0D/V7+q59Ee4n446rpEGanaWLL9deBKbF4GATPQ0JhMC8GoEIHDjALwFpZK24uP39
+         DAlRT+1Ji3zsUDNrRNwwDQrZNU+yCTqrw+3i6BBKsy0G0M0bMY2UlBZd2PFtnj6Pyxnl
+         o0n+QoKxKQZX/ZHkPSmDWTXsYr6JQQLHyaUvclsjQGXsg2otE8OH42O/a5pFAXh+DJ7v
+         JZ155RL+SOkmBh/IwakV6UGnOcnZemC9QM3W41gEuD9jqfAOgI+srZEGt6fszDF6dobY
+         ZHdA==
+X-Gm-Message-State: AOAM531UQinYrilrgYxIgCMGQCF2WlVGENoy7mAox/WokaPP90K3fypo
+        XqpzyO4bPcpp5kRXiPPeJZw=
+X-Google-Smtp-Source: ABdhPJxbGIpJcDOePaM5Gfd1kkCmWXyafldXjALuO3QnZ/q2rVXtIncIvo8kCW5sylrwDKP7EZ2yHQ==
+X-Received: by 2002:a63:490:: with SMTP id 138mr7223630pge.99.1620353526869;
+        Thu, 06 May 2021 19:12:06 -0700 (PDT)
+Received: from localhost ([2409:4063:4307:f74c:aad7:c605:3fd2:aff3])
+        by smtp.gmail.com with ESMTPSA id o127sm3389359pfd.147.2021.05.06.19.12.05
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 06 May 2021 19:12:06 -0700 (PDT)
+Date:   Fri, 7 May 2021 07:41:55 +0530
+From:   Kumar Kartikeya Dwivedi <memxor@gmail.com>
+To:     Daniel Borkmann <daniel@iogearbox.net>
+Cc:     bpf@vger.kernel.org,
+        Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
         Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
         Martin KaFai Lau <kafai@fb.com>,
         Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>,
         John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>, bpf <bpf@vger.kernel.org>,
-        Network Development <netdev@vger.kernel.org>,
-        Linux-Fsdevel <linux-fsdevel@vger.kernel.org>,
-        "open list:CONTROL GROUP (CGROUP)" <cgroups@vger.kernel.org>,
-        Alex Deucher <alexander.deucher@amd.com>,
-        amd-gfx list <amd-gfx@lists.freedesktop.org>,
-        DRI Development <dri-devel@lists.freedesktop.org>,
-        Brian Welty <brian.welty@intel.com>
-Content-Type: text/plain; charset="UTF-8"
+        KP Singh <kpsingh@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        Shaun Crampton <shaun@tigera.io>, netdev@vger.kernel.org
+Subject: Re: [PATCH bpf-next v6 2/3] libbpf: add low level TC-BPF API
+Message-ID: <20210507021155.ma2ogd25so5rgobg@apollo>
+References: <20210504005023.1240974-1-memxor@gmail.com>
+ <20210504005023.1240974-3-memxor@gmail.com>
+ <eb6aada2-0de8-3adf-4b69-898a1c31c4e6@iogearbox.net>
+ <20210506023753.7hkzo3xxrqighcm2@apollo>
+ <70213fce-858e-5384-1614-919c4eced8ba@iogearbox.net>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <70213fce-858e-5384-1614-919c4eced8ba@iogearbox.net>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Sorry for the late reply (I have been working on other stuff.)
-
-On Fri, Feb 5, 2021 at 8:49 AM Daniel Vetter <daniel@ffwll.ch> wrote:
+On Fri, May 07, 2021 at 03:27:10AM IST, Daniel Borkmann wrote:
+> On 5/6/21 4:37 AM, Kumar Kartikeya Dwivedi wrote:
+> > On Thu, May 06, 2021 at 03:12:01AM IST, Daniel Borkmann wrote:
+> > > On 5/4/21 2:50 AM, Kumar Kartikeya Dwivedi wrote:
+> > > > This adds functions that wrap the netlink API used for adding,
+> > > > manipulating, and removing traffic control filters.
+> > > >
+> > > > An API summary:
+> > >
+> > > Looks better, few minor comments below:
+> > >
+> > > > A bpf_tc_hook represents a location where a TC-BPF filter can be
+> > > > attached. This means that creating a hook leads to creation of the
+> > > > backing qdisc, while destruction either removes all filters attached to
+> > > > a hook, or destroys qdisc if requested explicitly (as discussed below).
+> > > >
+> > > > The TC-BPF API functions operate on this bpf_tc_hook to attach, replace,
+> > > > query, and detach tc filters.
+> > > >
+> > > > All functions return 0 on success, and a negative error code on failure.
+> > > >
+> > > > bpf_tc_hook_create - Create a hook
+> > > > Parameters:
+> > > > 	@hook - Cannot be NULL, ifindex > 0, attach_point must be set to
+> > > > 		proper enum constant. Note that parent must be unset when
+> > > > 		attach_point is one of BPF_TC_INGRESS or BPF_TC_EGRESS. Note
+> > > > 		that as an exception BPF_TC_INGRESS|BPF_TC_EGRESS is also a
+> > > > 		valid value for attach_point.
+> > > >
+> > > > 		Returns -EOPNOTSUPP when hook has attach_point as BPF_TC_CUSTOM.
+> > > >
+> > > > 		hook's flags member can be BPF_TC_F_REPLACE, which
+> > > > 		creates qdisc in non-exclusive mode (i.e. an existing
+> > > > 		qdisc will be replaced instead of this function failing
+> > > > 		with -EEXIST).
+> > >
+> > > Why supporting BPF_TC_F_REPLACE here? It's not changing any qdisc parameters
+> > > given clsact doesn't have any, no? Iow, what effect are you expecting on this
+> > > with BPF_TC_F_REPLACE & why supporting it? I'd probably just require flags to
+> > > be 0 here, and if hook exists return sth like -EEXIST.
+> >
+> > Ok, will change.
+> >
+> > > > bpf_tc_hook_destroy - Destroy the hook
+> > > > Parameters:
+> > > >           @hook - Cannot be NULL. The behaviour depends on value of
+> > > > 		attach_point.
+> > > >
+> > > > 		If BPF_TC_INGRESS, all filters attached to the ingress
+> > > > 		hook will be detached.
+> > > > 		If BPF_TC_EGRESS, all filters attached to the egress hook
+> > > > 		will be detached.
+> > > > 		If BPF_TC_INGRESS|BPF_TC_EGRESS, the clsact qdisc will be
+> > > > 		deleted, also detaching all filters.
+> > > >
+> > > > 		As before, parent must be unset for these attach_points,
+> > > > 		and set for BPF_TC_CUSTOM. flags must also be unset.
+> > > >
+> > > > 		It is advised that if the qdisc is operated on by many programs,
+> > > > 		then the program at least check that there are no other existing
+> > > > 		filters before deleting the clsact qdisc. An example is shown
+> > > > 		below:
+> > > >
+> > > > 		DECLARE_LIBBPF_OPTS(bpf_tc_hook, .ifindex = if_nametoindex("lo"),
+> > > > 				    .attach_point = BPF_TC_INGRESS);
+> > > > 		/* set opts as NULL, as we're not really interested in
+> > > > 		 * getting any info for a particular filter, but just
+> > > > 	 	 * detecting its presence.
+> > > > 		 */
+> > > > 		r = bpf_tc_query(&hook, NULL);
+> > > > 		if (r == -ENOENT) {
+> > > > 			/* no filters */
+> > > > 			hook.attach_point = BPF_TC_INGRESS|BPF_TC_EGREESS;
+> > > > 			return bpf_tc_hook_destroy(&hook);
+> > > > 		} else {
+> > > > 			/* failed or r == 0, the latter means filters do exist */
+> > > > 			return r;
+> > > > 		}
+> > > >
+> > > > 		Note that there is a small race between checking for no
+> > > > 		filters and deleting the qdisc. This is currently unavoidable.
+> > > >
+> > > > 		Returns -EOPNOTSUPP when hook has attach_point as BPF_TC_CUSTOM.
+> > > >
+> > > > bpf_tc_attach - Attach a filter to a hook
+> > > > Parameters:
+> > > > 	@hook - Cannot be NULL. Represents the hook the filter will be
+> > > > 		attached to. Requirements for ifindex and attach_point are
+> > > > 		same as described in bpf_tc_hook_create, but BPF_TC_CUSTOM
+> > > > 		is also supported.  In that case, parent must be set to the
+> > > > 		handle where the filter will be attached (using TC_H_MAKE).
+> > > > 		flags member must be unset.
+> > > >
+> > > > 		E.g. To set parent to 1:16 like in tc command line,
+> > > > 		     the equivalent would be TC_H_MAKE(1 << 16, 16)
+> > >
+> > > Small nit: I wonder whether from libbpf side we should just support a more
+> > > user friendly TC_H_MAKE, so you'd have: BPF_TC_CUSTOM + BPF_TC_PARENT(1, 16).
+> >
+> > Something like this was there in v1. I'll add this macro again (I guess the most surprising part of
+> > TC_H_MAKE is that it won't shift the major number).
 >
-> So I agree that on one side CU mask can be used for low-level quality
-> of service guarantees (like the CLOS cache stuff on intel cpus as an
-> example), and that's going to be rather hw specific no matter what.
+> Agree, weird one. :)
 >
-> But my understanding of AMD's plans here is that CU mask is the only
-> thing you'll have to partition gpu usage in a multi-tenant environment
-> - whether that's cloud or also whether that's containing apps to make
-> sure the compositor can still draw the desktop (except for fullscreen
-> ofc) doesn't really matter I think.
-This is not correct.  Even in the original cgroup proposal, it
-supports both mask and count as a way to define unit(s) of sub-device.
-For AMD, we already have SRIOV that supports GPU partitioning in a
-time-sliced-of-a-whole-GPU fashion.
+> [...]
+> > > > bpf_tc_detach
+> > > > Parameters:
+> > > > 	@hook: Cannot be NULL. Represents the hook the filter will be
+> > > > 		detached from. Requirements are same as described above
+> > > > 		in bpf_tc_attach.
+> > > >
+> > > > 	@opts:	Cannot be NULL.
+> > > >
+> > > > 		The following opts must be set:
+> > > > 			handle
+> > > > 			priority
+> > > > 		The following opts must be unset:
+> > > > 			prog_fd
+> > > > 			prog_id
+> > > > 			flags
+> > > >
+> > > > bpf_tc_query
+> > > > Parameters:
+> > > > 	@hook: Cannot be NULL. Represents the hook where the filter
+> > > > 	       lookup will be performed. Requires are same as described
+> > > > 	       above in bpf_tc_attach.
+> > > >
+> > > > 	@opts: Can be NULL.
+> > >
+> > > Shouldn't it be: Cannot be NULL?
+> >
+> > This allows you to check the existence of a filter. If set to NULL we skip writing anything to opts,
+>
+> You mean in this case s/filter/hook/, right?
+>
 
-Kenny
+Hm? I do mean filter. Since there is nothing to fill, we just cut short reading any more and return
+early (but set info->processed) indicating there is (atleast) a filter attached.
+
+It also allows you to implement the if (zero_filters()) del_qdisc(); logic on your own.
+
+> > but we still return -ENOENT or 0 depending on whether atleast one filter exists (based on the
+> > default attributes that we choose). This is used in multiple places in the test, to determine
+> > whether no filters exists.
+>
+> In other words, it's same as bpf_tc_hook_create() which would return -EEXIST just that
+> we do /not/ create the hook if it does not exist, right?
+>
+
+It really has nothing to do with bpf_tc_hook, that is only for obtaining ifindex/parent. With opts
+as NULL you can just determine if there is any filter that is attached to the hook or not. In case
+you do pass in opts but leave everything unset, we then return the first match.
+
+> > > > 	       The following opts are optional:
+> > > > 			handle
+> > > > 			priority
+> > > > 			prog_fd
+> > > > 			prog_id
+> > >
+> > > What is the use case to set prog_fd here?
+> >
+> > It allows you to search with the prog_id of the program represented by fd. It's just a convenience
+> > thing, we end up doing a call to get the prog_id for you, and since the parameter is already there,
+> > it seemed ok to support this.
+>
+> I would drop that part and have prog_fd forced to 0, given libbpf already has other means to
+> retrieve it from fd, and if non-convenient, then lets add a simple/generic libbpf API.
+>
+
+Ok, will drop.
+
+> > > > 	       The following opts must be unset:
+> > > > 			flags
+> > > >
+> > > > 	       However, only one of prog_fd and prog_id must be
+> > > > 	       set. Setting both leads to an error. Setting none is
+> > > > 	       allowed.
+> > > >
+> > > > 	       The following fields will be filled by bpf_tc_query on a
+> > > > 	       successful lookup if they are unset:
+> > > > 			handle
+> > > > 			priority
+> > > > 			prog_id
+> > > >
+> > > > 	       Based on the specified optional parameters, the matching
+> > > > 	       data for the first matching filter is filled in and 0 is
+> > > > 	       returned. When setting prog_fd, the prog_id will be
+> > > > 	       matched against prog_id of the loaded SCHED_CLS prog
+> > > > 	       represented by prog_fd.
+> > > >
+> > > > 	       To uniquely identify a filter, e.g. to detect its presence,
+> > > > 	       it is recommended to set both handle and priority fields.
+> > >
+> > > What if prog_id is not unique, but part of multiple instances? Do we need
+> > > to support this case?
+> >
+> > We return the first filter that matches on the prog_id. I think it is worthwhile to support this, as
+> > long as the kernel's sequence of returning filters is stable (which it is), we keep returning the
+> > same filter's handle/priority, so you can essentially pop filters attached to a hook one by one by
+> > passing in unset opts and getting its details (or setting one of the parameters and making the
+> > lookup domain smaller).
+> >
+> > In simple words, setting one of the parameters that will be filled leads to only returning an entry
+> > that matches them. This is similar to what tc filter show's dump allows you to do.
+>
+> I think this is rather a bit weird/hacky/unintuitive. If we need such API, then lets add a
+> proper one which returns all handle/priority combinations that match for a given prog_id
+> for the provided hook, but I don't think this needs to be in the initial set; could be done
+> as follow-up. (*)
+>
+
+Initially when adding this me and Toke did discuss the possibility of a query API that returns all
+matches instead of the first one, but there were a few questions around how this would be returned.
+
+One of the ways would be to require the caller to provide a buffer, and then provide some way to
+iterate over this. The latter part is easy, but it is hard to predict how big the buffer should be
+from the calling end. If it is smaller than needed, we will have to leave out entries and indicate
+that in some way, and we also cannot return them in a subsequent call as that would break atomicity
+(and we would have to know where to seek forward to in the netlink reply the next time).
+
+The other way is making bpf_tc_query return an allocated buffer. This is better, as we can keep
+doing realloc to grow it as needed, but again it seems like there must be a cap on the maximum size
+to avoid unbounded growth (as there can be potentially many, many matching filters, especially on
+use of NLM_F_DUMP).
+
+A completely different idea would be to take a callback pointer from the user and invoke it for each
+matching entry, allowing the user to do whatever they want with it (and have a void *userdata
+parameter which we pass in). This sounds nice and has many benefits, but is potentially slower as
+far as iteration is concerned (which might be a valid concern depending on how this interface is
+used in the future).
+
+It would be nice to have some more input on how this should be done before I get to writing the
+code.
+
+> [...]
+
+--
+Kartikeya
