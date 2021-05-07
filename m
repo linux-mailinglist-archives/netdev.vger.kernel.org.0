@@ -2,248 +2,144 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0D7B6375E58
-	for <lists+netdev@lfdr.de>; Fri,  7 May 2021 03:26:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0D927375E61
+	for <lists+netdev@lfdr.de>; Fri,  7 May 2021 03:30:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233418AbhEGB1g (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 6 May 2021 21:27:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52654 "EHLO
+        id S233574AbhEGBbl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 6 May 2021 21:31:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53554 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231461AbhEGB1g (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 6 May 2021 21:27:36 -0400
-Received: from mail-qk1-x72f.google.com (mail-qk1-x72f.google.com [IPv6:2607:f8b0:4864:20::72f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F1AFC061574;
-        Thu,  6 May 2021 18:26:37 -0700 (PDT)
-Received: by mail-qk1-x72f.google.com with SMTP id i17so7012106qki.3;
-        Thu, 06 May 2021 18:26:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=RC3HZQRAM0jipTBu9NHkCJdfO2tCCcmqkUY+qLxNsoE=;
-        b=dAIVg8KG7fejcsWQh6h/GHyBJLVUw8osR1Zb6TEpHR3E8ZJkY1l66Iv2AInYk4NG4+
-         306WO/Ed+ERjeQ9VVxlQSaZg5IoXDvdkgwXhJqYKhu7t96iUQUWT71sq4GcuqlvPezXX
-         dPDy8DJcFgekA6O9wDrB5dqJQg7+1zPf3bdA8N7ntyRH+S8sUl3wLKAvJFSNc/tsQZ8E
-         JVlJa73R2tokPY1xAJNZCgmT26bOli/qUuR/bLiAagP1BnDR8Ru5CWiYmf31DU5bn7A6
-         ZmP71f5hiKeCPKWeRSeu0+0YynNZUyXeP6Fe+9j5SGS5ZpfUNyLTnU1csHIgUC/DCW6N
-         skSg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=RC3HZQRAM0jipTBu9NHkCJdfO2tCCcmqkUY+qLxNsoE=;
-        b=rWnpKH+b8Ji5fBv64c9It9h0Q3/o/oztJN3nQaf/elJU8ftYLgvjNx4ydrq8XLLZx5
-         j5VH3CP+TTCV/+sr+DYHLJ2iEviEhGZ4gewIIHqjsT69ax+jh2Wc6pvOrHC8UF9wtih0
-         BZDBa9ZDUDy7SFsIJNB5RjNw+Oun7FPSHWXXF5QKAF5qEq+MyplxvKvtGge4nVfqTG1W
-         KbtDu8CYMo23mqp+Dx7GNHJVgnVVm1Kf6WrRcGaUJssilfqAen4biBLwMnxS9jdrSTVX
-         8/xGL0oM8IyovmH/9MWxigkCMQ8yZyU0iK9G9Pdzlp8N/rYU7AL0aCemCicYv3Vm7z5q
-         b/mw==
-X-Gm-Message-State: AOAM531EMcJpjhIDOyG46PpMsIafXu0VeNl7aaf+/EyYf5MUiUt16zhd
-        FLLqvsTLQ4l9MtIVNBYGy+CNgtN3ceudbMJnZl0=
-X-Google-Smtp-Source: ABdhPJxSXPwXHxYaiJ1qSY2uuVYIkfteba2pzaF87r3zxueZTC6ZOLqFkB4NCg0WGfvDkgqheztMDxNFrtWD/n0cY6U=
-X-Received: by 2002:a37:b8b:: with SMTP id 133mr806568qkl.433.1620350796208;
- Thu, 06 May 2021 18:26:36 -0700 (PDT)
+        with ESMTP id S231461AbhEGBbk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 6 May 2021 21:31:40 -0400
+Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 004CFC061574
+        for <netdev@vger.kernel.org>; Thu,  6 May 2021 18:30:41 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=bombadil.20210309; h=Content-Transfer-Encoding:
+        Content-Type:In-Reply-To:MIME-Version:Date:Message-ID:References:Cc:To:From:
+        Subject:Sender:Reply-To:Content-ID:Content-Description;
+        bh=EnWqp8fibr89o8ihsd7/B1qugGKDIgfUNwDCiuC5UlI=; b=iI3xwAgIqdWWOnA3WWnY6tzhEQ
+        lFM7GnNpOFql0ET+crEaclxqoxeewtDSq9Kjj5Hn3Sq9AxT4ZWAMRLcnL0I4wLVDxoW4FAWGTyXX4
+        RlIH3p6g4SWt92Atv/OitddbU93vxvUgbVKEu5XwAOGYWJGB1Bhra3Hzt7xDohciDasK+xj3HcjJ7
+        V7U3PqOCGibBxFwWGjgsumFc8o6GfW5LghB6wXKaTAdIHCh4RFynJyTgLAgr4SFENuj1dl+3PTWz2
+        cee5zhJWeRrHsyKhCA1o9/JIrQI0Apw24hhdVPdqoVJFQYksu+1kyRug2BKbDcopI0jQO+/kRF5oW
+        GJAbTByA==;
+Received: from [2601:1c0:6280:3f0::7376]
+        by bombadil.infradead.org with esmtpsa (Exim 4.94 #2 (Red Hat Linux))
+        id 1lepKB-006VQ9-VQ; Fri, 07 May 2021 01:30:40 +0000
+Subject: Re: [PATCH v3 net] ionic: fix ptp support config breakage
+From:   Randy Dunlap <rdunlap@infradead.org>
+To:     Shannon Nelson <snelson@pensando.io>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, drivers@pensando.io,
+        Allen Hubbe <allenbh@pensando.io>
+References: <20210506041846.62502-1-snelson@pensando.io>
+ <20210506171529.0d95c9da@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <b3099289-0ae4-7a4f-6739-55f788418eb8@infradead.org>
+ <d412627d-467d-8e19-f4b6-2899afa1845d@pensando.io>
+ <4e831e77-0688-f3a9-1202-76f88230c7a8@infradead.org>
+ <4f3f61ad-08dd-0bba-bd8e-8cb16b466012@infradead.org>
+Message-ID: <583aeb80-4ac8-06ac-67f7-d717415523dd@infradead.org>
+Date:   Thu, 6 May 2021 18:30:39 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.9.1
 MIME-Version: 1.0
-References: <CGME20210429102143epcas2p4c8747c09a9de28f003c20389c050394a@epcas2p4.samsung.com>
- <1619690903-1138-1-git-send-email-dseok.yi@samsung.com> <8c2ea41a-3fc5-d560-16e5-bf706949d857@iogearbox.net>
- <02bf01d74211$0ff4aed0$2fde0c70$@samsung.com> <CA+FuTScC96R5o24c-sbY-CEV4EYOVFepFR85O4uGtCLwOjnzEw@mail.gmail.com>
- <02c801d7421f$65287a90$2f796fb0$@samsung.com> <CA+FuTScUJwqEpYim0hG27k39p_yEyzuW2A8RFKuBndctgKjWZw@mail.gmail.com>
- <001801d742db$68ab8060$3a028120$@samsung.com>
-In-Reply-To: <001801d742db$68ab8060$3a028120$@samsung.com>
-From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Date:   Thu, 6 May 2021 21:25:59 -0400
-Message-ID: <CAF=yD-KtJvyjHgGVwscoQpFX3e+DmQCYeO_HVGwyGAp3ote00A@mail.gmail.com>
-Subject: Re: [PATCH bpf] bpf: check for data_len before upgrading mss when 6
- to 4
-To:     Dongseok Yi <dseok.yi@samsung.com>
-Cc:     Daniel Borkmann <daniel@iogearbox.net>, bpf <bpf@vger.kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Network Development <netdev@vger.kernel.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <4f3f61ad-08dd-0bba-bd8e-8cb16b466012@infradead.org>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> > > head_skb's data_len is the sum of skb_gro_len for each skb of the frags.
-> > > data_len could be 8 if server sent a small size packet and it is GROed
-> > > to head_skb.
-> > >
-> > > Please let me know if I am missing something.
-> >
-> > This is my understanding of the data path. This is a forwarding path
-> > for TCP traffic.
-> >
-> > GRO is enabled and will coalesce multiple segments into a single large
-> > packet. In bad cases, the coalesced packet payload is > MSS, but < MSS
-> > + 20.
-> >
-> > Somewhere between GRO and GSO you have a BPF program that converts the
-> > IPv6 address to IPv4.
->
-> Your understanding is right. The data path is GRO -> BPF 6 to 4 ->
-> GSO.
->
-> >
-> > There is no concept of head_skb at the time of this BPF program. It is
-> > a single SKB, with an skb linear part and multiple data items in the
-> > frags (no frag_list).
->
-> Sorry for the confusion. head_skb what I mentioned was a skb linear
-> part. I'm considering a single SKB with frags too.
->
-> >
-> > When entering the GSO stack, this single skb now has a payload length
-> > < MSS. So it would just make a valid TCP packet on its own?
-> >
-> > skb_gro_len is only relevant inside the GRO stack. It internally casts
-> > the skb->cb[] to NAPI_GRO_CB. This field is a scratch area that may be
-> > reused for other purposes later by other layers of the datapath. It is
-> > not safe to read this inside bpf_skb_proto_6_to_4.
->
-> The condition what I made uses skb->data_len not skb_gro_len. Does
-> skb->data_len have a different meaning on each layer? As I know,
-> data_len indicates the amount of frags or frag_list. skb->data_len
-> should be > 20 in the sample case because the payload size of the skb
-> linear part is the same with mss.
+On 5/6/21 6:16 PM, Randy Dunlap wrote:
+> On 5/6/21 6:12 PM, Randy Dunlap wrote:
+>> On 5/6/21 5:48 PM, Shannon Nelson wrote:
+>>> On 5/6/21 5:21 PM, Randy Dunlap wrote:
+>>>> On 5/6/21 5:15 PM, Jakub Kicinski wrote:
+>>>>> On Wed,  5 May 2021 21:18:46 -0700 Shannon Nelson wrote:
+>>>>>> Driver link failed with undefined references in some
+>>>>>> kernel config variations.
+>>>>> This is really vague and the patch is not very obvious.
 
-Ah, got it.
+When IONIC=y and PTP_1588_CLOCK=m...
 
-data_len is the length of the skb minus the length in the skb linear
-section (as seen in skb_headlen).
+>>>>>>   ionic-y := ionic_main.o ionic_bus_pci.o ionic_devlink.o ionic_dev.o \
+>>>>>>          ionic_debugfs.o ionic_lif.o ionic_rx_filter.o ionic_ethtool.o \
+>>>>>> -       ionic_txrx.o ionic_stats.o ionic_fw.o
+>>>>>> -ionic-$(CONFIG_PTP_1588_CLOCK) += ionic_phc.o
+>>>>>> +       ionic_txrx.o ionic_stats.o ionic_fw.o ionic_phc.o
+>>>>> So we'd replace a build dependency..
+>>>>>
+>>>>>> diff --git a/drivers/net/ethernet/pensando/ionic/ionic_phc.c b/drivers/net/ethernet/pensando/ionic/ionic_phc.c
+>>>>>> index a87c87e86aef..30c78808c45a 100644
+>>>>>> --- a/drivers/net/ethernet/pensando/ionic/ionic_phc.c
+>>>>>> +++ b/drivers/net/ethernet/pensando/ionic/ionic_phc.c
+>>>>>> @@ -1,6 +1,8 @@
+>>>>>>   // SPDX-License-Identifier: GPL-2.0
+>>>>>>   /* Copyright(c) 2017 - 2021 Pensando Systems, Inc */
+>>>>>>   +#if IS_ENABLED(CONFIG_PTP_1588_CLOCK)
+>>>>>> +
+>>>>>>   #include <linux/netdevice.h>
+>>>>>>   #include <linux/etherdevice.h>
+>>>>>>   @@ -613,3 +615,4 @@ void ionic_lif_free_phc(struct ionic_lif *lif)
+>>>>>>       devm_kfree(lif->ionic->dev, lif->phc);
+>>>>>>       lif->phc = NULL;
+>>>>>>   }
+>>>>>> +#endif /* IS_ENABLED(CONFIG_PTP_1588_CLOCK) */
+>>>>> .. with an ifdef around an entire file? Does not feel very clean.
+>>>>>
+>>>>> The construct of using:
+>>>>>
+>>>>>     drv-$(CONFIG_PTP_1588_CLOCK) += ptp.o
+>>>>>
+>>>>> seems relatively common, why does it now work here?
+>>>>>
+>>>>> Maybe the config in question has PTP as a module and ionic built in?
+>>>>> Then you should add depends on PTP_1588_CLOCK || !PTP_1588_CLOCK.
+>>>>>
+>>>>> Maybe somehow the "ionic-y" confuses kbuild and it should be ionic-objs?
+>>>>>
+>>>>> At the very least we need a better explanation in the commit message.
+>>>>>
+>>>> I'll take a look if someone can point me to the .config file.
+>>>>
+>>>
+>>> These are the notes I got from kernel test robot:
+>>> https://lore.kernel.org/lkml/202105041020.efEaBOYC-lkp@intel.com/
+>>> https://lore.kernel.org/lkml/202105041154.GrLZmjGh-lkp@intel.com/
+>>> https://lore.kernel.org/lkml/202105041634.paURyDp0-lkp@intel.com/
+>>> https://lore.kernel.org/lkml/202105050636.UXXDl7m2-lkp@intel.com/
+>>
+>> At first glance it looks like Jakub's suggestion of
+>>>>> Maybe the config in question has PTP as a module and ionic built in?
+>>>>> Then you should add depends on PTP_1588_CLOCK || !PTP_1588_CLOCK.
+>>
+>> is what is needed, but I'm still doing build testing ATM.
+> 
+> Nope, eat my words. These build issues are not about PTP.
+> I'm still looking.
 
-So this gso skb consists of two segments, the first one entirely
-linear, the payload of the second is in skb_shinfo(skb)->frags[0].
+I have been trying to go to fast.. slow down, wait for the old computer.
 
-It is not guaranteed that gso skbs built from two individual skbs end
-up looking like that. Only protocol headers in the linear segment and
-the payload of both in frags is common.
-
-> We can modify netif_needs_gso as another option to hit
-> skb_needs_linearize in validate_xmit_skb. But I think we should compare
-> skb->gso_size and skb->data_len too to check if mss exceed a payload
-> size.
-
-The rest of the stack does not build such gso packets with payload len
-< mss, so we should not have to add workarounds in the gso hot path
-for this.
-
-Also no need to linearize this skb. I think that if the bpf program
-would just clear the gso type, the packet would be sent correctly.
-Unless I'm missing something.
-
-But I don't mean to argue that it should do that in production.
-Instead, not playing mss games would solve this and stay close to the
-original datapath if no bpf program had been present. Including
-maintaining the GSO invariant of sending out the same chain of packets
-as received (bar the IPv6 to IPv4 change).
-
-This could be achieved by adding support for the flag
-BPF_F_ADJ_ROOM_FIXED_GSO in the flags field of bpf_skb_change_proto.
-And similar to bpf_skb_net_shrink:
-
-                /* Due to header shrink, MSS can be upgraded. */
-                if (!(flags & BPF_F_ADJ_ROOM_FIXED_GSO))
-                        skb_increase_gso_size(shinfo, len_diff);
-
-The other case, from IPv4 to IPv6 is more difficult to address, as not
-reducing the MSS will result in packets exceeding MTU. That calls for
-workarounds like MSS clamping. Anyway, that is out of scope here.
+Back to Jakub's suggestion -- that works for me. (copy-paste, whitespace damaged)
 
 
+--- linux-next-20210506.orig/drivers/net/ethernet/pensando/Kconfig
++++ linux-next-20210506/drivers/net/ethernet/pensando/Kconfig
+@@ -20,6 +20,7 @@ if NET_VENDOR_PENSANDO
+ config IONIC
+        tristate "Pensando Ethernet IONIC Support"
+        depends on 64BIT && PCI
++       depends on PTP_1588_CLOCK || !PTP_1588_CLOCK
+        select NET_DEVLINK
+        select DIMLIB
+        help
 
-> >
-> >
-> > > >
-> > > > One simple solution if this packet no longer needs to be segmented
-> > > > might be to reset the gso_type completely.
-> > >
-> > > I am not sure gso_type can be cleared even when GSO is needed.
-> > >
-> > > >
-> > > > In general, I would advocate using BPF_F_ADJ_ROOM_FIXED_GSO. When
-> > > > converting from IPv6 to IPv4, fixed gso will end up building packets
-> > > > that are slightly below the MTU. That opportunity cost is negligible
-> > > > (especially with TSO). Unfortunately, I see that that flag is
-> > > > available for bpf_skb_adjust_room but not for bpf_skb_proto_6_to_4.
-> > > >
-> > > >
-> > > > > > > would increse the gso_size to 1392. tcp_gso_segment will get an error
-> > > > > > > with 1380 <= 1392.
-> > > > > > >
-> > > > > > > Check for the size of GROed payload if it is really bigger than target
-> > > > > > > mss when increase mss.
-> > > > > > >
-> > > > > > > Fixes: 6578171a7ff0 (bpf: add bpf_skb_change_proto helper)
-> > > > > > > Signed-off-by: Dongseok Yi <dseok.yi@samsung.com>
-> > > > > > > ---
-> > > > > > >   net/core/filter.c | 4 +++-
-> > > > > > >   1 file changed, 3 insertions(+), 1 deletion(-)
-> > > > > > >
-> > > > > > > diff --git a/net/core/filter.c b/net/core/filter.c
-> > > > > > > index 9323d34..3f79e3c 100644
-> > > > > > > --- a/net/core/filter.c
-> > > > > > > +++ b/net/core/filter.c
-> > > > > > > @@ -3308,7 +3308,9 @@ static int bpf_skb_proto_6_to_4(struct sk_buff *skb)
-> > > > > > >             }
-> > > > > > >
-> > > > > > >             /* Due to IPv4 header, MSS can be upgraded. */
-> > > > > > > -           skb_increase_gso_size(shinfo, len_diff);
-> > > > > > > +           if (skb->data_len > len_diff)
-> > > > > >
-> > > > > > Could you elaborate some more on what this has to do with data_len specifically
-> > > > > > here? I'm not sure I follow exactly your above commit description. Are you saying
-> > > > > > that you're hitting in tcp_gso_segment():
-> > > > > >
-> > > > > >          [...]
-> > > > > >          mss = skb_shinfo(skb)->gso_size;
-> > > > > >          if (unlikely(skb->len <= mss))
-> > > > > >                  goto out;
-> > > > > >          [...]
-> > > > >
-> > > > > Yes, right
-> > > > >
-> > > > > >
-> > > > > > Please provide more context on the bug, thanks!
-> > > > >
-> > > > > tcp_gso_segment():
-> > > > >         [...]
-> > > > >         __skb_pull(skb, thlen);
-> > > > >
-> > > > >         mss = skb_shinfo(skb)->gso_size;
-> > > > >         if (unlikely(skb->len <= mss))
-> > > > >         [...]
-> > > > >
-> > > > > skb->len will have total GROed TCP payload size after __skb_pull.
-> > > > > skb->len <= mss will not be happened in a normal GROed situation. But
-> > > > > bpf_skb_proto_6_to_4 would upgrade MSS by increasing gso_size, it can
-> > > > > hit an error condition.
-> > > > >
-> > > > > We should ensure the following condition.
-> > > > > total GROed TCP payload > the original mss + (IPv6 size - IPv4 size)
-> > > > >
-> > > > > Due to
-> > > > > total GROed TCP payload = the original mss + skb->data_len
-> > > > > IPv6 size - IPv4 size = len_diff
-> > > > >
-> > > > > Finally, we can get the condition.
-> > > > > skb->data_len > len_diff
-> > > > >
-> > > > > >
-> > > > > > > +                   skb_increase_gso_size(shinfo, len_diff);
-> > > > > > > +
-> > > > > > >             /* Header must be checked, and gso_segs recomputed. */
-> > > > > > >             shinfo->gso_type |= SKB_GSO_DODGY;
-> > > > > > >             shinfo->gso_segs = 0;
-> > > > > > >
-> > > > >
-> > > > >
-> > >
->
+If PTP_1588_CLOCK=m, the depends limits IONIC to =m (or disabled).
+If PTP_1588_CLOCK is disabled, IONIC can be any of y/m/n.
+
+
+-- 
+~Randy
+
