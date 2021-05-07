@@ -2,161 +2,200 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 348B73766FF
-	for <lists+netdev@lfdr.de>; Fri,  7 May 2021 16:22:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C4EE837671E
+	for <lists+netdev@lfdr.de>; Fri,  7 May 2021 16:40:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237622AbhEGOXe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 7 May 2021 10:23:34 -0400
-Received: from mail-eopbgr750053.outbound.protection.outlook.com ([40.107.75.53]:3985
-        "EHLO NAM02-BL2-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S237621AbhEGOX0 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 7 May 2021 10:23:26 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=OUdfzo+jffuBVa5waiwbccT3c1FtZMoDqTxc7LYZEnSxZNqb1CzWpSp3Jn3W9QGIJLPQ2Nakmc9TodDsGBbMAbB7u3TOHTwGRbzKUBs3JdgX2i3mJsPcBzRCxKqXagmUZAuTs5e7qn3ooBfJbwq8qK59ctv9LWhbmrB4ceeepkzboQW8TuKkui66TfJvFavURE6O3U57BUY7iZSaXV2JMSiLZ8Rz8g1IsQfSVJE6UvNqhOzpysXmtGUTsXozt1u4wQ66wd4TZSt9SJ5acgO6HfFaUyr17H6fJ+TosAGWo1RBoyRGhbEiyXHBIB9es+2yVMNOU64eoCFkj6MVfMUxPQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=/nYmwnLfbmSCjLbBkV991uhzibW6o6IvG4ba/z8M03Y=;
- b=cs9YGPvsEj6+m4Sv/vPuOUBpgMC3PLLAfiY15+gHirpIcmFy8EAKuJPRyuebITsHAEnRJrmlq00zuSVLqJ8aBlFfHnVOIFxEJnpcy1O20lKsl86hB0g0oI0S0SQ2Amsym9NL4w9/w5g0KSXkzXqxBWakvg0XDXfFbPbLZ5/K8qYTM8RNcvZHQeBFrWkfaw0nBjSTrWciiSMA060P0wrKvnoLPtWz37ZxbyXxGgOhhqRb+3JnVPJuhI+1co4SW4AkhvMBCOuO1fuMbUhqc1DHoAzMGvddmepHj9vqwURiLinyhKWRXplJGCVb6nXNoK82x6GMFmvgmQkfh2T8IyumHQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.112.34) smtp.rcpttodomain=foss.st.com smtp.mailfrom=nvidia.com;
- dmarc=pass (p=none sp=none pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=/nYmwnLfbmSCjLbBkV991uhzibW6o6IvG4ba/z8M03Y=;
- b=CalbQ1JpCf3SiRLLRxGuOGd5DXbLiJmICAxKRn2fbw33kd+30cZrLuh+jJm2XqrZd616mckXSPeAyu10KUhF4KvURASVcJiLotn0gpNgKJBQz08KiomMnxpScX9R0L95R7U5OVPfsrCYt5pk8FgmW/ctjQimY5WKlonXd9soKjMdkComL1haq4mp87wmF8+GR0MZwbYdOBHbWtmBUyLAww2JLPu+g+LOm0Xnmor3++KbJuppI101Nh90F5GPOW5LtS1LEB45ogbjL2LTl6gBNYv9rR5Vn0tf5dLD35ez7VApFs4TZGmo6gFeyXggsV7ubX1CqjqFBKugTXl7ERofrw==
-Received: from MW4PR04CA0172.namprd04.prod.outlook.com (2603:10b6:303:85::27)
- by BL1PR12MB5109.namprd12.prod.outlook.com (2603:10b6:208:309::12) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4108.27; Fri, 7 May
- 2021 14:22:22 +0000
-Received: from CO1NAM11FT012.eop-nam11.prod.protection.outlook.com
- (2603:10b6:303:85:cafe::d3) by MW4PR04CA0172.outlook.office365.com
- (2603:10b6:303:85::27) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4108.25 via Frontend
- Transport; Fri, 7 May 2021 14:22:22 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.112.34)
- smtp.mailfrom=nvidia.com; foss.st.com; dkim=none (message not signed)
- header.d=none;foss.st.com; dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.112.34 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.112.34; helo=mail.nvidia.com;
-Received: from mail.nvidia.com (216.228.112.34) by
- CO1NAM11FT012.mail.protection.outlook.com (10.13.175.192) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.20.4108.25 via Frontend Transport; Fri, 7 May 2021 14:22:21 +0000
-Received: from [10.26.49.8] (172.20.145.6) by HQMAIL107.nvidia.com
- (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Fri, 7 May
- 2021 14:22:19 +0000
-Subject: Re: [RFC net-next] net: stmmac: should not modify RX descriptor when
- STMMAC resume
-To:     Joakim Zhang <qiangqing.zhang@nxp.com>,
-        Jakub Kicinski <kuba@kernel.org>
-CC:     "peppe.cavallaro@st.com" <peppe.cavallaro@st.com>,
-        "alexandre.torgue@foss.st.com" <alexandre.torgue@foss.st.com>,
-        "joabreu@synopsys.com" <joabreu@synopsys.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "mcoquelin.stm32@gmail.com" <mcoquelin.stm32@gmail.com>,
-        "andrew@lunn.ch" <andrew@lunn.ch>,
-        "f.fainelli@gmail.com" <f.fainelli@gmail.com>,
-        dl-linux-imx <linux-imx@nxp.com>,
-        "treding@nvidia.com" <treding@nvidia.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-References: <20210419115921.19219-1-qiangqing.zhang@nxp.com>
- <f00e1790-5ba6-c9f0-f34f-d8a39c355cd7@nvidia.com>
- <DB8PR04MB67954D37A59B2D91C69BF6A9E6489@DB8PR04MB6795.eurprd04.prod.outlook.com>
- <cec17489-2ef9-7862-94c8-202d31507a0c@nvidia.com>
- <DB8PR04MB67953A499438FF3FF6BE531BE6469@DB8PR04MB6795.eurprd04.prod.outlook.com>
- <20210422085648.33738d1f@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <1732e825-dd8b-6f24-6ead-104467e70a6c@nvidia.com>
- <DB8PR04MB67952FC590FEE5A327DA4C95E6589@DB8PR04MB6795.eurprd04.prod.outlook.com>
-From:   Jon Hunter <jonathanh@nvidia.com>
-Message-ID: <c4e64250-35d0-dde3-661d-1ee7b9fa8596@nvidia.com>
-Date:   Fri, 7 May 2021 15:22:17 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.7.1
+        id S237679AbhEGOlk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 7 May 2021 10:41:40 -0400
+Received: from mail.kernel.org ([198.145.29.99]:54714 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S233545AbhEGOlj (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 7 May 2021 10:41:39 -0400
+Received: from gandalf.local.home (cpe-66-24-58-225.stny.res.rr.com [66.24.58.225])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 622A361157;
+        Fri,  7 May 2021 14:40:38 +0000 (UTC)
+Date:   Fri, 7 May 2021 10:40:36 -0400
+From:   Steven Rostedt <rostedt@goodmis.org>
+To:     Stefano Garzarella <sgarzare@redhat.com>
+Cc:     LKML <linux-kernel@vger.kernel.org>,
+        Stefan Hajnoczi <stefanha@redhat.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        Jason Wang <jasowang@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, kvm@vger.kernel.org,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
+        Joel Fernandes <joelaf@google.com>,
+        Linux Trace Devel <linux-trace-devel@vger.kernel.org>
+Subject: Re: [RFC][PATCH] vhost/vsock: Add vsock_list file to map cid with
+ vhost tasks
+Message-ID: <20210507104036.711b0b10@gandalf.local.home>
+In-Reply-To: <20210507141120.ot6xztl4h5zyav2c@steredhat>
+References: <20210505163855.32dad8e7@gandalf.local.home>
+        <20210507141120.ot6xztl4h5zyav2c@steredhat>
+X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-In-Reply-To: <DB8PR04MB67952FC590FEE5A327DA4C95E6589@DB8PR04MB6795.eurprd04.prod.outlook.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
-X-Originating-IP: [172.20.145.6]
-X-ClientProxiedBy: HQMAIL101.nvidia.com (172.20.187.10) To
- HQMAIL107.nvidia.com (172.20.187.13)
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 28a3d646-579f-45ca-2521-08d91163876d
-X-MS-TrafficTypeDiagnostic: BL1PR12MB5109:
-X-Microsoft-Antispam-PRVS: <BL1PR12MB51096613CE29BE7CCB2B8F66D9579@BL1PR12MB5109.namprd12.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:9508;
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: m+sVRju3zIqRb2gSDJgKLLPGH7xHzTmcxnv5Gw1ocnJVyrP8ehsTh0OIjDdR8CXiGaZaYVB41YJInysh8DMzgRjtkT5DG/fd0fRZYVmr13ejzPwtSFsSu1YoCoAORP5pJwMoM2D+4NGFJKHY24BhiEBL+s7TFnuxbH1q53IaSh2J9KBTVRqtbbF13v2purcYsesxCsITkik3bSU5COU3jrg1b+4f3BjW9yBLLGOTkP0mQN1iOJ34tfZYhcEQ9JJbBm8+kSBeG+66xvcbGZaAw/+EhP+CbUzb8hbK/184XoD1W/KEDegSiJ8IA3+JUAiWqxv1ssssdrZcXjLGyNyCIDxB8bnoDVXpNW6EfQDOQ+IjEpZGWpQAcTWyoj/nnKJqNguuRGr2cktnvs45qXMDGj2AvEAqb1QBQUjM1lnOjxNBqhyB+DkxmCl93p8kfecwflvhKzYZs0TnNrQTW0VHUGbg2n4uik00rdncop3r7p8U9pUPtNMV4NKUZWAwlp4nDF8kj905VhOElbHPzY6xtin51kwqGAlA4UkTAzBAhkdxXT/+IiD7pWUdUd4LOA+vb+N8PkRGW5h7/pWt/3PMUMT09SVKpmgBxD1XNFbchZbxhGchMDvbXFUvxotgZmuVAV9KnPxf1UU3U+nvB/BITvxlApr+EuTS+JkRrAOK02BliuCqRH5EjHqitmt2U3CA
-X-Forefront-Antispam-Report: CIP:216.228.112.34;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:schybrid03.nvidia.com;CAT:NONE;SFS:(4636009)(136003)(376002)(346002)(39860400002)(396003)(36840700001)(46966006)(7416002)(53546011)(5660300002)(36906005)(36756003)(2906002)(16576012)(110136005)(316002)(54906003)(31696002)(70206006)(8936002)(4326008)(83380400001)(356005)(70586007)(36860700001)(426003)(47076005)(31686004)(186003)(336012)(8676002)(7636003)(16526019)(478600001)(82740400003)(2616005)(26005)(82310400003)(86362001)(43740500002);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 07 May 2021 14:22:21.9398
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 28a3d646-579f-45ca-2521-08d91163876d
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.112.34];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource: CO1NAM11FT012.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL1PR12MB5109
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Joakim,
+On Fri, 7 May 2021 16:11:20 +0200
+Stefano Garzarella <sgarzare@redhat.com> wrote:
 
-On 06/05/2021 07:33, Joakim Zhang wrote:
+> Hi Steven,
 > 
->> -----Original Message-----
->> From: Jon Hunter <jonathanh@nvidia.com>
->> Sent: 2021年4月23日 21:48
->> To: Jakub Kicinski <kuba@kernel.org>; Joakim Zhang
->> <qiangqing.zhang@nxp.com>
->> Cc: peppe.cavallaro@st.com; alexandre.torgue@foss.st.com;
->> joabreu@synopsys.com; davem@davemloft.net;
->> mcoquelin.stm32@gmail.com; andrew@lunn.ch; f.fainelli@gmail.com;
->> dl-linux-imx <linux-imx@nxp.com>; treding@nvidia.com;
->> netdev@vger.kernel.org
->> Subject: Re: [RFC net-next] net: stmmac: should not modify RX descriptor when
->> STMMAC resume
->>
->>
->> On 22/04/2021 16:56, Jakub Kicinski wrote:
->>> On Thu, 22 Apr 2021 04:53:08 +0000 Joakim Zhang wrote:
->>>> Could you please help review this patch? It's really beyond my
->>>> comprehension, why this patch would affect Tegra186 Jetson TX2 board?
->>>
->>> Looks okay, please repost as non-RFC.
->>
->>
->> I still have an issue with a board not being able to resume from suspend with
->> this patch. Shouldn't we try to resolve that first?
+> On Wed, May 05, 2021 at 04:38:55PM -0400, Steven Rostedt wrote:
+> >The new trace-cmd 3.0 (which is almost ready to be released) allows for
+> >tracing between host and guests with timestamp synchronization such that
+> >the events on the host and the guest can be interleaved in the proper order
+> >that they occur. KernelShark now has a plugin that visualizes this
+> >interaction.
+> >
+> >The implementation requires that the guest has a vsock CID assigned, and on
+> >the guest a "trace-cmd agent" is running, that will listen on a port for
+> >the CID. The on the host a "trace-cmd record -A guest@cid:port -e events"
+> >can be called and the host will connect to the guest agent through the
+> >cid/port pair and have the agent enable tracing on behalf of the host and
+> >send the trace data back down to it.
+> >
+> >The problem is that there is no sure fire way to find the CID for a guest.
+> >Currently, the user must know the cid, or we have a hack that looks for the
+> >qemu process and parses the --guest-cid parameter from it. But this is
+> >prone to error and does not work on other implementation (was told that
+> >crosvm does not use qemu).  
 > 
-> Hi Jon,
+> For debug I think could be useful to link the vhost-vsock kthread to the 
+> CID, but for the user point of view, maybe is better to query the VM 
+> management layer, for example if you're using libvirt, you can easily do:
 > 
-> Any updates about this? Could I repost as non-RFC?
+> $ virsh dumpxml fedora34 | grep cid
+>      <cid auto='yes' address='3'/>
+
+We looked into going this route, but then that means trace-cmd host/guest
+tracing needs a way to handle every layer, as some people use libvirt
+(myself included), some people use straight qemu, some people us Xen, and
+some people use crosvm. We need to support all of them. Which is why I'm
+looking at doing this from the lowest common denominator, and since vsock
+is a requirement from trace-cmd to do this tracing, getting the thread
+that's related to the vsock is that lowest denominator.
+
+> 
+> >
+> >As I can not find a way to discover CIDs assigned to guests via any kernel
+> >interface, I decided to create this one. Note, I'm not attached to it. If
+> >there's a better way to do this, I would love to have it. But since I'm not
+> >an expert in the networking layer nor virtio, I decided to stick to what I
+> >know and add a debugfs interface that simply lists all the registered 
+> >CIDs
+> >and the worker task that they are associated with. The worker task at
+> >least has the PID of the task it represents.  
+> 
+> I honestly don't know if it's the best interface, like I said maybe for 
+> debugging it's fine, but if we want to expose it to the user in some 
+> way, we could support devlink/netlink to provide information about the 
+> vsock devices currently in use.
+
+Ideally, a devlink/netlink is the right approach. I just had no idea on how
+to implement that ;-)  So I went with what I know, which is debugfs files!
 
 
-Sorry no updates from my end. Again, I don't see how we can post this as
-it introduces a regression for us. I am sorry that I am not able to help
-more here, but we have done some extensive testing on the current
-mainline without your change and I don't see any issues with regard to
-suspend/resume. Hence, this does not appear to fix any pre-existing
-issues. It is possible that we are not seeing them.
 
-At this point I think that we really need someone from Synopsys to help
-us understand that exact problem that you are experiencing so that we
-can ensure we have the necessary fix in place and if this is something
-that is applicable to all devices or not.
+> >Signed-off-by: Steven Rostedt (VMware) <rostedt@goodmis.org>
+> >---
+> >diff --git a/drivers/vhost/vsock.c b/drivers/vhost/vsock.c
+> >index 5e78fb719602..4f03b25b23c1 100644
+> >--- a/drivers/vhost/vsock.c
+> >+++ b/drivers/vhost/vsock.c
+> >@@ -15,6 +15,7 @@
+> > #include <linux/virtio_vsock.h>
+> > #include <linux/vhost.h>
+> > #include <linux/hashtable.h>
+> >+#include <linux/debugfs.h>
+> >
+> > #include <net/af_vsock.h>
+> > #include "vhost.h"
+> >@@ -900,6 +901,128 @@ static struct miscdevice vhost_vsock_misc = {
+> > 	.fops = &vhost_vsock_fops,
+> > };
+> >
+> >+static struct dentry *vsock_file;
+> >+
+> >+struct vsock_file_iter {
+> >+	struct hlist_node	*node;
+> >+	int			index;
+> >+};
+> >+
+> >+
+> >+static void *vsock_next(struct seq_file *m, void *v, loff_t *pos)
+> >+{
+> >+	struct vsock_file_iter *iter = v;
+> >+	struct vhost_vsock *vsock;
+> >+
+> >+	if (pos)
+> >+		(*pos)++;
+> >+
+> >+	if (iter->index >= (int)HASH_SIZE(vhost_vsock_hash))
+> >+		return NULL;
+> >+
+> >+	if (iter->node)
+> >+		iter->node = rcu_dereference_raw(hlist_next_rcu(iter->node));
+> >+
+> >+	for (;;) {
+> >+		if (iter->node) {
+> >+			vsock = hlist_entry_safe(rcu_dereference_raw(iter->node),
+> >+						 struct vhost_vsock, hash);
+> >+			if (vsock->guest_cid)
+> >+				break;
+> >+			iter->node = rcu_dereference_raw(hlist_next_rcu(iter->node));
+> >+			continue;
+> >+		}
+> >+		iter->index++;
+> >+		if (iter->index >= HASH_SIZE(vhost_vsock_hash))
+> >+			return NULL;
+> >+
+> >+		iter->node = rcu_dereference_raw(hlist_first_rcu(&vhost_vsock_hash[iter->index]));
+> >+	}
+> >+	return iter;
+> >+}
+> >+
+> >+static void *vsock_start(struct seq_file *m, loff_t *pos)
+> >+{
+> >+	struct vsock_file_iter *iter = m->private;
+> >+	loff_t l = 0;
+> >+	void *t;
+> >+
+> >+	rcu_read_lock();  
+> 
+> Instead of keeping this rcu lock between vsock_start() and vsock_stop(), 
+> maybe it's better to make a dump here of the bindings (pid/cid), save it 
+> in an array, and iterate it in vsock_next().
 
-Jon
+The start/stop of a seq_file() is made for taking locks. I do this with all
+my code in ftrace. Yeah, there's a while loop between the two, but that's
+just to fill the buffer. It's not that long and it never goes to userspace
+between the two. You can even use this for spin locks (but I wouldn't
+recommend doing it for raw ones).
 
--- 
-nvpublic
+> 
+> >+
+> >+	iter->index = -1;
+> >+	iter->node = NULL;
+> >+	t = vsock_next(m, iter, NULL);
+> >+
+> >+	for (; iter->index < HASH_SIZE(vhost_vsock_hash) && l < *pos;
+> >+	     t = vsock_next(m, iter, &l))
+> >+		;  
+> 
+> A while() maybe was more readable...
+
+Again, I just cut and pasted from my other code.
+
+If you have a good idea on how to implement this with netlink (something
+that ss or netstat can dislpay), I think that's the best way to go.
+
+Thanks for looking at this!
+
+-- Steve
