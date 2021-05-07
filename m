@@ -2,81 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D779E376B77
-	for <lists+netdev@lfdr.de>; Fri,  7 May 2021 23:07:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id ED057376BC6
+	for <lists+netdev@lfdr.de>; Fri,  7 May 2021 23:31:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230268AbhEGVIh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 7 May 2021 17:08:37 -0400
-Received: from bosmailout07.eigbox.net ([66.96.187.7]:51615 "EHLO
-        bosmailout07.eigbox.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230093AbhEGVIg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 7 May 2021 17:08:36 -0400
-X-Greylist: delayed 1993 seconds by postgrey-1.27 at vger.kernel.org; Fri, 07 May 2021 17:08:34 EDT
-Received: from bosmailscan09.eigbox.net ([10.20.15.9])
-        by bosmailout07.eigbox.net with esmtp (Exim)
-        id 1lf7Av-0006tO-7P; Fri, 07 May 2021 16:34:17 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=godsofu4.com; s=dkim; h=Sender:Content-Transfer-Encoding:Content-Type:
-        Message-ID:Reply-To:Subject:To:From:Date:MIME-Version:Cc:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:In-Reply-To:References:List-Id:List-Help:List-Unsubscribe:
-        List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=aM9bUFGSTpfnep8zAVAJMnojqhcwpuHDFPgQnPqW4M4=; b=L/dzd5zNAEgsj4wIrKa+NtSPJw
-        eQ6m0GeIJ6FqTTz2wiDrKQSrTcort882vfn/+WrQRiS6dPQyUMnRoYzBdTC3E+FPhQC0J5kKK/D0H
-        LM0KWgEROPL9XGkkPtDbKcgO4+OMnZdyobiKxOhkfe91ky2DNAXxyoYHdAO9zpzXG+7mrT96w/C0D
-        cSd8H7hg5/xg61MAGwsjzNLbBqB/Um6CNHq79BiaCrU/VOU9jFfq+aQrz3oTlTvSP7fReohDtc0So
-        ompsD7yaXBZ9hvgSYsYha8MroiFNOSv4R+xYZEYz8YP739+DdmhMwQWEH6X2KZGYjJyQTGC+0Ty8F
-        p4i+Ml+Q==;
-Received: from [10.115.3.33] (helo=bosimpout13)
-        by bosmailscan09.eigbox.net with esmtp (Exim)
-        id 1lf7Ap-0008KG-EB; Fri, 07 May 2021 16:34:11 -0400
-Received: from boswebmail06.eigbox.net ([10.20.16.6])
-        by bosimpout13 with 
-        id 1wa22500Q07qujN01wa7Wz; Fri, 07 May 2021 16:34:11 -0400
-X-EN-SP-DIR: OUT
-X-EN-SP-SQ: 1
-Received: from [127.0.0.1] (helo=homestead)
-        by boswebmail06.eigbox.net with esmtp (Exim)
-        id 1lf79s-0005SY-TS; Fri, 07 May 2021 16:33:12 -0400
-Received: from [197.239.81.229]
- by emailmg.homestead.com
- with HTTP (HTTP/1.1 POST); Fri, 07 May 2021 16:33:12 -0400
+        id S229796AbhEGVcd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 7 May 2021 17:32:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36716 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229696AbhEGVcb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 7 May 2021 17:32:31 -0400
+Received: from phobos.denx.de (phobos.denx.de [IPv6:2a01:238:438b:c500:173d:9f52:ddab:ee01])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C82DC0613ED;
+        Fri,  7 May 2021 14:31:31 -0700 (PDT)
+Received: from tr.lan (ip-89-176-112-137.net.upcbroadband.cz [89.176.112.137])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
+        (No client certificate requested)
+        (Authenticated sender: marex@denx.de)
+        by phobos.denx.de (Postfix) with ESMTPSA id F2F4182E47;
+        Fri,  7 May 2021 23:31:23 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=denx.de;
+        s=phobos-20191101; t=1620423084;
+        bh=o4/gHmXu58eNBuIOxxGt66kzOFcAYTx++O+I5qwK17s=;
+        h=From:To:Cc:Subject:Date:From;
+        b=iBdNCaACtLdoOnLiCyqHIfxkaEt/A7E34W/t8RtkKklLoqicVA7kkIYOwx+4V7jAm
+         hQu4btPU5xzzmQ4ZrW2lU7LheYFJpNNnC6f0UvurLPD2ZV5dzU00NZx3hvs/uvFcO/
+         shEsE9TFV+AVnR735rCI/YoCS/85rIYvLzWHLaoJAzF2sJU5+q5XCqKGDopn/p6/BZ
+         IdAO3Fya+4kJPR8Gmo98byWBtiP+MlD4/izqWXRPYViGcJ8uIR//JRBr55YSbNxlJc
+         7/zaoTPg/KuPhfCvDUFgdN8kcJ3GRuKAryfnrFQueIMTnqLIloIDEpXSF/1sCdkGGd
+         +ozUBr5BnwzIg==
+From:   Marek Vasut <marex@denx.de>
+To:     linux-wireless@vger.kernel.org
+Cc:     Marek Vasut <marex@denx.de>,
+        Amitkumar Karwar <amit.karwar@redpinesignals.com>,
+        Angus Ainslie <angus@akkea.ca>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        Karun Eagalapati <karun256@gmail.com>,
+        Martin Kepplinger <martink@posteo.de>,
+        Prameela Rani Garnepudi <prameela.j04cs@gmail.com>,
+        Sebastian Krzyszkowiak <sebastian.krzyszkowiak@puri.sm>,
+        Siva Rebbagondla <siva8118@gmail.com>, netdev@vger.kernel.org,
+        stable@vger.kernel.org
+Subject: [PATCH] rsi: Assign beacon rate settings to the correct rate_info descriptor field
+Date:   Fri,  7 May 2021 23:31:05 +0200
+Message-Id: <20210507213105.140138-1-marex@denx.de>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-Date:   Fri, 07 May 2021 20:33:12 +0000
-From:   Mrs Suzara Maling Wan <fast65@godsofu4.com>
-To:     undisclosed-recipients:;
-Subject: URGENT REPLY NEEDED
-Reply-To: suzara2017malingwan@gmail.com
-Mail-Reply-To: suzara2017malingwan@gmail.com
-Message-ID: <631345976938ca35031d7e185b0c5f57@godsofu4.com>
-X-Sender: fast65@godsofu4.com
-User-Agent: Roundcube Webmail/1.3.14
-Content-Type: text/plain; charset=US-ASCII;
- format=flowed
-Content-Transfer-Encoding: 7bit
-X-EN-AuthUser: fast65@godsofu4.com
-Sender:  Mrs Suzara Maling Wan <fast65@godsofu4.com>
+Content-Transfer-Encoding: 8bit
+X-Virus-Scanned: clamav-milter 0.102.4 at phobos.denx.de
+X-Virus-Status: Clean
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+The RSI_RATE_x bits must be assigned to struct rsi_data_desc rate_info
+field. The rest of the driver does it correctly, except this one place,
+so fix it. This is also aligned with the RSI downstream vendor driver.
+Without this patch, an AP operating at 5 GHz does not transmit any
+beacons at all, this patch fixes that.
 
+Fixes: d26a9559403c ("rsi: add beacon changes for AP mode")
+Signed-off-by: Marek Vasut <marex@denx.de>
+Cc: Amitkumar Karwar <amit.karwar@redpinesignals.com>
+Cc: Angus Ainslie <angus@akkea.ca>
+Cc: David S. Miller <davem@davemloft.net>
+Cc: Jakub Kicinski <kuba@kernel.org>
+Cc: Kalle Valo <kvalo@codeaurora.org>
+Cc: Karun Eagalapati <karun256@gmail.com>
+Cc: Martin Kepplinger <martink@posteo.de>
+Cc: Prameela Rani Garnepudi <prameela.j04cs@gmail.com>
+Cc: Sebastian Krzyszkowiak <sebastian.krzyszkowiak@puri.sm>
+Cc: Siva Rebbagondla <siva8118@gmail.com>
+Cc: netdev@vger.kernel.org
+Cc: stable@vger.kernel.org
+---
+ drivers/net/wireless/rsi/rsi_91x_hal.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-My names are Mrs Suzara Maling Wan, I am a Nationality of the Republic
-of the Philippine presently base in West Africa B/F, dealing with
-exportation of Gold, I was diagnose of blood Causal decease, and my
-doctor have announce to me that I have few days to leave due to the
-condition of my sickness.
+diff --git a/drivers/net/wireless/rsi/rsi_91x_hal.c b/drivers/net/wireless/rsi/rsi_91x_hal.c
+index ce9892152f4d..ab837921d9a4 100644
+--- a/drivers/net/wireless/rsi/rsi_91x_hal.c
++++ b/drivers/net/wireless/rsi/rsi_91x_hal.c
+@@ -470,9 +470,9 @@ int rsi_prepare_beacon(struct rsi_common *common, struct sk_buff *skb)
+ 	}
+ 
+ 	if (common->band == NL80211_BAND_2GHZ)
+-		bcn_frm->bbp_info |= cpu_to_le16(RSI_RATE_1);
++		bcn_frm->rate_info |= cpu_to_le16(RSI_RATE_1);
+ 	else
+-		bcn_frm->bbp_info |= cpu_to_le16(RSI_RATE_6);
++		bcn_frm->rate_info |= cpu_to_le16(RSI_RATE_6);
+ 
+ 	if (mac_bcn->data[tim_offset + 2] == 0)
+ 		bcn_frm->frame_info |= cpu_to_le16(RSI_DATA_DESC_DTIM_BEACON);
+-- 
+2.30.2
 
-I have a desire to build an orphanage home in your country of which i
-cannot execute the project myself due to my present health condition,
-I am willing to hand over the project under your care for you to help
-me fulfill my dreams and desire of building an orphanage home in your
-country.
-
-Reply in you are will to help so that I can direct you to my bank for
-the urgent transfer of the fund/money require for the project to your
-account as I have already made the fund/money available.
-
-With kind regards
-Mrs Suzara Maling Wan
