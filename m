@@ -2,24 +2,24 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C43B83769A3
-	for <lists+netdev@lfdr.de>; Fri,  7 May 2021 19:48:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 842BD3769A5
+	for <lists+netdev@lfdr.de>; Fri,  7 May 2021 19:48:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229667AbhEGRsv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 7 May 2021 13:48:51 -0400
-Received: from mail.netfilter.org ([217.70.188.207]:49110 "EHLO
+        id S229560AbhEGRsw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 7 May 2021 13:48:52 -0400
+Received: from mail.netfilter.org ([217.70.188.207]:49122 "EHLO
         mail.netfilter.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229560AbhEGRss (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 7 May 2021 13:48:48 -0400
+        with ESMTP id S229604AbhEGRst (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 7 May 2021 13:48:49 -0400
 Received: from localhost.localdomain (unknown [90.77.255.23])
-        by mail.netfilter.org (Postfix) with ESMTPSA id 587F164155;
+        by mail.netfilter.org (Postfix) with ESMTPSA id F11C564152;
         Fri,  7 May 2021 19:47:01 +0200 (CEST)
 From:   Pablo Neira Ayuso <pablo@netfilter.org>
 To:     netfilter-devel@vger.kernel.org
 Cc:     davem@davemloft.net, netdev@vger.kernel.org, kuba@kernel.org
-Subject: [PATCH net 3/8] netfilter: nfnetlink: add a missing rcu_read_unlock()
-Date:   Fri,  7 May 2021 19:47:34 +0200
-Message-Id: <20210507174739.1850-4-pablo@netfilter.org>
+Subject: [PATCH net 4/8] netfilter: nfnetlink_osf: Fix a missing skb_header_pointer() NULL check
+Date:   Fri,  7 May 2021 19:47:35 +0200
+Message-Id: <20210507174739.1850-5-pablo@netfilter.org>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20210507174739.1850-1-pablo@netfilter.org>
 References: <20210507174739.1850-1-pablo@netfilter.org>
@@ -29,106 +29,28 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Eric Dumazet <edumazet@google.com>
+Do not assume that the tcph->doff field is correct when parsing for TCP
+options, skb_header_pointer() might fail to fetch these bits.
 
-Reported by syzbot :
-BUG: sleeping function called from invalid context at include/linux/sched/mm.h:201
-in_atomic(): 0, irqs_disabled(): 0, non_block: 0, pid: 26899, name: syz-executor.5
-1 lock held by syz-executor.5/26899:
- #0: ffffffff8bf797a0 (rcu_read_lock){....}-{1:2}, at: nfnetlink_get_subsys net/netfilter/nfnetlink.c:148 [inline]
- #0: ffffffff8bf797a0 (rcu_read_lock){....}-{1:2}, at: nfnetlink_rcv_msg+0x1da/0x1300 net/netfilter/nfnetlink.c:226
-Preemption disabled at:
-[<ffffffff8917799e>] preempt_schedule_irq+0x3e/0x90 kernel/sched/core.c:5533
-CPU: 1 PID: 26899 Comm: syz-executor.5 Not tainted 5.12.0-next-20210504-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-Call Trace:
- __dump_stack lib/dump_stack.c:79 [inline]
- dump_stack+0x141/0x1d7 lib/dump_stack.c:120
- ___might_sleep.cold+0x1f1/0x237 kernel/sched/core.c:8338
- might_alloc include/linux/sched/mm.h:201 [inline]
- slab_pre_alloc_hook mm/slab.h:500 [inline]
- slab_alloc_node mm/slub.c:2845 [inline]
- kmem_cache_alloc_node+0x33d/0x3e0 mm/slub.c:2960
- __alloc_skb+0x20b/0x340 net/core/skbuff.c:413
- alloc_skb include/linux/skbuff.h:1107 [inline]
- nlmsg_new include/net/netlink.h:953 [inline]
- netlink_ack+0x1ed/0xaa0 net/netlink/af_netlink.c:2437
- netlink_rcv_skb+0x33d/0x420 net/netlink/af_netlink.c:2508
- nfnetlink_rcv+0x1ac/0x420 net/netfilter/nfnetlink.c:650
- netlink_unicast_kernel net/netlink/af_netlink.c:1312 [inline]
- netlink_unicast+0x533/0x7d0 net/netlink/af_netlink.c:1338
- netlink_sendmsg+0x856/0xd90 net/netlink/af_netlink.c:1927
- sock_sendmsg_nosec net/socket.c:654 [inline]
- sock_sendmsg+0xcf/0x120 net/socket.c:674
- ____sys_sendmsg+0x6e8/0x810 net/socket.c:2350
- ___sys_sendmsg+0xf3/0x170 net/socket.c:2404
- __sys_sendmsg+0xe5/0x1b0 net/socket.c:2433
- do_syscall_64+0x3a/0xb0 arch/x86/entry/common.c:47
- entry_SYSCALL_64_after_hwframe+0x44/0xae
-RIP: 0033:0x4665f9
-Code: ff ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 40 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 bc ff ff ff f7 d8 64 89 01 48
-RSP: 002b:00007fa8a03ee188 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
-RAX: ffffffffffffffda RBX: 000000000056bf60 RCX: 00000000004665f9
-RDX: 0000000000000000 RSI: 0000000020000480 RDI: 0000000000000004
-RBP: 00000000004bfce1 R08: 0000000000000000 R09: 0000000000000000
-R10: 0000000000000000 R11: 0000000000000246 R12: 000000000056bf60
-R13: 00007fffe864480f R14: 00007fa8a03ee300 R15: 0000000000022000
-
-================================================
-WARNING: lock held when returning to user space!
-5.12.0-next-20210504-syzkaller #0 Tainted: G        W
-------------------------------------------------
-syz-executor.5/26899 is leaving the kernel with locks still held!
-1 lock held by syz-executor.5/26899:
- #0: ffffffff8bf797a0 (rcu_read_lock){....}-{1:2}, at: nfnetlink_get_subsys net/netfilter/nfnetlink.c:148 [inline]
- #0: ffffffff8bf797a0 (rcu_read_lock){....}-{1:2}, at: nfnetlink_rcv_msg+0x1da/0x1300 net/netfilter/nfnetlink.c:226
-------------[ cut here ]------------
-WARNING: CPU: 0 PID: 26899 at kernel/rcu/tree_plugin.h:359 rcu_note_context_switch+0xfd/0x16e0 kernel/rcu/tree_plugin.h:359
-Modules linked in:
-CPU: 0 PID: 26899 Comm: syz-executor.5 Tainted: G        W         5.12.0-next-20210504-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-RIP: 0010:rcu_note_context_switch+0xfd/0x16e0 kernel/rcu/tree_plugin.h:359
-Code: 48 89 fa 48 c1 ea 03 0f b6 14 02 48 89 f8 83 e0 07 83 c0 03 38 d0 7c 08 84 d2 0f 85 2e 0d 00 00 8b bd cc 03 00 00 85 ff 7e 02 <0f> 0b 65 48 8b 2c 25 00 f0 01 00 48 8d bd cc 03 00 00 48 b8 00 00
-RSP: 0000:ffffc90002fffdb0 EFLAGS: 00010002
-RAX: 0000000000000007 RBX: ffff8880b9c36080 RCX: ffffffff8dc99bac
-RDX: 0000000000000000 RSI: 0000000000000008 RDI: 0000000000000001
-RBP: ffff88808b9d1c80 R08: 0000000000000000 R09: ffffffff8dc96917
-R10: fffffbfff1b92d22 R11: 0000000000000000 R12: 0000000000000000
-R13: ffff88808b9d1c80 R14: ffff88808b9d1c80 R15: ffffc90002ff8000
-FS:  00007fa8a03ee700(0000) GS:ffff8880b9c00000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 00007f09896ed000 CR3: 0000000032070000 CR4: 00000000001526f0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-Call Trace:
- __schedule+0x214/0x23e0 kernel/sched/core.c:5044
- schedule+0xcf/0x270 kernel/sched/core.c:5226
- exit_to_user_mode_loop kernel/entry/common.c:162 [inline]
- exit_to_user_mode_prepare+0x13e/0x280 kernel/entry/common.c:208
- irqentry_exit_to_user_mode+0x5/0x40 kernel/entry/common.c:314
- asm_sysvec_reschedule_ipi+0x12/0x20 arch/x86/include/asm/idtentry.h:637
-RIP: 0033:0x4665f9
-
-Fixes: 50f2db9e368f ("netfilter: nfnetlink: consolidate callback types")
-Signed-off-by: Eric Dumazet <edumazet@google.com>
-Reported-by: syzbot <syzkaller@googlegroups.com>
+Fixes: 11eeef41d5f6 ("netfilter: passive OS fingerprint xtables match")
 Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
 ---
- net/netfilter/nfnetlink.c | 1 +
- 1 file changed, 1 insertion(+)
+ net/netfilter/nfnetlink_osf.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/net/netfilter/nfnetlink.c b/net/netfilter/nfnetlink.c
-index d7a9628b6cee..e8dbd8379027 100644
---- a/net/netfilter/nfnetlink.c
-+++ b/net/netfilter/nfnetlink.c
-@@ -295,6 +295,7 @@ static int nfnetlink_rcv_msg(struct sk_buff *skb, struct nlmsghdr *nlh,
- 			nfnl_unlock(subsys_id);
- 			break;
- 		default:
-+			rcu_read_unlock();
- 			err = -EINVAL;
- 			break;
- 		}
+diff --git a/net/netfilter/nfnetlink_osf.c b/net/netfilter/nfnetlink_osf.c
+index e8f8875c6884..0fa2e2030427 100644
+--- a/net/netfilter/nfnetlink_osf.c
++++ b/net/netfilter/nfnetlink_osf.c
+@@ -186,6 +186,8 @@ static const struct tcphdr *nf_osf_hdr_ctx_init(struct nf_osf_hdr_ctx *ctx,
+ 
+ 		ctx->optp = skb_header_pointer(skb, ip_hdrlen(skb) +
+ 				sizeof(struct tcphdr), ctx->optsize, opts);
++		if (!ctx->optp)
++			return NULL;
+ 	}
+ 
+ 	return tcp;
 -- 
 2.30.2
 
