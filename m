@@ -2,69 +2,48 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 57784376C11
-	for <lists+netdev@lfdr.de>; Sat,  8 May 2021 00:09:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D721A376C39
+	for <lists+netdev@lfdr.de>; Sat,  8 May 2021 00:12:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229839AbhEGWKI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 7 May 2021 18:10:08 -0400
-Received: from mail.kernel.org ([198.145.29.99]:56016 "EHLO mail.kernel.org"
+        id S230090AbhEGWMv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 7 May 2021 18:12:51 -0400
+Received: from mail.kernel.org ([198.145.29.99]:59358 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229713AbhEGWKE (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 7 May 2021 18:10:04 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id AA33B60BD3;
-        Fri,  7 May 2021 22:08:54 +0000 (UTC)
+        id S230095AbhEGWMo (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 7 May 2021 18:12:44 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 5D8BA611F1;
+        Fri,  7 May 2021 22:11:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1620425342;
-        bh=pLN/AlAGxiGZnqtkHzoskF1g1y+Og1zx70nNd/gvob8=;
-        h=From:To:Cc:Subject:Date:From;
-        b=GZ13BdKpryifxhRwUeXYiDxMV+BWySTA7GY7/CWwvuCWkusUFDxkw2jKiOlfzjbCr
-         So4fZaGkAyPTwA8Q1TjLVhcTwgJc8xvHUXFTKFHcbAkEIqYdWcKh0axCM+T92qoOrQ
-         bkgNUSiGEeKqAdmwuN3qiVKoII2y7FbwOUX6mX301a6kiRL+VhsHKLQbMnh2CNRIHJ
-         HKxjre312EfivKKOz+Q2DN/Jdax+mgS6zOKiXtE7A5jQN2E+WeTOOh+m15wqAaIqSp
-         vmCijYogutqPzDP5KIogDPopYspUOizf4eB1toyhkfcE7uWw2BB6nwUsTEL9hofb0l
-         fr7hse6Wb3kJA==
+        s=k20201202; t=1620425504;
+        bh=Z8/t58HXrQWvRNq7RJkw/zVGS+awX9fu5iAau4CEuTM=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=IijVFH2E9HYV114Qph7UNhwrB8O6u0uJ75WgEB1kdGOOsojWG6SZI+w7aO7Du9pPZ
+         i4wK5qDqL+Xg2c21IF+rtS2QP3M2fu8X03aK/XJ12T/920xgeSeS2f+uPfu8VTspBA
+         d2PzThH7iDrvRAxgXCxZ6o9UKux7qVqMfgAwNxAKh3MdEISscybroj31bgsXukMScx
+         7S9iS8iUIgMXaWvsviiBYmzG8Zdl090OJV4U1xSUstAaENoNFmJHMz5aXxfr3GuGq0
+         /hXveixaY+1ncEEFO4kj7NAMBeNz1AJEZ6QF1pjHpVQJb3xg1XGHRrx19/rGbv01hb
+         0u2ivoBCHBxgA==
 From:   Arnd Bergmann <arnd@kernel.org>
 To:     linux-arch@vger.kernel.org
 Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
         Vineet Gupta <vgupta@synopsys.com>,
         Arnd Bergmann <arnd@arndb.de>,
         Amitkumar Karwar <amitkarwar@gmail.com>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        Borislav Petkov <bp@alien8.de>,
-        Eric Dumazet <edumazet@google.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
         Ganapathi Bhat <ganapathi017@gmail.com>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        "H. Peter Anvin" <hpa@zytor.com>, Ingo Molnar <mingo@redhat.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        James Morris <jmorris@namei.org>, Jens Axboe <axboe@kernel.dk>,
-        John Johansen <john.johansen@canonical.com>,
-        Jonas Bonn <jonas@southpole.se>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Paul Mackerras <paulus@samba.org>,
-        Rich Felker <dalias@libc.org>,
-        "Richard Russon (FlatCap)" <ldm@flatcap.org>,
-        Russell King <linux@armlinux.org.uk>,
-        "Serge E. Hallyn" <serge@hallyn.com>,
         Sharvari Harisangam <sharvari.harisangam@nxp.com>,
-        Stafford Horne <shorne@gmail.com>,
-        Stefan Kristiansson <stefan.kristiansson@saunalahti.fi>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>,
         Xinming Hu <huxinming820@gmail.com>,
-        Yoshinori Sato <ysato@users.sourceforge.jp>, x86@kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-m68k@lists.linux-m68k.org, linux-crypto@vger.kernel.org,
-        openrisc@lists.librecores.org, linuxppc-dev@lists.ozlabs.org,
-        linux-sh@vger.kernel.org, sparclinux@vger.kernel.org,
-        linux-ntfs-dev@lists.sourceforge.net, linux-block@vger.kernel.org,
+        Kalle Valo <kvalo@codeaurora.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Devidas Puranik <devidas@marvell.com>,
         linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-security-module@vger.kernel.org
-Subject: [RFC 0/12] Unify asm/unaligned.h around struct helper
-Date:   Sat,  8 May 2021 00:07:45 +0200
-Message-Id: <20210507220813.365382-1-arnd@kernel.org>
+        linux-kernel@vger.kernel.org
+Subject: [RFC 10/12] mwifiex: re-fix for unaligned accesses
+Date:   Sat,  8 May 2021 00:07:55 +0200
+Message-Id: <20210507220813.365382-11-arnd@kernel.org>
 X-Mailer: git-send-email 2.29.2
+In-Reply-To: <20210507220813.365382-1-arnd@kernel.org>
+References: <20210507220813.365382-1-arnd@kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
@@ -73,139 +52,54 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Arnd Bergmann <arnd@arndb.de>
 
-The get_unaligned()/put_unaligned() helpers are traditionally architecture
-specific, with the two main variants being the "access-ok.h" version
-that assumes unaligned pointer accesses always work on a particular
-architecture, and the "le-struct.h" version that casts the data to a
-byte aligned type before dereferencing, for architectures that cannot
-always do unaligned accesses in hardware.
+A patch from 2017 changed some accesses to DMA memory to use
+get_unaligned_le32() and similar interfaces, to avoid problems
+with doing unaligned accesson uncached memory.
 
-Based on the discussion linked below, it appears that the access-ok
-version is not realiable on any architecture, but the struct version
-probably has no downsides. This series changes the code to use the
-same implementation on all architectures, addressing the few exceptions
-separately.
+However, the change in the mwifiex_pcie_alloc_sleep_cookie_buf()
+function ended up changing the size of the access instead,
+as it operates on a pointer to u8.
 
-I've pushed the patches to the asm-generic git tree for testing.
+Change this function back to actually access the entire 32 bits.
+Note that the pointer is aligned by definition because it came
+from dma_alloc_coherent().
 
-	Arnd
+Fixes: 92c70a958b0b ("mwifiex: fix for unaligned reads")
+Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+---
+ drivers/net/wireless/marvell/mwifiex/pcie.c | 10 ++++------
+ 1 file changed, 4 insertions(+), 6 deletions(-)
 
-Link: https://lore.kernel.org/lkml/75d07691-1e4f-741f-9852-38c0b4f520bc@synopsys.com/
-Link: https://gcc.gnu.org/bugzilla/show_bug.cgi?id=100363
-Link: git://git.kernel.org/pub/scm/linux/kernel/git/arnd/asm-generic.git unaligned-rework
-
-Arnd Bergmann (12):
-  asm-generic: use asm-generic/unaligned.h for most architectures
-  openrisc: always use unaligned-struct header
-  sh: remove unaligned access for sh4a
-  m68k: select CONFIG_HAVE_EFFICIENT_UNALIGNED_ACCESS
-  powerpc: use linux/unaligned/le_struct.h on LE power7
-  asm-generic: unaligned: remove byteshift helpers
-  asm-generic: unaligned always use struct helpers
-  partitions: msdos: fix one-byte get_unaligned()
-  apparmor: use get_unaligned() only for multi-byte words
-  mwifiex: re-fix for unaligned accesses
-  netpoll: avoid put_unaligned() on single character
-  asm-generic: simplify asm/unaligned.h
-
- arch/alpha/include/asm/unaligned.h          |  12 --
- arch/arm/include/asm/unaligned.h            |  27 ---
- arch/ia64/include/asm/unaligned.h           |  12 --
- arch/m68k/Kconfig                           |   1 +
- arch/m68k/include/asm/unaligned.h           |  26 ---
- arch/microblaze/include/asm/unaligned.h     |  27 ---
- arch/mips/crypto/crc32-mips.c               |   2 +-
- arch/openrisc/include/asm/unaligned.h       |  47 -----
- arch/parisc/include/asm/unaligned.h         |   6 +-
- arch/powerpc/include/asm/unaligned.h        |  22 ---
- arch/sh/include/asm/unaligned-sh4a.h        | 199 --------------------
- arch/sh/include/asm/unaligned.h             |  13 --
- arch/sparc/include/asm/unaligned.h          |  11 --
- arch/x86/include/asm/unaligned.h            |  15 --
- arch/xtensa/include/asm/unaligned.h         |  29 ---
- block/partitions/ldm.h                      |   2 +-
- block/partitions/msdos.c                    |   2 +-
- drivers/net/wireless/marvell/mwifiex/pcie.c |  10 +-
- include/asm-generic/unaligned.h             | 149 ++++++++++++---
- include/linux/unaligned/access_ok.h         |  68 -------
- include/linux/unaligned/be_byteshift.h      |  71 -------
- include/linux/unaligned/be_memmove.h        |  37 ----
- include/linux/unaligned/be_struct.h         |  37 ----
- include/linux/unaligned/generic.h           | 115 -----------
- include/linux/unaligned/le_byteshift.h      |  71 -------
- include/linux/unaligned/le_memmove.h        |  37 ----
- include/linux/unaligned/le_struct.h         |  37 ----
- include/linux/unaligned/memmove.h           |  46 -----
- net/core/netpoll.c                          |   4 +-
- security/apparmor/policy_unpack.c           |   2 +-
- 30 files changed, 137 insertions(+), 1000 deletions(-)
- delete mode 100644 arch/alpha/include/asm/unaligned.h
- delete mode 100644 arch/arm/include/asm/unaligned.h
- delete mode 100644 arch/ia64/include/asm/unaligned.h
- delete mode 100644 arch/m68k/include/asm/unaligned.h
- delete mode 100644 arch/microblaze/include/asm/unaligned.h
- delete mode 100644 arch/openrisc/include/asm/unaligned.h
- delete mode 100644 arch/powerpc/include/asm/unaligned.h
- delete mode 100644 arch/sh/include/asm/unaligned-sh4a.h
- delete mode 100644 arch/sh/include/asm/unaligned.h
- delete mode 100644 arch/sparc/include/asm/unaligned.h
- delete mode 100644 arch/x86/include/asm/unaligned.h
- delete mode 100644 arch/xtensa/include/asm/unaligned.h
- delete mode 100644 include/linux/unaligned/access_ok.h
- delete mode 100644 include/linux/unaligned/be_byteshift.h
- delete mode 100644 include/linux/unaligned/be_memmove.h
- delete mode 100644 include/linux/unaligned/be_struct.h
- delete mode 100644 include/linux/unaligned/generic.h
- delete mode 100644 include/linux/unaligned/le_byteshift.h
- delete mode 100644 include/linux/unaligned/le_memmove.h
- delete mode 100644 include/linux/unaligned/le_struct.h
- delete mode 100644 include/linux/unaligned/memmove.h
-
-Cc: Amitkumar Karwar <amitkarwar@gmail.com>
-Cc: Arnd Bergmann <arnd@arndb.de>
-Cc: Benjamin Herrenschmidt <benh@kernel.crashing.org>
-Cc: Borislav Petkov <bp@alien8.de>
-Cc: Eric Dumazet <edumazet@google.com>
-Cc: Florian Fainelli <f.fainelli@gmail.com>
-Cc: Ganapathi Bhat <ganapathi017@gmail.com>
-Cc: Geert Uytterhoeven <geert@linux-m68k.org>
-Cc: "H. Peter Anvin" <hpa@zytor.com>
-Cc: Ingo Molnar <mingo@redhat.com>
-Cc: Jakub Kicinski <kuba@kernel.org>
-Cc: James Morris <jmorris@namei.org>
-Cc: Jens Axboe <axboe@kernel.dk>
-Cc: John Johansen <john.johansen@canonical.com>
-Cc: Jonas Bonn <jonas@southpole.se>
-Cc: Kalle Valo <kvalo@codeaurora.org>
-Cc: Michael Ellerman <mpe@ellerman.id.au>
-Cc: Paul Mackerras <paulus@samba.org>
-Cc: Rich Felker <dalias@libc.org>
-Cc: "Richard Russon (FlatCap)" <ldm@flatcap.org>
-Cc: Russell King <linux@armlinux.org.uk>
-Cc: "Serge E. Hallyn" <serge@hallyn.com>
-Cc: Sharvari Harisangam <sharvari.harisangam@nxp.com>
-Cc: Stafford Horne <shorne@gmail.com>
-Cc: Stefan Kristiansson <stefan.kristiansson@saunalahti.fi>
-Cc: Thomas Gleixner <tglx@linutronix.de>
-Cc: Vladimir Oltean <vladimir.oltean@nxp.com>
-Cc: Xinming Hu <huxinming820@gmail.com>
-Cc: Yoshinori Sato <ysato@users.sourceforge.jp>
-Cc: x86@kernel.org
-Cc: linux-kernel@vger.kernel.org
-Cc: linux-arm-kernel@lists.infradead.org
-Cc: linux-m68k@lists.linux-m68k.org
-Cc: linux-crypto@vger.kernel.org
-Cc: openrisc@lists.librecores.org
-Cc: linuxppc-dev@lists.ozlabs.org
-Cc: linux-sh@vger.kernel.org
-Cc: sparclinux@vger.kernel.org
-Cc: linux-ntfs-dev@lists.sourceforge.net
-Cc: linux-block@vger.kernel.org
-Cc: linux-wireless@vger.kernel.org
-Cc: netdev@vger.kernel.org
-Cc: linux-arch@vger.kernel.org
-Cc: linux-security-module@vger.kernel.org
-
+diff --git a/drivers/net/wireless/marvell/mwifiex/pcie.c b/drivers/net/wireless/marvell/mwifiex/pcie.c
+index 94228b316df1..46517515ba72 100644
+--- a/drivers/net/wireless/marvell/mwifiex/pcie.c
++++ b/drivers/net/wireless/marvell/mwifiex/pcie.c
+@@ -1231,7 +1231,7 @@ static int mwifiex_pcie_delete_cmdrsp_buf(struct mwifiex_adapter *adapter)
+ static int mwifiex_pcie_alloc_sleep_cookie_buf(struct mwifiex_adapter *adapter)
+ {
+ 	struct pcie_service_card *card = adapter->card;
+-	u32 tmp;
++	u32 *cookie;
+ 
+ 	card->sleep_cookie_vbase = dma_alloc_coherent(&card->dev->dev,
+ 						      sizeof(u32),
+@@ -1242,13 +1242,11 @@ static int mwifiex_pcie_alloc_sleep_cookie_buf(struct mwifiex_adapter *adapter)
+ 			    "dma_alloc_coherent failed!\n");
+ 		return -ENOMEM;
+ 	}
++	cookie = (u32 *)card->sleep_cookie_vbase;
+ 	/* Init val of Sleep Cookie */
+-	tmp = FW_AWAKE_COOKIE;
+-	put_unaligned(tmp, card->sleep_cookie_vbase);
++	*cookie = FW_AWAKE_COOKIE;
+ 
+-	mwifiex_dbg(adapter, INFO,
+-		    "alloc_scook: sleep cookie=0x%x\n",
+-		    get_unaligned(card->sleep_cookie_vbase));
++	mwifiex_dbg(adapter, INFO, "alloc_scook: sleep cookie=0x%x\n", *cookie);
+ 
+ 	return 0;
+ }
 -- 
 2.29.2
 
