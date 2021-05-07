@@ -2,118 +2,245 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B1E5D376118
-	for <lists+netdev@lfdr.de>; Fri,  7 May 2021 09:25:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id ED13C376131
+	for <lists+netdev@lfdr.de>; Fri,  7 May 2021 09:35:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233848AbhEGH03 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 7 May 2021 03:26:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46496 "EHLO
+        id S235202AbhEGHgU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 7 May 2021 03:36:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48946 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230022AbhEGH01 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 7 May 2021 03:26:27 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C167C061761
-        for <netdev@vger.kernel.org>; Fri,  7 May 2021 00:25:27 -0700 (PDT)
-Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <mkl@pengutronix.de>)
-        id 1leurU-00039K-76; Fri, 07 May 2021 09:25:24 +0200
-Received: from pengutronix.de (unknown [IPv6:2a03:f580:87bc:d400:1c71:1fb7:6204:3618])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (Client did not present a certificate)
-        (Authenticated sender: mkl-all@blackshift.org)
-        by smtp.blackshift.org (Postfix) with ESMTPSA id 801CE61E95B;
-        Fri,  7 May 2021 07:25:22 +0000 (UTC)
-Date:   Fri, 7 May 2021 09:25:21 +0200
-From:   Marc Kleine-Budde <mkl@pengutronix.de>
-To:     Drew Fustini <drew@beagleboard.org>
-Cc:     netdev@vger.kernel.org, linux-can@vger.kernel.org,
-        Will C <will@macchina.cc>, menschel.p@posteo.de
-Subject: Re: [net-next 6/6] can: mcp251xfd: mcp251xfd_regmap_crc_read(): work
- around broken CRC on TBC register
-Message-ID: <20210507072521.3y652xz2kmibjo7d@pengutronix.de>
-References: <20210407080118.1916040-1-mkl@pengutronix.de>
- <20210407080118.1916040-7-mkl@pengutronix.de>
- <CAPgEAj6N9d=s1a-P_P0mBe1aV2tQBQ4m6shvbPcPvX7W1NNzJw@mail.gmail.com>
- <a46b95e3-4238-a930-6de3-360f86beaf52@pengutronix.de>
+        with ESMTP id S233280AbhEGHgT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 7 May 2021 03:36:19 -0400
+Received: from ssl.serverraum.org (ssl.serverraum.org [IPv6:2a01:4f8:151:8464::1:2])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7EB23C061574;
+        Fri,  7 May 2021 00:35:19 -0700 (PDT)
+Received: from ssl.serverraum.org (web.serverraum.org [172.16.0.2])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ssl.serverraum.org (Postfix) with ESMTPSA id D20BA2224B;
+        Fri,  7 May 2021 09:35:12 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
+        t=1620372915;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=xxzUiiFuJ/9Edm/UU/hesO2aF750sfl0VQkiGiRSOrM=;
+        b=ARtBpiG2s/alm7WolB54kzz7ze/VXFEy11dW09cq102bbar3Vu/JhnMAK8M9YJE86/yOui
+        zJvCvYD/UGiouodhZYpW+dJ+IhWBA3zDKkGmEu48zBvb20ii8889ejTS23ajWZvLU/f4WT
+        JB4n9mPb9PT9oOqW76C+D7K1q+yYlnM=
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="zgdc2i5vhwpzbjcf"
-Content-Disposition: inline
-In-Reply-To: <a46b95e3-4238-a930-6de3-360f86beaf52@pengutronix.de>
-X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
-X-SA-Exim-Mail-From: mkl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
+Content-Type: text/plain; charset=US-ASCII;
+ format=flowed
+Content-Transfer-Encoding: 7bit
+Date:   Fri, 07 May 2021 09:35:12 +0200
+From:   Michael Walle <michael@walle.cc>
+To:     Xiaoliang Yang <xiaoliang.yang_1@nxp.com>
+Cc:     Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        UNGLinuxDriver@microchip.com, alexandre.belloni@bootlin.com,
+        allan.nielsen@microchip.com,
+        Claudiu Manoil <claudiu.manoil@nxp.com>, davem@davemloft.net,
+        idosch@mellanox.com, joergen.andreasen@microchip.com,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        Po Liu <po.liu@nxp.com>, vinicius.gomes@intel.com
+Subject: Re: [EXT] Re: [net-next] net: dsa: felix: disable always guard band
+ bit for TAS config
+In-Reply-To: <DB8PR04MB5785A6A773FEA4F3E0E77698F0579@DB8PR04MB5785.eurprd04.prod.outlook.com>
+References: <20210419102530.20361-1-xiaoliang.yang_1@nxp.com>
+ <20210504170514.10729-1-michael@walle.cc>
+ <20210504181833.w2pecbp2qpuiactv@skbuf>
+ <c7618025da6723418c56a54fe4683bd7@walle.cc>
+ <20210504185040.ftkub3ropuacmyel@skbuf>
+ <ccb40b7fd18b51ecfc3f849a47378c54@walle.cc>
+ <20210504191739.73oejybqb6z7dlxr@skbuf>
+ <d933eef300cb1e1db7d36ca2cb876ef6@walle.cc>
+ <20210504213259.l5rbnyhxrrbkykyg@skbuf>
+ <efe5ac03ceddc8ff472144b5fe9fd046@walle.cc>
+ <DB8PR04MB5785A6A773FEA4F3E0E77698F0579@DB8PR04MB5785.eurprd04.prod.outlook.com>
+User-Agent: Roundcube Webmail/1.4.11
+Message-ID: <2898c3ae1319756e13b95da2b74ccacc@walle.cc>
+X-Sender: michael@walle.cc
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hi Xiaoliang,
 
---zgdc2i5vhwpzbjcf
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Am 2021-05-07 09:16, schrieb Xiaoliang Yang:
+> On 2021-05-06 21:25, Michael Walle <michael@walle.cc> wrote:
+>> Am 2021-05-04 23:33, schrieb Vladimir Oltean:
+>> > [ trimmed the CC list, as this is most likely spam for most people ]
+>> >
+>> > On Tue, May 04, 2021 at 10:23:11PM +0200, Michael Walle wrote:
+>> >> Am 2021-05-04 21:17, schrieb Vladimir Oltean:
+>> >> > On Tue, May 04, 2021 at 09:08:00PM +0200, Michael Walle wrote:
+>> >> > > > > > > As explained in another mail in this thread, all queues
+>> >> > > > > > > are marked as scheduled. So this is actually a no-op,
+>> >> > > > > > > correct? It doesn't matter if it set or not set for now. Dunno why
+>> we even care for this bit then.
+>> >> > > > > >
+>> >> > > > > > It matters because ALWAYS_GUARD_BAND_SCH_Q reduces the
+>> >> > > > > > available throughput when set.
+>> >> > > > >
+>> >> > > > > Ahh, I see now. All queues are "scheduled" but the guard band
+>> >> > > > > only applies for "non-scheduled" -> "scheduled" transitions.
+>> >> > > > > So the guard band is never applied, right? Is that really
+>> >> > > > > what we want?
+>> >> > > >
+>> >> > > > Xiaoliang explained that yes, this is what we want. If the end
+>> >> > > > user wants a guard band they can explicitly add a "sched-entry
+>> >> > > > 00" in the tc-taprio config.
+>> >> > >
+>> >> > > You're disabling the guard band, then. I figured, but isn't that
+>> >> > > suprising for the user? Who else implements taprio? Do they do it
+>> >> > > in the same way? I mean this behavior is passed right to the
+>> >> > > userspace and have a direct impact on how it is configured. Of
+>> >> > > course a user can add it manually, but I'm not sure that is what
+>> >> > > we want here. At least it needs to be documented somewhere. Or
+>> >> > > maybe it should be a switchable option.
+>> >> > >
+>> >> > > Consider the following:
+>> >> > > sched-entry S 01 25000
+>> >> > > sched-entry S fe 175000
+>> >> > > basetime 0
+>> >> > >
+>> >> > > Doesn't guarantee, that queue 0 is available at the beginning of
+>> >> > > the cycle, in the worst case it takes up to <begin of cycle> +
+>> >> > > ~12.5us until the frame makes it through (given gigabit and 1518b
+>> >> > > frames).
+>> >> > >
+>> >> > > Btw. there are also other implementations which don't need a
+>> >> > > guard band (because they are store-and-forward and cound the
+>> >> > > remaining bytes). So yes, using a guard band and scheduling is
+>> >> > > degrading the performance.
+>> >> >
+>> >> > What is surprising for the user, and I mentioned this already in
+>> >> > another thread on this patch, is that the Felix switch overruns the
+>> >> > time gate (a packet taking 2 us to transmit will start transmission
+>> >> > even if there is only 1 us left of its time slot, delaying the
+>> >> > packets from the next time slot by 1 us). I guess that this is why
+>> >> > the ALWAYS_GUARD_BAND_SCH_Q bit exists, as a way to avoid these
+>> >> > overruns, but it is a bit of a poor tool for that job. Anyway,
+>> >> > right now we disable it and live with the overruns.
+>> >>
+>> >> We are talking about the same thing here. Why is that a poor tool?
+>> >
+>> > It is a poor tool because it revolves around the idea of "scheduled
+>> > queues" and "non-scheduled queues".
+>> >
+>> > Consider the following tc-taprio schedule:
+>> >
+>> >       sched-entry S 81 2000 # TC 7 and 0 open, all others closed
+>> >       sched-entry S 82 2000 # TC 7 and 1 open, all others closed
+>> >       sched-entry S 84 2000 # TC 7 and 2 open, all others closed
+>> >       sched-entry S 88 2000 # TC 7 and 3 open, all others closed
+>> >       sched-entry S 90 2000 # TC 7 and 4 open, all others closed
+>> >       sched-entry S a0 2000 # TC 7 and 5 open, all others closed
+>> >       sched-entry S c0 2000 # TC 7 and 6 open, all others closed
+>> >
+>> > Otherwise said, traffic class 7 should be able to send any time it
+>> > wishes.
+>> 
+>> What is the use case behind that? TC7 (with the highest priority) may 
+>> always
+>> take precedence of the other TCs, thus what is the point of having a 
+>> dedicated
+>> window for the others.
+>> 
+>> Anyway, I've tried it and there are no hiccups. I've meassured the 
+>> delta
+>> between the start of successive packets and they are always ~12370ns 
+>> for a
+>> 1518b frame. TC7 is open all the time, which makes sense. It only 
+>> happens if
+>> you actually close the gate, eg. you have a sched-entry where a TC7 
+>> bit is not
+>> set. In this case, I can see a difference between 
+>> ALWAYS_GUARD_BAND_SCH_Q
+>> set and not set. If it is set, there is up to a ~12.5us delay added 
+>> (of course it
+>> depends on when the former frame was scheduled).
+>> 
+>> It seems that also needs to be 1->0 transition.
+>> 
+>> You've already mentioned that the switch violates the Qbv standard.
+>> What makes you think so? IMHO before that patch, it wasn't violated.
+>> Now it likely is (still have to confirm that). How can this be 
+>> reasonable?
+>> 
+>> If you have a look at the initial commit message, it is about making 
+>> it possible
+>> to have a smaller gate window, but that is not possible because of the 
+>> current
+>> guard band of ~12.5us. It seems to be a shortcut for not having the 
+>> MAXSDU
+>> (and thus the length of the guard band) configurable. Yes (static) 
+>> guard bands
+>> will have a performance impact, also described in [1]. You are trading 
+>> the
+>> correctness of the TAS for performance. And it is the sole purpose of 
+>> Qbv to
+>> have a determisitc way (in terms of timing) of sending the frames.
+>> 
+>> And telling the user, hey, we know we violate the Qbv standard, please 
+>> insert
+>> the guard bands yourself if you really need them is not a real 
+>> solution. As
+>> already mentioned, (1) it is not documented anywhere, (2) can't be 
+>> shared
+>> among other switches (unless they do the same workaround) and (3) what 
+>> am
+>> I supposed to do for TSN compliance testing. Modifying the schedule 
+>> that is
+>> about to be checked (and thus given by the compliance suite)?
+>> 
+> I disable the always guard band bit because each gate control list
+> needs to reserve a guard band slot, which affects performance. The
+> user does not need to set a guard band for each queue transmission.
+> For example, "sched-entry S 01 2000 sched-entry S fe 98000". Queue 0
+> is protected traffic and has smaller frames, so there is no need to
+> reserve a guard band during the open time of queue 0. The user can add
+> the following guard band before protected traffic: "sched-entry S 00
+> 25000 sched-entry S 01 2000 sched-entry S fe 73000"
 
-On 22.04.2021 09:18:54, Marc Kleine-Budde wrote:
-> On 4/21/21 9:58 PM, Drew Fustini wrote:
-> > I am encountering similar error with the 5.10 raspberrypi kernel on
-> > RPi 4 with MCP2518FD:
-> >=20
-> >   mcp251xfd spi0.0 can0: CRC read error at address 0x0010 (length=3D4,
-> > data=3D00 ad 58 67, CRC=3D0xbbfd) retrying
->=20
-> What's the situation you see these errors?
->=20
-> I'm not particular happy with that patch, as it only works around that one
-> particular bit flip issue. If you really hammer the register, the driver =
-will
-> still notice CRC errors that can be explained by other bits flipping. Con=
-sider
-> this as the first order approximation of a higher order problem :) - the =
-root
-> cause is still unknown.
->=20
-> > Would it be possible for you to pull these patches into a v5.10 branch
-> > in your linux-rpi repo [1]?
->=20
-> Here you are:
->=20
-> https://github.com/marckleinebudde/linux-rpi/tree/v5.10-rpi/backport-perf=
-ormance-improvements
->=20
-> I've included the UINC performance enhancements, too. The branch is compi=
-led
-> tested only, though. I'll send a pull request to the rpi kernel after I've
-> testing feedback from you.
+Again, you're passing the handling of the guard band to the user,
+which is an implementation detail for this switch (unless there is
+a new switch for it on the qdisc IMHO). And (1), (2) and (3) from
+above is still valid.
 
-Drew, Patrick, have you tested this branch? If so I'll send a pull
-request to the raspi kernel.
+Consider the entry
+  sched-entry S 01 2000
+  sched-entry S 02 20000
 
-regards,
-Marc
+A user assumes that TC0 is open for 2us. But with your change
+it is bascially open for 2us + 12.5us. And even worse, it is not
+deterministic. A frame in the subsequent queue (ie TC1) can be
+scheduled anywhere beteeen 0us and 12.5us after opening the gate,
+depending on wether there is still a frame transmitting on TC0.
 
---=20
-Pengutronix e.K.                 | Marc Kleine-Budde           |
-Embedded Linux                   | https://www.pengutronix.de  |
-Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
-Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
+> I checked other devices such as ENETC and it can calculate how long
+> the frame transmission will take and determine whether to transmit
+> before the gate is closed. The VSC9959 device does not have this
+> hardware function. If we implement guard bands on each queue, we need
+> to reserve a 12.5us guard band for each GCL, even if it only needs to
+> send a small packet. This confuses customers.
 
---zgdc2i5vhwpzbjcf
-Content-Type: application/pgp-signature; name="signature.asc"
+How about getting it right and working on how we can set the MAXSDU
+per queue and thus making the guard band smaller?
 
------BEGIN PGP SIGNATURE-----
+> actually, I'm not sure if this will violate the Qbv standard. I looked
+> up the Qbv standard spec, and found it only introduce the guard band
+> before protected window (Annex Q (informative)Traffic scheduling). It
+> allows to design the schedule to accommodate the intended pattern of
+> transmission without overrunning the next gate-close event for the
+> traffic classes concerned.
 
-iQEzBAABCgAdFiEEK3kIWJt9yTYMP3ehqclaivrt76kFAmCU618ACgkQqclaivrt
-76lWwggAtDF9QvyQiUgKvyA7rtoHTsb69Cj6EJw4RklI0ZoUqaLTHWF3dg4WwEWf
-A73wofXFIhZ5vayfXxD4/2jZEvI5zx1GB78KNuX7HFRWgjEwLFGF9JiOQ6Hmi/NM
-kqgOhBGZ7gNCKqLpEiO2AV7qw7i6FVJOWuhb/Is1CXWwrin7YuvFE72yv1Rpx2Bm
-YpIgb9qPlu2YZMOgRqOEON6U0nGN+UuyeHWpxISZ2ico05dKeg31NNNhmAGjOJLF
-ndpNX5ltOOXqQgivf3ofTVoD+x5BGn61tCkn6lFW2HElqT41jCwDSLGP4Vudt+xL
-jBBBxf8XMeKEiXYTk09t4zU+A4GTvw==
-=vCf+
------END PGP SIGNATURE-----
+Vladimir already quoted "IEEE 802.1Q-2018 clause 8.6.8.4". I didn't
+check it, though.
 
---zgdc2i5vhwpzbjcf--
+A static guard band is one of the options you have to fulfill that.
+Granted, it is not that efficient, but it is how the switch handles
+it.
+
+-michael
