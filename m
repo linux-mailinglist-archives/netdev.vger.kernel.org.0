@@ -2,165 +2,162 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id ED8E1375F20
-	for <lists+netdev@lfdr.de>; Fri,  7 May 2021 05:23:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5A0A8375F23
+	for <lists+netdev@lfdr.de>; Fri,  7 May 2021 05:26:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230220AbhEGDYc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 6 May 2021 23:24:32 -0400
-Received: from szxga01-in.huawei.com ([45.249.212.187]:5593 "EHLO
-        szxga01-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229955AbhEGDYb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 6 May 2021 23:24:31 -0400
-Received: from dggeml711-chm.china.huawei.com (unknown [172.30.72.53])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4FbwhK6HgHzYdjR;
-        Fri,  7 May 2021 11:21:05 +0800 (CST)
-Received: from dggpemm500005.china.huawei.com (7.185.36.74) by
- dggeml711-chm.china.huawei.com (10.3.17.122) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
- 15.1.2176.2; Fri, 7 May 2021 11:23:29 +0800
-Received: from [127.0.0.1] (10.69.30.204) by dggpemm500005.china.huawei.com
- (7.185.36.74) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id 15.1.2176.2; Fri, 7 May 2021
- 11:23:29 +0800
-Subject: Re: [PATCH net-next v3 0/5] page_pool: recycle buffers
-To:     Ilias Apalodimas <ilias.apalodimas@linaro.org>
-CC:     Matteo Croce <mcroce@linux.microsoft.com>,
-        <netdev@vger.kernel.org>, <linux-mm@kvack.org>,
-        Ayush Sawal <ayush.sawal@chelsio.com>,
-        "Vinay Kumar Yadav" <vinay.yadav@chelsio.com>,
-        Rohit Maheshwari <rohitm@chelsio.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        Marcin Wojtas <mw@semihalf.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Mirko Lindner <mlindner@marvell.com>,
-        Stephen Hemminger <stephen@networkplumber.org>,
-        "Tariq Toukan" <tariqt@nvidia.com>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        "Alexei Starovoitov" <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        "John Fastabend" <john.fastabend@gmail.com>,
-        Boris Pismenny <borisp@nvidia.com>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
-        Vlastimil Babka <vbabka@suse.cz>, Yu Zhao <yuzhao@google.com>,
-        Will Deacon <will@kernel.org>,
-        Michel Lespinasse <walken@google.com>,
-        Fenghua Yu <fenghua.yu@intel.com>,
-        Roman Gushchin <guro@fb.com>, Hugh Dickins <hughd@google.com>,
-        Peter Xu <peterx@redhat.com>, Jason Gunthorpe <jgg@ziepe.ca>,
-        Guoqing Jiang <guoqing.jiang@cloud.ionos.com>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
-        Alexander Lobakin <alobakin@pm.me>,
-        Cong Wang <cong.wang@bytedance.com>, wenxu <wenxu@ucloud.cn>,
-        Kevin Hao <haokexin@gmail.com>,
-        Aleksandr Nogikh <nogikh@google.com>,
-        Jakub Sitnicki <jakub@cloudflare.com>,
-        Marco Elver <elver@google.com>,
-        Willem de Bruijn <willemb@google.com>,
-        Miaohe Lin <linmiaohe@huawei.com>,
-        Guillaume Nault <gnault@redhat.com>,
-        <linux-kernel@vger.kernel.org>, <linux-rdma@vger.kernel.org>,
-        <bpf@vger.kernel.org>, Matthew Wilcox <willy@infradead.org>,
-        Eric Dumazet <edumazet@google.com>,
-        David Ahern <dsahern@gmail.com>,
-        Lorenzo Bianconi <lorenzo@kernel.org>,
-        Saeed Mahameed <saeedm@nvidia.com>,
-        Andrew Lunn <andrew@lunn.ch>, Paolo Abeni <pabeni@redhat.com>
-References: <20210409223801.104657-1-mcroce@linux.microsoft.com>
- <e873c16e-8f49-6e70-1f56-21a69e2e37ce@huawei.com>
- <YIsAIzecktXXBlxn@apalos.home>
- <9bf7c5b3-c3cf-e669-051f-247aa8df5c5a@huawei.com>
- <YIwvI5/ygBvZG5sy@apalos.home>
- <33b02220-cc50-f6b2-c436-f4ec041d6bc4@huawei.com>
- <YJPn5t2mdZKC//dp@apalos.home>
-From:   Yunsheng Lin <linyunsheng@huawei.com>
-Message-ID: <75a332fa-74e4-7b7b-553e-3a1a6cb85dff@huawei.com>
-Date:   Fri, 7 May 2021 11:23:28 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:52.0) Gecko/20100101
- Thunderbird/52.2.0
+        id S230410AbhEGD1K (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 6 May 2021 23:27:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50532 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230377AbhEGD1I (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 6 May 2021 23:27:08 -0400
+Received: from mail-pl1-x636.google.com (mail-pl1-x636.google.com [IPv6:2607:f8b0:4864:20::636])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C92B9C061574
+        for <netdev@vger.kernel.org>; Thu,  6 May 2021 20:26:08 -0700 (PDT)
+Received: by mail-pl1-x636.google.com with SMTP id h7so4462700plt.1
+        for <netdev@vger.kernel.org>; Thu, 06 May 2021 20:26:08 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=pensando.io; s=google;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-transfer-encoding:content-language;
+        bh=gJaFed0wY00nTCYMKyAT4BeNXU9a28r1uwn6VpBfIhw=;
+        b=QqprI70irvJ63PrgI8B7wwMkgnbrfszvI+hsLrO0v5jomLcHCOifwZxPSO5LcRbrxB
+         KFp76cVAHbHaRtPH78YiAXCfA0FXKlAaWqT9U6BbGZpAhzdMOm2VvmJ4qug2B7h270dn
+         A8841PUjVf5TohTEfctAGtocMsNieJ2n6A9eut8GBxUPyiL2nXb0CR3NxeQh+EHT73nB
+         MRcD68q05PiawJHQyS2dtEBtl6g8GOt9p/PA/f2SBR5u43saDLo5YXQulWz5BNeBOfix
+         dvMt1Na+y5jGrdsGr2lW1MFOIuIWIiWPVHF3nPB/DKPfy3nBQmlgANCqejLSW2NK5XVW
+         f3hw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-transfer-encoding
+         :content-language;
+        bh=gJaFed0wY00nTCYMKyAT4BeNXU9a28r1uwn6VpBfIhw=;
+        b=TVZyQOOhaWaiwXKxBGn8jWRKM6sJIr2wuEQH/qE3u32B1cbz6xRFYGjVlb1pXyq7Hg
+         mIKaY3cvH/FBSCMJNG+T3BxrwTwsQKFFvnY2lP0fCN1q5W+nnyjTxznRsvTtJSGhdexe
+         XJ/qB4KwUrC705NWAhcgVD/3GXcGzvpSYVlBH1I9kIRQgG1YkYyAmo6kj0Az+ilZkl0t
+         yblc+Q/R0OG1S1w13jv4lrywi2klB+aADLCdt8CDzzkzQNjsuEfNt0Ufzsc1poxPZ9/T
+         z8aK19CmfugaH3T/z9RfTNfeKZYnZUxic6t/UtKj/p/GMkMUfNlV0NPy54xqtxKy6ppc
+         Nu1g==
+X-Gm-Message-State: AOAM532LVw16PQU5k3l1r5NtynLbToD4Wl+7MBXGFvam3W1xQ9aFnb/i
+        KqYH/RuEcpf71tVwOlhCmAhTGZ/Xc2KwWA==
+X-Google-Smtp-Source: ABdhPJxxV6HmISwgBRNubRD8+rjL79roAxvr5HehXE4tnbVOVsWet0hGEOgdnS51qpH431OTwcq4TA==
+X-Received: by 2002:a17:90b:3504:: with SMTP id ls4mr20209297pjb.222.1620357968236;
+        Thu, 06 May 2021 20:26:08 -0700 (PDT)
+Received: from Shannons-MacBook-Pro.local ([50.53.47.17])
+        by smtp.gmail.com with ESMTPSA id m9sm3047904pgt.65.2021.05.06.20.26.06
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 06 May 2021 20:26:07 -0700 (PDT)
+Subject: Re: [PATCH v3 net] ionic: fix ptp support config breakage
+To:     Randy Dunlap <rdunlap@infradead.org>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, drivers@pensando.io,
+        Allen Hubbe <allenbh@pensando.io>
+References: <20210506041846.62502-1-snelson@pensando.io>
+ <20210506171529.0d95c9da@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <b3099289-0ae4-7a4f-6739-55f788418eb8@infradead.org>
+ <d412627d-467d-8e19-f4b6-2899afa1845d@pensando.io>
+ <4e831e77-0688-f3a9-1202-76f88230c7a8@infradead.org>
+ <4f3f61ad-08dd-0bba-bd8e-8cb16b466012@infradead.org>
+ <583aeb80-4ac8-06ac-67f7-d717415523dd@infradead.org>
+From:   Shannon Nelson <snelson@pensando.io>
+Message-ID: <ed18d03f-d467-5fe9-7b04-0fd474128d0b@pensando.io>
+Date:   Thu, 6 May 2021 20:26:05 -0700
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
+ Gecko/20100101 Thunderbird/78.10.1
 MIME-Version: 1.0
-In-Reply-To: <YJPn5t2mdZKC//dp@apalos.home>
-Content-Type: text/plain; charset="utf-8"
+In-Reply-To: <583aeb80-4ac8-06ac-67f7-d717415523dd@infradead.org>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.69.30.204]
-X-ClientProxiedBy: dggeme714-chm.china.huawei.com (10.1.199.110) To
- dggpemm500005.china.huawei.com (7.185.36.74)
-X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2021/5/6 20:58, Ilias Apalodimas wrote:
->>>>
->>>
->>> Not really, the opposite is happening here. If the pp_recycle bit is set we
->>> will always call page_pool_return_skb_page().  If the page signature matches
->>> the 'magic' set by page pool we will always call xdp_return_skb_frame() will
->>> end up calling __page_pool_put_page(). If the refcnt is 1 we'll try
->>> to recycle the page.  If it's not we'll release it from page_pool (releasing
->>> some internal references we keep) unmap the buffer and decrement the refcnt.
->>
->> Yes, I understood the above is what the page pool do now.
->>
->> But the question is who is still holding an extral reference to the page when
->> kfree_skb()? Perhaps a cloned and pskb_expand_head()'ed skb is holding an extral
->> reference to the same page? So why not just do a page_ref_dec() if the orginal skb
->> is freed first, and call __page_pool_put_page() when the cloned skb is freed later?
->> So that we can always reuse the recyclable page from a recyclable skb. This may
->> make the page_pool_destroy() process delays longer than before, I am supposed the
->> page_pool_destroy() delaying for cloned skb case does not really matters here.
->>
->> If the above works, I think the samiliar handling can be added to RX zerocopy if
->> the RX zerocopy also hold extral references to the recyclable page from a recyclable
->> skb too?
->>
-> 
-> Right, this sounds doable, but I'll have to go back code it and see if it
-> really makes sense.  However I'd still prefer the support to go in as-is
-> (including the struct xdp_mem_info in struct page, instead of a page_pool
-> pointer).
-> 
-> There's a couple of reasons for that.  If we keep the struct xdp_mem_info we
-> can in the future recycle different kind of buffers using __xdp_return().
-> And this is a non intrusive change if we choose to store the page pool address
-> directly in the future.  It just affects the internal contract between the
-> page_pool code and struct page.  So it won't affect any drivers that already
-> use the feature.
+On 5/6/21 6:30 PM, Randy Dunlap wrote:
+> On 5/6/21 6:16 PM, Randy Dunlap wrote:
+>> On 5/6/21 6:12 PM, Randy Dunlap wrote:
+>>> On 5/6/21 5:48 PM, Shannon Nelson wrote:
+>>>> On 5/6/21 5:21 PM, Randy Dunlap wrote:
+>>>>> On 5/6/21 5:15 PM, Jakub Kicinski wrote:
+>>>>>> On Wed,  5 May 2021 21:18:46 -0700 Shannon Nelson wrote:
+>>>>>>> Driver link failed with undefined references in some
+>>>>>>> kernel config variations.
+>>>>>> This is really vague and the patch is not very obvious.
+> When IONIC=y and PTP_1588_CLOCK=m...
+>
+>>>>>>>    ionic-y := ionic_main.o ionic_bus_pci.o ionic_devlink.o ionic_dev.o \
+>>>>>>>           ionic_debugfs.o ionic_lif.o ionic_rx_filter.o ionic_ethtool.o \
+>>>>>>> -       ionic_txrx.o ionic_stats.o ionic_fw.o
+>>>>>>> -ionic-$(CONFIG_PTP_1588_CLOCK) += ionic_phc.o
+>>>>>>> +       ionic_txrx.o ionic_stats.o ionic_fw.o ionic_phc.o
+>>>>>> So we'd replace a build dependency..
+>>>>>>
+>>>>>>> diff --git a/drivers/net/ethernet/pensando/ionic/ionic_phc.c b/drivers/net/ethernet/pensando/ionic/ionic_phc.c
+>>>>>>> index a87c87e86aef..30c78808c45a 100644
+>>>>>>> --- a/drivers/net/ethernet/pensando/ionic/ionic_phc.c
+>>>>>>> +++ b/drivers/net/ethernet/pensando/ionic/ionic_phc.c
+>>>>>>> @@ -1,6 +1,8 @@
+>>>>>>>    // SPDX-License-Identifier: GPL-2.0
+>>>>>>>    /* Copyright(c) 2017 - 2021 Pensando Systems, Inc */
+>>>>>>>    +#if IS_ENABLED(CONFIG_PTP_1588_CLOCK)
+>>>>>>> +
+>>>>>>>    #include <linux/netdevice.h>
+>>>>>>>    #include <linux/etherdevice.h>
+>>>>>>>    @@ -613,3 +615,4 @@ void ionic_lif_free_phc(struct ionic_lif *lif)
+>>>>>>>        devm_kfree(lif->ionic->dev, lif->phc);
+>>>>>>>        lif->phc = NULL;
+>>>>>>>    }
+>>>>>>> +#endif /* IS_ENABLED(CONFIG_PTP_1588_CLOCK) */
+>>>>>> .. with an ifdef around an entire file? Does not feel very clean.
+>>>>>>
+>>>>>> The construct of using:
+>>>>>>
+>>>>>>      drv-$(CONFIG_PTP_1588_CLOCK) += ptp.o
+>>>>>>
+>>>>>> seems relatively common, why does it now work here?
+>>>>>>
+>>>>>> Maybe the config in question has PTP as a module and ionic built in?
+>>>>>> Then you should add depends on PTP_1588_CLOCK || !PTP_1588_CLOCK.
+>>>>>>
+>>>>>> Maybe somehow the "ionic-y" confuses kbuild and it should be ionic-objs?
+>>>>>>
+>>>>>> At the very least we need a better explanation in the commit message.
+>>>>>>
+>>>>> I'll take a look if someone can point me to the .config file.
+>>>>>
+>>>> These are the notes I got from kernel test robot:
+>>>> https://lore.kernel.org/lkml/202105041020.efEaBOYC-lkp@intel.com/
+>>>> https://lore.kernel.org/lkml/202105041154.GrLZmjGh-lkp@intel.com/
+>>>> https://lore.kernel.org/lkml/202105041634.paURyDp0-lkp@intel.com/
+>>>> https://lore.kernel.org/lkml/202105050636.UXXDl7m2-lkp@intel.com/
+>>> At first glance it looks like Jakub's suggestion of
+>>>>>> Maybe the config in question has PTP as a module and ionic built in?
+>>>>>> Then you should add depends on PTP_1588_CLOCK || !PTP_1588_CLOCK.
+>>> is what is needed, but I'm still doing build testing ATM.
+>> Nope, eat my words. These build issues are not about PTP.
+>> I'm still looking.
+> I have been trying to go to fast.. slow down, wait for the old computer.
+>
+> Back to Jakub's suggestion -- that works for me. (copy-paste, whitespace damaged)
+>
+>
+> --- linux-next-20210506.orig/drivers/net/ethernet/pensando/Kconfig
+> +++ linux-next-20210506/drivers/net/ethernet/pensando/Kconfig
+> @@ -20,6 +20,7 @@ if NET_VENDOR_PENSANDO
+>   config IONIC
+>          tristate "Pensando Ethernet IONIC Support"
+>          depends on 64BIT && PCI
+> +       depends on PTP_1588_CLOCK || !PTP_1588_CLOCK
+>          select NET_DEVLINK
+>          select DIMLIB
+>          help
+>
+> If PTP_1588_CLOCK=m, the depends limits IONIC to =m (or disabled).
+> If PTP_1588_CLOCK is disabled, IONIC can be any of y/m/n.
+>
 
-This patchset has embeded a signature field in "struct page", and xdp_mem_info
-is stored in page_private(), which seems not considering the case for associating
-the page pool with "struct page" directly yet? Is the page pool also stored in
-page_private() and a different signature is used to indicate that?
+Thanks, I'll follow up with this.
+sln
 
-I am not saying we have to do it in this patchset, but we have to consider it
-while we are adding new signature field to "struct page", right?
-
-> Regarding the page_ref_dec(), which as I said sounds doable, I'd prefer
-> playing it safe for now and getting rid of the buffers that somehow ended up
-> holding an extra reference.  Once this gets approved we can go back and try to
-> save the extra space.  I hope I am not wrong but the changes required to
-> support a few extra refcounts should not change the current patches much.
-> 
-> Thanks for taking the time on this!
-
-Thanks all invovled in the effort improving page pool too:)
-
-> /Ilias
-> 
->>>
->>> [1] https://lore.kernel.org/netdev/154413868810.21735.572808840657728172.stgit@firesoul/
->>>
->>> Cheers
->>> /Ilias
->>>
->>> .
->>>
->>
-> 
-> .
-> 
 
