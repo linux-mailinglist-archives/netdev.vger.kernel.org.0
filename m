@@ -2,258 +2,138 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0E312375E65
-	for <lists+netdev@lfdr.de>; Fri,  7 May 2021 03:33:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2EDCC375E73
+	for <lists+netdev@lfdr.de>; Fri,  7 May 2021 03:36:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232578AbhEGBeA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 6 May 2021 21:34:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54072 "EHLO
+        id S233360AbhEGBhu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 6 May 2021 21:37:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54930 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229769AbhEGBd7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 6 May 2021 21:33:59 -0400
-Received: from mail-pj1-x1030.google.com (mail-pj1-x1030.google.com [IPv6:2607:f8b0:4864:20::1030])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE8E5C061574
-        for <netdev@vger.kernel.org>; Thu,  6 May 2021 18:32:59 -0700 (PDT)
-Received: by mail-pj1-x1030.google.com with SMTP id t2-20020a17090a0242b0290155433387beso3769483pje.1
-        for <netdev@vger.kernel.org>; Thu, 06 May 2021 18:32:59 -0700 (PDT)
+        with ESMTP id S229801AbhEGBhu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 6 May 2021 21:37:50 -0400
+Received: from mail-lf1-x12b.google.com (mail-lf1-x12b.google.com [IPv6:2a00:1450:4864:20::12b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 23E41C061574;
+        Thu,  6 May 2021 18:36:51 -0700 (PDT)
+Received: by mail-lf1-x12b.google.com with SMTP id c3so10531454lfs.7;
+        Thu, 06 May 2021 18:36:51 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:date:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=s5IXz0Xh8rnK6C98s15YZFws0grdv+KEyo474HFabyk=;
-        b=LdAuXbbdKicQln3RAzfjvOL26/pIMGfPR4JVc6QHX3R4tpACiDDF2rOD8thKd28dKN
-         TmpfNoVrmKvd4bdmLmzQUMV2icDbkm/i4SeoLiEr5OqgJ1mLLUdwr2VhdnfiRcAxBEUW
-         /RBeXxLsCa/ojNe2Cd6JGR98Is34GqNdIS5YHw4Z/mCOJvTdHWrlqyPQmJfJbJg/9PPS
-         Vwbks05BQKBt8M6Z+C1xvkxjQBG12tbihla3RcAjl6UH/q97QuJUjpg047ukp3ek8jUp
-         Lo+7pDldiZtwe1dSG4N3b9vCQgeSlyRayxRvou+jxl8v+q2sVzrox1AmtJKEonMYzQyv
-         LRWA==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=yp92bb3c6SvtXsIjAOJgzWLF7h8li9Wnf1HLRPggKFg=;
+        b=VbYVVX4p8gqRYI4xPWPKYkP4e7wOcnI/duVCy13AmT+drOv0RR9eehgffrbmMp8tUS
+         viWQHf9f0ApvEKQhbJvHJ4240wkeUGWQWUr/Szxb+fXFNLaLulNQPmsIevMCEX8T6/jr
+         DqDHh2Mg0GsRCN6p9gjp1k3E40YdBAKXYxcosoECRbAIhe5eGZx7LgTsgi+CWdLh6F01
+         Vp/FMv57UWx4nRyvT628mlJGzUab8ukmLe31wA27a4tReKp7VjEn7iR7b4UeW7CjePsX
+         BqlI22usYmDYqSqvJ8AWVe8ngIbK86OMHzvyF9Hvn2/oczGA0MxINu7qx0hJKyeomcBE
+         XW7Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:date:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=s5IXz0Xh8rnK6C98s15YZFws0grdv+KEyo474HFabyk=;
-        b=STJsFJEPeNKeLGcjIeDMem2H1cvPe6P/aTTn28p6lKHgQ4sLhMweWpDgZZJFugZyIx
-         MwFLe09RlZLVYig21xhjEBia1zu/qKELJoDHKd2Ui/kN6F/iqgYaSF3JEHJfYxNT7anG
-         QgZa7ZifJHmyS63kzYA1QKbSyCkD/HOhNhqeYY2UvtfAwkdvKKi9Cl88eq3WO0XAQ/zj
-         F3hyXlxTgRkLI2XwpImc2+ZkSMjp+fzcAPVqY5s9rxgMF6trN6vfBjA9L+TGjQdreVO4
-         4Kugzxy+eRkcJKRFvhlQTQEor65rRRh7txMT1KEwokYxKLSAKVmdF71x5XdHNQY7nGKa
-         q8lg==
-X-Gm-Message-State: AOAM532PBLu9fG3HV/XOCAWKLf4vZXMV8s2AEPP4w9A4cfF810+UKcJk
-        PxLyE9PfHhRXWS59h54aG38=
-X-Google-Smtp-Source: ABdhPJx5uhHkQYLg+5dtt0oVbJQM6So0CXVD99cNOYTg17OJjQSULALbRLtwekQ865KV6OxwsGhGWw==
-X-Received: by 2002:a17:90b:34a:: with SMTP id fh10mr21398701pjb.123.1620351179065;
-        Thu, 06 May 2021 18:32:59 -0700 (PDT)
-Received: from localhost ([209.132.188.80])
-        by smtp.gmail.com with ESMTPSA id n26sm3210079pfq.28.2021.05.06.18.32.57
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 06 May 2021 18:32:58 -0700 (PDT)
-From:   Coiby Xu <coiby.xu@gmail.com>
-X-Google-Original-From: Coiby Xu <Coiby.Xu@gmail.com>
-Date:   Fri, 7 May 2021 09:32:39 +0800
-To:     Benjamin Poirier <benjamin.poirier@gmail.com>
-Cc:     linux-staging@lists.linux.dev, netdev@vger.kernel.org
-Subject: Re: About improving the qlge Ethernet driver by following
- drivers/staging/qlge/TODO
-Message-ID: <20210507013239.4kmzsxtxnrpdqhuk@Rk>
-References: <20210504131421.mijffwcruql2fupn@Rk>
- <YJJegiK9mMvAEQwU@f3>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=yp92bb3c6SvtXsIjAOJgzWLF7h8li9Wnf1HLRPggKFg=;
+        b=SvPUJkDYUChHun1yjfQlztArCwA/04vIpzIB+43fan1NW8lKE6E9WbrmYipfCtRUdw
+         kF7B4TNN3SyKkZC1pP/40orN14hcN4nPL/dLY98IPuRYCNaqju6w4ahhwPqNRS/XEDGa
+         tztgydCk+vMnXEUeQqrXi62MREo80U2ZNJkNNfqFsRJ5k1uMRzsEhh5r9bg5q4hJMmTG
+         a5kDBpwd2LL3bUq5H+6qNfrSRmz4OJGyQVZvbMwOyIyUhOjRYmmcBKxGJyUyIh5+QldN
+         io4aSnaLuwmAirUtCfMfgifNNfkL29pif+f6XTwbyKVcgYiWtSe0FDapF0QK7Ni7MXJM
+         usog==
+X-Gm-Message-State: AOAM533tSWYQMq2aLoItMq7nBo0L/Wi7/e8NiSQU3dHwzqtwETWmKGtO
+        dbsbRzJ8GNV2es+OBAprCT4B1RqRCCHZc5OFn6c=
+X-Google-Smtp-Source: ABdhPJyUFJpvuSJsvsGGISKzUcW11B7p50GcV5lnAf1wGaOYxSigFhSpFAeTnUK/rz15TutmLQqFMmj8wTbJceUjKFU=
+X-Received: by 2002:a05:6512:2036:: with SMTP id s22mr5161234lfs.540.1620351409650;
+ Thu, 06 May 2021 18:36:49 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii; format=flowed
-Content-Disposition: inline
-In-Reply-To: <YJJegiK9mMvAEQwU@f3>
+References: <20210429114712.43783-1-jolsa@kernel.org>
+In-Reply-To: <20210429114712.43783-1-jolsa@kernel.org>
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Date:   Thu, 6 May 2021 18:36:38 -0700
+Message-ID: <CAADnVQLDwjE8KFcqbzB5op5b=fC2941tnnWOtQ+X1DYi6Yw1xA@mail.gmail.com>
+Subject: Re: [PATCHv2] bpf: Add deny list of btf ids check for tracing programs
+To:     Jiri Olsa <jolsa@kernel.org>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andriin@fb.com>,
+        Network Development <netdev@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>, Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, May 05, 2021 at 05:59:46PM +0900, Benjamin Poirier wrote:
->On 2021-05-04 21:14 +0800, Coiby Xu wrote:
->> Hi Benjamin,
->>
->> As you have known, I'm working on improving drivers/staging/qlge. I'm
->> not sure if I correctly understand some TODO items. Since you wrote the TODO
->> list, could you explain some of the items or comment on the
->> corresponding fix for me?
->>
->> > * while in that area, using two 8k buffers to store one 9k frame is a poor
->> >   choice of buffer size.
->>
->> Currently, LARGE_BUFFER_MAX_SIZE is defined as 8192. How about we simply
->> changing LARGE_BUFFER_MAX_SIZE to 4096? This is what
->> drivers/net/ethernet/intel/e1000 does for jumbo frame right now.
+On Thu, Apr 29, 2021 at 4:47 AM Jiri Olsa <jolsa@kernel.org> wrote:
 >
->I think that frags of 4096 would be better for allocations than the
->current scheme. However, I don't know if simply changing that define is
->the only thing to do.
+> The recursion check in __bpf_prog_enter and __bpf_prog_exit
+> leaves some (not inlined) functions unprotected:
 >
->BTW, e1000 was written long ago and not updated much, so it's not the
->reference I would look at generally. Sadly I don't do much kernel
->development anymore so I don't know which one to recommend either :/ If
->I had to guess, I'd say ixgbe is a device of a similar vintage whose
->driver has seen a lot better work.
-
-Thanks! I think we can simply set it to 4096,
-  - I did a basic test. There are two interfaces managed by this qlge
-    driver. I started a HTTP server binded to one interface. And curl -I
-    THE_OTHER_INTERFACE was fine.
-  - ixgbe also set page order to 0 unless FCoE is 
-     // drivers/net/ethernet/intel/ixgbe/ixgbe.h
-     /*
-      * FCoE requires that all Rx buffers be over 2200 bytes in length.  Since
-      * this is twice the size of a half page we need to double the page order
-      * for FCoE enabled Rx queues.
-      */
-     static inline unsigned int ixgbe_rx_bufsz(struct ixgbe_ring *ring)
-     {
-     	if (test_bit(__IXGBE_RX_3K_BUFFER, &ring->state))
-     		return IXGBE_RXBUFFER_3K;
-     #if (PAGE_SIZE < 8192)
-     	if (ring_uses_build_skb(ring))
-     		return IXGBE_MAX_2K_FRAME_BUILD_SKB;
-     #endif
-     	return IXGBE_RXBUFFER_2K;
-     }
-     
-     static inline unsigned int ixgbe_rx_pg_order(struct ixgbe_ring *ring)
-     {
-     #if (PAGE_SIZE < 8192)
-     	if (test_bit(__IXGBE_RX_3K_BUFFER, &ring->state))
-     		return 1;
-     #endif
-     	return 0;
-     }
-   - e1000 does the same thing.
+> In __bpf_prog_enter:
+>   - migrate_disable is called before prog->active is checked
 >
->>
->> > * in the "chain of large buffers" case, the driver uses an skb allocated with
->> >   head room but only puts data in the frags.
->>
->> Do you suggest implementing the copybreak feature which exists for e1000 for
->> this driver, i.e., allocing a sk_buff and coping the header buffer into it?
+> In __bpf_prog_exit:
+>   - migrate_enable,rcu_read_unlock_strict are called after
+>     prog->active is decreased
 >
->No. From the "chain of large buffers" quote, I think I was referring to:
+> When attaching trampoline to them we get panic like:
 >
->\ qlge_refill_sb
->	skb = __netdev_alloc_skb(qdev->ndev, SMALL_BUFFER_SIZE, gfp);
+>   traps: PANIC: double fault, error_code: 0x0
+>   double fault: 0000 [#1] SMP PTI
+>   RIP: 0010:__bpf_prog_enter+0x4/0x50
+>   ...
+>   Call Trace:
+>    <IRQ>
+>    bpf_trampoline_6442466513_0+0x18/0x1000
+>    migrate_disable+0x5/0x50
+>    __bpf_prog_enter+0x9/0x50
+>    bpf_trampoline_6442466513_0+0x18/0x1000
+>    migrate_disable+0x5/0x50
+>    __bpf_prog_enter+0x9/0x50
+>    bpf_trampoline_6442466513_0+0x18/0x1000
+>    migrate_disable+0x5/0x50
+>    __bpf_prog_enter+0x9/0x50
+>    bpf_trampoline_6442466513_0+0x18/0x1000
+>    migrate_disable+0x5/0x50
+>    ...
 >
->\ qlge_build_rx_skb
->		[...]
->		/*
->		 * The data is in a chain of large buffers
->		[...]
->			skb_fill_page_desc(skb, i,
->					   lbq_desc->p.pg_chunk.page,
->					   lbq_desc->p.pg_chunk.offset, size);
->		[...]
->		__pskb_pull_tail(skb, hlen);
+> Fixing this by adding deny list of btf ids for tracing
+> programs and checking btf id during program verification.
+> Adding above functions to this list.
 >
->So out of SMALL_BUFFER_SIZE, only hlen is used. Since SMALL_BUFFER_SIZE
->is only 256, I'm not sure now if this really has any impact. In fact it
->seems in line with ex. what ixgbe does (IXGBE_RX_HDR_SIZE).
-
-Thanks for the clarification. It seems we needn't to change this place.
-
+> Suggested-by: Alexei Starovoitov <ast@kernel.org>
+> Signed-off-by: Jiri Olsa <jolsa@kernel.org>
+> ---
+> v2 changes:
+>   - drop check for EXT programs [Andrii]
 >
->However, in the same area, there is also
->			skb = netdev_alloc_skb(qdev->ndev, length);
->			[...]
->			skb_fill_page_desc(skb, 0, lbq_desc->p.pg_chunk.page,
->					   lbq_desc->p.pg_chunk.offset,
->					   length);
+>  kernel/bpf/verifier.c | 14 ++++++++++++++
+>  1 file changed, 14 insertions(+)
 >
->Why is the skb allocated with "length" size? Something like
->	skb = napi_alloc_skb(&rx_ring->napi, SMALL_BUFFER_SIZE);
->would be better I think. The head only needs enough space for the
->subsequent hlen pull.
-
-Thanks for the explanation! I think this place needs to modified. I'll
-try to figure out how to reach this part of code so I can make sure the
-change wouldn't introduce an issue.
-
-Btw, qlge_process_mac_rx_page also has this issue,
-
-     static void qlge_process_mac_rx_page(struct qlge_adapter *qdev,
-     				     struct rx_ring *rx_ring,
-     				     struct qlge_ib_mac_iocb_rsp *ib_mac_rsp,
-     				     u32 length, u16 vlan_id)
-     {
-     	struct net_device *ndev = qdev->ndev;
-     	struct sk_buff *skb = NULL;
-     	void *addr;
-     	struct qlge_bq_desc *lbq_desc = qlge_get_curr_lchunk(qdev, rx_ring);
-     	struct napi_struct *napi = &rx_ring->napi;
-     	size_t hlen = ETH_HLEN;
-         ...
-     	skb = netdev_alloc_skb(ndev, length);
-     	skb_put_data(skb, addr, hlen);
-         ...
-     	skb_fill_page_desc(skb, 0, lbq_desc->p.pg_chunk.page,
-     			   lbq_desc->p.pg_chunk.offset + hlen, length - hlen);
-
-The code path would include qlge_process_mac_rx_page by
-$ ping -I enp94s0f0 -c 4 -s 8800 -M do 192.168.1.209
-after enabling jumbo frame.  
-
+> diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
+> index 2579f6fbb5c3..42311e51ac71 100644
+> --- a/kernel/bpf/verifier.c
+> +++ b/kernel/bpf/verifier.c
+> @@ -13112,6 +13112,17 @@ int bpf_check_attach_target(struct bpf_verifier_log *log,
+>         return 0;
+>  }
 >
->BTW, it looks like commit f8c047be5401 ("staging: qlge: use qlge_*
->prefix to avoid namespace clashes with other qlogic drivers") missed
->some structures like struct rx_ring. Defines like SMALL_BUFFER_SIZE
->should also have a prefix.
+> +BTF_SET_START(btf_id_deny)
+> +BTF_ID_UNUSED
+> +#ifdef CONFIG_SMP
+> +BTF_ID(func, migrate_disable)
+> +BTF_ID(func, migrate_enable)
+> +#endif
+> +#if !defined CONFIG_PREEMPT_RCU && !defined CONFIG_TINY_RCU
+> +BTF_ID(func, rcu_read_unlock_strict)
+> +#endif
+> +BTF_SET_END(btf_id_deny)
 
-Thanks for the reminding! When renaming rx_ring to a completion queue,
-I'll add a prefix. I'll also add a prefix to other structures. 
->
->>
->> > * fix weird line wrapping (all over, ex. the ql_set_routing_reg() calls in
->> >   qlge_set_multicast_list()).
->>
->> This issue of weird line wrapping is supposed to be all over. But I can
->> only find the ql_set_routing_reg() calls in qlge_set_multicast_list have
->> this problem,
->>
->> 			if (qlge_set_routing_reg
->> 			    (qdev, RT_IDX_PROMISCUOUS_SLOT, RT_IDX_VALID, 1)) {
->>
->> I can't find other places where functions calls put square and arguments
->> in the new line. Could you give more hints?
->
->Here are other examples of what I would call weird line wrapping:
->
->	status = qlge_validate_flash(qdev,
->				     sizeof(struct flash_params_8000) /
->				   sizeof(u16),
->				   "8000");
-
-Oh, I also found this one but I think it more fits another TODO item,
-i.e., "* fix weird indentation (all over, ex. the for loops in
-qlge_get_stats())".
-
->
->	status = qlge_wait_reg_rdy(qdev,
->				   XGMAC_ADDR, XGMAC_ADDR_RDY, XGMAC_ADDR_XME);
->
->[...]
-
-Do you mean we should change it as follows,
-
-
-	status = qlge_wait_reg_rdy(qdev, XGMAC_ADDR, XGMAC_ADDR_RDY,
-				               XGMAC_ADDR_XME);
-
-"V=" in vim could detect some indentation problems but not the line
-wrapping issue. So I just scanned the code manually to find this issue. 
-Do you know there is a tool that could check if the code fits the kernel
-coding style?
-
->
->I put that item towards the end of the TODO list because I think the
->misshapen formatting and the ridiculous overuse of () in expressions
->serve a useful purpose. They clearly point to the code that hasn't yet
->been rewritten; they make it easy to know what code to audit. Because of
->that, I strongly think it would be better to tackle the TODO list
->(roughly) in order.
-
-Thanks for this tip! I'll tackle the TODO list in order.
-
--- 
-Best regards,
-Coiby
+I was wondering whether it makes sense to do this on pahole side instead ?
+It can do more flexible regex matching and excluding all such functions
+from vmlinux btf without the kernel having to do a maze of #ifdef
+depending on config.
+On one side we will lose BTF info about such functions, but what do we
+need it for?
+On the other side it will be a tiny reduction in vmlinux btf :)
+Thoughts?
