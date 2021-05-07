@@ -2,189 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 05645375D76
-	for <lists+netdev@lfdr.de>; Fri,  7 May 2021 01:33:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 838EF375DC4
+	for <lists+netdev@lfdr.de>; Fri,  7 May 2021 02:02:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232466AbhEFXd5 convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Thu, 6 May 2021 19:33:57 -0400
-Received: from mga02.intel.com ([134.134.136.20]:11647 "EHLO mga02.intel.com"
+        id S233294AbhEGAC7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 6 May 2021 20:02:59 -0400
+Received: from mail.kernel.org ([198.145.29.99]:44852 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231976AbhEFXd5 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 6 May 2021 19:33:57 -0400
-IronPort-SDR: R5+qV8xclRUTeEOJWRptI7qJzNonRtpqj3ncqK1fwMM4VT9i9guUxaDwIidQ0iRGlTL5KKDxln
- hsl6FM2ouDEQ==
-X-IronPort-AV: E=McAfee;i="6200,9189,9976"; a="185734856"
-X-IronPort-AV: E=Sophos;i="5.82,279,1613462400"; 
-   d="scan'208";a="185734856"
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 May 2021 16:32:58 -0700
-IronPort-SDR: SyYW2Uu45XN+OQnBcYgF7KtLJ/Ct2eQfE2TkRgO5N1AWRpzfcQwyu2GG/1T9WmGjQvHga6jIzw
- JkpsVkBTgnig==
-X-IronPort-AV: E=Sophos;i="5.82,279,1613462400"; 
-   d="scan'208";a="389805902"
-Received: from jbrandeb-mobl4.amr.corp.intel.com (HELO localhost) ([10.212.202.181])
-  by orsmga003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 May 2021 16:32:57 -0700
-Date:   Thu, 6 May 2021 16:32:57 -0700
-From:   Jesse Brandeburg <jesse.brandeburg@intel.com>
-To:     Alexander Duyck <alexander.duyck@gmail.com>
-Cc:     Oleksandr Natalenko <oleksandr@natalenko.name>,
-        Jakub Kicinski <kuba@kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        "Nguyen, Anthony L" <anthony.l.nguyen@intel.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        intel-wired-lan <intel-wired-lan@lists.osuosl.org>,
-        Netdev <netdev@vger.kernel.org>
-Subject: Re: [igb] netconsole triggers warning in netpoll_poll_dev
-Message-ID: <20210506163257.000036fe@intel.com>
-In-Reply-To: <CAKgT0Uemubh8yP+UXh-n-YceheFRZO+hYpxtqs+=vedv7hbv4w@mail.gmail.com>
-References: <20210406123619.rhvtr73xwwlbu2ll@spock.localdomain>
-        <20210406114734.0e00cb2f@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <20210407060053.wyo75mqwcva6w6ci@spock.localdomain>
-        <20210407083748.56b9c261@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <CAKgT0UfLLQycLsAZQ98ofBGYPwejA6zHbG6QsNrU92mizS7e0g@mail.gmail.com>
-        <20210407110722.1eb4ebf2@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <CAKgT0UcQXVOifi_2r_Y6meg_zvHDBf1me8VwA4pvEtEMzOaw2Q@mail.gmail.com>
-        <20210423081944.kvvm4v7jcdyj74l3@spock.localdomain>
-        <20210423155836.25ef1e77@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <20210426064736.7efynita4brzos4u@spock.localdomain>
-        <CAKgT0Uemubh8yP+UXh-n-YceheFRZO+hYpxtqs+=vedv7hbv4w@mail.gmail.com>
-X-Mailer: Claws Mail 3.12.0 (GTK+ 2.24.28; i686-w64-mingw32)
+        id S232375AbhEGAC6 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 6 May 2021 20:02:58 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 98D0F61164;
+        Fri,  7 May 2021 00:01:58 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1620345719;
+        bh=OnZ8E8ucGobRrYWP6K56v9dvJ/+sAsK5BzaPSU1d9Hw=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=qrq87rGu4EWRk54rAiG8OLLqbwFB/dWuNDBn62M5RZNh3UJCJI1Q59HJ3pkcVgyXD
+         cDFRZ1qM3AMzx6C7gNZa8L4/eBy3KNBeTxsbZbUABpmWrelr8bK+YfdKtpE8va3Zbr
+         cpdtOpVPLGHsQp3UXfts6yiYW2e1DCGSoe3cK+o800KztRvgb4X3ReGtU3+iXepEfD
+         XCxKkXLFNUXYEO2+X0vhgLvgPmBSQBvWItsnmtwQal2imL5tWAEnO6dt7tdLB1bjgb
+         gdOJqRCShFO9vsirw1I0nFHO8bFeXO2DhArIaCQFclNfxiV9i8LstLgk0jVdlMIYoo
+         mAG1OpKJMfGnw==
+Date:   Thu, 6 May 2021 17:01:57 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     =?UTF-8?B?xYF1a2Fzeg==?= Stelmach <l.stelmach@samsung.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Andrew Lunn <andrew@lunn.ch>, jim.cromie@gmail.com,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Kukjin Kim <kgene@kernel.org>,
+        Krzysztof Kozlowski <krzk@kernel.org>,
+        Russell King <linux@armlinux.org.uk>, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-samsung-soc@vger.kernel.org,
+        =?UTF-8?B?QmFydMWCb21pZWogxbtvbG5pZXJr?= =?UTF-8?B?aWV3aWN6?= 
+        <b.zolnierkie@samsung.com>,
+        Marek Szyprowski <m.szyprowski@samsung.com>
+Subject: Re: [RESEND PATCH v11 0/3] AX88796C SPI Ethernet Adapter
+Message-ID: <20210506170157.6deb1b6d@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <dleftjim3x2jhw.fsf%l.stelmach@samsung.com>
+References: <20210302152250.27113-1-l.stelmach@samsung.com>
+        <CGME20210505171151eucas1p15785129622c00205d1d071a2fcaa30e8@eucas1p1.samsung.com>
+        <dleftjim3x2jhw.fsf%l.stelmach@samsung.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 8BIT
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Alexander Duyck wrote:
-
-> On Sun, Apr 25, 2021 at 11:47 PM Oleksandr Natalenko
-> <oleksandr@natalenko.name> wrote:
+On Wed, 05 May 2021 19:11:39 +0200 =C5=81ukasz Stelmach wrote:
+> It was <2021-03-02 wto 16:22>, when =C5=81ukasz Stelmach wrote:
+> > This is a driver for AX88796C Ethernet Adapter connected in SPI mode as
+> > found on ARTIK5 evaluation board. The driver has been ported from a
+> > v3.10.9 vendor kernel for ARTIK5 board.
 > >
-> > Hello.
-> >
-> > On Fri, Apr 23, 2021 at 03:58:36PM -0700, Jakub Kicinski wrote:
-> > > On Fri, 23 Apr 2021 10:19:44 +0200 Oleksandr Natalenko wrote:
-> > > > On Wed, Apr 07, 2021 at 04:06:29PM -0700, Alexander Duyck wrote:
-> > > > > On Wed, Apr 7, 2021 at 11:07 AM Jakub Kicinski <kuba@kernel.org> wrote:
-> > > > > > Sure, that's simplest. I wasn't sure something is supposed to prevent
-> > > > > > this condition or if it's okay to cover it up.
-> > > > >
-> > > > > I'm pretty sure it is okay to cover it up. In this case the "budget -
-> > > > > 1" is supposed to be the upper limit on what can be reported. I think
-> > > > > it was assuming an unsigned value anyway.
-> > > > >
-> > > > > Another alternative would be to default clean_complete to !!budget.
-> > > > > Then if budget is 0 clean_complete would always return false.
-> > > >
-> > > > So, among all the variants, which one to try? Or there was a separate
-> > > > patch sent to address this?
-> > >
-> > > Alex's suggestion is probably best.
-> > >
-> > > I'm not aware of the fix being posted. Perhaps you could take over and
-> > > post the patch if Intel doesn't chime in?
-> >
-> > So, IIUC, Alex suggests this:
-> >
-> > ```
-> > diff --git a/drivers/net/ethernet/intel/igb/igb_main.c b/drivers/net/ethernet/intel/igb/igb_main.c
-> > index a45cd2b416c8..7503d5bf168a 100644
-> > --- a/drivers/net/ethernet/intel/igb/igb_main.c
-> > +++ b/drivers/net/ethernet/intel/igb/igb_main.c
-> > @@ -7981,7 +7981,7 @@ static int igb_poll(struct napi_struct *napi, int budget)
-> >                                                      struct igb_q_vector,
-> >                                                      napi);
-> >         bool clean_complete = true;
-> > -       int work_done = 0;
-> > +       unsigned int work_done = 0;
-> >
-> >  #ifdef CONFIG_IGB_DCA
-> >         if (q_vector->adapter->flags & IGB_FLAG_DCA_ENABLED)
-> > @@ -8008,7 +8008,7 @@ static int igb_poll(struct napi_struct *napi, int budget)
-> >         if (likely(napi_complete_done(napi, work_done)))
-> >                 igb_ring_irq_enable(q_vector);
-> >
-> > -       return min(work_done, budget - 1);
-> > +       return min_t(unsigned int, work_done, budget - 1);
-> >  }
-> >
-> >  /**
-> > ```
-> >
-> > Am I right?
-> >
-> > Thanks.
-> 
-> Actually a better way to go would be to probably just initialize
-> "clean_complete = !!budget". With that we don't have it messing with
-> the interrupt enables which would probably be a better behavior.
+> > Changes in v11:
+> >   - changed stat counters to 64-bit
+> >   - replaced WARN_ON(!mutex_is_locked()) with lockdep_assert_held()
+> >   - replaced ax88796c_free_skb_queue() with __skb_queue_purge()
+> >   - added cancel_work_sync() for ax_work
+> >   - removed unused fields of struct skb_data
+> >   - replaced MAX() with max() from minmax.h
+> >   - rebased to net-next (resend) =20
+>=20
+> Hi,
+>=20
+> What is current status? Should I rebase once more?
 
+Unfortunately it seems so :( The patches got marked as Not Applicable
+in patchwork. And now we are once again in the merge window period.
+Please repost late next week, and make sure to prefix the subjects with
+[PATCH net-next v12], this will hopefully prevent mis-categorization.
 
-Thanks guys for the suggestions here! Finally got some time for
-this, so here is the patch I'm going to queue shortly.
-
-From ffd24e90d688ee347ab051266bfc7fca00324a68 Mon Sep 17 00:00:00 2001
-From: Jesse Brandeburg <jesse.brandeburg@intel.com>
-Date: Thu, 6 May 2021 14:41:11 -0700
-Subject: [PATCH net] igb: fix netpoll exit with traffic
-To: netdev,
-    Oleksandr Natalenko <oleksandr@natalenko.name>
-Cc: Jakub Kicinski <kuba@kernel.org>, LKML <linux-kernel@vger.kernel.org>, "Brandeburg, Jesse" <jesse.brandeburg@intel.com>, "Nguyen, Anthony L" <anthony.l.nguyen@intel.com>, "David S. Miller" <davem@davemloft.net>, intel-wired-lan <intel-wired-lan@lists.osuosl.org>, Alexander Duyck <alexander.duyck@gmail.com>
-
-Oleksandr brought a bug report where netpoll causes trace messages in
-the log on igb.
-
-[22038.710800] ------------[ cut here ]------------
-[22038.710801] igb_poll+0x0/0x1440 [igb] exceeded budget in poll
-[22038.710802] WARNING: CPU: 12 PID: 40362 at net/core/netpoll.c:155 netpoll_poll_dev+0x18a/0x1a0
-
-After some discussion and debug from the list, it was deemed that the
-right thing to do is initialize the clean_complete variable to false
-when the "netpoll mode" of passing a zero budget is used.
-
-This logic should be sane and not risky because the only time budget
-should be zero on entry is netpoll.  Change includes a small refactor
-of local variable assignments to clean up the look.
-
-Fixes: 16eb8815c235 ("igb: Refactor clean_rx_irq to reduce overhead and improve performance")
-Reported-by: Oleksandr Natalenko <oleksandr@natalenko.name>
-Suggested-by: Alexander Duyck <alexander.duyck@gmail.com>
-Signed-off-by: Jesse Brandeburg <jesse.brandeburg@intel.com>
----
-
-Compile tested ONLY, but functionally it should be exactly the same for
-all cases except when budget is zero on entry, which will hopefully fix
-the bug.
----
- drivers/net/ethernet/intel/igb/igb_main.c | 12 ++++++++----
- 1 file changed, 8 insertions(+), 4 deletions(-)
-
-diff --git a/drivers/net/ethernet/intel/igb/igb_main.c b/drivers/net/ethernet/intel/igb/igb_main.c
-index 0cd37ad81b4e..b0a9bed14071 100644
---- a/drivers/net/ethernet/intel/igb/igb_main.c
-+++ b/drivers/net/ethernet/intel/igb/igb_main.c
-@@ -7991,12 +7991,16 @@ static void igb_ring_irq_enable(struct igb_q_vector *q_vector)
-  **/
- static int igb_poll(struct napi_struct *napi, int budget)
- {
--	struct igb_q_vector *q_vector = container_of(napi,
--						     struct igb_q_vector,
--						     napi);
--	bool clean_complete = true;
-+	struct igb_q_vector *q_vector;
-+	bool clean_complete;
- 	int work_done = 0;
- 
-+	/* if budget is zero, we have a special case for netconsole, so
-+	 * make sure to set clean_complete to false in that case.
-+	 */
-+	clean_complete = !!budget;
-+
-+	q_vector = container_of(napi, struct igb_q_vector, napi);
- #ifdef CONFIG_IGB_DCA
- 	if (q_vector->adapter->flags & IGB_FLAG_DCA_ENABLED)
- 		igb_update_dca(q_vector);
--- 
-2.30.2
-
+Looking at the code again is the use of netif_stop_queue(ndev) in
+ax88796c_close() not a little racy? The work may be running in parallel=20
+and immediately re-enable the queue.
