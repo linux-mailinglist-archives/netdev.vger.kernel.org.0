@@ -2,162 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5A0A8375F23
-	for <lists+netdev@lfdr.de>; Fri,  7 May 2021 05:26:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0B1B5375FC3
+	for <lists+netdev@lfdr.de>; Fri,  7 May 2021 07:41:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230410AbhEGD1K (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 6 May 2021 23:27:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50532 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230377AbhEGD1I (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 6 May 2021 23:27:08 -0400
-Received: from mail-pl1-x636.google.com (mail-pl1-x636.google.com [IPv6:2607:f8b0:4864:20::636])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C92B9C061574
-        for <netdev@vger.kernel.org>; Thu,  6 May 2021 20:26:08 -0700 (PDT)
-Received: by mail-pl1-x636.google.com with SMTP id h7so4462700plt.1
-        for <netdev@vger.kernel.org>; Thu, 06 May 2021 20:26:08 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=pensando.io; s=google;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-transfer-encoding:content-language;
-        bh=gJaFed0wY00nTCYMKyAT4BeNXU9a28r1uwn6VpBfIhw=;
-        b=QqprI70irvJ63PrgI8B7wwMkgnbrfszvI+hsLrO0v5jomLcHCOifwZxPSO5LcRbrxB
-         KFp76cVAHbHaRtPH78YiAXCfA0FXKlAaWqT9U6BbGZpAhzdMOm2VvmJ4qug2B7h270dn
-         A8841PUjVf5TohTEfctAGtocMsNieJ2n6A9eut8GBxUPyiL2nXb0CR3NxeQh+EHT73nB
-         MRcD68q05PiawJHQyS2dtEBtl6g8GOt9p/PA/f2SBR5u43saDLo5YXQulWz5BNeBOfix
-         dvMt1Na+y5jGrdsGr2lW1MFOIuIWIiWPVHF3nPB/DKPfy3nBQmlgANCqejLSW2NK5XVW
-         f3hw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-transfer-encoding
-         :content-language;
-        bh=gJaFed0wY00nTCYMKyAT4BeNXU9a28r1uwn6VpBfIhw=;
-        b=TVZyQOOhaWaiwXKxBGn8jWRKM6sJIr2wuEQH/qE3u32B1cbz6xRFYGjVlb1pXyq7Hg
-         mIKaY3cvH/FBSCMJNG+T3BxrwTwsQKFFvnY2lP0fCN1q5W+nnyjTxznRsvTtJSGhdexe
-         XJ/qB4KwUrC705NWAhcgVD/3GXcGzvpSYVlBH1I9kIRQgG1YkYyAmo6kj0Az+ilZkl0t
-         yblc+Q/R0OG1S1w13jv4lrywi2klB+aADLCdt8CDzzkzQNjsuEfNt0Ufzsc1poxPZ9/T
-         z8aK19CmfugaH3T/z9RfTNfeKZYnZUxic6t/UtKj/p/GMkMUfNlV0NPy54xqtxKy6ppc
-         Nu1g==
-X-Gm-Message-State: AOAM532LVw16PQU5k3l1r5NtynLbToD4Wl+7MBXGFvam3W1xQ9aFnb/i
-        KqYH/RuEcpf71tVwOlhCmAhTGZ/Xc2KwWA==
-X-Google-Smtp-Source: ABdhPJxxV6HmISwgBRNubRD8+rjL79roAxvr5HehXE4tnbVOVsWet0hGEOgdnS51qpH431OTwcq4TA==
-X-Received: by 2002:a17:90b:3504:: with SMTP id ls4mr20209297pjb.222.1620357968236;
-        Thu, 06 May 2021 20:26:08 -0700 (PDT)
-Received: from Shannons-MacBook-Pro.local ([50.53.47.17])
-        by smtp.gmail.com with ESMTPSA id m9sm3047904pgt.65.2021.05.06.20.26.06
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 06 May 2021 20:26:07 -0700 (PDT)
-Subject: Re: [PATCH v3 net] ionic: fix ptp support config breakage
-To:     Randy Dunlap <rdunlap@infradead.org>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, drivers@pensando.io,
-        Allen Hubbe <allenbh@pensando.io>
-References: <20210506041846.62502-1-snelson@pensando.io>
- <20210506171529.0d95c9da@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <b3099289-0ae4-7a4f-6739-55f788418eb8@infradead.org>
- <d412627d-467d-8e19-f4b6-2899afa1845d@pensando.io>
- <4e831e77-0688-f3a9-1202-76f88230c7a8@infradead.org>
- <4f3f61ad-08dd-0bba-bd8e-8cb16b466012@infradead.org>
- <583aeb80-4ac8-06ac-67f7-d717415523dd@infradead.org>
-From:   Shannon Nelson <snelson@pensando.io>
-Message-ID: <ed18d03f-d467-5fe9-7b04-0fd474128d0b@pensando.io>
-Date:   Thu, 6 May 2021 20:26:05 -0700
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
- Gecko/20100101 Thunderbird/78.10.1
+        id S230444AbhEGFm1 convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Fri, 7 May 2021 01:42:27 -0400
+Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:17098 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S230446AbhEGFm0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 7 May 2021 01:42:26 -0400
+Received: from pps.filterd (m0109333.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 1475dndV020971
+        for <netdev@vger.kernel.org>; Thu, 6 May 2021 22:41:27 -0700
+Received: from maileast.thefacebook.com ([163.114.130.16])
+        by mx0a-00082601.pphosted.com with ESMTP id 38csqa9aqu-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
+        for <netdev@vger.kernel.org>; Thu, 06 May 2021 22:41:27 -0700
+Received: from intmgw001.37.frc1.facebook.com (2620:10d:c0a8:1b::d) by
+ mail.thefacebook.com (2620:10d:c0a8:83::7) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2176.2; Thu, 6 May 2021 22:41:26 -0700
+Received: by devbig012.ftw2.facebook.com (Postfix, from userid 137359)
+        id 01CC72ED7617; Thu,  6 May 2021 22:41:22 -0700 (PDT)
+From:   Andrii Nakryiko <andrii@kernel.org>
+To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>, <ast@fb.com>,
+        <daniel@iogearbox.net>
+CC:     <andrii@kernel.org>, <kernel-team@fb.com>
+Subject: [RFC PATCH bpf-next 0/7] BPF static linker: global symbols visibility
+Date:   Thu, 6 May 2021 22:41:12 -0700
+Message-ID: <20210507054119.270888-1-andrii@kernel.org>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-In-Reply-To: <583aeb80-4ac8-06ac-67f7-d717415523dd@infradead.org>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 8bit
-Content-Language: en-US
+Content-Transfer-Encoding: 8BIT
+X-FB-Internal: Safe
+Content-Type: text/plain
+X-Proofpoint-GUID: fDdLOkZPi8o05Lbrld5IUhbxzNkIdOgq
+X-Proofpoint-ORIG-GUID: fDdLOkZPi8o05Lbrld5IUhbxzNkIdOgq
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.391,18.0.761
+ definitions=2021-05-07_01:2021-05-06,2021-05-07 signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 suspectscore=0
+ bulkscore=0 lowpriorityscore=0 mlxlogscore=999 clxscore=1015 mlxscore=0
+ adultscore=0 priorityscore=1501 spamscore=0 phishscore=0 impostorscore=0
+ malwarescore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2104190000 definitions=main-2105070042
+X-FB-Internal: deliver
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 5/6/21 6:30 PM, Randy Dunlap wrote:
-> On 5/6/21 6:16 PM, Randy Dunlap wrote:
->> On 5/6/21 6:12 PM, Randy Dunlap wrote:
->>> On 5/6/21 5:48 PM, Shannon Nelson wrote:
->>>> On 5/6/21 5:21 PM, Randy Dunlap wrote:
->>>>> On 5/6/21 5:15 PM, Jakub Kicinski wrote:
->>>>>> On Wed,  5 May 2021 21:18:46 -0700 Shannon Nelson wrote:
->>>>>>> Driver link failed with undefined references in some
->>>>>>> kernel config variations.
->>>>>> This is really vague and the patch is not very obvious.
-> When IONIC=y and PTP_1588_CLOCK=m...
->
->>>>>>>    ionic-y := ionic_main.o ionic_bus_pci.o ionic_devlink.o ionic_dev.o \
->>>>>>>           ionic_debugfs.o ionic_lif.o ionic_rx_filter.o ionic_ethtool.o \
->>>>>>> -       ionic_txrx.o ionic_stats.o ionic_fw.o
->>>>>>> -ionic-$(CONFIG_PTP_1588_CLOCK) += ionic_phc.o
->>>>>>> +       ionic_txrx.o ionic_stats.o ionic_fw.o ionic_phc.o
->>>>>> So we'd replace a build dependency..
->>>>>>
->>>>>>> diff --git a/drivers/net/ethernet/pensando/ionic/ionic_phc.c b/drivers/net/ethernet/pensando/ionic/ionic_phc.c
->>>>>>> index a87c87e86aef..30c78808c45a 100644
->>>>>>> --- a/drivers/net/ethernet/pensando/ionic/ionic_phc.c
->>>>>>> +++ b/drivers/net/ethernet/pensando/ionic/ionic_phc.c
->>>>>>> @@ -1,6 +1,8 @@
->>>>>>>    // SPDX-License-Identifier: GPL-2.0
->>>>>>>    /* Copyright(c) 2017 - 2021 Pensando Systems, Inc */
->>>>>>>    +#if IS_ENABLED(CONFIG_PTP_1588_CLOCK)
->>>>>>> +
->>>>>>>    #include <linux/netdevice.h>
->>>>>>>    #include <linux/etherdevice.h>
->>>>>>>    @@ -613,3 +615,4 @@ void ionic_lif_free_phc(struct ionic_lif *lif)
->>>>>>>        devm_kfree(lif->ionic->dev, lif->phc);
->>>>>>>        lif->phc = NULL;
->>>>>>>    }
->>>>>>> +#endif /* IS_ENABLED(CONFIG_PTP_1588_CLOCK) */
->>>>>> .. with an ifdef around an entire file? Does not feel very clean.
->>>>>>
->>>>>> The construct of using:
->>>>>>
->>>>>>      drv-$(CONFIG_PTP_1588_CLOCK) += ptp.o
->>>>>>
->>>>>> seems relatively common, why does it now work here?
->>>>>>
->>>>>> Maybe the config in question has PTP as a module and ionic built in?
->>>>>> Then you should add depends on PTP_1588_CLOCK || !PTP_1588_CLOCK.
->>>>>>
->>>>>> Maybe somehow the "ionic-y" confuses kbuild and it should be ionic-objs?
->>>>>>
->>>>>> At the very least we need a better explanation in the commit message.
->>>>>>
->>>>> I'll take a look if someone can point me to the .config file.
->>>>>
->>>> These are the notes I got from kernel test robot:
->>>> https://lore.kernel.org/lkml/202105041020.efEaBOYC-lkp@intel.com/
->>>> https://lore.kernel.org/lkml/202105041154.GrLZmjGh-lkp@intel.com/
->>>> https://lore.kernel.org/lkml/202105041634.paURyDp0-lkp@intel.com/
->>>> https://lore.kernel.org/lkml/202105050636.UXXDl7m2-lkp@intel.com/
->>> At first glance it looks like Jakub's suggestion of
->>>>>> Maybe the config in question has PTP as a module and ionic built in?
->>>>>> Then you should add depends on PTP_1588_CLOCK || !PTP_1588_CLOCK.
->>> is what is needed, but I'm still doing build testing ATM.
->> Nope, eat my words. These build issues are not about PTP.
->> I'm still looking.
-> I have been trying to go to fast.. slow down, wait for the old computer.
->
-> Back to Jakub's suggestion -- that works for me. (copy-paste, whitespace damaged)
->
->
-> --- linux-next-20210506.orig/drivers/net/ethernet/pensando/Kconfig
-> +++ linux-next-20210506/drivers/net/ethernet/pensando/Kconfig
-> @@ -20,6 +20,7 @@ if NET_VENDOR_PENSANDO
->   config IONIC
->          tristate "Pensando Ethernet IONIC Support"
->          depends on 64BIT && PCI
-> +       depends on PTP_1588_CLOCK || !PTP_1588_CLOCK
->          select NET_DEVLINK
->          select DIMLIB
->          help
->
-> If PTP_1588_CLOCK=m, the depends limits IONIC to =m (or disabled).
-> If PTP_1588_CLOCK is disabled, IONIC can be any of y/m/n.
->
+This RFC explores dropping static variables from BPF skeleton and leaving them
+for use only within BPF object file. Instead, BPF static linker is extended
+with support for controlling global symbol visibility outside of a single BPF
+object file through STV_HIDDEN and STV_INTERNAL ELF symbol visibility.
 
-Thanks, I'll follow up with this.
-sln
+See patch #7 for all the details, justification, and comparison with
+user-space linker behavior.
 
+Andrii Nakryiko (7):
+  bpftool: strip const/volatile/restrict modifiers from .bss and .data
+    vars
+  libbpf: add per-file linker opts
+  selftests/bpf: stop using static variables for passing data to/from
+    user-space
+  bpftool: stop emitting static variables in BPF skeleton
+  libbpf: fix ELF symbol visibility update logic
+  libbpf: treat STV_INTERNAL same as STV_HIDDEN for functions
+  libbpf: convert STV_HIDDEN symbols into STV_INTERNAL after linking
+
+ tools/bpf/bpftool/gen.c                       |  8 ++-
+ tools/lib/bpf/libbpf.c                        | 11 ++--
+ tools/lib/bpf/libbpf.h                        | 10 ++-
+ tools/lib/bpf/linker.c                        | 62 +++++++++++++++----
+ .../selftests/bpf/prog_tests/send_signal.c    |  2 +-
+ .../selftests/bpf/prog_tests/skeleton.c       |  6 +-
+ .../selftests/bpf/prog_tests/static_linked.c  |  5 --
+ .../selftests/bpf/progs/bpf_iter_test_kern4.c |  4 +-
+ tools/testing/selftests/bpf/progs/kfree_skb.c |  4 +-
+ tools/testing/selftests/bpf/progs/tailcall3.c |  2 +-
+ tools/testing/selftests/bpf/progs/tailcall4.c |  2 +-
+ tools/testing/selftests/bpf/progs/tailcall5.c |  2 +-
+ .../selftests/bpf/progs/tailcall_bpf2bpf2.c   |  2 +-
+ .../selftests/bpf/progs/tailcall_bpf2bpf4.c   |  2 +-
+ .../selftests/bpf/progs/test_check_mtu.c      |  4 +-
+ .../selftests/bpf/progs/test_cls_redirect.c   |  4 +-
+ .../bpf/progs/test_global_func_args.c         |  2 +-
+ .../selftests/bpf/progs/test_rdonly_maps.c    |  6 +-
+ .../selftests/bpf/progs/test_skeleton.c       |  4 +-
+ .../bpf/progs/test_snprintf_single.c          |  2 +-
+ .../selftests/bpf/progs/test_sockmap_listen.c |  4 +-
+ .../selftests/bpf/progs/test_static_linked1.c |  8 +--
+ .../selftests/bpf/progs/test_static_linked2.c |  8 +--
+ 23 files changed, 105 insertions(+), 59 deletions(-)
+
+-- 
+2.30.2
 
