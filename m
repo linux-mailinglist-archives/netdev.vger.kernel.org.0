@@ -2,104 +2,149 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 41AC03761C4
-	for <lists+netdev@lfdr.de>; Fri,  7 May 2021 10:19:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5BF833761CE
+	for <lists+netdev@lfdr.de>; Fri,  7 May 2021 10:22:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236032AbhEGIUA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 7 May 2021 04:20:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58808 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236025AbhEGIUA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 7 May 2021 04:20:00 -0400
-Received: from mail-lj1-x233.google.com (mail-lj1-x233.google.com [IPv6:2a00:1450:4864:20::233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 84703C061761
-        for <netdev@vger.kernel.org>; Fri,  7 May 2021 01:18:58 -0700 (PDT)
-Received: by mail-lj1-x233.google.com with SMTP id a36so10478756ljq.8
-        for <netdev@vger.kernel.org>; Fri, 07 May 2021 01:18:58 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cloudflare.com; s=google;
-        h=references:user-agent:from:to:cc:subject:in-reply-to:date
-         :message-id:mime-version;
-        bh=MWUVk7yj4646QDn77Qt6hcagY8Hi56LhWTAfIF7pdMg=;
-        b=DbVZ6yH9o0FYTy0CiT+ADnreY6dYlUSWyGcLtWbjKd3sAAUljty/16PHsUoM/pi12a
-         mJKhcbvaKymrnjtvRMMXSuzu1n5LorL4FJIQkfVtDsDzcYqQtzVWn7NnvRHydCJp02Um
-         fSw4gPpR5hxX/GwrFhcYlhl6xT2NpCApEXp/8=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:references:user-agent:from:to:cc:subject
-         :in-reply-to:date:message-id:mime-version;
-        bh=MWUVk7yj4646QDn77Qt6hcagY8Hi56LhWTAfIF7pdMg=;
-        b=czjxdg/mmFkmzFXLG3wfWjJSo7TbghL0X84oAbIS/u1fvZeShuOYoSMxe2uibnNWMG
-         0Fceek37rg8lrYSrFJmrvGN1VSkdVmt8aMiscCwrf3MXbRNzkXWyQeKXAXeu2lQBROhy
-         zOfvYURyDvYJaUuD6Jx2vay9kZdummTBgEBSHFp3k8SLyzVxlaBl5YP2rDK7PLJIJ6Jt
-         v9SmmIGozBJTy5cSewMer968GOJ+/vqHg5Faj/rt7oMvBSwwGzLA4QG+Pf3vP16+Y9J+
-         4VnYwIw17CMcob85LlfBCZSF2oeG2iUhYUCYW6Q2wfvMC1c0WjSfEybY8piRblIuUvmM
-         0OFA==
-X-Gm-Message-State: AOAM531FF0o1VLdzqu990Ug1mIA6G+4z/EOCbqpTJ9t5euBQCrqmP1zs
-        xoq9XyLkxT5ao1j3k25ekn757g==
-X-Google-Smtp-Source: ABdhPJypd6aRbK0rSSS+jySi5DZGTAj8XBKj+Bp2XKwZBIBwOv4W4kOyj8SEKhV5o/W7k41GbM3zzA==
-X-Received: by 2002:a2e:581a:: with SMTP id m26mr6768114ljb.493.1620375536887;
-        Fri, 07 May 2021 01:18:56 -0700 (PDT)
-Received: from cloudflare.com (83.31.64.64.ipv4.supernova.orange.pl. [83.31.64.64])
-        by smtp.gmail.com with ESMTPSA id n20sm1284526lfq.186.2021.05.07.01.18.55
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 07 May 2021 01:18:56 -0700 (PDT)
-References: <20210426025001.7899-1-xiyou.wangcong@gmail.com>
- <20210426025001.7899-5-xiyou.wangcong@gmail.com>
-User-agent: mu4e 1.1.0; emacs 27.2
-From:   Jakub Sitnicki <jakub@cloudflare.com>
-To:     Cong Wang <xiyou.wangcong@gmail.com>
-Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
-        jiang.wang@bytedance.com, duanxiongchun@bytedance.com,
-        wangdongdong.6@bytedance.com, Cong Wang <cong.wang@bytedance.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Lorenz Bauer <lmb@cloudflare.com>
-Subject: Re: [Patch bpf-next v3 04/10] af_unix: set TCP_ESTABLISHED for
- datagram sockets too
-In-reply-to: <20210426025001.7899-5-xiyou.wangcong@gmail.com>
-Date:   Fri, 07 May 2021 10:18:54 +0200
-Message-ID: <87mtt7ufbl.fsf@cloudflare.com>
+        id S236099AbhEGIXE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 7 May 2021 04:23:04 -0400
+Received: from mout01.posteo.de ([185.67.36.65]:34517 "EHLO mout01.posteo.de"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S236093AbhEGIXD (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 7 May 2021 04:23:03 -0400
+Received: from submission (posteo.de [89.146.220.130]) 
+        by mout01.posteo.de (Postfix) with ESMTPS id 7C0F3240034
+        for <netdev@vger.kernel.org>; Fri,  7 May 2021 10:22:02 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=posteo.de; s=2017;
+        t=1620375722; bh=LYA5ogitjTp7jwaXbk6FDjY+jUFSRv5AMDTWb3PgxcM=;
+        h=To:Cc:From:Autocrypt:Subject:Date:From;
+        b=hkz/9WGK8SMbNSOb/7YDPbHmZ3tQWLak+Ug4HKi0ZTf0n5GABSokd1YZn56Angikm
+         C3uUKYgBXrJOLc/gjZ9gUcyVPvnBOrWYAtrJ196rQl4uUHBXLgrj7n8CceBE4AR8j6
+         gf1iFMmcLB6B4vxtX2fz8PtPrvGCVVxZBMKiwAq4EKHcAnCEPR8KEvgqhfSSawFTU6
+         HYQSsttvcigUjhm1P0WQuETB5O1Lh0GBHOlnHoVPtBZ3uLmgiV6V+4zDSz6HmTlFtG
+         jm90D4uspL+WYXkKqp6aJcZEK3jX0dkLsES1SxtTOXh3Lafp88Ci43ZOdyO5pmh1Gg
+         5NLglVVOv+IJA==
+Received: from customer (localhost [127.0.0.1])
+        by submission (posteo.de) with ESMTPSA id 4Fc3MX2Skgz6tmp;
+        Fri,  7 May 2021 10:21:59 +0200 (CEST)
+To:     Marc Kleine-Budde <mkl@pengutronix.de>,
+        Drew Fustini <drew@beagleboard.org>
+Cc:     netdev@vger.kernel.org, linux-can@vger.kernel.org,
+        Will C <will@macchina.cc>
+References: <20210407080118.1916040-1-mkl@pengutronix.de>
+ <20210407080118.1916040-7-mkl@pengutronix.de>
+ <CAPgEAj6N9d=s1a-P_P0mBe1aV2tQBQ4m6shvbPcPvX7W1NNzJw@mail.gmail.com>
+ <a46b95e3-4238-a930-6de3-360f86beaf52@pengutronix.de>
+ <20210507072521.3y652xz2kmibjo7d@pengutronix.de>
+From:   Patrick Menschel <menschel.p@posteo.de>
+Autocrypt: addr=menschel.p@posteo.de; prefer-encrypt=mutual; keydata=
+ LS0tLS1CRUdJTiBQR1AgUFVCTElDIEtFWSBCTE9DSy0tLS0tCgptUUlOQkZ3RG1RZ0JFQUMr
+ elBRRy9KTHQyWUpiNTRERFBKd0Jtd25EUTh4dUZQcEFjRjNYSVVuZkFOTGs0OUpoClhWczFR
+ TnVHZk1VLytmY3RPWGd0SmF6Q3doc3NGdlUvWStPc1Nmd3FTN1ROOXhIWE1DZmtnK1gxRHhI
+ ZGtqcmoKL1pUYkxHd1FUQlE2SVpVeW9BTEVSQ2RHZFBETFVqWERSS0poSTdvV3RqYlVFWUVr
+ ZE9RYnY2eDhLVWd1bGtHUgpYYWxka1hJZ0R0VWZLaUE0VGhBVXpncVJuZ09DV2ZITis4TnBo
+ Q2pGVlFnclRSakxCc3pkZTFnTmJkZ2kvdWxiClcyTngvS1Jqa0F1TTdFUVJvVUJ2QUJWb2FX
+ R3ZYenIzUmphUFhrSk5wNHdFbm1IcVoxZlVteWMvSGZRNnVjWnkKRW5QZnlEWExtWTJQUU5P
+ N2ZCemZLMTJVRTdWZHh0OTBDNURPSkRBc25kNHYreloxNHJObEpmTHNwaDZkVlNIbApsS2t2
+ NE1BTndNaGxRT3Bta1pLMHhVU0Q2R0M1OHRiV0RSbEg4b3UrWUhDYlh2OHJCTXphR0phWDVB
+ S25lNTJTCmZEUCtiQVVTdWVQdDhrRG5TaU1ZNk9iUEdObWhqcW1JN1RmNkU1NDdqRXUzcmxr
+ aVI3Rno2cktVVzA5VlBlcnAKUnVya3orSTFtTDZ5ZTlZdGFDZ3MwbFR4b3VuYnA5emROVE04
+ djZFOGJsMWNoSnRoYWs1bkEvRktnbmRtVHdhUQpNclFTRFEyNmxMcUw0MXRPZzhlVXFhTzJI
+ TXVPRGNaaVVIMGVNWHlQZjhsbXhMcy9sbUVZU3hGUXFMWlBjWW9pClA0SGxVcDNSMkxIa0hO
+ WDg1WDBKUldwRkkwLzNKMTFiWEpjLzc1MzVKODExdE9aRDkyRHlkK20zS3dBUkFRQUIKdENk
+ UVlYUnlhV05ySUUxbGJuTmphR1ZzSUR4dFpXNXpZMmhsYkM1d1FIQnZjM1JsYnk1a1pUNkpB
+ bFFFRXdFSwpBRDRXSVFUcFZLQkNXcGNoUW9QQURFY3g1bTR3ejYrNFRnVUNYQU9aQ0FJYkl3
+ VUpDV1lCZ0FVTENRZ0hBZ1lWCkNna0lDd0lFRmdJREFRSWVBUUlYZ0FBS0NSQXg1bTR3ejYr
+ NFRnQTJELzBTQW92U0xuK1pTcGUzK0d4UUhKMzYKWmJ1TWs0REVSa0RKMnIveStvc254WUd2
+ TmNtU3N5Q1pBaVZjTTlFM0kxUXVtdDZvWHpoditJUDJNd09MZTlQMwpvUmhJQ1JyQ2RwWmY1
+ YjdDb0lOc3lENUJwNGFsSUs5UFpHUDdXTjRHeGE3OVpNYkRhNVBNWGVQZ2psckFNVGNOCjRv
+ c2Q5NVB4eFNkV1dheTB2TUh0VWYwRGJkaDFRNUs1U3lkREpxdG56dFBkNzBzUG9wOHBRSWhE
+ NExGUWdpcFgKL3VRdkEvWnZpN2c5T3N4YThCNnRDTG41VG5LT2lNYktCVUFya1FHTDFnbDQ4
+ NFJtKzRlR011YVZrVjVBb3VYMApOaGQvTVU3eEMxS2dGcWZwYTMzZ0ZRdUxTSTU2aStuRkt6
+ dzNIdiszeHBJOXJjaHFXQjNnSWNVQ2lQZmFxcU1vCnI4RVNKODF0NWlvckQrRlpQb1RyMUEz
+ aGZTMTNuMGxWUytsZUd3dlNucjRRZ0gvcjZ5eGw4RERIaUdFMUFXblAKaTNaWFNKWnkxRUJW
+ TWJXTXFBNzFwczZDS2ZnbmpmSHVvVmNsTElXd3cxT2gwYXlER1hMZUFic1VPTGtGOXAxMwo1
+ MWxRS0lJWUZpcXVwL09qa0pKMlgxaTdITjlqV2xRVnR0SER3QlhZOWNYWDRHUzk3cnNwSVhj
+ S2hHRytFSVB0CjFEaFdBdDR1ZDdqcDIrSDRmTXlKZGlVK0wrYTVXNjlTODZpOURTMjBUdXd2
+ K3JRemNQWTQ3MkVxZmo0elhWWmsKNUNzZ2kxVDZzQ1lnZDd5TGpHMnFYblZsSTJqQ1JyT0RW
+ dGJiY25jSi9peEhPQ1h2TmlvRzZPREhBM3ZtNlZxaQpEelBmYTBFaWZveWMxbDRvSUZvQ2c3
+ a0NEUVJjQTVrSUFSQUEwdUlXUGNrRlpzb0ZVZG1Sd29vMW95YzhmSyttCll6TmhTc1l0UTlI
+ ZDMvQmlWeUxwUERQK0F6eks4U2JvWXVGcTJOaGRJaTIyeFRTZ2pyRFZMOU10YTdNbDB6cHgK
+ QnJSTitySm5LRFl3bThJeUl6eUpCRmhXU1l3YnVPSXVqbnB6U1IvVGVDT1VvelRadFhnQmRU
+ YzZrUG5kV1BWTgpDWU9hZVFXdDI1Qnc3ZGNVbllUQ1FWYm9EN0RFVWFEVkVqM1BKM2U0aGli
+ TEp1UnEvK1dQY3kxQ3g2UFNucTJ6CkdQN1pVNWh6NjF2ZGovbVJJa2QxS2UzUTZmWUwzSVRN
+ T1l1WGF6VUVEZ3l3TlN0bVkwRmZUT05GWEtGTXdSNm8KcUtuSGlTN2tINytxQWFodUpkdVFB
+ MW9SU2xUTWRFb3F2WHEySlVJTm1NaGdYL0ZQN3ZpZEFxcTdnVjRXWElxcAptckliVHBiNVpz
+ U0N6dUJBd3lkOTYxM1lmYWpZVGlUYkJGRzQ1Mld4TnlJeTFUdVpWMmIxZlhPbGdLRjNvbmUx
+ CnhwbURqbTFlZVhSdjRnV0d0Vks5cXlEaUtYWnlmQ0YyL2o5d08xaTNnUHZqYmFvU1dhT2hH
+ T2V6dlNFQzB4RjgKWU9TMitGSmxVclVyVm54UXZsZkdyWFYxbUpRTHpvcFJ5N0VndjNlRDI0
+ NUx5YjhjUHpOUmppelRqV2RYN0g0MwpuNTlXMkdWTkFLTkNyV1pkOGNjZEdJK1RodmwzUUh1
+ YWQ3NEY5cGdDUUNZWXM5dG92YVZldFR1WlI2Y3JMaG10CmxmK1V4ME5SV29PV2ZTR0w5anBt
+ dkR3aGlwWCszMUlvb1FiOTZ1a2UzOFBZMUVOMjJ6QlBxZ25jVVVrUkxQQncKbEhYbnpFVit6
+ U1p4QXpFQUVRRUFBWWtDUEFRWUFRb0FKaFloQk9sVW9FSmFseUZDZzhBTVJ6SG1iakRQcjdo
+ TwpCUUpjQTVrSUFoc01CUWtKWmdHQUFBb0pFREhtYmpEUHI3aE9Db0lQLzNTanBFdTl4Wkpj
+ TlZvU0s5MTA0enB6CmtnS2FUVmcrR0tZSEFJa1NZL3U2NU1zVmFTWk14bWVDSzdtTiswNU1w
+ RUZCYW9uMG5sVTlRK0ZMRDFkRDBsenYKTVBkOEZOcEx4VEMxVDQwbXBVN0ZCV1hlVjZWRHoz
+ STY5VkFBdjRWVDM4ZVZhYXBOS1lmVGdwcFRYVEVNYVdoTApVYUpGaU1HaFNYaGkrR01GV2Ji
+ NVNFOGJJRTZ0WUpONWlYZUFNVFE4NjhYVGtHS0VHTjk3bEU2S09odmpWV0kxCkhiUVIzZ0tV
+ ck1uVmlhbGp0YnV4bGNvS2YrblRvNG85OUEyTkprRCswaFozclJZTWhacFR1MitkcCt2Rm9p
+ aEQKdVNFTCtoblZhNFRMd2pYd2gzNzNweU9XMFhra2E5YWpNTEFoMUFtMmRBa0pLSDhzMVlJ
+ UUlpL2Q3bEkyYXQ1awpIcWtIa2p0YzE1ZkgrQUU5Q0VSM3RCSVNoYU9Fb0hXTXc0WEs5NS9n
+ MWVnMVB1cmJmN3RwRnltcklxU3ppQjlvCjJBWituSHVDQ001ZC9pQXh5MmJOcndqNDhPM2Z5
+ WXd1a0pManUyNlJKbzRMNStjNEJoTU1Ray9nVWROdldHK2YKNUxreVhvbHNMY0p0SktLdStD
+ V1pFK1hxc2RGWHd2d2xDRVNSQ012cGZyQmNtY1hrT0g3S1JKVy9pUjFXVjVRZApjR3ZDcDl0
+ a08vaEhSb2t0dzBibUl1MlFhZkovajZLTGJqZWV4cTc0TWUyb0U5YmkxY3B2azYvSElDV0JQ
+ dHVYCnNqd2o1Q2M3UlZOMjJLekdZT0RKVGtxU0d4RjV1NVlkTHVNVG5CVGNweEphR2h3MzNq
+ QjgwY3o3enFwQXBpREIKZFFnR2psVlNQT3ZidU04aXBPZDYKPW1nREMKLS0tLS1FTkQgUEdQ
+ IFBVQkxJQyBLRVkgQkxPQ0stLS0tLQo=
+Subject: Re: [net-next 6/6] can: mcp251xfd: mcp251xfd_regmap_crc_read(): work
+ around broken CRC on TBC register
+Message-ID: <c0048a2a-2a32-00b5-f995-f30453aaeedb@posteo.de>
+Date:   Fri,  7 May 2021 08:21:57 +0000
 MIME-Version: 1.0
-Content-Type: text/plain
+In-Reply-To: <20210507072521.3y652xz2kmibjo7d@pengutronix.de>
+Content-Type: text/plain; charset=utf-8
+Content-Language: de-DE
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Apr 26, 2021 at 04:49 AM CEST, Cong Wang wrote:
-> From: Cong Wang <cong.wang@bytedance.com>
->
-> Currently only unix stream socket sets TCP_ESTABLISHED,
-> datagram socket can set this too when they connect to its
-> peer socket. At least __ip4_datagram_connect() does the same.
->
-> This will be used by the next patch to determine whether an
-> AF_UNIX datagram socket can be redirected in sockmap.
->
-> Cc: John Fastabend <john.fastabend@gmail.com>
-> Cc: Daniel Borkmann <daniel@iogearbox.net>
-> Cc: Jakub Sitnicki <jakub@cloudflare.com>
-> Cc: Lorenz Bauer <lmb@cloudflare.com>
-> Signed-off-by: Cong Wang <cong.wang@bytedance.com>
-> ---
->  net/unix/af_unix.c | 12 ++++++------
->  1 file changed, 6 insertions(+), 6 deletions(-)
->
-> diff --git a/net/unix/af_unix.c b/net/unix/af_unix.c
-> index 8968ed44a89f..c4afc5fbe137 100644
-> --- a/net/unix/af_unix.c
-> +++ b/net/unix/af_unix.c
-> @@ -1206,6 +1206,8 @@ static int unix_dgram_connect(struct socket *sock, struct sockaddr *addr,
->  		unix_peer(sk) = other;
->  		unix_state_double_unlock(sk, other);
->  	}
-> +
-> +	sk->sk_state = other->sk_state = TCP_ESTABLISHED;
+Am 07.05.21 um 09:25 schrieb Marc Kleine-Budde:
+> On 22.04.2021 09:18:54, Marc Kleine-Budde wrote:
+>> On 4/21/21 9:58 PM, Drew Fustini wrote:
+>>> I am encountering similar error with the 5.10 raspberrypi kernel on
+>>> RPi 4 with MCP2518FD:
+>>>
+>>>   mcp251xfd spi0.0 can0: CRC read error at address 0x0010 (length=4,
+>>> data=00 ad 58 67, CRC=0xbbfd) retrying
+>>
+>> What's the situation you see these errors?
+>>
+>> I'm not particular happy with that patch, as it only works around that one
+>> particular bit flip issue. If you really hammer the register, the driver will
+>> still notice CRC errors that can be explained by other bits flipping. Consider
+>> this as the first order approximation of a higher order problem :) - the root
+>> cause is still unknown.
+>>
+>>> Would it be possible for you to pull these patches into a v5.10 branch
+>>> in your linux-rpi repo [1]?
+>>
+>> Here you are:
+>>
+>> https://github.com/marckleinebudde/linux-rpi/tree/v5.10-rpi/backport-performance-improvements
+>>
+>> I've included the UINC performance enhancements, too. The branch is compiled
+>> tested only, though. I'll send a pull request to the rpi kernel after I've
+>> testing feedback from you.
+> 
+> Drew, Patrick, have you tested this branch? If so I'll send a pull
+> request to the raspi kernel.
+> 
+Sorry Marc,
 
-`other` can be NULL. In such case we're back to UNCONNECTED state.
+not yet. Thanks for reminding me. I'll start a native build on a pi0w asap.
 
->  	return 0;
->  
->  out_unlock:
+Is there any test application or stress test that I should run?
 
-[...]
+Regards,
+Patrick
