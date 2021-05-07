@@ -2,94 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0ED75376187
-	for <lists+netdev@lfdr.de>; Fri,  7 May 2021 09:55:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C3D6B376192
+	for <lists+netdev@lfdr.de>; Fri,  7 May 2021 09:59:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235030AbhEGH4o (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 7 May 2021 03:56:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53654 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232997AbhEGH4n (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 7 May 2021 03:56:43 -0400
-Received: from mail-lf1-x133.google.com (mail-lf1-x133.google.com [IPv6:2a00:1450:4864:20::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E6509C061574;
-        Fri,  7 May 2021 00:55:43 -0700 (PDT)
-Received: by mail-lf1-x133.google.com with SMTP id x20so11545127lfu.6;
-        Fri, 07 May 2021 00:55:43 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=d1FrNuovi6qchn9VoSrH/ZZcEV9n4ZW2UXgmvYmjE+g=;
-        b=u/fBwS9p8+ZJ1uzUyj9xWfncK+l0n+O3W0A4tJwhN9+RVhbt/VxvDgu1xrwj2TQchS
-         T/WPQv24Xe7/GAMWEocVZZ+VeKuAueYMPejrAQ4dHHkQAaQ0f9lWCavmcbn4ZeuMHtyd
-         G0q3a5q2xnS7zV2HZgTnSwnhjlmYBHQujJe9LsIZ5vndhGoSOKiL7mXJZ78Qr6SDkgkk
-         I2yUR6lRzrz7o/PcVSpNT+6WPcHUdg3M6VcLyoKjuCE8zy3empFn+fAyPxxgJbGbFFzG
-         gedCmZnjFIIrU9ayPlv9omPusy40prB3L31vMgUr0/mQKWtGrPNBiYiQJ67pkAMJZj0h
-         Oj5g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=d1FrNuovi6qchn9VoSrH/ZZcEV9n4ZW2UXgmvYmjE+g=;
-        b=S4jjChb7VfoOXGWuSGGLjN0ctrXjdmQsi2c3RpxgOJ9DnpFSGdR5csKQIWnt7HHacm
-         j53FQJy7qwDcrSbQQGArPEtsLT2tXBZsuY77UcwTR0lXkkUaD2HJsvouzCzPuNMlUDRH
-         M2POHPHdhlrTJJbq/sR69YCCj0NGdkRc0iW9jnOZKTEHFjwFaan0RmJO+uKxfqwrerhc
-         p+75yGl7vqt71cH/B7B9Tjd6/t7+zihcBwkaI2VqIBLESkZHR72tAypzSyhZ2Oer4uKR
-         atv+zqOAW99oYHJFwiLv4IwUYHa2tiB0nii/5rnSTVdqUSiPFDY/5vY3lLzX3lMa5t24
-         83sQ==
-X-Gm-Message-State: AOAM531OqDFSmh5KvB81OKTcewmtrGJLjalhqx+pIwhka0jUTtBKepXn
-        5EUl6qh9AGrR8XHnRKj/9q8CBncOzlB1Qjh63M0=
-X-Google-Smtp-Source: ABdhPJxmOfmHUfXXyaTbU88iBMHRGJL5QKoxgPRItgy6u662XlJ1CgzE8LYRu4JF7W41BVjOUogeB1Zoj1BFMzNjYeM=
-X-Received: by 2002:a05:6512:3f27:: with SMTP id y39mr5490221lfa.166.1620374142511;
- Fri, 07 May 2021 00:55:42 -0700 (PDT)
+        id S234911AbhEGIAc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 7 May 2021 04:00:32 -0400
+Received: from mail.netfilter.org ([217.70.188.207]:48312 "EHLO
+        mail.netfilter.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233730AbhEGIAb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 7 May 2021 04:00:31 -0400
+Received: from us.es (unknown [90.77.255.23])
+        by mail.netfilter.org (Postfix) with ESMTPSA id 0DA646414B;
+        Fri,  7 May 2021 09:58:46 +0200 (CEST)
+Date:   Fri, 7 May 2021 09:59:28 +0200
+From:   Pablo Neira Ayuso <pablo@netfilter.org>
+To:     Eric Dumazet <eric.dumazet@gmail.com>
+Cc:     Jozsef Kadlecsik <kadlec@blackhole.kfki.hu>,
+        Florian Westphal <fw@strlen.de>,
+        netfilter-devel@vger.kernel.org, netdev <netdev@vger.kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        syzbot <syzkaller@googlegroups.com>
+Subject: Re: [PATCH net 1/2] netfilter: nf_tables: avoid overflows in
+ nft_hash_buckets()
+Message-ID: <20210507075928.GA4320@salvia>
+References: <20210506125323.3887186-1-eric.dumazet@gmail.com>
 MIME-Version: 1.0
-References: <20210429062130.29403-1-dqfext@gmail.com> <20210429.170815.956010543291313915.davem@davemloft.net>
- <20210430023839.246447-1-dqfext@gmail.com> <YIv28APpOP9tnuO+@lunn.ch>
- <trinity-843c99ce-952a-434e-95e4-4ece3ba6b9bd-1619786236765@3c-app-gmx-bap03>
- <YIv7w8Wy81fmU5A+@lunn.ch> <trinity-611ff023-c337-4148-a215-98fd5604eac2-1619787382934@3c-app-gmx-bap03>
- <YIwCliT5NZT713WD@lunn.ch> <trinity-c45bbeec-5b7c-43a2-8e86-7cb22ad61558-1619794787680@3c-app-gmx-bap03>
- <YIwxpYD1jnFMPQz+@lunn.ch> <fc962daf8b7babc22b043b2b0878a206780b55f3.camel@mediatek.com>
- <CALW65ja5mRPoNM2EZsONMh8Kda5OgQg79R=Xp71CaQcp4cprnQ@mail.gmail.com> <f3f5167f60b7897b952f5fff7bcaef976c3c6531.camel@mediatek.com>
-In-Reply-To: <f3f5167f60b7897b952f5fff7bcaef976c3c6531.camel@mediatek.com>
-From:   DENG Qingfang <dqfext@gmail.com>
-Date:   Fri, 7 May 2021 15:55:31 +0800
-Message-ID: <CALW65jaPO52vX02KGqEooE2LRUMNMgFoHYMfyXUtOa7SPS-jqg@mail.gmail.com>
-Subject: Re: Re: Re: Re: [PATCH net-next 0/4] MT7530 interrupt support
-To:     Landen Chao <landen.chao@mediatek.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Frank Wunderlich <frank-w@public-files.de>,
-        David Miller <davem@davemloft.net>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Russell King - ARM Linux admin <linux@armlinux.org.uk>,
-        Sean Wang <sean.wang@mediatek.com>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Sergio Paracuellos <sergio.paracuellos@gmail.com>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        "moderated list:ARM/Mediatek SoC support" 
-        <linux-mediatek@lists.infradead.org>,
-        linux-staging@lists.linux.dev,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>, netdev <netdev@vger.kernel.org>,
-        Weijie Gao <weijie.gao@mediatek.com>,
-        Chuanhong Guo <gch981213@gmail.com>,
-        =?UTF-8?Q?Ren=C3=A9_van_Dorst?= <opensource@vdorst.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Marc Zyngier <maz@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20210506125323.3887186-1-eric.dumazet@gmail.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, May 6, 2021 at 8:54 PM Landen Chao <landen.chao@mediatek.com> wrote:
-> MT7620's FE PHY HW is different from MT753x's GE PHY. Vendor registers
-> of these two PHY are totally different.
+On Thu, May 06, 2021 at 05:53:23AM -0700, Eric Dumazet wrote:
+> From: Eric Dumazet <edumazet@google.com>
+> 
+> Number of buckets being stored in 32bit variables, we have to
+> ensure that no overflows occur in nft_hash_buckets()
+> 
+> syzbot injected a size == 0x40000000 and reported:
+> 
+> UBSAN: shift-out-of-bounds in ./include/linux/log2.h:57:13
+> shift exponent 64 is too large for 64-bit type 'long unsigned int'
+> CPU: 1 PID: 29539 Comm: syz-executor.4 Not tainted 5.12.0-rc7-syzkaller #0
+> Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+> Call Trace:
+>  __dump_stack lib/dump_stack.c:79 [inline]
+>  dump_stack+0x141/0x1d7 lib/dump_stack.c:120
+>  ubsan_epilogue+0xb/0x5a lib/ubsan.c:148
+>  __ubsan_handle_shift_out_of_bounds.cold+0xb1/0x181 lib/ubsan.c:327
+>  __roundup_pow_of_two include/linux/log2.h:57 [inline]
+>  nft_hash_buckets net/netfilter/nft_set_hash.c:411 [inline]
+>  nft_hash_estimate.cold+0x19/0x1e net/netfilter/nft_set_hash.c:652
+>  nft_select_set_ops net/netfilter/nf_tables_api.c:3586 [inline]
+>  nf_tables_newset+0xe62/0x3110 net/netfilter/nf_tables_api.c:4322
+>  nfnetlink_rcv_batch+0xa09/0x24b0 net/netfilter/nfnetlink.c:488
+>  nfnetlink_rcv_skb_batch net/netfilter/nfnetlink.c:612 [inline]
+>  nfnetlink_rcv+0x3af/0x420 net/netfilter/nfnetlink.c:630
+>  netlink_unicast_kernel net/netlink/af_netlink.c:1312 [inline]
+>  netlink_unicast+0x533/0x7d0 net/netlink/af_netlink.c:1338
+>  netlink_sendmsg+0x856/0xd90 net/netlink/af_netlink.c:1927
+>  sock_sendmsg_nosec net/socket.c:654 [inline]
+>  sock_sendmsg+0xcf/0x120 net/socket.c:674
+>  ____sys_sendmsg+0x6e8/0x810 net/socket.c:2350
+>  ___sys_sendmsg+0xf3/0x170 net/socket.c:2404
+>  __sys_sendmsg+0xe5/0x1b0 net/socket.c:2433
+>  do_syscall_64+0x2d/0x70 arch/x86/entry/common.c:46
 
-Okay. So if the FE PHY is added later, it can be named mediatek-fe.c.
+Applied, thanks.
