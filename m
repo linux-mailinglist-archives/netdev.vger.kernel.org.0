@@ -2,164 +2,120 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 456AB376D88
-	for <lists+netdev@lfdr.de>; Sat,  8 May 2021 01:58:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 79807376DAA
+	for <lists+netdev@lfdr.de>; Sat,  8 May 2021 02:29:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230165AbhEGX6I (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 7 May 2021 19:58:08 -0400
-Received: from mail.kernel.org ([198.145.29.99]:40582 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229959AbhEGX6H (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 7 May 2021 19:58:07 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 63197601FA;
-        Fri,  7 May 2021 23:57:04 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1620431826;
-        bh=75/UCOvPi5A/3+VxLXqhJqocyY02+9r1OPTzZlGM5fU=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=PGa9HZz2Ejb6ioHTOtFfaUy9BjfK1W122wYXztFvfEo+hqw+qBEq1Ao8LFIwD2ffN
-         5NSP27QmgXe/Bd9owAOZwh0Y+yJs1WkWBNlsA1kBR3kaHFUT7IPvNsejtQdtGkMO8Z
-         PLt2RIbR/lJb43KZeV6pUme3lsvqvkVIylBKv0mAHaj8/s6vDvQC/T6uqDptcs+yjR
-         6wpyyllIKCZxSa0HuuIxXLCarqM0e+N/Bc8tvrCwsCARAUzkfBp3q71p+/vTZThdrh
-         bRkcdfjtLG85DL5Ym0KssfzDEYsJ03D/dteGVuy9r+xki1dv3SaA8xEx/4XbOvT+VB
-         IQ9eB+++myZlA==
-Date:   Fri, 7 May 2021 16:57:03 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Yunsheng Lin <linyunsheng@huawei.com>
-Cc:     <davem@davemloft.net>, <olteanv@gmail.com>, <ast@kernel.org>,
-        <daniel@iogearbox.net>, <andriin@fb.com>, <edumazet@google.com>,
-        <weiwan@google.com>, <cong.wang@bytedance.com>,
-        <ap420073@gmail.com>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <linuxarm@openeuler.org>,
-        <mkl@pengutronix.de>, <linux-can@vger.kernel.org>,
-        <jhs@mojatatu.com>, <xiyou.wangcong@gmail.com>, <jiri@resnulli.us>,
-        <andrii@kernel.org>, <kafai@fb.com>, <songliubraving@fb.com>,
-        <yhs@fb.com>, <john.fastabend@gmail.com>, <kpsingh@kernel.org>,
-        <bpf@vger.kernel.org>, <jonas.bonn@netrounds.com>,
-        <pabeni@redhat.com>, <mzhivich@akamai.com>, <johunt@akamai.com>,
-        <albcamus@gmail.com>, <kehuan.feng@gmail.com>,
-        <a.fatoum@pengutronix.de>, <atenart@kernel.org>,
-        <alexander.duyck@gmail.com>, <hdanton@sina.com>, <jgross@suse.com>,
-        <JKosina@suse.com>, <mkubecek@suse.cz>, <bjorn@kernel.org>
-Subject: Re: [PATCH net v5 1/3] net: sched: fix packet stuck problem for
- lockless qdisc
-Message-ID: <20210507165703.70771c55@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <1620266264-48109-2-git-send-email-linyunsheng@huawei.com>
-References: <1620266264-48109-1-git-send-email-linyunsheng@huawei.com>
-        <1620266264-48109-2-git-send-email-linyunsheng@huawei.com>
+        id S230151AbhEHAaW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 7 May 2021 20:30:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47640 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229812AbhEHAaV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 7 May 2021 20:30:21 -0400
+Received: from mail-wm1-x332.google.com (mail-wm1-x332.google.com [IPv6:2a00:1450:4864:20::332])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D6ED2C061574;
+        Fri,  7 May 2021 17:29:19 -0700 (PDT)
+Received: by mail-wm1-x332.google.com with SMTP id s5-20020a7bc0c50000b0290147d0c21c51so5750717wmh.4;
+        Fri, 07 May 2021 17:29:19 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Zzb7lt9+x9O2s44k4kSu1lzOPp+x1XlcNqKjooCHFzg=;
+        b=s0BGHi3g9S7i92EBWHhs/u7b07WHcJYAaSjPWTS2I+9CBuWQ6iSCRMBTVp8AZw6sMt
+         A0q6LqdHBxh7hUSIFz9Np6HdKI6+QwFsozgPHOhYSC1y3PcuGDL7TrXT6AoiLp8T9F8N
+         S8faMkOxWx+nNCh0j6/P5uf5YJUVBj6+aNtPDJEN5jkhwriXvNk+cD188uvUYsuF3TCV
+         h5IEOKlTW2ZeV5Z0ndkn9bl2Y7AOIcG5As7mZG0b/YXZeKFFzwRW5ibfTE2S77QMhvRB
+         vq5gxfukb4Q7UBLBGh3PqXBlohAPbnsNonc+iJ0wsMM/Um+8gdJvc+gpJ0iEofXXXA65
+         AIbA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Zzb7lt9+x9O2s44k4kSu1lzOPp+x1XlcNqKjooCHFzg=;
+        b=SlLnrh65Hr9xlow6/Tv2JIQ0TArLinzQ3nTId1HVmBJRZ34vB+NHvrtnrbMSeXVPMl
+         o2uAZ116HdhS1v9AiktnF+S/wE0XfFos1RmC4pQjI8K37lbNYwCpegHKp17fLJD3Q4PX
+         lviJ73oLpdtY9KgcdVuTIK2SYc/tVT20EuRnZj4efu8oy9gdXSPOC/OJOpJp/5/mvBdw
+         R7b9BaDaa9kKRLXIw29RpOVYaWko8g4GGlGBwpOBoRf2oS8RRLYkO1n1e08RgiOwfJ/S
+         5Yfr2snBRVKjEl/8klgSifIogbc0e6FD/JYdrNmAu3CfaMcAHx+zen06aiOTqQLZtYZ6
+         LBdA==
+X-Gm-Message-State: AOAM533GBWDZlyA2or/RY3TH8aT3hRi0xrl2oQz4oOU33Y61KcveDjfl
+        /2PcsQDrvuPUYEEbgeBEnN0=
+X-Google-Smtp-Source: ABdhPJwGGbtKbVOUb99QhM7IxRgzszX/N68JVA8x41GPfbF0L3O8s7BNaObPJPmCbDuKjMZ+8Y0HLA==
+X-Received: by 2002:a7b:c94b:: with SMTP id i11mr1481097wml.120.1620433758489;
+        Fri, 07 May 2021 17:29:18 -0700 (PDT)
+Received: from Ansuel-xps.localdomain (93-35-189-2.ip56.fastwebnet.it. [93.35.189.2])
+        by smtp.googlemail.com with ESMTPSA id f4sm10967597wrz.33.2021.05.07.17.29.17
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 07 May 2021 17:29:18 -0700 (PDT)
+From:   Ansuel Smith <ansuelsmth@gmail.com>
+To:     Florian Fainelli <f.fainelli@gmail.com>
+Cc:     Ansuel Smith <ansuelsmth@gmail.com>, Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [RFC PATCH net-next v4 01/28] net: mdio: ipq8064: clean whitespaces in define
+Date:   Sat,  8 May 2021 02:28:51 +0200
+Message-Id: <20210508002920.19945-1-ansuelsmth@gmail.com>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 6 May 2021 09:57:42 +0800 Yunsheng Lin wrote:
-> @@ -159,8 +160,37 @@ static inline bool qdisc_is_empty(const struct Qdisc *qdisc)
->  static inline bool qdisc_run_begin(struct Qdisc *qdisc)
->  {
->  	if (qdisc->flags & TCQ_F_NOLOCK) {
-> +		bool dont_retry = test_bit(__QDISC_STATE_MISSED,
-> +					   &qdisc->state);
-> +
-> +		if (spin_trylock(&qdisc->seqlock))
-> +			goto nolock_empty;
-> +
-> +		/* If the flag is set before doing the spin_trylock() and
-> +		 * the above spin_trylock() return false, it means other cpu
-> +		 * holding the lock will do dequeuing for us, or it wil see
+Fix mixed whitespace and tab for define spacing.
 
-s/wil/will/
+Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+---
+ drivers/net/mdio/mdio-ipq8064.c | 25 +++++++++++++------------
+ 1 file changed, 13 insertions(+), 12 deletions(-)
 
-> +		 * the flag set after releasing lock and reschedule the
-> +		 * net_tx_action() to do the dequeuing.
-
-I don't understand why MISSED is checked before the trylock.
-Could you explain why it can't be tested directly here?
-
-> +		 */
-> +		if (dont_retry)
-> +			return false;
-> +
-> +		/* We could do set_bit() before the first spin_trylock(),
-> +		 * and avoid doing second spin_trylock() completely, then
-> +		 * we could have multi cpus doing the set_bit(). Here use
-> +		 * dont_retry to avoid doing the set_bit() and the second
-> +		 * spin_trylock(), which has 5% performance improvement than
-> +		 * doing the set_bit() before the first spin_trylock().
-> +		 */
-> +		set_bit(__QDISC_STATE_MISSED, &qdisc->state);
-> +
-> +		/* Retry again in case other CPU may not see the new flag
-> +		 * after it releases the lock at the end of qdisc_run_end().
-> +		 */
->  		if (!spin_trylock(&qdisc->seqlock))
->  			return false;
-> +
-> +nolock_empty:
->  		WRITE_ONCE(qdisc->empty, false);
->  	} else if (qdisc_is_running(qdisc)) {
->  		return false;
-> @@ -176,8 +206,13 @@ static inline bool qdisc_run_begin(struct Qdisc *qdisc)
->  static inline void qdisc_run_end(struct Qdisc *qdisc)
->  {
->  	write_seqcount_end(&qdisc->running);
-> -	if (qdisc->flags & TCQ_F_NOLOCK)
-> +	if (qdisc->flags & TCQ_F_NOLOCK) {
->  		spin_unlock(&qdisc->seqlock);
-> +
-> +		if (unlikely(test_bit(__QDISC_STATE_MISSED,
-> +				      &qdisc->state)))
-> +			__netif_schedule(qdisc);
-> +	}
->  }
->  
->  static inline bool qdisc_may_bulk(const struct Qdisc *qdisc)
-> diff --git a/net/sched/sch_generic.c b/net/sched/sch_generic.c
-> index 44991ea..9bc73ea 100644
-> --- a/net/sched/sch_generic.c
-> +++ b/net/sched/sch_generic.c
-> @@ -640,8 +640,10 @@ static struct sk_buff *pfifo_fast_dequeue(struct Qdisc *qdisc)
->  {
->  	struct pfifo_fast_priv *priv = qdisc_priv(qdisc);
->  	struct sk_buff *skb = NULL;
-> +	bool need_retry = true;
->  	int band;
->  
-> +retry:
->  	for (band = 0; band < PFIFO_FAST_BANDS && !skb; band++) {
->  		struct skb_array *q = band2list(priv, band);
->  
-> @@ -652,6 +654,16 @@ static struct sk_buff *pfifo_fast_dequeue(struct Qdisc *qdisc)
->  	}
->  	if (likely(skb)) {
->  		qdisc_update_stats_at_dequeue(qdisc, skb);
-> +	} else if (need_retry &&
-> +		   test_and_clear_bit(__QDISC_STATE_MISSED,
-> +				      &qdisc->state)) {
-
-Why test_and_clear_bit() here? AFAICT this is the only place the bit 
-is cleared. So the test and clear do not have to be atomic.
-
-To my limited understanding on x86 test_bit() is never a locked
-operation, while test_and_clear_bit() is always locked. So we'd save
-an atomic operation in un-contended case if we tested first and then
-cleared.
-
-> +		/* do another dequeuing after clearing the flag to
-> +		 * avoid calling __netif_schedule().
-> +		 */
-> +		smp_mb__after_atomic();
-
-test_and_clear_bit() which returned true implies a memory barrier,
-AFAIU, so the barrier is not needed with the code as is. It will be
-needed if we switch to test_bit() + clear_bit(), but please clarify
-what it is paring with.
-
-> +		need_retry = false;
-> +
-> +		goto retry;
->  	} else {
->  		WRITE_ONCE(qdisc->empty, true);
->  	}
+diff --git a/drivers/net/mdio/mdio-ipq8064.c b/drivers/net/mdio/mdio-ipq8064.c
+index 1bd18857e1c5..fb1614242e13 100644
+--- a/drivers/net/mdio/mdio-ipq8064.c
++++ b/drivers/net/mdio/mdio-ipq8064.c
+@@ -15,25 +15,26 @@
+ #include <linux/mfd/syscon.h>
+ 
+ /* MII address register definitions */
+-#define MII_ADDR_REG_ADDR                       0x10
+-#define MII_BUSY                                BIT(0)
+-#define MII_WRITE                               BIT(1)
+-#define MII_CLKRANGE_60_100M                    (0 << 2)
+-#define MII_CLKRANGE_100_150M                   (1 << 2)
+-#define MII_CLKRANGE_20_35M                     (2 << 2)
+-#define MII_CLKRANGE_35_60M                     (3 << 2)
+-#define MII_CLKRANGE_150_250M                   (4 << 2)
+-#define MII_CLKRANGE_250_300M                   (5 << 2)
++#define MII_ADDR_REG_ADDR			0x10
++#define MII_BUSY				BIT(0)
++#define MII_WRITE				BIT(1)
++#define MII_CLKRANGE(x)				((x) << 2)
++#define MII_CLKRANGE_60_100M			MII_CLKRANGE(0)
++#define MII_CLKRANGE_100_150M			MII_CLKRANGE(1)
++#define MII_CLKRANGE_20_35M			MII_CLKRANGE(2)
++#define MII_CLKRANGE_35_60M			MII_CLKRANGE(3)
++#define MII_CLKRANGE_150_250M			MII_CLKRANGE(4)
++#define MII_CLKRANGE_250_300M			MII_CLKRANGE(5)
+ #define MII_CLKRANGE_MASK			GENMASK(4, 2)
+ #define MII_REG_SHIFT				6
+ #define MII_REG_MASK				GENMASK(10, 6)
+ #define MII_ADDR_SHIFT				11
+ #define MII_ADDR_MASK				GENMASK(15, 11)
+ 
+-#define MII_DATA_REG_ADDR                       0x14
++#define MII_DATA_REG_ADDR			0x14
+ 
+-#define MII_MDIO_DELAY_USEC                     (1000)
+-#define MII_MDIO_RETRY_MSEC                     (10)
++#define MII_MDIO_DELAY_USEC			(1000)
++#define MII_MDIO_RETRY_MSEC			(10)
+ 
+ struct ipq8064_mdio {
+ 	struct regmap *base; /* NSS_GMAC0_BASE */
+-- 
+2.30.2
 
