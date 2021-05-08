@@ -2,83 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9D497376F49
-	for <lists+netdev@lfdr.de>; Sat,  8 May 2021 05:53:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 215C4376F91
+	for <lists+netdev@lfdr.de>; Sat,  8 May 2021 06:35:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230525AbhEHDyP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 7 May 2021 23:54:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35310 "EHLO
+        id S230234AbhEHEgs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 8 May 2021 00:36:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44462 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229947AbhEHDyO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 7 May 2021 23:54:14 -0400
-Received: from mail-pl1-x62b.google.com (mail-pl1-x62b.google.com [IPv6:2607:f8b0:4864:20::62b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D5BD8C061574;
-        Fri,  7 May 2021 20:53:11 -0700 (PDT)
-Received: by mail-pl1-x62b.google.com with SMTP id t21so6244985plo.2;
-        Fri, 07 May 2021 20:53:11 -0700 (PDT)
+        with ESMTP id S229467AbhEHEgp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 8 May 2021 00:36:45 -0400
+Received: from mail-pj1-x1034.google.com (mail-pj1-x1034.google.com [IPv6:2607:f8b0:4864:20::1034])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A5786C061574;
+        Fri,  7 May 2021 21:35:43 -0700 (PDT)
+Received: by mail-pj1-x1034.google.com with SMTP id ge1so6328256pjb.2;
+        Fri, 07 May 2021 21:35:43 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id;
-        bh=UVAOZkyEJJo57GwyWj7UmAw4YWwIKnE98l3Qa37aUrA=;
-        b=mNwrBtO/OOX8pi/1NNE+PTtq0ZOeF3CacIDY7MHwUixuNegSIOdz4+2Y70kXv/HdPw
-         6xL96O+ZDjTNkhDVUUHqdFNN5okffMHJtnzZBIbT05kZEJXInJFqrjksb7VEPm9pVtaH
-         Bnh5V9pqZMrcSfdSgvC8OTtR3kvvF1Ae0By8xqKaeAGphPmMkNn+P/0xo0b3hZO4YADA
-         khKpYcNkXfHlLLB+B0J4k8GmIdEH87h5Sy3xkktS3um2eLYgV4OFVWQCDVSIwCw0qL70
-         F9teJL1xCwel3MW1cLpokvIU3IbFD5ixCrJY3DNEm47zIYixWGWwUsZywX2IBtbssSAi
-         lKHw==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-disposition:content-transfer-encoding;
+        bh=mb3BGM16x7Xe0gx2+n/qTDSlXlHCwNft0stvutYSgdM=;
+        b=eRqfGvt6oB4OT8ED4CclVaxJ78rEifGaWxb6C08cqU7WghFstXy3lnK6LhlisY4eei
+         VYiOnMFNuUxYxexJeq1h0Bo6MS/rYcnouPsBRz4/T6uUpwozW3Xjqzv5nADL/1Zj05NN
+         +ePEyUYKdxkc23iBeOZJu3Cfoys0/MvI41kIKp67dRulSofOOPgrJ29djGFRSHwNrGKM
+         nry8gDy6/gBGJuirdh5GkukNQn2G0Cq3DByeMgGTWIW+o/MmOGPXT/9vtB8/enmYRPtA
+         zUFK6tV1EzwZZ/NsHFXir933xynHvhuXWggdBIUpQBH9nQ5HBXPcbjjcUOSwiUXA7Uwk
+         DvEg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=UVAOZkyEJJo57GwyWj7UmAw4YWwIKnE98l3Qa37aUrA=;
-        b=K+mUcvMVFUHnBGDVWIzSGSa3blhHXokyyOi8fS7XZNGV+6/yEl+5evqU0Rds/ZT/6J
-         bq9So0Gr9wzLsc1t8kLDHXAoOEtOh41foHI4/MMvCOExZiRzSh+0/AZDPTB3vXLFvWr5
-         kowgUNJKJmPUBO05kAw+jwZfswuEypo2JUoy/1/Ia4mimVcjaeKu2WWBr1BdZcW8JGKk
-         4Ur8pXIrMca5kP99QHEK7fQBIeFbKh/pdMlv3nBCn53+sgz9nhaSquShNybM6qo0nyoH
-         uOElGyF18CBTPMg79EImhWRwUxTFXmZCCdOMfkP1vQupr6EhjxaPPZ37s12C2WiWyFra
-         /ikw==
-X-Gm-Message-State: AOAM531aUgaA7hqLNMmpJPtthGvYhTO4CABjfwrCXSBfdSQNaxzqrqJU
-        1rS1Qu6nCJ1+4B+MIeJq4w==
-X-Google-Smtp-Source: ABdhPJz00ehHYbTCOyJuzDdcnPdndMZbvOZBT+hYbOvMjS+C7Yh/JrMU21VkKlC5C6zpOtljamD5kw==
-X-Received: by 2002:a17:903:230a:b029:ee:a909:4f92 with SMTP id d10-20020a170903230ab02900eea9094f92mr13880320plh.44.1620445991077;
-        Fri, 07 May 2021 20:53:11 -0700 (PDT)
-Received: from localhost.localdomain ([210.32.145.152])
-        by smtp.gmail.com with ESMTPSA id a13sm5694824pgm.43.2021.05.07.20.53.07
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-disposition
+         :content-transfer-encoding;
+        bh=mb3BGM16x7Xe0gx2+n/qTDSlXlHCwNft0stvutYSgdM=;
+        b=gWYMVpaT53oYJHM2Qoty2tuad+6cuDb5CbBWAabSA8njWnfO67PxsPZnpBgwxMTZq3
+         ajqYUcOoTU+7E8z9czcywQigoiBv5TDR5373+mtkV9LPBcO4ASYIbj5mLsgJSqKTm5b6
+         ImV0RK6gur/qOaDtiB1UdVFBI4dwnDNPu4FvRgR80IfAREQCsbOOef0ErjRQvsH6Cltd
+         2/F0sjFJPM+C4t1moEe5+GXYlEY9BPk7Ht5K1c/hz3XTgBvioIuK6wbOJiG2zB7AYdHl
+         7jQTKfR49BaOtJ+4t3Wj1s3z90cPDT/trFDeOAMUKlpu/ubXdX7ikDxtyJ/QRpcYRdfi
+         fXjw==
+X-Gm-Message-State: AOAM530JOyVwVJCFpRAWqGyxP8IAA59gi7ueNAac55U1q6O2bn0y0a2E
+        AOX+1bL7I7XnjREh8sFotjE=
+X-Google-Smtp-Source: ABdhPJzaDaKcMlevtLCEZf/3+83Z5j2CdSMCOm5/iYsLIv8pDLe85FjMz2DQD8qIta6UJlMDM0rZXw==
+X-Received: by 2002:a17:90a:e298:: with SMTP id d24mr14533166pjz.144.1620448543121;
+        Fri, 07 May 2021 21:35:43 -0700 (PDT)
+Received: from localhost.localdomain ([138.197.212.246])
+        by smtp.gmail.com with ESMTPSA id n5sm5915810pfo.40.2021.05.07.21.35.38
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 07 May 2021 20:53:10 -0700 (PDT)
-From:   Jinmeng Zhou <jjjinmeng.zhou@gmail.com>
-To:     davem@davemloft.net, kuba@kernel.org
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        shenwenbosmile@gmail.com, Jeimon <jjjinmeng.zhou@gmail.com>
-Subject: [PATCH] net/nfc/rawsock.c: fix a permission check bug
-Date:   Sat,  8 May 2021 11:52:30 +0800
-Message-Id: <20210508035230.8229-1-jjjinmeng.zhou@gmail.com>
-X-Mailer: git-send-email 2.17.1
+        Fri, 07 May 2021 21:35:42 -0700 (PDT)
+From:   DENG Qingfang <dqfext@gmail.com>
+To:     Ansuel Smith <ansuelsmth@gmail.com>
+Cc:     Florian Fainelli <f.fainelli@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: Re: [RFC PATCH net-next v4 28/28] net: phy: add qca8k driver for qca8k switch internal PHY
+Date:   Sat,  8 May 2021 12:35:35 +0800
+Message-Id: <20210508043535.18520-1-dqfext@gmail.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20210508002920.19945-28-ansuelsmth@gmail.com>
+References: <20210508002920.19945-1-ansuelsmth@gmail.com> <20210508002920.19945-28-ansuelsmth@gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jeimon <jjjinmeng.zhou@gmail.com>
+On Sat, May 08, 2021 at 02:29:18AM +0200, Ansuel Smith wrote:
+> Add initial support for qca8k internal PHYs. The internal PHYs requires
+> special mmd and debug values to be set based on the switch revision
+> passwd using the dev_flags. Supports output of idle, receive and eee_wake
+> errors stats.
+> Some debug values sets can't be translated as the documentation lacks any
+> reference about them.
 
-The function rawsock_create() calls a privileged function sk_alloc(), which requires a ns-aware check to check net->user_ns, i.e., ns_capable(). However, the original code checks the init_user_ns using capable(). So we replace the capable() with ns_capable().
+I think this can be merged into at803x.c, as they have almost the same
+registers, and some features such as interrupt handler and cable test
+can be reused.
 
-Signed-off-by: Jeimon <jjjinmeng.zhou@gmail.com>
----
- net/nfc/rawsock.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/net/nfc/rawsock.c b/net/nfc/rawsock.c
-index 955c195ae..a76b62f55 100644
---- a/net/nfc/rawsock.c
-+++ b/net/nfc/rawsock.c
-@@ -329,7 +329,7 @@ static int rawsock_create(struct net *net, struct socket *sock,
- 		return -ESOCKTNOSUPPORT;
- 
- 	if (sock->type == SOCK_RAW) {
--		if (!capable(CAP_NET_RAW))
-+		if (!ns_capable(net->user_ns, CAP_NET_RAW))
- 			return -EPERM;
- 		sock->ops = &rawsock_raw_ops;
- 	} else {
--- 
-2.17.1
-
+> 
+> Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
+> ---
