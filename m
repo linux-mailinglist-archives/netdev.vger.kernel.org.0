@@ -2,170 +2,50 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id ED7D1377337
-	for <lists+netdev@lfdr.de>; Sat,  8 May 2021 18:38:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8D68F37735D
+	for <lists+netdev@lfdr.de>; Sat,  8 May 2021 19:25:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230125AbhEHQjA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 8 May 2021 12:39:00 -0400
-Received: from mx12.kaspersky-labs.com ([91.103.66.155]:45754 "EHLO
-        mx12.kaspersky-labs.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229647AbhEHQiw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 8 May 2021 12:38:52 -0400
-Received: from relay12.kaspersky-labs.com (unknown [127.0.0.10])
-        by relay12.kaspersky-labs.com (Postfix) with ESMTP id BBB7276F37;
-        Sat,  8 May 2021 19:37:43 +0300 (MSK)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kaspersky.com;
-        s=mail202102; t=1620491863;
-        bh=MGkuxaLyQrGDyQGBNRLu1LM9cj5Iy4AYtoLRZpphOqc=;
-        h=From:To:Subject:Date:Message-ID:MIME-Version:Content-Type;
-        b=ziLtJsV+rdnu1oBZAVxAxWi0z3sxigPegwgXnK6znoHWbXB4DVmwBztqIqsJbOZ1W
-         Qg5we0HfUpXUQj9lS4xd4xaiD9FTT9Au8HxO7LCwLYCdYqIDHmiJ9/kIvJFulSh8rj
-         rXcqHcKE56ClnCg6M+WC5YgPAgoRtXlP4ruWXTsHLfe/wfPIfeLmEUC200WjinyQAp
-         Zfn8va6BPT9rXne3hSg81nCFKe6It08gfEfj/6rRdYReuuhqBj3uCuB102ioWJ3B93
-         4Hx677+6RgjtEt9LWAPqIWIIptCj7GihDi3kHEfCH8Id49C7zrdoAmNp1yJUxiHnFN
-         luR6yUQYTI+/w==
-Received: from mail-hq2.kaspersky.com (unknown [91.103.66.206])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-SHA256 (128/128 bits))
-        (Client CN "mail-hq2.kaspersky.com", Issuer "Kaspersky MailRelays CA G3" (verified OK))
-        by mailhub12.kaspersky-labs.com (Postfix) with ESMTPS id 7799276F2F;
-        Sat,  8 May 2021 19:37:43 +0300 (MSK)
-Received: from arseniy-pc.avp.ru (10.64.68.128) by hqmailmbx3.avp.ru
- (10.64.67.243) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2176.2; Sat, 8 May
- 2021 19:37:43 +0300
-From:   Arseny Krasnov <arseny.krasnov@kaspersky.com>
-To:     Stefan Hajnoczi <stefanha@redhat.com>,
-        Stefano Garzarella <sgarzare@redhat.com>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        Jason Wang <jasowang@redhat.com>,
+        id S229614AbhEHR0x (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 8 May 2021 13:26:53 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:59420 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229544AbhEHR0w (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 8 May 2021 13:26:52 -0400
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1lfQhs-003Ho6-Pe; Sat, 08 May 2021 19:25:36 +0200
+Date:   Sat, 8 May 2021 19:25:36 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Dan Carpenter <dan.carpenter@oracle.com>
+Cc:     Florian Fainelli <f.fainelli@gmail.com>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
         "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Arseny Krasnov <arseny.krasnov@kaspersky.com>,
-        Jorgen Hansen <jhansen@vmware.com>,
-        Norbert Slusarek <nslusarek@gmx.net>,
-        Andra Paraschiv <andraprs@amazon.com>,
-        Colin Ian King <colin.king@canonical.com>
-CC:     <kvm@vger.kernel.org>, <virtualization@lists.linux-foundation.org>,
-        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <stsp2@yandex.ru>, <oxffffaa@gmail.com>
-Subject: [RFC PATCH v9 19/19] af_vsock: serialize writes to shared socket
-Date:   Sat, 8 May 2021 19:37:35 +0300
-Message-ID: <20210508163738.3432975-1-arseny.krasnov@kaspersky.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20210508163027.3430238-1-arseny.krasnov@kaspersky.com>
-References: <20210508163027.3430238-1-arseny.krasnov@kaspersky.com>
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        kernel-janitors@vger.kernel.org
+Subject: Re: [PATCH net] net: dsa: fix a crash if ->get_sset_count() fails
+Message-ID: <YJbJkKi7/P5Xkz9v@lunn.ch>
+References: <YJaSe3RPgn7gKxZv@mwanda>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Originating-IP: [10.64.68.128]
-X-ClientProxiedBy: hqmailmbx2.avp.ru (10.64.67.242) To hqmailmbx3.avp.ru
- (10.64.67.243)
-X-KSE-ServerInfo: hqmailmbx3.avp.ru, 9
-X-KSE-AntiSpam-Interceptor-Info: scan successful
-X-KSE-AntiSpam-Version: 5.9.20, Database issued on: 05/08/2021 16:27:11
-X-KSE-AntiSpam-Status: KAS_STATUS_NOT_DETECTED
-X-KSE-AntiSpam-Method: none
-X-KSE-AntiSpam-Rate: 10
-X-KSE-AntiSpam-Info: Lua profiles 163552 [May 08 2021]
-X-KSE-AntiSpam-Info: Version: 5.9.20.0
-X-KSE-AntiSpam-Info: Envelope from: arseny.krasnov@kaspersky.com
-X-KSE-AntiSpam-Info: LuaCore: 445 445 d5f7ae5578b0f01c45f955a2a751ac25953290c9
-X-KSE-AntiSpam-Info: {Prob_from_in_msgid}
-X-KSE-AntiSpam-Info: {Tracking_from_domain_doesnt_match_to}
-X-KSE-AntiSpam-Info: 127.0.0.199:7.1.2;d41d8cd98f00b204e9800998ecf8427e.com:7.1.1;arseniy-pc.avp.ru:7.1.1;kaspersky.com:7.1.1
-X-KSE-AntiSpam-Info: Rate: 10
-X-KSE-AntiSpam-Info: Status: not_detected
-X-KSE-AntiSpam-Info: Method: none
-X-KSE-Antiphishing-Info: Clean
-X-KSE-Antiphishing-ScanningType: Deterministic
-X-KSE-Antiphishing-Method: None
-X-KSE-Antiphishing-Bases: 05/08/2021 16:29:00
-X-KSE-AttachmentFiltering-Interceptor-Info: no applicable attachment filtering
- rules found
-X-KSE-Antivirus-Interceptor-Info: scan successful
-X-KSE-Antivirus-Info: Clean, bases: 08.05.2021 12:32:00
-X-KSE-BulkMessagesFiltering-Scan-Result: InTheLimit
-X-KSE-AttachmentFiltering-Interceptor-Info: no applicable attachment filtering
- rules found
-X-KSE-BulkMessagesFiltering-Scan-Result: InTheLimit
-X-KLMS-Rule-ID: 52
-X-KLMS-Message-Action: clean
-X-KLMS-AntiSpam-Status: not scanned, disabled by settings
-X-KLMS-AntiSpam-Interceptor-Info: not scanned
-X-KLMS-AntiPhishing: Clean, bases: 2021/05/08 15:50:00
-X-KLMS-AntiVirus: Kaspersky Security for Linux Mail Server, version 8.0.3.30, bases: 2021/05/08 12:32:00 #16600610
-X-KLMS-AntiVirus-Status: Clean, skipped
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YJaSe3RPgn7gKxZv@mwanda>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This add logic, that serializes write access to single socket
-by multiple threads. It is implemented be adding field with TID
-of current writer. When writer tries to send something, it checks
-that field is -1(free), else it sleep in the same way as waiting
-for free space at peers' side.
+On Sat, May 08, 2021 at 04:30:35PM +0300, Dan Carpenter wrote:
+> If ds->ops->get_sset_count() fails then it "count" is a negative error
+> code such as -EOPNOTSUPP.  Because "i" is an unsigned int, the negative
+> error code is type promoted to a very high value and the loop will
+> corrupt memory until the system crashes.
+> 
+> Fix this by checking for error codes and changing the type of "i" to
+> just int.
+> 
+> Fixes: badf3ada60ab ("net: dsa: Provide CPU port statistics to master netdev")
+> Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
 
-Signed-off-by: Arseny Krasnov <arseny.krasnov@kaspersky.com>
----
- include/net/af_vsock.h   |  1 +
- net/vmw_vsock/af_vsock.c | 10 +++++++++-
- 2 files changed, 10 insertions(+), 1 deletion(-)
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
 
-diff --git a/include/net/af_vsock.h b/include/net/af_vsock.h
-index 1747c0b564ef..413343f18e99 100644
---- a/include/net/af_vsock.h
-+++ b/include/net/af_vsock.h
-@@ -69,6 +69,7 @@ struct vsock_sock {
- 	u64 buffer_size;
- 	u64 buffer_min_size;
- 	u64 buffer_max_size;
-+	pid_t tid_owner;
- 
- 	/* Private to transport. */
- 	void *trans;
-diff --git a/net/vmw_vsock/af_vsock.c b/net/vmw_vsock/af_vsock.c
-index 7790728465f4..1fb4a1860f6d 100644
---- a/net/vmw_vsock/af_vsock.c
-+++ b/net/vmw_vsock/af_vsock.c
-@@ -757,6 +757,7 @@ static struct sock *__vsock_create(struct net *net,
- 	vsk->peer_shutdown = 0;
- 	INIT_DELAYED_WORK(&vsk->connect_work, vsock_connect_timeout);
- 	INIT_DELAYED_WORK(&vsk->pending_work, vsock_pending_work);
-+	vsk->tid_owner = -1;
- 
- 	psk = parent ? vsock_sk(parent) : NULL;
- 	if (parent) {
-@@ -1765,7 +1766,9 @@ static int vsock_connectible_sendmsg(struct socket *sock, struct msghdr *msg,
- 		ssize_t written;
- 
- 		add_wait_queue(sk_sleep(sk), &wait);
--		while (vsock_stream_has_space(vsk) == 0 &&
-+		while ((vsock_stream_has_space(vsk) == 0 ||
-+			(vsk->tid_owner != current->pid &&
-+			 vsk->tid_owner != -1)) &&
- 		       sk->sk_err == 0 &&
- 		       !(sk->sk_shutdown & SEND_SHUTDOWN) &&
- 		       !(vsk->peer_shutdown & RCV_SHUTDOWN)) {
-@@ -1796,6 +1799,8 @@ static int vsock_connectible_sendmsg(struct socket *sock, struct msghdr *msg,
- 				goto out_err;
- 			}
- 		}
-+
-+		vsk->tid_owner = current->pid;
- 		remove_wait_queue(sk_sleep(sk), &wait);
- 
- 		/* These checks occur both as part of and after the loop
-@@ -1852,7 +1857,10 @@ static int vsock_connectible_sendmsg(struct socket *sock, struct msghdr *msg,
- 			err = total_written;
- 	}
- out:
-+	vsk->tid_owner = -1;
- 	release_sock(sk);
-+	sk->sk_write_space(sk);
-+
- 	return err;
- }
- 
--- 
-2.25.1
-
+    Andrew
