@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F2709376DA9
-	for <lists+netdev@lfdr.de>; Sat,  8 May 2021 02:29:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CA9E5376DAB
+	for <lists+netdev@lfdr.de>; Sat,  8 May 2021 02:29:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230267AbhEHAaW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 7 May 2021 20:30:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47642 "EHLO
+        id S230308AbhEHAaZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 7 May 2021 20:30:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47650 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229880AbhEHAaV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 7 May 2021 20:30:21 -0400
-Received: from mail-wr1-x42f.google.com (mail-wr1-x42f.google.com [IPv6:2a00:1450:4864:20::42f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C4157C061761;
-        Fri,  7 May 2021 17:29:20 -0700 (PDT)
-Received: by mail-wr1-x42f.google.com with SMTP id l14so10864011wrx.5;
-        Fri, 07 May 2021 17:29:20 -0700 (PDT)
+        with ESMTP id S230246AbhEHAaW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 7 May 2021 20:30:22 -0400
+Received: from mail-wm1-x336.google.com (mail-wm1-x336.google.com [IPv6:2a00:1450:4864:20::336])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D290EC061574;
+        Fri,  7 May 2021 17:29:21 -0700 (PDT)
+Received: by mail-wm1-x336.google.com with SMTP id s82so6101496wmf.3;
+        Fri, 07 May 2021 17:29:21 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=IMGJC3f9H4OYqX3wBCM/mk0stFuB1KlCyCQlxa9ipnI=;
-        b=rU36FNZN3Zp5VlSKeF9MX+GnfOslaMi7mHa9PKHXup7J+yzH+7rB6wMBT1BKKwusdb
-         LBfeBwAEE9dwdHM2/gDVDN8+fpIEA3aRRxKP0AKMX7HmRKAhBDFZB3slXPu8CRVtdfFK
-         GBW4nF0smoMKtyqSiymNPKJKpbuobBF5Ck//+IXshVbRQwYuD7Eg5HUBJBCdNNhaIbKD
-         ozMTpP7TFC+X3wSQCrtiwYb36jvhwBcQcS4CUHiRwWKEK2cAcBqHilzNqhjfpPsDLT2n
-         EVst/2CKvgBFJrJtr0AkfTqPmu80Ok2w0hOhA4Jp/Rewfta6+dGGZg0Ord9cq6r6BTfe
-         N9+A==
+        bh=ceZsngI1VaZJ3EMhxlXbFwwOKDKMAKywASflzR5/4cU=;
+        b=s2gSd6cOdhtXlhezgjj1rWHyNyd21tM+E/YyfyY1PuF+sF7vVSt4rtMCwFnlHtB4JF
+         9eAwi2fbFLS/XDVG6b+l3NQYSXBLhIQZrzxTas9WWGssfzpWLAIdK+5PREBEhIbA3t6m
+         F0dfc+9+RzpNhWNhwla0lNL986K6UWLmanneh5EAF4kpDito8uGexusZPbrKm3Hr3iPm
+         AvpJhY/pVRqvO4Lv5duootZQuOkVOVlvaLnwpMB2QERjDDOl8/4trUi8qlzmUF51F2ga
+         O1/SLFUYjTWTxsire2EAszO8q6WGIVPHBSUV02bRY/lUHG1+2O9kHoVVQSUjkHuyPrn5
+         63OQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=IMGJC3f9H4OYqX3wBCM/mk0stFuB1KlCyCQlxa9ipnI=;
-        b=lwrf8BPjM+XTK2ou5MzA2+N6Mqcfa1iI00eK2v2Ay7F2SS01y094zRQa8Z3vCeuW1t
-         BQyOvi5vl5Oi3kjsN3/E/KSf9Q13HI7mxhqON5Q9S9yH0gqjVp6DRNgy4Otg5mMYrxeV
-         2O69In5qRoI6mCp38H+pv94BfNw73xvGkvZSSdcorbDFl/Gh1JS9OmYX3UcFHa86/Xm6
-         OaTP6t4nF+De7QjGIabs092jprF8etWKFCCpEtqPVKzAUc4CU4YyHxVTB5D/8Dbmnktg
-         63+5F7RteyobI1+NgU32qP/88HuYfyuRn/AwxFGVs4xxk30LRTXcZa4baSJSnzF7yU2I
-         u7Gw==
-X-Gm-Message-State: AOAM5307mq/SAuUYU6/mhs6pVWpdlqPcL4z1yDowqbuQRtnv1+RqRW08
-        +KR5XgSBoUrPSdgOA6yMZbA=
-X-Google-Smtp-Source: ABdhPJwpGV9HWrc3IDQcUMUrJ8jFL5VcJzCj/ChKs6AR8W4iw6RM1KBIKh4jNI1jqK9xjtZt8dcbYw==
-X-Received: by 2002:adf:e9c2:: with SMTP id l2mr15340147wrn.323.1620433759454;
-        Fri, 07 May 2021 17:29:19 -0700 (PDT)
+        bh=ceZsngI1VaZJ3EMhxlXbFwwOKDKMAKywASflzR5/4cU=;
+        b=eQhrrJn7+ItbMagyNrdtiY2TJz5CZf8vCGo6A3ImX/uvODszGUYoVFgn4ArsoyqJjU
+         uZA/mDs7pbUyLho9b//9Uwx7BdZYYX8562Jx7E7HHk4wEJWfdiaBsQBOEWBPzT25NzdV
+         esMMlSN4cHwXgxmxSLXNX+serGDG1t5qWfsDe1mslEyt6ZsdXq10ZTGvZdNDP1DMNJ4U
+         279wY8zH+ST3BwELKVQ5v9iv4eqislUcpGkq27DC/bNqBiW7LHWLYxOy/6QoAhmVWk/W
+         wMRF8kVlXzSyXjn26B2BbLUxNewevjTMMFHLTQONKXVkBrSgT/221hTabksvZ7bsPXXY
+         9Uwg==
+X-Gm-Message-State: AOAM531va44eCnz5y0dCdxnqDjl70Qc9Wtcbb073i8bTga+1QFjhyOei
+        RKGh3W5JKFNZQui6yMNWSLc=
+X-Google-Smtp-Source: ABdhPJw0f4QjZtsN5+6wcWvoqKSXCtEuIIDvuv1VrJ4+gLkrwxd3+VxUaVT00M72/X+Y0W430TO8wA==
+X-Received: by 2002:a1c:7419:: with SMTP id p25mr24330483wmc.79.1620433760446;
+        Fri, 07 May 2021 17:29:20 -0700 (PDT)
 Received: from Ansuel-xps.localdomain (93-35-189-2.ip56.fastwebnet.it. [93.35.189.2])
-        by smtp.googlemail.com with ESMTPSA id f4sm10967597wrz.33.2021.05.07.17.29.18
+        by smtp.googlemail.com with ESMTPSA id f4sm10967597wrz.33.2021.05.07.17.29.19
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 07 May 2021 17:29:19 -0700 (PDT)
+        Fri, 07 May 2021 17:29:20 -0700 (PDT)
 From:   Ansuel Smith <ansuelsmth@gmail.com>
 To:     Florian Fainelli <f.fainelli@gmail.com>
 Cc:     Ansuel Smith <ansuelsmth@gmail.com>, Andrew Lunn <andrew@lunn.ch>,
@@ -55,9 +55,9 @@ Cc:     Ansuel Smith <ansuelsmth@gmail.com>, Andrew Lunn <andrew@lunn.ch>,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Subject: [RFC PATCH net-next v4 02/28] net: mdio: ipq8064: add regmap config to disable REGCACHE
-Date:   Sat,  8 May 2021 02:28:52 +0200
-Message-Id: <20210508002920.19945-2-ansuelsmth@gmail.com>
+Subject: [RFC PATCH net-next v4 03/28] net: mdio: ipq8064: enlarge sleep after read/write operation
+Date:   Sat,  8 May 2021 02:28:53 +0200
+Message-Id: <20210508002920.19945-3-ansuelsmth@gmail.com>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20210508002920.19945-1-ansuelsmth@gmail.com>
 References: <20210508002920.19945-1-ansuelsmth@gmail.com>
@@ -67,83 +67,47 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-mdio drivers should not use REGCHACHE. Also disable locking since it's
-handled by the mdio users and regmap is always accessed atomically.
+With the use of the qca8k dsa driver, some problem arised related to
+port status detection. With a load on a specific port (for example a
+simple speed test), the driver starts to behave in a strange way and
+garbage data is produced. To address this, enlarge the sleep delay and
+address a bug for the reg offset 31 that require additional delay for
+this specific reg.
 
 Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
 ---
- drivers/net/mdio/mdio-ipq8064.c | 34 +++++++++++++++++++++++----------
- 1 file changed, 24 insertions(+), 10 deletions(-)
+ drivers/net/mdio/mdio-ipq8064.c | 11 +++++++++--
+ 1 file changed, 9 insertions(+), 2 deletions(-)
 
 diff --git a/drivers/net/mdio/mdio-ipq8064.c b/drivers/net/mdio/mdio-ipq8064.c
-index fb1614242e13..9862745d1cee 100644
+index 9862745d1cee..a3f7f9de12b6 100644
 --- a/drivers/net/mdio/mdio-ipq8064.c
 +++ b/drivers/net/mdio/mdio-ipq8064.c
-@@ -10,9 +10,8 @@
- #include <linux/module.h>
- #include <linux/regmap.h>
- #include <linux/of_mdio.h>
--#include <linux/phy.h>
-+#include <linux/of_address.h>
- #include <linux/platform_device.h>
--#include <linux/mfd/syscon.h>
+@@ -65,7 +65,7 @@ ipq8064_mdio_read(struct mii_bus *bus, int phy_addr, int reg_offset)
+ 		   ((reg_offset << MII_REG_SHIFT) & MII_REG_MASK);
  
- /* MII address register definitions */
- #define MII_ADDR_REG_ADDR			0x10
-@@ -97,14 +96,34 @@ ipq8064_mdio_write(struct mii_bus *bus, int phy_addr, int reg_offset, u16 data)
+ 	regmap_write(priv->base, MII_ADDR_REG_ADDR, miiaddr);
+-	usleep_range(8, 10);
++	usleep_range(10, 13);
+ 
+ 	err = ipq8064_mdio_wait_busy(priv);
+ 	if (err)
+@@ -91,7 +91,14 @@ ipq8064_mdio_write(struct mii_bus *bus, int phy_addr, int reg_offset, u16 data)
+ 		   ((reg_offset << MII_REG_SHIFT) & MII_REG_MASK);
+ 
+ 	regmap_write(priv->base, MII_ADDR_REG_ADDR, miiaddr);
+-	usleep_range(8, 10);
++
++	/* For the specific reg 31 extra time is needed or the next
++	 * read will produce garbage data.
++	 */
++	if (reg_offset == 31)
++		usleep_range(30, 43);
++	else
++		usleep_range(10, 13);
+ 
  	return ipq8064_mdio_wait_busy(priv);
  }
- 
-+static const struct regmap_config ipq8064_mdio_regmap_config = {
-+	.reg_bits = 32,
-+	.reg_stride = 4,
-+	.val_bits = 32,
-+	.can_multi_write = false,
-+	/* the mdio lock is used by any user of this mdio driver */
-+	.disable_locking = true,
-+
-+	.cache_type = REGCACHE_NONE,
-+};
-+
- static int
- ipq8064_mdio_probe(struct platform_device *pdev)
- {
- 	struct device_node *np = pdev->dev.of_node;
- 	struct ipq8064_mdio *priv;
-+	struct resource res;
- 	struct mii_bus *bus;
-+	void __iomem *base;
- 	int ret;
- 
-+	if (of_address_to_resource(np, 0, &res))
-+		return -ENOMEM;
-+
-+	base = ioremap(res.start, resource_size(&res));
-+	if (!base)
-+		return -ENOMEM;
-+
- 	bus = devm_mdiobus_alloc_size(&pdev->dev, sizeof(*priv));
- 	if (!bus)
- 		return -ENOMEM;
-@@ -116,15 +135,10 @@ ipq8064_mdio_probe(struct platform_device *pdev)
- 	bus->parent = &pdev->dev;
- 
- 	priv = bus->priv;
--	priv->base = device_node_to_regmap(np);
--	if (IS_ERR(priv->base)) {
--		if (priv->base == ERR_PTR(-EPROBE_DEFER))
--			return -EPROBE_DEFER;
--
--		dev_err(&pdev->dev, "error getting device regmap, error=%pe\n",
--			priv->base);
-+	priv->base = devm_regmap_init_mmio(&pdev->dev, base,
-+					   &ipq8064_mdio_regmap_config);
-+	if (IS_ERR(priv->base))
- 		return PTR_ERR(priv->base);
--	}
- 
- 	ret = of_mdiobus_register(bus, np);
- 	if (ret)
 -- 
 2.30.2
 
