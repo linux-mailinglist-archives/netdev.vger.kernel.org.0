@@ -2,203 +2,446 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1087B377147
-	for <lists+netdev@lfdr.de>; Sat,  8 May 2021 12:48:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 89BBD37714E
+	for <lists+netdev@lfdr.de>; Sat,  8 May 2021 13:01:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230350AbhEHKtn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 8 May 2021 06:49:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40232 "EHLO
+        id S230405AbhEHLCV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 8 May 2021 07:02:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42954 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230234AbhEHKtn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 8 May 2021 06:49:43 -0400
-Received: from mail-ej1-x632.google.com (mail-ej1-x632.google.com [IPv6:2a00:1450:4864:20::632])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A51A0C061574
-        for <netdev@vger.kernel.org>; Sat,  8 May 2021 03:48:41 -0700 (PDT)
-Received: by mail-ej1-x632.google.com with SMTP id w3so17424769ejc.4
-        for <netdev@vger.kernel.org>; Sat, 08 May 2021 03:48:41 -0700 (PDT)
+        with ESMTP id S230257AbhEHLCU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 8 May 2021 07:02:20 -0400
+Received: from mail-ed1-x531.google.com (mail-ed1-x531.google.com [IPv6:2a00:1450:4864:20::531])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7AD25C061574
+        for <netdev@vger.kernel.org>; Sat,  8 May 2021 04:01:19 -0700 (PDT)
+Received: by mail-ed1-x531.google.com with SMTP id g14so13217869edy.6
+        for <netdev@vger.kernel.org>; Sat, 08 May 2021 04:01:19 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:subject:from:in-reply-to:date:cc
-         :content-transfer-encoding:message-id:references:to;
-        bh=DId7r9IjrOE1xiCLNpv2Xp6WK+XEYkrrdJ+/5oKbHts=;
-        b=tIvd9XImtJPSlaJy/Rp9nXxqNeBDigZHp+nohcybdXy7ZLN3HpYt13rXLhxH44t4Cq
-         ycmcdJEYKTIt5su148bT7wqWFFezLOhNFMR0CVxIwCkFMU4QGVDjz/mN1GN7sQtqFPFI
-         /PN8Z1twVDc01rOJe6iP7/6Grfjv7nTIPM+TMTqg6ZsVl+h7GrWmQf+BBh2Mvm8gFGAE
-         l222gY4cJ0U5WV3I9uh51j3S5JrmnUcAjGvCiEzBnFekDY3mu8GlBUYfv8Q7IIffKoWM
-         IS0D54SnFvTfA1yxVvF2eXR5tgLbdl7zj+AQI20lleOYpJMRbciOGZCl3Ly8QCot5UYD
-         EuFg==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=VAUSWbe9maPv3azSF5cK9vewt6XdzzIzjYRsNZyI8g4=;
+        b=kmnQb3WKCARapuB49OEfA1cc57eN8zet05EyGIn4OgtlGqV7+uzsPzqhUjiOph8UsU
+         /3lnj/Q4PrmQDv5312GZPGSZyIif5RGUxoEVNd+q/4gOupBFfyEuHTvuOZ7nEMq5zWEY
+         4ifY7SpwuiE4BSMbnZajF0fZAKyUu2acv86+FA8Sey6O5+R4DsL0jOLn9AgTZcdAkr6i
+         2TpAMqKvqpGXmgNKRnQaHYf+KWVlnOKFVjgjxSGTfHVZSnHs4N9VGwSeH6w0baJuPvQZ
+         DkXAeIJxEJp43YuvEORdMBHgRsp7e+UO9zoQblLLkxXx1XDs/X8FJTWVR6MXhXRZyoc6
+         C34g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:subject:from:in-reply-to:date:cc
-         :content-transfer-encoding:message-id:references:to;
-        bh=DId7r9IjrOE1xiCLNpv2Xp6WK+XEYkrrdJ+/5oKbHts=;
-        b=c06T0DNUBIn/T17K3NgYDZvwEGD22OUE4qbNiHAGxJmdxVULrbMKk78Joyulo7YKRY
-         qD/KjVdnIzjRdXptZMNGn9LITwDXxjGN4vV0Cfvg6DaEMu9JhRQyz0oAqjhO0XxwY2Bk
-         E0s6FQs3IAuAFRAuy0FOs8CMvJmr+cf8pNKN/zpNqmP7+os6FDRI8S2gsAGny3aps3wA
-         NNPd9ImF7N8EZcJX3f/IkTnlIQdrohFfRYNkbUDNoLC7XNT8JIuO20ODNXSBNvMs0vDh
-         0yLacJZmIn9EiPn8rlTJVccyCN4v9EQETaH0I2VMwKvQK/0bXqgD/qh9WdBEoMRL3xwC
-         utVg==
-X-Gm-Message-State: AOAM5305Sp/yZ+sn5yfBz38z1NKha7zqviVlSU3MRZebj8k6XHzMKesM
-        CcHeKJ+Njf1qYlQqRVotgODWzaXsGrPgvg==
-X-Google-Smtp-Source: ABdhPJxy4n5IDpkULHJDbobUi/FVr8+cio7TtQ4FBEMW+Ofslhcf5BcdEj7W946RBwxsaD+qwqKkkQ==
-X-Received: by 2002:a17:907:7895:: with SMTP id ku21mr15509668ejc.373.1620470920273;
-        Sat, 08 May 2021 03:48:40 -0700 (PDT)
-Received: from smtpclient.apple ([178.254.237.20])
-        by smtp.gmail.com with ESMTPSA id k9sm5443882eje.102.2021.05.08.03.48.38
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Sat, 08 May 2021 03:48:39 -0700 (PDT)
-Content-Type: text/plain;
-        charset=us-ascii
-Mime-Version: 1.0 (Mac OS X Mail 14.0 \(3654.100.0.2.11\))
-Subject: Bug Report Napi kthread rcd 
-From:   Martin Zaharinov <micron10@gmail.com>
-In-Reply-To: <457C51FA-5AD3-40AE-B8CE-AFBDB81DD258@gmail.com>
-Date:   Sat, 8 May 2021 13:48:37 +0300
-Cc:     netdev <netdev@vger.kernel.org>, Wei Wang <weiwan@google.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Alexander Duyck <alexanderduyck@fb.com>,
-        Hannes Frederic Sowa <hannes@stressinduktion.org>,
-        Eric Dumazet <edumazet@google.com>, alobakin@pm.me
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=VAUSWbe9maPv3azSF5cK9vewt6XdzzIzjYRsNZyI8g4=;
+        b=bMyB3iE1tUWgDUgj9kPbjKJ/lRratW4CYEDcSonKkNwW5lWZvXtRjDFyu0oDl8yygu
+         RGqYHsyY3+qUy6X0ORZD9imaW6Wywxbd0VdEmQUdP+sBDpa5Pnwo3SACWnP9jV3EVyaI
+         rwc3PQQTVoGl97mP8G8IXyk+pqynyCRiYO1t9aT5JX7j5WtT7X4vyyxwfRxyTbR3YSTB
+         aEEA13ww8C7c4CYLvGbjLmLaHiIGW073PBKKFYqRTodUer6PcDRpGvZamUBk6cZZUy3L
+         7M2wWH27OeOUgme5VBAwW+8fe4ywK3HeZTCZNEM/axc7TKCkq9SyDy1xWmMjHVsCPrqy
+         VAZw==
+X-Gm-Message-State: AOAM531Y/9IM+yVudM091o43xeK7SrdybsUIz8x9H6g7A7EpOa/zp+KL
+        vx2Lrxf1eYLp7c7X7iekZsC9IKdfLc0kbGeBRj8=
+X-Google-Smtp-Source: ABdhPJy0Dlo/FWJZnjdhZ+6bWhNS1rFvP6Nan8puN4ikCMCmfNlCAqPWx5Avmw++EIcelRfYkuD0hSVOPENzozj+Ihc=
+X-Received: by 2002:aa7:c30c:: with SMTP id l12mr17218569edq.217.1620471677945;
+ Sat, 08 May 2021 04:01:17 -0700 (PDT)
+MIME-Version: 1.0
+References: <20210429190926.5086-1-smalin@marvell.com> <20210429190926.5086-18-smalin@marvell.com>
+ <301d2567-2880-e8b2-7d68-0437d7c4f1bb@suse.de>
+In-Reply-To: <301d2567-2880-e8b2-7d68-0437d7c4f1bb@suse.de>
+From:   Shai Malin <malin1024@gmail.com>
+Date:   Sat, 8 May 2021 14:01:06 +0300
+Message-ID: <CAKKgK4yW4o1LoBQjGcQ3k1_oXfH9X54gNNGHrRfQ3uEBGm+5QQ@mail.gmail.com>
+Subject: Re: [RFC PATCH v4 17/27] qedn: Add qedn probe
+To:     Hannes Reinecke <hare@suse.de>
+Cc:     Shai Malin <smalin@marvell.com>, netdev@vger.kernel.org,
+        linux-nvme@lists.infradead.org, davem@davemloft.net,
+        kuba@kernel.org, sagi@grimberg.me, hch@lst.de, axboe@fb.com,
+        kbusch@kernel.org, Ariel Elior <aelior@marvell.com>,
+        Michal Kalderon <mkalderon@marvell.com>, okulkarni@marvell.com,
+        pkushwaha@marvell.com, Dean Balandin <dbalandin@marvell.com>
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
-Message-Id: <E1410B34-4551-469C-8EE9-AAB5C001248E@gmail.com>
-References: <20210316223647.4080796-1-weiwan@google.com>
- <6AF20AA6-07E7-4DDD-8A9E-BE093FC03802@gmail.com>
- <CANn89iJxXOZktXv6Arh82OAGOpn523NuOcWFDaSmJriOaXQMRw@mail.gmail.com>
- <AE7C80D4-DD7E-4AA7-B261-A66B30F57D3B@gmail.com>
- <CANn89iKyWgYeD_B-iJxL50C4BHYiDh+dWOyFYXatteF=eU7zoA@mail.gmail.com>
- <9F81F217-6E5C-49EB-95A7-CCB1D3C3ED4F@gmail.com>
- <00722e87685db9da3ef76166780dcbf5b4617bf7.camel@redhat.com>
- <457C51FA-5AD3-40AE-B8CE-AFBDB81DD258@gmail.com>
-To:     Paolo Abeni <pabeni@redhat.com>
-X-Mailer: Apple Mail (2.3654.100.0.2.11)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi all=20
-One more bug report .
-Kernel is 5.12.1=20
+On 5/2/21 2:28 PM, Hannes Reinecke wrote:
+> On 4/29/21 9:09 PM, Shai Malin wrote:
+> > This patch introduces the functionality of loading and unloading
+> > physical function.
+> > qedn_probe() loads the offload device PF(physical function), and
+> > initialize the HW and the FW with the PF parameters using the
+> > HW ops->qed_nvmetcp_ops, which are similar to other "qed_*_ops" which
+> > are used by the qede, qedr, qedf and qedi device drivers.
+> > qedn_remove() unloads the offload device PF, re-initialize the HW and
+> > the FW with the PF parameters.
+> >
+> > The struct qedn_ctx is per PF container for PF-specific attributes and
+> > resources.
+> >
+> > Acked-by: Igor Russkikh <irusskikh@marvell.com>
+> > Signed-off-by: Dean Balandin <dbalandin@marvell.com>
+> > Signed-off-by: Prabhakar Kushwaha <pkushwaha@marvell.com>
+> > Signed-off-by: Omkar Kulkarni <okulkarni@marvell.com>
+> > Signed-off-by: Michal Kalderon <mkalderon@marvell.com>
+> > Signed-off-by: Ariel Elior <aelior@marvell.com>
+> > Signed-off-by: Shai Malin <smalin@marvell.com>
+> > ---
+> >   drivers/nvme/hw/Kconfig          |   1 +
+> >   drivers/nvme/hw/qedn/qedn.h      |  49 ++++++++
+> >   drivers/nvme/hw/qedn/qedn_main.c | 191 ++++++++++++++++++++++++++++++=
+-
+> >   3 files changed, 236 insertions(+), 5 deletions(-)
+> >
+> > diff --git a/drivers/nvme/hw/Kconfig b/drivers/nvme/hw/Kconfig
+> > index 374f1f9dbd3d..91b1bd6f07d8 100644
+> > --- a/drivers/nvme/hw/Kconfig
+> > +++ b/drivers/nvme/hw/Kconfig
+> > @@ -2,6 +2,7 @@
+> >   config NVME_QEDN
+> >       tristate "Marvell NVM Express over Fabrics TCP offload"
+> >       depends on NVME_TCP_OFFLOAD
+> > +     select QED_NVMETCP
+> >       help
+> >         This enables the Marvell NVMe TCP offload support (qedn).
+> >
+> > diff --git a/drivers/nvme/hw/qedn/qedn.h b/drivers/nvme/hw/qedn/qedn.h
+> > index bcd0748a10fd..c1ac17eabcb7 100644
+> > --- a/drivers/nvme/hw/qedn/qedn.h
+> > +++ b/drivers/nvme/hw/qedn/qedn.h
+> > @@ -6,14 +6,63 @@
+> >   #ifndef _QEDN_H_
+> >   #define _QEDN_H_
+> >
+> > +#include <linux/qed/qed_if.h>
+> > +#include <linux/qed/qed_nvmetcp_if.h>
+> > +
+> >   /* Driver includes */
+> >   #include "../../host/tcp-offload.h"
+> >
+> > +#define QEDN_MAJOR_VERSION           8
+> > +#define QEDN_MINOR_VERSION           62
+> > +#define QEDN_REVISION_VERSION                10
+> > +#define QEDN_ENGINEERING_VERSION     0
+> > +#define DRV_MODULE_VERSION __stringify(QEDE_MAJOR_VERSION) "."       \
+> > +             __stringify(QEDE_MINOR_VERSION) "."             \
+> > +             __stringify(QEDE_REVISION_VERSION) "."          \
+> > +             __stringify(QEDE_ENGINEERING_VERSION)
+> > +
+> >   #define QEDN_MODULE_NAME "qedn"
+> >
+> > +#define QEDN_MAX_TASKS_PER_PF (16 * 1024)
+> > +#define QEDN_MAX_CONNS_PER_PF (4 * 1024)
+> > +#define QEDN_FW_CQ_SIZE (4 * 1024)
+> > +#define QEDN_PROTO_CQ_PROD_IDX       0
+> > +#define QEDN_NVMETCP_NUM_FW_CONN_QUEUE_PAGES 2
+> > +
+> > +enum qedn_state {
+> > +     QEDN_STATE_CORE_PROBED =3D 0,
+> > +     QEDN_STATE_CORE_OPEN,
+> > +     QEDN_STATE_GL_PF_LIST_ADDED,
+> > +     QEDN_STATE_MFW_STATE,
+> > +     QEDN_STATE_REGISTERED_OFFLOAD_DEV,
+> > +     QEDN_STATE_MODULE_REMOVE_ONGOING,
+> > +};
+> > +
+> >   struct qedn_ctx {
+> >       struct pci_dev *pdev;
+> > +     struct qed_dev *cdev;
+> > +     struct qed_dev_nvmetcp_info dev_info;
+> >       struct nvme_tcp_ofld_dev qedn_ofld_dev;
+> > +     struct qed_pf_params pf_params;
+> > +
+> > +     /* Global PF list entry */
+> > +     struct list_head gl_pf_entry;
+> > +
+> > +     /* Accessed with atomic bit ops, used with enum qedn_state */
+> > +     unsigned long state;
+> > +
+> > +     /* Fast path queues */
+> > +     u8 num_fw_cqs;
+> > +};
+> > +
+> > +struct qedn_global {
+> > +     struct list_head qedn_pf_list;
+> > +
+> > +     /* Host mode */
+> > +     struct list_head ctrl_list;
+> > +
+> > +     /* Mutex for accessing the global struct */
+> > +     struct mutex glb_mutex;
+> >   };
+> >
+> >   #endif /* _QEDN_H_ */
+> > diff --git a/drivers/nvme/hw/qedn/qedn_main.c b/drivers/nvme/hw/qedn/qe=
+dn_main.c
+> > index 31d6d86d6eb7..e3e8e3676b79 100644
+> > --- a/drivers/nvme/hw/qedn/qedn_main.c
+> > +++ b/drivers/nvme/hw/qedn/qedn_main.c
+> > @@ -14,6 +14,10 @@
+> >
+> >   #define CHIP_NUM_AHP_NVMETCP 0x8194
+> >
+> > +const struct qed_nvmetcp_ops *qed_ops;
+> > +
+> > +/* Global context instance */
+> > +struct qedn_global qedn_glb;
+> >   static struct pci_device_id qedn_pci_tbl[] =3D {
+> >       { PCI_VDEVICE(QLOGIC, CHIP_NUM_AHP_NVMETCP), 0 },
+> >       {0, 0},
+> > @@ -99,12 +103,132 @@ static struct nvme_tcp_ofld_ops qedn_ofld_ops =3D=
+ {
+> >       .commit_rqs =3D qedn_commit_rqs,
+> >   };
+> >
+> > +static inline void qedn_init_pf_struct(struct qedn_ctx *qedn)
+> > +{
+> > +     /* Placeholder - Initialize qedn fields */
+> > +}
+> > +
+> > +static inline void
+> > +qedn_init_core_probe_params(struct qed_probe_params *probe_params)
+> > +{
+> > +     memset(probe_params, 0, sizeof(*probe_params));
+> > +     probe_params->protocol =3D QED_PROTOCOL_NVMETCP;
+> > +     probe_params->is_vf =3D false;
+> > +     probe_params->recov_in_prog =3D 0;
+> > +}
+> > +
+> > +static inline int qedn_core_probe(struct qedn_ctx *qedn)
+> > +{
+> > +     struct qed_probe_params probe_params;
+> > +     int rc =3D 0;
+> > +
+> > +     qedn_init_core_probe_params(&probe_params);
+> > +     pr_info("Starting QED probe\n");
+> > +     qedn->cdev =3D qed_ops->common->probe(qedn->pdev, &probe_params);
+> > +     if (!qedn->cdev) {
+> > +             rc =3D -ENODEV;
+> > +             pr_err("QED probe failed\n");
+> > +     }
+> > +
+> > +     return rc;
+> > +}
+> > +
+> > +static void qedn_add_pf_to_gl_list(struct qedn_ctx *qedn)
+> > +{
+> > +     mutex_lock(&qedn_glb.glb_mutex);
+> > +     list_add_tail(&qedn->gl_pf_entry, &qedn_glb.qedn_pf_list);
+> > +     mutex_unlock(&qedn_glb.glb_mutex);
+> > +}
+> > +
+> > +static void qedn_remove_pf_from_gl_list(struct qedn_ctx *qedn)
+> > +{
+> > +     mutex_lock(&qedn_glb.glb_mutex);
+> > +     list_del_init(&qedn->gl_pf_entry);
+> > +     mutex_unlock(&qedn_glb.glb_mutex);
+> > +}
+> > +
+> > +static int qedn_set_nvmetcp_pf_param(struct qedn_ctx *qedn)
+> > +{
+> > +     u32 fw_conn_queue_pages =3D QEDN_NVMETCP_NUM_FW_CONN_QUEUE_PAGES;
+> > +     struct qed_nvmetcp_pf_params *pf_params;
+> > +
+> > +     pf_params =3D &qedn->pf_params.nvmetcp_pf_params;
+> > +     memset(pf_params, 0, sizeof(*pf_params));
+> > +     qedn->num_fw_cqs =3D min_t(u8, qedn->dev_info.num_cqs, num_online=
+_cpus());
+> > +
+> > +     pf_params->num_cons =3D QEDN_MAX_CONNS_PER_PF;
+> > +     pf_params->num_tasks =3D QEDN_MAX_TASKS_PER_PF;
+> > +
+> > +     /* Placeholder - Initialize function level queues */
+> > +
+> > +     /* Placeholder - Initialize TCP params */
+> > +
+> > +     /* Queues */
+> > +     pf_params->num_sq_pages_in_ring =3D fw_conn_queue_pages;
+> > +     pf_params->num_r2tq_pages_in_ring =3D fw_conn_queue_pages;
+> > +     pf_params->num_uhq_pages_in_ring =3D fw_conn_queue_pages;
+> > +     pf_params->num_queues =3D qedn->num_fw_cqs;
+> > +     pf_params->cq_num_entries =3D QEDN_FW_CQ_SIZE;
+> > +
+> > +     /* the CQ SB pi */
+> > +     pf_params->gl_rq_pi =3D QEDN_PROTO_CQ_PROD_IDX;
+> > +
+> > +     return 0;
+> > +}
+> > +
+> > +static inline int qedn_slowpath_start(struct qedn_ctx *qedn)
+> > +{
+> > +     struct qed_slowpath_params sp_params =3D {};
+> > +     int rc =3D 0;
+> > +
+> > +     /* Start the Slowpath-process */
+> > +     sp_params.int_mode =3D QED_INT_MODE_MSIX;
+> > +     sp_params.drv_major =3D QEDN_MAJOR_VERSION;
+> > +     sp_params.drv_minor =3D QEDN_MINOR_VERSION;
+> > +     sp_params.drv_rev =3D QEDN_REVISION_VERSION;
+> > +     sp_params.drv_eng =3D QEDN_ENGINEERING_VERSION;
+> > +     strscpy(sp_params.name, "qedn NVMeTCP", QED_DRV_VER_STR_SIZE);
+> > +     rc =3D qed_ops->common->slowpath_start(qedn->cdev, &sp_params);
+> > +     if (rc)
+> > +             pr_err("Cannot start slowpath\n");
+> > +
+> > +     return rc;
+> > +}
+> > +
+> >   static void __qedn_remove(struct pci_dev *pdev)
+> >   {
+> >       struct qedn_ctx *qedn =3D pci_get_drvdata(pdev);
+> > +     int rc;
+> > +
+> > +     pr_notice("qedn remove started: abs PF id=3D%u\n",
+> > +               qedn->dev_info.common.abs_pf_id);
+> > +
+> > +     if (test_and_set_bit(QEDN_STATE_MODULE_REMOVE_ONGOING, &qedn->sta=
+te)) {
+> > +             pr_err("Remove already ongoing\n");
+> > +
+> > +             return;
+> > +     }
+> > +
+> > +     if (test_and_clear_bit(QEDN_STATE_REGISTERED_OFFLOAD_DEV, &qedn->=
+state))
+> > +             nvme_tcp_ofld_unregister_dev(&qedn->qedn_ofld_dev);
+> > +
+> > +     if (test_and_clear_bit(QEDN_STATE_GL_PF_LIST_ADDED, &qedn->state)=
+)
+> > +             qedn_remove_pf_from_gl_list(qedn);
+> > +     else
+> > +             pr_err("Failed to remove from global PF list\n");
+> > +
+> > +     if (test_and_clear_bit(QEDN_STATE_MFW_STATE, &qedn->state)) {
+> > +             rc =3D qed_ops->common->update_drv_state(qedn->cdev, fals=
+e);
+> > +             if (rc)
+> > +                     pr_err("Failed to send drv state to MFW\n");
+> > +     }
+> > +
+> > +     if (test_and_clear_bit(QEDN_STATE_CORE_OPEN, &qedn->state))
+> > +             qed_ops->common->slowpath_stop(qedn->cdev);
+> > +
+> > +     if (test_and_clear_bit(QEDN_STATE_CORE_PROBED, &qedn->state))
+> > +             qed_ops->common->remove(qedn->cdev);
+> >
+> > -     pr_notice("Starting qedn_remove\n");
+> > -     nvme_tcp_ofld_unregister_dev(&qedn->qedn_ofld_dev);
+> >       kfree(qedn);
+> >       pr_notice("Ending qedn_remove successfully\n");
+> >   }
+> > @@ -144,15 +268,55 @@ static int __qedn_probe(struct pci_dev *pdev)
+> >       if (!qedn)
+> >               return -ENODEV;
+> >
+> > +     qedn_init_pf_struct(qedn);
+> > +
+> > +     /* QED probe */
+> > +     rc =3D qedn_core_probe(qedn);
+> > +     if (rc)
+> > +             goto exit_probe_and_release_mem;
+> > +
+> > +     set_bit(QEDN_STATE_CORE_PROBED, &qedn->state);
+> > +
+> > +     rc =3D qed_ops->fill_dev_info(qedn->cdev, &qedn->dev_info);
+> > +     if (rc) {
+> > +             pr_err("fill_dev_info failed\n");
+> > +             goto exit_probe_and_release_mem;
+> > +     }
+> > +
+> > +     qedn_add_pf_to_gl_list(qedn);
+> > +     set_bit(QEDN_STATE_GL_PF_LIST_ADDED, &qedn->state);
+> > +
+> > +     rc =3D qedn_set_nvmetcp_pf_param(qedn);
+> > +     if (rc)
+> > +             goto exit_probe_and_release_mem;
+> > +
+> > +     qed_ops->common->update_pf_params(qedn->cdev, &qedn->pf_params);
+> > +     rc =3D qedn_slowpath_start(qedn);
+> > +     if (rc)
+> > +             goto exit_probe_and_release_mem;
+> > +
+> > +     set_bit(QEDN_STATE_CORE_OPEN, &qedn->state);
+> > +
+> > +     rc =3D qed_ops->common->update_drv_state(qedn->cdev, true);
+> > +     if (rc) {
+> > +             pr_err("Failed to send drv state to MFW\n");
+> > +             goto exit_probe_and_release_mem;
+> > +     }
+> > +
+> > +     set_bit(QEDN_STATE_MFW_STATE, &qedn->state);
+> > +
+> >       qedn->qedn_ofld_dev.ops =3D &qedn_ofld_ops;
+> >       INIT_LIST_HEAD(&qedn->qedn_ofld_dev.entry);
+> >       rc =3D nvme_tcp_ofld_register_dev(&qedn->qedn_ofld_dev);
+> >       if (rc)
+> > -             goto release_qedn;
+> > +             goto exit_probe_and_release_mem;
+> > +
+> > +     set_bit(QEDN_STATE_REGISTERED_OFFLOAD_DEV, &qedn->state);
+> >
+> >       return 0;
+> > -release_qedn:
+> > -     kfree(qedn);
+> > +exit_probe_and_release_mem:
+> > +     __qedn_remove(pdev);
+> > +     pr_err("probe ended with error\n");
+> >
+> >       return rc;
+> >   }
+> > @@ -170,10 +334,26 @@ static struct pci_driver qedn_pci_driver =3D {
+> >       .shutdown =3D qedn_shutdown,
+> >   };
+> >
+> > +static inline void qedn_init_global_contxt(void)
+> > +{
+> > +     INIT_LIST_HEAD(&qedn_glb.qedn_pf_list);
+> > +     INIT_LIST_HEAD(&qedn_glb.ctrl_list);
+> > +     mutex_init(&qedn_glb.glb_mutex);
+> > +}
+> > +
+> >   static int __init qedn_init(void)
+> >   {
+> >       int rc;
+> >
+> > +     qedn_init_global_contxt();
+> > +
+> > +     qed_ops =3D qed_get_nvmetcp_ops();
+> > +     if (!qed_ops) {
+> > +             pr_err("Failed to get QED NVMeTCP ops\n");
+> > +
+> > +             return -EINVAL;
+> > +     }
+> > +
+> >       rc =3D pci_register_driver(&qedn_pci_driver);
+> >       if (rc) {
+> >               pr_err("Failed to register pci driver\n");
+> > @@ -189,6 +369,7 @@ static int __init qedn_init(void)
+> >   static void __exit qedn_cleanup(void)
+> >   {
+> >       pci_unregister_driver(&qedn_pci_driver);
+> > +     qed_put_nvmetcp_ops();
+> >       pr_notice("Unloading qedn ended\n");
+> >   }
+> >
+> >
+> I do wonder what you need the global list of devices for, but let's see.
+>
 
-If you need more info I will write.
+It is in use in qedn_get_pf_from_pdev().
+We will replace it in V5 in order to benefit from the nvme_tcp_ofld_devices
+list.
 
-Server run with 200 users with nat=20
+> Reviewed-by: Hannes Reinecke <hare@suse.de>
 
-[81402.540906] rcu: INFO: rcu_sched self-detected stall on CPU
-[81402.540909] rcu: 5-....: (3314 ticks this GP) =
-idle=3D74e/1/0x4000000000000000 softirq=3D4979878/4979878 fqs=3D2554 =
-last_accelerate: a926/c0a0 dyntick_enabled: 1
-[81402.540911] (t=3D6001 jiffies g=3D7517749 q=3D44479)
-[81402.540913] NMI backtrace for cpu 5
-[81402.540914] CPU: 5 PID: 36 Comm: ksoftirqd/5 Tainted: G O 5.12.1 #1
-[81402.540916] Hardware name: Supermicro Super Server/X10SRD-F, BIOS 3.3 =
-10/28/2020
-[81402.540917] Call Trace:
-[81402.540919]
-[81402.540920] dump_stack+0x65/0x7d
-[81402.540924] ? lapic_can_unplug_cpu+0x70/0x70
-[81402.540927] nmi_trigger_cpumask_backtrace.cold+0x40/0x4d
-[81402.540929] rcu_dump_cpu_stacks+0xbe/0xec
-[81402.540932] rcu_sched_clock_irq.cold+0x195/0x3f1
-[81402.540934] ? enqueue_task_fair+0x796/0xbd0
-[81402.540938] update_process_times+0x88/0xc0
-[81402.540942] tick_sched_timer+0x7f/0x110
-[81402.540944] ? tick_nohz_dep_set_task+0x80/0x80
-[81402.540945] __hrtimer_run_queues+0x10b/0x1b0
-[81402.540947] hrtimer_interrupt+0x10a/0x420
-[81402.540949] __sysvec_apic_timer_interrupt+0x47/0x60
-[81402.540952] sysvec_apic_timer_interrupt+0x65/0x90
-[81402.540955]
-[81402.540955] asm_sysvec_apic_timer_interrupt+0xf/0x20
-[81402.540959] RIP: 0010:console_unlock+0x366/0x5e0
-[81402.540961] Code: ff ff 8b 05 44 5f b2 01 85 c0 75 66 c7 05 3a 5f b2 =
-01 01 00 00 00 e9 0f fd ff ff e8 f4 1c 00 00 48 85 db 74 01 fb 8b 54 24 =
-0c <85> d2 0f 84 4a fd ff ff e8 1d 2b 7c 00 e9 40 fd ff ff 4d 85 ff 74
-[81402.540963] RSP: 0018:ffff9dc980203a80 EFLAGS: 00000206
-[81402.540964] RAX: 0000000000000000 RBX: 0000000000000200 RCX: =
-0000000000000000
-[81402.540965] RDX: 0000000000000000 RSI: 0000000000000087 RDI: =
-ffffffff82b59898
-[81402.540966] RBP: 0000000000000000 R08: ffff9786814db080 R09: =
-0000000000000000
-[81402.540966] R10: ffff9786a85bf260 R11: ffff9786f7bd7cf0 R12: =
-0000000000000048
-[81402.540967] R13: 0000000000000000 R14: 20c49ba5e353f7cf R15: =
-0000000000000000
-[81402.540968] ? common_interrupt+0x14/0xa0
-[81402.540969] ? asm_common_interrupt+0x1b/0x40
-[81402.540971] vprintk_default+0x5a/0x150
-[81402.540972] printk+0x43/0x45
-[81402.540975] create_nat_session+0x1c5e/0x1cfd [xt_NAT]
-[81402.540978] ipt_do_table+0x2e5/0x670 [ip_tables]
-[81402.540980] ? ip_route_input_noref+0xa8/0x1e0
-[81402.540983] nf_hook_slow+0x36/0xa0
-[81402.540986] ip_forward+0x40d/0x450
-[81402.540987] ? ip4_obj_hashfn+0xc0/0xc0
-[81402.540989] process_backlog+0x11a/0x230
-[81402.540992] __napi_poll+0x1f/0x130
-[81402.540994] net_rx_action+0x239/0x2f0
-[81402.540996] ? run_timer_softirq+0x730/0x880
-[81402.540998] __do_softirq+0xaf/0x1da
-[81402.541000] run_ksoftirqd+0x15/0x20
-[81402.541004] smpboot_thread_fn+0xb3/0x140
-[81402.541006] ? sort_range+0x20/0x20
-[81402.541008] kthread+0xea/0x120
-[81402.541010] ? kthread_park+0x80/0x80
-[81402.541012] ret_from_fork+0x1f/0x30
-[81416.300055] rcu: INFO: rcu_sched detected expedited stalls on =
-CPUs/tasks: {
-[81476.311498] rcu: INFO: rcu_sched self-detected stall on CPU
-[81476.311500] rcu: 3-....: (1 GPs behind) idle=3D86a/1/0x4000000000000000=
- softirq=3D4703397/4703398 fqs=3D2596 last_accelerate: c5ff/dd71 =
-dyntick_enabled: 1
-[81476.311503] (t=3D6001 jiffies g=3D7517753 q=3D82419)
-[81476.311505] NMI backtrace for cpu 3
-[81476.311506] CPU: 3 PID: 527214 Comm: kworker/3:2 Tainted: G O 5.12.1 =
-#1
-[81476.311507] Hardware name: Supermicro Super Server/X10SRD-F, BIOS 3.3 =
-10/28/2020
-[81476.311509] Workqueue: rcu_gp wait_rcu_exp_gp
-[81476.311512] Call Trace:
-[81476.311514]
-[81476.311515] dump_stack+0x65/0x7d
-[81476.311519] ? lapic_can_unplug_cpu+0x70/0x70
-[81476.311521] nmi_trigger_cpumask_backtrace.cold+0x40/0x4d
-[81476.311523] rcu_dump_cpu_stacks+0xbe/0xec
-[81476.311527] rcu_sched_clock_irq.cold+0x195/0x3f1
-[81476.311529] ? timekeeping_advance+0x34e/0x540
-[81476.311531] update_process_times+0x88/0xc0
-[81476.311534] tick_sched_timer+0x7f/0x110
-[81476.311536] ? tick_nohz_dep_set_task+0x80/0x80
-[81476.311537] __hrtimer_run_queues+0x10b/0x1b0
-[81476.311539] hrtimer_interrupt+0x10a/0x420
-[81476.311541] __sysvec_apic_timer_interrupt+0x47/0x60
-[81476.311544] sysvec_apic_timer_interrupt+0x65/0x90
-[81476.311547]
-[81476.311547] asm_sysvec_apic_timer_interrupt+0xf/0x20
-[81476.311551] RIP: 0010:console_unlock+0x366/0x5e0
-[81476.311554] Code: ff ff 8b 05 44 5f b2 01 85 c0 75 66 c7 05 3a 5f b2 =
-01 01 00 00 00 e9 0f fd ff ff e8 f4 1c 00 00 48 85 db 74 01 fb 8b 54 24 =
-0c <85> d2 0f 84 4a fd ff ff e8 1d 2b 7c 00 e9 40 fd ff ff 4d 85 ff 74
-[81476.311555] RSP: 0018:ffff9dc980313cc0 EFLAGS: 00000206
-[81476.311556] RAX: 0000000000000000 RBX: 0000000000000200 RCX: =
-0000000000000000
-[81476.311557] RDX: 0000000000000000 RSI: 0000000000000087 RDI: =
-ffffffff82b59898
-[81476.311557] RBP: 0000000000000000 R08: ffff9786814db080 R09: =
-0000000000000000
-[81476.311558] R10: ffff9786a85bac10 R11: ffff97872e90acf0 R12: =
-0000000000000048
-[81476.311559] R13: 0000000000000000 R14: 20c49ba5e353f7cf R15: =
-0000000000000000
-[81476.311560] vprintk_default+0x5a/0x150
-[81476.311562] printk+0x43/0x45
-[81476.311563] synchronize_rcu_expedited_wait.cold+0x20/0x2db
-[81476.311565] rcu_exp_wait_wake+0xc/0x110
-[81476.311567] process_one_work+0x1ec/0x350
-[81476.311569] worker_thread+0x4f/0x4d0
-[81476.311570] ? process_one_work+0x350/0x350
-[81476.311571] kthread+0xea/0x120
-[81476.311573] ? kthread_park+0x80/0x80
-[81476.311574] ret_from_fork+0x1f/0x30
-[81551.199572] } 19586 jiffies s: 14473 root: 0x0/.=
+Thanks.
+
+>
+> Cheers,
+>
+> Hannes
+> --
+> Dr. Hannes Reinecke                Kernel Storage Architect
+> hare@suse.de                              +49 911 74053 688
+> SUSE Software Solutions GmbH, Maxfeldstr. 5, 90409 N=C3=BCrnberg
+> HRB 36809 (AG N=C3=BCrnberg), Gesch=C3=A4ftsf=C3=BChrer: Felix Imend=C3=
+=B6rffer
