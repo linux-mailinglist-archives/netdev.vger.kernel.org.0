@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 67E91376DE0
-	for <lists+netdev@lfdr.de>; Sat,  8 May 2021 02:34:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4D783376DE2
+	for <lists+netdev@lfdr.de>; Sat,  8 May 2021 02:34:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230439AbhEHAcv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 7 May 2021 20:32:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47692 "EHLO
+        id S231174AbhEHAcw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 7 May 2021 20:32:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47714 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231174AbhEHAcC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 7 May 2021 20:32:02 -0400
-Received: from mail-wr1-x430.google.com (mail-wr1-x430.google.com [IPv6:2a00:1450:4864:20::430])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 90235C061364;
-        Fri,  7 May 2021 17:29:49 -0700 (PDT)
-Received: by mail-wr1-x430.google.com with SMTP id a4so10870594wrr.2;
-        Fri, 07 May 2021 17:29:49 -0700 (PDT)
+        with ESMTP id S231183AbhEHAcD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 7 May 2021 20:32:03 -0400
+Received: from mail-wm1-x330.google.com (mail-wm1-x330.google.com [IPv6:2a00:1450:4864:20::330])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F6A4C061373;
+        Fri,  7 May 2021 17:29:50 -0700 (PDT)
+Received: by mail-wm1-x330.google.com with SMTP id u5-20020a7bc0450000b02901480e40338bso7283504wmc.1;
+        Fri, 07 May 2021 17:29:50 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=BOvSatlS8tFeNsTKg9BoqpzwguXJ04zpGtCKT1DOre8=;
-        b=Mm5gWcLd1c4e0pcP92t14azF6y3OzFUybWV5hSMNMRR/39wdqwOv9g7YPTTm04bL0w
-         Enslzxz7p9BggaiXc9YQYD3IUQKRlUNqwvlnaFbOgd66yKOt1jR4B2zf4T3WkBH/etAE
-         bE6JkxPpd4hZfcNVpj4HRSooHjAnmUXkTelHCf3uiIfSu3pXxWGbMw+pflkCeWvZYtXC
-         3owHWXkh8GVBzwNOqjXdtDNvADqAl8SxNtwC9g7ROMcokz0vgbHhBo2BQ76US/QGaO+b
-         +WC0qmkOZF6lUcvcHBzU3UozxxV2pnLyxNz6NWxCrVvPfbYMemkYOnkO0fHJfGLTT0ZH
-         CVTg==
+        bh=aOXIFQ6B/eqAVp4zbCeNkJnyhpNrD5T3KEJwsOpWC3o=;
+        b=s2rEjKatrA4fQGVJiVFY8oerE9fRBgjLNhXXup+DTfDYkDDHVM/7UUh6SiZ1I2Swnc
+         TGB8BMO4oMB0hiHZskKCtnUmY5dOz+0achz4M4ThIGGrvInP9QxG4DKd2jcqQ96f0QGE
+         6j9GXXSc2nVtf8PGRNOinsBalqvk/AGU13eRX/AOdaua60yJdK3HdvUoEJKY5mCBhEpg
+         +XERb9NcIgUmRe6U+ziNPcTT2FxXWm8RGhi2n2OvYRK9RSEdka/XzjsWW9M43Z0otDNN
+         yB7gQSuEqb7QtJbxLJ2bLmQ/Scg9PQSjgpjNRC1UUbhPo/QpNk4QWhAkSm0DQZfCbKON
+         tWRg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=BOvSatlS8tFeNsTKg9BoqpzwguXJ04zpGtCKT1DOre8=;
-        b=rdr0M8B2vPjVLBhcXfVl4X4qFPNkFDEnP1uSpD4yOj8ObzLbZGWmGBSM2BnUDzdoOv
-         tjsGSuDRBZB/VOgXwNKfPsHzRbQVktZOsBENPjTcPbTI2ta8LoX9tgm6AnRIDym4WeqF
-         BcVTAqczaqVdbOVH2Y9T1+N73HnBAmOK/93ZjC2YcQKjoKwHvNM2e1v3dEJKppeCyni3
-         UKE/6W76vHlLawPbIAzK1EGVnBzklUpepIHttNX38gwVC++pZ9dLqvpyezqXC1EcO00i
-         6C3HbacI89dTbckBWu+Qwz+zlnC7ApFtPtSKxCAvLWrFgP0hW0ygRf0dvntLH8imWvsS
-         H9rg==
-X-Gm-Message-State: AOAM531rSqlvukQMkyRzHDOqPhjDfVT54esh5Wni9kfUs8dT/diAALS1
-        byefcXyKu3GxNeUcSur+B+8=
-X-Google-Smtp-Source: ABdhPJzGN+9MmRIwVF/kB23ZrSO8uN6toTitQSOApr5CTbYhkUjOFaGK3T0qDCGagw3Sh2CTkWaAEw==
-X-Received: by 2002:a5d:64eb:: with SMTP id g11mr16098424wri.260.1620433788224;
-        Fri, 07 May 2021 17:29:48 -0700 (PDT)
+        bh=aOXIFQ6B/eqAVp4zbCeNkJnyhpNrD5T3KEJwsOpWC3o=;
+        b=bpG0micWGVnML3jXxaQN+zT6tDzPnTejYotXbfT6s+BO5Ag3M2Jg4BkS8OBnzoMsHu
+         MMY8WQIYNCAspJXjnkgJkmstAo6i/2YXtCuDS9XPRm82R/dIk8vqlnY2O/vLo/MYJ1a4
+         rI4dmMOf1ly+zkagvnTE9o3EtY22SzH0Z0EvyLIUs0aeVgnoOoEc5cY21rXPfTb/oHo+
+         QkdxFNc0ZmHs98Qejusixjyl6bw0MLrvknuli5oB844Lf/dF/p++Nu871X0SEqx0Ibl9
+         mipPTNSVJ/tVR02JhmEVX4BLgqduHaI0tldu58Rqj0wfA1YcRJPrMM0ENRLKfwNrv7xf
+         JFNA==
+X-Gm-Message-State: AOAM533xoV+jvozuy7uVjApknb3Vr0bz+aTqjA7kb6PeTmy2D1hhXdyf
+        ZDxcZ0IPGC9cX/sPA9rJPEk=
+X-Google-Smtp-Source: ABdhPJxAxvHPKWcpJwC1QxE85Ah5URf4mvJNLseQKQUQsG4v9SCqdFFONKftYcwh19n3ptGYNrIirw==
+X-Received: by 2002:a1c:21d7:: with SMTP id h206mr12389354wmh.56.1620433789333;
+        Fri, 07 May 2021 17:29:49 -0700 (PDT)
 Received: from Ansuel-xps.localdomain (93-35-189-2.ip56.fastwebnet.it. [93.35.189.2])
-        by smtp.googlemail.com with ESMTPSA id f4sm10967597wrz.33.2021.05.07.17.29.47
+        by smtp.googlemail.com with ESMTPSA id f4sm10967597wrz.33.2021.05.07.17.29.48
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 07 May 2021 17:29:47 -0700 (PDT)
+        Fri, 07 May 2021 17:29:49 -0700 (PDT)
 From:   Ansuel Smith <ansuelsmth@gmail.com>
 To:     Florian Fainelli <f.fainelli@gmail.com>
 Cc:     Ansuel Smith <ansuelsmth@gmail.com>, Andrew Lunn <andrew@lunn.ch>,
@@ -56,9 +56,9 @@ Cc:     Ansuel Smith <ansuelsmth@gmail.com>, Andrew Lunn <andrew@lunn.ch>,
         Jakub Kicinski <kuba@kernel.org>,
         Russell King <linux@armlinux.org.uk>, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Subject: [RFC PATCH net-next v4 26/28] net: dsa: permit driver to provide custom phy_mii_mask for slave mdiobus
-Date:   Sat,  8 May 2021 02:29:16 +0200
-Message-Id: <20210508002920.19945-26-ansuelsmth@gmail.com>
+Subject: [RFC PATCH net-next v4 27/28] net: dsa: qca8k: pass switch_revision info to phy dev_flags
+Date:   Sat,  8 May 2021 02:29:17 +0200
+Message-Id: <20210508002920.19945-27-ansuelsmth@gmail.com>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20210508002920.19945-1-ansuelsmth@gmail.com>
 References: <20210508002920.19945-1-ansuelsmth@gmail.com>
@@ -68,97 +68,49 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Some switch doesn't have a 1:1 map phy to port. Permit driver to provide
-a custom phy_mii_mask so the internal mdiobus can correctly use the
-provided phy reg as it can differ from the port reg.
-The qca8k driver is provided as a first user of this function.
+Define get_phy_flags to pass switch_Revision needed to tweak the
+internal PHY with debug values based on the revision.
 
 Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
 ---
- drivers/net/dsa/qca8k.c | 30 ++++++++++++++++++++++++++++++
- include/net/dsa.h       |  7 +++++++
- net/dsa/dsa2.c          |  7 ++++++-
- 3 files changed, 43 insertions(+), 1 deletion(-)
+ drivers/net/dsa/qca8k.c | 17 +++++++++++++++++
+ 1 file changed, 17 insertions(+)
 
 diff --git a/drivers/net/dsa/qca8k.c b/drivers/net/dsa/qca8k.c
-index 3d195fdd7ed5..3c3e05735b2d 100644
+index 3c3e05735b2d..8dafa581b7fa 100644
 --- a/drivers/net/dsa/qca8k.c
 +++ b/drivers/net/dsa/qca8k.c
-@@ -1685,7 +1685,37 @@ qca8k_get_tag_protocol(struct dsa_switch *ds, int port,
- 	return DSA_TAG_PROTO_QCA;
+@@ -1678,6 +1678,22 @@ qca8k_port_vlan_del(struct dsa_switch *ds, int port,
+ 	return ret;
  }
  
-+static u32
-+qca8k_get_phys_mii_mask(struct dsa_switch *ds)
++static u32 qca8k_get_phy_flags(struct dsa_switch *ds, int port)
 +{
-+	struct device_node *mdio, *phy;
-+	u32 reg, phy_mii_mask = 0;
-+	int err;
++	struct qca8k_priv *priv = ds->priv;
 +
-+	mdio = of_get_child_by_name(ds->dev->of_node, "mdio");
-+	if (mdio) {
-+		for_each_available_child_of_node(mdio, phy) {
-+			err = of_property_read_u32(phy, "reg", &reg);
-+			if (err) {
-+				of_node_put(phy);
-+				of_node_put(mdio);
-+				return 0;
-+			}
++	/* Communicate to the phy internal driver the switch revision.
++	 * Based on the switch revision different values needs to be
++	 * set to the dbg and mmd reg on the phy.
++	 * The first 2 bit are used to communicate the switch revision
++	 * to the phy driver.
++	 */
++	if (port > 0 && port < 6)
++		return priv->switch_revision;
 +
-+			phy_mii_mask |= BIT(reg);
-+		}
-+
-+		of_node_put(mdio);
-+		return phy_mii_mask;
-+	}
-+
-+	/* Fallback to the lagacy mapping if mdio node is not found */
-+	dev_warn(ds->dev, "Using the legacy phys_mii_mapping. Consider updating the dts.");
-+	return dsa_user_ports(ds);
++	return 0;
 +}
 +
- static const struct dsa_switch_ops qca8k_switch_ops = {
-+	.get_phys_mii_mask	= qca8k_get_phys_mii_mask,
- 	.get_tag_protocol	= qca8k_get_tag_protocol,
- 	.setup			= qca8k_setup,
- 	.get_strings		= qca8k_get_strings,
-diff --git a/include/net/dsa.h b/include/net/dsa.h
-index 83a933e563fe..4003ffc659a4 100644
---- a/include/net/dsa.h
-+++ b/include/net/dsa.h
-@@ -511,6 +511,13 @@ struct dsa_switch_ops {
- 	void	(*teardown)(struct dsa_switch *ds);
- 	u32	(*get_phy_flags)(struct dsa_switch *ds, int port);
+ static enum dsa_tag_protocol
+ qca8k_get_tag_protocol(struct dsa_switch *ds, int port,
+ 		       enum dsa_tag_protocol mp)
+@@ -1741,6 +1757,7 @@ static const struct dsa_switch_ops qca8k_switch_ops = {
+ 	.phylink_mac_config	= qca8k_phylink_mac_config,
+ 	.phylink_mac_link_down	= qca8k_phylink_mac_link_down,
+ 	.phylink_mac_link_up	= qca8k_phylink_mac_link_up,
++	.get_phy_flags		= qca8k_get_phy_flags,
+ };
  
-+	/*
-+	 * Provide a custom phys_mii_mask for the dsa slave mdiobus instead
-+	 * of relying on the dsa_user_ports. Not every switch has a 1:1 map
-+	 * port to PHY, hence the driver can provide their fixed mask.
-+	 */
-+	u32	(*get_phys_mii_mask)(struct dsa_switch *ds);
-+
- 	/*
- 	 * Access to the switch's PHY registers.
- 	 */
-diff --git a/net/dsa/dsa2.c b/net/dsa/dsa2.c
-index 79adabe3e2a7..7eabd4d67849 100644
---- a/net/dsa/dsa2.c
-+++ b/net/dsa/dsa2.c
-@@ -682,8 +682,13 @@ static int dsa_switch_setup(struct dsa_switch *ds)
- 	 * driver and before ops->setup() has run, since the switch drivers and
- 	 * the slave MDIO bus driver rely on these values for probing PHY
- 	 * devices or not
-+	 * Driver can provide his on mask as some switch doesn't have a 1:1 map
-+	 * phy to port.
- 	 */
--	ds->phys_mii_mask |= dsa_user_ports(ds);
-+	if (ds->ops->get_phys_mii_mask)
-+		ds->phys_mii_mask = ds->ops->get_phys_mii_mask(ds);
-+	else
-+		ds->phys_mii_mask |= dsa_user_ports(ds);
- 
- 	/* Add the switch to devlink before calling setup, so that setup can
- 	 * add dpipe tables
+ static int qca8k_read_switch_id(struct qca8k_priv *priv)
 -- 
 2.30.2
 
