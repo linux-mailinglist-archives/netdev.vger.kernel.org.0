@@ -2,37 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 20FBD377313
-	for <lists+netdev@lfdr.de>; Sat,  8 May 2021 18:34:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 448C1377316
+	for <lists+netdev@lfdr.de>; Sat,  8 May 2021 18:35:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229992AbhEHQfT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 8 May 2021 12:35:19 -0400
-Received: from mx13.kaspersky-labs.com ([91.103.66.164]:63051 "EHLO
+        id S229964AbhEHQfu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 8 May 2021 12:35:50 -0400
+Received: from mx13.kaspersky-labs.com ([91.103.66.164]:63163 "EHLO
         mx13.kaspersky-labs.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229968AbhEHQfO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 8 May 2021 12:35:14 -0400
+        with ESMTP id S230014AbhEHQfo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 8 May 2021 12:35:44 -0400
 Received: from relay13.kaspersky-labs.com (unknown [127.0.0.10])
-        by relay13.kaspersky-labs.com (Postfix) with ESMTP id 2D05B5217C7;
-        Sat,  8 May 2021 19:34:10 +0300 (MSK)
+        by relay13.kaspersky-labs.com (Postfix) with ESMTP id 9D8EB520EE7;
+        Sat,  8 May 2021 19:34:40 +0300 (MSK)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kaspersky.com;
-        s=mail202102; t=1620491650;
-        bh=ETKo6UW2zDMi81eHKmAxKdIQQK5AdobiVJV5w3Gy66k=;
+        s=mail202102; t=1620491680;
+        bh=Cr6IfYZeeDv/mRFF3/dL1PUNQIYf9pPV/OeJKwrG9h4=;
         h=From:To:Subject:Date:Message-ID:MIME-Version:Content-Type;
-        b=cY4stCwSB0VbSKlxQrb35Eu1QDR937lodV6TG9ToijchnRBoVSmq7HVnxq6GvUTu1
-         F0aJOdudRglNRpmvykKnl3zHqTB42r7fxy7t9c/y0ja1OmMVoVo/ZrOMsnqK8WX/hw
-         enWYXtNLkxSonWH+MkoCdASDPlkIr6joEMGQLOXi//NS4fr+NOwteDybEn80BlQLvs
-         Mi5eCGs8c+Vj/9VOTFHsBQWA3JShNl0tNxEn3CM9BFs9QnpHry1MOPhtUZlGl2d1wK
-         V7bsCSSEbNw52JWulhrUyEOHLTGHNR+WfekPgyB4o11PbOgidAiqjR+UiN4Lsmbe7H
-         Pwisy38CZC6bg==
+        b=DEqueHm4ILAqgpWzq7Cpsu2qv1XIkiTZ9VyZz30pko4wybJT1eSNPKyX3A2NP0f27
+         7LLQCt9I8NoKlurVDGkrx4wlnhrUatLCANoIYEionFOZuq5J1HpBY0N2gDiuLARC/x
+         vlOmuNnZBOgAu8m4PZbVvsD273lmBATQbERqFwKwS+8KNq49tlIHkslwQkCTZ7n4zo
+         wDlcvZN/xZCjvf3evHpkPZ+g9hmG1XH11zuoE/rYAK4scj5f8XxDhdu2XiOYqmYFpr
+         IQLiJ69yFRIsHOeDaijl/CHrQXkn36U3WDn/Tmov1uEr0f0EAK9aJIWE37pqTsBh9d
+         sHxFavdirluRQ==
 Received: from mail-hq2.kaspersky.com (unknown [91.103.66.206])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-SHA256 (128/128 bits))
         (Client CN "mail-hq2.kaspersky.com", Issuer "Kaspersky MailRelays CA G3" (verified OK))
-        by mailhub13.kaspersky-labs.com (Postfix) with ESMTPS id E6FE5521416;
-        Sat,  8 May 2021 19:34:09 +0300 (MSK)
-Received: from arseniy-pc.avp.ru (10.64.68.128) by hqmailmbx3.avp.ru
+        by mailhub13.kaspersky-labs.com (Postfix) with ESMTPS id 61F15520DE7;
+        Sat,  8 May 2021 19:34:40 +0300 (MSK)
+Received: from arseniy-pc.avp.ru (10.64.68.129) by hqmailmbx3.avp.ru
  (10.64.67.243) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2176.2; Sat, 8 May
- 2021 19:34:09 +0300
+ 2021 19:34:39 +0300
 From:   Arseny Krasnov <arseny.krasnov@kaspersky.com>
 To:     Stefan Hajnoczi <stefanha@redhat.com>,
         Stefano Garzarella <sgarzare@redhat.com>,
@@ -42,22 +42,22 @@ To:     Stefan Hajnoczi <stefanha@redhat.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Arseny Krasnov <arseny.krasnov@kaspersky.com>,
         Jorgen Hansen <jhansen@vmware.com>,
-        Norbert Slusarek <nslusarek@gmx.net>,
         Andra Paraschiv <andraprs@amazon.com>,
+        Norbert Slusarek <nslusarek@gmx.net>,
         Colin Ian King <colin.king@canonical.com>
 CC:     <kvm@vger.kernel.org>, <virtualization@lists.linux-foundation.org>,
         <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
         <stsp2@yandex.ru>, <oxffffaa@gmail.com>
-Subject: [RFC PATCH v9 07/19] af_vsock: update comments for stream sockets
-Date:   Sat, 8 May 2021 19:34:00 +0300
-Message-ID: <20210508163404.3431470-1-arseny.krasnov@kaspersky.com>
+Subject: [RFC PATCH v9 08/19] virtio/vsock: set packet's type in virtio_transport_send_pkt_info()
+Date:   Sat, 8 May 2021 19:34:14 +0300
+Message-ID: <20210508163418.3431582-1-arseny.krasnov@kaspersky.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20210508163027.3430238-1-arseny.krasnov@kaspersky.com>
 References: <20210508163027.3430238-1-arseny.krasnov@kaspersky.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
-X-Originating-IP: [10.64.68.128]
+X-Originating-IP: [10.64.68.129]
 X-ClientProxiedBy: hqmailmbx3.avp.ru (10.64.67.243) To hqmailmbx3.avp.ru
  (10.64.67.243)
 X-KSE-ServerInfo: hqmailmbx3.avp.ru, 9
@@ -99,85 +99,108 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This replaces 'stream' to 'connection oriented' in comments as
-SEQPACKET is also connection oriented.
+This moves passing type of packet from 'info' structure to  'virtio_
+transport_send_pkt_info()' function. There is no need to set type of
+packet which differs from type of socket. Since at current time only
+stream type is supported, set it directly in 'virtio_transport_send_
+pkt_info()', so callers don't need to set it.
 
 Signed-off-by: Arseny Krasnov <arseny.krasnov@kaspersky.com>
 Reviewed-by: Stefano Garzarella <sgarzare@redhat.com>
 ---
- net/vmw_vsock/af_vsock.c | 31 +++++++++++++++++--------------
- 1 file changed, 17 insertions(+), 14 deletions(-)
+ net/vmw_vsock/virtio_transport_common.c | 19 +++++--------------
+ 1 file changed, 5 insertions(+), 14 deletions(-)
 
-diff --git a/net/vmw_vsock/af_vsock.c b/net/vmw_vsock/af_vsock.c
-index 5819e8fd9eaf..7790728465f4 100644
---- a/net/vmw_vsock/af_vsock.c
-+++ b/net/vmw_vsock/af_vsock.c
-@@ -415,8 +415,8 @@ static void vsock_deassign_transport(struct vsock_sock *vsk)
+diff --git a/net/vmw_vsock/virtio_transport_common.c b/net/vmw_vsock/virtio_transport_common.c
+index 902cb6dd710b..6503a8370130 100644
+--- a/net/vmw_vsock/virtio_transport_common.c
++++ b/net/vmw_vsock/virtio_transport_common.c
+@@ -179,6 +179,8 @@ static int virtio_transport_send_pkt_info(struct vsock_sock *vsk,
+ 	struct virtio_vsock_pkt *pkt;
+ 	u32 pkt_len = info->pkt_len;
  
- /* Assign a transport to a socket and call the .init transport callback.
-  *
-- * Note: for stream socket this must be called when vsk->remote_addr is set
-- * (e.g. during the connect() or when a connection request on a listener
-+ * Note: for connection oriented socket this must be called when vsk->remote_addr
-+ * is set (e.g. during the connect() or when a connection request on a listener
-  * socket is received).
-  * The vsk->remote_addr is used to decide which transport to use:
-  *  - remote CID == VMADDR_CID_LOCAL or g2h->local_cid or VMADDR_CID_HOST if
-@@ -470,10 +470,10 @@ int vsock_assign_transport(struct vsock_sock *vsk, struct vsock_sock *psk)
- 			return 0;
++	info->type = VIRTIO_VSOCK_TYPE_STREAM;
++
+ 	t_ops = virtio_transport_get_ops(vsk);
+ 	if (unlikely(!t_ops))
+ 		return -EFAULT;
+@@ -270,12 +272,10 @@ void virtio_transport_put_credit(struct virtio_vsock_sock *vvs, u32 credit)
+ EXPORT_SYMBOL_GPL(virtio_transport_put_credit);
  
- 		/* transport->release() must be called with sock lock acquired.
--		 * This path can only be taken during vsock_stream_connect(),
--		 * where we have already held the sock lock.
--		 * In the other cases, this function is called on a new socket
--		 * which is not assigned to any transport.
-+		 * This path can only be taken during vsock_connect(), where we
-+		 * have already held the sock lock. In the other cases, this
-+		 * function is called on a new socket which is not assigned to
-+		 * any transport.
- 		 */
- 		vsk->transport->release(vsk);
- 		vsock_deassign_transport(vsk);
-@@ -658,9 +658,10 @@ static int __vsock_bind_connectible(struct vsock_sock *vsk,
+ static int virtio_transport_send_credit_update(struct vsock_sock *vsk,
+-					       int type,
+ 					       struct virtio_vsock_hdr *hdr)
+ {
+ 	struct virtio_vsock_pkt_info info = {
+ 		.op = VIRTIO_VSOCK_OP_CREDIT_UPDATE,
+-		.type = type,
+ 		.vsk = vsk,
+ 	};
  
- 	vsock_addr_init(&vsk->local_addr, new_addr.svm_cid, new_addr.svm_port);
- 
--	/* Remove stream sockets from the unbound list and add them to the hash
--	 * table for easy lookup by its address.  The unbound list is simply an
--	 * extra entry at the end of the hash table, a trick used by AF_UNIX.
-+	/* Remove connection oriented sockets from the unbound list and add them
-+	 * to the hash table for easy lookup by its address.  The unbound list
-+	 * is simply an extra entry at the end of the hash table, a trick used
-+	 * by AF_UNIX.
+@@ -383,11 +383,8 @@ virtio_transport_stream_do_dequeue(struct vsock_sock *vsk,
+ 	 * messages, we set the limit to a high value. TODO: experiment
+ 	 * with different values.
  	 */
- 	__vsock_remove_bound(vsk);
- 	__vsock_insert_bound(vsock_bound_sockets(&vsk->local_addr), vsk);
-@@ -952,10 +953,10 @@ static int vsock_shutdown(struct socket *sock, int mode)
- 	if ((mode & ~SHUTDOWN_MASK) || !mode)
- 		return -EINVAL;
+-	if (free_space < VIRTIO_VSOCK_MAX_PKT_BUF_SIZE) {
+-		virtio_transport_send_credit_update(vsk,
+-						    VIRTIO_VSOCK_TYPE_STREAM,
+-						    NULL);
+-	}
++	if (free_space < VIRTIO_VSOCK_MAX_PKT_BUF_SIZE)
++		virtio_transport_send_credit_update(vsk, NULL);
  
--	/* If this is a STREAM socket and it is not connected then bail out
--	 * immediately.  If it is a DGRAM socket then we must first kick the
--	 * socket so that it wakes up from any sleeping calls, for example
--	 * recv(), and then afterwards return the error.
-+	/* If this is a connection oriented socket and it is not connected then
-+	 * bail out immediately.  If it is a DGRAM socket then we must first
-+	 * kick the socket so that it wakes up from any sleeping calls, for
-+	 * example recv(), and then afterwards return the error.
- 	 */
+ 	return total;
  
- 	sk = sock->sk;
-@@ -1727,7 +1728,9 @@ static int vsock_connectible_sendmsg(struct socket *sock, struct msghdr *msg,
+@@ -496,8 +493,7 @@ void virtio_transport_notify_buffer_size(struct vsock_sock *vsk, u64 *val)
  
- 	transport = vsk->transport;
+ 	vvs->buf_alloc = *val;
  
--	/* Callers should not provide a destination with stream sockets. */
-+	/* Callers should not provide a destination with connection oriented
-+	 * sockets.
-+	 */
- 	if (msg->msg_namelen) {
- 		err = sk->sk_state == TCP_ESTABLISHED ? -EISCONN : -EOPNOTSUPP;
- 		goto out;
+-	virtio_transport_send_credit_update(vsk, VIRTIO_VSOCK_TYPE_STREAM,
+-					    NULL);
++	virtio_transport_send_credit_update(vsk, NULL);
+ }
+ EXPORT_SYMBOL_GPL(virtio_transport_notify_buffer_size);
+ 
+@@ -624,7 +620,6 @@ int virtio_transport_connect(struct vsock_sock *vsk)
+ {
+ 	struct virtio_vsock_pkt_info info = {
+ 		.op = VIRTIO_VSOCK_OP_REQUEST,
+-		.type = VIRTIO_VSOCK_TYPE_STREAM,
+ 		.vsk = vsk,
+ 	};
+ 
+@@ -636,7 +631,6 @@ int virtio_transport_shutdown(struct vsock_sock *vsk, int mode)
+ {
+ 	struct virtio_vsock_pkt_info info = {
+ 		.op = VIRTIO_VSOCK_OP_SHUTDOWN,
+-		.type = VIRTIO_VSOCK_TYPE_STREAM,
+ 		.flags = (mode & RCV_SHUTDOWN ?
+ 			  VIRTIO_VSOCK_SHUTDOWN_RCV : 0) |
+ 			 (mode & SEND_SHUTDOWN ?
+@@ -665,7 +659,6 @@ virtio_transport_stream_enqueue(struct vsock_sock *vsk,
+ {
+ 	struct virtio_vsock_pkt_info info = {
+ 		.op = VIRTIO_VSOCK_OP_RW,
+-		.type = VIRTIO_VSOCK_TYPE_STREAM,
+ 		.msg = msg,
+ 		.pkt_len = len,
+ 		.vsk = vsk,
+@@ -688,7 +681,6 @@ static int virtio_transport_reset(struct vsock_sock *vsk,
+ {
+ 	struct virtio_vsock_pkt_info info = {
+ 		.op = VIRTIO_VSOCK_OP_RST,
+-		.type = VIRTIO_VSOCK_TYPE_STREAM,
+ 		.reply = !!pkt,
+ 		.vsk = vsk,
+ 	};
+@@ -1000,7 +992,6 @@ virtio_transport_send_response(struct vsock_sock *vsk,
+ {
+ 	struct virtio_vsock_pkt_info info = {
+ 		.op = VIRTIO_VSOCK_OP_RESPONSE,
+-		.type = VIRTIO_VSOCK_TYPE_STREAM,
+ 		.remote_cid = le64_to_cpu(pkt->hdr.src_cid),
+ 		.remote_port = le32_to_cpu(pkt->hdr.src_port),
+ 		.reply = true,
 -- 
 2.25.1
 
