@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 217A0376DD7
+	by mail.lfdr.de (Postfix) with ESMTP id D7659376DD9
 	for <lists+netdev@lfdr.de>; Sat,  8 May 2021 02:34:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230434AbhEHAcU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 7 May 2021 20:32:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47764 "EHLO
+        id S231552AbhEHAcV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 7 May 2021 20:32:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47766 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230476AbhEHAbH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 7 May 2021 20:31:07 -0400
-Received: from mail-wr1-x433.google.com (mail-wr1-x433.google.com [IPv6:2a00:1450:4864:20::433])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DAFECC061354;
-        Fri,  7 May 2021 17:29:45 -0700 (PDT)
-Received: by mail-wr1-x433.google.com with SMTP id s8so10863032wrw.10;
-        Fri, 07 May 2021 17:29:45 -0700 (PDT)
+        with ESMTP id S230493AbhEHAbJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 7 May 2021 20:31:09 -0400
+Received: from mail-wm1-x32b.google.com (mail-wm1-x32b.google.com [IPv6:2a00:1450:4864:20::32b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 269F7C06135B;
+        Fri,  7 May 2021 17:29:47 -0700 (PDT)
+Received: by mail-wm1-x32b.google.com with SMTP id o127so6102004wmo.4;
+        Fri, 07 May 2021 17:29:47 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=D5uILt9Mcik69GuSPXQVODEGZtxJwB3jkU/VveoNRJY=;
-        b=aPiMybhdazAWHfH8VCeUfkKwZUm8E5m/BizfTo3J55KXdWXy4WiW6pvdWTnM0MrAxN
-         CrIiTXZaWb+iuBurRdE1gXBWuWc42f+OMg8Tl9pR18vC3IH1eMh/0U81MOaXsZ2GncHW
-         9/xCu3Ph1Q+TyLQmTGcV8mrs9UwAHu3qT/8DDuA9bLBu+9qAlMtdvb96INgwR/EJuwDL
-         ROybuA5PYWkHIH+uFgc2sOM7xGJ6ESqJB4G54lWcNiX9gK4IUEpv5onzzw/6GSg1BFwr
-         NuGTGGTDDB9Zy3BMj8jytlYEbZn6ItCKqoYqiSUw8/gJP9MO2me+evYwovHQl+ZBAg+a
-         PgpQ==
+        bh=MOLPDc8gh067O4OWdNlGUuI5YoNwGjIQBjLg8LQX940=;
+        b=ddI6l62VvWsC0xVGP2mnZXHWMYr2U/4LLN5DWMheBvTAqvN9wuc31ndF/nmut2CPAQ
+         WvKN6yGOWwXk5AegXO8g+zg+2wNoCPSxcaqinTNMOdtLHBleOqpoLQhAE7h3jYkRHEoF
+         4BOpesi8pr4zv9bfrINpP0CIEZUlvniPzzVSBLtBfKXRZv3TeAP282geHZwJRdzg2fWY
+         zXq9wDMk14/+Pdu/tNN1H5ie0uH+PucvQH0TLyS7Nl+yF44aV9SRGwX61kfh9gp35ktd
+         TgI298Naeo/kjdizafz/5xhmt2ei9EIpZhExN7b21K0DbsrNMSBdIqlQrDUuF1l4JZES
+         fuHQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=D5uILt9Mcik69GuSPXQVODEGZtxJwB3jkU/VveoNRJY=;
-        b=PDeVXaA6Q0B9nhJW4TlQz2fjkxilju/vX/7U40ysM+TJvpBbM7NUXwT/kDWcD3ftGC
-         4zTrsORtuybwmnkF5nPCFiAC2Kv0CMUwTeJuYfGqAAfahopbvFCRXoA6vgoRj1/k5XKc
-         dvocVw3SmdKHVGU50dQA+XA8AyhYaZVCXzF4/nZIeMSOgmvsqcVf5iswqo1nh0/MOlE7
-         n7eIKqXVSTSzgYwazxkxNPza6bSuqmydEevh4C8ZEMNFfXXQx5BlK6CnvORzgqaixliA
-         WF9zbJkLMCPm6T4B7wrjdxwaaxdeFTKGi0NXAbpgpP/UUMm6Y5aMUs89Xo1KDBo2drlZ
-         /TJQ==
-X-Gm-Message-State: AOAM532SDaXU2Eq67mpz+n6hBAZCz8UiODwIbBnFqvkqKIO8zYC7oLh1
-        xwwzM4YdymyTFeP7hV4aKzY=
-X-Google-Smtp-Source: ABdhPJw/Pq+vvq3FZsqSdCfYPDj9ZmoQYsIpqvP0/xvnRbLpbJQx7oc9TOZRtKwz4t42P2Ac2sTsxQ==
-X-Received: by 2002:a5d:6342:: with SMTP id b2mr15854176wrw.203.1620433784443;
-        Fri, 07 May 2021 17:29:44 -0700 (PDT)
+        bh=MOLPDc8gh067O4OWdNlGUuI5YoNwGjIQBjLg8LQX940=;
+        b=fNvz9D0+DUTujNpTZr9eqFSPBgntugzFFTtED97jc+iL5GiDitZmGMb//TXqg4rxAB
+         +zTlB8g/+RmOs/rWjB2tNb2xfG2ldBQsnZPMnyoJmhz+fy2GGFjLM4nQ3vHW7Beib84a
+         C15vTXeG3ayVQ3wqNLwlzauMBzYRqxgZQ+U1EO0CFFT/c46VzL+1EkuSqjYSlyOUIdG5
+         TNqjv0EVOh1pkmnJ45ZU384L6aDJIrXGEazieuVj6VyMLfVQ9IFtCRVOBOJZwvl96eFv
+         TfvZI8iZ4EBNIVePDm3ksGwdgFWpQ9grY9gJdK7wCJRe21nyk3pnz1y5kVjCzESSxDBD
+         iyRQ==
+X-Gm-Message-State: AOAM533NF9HbYxZojf1wkWD1UJVBvr0Ahw1kAPFLpzGqQjNMYZZFqYdP
+        AN++7CnJHG/7s+h/qaQ7Oq8=
+X-Google-Smtp-Source: ABdhPJzz1MNReaK3Lu9L/EXnVOIlddL6utwXLDIG0ibhGbORBzREZg4RxVVQbJDNk8SQr8cRMOrW3w==
+X-Received: by 2002:a1c:1f03:: with SMTP id f3mr22542244wmf.175.1620433785695;
+        Fri, 07 May 2021 17:29:45 -0700 (PDT)
 Received: from Ansuel-xps.localdomain (93-35-189-2.ip56.fastwebnet.it. [93.35.189.2])
-        by smtp.googlemail.com with ESMTPSA id f4sm10967597wrz.33.2021.05.07.17.29.43
+        by smtp.googlemail.com with ESMTPSA id f4sm10967597wrz.33.2021.05.07.17.29.44
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 07 May 2021 17:29:44 -0700 (PDT)
+        Fri, 07 May 2021 17:29:45 -0700 (PDT)
 From:   Ansuel Smith <ansuelsmth@gmail.com>
 To:     Florian Fainelli <f.fainelli@gmail.com>
 Cc:     Ansuel Smith <ansuelsmth@gmail.com>, Andrew Lunn <andrew@lunn.ch>,
@@ -54,11 +54,12 @@ Cc:     Ansuel Smith <ansuelsmth@gmail.com>, Andrew Lunn <andrew@lunn.ch>,
         Vladimir Oltean <olteanv@gmail.com>,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
         Russell King <linux@armlinux.org.uk>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [RFC PATCH net-next v4 23/28] net: dsa: register of_mdiobus if a mdio node is declared
-Date:   Sat,  8 May 2021 02:29:13 +0200
-Message-Id: <20210508002920.19945-23-ansuelsmth@gmail.com>
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [RFC PATCH net-next v4 24/28] devicetree: net: dsa: Document use of mdio node inside switch node
+Date:   Sat,  8 May 2021 02:29:14 +0200
+Message-Id: <20210508002920.19945-24-ansuelsmth@gmail.com>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20210508002920.19945-1-ansuelsmth@gmail.com>
 References: <20210508002920.19945-1-ansuelsmth@gmail.com>
@@ -68,159 +69,60 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Some switch have phy port that use the internal switch mdio bus and can
-have different phy regs than the one declared in the ports node. Add
-support for this specific case by registering the mdiobus with the mdio
-node and permit the port to declare a phy-handle defined inside the
-switch node.
-
-This is an example from the qca8337 switch where the 5 phy port should
-use the internal mdiobus and would benefits from this.
-
-switch10: switch@10 {
-        compatible = "qca,qca8337";
-        #address-cells = <1>;
-        #size-cells = <0>;
-        reg = <0x10>;
-
-        ports {
-                #address-cells = <1>;
-                #size-cells = <0>;
-
-                port@0 {
-                        reg = <0>;
-                        label = "cpu";
-                        ethernet = <&gmac1>;
-                        phy-mode = "rgmii-id";
-
-                        fixed-link {
-                                speed = <1000>;
-                                full-duplex;
-                        };
-                };
-
-                port@1 {
-                        reg = <1>;
-                        label = "lan1";
-
-                        phy-handle = <&phy_port0>;
-                        phy-mode = "internal";
-                };
-
-                port@2 {
-                        reg = <2>;
-                        label = "lan2";
-
-                        phy-handle = <&phy_port1>;
-                        phy-mode = "internal";
-                };
-
-                port@3 {
-                        reg = <3>;
-                        label = "lan3";
-
-                        phy-handle = <&phy_port2>;
-                        phy-mode = "internal";
-                };
-
-                port@4 {
-                        reg = <4>;
-                        label = "lan4";
-
-                        phy-handle = <&phy_port3>;
-                        phy-mode = "internal";
-                };
-
-                port@5 {
-                        reg = <5>;
-                        label = "wan";
-
-                        phy-handle = <&phy_port4>;
-                        phy-mode = "internal";
-                };
-
-                port@6 {
-                        reg = <6>;
-                        label = "cpu";
-                        ethernet = <&gmac2>;
-                        phy-mode = "sgmii";
-
-                        fixed-link {
-                                        speed = <1000>;
-                                        full-duplex;
-                        };
-                };
-        };
-
-        mdio {
-                #address-cells = <1>;
-                #size-cells = <0>;
-
-                phy_port0: phy@0 {
-                        reg = <0>;
-                };
-
-                phy_port1: phy@1 {
-                        reg = <1>;
-                };
-
-                phy_port2: phy@2 {
-                        reg = <2>;
-                };
-
-                phy_port3: phy@3 {
-                        reg = <3>;
-                };
-
-                phy_port4: phy@4 {
-                        reg = <4>;
-                };
-        };
-};
+Switch node can contain mdio node to describe internal mdio and PHYs
+connected to the switch ports.
 
 Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
 ---
- net/dsa/dsa2.c | 13 ++++++++++++-
- 1 file changed, 12 insertions(+), 1 deletion(-)
+ .../devicetree/bindings/net/dsa/dsa.yaml      | 28 +++++++++++++++++++
+ 1 file changed, 28 insertions(+)
 
-diff --git a/net/dsa/dsa2.c b/net/dsa/dsa2.c
-index 3c3e56a1f34d..79adabe3e2a7 100644
---- a/net/dsa/dsa2.c
-+++ b/net/dsa/dsa2.c
-@@ -14,6 +14,7 @@
- #include <linux/rtnetlink.h>
- #include <linux/of.h>
- #include <linux/of_net.h>
-+#include <linux/of_mdio.h>
- #include <net/devlink.h>
+diff --git a/Documentation/devicetree/bindings/net/dsa/dsa.yaml b/Documentation/devicetree/bindings/net/dsa/dsa.yaml
+index 8a3494db4d8d..fbefaca884cc 100644
+--- a/Documentation/devicetree/bindings/net/dsa/dsa.yaml
++++ b/Documentation/devicetree/bindings/net/dsa/dsa.yaml
+@@ -15,6 +15,9 @@ description:
+   This binding represents Ethernet Switches which have a dedicated CPU
+   port. That port is usually connected to an Ethernet Controller of the
+   SoC. Such setups are typical for embedded devices.
++  Switch can also have PHY port connected to an internal mdio bus by
++  declaring a mdio node inside the switch node and declaring the
++  phy-handle for each required port.
  
- #include "dsa_priv.h"
-@@ -721,6 +722,8 @@ static int dsa_switch_setup(struct dsa_switch *ds)
- 	devlink_params_publish(ds->devlink);
+ select: false
  
- 	if (!ds->slave_mii_bus && ds->ops->phy_read) {
-+		struct device_node *mdio;
+@@ -87,6 +90,31 @@ patternProperties:
+ 
+         additionalProperties: false
+ 
++patternProperties:
++  mdio:
++    description:
++      Describes the internal mdio of the Ethernet switch
++    type: object
++    properties:
++      '#address-cells':
++        const: 1
++      '#size-cells':
++        const: 0
 +
- 		ds->slave_mii_bus = devm_mdiobus_alloc(ds->dev);
- 		if (!ds->slave_mii_bus) {
- 			err = -ENOMEM;
-@@ -729,7 +732,15 @@ static int dsa_switch_setup(struct dsa_switch *ds)
- 
- 		dsa_slave_mii_bus_init(ds);
- 
--		err = mdiobus_register(ds->slave_mii_bus);
-+		mdio = of_get_child_by_name(ds->dev->of_node, "mdio");
++    patternProperties:
++      phy:
++        type: object
++        description: Ethernet switch internal PHY
 +
-+		if (mdio) {
-+			err = of_mdiobus_register(ds->slave_mii_bus, mdio);
-+			of_node_put(mdio);
-+		} else {
-+			err = mdiobus_register(ds->slave_mii_bus);
-+		}
++        properties:
++          reg:
++            description: PHY address
 +
- 		if (err < 0)
- 			goto teardown;
- 	}
++        required:
++            - reg
++
++        additionalProperties: false
++
+ oneOf:
+   - required:
+       - ports
 -- 
 2.30.2
 
