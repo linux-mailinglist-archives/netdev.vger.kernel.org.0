@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 98335376DC9
-	for <lists+netdev@lfdr.de>; Sat,  8 May 2021 02:34:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1B9F5376DCD
+	for <lists+netdev@lfdr.de>; Sat,  8 May 2021 02:34:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231378AbhEHAbP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 7 May 2021 20:31:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47766 "EHLO
+        id S230495AbhEHAbW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 7 May 2021 20:31:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47782 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230495AbhEHAak (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 7 May 2021 20:30:40 -0400
-Received: from mail-wr1-x431.google.com (mail-wr1-x431.google.com [IPv6:2a00:1450:4864:20::431])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE484C061346;
-        Fri,  7 May 2021 17:29:38 -0700 (PDT)
-Received: by mail-wr1-x431.google.com with SMTP id m9so10873040wrx.3;
-        Fri, 07 May 2021 17:29:38 -0700 (PDT)
+        with ESMTP id S230506AbhEHAal (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 7 May 2021 20:30:41 -0400
+Received: from mail-wr1-x42e.google.com (mail-wr1-x42e.google.com [IPv6:2a00:1450:4864:20::42e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D6DEDC06134A;
+        Fri,  7 May 2021 17:29:39 -0700 (PDT)
+Received: by mail-wr1-x42e.google.com with SMTP id s8so10862895wrw.10;
+        Fri, 07 May 2021 17:29:39 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=+h+ej8+g7K6vmS4t/5VTu2T/0hfaLSCmNjTS7IqFOgY=;
-        b=sMJZr77+1/wamSKH/xUsZN+mc9C2LRhaCYwIW98u+p3FhHx9derCBCW+HGgWOwuPEa
-         or96BhYc+/fC+OG/RS5CTtqhl3Gu9kWG/TTcpGwdUkAlbpnS9EtqtG21/zlaMYtAzR8l
-         AsbK2XfqAY6dkshISoWF+8u5X9wEpBpw6XvqBzUy3ZfDjQS63MWiGYBzLxEx0jzEKKGF
-         WAMewSi270f1Sz9klMIU1SlItUkqChOBxJ+vyMk0Duyun2+C3KS7gPh8vXFgiGzg77o2
-         NA0ZdHmvv0yUUA6vk88Dur4kAqTs1v6Wgfp7RrFXREoxiynlAfZxSVL8D7Zb/Hf1NMQH
-         aAxA==
+        bh=VxdnfwS83mL792/gMDUPBetwEP7r6LLFgozjaMCuGc8=;
+        b=u9ktDqyIQBBO/JkRMfDN845QXtJ9fOk0hwu7hCzyb1gH8YueKz2MlAJVZmpqz1myRP
+         Vw2mWxLHccvfzK86XoudZ4UUp51QVqUpr0BtteJhOpaDzPaApgxMoffhiDM5I/qjJfC/
+         xRoh021LSsG76u7J/nQH576jaduAKYZZArEBp4+H2esBEZtuL9j5D89Ic+giHdPCxPgF
+         kcR+YMTrRFItSs3CkPguW3hSIspf0F6G35mDKrpx3/a1yYKxtP9ziK8NMJWc7z177jqL
+         M5iaI7aIM31P3DXtmeexrg7bwfSuO+JkISdOSCub8ftulojZZH63d5TOkcw9deUSXCMy
+         xmPQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=+h+ej8+g7K6vmS4t/5VTu2T/0hfaLSCmNjTS7IqFOgY=;
-        b=gslR4ntH3DhAsl5mvQdpeyAtpOjQpqtuCR18odgZdd5g07drzdm4IehBlAqUyWGSpk
-         B0kCIF91BpNazmmhVFIG5zjdy3kkXHvMNFOm0yXr2VT3+57tYP1grlaT3r/UYd17EMTK
-         d0h9orsfmYhEMhDsDpt/RZAkQv9haxmtICas+cJIPRjFefpn1xnxxsgEKq4Ci+tWJ9kW
-         dJH0gl7+XnRtYq261dQVrT2AtdU/q65iUvFwdocVxM00exNn6R3dij4i5vVY3JLyLelL
-         GF/JApLBLJM9JtHf7+9sRQut35LbsvW64p0TnO1AHMM6c97rWKzx8TW3h50TDkMFk58L
-         h6EQ==
-X-Gm-Message-State: AOAM533109aSvaKtQG6q8DdGrrbbOcJ/GaLJJ8pwjbrnLJL2ep+WaX6E
-        wWxHS2cvkfnvf6ZChrAvVIY=
-X-Google-Smtp-Source: ABdhPJzGe3xuQ84gdFqTNK1f457u/DJD1Y2yuy6kSlAa4lkGjQewp7/GgDjczJoetoF5oCQzdCaruQ==
-X-Received: by 2002:a5d:64c7:: with SMTP id f7mr15499727wri.257.1620433777425;
-        Fri, 07 May 2021 17:29:37 -0700 (PDT)
+        bh=VxdnfwS83mL792/gMDUPBetwEP7r6LLFgozjaMCuGc8=;
+        b=XFPybQ34yLSC+B4DvB0ycsC5221OsvFjlMiSUFkicPtWTkGzc60S0slgl4WvclZUyd
+         vy7qKRv1ZZrE84NSlF8bRF2az88L4csYVjsxsx4nYqNlEx2xZAXFenv8VuAOq7LWeZOV
+         0XlUArgaCmpaTD2W2NRcwescezkAu8r642q8gji57ILLO0+tX4Ava752a+0IXl8NfNxi
+         llXh5vo3wiUsIH1cY+0E7XgvUBcwAwgvD/cUEqt4pEvm608L9G0G131Cx0TWimWFLbbK
+         0iGBhuCKCx9qtErwyfK3uscIV8ioQYCqSxdMnylbbIu7mpn+6gh+4cmfsRSDMJVL4vAk
+         WKbg==
+X-Gm-Message-State: AOAM533LAuOB6uFAB4pq5mkdii0eIa9LwjpnRIaRlnX6sR070mdEmWO3
+        HKFYXAQkjIT9fQFjF8C3qf74fkZz6asH6g==
+X-Google-Smtp-Source: ABdhPJzFV8l0djkc+Zef2/k0xt9WwTs5aE1ZaEzQ1nr4GaJfHANkXqLbZhk3qLFhg/RflLadx3C2hQ==
+X-Received: by 2002:a05:6000:1ac7:: with SMTP id i7mr15898888wry.380.1620433778543;
+        Fri, 07 May 2021 17:29:38 -0700 (PDT)
 Received: from Ansuel-xps.localdomain (93-35-189-2.ip56.fastwebnet.it. [93.35.189.2])
-        by smtp.googlemail.com with ESMTPSA id f4sm10967597wrz.33.2021.05.07.17.29.36
+        by smtp.googlemail.com with ESMTPSA id f4sm10967597wrz.33.2021.05.07.17.29.37
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 07 May 2021 17:29:37 -0700 (PDT)
+        Fri, 07 May 2021 17:29:38 -0700 (PDT)
 From:   Ansuel Smith <ansuelsmth@gmail.com>
 To:     Florian Fainelli <f.fainelli@gmail.com>
 Cc:     Ansuel Smith <ansuelsmth@gmail.com>, Andrew Lunn <andrew@lunn.ch>,
@@ -56,9 +56,9 @@ Cc:     Ansuel Smith <ansuelsmth@gmail.com>, Andrew Lunn <andrew@lunn.ch>,
         Jakub Kicinski <kuba@kernel.org>,
         Russell King <linux@armlinux.org.uk>, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Subject: [RFC PATCH net-next v4 17/28] net: dsa: qca8k: add support for switch rev
-Date:   Sat,  8 May 2021 02:29:07 +0200
-Message-Id: <20210508002920.19945-17-ansuelsmth@gmail.com>
+Subject: [RFC PATCH net-next v4 18/28] net: dsa: qca8k: add ethernet-ports fallback to setup_mdio_bus
+Date:   Sat,  8 May 2021 02:29:08 +0200
+Message-Id: <20210508002920.19945-18-ansuelsmth@gmail.com>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20210508002920.19945-1-ansuelsmth@gmail.com>
 References: <20210508002920.19945-1-ansuelsmth@gmail.com>
@@ -68,117 +68,28 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-qca8k internal phy driver require some special debug value to be set
-based on the switch revision. Rework the switch id read function to
-also read the chip revision.
+Dsa now also supports ethernet-ports. Add this new binding as a fallback
+if the ports node can't be found.
 
 Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
 ---
- drivers/net/dsa/qca8k.c | 53 ++++++++++++++++++++++++++---------------
- drivers/net/dsa/qca8k.h |  7 ++++--
- 2 files changed, 39 insertions(+), 21 deletions(-)
+ drivers/net/dsa/qca8k.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
 diff --git a/drivers/net/dsa/qca8k.c b/drivers/net/dsa/qca8k.c
-index 301bb94aba84..9905a2631420 100644
+index 9905a2631420..285cce4fab9f 100644
 --- a/drivers/net/dsa/qca8k.c
 +++ b/drivers/net/dsa/qca8k.c
-@@ -1591,12 +1591,40 @@ static const struct dsa_switch_ops qca8k_switch_ops = {
- 	.phylink_mac_link_up	= qca8k_phylink_mac_link_up,
- };
+@@ -730,6 +730,9 @@ qca8k_setup_mdio_bus(struct qca8k_priv *priv)
+ 	int err;
  
-+static int qca8k_read_switch_id(struct qca8k_priv *priv)
-+{
-+	const struct qca8k_match_data *data;
-+	u32 val;
-+	u8 id;
+ 	ports = of_get_child_by_name(priv->dev->of_node, "ports");
++	if (!ports)
++		ports = of_get_child_by_name(priv->dev->of_node, "ethernet-ports");
 +
-+	/* get the switches ID from the compatible */
-+	data = of_device_get_match_data(priv->dev);
-+	if (!data)
-+		return -ENODEV;
-+
-+	val = qca8k_read(priv, QCA8K_REG_MASK_CTRL);
-+	if (val < 0)
-+		return -ENODEV;
-+
-+	id = QCA8K_MASK_CTRL_DEVICE_ID(val & QCA8K_MASK_CTRL_DEVICE_ID_MASK);
-+	if (id != data->id) {
-+		dev_err(priv->dev, "Switch id detected %x but expected %x", id, data->id);
-+		return -ENODEV;
-+	}
-+
-+	priv->switch_id = id;
-+
-+	/* Save revision to communicate to the internal PHY driver */
-+	priv->switch_revision = (val & QCA8K_MASK_CTRL_REV_ID_MASK);
-+
-+	return 0;
-+}
-+
- static int
- qca8k_sw_probe(struct mdio_device *mdiodev)
- {
--	const struct qca8k_match_data *data;
- 	struct qca8k_priv *priv;
--	u32 id;
-+	int ret;
+ 	if (!ports)
+ 		return -EINVAL;
  
- 	/* allocate the private data struct so that we can probe the switches
- 	 * ID register
-@@ -1622,24 +1650,11 @@ qca8k_sw_probe(struct mdio_device *mdiodev)
- 		gpiod_set_value_cansleep(priv->reset_gpio, 0);
- 	}
- 
--	/* get the switches ID from the compatible */
--	data = of_device_get_match_data(&mdiodev->dev);
--	if (!data)
--		return -ENODEV;
--
--	/* read the switches ID register */
--	id = qca8k_read(priv, QCA8K_REG_MASK_CTRL);
--	if (id < 0)
--		return id;
--
--	id >>= QCA8K_MASK_CTRL_ID_S;
--	id &= QCA8K_MASK_CTRL_ID_M;
--	if (id != data->id) {
--		dev_err(&mdiodev->dev, "Switch id detected %x but expected %x", id, data->id);
--		return -ENODEV;
--	}
-+	/* Check the detected switch id */
-+	ret = qca8k_read_switch_id(priv);
-+	if (ret)
-+		return ret;
- 
--	priv->switch_id = id;
- 	priv->ds = devm_kzalloc(&mdiodev->dev, sizeof(*priv->ds), GFP_KERNEL);
- 	if (!priv->ds)
- 		return -ENOMEM;
-diff --git a/drivers/net/dsa/qca8k.h b/drivers/net/dsa/qca8k.h
-index eceeacfe2c5d..338277978ec0 100644
---- a/drivers/net/dsa/qca8k.h
-+++ b/drivers/net/dsa/qca8k.h
-@@ -30,8 +30,10 @@
- 
- /* Global control registers */
- #define QCA8K_REG_MASK_CTRL				0x000
--#define   QCA8K_MASK_CTRL_ID_M				0xff
--#define   QCA8K_MASK_CTRL_ID_S				8
-+#define   QCA8K_MASK_CTRL_REV_ID_MASK			GENMASK(7, 0)
-+#define   QCA8K_MASK_CTRL_REV_ID(x)			((x) >> 0)
-+#define   QCA8K_MASK_CTRL_DEVICE_ID_MASK		GENMASK(15, 8)
-+#define   QCA8K_MASK_CTRL_DEVICE_ID(x)			((x) >> 8)
- #define QCA8K_REG_PORT0_PAD_CTRL			0x004
- #define QCA8K_REG_PORT5_PAD_CTRL			0x008
- #define QCA8K_REG_PORT6_PAD_CTRL			0x00c
-@@ -251,6 +253,7 @@ struct qca8k_match_data {
- 
- struct qca8k_priv {
- 	u8 switch_id;
-+	u8 switch_revision;
- 	struct regmap *regmap;
- 	struct mii_bus *bus;
- 	struct ar8xxx_port_status port_sts[QCA8K_NUM_PORTS];
 -- 
 2.30.2
 
