@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 79933376DD3
-	for <lists+netdev@lfdr.de>; Sat,  8 May 2021 02:34:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3BCE3376DD5
+	for <lists+netdev@lfdr.de>; Sat,  8 May 2021 02:34:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231258AbhEHAcJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 7 May 2021 20:32:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47712 "EHLO
+        id S230478AbhEHAcS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 7 May 2021 20:32:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47696 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231263AbhEHAa6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 7 May 2021 20:30:58 -0400
-Received: from mail-wr1-x42a.google.com (mail-wr1-x42a.google.com [IPv6:2a00:1450:4864:20::42a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3BCDEC06134F;
-        Fri,  7 May 2021 17:29:43 -0700 (PDT)
-Received: by mail-wr1-x42a.google.com with SMTP id m9so10873125wrx.3;
-        Fri, 07 May 2021 17:29:43 -0700 (PDT)
+        with ESMTP id S230463AbhEHAbE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 7 May 2021 20:31:04 -0400
+Received: from mail-wm1-x336.google.com (mail-wm1-x336.google.com [IPv6:2a00:1450:4864:20::336])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 846DBC061350;
+        Fri,  7 May 2021 17:29:44 -0700 (PDT)
+Received: by mail-wm1-x336.google.com with SMTP id o127so6101977wmo.4;
+        Fri, 07 May 2021 17:29:44 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=VXJeCZ6p+84hYUeYtR84+eoPuhkPjIoXlDYRmPpn2+8=;
-        b=DPeGUdJcSUo+UoxhjoUaNJfdVkwp640u3cPmrm2GUFftpL96BlYx+M9lIclfy07z9w
-         IwkZz2QpxQv9scdQaXdyyzlOee6h7L0ePa6hBNW9iV/CNXK2R5AJxC1IgFf3F90Ri0gb
-         3bFXEZob8kzLh5G0zZefvMcyEUezUgKCzJOCWqo6OYrqvlNZo++PgU2uM1CwECXikUVq
-         kgzv46bjSDRNh1o19wqCdk6bem99KQ8XPVVo1p8phdtMz2DdC9uCAjACWUplYVTGeHff
-         elckCnBZDS5QfarhjGtmEcy0OajKpi4YqzYBEij2GAiZUYjWyXf/wivqRAb3gMdm8OjV
-         0M5Q==
+        bh=eEGM53YIGmYlpHBRnf6Ug1VRbnl//rrgzPHo8YXGMUc=;
+        b=hK8NZIQgUk1gvvitXr0FjLQXG0FG4vNzGFSCcpzPB/5gEmkvzj2tO79UpF7SrMgTbK
+         QuFjt19IbEUbDl8ocHi8fcbz4TT6WjI0seebQS5dv0Ye+hdNj9bLX1trmNnT7sX/XX2p
+         7BBHs/AsdDHXJCt2oWDHKr5WT7xmmjV0dAMO39Px5RE9SD6GD5cxorpBwCTIEmVUs4qS
+         kcQ11eFSpR4rcHoDMX/DTqlJTxVXPUs/iIooXUlA3p1slLShrN1UVaw6UvpJaGKIBvvW
+         mLUoXtEuSbX7AkooySkAYuJ8SHwcOAtdKm+V+2/j3OnDdbA6Jahi+djovvhc7YoU1dkc
+         uqqw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=VXJeCZ6p+84hYUeYtR84+eoPuhkPjIoXlDYRmPpn2+8=;
-        b=sYVT1AZkMly0db0FAU/9fCYuGEWwPIo8nevqhdQvVumIGYiXa/uTNZHg2sqBbud47p
-         hQmnDK0W139Y95DHHhmOA9kgRNFK40C/FLijDSw/Ie3vM4kM8lK9N9nKBHs8fZ00XyuB
-         EUFAyQt5Fk1RJIHp+KXU1KXEvhty8QrweLnnSLU044P0FDiVDmlDhI90bwN8TfPeHlwM
-         AEEiCblvNRfWBxIU3OgLKsh3cJ+iAfw3cXmqkjH3w51XX6gsiG/HFq2BSueB68F5Xfxn
-         8g/+7D9ISFhuk0G9G8oZh3gvkgWjesJYbA1t9kRvXQvTy+PziGgWicnDKqYxguiIZZdZ
-         XBkw==
-X-Gm-Message-State: AOAM530f6OII+aN7xMglwug14ovAdjSuUgAf+0Rb6Ty2gifElZnpwjJh
-        HGHOlJerHJ1Ba5+nRuWPqu4=
-X-Google-Smtp-Source: ABdhPJyH62MH2gubA6pgUluB4iCFQc8a5Y0s9n7M7Qax7f3RiG9lHrJUS9t+BPySpGJNkHEyNW1hqA==
-X-Received: by 2002:a5d:6811:: with SMTP id w17mr16067723wru.348.1620433781868;
-        Fri, 07 May 2021 17:29:41 -0700 (PDT)
+        bh=eEGM53YIGmYlpHBRnf6Ug1VRbnl//rrgzPHo8YXGMUc=;
+        b=l469G2UdQ1NUmW4OLiKB30c99UhtQaoO0Dmd2kACT2dsXwqPNAlGNdX0ik61ZDC9cm
+         B/YrJd6FFjF+EnOMfIqyjw6T+XdZCIbrDM8c8C3v2pwH15dcjN34IlJ7EE7j1YtFU0na
+         iyMWkOoJzy3eVD97WF8FX36o/JKZ2u8EyuU4edEjoK4TrewbCutwHncEH237InVDhhkP
+         4RfEvCoeTAy3DF6aXiJrrL7mMTOMvf975vStpv3ZFi7o4bsC15I/4L4bK4/R4M6yZ5JV
+         30dwssmdBOzaV7HKO7MAAZGlq08xOcpYxUp4oBGm3ByLUftlmqaT+8BgAj6pe0b8q6lI
+         +bBw==
+X-Gm-Message-State: AOAM532RYuFcfwzITS8w+fAHpRMRbcWbFe/Qd9eL9DW+dKguWwyzEeUQ
+        f7kJQs1t7faUmQhdJxU6/68=
+X-Google-Smtp-Source: ABdhPJw7AtPGTdQJauew1+h1iSolj/BiUS1OPVrNW0uJpAnf3pQciPUPWRcZDlYwN9s9Y91GmPX2ag==
+X-Received: by 2002:a05:600c:c7:: with SMTP id u7mr12616353wmm.156.1620433783149;
+        Fri, 07 May 2021 17:29:43 -0700 (PDT)
 Received: from Ansuel-xps.localdomain (93-35-189-2.ip56.fastwebnet.it. [93.35.189.2])
-        by smtp.googlemail.com with ESMTPSA id f4sm10967597wrz.33.2021.05.07.17.29.41
+        by smtp.googlemail.com with ESMTPSA id f4sm10967597wrz.33.2021.05.07.17.29.42
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 07 May 2021 17:29:41 -0700 (PDT)
+        Fri, 07 May 2021 17:29:42 -0700 (PDT)
 From:   Ansuel Smith <ansuelsmth@gmail.com>
 To:     Florian Fainelli <f.fainelli@gmail.com>
 Cc:     Ansuel Smith <ansuelsmth@gmail.com>, Andrew Lunn <andrew@lunn.ch>,
@@ -56,9 +56,9 @@ Cc:     Ansuel Smith <ansuelsmth@gmail.com>, Andrew Lunn <andrew@lunn.ch>,
         Jakub Kicinski <kuba@kernel.org>,
         Russell King <linux@armlinux.org.uk>, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Subject: [RFC PATCH net-next v4 21/28] net: dsa: qca8k: dsa: qca8k: protect MASTER busy_wait with mdio mutex
-Date:   Sat,  8 May 2021 02:29:11 +0200
-Message-Id: <20210508002920.19945-21-ansuelsmth@gmail.com>
+Subject: [RFC PATCH net-next v4 22/28] net: dsa: qca8k: enlarge mdio delay and timeout
+Date:   Sat,  8 May 2021 02:29:12 +0200
+Message-Id: <20210508002920.19945-22-ansuelsmth@gmail.com>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20210508002920.19945-1-ansuelsmth@gmail.com>
 References: <20210508002920.19945-1-ansuelsmth@gmail.com>
@@ -68,129 +68,43 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-MDIO_MASTER operation have a dedicated busy wait that is not protected
-by the mdio mutex. This can cause situation where the MASTER operation
-is done and a normal operation is executed between the MASTER read/write
-and the MASTER busy_wait. Rework the qca8k_mdio_read/write function to
-address this issue by binding the lock for the whole MASTER operation
-and not only the mdio read/write common operation.
+The witch require some extra delay after setting page or the next
+read/write can use still use the old page. Add a delay after the
+set_page function to address this as it's done in QSDK legacy driver.
+Some timeouts were notice with VLAN and phy function, enlarge the
+mdio busy wait timeout to fix these problems.
 
 Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
 ---
- drivers/net/dsa/qca8k.c | 68 +++++++++++++++++++++++++++++++++--------
- 1 file changed, 55 insertions(+), 13 deletions(-)
+ drivers/net/dsa/qca8k.c | 1 +
+ drivers/net/dsa/qca8k.h | 2 +-
+ 2 files changed, 2 insertions(+), 1 deletion(-)
 
 diff --git a/drivers/net/dsa/qca8k.c b/drivers/net/dsa/qca8k.c
-index 2e0d2f918efe..e272ccaaa7f6 100644
+index e272ccaaa7f6..f96579c0bd46 100644
 --- a/drivers/net/dsa/qca8k.c
 +++ b/drivers/net/dsa/qca8k.c
-@@ -639,9 +639,32 @@ qca8k_port_to_phy(int port)
- 	return port - 1;
+@@ -143,6 +143,7 @@ qca8k_set_page(struct mii_bus *bus, u16 page)
+ 	}
+ 
+ 	qca8k_current_page = page;
++	usleep_range(1000, 2000);
+ 	return 0;
  }
  
-+static int
-+qca8k_mdio_busy_wait(struct qca8k_priv *priv, u32 reg, u32 mask)
-+{
-+	u16 r1, r2, page;
-+	u32 val;
-+	int ret;
-+
-+	qca8k_split_addr(reg, &r1, &r2, &page);
-+
-+	ret = read_poll_timeout(qca8k_mii_read32, val, !(val & mask), 0,
-+				QCA8K_BUSY_WAIT_TIMEOUT * USEC_PER_MSEC, false,
-+				priv->bus, 0x10 | r2, r1);
-+
-+	/* Check if qca8k_read has failed for a different reason
-+	 * before returnting -ETIMEDOUT
-+	 */
-+	if (ret < 0 && val < 0)
-+		return val;
-+
-+	return ret;
-+}
-+
- static int
- qca8k_mdio_write(struct qca8k_priv *priv, int port, u32 regnum, u16 data)
- {
-+	u16 r1, r2, page;
- 	u32 phy, val;
- 	int ret;
+diff --git a/drivers/net/dsa/qca8k.h b/drivers/net/dsa/qca8k.h
+index a878486d9bcd..d365f85ab34f 100644
+--- a/drivers/net/dsa/qca8k.h
++++ b/drivers/net/dsa/qca8k.h
+@@ -20,7 +20,7 @@
+ #define PHY_ID_QCA8337					0x004dd036
+ #define QCA8K_ID_QCA8337				0x13
  
-@@ -657,12 +680,21 @@ qca8k_mdio_write(struct qca8k_priv *priv, int port, u32 regnum, u16 data)
- 	      QCA8K_MDIO_MASTER_REG_ADDR(regnum) |
- 	      QCA8K_MDIO_MASTER_DATA(data);
+-#define QCA8K_BUSY_WAIT_TIMEOUT				20
++#define QCA8K_BUSY_WAIT_TIMEOUT				2000
  
--	ret = qca8k_write(priv, QCA8K_MDIO_MASTER_CTRL, val);
-+	qca8k_split_addr(QCA8K_MDIO_MASTER_CTRL, &r1, &r2, &page);
-+
-+	mutex_lock_nested(&priv->bus->mdio_lock, MDIO_MUTEX_NESTED);
-+
-+	ret = qca8k_set_page(priv->bus, page);
- 	if (ret)
--		return ret;
-+		goto exit;
-+
-+	qca8k_mii_write32(priv->bus, 0x10 | r2, r1, val);
-+
-+	ret = qca8k_mdio_busy_wait(priv, QCA8K_MDIO_MASTER_CTRL,
-+				   QCA8K_MDIO_MASTER_BUSY);
+ #define QCA8K_NUM_FDB_RECORDS				2048
  
--	ret = qca8k_busy_wait(priv, QCA8K_MDIO_MASTER_CTRL,
--			      QCA8K_MDIO_MASTER_BUSY);
-+exit:
-+	mutex_unlock(&priv->bus->mdio_lock);
- 
- 	/* even if the busy_wait timeouts try to clear the MASTER_EN */
- 	qca8k_reg_clear(priv, QCA8K_MDIO_MASTER_CTRL,
-@@ -674,6 +706,7 @@ qca8k_mdio_write(struct qca8k_priv *priv, int port, u32 regnum, u16 data)
- static int
- qca8k_mdio_read(struct qca8k_priv *priv, int port, u32 regnum)
- {
-+	u16 r1, r2, page;
- 	u32 phy, val;
- 	int ret;
- 
-@@ -688,21 +721,30 @@ qca8k_mdio_read(struct qca8k_priv *priv, int port, u32 regnum)
- 	      QCA8K_MDIO_MASTER_READ | QCA8K_MDIO_MASTER_PHY_ADDR(phy) |
- 	      QCA8K_MDIO_MASTER_REG_ADDR(regnum);
- 
--	ret = qca8k_write(priv, QCA8K_MDIO_MASTER_CTRL, val);
--	if (ret)
--		return ret;
-+	qca8k_split_addr(QCA8K_MDIO_MASTER_CTRL, &r1, &r2, &page);
-+
-+	mutex_lock_nested(&priv->bus->mdio_lock, MDIO_MUTEX_NESTED);
- 
--	ret = qca8k_busy_wait(priv, QCA8K_MDIO_MASTER_CTRL,
--			      QCA8K_MDIO_MASTER_BUSY);
-+	ret = qca8k_set_page(priv->bus, page);
- 	if (ret)
--		return ret;
-+		goto exit;
- 
--	val = qca8k_read(priv, QCA8K_MDIO_MASTER_CTRL);
--	if (val < 0)
--		return val;
-+	qca8k_mii_write32(priv->bus, 0x10 | r2, r1, val);
-+
-+	ret = qca8k_mdio_busy_wait(priv, QCA8K_MDIO_MASTER_CTRL,
-+				   QCA8K_MDIO_MASTER_BUSY);
-+	if (ret)
-+		goto exit;
- 
-+	val = qca8k_mii_read32(priv->bus, 0x10 | r2, r1);
- 	val &= QCA8K_MDIO_MASTER_DATA_MASK;
- 
-+exit:
-+	mutex_unlock(&priv->bus->mdio_lock);
-+
-+	if (val >= 0)
-+		val &= QCA8K_MDIO_MASTER_DATA_MASK;
-+
- 	/* even if the busy_wait timeouts try to clear the MASTER_EN */
- 	qca8k_reg_clear(priv, QCA8K_MDIO_MASTER_CTRL,
- 			QCA8K_MDIO_MASTER_EN);
 -- 
 2.30.2
 
