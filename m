@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6AD5C37743F
-	for <lists+netdev@lfdr.de>; Sun,  9 May 2021 00:09:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8AC9D377442
+	for <lists+netdev@lfdr.de>; Sun,  9 May 2021 00:09:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229698AbhEHWKR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 8 May 2021 18:10:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46206 "EHLO
+        id S229721AbhEHWKT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 8 May 2021 18:10:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46216 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229567AbhEHWKO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 8 May 2021 18:10:14 -0400
-Received: from mail-qt1-x836.google.com (mail-qt1-x836.google.com [IPv6:2607:f8b0:4864:20::836])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9196DC06175F;
-        Sat,  8 May 2021 15:09:11 -0700 (PDT)
-Received: by mail-qt1-x836.google.com with SMTP id v4so504735qtp.1;
-        Sat, 08 May 2021 15:09:11 -0700 (PDT)
+        with ESMTP id S229673AbhEHWKP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 8 May 2021 18:10:15 -0400
+Received: from mail-qv1-xf2b.google.com (mail-qv1-xf2b.google.com [IPv6:2607:f8b0:4864:20::f2b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0DE3FC061574;
+        Sat,  8 May 2021 15:09:13 -0700 (PDT)
+Received: by mail-qv1-xf2b.google.com with SMTP id r13so6616920qvm.7;
+        Sat, 08 May 2021 15:09:13 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=lU6deMHw1f7T8Vy5QqfQAadD/G/Nn7rO2ZLLwGffBII=;
-        b=toHg32WaYqiKj0Elqih2fW+wjSMkpM61WLwJjzcIP0wYPvS9nQkL/XEsM5CCm0A58d
-         xBvvMlR8ZiL3k4aOHv/OZio7XHFon5db1ZcR1vI/YN2wVvWvgg5gstih7erZeUZiOBRi
-         aIcxt3+Krm2G1DWTYBbaBkks7/z7v6VHR7lHOZXT9gGudUv7a/9JRHOPRFaxPN6sUz/g
-         QvF/d/FWgKcYydYoWr4ecJ4m7e0OxC/LoS1mHj+tCVCEHS737KTK3wbnMVFwCw7wAvdc
-         DapAwvP7urcr7W5qBOOC5K7aSV8ALrp3ipjs5TTfA7RXJBlKEbIXlMHGPtHQ9lon5rOj
-         JIHg==
+        bh=7d/KU/DC62hu/FTJavom/LekEDnR80g4Tdja2rES75g=;
+        b=s3NkkDJMhuw6Pvh66o/XcQB6W/rRnrwQ4HFpzl+nyj8x9ICEEayghHWVNu3Vumg9LL
+         9f6qQSX2NzLyWR//OWRY2KywXzdspI/0PI9V7XJP2Ek8WEXV95PTTqim4uLHLastRl5K
+         0wsmPrHCc4dWRf6eAbK3vWEkrRkuyGZyMNWAHAYbqFfonfwJhD4OX1tFm5/AdHHX1p2t
+         QwnKccO/cCzV34SE/jWWp6EoCmNOsQ765zCP1Kg89Z2TIB1qrZIOrQ0tL5bgMW5wEo1W
+         e34qLkjnwKnmrzme6zzKCBt+kUaQh/HPMf552V9nsqSb8yqItNOksp5GLpPc+n8/N+qo
+         JRwA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=lU6deMHw1f7T8Vy5QqfQAadD/G/Nn7rO2ZLLwGffBII=;
-        b=mXzWuKuF4urO58HZ0kZt+OhqDskONFKV5PbQGjsbXktmUzVszV2pCO4gClwi6yHm4b
-         gfg+fM0r+nqDAdbESzg1ZgtjSh1lG4SLSW0Ooy8h65JwtceO2ixEhBjQLJg9cprHVoQ5
-         Jml91QrOM3wnKLJRp3DWVClC1zfOFLT1zihQXScbC5Ejmn4zU6yYAKFK8PngYHv1dYmH
-         BtxpjOxm4hDLAxHblyvxxc4u0IifeiUtdTbnq7e/8GJASkN1VfW7h+9cMHi/NwS1Phhy
-         H4ivwk9Z/avUG+Bu6ZjJKFGceyR6giZj5grDTF3KJVbjrgT3LzWlyH1JKSINATLeLips
-         u3HA==
-X-Gm-Message-State: AOAM530kgaXXi659aKg2Fu+CxK06DGm/+AgZC+zOMONpCg/J+yQh/6oE
-        ozQqbxjHT40EZkl14Uz7pkj0rO11hpWwIw==
-X-Google-Smtp-Source: ABdhPJxhbfPuz7Sx0z8Lk0C1xiMdpNGtlvGVJTqY2egkcrdV9HFwWt/g2Dpos94c34+NatASZtNgUA==
-X-Received: by 2002:ac8:7b8c:: with SMTP id p12mr15432903qtu.137.1620511750688;
-        Sat, 08 May 2021 15:09:10 -0700 (PDT)
+        bh=7d/KU/DC62hu/FTJavom/LekEDnR80g4Tdja2rES75g=;
+        b=iAp/GGfvJUl3yfS/31bk2+GGPARU4UHPukhC61nHQTjsYpD49uqD/C5xdxgjdD5lbc
+         0g471qfgyBQJ4N+gkoPAHvBsg3zA0cZmvSwFmwfepsBN4XaeVu03PO9Ed8+sCZmcUa9x
+         N5SMDbGVrefVFd7xKCtcouVfg50K//y+q4eUUqA3d1OGNA6Qivuj3RfTHwHG/Ru/mC+r
+         JPKiCrpydLhgERjoB/KpzfcK28ny0Da3FPjNhmqCBeckmTXkEQ4Q9expXnGFI7SRGNTc
+         CNnguWGUHatsyxS5tC2rLWjOzWY7c38eoTkXZ71gnxwlcOE9TXNXdWo8tKKwkDVAi5os
+         eVDg==
+X-Gm-Message-State: AOAM532p7iDRKhUM+qIPwOz9lTz1nWr6tJByw0AR+VKrMk1OK26ksEcU
+        k39Dl1AiZpg3c6u1afxDNiBFyJ+aCzBtBA==
+X-Google-Smtp-Source: ABdhPJycm4RJ5dkrx/0QkwSdG9YzBCTFtY43LS3uk5Q1rzA+aJ1Wq794g25vqNApBlnMasOxCJVhrg==
+X-Received: by 2002:a0c:ec0f:: with SMTP id y15mr16335250qvo.9.1620511752122;
+        Sat, 08 May 2021 15:09:12 -0700 (PDT)
 Received: from unknown.attlocal.net ([2600:1700:65a0:ab60:65fe:be14:6eed:46f])
-        by smtp.gmail.com with ESMTPSA id 189sm8080797qkd.51.2021.05.08.15.09.09
+        by smtp.gmail.com with ESMTPSA id 189sm8080797qkd.51.2021.05.08.15.09.10
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 08 May 2021 15:09:10 -0700 (PDT)
+        Sat, 08 May 2021 15:09:11 -0700 (PDT)
 From:   Cong Wang <xiyou.wangcong@gmail.com>
 To:     netdev@vger.kernel.org
 Cc:     bpf@vger.kernel.org, jiang.wang@bytedance.com,
@@ -56,9 +56,9 @@ Cc:     bpf@vger.kernel.org, jiang.wang@bytedance.com,
         Daniel Borkmann <daniel@iogearbox.net>,
         Jakub Sitnicki <jakub@cloudflare.com>,
         Lorenz Bauer <lmb@cloudflare.com>
-Subject: [Patch bpf-next v4 03/12] af_unix: set TCP_ESTABLISHED for datagram sockets too
-Date:   Sat,  8 May 2021 15:08:26 -0700
-Message-Id: <20210508220835.53801-4-xiyou.wangcong@gmail.com>
+Subject: [Patch bpf-next v4 04/12] sock_map: export symbols for af_unix module
+Date:   Sat,  8 May 2021 15:08:27 -0700
+Message-Id: <20210508220835.53801-5-xiyou.wangcong@gmail.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20210508220835.53801-1-xiyou.wangcong@gmail.com>
 References: <20210508220835.53801-1-xiyou.wangcong@gmail.com>
@@ -70,12 +70,8 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Cong Wang <cong.wang@bytedance.com>
 
-Currently only unix stream socket sets TCP_ESTABLISHED,
-datagram socket can set this too when they connect to its
-peer socket. At least __ip4_datagram_connect() does the same.
-
-This will be used by a later patch to determine whether an
-AF_UNIX datagram socket can be redirected in sockmap.
+Before af_unix there is no need to support modules. Now
+we have to export these two functions for af_unix module.
 
 Cc: John Fastabend <john.fastabend@gmail.com>
 Cc: Daniel Borkmann <daniel@iogearbox.net>
@@ -83,48 +79,29 @@ Cc: Jakub Sitnicki <jakub@cloudflare.com>
 Cc: Lorenz Bauer <lmb@cloudflare.com>
 Signed-off-by: Cong Wang <cong.wang@bytedance.com>
 ---
- net/unix/af_unix.c | 14 ++++++++------
- 1 file changed, 8 insertions(+), 6 deletions(-)
+ net/core/sock_map.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/net/unix/af_unix.c b/net/unix/af_unix.c
-index 26d18f948737..e08918c45892 100644
---- a/net/unix/af_unix.c
-+++ b/net/unix/af_unix.c
-@@ -487,6 +487,7 @@ static void unix_dgram_disconnected(struct sock *sk, struct sock *other)
- 			other->sk_error_report(other);
- 		}
- 	}
-+	sk->sk_state = other->sk_state = TCP_CLOSE;
+diff --git a/net/core/sock_map.c b/net/core/sock_map.c
+index 6f1b82b8ad49..13b474d89f93 100644
+--- a/net/core/sock_map.c
++++ b/net/core/sock_map.c
+@@ -1513,6 +1513,7 @@ void sock_map_unhash(struct sock *sk)
+ 	rcu_read_unlock();
+ 	saved_unhash(sk);
  }
++EXPORT_SYMBOL_GPL(sock_map_unhash);
  
- static void unix_sock_destructor(struct sock *sk)
-@@ -1197,6 +1198,9 @@ static int unix_dgram_connect(struct socket *sock, struct sockaddr *addr,
- 		unix_peer(sk) = other;
- 		unix_state_double_unlock(sk, other);
- 	}
-+
-+	if (unix_peer(sk))
-+		sk->sk_state = other->sk_state = TCP_ESTABLISHED;
- 	return 0;
- 
- out_unlock:
-@@ -1429,12 +1433,10 @@ static int unix_socketpair(struct socket *socka, struct socket *sockb)
- 	init_peercred(ska);
- 	init_peercred(skb);
- 
--	if (ska->sk_type != SOCK_DGRAM) {
--		ska->sk_state = TCP_ESTABLISHED;
--		skb->sk_state = TCP_ESTABLISHED;
--		socka->state  = SS_CONNECTED;
--		sockb->state  = SS_CONNECTED;
--	}
-+	ska->sk_state = TCP_ESTABLISHED;
-+	skb->sk_state = TCP_ESTABLISHED;
-+	socka->state  = SS_CONNECTED;
-+	sockb->state  = SS_CONNECTED;
- 	return 0;
+ void sock_map_close(struct sock *sk, long timeout)
+ {
+@@ -1536,6 +1537,7 @@ void sock_map_close(struct sock *sk, long timeout)
+ 	release_sock(sk);
+ 	saved_close(sk, timeout);
  }
++EXPORT_SYMBOL_GPL(sock_map_close);
  
+ static int sock_map_iter_attach_target(struct bpf_prog *prog,
+ 				       union bpf_iter_link_info *linfo,
 -- 
 2.25.1
 
