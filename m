@@ -2,37 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 210E1377330
-	for <lists+netdev@lfdr.de>; Sat,  8 May 2021 18:37:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9F5D6377333
+	for <lists+netdev@lfdr.de>; Sat,  8 May 2021 18:38:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229836AbhEHQiy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 8 May 2021 12:38:54 -0400
-Received: from mx12.kaspersky-labs.com ([91.103.66.155]:45684 "EHLO
+        id S230031AbhEHQi4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 8 May 2021 12:38:56 -0400
+Received: from mx12.kaspersky-labs.com ([91.103.66.155]:45663 "EHLO
         mx12.kaspersky-labs.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229559AbhEHQiv (ORCPT
+        with ESMTP id S229552AbhEHQiv (ORCPT
         <rfc822;netdev@vger.kernel.org>); Sat, 8 May 2021 12:38:51 -0400
 Received: from relay12.kaspersky-labs.com (unknown [127.0.0.10])
-        by relay12.kaspersky-labs.com (Postfix) with ESMTP id F32B976F28;
+        by relay12.kaspersky-labs.com (Postfix) with ESMTP id CB05976F36;
         Sat,  8 May 2021 19:37:33 +0300 (MSK)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kaspersky.com;
-        s=mail202102; t=1620491854;
-        bh=d7FWuSVdlwWm4gAzQsTTiqzSPX3xmCCuv0va6SbfC9w=;
+        s=mail202102; t=1620491853;
+        bh=SSPafbxy4r2OU72JdjQWKGMN2ReGB2PQt4Gd/j7hBes=;
         h=From:To:Subject:Date:Message-ID:MIME-Version:Content-Type;
-        b=bW8RE2dRA+xyewFIMiF7vdW84LnqFymTl10+NBZskruE/jGx615KCfGJoQNj+ptID
-         1Iw7CX1sm2NMoeYyA5hz+9erbpjk7qD1ds+luECW87TDIiogOgD95Czpg5557FizBH
-         FNzLWGVP5H5GeMG5ZGW56jkNDkqthpjpSJTIXQmiRYyQMElDV5DHFN7UyKdIOe2fnV
-         GRLx8PRROujeviKBy6uoN14NGsNo/BVnBtmmVHsqndEtxG8sDZyO/lX4HF4oDta+9u
-         FIC5qlvEynFW4SYN3LtCay0c8Z8RE2Sclqo/+KgY5XQ5+FzXvVEy0EE9RItmJYclCo
-         3wuOF4s5LZTSw==
+        b=PezQpEBEppUum37twSP/DbfT3ifbsuvEKOyBYTW7ZLGMoP49zQtDIyoQtEId4n6hr
+         A+sT15gt2yCXLdpqVDcdMhELrQzYYlZQjdcXPkLzznDO5cZ41Ysp0gb7ZlN8POCSNF
+         kwgbCwquJPwefaNQP+FDP8m1cV3+r3Y+1icz9VmkMe2j4R1Q0wmlFxT++B3KV256w9
+         +Pz1mFLDc9c/UG2bEEsKZ66ASpFYElQhkUsahO1HZjY1Gb4oU1GyNJSp4DPkBlGT1t
+         TdYHd/kBeSZ4GsXVHuY1frjuXX7M90IgywDv+smrOpuXsSVp4BBzfdcuPqUzQ1LnLz
+         bQWeV3G60cvKA==
 Received: from mail-hq2.kaspersky.com (unknown [91.103.66.206])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-SHA256 (128/128 bits))
         (Client CN "mail-hq2.kaspersky.com", Issuer "Kaspersky MailRelays CA G3" (verified OK))
-        by mailhub12.kaspersky-labs.com (Postfix) with ESMTPS id A177576F01;
+        by mailhub12.kaspersky-labs.com (Postfix) with ESMTPS id 6786F76F33;
         Sat,  8 May 2021 19:37:33 +0300 (MSK)
-Received: from arseniy-pc.avp.ru (10.64.68.128) by hqmailmbx3.avp.ru
+Received: from arseniy-pc.avp.ru (10.64.68.129) by hqmailmbx3.avp.ru
  (10.64.67.243) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2176.2; Sat, 8 May
- 2021 19:37:11 +0300
+ 2021 19:37:29 +0300
 From:   Arseny Krasnov <arseny.krasnov@kaspersky.com>
 To:     Stefan Hajnoczi <stefanha@redhat.com>,
         Stefano Garzarella <sgarzare@redhat.com>,
@@ -40,25 +40,27 @@ To:     Stefan Hajnoczi <stefanha@redhat.com>,
         Jason Wang <jasowang@redhat.com>,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Ingo Molnar <mingo@redhat.com>,
         Arseny Krasnov <arseny.krasnov@kaspersky.com>,
         Jorgen Hansen <jhansen@vmware.com>,
-        Andra Paraschiv <andraprs@amazon.com>,
         Colin Ian King <colin.king@canonical.com>,
-        Norbert Slusarek <nslusarek@gmx.net>
+        Norbert Slusarek <nslusarek@gmx.net>,
+        Andra Paraschiv <andraprs@amazon.com>
 CC:     <kvm@vger.kernel.org>, <virtualization@lists.linux-foundation.org>,
         <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
         <stsp2@yandex.ru>, <oxffffaa@gmail.com>
-Subject: [RFC PATCH v9 17/19] vsock_test: add SOCK_SEQPACKET tests
-Date:   Sat, 8 May 2021 19:37:00 +0300
-Message-ID: <20210508163704.3432731-1-arseny.krasnov@kaspersky.com>
+Subject: [RFC PATCH v9 18/19] virtio/vsock: update trace event for SEQPACKET
+Date:   Sat, 8 May 2021 19:37:20 +0300
+Message-ID: <20210508163725.3432864-1-arseny.krasnov@kaspersky.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20210508163027.3430238-1-arseny.krasnov@kaspersky.com>
 References: <20210508163027.3430238-1-arseny.krasnov@kaspersky.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
-X-Originating-IP: [10.64.68.128]
-X-ClientProxiedBy: hqmailmbx1.avp.ru (10.64.67.241) To hqmailmbx3.avp.ru
+X-Originating-IP: [10.64.68.129]
+X-ClientProxiedBy: hqmailmbx2.avp.ru (10.64.67.242) To hqmailmbx3.avp.ru
  (10.64.67.243)
 X-KSE-ServerInfo: hqmailmbx3.avp.ru, 9
 X-KSE-AntiSpam-Interceptor-Info: scan successful
@@ -99,195 +101,31 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This adds two tests of SOCK_SEQPACKET socket: both transfer data and
-then test MSG_EOR and MSG_TRUNC flags. Cases for connect(), bind(),
-etc. are not tested, because it is same as for stream socket.
+This adds SEQPACKET socket's type for trace event of virtio vsock.
 
 Signed-off-by: Arseny Krasnov <arseny.krasnov@kaspersky.com>
 ---
- tools/testing/vsock/util.c       | 32 +++++++++++++---
- tools/testing/vsock/util.h       |  3 ++
- tools/testing/vsock/vsock_test.c | 63 ++++++++++++++++++++++++++++++++
- 3 files changed, 93 insertions(+), 5 deletions(-)
+ include/trace/events/vsock_virtio_transport_common.h | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
-diff --git a/tools/testing/vsock/util.c b/tools/testing/vsock/util.c
-index 93cbd6f603f9..2acbb7703c6a 100644
---- a/tools/testing/vsock/util.c
-+++ b/tools/testing/vsock/util.c
-@@ -84,7 +84,7 @@ void vsock_wait_remote_close(int fd)
- }
+diff --git a/include/trace/events/vsock_virtio_transport_common.h b/include/trace/events/vsock_virtio_transport_common.h
+index 6782213778be..b30c0e319b0e 100644
+--- a/include/trace/events/vsock_virtio_transport_common.h
++++ b/include/trace/events/vsock_virtio_transport_common.h
+@@ -9,9 +9,12 @@
+ #include <linux/tracepoint.h>
  
- /* Connect to <cid, port> and return the file descriptor. */
--int vsock_stream_connect(unsigned int cid, unsigned int port)
-+static int vsock_connect(unsigned int cid, unsigned int port, int type)
- {
- 	union {
- 		struct sockaddr sa;
-@@ -101,7 +101,7 @@ int vsock_stream_connect(unsigned int cid, unsigned int port)
+ TRACE_DEFINE_ENUM(VIRTIO_VSOCK_TYPE_STREAM);
++TRACE_DEFINE_ENUM(VIRTIO_VSOCK_TYPE_SEQPACKET);
  
- 	control_expectln("LISTENING");
+ #define show_type(val) \
+-	__print_symbolic(val, { VIRTIO_VSOCK_TYPE_STREAM, "STREAM" })
++	__print_symbolic(val, \
++				{ VIRTIO_VSOCK_TYPE_STREAM, "STREAM" }, \
++				{ VIRTIO_VSOCK_TYPE_SEQPACKET, "SEQPACKET" })
  
--	fd = socket(AF_VSOCK, SOCK_STREAM, 0);
-+	fd = socket(AF_VSOCK, type, 0);
- 
- 	timeout_begin(TIMEOUT);
- 	do {
-@@ -120,11 +120,21 @@ int vsock_stream_connect(unsigned int cid, unsigned int port)
- 	return fd;
- }
- 
-+int vsock_stream_connect(unsigned int cid, unsigned int port)
-+{
-+	return vsock_connect(cid, port, SOCK_STREAM);
-+}
-+
-+int vsock_seqpacket_connect(unsigned int cid, unsigned int port)
-+{
-+	return vsock_connect(cid, port, SOCK_SEQPACKET);
-+}
-+
- /* Listen on <cid, port> and return the first incoming connection.  The remote
-  * address is stored to clientaddrp.  clientaddrp may be NULL.
-  */
--int vsock_stream_accept(unsigned int cid, unsigned int port,
--			struct sockaddr_vm *clientaddrp)
-+static int vsock_accept(unsigned int cid, unsigned int port,
-+			struct sockaddr_vm *clientaddrp, int type)
- {
- 	union {
- 		struct sockaddr sa;
-@@ -145,7 +155,7 @@ int vsock_stream_accept(unsigned int cid, unsigned int port,
- 	int client_fd;
- 	int old_errno;
- 
--	fd = socket(AF_VSOCK, SOCK_STREAM, 0);
-+	fd = socket(AF_VSOCK, type, 0);
- 
- 	if (bind(fd, &addr.sa, sizeof(addr.svm)) < 0) {
- 		perror("bind");
-@@ -189,6 +199,18 @@ int vsock_stream_accept(unsigned int cid, unsigned int port,
- 	return client_fd;
- }
- 
-+int vsock_stream_accept(unsigned int cid, unsigned int port,
-+			struct sockaddr_vm *clientaddrp)
-+{
-+	return vsock_accept(cid, port, clientaddrp, SOCK_STREAM);
-+}
-+
-+int vsock_seqpacket_accept(unsigned int cid, unsigned int port,
-+			   struct sockaddr_vm *clientaddrp)
-+{
-+	return vsock_accept(cid, port, clientaddrp, SOCK_SEQPACKET);
-+}
-+
- /* Transmit one byte and check the return value.
-  *
-  * expected_ret:
-diff --git a/tools/testing/vsock/util.h b/tools/testing/vsock/util.h
-index e53dd09d26d9..a3375ad2fb7f 100644
---- a/tools/testing/vsock/util.h
-+++ b/tools/testing/vsock/util.h
-@@ -36,8 +36,11 @@ struct test_case {
- void init_signals(void);
- unsigned int parse_cid(const char *str);
- int vsock_stream_connect(unsigned int cid, unsigned int port);
-+int vsock_seqpacket_connect(unsigned int cid, unsigned int port);
- int vsock_stream_accept(unsigned int cid, unsigned int port,
- 			struct sockaddr_vm *clientaddrp);
-+int vsock_seqpacket_accept(unsigned int cid, unsigned int port,
-+			   struct sockaddr_vm *clientaddrp);
- void vsock_wait_remote_close(int fd);
- void send_byte(int fd, int expected_ret, int flags);
- void recv_byte(int fd, int expected_ret, int flags);
-diff --git a/tools/testing/vsock/vsock_test.c b/tools/testing/vsock/vsock_test.c
-index 5a4fb80fa832..ffec985fd36f 100644
---- a/tools/testing/vsock/vsock_test.c
-+++ b/tools/testing/vsock/vsock_test.c
-@@ -14,6 +14,8 @@
- #include <errno.h>
- #include <unistd.h>
- #include <linux/kernel.h>
-+#include <sys/types.h>
-+#include <sys/socket.h>
- 
- #include "timeout.h"
- #include "control.h"
-@@ -279,6 +281,62 @@ static void test_stream_msg_peek_server(const struct test_opts *opts)
- 	close(fd);
- }
- 
-+#define MESSAGE_TRUNC_SZ 32
-+static void test_seqpacket_msg_trunc_client(const struct test_opts *opts)
-+{
-+	int fd;
-+	char buf[MESSAGE_TRUNC_SZ];
-+
-+	fd = vsock_seqpacket_connect(opts->peer_cid, 1234);
-+	if (fd < 0) {
-+		perror("connect");
-+		exit(EXIT_FAILURE);
-+	}
-+
-+	if (send(fd, buf, sizeof(buf), 0) != sizeof(buf)) {
-+		perror("send failed");
-+		exit(EXIT_FAILURE);
-+	}
-+
-+	control_writeln("SENDDONE");
-+	close(fd);
-+}
-+
-+static void test_seqpacket_msg_trunc_server(const struct test_opts *opts)
-+{
-+	int fd;
-+	char buf[MESSAGE_TRUNC_SZ / 2];
-+	struct msghdr msg = {0};
-+	struct iovec iov = {0};
-+
-+	fd = vsock_seqpacket_accept(VMADDR_CID_ANY, 1234, NULL);
-+	if (fd < 0) {
-+		perror("accept");
-+		exit(EXIT_FAILURE);
-+	}
-+
-+	control_expectln("SENDDONE");
-+	iov.iov_base = buf;
-+	iov.iov_len = sizeof(buf);
-+	msg.msg_iov = &iov;
-+	msg.msg_iovlen = 1;
-+
-+	ssize_t ret = recvmsg(fd, &msg, MSG_TRUNC);
-+
-+	if (ret != MESSAGE_TRUNC_SZ) {
-+		printf("%zi\n", ret);
-+		perror("MSG_TRUNC doesn't work");
-+		exit(EXIT_FAILURE);
-+	}
-+
-+	if (!(msg.msg_flags & MSG_TRUNC)) {
-+		fprintf(stderr, "MSG_TRUNC expected\n");
-+		exit(EXIT_FAILURE);
-+	}
-+
-+	close(fd);
-+}
-+
- static struct test_case test_cases[] = {
- 	{
- 		.name = "SOCK_STREAM connection reset",
-@@ -309,6 +367,11 @@ static struct test_case test_cases[] = {
- 		.run_client = test_stream_msg_peek_client,
- 		.run_server = test_stream_msg_peek_server,
- 	},
-+	{
-+		.name = "SOCK_SEQPACKET send data MSG_TRUNC",
-+		.run_client = test_seqpacket_msg_trunc_client,
-+		.run_server = test_seqpacket_msg_trunc_server,
-+	},
- 	{},
- };
- 
+ TRACE_DEFINE_ENUM(VIRTIO_VSOCK_OP_INVALID);
+ TRACE_DEFINE_ENUM(VIRTIO_VSOCK_OP_REQUEST);
 -- 
 2.25.1
 
