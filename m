@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3BCE3376DD5
-	for <lists+netdev@lfdr.de>; Sat,  8 May 2021 02:34:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 217A0376DD7
+	for <lists+netdev@lfdr.de>; Sat,  8 May 2021 02:34:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230478AbhEHAcS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 7 May 2021 20:32:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47696 "EHLO
+        id S230434AbhEHAcU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 7 May 2021 20:32:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47764 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230463AbhEHAbE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 7 May 2021 20:31:04 -0400
-Received: from mail-wm1-x336.google.com (mail-wm1-x336.google.com [IPv6:2a00:1450:4864:20::336])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 846DBC061350;
-        Fri,  7 May 2021 17:29:44 -0700 (PDT)
-Received: by mail-wm1-x336.google.com with SMTP id o127so6101977wmo.4;
-        Fri, 07 May 2021 17:29:44 -0700 (PDT)
+        with ESMTP id S230476AbhEHAbH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 7 May 2021 20:31:07 -0400
+Received: from mail-wr1-x433.google.com (mail-wr1-x433.google.com [IPv6:2a00:1450:4864:20::433])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DAFECC061354;
+        Fri,  7 May 2021 17:29:45 -0700 (PDT)
+Received: by mail-wr1-x433.google.com with SMTP id s8so10863032wrw.10;
+        Fri, 07 May 2021 17:29:45 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=eEGM53YIGmYlpHBRnf6Ug1VRbnl//rrgzPHo8YXGMUc=;
-        b=hK8NZIQgUk1gvvitXr0FjLQXG0FG4vNzGFSCcpzPB/5gEmkvzj2tO79UpF7SrMgTbK
-         QuFjt19IbEUbDl8ocHi8fcbz4TT6WjI0seebQS5dv0Ye+hdNj9bLX1trmNnT7sX/XX2p
-         7BBHs/AsdDHXJCt2oWDHKr5WT7xmmjV0dAMO39Px5RE9SD6GD5cxorpBwCTIEmVUs4qS
-         kcQ11eFSpR4rcHoDMX/DTqlJTxVXPUs/iIooXUlA3p1slLShrN1UVaw6UvpJaGKIBvvW
-         mLUoXtEuSbX7AkooySkAYuJ8SHwcOAtdKm+V+2/j3OnDdbA6Jahi+djovvhc7YoU1dkc
-         uqqw==
+        bh=D5uILt9Mcik69GuSPXQVODEGZtxJwB3jkU/VveoNRJY=;
+        b=aPiMybhdazAWHfH8VCeUfkKwZUm8E5m/BizfTo3J55KXdWXy4WiW6pvdWTnM0MrAxN
+         CrIiTXZaWb+iuBurRdE1gXBWuWc42f+OMg8Tl9pR18vC3IH1eMh/0U81MOaXsZ2GncHW
+         9/xCu3Ph1Q+TyLQmTGcV8mrs9UwAHu3qT/8DDuA9bLBu+9qAlMtdvb96INgwR/EJuwDL
+         ROybuA5PYWkHIH+uFgc2sOM7xGJ6ESqJB4G54lWcNiX9gK4IUEpv5onzzw/6GSg1BFwr
+         NuGTGGTDDB9Zy3BMj8jytlYEbZn6ItCKqoYqiSUw8/gJP9MO2me+evYwovHQl+ZBAg+a
+         PgpQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=eEGM53YIGmYlpHBRnf6Ug1VRbnl//rrgzPHo8YXGMUc=;
-        b=l469G2UdQ1NUmW4OLiKB30c99UhtQaoO0Dmd2kACT2dsXwqPNAlGNdX0ik61ZDC9cm
-         B/YrJd6FFjF+EnOMfIqyjw6T+XdZCIbrDM8c8C3v2pwH15dcjN34IlJ7EE7j1YtFU0na
-         iyMWkOoJzy3eVD97WF8FX36o/JKZ2u8EyuU4edEjoK4TrewbCutwHncEH237InVDhhkP
-         4RfEvCoeTAy3DF6aXiJrrL7mMTOMvf975vStpv3ZFi7o4bsC15I/4L4bK4/R4M6yZ5JV
-         30dwssmdBOzaV7HKO7MAAZGlq08xOcpYxUp4oBGm3ByLUftlmqaT+8BgAj6pe0b8q6lI
-         +bBw==
-X-Gm-Message-State: AOAM532RYuFcfwzITS8w+fAHpRMRbcWbFe/Qd9eL9DW+dKguWwyzEeUQ
-        f7kJQs1t7faUmQhdJxU6/68=
-X-Google-Smtp-Source: ABdhPJw7AtPGTdQJauew1+h1iSolj/BiUS1OPVrNW0uJpAnf3pQciPUPWRcZDlYwN9s9Y91GmPX2ag==
-X-Received: by 2002:a05:600c:c7:: with SMTP id u7mr12616353wmm.156.1620433783149;
-        Fri, 07 May 2021 17:29:43 -0700 (PDT)
+        bh=D5uILt9Mcik69GuSPXQVODEGZtxJwB3jkU/VveoNRJY=;
+        b=PDeVXaA6Q0B9nhJW4TlQz2fjkxilju/vX/7U40ysM+TJvpBbM7NUXwT/kDWcD3ftGC
+         4zTrsORtuybwmnkF5nPCFiAC2Kv0CMUwTeJuYfGqAAfahopbvFCRXoA6vgoRj1/k5XKc
+         dvocVw3SmdKHVGU50dQA+XA8AyhYaZVCXzF4/nZIeMSOgmvsqcVf5iswqo1nh0/MOlE7
+         n7eIKqXVSTSzgYwazxkxNPza6bSuqmydEevh4C8ZEMNFfXXQx5BlK6CnvORzgqaixliA
+         WF9zbJkLMCPm6T4B7wrjdxwaaxdeFTKGi0NXAbpgpP/UUMm6Y5aMUs89Xo1KDBo2drlZ
+         /TJQ==
+X-Gm-Message-State: AOAM532SDaXU2Eq67mpz+n6hBAZCz8UiODwIbBnFqvkqKIO8zYC7oLh1
+        xwwzM4YdymyTFeP7hV4aKzY=
+X-Google-Smtp-Source: ABdhPJw/Pq+vvq3FZsqSdCfYPDj9ZmoQYsIpqvP0/xvnRbLpbJQx7oc9TOZRtKwz4t42P2Ac2sTsxQ==
+X-Received: by 2002:a5d:6342:: with SMTP id b2mr15854176wrw.203.1620433784443;
+        Fri, 07 May 2021 17:29:44 -0700 (PDT)
 Received: from Ansuel-xps.localdomain (93-35-189-2.ip56.fastwebnet.it. [93.35.189.2])
-        by smtp.googlemail.com with ESMTPSA id f4sm10967597wrz.33.2021.05.07.17.29.42
+        by smtp.googlemail.com with ESMTPSA id f4sm10967597wrz.33.2021.05.07.17.29.43
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 07 May 2021 17:29:42 -0700 (PDT)
+        Fri, 07 May 2021 17:29:44 -0700 (PDT)
 From:   Ansuel Smith <ansuelsmth@gmail.com>
 To:     Florian Fainelli <f.fainelli@gmail.com>
 Cc:     Ansuel Smith <ansuelsmth@gmail.com>, Andrew Lunn <andrew@lunn.ch>,
@@ -56,9 +56,9 @@ Cc:     Ansuel Smith <ansuelsmth@gmail.com>, Andrew Lunn <andrew@lunn.ch>,
         Jakub Kicinski <kuba@kernel.org>,
         Russell King <linux@armlinux.org.uk>, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Subject: [RFC PATCH net-next v4 22/28] net: dsa: qca8k: enlarge mdio delay and timeout
-Date:   Sat,  8 May 2021 02:29:12 +0200
-Message-Id: <20210508002920.19945-22-ansuelsmth@gmail.com>
+Subject: [RFC PATCH net-next v4 23/28] net: dsa: register of_mdiobus if a mdio node is declared
+Date:   Sat,  8 May 2021 02:29:13 +0200
+Message-Id: <20210508002920.19945-23-ansuelsmth@gmail.com>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20210508002920.19945-1-ansuelsmth@gmail.com>
 References: <20210508002920.19945-1-ansuelsmth@gmail.com>
@@ -68,43 +68,159 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The witch require some extra delay after setting page or the next
-read/write can use still use the old page. Add a delay after the
-set_page function to address this as it's done in QSDK legacy driver.
-Some timeouts were notice with VLAN and phy function, enlarge the
-mdio busy wait timeout to fix these problems.
+Some switch have phy port that use the internal switch mdio bus and can
+have different phy regs than the one declared in the ports node. Add
+support for this specific case by registering the mdiobus with the mdio
+node and permit the port to declare a phy-handle defined inside the
+switch node.
+
+This is an example from the qca8337 switch where the 5 phy port should
+use the internal mdiobus and would benefits from this.
+
+switch10: switch@10 {
+        compatible = "qca,qca8337";
+        #address-cells = <1>;
+        #size-cells = <0>;
+        reg = <0x10>;
+
+        ports {
+                #address-cells = <1>;
+                #size-cells = <0>;
+
+                port@0 {
+                        reg = <0>;
+                        label = "cpu";
+                        ethernet = <&gmac1>;
+                        phy-mode = "rgmii-id";
+
+                        fixed-link {
+                                speed = <1000>;
+                                full-duplex;
+                        };
+                };
+
+                port@1 {
+                        reg = <1>;
+                        label = "lan1";
+
+                        phy-handle = <&phy_port0>;
+                        phy-mode = "internal";
+                };
+
+                port@2 {
+                        reg = <2>;
+                        label = "lan2";
+
+                        phy-handle = <&phy_port1>;
+                        phy-mode = "internal";
+                };
+
+                port@3 {
+                        reg = <3>;
+                        label = "lan3";
+
+                        phy-handle = <&phy_port2>;
+                        phy-mode = "internal";
+                };
+
+                port@4 {
+                        reg = <4>;
+                        label = "lan4";
+
+                        phy-handle = <&phy_port3>;
+                        phy-mode = "internal";
+                };
+
+                port@5 {
+                        reg = <5>;
+                        label = "wan";
+
+                        phy-handle = <&phy_port4>;
+                        phy-mode = "internal";
+                };
+
+                port@6 {
+                        reg = <6>;
+                        label = "cpu";
+                        ethernet = <&gmac2>;
+                        phy-mode = "sgmii";
+
+                        fixed-link {
+                                        speed = <1000>;
+                                        full-duplex;
+                        };
+                };
+        };
+
+        mdio {
+                #address-cells = <1>;
+                #size-cells = <0>;
+
+                phy_port0: phy@0 {
+                        reg = <0>;
+                };
+
+                phy_port1: phy@1 {
+                        reg = <1>;
+                };
+
+                phy_port2: phy@2 {
+                        reg = <2>;
+                };
+
+                phy_port3: phy@3 {
+                        reg = <3>;
+                };
+
+                phy_port4: phy@4 {
+                        reg = <4>;
+                };
+        };
+};
 
 Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
 ---
- drivers/net/dsa/qca8k.c | 1 +
- drivers/net/dsa/qca8k.h | 2 +-
- 2 files changed, 2 insertions(+), 1 deletion(-)
+ net/dsa/dsa2.c | 13 ++++++++++++-
+ 1 file changed, 12 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/dsa/qca8k.c b/drivers/net/dsa/qca8k.c
-index e272ccaaa7f6..f96579c0bd46 100644
---- a/drivers/net/dsa/qca8k.c
-+++ b/drivers/net/dsa/qca8k.c
-@@ -143,6 +143,7 @@ qca8k_set_page(struct mii_bus *bus, u16 page)
+diff --git a/net/dsa/dsa2.c b/net/dsa/dsa2.c
+index 3c3e56a1f34d..79adabe3e2a7 100644
+--- a/net/dsa/dsa2.c
++++ b/net/dsa/dsa2.c
+@@ -14,6 +14,7 @@
+ #include <linux/rtnetlink.h>
+ #include <linux/of.h>
+ #include <linux/of_net.h>
++#include <linux/of_mdio.h>
+ #include <net/devlink.h>
+ 
+ #include "dsa_priv.h"
+@@ -721,6 +722,8 @@ static int dsa_switch_setup(struct dsa_switch *ds)
+ 	devlink_params_publish(ds->devlink);
+ 
+ 	if (!ds->slave_mii_bus && ds->ops->phy_read) {
++		struct device_node *mdio;
++
+ 		ds->slave_mii_bus = devm_mdiobus_alloc(ds->dev);
+ 		if (!ds->slave_mii_bus) {
+ 			err = -ENOMEM;
+@@ -729,7 +732,15 @@ static int dsa_switch_setup(struct dsa_switch *ds)
+ 
+ 		dsa_slave_mii_bus_init(ds);
+ 
+-		err = mdiobus_register(ds->slave_mii_bus);
++		mdio = of_get_child_by_name(ds->dev->of_node, "mdio");
++
++		if (mdio) {
++			err = of_mdiobus_register(ds->slave_mii_bus, mdio);
++			of_node_put(mdio);
++		} else {
++			err = mdiobus_register(ds->slave_mii_bus);
++		}
++
+ 		if (err < 0)
+ 			goto teardown;
  	}
- 
- 	qca8k_current_page = page;
-+	usleep_range(1000, 2000);
- 	return 0;
- }
- 
-diff --git a/drivers/net/dsa/qca8k.h b/drivers/net/dsa/qca8k.h
-index a878486d9bcd..d365f85ab34f 100644
---- a/drivers/net/dsa/qca8k.h
-+++ b/drivers/net/dsa/qca8k.h
-@@ -20,7 +20,7 @@
- #define PHY_ID_QCA8337					0x004dd036
- #define QCA8K_ID_QCA8337				0x13
- 
--#define QCA8K_BUSY_WAIT_TIMEOUT				20
-+#define QCA8K_BUSY_WAIT_TIMEOUT				2000
- 
- #define QCA8K_NUM_FDB_RECORDS				2048
- 
 -- 
 2.30.2
 
