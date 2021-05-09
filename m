@@ -2,34 +2,34 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 46EAE377731
-	for <lists+netdev@lfdr.de>; Sun,  9 May 2021 17:17:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BF8AF377733
+	for <lists+netdev@lfdr.de>; Sun,  9 May 2021 17:17:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229735AbhEIPSn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 9 May 2021 11:18:43 -0400
-Received: from out4-smtp.messagingengine.com ([66.111.4.28]:42047 "EHLO
+        id S229751AbhEIPSr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 9 May 2021 11:18:47 -0400
+Received: from out4-smtp.messagingengine.com ([66.111.4.28]:39547 "EHLO
         out4-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S229712AbhEIPSl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 9 May 2021 11:18:41 -0400
-Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
-        by mailout.nyi.internal (Postfix) with ESMTP id DA6995C00E7;
-        Sun,  9 May 2021 11:17:37 -0400 (EDT)
+        by vger.kernel.org with ESMTP id S229737AbhEIPSo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 9 May 2021 11:18:44 -0400
+Received: from compute1.internal (compute1.nyi.internal [10.202.2.41])
+        by mailout.nyi.internal (Postfix) with ESMTP id C7CEB5C00F9;
+        Sun,  9 May 2021 11:17:40 -0400 (EDT)
 Received: from mailfrontend1 ([10.202.2.162])
-  by compute4.internal (MEProxy); Sun, 09 May 2021 11:17:37 -0400
+  by compute1.internal (MEProxy); Sun, 09 May 2021 11:17:40 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
         messagingengine.com; h=cc:content-transfer-encoding:date:from
         :in-reply-to:message-id:mime-version:references:subject:to
         :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
-        fm2; bh=vJMUtGJcDyB+PdPl0g3TEX6/JZtkvnAzK7wFolAV4UA=; b=I6ZGN2MK
-        FP8vG+pSwf/XC9tjgEsGnrhoQRGKXCwNFyLHs4e8hKEt2ceKleaOXqfUlXir322r
-        L3WwzxdNPmxOzdxqCoX11b9JWIKzXxiXiFVae9RgAY1HQPr9o2Ql20YHxzNx8h2g
-        znoBXee7V6c0kDgNClmhnwCspqsqTN68GWGFUtd/11zNaG1WTl5COWQYiz3zOVnE
-        o3UuiADCbQGAMPOm3xCwgmWEaHypZQh4DdDa6WxOsVa84OsiimU5ChzerfzHsGdm
-        Czw/cHU+mN+9zTTyXtM/jb0PpNDJeVsIGZw/26APKFHZ78M4Lx1bsU8kQ9AuVAsF
-        +0O93tcBnbrhkw==
-X-ME-Sender: <xms:Ef2XYCrGrIDTuwBb68Q9D1Sm6r2vs0t1AX0NIu7PXgS7-FBRwBMaKQ>
-    <xme:Ef2XYAo4SGangVrBduUato5VgByV8ojxXmscX9lsfjIz8BeNnyoWJ_al4lqmollQg
-    7CZTr6bTmydf4k>
+        fm2; bh=WMhxOASiDj22LId35WsJz4anmBeYehIc99P8W9T+ZtE=; b=UtIjj1bl
+        wcsi89cgdXqRaHJUfZ72boEDtajV7tK16w8vmsuUxq85UJ7+gWwd9YD3KaHxI9vx
+        3TikSyX+8AMdwcbtl23t4aQMKi07JWeuEOXRw9E6YtHHgPZ5Giu//S1e65vserw4
+        XcaRa6Lk12tZrqwNvBIyVPvrVmRY4Yz2zdkShTZ4FZCGJLDT6ugI/yDWUHXXfOg0
+        cEuj/sg3e8WmDn5bR4GB8GDnV9YgjabpCtJKqXSIEuQR5ngxbUtjc6B8Cs5BQgIM
+        9jiKVvZLb7FWwgceDT29bV++MjchOJx/U6VturdpK8ZOcv9Im6M99lAHbxAipqUR
+        7zGzTvO5hIpfjQ==
+X-ME-Sender: <xms:FP2XYPXoDsRdwwUqw3W0Jpx1NxqO4cNvEdePFamqWycrY8s0D02dmQ>
+    <xme:FP2XYHlqd1_ZQ1aP0CrYAIdGqfye353BXrdBrI2RNYwKbBpLbiN0wO1oynraMpl9V
+    HjrcnrnQvrdhio>
 X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduledrvdegiedgkeelucetufdoteggodetrfdotf
     fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
     uceurghilhhouhhtmecufedttdenucenucfjughrpefhvffufffkofgjfhgggfestdekre
@@ -38,22 +38,22 @@ X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduledrvdegiedgkeelucetufdoteggod
     ehgfdtffethfelvdejgffghefgveejkefhnecukfhppeduleefrdegjedrudeihedrvdeh
     udenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpehiug
     hoshgthhesihguohhstghhrdhorhhg
-X-ME-Proxy: <xmx:Ef2XYHMwsbueGl-fjoE7YONDNq-e1UwwLf59iAhGmxqBFwsF7GgvCA>
-    <xmx:Ef2XYB5f4MQv9u5sCCeZqn2jRLjc1ixhX27jRHzEPG1Q_Q9U73OUkA>
-    <xmx:Ef2XYB446Vj4SFXVWKuoQw6E8vIGK87tI2kjclZM-NlvIfsVnVy5wg>
-    <xmx:Ef2XYOsJ4DspI32yini9PjJCLk_iC-nXilyWC_I3spdk4IBv6-7T5A>
+X-ME-Proxy: <xmx:FP2XYLZjbfzOFvdYjEgguPksut0E8BAqesFZ6oeny2rIeuKwoqP3pw>
+    <xmx:FP2XYKVk1Ma-4rbdt4h3z0DICsLVWyAk3IysEW-UwaI9Bo6e9yMOxA>
+    <xmx:FP2XYJncOpUVLpHWgkWuFgj3PUN7fe5CCNkchPTy-Qqu55Y7QT3Fug>
+    <xmx:FP2XYHZ1DABDSZVHKGpS3JcBnmP7xgax9QavsLPnxv2RtMwhDwqmbg>
 Received: from shredder.mellanox.com (unknown [193.47.165.251])
         by mail.messagingengine.com (Postfix) with ESMTPA;
-        Sun,  9 May 2021 11:17:34 -0400 (EDT)
+        Sun,  9 May 2021 11:17:38 -0400 (EDT)
 From:   Ido Schimmel <idosch@idosch.org>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, kuba@kernel.org, dsahern@gmail.com,
         petrm@nvidia.com, roopa@nvidia.com, nikolay@nvidia.com,
         ssuryaextr@gmail.com, mlxsw@nvidia.com,
         Ido Schimmel <idosch@nvidia.com>
-Subject: [RFC PATCH net-next v2 01/10] ipv4: Calculate multipath hash inside switch statement
-Date:   Sun,  9 May 2021 18:16:06 +0300
-Message-Id: <20210509151615.200608-2-idosch@idosch.org>
+Subject: [RFC PATCH net-next v2 02/10] ipv4: Add a sysctl to control multipath hash fields
+Date:   Sun,  9 May 2021 18:16:07 +0300
+Message-Id: <20210509151615.200608-3-idosch@idosch.org>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20210509151615.200608-1-idosch@idosch.org>
 References: <20210509151615.200608-1-idosch@idosch.org>
@@ -65,60 +65,190 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Ido Schimmel <idosch@nvidia.com>
 
-A subsequent patch will add another multipath hash policy where the
-multipath hash is calculated directly by the policy specific code and
-not outside of the switch statement.
+A subsequent patch will add a new multipath hash policy where the packet
+fields used for multipath hash calculation are determined by user space.
+This patch adds a sysctl that allows user space to set these fields.
 
-Prepare for this change by moving the multipath hash calculation inside
-the switch statement.
+The packet fields are represented using a bitmask and are common between
+IPv4 and IPv6 to allow user space to use the same numbering across both
+protocols. For example, to hash based on standard 5-tuple:
 
-No functional changes intended.
+ # sysctl -w net.ipv4.fib_multipath_hash_fields=0x0037
+ net.ipv4.fib_multipath_hash_fields = 0x0037
+
+The kernel rejects unknown fields, for example:
+
+ # sysctl -w net.ipv4.fib_multipath_hash_fields=0x1000
+ sysctl: setting key "net.ipv4.fib_multipath_hash_fields": Invalid argument
+
+More fields can be added in the future, if needed.
 
 Signed-off-by: Ido Schimmel <idosch@nvidia.com>
 ---
- net/ipv4/route.c | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+ Documentation/networking/ip-sysctl.rst | 27 ++++++++++++++++
+ include/net/ip_fib.h                   | 43 ++++++++++++++++++++++++++
+ include/net/netns/ipv4.h               |  1 +
+ net/ipv4/fib_frontend.c                |  6 ++++
+ net/ipv4/sysctl_net_ipv4.c             | 11 +++++++
+ 5 files changed, 88 insertions(+)
 
-diff --git a/net/ipv4/route.c b/net/ipv4/route.c
-index f6787c55f6ab..9d61e969446e 100644
---- a/net/ipv4/route.c
-+++ b/net/ipv4/route.c
-@@ -1912,7 +1912,7 @@ int fib_multipath_hash(const struct net *net, const struct flowi4 *fl4,
- {
- 	u32 multipath_hash = fl4 ? fl4->flowi4_multipath_hash : 0;
- 	struct flow_keys hash_keys;
--	u32 mhash;
-+	u32 mhash = 0;
+diff --git a/Documentation/networking/ip-sysctl.rst b/Documentation/networking/ip-sysctl.rst
+index c2ecc9894fd0..15982f830abc 100644
+--- a/Documentation/networking/ip-sysctl.rst
++++ b/Documentation/networking/ip-sysctl.rst
+@@ -100,6 +100,33 @@ fib_multipath_hash_policy - INTEGER
+ 	- 1 - Layer 4
+ 	- 2 - Layer 3 or inner Layer 3 if present
  
- 	switch (net->ipv4.sysctl_fib_multipath_hash_policy) {
- 	case 0:
-@@ -1924,6 +1924,7 @@ int fib_multipath_hash(const struct net *net, const struct flowi4 *fl4,
- 			hash_keys.addrs.v4addrs.src = fl4->saddr;
- 			hash_keys.addrs.v4addrs.dst = fl4->daddr;
- 		}
-+		mhash = flow_hash_from_keys(&hash_keys);
- 		break;
- 	case 1:
- 		/* skb is currently provided only when forwarding */
-@@ -1957,6 +1958,7 @@ int fib_multipath_hash(const struct net *net, const struct flowi4 *fl4,
- 			hash_keys.ports.dst = fl4->fl4_dport;
- 			hash_keys.basic.ip_proto = fl4->flowi4_proto;
- 		}
-+		mhash = flow_hash_from_keys(&hash_keys);
- 		break;
- 	case 2:
- 		memset(&hash_keys, 0, sizeof(hash_keys));
-@@ -1987,9 +1989,9 @@ int fib_multipath_hash(const struct net *net, const struct flowi4 *fl4,
- 			hash_keys.addrs.v4addrs.src = fl4->saddr;
- 			hash_keys.addrs.v4addrs.dst = fl4->daddr;
- 		}
-+		mhash = flow_hash_from_keys(&hash_keys);
- 		break;
- 	}
--	mhash = flow_hash_from_keys(&hash_keys);
++fib_multipath_hash_fields - UNSIGNED INTEGER
++	When fib_multipath_hash_policy is set to 3 (custom multipath hash), the
++	fields used for multipath hash calculation are determined by this
++	sysctl.
++
++	This value is a bitmask which enables various fields for multipath hash
++	calculation.
++
++	Possible fields are:
++
++	====== ============================
++	0x0001 Source IP address
++	0x0002 Destination IP address
++	0x0004 IP protocol
++	0x0008 Unused
++	0x0010 Source port
++	0x0020 Destination port
++	0x0040 Inner source IP address
++	0x0080 Inner destination IP address
++	0x0100 Inner IP protocol
++	0x0200 Inner Flow Label
++	0x0400 Inner source port
++	0x0800 Inner destination port
++	====== ============================
++
++	Default: 0x0007 (source IP, destination IP and IP protocol)
++
+ fib_sync_mem - UNSIGNED INTEGER
+ 	Amount of dirty memory from fib entries that can be backlogged before
+ 	synchronize_rcu is forced.
+diff --git a/include/net/ip_fib.h b/include/net/ip_fib.h
+index a914f33f3ed5..3ab2563b1a23 100644
+--- a/include/net/ip_fib.h
++++ b/include/net/ip_fib.h
+@@ -466,6 +466,49 @@ int fib_sync_up(struct net_device *dev, unsigned char nh_flags);
+ void fib_sync_mtu(struct net_device *dev, u32 orig_mtu);
+ void fib_nhc_update_mtu(struct fib_nh_common *nhc, u32 new, u32 orig);
  
- 	if (multipath_hash)
- 		mhash = jhash_2words(mhash, multipath_hash, 0);
++/* Fields used for sysctl_fib_multipath_hash_fields.
++ * Common to IPv4 and IPv6.
++ *
++ * Add new fields at the end. This is user API.
++ */
++#define FIB_MULTIPATH_HASH_FIELD_SRC_IP			BIT(0)
++#define FIB_MULTIPATH_HASH_FIELD_DST_IP			BIT(1)
++#define FIB_MULTIPATH_HASH_FIELD_IP_PROTO		BIT(2)
++#define FIB_MULTIPATH_HASH_FIELD_FLOWLABEL		BIT(3)
++#define FIB_MULTIPATH_HASH_FIELD_SRC_PORT		BIT(4)
++#define FIB_MULTIPATH_HASH_FIELD_DST_PORT		BIT(5)
++#define FIB_MULTIPATH_HASH_FIELD_INNER_SRC_IP		BIT(6)
++#define FIB_MULTIPATH_HASH_FIELD_INNER_DST_IP		BIT(7)
++#define FIB_MULTIPATH_HASH_FIELD_INNER_IP_PROTO		BIT(8)
++#define FIB_MULTIPATH_HASH_FIELD_INNER_FLOWLABEL	BIT(9)
++#define FIB_MULTIPATH_HASH_FIELD_INNER_SRC_PORT		BIT(10)
++#define FIB_MULTIPATH_HASH_FIELD_INNER_DST_PORT		BIT(11)
++
++#define FIB_MULTIPATH_HASH_FIELD_OUTER_MASK		\
++	(FIB_MULTIPATH_HASH_FIELD_SRC_IP |		\
++	 FIB_MULTIPATH_HASH_FIELD_DST_IP |		\
++	 FIB_MULTIPATH_HASH_FIELD_IP_PROTO |		\
++	 FIB_MULTIPATH_HASH_FIELD_FLOWLABEL |		\
++	 FIB_MULTIPATH_HASH_FIELD_SRC_PORT |		\
++	 FIB_MULTIPATH_HASH_FIELD_DST_PORT)
++
++#define FIB_MULTIPATH_HASH_FIELD_INNER_MASK		\
++	(FIB_MULTIPATH_HASH_FIELD_INNER_SRC_IP |	\
++	 FIB_MULTIPATH_HASH_FIELD_INNER_DST_IP |	\
++	 FIB_MULTIPATH_HASH_FIELD_INNER_IP_PROTO |	\
++	 FIB_MULTIPATH_HASH_FIELD_INNER_FLOWLABEL |	\
++	 FIB_MULTIPATH_HASH_FIELD_INNER_SRC_PORT |	\
++	 FIB_MULTIPATH_HASH_FIELD_INNER_DST_PORT)
++
++#define FIB_MULTIPATH_HASH_FIELD_ALL_MASK		\
++	(FIB_MULTIPATH_HASH_FIELD_OUTER_MASK |		\
++	 FIB_MULTIPATH_HASH_FIELD_INNER_MASK)
++
++#define FIB_MULTIPATH_HASH_FIELD_DEFAULT_MASK		\
++	(FIB_MULTIPATH_HASH_FIELD_SRC_IP |		\
++	 FIB_MULTIPATH_HASH_FIELD_DST_IP |		\
++	 FIB_MULTIPATH_HASH_FIELD_IP_PROTO)
++
+ #ifdef CONFIG_IP_ROUTE_MULTIPATH
+ int fib_multipath_hash(const struct net *net, const struct flowi4 *fl4,
+ 		       const struct sk_buff *skb, struct flow_keys *flkeys);
+diff --git a/include/net/netns/ipv4.h b/include/net/netns/ipv4.h
+index f6af8d96d3c6..746c80cd4257 100644
+--- a/include/net/netns/ipv4.h
++++ b/include/net/netns/ipv4.h
+@@ -210,6 +210,7 @@ struct netns_ipv4 {
+ #endif
+ #endif
+ #ifdef CONFIG_IP_ROUTE_MULTIPATH
++	u32 sysctl_fib_multipath_hash_fields;
+ 	u8 sysctl_fib_multipath_use_neigh;
+ 	u8 sysctl_fib_multipath_hash_policy;
+ #endif
+diff --git a/net/ipv4/fib_frontend.c b/net/ipv4/fib_frontend.c
+index 84bb707bd88d..129213b7d834 100644
+--- a/net/ipv4/fib_frontend.c
++++ b/net/ipv4/fib_frontend.c
+@@ -1516,6 +1516,12 @@ static int __net_init ip_fib_net_init(struct net *net)
+ 	if (err)
+ 		return err;
+ 
++#ifdef CONFIG_IP_ROUTE_MULTIPATH
++	/* Default to 3-tuple */
++	net->ipv4.sysctl_fib_multipath_hash_fields =
++		FIB_MULTIPATH_HASH_FIELD_DEFAULT_MASK;
++#endif
++
+ 	/* Avoid false sharing : Use at least a full cache line */
+ 	size = max_t(size_t, size, L1_CACHE_BYTES);
+ 
+diff --git a/net/ipv4/sysctl_net_ipv4.c b/net/ipv4/sysctl_net_ipv4.c
+index a62934b9f15a..da627c4d633a 100644
+--- a/net/ipv4/sysctl_net_ipv4.c
++++ b/net/ipv4/sysctl_net_ipv4.c
+@@ -19,6 +19,7 @@
+ #include <net/snmp.h>
+ #include <net/icmp.h>
+ #include <net/ip.h>
++#include <net/ip_fib.h>
+ #include <net/route.h>
+ #include <net/tcp.h>
+ #include <net/udp.h>
+@@ -48,6 +49,8 @@ static int ip_ping_group_range_min[] = { 0, 0 };
+ static int ip_ping_group_range_max[] = { GID_T_MAX, GID_T_MAX };
+ static u32 u32_max_div_HZ = UINT_MAX / HZ;
+ static int one_day_secs = 24 * 3600;
++static u32 fib_multipath_hash_fields_all_mask __maybe_unused =
++	FIB_MULTIPATH_HASH_FIELD_ALL_MASK;
+ 
+ /* obsolete */
+ static int sysctl_tcp_low_latency __read_mostly;
+@@ -1052,6 +1055,14 @@ static struct ctl_table ipv4_net_table[] = {
+ 		.extra1		= SYSCTL_ZERO,
+ 		.extra2		= &two,
+ 	},
++	{
++		.procname	= "fib_multipath_hash_fields",
++		.data		= &init_net.ipv4.sysctl_fib_multipath_hash_fields,
++		.maxlen		= sizeof(u32),
++		.mode		= 0644,
++		.proc_handler	= proc_douintvec_minmax,
++		.extra2		= &fib_multipath_hash_fields_all_mask,
++	},
+ #endif
+ 	{
+ 		.procname	= "ip_unprivileged_port_start",
 -- 
 2.31.1
 
