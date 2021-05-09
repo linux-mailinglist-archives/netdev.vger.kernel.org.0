@@ -2,64 +2,62 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E20253778F4
-	for <lists+netdev@lfdr.de>; Mon, 10 May 2021 00:11:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3BB2D3778F5
+	for <lists+netdev@lfdr.de>; Mon, 10 May 2021 00:11:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229986AbhEIWLI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 9 May 2021 18:11:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45192 "EHLO
+        id S229996AbhEIWMT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 9 May 2021 18:12:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45448 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229699AbhEIWLI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 9 May 2021 18:11:08 -0400
-Received: from mail-ot1-x334.google.com (mail-ot1-x334.google.com [IPv6:2607:f8b0:4864:20::334])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 55423C061573
-        for <netdev@vger.kernel.org>; Sun,  9 May 2021 15:10:04 -0700 (PDT)
-Received: by mail-ot1-x334.google.com with SMTP id t4-20020a05683014c4b02902ed26dd7a60so2615047otq.7
-        for <netdev@vger.kernel.org>; Sun, 09 May 2021 15:10:04 -0700 (PDT)
+        with ESMTP id S229699AbhEIWMS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 9 May 2021 18:12:18 -0400
+Received: from mail-oi1-x22b.google.com (mail-oi1-x22b.google.com [IPv6:2607:f8b0:4864:20::22b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 63796C061573
+        for <netdev@vger.kernel.org>; Sun,  9 May 2021 15:11:14 -0700 (PDT)
+Received: by mail-oi1-x22b.google.com with SMTP id c3so14061851oic.8
+        for <netdev@vger.kernel.org>; Sun, 09 May 2021 15:11:14 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=358iE4wossBES3Y3am8wyFYse5OYRINX1v0J5nqe1Xw=;
-        b=grsFI0SH7R10mC9Xi8oaJHUtY1MVVx3i8lhgXy7Rws3ZtQat/6izyXpkhK2KwWtjD2
-         xsT9+4y7VB4OVNkR1X4Evas7M5fSpqgT5UtrPjhCDedY5fLJA8CqmkC7MSkX2FNIqoFm
-         oBT653+Xipf80WcBuE00Bi58AJmjgAm9UOWgRh9yV4h8+jhPKsSvYLb8tCtgd510BxBl
-         mc+4VfCahrulYDP56lEBl8Vp2mAF2ch8FE54wqVpYM66PEDRsupR1bAG1cH5Tw/NUcsg
-         jCpsESLQtd3MUSvkk/2pnigIBKdc8/KbaJQJzcwqgOnIrjju7uZnr5OnS1+NiAEXapmj
-         TRdA==
+        h=subject:to:references:from:message-id:date:user-agent:mime-version
+         :in-reply-to:content-language:content-transfer-encoding;
+        bh=myQVw89np4+hZbHk+MUQbcs29nedLhEONbPUxMmU6h0=;
+        b=mhWf5PI6B+wGCtmdKX6k3ri5YdAgv4DEn47B89Z3lsXNaTjKQ1XamuSQhT0FoQF+mG
+         31CgVJe89MZDs0E02eWYrtO9iBlYKnpeh/YVT+C19nR2I1UhFSjMo0LBvGcjeVbRDcj+
+         KKlOzB/km24BOohPUXWTGjbi/nem9tiv29gRND7z/vA0azmKtJ5cl91z6gt2GZfdp1Ko
+         C55X7ZXZUrfWGA+ZB5v2FWG1pnsJYVIYRbx7SvWdYMaNL6k4A83+JHVg8NryDvoQdSeX
+         MdxG2xf1kyIKroOuQbSj+KEspdC53/KluK33g+rxEvfx8dDoxMnR4Tl5LNGnnfOj2/7s
+         0WMw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+        h=x-gm-message-state:subject:to:references:from:message-id:date
          :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=358iE4wossBES3Y3am8wyFYse5OYRINX1v0J5nqe1Xw=;
-        b=tabfZFnm8fcLh2+t6xAPE76Rpbri+0WWhzNvpwpLYcGQo/DP8se7+/hAUxnCiiZEig
-         3jkPxtcKigGFh7zWAwP3EOxObfI3E3doKMFe1qD1IlEyVn+PJdOZt3oGw9GOaKt1y4JS
-         RGbQjS3ugK3oL17AZbWG3m7+vEHPE9sbCUDVLmfJbK++fqz1uYuMzdDVPaX1xrybmdNZ
-         8aIy1UE/Zzx/FWPolPBBNxwjQyADAzFxFuizOCNkOIv6YDhu8d24mGKaOp3jfi9ApfWP
-         +5qejpBaHdkM30FFQBV7wX7zP+Flq52WGP23FECRpPlGKkho1M0mGAIQmZW41CdeSnAX
-         siTQ==
-X-Gm-Message-State: AOAM5312b2gP/weuF609qwQX3CqqV7B3xTBY1IHYsj3djgZf06BAGlUe
-        ZQsmqoMhuctkAxa6ETNEzWwycEJX3C8=
-X-Google-Smtp-Source: ABdhPJxA+JEnmlcFNUtdOM1v28qI3VC3j55qrr3WYDc2oUIsT5xZqL/jJxUzHdKC/rZZ5Gn8OADrJA==
-X-Received: by 2002:a9d:449:: with SMTP id 67mr18123780otc.333.1620598203716;
-        Sun, 09 May 2021 15:10:03 -0700 (PDT)
+        bh=myQVw89np4+hZbHk+MUQbcs29nedLhEONbPUxMmU6h0=;
+        b=Rjx+95qfcZzf9ebxArIHGX39Xb9RVoDScr+pMz6QBMX3BZ9vWyWZvA70Z/LLaLHAYI
+         xTndf684OYhBCVp04CtWH+O/8z+4sOjHRimFcPaRD6uYACHxjSs1NgfZ1rBgjPIRxb5Y
+         Ae7RtpSMGsvmqoTP0KvTnM6nS2fLFov5HjfsrNNst/pk4QP6TGHILlk6pAnIEZD4vPLf
+         9v6bUNm98VzUeT8fXFuMt5Km5IHguwbsN9jyGTQXGYli6E1oYgnW41yZ931UggB8gS6y
+         nRsgNtpsFuwoy6/zYLjco7BqBIAVrPoyXz18UcLT5vR+63K36wihU/wDgMODMZ772Mnq
+         JzlQ==
+X-Gm-Message-State: AOAM531GPJJXdHua+rP9amiEIRy927DAouV+MQNQheZAi5zDdrqQnKQ2
+        7Ed95VSHP6l87Yi19j7/HNX/57EKIIs=
+X-Google-Smtp-Source: ABdhPJxljzoDMSOoJtkwI0bCsccsBUc7tfCGfFCmD3+WGQSJaTGT0Fp5d3bQKtn3DEQnHGPYLbRSFA==
+X-Received: by 2002:aca:4f4a:: with SMTP id d71mr7550893oib.128.1620598273790;
+        Sun, 09 May 2021 15:11:13 -0700 (PDT)
 Received: from Davids-MacBook-Pro.local ([2601:282:800:dc80:5d79:6512:fce6:88aa])
-        by smtp.googlemail.com with ESMTPSA id g9sm2305130oop.30.2021.05.09.15.10.03
+        by smtp.googlemail.com with ESMTPSA id w10sm2315345oou.35.2021.05.09.15.11.13
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 09 May 2021 15:10:03 -0700 (PDT)
-Subject: Re: [PATCH iproute2 1/2] tipc: bail out if algname is abnormally long
-To:     Andrea Claudi <aclaudi@redhat.com>, netdev@vger.kernel.org
-Cc:     stephen@networkplumber.org
-References: <cover.1619886329.git.aclaudi@redhat.com>
- <0615f30dc0e11d25d61b48a65dfcb9e9f1136188.1619886329.git.aclaudi@redhat.com>
+        Sun, 09 May 2021 15:11:13 -0700 (PDT)
+Subject: Re: [PATCH iproute2] mptcp: avoid uninitialised errno usage
+To:     Florian Westphal <fw@strlen.de>, netdev@vger.kernel.org
+References: <20210503103631.30694-1-fw@strlen.de>
 From:   David Ahern <dsahern@gmail.com>
-Message-ID: <64d07b61-738c-d429-96d5-1067d62ada32@gmail.com>
-Date:   Sun, 9 May 2021 16:10:01 -0600
+Message-ID: <b8d9cc70-7667-d2b3-50b6-0ef0ce041735@gmail.com>
+Date:   Sun, 9 May 2021 16:11:11 -0600
 User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
  Gecko/20100101 Thunderbird/78.10.1
 MIME-Version: 1.0
-In-Reply-To: <0615f30dc0e11d25d61b48a65dfcb9e9f1136188.1619886329.git.aclaudi@redhat.com>
+In-Reply-To: <20210503103631.30694-1-fw@strlen.de>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -67,21 +65,39 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 5/1/21 10:32 AM, Andrea Claudi wrote:
-> tipc segfaults when called with an abnormally long algname:
+On 5/3/21 4:36 AM, Florian Westphal wrote:
+> The function called *might* set errno based on errno value in NLMSG_ERROR
+> message, but in case no such message exists errno is left alone.
 > 
-> $ tipc node set key 0x1234 algname supercalifragilistichespiralidososupercalifragilistichespiralidoso
-> *** buffer overflow detected ***: terminated
+> This may cause ip to fail with
+>     "can't subscribe to mptcp events: Success"
 > 
-> Fix this returning an error if provided algname is longer than
-> TIPC_AEAD_ALG_NAME.
+> on kernels that support mptcp but lack event support (all kernels <= 5.11).
 > 
-> Fixes: 24bee3bf9752 ("tipc: add new commands to set TIPC AEAD key")
-> Signed-off-by: Andrea Claudi <aclaudi@redhat.com>
+> Set errno to a meaningful value.  This will then still exit with the
+> more specific 'permission denied' or some such when called by process
+> that lacks CAP_NET_ADMIN on 5.12 and later.
+> 
+> Fixes: ff619e4fd370 ("mptcp: add support for event monitoring")
+> Signed-off-by: Florian Westphal <fw@strlen.de>
 > ---
->  tipc/node.c | 9 +++++++--
->  1 file changed, 7 insertions(+), 2 deletions(-)
+>  ip/ipmptcp.c | 3 +++
+>  1 file changed, 3 insertions(+)
+> 
+> diff --git a/ip/ipmptcp.c b/ip/ipmptcp.c
+> index 5f490f0026d9..504b5b2f5329 100644
+> --- a/ip/ipmptcp.c
+> +++ b/ip/ipmptcp.c
+> @@ -491,6 +491,9 @@ out:
+>  
+>  static int mptcp_monitor(void)
+>  {
+> +	/* genl_add_mcast_grp may or may not set errno */
+> +	errno = EOPNOTSUPP;
+> +
+>  	if (genl_add_mcast_grp(&genl_rth, genl_family, MPTCP_PM_EV_GRP_NAME) < 0) {
+>  		perror("can't subscribe to mptcp events");
+>  		return 1;
 > 
 
-applied both, thanks.
-
+Seems like this should be set in genl_add_mcast_grp vs its caller.
