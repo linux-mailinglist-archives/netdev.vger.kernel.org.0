@@ -2,175 +2,192 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DA8B5377598
-	for <lists+netdev@lfdr.de>; Sun,  9 May 2021 07:12:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8F4743775A0
+	for <lists+netdev@lfdr.de>; Sun,  9 May 2021 07:37:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229617AbhEIFNt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 9 May 2021 01:13:49 -0400
-Received: from smtp-fw-9102.amazon.com ([207.171.184.29]:32241 "EHLO
-        smtp-fw-9102.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229453AbhEIFNs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 9 May 2021 01:13:48 -0400
+        id S229641AbhEIFi5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 9 May 2021 01:38:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57552 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229453AbhEIFi4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 9 May 2021 01:38:56 -0400
+Received: from mail-pf1-x435.google.com (mail-pf1-x435.google.com [IPv6:2607:f8b0:4864:20::435])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C8F18C061573;
+        Sat,  8 May 2021 22:37:53 -0700 (PDT)
+Received: by mail-pf1-x435.google.com with SMTP id i13so11524501pfu.2;
+        Sat, 08 May 2021 22:37:53 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
-  t=1620537165; x=1652073165;
-  h=references:from:to:cc:subject:in-reply-to:date:
-   message-id:mime-version;
-  bh=XVtQRWhA4CuXLzObdTcbpeSXr8ZueHXWK6PH9f+p+0w=;
-  b=v1WPo1YHYOKGrHFhZjvvAWMzbEDpvW1UOzGpiw4sJHHElau0nbELpCbG
-   o4mg3/gFXyC8+nYa8Dxhjc7IrLPzLqW5QxtSdX3JBWds7y2cub0iSgwqs
-   hR3C/Vl0uT2tb68ja6H9+d4CC4GVlK0/WTt27aPFHf4zvO+D16locrgkV
-   M=;
-X-IronPort-AV: E=Sophos;i="5.82,284,1613433600"; 
-   d="scan'208";a="134015522"
-Received: from pdx4-co-svc-p1-lb2-vlan2.amazon.com (HELO email-inbound-relay-2b-c300ac87.us-west-2.amazon.com) ([10.25.36.210])
-  by smtp-border-fw-9102.sea19.amazon.com with ESMTP; 09 May 2021 05:12:39 +0000
-Received: from EX13D28EUC001.ant.amazon.com (pdx1-ws-svc-p6-lb9-vlan2.pdx.amazon.com [10.236.137.194])
-        by email-inbound-relay-2b-c300ac87.us-west-2.amazon.com (Postfix) with ESMTPS id 51476A17D3;
-        Sun,  9 May 2021 05:12:22 +0000 (UTC)
-Received: from u570694869fb251.ant.amazon.com.amazon.com (10.43.160.119) by
- EX13D28EUC001.ant.amazon.com (10.43.164.4) with Microsoft SMTP Server (TLS)
- id 15.0.1497.2; Sun, 9 May 2021 05:11:57 +0000
-References: <20210409223801.104657-1-mcroce@linux.microsoft.com>
- <e873c16e-8f49-6e70-1f56-21a69e2e37ce@huawei.com>
- <YIsAIzecktXXBlxn@apalos.home>
- <9bf7c5b3-c3cf-e669-051f-247aa8df5c5a@huawei.com>
- <YIwvI5/ygBvZG5sy@apalos.home>
- <33b02220-cc50-f6b2-c436-f4ec041d6bc4@huawei.com>
- <YJPn5t2mdZKC//dp@apalos.home>
- <75a332fa-74e4-7b7b-553e-3a1a6cb85dff@huawei.com>
- <YJTm4uhvqCy2lJH8@apalos.home>
- <bdd97ac5-f932-beec-109e-ace9cd62f661@huawei.com>
- <20210507121953.59e22aa8@carbon>
-User-agent: mu4e 1.4.15; emacs 27.1
-From:   Shay Agroskin <shayagr@amazon.com>
-To:     Jesper Dangaard Brouer <brouer@redhat.com>
-CC:     Yunsheng Lin <linyunsheng@huawei.com>,
-        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
-        Matteo Croce <mcroce@linux.microsoft.com>,
-        <netdev@vger.kernel.org>, <linux-mm@kvack.org>,
-        Ayush Sawal <ayush.sawal@chelsio.com>,
-        Vinay Kumar Yadav <vinay.yadav@chelsio.com>,
-        Rohit Maheshwari <rohitm@chelsio.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        Marcin Wojtas <mw@semihalf.com>,
-        "Russell King" <linux@armlinux.org.uk>,
-        Mirko Lindner <mlindner@marvell.com>,
-        Stephen Hemminger <stephen@networkplumber.org>,
-        Tariq Toukan <tariqt@nvidia.com>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        "Alexei Starovoitov" <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        "John Fastabend" <john.fastabend@gmail.com>,
-        Boris Pismenny <borisp@nvidia.com>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
-        Vlastimil Babka <vbabka@suse.cz>, Yu Zhao <yuzhao@google.com>,
-        Will Deacon <will@kernel.org>,
-        Michel Lespinasse <walken@google.com>,
-        Fenghua Yu <fenghua.yu@intel.com>,
-        Roman Gushchin <guro@fb.com>, Hugh Dickins <hughd@google.com>,
-        Peter Xu <peterx@redhat.com>, Jason Gunthorpe <jgg@ziepe.ca>,
-        Guoqing Jiang <guoqing.jiang@cloud.ionos.com>,
-        "Jonathan Lemon" <jonathan.lemon@gmail.com>,
-        Alexander Lobakin <alobakin@pm.me>,
-        "Cong Wang" <cong.wang@bytedance.com>, wenxu <wenxu@ucloud.cn>,
-        Kevin Hao <haokexin@gmail.com>,
-        Aleksandr Nogikh <nogikh@google.com>,
-        Jakub Sitnicki <jakub@cloudflare.com>,
-        Marco Elver <elver@google.com>,
-        Willem de Bruijn <willemb@google.com>,
-        Miaohe Lin <linmiaohe@huawei.com>,
-        Guillaume Nault <gnault@redhat.com>,
-        <linux-kernel@vger.kernel.org>, <linux-rdma@vger.kernel.org>,
-        <bpf@vger.kernel.org>, Matthew Wilcox <willy@infradead.org>,
-        Eric Dumazet <edumazet@google.com>,
-        David Ahern <dsahern@gmail.com>,
-        Lorenzo Bianconi <lorenzo@kernel.org>,
-        Saeed Mahameed <saeedm@nvidia.com>,
-        Andrew Lunn <andrew@lunn.ch>, Paolo Abeni <pabeni@redhat.com>
-Subject: Re: [PATCH net-next v3 0/5] page_pool: recycle buffers
-In-Reply-To: <20210507121953.59e22aa8@carbon>
-Date:   Sun, 9 May 2021 08:11:35 +0300
-Message-ID: <pj41zl4kfclce0.fsf@u570694869fb251.ant.amazon.com>
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=b+CaOKHF2wRvgJqlD3ywdIdIByKyjWji44jkH4zC5XE=;
+        b=UPUUPCpAFgxvFi8kOr9rTxVfLCS2lmGp+gF17KpKnQzKR0JWYJDALIuqMKMFZeZPS+
+         zqzhcmJwD+K8bkOILZSP5k48OJ+UXpRXCCphisSy2FG0QtIZpj1gAp4qP8KeyPBG+Nib
+         nmuXlSAv62euCy/Xvg9UGpTVkGzVXY3cYAB4ba1o3v73TfVfvqrjKJQQRfr+rffuYd7T
+         +fy4hcxCDTx+SUKJPqBteps8LUdXxbTPbFd/o8AgRCMXh4rlePvHLqSZdEGFp2t+vFnM
+         gzCU+kFWp60iKPGc2bXgzebeOuurK2V5wCtuDR0xArPpFHqbJOPkaEvP/nDkPoewHuey
+         M+uw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=b+CaOKHF2wRvgJqlD3ywdIdIByKyjWji44jkH4zC5XE=;
+        b=fZcZD6HlAQrQqu7Q1zPdRVB56FYEJBlKVTEnbLb2oLR0Qlu3Xf5kR1piqDQOrUZQHi
+         GQWoVD6rp4gQmnOhluCGe7mj36NxRhbKToO7MxS5Gnq7e+SalN/WnVopIUn4MFoifGDm
+         /kZwfXEnef/MoXYrr0zXmUhAEwYsrC9NwM1TYmMxR47/GkmaBCiZ2LzdT6H3qBfKiNiE
+         oXSys5pkibgjhgCrQjizsymiv9/0PCT10P1Gq/aky+yJgLioqleCLApykUkXjrUCmSro
+         SB8AjA4hnShgS7T6qymnuTjYG/EijeVWiVuCc+LE42A1ELGDcI0CYSAxhn+bmAdNkSY+
+         7xzg==
+X-Gm-Message-State: AOAM531GFZZGlib1GHT5eKKd2ZUTyssEhiVzTymo9xocrYGAfQ+Sk7d3
+        WFFNNo2X55fTg4Eik+Aqh8gQ0Uvo59ZF8qLN6P8=
+X-Google-Smtp-Source: ABdhPJxTV4Ap2Y95o+74XVJu4vKuHmNfphPRrJx/LeMosQlF6fkWzBsT+BEK+nEznSMp7rDYeSM+TipLT2F52FmNnf8=
+X-Received: by 2002:a62:b609:0:b029:28e:af60:60f5 with SMTP id
+ j9-20020a62b6090000b029028eaf6060f5mr18558879pff.43.1620538673181; Sat, 08
+ May 2021 22:37:53 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; format=flowed
-X-Originating-IP: [10.43.160.119]
-X-ClientProxiedBy: EX13D13UWB002.ant.amazon.com (10.43.161.21) To
- EX13D28EUC001.ant.amazon.com (10.43.164.4)
+References: <20210402192823.bqwgipmky3xsucs5@ast-mbp> <CAM_iQpUfv7c19zFN1Y5-cSUiVwpk0bmtBMSxZoELgDOFCQ=qAw@mail.gmail.com>
+ <20210402234500.by3wigegeluy5w7j@ast-mbp> <CAM_iQpWf2aYbY=tKejb=nx7LWBLo1woTp-n4wOLhkUuDCz8u-Q@mail.gmail.com>
+ <20210412230151.763nqvaadrrg77kd@ast-mbp.dhcp.thefacebook.com>
+ <CAM_iQpWePmmpr0RKqCrQ=NPiGrq2Tx9OU9y3e4CTzFjvh5t47w@mail.gmail.com>
+ <CAADnVQLsmULxJYq9rHS4xyg=VAUeexJTh35vTWTVgjeqwX4D6g@mail.gmail.com>
+ <CAM_iQpVtxgZNeqh4_Pqftc3D163JnRvP3AZRuFrYNeyWLgVBVA@mail.gmail.com>
+ <CAADnVQLFehCeQRbwEQ9VM-=Y3V3es2Ze8gFPs6cZHwNH0Ct7vw@mail.gmail.com>
+ <CAM_iQpWDhoY_msU=AowHFq3N3OuQpvxd2ADP_Z+gxBfGduhrPA@mail.gmail.com>
+ <20210427020159.hhgyfkjhzjk3lxgs@ast-mbp.dhcp.thefacebook.com>
+ <CAM_iQpVE4XG7SPAVBmV2UtqUANg3X-1ngY7COYC03NrT6JkZ+g@mail.gmail.com> <CAADnVQK9BgguVorziWgpMktLHuPCgEaKa4fz-KCfhcZtT46teQ@mail.gmail.com>
+In-Reply-To: <CAADnVQK9BgguVorziWgpMktLHuPCgEaKa4fz-KCfhcZtT46teQ@mail.gmail.com>
+From:   Cong Wang <xiyou.wangcong@gmail.com>
+Date:   Sat, 8 May 2021 22:37:42 -0700
+Message-ID: <CAM_iQpWBrxuT=Y3CbhxYpE5a+QSk-O=Vj4euegggXAAKTHRBqw@mail.gmail.com>
+Subject: Re: [RFC Patch bpf-next] bpf: introduce bpf timer
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>,
+        Xiongchun Duan <duanxiongchun@bytedance.com>,
+        Dongdong Wang <wangdongdong.6@bytedance.com>,
+        Muchun Song <songmuchun@bytedance.com>,
+        Cong Wang <cong.wang@bytedance.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Pedro Tammela <pctammela@mojatatu.com>,
+        Jamal Hadi Salim <jhs@mojatatu.com>,
+        Joe Stringer <joe@cilium.io>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-Jesper Dangaard Brouer <brouer@redhat.com> writes:
-
-> On Fri, 7 May 2021 16:28:30 +0800
-> Yunsheng Lin <linyunsheng@huawei.com> wrote:
+On Tue, Apr 27, 2021 at 11:34 AM Alexei Starovoitov
+<alexei.starovoitov@gmail.com> wrote:
 >
->> On 2021/5/7 15:06, Ilias Apalodimas wrote:
->> > On Fri, May 07, 2021 at 11:23:28AM +0800, Yunsheng Lin wrote:  
->> >> On 2021/5/6 20:58, Ilias Apalodimas wrote:  
->> >>>>>>  
->> >>>>>
-> ...
->> > 
->> > 
->> > I think both choices are sane.  What I am trying to explain 
->> > here, is
->> > regardless of what we choose now, we can change it in the 
->> > future without
->> > affecting the API consumers at all.  What will change 
->> > internally is the way we
->> > lookup the page pool pointer we are trying to recycle.  
->> 
->> It seems the below API need changing?
->> +static inline void skb_mark_for_recycle(struct sk_buff *skb, 
->> struct page *page,
->> +					struct xdp_mem_info *mem)
+> On Tue, Apr 27, 2021 at 9:36 AM Cong Wang <xiyou.wangcong@gmail.com> wrote:
+> >
+> > If we enforce this ownership, in case of conntrack the owner would be
+> > the program which sees the connection first, which is pretty much
+> > unpredictable. For example, if the ingress program sees a connection
+> > first, it installs a timer for this connection, but the traffic is
+> > bidirectional,
+> > hence egress program needs this connection and its timer too, we
+> > should not remove this timer when the ingress program is freed.
 >
-> I don't think we need to change this API, to support future 
-> memory
-> models.  Notice that xdp_mem_info have a 'type' member.
+> Sure. That's trivially achieved with pinning.
 
-Hi,
-Providing that we will (possibly as a future optimization) store 
-the pointer to the page pool in struct page instead of strcut 
-xdp_mem_info, passing
-xdp_mem_info * instead of struct page_pool * would mean that for 
-every packet we'll need to call
-             xa = rhashtable_lookup(mem_id_ht, &mem->id, 
-             mem_id_rht_params);
-             xa->page_pool;
+If users forget to do so, their ebpf program would crash the kernel,
+right? But ebpf programs should never crash the kernel, right?
 
-which might pressure the Dcache to fetch a pointer that might be 
-present already in cache as part of driver's data-structures.
+> One can have an ingress prog that tailcalls into another prog
+> that arms the timer with one of its subprogs.
+> Egress prog can tailcall into the same prog as well.
+> The ingress and egress progs can be replaced one by one
+> or removed both together and middle prog can stay alive
+> if it's pinned in bpffs or held alive by FD.
 
-I tend to agree with Yunsheng that it makes more sense to adjust 
-the API for the clear use-case now rather than using xdp_mem_info 
-indirection. It seems to me like
-the page signature provides the same information anyway and allows 
-to support different memory types.
+This looks necessarily complex. Look at the overhead of using
+a timer properly here:
 
-Shay
+1. pin timer callback program
+2. a program to install timer
+3. a program array contains the above program
+4. a tail call into the above program array
+
+Why not design a simpler solution?
 
 >
-> Naming in Computer Science is a hard problem ;-). Something that 
-> seems
-> to confuse a lot of people is the naming of the struct 
-> "xdp_mem_info".  
-> Maybe we should have named it "mem_info" instead or 
-> "net_mem_info", as
-> it doesn't indicate that the device is running XDP.
+> > From another point of view: maps and programs are both first-class
+> > resources in eBPF, a timer is stored in a map and associated with a
+> > program, so it is naturally a first-class resource too.
 >
-> I see XDP as the RX-layer before the network stack, that helps 
-> drivers
-> to support different memory models, also for handling normal 
-> packets
-> that doesn't get process by XDP, and the drivers doesn't even 
-> need to
-> support XDP to use the "xdp_mem_info" type.
+> Not really. The timer abstraction is about data. It invokes the callback.
+> That callback is a part of the program. The lifetime of the timer object
+> and lifetime of the callback can be different.
+> Obviously the timer logic need to make sure that callback text is alive
+> when the timer is armed.
 
+Only if the callback could reference struct bpf_prog... And even if it
+could, how about users forgetting to do so? ebpf verifier has to reject
+such cases.
+
+> Combining timer and callback concepts creates a messy abstraction.
+> In the normal kernel code one can have a timer in any kernel data
+> structure and callback in the kernel text or in the kernel module.
+> The code needs to make sure that the module won't go away while
+> the timer is armed. Same thing with bpf progs. The progs are safe
+> kernel modules. The timers are independent objects.
+
+Kernel modules can take reference count of its own module very
+easily, plus there is no verifier for kernel modules. I don't understand
+why you want to make ebpf programs as close to kernel modules as
+possible in this case.
+
+>
+> > >
+> > > > >
+> > > > > Also if your colleagues have something to share they should be
+> > > > > posting to the mailing list. Right now you're acting as a broken phone
+> > > > > passing info back and forth and the knowledge gets lost.
+> > > > > Please ask your colleagues to participate online.
+> > > >
+> > > > They are already in CC from the very beginning. And our use case is
+> > > > public, it is Cilium conntrack:
+> > > > https://github.com/cilium/cilium/blob/master/bpf/lib/conntrack.h
+> > > >
+> > > > The entries of the code are:
+> > > > https://github.com/cilium/cilium/blob/master/bpf/bpf_lxc.c
+> > > >
+> > > > The maps for conntrack are:
+> > > > https://github.com/cilium/cilium/blob/master/bpf/lib/conntrack_map.h
+> > >
+> > > If that's the only goal then kernel timers are not needed.
+> > > cilium conntrack works well as-is.
+> >
+> > We don't go back to why user-space cleanup is inefficient again,
+> > do we? ;)
+>
+> I remain unconvinced that cilium conntrack _needs_ timer apis.
+> It works fine in production and I don't hear any complaints
+> from cilium users. So 'user space cleanup inefficiencies' is
+> very subjective and cannot be the reason to add timer apis.
+
+I am pretty sure I showed the original report to you when I sent
+timeout hashmap patch, in case you forgot here it is again:
+https://github.com/cilium/cilium/issues/5048
+
+and let me quote the original report here:
+
+"The current implementation (as of v1.2) for managing the contents of
+the datapath connection tracking map leaves something to be desired:
+Once per minute, the userspace cilium-agent makes a series of calls to
+the bpf() syscall to fetch all of the entries in the map to determine
+whether they should be deleted. For each entry in the map, 2-3 calls
+must be made: One to fetch the next key, one to fetch the value, and
+perhaps one to delete the entry. The maximum size of the map is 1
+million entries, and if the current count approaches this size then
+the garbage collection goroutine may spend a significant number of CPU
+cycles iterating and deleting elements from the conntrack map."
+
+(Adding Joe in Cc too.)
+
+Thanks.
