@@ -2,65 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 60CD1377910
-	for <lists+netdev@lfdr.de>; Mon, 10 May 2021 00:45:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3DEB3377917
+	for <lists+netdev@lfdr.de>; Mon, 10 May 2021 00:53:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229973AbhEIWp2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 9 May 2021 18:45:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52604 "EHLO
+        id S229968AbhEIWyG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 9 May 2021 18:54:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54474 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229815AbhEIWp0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 9 May 2021 18:45:26 -0400
-Received: from mail-ot1-x32e.google.com (mail-ot1-x32e.google.com [IPv6:2607:f8b0:4864:20::32e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F1F82C061573
-        for <netdev@vger.kernel.org>; Sun,  9 May 2021 15:44:21 -0700 (PDT)
-Received: by mail-ot1-x32e.google.com with SMTP id d3-20020a9d29030000b029027e8019067fso12772999otb.13
-        for <netdev@vger.kernel.org>; Sun, 09 May 2021 15:44:21 -0700 (PDT)
+        with ESMTP id S229840AbhEIWyG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 9 May 2021 18:54:06 -0400
+Received: from mail-oi1-x235.google.com (mail-oi1-x235.google.com [IPv6:2607:f8b0:4864:20::235])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 83382C061573
+        for <netdev@vger.kernel.org>; Sun,  9 May 2021 15:53:02 -0700 (PDT)
+Received: by mail-oi1-x235.google.com with SMTP id w16so6004093oiv.3
+        for <netdev@vger.kernel.org>; Sun, 09 May 2021 15:53:02 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:to:cc:references:from:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=Z7LlaMk8ew5Lcgj4itXeK5xYc5MArZgk6UrX2/Ab+/4=;
-        b=ntEsGjtDzn++ng4EyzzsekWrjSjuVCxI7kNaC7B8ysPcaHjY8s3MnsEmywYyAS+W7h
-         fQ57l7etbAQMq3nlMDuq+3DIwUNcECuDgf6FWdxPy56Z/5t/9CXdHlbdF62UW8DqVWb+
-         nRLwoKza9Uo2kP7F5/4XWOs7LqwuJA0lfHBDTfVcKiBdIKpqWJaufHi57U6Mem5oEcK1
-         eeZXCjy9C6AkmEFsjiWBk7+YEbzilLTaAuDftrMRYqwX89NjIdGmLm12RGdeK52PiJYU
-         MxkkZr91FCs2H0nHryntKjFPFhn0jQY10VlFY26zb13Z9iNVX+aqQBk5tsr/8F4PQ1Ma
-         /PCQ==
+        bh=z9uj1hqmuXaYURGRLik6dJ+QWGOKsSu+5FD6+SvZfks=;
+        b=Ou41nqAG7CUPnQTviMWSliyaOn8F7aTO62h1fCNwz5Jvy76pg0Ji8I+yQGRyh1Ejwr
+         CwiQh/pL46KMB1OJkBakSkNFOByR8pVXtXkC/0+zD35B4i7kE1eKzRYriSKQqXJNoGWK
+         DyU12XYW61CqCrayCP0Vu4tdkIwWYzM2ceS4BJAWO9idVVUWlS2IB63sMsyBRfmf7zU0
+         Qgr/Uo2xldHOoVlgQ/5PjFA6XsHjA2M+ixStZstgZaBb+J5UYvyMlhjrdT53Ik4j5XZY
+         WnMjDLapE2wu4/w8aE9SCAsPcLnT9/rZb551DxyV8OHvepYtYaeJb0dACzRwcxPr1xXP
+         mE/g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:message-id:date
          :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=Z7LlaMk8ew5Lcgj4itXeK5xYc5MArZgk6UrX2/Ab+/4=;
-        b=Rw6B5RvuKJ/+LuVEVOo7hPoRcmzLu17DNLlWTRNKBKv4vDlqvpAKK072+OC2wqlqx8
-         1u30PauPzv/s5Cmo9WJuwR3zElEW2YNp8u3eLSmLTvlIKaQ5HgL/9O6Oyw6Kbv5zIr3c
-         JTzHcXbm+vZjLzFM1dYr2EcCjc7EnqkphJJtBoTeuVqQFxF2wzFhvoe9ZgziZVlitZnT
-         6BYevplh9xVMRPBcqSTbSERUYExWdGjm4bCpwH0oxEzXV/paa8/SRMXJTjUOKUYsiPkG
-         wODB/9EE8EilfGKg8BxgfzeJ2l6AcIc7R6xUaLK/rGaj55Jhm7YoF+WxSPLfM3nzgTc0
-         sxMA==
-X-Gm-Message-State: AOAM530D8JpOysCXJAyBR6PDgA1Pjxn/L4tfDezacGx1HWhLmVln2PlN
-        OutDviFPCIbKPgoFy3e3NO9TFW6+JN4=
-X-Google-Smtp-Source: ABdhPJxZ54I86LuY5JCJ5af1GDyTnHjZw7bY0RdO0K8PiKLgY8RuazC/EPkD7toS19s7uhLuT4H5/g==
-X-Received: by 2002:a05:6830:2141:: with SMTP id r1mr15005654otd.13.1620600259364;
-        Sun, 09 May 2021 15:44:19 -0700 (PDT)
+        bh=z9uj1hqmuXaYURGRLik6dJ+QWGOKsSu+5FD6+SvZfks=;
+        b=RfJ2ngI7tCUzMQBmOKFnbVUtnXF8sysuAvsMGmmelA7gXpfWYq8krdo/8Q6OVleMO+
+         banDceCd/ehFxkoQOfBYvlLgb+LXWCY52ErxSFpPyuU2jG7JsFntOTkLBAmMbgHByrbe
+         QyT15MlYOu0BmUgw0V1TiGFtAkyl3VS79QRTnqXPk2qgNhVpikVcGK4+Xwqtsd+d4VZF
+         hLrezyR2QaybtJHbST29J28LgJXiqftabxAInT0F0/ov3icElVpNUPXwfxGce71jYXhQ
+         4D4rTW7sLumhUf4JSR5qr/b6+oYSHAWk1SfAfkFts0PNO5slp5h9jV469NOlmV3MG160
+         n3kw==
+X-Gm-Message-State: AOAM53103YONnNGfjS5YxD4P7GSC9qN8GLcbqYlzcCBdgCMqx5Gb8Gi2
+        yoxcaIKmE+Mm9iMDDrH1Y39WMTpqLE0=
+X-Google-Smtp-Source: ABdhPJy61Nn/QpPRczreF34IOqeJ9u0UC3J1qfncnjGx1eF6imJ0CEnzGO66J8swcsRcrgsjMw+hKg==
+X-Received: by 2002:a05:6808:68e:: with SMTP id k14mr15736163oig.175.1620600781807;
+        Sun, 09 May 2021 15:53:01 -0700 (PDT)
 Received: from Davids-MacBook-Pro.local ([2601:282:800:dc80:5d79:6512:fce6:88aa])
-        by smtp.googlemail.com with ESMTPSA id q20sm2728026otl.40.2021.05.09.15.44.18
+        by smtp.googlemail.com with ESMTPSA id u201sm2308876oia.10.2021.05.09.15.53.01
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 09 May 2021 15:44:18 -0700 (PDT)
-Subject: Re: [PATCH iproute2] mptcp: avoid uninitialised errno usage
-To:     Florian Westphal <fw@strlen.de>
+        Sun, 09 May 2021 15:53:01 -0700 (PDT)
+Subject: Re: [PACTH iproute2-next] ip: dynamically size columns when printing
+ stats
+To:     Jakub Kicinski <kuba@kernel.org>, stephen@networkplumber.org
 Cc:     netdev@vger.kernel.org
-References: <20210503103631.30694-1-fw@strlen.de>
- <b8d9cc70-7667-d2b3-50b6-0ef0ce041735@gmail.com>
- <20210509222549.GE4038@breakpoint.cc>
+References: <20210501031059.529906-1-kuba@kernel.org>
 From:   David Ahern <dsahern@gmail.com>
-Message-ID: <3fc254ad-4766-a599-3500-ca16bd7d52c6@gmail.com>
-Date:   Sun, 9 May 2021 16:44:18 -0600
+Message-ID: <ae8aee40-4987-0554-e415-0922aca85cd6@gmail.com>
+Date:   Sun, 9 May 2021 16:53:00 -0600
 User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
  Gecko/20100101 Thunderbird/78.10.1
 MIME-Version: 1.0
-In-Reply-To: <20210509222549.GE4038@breakpoint.cc>
+In-Reply-To: <20210501031059.529906-1-kuba@kernel.org>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -68,115 +67,70 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 5/9/21 4:25 PM, Florian Westphal wrote:
-> David Ahern <dsahern@gmail.com> wrote:
->> On 5/3/21 4:36 AM, Florian Westphal wrote:
->>> The function called *might* set errno based on errno value in NLMSG_ERROR
->>> message, but in case no such message exists errno is left alone.
->>>
->>> This may cause ip to fail with
->>>     "can't subscribe to mptcp events: Success"
->>>
->>> on kernels that support mptcp but lack event support (all kernels <= 5.11).
->>>
->>> Set errno to a meaningful value.  This will then still exit with the
->>> more specific 'permission denied' or some such when called by process
->>> that lacks CAP_NET_ADMIN on 5.12 and later.
->>>
->>> Fixes: ff619e4fd370 ("mptcp: add support for event monitoring")
->>> Signed-off-by: Florian Westphal <fw@strlen.de>
->>> ---
->>>  ip/ipmptcp.c | 3 +++
->>>  1 file changed, 3 insertions(+)
->>>
->>> diff --git a/ip/ipmptcp.c b/ip/ipmptcp.c
->>> index 5f490f0026d9..504b5b2f5329 100644
->>> --- a/ip/ipmptcp.c
->>> +++ b/ip/ipmptcp.c
->>> @@ -491,6 +491,9 @@ out:
->>>  
->>>  static int mptcp_monitor(void)
->>>  {
->>> +	/* genl_add_mcast_grp may or may not set errno */
->>> +	errno = EOPNOTSUPP;
->>> +
->>>  	if (genl_add_mcast_grp(&genl_rth, genl_family, MPTCP_PM_EV_GRP_NAME) < 0) {
->>>  		perror("can't subscribe to mptcp events");
->>>  		return 1;
->>>
->>
->> Seems like this should be set in genl_add_mcast_grp vs its caller.
+On 4/30/21 9:10 PM, Jakub Kicinski wrote:
+> This change makes ip -s -s output size the columns
+> automatically. I often find myself using json
+> output because the normal output is unreadable.
+> Even on a laptop after 2 days of uptime byte
+> and packet counters almost overflow their columns,
+> let alone a busy server.
 > 
-> I think setting errno in libraries (libc excluded) is a bad design
-
-lib/libnetlink.c, rtnl_talk for example already does. I think it would
-be best for the location of the error to set the errno.
-
-Your suggested change here goes way beyond setting a default errno
-before calling genl_add_mcast_grp.
-
-> choice.  If you still disagree, then I can respin, but it would get a
-> bit more ugly, e.g. (untested!):
+> For max readability switch to right align.
 > 
-> diff --git a/lib/libgenl.c b/lib/libgenl.c
-> --- a/lib/libgenl.c
-> +++ b/lib/libgenl.c
-> @@ -100,20 +100,29 @@ int genl_add_mcast_grp(struct rtnl_handle *grth, __u16 fnum, const char *group)
->  
->  	addattr16(&req.n, sizeof(req), CTRL_ATTR_FAMILY_ID, fnum);
->  
-> +	/* clear errno to set a default value if needed */
-> +	errno = 0;
-> +
->  	if (rtnl_talk(grth, &req.n, &answer) < 0) {
->  		fprintf(stderr, "Error talking to the kernel\n");
-> +		if (errno == 0)
-> +			errno = EOPNOTSUPP;
-
-you don't list the above string in the output in the commit log. Staring
-at rtnl_talk and recvmsg and its failure paths, it seems unlikely that
-path is causing the problem.
-
->  		return -2;
->  	}
->  
->  	ghdr = NLMSG_DATA(answer);
->  	len = answer->nlmsg_len;
->  
-> -	if (answer->nlmsg_type != GENL_ID_CTRL)
-> +	if (answer->nlmsg_type != GENL_ID_CTRL) {
-> +		errno = EINVAL;
->  		goto err_free;
-> +	}
->  
->  	len -= NLMSG_LENGTH(GENL_HDRLEN);
-> -	if (len < 0)
-> +	if (len < 0) {
-> +		errno = EINVAL;
->  		goto err_free;
-> +	}
-
-EINVAL here is different than what you have in the commit message. Are
-one of these the location of the real problem? Seems likely since your
-commit log only showed "can't subscribe to mptcp events: Success" and
-not any other error strings.
-
-e.g., if CTRL_ATTR_MCAST_GROUPS is NULL, that would be the place to put
-the EOPNOTSUPP, but then it too has a string not listed in your commit log.
-
->  
->  	attrs = (struct rtattr *) ((char *) ghdr + GENL_HDRLEN);
->  	parse_rtattr(tb, CTRL_ATTR_MAX, attrs, len);
-> @@ -130,6 +139,10 @@ int genl_add_mcast_grp(struct rtnl_handle *grth, __u16 fnum, const char *group)
->  
->  err_free:
->  	free(answer);
-> +
-> +	if (ret < 0 && errno == 0)
-> +		errno = EOPNOTSUPP;
-> +
->  	return ret;
->  }
->  
+> Before:
 > 
+>     RX: bytes  packets  errors  dropped missed  mcast
+>     8227918473 8617683  0       0       0       0
+>     RX errors: length   crc     frame   fifo    overrun
+>                0        0       0       0       0
+>     TX: bytes  packets  errors  dropped carrier collsns
+>     691937917  4727223  0       0       0       0
+>     TX errors: aborted  fifo   window heartbeat transns
+>                0        0       0       0       10
+> 
+> After:
+> 
+>     RX:  bytes packets errors dropped  missed   mcast
+>     8228633710 8618408      0       0       0       0
+>     RX errors:  length    crc   frame    fifo overrun
+>                      0      0       0       0       0
+>     TX:  bytes packets errors dropped carrier collsns
+>      692006303 4727740      0       0       0       0
+>     TX errors: aborted   fifo  window heartbt transns
+>                      0      0       0       0      10
+> 
+> More importantly, with large values before:
+> 
+>     RX: bytes  packets  errors  dropped overrun mcast
+>     126570234447969 15016149200 0       0       0       0
+>     RX errors: length   crc     frame   fifo    missed
+>                0        0       0       0       0
+>     TX: bytes  packets  errors  dropped carrier collsns
+>     126570234447969 15016149200 0       0       0       0
+>     TX errors: aborted  fifo   window heartbeat transns
+>                0        0       0       0       10
+> 
+> Note that in this case we have full shift by a column,
+> e.g. the value under "dropped" is actually for "errors" etc.
+> 
+> After:
+> 
+>     RX:       bytes     packets errors dropped  missed   mcast
+>     126570234447969 15016149200      0       0       0       0
+>     RX errors:           length    crc   frame    fifo overrun
+>                               0      0       0       0       0
+>     TX:       bytes     packets errors dropped carrier collsns
+>     126570234447969 15016149200      0       0       0       0
+>     TX errors:          aborted   fifo  window heartbt transns
+>                               0      0       0       0      10
+> 
+> Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+> ---
+> Note - this patch does depend on the trivial nohandler print fix.
+> 
+>  ip/ipaddress.c | 146 +++++++++++++++++++++++++++++++++++--------------
+>  1 file changed, 106 insertions(+), 40 deletions(-)
+> 
+
+good improvement. applied. Thanks,
 
