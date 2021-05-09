@@ -2,170 +2,150 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AA63A3775CF
-	for <lists+netdev@lfdr.de>; Sun,  9 May 2021 09:46:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DE0E73775D3
+	for <lists+netdev@lfdr.de>; Sun,  9 May 2021 09:51:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229631AbhEIHrh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 9 May 2021 03:47:37 -0400
-Received: from mout02.posteo.de ([185.67.36.66]:38957 "EHLO mout02.posteo.de"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229593AbhEIHrf (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 9 May 2021 03:47:35 -0400
-Received: from submission (posteo.de [89.146.220.130]) 
-        by mout02.posteo.de (Postfix) with ESMTPS id 14654240101
-        for <netdev@vger.kernel.org>; Sun,  9 May 2021 09:46:22 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=posteo.de; s=2017;
-        t=1620546382; bh=sK4wl5IwkWJ2n0WlFhO+Ho3j0hfwWiWPygPRQOXSwKo=;
-        h=From:To:Cc:Autocrypt:Subject:Date:From;
-        b=kAr5gNMu45e/ki+wWXx/iFdBU/v+657mAZ6Tc3hueuKLBODEznc8ewnmOADAMpNM5
-         7fE8fp8A3B8Jef7+G0K+Kfph0reSHnXPcQTfrBuj9Jo6pXmmdXBoNUqLcmjwo9b2ow
-         f4AVpJzpoOznDhlPe2R3GDMH7DgOEiRK/t7J2WAmRcwYPy2V02nLtCzXG33+8qCFet
-         sChkTpLZk+aQR5XeTicefJVSi6SgpDuTqqE+jsGY34UNL40CQavXb53Fglwzv5xHGB
-         J1/TqQOg79ZbN+LOv+0HTRfceRSsdKNQksL5PIUanICF2Wm7uw03W2ds/0RL+HzgGt
-         agJZlSAXTyEfQ==
-Received: from customer (localhost [127.0.0.1])
-        by submission (posteo.de) with ESMTPSA id 4FdGTT1BwDz9rxS;
-        Sun,  9 May 2021 09:46:21 +0200 (CEST)
-From:   Patrick Menschel <menschel.p@posteo.de>
-To:     Marc Kleine-Budde <mkl@pengutronix.de>
-Cc:     Drew Fustini <drew@beagleboard.org>, netdev@vger.kernel.org,
-        linux-can@vger.kernel.org, Will C <will@macchina.cc>
-References: <20210407080118.1916040-1-mkl@pengutronix.de>
- <20210407080118.1916040-7-mkl@pengutronix.de>
- <CAPgEAj6N9d=s1a-P_P0mBe1aV2tQBQ4m6shvbPcPvX7W1NNzJw@mail.gmail.com>
- <a46b95e3-4238-a930-6de3-360f86beaf52@pengutronix.de>
- <20210507072521.3y652xz2kmibjo7d@pengutronix.de>
- <c0048a2a-2a32-00b5-f995-f30453aaeedb@posteo.de>
- <20210507082536.jgmaoyusp3papmlw@pengutronix.de>
- <7cb69acc-ee56-900b-0320-a893f687d850@posteo.de>
-Autocrypt: addr=menschel.p@posteo.de; prefer-encrypt=mutual; keydata=
- LS0tLS1CRUdJTiBQR1AgUFVCTElDIEtFWSBCTE9DSy0tLS0tCgptUUlOQkZ3RG1RZ0JFQUMr
- elBRRy9KTHQyWUpiNTRERFBKd0Jtd25EUTh4dUZQcEFjRjNYSVVuZkFOTGs0OUpoClhWczFR
- TnVHZk1VLytmY3RPWGd0SmF6Q3doc3NGdlUvWStPc1Nmd3FTN1ROOXhIWE1DZmtnK1gxRHhI
- ZGtqcmoKL1pUYkxHd1FUQlE2SVpVeW9BTEVSQ2RHZFBETFVqWERSS0poSTdvV3RqYlVFWUVr
- ZE9RYnY2eDhLVWd1bGtHUgpYYWxka1hJZ0R0VWZLaUE0VGhBVXpncVJuZ09DV2ZITis4TnBo
- Q2pGVlFnclRSakxCc3pkZTFnTmJkZ2kvdWxiClcyTngvS1Jqa0F1TTdFUVJvVUJ2QUJWb2FX
- R3ZYenIzUmphUFhrSk5wNHdFbm1IcVoxZlVteWMvSGZRNnVjWnkKRW5QZnlEWExtWTJQUU5P
- N2ZCemZLMTJVRTdWZHh0OTBDNURPSkRBc25kNHYreloxNHJObEpmTHNwaDZkVlNIbApsS2t2
- NE1BTndNaGxRT3Bta1pLMHhVU0Q2R0M1OHRiV0RSbEg4b3UrWUhDYlh2OHJCTXphR0phWDVB
- S25lNTJTCmZEUCtiQVVTdWVQdDhrRG5TaU1ZNk9iUEdObWhqcW1JN1RmNkU1NDdqRXUzcmxr
- aVI3Rno2cktVVzA5VlBlcnAKUnVya3orSTFtTDZ5ZTlZdGFDZ3MwbFR4b3VuYnA5emROVE04
- djZFOGJsMWNoSnRoYWs1bkEvRktnbmRtVHdhUQpNclFTRFEyNmxMcUw0MXRPZzhlVXFhTzJI
- TXVPRGNaaVVIMGVNWHlQZjhsbXhMcy9sbUVZU3hGUXFMWlBjWW9pClA0SGxVcDNSMkxIa0hO
- WDg1WDBKUldwRkkwLzNKMTFiWEpjLzc1MzVKODExdE9aRDkyRHlkK20zS3dBUkFRQUIKdENk
- UVlYUnlhV05ySUUxbGJuTmphR1ZzSUR4dFpXNXpZMmhsYkM1d1FIQnZjM1JsYnk1a1pUNkpB
- bFFFRXdFSwpBRDRXSVFUcFZLQkNXcGNoUW9QQURFY3g1bTR3ejYrNFRnVUNYQU9aQ0FJYkl3
- VUpDV1lCZ0FVTENRZ0hBZ1lWCkNna0lDd0lFRmdJREFRSWVBUUlYZ0FBS0NSQXg1bTR3ejYr
- NFRnQTJELzBTQW92U0xuK1pTcGUzK0d4UUhKMzYKWmJ1TWs0REVSa0RKMnIveStvc254WUd2
- TmNtU3N5Q1pBaVZjTTlFM0kxUXVtdDZvWHpoditJUDJNd09MZTlQMwpvUmhJQ1JyQ2RwWmY1
- YjdDb0lOc3lENUJwNGFsSUs5UFpHUDdXTjRHeGE3OVpNYkRhNVBNWGVQZ2psckFNVGNOCjRv
- c2Q5NVB4eFNkV1dheTB2TUh0VWYwRGJkaDFRNUs1U3lkREpxdG56dFBkNzBzUG9wOHBRSWhE
- NExGUWdpcFgKL3VRdkEvWnZpN2c5T3N4YThCNnRDTG41VG5LT2lNYktCVUFya1FHTDFnbDQ4
- NFJtKzRlR011YVZrVjVBb3VYMApOaGQvTVU3eEMxS2dGcWZwYTMzZ0ZRdUxTSTU2aStuRkt6
- dzNIdiszeHBJOXJjaHFXQjNnSWNVQ2lQZmFxcU1vCnI4RVNKODF0NWlvckQrRlpQb1RyMUEz
- aGZTMTNuMGxWUytsZUd3dlNucjRRZ0gvcjZ5eGw4RERIaUdFMUFXblAKaTNaWFNKWnkxRUJW
- TWJXTXFBNzFwczZDS2ZnbmpmSHVvVmNsTElXd3cxT2gwYXlER1hMZUFic1VPTGtGOXAxMwo1
- MWxRS0lJWUZpcXVwL09qa0pKMlgxaTdITjlqV2xRVnR0SER3QlhZOWNYWDRHUzk3cnNwSVhj
- S2hHRytFSVB0CjFEaFdBdDR1ZDdqcDIrSDRmTXlKZGlVK0wrYTVXNjlTODZpOURTMjBUdXd2
- K3JRemNQWTQ3MkVxZmo0elhWWmsKNUNzZ2kxVDZzQ1lnZDd5TGpHMnFYblZsSTJqQ1JyT0RW
- dGJiY25jSi9peEhPQ1h2TmlvRzZPREhBM3ZtNlZxaQpEelBmYTBFaWZveWMxbDRvSUZvQ2c3
- a0NEUVJjQTVrSUFSQUEwdUlXUGNrRlpzb0ZVZG1Sd29vMW95YzhmSyttCll6TmhTc1l0UTlI
- ZDMvQmlWeUxwUERQK0F6eks4U2JvWXVGcTJOaGRJaTIyeFRTZ2pyRFZMOU10YTdNbDB6cHgK
- QnJSTitySm5LRFl3bThJeUl6eUpCRmhXU1l3YnVPSXVqbnB6U1IvVGVDT1VvelRadFhnQmRU
- YzZrUG5kV1BWTgpDWU9hZVFXdDI1Qnc3ZGNVbllUQ1FWYm9EN0RFVWFEVkVqM1BKM2U0aGli
- TEp1UnEvK1dQY3kxQ3g2UFNucTJ6CkdQN1pVNWh6NjF2ZGovbVJJa2QxS2UzUTZmWUwzSVRN
- T1l1WGF6VUVEZ3l3TlN0bVkwRmZUT05GWEtGTXdSNm8KcUtuSGlTN2tINytxQWFodUpkdVFB
- MW9SU2xUTWRFb3F2WHEySlVJTm1NaGdYL0ZQN3ZpZEFxcTdnVjRXWElxcAptckliVHBiNVpz
- U0N6dUJBd3lkOTYxM1lmYWpZVGlUYkJGRzQ1Mld4TnlJeTFUdVpWMmIxZlhPbGdLRjNvbmUx
- CnhwbURqbTFlZVhSdjRnV0d0Vks5cXlEaUtYWnlmQ0YyL2o5d08xaTNnUHZqYmFvU1dhT2hH
- T2V6dlNFQzB4RjgKWU9TMitGSmxVclVyVm54UXZsZkdyWFYxbUpRTHpvcFJ5N0VndjNlRDI0
- NUx5YjhjUHpOUmppelRqV2RYN0g0MwpuNTlXMkdWTkFLTkNyV1pkOGNjZEdJK1RodmwzUUh1
- YWQ3NEY5cGdDUUNZWXM5dG92YVZldFR1WlI2Y3JMaG10CmxmK1V4ME5SV29PV2ZTR0w5anBt
- dkR3aGlwWCszMUlvb1FiOTZ1a2UzOFBZMUVOMjJ6QlBxZ25jVVVrUkxQQncKbEhYbnpFVit6
- U1p4QXpFQUVRRUFBWWtDUEFRWUFRb0FKaFloQk9sVW9FSmFseUZDZzhBTVJ6SG1iakRQcjdo
- TwpCUUpjQTVrSUFoc01CUWtKWmdHQUFBb0pFREhtYmpEUHI3aE9Db0lQLzNTanBFdTl4Wkpj
- TlZvU0s5MTA0enB6CmtnS2FUVmcrR0tZSEFJa1NZL3U2NU1zVmFTWk14bWVDSzdtTiswNU1w
- RUZCYW9uMG5sVTlRK0ZMRDFkRDBsenYKTVBkOEZOcEx4VEMxVDQwbXBVN0ZCV1hlVjZWRHoz
- STY5VkFBdjRWVDM4ZVZhYXBOS1lmVGdwcFRYVEVNYVdoTApVYUpGaU1HaFNYaGkrR01GV2Ji
- NVNFOGJJRTZ0WUpONWlYZUFNVFE4NjhYVGtHS0VHTjk3bEU2S09odmpWV0kxCkhiUVIzZ0tV
- ck1uVmlhbGp0YnV4bGNvS2YrblRvNG85OUEyTkprRCswaFozclJZTWhacFR1MitkcCt2Rm9p
- aEQKdVNFTCtoblZhNFRMd2pYd2gzNzNweU9XMFhra2E5YWpNTEFoMUFtMmRBa0pLSDhzMVlJ
- UUlpL2Q3bEkyYXQ1awpIcWtIa2p0YzE1ZkgrQUU5Q0VSM3RCSVNoYU9Fb0hXTXc0WEs5NS9n
- MWVnMVB1cmJmN3RwRnltcklxU3ppQjlvCjJBWituSHVDQ001ZC9pQXh5MmJOcndqNDhPM2Z5
- WXd1a0pManUyNlJKbzRMNStjNEJoTU1Ray9nVWROdldHK2YKNUxreVhvbHNMY0p0SktLdStD
- V1pFK1hxc2RGWHd2d2xDRVNSQ012cGZyQmNtY1hrT0g3S1JKVy9pUjFXVjVRZApjR3ZDcDl0
- a08vaEhSb2t0dzBibUl1MlFhZkovajZLTGJqZWV4cTc0TWUyb0U5YmkxY3B2azYvSElDV0JQ
- dHVYCnNqd2o1Q2M3UlZOMjJLekdZT0RKVGtxU0d4RjV1NVlkTHVNVG5CVGNweEphR2h3MzNq
- QjgwY3o3enFwQXBpREIKZFFnR2psVlNQT3ZidU04aXBPZDYKPW1nREMKLS0tLS1FTkQgUEdQ
- IFBVQkxJQyBLRVkgQkxPQ0stLS0tLQo=
-Subject: Re: [net-next 6/6] can: mcp251xfd: mcp251xfd_regmap_crc_read(): work
- around broken CRC on TBC register
-Message-ID: <b58d4484-db27-f199-875e-ae3694cd271f@posteo.de>
-Date:   Sun,  9 May 2021 07:46:20 +0000
+        id S229660AbhEIHwM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 9 May 2021 03:52:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57740 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229593AbhEIHwL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 9 May 2021 03:52:11 -0400
+Received: from mail-pj1-x1032.google.com (mail-pj1-x1032.google.com [IPv6:2607:f8b0:4864:20::1032])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF065C061573
+        for <netdev@vger.kernel.org>; Sun,  9 May 2021 00:51:07 -0700 (PDT)
+Received: by mail-pj1-x1032.google.com with SMTP id ge1so8092446pjb.2
+        for <netdev@vger.kernel.org>; Sun, 09 May 2021 00:51:07 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=0totEIVo+196OQXkSAcXRKH+cicRhbOAxI9ctBdNXzc=;
+        b=KDsAl+zyJvyuVqmTYyfBRbH25FcUtS1Zm1J59LZxrNJ09mss+ZsnQWCxJwHslyg1ro
+         rxfcs+YrSUpeNBU92tqDOwQB/RfO54Ekeweri4jUB8hFeYet8NMh10lL3HbWa4tim1qF
+         3tBaPAaPJ/b3wHvoOz6JLjH0uvFJft6aQ5O9bt9mTDjIBct+gRdE/lGom5hrPIe+9Tcb
+         727TK/O3Iqy1eOUgrl9knS8jMRhz80rqw83mSXtlh7oFsNKbE8MUwVQ7VRsE1uoxE3R3
+         WkJz0XKNQIXzQ+JZmr1i5mP0RJLBfFa0mDl8Oa5i6bT9+xeVtnWya3SKhbomESZ2Ahrt
+         4C6g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=0totEIVo+196OQXkSAcXRKH+cicRhbOAxI9ctBdNXzc=;
+        b=e2VbuLJe2ezGLUm4FDU/1oUSq6gXGvPgma0UOTtnzYpnJkBqQ3Eqza56ezWJLOmU67
+         P49k05kxfRyPec1bFZ/sLDfUVydBkLG5529WU0iQTrwpr31tyedBdbDHbCzcHX5a8gnV
+         kdtkdq6rJGOja7FN8c/CbA9Xwy0UrzgNNGtJmPmPVv2jNen3GQDIlfr5zj1za1kkBWIX
+         yQnSl1kyMmpfYti3s7M2r1+DFKjAgf3FuEptDp37uTJxYLqKl+NkQ7dPka0RqtrCLJh/
+         LYnR6SyJZ6Vt/CKMooQ4HeRinBcbWoJlaK8l49NzAQoSBkikK+1gWukbabGtMvgeORe7
+         jOrQ==
+X-Gm-Message-State: AOAM532gaJCEnDcZlcxEG/m3z4PH9rO8OgqzZ+K8uVpuTwOeVmRF75Z9
+        T0BAxGD0/Kp1EbC8SUUa/Kl6pfURrSiN5Q==
+X-Google-Smtp-Source: ABdhPJzl8PbWxYbGX1s3IZyWl59KHp5OKrQTtiu11bezg8TJWjLC+MwrJs4uK8Ochev8aHDHj3MKvQ==
+X-Received: by 2002:a17:90a:eac2:: with SMTP id ev2mr29646694pjb.134.1620546667402;
+        Sun, 09 May 2021 00:51:07 -0700 (PDT)
+Received: from f3 ([2405:6580:97e0:3100:436:f9d5:2c0c:fa57])
+        by smtp.gmail.com with ESMTPSA id a12sm7206714pfg.102.2021.05.09.00.51.05
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 09 May 2021 00:51:06 -0700 (PDT)
+Date:   Sun, 9 May 2021 16:51:02 +0900
+From:   Benjamin Poirier <benjamin.poirier@gmail.com>
+To:     Coiby Xu <coiby.xu@gmail.com>
+Cc:     linux-staging@lists.linux.dev, netdev@vger.kernel.org
+Subject: Re: About improving the qlge Ethernet driver by following
+ drivers/staging/qlge/TODO
+Message-ID: <YJeUZo+zoNZmFuKs@f3>
+References: <20210504131421.mijffwcruql2fupn@Rk>
+ <YJJegiK9mMvAEQwU@f3>
+ <20210507013239.4kmzsxtxnrpdqhuk@Rk>
+ <20210508232705.6v6otnlphabfsgz7@Rk>
 MIME-Version: 1.0
-In-Reply-To: <7cb69acc-ee56-900b-0320-a893f687d850@posteo.de>
-Content-Type: text/plain; charset=utf-8
-Content-Language: de-DE
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210508232705.6v6otnlphabfsgz7@Rk>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Am 08.05.21 um 20:36 schrieb Patrick Menschel:
-> Am 07.05.21 um 10:25 schrieb Marc Kleine-Budde:
->> On 07.05.2021 08:21:57, Patrick Menschel wrote:
->>>>>> Would it be possible for you to pull these patches into a v5.10 branch
->>>>>> in your linux-rpi repo [1]?
->>>>>
->>>>> Here you are:
->>>>>
->>>>> https://github.com/marckleinebudde/linux-rpi/tree/v5.10-rpi/backport-performance-improvements
->>>>>
->>>>> I've included the UINC performance enhancements, too. The branch is compiled
->>>>> tested only, though. I'll send a pull request to the rpi kernel after I've
->>>>> testing feedback from you.
->>>>
->>>> Drew, Patrick, have you tested this branch? If so I'll send a pull
->>>> request to the raspi kernel.
->>>>
->>
->>> not yet. Thanks for reminding me. I'll start a native build on a pi0w asap.
->>>
->>> Is there any test application or stress test that I should run?
->>
->> No, not any particular, do your normal (stress) testing.
->>
-> Following up on this.
+On 2021-05-09 07:27 +0800, Coiby Xu wrote:
+> On Fri, May 07, 2021 at 09:32:39AM +0800, Coiby Xu wrote:
+> > On Wed, May 05, 2021 at 05:59:46PM +0900, Benjamin Poirier wrote:
+> > > On 2021-05-04 21:14 +0800, Coiby Xu wrote:
+> > > > Hi Benjamin,
+> > > > 
+> > > > As you have known, I'm working on improving drivers/staging/qlge. I'm
+> > > > not sure if I correctly understand some TODO items. Since you wrote the TODO
+> > > > list, could you explain some of the items or comment on the
+> > > > corresponding fix for me?
+> > > > 
+> [...]
+> > > 
+> > > However, in the same area, there is also
+> > > 			skb = netdev_alloc_skb(qdev->ndev, length);
+> > > 			[...]
+> > > 			skb_fill_page_desc(skb, 0, lbq_desc->p.pg_chunk.page,
+> > > 					   lbq_desc->p.pg_chunk.offset,
+> > > 					   length);
+> > > 
+> > > Why is the skb allocated with "length" size? Something like
+> > > 	skb = napi_alloc_skb(&rx_ring->napi, SMALL_BUFFER_SIZE);
+> > > would be better I think. The head only needs enough space for the
+> > > subsequent hlen pull.
+> > 
+> > Thanks for the explanation! I think this place needs to modified. I'll
+> > try to figure out how to reach this part of code so I can make sure the
+> > change wouldn't introduce an issue.
 > 
-> ...
+> After failing to reach to this part of code, it occurred to me this
+> may be what the first TODO item meant by "dead code" that handle
+> non-split case,
 > 
-> Do I have to change my test?
+> > * commit 7c734359d350 ("qlge: Size RX buffers based on MTU.", v2.6.33-rc1)
+> >   introduced dead code in the receive routines, which should be rewritten
+> >   anyways by the admission of the author himself, see the comment above
+> >   ql_build_rx_skb(). That function is now used exclusively to handle packets
+> >   that underwent header splitting but it still contains code to handle non
+> >   split cases.
+> 
+> Do you think so? 
 
-Hi Marc,
+Yes
 
-I changed my test to 1 hour and removed the sleep statement.
-Still no measurable difference for performance and no CRC Errors with
-both kernels.
+> Btw, I think you meant commit 4f848c0a9c265cb3457fbf842dbffd28e82a44fd
+> ("qlge: Add RX frame handlers for non-split frames") here. Because it was in this
+> commit where the ql_process_mac_split_rx_intr was first introduced,
+> 
+>     -static void ql_process_mac_rx_intr(struct ql_adapter *qdev,
+>     +static void ql_process_mac_split_rx_intr(struct ql_adapter *qdev,
+>                                        struct rx_ring *rx_ring,
+>     -                                  struct ib_mac_iocb_rsp *ib_mac_rsp)
+>     +                                  struct ib_mac_iocb_rsp *ib_mac_rsp,
+>     +                                  u16 vlan_id)
 
-Apparently the test is hard on the CPU, I have two pytest processes
-listed in htop one with 80%CPU and one with 60% CPU, approx 30% ram
-usage of 512MB. I have no clue how it reaches the CPU values, there
-should be only one CPU on the pi0w.
+It's possible that I referenced the wrong commit in the TODO. Clearly
+there is dead code after commit 4f848c0a9c26 ("qlge: Add RX frame
+handlers for non-split frames.") like you say. I don't remember for sure
+if I had found some before even before that.
 
+> 
+> Another TODO item I don't understand is as follows,
+> > * the driver has a habit of using runtime checks where compile time checks are
+> >  possible (ex. ql_free_rx_buffers(), ql_alloc_rx_buffers())
+> 
+> Could be more specific about which runtime checks are used in
+> ql_free_rx_buffers and ql_alloc_rx_buffers?
 
-### 5.10.17+ on pi0w ###
+This specific example was fixed in commit
+e4c911a73c89 ("staging: qlge: Remove rx_ring.type")
 
-2021-05-09 08:02:56 [    INFO] 725649 frames in 1:00:00
-(test_socketcan.py:890)
+I forgot to update the TODO when making that commit.
 
+Here are other examples:
+a68a5b2fd3a2 ("staging: qlge: Remove bq_desc.maplen")
+16714d98bf63 ("staging: qlge: Remove rx_ring.sbq_buf_size")
+ec705b983b46 ("staging: qlge: Remove qlge_bq.len & size")
 
-### 5.10.31-performance-backports+ on pi0w ###
-
-2021-05-09 09:13:32 [    INFO] 715936 frames in 1:00:00
-(test_socketcan.py:890)
-
-
-I'll switch boards to a pi3b and test again with these settings.
-
-Best Regards,
-Patrick
+I don't remember of remaining examples to point you to. Maybe there
+aren't but given that there were indeed quite a few, I would suggest
+that you look at those commits and keep this item in mind as you work on
+the other items earlier in the list. If at the end you think that this
+is no longer a problem, then remove it from the list.
