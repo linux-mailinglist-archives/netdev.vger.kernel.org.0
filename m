@@ -2,122 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A46DD377683
-	for <lists+netdev@lfdr.de>; Sun,  9 May 2021 13:56:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 694A9377692
+	for <lists+netdev@lfdr.de>; Sun,  9 May 2021 14:19:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229596AbhEIL5B (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 9 May 2021 07:57:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53866 "EHLO
+        id S229609AbhEIMUF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 9 May 2021 08:20:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58868 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229563AbhEIL5A (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 9 May 2021 07:57:00 -0400
-Received: from mail-wr1-x433.google.com (mail-wr1-x433.google.com [IPv6:2a00:1450:4864:20::433])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E649C061573
-        for <netdev@vger.kernel.org>; Sun,  9 May 2021 04:55:57 -0700 (PDT)
-Received: by mail-wr1-x433.google.com with SMTP id d11so13701363wrw.8
-        for <netdev@vger.kernel.org>; Sun, 09 May 2021 04:55:57 -0700 (PDT)
+        with ESMTP id S229590AbhEIMUE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 9 May 2021 08:20:04 -0400
+Received: from mail-wm1-x342.google.com (mail-wm1-x342.google.com [IPv6:2a00:1450:4864:20::342])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9BE22C061574
+        for <netdev@vger.kernel.org>; Sun,  9 May 2021 05:19:01 -0700 (PDT)
+Received: by mail-wm1-x342.google.com with SMTP id l18-20020a1ced120000b029014c1adff1edso9590733wmh.4
+        for <netdev@vger.kernel.org>; Sun, 09 May 2021 05:19:01 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
+        d=philpotter-co-uk.20150623.gappssmtp.com; s=20150623;
         h=from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=0hV4iGNIu4ljAp3MSQG/pucaqPLJ1WIQWPk6y7E6xZQ=;
-        b=DLDEHgipsm27vWvlz6gRPmlrXobmSlD7uaACZDxI3DJ2QXgaZ1NX0VlGma7iXcgqK3
-         ZGtXs4HQyNgX7H7YlkvaZg6fAAEIbsIvb9hmLJMF2A9v8lDMks+44DdpQxXRcHlN86Oc
-         dh6anOgHQrPeo3NOc72ocNJhoXZhX8kb0PZGTx/kGUJ+MUNBY62UqgXP5hjrJyOrObR7
-         pqWxd6sOBFCC+m48XeGt9zP7RI2TUcJP7p0WcCiPGReP9KN761uj7eDTLE8MPOQrPFUh
-         BzB0CXkKTvg1bHMsqECrSjuJGIdwbShtOLL13ou+98HflDLnlvUmuWNFweFLZPKaXqUZ
-         xkZA==
+        bh=YqSSl0qicw8S1ed4pNsXBhSgZaQS6HCAXzNACgXQNog=;
+        b=TOV4S5s0G6u9v9R1FK1rsk1u891PtTqDM59/a0ROMpk+jtnLetiGRleDAxrAKPaqCS
+         HtMzWlcyiMjkWQAcrv+TTxsjPQUY9pe9OplQqo3r2iTQqz3tXsaAWmWBdYLvb8FcuaJR
+         dh4IZ9xTqQbsdEQPgEzlgjlt763h+MYGCWanDIIRF4QKBGgEI/Ky5xifsNYmFYxzxuoM
+         T0PDkjLnYeak3U7DPXZH36DEtxaxPx1KGpJqPfBrXKA3q9ifCROLgiIrzmwfljLFOP5V
+         msDzs0ObROqD9Dj/oCb0FQ9nTPrDFpBFZBzNbHgl8r6YVNX4iPnkAUNUmKngwjXLY8oa
+         N0sA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=0hV4iGNIu4ljAp3MSQG/pucaqPLJ1WIQWPk6y7E6xZQ=;
-        b=IoqOADO58IpvtKujUmfpv70usMF+U3ehVI+VGdMv/eqa1lorkG2wdhq5puuubTLd18
-         oXK9b+n8OG6C3LXF0TcHFDN6M7nI32XnDpf+on5BXkOhkLswzzlTgIGIQV2KMMr8VkM0
-         WhlWLZ+Cy9cpFwsjSF37LOWteVWrB9lvYIftqmejOzGy2jh9bEJDiwouH3DT6d8J1tBz
-         pSJWxQ7aYoIz62Or+QKFIj0+SBVFd6oSkf12+GDuFP720xeaVnJQQBqW3+RdH5x8QERZ
-         Gt189km/7DuOLwdEZzN4oZ9Y8huWPctAUB5bNSihL0AocUl9Co3gdiazv1xZee2t6MrP
-         /axQ==
-X-Gm-Message-State: AOAM532/B8QT+KAmSl8/yAdIbn7D/Z3sdM+mtC6jm0KKgfPgMnS62HKm
-        92qiBaCy6U2rGAW2/LbrYDU=
-X-Google-Smtp-Source: ABdhPJwJsAPaVT7n+ksdN2TolguSsHHhwjhr5ew9cWYAz27O0w8/FHJZidPPmYtg9TbikhKQX/zEcg==
-X-Received: by 2002:adf:a316:: with SMTP id c22mr24147411wrb.202.1620561356097;
-        Sun, 09 May 2021 04:55:56 -0700 (PDT)
-Received: from localhost.localdomain ([86.127.41.210])
-        by smtp.gmail.com with ESMTPSA id y15sm17920661wrh.8.2021.05.09.04.55.55
+        bh=YqSSl0qicw8S1ed4pNsXBhSgZaQS6HCAXzNACgXQNog=;
+        b=rxSb61XzsTcF9Skj94J/TWXB5kYhYhDzEKlKpdlJNMJSsy1rlWPYTMWNYOBE2s7Yft
+         LoAr4aLR/d0soXJOUfW5S0ewPdaIU7DNMby8zDDRKw2nm5Rx/l2gGTYSmhv8OZJnftMt
+         si4/eG4ieA4wv7p8uhK4f4emoXk+iilzpQZEVtv6b8c8DaL2PPwhroCu7nI1wSfGy6IM
+         5Dc4d/9VoQ21+La9GICBR8dNjKRXl0sZFg++YtzueU8lJFOl+WQN4HTR95aMGORikkzt
+         /iB56F9FkJx1oYlHZn9mL3wsZFkzm0tGIVKaAK38hFJdiAQ6O55s5sGk/Dwidj6+XWda
+         DoOQ==
+X-Gm-Message-State: AOAM532tnkECFdtAGEeslmvOcxelUcG+72ZY+XqVuPisGXxQP1bmc4hs
+        0khCmAormjiJqZspaNBXdEkx7g==
+X-Google-Smtp-Source: ABdhPJzqyERM42xv3k0v3/mJEy4FwHnNStDcZqDn8swknsVhbFkb4DErcx5RuxDGmuA82atG+raK/w==
+X-Received: by 2002:a1c:7fd0:: with SMTP id a199mr20861840wmd.161.1620562740099;
+        Sun, 09 May 2021 05:19:00 -0700 (PDT)
+Received: from localhost.localdomain (2.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.a.1.e.e.d.f.d.0.b.8.0.1.0.0.2.ip6.arpa. [2001:8b0:dfde:e1a0::2])
+        by smtp.gmail.com with ESMTPSA id p10sm19158223wre.84.2021.05.09.05.18.59
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 09 May 2021 04:55:55 -0700 (PDT)
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
-Cc:     Florian Fainelli <f.fainelli@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Dan Carpenter <dan.carpenter@oracle.com>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>
-Subject: [PATCH net] net: dsa: fix error code getting shifted with 4 in dsa_slave_get_sset_count
-Date:   Sun,  9 May 2021 14:55:13 +0300
-Message-Id: <20210509115513.4121549-1-olteanv@gmail.com>
-X-Mailer: git-send-email 2.25.1
+        Sun, 09 May 2021 05:18:59 -0700 (PDT)
+From:   Phillip Potter <phil@philpotter.co.uk>
+To:     davem@davemloft.net
+Cc:     kuba@kernel.org, yhs@fb.com, ast@kernel.org,
+        johannes.berg@intel.com, rdunlap@infradead.org,
+        0x7f454c46@gmail.com, yangyingliang@huawei.com,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] netlink: netlink_sendmsg: memset unused tail bytes in skb
+Date:   Sun,  9 May 2021 13:18:58 +0100
+Message-Id: <20210509121858.1232583-1-phil@philpotter.co.uk>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Vladimir Oltean <vladimir.oltean@nxp.com>
+When allocating the skb within netlink_sendmsg, with certain supplied
+len arguments, extra bytes are allocated at the end of the data buffer,
+due to SKB_DATA_ALIGN giving a larger size within __alloc_skb for
+alignment reasons. This means that after using skb_put with the same
+len value and then copying data into the skb, the skb tail area is
+non-zero in size and contains uninitialised bytes. Wiping this area
+(if it exists) fixes a KMSAN-found uninit-value bug reported by syzbot at:
+https://syzkaller.appspot.com/bug?id=3e63bcec536b7136b54c72e06adeb87dc6519f69
 
-DSA implements a bunch of 'standardized' ethtool statistics counters,
-namely tx_packets, tx_bytes, rx_packets, rx_bytes. So whatever the
-hardware driver returns in .get_sset_count(), we need to add 4 to that.
-
-That is ok, except that .get_sset_count() can return a negative error
-code, for example:
-
-b53_get_sset_count
--> phy_ethtool_get_sset_count
-   -> return -EIO
-
--EIO is -5, and with 4 added to it, it becomes -1, aka -EPERM. One can
-imagine that certain error codes may even become positive, although
-based on code inspection I did not see instances of that.
-
-Check the error code first, if it is negative return it as-is.
-
-Based on a similar patch for dsa_master_get_strings from Dan Carpenter:
-https://patchwork.kernel.org/project/netdevbpf/patch/YJaSe3RPgn7gKxZv@mwanda/
-
-Fixes: 91da11f870f0 ("net: Distributed Switch Architecture protocol support")
-Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+Reported-by: syzbot+a73d24a22eeeebe5f244@syzkaller.appspotmail.com
+Signed-off-by: Phillip Potter <phil@philpotter.co.uk>
 ---
- net/dsa/slave.c | 12 +++++++-----
- 1 file changed, 7 insertions(+), 5 deletions(-)
+ net/netlink/af_netlink.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/net/dsa/slave.c b/net/dsa/slave.c
-index 3689ffa2dbb8..dda232a8d6f5 100644
---- a/net/dsa/slave.c
-+++ b/net/dsa/slave.c
-@@ -798,13 +798,15 @@ static int dsa_slave_get_sset_count(struct net_device *dev, int sset)
- 	struct dsa_switch *ds = dp->ds;
- 
- 	if (sset == ETH_SS_STATS) {
--		int count;
-+		int err = 0;
- 
--		count = 4;
--		if (ds->ops->get_sset_count)
--			count += ds->ops->get_sset_count(ds, dp->index, sset);
-+		if (ds->ops->get_sset_count) {
-+			err = ds->ops->get_sset_count(ds, dp->index, sset);
-+			if (err < 0)
-+				return err;
-+		}
- 
--		return count;
-+		return err + 4;
- 	} else if (sset ==  ETH_SS_TEST) {
- 		return net_selftest_get_count();
+diff --git a/net/netlink/af_netlink.c b/net/netlink/af_netlink.c
+index 3a62f97acf39..e54321b63f98 100644
+--- a/net/netlink/af_netlink.c
++++ b/net/netlink/af_netlink.c
+@@ -1914,6 +1914,9 @@ static int netlink_sendmsg(struct socket *sock, struct msghdr *msg, size_t len)
+ 		goto out;
  	}
+ 
++	if (skb->end - skb->tail)
++		memset(skb_tail_pointer(skb), 0, skb->end - skb->tail);
++
+ 	err = security_netlink_send(sk, skb);
+ 	if (err) {
+ 		kfree_skb(skb);
 -- 
-2.25.1
+2.30.2
 
