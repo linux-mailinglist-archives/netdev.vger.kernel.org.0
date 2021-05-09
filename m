@@ -2,143 +2,135 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DE87F37777C
-	for <lists+netdev@lfdr.de>; Sun,  9 May 2021 18:07:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1D8403777D5
+	for <lists+netdev@lfdr.de>; Sun,  9 May 2021 19:35:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229847AbhEIQEA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 9 May 2021 12:04:00 -0400
-Received: from mga18.intel.com ([134.134.136.126]:32381 "EHLO mga18.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229645AbhEIQD7 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 9 May 2021 12:03:59 -0400
-IronPort-SDR: si5NvEiD2di93DP2zfEtOI2tvKIrI37IXIWohBA74J1oGLwZyC/nbS1K+wSgD8pb3/V8LC1nwV
- qoZAe9324HrA==
-X-IronPort-AV: E=McAfee;i="6200,9189,9979"; a="186489813"
-X-IronPort-AV: E=Sophos;i="5.82,286,1613462400"; 
-   d="scan'208";a="186489813"
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 May 2021 09:02:56 -0700
-IronPort-SDR: 4JNVOgTvcpa06LIRy1rMiVxFwO+gvDGWg19/1fEpTBI0W5D9vS/kYpIWXwc/3yAhZvUhof636H
- dbjORZuoZ8JQ==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.82,286,1613462400"; 
-   d="scan'208";a="460897375"
-Received: from ranger.igk.intel.com ([10.102.21.164])
-  by FMSMGA003.fm.intel.com with ESMTP; 09 May 2021 09:02:52 -0700
-Date:   Sun, 9 May 2021 17:50:33 +0200
-From:   Maciej Fijalkowski <maciej.fijalkowski@intel.com>
-To:     Toke =?iso-8859-1?Q?H=F8iland-J=F8rgensen?= <toke@redhat.com>
-Cc:     Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        Zvi Effron <zeffron@riotgames.com>,
-        T K Sourabh <sourabhtk37@gmail.com>,
-        Xdp <xdp-newbies@vger.kernel.org>,
-        intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org,
-        magnus.karlsson@intel.com, kuba@kernel.org
-Subject: Re: Dropped packets mapping IRQs for adjusted queue counts on i40e
-Message-ID: <20210509155033.GB36905@ranger.igk.intel.com>
-References: <CAC1LvL1NHj6n+RNYRmja2YDhkcCwREuhjaBz_k255rU1jdO8Sw@mail.gmail.com>
- <CADS2XXpjasmJKP__oHsrvv3EG8n-FjB6sqHwgQfh7QgeJ8GrrQ@mail.gmail.com>
- <CAC1LvL2Q=s8pmwKAh2615fsTFEETKp96jpoLJS+75=0ztwuLFQ@mail.gmail.com>
- <CADS2XXptoyPTBObKgp3gcRZnWzoVyZrC26tDpLWhC9YrGMSefw@mail.gmail.com>
- <CAC1LvL2zmO1ntKeAoUMkJSarJBgxNhnTva3Di4047MTKqo8rPA@mail.gmail.com>
- <CAC1LvL1Kd-TCuPk0BEQyGvEiLzgUqkZHOKQNOUnxXSY6NjFMmw@mail.gmail.com>
- <20210505130128.00006720@intel.com>
- <20210505212157.GA63266@ranger.igk.intel.com>
- <87fsz0w3xn.fsf@toke.dk>
+        id S229726AbhEIRgj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 9 May 2021 13:36:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42222 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229650AbhEIRgi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 9 May 2021 13:36:38 -0400
+Received: from mail-pf1-x42c.google.com (mail-pf1-x42c.google.com [IPv6:2607:f8b0:4864:20::42c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 55568C061573
+        for <netdev@vger.kernel.org>; Sun,  9 May 2021 10:35:35 -0700 (PDT)
+Received: by mail-pf1-x42c.google.com with SMTP id i13so12146135pfu.2
+        for <netdev@vger.kernel.org>; Sun, 09 May 2021 10:35:35 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=fgdJMhILSZ0GaWX9fsMf1XcdhZB/J1PnFtKfIKNyRZg=;
+        b=ovzZIxwTdk1bxjpPcDs5o6uj5xv2l6T8/KdxDkXEw0x0tUrEbEhvVN+emAAUHsDMIY
+         9qLkA3N19zT3yhV5H5Q8HKjG23xTKnA1YlMfWoedEvVimWw1irf15Hi8m3B7pL6nfTap
+         rDXIKSIoleGoBJNvOhQYeNp6m5oMxqxwR/xNvNWMvwYMeVrhHZ2gmjfQbiWUi+pkK0yf
+         GYXe1To6C/SMJRhLqeCGJCKCFFUqG3HlMrHooaRprlb/69QHcNK/jQCkYf32y+pON9Cc
+         mWMJzXbIinteEfdDbNc0I1hzTrG+vfwShcMiJbc1PHohpthByhy7+rfiDw9SD3UPYjce
+         1YQg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=fgdJMhILSZ0GaWX9fsMf1XcdhZB/J1PnFtKfIKNyRZg=;
+        b=ndtBpeeBRd4WmiiBxpvZE4MrYBIdfkLj8KwjGnk+K27KYVBuiFz4A5C3d8sUY2rw1t
+         AAr9kdqJDnOvQSMDxXijJMy2bB9LQuWRTigNYguHT2i+rxljzHHxmu6GTNsmaj+QzN+B
+         fG3klKwbCMG3Sca325iO5F20kEoxqqYtYnYdjzdu30covWJJqsnPD+yMizw7df1CpJkS
+         41ZrXK6x6sjYytjGJFbWs+Y3idX0EXIdP5ZaGGCJgTktRK+yqXTzGzqWHUH7aQXUhcfU
+         OpmI6f9opOQHyR4vsMpvZEk2z5/MLNkvTGD5fpmo+Ecs4SbyXoivoOiSrEUMatARZZGk
+         +NvA==
+X-Gm-Message-State: AOAM5304Ite20Ckzz9/2woMIvhxQBeNC1YHTqpKs9g0d0XfloP1JUKbY
+        4t1NFmFyEviJi+KmfI+XLGE=
+X-Google-Smtp-Source: ABdhPJzsAay1dXFs7E8AAWpXr1ASxpk5s8VVoXzF1uHrrLPaZS793kJWGbur9r/OX1lURbT1M4c1uQ==
+X-Received: by 2002:a63:e1d:: with SMTP id d29mr21933369pgl.175.1620581734557;
+        Sun, 09 May 2021 10:35:34 -0700 (PDT)
+Received: from [10.230.29.202] ([192.19.223.252])
+        by smtp.gmail.com with ESMTPSA id f201sm9205103pfa.133.2021.05.09.10.35.30
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sun, 09 May 2021 10:35:33 -0700 (PDT)
+Subject: Re: [PATCH net] net: dsa: fix error code getting shifted with 4 in
+ dsa_slave_get_sset_count
+To:     Vladimir Oltean <olteanv@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Dan Carpenter <dan.carpenter@oracle.com>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>
+References: <20210509115513.4121549-1-olteanv@gmail.com>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+Message-ID: <53834b37-16c5-2d1d-ab72-78f699603dca@gmail.com>
+Date:   Sun, 9 May 2021 10:35:27 -0700
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Firefox/78.0 Thunderbird/78.10.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <87fsz0w3xn.fsf@toke.dk>
-User-Agent: Mutt/1.12.1 (2019-06-15)
+In-Reply-To: <20210509115513.4121549-1-olteanv@gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, May 06, 2021 at 12:29:40PM +0200, Toke Høiland-Jørgensen wrote:
-> Maciej Fijalkowski <maciej.fijalkowski@intel.com> writes:
-> 
-> > On Wed, May 05, 2021 at 01:01:28PM -0700, Jesse Brandeburg wrote:
-> >> Zvi Effron wrote:
-> >> 
-> >> > On Tue, May 4, 2021 at 4:07 PM Zvi Effron <zeffron@riotgames.com> wrote:
-> >> > > I'm suspecting it's something with how XDP_REDIRECT is implemented in
-> >> > > the i40e driver, but I don't know if this is a) cross driver behavior,
-> >> > > b) expected behavior, or c) a bug.
-> >> > I think I've found the issue, and it appears to be specific to i40e
-> >> > (and maybe other drivers, too, but not XDP itself).
-> >> > 
-> >> > When performing the XDP xmit, i40e uses the smp_processor_id() to
-> >> > select the tx queue (see
-> >> > https://elixir.bootlin.com/linux/v5.12.1/source/drivers/net/ethernet/intel/i40e/i40e_txrx.c#L3846).
-> >> > I'm not 100% clear on how the CPU is selected (since we don't use
-> >> > cores 0 and 1), we end up on a core whose id is higher than any
-> >> > available queue.
-> >> > 
-> >> > I'm going to try to modify our IRQ mappings to test this.
-> >> > 
-> >> > If I'm correct, this feels like a bug to me, since it requires a user
-> >> > to understand low level driver details to do IRQ remapping, which is a
-> >> > bit higher level. But if it's intended, we'll just have to figure out
-> >> > how to work around this. (Unfortunately, using split tx and rx queues
-> >> > is not possible with i40e, so that easy solution is unavailable.)
-> >> > 
-> >> > --Zvi
-> >
-> > Hey Zvi, sorry for the lack of assistance, there has been statutory free
-> > time in Poland and today i'm in the birthday mode, but we managed to
-> > discuss the issue with Magnus and we feel like we could have a solution
-> > for that, more below.
-> >
-> >> 
-> >> 
-> >> It seems like for Intel drivers, igc, ixgbe, i40e, ice all have
-> >> this problem.
-> >> 
-> >> Notably, igb, fixes it like I would expect.
-> >
-> > igb is correct but I think that we would like to avoid the introduction of
-> > locking for higher speed NICs in XDP data path.
-> >
-> > We talked with Magnus that for i40e and ice that have lots of HW
-> > resources, we could always create the xdp_rings array of num_online_cpus()
-> > size and use smp_processor_id() for accesses, regardless of the user's
-> > changes to queue count.
-> 
-> What is "lots"? Systems with hundreds of CPUs exist (and I seem to
-> recall an issue with just such a system on Intel hardware(?)). Also,
-> what if num_online_cpus() changes?
 
-"Lots" is 16k for ice. For i40e datasheet tells that it's only 1536 for
-whole device, so I back off from the statement that i40e has a lot of
-resources :)
 
-Also, s/num_online_cpus()/num_possible_cpus().
+On 5/9/2021 4:55 AM, Vladimir Oltean wrote:
+> From: Vladimir Oltean <vladimir.oltean@nxp.com>
+> 
+> DSA implements a bunch of 'standardized' ethtool statistics counters,
+> namely tx_packets, tx_bytes, rx_packets, rx_bytes. So whatever the
+> hardware driver returns in .get_sset_count(), we need to add 4 to that.
+> 
+> That is ok, except that .get_sset_count() can return a negative error
+> code, for example:
+> 
+> b53_get_sset_count
+> -> phy_ethtool_get_sset_count
+>    -> return -EIO
+> 
+> -EIO is -5, and with 4 added to it, it becomes -1, aka -EPERM. One can
+> imagine that certain error codes may even become positive, although
+> based on code inspection I did not see instances of that.
+> 
+> Check the error code first, if it is negative return it as-is.
+> 
+> Based on a similar patch for dsa_master_get_strings from Dan Carpenter:
+> https://patchwork.kernel.org/project/netdevbpf/patch/YJaSe3RPgn7gKxZv@mwanda/
+> 
+> Fixes: 91da11f870f0 ("net: Distributed Switch Architecture protocol support")
+> Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-> 
-> > This way the smp_processor_id() provides the serialization by itself as
-> > we're under napi on a given cpu, so there's no need for locking
-> > introduction - there is a per-cpu XDP ring provided. If we would stick to
-> > the approach where you adjust the size of xdp_rings down to the shrinked
-> > Rx queue count and use a smp_processor_id() % vsi->num_queue_pairs formula
-> > then we could have a resource contention. Say that you did on a 16 core
-> > system:
-> > $ ethtool -L eth0 combined 2
-> >
-> > and then mapped the q0 to cpu1 and q1 to cpu 11. Both queues will grab the
-> > xdp_rings[1], so we would have to introduce the locking.
-> >
-> > Proposed approach would just result with more Tx queues packed onto Tx
-> > ring container of queue vector.
-> >
-> > Thoughts? Any concerns? Should we have a 'fallback' mode if we would be
-> > out of queues?
-> 
-> Yes, please :)
+Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
 
-How to have a fallback (in drivers that need it) in a way that wouldn't
-hurt the scenario where queue per cpu requirement is satisfied?
+Just one nit below:
 
+> ---
+>  net/dsa/slave.c | 12 +++++++-----
+>  1 file changed, 7 insertions(+), 5 deletions(-)
 > 
-> -Toke
-> 
+> diff --git a/net/dsa/slave.c b/net/dsa/slave.c
+> index 3689ffa2dbb8..dda232a8d6f5 100644
+> --- a/net/dsa/slave.c
+> +++ b/net/dsa/slave.c
+> @@ -798,13 +798,15 @@ static int dsa_slave_get_sset_count(struct net_device *dev, int sset)
+>  	struct dsa_switch *ds = dp->ds;
+>  
+>  	if (sset == ETH_SS_STATS) {
+> -		int count;
+> +		int err = 0;
+>  
+> -		count = 4;
+> -		if (ds->ops->get_sset_count)
+> -			count += ds->ops->get_sset_count(ds, dp->index, sset);
+> +		if (ds->ops->get_sset_count) {
+> +			err = ds->ops->get_sset_count(ds, dp->index, sset);
+> +			if (err < 0)
+> +				return err;
+> +		}
+>  
+> -		return count;
+
+I would have a preference for keeping the count variable and treating it
+specifically in case it is negative.
+-- 
+Florian
