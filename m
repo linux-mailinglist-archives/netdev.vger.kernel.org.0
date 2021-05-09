@@ -2,71 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 415493778EB
-	for <lists+netdev@lfdr.de>; Sun,  9 May 2021 23:54:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 998CE3778F3
+	for <lists+netdev@lfdr.de>; Mon, 10 May 2021 00:11:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229933AbhEIVzS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 9 May 2021 17:55:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41784 "EHLO
+        id S229964AbhEIWKt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 9 May 2021 18:10:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45114 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229662AbhEIVzS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 9 May 2021 17:55:18 -0400
-Received: from mail-ej1-x62f.google.com (mail-ej1-x62f.google.com [IPv6:2a00:1450:4864:20::62f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D78FC061573
-        for <netdev@vger.kernel.org>; Sun,  9 May 2021 14:54:13 -0700 (PDT)
-Received: by mail-ej1-x62f.google.com with SMTP id s20so16067496ejr.9
-        for <netdev@vger.kernel.org>; Sun, 09 May 2021 14:54:13 -0700 (PDT)
+        with ESMTP id S229699AbhEIWKt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 9 May 2021 18:10:49 -0400
+Received: from mail-oo1-xc2b.google.com (mail-oo1-xc2b.google.com [IPv6:2607:f8b0:4864:20::c2b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A0F36C061573
+        for <netdev@vger.kernel.org>; Sun,  9 May 2021 15:09:45 -0700 (PDT)
+Received: by mail-oo1-xc2b.google.com with SMTP id s24-20020a4aead80000b02901fec6deb28aso3081828ooh.11
+        for <netdev@vger.kernel.org>; Sun, 09 May 2021 15:09:45 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=BUKgrm0iW6aeFKwl3oW3H+VZ1RqWnbBKe4voE1NkxW0=;
-        b=CdYbZjnbfLDUA3eTM1F3Mg8LBHzXaYn+d1cl9nFdBWaRmCcHBYtioercbwgS8Pxn/G
-         w4Ruf8PcCrvR3rN7017nceyoAZKIJoRl6iYQfIwemW1Xpxe3uqr+st63w/2yEykcGbKO
-         vs4D9FC7Dw2nLZm+NM8VHqdlNwvus4Sh7kZRUb5E+KUGqorR/2yblaiIRadAiX3EYFV1
-         GloNdXXvCtfefM6zzhEtdrxwXYd2t7Bvd8zHSX/M5obZsD4XSpHbIoESNORicNe9Bx2P
-         xR0pXuUrbns7TQ7HRuGIYQhaTVoyeCOzzBhJk4TN9aG6Slp3HZD5wVwT0myzHpr3sBwE
-         jLRA==
+        h=subject:to:references:from:message-id:date:user-agent:mime-version
+         :in-reply-to:content-language:content-transfer-encoding;
+        bh=NPeFGBu1iIHqqYN091/XPUGAZew+lI26h0TTRnu9/go=;
+        b=ulegOTxf8AO7SRR6b2mu3KNJzfebI4QUhagz8wlqds9zJ2F40T9BVKA6X+SyclT1Iz
+         NOHdROM77UW46F8dp+Z9LmgBhq+uKq/mbU3QtUCG0v3YYh0dsSUdTxlAXsZHiAGL0BEi
+         yGy0ADemfK6dKEmVIiIGmbDL8hdwughPgzCV9gpsInsfjVEq3bIv5yNAobAuTO0SE288
+         7ZWbPhOBCCUuGpx5XcjDCqcxLkujPWB15pxM3/LwIklHnlGrR3rxP9b1qwl7nkAuryra
+         8T5GLuwxs51AtcpnOmfFDiksVURjpnzH0BkkRT/zIY08KH2SM9pFpUyObi6k/Tu9lGLd
+         BmSg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=BUKgrm0iW6aeFKwl3oW3H+VZ1RqWnbBKe4voE1NkxW0=;
-        b=OzIiqfP2Wk9rfkwP6mtPrknLopehavhKGmVtatGJ7abHNuBORwXaj/17/xXHEFgeRY
-         6fConBqN/pj2meQnd7BxngCBweieSmY2cjS1Am8jK74TuUwxbzCrsmxYu1cFiizFzU9Q
-         OSdIlDbrfbJ26lr0J+KTJWr6oeyCITvZYCQZkmVmBdvw9eyf+mtK85IS8Ey5YAeoWroR
-         N2Bf2mIBbRYcL76EKyFmaW7SYawopQZctSAjA8aU8J5M6NQwBophy4e0LgLaj20iwKhc
-         zbrVx5A5hLh3dQ2qPEF+7dRHM1vAgBDIl/ZbiEenY/M08bY104Jw6wSVVI6YR8WGDbUg
-         S2Ow==
-X-Gm-Message-State: AOAM532Flh3PafDJH2IepUVexswa1B1g68q7F3IvGfF1imuff5m1vxU2
-        EFrC9DqdTVqRT0hShbdQHOezpMfYNJvWKEnyQ2M=
-X-Google-Smtp-Source: ABdhPJzv/j2xP8mvBWSli5bZjLCEYkoT8lBD9GlSxuJRMAZrcYHKMqBJJoyrqOU4TnI7rbrn8Skuu14H3VEr/EuyYrY=
-X-Received: by 2002:a17:906:9a02:: with SMTP id ai2mr22752461ejc.279.1620597252167;
- Sun, 09 May 2021 14:54:12 -0700 (PDT)
+        h=x-gm-message-state:subject:to:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=NPeFGBu1iIHqqYN091/XPUGAZew+lI26h0TTRnu9/go=;
+        b=LrxGb1Ya9O945dXVZ99lgwY1kimc9pLYa6Tt4Q/Cd7ZBzqd3r8AaScZyWkf1Vm0PfD
+         I/LrQflosgTa2Re9ScY1Sw7D+CSugJsg7JuGk9WOFhTApDk3HmpJtWrnQa/NE4FQQyZa
+         gh8cfY5572D7DJmWmOK+0Byr9SBKPH0fph+CjH0Lk4M5PR0rT/EBzvARkHGvgODzemWH
+         1ChDlaea6uLIo0U0+Pk56QMASMCIj6Y/Skgi2QGSoTo9z2hZ8Mr20u0oKeGvfLY8tQZQ
+         +Z/ARHJGjN+Dz+pKwiIY/mo/BKwiVc7oQTpZidCK2DUFOmTxqacjZnvDk0yGlNjQ8G0m
+         BtKA==
+X-Gm-Message-State: AOAM531yv0Zun8iRdRvnOum3tKne2GFfwAJAaQnl3GdtRVx7ysM1fMxZ
+        OLf2ZlxF23zQ0xUoYUIjeGg=
+X-Google-Smtp-Source: ABdhPJwCGjHVXCAoyzB9k+9KoNLLs3dw+5rYJxJ0c7XRCCMhYn4mIxaIGgPsRzCaniHuyihKHVWHjw==
+X-Received: by 2002:a4a:9c8c:: with SMTP id z12mr16619572ooj.3.1620598184970;
+        Sun, 09 May 2021 15:09:44 -0700 (PDT)
+Received: from Davids-MacBook-Pro.local ([2601:282:800:dc80:5d79:6512:fce6:88aa])
+        by smtp.googlemail.com with ESMTPSA id z4sm2654032otq.65.2021.05.09.15.09.44
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sun, 09 May 2021 15:09:44 -0700 (PDT)
+Subject: Re: [iproute2] tipc: call a sub-routine in separate socket
+To:     Hoang Le <hoang.h.le@dektech.com.au>, netdev@vger.kernel.org,
+        tipc-discussion@lists.sourceforge.net, jmaloy@redhat.com,
+        maloy@donjonn.com, ying.xue@windriver.com,
+        tung.q.nguyen@dektech.com.au
+References: <20210506032724.4111-1-hoang.h.le@dektech.com.au>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <f62d9905-22d1-08db-1b6b-e32e7d089e87@gmail.com>
+Date:   Sun, 9 May 2021 16:09:42 -0600
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
+ Gecko/20100101 Thunderbird/78.10.1
 MIME-Version: 1.0
-References: <20210509115513.4121549-1-olteanv@gmail.com> <53834b37-16c5-2d1d-ab72-78f699603dca@gmail.com>
-In-Reply-To: <53834b37-16c5-2d1d-ab72-78f699603dca@gmail.com>
-From:   Vladimir Oltean <olteanv@gmail.com>
-Date:   Mon, 10 May 2021 00:54:01 +0300
-Message-ID: <CA+h21hoKocOhidF_wNaQhOgiq_KqMsi4LJisdPTkEiWo3x4ZDA@mail.gmail.com>
-Subject: Re: [PATCH net] net: dsa: fix error code getting shifted with 4 in dsa_slave_get_sset_count
-To:     Florian Fainelli <f.fainelli@gmail.com>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        netdev <netdev@vger.kernel.org>, Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Dan Carpenter <dan.carpenter@oracle.com>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <20210506032724.4111-1-hoang.h.le@dektech.com.au>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, May 09, 2021 at 10:35:27AM -0700, Florian Fainelli wrote:
-> On 5/9/2021 4:55 AM, Vladimir Oltean wrote:
-> I would have a preference for keeping the count variable and treating it
-> specifically in case it is negative.
+On 5/5/21 9:27 PM, Hoang Le wrote:
+> When receiving a result from first query to netlink, we may exec
+> a another query inside the callback. If calling this sub-routine
+> in the same socket, it will be discarded the result from previous
+> exection.
+> To avoid this we perform a nested query in separate socket.
+> 
+> Fixes: 202102830663 ("tipc: use the libmnl functions in lib/mnl_utils.c")
+> Signed-off-by: Hoang Le <hoang.h.le@dektech.com.au>
+> Acked-by: Jon Maloy <jmaloy@redhat.com>
+> ---
+>  tipc/bearer.c | 50 +++++++++++++++++++++++++++++++++++++++++++++-----
+>  tipc/link.c   | 15 +++++++++++++--
+>  tipc/socket.c | 17 +++++++++++++++--
+>  3 files changed, 73 insertions(+), 9 deletions(-)
+> 
 
-Thanks. I hope I've understood you correctly that renaming "err" back to
-"count" was all that you were asking for. Anyway, patch is superseded by
-https://patchwork.kernel.org/project/netdevbpf/patch/20210509193338.451174-1-olteanv@gmail.com/
+applied, thanks
+
