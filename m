@@ -2,73 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B27BA377854
-	for <lists+netdev@lfdr.de>; Sun,  9 May 2021 21:52:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 415493778EB
+	for <lists+netdev@lfdr.de>; Sun,  9 May 2021 23:54:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229925AbhEITxN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 9 May 2021 15:53:13 -0400
-Received: from mail-il1-f199.google.com ([209.85.166.199]:51754 "EHLO
-        mail-il1-f199.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229666AbhEITxM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 9 May 2021 15:53:12 -0400
-Received: by mail-il1-f199.google.com with SMTP id b1-20020a92dcc10000b02901b79d339165so4331207ilr.18
-        for <netdev@vger.kernel.org>; Sun, 09 May 2021 12:52:07 -0700 (PDT)
+        id S229933AbhEIVzS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 9 May 2021 17:55:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41784 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229662AbhEIVzS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 9 May 2021 17:55:18 -0400
+Received: from mail-ej1-x62f.google.com (mail-ej1-x62f.google.com [IPv6:2a00:1450:4864:20::62f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D78FC061573
+        for <netdev@vger.kernel.org>; Sun,  9 May 2021 14:54:13 -0700 (PDT)
+Received: by mail-ej1-x62f.google.com with SMTP id s20so16067496ejr.9
+        for <netdev@vger.kernel.org>; Sun, 09 May 2021 14:54:13 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=BUKgrm0iW6aeFKwl3oW3H+VZ1RqWnbBKe4voE1NkxW0=;
+        b=CdYbZjnbfLDUA3eTM1F3Mg8LBHzXaYn+d1cl9nFdBWaRmCcHBYtioercbwgS8Pxn/G
+         w4Ruf8PcCrvR3rN7017nceyoAZKIJoRl6iYQfIwemW1Xpxe3uqr+st63w/2yEykcGbKO
+         vs4D9FC7Dw2nLZm+NM8VHqdlNwvus4Sh7kZRUb5E+KUGqorR/2yblaiIRadAiX3EYFV1
+         GloNdXXvCtfefM6zzhEtdrxwXYd2t7Bvd8zHSX/M5obZsD4XSpHbIoESNORicNe9Bx2P
+         xR0pXuUrbns7TQ7HRuGIYQhaTVoyeCOzzBhJk4TN9aG6Slp3HZD5wVwT0myzHpr3sBwE
+         jLRA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
-         :from:to;
-        bh=001ucYqBcq5hHetM/YG6b6qU6lfZlfM5MsOotoGLw6s=;
-        b=ayQi8XOOvp70kDe0TyxKQ1RsYZZD26xP1MBLrNmq5gLowN/grbx7qwzGZKnzOj+Mqj
-         ONbKfLr/GqAcd3gnQftf4nfg4fYpdyhPla1PLnGDgkxUc9Wj1m/4anm+ClEI08X/R8DZ
-         K6wr1vxboueNMBqarAfSDeieWH+cut314XrqfjIlLpvkXNhRt3ZX049MXx4xLtPq9YWe
-         6K3UmMppaG4g83tvhyVXORL2btLOvtqQKT4wddq8CwoeFdBnD7nXUQyrK0/m7FMDJpRI
-         QQIUnnVYQuj/bAsr4VB35OWV0V7M49Wfreu7WbaY/ntedWF4UZ2Obi5VkHbQ7TPcusgy
-         XnZQ==
-X-Gm-Message-State: AOAM531yGj/A4npbOlTUpsnSgya64CrPir1zgjfyGyvqwhX1bBZaE0SF
-        ytd56TfykjbYB0EIAakHAnnpcTx4dmjGp2D+uyLl/+CmAv/l
-X-Google-Smtp-Source: ABdhPJzed5HQDQb/w0WLy/sSJ5scMD00J53TAphMc4LFvXlIfruUmkRJV2bYpKP9zlVDzT0+x6AdHe2Mir7a8+KTzmCONeHtZ8K+
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=BUKgrm0iW6aeFKwl3oW3H+VZ1RqWnbBKe4voE1NkxW0=;
+        b=OzIiqfP2Wk9rfkwP6mtPrknLopehavhKGmVtatGJ7abHNuBORwXaj/17/xXHEFgeRY
+         6fConBqN/pj2meQnd7BxngCBweieSmY2cjS1Am8jK74TuUwxbzCrsmxYu1cFiizFzU9Q
+         OSdIlDbrfbJ26lr0J+KTJWr6oeyCITvZYCQZkmVmBdvw9eyf+mtK85IS8Ey5YAeoWroR
+         N2Bf2mIBbRYcL76EKyFmaW7SYawopQZctSAjA8aU8J5M6NQwBophy4e0LgLaj20iwKhc
+         zbrVx5A5hLh3dQ2qPEF+7dRHM1vAgBDIl/ZbiEenY/M08bY104Jw6wSVVI6YR8WGDbUg
+         S2Ow==
+X-Gm-Message-State: AOAM532Flh3PafDJH2IepUVexswa1B1g68q7F3IvGfF1imuff5m1vxU2
+        EFrC9DqdTVqRT0hShbdQHOezpMfYNJvWKEnyQ2M=
+X-Google-Smtp-Source: ABdhPJzv/j2xP8mvBWSli5bZjLCEYkoT8lBD9GlSxuJRMAZrcYHKMqBJJoyrqOU4TnI7rbrn8Skuu14H3VEr/EuyYrY=
+X-Received: by 2002:a17:906:9a02:: with SMTP id ai2mr22752461ejc.279.1620597252167;
+ Sun, 09 May 2021 14:54:12 -0700 (PDT)
 MIME-Version: 1.0
-X-Received: by 2002:a92:510:: with SMTP id q16mr5942373ile.41.1620589927542;
- Sun, 09 May 2021 12:52:07 -0700 (PDT)
-Date:   Sun, 09 May 2021 12:52:07 -0700
-In-Reply-To: <000000000000cc615405c13e4dfe@google.com>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000f532ab05c1eafe35@google.com>
-Subject: Re: [syzbot] KASAN: use-after-free Read in nfc_llcp_put_ssap
-From:   syzbot <syzbot+e4689b43d2ed2ed63611@syzkaller.appspotmail.com>
-To:     akpm@linux-foundation.org, bp@alien8.de, davem@davemloft.net,
-        hpa@zytor.com, jmattson@google.com, joro@8bytes.org,
-        kuba@kernel.org, kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        mark.rutland@arm.com, masahiroy@kernel.org, mingo@redhat.com,
-        netdev@vger.kernel.org, pbonzini@redhat.com, peterz@infradead.org,
-        rafael.j.wysocki@intel.com, rostedt@goodmis.org, seanjc@google.com,
-        syzkaller-bugs@googlegroups.com, tglx@linutronix.de,
-        vkuznets@redhat.com, wanpengli@tencent.com, will@kernel.org,
-        x86@kernel.org
+References: <20210509115513.4121549-1-olteanv@gmail.com> <53834b37-16c5-2d1d-ab72-78f699603dca@gmail.com>
+In-Reply-To: <53834b37-16c5-2d1d-ab72-78f699603dca@gmail.com>
+From:   Vladimir Oltean <olteanv@gmail.com>
+Date:   Mon, 10 May 2021 00:54:01 +0300
+Message-ID: <CA+h21hoKocOhidF_wNaQhOgiq_KqMsi4LJisdPTkEiWo3x4ZDA@mail.gmail.com>
+Subject: Re: [PATCH net] net: dsa: fix error code getting shifted with 4 in dsa_slave_get_sset_count
+To:     Florian Fainelli <f.fainelli@gmail.com>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        netdev <netdev@vger.kernel.org>, Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Dan Carpenter <dan.carpenter@oracle.com>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-syzbot has bisected this issue to:
+On Sun, May 09, 2021 at 10:35:27AM -0700, Florian Fainelli wrote:
+> On 5/9/2021 4:55 AM, Vladimir Oltean wrote:
+> I would have a preference for keeping the count variable and treating it
+> specifically in case it is negative.
 
-commit 997acaf6b4b59c6a9c259740312a69ea549cc684
-Author: Mark Rutland <mark.rutland@arm.com>
-Date:   Mon Jan 11 15:37:07 2021 +0000
-
-    lockdep: report broken irq restoration
-
-bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=14af741dd00000
-start commit:   95aafe91 net: ethernet: ixp4xx: Support device tree probing
-git tree:       net-next
-final oops:     https://syzkaller.appspot.com/x/report.txt?x=16af741dd00000
-console output: https://syzkaller.appspot.com/x/log.txt?x=12af741dd00000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=7668018815a66138
-dashboard link: https://syzkaller.appspot.com/bug?extid=e4689b43d2ed2ed63611
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=15ed2663d00000
-
-Reported-by: syzbot+e4689b43d2ed2ed63611@syzkaller.appspotmail.com
-Fixes: 997acaf6b4b5 ("lockdep: report broken irq restoration")
-
-For information about bisection process see: https://goo.gl/tpsmEJ#bisection
+Thanks. I hope I've understood you correctly that renaming "err" back to
+"count" was all that you were asking for. Anyway, patch is superseded by
+https://patchwork.kernel.org/project/netdevbpf/patch/20210509193338.451174-1-olteanv@gmail.com/
