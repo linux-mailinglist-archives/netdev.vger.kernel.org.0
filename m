@@ -2,77 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9F95F3799F1
-	for <lists+netdev@lfdr.de>; Tue, 11 May 2021 00:20:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2A7F7379A00
+	for <lists+netdev@lfdr.de>; Tue, 11 May 2021 00:24:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233167AbhEJWVr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 10 May 2021 18:21:47 -0400
-Received: from mail.kernel.org ([198.145.29.99]:58312 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232177AbhEJWVS (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 10 May 2021 18:21:18 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id 2E0F36161C;
-        Mon, 10 May 2021 22:20:12 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1620685212;
-        bh=DPufKTlQo/+DorwT61wv8lVftcfjqUcX5vWqEzJyCwA=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=BHAAPjw0ImoS4OuvrEn0LULODDys6dmIKXIitA+w5qNarfhNndOTpGi43Ectzhkrx
-         45XNEmSKkJ0p96C0coqvn9UEbCTSH9uPGpwgFrE+LM+RFkDoeBYuLgNYk1PoY4omv4
-         fLwKoVzWqcUSeKGAQBQc8EBTmGMrnkFS1YThbmklE8srE0mE6Nv0bed4YReuEf5Oqu
-         mxQ1R0hoLLtyCeRYKqGUF7GdDE5G1n0H8WNQGhsCA2h9Ol+Mw+ORCxUsDPFQDKxkZd
-         Rzn0WDEvyoF1Tc/TwSk8guRekkLW9e42GNiAiAKh4u7C2xH3cnVh5/dHvLNpDmtpg1
-         7xTS3nelqYw4A==
-Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 2322B60C09;
-        Mon, 10 May 2021 22:20:12 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        id S231208AbhEJWZo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 10 May 2021 18:25:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58098 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231159AbhEJWZf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 10 May 2021 18:25:35 -0400
+Received: from mail-lf1-x12f.google.com (mail-lf1-x12f.google.com [IPv6:2a00:1450:4864:20::12f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 187D0C061574;
+        Mon, 10 May 2021 15:24:26 -0700 (PDT)
+Received: by mail-lf1-x12f.google.com with SMTP id z13so25733203lft.1;
+        Mon, 10 May 2021 15:24:26 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=UB7STX+2BxkjlcmPswGdadDbZZquPtBCCQkaCzIDE+k=;
+        b=tPKvon4TXZcQUmVNIMXsbJNJJfRhE8yBGDSSU1l2CObWZ6JvokUJMkr4Y0pG4jnU0m
+         pJHdDDxlftKQbdiIkBsrQHk+9in+js7ZwPOK3T/OtTlhT9rMuXbRwBzSw1ZCgg4uLWve
+         bphsC/Abi4M3nkWnXGopGbLCiPU+omE+YKixVjfPBs67M5TcLZuVluRyEsT9GJgP4vH7
+         BOb3tWDFEYYHmu9aBSCR9SUQcOeQ8DDpqiMYh5Q8ZDQYsWcwA4PM/e6xHwkAepVD9pF3
+         sUPbAc84hitbwheGjhtRZwTj3P3bFgcHM/wwnBYUdsKxP4iLQE2/uZjP6MIQj0byMB2c
+         xkAg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=UB7STX+2BxkjlcmPswGdadDbZZquPtBCCQkaCzIDE+k=;
+        b=m8eM26pp6vLvhKMBnpl7MPrFu5TdPXj/FEr5cTGxGiYTyd5q/0gm1ZkIiAM+Wbwv4r
+         RAkFyyZeEUWjBQNp8cxHsRo4aGsRB1cArtULPRP3qXij2fwf73B1WbIuOiwcNPaxIiHh
+         QJxWC/hIYGOKK5zyHaHWWPuDlLEVO9N2p+i9yaqjgL4oF+FCC20CfcIFfvxkVBs/UgEo
+         otzyuWqifQ7x6Jk2+G7judDB7BnLXRh1q0IF0C9a2jjMvpPv/QIuAqCKaFzvHBIPsaQu
+         Yx080i6AfDlbHRU4c7Rew2wXDJfqfeB27QHRnBrSiE2zvnBM5uinB3RHNJg6IZVgwCJ7
+         SXmA==
+X-Gm-Message-State: AOAM532RmJWgWZnCLQWLRpLBMr4RGBbWl42YtoB3qybgEsITxOjAu4ni
+        /PxiPqO+qHTIRbi2LAex7PdWqrYAw0k=
+X-Google-Smtp-Source: ABdhPJwz1nXqStPCyV4kW/r7tJbrKbNs1e+uZx5KRX66nTHku4J3LhN5phbEJ2JfUGc2GVv6Ww1p5Q==
+X-Received: by 2002:a19:6a07:: with SMTP id u7mr18725829lfu.579.1620685464366;
+        Mon, 10 May 2021 15:24:24 -0700 (PDT)
+Received: from [192.168.2.145] (109-252-193-91.dynamic.spd-mgts.ru. [109.252.193.91])
+        by smtp.googlemail.com with ESMTPSA id x62sm2388400lff.295.2021.05.10.15.24.23
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 10 May 2021 15:24:24 -0700 (PDT)
+Subject: Re: [PATCH v1] brcmfmac: Silence error messages about unsupported
+ firmware features
+To:     Andy Shevchenko <andy.shevchenko@gmail.com>
+Cc:     Arend van Spriel <arend.vanspriel@broadcom.com>,
+        Franky Lin <franky.lin@broadcom.com>,
+        Hante Meuleman <hante.meuleman@broadcom.com>,
+        Chi-Hsien Lin <chi-hsien.lin@cypress.com>,
+        Wright Feng <wright.feng@cypress.com>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>,
+        "brcm80211-dev-list.pdl@broadcom.com" 
+        <brcm80211-dev-list.pdl@broadcom.com>,
+        "brcm80211-dev-list@cypress.com" <brcm80211-dev-list@cypress.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+References: <20210510221148.12134-1-digetx@gmail.com>
+ <CAHp75VdbFDxQy6vxDheTzcQhYEoodwbjD_LTOCyoiuLUoj4DXQ@mail.gmail.com>
+From:   Dmitry Osipenko <digetx@gmail.com>
+Message-ID: <34330b8c-1c9d-de77-8f7f-4400855777fb@gmail.com>
+Date:   Tue, 11 May 2021 01:24:23 +0300
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.8.1
 MIME-Version: 1.0
+In-Reply-To: <CAHp75VdbFDxQy6vxDheTzcQhYEoodwbjD_LTOCyoiuLUoj4DXQ@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next v3 0/5] net: pch_gbe: fix and a few cleanups
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <162068521214.17141.13468046440928102441.git-patchwork-notify@kernel.org>
-Date:   Mon, 10 May 2021 22:20:12 +0000
-References: <20210510163931.42417-1-andriy.shevchenko@linux.intel.com>
-In-Reply-To: <20210510163931.42417-1-andriy.shevchenko@linux.intel.com>
-To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc:     davem@davemloft.net, f.suligoi@asem.it, lee.jones@linaro.org,
-        jesse.brandeburg@intel.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, kuba@kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
-
-This series was applied to netdev/net-next.git (refs/heads/master):
-
-On Mon, 10 May 2021 19:39:26 +0300 you wrote:
-> The series provides one fix (patch 1) for GPIO to be able to wait for
-> the GPIO driver to appear. This is separated from the conversion to
-> the GPIO descriptors (patch 2) in order to have a possibility for
-> backporting. Patches 3 and 4 fix minor warnings from Sparse while
-> moving to a new APIs. Patch 5 is MODULE_VERSION() clean up.
+11.05.2021 01:18, Andy Shevchenko пишет:
+> On Tuesday, May 11, 2021, Dmitry Osipenko <digetx@gmail.com
+> <mailto:digetx@gmail.com>> wrote:
 > 
-> Tested on Intel Minnowboard (v1).
+>     KMSG is flooded with error messages about unsupported firmware
+>     features on BCM4329 chip. The GET_ASSOCLIST error became especially
+>     noisy with a newer NetworkManager version of Ubuntu 21.04. Let's print
+>     the noisy error messages only once.
 > 
-> [...]
+> 
+> Seems like you are reinventing *_once() printing methods. Please use
+> them instead
 
-Here is the summary with links:
-  - [net-next,v3,1/5] net: pch_gbe: Propagate error from devm_gpio_request_one()
-    https://git.kernel.org/netdev/net-next/c/9e3617a7b845
-  - [net-next,v3,2/5] net: pch_gbe: Convert to use GPIO descriptors
-    https://git.kernel.org/netdev/net-next/c/aca6a8746c36
-  - [net-next,v3,3/5] net: pch_gbe: use readx_poll_timeout_atomic() variant
-    https://git.kernel.org/netdev/net-next/c/6fcfb267cb49
-  - [net-next,v3,4/5] net: pch_gbe: Use proper accessors to BE data in pch_ptp_match()
-    https://git.kernel.org/netdev/net-next/c/443ef39b499c
-  - [net-next,v3,5/5] net: pch_gbe: remove unneeded MODULE_VERSION() call
-    https://git.kernel.org/netdev/net-next/c/40b161bb16c4
-
-You are awesome, thank you!
---
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+Indeed, I see now that it won't be difficult to add the new
+wiphy_err_once() helper that will use the generic dev_err_once(). I'll
+make a v2, thank you for taking a look at the patch.
