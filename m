@@ -2,96 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2A7F7379A00
-	for <lists+netdev@lfdr.de>; Tue, 11 May 2021 00:24:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D250F379A37
+	for <lists+netdev@lfdr.de>; Tue, 11 May 2021 00:36:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231208AbhEJWZo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 10 May 2021 18:25:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58098 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231159AbhEJWZf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 10 May 2021 18:25:35 -0400
-Received: from mail-lf1-x12f.google.com (mail-lf1-x12f.google.com [IPv6:2a00:1450:4864:20::12f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 187D0C061574;
-        Mon, 10 May 2021 15:24:26 -0700 (PDT)
-Received: by mail-lf1-x12f.google.com with SMTP id z13so25733203lft.1;
-        Mon, 10 May 2021 15:24:26 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=UB7STX+2BxkjlcmPswGdadDbZZquPtBCCQkaCzIDE+k=;
-        b=tPKvon4TXZcQUmVNIMXsbJNJJfRhE8yBGDSSU1l2CObWZ6JvokUJMkr4Y0pG4jnU0m
-         pJHdDDxlftKQbdiIkBsrQHk+9in+js7ZwPOK3T/OtTlhT9rMuXbRwBzSw1ZCgg4uLWve
-         bphsC/Abi4M3nkWnXGopGbLCiPU+omE+YKixVjfPBs67M5TcLZuVluRyEsT9GJgP4vH7
-         BOb3tWDFEYYHmu9aBSCR9SUQcOeQ8DDpqiMYh5Q8ZDQYsWcwA4PM/e6xHwkAepVD9pF3
-         sUPbAc84hitbwheGjhtRZwTj3P3bFgcHM/wwnBYUdsKxP4iLQE2/uZjP6MIQj0byMB2c
-         xkAg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=UB7STX+2BxkjlcmPswGdadDbZZquPtBCCQkaCzIDE+k=;
-        b=m8eM26pp6vLvhKMBnpl7MPrFu5TdPXj/FEr5cTGxGiYTyd5q/0gm1ZkIiAM+Wbwv4r
-         RAkFyyZeEUWjBQNp8cxHsRo4aGsRB1cArtULPRP3qXij2fwf73B1WbIuOiwcNPaxIiHh
-         QJxWC/hIYGOKK5zyHaHWWPuDlLEVO9N2p+i9yaqjgL4oF+FCC20CfcIFfvxkVBs/UgEo
-         otzyuWqifQ7x6Jk2+G7judDB7BnLXRh1q0IF0C9a2jjMvpPv/QIuAqCKaFzvHBIPsaQu
-         Yx080i6AfDlbHRU4c7Rew2wXDJfqfeB27QHRnBrSiE2zvnBM5uinB3RHNJg6IZVgwCJ7
-         SXmA==
-X-Gm-Message-State: AOAM532RmJWgWZnCLQWLRpLBMr4RGBbWl42YtoB3qybgEsITxOjAu4ni
-        /PxiPqO+qHTIRbi2LAex7PdWqrYAw0k=
-X-Google-Smtp-Source: ABdhPJwz1nXqStPCyV4kW/r7tJbrKbNs1e+uZx5KRX66nTHku4J3LhN5phbEJ2JfUGc2GVv6Ww1p5Q==
-X-Received: by 2002:a19:6a07:: with SMTP id u7mr18725829lfu.579.1620685464366;
-        Mon, 10 May 2021 15:24:24 -0700 (PDT)
-Received: from [192.168.2.145] (109-252-193-91.dynamic.spd-mgts.ru. [109.252.193.91])
-        by smtp.googlemail.com with ESMTPSA id x62sm2388400lff.295.2021.05.10.15.24.23
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 10 May 2021 15:24:24 -0700 (PDT)
-Subject: Re: [PATCH v1] brcmfmac: Silence error messages about unsupported
- firmware features
-To:     Andy Shevchenko <andy.shevchenko@gmail.com>
-Cc:     Arend van Spriel <arend.vanspriel@broadcom.com>,
-        Franky Lin <franky.lin@broadcom.com>,
-        Hante Meuleman <hante.meuleman@broadcom.com>,
-        Chi-Hsien Lin <chi-hsien.lin@cypress.com>,
-        Wright Feng <wright.feng@cypress.com>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>,
-        "brcm80211-dev-list.pdl@broadcom.com" 
-        <brcm80211-dev-list.pdl@broadcom.com>,
-        "brcm80211-dev-list@cypress.com" <brcm80211-dev-list@cypress.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-References: <20210510221148.12134-1-digetx@gmail.com>
- <CAHp75VdbFDxQy6vxDheTzcQhYEoodwbjD_LTOCyoiuLUoj4DXQ@mail.gmail.com>
-From:   Dmitry Osipenko <digetx@gmail.com>
-Message-ID: <34330b8c-1c9d-de77-8f7f-4400855777fb@gmail.com>
-Date:   Tue, 11 May 2021 01:24:23 +0300
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.8.1
+        id S231514AbhEJWhk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 10 May 2021 18:37:40 -0400
+Received: from tartarus.angband.pl ([51.83.246.204]:34704 "EHLO
+        tartarus.angband.pl" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230271AbhEJWh2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 10 May 2021 18:37:28 -0400
+X-Greylist: delayed 1784 seconds by postgrey-1.27 at vger.kernel.org; Mon, 10 May 2021 18:37:20 EDT
+Received: from kilobyte by tartarus.angband.pl with local (Exim 4.94.2)
+        (envelope-from <kilobyte@angband.pl>)
+        id 1lgDtp-00EKjz-Lm; Mon, 10 May 2021 23:57:13 +0200
+Date:   Mon, 10 May 2021 23:57:13 +0200
+From:   Adam Borowski <kilobyte@angband.pl>
+To:     Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+Cc:     Linux Doc Mailing List <linux-doc@vger.kernel.org>,
+        linux-kernel@vger.kernel.org, Jonathan Corbet <corbet@lwn.net>,
+        alsa-devel@alsa-project.org, coresight@lists.linaro.org,
+        dri-devel@lists.freedesktop.org, intel-gfx@lists.freedesktop.org,
+        intel-wired-lan@lists.osuosl.org, keyrings@vger.kernel.org,
+        kvm@vger.kernel.org, linux-acpi@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-edac@vger.kernel.org,
+        linux-ext4@vger.kernel.org, linux-f2fs-devel@lists.sourceforge.net,
+        linux-fpga@vger.kernel.org, linux-hwmon@vger.kernel.org,
+        linux-iio@vger.kernel.org, linux-input@vger.kernel.org,
+        linux-integrity@vger.kernel.org, linux-media@vger.kernel.org,
+        linux-pci@vger.kernel.org, linux-pm@vger.kernel.org,
+        linux-rdma@vger.kernel.org, linux-riscv@lists.infradead.org,
+        linux-sgx@vger.kernel.org, linux-usb@vger.kernel.org,
+        mjpeg-users@lists.sourceforge.net, netdev@vger.kernel.org,
+        rcu@vger.kernel.org, x86@kernel.org
+Subject: Re: [PATCH 00/53] Get rid of UTF-8 chars that can be mapped as ASCII
+Message-ID: <YJmsOYzPIsQ04Zxb@angband.pl>
+References: <cover.1620641727.git.mchehab+huawei@kernel.org>
 MIME-Version: 1.0
-In-Reply-To: <CAHp75VdbFDxQy6vxDheTzcQhYEoodwbjD_LTOCyoiuLUoj4DXQ@mail.gmail.com>
 Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <cover.1620641727.git.mchehab+huawei@kernel.org>
+X-Junkbait: aaron@angband.pl, zzyx@angband.pl
+X-SA-Exim-Connect-IP: <locally generated>
+X-SA-Exim-Mail-From: kilobyte@angband.pl
+X-SA-Exim-Scanned: No (on tartarus.angband.pl); SAEximRunCond expanded to false
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-11.05.2021 01:18, Andy Shevchenko пишет:
-> On Tuesday, May 11, 2021, Dmitry Osipenko <digetx@gmail.com
-> <mailto:digetx@gmail.com>> wrote:
+On Mon, May 10, 2021 at 12:26:12PM +0200, Mauro Carvalho Chehab wrote:
+> There are several UTF-8 characters at the Kernel's documentation.
+[...]
+> Other UTF-8 characters were added along the time, but they're easily
+> replaceable by ASCII chars.
 > 
->     KMSG is flooded with error messages about unsupported firmware
->     features on BCM4329 chip. The GET_ASSOCLIST error became especially
->     noisy with a newer NetworkManager version of Ubuntu 21.04. Let's print
->     the noisy error messages only once.
-> 
-> 
-> Seems like you are reinventing *_once() printing methods. Please use
-> them instead
+> As Linux developers are all around the globe, and not everybody has UTF-8
+> as their default charset
 
-Indeed, I see now that it won't be difficult to add the new
-wiphy_err_once() helper that will use the generic dev_err_once(). I'll
-make a v2, thank you for taking a look at the patch.
+I'm not aware of a distribution that still allows selecting a non-UTF-8
+charset in a normal flow in their installer.  And if they haven't purged
+support for ancient encodings, that support is thoroughly bitrotten.
+Thus, I disagree that this is a legitimate concern.
+
+What _could_ be a legitimate reason is that someone is on a _terminal_
+that can't display a wide enough set of glyphs.  Such terminals are:
+ • Linux console (because of vgacon limitations; patchsets to improve
+   other cons haven't been mainlined)
+ • some Windows terminals (putty, old Windows console) that can't borrow
+   glyphs from other fonts like fontconfig can
+
+For the former, it's whatever your distribution ships in
+/usr/share/consolefonts/ or an equivalent, which is based on historic
+ISO-8859 and VT100 traditions.
+
+For the latter, the near-guaranteed character set is WGL4.
+
+
+Thus, at least two of your choices seem to disagree with the above:
+[dropped]
+> 	0xd7   => 'x',		# MULTIPLICATION SIGN
+[retained]
+> 	- U+2b0d ('⬍'): UP DOWN BLACK ARROW
+
+× is present in ISO-8859, V100, WGL4; I've found no font in
+/usr/share/consolefonts/ on my Debian unstable box that lacks this
+character.
+
+⬍ is not found in any of the above.  You might want to at least
+convert it to ↕ which is at least present in WGL4, and thus likely
+to be supported in fonts heeding Windows/Mac/OpenType recommendations.
+That still won't make it work on VT.
+
+
+Meow!
+-- 
+⢀⣴⠾⠻⢶⣦⠀ .--[ Makefile ]
+⣾⠁⢠⠒⠀⣿⡁ # beware of races
+⢿⡄⠘⠷⠚⠋⠀ all: pillage burn
+⠈⠳⣄⠀⠀⠀⠀ `----
