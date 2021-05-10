@@ -2,211 +2,201 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E35003791E5
-	for <lists+netdev@lfdr.de>; Mon, 10 May 2021 17:05:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8883C3792AE
+	for <lists+netdev@lfdr.de>; Mon, 10 May 2021 17:29:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240546AbhEJPGh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 10 May 2021 11:06:37 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:28740 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S231536AbhEJPCi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 10 May 2021 11:02:38 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1620658893;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=tQFidAMkIKIHS26NAPycpeHm02ATyGtJ8uUbhbJtKSE=;
-        b=VUTSZFNcluJBOZho186nCBD9PHur19ogW5+5MfJxLVK8DEUSBsba6ZhhIZO4J412OKFX8T
-        waBogxodm5JewxTPeStZxJ9c2UaWX7RjEd/wLf6xtyqlIM/AMtVk/T5Z7GyTWq/b+8PSrN
-        BasRMNfN+1ZtB+5WqwanIpfDApQiLmc=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-12-X-Yxeb4tNHewz_99_55bkQ-1; Mon, 10 May 2021 11:01:27 -0400
-X-MC-Unique: X-Yxeb4tNHewz_99_55bkQ-1
-Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com [10.5.11.13])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 9700E107ACC7;
-        Mon, 10 May 2021 15:01:25 +0000 (UTC)
-Received: from carbon (unknown [10.36.110.19])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 861FC60CC5;
-        Mon, 10 May 2021 15:01:11 +0000 (UTC)
-Date:   Mon, 10 May 2021 17:01:10 +0200
-From:   Jesper Dangaard Brouer <brouer@redhat.com>
-To:     Toke =?UTF-8?B?SMO4aWxhbmQtSsO4cmdlbnNlbg==?= <toke@redhat.com>
-Cc:     brouer@redhat.com,
-        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
-        Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        Zvi Effron <zeffron@riotgames.com>,
-        T K Sourabh <sourabhtk37@gmail.com>,
-        Xdp <xdp-newbies@vger.kernel.org>,
-        intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org,
-        magnus.karlsson@intel.com, kuba@kernel.org,
-        Tony Nguyen <anthony.l.nguyen@intel.com>
-Subject: Re: Dropped packets mapping IRQs for adjusted queue counts on i40e
-Message-ID: <20210510170110.52640ae8@carbon>
-In-Reply-To: <87h7jaq1dd.fsf@toke.dk>
-References: <CAC1LvL1NHj6n+RNYRmja2YDhkcCwREuhjaBz_k255rU1jdO8Sw@mail.gmail.com>
-        <CADS2XXpjasmJKP__oHsrvv3EG8n-FjB6sqHwgQfh7QgeJ8GrrQ@mail.gmail.com>
-        <CAC1LvL2Q=s8pmwKAh2615fsTFEETKp96jpoLJS+75=0ztwuLFQ@mail.gmail.com>
-        <CADS2XXptoyPTBObKgp3gcRZnWzoVyZrC26tDpLWhC9YrGMSefw@mail.gmail.com>
-        <CAC1LvL2zmO1ntKeAoUMkJSarJBgxNhnTva3Di4047MTKqo8rPA@mail.gmail.com>
-        <CAC1LvL1Kd-TCuPk0BEQyGvEiLzgUqkZHOKQNOUnxXSY6NjFMmw@mail.gmail.com>
-        <20210505130128.00006720@intel.com>
-        <20210505212157.GA63266@ranger.igk.intel.com>
-        <87fsz0w3xn.fsf@toke.dk>
-        <20210509155033.GB36905@ranger.igk.intel.com>
-        <87h7jaq1dd.fsf@toke.dk>
+        id S232389AbhEJPaF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 10 May 2021 11:30:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47836 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234913AbhEJP1n (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 10 May 2021 11:27:43 -0400
+Received: from mail-il1-x136.google.com (mail-il1-x136.google.com [IPv6:2607:f8b0:4864:20::136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D02C8C04BF0F
+        for <netdev@vger.kernel.org>; Mon, 10 May 2021 08:09:57 -0700 (PDT)
+Received: by mail-il1-x136.google.com with SMTP id r5so14360705ilb.2
+        for <netdev@vger.kernel.org>; Mon, 10 May 2021 08:09:57 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=8kTuByNgyMtrEkhRj3rWSQu3NsuZi1QL5Z6zDTh5OHQ=;
+        b=A+/BJpDmXlX7Zxf9C3GmO/6Cff8NswFavsQVfyVKuYdl/c3epGlRJqVEHYXh2728dB
+         I3F4fguiCdD4w208QrJxXFvxvHPxITJ0L4vx7avNu92Jgrj0n1AeUwsJos1pSij9T2Cz
+         uodfrNc17m/O/J/sZCi/TXyC3/tpAQkiTbnt5CIOeR98A47W53ijsQ3eTV60uwHbGhUJ
+         g/0DhRFO5JA/lDBX5zvmDi2x8lANnXjNRRnKtTAmQu8lrNu194BI9Ez3UKFPxbppXPue
+         fCS1l0Mr/2tmkk77Pg6CMobzHlNDK3FHCypRlyisOANU3VmdAlE1Rw2o8lR4pEJdOx1S
+         785w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=8kTuByNgyMtrEkhRj3rWSQu3NsuZi1QL5Z6zDTh5OHQ=;
+        b=e9xEQTN+YA/wWZS/5awkDVCboNO1X7uJpuDw13qUxm2NCFusEVzfpk2lEb17rY3Z3V
+         B3CnBjwTpCmt5rH5GkeIqx40MliOAebH9I4N+IqW8mM/etUceZ4TngwPWSV70uMSRhVl
+         yPzbXjALQkBHDM00UsGeiiYveZG+FyxI3xNbcjra86lPa22/ewhYYRi9D8XaYpP/nkAs
+         7Dydg4yuQ3Y0ulYHHLHnrS46owH6NIq+Fa6uzw7LL0YtpWd1g9CrneyPfE6WmahyvvxY
+         Wc6FXuqTetP+MbCsNFZ0YNKMc8r2moSkzKw/w2YloG3qg29PumUA4JxkzNlZ1IaSIKfR
+         47QA==
+X-Gm-Message-State: AOAM532rLxnioeJoCihri59QZn/D9lFa8szMyWKAHdMCebOyuSeHcffv
+        Z1pLSvSoy6+CC8H1iPei89uclBdAqr5ekCb0GF+PP/M6cm4AYQ==
+X-Google-Smtp-Source: ABdhPJxmjBRNQzngOUFhRaQFafW2Gd1wm/nXW90UrrVlwLGgZK2EPWe9H03kGpYlnmL/HIYbtQdH7qLrywY0W01L3dU=
+X-Received: by 2002:a05:6e02:d41:: with SMTP id h1mr21424821ilj.0.1620659397232;
+ Mon, 10 May 2021 08:09:57 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+References: <421cc86c-b66f-b372-32f7-21e59f9a98bc@kontron.de>
+ <CAA93jw6bWOU3wX5tubkTzOFxDMWXdgmBqnGPAnzZKVVFQTEUDQ@mail.gmail.com> <c9f26a11-bb53-e3aa-606c-a592365a9a1e@kontron.de>
+In-Reply-To: <c9f26a11-bb53-e3aa-606c-a592365a9a1e@kontron.de>
+From:   Dave Taht <dave.taht@gmail.com>
+Date:   Mon, 10 May 2021 08:09:46 -0700
+Message-ID: <CAA93jw5Ab+ZVq48JAcA0s_=fLBJ4OCmVfsuK6=K3A24_k0tyYg@mail.gmail.com>
+Subject: Re: i.MX8MM Ethernet TX Bandwidth Fluctuations
+To:     Frieder Schrempf <frieder.schrempf@kontron.de>
+Cc:     NXP Linux Team <linux-imx@nxp.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 10 May 2021 13:22:54 +0200
-Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com> wrote:
+On Mon, May 10, 2021 at 5:49 AM Frieder Schrempf
+<frieder.schrempf@kontron.de> wrote:
+>
+> Hi Dave,
+>
+> thanks for the input. I really don't know much about the networking stack=
+, so at the moment I can only provide the values requested below, without k=
+nowing what it really means.
+>
+> What's so strange is, that the performance is actually good in general an=
+d only "snaps" to the "bad" state and back after some time or after repeate=
+d test runs.
+>
+> And by the way, the ethernet driver in use is the FEC driver at drivers/n=
+et/ethernet/freescale/fec_main.c.
 
-> Maciej Fijalkowski <maciej.fijalkowski@intel.com> writes:
->=20
-> > On Thu, May 06, 2021 at 12:29:40PM +0200, Toke H=C3=B8iland-J=C3=B8rgen=
-sen wrote: =20
-> >> Maciej Fijalkowski <maciej.fijalkowski@intel.com> writes:
-> >>  =20
-> >> > On Wed, May 05, 2021 at 01:01:28PM -0700, Jesse Brandeburg wrote: =20
-> >> >> Zvi Effron wrote:
-> >> >>  =20
-> >> >> > On Tue, May 4, 2021 at 4:07 PM Zvi Effron <zeffron@riotgames.com>=
- wrote: =20
-> >> >> > > I'm suspecting it's something with how XDP_REDIRECT is implemen=
-ted in
-> >> >> > > the i40e driver, but I don't know if this is a) cross driver be=
-havior,
-> >> >> > > b) expected behavior, or c) a bug. =20
-> >> >> > I think I've found the issue, and it appears to be specific to i4=
-0e
-> >> >> > (and maybe other drivers, too, but not XDP itself).
-> >> >> >=20
-> >> >> > When performing the XDP xmit, i40e uses the smp_processor_id() to
-> >> >> > select the tx queue (see
-> >> >> > https://elixir.bootlin.com/linux/v5.12.1/source/drivers/net/ether=
-net/intel/i40e/i40e_txrx.c#L3846).
-> >> >> > I'm not 100% clear on how the CPU is selected (since we don't use
-> >> >> > cores 0 and 1), we end up on a core whose id is higher than any
-> >> >> > available queue.
-> >> >> >=20
-> >> >> > I'm going to try to modify our IRQ mappings to test this.
-> >> >> >=20
-> >> >> > If I'm correct, this feels like a bug to me, since it requires a =
-user
-> >> >> > to understand low level driver details to do IRQ remapping, which=
- is a
-> >> >> > bit higher level. But if it's intended, we'll just have to figure=
- out
-> >> >> > how to work around this. (Unfortunately, using split tx and rx qu=
-eues
-> >> >> > is not possible with i40e, so that easy solution is unavailable.)
-> >> >> >=20
-> >> >> > --Zvi =20
-> >> >
-> >> > Hey Zvi, sorry for the lack of assistance, there has been statutory =
-free
-> >> > time in Poland and today i'm in the birthday mode, but we managed to
-> >> > discuss the issue with Magnus and we feel like we could have a solut=
-ion
-> >> > for that, more below.
-> >> > =20
-> >> >>=20
-> >> >>=20
-> >> >> It seems like for Intel drivers, igc, ixgbe, i40e, ice all have
-> >> >> this problem.
-> >> >>=20
-> >> >> Notably, igb, fixes it like I would expect. =20
-> >> >
-> >> > igb is correct but I think that we would like to avoid the introduct=
-ion of
-> >> > locking for higher speed NICs in XDP data path.
-> >> >
-> >> > We talked with Magnus that for i40e and ice that have lots of HW
-> >> > resources, we could always create the xdp_rings array of num_online_=
-cpus()
-> >> > size and use smp_processor_id() for accesses, regardless of the user=
-'s
-> >> > changes to queue count. =20
-> >>=20
-> >> What is "lots"? Systems with hundreds of CPUs exist (and I seem to
-> >> recall an issue with just such a system on Intel hardware(?)). Also,
-> >> what if num_online_cpus() changes? =20
+It doesn't look (from a quick grep) that that driver ever got BQL support.
+
+davet@Georges-MacBook-Pro freescale % grep sent_queue *.c
+gianfar.c:    netdev_tx_sent_queue(txq, bytes_sent);
+ucc_geth.c:    netdev_sent_queue(dev, skb->len);
+
+If you really care about bidirectional throughput, having enormous
+fifo buffers buried deep in the driver has a tendency to hurt that a
+lot and has the symptoms you describe, however not as persistent, so I
+would suspect another bug involving gso or gro to start with...
+
+BUT: I note that the effort in implementing bql and testing the packet
+size accounting usually shows up other problems in the tx/rx ring, GRO
+or NAPI code, and thus is worthwhile exercise that might find where
+things are getting stuck.
+
+It doesn't appear your kernel has fq_codel qdisc support, either,
+which means big dumb fifos at that layer, drastically affecting bidir
+throughput. also.
+
+Since the nxp team is cc'd this is a preso I'd given broadcom back in 2018:
+
+http://www.taht.net/~d/broadcom_aug9_2018.pdf
+
+And the relevant lwn articles from, like, 2011:
+
+https://lwn.net/Articles/454390/
+
+https://lwn.net/Articles/469652/
+
+
+If someone wants to send me a board to play with...
+
+> On 06.05.21 16:53, Dave Taht wrote:
+> > I am a big fan of bql - is that implemented on this driver?
 > >
-> > "Lots" is 16k for ice. For i40e datasheet tells that it's only 1536 for
-> > whole device, so I back off from the statement that i40e has a lot of
-> > resources :)
+> > cd /sys/class/net/your_device_name/queues/tx-0/byte_queue_limits/
+> > cat limit
+>
+> ~# cat /sys/class/net/eth0/queues/tx-0/byte_queue_limits/limit
+> 0
+>
 > >
-> > Also, s/num_online_cpus()/num_possible_cpus(). =20
->=20
-> OK, even 1536 is more than I expected; I figured it would be way lower,
-> which is why you were suggesting to use num_online_cpus() instead; but
-> yeah, num_possible_cpus() is obviously better, then :)
->=20
-> >> > This way the smp_processor_id() provides the serialization by itself=
- as
-> >> > we're under napi on a given cpu, so there's no need for locking
-> >> > introduction - there is a per-cpu XDP ring provided. If we would sti=
-ck to
-> >> > the approach where you adjust the size of xdp_rings down to the shri=
-nked
-> >> > Rx queue count and use a smp_processor_id() % vsi->num_queue_pairs f=
-ormula
-> >> > then we could have a resource contention. Say that you did on a 16 c=
-ore
-> >> > system:
-> >> > $ ethtool -L eth0 combined 2
-> >> >
-> >> > and then mapped the q0 to cpu1 and q1 to cpu 11. Both queues will gr=
-ab the
-> >> > xdp_rings[1], so we would have to introduce the locking.
-> >> >
-> >> > Proposed approach would just result with more Tx queues packed onto =
-Tx
-> >> > ring container of queue vector.
-> >> >
-> >> > Thoughts? Any concerns? Should we have a 'fallback' mode if we would=
- be
-> >> > out of queues? =20
-> >>=20
-> >> Yes, please :) =20
+> > see also bqlmon from github
 > >
-> > How to have a fallback (in drivers that need it) in a way that wouldn't
-> > hurt the scenario where queue per cpu requirement is satisfied? =20
->=20
-> Well, it should be possible to detect this at setup time, right? Not too
-> familiar with the driver code, but would it be possible to statically
-> dispatch to an entirely different code path if this happens?
+> > is fq_codel running on the ethernet interface? the iperf bidir test
+> > does much better with that in place rather than a fifo. tc -s qdisc
+> > show dev your_device
+>
+> ~# tc -s qdisc show dev eth0
+> RTNETLINK answers: Operation not supported
+> Dump terminated
+>
+> Best regards
+> Frieder
+>
+> >
+> > Also I tend to run tests using the flent tool, which will yield more
+> > data. Install netperf and irtt on the target, flent, netperf, irtt on
+> > the test driver box...
+> >
+> > flent -H the-target-ip -x --socket-stats -t whateveryouaretesting rrul
+> > # the meanest bidir test there
+> >
+> > flent-gui *.gz
+> >
+> > On Thu, May 6, 2021 at 7:47 AM Frieder Schrempf
+> > <frieder.schrempf@kontron.de> wrote:
+> >>
+> >> Hi,
+> >>
+> >> we observed some weird phenomenon with the Ethernet on our i.MX8M-Mini=
+ boards. It happens quite often that the measured bandwidth in TX direction=
+ drops from its expected/nominal value to something like 50% (for 100M) or =
+~67% (for 1G) connections.
+> >>
+> >> So far we reproduced this with two different hardware designs using tw=
+o different PHYs (RGMII VSC8531 and RMII KSZ8081), two different kernel ver=
+sions (v5.4 and v5.10) and link speeds of 100M and 1G.
+> >>
+> >> To measure the throughput we simply run iperf3 on the target (with a s=
+hort p2p connection to the host PC) like this:
+> >>
+> >>         iperf3 -c 192.168.1.10 --bidir
+> >>
+> >> But even something more simple like this can be used to get the info (=
+with 'nc -l -p 1122 > /dev/null' running on the host):
+> >>
+> >>         dd if=3D/dev/zero bs=3D10M count=3D1 | nc 192.168.1.10 1122
+> >>
+> >> The results fluctuate between each test run and are sometimes 'good' (=
+e.g. ~90 MBit/s for 100M link) and sometimes 'bad' (e.g. ~45 MBit/s for 100=
+M link).
+> >> There is nothing else running on the system in parallel. Some more inf=
+o is also available in this post: [1].
+> >>
+> >> If there's anyone around who has an idea on what might be the reason f=
+or this, please let me know!
+> >> Or maybe someone would be willing to do a quick test on his own hardwa=
+re. That would also be highly appreciated!
+> >>
+> >> Thanks and best regards
+> >> Frieder
+> >>
+> >> [1]: https://eur04.safelinks.protection.outlook.com/?url=3Dhttps%3A%2F=
+%2Fcommunity.nxp.com%2Ft5%2Fi-MX-Processors%2Fi-MX8MM-Ethernet-TX-Bandwidth=
+-Fluctuations%2Fm-p%2F1242467%23M170563&amp;data=3D04%7C01%7Cfrieder.schrem=
+pf%40kontron.de%7C157b00b2686447fd9a7108d9109ecbc6%7C8c9d3c973fd941c8a2b164=
+6f3942daf1%7C0%7C0%7C637559096478620665%7CUnknown%7CTWFpbGZsb3d8eyJWIjoiMC4=
+wLjAwMDAiLCJQIjoiV2luMzIiLCJBTiI6Ik1haWwiLCJXVCI6Mn0%3D%7C1000&amp;sdata=3D=
+SFT%2Boic9C1sirw%2BT1o1qRNNUe4H9bk2FHkLQpdy489I%3D&amp;reserved=3D0
+> >
+> >
+> >
 
-The ndo_xdp_xmit call is a function pointer.  Thus, if it happens at
-this level, then at setup time the driver can simply change the NDO to
-use a TX-queue-locked variant.
 
-I actually consider it a bug that i40e allow this misconfig to happen.
-The ixgbe driver solves the problem by rejecting XDP attach if the
-system have more CPUs than TXQs available.
-
-IMHO it is a better solution to add shard'ed/partitioned TXQ-locking
-when this situation happens, instead of denying XDP attach.  Since the
-original XDP-redirect the ndo_xdp_xmit call have gotten bulking added,
-thus the locking will be amortized over the bulk.
-
-One question is how do we inform the end-user that XDP will be using
-a slightly slower TXQ-locking scheme?  Given we have no XDP-features
-exposed, I suggest a simple kernel log message, which we already have
-for other XDP situations when the MTU is too large, or TSO is enabled.
 
 --=20
-Best regards,
-  Jesper Dangaard Brouer
-  MSc.CS, Principal Kernel Engineer at Red Hat
-  LinkedIn: http://www.linkedin.com/in/brouer
+Latest Podcast:
+https://www.linkedin.com/feed/update/urn:li:activity:6791014284936785920/
 
+Dave T=C3=A4ht CTO, TekLibre, LLC
