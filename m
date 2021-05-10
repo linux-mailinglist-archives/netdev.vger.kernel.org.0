@@ -2,42 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2145D379911
-	for <lists+netdev@lfdr.de>; Mon, 10 May 2021 23:20:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BD357379932
+	for <lists+netdev@lfdr.de>; Mon, 10 May 2021 23:30:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232082AbhEJVVg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 10 May 2021 17:21:36 -0400
-Received: from mail.kernel.org ([198.145.29.99]:57698 "EHLO mail.kernel.org"
+        id S232839AbhEJVbZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 10 May 2021 17:31:25 -0400
+Received: from mail.kernel.org ([198.145.29.99]:40414 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229810AbhEJVVg (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 10 May 2021 17:21:36 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id AE0B96143C;
-        Mon, 10 May 2021 21:20:30 +0000 (UTC)
+        id S231811AbhEJVbQ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 10 May 2021 17:31:16 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPS id 9237D61613;
+        Mon, 10 May 2021 21:30:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1620681630;
-        bh=W7x4+uZ7VVa2q7Y6dgs5UJff+CkCbukbrQgvkVm/xQs=;
+        s=k20201202; t=1620682210;
+        bh=MmE8v1hXubznzhGaE7C8q0XVtGuAxwMrNzLeBYh7e1I=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=NpPsiEz/FAGAGuK2qXGfzYxwMXhwxrFqeqAroZT9TpKYdJU5Fk7rLOgBNB/KXUc+M
-         N6xFuyt62IV5JvxFvbUIMXCVrNIvBIxUz1fP0C3HrMVVe0zD5lgG/ljTRrytoZksFV
-         APVz1toXkTFoW0ry00X3t/UNkM1HT8BfPRDyDkF9FzykOHAu6P5uatlVDJAV9TcD0v
-         uN7Xn2dFCaKEeze9QsJ13p/gnZ+vGvec3TlQl03FRy33icTrueOTHkDty62SHwFCJ5
-         jXT1kNWB78D8WZTXfk4lCjrjP9NaAJzpU9bm+jOFmMV26d87Oesvd3BAV7WqWsNDim
-         lIng47K4UwGMg==
+        b=SkNlk5d9VGZTA8yyM3909B0OwqFeqk7PVPGEx71TSc+iVwc+AanZeP5ErXLnsBxtr
+         fq06GBo0JR5kylVOdYPtuQqeOSxibvxHtNdFB1ApOrzuQPnlBV6vGDpTuWeXBZtqL+
+         xKdSVXDKAEJEZgunNJyyEX0rg3wg2hkrTqKt28ytctnIFyrenC34aXUFvFoL9wi+rV
+         DIPy/dVE9vqhcdOh3B5IpXl55ZQjRsJE3wKe2uWIHVi4066an5pggQvAWXNAxXVgto
+         xZdHomiovzawzQlJGfrOZ+riTtvFgPQBNgUEDzIKrH/FVNvlbLw9xh2T00TOuzWn4+
+         hxtP/x3Prff0w==
 Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 9E8C760A27;
-        Mon, 10 May 2021 21:20:30 +0000 (UTC)
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 8C929609AC;
+        Mon, 10 May 2021 21:30:10 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH] net: openvswitch: Remove unnecessary skb_nfct()
+Subject: Re: [PATCH] neighbour: Remove redundant initialization of 'bucket'
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <162068163064.24072.9360030914450540310.git-patchwork-notify@kernel.org>
-Date:   Mon, 10 May 2021 21:20:30 +0000
-References: <1620440827-17900-1-git-send-email-yejunedeng@gmail.com>
-In-Reply-To: <1620440827-17900-1-git-send-email-yejunedeng@gmail.com>
-To:     Yejune Deng <yejune.deng@gmail.com>
-Cc:     pshelar@ovn.org, davem@davemloft.net, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, yejunedeng@gmail.com
+Message-Id: <162068221057.28006.13564077451143284721.git-patchwork-notify@kernel.org>
+Date:   Mon, 10 May 2021 21:30:10 +0000
+References: <1620468185-122101-1-git-send-email-yang.lee@linux.alibaba.com>
+In-Reply-To: <1620468185-122101-1-git-send-email-yang.lee@linux.alibaba.com>
+To:     Yang Li <yang.lee@linux.alibaba.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, nathan@kernel.org,
+        ndesaulniers@google.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, clang-built-linux@googlegroups.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
@@ -46,18 +47,21 @@ Hello:
 
 This patch was applied to netdev/net-next.git (refs/heads/master):
 
-On Sat,  8 May 2021 10:27:07 +0800 you wrote:
-> There is no need add 'if (skb_nfct(skb))' assignment, the
-> nf_conntrack_put() would check it.
+On Sat,  8 May 2021 18:03:05 +0800 you wrote:
+> Integer variable 'bucket' is being initialized however
+> this value is never read as 'bucket' is assigned zero
+> in for statement. Remove the redundant assignment.
 > 
-> Signed-off-by: Yejune Deng <yejunedeng@gmail.com>
-> ---
->  net/openvswitch/conntrack.c | 11 ++++-------
->  1 file changed, 4 insertions(+), 7 deletions(-)
+> Cleans up clang warning:
+> 
+> net/core/neighbour.c:3144:6: warning: Value stored to 'bucket' during
+> its initialization is never read [clang-analyzer-deadcode.DeadStores]
+> 
+> [...]
 
 Here is the summary with links:
-  - net: openvswitch: Remove unnecessary skb_nfct()
-    https://git.kernel.org/netdev/net-next/c/d2792e91de2b
+  - neighbour: Remove redundant initialization of 'bucket'
+    https://git.kernel.org/netdev/net-next/c/48de7c0c1c92
 
 You are awesome, thank you!
 --
