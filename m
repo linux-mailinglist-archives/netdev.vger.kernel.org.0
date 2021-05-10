@@ -2,276 +2,148 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 08A09377A1D
-	for <lists+netdev@lfdr.de>; Mon, 10 May 2021 04:22:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8D1A0377A3E
+	for <lists+netdev@lfdr.de>; Mon, 10 May 2021 04:58:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230184AbhEJCXr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 9 May 2021 22:23:47 -0400
-Received: from mailout4.samsung.com ([203.254.224.34]:21834 "EHLO
-        mailout4.samsung.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230127AbhEJCXr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 9 May 2021 22:23:47 -0400
-Received: from epcas2p2.samsung.com (unknown [182.195.41.54])
-        by mailout4.samsung.com (KnoxPortal) with ESMTP id 20210510022241epoutp04cc7d73580d610f47cf3a8fdc0c3dc44f~9k0QRXAzH0868908689epoutp04H
-        for <netdev@vger.kernel.org>; Mon, 10 May 2021 02:22:41 +0000 (GMT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mailout4.samsung.com 20210510022241epoutp04cc7d73580d610f47cf3a8fdc0c3dc44f~9k0QRXAzH0868908689epoutp04H
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
-        s=mail20170921; t=1620613361;
-        bh=cPButctKmrrZXM/6u9WU7erJpLUuP4/V9hThU/X1pcU=;
-        h=From:To:Cc:In-Reply-To:Subject:Date:References:From;
-        b=WK3X8wUS0oRqQlvvVz5rrb6okq+kXl7Nb+DsaZMml8bNUvd61msx9IfXMdoV3bG/y
-         OXn90UIoqzsVyfuDpDAnEylq8uOX28jDYSsGDPY9Zw8JZiQ18K80isvS1nbHl36nNR
-         L+NYg9v/MXDYocR8CyCUugqwSXTyF/5iqu7T24zg=
-Received: from epsnrtp1.localdomain (unknown [182.195.42.162]) by
-        epcas2p4.samsung.com (KnoxPortal) with ESMTP id
-        20210510022240epcas2p4b1b66080c026374e399ed3a45f178eaa~9k0P0M0Hh2259022590epcas2p4X;
-        Mon, 10 May 2021 02:22:40 +0000 (GMT)
-Received: from epsmges2p4.samsung.com (unknown [182.195.40.187]) by
-        epsnrtp1.localdomain (Postfix) with ESMTP id 4FdlFW0zMrz4x9QV; Mon, 10 May
-        2021 02:22:39 +0000 (GMT)
-Received: from epcas2p3.samsung.com ( [182.195.41.55]) by
-        epsmges2p4.samsung.com (Symantec Messaging Gateway) with SMTP id
-        45.F3.09717.DE898906; Mon, 10 May 2021 11:22:38 +0900 (KST)
-Received: from epsmtrp1.samsung.com (unknown [182.195.40.13]) by
-        epcas2p2.samsung.com (KnoxPortal) with ESMTPA id
-        20210510022237epcas2p2a55d3ec5b401627a2d82d60d31949618~9k0MhsQMi1757817578epcas2p2u;
-        Mon, 10 May 2021 02:22:37 +0000 (GMT)
-Received: from epsmgms1p1new.samsung.com (unknown [182.195.42.41]) by
-        epsmtrp1.samsung.com (KnoxPortal) with ESMTP id
-        20210510022237epsmtrp1d35fec293ebcf05e6e8a39faa111129e~9k0MfqTfn2202122021epsmtrp1B;
-        Mon, 10 May 2021 02:22:37 +0000 (GMT)
-X-AuditID: b6c32a48-4e5ff700000025f5-45-609898ed183d
-Received: from epsmtip1.samsung.com ( [182.195.34.30]) by
-        epsmgms1p1new.samsung.com (Symantec Messaging Gateway) with SMTP id
-        FE.D8.08637.DE898906; Mon, 10 May 2021 11:22:37 +0900 (KST)
-Received: from KORDO035731 (unknown [12.36.185.47]) by epsmtip1.samsung.com
-        (KnoxPortal) with ESMTPA id
-        20210510022237epsmtip1e337501ffcf70dc947e708fac3265eed~9k0MM2Qny2865128651epsmtip1L;
-        Mon, 10 May 2021 02:22:37 +0000 (GMT)
-From:   "Dongseok Yi" <dseok.yi@samsung.com>
-To:     "'Willem de Bruijn'" <willemdebruijn.kernel@gmail.com>
-Cc:     "'Yunsheng Lin'" <linyunsheng@huawei.com>,
-        "'Daniel Borkmann'" <daniel@iogearbox.net>,
-        "'bpf'" <bpf@vger.kernel.org>,
-        "'Alexei Starovoitov'" <ast@kernel.org>,
-        "'Andrii Nakryiko'" <andrii@kernel.org>,
-        "'Martin KaFai Lau'" <kafai@fb.com>,
-        "'Song Liu'" <songliubraving@fb.com>,
-        "'Yonghong Song'" <yhs@fb.com>,
-        "'John Fastabend'" <john.fastabend@gmail.com>,
-        "'KP Singh'" <kpsingh@kernel.org>,
-        "'David S. Miller'" <davem@davemloft.net>,
-        "'Jakub Kicinski'" <kuba@kernel.org>,
-        "'Network Development'" <netdev@vger.kernel.org>,
-        "'linux-kernel'" <linux-kernel@vger.kernel.org>
-In-Reply-To: <CAF=yD-L9pxAFoT+c1Xk5YS42ZaJ+YLVQVnV+fvtqn-gLxq9ENg@mail.gmail.com>
-Subject: RE: [PATCH bpf] bpf: check for data_len before upgrading mss when 6
- to 4
-Date:   Mon, 10 May 2021 11:22:36 +0900
-Message-ID: <00c901d74543$57fa3620$07eea260$@samsung.com>
+        id S230205AbhEJC67 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 9 May 2021 22:58:59 -0400
+Received: from mail-eopbgr60134.outbound.protection.outlook.com ([40.107.6.134]:11909
+        "EHLO EUR04-DB3-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S229670AbhEJC67 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 9 May 2021 22:58:59 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=fkZU4Vmuwi96XOTx5AQzKi5ZttFT2PdveoZgPypTHxjlxaq0pts415iXQPMympkjuYzqkBIblNaCbm9iQTZbITvNc53dVqyJjnX/6m2S0+2ScCjKMF+0957fBOk6peMOltVpLVssbONtYSfRM+dgukOtuVS1xOJZ7ZhBvRpmuEfHJI55sLdHGABp7644891BCIAGBwZy7WmAnxlP99vNdkk/bmQKNwUgJAhQaHb8Pyoyp4Tyn7WeyngtHON9s1gDAm5D6P9Im2JbyUdpd+5v63oT2JM4qocFFDLhA5Yx4uH7aWVqfnZy0InFcy8e8Asmt55f/+vVM9mpArVDenTOFw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=NmdI+bK3+gi/GPUdnBJJp4NAMiTK9xx0YaO1Ga4mU60=;
+ b=kSkXPPAlb0be+ZB6XYfO0gyNTwW0OgHbrvUkx1Ce9sddM6iXKXnC+IchxkesQts033iclzC9e/hT9D9Mmnvu/NqFtnbuEIAm01sMXuHk6XSfgPmSdHbnRCE87/BNw4fkrno3UzZphu0Jwof8W/JskdxfhHUMDuV2ibLpgnMAqXv1PVhGsZuWCee/aLzWBPgV68GTxFwo59J+wE4bP5ZO1gB12yinQUhuvBV1JUy6RVHKJlD61FVX/eXcmbPcImWZJ1QG14I5A+xNUglapYlYlRxi7gglWq7VBsgJbVc1jySUF0uYMGzAPfQz1bXygvfxiq4DiuTy7lpAVn0gS2potQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=dektech.com.au; dmarc=pass action=none
+ header.from=dektech.com.au; dkim=pass header.d=dektech.com.au; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=dektech.com.au;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=NmdI+bK3+gi/GPUdnBJJp4NAMiTK9xx0YaO1Ga4mU60=;
+ b=JSOhgAyRJ9Oe1wJKxlGSIZiDxaVKspgm+Cv93Xo/0bkfrR9nCuY2qO2a31IWl8+2QL85HpNTv+fcNGrdcxujsue6t/3o+gQnPdI43pDtGIpmawapJFDGgxofCAGJGrIrjUlCIdsukjL9z4EYsgwtRCXpxU5i1AaLUpYf/LRVN4Y=
+Authentication-Results: redhat.com; dkim=none (message not signed)
+ header.d=none;redhat.com; dmarc=none action=none header.from=dektech.com.au;
+Received: from VI1PR05MB4605.eurprd05.prod.outlook.com (2603:10a6:802:61::21)
+ by VI1PR05MB6877.eurprd05.prod.outlook.com (2603:10a6:800:185::12) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4108.27; Mon, 10 May
+ 2021 02:57:53 +0000
+Received: from VI1PR05MB4605.eurprd05.prod.outlook.com
+ ([fe80::c1b1:f949:5243:8e89]) by VI1PR05MB4605.eurprd05.prod.outlook.com
+ ([fe80::c1b1:f949:5243:8e89%4]) with mapi id 15.20.4108.031; Mon, 10 May 2021
+ 02:57:53 +0000
+From:   Hoang Le <hoang.h.le@dektech.com.au>
+To:     jmaloy@redhat.com, maloy@donjonn.com, ying.xue@windriver.com,
+        kuba@kernel.org, davem@davemloft.net, netdev@vger.kernel.org,
+        tipc-discussion@lists.sourceforge.net
+Subject: [net] tipc: make node link identity publish thread safe
+Date:   Mon, 10 May 2021 09:57:38 +0700
+Message-Id: <20210510025738.4713-1-hoang.h.le@dektech.com.au>
+X-Mailer: git-send-email 2.25.1
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [14.161.14.188]
+X-ClientProxiedBy: SG2PR06CA0252.apcprd06.prod.outlook.com
+ (2603:1096:4:ac::36) To VI1PR05MB4605.eurprd05.prod.outlook.com
+ (2603:10a6:802:61::21)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-Mailer: Microsoft Outlook 16.0
-Thread-Index: AQKypHYW3xad5/j2XvChPebQmKG2owG+YoocAqFpyMsBZavlXQIxNaIYAiru3ucBq8RF2QKY6vTDAm6kVlUBadK04AMaqQ3GARiLayQDE+caW6hZCGpw
-Content-Language: ko
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFjrBJsWRmVeSWpSXmKPExsWy7bCmue67GTMSDH7tZbT4/ns2s8WXn7fZ
-        LT4fOc5msXjhN2aLOedbWCyadqxgsnjx4QmjxfN9vUwWF7b1sVpc3jWHzaLhLZfFsQViFj8P
-        n2G2WPxzA1DVkhmMDvweW1beZPKY2PyO3WPnrLvsHi1H3rJ6dN24xOyxaVUnm8fnTXIB7FE5
-        NhmpiSmpRQqpecn5KZl56bZK3sHxzvGmZgaGuoaWFuZKCnmJuam2Si4+AbpumTlAZysplCXm
-        lAKFAhKLi5X07WyK8ktLUhUy8otLbJVSC1JyCgwNC/SKE3OLS/PS9ZLzc60MDQyMTIEqE3Iy
-        7jyYxlzwzahi8cU+9gbGDrUuRk4OCQETiZ/zH7B2MXJxCAnsYJR4PeU2I4TziVHi783PUM43
-        RokrXVPZYFr2NjWyQCT2MkpcmzyXDcJ5wSgx69ZaFpAqNgEtiTez2llBbBEBK4n/s0+wgxQx
-        C5xmkXiy+hsTSIJTIFDi369P7CC2sECwxNNJTWBxFgFVifObJ4E18wpYSkxt2cAMYQtKnJz5
-        BGwBs4C8xPa3c5ghTlKQ+Pl0GdgXIgJNjBLTW6czQRSJSMzubIMqesAhse87H4TtInG/4Skj
-        hC0s8er4FnYIW0riZX8bkM0BZNdLtHbHgMyUEOgB+n8fxGIJAWOJWc/aGUFqmAU0Jdbv0oco
-        V5Y4cgvqND6JjsN/oabwSnS0CUGYShITv8RDzJCQeHFyMssERqVZSP6aheSvWUjOn4WwagEj
-        yypGsdSC4tz01GKjAhPkyN7ECE7SWh47GGe//aB3iJGJg/EQowQHs5IIr2jHtAQh3pTEyqrU
-        ovz4otKc1OJDjKbAkJ7ILCWanA/ME3kl8YamRmZmBpamFqZmRhZK4rw/U+sShATSE0tSs1NT
-        C1KLYPqYODilGpgU/fa/dDnx2N2zS7z6p/3HaNFSK57AeROkPtrNv+01Wzup/P6HHXyfdNkl
-        Qu+1bg1a13xwwQzXw+81UmrFmEyEWlTen5Bc9fVE5if7n3XuZ1Yvcg13v5Pd4hK72/4oj2O+
-        peDvgLJTMmsPrFMQD3ztt+FM+AepJ7Vsm7xPzQ/ijdy79dM31lmSZ39eaCo8/WO92tMreauN
-        FQQuJFaWMixP2X4n/O/V4terHbsMmwoZPhyM+vNhQ1e33PdDz76wPdlyNO/Z1lVBpzJOf32Q
-        L8p8dbHb1reBmne2ywjYn5F+XuZ3m/3aLSUmtncpvk83HWqbeTju8+I5Ts+mlPfM6l/nIPs+
-        LXheFcvxh9aJcyZdVWIpzkg01GIuKk4EAE8RZyNbBAAA
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFtrKIsWRmVeSWpSXmKPExsWy7bCSnO7bGTMSDE5+47f4/ns2s8WXn7fZ
-        LT4fOc5msXjhN2aLOedbWCyadqxgsnjx4QmjxfN9vUwWF7b1sVpc3jWHzaLhLZfFsQViFj8P
-        n2G2WPxzA1DVkhmMDvweW1beZPKY2PyO3WPnrLvsHi1H3rJ6dN24xOyxaVUnm8fnTXIB7FFc
-        NimpOZllqUX6dglcGXceTGMu+GZUsfhiH3sDY4daFyMnh4SAicTepkaWLkYuDiGB3YwSWw8t
-        Zexi5ABKSEjs2uwKUSMscb/lCCtEzTNGiY8H17GCJNgEtCTezGoHs0UErCT+zz7BDlLELHCV
-        RWLzj2/MEB29bBJntk9hAqniFAiU+PfrEzuILQxk9/+7xQhiswioSpzfPAlsEq+ApcTUlg3M
-        ELagxMmZT1hAbGYBbYneh62MELa8xPa3c5ghzlOQ+Pl0Gdh5IgJNjBLTW6czQRSJSMzubGOe
-        wCg8C8msWUhmzUIyaxaSlgWMLKsYJVMLinPTc4sNCwzzUsv1ihNzi0vz0vWS83M3MYJjVktz
-        B+P2VR/0DjEycTAeYpTgYFYS4RXtmJYgxJuSWFmVWpQfX1Sak1p8iFGag0VJnPdC18l4IYH0
-        xJLU7NTUgtQimCwTB6dUA9OewCt2DFpS8x/2Tj3v9FOW/+LZprV9j25Nj/S8e0KGub83eslJ
-        LbNMlf4TXN28hXY1qhoSKxXDVCJWX7AU0WovW93dXqWqZpl78cnhpOzyP7r3XScGqVy8qy1/
-        aLrJi5PnrZeLpkYGZFYKbar0e5a/6jIP61PZ65aqUUEiR14HsSuLMBhYX2fxTCsWy/prdOuc
-        JrtbQNTjK8a8PNf/iEzuKqw1a32puLrlf+rJ4Ifvv/jGbfA+FxhyzX9dmPW2WsPPQZeNn7G9
-        /Or+bE/v8cn9Dv+YXvn/NPQ8wbZTq/PzqY8ZU74yT1IPvF9ePG/iBheXiSvmJOoE5J/2VtY9
-        06C8eBHrLiu2Twee8KnWKLEUZyQaajEXFScCAJ1amGxIAwAA
-X-CMS-MailID: 20210510022237epcas2p2a55d3ec5b401627a2d82d60d31949618
-X-Msg-Generator: CA
-Content-Type: text/plain; charset="utf-8"
-X-Sendblock-Type: AUTO_CONFIDENTIAL
-CMS-TYPE: 102P
-DLP-Filter: Pass
-X-CFilter-Loop: Reflected
-X-CMS-RootMailID: 20210429102143epcas2p4c8747c09a9de28f003c20389c050394a
-References: <CGME20210429102143epcas2p4c8747c09a9de28f003c20389c050394a@epcas2p4.samsung.com>
-        <1619690903-1138-1-git-send-email-dseok.yi@samsung.com>
-        <8c2ea41a-3fc5-d560-16e5-bf706949d857@iogearbox.net>
-        <02bf01d74211$0ff4aed0$2fde0c70$@samsung.com>
-        <CA+FuTScC96R5o24c-sbY-CEV4EYOVFepFR85O4uGtCLwOjnzEw@mail.gmail.com>
-        <02c801d7421f$65287a90$2f796fb0$@samsung.com>
-        <CA+FuTScUJwqEpYim0hG27k39p_yEyzuW2A8RFKuBndctgKjWZw@mail.gmail.com>
-        <001801d742db$68ab8060$3a028120$@samsung.com>
-        <CAF=yD-KtJvyjHgGVwscoQpFX3e+DmQCYeO_HVGwyGAp3ote00A@mail.gmail.com>
-        <436dbc62-451b-9b29-178d-9da28f47ef24@huawei.com>
-        <CAF=yD-+d0QYj+812joeuEx1HKPzDyhMpkZP5aP=yNBzrQT5usw@mail.gmail.com>
-        <007001d7431a$96281960$c2784c20$@samsung.com>
-        <CAF=yD-L9pxAFoT+c1Xk5YS42ZaJ+YLVQVnV+fvtqn-gLxq9ENg@mail.gmail.com>
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from dektech.com.au (14.161.14.188) by SG2PR06CA0252.apcprd06.prod.outlook.com (2603:1096:4:ac::36) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4108.25 via Frontend Transport; Mon, 10 May 2021 02:57:51 +0000
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: f069cad7-49c8-4f1a-9ee5-08d9135f67a6
+X-MS-TrafficTypeDiagnostic: VI1PR05MB6877:
+X-Microsoft-Antispam-PRVS: <VI1PR05MB68778DB3A4D87ECB00F3CA91F1549@VI1PR05MB6877.eurprd05.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:2958;
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: MYdbDX7Zd7JNe/DvUtgYGpoYqlpxpBWRgK+xHVbEInltDZVBSBNwOFKkwLI4amH+mZ1N0gHcUdfxwqDB+Sa/mIv3TJ9Z5pGe33PNiBAd7+SgSfqPwtUaL0MXFtbPKPlgeSTlcTA3/9jenX3xueME5NiehpB8Ls4G7pH7ECuH4f35mP1WO7y+sWSxI20c6sp87jocS+wsAmwv55ik0S14yuUwBVqKdpaQG12bYiJj4YvxkIM+zPvzO02FfMtwkcBGJSu7WUJzOrDsKB1hqhVhoAnh99P0CfD8Z7EoGixmInW5t3HasPYaZeRraSP9khXeYaoq+1Jcx0P+lp3YOeDqcEgux8muqQw5IMVRuUsgOHwRk7iiPk8xzU+ufm6LD9TqzRg7MXy67YywsBBGJZ3mmkb3pwFidRN9zG/INFovbqSjxA84pB67U4gmaHHtwNbdDFw1t/+v1/BXMV7iCX3Eyk9JxeeP71FL8djXiQYCbH/QPvYzPTfKIRb5MzAYCtOGBBuOLClf3GH3y5yxISPUqj+Kjoyk50EJvljaSmS/ZdjwBTHPyhBo5MnqqCEfeRccnTWa2BXOi7Bwmrlj1/5Ox0vD4ShVgUe5pX2xcqaKPNa1t6PTut6X33jSTzlXqD5JErb3ObqconZjntlHDylpbQ==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR05MB4605.eurprd05.prod.outlook.com;PTR:;CAT:NONE;SFS:(366004)(376002)(346002)(136003)(39840400004)(396003)(8676002)(26005)(66556008)(66946007)(8936002)(52116002)(83380400001)(16526019)(186003)(38350700002)(7696005)(1076003)(5660300002)(66476007)(478600001)(2616005)(38100700002)(956004)(86362001)(36756003)(6666004)(2906002)(55016002)(103116003)(316002);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData: =?us-ascii?Q?bz/lHdkEvwRTTrCn5h0bP18b7qCArZYELmKPDq+d15yDyqLwtKjE46yqqzj1?=
+ =?us-ascii?Q?1nfnQ+sG7hj829T31m8/X2pRGmqRFbn8eS+O+sip9qzcCTyIWjc6o289E/7K?=
+ =?us-ascii?Q?+MGNw5bgimIEYKmmXjE70uppGf+FZizfjAc0NKb5FTAONOl/jjxX6X+BuHB3?=
+ =?us-ascii?Q?ZLFMa1uXJ2dCzuiF6km5xjq4OAjQzVRTM25c0dujWB1XQ6LsysQFGg2AQXZm?=
+ =?us-ascii?Q?L+8j14c4yI7b218+VFOLlUPh0xmRWDkIMy85AwpIvNXo4fxMznOIg29ZmpIB?=
+ =?us-ascii?Q?O4X3ORRCxr5UTUDBV1l+HY+SdnR+eCdk11Hv/qqbUSeBGclQJel4gxvb0IGD?=
+ =?us-ascii?Q?c5FM5agVpUD53VQsezm8DG35Hj0srDMXX8rAXba/U8dp2AjEFqG5RxwNtnem?=
+ =?us-ascii?Q?91ytzpKOe8xL7MHIoRv+fBIYn7IMVpoxgakJLY7hruYTnp+y40nqsG6mhZ5j?=
+ =?us-ascii?Q?1blFhw0YsMS4FF9hCeAgR2/CKTX65paY5RS/mE5Y7vm6BbaweA1nHrNeOOUc?=
+ =?us-ascii?Q?oRQgv6+C+l9WA4a3CWfBUY1khtwA97lVcKeaq6sHFlRX7gaoor5baIg19J/S?=
+ =?us-ascii?Q?ZewfJA5mHs+2xOLzKEfqlGAqXzf/2Ord5rsKMF3M0JgZ3DQwD3472iZ+cZiK?=
+ =?us-ascii?Q?+knf5Doc5BRvXnYQ7em0FCT601vf0IfVqgrCkC5+Zk8/6QVmUX5s8egXauoL?=
+ =?us-ascii?Q?z6+m585v8torz5EFG+J4iDgr+mAa7KZByY5MuvHKQF2atevUKnTlHGITIoZ+?=
+ =?us-ascii?Q?M0AxJ0+wLuhZTw1Lr6UeQPz4MwKIwiuqdkXy7eNR5JrhzI617bqtWqxSN5+x?=
+ =?us-ascii?Q?mc2jULTjotkK1FPQnaPfwPbnVQZlS0JstGC5i/EHITFb6CDb0ow9HsfbuZoz?=
+ =?us-ascii?Q?dun5NcPFxaTn3c+faG7xEvmZZrLzA/lYnCwoSH+i80BPNMz05SAucsTaz9Nd?=
+ =?us-ascii?Q?gmLPPD6nEtd3bJOxEzkIvbx5pzyuyOY3DXNETL0et3iQtATWi9nNRMMoHYM4?=
+ =?us-ascii?Q?aqcijSbcoMARZaSfc9SERrF79l4slgXvOWCD5odyuqHl6Jl52sbYTeKlVviT?=
+ =?us-ascii?Q?INwK5ypEZ9HBv+4va8ZLqRxeK810rg4faIlhRwyqrF6U+UKedPs8++o9zZLM?=
+ =?us-ascii?Q?9YKkxuSQEwDg4pxgsodMzWIGQPZ+cBie9+RNFSJpPpNdJOaM/1YlMsxDmcpd?=
+ =?us-ascii?Q?zPVYYEekoVSYpVvgEVUPF9v97xstw9vWEUvxoDJw0PD6erRdxZkuf5No0DIQ?=
+ =?us-ascii?Q?QTU3lV3pARwwL4jmWbTIGUF8/k1akjukT8usPUjO0ecrPPBfcU9zPKSd85Cn?=
+ =?us-ascii?Q?9APCZUjzjx8QzQP5UoQgh1lU?=
+X-OriginatorOrg: dektech.com.au
+X-MS-Exchange-CrossTenant-Network-Message-Id: f069cad7-49c8-4f1a-9ee5-08d9135f67a6
+X-MS-Exchange-CrossTenant-AuthSource: VI1PR05MB4605.eurprd05.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 10 May 2021 02:57:53.4747
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 1957ea50-0dd8-4360-8db0-c9530df996b2
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: zws+qjpSbIG7TbAXY/z9YL5F+YFmh6hTCW/jcIncEt8as+ObX2jDq+JCyfXnD+dmUjFg9rKS91L0zrCz7yYKRcb0R+v9pnztNIMqfdQudho=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR05MB6877
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, May 07, 2021 at 09:50:03AM -0400, Willem de Bruijn wrote:
-> On Fri, May 7, 2021 at 4:25 AM Dongseok Yi <dseok.yi@samsung.com> wrote:
-> >
-> > On Thu, May 06, 2021 at 09:53:45PM -0400, Willem de Bruijn wrote:
-> > > On Thu, May 6, 2021 at 9:45 PM Yunsheng Lin <linyunsheng@huawei.com> wrote:
-> > > >
-> > > > On 2021/5/7 9:25, Willem de Bruijn wrote:
-> > > > >>>> head_skb's data_len is the sum of skb_gro_len for each skb of the frags.
-> > > > >>>> data_len could be 8 if server sent a small size packet and it is GROed
-> > > > >>>> to head_skb.
-> > > > >>>>
-> > > > >>>> Please let me know if I am missing something.
-> > > > >>>
-> > > > >>> This is my understanding of the data path. This is a forwarding path
-> > > > >>> for TCP traffic.
-> > > > >>>
-> > > > >>> GRO is enabled and will coalesce multiple segments into a single large
-> > > > >>> packet. In bad cases, the coalesced packet payload is > MSS, but < MSS
-> > > > >>> + 20.
-> > > > >>>
-> > > > >>> Somewhere between GRO and GSO you have a BPF program that converts the
-> > > > >>> IPv6 address to IPv4.
-> > > > >>
-> > > > >> Your understanding is right. The data path is GRO -> BPF 6 to 4 ->
-> > > > >> GSO.
-> > > > >>
-> > > > >>>
-> > > > >>> There is no concept of head_skb at the time of this BPF program. It is
-> > > > >>> a single SKB, with an skb linear part and multiple data items in the
-> > > > >>> frags (no frag_list).
-> > > > >>
-> > > > >> Sorry for the confusion. head_skb what I mentioned was a skb linear
-> > > > >> part. I'm considering a single SKB with frags too.
-> > > > >>
-> > > > >>>
-> > > > >>> When entering the GSO stack, this single skb now has a payload length
-> > > > >>> < MSS. So it would just make a valid TCP packet on its own?
-> > > > >>>
-> > > > >>> skb_gro_len is only relevant inside the GRO stack. It internally casts
-> > > > >>> the skb->cb[] to NAPI_GRO_CB. This field is a scratch area that may be
-> > > > >>> reused for other purposes later by other layers of the datapath. It is
-> > > > >>> not safe to read this inside bpf_skb_proto_6_to_4.
-> > > > >>
-> > > > >> The condition what I made uses skb->data_len not skb_gro_len. Does
-> > > > >> skb->data_len have a different meaning on each layer? As I know,
-> > > > >> data_len indicates the amount of frags or frag_list. skb->data_len
-> > > > >> should be > 20 in the sample case because the payload size of the skb
-> > > > >> linear part is the same with mss.
-> > > > >
-> > > > > Ah, got it.
-> > > > >
-> > > > > data_len is the length of the skb minus the length in the skb linear
-> > > > > section (as seen in skb_headlen).
-> > > > >
-> > > > > So this gso skb consists of two segments, the first one entirely
-> > > > > linear, the payload of the second is in skb_shinfo(skb)->frags[0].
-> > > > >
-> > > > > It is not guaranteed that gso skbs built from two individual skbs end
-> > > > > up looking like that. Only protocol headers in the linear segment and
-> > > > > the payload of both in frags is common.
-> > > > >
-> > > > >> We can modify netif_needs_gso as another option to hit
-> > > > >> skb_needs_linearize in validate_xmit_skb. But I think we should compare
-> > > > >> skb->gso_size and skb->data_len too to check if mss exceed a payload
-> > > > >> size.
-> > > > >
-> > > > > The rest of the stack does not build such gso packets with payload len
-> > > > > < mss, so we should not have to add workarounds in the gso hot path
-> > > > > for this.
-> > > > >
-> > > > > Also no need to linearize this skb. I think that if the bpf program
-> > > > > would just clear the gso type, the packet would be sent correctly.
-> > > > > Unless I'm missing something.
-> > > >
-> > > > Does the checksum/len field in ip and tcp/udp header need adjusting
-> > > > before clearing gso type as the packet has became bigger?
-> > >
-> > > gro takes care of this. see for instance inet_gro_complete for updates
-> > > to the ip header.
-> >
-> > I think clearing the gso type will get an error at tcp4_gso_segment
-> > because netif_needs_gso returns true in validate_xmit_skb.
-> 
-> Oh right. Whether a packet is gso is defined by gso_size being
-> non-zero, not by gso_type.
-> 
-> > >
-> > > > Also, instead of testing skb->data_len, may test the skb->len?
-> > > >
-> > > > skb->len - (mac header + ip/ipv6 header + udp/tcp header) > mss + len_diff
-> > >
-> > > Yes. Essentially doing the same calculation as the gso code that is
-> > > causing the packet to be dropped.
-> >
-> > BPF program is usually out of control. Can we take a general approach?
-> > The below 2 cases has no issue when mss upgrading.
-> > 1) skb->data_len > mss + 20
-> > 2) skb->data_len < mss && skb->data_len > 20
-> > The corner case is when
-> > 3) skb->data_len > mss && skb->data_len < mss + 20
-> 
-> Again, you cannot use skb->data_len alone to make inferences about the
-> size of the second packet.
+The using of the node address and node link identity are not thread safe,
+meaning that two publications may be published the same values, as result
+one of them will get failure because of already existing in the name table.
+To avoid this we have to use the node address and node link identity values
+from inside the node item's write lock protection.
 
-This approach is oriented a general way that does not make inferences
-about the size of the second packet.
+Fixes: 50a3499ab853 ("tipc: simplify signature of tipc_namtbl_publish()")
+Acked-by: Jon Maloy <jmaloy@redhat.com>
+Signed-off-by: Hoang Le <hoang.h.le@dektech.com.au>
+---
+ net/tipc/node.c | 12 ++++++------
+ 1 file changed, 6 insertions(+), 6 deletions(-)
 
-We can obviously increase the mss size when
-1) skb->data_len > mss + 20
-The issue will be fixed even if we consider the #1 condition.
-
-But there is a precondition that mss < skb payload. If skb->data_len <
-mss then skb_headlen(skb) contains the size of mss. So, we can check
-the #2 condition too.
-2) skb->data_len < mss && skb->data_len > 20
-
-> 
-> >
-> > But to cover #3 case, we should check the condition Yunsheng Lin said.
-> > What if we do mss upgrading for both #1 and #2 cases only?
-> >
-> > +               unsigned short off_len = skb->data_len > shinfo->gso_size ?
-> > +                       shinfo->gso_size : 0;
-> > [...]
-> >                 /* Due to IPv4 header, MSS can be upgraded. */
-> > -               skb_increase_gso_size(shinfo, len_diff);
-> > +               if (skb->data_len - off_len > len_diff)
-> > +                       skb_increase_gso_size(shinfo, len_diff);
-> 
-> That generates TCP packets with different MSS within the same stream.
-> 
-> My suggestion remains to just not change MSS at all. But this has to
-> be a new flag to avoid changing established behavior.
-
-I don't understand why the mss size should be kept in GSO step. Will
-there be any issue with different mss?
-
-In general, upgrading mss make sense when 6 to 4. The new flag would be
-set by user to not change mss. What happened if user does not set the
-flag? I still think we should fix the issue with a general approach. Or
-can we remove the skb_increase_gso_size line?
+diff --git a/net/tipc/node.c b/net/tipc/node.c
+index 8217905348f4..81af92954c6c 100644
+--- a/net/tipc/node.c
++++ b/net/tipc/node.c
+@@ -423,18 +423,18 @@ static void tipc_node_write_unlock(struct tipc_node *n)
+ 	write_unlock_bh(&n->lock);
+ 
+ 	if (flags & TIPC_NOTIFY_NODE_DOWN)
+-		tipc_publ_notify(net, publ_list, n->addr, n->capabilities);
++		tipc_publ_notify(net, publ_list, sk.node, n->capabilities);
+ 
+ 	if (flags & TIPC_NOTIFY_NODE_UP)
+-		tipc_named_node_up(net, n->addr, n->capabilities);
++		tipc_named_node_up(net, sk.node, n->capabilities);
+ 
+ 	if (flags & TIPC_NOTIFY_LINK_UP) {
+-		tipc_mon_peer_up(net, n->addr, bearer_id);
+-		tipc_nametbl_publish(net, &ua, &sk, n->link_id);
++		tipc_mon_peer_up(net, sk.node, bearer_id);
++		tipc_nametbl_publish(net, &ua, &sk, sk.ref);
+ 	}
+ 	if (flags & TIPC_NOTIFY_LINK_DOWN) {
+-		tipc_mon_peer_down(net, n->addr, bearer_id);
+-		tipc_nametbl_withdraw(net, &ua, &sk, n->link_id);
++		tipc_mon_peer_down(net, sk.node, bearer_id);
++		tipc_nametbl_withdraw(net, &ua, &sk, sk.ref);
+ 	}
+ }
+ 
+-- 
+2.25.1
 
