@@ -2,401 +2,230 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B9E8C377A02
-	for <lists+netdev@lfdr.de>; Mon, 10 May 2021 03:58:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 20F68377A08
+	for <lists+netdev@lfdr.de>; Mon, 10 May 2021 04:10:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230129AbhEJB7d (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 9 May 2021 21:59:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38144 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230103AbhEJB7b (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 9 May 2021 21:59:31 -0400
-Received: from mail-qt1-x82f.google.com (mail-qt1-x82f.google.com [IPv6:2607:f8b0:4864:20::82f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 045C6C061573
-        for <netdev@vger.kernel.org>; Sun,  9 May 2021 18:58:26 -0700 (PDT)
-Received: by mail-qt1-x82f.google.com with SMTP id h21so7152516qtu.5
-        for <netdev@vger.kernel.org>; Sun, 09 May 2021 18:58:26 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=coverfire.com; s=google;
-        h=message-id:subject:from:to:cc:date:user-agent:mime-version
-         :content-transfer-encoding;
-        bh=NOL2WPCaW6j3X4o22V8BnKNecmRnxfaC3Ud1B5MicLY=;
-        b=JyvyP2QRuHMlTxS2u/9jxMSEhi3ygCfe3SZlpXujyA2nU4bvCkTeITdB5V8WUZ/OKK
-         FG8l5mI2XE/mYVLW9gwABsfudLaQxTnDwAvfEY5WjO3CNd0tzsJsi7QreaKgWSF+9dlw
-         s83O5bZvhlMSGZq7mxRXCcx22B1r+4ObGkHHsGuQC5OfUFocYMAOgmdbKAA5WvvfElWW
-         Qc65gFHSvERikxTI9oN7aNAxswXjbJCNJimdZK4Kv9DuyLVh9xlJqsDLT+H+0D+lrLbh
-         yNGB1vaYUL851HokvSM9uG/zStBbL4vRjr4UVxSBOYYbCgaYLosuOaWlhH4L/STMenBz
-         SmKA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:message-id:subject:from:to:cc:date:user-agent
-         :mime-version:content-transfer-encoding;
-        bh=NOL2WPCaW6j3X4o22V8BnKNecmRnxfaC3Ud1B5MicLY=;
-        b=C7gB/+yrVIeWkYrCBVmwtPx4OIL+Cb7kzlfBUksOQVSeDpAd4xqkH30DGgyZbo/dcA
-         cRbAsStHGFeyuXZDMf5ZfSg1wwT1bSkAkXRRqNI1r8DG4W/vUvkV34nf1jG3/ilOz/WK
-         Bb4EDsJ6/sKH0dJz1GPrj/SY0x1jCUynFLl0i32/BsO8+JrjBbHD/TOot+2fijSK0fY5
-         zwiTD2pa1nHrF4NxhLAETfE8OaUN3Lt+kBV5xKtPvLd58ZFvLbxNC5XEB6i/qMVRVGgB
-         cpsWw9mx6oudm6OsREG2qqJC+0eC+8BqINXpql0llpxxIkm0wKHrrV/6dePjWh4frVtR
-         X4lw==
-X-Gm-Message-State: AOAM533uxtB/s8CGAqiE3z9LS1sZvHXUYlxVOGNOV34nOOzD2eha3+6Z
-        6k5adkudKiHXDtQSEB+6v34EpRZVIXPiAA==
-X-Google-Smtp-Source: ABdhPJwHUhij81QMxybrqneZJLYTGa9CWFIKtnrnN4YT4A9DoI1J1Pda9PO7nYKT91Ebl9qfwZX0CA==
-X-Received: by 2002:a05:622a:15d6:: with SMTP id d22mr20217423qty.209.1620611905659;
-        Sun, 09 May 2021 18:58:25 -0700 (PDT)
-Received: from ?IPv6:2607:f2c0:e56e:28c:e4de:d9eb:cc0b:f46a? ([2607:f2c0:e56e:28c:e4de:d9eb:cc0b:f46a])
-        by smtp.gmail.com with ESMTPSA id k15sm10949765qtg.68.2021.05.09.18.58.24
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 09 May 2021 18:58:25 -0700 (PDT)
-Message-ID: <52fdf0e0d9d453379df2163f16bdf12f425ef456.camel@coverfire.com>
-Subject: xsk_buff_pool.c trace
-From:   Dan Siemon <dan@coverfire.com>
-To:     netdev@vger.kernel.org
-Cc:     bjorn@kernel.org, magnus.karlsson@intel.com
-Date:   Sun, 09 May 2021 21:58:24 -0400
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.40.0 (3.40.0-1.fc34) 
+        id S230157AbhEJCL3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 9 May 2021 22:11:29 -0400
+Received: from mail-eopbgr140073.outbound.protection.outlook.com ([40.107.14.73]:12678
+        "EHLO EUR01-VE1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S230038AbhEJCL2 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 9 May 2021 22:11:28 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=LHpTo9ORRw7vU8z49w3U/I/lXET32fQGjR01BjFLeveA9EDzeFWWk+V11PJ3YMBEmLpIgQ0d9G5Pgp81+xsvPRNHdFph2A6Q3lTBZv2SaYnVH6XPDIaibwwMco+lSF0s7DinynIksgy/ZZMxNLdso0VSj9AEtEgysGrXd1WfuyqDiovjM1bay4GTGgswSkD1CkzOnB5oobmXbceUoxFFp+HnCZlNkwAEODiHrs/2CGWh6O7UJt4/wmU1QFbqbVFxlYBso9Z7eIdtMYxALyHumRj9/590els5QR3H0o+uUpJbvjKzC5kFc/kswHvQLFyebvGFTcyNCWk67plvAczg+w==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=vyQg+4V2zVtks+QV+I6Kj5KnY1+zdh0tvk27W4fQ8zA=;
+ b=GRtfta6++kGtwzRBMz3uSd6qOgumfZhxtTlCMWZJabKYnyCEisPW7mmbK2Vf6RTq0Kv/E38CMqgpkPR8kb2VYMq4msVcjl985D+rSehf4qsB8grgwlTbBwDbWGH9Yt4pAYx3fgJZ4fsSRiCk6P+l23gu7/u2NcYfB0rP/idiLSqcXgd85OaFFUgTPbUrFglzcWANINkOZFz6y/5Z5T0b+I+mNks7pRek2ELyrUruzFtFJiyXmOhR6cWNZETMAbRJTpu1Fh4I+gzcQR/QxWOMmSEpjybrmckbUZfMLxgXs6gZnVHeY8Y6NCsTf8NfIjTAS49e/1skYbVXE8m6xSk1AA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=vyQg+4V2zVtks+QV+I6Kj5KnY1+zdh0tvk27W4fQ8zA=;
+ b=oL0MZi0L0zelOgG1vAgXgkFhs8r+QjQngDHTeBK0hWEx+fNYb//Y8L7H9PT12h6vZ9VWCU1swCqJKTT/POfR77SEJjo4C1iAImJXPnBBGZRm2ptDBc28Xx6JsnU5DDL4Fk0QTeX6nufFUDugSCooE80jfma445n0Q/1G5clhf3U=
+Received: from DB8PR04MB6795.eurprd04.prod.outlook.com (2603:10a6:10:fa::15)
+ by DB6PR0401MB2502.eurprd04.prod.outlook.com (2603:10a6:4:37::16) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4108.30; Mon, 10 May
+ 2021 02:10:21 +0000
+Received: from DB8PR04MB6795.eurprd04.prod.outlook.com
+ ([fe80::3400:b139:f681:c8cf]) by DB8PR04MB6795.eurprd04.prod.outlook.com
+ ([fe80::3400:b139:f681:c8cf%9]) with mapi id 15.20.4108.031; Mon, 10 May 2021
+ 02:10:21 +0000
+From:   Joakim Zhang <qiangqing.zhang@nxp.com>
+To:     Florian Fainelli <f.fainelli@gmail.com>,
+        Jon Hunter <jonathanh@nvidia.com>,
+        Jakub Kicinski <kuba@kernel.org>
+CC:     "peppe.cavallaro@st.com" <peppe.cavallaro@st.com>,
+        "alexandre.torgue@foss.st.com" <alexandre.torgue@foss.st.com>,
+        "joabreu@synopsys.com" <joabreu@synopsys.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "mcoquelin.stm32@gmail.com" <mcoquelin.stm32@gmail.com>,
+        "andrew@lunn.ch" <andrew@lunn.ch>,
+        dl-linux-imx <linux-imx@nxp.com>,
+        "treding@nvidia.com" <treding@nvidia.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: RE: [RFC net-next] net: stmmac: should not modify RX descriptor when
+ STMMAC resume
+Thread-Topic: [RFC net-next] net: stmmac: should not modify RX descriptor when
+ STMMAC resume
+Thread-Index: AQHXNRN2zsKOwhYLU0OtzigMEkddiqq78qqAgACuHyCAAMibgIACfU4wgADPWgCAAW5iAIAT9FVggAIV2YCAAL0YIIAA64mAgAI4pqA=
+Date:   Mon, 10 May 2021 02:10:21 +0000
+Message-ID: <DB8PR04MB6795166AB5A04B4D4B7DE53AE6549@DB8PR04MB6795.eurprd04.prod.outlook.com>
+References: <20210419115921.19219-1-qiangqing.zhang@nxp.com>
+ <f00e1790-5ba6-c9f0-f34f-d8a39c355cd7@nvidia.com>
+ <DB8PR04MB67954D37A59B2D91C69BF6A9E6489@DB8PR04MB6795.eurprd04.prod.outlook.com>
+ <cec17489-2ef9-7862-94c8-202d31507a0c@nvidia.com>
+ <DB8PR04MB67953A499438FF3FF6BE531BE6469@DB8PR04MB6795.eurprd04.prod.outlook.com>
+ <20210422085648.33738d1f@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <1732e825-dd8b-6f24-6ead-104467e70a6c@nvidia.com>
+ <DB8PR04MB67952FC590FEE5A327DA4C95E6589@DB8PR04MB6795.eurprd04.prod.outlook.com>
+ <c4e64250-35d0-dde3-661d-1ee7b9fa8596@nvidia.com>
+ <DB8PR04MB6795D3049415E51A15132F59E6569@DB8PR04MB6795.eurprd04.prod.outlook.com>
+ <e75fee5a-0b98-58b0-4ec8-9a0646812392@gmail.com>
+In-Reply-To: <e75fee5a-0b98-58b0-4ec8-9a0646812392@gmail.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: gmail.com; dkim=none (message not signed)
+ header.d=none;gmail.com; dmarc=none action=none header.from=nxp.com;
+x-originating-ip: [119.31.174.71]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 28b14463-018d-4fb5-d448-08d91358c40d
+x-ms-traffictypediagnostic: DB6PR0401MB2502:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <DB6PR0401MB25029BB024347C3A3A989BCEE6549@DB6PR0401MB2502.eurprd04.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:10000;
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: 3gRfG8dHa6wWEHQkt4+o/S+NzExJD9eevXtpNQwdu8Dm4KFFOXkbQ0YNufe1JSZOh3KRaEsoUbooW9wM37KVNDjud5dybtM0JQUub6xCFciZHfp7koCCOvrcfjErkj/Pf/a/eQtm1h5Ky/ruTNBePx0rw4U50OM5Vg2mVmP2fvEEKEx6Mx0HF/cpMQltpetWvJofVS+WDaeO+3TVySrUoO+fE6M6euR5MaSE3Tp7l6nBx5SauCracS9iZ+5ju1EeW+2gN7C7ndYoN5nmbNTXsYCVqs8Yin03qjPiFSHZeTVA0HRkcwQI0VNab/6+qqjhS3qLDN446f/Oz98TmvL+TdMUZSVLpdB5L3hh2a+ktAfs1P8XI70ZE+K1fRnu5sQsE3R/X6qxIwv71UBP2xLaH/H0TSAd2urzFdWfzOIN83MojLeShAtfNk4WujxwuRp6DSxNPZ+k1MsRrL5q0Z1y8Ed6kK8ERZxxVtCop3lBD4TBiyF/j1vkspju3s8EmHK6J4U0jBWINthGiCeCCybE0JG8WzM45QgrkzffMnNk1d1WQ9SpEfdxV1v9vXq33ezavr3Kh+bky33vnqEFqP4WBEsmBjdYnCyk8AsX/17eTHC12TFijT1KLj1LZNfeJMZ5/wt3IBRZahfp1oVT92A3ew==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DB8PR04MB6795.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(136003)(366004)(396003)(376002)(39860400002)(346002)(26005)(86362001)(186003)(83380400001)(66946007)(9686003)(64756008)(66556008)(66476007)(66446008)(76116006)(8936002)(55016002)(33656002)(71200400001)(7696005)(54906003)(8676002)(53546011)(38100700002)(7416002)(4326008)(5660300002)(6506007)(52536014)(122000001)(316002)(110136005)(2906002)(478600001)(574254001);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata: =?utf-8?B?RkgvbFpYZ0NpVEdGbmVrWXRjMDFFcElvYWlDMDJ5ajV5NEU5UWJQbTR6Qmls?=
+ =?utf-8?B?ZWNnRjZENk1Cam9aUE9vcDBDK09ETXZRbWVMVkc3VmZvSCt4SnNSbmxRdTB0?=
+ =?utf-8?B?SGVRSkY0cVJWeEtSRHVpbUNucG5qMFdEUkxINlZqTHlleE9rSCtkS2lkMy9H?=
+ =?utf-8?B?U0xSME5nUW1CaFM1N1E5V2tyQ001YytWOXloOXhkU3BIcEw0S2VNM1Q0TFEv?=
+ =?utf-8?B?czRXckRZRlYvdU0wNHU1UlN5Um1ZRlJuNzFNRW1qc043dDdCZm9WdEpxbDVx?=
+ =?utf-8?B?bm5kcStZbEtCMnRJZ1JQWTlNZzVacXMrb3E5clFmaHlic0I3NlBPZEYydVVB?=
+ =?utf-8?B?US9YeEhOV1F6ODlSTzczMzNWaW5ocXRlcDZBRkRQMHd0WWVRQVh5cUF5aW5X?=
+ =?utf-8?B?eDVldktzbXpqd3FidGFBRkIvdStJY2IzSjYyWnZKVnNpL2F6RkgzeU5vVHNl?=
+ =?utf-8?B?cTYydHBQWlJNaHNjY3FJTlloaUJteHdLSVQ4SzRqcW9xdmpIUEVhL1NLN0RC?=
+ =?utf-8?B?STNjeXB1d1Y1b3ZmZ2x6Mkh2Q1dZRnljYjc3NHNsWHRqVDZFNTdiWEpYY2Fp?=
+ =?utf-8?B?UktFODVvTUN5bFZHTWwrUjV6R0pOZjVhQXFycER6ZSt5azY0TVFGM3JDTzdh?=
+ =?utf-8?B?U2pzWlByM0hmR3ZKK3ZyM3N2a24vZkpnMWNMVU5aVVNET3VDVDRSOEs3WURH?=
+ =?utf-8?B?cnFVejBiUzRmTTJlRzFYL1RXRlhZUEl6TUVZbmN5M3V3ZFYwUmVOWndVeGlt?=
+ =?utf-8?B?ODlTNi9lZ0tsZWZUYUhEZkhTY2loYUh2ZERkcHZacGQwSm5MRW1Ca1RJVnFy?=
+ =?utf-8?B?dnU0LzYwYlZGd2xMTTN6SkF4bS94WEZabnJtUlY0MFZ5T2lTK2lDeXJ4T2Q3?=
+ =?utf-8?B?ZG1wYlplV3c5clpyd2k4eDE1NGp6Q0NqRjJDQllJanUva2pJSkRnd3cxWDdH?=
+ =?utf-8?B?R0c5VC85dy9XcDRRa0k4OTZmN1BFZVVYRjlNUlErUmg5eWYrTWQydGhEdDFp?=
+ =?utf-8?B?bWlubjdFNW5qV2ViZ29SQWhqcEw1Mm5IZ2VJVHlVTG43c25nMWVnd0xCdWpN?=
+ =?utf-8?B?Rm9GbVJzbW5IWDFCTTFsVHNMaUxRdU90d2I4aFNoMmpHdkh6bGFMQnJqUU5L?=
+ =?utf-8?B?ZWpJWndoOHRFUXY2UnJadGJEUnVyNk1mTnRUNDNKakVCcmF3enFwRXkrbWJG?=
+ =?utf-8?B?Q2Fyc3dXNXh5RjZ3eklwbWJ2OEYrVVlVZ1pPQmxheWpQbmIxcGU0eUVYcGlR?=
+ =?utf-8?B?TTdLZnY2QjNXMGVFNHZVY3JRVmVucFFMdFRWL3ZldlBnN3pscEJlRmkzM3JK?=
+ =?utf-8?B?YjV5YTdRaXNLd3hzeU92NDVlSFZxRDB0cVQxclpmcnNrQXhzZ0VKekR6TCtY?=
+ =?utf-8?B?QnQzVjZ2bm5DT204ellxTVZDbkNqbGM1T1l4RFl2S3l3V1VjYlhYZ1JZTGF3?=
+ =?utf-8?B?M3REMk5yYkE3KzY0d0JDeVJQdnBkRkJIdlQ5OFlRdzV6WUw3aWYxejRhYUV5?=
+ =?utf-8?B?eTJJYkJ3UlFrMEN0QVlteHY4NjBnNnBEaUlqRDI3ZFNka2R1MlRsVnNDUnNo?=
+ =?utf-8?B?V1ZmeU81YStJSFdFeUQyUjV1VGFrc0Q4RjdRQ3F3UXgzUGdHQ1ZBdUNHMjFS?=
+ =?utf-8?B?MVJQcjdsS1RFem5WNHhmUFdjMi9ONmwzK3FsM1lHQjN5eHdVcU9nVDdNNjcw?=
+ =?utf-8?B?ZnhibnFlSWIvckthSTNSaHd6YnlhS2ZkVWwwamNpWE1YdURNbStTU0RVNDlL?=
+ =?utf-8?Q?kVmPx6JSJ82kfUzIBc=3D?=
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: DB8PR04MB6795.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 28b14463-018d-4fb5-d448-08d91358c40d
+X-MS-Exchange-CrossTenant-originalarrivaltime: 10 May 2021 02:10:21.5701
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: MrgT+HxpeiAR+58AMGRi4BiCNKxklLo5MKnrcdfHcl06ltLzsYivKurY/d7YiNNa61enLe96mgXfF2dBZBEj4w==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB6PR0401MB2502
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-i40e NIC with 5.11.17-300.fc34.x86_64
-
-Unfortunately, this does not consistently occur.
-
-[ 2739.991807] ------------[ cut here ]------------
-[ 2739.996428] Failed to disable zero-copy!
-[ 2740.000378] WARNING: CPU: 0 PID: 302 at net/xdp/xsk_buff_pool.c:118
-xp_disable_drv_zc+0x69/0xa0
-[ 2740.009075] Modules linked in: rfkill vfat fat rpcrdma sunrpc
-rdma_ucm ib_srpt ib_isert iscsi_target_mod target_core_mod ib_iser
-libiscsi scsi_transport_iscsi rdma_cm iw_cm ib_cm intel_rapl_msr
-iTCO_wdt intel_pmc_bxt iTCO_vendor_support intel_rapl_common
-isst_if_common skx_edac nfit libnvdimm x86_pkg_temp_thermal
-intel_powerclamp coretemp kvm_intel kvm irqbypass i40iw rapl
-intel_cstate ib_uverbs intel_uncore ipmi_ssif ib_core pcspkr i2c_i801
-lpc_ich i2c_smbus joydev mei_me mei acpi_ipmi ioatdma ipmi_si
-ipmi_devintf ipmi_msghandler fuse zram ip_tables xfs ast
-drm_vram_helper drm_kms_helper crct10dif_pclmul crc32_pclmul qat_c62x
-cec drm_ttm_helper crc32c_intel intel_qat ttm ghash_clmulni_intel i40e
-drm igb authenc dca i2c_algo_bit wmi uas usb_storage i2c_dev
-[ 2740.075995] CPU: 0 PID: 302 Comm: kworker/0:2 Not tainted 5.11.17-
-300.fc34.x86_64 #1
-[ 2740.083734] Hardware name: To be filled by O.E.M. To be filled by
-O.E.M./To be filled by O.E.M., BIOS 5.14 04/18/2019
-[ 2740.094334] Workqueue: events xp_release_deferred
-[ 2740.099039] RIP: 0010:xp_disable_drv_zc+0x69/0xa0
-[ 2740.103744] Code: 10 48 8b 87 f0 01 00 00 48 8b 80 50 02 00 00 e8 cd
-26 2b 00 85 c0 75 06 48 83 c4 20 5b c3 48 c7 c7 70 10 49 95 e8 36 db 01
-00 <0f> 0b 48 83 c4 20 5b c3 80 3d 29 eb 1b 01 00 75 9c ba 6c 00 00 00
-[ 2740.122494] RSP: 0018:ffffa93580c9be48 EFLAGS: 00010296
-[ 2740.127717] RAX: 000000000000001c RBX: ffffa9358f309000 RCX:
-0000000000000000
-[ 2740.134851] RDX: ffff8be5e0626ba0 RSI: ffff8be5e0618ac0 RDI:
-ffff8be5e0618ac0
-[ 2740.141985] RBP: ffffa9358f309000 R08: 0000000000000000 R09:
-ffffa93580c9bc78
-[ 2740.149117] R10: ffffa93580c9bc70 R11: ffff8be63ff3c228 R12:
-ffff8be5e0629980
-[ 2740.156251] R13: ffff8be5e062f700 R14: 0000000000000000 R15:
-0000000000000000
-[ 2740.163382] FS:  0000000000000000(0000) GS:ffff8be5e0600000(0000)
-knlGS:0000000000000000
-[ 2740.171468] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-[ 2740.177217] CR2: 00007f42c932d224 CR3: 0000000409a10003 CR4:
-00000000007706f0
-[ 2740.184349] DR0: 0000000000000000 DR1: 0000000000000000 DR2:
-0000000000000000
-[ 2740.191481] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7:
-0000000000000400
-[ 2740.198617] PKRU: 55555554
-[ 2740.201328] Call Trace:
-[ 2740.203786]  ? mutex_lock+0xe/0x30
-[ 2740.207198]  xp_release_deferred+0x22/0xa0
-[ 2740.211296]  process_one_work+0x1ec/0x380
-[ 2740.215309]  worker_thread+0x53/0x3e0
-[ 2740.218975]  ? process_one_work+0x380/0x380
-[ 2740.223161]  kthread+0x11b/0x140
-[ 2740.226392]  ? kthread_associate_blkcg+0xa0/0xa0
-[ 2740.231015]  ret_from_fork+0x1f/0x30
-[ 2740.234604] ---[ end trace cbb7bcf4ac8a3b92 ]---
-[ 2740.336808] ------------[ cut here ]------------
-[ 2740.341429] Failed to disable zero-copy!
-[ 2740.345384] WARNING: CPU: 3 PID: 316 at net/xdp/xsk_buff_pool.c:118
-xp_disable_drv_zc+0x69/0xa0
-[ 2740.354086] Modules linked in: rfkill vfat fat rpcrdma sunrpc
-rdma_ucm ib_srpt ib_isert iscsi_target_mod target_core_mod ib_iser
-libiscsi scsi_transport_iscsi rdma_cm iw_cm ib_cm intel_rapl_msr
-iTCO_wdt intel_pmc_bxt iTCO_vendor_support intel_rapl_common
-isst_if_common skx_edac nfit libnvdimm x86_pkg_temp_thermal
-intel_powerclamp coretemp kvm_intel kvm irqbypass i40iw rapl
-intel_cstate ib_uverbs intel_uncore ipmi_ssif ib_core pcspkr i2c_i801
-lpc_ich i2c_smbus joydev mei_me mei acpi_ipmi ioatdma ipmi_si
-ipmi_devintf ipmi_msghandler fuse zram ip_tables xfs ast
-drm_vram_helper drm_kms_helper crct10dif_pclmul crc32_pclmul qat_c62x
-cec drm_ttm_helper crc32c_intel intel_qat ttm ghash_clmulni_intel i40e
-drm igb authenc dca i2c_algo_bit wmi uas usb_storage i2c_dev
-[ 2740.420997] CPU: 3 PID: 316 Comm: kworker/3:1 Tainted: G        W  
-5.11.17-300.fc34.x86_64 #1
-[ 2740.430133] Hardware name: To be filled by O.E.M. To be filled by
-O.E.M./To be filled by O.E.M., BIOS 5.14 04/18/2019
-[ 2740.440730] Workqueue: events xp_release_deferred
-[ 2740.445447] RIP: 0010:xp_disable_drv_zc+0x69/0xa0
-[ 2740.450150] Code: 10 48 8b 87 f0 01 00 00 48 8b 80 50 02 00 00 e8 cd
-26 2b 00 85 c0 75 06 48 83 c4 20 5b c3 48 c7 c7 70 10 49 95 e8 36 db 01
-00 <0f> 0b 48 83 c4 20 5b c3 80 3d 29 eb 1b 01 00 75 9c ba 6c 00 00 00
-[ 2740.468900] RSP: 0018:ffffa93580d0be48 EFLAGS: 00010296
-[ 2740.474124] RAX: 000000000000001c RBX: ffffa93586ff2000 RCX:
-0000000000000000
-[ 2740.481258] RDX: ffff8be5e06e6ba0 RSI: ffff8be5e06d8ac0 RDI:
-ffff8be5e06d8ac0
-[ 2740.488392] RBP: ffffa93586ff2000 R08: 0000000000000000 R09:
-ffffa93580d0bc78
-[ 2740.495523] R10: ffffa93580d0bc70 R11: ffff8be63ff3c228 R12:
-ffff8be5e06e9980
-[ 2740.502657] R13: ffff8be5e06ef700 R14: 0000000000000000 R15:
-0000000000000000
-[ 2740.509792] FS:  0000000000000000(0000) GS:ffff8be5e06c0000(0000)
-knlGS:0000000000000000
-[ 2740.517877] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-[ 2740.523622] CR2: 000056209994d798 CR3: 000000028ee14004 CR4:
-00000000007706e0
-[ 2740.530757] DR0: 0000000000000000 DR1: 0000000000000000 DR2:
-0000000000000000
-[ 2740.537889] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7:
-0000000000000400
-[ 2740.545022] PKRU: 55555554
-[ 2740.547736] Call Trace:
-[ 2740.550190]  xp_release_deferred+0x22/0xa0
-[ 2740.554298]  process_one_work+0x1ec/0x380
-[ 2740.558321]  worker_thread+0x53/0x3e0
-[ 2740.561993]  ? process_one_work+0x380/0x380
-[ 2740.566177]  kthread+0x11b/0x140
-[ 2740.569414]  ? kthread_associate_blkcg+0xa0/0xa0
-[ 2740.574031]  ret_from_fork+0x1f/0x30
-[ 2740.577623] ---[ end trace cbb7bcf4ac8a3b93 ]---
-[ 2740.679825] ------------[ cut here ]------------
-[ 2740.684440] Failed to disable zero-copy!
-[ 2740.688392] WARNING: CPU: 2 PID: 387 at net/xdp/xsk_buff_pool.c:118
-xp_disable_drv_zc+0x69/0xa0
-[ 2740.697087] Modules linked in: rfkill vfat fat rpcrdma sunrpc
-rdma_ucm ib_srpt ib_isert iscsi_target_mod target_core_mod ib_iser
-libiscsi scsi_transport_iscsi rdma_cm iw_cm ib_cm intel_rapl_msr
-iTCO_wdt intel_pmc_bxt iTCO_vendor_support intel_rapl_common
-isst_if_common skx_edac nfit libnvdimm x86_pkg_temp_thermal
-intel_powerclamp coretemp kvm_intel kvm irqbypass i40iw rapl
-intel_cstate ib_uverbs intel_uncore ipmi_ssif ib_core pcspkr i2c_i801
-lpc_ich i2c_smbus joydev mei_me mei acpi_ipmi ioatdma ipmi_si
-ipmi_devintf ipmi_msghandler fuse zram ip_tables xfs ast
-drm_vram_helper drm_kms_helper crct10dif_pclmul crc32_pclmul qat_c62x
-cec drm_ttm_helper crc32c_intel intel_qat ttm ghash_clmulni_intel i40e
-drm igb authenc dca i2c_algo_bit wmi uas usb_storage i2c_dev
-[ 2740.763999] CPU: 2 PID: 387 Comm: kworker/2:1 Tainted: G        W  
-5.11.17-300.fc34.x86_64 #1
-[ 2740.773123] Hardware name: To be filled by O.E.M. To be filled by
-O.E.M./To be filled by O.E.M., BIOS 5.14 04/18/2019
-[ 2740.783722] Workqueue: events xp_release_deferred
-[ 2740.788431] RIP: 0010:xp_disable_drv_zc+0x69/0xa0
-[ 2740.793135] Code: 10 48 8b 87 f0 01 00 00 48 8b 80 50 02 00 00 e8 cd
-26 2b 00 85 c0 75 06 48 83 c4 20 5b c3 48 c7 c7 70 10 49 95 e8 36 db 01
-00 <0f> 0b 48 83 c4 20 5b c3 80 3d 29 eb 1b 01 00 75 9c ba 6c 00 00 00
-[ 2740.811883] RSP: 0018:ffffa935843ebe48 EFLAGS: 00010296
-[ 2740.817110] RAX: 000000000000001c RBX: ffffa9358eb05000 RCX:
-0000000000000000
-[ 2740.824242] RDX: ffff8be5e06a6ba0 RSI: ffff8be5e0698ac0 RDI:
-ffff8be5e0698ac0
-[ 2740.831375] RBP: ffffa9358eb05000 R08: 0000000000000000 R09:
-ffffa935843ebc78
-[ 2740.838509] R10: ffffa935843ebc70 R11: ffff8be63ff3c228 R12:
-ffff8be5e06a9980
-[ 2740.845643] R13: ffff8be5e06af700 R14: 0000000000000000 R15:
-0000000000000000
-[ 2740.852776] FS:  0000000000000000(0000) GS:ffff8be5e0680000(0000)
-knlGS:0000000000000000
-[ 2740.860861] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-[ 2740.866609] CR2: 00007f580c1a0ae0 CR3: 000000028ec8c002 CR4:
-00000000007706e0
-[ 2740.873741] DR0: 0000000000000000 DR1: 0000000000000000 DR2:
-0000000000000000
-[ 2740.880875] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7:
-0000000000000400
-[ 2740.888006] PKRU: 55555554
-[ 2740.890719] Call Trace:
-[ 2740.893173]  xp_release_deferred+0x22/0xa0
-[ 2740.897274]  process_one_work+0x1ec/0x380
-[ 2740.901294]  worker_thread+0x53/0x3e0
-[ 2740.904959]  ? process_one_work+0x380/0x380
-[ 2740.909144]  kthread+0x11b/0x140
-[ 2740.912378]  ? kthread_associate_blkcg+0xa0/0xa0
-[ 2740.916999]  ret_from_fork+0x1f/0x30
-[ 2740.920578] ---[ end trace cbb7bcf4ac8a3b94 ]---
-[ 2740.925513] i40e 0000:17:00.1: VSI seid 391 Rx ring 72 disable
-timeout
-[ 2740.945857] ------------[ cut here ]------------
-[ 2740.950479] Failed to disable zero-copy!
-[ 2740.954431] WARNING: CPU: 2 PID: 783 at net/xdp/xsk_buff_pool.c:118
-xp_disable_drv_zc+0x69/0xa0
-[ 2740.963126] Modules linked in: rfkill vfat fat rpcrdma sunrpc
-rdma_ucm ib_srpt ib_isert iscsi_target_mod target_core_mod ib_iser
-libiscsi scsi_transport_iscsi rdma_cm iw_cm ib_cm intel_rapl_msr
-iTCO_wdt intel_pmc_bxt iTCO_vendor_support intel_rapl_common
-isst_if_common skx_edac nfit libnvdimm x86_pkg_temp_thermal
-intel_powerclamp coretemp kvm_intel kvm irqbypass i40iw rapl
-intel_cstate ib_uverbs intel_uncore ipmi_ssif ib_core pcspkr i2c_i801
-lpc_ich i2c_smbus joydev mei_me mei acpi_ipmi ioatdma ipmi_si
-ipmi_devintf ipmi_msghandler fuse zram ip_tables xfs ast
-drm_vram_helper drm_kms_helper crct10dif_pclmul crc32_pclmul qat_c62x
-cec drm_ttm_helper crc32c_intel intel_qat ttm ghash_clmulni_intel i40e
-drm igb authenc dca i2c_algo_bit wmi uas usb_storage i2c_dev
-[ 2741.030038] CPU: 2 PID: 783 Comm: kworker/2:2 Tainted: G        W  
-5.11.17-300.fc34.x86_64 #1
-[ 2741.039170] Hardware name: To be filled by O.E.M. To be filled by
-O.E.M./To be filled by O.E.M., BIOS 5.14 04/18/2019
-[ 2741.049769] Workqueue: events xp_release_deferred
-[ 2741.054475] RIP: 0010:xp_disable_drv_zc+0x69/0xa0
-[ 2741.059181] Code: 10 48 8b 87 f0 01 00 00 48 8b 80 50 02 00 00 e8 cd
-26 2b 00 85 c0 75 06 48 83 c4 20 5b c3 48 c7 c7 70 10 49 95 e8 36 db 01
-00 <0f> 0b 48 83 c4 20 5b c3 80 3d 29 eb 1b 01 00 75 9c ba 6c 00 00 00
-[ 2741.077929] RSP: 0018:ffffa93580f37e48 EFLAGS: 00010296
-[ 2741.083156] RAX: 000000000000001c RBX: ffffa9358f70b000 RCX:
-0000000000000000
-[ 2741.090287] RDX: ffff8be5e06a6ba0 RSI: ffff8be5e0698ac0 RDI:
-ffff8be5e0698ac0
-[ 2741.097424] RBP: ffffa9358f70b000 R08: 0000000000000000 R09:
-ffffa93580f37c78
-[ 2741.104555] R10: ffffa93580f37c70 R11: ffff8be63ff3c228 R12:
-ffff8be5e06a9980
-[ 2741.111687] R13: ffff8be5e06af700 R14: 0000000000000000 R15:
-0000000000000000
-[ 2741.118822] FS:  0000000000000000(0000) GS:ffff8be5e0680000(0000)
-knlGS:0000000000000000
-[ 2741.126909] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-[ 2741.132655] CR2: 00007f580c1a0ae0 CR3: 000000028ec8c002 CR4:
-00000000007706e0
-[ 2741.139787] DR0: 0000000000000000 DR1: 0000000000000000 DR2:
-0000000000000000
-[ 2741.146921] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7:
-0000000000000400
-[ 2741.154053] PKRU: 55555554
-[ 2741.156764] Call Trace:
-[ 2741.159219]  xp_release_deferred+0x22/0xa0
-[ 2741.163320]  process_one_work+0x1ec/0x380
-[ 2741.167330]  worker_thread+0x53/0x3e0
-[ 2741.170996]  ? process_one_work+0x380/0x380
-[ 2741.175184]  kthread+0x11b/0x140
-[ 2741.178415]  ? kthread_associate_blkcg+0xa0/0xa0
-[ 2741.183036]  ret_from_fork+0x1f/0x30
-[ 2741.186617] ---[ end trace cbb7bcf4ac8a3b95 ]---
-[ 2741.294857] ------------[ cut here ]------------
-[ 2741.299477] Failed to disable zero-copy!
-[ 2741.303428] WARNING: CPU: 2 PID: 5711 at net/xdp/xsk_buff_pool.c:118
-xp_disable_drv_zc+0x69/0xa0
-[ 2741.312210] Modules linked in: rfkill vfat fat rpcrdma sunrpc
-rdma_ucm ib_srpt ib_isert iscsi_target_mod target_core_mod ib_iser
-libiscsi scsi_transport_iscsi rdma_cm iw_cm ib_cm intel_rapl_msr
-iTCO_wdt intel_pmc_bxt iTCO_vendor_support intel_rapl_common
-isst_if_common skx_edac nfit libnvdimm x86_pkg_temp_thermal
-intel_powerclamp coretemp kvm_intel kvm irqbypass i40iw rapl
-intel_cstate ib_uverbs intel_uncore ipmi_ssif ib_core pcspkr i2c_i801
-lpc_ich i2c_smbus joydev mei_me mei acpi_ipmi ioatdma ipmi_si
-ipmi_devintf ipmi_msghandler fuse zram ip_tables xfs ast
-drm_vram_helper drm_kms_helper crct10dif_pclmul crc32_pclmul qat_c62x
-cec drm_ttm_helper crc32c_intel intel_qat ttm ghash_clmulni_intel i40e
-drm igb authenc dca i2c_algo_bit wmi uas usb_storage i2c_dev
-[ 2741.379125] CPU: 2 PID: 5711 Comm: kworker/2:0 Tainted: G        W 
-5.11.17-300.fc34.x86_64 #1
-[ 2741.388341] Hardware name: To be filled by O.E.M. To be filled by
-O.E.M./To be filled by O.E.M., BIOS 5.14 04/18/2019
-[ 2741.398943] Workqueue: events xp_release_deferred
-[ 2741.403649] RIP: 0010:xp_disable_drv_zc+0x69/0xa0
-[ 2741.408354] Code: 10 48 8b 87 f0 01 00 00 48 8b 80 50 02 00 00 e8 cd
-26 2b 00 85 c0 75 06 48 83 c4 20 5b c3 48 c7 c7 70 10 49 95 e8 36 db 01
-00 <0f> 0b 48 83 c4 20 5b c3 80 3d 29 eb 1b 01 00 75 9c ba 6c 00 00 00
-[ 2741.427100] RSP: 0018:ffffa9372f13fe48 EFLAGS: 00010296
-[ 2741.432328] RAX: 000000000000001c RBX: ffffa9358ef07000 RCX:
-0000000000000000
-[ 2741.439460] RDX: ffff8be5e06a6ba0 RSI: ffff8be5e0698ac0 RDI:
-ffff8be5e0698ac0
-[ 2741.446594] RBP: ffffa9358ef07000 R08: 0000000000000000 R09:
-ffffa9372f13fc78
-[ 2741.453727] R10: ffffa9372f13fc70 R11: ffff8be63ff3c228 R12:
-ffff8be5e06a9980
-[ 2741.460858] R13: ffff8be5e06af700 R14: 0000000000000000 R15:
-0000000000000000
-[ 2741.467994] FS:  0000000000000000(0000) GS:ffff8be5e0680000(0000)
-knlGS:0000000000000000
-[ 2741.476080] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-[ 2741.481824] CR2: 00007f580c1a0ae0 CR3: 000000028ec8c002 CR4:
-00000000007706e0
-[ 2741.488959] DR0: 0000000000000000 DR1: 0000000000000000 DR2:
-0000000000000000
-[ 2741.496092] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7:
-0000000000000400
-[ 2741.503224] PKRU: 55555554
-[ 2741.505936] Call Trace:
-[ 2741.508391]  xp_release_deferred+0x22/0xa0
-[ 2741.512491]  process_one_work+0x1ec/0x380
-[ 2741.516505]  worker_thread+0x53/0x3e0
-[ 2741.520170]  ? process_one_work+0x380/0x380
-[ 2741.524354]  kthread+0x11b/0x140
-[ 2741.527587]  ? kthread_associate_blkcg+0xa0/0xa0
-[ 2741.532206]  ret_from_fork+0x1f/0x30
-[ 2741.535789] ---[ end trace cbb7bcf4ac8a3b96 ]---
-[ 2741.637874] ------------[ cut here ]------------
-[ 2741.642495] Failed to disable zero-copy!
-[ 2741.646450] WARNING: CPU: 3 PID: 3925 at net/xdp/xsk_buff_pool.c:118
-xp_disable_drv_zc+0x69/0xa0
-[ 2741.655239] Modules linked in: rfkill vfat fat rpcrdma sunrpc
-rdma_ucm ib_srpt ib_isert iscsi_target_mod target_core_mod ib_iser
-libiscsi scsi_transport_iscsi rdma_cm iw_cm ib_cm intel_rapl_msr
-iTCO_wdt intel_pmc_bxt iTCO_vendor_support intel_rapl_common
-isst_if_common skx_edac nfit libnvdimm x86_pkg_temp_thermal
-intel_powerclamp coretemp kvm_intel kvm irqbypass i40iw rapl
-intel_cstate ib_uverbs intel_uncore ipmi_ssif ib_core pcspkr i2c_i801
-lpc_ich i2c_smbus joydev mei_me mei acpi_ipmi ioatdma ipmi_si
-ipmi_devintf ipmi_msghandler fuse zram ip_tables xfs ast
-drm_vram_helper drm_kms_helper crct10dif_pclmul crc32_pclmul qat_c62x
-cec drm_ttm_helper crc32c_intel intel_qat ttm ghash_clmulni_intel i40e
-drm igb authenc dca i2c_algo_bit wmi uas usb_storage i2c_dev
-[ 2741.722150] CPU: 3 PID: 3925 Comm: kworker/3:0 Tainted: G        W 
-5.11.17-300.fc34.x86_64 #1
-[ 2741.731371] Hardware name: To be filled by O.E.M. To be filled by
-O.E.M./To be filled by O.E.M., BIOS 5.14 04/18/2019
-[ 2741.741968] Workqueue: events xp_release_deferred
-[ 2741.746676] RIP: 0010:xp_disable_drv_zc+0x69/0xa0
-[ 2741.751380] Code: 10 48 8b 87 f0 01 00 00 48 8b 80 50 02 00 00 e8 cd
-26 2b 00 85 c0 75 06 48 83 c4 20 5b c3 48 c7 c7 70 10 49 95 e8 36 db 01
-00 <0f> 0b 48 83 c4 20 5b c3 80 3d 29 eb 1b 01 00 75 9c ba 6c 00 00 00
-[ 2741.770130] RSP: 0018:ffffa93580f9fe48 EFLAGS: 00010296
-[ 2741.775354] RAX: 000000000000001c RBX: ffffa9358af02000 RCX:
-0000000000000000
-[ 2741.782487] RDX: ffff8be5e06e6ba0 RSI: ffff8be5e06d8ac0 RDI:
-ffff8be5e06d8ac0
-[ 2741.789624] RBP: ffffa9358af02000 R08: 0000000000000000 R09:
-ffffa93580f9fc78
-[ 2741.796763] R10: ffffa93580f9fc70 R11: ffff8be63ff3c228 R12:
-ffff8be5e06e9980
-[ 2741.803895] R13: ffff8be5e06ef700 R14: 0000000000000000 R15:
-0000000000000000
-[ 2741.811030] FS:  0000000000000000(0000) GS:ffff8be5e06c0000(0000)
-knlGS:0000000000000000
-[ 2741.819116] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-[ 2741.824861] CR2: 00007fc9a42684e0 CR3: 00000002ccdf4001 CR4:
-00000000007706e0
-[ 2741.831994] DR0: 0000000000000000 DR1: 0000000000000000 DR2:
-0000000000000000
-[ 2741.839127] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7:
-0000000000000400
-[ 2741.846259] PKRU: 55555554
-[ 2741.848973] Call Trace:
-[ 2741.851428]  xp_release_deferred+0x22/0xa0
-[ 2741.855539]  process_one_work+0x1ec/0x380
-[ 2741.859557]  worker_thread+0x53/0x3e0
-[ 2741.863221]  ? process_one_work+0x380/0x380
-[ 2741.867410]  kthread+0x11b/0x140
-[ 2741.870651]  ? kthread_associate_blkcg+0xa0/0xa0
-[ 2741.875271]  ret_from_fork+0x1f/0x30
-[ 2741.878861] ---[ end trace cbb7bcf4ac8a3b97 ]---
-
-
+DQpIaSBGbG9yaWFuLA0KDQo+IC0tLS0tT3JpZ2luYWwgTWVzc2FnZS0tLS0tDQo+IEZyb206IEZs
+b3JpYW4gRmFpbmVsbGkgPGYuZmFpbmVsbGlAZ21haWwuY29tPg0KPiBTZW50OiAyMDIx5bm0Neac
+iDjml6UgMjM6NDINCj4gVG86IEpvYWtpbSBaaGFuZyA8cWlhbmdxaW5nLnpoYW5nQG54cC5jb20+
+OyBKb24gSHVudGVyDQo+IDxqb25hdGhhbmhAbnZpZGlhLmNvbT47IEpha3ViIEtpY2luc2tpIDxr
+dWJhQGtlcm5lbC5vcmc+DQo+IENjOiBwZXBwZS5jYXZhbGxhcm9Ac3QuY29tOyBhbGV4YW5kcmUu
+dG9yZ3VlQGZvc3Muc3QuY29tOw0KPiBqb2FicmV1QHN5bm9wc3lzLmNvbTsgZGF2ZW1AZGF2ZW1s
+b2Z0Lm5ldDsNCj4gbWNvcXVlbGluLnN0bTMyQGdtYWlsLmNvbTsgYW5kcmV3QGx1bm4uY2g7IGRs
+LWxpbnV4LWlteA0KPiA8bGludXgtaW14QG54cC5jb20+OyB0cmVkaW5nQG52aWRpYS5jb207IG5l
+dGRldkB2Z2VyLmtlcm5lbC5vcmcNCj4gU3ViamVjdDogUmU6IFtSRkMgbmV0LW5leHRdIG5ldDog
+c3RtbWFjOiBzaG91bGQgbm90IG1vZGlmeSBSWCBkZXNjcmlwdG9yIHdoZW4NCj4gU1RNTUFDIHJl
+c3VtZQ0KPiANCj4gDQo+IA0KPiBPbiA1LzgvMjAyMSA0OjIwIEFNLCBKb2FraW0gWmhhbmcgd3Jv
+dGU6DQo+ID4NCj4gPiBIaSBKYWt1YiwNCj4gPg0KPiA+PiAtLS0tLU9yaWdpbmFsIE1lc3NhZ2Ut
+LS0tLQ0KPiA+PiBGcm9tOiBKb24gSHVudGVyIDxqb25hdGhhbmhAbnZpZGlhLmNvbT4NCj4gPj4g
+U2VudDogMjAyMeW5tDXmnIg35pelIDIyOjIyDQo+ID4+IFRvOiBKb2FraW0gWmhhbmcgPHFpYW5n
+cWluZy56aGFuZ0BueHAuY29tPjsgSmFrdWIgS2ljaW5za2kNCj4gPj4gPGt1YmFAa2VybmVsLm9y
+Zz4NCj4gPj4gQ2M6IHBlcHBlLmNhdmFsbGFyb0BzdC5jb207IGFsZXhhbmRyZS50b3JndWVAZm9z
+cy5zdC5jb207DQo+ID4+IGpvYWJyZXVAc3lub3BzeXMuY29tOyBkYXZlbUBkYXZlbWxvZnQubmV0
+Ow0KPiBtY29xdWVsaW4uc3RtMzJAZ21haWwuY29tOw0KPiA+PiBhbmRyZXdAbHVubi5jaDsgZi5m
+YWluZWxsaUBnbWFpbC5jb207IGRsLWxpbnV4LWlteA0KPiA+PiA8bGludXgtaW14QG54cC5jb20+
+OyB0cmVkaW5nQG52aWRpYS5jb207IG5ldGRldkB2Z2VyLmtlcm5lbC5vcmcNCj4gPj4gU3ViamVj
+dDogUmU6IFtSRkMgbmV0LW5leHRdIG5ldDogc3RtbWFjOiBzaG91bGQgbm90IG1vZGlmeSBSWA0K
+PiA+PiBkZXNjcmlwdG9yIHdoZW4gU1RNTUFDIHJlc3VtZQ0KPiA+Pg0KPiA+PiBIaSBKb2FraW0s
+DQo+ID4+DQo+ID4+IE9uIDA2LzA1LzIwMjEgMDc6MzMsIEpvYWtpbSBaaGFuZyB3cm90ZToNCj4g
+Pj4+DQo+ID4+Pj4gLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj4gPj4+PiBGcm9tOiBKb24g
+SHVudGVyIDxqb25hdGhhbmhAbnZpZGlhLmNvbT4NCj4gPj4+PiBTZW50OiAyMDIx5bm0NOaciDIz
+5pelIDIxOjQ4DQo+ID4+Pj4gVG86IEpha3ViIEtpY2luc2tpIDxrdWJhQGtlcm5lbC5vcmc+OyBK
+b2FraW0gWmhhbmcNCj4gPj4+PiA8cWlhbmdxaW5nLnpoYW5nQG54cC5jb20+DQo+ID4+Pj4gQ2M6
+IHBlcHBlLmNhdmFsbGFyb0BzdC5jb207IGFsZXhhbmRyZS50b3JndWVAZm9zcy5zdC5jb207DQo+
+ID4+Pj4gam9hYnJldUBzeW5vcHN5cy5jb207IGRhdmVtQGRhdmVtbG9mdC5uZXQ7DQo+ID4+IG1j
+b3F1ZWxpbi5zdG0zMkBnbWFpbC5jb207DQo+ID4+Pj4gYW5kcmV3QGx1bm4uY2g7IGYuZmFpbmVs
+bGlAZ21haWwuY29tOyBkbC1saW51eC1pbXgNCj4gPj4+PiA8bGludXgtaW14QG54cC5jb20+OyB0
+cmVkaW5nQG52aWRpYS5jb207IG5ldGRldkB2Z2VyLmtlcm5lbC5vcmcNCj4gPj4+PiBTdWJqZWN0
+OiBSZTogW1JGQyBuZXQtbmV4dF0gbmV0OiBzdG1tYWM6IHNob3VsZCBub3QgbW9kaWZ5IFJYDQo+
+ID4+Pj4gZGVzY3JpcHRvciB3aGVuIFNUTU1BQyByZXN1bWUNCj4gPj4+Pg0KPiA+Pj4+DQo+ID4+
+Pj4gT24gMjIvMDQvMjAyMSAxNjo1NiwgSmFrdWIgS2ljaW5za2kgd3JvdGU6DQo+ID4+Pj4+IE9u
+IFRodSwgMjIgQXByIDIwMjEgMDQ6NTM6MDggKzAwMDAgSm9ha2ltIFpoYW5nIHdyb3RlOg0KPiA+
+Pj4+Pj4gQ291bGQgeW91IHBsZWFzZSBoZWxwIHJldmlldyB0aGlzIHBhdGNoPyBJdCdzIHJlYWxs
+eSBiZXlvbmQgbXkNCj4gPj4+Pj4+IGNvbXByZWhlbnNpb24sIHdoeSB0aGlzIHBhdGNoIHdvdWxk
+IGFmZmVjdCBUZWdyYTE4NiBKZXRzb24gVFgyDQo+IGJvYXJkPw0KPiA+Pj4+Pg0KPiA+Pj4+PiBM
+b29rcyBva2F5LCBwbGVhc2UgcmVwb3N0IGFzIG5vbi1SRkMuDQo+ID4+Pj4NCj4gPj4+Pg0KPiA+
+Pj4+IEkgc3RpbGwgaGF2ZSBhbiBpc3N1ZSB3aXRoIGEgYm9hcmQgbm90IGJlaW5nIGFibGUgdG8g
+cmVzdW1lIGZyb20NCj4gPj4+PiBzdXNwZW5kIHdpdGggdGhpcyBwYXRjaC4gU2hvdWxkbid0IHdl
+IHRyeSB0byByZXNvbHZlIHRoYXQgZmlyc3Q/DQo+ID4+Pg0KPiA+Pj4gSGkgSm9uLA0KPiA+Pj4N
+Cj4gPj4+IEFueSB1cGRhdGVzIGFib3V0IHRoaXM/IENvdWxkIEkgcmVwb3N0IGFzIG5vbi1SRkM/
+DQo+ID4+DQo+ID4+DQo+ID4+IFNvcnJ5IG5vIHVwZGF0ZXMgZnJvbSBteSBlbmQuIEFnYWluLCBJ
+IGRvbid0IHNlZSBob3cgd2UgY2FuIHBvc3QgdGhpcw0KPiA+PiBhcyBpdCBpbnRyb2R1Y2VzIGEg
+cmVncmVzc2lvbiBmb3IgdXMuIEkgYW0gc29ycnkgdGhhdCBJIGFtIG5vdCBhYmxlDQo+ID4+IHRv
+IGhlbHAgbW9yZSBoZXJlLCBidXQgd2UgaGF2ZSBkb25lIHNvbWUgZXh0ZW5zaXZlIHRlc3Rpbmcg
+b24gdGhlDQo+ID4+IGN1cnJlbnQgbWFpbmxpbmUgd2l0aG91dCB5b3VyIGNoYW5nZSBhbmQgSSBk
+b24ndCBzZWUgYW55IGlzc3VlcyB3aXRoDQo+ID4+IHJlZ2FyZCB0byBzdXNwZW5kL3Jlc3VtZS4g
+SGVuY2UsIHRoaXMgZG9lcyBub3QgYXBwZWFyIHRvIGZpeCBhbnkNCj4gPj4gcHJlLWV4aXN0aW5n
+IGlzc3Vlcy4gSXQgaXMgcG9zc2libGUgdGhhdCB3ZSBhcmUgbm90IHNlZWluZyB0aGVtLg0KPiA+
+Pg0KPiA+PiBBdCB0aGlzIHBvaW50IEkgdGhpbmsgdGhhdCB3ZSByZWFsbHkgbmVlZCBzb21lb25l
+IGZyb20gU3lub3BzeXMgdG8NCj4gPj4gaGVscCB1cyB1bmRlcnN0YW5kIHRoYXQgZXhhY3QgcHJv
+YmxlbSB0aGF0IHlvdSBhcmUgZXhwZXJpZW5jaW5nIHNvDQo+ID4+IHRoYXQgd2UgY2FuIGVuc3Vy
+ZSB3ZSBoYXZlIHRoZSBuZWNlc3NhcnkgZml4IGluIHBsYWNlIGFuZCBpZiB0aGlzIGlzDQo+ID4+
+IHNvbWV0aGluZyB0aGF0IGlzIGFwcGxpY2FibGUgdG8gYWxsIGRldmljZXMgb3Igbm90Lg0KPiA+
+DQo+ID4gVGhpcyBwYXRjaCBvbmx5IHJlbW92ZXMgbW9kaWZpY2F0aW9uIG9mIFJ4IGRlc2NyaXB0
+b3JzIHdoZW4gU1RNTUFDDQo+IHJlc3VtZSBiYWNrLCBJTUhPLCBpdCBzaG91bGQgbm90IGFmZmVj
+dCBzeXN0ZW0gc3VzcGVuZC9yZXN1bWUgZnVuY3Rpb24uDQo+ID4gRG8geW91IGhhdmUgYW55IGlk
+ZWEgYWJvdXQgSm9oJ3MgaXNzdWUgb3IgYW55IGFjY2VwdGFibGUgc29sdXRpb24gdG8gZml4IHRo
+ZQ0KPiBpc3N1ZSBJIG1ldD8gVGhhbmtzIGEgbG90IQ0KPiANCj4gSm9ha2ltLCBkb24ndCB5b3Ug
+aGF2ZSBhIHN1cHBvcnQgY29udGFjdCBhdCBTeW5vcHN5cyB3aG8gd291bGQgYmUgYWJsZSB0bw0K
+PiBoZWxwIG9yIHNvbWVvbmUgYXQgTlhQIHdobyB3YXMgcmVzcG9uc2libGUgZm9yIHRoZSBNQUMg
+aW50ZWdyYXRpb24/DQo+IFdlIGFsc28gaGF2ZSBTeW5vcHN5cyBlbmdpbmVlcnMgY29waWVkIHNv
+IHByZXN1bWFibHkgdGhleSBjb3VsZCBzaGVkIHNvbWUNCj4gbGlnaHQuDQoNCkkgY29udGFjdGVk
+IFN5bm9wc3lzIG5vIHN1YnN0YW50aXZlIGhlbHAgd2FzIHJlY2VpdmVkLCBhbmQgaW50ZWdyYXRp
+b24gZ3V5cyBmcm9tIE5YUCBpcyB1bmF2YWlsYWJsZSBub3cuDQoNCkJ1dCwgc29tZSBoaW50cyBo
+YXMgY2FtZSBvdXQsIHNlZW1zIGEgYml0IGhlbHAuIEkgZm91bmQgdGhhdCB0aGUgRE1BIHdpZHRo
+IGlzIDM0IGJpdHMgb24gaS5NWDhNUCwgdGhpcyBtYXkgZGlmZmVyZW50IGZyb20gbWFueSBleGlz
+dGluZyBTb0NzIHdoaWNoIGludGVncmF0ZWQgU1RNTUFDLg0KDQpBcyBJIGRlc2NyaWJlZCBpbiB0
+aGUgY29tbWl0IG1lc3NhZ2U6DQpXaGVuIHN5c3RlbSBzdXNwZW5kOiB0aGUgcnggZGVzY3JpcHRv
+ciBpcyAwMDggWzB4MDAwMDAwMDBjNDMxMDA4MF06IDB4MCAweDQwIDB4MCAweDM0MDEwMDQwDQpX
+aGVuIHN5c3RlbSByZXN1bWU6IHRoZSByeCBkZXNjcmlwdG9yIG1vZGlmaWVkIHRvIDAwOCBbMHgw
+MDAwMDAwMGM0MzEwMDgwXTogMHgwIDB4NDAgMHgwIDB4YjUwMTAwNDANClNpbmNlIHRoZSBETUEg
+aXMgMzQgYml0cyB3aWR0aCwgc28gZGVzYzAvZGVzYzEgaW5kaWNhdGVzIHRoZSBidWZmZXIgYWRk
+cmVzcywgYWZ0ZXIgc3lzdGVtIHJlc3VtZSwgdGhlIGJ1ZmZlciBhZGRyZXNzIGNoYW5nZWQgdG8g
+MHg0MDAwMDAwMDAwLg0KQW5kIHRoZSBjb3JyZWN0IHJ4IGRlc2NyaXB0b3IgaXMgMDA4IFsweDAw
+MDAwMDAwYzQzMTAwODBdOiAweDY1MTEwMDAgMHgxIDB4MCAweDgxMDAwMDAwLCB0aGUgdmFsaWQg
+YnVmZmVyIGFkZHJlc3MgaXMgMHgxNjUxMTAwMC4NClNvIHdoZW4gRE1BIHRyaWVkIHRvIGFjY2Vz
+cyAweDQwMDAwMDAwMDAsIHRoaXMgdmFsaWQgYWRkcmVzcywgd291bGQgZ2VuZXJhdGUgZmF0YWwg
+YnVzIGVycm9yLg0KDQpCdXQgZm9yIG90aGVyIDMyIGJpdHMgd2lkdGggRE1BLCBETUEgc2VlbXMg
+c3RpbGwgY2FuIHdvcmsgd2hlbiB0aGlzIGlzc3VlIGhhcHBlbmVkLCBvbmx5IGRlc2MwIGluZGlj
+YXRlcyBidWZmZXIgYWRkcmVzcywgc28gdGhlIGJ1ZmZlciBhZGRyZXNzIGlzIDB4MCB3aGVuIHN5
+c3RlbSByZXN1bWUuDQpBbmQgdGhlcmUgaXMgYSBOT1RFIGluIHRoZSBndWlkZToNCkluIHRoZSBS
+ZWNlaXZlIERlc2NyaXB0b3IgKFJlYWQgRm9ybWF0KSwgaWYgdGhlIEJ1ZmZlciBBZGRyZXNzDQpm
+aWVsZCBpcyBhbGwgMHMsIHRoZSBtb2R1bGUgZG9lcyBub3QgdHJhbnNmZXIgZGF0YSB0byB0aGF0
+IGJ1ZmZlcg0KYW5kIHNraXBzIHRvIHRoZSBuZXh0IGJ1ZmZlciBvciBuZXh0IGRlc2NyaXB0b3Iu
+DQpGb3IgdGhpcyBub3RlLCBJIGRvbid0IGtub3cgd2hhdCBjb3VsZCBJUCBhY3R1YWxseSBkbywg
+d2hlbiBkZXRlY3QgYWxsIHplcm9zIGJ1ZmZlciBhZGRyZXNzLCBpdCB3aWxsIGNoYW5nZSB0aGUg
+ZGVzY3JpcHRvciB0byBhcHBsaWNhdGlvbiBvd24/IElmIG5vdCwgU1RNTUFDIGRyaXZlciBzZWVt
+cyBjYW4ndCBoYW5kbGUgdGhpcyBjYXNlLg0KSSB3aWxsIGNvbnRhY3QgU3lub3BzeXMgZ3V5cyBm
+b3IgbW9yZSBkZXRhaWxzLg0KDQpJdCBub3cgYXBwZWFycyB0aGF0IHRoaXMgaXNzdWUgc2VlbXMg
+b25seSBjYW4gYmUgcmVwcm9kdWNlZCBvbiBETUEgd2lkdGggbW9yZSB0aGFuIDMyIGJpdHMsIHRo
+aXMgbWF5IGJlIHdoeSBvdGhlciBTb0NzKGUuZy4gaS5NWDhEWEwpIHdoaWNoIGludGVncmF0ZWQg
+dGhlIHNhbWUgU1RNTUFDIElQIGNhbid0IHJlcHJvZHVjZSBpdC4NCg0KQmVzdCBSZWdhcmRzLA0K
+Sm9ha2ltIFpoYW5nDQo+IC0tDQo+IEZsb3JpYW4NCg==
