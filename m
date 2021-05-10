@@ -2,715 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 54D94377ACF
-	for <lists+netdev@lfdr.de>; Mon, 10 May 2021 05:48:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9209B377B79
+	for <lists+netdev@lfdr.de>; Mon, 10 May 2021 07:26:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230435AbhEJDtD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 9 May 2021 23:49:03 -0400
-Received: from smtp-fw-33001.amazon.com ([207.171.190.10]:55854 "EHLO
-        smtp-fw-33001.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230198AbhEJDtC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 9 May 2021 23:49:02 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=amazon.co.jp; i=@amazon.co.jp; q=dns/txt;
-  s=amazon201209; t=1620618479; x=1652154479;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=BW7oAmUMoFkDKpzRHajRuWRxazget/5yoTytGebKrf4=;
-  b=A2fVCoEbsXQn7yjXaE/8es75Kan7J6opzxYkfFT5uqCY3A16LHiW8paW
-   9DI15gWRGq9tNyBgnlbxcW1V0DYPBtQ29Xc1vCvBVMB2anl2p8tQCV3fj
-   cL/fCDLIrrwBxnxUMYhxNKQJIYXRkCA8ffJ9oJf7QtBCn2lLsDf2BY9AA
-   Y=;
-X-IronPort-AV: E=Sophos;i="5.82,286,1613433600"; 
-   d="scan'208";a="124880120"
-Received: from pdx4-co-svc-p1-lb2-vlan3.amazon.com (HELO email-inbound-relay-1e-c7c08562.us-east-1.amazon.com) ([10.25.36.214])
-  by smtp-border-fw-33001.sea14.amazon.com with ESMTP; 10 May 2021 03:47:58 +0000
-Received: from EX13MTAUWB001.ant.amazon.com (iad12-ws-svc-p26-lb9-vlan2.iad.amazon.com [10.40.163.34])
-        by email-inbound-relay-1e-c7c08562.us-east-1.amazon.com (Postfix) with ESMTPS id 94888240AEF;
-        Mon, 10 May 2021 03:47:54 +0000 (UTC)
-Received: from EX13D04ANC001.ant.amazon.com (10.43.157.89) by
- EX13MTAUWB001.ant.amazon.com (10.43.161.207) with Microsoft SMTP Server (TLS)
- id 15.0.1497.2; Mon, 10 May 2021 03:47:53 +0000
-Received: from 88665a182662.ant.amazon.com (10.43.160.17) by
- EX13D04ANC001.ant.amazon.com (10.43.157.89) with Microsoft SMTP Server (TLS)
- id 15.0.1497.2; Mon, 10 May 2021 03:47:43 +0000
-From:   Kuniyuki Iwashima <kuniyu@amazon.co.jp>
-To:     "David S . Miller" <davem@davemloft.net>,
+        id S230059AbhEJF1Q (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 10 May 2021 01:27:16 -0400
+Received: from fllv0016.ext.ti.com ([198.47.19.142]:40818 "EHLO
+        fllv0016.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229608AbhEJF1M (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 10 May 2021 01:27:12 -0400
+Received: from fllv0034.itg.ti.com ([10.64.40.246])
+        by fllv0016.ext.ti.com (8.15.2/8.15.2) with ESMTP id 14A5Ps0B086292;
+        Mon, 10 May 2021 00:25:54 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1620624354;
+        bh=LxP269CC01J/+uDjAhE3J1hacOKs7cPiUQDYAbvIoRg=;
+        h=From:To:CC:Subject:Date;
+        b=R/qR7hSGRSG0c2pneg/gr+d+rvUf+8XknJGC4siHmqZoln7kvNEcPk39Mw7YN0CNZ
+         7WVxFZttkkamsdn8nq289yZWkEgRPWqZK4cJv+7AOkD52DhSAaGSf5ds7JMVDvfvtD
+         OdGMul/TNnW0slYkPwurvnYZjDrIHRlfNvuYlWh0=
+Received: from DLEE101.ent.ti.com (dlee101.ent.ti.com [157.170.170.31])
+        by fllv0034.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 14A5Pst4075800
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Mon, 10 May 2021 00:25:54 -0500
+Received: from DLEE107.ent.ti.com (157.170.170.37) by DLEE101.ent.ti.com
+ (157.170.170.31) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2176.2; Mon, 10
+ May 2021 00:25:53 -0500
+Received: from fllv0039.itg.ti.com (10.64.41.19) by DLEE107.ent.ti.com
+ (157.170.170.37) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2176.2 via
+ Frontend Transport; Mon, 10 May 2021 00:25:53 -0500
+Received: from gsaswath-HP-ProBook-640-G5.dal.design.ti.com (ileax41-snat.itg.ti.com [10.172.224.153])
+        by fllv0039.itg.ti.com (8.15.2/8.15.2) with ESMTP id 14A5PfCm045426;
+        Mon, 10 May 2021 00:25:43 -0500
+From:   Aswath Govindraju <a-govindraju@ti.com>
+CC:     Chandrasekar Ramakrishnan <rcsekar@samsung.com>,
+        Wolfgang Grandegger <wg@grandegger.com>,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
+        "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>
-CC:     Benjamin Herrenschmidt <benh@amazon.com>,
-        Kuniyuki Iwashima <kuniyu@amazon.co.jp>,
-        Kuniyuki Iwashima <kuni1840@gmail.com>, <bpf@vger.kernel.org>,
-        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-Subject: [PATCH v5 bpf-next 11/11] bpf: Test BPF_SK_REUSEPORT_SELECT_OR_MIGRATE.
-Date:   Mon, 10 May 2021 12:44:33 +0900
-Message-ID: <20210510034433.52818-12-kuniyu@amazon.co.jp>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20210510034433.52818-1-kuniyu@amazon.co.jp>
-References: <20210510034433.52818-1-kuniyu@amazon.co.jp>
+        Rob Herring <robh+dt@kernel.org>, <linux-can@vger.kernel.org>,
+        <netdev@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        Lokesh Vutla <lokeshvutla@ti.com>,
+        Kishon Vijay Abraham I <kishon@ti.com>,
+        Aswath Govindraju <a-govindraju@ti.com>
+Subject: [PATCH v4 0/2] MCAN: Add support for implementing transceiver as a phy
+Date:   Mon, 10 May 2021 10:55:39 +0530
+Message-ID: <20210510052541.14168-1-a-govindraju@ti.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
-X-Originating-IP: [10.43.160.17]
-X-ClientProxiedBy: EX13D18UWC001.ant.amazon.com (10.43.162.105) To
- EX13D04ANC001.ant.amazon.com (10.43.157.89)
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+To:     unlisted-recipients:; (no To-header on input)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch adds a test for BPF_SK_REUSEPORT_SELECT_OR_MIGRATE and
-removes 'static' from settimeo() in network_helpers.c.
+The following series of patches add support for implementing the
+transceiver as a phy of m_can_platform driver.
 
-Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.co.jp>
----
- tools/testing/selftests/bpf/network_helpers.c |   2 +-
- tools/testing/selftests/bpf/network_helpers.h |   1 +
- .../bpf/prog_tests/migrate_reuseport.c        | 532 ++++++++++++++++++
- .../bpf/progs/test_migrate_reuseport.c        |  67 +++
- 4 files changed, 601 insertions(+), 1 deletion(-)
- create mode 100644 tools/testing/selftests/bpf/prog_tests/migrate_reuseport.c
- create mode 100644 tools/testing/selftests/bpf/progs/test_migrate_reuseport.c
+TCAN1042 has a standby signal that needs to be pulled high for
+sending/receiving messages[1]. TCAN1043 has a enable signal along with
+standby signal that needs to be pulled up for sending/receiving
+messages[2], and other combinations of the two lines can be used to put the
+transceiver in different states to reduce power consumption. On boards
+like the AM654-idk and J721e-evm these signals are controlled using gpios.
 
-diff --git a/tools/testing/selftests/bpf/network_helpers.c b/tools/testing/selftests/bpf/network_helpers.c
-index 12ee40284da0..2060bc122c53 100644
---- a/tools/testing/selftests/bpf/network_helpers.c
-+++ b/tools/testing/selftests/bpf/network_helpers.c
-@@ -40,7 +40,7 @@ struct ipv6_packet pkt_v6 = {
- 	.tcp.doff = 5,
- };
- 
--static int settimeo(int fd, int timeout_ms)
-+int settimeo(int fd, int timeout_ms)
- {
- 	struct timeval timeout = { .tv_sec = 3 };
- 
-diff --git a/tools/testing/selftests/bpf/network_helpers.h b/tools/testing/selftests/bpf/network_helpers.h
-index 7205f8afdba1..5e0d51c07b63 100644
---- a/tools/testing/selftests/bpf/network_helpers.h
-+++ b/tools/testing/selftests/bpf/network_helpers.h
-@@ -33,6 +33,7 @@ struct ipv6_packet {
- } __packed;
- extern struct ipv6_packet pkt_v6;
- 
-+int settimeo(int fd, int timeout_ms);
- int start_server(int family, int type, const char *addr, __u16 port,
- 		 int timeout_ms);
- int connect_to_fd(int server_fd, int timeout_ms);
-diff --git a/tools/testing/selftests/bpf/prog_tests/migrate_reuseport.c b/tools/testing/selftests/bpf/prog_tests/migrate_reuseport.c
-new file mode 100644
-index 000000000000..071bf0704a43
---- /dev/null
-+++ b/tools/testing/selftests/bpf/prog_tests/migrate_reuseport.c
-@@ -0,0 +1,532 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/*
-+ * Check if we can migrate child sockets.
-+ *
-+ *   1. call listen() for 4 server sockets.
-+ *   2. call connect() for 25 client sockets.
-+ *   3. call listen() for 1 server socket. (migration target)
-+ *   4. update a map to migrate all child sockets
-+ *        to the last server socket (migrate_map[cookie] = 4)
-+ *   5. call shutdown() for first 4 server sockets
-+ *        and migrate the requests in the accept queue
-+ *        to the last server socket.
-+ *   6. call listen() for the second server socket.
-+ *   7. call shutdown() for the last server
-+ *        and migrate the requests in the accept queue
-+ *        to the second server socket.
-+ *   8. call listen() for the last server.
-+ *   9. call shutdown() for the second server
-+ *        and migrate the requests in the accept queue
-+ *        to the last server socket.
-+ *  10. call accept() for the last server socket.
-+ *
-+ * Author: Kuniyuki Iwashima <kuniyu@amazon.co.jp>
-+ */
-+
-+#include <bpf/bpf.h>
-+#include <bpf/libbpf.h>
-+
-+#include "test_progs.h"
-+#include "test_migrate_reuseport.skel.h"
-+#include "network_helpers.h"
-+
-+#define NR_SERVERS 5
-+#define NR_CLIENTS (NR_SERVERS * 5)
-+#define MIGRATED_TO (NR_SERVERS - 1)
-+
-+/* fastopenq->max_qlen and sk->sk_max_ack_backlog */
-+#define QLEN (NR_CLIENTS * 5)
-+
-+#define MSG "Hello World\0"
-+#define MSGLEN 12
-+
-+static struct migrate_reuseport_test_case {
-+	const char *name;
-+	__s64 servers[NR_SERVERS];
-+	__s64 clients[NR_CLIENTS];
-+	struct sockaddr_storage addr;
-+	socklen_t addrlen;
-+	int family;
-+	int state;
-+	bool drop_ack;
-+	bool expire_synack_timer;
-+	bool fastopen;
-+} test_cases[] = {
-+	{
-+		.name = "IPv4 - TCP_ESTABLISHED - inet_csk_listen_stop",
-+		.family = AF_INET,
-+		.state = BPF_TCP_ESTABLISHED,
-+		.drop_ack = false,
-+		.expire_synack_timer = false,
-+		.fastopen = false,
-+	},
-+	{
-+		.name = "IPv4 - TCP_SYN_RECV - inet_csk_listen_stop",
-+		.family = AF_INET,
-+		.state = BPF_TCP_SYN_RECV,
-+		.drop_ack = true,
-+		.expire_synack_timer = false,
-+		.fastopen = true,
-+	},
-+	{
-+		.name = "IPv4 - TCP_NEW_SYN_RECV - inet_csk_complete_hashdance",
-+		.family = AF_INET,
-+		.state = BPF_TCP_NEW_SYN_RECV,
-+		.drop_ack = true,
-+		.expire_synack_timer = false,
-+		.fastopen = false,
-+	},
-+	{
-+		.name = "IPv4 - TCP_NEW_SYN_RECV - reqsk_timer_handler",
-+		.family = AF_INET,
-+		.state = BPF_TCP_NEW_SYN_RECV,
-+		.drop_ack = true,
-+		.expire_synack_timer = true,
-+		.fastopen = false,
-+	},
-+	{
-+		.name = "IPv6 - TCP_ESTABLISHED - inet_csk_listen_stop",
-+		.family = AF_INET6,
-+		.state = BPF_TCP_ESTABLISHED,
-+		.drop_ack = false,
-+		.expire_synack_timer = false,
-+		.fastopen = false,
-+	},
-+	{
-+		.name = "IPv6 - TCP_SYN_RECV - inet_csk_listen_stop",
-+		.family = AF_INET6,
-+		.state = BPF_TCP_SYN_RECV,
-+		.drop_ack = true,
-+		.expire_synack_timer = false,
-+		.fastopen = true,
-+	},
-+	{
-+		.name = "IPv6 - TCP_NEW_SYN_RECV - inet_csk_complete_hashdance",
-+		.family = AF_INET6,
-+		.state = BPF_TCP_NEW_SYN_RECV,
-+		.drop_ack = true,
-+		.expire_synack_timer = false,
-+		.fastopen = false,
-+	},
-+	{
-+		.name = "IPv6 - TCP_NEW_SYN_RECV - reqsk_timer_handler",
-+		.family = AF_INET6,
-+		.state = BPF_TCP_NEW_SYN_RECV,
-+		.drop_ack = true,
-+		.expire_synack_timer = true,
-+		.fastopen = false,
-+	}
-+};
-+
-+static void init_fds(__s64 fds[], int len)
-+{
-+	int i;
-+
-+	for (i = 0; i < len; i++)
-+		fds[i] = -1;
-+}
-+
-+static void close_fds(__s64 fds[], int len)
-+{
-+	int i;
-+
-+	for (i = 0; i < len; i++) {
-+		if (fds[i] != -1) {
-+			close(fds[i]);
-+			fds[i] = -1;
-+		}
-+	}
-+}
-+
-+static int setup_fastopen(char *buf, int size, int *saved_len, bool restore)
-+{
-+	int err = 0, fd, len;
-+
-+	fd = open("/proc/sys/net/ipv4/tcp_fastopen", O_RDWR);
-+	if (!ASSERT_NEQ(fd, -1, "open"))
-+		return -1;
-+
-+	if (restore) {
-+		len = write(fd, buf, *saved_len);
-+		if (!ASSERT_EQ(len, *saved_len, "write - restore"))
-+			err = -1;
-+	} else {
-+		*saved_len = read(fd, buf, size);
-+		if (!ASSERT_GE(*saved_len, 1, "read")) {
-+			err = -1;
-+			goto close;
-+		}
-+
-+		err = lseek(fd, 0, SEEK_SET);
-+		if (!ASSERT_OK(err, "lseek"))
-+			goto close;
-+
-+		/* (TFO_CLIENT_ENABLE | TFO_SERVER_ENABLE) */
-+		len = write(fd, "3", 1);
-+		if (!ASSERT_EQ(len, 1, "write - setup"))
-+			err = -1;
-+	}
-+
-+close:
-+	close(fd);
-+
-+	return err;
-+}
-+
-+static int run_iptables(struct migrate_reuseport_test_case *test_case,
-+			bool add_rule)
-+{
-+	char buf[128];
-+	int err;
-+
-+	sprintf(buf, "%s -%c OUTPUT -o lo -p tcp --dport %d --tcp-flags SYN,ACK ACK -j DROP",
-+		test_case->family == AF_INET ? "iptables" : "ip6tables",
-+		add_rule ? 'A' : 'D',
-+		ntohs(test_case->family == AF_INET ?
-+		      ((struct sockaddr_in *)&test_case->addr)->sin_port :
-+		      ((struct sockaddr_in6 *)&test_case->addr)->sin6_port));
-+
-+	err = system(buf);
-+
-+	return err == -1 ? err : WEXITSTATUS(err);
-+}
-+
-+static int start_servers(struct migrate_reuseport_test_case *test_case,
-+			 struct test_migrate_reuseport *skel)
-+{
-+	int i, err, prog_fd, reuseport = 1, qlen = QLEN;
-+
-+	prog_fd = bpf_program__fd(skel->progs.prog_migrate_reuseport);
-+
-+	make_sockaddr(test_case->family,
-+		      test_case->family == AF_INET ? "127.0.0.1" : "::1", 0,
-+		      &test_case->addr, &test_case->addrlen);
-+
-+	for (i = 0; i < NR_SERVERS; i++) {
-+		test_case->servers[i] = socket(test_case->family, SOCK_STREAM,
-+					       IPPROTO_TCP);
-+		if (!ASSERT_NEQ(test_case->servers[i], -1, "socket"))
-+			return -1;
-+
-+		err = setsockopt(test_case->servers[i], SOL_SOCKET,
-+				 SO_REUSEPORT, &reuseport, sizeof(reuseport));
-+		if (!ASSERT_OK(err, "setsockopt - SO_REUSEPORT"))
-+			return -1;
-+
-+		err = bind(test_case->servers[i],
-+			   (struct sockaddr *)&test_case->addr,
-+			   test_case->addrlen);
-+		if (!ASSERT_OK(err, "bind"))
-+			return -1;
-+
-+		if (i == 0) {
-+			err = setsockopt(test_case->servers[i], SOL_SOCKET,
-+					 SO_ATTACH_REUSEPORT_EBPF,
-+					 &prog_fd, sizeof(prog_fd));
-+			if (!ASSERT_OK(err,
-+				       "setsockopt - SO_ATTACH_REUSEPORT_EBPF"))
-+				return -1;
-+
-+			err = getsockname(test_case->servers[i],
-+					  (struct sockaddr *)&test_case->addr,
-+					  &test_case->addrlen);
-+			if (!ASSERT_OK(err, "getsockname"))
-+				return -1;
-+		}
-+
-+		if (test_case->fastopen) {
-+			err = setsockopt(test_case->servers[i],
-+					 SOL_TCP, TCP_FASTOPEN,
-+					 &qlen, sizeof(qlen));
-+			if (!ASSERT_OK(err, "setsockopt - TCP_FASTOPEN"))
-+				return -1;
-+		}
-+
-+		/* All requests will be tied to the first four listeners */
-+		if (i != MIGRATED_TO) {
-+			err = listen(test_case->servers[i], qlen);
-+			if (!ASSERT_OK(err, "listen"))
-+				return -1;
-+		}
-+	}
-+
-+	return 0;
-+}
-+
-+static int start_clients(struct migrate_reuseport_test_case *test_case)
-+{
-+	char buf[MSGLEN] = MSG;
-+	int i, err;
-+
-+	for (i = 0; i < NR_CLIENTS; i++) {
-+		test_case->clients[i] = socket(test_case->family, SOCK_STREAM,
-+					       IPPROTO_TCP);
-+		if (!ASSERT_NEQ(test_case->clients[i], -1, "socket"))
-+			return -1;
-+
-+		/* iptables only drops the final ACK, so clients will
-+		 * transition to TCP_ESTABLISHED immediately.
-+		 */
-+		err = settimeo(test_case->clients[i], 100);
-+		if (!ASSERT_OK(err, "settimeo"))
-+			return -1;
-+
-+		if (test_case->fastopen) {
-+			int fastopen = 1;
-+
-+			err = setsockopt(test_case->clients[i], IPPROTO_TCP,
-+					 TCP_FASTOPEN_CONNECT, &fastopen,
-+					 sizeof(fastopen));
-+			if (!ASSERT_OK(err,
-+				       "setsockopt - TCP_FASTOPEN_CONNECT"))
-+				return -1;
-+		}
-+
-+		err = connect(test_case->clients[i],
-+			      (struct sockaddr *)&test_case->addr,
-+			      test_case->addrlen);
-+		if (!ASSERT_OK(err, "connect"))
-+			return -1;
-+
-+		err = write(test_case->clients[i], buf, MSGLEN);
-+		if (!ASSERT_EQ(err, MSGLEN, "write"))
-+			return -1;
-+	}
-+
-+	return 0;
-+}
-+
-+static int update_maps(struct migrate_reuseport_test_case *test_case,
-+		       struct test_migrate_reuseport *skel)
-+{
-+	int i, err, migrated_to = MIGRATED_TO;
-+	int reuseport_map_fd, migrate_map_fd;
-+	__u64 value;
-+
-+	reuseport_map_fd = bpf_map__fd(skel->maps.reuseport_map);
-+	migrate_map_fd = bpf_map__fd(skel->maps.migrate_map);
-+
-+	for (i = 0; i < NR_SERVERS; i++) {
-+		value = (__u64)test_case->servers[i];
-+		err = bpf_map_update_elem(reuseport_map_fd, &i, &value,
-+					  BPF_NOEXIST);
-+		if (!ASSERT_OK(err, "bpf_map_update_elem - reuseport_map"))
-+			return -1;
-+
-+		err = bpf_map_lookup_elem(reuseport_map_fd, &i, &value);
-+		if (!ASSERT_OK(err, "bpf_map_lookup_elem - reuseport_map"))
-+			return -1;
-+
-+		err = bpf_map_update_elem(migrate_map_fd, &value, &migrated_to,
-+					  BPF_NOEXIST);
-+		if (!ASSERT_OK(err, "bpf_map_update_elem - migrate_map"))
-+			return -1;
-+	}
-+
-+	return 0;
-+}
-+
-+static int migrate_dance(struct migrate_reuseport_test_case *test_case)
-+{
-+	int i, err;
-+
-+	/* Migrate TCP_ESTABLISHED and TCP_SYN_RECV requests
-+	 * to the last listener based on eBPF.
-+	 */
-+	for (i = 0; i < MIGRATED_TO; i++) {
-+		err = shutdown(test_case->servers[i], SHUT_RDWR);
-+		if (!ASSERT_OK(err, "shutdown"))
-+			return -1;
-+	}
-+
-+	/* No dance for TCP_NEW_SYN_RECV to migrate based on eBPF */
-+	if (test_case->state == BPF_TCP_NEW_SYN_RECV)
-+		return 0;
-+
-+	/* Note that we use the second listener instead of the
-+	 * first one here.
-+	 *
-+	 * The fist listener is bind()ed with port 0 and,
-+	 * SOCK_BINDPORT_LOCK is not set to sk_userlocks, so
-+	 * calling listen() again will bind() the first listener
-+	 * on a new ephemeral port and detach it from the existing
-+	 * reuseport group.  (See: __inet_bind(), tcp_set_state())
-+	 *
-+	 * OTOH, the second one is bind()ed with a specific port,
-+	 * and SOCK_BINDPORT_LOCK is set. Thus, re-listen() will
-+	 * resurrect the listener on the existing reuseport group.
-+	 */
-+	err = listen(test_case->servers[1], QLEN);
-+	if (!ASSERT_OK(err, "listen"))
-+		return -1;
-+
-+	/* Migrate from the last listener to the second one.
-+	 *
-+	 * All listeners were detached out of the reuseport_map,
-+	 * so migration will be done by kernel random pick from here.
-+	 */
-+	err = shutdown(test_case->servers[MIGRATED_TO], SHUT_RDWR);
-+	if (!ASSERT_OK(err, "shutdown"))
-+		return -1;
-+
-+	/* Back to the existing reuseport group */
-+	err = listen(test_case->servers[MIGRATED_TO], QLEN);
-+	if (!ASSERT_OK(err, "listen"))
-+		return -1;
-+
-+	/* Migrate back to the last one from the second one */
-+	err = shutdown(test_case->servers[1], SHUT_RDWR);
-+	if (!ASSERT_OK(err, "shutdown"))
-+		return -1;
-+
-+	return 0;
-+}
-+
-+static void count_requests(struct migrate_reuseport_test_case *test_case,
-+			   struct test_migrate_reuseport *skel)
-+{
-+	struct sockaddr_storage addr;
-+	socklen_t len = sizeof(addr);
-+	int err, cnt = 0, client;
-+	char buf[MSGLEN];
-+
-+	err = settimeo(test_case->servers[MIGRATED_TO], 4000);
-+	if (!ASSERT_OK(err, "settimeo"))
-+		goto out;
-+
-+	for (; cnt < NR_CLIENTS; cnt++) {
-+		client = accept(test_case->servers[MIGRATED_TO],
-+				(struct sockaddr *)&addr, &len);
-+		if (!ASSERT_NEQ(client, -1, "accept"))
-+			goto out;
-+
-+		memset(buf, 0, MSGLEN);
-+		read(client, &buf, MSGLEN);
-+		close(client);
-+
-+		if (!ASSERT_STREQ(buf, MSG, "read"))
-+			goto out;
-+	}
-+
-+out:
-+	ASSERT_EQ(cnt, NR_CLIENTS, test_case->name);
-+
-+	if (test_case->state == BPF_TCP_ESTABLISHED ||
-+	    test_case->state == BPF_TCP_SYN_RECV) {
-+		cnt = skel->data->migrated_at_close;
-+	} else if (test_case->state == BPF_TCP_NEW_SYN_RECV) {
-+		if (test_case->expire_synack_timer)
-+			cnt = skel->data->migrated_at_send_synack;
-+		else
-+			cnt = skel->data->migrated_at_recv_ack;
-+	}
-+
-+	ASSERT_EQ(cnt, NR_CLIENTS, test_case->name);
-+}
-+
-+static void run_test(struct migrate_reuseport_test_case *test_case,
-+		     struct test_migrate_reuseport *skel)
-+{
-+	bool added_rule = false;
-+	int err, saved_len;
-+	char buf[16];
-+
-+	skel->data->migrated_at_close = 0;
-+	skel->data->migrated_at_send_synack = 0;
-+	skel->data->migrated_at_recv_ack = 0;
-+
-+	init_fds(test_case->servers, NR_SERVERS);
-+	init_fds(test_case->clients, NR_CLIENTS);
-+
-+	if (test_case->fastopen) {
-+		memset(buf, 0, sizeof(buf));
-+
-+		err = setup_fastopen(buf, sizeof(buf), &saved_len, false);
-+		if (!ASSERT_OK(err, "setup_fastopen - setup"))
-+			return;
-+	}
-+
-+	err = start_servers(test_case, skel);
-+	if (!ASSERT_OK(err, "start_servers"))
-+		goto close_servers;
-+
-+	if (test_case->drop_ack) {
-+		/* Drop the final ACK of the 3-way handshake and stick the
-+		 * in-flight requests on TCP_SYN_RECV or TCP_NEW_SYN_RECV.
-+		 */
-+		err = run_iptables(test_case, true);
-+		if (!ASSERT_OK(err, "run_iptables - add rule"))
-+			goto close_servers;
-+
-+		added_rule = true;
-+	}
-+
-+	/* Tie requests to the first four listners */
-+	err = start_clients(test_case);
-+	if (!ASSERT_OK(err, "start_clients"))
-+		goto close_clients;
-+
-+	err = listen(test_case->servers[MIGRATED_TO], QLEN);
-+	if (!ASSERT_OK(err, "listen"))
-+		goto close_clients;
-+
-+	err = update_maps(test_case, skel);
-+	if (!ASSERT_OK(err, "fill_maps"))
-+		goto close_clients;
-+
-+	/* Migrate the requests in the accept queue only.
-+	 * TCP_NEW_SYN_RECV requests are not migrated at this point.
-+	 */
-+	err = migrate_dance(test_case);
-+	if (!ASSERT_OK(err, "migrate_dance"))
-+		goto close_clients;
-+
-+	if (test_case->expire_synack_timer) {
-+		/* Wait for SYN+ACK timers to expire so that
-+		 * reqsk_timer_handler() migrates TCP_NEW_SYN_RECV requests.
-+		 */
-+		sleep(1);
-+	}
-+
-+	if (test_case->drop_ack) {
-+		/* Resume 3WHS and migrate TCP_NEW_SYN_RECV requests */
-+		err = run_iptables(test_case, false);
-+		if (!ASSERT_OK(err, "run_iptables - delete rule"))
-+			goto close_clients;
-+
-+		added_rule = false;
-+	}
-+
-+	count_requests(test_case, skel);
-+
-+close_clients:
-+	close_fds(test_case->clients, NR_CLIENTS);
-+
-+	if (added_rule) {
-+		err = run_iptables(test_case, false);
-+		ASSERT_OK(err, "run_iptables - clean up rule");
-+	}
-+
-+close_servers:
-+	close_fds(test_case->servers, NR_SERVERS);
-+
-+	if (test_case->fastopen) {
-+		err = setup_fastopen(buf, sizeof(buf), &saved_len, true);
-+		ASSERT_OK(err, "setup_fastopen - restore");
-+	}
-+}
-+
-+void test_migrate_reuseport(void)
-+{
-+	struct test_migrate_reuseport *skel;
-+	int i;
-+
-+	skel = test_migrate_reuseport__open_and_load();
-+	if (!ASSERT_OK_PTR(skel, "open_and_load"))
-+		return;
-+
-+	for (i = 0; i < ARRAY_SIZE(test_cases); i++)
-+		run_test(&test_cases[i], skel);
-+
-+	test_migrate_reuseport__destroy(skel);
-+}
-diff --git a/tools/testing/selftests/bpf/progs/test_migrate_reuseport.c b/tools/testing/selftests/bpf/progs/test_migrate_reuseport.c
-new file mode 100644
-index 000000000000..72978b5d1fcb
---- /dev/null
-+++ b/tools/testing/selftests/bpf/progs/test_migrate_reuseport.c
-@@ -0,0 +1,67 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/*
-+ * Check if we can migrate child sockets.
-+ *
-+ *   1. If reuse_md->migrating_sk is NULL (SYN packet),
-+ *        return SK_PASS without selecting a listener.
-+ *   2. If reuse_md->migrating_sk is not NULL (socket migration),
-+ *        select a listener (reuseport_map[migrate_map[cookie]])
-+ *
-+ * Author: Kuniyuki Iwashima <kuniyu@amazon.co.jp>
-+ */
-+
-+#include <stddef.h>
-+#include <linux/bpf.h>
-+#include <bpf/bpf_helpers.h>
-+
-+struct {
-+	__uint(type, BPF_MAP_TYPE_REUSEPORT_SOCKARRAY);
-+	__uint(max_entries, 256);
-+	__type(key, int);
-+	__type(value, __u64);
-+} reuseport_map SEC(".maps");
-+
-+struct {
-+	__uint(type, BPF_MAP_TYPE_HASH);
-+	__uint(max_entries, 256);
-+	__type(key, __u64);
-+	__type(value, int);
-+} migrate_map SEC(".maps");
-+
-+int migrated_at_close SEC(".data");
-+int migrated_at_send_synack SEC(".data");
-+int migrated_at_recv_ack SEC(".data");
-+
-+SEC("sk_reuseport/migrate")
-+int prog_migrate_reuseport(struct sk_reuseport_md *reuse_md)
-+{
-+	int *key, flags = 0, state, err;
-+	__u64 cookie;
-+
-+	if (!reuse_md->migrating_sk)
-+		return SK_PASS;
-+
-+	state = reuse_md->migrating_sk->state;
-+	cookie = bpf_get_socket_cookie(reuse_md->sk);
-+
-+	key = bpf_map_lookup_elem(&migrate_map, &cookie);
-+	if (!key)
-+		return SK_DROP;
-+
-+	err = bpf_sk_select_reuseport(reuse_md, &reuseport_map, key, flags);
-+	if (err)
-+		return SK_PASS;
-+
-+	if (state == BPF_TCP_ESTABLISHED || state == BPF_TCP_SYN_RECV) {
-+		migrated_at_close++;
-+	} else if (BPF_TCP_NEW_SYN_RECV) {
-+		if (!reuse_md->len)
-+			migrated_at_send_synack++;
-+		else
-+			migrated_at_recv_ack++;
-+	}
-+
-+	return SK_PASS;
-+}
-+
-+char _license[] SEC("license") = "GPL";
+These gpios are set in phy driver, and the transceiver can be put in
+different states using phy API. The phy driver is added in the series [3].
+
+This patch series is dependent on [4].
+
+changes since v3:
+- Added phy_power_off() in case of an error in m_can_open().
+
+changes since v2:
+- changed dev_err to dev_err_probe in patch 2
+- used mcan_class instead of priv to assign max bit rate
+- Picked up  Rob Herring's acked-by for patch 1
+
+changes since v1:
+- Used the API devm_phy_get_optional() instead of
+  devm_of_phy_get_optional_by_index()
+
+[1] - https://www.ti.com/lit/ds/symlink/tcan1042h.pdf
+[2] - https://www.ti.com/lit/ds/symlink/tcan1043-q1.pdf
+[3] - https://lore.kernel.org/patchwork/project/lkml/list/?series=498359
+[4] - https://lore.kernel.org/patchwork/patch/1413286/
+
+Faiz Abbas (2):
+  dt-bindings: net: can: Document transceiver implementation as phy
+  can: m_can: Add support for transceiver as phy
+
+ .../devicetree/bindings/net/can/bosch,m_can.yaml    |  3 +++
+ drivers/net/can/m_can/m_can.c                       | 11 +++++++++++
+ drivers/net/can/m_can/m_can.h                       |  2 ++
+ drivers/net/can/m_can/m_can_platform.c              | 13 +++++++++++++
+ 4 files changed, 29 insertions(+)
+
 -- 
-2.30.2
+2.17.1
 
