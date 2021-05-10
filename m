@@ -2,412 +2,151 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B278B377C1D
-	for <lists+netdev@lfdr.de>; Mon, 10 May 2021 08:15:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 27A29377C89
+	for <lists+netdev@lfdr.de>; Mon, 10 May 2021 08:54:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230001AbhEJGQi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 10 May 2021 02:16:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37772 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229653AbhEJGQg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 10 May 2021 02:16:36 -0400
-Received: from mail-pf1-x436.google.com (mail-pf1-x436.google.com [IPv6:2607:f8b0:4864:20::436])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 99C76C061573
-        for <netdev@vger.kernel.org>; Sun,  9 May 2021 23:15:32 -0700 (PDT)
-Received: by mail-pf1-x436.google.com with SMTP id i13so13014623pfu.2
-        for <netdev@vger.kernel.org>; Sun, 09 May 2021 23:15:32 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=KVH1rH+yQDHG+6fdOf2loeC/MFs2dsBS09Ew5gso7+U=;
-        b=u7tieQ4RXyTZrTI6+c/rNDZdRUxA1liJFXaJvzWU32PJ4D/Z9pNkmxeUvzJACW5A+Q
-         4bY+S+hL1/Cx4Z6h404/V/q+DKF0FBlNcEzFtyC4pAhA7OGn4/EC3po4yJHyGtjiWLJQ
-         R3X8M9vqQJmALedWx/EDxA6+MRWJ4j37EaF2DydIMm51ZiF9cwvWl4xW0H4aYO8fn3rk
-         qc+4LEro8CBZm1+fNhl6ek5oGMq14YfTIvAPKkNQ9qyTwIP1oYoB3OmrP7e6JZXnwlhj
-         ebRmIRBcxSXYtjqN3RLW99MecUYQp2MfkepEqYr+Lm/Inob6kG6qUcTsvliMr7Sc2wY8
-         cRpA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=KVH1rH+yQDHG+6fdOf2loeC/MFs2dsBS09Ew5gso7+U=;
-        b=Mccdut7+wdlQWYDCpM1U4TJ8V69mfTeW7VWFMsEpoLN1YeAsfrZBWgCLsEKJV4mm0S
-         iXviLiiFEiFO1526RmkBKNltieqL8x31VF93OGS/gS4f7kuMt4IYb/VcWopN8hAc6FCi
-         PYYu4Htlc3G8rsbG0fGF/8/IhTEWUIAhJWb9aCnLiErOwf6DvVv1LN9zmqPtGjmI9nHw
-         9NMpTNUiT67SxsR2vxDPCK7zHOtSBrN6aAwrz+YZw/XKtkPwOYS2nOLRJO6VwfR337yK
-         Dr4G+wmY+8hWD4UUw8OyocJkobYwteLqG5SpJLCkwvj2L8QqUrqj9tdj1TNOJigi1gPv
-         kt2g==
-X-Gm-Message-State: AOAM531Kq5imfZm99gRKS+yEKcnm4mLt/87WOHB/gx8Dxte7UdR4odQQ
-        ZJ7F0KWJDVplJ72O0wljzaHFs502M15Pr1sTXaw=
-X-Google-Smtp-Source: ABdhPJzgMcKPoTJEPq87VFcVRJeH4ieBa0x8eUnUUb83dnKRYHGYomePSaF3XEOl22Ru6CCJiwYi0SQlNOGCOkL7HQM=
-X-Received: by 2002:aa7:9313:0:b029:2c5:7e1c:2c77 with SMTP id
- 19-20020aa793130000b02902c57e1c2c77mr288554pfj.73.1620627331816; Sun, 09 May
- 2021 23:15:31 -0700 (PDT)
+        id S230103AbhEJGzd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 10 May 2021 02:55:33 -0400
+Received: from mail-eopbgr70075.outbound.protection.outlook.com ([40.107.7.75]:40356
+        "EHLO EUR04-HE1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S229863AbhEJGzb (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 10 May 2021 02:55:31 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=dOVpN6o+czR9c83ySUBN21vW+tt62oWLuCZ10eqZT5MFFPBtybWxy/2acCGStOElmoU6pGdhcVovUMrOIbX2D0j31LrRpqTomjUO189JAmDlBl/Ovi3UPzo3Ot1A9+v72E/unoJPpMddJ3Bk2ivRdFKKHCFxa/KxiP9z9wUMjm3wYgN/adgR7NEh6HwWLDZlfSX0YZ+z+jKojR4CeA765/jmTk6IPuW1Pw9YGImM91GNMgNOrqV6jxkI2VxD/4GQJWpkMa82f46algs/Useac4xaHC352/roQSZ24eAvjgm9w2R5ztkZysypPuQDGv1a2F0j+2LdzvjTOH6NJh07gA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=y3pEUsEGDmBnvLSWu4kY0hxXDXyrhstmVyjZRRtWloY=;
+ b=LcrPj3wvdBgO58njHZWbQjc4pSfPQtnPt+iudCrbrrGafyOHIX2r0CidqwcMZiPBtKGUkl7PrEODj9KpJXUz29vNaDYDNE+mpcvnXbSzfNMjtsXPiIIDt9LPkXrodZXUDW3X59AvIGRGH6aB9ahfTxGxEVq6BdTh6h7ifIoaU2K26jZuTNrXXnFGg+2hYuf1IbJVHSSIbXkpObgTmW7exrvUW7NrdHFC2AOMUCvhy6ty/YhKO0qR6trRMUGw7riXndLZtuXMQuT+fzn/LYcBuT8pZ1jRmOQdV9/RQnzY9nCn1lsUxcFQqq430aYb7kM+uFNmeEQM3uf1c+4CcuVfZQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=y3pEUsEGDmBnvLSWu4kY0hxXDXyrhstmVyjZRRtWloY=;
+ b=UFDOIRF3MP/7Vj4MB9iepw0nDzD47d3V0lqAIUQDR1dqfRer/1N42sA3Gl4YTQPGGbbHUzOfDSn5FcJeXrdIJqRLPewCxi8TcxLcIhxq9BgFIaZ4AbE4co5Kc4P+xMZ0D7rMLV5aNwDYtnpCkGVr3eneWBP38F/mCWtX/titi6w=
+Authentication-Results: st.com; dkim=none (message not signed)
+ header.d=none;st.com; dmarc=none action=none header.from=nxp.com;
+Received: from DB8PR04MB6795.eurprd04.prod.outlook.com (2603:10a6:10:fa::15)
+ by DB7PR04MB4780.eurprd04.prod.outlook.com (2603:10a6:10:1c::15) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4108.28; Mon, 10 May
+ 2021 06:54:23 +0000
+Received: from DB8PR04MB6795.eurprd04.prod.outlook.com
+ ([fe80::3400:b139:f681:c8cf]) by DB8PR04MB6795.eurprd04.prod.outlook.com
+ ([fe80::3400:b139:f681:c8cf%9]) with mapi id 15.20.4108.031; Mon, 10 May 2021
+ 06:54:23 +0000
+From:   Joakim Zhang <qiangqing.zhang@nxp.com>
+To:     peppe.cavallaro@st.com, alexandre.torgue@st.com,
+        joabreu@synopsys.com, davem@davemloft.net, kuba@kernel.org,
+        f.fainelli@gmail.com, andrew@lunn.ch
+Cc:     Jisheng.Zhang@synaptics.com, netdev@vger.kernel.org,
+        linux-imx@nxp.com
+Subject: [PATCH V5 net] net: stmmac: Fix MAC WoL not working if PHY does not support WoL
+Date:   Mon, 10 May 2021 14:55:09 +0800
+Message-Id: <20210510065509.27923-1-qiangqing.zhang@nxp.com>
+X-Mailer: git-send-email 2.17.1
+Content-Type: text/plain
+X-Originating-IP: [119.31.174.71]
+X-ClientProxiedBy: SG2PR0401CA0021.apcprd04.prod.outlook.com
+ (2603:1096:3:1::31) To DB8PR04MB6795.eurprd04.prod.outlook.com
+ (2603:10a6:10:fa::15)
 MIME-Version: 1.0
-References: <52fdf0e0d9d453379df2163f16bdf12f425ef456.camel@coverfire.com>
-In-Reply-To: <52fdf0e0d9d453379df2163f16bdf12f425ef456.camel@coverfire.com>
-From:   Magnus Karlsson <magnus.karlsson@gmail.com>
-Date:   Mon, 10 May 2021 08:15:21 +0200
-Message-ID: <CAJ8uoz1qKnJw+StSfuCkXuoS5-qOQA89HKjLzedh7LySBDUp1g@mail.gmail.com>
-Subject: Re: xsk_buff_pool.c trace
-To:     Dan Siemon <dan@coverfire.com>
-Cc:     Network Development <netdev@vger.kernel.org>,
-        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn@kernel.org>,
-        "Karlsson, Magnus" <magnus.karlsson@intel.com>
-Content-Type: text/plain; charset="UTF-8"
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from localhost.localdomain (119.31.174.71) by SG2PR0401CA0021.apcprd04.prod.outlook.com (2603:1096:3:1::31) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4108.25 via Frontend Transport; Mon, 10 May 2021 06:54:20 +0000
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: ffe2a510-ec26-4474-7f54-08d9138071b3
+X-MS-TrafficTypeDiagnostic: DB7PR04MB4780:
+X-MS-Exchange-Transport-Forked: True
+X-Microsoft-Antispam-PRVS: <DB7PR04MB4780255C7CED0D8D6BFC14A3E6549@DB7PR04MB4780.eurprd04.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:369;
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: l4JcKz3g8aLNv9vLHmibDa8INNihzdDe3y+X1GdAmH73QsvexeF2ton7gL6xeOuRRamggG7Hsy4yDuIzX47YCUeq/CWLlwK1Cq11/U/8w1bozaEhJQWUtWavrethyCVdoOg7TI9gFBfc2RYKiNtOJjqTNeBaHyUjLEyTgGlYDVtddZY7VLUgktj8P1gJseOHMljurHkb4Uw5kR2GeOwG2BhLNMxMmbjpl4zNOvoURsEzvGbaaeBI2j6eq036oiCJgZwG4HqvJF/RMXR5IMvlV9YTNL2F4ZSyKzoFGFBJrqTJD5CGQ+eezu6Q+bVnOTvlAMI8amDIAhMO0DYiapuAFO6exmvOIVOT7FzhusBb1YtO2nT5LAzrjc9WgUklyU0Zr1YhNG60gWD0q2i+lJiYwmJSl9FZ0haUWyglOTqKVyVmoIjRxFWuxVv8w4oqF+hPVgRHnAO6VSYjcLy/GxuDhDZ3qkgavdCSILEtpqvR/Un2CpFAitLU9mj0Td+spQf0BY8x5YY5z9amB4qOYxACrEi7BsGBXezGQKO1sV/RG6mFZ47RFA7EN4pAr8obySSe3OuCfZD+Vlv4gJEceTDbBlLiv+A1J7IvLj7WiSpaJnquUz9/Q4iyPQda+TR2V0blFQyy6dGwtKSrLElt3swkNa0yLDWWtp4uzTl52G6hdQ4dSj6MrKsb8ljFgUZte+/T4x0HYJqa5AaBj6EoAEF5sQ==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DB8PR04MB6795.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(396003)(346002)(376002)(136003)(39860400002)(2616005)(6512007)(83380400001)(26005)(38350700002)(4326008)(1076003)(8676002)(66556008)(478600001)(186003)(66476007)(16526019)(36756003)(86362001)(5660300002)(6666004)(66946007)(38100700002)(956004)(316002)(2906002)(52116002)(6506007)(8936002)(6486002)(69590400013)(309714004);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData: =?us-ascii?Q?cIRlKpm7mR62MPylOvjVrJb2fRUZewEn5eAuOalFo1kNKi17YTayPl6GldOG?=
+ =?us-ascii?Q?lqrRdq2qwawycFlUdxte65KjZ6lo+lEiHSqUm52rLe7O7gw381wHKVdgD/sD?=
+ =?us-ascii?Q?BgLXDWoPcPmAbvNFAtc/QQrB2KT9VfqIgiiRNlFtU6K8NCtpJ5g/MV/oG20x?=
+ =?us-ascii?Q?7iEfqBYEBfcZu6MdKM0iDYqOVJgGAzYKCWQpODUoAsQ4iIaSLhahKjsVGVux?=
+ =?us-ascii?Q?UlPn4bw0HeNljBKKaMZuH7m2OiRXQrjgJKXLg53KHS38Vc6wYILNzUSIZAvY?=
+ =?us-ascii?Q?/8OEb3/htBQdf92LM6Ad10OaWNrdDPRLtEASGd0xqj3Bw+BRJzmn75sCn8Dd?=
+ =?us-ascii?Q?2wzglnRHYm68guLLZyvAsOccnz+GxQ6+PwhEF5YvB4iD1gFbZpT/OSEhd+J0?=
+ =?us-ascii?Q?U8oC9RdHFVg0OsX17JSe6ZKiGuiGsE14/c9Sng7fZlE2eSpFNBaj11IRuZH8?=
+ =?us-ascii?Q?GT5ZG+GjuIP93a6racu2gi/bN4MvdQDW81Ozc8RBMs/Tr+kQWS+77+V8JAdd?=
+ =?us-ascii?Q?uE7d8L4ssmkEJ0hK3zHFMZ9qMb3MxMF2ITH00nIdpNCPHPbP2uTMXJftFryy?=
+ =?us-ascii?Q?XlxJTYxPhd7GzaYNylQUtsDRibwvIm9vhqChr1TIXNjd+sU/nNTMS8MGt0fI?=
+ =?us-ascii?Q?p2J6ybZ+V+YsXa5L/I0WjRrcj7GYPZb9PHejDf4SbPZe9u4J7fZPFBc8Aaln?=
+ =?us-ascii?Q?qdryvWzxr3ZhUWEV8f+clK5UXTvJ3EogpdRfDh8KhKgi4lfA9iRWnEky71V+?=
+ =?us-ascii?Q?TtIQA1eZiHZOU3fRID1QM81ji9zp5xePCo3NhWE7V4oOUcR843BN6YuThkU2?=
+ =?us-ascii?Q?aFVABaaCNPTWTxDOK1S3WxO8DMIsz62DSkG7LcW9IDLoxxAT7LjB0MlrKiOR?=
+ =?us-ascii?Q?vF/7RlLuX7jB9E4PtA6ZTlOEc6OslwvsPmz+5xaTplyRXw+WXgaNbDG1Zj26?=
+ =?us-ascii?Q?SPIqGArMUUUbyJNn5Zt5Pq43TL1/wynPClcTUkARtk4N9kO5MArGBJdLvyxf?=
+ =?us-ascii?Q?6fwD59Qp+rmQ878uLZrfH3M+Yqq8MoVFUrsZuBQHKaFJd2iPgDbmFHiJYTI/?=
+ =?us-ascii?Q?HY/gJyLOta2/2+OPRLx5eLHMlEUZrdcWlTVdpqYrwfqhHenNOrDqG6g60PSI?=
+ =?us-ascii?Q?+b9Jjp38ZUrgERlCHjRs6FMQgxtaPq3bHD+qOaWwjNXyIKhVL1bk8yGJUPW2?=
+ =?us-ascii?Q?Sbx0xhc56/e2z6tkVJkBl4HJCP8vQZUu8WuEnPrQ1Wrr+yCydEvZb5HjsEST?=
+ =?us-ascii?Q?8DM4bh40e/3ohjStvfqCFN5OIgnns+XwjGMnxFXqSSu+XMthnEraV9yc5FPT?=
+ =?us-ascii?Q?jNO7vadihNwJZt18gAOpaqs2?=
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: ffe2a510-ec26-4474-7f54-08d9138071b3
+X-MS-Exchange-CrossTenant-AuthSource: DB8PR04MB6795.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 10 May 2021 06:54:23.5708
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: gJIgG0YFH7+tqWhYosCmAyKDOkaKkDC41ZLHp4Lh/HthfBB2d5u4ZMC8+fagsJwzVHogwu60au/xyAFvEf2CBg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB7PR04MB4780
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, May 10, 2021 at 3:59 AM Dan Siemon <dan@coverfire.com> wrote:
->
-> i40e NIC with 5.11.17-300.fc34.x86_64
->
-> Unfortunately, this does not consistently occur.
->
-> [ 2739.991807] ------------[ cut here ]------------
-> [ 2739.996428] Failed to disable zero-copy!
+Both get and set WoL will check device_can_wakeup(), if MAC supports PMT, it
+will set device wakeup capability. After commit 1d8e5b0f3f2c ("net: stmmac:
+Support WOL with phy"), device wakeup capability will be overwrite in
+stmmac_init_phy() according to phy's Wol feature. If phy doesn't support WoL,
+then MAC will lose wakeup capability. To fix this issue, only overwrite device
+wakeup capability when MAC doesn't support PMT.
 
-Could you please dump the error value that i40e_xsk_pool_disable
-returns? Just so I have something more to go on. There are three
-functions that can fail, xsk_get_pool_from_qid(),
-i40e_queue_pair_disable(), and i40e_queue_pair_enable(). If you can
-dig even deeper into what sub function of those functions that fail,
-even better. It would be ideal, if you could enable a function trace
-when you get into i40e_xsk_pool_disable so we would know exactly what
-function fails.
+For STMMAC now driver checks MAC's WoL capability if MAC supports PMT, if
+not support, driver will check PHY's WoL capability.
 
-> [ 2740.000378] WARNING: CPU: 0 PID: 302 at net/xdp/xsk_buff_pool.c:118
-> xp_disable_drv_zc+0x69/0xa0
-> [ 2740.009075] Modules linked in: rfkill vfat fat rpcrdma sunrpc
-> rdma_ucm ib_srpt ib_isert iscsi_target_mod target_core_mod ib_iser
-> libiscsi scsi_transport_iscsi rdma_cm iw_cm ib_cm intel_rapl_msr
-> iTCO_wdt intel_pmc_bxt iTCO_vendor_support intel_rapl_common
-> isst_if_common skx_edac nfit libnvdimm x86_pkg_temp_thermal
-> intel_powerclamp coretemp kvm_intel kvm irqbypass i40iw rapl
-> intel_cstate ib_uverbs intel_uncore ipmi_ssif ib_core pcspkr i2c_i801
-> lpc_ich i2c_smbus joydev mei_me mei acpi_ipmi ioatdma ipmi_si
-> ipmi_devintf ipmi_msghandler fuse zram ip_tables xfs ast
-> drm_vram_helper drm_kms_helper crct10dif_pclmul crc32_pclmul qat_c62x
-> cec drm_ttm_helper crc32c_intel intel_qat ttm ghash_clmulni_intel i40e
-> drm igb authenc dca i2c_algo_bit wmi uas usb_storage i2c_dev
-> [ 2740.075995] CPU: 0 PID: 302 Comm: kworker/0:2 Not tainted 5.11.17-
-> 300.fc34.x86_64 #1
-> [ 2740.083734] Hardware name: To be filled by O.E.M. To be filled by
-> O.E.M./To be filled by O.E.M., BIOS 5.14 04/18/2019
-> [ 2740.094334] Workqueue: events xp_release_deferred
-> [ 2740.099039] RIP: 0010:xp_disable_drv_zc+0x69/0xa0
-> [ 2740.103744] Code: 10 48 8b 87 f0 01 00 00 48 8b 80 50 02 00 00 e8 cd
-> 26 2b 00 85 c0 75 06 48 83 c4 20 5b c3 48 c7 c7 70 10 49 95 e8 36 db 01
-> 00 <0f> 0b 48 83 c4 20 5b c3 80 3d 29 eb 1b 01 00 75 9c ba 6c 00 00 00
-> [ 2740.122494] RSP: 0018:ffffa93580c9be48 EFLAGS: 00010296
-> [ 2740.127717] RAX: 000000000000001c RBX: ffffa9358f309000 RCX:
-> 0000000000000000
-> [ 2740.134851] RDX: ffff8be5e0626ba0 RSI: ffff8be5e0618ac0 RDI:
-> ffff8be5e0618ac0
-> [ 2740.141985] RBP: ffffa9358f309000 R08: 0000000000000000 R09:
-> ffffa93580c9bc78
-> [ 2740.149117] R10: ffffa93580c9bc70 R11: ffff8be63ff3c228 R12:
-> ffff8be5e0629980
-> [ 2740.156251] R13: ffff8be5e062f700 R14: 0000000000000000 R15:
-> 0000000000000000
-> [ 2740.163382] FS:  0000000000000000(0000) GS:ffff8be5e0600000(0000)
-> knlGS:0000000000000000
-> [ 2740.171468] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-> [ 2740.177217] CR2: 00007f42c932d224 CR3: 0000000409a10003 CR4:
-> 00000000007706f0
-> [ 2740.184349] DR0: 0000000000000000 DR1: 0000000000000000 DR2:
-> 0000000000000000
-> [ 2740.191481] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7:
-> 0000000000000400
-> [ 2740.198617] PKRU: 55555554
-> [ 2740.201328] Call Trace:
-> [ 2740.203786]  ? mutex_lock+0xe/0x30
-> [ 2740.207198]  xp_release_deferred+0x22/0xa0
-> [ 2740.211296]  process_one_work+0x1ec/0x380
-> [ 2740.215309]  worker_thread+0x53/0x3e0
-> [ 2740.218975]  ? process_one_work+0x380/0x380
-> [ 2740.223161]  kthread+0x11b/0x140
-> [ 2740.226392]  ? kthread_associate_blkcg+0xa0/0xa0
-> [ 2740.231015]  ret_from_fork+0x1f/0x30
-> [ 2740.234604] ---[ end trace cbb7bcf4ac8a3b92 ]---
-> [ 2740.336808] ------------[ cut here ]------------
-> [ 2740.341429] Failed to disable zero-copy!
-> [ 2740.345384] WARNING: CPU: 3 PID: 316 at net/xdp/xsk_buff_pool.c:118
-> xp_disable_drv_zc+0x69/0xa0
-> [ 2740.354086] Modules linked in: rfkill vfat fat rpcrdma sunrpc
-> rdma_ucm ib_srpt ib_isert iscsi_target_mod target_core_mod ib_iser
-> libiscsi scsi_transport_iscsi rdma_cm iw_cm ib_cm intel_rapl_msr
-> iTCO_wdt intel_pmc_bxt iTCO_vendor_support intel_rapl_common
-> isst_if_common skx_edac nfit libnvdimm x86_pkg_temp_thermal
-> intel_powerclamp coretemp kvm_intel kvm irqbypass i40iw rapl
-> intel_cstate ib_uverbs intel_uncore ipmi_ssif ib_core pcspkr i2c_i801
-> lpc_ich i2c_smbus joydev mei_me mei acpi_ipmi ioatdma ipmi_si
-> ipmi_devintf ipmi_msghandler fuse zram ip_tables xfs ast
-> drm_vram_helper drm_kms_helper crct10dif_pclmul crc32_pclmul qat_c62x
-> cec drm_ttm_helper crc32c_intel intel_qat ttm ghash_clmulni_intel i40e
-> drm igb authenc dca i2c_algo_bit wmi uas usb_storage i2c_dev
-> [ 2740.420997] CPU: 3 PID: 316 Comm: kworker/3:1 Tainted: G        W
-> 5.11.17-300.fc34.x86_64 #1
-> [ 2740.430133] Hardware name: To be filled by O.E.M. To be filled by
-> O.E.M./To be filled by O.E.M., BIOS 5.14 04/18/2019
-> [ 2740.440730] Workqueue: events xp_release_deferred
-> [ 2740.445447] RIP: 0010:xp_disable_drv_zc+0x69/0xa0
-> [ 2740.450150] Code: 10 48 8b 87 f0 01 00 00 48 8b 80 50 02 00 00 e8 cd
-> 26 2b 00 85 c0 75 06 48 83 c4 20 5b c3 48 c7 c7 70 10 49 95 e8 36 db 01
-> 00 <0f> 0b 48 83 c4 20 5b c3 80 3d 29 eb 1b 01 00 75 9c ba 6c 00 00 00
-> [ 2740.468900] RSP: 0018:ffffa93580d0be48 EFLAGS: 00010296
-> [ 2740.474124] RAX: 000000000000001c RBX: ffffa93586ff2000 RCX:
-> 0000000000000000
-> [ 2740.481258] RDX: ffff8be5e06e6ba0 RSI: ffff8be5e06d8ac0 RDI:
-> ffff8be5e06d8ac0
-> [ 2740.488392] RBP: ffffa93586ff2000 R08: 0000000000000000 R09:
-> ffffa93580d0bc78
-> [ 2740.495523] R10: ffffa93580d0bc70 R11: ffff8be63ff3c228 R12:
-> ffff8be5e06e9980
-> [ 2740.502657] R13: ffff8be5e06ef700 R14: 0000000000000000 R15:
-> 0000000000000000
-> [ 2740.509792] FS:  0000000000000000(0000) GS:ffff8be5e06c0000(0000)
-> knlGS:0000000000000000
-> [ 2740.517877] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-> [ 2740.523622] CR2: 000056209994d798 CR3: 000000028ee14004 CR4:
-> 00000000007706e0
-> [ 2740.530757] DR0: 0000000000000000 DR1: 0000000000000000 DR2:
-> 0000000000000000
-> [ 2740.537889] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7:
-> 0000000000000400
-> [ 2740.545022] PKRU: 55555554
-> [ 2740.547736] Call Trace:
-> [ 2740.550190]  xp_release_deferred+0x22/0xa0
-> [ 2740.554298]  process_one_work+0x1ec/0x380
-> [ 2740.558321]  worker_thread+0x53/0x3e0
-> [ 2740.561993]  ? process_one_work+0x380/0x380
-> [ 2740.566177]  kthread+0x11b/0x140
-> [ 2740.569414]  ? kthread_associate_blkcg+0xa0/0xa0
-> [ 2740.574031]  ret_from_fork+0x1f/0x30
-> [ 2740.577623] ---[ end trace cbb7bcf4ac8a3b93 ]---
-> [ 2740.679825] ------------[ cut here ]------------
-> [ 2740.684440] Failed to disable zero-copy!
-> [ 2740.688392] WARNING: CPU: 2 PID: 387 at net/xdp/xsk_buff_pool.c:118
-> xp_disable_drv_zc+0x69/0xa0
-> [ 2740.697087] Modules linked in: rfkill vfat fat rpcrdma sunrpc
-> rdma_ucm ib_srpt ib_isert iscsi_target_mod target_core_mod ib_iser
-> libiscsi scsi_transport_iscsi rdma_cm iw_cm ib_cm intel_rapl_msr
-> iTCO_wdt intel_pmc_bxt iTCO_vendor_support intel_rapl_common
-> isst_if_common skx_edac nfit libnvdimm x86_pkg_temp_thermal
-> intel_powerclamp coretemp kvm_intel kvm irqbypass i40iw rapl
-> intel_cstate ib_uverbs intel_uncore ipmi_ssif ib_core pcspkr i2c_i801
-> lpc_ich i2c_smbus joydev mei_me mei acpi_ipmi ioatdma ipmi_si
-> ipmi_devintf ipmi_msghandler fuse zram ip_tables xfs ast
-> drm_vram_helper drm_kms_helper crct10dif_pclmul crc32_pclmul qat_c62x
-> cec drm_ttm_helper crc32c_intel intel_qat ttm ghash_clmulni_intel i40e
-> drm igb authenc dca i2c_algo_bit wmi uas usb_storage i2c_dev
-> [ 2740.763999] CPU: 2 PID: 387 Comm: kworker/2:1 Tainted: G        W
-> 5.11.17-300.fc34.x86_64 #1
-> [ 2740.773123] Hardware name: To be filled by O.E.M. To be filled by
-> O.E.M./To be filled by O.E.M., BIOS 5.14 04/18/2019
-> [ 2740.783722] Workqueue: events xp_release_deferred
-> [ 2740.788431] RIP: 0010:xp_disable_drv_zc+0x69/0xa0
-> [ 2740.793135] Code: 10 48 8b 87 f0 01 00 00 48 8b 80 50 02 00 00 e8 cd
-> 26 2b 00 85 c0 75 06 48 83 c4 20 5b c3 48 c7 c7 70 10 49 95 e8 36 db 01
-> 00 <0f> 0b 48 83 c4 20 5b c3 80 3d 29 eb 1b 01 00 75 9c ba 6c 00 00 00
-> [ 2740.811883] RSP: 0018:ffffa935843ebe48 EFLAGS: 00010296
-> [ 2740.817110] RAX: 000000000000001c RBX: ffffa9358eb05000 RCX:
-> 0000000000000000
-> [ 2740.824242] RDX: ffff8be5e06a6ba0 RSI: ffff8be5e0698ac0 RDI:
-> ffff8be5e0698ac0
-> [ 2740.831375] RBP: ffffa9358eb05000 R08: 0000000000000000 R09:
-> ffffa935843ebc78
-> [ 2740.838509] R10: ffffa935843ebc70 R11: ffff8be63ff3c228 R12:
-> ffff8be5e06a9980
-> [ 2740.845643] R13: ffff8be5e06af700 R14: 0000000000000000 R15:
-> 0000000000000000
-> [ 2740.852776] FS:  0000000000000000(0000) GS:ffff8be5e0680000(0000)
-> knlGS:0000000000000000
-> [ 2740.860861] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-> [ 2740.866609] CR2: 00007f580c1a0ae0 CR3: 000000028ec8c002 CR4:
-> 00000000007706e0
-> [ 2740.873741] DR0: 0000000000000000 DR1: 0000000000000000 DR2:
-> 0000000000000000
-> [ 2740.880875] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7:
-> 0000000000000400
-> [ 2740.888006] PKRU: 55555554
-> [ 2740.890719] Call Trace:
-> [ 2740.893173]  xp_release_deferred+0x22/0xa0
-> [ 2740.897274]  process_one_work+0x1ec/0x380
-> [ 2740.901294]  worker_thread+0x53/0x3e0
-> [ 2740.904959]  ? process_one_work+0x380/0x380
-> [ 2740.909144]  kthread+0x11b/0x140
-> [ 2740.912378]  ? kthread_associate_blkcg+0xa0/0xa0
-> [ 2740.916999]  ret_from_fork+0x1f/0x30
-> [ 2740.920578] ---[ end trace cbb7bcf4ac8a3b94 ]---
-> [ 2740.925513] i40e 0000:17:00.1: VSI seid 391 Rx ring 72 disable
-> timeout
-> [ 2740.945857] ------------[ cut here ]------------
-> [ 2740.950479] Failed to disable zero-copy!
-> [ 2740.954431] WARNING: CPU: 2 PID: 783 at net/xdp/xsk_buff_pool.c:118
-> xp_disable_drv_zc+0x69/0xa0
-> [ 2740.963126] Modules linked in: rfkill vfat fat rpcrdma sunrpc
-> rdma_ucm ib_srpt ib_isert iscsi_target_mod target_core_mod ib_iser
-> libiscsi scsi_transport_iscsi rdma_cm iw_cm ib_cm intel_rapl_msr
-> iTCO_wdt intel_pmc_bxt iTCO_vendor_support intel_rapl_common
-> isst_if_common skx_edac nfit libnvdimm x86_pkg_temp_thermal
-> intel_powerclamp coretemp kvm_intel kvm irqbypass i40iw rapl
-> intel_cstate ib_uverbs intel_uncore ipmi_ssif ib_core pcspkr i2c_i801
-> lpc_ich i2c_smbus joydev mei_me mei acpi_ipmi ioatdma ipmi_si
-> ipmi_devintf ipmi_msghandler fuse zram ip_tables xfs ast
-> drm_vram_helper drm_kms_helper crct10dif_pclmul crc32_pclmul qat_c62x
-> cec drm_ttm_helper crc32c_intel intel_qat ttm ghash_clmulni_intel i40e
-> drm igb authenc dca i2c_algo_bit wmi uas usb_storage i2c_dev
-> [ 2741.030038] CPU: 2 PID: 783 Comm: kworker/2:2 Tainted: G        W
-> 5.11.17-300.fc34.x86_64 #1
-> [ 2741.039170] Hardware name: To be filled by O.E.M. To be filled by
-> O.E.M./To be filled by O.E.M., BIOS 5.14 04/18/2019
-> [ 2741.049769] Workqueue: events xp_release_deferred
-> [ 2741.054475] RIP: 0010:xp_disable_drv_zc+0x69/0xa0
-> [ 2741.059181] Code: 10 48 8b 87 f0 01 00 00 48 8b 80 50 02 00 00 e8 cd
-> 26 2b 00 85 c0 75 06 48 83 c4 20 5b c3 48 c7 c7 70 10 49 95 e8 36 db 01
-> 00 <0f> 0b 48 83 c4 20 5b c3 80 3d 29 eb 1b 01 00 75 9c ba 6c 00 00 00
-> [ 2741.077929] RSP: 0018:ffffa93580f37e48 EFLAGS: 00010296
-> [ 2741.083156] RAX: 000000000000001c RBX: ffffa9358f70b000 RCX:
-> 0000000000000000
-> [ 2741.090287] RDX: ffff8be5e06a6ba0 RSI: ffff8be5e0698ac0 RDI:
-> ffff8be5e0698ac0
-> [ 2741.097424] RBP: ffffa9358f70b000 R08: 0000000000000000 R09:
-> ffffa93580f37c78
-> [ 2741.104555] R10: ffffa93580f37c70 R11: ffff8be63ff3c228 R12:
-> ffff8be5e06a9980
-> [ 2741.111687] R13: ffff8be5e06af700 R14: 0000000000000000 R15:
-> 0000000000000000
-> [ 2741.118822] FS:  0000000000000000(0000) GS:ffff8be5e0680000(0000)
-> knlGS:0000000000000000
-> [ 2741.126909] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-> [ 2741.132655] CR2: 00007f580c1a0ae0 CR3: 000000028ec8c002 CR4:
-> 00000000007706e0
-> [ 2741.139787] DR0: 0000000000000000 DR1: 0000000000000000 DR2:
-> 0000000000000000
-> [ 2741.146921] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7:
-> 0000000000000400
-> [ 2741.154053] PKRU: 55555554
-> [ 2741.156764] Call Trace:
-> [ 2741.159219]  xp_release_deferred+0x22/0xa0
-> [ 2741.163320]  process_one_work+0x1ec/0x380
-> [ 2741.167330]  worker_thread+0x53/0x3e0
-> [ 2741.170996]  ? process_one_work+0x380/0x380
-> [ 2741.175184]  kthread+0x11b/0x140
-> [ 2741.178415]  ? kthread_associate_blkcg+0xa0/0xa0
-> [ 2741.183036]  ret_from_fork+0x1f/0x30
-> [ 2741.186617] ---[ end trace cbb7bcf4ac8a3b95 ]---
-> [ 2741.294857] ------------[ cut here ]------------
-> [ 2741.299477] Failed to disable zero-copy!
-> [ 2741.303428] WARNING: CPU: 2 PID: 5711 at net/xdp/xsk_buff_pool.c:118
-> xp_disable_drv_zc+0x69/0xa0
-> [ 2741.312210] Modules linked in: rfkill vfat fat rpcrdma sunrpc
-> rdma_ucm ib_srpt ib_isert iscsi_target_mod target_core_mod ib_iser
-> libiscsi scsi_transport_iscsi rdma_cm iw_cm ib_cm intel_rapl_msr
-> iTCO_wdt intel_pmc_bxt iTCO_vendor_support intel_rapl_common
-> isst_if_common skx_edac nfit libnvdimm x86_pkg_temp_thermal
-> intel_powerclamp coretemp kvm_intel kvm irqbypass i40iw rapl
-> intel_cstate ib_uverbs intel_uncore ipmi_ssif ib_core pcspkr i2c_i801
-> lpc_ich i2c_smbus joydev mei_me mei acpi_ipmi ioatdma ipmi_si
-> ipmi_devintf ipmi_msghandler fuse zram ip_tables xfs ast
-> drm_vram_helper drm_kms_helper crct10dif_pclmul crc32_pclmul qat_c62x
-> cec drm_ttm_helper crc32c_intel intel_qat ttm ghash_clmulni_intel i40e
-> drm igb authenc dca i2c_algo_bit wmi uas usb_storage i2c_dev
-> [ 2741.379125] CPU: 2 PID: 5711 Comm: kworker/2:0 Tainted: G        W
-> 5.11.17-300.fc34.x86_64 #1
-> [ 2741.388341] Hardware name: To be filled by O.E.M. To be filled by
-> O.E.M./To be filled by O.E.M., BIOS 5.14 04/18/2019
-> [ 2741.398943] Workqueue: events xp_release_deferred
-> [ 2741.403649] RIP: 0010:xp_disable_drv_zc+0x69/0xa0
-> [ 2741.408354] Code: 10 48 8b 87 f0 01 00 00 48 8b 80 50 02 00 00 e8 cd
-> 26 2b 00 85 c0 75 06 48 83 c4 20 5b c3 48 c7 c7 70 10 49 95 e8 36 db 01
-> 00 <0f> 0b 48 83 c4 20 5b c3 80 3d 29 eb 1b 01 00 75 9c ba 6c 00 00 00
-> [ 2741.427100] RSP: 0018:ffffa9372f13fe48 EFLAGS: 00010296
-> [ 2741.432328] RAX: 000000000000001c RBX: ffffa9358ef07000 RCX:
-> 0000000000000000
-> [ 2741.439460] RDX: ffff8be5e06a6ba0 RSI: ffff8be5e0698ac0 RDI:
-> ffff8be5e0698ac0
-> [ 2741.446594] RBP: ffffa9358ef07000 R08: 0000000000000000 R09:
-> ffffa9372f13fc78
-> [ 2741.453727] R10: ffffa9372f13fc70 R11: ffff8be63ff3c228 R12:
-> ffff8be5e06a9980
-> [ 2741.460858] R13: ffff8be5e06af700 R14: 0000000000000000 R15:
-> 0000000000000000
-> [ 2741.467994] FS:  0000000000000000(0000) GS:ffff8be5e0680000(0000)
-> knlGS:0000000000000000
-> [ 2741.476080] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-> [ 2741.481824] CR2: 00007f580c1a0ae0 CR3: 000000028ec8c002 CR4:
-> 00000000007706e0
-> [ 2741.488959] DR0: 0000000000000000 DR1: 0000000000000000 DR2:
-> 0000000000000000
-> [ 2741.496092] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7:
-> 0000000000000400
-> [ 2741.503224] PKRU: 55555554
-> [ 2741.505936] Call Trace:
-> [ 2741.508391]  xp_release_deferred+0x22/0xa0
-> [ 2741.512491]  process_one_work+0x1ec/0x380
-> [ 2741.516505]  worker_thread+0x53/0x3e0
-> [ 2741.520170]  ? process_one_work+0x380/0x380
-> [ 2741.524354]  kthread+0x11b/0x140
-> [ 2741.527587]  ? kthread_associate_blkcg+0xa0/0xa0
-> [ 2741.532206]  ret_from_fork+0x1f/0x30
-> [ 2741.535789] ---[ end trace cbb7bcf4ac8a3b96 ]---
-> [ 2741.637874] ------------[ cut here ]------------
-> [ 2741.642495] Failed to disable zero-copy!
-> [ 2741.646450] WARNING: CPU: 3 PID: 3925 at net/xdp/xsk_buff_pool.c:118
-> xp_disable_drv_zc+0x69/0xa0
-> [ 2741.655239] Modules linked in: rfkill vfat fat rpcrdma sunrpc
-> rdma_ucm ib_srpt ib_isert iscsi_target_mod target_core_mod ib_iser
-> libiscsi scsi_transport_iscsi rdma_cm iw_cm ib_cm intel_rapl_msr
-> iTCO_wdt intel_pmc_bxt iTCO_vendor_support intel_rapl_common
-> isst_if_common skx_edac nfit libnvdimm x86_pkg_temp_thermal
-> intel_powerclamp coretemp kvm_intel kvm irqbypass i40iw rapl
-> intel_cstate ib_uverbs intel_uncore ipmi_ssif ib_core pcspkr i2c_i801
-> lpc_ich i2c_smbus joydev mei_me mei acpi_ipmi ioatdma ipmi_si
-> ipmi_devintf ipmi_msghandler fuse zram ip_tables xfs ast
-> drm_vram_helper drm_kms_helper crct10dif_pclmul crc32_pclmul qat_c62x
-> cec drm_ttm_helper crc32c_intel intel_qat ttm ghash_clmulni_intel i40e
-> drm igb authenc dca i2c_algo_bit wmi uas usb_storage i2c_dev
-> [ 2741.722150] CPU: 3 PID: 3925 Comm: kworker/3:0 Tainted: G        W
-> 5.11.17-300.fc34.x86_64 #1
-> [ 2741.731371] Hardware name: To be filled by O.E.M. To be filled by
-> O.E.M./To be filled by O.E.M., BIOS 5.14 04/18/2019
-> [ 2741.741968] Workqueue: events xp_release_deferred
-> [ 2741.746676] RIP: 0010:xp_disable_drv_zc+0x69/0xa0
-> [ 2741.751380] Code: 10 48 8b 87 f0 01 00 00 48 8b 80 50 02 00 00 e8 cd
-> 26 2b 00 85 c0 75 06 48 83 c4 20 5b c3 48 c7 c7 70 10 49 95 e8 36 db 01
-> 00 <0f> 0b 48 83 c4 20 5b c3 80 3d 29 eb 1b 01 00 75 9c ba 6c 00 00 00
-> [ 2741.770130] RSP: 0018:ffffa93580f9fe48 EFLAGS: 00010296
-> [ 2741.775354] RAX: 000000000000001c RBX: ffffa9358af02000 RCX:
-> 0000000000000000
-> [ 2741.782487] RDX: ffff8be5e06e6ba0 RSI: ffff8be5e06d8ac0 RDI:
-> ffff8be5e06d8ac0
-> [ 2741.789624] RBP: ffffa9358af02000 R08: 0000000000000000 R09:
-> ffffa93580f9fc78
-> [ 2741.796763] R10: ffffa93580f9fc70 R11: ffff8be63ff3c228 R12:
-> ffff8be5e06e9980
-> [ 2741.803895] R13: ffff8be5e06ef700 R14: 0000000000000000 R15:
-> 0000000000000000
-> [ 2741.811030] FS:  0000000000000000(0000) GS:ffff8be5e06c0000(0000)
-> knlGS:0000000000000000
-> [ 2741.819116] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-> [ 2741.824861] CR2: 00007fc9a42684e0 CR3: 00000002ccdf4001 CR4:
-> 00000000007706e0
-> [ 2741.831994] DR0: 0000000000000000 DR1: 0000000000000000 DR2:
-> 0000000000000000
-> [ 2741.839127] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7:
-> 0000000000000400
-> [ 2741.846259] PKRU: 55555554
-> [ 2741.848973] Call Trace:
-> [ 2741.851428]  xp_release_deferred+0x22/0xa0
-> [ 2741.855539]  process_one_work+0x1ec/0x380
-> [ 2741.859557]  worker_thread+0x53/0x3e0
-> [ 2741.863221]  ? process_one_work+0x380/0x380
-> [ 2741.867410]  kthread+0x11b/0x140
-> [ 2741.870651]  ? kthread_associate_blkcg+0xa0/0xa0
-> [ 2741.875271]  ret_from_fork+0x1f/0x30
-> [ 2741.878861] ---[ end trace cbb7bcf4ac8a3b97 ]---
->
->
+Fixes: 1d8e5b0f3f2c ("net: stmmac: Support WOL with phy")
+Reviewed-by: Jisheng Zhang <Jisheng.Zhang@synaptics.com>
+Signed-off-by: Joakim Zhang <qiangqing.zhang@nxp.com>
+---
+ drivers/net/ethernet/stmicro/stmmac/stmmac_main.c | 9 ++++++---
+ 1 file changed, 6 insertions(+), 3 deletions(-)
+
+diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
+index 345b4c6d1fd4..fea3bf07ae89 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
++++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
+@@ -1196,7 +1196,6 @@ static void stmmac_check_pcs_mode(struct stmmac_priv *priv)
+  */
+ static int stmmac_init_phy(struct net_device *dev)
+ {
+-	struct ethtool_wolinfo wol = { .cmd = ETHTOOL_GWOL };
+ 	struct stmmac_priv *priv = netdev_priv(dev);
+ 	struct device_node *node;
+ 	int ret;
+@@ -1222,8 +1221,12 @@ static int stmmac_init_phy(struct net_device *dev)
+ 		ret = phylink_connect_phy(priv->phylink, phydev);
+ 	}
+ 
+-	phylink_ethtool_get_wol(priv->phylink, &wol);
+-	device_set_wakeup_capable(priv->device, !!wol.supported);
++	if (!priv->plat->pmt) {
++		struct ethtool_wolinfo wol = { .cmd = ETHTOOL_GWOL };
++
++		phylink_ethtool_get_wol(priv->phylink, &wol);
++		device_set_wakeup_capable(priv->device, !!wol.supported);
++	}
+ 
+ 	return ret;
+ }
+-- 
+2.17.1
+
