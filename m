@@ -2,357 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 698213789F6
-	for <lists+netdev@lfdr.de>; Mon, 10 May 2021 13:53:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 53CD83789F8
+	for <lists+netdev@lfdr.de>; Mon, 10 May 2021 13:53:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236827AbhEJLfD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 10 May 2021 07:35:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48910 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238461AbhEJLRt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 10 May 2021 07:17:49 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 14730C061352
-        for <netdev@vger.kernel.org>; Mon, 10 May 2021 04:14:33 -0700 (PDT)
-Received: from dude.hi.pengutronix.de ([2001:67c:670:100:1d::7])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ore@pengutronix.de>)
-        id 1lg3rj-0003uF-E6; Mon, 10 May 2021 13:14:23 +0200
-Received: from ore by dude.hi.pengutronix.de with local (Exim 4.92)
-        (envelope-from <ore@pengutronix.de>)
-        id 1lg3rh-0005rS-D6; Mon, 10 May 2021 13:14:21 +0200
-From:   Oleksij Rempel <o.rempel@pengutronix.de>
-To:     Woojung Huh <woojung.huh@microchip.com>,
-        UNGLinuxDriver@microchip.com, Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     Oleksij Rempel <o.rempel@pengutronix.de>, kernel@pengutronix.de,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Russell King <linux@armlinux.org.uk>,
-        Michael Grzeschik <m.grzeschik@pengutronix.de>
-Subject: [RFC PATCH v2 9/9] net: phy: micrel: ksz886x/ksz8081: add cabletest support
-Date:   Mon, 10 May 2021 13:14:19 +0200
-Message-Id: <20210510111419.22384-10-o.rempel@pengutronix.de>
-X-Mailer: git-send-email 2.29.2
-In-Reply-To: <20210510111419.22384-1-o.rempel@pengutronix.de>
-References: <20210510111419.22384-1-o.rempel@pengutronix.de>
+        id S238391AbhEJLfF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 10 May 2021 07:35:05 -0400
+Received: from mail.kernel.org ([198.145.29.99]:40598 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S239112AbhEJLVG (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 10 May 2021 07:21:06 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id CC8EA6101E;
+        Mon, 10 May 2021 11:19:53 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1620645601;
+        bh=W7iAKST7BRDMlEttXNNjJ33EX76A4qp8I6GEgdSMv7U=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=gmDmb0dM5IcZQ9rSlubjtF+K7WR5CTuBYzK7hGG8NgJ6VoZl1xWTpOcwkH/5/0zA/
+         vlx1VxEGYzpDqoIrEOS4Gq4vleDywsH/Tbkz7KjwQOxa0gHoTz3ZfhQBobu6oYwUNn
+         Apktwvurhr0XmVvzqYbUbTW3FMnBkgNdhIrbGi6F2SzZTvdCwG1IcEdUG7Tg53VOjZ
+         rsHYuTEPmzH2qPOyCxJC2wx/q7V+K8nhKe4JHOwCkQGI9ADck3Kw17WLNRkmbFOBip
+         a9pcqsOJVVBc05NJGVPFoJfSO03eP8zjvIV4wRYaZYLrBIVfbDQLgQs1bXlcp7w7lK
+         9KVTRb7Ve04dg==
+Date:   Mon, 10 May 2021 13:19:50 +0200
+From:   Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+To:     Thorsten Leemhuis <linux@leemhuis.info>
+Cc:     Linux Doc Mailing List <linux-doc@vger.kernel.org>,
+        linux-kernel@vger.kernel.org, Jonathan Corbet <corbet@lwn.net>,
+        alsa-devel@alsa-project.org, coresight@lists.linaro.org,
+        dri-devel@lists.freedesktop.org, intel-gfx@lists.freedesktop.org,
+        intel-wired-lan@lists.osuosl.org, keyrings@vger.kernel.org,
+        kvm@vger.kernel.org, linux-acpi@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-edac@vger.kernel.org,
+        linux-ext4@vger.kernel.org, linux-f2fs-devel@lists.sourceforge.net,
+        linux-fpga@vger.kernel.org, linux-hwmon@vger.kernel.org,
+        linux-iio@vger.kernel.org, linux-input@vger.kernel.org,
+        linux-integrity@vger.kernel.org, linux-media@vger.kernel.org,
+        linux-pci@vger.kernel.org, linux-pm@vger.kernel.org,
+        linux-rdma@vger.kernel.org, linux-riscv@lists.infradead.org,
+        linux-sgx@vger.kernel.org, linux-usb@vger.kernel.org,
+        mjpeg-users@lists.sourceforge.net, netdev@vger.kernel.org,
+        rcu@vger.kernel.org, x86@kernel.org
+Subject: Re: [PATCH 00/53] Get rid of UTF-8 chars that can be mapped as
+ ASCII
+Message-ID: <20210510131950.063f0608@coco.lan>
+In-Reply-To: <c4479ced-f4d8-1a1e-ee54-9abc55344187@leemhuis.info>
+References: <cover.1620641727.git.mchehab+huawei@kernel.org>
+        <c4479ced-f4d8-1a1e-ee54-9abc55344187@leemhuis.info>
+X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-redhat-linux-gnu)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::7
-X-SA-Exim-Mail-From: ore@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch support for cable test for the ksz886x switches and the
-ksz8081 PHY.
+Em Mon, 10 May 2021 12:52:44 +0200
+Thorsten Leemhuis <linux@leemhuis.info> escreveu:
 
-The patch was tested on a KSZ8873RLL switch with following results:
+> On 10.05.21 12:26, Mauro Carvalho Chehab wrote:
+> >
+> > As Linux developers are all around the globe, and not everybody has UTF=
+-8
+> > as their default charset, better to use UTF-8 only on cases where it is=
+ really
+> > needed.
+> > [=E2=80=A6]
+> > The remaining patches on series address such cases on *.rst files and=20
+> > inside the Documentation/ABI, using this perl map table in order to do =
+the
+> > charset conversion:
+> >=20
+> > my %char_map =3D (
+> > [=E2=80=A6]
+> > 	0x2013 =3D> '-',		# EN DASH
+> > 	0x2014 =3D> '-',		# EM DASH =20
 
-- port 1:
-  - provides invalid values, thus return -ENOTSUPP
-    (Errata: DS80000830A: "LinkMD does not work on Port 1",
-     http://ww1.microchip.com/downloads/en/DeviceDoc/KSZ8873-Errata-DS80000830A.pdf)
 
-- port 2:
-  - can detect distance
-  - can detect open on each wire of pair A (wire 1 and 2)
-  - can detect open only on one wire of pair B (only wire 3)
-  - can detect short between wires of a pair (wires 1 + 2 or 3 + 6)
-  - short between pairs is detected as open.
-    For example short between wires 2 + 3 is detected as open.
+> I might be performing bike shedding here, but wouldn't it be better to
+> replace those two with "--", as explained in
+> https://en.wikipedia.org/wiki/Dash#Approximating_the_em_dash_with_two_or_=
+three_hyphens
+>=20
+> For EM DASH there seems to be even "---", but I'd say that is a bit too
+> much.
 
-Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
+Yeah, we can do, instead:
 
----
+ 	0x2013 =3D> '--',		# EN DASH
+ 	0x2014 =3D> '---',	# EM DASH =20
 
-- added PHY_POLL_CABLE_TEST to make it work in interrupt mode
----
- drivers/net/dsa/microchip/ksz8795.c |  13 ++
- drivers/net/phy/micrel.c            | 180 ++++++++++++++++++++++++++++
- include/linux/micrel_phy.h          |   1 +
- 3 files changed, 194 insertions(+)
+I was actually in doubt about those ;-)
 
-diff --git a/drivers/net/dsa/microchip/ksz8795.c b/drivers/net/dsa/microchip/ksz8795.c
-index ae5fe9c829da..1881adb19c85 100644
---- a/drivers/net/dsa/microchip/ksz8795.c
-+++ b/drivers/net/dsa/microchip/ksz8795.c
-@@ -970,6 +970,18 @@ static enum dsa_tag_protocol ksz8_get_tag_protocol(struct dsa_switch *ds,
- 		DSA_TAG_PROTO_KSZ9893 : DSA_TAG_PROTO_KSZ8795;
- }
- 
-+static u32 ksz8_sw_get_phy_flags(struct dsa_switch *ds, int port)
-+{
-+	/* Silicon Errata Sheet (DS80000830A):
-+	 * Port 1 does not work with LinkMD Cable-Testing.
-+	 * Port 1 does not respond to received PAUSE control frames.
-+	 */
-+	if (!port)
-+		return MICREL_KSZ8_P1_ERRATA;
-+
-+	return 0;
-+}
-+
- static void ksz8_get_strings(struct dsa_switch *ds, int port,
- 			     u32 stringset, uint8_t *buf)
- {
-@@ -1507,6 +1519,7 @@ static void ksz8_validate(struct dsa_switch *ds, int port,
- 
- static const struct dsa_switch_ops ksz8_switch_ops = {
- 	.get_tag_protocol	= ksz8_get_tag_protocol,
-+	.get_phy_flags		= ksz8_sw_get_phy_flags,
- 	.setup			= ksz8_setup,
- 	.phy_read		= ksz_phy_read16,
- 	.phy_write		= ksz_phy_write16,
-diff --git a/drivers/net/phy/micrel.c b/drivers/net/phy/micrel.c
-index b6ce7bd66738..6b744e68ce97 100644
---- a/drivers/net/phy/micrel.c
-+++ b/drivers/net/phy/micrel.c
-@@ -20,6 +20,7 @@
-  */
- 
- #include <linux/bitfield.h>
-+#include <linux/ethtool_netlink.h>
- #include <linux/kernel.h>
- #include <linux/module.h>
- #include <linux/phy.h>
-@@ -53,6 +54,18 @@
- #define	KSZPHY_INTCS_STATUS			(KSZPHY_INTCS_LINK_DOWN_STATUS |\
- 						 KSZPHY_INTCS_LINK_UP_STATUS)
- 
-+/* LinkMD Control/Status */
-+#define KSZ8081_LMD				0x1d
-+#define KSZ8081_LMD_ENABLE_TEST			BIT(15)
-+#define KSZ8081_LMD_STAT_NORMAL			0
-+#define KSZ8081_LMD_STAT_OPEN			1
-+#define KSZ8081_LMD_STAT_SHORT			2
-+#define KSZ8081_LMD_STAT_FAIL			3
-+#define KSZ8081_LMD_STAT_MASK			GENMASK(14, 13)
-+/* Short cable (<10 meter) has been detected by LinkMD */
-+#define KSZ8081_LMD_SHORT_INDICATOR		BIT(12)
-+#define KSZ8081_LMD_DELTA_TIME_MASK		GENMASK(8, 0)
-+
- /* PHY Control 1 */
- #define MII_KSZPHY_CTRL_1			0x1e
- #define KSZ8081_CTRL1_MDIX_STAT			BIT(4)
-@@ -1386,6 +1399,167 @@ static int kszphy_probe(struct phy_device *phydev)
- 	return 0;
- }
- 
-+static int ksz886x_cable_test_start(struct phy_device *phydev)
-+{
-+	if (phydev->dev_flags & MICREL_KSZ8_P1_ERRATA)
-+		return -ENOTSUPP;
-+
-+	/* If autoneg is enabled, we won't be able to test cross pair
-+	 * short. In this case, the PHY will "detect" a link and
-+	 * confuse the internal state machine - disable auto neg here.
-+	 * If autoneg is disabled, we should set the speed to 10mbit.
-+	 */
-+	return phy_clear_bits(phydev, MII_BMCR, BMCR_ANENABLE | BMCR_SPEED100);
-+}
-+
-+static int ksz886x_cable_test_result_trans(u16 status)
-+{
-+	switch (FIELD_GET(KSZ8081_LMD_STAT_MASK, status)) {
-+	case KSZ8081_LMD_STAT_NORMAL:
-+		return ETHTOOL_A_CABLE_RESULT_CODE_OK;
-+	case KSZ8081_LMD_STAT_SHORT:
-+		return ETHTOOL_A_CABLE_RESULT_CODE_SAME_SHORT;
-+	case KSZ8081_LMD_STAT_OPEN:
-+		return ETHTOOL_A_CABLE_RESULT_CODE_OPEN;
-+	case KSZ8081_LMD_STAT_FAIL:
-+		/* fall through */
-+	default:
-+		return ETHTOOL_A_CABLE_RESULT_CODE_UNSPEC;
-+	}
-+}
-+
-+static bool ksz886x_cable_test_failed(u16 status)
-+{
-+	return FIELD_GET(KSZ8081_LMD_STAT_MASK, status) ==
-+		KSZ8081_LMD_STAT_FAIL;
-+}
-+
-+static bool ksz886x_cable_test_fault_length_valid(u16 status)
-+{
-+	switch (FIELD_GET(KSZ8081_LMD_STAT_MASK, status)) {
-+	case KSZ8081_LMD_STAT_OPEN:
-+		/* fall through */
-+	case KSZ8081_LMD_STAT_SHORT:
-+		return true;
-+	}
-+	return false;
-+}
-+
-+static int ksz886x_cable_test_fault_length(u16 status)
-+{
-+	int dt;
-+
-+	/* According to the data sheet the distance to the fault is
-+	 * DELTA_TIME * 0.4 meters.
-+	 */
-+	dt = FIELD_GET(KSZ8081_LMD_DELTA_TIME_MASK, status);
-+
-+	return (dt * 400) / 10;
-+}
-+
-+static int ksz886x_cable_test_wait_for_completion(struct phy_device *phydev)
-+{
-+	int val, ret;
-+
-+	ret = phy_read_poll_timeout(phydev, KSZ8081_LMD, val,
-+				    !(val & KSZ8081_LMD_ENABLE_TEST),
-+				    30000, 100000, true);
-+
-+	return ret < 0 ? ret : 0;
-+}
-+
-+static int ksz886x_cable_test_one_pair(struct phy_device *phydev, int pair)
-+{
-+	static const int ethtool_pair[] = {
-+		ETHTOOL_A_CABLE_PAIR_A,
-+		ETHTOOL_A_CABLE_PAIR_B,
-+	};
-+	int ret, val, mdix;
-+
-+	/* There is no way to choice the pair, like we do one ksz9031.
-+	 * We can workaround this limitation by using the MDI-X functionality.
-+	 */
-+	if (pair == 0)
-+		mdix = ETH_TP_MDI;
-+	else
-+		mdix = ETH_TP_MDI_X;
-+
-+	switch (phydev->phy_id & MICREL_PHY_ID_MASK) {
-+	case PHY_ID_KSZ8081:
-+		ret = ksz8081_config_mdix(phydev, mdix);
-+		break;
-+	case PHY_ID_KSZ886X:
-+		ret = ksz886x_config_mdix(phydev, mdix);
-+		break;
-+	default:
-+		ret = -ENODEV;
-+	}
-+
-+	if (ret)
-+		return ret;
-+
-+	/* Now we are ready to fire. This command will send a 100ns pulse
-+	 * to the pair.
-+	 */
-+	ret = phy_write(phydev, KSZ8081_LMD, KSZ8081_LMD_ENABLE_TEST);
-+	if (ret)
-+		return ret;
-+
-+	ret = ksz886x_cable_test_wait_for_completion(phydev);
-+	if (ret)
-+		return ret;
-+
-+	val = phy_read(phydev, KSZ8081_LMD);
-+	if (val < 0)
-+		return val;
-+
-+	if (ksz886x_cable_test_failed(val))
-+		return -EAGAIN;
-+
-+	ret = ethnl_cable_test_result(phydev, ethtool_pair[pair],
-+				      ksz886x_cable_test_result_trans(val));
-+	if (ret)
-+		return ret;
-+
-+	if (!ksz886x_cable_test_fault_length_valid(val))
-+		return 0;
-+
-+	return ethnl_cable_test_fault_length(phydev, ethtool_pair[pair],
-+					     ksz886x_cable_test_fault_length(val));
-+}
-+
-+static int ksz886x_cable_test_get_status(struct phy_device *phydev,
-+					 bool *finished)
-+{
-+	unsigned long pair_mask = 0x3;
-+	int retries = 20;
-+	int pair, ret;
-+
-+	*finished = false;
-+
-+	/* Try harder if link partner is active */
-+	while (pair_mask && retries--) {
-+		for_each_set_bit(pair, &pair_mask, 4) {
-+			ret = ksz886x_cable_test_one_pair(phydev, pair);
-+			if (ret == -EAGAIN)
-+				continue;
-+			if (ret < 0)
-+				return ret;
-+			clear_bit(pair, &pair_mask);
-+		}
-+		/* If link partner is in autonegotiation mode it will send 2ms
-+		 * of FLPs with at least 6ms of silence.
-+		 * Add 2ms sleep to have better chances to hit this silence.
-+		 */
-+		if (pair_mask)
-+			msleep(2);
-+	}
-+
-+	*finished = true;
-+
-+	return 0;
-+}
-+
- static struct phy_driver ksphy_driver[] = {
- {
- 	.phy_id		= PHY_ID_KS8737,
-@@ -1492,6 +1666,7 @@ static struct phy_driver ksphy_driver[] = {
- 	.phy_id		= PHY_ID_KSZ8081,
- 	.name		= "Micrel KSZ8081 or KSZ8091",
- 	.phy_id_mask	= MICREL_PHY_ID_MASK,
-+	.flags		= PHY_POLL_CABLE_TEST,
- 	/* PHY_BASIC_FEATURES */
- 	.driver_data	= &ksz8081_type,
- 	.probe		= kszphy_probe,
-@@ -1506,6 +1681,8 @@ static struct phy_driver ksphy_driver[] = {
- 	.get_stats	= kszphy_get_stats,
- 	.suspend	= kszphy_suspend,
- 	.resume		= kszphy_resume,
-+	.cable_test_start	= ksz886x_cable_test_start,
-+	.cable_test_get_status	= ksz886x_cable_test_get_status,
- }, {
- 	.phy_id		= PHY_ID_KSZ8061,
- 	.name		= "Micrel KSZ8061",
-@@ -1594,11 +1771,14 @@ static struct phy_driver ksphy_driver[] = {
- 	.phy_id_mask	= MICREL_PHY_ID_MASK,
- 	.name		= "Micrel KSZ8851 Ethernet MAC or KSZ886X Switch",
- 	/* PHY_BASIC_FEATURES */
-+	.flags		= PHY_POLL_CABLE_TEST,
- 	.config_init	= kszphy_config_init,
- 	.config_aneg	= ksz886x_config_aneg,
- 	.read_status	= ksz886x_read_status,
- 	.suspend	= genphy_suspend,
- 	.resume		= ksz886x_resume,
-+	.cable_test_start	= ksz886x_cable_test_start,
-+	.cable_test_get_status	= ksz886x_cable_test_get_status,
- }, {
- 	.name		= "Micrel KSZ87XX Switch",
- 	/* PHY_BASIC_FEATURES */
-diff --git a/include/linux/micrel_phy.h b/include/linux/micrel_phy.h
-index 58370abd9f4f..3d43c60b49fa 100644
---- a/include/linux/micrel_phy.h
-+++ b/include/linux/micrel_phy.h
-@@ -39,6 +39,7 @@
- /* struct phy_device dev_flags definitions */
- #define MICREL_PHY_50MHZ_CLK	0x00000001
- #define MICREL_PHY_FXEN		0x00000002
-+#define MICREL_KSZ8_P1_ERRATA	0x00000003
- 
- #define MICREL_KSZ9021_EXTREG_CTRL	0xB
- #define MICREL_KSZ9021_EXTREG_DATA_WRITE	0xC
--- 
-2.29.2
+Btw, when producing HTML documentation,  Sphinx should convert:
+	-- into EN DASH
+and:
+	--- into EM DASH
 
+So, the resulting html will be identical.
+
+> Or do you fear the extra work as some lines then might break the
+> 80-character limit then?
+
+No, I suspect that the line size won't be an issue. Some care should
+taken when EN DASH and EM DASH are used inside tables.
+
+Thanks,
+Mauro
