@@ -2,109 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D010A377C10
-	for <lists+netdev@lfdr.de>; Mon, 10 May 2021 08:06:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E3C65377C16
+	for <lists+netdev@lfdr.de>; Mon, 10 May 2021 08:09:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229998AbhEJGHP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 10 May 2021 02:07:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35726 "EHLO
+        id S230039AbhEJGLA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 10 May 2021 02:11:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36536 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229608AbhEJGHO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 10 May 2021 02:07:14 -0400
-Received: from mail-pg1-x529.google.com (mail-pg1-x529.google.com [IPv6:2607:f8b0:4864:20::529])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 438DDC061573
-        for <netdev@vger.kernel.org>; Sun,  9 May 2021 23:06:10 -0700 (PDT)
-Received: by mail-pg1-x529.google.com with SMTP id m37so12528466pgb.8
-        for <netdev@vger.kernel.org>; Sun, 09 May 2021 23:06:10 -0700 (PDT)
+        with ESMTP id S229608AbhEJGK7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 10 May 2021 02:10:59 -0400
+Received: from mail-qt1-x82f.google.com (mail-qt1-x82f.google.com [IPv6:2607:f8b0:4864:20::82f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1353DC061574
+        for <netdev@vger.kernel.org>; Sun,  9 May 2021 23:09:55 -0700 (PDT)
+Received: by mail-qt1-x82f.google.com with SMTP id y12so11166837qtx.11
+        for <netdev@vger.kernel.org>; Sun, 09 May 2021 23:09:54 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
+        d=google.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=MDrcpXE39hK+tsy+zeJ9NcnfUtXm+Fj2OZgopVYIL0c=;
-        b=a4k8t596jRiGiHvZ3K9iDz5sTR7VxyAB6dhL5+66qQchlvRyybuzfPcEgu3mErhetO
-         sRGV2scP9qoVnV7zobRdH8j4p2CAHFm5D7KizyW267aRqlRFEy7sYCcruH9+5zj5BH71
-         Uip2ZkTlM/yMTiCmBxx4lGSDZqexb2VIFjdTCUwMoacrvhf1UjKS3wHQ5ZVHg6BeNmie
-         Mllfq7Xh2Iom/Gc9rLPnnmJO305FxGiuPMktkhi66GJ3O8VHpdv5qNowLBtp2Fv4Z22T
-         ThPHreJeAGQFbiLRxL0GZu7CfOqC6YrfjF53myFmJbWQzKKj5ir9AitBShFvMsKvTRNP
-         jFOg==
+        bh=eGZtaov/2jLp363MbdipRXDLJ+YxSvxBrC/OhuvnYEY=;
+        b=Tv8XwToGZImRnH+ZMmuLTzHnVD5UsM8Ex7xEdqPm1D286RgzDjkHSFL0rdq9Uztdcm
+         JKvFQjM9F6f3o3Edwo3OuHurfKBFErCcapmgs0Rk92eOaFWQ3WWXHM54dbH+bSk+l3ih
+         EaeWoHl1D7IbFxHdBPgNQdDRqiR4X3JIXrYFss6a1TeAV98Z/tc1QJEAJEND5qfAQ7nE
+         BJK+uRT2WRin8d3NqVW71PZxNHSzckNzDtUPnF8N96GpRdhvXRwUmAcBEgPvRyXjtvf/
+         eV65vqynzK4bNnmHBUkr2Ab9QZ9AOxK0VTC2iL7nqSy5LcjR4e2NOK9qYcuoYPJKiSQz
+         tKbg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=MDrcpXE39hK+tsy+zeJ9NcnfUtXm+Fj2OZgopVYIL0c=;
-        b=EgeWK2vVVjdvF10o+GbU5HkrovNp/if9Lu/X5Yyd/VBWCVOW2kMvK0Gh/x0Jxt87OV
-         +SZzq9lr8V83DxWbUQq7I+6uPmS6y/Jn/zsanPcVmrnIzb6HQ49PKezqNgu4vrWjQhcP
-         Ya2MRUSz7bzgI+WtuSBu25ljQUPVQ22dgtb+Kgox/cFsIrufRnSuOEW/W8EFDX7kjvq+
-         B8Qdv8ZfjpUKSYNEq1yod9lAdoVOkLKVJyvdYTMvNyZid64QHS519wa+rECVsGFpaP6m
-         beBMFCPETM7egvtNfIqYDk7tWSI66shPbugmkyrS/7ybFvAdtMs76VUQ72xmxa5w1Nhf
-         hTVQ==
-X-Gm-Message-State: AOAM532VHIK2uBnX2JIYpf4EgU3nty1RkcItzBtQ7bQHmF4GW2k8zbRc
-        r0vBNN9rtrcca8qSTDctj0fbbR66U6a+1H0f3o8=
-X-Google-Smtp-Source: ABdhPJyI5s8NZwfuKDpEZ8b6Fp2u5on+enRQ4oHGe86WgJBiFubYi63j4o4IlmRCWCnLfYIus4gTKeOu0wdd5AuRwMU=
-X-Received: by 2002:a62:1b97:0:b029:24e:44e9:a8c1 with SMTP id
- b145-20020a621b970000b029024e44e9a8c1mr24125765pfb.19.1620626769732; Sun, 09
- May 2021 23:06:09 -0700 (PDT)
+        bh=eGZtaov/2jLp363MbdipRXDLJ+YxSvxBrC/OhuvnYEY=;
+        b=PWXIUHJDtWkjnDYW1r+aLi0rtTOP6JBGpYMfQSKkBe7qFn7hDT6S028OZuinhbZWs6
+         1hRPD/tj6uaXC1vGVIxMjJUFKb54dntFdJeqmuxIcoarBDkvb9YUgmJv6vIfXmBaVzr2
+         5YKQKDP+x2t0B6WGxyQTzoy8U10GYDoyKjCQpZ2SFpfvCyCVx6xyzKj8pGf6oJhBeVVn
+         994zbA7N1liWnDb8MhvvM0dOHStsHfVupjdDOouVTOJVpU01dwMSvAj8+Im7UqOjovpG
+         3Orj+wDw4lvbPPdIlxdQcrHo6fqSlWNyjy7GcaldefF141Rdm3aTX9KE0unpf2V8dbSi
+         jrhQ==
+X-Gm-Message-State: AOAM531eOyOeQTpBXqp66eD5jRLGPK5rEu/NPBRqoKMuMbpbFBKpcT2Y
+        49EEcAc+7WnkG8JI6D9zGdVjvCRA1UCZAFcJBHQg6g==
+X-Google-Smtp-Source: ABdhPJwDXNAJ7rqPdsxdvS37L/b6fPAlZK2aUqvtF7QMNjEjv477/3kILJBGFyURKDos3ry5nTQ9UROQCms1gkuN9xY=
+X-Received: by 2002:ac8:110d:: with SMTP id c13mr20896043qtj.337.1620626993742;
+ Sun, 09 May 2021 23:09:53 -0700 (PDT)
 MIME-Version: 1.0
-References: <20210423100446.15412-1-magnus.karlsson@gmail.com> <75d0a1d13a755bc128458c0d43f16d54fe08051e.camel@intel.com>
-In-Reply-To: <75d0a1d13a755bc128458c0d43f16d54fe08051e.camel@intel.com>
-From:   Magnus Karlsson <magnus.karlsson@gmail.com>
-Date:   Mon, 10 May 2021 08:06:00 +0200
-Message-ID: <CAJ8uoz0Pgfn8kai34_MFGYv3m7c24bpo4DhjZ8oLgd4zaGMWsg@mail.gmail.com>
-Subject: Re: [PATCH intel-net 0/5] i40e: ice: ixgbe: ixgbevf: igb: add correct
- exception tracing for XDP
-To:     "Nguyen, Anthony L" <anthony.l.nguyen@intel.com>
-Cc:     "intel-wired-lan@lists.osuosl.org" <intel-wired-lan@lists.osuosl.org>,
-        "Karlsson, Magnus" <magnus.karlsson@intel.com>,
-        "Fijalkowski, Maciej" <maciej.fijalkowski@intel.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "brouer@redhat.com" <brouer@redhat.com>
+References: <0000000000009f94c1057e772431@google.com> <000000000000e5b92105c1e723d5@google.com>
+In-Reply-To: <000000000000e5b92105c1e723d5@google.com>
+From:   Dmitry Vyukov <dvyukov@google.com>
+Date:   Mon, 10 May 2021 08:09:42 +0200
+Message-ID: <CACT4Y+a-WdDEJEx=E7gr2ci0F6U8ncvMgVSzph00H7U_qmc+_Q@mail.gmail.com>
+Subject: Re: [syzbot] WARNING in hsr_forward_skb
+To:     syzbot <syzbot+fdce8f2a8903f3ba0e6b@syzkaller.appspotmail.com>
+Cc:     arvid.brodin@alten.se, Jens Axboe <axboe@fb.com>,
+        Jens Axboe <axboe@kernel.dk>,
+        David Miller <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Christoph Hellwig <hch@lst.de>,
+        Jakub Kicinski <kuba@kernel.org>, kurt@linutronix.de,
+        linux-block <linux-block@vger.kernel.org>,
+        linux-can@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>,
+        m-karicheri2@ti.com, Ming Lei <ming.lei@redhat.com>,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
+        netdev <netdev@vger.kernel.org>,
+        Oliver Hartkopp <socketcan@hartkopp.net>,
+        syzkaller-bugs <syzkaller-bugs@googlegroups.com>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, May 8, 2021 at 12:58 AM Nguyen, Anthony L
-<anthony.l.nguyen@intel.com> wrote:
+On Sun, May 9, 2021 at 5:16 PM syzbot
+<syzbot+fdce8f2a8903f3ba0e6b@syzkaller.appspotmail.com> wrote:
 >
-> On Fri, 2021-04-23 at 12:04 +0200, Magnus Karlsson wrote:
-> > Add missing exception tracing to XDP when a number of different
-> > errors
-> > can occur. The support was only partial. Several errors where not
-> > logged which would confuse the user quite a lot not knowing where and
-> > why the packets disappeared.
-> >
-> > This patch set fixes this for all Intel drivers with XDP support.
-> >
-> > Thanks: Magnus
+> syzbot suspects this issue was fixed by commit:
 >
-> This doesn't apply anymore with the 5.13 patches. It looks like your
-> "optimize for XDP_REDIRECT in xsk path" patches are conflicting with
-> some of these. Did you want to rework them?
+> commit 9d6803921a16f4d768dc41a75375629828f4d91e
+> Author: Kurt Kanzenbach <kurt@linutronix.de>
+> Date:   Tue Apr 6 07:35:09 2021 +0000
+>
+>     net: hsr: Reset MAC header for Tx path
+>
+> bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=119c7fedd00000
+> start commit:   3af409ca net: enetc: fix destroyed phylink dereference dur..
+> git tree:       net
+> kernel config:  https://syzkaller.appspot.com/x/.config?x=8cb23303ddb9411f
+> dashboard link: https://syzkaller.appspot.com/bug?extid=fdce8f2a8903f3ba0e6b
+> syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=1525467ad00000
+> C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=114c0b12d00000
+>
+> If the result looks correct, please mark the issue as fixed by replying with:
+>
+> #syz fix: net: hsr: Reset MAC header for Tx path
+>
+> For information about bisection process see: https://goo.gl/tpsmEJ#bisection
 
-I will rebase them and resubmit.
+The patch references this exact warning.
 
-> Thanks,
-> Tony
->
-> > Magnus Karlsson (5):
-> >   i40e: add correct exception tracing for XDP
-> >   ice: add correct exception tracing for XDP
-> >   ixgbe: add correct exception tracing for XDP
-> >   igb add correct exception tracing for XDP
-> >   ixgbevf: add correct exception tracing for XDP
-> >
-> >  drivers/net/ethernet/intel/i40e/i40e_txrx.c      |  7 ++++++-
-> >  drivers/net/ethernet/intel/i40e/i40e_xsk.c       |  7 ++++++-
-> >  drivers/net/ethernet/intel/ice/ice_txrx.c        | 12 +++++++++---
-> >  drivers/net/ethernet/intel/ice/ice_xsk.c         |  7 ++++++-
-> >  drivers/net/ethernet/intel/igb/igb_main.c        | 10 ++++++----
-> >  drivers/net/ethernet/intel/ixgbe/ixgbe_main.c    | 16 ++++++++----
-> > ----
-> >  drivers/net/ethernet/intel/ixgbe/ixgbe_xsk.c     | 13 ++++++++-----
-> >  .../net/ethernet/intel/ixgbevf/ixgbevf_main.c    |  3 +++
-> >  8 files changed, 52 insertions(+), 23 deletions(-)
-> >
-> >
-> > base-commit: bb556de79f0a9e647e8febe15786ee68483fa67b
-> > --
-> > 2.29.0
+#syz fix: net: hsr: Reset MAC header for Tx path
