@@ -2,118 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3F41A377B8C
-	for <lists+netdev@lfdr.de>; Mon, 10 May 2021 07:31:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D010A377C10
+	for <lists+netdev@lfdr.de>; Mon, 10 May 2021 08:06:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230133AbhEJFcp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 10 May 2021 01:32:45 -0400
-Received: from fllv0015.ext.ti.com ([198.47.19.141]:55060 "EHLO
-        fllv0015.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229608AbhEJFcn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 10 May 2021 01:32:43 -0400
-Received: from lelv0265.itg.ti.com ([10.180.67.224])
-        by fllv0015.ext.ti.com (8.15.2/8.15.2) with ESMTP id 14A5VU8Z081177;
-        Mon, 10 May 2021 00:31:30 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1620624690;
-        bh=CdW+YRXLk3uk5cWZMxSMVSm607ddrQRwN9EUo67GHoU=;
-        h=Subject:CC:References:From:Date:In-Reply-To;
-        b=pZw4ZfNGu/LI6x30dgWiJozhK3BJ/kQct6DXHqouVnCRQGw3nX9sEegZzTBXe9KZe
-         tx4sCda87g3Gn4y50rC2Wq33JVlWSQi0uJ7fT+Yuczj/ZKHG0Cdb4PrUbmGf09OxQ0
-         OgfYCK8ReLYiTeY8A01veuU8LMG9YF6tkGrMOGE4=
-Received: from DLEE100.ent.ti.com (dlee100.ent.ti.com [157.170.170.30])
-        by lelv0265.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 14A5VT4r093051
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Mon, 10 May 2021 00:31:29 -0500
-Received: from DLEE108.ent.ti.com (157.170.170.38) by DLEE100.ent.ti.com
- (157.170.170.30) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2176.2; Mon, 10
- May 2021 00:31:29 -0500
-Received: from fllv0039.itg.ti.com (10.64.41.19) by DLEE108.ent.ti.com
- (157.170.170.38) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2176.2 via
- Frontend Transport; Mon, 10 May 2021 00:31:29 -0500
-Received: from [10.250.235.117] (ileax41-snat.itg.ti.com [10.172.224.153])
-        by fllv0039.itg.ti.com (8.15.2/8.15.2) with ESMTP id 14A5VM3U057050;
-        Mon, 10 May 2021 00:31:24 -0500
-Subject: Re: [PATCH v3 0/2] MCAN: Add support for implementing transceiver as
- a phy
-CC:     <linux-kernel@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-can@vger.kernel.org>, <netdev@vger.kernel.org>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
-        Wolfgang Grandegger <wg@grandegger.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Chandrasekar Ramakrishnan <rcsekar@samsung.com>,
-        Kishon Vijay Abraham I <kishon@ti.com>,
-        Lokesh Vutla <lokeshvutla@ti.com>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        Grygorii Strashko <grygorii.strashko@ti.com>,
-        Faiz Abbas <faiz_abbas@ti.com>
-References: <20210416114245.24829-1-a-govindraju@ti.com>
-From:   Aswath Govindraju <a-govindraju@ti.com>
-Message-ID: <2ac62e0b-58e0-0a5c-06c9-c2d5052c7a5d@ti.com>
-Date:   Mon, 10 May 2021 11:01:22 +0530
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+        id S229998AbhEJGHP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 10 May 2021 02:07:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35726 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229608AbhEJGHO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 10 May 2021 02:07:14 -0400
+Received: from mail-pg1-x529.google.com (mail-pg1-x529.google.com [IPv6:2607:f8b0:4864:20::529])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 438DDC061573
+        for <netdev@vger.kernel.org>; Sun,  9 May 2021 23:06:10 -0700 (PDT)
+Received: by mail-pg1-x529.google.com with SMTP id m37so12528466pgb.8
+        for <netdev@vger.kernel.org>; Sun, 09 May 2021 23:06:10 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=MDrcpXE39hK+tsy+zeJ9NcnfUtXm+Fj2OZgopVYIL0c=;
+        b=a4k8t596jRiGiHvZ3K9iDz5sTR7VxyAB6dhL5+66qQchlvRyybuzfPcEgu3mErhetO
+         sRGV2scP9qoVnV7zobRdH8j4p2CAHFm5D7KizyW267aRqlRFEy7sYCcruH9+5zj5BH71
+         Uip2ZkTlM/yMTiCmBxx4lGSDZqexb2VIFjdTCUwMoacrvhf1UjKS3wHQ5ZVHg6BeNmie
+         Mllfq7Xh2Iom/Gc9rLPnnmJO305FxGiuPMktkhi66GJ3O8VHpdv5qNowLBtp2Fv4Z22T
+         ThPHreJeAGQFbiLRxL0GZu7CfOqC6YrfjF53myFmJbWQzKKj5ir9AitBShFvMsKvTRNP
+         jFOg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=MDrcpXE39hK+tsy+zeJ9NcnfUtXm+Fj2OZgopVYIL0c=;
+        b=EgeWK2vVVjdvF10o+GbU5HkrovNp/if9Lu/X5Yyd/VBWCVOW2kMvK0Gh/x0Jxt87OV
+         +SZzq9lr8V83DxWbUQq7I+6uPmS6y/Jn/zsanPcVmrnIzb6HQ49PKezqNgu4vrWjQhcP
+         Ya2MRUSz7bzgI+WtuSBu25ljQUPVQ22dgtb+Kgox/cFsIrufRnSuOEW/W8EFDX7kjvq+
+         B8Qdv8ZfjpUKSYNEq1yod9lAdoVOkLKVJyvdYTMvNyZid64QHS519wa+rECVsGFpaP6m
+         beBMFCPETM7egvtNfIqYDk7tWSI66shPbugmkyrS/7ybFvAdtMs76VUQ72xmxa5w1Nhf
+         hTVQ==
+X-Gm-Message-State: AOAM532VHIK2uBnX2JIYpf4EgU3nty1RkcItzBtQ7bQHmF4GW2k8zbRc
+        r0vBNN9rtrcca8qSTDctj0fbbR66U6a+1H0f3o8=
+X-Google-Smtp-Source: ABdhPJyI5s8NZwfuKDpEZ8b6Fp2u5on+enRQ4oHGe86WgJBiFubYi63j4o4IlmRCWCnLfYIus4gTKeOu0wdd5AuRwMU=
+X-Received: by 2002:a62:1b97:0:b029:24e:44e9:a8c1 with SMTP id
+ b145-20020a621b970000b029024e44e9a8c1mr24125765pfb.19.1620626769732; Sun, 09
+ May 2021 23:06:09 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <20210416114245.24829-1-a-govindraju@ti.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
-To:     unlisted-recipients:; (no To-header on input)
+References: <20210423100446.15412-1-magnus.karlsson@gmail.com> <75d0a1d13a755bc128458c0d43f16d54fe08051e.camel@intel.com>
+In-Reply-To: <75d0a1d13a755bc128458c0d43f16d54fe08051e.camel@intel.com>
+From:   Magnus Karlsson <magnus.karlsson@gmail.com>
+Date:   Mon, 10 May 2021 08:06:00 +0200
+Message-ID: <CAJ8uoz0Pgfn8kai34_MFGYv3m7c24bpo4DhjZ8oLgd4zaGMWsg@mail.gmail.com>
+Subject: Re: [PATCH intel-net 0/5] i40e: ice: ixgbe: ixgbevf: igb: add correct
+ exception tracing for XDP
+To:     "Nguyen, Anthony L" <anthony.l.nguyen@intel.com>
+Cc:     "intel-wired-lan@lists.osuosl.org" <intel-wired-lan@lists.osuosl.org>,
+        "Karlsson, Magnus" <magnus.karlsson@intel.com>,
+        "Fijalkowski, Maciej" <maciej.fijalkowski@intel.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "brouer@redhat.com" <brouer@redhat.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi all,
+On Sat, May 8, 2021 at 12:58 AM Nguyen, Anthony L
+<anthony.l.nguyen@intel.com> wrote:
+>
+> On Fri, 2021-04-23 at 12:04 +0200, Magnus Karlsson wrote:
+> > Add missing exception tracing to XDP when a number of different
+> > errors
+> > can occur. The support was only partial. Several errors where not
+> > logged which would confuse the user quite a lot not knowing where and
+> > why the packets disappeared.
+> >
+> > This patch set fixes this for all Intel drivers with XDP support.
+> >
+> > Thanks: Magnus
+>
+> This doesn't apply anymore with the 5.13 patches. It looks like your
+> "optimize for XDP_REDIRECT in xsk path" patches are conflicting with
+> some of these. Did you want to rework them?
 
-On 16/04/21 5:12 pm, Aswath Govindraju wrote:
-> The following series of patches add support for implementing the
-> transceiver as a phy of m_can_platform driver.
-> 
-> TCAN1042 has a standby signal that needs to be pulled high for
-> sending/receiving messages[1]. TCAN1043 has a enable signal along with
-> standby signal that needs to be pulled up for sending/receiving
-> messages[2], and other combinations of the two lines can be used to put the
-> transceiver in different states to reduce power consumption. On boards
-> like the AM654-idk and J721e-evm these signals are controlled using gpios.
-> 
-> These gpios are set in phy driver, and the transceiver can be put in
-> different states using phy API. The phy driver is added in the series [3].
-> 
-> This patch series is dependent on [4].
-> 
-> changes since v2:
-> - changed dev_err to dev_err_probe in patch 2
-> - used mcan_class instead of priv to assign max bit rate
-> - Picked up  Rob Herring's acked-by for patch 1
-> 
-> changes since v1:
-> - Used the API devm_phy_get_optional() instead of 
->   devm_of_phy_get_optional_by_index()
-> > [1] - https://www.ti.com/lit/ds/symlink/tcan1042h.pdf
-> [2] - https://www.ti.com/lit/ds/symlink/tcan1043-q1.pdf
-> [3] - https://lore.kernel.org/patchwork/project/lkml/list/?series=495511
-> [4] - https://lore.kernel.org/patchwork/patch/1413286/
-> 
+I will rebase them and resubmit.
 
-Posted v4 for this series after adding phy_power_off in the path when
-there is an error.
-
-Thanks,
-Aswath
-
-> Faiz Abbas (2):
->   dt-bindings: net: can: Document transceiver implementation as phy
->   can: m_can: Add support for transceiver as phy
-> 
->  .../devicetree/bindings/net/can/bosch,m_can.yaml    |  3 +++
->  drivers/net/can/m_can/m_can.c                       | 10 ++++++++++
->  drivers/net/can/m_can/m_can.h                       |  2 ++
->  drivers/net/can/m_can/m_can_platform.c              | 13 +++++++++++++
->  4 files changed, 28 insertions(+)
-> 
-
+> Thanks,
+> Tony
+>
+> > Magnus Karlsson (5):
+> >   i40e: add correct exception tracing for XDP
+> >   ice: add correct exception tracing for XDP
+> >   ixgbe: add correct exception tracing for XDP
+> >   igb add correct exception tracing for XDP
+> >   ixgbevf: add correct exception tracing for XDP
+> >
+> >  drivers/net/ethernet/intel/i40e/i40e_txrx.c      |  7 ++++++-
+> >  drivers/net/ethernet/intel/i40e/i40e_xsk.c       |  7 ++++++-
+> >  drivers/net/ethernet/intel/ice/ice_txrx.c        | 12 +++++++++---
+> >  drivers/net/ethernet/intel/ice/ice_xsk.c         |  7 ++++++-
+> >  drivers/net/ethernet/intel/igb/igb_main.c        | 10 ++++++----
+> >  drivers/net/ethernet/intel/ixgbe/ixgbe_main.c    | 16 ++++++++----
+> > ----
+> >  drivers/net/ethernet/intel/ixgbe/ixgbe_xsk.c     | 13 ++++++++-----
+> >  .../net/ethernet/intel/ixgbevf/ixgbevf_main.c    |  3 +++
+> >  8 files changed, 52 insertions(+), 23 deletions(-)
+> >
+> >
+> > base-commit: bb556de79f0a9e647e8febe15786ee68483fa67b
+> > --
+> > 2.29.0
