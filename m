@@ -2,201 +2,142 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8883C3792AE
-	for <lists+netdev@lfdr.de>; Mon, 10 May 2021 17:29:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E5D963792CE
+	for <lists+netdev@lfdr.de>; Mon, 10 May 2021 17:34:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232389AbhEJPaF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 10 May 2021 11:30:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47836 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234913AbhEJP1n (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 10 May 2021 11:27:43 -0400
-Received: from mail-il1-x136.google.com (mail-il1-x136.google.com [IPv6:2607:f8b0:4864:20::136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D02C8C04BF0F
-        for <netdev@vger.kernel.org>; Mon, 10 May 2021 08:09:57 -0700 (PDT)
-Received: by mail-il1-x136.google.com with SMTP id r5so14360705ilb.2
-        for <netdev@vger.kernel.org>; Mon, 10 May 2021 08:09:57 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=8kTuByNgyMtrEkhRj3rWSQu3NsuZi1QL5Z6zDTh5OHQ=;
-        b=A+/BJpDmXlX7Zxf9C3GmO/6Cff8NswFavsQVfyVKuYdl/c3epGlRJqVEHYXh2728dB
-         I3F4fguiCdD4w208QrJxXFvxvHPxITJ0L4vx7avNu92Jgrj0n1AeUwsJos1pSij9T2Cz
-         uodfrNc17m/O/J/sZCi/TXyC3/tpAQkiTbnt5CIOeR98A47W53ijsQ3eTV60uwHbGhUJ
-         g/0DhRFO5JA/lDBX5zvmDi2x8lANnXjNRRnKtTAmQu8lrNu194BI9Ez3UKFPxbppXPue
-         fCS1l0Mr/2tmkk77Pg6CMobzHlNDK3FHCypRlyisOANU3VmdAlE1Rw2o8lR4pEJdOx1S
-         785w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=8kTuByNgyMtrEkhRj3rWSQu3NsuZi1QL5Z6zDTh5OHQ=;
-        b=e9xEQTN+YA/wWZS/5awkDVCboNO1X7uJpuDw13qUxm2NCFusEVzfpk2lEb17rY3Z3V
-         B3CnBjwTpCmt5rH5GkeIqx40MliOAebH9I4N+IqW8mM/etUceZ4TngwPWSV70uMSRhVl
-         yPzbXjALQkBHDM00UsGeiiYveZG+FyxI3xNbcjra86lPa22/ewhYYRi9D8XaYpP/nkAs
-         7Dydg4yuQ3Y0ulYHHLHnrS46owH6NIq+Fa6uzw7LL0YtpWd1g9CrneyPfE6WmahyvvxY
-         Wc6FXuqTetP+MbCsNFZ0YNKMc8r2moSkzKw/w2YloG3qg29PumUA4JxkzNlZ1IaSIKfR
-         47QA==
-X-Gm-Message-State: AOAM532rLxnioeJoCihri59QZn/D9lFa8szMyWKAHdMCebOyuSeHcffv
-        Z1pLSvSoy6+CC8H1iPei89uclBdAqr5ekCb0GF+PP/M6cm4AYQ==
-X-Google-Smtp-Source: ABdhPJxmjBRNQzngOUFhRaQFafW2Gd1wm/nXW90UrrVlwLGgZK2EPWe9H03kGpYlnmL/HIYbtQdH7qLrywY0W01L3dU=
-X-Received: by 2002:a05:6e02:d41:: with SMTP id h1mr21424821ilj.0.1620659397232;
- Mon, 10 May 2021 08:09:57 -0700 (PDT)
+        id S235641AbhEJPgA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 10 May 2021 11:36:00 -0400
+Received: from mail-eopbgr130053.outbound.protection.outlook.com ([40.107.13.53]:37541
+        "EHLO EUR01-HE1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S231562AbhEJPfx (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 10 May 2021 11:35:53 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=TkUec6q3lEjPAtspoBm3KBYhBZiLWIq+xoyLZufn95Abv4aTXtof+ceIbCkHAI4YkVI09HNgme6JP6VSCQ45b3Zs4+Re9Hq+tbXnbQgrQMvcS9EZSSQDPPztTsNXATSlrAxIWpbxXOmkiV0AD6GLE1AzCs2EW1C8kTh4x4LhSIufWjOVkmQEAV5x5CXhjWJ4W0KDfqaOnRhb8q8RMbMfRU5EHXh2UV0jWZ9cuoLkK/3aWg1c5VEJrfMrSdi7FV132Tiv42T+IBrvlHVQETY8dm42wgf9Z9pc9TcjPpma34Dc7+f76Wzm0rPFdjimLeRtgVeXOlldj74HYChTxepGYA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=zcSApOdhKJo6LwiqaC4jRmBQ35dCNWa4mdRGCCIrJ6c=;
+ b=i41G7FcJz+AdFyQdoJ8w9X3imvZ96XmxGye20HSd+avEpgdHg/DFulAh5BtW5czxXq9wQ/1g8NWecGksGFF599Dy7cklHQEo3TVlqpALWe2NmZ3szPr4YHTdOYKSDXz1QLLIVahOHls0vb5S9Q3J4CYHOKI/WhcxeBRHgFstcOJnN5UOZeI71wJkSHrUc/Y/gazydybnI3ZSy+KsEIqzVmhc+2DdEJoTxYjCMtNzNwG2M4wxzn1E/2EhtW2ublWwVXcFZzxFYp73oVlmj9YuP2J1XpJ6uQ8VeYPYslXSJT1iAqoOxXvXqM7dxbaYenvZBPbeFISbF2WdqUxUiRjbSg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=oss.nxp.com; dmarc=pass action=none header.from=oss.nxp.com;
+ dkim=pass header.d=oss.nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=NXP1.onmicrosoft.com;
+ s=selector2-NXP1-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=zcSApOdhKJo6LwiqaC4jRmBQ35dCNWa4mdRGCCIrJ6c=;
+ b=bN6AURL+namsvA/319IHvN8ZYvCPJZ18drVJtuw+SnHzcHRwYi89XgrlaOJxXsFm7mR+m5jeOLnAPvFrajVlubkALrpkcqvBUDSqWoQdB9RFYdnJHvut1KlLQOHA7f7G/RNHk8+8QF3WBUNRHm8jUpDw++sMsOBHPQUSsrXgLGM=
+Authentication-Results: lunn.ch; dkim=none (message not signed)
+ header.d=none;lunn.ch; dmarc=none action=none header.from=oss.nxp.com;
+Received: from VI1PR04MB5101.eurprd04.prod.outlook.com (2603:10a6:803:5f::31)
+ by VI1PR0402MB3470.eurprd04.prod.outlook.com (2603:10a6:803:10::11) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4108.26; Mon, 10 May
+ 2021 15:34:45 +0000
+Received: from VI1PR04MB5101.eurprd04.prod.outlook.com
+ ([fe80::34f6:6011:99b7:ec68]) by VI1PR04MB5101.eurprd04.prod.outlook.com
+ ([fe80::34f6:6011:99b7:ec68%5]) with mapi id 15.20.4108.031; Mon, 10 May 2021
+ 15:34:45 +0000
+From:   "Radu Pirea (NXP OSS)" <radu-nicolae.pirea@oss.nxp.com>
+To:     andrew@lunn.ch, hkallweit1@gmail.com, linux@armlinux.org.uk,
+        davem@davemloft.net, kuba@kernel.org, richardcochran@gmail.com
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        "Radu Pirea (NXP OSS)" <radu-nicolae.pirea@oss.nxp.com>
+Subject: [PATCH v2 0/2] Add PTP support for TJA1103
+Date:   Mon, 10 May 2021 18:34:31 +0300
+Message-Id: <20210510153433.224723-1-radu-nicolae.pirea@oss.nxp.com>
+X-Mailer: git-send-email 2.31.1
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [89.45.21.213]
+X-ClientProxiedBy: AM4PR0202CA0011.eurprd02.prod.outlook.com
+ (2603:10a6:200:89::21) To VI1PR04MB5101.eurprd04.prod.outlook.com
+ (2603:10a6:803:5f::31)
 MIME-Version: 1.0
-References: <421cc86c-b66f-b372-32f7-21e59f9a98bc@kontron.de>
- <CAA93jw6bWOU3wX5tubkTzOFxDMWXdgmBqnGPAnzZKVVFQTEUDQ@mail.gmail.com> <c9f26a11-bb53-e3aa-606c-a592365a9a1e@kontron.de>
-In-Reply-To: <c9f26a11-bb53-e3aa-606c-a592365a9a1e@kontron.de>
-From:   Dave Taht <dave.taht@gmail.com>
-Date:   Mon, 10 May 2021 08:09:46 -0700
-Message-ID: <CAA93jw5Ab+ZVq48JAcA0s_=fLBJ4OCmVfsuK6=K3A24_k0tyYg@mail.gmail.com>
-Subject: Re: i.MX8MM Ethernet TX Bandwidth Fluctuations
-To:     Frieder Schrempf <frieder.schrempf@kontron.de>
-Cc:     NXP Linux Team <linux-imx@nxp.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from localhost.localdomain (89.45.21.213) by AM4PR0202CA0011.eurprd02.prod.outlook.com (2603:10a6:200:89::21) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4108.25 via Frontend Transport; Mon, 10 May 2021 15:34:43 +0000
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 9c55e341-1f94-49f1-e48b-08d913c922f4
+X-MS-TrafficTypeDiagnostic: VI1PR0402MB3470:
+X-MS-Exchange-SharedMailbox-RoutingAgent-Processed: True
+X-MS-Exchange-Transport-Forked: True
+X-Microsoft-Antispam-PRVS: <VI1PR0402MB34708169F6EED2121C0332B69F549@VI1PR0402MB3470.eurprd04.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:8273;
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: rcUGbdEzmGhJ8MKTqvO4WuBBNa4AobNBK4NNt2ALS10hwY72t0PXUIep/vjpPSEuxID8gkx+5RWy/fgZB9B2Cy7ywoAA5Z9yzOU56BYfrzHJ9FS/FjZ93hAJsFg1sg4Fv7oxzqZH4lp7X4vu5hRdNe9trYfoFjVQL06g2GEjfPOzUS3PNIaui8x/9O9sGhTxHLuC97dzJFlAU44V3I4VFO+uKMUSKjIjszMaBBD+TRfvscP5zg+xa6lvC+ZukL8vLEwl/ajMevbMWlLMpSvpwspWk63wrGLQy9qWsKwAGr+gQa/U0O4YoeBFiAFDIPvYTaXEDDgbLFPQkp2ENwzgVdgLzb9q2GxCCs/Ffb3uV8EYBjoXQOpj0EXG03qt5rpFsqrdhOP8eNtPEf9wskazYw9NviyOlNBdt7R1cOVxPeNtLyl7/KfqHWhfohMtpTK5S+X+qck7ApzRwiKqoTlBOEdRh0I2ee/0mIigtRQpZ1Q5Wki8fPOEYsPAp5V8L6dXJ7sVu9uyVEbw1tccwbHh0menXolmuDgllFC3twuVLLKUpVzTyhTZL7CEbru1twJFpRbcdBL55VIGpQIMHb6LLNc0Yi57okO9b2KBNKaQMf+laShAERnuTjfzV49fl4FzTFHjHFH45PZLCO97qKQ2Bi0yutwTAsjkPXi2xiQ5YdynFPUn2vDnmHfan1dHkniah4WCntPE4x85EFy+RkU2gg==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5101.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(376002)(136003)(366004)(346002)(396003)(39860400002)(478600001)(66556008)(66946007)(86362001)(66476007)(8936002)(5660300002)(4326008)(6666004)(38350700002)(8676002)(1076003)(52116002)(16526019)(186003)(6512007)(6486002)(316002)(956004)(38100700002)(2906002)(6506007)(83380400001)(26005)(2616005)(69590400013)(41350200001);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData: =?us-ascii?Q?JXS/ljaSnZEjwg7goeCOF4hgJYyuRRtqunMFCi28suLhehCUeR6eFwiF9274?=
+ =?us-ascii?Q?oI7MV77rx4FVtfmi517OoJ4biOCBZa6bFr2C7CNdg5Bkmvlxa41pg936OM4m?=
+ =?us-ascii?Q?dZVBnJHP1d/sC46sP7bARxvVwaujMEAFDZ8f+IoiNL3GBplVtEYxJFBhDQVq?=
+ =?us-ascii?Q?c8e+7VsOvskFOMGilh6BRhYbkVi2dQHccMC1bP0vvNBwOIFjRRSladb5alty?=
+ =?us-ascii?Q?cuJuT/6QXIY5106De0DFs1IyYhHX63io5FovSmdGOzNr5K3xw4ofnoY3GbUJ?=
+ =?us-ascii?Q?oEkBQYjk7tzriA8Q2k46dQWMWje8yej+gydQkEH9/mS/3wzKh1CSOgn7Ibm9?=
+ =?us-ascii?Q?TAtZC2Q4XptLQJ/sRZ0EKSDNdGuvMiyPgvL7m0BpPQnQl5Gowb4qqsaKa+ZL?=
+ =?us-ascii?Q?bqMMyxtMFVigc8IhGNfSAaFRqvk72hDlY7A9/Nu+kdPI0NJ8i2SfW6WJ/EFl?=
+ =?us-ascii?Q?/dd/m1uB38pjweLqAdCoL3/Jyd1RdnGE1HkHE2CJSiNRBMicaJzCkbS0nEwd?=
+ =?us-ascii?Q?ph/KD/O+j20+I9RtxOerRV8iPH+zXjd1cMd7LqFaAtN5JWns43L1iO1tSvi0?=
+ =?us-ascii?Q?9uQyNsXIQKDB3Z/CBKNGDwwHR0uYj9q6uTXiyDufkKZlK0/kXcxzsfX/rx6Q?=
+ =?us-ascii?Q?F8J8K2z2ukK0drNfLOzK6PdSt7ua953JJ2N6tmB3JGsjHH2rF7RBZCza64kL?=
+ =?us-ascii?Q?zyoyRfi4v9/CeOrSvCxlzBIE3dPQ/ZCWWS5qud/ejVwLeJlS0pLPdCU6MD8O?=
+ =?us-ascii?Q?BGjk11bvZPfVjVmk6aEIK9IgLFt2w4h32i+8JQC/WTWjFlpD7FkigwOHWIsT?=
+ =?us-ascii?Q?lR2ejHJCdWPVvTaKcKF26JxJGcziUv1r+DHUJmbF3P05CZU0x1k1mU6nME27?=
+ =?us-ascii?Q?1KRW1lPqoEZbbyvod5mxF5phnmk3EphGySWDobB0j2DjGgxIkA3af2ky1gMy?=
+ =?us-ascii?Q?93ZF1m6b5kEHDShsTTjpUHI5Q9qZ5jUEmD9hYOOTjX5wr3wGwMplV2IhTGC7?=
+ =?us-ascii?Q?cq/m6OcMRjyawuJECa59Oc3uHLuTIlwQ4zmC9At5iUEzFTxzDNBA822dqGgO?=
+ =?us-ascii?Q?ABbLmFsplAClRVuou/eRhh4BhZaMaPh6rVt4Ry7fWP+XwzcVSFqzbXm3S5bV?=
+ =?us-ascii?Q?ufTrXHkh3ZAznZekub2V/kOEgy3TrVkbo7pH3SQC1otfQvI1RgCAhAhYlT6O?=
+ =?us-ascii?Q?V2kP+l0L5ZkTMENwdviujM50RL/gnA5xPbn2jDBZ7movrPCswjoDmtvPHhY9?=
+ =?us-ascii?Q?rcQO9f23MBYFt+KZU9aQxFdIiP7PxJasqnOsviXvoOxrlCIiAIeQse/2V5qU?=
+ =?us-ascii?Q?LJAsIHebpmror1C8ek7r3Ja3?=
+X-OriginatorOrg: oss.nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 9c55e341-1f94-49f1-e48b-08d913c922f4
+X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5101.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 10 May 2021 15:34:44.9762
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: HGYx0hREaUzYuS09kzwhUbgzZQyHh+0gqTs1rdl6m+pGzdlF8nmCOUPj3GxqGC+S75q896L8sixvf+NPCKjgPTFZnufRxW6/dOdjeBXapP8=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR0402MB3470
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, May 10, 2021 at 5:49 AM Frieder Schrempf
-<frieder.schrempf@kontron.de> wrote:
->
-> Hi Dave,
->
-> thanks for the input. I really don't know much about the networking stack=
-, so at the moment I can only provide the values requested below, without k=
-nowing what it really means.
->
-> What's so strange is, that the performance is actually good in general an=
-d only "snaps" to the "bad" state and back after some time or after repeate=
-d test runs.
->
-> And by the way, the ethernet driver in use is the FEC driver at drivers/n=
-et/ethernet/freescale/fec_main.c.
+Hi,
 
-It doesn't look (from a quick grep) that that driver ever got BQL support.
+This is the PTP support for TJA1103.
+The RX timestamp is found in the reserved2 field of the PTP package.
+The TX timestamp has to be read from the phy registers. Reading of the
+timestamp works with interrupts or with polling(that starts when
+.nxp_c45_txtstamp is called).
+The implementation of .adjtime is done by read modify write because there
+is no way to atomically add/subtract a constant from the clock value.
 
-davet@Georges-MacBook-Pro freescale % grep sent_queue *.c
-gianfar.c:    netdev_tx_sent_queue(txq, bytes_sent);
-ucc_geth.c:    netdev_sent_queue(dev, skb->len);
+I've moved scaled_ppm_to_ppb function from ptp_clock.c to
+ptp_clock_kernel.h in  order to be able to build the driver without
+PTP_1588_CLOCK=y.
 
-If you really care about bidirectional throughput, having enormous
-fifo buffers buried deep in the driver has a tendency to hurt that a
-lot and has the symptoms you describe, however not as persistent, so I
-would suspect another bug involving gso or gro to start with...
+Radu P.
 
-BUT: I note that the effort in implementing bql and testing the packet
-size accounting usually shows up other problems in the tx/rx ring, GRO
-or NAPI code, and thus is worthwhile exercise that might find where
-things are getting stuck.
+Changes v2:
+ - added unlocked version for the functions nxp_c45_ptp_settime64 and
+ nxp_c45_ptp_gettimex64
+ - use only one lock for .gettimex64 and .settime64
+ - added the same lock for .adjfine, .adjtime and nxp_c45_get_hwtxts
+ - moved the reading of the hw ts outside of the loop where the RX ts are
+ reconstructed
 
-It doesn't appear your kernel has fq_codel qdisc support, either,
-which means big dumb fifos at that layer, drastically affecting bidir
-throughput. also.
+Radu Pirea (NXP OSS) (2):
+  ptp: ptp_clock: make scaled_ppm_to_ppb static inline
+  phy: nxp-c45-tja11xx: add timestamping support
 
-Since the nxp team is cc'd this is a preso I'd given broadcom back in 2018:
+ drivers/net/phy/nxp-c45-tja11xx.c | 531 +++++++++++++++++++++++++++++-
+ drivers/ptp/ptp_clock.c           |  21 --
+ include/linux/ptp_clock_kernel.h  |  34 +-
+ 3 files changed, 556 insertions(+), 30 deletions(-)
 
-http://www.taht.net/~d/broadcom_aug9_2018.pdf
+-- 
+2.31.1
 
-And the relevant lwn articles from, like, 2011:
-
-https://lwn.net/Articles/454390/
-
-https://lwn.net/Articles/469652/
-
-
-If someone wants to send me a board to play with...
-
-> On 06.05.21 16:53, Dave Taht wrote:
-> > I am a big fan of bql - is that implemented on this driver?
-> >
-> > cd /sys/class/net/your_device_name/queues/tx-0/byte_queue_limits/
-> > cat limit
->
-> ~# cat /sys/class/net/eth0/queues/tx-0/byte_queue_limits/limit
-> 0
->
-> >
-> > see also bqlmon from github
-> >
-> > is fq_codel running on the ethernet interface? the iperf bidir test
-> > does much better with that in place rather than a fifo. tc -s qdisc
-> > show dev your_device
->
-> ~# tc -s qdisc show dev eth0
-> RTNETLINK answers: Operation not supported
-> Dump terminated
->
-> Best regards
-> Frieder
->
-> >
-> > Also I tend to run tests using the flent tool, which will yield more
-> > data. Install netperf and irtt on the target, flent, netperf, irtt on
-> > the test driver box...
-> >
-> > flent -H the-target-ip -x --socket-stats -t whateveryouaretesting rrul
-> > # the meanest bidir test there
-> >
-> > flent-gui *.gz
-> >
-> > On Thu, May 6, 2021 at 7:47 AM Frieder Schrempf
-> > <frieder.schrempf@kontron.de> wrote:
-> >>
-> >> Hi,
-> >>
-> >> we observed some weird phenomenon with the Ethernet on our i.MX8M-Mini=
- boards. It happens quite often that the measured bandwidth in TX direction=
- drops from its expected/nominal value to something like 50% (for 100M) or =
-~67% (for 1G) connections.
-> >>
-> >> So far we reproduced this with two different hardware designs using tw=
-o different PHYs (RGMII VSC8531 and RMII KSZ8081), two different kernel ver=
-sions (v5.4 and v5.10) and link speeds of 100M and 1G.
-> >>
-> >> To measure the throughput we simply run iperf3 on the target (with a s=
-hort p2p connection to the host PC) like this:
-> >>
-> >>         iperf3 -c 192.168.1.10 --bidir
-> >>
-> >> But even something more simple like this can be used to get the info (=
-with 'nc -l -p 1122 > /dev/null' running on the host):
-> >>
-> >>         dd if=3D/dev/zero bs=3D10M count=3D1 | nc 192.168.1.10 1122
-> >>
-> >> The results fluctuate between each test run and are sometimes 'good' (=
-e.g. ~90 MBit/s for 100M link) and sometimes 'bad' (e.g. ~45 MBit/s for 100=
-M link).
-> >> There is nothing else running on the system in parallel. Some more inf=
-o is also available in this post: [1].
-> >>
-> >> If there's anyone around who has an idea on what might be the reason f=
-or this, please let me know!
-> >> Or maybe someone would be willing to do a quick test on his own hardwa=
-re. That would also be highly appreciated!
-> >>
-> >> Thanks and best regards
-> >> Frieder
-> >>
-> >> [1]: https://eur04.safelinks.protection.outlook.com/?url=3Dhttps%3A%2F=
-%2Fcommunity.nxp.com%2Ft5%2Fi-MX-Processors%2Fi-MX8MM-Ethernet-TX-Bandwidth=
--Fluctuations%2Fm-p%2F1242467%23M170563&amp;data=3D04%7C01%7Cfrieder.schrem=
-pf%40kontron.de%7C157b00b2686447fd9a7108d9109ecbc6%7C8c9d3c973fd941c8a2b164=
-6f3942daf1%7C0%7C0%7C637559096478620665%7CUnknown%7CTWFpbGZsb3d8eyJWIjoiMC4=
-wLjAwMDAiLCJQIjoiV2luMzIiLCJBTiI6Ik1haWwiLCJXVCI6Mn0%3D%7C1000&amp;sdata=3D=
-SFT%2Boic9C1sirw%2BT1o1qRNNUe4H9bk2FHkLQpdy489I%3D&amp;reserved=3D0
-> >
-> >
-> >
-
-
-
---=20
-Latest Podcast:
-https://www.linkedin.com/feed/update/urn:li:activity:6791014284936785920/
-
-Dave T=C3=A4ht CTO, TekLibre, LLC
