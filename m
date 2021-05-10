@@ -2,43 +2,44 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9CDB33799EE
-	for <lists+netdev@lfdr.de>; Tue, 11 May 2021 00:20:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 411C33799F3
+	for <lists+netdev@lfdr.de>; Tue, 11 May 2021 00:21:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232938AbhEJWVc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 10 May 2021 18:21:32 -0400
-Received: from mail.kernel.org ([198.145.29.99]:58284 "EHLO mail.kernel.org"
+        id S233206AbhEJWVt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 10 May 2021 18:21:49 -0400
+Received: from mail.kernel.org ([198.145.29.99]:58302 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231905AbhEJWVS (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S232009AbhEJWVS (ORCPT <rfc822;netdev@vger.kernel.org>);
         Mon, 10 May 2021 18:21:18 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id 132E761554;
+Received: by mail.kernel.org (Postfix) with ESMTPS id 24F2A61585;
         Mon, 10 May 2021 22:20:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1620685212;
-        bh=4oY1apo5/J7SvKAH0z7O3N0gLfuwPOnbbw0zclqHahc=;
+        bh=n5YjMWaeeJkUi6Bux0sq9OLNsVytDfxk91Vw8Qg+DqY=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=netWBYpNUpGUfqvQSQN3jF9KKDqXewPenHuUtCSq89fuwJ+FlGkN4ljg2ypZ1dmbE
-         HqpJK/OFUe8Vj1sCw+zMlQfh9s2A067q1SKOqvL1P8DjzTepsWs3Myp4Bqfuuo00vL
-         4mVorjipFXDHTKePG2J64uUTgfMG9olmd2+Y0y0vAXVu6fiXBZ47eC1RKhAC6IL/Qi
-         KrIcz01lhizFr8vK6upvKDamxV76IVV/c8I6nvXKvXZRt41IMvk/DOBZ/Mgls0deom
-         ZYM0MJSCZqJCg98lqkvqqRJfefFZj+g1SA+VYaivdESYoK1sbmYAqvKU9FxIi5mHq3
-         M+5IfJKe3sfFg==
+        b=tet7lBEmswNS92T2EIe4D6hJmJ3cksGYTTMCGn1x1l4KrEGI44LDrPaUP/KXdSFAs
+         lGaO5MozX9Ip8yjRVZ6CqHbHdbV1Lv0bzYDcmNgkVq+I3bFSBh9pLHr3lrx5zCnIAY
+         pJeQTpHPDBuCzphUhRs+7AWsfqA9EtZc2bQlK1Q9GUETLo7n1k686Q7JrKzirDHS4h
+         cmpWPaPrzYVDBS5QTNQ+rmyBcCijkviIZOlj+SqUWJSKGDi/XadKW/WySaZ68BwsC/
+         xqYby41KuKdgEy7ogpf6uxbrzQpx1QqpNDzqPQdKDirMYX5YSjwDLVzIdR0MG6+W1Y
+         zwL6N8efbyQow==
 Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 05BE760A6F;
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 1B4AF60CA9;
         Mon, 10 May 2021 22:20:12 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH v2 0/2] Add PTP support for TJA1103
+Subject: Re: [PATCH net-next v1 1/4] net: mvpp2: Put fwnode in error case during
+ ->probe()
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <162068521201.17141.3763962700851866302.git-patchwork-notify@kernel.org>
+Message-Id: <162068521210.17141.12537485843274435664.git-patchwork-notify@kernel.org>
 Date:   Mon, 10 May 2021 22:20:12 +0000
-References: <20210510153433.224723-1-radu-nicolae.pirea@oss.nxp.com>
-In-Reply-To: <20210510153433.224723-1-radu-nicolae.pirea@oss.nxp.com>
-To:     Radu Pirea (NXP OSS) <radu-nicolae.pirea@oss.nxp.com>
-Cc:     andrew@lunn.ch, hkallweit1@gmail.com, linux@armlinux.org.uk,
-        davem@davemloft.net, kuba@kernel.org, richardcochran@gmail.com,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20210510095808.3302997-1-andy.shevchenko@gmail.com>
+In-Reply-To: <20210510095808.3302997-1-andy.shevchenko@gmail.com>
+To:     Andy Shevchenko <andy.shevchenko@gmail.com>
+Cc:     davem@davemloft.net, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, mw@semihalf.com,
+        linux@armlinux.org.uk, kuba@kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
@@ -47,24 +48,28 @@ Hello:
 
 This series was applied to netdev/net-next.git (refs/heads/master):
 
-On Mon, 10 May 2021 18:34:31 +0300 you wrote:
-> Hi,
+On Mon, 10 May 2021 12:58:05 +0300 you wrote:
+> In each iteration fwnode_for_each_available_child_node() bumps a reference
+> counting of a loop variable followed by dropping in on a next iteration,
 > 
-> This is the PTP support for TJA1103.
-> The RX timestamp is found in the reserved2 field of the PTP package.
-> The TX timestamp has to be read from the phy registers. Reading of the
-> timestamp works with interrupts or with polling(that starts when
-> .nxp_c45_txtstamp is called).
-> The implementation of .adjtime is done by read modify write because there
-> is no way to atomically add/subtract a constant from the clock value.
+> Since in error case the loop is broken, we have to drop a reference count
+> by ourselves. Do it for port_fwnode in error case during ->probe().
+> 
+> Fixes: 248122212f68 ("net: mvpp2: use device_*/fwnode_* APIs instead of of_*")
+> Cc: Marcin Wojtas <mw@semihalf.com>
+> Signed-off-by: Andy Shevchenko <andy.shevchenko@gmail.com>
 > 
 > [...]
 
 Here is the summary with links:
-  - [v2,1/2] ptp: ptp_clock: make scaled_ppm_to_ppb static inline
-    https://git.kernel.org/netdev/net-next/c/9d9d415f0048
-  - [v2,2/2] phy: nxp-c45-tja11xx: add timestamping support
-    https://git.kernel.org/netdev/net-next/c/514def5dd339
+  - [net-next,v1,1/4] net: mvpp2: Put fwnode in error case during ->probe()
+    https://git.kernel.org/netdev/net-next/c/71f0891c84df
+  - [net-next,v1,2/4] net: mvpp2: Use device_get_match_data() helper
+    https://git.kernel.org/netdev/net-next/c/692b82c57f71
+  - [net-next,v1,3/4] net: mvpp2: Use devm_clk_get_optional()
+    https://git.kernel.org/netdev/net-next/c/cf3399b731d3
+  - [net-next,v1,4/4] net: mvpp2: Unshadow error code of device_property_read_u32()
+    https://git.kernel.org/netdev/net-next/c/584525554fd6
 
 You are awesome, thank you!
 --
