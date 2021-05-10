@@ -2,24 +2,24 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 092C937851E
-	for <lists+netdev@lfdr.de>; Mon, 10 May 2021 13:22:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 386673789D6
+	for <lists+netdev@lfdr.de>; Mon, 10 May 2021 13:52:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233239AbhEJK6p (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 10 May 2021 06:58:45 -0400
-Received: from mail.kernel.org ([198.145.29.99]:52794 "EHLO mail.kernel.org"
+        id S236588AbhEJLdA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 10 May 2021 07:33:00 -0400
+Received: from mail.kernel.org ([198.145.29.99]:45604 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S233884AbhEJKze (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 10 May 2021 06:55:34 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 7399661C26;
-        Mon, 10 May 2021 10:42:51 +0000 (UTC)
+        id S235869AbhEJLGk (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 10 May 2021 07:06:40 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id CAF786157E;
+        Mon, 10 May 2021 10:56:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1620643372;
+        s=korg; t=1620644206;
         bh=Ga0GcZJ15+mCFyWQygC1n0QxlS2LBSHB5Xti+h6bYng=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=WoKTXIEPe7kNFG3/6ElGn+c+9Q7mrsiWZrnQ23B9t5FnawjhwCQggqtCi8BDDWygp
-         nUYtBDGUlnYSyK4WIMRv9mL+gMud3GHJe6c+afPOLBn6z3L2dVtLnikbBjsZCdjARl
-         KhjQPw+fL18L2jIDGkPiCDvQ5tDPPg8C03NzVyDw=
+        b=uBfxkZLMa6T01w1HOGMxelaGbxFSm6gDSePY5FPpPrVxWKM9EGc31S0/V6ACiwep4
+         xanm7uz5yGWYYfNToVT7N5whjI/GJUhD//QEQE4U4pz9gLNjzKlM/8VIuDZJ7zA5Lj
+         gSuNnWP9b9ruT+Ko1B9ooWOQYAhnE6bv32q22+6I=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
@@ -33,12 +33,12 @@ Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Martin Kepplinger <martink@posteo.de>,
         Sebastian Krzyszkowiak <sebastian.krzyszkowiak@puri.sm>,
         Siva Rebbagondla <siva8118@gmail.com>, netdev@vger.kernel.org
-Subject: [PATCH 5.10 289/299] rsi: Use resume_noirq for SDIO
-Date:   Mon, 10 May 2021 12:21:26 +0200
-Message-Id: <20210510102014.466602818@linuxfoundation.org>
+Subject: [PATCH 5.11 331/342] rsi: Use resume_noirq for SDIO
+Date:   Mon, 10 May 2021 12:22:01 +0200
+Message-Id: <20210510102021.038993300@linuxfoundation.org>
 X-Mailer: git-send-email 2.31.1
-In-Reply-To: <20210510102004.821838356@linuxfoundation.org>
-References: <20210510102004.821838356@linuxfoundation.org>
+In-Reply-To: <20210510102010.096403571@linuxfoundation.org>
+References: <20210510102010.096403571@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
