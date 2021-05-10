@@ -2,254 +2,132 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D42703792EE
-	for <lists+netdev@lfdr.de>; Mon, 10 May 2021 17:41:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 67E5A3792F0
+	for <lists+netdev@lfdr.de>; Mon, 10 May 2021 17:44:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230479AbhEJPmi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 10 May 2021 11:42:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51558 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230002AbhEJPmc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 10 May 2021 11:42:32 -0400
-Received: from mail-ej1-x62f.google.com (mail-ej1-x62f.google.com [IPv6:2a00:1450:4864:20::62f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 71D1EC061574
-        for <netdev@vger.kernel.org>; Mon, 10 May 2021 08:41:26 -0700 (PDT)
-Received: by mail-ej1-x62f.google.com with SMTP id r9so25229081ejj.3
-        for <netdev@vger.kernel.org>; Mon, 10 May 2021 08:41:26 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=p9+0Nb64PBW1BL3+C5z03NpHOeyjqi882dANiQjwxyA=;
-        b=ZXzIzmRj7gOotc6e3smjZ17T0DatbzlAe6v/fKo30Vk7VvxXg6edjI8peGXb2aJR4v
-         RGefb0hosyF28W1WBEJ9OmR5XlvSOonGa5PflWMi4baXS1zFRjJ/kHY6H/mE0FXfClJi
-         Ayyy9GQy253WSax3uAs+xekXin+NncjyiNNm35gCO4uUli0dKEGS4P7zM7mXwv34LjUh
-         +MJQfhTjxAi6n+Hn2LXbcF4FOlWwlIecL3g5UYDlDLvozvaatbbYcu1xiPC5kwOgUYH4
-         Kya+1s4elzPuUgLKLsn8G165f+pq7ULrUyCtSFNrxM1J4vGTBWAP3swTpR+x93jqzEza
-         evAg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=p9+0Nb64PBW1BL3+C5z03NpHOeyjqi882dANiQjwxyA=;
-        b=FbNuv8DzWdsxLtNvFbrmQr2CYL1mog1btHoL9PFMLBxJ52prXFCnGp7l8zjWWH/z2c
-         0BcwIVX5jNfg3JducE0iiKpS3pSBS/24b68XJPlfZ+8cWKwcPEmt2hLbgkMd3XmqhmXi
-         OoelPuszhO63vxMbdBvyDfZHxMJKUYxPcWCGjtTR7L75WrgAfJOds0NLk1FhdEza+B25
-         ZwiLZ9t0mFUiOxbwKGVodhzs5+kpO5AxdNxsd1lZk9nYqIyyGSnfeGCkzBGCAb+wfe13
-         2wUAKlyv+vCPsLHlvgQcc3aU0Rf6RYz5tVhfTvQOVaI7TBHQavxs7vUdj14SVSrsPnxW
-         VkAA==
-X-Gm-Message-State: AOAM533TzmSEqiF7PG5o8GYhaPZnnK1gC5ZWX6TyLDytGeCvuZkJ7o1f
-        J7kdUqfZeQdhNsYvf9DROowYIfKku4waTG4C8wM=
-X-Google-Smtp-Source: ABdhPJwvBJ88WwiPMFCJZhMo6dl5lUVJY1eKwuyx0/TBJ07egd4em6bA8DmlDS4r1DvqHqUn37SQnyuFgbFaWPzJ2ks=
-X-Received: by 2002:a17:906:2b0c:: with SMTP id a12mr26180017ejg.473.1620661285028;
- Mon, 10 May 2021 08:41:25 -0700 (PDT)
-MIME-Version: 1.0
-References: <1620433768-31048-1-git-send-email-michael.chan@broadcom.com>
-In-Reply-To: <1620433768-31048-1-git-send-email-michael.chan@broadcom.com>
-From:   Alexander Duyck <alexander.duyck@gmail.com>
-Date:   Mon, 10 May 2021 08:41:14 -0700
-Message-ID: <CAKgT0Uep_dwLaG=dsSs9q0UuM3y_4_y7E60nqJMJ7B4WYtO8Rw@mail.gmail.com>
-Subject: Re: [PATCH net v2] bnxt_en: Fix and improve .ndo_features_check().
-To:     Michael Chan <michael.chan@broadcom.com>
-Cc:     David Miller <davem@davemloft.net>,
-        Netdev <netdev@vger.kernel.org>,
+        id S230479AbhEJPpk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 10 May 2021 11:45:40 -0400
+Received: from mail-bn8nam11on2078.outbound.protection.outlook.com ([40.107.236.78]:5857
+        "EHLO NAM11-BN8-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S230383AbhEJPpi (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 10 May 2021 11:45:38 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=kK4sqvLEJcbFBLM8z7JZJZcu6pXQPexXSd+ttap8E7adLqtx5q3hjjvB5vgWZx9QSjn4+X9mYjJB4sTf2LLyUB7zFQ1a62GKDuQ/bGGyjClWa0ae5vmnStHYXgfUIf33vu1qWAzdF9xx+JbT7EqwkLmp9Bfkmhs6Frq9cJpOxpwLjiz7HE9WbUyjXAJDZRTd16RxTUHW1518ktlkyLucMyOC0L7KxQlywmzT+gmUUwvEXiDCjhmNLjzkGR8HeHQ1qpGjAIWfJUED3Of97iApXJoMFJHIGyc7rxxlebxW3KKvOPgQs484e2DBmVi0MuzjpvuiDRoGVQBo9rODxbD1bg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=PY17iLIFSJTn+MMQUXbNaXm7CyWuNCiU9dsC20wQly4=;
+ b=bZ/8AB6VxUlUTRPW061Qda3VJtf4FuNWLtQP5gzQKPe1ciEscgIOUcOIKIprxIxhCQeMvYgRc2i03SzVYxsvSfAtGUOPuT6l7Xl51NYuHvOLV9MXm4syRHtGpBd6vwkKdDaCS4ox/NIxLwDwGRLCDi8W6zdfnKZXqRjkO2Z1Hfdc5xC+4o29nSi/L4BVVX0qLboXBvcg9UgaSoEatA/+MfuTV2ijYqnIJ04g2xV2YeIzDOBxOI+im/5Nmw2e2cOuZ5/h4zz1kEKxHrK98l0ixXeFyI8voLV6C/YcxcMijvhSs+2DYrNGiGqIhqAvhuYT5+li9BwozJVPEHop8wAGGA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 216.228.112.34) smtp.rcpttodomain=davemloft.net smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=none sp=none pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=PY17iLIFSJTn+MMQUXbNaXm7CyWuNCiU9dsC20wQly4=;
+ b=ubPIzCBkbuqTvQe280QqadG00RT69e5EQtzXNzJpEZAQ0Dg/zwi4AIHTalwrEsfO1KlzG7MQP+dMAeafU3oLs3em9iAUYdbFeJXKcgFcfSo1cyo1v5ycV67WYH77wqyB4oaFmrCg6kC/Wwe4/UgxI/3vZEAn8KWwj6k1gjGGUli9VI8KOc/6t0WaViUYSJe0R9q8wjCquHqMjGVzymTVN2Q2lcpR0ZeTZKKHQURZ/n1pcDZlaWwbSb7w8dlHnNSLXfSR0k0nLEz+2GeBlimSmHAmr8gjQdUXoh8qdfdhY2Ef+Hjrlh3R18aS4fwp1+Wtx+TShFCddqVfW1KmalfD3Q==
+Received: from MW4PR03CA0074.namprd03.prod.outlook.com (2603:10b6:303:b6::19)
+ by MW2PR12MB2539.namprd12.prod.outlook.com (2603:10b6:907:9::30) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4108.25; Mon, 10 May
+ 2021 15:44:31 +0000
+Received: from CO1NAM11FT017.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:303:b6:cafe::86) by MW4PR03CA0074.outlook.office365.com
+ (2603:10b6:303:b6::19) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4108.25 via Frontend
+ Transport; Mon, 10 May 2021 15:44:31 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.112.34)
+ smtp.mailfrom=nvidia.com; davemloft.net; dkim=none (message not signed)
+ header.d=none;davemloft.net; dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 216.228.112.34 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.112.34; helo=mail.nvidia.com;
+Received: from mail.nvidia.com (216.228.112.34) by
+ CO1NAM11FT017.mail.protection.outlook.com (10.13.175.108) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.20.4108.25 via Frontend Transport; Mon, 10 May 2021 15:44:31 +0000
+Received: from [10.80.2.154] (172.20.145.6) by HQMAIL107.nvidia.com
+ (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Mon, 10 May
+ 2021 15:44:28 +0000
+Subject: Re: ethtool features: tx-udp_tnl-csum-segmentation and
+ tx-udp_tnl-segmentation
+To:     Edward Cree <ecree.xilinx@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Andy Gospodarek <gospo@broadcom.com>
-Content-Type: text/plain; charset="UTF-8"
+        Jonathan Corbet <corbet@lwn.net>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "Saeed Mahameed" <saeedm@nvidia.com>
+CC:     Tariq Toukan <tariqt@nvidia.com>, Moshe Shemesh <moshe@nvidia.com>,
+        "Maria Pasechnik" <mariap@nvidia.com>
+References: <c4cd5df8-2a16-6c31-8a13-4d36b51ba13b@nvidia.com>
+ <77f09431-d80f-e9d0-7e08-3ab7bf4680d8@gmail.com>
+From:   Aya Levin <ayal@nvidia.com>
+Message-ID: <9b6f1499-db56-9c87-8407-09e4daa5f15e@nvidia.com>
+Date:   Mon, 10 May 2021 18:44:03 +0300
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.10.1
+MIME-Version: 1.0
+In-Reply-To: <77f09431-d80f-e9d0-7e08-3ab7bf4680d8@gmail.com>
+Content-Type: text/plain; charset="utf-8"; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [172.20.145.6]
+X-ClientProxiedBy: HQMAIL101.nvidia.com (172.20.187.10) To
+ HQMAIL107.nvidia.com (172.20.187.13)
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 1b7cab2e-2908-41ba-2b72-08d913ca80e5
+X-MS-TrafficTypeDiagnostic: MW2PR12MB2539:
+X-Microsoft-Antispam-PRVS: <MW2PR12MB25391403D27778E8BF9922CABD549@MW2PR12MB2539.namprd12.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:9508;
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: h2XuQnHEkNgz/CckUggO6McNGFh7tw9BLdN4BImOf8aqMa4j6h0WKef1BrSUXNV1DnEd38c5+5EGxqyGSg4rn6Tf/vOMqqZo2gWoy3nIrmSfgw86XwlS/gXY+x6AlevZxyzg3rSzVXB2zuEMUnFsb18vvDbEAO/wzN+/td/w+jwFQ1vq69M4EmU1sr0bM+/SsMbXF8om5bPpbqXX8vUl4lVhtJjyJlD/DjcssRy7s3go85p7xodY9XJL1nHtpBZBMApF8pHtRcmQNChFriQKn0mgZdZP0JpLp1XAgrXxCmxwDlfC21Xb0jlyaL8o+g9VrEvDVVxeKNwCqWAKOqZwHKSaUiToLyK5tKC6IrYi6GKRMjJN2V5/W4WEm2/bIErFOuTojR6o9+7vLR5QZCM1usQe/LbeuDWf7dnlPVVeSQzWnblGxGXeU3XzpQK8MlCMHEGo5O+qGxW49nHBH+3VKX+tF35Q9yi92WKRbAJlk9OiQAkiHm322K/bNJWgsiWhBg/qBC9rPnuCbyHpcXg1Kew23Rmh/nTj8CEmfPafhoDrCq4qbRjJ38UHk5EUdOKBKII8QG+287Jp1+FGNjt0SorjFO3+ODPgYXbiErDtAxlB5IFwlVL/p5gGwiN2Hc4EkHDpkqbkI8AUC7TDo2qF/tWTcKY3IJN3ab807KnsGiwpj6oBI+Wm932K7RLpwheu
+X-Forefront-Antispam-Report: CIP:216.228.112.34;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:schybrid03.nvidia.com;CAT:NONE;SFS:(4636009)(39860400002)(396003)(346002)(376002)(136003)(36840700001)(46966006)(2616005)(426003)(110136005)(82310400003)(82740400003)(26005)(7636003)(356005)(316002)(4326008)(8676002)(16576012)(36860700001)(36906005)(478600001)(54906003)(70206006)(2906002)(6636002)(83380400001)(8936002)(47076005)(107886003)(53546011)(6666004)(36756003)(86362001)(5660300002)(336012)(16526019)(186003)(31686004)(31696002)(70586007)(43740500002);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 10 May 2021 15:44:31.5300
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 1b7cab2e-2908-41ba-2b72-08d913ca80e5
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.112.34];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource: CO1NAM11FT017.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW2PR12MB2539
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, May 7, 2021 at 5:29 PM Michael Chan <michael.chan@broadcom.com> wrote:
->
-> Jakub Kicinski pointed out that we need to handle ipv6 extension headers
-> and to explicitly check for supported tunnel types in
-> .ndo_features_check().
->
-> For ipv6 extension headers, the hardware supports up to 2 ext. headers
-> and each must be <= 64 bytes.  For tunneled packets, the supported
-> packets are UDP with supported VXLAN and Geneve ports, GRE, and IPIP.
->
-> v2: Add missing step to check inner ipv6 header for UDP and GRE tunnels.
->     Check TCP/UDP next header after skipping ipv6 ext headers for
->     non-tunneled packets and for inner ipv6.
->     (Both feedback from Alexander Duyck)
->
-> Reviewed-by: Edwin Peer <edwin.peer@broadcom.com>
-> Reviewed-by: Pavan Chebbi <pavan.chebbi@broadcom.com>
-> Fixes: 1698d600b361 ("bnxt_en: Implement .ndo_features_check().")
-> Signed-off-by: Michael Chan <michael.chan@broadcom.com>
-> ---
->  drivers/net/ethernet/broadcom/bnxt/bnxt.c | 125 +++++++++++++++++++---
->  1 file changed, 108 insertions(+), 17 deletions(-)
->
-> diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt.c b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-> index 39ac9e2f5118..8e4670e37140 100644
-> --- a/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-> +++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-> @@ -10785,37 +10785,128 @@ static int bnxt_set_features(struct net_device *dev, netdev_features_t features)
->         return rc;
->  }
->
-> +static bool bnxt_exthdr_check(struct bnxt *bp, struct sk_buff *skb, int nw_off,
-> +                             u8 *nextproto)
-> +{
-> +       struct ipv6hdr *ip6h = (struct ipv6hdr *)(skb->data + nw_off);
-> +       int hdr_count = 0;
-> +       u8 nexthdr;
-> +       int start;
-> +
-> +       /* Check that there are at most 2 IPv6 extension headers, no
-> +        * fragment header, and each is <= 64 bytes.
-> +        */
-> +       start = nw_off + sizeof(*ip6h);
-> +       nexthdr = ip6h->nexthdr;
-> +       while (ipv6_ext_hdr(nexthdr)) {
-> +               struct ipv6_opt_hdr _hdr, *hp;
-> +               int hdrlen;
-> +
-> +               if (hdr_count >= 3 || nexthdr == NEXTHDR_NONE ||
-> +                   nexthdr == NEXTHDR_FRAGMENT)
-> +                       return false;
-> +               hp = skb_header_pointer(skb, start, sizeof(_hdr), &_hdr);
-> +               if (!hp)
-> +                       return false;
-> +               if (nexthdr == NEXTHDR_AUTH)
-> +                       hdrlen = ipv6_authlen(hp);
-> +               else
-> +                       hdrlen = ipv6_optlen(hp);
-> +
-> +               if (hdrlen > 64)
-> +                       return false;
-> +               nexthdr = hp->nexthdr;
-> +               start += hdrlen;
-> +               hdr_count++;
-> +       }
-> +       /* Only support TCP/UDP unless the caller checks the nextproto. */
-> +       if (nextproto) {
-> +               *nextproto = nexthdr;
-> +               return true;
-> +       }
-> +       if (nexthdr == IPPROTO_TCP || nexthdr == IPPROTO_UDP)
-> +               return true;
-> +       return false;
-> +}
-> +
-> +/* For UDP, we can only handle 1 Vxlan port and 1 Geneve port. */
-> +static bool bnxt_udp_tunl_check(struct bnxt *bp, struct sk_buff *skb)
-> +{
-> +       struct udphdr *uh = udp_hdr(skb);
-> +       __be16 udp_port = uh->dest;
-> +
-> +       if (udp_port != bp->vxlan_port && udp_port != bp->nge_port)
-> +               return false;
-> +       if (skb->inner_protocol_type == ENCAP_TYPE_ETHER) {
-> +               struct ethhdr *eh = inner_eth_hdr(skb);
-> +
-> +               switch (eh->h_proto) {
-> +               case htons(ETH_P_IP):
-> +                       return true;
-> +               case htons(ETH_P_IPV6):
-> +                       return bnxt_exthdr_check(bp, skb,
-> +                                                skb_inner_network_offset(skb),
-> +                                                NULL);
-> +               }
-> +       }
-> +       return false;
-> +}
-> +
-> +static bool bnxt_tunl_check(struct bnxt *bp, struct sk_buff *skb, u8 l4_proto)
-> +{
-> +       switch (l4_proto) {
-> +       case IPPROTO_UDP:
-> +               return bnxt_udp_tunl_check(bp, skb);
-> +       case IPPROTO_IPIP:
-> +               return true;
-> +       case IPPROTO_GRE: {
-> +               switch (skb->inner_protocol) {
-> +               default:
-> +                       return false;
-> +               case htons(ETH_P_IP):
-> +                       return true;
-> +               case htons(ETH_P_IPV6):
-> +                       fallthrough;
-> +               }
-> +       }
-> +       case IPPROTO_IPV6:
-> +               /* Check ext headers of inner ipv6 */
-> +               return bnxt_exthdr_check(bp, skb, skb_inner_network_offset(skb),
-> +                                        NULL);
-> +       }
-> +       return false;
-> +}
-> +
->  static netdev_features_t bnxt_features_check(struct sk_buff *skb,
->                                              struct net_device *dev,
->                                              netdev_features_t features)
->  {
-> -       struct bnxt *bp;
-> -       __be16 udp_port;
-> +       struct bnxt *bp = netdev_priv(dev);
->         u8 l4_proto = 0;
->
->         features = vlan_features_check(skb, features);
-> -       if (!skb->encapsulation)
-> -               return features;
-> -
->         switch (vlan_get_protocol(skb)) {
->         case htons(ETH_P_IP):
-> +               if (!skb->encapsulation)
-> +                       return features;
->                 l4_proto = ip_hdr(skb)->protocol;
-> -               break;
-> +               if (!bnxt_tunl_check(bp, skb, l4_proto))
-> +                       goto disable_offload;
+Thanks a lot for your response!
 
-What is the point of this label, couldn't you just use a break since
-this is in a switch statement? Or you could flip the logic and have it
-return features if you successfully determined the offload is doable
-and then default to adding a break at the end of the case section.
-
-> +               return features;
->         case htons(ETH_P_IPV6):
-> -               l4_proto = ipv6_hdr(skb)->nexthdr;
-> +               if (!bnxt_exthdr_check(bp, skb, skb_network_offset(skb),
-> +                                      &l4_proto))
-> +                       goto disable_offload;
-
-Same here. You could probably just use a break statement.
-
-Also you might save yourself a step here by passing an actual pointer
-instead of the address of l4_proto here. Then what you could do is in
-the skb->encapsulation case you initialize the pointer to the address
-of l4_proto, and in the non encap case you set the pointer to NULL.
-Doing that you can avoid having to repeat the same TCP/UDP check below
-and could instead just return features if !pointer ||
-bnxt_tunl_check().
-
-> +               if (skb->encapsulation) {
-> +                       if (bnxt_tunl_check(bp, skb, l4_proto))
-> +                               return features;
-> +               } else if (l4_proto == IPPROTO_TCP || l4_proto == IPPROTO_UDP) {
-> +                       return features;
-> +               }
->                 break;
-> -       default:
-> -               return features;
->         }
->
-> -       if (l4_proto != IPPROTO_UDP)
-> -               return features;
-> -
-> -       bp = netdev_priv(dev);
-> -       /* For UDP, we can only handle 1 Vxlan port and 1 Geneve port. */
-> -       udp_port = udp_hdr(skb)->dest;
-> -       if (udp_port == bp->vxlan_port || udp_port == bp->nge_port)
-> -               return features;
-> +disable_offload:
->         return features & ~(NETIF_F_CSUM_MASK | NETIF_F_GSO_MASK);
->  }
->
-> --
-> 2.18.1
->
+On 4/29/2021 5:49 PM, Edward Cree wrote:
+> On 29/04/2021 10:16, Aya Levin wrote:
+>> I see a strange behavior when toggling feature flags:
+>> (1) tx-udp_tnl-csum-segmentation
+>> (2) tx-udp_tnl-segmentation
+> ...
+>> What is the role of each feature flag?
+> IIRC, tx-udp_tnl-segmentation controls whether to do TSO on packets that don't
+>   have an outer checksum to offload, whereas tx-udp_tnl-csum-segmentation controls
+>   the same for packets that _do_ need outer checksum offload.  The difference
+>   being whether gso_type is SKB_GSO_UDP_TUNNEL or SKB_GSO_UDP_TUNNEL_CSUM.
+Digging further in the code I see that the driver may allow/block inner 
+checksum offload by set/unset NETIF_F_HW_CSUM to hw_enc_features at 
+driver's load.
+I couldn't find a control - is this expected?
+> 
+> To a first approximation there's one feature flag for each SKB_GSO_* bit, and if
+>   an skb's gso_type requires a feature that's not enabled on the device, the core
+>   will segment that skb in software before handing it to the driver.
+> 
+> Documentation/networking/segmentation-offloads.rst may also be useful to read if
+>   you haven't already.
+> 
+> (And note that the kernel's favourite way for hardware to behave is to instead
+>   provide GSO_PARTIAL offload / tx-gso-partial, rather than doing protocol-
+>   ossified offloads for specific kinds of tunnels.)
+> 
+> -ed
+> 
