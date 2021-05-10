@@ -2,195 +2,118 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5A76D377B81
-	for <lists+netdev@lfdr.de>; Mon, 10 May 2021 07:26:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3F41A377B8C
+	for <lists+netdev@lfdr.de>; Mon, 10 May 2021 07:31:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230141AbhEJF1c (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 10 May 2021 01:27:32 -0400
-Received: from fllv0015.ext.ti.com ([198.47.19.141]:53424 "EHLO
+        id S230133AbhEJFcp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 10 May 2021 01:32:45 -0400
+Received: from fllv0015.ext.ti.com ([198.47.19.141]:55060 "EHLO
         fllv0015.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230157AbhEJF1X (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 10 May 2021 01:27:23 -0400
+        with ESMTP id S229608AbhEJFcn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 10 May 2021 01:32:43 -0400
 Received: from lelv0265.itg.ti.com ([10.180.67.224])
-        by fllv0015.ext.ti.com (8.15.2/8.15.2) with ESMTP id 14A5QAEu078564;
-        Mon, 10 May 2021 00:26:10 -0500
+        by fllv0015.ext.ti.com (8.15.2/8.15.2) with ESMTP id 14A5VU8Z081177;
+        Mon, 10 May 2021 00:31:30 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1620624370;
-        bh=+LgbeEpcGAX1uaIBoLFr6F1+kThw6gjG8L/0QWGfkRY=;
-        h=From:To:CC:Subject:Date:In-Reply-To:References;
-        b=eSZHJG0wsxYsO7+qEgWymP9/SgPkv3IiMY4IJy3toL3JjIXqUHoKnklzmcCY/q8dF
-         oqwEBX4UoS2yLab//TfZksBdHwqsafaEdLmT6XJ77KQ9RtdcsvBmNTiXkPQznquemV
-         z/zAOlbSvjiFt1lG7NrKDnldv9ZVjuQVGjgWj3rU=
-Received: from DFLE114.ent.ti.com (dfle114.ent.ti.com [10.64.6.35])
-        by lelv0265.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 14A5QAEE084465
+        s=ti-com-17Q1; t=1620624690;
+        bh=CdW+YRXLk3uk5cWZMxSMVSm607ddrQRwN9EUo67GHoU=;
+        h=Subject:CC:References:From:Date:In-Reply-To;
+        b=pZw4ZfNGu/LI6x30dgWiJozhK3BJ/kQct6DXHqouVnCRQGw3nX9sEegZzTBXe9KZe
+         tx4sCda87g3Gn4y50rC2Wq33JVlWSQi0uJ7fT+Yuczj/ZKHG0Cdb4PrUbmGf09OxQ0
+         OgfYCK8ReLYiTeY8A01veuU8LMG9YF6tkGrMOGE4=
+Received: from DLEE100.ent.ti.com (dlee100.ent.ti.com [157.170.170.30])
+        by lelv0265.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 14A5VT4r093051
         (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Mon, 10 May 2021 00:26:10 -0500
-Received: from DFLE106.ent.ti.com (10.64.6.27) by DFLE114.ent.ti.com
- (10.64.6.35) with Microsoft SMTP Server (version=TLS1_2,
+        Mon, 10 May 2021 00:31:29 -0500
+Received: from DLEE108.ent.ti.com (157.170.170.38) by DLEE100.ent.ti.com
+ (157.170.170.30) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2176.2; Mon, 10
- May 2021 00:26:09 -0500
-Received: from fllv0039.itg.ti.com (10.64.41.19) by DFLE106.ent.ti.com
- (10.64.6.27) with Microsoft SMTP Server (version=TLS1_2,
+ May 2021 00:31:29 -0500
+Received: from fllv0039.itg.ti.com (10.64.41.19) by DLEE108.ent.ti.com
+ (157.170.170.38) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2176.2 via
- Frontend Transport; Mon, 10 May 2021 00:26:09 -0500
-Received: from gsaswath-HP-ProBook-640-G5.dal.design.ti.com (ileax41-snat.itg.ti.com [10.172.224.153])
-        by fllv0039.itg.ti.com (8.15.2/8.15.2) with ESMTP id 14A5PfCo045426;
-        Mon, 10 May 2021 00:26:01 -0500
-From:   Aswath Govindraju <a-govindraju@ti.com>
-CC:     Chandrasekar Ramakrishnan <rcsekar@samsung.com>,
-        Wolfgang Grandegger <wg@grandegger.com>,
+ Frontend Transport; Mon, 10 May 2021 00:31:29 -0500
+Received: from [10.250.235.117] (ileax41-snat.itg.ti.com [10.172.224.153])
+        by fllv0039.itg.ti.com (8.15.2/8.15.2) with ESMTP id 14A5VM3U057050;
+        Mon, 10 May 2021 00:31:24 -0500
+Subject: Re: [PATCH v3 0/2] MCAN: Add support for implementing transceiver as
+ a phy
+CC:     <linux-kernel@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-can@vger.kernel.org>, <netdev@vger.kernel.org>,
         Marc Kleine-Budde <mkl@pengutronix.de>,
+        Wolfgang Grandegger <wg@grandegger.com>,
+        Rob Herring <robh+dt@kernel.org>,
         "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>, <linux-can@vger.kernel.org>,
-        <netdev@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        Lokesh Vutla <lokeshvutla@ti.com>,
+        Chandrasekar Ramakrishnan <rcsekar@samsung.com>,
         Kishon Vijay Abraham I <kishon@ti.com>,
-        Aswath Govindraju <a-govindraju@ti.com>
-Subject: [PATCH v4 2/2] can: m_can: Add support for transceiver as phy
-Date:   Mon, 10 May 2021 10:55:41 +0530
-Message-ID: <20210510052541.14168-3-a-govindraju@ti.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20210510052541.14168-1-a-govindraju@ti.com>
-References: <20210510052541.14168-1-a-govindraju@ti.com>
+        Lokesh Vutla <lokeshvutla@ti.com>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        Grygorii Strashko <grygorii.strashko@ti.com>,
+        Faiz Abbas <faiz_abbas@ti.com>
+References: <20210416114245.24829-1-a-govindraju@ti.com>
+From:   Aswath Govindraju <a-govindraju@ti.com>
+Message-ID: <2ac62e0b-58e0-0a5c-06c9-c2d5052c7a5d@ti.com>
+Date:   Mon, 10 May 2021 11:01:22 +0530
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
 MIME-Version: 1.0
-Content-Type: text/plain
+In-Reply-To: <20210416114245.24829-1-a-govindraju@ti.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 To:     unlisted-recipients:; (no To-header on input)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Faiz Abbas <faiz_abbas@ti.com>
+Hi all,
 
-Add support for implementing transceiver node as phy. The max_bitrate is
-obtained by getting a phy attribute.
+On 16/04/21 5:12 pm, Aswath Govindraju wrote:
+> The following series of patches add support for implementing the
+> transceiver as a phy of m_can_platform driver.
+> 
+> TCAN1042 has a standby signal that needs to be pulled high for
+> sending/receiving messages[1]. TCAN1043 has a enable signal along with
+> standby signal that needs to be pulled up for sending/receiving
+> messages[2], and other combinations of the two lines can be used to put the
+> transceiver in different states to reduce power consumption. On boards
+> like the AM654-idk and J721e-evm these signals are controlled using gpios.
+> 
+> These gpios are set in phy driver, and the transceiver can be put in
+> different states using phy API. The phy driver is added in the series [3].
+> 
+> This patch series is dependent on [4].
+> 
+> changes since v2:
+> - changed dev_err to dev_err_probe in patch 2
+> - used mcan_class instead of priv to assign max bit rate
+> - Picked up  Rob Herring's acked-by for patch 1
+> 
+> changes since v1:
+> - Used the API devm_phy_get_optional() instead of 
+>   devm_of_phy_get_optional_by_index()
+> > [1] - https://www.ti.com/lit/ds/symlink/tcan1042h.pdf
+> [2] - https://www.ti.com/lit/ds/symlink/tcan1043-q1.pdf
+> [3] - https://lore.kernel.org/patchwork/project/lkml/list/?series=495511
+> [4] - https://lore.kernel.org/patchwork/patch/1413286/
+> 
 
-Signed-off-by: Faiz Abbas <faiz_abbas@ti.com>
-Signed-off-by: Aswath Govindraju <a-govindraju@ti.com>
----
- drivers/net/can/m_can/m_can.c          | 11 +++++++++++
- drivers/net/can/m_can/m_can.h          |  2 ++
- drivers/net/can/m_can/m_can_platform.c | 13 +++++++++++++
- 3 files changed, 26 insertions(+)
+Posted v4 for this series after adding phy_power_off in the path when
+there is an error.
 
-diff --git a/drivers/net/can/m_can/m_can.c b/drivers/net/can/m_can/m_can.c
-index 3cf6de21d19c..afbecc35d3b6 100644
---- a/drivers/net/can/m_can/m_can.c
-+++ b/drivers/net/can/m_can/m_can.c
-@@ -21,6 +21,7 @@
- #include <linux/iopoll.h>
- #include <linux/can/dev.h>
- #include <linux/pinctrl/consumer.h>
-+#include <linux/phy/phy.h>
- 
- #include "m_can.h"
- 
-@@ -1514,6 +1515,7 @@ static void m_can_stop(struct net_device *dev)
- static int m_can_close(struct net_device *dev)
- {
- 	struct m_can_classdev *cdev = netdev_priv(dev);
-+	int err;
- 
- 	netif_stop_queue(dev);
- 
-@@ -1536,6 +1538,10 @@ static int m_can_close(struct net_device *dev)
- 	close_candev(dev);
- 	can_led_event(dev, CAN_LED_EVENT_STOP);
- 
-+	err = phy_power_off(cdev->transceiver);
-+	if (err)
-+		return err;
-+
- 	return 0;
- }
- 
-@@ -1721,6 +1727,10 @@ static int m_can_open(struct net_device *dev)
- 	struct m_can_classdev *cdev = netdev_priv(dev);
- 	int err;
- 
-+	err = phy_power_on(cdev->transceiver);
-+	if (err)
-+		return err;
-+
- 	err = m_can_clk_start(cdev);
- 	if (err)
- 		return err;
-@@ -1781,6 +1791,7 @@ static int m_can_open(struct net_device *dev)
- 	close_candev(dev);
- exit_disable_clks:
- 	m_can_clk_stop(cdev);
-+	phy_power_off(cdev->transceiver);
- 	return err;
- }
- 
-diff --git a/drivers/net/can/m_can/m_can.h b/drivers/net/can/m_can/m_can.h
-index ace071c3e58c..38cad068abad 100644
---- a/drivers/net/can/m_can/m_can.h
-+++ b/drivers/net/can/m_can/m_can.h
-@@ -28,6 +28,7 @@
- #include <linux/iopoll.h>
- #include <linux/can/dev.h>
- #include <linux/pinctrl/consumer.h>
-+#include <linux/phy/phy.h>
- 
- /* m_can lec values */
- enum m_can_lec_type {
-@@ -82,6 +83,7 @@ struct m_can_classdev {
- 	struct workqueue_struct *tx_wq;
- 	struct work_struct tx_work;
- 	struct sk_buff *tx_skb;
-+	struct phy *transceiver;
- 
- 	struct can_bittiming_const *bit_timing;
- 	struct can_bittiming_const *data_timing;
-diff --git a/drivers/net/can/m_can/m_can_platform.c b/drivers/net/can/m_can/m_can_platform.c
-index 599de0e08cd7..f102d532b7f0 100644
---- a/drivers/net/can/m_can/m_can_platform.c
-+++ b/drivers/net/can/m_can/m_can_platform.c
-@@ -6,6 +6,7 @@
- // Copyright (C) 2018-19 Texas Instruments Incorporated - http://www.ti.com/
- 
- #include <linux/platform_device.h>
-+#include <linux/phy/phy.h>
- 
- #include "m_can.h"
- 
-@@ -67,6 +68,7 @@ static int m_can_plat_probe(struct platform_device *pdev)
- 	struct resource *res;
- 	void __iomem *addr;
- 	void __iomem *mram_addr;
-+	struct phy *transceiver;
- 	int irq, ret = 0;
- 
- 	mcan_class = m_can_class_allocate_dev(&pdev->dev,
-@@ -101,6 +103,16 @@ static int m_can_plat_probe(struct platform_device *pdev)
- 		goto probe_fail;
- 	}
- 
-+	transceiver = devm_phy_optional_get(&pdev->dev, NULL);
-+	if (IS_ERR(transceiver)) {
-+		ret = PTR_ERR(transceiver);
-+		dev_err_probe(&pdev->dev, ret, "failed to get phy\n");
-+		return ret;
-+	}
-+
-+	if (transceiver)
-+		mcan_class->can.bitrate_max = transceiver->attrs.max_link_rate;
-+
- 	priv->base = addr;
- 	priv->mram_base = mram_addr;
- 
-@@ -108,6 +120,7 @@ static int m_can_plat_probe(struct platform_device *pdev)
- 	mcan_class->pm_clock_support = 1;
- 	mcan_class->can.clock.freq = clk_get_rate(mcan_class->cclk);
- 	mcan_class->dev = &pdev->dev;
-+	mcan_class->transceiver = transceiver;
- 
- 	mcan_class->ops = &m_can_plat_ops;
- 
--- 
-2.17.1
+Thanks,
+Aswath
+
+> Faiz Abbas (2):
+>   dt-bindings: net: can: Document transceiver implementation as phy
+>   can: m_can: Add support for transceiver as phy
+> 
+>  .../devicetree/bindings/net/can/bosch,m_can.yaml    |  3 +++
+>  drivers/net/can/m_can/m_can.c                       | 10 ++++++++++
+>  drivers/net/can/m_can/m_can.h                       |  2 ++
+>  drivers/net/can/m_can/m_can_platform.c              | 13 +++++++++++++
+>  4 files changed, 28 insertions(+)
+> 
 
