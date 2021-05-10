@@ -2,58 +2,58 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D4CA1377F86
-	for <lists+netdev@lfdr.de>; Mon, 10 May 2021 11:39:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5E1C3377F8B
+	for <lists+netdev@lfdr.de>; Mon, 10 May 2021 11:39:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230346AbhEJJkb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 10 May 2021 05:40:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55126 "EHLO
+        id S230372AbhEJJkd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 10 May 2021 05:40:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55128 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230319AbhEJJk1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 10 May 2021 05:40:27 -0400
-Received: from mail-wm1-x32e.google.com (mail-wm1-x32e.google.com [IPv6:2a00:1450:4864:20::32e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 92FA8C06175F
-        for <netdev@vger.kernel.org>; Mon, 10 May 2021 02:39:22 -0700 (PDT)
-Received: by mail-wm1-x32e.google.com with SMTP id n205so8803354wmf.1
-        for <netdev@vger.kernel.org>; Mon, 10 May 2021 02:39:22 -0700 (PDT)
+        with ESMTP id S230337AbhEJJk2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 10 May 2021 05:40:28 -0400
+Received: from mail-wm1-x329.google.com (mail-wm1-x329.google.com [IPv6:2a00:1450:4864:20::329])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD2F4C061574
+        for <netdev@vger.kernel.org>; Mon, 10 May 2021 02:39:23 -0700 (PDT)
+Received: by mail-wm1-x329.google.com with SMTP id y124-20020a1c32820000b029010c93864955so10752679wmy.5
+        for <netdev@vger.kernel.org>; Mon, 10 May 2021 02:39:23 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=vrGRBMEMBYdn7xsdOu9Vp0GY4DXrITa4gzZ8kQN2zME=;
-        b=lOP0IvOfVhJVX0SdpTPVUaZmw0YtS+95e8JoBC5851SxngZkPhF9z4HPVov4sHZX3u
-         +J9ik7XLJXmoaLDGL6W5wVSxBxI/Fsup3m/0L4XJ9stAQ5KNb3FuBSCreAYU2Jd2YLOZ
-         SLx4uSVYt3X7XX9FEbHB1QX3Ys9MW2ltz2PXY02uEvywx6ccPdhfsx30q3KEn592iNEg
-         rbD91S9HLV4eNq+ZbGwkx9cn5b8nsfp5p4RnzInb9MQ0Z15ZpCqGS1aRA/s09PQr/EKc
-         UFMYIk/vy2HM6uJpVMlKLKYcQdSfw4h+USggPIaoc2hyQJvG6rOw+QWU6nK5oePsm4LM
-         uPDQ==
+        bh=6+LTRB3VeUFqK10wpr4zxmf6+vUY37t/15OeIVQYx0c=;
+        b=TzJR5KOFFl9YqEnH/MEwkVADy+gytZMw3a1UlDM1riIoHbLyRlQGfuK1g4Cz3NZWXx
+         zOYeMiyNPxlBVQ9nLQsdtG6ePRAQ0cxBa+l+Pot50fyOrxnJhzlKZSCaGR6fZtcNUPQR
+         0zAwye4vRwnTq0xPeGJq/koVWlk2PEB9PiKS0NlMrJH3PEm/fX0zL6QK6j22D7v3Y/E/
+         ZNmdbpWbpUNSNR4qIBkeE6B2W/FSIC/D55YP/j2jqqpT00neN7Fl9LUjKeG6oraBsGxB
+         Qn61siwM9Fuu1+Z+77tI1x+n+yUgWKsNcIS8+ywH6Zw6P2YfkqSTTJ2Rt8eukxFcAI+k
+         JV8Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=vrGRBMEMBYdn7xsdOu9Vp0GY4DXrITa4gzZ8kQN2zME=;
-        b=f0Dzu11fdxNsYKawOhnoTyFsSTR18gI083XbrrHtkj9xUfJ4TfgLSPgxpFa0P36MIS
-         pcdhbP7fAKlcCK/44vdJ4KY8CTv8/4AaClMNSLC5XsDXt6175SOR9eX8rU6BGM1+cXXf
-         h+l+RqFbHI6WWyeav6XIgoDVfcZu2a4d6paf5mcrJHjsqjM5CTpxkmHNi7j1P+EJpAD1
-         ytzhcoxp7bmArm+2eryPQHOA1bzGcJ3BXlxIf6r5/dbVRpLh3XTGY88vgikJiCHQPUrF
-         BUmBkFt9bx7OHd8I5deAHvd429FgCXKy1utYU0D5/tRXs5aO6kJTYf3QKJwBwRq/L7DT
-         uPrA==
-X-Gm-Message-State: AOAM533gxWvE5aQUL0zHIngvrkHoNmF1VYGppFqFVYZJt9eyyrJKKE9y
-        fDR2SD152ZeQ1/mxIwAYziw=
-X-Google-Smtp-Source: ABdhPJxDq6hQN5O0/HVqWr9ddKcumjxbGtyJQZShCuo/z//KHYAFqRunTQkKv+3Vr8NNXS3Jm4G5MQ==
-X-Received: by 2002:a05:600c:154a:: with SMTP id f10mr25597527wmg.31.1620639561387;
-        Mon, 10 May 2021 02:39:21 -0700 (PDT)
+        bh=6+LTRB3VeUFqK10wpr4zxmf6+vUY37t/15OeIVQYx0c=;
+        b=lWGRO3cjnRjwXK6tMGOBp+ndDatlAzSGx7ScC01Qo4ceKQ5skayJnZFYyAxBcm5vM0
+         V/h2f3t7gN+41dde/LYyJZbe7bXMHaMmxqPk5s7rPcVqTv40sEv5rexvw336cV8KMSvo
+         y3b/6ui+4BR4GpmO7nysdUuKHbuAW4SXt+G4q8UWRc/M5Ih3DIWwPgONKHAib/JApI7k
+         uMtJ3LPNSmCPrZveJxpPeMkbf5WlenfRI2GXMf6O6svlmgTwBusCK44EI0CBL3VDMCJ9
+         ETLpQ3RwbJnrSVppVQSW5OtRnAP3pU1g4PLuyElD3p1OkJlvKKaQwAcd0+lWBl6+t1Dh
+         TQ7Q==
+X-Gm-Message-State: AOAM531HzobdlH4hzrxm3ax3VAxUY2B/yMmWmAaTVNc0tma63WC6x6/2
+        QY02YGBeS6/pESwxgt1aFc8=
+X-Google-Smtp-Source: ABdhPJw4IDSVTCDH95Xq0Ef9vi4FdUcD02zRAsTdyPWRHyY6/xpHdSOZoI9y9/QzBQosRl5dYlOWsg==
+X-Received: by 2002:a1c:f705:: with SMTP id v5mr34937718wmh.69.1620639562547;
+        Mon, 10 May 2021 02:39:22 -0700 (PDT)
 Received: from localhost.localdomain (h-47-246.A165.priv.bahnhof.se. [46.59.47.246])
-        by smtp.gmail.com with ESMTPSA id i2sm25892933wro.0.2021.05.10.02.39.20
+        by smtp.gmail.com with ESMTPSA id i2sm25892933wro.0.2021.05.10.02.39.21
         (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Mon, 10 May 2021 02:39:21 -0700 (PDT)
+        Mon, 10 May 2021 02:39:22 -0700 (PDT)
 From:   Magnus Karlsson <magnus.karlsson@gmail.com>
 To:     magnus.karlsson@intel.com, intel-wired-lan@lists.osuosl.org,
         anthony.l.nguyen@intel.com, maciej.fijalkowski@intel.com
 Cc:     netdev@vger.kernel.org, brouer@redhat.com
-Subject: [PATCH intel-net v2 4/6] igb: add correct exception tracing for XDP
-Date:   Mon, 10 May 2021 11:38:52 +0200
-Message-Id: <20210510093854.31652-5-magnus.karlsson@gmail.com>
+Subject: [PATCH intel-net v2 5/6] ixgbevf: add correct exception tracing for XDP
+Date:   Mon, 10 May 2021 11:38:53 +0200
+Message-Id: <20210510093854.31652-6-magnus.karlsson@gmail.com>
 X-Mailer: git-send-email 2.29.0
 In-Reply-To: <20210510093854.31652-1-magnus.karlsson@gmail.com>
 References: <20210510093854.31652-1-magnus.karlsson@gmail.com>
@@ -70,33 +70,23 @@ errors can occur. The support was only partial. Several errors
 where not logged which would confuse the user quite a lot not
 knowing where and why the packets disappeared.
 
-Fixes: 9cbc948b5a20 ("igb: add XDP support")
+Fixes: 21092e9ce8b1 ("ixgbevf: Add support for XDP_TX action")
 Reported-by: Jesper Dangaard Brouer <brouer@redhat.com>
 Signed-off-by: Magnus Karlsson <magnus.karlsson@intel.com>
 ---
- drivers/net/ethernet/intel/igb/igb_main.c | 10 ++++++----
- 1 file changed, 6 insertions(+), 4 deletions(-)
+ drivers/net/ethernet/intel/ixgbevf/ixgbevf_main.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/drivers/net/ethernet/intel/igb/igb_main.c b/drivers/net/ethernet/intel/igb/igb_main.c
-index 038a9fd1af44..004a5b15fadb 100644
---- a/drivers/net/ethernet/intel/igb/igb_main.c
-+++ b/drivers/net/ethernet/intel/igb/igb_main.c
-@@ -8401,18 +8401,20 @@ static struct sk_buff *igb_run_xdp(struct igb_adapter *adapter,
- 		break;
+diff --git a/drivers/net/ethernet/intel/ixgbevf/ixgbevf_main.c b/drivers/net/ethernet/intel/ixgbevf/ixgbevf_main.c
+index ba2ed8a43d2d..0e733cc15c58 100644
+--- a/drivers/net/ethernet/intel/ixgbevf/ixgbevf_main.c
++++ b/drivers/net/ethernet/intel/ixgbevf/ixgbevf_main.c
+@@ -1067,11 +1067,14 @@ static struct sk_buff *ixgbevf_run_xdp(struct ixgbevf_adapter *adapter,
  	case XDP_TX:
- 		result = igb_xdp_xmit_back(adapter, xdp);
-+		if (result == IGB_XDP_CONSUMED)
+ 		xdp_ring = adapter->xdp_ring[rx_ring->queue_index];
+ 		result = ixgbevf_xmit_xdp_ring(xdp_ring, xdp);
++		if (result == IXGBEVF_XDP_CONSUMED)
 +			goto out_failure;
- 		break;
- 	case XDP_REDIRECT:
- 		err = xdp_do_redirect(adapter->netdev, xdp, xdp_prog);
--		if (!err)
--			result = IGB_XDP_REDIR;
--		else
--			result = IGB_XDP_CONSUMED;
-+		if (err)
-+			goto out_failure;
-+		result = IGB_XDP_REDIR;
  		break;
  	default:
  		bpf_warn_invalid_xdp_action(act);
@@ -104,7 +94,7 @@ index 038a9fd1af44..004a5b15fadb 100644
  	case XDP_ABORTED:
 +out_failure:
  		trace_xdp_exception(rx_ring->netdev, xdp_prog, act);
- 		fallthrough;
+ 		fallthrough; /* handle aborts by dropping packet */
  	case XDP_DROP:
 -- 
 2.29.0
