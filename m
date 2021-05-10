@@ -2,157 +2,181 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4A8F0378D47
-	for <lists+netdev@lfdr.de>; Mon, 10 May 2021 15:42:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1437F378D4C
+	for <lists+netdev@lfdr.de>; Mon, 10 May 2021 15:42:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239580AbhEJMiI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 10 May 2021 08:38:08 -0400
-Received: from mail-bn8nam08on2082.outbound.protection.outlook.com ([40.107.100.82]:51296
-        "EHLO NAM04-BN8-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S236359AbhEJLwA (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 10 May 2021 07:52:00 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=U+xzAQ7qzavloqVr0n9mM2RaWtS0j2sBL/mi2j5vO/XE/CrvcuLrIj+xqPSlcipOU86Lm1P7a68swmjukPBSgDq/fjlAWX8AcSBnXSJMZJwKy3FR0pDIMXqS6U72iARQjN8AGZZaay7IaVzufeiBkUA04++Ft+SYIUgVBE3vupQmNih6gDISZTH9/kjv24EEVtAqC0t92tKZN24YySipG71N0xhwEWVfGgecjhkf832eRcruT8EgHOMN0KRano0hMZ8UwG5GaoeEbWd4aZthoxYWqDmABDs+mAw1wvL2512XesF7Rrq02pjv3slhmQwFEY1Vqa/u7I2CR+sfOujkqA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=czlfPOuzBT2/WGvWKvZevuKCpkfxz3WIP9KWkGqJ+y0=;
- b=Il7PSMQkcSjzcmBP0BPaYRNeEicoSPQ66/eprPfzD50NF3hLLVKK8CdgLYutqIyWOAbf/zc+ph/cRK/Y3sHEcQfVMtLz4zSoHpn2Bi+Bd1dnygycGvZjYkW8Eun6oRVd2Tr4/f25X3N58tt1qtr1kg8z9J0QpogQLoRroZ2kFfSe9JpxLqbmgLIsoqiA26EqT5GrEgYsCA4dan1JxUulgVYhHlqN1wsyxX1crKPXccBrtYzUNXj5GXeQY+S8VAi5CiRdBN6DZy8rQTM8i+HLXHbJJ7hDk2jecn0YqddNChTvbCXkK1r5x5YK/VuqbMrvDdvM4g2KX1dxk8aSOPcl1A==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.112.35) smtp.rcpttodomain=netfilter.org smtp.mailfrom=nvidia.com;
- dmarc=pass (p=none sp=none pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=czlfPOuzBT2/WGvWKvZevuKCpkfxz3WIP9KWkGqJ+y0=;
- b=tyAkubfuTWpxpFt4xCMcZnGK7XV3oEKjRlhTi5htxsG09bb5Uu7V7p+4Fms63ZtOgAf8MuWZZSOfZNghBc7mfzHhHgT6vF/4WCMyMEYFKzZcSPkLnisGBUA4m4ENsyjvzkuaY0kBfdx+bk1FwmDNYCH2BL0EoQNrzq53+8iAF2sqm5IMlZxFqWXQekost9FibQ0fUOZejM1vDuMvibV1a14RoZFIfT97oVowbo0xLjrDE4JFHwQiF5PzDCvJPLpZZayQ2prcVO/qAJ92i7naa8w9HN0U47aXqTWsSFkEyoRrOVQHCjfsCq/Xq8v9eiG6KKBQ8tc/E64Vg2pBQ/FWWg==
-Received: from DM5PR10CA0021.namprd10.prod.outlook.com (2603:10b6:4:2::31) by
- BN6PR1201MB2514.namprd12.prod.outlook.com (2603:10b6:404:b0::19) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4108.29; Mon, 10 May
- 2021 11:50:54 +0000
-Received: from DM6NAM11FT005.eop-nam11.prod.protection.outlook.com
- (2603:10b6:4:2:cafe::3f) by DM5PR10CA0021.outlook.office365.com
- (2603:10b6:4:2::31) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4108.25 via Frontend
- Transport; Mon, 10 May 2021 11:50:54 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.112.35)
- smtp.mailfrom=nvidia.com; netfilter.org; dkim=none (message not signed)
- header.d=none;netfilter.org; dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.112.35 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.112.35; helo=mail.nvidia.com;
-Received: from mail.nvidia.com (216.228.112.35) by
- DM6NAM11FT005.mail.protection.outlook.com (10.13.172.238) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.20.4108.25 via Frontend Transport; Mon, 10 May 2021 11:50:53 +0000
-Received: from HQMAIL105.nvidia.com (172.20.187.12) by HQMAIL111.nvidia.com
- (172.20.187.18) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Mon, 10 May
- 2021 11:50:52 +0000
-Received: from HQMAIL101.nvidia.com (172.20.187.10) by HQMAIL105.nvidia.com
- (172.20.187.12) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Mon, 10 May
- 2021 11:50:52 +0000
-Received: from dev-r-vrt-138.mtr.labs.mlnx (172.20.145.6) by mail.nvidia.com
- (172.20.187.10) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Mon, 10 May 2021 11:50:51 +0000
-From:   Roi Dayan <roid@nvidia.com>
-To:     <netdev@vger.kernel.org>, Pablo Neira Ayuso <pablo@netfilter.org>
-CC:     Roi Dayan <roid@nvidia.com>, Oz Shlomo <ozsh@nvidia.com>,
-        Paul Blakey <paulb@nvidia.com>
-Subject: [PATCH net 1/1] netfilter: flowtable: Remove redundant hw refresh bit
-Date:   Mon, 10 May 2021 14:50:24 +0300
-Message-ID: <20210510115024.10748-1-roid@nvidia.com>
-X-Mailer: git-send-email 2.26.2
+        id S239654AbhEJMjJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 10 May 2021 08:39:09 -0400
+Received: from mail.kernel.org ([198.145.29.99]:44172 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S243600AbhEJL4e (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 10 May 2021 07:56:34 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 383C061260;
+        Mon, 10 May 2021 11:55:22 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1620647729;
+        bh=dyIPtb49LgFnCoKazyq+bQhPSj3PCobNssG21KHdoK4=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=S4cpkndG9UuTYGkhKfO3hJLbYIHDWve5Su3QQFRXInDkMRoAu9bVjsNPKBQQExFiA
+         MH/LvEqboPFe5Mg323DsrqgW7WJPZfjJ5OWh3KcGd7Kzb/Ed/OuhsjfzebDsCLf+jo
+         Z2y3h21hX1f0r0znndE/gsvI3+7MfvcFNE3R9vJ3F6eSaoK3rYc9HAxpysQKCzq2nw
+         XliTZNXkMCNQpYy6ormSrp00pDOW21OImF+xXBpjWC/JIXAZfq/wrXo3rh38peS5/g
+         BQeri8Wl+fs0ihvm/Fcaw0vxpMvqk7Fkm7kctYIMuGKithMKv3Kd8J2NMAGsk2M1IJ
+         Z8/9XzwZufeKA==
+Date:   Mon, 10 May 2021 13:55:18 +0200
+From:   Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+To:     David Woodhouse <dwmw2@infradead.org>
+Cc:     Linux Doc Mailing List <linux-doc@vger.kernel.org>,
+        linux-kernel@vger.kernel.org, Jonathan Corbet <corbet@lwn.net>,
+        alsa-devel@alsa-project.org, coresight@lists.linaro.org,
+        dri-devel@lists.freedesktop.org, intel-gfx@lists.freedesktop.org,
+        intel-wired-lan@lists.osuosl.org, keyrings@vger.kernel.org,
+        kvm@vger.kernel.org, linux-acpi@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-edac@vger.kernel.org,
+        linux-ext4@vger.kernel.org, linux-f2fs-devel@lists.sourceforge.net,
+        linux-fpga@vger.kernel.org, linux-hwmon@vger.kernel.org,
+        linux-iio@vger.kernel.org, linux-input@vger.kernel.org,
+        linux-integrity@vger.kernel.org, linux-media@vger.kernel.org,
+        linux-pci@vger.kernel.org, linux-pm@vger.kernel.org,
+        linux-rdma@vger.kernel.org, linux-riscv@lists.infradead.org,
+        linux-sgx@vger.kernel.org, linux-usb@vger.kernel.org,
+        mjpeg-users@lists.sourceforge.net, netdev@vger.kernel.org,
+        rcu@vger.kernel.org, x86@kernel.org
+Subject: Re: [PATCH 00/53] Get rid of UTF-8 chars that can be mapped as
+ ASCII
+Message-ID: <20210510135518.305cc03d@coco.lan>
+In-Reply-To: <2ae366fdff4bd5910a2270823e8da70521c859af.camel@infradead.org>
+References: <cover.1620641727.git.mchehab+huawei@kernel.org>
+        <2ae366fdff4bd5910a2270823e8da70521c859af.camel@infradead.org>
+X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-redhat-linux-gnu)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: a35435b7-3041-4204-57e7-08d913a9dd83
-X-MS-TrafficTypeDiagnostic: BN6PR1201MB2514:
-X-Microsoft-Antispam-PRVS: <BN6PR1201MB25144407D22CACFEAB093262B8549@BN6PR1201MB2514.namprd12.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:7219;
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: +ymYcADj6UGFB1j1yB3BkXXOaqIY0MnpaP8qGh2ndyNT78FB2Xq1nwYKWGBPQ75b8yZ26/oJqs4UgobXoNd9sAU566jdNVfp3HTFQrKpxQt0QNv5vN82iyVkTdSBiXolXis301wKo6JgbdrQhFZPAnDUfd3rxKcQI20ZlmfPDAZkdM9KgSHl9KjbyzblCWOmbFs1N78glpyJWdzK99yejaOPqGaNLDr9TdbRwgO1IR4emD5wAxMnpcNfdLIK65riZIKGYLUe39OmtlKGbPk/g2fZze4v+BgO4mQktstMRjd83RSD33APd1OO+2GJfyuALQ17PvzM2tK3fJsFtVCG9dUK0jlmmlMe8SV74pbFZijB9tUptm6FYiE7TcBIN1nSpFxW60oKDqa9NZgaKjCGBhOtU8uct2KU5uPPXcykygzyeMSWJWaHE2WezuthdQQ+V0JFJMjI8sNYcd+tmss1aBOjLB2fL4DS2b3FdpEXFD22ujh2TmOu5fbRH9i+2P7WOlLWbvdyUWmer14WaLTeWp6l8zUrCb3CNGyn6+LUFyj8AmPgnd2wW1hcgNoi09HTwBv1AI5aM0ep2ghVACUriImLU4kude3kwBz7fm1W7mcZxTSxUGl/h7gOCWIqq6OYH64bW1RaIuE73wMmmgj495AseiXSyyMjdOa3VhSa+CQ=
-X-Forefront-Antispam-Report: CIP:216.228.112.35;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:schybrid04.nvidia.com;CAT:NONE;SFS:(4636009)(39860400002)(396003)(136003)(376002)(346002)(46966006)(36840700001)(47076005)(336012)(7636003)(70206006)(186003)(8936002)(83380400001)(54906003)(2616005)(8676002)(110136005)(426003)(70586007)(4326008)(82310400003)(26005)(2906002)(36906005)(5660300002)(36860700001)(356005)(478600001)(36756003)(86362001)(316002)(82740400003)(6666004)(107886003)(1076003);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 10 May 2021 11:50:53.5339
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: a35435b7-3041-4204-57e7-08d913a9dd83
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.112.35];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource: DM6NAM11FT005.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN6PR1201MB2514
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Offloading conns could fail for multiple reasons and a hw refresh bit is
-set to try to reoffload it in next sw packet.
-But it could be in some cases and future points that the hw refresh bit
-is not set but a refresh could succeed.
-Remove the hw refresh bit and do offload refresh if requested.
-There won't be a new work entry if a work is already pending
-anyway as there is the hw pending bit.
+Hi David,
 
-Fixes: 8b3646d6e0c4 ("net/sched: act_ct: Support refreshing the flow table entries")
-Signed-off-by: Roi Dayan <roid@nvidia.com>
+Em Mon, 10 May 2021 11:54:02 +0100
+David Woodhouse <dwmw2@infradead.org> escreveu:
+
+> On Mon, 2021-05-10 at 12:26 +0200, Mauro Carvalho Chehab wrote:
+> > There are several UTF-8 characters at the Kernel's documentation.
+> >=20
+> > Several of them were due to the process of converting files from
+> > DocBook, LaTeX, HTML and Markdown. They were probably introduced
+> > by the conversion tools used on that time.
+> >=20
+> > Other UTF-8 characters were added along the time, but they're easily
+> > replaceable by ASCII chars.
+> >=20
+> > As Linux developers are all around the globe, and not everybody has UTF=
+-8
+> > as their default charset, better to use UTF-8 only on cases where it is=
+ really
+> > needed. =20
+>=20
+> No, that is absolutely the wrong approach.
+>=20
+> If someone has a local setup which makes bogus assumptions about text
+> encodings, that is their own mistake.
+>=20
+> We don't do them any favours by trying to *hide* it in the common case
+> so that they don't notice it for longer.
+>=20
+> There really isn't much excuse for such brokenness, this far into the
+> 21st century.
+>=20
+> Even *before* UTF-8 came along in the final decade of the last
+> millennium, it was important to know which character set a given piece
+> of text was encoded in.
+>=20
+> In fact it was even *more* important back then, we couldn't just assume
+> UTF-8 everywhere like we can in modern times.
+>=20
+> Git can already do things like CRLF conversion on checking files out to
+> match local conventions; if you want to teach it to do character set
+> conversions too then I suppose that might be useful to a few developers
+> who've fallen through a time warp and still need it. But nobody's ever
+> bothered before because it just isn't necessary these days.
+>=20
+> Please *don't* attempt to address this anachronistic and esoteric
+> "requirement" by dragging the kernel source back in time by three
+> decades.
+
+No. The idea is not to go back three decades ago.=20
+
+The goal is just to avoid use UTF-8 where it is not needed. See, the vast
+majority of UTF-8 chars are kept:
+
+	- Non-ASCII Latin and Greek chars;
+	- Box drawings;
+	- arrows;
+	- most symbols.
+
+There, it makes perfect sense to keep using UTF-8.
+
+We should keep using UTF-8 on Kernel. This is something that it shouldn't
+be changed.
+
 ---
- include/net/netfilter/nf_flow_table.h | 1 -
- net/netfilter/nf_flow_table_core.c    | 3 +--
- net/netfilter/nf_flow_table_offload.c | 7 ++++---
- 3 files changed, 5 insertions(+), 6 deletions(-)
 
-diff --git a/include/net/netfilter/nf_flow_table.h b/include/net/netfilter/nf_flow_table.h
-index 51d8eb99764d..48ef7460ff30 100644
---- a/include/net/netfilter/nf_flow_table.h
-+++ b/include/net/netfilter/nf_flow_table.h
-@@ -157,7 +157,6 @@ enum nf_flow_flags {
- 	NF_FLOW_HW,
- 	NF_FLOW_HW_DYING,
- 	NF_FLOW_HW_DEAD,
--	NF_FLOW_HW_REFRESH,
- 	NF_FLOW_HW_PENDING,
- };
- 
-diff --git a/net/netfilter/nf_flow_table_core.c b/net/netfilter/nf_flow_table_core.c
-index 39c02d1aeedf..1d02650dd715 100644
---- a/net/netfilter/nf_flow_table_core.c
-+++ b/net/netfilter/nf_flow_table_core.c
-@@ -306,8 +306,7 @@ void flow_offload_refresh(struct nf_flowtable *flow_table,
- {
- 	flow->timeout = nf_flowtable_time_stamp + NF_FLOW_TIMEOUT;
- 
--	if (likely(!nf_flowtable_hw_offload(flow_table) ||
--		   !test_and_clear_bit(NF_FLOW_HW_REFRESH, &flow->flags)))
-+	if (likely(!nf_flowtable_hw_offload(flow_table)))
- 		return;
- 
- 	nf_flow_offload_add(flow_table, flow);
-diff --git a/net/netfilter/nf_flow_table_offload.c b/net/netfilter/nf_flow_table_offload.c
-index 2af7bdb38407..528b2f172684 100644
---- a/net/netfilter/nf_flow_table_offload.c
-+++ b/net/netfilter/nf_flow_table_offload.c
-@@ -902,10 +902,11 @@ static void flow_offload_work_add(struct flow_offload_work *offload)
- 
- 	err = flow_offload_rule_add(offload, flow_rule);
- 	if (err < 0)
--		set_bit(NF_FLOW_HW_REFRESH, &offload->flow->flags);
--	else
--		set_bit(IPS_HW_OFFLOAD_BIT, &offload->flow->ct->status);
-+		goto out;
-+
-+	set_bit(IPS_HW_OFFLOAD_BIT, &offload->flow->ct->status);
- 
-+out:
- 	nf_flow_offload_destroy(flow_rule);
- }
- 
--- 
-2.26.2
+This patch series is doing conversion only when using ASCII makes
+more sense than using UTF-8.=20
 
+See, a number of converted documents ended with weird characters
+like ZERO WIDTH NO-BREAK SPACE (U+FEFF) character. This specific
+character doesn't do any good.
+
+Others use NO-BREAK SPACE (U+A0) instead of 0x20. Harmless, until
+someone tries to use grep[1].
+
+[1] try to run:
+
+    $ git grep "CPU 0 has been" Documentation/RCU/
+
+    it will return nothing with current upstream.
+
+    But it will work fine after the series is applied:
+
+    $ git grep "CPU 0 has been" Documentation/RCU/
+      Documentation/RCU/Design/Data-Structures/Data-Structures.rst:| #. CPU=
+ 0 has been in dyntick-idle mode for quite some time. When it   |
+      Documentation/RCU/Design/Data-Structures/Data-Structures.rst:|    not=
+ices that CPU 0 has been in dyntick idle mode, which qualifies  |
+
+The main point on this series is to replace just the occurrences
+where ASCII represents the symbol equally well, e. g. it is limited
+for those chars:
+
+	- U+2010 ('=E2=80=90'): HYPHEN
+	- U+00ad ('=C2=AD'): SOFT HYPHEN
+	- U+2013 ('=E2=80=93'): EN DASH
+	- U+2014 ('=E2=80=94'): EM DASH
+
+	- U+2018 ('=E2=80=98'): LEFT SINGLE QUOTATION MARK
+	- U+2019 ('=E2=80=99'): RIGHT SINGLE QUOTATION MARK
+	- U+00b4 ('=C2=B4'): ACUTE ACCENT
+
+	- U+201c ('=E2=80=9C'): LEFT DOUBLE QUOTATION MARK
+	- U+201d ('=E2=80=9D'): RIGHT DOUBLE QUOTATION MARK
+
+	- U+00d7 ('=C3=97'): MULTIPLICATION SIGN
+	- U+2212 ('=E2=88=92'): MINUS SIGN
+
+	- U+2217 ('=E2=88=97'): ASTERISK OPERATOR
+	  (this one used as a pointer reference like "*foo" on C code
+	   example inside a document converted from LaTeX)
+
+	- U+00bb ('=C2=BB'): RIGHT-POINTING DOUBLE ANGLE QUOTATION MARK
+	  (this one also used wrongly on an ABI file, meaning '>')
+
+	- U+00a0 ('=C2=A0'): NO-BREAK SPACE
+	- U+feff ('=EF=BB=BF'): ZERO WIDTH NO-BREAK SPACE
+
+Using the above symbols will just trick tools like grep for no good
+reason.
+
+Thanks,
+Mauro
