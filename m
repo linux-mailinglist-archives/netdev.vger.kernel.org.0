@@ -2,175 +2,163 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 557B2379436
-	for <lists+netdev@lfdr.de>; Mon, 10 May 2021 18:38:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 580FC37943C
+	for <lists+netdev@lfdr.de>; Mon, 10 May 2021 18:39:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231757AbhEJQj1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 10 May 2021 12:39:27 -0400
-Received: from mail-ej1-f47.google.com ([209.85.218.47]:33350 "EHLO
-        mail-ej1-f47.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231754AbhEJQjN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 10 May 2021 12:39:13 -0400
-Received: by mail-ej1-f47.google.com with SMTP id t4so25569634ejo.0;
-        Mon, 10 May 2021 09:38:08 -0700 (PDT)
+        id S231793AbhEJQka (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 10 May 2021 12:40:30 -0400
+Received: from mail-io1-f69.google.com ([209.85.166.69]:47937 "EHLO
+        mail-io1-f69.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231651AbhEJQk2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 10 May 2021 12:40:28 -0400
+Received: by mail-io1-f69.google.com with SMTP id q187-20020a6b8ec40000b0290431cccd987fso10953024iod.14
+        for <netdev@vger.kernel.org>; Mon, 10 May 2021 09:39:23 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:organization:mime-version:content-transfer-encoding;
-        bh=bMp27vjnpmoienkYOT4SN0KllWYc9kDbddnvTB+uzc0=;
-        b=YsCXn5TUhrY9TC79A3oY/ofHCDCZ4s/MMuOFgV2REc2qjTeV8jNoIN+qE3u+KnYFjo
-         LJmDDgILA84wuJelo5+h5m96tOVOvKfgWs19VKbdQSmDN3xUhoLcWSjkmrRRbMD+gm/8
-         y6bsD9rWvfXJHJgP4uWhJfoEWjIe8V2Rh7KWH6K6nM9jEOXBbldNQLSpKkl0e+DAzlIj
-         ovEU8aDV0uV9LQKlg7LJymE+FSIMQdPf3yfjzpnxzKKDb6hjHnsy4YEZFpPmxKtM5Rqv
-         ofpAC29rowzyHQmQgryXz5sL80s5rRUQn2h321Bp6BiomAT6dva3pZdU5nlWrxjliZSS
-         e2Ew==
-X-Gm-Message-State: AOAM532Db8W4EBc01QUNXz8zRWQxbdFjxZA0JgGRpm/aS/8fgYDnkPTe
-        YfvzSf6B2Xfu0o3/gTBj/Hc=
-X-Google-Smtp-Source: ABdhPJxngxasS9kSwAqLewU+kX4d6eFSK+sYWdvZKTa8IXx9X39lFpQYeqK/u/q6+52891rCrKTCZQ==
-X-Received: by 2002:a17:906:8285:: with SMTP id h5mr26338206ejx.456.1620664687663;
-        Mon, 10 May 2021 09:38:07 -0700 (PDT)
-Received: from localhost (net-5-94-253-60.cust.vodafonedsl.it. [5.94.253.60])
-        by smtp.gmail.com with ESMTPSA id g4sm11680730edq.0.2021.05.10.09.38.06
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 10 May 2021 09:38:07 -0700 (PDT)
-Date:   Mon, 10 May 2021 18:38:04 +0200
-From:   Matteo Croce <mcroce@linux.microsoft.com>
-To:     "Matthew Wilcox (Oracle)" <willy@infradead.org>
-Cc:     linux-mm@kvack.org, stable@vger.kernel.org,
-        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        Vlastimil Babka <vbabka@suse.cz>, netdev@vger.kernel.org
-Subject: Re: [PATCH] mm: Fix struct page layout on 32-bit systems
-Message-ID: <20210510183804.05bc134f@linux.microsoft.com>
-In-Reply-To: <20210510153211.1504886-1-willy@infradead.org>
-References: <20210510153211.1504886-1-willy@infradead.org>
-Organization: Microsoft
-X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-redhat-linux-gnu)
+        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
+        bh=2wly/O+HvIt0rcClz5QNHA4b+xTsdGSZCsHQi9If7BI=;
+        b=JyrYbMAqJx2gquh4feyNClUeCr0gpqRS274bTdcQvRz4mEiXUyXU70OE/ihXjZTrdA
+         nbPzcWBl1Qd8s6+UsPB8GtsUNCL0YNK+Zxn8muS+QGRJBBTVJY7SZuADfjJV+DdYNNPF
+         pKY8gQQAP5qMJVFpVdOTnxuXK+M+nQreuhs3SWDlnsoKrwNEoXZQEVrWnSLJsvmZX4Wl
+         XQY4nmy3Ee7p9ReE6O99J3B9I46taIXWdHzPnZpRPd8tqiqJ7gNsFOnuvC5bZT+DmNEZ
+         55a9mdkdv6XlEZPngFoDkWbyhdRytzFyEdFpixS44Pb4QeV2UARDY82v21jnXwngZsCS
+         teBw==
+X-Gm-Message-State: AOAM5318HpI0UZdk9oMhSuvLvKxC/M99y+iyJhxBq61WpTUfX8rDsyTJ
+        zU/2SvNhym95Qc0BADW4JAyTrAJpQWnPTa0vJuXw+xAeEtOd
+X-Google-Smtp-Source: ABdhPJwX+GObqgnDBGYuMWbTWtPFCcAasaSVoz9SeDUx4T3ejVOiT8Wlf626BLrgqT2Ocqr+1HiFl/L8cDcoEXStGwd/6VDTrsXV
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+X-Received: by 2002:a05:6e02:1d88:: with SMTP id h8mr22800400ila.66.1620664763394;
+ Mon, 10 May 2021 09:39:23 -0700 (PDT)
+Date:   Mon, 10 May 2021 09:39:23 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <00000000000085afae05c1fc6b07@google.com>
+Subject: [syzbot] WARNING in bpf_bprintf_prepare
+From:   syzbot <syzbot+63122d0bc347f18c1884@syzkaller.appspotmail.com>
+To:     andrii@kernel.org, ast@kernel.org, bpf@vger.kernel.org,
+        daniel@iogearbox.net, john.fastabend@gmail.com, kafai@fb.com,
+        kpsingh@kernel.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, songliubraving@fb.com,
+        syzkaller-bugs@googlegroups.com, yhs@fb.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 10 May 2021 16:32:11 +0100
-"Matthew Wilcox (Oracle)" <willy@infradead.org> wrote:
+Hello,
 
-> 32-bit architectures which expect 8-byte alignment for 8-byte integers
-> and need 64-bit DMA addresses (arm, mips, ppc) had their struct page
-> inadvertently expanded in 2019.  When the dma_addr_t was added, it
-> forced the alignment of the union to 8 bytes, which inserted a 4 byte
-> gap between 'flags' and the union.
-> 
-> Fix this by storing the dma_addr_t in one or two adjacent unsigned
-> longs. This restores the alignment to that of an unsigned long.  We
-> always store the low bits in the first word to prevent the PageTail
-> bit from being inadvertently set on a big endian platform.  If that
-> happened, get_user_pages_fast() racing against a page which was freed
-> and reallocated to the page_pool could dereference a bogus
-> compound_head(), which would be hard to trace back to this cause.
-> 
-> Fixes: c25fff7171be ("mm: add dma_addr_t to struct page")
-> Cc: stable@vger.kernel.org
-> Signed-off-by: Matthew Wilcox (Oracle) <willy@infradead.org>
-> Acked-by: Ilias Apalodimas <ilias.apalodimas@linaro.org>
-> Acked-by: Jesper Dangaard Brouer <brouer@redhat.com>
-> Acked-by: Vlastimil Babka <vbabka@suse.cz>
-> ---
->  include/linux/mm_types.h |  4 ++--
->  include/net/page_pool.h  | 12 +++++++++++-
->  net/core/page_pool.c     | 12 +++++++-----
->  3 files changed, 20 insertions(+), 8 deletions(-)
-> 
-> diff --git a/include/linux/mm_types.h b/include/linux/mm_types.h
-> index 6613b26a8894..5aacc1c10a45 100644
-> --- a/include/linux/mm_types.h
-> +++ b/include/linux/mm_types.h
-> @@ -97,10 +97,10 @@ struct page {
->  		};
->  		struct {	/* page_pool used by netstack */
->  			/**
-> -			 * @dma_addr: might require a 64-bit value
-> even on
-> +			 * @dma_addr: might require a 64-bit value on
->  			 * 32-bit architectures.
->  			 */
-> -			dma_addr_t dma_addr;
-> +			unsigned long dma_addr[2];
->  		};
->  		struct {	/* slab, slob and slub */
->  			union {
-> diff --git a/include/net/page_pool.h b/include/net/page_pool.h
-> index 6d517a37c18b..b4b6de909c93 100644
-> --- a/include/net/page_pool.h
-> +++ b/include/net/page_pool.h
-> @@ -198,7 +198,17 @@ static inline void
-> page_pool_recycle_direct(struct page_pool *pool, 
->  static inline dma_addr_t page_pool_get_dma_addr(struct page *page)
->  {
-> -	return page->dma_addr;
-> +	dma_addr_t ret = page->dma_addr[0];
-> +	if (sizeof(dma_addr_t) > sizeof(unsigned long))
-> +		ret |= (dma_addr_t)page->dma_addr[1] << 16 << 16;
-> +	return ret;
-> +}
-> +
-> +static inline void page_pool_set_dma_addr(struct page *page,
-> dma_addr_t addr) +{
-> +	page->dma_addr[0] = addr;
-> +	if (sizeof(dma_addr_t) > sizeof(unsigned long))
-> +		page->dma_addr[1] = upper_32_bits(addr);
->  }
->  
->  static inline bool is_page_pool_compiled_in(void)
-> diff --git a/net/core/page_pool.c b/net/core/page_pool.c
-> index 9ec1aa9640ad..3c4c4c7a0402 100644
-> --- a/net/core/page_pool.c
-> +++ b/net/core/page_pool.c
-> @@ -174,8 +174,10 @@ static void page_pool_dma_sync_for_device(struct
-> page_pool *pool, struct page *page,
->  					  unsigned int dma_sync_size)
->  {
-> +	dma_addr_t dma_addr = page_pool_get_dma_addr(page);
-> +
->  	dma_sync_size = min(dma_sync_size, pool->p.max_len);
-> -	dma_sync_single_range_for_device(pool->p.dev, page->dma_addr,
-> +	dma_sync_single_range_for_device(pool->p.dev, dma_addr,
->  					 pool->p.offset,
-> dma_sync_size, pool->p.dma_dir);
->  }
-> @@ -195,7 +197,7 @@ static bool page_pool_dma_map(struct page_pool
-> *pool, struct page *page) if (dma_mapping_error(pool->p.dev, dma))
->  		return false;
->  
-> -	page->dma_addr = dma;
-> +	page_pool_set_dma_addr(page, dma);
->  
->  	if (pool->p.flags & PP_FLAG_DMA_SYNC_DEV)
->  		page_pool_dma_sync_for_device(pool, page,
-> pool->p.max_len); @@ -331,13 +333,13 @@ void
-> page_pool_release_page(struct page_pool *pool, struct page *page) */
->  		goto skip_dma_unmap;
->  
-> -	dma = page->dma_addr;
-> +	dma = page_pool_get_dma_addr(page);
->  
-> -	/* When page is unmapped, it cannot be returned our pool */
-> +	/* When page is unmapped, it cannot be returned to our pool
-> */ dma_unmap_page_attrs(pool->p.dev, dma,
->  			     PAGE_SIZE << pool->p.order,
-> pool->p.dma_dir, DMA_ATTR_SKIP_CPU_SYNC);
-> -	page->dma_addr = 0;
-> +	page_pool_set_dma_addr(page, 0);
->  skip_dma_unmap:
->  	/* This may be the last page returned, releasing the pool, so
->  	 * it is not safe to reference pool afterwards.
+syzbot found the following issue on:
 
-I rebased the skb recycling series against this change. I have it
-running since a few days on a machine (MacchiatoBIN Double shot) which
-uses the mvpp2 driver.
-No issues so far.
+HEAD commit:    3733bfbb bpf, selftests: Update array map tests for per-cp..
+git tree:       bpf-next
+console output: https://syzkaller.appspot.com/x/log.txt?x=126c1a1ed00000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=7668018815a66138
+dashboard link: https://syzkaller.appspot.com/bug?extid=63122d0bc347f18c1884
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=149d83e1d00000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=10d157a3d00000
 
-Regards,
--- 
-per aspera ad upstream
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+63122d0bc347f18c1884@syzkaller.appspotmail.com
+
+------------[ cut here ]------------
+WARNING: CPU: 1 PID: 8388 at kernel/bpf/helpers.c:712 try_get_fmt_tmp_buf kernel/bpf/helpers.c:712 [inline]
+WARNING: CPU: 1 PID: 8388 at kernel/bpf/helpers.c:712 bpf_bprintf_prepare+0xeba/0x10b0 kernel/bpf/helpers.c:760
+Modules linked in:
+CPU: 1 PID: 8388 Comm: syz-executor545 Not tainted 5.12.0-rc7-syzkaller #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+RIP: 0010:try_get_fmt_tmp_buf kernel/bpf/helpers.c:712 [inline]
+RIP: 0010:bpf_bprintf_prepare+0xeba/0x10b0 kernel/bpf/helpers.c:760
+Code: c6 e8 3a 4d 5e 02 83 c0 01 48 98 48 01 c5 48 89 6c 24 08 e8 78 0a ed ff 8d 6b 02 83 44 24 10 01 e9 d6 f5 ff ff e8 66 0a ed ff <0f> 0b 65 ff 0d fd 12 7c 7e bf 01 00 00 00 41 bc f0 ff ff ff e8 dd
+RSP: 0018:ffffc90000dc0290 EFLAGS: 00010246
+RAX: 0000000000000000 RBX: 0000000000000002 RCX: 0000000000000100
+RDX: ffff888013b88000 RSI: ffffffff8186ebfa RDI: 0000000000000003
+RBP: 0000000000000002 R08: 0000000000000001 R09: 0000000000000001
+R10: ffffffff8186e794 R11: 0000000000000000 R12: ffffc90000dc03c0
+R13: 0000000000000100 R14: ffffc90000dc0478 R15: 0000000000000003
+FS:  00000000013d1300(0000) GS:ffff8880b9d00000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 00000000004b00f0 CR3: 0000000014d6b000 CR4: 00000000001506e0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+Call Trace:
+ <IRQ>
+ ____bpf_trace_printk kernel/trace/bpf_trace.c:389 [inline]
+ bpf_trace_printk+0xab/0x3a0 kernel/trace/bpf_trace.c:380
+ bpf_prog_0605f9f479290f07+0x2f/0xfd8
+ bpf_dispatcher_nop_func include/linux/bpf.h:684 [inline]
+ __bpf_trace_run kernel/trace/bpf_trace.c:1788 [inline]
+ bpf_trace_run2+0x12f/0x390 kernel/trace/bpf_trace.c:1825
+ __bpf_trace_net_dev_start_xmit+0xb1/0xe0 include/trace/events/tcp.h:238
+ trace_net_dev_start_xmit include/trace/events/net.h:14 [inline]
+ xmit_one net/core/dev.c:3653 [inline]
+ dev_hard_start_xmit+0x57b/0x920 net/core/dev.c:3670
+ sch_direct_xmit+0x2e1/0xbd0 net/sched/sch_generic.c:313
+ qdisc_restart net/sched/sch_generic.c:376 [inline]
+ __qdisc_run+0x4ba/0x15f0 net/sched/sch_generic.c:384
+ qdisc_run include/net/pkt_sched.h:136 [inline]
+ qdisc_run include/net/pkt_sched.h:128 [inline]
+ __dev_xmit_skb net/core/dev.c:3856 [inline]
+ __dev_queue_xmit+0x142e/0x2e30 net/core/dev.c:4213
+ neigh_hh_output include/net/neighbour.h:499 [inline]
+ neigh_output include/net/neighbour.h:508 [inline]
+ ip6_finish_output2+0x911/0x1700 net/ipv6/ip6_output.c:117
+ __ip6_finish_output net/ipv6/ip6_output.c:182 [inline]
+ __ip6_finish_output+0x4c1/0xe10 net/ipv6/ip6_output.c:161
+ ip6_finish_output+0x35/0x200 net/ipv6/ip6_output.c:192
+ NF_HOOK_COND include/linux/netfilter.h:290 [inline]
+ ip6_output+0x1e4/0x530 net/ipv6/ip6_output.c:215
+ dst_output include/net/dst.h:448 [inline]
+ NF_HOOK include/linux/netfilter.h:301 [inline]
+ ndisc_send_skb+0xa99/0x1750 net/ipv6/ndisc.c:508
+ ndisc_send_rs+0x12e/0x6f0 net/ipv6/ndisc.c:702
+ addrconf_rs_timer+0x3f2/0x820 net/ipv6/addrconf.c:3877
+ call_timer_fn+0x1a5/0x6b0 kernel/time/timer.c:1431
+ expire_timers kernel/time/timer.c:1476 [inline]
+ __run_timers.part.0+0x67c/0xa50 kernel/time/timer.c:1745
+ __run_timers kernel/time/timer.c:1726 [inline]
+ run_timer_softirq+0xb3/0x1d0 kernel/time/timer.c:1758
+ __do_softirq+0x29b/0x9f6 kernel/softirq.c:345
+ invoke_softirq kernel/softirq.c:221 [inline]
+ __irq_exit_rcu kernel/softirq.c:422 [inline]
+ irq_exit_rcu+0x134/0x200 kernel/softirq.c:434
+ sysvec_apic_timer_interrupt+0x93/0xc0 arch/x86/kernel/apic/apic.c:1100
+ </IRQ>
+ asm_sysvec_apic_timer_interrupt+0x12/0x20 arch/x86/include/asm/idtentry.h:632
+RIP: 0010:__raw_spin_unlock_irqrestore include/linux/spinlock_api_smp.h:161 [inline]
+RIP: 0010:_raw_spin_unlock_irqrestore+0x38/0x70 kernel/locking/spinlock.c:191
+Code: 74 24 10 e8 6a bd 4d f8 48 89 ef e8 a2 73 4e f8 81 e3 00 02 00 00 75 25 9c 58 f6 c4 02 75 2d 48 85 db 74 01 fb bf 01 00 00 00 <e8> 83 41 42 f8 65 8b 05 4c 07 f6 76 85 c0 74 0a 5b 5d c3 e8 f0 fc
+RSP: 0018:ffffc9000111f9e8 EFLAGS: 00000206
+RAX: 0000000000000002 RBX: 0000000000000200 RCX: 1ffffffff1b8bb31
+RDX: 0000000000000000 RSI: 0000000000000002 RDI: 0000000000000001
+RBP: ffffffff8bfef320 R08: 0000000000000001 R09: 0000000000000001
+R10: ffffffff8179e5a8 R11: 0000000000000000 R12: 0000000000000002
+R13: 0000000000000293 R14: ffff888013b88000 R15: 0000000000000003
+ ____bpf_trace_printk kernel/trace/bpf_trace.c:398 [inline]
+ bpf_trace_printk+0x172/0x3a0 kernel/trace/bpf_trace.c:380
+ bpf_prog_0605f9f479290f07+0x2f/0x7e8
+ bpf_dispatcher_nop_func include/linux/bpf.h:684 [inline]
+ bpf_test_run+0x45f/0xaa0 net/bpf/test_run.c:117
+ bpf_prog_test_run_skb+0xabc/0x1c70 net/bpf/test_run.c:656
+ bpf_prog_test_run kernel/bpf/syscall.c:3149 [inline]
+ __do_sys_bpf+0x218b/0x4f40 kernel/bpf/syscall.c:4428
+ do_syscall_64+0x2d/0x70 arch/x86/entry/common.c:46
+ entry_SYSCALL_64_after_hwframe+0x44/0xae
+RIP: 0033:0x43ff49
+Code: 28 00 00 00 75 05 48 83 c4 28 c3 e8 b1 14 00 00 90 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 c0 ff ff ff f7 d8 64 89 01 48
+RSP: 002b:00007fffdb8cfd68 EFLAGS: 00000246 ORIG_RAX: 0000000000000141
+RAX: ffffffffffffffda RBX: 0000000000011ca4 RCX: 000000000043ff49
+RDX: 0000000000000048 RSI: 0000000020000180 RDI: 000000000000000a
+RBP: 0000000000000000 R08: 00007fffdb8cff08 R09: 00007fffdb8cff08
+R10: 00007fffdb8cff08 R11: 0000000000000246 R12: 00007fffdb8cfd7c
+R13: 431bde82d7b634db R14: 00000000004b0018 R15: 0000000000400488
+
+
+---
+This report is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
+
+syzbot will keep track of this issue. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+syzbot can test patches for this issue, for details see:
+https://goo.gl/tpsmEJ#testing-patches
