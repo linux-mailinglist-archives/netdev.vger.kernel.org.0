@@ -2,197 +2,222 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C8C0A377A5E
-	for <lists+netdev@lfdr.de>; Mon, 10 May 2021 05:04:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id ECE45377AAA
+	for <lists+netdev@lfdr.de>; Mon, 10 May 2021 05:45:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230301AbhEJDFw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 9 May 2021 23:05:52 -0400
-Received: from mail-vi1eur05on2060.outbound.protection.outlook.com ([40.107.21.60]:39080
-        "EHLO EUR05-VI1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S230213AbhEJDFs (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 9 May 2021 23:05:48 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=lG73XzJhYqQBpcpBgKDRkdSpZt6usfAjzJuxpc57pMo3uZavLurNRAkSuOCb8hDgbteGjk68Z8E8bwpuY+idgDMA10rmX6IXjbr/bmwqudUzgvMKZPbVuoTI/S9LjmGVGoPYvzPvx9SLf1i3jb0IhABMRK2jfwBsiiJYIzTW0N+YHHd+AkpZQcWV8Up+6buU8fPuaoVQXKJI5iQdn37rsvSzZCfGWhczsTbG72x9bUxq/jnWTiYM6n8IlB6toi5jDNUhITOPf2szlScE2819biNCQLFixJLl2o7PH9/l6uYt1soVVfEzm1BjA7A+tVVk73p4loDpVV2uir1Lrog+ng==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=TDUQlXor9evUQ0yit2kXVd4vmoHIsMkthblcT0+B3fE=;
- b=HvbSx9xWOYyNok2C7ORj7TNhehiHCmi+5FUdNUNh0nUN2mGOangp++xxsAA6zwmCal6p8PkKpwJdxnsNZxYhZc+6osNnVungH1JgUpxRPIFliTwzFgipy8c7NwYpxap29YFeOWHetfJS36TwBU64q8rcxKu33daoPKRnZGG8vVskKjO0qyEShir7Z9sTZwXSL+6rEe5SDkgqwSj9c9IdDl0OiG/FLOqeoLxDxlwNDnbOIZ276vr6QEW7HAjPU9AGeBmxKSJlZm1IcJsWFfD6Z+Wx/3FmdLj7VnS9rGmK6l84Skf5dBxQLafhzTjNXz+xZXvLkcCEyFcQXxalVMHAOg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=TDUQlXor9evUQ0yit2kXVd4vmoHIsMkthblcT0+B3fE=;
- b=pjCKKLpiUnB9uw/GXWHiVdKEmsP2M96HB6/DxDhDS0Js5h0i/qWdKsUJzFgIkfM03UWmNARgO7KylugeI1/MKO4ORLX8tBoAyyrLHlFZIbaO1RFTk6PfJnMA9mxNdi9NUCzFYIrDxac9UpiYvpkb6I/Wc//JLZyaocmI7Gtnb8Y=
-Received: from DB7PR04MB5017.eurprd04.prod.outlook.com (2603:10a6:10:1b::21)
- by DB6PR0401MB2231.eurprd04.prod.outlook.com (2603:10a6:4:46::26) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4065.20; Mon, 10 May
- 2021 03:04:39 +0000
-Received: from DB7PR04MB5017.eurprd04.prod.outlook.com
- ([fe80::854e:3ceb:76a4:21fc]) by DB7PR04MB5017.eurprd04.prod.outlook.com
- ([fe80::854e:3ceb:76a4:21fc%6]) with mapi id 15.20.4108.031; Mon, 10 May 2021
- 03:04:39 +0000
-From:   "Y.b. Lu" <yangbo.lu@nxp.com>
-To:     Richard Cochran <richardcochran@gmail.com>
-CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: RE: [net-next 0/6] ptp: support virtual clocks for multiple domains
-Thread-Topic: [net-next 0/6] ptp: support virtual clocks for multiple domains
-Thread-Index: AQHXQx2n9odSkzWl/E2JdNuSb7aRparZ90oAgAIIfCA=
-Date:   Mon, 10 May 2021 03:04:39 +0000
-Message-ID: <DB7PR04MB50172689502A71C4F2D08890F8549@DB7PR04MB5017.eurprd04.prod.outlook.com>
-References: <20210507085756.20427-1-yangbo.lu@nxp.com>
- <20210508191718.GC13867@hoboy.vegasvil.org>
-In-Reply-To: <20210508191718.GC13867@hoboy.vegasvil.org>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: gmail.com; dkim=none (message not signed)
- header.d=none;gmail.com; dmarc=none action=none header.from=nxp.com;
-x-originating-ip: [119.31.174.73]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: f855f743-a50f-4968-fd41-08d913605a1a
-x-ms-traffictypediagnostic: DB6PR0401MB2231:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <DB6PR0401MB223123F419824BBBC10453AAF8549@DB6PR0401MB2231.eurprd04.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:10000;
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: XfkiV+cwU9OZhXuxIgkkcMeiIaa7GDUgRlQc6gRaalxiyhIlrughIIsPG2AgYXhxPvKIGU6JF9rR00TZWaNMURbvdqzxhwvOB/7N16/e8IhPOIVv3khK1CQgAqesvIY5YA5/32U0wFz1K2DwXEJGKUko1jsu1Gz3wBYSX0vVocc/AOnUvcoiTC3WCQRgOJCk4jvmvxED4x3bBXkv8aSOid59lUvTONutEIbmrJr36Rp0rUb7Q54AQvkt6/0F1Fe3pVXZP866S1XvpJ+6g7M1gL2qLgOUi4OchSRQQHkJv5qZzVSuWcVa7cLTqMPDkYmfXEWtvA4IffthLmgb/S5T0nKbYVaFfviZMasl7KfbI05hkEfVVOSimig2IOrzYEwVhfxNXCn531WC8Jq672sF+3glM6aPA5fzMsV56t9RHFOfZmY5t2iWu/yYTOY+N8zqiY5ZgeHyTM7kkp97fjAD60eYM1c21cMIsrHBEteQbqKGpectbv1g/ROSfCY063X9vjMbYSsmgJbRDPl/eskECQGMBIq8YCcLn/hjLHvdU4TQC0tqQAGD+UCFb0l+rckUZNaHsI6WqOSmDn0l5/DQhmJzXbGQLo6X5nI8UZj6Rgk=
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DB7PR04MB5017.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(376002)(136003)(346002)(366004)(39860400002)(396003)(316002)(54906003)(8936002)(8676002)(9686003)(26005)(6916009)(2906002)(478600001)(55016002)(4326008)(38100700002)(122000001)(186003)(76116006)(66946007)(33656002)(83380400001)(5660300002)(66556008)(86362001)(66476007)(6506007)(53546011)(52536014)(71200400001)(64756008)(7696005)(66446008);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata: =?gb2312?B?dEtUY2toUVpMM284clRGYkdOa1VIUldlaEVBOC9FSlBrMXFOZG9HaUZLaDM2?=
- =?gb2312?B?VFRnVk5XUjJMQzRFa0FuSmJiSVd1V0JBY3o2M2pTUTZXYVhlSzZDclRVdW1i?=
- =?gb2312?B?RmNvMEduOVF1ajhpZXhMSzYzQjQwOXZpZWViUHdTVThLM3loTTNOakFERS8r?=
- =?gb2312?B?UVBHaS84djA2NlE5WVRqSVg5VU5EOHZXZkZ1dXRnZGc5c0NrcndLZFhiUllo?=
- =?gb2312?B?VE5LQTBiVEd0WlZTbnhHYkJZRU05a3pCS2UwMEtET3I5K3oxNWlMTmJoQjl6?=
- =?gb2312?B?WTVBSmRpQVNJaDVoV0NFME40bzRTM1NPVGZobTJXRWVyOHBJVnkyZWg2S0sw?=
- =?gb2312?B?TktxNFhTOHFiSlFTaXRhREJXS1ptMnNJUE9ZcEZDMW9iS2NsUUh2Y2J5a3Iy?=
- =?gb2312?B?V2l4UkR2eG8xSTUydTVUK0JEeG1WWTBNd3c1dy9sOWlwM2RzVytTVUROODdD?=
- =?gb2312?B?SkYybTZWZG1CS2hkbTNCSGg5REFZazNuU1ZqY2FpazZBSHlsMWo4Q1dHSUN2?=
- =?gb2312?B?dS96OFovaGpxeHJvU25vTys2TUxWZ2pYOVovVDFhVWdVbWVlWXJmS3FVZUJx?=
- =?gb2312?B?aEVaZW80bW9qQjlLak9TSGhYdVNZd290ZWI0S256REt0cGlLT3NWN0laWTRM?=
- =?gb2312?B?eDJRb2pWM1k5enJLQnUweG1CajBSSzBzdS9VejlWZEljSFdRS3FURGRrcnQ4?=
- =?gb2312?B?MVhsaW1hT1lhUllBQitiUjdaY0ZkUmZONUE2eUcxa0JybzBYa3R3c0pYU0FL?=
- =?gb2312?B?aC8yYmJOcWRqL1Rmc25IM01CQWIxZnU3WjJYV2F4ZHo0RWVqaGJJOEhHVE9x?=
- =?gb2312?B?NXUrOGMwMDIvUStUbVhQOVlvMTBhYkIzZElRT3FzT1B1SnpNMHpmTloxWlJy?=
- =?gb2312?B?MDJpaDJVcE0vRWNNRWNhaVEyblZjTGRCNkdXcUYyUExCZm5GVkswYVJ3Y1dl?=
- =?gb2312?B?TTljeUNIQk9Hd0Z6YktxQ1VkcS9FQ0o3NXo5aTB0dHB5ZFBWc0xiRDJCQlZa?=
- =?gb2312?B?VWVNbDJNSFh4Y1RQNUtYZE5BMWZNd2JRbllleGF6b0JhYTcyK1dQWURVcEpr?=
- =?gb2312?B?WVpWWm9lTEh3V0k3Q1gyTHYwdzhBOTA4cm42MnVNY1pwL2s0UVY0SXFpc01N?=
- =?gb2312?B?WFBkZ0RlZGZhT3Bra1ZEb2cwWUwvZGVPczBhREx3d3Via2U5eURIV0phRzYz?=
- =?gb2312?B?VFU1VEZDZ0MvZVM3dnBZNlZuYWdGTkQ1cFBjM01HZ3dTWDFKeXJFSEdUejlQ?=
- =?gb2312?B?VlFSUm8wVDdQRnFESnNLNnA3S241UTFoREtqOW11eW0wdVpZWG1ieTR4Q0lN?=
- =?gb2312?B?U2VGUlNLL0F6TTdhcG1rWEhyalQ3Y3E4RHNmZldOQTYrbTlhSVBLdCtrL1F0?=
- =?gb2312?B?MHRZOTUyZFFnd3dwM1RxSmV5N2ttUzlPWEFvYUplY2VrcW53UDlwVTJjdklD?=
- =?gb2312?B?ZjdpN0pjQzlsZmpnK09pQUxoTnU3SzNIMnZraVZZdWY2TkxqMEoyL0NKY3l2?=
- =?gb2312?B?UFp6UUdHR1kvTm80L0NRV3EyVElFUzV3aVROQjZENVJLTVU2Z2dOTFduY1pi?=
- =?gb2312?B?UjJpOUpPUG5sNDg2VW5OaW5UcFJTeWRtM29kdlRlT3E0bXRwVmhJNjdHTy9o?=
- =?gb2312?B?NEVjYURKVlZlajRrbEZXbTVvUk45RW1YeTIvWDBQZVc3K0l2UzNXVTVMbEZ0?=
- =?gb2312?B?Vytrb3Zxd1ZJa2JjbFVJQ0hxMXJZQ0FVTXlpZzJuL0kwWnZISzRjMUcvWVN4?=
- =?gb2312?Q?XipUjB40Y27+beQ3YbGMBgg1DvadbnKkYZQ2L9Q?=
-Content-Type: text/plain; charset="gb2312"
-Content-Transfer-Encoding: base64
+        id S230127AbhEJDqP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 9 May 2021 23:46:15 -0400
+Received: from smtp-fw-6002.amazon.com ([52.95.49.90]:37648 "EHLO
+        smtp-fw-6002.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230029AbhEJDqP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 9 May 2021 23:46:15 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=amazon.co.jp; i=@amazon.co.jp; q=dns/txt;
+  s=amazon201209; t=1620618312; x=1652154312;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=TLoGDHR/7ed9C1dlUyjesN0+jaql1ZFyM7ZqZzd2gM0=;
+  b=pu+UjYZGRGtutGgz0GF9mKybt1auNnSWPPIFNzXbcZO0xu/16WaOjG5/
+   mmA9XrIU6pGblpOnAY1/ucndqVR3mNOIowwHSRymVHC+FbDxYNdb3mQ28
+   x4adGUkdrnKb8sbalZqmFGWrl3kkYn9CDnwPt6V+uzkwYvnA1tr1uKFXF
+   0=;
+X-IronPort-AV: E=Sophos;i="5.82,286,1613433600"; 
+   d="scan'208";a="111126515"
+Received: from iad12-co-svc-p1-lb1-vlan2.amazon.com (HELO email-inbound-relay-1e-28209b7b.us-east-1.amazon.com) ([10.43.8.2])
+  by smtp-border-fw-6002.iad6.amazon.com with ESMTP; 10 May 2021 03:45:11 +0000
+Received: from EX13MTAUWB001.ant.amazon.com (iad12-ws-svc-p26-lb9-vlan2.iad.amazon.com [10.40.163.34])
+        by email-inbound-relay-1e-28209b7b.us-east-1.amazon.com (Postfix) with ESMTPS id DE54AC3BAD;
+        Mon, 10 May 2021 03:45:07 +0000 (UTC)
+Received: from EX13D04ANC001.ant.amazon.com (10.43.157.89) by
+ EX13MTAUWB001.ant.amazon.com (10.43.161.207) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.2; Mon, 10 May 2021 03:45:07 +0000
+Received: from 88665a182662.ant.amazon.com (10.43.160.17) by
+ EX13D04ANC001.ant.amazon.com (10.43.157.89) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.2; Mon, 10 May 2021 03:45:02 +0000
+From:   Kuniyuki Iwashima <kuniyu@amazon.co.jp>
+To:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>
+CC:     Benjamin Herrenschmidt <benh@amazon.com>,
+        Kuniyuki Iwashima <kuniyu@amazon.co.jp>,
+        Kuniyuki Iwashima <kuni1840@gmail.com>, <bpf@vger.kernel.org>,
+        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+Subject: [PATCH v5 bpf-next 00/11] Socket migration for SO_REUSEPORT.
+Date:   Mon, 10 May 2021 12:44:22 +0900
+Message-ID: <20210510034433.52818-1-kuniyu@amazon.co.jp>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: DB7PR04MB5017.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: f855f743-a50f-4968-fd41-08d913605a1a
-X-MS-Exchange-CrossTenant-originalarrivaltime: 10 May 2021 03:04:39.8312
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: qZvjFtvwLvp3qc71eEQb6MTvVeswR+nikBVs6UDME4CI8S1gSedyeevR6DLcKC9NQqhdHUF/TXtNEXJw5VR6uQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB6PR0401MB2231
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [10.43.160.17]
+X-ClientProxiedBy: EX13D18UWC001.ant.amazon.com (10.43.162.105) To
+ EX13D04ANC001.ant.amazon.com (10.43.157.89)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-SGkgUmljaGFyZCwNCg0KPiAtLS0tLU9yaWdpbmFsIE1lc3NhZ2UtLS0tLQ0KPiBGcm9tOiBSaWNo
-YXJkIENvY2hyYW4gPHJpY2hhcmRjb2NocmFuQGdtYWlsLmNvbT4NCj4gU2VudDogMjAyMcTqNdTC
-OcjVIDM6MTcNCj4gVG86IFkuYi4gTHUgPHlhbmdiby5sdUBueHAuY29tPg0KPiBDYzogbmV0ZGV2
-QHZnZXIua2VybmVsLm9yZzsgRGF2aWQgUyAuIE1pbGxlciA8ZGF2ZW1AZGF2ZW1sb2Z0Lm5ldD47
-IENsYXVkaXUNCj4gTWFub2lsIDxjbGF1ZGl1Lm1hbm9pbEBueHAuY29tPjsgSmFrdWIgS2ljaW5z
-a2kgPGt1YmFAa2VybmVsLm9yZz4NCj4gU3ViamVjdDogUmU6IFtuZXQtbmV4dCAwLzZdIHB0cDog
-c3VwcG9ydCB2aXJ0dWFsIGNsb2NrcyBmb3IgbXVsdGlwbGUgZG9tYWlucw0KPiANCj4gT24gRnJp
-LCBNYXkgMDcsIDIwMjEgYXQgMDQ6NTc6NTBQTSArMDgwMCwgWWFuZ2JvIEx1IHdyb3RlOg0KPiA+
-ICAgcHRwNGwgLWkgZW5vMCAtcC9kZXYvcHRwMSAtbSAtLWRvbWFpbk51bWJlcj0xIC0tcHJpb3Jp
-dHkxPTEyOCA+DQo+IGRvbWFpbjEtc2xhdmUubG9nIDI+JjEgJg0KPiA+ICAgcHRwNGwgLWkgZW5v
-MCAtcC9kZXYvcHRwMiAtbSAtLWRvbWFpbk51bWJlcj0yIC0tcHJpb3JpdHkxPTEyOCA+DQo+IGRv
-bWFpbjItc2xhdmUubG9nIDI+JjEgJg0KPiA+ICAgcHRwNGwgLWkgZW5vMCAtcC9kZXYvcHRwMyAt
-bSAtLWRvbWFpbk51bWJlcj0zIC0tcHJpb3JpdHkxPTEyNyA+DQo+ID4gZG9tYWluMy1tYXN0ZXIu
-bG9nIDI+JjEgJg0KPiANCj4gPiAtIE1ha2UgY2hhbmdpbmcgb24gcGh5c2ljYWwgY2xvY2sgdHJh
-bnNwYXJlbnQgdG8gdmlydHVhbCBjbG9ja3MuDQo+ID4gICBUaGUgdmlydHVhbCBjbG9jayBpcyBi
-YXNlZCBvbiBmcmVlIHJ1bm5pbmcgcGh5c2ljYWwgY2xvY2suIElmIHBoeXNpY2FsDQo+ID4gICBj
-bG9jayBoYXMgdG8gYmUgY2hhbmdlZCwgaG93IHRvIG1ha2UgdGhlIGNoYW5nZSB0cmFuc3BhcmVu
-dCB0byBhbGwNCj4gPiAgIHZpcnR1YWwgY2xvY2tzPw0KPiANCj4gWWVzLCB0aGlzIGlzIGEgc2Vy
-aW91cyBkZWZlY3Qgb2YgdGhpcyBwYXRjaCBzZXJpZXMsIGFuZCB0aGVyZSBpcyBubyB3YXkgdG8g
-Zml4IGl0LiAgSW4NCj4gdGhlIGFib3ZlIGV4YW1wbGUsIHN1cHBvc2UgdGhhdCBkb21haW5OdW1i
-ZXIgMSBuZWVkcyArMTEgcHBtIGFuZA0KPiBkb21haW5OdW1iZXIgMiBuZWVkcyAtMTIgcHBtLiAg
-WW91IGNhbid0IGFkanVzdCBvbmUgY2xvY2sgaW4gdHdvIGRpZmZlcmVudA0KPiB3YXlzLg0KDQpU
-aGVyZSBtYXkgYmUgc29tZSBtaXN1bmRlcnN0YW5kaW5nLiBJbiB0aGUgZXhhbXBsZSwgZG9tYWlu
-IDEsIDIsIDMgYXJlIGJhc2VkIG9uIFBUUCB2aXJ0dWFsIGNsb2NrcyBwdHAxLCBwdHAyIGFuZCBw
-dHAzIHdoaWNoIGFyZSB1dGlsaXppbmcgdGhlaXIgb3duIHRpbWVjb3VudGVyLg0KVGhlIGNsb2Nr
-IGFkanVzdG1lbnQgb24gdGhlbSB3b24ndCBhZmZlY3QgZWFjaCBvdGhlci4gVGhlIGV4YW1wbGUg
-d29ya2VkIGZpbmUgaW4gbXkgdmVyaWZpY2F0aW9uLg0KDQo+IA0KPiA+ICAgQWN0dWFsbHkgdGhl
-IGZyZXF1ZW5jeSBhZGp1c3RtZW5kIG9uIHBoeXNpY2FsIGNsb2NrDQo+ID4gICBtYXkgYmUgaGlk
-ZGVuIGJ5IHVwZGF0aW5nIHZpcnR1YWwgY2xvY2tzIGluIG9wcG9zaXRlIGRpcmVjdGlvbiBhdCBz
-YW1lDQo+ID4gICB0aW1lLiBDb25zaWRlcmluZyB0aGUgcHBiIHZhbHVlcyBhZGp1c3RlZCwgdGhl
-IGNvZGUgZXhlY3V0aW9uIGRlbGF5DQo+ID4gICB3aWxsIGJlIGxpdHRsZSBlbm91Z2ggdG8gaWdu
-b3JlLg0KPiANCj4gQXNzdW1pbmcgdGhhdCB0aGUgZnJlcXVlbmN5IG9mZnNldCBpcyBleGFjdGx5
-IHRoZSBzYW1lIG9uIGFsbCBkb21haW5zLCB3aGljaA0KPiB3aWxsIHZlcnkgb2Z0ZW4gYmUgZmFs
-c2UuDQoNCkkgbWVhbiBpZiB0aGUgcGh5c2ljYWwgY2xvY2sga2VlcHMgZnJlZSBydW5uaW5nLCBh
-bGwgdmlydHVhbCBjbG9ja3MgdXRpbGl6aW5nIHRoZWlyIG93biB0aW1lcmNvdW50ZXIgY2FuIHdv
-cmsgZmluZSBpbmRlcGVuZGVudGx5IHdpdGhvdXQgYWZmZWN0aW5nIG9uIGVhY2ggb3RoZXIuDQpJ
-ZiB0aGUgcGh5c2ljYWwgY2xvY2sgaGFzIGNoYW5nZSBvbiBmcmVxdWVuY3ksIHRoZXJlIGlzIGFs
-c28gd2F5IHRvIG1ha2UgdGhlIGNoYW5nZSBub3QgYWZmZWN0IHZpcnR1YWwgY2xvY2tzLg0KRm9y
-IGV4YW1wbGUsIHdoZW4gdGhlcmUgaXMgKzEyIHBwbSBjaGFuZ2Ugb24gcGh5c2ljYWwgY2xvY2ss
-IGp1c3QgZ2l2ZSAtMTIgcHBtIGNoYW5nZSBvbiB2aXJ0dWFsIGNsb2Nrcy4NCkFuZCB0aGUgY29k
-ZSBleGVjdXRpb24gZGVsYXkganVzdCBoYXMgdmVyeSBsaXR0bGUgYWZmZWN0aW5nIG9uIHRoZSB0
-aW1lIGVycm9yIGNvbnNpZGVyaW5nIG9ubHkgMTIgcHBtIGZyZXF1ZW5jeSBhZGp1c3RlZC4NClRo
-aXMgaXMgYSBUT0RPIHdvcmsuDQoNCj4gDQo+ID4gICBCdXQgaXQncyBoYXJkIHRvIGhpZGUgY2xv
-Y2sgc3RlcHBpbmcsDQo+ID4gICBieSBub3cgSSB0aGluayB0aGUgd29ya2Fyb3VuZCBtYXkgYmUg
-aW5oaWJpdGluZyBwaHlzaWNhbCBjbG9jayBzdGVwcGluZw0KPiA+ICAgd2hlbiBydW4gdXNlciBz
-cGFjZSBwdHAgYXBwbGljYXRpb24uDQo+IA0KPiBUaGF0IHdvbid0IHdvcmsgZWl0aGVyLCBiZWNh
-dXNlIGEgcGhhc2Ugb2Zmc2V0IG9uIG9uZSBkb21haW4gd2lsbCByZXN1bHQgaW4gYQ0KPiBsYXJn
-ZSBzbGV3IGF0IHRoZSBtYXhpbXVtIHJhdGUsIGJ1dCB0aGF0IHJhdGUgd291bGQgc3BvaWwgdGhl
-IG90aGVyIGRvbWFpbnMuDQoNClBoYXNlIG9mZnNldCBjaGFuZ2luZyBvbiBwaHlzaWNhbCBjbG9j
-ayBhZmZlY3RzIHZpcnR1YWwgY2xvY2tzLiBUaGlzIGlzIG5vdCBhYmxlIHRvIGFkZHJlc3MuDQpC
-dXQgdGhlcmUgaXMgd29ya2Fyb3VuZCwgbGlrZSB3ZSBpbmhpYml0IHBoeXNpY2FsIGNsb2NrIHN0
-ZXBwaW5nIGR1cmluZyBQVFAgYXBwbGljYXRpb24gcnVubmluZy4NCg0KPiANCj4gVGhlIGJlc3Qg
-d2F5IHRvIHN1cHBvcnQgbXVsdGlwbGUgUFRQIGRvbWFpbnMgc2ltdWx0YW5lb3VzbHkgaXMgaW4g
-dGhlDQo+IGFwcGxpY2F0aW9uLiAgSXQgaXMgcmVhbGx5IHRoZSBvbmx5IHdheSwgYmVjYXVzZSB0
-aGUga2VybmVsIGRvZXMgbm90IGhhbmRsZSBhbnkNCj4gZGV0YWlscyBvZiB0aGUgUFRQLCBsaWtl
-IGRvbWFpbk51bWJlci4gIFRoZSBrZXJuZWwgb25seSBwcm92aWRlcyBjbG9jayBjb250cm9sDQo+
-IGFuZCBwYWNrZXQgdGltZSBzdGFtcGluZy4NCg0KSSB1bmRlcnN0YW5kLiBJIGV4cGxhaW4gbXkg
-aWRlYSBhYm92ZSB0byBtYWtlIGl0IGNsZWFyIGF2b2lkIG1pc3VuZGVyc3RhbmRpbmcuDQpUaGlz
-IHBhdGNoLXNldCBmb2N1c2VzIG9uIGNsb2NrIGNvbnRyb2wgYW5kIHRpbWVzdGFtcGluZy4gSXQg
-cHJvdmlkZXMgc3VwcG9ydCBmb3IgdmlydHVhbCBjbG9ja3MgYW5kIGRvbWFpbiB0aW1lc3RhbXAg
-cmVsYXRlZC4NClB1dCB0aGVzZSBpbiBrZXJuZWwsIFBUUCBhcHBsaWNhdGlvbnMgZG9uJ3QgaGF2
-ZSB0byBkbyBzdWNoIHRoaW5nIGJ5IGVhY2ggb2YgdGhlbS4NCg0KPiANCj4gcHRwNGwgZG9lcyBu
-b3QgaGFuZGxlIG11bHRpcGxlIGRvbWFpbnMgdG9kYXksIGJ1dCBpdCBkZWZpbml0ZWx5IGNvdWxk
-IGJlIGFkZGVkDQo+IHdpdGggc29tZSBlZmZvcnQuICBJdCB3b3VsZCBoYXZlIHRvIHN5bmNocm9u
-aXplIHRoZSBjbG9jayB0byBvbmUgY2hvc2VuDQo+IGRvbWFpbiwgYW5kIHRyYWNrIHRoZSBwaGFz
-ZSBhbmQgZnJlcXVlbmN5IG9mZnNldHMgb2YgZWFjaCBvZiB0aGUgb3RoZXINCj4gZG9tYWlucyB3
-aXRoIHJlc3BlY3QgdG8gdGhlIGNob3NlbiBkb21haW4uICBIYXZpbmcgZG9uZSB0aGlzLCB0aGUg
-c29mdHdhcmUNCj4gY2FuIGNvbnZlcnQgdGltZSBzdGFtcHMgYmV0d2VlbiB0aGUgZG9tYWlucyBw
-ZXJmZWN0bHkuICBVc2luZyB0aGUgdHJhY2tlZA0KPiBwaGFzZSBhbmQgZnJlcXVlbmN5IG9mZnNl
-dHMsIGl0IGNhbiBhbHNvIHN3aXRjaCBkb21haW5zIHNlYW1sZXNzbHkgd2l0aG91dA0KPiBoYWNr
-cyBvciBndWVzc3dvcmsuDQoNClN1cmUuIFRoaXMgY2FuIGJlIGRvbmUgaW4gYXBwbGljYXRpb24u
-IEknbSBub3Qgc3VyZSB3aGV0aGVyIG15IGV4cGxhaW5pbmcgYWRkcmVzcyB0aGUgImRlZmVjdCIg
-eW91IG1lbnRpb25lZCA6KQ0KSSBob3BlIHllcy4gQWN0dWFsbHkgdGhpcyBwYXRjaC1zZXQgY2Fu
-IHByb3ZpZGUgcHRwMSwgcHRwMiwgLi4uICwgd2hpY2ggYXJlIHN0YW5kYXJkIHB0cCBkZXZpY2Vz
-IHdpdGggZG9tYWlucyBib3VuZC4NCnB0cDRsIGNhbiBkaXJlY3RseSB1c2UgdGhlbSBmb3IgZG9t
-YWluIGNsb2NrIGNvbnRyb2xzLiBUaGUgdGltZXN0YW1wIGlzIGFscmVhZHkgY29udmVydGVkIHRv
-IGRvbWFpbiBpbiBrZXJuZWwuDQpUaGlzIGJlbmVmaXRzIGFsbCBQVFAgYXBwbGljYXRpb25zLg0K
-DQo+IA0KPiBTbyBJIGhhdmUgdG8gc2F5IE5BSyB0byB0aGlzIHNlcmllcyBiZWNhdXNlIGl0IGNh
-bid0IGRvIGFueSBvZiB0aGF0LCBhbmQgaXQgY2Fubm90DQo+IGJlIG1hZGUgdG8gd29yayBlaXRo
-ZXIuDQoNClRoZXJlIG1heSBiZSBtaXN1bmRlcnN0YW5kaW5nLg0KSG9wZSBmb3IgY29tbWVudHMg
-YWZ0ZXIgc2VlaW5nIG15IGV4cGxhaW5pbmc6KQ0KDQpUaGFuayB5b3UuDQoNCj4gDQo+IFRoYW5r
-cywNCj4gUmljaGFyZA0K
+The SO_REUSEPORT option allows sockets to listen on the same port and to
+accept connections evenly. However, there is a defect in the current
+implementation [1]. When a SYN packet is received, the connection is tied
+to a listening socket. Accordingly, when the listener is closed, in-flight
+requests during the three-way handshake and child sockets in the accept
+queue are dropped even if other listeners on the same port could accept
+such connections.
+
+This situation can happen when various server management tools restart
+server (such as nginx) processes. For instance, when we change nginx
+configurations and restart it, it spins up new workers that respect the new
+configuration and closes all listeners on the old workers, resulting in the
+in-flight ACK of 3WHS is responded by RST.
+
+To avoid such a situation, users have to know deeply how the kernel handles
+SYN packets and implement connection draining by eBPF [2]:
+
+  1. Stop routing SYN packets to the listener by eBPF.
+  2. Wait for all timers to expire to complete requests
+  3. Accept connections until EAGAIN, then close the listener.
+
+  or
+
+  1. Start counting SYN packets and accept syscalls using the eBPF map.
+  2. Stop routing SYN packets.
+  3. Accept connections up to the count, then close the listener.
+
+In either way, we cannot close a listener immediately. However, ideally,
+the application need not drain the not yet accepted sockets because 3WHS
+and tying a connection to a listener are just the kernel behaviour. The
+root cause is within the kernel, so the issue should be addressed in kernel
+space and should not be visible to user space. This patchset fixes it so
+that users need not take care of kernel implementation and connection
+draining. With this patchset, the kernel redistributes requests and
+connections from a listener to the others in the same reuseport group
+at/after close or shutdown syscalls.
+
+Although some software does connection draining, there are still merits in
+migration. For some security reasons, such as replacing TLS certificates,
+we may want to apply new settings as soon as possible and/or we may not be
+able to wait for connection draining. The sockets in the accept queue have
+not started application sessions yet. So, if we do not drain such sockets,
+they can be handled by the newer listeners and could have a longer
+lifetime. It is difficult to drain all connections in every case, but we
+can decrease such aborted connections by migration. In that sense,
+migration is always better than draining. 
+
+Moreover, auto-migration simplifies user space logic and also works well in
+a case where we cannot modify and build a server program to implement the
+workaround.
+
+Note that the source and destination listeners MUST have the same settings
+at the socket API level; otherwise, applications may face inconsistency and
+cause errors. In such a case, we have to use the eBPF program to select a
+specific listener or to cancel migration.
+
+Special thanks to Martin KaFai Lau for bouncing ideas and exchanging code
+snippets along the way.
+
+
+Link:
+ [1] The SO_REUSEPORT socket option
+ https://lwn.net/Articles/542629/
+
+ [2] Re: [PATCH 1/1] net: Add SO_REUSEPORT_LISTEN_OFF socket option as drain mode
+ https://lore.kernel.org/netdev/1458828813.10868.65.camel@edumazet-glaptop3.roam.corp.google.com/
+
+
+Changelog:
+ v5:
+  * Move initializtion of sk_node from 6th to 5th patch
+  * Initialize sk_refcnt in reqsk_clone()
+  * Modify some definitions in reqsk_timer_handler()
+  * Validate in which path/state migration happens in selftest
+
+ v4:
+ https://lore.kernel.org/bpf/20210427034623.46528-1-kuniyu@amazon.co.jp/
+  * Make some functions and variables 'static' in selftest
+  * Remove 'scalability' from the cover letter
+
+ v3:
+ https://lore.kernel.org/bpf/20210420154140.80034-1-kuniyu@amazon.co.jp/
+  * Add sysctl back for reuseport_grow()
+  * Add helper functions to manage socks[]
+  * Separate migration related logic into functions: reuseport_resurrect(),
+    reuseport_stop_listen_sock(), reuseport_migrate_sock()
+  * Clone request_sock to be migrated
+  * Migrate request one by one
+  * Pass child socket to eBPF prog
+
+ v2:
+ https://lore.kernel.org/netdev/20201207132456.65472-1-kuniyu@amazon.co.jp/
+  * Do not save closed sockets in socks[]
+  * Revert 607904c357c61adf20b8fd18af765e501d61a385
+  * Extract inet_csk_reqsk_queue_migrate() into a single patch
+  * Change the spin_lock order to avoid lockdep warning
+  * Add static to __reuseport_select_sock
+  * Use refcount_inc_not_zero() in reuseport_select_migrated_sock()
+  * Set the default attach type in bpf_prog_load_check_attach()
+  * Define new proto of BPF_FUNC_get_socket_cookie
+  * Fix test to be compiled successfully
+  * Update commit messages
+
+ v1:
+ https://lore.kernel.org/netdev/20201201144418.35045-1-kuniyu@amazon.co.jp/
+  * Remove the sysctl option
+  * Enable migration if eBPF progam is not attached
+  * Add expected_attach_type to check if eBPF program can migrate sockets
+  * Add a field to tell migration type to eBPF program
+  * Support BPF_FUNC_get_socket_cookie to get the cookie of sk
+  * Allocate an empty skb if skb is NULL
+  * Pass req_to_sk(req)->sk_hash because listener's hash is zero
+  * Update commit messages and coverletter
+
+ RFC:
+ https://lore.kernel.org/netdev/20201117094023.3685-1-kuniyu@amazon.co.jp/
+
+
+Kuniyuki Iwashima (11):
+  net: Introduce net.ipv4.tcp_migrate_req.
+  tcp: Add num_closed_socks to struct sock_reuseport.
+  tcp: Keep TCP_CLOSE sockets in the reuseport group.
+  tcp: Add reuseport_migrate_sock() to select a new listener.
+  tcp: Migrate TCP_ESTABLISHED/TCP_SYN_RECV sockets in accept queues.
+  tcp: Migrate TCP_NEW_SYN_RECV requests at retransmitting SYN+ACKs.
+  tcp: Migrate TCP_NEW_SYN_RECV requests at receiving the final ACK.
+  bpf: Support BPF_FUNC_get_socket_cookie() for
+    BPF_PROG_TYPE_SK_REUSEPORT.
+  bpf: Support socket migration by eBPF.
+  libbpf: Set expected_attach_type for BPF_PROG_TYPE_SK_REUSEPORT.
+  bpf: Test BPF_SK_REUSEPORT_SELECT_OR_MIGRATE.
+
+ Documentation/networking/ip-sysctl.rst        |  20 +
+ include/linux/bpf.h                           |   1 +
+ include/linux/filter.h                        |   2 +
+ include/net/netns/ipv4.h                      |   1 +
+ include/net/request_sock.h                    |   2 +
+ include/net/sock_reuseport.h                  |   9 +-
+ include/uapi/linux/bpf.h                      |  16 +
+ kernel/bpf/syscall.c                          |  13 +
+ net/core/filter.c                             |  23 +-
+ net/core/request_sock.c                       |  39 ++
+ net/core/sock_reuseport.c                     | 337 +++++++++--
+ net/ipv4/inet_connection_sock.c               | 146 ++++-
+ net/ipv4/inet_hashtables.c                    |   2 +-
+ net/ipv4/sysctl_net_ipv4.c                    |   9 +
+ net/ipv4/tcp_ipv4.c                           |  20 +-
+ net/ipv6/tcp_ipv6.c                           |  14 +-
+ tools/include/uapi/linux/bpf.h                |  16 +
+ tools/lib/bpf/libbpf.c                        |   5 +-
+ tools/testing/selftests/bpf/network_helpers.c |   2 +-
+ tools/testing/selftests/bpf/network_helpers.h |   1 +
+ .../bpf/prog_tests/migrate_reuseport.c        | 532 ++++++++++++++++++
+ .../bpf/progs/test_migrate_reuseport.c        |  67 +++
+ 22 files changed, 1217 insertions(+), 60 deletions(-)
+ create mode 100644 tools/testing/selftests/bpf/prog_tests/migrate_reuseport.c
+ create mode 100644 tools/testing/selftests/bpf/progs/test_migrate_reuseport.c
+
+-- 
+2.30.2
+
