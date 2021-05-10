@@ -2,169 +2,145 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 36AD9378D52
-	for <lists+netdev@lfdr.de>; Mon, 10 May 2021 15:42:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 43321378D53
+	for <lists+netdev@lfdr.de>; Mon, 10 May 2021 15:42:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348020AbhEJMjb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 10 May 2021 08:39:31 -0400
-Received: from mga04.intel.com ([192.55.52.120]:11545 "EHLO mga04.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1344955AbhEJMVB (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 10 May 2021 08:21:01 -0400
-IronPort-SDR: pJbtbx2JDmN4VcoGNb1fgN7z+GDt2tI4cnlTiPhgxx54UrkB9PEUY6F4YEV++hnF8oaqkjnOFS
- d8QtXukQqeGQ==
-X-IronPort-AV: E=McAfee;i="6200,9189,9979"; a="197195432"
-X-IronPort-AV: E=Sophos;i="5.82,287,1613462400"; 
-   d="scan'208";a="197195432"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 May 2021 05:19:38 -0700
-IronPort-SDR: ao4yB93p+glGus/p+7LqlVOo/UzoL00iN6fQNdv79r/4ZwcIE5umGx34UpIlUVegZIcG2R+z+i
- pNhno4LPORtg==
-X-IronPort-AV: E=Sophos;i="5.82,287,1613462400"; 
-   d="scan'208";a="391900373"
-Received: from smile.fi.intel.com (HELO smile) ([10.237.68.40])
-  by orsmga006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 May 2021 05:19:32 -0700
-Received: from andy by smile with local (Exim 4.94)
-        (envelope-from <andy.shevchenko@gmail.com>)
-        id 1lg4sg-00BAFq-NY; Mon, 10 May 2021 15:19:26 +0300
-Date:   Mon, 10 May 2021 15:19:26 +0300
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-To:     "Rocco.Yue" <rocco.yue@mediatek.com>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Masahiro Yamada <masahiroy@kernel.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
-        Tetsuo Handa <penguin-kernel@i-love.sakura.ne.jp>,
-        Peter Enderborg <peter.enderborg@sony.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Anshuman Khandual <anshuman.khandual@arm.com>,
-        Vitor Massaru Iha <vitor@massaru.org>,
-        Sedat Dilek <sedat.dilek@gmail.com>,
-        Wei Yang <richard.weiyang@gmail.com>,
-        Cong Wang <cong.wang@bytedance.com>,
-        Di Zhu <zhudi21@huawei.com>,
-        Stephen Hemminger <stephen@networkplumber.org>,
-        Francis Laniel <laniel_francis@privacyrequired.com>,
-        Roopa Prabhu <roopa@cumulusnetworks.com>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        linux-arm Mailing List <linux-arm-kernel@lists.infradead.org>,
-        "moderated list:ARM/Mediatek SoC support" 
-        <linux-mediatek@lists.infradead.org>, wsd_upsream@mediatek.com
-Subject: Re: [PATCH][v2] rtnetlink: add rtnl_lock debug log
-Message-ID: <YJkkzlJQPWXjanxe@smile.fi.intel.com>
-References: <20210508085738.6296-1-rocco.yue@mediatek.com>
- <CAHp75VftbW7pgkfrSB6teKZO4EfGH9UWkhy1SAtijCLvKz8HTQ@mail.gmail.com>
- <1620631421.29475.106.camel@mbjsdccf07>
+        id S1348043AbhEJMjn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 10 May 2021 08:39:43 -0400
+Received: from mail-io1-f71.google.com ([209.85.166.71]:44739 "EHLO
+        mail-io1-f71.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1345071AbhEJMVZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 10 May 2021 08:21:25 -0400
+Received: by mail-io1-f71.google.com with SMTP id z25-20020a05660200d9b02903de90ff885fso10330756ioe.11
+        for <netdev@vger.kernel.org>; Mon, 10 May 2021 05:20:20 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
+        bh=yGybm/OKMYW9dTFg1+VqjuNHMpHtONIEX8ofI4uC37E=;
+        b=f5HfeB8BFY9yZ0LLljX4KqPq+gX7Q/dOHu4YyQ2Kh6/WQ351lCMa8roj/1L43Mfxj7
+         ArDWq7bFAqYqCq8vczSvQe1jVK9v9ndRFjm2FfpdBdzGX+FIzDq2rQkyoj7V3QsVbaH1
+         UFeRpb4Jj9rjIOFt2EQbpprkG2COICe5z96oEJB0abC5w6X1NhGEVPAfNirBTeqOF3Pw
+         CTV/LCuwpV8MLMsjO6JQWCsVt/ri51zRYEXJa9z+s1+VB52ndDdgioVR3N5YY8hKfVoC
+         1e/ToJj0fgbA4scXHdzI1u5WYj4eEEywu8fnscmt7xSBy382PgFCnCO9aKD+9XA7xrCx
+         T0LA==
+X-Gm-Message-State: AOAM533oGf6geI93qipbYYoOAcpiZyBkE6WTWRixwQjx7CeO4e/GoF7F
+        BHVXEZEcQJzyGLHsHPqfWbQlg/clzmVYD7nvo+6bB0vQJqBp
+X-Google-Smtp-Source: ABdhPJyyQw3dEbRyRW4VS0DoprZBL+QwBz/A3ubXiEuokZ79wk2MeZ/DpST/4kh+m5PHrFl5BaIjFixw3WvNAt6t09iWSmhKnhRo
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1620631421.29475.106.camel@mbjsdccf07>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+X-Received: by 2002:a02:a81a:: with SMTP id f26mr17370052jaj.110.1620649219813;
+ Mon, 10 May 2021 05:20:19 -0700 (PDT)
+Date:   Mon, 10 May 2021 05:20:19 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <0000000000000d772e05c1f8cd1f@google.com>
+Subject: [syzbot] possible deadlock in cfg80211_netdev_notifier_call (2)
+From:   syzbot <syzbot+452ea4fbbef700ff0a56@syzkaller.appspotmail.com>
+To:     davem@davemloft.net, johannes@sipsolutions.net, kuba@kernel.org,
+        linux-kernel@vger.kernel.org, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, May 10, 2021 at 03:23:41PM +0800, Rocco.Yue wrote:
-> On Sun, 2021-05-09 at 12:42 +0300, Andy Shevchenko wrote:
-> > On Sat, May 8, 2021 at 12:11 PM Rocco Yue <rocco.yue@mediatek.com> wrote:
-> > >
-> > > We often encounter system hangs caused by certain process
-> > > holding rtnl_lock for a long time. Even if there is a lock
-> > > detection mechanism in Linux, it is a bit troublesome and
-> > > affects the system performance. We hope to add a lightweight
-> > > debugging mechanism for detecting rtnl_lock.
-> > >
-> > > Up to now, we have discovered and solved some potential bugs
-> > > through this lightweight rtnl_lock debugging mechanism, which
-> > > is helpful for us.
-> > >
-> > > When you say Y for RTNL_LOCK_DEBUG, then the kernel will detect
-> > > if any function hold rtnl_lock too long and some key information
-> > > will be printed out to help locate the problem.
-> > >
-> > > i.e: from the following logs, we can clearly know that the pid=2206
-> > > RfxSender_4 process holds rtnl_lock for a long time, causing the
-> > > system to hang. And we can also speculate that the delay operation
-> > > may be performed in devinet_ioctl(), resulting in rtnl_lock was
-> > > not released in time.
-> > >
-> > > <6>[   40.191481][    C6] rtnetlink: -- rtnl_print_btrace start --
-> > 
-> > You don't seem to get it. It's a quite long trace for the commit
-> > message. Do you need all those lines below? Why?
-> > 
-> 
-> The contents shown in all the lines below are the original printed after
-> adding this patch, I pasted these lines into commit message to
-> illustrate this patch as a case.
-> 
-> It now appears that some of following are indeed unnecessary, I am going
-> to condense a lot of following contents as follows.
-> 
-> Could you please help to take a look at it again? many thanks :-)
-> 
-> [   40.191481] rtnetlink: -- rtnl_print_btrace start --
-> [   40.191494] RfxSender_4[2206][R] hold rtnl_lock more than 2 sec,
-> start time: 38181400013
-> [   40.191571] Call trace:
-> [   40.191586]  rtnl_print_btrace+0xf0/0x124
-> [   40.191656]  __delay+0xc0/0x180
-> [   40.191663]  devinet_ioctl+0x21c/0x75c
-> [   40.191668]  inet_ioctl+0xb8/0x1f8
-> [   40.191675]  sock_do_ioctl+0x70/0x2ac
-> [   40.191682]  sock_ioctl+0x5dc/0xa74
-> [   40.191715] rtnetlink: -- rtnl_print_btrace end --
-> [   42.181879] rtnetlink: rtnl_lock is held by [2206] from
-> [38181400013] to [42181875177]
+Hello,
 
-Much better, thanks!
+syzbot found the following issue on:
 
-(You still need a real review on the contents of the change)
+HEAD commit:    b7415964 Merge tag 'riscv-for-linus-5.13-mw1' of git://git..
+git tree:       upstream
+console output: https://syzkaller.appspot.com/x/log.txt?x=1240ba0dd00000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=b072be26137971e1
+dashboard link: https://syzkaller.appspot.com/bug?extid=452ea4fbbef700ff0a56
 
-> > > <6>[   40.191494][    C6] rtnetlink: RfxSender_4[2206][R] hold rtnl_lock
-> > > more than 2 sec, start time: 38181400013
-> > > <4>[   40.191510][    C6]  devinet_ioctl+0x1fc/0x75c
-> > > <4>[   40.191517][    C6]  inet_ioctl+0xb8/0x1f8
-> > > <4>[   40.191527][    C6]  sock_do_ioctl+0x70/0x2ac
-> > > <4>[   40.191533][    C6]  sock_ioctl+0x5dc/0xa74
-> > > <4>[   40.191541][    C6]  __arm64_sys_ioctl+0x178/0x1fc
-> > > <4>[   40.191548][    C6]  el0_svc_common+0xc0/0x24c
-> > > <4>[   40.191555][    C6]  el0_svc+0x28/0x88
-> > > <4>[   40.191560][    C6]  el0_sync_handler+0x8c/0xf0
-> > > <4>[   40.191566][    C6]  el0_sync+0x198/0x1c0
-> > > <6>[   40.191571][    C6] Call trace:
-> > > <6>[   40.191586][    C6]  rtnl_print_btrace+0xf0/0x124
-> > > <6>[   40.191595][    C6]  call_timer_fn+0x5c/0x3b4
-> > > <6>[   40.191602][    C6]  expire_timers+0xe0/0x49c
-> > > <6>[   40.191609][    C6]  __run_timers+0x34c/0x48c
-> > > <6>[   40.191616][    C6]  run_timer_softirq+0x28/0x58
-> > > <6>[   40.191621][    C6]  efi_header_end+0x168/0x690
-> > > <6>[   40.191628][    C6]  __irq_exit_rcu+0x108/0x124
-> > > <6>[   40.191635][    C6]  __handle_domain_irq+0x130/0x1b4
-> > > <6>[   40.191643][    C6]  gic_handle_irq.29882+0x6c/0x2d8
-> > > <6>[   40.191648][    C6]  el1_irq+0xdc/0x1c0
-> > > <6>[   40.191656][    C6]  __delay+0xc0/0x180
-> > > <6>[   40.191663][    C6]  devinet_ioctl+0x21c/0x75c
-> > > <6>[   40.191668][    C6]  inet_ioctl+0xb8/0x1f8
-> > > <6>[   40.191675][    C6]  sock_do_ioctl+0x70/0x2ac
-> > > <6>[   40.191682][    C6]  sock_ioctl+0x5dc/0xa74
-> > > <6>[   40.191688][    C6]  __arm64_sys_ioctl+0x178/0x1fc
-> > > <6>[   40.191694][    C6]  el0_svc_common+0xc0/0x24c
-> > > <6>[   40.191699][    C6]  el0_svc+0x28/0x88
-> > > <6>[   40.191705][    C6]  el0_sync_handler+0x8c/0xf0
-> > > <6>[   40.191710][    C6]  el0_sync+0x198/0x1c0
-> > > <6>[   40.191715][    C6] rtnetlink: -- rtnl_print_btrace end --
-> > >
-> > > <6>[   42.181879][ T2206] rtnetlink: rtnl_lock is held by [2206] from
-> > > [38181400013] to [42181875177]
+Unfortunately, I don't have any reproducer for this issue yet.
 
--- 
-With Best Regards,
-Andy Shevchenko
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+452ea4fbbef700ff0a56@syzkaller.appspotmail.com
+
+============================================
+WARNING: possible recursive locking detected
+5.12.0-syzkaller #0 Not tainted
+--------------------------------------------
+syz-executor.1/16085 is trying to acquire lock:
+ffff88804f3b05e8 (&rdev->wiphy.mtx){+.+.}-{3:3}, at: wiphy_lock include/net/cfg80211.h:5273 [inline]
+ffff88804f3b05e8 (&rdev->wiphy.mtx){+.+.}-{3:3}, at: cfg80211_netdev_notifier_call+0x704/0x11d0 net/wireless/core.c:1429
+
+but task is already holding lock:
+ffff88804f3b05e8 (&rdev->wiphy.mtx){+.+.}-{3:3}, at: wiphy_lock include/net/cfg80211.h:5273 [inline]
+ffff88804f3b05e8 (&rdev->wiphy.mtx){+.+.}-{3:3}, at: ieee80211_stop+0x6a/0xf0 net/mac80211/iface.c:644
+
+other info that might help us debug this:
+ Possible unsafe locking scenario:
+
+       CPU0
+       ----
+  lock(&rdev->wiphy.mtx);
+  lock(&rdev->wiphy.mtx);
+
+ *** DEADLOCK ***
+
+ May be due to missing lock nesting notation
+
+2 locks held by syz-executor.1/16085:
+ #0: ffffffff8d6a4968 (rtnl_mutex){+.+.}-{3:3}, at: dev_ioctl+0x19f/0xb70 net/core/dev_ioctl.c:504
+ #1: ffff88804f3b05e8 (&rdev->wiphy.mtx){+.+.}-{3:3}, at: wiphy_lock include/net/cfg80211.h:5273 [inline]
+ #1: ffff88804f3b05e8 (&rdev->wiphy.mtx){+.+.}-{3:3}, at: ieee80211_stop+0x6a/0xf0 net/mac80211/iface.c:644
+
+stack backtrace:
+CPU: 0 PID: 16085 Comm: syz-executor.1 Not tainted 5.12.0-syzkaller #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+Call Trace:
+ __dump_stack lib/dump_stack.c:79 [inline]
+ dump_stack+0x141/0x1d7 lib/dump_stack.c:120
+ print_deadlock_bug kernel/locking/lockdep.c:2831 [inline]
+ check_deadlock kernel/locking/lockdep.c:2874 [inline]
+ validate_chain kernel/locking/lockdep.c:3663 [inline]
+ __lock_acquire.cold+0x22f/0x3b4 kernel/locking/lockdep.c:4902
+ lock_acquire kernel/locking/lockdep.c:5512 [inline]
+ lock_acquire+0x1ab/0x740 kernel/locking/lockdep.c:5477
+ __mutex_lock_common kernel/locking/mutex.c:949 [inline]
+ __mutex_lock+0x139/0x1120 kernel/locking/mutex.c:1096
+ wiphy_lock include/net/cfg80211.h:5273 [inline]
+ cfg80211_netdev_notifier_call+0x704/0x11d0 net/wireless/core.c:1429
+ notifier_call_chain+0xb5/0x200 kernel/notifier.c:83
+ call_netdevice_notifiers_info+0xb5/0x130 net/core/dev.c:2121
+ call_netdevice_notifiers_extack net/core/dev.c:2133 [inline]
+ call_netdevice_notifiers net/core/dev.c:2147 [inline]
+ __dev_close_many+0xf3/0x2f0 net/core/dev.c:1667
+ dev_close_many+0x22c/0x620 net/core/dev.c:1718
+ dev_close net/core/dev.c:1744 [inline]
+ dev_close+0x16d/0x210 net/core/dev.c:1738
+ ieee80211_do_stop+0x1276/0x20e0 net/mac80211/iface.c:486
+ ieee80211_stop+0x77/0xf0 net/mac80211/iface.c:645
+ __dev_close_many+0x1b8/0x2f0 net/core/dev.c:1693
+ __dev_close net/core/dev.c:1705 [inline]
+ __dev_change_flags+0x2ca/0x750 net/core/dev.c:8739
+ dev_change_flags+0x93/0x170 net/core/dev.c:8812
+ dev_ifsioc+0x210/0xa60 net/core/dev_ioctl.c:254
+ dev_ioctl+0x1ad/0xb70 net/core/dev_ioctl.c:505
+ sock_do_ioctl+0x148/0x2d0 net/socket.c:1062
+ sock_ioctl+0x477/0x6a0 net/socket.c:1179
+ vfs_ioctl fs/ioctl.c:51 [inline]
+ __do_sys_ioctl fs/ioctl.c:1069 [inline]
+ __se_sys_ioctl fs/ioctl.c:1055 [inline]
+ __x64_sys_ioctl+0x193/0x200 fs/ioctl.c:1055
+ do_syscall_64+0x3a/0xb0 arch/x86/entry/common.c:47
+ entry_SYSCALL_64_after_hwframe+0x44/0xae
+RIP: 0033:0x4665f9
+Code: ff ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 40 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 bc ff ff ff f7 d8 64 89 01 48
+RSP: 002b:00007f59aeea3188 EFLAGS: 00000246 ORIG_RAX: 0000000000000010
+RAX: ffffffffffffffda RBX: 000000000056bf60 RCX: 00000000004665f9
+RDX: 00000000200005c0 RSI: 0000000000008914 RDI: 0000000000000003
+RBP: 00000000004bfce1 R08: 0000000000000000 R09: 0000000000000000
+R10: 0000000000000000 R11: 0000000000000246 R12: 000000000056bf60
+R13: 0000000000a9fb1f R14: 00007f59aeea3300 R15: 0000000000022000
 
 
+---
+This report is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
+
+syzbot will keep track of this issue. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
