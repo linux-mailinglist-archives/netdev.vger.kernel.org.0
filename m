@@ -2,104 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0C53F3789D9
-	for <lists+netdev@lfdr.de>; Mon, 10 May 2021 13:52:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 102543789F0
+	for <lists+netdev@lfdr.de>; Mon, 10 May 2021 13:53:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234455AbhEJLdJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 10 May 2021 07:33:09 -0400
-Received: from ssl.serverraum.org ([176.9.125.105]:52703 "EHLO
-        ssl.serverraum.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236627AbhEJLIW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 10 May 2021 07:08:22 -0400
-Received: from mwalle01.fritz.box (unknown [IPv6:2a02:810c:c200:2e91:fa59:71ff:fe9b:b851])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-384) server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by ssl.serverraum.org (Postfix) with ESMTPSA id 757B022239;
-        Mon, 10 May 2021 13:07:15 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
-        t=1620644836;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=UvqLle58hbQrYS8D+Qw3M/VyRDyS9/kql1bKzFA9u7k=;
-        b=fARMSm9TNGEW00ePDePRuLEWD6meuhM4gNJBexH8X5WahVhkjcmFtIsh/DkiZ1PZadJdlT
-        l3/Z/XBwt3yGoJUb3z5w+Uw2QS8BKKV+qPLzxcQb5TNaW/2096auE7k6llCniolwJprYq+
-        ygS8YDrQqBviVGNwEKsF4vjWMF4yaD4=
-From:   Michael Walle <michael@walle.cc>
-To:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     Vladimir Oltean <vladimir.oltean@nxp.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        id S234926AbhEJLeU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 10 May 2021 07:34:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48896 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S238438AbhEJLRr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 10 May 2021 07:17:47 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF582C06134D
+        for <netdev@vger.kernel.org>; Mon, 10 May 2021 04:14:32 -0700 (PDT)
+Received: from dude.hi.pengutronix.de ([2001:67c:670:100:1d::7])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ore@pengutronix.de>)
+        id 1lg3rj-0003u6-Dq; Mon, 10 May 2021 13:14:23 +0200
+Received: from ore by dude.hi.pengutronix.de with local (Exim 4.92)
+        (envelope-from <ore@pengutronix.de>)
+        id 1lg3rh-0005q8-2T; Mon, 10 May 2021 13:14:21 +0200
+From:   Oleksij Rempel <o.rempel@pengutronix.de>
+To:     Woojung Huh <woojung.huh@microchip.com>,
         UNGLinuxDriver@microchip.com, Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
         Florian Fainelli <f.fainelli@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Xiaoliang Yang <xiaoliang.yang_1@nxp.com>,
-        Michael Walle <michael@walle.cc>
-Subject: [PATCH net] net: dsa: felix: re-enable TAS guard band mode
-Date:   Mon, 10 May 2021 13:07:08 +0200
-Message-Id: <20210510110708.11504-1-michael@walle.cc>
-X-Mailer: git-send-email 2.20.1
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     Oleksij Rempel <o.rempel@pengutronix.de>, kernel@pengutronix.de,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Russell King <linux@armlinux.org.uk>,
+        Michael Grzeschik <m.grzeschik@pengutronix.de>
+Subject: [RFC PATCH v2 0/9] provide cable test support for the ksz886x
+Date:   Mon, 10 May 2021 13:14:10 +0200
+Message-Id: <20210510111419.22384-1-o.rempel@pengutronix.de>
+X-Mailer: git-send-email 2.29.2
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Spam: Yes
+X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::7
+X-SA-Exim-Mail-From: ore@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Commit 316bcffe4479 ("net: dsa: felix: disable always guard band bit for
-TAS config") disabled the guard band and broke 802.3Qbv compliance.
+changes v2:
+- use generic MII_* defines where possible
+- rework phylink validate
+- remove phylink get state function
+- reorder cabletest patches to make PHY flag patch in the right order
+- fix MDI-X detection
 
-There are two issues here:
- (1) Without the guard band the end of the scheduling window could be
-     overrun by a frame in transit.
- (2) Frames that don't fit into a configured window will still be sent.
+This patches provide support for cable testing on the ksz886x switches.
+Since it has one special port, we needed to add phylink with validation
+and extra quirk for the PHY to signal, that one port will not provide
+valid cable testing reports.
 
-The reason for both issues is that the switch will schedule the _start_
-of a frame transmission inside the predefined window without taking the
-length of the frame into account. Thus, we'll need the guard band which
-will close the gate early, so that a complete frame can still be sent.
-Revert the commit and add a note.
+Michael Grzeschik (2):
+  net: phy: micrel: move phy reg offsets to common header
+  net: dsa: microchip: ksz8795: add phylink support
 
-For a lengthy discussion see [1].
+Oleksij Rempel (7):
+  net: phy: micrel: use consistent indention after define
+  net: phy: micrel: apply resume errata workaround for ksz8873 and
+    ksz8863
+  net: phy/dsa micrel/ksz886x add MDI-X support
+  net: phy: micrel: ksz8081 add MDI-X support
+  net: dsa: microchip: ksz8795: add LINK_MD register support
+  net: dsa: dsa_slave_phy_connect(): extend phy's flags with port
+    specific phy flags
+  net: phy: micrel: ksz886x/ksz8081: add cabletest support
 
-[1] https://lore.kernel.org/netdev/c7618025da6723418c56a54fe4683bd7@walle.cc/
+ drivers/net/dsa/microchip/ksz8795.c     | 218 +++++++++----
+ drivers/net/dsa/microchip/ksz8795_reg.h |  67 +---
+ drivers/net/ethernet/micrel/ksz884x.c   | 105 +-----
+ drivers/net/phy/micrel.c                | 403 +++++++++++++++++++++++-
+ drivers/net/phy/phylink.c               |   2 +-
+ include/linux/micrel_phy.h              |  16 +
+ net/dsa/slave.c                         |   4 +
+ 7 files changed, 588 insertions(+), 227 deletions(-)
 
-Fixes: 316bcffe4479 ("net: dsa: felix: disable always guard band bit for TAS config")
-Signed-off-by: Michael Walle <michael@walle.cc>
----
- drivers/net/dsa/ocelot/felix_vsc9959.c | 15 ++++++++++-----
- 1 file changed, 10 insertions(+), 5 deletions(-)
-
-diff --git a/drivers/net/dsa/ocelot/felix_vsc9959.c b/drivers/net/dsa/ocelot/felix_vsc9959.c
-index 2473bebe48e6..f966a253d1c7 100644
---- a/drivers/net/dsa/ocelot/felix_vsc9959.c
-+++ b/drivers/net/dsa/ocelot/felix_vsc9959.c
-@@ -1227,12 +1227,17 @@ static int vsc9959_qos_port_tas_set(struct ocelot *ocelot, int port,
- 	if (taprio->num_entries > VSC9959_TAS_GCL_ENTRY_MAX)
- 		return -ERANGE;
- 
--	/* Set port num and disable ALWAYS_GUARD_BAND_SCH_Q, which means set
--	 * guard band to be implemented for nonschedule queues to schedule
--	 * queues transition.
-+	/* Enable guard band. The switch will schedule frames without taking
-+	 * their length into account. Thus we'll always need to enable the
-+	 * guard band which reserves the time of a maximum sized frame at the
-+	 * end of the time window.
-+	 *
-+	 * Although the ALWAYS_GUARD_BAND_SCH_Q bit is global for all ports, we
-+	 * need to set PORT_NUM, because subsequent writes to PARAM_CFG_REG_n
-+	 * operate on the port number.
- 	 */
--	ocelot_rmw(ocelot,
--		   QSYS_TAS_PARAM_CFG_CTRL_PORT_NUM(port),
-+	ocelot_rmw(ocelot, QSYS_TAS_PARAM_CFG_CTRL_PORT_NUM(port) |
-+		   QSYS_TAS_PARAM_CFG_CTRL_ALWAYS_GUARD_BAND_SCH_Q,
- 		   QSYS_TAS_PARAM_CFG_CTRL_PORT_NUM_M |
- 		   QSYS_TAS_PARAM_CFG_CTRL_ALWAYS_GUARD_BAND_SCH_Q,
- 		   QSYS_TAS_PARAM_CFG_CTRL);
 -- 
-2.20.1
+2.29.2
 
