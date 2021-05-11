@@ -2,154 +2,177 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5C61037B07C
-	for <lists+netdev@lfdr.de>; Tue, 11 May 2021 23:06:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A744237B08E
+	for <lists+netdev@lfdr.de>; Tue, 11 May 2021 23:08:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230011AbhEKVHV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 11 May 2021 17:07:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54426 "EHLO
+        id S230005AbhEKVJt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 11 May 2021 17:09:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55034 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229736AbhEKVHP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 11 May 2021 17:07:15 -0400
-Received: from mail-lf1-x134.google.com (mail-lf1-x134.google.com [IPv6:2a00:1450:4864:20::134])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6565EC061574;
-        Tue, 11 May 2021 14:06:07 -0700 (PDT)
-Received: by mail-lf1-x134.google.com with SMTP id c3so30627216lfs.7;
-        Tue, 11 May 2021 14:06:07 -0700 (PDT)
+        with ESMTP id S229920AbhEKVJr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 11 May 2021 17:09:47 -0400
+Received: from mail-pg1-x52a.google.com (mail-pg1-x52a.google.com [IPv6:2607:f8b0:4864:20::52a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CDBD4C061574;
+        Tue, 11 May 2021 14:08:39 -0700 (PDT)
+Received: by mail-pg1-x52a.google.com with SMTP id j12so10587938pgh.7;
+        Tue, 11 May 2021 14:08:39 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=T7H5DSMQGmthW/fFcIa05CsgiLo9R8DRtxiNNmTCJeQ=;
-        b=miaEpzr0DuO8TgZDyFi33zhnTchkhu5xxUbi+cRZzdwu9Sx++Q4OV8tNUm8ujAD18a
-         x1KLQBLm4R6Ysas+j9yfNdYIgRp6PQjZxOb/QWwTkLMjJbTpXr0KrxL0vH2B4571SHV6
-         Y5cVaJ+kjeKAtcuZ9R982RmOvI2JCRDd8HUPWSBA4H6fBQcqfuwF3OjUXlGziDjkw3VO
-         cn1kqOVGS4zkYDVauSSKzyeTbx7biFIae+LjzmB4a7oQpQUbCtoKBgM5uZu1GpxBD1nv
-         Kb9NaA4WXZcLcBO9jBsVvJceugqMMIfjLfUm91ClKcCACZP1uJhEBXqpuWW415jRZKAE
-         0JRg==
+        bh=yeTmaLpBoDA9Ekt1gKnRp3RBMHLIvZWlfy842jaoV5M=;
+        b=CqcA7WwPDBX4B24ONzqtDPGitezowFjBeo4a8DsZABJ4gIhmuoCFlW8p9VqgHCMISZ
+         YkjMBRDCV7/q6QFy5zojPtF45duIZ94Wu+SaGyL5w4Z/pE5bvnsfYTJbTvGW1qIwVlu/
+         mfVpfJJNZWOnEV0BFFGr5dgSj6Heg7q5HS1vgVhr8U2gUjIEZONXeUbDnCYdEO5gCdGa
+         Ev12fXVUvEdAlMDeKNVQwWK5uLO0OOZP6w6efeaUTo5iroBXp5W4SEXQSOVFplDgIcEk
+         fAKO3ZbBnxAQlL2W+KaAFh16rFNVIcvAgSwogT6laykolUtiZfKOOA6T+4PMOrOxMfBk
+         5/gw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=T7H5DSMQGmthW/fFcIa05CsgiLo9R8DRtxiNNmTCJeQ=;
-        b=DeAA6ulxOIxQmJ9ZG6wb4fDeM+BTqxEzF/o6DjeyLD+ZFIE3pP5u3pRKjiywQM94Ie
-         CRyTi6axy5NLDdWVJ98QvMy2k5ngVlLguKGI8X4v1eUMgeHJZoBP3Q2gnldCXf7PYi9i
-         /6ALWyL6bI7D3MavFbaJ9Hx8Gew5Uv3bz/Iu5j5Uf07a0sL46M+jjVZoCGiQ0dXx5bWx
-         1EqSEcOXR/diWW5coJDl6qAqB1hACT2vDPlZQv2IRIsMi44huxkY3DBDh4mMR/6wJb49
-         MfvrY4MAj5XoOyCKzXsvA643zhGmIDGuIZSgAFVd9LpII1xz4kIYiJUMAWYPbzUTDqmV
-         X00g==
-X-Gm-Message-State: AOAM532Ypxqd6rZ8Cofui+E7mpiJ2LzXG5hfvcRDvHXbldVWJfa+G9E1
-        daWduF4w+C0tdXzvMSDDnN3MyqlQdp76WqPITF6sjcmT
-X-Google-Smtp-Source: ABdhPJyBX4PDMF3y34uLZfIpe95NLQvi6O34yulCDJF2inA1vhXel3l8cKsTkZypi27YMedd6sCOVJT4Bu6Pxqunpdw=
-X-Received: by 2002:a05:6512:3f93:: with SMTP id x19mr22127695lfa.182.1620767165858;
- Tue, 11 May 2021 14:06:05 -0700 (PDT)
+        bh=yeTmaLpBoDA9Ekt1gKnRp3RBMHLIvZWlfy842jaoV5M=;
+        b=NuiKNhBfM+j8nxj99mo1wGivXPC5vD9blTIHBvXPgmXAbHivDozwzRxDK6jFwoTv3M
+         eSmZDrchYXmAh7SoTQgLB1S9Ctwl+WceoL48POKkrcoEggnGC0Ba+qOEvJCK3LUkzbrf
+         nO5YP28kvJWruY+rcvtdKOKgn1E+JnCazzq2oJz12z+0J+BAR1hSHqELr7eIc2mO6cdC
+         h9w29M435nmxL03w1lRvYyuQlpYHIHGEDwo825qUuqFoLPz2zHGKoQsY1RwTqaT4o5qe
+         q4PLGoW830PSTTblzU2y49XOaaS54Z2jrz1NHkOTIbFwMVBcOGWIrZGwdMWWUYtlTrMU
+         1Uyg==
+X-Gm-Message-State: AOAM533trgfEw/RPMrvAqlgcoRV7mfncAcbLxY/qLfwt3kgPl74g2dbY
+        +nNlczzen8HT6y6eBWLOh5dA/jHUogiFwvl2nks=
+X-Google-Smtp-Source: ABdhPJw2EergD/NX50T4OkhnmC9+rTkdRU1qz0edm+NvDNtB5VB+K8fCZ8qgXabuqyD3CqZJSjTqnEnUtOf3VB7trqE=
+X-Received: by 2002:a63:d014:: with SMTP id z20mr31821501pgf.428.1620767319364;
+ Tue, 11 May 2021 14:08:39 -0700 (PDT)
 MIME-Version: 1.0
-References: <20210429114712.43783-1-jolsa@kernel.org> <CAADnVQLDwjE8KFcqbzB5op5b=fC2941tnnWOtQ+X1DYi6Yw1xA@mail.gmail.com>
- <YJkByQ4bGa7jrvWR@krava>
-In-Reply-To: <YJkByQ4bGa7jrvWR@krava>
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Tue, 11 May 2021 14:05:54 -0700
-Message-ID: <CAADnVQLJzJinUhWM4eFd1=GEjgNT-25y_bCx7LOjhpSXumKcHw@mail.gmail.com>
-Subject: Re: [PATCHv2] bpf: Add deny list of btf ids check for tracing programs
-To:     Jiri Olsa <jolsa@redhat.com>
-Cc:     Jiri Olsa <jolsa@kernel.org>, Alexei Starovoitov <ast@kernel.org>,
+References: <20210402192823.bqwgipmky3xsucs5@ast-mbp> <CAM_iQpUfv7c19zFN1Y5-cSUiVwpk0bmtBMSxZoELgDOFCQ=qAw@mail.gmail.com>
+ <20210402234500.by3wigegeluy5w7j@ast-mbp> <CAM_iQpWf2aYbY=tKejb=nx7LWBLo1woTp-n4wOLhkUuDCz8u-Q@mail.gmail.com>
+ <20210412230151.763nqvaadrrg77kd@ast-mbp.dhcp.thefacebook.com>
+ <CAM_iQpWePmmpr0RKqCrQ=NPiGrq2Tx9OU9y3e4CTzFjvh5t47w@mail.gmail.com>
+ <CAADnVQLsmULxJYq9rHS4xyg=VAUeexJTh35vTWTVgjeqwX4D6g@mail.gmail.com>
+ <CAM_iQpVtxgZNeqh4_Pqftc3D163JnRvP3AZRuFrYNeyWLgVBVA@mail.gmail.com>
+ <CAADnVQLFehCeQRbwEQ9VM-=Y3V3es2Ze8gFPs6cZHwNH0Ct7vw@mail.gmail.com>
+ <CAM_iQpWDhoY_msU=AowHFq3N3OuQpvxd2ADP_Z+gxBfGduhrPA@mail.gmail.com>
+ <20210427020159.hhgyfkjhzjk3lxgs@ast-mbp.dhcp.thefacebook.com>
+ <CAM_iQpVE4XG7SPAVBmV2UtqUANg3X-1ngY7COYC03NrT6JkZ+g@mail.gmail.com>
+ <CAADnVQK9BgguVorziWgpMktLHuPCgEaKa4fz-KCfhcZtT46teQ@mail.gmail.com>
+ <CAM_iQpWBrxuT=Y3CbhxYpE5a+QSk-O=Vj4euegggXAAKTHRBqw@mail.gmail.com> <CAOftzPh0cj_XRES8mrNWnyKFZDLpRez09NAofmu1F1JAZf43Cw@mail.gmail.com>
+In-Reply-To: <CAOftzPh0cj_XRES8mrNWnyKFZDLpRez09NAofmu1F1JAZf43Cw@mail.gmail.com>
+From:   Cong Wang <xiyou.wangcong@gmail.com>
+Date:   Tue, 11 May 2021 14:08:27 -0700
+Message-ID: <CAM_iQpXfbjQUpo56DUHrBmJ_LnNDi7axKn-dSYA2Uu5oewVn7A@mail.gmail.com>
+Subject: Re: [RFC Patch bpf-next] bpf: introduce bpf timer
+To:     Joe Stringer <joe@cilium.io>
+Cc:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>,
+        Xiongchun Duan <duanxiongchun@bytedance.com>,
+        Dongdong Wang <wangdongdong.6@bytedance.com>,
+        Muchun Song <songmuchun@bytedance.com>,
+        Cong Wang <cong.wang@bytedance.com>,
+        Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andriin@fb.com>,
-        Network Development <netdev@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>, Martin KaFai Lau <kafai@fb.com>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
         Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>
+        Pedro Tammela <pctammela@mojatatu.com>,
+        Jamal Hadi Salim <jhs@mojatatu.com>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, May 10, 2021 at 2:50 AM Jiri Olsa <jolsa@redhat.com> wrote:
+On Mon, May 10, 2021 at 10:06 PM Joe Stringer <joe@cilium.io> wrote:
 >
-> On Thu, May 06, 2021 at 06:36:38PM -0700, Alexei Starovoitov wrote:
-> > On Thu, Apr 29, 2021 at 4:47 AM Jiri Olsa <jolsa@kernel.org> wrote:
-> > >
-> > > The recursion check in __bpf_prog_enter and __bpf_prog_exit
-> > > leaves some (not inlined) functions unprotected:
-> > >
-> > > In __bpf_prog_enter:
-> > >   - migrate_disable is called before prog->active is checked
-> > >
-> > > In __bpf_prog_exit:
-> > >   - migrate_enable,rcu_read_unlock_strict are called after
-> > >     prog->active is decreased
-> > >
-> > > When attaching trampoline to them we get panic like:
-> > >
-> > >   traps: PANIC: double fault, error_code: 0x0
-> > >   double fault: 0000 [#1] SMP PTI
-> > >   RIP: 0010:__bpf_prog_enter+0x4/0x50
-> > >   ...
-> > >   Call Trace:
-> > >    <IRQ>
-> > >    bpf_trampoline_6442466513_0+0x18/0x1000
-> > >    migrate_disable+0x5/0x50
-> > >    __bpf_prog_enter+0x9/0x50
-> > >    bpf_trampoline_6442466513_0+0x18/0x1000
-> > >    migrate_disable+0x5/0x50
-> > >    __bpf_prog_enter+0x9/0x50
-> > >    bpf_trampoline_6442466513_0+0x18/0x1000
-> > >    migrate_disable+0x5/0x50
-> > >    __bpf_prog_enter+0x9/0x50
-> > >    bpf_trampoline_6442466513_0+0x18/0x1000
-> > >    migrate_disable+0x5/0x50
-> > >    ...
-> > >
-> > > Fixing this by adding deny list of btf ids for tracing
-> > > programs and checking btf id during program verification.
-> > > Adding above functions to this list.
-> > >
-> > > Suggested-by: Alexei Starovoitov <ast@kernel.org>
-> > > Signed-off-by: Jiri Olsa <jolsa@kernel.org>
-> > > ---
-> > > v2 changes:
-> > >   - drop check for EXT programs [Andrii]
-> > >
-> > >  kernel/bpf/verifier.c | 14 ++++++++++++++
-> > >  1 file changed, 14 insertions(+)
-> > >
-> > > diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
-> > > index 2579f6fbb5c3..42311e51ac71 100644
-> > > --- a/kernel/bpf/verifier.c
-> > > +++ b/kernel/bpf/verifier.c
-> > > @@ -13112,6 +13112,17 @@ int bpf_check_attach_target(struct bpf_verifier_log *log,
-> > >         return 0;
-> > >  }
-> > >
-> > > +BTF_SET_START(btf_id_deny)
-> > > +BTF_ID_UNUSED
-> > > +#ifdef CONFIG_SMP
-> > > +BTF_ID(func, migrate_disable)
-> > > +BTF_ID(func, migrate_enable)
-> > > +#endif
-> > > +#if !defined CONFIG_PREEMPT_RCU && !defined CONFIG_TINY_RCU
-> > > +BTF_ID(func, rcu_read_unlock_strict)
-> > > +#endif
-> > > +BTF_SET_END(btf_id_deny)
+> Hi Cong,
+>
+> On Sat, May 8, 2021 at 10:39 PM Cong Wang <xiyou.wangcong@gmail.com> wrote:
 > >
-> > I was wondering whether it makes sense to do this on pahole side instead ?
-> > It can do more flexible regex matching and excluding all such functions
-> > from vmlinux btf without the kernel having to do a maze of #ifdef
-> > depending on config.
-> > On one side we will lose BTF info about such functions, but what do we
-> > need it for?
-> > On the other side it will be a tiny reduction in vmlinux btf :)
-> > Thoughts?
+> > On Tue, Apr 27, 2021 at 11:34 AM Alexei Starovoitov
+> > <alexei.starovoitov@gmail.com> wrote:
+> > >
+> > > On Tue, Apr 27, 2021 at 9:36 AM Cong Wang <xiyou.wangcong@gmail.com> wrote:
+> > > >
+> > > > We don't go back to why user-space cleanup is inefficient again,
+> > > > do we? ;)
+> > >
+> > > I remain unconvinced that cilium conntrack _needs_ timer apis.
+> > > It works fine in production and I don't hear any complaints
+> > > from cilium users. So 'user space cleanup inefficiencies' is
+> > > very subjective and cannot be the reason to add timer apis.
+> >
+> > I am pretty sure I showed the original report to you when I sent
+> > timeout hashmap patch, in case you forgot here it is again:
+> > https://github.com/cilium/cilium/issues/5048
+> >
+> > and let me quote the original report here:
+> >
+> > "The current implementation (as of v1.2) for managing the contents of
+> > the datapath connection tracking map leaves something to be desired:
+> > Once per minute, the userspace cilium-agent makes a series of calls to
+> > the bpf() syscall to fetch all of the entries in the map to determine
+> > whether they should be deleted. For each entry in the map, 2-3 calls
+> > must be made: One to fetch the next key, one to fetch the value, and
+> > perhaps one to delete the entry. The maximum size of the map is 1
+> > million entries, and if the current count approaches this size then
+> > the garbage collection goroutine may spend a significant number of CPU
+> > cycles iterating and deleting elements from the conntrack map."
 >
-> we just removed the ftrace filter so BTF will have 'all' functions
+> I'm also curious to hear more details as I haven't seen any recent
+> discussion in the common Cilium community channels (GitHub / Slack)
+> around deficiencies in the conntrack garbage collection since we
+> addressed the LRU issues upstream and switched back to LRU maps.
+> There's an update to the report quoted from the same link above:
 >
-> I think the filtering on pahole side could cause problems like
-> the recent one with cubictcp_state.. it's just 3 functions, but
-> what if they rename? this way we at least get compilation error ;-)
->
-> I'd go with all functions in BTF and restrict attachment for those
-> that cause problems
+> "In recent releases, we've moved back to LRU for management of the CT
+> maps so the core problem is not as bad; furthermore we have
+> implemented a backoff for GC depending on the size and number of
+> entries in the conntrack table, so that in active environments the
+> userspace GC is frequent enough to prevent issues but in relatively
+> passive environments the userspace GC is only rarely run (to minimize
+> CPU impact)."
 
-Ok. Let's see how it will work in practice.
-Applied to bpf tree.
+Thanks for sharing the update. I am sure Jamal/Pedro measured LRU
+and percpu LRU as well, hope they can share the numbers here.
+
+>
+> By "core problem is not as bad", I would have been referring to the
+> way that failing to garbage collect hashtables in a timely manner can
+> lead to rejecting new connections due to lack of available map space.
+> Switching back to LRU mitigated this concern. With a reduced frequency
+
+LRU eviction only kicks in when the space is full, which is already too
+late. More importantly, with LRU, when an entry becomes "expired"
+is nondeterministic, which contradicts the definition of conntrack,
+which is time based.
+
+> of running the garbage collection logic, the CPU impact is lower as
+> well. I don't think we've explored batched map ops for this use case
+> yet either, which would already serve to improve the CPU usage
+> situation without extending the kernel.
+
+Sure, if we could let GC run once every year, the amortized CPU
+overhead would become literally zero. ;) I am sure this is not what
+you really want to suggest.
+
+>
+> The main outstanding issue I'm aware of is that we will often have a
+> 1:1 mapping of entries in the CT map and the NAT map, and ideally we'd
+> like them to have tied fates but currently we have no mechanism to do
+> this with LRU. When LRU eviction occurs, the entries can get out of
+> sync until the next GC. I could imagine timers helping with this if we
+> were to switch back to hash maps since we could handle this problem in
+> custom eviction logic, but that would reintroduce the entry management
+> problem above. So then we'd still need more work to figure out how to
+> address that with a timers approach. If I were to guess right now, the
+> right solution for this particular problem is probably associating
+> programs with map entry lifecycle events (like LRU eviction) rather
+> than adding timers to trigger the logic we want, but that's a whole
+> different discussion.
+
+I proposed a timeout hashmap before this ebpf timer, it is Alexei
+who suggested abstracting it as a timer, which makes sense to me.
+So, I am not sure what you are suggesting here, at least we are not
+going back to timeout hashmap or anything similarly tied closely
+with a map.
+
+Thanks.
