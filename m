@@ -2,171 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7D90E37B01C
-	for <lists+netdev@lfdr.de>; Tue, 11 May 2021 22:35:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 739E037B05F
+	for <lists+netdev@lfdr.de>; Tue, 11 May 2021 22:54:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229952AbhEKUgq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 11 May 2021 16:36:46 -0400
-Received: from www62.your-server.de ([213.133.104.62]:42888 "EHLO
-        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229736AbhEKUgp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 11 May 2021 16:36:45 -0400
-Received: from 30.101.7.85.dynamic.wline.res.cust.swisscom.ch ([85.7.101.30] helo=localhost)
-        by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92.3)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1lgZ6P-000427-Qn; Tue, 11 May 2021 22:35:37 +0200
-From:   Daniel Borkmann <daniel@iogearbox.net>
-To:     alexei.starovoitov@gmail.com
-Cc:     andrii@kernel.org, bpf@vger.kernel.org, netdev@vger.kernel.org,
-        Daniel Borkmann <daniel@iogearbox.net>
-Subject: [PATCH bpf 2/2] bpf: Add kconfig knob for disabling unpriv bpf by default
-Date:   Tue, 11 May 2021 22:35:17 +0200
-Message-Id: <74ec548079189e4e4dffaeb42b8987bb3c852eee.1620765074.git.daniel@iogearbox.net>
-X-Mailer: git-send-email 2.21.0
-In-Reply-To: <f23f58765a4d59244ebd8037da7b6a6b2fb58446.1620765074.git.daniel@iogearbox.net>
-References: <f23f58765a4d59244ebd8037da7b6a6b2fb58446.1620765074.git.daniel@iogearbox.net>
+        id S230124AbhEKU4C (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 11 May 2021 16:56:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51960 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229848AbhEKU4A (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 11 May 2021 16:56:00 -0400
+Received: from mail-ot1-x32a.google.com (mail-ot1-x32a.google.com [IPv6:2607:f8b0:4864:20::32a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A3DCAC061574;
+        Tue, 11 May 2021 13:54:53 -0700 (PDT)
+Received: by mail-ot1-x32a.google.com with SMTP id u19-20020a0568302493b02902d61b0d29adso17923663ots.10;
+        Tue, 11 May 2021 13:54:53 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=sender:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=bP2618JY2DE3yj2d7g93gwrbJJQkvioNaEQ1U9UncYI=;
+        b=S/Q680UVMhXEh5mtozUsmjMmpQRedOJCMBczniCRFKgukQ4lSmnVPAcS0etdlvXizq
+         GB3o0HeTJwPjXOSs0yG+E+8w/iRJ0bE8M/mENTueh+mifvYRSGyaEw34467ep2rdtK+V
+         XpOUjMcUXFiqgnW8a7aqGP1DhfIiownQmBcsOpxJ/O8YuKxbAmRKTnIkoCzE4cJC9EpS
+         F46hZZxeRaoNab8PCFfXcIlFPZNBW1J+0scKhKEVb83R333maTOXlyWQ1K3nDjKxoPYU
+         uXx3QxGTqmwGDxn8aW6IavVapSi0NX2maQ2htNEbuJnFG1cp5Xr0tvNVq2DfuKG6CVaP
+         1oBw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:sender:from:to:cc:subject:date:message-id
+         :mime-version:content-transfer-encoding;
+        bh=bP2618JY2DE3yj2d7g93gwrbJJQkvioNaEQ1U9UncYI=;
+        b=sDrbB+Gvp7XRSdQOnQInEI1phJ6NemgqXYafdHN+ywdvX2agsI8tSkngIL5384kuMb
+         YTlvIP5R6SjlmQa+3usgDPEiaZHIO9Fm8Ad1Xp4XLk6D/zYRW6/InU7I29mc7JnDXrC2
+         a+y2Q1ZKIhVW5rf6AequU/dPfKChJnjg5PqwaXi5MykyYgH2m4XvnGEIrAqXkr6gGjHe
+         MzYWLvrk6hGEczD0fpgwKgTfcfMMSb5EVRuOBvGp32o+8hlR3Ml7eu4kHPZsEFvT89yn
+         eUee1sGbKu2XcRDz5FixyGp61jzjyQdVlWQq6eWIPgS6/eG33wblZibofngf42OtWcHC
+         011Q==
+X-Gm-Message-State: AOAM532Vpa9rNYNkEvUz7UlaZRz879QHUGqdK2fgDRHrCXMsqFSzNPU9
+        1+cw0yDAxnDd6o/KN7oNHYgjPUdw9i0=
+X-Google-Smtp-Source: ABdhPJwW3OReJrqrn6ICu6fJk++aFosn+n08kcHTvM7KgqDWqf2d5pHqYVvfczWQIa6f9pklZPmgrw==
+X-Received: by 2002:a9d:6c81:: with SMTP id c1mr14037459otr.248.1620766493103;
+        Tue, 11 May 2021 13:54:53 -0700 (PDT)
+Received: from localhost ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
+        by smtp.gmail.com with ESMTPSA id q130sm3361498oif.40.2021.05.11.13.54.52
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 11 May 2021 13:54:52 -0700 (PDT)
+Sender: Guenter Roeck <groeck7@gmail.com>
+From:   Guenter Roeck <linux@roeck-us.net>
+To:     Jamal Hadi Salim <jhs@mojatatu.com>
+Cc:     Cong Wang <xiyou.wangcong@gmail.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Guenter Roeck <linux@roeck-us.net>
+Subject: [PATCH] net/sched: taprio: Drop unnecessary NULL check after container_of
+Date:   Tue, 11 May 2021 13:54:49 -0700
+Message-Id: <20210511205449.1676407-1-linux@roeck-us.net>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.103.2/26167/Tue May 11 13:12:12 2021)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add a kconfig knob which allows for unprivileged bpf to be disabled by default.
-If set, the knob sets /proc/sys/kernel/unprivileged_bpf_disabled to value of 2.
+The rcu_head pointer passed to taprio_free_sched_cb is never NULL.
+That means that the result of container_of() operations on it is also
+never NULL, even though rcu_head is the first element of the structure
+embedding it. On top of that, it is misleading to perform a NULL check
+on the result of container_of() because the position of the contained
+element could change, which would make the check invalid. Remove the
+unnecessary NULL check.
 
-This still allows a transition of 2 -> {0,1} through an admin. Similarly,
-this also still keeps 1 -> {1} behavior intact, so that once set to permanently
-disabled, it cannot be undone aside from a reboot.
+This change was made automatically with the following Coccinelle script.
 
-We've also added extra2 with max of 2 for the procfs handler, so that an admin
-still has a chance to toggle between 0 <-> 2.
+@@
+type t;
+identifier v;
+statement s;
+@@
 
-Either way, as an additional alternative, applications can make use of CAP_BPF
-that we added a while ago.
+<+...
+(
+  t v = container_of(...);
+|
+  v = container_of(...);
+)
+  ...
+  when != v
+- if (\( !v \| v == NULL \) ) s
+...+>
 
-Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
+Signed-off-by: Guenter Roeck <linux@roeck-us.net>
 ---
- Documentation/admin-guide/sysctl/kernel.rst | 17 +++++++++---
- kernel/bpf/Kconfig                          | 10 +++++++
- kernel/bpf/syscall.c                        |  3 ++-
- kernel/sysctl.c                             | 29 +++++++++++++++++----
- 4 files changed, 50 insertions(+), 9 deletions(-)
+ net/sched/sch_taprio.c | 3 ---
+ 1 file changed, 3 deletions(-)
 
-diff --git a/Documentation/admin-guide/sysctl/kernel.rst b/Documentation/admin-guide/sysctl/kernel.rst
-index 1d56a6b73a4e..24ab20d7a50a 100644
---- a/Documentation/admin-guide/sysctl/kernel.rst
-+++ b/Documentation/admin-guide/sysctl/kernel.rst
-@@ -1457,11 +1457,22 @@ unprivileged_bpf_disabled
- =========================
+diff --git a/net/sched/sch_taprio.c b/net/sched/sch_taprio.c
+index 5c91df52b8c2..71e8a7a84841 100644
+--- a/net/sched/sch_taprio.c
++++ b/net/sched/sch_taprio.c
+@@ -114,9 +114,6 @@ static void taprio_free_sched_cb(struct rcu_head *head)
+ 	struct sched_gate_list *sched = container_of(head, struct sched_gate_list, rcu);
+ 	struct sched_entry *entry, *n;
  
- Writing 1 to this entry will disable unprivileged calls to ``bpf()``;
--once disabled, calling ``bpf()`` without ``CAP_SYS_ADMIN`` will return
--``-EPERM``.
-+once disabled, calling ``bpf()`` without ``CAP_SYS_ADMIN`` or ``CAP_BPF``
-+will return ``-EPERM``. Once set to 1, this can't be cleared from the
-+running kernel anymore.
- 
--Once set, this can't be cleared.
-+Writing 2 to this entry will also disable unprivileged calls to ``bpf()``,
-+however, an admin can still change this setting later on, if needed, by
-+writing 0 or 1 to this entry.
- 
-+If ``BPF_UNPRIV_DEFAULT_OFF`` is enabled in the kernel config, then this
-+entry will default to 2 instead of 0.
-+
-+= =============================================================
-+0 Unprivileged calls to ``bpf()`` are enabled
-+1 Unprivileged calls to ``bpf()`` are disabled without recovery
-+2 Unprivileged calls to ``bpf()`` are disabled
-+= =============================================================
- 
- watchdog
- ========
-diff --git a/kernel/bpf/Kconfig b/kernel/bpf/Kconfig
-index b4edaefc6255..26b591e23f16 100644
---- a/kernel/bpf/Kconfig
-+++ b/kernel/bpf/Kconfig
-@@ -61,6 +61,16 @@ config BPF_JIT_DEFAULT_ON
- 	def_bool ARCH_WANT_DEFAULT_BPF_JIT || BPF_JIT_ALWAYS_ON
- 	depends on HAVE_EBPF_JIT && BPF_JIT
- 
-+config BPF_UNPRIV_DEFAULT_OFF
-+	bool "Disable unprivileged BPF by default"
-+	depends on BPF_SYSCALL
-+	help
-+	  Disables unprivileged BPF by default by setting the corresponding
-+	  /proc/sys/kernel/unprivileged_bpf_disabled knob to 2. An admin can
-+	  still reenable it by setting it to 0 later on, or permanently
-+	  disable it by setting it to 1 (from which no other transition to
-+	  0 is possible anymore).
-+
- source "kernel/bpf/preload/Kconfig"
- 
- config BPF_LSM
-diff --git a/kernel/bpf/syscall.c b/kernel/bpf/syscall.c
-index 941ca06d9dfa..ea04b0deb5ce 100644
---- a/kernel/bpf/syscall.c
-+++ b/kernel/bpf/syscall.c
-@@ -50,7 +50,8 @@ static DEFINE_SPINLOCK(map_idr_lock);
- static DEFINE_IDR(link_idr);
- static DEFINE_SPINLOCK(link_idr_lock);
- 
--int sysctl_unprivileged_bpf_disabled __read_mostly;
-+int sysctl_unprivileged_bpf_disabled __read_mostly =
-+	IS_BUILTIN(CONFIG_BPF_UNPRIV_DEFAULT_OFF) ? 2 : 0;
- 
- static const struct bpf_map_ops * const bpf_map_types[] = {
- #define BPF_PROG_TYPE(_id, _name, prog_ctx_type, kern_ctx_type)
-diff --git a/kernel/sysctl.c b/kernel/sysctl.c
-index f91d327273c1..6df7c81f7cdd 100644
---- a/kernel/sysctl.c
-+++ b/kernel/sysctl.c
-@@ -225,7 +225,27 @@ static int bpf_stats_handler(struct ctl_table *table, int write,
- 	mutex_unlock(&bpf_stats_enabled_mutex);
- 	return ret;
- }
--#endif
-+
-+static int bpf_unpriv_handler(struct ctl_table *table, int write,
-+			      void *buffer, size_t *lenp, loff_t *ppos)
-+{
-+	int ret, unpriv_enable = *(int *)table->data;
-+	bool locked_state = unpriv_enable == 1;
-+	struct ctl_table tmp = *table;
-+
-+	if (write && !capable(CAP_SYS_ADMIN))
-+		return -EPERM;
-+
-+	tmp.data = &unpriv_enable;
-+	ret = proc_dointvec_minmax(&tmp, write, buffer, lenp, ppos);
-+	if (write && !ret) {
-+		if (locked_state && unpriv_enable != 1)
-+			return -EPERM;
-+		*(int *)table->data = unpriv_enable;
-+	}
-+	return ret;
-+}
-+#endif /* CONFIG_BPF_SYSCALL && CONFIG_SYSCTL */
- 
- /*
-  * /proc/sys support
-@@ -2600,10 +2620,9 @@ static struct ctl_table kern_table[] = {
- 		.data		= &sysctl_unprivileged_bpf_disabled,
- 		.maxlen		= sizeof(sysctl_unprivileged_bpf_disabled),
- 		.mode		= 0644,
--		/* only handle a transition from default "0" to "1" */
--		.proc_handler	= proc_dointvec_minmax,
--		.extra1		= SYSCTL_ONE,
--		.extra2		= SYSCTL_ONE,
-+		.proc_handler	= bpf_unpriv_handler,
-+		.extra1		= SYSCTL_ZERO,
-+		.extra2		= &two,
- 	},
- 	{
- 		.procname	= "bpf_stats_enabled",
+-	if (!sched)
+-		return;
+-
+ 	list_for_each_entry_safe(entry, n, &sched->entries, list) {
+ 		list_del(&entry->list);
+ 		kfree(entry);
 -- 
-2.21.0
+2.25.1
 
