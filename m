@@ -2,133 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 463FD37A2F2
-	for <lists+netdev@lfdr.de>; Tue, 11 May 2021 11:05:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D27D537A301
+	for <lists+netdev@lfdr.de>; Tue, 11 May 2021 11:08:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231254AbhEKJGL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 11 May 2021 05:06:11 -0400
-Received: from szxga08-in.huawei.com ([45.249.212.255]:2298 "EHLO
-        szxga08-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230445AbhEKJGJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 11 May 2021 05:06:09 -0400
-Received: from dggeml712-chm.china.huawei.com (unknown [172.30.72.57])
-        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4FfX2Q6vYWz19NB4;
-        Tue, 11 May 2021 17:00:46 +0800 (CST)
-Received: from dggpemm500005.china.huawei.com (7.185.36.74) by
- dggeml712-chm.china.huawei.com (10.3.17.123) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
- 15.1.2176.2; Tue, 11 May 2021 17:05:00 +0800
-Received: from [127.0.0.1] (10.69.30.204) by dggpemm500005.china.huawei.com
- (7.185.36.74) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id 15.1.2176.2; Tue, 11 May
- 2021 17:05:00 +0800
-Subject: Re: [PATCH net v6 3/3] net: sched: fix tx action reschedule issue
- with stopped queue
-To:     Jakub Kicinski <kuba@kernel.org>
-CC:     <davem@davemloft.net>, <olteanv@gmail.com>, <ast@kernel.org>,
-        <daniel@iogearbox.net>, <andriin@fb.com>, <edumazet@google.com>,
-        <weiwan@google.com>, <cong.wang@bytedance.com>,
-        <ap420073@gmail.com>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <linuxarm@openeuler.org>,
-        <mkl@pengutronix.de>, <linux-can@vger.kernel.org>,
-        <jhs@mojatatu.com>, <xiyou.wangcong@gmail.com>, <jiri@resnulli.us>,
-        <andrii@kernel.org>, <kafai@fb.com>, <songliubraving@fb.com>,
-        <yhs@fb.com>, <john.fastabend@gmail.com>, <kpsingh@kernel.org>,
-        <bpf@vger.kernel.org>, <jonas.bonn@netrounds.com>,
-        <pabeni@redhat.com>, <mzhivich@akamai.com>, <johunt@akamai.com>,
-        <albcamus@gmail.com>, <kehuan.feng@gmail.com>,
-        <a.fatoum@pengutronix.de>, <atenart@kernel.org>,
-        <alexander.duyck@gmail.com>, <hdanton@sina.com>, <jgross@suse.com>,
-        <JKosina@suse.com>, <mkubecek@suse.cz>, <bjorn@kernel.org>,
-        <alobakin@pm.me>
-References: <1620610956-56306-1-git-send-email-linyunsheng@huawei.com>
- <1620610956-56306-4-git-send-email-linyunsheng@huawei.com>
- <20210510212232.3386c5b4@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-From:   Yunsheng Lin <linyunsheng@huawei.com>
-Message-ID: <c676404c-f210-b0cb-ced3-5449676055a8@huawei.com>
-Date:   Tue, 11 May 2021 17:04:59 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:52.0) Gecko/20100101
- Thunderbird/52.2.0
+        id S231274AbhEKJJV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 11 May 2021 05:09:21 -0400
+Received: from mail-vs1-f52.google.com ([209.85.217.52]:45980 "EHLO
+        mail-vs1-f52.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231189AbhEKJJS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 11 May 2021 05:09:18 -0400
+Received: by mail-vs1-f52.google.com with SMTP id x188so4253750vsx.12;
+        Tue, 11 May 2021 02:08:11 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=VWZENhS44KnEbYhJ55uNu4C5dSY972Eyg88PLcY/zho=;
+        b=ZYteCF6VMnbzLPAL9iAFHg4dIeYly3O1jQ5AW5JJ2oPvkDf9qaHUYPPSTqgNsxT5sH
+         z3T+D/pKNKeSsu6YOS9dBxElcxnKDvYdOPgcyDCb/u+Rjyfpj745mOZI32j9IjihwyUr
+         18QVNg5hgXGFGwhICErwrs1obuxQToEcdsLOybILakDy3FOXo5qg9Unde5N9jpGNBfOg
+         ksriRNSbrosR5iE6bMuQAlm+SInUEV4H0lm9pFhk+oCD0yP23p/y3/6M5kGXwnXTYgNz
+         2yQHWt/hx0eOG6fgVYxpn8Wuy1dv/f+HlL2gT5ilUwr//ZgxrlhnrNooAhGHlRhAGFyS
+         YgiQ==
+X-Gm-Message-State: AOAM532nrO/G0LpWV4ZfZEqMlg+EpjJ40uVfT8BX5GGt+EPxoDpKK11r
+        EdBs9u0cwCTCCcNf2gDYQKoQKiMkGjRtKiOxI+M=
+X-Google-Smtp-Source: ABdhPJweTlTBbaLMWAGki0KxVFdQqpl/ZcfogWI1Lhfowsw6ZamthDcv+jjw6/wD3nCQ2Fi0vyUoOcx9OTMR/abE99c=
+X-Received: by 2002:a67:3113:: with SMTP id x19mr17992653vsx.40.1620724090696;
+ Tue, 11 May 2021 02:08:10 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <20210510212232.3386c5b4@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.69.30.204]
-X-ClientProxiedBy: dggeme719-chm.china.huawei.com (10.1.199.115) To
- dggpemm500005.china.huawei.com (7.185.36.74)
-X-CFilter-Loop: Reflected
+References: <20210330145430.996981-1-maz@kernel.org> <20210330145430.996981-8-maz@kernel.org>
+In-Reply-To: <20210330145430.996981-8-maz@kernel.org>
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+Date:   Tue, 11 May 2021 11:07:59 +0200
+Message-ID: <CAMuHMdWd5261ti-zKsroFLvWs0abaWa7G4DKefgPwFb3rEjnNw@mail.gmail.com>
+Subject: Re: [PATCH v19 7/7] ptp: arm/arm64: Enable ptp_kvm for arm/arm64
+To:     Marc Zyngier <maz@kernel.org>, jianyong.wu@arm.com
+Cc:     netdev <netdev@vger.kernel.org>, Yangbo Lu <yangbo.lu@nxp.com>,
+        John Stultz <john.stultz@linaro.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Paolo Bonzini <pbonzini@redhat.com>, seanjc@google.com,
+        Richard Cochran <richardcochran@gmail.com>,
+        Mark Rutland <Mark.Rutland@arm.com>,
+        Will Deacon <will@kernel.org>,
+        Suzuki K Poulose <suzuki.poulose@arm.com>,
+        Andre Przywara <Andre.Przywara@arm.com>,
+        Steven Price <steven.price@arm.com>,
+        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
+        Sudeep Holla <sudeep.holla@arm.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        kvmarm@lists.cs.columbia.edu, KVM list <kvm@vger.kernel.org>,
+        Steve Capper <Steve.Capper@arm.com>, justin.he@arm.com,
+        Android Kernel Team <kernel-team@android.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2021/5/11 12:22, Jakub Kicinski wrote:
-> On Mon, 10 May 2021 09:42:36 +0800 Yunsheng Lin wrote:
->> The netdev qeueue might be stopped when byte queue limit has
->> reached or tx hw ring is full, net_tx_action() may still be
->> rescheduled endlessly if STATE_MISSED is set, which consumes
->> a lot of cpu without dequeuing and transmiting any skb because
->> the netdev queue is stopped, see qdisc_run_end().
->>
->> This patch fixes it by checking the netdev queue state before
->> calling qdisc_run() and clearing STATE_MISSED if netdev queue is
->> stopped during qdisc_run(), the net_tx_action() is recheduled
->> again when netdev qeueue is restarted, see netif_tx_wake_queue().
->>
->> Fixes: 6b3ba9146fe6 ("net: sched: allow qdiscs to handle locking")
->> Reported-by: Michal Kubecek <mkubecek@suse.cz>
->> Signed-off-by: Yunsheng Lin <linyunsheng@huawei.com>
-> 
-> Patches 1 and 2 look good to me but this one I'm not 100% sure.
-> 
->> @@ -251,8 +253,10 @@ static struct sk_buff *dequeue_skb(struct Qdisc *q, bool *validate,
->>  	*validate = true;
->>  
->>  	if ((q->flags & TCQ_F_ONETXQUEUE) &&
->> -	    netif_xmit_frozen_or_stopped(txq))
->> +	    netif_xmit_frozen_or_stopped(txq)) {
->> +		clear_bit(__QDISC_STATE_MISSED, &q->state);
->>  		return skb;
->> +	}
-> 
-> The queues are woken asynchronously without holding any locks via
-> netif_tx_wake_queue(). Theoretically we can have a situation where:
-> 
-> CPU 0                            CPU 1   
->   .                                .
-> dequeue_skb()                      .
->   netif_xmit_frozen..() # true     .
->   .                              [IRQ]
->   .                              netif_tx_wake_queue()
->   .                              <end of IRQ>
->   .                              netif_tx_action()
->   .                              set MISSED
->   clear MISSED
->   return NULL
-> ret from qdisc_restart()
-> ret from __qdisc_run()
-> qdisc_run_end()
-> -> MISSED not set
+Hi Marc, Jianyong,
 
-Yes, the above does seems to have the above data race.
+On Tue, Mar 30, 2021 at 4:56 PM Marc Zyngier <maz@kernel.org> wrote:
+> From: Jianyong Wu <jianyong.wu@arm.com>
+>
+> Currently, there is no mechanism to keep time sync between guest and host
+> in arm/arm64 virtualization environment. Time in guest will drift compared
+> with host after boot up as they may both use third party time sources
+> to correct their time respectively. The time deviation will be in order
+> of milliseconds. But in some scenarios,like in cloud environment, we ask
+> for higher time precision.
+>
+> kvm ptp clock, which chooses the host clock source as a reference
+> clock to sync time between guest and host, has been adopted by x86
+> which takes the time sync order from milliseconds to nanoseconds.
+>
+> This patch enables kvm ptp clock for arm/arm64 and improves clock sync precision
+> significantly.
 
-As my understanding, there is two ways to fix the above data race:
-1. do not clear the STATE_MISSED for netif_xmit_frozen_or_stopped()
-   case, just check the netif_xmit_frozen_or_stopped() before
-   calling __netif_schedule() at the end of qdisc_run_end(). This seems
-   to only work with qdisc with TCQ_F_ONETXQUEUE flag because it seems
-   we can only check the netif_xmit_frozen_or_stopped() with q->dev_queue,
-   I am not sure q->dev_queue is pointint to which netdev queue when qdisc
-   is not set with TCQ_F_ONETXQUEUE flag.
+> --- a/drivers/ptp/Kconfig
+> +++ b/drivers/ptp/Kconfig
+> @@ -108,7 +108,7 @@ config PTP_1588_CLOCK_PCH
+>  config PTP_1588_CLOCK_KVM
+>         tristate "KVM virtual PTP clock"
+>         depends on PTP_1588_CLOCK
+> -       depends on KVM_GUEST && X86
+> +       depends on (KVM_GUEST && X86) || (HAVE_ARM_SMCCC_DISCOVERY && ARM_ARCH_TIMER)
 
-2. clearing the STATE_MISSED for netif_xmit_frozen_or_stopped() case
-   as this patch does, and protect the __netif_schedule() with q->seqlock
-   for netif_tx_wake_queue(), which might bring unnecessary overhead for
-   non-stopped queue case
+Why does this not depend on KVM_GUEST on ARM?
+I.e. shouldn't the dependency be:
 
-Any better idea?
+    KVM_GUEST && (X86 || (HAVE_ARM_SMCCC_DISCOVERY && ARM_ARCH_TIMER))
 
-> 
-> .
-> 
+?
 
+>         default y
+>         help
+>           This driver adds support for using kvm infrastructure as a PTP
+
+Gr{oetje,eeting}s,
+
+                        Geert
+
+-- 
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
