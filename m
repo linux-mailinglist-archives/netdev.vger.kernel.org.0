@@ -2,96 +2,118 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 35D3937AE94
-	for <lists+netdev@lfdr.de>; Tue, 11 May 2021 20:37:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3594237AE9C
+	for <lists+netdev@lfdr.de>; Tue, 11 May 2021 20:45:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232027AbhEKSiI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 11 May 2021 14:38:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49060 "EHLO
+        id S231944AbhEKSqK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 11 May 2021 14:46:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50808 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231439AbhEKSiH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 11 May 2021 14:38:07 -0400
-Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EFE47C061574
-        for <netdev@vger.kernel.org>; Tue, 11 May 2021 11:37:00 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=bombadil.20210309; h=Content-Transfer-Encoding:
-        Content-Type:In-Reply-To:MIME-Version:Date:Message-ID:From:References:Cc:To:
-        Subject:Sender:Reply-To:Content-ID:Content-Description;
-        bh=XndQ+T+f0pBAzvowmJCGafDYlfQgKlSbPmzDSOTnijY=; b=MAl+Gh22xTokllBVZMiDv0StUQ
-        uu8BXFGe/sQSpNhWY9Gx60688kdBJYiFnDXL1pM2MkiAuz5pTMYItuk7aUF7wEAHZGlrw+P6RgSKN
-        FrxhVmKp7k1LBJQvi9POMUU0fpBApYtred060gPnEmLDIczjFJwXVXMn9/tJEayRbOyh2mSS7pDEm
-        U1e7V/s69dDzMKG5BP68Bi70YDoV4pngVd+G220ax8q4oMIVd4DOhtxjpE9xeJIanHTJOKlWKpaAO
-        GEeTGoHY7DNcEW4/+7orlyT5XwqX04l3Vpa2KSz6yWO3hU2wKF+sooC54sc9/gzs4cgVxcZO42l8x
-        VqsbY9uw==;
-Received: from [2601:1c0:6280:3f0:d7c4:8ab4:31d7:f0ba]
-        by bombadil.infradead.org with esmtpsa (Exim 4.94 #2 (Red Hat Linux))
-        id 1lgXFa-009qZz-0m; Tue, 11 May 2021 18:36:58 +0000
-Subject: Re: [PATCH v4 net] ionic: fix ptp support config breakage
-To:     Shannon Nelson <snelson@pensando.io>, netdev@vger.kernel.org,
-        davem@davemloft.net, kuba@kernel.org
-Cc:     drivers@pensando.io, Allen Hubbe <allenbh@pensando.io>
-References: <20210511181132.25851-1-snelson@pensando.io>
-From:   Randy Dunlap <rdunlap@infradead.org>
-Message-ID: <83bbecd2-086c-47c2-d62d-3312004fff4d@infradead.org>
-Date:   Tue, 11 May 2021 11:36:56 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.10.0
+        with ESMTP id S231824AbhEKSqJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 11 May 2021 14:46:09 -0400
+Received: from sipsolutions.net (s3.sipsolutions.net [IPv6:2a01:4f8:191:4433::2])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BC0C0C061574;
+        Tue, 11 May 2021 11:45:02 -0700 (PDT)
+Received: by sipsolutions.net with esmtpsa (TLS1.3:ECDHE_X25519__RSA_PSS_RSAE_SHA256__AES_256_GCM:256)
+        (Exim 4.94.2)
+        (envelope-from <johannes@sipsolutions.net>)
+        id 1lgXNM-007b3L-VM; Tue, 11 May 2021 20:45:01 +0200
+From:   Johannes Berg <johannes@sipsolutions.net>
+To:     netdev@vger.kernel.org
+Cc:     linux-wireless@vger.kernel.org
+Subject: pull-request: mac80211 2021-05-11
+Date:   Tue, 11 May 2021 20:44:53 +0200
+Message-Id: <20210511184454.164893-1-johannes@sipsolutions.net>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-In-Reply-To: <20210511181132.25851-1-snelson@pensando.io>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 5/11/21 11:11 AM, Shannon Nelson wrote:
-> When IONIC=y and PTP_1588_CLOCK=m were set in the .config file
-> the driver link failed with undefined references.
-> 
-> We add the dependancy
-> 	depends on PTP_1588_CLOCK || !PTP_1588_CLOCK
-> to clear this up.
-> 
-> If PTP_1588_CLOCK=m, the depends limits IONIC to =m (or disabled).
-> If PTP_1588_CLOCK is disabled, IONIC can be any of y/m/n.
-> 
-> Fixes: 61db421da31b ("ionic: link in the new hw timestamp code")
-> Reported-by: kernel test robot <lkp@intel.com>
-> Cc: Jakub Kicinski <kuba@kernel.org>
-> Cc: Randy Dunlap <rdunlap@infradead.org>
-> Cc: Allen Hubbe <allenbh@pensando.io>
-> Signed-off-by: Shannon Nelson <snelson@pensando.io>
+Hi,
 
-Acked-by: Randy Dunlap <rdunlap@infradead.org>
+So exciting times, for the first pull request for fixes I
+have a bunch of security things that have been under embargo
+for a while - see more details in the tag below, and at the
+patch posting message I linked to.
 
-Thanks.
+I organized with Kalle to just have a single set of fixes
+for mac80211 and ath10k/ath11k, we don't know about any of
+the other vendors (the mac80211 + already released firmware
+is sufficient to fix iwlwifi.)
 
-> ---
-> 
-> v4 - Jakub's rewrite
-> v3 - put version notes below ---, added Allen's Cc
-> v2 - added Fixes tag
-> ---
->  drivers/net/ethernet/pensando/Kconfig | 1 +
->  1 file changed, 1 insertion(+)
-> 
-> diff --git a/drivers/net/ethernet/pensando/Kconfig b/drivers/net/ethernet/pensando/Kconfig
-> index 5f8b0bb3af6e..202973a82712 100644
-> --- a/drivers/net/ethernet/pensando/Kconfig
-> +++ b/drivers/net/ethernet/pensando/Kconfig
-> @@ -20,6 +20,7 @@ if NET_VENDOR_PENSANDO
->  config IONIC
->  	tristate "Pensando Ethernet IONIC Support"
->  	depends on 64BIT && PCI
-> +	depends on PTP_1588_CLOCK || !PTP_1588_CLOCK
->  	select NET_DEVLINK
->  	select DIMLIB
->  	help
-> 
+Please pull and let me know if there's any problem.
+
+Thanks,
+johannes
 
 
--- 
-~Randy
+
+The following changes since commit 297c4de6f780b63b6d2af75a730720483bf1904a:
+
+  net: dsa: felix: re-enable TAS guard band mode (2021-05-10 14:48:55 -0700)
+
+are available in the Git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/jberg/mac80211.git tags/mac80211-for-net-2021-05-11
+
+for you to fetch changes up to 210f563b097997ce917e82feab356b298bfd12b0:
+
+  ath11k: Drop multicast fragments (2021-05-11 20:16:30 +0200)
+
+----------------------------------------------------------------
+Several security issues in the 802.11 implementations were found by
+Mathy Vanhoef (New York University Abu Dhabi), and this contains the
+fixes developed for mac80211 and specifically Qualcomm drivers, I'm
+sending this together (as agreed with Kalle) to have just a single
+set of patches for now. We don't know about other vendors though.
+
+More details in the patch posting:
+https://lore.kernel.org/r/20210511180259.159598-1-johannes@sipsolutions.net
+
+----------------------------------------------------------------
+Johannes Berg (5):
+      mac80211: drop A-MSDUs on old ciphers
+      mac80211: add fragment cache to sta_info
+      mac80211: check defrag PN against current frame
+      mac80211: prevent attacks on TKIP/WEP as well
+      mac80211: do not accept/forward invalid EAPOL frames
+
+Mathy Vanhoef (4):
+      mac80211: assure all fragments are encrypted
+      mac80211: prevent mixed key and fragment cache attacks
+      mac80211: properly handle A-MSDUs that start with an RFC 1042 header
+      cfg80211: mitigate A-MSDU aggregation attacks
+
+Sriram R (3):
+      ath10k: Validate first subframe of A-MSDU before processing the list
+      ath11k: Clear the fragment cache during key install
+      ath11k: Drop multicast fragments
+
+Wen Gong (6):
+      mac80211: extend protection against mixed key and fragment cache attacks
+      ath10k: add CCMP PN replay protection for fragmented frames for PCIe
+      ath10k: drop fragments with multicast DA for PCIe
+      ath10k: drop fragments with multicast DA for SDIO
+      ath10k: drop MPDU which has discard flag set by firmware for SDIO
+      ath10k: Fix TKIP Michael MIC verification for PCIe
+
+ drivers/net/wireless/ath/ath10k/htt.h     |   1 +
+ drivers/net/wireless/ath/ath10k/htt_rx.c  | 201 ++++++++++++++++++++++++++++--
+ drivers/net/wireless/ath/ath10k/rx_desc.h |  14 ++-
+ drivers/net/wireless/ath/ath11k/dp_rx.c   |  34 +++++
+ drivers/net/wireless/ath/ath11k/dp_rx.h   |   1 +
+ drivers/net/wireless/ath/ath11k/mac.c     |   6 +
+ include/net/cfg80211.h                    |   4 +-
+ net/mac80211/ieee80211_i.h                |  36 ++----
+ net/mac80211/iface.c                      |  11 +-
+ net/mac80211/key.c                        |   7 ++
+ net/mac80211/key.h                        |   2 +
+ net/mac80211/rx.c                         | 150 +++++++++++++++++-----
+ net/mac80211/sta_info.c                   |   6 +-
+ net/mac80211/sta_info.h                   |  33 ++++-
+ net/mac80211/wpa.c                        |  13 +-
+ net/wireless/util.c                       |   7 +-
+ 16 files changed, 441 insertions(+), 85 deletions(-)
 
