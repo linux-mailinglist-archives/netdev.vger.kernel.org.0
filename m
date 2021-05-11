@@ -2,63 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5463437ACC9
-	for <lists+netdev@lfdr.de>; Tue, 11 May 2021 19:13:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4747A37ACCC
+	for <lists+netdev@lfdr.de>; Tue, 11 May 2021 19:14:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231824AbhEKROJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 11 May 2021 13:14:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57922 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231230AbhEKROI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 11 May 2021 13:14:08 -0400
-Received: from mail-pl1-x631.google.com (mail-pl1-x631.google.com [IPv6:2607:f8b0:4864:20::631])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9AEACC061574;
-        Tue, 11 May 2021 10:13:00 -0700 (PDT)
-Received: by mail-pl1-x631.google.com with SMTP id b15so4966321plh.10;
-        Tue, 11 May 2021 10:13:00 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=kVJO4CtbzHc/3Ro3BSgADxEw84V62g2+OdcoUzH6GiI=;
-        b=dftaaVBblw+mN/KC61iYpD4fFGNbLIwvr+HDQNMZJc8D3bgkronqax0OWTqdLV0XS3
-         6ul1Y7h2pk5uMOqn5RK6ldd2wZTTixUCZSEf95Wh0aVgsdO7y0d9SXuvVr4hf5ahzn+D
-         DfUVHanJP2UWZfE4E5AAhMq2hVkOHqcL1vmvftXySeaFW5myViD8gGYRAOU5B9gySW9D
-         ACMNWde0b+mGZUDfPUfPpMnEYW2/G/Co/Uupq2it0Yp8rGKX8If0zhikcz/mvGL62mtP
-         Dz+nBO8NQhek5KaCncup8pC+jbqdm+xPTx2TgLVzOGMInSqYFoYiOkVvOhKQuxlq2dz/
-         /SLg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=kVJO4CtbzHc/3Ro3BSgADxEw84V62g2+OdcoUzH6GiI=;
-        b=YZynoNoh6ngTFbSFqmZLW9xyx68RtFPFEj9ejD0wqkSaNBAJ1pE17hUQp281xtyh4L
-         3dFTFGYWmeCT4WCE7DVb5MUQKFCsjwBMJ+kEc5T1WKgXTHo/BtfD5MX1RXW0WpixIbtk
-         DUtqNw8WRMt1SqKHqpdLBn84iMTMh5w72CEb0Eg9ituTE0XjICs0QcHcjGXtTCpi7SpL
-         bzX7qXkqUqcK2V17etlFiCwchiCrAIn3rlb6OkrSRd3g6DVAZsn5KFKPAcn2C9zQYK8S
-         rYwIFltYwG3w+cOBN2ukSwCLATBXk7dASPdyI1c6uY96YwxDpe+iLJGQjPcAsNekuYnW
-         dSOg==
-X-Gm-Message-State: AOAM532H26ufNizFgZg1JT7CN6YpyY9ZQWUTx/e2zbG66ZZ+v+zCv9q8
-        2IxTA+xqb9drRPNcoWFjoQK07yVnXfrpWfTJpNAEkxbkqTSO/Q==
-X-Google-Smtp-Source: ABdhPJwApODesd0pw/Xj/4HKXp0/LTIINOWceNHveLRqte1CWC0QT3iPRv5CH3UfgRjHPPuhdmTelKPMxM3vm0TrejQ=
-X-Received: by 2002:a17:90a:e2cb:: with SMTP id fr11mr2181276pjb.56.1620753180192;
- Tue, 11 May 2021 10:13:00 -0700 (PDT)
+        id S231703AbhEKRPS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 11 May 2021 13:15:18 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:34969 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S231392AbhEKRPR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 11 May 2021 13:15:17 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1620753250;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=pk4z78AX9PO6TFw0FJG3UMJGW7JO7PHknrNHBcHpsYw=;
+        b=BRX1jLCtxnPb+Ilizt1Q82HMveUelli3PF+nThWD40GEdC/tvhtraAt32sgoeIy2tpvCIG
+        CgTYPR3PW8oWDv9qfBaFJJmI+C0nnK2s4tLWd/TgrJ9221XLnvBqTHetnjvwtlYXYGq05T
+        EYdjZ3a9EDv/M0+2SYX+w06d3RkdAS4=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-41-ZgT30B2VODW3_Hx6oOB55A-1; Tue, 11 May 2021 13:14:07 -0400
+X-MC-Unique: ZgT30B2VODW3_Hx6oOB55A-1
+Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com [10.5.11.22])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 47332107ACC7;
+        Tue, 11 May 2021 17:14:05 +0000 (UTC)
+Received: from gerbillo.redhat.com (ovpn-115-64.ams2.redhat.com [10.36.115.64])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 5F8661037F2C;
+        Tue, 11 May 2021 17:14:03 +0000 (UTC)
+From:   Paolo Abeni <pabeni@redhat.com>
+To:     netdev@vger.kernel.org
+Cc:     Mat Martineau <mathew.j.martineau@linux.intel.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, mptcp@lists.linux.dev,
+        Maxim Galaganov <max@internet.ru>
+Subject: [PATCH v2 net] mptcp: fix data stream corruption
+Date:   Tue, 11 May 2021 19:13:51 +0200
+Message-Id: <0c393b7ad78e0bab142f48d53995aaa8636b44d9.1620753167.git.pabeni@redhat.com>
 MIME-Version: 1.0
-References: <000000000000cc615405c13e4dfe@google.com> <00000000000086605105c1d201bc@google.com>
-In-Reply-To: <00000000000086605105c1d201bc@google.com>
-From:   Cong Wang <xiyou.wangcong@gmail.com>
-Date:   Tue, 11 May 2021 10:12:49 -0700
-Message-ID: <CAM_iQpU4Jh8bONSZTYT8du48xM=Eg3rrrQEBSBxhsWc+bXyC8Q@mail.gmail.com>
-Subject: Re: [syzbot] KASAN: use-after-free Read in nfc_llcp_put_ssap
-To:     syzbot <syzbot+e4689b43d2ed2ed63611@syzkaller.appspotmail.com>
-Cc:     David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        syzkaller-bugs <syzkaller-bugs@googlegroups.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-#syz fix: net/nfc: fix use-after-free llcp_sock_bind/connect
+Maxim reported several issues when forcing a TCP transparent proxy
+to use the MPTCP protocol for the inbound connections. He also
+provided a clean reproducer.
+
+The problem boils down to 'mptcp_frag_can_collapse_to()' assuming
+that only MPTCP will use the given page_frag.
+
+If others - e.g. the plain TCP protocol - allocate page fragments,
+we can end-up re-using already allocated memory for mptcp_data_frag.
+
+Fix the issue ensuring that the to-be-expanded data fragment is
+located at the current page frag end.
+
+v1 -> v2:
+ - added missing fixes tag (Mat)
+
+Closes: https://github.com/multipath-tcp/mptcp_net-next/issues/178
+Reported-and-tested-by: Maxim Galaganov <max@internet.ru>
+Fixes: 18b683bff89d ("mptcp: queue data for mptcp level retransmission")
+Signed-off-by: Paolo Abeni <pabeni@redhat.com>
+---
+ net/mptcp/protocol.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
+
+diff --git a/net/mptcp/protocol.c b/net/mptcp/protocol.c
+index 29a2d690d8d5..2d21a4793d9d 100644
+--- a/net/mptcp/protocol.c
++++ b/net/mptcp/protocol.c
+@@ -879,12 +879,18 @@ static bool mptcp_skb_can_collapse_to(u64 write_seq,
+ 	       !mpext->frozen;
+ }
+ 
++/* we can append data to the given data frag if:
++ * - there is space available in the backing page_frag
++ * - the data frag tail matches the current page_frag free offset
++ * - the data frag end sequence number matches the current write seq
++ */
+ static bool mptcp_frag_can_collapse_to(const struct mptcp_sock *msk,
+ 				       const struct page_frag *pfrag,
+ 				       const struct mptcp_data_frag *df)
+ {
+ 	return df && pfrag->page == df->page &&
+ 		pfrag->size - pfrag->offset > 0 &&
++		pfrag->offset == (df->offset + df->data_len) &&
+ 		df->data_seq + df->data_len == msk->write_seq;
+ }
+ 
+-- 
+2.26.2
+
