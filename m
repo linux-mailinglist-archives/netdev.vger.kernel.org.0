@@ -2,70 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5DC98379C1B
-	for <lists+netdev@lfdr.de>; Tue, 11 May 2021 03:33:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BEB1A379C2A
+	for <lists+netdev@lfdr.de>; Tue, 11 May 2021 03:40:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230347AbhEKBed (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 10 May 2021 21:34:33 -0400
-Received: from m1326.mail.163.com ([220.181.13.26]:8800 "EHLO
-        m1326.mail.163.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229920AbhEKBec (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 10 May 2021 21:34:32 -0400
-X-Greylist: delayed 910 seconds by postgrey-1.27 at vger.kernel.org; Mon, 10 May 2021 21:34:31 EDT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
-        s=s110527; h=Date:From:Subject:MIME-Version:Message-ID; bh=pX0W9
-        wuwf/tF+3wemWI5zkKp/yqjIIzDzOY7/OEuSQs=; b=ojlPlmQVsBNtNCUIjHnjR
-        cZalyyp1caF1fA2b1zbXhOt/s/15xLONQulg/3eyK9pDtb3EtjianxIE5bapgP8n
-        0CxN8YqwZ0TrWjWzCtspGl4ApMrDTgzyT0hHLUjMeN/TKu1DvqHWG/pBBzlrcSLe
-        KySbSwpVXo+0R2Gryeophs=
-Received: from meijusan$163.com ( [117.131.86.42] ) by ajax-webmail-wmsvr26
- (Coremail) ; Tue, 11 May 2021 09:18:04 +0800 (CST)
-X-Originating-IP: [117.131.86.42]
-Date:   Tue, 11 May 2021 09:18:04 +0800 (CST)
-From:   meijusan <meijusan@163.com>
-To:     "Jakub Kicinski" <kuba@kernel.org>
-Cc:     davem@davemloft.net, yoshfuji@linux-ipv6.org, dsahern@kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re:Re: [PATCH] net/ipv4/ip_fragment:fix missing Flags reserved bit
- set in iphdr
-X-Priority: 3
-X-Mailer: Coremail Webmail Server Version XT5.0.13 build 20210104(ab8c30b6)
- Copyright (c) 2002-2021 www.mailtech.cn 163com
-In-Reply-To: <20210507155900.43cd8200@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-References: <20210506145905.3884-1-meijusan@163.com>
- <20210507155900.43cd8200@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-Content-Transfer-Encoding: base64
-Content-Type: text/plain; charset=GBK
+        id S230379AbhEKBl3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 10 May 2021 21:41:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45298 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230130AbhEKBl3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 10 May 2021 21:41:29 -0400
+Received: from mail-ed1-x531.google.com (mail-ed1-x531.google.com [IPv6:2a00:1450:4864:20::531])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6327EC061760
+        for <netdev@vger.kernel.org>; Mon, 10 May 2021 18:40:23 -0700 (PDT)
+Received: by mail-ed1-x531.google.com with SMTP id s7so16240889edq.12
+        for <netdev@vger.kernel.org>; Mon, 10 May 2021 18:40:23 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=paul-moore-com.20150623.gappssmtp.com; s=20150623;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=UewUIUnZEU+WLxgt73DD3mXzDpZZk6Udya01I4ZEHrw=;
+        b=kswNC8BfZzTXjrd6CNTModmWLgnAvrz8jFPHApeblmQg6rKJTfpByfO00OR0Pz90U7
+         j1h5wLO98+mXFSkHIGaBBPFlGFIlVgszWA4z5S//jxNs7j6V5k7SvxLs2BACJNEA6cY6
+         DdJk9F38VUmJZBUbe9y0G/3gP+BARMhWvICBTY4L0I+bRubNxCVz0PQMxcRQKAw3iRiO
+         9MY1YMyzrEx57GDbBf8hCIEs3/VeMBEt//BpG/7jKlbyR/3VUWpUVsq//ToDHX33Pe2D
+         UrYTX7tsSokm+E8dtjV5qW0tm9osyXnMLHx2HdZLyQm8oWzBGAc9Z9pL9D7wg9NU6CQ0
+         vTOg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=UewUIUnZEU+WLxgt73DD3mXzDpZZk6Udya01I4ZEHrw=;
+        b=m5GAp5xKEUEyg2avOvso+XcsI9NhX3wABwN7mcVhVp4jXOhaeH6SymYQETExXu7q6p
+         L6F8CbE/wlxlgA958DWcUmVvXJY306TWcRfzVzX6Fn5WRxU+JrqioP4jKn1+38SgglcF
+         rrB1a4rS3CbfHCjytEX0oateJve+xhGCn0mgHuKdoSm4CmUtc5wyXZiumn+jUth2QBA7
+         QlRr2AsIi/hBhjW6L+arT6bNdfW6ISnm1UP/esSEWS1wDesozctpA+IbWYBqdKS0LMK8
+         xp+hqpNlUCb04gd6W3iS0iVfkBPG2xRg958lNwC7WcbjyLoHnjE+4xlqdoanzNMpWJVi
+         pw/A==
+X-Gm-Message-State: AOAM532Si5bd2HgfYdNb/tOY+7LnVbnfh53FLu3f6x3ckwbrs/65WU4G
+        VmsO6fyrH/5THC1RHNeBOWyk6Scu3TaDLK0ZtHiu
+X-Google-Smtp-Source: ABdhPJyiTl7fBwjdXCS+1nwJylc1lzHYHwN8ZdaJRSyBufr+LfV/BQ7QX/iNclrk81EQS7LWDc/1AEQHqAIC14Mt+cY=
+X-Received: by 2002:a05:6402:177c:: with SMTP id da28mr32267501edb.135.1620697221981;
+ Mon, 10 May 2021 18:40:21 -0700 (PDT)
 MIME-Version: 1.0
-Message-ID: <1368d6c3.bd1.1795900a467.Coremail.meijusan@163.com>
-X-Coremail-Locale: zh_CN
-X-CM-TRANSID: GsGowAA3eNdM25lgWE7gAA--.47834W
-X-CM-SenderInfo: xphly3xvdqqiywtou0bp/1tbiFgyPHl44P95hDgAAsj
-X-Coremail-Antispam: 1U5529EdanIXcx71UUUUU7vcSsGvfC2KfnxnUU==
+References: <20210409054841.320-1-hbut_tan@163.com>
+In-Reply-To: <20210409054841.320-1-hbut_tan@163.com>
+From:   Paul Moore <paul@paul-moore.com>
+Date:   Mon, 10 May 2021 21:40:11 -0400
+Message-ID: <CAHC9VhT8+DR0jvY8SO=HArhjcTfxsZxaoqy-1ufcOQEcD6qOXQ@mail.gmail.com>
+Subject: Re: [PATCH 2/2] selinux:Delete selinux_xfrm_policy_lookup() useless argument
+To:     Zhongjun Tan <hbut_tan@163.com>
+Cc:     steffen.klassert@secunet.com, herbert@gondor.apana.org.au,
+        davem@davemloft.net, kuba@kernel.org,
+        James Morris <jmorris@namei.org>,
+        Serge Hallyn <serge@hallyn.com>,
+        Stephen Smalley <stephen.smalley.work@gmail.com>,
+        Eric Paris <eparis@parisplace.org>, keescook@chromium.org,
+        gregkh@linuxfoundation.org, ebiederm@xmission.com,
+        kpsingh@google.com, dhowells@redhat.com,
+        christian.brauner@ubuntu.com, zohar@linux.ibm.com,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        linux-security-module@vger.kernel.org, selinux@vger.kernel.org,
+        Zhongjun Tan <tanzhongjun@yulong.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-CkF0IDIwMjEtMDUtMDggMDY6NTk6MDAsICJKYWt1YiBLaWNpbnNraSIgPGt1YmFAa2VybmVsLm9y
-Zz4gd3JvdGU6Cj5PbiBUaHUsICA2IE1heSAyMDIxIDIyOjU5OjA1ICswODAwIG1laWp1c2FuIHdy
-b3RlOgo+PiBpcCBmcmFnIHdpdGggdGhlIGlwaGRyIGZsYWdzIHJlc2VydmVkIGJpdCBzZXQsdmlh
-IHJvdXRlcixpcCBmcmFnIHJlYXNtIG9yCj4+IGZyYWdtZW50LGNhdXNpbmcgdGhlIHJlc2VydmVk
-IGJpdCBpcyByZXNldCB0byB6ZXJvLgo+PiAKPj4gS2VlcCByZXNlcnZlZCBiaXQgc2V0IGlzIG5v
-dCBtb2RpZmllZCBpbiBpcCBmcmFnICBkZWZyYWcgb3IgZnJhZ21lbnQuCj4+IAo+PiBTaWduZWQt
-b2ZmLWJ5OiBtZWlqdXNhbiA8bWVpanVzYW5AMTYzLmNvbT4KPgo+Q291bGQgeW91IHBsZWFzZSBw
-cm92aWRlIG1vcmUgYmFja2dyb3VuZCBvbiB3aHkgd2UnZCB3YW50IHRvIGRvIHRoaXM/Cgo+UHJl
-ZmVyYWJseSB3aXRoIHJlZmVyZW5jZXMgdG8gcmVsZXZhbnQgKG5vbi1BcHJpbCBGb29scycgRGF5
-KSBSRkNzLgoKW2JhY2tncm91bmRdCnRoZSBTaW1wbGUgbmV0d29yayB1c2FnZSBzY2VuYXJpb3M6
-IHRoZSBvbmUgUEMgc29mdHdhcmU8LS0tPmxpbnV4IHJvdXRlcihMMykvbGludXggYnJpZGVnZShM
-MixicmlkZ2UtbmYtY2FsbC1pcHRhYmxlcyk8LS0tPnRoZSBvdGhlciBQQyBzb2Z0d2FyZQoxKXRo
-ZSBQQyBzb2Z0d2FyZSBzZW5kIHRoZSBpcCBwYWNrZXQgd2l0aCB0aGUgaXBoZHIgZmxhZ3MgcmVz
-ZXJ2ZWQgYml0IGlzIHNldCwgd2hlbiBpcCBwYWNrZXQobm90IGZyYWdtZW50cyApIHZpYSB0aGUg
-b25lIGxpbnV4IHJvdXRlci9saW51eCBicmlkZ2UsYW5kIHRoZSBpcGhkciBmbGFncyByZXNlcnZl
-ZCBiaXQgaXMgbm90IG1vZGlmaWVkOwoyKWJ1dCB0aGUgaXAgZnJhZ21lbnRzIHZpYSByb3V0ZXIs
-dGhlIGxpbnV4IElQIHJlYXNzZW1ibHkgb3IgZnJhZ21lbnRhdGlvbiAsY2F1c2luZyB0aGUgcmVz
-ZXJ2ZWQgYml0IGlzIHJlc2V0IHRvIHplcm8sV2hpY2ggbGVhZHMgdG8gVGhlIG90aGVyIFBDIHNv
-ZnR3YXJlIGRlcGVuZGluZyBvbiB0aGUgcmVzZXJ2ZWQgYml0IHNldCAgcHJvY2VzcyB0aGUgUGFj
-a2V0IGZhaWxlZC4KW3JmY10KUkZDNzkxCkJpdCAwOiByZXNlcnZlZCwgbXVzdCBiZSB6ZXJvClJG
-QzM1MTQKSW50cm9kdWN0aW9uIFRoaXMgYml0ICwgYnV0IFRoZSBzY2VuZSBzZWVtcyBkaWZmZXJl
-bnQgZnJvbSB1c6Osd2UgZXhwZWN0IEtlZXAgcmVzZXJ2ZWQgYml0IHNldCBpcyBub3QgbW9kaWZp
-ZWQgd2hlbiBmb3J3YXJkIHRoZSBsaW51eCByb3V0ZXIKCgoKCgo=
+On Fri, Apr 9, 2021 at 1:52 AM Zhongjun Tan <hbut_tan@163.com> wrote:
+>
+> From: Zhongjun Tan <tanzhongjun@yulong.com>
+>
+> seliunx_xfrm_policy_lookup() is hooks of security_xfrm_policy_lookup().
+> The dir argument is uselss in security_xfrm_policy_lookup(). So
+> remove the dir argument from selinux_xfrm_policy_lookup() and
+> security_xfrm_policy_lookup().
+>
+> Signed-off-by: Zhongjun Tan <tanzhongjun@yulong.com>
+> ---
+>  include/linux/lsm_hook_defs.h   | 3 +--
+>  include/linux/security.h        | 4 ++--
+>  net/xfrm/xfrm_policy.c          | 6 ++----
+>  security/security.c             | 4 ++--
+>  security/selinux/include/xfrm.h | 2 +-
+>  security/selinux/xfrm.c         | 2 +-
+>  6 files changed, 9 insertions(+), 12 deletions(-)
+
+Merged into selinux/next, thanks.
+
+-- 
+paul moore
+www.paul-moore.com
