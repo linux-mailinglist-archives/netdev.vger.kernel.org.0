@@ -2,159 +2,202 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 63A56379F37
-	for <lists+netdev@lfdr.de>; Tue, 11 May 2021 07:34:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 73A1137A005
+	for <lists+netdev@lfdr.de>; Tue, 11 May 2021 08:51:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230166AbhEKFfr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 11 May 2021 01:35:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40956 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229885AbhEKFfq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 11 May 2021 01:35:46 -0400
-Received: from mail-io1-xd2e.google.com (mail-io1-xd2e.google.com [IPv6:2607:f8b0:4864:20::d2e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF821C061574;
-        Mon, 10 May 2021 22:34:39 -0700 (PDT)
-Received: by mail-io1-xd2e.google.com with SMTP id n40so1285770ioz.4;
-        Mon, 10 May 2021 22:34:39 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:message-id:in-reply-to:references:subject
-         :mime-version:content-transfer-encoding;
-        bh=uQWk7HphOi8JaZQ9rKhZ3FNjobByMHuBC/zeBOelz30=;
-        b=iTtErxT+5SBiDTAGyl+fRso5STMEz25OBWQjCGMUFFWEEfzsJxmBgEbhWX06vK27M7
-         ZBWM204QBg00GAfDUBOc2gbMlBOiqEXU2pBpcN71pjn4+nGYD6hAnvaX8zgFRElpz5rQ
-         7/sK1uIM+NvERYPB118KVUGoZupHleA06jfkkys75Rn/gjexceTqGwHb13i/nBaV4qte
-         vRsxWS2rnnSiP9zXlhXxdhud/7gttfD4X/DTPVQSYiMUWXnaD5rCJfIul0MwiTz4Bqpu
-         hXzx7SWYDCKnvH0XG8XTjiKapQ0It4JdiVfZ82DflUdXozYZxN2a2f/nGleIvTYAzGB7
-         qvAQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:message-id:in-reply-to
-         :references:subject:mime-version:content-transfer-encoding;
-        bh=uQWk7HphOi8JaZQ9rKhZ3FNjobByMHuBC/zeBOelz30=;
-        b=TcNN2vkZ2Kejvc9YrLB8/ALEu1MOJgJB8A40/7OJphmh5rz3pOBxDIzGN/LqqZutPL
-         +n79FRGdlpwkYgBbv5Emvo3pbFnCcZ6rJ4GYG3IrRLtQGFqa6EGVr4lo0gOsHGSP76pm
-         EVa/8ZFwxroanvIaSWG0/Bm3RlbMkZIdFEuAwWpkRhahQiv2K7u1gkgvpblC7A5m2TzE
-         ImVBJmbHx1QAPOvt5dFtTrx0GcrtQAuJKiMBKiAFCgfc29JvTy//a+sMq/wD/wrCVszd
-         EIUJunbUU9SzaJVM+5STmUrvuamZFRfjBGrijWDkKUeibD28+/42cI9sN5eGsx0wahp1
-         Ml5Q==
-X-Gm-Message-State: AOAM530BPThXICC+Sb/2vTScoZJuo5timRuvkZuTbK3R6KyhjmPyXzL+
-        dicaoNLlallQu3eFVw1zAcY=
-X-Google-Smtp-Source: ABdhPJz9V2soDps2wgveW5Yz++nuERQ8ApaaxGTW26K6zULD9kvJ2Sf3HG0X1Oy401CpvGadrMfG9g==
-X-Received: by 2002:a5e:8a08:: with SMTP id d8mr21349962iok.192.1620711279251;
-        Mon, 10 May 2021 22:34:39 -0700 (PDT)
-Received: from localhost ([172.242.244.146])
-        by smtp.gmail.com with ESMTPSA id x13sm9084654ilq.85.2021.05.10.22.34.36
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 10 May 2021 22:34:38 -0700 (PDT)
-Date:   Mon, 10 May 2021 22:34:29 -0700
-From:   John Fastabend <john.fastabend@gmail.com>
-To:     Cong Wang <xiyou.wangcong@gmail.com>, netdev@vger.kernel.org
-Cc:     bpf@vger.kernel.org, jiang.wang@bytedance.com,
-        duanxiongchun@bytedance.com, wangdongdong.6@bytedance.com,
-        Cong Wang <cong.wang@bytedance.com>,
-        John Fastabend <john.fastabend@gmail.com>,
+        id S230408AbhEKGwH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 11 May 2021 02:52:07 -0400
+Received: from mailout3.samsung.com ([203.254.224.33]:45157 "EHLO
+        mailout3.samsung.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230167AbhEKGwH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 11 May 2021 02:52:07 -0400
+Received: from epcas2p2.samsung.com (unknown [182.195.41.54])
+        by mailout3.samsung.com (KnoxPortal) with ESMTP id 20210511065059epoutp033c637097bc5a35aa137b2bab3f418e8b~98Hy_AZEd1499314993epoutp03g
+        for <netdev@vger.kernel.org>; Tue, 11 May 2021 06:50:59 +0000 (GMT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mailout3.samsung.com 20210511065059epoutp033c637097bc5a35aa137b2bab3f418e8b~98Hy_AZEd1499314993epoutp03g
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
+        s=mail20170921; t=1620715859;
+        bh=1ZZQwBOGeu8uekno2BLelsyca/RkRfVZ3WSZ6YzujrU=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=FYJbrrDwSm7hXgRCG/QXstKBSsaSp59HoLuhyCylpoGYoF29S9GsaCrBSRWK2Fffz
+         b6hk4jm0gDDzrTDNRfXyTakLbDCbHeVxZbXhcpGPcWKYmlcUnpTiEUyMMzuArG+FzR
+         cilrNRFZNIFxQRh4VH9Pc1UNrMQ9uuE1wnj6Z+3U=
+Received: from epsnrtp4.localdomain (unknown [182.195.42.165]) by
+        epcas2p1.samsung.com (KnoxPortal) with ESMTP id
+        20210511065058epcas2p1474564a69434b88d4767e643ad2e08b4~98HyNkJnm1838818388epcas2p1D;
+        Tue, 11 May 2021 06:50:58 +0000 (GMT)
+Received: from epsmges2p4.samsung.com (unknown [182.195.40.181]) by
+        epsnrtp4.localdomain (Postfix) with ESMTP id 4FfT8d4L6fz4x9Pq; Tue, 11 May
+        2021 06:50:57 +0000 (GMT)
+Received: from epcas2p4.samsung.com ( [182.195.41.56]) by
+        epsmges2p4.samsung.com (Symantec Messaging Gateway) with SMTP id
+        81.D1.09717.0592A906; Tue, 11 May 2021 15:50:57 +0900 (KST)
+Received: from epsmtrp1.samsung.com (unknown [182.195.40.13]) by
+        epcas2p1.samsung.com (KnoxPortal) with ESMTPA id
+        20210511065056epcas2p1788505019deb274f5c57650a2f5d7ef0~98HvxZexz1537715377epcas2p1V;
+        Tue, 11 May 2021 06:50:56 +0000 (GMT)
+Received: from epsmgms1p1new.samsung.com (unknown [182.195.42.41]) by
+        epsmtrp1.samsung.com (KnoxPortal) with ESMTP id
+        20210511065056epsmtrp1154f42734008e77b75124006a195c029~98HvvtR5r2914829148epsmtrp1b;
+        Tue, 11 May 2021 06:50:56 +0000 (GMT)
+X-AuditID: b6c32a48-4e5ff700000025f5-6c-609a295067c4
+Received: from epsmtip2.samsung.com ( [182.195.34.31]) by
+        epsmgms1p1new.samsung.com (Symantec Messaging Gateway) with SMTP id
+        3A.96.08637.F492A906; Tue, 11 May 2021 15:50:55 +0900 (KST)
+Received: from ubuntu.dsn.sec.samsung.com (unknown [12.36.155.120]) by
+        epsmtip2.samsung.com (KnoxPortal) with ESMTPA id
+        20210511065055epsmtip23f9a9e7dd8a093cde3a8a426606b3c7f~98HvfyhHp0092600926epsmtip2E;
+        Tue, 11 May 2021 06:50:55 +0000 (GMT)
+From:   Dongseok Yi <dseok.yi@samsung.com>
+To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Cc:     Dongseok Yi <dseok.yi@samsung.com>,
+        Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
-        Jakub Sitnicki <jakub@cloudflare.com>,
-        Lorenz Bauer <lmb@cloudflare.com>
-Message-ID: <609a1765cf6d7_876892080@john-XPS-13-9370.notmuch>
-In-Reply-To: <20210426025001.7899-3-xiyou.wangcong@gmail.com>
-References: <20210426025001.7899-1-xiyou.wangcong@gmail.com>
- <20210426025001.7899-3-xiyou.wangcong@gmail.com>
-Subject: RE: [Patch bpf-next v3 02/10] af_unix: implement ->read_sock() for
- sockmap
-Mime-Version: 1.0
-Content-Type: text/plain;
- charset=utf-8
-Content-Transfer-Encoding: 7bit
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH bpf v2] bpf: check BPF_F_ADJ_ROOM_FIXED_GSO when upgrading
+ mss in 6 to 4
+Date:   Tue, 11 May 2021 15:36:37 +0900
+Message-Id: <1620714998-120657-1-git-send-email-dseok.yi@samsung.com>
+X-Mailer: git-send-email 2.7.4
+In-Reply-To: <1619690903-1138-1-git-send-email-dseok.yi@samsung.com>
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFuplk+LIzCtJLcpLzFFi42LZdljTQjdQc1aCwYnfjBbff89mtvjy8za7
+        xecjx9ksFi/8xmwx53wLi8WVaX8YLZp2rGCyePHhCaPF8329TBYXtvWxWlzeNYfN4tgCMYuf
+        h88wWyz+uQGoYskMRgd+jy0rbzJ5TGx+x+6xc9Zddo+uG5eYPTat6mTz6NuyitHj8ya5APao
+        HJuM1MSU1CKF1Lzk/JTMvHRbJe/geOd4UzMDQ11DSwtzJYW8xNxUWyUXnwBdt8wcoLuVFMoS
+        c0qBQgGJxcVK+nY2RfmlJakKGfnFJbZKqQUpOQWGhgV6xYm5xaV56XrJ+blWhgYGRqZAlQk5
+        GQsXLGMq+CRW0dC8nrGBcalQFyMnh4SAicSjJ0vZQWwhgR2MEr2rnLoYuYDsT0D226WMEM43
+        Ron29ReZYTomTz/FDJHYyygxY+IEqKofjBJ9jUdYQarYBDQk9r97AWaLCJhJbDxygwWkiFng
+        MbNEz57lLCAJYYEoiYOPDoGNZRFQlWjZdwCsgVfAVWLahitMEOvkJG6e6wSr4RRwkfg04wPY
+        agmBiRwSzVM/skAUuUicfbefFcIWlnh1fAs7hC0l8bK/DcjmALLrJVq7YyB6exglrux7AtVr
+        LDHrWTsjSA2zgKbE+l36EOXKEkdugVUwC/BJdBz+CzWFV6KjTQjCVJKY+CUeYoaExIuTk6Hm
+        eUj8nXKRFRIk0xklZnV0MU9glJuFMH8BI+MqRrHUguLc9NRiowIT5AjbxAhOl1oeOxhnv/2g
+        d4iRiYPxEKMEB7OSCK9ox7QEId6UxMqq1KL8+KLSnNTiQ4ymwKCbyCwlmpwPTNh5JfGGpkZm
+        ZgaWphamZkYWSuK8P1PrEoQE0hNLUrNTUwtSi2D6mDg4pRqYUk/8FVAx3Zi4vX239/qiwvaV
+        LK/UN3mWV3v80086nyzxsN6o2mrt1cIp3/runWQSaGmeJrFc4GT0uvJNs7X7/qdej/5gM2XJ
+        lTvidtM1Pro1G4v/vmcbxzRp3dabx7zdb2/W33rv4e5urV+/D6iZi1sdCxGyTSo6VP5FOGH9
+        ++vMyW8+cc1MzbaaLDfR/dei6R6LmBdlxf0Xf1Tu3P4mwTiieEGO4dJ9Kdtdj+Wcc7l2hXW1
+        2+9XLH+dbh1r3937vftl4e+UmnuZTqe9NOUu2bJ+WLxdbJWy+YobZvNTvQ5M7Vu4yUdm58+g
+        fYZZM6LLTbTXrBBivL7KYMOnZ/efepyy3HJ0gV1a+a1ljcE3ryuxFGckGmoxFxUnAgChS3g1
+        IAQAAA==
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFjrOLMWRmVeSWpSXmKPExsWy7bCSvK6/5qwEgytfTS2+/57NbPHl5212
+        i89HjrNZLF74jdlizvkWFosr0/4wWjTtWMFk8eLDE0aL5/t6mSwubOtjtbi8aw6bxbEFYhY/
+        D59htlj8cwNQxZIZjA78HltW3mTymNj8jt1j56y77B5dNy4xe2xa1cnm0bdlFaPH501yAexR
+        XDYpqTmZZalF+nYJXBkLFyxjKvgkVtHQvJ6xgXGpUBcjJ4eEgInE5OmnmEFsIYHdjBJHd7B2
+        MXIAxSUkdm12hSgRlrjfcgQozAVU8o1R4viGZ2D1bAIaEvvfvWAFsUUEzCQ2HrnBAlLELPCR
+        WeLotbdMIAlhgQiJkx2zGEFsFgFViZZ9B8AaeAVcJaZtuMIEsUFO4ua5TrChnAIuEp9mfIA6
+        yFni3eFPLBMY+RYwMqxilEwtKM5Nzy02LDDMSy3XK07MLS7NS9dLzs/dxAgOay3NHYzbV33Q
+        O8TIxMF4iFGCg1lJhFe0Y1qCEG9KYmVValF+fFFpTmrxIUZpDhYlcd4LXSfjhQTSE0tSs1NT
+        C1KLYLJMHJxSDUyrGz/fDuk7b/SkfckdEfeeGefX58ytvZ9nZroxfaeMgrLJE6ZEGdM7t0qU
+        N99deb/vyXvRlBzjOx2Ns573ZWk0/g6JcNw3i6n4uI/Fik/6l88kp1x7bnu4cMeJH7y2v6Zd
+        3Xq58kGselWJ5Gmup3cYL3Nc6NKVa7IKO2nOvYF19q2qLC+pcvP9e/9/+bQqmHHLDmkOldby
+        Ns3XQrOPTLvEdVM2dtHFFIfHtXzRH+pXXr78cifrhZpK/nXrkpQDZ082j+yf845FJGvaEelL
+        abc25LpNn71xWqA6z2NlP7n/1RxTjqwJWDjD8bPHBd0VTyM+XnHLdOFMWXhhluZV9wUBr6fM
+        aKxqTcn13cV+++Q3JZbijERDLeai4kQAE3Jh69oCAAA=
+X-CMS-MailID: 20210511065056epcas2p1788505019deb274f5c57650a2f5d7ef0
+X-Msg-Generator: CA
+Content-Type: text/plain; charset="utf-8"
+X-Sendblock-Type: AUTO_CONFIDENTIAL
+CMS-TYPE: 102P
+DLP-Filter: Pass
+X-CFilter-Loop: Reflected
+X-CMS-RootMailID: 20210511065056epcas2p1788505019deb274f5c57650a2f5d7ef0
+References: <1619690903-1138-1-git-send-email-dseok.yi@samsung.com>
+        <CGME20210511065056epcas2p1788505019deb274f5c57650a2f5d7ef0@epcas2p1.samsung.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Cong Wang wrote:
-> From: Cong Wang <cong.wang@bytedance.com>
-> 
-> Implement ->read_sock() for AF_UNIX datagram socket, it is
-> pretty much similar to udp_read_sock().
-> 
-> Cc: John Fastabend <john.fastabend@gmail.com>
-> Cc: Daniel Borkmann <daniel@iogearbox.net>
-> Cc: Jakub Sitnicki <jakub@cloudflare.com>
-> Cc: Lorenz Bauer <lmb@cloudflare.com>
-> Signed-off-by: Cong Wang <cong.wang@bytedance.com>
-> ---
->  net/unix/af_unix.c | 38 ++++++++++++++++++++++++++++++++++++++
->  1 file changed, 38 insertions(+)
-> 
-> diff --git a/net/unix/af_unix.c b/net/unix/af_unix.c
-> index 5a31307ceb76..f4dc22db371d 100644
-> --- a/net/unix/af_unix.c
-> +++ b/net/unix/af_unix.c
-> @@ -661,6 +661,8 @@ static ssize_t unix_stream_splice_read(struct socket *,  loff_t *ppos,
->  				       unsigned int flags);
->  static int unix_dgram_sendmsg(struct socket *, struct msghdr *, size_t);
->  static int unix_dgram_recvmsg(struct socket *, struct msghdr *, size_t, int);
-> +static int unix_read_sock(struct sock *sk, read_descriptor_t *desc,
-> +			  sk_read_actor_t recv_actor);
->  static int unix_dgram_connect(struct socket *, struct sockaddr *,
->  			      int, int);
->  static int unix_seqpacket_sendmsg(struct socket *, struct msghdr *, size_t);
-> @@ -738,6 +740,7 @@ static const struct proto_ops unix_dgram_ops = {
->  	.listen =	sock_no_listen,
->  	.shutdown =	unix_shutdown,
->  	.sendmsg =	unix_dgram_sendmsg,
-> +	.read_sock =	unix_read_sock,
->  	.recvmsg =	unix_dgram_recvmsg,
->  	.mmap =		sock_no_mmap,
->  	.sendpage =	sock_no_sendpage,
-> @@ -2183,6 +2186,41 @@ static int unix_dgram_recvmsg(struct socket *sock, struct msghdr *msg,
->  	return err;
->  }
->  
-> +static int unix_read_sock(struct sock *sk, read_descriptor_t *desc,
-> +			  sk_read_actor_t recv_actor)
-> +{
-> +	int copied = 0;
-> +
-> +	while (1) {
-> +		struct unix_sock *u = unix_sk(sk);
-> +		struct sk_buff *skb;
-> +		int used, err;
-> +
-> +		mutex_lock(&u->iolock);
-> +		skb = skb_recv_datagram(sk, 0, 1, &err);
-> +		if (!skb) {
-> +			mutex_unlock(&u->iolock);
-> +			return err;
+In the forwarding path GRO -> BPF 6 to 4 -> GSO for TCP traffic, the
+coalesced packet payload can be > MSS, but < MSS + 20.
+bpf_skb_proto_6_to_4 will increase the MSS and it can be > the payload
+length. After then tcp_gso_segment checks for the payload length if it
+is <= MSS. The condition is causing the packet to be dropped.
 
-Here we should check copied and break if copied is >0. Sure the caller here
-has desc.count = 1 but its still fairly fragile.
+tcp_gso_segment():
+        [...]
+        mss = skb_shinfo(skb)->gso_size;
+        if (unlikely(skb->len <= mss))
+                goto out;
+        [...]
 
-> +		}
-> +
-> +		used = recv_actor(desc, skb, 0, skb->len);
-> +		if (used <= 0) {
-> +			if (!copied)
-> +				copied = used;
-> +			mutex_unlock(&u->iolock);
-> +			break;
-> +		} else if (used <= skb->len) {
-> +			copied += used;
-> +		}
-> +		mutex_unlock(&u->iolock);
-> +
-> +		if (!desc->count)
-> +			break;
-> +	}
-> +
-> +	return copied;
-> +}
-> +
->  /*
->   *	Sleep until more data has arrived. But check for races..
->   */
-> -- 
-> 2.25.1
-> 
+Allow to increase MSS when BPF_F_ADJ_ROOM_FIXED_GSO is not set.
 
+Fixes: 6578171a7ff0 (bpf: add bpf_skb_change_proto helper)
+Signed-off-by: Dongseok Yi <dseok.yi@samsung.com>
+---
+ net/core/filter.c | 13 +++++++------
+ 1 file changed, 7 insertions(+), 6 deletions(-)
+
+v2:
+per Willem de Bruijn request,
+checked the flag instead of a generic approach.
+
+diff --git a/net/core/filter.c b/net/core/filter.c
+index cae56d0..a98b28d 100644
+--- a/net/core/filter.c
++++ b/net/core/filter.c
+@@ -3276,7 +3276,7 @@ static int bpf_skb_proto_4_to_6(struct sk_buff *skb)
+ 	return 0;
+ }
+ 
+-static int bpf_skb_proto_6_to_4(struct sk_buff *skb)
++static int bpf_skb_proto_6_to_4(struct sk_buff *skb, u64 flags)
+ {
+ 	const u32 len_diff = sizeof(struct ipv6hdr) - sizeof(struct iphdr);
+ 	u32 off = skb_mac_header_len(skb);
+@@ -3305,7 +3305,8 @@ static int bpf_skb_proto_6_to_4(struct sk_buff *skb)
+ 		}
+ 
+ 		/* Due to IPv4 header, MSS can be upgraded. */
+-		skb_increase_gso_size(shinfo, len_diff);
++		if (!(flags & BPF_F_ADJ_ROOM_FIXED_GSO))
++			skb_increase_gso_size(shinfo, len_diff);
+ 		/* Header must be checked, and gso_segs recomputed. */
+ 		shinfo->gso_type |= SKB_GSO_DODGY;
+ 		shinfo->gso_segs = 0;
+@@ -3317,7 +3318,7 @@ static int bpf_skb_proto_6_to_4(struct sk_buff *skb)
+ 	return 0;
+ }
+ 
+-static int bpf_skb_proto_xlat(struct sk_buff *skb, __be16 to_proto)
++static int bpf_skb_proto_xlat(struct sk_buff *skb, __be16 to_proto, u64 flags)
+ {
+ 	__be16 from_proto = skb->protocol;
+ 
+@@ -3327,7 +3328,7 @@ static int bpf_skb_proto_xlat(struct sk_buff *skb, __be16 to_proto)
+ 
+ 	if (from_proto == htons(ETH_P_IPV6) &&
+ 	      to_proto == htons(ETH_P_IP))
+-		return bpf_skb_proto_6_to_4(skb);
++		return bpf_skb_proto_6_to_4(skb, flags);
+ 
+ 	return -ENOTSUPP;
+ }
+@@ -3337,7 +3338,7 @@ BPF_CALL_3(bpf_skb_change_proto, struct sk_buff *, skb, __be16, proto,
+ {
+ 	int ret;
+ 
+-	if (unlikely(flags))
++	if (unlikely(flags & ~(BPF_F_ADJ_ROOM_FIXED_GSO)))
+ 		return -EINVAL;
+ 
+ 	/* General idea is that this helper does the basic groundwork
+@@ -3357,7 +3358,7 @@ BPF_CALL_3(bpf_skb_change_proto, struct sk_buff *, skb, __be16, proto,
+ 	 * that. For offloads, we mark packet as dodgy, so that headers
+ 	 * need to be verified first.
+ 	 */
+-	ret = bpf_skb_proto_xlat(skb, proto);
++	ret = bpf_skb_proto_xlat(skb, proto, flags);
+ 	bpf_compute_data_pointers(skb);
+ 	return ret;
+ }
+-- 
+2.7.4
 
