@@ -2,114 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C64A937A234
-	for <lists+netdev@lfdr.de>; Tue, 11 May 2021 10:34:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E54D037A23D
+	for <lists+netdev@lfdr.de>; Tue, 11 May 2021 10:35:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230382AbhEKIfV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 11 May 2021 04:35:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52938 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230073AbhEKIfT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 11 May 2021 04:35:19 -0400
-Received: from mail-ot1-x32c.google.com (mail-ot1-x32c.google.com [IPv6:2607:f8b0:4864:20::32c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 69FE5C06175F
-        for <netdev@vger.kernel.org>; Tue, 11 May 2021 01:34:12 -0700 (PDT)
-Received: by mail-ot1-x32c.google.com with SMTP id q7-20020a9d57870000b02902a5c2bd8c17so16864830oth.5
-        for <netdev@vger.kernel.org>; Tue, 11 May 2021 01:34:12 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=daynix-com.20150623.gappssmtp.com; s=20150623;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=wgdPV/AcewZdrV8IdLTwGyLrFumxsFWQvFFQfDf0wVQ=;
-        b=0ZapcwACbS75HaNUVIMJA2nF3TdzK7yHK93AEsDFWQj8EPz+9cmwgw80lvA1lgAEcQ
-         uz/w0p69/JLKKlrFul/W9WeNdp8+jOwBZg2fofcQkFW61UPtzJvJ6gvbq69u/kBAquis
-         kkgdUMlLxWCwi3BvPFR7IUQn9zq0xmg0bVmILplyvwK/wfPbwPqlmjJeWI9Eko1doGGi
-         FQWXi7kHsmCKdsmfuA+BBVIHnQXevwiPUdnh+rcK2HqBBC387AtQ519eZkHJ0SsnceXB
-         Yd3siNFoRrVgjmFLca5F43CEhd/Qe8uE1M9/C1PkehqGJTLCCUm2OQX0W3w6auokH3Nm
-         CFxQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=wgdPV/AcewZdrV8IdLTwGyLrFumxsFWQvFFQfDf0wVQ=;
-        b=nCfSLLz7PyLQwXlVv660UrFVOCBuRPwZZiUEBU9Rble0PLdYhZFLgOM7bD7s7GDoTW
-         UPG8aH/vVQKZb8y2aadNueurzKTSHjezsxAkeZ2gGxM0TY0VLjhJ9UNp+T/GSApyXTMY
-         S5FOk22WoSrFEp1O4C2yfYuWG7hJCzXITUAVYCDoAn1ml/YZa8y0tXO7BpMxq79TzAKe
-         L3f4ApQJ0oOybmAvxvfIdTHwZ+YXfSo78j0g1BQGZkyFWr/d2VumP7pdciyUF0cA/Pgq
-         qPK4jKjaktcYfhdlCKbG0bBsfzL4xoMcHGtzLhk7rFnmGjjThmdQ1GsbeV41XghmVN4/
-         6aDQ==
-X-Gm-Message-State: AOAM531S+RuwmtyESDRn4zGDnMoO+rJ8hSTF5tK8rLRs7hv7DoH/Hubt
-        qJ+9eIlqRSzez5D5pjAZXr6HBKdarvfltB22OqGzkQ==
-X-Google-Smtp-Source: ABdhPJzVt5nVC9XjXq5gIom64lU88TpjNEqpB89DApWc6nOZvte02Xy9S4mlekR3eFeF5u5HlWWwHuHrS+XxZjZHixU=
-X-Received: by 2002:a05:6830:4103:: with SMTP id w3mr20719290ott.27.1620722051869;
- Tue, 11 May 2021 01:34:11 -0700 (PDT)
-MIME-Version: 1.0
-References: <20210511044253.469034-1-yuri.benditovich@daynix.com>
- <20210511044253.469034-5-yuri.benditovich@daynix.com> <eb8c4984-f0cc-74ee-537f-fc60deaaaa73@redhat.com>
-In-Reply-To: <eb8c4984-f0cc-74ee-537f-fc60deaaaa73@redhat.com>
-From:   Yuri Benditovich <yuri.benditovich@daynix.com>
-Date:   Tue, 11 May 2021 11:33:59 +0300
-Message-ID: <CAOEp5OdrCDPx4ijLcEOm=Wxma6hc=nyqw4Xm6bggBxvgtR0tbg@mail.gmail.com>
-Subject: Re: [PATCH 4/4] tun: indicate support for USO feature
-To:     Jason Wang <jasowang@redhat.com>
+        id S230343AbhEKIgu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 11 May 2021 04:36:50 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:55204 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S230126AbhEKIgt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 11 May 2021 04:36:49 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1620722143;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=61MS3Y4w0JQptx9KJ6w8U1V0xBFEqQ1A+uVtPHLuWG8=;
+        b=KwryFn5ntHoZ/eLYsT3K/3+jNlSquUov8cKZWawzq3m990tjUcnoyAzsjxvalKIaL5cGHf
+        WPNrkjqTgXN1O8GLX+47oc7BjgZMWVfnY5ax/fmoYR5w4JLAeVEvtlc+Sm5F70wF03biBZ
+        o60y9GEOChItnFh2Nres8P0695bgqW4=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-422-A_iIi4ltOBOHUVo8TVImuA-1; Tue, 11 May 2021 04:35:39 -0400
+X-MC-Unique: A_iIi4ltOBOHUVo8TVImuA-1
+Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com [10.5.11.13])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id EBA5980ED8E;
+        Tue, 11 May 2021 08:35:38 +0000 (UTC)
+Received: from gerbillo.redhat.com (ovpn-115-64.ams2.redhat.com [10.36.115.64])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id D487D60843;
+        Tue, 11 May 2021 08:35:37 +0000 (UTC)
+From:   Paolo Abeni <pabeni@redhat.com>
+To:     netdev@vger.kernel.org
 Cc:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        "Michael S . Tsirkin" <mst@redhat.com>,
-        Network Development <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        virtualization@lists.linux-foundation.org,
-        Yan Vugenfirer <yan@daynix.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+        Eric Dumazet <edumazet@google.com>
+Subject: [PATCH net] net: really orphan skbs tied to closing sk
+Date:   Tue, 11 May 2021 10:35:21 +0200
+Message-Id: <b634d7aa85404b892a6199542c396b8ce4f94221.1620722065.git.pabeni@redhat.com>
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, May 11, 2021 at 9:50 AM Jason Wang <jasowang@redhat.com> wrote:
->
->
-> =E5=9C=A8 2021/5/11 =E4=B8=8B=E5=8D=8812:42, Yuri Benditovich =E5=86=99=
-=E9=81=93:
-> > Signed-off-by: Yuri Benditovich <yuri.benditovich@daynix.com>
-> > ---
-> >   drivers/net/tun.c | 2 +-
-> >   1 file changed, 1 insertion(+), 1 deletion(-)
-> >
-> > diff --git a/drivers/net/tun.c b/drivers/net/tun.c
-> > index 84f832806313..a35054f9d941 100644
-> > --- a/drivers/net/tun.c
-> > +++ b/drivers/net/tun.c
-> > @@ -2812,7 +2812,7 @@ static int set_offload(struct tun_struct *tun, un=
-signed long arg)
-> >                       arg &=3D ~(TUN_F_TSO4|TUN_F_TSO6);
-> >               }
-> >
-> > -             arg &=3D ~TUN_F_UFO;
-> > +             arg &=3D ~(TUN_F_UFO|TUN_F_USO);
->
->
-> It looks to me kernel doesn't use "USO", so TUN_F_UDP_GSO_L4 is a better
-> name for this
+If the owing socket is shutting down - e.g. the sock reference
+count already dropped to 0 and only sk_wmem_alloc is keeping
+the sock alive, skb_orphan_partial() becomes a no-op.
 
-No problem, I can change it in v2
+When forwarding packets over veth with GRO enabled, the above
+causes refcount errors.
 
- and I guess we should toggle NETIF_F_UDP_GSO_l4 here?
+This change addresses the issue with a plain skb_orphan() call
+in the critical scenario.
 
-No, we do not, because this indicates only the fact that the guest can
-send large UDP packets and have them splitted to UDP segments.
+Fixes: 9adc89af724f ("net: let skb_orphan_partial wake-up waiters.")
+Signed-off-by: Paolo Abeni <pabeni@redhat.com>
+---
+ include/net/sock.h | 4 +++-
+ net/core/sock.c    | 8 ++++----
+ 2 files changed, 7 insertions(+), 5 deletions(-)
 
->
-> And how about macvtap?
+diff --git a/include/net/sock.h b/include/net/sock.h
+index 42bc5e1a627f..0e962d8bc73b 100644
+--- a/include/net/sock.h
++++ b/include/net/sock.h
+@@ -2231,13 +2231,15 @@ static inline void skb_set_owner_r(struct sk_buff *skb, struct sock *sk)
+ 	sk_mem_charge(sk, skb->truesize);
+ }
+ 
+-static inline void skb_set_owner_sk_safe(struct sk_buff *skb, struct sock *sk)
++static inline __must_check bool skb_set_owner_sk_safe(struct sk_buff *skb, struct sock *sk)
+ {
+ 	if (sk && refcount_inc_not_zero(&sk->sk_refcnt)) {
+ 		skb_orphan(skb);
+ 		skb->destructor = sock_efree;
+ 		skb->sk = sk;
++		return true;
+ 	}
++	return false;
+ }
+ 
+ void sk_reset_timer(struct sock *sk, struct timer_list *timer,
+diff --git a/net/core/sock.c b/net/core/sock.c
+index c761c4a0b66b..958614ea16ed 100644
+--- a/net/core/sock.c
++++ b/net/core/sock.c
+@@ -2132,10 +2132,10 @@ void skb_orphan_partial(struct sk_buff *skb)
+ 	if (skb_is_tcp_pure_ack(skb))
+ 		return;
+ 
+-	if (can_skb_orphan_partial(skb))
+-		skb_set_owner_sk_safe(skb, skb->sk);
+-	else
+-		skb_orphan(skb);
++	if (can_skb_orphan_partial(skb) && skb_set_owner_sk_safe(skb, skb->sk))
++		return;
++
++	skb_orphan(skb);
+ }
+ EXPORT_SYMBOL(skb_orphan_partial);
+ 
+-- 
+2.26.2
 
-We will check how to do that for macvtap. We will send a separate
-patch for macvtap or ask for advice.
-
->
-> Thanks
->
->
-> >       }
-> >
-> >       /* This gives the user a way to test for new features in future b=
-y
->
