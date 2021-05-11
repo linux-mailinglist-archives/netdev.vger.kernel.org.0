@@ -2,88 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6B56837A7FC
-	for <lists+netdev@lfdr.de>; Tue, 11 May 2021 15:44:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 930E837A802
+	for <lists+netdev@lfdr.de>; Tue, 11 May 2021 15:45:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231655AbhEKNp7 convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Tue, 11 May 2021 09:45:59 -0400
-Received: from eu-smtp-delivery-151.mimecast.com ([185.58.85.151]:53765 "EHLO
-        eu-smtp-delivery-151.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S231643AbhEKNpz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 11 May 2021 09:45:55 -0400
-Received: from AcuMS.aculab.com (156.67.243.121 [156.67.243.121]) (Using
- TLS) by relay.mimecast.com with ESMTP id
- uk-mta-90-u6_30JzFPh2ZNfstzjEviw-1; Tue, 11 May 2021 14:44:46 +0100
-X-MC-Unique: u6_30JzFPh2ZNfstzjEviw-1
-Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) by
- AcuMS.aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) with Microsoft SMTP
- Server (TLS) id 15.0.1497.2; Tue, 11 May 2021 14:44:45 +0100
-Received: from AcuMS.Aculab.com ([fe80::994c:f5c2:35d6:9b65]) by
- AcuMS.aculab.com ([fe80::994c:f5c2:35d6:9b65%12]) with mapi id
- 15.00.1497.015; Tue, 11 May 2021 14:44:45 +0100
-From:   David Laight <David.Laight@ACULAB.COM>
-To:     'Matthew Wilcox' <willy@infradead.org>
-CC:     "davem@davemloft.net" <davem@davemloft.net>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "yoshfuji@linux-ipv6.org" <yoshfuji@linux-ipv6.org>,
-        "dsahern@kernel.org" <dsahern@kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Eric Dumazet <edumazet@google.com>
-Subject: RE: [PATCH] udp: Switch the order of arguments to copy_linear_skb
-Thread-Topic: [PATCH] udp: Switch the order of arguments to copy_linear_skb
-Thread-Index: AQHXRlmlQPna6YyAckavKt6/OjmurareQVGA///3HICAABItsA==
-Date:   Tue, 11 May 2021 13:44:45 +0000
-Message-ID: <73f91574e34f4b92910e2afd012e16f4@AcuMS.aculab.com>
-References: <20210511113400.1722975-1-willy@infradead.org>
- <ae8f4e176b17439b87420cad69fbabf9@AcuMS.aculab.com>
- <YJqI3Vixcqr+jyZX@casper.infradead.org>
-In-Reply-To: <YJqI3Vixcqr+jyZX@casper.infradead.org>
-Accept-Language: en-GB, en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ms-exchange-transport-fromentityheader: Hosted
-x-originating-ip: [10.202.205.107]
+        id S231472AbhEKNrA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 11 May 2021 09:47:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38728 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231426AbhEKNq6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 11 May 2021 09:46:58 -0400
+Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 44459C06174A;
+        Tue, 11 May 2021 06:45:52 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=FVA5wqZqu8qiAE18h5kq9MiEIAMhp9EbfMLzX4fyri0=; b=qXaafalpgCsxtOTMTKsFr32oAl
+        Ey4Pn5q26OmCtYaucXBxnIc0nTRX90wkfOgcbYJ5B9wESM8C0n7F3PTXHnwa4/4MY5QSTyVNzOt2w
+        w0LE/RGFPT2Iwwi983+WJrOchbqG2Z/ZhzM+nFrlyFr/Yd475x75jCjPe0Kbh06tm93HqeyDPJ7SS
+        39BS3YUqzv/AbpzCUfG8+HXbylR9cj/X15Ad3l0g9OfyanhsU7zCJw8gAxfCVgsxRaDJ1igUR85M6
+        CriaKnychXfPzkvEMBUYFiJI1YXfFtIFEjJMyv/0jqIWfCze7IKMWonff8JCfJMI48b3ANGJBXgfp
+        R6vqWoeA==;
+Received: from willy by casper.infradead.org with local (Exim 4.94 #2 (Red Hat Linux))
+        id 1lgShY-007K8j-G2; Tue, 11 May 2021 13:45:33 +0000
+Date:   Tue, 11 May 2021 14:45:32 +0100
+From:   Matthew Wilcox <willy@infradead.org>
+To:     Matteo Croce <mcroce@linux.microsoft.com>
+Cc:     netdev@vger.kernel.org, linux-mm@kvack.org,
+        Ayush Sawal <ayush.sawal@chelsio.com>,
+        Vinay Kumar Yadav <vinay.yadav@chelsio.com>,
+        Rohit Maheshwari <rohitm@chelsio.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        Marcin Wojtas <mw@semihalf.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Mirko Lindner <mlindner@marvell.com>,
+        Stephen Hemminger <stephen@networkplumber.org>,
+        Tariq Toukan <tariqt@nvidia.com>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Boris Pismenny <borisp@nvidia.com>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
+        Vlastimil Babka <vbabka@suse.cz>, Yu Zhao <yuzhao@google.com>,
+        Will Deacon <will@kernel.org>,
+        Michel Lespinasse <walken@google.com>,
+        Fenghua Yu <fenghua.yu@intel.com>,
+        Roman Gushchin <guro@fb.com>, Hugh Dickins <hughd@google.com>,
+        Peter Xu <peterx@redhat.com>, Jason Gunthorpe <jgg@ziepe.ca>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        Alexander Lobakin <alobakin@pm.me>,
+        Cong Wang <cong.wang@bytedance.com>, wenxu <wenxu@ucloud.cn>,
+        Kevin Hao <haokexin@gmail.com>,
+        Jakub Sitnicki <jakub@cloudflare.com>,
+        Marco Elver <elver@google.com>,
+        Willem de Bruijn <willemb@google.com>,
+        Miaohe Lin <linmiaohe@huawei.com>,
+        Yunsheng Lin <linyunsheng@huawei.com>,
+        Guillaume Nault <gnault@redhat.com>,
+        linux-kernel@vger.kernel.org, linux-rdma@vger.kernel.org,
+        bpf@vger.kernel.org, Eric Dumazet <edumazet@google.com>,
+        David Ahern <dsahern@gmail.com>,
+        Lorenzo Bianconi <lorenzo@kernel.org>,
+        Saeed Mahameed <saeedm@nvidia.com>,
+        Andrew Lunn <andrew@lunn.ch>, Paolo Abeni <pabeni@redhat.com>,
+        Sven Auhagen <sven.auhagen@voleatech.de>
+Subject: Re: [PATCH net-next v4 1/4] mm: add a signature in struct page
+Message-ID: <YJqKfNh6l3yY2daM@casper.infradead.org>
+References: <20210511133118.15012-1-mcroce@linux.microsoft.com>
+ <20210511133118.15012-2-mcroce@linux.microsoft.com>
 MIME-Version: 1.0
-Authentication-Results: relay.mimecast.com;
-        auth=pass smtp.auth=C51A453 smtp.mailfrom=david.laight@aculab.com
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: aculab.com
-Content-Language: en-US
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8BIT
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210511133118.15012-2-mcroce@linux.microsoft.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Matthew Wilcox
-> Sent: 11 May 2021 14:39
-> 
-> On Tue, May 11, 2021 at 01:11:42PM +0000, David Laight wrote:
-> > From: Matthew Wilcox
-> > > Sent: 11 May 2021 12:34
-> > >
-> > > All other skb functions use (off, len); this is the only one which
-> > > uses (len, off).  Make it consistent.
-> >
-> > I wouldn't change the order of the arguments without some other
-> > change that ensures old code fails to compile.
-> > (Like tweaking the function name.)
-> 
-> Yes, some random essentially internal function that has had no new
-> users since it was created in 2017 should get a new name *eyeroll*.
-> 
-> Please find more useful things to critique.  Or, you know, write some
-> damned code yourself instead of just having opinions.
+On Tue, May 11, 2021 at 03:31:15PM +0200, Matteo Croce wrote:
+> @@ -101,6 +101,7 @@ struct page {
+>  			 * 32-bit architectures.
+>  			 */
+>  			unsigned long dma_addr[2];
+> +			unsigned long signature;
+>  		};
+>  		struct {	/* slab, slob and slub */
+>  			union {
 
-You could easily completely screw up any code that isn't committed
-to the kernel source tree.
-It isn't the sort of bug I'd want to diagnose.
+No.  Signature now aliases with page->mapping, which is going to go
+badly wrong for drivers which map this page into userspace.
 
-	David
+I had this as:
 
--
-Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
-Registration No: 1397386 (Wales)
++                       unsigned long pp_magic;
++                       unsigned long xmi;
++                       unsigned long _pp_mapping_pad;
+                        unsigned long dma_addr[2];
 
+and pp_magic needs to be set to something with bits 0&1 clear and
+clearly isn't a pointer.  I went with POISON_POINTER_DELTA + 0x40.
