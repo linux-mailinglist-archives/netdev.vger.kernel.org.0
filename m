@@ -2,180 +2,66 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 924FB37A7BB
-	for <lists+netdev@lfdr.de>; Tue, 11 May 2021 15:34:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 02DB037A7DD
+	for <lists+netdev@lfdr.de>; Tue, 11 May 2021 15:39:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231639AbhEKNfY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 11 May 2021 09:35:24 -0400
-Received: from mail-ed1-f51.google.com ([209.85.208.51]:37499 "EHLO
-        mail-ed1-f51.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231440AbhEKNfV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 11 May 2021 09:35:21 -0400
-Received: by mail-ed1-f51.google.com with SMTP id f1so652377edt.4;
-        Tue, 11 May 2021 06:34:12 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=opbCv80kZO0WR00E8CvyXu7JXQ2Kf6zwvEyZ//vM1Tw=;
-        b=a0tLJmbXFy2Jbh0m0MsbqG+TNDnpXzBLj2kWXKUIvobDlq1Kc6K/osYtePuSiat5lp
-         CPEhiUquHVj9JagWjBABWdaPsY4gSWm6+zEZD89qYkNlRCGNfIDUmpqbVwVLaLIqSw+8
-         K4evr6SJHgNaNSvY5ujMypXSpphnglNUKlHxD+b97Xm9ZNctMBIuX5djj1vDLO8NaIn6
-         /V2ZKuw2/Q+347loXL2TVZVhIWRJa1UgBwWnwb383tOzLx3H5YifVnLlljhw+D01h71r
-         8Pp+XrMbm0XDBQ3pZIWgjLSuC3EHGDjfRvNLAmhF37CYyI+JHnrJ1RFaSPA7zz8VvhSH
-         uoYA==
-X-Gm-Message-State: AOAM530Q+QmPruUx3WnukvoDPlj66fVQu1npHSgOldCunZu2mIjDb2dG
-        FVWXEdsb4tbxDkCj0XUpHZZJjX6eXq2lBIni
-X-Google-Smtp-Source: ABdhPJxFON1iLvgj/qc5/xaXt8z19zepipzFxfFB7xkn4XGfCltkU60ur9IrBl/dtWY53DcWuTjY1A==
-X-Received: by 2002:aa7:d950:: with SMTP id l16mr36092015eds.374.1620740052002;
-        Tue, 11 May 2021 06:34:12 -0700 (PDT)
-Received: from msft-t490s.teknoraver.net (net-5-94-253-60.cust.vodafonedsl.it. [5.94.253.60])
-        by smtp.gmail.com with ESMTPSA id b12sm14577136eds.23.2021.05.11.06.34.08
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 11 May 2021 06:34:11 -0700 (PDT)
-From:   Matteo Croce <mcroce@linux.microsoft.com>
-To:     netdev@vger.kernel.org, linux-mm@kvack.org
-Cc:     Ayush Sawal <ayush.sawal@chelsio.com>,
-        Vinay Kumar Yadav <vinay.yadav@chelsio.com>,
-        Rohit Maheshwari <rohitm@chelsio.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        Marcin Wojtas <mw@semihalf.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Mirko Lindner <mlindner@marvell.com>,
-        Stephen Hemminger <stephen@networkplumber.org>,
-        Tariq Toukan <tariqt@nvidia.com>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Boris Pismenny <borisp@nvidia.com>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
-        Vlastimil Babka <vbabka@suse.cz>, Yu Zhao <yuzhao@google.com>,
-        Will Deacon <will@kernel.org>,
-        Michel Lespinasse <walken@google.com>,
-        Fenghua Yu <fenghua.yu@intel.com>,
-        Roman Gushchin <guro@fb.com>, Hugh Dickins <hughd@google.com>,
-        Peter Xu <peterx@redhat.com>, Jason Gunthorpe <jgg@ziepe.ca>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
-        Alexander Lobakin <alobakin@pm.me>,
-        Cong Wang <cong.wang@bytedance.com>, wenxu <wenxu@ucloud.cn>,
-        Kevin Hao <haokexin@gmail.com>,
-        Jakub Sitnicki <jakub@cloudflare.com>,
-        Marco Elver <elver@google.com>,
-        Willem de Bruijn <willemb@google.com>,
-        Miaohe Lin <linmiaohe@huawei.com>,
-        Yunsheng Lin <linyunsheng@huawei.com>,
-        Guillaume Nault <gnault@redhat.com>,
-        linux-kernel@vger.kernel.org, linux-rdma@vger.kernel.org,
-        bpf@vger.kernel.org, Matthew Wilcox <willy@infradead.org>,
-        Eric Dumazet <edumazet@google.com>,
-        David Ahern <dsahern@gmail.com>,
-        Lorenzo Bianconi <lorenzo@kernel.org>,
-        Saeed Mahameed <saeedm@nvidia.com>,
-        Andrew Lunn <andrew@lunn.ch>, Paolo Abeni <pabeni@redhat.com>,
-        Sven Auhagen <sven.auhagen@voleatech.de>
-Subject: [PATCH net-next v4 4/4] mvneta: recycle buffers
-Date:   Tue, 11 May 2021 15:31:18 +0200
-Message-Id: <20210511133118.15012-5-mcroce@linux.microsoft.com>
-X-Mailer: git-send-email 2.31.1
-In-Reply-To: <20210511133118.15012-1-mcroce@linux.microsoft.com>
-References: <20210511133118.15012-1-mcroce@linux.microsoft.com>
+        id S231479AbhEKNkd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 11 May 2021 09:40:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37242 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229921AbhEKNkd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 11 May 2021 09:40:33 -0400
+Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF6CFC061574;
+        Tue, 11 May 2021 06:39:26 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=SKJhE6L8p0+9htttbQMfz6vP+47lUTeOtbP24QTWnlo=; b=pMFte22mrITclViRsAe1ciWoEx
+        ZyMunvfrUCenCLoSqCtJ2N/fHxKeZhEjkW+bW5ldbaXrbuGfjqV7HEDY+UiLb0XKB/yD5LvNwGxUn
+        ZLHv+OPanaF2l3Ge45ApAlAaMMPMJqjFvbsnsUVExEYxStiLOZraNieJmvzpAR8lY9bEcCrTFja9U
+        p/KqXldFLBckAPzxX/e52ZDHXfV+4v7bFjShOOp5NQnAQa2IGuyhoNsQXSKB1kxSH+P7Q5p27XzWQ
+        5Vj8AjQhm5JQGG6Nl5WWtKncoR2aUa2FMw+D06f5gMWmuWQXBSR4y3qjcatEMypV8QEfkM7Zdh9vx
+        kSZGmYew==;
+Received: from willy by casper.infradead.org with local (Exim 4.94 #2 (Red Hat Linux))
+        id 1lgSar-007Jrs-TV; Tue, 11 May 2021 13:38:44 +0000
+Date:   Tue, 11 May 2021 14:38:37 +0100
+From:   Matthew Wilcox <willy@infradead.org>
+To:     David Laight <David.Laight@aculab.com>
+Cc:     "davem@davemloft.net" <davem@davemloft.net>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "yoshfuji@linux-ipv6.org" <yoshfuji@linux-ipv6.org>,
+        "dsahern@kernel.org" <dsahern@kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Eric Dumazet <edumazet@google.com>
+Subject: Re: [PATCH] udp: Switch the order of arguments to copy_linear_skb
+Message-ID: <YJqI3Vixcqr+jyZX@casper.infradead.org>
+References: <20210511113400.1722975-1-willy@infradead.org>
+ <ae8f4e176b17439b87420cad69fbabf9@AcuMS.aculab.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <ae8f4e176b17439b87420cad69fbabf9@AcuMS.aculab.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Matteo Croce <mcroce@microsoft.com>
+On Tue, May 11, 2021 at 01:11:42PM +0000, David Laight wrote:
+> From: Matthew Wilcox
+> > Sent: 11 May 2021 12:34
+> > 
+> > All other skb functions use (off, len); this is the only one which
+> > uses (len, off).  Make it consistent.
+> 
+> I wouldn't change the order of the arguments without some other
+> change that ensures old code fails to compile.
+> (Like tweaking the function name.)
 
-Use the new recycling API for page_pool.
-In a drop rate test, the packet rate increased di 10%,
-from 269 Kpps to 296 Kpps.
+Yes, some random essentially internal function that has had no new
+users since it was created in 2017 should get a new name *eyeroll*.
 
-perf top on a stock system shows:
-
-Overhead  Shared Object     Symbol
-  21.78%  [kernel]          [k] __pi___inval_dcache_area
-  21.66%  [mvneta]          [k] mvneta_rx_swbm
-   7.00%  [kernel]          [k] kmem_cache_alloc
-   6.05%  [kernel]          [k] eth_type_trans
-   4.44%  [kernel]          [k] kmem_cache_free.part.0
-   3.80%  [kernel]          [k] __netif_receive_skb_core
-   3.68%  [kernel]          [k] dev_gro_receive
-   3.65%  [kernel]          [k] get_page_from_freelist
-   3.43%  [kernel]          [k] page_pool_release_page
-   3.35%  [kernel]          [k] free_unref_page
-
-And this is the same output with recycling enabled:
-
-Overhead  Shared Object     Symbol
-  24.10%  [kernel]          [k] __pi___inval_dcache_area
-  23.02%  [mvneta]          [k] mvneta_rx_swbm
-   7.19%  [kernel]          [k] kmem_cache_alloc
-   6.50%  [kernel]          [k] eth_type_trans
-   4.93%  [kernel]          [k] __netif_receive_skb_core
-   4.77%  [kernel]          [k] kmem_cache_free.part.0
-   3.93%  [kernel]          [k] dev_gro_receive
-   3.03%  [kernel]          [k] build_skb
-   2.91%  [kernel]          [k] page_pool_put_page
-   2.85%  [kernel]          [k] __xdp_return
-
-The test was done with mausezahn on the TX side with 64 byte raw
-ethernet frames.
-
-Signed-off-by: Matteo Croce <mcroce@microsoft.com>
----
- drivers/net/ethernet/marvell/mvneta.c | 11 +++++++----
- 1 file changed, 7 insertions(+), 4 deletions(-)
-
-diff --git a/drivers/net/ethernet/marvell/mvneta.c b/drivers/net/ethernet/marvell/mvneta.c
-index 7d5cd9bc6c99..6d2f8dce4900 100644
---- a/drivers/net/ethernet/marvell/mvneta.c
-+++ b/drivers/net/ethernet/marvell/mvneta.c
-@@ -2320,7 +2320,7 @@ mvneta_swbm_add_rx_fragment(struct mvneta_port *pp,
- }
- 
- static struct sk_buff *
--mvneta_swbm_build_skb(struct mvneta_port *pp, struct mvneta_rx_queue *rxq,
-+mvneta_swbm_build_skb(struct mvneta_port *pp, struct page_pool *pool,
- 		      struct xdp_buff *xdp, u32 desc_status)
- {
- 	struct skb_shared_info *sinfo = xdp_get_shared_info_from_buff(xdp);
-@@ -2331,7 +2331,7 @@ mvneta_swbm_build_skb(struct mvneta_port *pp, struct mvneta_rx_queue *rxq,
- 	if (!skb)
- 		return ERR_PTR(-ENOMEM);
- 
--	page_pool_release_page(rxq->page_pool, virt_to_page(xdp->data));
-+	skb_mark_for_recycle(skb, virt_to_page(xdp->data), pool);
- 
- 	skb_reserve(skb, xdp->data - xdp->data_hard_start);
- 	skb_put(skb, xdp->data_end - xdp->data);
-@@ -2343,7 +2343,10 @@ mvneta_swbm_build_skb(struct mvneta_port *pp, struct mvneta_rx_queue *rxq,
- 		skb_add_rx_frag(skb, skb_shinfo(skb)->nr_frags,
- 				skb_frag_page(frag), skb_frag_off(frag),
- 				skb_frag_size(frag), PAGE_SIZE);
--		page_pool_release_page(rxq->page_pool, skb_frag_page(frag));
-+		/* We don't need to reset pp_recycle here. It's already set, so
-+		 * just mark fragments for recycling.
-+		 */
-+		page_pool_store_mem_info(skb_frag_page(frag), pool);
- 	}
- 
- 	return skb;
-@@ -2425,7 +2428,7 @@ static int mvneta_rx_swbm(struct napi_struct *napi,
- 		    mvneta_run_xdp(pp, rxq, xdp_prog, &xdp_buf, frame_sz, &ps))
- 			goto next;
- 
--		skb = mvneta_swbm_build_skb(pp, rxq, &xdp_buf, desc_status);
-+		skb = mvneta_swbm_build_skb(pp, pp, &xdp_buf, desc_status);
- 		if (IS_ERR(skb)) {
- 			struct mvneta_pcpu_stats *stats = this_cpu_ptr(pp->stats);
- 
--- 
-2.31.1
-
+Please find more useful things to critique.  Or, you know, write some
+damned code yourself instead of just having opinions.
