@@ -2,67 +2,62 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A4D7B37A20A
-	for <lists+netdev@lfdr.de>; Tue, 11 May 2021 10:31:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C64A937A234
+	for <lists+netdev@lfdr.de>; Tue, 11 May 2021 10:34:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230399AbhEKIch (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 11 May 2021 04:32:37 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:30535 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S229995AbhEKIcf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 11 May 2021 04:32:35 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1620721888;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=L03rSJtnAgFGyBancVHdJ/m6c98PSwpvaqqILqNedlU=;
-        b=RldmvnNniY/aJFqGLaEejxeAzeK19ebGP9l9ckj9HEeAicWKf4nAvcgqq0RSoRnhaD2poO
-        0iHCB6o7HRCWccSSz/1xs8X3ItrorY7+SpkMrUSbSQqOYPEb4rEgfLMVxVZd2e8QlJy7Yx
-        GBxcoUAgx5FCttrqboH2tw+bQHuzyNM=
-Received: from mail-lf1-f69.google.com (mail-lf1-f69.google.com
- [209.85.167.69]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-135-m5IyxhFeOUe3nYOX38dR_g-1; Tue, 11 May 2021 04:31:27 -0400
-X-MC-Unique: m5IyxhFeOUe3nYOX38dR_g-1
-Received: by mail-lf1-f69.google.com with SMTP id p10-20020a19f10a0000b02901d675ef8fb8so3337420lfh.16
-        for <netdev@vger.kernel.org>; Tue, 11 May 2021 01:31:26 -0700 (PDT)
+        id S230382AbhEKIfV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 11 May 2021 04:35:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52938 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230073AbhEKIfT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 11 May 2021 04:35:19 -0400
+Received: from mail-ot1-x32c.google.com (mail-ot1-x32c.google.com [IPv6:2607:f8b0:4864:20::32c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 69FE5C06175F
+        for <netdev@vger.kernel.org>; Tue, 11 May 2021 01:34:12 -0700 (PDT)
+Received: by mail-ot1-x32c.google.com with SMTP id q7-20020a9d57870000b02902a5c2bd8c17so16864830oth.5
+        for <netdev@vger.kernel.org>; Tue, 11 May 2021 01:34:12 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=daynix-com.20150623.gappssmtp.com; s=20150623;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=wgdPV/AcewZdrV8IdLTwGyLrFumxsFWQvFFQfDf0wVQ=;
+        b=0ZapcwACbS75HaNUVIMJA2nF3TdzK7yHK93AEsDFWQj8EPz+9cmwgw80lvA1lgAEcQ
+         uz/w0p69/JLKKlrFul/W9WeNdp8+jOwBZg2fofcQkFW61UPtzJvJ6gvbq69u/kBAquis
+         kkgdUMlLxWCwi3BvPFR7IUQn9zq0xmg0bVmILplyvwK/wfPbwPqlmjJeWI9Eko1doGGi
+         FQWXi7kHsmCKdsmfuA+BBVIHnQXevwiPUdnh+rcK2HqBBC387AtQ519eZkHJ0SsnceXB
+         Yd3siNFoRrVgjmFLca5F43CEhd/Qe8uE1M9/C1PkehqGJTLCCUm2OQX0W3w6auokH3Nm
+         CFxQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc:content-transfer-encoding;
-        bh=L03rSJtnAgFGyBancVHdJ/m6c98PSwpvaqqILqNedlU=;
-        b=HCx5nOasSVybgYdTouO7YRoCGRfoLCEiZR9ac2mQkpwWz3illvJimwBnkIreG1hDaM
-         bpGAYNoFIrWM7h9OZq6i6JTgZ5vdbLUjrS6PLX0B8nDBxCshUinCDtEkdP6H1ybzbBRs
-         3623SIkin1m5czqHt1vWeXKGNEJUJ4xIyow5rnWE3Bj990rEUb42jEl2jZZaqUkrk6b+
-         x2KWPZD+4KjJHxPZz2ocTQRouOyK9enf82VC1acTOvO+KdSlU/jDtWiUSkiAGM/ncEX/
-         SKEtuRzUV8mKzCbyMVPYYJHh5IcI+XgE02nacEmuPf4hPD95DEsWFOg730dcJO+5pnAE
-         +teA==
-X-Gm-Message-State: AOAM532+5gyvhPNZhUsqit2hIfRT+xe675SPyk0ILwrOrCXESWnpbp8r
-        eKDX1CsxbWTSM4OSbeNo5AjXkh4ECR88EiXAfUU8y+S7g+6SWoaTwSzTJHokaRevvkDER74BYX4
-        nPr8Pbhr5xSaRPsUtfk5jb6IjDABT8C1C
-X-Received: by 2002:a05:651c:3cf:: with SMTP id f15mr6277312ljp.404.1620721885569;
-        Tue, 11 May 2021 01:31:25 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJzHLZ1YD9/2pHaEcCCi78y5495opccD/EC/LlPQBQi+2b5oR/fD3/SoV4oxtDLQhEshzmLVnKu039vKj+S2Isw=
-X-Received: by 2002:a05:651c:3cf:: with SMTP id f15mr6277299ljp.404.1620721885330;
- Tue, 11 May 2021 01:31:25 -0700 (PDT)
+        bh=wgdPV/AcewZdrV8IdLTwGyLrFumxsFWQvFFQfDf0wVQ=;
+        b=nCfSLLz7PyLQwXlVv660UrFVOCBuRPwZZiUEBU9Rble0PLdYhZFLgOM7bD7s7GDoTW
+         UPG8aH/vVQKZb8y2aadNueurzKTSHjezsxAkeZ2gGxM0TY0VLjhJ9UNp+T/GSApyXTMY
+         S5FOk22WoSrFEp1O4C2yfYuWG7hJCzXITUAVYCDoAn1ml/YZa8y0tXO7BpMxq79TzAKe
+         L3f4ApQJ0oOybmAvxvfIdTHwZ+YXfSo78j0g1BQGZkyFWr/d2VumP7pdciyUF0cA/Pgq
+         qPK4jKjaktcYfhdlCKbG0bBsfzL4xoMcHGtzLhk7rFnmGjjThmdQ1GsbeV41XghmVN4/
+         6aDQ==
+X-Gm-Message-State: AOAM531S+RuwmtyESDRn4zGDnMoO+rJ8hSTF5tK8rLRs7hv7DoH/Hubt
+        qJ+9eIlqRSzez5D5pjAZXr6HBKdarvfltB22OqGzkQ==
+X-Google-Smtp-Source: ABdhPJzVt5nVC9XjXq5gIom64lU88TpjNEqpB89DApWc6nOZvte02Xy9S4mlekR3eFeF5u5HlWWwHuHrS+XxZjZHixU=
+X-Received: by 2002:a05:6830:4103:: with SMTP id w3mr20719290ott.27.1620722051869;
+ Tue, 11 May 2021 01:34:11 -0700 (PDT)
 MIME-Version: 1.0
 References: <20210511044253.469034-1-yuri.benditovich@daynix.com>
- <20210511044253.469034-3-yuri.benditovich@daynix.com> <0e31ea70-f12a-070e-c72b-6e1d337a89bc@redhat.com>
- <CAOEp5Ofi52eCV1R261afkC2Oqgn5v8V6w3QQP8tHWcEiLmsUSQ@mail.gmail.com>
-In-Reply-To: <CAOEp5Ofi52eCV1R261afkC2Oqgn5v8V6w3QQP8tHWcEiLmsUSQ@mail.gmail.com>
-From:   Jason Wang <jasowang@redhat.com>
-Date:   Tue, 11 May 2021 16:31:10 +0800
-Message-ID: <CACGkMEsKXWN9jQ23ix26DzKv-nUfUPHPEP9Trz0saCAZkMbdRA@mail.gmail.com>
-Subject: Re: [PATCH 2/4] virtio-net: add support of UDP segmentation (USO) on
- the host
-To:     Yuri Benditovich <yuri.benditovich@daynix.com>
+ <20210511044253.469034-5-yuri.benditovich@daynix.com> <eb8c4984-f0cc-74ee-537f-fc60deaaaa73@redhat.com>
+In-Reply-To: <eb8c4984-f0cc-74ee-537f-fc60deaaaa73@redhat.com>
+From:   Yuri Benditovich <yuri.benditovich@daynix.com>
+Date:   Tue, 11 May 2021 11:33:59 +0300
+Message-ID: <CAOEp5OdrCDPx4ijLcEOm=Wxma6hc=nyqw4Xm6bggBxvgtR0tbg@mail.gmail.com>
+Subject: Re: [PATCH 4/4] tun: indicate support for USO feature
+To:     Jason Wang <jasowang@redhat.com>
 Cc:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
         "Michael S . Tsirkin" <mst@redhat.com>,
         Network Development <netdev@vger.kernel.org>,
         LKML <linux-kernel@vger.kernel.org>,
-        virtualization <virtualization@lists.linux-foundation.org>,
+        virtualization@lists.linux-foundation.org,
         Yan Vugenfirer <yan@daynix.com>
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
@@ -70,80 +65,51 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, May 11, 2021 at 4:24 PM Yuri Benditovich
-<yuri.benditovich@daynix.com> wrote:
+On Tue, May 11, 2021 at 9:50 AM Jason Wang <jasowang@redhat.com> wrote:
 >
-> On Tue, May 11, 2021 at 9:47 AM Jason Wang <jasowang@redhat.com> wrote:
-> >
-> >
-> > =E5=9C=A8 2021/5/11 =E4=B8=8B=E5=8D=8812:42, Yuri Benditovich =E5=86=99=
+>
+> =E5=9C=A8 2021/5/11 =E4=B8=8B=E5=8D=8812:42, Yuri Benditovich =E5=86=99=
 =E9=81=93:
-> > > Large UDP packet provided by the guest with GSO type set to
-> > > VIRTIO_NET_HDR_GSO_UDP_L4 will be divided to several UDP
-> > > packets according to the gso_size field.
-> > >
-> > > Signed-off-by: Yuri Benditovich <yuri.benditovich@daynix.com>
-> > > ---
-> > >   include/linux/virtio_net.h | 5 +++++
-> > >   1 file changed, 5 insertions(+)
-> > >
-> > > diff --git a/include/linux/virtio_net.h b/include/linux/virtio_net.h
-> > > index b465f8f3e554..4ecf9a1ca912 100644
-> > > --- a/include/linux/virtio_net.h
-> > > +++ b/include/linux/virtio_net.h
-> > > @@ -51,6 +51,11 @@ static inline int virtio_net_hdr_to_skb(struct sk_=
-buff *skb,
-> > >                       ip_proto =3D IPPROTO_UDP;
-> > >                       thlen =3D sizeof(struct udphdr);
-> > >                       break;
-> > > +             case VIRTIO_NET_HDR_GSO_UDP_L4:
-> > > +                     gso_type =3D SKB_GSO_UDP_L4;
-> > > +                     ip_proto =3D IPPROTO_UDP;
-> > > +                     thlen =3D sizeof(struct udphdr);
-> > > +                     break;
+> > Signed-off-by: Yuri Benditovich <yuri.benditovich@daynix.com>
+> > ---
+> >   drivers/net/tun.c | 2 +-
+> >   1 file changed, 1 insertion(+), 1 deletion(-)
 > >
+> > diff --git a/drivers/net/tun.c b/drivers/net/tun.c
+> > index 84f832806313..a35054f9d941 100644
+> > --- a/drivers/net/tun.c
+> > +++ b/drivers/net/tun.c
+> > @@ -2812,7 +2812,7 @@ static int set_offload(struct tun_struct *tun, un=
+signed long arg)
+> >                       arg &=3D ~(TUN_F_TSO4|TUN_F_TSO6);
+> >               }
 > >
-> > This is only for rx, how about tx?
+> > -             arg &=3D ~TUN_F_UFO;
+> > +             arg &=3D ~(TUN_F_UFO|TUN_F_USO);
 >
-> In terms of the guest this is only for TX.
-
-So virtio_net_hdr_to_skb() can be called by all the followings:
-
-1) receive_buf() which is guest RX.
-2) tun_get_user() which is guest TX
-3) tap_get_user() which is guest TX
-4) {t}packet_send() which is userspace TX
-
-So it touches for both RX and TX.
-
-> Guest RX is a different thing, this is actually coalescing of
-> segmented UDP packets into a large one.
-
-Another case, the packet could be sent from another VM (like the UFO case).
-
-Supporting that for both TX and RX and greatly improve the performance
-of VM2VM traffic.
-
-Thanks
-
-> This feature is not defined in the virtio spec yet and the support of
-> it first of all depends on the OS.
-> For example: TCP LSO (guest TX) is supported almost by all the
-> versions of Windows.
-> TCP RSC (coalescing of TCP segments) is supported by Win 8 / Server 2012 =
-and up.
-> UDP segmentation is supported by Windows kernels 1903+
-> UDP coalescing is defined by Windows kernels 2004+ and not supported
-> by the driver yet.
 >
-> >
-> > Thanks
-> >
-> >
-> >
-> > >               default:
-> > >                       return -EINVAL;
-> > >               }
-> >
->
+> It looks to me kernel doesn't use "USO", so TUN_F_UDP_GSO_L4 is a better
+> name for this
 
+No problem, I can change it in v2
+
+ and I guess we should toggle NETIF_F_UDP_GSO_l4 here?
+
+No, we do not, because this indicates only the fact that the guest can
+send large UDP packets and have them splitted to UDP segments.
+
+>
+> And how about macvtap?
+
+We will check how to do that for macvtap. We will send a separate
+patch for macvtap or ask for advice.
+
+>
+> Thanks
+>
+>
+> >       }
+> >
+> >       /* This gives the user a way to test for new features in future b=
+y
+>
