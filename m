@@ -2,90 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4293D37A85D
-	for <lists+netdev@lfdr.de>; Tue, 11 May 2021 16:01:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1339237A86E
+	for <lists+netdev@lfdr.de>; Tue, 11 May 2021 16:06:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231508AbhEKOCz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 11 May 2021 10:02:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42368 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231305AbhEKOCy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 11 May 2021 10:02:54 -0400
-Received: from mail-qv1-xf31.google.com (mail-qv1-xf31.google.com [IPv6:2607:f8b0:4864:20::f31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 22294C061574
-        for <netdev@vger.kernel.org>; Tue, 11 May 2021 07:01:46 -0700 (PDT)
-Received: by mail-qv1-xf31.google.com with SMTP id w9so10149821qvi.13
-        for <netdev@vger.kernel.org>; Tue, 11 May 2021 07:01:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=coverfire.com; s=google;
-        h=message-id:subject:from:to:cc:date:in-reply-to:references
-         :user-agent:mime-version:content-transfer-encoding;
-        bh=qQrmHIXjnXfQWJtbeZXpWntrZOfwSCQYMKOgToYP8RY=;
-        b=T396vYFeyeH2mfE6IyQBYJ38lT3Ui2Zq67Smwbm/Z1g0PIbizMRKQ1uKlVX2eyxGTi
-         JVwl3t6OTQP30yWJy0rQHZBNwfPOvOYo8uVeEMk03NAZ4L02t1ce6mTmSHMK9fRSI9ti
-         F5bjVfWAV3jujBEdvaQ5MK63pNTlEEGAAqro2fyiOuCcpuVqHRVsq48T9ImHZ06kMAXB
-         Bjhns7yE/acr5tu/08irFjl7qAzH8l+8+PmcX+Hg0NesEAV3ax/4sLSOjJMEDCctRwid
-         2sNlTowaBrOp1DEuG+DXwJVfLK1WDvH7rHtx2/ghDjxVFM39MBOKGzdJcWsjLNFhJuAU
-         QHiA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
-         :references:user-agent:mime-version:content-transfer-encoding;
-        bh=qQrmHIXjnXfQWJtbeZXpWntrZOfwSCQYMKOgToYP8RY=;
-        b=ro9u6mGHnGBB+XXNvOfVArmneV81EC8fHdr1O0UGeC+j3enzAzdT7Ou+44KyhwUaf2
-         FPlO/sJmGgE6CLA+FydPbz0MPPJs20z8RUNdcjUxjVRm5BQzzKjOWnl7N4x9tps/5+02
-         Ur/EXSIwLzk05Mq7Z+x0DKFBzZrihquBmRkfipL7bSzQy2rPd1UHWGJCtmMLBgFAy1ig
-         aWJEwtz7M/wPLmLSXOCXEvnUH3ATVNlSqlRb5Tj5rjtw79pYvbxIQ3mtxJJ3KYN3Fhbq
-         DZ43VdCXszaMMsuOjSwiDeAr/Drx3IV/qGL0+nbKGwwam+5LR6nLVNEbK1NF/x3hzdoT
-         aIqA==
-X-Gm-Message-State: AOAM531xkx9yPwzXaXeMiSpQvhWE62S9AFcntRiiGhQgk4C8BrRE1P5V
-        9vqJj5vn4gBtE0SLPx3jtkenWA==
-X-Google-Smtp-Source: ABdhPJxytzBaKMGlPrwKBzJjDMzkAtcbYORowCXBnr0UKZ1P/EsTeNA7ml4BMiAqfrET7ORua2iQqQ==
-X-Received: by 2002:a0c:a483:: with SMTP id x3mr10389262qvx.28.1620741705351;
-        Tue, 11 May 2021 07:01:45 -0700 (PDT)
-Received: from ?IPv6:2607:f2c0:e56e:28c:e4de:d9eb:cc0b:f46a? ([2607:f2c0:e56e:28c:e4de:d9eb:cc0b:f46a])
-        by smtp.gmail.com with ESMTPSA id r5sm13794415qtp.75.2021.05.11.07.01.44
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 11 May 2021 07:01:44 -0700 (PDT)
-Message-ID: <a52430d1e11c5cadcd08706bd6d8da3ea48e1c04.camel@coverfire.com>
-Subject: Re: xsk_buff_pool.c trace
-From:   Dan Siemon <dan@coverfire.com>
-To:     Magnus Karlsson <magnus.karlsson@gmail.com>
-Cc:     Network Development <netdev@vger.kernel.org>,
-        =?ISO-8859-1?Q?Bj=F6rn_T=F6pel?= <bjorn@kernel.org>,
-        "Karlsson, Magnus" <magnus.karlsson@intel.com>
-Date:   Tue, 11 May 2021 10:01:43 -0400
-In-Reply-To: <CAJ8uoz1qKnJw+StSfuCkXuoS5-qOQA89HKjLzedh7LySBDUp1g@mail.gmail.com>
-References: <52fdf0e0d9d453379df2163f16bdf12f425ef456.camel@coverfire.com>
-         <CAJ8uoz1qKnJw+StSfuCkXuoS5-qOQA89HKjLzedh7LySBDUp1g@mail.gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.40.1 (3.40.1-1.fc34) 
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
+        id S231680AbhEKOHI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 11 May 2021 10:07:08 -0400
+Received: from m12-14.163.com ([220.181.12.14]:55369 "EHLO m12-14.163.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S231489AbhEKOHH (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 11 May 2021 10:07:07 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
+        s=s110527; h=From:Subject:Date:Message-Id; bh=8DEIr7JHMWWcTKNdor
+        0P0+DA4ax1L12j+Rr59qjm03M=; b=YPvxBtNaHTVC1S9nSMfdlTZ+BBpD7kqRVd
+        h1YSaIMhDgmwYh59IZctCD06huiXicyGWPTA3o9JKhseJS3a+prKU1BUfSHvLrRC
+        54X6uWnBxUlcRvp1hmTATpP+v0zoa3/I+eAAYxoKBw9cymRfLF7+53YcqKdwPSMU
+        Wa1HWqcFk=
+Received: from localhost.localdomain (unknown [117.139.248.194])
+        by smtp10 (Coremail) with SMTP id DsCowADXj20Lj5pgIgswIQ--.31375S2;
+        Tue, 11 May 2021 22:05:00 +0800 (CST)
+From:   Hailong Liu <liuhailongg6@163.com>
+To:     Alexei Starovoitov <ast@kernel.org>
+Cc:     Yonghong Song <yhs@fb.com>, Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Hailong Liu <liu.hailong6@zte.com.cn>
+Subject: [PATCH] samples, bpf: suppress compiler warning
+Date:   Tue, 11 May 2021 22:04:29 +0800
+Message-Id: <20210511140429.89426-1-liuhailongg6@163.com>
+X-Mailer: git-send-email 2.17.1
+X-CM-TRANSID: DsCowADXj20Lj5pgIgswIQ--.31375S2
+X-Coremail-Antispam: 1Uf129KBjvJXoW7Zr1xZF47AFykur1rAr1DZFb_yoW8XFW8pa
+        1kt347KFZayF1Y9ry3Xr9rK34Fv34kGFyUGFZ7Jry3J3Waq3ykWayYyFZ8Wr45Gr95KF4S
+        vw1Sgry8G3WUCaDanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+        9KBjDUYxBIdaVFxhVjvjDU0xZFpf9x07jnID7UUUUU=
+X-Originating-IP: [117.139.248.194]
+X-CM-SenderInfo: xolxxtxlor0wjjw6il2tof0z/xtbBChePYF3l-XpMDQAAsM
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 2021-05-10 at 08:15 +0200, Magnus Karlsson wrote:
-> On Mon, May 10, 2021 at 3:59 AM Dan Siemon <dan@coverfire.com> wrote:
-> > 
-> > i40e NIC with 5.11.17-300.fc34.x86_64
-> > 
-> > Unfortunately, this does not consistently occur.
-> > 
-> > [ 2739.991807] ------------[ cut here ]------------
-> > [ 2739.996428] Failed to disable zero-copy!
-> 
-> Could you please dump the error value that i40e_xsk_pool_disable
-> returns? Just so I have something more to go on. There are three
-> functions that can fail, xsk_get_pool_from_qid(),
-> i40e_queue_pair_disable(), and i40e_queue_pair_enable(). If you can
-> dig even deeper into what sub function of those functions that fail,
-> even better. It would be ideal, if you could enable a function trace
-> when you get into i40e_xsk_pool_disable so we would know exactly what
-> function fails.
+From: Hailong Liu <liu.hailong6@zte.com.cn>
 
-Thank you for taking a look. Unfortunately, I haven't been able to make
-this happen consistently. If I can, I will try your suggestions.
-> 
+While cross compiling on ARM32 , the casting from pointer to __u64 will
+cause warnings:
+
+samples/bpf/task_fd_query_user.c: In function 'main':
+samples/bpf/task_fd_query_user.c:399:23: warning: cast from pointer to integer of different size [-Wpointer-to-int-cast]
+399 | uprobe_file_offset = (__u64)main - (__u64)&__executable_start;
+| ^
+samples/bpf/task_fd_query_user.c:399:37: warning: cast from pointer to integer of different size [-Wpointer-to-int-cast]
+399 | uprobe_file_offset = (__u64)main - (__u64)&__executable_start;
+
+Workaround this by using "unsigned long" to adapt to different ARCHs.
+
+Signed-off-by: Hailong Liu <liu.hailong6@zte.com.cn>
+---
+ samples/bpf/task_fd_query_user.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/samples/bpf/task_fd_query_user.c b/samples/bpf/task_fd_query_user.c
+index a78025b0026b..c9a0ca8351fd 100644
+--- a/samples/bpf/task_fd_query_user.c
++++ b/samples/bpf/task_fd_query_user.c
+@@ -396,7 +396,7 @@ int main(int argc, char **argv)
+ 	 * on different systems with different compilers. The right way is
+ 	 * to parse the ELF file. We took a shortcut here.
+ 	 */
+-	uprobe_file_offset = (__u64)main - (__u64)&__executable_start;
++	uprobe_file_offset = (unsigned long)main - (unsigned long)&__executable_start;
+ 	CHECK_AND_RET(test_nondebug_fs_probe("uprobe", (char *)argv[0],
+ 					     uprobe_file_offset, 0x0, false,
+ 					     BPF_FD_TYPE_UPROBE,
+-- 
+2.25.1
 
