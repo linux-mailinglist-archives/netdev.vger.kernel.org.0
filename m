@@ -2,81 +2,166 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1339237A86E
-	for <lists+netdev@lfdr.de>; Tue, 11 May 2021 16:06:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F3DD237A897
+	for <lists+netdev@lfdr.de>; Tue, 11 May 2021 16:09:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231680AbhEKOHI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 11 May 2021 10:07:08 -0400
-Received: from m12-14.163.com ([220.181.12.14]:55369 "EHLO m12-14.163.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231489AbhEKOHH (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 11 May 2021 10:07:07 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
-        s=s110527; h=From:Subject:Date:Message-Id; bh=8DEIr7JHMWWcTKNdor
-        0P0+DA4ax1L12j+Rr59qjm03M=; b=YPvxBtNaHTVC1S9nSMfdlTZ+BBpD7kqRVd
-        h1YSaIMhDgmwYh59IZctCD06huiXicyGWPTA3o9JKhseJS3a+prKU1BUfSHvLrRC
-        54X6uWnBxUlcRvp1hmTATpP+v0zoa3/I+eAAYxoKBw9cymRfLF7+53YcqKdwPSMU
-        Wa1HWqcFk=
-Received: from localhost.localdomain (unknown [117.139.248.194])
-        by smtp10 (Coremail) with SMTP id DsCowADXj20Lj5pgIgswIQ--.31375S2;
-        Tue, 11 May 2021 22:05:00 +0800 (CST)
-From:   Hailong Liu <liuhailongg6@163.com>
-To:     Alexei Starovoitov <ast@kernel.org>
-Cc:     Yonghong Song <yhs@fb.com>, Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Hailong Liu <liu.hailong6@zte.com.cn>
-Subject: [PATCH] samples, bpf: suppress compiler warning
-Date:   Tue, 11 May 2021 22:04:29 +0800
-Message-Id: <20210511140429.89426-1-liuhailongg6@163.com>
-X-Mailer: git-send-email 2.17.1
-X-CM-TRANSID: DsCowADXj20Lj5pgIgswIQ--.31375S2
-X-Coremail-Antispam: 1Uf129KBjvJXoW7Zr1xZF47AFykur1rAr1DZFb_yoW8XFW8pa
-        1kt347KFZayF1Y9ry3Xr9rK34Fv34kGFyUGFZ7Jry3J3Waq3ykWayYyFZ8Wr45Gr95KF4S
-        vw1Sgry8G3WUCaDanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-        9KBjDUYxBIdaVFxhVjvjDU0xZFpf9x07jnID7UUUUU=
-X-Originating-IP: [117.139.248.194]
-X-CM-SenderInfo: xolxxtxlor0wjjw6il2tof0z/xtbBChePYF3l-XpMDQAAsM
+        id S231760AbhEKOKj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 11 May 2021 10:10:39 -0400
+Received: from hostingweb31-40.netsons.net ([89.40.174.40]:48278 "EHLO
+        hostingweb31-40.netsons.net" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S231663AbhEKOKg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 11 May 2021 10:10:36 -0400
+Received: from [77.244.183.192] (port=61918 helo=[192.168.178.41])
+        by hostingweb31.netsons.net with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
+        (Exim 4.94.2)
+        (envelope-from <luca@lucaceresoli.net>)
+        id 1lgT4h-0009Q7-5U; Tue, 11 May 2021 16:09:27 +0200
+Subject: Re: [PATCH] dt-bindings: More removals of type references on common
+ properties
+To:     Rob Herring <robh@kernel.org>
+Cc:     devicetree@vger.kernel.org,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Olivier Moysan <olivier.moysan@foss.st.com>,
+        Arnaud Pouliquen <arnaud.pouliquen@foss.st.com>,
+        Jonathan Cameron <jic23@kernel.org>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Georgi Djakov <djakov@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Sebastian Reichel <sre@kernel.org>,
+        Orson Zhai <orsonzhai@gmail.com>,
+        Baolin Wang <baolin.wang7@gmail.com>,
+        Chunyan Zhang <zhang.lyra@gmail.com>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        Mark Brown <broonie@kernel.org>,
+        Fabrice Gasnier <fabrice.gasnier@st.com>,
+        Odelu Kukatla <okukatla@codeaurora.org>,
+        Alex Elder <elder@kernel.org>,
+        Shengjiu Wang <shengjiu.wang@nxp.com>,
+        linux-clk <linux-clk@vger.kernel.org>,
+        Linux-ALSA <alsa-devel@alsa-project.org>,
+        "open list:IIO SUBSYSTEM AND DRIVERS" <linux-iio@vger.kernel.org>,
+        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
+        Linux Input <linux-input@vger.kernel.org>,
+        "open list:THERMAL" <linux-pm@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>
+References: <20210510204524.617390-1-robh@kernel.org>
+ <d3aae746-284b-b0bc-0d52-a76c361d3592@lucaceresoli.net>
+ <CAL_JsqLhwifngoNK0ciO=yuVqpEbMGOSWMHyT=5DcYcO9jcuCw@mail.gmail.com>
+From:   Luca Ceresoli <luca@lucaceresoli.net>
+Message-ID: <2b09c4ed-758d-6eed-8fc1-39653d10e844@lucaceresoli.net>
+Date:   Tue, 11 May 2021 16:09:24 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.8.1
+MIME-Version: 1.0
+In-Reply-To: <CAL_JsqLhwifngoNK0ciO=yuVqpEbMGOSWMHyT=5DcYcO9jcuCw@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: it-IT
+Content-Transfer-Encoding: 7bit
+X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
+X-AntiAbuse: Primary Hostname - hostingweb31.netsons.net
+X-AntiAbuse: Original Domain - vger.kernel.org
+X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
+X-AntiAbuse: Sender Address Domain - lucaceresoli.net
+X-Get-Message-Sender-Via: hostingweb31.netsons.net: authenticated_id: luca@lucaceresoli.net
+X-Authenticated-Sender: hostingweb31.netsons.net: luca@lucaceresoli.net
+X-Source: 
+X-Source-Args: 
+X-Source-Dir: 
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Hailong Liu <liu.hailong6@zte.com.cn>
+Hi Rob,
 
-While cross compiling on ARM32 , the casting from pointer to __u64 will
-cause warnings:
+On 11/05/21 15:44, Rob Herring wrote:
+> On Tue, May 11, 2021 at 2:20 AM Luca Ceresoli <luca@lucaceresoli.net> wrote:
+>>
+>> Hi,
+>>
+>> On 10/05/21 22:45, Rob Herring wrote:
+>>> Users of common properties shouldn't have a type definition as the
+>>> common schemas already have one. A few new ones slipped in and
+>>> *-names was missed in the last clean-up pass. Drop all the unnecessary
+>>> type references in the tree.
+>>>
+>>> A meta-schema update to catch these is pending.
+>>>
+>>> Cc: Luca Ceresoli <luca@lucaceresoli.net>
+>>> Cc: Stephen Boyd <sboyd@kernel.org>
+>>> Cc: Olivier Moysan <olivier.moysan@foss.st.com>
+>>> Cc: Arnaud Pouliquen <arnaud.pouliquen@foss.st.com>
+>>> Cc: Jonathan Cameron <jic23@kernel.org>
+>>> Cc: Lars-Peter Clausen <lars@metafoo.de>
+>>> Cc: Dmitry Torokhov <dmitry.torokhov@gmail.com>
+>>> Cc: Bjorn Andersson <bjorn.andersson@linaro.org>
+>>> Cc: Georgi Djakov <djakov@kernel.org>
+>>> Cc: "David S. Miller" <davem@davemloft.net>
+>>> Cc: Jakub Kicinski <kuba@kernel.org>
+>>> Cc: Sebastian Reichel <sre@kernel.org>
+>>> Cc: Orson Zhai <orsonzhai@gmail.com>
+>>> Cc: Baolin Wang <baolin.wang7@gmail.com>
+>>> Cc: Chunyan Zhang <zhang.lyra@gmail.com>
+>>> Cc: Liam Girdwood <lgirdwood@gmail.com>
+>>> Cc: Mark Brown <broonie@kernel.org>
+>>> Cc: Fabrice Gasnier <fabrice.gasnier@st.com>
+>>> Cc: Odelu Kukatla <okukatla@codeaurora.org>
+>>> Cc: Alex Elder <elder@kernel.org>
+>>> Cc: Shengjiu Wang <shengjiu.wang@nxp.com>
+>>> Cc: linux-clk@vger.kernel.org
+>>> Cc: alsa-devel@alsa-project.org
+>>> Cc: linux-iio@vger.kernel.org
+>>> Cc: linux-arm-kernel@lists.infradead.org
+>>> Cc: linux-input@vger.kernel.org
+>>> Cc: linux-pm@vger.kernel.org
+>>> Cc: netdev@vger.kernel.org
+>>> Signed-off-by: Rob Herring <robh@kernel.org>
+>>> ---
+>>>  Documentation/devicetree/bindings/clock/idt,versaclock5.yaml    | 2 --
+>>>  .../devicetree/bindings/iio/adc/st,stm32-dfsdm-adc.yaml         | 1 -
+>>>  Documentation/devicetree/bindings/input/input.yaml              | 1 -
+>>>  Documentation/devicetree/bindings/interconnect/qcom,rpmh.yaml   | 1 -
+>>>  Documentation/devicetree/bindings/net/qcom,ipa.yaml             | 1 -
+>>>  .../devicetree/bindings/power/supply/sc2731-charger.yaml        | 2 +-
+>>>  Documentation/devicetree/bindings/sound/fsl,rpmsg.yaml          | 2 +-
+>>>  7 files changed, 2 insertions(+), 8 deletions(-)
+>>>
+>>> diff --git a/Documentation/devicetree/bindings/clock/idt,versaclock5.yaml b/Documentation/devicetree/bindings/clock/idt,versaclock5.yaml
+>>> index c268debe5b8d..28675b0b80f1 100644
+>>> --- a/Documentation/devicetree/bindings/clock/idt,versaclock5.yaml
+>>> +++ b/Documentation/devicetree/bindings/clock/idt,versaclock5.yaml
+>>> @@ -60,7 +60,6 @@ properties:
+>>>      maxItems: 2
+>>>
+>>>    idt,xtal-load-femtofarads:
+>>> -    $ref: /schemas/types.yaml#/definitions/uint32
+>>>      minimum: 9000
+>>>      maximum: 22760
+>>>      description: Optional load capacitor for XTAL1 and XTAL2
+>>> @@ -84,7 +83,6 @@ patternProperties:
+>>>          enum: [ 1800000, 2500000, 3300000 ]
+>>>        idt,slew-percent:
+>>>          description: The Slew rate control for CMOS single-ended.
+>>> -        $ref: /schemas/types.yaml#/definitions/uint32
+>>>          enum: [ 80, 85, 90, 100 ]
+>>
+>> Ok, but shouldn't "percent" be listed in
+>> Documentation/devicetree/bindings/property-units.txt?
+> 
+> It is in the schema already[1].
 
-samples/bpf/task_fd_query_user.c: In function 'main':
-samples/bpf/task_fd_query_user.c:399:23: warning: cast from pointer to integer of different size [-Wpointer-to-int-cast]
-399 | uprobe_file_offset = (__u64)main - (__u64)&__executable_start;
-| ^
-samples/bpf/task_fd_query_user.c:399:37: warning: cast from pointer to integer of different size [-Wpointer-to-int-cast]
-399 | uprobe_file_offset = (__u64)main - (__u64)&__executable_start;
+Sure, but having an incomplete file in the kernel is poorly useful, if
+not misleading. What about any of these options:
 
-Workaround this by using "unsigned long" to adapt to different ARCHs.
+- add to property-units.txt the missing units
+- delete property-units.txt from the kernel sources
+- replace the entire content of property-units.txt with a link to the
+  schema file, stating it is the authoritative and complete source
 
-Signed-off-by: Hailong Liu <liu.hailong6@zte.com.cn>
----
- samples/bpf/task_fd_query_user.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+I would feel a lot better with any of these. I can prepare the patch too.
 
-diff --git a/samples/bpf/task_fd_query_user.c b/samples/bpf/task_fd_query_user.c
-index a78025b0026b..c9a0ca8351fd 100644
---- a/samples/bpf/task_fd_query_user.c
-+++ b/samples/bpf/task_fd_query_user.c
-@@ -396,7 +396,7 @@ int main(int argc, char **argv)
- 	 * on different systems with different compilers. The right way is
- 	 * to parse the ELF file. We took a shortcut here.
- 	 */
--	uprobe_file_offset = (__u64)main - (__u64)&__executable_start;
-+	uprobe_file_offset = (unsigned long)main - (unsigned long)&__executable_start;
- 	CHECK_AND_RET(test_nondebug_fs_probe("uprobe", (char *)argv[0],
- 					     uprobe_file_offset, 0x0, false,
- 					     BPF_FD_TYPE_UPROBE,
 -- 
-2.25.1
-
+Luca
