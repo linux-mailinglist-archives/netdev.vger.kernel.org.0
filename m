@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CBC39379CB1
-	for <lists+netdev@lfdr.de>; Tue, 11 May 2021 04:10:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1F333379CB8
+	for <lists+netdev@lfdr.de>; Tue, 11 May 2021 04:10:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230511AbhEKCK5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 10 May 2021 22:10:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51408 "EHLO
+        id S230508AbhEKCL5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 10 May 2021 22:11:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51324 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231163AbhEKCJ1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 10 May 2021 22:09:27 -0400
-Received: from mail-wr1-x42e.google.com (mail-wr1-x42e.google.com [IPv6:2a00:1450:4864:20::42e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F830C061360;
-        Mon, 10 May 2021 19:07:46 -0700 (PDT)
-Received: by mail-wr1-x42e.google.com with SMTP id n2so18537629wrm.0;
-        Mon, 10 May 2021 19:07:46 -0700 (PDT)
+        with ESMTP id S231469AbhEKCKN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 10 May 2021 22:10:13 -0400
+Received: from mail-wr1-x435.google.com (mail-wr1-x435.google.com [IPv6:2a00:1450:4864:20::435])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5BF5AC061364;
+        Mon, 10 May 2021 19:07:47 -0700 (PDT)
+Received: by mail-wr1-x435.google.com with SMTP id d11so18465144wrw.8;
+        Mon, 10 May 2021 19:07:47 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=DJf85nxR69z/IKM3e9jg3hcn7qldqV13DtN14Eg44tU=;
-        b=Si1gonHqAV9KSijXAQKyMyRSkq8azzaeqXz/E/taqjYlarT8QL+9p/mmXlZkiCgdeW
-         i55vTPrMVIADXTPiwc3V26bZcuPsqRN0z3f2icANjfiTh3H+rYNo8r0J4iZqki3/u7ig
-         IRpXzZVXdNEI/fHlP8LUEi3eMmC6rCXDORU0CMw05+/AyUIwv1y1TSoE5ellgFNODU1b
-         +R8WcRIfUtkLystMDi4/hVcEHPIx5jwLJfLCqDgvt7qZbMDSTuv9hjBXU77PfWAmmOXB
-         9jQWPs800HgSK36JjKnLcoVy7H08BZ4FYNCl9ijbJD0x30LSj+YkNDTCvmKPyILLjsMp
-         v/sQ==
+        bh=LjF+h6zVM9Quo5sRZfrPUJDPQbdHpzTgaoj5QFEqGYQ=;
+        b=MpgaUcXFhVwbeojAiutw8iYUiolQ5+dB9mY/vwgIPNpgDzRchRTJiToO37cd4G8Kqw
+         G82gLQTx084faQPXp6ZJJCswF0gP6AyrwYve4r+xYII56M44O5WZtK1DIUgIYs9+6+S2
+         zyVUmptPBp7genEEzzS6MMzzn3G/ck3RGYuAltSiTPzkO9j4e5cl8Z2b9i7xvuM32YP6
+         F8oFkoiYljCj6JuXH8qgKmlSocCTnTAi4XgZ9kLj0Na8YYbe4BimM4hW+PMcj+KrzIu/
+         l+zz81Oo3U+RN6XODVVZ7sMivCYiZNPVd2sJKpZo2R9wzr2TD6rxB2reYTlidp/NcM/F
+         UJCw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=DJf85nxR69z/IKM3e9jg3hcn7qldqV13DtN14Eg44tU=;
-        b=ovAB/m+zcqqMCsl+ub7fNIt91KtjLPq228KcOFrhynlx0Oa58ksoRHCqS74QCyexZZ
-         ErWkmy+edE/R9mFa7jKay8U6YabpF1g48p6rVRacVawBDflctEJj565wwN0mCWSxXklr
-         3833rnBPb24t/7nWn2ootvqqIQ0d9tbm3TbhVpNJO+WsWJymxye8hQZO7hNFVVb74Vfl
-         xunvAr92UxeWM3ywFiW2SqjEFr245tY9Ab6YScD94l3jeel+Txuo0Zsspe8PGz5sHFbm
-         bG1PEV7EGLStulV/P09gG0WKzV4dRfRlC6Dz+bw2VGz6+OBXphDfdhbdHhVYJY6rYSQS
-         H/hA==
-X-Gm-Message-State: AOAM533IjbnYKCYacRFruBrTgBnavJHGPyai8GhLz8yO+OlYxMzpdPJm
-        IuzjMMZrVREv3Z7H3l7wn10=
-X-Google-Smtp-Source: ABdhPJxPKiDcLt04X5gfYU/QdVa+Qc3Bm+N1/auesDeSj2+Y5lit5NlrK4kI5G6mZvBIiyYyxnagBw==
-X-Received: by 2002:a05:6000:508:: with SMTP id a8mr34298376wrf.315.1620698865027;
-        Mon, 10 May 2021 19:07:45 -0700 (PDT)
+        bh=LjF+h6zVM9Quo5sRZfrPUJDPQbdHpzTgaoj5QFEqGYQ=;
+        b=i5U+NQzWOOKGWVZuOk5bUZFg3klBItmVW4xuGI0xk9vRgxfvQHadHicLrJeFX+3iBQ
+         rcwNFvJiv+yeEaym3MR62Moy6bYsMpODEeqeKfMzHPA/yxM2VRmG95Oo6YP/S+sVSREW
+         0W1HCkd3S9MypGiylUSy6mGULqIKjqId1ybdZ/ZVD+5rE4m0g6tnNgXoyezDChP9/ham
+         u+QS3X8z1WM3kdOpedFNtwTn0jeSb13vPTxywOWXLvnLe8V2QMfpMCB9TERy6+AlZaLW
+         Qavc1dIKt5kNfx9TME1b6eHrDB+kSNanUJP6JQVKNU9ajwn+gEYpfZSKQ2Mw6xX+/zj8
+         4YLg==
+X-Gm-Message-State: AOAM530F42bLlPp6QFDHvkBlJC5xx56HpuqfEePOkdT5rco9d4KZM56e
+        vkSU4bjp9azKzjCs8MdiuQc=
+X-Google-Smtp-Source: ABdhPJxvms7MjATLWv1uG6P8op4wY7ozDf5l7NhXWBA90F8VE952fM8uiQQW9DdrrXldz1avftj3NQ==
+X-Received: by 2002:adf:f90c:: with SMTP id b12mr12323304wrr.409.1620698866044;
+        Mon, 10 May 2021 19:07:46 -0700 (PDT)
 Received: from Ansuel-xps.localdomain (93-35-189-2.ip56.fastwebnet.it. [93.35.189.2])
-        by smtp.googlemail.com with ESMTPSA id q20sm2607436wmq.2.2021.05.10.19.07.44
+        by smtp.googlemail.com with ESMTPSA id q20sm2607436wmq.2.2021.05.10.19.07.45
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 10 May 2021 19:07:44 -0700 (PDT)
+        Mon, 10 May 2021 19:07:45 -0700 (PDT)
 From:   Ansuel Smith <ansuelsmth@gmail.com>
 To:     Andrew Lunn <andrew@lunn.ch>,
         Vivien Didelot <vivien.didelot@gmail.com>,
@@ -61,9 +61,9 @@ To:     Andrew Lunn <andrew@lunn.ch>,
         devicetree@vger.kernel.org (open list:OPEN FIRMWARE AND FLATTENED
         DEVICE TREE BINDINGS), linux-kernel@vger.kernel.org (open list)
 Cc:     Ansuel Smith <ansuelsmth@gmail.com>
-Subject: [RFC PATCH net-next v5 23/25] net: dsa: qca8k: pass switch_revision info to phy dev_flags
-Date:   Tue, 11 May 2021 04:04:58 +0200
-Message-Id: <20210511020500.17269-24-ansuelsmth@gmail.com>
+Subject: [RFC PATCH net-next v5 24/25] net: phy: at803x: clean whitespace errors
+Date:   Tue, 11 May 2021 04:04:59 +0200
+Message-Id: <20210511020500.17269-25-ansuelsmth@gmail.com>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20210511020500.17269-1-ansuelsmth@gmail.com>
 References: <20210511020500.17269-1-ansuelsmth@gmail.com>
@@ -73,50 +73,76 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Define get_phy_flags to pass switch_Revision needed to tweak the
-internal PHY with debug values based on the revision.
+Clean any whitespace errors and fix not aligned define.
 
 Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
-Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
 ---
- drivers/net/dsa/qca8k.c | 17 +++++++++++++++++
- 1 file changed, 17 insertions(+)
+ drivers/net/phy/at803x.c | 30 ++++++++++++++++--------------
+ 1 file changed, 16 insertions(+), 14 deletions(-)
 
-diff --git a/drivers/net/dsa/qca8k.c b/drivers/net/dsa/qca8k.c
-index 920cdb1ff2b9..9da7eccfa558 100644
---- a/drivers/net/dsa/qca8k.c
-+++ b/drivers/net/dsa/qca8k.c
-@@ -1732,6 +1732,22 @@ qca8k_port_vlan_del(struct dsa_switch *ds, int port,
- 	return ret;
- }
+diff --git a/drivers/net/phy/at803x.c b/drivers/net/phy/at803x.c
+index 32af52dd5aed..d2378a73de6f 100644
+--- a/drivers/net/phy/at803x.c
++++ b/drivers/net/phy/at803x.c
+@@ -83,8 +83,8 @@
+ #define AT803X_MODE_CFG_MASK			0x0F
+ #define AT803X_MODE_CFG_SGMII			0x01
  
-+static u32 qca8k_get_phy_flags(struct dsa_switch *ds, int port)
-+{
-+	struct qca8k_priv *priv = ds->priv;
-+
-+	/* Communicate to the phy internal driver the switch revision.
-+	 * Based on the switch revision different values needs to be
-+	 * set to the dbg and mmd reg on the phy.
-+	 * The first 2 bit are used to communicate the switch revision
-+	 * to the phy driver.
-+	 */
-+	if (port > 0 && port < 6)
-+		return priv->switch_revision;
-+
-+	return 0;
-+}
-+
- static enum dsa_tag_protocol
- qca8k_get_tag_protocol(struct dsa_switch *ds, int port,
- 		       enum dsa_tag_protocol mp)
-@@ -1765,6 +1781,7 @@ static const struct dsa_switch_ops qca8k_switch_ops = {
- 	.phylink_mac_config	= qca8k_phylink_mac_config,
- 	.phylink_mac_link_down	= qca8k_phylink_mac_link_down,
- 	.phylink_mac_link_up	= qca8k_phylink_mac_link_up,
-+	.get_phy_flags		= qca8k_get_phy_flags,
- };
+-#define AT803X_PSSR			0x11	/*PHY-Specific Status Register*/
+-#define AT803X_PSSR_MR_AN_COMPLETE	0x0200
++#define AT803X_PSSR				0x11	/*PHY-Specific Status Register*/
++#define AT803X_PSSR_MR_AN_COMPLETE		0x0200
  
- static int qca8k_read_switch_id(struct qca8k_priv *priv)
+ #define AT803X_DEBUG_REG_0			0x00
+ #define AT803X_DEBUG_RX_CLK_DLY_EN		BIT(15)
+@@ -128,24 +128,28 @@
+ #define AT803X_CLK_OUT_STRENGTH_HALF		1
+ #define AT803X_CLK_OUT_STRENGTH_QUARTER		2
+ 
+-#define AT803X_DEFAULT_DOWNSHIFT 5
+-#define AT803X_MIN_DOWNSHIFT 2
+-#define AT803X_MAX_DOWNSHIFT 9
++#define AT803X_DEFAULT_DOWNSHIFT		5
++#define AT803X_MIN_DOWNSHIFT			2
++#define AT803X_MAX_DOWNSHIFT			9
+ 
+ #define AT803X_MMD3_SMARTEEE_CTL1		0x805b
+ #define AT803X_MMD3_SMARTEEE_CTL2		0x805c
+ #define AT803X_MMD3_SMARTEEE_CTL3		0x805d
+ #define AT803X_MMD3_SMARTEEE_CTL3_LPI_EN	BIT(8)
+ 
+-#define ATH9331_PHY_ID 0x004dd041
+-#define ATH8030_PHY_ID 0x004dd076
+-#define ATH8031_PHY_ID 0x004dd074
+-#define ATH8032_PHY_ID 0x004dd023
+-#define ATH8035_PHY_ID 0x004dd072
++#define ATH9331_PHY_ID				0x004dd041
++#define ATH8030_PHY_ID				0x004dd076
++#define ATH8031_PHY_ID				0x004dd074
++#define ATH8032_PHY_ID				0x004dd023
++#define ATH8035_PHY_ID				0x004dd072
+ #define AT8030_PHY_ID_MASK			0xffffffef
+ 
+-#define AT803X_PAGE_FIBER		0
+-#define AT803X_PAGE_COPPER		1
++#define AT803X_PAGE_FIBER			0
++#define AT803X_PAGE_COPPER			1
++
++/* don't turn off internal PLL */
++#define AT803X_KEEP_PLL_ENABLED			BIT(0)
++#define AT803X_DISABLE_SMARTEEE			BIT(1)
+ 
+ MODULE_DESCRIPTION("Qualcomm Atheros AR803x PHY driver");
+ MODULE_AUTHOR("Matus Ujhelyi");
+@@ -153,8 +157,6 @@ MODULE_LICENSE("GPL");
+ 
+ struct at803x_priv {
+ 	int flags;
+-#define AT803X_KEEP_PLL_ENABLED	BIT(0)	/* don't turn off internal PLL */
+-#define AT803X_DISABLE_SMARTEEE	BIT(1)
+ 	u16 clk_25m_reg;
+ 	u16 clk_25m_mask;
+ 	u8 smarteee_lpi_tw_1g;
 -- 
 2.30.2
 
