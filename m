@@ -2,175 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5788137AD46
-	for <lists+netdev@lfdr.de>; Tue, 11 May 2021 19:43:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4E85137AD56
+	for <lists+netdev@lfdr.de>; Tue, 11 May 2021 19:48:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231517AbhEKRoc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 11 May 2021 13:44:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36658 "EHLO
+        id S231462AbhEKRtN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 11 May 2021 13:49:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37714 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231589AbhEKRob (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 11 May 2021 13:44:31 -0400
-Received: from mail-qt1-x82b.google.com (mail-qt1-x82b.google.com [IPv6:2607:f8b0:4864:20::82b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 733DAC06174A;
-        Tue, 11 May 2021 10:43:23 -0700 (PDT)
-Received: by mail-qt1-x82b.google.com with SMTP id 1so15236604qtb.0;
-        Tue, 11 May 2021 10:43:23 -0700 (PDT)
+        with ESMTP id S231329AbhEKRtN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 11 May 2021 13:49:13 -0400
+Received: from mail-ej1-x635.google.com (mail-ej1-x635.google.com [IPv6:2a00:1450:4864:20::635])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 551A1C06174A
+        for <netdev@vger.kernel.org>; Tue, 11 May 2021 10:48:06 -0700 (PDT)
+Received: by mail-ej1-x635.google.com with SMTP id b25so30977564eju.5
+        for <netdev@vger.kernel.org>; Tue, 11 May 2021 10:48:06 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=7EoUwhxShyIjUyxLCtqm6mHgvtxIMHzCgGW7d5l2nII=;
-        b=Z8Avlf4zif1fDxOvVfulUCrBxUGi0vw/phtCGHU+xuYH2PWJ3jqAMa49iFrwbn0n0G
-         FI7GdYFCpOnZu3N3k16QhPDJOzhGC/zTqsqWgDQ5TwXf/vY0HJ+yzA1xxzTcq2XSjydN
-         of/8IpRrIe/4ptn5UAJYl06+RnLehe9MFV4KMY2pQPomtc/f7ePRq6GNF2jeU5q0ISk7
-         jr833Uwh5BOpGMIPpbwC87QTDfQUEtVm9xW6eAemUqjN0fQRAY16NhXyg01z8x5wa8cz
-         lY3sEnLGaaeLN602aGywPFu9jNHMYeQ5gpfVK+3Yc9T+PN/5QvvhQ+FeD/5H8f4WQqBe
-         GCYA==
+        bh=tXU/u/oI0c/X+zEdSbjxSjUwDdEq6XptIKJISi7rLG4=;
+        b=MW+jnvnJIKnOGEtUwz3fsZFljt3ifuyz+WcJOv9QbqR3U2V0/NEvqymsIPF5umUnPa
+         n33vPvd5/pV04hDrPogIfeHSHw3/5t/Tw18SowZjV5KRFhEqo53ycPeWzNXZJK0vrygI
+         2vdof3xPopC/8A3cK/cyPI92FtKVLjcJgCgI92yRKI3fSL1MbWf7DXTC5nmlSh7k7bKT
+         xKx/RDXI2UpE63LVp7qr+/fbudVqiymDhuwPb2LQOgahSE9OAOqxqh/qSlAecMo9Niyv
+         flgWhOIljYicY1kR15yAy7mDnLQkVAaueQyvWsVLdf5nBNIQKWydzX3qygCukvXMZKnR
+         i3sA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=7EoUwhxShyIjUyxLCtqm6mHgvtxIMHzCgGW7d5l2nII=;
-        b=eMZ/dOQyB37qE9nWMSve4MDjbdEygkxTz8hiGHuet1abJ/q9FwwFUGcJfV53FoSlnF
-         S/GXiKbN+tUllurrmUD7dPwI+rpZ6qlGkTSHJji8kRNZ1kkDGLFwT2+l/j82EJLx0uKN
-         Jwzr57djov5GxGDRUFRUzqe0dDYI0LZA6zpvPVFt9f+N9R06srZuwWmuqZpgE0a1lJQj
-         VHDZ+yUORTo0szT3kvyUOlIohnVkUEpsGgZQguDUWjsQB36bSGFn+xfWLvIcrM7zJHU0
-         CzyLm9Ymqg16WJPZX8Le6Xxk1r3fmevTngi6ASuSNXX/H5rhrbC52jSSRlRCRDG1tIRh
-         AhGQ==
-X-Gm-Message-State: AOAM532AwVtiPafcjdcBBDv6dUS/r8LGC1aXlCYtKdvjTmMfjz6/9Wn8
-        458jUkwmXenSiFYTHvlmU/zBlyaORzLLph454bKTddXU
-X-Google-Smtp-Source: ABdhPJzcSeFwz9wTQoYIJ5UZhwyJBLphpG+3DMqQdRF0jRSh3zIYTl6mJ2ByBIVkQjMXHgdU9LLV5Z1LM0mvlYNTSjI=
-X-Received: by 2002:ac8:5c86:: with SMTP id r6mr28941238qta.216.1620755002701;
- Tue, 11 May 2021 10:43:22 -0700 (PDT)
+        bh=tXU/u/oI0c/X+zEdSbjxSjUwDdEq6XptIKJISi7rLG4=;
+        b=UISXfx/WYnQ/EhOqmUAiH+6RaC+jmWeOZq3TSiMHnC7lQPuv4i0dO+lBWDettOBWe8
+         X76VklJo/9i/Lb0IPMs7bqSptb4x4D3m4oey7djla5bvzgL0ZgPXXqRKLNelWqPa7mLz
+         ull5W8ZsB25ajAvQ4xSnD0j7b3a+phRi5MUJykPZkvaYtAYH5O4KZVJndjHIkGxAecbD
+         Nda+4QN+jikQ3nMEN7V3QVTwBUgnEhylUAA6tEI+lBg9f2uQwBWRWO32V22/yfUeoBUh
+         tt+RWN7/+4Zpff3Wybf50KOW+H3iLw9Z4kGYtJj53vUjiAbzIeR82dDm4F6bSZZ/qWHH
+         e5gg==
+X-Gm-Message-State: AOAM531vvCmkYaZrcgMj2/YhP2W5Rni6w6Z5G15WqnPjjfZ9gYLI9cut
+        qTGPyjxD34qT3h1hy/La/CofnscpzOs=
+X-Google-Smtp-Source: ABdhPJzEXNTAYJMOhjwSGsefF0rCiTrZvFyQKqe82ECDxpZaFSfJcty8fb1qqM61+gMmrkYvqkB7cw==
+X-Received: by 2002:a17:907:1c15:: with SMTP id nc21mr33652618ejc.49.1620755284458;
+        Tue, 11 May 2021 10:48:04 -0700 (PDT)
+Received: from mail-wr1-f44.google.com (mail-wr1-f44.google.com. [209.85.221.44])
+        by smtp.gmail.com with ESMTPSA id g9sm12104466ejo.8.2021.05.11.10.48.03
+        for <netdev@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 11 May 2021 10:48:03 -0700 (PDT)
+Received: by mail-wr1-f44.google.com with SMTP id s8so21008750wrw.10
+        for <netdev@vger.kernel.org>; Tue, 11 May 2021 10:48:03 -0700 (PDT)
+X-Received: by 2002:a5d:6285:: with SMTP id k5mr4589508wru.50.1620755283209;
+ Tue, 11 May 2021 10:48:03 -0700 (PDT)
 MIME-Version: 1.0
-References: <CGME20210511065056epcas2p1788505019deb274f5c57650a2f5d7ef0@epcas2p1.samsung.com>
- <1619690903-1138-1-git-send-email-dseok.yi@samsung.com> <1620714998-120657-1-git-send-email-dseok.yi@samsung.com>
-In-Reply-To: <1620714998-120657-1-git-send-email-dseok.yi@samsung.com>
+References: <20210511044253.469034-1-yuri.benditovich@daynix.com> <20210511044253.469034-3-yuri.benditovich@daynix.com>
+In-Reply-To: <20210511044253.469034-3-yuri.benditovich@daynix.com>
 From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Date:   Tue, 11 May 2021 13:42:46 -0400
-Message-ID: <CAF=yD-+8676QHiKD2ZA4e0kVE+11cOi6sa+M-vmx0+05tm1GfQ@mail.gmail.com>
-Subject: Re: [PATCH bpf v2] bpf: check BPF_F_ADJ_ROOM_FIXED_GSO when upgrading
- mss in 6 to 4
-To:     Dongseok Yi <dseok.yi@samsung.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
+Date:   Tue, 11 May 2021 13:47:26 -0400
+X-Gmail-Original-Message-ID: <CA+FuTSdfA6sT68AJNpa=VPBdwRFHvEY+=C-B_mS=y=WMpTyc=Q@mail.gmail.com>
+Message-ID: <CA+FuTSdfA6sT68AJNpa=VPBdwRFHvEY+=C-B_mS=y=WMpTyc=Q@mail.gmail.com>
+Subject: Re: [PATCH 2/4] virtio-net: add support of UDP segmentation (USO) on
+ the host
+To:     Yuri Benditovich <yuri.benditovich@daynix.com>
+Cc:     David Miller <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        Jason Wang <jasowang@redhat.com>,
         Network Development <netdev@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>, LKML <linux-kernel@vger.kernel.org>
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        virtualization@lists.linux-foundation.org,
+        Yan Vugenfirer <yan@daynix.com>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, May 11, 2021 at 2:51 AM Dongseok Yi <dseok.yi@samsung.com> wrote:
+On Tue, May 11, 2021 at 12:43 AM Yuri Benditovich
+<yuri.benditovich@daynix.com> wrote:
 >
-> In the forwarding path GRO -> BPF 6 to 4 -> GSO for TCP traffic, the
-> coalesced packet payload can be > MSS, but < MSS + 20.
-> bpf_skb_proto_6_to_4 will increase the MSS and it can be > the payload
-> length. After then tcp_gso_segment checks for the payload length if it
-> is <= MSS. The condition is causing the packet to be dropped.
+> Large UDP packet provided by the guest with GSO type set to
+> VIRTIO_NET_HDR_GSO_UDP_L4 will be divided to several UDP
+> packets according to the gso_size field.
 >
-> tcp_gso_segment():
->         [...]
->         mss = skb_shinfo(skb)->gso_size;
->         if (unlikely(skb->len <= mss))
->                 goto out;
->         [...]
->
-> Allow to increase MSS when BPF_F_ADJ_ROOM_FIXED_GSO is not set.
->
-> Fixes: 6578171a7ff0 (bpf: add bpf_skb_change_proto helper)
-> Signed-off-by: Dongseok Yi <dseok.yi@samsung.com>
->
+> Signed-off-by: Yuri Benditovich <yuri.benditovich@daynix.com>
 > ---
+>  include/linux/virtio_net.h | 5 +++++
+>  1 file changed, 5 insertions(+)
+>
+> diff --git a/include/linux/virtio_net.h b/include/linux/virtio_net.h
+> index b465f8f3e554..4ecf9a1ca912 100644
+> --- a/include/linux/virtio_net.h
+> +++ b/include/linux/virtio_net.h
+> @@ -51,6 +51,11 @@ static inline int virtio_net_hdr_to_skb(struct sk_buff *skb,
+>                         ip_proto = IPPROTO_UDP;
+>                         thlen = sizeof(struct udphdr);
+>                         break;
+> +               case VIRTIO_NET_HDR_GSO_UDP_L4:
+> +                       gso_type = SKB_GSO_UDP_L4;
+> +                       ip_proto = IPPROTO_UDP;
+> +                       thlen = sizeof(struct udphdr);
+> +                       break;
 
-Thanks. Note that this feature does not preclude the alternatives
-discussed, of converting the packet to non-TSO (by clearing gso_size)
-or optionally modifying MSS (but that should get okay from TCP
-experts).
-
-I would target this for bpf-next and drop the Fixes. But that is
-admittedly debatable.
-
->  net/core/filter.c | 13 +++++++------
->  1 file changed, 7 insertions(+), 6 deletions(-)
->
-> v2:
-> per Willem de Bruijn request,
-> checked the flag instead of a generic approach.
->
-> diff --git a/net/core/filter.c b/net/core/filter.c
-> index cae56d0..a98b28d 100644
-> --- a/net/core/filter.c
-> +++ b/net/core/filter.c
-> @@ -3276,7 +3276,7 @@ static int bpf_skb_proto_4_to_6(struct sk_buff *skb)
->         return 0;
->  }
->
-> -static int bpf_skb_proto_6_to_4(struct sk_buff *skb)
-> +static int bpf_skb_proto_6_to_4(struct sk_buff *skb, u64 flags)
->  {
->         const u32 len_diff = sizeof(struct ipv6hdr) - sizeof(struct iphdr);
->         u32 off = skb_mac_header_len(skb);
-> @@ -3305,7 +3305,8 @@ static int bpf_skb_proto_6_to_4(struct sk_buff *skb)
->                 }
->
->                 /* Due to IPv4 header, MSS can be upgraded. */
-> -               skb_increase_gso_size(shinfo, len_diff);
-> +               if (!(flags & BPF_F_ADJ_ROOM_FIXED_GSO))
-> +                       skb_increase_gso_size(shinfo, len_diff);
->                 /* Header must be checked, and gso_segs recomputed. */
->                 shinfo->gso_type |= SKB_GSO_DODGY;
->                 shinfo->gso_segs = 0;
-> @@ -3317,7 +3318,7 @@ static int bpf_skb_proto_6_to_4(struct sk_buff *skb)
->         return 0;
->  }
->
-> -static int bpf_skb_proto_xlat(struct sk_buff *skb, __be16 to_proto)
-> +static int bpf_skb_proto_xlat(struct sk_buff *skb, __be16 to_proto, u64 flags)
->  {
->         __be16 from_proto = skb->protocol;
->
-> @@ -3327,7 +3328,7 @@ static int bpf_skb_proto_xlat(struct sk_buff *skb, __be16 to_proto)
->
->         if (from_proto == htons(ETH_P_IPV6) &&
->               to_proto == htons(ETH_P_IP))
-> -               return bpf_skb_proto_6_to_4(skb);
-> +               return bpf_skb_proto_6_to_4(skb, flags);
->
->         return -ENOTSUPP;
->  }
-> @@ -3337,7 +3338,7 @@ BPF_CALL_3(bpf_skb_change_proto, struct sk_buff *, skb, __be16, proto,
->  {
->         int ret;
->
-> -       if (unlikely(flags))
-> +       if (unlikely(flags & ~(BPF_F_ADJ_ROOM_FIXED_GSO)))
->                 return -EINVAL;
-
-Once allowing this flag, please immediately support it for both
-bpf_skb_proto_6_to_4 and bpf_skb_4_to_6.
-
-We cannot do that later if we ignore the second case now.
-
-
->         /* General idea is that this helper does the basic groundwork
-> @@ -3357,7 +3358,7 @@ BPF_CALL_3(bpf_skb_change_proto, struct sk_buff *, skb, __be16, proto,
->          * that. For offloads, we mark packet as dodgy, so that headers
->          * need to be verified first.
->          */
-> -       ret = bpf_skb_proto_xlat(skb, proto);
-> +       ret = bpf_skb_proto_xlat(skb, proto, flags);
->         bpf_compute_data_pointers(skb);
->         return ret;
->  }
-> --
-> 2.7.4
->
+If adding a new VIRTIO_NET_HDR type I suggest adding separate IPv4 and
+IPv6 variants, analogous to VIRTIO_NET_HDR_GSO_TCPV[46]. To avoid
+having to infer protocol again, as for UDP fragmentation offload (the
+retry case below this code).
