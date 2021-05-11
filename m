@@ -2,98 +2,130 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8FF6637A5D3
-	for <lists+netdev@lfdr.de>; Tue, 11 May 2021 13:34:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A29D237A640
+	for <lists+netdev@lfdr.de>; Tue, 11 May 2021 14:04:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231426AbhEKLft (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 11 May 2021 07:35:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37306 "EHLO
+        id S231516AbhEKMFp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 11 May 2021 08:05:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44034 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231126AbhEKLft (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 11 May 2021 07:35:49 -0400
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1BD2FC061574;
-        Tue, 11 May 2021 04:34:43 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=Content-Transfer-Encoding:MIME-Version:
-        Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:Content-ID:
-        Content-Description:In-Reply-To:References;
-        bh=z8xth38edps4ercvMCzw87sEignsU1bmAbE1Z2XXkMo=; b=r18c6FH0bQlv+AXcu0qPDkQona
-        PXwtIcOpBUP1r4eVHMQB3L78lthcIk6qHQUiMQjk3W02GsVW2ZeNweBq0TZtHsg5hAp++wAiMV/Ho
-        pkICVhaXwD+crN3+Y9QH7WJ/VZgYoqBgPQHc3/HWXVJAGw/0ihmNrfQxJN4WIPZy94FYQ4amC1o74
-        j8w6Lz+ulFThH5AYXrzmlHJQWi/6DCD3l7T3D0RA0Oozo0xLVEcHs/zFaCOeu4OUtO1vw8Z97o1Mc
-        f3agHWPGUZHWXdtpriIJwfAbejid0l7FwMjQRM15W0Xr4MpubxUQr+WTOQ1ALhseL37gBUN25xoJb
-        Tmgdk/lQ==;
-Received: from willy by casper.infradead.org with local (Exim 4.94 #2 (Red Hat Linux))
-        id 1lgQeL-007EFh-Po; Tue, 11 May 2021 11:34:13 +0000
-From:   "Matthew Wilcox (Oracle)" <willy@infradead.org>
-To:     davem@davemloft.net, kuba@kernel.org, yoshfuji@linux-ipv6.org,
-        dsahern@kernel.org
-Cc:     "Matthew Wilcox (Oracle)" <willy@infradead.org>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Paolo Abeni <pabeni@redhat.com>,
-        Eric Dumazet <edumazet@google.com>
-Subject: [PATCH] udp: Switch the order of arguments to copy_linear_skb
-Date:   Tue, 11 May 2021 12:34:00 +0100
-Message-Id: <20210511113400.1722975-1-willy@infradead.org>
-X-Mailer: git-send-email 2.30.2
+        with ESMTP id S231360AbhEKMFo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 11 May 2021 08:05:44 -0400
+Received: from mail-ej1-x631.google.com (mail-ej1-x631.google.com [IPv6:2a00:1450:4864:20::631])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 438C2C061574;
+        Tue, 11 May 2021 05:04:37 -0700 (PDT)
+Received: by mail-ej1-x631.google.com with SMTP id u21so29303204ejo.13;
+        Tue, 11 May 2021 05:04:37 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=utHsOPyt6B8QXxA11NN5m8mL0JLPynGEISGvlJw01Dw=;
+        b=DJOC2gJ+9BqIl8iGZTYXjHSpKzt9qYnQddJouDekoEZBXlY6a9GiWOqUxM0ewytfnB
+         Ntpeb2WS5/afAMzZUruFzLMokit7N46Erik4mrAoLzLK8myuvt7fhXBvvq3R3Z1jzxvV
+         juZPGlt8pnWytGV2zaQVsBayzMO6A4oq/ScWZWy5ArI1I1xYEgTocBj4fTkM3YjEIxgK
+         ppAdR9W/wI0wlroUyQGZHiNFyXxsUzr3Td7e/fyj6tPh8scDAps9kXu5bCohmVD19pfa
+         6BAWishF/1NO9E5e+nFGXGJ4d0JShCf9klj2n/Zq0IAxINYeD0LsOFIHM6VJUJWUK0yc
+         SaJQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=utHsOPyt6B8QXxA11NN5m8mL0JLPynGEISGvlJw01Dw=;
+        b=dqzjkl0EkuNcOF2ASVciySl81RJecj2c4QEie1LbJ4FRYBUPGIM6QIX5dznqi9JS64
+         Okqqlu+4S/L3+lLZnf3fPrRrJoxei22wAznD3NVrOxlfy+U27FcEXS333gpg4KtyKa/X
+         Pfd2RhkiX4f9zDZiNUf67vIkq1OaXHAT/KF1wXomBakkqnTQ2qshZSrwsX8BZ14UIZZX
+         EfNJebXlgob9/Cal9hj8xcKT10kKM+Mi05MNHKoxtpcO4Y3fcnhPnKpNU2WwjI3hhDKs
+         KCsTd6vhtJsJWpdIguqPZkHMGb7DbBOIw/14Z3NT19AN163gcRFhBHLPzMrFm9Kgi6Kh
+         HT7w==
+X-Gm-Message-State: AOAM530FGdW3wFTLCZ5r50FIyu5Ld5/I1zDKjCUyvqi5TUesmUAXll0c
+        kD+/JX8n6Q3y6r03XnRYS1s=
+X-Google-Smtp-Source: ABdhPJweOxuNLVl2iNxPeVgpWKCkpBdUN+5NE2ejoq2KCSllQoBPAAZbhQcodlRDwFqG7O+Dc7LlpQ==
+X-Received: by 2002:a17:906:4143:: with SMTP id l3mr31716237ejk.509.1620734675971;
+        Tue, 11 May 2021 05:04:35 -0700 (PDT)
+Received: from localhost.localdomain ([2a04:241e:502:1d80:58c4:451b:d037:737c])
+        by smtp.gmail.com with ESMTPSA id o20sm8212615eds.20.2021.05.11.05.04.34
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 11 May 2021 05:04:35 -0700 (PDT)
+From:   Leonard Crestez <cdleonard@gmail.com>
+To:     Neal Cardwell <ncardwell@google.com>,
+        Matt Mathis <mattmathis@google.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Willem de Bruijn <willemb@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        David Ahern <dsahern@kernel.org>,
+        John Heffner <johnwheffner@gmail.com>,
+        Leonard Crestez <lcrestez@drivenets.com>,
+        Soheil Hassas Yeganeh <soheil@google.com>,
+        Roopa Prabhu <roopa@cumulusnetworks.com>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [RFC 0/3] tcp: Improve mtu probe preconditions
+Date:   Tue, 11 May 2021 15:04:15 +0300
+Message-Id: <cover.1620733594.git.cdleonard@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-All other skb functions use (off, len); this is the only one which
-uses (len, off).  Make it consistent.
+According to RFC4821 Section 7.4 "Protocols MAY delay sending non-probes
+in order to accumulate enough data" but in practice linux only sends
+probes when a lot of data accumulates on the send side.
 
-Cc: Paolo Abeni <pabeni@redhat.com>
-Cc: Eric Dumazet <edumazet@google.com>
-Signed-off-by: Matthew Wilcox (Oracle) <willy@infradead.org>
+Bigget improvement is to make tcp_xmit_size_goal (normally used for TSO)
+take the probe size into account. This makes probes more likely to be
+sent when applications use short writes. This should introduce no delays
+beyond existing autocork heuristics.
+
+TCP RACK allows timely loss detection with fewer outstanding packets
+than fast transmit, if enabled we can use this to shrink the probe size
+and require much less data for probing.
+
+Successive mtu probes will result in reducing the cwnd since it's
+measured in packets and we send bigger packets. The cwnd value can get
+stuck below 11 so rework the cwnd logic in tcp_mtu_probe to be based on
+the number of packets that we actually need to send.
+
+Signed-off-by: Leonard Crestez <cdleonard@gmail.com>
+
 ---
- include/net/udp.h | 2 +-
- net/ipv4/udp.c    | 2 +-
- net/ipv6/udp.c    | 2 +-
- 3 files changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/include/net/udp.h b/include/net/udp.h
-index 360df454356c..c4a7a4c56e75 100644
---- a/include/net/udp.h
-+++ b/include/net/udp.h
-@@ -392,7 +392,7 @@ static inline bool udp_skb_is_linear(struct sk_buff *skb)
- }
- #endif
- 
--static inline int copy_linear_skb(struct sk_buff *skb, int len, int off,
-+static inline int copy_linear_skb(struct sk_buff *skb, int off, int len,
- 				  struct iov_iter *to)
- {
- 	int n;
-diff --git a/net/ipv4/udp.c b/net/ipv4/udp.c
-index 15f5504adf5b..783c466e6071 100644
---- a/net/ipv4/udp.c
-+++ b/net/ipv4/udp.c
-@@ -1859,7 +1859,7 @@ int udp_recvmsg(struct sock *sk, struct msghdr *msg, size_t len, int noblock,
- 
- 	if (checksum_valid || udp_skb_csum_unnecessary(skb)) {
- 		if (udp_skb_is_linear(skb))
--			err = copy_linear_skb(skb, copied, off, &msg->msg_iter);
-+			err = copy_linear_skb(skb, off, copied, &msg->msg_iter);
- 		else
- 			err = skb_copy_datagram_msg(skb, off, msg, copied);
- 	} else {
-diff --git a/net/ipv6/udp.c b/net/ipv6/udp.c
-index 199b080d418a..24b202dd370e 100644
---- a/net/ipv6/udp.c
-+++ b/net/ipv6/udp.c
-@@ -369,7 +369,7 @@ int udpv6_recvmsg(struct sock *sk, struct msghdr *msg, size_t len,
- 
- 	if (checksum_valid || udp_skb_csum_unnecessary(skb)) {
- 		if (udp_skb_is_linear(skb))
--			err = copy_linear_skb(skb, copied, off, &msg->msg_iter);
-+			err = copy_linear_skb(skb, off, copied, &msg->msg_iter);
- 		else
- 			err = skb_copy_datagram_msg(skb, off, msg, copied);
- 	} else {
+Previous RFCs:
+* https://lore.kernel.org/netdev/d7fbf3d3a2490d0a9e99945593ada243da58e0f8.1619000255.git.cdleonard@gmail.com/
+* https://lore.kernel.org/netdev/c575e693788233edeb399d8f9b6d9217b3daed9b.1619403511.git.lcrestez@drivenets.com/
+
+The sysctls can probably be dropped, they're there for easy
+experimentation.
+
+It is possible that I misunderstood the meaning of "return 0 to wait"
+from tcp_mtu_probe.
+
+This introduces a bunch of mtu-to-mss calculations inside
+tcp_xmit_size_goal which is called on every write. It might make sense
+to cache the size of a pending probe inside icsk_mtup.probe_size. Right
+now it's zero unless a probe is outstanding; a separate bit could be
+used intead.
+
+Leonard Crestez (3):
+  tcp: Consider mtu probing for tcp_xmit_size_goal
+  tcp: Use mtu probes if RACK is enabled
+  tcp: Adjust congestion window handling for mtu probe
+
+ Documentation/networking/ip-sysctl.rst | 10 ++++
+ include/net/inet_connection_sock.h     |  4 +-
+ include/net/netns/ipv4.h               |  2 +
+ include/net/tcp.h                      |  1 +
+ net/ipv4/sysctl_net_ipv4.c             | 14 +++++
+ net/ipv4/tcp.c                         | 11 +++-
+ net/ipv4/tcp_ipv4.c                    |  2 +
+ net/ipv4/tcp_output.c                  | 72 +++++++++++++++++++++-----
+ 8 files changed, 102 insertions(+), 14 deletions(-)
+
+
+base-commit: 3913ba732e972d88ebc391323999e780a9295852
 -- 
-2.30.2
+2.25.1
 
