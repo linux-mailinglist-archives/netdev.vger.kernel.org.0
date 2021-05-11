@@ -2,169 +2,160 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 986D137A913
-	for <lists+netdev@lfdr.de>; Tue, 11 May 2021 16:24:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D725937A92A
+	for <lists+netdev@lfdr.de>; Tue, 11 May 2021 16:26:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231826AbhEKOZJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 11 May 2021 10:25:09 -0400
-Received: from mail.kernel.org ([198.145.29.99]:60488 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231773AbhEKOZH (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 11 May 2021 10:25:07 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 7BF676187E;
-        Tue, 11 May 2021 14:24:00 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1620743040;
-        bh=K5dIHfa4f6iByDzBZIlrjQRjF6/bEjxWK1nUAqzRpew=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=JwaonazL7mHtxi37clzYyAaTtim9WYGe0jNdHlIfH66KDgGwD7QSLjEbrzvQMGgxj
-         cDxVGdxsCSttt8JIk8CkX28GzepNyrYgvBI1JuvlFOJaMgtQqfDezEAUokTzNj9Di/
-         AXk99SIB1YVQuMhT8u6c+PflBGCBBVOhpYgwe9cQWyML9PY1iJv974grpxFQf2Zlfk
-         aUGvNVSxIAiuPtI40JwsNp54vhkyiWFA7kZoGWTVhKJA8n9Wz1XL4k007CFv87+k2k
-         ie6Ts3jvb6fuJ96vpOt+4eetlT3LXFNfFHwPDzEMeFWHkETQEygR474DDgvL+Oc1l/
-         9cZVdIGiRgynA==
-Received: by mail-ed1-f53.google.com with SMTP id v5so12032451edc.8;
-        Tue, 11 May 2021 07:24:00 -0700 (PDT)
-X-Gm-Message-State: AOAM5336IfGGHK4WvHXBJwJ1DkR9FDCNaG8F6ys88Kmm2uB8QC8lGEBv
-        7Kemzwb5+bFmJnTumAKG56ABR7gqI57cF0v2Aw==
-X-Google-Smtp-Source: ABdhPJxvejkoMRuepYDfIZklCbkFbvR1TbNfZ2DNIhf0/HxlULmwCrdyYucaU8vfjuT695OoYvWsI5knsrz4cgRv3yU=
-X-Received: by 2002:a50:c446:: with SMTP id w6mr33152086edf.62.1620743038881;
- Tue, 11 May 2021 07:23:58 -0700 (PDT)
+        id S231888AbhEKO1Y (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 11 May 2021 10:27:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48104 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231684AbhEKO1T (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 11 May 2021 10:27:19 -0400
+Received: from mail-yb1-xb2c.google.com (mail-yb1-xb2c.google.com [IPv6:2607:f8b0:4864:20::b2c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F31CC06174A
+        for <netdev@vger.kernel.org>; Tue, 11 May 2021 07:26:13 -0700 (PDT)
+Received: by mail-yb1-xb2c.google.com with SMTP id v39so26556935ybd.4
+        for <netdev@vger.kernel.org>; Tue, 11 May 2021 07:26:13 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=CEaJC4cb5Y4A+8IsZZEeBM2QdsYN5Y7DFCllFllvi+8=;
+        b=zHX1LMvKjHtyR4sV+y0aqvfoFcsp0EjIHx5Pt5zG+iVHvcxKYTo3vrUGTaAWwd8n54
+         Sfqn8OV7GElBxhfBXlUssjujJWtAC4qSGRQRUdjhpxxfIF/QhMZuc4qpQhRqMR2wxO35
+         PUJFZ124qF2EtUdMTmUBpVLFUQUtq2V0+5HEOB02MRwMRFtF2H0ypRhbY9hAsMcY5VaX
+         NMWRowJcerYr/hEpfCDq56QNJVhvrpZzyFRgGaLU7Od2GT34GNf6kMsyWrhX+phrvlrk
+         he7jEFsGAUZVNd7E0mAorNTJN4vbw3juF/pR8H2tEAQ/4MVq5x3yPsBcSeKS4v/uiUHB
+         uX1Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=CEaJC4cb5Y4A+8IsZZEeBM2QdsYN5Y7DFCllFllvi+8=;
+        b=qPMVzx3kSN6OXv/a6vanRjPnQiLwoOXIPD4zroXAO56KY3UdREouwCojoAU/dmsJaM
+         C4EQB+CA3YlWsqBaQWo3qsPRnyPQYaHP6AJpDiIo/OuGO57X1y/2oWVR+ezzhg9+RP09
+         VcxlNqZdy2CKrPtBJO8V+vt/tEBCksPaC0LjimxM5IOVn4oHNr/yu/qWYwjtfaOie6SH
+         O/RlQv9EnLwdE9I+Gx3G4kxmtJjW9JaJdqTi1IFQzVSZ+Fg4k8ucmHspR2EhShC29DsE
+         EEtzcvXe4ueYKBtqs3UDzatClcblcCiniYOulZE5bxf88F95DS+hunJ9Z6zrCKinhiFJ
+         rr1w==
+X-Gm-Message-State: AOAM533eSuWhsftRKCG31WgioHwF1/XxGiCjgRp4icpa5uX07v2GD5P5
+        r2T6BYV674K/xQKHm1AXO52XXz01cInVCkRlX6gLkBOHz/FwJA==
+X-Google-Smtp-Source: ABdhPJzh4VjKqBeHWbxCHf0TChJFitLGXDaA/GUpbzyFXfVL/53v7XHycwNEzDPWQyzljYzsrL3I6khv5C0KKCJRTSQ=
+X-Received: by 2002:a25:d0cb:: with SMTP id h194mr28426645ybg.408.1620743172546;
+ Tue, 11 May 2021 07:26:12 -0700 (PDT)
 MIME-Version: 1.0
-References: <20210510204524.617390-1-robh@kernel.org> <d3aae746-284b-b0bc-0d52-a76c361d3592@lucaceresoli.net>
- <CAL_JsqLhwifngoNK0ciO=yuVqpEbMGOSWMHyT=5DcYcO9jcuCw@mail.gmail.com> <2b09c4ed-758d-6eed-8fc1-39653d10e844@lucaceresoli.net>
-In-Reply-To: <2b09c4ed-758d-6eed-8fc1-39653d10e844@lucaceresoli.net>
-From:   Rob Herring <robh@kernel.org>
-Date:   Tue, 11 May 2021 09:23:44 -0500
-X-Gmail-Original-Message-ID: <CAL_JsqKEdtJ=NndWAR4j1WEBnzML_UkGFzKd6fkKOiV1SLFczg@mail.gmail.com>
-Message-ID: <CAL_JsqKEdtJ=NndWAR4j1WEBnzML_UkGFzKd6fkKOiV1SLFczg@mail.gmail.com>
-Subject: Re: [PATCH] dt-bindings: More removals of type references on common properties
-To:     Luca Ceresoli <luca@lucaceresoli.net>
-Cc:     devicetree@vger.kernel.org,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Olivier Moysan <olivier.moysan@foss.st.com>,
-        Arnaud Pouliquen <arnaud.pouliquen@foss.st.com>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Georgi Djakov <djakov@kernel.org>,
+References: <20210511133118.15012-1-mcroce@linux.microsoft.com>
+ <20210511133118.15012-2-mcroce@linux.microsoft.com> <YJqKfNh6l3yY2daM@casper.infradead.org>
+ <YJqQgYSWH2qan1GS@apalos.home> <YJqSM79sOk1PRFPT@casper.infradead.org>
+In-Reply-To: <YJqSM79sOk1PRFPT@casper.infradead.org>
+From:   Ilias Apalodimas <ilias.apalodimas@linaro.org>
+Date:   Tue, 11 May 2021 17:25:36 +0300
+Message-ID: <CAC_iWj+Tw9DzzzVj-F9AwzBN_OJV_HN2miJT4KTBH_Uei_V2ZA@mail.gmail.com>
+Subject: Re: [PATCH net-next v4 1/4] mm: add a signature in struct page
+To:     Matthew Wilcox <willy@infradead.org>
+Cc:     Matteo Croce <mcroce@linux.microsoft.com>,
+        Networking <netdev@vger.kernel.org>,
+        Linux-MM <linux-mm@kvack.org>,
+        Ayush Sawal <ayush.sawal@chelsio.com>,
+        Vinay Kumar Yadav <vinay.yadav@chelsio.com>,
+        Rohit Maheshwari <rohitm@chelsio.com>,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Sebastian Reichel <sre@kernel.org>,
-        Orson Zhai <orsonzhai@gmail.com>,
-        Baolin Wang <baolin.wang7@gmail.com>,
-        Chunyan Zhang <zhang.lyra@gmail.com>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Mark Brown <broonie@kernel.org>,
-        Fabrice Gasnier <fabrice.gasnier@st.com>,
-        Odelu Kukatla <okukatla@codeaurora.org>,
-        Alex Elder <elder@kernel.org>,
-        Shengjiu Wang <shengjiu.wang@nxp.com>,
-        linux-clk <linux-clk@vger.kernel.org>,
-        Linux-ALSA <alsa-devel@alsa-project.org>,
-        "open list:IIO SUBSYSTEM AND DRIVERS" <linux-iio@vger.kernel.org>,
-        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
-        Linux Input <linux-input@vger.kernel.org>,
-        "open list:THERMAL" <linux-pm@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        Marcin Wojtas <mw@semihalf.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Mirko Lindner <mlindner@marvell.com>,
+        Stephen Hemminger <stephen@networkplumber.org>,
+        Tariq Toukan <tariqt@nvidia.com>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Boris Pismenny <borisp@nvidia.com>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
+        Vlastimil Babka <vbabka@suse.cz>, Yu Zhao <yuzhao@google.com>,
+        Will Deacon <will@kernel.org>,
+        Michel Lespinasse <walken@google.com>,
+        Fenghua Yu <fenghua.yu@intel.com>,
+        Roman Gushchin <guro@fb.com>, Hugh Dickins <hughd@google.com>,
+        Peter Xu <peterx@redhat.com>, Jason Gunthorpe <jgg@ziepe.ca>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        Alexander Lobakin <alobakin@pm.me>,
+        Cong Wang <cong.wang@bytedance.com>, wenxu <wenxu@ucloud.cn>,
+        Kevin Hao <haokexin@gmail.com>,
+        Jakub Sitnicki <jakub@cloudflare.com>,
+        Marco Elver <elver@google.com>,
+        Willem de Bruijn <willemb@google.com>,
+        Miaohe Lin <linmiaohe@huawei.com>,
+        Yunsheng Lin <linyunsheng@huawei.com>,
+        Guillaume Nault <gnault@redhat.com>,
+        open list <linux-kernel@vger.kernel.org>,
+        linux-rdma@vger.kernel.org, bpf <bpf@vger.kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        David Ahern <dsahern@gmail.com>,
+        Lorenzo Bianconi <lorenzo@kernel.org>,
+        Saeed Mahameed <saeedm@nvidia.com>,
+        Andrew Lunn <andrew@lunn.ch>, Paolo Abeni <pabeni@redhat.com>,
+        Sven Auhagen <sven.auhagen@voleatech.de>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, May 11, 2021 at 9:09 AM Luca Ceresoli <luca@lucaceresoli.net> wrote:
+On Tue, 11 May 2021 at 17:19, Matthew Wilcox <willy@infradead.org> wrote:
 >
-> Hi Rob,
->
-> On 11/05/21 15:44, Rob Herring wrote:
-> > On Tue, May 11, 2021 at 2:20 AM Luca Ceresoli <luca@lucaceresoli.net> wrote:
-> >>
-> >> Hi,
-> >>
-> >> On 10/05/21 22:45, Rob Herring wrote:
-> >>> Users of common properties shouldn't have a type definition as the
-> >>> common schemas already have one. A few new ones slipped in and
-> >>> *-names was missed in the last clean-up pass. Drop all the unnecessary
-> >>> type references in the tree.
-> >>>
-> >>> A meta-schema update to catch these is pending.
-> >>>
-> >>> Cc: Luca Ceresoli <luca@lucaceresoli.net>
-> >>> Cc: Stephen Boyd <sboyd@kernel.org>
-> >>> Cc: Olivier Moysan <olivier.moysan@foss.st.com>
-> >>> Cc: Arnaud Pouliquen <arnaud.pouliquen@foss.st.com>
-> >>> Cc: Jonathan Cameron <jic23@kernel.org>
-> >>> Cc: Lars-Peter Clausen <lars@metafoo.de>
-> >>> Cc: Dmitry Torokhov <dmitry.torokhov@gmail.com>
-> >>> Cc: Bjorn Andersson <bjorn.andersson@linaro.org>
-> >>> Cc: Georgi Djakov <djakov@kernel.org>
-> >>> Cc: "David S. Miller" <davem@davemloft.net>
-> >>> Cc: Jakub Kicinski <kuba@kernel.org>
-> >>> Cc: Sebastian Reichel <sre@kernel.org>
-> >>> Cc: Orson Zhai <orsonzhai@gmail.com>
-> >>> Cc: Baolin Wang <baolin.wang7@gmail.com>
-> >>> Cc: Chunyan Zhang <zhang.lyra@gmail.com>
-> >>> Cc: Liam Girdwood <lgirdwood@gmail.com>
-> >>> Cc: Mark Brown <broonie@kernel.org>
-> >>> Cc: Fabrice Gasnier <fabrice.gasnier@st.com>
-> >>> Cc: Odelu Kukatla <okukatla@codeaurora.org>
-> >>> Cc: Alex Elder <elder@kernel.org>
-> >>> Cc: Shengjiu Wang <shengjiu.wang@nxp.com>
-> >>> Cc: linux-clk@vger.kernel.org
-> >>> Cc: alsa-devel@alsa-project.org
-> >>> Cc: linux-iio@vger.kernel.org
-> >>> Cc: linux-arm-kernel@lists.infradead.org
-> >>> Cc: linux-input@vger.kernel.org
-> >>> Cc: linux-pm@vger.kernel.org
-> >>> Cc: netdev@vger.kernel.org
-> >>> Signed-off-by: Rob Herring <robh@kernel.org>
-> >>> ---
-> >>>  Documentation/devicetree/bindings/clock/idt,versaclock5.yaml    | 2 --
-> >>>  .../devicetree/bindings/iio/adc/st,stm32-dfsdm-adc.yaml         | 1 -
-> >>>  Documentation/devicetree/bindings/input/input.yaml              | 1 -
-> >>>  Documentation/devicetree/bindings/interconnect/qcom,rpmh.yaml   | 1 -
-> >>>  Documentation/devicetree/bindings/net/qcom,ipa.yaml             | 1 -
-> >>>  .../devicetree/bindings/power/supply/sc2731-charger.yaml        | 2 +-
-> >>>  Documentation/devicetree/bindings/sound/fsl,rpmsg.yaml          | 2 +-
-> >>>  7 files changed, 2 insertions(+), 8 deletions(-)
-> >>>
-> >>> diff --git a/Documentation/devicetree/bindings/clock/idt,versaclock5.yaml b/Documentation/devicetree/bindings/clock/idt,versaclock5.yaml
-> >>> index c268debe5b8d..28675b0b80f1 100644
-> >>> --- a/Documentation/devicetree/bindings/clock/idt,versaclock5.yaml
-> >>> +++ b/Documentation/devicetree/bindings/clock/idt,versaclock5.yaml
-> >>> @@ -60,7 +60,6 @@ properties:
-> >>>      maxItems: 2
-> >>>
-> >>>    idt,xtal-load-femtofarads:
-> >>> -    $ref: /schemas/types.yaml#/definitions/uint32
-> >>>      minimum: 9000
-> >>>      maximum: 22760
-> >>>      description: Optional load capacitor for XTAL1 and XTAL2
-> >>> @@ -84,7 +83,6 @@ patternProperties:
-> >>>          enum: [ 1800000, 2500000, 3300000 ]
-> >>>        idt,slew-percent:
-> >>>          description: The Slew rate control for CMOS single-ended.
-> >>> -        $ref: /schemas/types.yaml#/definitions/uint32
-> >>>          enum: [ 80, 85, 90, 100 ]
-> >>
-> >> Ok, but shouldn't "percent" be listed in
-> >> Documentation/devicetree/bindings/property-units.txt?
+> On Tue, May 11, 2021 at 05:11:13PM +0300, Ilias Apalodimas wrote:
+> > Hi Matthew,
 > >
-> > It is in the schema already[1].
+> > On Tue, May 11, 2021 at 02:45:32PM +0100, Matthew Wilcox wrote:
+> > > On Tue, May 11, 2021 at 03:31:15PM +0200, Matteo Croce wrote:
+> > > > @@ -101,6 +101,7 @@ struct page {
+> > > >                    * 32-bit architectures.
+> > > >                    */
+> > > >                   unsigned long dma_addr[2];
+> > > > +                 unsigned long signature;
+> > > >           };
+> > > >           struct {        /* slab, slob and slub */
+> > > >                   union {
+> > >
+> > > No.  Signature now aliases with page->mapping, which is going to go
+> > > badly wrong for drivers which map this page into userspace.
+> > >
+> > > I had this as:
+> > >
+> > > +                       unsigned long pp_magic;
+> > > +                       unsigned long xmi;
+> > > +                       unsigned long _pp_mapping_pad;
+> > >                         unsigned long dma_addr[2];
+> > >
+> > > and pp_magic needs to be set to something with bits 0&1 clear and
+> > > clearly isn't a pointer.  I went with POISON_POINTER_DELTA + 0x40.
+> >
+> > Regardless to the changes required, there's another thing we'd like your
+> > opinion on.
+> > There was a change wrt to the previous patchset. We used to store the
+> > struct xdp_mem_info into page->private.  On the new version we store the
+> > page_pool ptr address in page->private (there's an explanation why on the
+> > mail thread, but the tl;dr is that we can get some more speed and keeping
+> > xdp_mem_info is not that crucial). So since we can just store the page_pool
+> > address directly, should we keep using page->private or it's better to
+> > do:
+> >
+> > +                       unsigned long pp_magic;
+> > +                       unsigned long pp_ptr;
+> > +                       unsigned long _pp_mapping_pad;
+> >                         unsigned long dma_addr[2];
+> > and use pp_ptr?
 >
-> Sure, but having an incomplete file in the kernel is poorly useful, if
-> not misleading. What about any of these options:
+> I'd rather you didn't use page_private ... Any reason not to use:
 >
-> - add to property-units.txt the missing units
-> - delete property-units.txt from the kernel sources
-> - replace the entire content of property-units.txt with a link to the
->   schema file, stating it is the authoritative and complete source
+>                         unsigned long pp_magic;
+>                         struct page_pool *pp;
+>                         unsigned long _pp_mapping_pad;
+>                         unsigned long dma_addr[2];
 >
-> I would feel a lot better with any of these. I can prepare the patch too.
+> ?
 
-Yes, we should remove it. I just hadn't gotten around to it. Note
-there is one reference to it in writing-bindings.rst.
-
-Rob
+Nope not at all, either would work. we'll switch to that
