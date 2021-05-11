@@ -2,65 +2,76 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 286C537A55F
-	for <lists+netdev@lfdr.de>; Tue, 11 May 2021 12:58:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8F64C37A5BF
+	for <lists+netdev@lfdr.de>; Tue, 11 May 2021 13:29:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231386AbhEKK7l (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 11 May 2021 06:59:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57556 "EHLO
+        id S231484AbhEKLaH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 11 May 2021 07:30:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36040 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230401AbhEKK7k (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 11 May 2021 06:59:40 -0400
-Received: from mail-yb1-xb31.google.com (mail-yb1-xb31.google.com [IPv6:2607:f8b0:4864:20::b31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D60FC061574
-        for <netdev@vger.kernel.org>; Tue, 11 May 2021 03:58:33 -0700 (PDT)
-Received: by mail-yb1-xb31.google.com with SMTP id g38so25742683ybi.12
-        for <netdev@vger.kernel.org>; Tue, 11 May 2021 03:58:33 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:reply-to:from:date:message-id:subject:to
-         :content-transfer-encoding;
-        bh=4Fi+lUNU3jDf/s7zaQekSPqMgipjsFvVBc8ZBp3thgM=;
-        b=X7wR9eeLBbQ2WSkOH2hR5imonk5NNYkKpL11ptvrZ3485OtuKzb1ODcqH7suWOiEid
-         ekzC2Qeq1LzT/2D41t+drxdN/G2i1+4yv2qhrKGpzdGkbT0YhP708nam+Sv5Bt79tgZc
-         ma7dmmEOP1Gt9o/lKmX9YfL+J0Je51TkYwFqugBLxnpybYk+URBB5jMZoSqb/lz8oCci
-         N//lSfzA3d6noNqrQ2N9p4ZIWNfzg9FRVRC5ffegH9EGWl427RkwuD3sKqEyIkKmQH0O
-         901XT5tFkQ7UzQk31aVECY7udFIy+Nq+TpI1LE5XoAaWEyuwV5CTkNq+3hwBSzse/uvp
-         1ElQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
-         :subject:to:content-transfer-encoding;
-        bh=4Fi+lUNU3jDf/s7zaQekSPqMgipjsFvVBc8ZBp3thgM=;
-        b=moQ2OjRxM1TaSM5DFcDO5lLfRfXL84LVfWyAo+stuRueO60xtSpppgbPYz+NF2BiQC
-         VuEj8hm0XFGfMOmRdWobgfch27kJg1l5tW3jrIc1HICUebq1Suuw7mPVbODaK18Aw1of
-         FC+29MIr5cw3VME/4Ohko/mwHHrAnAQbEkFA+tTZnoh6eE4KlMIAt2RmH7lCiQRbsCwv
-         ni5la+IRwKpO/H0f414Uigv2O9EFNJwRLNeAruW0I2vIWH3BnIQaIzORMZHuEdNuk6gF
-         mWnBKE+cSFzHOW/J6rH/bwl9GoinaJmCxjEZ93XrJrJH0sWQQHRYPnjmz+wdirrmzxw6
-         fC7g==
-X-Gm-Message-State: AOAM532MA/RnBIMFqsz0dnLCXtaWQf5jAkHEfRxjgmc1xMPDontk/+JB
-        1HS9luHKhSk33Ny7wyuAw7UfRxi+cYglo9hvoNA=
-X-Google-Smtp-Source: ABdhPJypOQuv4KWLt3CPtelRWcqaIZQawqlFj0IA4DGHb/Nasxg71ZoSYaC7GE/0i8PJY/qXlN10BwKJaorjvtdr7Jo=
-X-Received: by 2002:a25:bb88:: with SMTP id y8mr40355091ybg.292.1620730712721;
- Tue, 11 May 2021 03:58:32 -0700 (PDT)
+        with ESMTP id S230519AbhEKLaG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 11 May 2021 07:30:06 -0400
+Received: from mail.aperture-lab.de (mail.aperture-lab.de [IPv6:2a01:4f8:c2c:665b::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 70E35C061574;
+        Tue, 11 May 2021 04:28:59 -0700 (PDT)
+Received: from [127.0.0.1] (localhost [127.0.0.1]) by localhost (Mailerdaemon) with ESMTPSA id 711293E8F5;
+        Tue, 11 May 2021 13:28:56 +0200 (CEST)
+Date:   Tue, 11 May 2021 13:28:54 +0200
+From:   Linus =?utf-8?Q?L=C3=BCssing?= <linus.luessing@c0d3.blue>
+To:     The list for a Better Approach To Mobile Ad-hoc
+         Networking <b.a.t.m.a.n@lists.open-mesh.org>
+Cc:     netdev@vger.kernel.org, Roopa Prabhu <roopa@nvidia.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        bridge@lists.linux-foundation.org, linux-kernel@vger.kernel.org
+Subject: Re: [net-next v2 09/11] net: bridge: mcast: split multicast router
+ state for IPv4 and IPv6
+Message-ID: <20210511112854.GA2222@otheros>
+References: <20210509194509.10849-1-linus.luessing@c0d3.blue>
+ <20210509194509.10849-10-linus.luessing@c0d3.blue>
+ <f2f1c811-0502-bde4-8ece-e47b3e30dc66@nvidia.com>
 MIME-Version: 1.0
-Received: by 2002:a05:7110:a0ca:b029:b6:c217:1fb8 with HTTP; Tue, 11 May 2021
- 03:58:32 -0700 (PDT)
-Reply-To: stephenbordeaux@yahoo.com
-From:   Stephen Bordeaux <jeswa7m@gmail.com>
-Date:   Tue, 11 May 2021 11:58:32 +0100
-Message-ID: <CACGCBD6WpOmQJ=37Wv_xhcbjw0E8Sh8=fZAV4RfeW4m+PwgxKw@mail.gmail.com>
-Subject: 
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <f2f1c811-0502-bde4-8ece-e47b3e30dc66@nvidia.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
+X-Last-TLS-Session-Version: TLSv1.2
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Guten Morgen, ich bin Rechtsanwalt Stephen Bordeaux, Anwalt in der
-Anwaltskanzlei Bordeaux. Ich habe Sie bez=C3=BCglich des kontaktiert
-Eigentum des verstorbenen Dr. Edwin sollen 8,5 Millionen Dollar sein
-R=C3=BCckkehrer auf Ihr Konto. Auch in dieser Transaktion m=C3=B6chte ich d=
-ass
-Sie vertraulich antworten. Stephen Bordeaux
+On Tue, May 11, 2021 at 12:29:41PM +0300, Nikolay Aleksandrov wrote:
+> [...]
+> > -static void br_multicast_mark_router(struct net_bridge *br,
+> > -				     struct net_bridge_port *port)
+> > +#if IS_ENABLED(CONFIG_IPV6)
+> > +struct hlist_node *
+> > +br_ip6_multicast_get_rport_slot(struct net_bridge *br, struct net_bridge_port *port)
+> > +{
+> > +	struct hlist_node *slot = NULL;
+> > +	struct net_bridge_port *p;
+> > +
+> > +	hlist_for_each_entry(p, &br->ip6_mc_router_list, ip6_rlist) {
+> > +		if ((unsigned long)port >= (unsigned long)p)
+> > +			break;
+> > +		slot = &p->ip6_rlist;
+> > +	}
+> > +
+> > +	return slot;
+> > +}
+> 
+> The ip4/ip6 get_rport_slot functions are identical, why not add a list pointer
+> and use one function ?
+
+Hi Nikolay,
+
+Thanks for all the feedback and reviewing again! I'll
+remove (most of) the inlines as the router list modifications are
+not in the fast path.
+
+For the get_rport_slot functions, maybe I'm missing a simple
+solution. Note that "ip6_rlist" in hlist_for_each_entry() is not a
+pointer but will be expanded by the macro. I currently don't see
+how I could solve this with just one hlist_for_each_entry().
+
+Regards, Linus
