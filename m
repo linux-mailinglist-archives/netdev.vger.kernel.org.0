@@ -2,156 +2,140 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 960B537B16E
-	for <lists+netdev@lfdr.de>; Wed, 12 May 2021 00:11:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E8CE037B186
+	for <lists+netdev@lfdr.de>; Wed, 12 May 2021 00:17:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229968AbhEKWMz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 11 May 2021 18:12:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41046 "EHLO
+        id S230026AbhEKWSr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 11 May 2021 18:18:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42370 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229736AbhEKWMy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 11 May 2021 18:12:54 -0400
-Received: from warlock.wand.net.nz (warlock.cms.waikato.ac.nz [IPv6:2001:df0:4:4000::250:15])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF2A5C061574
-        for <netdev@vger.kernel.org>; Tue, 11 May 2021 15:11:47 -0700 (PDT)
-Received: from [209.85.215.179] (helo=mail-pg1-f179.google.com)
-        by warlock.wand.net.nz with esmtpsa (TLS1.2:RSA_AES_128_CBC_SHA1:128)
-        (Exim 4.84_2)
-        (envelope-from <rsanger@wand.net.nz>)
-        id 1lgabO-0002QF-Pw
-        for netdev@vger.kernel.org; Wed, 12 May 2021 10:11:43 +1200
-Received: by mail-pg1-f179.google.com with SMTP id s22so16737295pgk.6
-        for <netdev@vger.kernel.org>; Tue, 11 May 2021 15:11:41 -0700 (PDT)
-X-Gm-Message-State: AOAM532h3MhWEdl8Mu79RcZ06d1vA4aF8lbnXWBQQNnpstECxIcP1/2z
-        D+SmFsCkCt66GcdKQO8qs/V6l7HDNErHTmgLR4o=
-X-Google-Smtp-Source: ABdhPJwuOSl+xLclShilt3RbNRaFQlhPoUcLvfZ3Cp1C7AsXc0FGBttUpbRFKKFnhp5I5fVw0VQo16uGag3tZw6EemI=
-X-Received: by 2002:aa7:908c:0:b029:209:aacd:d8b with SMTP id
- i12-20020aa7908c0000b0290209aacd0d8bmr33010449pfa.74.1620771099811; Tue, 11
- May 2021 15:11:39 -0700 (PDT)
+        with ESMTP id S229736AbhEKWSq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 11 May 2021 18:18:46 -0400
+Received: from mail-wr1-x444.google.com (mail-wr1-x444.google.com [IPv6:2a00:1450:4864:20::444])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7AB24C061574
+        for <netdev@vger.kernel.org>; Tue, 11 May 2021 15:17:39 -0700 (PDT)
+Received: by mail-wr1-x444.google.com with SMTP id d11so21610143wrw.8
+        for <netdev@vger.kernel.org>; Tue, 11 May 2021 15:17:39 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=philpotter-co-uk.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=rIMnU3pEMyzESxwl/9HGpb60VQFyauRdmgB1fZ2i0PQ=;
+        b=lbQ/0T7CfsdayyPHbn5j4LU/IELNGNpn0EpNuxTYaaWR39f9MgG9/y4+g0Cm2GjRQV
+         QQRZGDOKRn+tYKQc9u7XzQtJPqzXCuFixHfaFoMsgRqaBYAoGdPCNgRUX9yS1PO1QkLU
+         Vtj96GjtmCI+Z1hZ5/bCnNBjuGeRAXQ0uoAf2E738XJ0O4KJh9JBzsyJnm5cZxQqQBcj
+         cNYzAulxov0Vl5Vy6WIA8qON2WvpFmHCxcx8mYKYeetbMunHQxoysUbXjxM24/QraVCt
+         QbUfnodLLtx9SATocntwK/2mWPtMFNYAAEuNlroBdkfm5vBBm69LIW9yUNv6l2ng4zbl
+         usBQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=rIMnU3pEMyzESxwl/9HGpb60VQFyauRdmgB1fZ2i0PQ=;
+        b=s9yxC8XOVwYDIF31cERB9P+TMGKR1lAQR7lrEk6j3a94ZwcthYphja/oTFFNaC7/cR
+         2S2BXXKnxFqrVoIa5x0r1SBsAVG2pbM1QZ29yNoYbTm+ngpvDSTZmVvAex/XVzgtzUoy
+         3UILAFycrx+yno905YV8nltbHzAavWGXMst65H0Qd+g9GZBQb6CoAKceGjeDkHDWfMGC
+         AxSAWuOo5njg0tn3RzIHah4c/aWtVuLZfIO+eaX46Yitu39YcI1c9nYYZ3PivWrEDC+c
+         ZLm8LVtuM1EfpG9AT+uOG5G5iQgPse5pNU24GNeNwcg+7pUMMrqdb8kOn/r80fm5Io8a
+         I5KA==
+X-Gm-Message-State: AOAM531dXq1ajGvSs4HSuFAVfFV2whzNruM6XOW5Lh+3eDVJNcAS7bsQ
+        krw9rAajZi+PhYWK8yr/Y0QviA==
+X-Google-Smtp-Source: ABdhPJwwI0m+O3Uja0c3Zn0UnwEmXQbJiNj29lXSpWpDwn3GIlYWdZnmmVFJR09jRPv3joVkZ6uiOg==
+X-Received: by 2002:a05:6000:180a:: with SMTP id m10mr40452470wrh.215.1620771458027;
+        Tue, 11 May 2021 15:17:38 -0700 (PDT)
+Received: from equinox (2.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.a.1.e.e.d.f.d.0.b.8.0.1.0.0.2.ip6.arpa. [2001:8b0:dfde:e1a0::2])
+        by smtp.gmail.com with ESMTPSA id r7sm4207518wmq.3.2021.05.11.15.17.36
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 11 May 2021 15:17:37 -0700 (PDT)
+Date:   Tue, 11 May 2021 23:17:35 +0100
+From:   Phillip Potter <phil@philpotter.co.uk>
+To:     Florian Westphal <fw@strlen.de>
+Cc:     davem@davemloft.net, kuba@kernel.org, yhs@fb.com, ast@kernel.org,
+        johannes.berg@intel.com, rdunlap@infradead.org,
+        0x7f454c46@gmail.com, yangyingliang@huawei.com,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] netlink: netlink_sendmsg: memset unused tail bytes in skb
+Message-ID: <YJsCf0tFub3YXKvh@equinox>
+References: <20210509121858.1232583-1-phil@philpotter.co.uk>
+ <20210509131051.GD4038@breakpoint.cc>
 MIME-Version: 1.0
-References: <1620085579-5646-1-git-send-email-rsanger@wand.net.nz>
- <CA+FuTSeDTYMZzT3n3tfm9KPCRx_ObWU-HaU4JxZCSCm_8sf2XA@mail.gmail.com>
- <CAN6QFNzj9+Y3W2eYTpHzVVjy_sYN+9d_Sa99HgQ0KgKyNmpeNw@mail.gmail.com>
- <CA+FuTSfE9wW55BbYRWNE1=XYAjG7gKVLLLbfAvB-4F+dL=8gHA@mail.gmail.com>
- <CAN6QFNw9xx0F35RNxDJS-4xbYu4SdU=XND=_dqCkGJgdNj5Hqw@mail.gmail.com> <CA+FuTSc=x6bG5O7mveAuNc6EXq3TdiD+nNYYp9rfiZ3frfGziA@mail.gmail.com>
-In-Reply-To: <CA+FuTSc=x6bG5O7mveAuNc6EXq3TdiD+nNYYp9rfiZ3frfGziA@mail.gmail.com>
-From:   Richard Sanger <rsanger@wand.net.nz>
-Date:   Wed, 12 May 2021 10:11:28 +1200
-X-Gmail-Original-Message-ID: <CAN6QFNyHep+UGjM7XpA4akbtvZFNDarVcs3=zZPpYO7RMTJgHg@mail.gmail.com>
-Message-ID: <CAN6QFNyHep+UGjM7XpA4akbtvZFNDarVcs3=zZPpYO7RMTJgHg@mail.gmail.com>
-Subject: Re: [PATCH] net: packetmmap: fix only tx timestamp on request
-To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Cc:     Network Development <netdev@vger.kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>
-Content-Type: text/plain; charset="UTF-8"
-Received-SPF: softfail client-ip=209.85.215.179; envelope-from=rsanger@wand.net.nz; helo=mail-pg1-f179.google.com
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210509131051.GD4038@breakpoint.cc>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-I've had a chance to look into this further and have found where the
-timestamp is added. Details are at the end of this message.
+On Sun, May 09, 2021 at 03:10:51PM +0200, Florian Westphal wrote:
+> Phillip Potter <phil@philpotter.co.uk> wrote:
+> > When allocating the skb within netlink_sendmsg, with certain supplied
+> > len arguments, extra bytes are allocated at the end of the data buffer,
+> > due to SKB_DATA_ALIGN giving a larger size within __alloc_skb for
+> > alignment reasons. This means that after using skb_put with the same
+> > len value and then copying data into the skb, the skb tail area is
+> > non-zero in size and contains uninitialised bytes. Wiping this area
+> > (if it exists) fixes a KMSAN-found uninit-value bug reported by syzbot at:
+> > https://syzkaller.appspot.com/bug?id=3e63bcec536b7136b54c72e06adeb87dc6519f69
+> 
+> This patch papers over the real bug.
+> 
+> Please fix TIPC instead.
+> Incomplete patch as a starting point:
+> 
+> diff --git a/net/tipc/node.c b/net/tipc/node.c
+> --- a/net/tipc/node.c
+> +++ b/net/tipc/node.c
+> @@ -2481,7 +2481,6 @@ int tipc_nl_node_get_link(struct sk_buff *skb, struct genl_info *info)
+>  	struct net *net = genl_info_net(info);
+>  	struct nlattr *attrs[TIPC_NLA_LINK_MAX + 1];
+>  	struct tipc_nl_msg msg;
+> -	char *name;
+>  	int err;
+>  
+>  	msg.portid = info->snd_portid;
+> @@ -2499,13 +2498,11 @@ int tipc_nl_node_get_link(struct sk_buff *skb, struct genl_info *info)
+>  	if (!attrs[TIPC_NLA_LINK_NAME])
+>  		return -EINVAL;
+>  
+> -	name = nla_data(attrs[TIPC_NLA_LINK_NAME]);
+> -
+>  	msg.skb = nlmsg_new(NLMSG_GOODSIZE, GFP_KERNEL);
+>  	if (!msg.skb)
+>  		return -ENOMEM;
+>  
+> -	if (strcmp(name, tipc_bclink_name) == 0) {
+> +	if (nla_strcmp(attrs[TIPC_NLA_LINK_NAME], tipc_bclink_name) == 0) {
+>  		err = tipc_nl_add_bc_link(net, &msg, tipc_net(net)->bcl);
+>  		if (err)
+>  			goto err_free;
+> 
+> 
+> You will also need to change tipc_node_find_by_name() to pass the nla
+> attr.
+> 
+> Alternatively TIPC_NLA_LINK_NAME policy can be changed:
+> 
+> diff --git a/net/tipc/netlink.c b/net/tipc/netlink.c
+> --- a/net/tipc/netlink.c
+> +++ b/net/tipc/netlink.c
+> @@ -88,7 +88,7 @@ const struct nla_policy tipc_nl_net_policy[TIPC_NLA_NET_MAX + 1] = {
+>  
+>  const struct nla_policy tipc_nl_link_policy[TIPC_NLA_LINK_MAX + 1] = {
+>         [TIPC_NLA_LINK_UNSPEC]          = { .type = NLA_UNSPEC },
+> -       [TIPC_NLA_LINK_NAME]            = { .type = NLA_STRING,
+> +       [TIPC_NLA_LINK_NAME]            = { .type = NLA_NUL_STRING,
+> 
+> 
+> ... which makes it safe to treat the raw attribute payload as a c-string,
+> but this might break existing userspace applications.
+> 
+> Its probably a good idea to audit all NLA_STRING attributes in tipc for
+> similar problems.
 
-On Thu, May 6, 2021 at 1:23 PM Willem de Bruijn
-<willemdebruijn.kernel@gmail.com> wrote:
->
-> On Wed, May 5, 2021 at 7:42 PM Richard Sanger <rsanger@wand.net.nz> wrote:
-[...]
-> >
-> > I've just verified using printk() that after the call to skb_tx_timestamp(skb)
-> > in veth_xmit() skb->tstamp == 0 as expected.
-> >
-> > However, when skb_tx_timestamp() is called within the packetmmap code path
-> > skb->tstamp holds a valid time.
->
-> Interesting. I had expected veth_xmit to trigger skb_orphan, which
-> calls the destructor.
->
-> But this is no longer true as of commit 9c4c325252c5 ("skbuff:
-> preserve sock reference when scrubbing the skb.").
->
-> As a result, I suppose the skb can enter the next namespace and be
-> timestamped there if receive timestamps are enabled (this is not
-> per-socket).
->
-> One way to verify, if you can easily recompile a kernel, is to add a
-> WARN_ON_ONCE(1) to tpacket_destruct_skb to see which path led up to
-> queuing the completion notification.
->
+Dear Florian,
 
-Here's the output of putting a WARN_ON_ONCE(1) statement in
-tpacket_destruct_skb, I don't believe it is related to the problem.
+Thank you for your feedback and code + suggestions, I will take a look at this over
+the next few days and then resubmit.
 
-[   37.249629] RIP: 0010:tpacket_destruct_skb+0x24/0x60
-[...]
-[   37.249659] Call Trace:
-[   37.249661]  <IRQ>
-[   37.249666]  skb_release_head_state+0x44/0x90
-[   37.249680]  skb_release_all+0x13/0x30
-[   37.249684]  kfree_skb+0x2f/0xa0
-[   37.249689]  llc_rcv+0x2e/0x360 [llc]
-[   37.249698]  __netif_receive_skb_one_core+0x8f/0xa0
-[   37.249707]  __netif_receive_skb+0x18/0x60
-[   37.249710]  process_backlog+0xa9/0x160
-[   37.249714]  __napi_poll+0x31/0x140
-[   37.249717]  net_rx_action+0xde/0x210
-[   37.249722]  __do_softirq+0xe0/0x29b
-[   37.249737]  do_softirq+0x66/0x80
-[   37.249747]  </IRQ>
-[   37.249748]  __local_bh_enable_ip+0x50/0x60
-[   37.249751]  __dev_queue_xmit+0x23a/0x6e0
-[   37.249756]  dev_queue_xmit+0x10/0x20
-[   37.249759]  packet_sendmsg+0x6b8/0x1c90
-[   37.249763]  ? __drain_all_pages+0x150/0x1c0
-[   37.249772]  sock_sendmsg+0x65/0x70
-[   37.249778]  __sys_sendto+0x113/0x190
-[   37.249783]  ? handle_mm_fault+0xda/0x2b0
-[   37.249790]  ? exit_to_user_mode_prepare+0x3c/0x1e0
-[   37.249800]  ? do_user_addr_fault+0x1d3/0x640
-[   37.249805]  __x64_sys_sendto+0x29/0x30
-[   37.249809]  do_syscall_64+0x40/0xb0
-[   37.249816]  entry_SYSCALL_64_after_hwframe+0x44/0xae
-[   37.249820] RIP: 0033:0x7f43950d27ea
-
-[...]
-
-> I think we need to understand exactly what goes on before we apply a
-> patch. It might just be papering over the problem otherwise.
-
-Okay, so the call path that adds the timestamp looks like this:
-
-send() syscall triggers tpacket_snd() which calls the veth_xmit() hander.
-In drivers/net/veth.c veth_xmit() calls veth_forward_skb() which then
-calls netif_rx()/netif_rx_internal() in net/core/dev.c.
-And finally, net_timestamp_check(netdev_tstamp_prequeue, skb) adds
-the timestamp, netdev_tstamp_prequeue defaults to 1.
-
-net_timestamp_check in its current form was added by 588f033075
-("net: use jump_label for netstamp_needed ")
-In the kernel since 3.3-rc1, so it looks like this issue has been present the
-entire time. Pre-conditions are netstamp_needed_key and
-netdev_tstamp_prequeue, so if either is false, timestamping won't happen
-at this stage in the code.
-
-Here's the call trace of where the timestamp is added
-
-[  251.619538] Call Trace:
-[  251.619550]  netif_rx+0x1b/0x60
-[  251.619556]  veth_xmit+0x19d/0x230 [veth]
-[  251.619563]  netdev_start_xmit+0x4a/0x8b
-[  251.619566]  dev_hard_start_xmit.cold+0xc8/0x1d5
-[  251.619569]  __dev_queue_xmit.cold+0xa3/0x12c
-[  251.619572]  dev_queue_xmit+0x10/0x20
-[  251.619575]  packet_sendmsg+0x6b8/0x1c90
-[  251.619580]  ? __drain_all_pages+0x150/0x1c0
-[  251.619588]  sock_sendmsg+0x65/0x70
-[  251.619594]  __sys_sendto+0x113/0x190
-[  251.619598]  ? handle_mm_fault+0xda/0x2b0
-[  251.619604]  ? exit_to_user_mode_prepare+0x3c/0x1e0
-[  251.619611]  ? do_user_addr_fault+0x1d3/0x640
-[  251.619615]  __x64_sys_sendto+0x29/0x30
-[  251.619618]  do_syscall_64+0x40/0xb0
-[  251.619623]  entry_SYSCALL_64_after_hwframe+0x44/0xae
-
-This appears to be reasonable, but I don't know what the expected behaviour
-is. Should this timestamp still be cleared before returning the sent skb?
+Regards,
+Phil
