@@ -2,109 +2,156 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E2A6A37B137
-	for <lists+netdev@lfdr.de>; Wed, 12 May 2021 00:00:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 960B537B16E
+	for <lists+netdev@lfdr.de>; Wed, 12 May 2021 00:11:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230114AbhEKWB4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 11 May 2021 18:01:56 -0400
-Received: from mout.gmx.net ([212.227.17.22]:54817 "EHLO mout.gmx.net"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229714AbhEKWBz (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 11 May 2021 18:01:55 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
-        s=badeba3b8450; t=1620770433;
-        bh=Ezf3+4/5WESk8OkhoMsaJlcqfc3Htg1LJN1RDH+6u1k=;
-        h=X-UI-Sender-Class:From:To:Cc:Subject:Date;
-        b=gN58ZNyDm+TQF5yCreJxdhLCIZVdkhlvj5FtoQNH7RyqlhZzdxcmqgsNCeWzUridt
-         b99U8Q9lMRwpG8k7PHLKiTo9jCkd0gjvASj+6NaadIDwEdQylsG9svo+6GbbRQU7kg
-         Jq1TnSGbRz912Kw2AssFZYj4M5TLQNVX42vCve/w=
-X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
-Received: from [89.247.255.239] ([89.247.255.239]) by web-mail.gmx.net
- (3c-app-gmx-bap63.server.lan [172.19.172.133]) (via HTTP); Wed, 12 May 2021
- 00:00:33 +0200
+        id S229968AbhEKWMz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 11 May 2021 18:12:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41046 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229736AbhEKWMy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 11 May 2021 18:12:54 -0400
+Received: from warlock.wand.net.nz (warlock.cms.waikato.ac.nz [IPv6:2001:df0:4:4000::250:15])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF2A5C061574
+        for <netdev@vger.kernel.org>; Tue, 11 May 2021 15:11:47 -0700 (PDT)
+Received: from [209.85.215.179] (helo=mail-pg1-f179.google.com)
+        by warlock.wand.net.nz with esmtpsa (TLS1.2:RSA_AES_128_CBC_SHA1:128)
+        (Exim 4.84_2)
+        (envelope-from <rsanger@wand.net.nz>)
+        id 1lgabO-0002QF-Pw
+        for netdev@vger.kernel.org; Wed, 12 May 2021 10:11:43 +1200
+Received: by mail-pg1-f179.google.com with SMTP id s22so16737295pgk.6
+        for <netdev@vger.kernel.org>; Tue, 11 May 2021 15:11:41 -0700 (PDT)
+X-Gm-Message-State: AOAM532h3MhWEdl8Mu79RcZ06d1vA4aF8lbnXWBQQNnpstECxIcP1/2z
+        D+SmFsCkCt66GcdKQO8qs/V6l7HDNErHTmgLR4o=
+X-Google-Smtp-Source: ABdhPJwuOSl+xLclShilt3RbNRaFQlhPoUcLvfZ3Cp1C7AsXc0FGBttUpbRFKKFnhp5I5fVw0VQo16uGag3tZw6EemI=
+X-Received: by 2002:aa7:908c:0:b029:209:aacd:d8b with SMTP id
+ i12-20020aa7908c0000b0290209aacd0d8bmr33010449pfa.74.1620771099811; Tue, 11
+ May 2021 15:11:39 -0700 (PDT)
 MIME-Version: 1.0
-Message-ID: <trinity-10aeed49-cb96-47d9-818e-b938913e6fce-1620770433273@3c-app-gmx-bap63>
-From:   Norbert Slusarek <nslusarek@gmx.net>
-To:     oss-security@lists.openwall.com
-Cc:     netdev@vger.kernel.org, socketcan@hartkopp.net, mkl@pengutronix.de,
-        alex.popov@linux.com, linux-can@vger.kernel.org,
-        seth.arnold@canonical.com, steve.beattie@canonical.com,
-        cascardo@canonical.com
-Subject: Linux kernel: net/can/isotp: race condition leads to local
- privilege escalation
-Content-Type: text/plain; charset=UTF-8
-Date:   Wed, 12 May 2021 00:00:33 +0200
-Importance: normal
-Sensitivity: Normal
-X-Priority: 3
-X-Provags-ID: V03:K1:sTuBeu26LFRf9uFTz8G/CIAspz4RlbypygBf7W0g+BG51Z19YdJL6eE3XgacocgX9E5hQ
- e+dDjOA3/EkoXbJo5U6DalUUgrJ/kNxwXEsEOWU2QRHdiHbiMjbcvVvwrPla846b1D8+4ac8P23p
- VluC8Dj1X56VtiIrUSCjRJqg3wGcdnWwu9zf//JlGtKXDulxThX6x5nwCiA42RHaxNOmEz+u7stB
- CqIoWZnqXndk1VKnRDpWzNfE/EOA1IOLk0AX64ombKQ+FPkYkORLBs4wRGX0gtuk5+Yh/OF8QiKa
- lQ=
-X-Spam-Flag: NO
-X-UI-Out-Filterresults: notjunk:1;V03:K0:eHrAPSba1PY=:uLosab/yJfOjF8kNOcEO8F
- JusYW6oNwA+VO55rLhhXgjWHAPSp/KZKaM0RzQ8N6amlXs346TFYDAqNXUJgHRNzcLSb/Hng7
- 4YIDTtQBeAyYsrDMiBrj/8WBQrFk1WDB+TOU3wNQDjxxDfRrOe+bJpL5OfEqMd4xHjSBdKj9A
- rV+lYKoNgQPDtrxSQE5nUNcvRA+V3bXdbfv4mwpkrj3O2cr+9/bIXXxDsZSjviq7WWGi7/u19
- MzMXUu91TgT8+/A7yw6rJ3x7mPR9KLBTN7ZNAFpV6p1a7xREINc67Bo+lbcQ1PZurDVIZHEaC
- Dz41Y601DfmsdwfcmKQZBp8QI6Eyj404tvSY37dFHZ0B2RXCGI2EP/KlS2ERTuXJG8EvIBUa4
- dpCfnnNvCwbjGYMm7famU+BODbXX6pfbS2XHnLi9Z9+9yZyzvnJkOO0r9yzlJI+Qt6OsoNcuB
- vkJQ4kHHRvwo80LKeeLGe1hMAAVlfOX/ZSRfsYYw3Nx0ZqAtpb33OBcJ3NkJmSvvOs9+ED0lG
- AJgbJdNSSLNsbNa+v3A+mliBPzVqLj2tyuvdZwlnqglQ9nevR/KqhnMwvGGnH7i60RXTkFxT1
- u7qU+6zgdUmcwJUH6B5Z+ae4doK+qsu/qCcIFLhXNGu7aPgjXggEgYfOqNLIXnt836UBPPodl
- dath8Yt1ZXLbqEIFqyMgptvehlPILsaEzTvkIDxff52LHMFkDVZAymHzDt1jLK0H53976d9Xz
- X3fMae4pX+LUais4xPvS4qlmNethvylnjVJau+IUr/E6bjuLeSdsei8NAJcB2Kt0YFHhoQPR8
- bGYG16TRBxukpeWRnFHOheUItanLBhycf47dL/mBL92AVAgob5pTUY0Ofyvns3a1SGWYvUpCt
- 8ngmbKQ2PfVnNfScwcYSnaI67lw8vhsQzYn6ECcv9y4dQxtVHDrd2Yy0uQcbVI
+References: <1620085579-5646-1-git-send-email-rsanger@wand.net.nz>
+ <CA+FuTSeDTYMZzT3n3tfm9KPCRx_ObWU-HaU4JxZCSCm_8sf2XA@mail.gmail.com>
+ <CAN6QFNzj9+Y3W2eYTpHzVVjy_sYN+9d_Sa99HgQ0KgKyNmpeNw@mail.gmail.com>
+ <CA+FuTSfE9wW55BbYRWNE1=XYAjG7gKVLLLbfAvB-4F+dL=8gHA@mail.gmail.com>
+ <CAN6QFNw9xx0F35RNxDJS-4xbYu4SdU=XND=_dqCkGJgdNj5Hqw@mail.gmail.com> <CA+FuTSc=x6bG5O7mveAuNc6EXq3TdiD+nNYYp9rfiZ3frfGziA@mail.gmail.com>
+In-Reply-To: <CA+FuTSc=x6bG5O7mveAuNc6EXq3TdiD+nNYYp9rfiZ3frfGziA@mail.gmail.com>
+From:   Richard Sanger <rsanger@wand.net.nz>
+Date:   Wed, 12 May 2021 10:11:28 +1200
+X-Gmail-Original-Message-ID: <CAN6QFNyHep+UGjM7XpA4akbtvZFNDarVcs3=zZPpYO7RMTJgHg@mail.gmail.com>
+Message-ID: <CAN6QFNyHep+UGjM7XpA4akbtvZFNDarVcs3=zZPpYO7RMTJgHg@mail.gmail.com>
+Subject: Re: [PATCH] net: packetmmap: fix only tx timestamp on request
+To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Cc:     Network Development <netdev@vger.kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>
+Content-Type: text/plain; charset="UTF-8"
+Received-SPF: softfail client-ip=209.85.215.179; envelope-from=rsanger@wand.net.nz; helo=mail-pg1-f179.google.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-A race condition in the CAN ISOTP networking protocol was discovered which
-allows forbidden changing of socket members after binding the socket.
+I've had a chance to look into this further and have found where the
+timestamp is added. Details are at the end of this message.
 
-In particular, the lack of locking behavior in isotp_setsockopt() makes it
-feasible to assign the flag CAN_ISOTP_SF_BROADCAST to the socket, despite having
-previously registered a can receiver. After closing the isotp socket, the can
-receiver will still be registered and use-after-free's can be triggered in
-isotp_rcv() on the freed isotp_sock structure.
-This leads to arbitrary kernel execution by overwriting the sk_error_report()
-pointer, which can be misused in order to execute a user-controlled ROP chain to
-gain root privileges.
+On Thu, May 6, 2021 at 1:23 PM Willem de Bruijn
+<willemdebruijn.kernel@gmail.com> wrote:
+>
+> On Wed, May 5, 2021 at 7:42 PM Richard Sanger <rsanger@wand.net.nz> wrote:
+[...]
+> >
+> > I've just verified using printk() that after the call to skb_tx_timestamp(skb)
+> > in veth_xmit() skb->tstamp == 0 as expected.
+> >
+> > However, when skb_tx_timestamp() is called within the packetmmap code path
+> > skb->tstamp holds a valid time.
+>
+> Interesting. I had expected veth_xmit to trigger skb_orphan, which
+> calls the destructor.
+>
+> But this is no longer true as of commit 9c4c325252c5 ("skbuff:
+> preserve sock reference when scrubbing the skb.").
+>
+> As a result, I suppose the skb can enter the next namespace and be
+> timestamped there if receive timestamps are enabled (this is not
+> per-socket).
+>
+> One way to verify, if you can easily recompile a kernel, is to add a
+> WARN_ON_ONCE(1) to tpacket_destruct_skb to see which path led up to
+> queuing the completion notification.
+>
 
-The vulnerability was introduced with the introduction of SF_BROADCAST support
-in commit 921ca574cd38 ("can: isotp: add SF_BROADCAST support for functional
-addressing") in 5.11-rc1.
-In fact, commit 323a391a220c ("can: isotp: isotp_setsockopt():
-block setsockopt on bound sockets") did not effectively prevent isotp_setsockopt()
-from modifying socket members before isotp_bind().
+Here's the output of putting a WARN_ON_ONCE(1) statement in
+tpacket_destruct_skb, I don't believe it is related to the problem.
 
-The requested CVE ID will be revealed along with further exploitation details
-as a response to this notice on 13th May of 2021.
+[   37.249629] RIP: 0010:tpacket_destruct_skb+0x24/0x60
+[...]
+[   37.249659] Call Trace:
+[   37.249661]  <IRQ>
+[   37.249666]  skb_release_head_state+0x44/0x90
+[   37.249680]  skb_release_all+0x13/0x30
+[   37.249684]  kfree_skb+0x2f/0xa0
+[   37.249689]  llc_rcv+0x2e/0x360 [llc]
+[   37.249698]  __netif_receive_skb_one_core+0x8f/0xa0
+[   37.249707]  __netif_receive_skb+0x18/0x60
+[   37.249710]  process_backlog+0xa9/0x160
+[   37.249714]  __napi_poll+0x31/0x140
+[   37.249717]  net_rx_action+0xde/0x210
+[   37.249722]  __do_softirq+0xe0/0x29b
+[   37.249737]  do_softirq+0x66/0x80
+[   37.249747]  </IRQ>
+[   37.249748]  __local_bh_enable_ip+0x50/0x60
+[   37.249751]  __dev_queue_xmit+0x23a/0x6e0
+[   37.249756]  dev_queue_xmit+0x10/0x20
+[   37.249759]  packet_sendmsg+0x6b8/0x1c90
+[   37.249763]  ? __drain_all_pages+0x150/0x1c0
+[   37.249772]  sock_sendmsg+0x65/0x70
+[   37.249778]  __sys_sendto+0x113/0x190
+[   37.249783]  ? handle_mm_fault+0xda/0x2b0
+[   37.249790]  ? exit_to_user_mode_prepare+0x3c/0x1e0
+[   37.249800]  ? do_user_addr_fault+0x1d3/0x640
+[   37.249805]  __x64_sys_sendto+0x29/0x30
+[   37.249809]  do_syscall_64+0x40/0xb0
+[   37.249816]  entry_SYSCALL_64_after_hwframe+0x44/0xae
+[   37.249820] RIP: 0033:0x7f43950d27ea
 
-Credits: Norbert Slusarek
+[...]
 
-*** exploit log ***
+> I think we need to understand exactly what goes on before we apply a
+> patch. It might just be papering over the problem otherwise.
 
-Adjusted to work with openSUSE Tumbleweed.
+Okay, so the call path that adds the timestamp looks like this:
 
-noprivs@suse:~/expl> uname -a
-Linux suse 5.12.0-1-default #1 SMP Mon Apr 26 04:25:46 UTC 2021 (5d43652) x86_64 x86_64 x86_64 GNU/Linux
-noprivs@suse:~/expl> ./lpe
-[+] entering setsockopt
-[+] entering bind
-[+] left bind with ret = 0
-[+] left setsockopt with flags = 838
-[+] race condition hit, closing and spraying socket
-[+] sending msg to run softirq with isotp_rcv()
-[+] check sudo su for root rights
-noprivs@suse:~/expl> sudo su
-suse:/home/noprivs/expl # id
-uid=0(root) gid=0(root) groups=0(root)
-suse:/home/noprivs/expl # cat /root/check
-high school student living in germany looking for an internship in info sec.
-if interested please reach out to nslusarek@gmx.net.
+send() syscall triggers tpacket_snd() which calls the veth_xmit() hander.
+In drivers/net/veth.c veth_xmit() calls veth_forward_skb() which then
+calls netif_rx()/netif_rx_internal() in net/core/dev.c.
+And finally, net_timestamp_check(netdev_tstamp_prequeue, skb) adds
+the timestamp, netdev_tstamp_prequeue defaults to 1.
 
-Regards,
-Norbert Slusarek
+net_timestamp_check in its current form was added by 588f033075
+("net: use jump_label for netstamp_needed ")
+In the kernel since 3.3-rc1, so it looks like this issue has been present the
+entire time. Pre-conditions are netstamp_needed_key and
+netdev_tstamp_prequeue, so if either is false, timestamping won't happen
+at this stage in the code.
+
+Here's the call trace of where the timestamp is added
+
+[  251.619538] Call Trace:
+[  251.619550]  netif_rx+0x1b/0x60
+[  251.619556]  veth_xmit+0x19d/0x230 [veth]
+[  251.619563]  netdev_start_xmit+0x4a/0x8b
+[  251.619566]  dev_hard_start_xmit.cold+0xc8/0x1d5
+[  251.619569]  __dev_queue_xmit.cold+0xa3/0x12c
+[  251.619572]  dev_queue_xmit+0x10/0x20
+[  251.619575]  packet_sendmsg+0x6b8/0x1c90
+[  251.619580]  ? __drain_all_pages+0x150/0x1c0
+[  251.619588]  sock_sendmsg+0x65/0x70
+[  251.619594]  __sys_sendto+0x113/0x190
+[  251.619598]  ? handle_mm_fault+0xda/0x2b0
+[  251.619604]  ? exit_to_user_mode_prepare+0x3c/0x1e0
+[  251.619611]  ? do_user_addr_fault+0x1d3/0x640
+[  251.619615]  __x64_sys_sendto+0x29/0x30
+[  251.619618]  do_syscall_64+0x40/0xb0
+[  251.619623]  entry_SYSCALL_64_after_hwframe+0x44/0xae
+
+This appears to be reasonable, but I don't know what the expected behaviour
+is. Should this timestamp still be cleared before returning the sent skb?
