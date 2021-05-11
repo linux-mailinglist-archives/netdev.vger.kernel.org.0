@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 347C2379CAF
+	by mail.lfdr.de (Postfix) with ESMTP id CBC39379CB1
 	for <lists+netdev@lfdr.de>; Tue, 11 May 2021 04:10:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231191AbhEKCKy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 10 May 2021 22:10:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51396 "EHLO
+        id S230511AbhEKCK5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 10 May 2021 22:10:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51408 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231318AbhEKCJZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 10 May 2021 22:09:25 -0400
-Received: from mail-wm1-x330.google.com (mail-wm1-x330.google.com [IPv6:2a00:1450:4864:20::330])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6655FC06135C;
-        Mon, 10 May 2021 19:07:45 -0700 (PDT)
-Received: by mail-wm1-x330.google.com with SMTP id j3-20020a05600c4843b02901484662c4ebso342744wmo.0;
-        Mon, 10 May 2021 19:07:45 -0700 (PDT)
+        with ESMTP id S231163AbhEKCJ1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 10 May 2021 22:09:27 -0400
+Received: from mail-wr1-x42e.google.com (mail-wr1-x42e.google.com [IPv6:2a00:1450:4864:20::42e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F830C061360;
+        Mon, 10 May 2021 19:07:46 -0700 (PDT)
+Received: by mail-wr1-x42e.google.com with SMTP id n2so18537629wrm.0;
+        Mon, 10 May 2021 19:07:46 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=mGHnGm/hpOZEaZYj5Kx0ZBgk1PIx8CsVXs93FeS0yH0=;
-        b=bhHQo5vFJKoULMrOUPL6KGs10ONR1s3bpU4HKJEuNgAF+jPB4RbRurmu6gHib1mgYQ
-         j11dlF0/g1NN7zQjZDAOkipi0+VdkuAfOqNKUnW23fENfBmqXTZ2rXHrOSQd584r6jII
-         XJFol16lSLHMB/XTZhP0J+87ZLs/P/K7+DeaZnVYuR4TCrOJQWpUEf7gXf6Wd6NhdTeT
-         rrqfJEZ3MQV1TtyhfuhtAvcIckGeA6Nk/XNsQLZl/vSzCdL+yxAaBsFFc4uViROjw6xT
-         JhELKiZXLgh21VXO84MparenRp5N7/6pYHgGRM0mi6kouleDVyxtMzM95epFBu5cZMah
-         i+ZA==
+        bh=DJf85nxR69z/IKM3e9jg3hcn7qldqV13DtN14Eg44tU=;
+        b=Si1gonHqAV9KSijXAQKyMyRSkq8azzaeqXz/E/taqjYlarT8QL+9p/mmXlZkiCgdeW
+         i55vTPrMVIADXTPiwc3V26bZcuPsqRN0z3f2icANjfiTh3H+rYNo8r0J4iZqki3/u7ig
+         IRpXzZVXdNEI/fHlP8LUEi3eMmC6rCXDORU0CMw05+/AyUIwv1y1TSoE5ellgFNODU1b
+         +R8WcRIfUtkLystMDi4/hVcEHPIx5jwLJfLCqDgvt7qZbMDSTuv9hjBXU77PfWAmmOXB
+         9jQWPs800HgSK36JjKnLcoVy7H08BZ4FYNCl9ijbJD0x30LSj+YkNDTCvmKPyILLjsMp
+         v/sQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=mGHnGm/hpOZEaZYj5Kx0ZBgk1PIx8CsVXs93FeS0yH0=;
-        b=q9sYk7m51slp3wmubpuAVm9w/ONKWgZsqc6sIwXfwWp2f+eCKETDKavUBm1b1dhA7Q
-         +0eh3itCP9a7Cug3E0JzcdAoAH6G93dGT+odxlWW3CQE1QOOc1SfqSkYI6qhAERwVAhl
-         v7wgJlETYTsblLm3WJGK6JZQrkxYe9LHJv+OSJUrayRi8daCDkh0uDEAq93NeuBwVt++
-         L1HV+4x3PbDHkcXDoyO8Xa85VDGl69Iw87cf05w7nkwxiTQOlJ2Yd2DYGI8zAlvG0afm
-         j2RQlP4nElpFQH/bV22kxY0I2BNklwMkjdSG3a1DDKXKyT6cj1vKzcBG3QA2Ofyda+rP
-         /F/Q==
-X-Gm-Message-State: AOAM530OodEOyd8wusR3NNDP0MxAZyoD+rc58+KWSKLRkzgmOjaa5WNq
-        9JYkif08VyCAlPHyi4JouQM=
-X-Google-Smtp-Source: ABdhPJwJ+RBoO6ER4NAzW0JXDe7tEsUXzlThKzihEkmjt7L5cDdwH9yfqb5U4ONef5mD+8ZsntpDow==
-X-Received: by 2002:a05:600c:4fd0:: with SMTP id o16mr29346962wmq.107.1620698864031;
-        Mon, 10 May 2021 19:07:44 -0700 (PDT)
+        bh=DJf85nxR69z/IKM3e9jg3hcn7qldqV13DtN14Eg44tU=;
+        b=ovAB/m+zcqqMCsl+ub7fNIt91KtjLPq228KcOFrhynlx0Oa58ksoRHCqS74QCyexZZ
+         ErWkmy+edE/R9mFa7jKay8U6YabpF1g48p6rVRacVawBDflctEJj565wwN0mCWSxXklr
+         3833rnBPb24t/7nWn2ootvqqIQ0d9tbm3TbhVpNJO+WsWJymxye8hQZO7hNFVVb74Vfl
+         xunvAr92UxeWM3ywFiW2SqjEFr245tY9Ab6YScD94l3jeel+Txuo0Zsspe8PGz5sHFbm
+         bG1PEV7EGLStulV/P09gG0WKzV4dRfRlC6Dz+bw2VGz6+OBXphDfdhbdHhVYJY6rYSQS
+         H/hA==
+X-Gm-Message-State: AOAM533IjbnYKCYacRFruBrTgBnavJHGPyai8GhLz8yO+OlYxMzpdPJm
+        IuzjMMZrVREv3Z7H3l7wn10=
+X-Google-Smtp-Source: ABdhPJxPKiDcLt04X5gfYU/QdVa+Qc3Bm+N1/auesDeSj2+Y5lit5NlrK4kI5G6mZvBIiyYyxnagBw==
+X-Received: by 2002:a05:6000:508:: with SMTP id a8mr34298376wrf.315.1620698865027;
+        Mon, 10 May 2021 19:07:45 -0700 (PDT)
 Received: from Ansuel-xps.localdomain (93-35-189-2.ip56.fastwebnet.it. [93.35.189.2])
-        by smtp.googlemail.com with ESMTPSA id q20sm2607436wmq.2.2021.05.10.19.07.43
+        by smtp.googlemail.com with ESMTPSA id q20sm2607436wmq.2.2021.05.10.19.07.44
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 10 May 2021 19:07:43 -0700 (PDT)
+        Mon, 10 May 2021 19:07:44 -0700 (PDT)
 From:   Ansuel Smith <ansuelsmth@gmail.com>
 To:     Andrew Lunn <andrew@lunn.ch>,
         Vivien Didelot <vivien.didelot@gmail.com>,
@@ -61,9 +61,9 @@ To:     Andrew Lunn <andrew@lunn.ch>,
         devicetree@vger.kernel.org (open list:OPEN FIRMWARE AND FLATTENED
         DEVICE TREE BINDINGS), linux-kernel@vger.kernel.org (open list)
 Cc:     Ansuel Smith <ansuelsmth@gmail.com>
-Subject: [RFC PATCH net-next v5 22/25] net: dsa: qca8k: improve internal mdio read/write bus access
-Date:   Tue, 11 May 2021 04:04:57 +0200
-Message-Id: <20210511020500.17269-23-ansuelsmth@gmail.com>
+Subject: [RFC PATCH net-next v5 23/25] net: dsa: qca8k: pass switch_revision info to phy dev_flags
+Date:   Tue, 11 May 2021 04:04:58 +0200
+Message-Id: <20210511020500.17269-24-ansuelsmth@gmail.com>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20210511020500.17269-1-ansuelsmth@gmail.com>
 References: <20210511020500.17269-1-ansuelsmth@gmail.com>
@@ -73,97 +73,50 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Improve the internal mdio read/write bus access by caching the value
-without accessing it for every read/write.
+Define get_phy_flags to pass switch_Revision needed to tweak the
+internal PHY with debug values based on the revision.
 
 Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
+Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
 ---
- drivers/net/dsa/qca8k.c | 28 +++++++++++++++-------------
- 1 file changed, 15 insertions(+), 13 deletions(-)
+ drivers/net/dsa/qca8k.c | 17 +++++++++++++++++
+ 1 file changed, 17 insertions(+)
 
 diff --git a/drivers/net/dsa/qca8k.c b/drivers/net/dsa/qca8k.c
-index 307fe7eb03f3..920cdb1ff2b9 100644
+index 920cdb1ff2b9..9da7eccfa558 100644
 --- a/drivers/net/dsa/qca8k.c
 +++ b/drivers/net/dsa/qca8k.c
-@@ -655,6 +655,7 @@ static int
- qca8k_mdio_write(struct mii_bus *salve_bus, int phy, int regnum, u16 data)
- {
- 	struct qca8k_priv *priv = salve_bus->priv;
-+	struct mii_bus *bus = priv->bus;
- 	u16 r1, r2, page;
- 	u32 val;
- 	int ret;
-@@ -669,22 +670,22 @@ qca8k_mdio_write(struct mii_bus *salve_bus, int phy, int regnum, u16 data)
- 
- 	qca8k_split_addr(QCA8K_MDIO_MASTER_CTRL, &r1, &r2, &page);
- 
--	mutex_lock_nested(&priv->bus->mdio_lock, MDIO_MUTEX_NESTED);
-+	mutex_lock_nested(&bus->mdio_lock, MDIO_MUTEX_NESTED);
- 
--	ret = qca8k_set_page(priv->bus, page);
-+	ret = qca8k_set_page(bus, page);
- 	if (ret)
- 		goto exit;
- 
--	qca8k_mii_write32(priv->bus, 0x10 | r2, r1, val);
-+	qca8k_mii_write32(bus, 0x10 | r2, r1, val);
- 
--	ret = qca8k_mdio_busy_wait(priv->bus, QCA8K_MDIO_MASTER_CTRL,
-+	ret = qca8k_mdio_busy_wait(bus, QCA8K_MDIO_MASTER_CTRL,
- 				   QCA8K_MDIO_MASTER_BUSY);
- 
- exit:
- 	/* even if the busy_wait timeouts try to clear the MASTER_EN */
--	qca8k_mii_write32(priv->bus, 0x10 | r2, r1, 0);
-+	qca8k_mii_write32(bus, 0x10 | r2, r1, 0);
- 
--	mutex_unlock(&priv->bus->mdio_lock);
-+	mutex_unlock(&bus->mdio_lock);
- 
+@@ -1732,6 +1732,22 @@ qca8k_port_vlan_del(struct dsa_switch *ds, int port,
  	return ret;
  }
-@@ -693,6 +694,7 @@ static int
- qca8k_mdio_read(struct mii_bus *salve_bus, int phy, int regnum)
- {
- 	struct qca8k_priv *priv = salve_bus->priv;
-+	struct mii_bus *bus = priv->bus;
- 	u16 r1, r2, page;
- 	u32 val;
- 	int ret;
-@@ -706,26 +708,26 @@ qca8k_mdio_read(struct mii_bus *salve_bus, int phy, int regnum)
  
- 	qca8k_split_addr(QCA8K_MDIO_MASTER_CTRL, &r1, &r2, &page);
++static u32 qca8k_get_phy_flags(struct dsa_switch *ds, int port)
++{
++	struct qca8k_priv *priv = ds->priv;
++
++	/* Communicate to the phy internal driver the switch revision.
++	 * Based on the switch revision different values needs to be
++	 * set to the dbg and mmd reg on the phy.
++	 * The first 2 bit are used to communicate the switch revision
++	 * to the phy driver.
++	 */
++	if (port > 0 && port < 6)
++		return priv->switch_revision;
++
++	return 0;
++}
++
+ static enum dsa_tag_protocol
+ qca8k_get_tag_protocol(struct dsa_switch *ds, int port,
+ 		       enum dsa_tag_protocol mp)
+@@ -1765,6 +1781,7 @@ static const struct dsa_switch_ops qca8k_switch_ops = {
+ 	.phylink_mac_config	= qca8k_phylink_mac_config,
+ 	.phylink_mac_link_down	= qca8k_phylink_mac_link_down,
+ 	.phylink_mac_link_up	= qca8k_phylink_mac_link_up,
++	.get_phy_flags		= qca8k_get_phy_flags,
+ };
  
--	mutex_lock_nested(&priv->bus->mdio_lock, MDIO_MUTEX_NESTED);
-+	mutex_lock_nested(&bus->mdio_lock, MDIO_MUTEX_NESTED);
- 
--	ret = qca8k_set_page(priv->bus, page);
-+	ret = qca8k_set_page(bus, page);
- 	if (ret)
- 		goto exit;
- 
--	qca8k_mii_write32(priv->bus, 0x10 | r2, r1, val);
-+	qca8k_mii_write32(bus, 0x10 | r2, r1, val);
- 
--	ret = qca8k_mdio_busy_wait(priv->bus, QCA8K_MDIO_MASTER_CTRL,
-+	ret = qca8k_mdio_busy_wait(bus, QCA8K_MDIO_MASTER_CTRL,
- 				   QCA8K_MDIO_MASTER_BUSY);
- 	if (ret)
- 		goto exit;
- 
--	val = qca8k_mii_read32(priv->bus, 0x10 | r2, r1);
-+	val = qca8k_mii_read32(bus, 0x10 | r2, r1);
- 
- exit:
- 	/* even if the busy_wait timeouts try to clear the MASTER_EN */
--	qca8k_mii_write32(priv->bus, 0x10 | r2, r1, 0);
-+	qca8k_mii_write32(bus, 0x10 | r2, r1, 0);
- 
--	mutex_unlock(&priv->bus->mdio_lock);
-+	mutex_unlock(&bus->mdio_lock);
- 
- 	if (val >= 0)
- 		val &= QCA8K_MDIO_MASTER_DATA_MASK;
+ static int qca8k_read_switch_id(struct qca8k_priv *priv)
 -- 
 2.30.2
 
