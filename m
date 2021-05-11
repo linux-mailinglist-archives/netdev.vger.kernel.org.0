@@ -2,95 +2,179 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7C75337B1BC
-	for <lists+netdev@lfdr.de>; Wed, 12 May 2021 00:51:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9E57337B1C1
+	for <lists+netdev@lfdr.de>; Wed, 12 May 2021 00:52:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229848AbhEKWwK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 11 May 2021 18:52:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49726 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229637AbhEKWwJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 11 May 2021 18:52:09 -0400
-Received: from mail-qv1-xf2e.google.com (mail-qv1-xf2e.google.com [IPv6:2607:f8b0:4864:20::f2e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D0E2EC061574
-        for <netdev@vger.kernel.org>; Tue, 11 May 2021 15:51:02 -0700 (PDT)
-Received: by mail-qv1-xf2e.google.com with SMTP id l12so1102151qvm.9
-        for <netdev@vger.kernel.org>; Tue, 11 May 2021 15:51:02 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=content-transfer-encoding:from:mime-version:subject:date:message-id
-         :references:cc:in-reply-to:to;
-        bh=5FL0PAXdFAkGTV8+uoUJixhTCs/2flvto6lANPgC7Zc=;
-        b=ZGsyQmwomw9+dJkK/QFDJZzqc2VVqnvavKF5hcukBI3FgaLEKVRCPxZVeYQzXtvrhN
-         ry0GSD9P3VvLprKb3ZgH7BIqX0Md8Za4Op71VwubiRAqGc7yq4eOKZg7WCLU0ikNu5xv
-         lJPFIKmY9IbdxVb/S0acSFGsgMy5033rANNTYewnJ7QXeXl6VFnSwV7XyIxQybJ0zynt
-         fOW21c0AU+z7pdSaaCRlh5aDwzzRD8uWbLCL7QdSFhbo/4d/rSHXRN7Ib5ZIO+j3zw1w
-         ArRL0iyqVeFqNtQfNmSHhp4+kRrw4YtLNe6kTp3yX5RzNRX9essFWMZOKCs4Yy4doJKN
-         iApA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:content-transfer-encoding:from:mime-version
-         :subject:date:message-id:references:cc:in-reply-to:to;
-        bh=5FL0PAXdFAkGTV8+uoUJixhTCs/2flvto6lANPgC7Zc=;
-        b=LhvX0NAqeH8MFqEzE7b9URYyVGbHnjxuZJDF60JuQt4U+wPqvuirKFRpUfpXgyvnwv
-         dFJnshLi1RcLGPSR9u6VfPu3DubRqMM0YayxKMF64IVrXEGGde7S/xwxv0QBe2iwNugq
-         52U2SM6dc7z9bXQh8m7uyN6ytzEP11bBlcxmD2vwss98m2dob8GwO1HR2B1qn7phiurP
-         AEOsXrWe5jEZsKQxK1ubbG3t0g6RkW9uvyY51LceBGMSdQ2+S8/QldNJE4zIlZcXmqDD
-         1tXdH6ABn2mEQiftd00m1JMLPR30iHGaAX9KLtgVmdDeldJCnWLZHFW5iH1xBhpt/UB7
-         reOw==
-X-Gm-Message-State: AOAM532PgXcz35fN7w+zpRj3MOSHCM26BT+PO8v8MrcaByTdcCn49Plo
-        8QrXfO5be49kwGeJ48CpZrrSBQS3s1Y=
-X-Google-Smtp-Source: ABdhPJwOY3WhaCzeE9JuS9nsUdLLhAPsMEeowD0BdxvldQRSzUg/gsfklrf6P5MCaELOgR1BMqwn1A==
-X-Received: by 2002:a0c:e242:: with SMTP id x2mr31755186qvl.45.1620773461815;
-        Tue, 11 May 2021 15:51:01 -0700 (PDT)
-Received: from [192.168.1.214] (pool-138-88-168-130.washdc.fios.verizon.net. [138.88.168.130])
-        by smtp.gmail.com with ESMTPSA id m22sm15466993qtu.43.2021.05.11.15.51.01
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 11 May 2021 15:51:01 -0700 (PDT)
-Content-Type: text/plain; charset=utf-8
+        id S229973AbhEKWx0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 11 May 2021 18:53:26 -0400
+Received: from mout.gmx.net ([212.227.17.22]:53849 "EHLO mout.gmx.net"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229637AbhEKWxY (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 11 May 2021 18:53:24 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
+        s=badeba3b8450; t=1620773528;
+        bh=WU24ziIMsl5MJ0jHEeI5AdeNfm5oYBKylyPjn0cY/t8=;
+        h=X-UI-Sender-Class:From:To:Cc:Subject:Date;
+        b=bx43Fhry+8Nk2nqMoVXI08mdZ1GX8jqF0qEVb4Py0pWKqgzf9ORlNDcbGzl/hPLLq
+         ETD5MlBqqV2szDFfOLFEDJz/6lWmgRRL+Rzs67MOq2c2kOStgtVI5FKBWm5G4j/jC9
+         pJbCtH2FnkoAy70Ore0GfqKIhbh+HiEk4viHhSn0=
+X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
+Received: from [89.247.255.239] ([89.247.255.239]) by web-mail.gmx.net
+ (3c-app-gmx-bs06.server.lan [172.19.170.55]) (via HTTP); Wed, 12 May 2021
+ 00:52:08 +0200
+MIME-Version: 1.0
+Message-ID: <trinity-e6ae9efa-9afb-4326-84c0-f3609b9b8168-1620773528307@3c-app-gmx-bs06>
+From:   Norbert Slusarek <nslusarek@gmx.net>
+To:     kuba@kernel.org
+Cc:     mkl@pengutronix.de, socketcan@hartkopp.net, davem@davemloft.net,
+        netdev@vger.kernel.org, cascardo@canonical.com
+Subject: [PATCH] can: isotp: prevent race between isotp_bind and
+ isotp_setsockopt
+Content-Type: text/plain; charset=UTF-8
+Date:   Wed, 12 May 2021 00:52:08 +0200
+Importance: normal
+Sensitivity: Normal
+X-Priority: 3
+X-Provags-ID: V03:K1:sceUbZNMBGye06dcafCKqUqZRaP5UlOxKHU8/Aa6RyLNrPy94yY2gAMFROvdtv+OSidyG
+ CMFlHUfKIKEcBJIrPl8HgY8h45ETOiCkJ5kOxcD2eSm9VtgK2NCImNkT52GdSCWocZJ8pOx9Czt3
+ WEn3NA7WCYQFVM/iYX1cFQJwjywJD3eC6byPXi5k6+TXusH6DDKO/CGucselHmuGD4ZDBntCKe5b
+ mTq6AIM25YIeiQRcK+2+9xb6eLr5SxB7OHzgLFK7XcBZv2ijXsf7E7n2yZet8E9MUUWLr2DzhGeC
+ p8=
+X-Spam-Flag: NO
+X-UI-Out-Filterresults: notjunk:1;V03:K0:8KNI88Fr9AQ=:W6eeYZWMSNB/wa7kW1/MAR
+ twCPbqUygj1JZzQpgTvbgoe+OxIYj30PSxaM6WxujKnXke6RQddIiUB6kZybVLzalecs5Nt2S
+ n23Ox/awtcX7HOpy9qpNsyzqoS8IsbGPx7o5mWZKtnqoNTwl8sXfuZDvXDjc5Caw5URm2F44W
+ IlaSNgL7k93/SfUd27BsrlLPVsIdKJMPni+pb0Od+cMHlh8z1WdiDX8nUTJlY/pFKiBuB8qaA
+ k9A3YW3IU6fckP5hVzzeTinEh7J8BK+garQH0vFgmMjTiiH1k8n/uREcNBRk46+rfnV1iB+zA
+ +1k9DelnPm9tY2dseY6FAROdnNsZAtgMOHXGF4Qu2GeghHywn0pqlLSgOqhf8xl8vYmpdJFP0
+ HCqe1sDctZgYUz/nDeooyBlYmNNOQ6s05Cim0U+RQQs8YEl+M5f4EO1bvyEVyZPIeDUTDCCuf
+ zEYtkNVtMoRCojb3xTh5yAvpVgYPvcCIerGeiqPyWjdzCTFB2FW7LXGv2ixA3XGzycnKNVgCi
+ MYgVl6JQpLb/BvhwP1L9DsJ6QJmfffP9g7mUxTztLB4m8sOuLVM66M6ZeB0U773CuG9q4LPIq
+ OhJ2TzXECKWvw7TStTN57qIcfzoDOYh4gl6Clg9S56zD2q5f4YpxuJiLbBqADCf5W7THZGiKw
+ eO1ZFXg7PyHfRsSRQx+egeZ0YpNxBfd5XHa6LI3sa0N2FCiT9chIiFkk53l+wi90L3ap1S8/9
+ pP+oEfXoz5ga0ThC9bKtAyKwCsNu0BQM9VjSxoRy827C4hwqGHI9K770VJADqODOXLoJTRRvk
+ KCOc14nrxgsOv7gY3BuC1UXDtqWRSjaoU4r71Lb+msKyvY3FQldv0ICmw4PaPv1wiAW8HkxDf
+ XKgq4Iny2nWoTNx9xhTMQw60krzv2D9ixq2bbGrvv++Ytu328442gfza25qP1y
 Content-Transfer-Encoding: quoted-printable
-From:   Urosh Milojkovic <uroshm@gmail.com>
-Mime-Version: 1.0 (1.0)
-Subject: Re: Project
-Date:   Tue, 11 May 2021 18:51:00 -0400
-Message-Id: <3BBE9297-5ACE-4A7F-AF9A-4EAECD81E23D@gmail.com>
-References: <20210511145036.3DB57174FC0499A0@flippiebeckerwealthsvs.online>
-Cc:     netdev@vger.kernel.org
-In-Reply-To: <20210511145036.3DB57174FC0499A0@flippiebeckerwealthsvs.online>
-To:     cpavlides01@flippiebeckerwealthservices.com
-X-Mailer: iPhone Mail (18D70)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello I am very interested ! What is the investment ? I am always looking fo=
-r these opportunities.=20
+From: Norbert Slusarek <nslusarek@gmx.net>
+Date: Wed, 12 May 2021 00:43:54 +0200
+Subject: [PATCH] can: isotp: prevent race between isotp_bind and isotp_set=
+sockopt
 
-Sent from my iPhone
+A race condition was found in isotp_setsockopt() which allows to
+change socket options after the socket was bound.
+For the specific case of SF_BROADCAST support, this might lead to possible
+use-after-free because can_rx_unregister() is not called.
 
-> On May 11, 2021, at 18:38, C Pavlides <cpavlides01@flippiebeckerwealthsvs.=
-online> wrote:
->=20
-> =EF=BB=BFHello there,
->=20
-> I hope this message finds you in good spirits especially during=20
-> this challenging time of coronavirus pandemic. I hope you and=20
-> your family are well and keeping safe. Anyway, I am Chris=20
-> Pavlides, a broker working with Flippiebecker Wealth. I got your=20
-> contact (along with few other contacts) through an online=20
-> business directory and I thought I should contact you to see if=20
-> you are interested in this opportunity. I am contacting you=20
-> because one of my high profile clients is interested in investing=20
-> abroad and has asked me to look for individuals and companies=20
-> with interesting business ideas and projects that he can invest=20
-> in. He wants to invest a substantial amount of asset abroad.
->=20
-> Please kindly respond back to this email if you are interested in=20
-> this opportunity. Once I receive your response, I will give you=20
-> more details and we can plan a strategy that will be beneficial=20
-> to all parties.
->=20
-> Best regards
->=20
-> C Pavlides
-> Flippiebecker Wealth
+Checking for the flag under the socket lock in isotp_bind()
+and taking the lock in isotp_setsockopt() fixes the issue.
+
+Fixes: 921ca574cd38 ("can: isotp: add SF_BROADCAST support for functional =
+addressing")
+Reported-by: Norbert Slusarek <nslusarek@gmx.net>
+Signed-off-by: Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
+Signed-off-by: Norbert Slusarek <nslusarek@gmx.net>
+Acked-by: Oliver Hartkopp <socketcan@hartkopp.net>
+=2D--
+ net/can/isotp.c | 49 +++++++++++++++++++++++++++++++++----------------
+ 1 file changed, 33 insertions(+), 16 deletions(-)
+
+diff --git a/net/can/isotp.c b/net/can/isotp.c
+index 15ea1234d457..6cc05940d0b7 100644
+=2D-- a/net/can/isotp.c
++++ b/net/can/isotp.c
+@@ -1059,27 +1059,31 @@ static int isotp_bind(struct socket *sock, struct =
+sockaddr *uaddr, int len)
+ 	if (len < CAN_REQUIRED_SIZE(struct sockaddr_can, can_addr.tp))
+ 		return -EINVAL;
+
++	if (addr->can_addr.tp.tx_id & (CAN_ERR_FLAG | CAN_RTR_FLAG))
++		return -EADDRNOTAVAIL;
++
++	if (!addr->can_ifindex)
++		return -ENODEV;
++
++	lock_sock(sk);
++
+ 	/* do not register frame reception for functional addressing */
+ 	if (so->opt.flags & CAN_ISOTP_SF_BROADCAST)
+ 		do_rx_reg =3D 0;
+
+ 	/* do not validate rx address for functional addressing */
+ 	if (do_rx_reg) {
+-		if (addr->can_addr.tp.rx_id =3D=3D addr->can_addr.tp.tx_id)
+-			return -EADDRNOTAVAIL;
++		if (addr->can_addr.tp.rx_id =3D=3D addr->can_addr.tp.tx_id) {
++			err =3D -EADDRNOTAVAIL;
++			goto out;
++		}
+
+-		if (addr->can_addr.tp.rx_id & (CAN_ERR_FLAG | CAN_RTR_FLAG))
+-			return -EADDRNOTAVAIL;
++		if (addr->can_addr.tp.rx_id & (CAN_ERR_FLAG | CAN_RTR_FLAG)) {
++			err =3D -EADDRNOTAVAIL;
++			goto out;
++		}
+ 	}
+
+-	if (addr->can_addr.tp.tx_id & (CAN_ERR_FLAG | CAN_RTR_FLAG))
+-		return -EADDRNOTAVAIL;
+-
+-	if (!addr->can_ifindex)
+-		return -ENODEV;
+-
+-	lock_sock(sk);
+-
+ 	if (so->bound && addr->can_ifindex =3D=3D so->ifindex &&
+ 	    addr->can_addr.tp.rx_id =3D=3D so->rxid &&
+ 	    addr->can_addr.tp.tx_id =3D=3D so->txid)
+@@ -1161,16 +1165,13 @@ static int isotp_getname(struct socket *sock, stru=
+ct sockaddr *uaddr, int peer)
+ 	return sizeof(*addr);
+ }
+
+-static int isotp_setsockopt(struct socket *sock, int level, int optname,
++static int isotp_setsockopt_locked(struct socket *sock, int level, int op=
+tname,
+ 			    sockptr_t optval, unsigned int optlen)
+ {
+ 	struct sock *sk =3D sock->sk;
+ 	struct isotp_sock *so =3D isotp_sk(sk);
+ 	int ret =3D 0;
+
+-	if (level !=3D SOL_CAN_ISOTP)
+-		return -EINVAL;
+-
+ 	if (so->bound)
+ 		return -EISCONN;
+
+@@ -1245,6 +1246,22 @@ static int isotp_setsockopt(struct socket *sock, in=
+t level, int optname,
+ 	return ret;
+ }
+
++static int isotp_setsockopt(struct socket *sock, int level, int optname,
++			    sockptr_t optval, unsigned int optlen)
++
++{
++	struct sock *sk =3D sock->sk;
++	int ret;
++
++	if (level !=3D SOL_CAN_ISOTP)
++		return -EINVAL;
++
++	lock_sock(sk);
++	ret =3D isotp_setsockopt_locked(sock, level, optname, optval, optlen);
++	release_sock(sk);
++	return ret;
++}
++
+ static int isotp_getsockopt(struct socket *sock, int level, int optname,
+ 			    char __user *optval, int __user *optlen)
+ {
+=2D-
+2.27.0
