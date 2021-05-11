@@ -2,70 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A36CF37B29E
-	for <lists+netdev@lfdr.de>; Wed, 12 May 2021 01:33:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 074BA37B2CA
+	for <lists+netdev@lfdr.de>; Wed, 12 May 2021 01:52:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230166AbhEKXeY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 11 May 2021 19:34:24 -0400
-Received: from mail.kernel.org ([198.145.29.99]:55362 "EHLO mail.kernel.org"
+        id S230096AbhEKXxP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 11 May 2021 19:53:15 -0400
+Received: from ozlabs.org ([203.11.71.1]:40961 "EHLO ozlabs.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230018AbhEKXeR (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 11 May 2021 19:34:17 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id A8E3361932;
-        Tue, 11 May 2021 23:33:10 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1620775990;
-        bh=oJ3l4wlzf7QBL5jHf7APnaJatjUe/MBghkI25GjTwgo=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=qBsWqG9UP6inu2TCX4d+QYgGdNvFvL7TF7dOgfv+hyEy6+t5BLO1Htwb8gEn1ljVE
-         OeSdrNh22EDcpUNG1GQNokpeRr0eXywy5vcC06k5Lys3hqUTYbEAv6BdyVoK5wy+cX
-         9U6Z3mT5PHt4lBJGeNFXlmlAMfpBPwVNs/+m5PPCYN5s3CNlTN7Xxon8UFnuX6Uviq
-         J3DtLlIIJA68fEUNE8fn0MxU5cssuwuzduoqTKIDZb/ko5jW6GoDfBPivwWCnbDDWl
-         SD7J3CTjGYvXvxFfpHeDPoi7z3ylMI/uLln83aCSn/S9kEQ4kl7835RZj34dcpoNtn
-         +FLCFx0gIvhfw==
-Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id A2AF560A02;
-        Tue, 11 May 2021 23:33:10 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        id S230075AbhEKXxO (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 11 May 2021 19:53:14 -0400
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 4Ffvps6xb1z9sWC;
+        Wed, 12 May 2021 09:52:05 +1000 (AEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=canb.auug.org.au;
+        s=201702; t=1620777126;
+        bh=M7TtSkXxMF0em4ofKmMx4OFSoudGXcoUk7yXJrm2mSw=;
+        h=Date:From:To:Cc:Subject:From;
+        b=BR7+Dtm3hOLEbZDwH64Edagaii6JAIUYnvjS53kvxE66ZbH/uUzJTIcBDK6kRRBl/
+         hlN2Om6zfcxNSBirT7+Hu8qJhPs0yKzDqY/RxmrEpOS6VxfL2TIqVbOf0zVkqKTD5H
+         w+OJBWxtlEJG8X/J90FDNwmtPA4FYSxbuTWl0o77dmQ6IdXJzoCFWaEZMY16D/A5/n
+         zKy0PfjPj9zRW5fYSgy1PcOKe9LSPxI07BJUuJqo82R2zNs+JD4vsOzt7D0HBWNQCl
+         94VXzZ8kKwuh99wa7GQFobgmp1z29OQTX5M1Xz+Txwqes7UyPMoBpGjP2eC5eMOHZD
+         /tjlq38aLkyoA==
+Date:   Wed, 12 May 2021 09:52:01 +1000
+From:   Stephen Rothwell <sfr@canb.auug.org.au>
+To:     David Miller <davem@davemloft.net>,
+        Networking <netdev@vger.kernel.org>
+Cc:     Loic Poulain <loic.poulain@linaro.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>
+Subject: linux-next: build failure after merge of the net-next tree
+Message-ID: <20210512095201.09323cda@canb.auug.org.au>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH] net/sched: taprio: Drop unnecessary NULL check after
- container_of
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <162077599066.17752.10688844250342653861.git-patchwork-notify@kernel.org>
-Date:   Tue, 11 May 2021 23:33:10 +0000
-References: <20210511205449.1676407-1-linux@roeck-us.net>
-In-Reply-To: <20210511205449.1676407-1-linux@roeck-us.net>
-To:     Guenter Roeck <linux@roeck-us.net>
-Cc:     jhs@mojatatu.com, xiyou.wangcong@gmail.com, jiri@resnulli.us,
-        davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
+Content-Type: multipart/signed; boundary="Sig_/hG/om+Wur_o8DNz.SY9kEgL";
+ protocol="application/pgp-signature"; micalg=pgp-sha256
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+--Sig_/hG/om+Wur_o8DNz.SY9kEgL
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
-This patch was applied to netdev/net-next.git (refs/heads/master):
+Hi all,
 
-On Tue, 11 May 2021 13:54:49 -0700 you wrote:
-> The rcu_head pointer passed to taprio_free_sched_cb is never NULL.
-> That means that the result of container_of() operations on it is also
-> never NULL, even though rcu_head is the first element of the structure
-> embedding it. On top of that, it is misleading to perform a NULL check
-> on the result of container_of() because the position of the contained
-> element could change, which would make the check invalid. Remove the
-> unnecessary NULL check.
-> 
-> [...]
+After merging the net-next tree, today's linux-next build (x86_64
+allmodconfig) failed like this:
 
-Here is the summary with links:
-  - net/sched: taprio: Drop unnecessary NULL check after container_of
-    https://git.kernel.org/netdev/net-next/c/faa5f5da809b
+drivers/usb/class/cdc-wdm.c: In function 'wdm_wwan_port_stop':
+drivers/usb/class/cdc-wdm.c:858:2: error: implicit declaration of function =
+'kill_urbs' [-Werror=3Dimplicit-function-declaration]
+  858 |  kill_urbs(desc);
+      |  ^~~~~~~~~
 
-You are awesome, thank you!
---
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+Caused by commit
 
+  cac6fb015f71 ("usb: class: cdc-wdm: WWAN framework integration")
 
+kill_urbs() was removed by commit
+
+  18abf8743674 ("cdc-wdm: untangle a circular dependency between callback a=
+nd softint")
+
+Which is included in v5.13-rc1.
+
+I have used the net-next tree from next-20210511 for today.
+
+--=20
+Cheers,
+Stephen Rothwell
+
+--Sig_/hG/om+Wur_o8DNz.SY9kEgL
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmCbGKEACgkQAVBC80lX
+0GxU0wgAldBKe6NYy9f9GJkUU0xrTAXAGMJV1AHWS6Zi70FoLXiFe7Rgw6TY9BFb
+4eSzo98zhvCIIEXw7vieH2kjFMb/b+cUPPimOA/FrEz9uUyBtIyAQGLgqdXgLWlA
+nIEtJCivCLLHH/eTEUsya9OJsb1j9oQpGHCtyH7kmIUXsoCn5yBV/XIZ6FjblgpT
+IJHkESuGDmksaZIWNBtT/iH/LBrVoJ/MfW6Q8nRNH3JV0phAViO/048oSdU0sPRH
+9CR2LGiOaSD3xGJ9WD+fFoje6KBV+GKDF01ve7EO9dZyaMDTu48Y6m/xff6zGhge
+SA/aH25cRFA9FTfqP9RuZFWOVK2oYw==
+=Mf9w
+-----END PGP SIGNATURE-----
+
+--Sig_/hG/om+Wur_o8DNz.SY9kEgL--
