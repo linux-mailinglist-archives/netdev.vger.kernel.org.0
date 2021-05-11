@@ -2,77 +2,165 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7AF86379C3A
-	for <lists+netdev@lfdr.de>; Tue, 11 May 2021 03:44:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 150AB379C48
+	for <lists+netdev@lfdr.de>; Tue, 11 May 2021 03:49:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230425AbhEKBpN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 10 May 2021 21:45:13 -0400
-Received: from szxga04-in.huawei.com ([45.249.212.190]:2763 "EHLO
-        szxga04-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230291AbhEKBpL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 10 May 2021 21:45:11 -0400
-Received: from DGGEMS413-HUB.china.huawei.com (unknown [172.30.72.58])
-        by szxga04-in.huawei.com (SkyGuard) with ESMTP id 4FfLGd0G1mzmg21;
-        Tue, 11 May 2021 09:40:41 +0800 (CST)
-Received: from [127.0.0.1] (10.174.177.72) by DGGEMS413-HUB.china.huawei.com
- (10.3.19.213) with Microsoft SMTP Server id 14.3.498.0; Tue, 11 May 2021
- 09:43:57 +0800
-Subject: Re: [PATCH 1/1] forcedeth: Delete a redundant condition branch
-To:     Andrew Lunn <andrew@lunn.ch>
-CC:     Rain River <rain.1986.08.12@gmail.com>,
-        Zhu Yanjun <zyjzyj2000@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        netdev <netdev@vger.kernel.org>
-References: <20210510135656.3960-1-thunder.leizhen@huawei.com>
- <YJmQufHgq6WlRz4Q@lunn.ch>
-From:   "Leizhen (ThunderTown)" <thunder.leizhen@huawei.com>
-Message-ID: <20f15fbc-347f-b76d-24f4-da08f76fd603@huawei.com>
-Date:   Tue, 11 May 2021 09:43:56 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.0
+        id S230429AbhEKBux (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 10 May 2021 21:50:53 -0400
+Received: from mail.kernel.org ([198.145.29.99]:47050 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S230334AbhEKBuw (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 10 May 2021 21:50:52 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 71510616E8;
+        Tue, 11 May 2021 01:49:44 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1620697787;
+        bh=eZrzgpTyyO5Blp6/LDxMMaLmtZs1tELZ4/7dFk3gLco=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=fJhqWJRLw+CPWIVo4ulxbq2qE/g1QN3h3r11Vp/Jrcyc84wwvshpmdybYw4zbjkCD
+         ufFdxlbGMpcx+F3VCg1qrmeX+TTLVTs9KdID8jea2Dt6lMOW1dyxdytXKfySQx35BD
+         R7Fn5WBNRIvF8fvh66TrYbDd7MeEBNoSuOiB8kzeaLd0Xq/+2ZCyvCin7eeLs736P7
+         kNSuoih4e1Q7bh3s/blHmggB3QvT82rhy6dzIYPuMAWha6mbVufGMABde7DmPL14li
+         DvPN5hhZSAU7Jp46KX0l2aw4xQ5BOp1BmNICcf+HY5ZlBzW4yhHlS7Ovwc1yQTNiZ6
+         H48LHRPBY2kqQ==
+Date:   Tue, 11 May 2021 09:49:41 +0800
+From:   Shawn Guo <shawnguo@kernel.org>
+To:     Oleksij Rempel <o.rempel@pengutronix.de>
+Cc:     Sascha Hauer <s.hauer@pengutronix.de>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Philippe Schenker <philippe.schenker@toradex.com>,
+        kernel@pengutronix.de, netdev@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-imx@nxp.com, Fabio Estevam <festevam@gmail.com>,
+        David Jander <david@protonic.nl>,
+        Russell King <linux@armlinux.org.uk>
+Subject: Re: [PATCH v2 1/7] ARM: imx6q: remove PHY fixup for KSZ9031
+Message-ID: <20210511014937.GK27585@dragon>
+References: <20210309112615.625-1-o.rempel@pengutronix.de>
+ <20210309112615.625-2-o.rempel@pengutronix.de>
 MIME-Version: 1.0
-In-Reply-To: <YJmQufHgq6WlRz4Q@lunn.ch>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.174.177.72]
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210309112615.625-2-o.rempel@pengutronix.de>
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-
-On 2021/5/11 3:59, Andrew Lunn wrote:
-> On Mon, May 10, 2021 at 09:56:56PM +0800, Zhen Lei wrote:
->> The statement of the last "if (adv_lpa & LPA_10HALF)" branch is the same
->> as the "else" branch. Delete it to simplify code.
->>
->> No functional change.
->>
->> Signed-off-by: Zhen Lei <thunder.leizhen@huawei.com>
+On Tue, Mar 09, 2021 at 12:26:09PM +0100, Oleksij Rempel wrote:
+> Starting with:
 > 
-> Hi Zhen
+>     bcf3440c6dd7 ("net: phy: micrel: add phy-mode support for the KSZ9031 PHY")
 > 
-> Could you teach your bot to check lore.kernel.org and see if the same
-> patch has been submitted before? If it has, there is probably a reason
-> why it was rejected. You need to check if that reason it still true.
-
-This is a tool that comes with the kernel. Now it's all about manual
-Google searches to see if someone has posted it. So there could be a
-mistake.
-
-Although the compiler can optimize this "if" branch, but I think those
-that can optimize directly should try to avoid relying on the machine.
-If it must exist, it should be in the form of comments. Otherwise, the
-intuition is that there was a mistake in writing this code. That's why
-the kernel tool reports it. At least the developers of the tool has the
-same point of view as mine.
-
+> the micrel phy driver started respecting phy-mode for the KSZ9031 PHY.
+> At least with kernel v5.8 configuration provided by this fixup was
+> overwritten by the micrel driver.
 > 
->     Andrew
+> This fixup was providing following configuration:
 > 
-> .
+> RX path: 2.58ns delay
+>     rx -0.42 (left shift) + rx_clk  +0.96ns (right shift) =
+>         1,38 + 1,2 internal RX delay = 2.58ns
+> TX path: 0.96ns delay
+>     tx (no delay) + tx_clk 0.96ns (right shift) = 0.96ns
 > 
+> This configuration is outside of the recommended RGMII clock skew delays
+> and about in the middle of: rgmii-idrx and rgmii-id
+> 
+> Since most embedded systems do not have enough place to introduce
+> significant clock skew, rgmii-id is the way to go.
+> 
+> In case this patch breaks network functionality on your system, build
+> kernel with enabled MICREL_PHY. If it is still not working then try
+> following device tree options:
+> 1. Set (or change) phy-mode in DT to:
+>    phy-mode = "rgmii-id";
+>    This actives internal delay for both RX and TX.
+> 1. Set (or change) phy-mode in DT to:
+>    phy-mode = "rgmii-idrx";
+>    This actives internal delay for RX only.
+> 3. Use following DT properties:
+>    phy-mode = "rgmii";
+>    txen-skew-psec = <0>;
+>    rxdv-skew-psec = <0>;
+>    rxd0-skew-psec = <0>;
+>    rxd1-skew-psec = <0>;
+>    rxd2-skew-psec = <0>;
+>    rxd3-skew-psec = <0>;
+>    rxc-skew-psec = <1860>;
+>    txc-skew-psec = <1860>;
+>    This activates the internal delays for RX and TX, with the value as
+>    the fixup that is removed in this patch.
+> 
+> Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
+> Acked-by: Philippe Schenker <philippe.schenker@toradex.com>
+> ---
+>  arch/arm/boot/dts/imx6q-dmo-edmqmx6.dts |  2 +-
+>  arch/arm/mach-imx/mach-imx6q.c          | 23 -----------------------
 
+I have different branch for DTS and mach-imx change.  Please split the
+changes.
+
+Shawn
+
+>  2 files changed, 1 insertion(+), 24 deletions(-)
+> 
+> diff --git a/arch/arm/boot/dts/imx6q-dmo-edmqmx6.dts b/arch/arm/boot/dts/imx6q-dmo-edmqmx6.dts
+> index fa2307d8ce86..c713ac03b3b9 100644
+> --- a/arch/arm/boot/dts/imx6q-dmo-edmqmx6.dts
+> +++ b/arch/arm/boot/dts/imx6q-dmo-edmqmx6.dts
+> @@ -112,7 +112,7 @@ flash: m25p80@0 {
+>  &fec {
+>  	pinctrl-names = "default";
+>  	pinctrl-0 = <&pinctrl_enet>;
+> -	phy-mode = "rgmii";
+> +	phy-mode = "rgmii-id";
+>  	phy-reset-gpios = <&gpio1 25 GPIO_ACTIVE_LOW>;
+>  	phy-supply = <&vgen2_1v2_eth>;
+>  	status = "okay";
+> diff --git a/arch/arm/mach-imx/mach-imx6q.c b/arch/arm/mach-imx/mach-imx6q.c
+> index 703998ebb52e..78205f90da27 100644
+> --- a/arch/arm/mach-imx/mach-imx6q.c
+> +++ b/arch/arm/mach-imx/mach-imx6q.c
+> @@ -40,27 +40,6 @@ static int ksz9021rn_phy_fixup(struct phy_device *phydev)
+>  	return 0;
+>  }
+>  
+> -static void mmd_write_reg(struct phy_device *dev, int device, int reg, int val)
+> -{
+> -	phy_write(dev, 0x0d, device);
+> -	phy_write(dev, 0x0e, reg);
+> -	phy_write(dev, 0x0d, (1 << 14) | device);
+> -	phy_write(dev, 0x0e, val);
+> -}
+> -
+> -static int ksz9031rn_phy_fixup(struct phy_device *dev)
+> -{
+> -	/*
+> -	 * min rx data delay, max rx/tx clock delay,
+> -	 * min rx/tx control delay
+> -	 */
+> -	mmd_write_reg(dev, 2, 4, 0);
+> -	mmd_write_reg(dev, 2, 5, 0);
+> -	mmd_write_reg(dev, 2, 8, 0x003ff);
+> -
+> -	return 0;
+> -}
+> -
+>  /*
+>   * fixup for PLX PEX8909 bridge to configure GPIO1-7 as output High
+>   * as they are used for slots1-7 PERST#
+> @@ -152,8 +131,6 @@ static void __init imx6q_enet_phy_init(void)
+>  	if (IS_BUILTIN(CONFIG_PHYLIB)) {
+>  		phy_register_fixup_for_uid(PHY_ID_KSZ9021, MICREL_PHY_ID_MASK,
+>  				ksz9021rn_phy_fixup);
+> -		phy_register_fixup_for_uid(PHY_ID_KSZ9031, MICREL_PHY_ID_MASK,
+> -				ksz9031rn_phy_fixup);
+>  		phy_register_fixup_for_uid(PHY_ID_AR8031, 0xffffffef,
+>  				ar8031_phy_fixup);
+>  		phy_register_fixup_for_uid(PHY_ID_AR8035, 0xffffffef,
+> -- 
+> 2.29.2
+> 
