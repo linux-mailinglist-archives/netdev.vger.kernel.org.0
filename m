@@ -2,179 +2,124 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9E57337B1C1
-	for <lists+netdev@lfdr.de>; Wed, 12 May 2021 00:52:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6636337B1F8
+	for <lists+netdev@lfdr.de>; Wed, 12 May 2021 00:57:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229973AbhEKWx0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 11 May 2021 18:53:26 -0400
-Received: from mout.gmx.net ([212.227.17.22]:53849 "EHLO mout.gmx.net"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229637AbhEKWxY (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 11 May 2021 18:53:24 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
-        s=badeba3b8450; t=1620773528;
-        bh=WU24ziIMsl5MJ0jHEeI5AdeNfm5oYBKylyPjn0cY/t8=;
-        h=X-UI-Sender-Class:From:To:Cc:Subject:Date;
-        b=bx43Fhry+8Nk2nqMoVXI08mdZ1GX8jqF0qEVb4Py0pWKqgzf9ORlNDcbGzl/hPLLq
-         ETD5MlBqqV2szDFfOLFEDJz/6lWmgRRL+Rzs67MOq2c2kOStgtVI5FKBWm5G4j/jC9
-         pJbCtH2FnkoAy70Ore0GfqKIhbh+HiEk4viHhSn0=
-X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
-Received: from [89.247.255.239] ([89.247.255.239]) by web-mail.gmx.net
- (3c-app-gmx-bs06.server.lan [172.19.170.55]) (via HTTP); Wed, 12 May 2021
- 00:52:08 +0200
+        id S229973AbhEKW5u (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 11 May 2021 18:57:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51186 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229637AbhEKW5t (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 11 May 2021 18:57:49 -0400
+Received: from mail-yb1-xb2d.google.com (mail-yb1-xb2d.google.com [IPv6:2607:f8b0:4864:20::b2d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA634C061574;
+        Tue, 11 May 2021 15:56:42 -0700 (PDT)
+Received: by mail-yb1-xb2d.google.com with SMTP id g38so28453388ybi.12;
+        Tue, 11 May 2021 15:56:42 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=xyJsr5+GU6OwmtbK8l0br93cj/vlkcS6F2ecLZDOOUw=;
+        b=rWUpmSmO26Ym2+SrQlRqIz2mpWdRvsw/gaBtPdipg5SId8RboUQCy8TKew5ARWnnO4
+         MRhqXDJ7GQFISDXt0yEF9HlAQlHqya8CPZa/s8TUwJRYT9NGPyodcTenVHxaZPylISXu
+         MYiBfVktTjdS18KL/MlJx92mPeG8mLTLY9AwNKn4087o2l3zemO/lXP4qomLmgB3dJXv
+         OtakumQPDJkapyMmqfE5jsj8CNL6Q7NrwLyf0Zi19hIXZ1/2WdgCuqKOE5XUl8gzv32x
+         f5ss0HfomCSV+b3WxIkrFGo8FbeVXxJKjb7y5p0vmWbzhp4zHdGgoVgPp8Q/iSZD3WiS
+         eujw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=xyJsr5+GU6OwmtbK8l0br93cj/vlkcS6F2ecLZDOOUw=;
+        b=P5J+WVR53runzxrGPvqcxZtFCeg7Sdueu8b1zCpzUj/yRvFMMuSBk93GYlQC2Sg/K7
+         ENKR7V4n3ZPYv2zwBcVxO6x9DUO+ZuYbzapL3DQ1R/sbszWYOwNCcaxYuDkE+wi4Iu9b
+         Fv1c9HviPZh63k0l7PwHqcNScCU4+zvEMJzAdGr+JljhtMYNJ3lg+B12rMOAGer52HYt
+         fRDheHu6Xw15j2fcl9+ihJ/ZT2S0ldqfnwGZKBdTOeXj29xXwPzkdnMdtqO8AnoPRl5b
+         881pUjFg3k8iQJytG4eh0Wz/WtKOxJgFHgCqGff2DC6g3kdOeapDar6V2kBKHsd02Gw4
+         pBjg==
+X-Gm-Message-State: AOAM533pwRXY+DX7cKHkhJJm8NWMNU9Gu5ZC/VjqtZJukizygCoL0BWb
+        z5PahX571jOZtK5TdXpaIWR0JBnZxJ3DQ5fAsO0=
+X-Google-Smtp-Source: ABdhPJxOJZq72lv83XITy6KKMDBkZMUV1JsOyUKmrwI3/5stYIVXL+jKGpVgHRkOvEq4dklqzJSD5C6XiyPth1TW3Gk=
+X-Received: by 2002:a5b:3c2:: with SMTP id t2mr43272548ybp.39.1620773802086;
+ Tue, 11 May 2021 15:56:42 -0700 (PDT)
 MIME-Version: 1.0
-Message-ID: <trinity-e6ae9efa-9afb-4326-84c0-f3609b9b8168-1620773528307@3c-app-gmx-bs06>
-From:   Norbert Slusarek <nslusarek@gmx.net>
-To:     kuba@kernel.org
-Cc:     mkl@pengutronix.de, socketcan@hartkopp.net, davem@davemloft.net,
-        netdev@vger.kernel.org, cascardo@canonical.com
-Subject: [PATCH] can: isotp: prevent race between isotp_bind and
- isotp_setsockopt
-Content-Type: text/plain; charset=UTF-8
-Date:   Wed, 12 May 2021 00:52:08 +0200
-Importance: normal
-Sensitivity: Normal
-X-Priority: 3
-X-Provags-ID: V03:K1:sceUbZNMBGye06dcafCKqUqZRaP5UlOxKHU8/Aa6RyLNrPy94yY2gAMFROvdtv+OSidyG
- CMFlHUfKIKEcBJIrPl8HgY8h45ETOiCkJ5kOxcD2eSm9VtgK2NCImNkT52GdSCWocZJ8pOx9Czt3
- WEn3NA7WCYQFVM/iYX1cFQJwjywJD3eC6byPXi5k6+TXusH6DDKO/CGucselHmuGD4ZDBntCKe5b
- mTq6AIM25YIeiQRcK+2+9xb6eLr5SxB7OHzgLFK7XcBZv2ijXsf7E7n2yZet8E9MUUWLr2DzhGeC
- p8=
-X-Spam-Flag: NO
-X-UI-Out-Filterresults: notjunk:1;V03:K0:8KNI88Fr9AQ=:W6eeYZWMSNB/wa7kW1/MAR
- twCPbqUygj1JZzQpgTvbgoe+OxIYj30PSxaM6WxujKnXke6RQddIiUB6kZybVLzalecs5Nt2S
- n23Ox/awtcX7HOpy9qpNsyzqoS8IsbGPx7o5mWZKtnqoNTwl8sXfuZDvXDjc5Caw5URm2F44W
- IlaSNgL7k93/SfUd27BsrlLPVsIdKJMPni+pb0Od+cMHlh8z1WdiDX8nUTJlY/pFKiBuB8qaA
- k9A3YW3IU6fckP5hVzzeTinEh7J8BK+garQH0vFgmMjTiiH1k8n/uREcNBRk46+rfnV1iB+zA
- +1k9DelnPm9tY2dseY6FAROdnNsZAtgMOHXGF4Qu2GeghHywn0pqlLSgOqhf8xl8vYmpdJFP0
- HCqe1sDctZgYUz/nDeooyBlYmNNOQ6s05Cim0U+RQQs8YEl+M5f4EO1bvyEVyZPIeDUTDCCuf
- zEYtkNVtMoRCojb3xTh5yAvpVgYPvcCIerGeiqPyWjdzCTFB2FW7LXGv2ixA3XGzycnKNVgCi
- MYgVl6JQpLb/BvhwP1L9DsJ6QJmfffP9g7mUxTztLB4m8sOuLVM66M6ZeB0U773CuG9q4LPIq
- OhJ2TzXECKWvw7TStTN57qIcfzoDOYh4gl6Clg9S56zD2q5f4YpxuJiLbBqADCf5W7THZGiKw
- eO1ZFXg7PyHfRsSRQx+egeZ0YpNxBfd5XHa6LI3sa0N2FCiT9chIiFkk53l+wi90L3ap1S8/9
- pP+oEfXoz5ga0ThC9bKtAyKwCsNu0BQM9VjSxoRy827C4hwqGHI9K770VJADqODOXLoJTRRvk
- KCOc14nrxgsOv7gY3BuC1UXDtqWRSjaoU4r71Lb+msKyvY3FQldv0ICmw4PaPv1wiAW8HkxDf
- XKgq4Iny2nWoTNx9xhTMQw60krzv2D9ixq2bbGrvv++Ytu328442gfza25qP1y
-Content-Transfer-Encoding: quoted-printable
+References: <20210511214605.2937099-1-pgwipeout@gmail.com> <20210511215644.GO1336@shell.armlinux.org.uk>
+In-Reply-To: <20210511215644.GO1336@shell.armlinux.org.uk>
+From:   Peter Geis <pgwipeout@gmail.com>
+Date:   Tue, 11 May 2021 18:56:31 -0400
+Message-ID: <CAMdYzYon+uscEXS=ntmQWD-ROr4owvbQwuWdb2DLmh74Gri1mA@mail.gmail.com>
+Subject: Re: [PATCH] net: phy: add driver for Motorcomm yt8511 phy
+To:     Russell King - ARM Linux admin <linux@armlinux.org.uk>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        "open list:ARM/Rockchip SoC..." <linux-rockchip@lists.infradead.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Norbert Slusarek <nslusarek@gmx.net>
-Date: Wed, 12 May 2021 00:43:54 +0200
-Subject: [PATCH] can: isotp: prevent race between isotp_bind and isotp_set=
-sockopt
+On Tue, May 11, 2021 at 5:56 PM Russell King - ARM Linux admin
+<linux@armlinux.org.uk> wrote:
+>
+> Hi,
+>
+> On Tue, May 11, 2021 at 05:46:06PM -0400, Peter Geis wrote:
+> > +static int yt8511_config_init(struct phy_device *phydev)
+> > +{
+> > +     int ret, val, oldpage;
+> > +
+> > +     /* set clock mode to 125mhz */
+> > +     oldpage = phy_select_page(phydev, YT8511_EXT_CLK_GATE);
+> > +     if (oldpage < 0)
+> > +             goto err_restore_page;
+> > +
+> > +     val = __phy_read(phydev, YT8511_PAGE);
+> > +     val |= (YT8511_CLK_125M);
+> > +     ret = __phy_write(phydev, YT8511_PAGE, val);
+>
+> Please consider __phy_modify(), and handle any error it returns.
 
-A race condition was found in isotp_setsockopt() which allows to
-change socket options after the socket was bound.
-For the specific case of SF_BROADCAST support, this might lead to possible
-use-after-free because can_rx_unregister() is not called.
+Hey that's really neat, thanks!
 
-Checking for the flag under the socket lock in isotp_bind()
-and taking the lock in isotp_setsockopt() fixes the issue.
+>
+> > +
+> > +     /* disable auto sleep */
+> > +     ret = __phy_write(phydev, YT8511_PAGE_SELECT, YT8511_EXT_SLEEP_CTRL);
+>
+> Please consider handling a failure to write here.
 
-Fixes: 921ca574cd38 ("can: isotp: add SF_BROADCAST support for functional =
-addressing")
-Reported-by: Norbert Slusarek <nslusarek@gmx.net>
-Signed-off-by: Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
-Signed-off-by: Norbert Slusarek <nslusarek@gmx.net>
-Acked-by: Oliver Hartkopp <socketcan@hartkopp.net>
-=2D--
- net/can/isotp.c | 49 +++++++++++++++++++++++++++++++++----------------
- 1 file changed, 33 insertions(+), 16 deletions(-)
+Will do.
 
-diff --git a/net/can/isotp.c b/net/can/isotp.c
-index 15ea1234d457..6cc05940d0b7 100644
-=2D-- a/net/can/isotp.c
-+++ b/net/can/isotp.c
-@@ -1059,27 +1059,31 @@ static int isotp_bind(struct socket *sock, struct =
-sockaddr *uaddr, int len)
- 	if (len < CAN_REQUIRED_SIZE(struct sockaddr_can, can_addr.tp))
- 		return -EINVAL;
+>
+> > +     val = __phy_read(phydev, YT8511_PAGE);
+> > +     val &= (~BIT(15));
+> > +     ret = __phy_write(phydev, YT8511_PAGE, val);
+>
+> Also a use for __phy_modify().
+>
+> > +
+> > +err_restore_page:
+> > +     return phy_restore_page(phydev, oldpage, ret);
+> > +}
+> > +
+> > +static struct phy_driver motorcomm_phy_drvs[] = {
+> > +     {
+> > +             PHY_ID_MATCH_EXACT(PHY_ID_YT8511),
+> > +             .name           = "YT8511 Gigabit Ethernet",
+> > +             .config_init    = &yt8511_config_init,
+>
+> Please drop the '&' here, it's unnecessary.
 
-+	if (addr->can_addr.tp.tx_id & (CAN_ERR_FLAG | CAN_RTR_FLAG))
-+		return -EADDRNOTAVAIL;
-+
-+	if (!addr->can_ifindex)
-+		return -ENODEV;
-+
-+	lock_sock(sk);
-+
- 	/* do not register frame reception for functional addressing */
- 	if (so->opt.flags & CAN_ISOTP_SF_BROADCAST)
- 		do_rx_reg =3D 0;
+Will do, thank you.
 
- 	/* do not validate rx address for functional addressing */
- 	if (do_rx_reg) {
--		if (addr->can_addr.tp.rx_id =3D=3D addr->can_addr.tp.tx_id)
--			return -EADDRNOTAVAIL;
-+		if (addr->can_addr.tp.rx_id =3D=3D addr->can_addr.tp.tx_id) {
-+			err =3D -EADDRNOTAVAIL;
-+			goto out;
-+		}
-
--		if (addr->can_addr.tp.rx_id & (CAN_ERR_FLAG | CAN_RTR_FLAG))
--			return -EADDRNOTAVAIL;
-+		if (addr->can_addr.tp.rx_id & (CAN_ERR_FLAG | CAN_RTR_FLAG)) {
-+			err =3D -EADDRNOTAVAIL;
-+			goto out;
-+		}
- 	}
-
--	if (addr->can_addr.tp.tx_id & (CAN_ERR_FLAG | CAN_RTR_FLAG))
--		return -EADDRNOTAVAIL;
--
--	if (!addr->can_ifindex)
--		return -ENODEV;
--
--	lock_sock(sk);
--
- 	if (so->bound && addr->can_ifindex =3D=3D so->ifindex &&
- 	    addr->can_addr.tp.rx_id =3D=3D so->rxid &&
- 	    addr->can_addr.tp.tx_id =3D=3D so->txid)
-@@ -1161,16 +1165,13 @@ static int isotp_getname(struct socket *sock, stru=
-ct sockaddr *uaddr, int peer)
- 	return sizeof(*addr);
- }
-
--static int isotp_setsockopt(struct socket *sock, int level, int optname,
-+static int isotp_setsockopt_locked(struct socket *sock, int level, int op=
-tname,
- 			    sockptr_t optval, unsigned int optlen)
- {
- 	struct sock *sk =3D sock->sk;
- 	struct isotp_sock *so =3D isotp_sk(sk);
- 	int ret =3D 0;
-
--	if (level !=3D SOL_CAN_ISOTP)
--		return -EINVAL;
--
- 	if (so->bound)
- 		return -EISCONN;
-
-@@ -1245,6 +1246,22 @@ static int isotp_setsockopt(struct socket *sock, in=
-t level, int optname,
- 	return ret;
- }
-
-+static int isotp_setsockopt(struct socket *sock, int level, int optname,
-+			    sockptr_t optval, unsigned int optlen)
-+
-+{
-+	struct sock *sk =3D sock->sk;
-+	int ret;
-+
-+	if (level !=3D SOL_CAN_ISOTP)
-+		return -EINVAL;
-+
-+	lock_sock(sk);
-+	ret =3D isotp_setsockopt_locked(sock, level, optname, optval, optlen);
-+	release_sock(sk);
-+	return ret;
-+}
-+
- static int isotp_getsockopt(struct socket *sock, int level, int optname,
- 			    char __user *optval, int __user *optlen)
- {
-=2D-
-2.27.0
+>
+> Thanks.
+>
+> --
+> RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+> FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
