@@ -2,79 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 56D2937AE6B
-	for <lists+netdev@lfdr.de>; Tue, 11 May 2021 20:24:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 35D3937AE94
+	for <lists+netdev@lfdr.de>; Tue, 11 May 2021 20:37:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231951AbhEKS0B (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 11 May 2021 14:26:01 -0400
-Received: from ms.lwn.net ([45.79.88.28]:35682 "EHLO ms.lwn.net"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231329AbhEKS0A (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 11 May 2021 14:26:00 -0400
-X-Greylist: delayed 5005 seconds by postgrey-1.27 at vger.kernel.org; Tue, 11 May 2021 14:26:00 EDT
-Received: from localhost (unknown [IPv6:2601:281:8300:104d:444a:d152:279d:1dbb])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ms.lwn.net (Postfix) with ESMTPSA id 505484BF;
-        Tue, 11 May 2021 18:24:53 +0000 (UTC)
-DKIM-Filter: OpenDKIM Filter v2.11.0 ms.lwn.net 505484BF
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=lwn.net; s=20201203;
-        t=1620757493; bh=9sU3ahlIQ4NVEGbfN/aeZtX+52ui1CI9/vl021LPM1U=;
-        h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
-        b=PD4SBIWrd2qF4jBts8tkLj+dOD8PeMpRMY6MQ2tW8mQ2JgUXHEEhZU+ekEzLQvPFs
-         kYce01dJPs7PGlsbLAYPormV3zSabfNRxdZ+094RmneJy6cOXIOibiQ0Hnhy6nyX0o
-         YybTFnADzTeyIbwqkBgXCM+lLRxTjrEwjbLGoesTo7x8nR4vCr9iHqNI9w/BPToEjQ
-         6Buf1D6flDuONDV8rJZJ42hX0kVfFz0+FAYHlHz0ZS64O57rf6Jg2L/mQJalqCR+kQ
-         omQrHuKO/XSfYpBj9D+JC/o25dIcYMFrhTncUqdIfDGY54ZeiVYqhUj7B/FKa0heIn
-         qdQSDbPKtA9dQ==
-From:   Jonathan Corbet <corbet@lwn.net>
-To:     Andrew Lunn <andrew@lunn.ch>,
-        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
-Cc:     Linux Doc Mailing List <linux-doc@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
-        intel-wired-lan@lists.osuosl.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: Re: [PATCH 5/5] docs: networking: device_drivers: fix bad usage of
- UTF-8 chars
-In-Reply-To: <YJq9abOeuBla3Jiw@lunn.ch>
-References: <cover.1620744606.git.mchehab+huawei@kernel.org>
- <95eb2a48d0ca3528780ce0dfce64359977fa8cb3.1620744606.git.mchehab+huawei@kernel.org>
- <YJq9abOeuBla3Jiw@lunn.ch>
-Date:   Tue, 11 May 2021 12:24:52 -0600
-Message-ID: <8735utdt6z.fsf@meer.lwn.net>
+        id S232027AbhEKSiI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 11 May 2021 14:38:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49060 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231439AbhEKSiH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 11 May 2021 14:38:07 -0400
+Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EFE47C061574
+        for <netdev@vger.kernel.org>; Tue, 11 May 2021 11:37:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=bombadil.20210309; h=Content-Transfer-Encoding:
+        Content-Type:In-Reply-To:MIME-Version:Date:Message-ID:From:References:Cc:To:
+        Subject:Sender:Reply-To:Content-ID:Content-Description;
+        bh=XndQ+T+f0pBAzvowmJCGafDYlfQgKlSbPmzDSOTnijY=; b=MAl+Gh22xTokllBVZMiDv0StUQ
+        uu8BXFGe/sQSpNhWY9Gx60688kdBJYiFnDXL1pM2MkiAuz5pTMYItuk7aUF7wEAHZGlrw+P6RgSKN
+        FrxhVmKp7k1LBJQvi9POMUU0fpBApYtred060gPnEmLDIczjFJwXVXMn9/tJEayRbOyh2mSS7pDEm
+        U1e7V/s69dDzMKG5BP68Bi70YDoV4pngVd+G220ax8q4oMIVd4DOhtxjpE9xeJIanHTJOKlWKpaAO
+        GEeTGoHY7DNcEW4/+7orlyT5XwqX04l3Vpa2KSz6yWO3hU2wKF+sooC54sc9/gzs4cgVxcZO42l8x
+        VqsbY9uw==;
+Received: from [2601:1c0:6280:3f0:d7c4:8ab4:31d7:f0ba]
+        by bombadil.infradead.org with esmtpsa (Exim 4.94 #2 (Red Hat Linux))
+        id 1lgXFa-009qZz-0m; Tue, 11 May 2021 18:36:58 +0000
+Subject: Re: [PATCH v4 net] ionic: fix ptp support config breakage
+To:     Shannon Nelson <snelson@pensando.io>, netdev@vger.kernel.org,
+        davem@davemloft.net, kuba@kernel.org
+Cc:     drivers@pensando.io, Allen Hubbe <allenbh@pensando.io>
+References: <20210511181132.25851-1-snelson@pensando.io>
+From:   Randy Dunlap <rdunlap@infradead.org>
+Message-ID: <83bbecd2-086c-47c2-d62d-3312004fff4d@infradead.org>
+Date:   Tue, 11 May 2021 11:36:56 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.10.0
 MIME-Version: 1.0
+In-Reply-To: <20210511181132.25851-1-snelson@pensando.io>
 Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Andrew Lunn <andrew@lunn.ch> writes:
+On 5/11/21 11:11 AM, Shannon Nelson wrote:
+> When IONIC=y and PTP_1588_CLOCK=m were set in the .config file
+> the driver link failed with undefined references.
+> 
+> We add the dependancy
+> 	depends on PTP_1588_CLOCK || !PTP_1588_CLOCK
+> to clear this up.
+> 
+> If PTP_1588_CLOCK=m, the depends limits IONIC to =m (or disabled).
+> If PTP_1588_CLOCK is disabled, IONIC can be any of y/m/n.
+> 
+> Fixes: 61db421da31b ("ionic: link in the new hw timestamp code")
+> Reported-by: kernel test robot <lkp@intel.com>
+> Cc: Jakub Kicinski <kuba@kernel.org>
+> Cc: Randy Dunlap <rdunlap@infradead.org>
+> Cc: Allen Hubbe <allenbh@pensando.io>
+> Signed-off-by: Shannon Nelson <snelson@pensando.io>
 
->> -monitoring tools such as ifstat or sar =E2=80=93n DEV [interval] [numbe=
-r of samples]
->> +monitoring tools such as `ifstat` or `sar -n DEV [interval] [number of =
-samples]`
->
-> ...
->
->>  For example: min_rate 1Gbit 3Gbit: Verify bandwidth limit using network
->> -monitoring tools such as ifstat or sar =E2=80=93n DEV [interval] [numbe=
-r of samples]
->> +monitoring tools such as ``ifstat`` or ``sar -n DEV [interval] [number =
-of samples]``
->
-> Is there a difference between ` and `` ? Does it make sense to be
-> consistent?
+Acked-by: Randy Dunlap <rdunlap@infradead.org>
 
-This is `just weird quotes`
-This is ``literal text`` set in monospace in processed output.
+Thanks.
 
-There is a certain tension between those who want to see liberal use of
-literal-text markup, and those who would rather have less markup in the
-text overall; certainly, it's better not to go totally nuts with it.
+> ---
+> 
+> v4 - Jakub's rewrite
+> v3 - put version notes below ---, added Allen's Cc
+> v2 - added Fixes tag
+> ---
+>  drivers/net/ethernet/pensando/Kconfig | 1 +
+>  1 file changed, 1 insertion(+)
+> 
+> diff --git a/drivers/net/ethernet/pensando/Kconfig b/drivers/net/ethernet/pensando/Kconfig
+> index 5f8b0bb3af6e..202973a82712 100644
+> --- a/drivers/net/ethernet/pensando/Kconfig
+> +++ b/drivers/net/ethernet/pensando/Kconfig
+> @@ -20,6 +20,7 @@ if NET_VENDOR_PENSANDO
+>  config IONIC
+>  	tristate "Pensando Ethernet IONIC Support"
+>  	depends on 64BIT && PCI
+> +	depends on PTP_1588_CLOCK || !PTP_1588_CLOCK
+>  	select NET_DEVLINK
+>  	select DIMLIB
+>  	help
+> 
 
-jon
+
+-- 
+~Randy
+
