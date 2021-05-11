@@ -2,108 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 930E837A802
-	for <lists+netdev@lfdr.de>; Tue, 11 May 2021 15:45:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6EC6437A80B
+	for <lists+netdev@lfdr.de>; Tue, 11 May 2021 15:48:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231472AbhEKNrA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 11 May 2021 09:47:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38728 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231426AbhEKNq6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 11 May 2021 09:46:58 -0400
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 44459C06174A;
-        Tue, 11 May 2021 06:45:52 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=FVA5wqZqu8qiAE18h5kq9MiEIAMhp9EbfMLzX4fyri0=; b=qXaafalpgCsxtOTMTKsFr32oAl
-        Ey4Pn5q26OmCtYaucXBxnIc0nTRX90wkfOgcbYJ5B9wESM8C0n7F3PTXHnwa4/4MY5QSTyVNzOt2w
-        w0LE/RGFPT2Iwwi983+WJrOchbqG2Z/ZhzM+nFrlyFr/Yd475x75jCjPe0Kbh06tm93HqeyDPJ7SS
-        39BS3YUqzv/AbpzCUfG8+HXbylR9cj/X15Ad3l0g9OfyanhsU7zCJw8gAxfCVgsxRaDJ1igUR85M6
-        CriaKnychXfPzkvEMBUYFiJI1YXfFtIFEjJMyv/0jqIWfCze7IKMWonff8JCfJMI48b3ANGJBXgfp
-        R6vqWoeA==;
-Received: from willy by casper.infradead.org with local (Exim 4.94 #2 (Red Hat Linux))
-        id 1lgShY-007K8j-G2; Tue, 11 May 2021 13:45:33 +0000
-Date:   Tue, 11 May 2021 14:45:32 +0100
-From:   Matthew Wilcox <willy@infradead.org>
-To:     Matteo Croce <mcroce@linux.microsoft.com>
-Cc:     netdev@vger.kernel.org, linux-mm@kvack.org,
-        Ayush Sawal <ayush.sawal@chelsio.com>,
-        Vinay Kumar Yadav <vinay.yadav@chelsio.com>,
-        Rohit Maheshwari <rohitm@chelsio.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        Marcin Wojtas <mw@semihalf.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Mirko Lindner <mlindner@marvell.com>,
-        Stephen Hemminger <stephen@networkplumber.org>,
-        Tariq Toukan <tariqt@nvidia.com>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Boris Pismenny <borisp@nvidia.com>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
-        Vlastimil Babka <vbabka@suse.cz>, Yu Zhao <yuzhao@google.com>,
-        Will Deacon <will@kernel.org>,
-        Michel Lespinasse <walken@google.com>,
-        Fenghua Yu <fenghua.yu@intel.com>,
-        Roman Gushchin <guro@fb.com>, Hugh Dickins <hughd@google.com>,
-        Peter Xu <peterx@redhat.com>, Jason Gunthorpe <jgg@ziepe.ca>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
-        Alexander Lobakin <alobakin@pm.me>,
-        Cong Wang <cong.wang@bytedance.com>, wenxu <wenxu@ucloud.cn>,
-        Kevin Hao <haokexin@gmail.com>,
-        Jakub Sitnicki <jakub@cloudflare.com>,
-        Marco Elver <elver@google.com>,
-        Willem de Bruijn <willemb@google.com>,
-        Miaohe Lin <linmiaohe@huawei.com>,
-        Yunsheng Lin <linyunsheng@huawei.com>,
-        Guillaume Nault <gnault@redhat.com>,
-        linux-kernel@vger.kernel.org, linux-rdma@vger.kernel.org,
-        bpf@vger.kernel.org, Eric Dumazet <edumazet@google.com>,
-        David Ahern <dsahern@gmail.com>,
-        Lorenzo Bianconi <lorenzo@kernel.org>,
-        Saeed Mahameed <saeedm@nvidia.com>,
-        Andrew Lunn <andrew@lunn.ch>, Paolo Abeni <pabeni@redhat.com>,
-        Sven Auhagen <sven.auhagen@voleatech.de>
-Subject: Re: [PATCH net-next v4 1/4] mm: add a signature in struct page
-Message-ID: <YJqKfNh6l3yY2daM@casper.infradead.org>
-References: <20210511133118.15012-1-mcroce@linux.microsoft.com>
- <20210511133118.15012-2-mcroce@linux.microsoft.com>
+        id S231599AbhEKNt1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 11 May 2021 09:49:27 -0400
+Received: from szxga05-in.huawei.com ([45.249.212.191]:2562 "EHLO
+        szxga05-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230435AbhEKNtZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 11 May 2021 09:49:25 -0400
+Received: from DGGEMS401-HUB.china.huawei.com (unknown [172.30.72.60])
+        by szxga05-in.huawei.com (SkyGuard) with ESMTP id 4FffM52MMPzwSNl;
+        Tue, 11 May 2021 21:45:37 +0800 (CST)
+Received: from [127.0.0.1] (10.174.177.72) by DGGEMS401-HUB.china.huawei.com
+ (10.3.19.201) with Microsoft SMTP Server id 14.3.498.0; Tue, 11 May 2021
+ 21:48:12 +0800
+Subject: Re: [PATCH] net: forcedeth: Give bot handlers a helping hand
+ understanding the code
+To:     Andrew Lunn <andrew@lunn.ch>, Jakub Kicinski <kuba@kernel.org>
+CC:     netdev <netdev@vger.kernel.org>
+References: <20210511124330.891694-1-andrew@lunn.ch>
+From:   "Leizhen (ThunderTown)" <thunder.leizhen@huawei.com>
+Message-ID: <e267c38d-5ddd-244a-d083-9dbe4ed9973c@huawei.com>
+Date:   Tue, 11 May 2021 21:48:11 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210511133118.15012-2-mcroce@linux.microsoft.com>
+In-Reply-To: <20210511124330.891694-1-andrew@lunn.ch>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.174.177.72]
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, May 11, 2021 at 03:31:15PM +0200, Matteo Croce wrote:
-> @@ -101,6 +101,7 @@ struct page {
->  			 * 32-bit architectures.
->  			 */
->  			unsigned long dma_addr[2];
-> +			unsigned long signature;
->  		};
->  		struct {	/* slab, slob and slub */
->  			union {
 
-No.  Signature now aliases with page->mapping, which is going to go
-badly wrong for drivers which map this page into userspace.
 
-I had this as:
+On 2021/5/11 20:43, Andrew Lunn wrote:
+> Bots handlers repeatedly fail to understand nv_update_linkspeed() and
+> submit patches unoptimizing it for the human reader. Add a comment to
+> try to prevent this in the future.
+> 
+> Signed-off-by: Andrew Lunn <andrew@lunn.ch>
+> ---
+>  drivers/net/ethernet/nvidia/forcedeth.c | 3 +++
+>  1 file changed, 3 insertions(+)
+> 
+> diff --git a/drivers/net/ethernet/nvidia/forcedeth.c b/drivers/net/ethernet/nvidia/forcedeth.c
+> index 8724d6a9ed02..0822b28f3b6a 100644
+> --- a/drivers/net/ethernet/nvidia/forcedeth.c
+> +++ b/drivers/net/ethernet/nvidia/forcedeth.c
+> @@ -3475,6 +3475,9 @@ static int nv_update_linkspeed(struct net_device *dev)
+>  		newls = NVREG_LINKSPEED_FORCE|NVREG_LINKSPEED_10;
+>  		newdup = 0;
+>  	} else {
+> +		/* Default to the same as 10/Half if we cannot
+> +		 * determine anything else.
+> +		 */
+I think it would be better to remove the if branch above and then add comments here.
+Otherwise, it becomes more and more redundant.
 
-+                       unsigned long pp_magic;
-+                       unsigned long xmi;
-+                       unsigned long _pp_mapping_pad;
-                        unsigned long dma_addr[2];
+>  		newls = NVREG_LINKSPEED_FORCE|NVREG_LINKSPEED_10;
+>  		newdup = 0;
+>  	}
+> 
 
-and pp_magic needs to be set to something with bits 0&1 clear and
-clearly isn't a pointer.  I went with POISON_POINTER_DELTA + 0x40.
