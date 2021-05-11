@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C5879379C79
-	for <lists+netdev@lfdr.de>; Tue, 11 May 2021 04:07:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D0A6A379C80
+	for <lists+netdev@lfdr.de>; Tue, 11 May 2021 04:08:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231164AbhEKCIt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 10 May 2021 22:08:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51308 "EHLO
+        id S231271AbhEKCJN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 10 May 2021 22:09:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51318 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230467AbhEKCIe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 10 May 2021 22:08:34 -0400
-Received: from mail-wm1-x32a.google.com (mail-wm1-x32a.google.com [IPv6:2a00:1450:4864:20::32a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA2C4C061760;
-        Mon, 10 May 2021 19:07:27 -0700 (PDT)
-Received: by mail-wm1-x32a.google.com with SMTP id o6-20020a05600c4fc6b029015ec06d5269so371098wmq.0;
-        Mon, 10 May 2021 19:07:27 -0700 (PDT)
+        with ESMTP id S230484AbhEKCIg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 10 May 2021 22:08:36 -0400
+Received: from mail-wm1-x32d.google.com (mail-wm1-x32d.google.com [IPv6:2a00:1450:4864:20::32d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A572AC061761;
+        Mon, 10 May 2021 19:07:28 -0700 (PDT)
+Received: by mail-wm1-x32d.google.com with SMTP id l18-20020a1ced120000b029014c1adff1edso314108wmh.4;
+        Mon, 10 May 2021 19:07:28 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=lOhZtmXqoRB7AbKYw3B3ViWwWTWCEQNKhNHuzYiWBKQ=;
-        b=Z7DVqFr6vUqNoLQbRWHtgaM31u1Jd5UsklU2u5hrRm4SfbnGAPGMVxe4t92LLCa2Uj
-         SfEoxu8zK1B9qPdS2bOCiDC5VNJ1VdoFTpWrsUVhrDpYbs42h0n0YvkZSGJyi6T7mnXJ
-         SJxINngF2TGh5AEwvvGh9yIfuIxKC1kdN9HVFnRWOvuU/HmnAcp/vfXAKf9/NSEMV1jY
-         6J+3ks+GR5B3vWQ+wT3olYX6vAmW36pm1lbo9hGe4b+F8kCJ4TJrTnxyNGU/pk1j2/Em
-         wZMRT6aTEMMylG3Dv7+jzKn6MSSG24vkFET1v5jwpcSWt0WR7tQuVcwLZgi0rqxAeVaT
-         vR3A==
+        bh=0YFnq7TuUbC+khUcVjnA3EasBDRmOOueSwaKGXSBOS8=;
+        b=un6TGnHjKB0+EOXR6XE84n0XES4WnTP5pgfttycnKEnvVrHdLAitMa9JgxtcghJH4C
+         sJPaM03Uo2QHQ6zQet+9orCIMmDCFIWlpyoaWIaAGdt+P9BrPIb/FQw4U36dqp9+D0FI
+         SlAuk/j/aqDLb0JVRe+ADBNkUk0uJxtNZ97PkpSfIj6yTV/D3FEwpCI/CF1CTjU1WqRk
+         RWgZ/O4MSH9KYqVKhOKGqy68hUCeGu9kZctXLioBh1gBKls46FmLB/TzeQL66ytDWpxg
+         2ZMF3C3aCPhXdfBtz/At/ZdTAAs+boDwRKapZY1G/Kei+ZvF5MScTe786vfEasTBbYXd
+         rMIA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=lOhZtmXqoRB7AbKYw3B3ViWwWTWCEQNKhNHuzYiWBKQ=;
-        b=AeL5O2pWZsTAXjeXhwT1mJkUnlUMyW75JAAF9dG8Rb1hUylkDW3IgfiDtyVK0xRtjY
-         pHHDpdbQ99xY2pIMfDNyOoDvrOS7XabaAeU6l4Anw6/7tA3Elf8KrUzzfuSTf8wfDTDa
-         EpCtaRNTfldozZVitIk+CE9MEC5Hr83mYBuqCyAFSfex8W7vYykjM7jPLid9mUTTSMBG
-         iYNluMz2CiBbcSYgi4ZrIog48t+KIzQephuY0jLYQrOk+CqGQjvf0PDLp9Nu9aTqKfLY
-         GIY9JCgS3oYIVbiCj7655+2z3XK2kHr1oPBbk5vlfK77G/CI7uOUiIVnVZsTi/8gwElb
-         pvQw==
-X-Gm-Message-State: AOAM532Bx7PS/3tMZffiW8USmO0uCToi+CL8wYPGL59Ne0J8/I5ePzkY
-        SinNod9uK8Qn2hgx1DHlgtk=
-X-Google-Smtp-Source: ABdhPJycOkHe1MkE/UKKktWJ4oRTGdQBCnYZ7x5W/y59WmNWjS7K1RJ0SGM+OVYBgGqbBX3OxVWkcA==
-X-Received: by 2002:a1c:1982:: with SMTP id 124mr30253383wmz.148.1620698846267;
-        Mon, 10 May 2021 19:07:26 -0700 (PDT)
+        bh=0YFnq7TuUbC+khUcVjnA3EasBDRmOOueSwaKGXSBOS8=;
+        b=bgzKU1gcAqdOb51ZOjESOvkZfqX5HZArD0Xv8gcVQ8YwVWrv0x8JMcWxrpTcb/nA7w
+         g+rc62Kdc3l+cafMt2yITLVcwQv5juhH+6l7xxGSIUyQs7gOB1BL8mWxwqa9M/sFA8vO
+         9Q49eRPKjr0LUQDjwiTBMmRpuh8qUYaCTqBT+5tOunrQgkUCgF+epviS3cd/V6vVQmJv
+         WHBtdB4tg4y8SjxHwrICidhlzTKwzLmrPcfrcTFopPXoDbQ4qfQPAgkYbHKUKzyuclnp
+         c1DUGikS0Q4bQcDkCVjZGcbrWFV1eHaeZatl1CLjSh5sYPHq6iQmm6XYK6K+h0GB5IZG
+         82Pw==
+X-Gm-Message-State: AOAM532qkXkOpVRkFazr/fz0IlCylRVwQkzSOY07elOrT2aHLg5HiIU+
+        qKwkrJe4VM8gNOQ33MdFTpE=
+X-Google-Smtp-Source: ABdhPJz23t9jg1D+n3eODz2IZFUJybb6A2RxnwP9A+/5XfXe7d2/6aOr9AQdWRiJ1rm0bjkz3UfHzw==
+X-Received: by 2002:a1c:e345:: with SMTP id a66mr2324841wmh.109.1620698847271;
+        Mon, 10 May 2021 19:07:27 -0700 (PDT)
 Received: from Ansuel-xps.localdomain (93-35-189-2.ip56.fastwebnet.it. [93.35.189.2])
-        by smtp.googlemail.com with ESMTPSA id q20sm2607436wmq.2.2021.05.10.19.07.25
+        by smtp.googlemail.com with ESMTPSA id q20sm2607436wmq.2.2021.05.10.19.07.26
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 10 May 2021 19:07:25 -0700 (PDT)
+        Mon, 10 May 2021 19:07:27 -0700 (PDT)
 From:   Ansuel Smith <ansuelsmth@gmail.com>
 To:     Andrew Lunn <andrew@lunn.ch>,
         Vivien Didelot <vivien.didelot@gmail.com>,
@@ -61,9 +61,9 @@ To:     Andrew Lunn <andrew@lunn.ch>,
         devicetree@vger.kernel.org (open list:OPEN FIRMWARE AND FLATTENED
         DEVICE TREE BINDINGS), linux-kernel@vger.kernel.org (open list)
 Cc:     Ansuel Smith <ansuelsmth@gmail.com>
-Subject: [RFC PATCH net-next v5 04/25] net: dsa: qca8k: handle qca8k_set_page errors
-Date:   Tue, 11 May 2021 04:04:39 +0200
-Message-Id: <20210511020500.17269-5-ansuelsmth@gmail.com>
+Subject: [RFC PATCH net-next v5 05/25] net: dsa: qca8k: handle error with qca8k_read operation
+Date:   Tue, 11 May 2021 04:04:40 +0200
+Message-Id: <20210511020500.17269-6-ansuelsmth@gmail.com>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20210511020500.17269-1-ansuelsmth@gmail.com>
 References: <20210511020500.17269-1-ansuelsmth@gmail.com>
@@ -73,103 +73,209 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-With a remote possibility, the set_page function can fail. Since this is
-a critical part of the write/read qca8k regs, propagate the error and
-terminate any read/write operation.
+qca8k_read can fail. Rework any user to handle error values and
+correctly return.
 
 Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
 Reviewed-by: Andrew Lunn <andrew@lunn.ch>
 ---
- drivers/net/dsa/qca8k.c | 33 ++++++++++++++++++++++++++-------
- 1 file changed, 26 insertions(+), 7 deletions(-)
+ drivers/net/dsa/qca8k.c | 73 ++++++++++++++++++++++++++++++++---------
+ 1 file changed, 58 insertions(+), 15 deletions(-)
 
 diff --git a/drivers/net/dsa/qca8k.c b/drivers/net/dsa/qca8k.c
-index 3c882d325fdf..c9830286fd6d 100644
+index c9830286fd6d..5eb4d13fe0ba 100644
 --- a/drivers/net/dsa/qca8k.c
 +++ b/drivers/net/dsa/qca8k.c
-@@ -127,16 +127,23 @@ qca8k_mii_write32(struct mii_bus *bus, int phy_id, u32 regnum, u32 val)
- 				    "failed to write qca8k 32bit register\n");
+@@ -231,8 +231,13 @@ static int
+ qca8k_regmap_read(void *ctx, uint32_t reg, uint32_t *val)
+ {
+ 	struct qca8k_priv *priv = (struct qca8k_priv *)ctx;
++	int ret;
++
++	ret = qca8k_read(priv, reg);
++	if (ret < 0)
++		return ret;
+ 
+-	*val = qca8k_read(priv, reg);
++	*val = ret;
+ 
+ 	return 0;
+ }
+@@ -300,15 +305,20 @@ qca8k_busy_wait(struct qca8k_priv *priv, u32 reg, u32 mask)
+ 	return ret;
  }
  
 -static void
 +static int
- qca8k_set_page(struct mii_bus *bus, u16 page)
+ qca8k_fdb_read(struct qca8k_priv *priv, struct qca8k_fdb *fdb)
  {
-+	int ret;
-+
- 	if (page == qca8k_current_page)
--		return;
-+		return 0;
+-	u32 reg[4];
++	u32 reg[4], val;
+ 	int i;
  
--	if (bus->write(bus, 0x18, 0, page) < 0)
-+	ret = bus->write(bus, 0x18, 0, page);
-+	if (ret < 0) {
- 		dev_err_ratelimited(&bus->dev,
- 				    "failed to set qca8k page\n");
-+		return ret;
-+	}
+ 	/* load the ARL table into an array */
+-	for (i = 0; i < 4; i++)
+-		reg[i] = qca8k_read(priv, QCA8K_REG_ATU_DATA0 + (i * 4));
++	for (i = 0; i < 4; i++) {
++		val = qca8k_read(priv, QCA8K_REG_ATU_DATA0 + (i * 4));
++		if (val < 0)
++			return val;
 +
- 	qca8k_current_page = page;
++		reg[i] = val;
++	}
+ 
+ 	/* vid - 83:72 */
+ 	fdb->vid = (reg[2] >> QCA8K_ATU_VID_S) & QCA8K_ATU_VID_M;
+@@ -323,6 +333,8 @@ qca8k_fdb_read(struct qca8k_priv *priv, struct qca8k_fdb *fdb)
+ 	fdb->mac[3] = (reg[0] >> QCA8K_ATU_ADDR3_S) & 0xff;
+ 	fdb->mac[4] = (reg[0] >> QCA8K_ATU_ADDR4_S) & 0xff;
+ 	fdb->mac[5] = reg[0] & 0xff;
++
 +	return 0;
  }
  
- static u32
-@@ -150,11 +157,14 @@ qca8k_read(struct qca8k_priv *priv, u32 reg)
+ static void
+@@ -374,6 +386,8 @@ qca8k_fdb_access(struct qca8k_priv *priv, enum qca8k_fdb_cmd cmd, int port)
+ 	/* Check for table full violation when adding an entry */
+ 	if (cmd == QCA8K_FDB_LOAD) {
+ 		reg = qca8k_read(priv, QCA8K_REG_ATU_FUNC);
++		if (reg < 0)
++			return reg;
+ 		if (reg & QCA8K_ATU_FUNC_FULL)
+ 			return -1;
+ 	}
+@@ -388,10 +402,10 @@ qca8k_fdb_next(struct qca8k_priv *priv, struct qca8k_fdb *fdb, int port)
  
- 	mutex_lock_nested(&bus->mdio_lock, MDIO_MUTEX_NESTED);
+ 	qca8k_fdb_write(priv, fdb->vid, fdb->port_mask, fdb->mac, fdb->aging);
+ 	ret = qca8k_fdb_access(priv, QCA8K_FDB_NEXT, port);
+-	if (ret >= 0)
+-		qca8k_fdb_read(priv, fdb);
++	if (ret < 0)
++		return ret;
  
--	qca8k_set_page(bus, page);
-+	val = qca8k_set_page(bus, page);
+-	return ret;
++	return qca8k_fdb_read(priv, fdb);
+ }
+ 
+ static int
+@@ -449,6 +463,8 @@ qca8k_vlan_access(struct qca8k_priv *priv, enum qca8k_vlan_cmd cmd, u16 vid)
+ 	/* Check for table full violation when adding an entry */
+ 	if (cmd == QCA8K_VLAN_LOAD) {
+ 		reg = qca8k_read(priv, QCA8K_REG_VTU_FUNC1);
++		if (reg < 0)
++			return reg;
+ 		if (reg & QCA8K_VTU_FUNC1_FULL)
+ 			return -ENOMEM;
+ 	}
+@@ -475,6 +491,8 @@ qca8k_vlan_add(struct qca8k_priv *priv, u8 port, u16 vid, bool untagged)
+ 		goto out;
+ 
+ 	reg = qca8k_read(priv, QCA8K_REG_VTU_FUNC0);
++	if (reg < 0)
++		return reg;
+ 	reg |= QCA8K_VTU_FUNC0_VALID | QCA8K_VTU_FUNC0_IVL_EN;
+ 	reg &= ~(QCA8K_VTU_FUNC0_EG_MODE_MASK << QCA8K_VTU_FUNC0_EG_MODE_S(port));
+ 	if (untagged)
+@@ -506,6 +524,8 @@ qca8k_vlan_del(struct qca8k_priv *priv, u8 port, u16 vid)
+ 		goto out;
+ 
+ 	reg = qca8k_read(priv, QCA8K_REG_VTU_FUNC0);
++	if (reg < 0)
++		return reg;
+ 	reg &= ~(3 << QCA8K_VTU_FUNC0_EG_MODE_S(port));
+ 	reg |= QCA8K_VTU_FUNC0_EG_MODE_NOT <<
+ 			QCA8K_VTU_FUNC0_EG_MODE_S(port);
+@@ -621,8 +641,11 @@ qca8k_mdio_read(struct qca8k_priv *priv, int port, u32 regnum)
+ 			    QCA8K_MDIO_MASTER_BUSY))
+ 		return -ETIMEDOUT;
+ 
+-	val = (qca8k_read(priv, QCA8K_MDIO_MASTER_CTRL) &
+-		QCA8K_MDIO_MASTER_DATA_MASK);
++	val = qca8k_read(priv, QCA8K_MDIO_MASTER_CTRL);
 +	if (val < 0)
-+		goto exit;
++		return val;
 +
- 	val = qca8k_mii_read32(bus, 0x10 | r2, r1);
++	val &= QCA8K_MDIO_MASTER_DATA_MASK;
  
-+exit:
- 	mutex_unlock(&bus->mdio_lock);
--
  	return val;
  }
+@@ -978,6 +1001,8 @@ qca8k_phylink_mac_link_state(struct dsa_switch *ds, int port,
+ 	u32 reg;
  
-@@ -163,14 +173,19 @@ qca8k_write(struct qca8k_priv *priv, u32 reg, u32 val)
+ 	reg = qca8k_read(priv, QCA8K_REG_PORT_STATUS(port));
++	if (reg < 0)
++		return reg;
+ 
+ 	state->link = !!(reg & QCA8K_PORT_STATUS_LINK_UP);
+ 	state->an_complete = state->link;
+@@ -1078,18 +1103,26 @@ qca8k_get_ethtool_stats(struct dsa_switch *ds, int port,
  {
- 	struct mii_bus *bus = priv->bus;
- 	u16 r1, r2, page;
-+	int ret;
+ 	struct qca8k_priv *priv = (struct qca8k_priv *)ds->priv;
+ 	const struct qca8k_mib_desc *mib;
+-	u32 reg, i;
++	u32 reg, i, val;
+ 	u64 hi;
  
- 	qca8k_split_addr(reg, &r1, &r2, &page);
+ 	for (i = 0; i < ARRAY_SIZE(ar8327_mib); i++) {
+ 		mib = &ar8327_mib[i];
+ 		reg = QCA8K_PORT_MIB_COUNTER(port) + mib->offset;
  
- 	mutex_lock_nested(&bus->mdio_lock, MDIO_MUTEX_NESTED);
- 
--	qca8k_set_page(bus, page);
-+	ret = qca8k_set_page(bus, page);
-+	if (ret < 0)
-+		goto exit;
+-		data[i] = qca8k_read(priv, reg);
++		val = qca8k_read(priv, reg);
++		if (val < 0)
++			continue;
 +
- 	qca8k_mii_write32(bus, 0x10 | r2, r1, val);
- 
-+exit:
- 	mutex_unlock(&bus->mdio_lock);
+ 		if (mib->size == 2) {
+ 			hi = qca8k_read(priv, reg + 4);
+-			data[i] |= hi << 32;
++			if (hi < 0)
++				continue;
+ 		}
++
++		data[i] = val;
++		if (mib->size == 2)
++			data[i] |= hi << 32;
+ 	}
  }
  
-@@ -185,12 +200,16 @@ qca8k_rmw(struct qca8k_priv *priv, u32 reg, u32 mask, u32 val)
+@@ -1107,18 +1140,25 @@ qca8k_set_mac_eee(struct dsa_switch *ds, int port, struct ethtool_eee *eee)
+ {
+ 	struct qca8k_priv *priv = (struct qca8k_priv *)ds->priv;
+ 	u32 lpi_en = QCA8K_REG_EEE_CTRL_LPI_EN(port);
++	int ret = 0;
+ 	u32 reg;
  
- 	mutex_lock_nested(&bus->mdio_lock, MDIO_MUTEX_NESTED);
- 
--	qca8k_set_page(bus, page);
-+	ret = qca8k_set_page(bus, page);
-+	if (ret < 0)
+ 	mutex_lock(&priv->reg_mutex);
+ 	reg = qca8k_read(priv, QCA8K_REG_EEE_CTRL);
++	if (reg < 0) {
++		ret = reg;
 +		goto exit;
++	}
 +
- 	ret = qca8k_mii_read32(bus, 0x10 | r2, r1);
- 	ret &= ~mask;
- 	ret |= val;
- 	qca8k_mii_write32(bus, 0x10 | r2, r1, ret);
+ 	if (eee->eee_enabled)
+ 		reg |= lpi_en;
+ 	else
+ 		reg &= ~lpi_en;
+ 	qca8k_write(priv, QCA8K_REG_EEE_CTRL, reg);
+-	mutex_unlock(&priv->reg_mutex);
  
+-	return 0;
 +exit:
- 	mutex_unlock(&bus->mdio_lock);
++	mutex_unlock(&priv->reg_mutex);
++	return ret;
+ }
  
- 	return ret;
+ static int
+@@ -1443,6 +1483,9 @@ qca8k_sw_probe(struct mdio_device *mdiodev)
+ 
+ 	/* read the switches ID register */
+ 	id = qca8k_read(priv, QCA8K_REG_MASK_CTRL);
++	if (id < 0)
++		return id;
++
+ 	id >>= QCA8K_MASK_CTRL_ID_S;
+ 	id &= QCA8K_MASK_CTRL_ID_M;
+ 	if (id != QCA8K_ID_QCA8337)
 -- 
 2.30.2
 
