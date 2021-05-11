@@ -2,157 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4BE5237B130
-	for <lists+netdev@lfdr.de>; Tue, 11 May 2021 23:59:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E2A6A37B137
+	for <lists+netdev@lfdr.de>; Wed, 12 May 2021 00:00:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230097AbhEKWA5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 11 May 2021 18:00:57 -0400
-Received: from www62.your-server.de ([213.133.104.62]:60114 "EHLO
-        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229736AbhEKWA5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 11 May 2021 18:00:57 -0400
-Received: from 30.101.7.85.dynamic.wline.res.cust.swisscom.ch ([85.7.101.30] helo=localhost)
-        by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92.3)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1lgaPq-000AFW-Ln; Tue, 11 May 2021 23:59:46 +0200
-From:   Daniel Borkmann <daniel@iogearbox.net>
-To:     davem@davemloft.net
-Cc:     kuba@kernel.org, daniel@iogearbox.net, ast@kernel.org,
-        andrii.nakryiko@gmail.com, netdev@vger.kernel.org,
-        bpf@vger.kernel.org
-Subject: pull-request: bpf 2021-05-11
-Date:   Tue, 11 May 2021 23:59:46 +0200
-Message-Id: <20210511215946.15578-1-daniel@iogearbox.net>
-X-Mailer: git-send-email 2.21.0
+        id S230114AbhEKWB4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 11 May 2021 18:01:56 -0400
+Received: from mout.gmx.net ([212.227.17.22]:54817 "EHLO mout.gmx.net"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229714AbhEKWBz (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 11 May 2021 18:01:55 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
+        s=badeba3b8450; t=1620770433;
+        bh=Ezf3+4/5WESk8OkhoMsaJlcqfc3Htg1LJN1RDH+6u1k=;
+        h=X-UI-Sender-Class:From:To:Cc:Subject:Date;
+        b=gN58ZNyDm+TQF5yCreJxdhLCIZVdkhlvj5FtoQNH7RyqlhZzdxcmqgsNCeWzUridt
+         b99U8Q9lMRwpG8k7PHLKiTo9jCkd0gjvASj+6NaadIDwEdQylsG9svo+6GbbRQU7kg
+         Jq1TnSGbRz912Kw2AssFZYj4M5TLQNVX42vCve/w=
+X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
+Received: from [89.247.255.239] ([89.247.255.239]) by web-mail.gmx.net
+ (3c-app-gmx-bap63.server.lan [172.19.172.133]) (via HTTP); Wed, 12 May 2021
+ 00:00:33 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.103.2/26167/Tue May 11 13:12:12 2021)
+Message-ID: <trinity-10aeed49-cb96-47d9-818e-b938913e6fce-1620770433273@3c-app-gmx-bap63>
+From:   Norbert Slusarek <nslusarek@gmx.net>
+To:     oss-security@lists.openwall.com
+Cc:     netdev@vger.kernel.org, socketcan@hartkopp.net, mkl@pengutronix.de,
+        alex.popov@linux.com, linux-can@vger.kernel.org,
+        seth.arnold@canonical.com, steve.beattie@canonical.com,
+        cascardo@canonical.com
+Subject: Linux kernel: net/can/isotp: race condition leads to local
+ privilege escalation
+Content-Type: text/plain; charset=UTF-8
+Date:   Wed, 12 May 2021 00:00:33 +0200
+Importance: normal
+Sensitivity: Normal
+X-Priority: 3
+X-Provags-ID: V03:K1:sTuBeu26LFRf9uFTz8G/CIAspz4RlbypygBf7W0g+BG51Z19YdJL6eE3XgacocgX9E5hQ
+ e+dDjOA3/EkoXbJo5U6DalUUgrJ/kNxwXEsEOWU2QRHdiHbiMjbcvVvwrPla846b1D8+4ac8P23p
+ VluC8Dj1X56VtiIrUSCjRJqg3wGcdnWwu9zf//JlGtKXDulxThX6x5nwCiA42RHaxNOmEz+u7stB
+ CqIoWZnqXndk1VKnRDpWzNfE/EOA1IOLk0AX64ombKQ+FPkYkORLBs4wRGX0gtuk5+Yh/OF8QiKa
+ lQ=
+X-Spam-Flag: NO
+X-UI-Out-Filterresults: notjunk:1;V03:K0:eHrAPSba1PY=:uLosab/yJfOjF8kNOcEO8F
+ JusYW6oNwA+VO55rLhhXgjWHAPSp/KZKaM0RzQ8N6amlXs346TFYDAqNXUJgHRNzcLSb/Hng7
+ 4YIDTtQBeAyYsrDMiBrj/8WBQrFk1WDB+TOU3wNQDjxxDfRrOe+bJpL5OfEqMd4xHjSBdKj9A
+ rV+lYKoNgQPDtrxSQE5nUNcvRA+V3bXdbfv4mwpkrj3O2cr+9/bIXXxDsZSjviq7WWGi7/u19
+ MzMXUu91TgT8+/A7yw6rJ3x7mPR9KLBTN7ZNAFpV6p1a7xREINc67Bo+lbcQ1PZurDVIZHEaC
+ Dz41Y601DfmsdwfcmKQZBp8QI6Eyj404tvSY37dFHZ0B2RXCGI2EP/KlS2ERTuXJG8EvIBUa4
+ dpCfnnNvCwbjGYMm7famU+BODbXX6pfbS2XHnLi9Z9+9yZyzvnJkOO0r9yzlJI+Qt6OsoNcuB
+ vkJQ4kHHRvwo80LKeeLGe1hMAAVlfOX/ZSRfsYYw3Nx0ZqAtpb33OBcJ3NkJmSvvOs9+ED0lG
+ AJgbJdNSSLNsbNa+v3A+mliBPzVqLj2tyuvdZwlnqglQ9nevR/KqhnMwvGGnH7i60RXTkFxT1
+ u7qU+6zgdUmcwJUH6B5Z+ae4doK+qsu/qCcIFLhXNGu7aPgjXggEgYfOqNLIXnt836UBPPodl
+ dath8Yt1ZXLbqEIFqyMgptvehlPILsaEzTvkIDxff52LHMFkDVZAymHzDt1jLK0H53976d9Xz
+ X3fMae4pX+LUais4xPvS4qlmNethvylnjVJau+IUr/E6bjuLeSdsei8NAJcB2Kt0YFHhoQPR8
+ bGYG16TRBxukpeWRnFHOheUItanLBhycf47dL/mBL92AVAgob5pTUY0Ofyvns3a1SGWYvUpCt
+ 8ngmbKQ2PfVnNfScwcYSnaI67lw8vhsQzYn6ECcv9y4dQxtVHDrd2Yy0uQcbVI
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi David, hi Jakub,
+A race condition in the CAN ISOTP networking protocol was discovered which
+allows forbidden changing of socket members after binding the socket.
 
-The following pull-request contains BPF updates for your *net* tree.
+In particular, the lack of locking behavior in isotp_setsockopt() makes it
+feasible to assign the flag CAN_ISOTP_SF_BROADCAST to the socket, despite having
+previously registered a can receiver. After closing the isotp socket, the can
+receiver will still be registered and use-after-free's can be triggered in
+isotp_rcv() on the freed isotp_sock structure.
+This leads to arbitrary kernel execution by overwriting the sk_error_report()
+pointer, which can be misused in order to execute a user-controlled ROP chain to
+gain root privileges.
 
-We've added 13 non-merge commits during the last 8 day(s) which contain
-a total of 21 files changed, 817 insertions(+), 382 deletions(-).
+The vulnerability was introduced with the introduction of SF_BROADCAST support
+in commit 921ca574cd38 ("can: isotp: add SF_BROADCAST support for functional
+addressing") in 5.11-rc1.
+In fact, commit 323a391a220c ("can: isotp: isotp_setsockopt():
+block setsockopt on bound sockets") did not effectively prevent isotp_setsockopt()
+from modifying socket members before isotp_bind().
 
-The main changes are:
+The requested CVE ID will be revealed along with further exploitation details
+as a response to this notice on 13th May of 2021.
 
-1) Fix multiple ringbuf bugs in particular to prevent writable mmap of
-   read-only pages, from Andrii Nakryiko & Thadeu Lima de Souza Cascardo.
+Credits: Norbert Slusarek
 
-2) Fix verifier alu32 known-const subregister bound tracking for bitwise
-   operations and/or/xor, from Daniel Borkmann.
+*** exploit log ***
 
-3) Reject trampoline attachment for functions with variable arguments,
-   and also add a deny list of other forbidden functions, from Jiri Olsa.
+Adjusted to work with openSUSE Tumbleweed.
 
-4) Fix nested bpf_bprintf_prepare() calls used by various helpers by
-   switching to per-CPU buffers, from Florent Revest.
+noprivs@suse:~/expl> uname -a
+Linux suse 5.12.0-1-default #1 SMP Mon Apr 26 04:25:46 UTC 2021 (5d43652) x86_64 x86_64 x86_64 GNU/Linux
+noprivs@suse:~/expl> ./lpe
+[+] entering setsockopt
+[+] entering bind
+[+] left bind with ret = 0
+[+] left setsockopt with flags = 838
+[+] race condition hit, closing and spraying socket
+[+] sending msg to run softirq with isotp_rcv()
+[+] check sudo su for root rights
+noprivs@suse:~/expl> sudo su
+suse:/home/noprivs/expl # id
+uid=0(root) gid=0(root) groups=0(root)
+suse:/home/noprivs/expl # cat /root/check
+high school student living in germany looking for an internship in info sec.
+if interested please reach out to nslusarek@gmx.net.
 
-5) Fix kernel compilation with BTF debug info on ppc64 due to pahole
-   missing TCP-CC functions like cubictcp_init, from Martin KaFai Lau.
-
-6) Add a kconfig entry to provide an option to disallow unprivileged
-   BPF by default, from Daniel Borkmann.
-
-7) Fix libbpf compilation for older libelf when GELF_ST_VISIBILITY()
-   macro is not available, from Arnaldo Carvalho de Melo.
-
-8) Migrate test_tc_redirect to test_progs framework as prep work
-   for upcoming skb_change_head() fix & selftest, from Jussi Maki.
-
-9) Fix a libbpf segfault in add_dummy_ksym_var() if BTF is not
-   present, from Ian Rogers.
-
-10) Fix tx_only micro-benchmark in xdpsock BPF sample with proper frame
-    size, from Magnus Karlsson.
-
-Please consider pulling these changes from:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf.git
-
-Thanks a lot!
-
-Also thanks to reporters, reviewers and testers of commits in this pull-request:
-
-Alexei Starovoitov, Andrii Nakryiko, John Fastabend, Maciej Fijalkowski, 
-Ryota Shiga, Manfred Paul, Thadeu Lima de Souza Cascardo
-
-----------------------------------------------------------------
-
-The following changes since commit 1682d8df20aa505f6ab12c76e934b26ede39c529:
-
-  Merge git://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf (2021-05-03 18:40:17 -0700)
-
-are available in the Git repository at:
-
-  https://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf.git 
-
-for you to fetch changes up to 569c484f9995f489f2b80dd134269fe07d2b900d:
-
-  bpf: Limit static tcp-cc functions in the .BTF_ids list to x86 (2021-05-11 23:23:07 +0200)
-
-----------------------------------------------------------------
-Andrii Nakryiko (1):
-      bpf: Prevent writable memory-mapping of read-only ringbuf pages
-
-Arnaldo Carvalho de Melo (1):
-      libbpf: Provide GELF_ST_VISIBILITY() define for older libelf
-
-Daniel Borkmann (3):
-      bpf: Fix alu32 const subreg bound tracking on bitwise operations
-      bpf, kconfig: Add consolidated menu entry for bpf with core options
-      bpf: Add kconfig knob for disabling unpriv bpf by default
-
-Florent Revest (1):
-      bpf: Fix nested bpf_bprintf_prepare with more per-cpu buffers
-
-Ian Rogers (1):
-      libbpf: Add NULL check to add_dummy_ksym_var
-
-Jiri Olsa (2):
-      bpf: Forbid trampoline attach for functions with variable arguments
-      bpf: Add deny list of btf ids check for tracing programs
-
-Jussi Maki (1):
-      selftests/bpf: Rewrite test_tc_redirect.sh as prog_tests/tc_redirect.c
-
-Magnus Karlsson (1):
-      samples/bpf: Consider frame size in tx_only of xdpsock sample
-
-Martin KaFai Lau (1):
-      bpf: Limit static tcp-cc functions in the .BTF_ids list to x86
-
-Thadeu Lima de Souza Cascardo (1):
-      bpf, ringbuf: Deny reserve of buffers larger than ringbuf
-
- Documentation/admin-guide/sysctl/kernel.rst        |  17 +-
- init/Kconfig                                       |  41 +-
- kernel/bpf/Kconfig                                 |  88 +++
- kernel/bpf/btf.c                                   |  12 +
- kernel/bpf/helpers.c                               |  27 +-
- kernel/bpf/ringbuf.c                               |  24 +-
- kernel/bpf/syscall.c                               |   3 +-
- kernel/bpf/verifier.c                              |  36 +-
- kernel/sysctl.c                                    |  29 +-
- net/Kconfig                                        |  27 -
- net/ipv4/bpf_tcp_ca.c                              |   2 +
- samples/bpf/xdpsock_user.c                         |   2 +-
- tools/lib/bpf/libbpf.c                             |   3 +
- tools/lib/bpf/libbpf_internal.h                    |   5 +
- tools/testing/selftests/bpf/network_helpers.c      |   2 +-
- tools/testing/selftests/bpf/network_helpers.h      |   1 +
- .../testing/selftests/bpf/prog_tests/tc_redirect.c | 589 +++++++++++++++++++++
- tools/testing/selftests/bpf/progs/test_tc_neigh.c  |  33 +-
- .../selftests/bpf/progs/test_tc_neigh_fib.c        |   9 +-
- tools/testing/selftests/bpf/progs/test_tc_peer.c   |  33 +-
- tools/testing/selftests/bpf/test_tc_redirect.sh    | 216 --------
- 21 files changed, 817 insertions(+), 382 deletions(-)
- create mode 100644 kernel/bpf/Kconfig
- create mode 100644 tools/testing/selftests/bpf/prog_tests/tc_redirect.c
- delete mode 100755 tools/testing/selftests/bpf/test_tc_redirect.sh
+Regards,
+Norbert Slusarek
