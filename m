@@ -2,189 +2,180 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 96C3F37A259
-	for <lists+netdev@lfdr.de>; Tue, 11 May 2021 10:41:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9A52E37A2D5
+	for <lists+netdev@lfdr.de>; Tue, 11 May 2021 11:00:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230491AbhEKImi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 11 May 2021 04:42:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54568 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230370AbhEKImg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 11 May 2021 04:42:36 -0400
-Received: from mail-ed1-x530.google.com (mail-ed1-x530.google.com [IPv6:2a00:1450:4864:20::530])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 89EE2C061761
-        for <netdev@vger.kernel.org>; Tue, 11 May 2021 01:41:30 -0700 (PDT)
-Received: by mail-ed1-x530.google.com with SMTP id v5so10820651edc.8
-        for <netdev@vger.kernel.org>; Tue, 11 May 2021 01:41:30 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=DBeVQ+DbzVOqheKpDE6b/l8xGHNgrrKmzCyeg4MY9MM=;
-        b=H3Vh0QtHbME6isjyak/fqgO1goM8VONv7XU0YXMAPQLdU6UuWv+3oBPI7jY4t2CneN
-         SMOLlmHljBNrs5MNsFp9KmTtTgcZjgAILR6/z0e9S+esC5zunVNqcbjGbksG5i9kfqXY
-         rvoSyY0KFxeVSUWRAMZlfhOOPc5ZgRVGbosfSdzAyX+Al6QmkNZbpVgfycj18NeTncEg
-         I6LAlWymuOFttSd3GMTry/9cWsWU/pTXXw8FKcbou7hoGgzDuzEA7Tdswuy6o3EcNH3T
-         lSDrAwZIAkrCgJd1FkzdDnpFdMBSK/w+j2AjZ6QJkgnqvZi5kcqPY+tEWFr2jycq0CfH
-         7h6g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=DBeVQ+DbzVOqheKpDE6b/l8xGHNgrrKmzCyeg4MY9MM=;
-        b=XIQFOM5jR0a/1rJsOWJP6lL3PQOA/LBE9tMhCGdwHbKDhe0h63lE2AaADuTMAQ7HSU
-         JN0Yy91kftOvAoHQ0yh9ZfU4zHWyuhF1UUE+oV0RaVBZt51oALay/rqzE8aDke01mOdv
-         qcKeHTdpZjKbhXEuRMGp3LieU4HPlSpp1HdLVqNRWAu/+bDss2jMP7fG5WZ3m1zKbzqU
-         y4nANZrAgwdPVWKZKoWVdzq5mdIh9+qNQNX7479mhDZM/uzxDakgTkb/10D3Mtz5z8Qh
-         5jyPw3wiT6tPgVKrG2VHXQhUy3e/V43iyLYqM56mT4XZlI1IWMxkglzxiC+k2mzoUJFR
-         l50Q==
-X-Gm-Message-State: AOAM533TzLB0t3oIJHNb9M6gUdXmQbMn/RUUxOHq8XWF0D2MItO5Mo+3
-        sjcudjGzBSaCOHD7kOPHYxl43H7Bd/wrvEnb
-X-Google-Smtp-Source: ABdhPJyk1DjUXXkr6mF3j2Ysv/fMzGsrok8fiyPMtBUheYMHXlhk4hlvbY3ypUShk/aetQ5cK9agQA==
-X-Received: by 2002:aa7:c390:: with SMTP id k16mr31251270edq.97.1620722489173;
-        Tue, 11 May 2021 01:41:29 -0700 (PDT)
-Received: from apalos.home ([94.69.77.156])
-        by smtp.gmail.com with ESMTPSA id w6sm8263246edc.25.2021.05.11.01.41.24
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 11 May 2021 01:41:28 -0700 (PDT)
-Date:   Tue, 11 May 2021 11:41:23 +0300
-From:   Ilias Apalodimas <ilias.apalodimas@linaro.org>
-To:     Shay Agroskin <shayagr@amazon.com>
-Cc:     Jesper Dangaard Brouer <brouer@redhat.com>,
-        Yunsheng Lin <linyunsheng@huawei.com>,
-        Matteo Croce <mcroce@linux.microsoft.com>,
-        netdev@vger.kernel.org, linux-mm@kvack.org,
-        Ayush Sawal <ayush.sawal@chelsio.com>,
-        Vinay Kumar Yadav <vinay.yadav@chelsio.com>,
-        Rohit Maheshwari <rohitm@chelsio.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        Marcin Wojtas <mw@semihalf.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Mirko Lindner <mlindner@marvell.com>,
-        Stephen Hemminger <stephen@networkplumber.org>,
-        Tariq Toukan <tariqt@nvidia.com>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Boris Pismenny <borisp@nvidia.com>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
-        Vlastimil Babka <vbabka@suse.cz>, Yu Zhao <yuzhao@google.com>,
-        Will Deacon <will@kernel.org>,
-        Michel Lespinasse <walken@google.com>,
-        Fenghua Yu <fenghua.yu@intel.com>,
-        Roman Gushchin <guro@fb.com>, Hugh Dickins <hughd@google.com>,
-        Peter Xu <peterx@redhat.com>, Jason Gunthorpe <jgg@ziepe.ca>,
-        Guoqing Jiang <guoqing.jiang@cloud.ionos.com>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
-        Alexander Lobakin <alobakin@pm.me>,
-        Cong Wang <cong.wang@bytedance.com>, wenxu <wenxu@ucloud.cn>,
-        Kevin Hao <haokexin@gmail.com>,
-        Aleksandr Nogikh <nogikh@google.com>,
-        Jakub Sitnicki <jakub@cloudflare.com>,
-        Marco Elver <elver@google.com>,
-        Willem de Bruijn <willemb@google.com>,
-        Miaohe Lin <linmiaohe@huawei.com>,
-        Guillaume Nault <gnault@redhat.com>,
-        linux-kernel@vger.kernel.org, linux-rdma@vger.kernel.org,
-        bpf@vger.kernel.org, Matthew Wilcox <willy@infradead.org>,
-        Eric Dumazet <edumazet@google.com>,
-        David Ahern <dsahern@gmail.com>,
-        Lorenzo Bianconi <lorenzo@kernel.org>,
-        Saeed Mahameed <saeedm@nvidia.com>,
-        Andrew Lunn <andrew@lunn.ch>, Paolo Abeni <pabeni@redhat.com>
-Subject: Re: [PATCH net-next v3 0/5] page_pool: recycle buffers
-Message-ID: <YJpDMwhX3OJrdjDd@apalos.home>
-References: <YIsAIzecktXXBlxn@apalos.home>
- <9bf7c5b3-c3cf-e669-051f-247aa8df5c5a@huawei.com>
- <YIwvI5/ygBvZG5sy@apalos.home>
- <33b02220-cc50-f6b2-c436-f4ec041d6bc4@huawei.com>
- <YJPn5t2mdZKC//dp@apalos.home>
- <75a332fa-74e4-7b7b-553e-3a1a6cb85dff@huawei.com>
- <YJTm4uhvqCy2lJH8@apalos.home>
- <bdd97ac5-f932-beec-109e-ace9cd62f661@huawei.com>
- <20210507121953.59e22aa8@carbon>
- <pj41zl4kfclce0.fsf@u570694869fb251.ant.amazon.com>
+        id S231208AbhEKJB2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 11 May 2021 05:01:28 -0400
+Received: from mail.kernel.org ([198.145.29.99]:57216 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S230439AbhEKJBU (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 11 May 2021 05:01:20 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id E709E611F1;
+        Tue, 11 May 2021 09:00:05 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1620723613;
+        bh=ETvFtPpZWz6DN3iWb3G2WAPhojmYo6ps7EuchaChQ+E=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=PLGy/1LSbmraLJz9I+ZFpgkDxkCfvpVNiHxpQ06jZIl8i8GhyxDYM7Gy1/DkHiCt5
+         klo7h/HCiZCdE58jLyhFWvaAVP5oc9x+G/BoSRcOX7C3Tl/sTRBZmSPn8j1vcyPJNt
+         mRJS0yxqm/yCxF+CPVj6SxA/ae6jVWIEkJrXhN8oiyzJkjvRZFRVAZch9kSHP1iP93
+         oW7IG29Utyoqz+QwiX4h4Rg5Qegv470eEj7pH0f2MN9paDsUyx4y03dGzSMfb4uf2a
+         FDLqKCDGwM78HAqr/sdfeYExPB7ah8JOeYwd9qD22mRbJt8d7NaYnvORLTCVIJ25K4
+         6sDaroZmf8XGQ==
+Date:   Tue, 11 May 2021 11:00:02 +0200
+From:   Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+To:     Edward Cree <ecree.xilinx@gmail.com>
+Cc:     Matthew Wilcox <willy@infradead.org>,
+        David Woodhouse <dwmw2@infradead.org>,
+        Linux Doc Mailing List <linux-doc@vger.kernel.org>,
+        linux-kernel@vger.kernel.org, Jonathan Corbet <corbet@lwn.net>,
+        alsa-devel@alsa-project.org, coresight@lists.linaro.org,
+        dri-devel@lists.freedesktop.org, intel-gfx@lists.freedesktop.org,
+        intel-wired-lan@lists.osuosl.org, keyrings@vger.kernel.org,
+        kvm@vger.kernel.org, linux-acpi@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-edac@vger.kernel.org,
+        linux-ext4@vger.kernel.org, linux-f2fs-devel@lists.sourceforge.net,
+        linux-fpga@vger.kernel.org, linux-hwmon@vger.kernel.org,
+        linux-iio@vger.kernel.org, linux-input@vger.kernel.org,
+        linux-integrity@vger.kernel.org, linux-media@vger.kernel.org,
+        linux-pci@vger.kernel.org, linux-pm@vger.kernel.org,
+        linux-rdma@vger.kernel.org, linux-riscv@lists.infradead.org,
+        linux-sgx@vger.kernel.org, linux-usb@vger.kernel.org,
+        mjpeg-users@lists.sourceforge.net, netdev@vger.kernel.org,
+        rcu@vger.kernel.org, x86@kernel.org
+Subject: Re: [PATCH 00/53] Get rid of UTF-8 chars that can be mapped as
+ ASCII
+Message-ID: <20210511110002.2f187f01@coco.lan>
+In-Reply-To: <ed65025c-1087-9672-7451-6d28e7ab8f92@gmail.com>
+References: <cover.1620641727.git.mchehab+huawei@kernel.org>
+        <2ae366fdff4bd5910a2270823e8da70521c859af.camel@infradead.org>
+        <20210510135518.305cc03d@coco.lan>
+        <df6b4567-030c-a480-c5a6-fe579830e8c0@gmail.com>
+        <YJk8LMFViV7Z3Uu7@casper.infradead.org>
+        <ed65025c-1087-9672-7451-6d28e7ab8f92@gmail.com>
+X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-redhat-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <pj41zl4kfclce0.fsf@u570694869fb251.ant.amazon.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Shay,
+Em Mon, 10 May 2021 15:33:47 +0100
+Edward Cree <ecree.xilinx@gmail.com> escreveu:
 
-On Sun, May 09, 2021 at 08:11:35AM +0300, Shay Agroskin wrote:
-> 
-> Jesper Dangaard Brouer <brouer@redhat.com> writes:
-> 
-> > On Fri, 7 May 2021 16:28:30 +0800
-> > Yunsheng Lin <linyunsheng@huawei.com> wrote:
-> > 
-> > > On 2021/5/7 15:06, Ilias Apalodimas wrote:
-> > > > On Fri, May 07, 2021 at 11:23:28AM +0800, Yunsheng Lin wrote:  >>
-> > > On 2021/5/6 20:58, Ilias Apalodimas wrote:  >>>>>>  >>>>>
-> > ...
-> > > > > > I think both choices are sane.  What I am trying to explain >
-> > > here, is
-> > > > regardless of what we choose now, we can change it in the > future
-> > > without
-> > > > affecting the API consumers at all.  What will change > internally
-> > > is the way we
-> > > > lookup the page pool pointer we are trying to recycle.
-> > > 
-> > > It seems the below API need changing?
-> > > +static inline void skb_mark_for_recycle(struct sk_buff *skb, struct
-> > > page *page,
-> > > +					struct xdp_mem_info *mem)
-> > 
-> > I don't think we need to change this API, to support future memory
-> > models.  Notice that xdp_mem_info have a 'type' member.
-> 
-> Hi,
-> Providing that we will (possibly as a future optimization) store the pointer
-> to the page pool in struct page instead of strcut xdp_mem_info, passing
-> xdp_mem_info * instead of struct page_pool * would mean that for every
-> packet we'll need to call
->             xa = rhashtable_lookup(mem_id_ht, &mem->id,
-> mem_id_rht_params);
->             xa->page_pool;
-> 
-> which might pressure the Dcache to fetch a pointer that might be present
-> already in cache as part of driver's data-structures.
-> 
-> I tend to agree with Yunsheng that it makes more sense to adjust the API for
-> the clear use-case now rather than using xdp_mem_info indirection. It seems
-> to me like
-> the page signature provides the same information anyway and allows to
-> support different memory types.
+> On 10/05/2021 14:59, Matthew Wilcox wrote:
+> > Most of these
+> > UTF-8 characters come from latex conversions and really aren't
+> > necessary (and are being used incorrectly). =20
+> I fully agree with fixing those.
+> The cover-letter, however, gave the impression that that was not the
+>  main purpose of this series; just, perhaps, a happy side-effect.
 
-We've switched the patches already.  We didn't notice any performance boost
-by doing so (tested on a machiattobin), but I agree as well.  As I
-explained the only thing that will change if we ever the need the struct
-xdp_mem_info in struct page is the internal contract between struct page
-and the recycling function, so let's start clean and see if we ever need
-that.
+Sorry for the mess. The main reason why I wrote this series is because
+there are lots of UTF-8 left-over chars from the ReST conversion.
+See:
+  - https://lore.kernel.org/linux-doc/20210507100435.3095f924@coco.lan/
 
+A large set of the UTF-8 letf-over chars were due to my conversion work,
+so I feel personally responsible to fix those ;-)
 
-Cheers
-/Ilias
-> 
-> Shay
-> 
-> > 
-> > Naming in Computer Science is a hard problem ;-). Something that seems
-> > to confuse a lot of people is the naming of the struct "xdp_mem_info".
-> > Maybe we should have named it "mem_info" instead or "net_mem_info", as
-> > it doesn't indicate that the device is running XDP.
-> > 
-> > I see XDP as the RX-layer before the network stack, that helps drivers
-> > to support different memory models, also for handling normal packets
-> > that doesn't get process by XDP, and the drivers doesn't even need to
-> > support XDP to use the "xdp_mem_info" type.
-> 
+Yet, this series has two positive side effects:
+
+ - it helps people needing to touch the documents using non-utf8 locales[1];
+ - it makes easier to grep for a text;
+
+[1] There are still some widely used distros nowadays (LTS ones?) that
+    don't set UTF-8 as default. Last time I installed a Debian machine
+    I had to explicitly set UTF-8 charset after install as the default
+    were using ASCII encoding (can't remember if it was Debian 10 or an
+    older version).
+
+Unintentionally, I ended by giving emphasis to the non-utf8 instead of
+giving emphasis to the conversion left-overs.
+
+FYI, this patch series originated from a discussion at linux-doc,
+reporting that Sphinx breaks when LANG is not set to utf-8[2]. That's
+why I probably ended giving the wrong emphasis at the cover letter.
+
+[2] See https://lore.kernel.org/linux-doc/20210506103913.GE6564@kitsune.sus=
+e.cz/
+    for the original report. I strongly suspect that the VM set by Michal=20
+    to build the docs was using a distro that doesn't set UTF-8 as default.
+
+    PS.:=20
+      I intend to prepare afterwards a separate fix to avoid Sphinx
+      logger to crash during Kernel doc builds when the locale charset
+      is not UTF-8, but I'm not too fluent in python. So, I need some
+      time to check if are there a way to just avoid python log crashes
+      without touching Sphinx code and without needing to trick it to=20
+      think that the machine's locale is UTF-8.
+
+See: while there was just a single document originally stored at the
+Kernel tree as a LaTeX document during the time we did the conversion
+(cdrom-standard.tex), there are several other documents stored as=20
+text that seemed to be generated by some tool like LaTeX, whose the
+original version were not preserved.=20
+
+Also, there were other documents using different markdown dialects=20
+that were converted via pandoc (and/or other similar tools). That's=20
+not to mention the ones that were converted from DocBook. Such
+tools tend to use some logic to use "neat" versions of some ASCII
+characters, like what this tool does:
+
+	https://daringfireball.net/projects/smartypants/
+
+(Sphinx itself seemed to use this tool on its early versions)
+
+All tool-converted documents can carry UTF-8 on unexpected places. See,
+on this series, a large amount of patches deal with U+A0 (NO-BREAK SPACE)
+chars. I can't see why someone writing a plain text document (or a ReST
+one) would type a NO-BREAK SPACE instead of a normal white space.
+
+The same applies, up to some sort, to curly commas: usually people just=20
+write ASCII "commas" on their documents, and use some tool like LaTeX
+or a text editor like libreoffice in order to convert them into
+ =E2=80=9Cutf-8 curly commas=E2=80=9D[3].
+
+[3] Sphinx will do such things at the produced output, doing something=20
+    similar to what smartypants does, nowadays using this:
+
+	https://docutils.sourceforge.io/docs/user/smartquotes.html
+
+    E. g.:
+      - Straight quotes (" and ') turned into "curly" quote characters;
+      - dashes (-- and ---) turned into en- and em-dash entities;
+      - three consecutive dots (... or . . .) turned into an ellipsis char.
+
+> > You seem quite knowedgeable about the various differences.  Perhaps
+> > you'd be willing to write a document for Documentation/doc-guide/
+> > that provides guidance for when to use which kinds of horizontal
+> > line?
+> I have Opinions about the proper usage of punctuation, but I also know =20
+>  that other people have differing opinions.  For instance, I place
+>  spaces around an em dash, which is nonstandard according to most
+>  style guides.  Really this is an individual enough thing that I'm not
+>  sure we could have a "kernel style guide" that would be more useful
+>  than general-purpose guidance like the page you linked.
+
+> Moreover, such a guide could make non-native speakers needlessly self-
+>  conscious about their writing and discourage them from contributing
+>  documentation at all.
+
+I don't think so. In a matter of fact, as a non-native speaker, I guess
+this can actually help people willing to write documents.
+
+>  I'm not advocating here for trying to push
+>  kernel developers towards an eats-shoots-and-leaves level of
+>  linguistic pedantry; rather, I merely think that existing correct
+>  usages should be left intact (and therefore, excising incorrect usage
+>  should only be attempted by someone with both the expertise and time
+>  to check each case).
+>=20
+> But if you really want such a doc I wouldn't mind contributing to it.
+
+IMO, a document like that can be helpful. I can help reviewing it.
+
+Thanks,
+Mauro
