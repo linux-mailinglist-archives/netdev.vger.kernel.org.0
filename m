@@ -2,217 +2,139 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DF98437A136
-	for <lists+netdev@lfdr.de>; Tue, 11 May 2021 09:52:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0AE5237A16F
+	for <lists+netdev@lfdr.de>; Tue, 11 May 2021 10:12:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229892AbhEKHxm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 11 May 2021 03:53:42 -0400
-Received: from frasgout.his.huawei.com ([185.176.79.56]:3059 "EHLO
-        frasgout.his.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229917AbhEKHxd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 11 May 2021 03:53:33 -0400
-Received: from fraeml704-chm.china.huawei.com (unknown [172.18.147.207])
-        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4FfVNg53Pnz6wm4T;
-        Tue, 11 May 2021 15:46:27 +0800 (CST)
-Received: from lhreml710-chm.china.huawei.com (10.201.108.61) by
- fraeml704-chm.china.huawei.com (10.206.15.53) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
- 15.1.2176.2; Tue, 11 May 2021 09:52:24 +0200
-Received: from localhost (10.52.125.126) by lhreml710-chm.china.huawei.com
- (10.201.108.61) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2176.2; Tue, 11 May
- 2021 08:52:23 +0100
-Date:   Tue, 11 May 2021 08:50:41 +0100
-From:   Jonathan Cameron <Jonathan.Cameron@Huawei.com>
-To:     Rob Herring <robh@kernel.org>
-CC:     <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        "Luca Ceresoli" <luca@lucaceresoli.net>,
-        Stephen Boyd <sboyd@kernel.org>,
-        "Olivier Moysan" <olivier.moysan@foss.st.com>,
-        Arnaud Pouliquen <arnaud.pouliquen@foss.st.com>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Georgi Djakov <djakov@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Sebastian Reichel <sre@kernel.org>,
-        "Orson Zhai" <orsonzhai@gmail.com>,
-        Baolin Wang <baolin.wang7@gmail.com>,
-        "Chunyan Zhang" <zhang.lyra@gmail.com>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Mark Brown <broonie@kernel.org>,
-        Fabrice Gasnier <fabrice.gasnier@st.com>,
-        Odelu Kukatla <okukatla@codeaurora.org>,
-        Alex Elder <elder@kernel.org>,
-        Shengjiu Wang <shengjiu.wang@nxp.com>,
-        <linux-clk@vger.kernel.org>, <alsa-devel@alsa-project.org>,
-        <linux-iio@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-input@vger.kernel.org>, <linux-pm@vger.kernel.org>,
-        <netdev@vger.kernel.org>
-Subject: Re: [PATCH] dt-bindings: More removals of type references on common
- properties
-Message-ID: <20210511085041.00000d39@Huawei.com>
-In-Reply-To: <20210510204524.617390-1-robh@kernel.org>
-References: <20210510204524.617390-1-robh@kernel.org>
-Organization: Huawei Technologies Research and Development (UK) Ltd.
-X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; i686-w64-mingw32)
+        id S230422AbhEKINh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 11 May 2021 04:13:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47912 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230338AbhEKINg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 11 May 2021 04:13:36 -0400
+Received: from mail-ot1-x32b.google.com (mail-ot1-x32b.google.com [IPv6:2607:f8b0:4864:20::32b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB475C061574
+        for <netdev@vger.kernel.org>; Tue, 11 May 2021 01:12:29 -0700 (PDT)
+Received: by mail-ot1-x32b.google.com with SMTP id f75-20020a9d03d10000b0290280def9ab76so16791011otf.12
+        for <netdev@vger.kernel.org>; Tue, 11 May 2021 01:12:29 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=daynix-com.20150623.gappssmtp.com; s=20150623;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=V4OvBsGlOboDMJilacIfX93BeArUzpCix7At3EOUarw=;
+        b=lmkuZ7aDqLoygz/VlHzMEKZGrl/9XcMQTxU2tuT9mZhq0XTw/tD6YTyLFhazQMDYt9
+         8zsBDzeJyVE1UpLyZiCRDTZVlbriSASCZMNryZutMDr0D8mzpX2ADN4ZeBdz4X3bHN0N
+         WCNkGFc4CTnoBVv5uGBz3kfd6ybzBH+9lmTS8pokT0di2GHzk6YjGFIJcDXc5CcxCW7T
+         nFKPhaBXRKMSlkC2NpFgBMsLmdcDWCyKtqzIWxh5lf2Epzpng2D79dYA/7zAsvWaHbge
+         wNiOLhXNwKKOrSBYWgY0RzM/2pjxJqJJDxNHPuCWLsllM2LRf3Fzoi/svD1xstkjNrYg
+         Q3Uw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=V4OvBsGlOboDMJilacIfX93BeArUzpCix7At3EOUarw=;
+        b=Ri/rJbaefiFEP6QLbEgmfcaJidRNSgtZ6w5ENsH6ONjoCj3A3kJJsigufw2FmPnnOg
+         q4RciUTd+iI1OQns/EalO8ZL55WbjMK8kP4Vl++9Who91lq+PgTDJj1S7u+Ce16XTFeO
+         TTpFbl4u8QvCTfElzlvoyX7IA2m5fZdCgcXy4ApjRmNI/LEVchv0ley+BxDnOfK3FN/Q
+         LMmwDcwAXsjDmXxYwJcA0CSi3jT3Dx6ojQQUdUTI4cuo2ko7LEvcv/TIxbr+EOhbI7d0
+         NT8YtBEGhNIClz2tBJh1xXy9vrkRMFagDfnWZnxY3g0lBqqZuAG56k6xWIqAJkZQHDhD
+         lMUw==
+X-Gm-Message-State: AOAM532IvvaVsgCv2jpxttqhP3FspOeDXGAHL8axft/DYeTOp5Db/ytF
+        I/sB2oOoBf78mh+qXOTjKQr6hdxrCajKUxW+08vfRQ==
+X-Google-Smtp-Source: ABdhPJzjpKpzE2uIaT3SST5gktTqbv6RbiB2hBKWt6nVkBt9S62hZ5H6ZT0FqybWOJb5zIq+d0MrfyMVMdMmpOGfEjI=
+X-Received: by 2002:a05:6830:4103:: with SMTP id w3mr20651835ott.27.1620720749398;
+ Tue, 11 May 2021 01:12:29 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset="US-ASCII"
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.52.125.126]
-X-ClientProxiedBy: lhreml730-chm.china.huawei.com (10.201.108.81) To
- lhreml710-chm.china.huawei.com (10.201.108.61)
-X-CFilter-Loop: Reflected
+References: <20210511044253.469034-1-yuri.benditovich@daynix.com>
+ <20210511044253.469034-2-yuri.benditovich@daynix.com> <40938c20-5851-089b-c3c0-074bbd636970@redhat.com>
+In-Reply-To: <40938c20-5851-089b-c3c0-074bbd636970@redhat.com>
+From:   Yuri Benditovich <yuri.benditovich@daynix.com>
+Date:   Tue, 11 May 2021 11:12:16 +0300
+Message-ID: <CAOEp5OdgYtP+W1thGsTGnvEPWrJ02s1HemskQpnMTUyYbsX4jQ@mail.gmail.com>
+Subject: Re: [PATCH 1/4] virtio-net: add definitions for host USO feature
+To:     Jason Wang <jasowang@redhat.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "Michael S . Tsirkin" <mst@redhat.com>,
+        Network Development <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        virtualization@lists.linux-foundation.org,
+        Yan Vugenfirer <yan@daynix.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 10 May 2021 15:45:24 -0500
-Rob Herring <robh@kernel.org> wrote:
+On Tue, May 11, 2021 at 9:47 AM Jason Wang <jasowang@redhat.com> wrote:
+>
+>
+> =E5=9C=A8 2021/5/11 =E4=B8=8B=E5=8D=8812:42, Yuri Benditovich =E5=86=99=
+=E9=81=93:
+> > Define feature bit and GSO type according to the VIRTIO
+> > specification.
+> >
+> > Signed-off-by: Yuri Benditovich <yuri.benditovich@daynix.com>
+> > ---
+> >   include/uapi/linux/virtio_net.h | 2 ++
+> >   1 file changed, 2 insertions(+)
+> >
+> > diff --git a/include/uapi/linux/virtio_net.h b/include/uapi/linux/virti=
+o_net.h
+> > index 3f55a4215f11..a556ac735d7f 100644
+> > --- a/include/uapi/linux/virtio_net.h
+> > +++ b/include/uapi/linux/virtio_net.h
+> > @@ -57,6 +57,7 @@
+> >                                        * Steering */
+> >   #define VIRTIO_NET_F_CTRL_MAC_ADDR 23       /* Set MAC address */
+> >
+> > +#define VIRTIO_NET_F_HOST_USO     56 /* Host can handle USO packets */
 
-> Users of common properties shouldn't have a type definition as the
-> common schemas already have one. A few new ones slipped in and
-> *-names was missed in the last clean-up pass. Drop all the unnecessary
-> type references in the tree.
-> 
-> A meta-schema update to catch these is pending.
-> 
-> Cc: Luca Ceresoli <luca@lucaceresoli.net>
-> Cc: Stephen Boyd <sboyd@kernel.org>
-> Cc: Olivier Moysan <olivier.moysan@foss.st.com>
-> Cc: Arnaud Pouliquen <arnaud.pouliquen@foss.st.com>
-> Cc: Jonathan Cameron <jic23@kernel.org>
-> Cc: Lars-Peter Clausen <lars@metafoo.de>
-> Cc: Dmitry Torokhov <dmitry.torokhov@gmail.com>
-> Cc: Bjorn Andersson <bjorn.andersson@linaro.org>
-> Cc: Georgi Djakov <djakov@kernel.org>
-> Cc: "David S. Miller" <davem@davemloft.net>
-> Cc: Jakub Kicinski <kuba@kernel.org>
-> Cc: Sebastian Reichel <sre@kernel.org>
-> Cc: Orson Zhai <orsonzhai@gmail.com>
-> Cc: Baolin Wang <baolin.wang7@gmail.com>
-> Cc: Chunyan Zhang <zhang.lyra@gmail.com>
-> Cc: Liam Girdwood <lgirdwood@gmail.com>
-> Cc: Mark Brown <broonie@kernel.org>
-> Cc: Fabrice Gasnier <fabrice.gasnier@st.com>
-> Cc: Odelu Kukatla <okukatla@codeaurora.org>
-> Cc: Alex Elder <elder@kernel.org>
-> Cc: Shengjiu Wang <shengjiu.wang@nxp.com>
-> Cc: linux-clk@vger.kernel.org
-> Cc: alsa-devel@alsa-project.org
-> Cc: linux-iio@vger.kernel.org
-> Cc: linux-arm-kernel@lists.infradead.org
-> Cc: linux-input@vger.kernel.org
-> Cc: linux-pm@vger.kernel.org
-> Cc: netdev@vger.kernel.org
-> Signed-off-by: Rob Herring <robh@kernel.org>
+This is the virtio-net feature
 
-Acked-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+> >   #define VIRTIO_NET_F_HASH_REPORT  57        /* Supports hash report *=
+/
+> >   #define VIRTIO_NET_F_RSS      60    /* Supports RSS RX steering */
+> >   #define VIRTIO_NET_F_RSC_EXT          61    /* extended coalescing in=
+fo */
+> > @@ -130,6 +131,7 @@ struct virtio_net_hdr_v1 {
+> >   #define VIRTIO_NET_HDR_GSO_TCPV4    1       /* GSO frame, IPv4 TCP (T=
+SO) */
+> >   #define VIRTIO_NET_HDR_GSO_UDP              3       /* GSO frame, IPv=
+4 UDP (UFO) */
+> >   #define VIRTIO_NET_HDR_GSO_TCPV6    4       /* GSO frame, IPv6 TCP */
+> > +#define VIRTIO_NET_HDR_GSO_UDP_L4    5       /* GSO frame, IPv4 UDP (U=
+SO) */
 
-> ---
->  Documentation/devicetree/bindings/clock/idt,versaclock5.yaml    | 2 --
->  .../devicetree/bindings/iio/adc/st,stm32-dfsdm-adc.yaml         | 1 -
->  Documentation/devicetree/bindings/input/input.yaml              | 1 -
->  Documentation/devicetree/bindings/interconnect/qcom,rpmh.yaml   | 1 -
->  Documentation/devicetree/bindings/net/qcom,ipa.yaml             | 1 -
->  .../devicetree/bindings/power/supply/sc2731-charger.yaml        | 2 +-
->  Documentation/devicetree/bindings/sound/fsl,rpmsg.yaml          | 2 +-
->  7 files changed, 2 insertions(+), 8 deletions(-)
-> 
-> diff --git a/Documentation/devicetree/bindings/clock/idt,versaclock5.yaml b/Documentation/devicetree/bindings/clock/idt,versaclock5.yaml
-> index c268debe5b8d..28675b0b80f1 100644
-> --- a/Documentation/devicetree/bindings/clock/idt,versaclock5.yaml
-> +++ b/Documentation/devicetree/bindings/clock/idt,versaclock5.yaml
-> @@ -60,7 +60,6 @@ properties:
->      maxItems: 2
->  
->    idt,xtal-load-femtofarads:
-> -    $ref: /schemas/types.yaml#/definitions/uint32
->      minimum: 9000
->      maximum: 22760
->      description: Optional load capacitor for XTAL1 and XTAL2
-> @@ -84,7 +83,6 @@ patternProperties:
->          enum: [ 1800000, 2500000, 3300000 ]
->        idt,slew-percent:
->          description: The Slew rate control for CMOS single-ended.
-> -        $ref: /schemas/types.yaml#/definitions/uint32
->          enum: [ 80, 85, 90, 100 ]
->  
->  required:
-> diff --git a/Documentation/devicetree/bindings/iio/adc/st,stm32-dfsdm-adc.yaml b/Documentation/devicetree/bindings/iio/adc/st,stm32-dfsdm-adc.yaml
-> index 6f2398cdc82d..1e7894e524f9 100644
-> --- a/Documentation/devicetree/bindings/iio/adc/st,stm32-dfsdm-adc.yaml
-> +++ b/Documentation/devicetree/bindings/iio/adc/st,stm32-dfsdm-adc.yaml
-> @@ -102,7 +102,6 @@ patternProperties:
->  
->        st,adc-channel-names:
->          description: List of single-ended channel names.
-> -        $ref: /schemas/types.yaml#/definitions/string-array
->  
->        st,filter-order:
->          description: |
-> diff --git a/Documentation/devicetree/bindings/input/input.yaml b/Documentation/devicetree/bindings/input/input.yaml
-> index 74244d21d2b3..d41d8743aad4 100644
-> --- a/Documentation/devicetree/bindings/input/input.yaml
-> +++ b/Documentation/devicetree/bindings/input/input.yaml
-> @@ -38,6 +38,5 @@ properties:
->        Duration in seconds which the key should be kept pressed for device to
->        reset automatically. Device with key pressed reset feature can specify
->        this property.
-> -    $ref: /schemas/types.yaml#/definitions/uint32
->  
->  additionalProperties: true
-> diff --git a/Documentation/devicetree/bindings/interconnect/qcom,rpmh.yaml b/Documentation/devicetree/bindings/interconnect/qcom,rpmh.yaml
-> index cb6498108b78..36c955965d90 100644
-> --- a/Documentation/devicetree/bindings/interconnect/qcom,rpmh.yaml
-> +++ b/Documentation/devicetree/bindings/interconnect/qcom,rpmh.yaml
-> @@ -92,7 +92,6 @@ properties:
->        this interconnect to send RPMh commands.
->  
->    qcom,bcm-voter-names:
-> -    $ref: /schemas/types.yaml#/definitions/string-array
->      description: |
->        Names for each of the qcom,bcm-voters specified.
->  
-> diff --git a/Documentation/devicetree/bindings/net/qcom,ipa.yaml b/Documentation/devicetree/bindings/net/qcom,ipa.yaml
-> index 7443490d4cc6..5fe6d3dceb08 100644
-> --- a/Documentation/devicetree/bindings/net/qcom,ipa.yaml
-> +++ b/Documentation/devicetree/bindings/net/qcom,ipa.yaml
-> @@ -105,7 +105,6 @@ properties:
->        - description: Whether the IPA clock is enabled (if valid)
->  
->    qcom,smem-state-names:
-> -    $ref: /schemas/types.yaml#/definitions/string-array
->      description: The names of the state bits used for SMP2P output
->      items:
->        - const: ipa-clock-enabled-valid
-> diff --git a/Documentation/devicetree/bindings/power/supply/sc2731-charger.yaml b/Documentation/devicetree/bindings/power/supply/sc2731-charger.yaml
-> index db1aa238cda5..b62c2431f94e 100644
-> --- a/Documentation/devicetree/bindings/power/supply/sc2731-charger.yaml
-> +++ b/Documentation/devicetree/bindings/power/supply/sc2731-charger.yaml
-> @@ -20,7 +20,7 @@ properties:
->      maxItems: 1
->  
->    phys:
-> -    $ref: /schemas/types.yaml#/definitions/phandle
-> +    maxItems: 1
->      description: phandle to the USB phy
->  
->    monitored-battery:
-> diff --git a/Documentation/devicetree/bindings/sound/fsl,rpmsg.yaml b/Documentation/devicetree/bindings/sound/fsl,rpmsg.yaml
-> index b4c190bddd84..61802a11baf4 100644
-> --- a/Documentation/devicetree/bindings/sound/fsl,rpmsg.yaml
-> +++ b/Documentation/devicetree/bindings/sound/fsl,rpmsg.yaml
-> @@ -49,7 +49,7 @@ properties:
->      maxItems: 1
->  
->    memory-region:
-> -    $ref: /schemas/types.yaml#/definitions/phandle
-> +    maxItems: 1
->      description:
->        phandle to a node describing reserved memory (System RAM memory)
->        The M core can't access all the DDR memory space on some platform,
+This is respective GSO type
 
+>
+>
+> This is the gso_type not the feature actually.
+>
+> I wonder what's the reason for not
+>
+> 1) introducing a dedicated virtio-net feature bit for this
+> (VIRTIO_NET_F_GUEST_GSO_UDP_L4.
+
+This series is not for GUEST's feature, it is only for host feature.
+
+> 2) toggle the NETIF_F_GSO_UDP_L4  feature for tuntap based on the
+> negotiated feature.
+
+The NETIF_F_GSO_UDP_L4 would be required for the guest RX path.
+The guest TX path does not require any flags to be propagated, it only
+allows the guest to transmit large UDP packets and have them
+automatically splitted.
+(This is similar to HOST_UFO but does packet segmentation instead of
+fragmentation. GUEST_UFO indeed requires a respective NETIF flag, as
+it is unclear whether the guest is capable of receiving such packets).
+
+>
+> Thanks
+>
+>
+> >   #define VIRTIO_NET_HDR_GSO_ECN              0x80    /* TCP has ECN se=
+t */
+> >       __u8 gso_type;
+> >       __virtio16 hdr_len;     /* Ethernet + IP + tcp/udp hdrs */
+>
