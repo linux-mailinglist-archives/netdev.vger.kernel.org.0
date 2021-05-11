@@ -2,105 +2,65 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E961337A002
-	for <lists+netdev@lfdr.de>; Tue, 11 May 2021 08:50:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E6B9F379FBE
+	for <lists+netdev@lfdr.de>; Tue, 11 May 2021 08:36:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230441AbhEKGv0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 11 May 2021 02:51:26 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:31496 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S230373AbhEKGvV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 11 May 2021 02:51:21 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1620715814;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=umA1WrHOFiVlBbjKzKntHglDQdg2BgS3oCexgpceoV4=;
-        b=C3hZ1C9ZulrWTPUKToIwD6r37MfnNgVc4uCAa4DH0Yenaq2lqYqGxSdTOZ0DjNp7iYuqUR
-        p3OigLjZUlG2K1Pm+gVHZMXqRPODIyoydNZlERGKSkhrEKg234Mo7nfTJyNjV4DdqTR1+c
-        DeojI2FANWxh6RK9dl+eHvv0pC4gvoQ=
-Received: from mail-pj1-f71.google.com (mail-pj1-f71.google.com
- [209.85.216.71]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-21-RJhxj6GTNNmdN3auZ_biVw-1; Tue, 11 May 2021 02:50:11 -0400
-X-MC-Unique: RJhxj6GTNNmdN3auZ_biVw-1
-Received: by mail-pj1-f71.google.com with SMTP id g4-20020a17090a5784b02901560d133779so1026045pji.1
-        for <netdev@vger.kernel.org>; Mon, 10 May 2021 23:50:11 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-transfer-encoding
-         :content-language;
-        bh=umA1WrHOFiVlBbjKzKntHglDQdg2BgS3oCexgpceoV4=;
-        b=Ju9USzU6SZexkAiO3ORneg90nj3fCIxkZ5b9mkilBx8+x17CmPzIl/BbDcGzuqeOKK
-         bnJpQa9N6lb8Ny+QFqZzeRHyhTqgytam5CxdDxsKlBj5hnwKx88mnqTzKrY7oyshWX7v
-         KgCihHU2HGdD+ALSFx0kc5/Zculz1beYVwszz4j/zNdUVCP43WQkRQ/G74ebdxgufNex
-         oS3XIq6SrQQPLTzrc9UZPGOnAxl8YsTJ1vB6vJIwgT3yO6W1oGai+dn5nRLIUJGJygOf
-         /p8vnJYzmBCKcr2zlhOr75Q6jKbbD47UgESf/aj/R8th08usefno8hkkAEVvh3Po+zPN
-         PnaA==
-X-Gm-Message-State: AOAM5302MuGpsqohQuHd0aK7k+YTtG44TQVxHQCn+GaWuKdb+0ctriGv
-        yOvi+hYJGtQPlnNDxoOLGhTvuXXCt05qmvH2Rz1UcHfqAQeFcG9tmGVCPnZiaP3Wqa/PNWzldht
-        rg87bpAbQglzMZCu7
-X-Received: by 2002:a17:90b:184:: with SMTP id t4mr3416780pjs.223.1620715810244;
-        Mon, 10 May 2021 23:50:10 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJy0nIA3fflnZGCrCpbroOw85DYJI2FzsmmyMHTk1Ihc+KFfaCk0aGqGfPaWbSRNEdOwp4oOXg==
-X-Received: by 2002:a17:90b:184:: with SMTP id t4mr3416761pjs.223.1620715810062;
-        Mon, 10 May 2021 23:50:10 -0700 (PDT)
-Received: from wangxiaodeMacBook-Air.local ([209.132.188.80])
-        by smtp.gmail.com with ESMTPSA id j16sm13601256pgh.69.2021.05.10.23.50.06
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 10 May 2021 23:50:09 -0700 (PDT)
-Subject: Re: [PATCH 4/4] tun: indicate support for USO feature
-To:     Yuri Benditovich <yuri.benditovich@daynix.com>,
-        davem@davemloft.net, kuba@kernel.org, mst@redhat.com,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        virtualization@lists.linux-foundation.org
-Cc:     yan@daynix.com
-References: <20210511044253.469034-1-yuri.benditovich@daynix.com>
- <20210511044253.469034-5-yuri.benditovich@daynix.com>
-From:   Jason Wang <jasowang@redhat.com>
-Message-ID: <eb8c4984-f0cc-74ee-537f-fc60deaaaa73@redhat.com>
-Date:   Tue, 11 May 2021 14:50:01 +0800
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
- Gecko/20100101 Thunderbird/78.10.1
+        id S230351AbhEKGhw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 11 May 2021 02:37:52 -0400
+Received: from szxga05-in.huawei.com ([45.249.212.191]:2557 "EHLO
+        szxga05-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229807AbhEKGhw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 11 May 2021 02:37:52 -0400
+Received: from DGGEMS404-HUB.china.huawei.com (unknown [172.30.72.58])
+        by szxga05-in.huawei.com (SkyGuard) with ESMTP id 4FfSn942d1zkWMx;
+        Tue, 11 May 2021 14:34:05 +0800 (CST)
+Received: from linux-lmwb.huawei.com (10.175.103.112) by
+ DGGEMS404-HUB.china.huawei.com (10.3.19.204) with Microsoft SMTP Server id
+ 14.3.498.0; Tue, 11 May 2021 14:36:33 +0800
+From:   Zou Wei <zou_wei@huawei.com>
+To:     <3chas3@gmail.com>
+CC:     <linux-atm-general@lists.sourceforge.net>,
+        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        Zou Wei <zou_wei@huawei.com>
+Subject: [PATCH -next] atm: iphase: fix possible use-after-free in ia_module_exit()
+Date:   Tue, 11 May 2021 14:53:36 +0800
+Message-ID: <1620716016-107941-1-git-send-email-zou_wei@huawei.com>
+X-Mailer: git-send-email 2.6.2
 MIME-Version: 1.0
-In-Reply-To: <20210511044253.469034-5-yuri.benditovich@daynix.com>
-Content-Type: text/plain; charset=gbk; format=flowed
-Content-Transfer-Encoding: 8bit
-Content-Language: en-US
+Content-Type: text/plain
+X-Originating-IP: [10.175.103.112]
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+This module's remove path calls del_timer(). However, that function
+does not wait until the timer handler finishes. This means that the
+timer handler may still be running after the driver's remove function
+has finished, which would result in a use-after-free.
 
-ÔÚ 2021/5/11 ÏÂÎç12:42, Yuri Benditovich Ð´µÀ:
-> Signed-off-by: Yuri Benditovich <yuri.benditovich@daynix.com>
-> ---
->   drivers/net/tun.c | 2 +-
->   1 file changed, 1 insertion(+), 1 deletion(-)
->
-> diff --git a/drivers/net/tun.c b/drivers/net/tun.c
-> index 84f832806313..a35054f9d941 100644
-> --- a/drivers/net/tun.c
-> +++ b/drivers/net/tun.c
-> @@ -2812,7 +2812,7 @@ static int set_offload(struct tun_struct *tun, unsigned long arg)
->   			arg &= ~(TUN_F_TSO4|TUN_F_TSO6);
->   		}
->   
-> -		arg &= ~TUN_F_UFO;
-> +		arg &= ~(TUN_F_UFO|TUN_F_USO);
+Fix by calling del_timer_sync(), which makes sure the timer handler
+has finished, and unable to re-schedule itself.
 
+Reported-by: Hulk Robot <hulkci@huawei.com>
+Signed-off-by: Zou Wei <zou_wei@huawei.com>
+---
+ drivers/atm/iphase.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-It looks to me kernel doesn't use "USO", so TUN_F_UDP_GSO_L4 is a better 
-name for this and I guess we should toggle NETIF_F_UDP_GSO_l4 here?
-
-And how about macvtap?
-
-Thanks
-
-
->   	}
->   
->   	/* This gives the user a way to test for new features in future by
+diff --git a/drivers/atm/iphase.c b/drivers/atm/iphase.c
+index 933e3ff..3f2ebfb 100644
+--- a/drivers/atm/iphase.c
++++ b/drivers/atm/iphase.c
+@@ -3279,7 +3279,7 @@ static void __exit ia_module_exit(void)
+ {
+ 	pci_unregister_driver(&ia_driver);
+ 
+-        del_timer(&ia_timer);
++	del_timer_sync(&ia_timer);
+ }
+ 
+ module_init(ia_module_init);
+-- 
+2.6.2
 
