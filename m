@@ -2,134 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0760A37AF7F
-	for <lists+netdev@lfdr.de>; Tue, 11 May 2021 21:42:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0C26937AFC7
+	for <lists+netdev@lfdr.de>; Tue, 11 May 2021 21:58:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232109AbhEKTnQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 11 May 2021 15:43:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35552 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231454AbhEKTnP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 11 May 2021 15:43:15 -0400
-Received: from mail-il1-x12e.google.com (mail-il1-x12e.google.com [IPv6:2607:f8b0:4864:20::12e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4ABA0C06174A
-        for <netdev@vger.kernel.org>; Tue, 11 May 2021 12:42:09 -0700 (PDT)
-Received: by mail-il1-x12e.google.com with SMTP id j20so18154312ilo.10
-        for <netdev@vger.kernel.org>; Tue, 11 May 2021 12:42:09 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=OUH0FdBeW1WnRtCtReTmgR1inU25bGMEwO/oVzk72IY=;
-        b=RVHTN0z0CTnwSws52IqIFciBCI4uG+vGpfhMwu96/YF+df0LqBgOSSMhSzkxXxiL/a
-         MisbEK0ye3GOcwqozujkDgr4LFDPgSfqVPvhgFgRtDM+ZgUNs56dv9gBhPamQZbDkzSt
-         3MvlOWbL2P7hvcgMcpQEVK7U+n4bS+YmxpCYJc2eE1zDtsH3NW91cv15ID7sh6h1TME/
-         Ouhsdk6i4HcmmAhJAXPT68Hrpu9sq2BhRWZYHsOUL0wugcW+o466Tpz/lJEkFZNegAQ4
-         ibt7tmvAfGVmlqt8Nj50GLtdJUraz8W45UTTwNB2sLW/ga3G2eWphMoavkdlNa77udMW
-         4bYg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=OUH0FdBeW1WnRtCtReTmgR1inU25bGMEwO/oVzk72IY=;
-        b=YHch+rMVkwuGuLuOW+8i5fLNnk2E40q7cnZFEdXfzNgig5+TlOzT1BhRPO2L6CENQS
-         tBF7qjgGtIHFRzUN9dvpEa3QSbFemYm9l3Q2nZNNAlvEPP6cdUg8H3vecIMxUuI0lchH
-         n/XYmgkP2tnSjQslEIMluv4dPKZEKPdPyc1YituNAnSHpyQm7rOASnYqIvQ71krZ4tFX
-         RCqMfGukKzvC25wU+mEpSnV8+BCdp+Gi2pnINGZpqbi4AZj4kvCjxfbcRmy4POu+pO/m
-         LmvvF0M2ZicS0ZGKq8FmO4WM/ixlxu6np8zHFdl7b4dmEMULEdKgw+L9liWrgxLOKnVx
-         pwNg==
-X-Gm-Message-State: AOAM532m2sy2nDBh0WjkqlWmm/GMrm5Uj5496IkUoBULOpujh33pALER
-        YMB31ya8QpOr9kXin1po72Mk9A==
-X-Google-Smtp-Source: ABdhPJy7UBz9VZgu9DYKSXdPxSNT0xTU+VRdoVwBpK0Yq6Zbx7gYMMs6U0NAZjPzVpfKfJaQnUALLw==
-X-Received: by 2002:a05:6e02:12aa:: with SMTP id f10mr27982600ilr.44.1620762128709;
-        Tue, 11 May 2021 12:42:08 -0700 (PDT)
-Received: from presto.localdomain (c-73-185-129-58.hsd1.mn.comcast.net. [73.185.129.58])
-        by smtp.gmail.com with ESMTPSA id f13sm9973600ila.62.2021.05.11.12.42.07
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 11 May 2021 12:42:08 -0700 (PDT)
-From:   Alex Elder <elder@linaro.org>
-To:     davem@davemloft.net, kuba@kernel.org
-Cc:     bjorn.andersson@linaro.org, evgreen@chromium.org,
-        cpratapa@codeaurora.org, subashab@codeaurora.org, elder@kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH net] net: ipa: memory region array is variable size
-Date:   Tue, 11 May 2021 14:42:04 -0500
-Message-Id: <20210511194204.863605-1-elder@linaro.org>
-X-Mailer: git-send-email 2.27.0
+        id S229809AbhEKT7i (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 11 May 2021 15:59:38 -0400
+Received: from out5-smtp.messagingengine.com ([66.111.4.29]:46719 "EHLO
+        out5-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S229456AbhEKT7i (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 11 May 2021 15:59:38 -0400
+Received: from compute1.internal (compute1.nyi.internal [10.202.2.41])
+        by mailout.nyi.internal (Postfix) with ESMTP id 73CAE5C0178;
+        Tue, 11 May 2021 15:58:30 -0400 (EDT)
+Received: from mailfrontend1 ([10.202.2.162])
+  by compute1.internal (MEProxy); Tue, 11 May 2021 15:58:30 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:content-type:date:from:in-reply-to
+        :message-id:mime-version:references:subject:to:x-me-proxy
+        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm2; bh=w9En54
+        sELRkrvjsaCzYH+PrjQAJ9pi+3hV73917lLdg=; b=WTlpekK/dTiqrrmkvqFOvy
+        bZnxQ7yjnFvw1uFRweqQNyyletONl1RPSDMRtABxgefLG6X2VppCm1HGV4dLmRWg
+        wibf8pallLLQxeDbTsZBieEP2Gk0QysJYEGRyBL35btqIKvgtfDI/8MOXLCJth/R
+        4+MVde5KIkcneGXAx1h5jebqJNoK2pz959pOhDMz2sOE54KHMSWfujzDhw34CHmo
+        x4twPuV8FDMD1+RSnhpz/UiVgCNLF7aZORkVEWnXioIwMZ7IwrZipTwYZF6XsucV
+        PQA8kUjO8EL/qujrVZmqhfBZMvG1z3ajL3hJDrpEYRBa9eMc56Ql/5QK2F/TKfdA
+        ==
+X-ME-Sender: <xms:5uGaYIe_jYPO-7cMguxCPHIx14GFXmOflqMggISfn8oFmGD7ScHU9g>
+    <xme:5uGaYKPy10faArMJFuik1HTmiU0oowAB98ZEiJdNqvNZ7Kpp_YyEQ5Bbtr7tOwLTX
+    kMS0KvhAqyVdlQ>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduledrvdehtddgudeggecutefuodetggdotefrod
+    ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfgh
+    necuuegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmd
+    enucfjughrpeffhffvuffkfhggtggujgesthdtredttddtvdenucfhrhhomhepkfguohcu
+    ufgthhhimhhmvghluceoihguohhstghhsehiughoshgthhdrohhrgheqnecuggftrfgrth
+    htvghrnheptdffkeekfeduffevgeeujeffjefhtefgueeugfevtdeiheduueeukefhudeh
+    leetnecukfhppeekgedrvddvledrudehfedrudekjeenucevlhhushhtvghrufhiiigvpe
+    dtnecurfgrrhgrmhepmhgrihhlfhhrohhmpehiughoshgthhesihguohhstghhrdhorhhg
+X-ME-Proxy: <xmx:5uGaYJgZlZoSjwW6x1dkq4nytp6eFgxvqCqCsHkoGN4ZbHCzq-Xu6Q>
+    <xmx:5uGaYN_hfXP-gPbgP1quY6DkdRiFzpzGwxfGjASUwxRXam7cX7ij4Q>
+    <xmx:5uGaYEtKXx0DtON_8ghOU2FBxkI-pK54khOtPN5w3EB2BRMnHu-xEQ>
+    <xmx:5uGaYIgUFpeRPESLq5Xe4n0voJfDXimr9a5BE74wLWxQFjQvUWeolQ>
+Received: from localhost (igld-84-229-153-187.inter.net.il [84.229.153.187])
+        by mail.messagingengine.com (Postfix) with ESMTPA;
+        Tue, 11 May 2021 15:58:29 -0400 (EDT)
+Date:   Tue, 11 May 2021 22:58:26 +0300
+From:   Ido Schimmel <idosch@idosch.org>
+To:     David Ahern <dsahern@gmail.com>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
+        petrm@nvidia.com, roopa@nvidia.com, nikolay@nvidia.com,
+        ssuryaextr@gmail.com, mlxsw@nvidia.com,
+        Ido Schimmel <idosch@nvidia.com>
+Subject: Re: [RFC PATCH net-next v2 02/10] ipv4: Add a sysctl to control
+ multipath hash fields
+Message-ID: <YJrh4nUgjnmZsVCh@shredder>
+References: <20210509151615.200608-1-idosch@idosch.org>
+ <20210509151615.200608-3-idosch@idosch.org>
+ <59331028-c1a5-2a7a-1e27-57e62f95030f@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <59331028-c1a5-2a7a-1e27-57e62f95030f@gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-IPA configuration data includes an array of memory region
-descriptors.  That was a fixed-size array at one time, but
-at some point we started defining it such that it was only
-as big as required for a given platform.  The actual number
-of entries in the array is recorded in the configuration data
-along with the array.
+On Tue, May 11, 2021 at 09:10:46AM -0600, David Ahern wrote:
+> On 5/9/21 9:16 AM, Ido Schimmel wrote:
+> > diff --git a/Documentation/networking/ip-sysctl.rst b/Documentation/networking/ip-sysctl.rst
+> > index c2ecc9894fd0..15982f830abc 100644
+> > --- a/Documentation/networking/ip-sysctl.rst
+> > +++ b/Documentation/networking/ip-sysctl.rst
+> > @@ -100,6 +100,33 @@ fib_multipath_hash_policy - INTEGER
+> >  	- 1 - Layer 4
+> >  	- 2 - Layer 3 or inner Layer 3 if present
+> >  
+> > +fib_multipath_hash_fields - UNSIGNED INTEGER
+> > +	When fib_multipath_hash_policy is set to 3 (custom multipath hash), the
+> > +	fields used for multipath hash calculation are determined by this
+> > +	sysctl.
+> > +
+> > +	This value is a bitmask which enables various fields for multipath hash
+> > +	calculation.
+> > +
+> > +	Possible fields are:
+> > +
+> > +	====== ============================
+> > +	0x0001 Source IP address
+> > +	0x0002 Destination IP address
+> > +	0x0004 IP protocol
+> > +	0x0008 Unused
+> 
+> Document that this bit is flowlabel for IPv6 and ignored for ipv4.
 
-A loop in ipa_mem_config() still assumes the array has entries
-for all defined memory region IDs.  As a result, this loop can
-go past the end of the actual array and attempt to write
-"canary" values based on nonsensical data.
-
-Fix this, by stashing the number of entries in the array, and
-using that rather than IPA_MEM_COUNT in the initialization loop
-found in ipa_mem_config().
-
-The only remaining use of IPA_MEM_COUNT is in a validation check
-to ensure configuration data doesn't have too many entries.
-That's fine for now.
-
-Fixes: 3128aae8c439a ("net: ipa: redefine struct ipa_mem_data")
-Signed-off-by: Alex Elder <elder@linaro.org>
----
- drivers/net/ipa/ipa.h     | 2 ++
- drivers/net/ipa/ipa_mem.c | 3 ++-
- 2 files changed, 4 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/net/ipa/ipa.h b/drivers/net/ipa/ipa.h
-index e7ff376cb5b7d..744406832a774 100644
---- a/drivers/net/ipa/ipa.h
-+++ b/drivers/net/ipa/ipa.h
-@@ -58,6 +58,7 @@ enum ipa_flag {
-  * @mem_virt:		Virtual address of IPA-local memory space
-  * @mem_offset:		Offset from @mem_virt used for access to IPA memory
-  * @mem_size:		Total size (bytes) of memory at @mem_virt
-+ * @mem_count:		Number of entries in the mem array
-  * @mem:		Array of IPA-local memory region descriptors
-  * @imem_iova:		I/O virtual address of IPA region in IMEM
-  * @imem_size:		Size of IMEM region
-@@ -103,6 +104,7 @@ struct ipa {
- 	void *mem_virt;
- 	u32 mem_offset;
- 	u32 mem_size;
-+	u32 mem_count;
- 	const struct ipa_mem *mem;
- 
- 	unsigned long imem_iova;
-diff --git a/drivers/net/ipa/ipa_mem.c b/drivers/net/ipa/ipa_mem.c
-index c5c3b1b7e67d5..1624125e7459f 100644
---- a/drivers/net/ipa/ipa_mem.c
-+++ b/drivers/net/ipa/ipa_mem.c
-@@ -180,7 +180,7 @@ int ipa_mem_config(struct ipa *ipa)
- 	 * for the region, write "canary" values in the space prior to
- 	 * the region's base address.
- 	 */
--	for (mem_id = 0; mem_id < IPA_MEM_COUNT; mem_id++) {
-+	for (mem_id = 0; mem_id < ipa->mem_count; mem_id++) {
- 		const struct ipa_mem *mem = &ipa->mem[mem_id];
- 		u16 canary_count;
- 		__le32 *canary;
-@@ -487,6 +487,7 @@ int ipa_mem_init(struct ipa *ipa, const struct ipa_mem_data *mem_data)
- 	ipa->mem_size = resource_size(res);
- 
- 	/* The ipa->mem[] array is indexed by enum ipa_mem_id values */
-+	ipa->mem_count = mem_data->local_count;
- 	ipa->mem = mem_data->local;
- 
- 	ret = ipa_imem_init(ipa, mem_data->imem_addr, mem_data->imem_size);
--- 
-2.27.0
-
+OK
