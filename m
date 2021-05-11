@@ -2,206 +2,129 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8E64937AB0E
-	for <lists+netdev@lfdr.de>; Tue, 11 May 2021 17:46:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9B80437AB15
+	for <lists+netdev@lfdr.de>; Tue, 11 May 2021 17:48:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231951AbhEKPrh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 11 May 2021 11:47:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38180 "EHLO
+        id S231839AbhEKPt3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 11 May 2021 11:49:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38608 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231609AbhEKPrh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 11 May 2021 11:47:37 -0400
-Received: from mail-oi1-x230.google.com (mail-oi1-x230.google.com [IPv6:2607:f8b0:4864:20::230])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B7D7DC061574
-        for <netdev@vger.kernel.org>; Tue, 11 May 2021 08:46:30 -0700 (PDT)
-Received: by mail-oi1-x230.google.com with SMTP id k25so19441150oic.4
-        for <netdev@vger.kernel.org>; Tue, 11 May 2021 08:46:30 -0700 (PDT)
+        with ESMTP id S231561AbhEKPt2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 11 May 2021 11:49:28 -0400
+Received: from mail-oo1-xc29.google.com (mail-oo1-xc29.google.com [IPv6:2607:f8b0:4864:20::c29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D93BBC061574;
+        Tue, 11 May 2021 08:48:21 -0700 (PDT)
+Received: by mail-oo1-xc29.google.com with SMTP id e7-20020a4ad2470000b02902088d0512ceso1459943oos.8;
+        Tue, 11 May 2021 08:48:21 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=DD+GmLhR3P4/N7IafXqcIbAsGHci6maf9s5Q/89MZZI=;
-        b=sXiQ+cY7hfO1hqWLMbfvBj8Bf8oeb5cFbz88+j4ykGBf21h1QXb5MuxjwuPyUqOzi4
-         5X4/zicgik5B6SlDvRWN9cn8Cf/GXYj07y4+PpepRWYrpyR8G+31qauMRiAkbPin8z6J
-         pJRH9viH/XULvzD3xFFI+Ub1AbsnwBM2g2lDDdRvpncDuunt975Kv1gs5odcEmwEI/ij
-         ccJ7Eio5pimwMIclq7Q+lynWIlyFPyxgsdf8LkHHnK08xvTcahYY/YYPjfBbSrQPOztg
-         pWBAKeyVXL28JkRiWjv2F5DbCJFSIJAQ1lvPW1pSRrua5/Rl2Dna9JawFfj5COZIyRED
-         HGwA==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=5G3X0SsMYoBRSudd4/RxfVXt3YIGObL1pFXwXeHxFjA=;
+        b=ergBPEMz0eajaLPXgWUA6rjor17KYhfwTmK2sOuzzDbXqsPIWtVRKjfxbIfzY9OkIc
+         q0L2k0bcDQHmQnOLvySuWkGTMFVDa41heYsNZzJu0POZhOZPPGT8MDgenaetDOwBDhCO
+         JZWEsqDG+G1ALmEIReIrhqYUxm/ZrRY7aAZPIYjXQJCm15gyHomQlJ2mOncSfwLSnUUn
+         x2ltw4rw0iutyooHA0z3ND6QaxqyQb28rLR3pop34okjpBS4V5vtmt+PSopxAYHRWt8h
+         +pljNqMcTsAXw3aWT6x7hsB4OHac8L/kKUSbwPj5bGCzHiu9F6Sx1u0g/8NXmUgau1Xk
+         QhAA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=DD+GmLhR3P4/N7IafXqcIbAsGHci6maf9s5Q/89MZZI=;
-        b=ugeWu8eK8nnAS0wlfqNgrj691iXFU73miaLagpnldRSkUXymxAUHbkt0xFfIQItCQl
-         5ljmbLyaJtCUcwWgVQHfyM6TmH/fFnuBgdDh15oTCu2sgOuiIcxyM1fwEzhWur4y8SXw
-         NpsNvOGiwmAEbuQkIKeZWDXoBmOB3jLEBNj/zICtbtgY7HrxcREvo4qPfUIqt2EwNNA1
-         EEhXtOmUuRwM/4+cczODWQ+Iod5mgFU3oIY/HKKjrJk1YSE8et3B8NTFOa6gIuYUZm/c
-         hAg4zgvDFl/OpqVUAU9pWrgaR3NJyYsj7Rd9O2Qf+rr++/o+5RIlgA+IAKqFRjF9kloN
-         P14w==
-X-Gm-Message-State: AOAM531/JSO8Z/U72EkDQI9wc7cMjQv8pxYxmBywy+0p7SP+aZXsP9+8
-        a5cavEoaxNHa7xW+12YonKARULoLCCe4rA==
-X-Google-Smtp-Source: ABdhPJzRWPNsxJI2ty/u2IhMaku69mRXDk1r79NXw+0Qz6TshvtUOweVyOStFkVWZ7YT0luRBrRs0g==
-X-Received: by 2002:aca:1814:: with SMTP id h20mr4014868oih.150.1620747990163;
-        Tue, 11 May 2021 08:46:30 -0700 (PDT)
-Received: from Davids-MacBook-Pro.local ([2601:282:800:dc80:8052:e21b:4a8:8b78])
-        by smtp.googlemail.com with ESMTPSA id j16sm1330915otn.55.2021.05.11.08.46.29
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 11 May 2021 08:46:29 -0700 (PDT)
-Subject: Re: [RFC PATCH net-next v2 03/10] ipv4: Add custom multipath hash
- policy
-To:     Ido Schimmel <idosch@idosch.org>, netdev@vger.kernel.org
-Cc:     davem@davemloft.net, kuba@kernel.org, petrm@nvidia.com,
-        roopa@nvidia.com, nikolay@nvidia.com, ssuryaextr@gmail.com,
-        mlxsw@nvidia.com, Ido Schimmel <idosch@nvidia.com>
-References: <20210509151615.200608-1-idosch@idosch.org>
- <20210509151615.200608-4-idosch@idosch.org>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <0a199bbf-0ee7-1826-0906-dcfed8c86c7d@gmail.com>
-Date:   Tue, 11 May 2021 09:46:27 -0600
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
- Gecko/20100101 Thunderbird/78.10.1
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=5G3X0SsMYoBRSudd4/RxfVXt3YIGObL1pFXwXeHxFjA=;
+        b=acGR549tbPP/qgYb2blIGz706W1bLxZXNWHCEN43aHlhy1ITzDY6/j6E4U+vrB3oLX
+         LDUXDatV7ATfm0Sur33yQZX3hImEtzWizQhdIw/jJEOBRxf3BzbDVypn0To/xlPPQ7Jd
+         j24UBx6FfEWVtf0uBIPk0SYkEqQRBYfHePOTHtq0kuyYalqXsSS/UZ/thMIYmDoXbbKk
+         9b779wQJ5vOEHJFtutlNTIQhWp3BCLSz5pnFbbWge60Tk2CPDbF+tUStPNkTLhZw9neN
+         ZhEKEudry+9sdwmImXtKeJtXbBiTi08eotjo/RI5qy4eF5zaCtJsKiY92aiCwS/GlY+k
+         MMZw==
+X-Gm-Message-State: AOAM532i7K5wkM2I1xZI8uFqiNZBOkZdqB9CJGyy5yFytHBLdpqyrcq2
+        N7iPJ5nwrvhGAKjqceN4R5wBMl/n8lQ1XiehnJscNKZ98Hc=
+X-Google-Smtp-Source: ABdhPJzACYbQ8TvRjv21GKdTUAKZG5wgcKKCL8UftacLyBzooNVzwknDRupMyFB2bQaOxgOZJU1/+G22G6kfIOv1RJs=
+X-Received: by 2002:a4a:d085:: with SMTP id i5mr23978147oor.61.1620748101287;
+ Tue, 11 May 2021 08:48:21 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <20210509151615.200608-4-idosch@idosch.org>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+References: <YJVnO+TCRW83S6w4@phenom.ffwll.local> <CADnq5_Pvtj1vb0bak_gUkv9J3+vfsMZxVKTKYeUvwQCajAWoVQ@mail.gmail.com>
+ <YJVqL4c6SJc8wdkK@phenom.ffwll.local> <CADnq5_PHjiHy=Su_1VKr5ycdnXN-OuSXw0X_TeNqSj+TJs2MGA@mail.gmail.com>
+ <CADnq5_OjaPw5iF_82bjNPt6v-7OcRmXmXECcN+Gdg1NcucJiHA@mail.gmail.com>
+ <YJVwtS9XJlogZRqv@phenom.ffwll.local> <YJWWByISHSPqF+aN@slm.duckdns.org>
+ <CADnq5_Mwd-xHZQ4pt34=FPk2Gq3ij1FNHWsEz1LdS7_Dyo00iQ@mail.gmail.com>
+ <YJWqIVnX9giaKMTG@slm.duckdns.org> <CADnq5_PudV4ufQW=DqrDow_vvMQDCJVxjqZeXeTvM=6Xp+a_RQ@mail.gmail.com>
+ <YJXRHXIykyEBdnTF@slm.duckdns.org>
+In-Reply-To: <YJXRHXIykyEBdnTF@slm.duckdns.org>
+From:   Alex Deucher <alexdeucher@gmail.com>
+Date:   Tue, 11 May 2021 11:48:10 -0400
+Message-ID: <CADnq5_MDvhJiA2rd6ELAx87x2RdXJ_Am6N=xZQdtsG_KCubAtw@mail.gmail.com>
+Subject: Re: [RFC] Add BPF_PROG_TYPE_CGROUP_IOCTL
+To:     Tejun Heo <tj@kernel.org>
+Cc:     Daniel Vetter <daniel@ffwll.ch>, Kenny Ho <y2kenny@gmail.com>,
+        Song Liu <songliubraving@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>,
+        DRI Development <dri-devel@lists.freedesktop.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Kenny Ho <Kenny.Ho@amd.com>,
+        "open list:CONTROL GROUP (CGROUP)" <cgroups@vger.kernel.org>,
+        Brian Welty <brian.welty@intel.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        amd-gfx list <amd-gfx@lists.freedesktop.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Linux-Fsdevel <linux-fsdevel@vger.kernel.org>,
+        Alexander Viro <viro@zeniv.linux.org.uk>,
+        Network Development <netdev@vger.kernel.org>,
+        KP Singh <kpsingh@chromium.org>, Yonghong Song <yhs@fb.com>,
+        bpf <bpf@vger.kernel.org>, Dave Airlie <airlied@gmail.com>,
+        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        Alex Deucher <alexander.deucher@amd.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 5/9/21 9:16 AM, Ido Schimmel wrote:
-> diff --git a/net/ipv4/route.c b/net/ipv4/route.c
-> index 9d61e969446e..a4c477475f4c 100644
-> --- a/net/ipv4/route.c
-> +++ b/net/ipv4/route.c
-> @@ -1906,6 +1906,121 @@ static void ip_multipath_l3_keys(const struct sk_buff *skb,
->  	hash_keys->addrs.v4addrs.dst = key_iph->daddr;
->  }
->  
-> +static u32 fib_multipath_custom_hash_outer(const struct net *net,
-> +					   const struct sk_buff *skb,
-> +					   bool *p_has_inner)
-> +{
-> +	u32 hash_fields = net->ipv4.sysctl_fib_multipath_hash_fields;
-> +	struct flow_keys keys, hash_keys;
-> +
-> +	if (!(hash_fields & FIB_MULTIPATH_HASH_FIELD_OUTER_MASK))
-> +		return 0;
-> +
-> +	memset(&hash_keys, 0, sizeof(hash_keys));
-> +	skb_flow_dissect_flow_keys(skb, &keys, FLOW_DISSECTOR_F_STOP_AT_ENCAP);
-> +
-> +	hash_keys.control.addr_type = FLOW_DISSECTOR_KEY_IPV4_ADDRS;
-> +	if (hash_fields & FIB_MULTIPATH_HASH_FIELD_SRC_IP)
-> +		hash_keys.addrs.v4addrs.src = keys.addrs.v4addrs.src;
-> +	if (hash_fields & FIB_MULTIPATH_HASH_FIELD_DST_IP)
-> +		hash_keys.addrs.v4addrs.dst = keys.addrs.v4addrs.dst;
-> +	if (hash_fields & FIB_MULTIPATH_HASH_FIELD_IP_PROTO)
-> +		hash_keys.basic.ip_proto = keys.basic.ip_proto;
-> +	if (hash_fields & FIB_MULTIPATH_HASH_FIELD_SRC_PORT)
-> +		hash_keys.ports.src = keys.ports.src;
-> +	if (hash_fields & FIB_MULTIPATH_HASH_FIELD_DST_PORT)
-> +		hash_keys.ports.dst = keys.ports.dst;
-> +
-> +	*p_has_inner = !!(keys.control.flags & FLOW_DIS_ENCAPSULATION);
-> +	return flow_hash_from_keys(&hash_keys);
-> +}
-> +
-> +static u32 fib_multipath_custom_hash_inner(const struct net *net,
-> +					   const struct sk_buff *skb,
-> +					   bool has_inner)
-> +{
-> +	u32 hash_fields = net->ipv4.sysctl_fib_multipath_hash_fields;
-> +	struct flow_keys keys, hash_keys;
-> +
-> +	/* We assume the packet carries an encapsulation, but if none was
-> +	 * encountered during dissection of the outer flow, then there is no
-> +	 * point in calling the flow dissector again.
-> +	 */
-> +	if (!has_inner)
-> +		return 0;
-> +
-> +	if (!(hash_fields & FIB_MULTIPATH_HASH_FIELD_INNER_MASK))
-> +		return 0;
-> +
-> +	memset(&hash_keys, 0, sizeof(hash_keys));
-> +	skb_flow_dissect_flow_keys(skb, &keys, 0);
-> +
-> +	if (!(keys.control.flags & FLOW_DIS_ENCAPSULATION))
-> +		return 0;
-> +
-> +	if (keys.control.addr_type == FLOW_DISSECTOR_KEY_IPV4_ADDRS) {
-> +		hash_keys.control.addr_type = FLOW_DISSECTOR_KEY_IPV4_ADDRS;
-> +		if (hash_fields & FIB_MULTIPATH_HASH_FIELD_INNER_SRC_IP)
-> +			hash_keys.addrs.v4addrs.src = keys.addrs.v4addrs.src;
-> +		if (hash_fields & FIB_MULTIPATH_HASH_FIELD_INNER_DST_IP)
-> +			hash_keys.addrs.v4addrs.dst = keys.addrs.v4addrs.dst;
-> +	} else if (keys.control.addr_type == FLOW_DISSECTOR_KEY_IPV6_ADDRS) {
-> +		hash_keys.control.addr_type = FLOW_DISSECTOR_KEY_IPV6_ADDRS;
-> +		if (hash_fields & FIB_MULTIPATH_HASH_FIELD_INNER_SRC_IP)
-> +			hash_keys.addrs.v6addrs.src = keys.addrs.v6addrs.src;
-> +		if (hash_fields & FIB_MULTIPATH_HASH_FIELD_INNER_DST_IP)
-> +			hash_keys.addrs.v6addrs.dst = keys.addrs.v6addrs.dst;
-> +		if (hash_fields & FIB_MULTIPATH_HASH_FIELD_INNER_FLOWLABEL)
-> +			hash_keys.tags.flow_label = keys.tags.flow_label;
-> +	}
-> +
-> +	if (hash_fields & FIB_MULTIPATH_HASH_FIELD_INNER_IP_PROTO)
-> +		hash_keys.basic.ip_proto = keys.basic.ip_proto;
-> +	if (hash_fields & FIB_MULTIPATH_HASH_FIELD_INNER_SRC_PORT)
-> +		hash_keys.ports.src = keys.ports.src;
-> +	if (hash_fields & FIB_MULTIPATH_HASH_FIELD_INNER_DST_PORT)
-> +		hash_keys.ports.dst = keys.ports.dst;
-> +
-> +	return flow_hash_from_keys(&hash_keys);
-> +}
-> +
-> +static u32 fib_multipath_custom_hash_skb(const struct net *net,
-> +					 const struct sk_buff *skb)
-> +{
-> +	u32 mhash, mhash_inner;
-> +	bool has_inner = true;
-> +
+On Fri, May 7, 2021 at 7:45 PM Tejun Heo <tj@kernel.org> wrote:
+>
+> Hello,
+>
+> On Fri, May 07, 2021 at 06:30:56PM -0400, Alex Deucher wrote:
+> > Maybe we are speaking past each other.  I'm not following.  We got
+> > here because a device specific cgroup didn't make sense.  With my
+> > Linux user hat on, that makes sense.  I don't want to write code to a
+> > bunch of device specific interfaces if I can avoid it.  But as for
+> > temporal vs spatial partitioning of the GPU, the argument seems to be
+> > a sort of hand-wavy one that both spatial and temporal partitioning
+> > make sense on CPUs, but only temporal partitioning makes sense on
+> > GPUs.  I'm trying to understand that assertion.  There are some GPUs
+>
+> Spatial partitioning as implemented in cpuset isn't a desirable model. It's
+> there partly because it has historically been there. It doesn't really
+> require dynamic hierarchical distribution of anything and is more of a way
+> to batch-update per-task configuration, which is how it's actually
+> implemented. It's broken too in that it interferes with per-task affinity
+> settings. So, not exactly a good example to follow. In addition, this sort
+> of partitioning requires more hardware knowledge and GPUs are worse than
+> CPUs in that hardwares differ more.
+>
+> Features like this are trivial to implement from userland side by making
+> per-process settings inheritable and restricting who can update the
+> settings.
+>
+> > that can more easily be temporally partitioned and some that can be
+> > more easily spatially partitioned.  It doesn't seem any different than
+> > CPUs.
+>
+> Right, it doesn't really matter how the resource is distributed. What
+> matters is how granular and generic the distribution can be. If gpus can
+> implement work-conserving proportional distribution, that's something which
+> is widely useful and inherently requires dynamic scheduling from kernel
+> side. If it's about setting per-vendor affinities, this is way too much
+> cgroup interface for a feature which can be easily implemented outside
+> cgroup. Just do per-process (or whatever handles gpus use) and confine their
+> configurations from cgroup side however way.
+>
+> While the specific theme changes a bit, we're basically having the same
+> discussion with the same conclusion over the past however many months.
+> Hopefully, the point is clear by now.
 
-Is it not possible to do the dissect once here and pass keys to outer
-and inner functions?
+Thanks, that helps a lot.
 
-	memset(&hash_keys, 0, sizeof(hash_keys));
-	skb_flow_dissect_flow_keys(skb, &keys, flag);
-
-
-> +	mhash = fib_multipath_custom_hash_outer(net, skb, &has_inner);
-> +	mhash_inner = fib_multipath_custom_hash_inner(net, skb, has_inner);
-> +
-> +	return jhash_2words(mhash, mhash_inner, 0);
-> +}
-> +
-> +static u32 fib_multipath_custom_hash_fl4(const struct net *net,
-> +					 const struct flowi4 *fl4)
-> +{
-> +	u32 hash_fields = net->ipv4.sysctl_fib_multipath_hash_fields;
-> +	struct flow_keys hash_keys;
-> +
-> +	if (!(hash_fields & FIB_MULTIPATH_HASH_FIELD_OUTER_MASK))
-> +		return 0;
-> +
-> +	memset(&hash_keys, 0, sizeof(hash_keys));
-> +	hash_keys.control.addr_type = FLOW_DISSECTOR_KEY_IPV4_ADDRS;
-> +	if (hash_fields & FIB_MULTIPATH_HASH_FIELD_SRC_IP)
-> +		hash_keys.addrs.v4addrs.src = fl4->saddr;
-> +	if (hash_fields & FIB_MULTIPATH_HASH_FIELD_DST_IP)
-> +		hash_keys.addrs.v4addrs.dst = fl4->daddr;
-> +	if (hash_fields & FIB_MULTIPATH_HASH_FIELD_IP_PROTO)
-> +		hash_keys.basic.ip_proto = fl4->flowi4_proto;
-> +	if (hash_fields & FIB_MULTIPATH_HASH_FIELD_SRC_PORT)
-> +		hash_keys.ports.src = fl4->fl4_sport;
-> +	if (hash_fields & FIB_MULTIPATH_HASH_FIELD_DST_PORT)
-> +		hash_keys.ports.dst = fl4->fl4_dport;
-> +
-> +	return flow_hash_from_keys(&hash_keys);
-> +}
-> +
->  /* if skb is set it will be used and fl4 can be NULL */
->  int fib_multipath_hash(const struct net *net, const struct flowi4 *fl4,
->  		       const struct sk_buff *skb, struct flow_keys *flkeys)
+Alex
