@@ -2,87 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1C1B337AC90
-	for <lists+netdev@lfdr.de>; Tue, 11 May 2021 19:01:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id ED70B37AC99
+	for <lists+netdev@lfdr.de>; Tue, 11 May 2021 19:01:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231665AbhEKRCD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 11 May 2021 13:02:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55180 "EHLO
+        id S231439AbhEKRCn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 11 May 2021 13:02:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55330 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231230AbhEKRCC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 11 May 2021 13:02:02 -0400
-Received: from mail-pj1-x102d.google.com (mail-pj1-x102d.google.com [IPv6:2607:f8b0:4864:20::102d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F31F7C061574;
-        Tue, 11 May 2021 10:00:54 -0700 (PDT)
-Received: by mail-pj1-x102d.google.com with SMTP id pf4-20020a17090b1d84b029015ccffe0f2eso61627pjb.0;
-        Tue, 11 May 2021 10:00:54 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=fmFyHNnUFHNuAVxbIzn7lHV9kvhWQzN1eSc9Pbf0XcQ=;
-        b=myLkImHXOezSotuuATiOAEM8rI4bn/KntJijmRm0HOQeeHwV6aTGsPD7nv0BjqQoH1
-         3L+W86p3VkFFKF1vCivgZ0qDY4CZ1J9P3bAUYxierHIchWRD2cjkCBTXhAgs0oZtHK8E
-         f/zSe/dcSO79CEJDcjuxvyV9AGAixNGBTyGehW/EyGOmO0qoxUzxVIjKjJjsRpCsvrQ9
-         IV3J4d5IfaH/91hgpUNr80AqexKcSdABwYoGz4zngIkqisK4mcn4V+nSvrjZZiEkbJ8E
-         Fn4f9Ons6kvYNmL5aBZXFCVScrB4uAxETd2UTttxRQkelZq+5WueHFxRmL/wJTjHalaa
-         8+rw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=fmFyHNnUFHNuAVxbIzn7lHV9kvhWQzN1eSc9Pbf0XcQ=;
-        b=IsVTMCSuMqkmPVbsCD2aJ8YL0F+ALfSvNBf+NKPxq6cKEAr/91CFox6niXjCIS4S5O
-         afq76FHEzNdEw3ko5L7IGo2oqbFitZw0aCWLH/ERQfHr+6Uj/oYFOdgxBLIdSOkTC2GS
-         DJe4ub/kjhXoHFdn+mHePun7I7NPyGugMrdE9NerE/+9vPtv0XzGHIObEYSpCTGFIjWc
-         +HW01eboF5/NGsFBl5pjS2WKfaDiZAOje8M828T3gRBCr1XRIclemAc7pmdWHETBUpcC
-         /QNblQlRb9BvuxkSpIV7PeDM9U9yWebPwh7YN5C9yxAVyaRbfmFS4Eqwg4cmQ7SameAg
-         W5cQ==
-X-Gm-Message-State: AOAM531BYROJYmZIwGDM0dN0F4H5+I2qANq5T9EpWqHOxtQ+f/xGI+3b
-        m3o/ZcGgiP9gkVVGrcx32XlXTSV7b7cDtER86/c=
-X-Google-Smtp-Source: ABdhPJzmu1ezMUQi6YlVmGSO8GpWvroaYz0PCIlp5rMRht3gY+s4xQHOXqACOfoh44yUmzfbgFNkExgUPr7+XNncE0c=
-X-Received: by 2002:a17:902:10b:b029:ed:2b3e:beb4 with SMTP id
- 11-20020a170902010bb02900ed2b3ebeb4mr31789999plb.64.1620752454532; Tue, 11
- May 2021 10:00:54 -0700 (PDT)
-MIME-Version: 1.0
-References: <20210511113257.2094-1-rocco.yue@mediatek.com>
-In-Reply-To: <20210511113257.2094-1-rocco.yue@mediatek.com>
-From:   Cong Wang <xiyou.wangcong@gmail.com>
-Date:   Tue, 11 May 2021 10:00:43 -0700
-Message-ID: <CAM_iQpVWSJ8BdRoLDX0MdiqmJn2dp+U9JM4mcfzRbVn4MZbzcg@mail.gmail.com>
-Subject: Re: [PATCH][v3] rtnetlink: add rtnl_lock debug log
-To:     Rocco yue <rocco.yue@mediatek.com>
-Cc:     "David S . Miller" <davem@davemloft.net>,
+        with ESMTP id S231437AbhEKRCh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 11 May 2021 13:02:37 -0400
+Received: from ms.lwn.net (ms.lwn.net [IPv6:2600:3c01:e000:3a1::42])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C5F67C061574;
+        Tue, 11 May 2021 10:01:30 -0700 (PDT)
+Received: from localhost (unknown [IPv6:2601:281:8300:104d:444a:d152:279d:1dbb])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ms.lwn.net (Postfix) with ESMTPSA id 6C8034BF;
+        Tue, 11 May 2021 17:01:27 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 ms.lwn.net 6C8034BF
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=lwn.net; s=20201203;
+        t=1620752487; bh=QmVYJvT1Kzq68R+QLKACGPLdolv6eNZVx9knetb0KFs=;
+        h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
+        b=irQf+xtmaDJZYLKwq3hA8ztA2UhPkWaMvlGfMCect35HeamgThOzqqCroC26BP/Sl
+         CZ5fyVVCGLDX5hEb0cnVXCWNegwA+Xs245fqJaayhz/QOZsSyLbOEm6eAcMMVYm6OY
+         KYssjOyi8tvqVhDlU9yQOg3yj6ggq5zhGjo6YGvleqEvR4QvYakpL6DYodSr6ne5p2
+         POLXDUg/aNRvtMVVTSEj+i7YB0HcWdlIM/5xZz2XEUDjPiyFKgjrJG+D5PIfW0A/ku
+         jf3zV8C5QT23k16fFmU0Sd0ej651gdEPXtb2eRRgDOFPAPrnQiy6aPBFrlggpfHlaH
+         YTUqF86upi5qg==
+From:   Jonathan Corbet <corbet@lwn.net>
+To:     Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
+        Linux Doc Mailing List <linux-doc@vger.kernel.org>
+Cc:     Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
+        linux-kernel@vger.kernel.org,
+        "David S. Miller" <davem@davemloft.net>,
+        Guenter Roeck <linux@roeck-us.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Masahiro Yamada <masahiroy@kernel.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Tetsuo Handa <penguin-kernel@i-love.sakura.ne.jp>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
-        linux-mediatek@lists.infradead.org, wsd_upstream@mediatek.com
-Content-Type: text/plain; charset="UTF-8"
+        Jean Delvare <jdelvare@suse.com>, Jens Axboe <axboe@kernel.dk>,
+        intel-wired-lan@lists.osuosl.org, linux-hwmon@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH 0/5] Fix some UTF-8 bad usages
+In-Reply-To: <cover.1620744606.git.mchehab+huawei@kernel.org>
+References: <cover.1620744606.git.mchehab+huawei@kernel.org>
+Date:   Tue, 11 May 2021 11:01:26 -0600
+Message-ID: <87fsytdx21.fsf@meer.lwn.net>
+MIME-Version: 1.0
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, May 11, 2021 at 4:46 AM Rocco yue <rocco.yue@mediatek.com> wrote:
->
-> From: Rocco Yue <rocco.yue@mediatek.com>
->
-> We often encounter system hangs caused by certain process
-> holding rtnl_lock for a long time. Even if there is a lock
-> detection mechanism in Linux, it is a bit troublesome and
-> affects the system performance. We hope to add a lightweight
-> debugging mechanism for detecting rtnl_lock.
+Mauro Carvalho Chehab <mchehab+huawei@kernel.org> writes:
 
-Any reason why this is specific to RTNL lock? To me holding
-a mutex lock for a long time is problematic for any mutex.
-I have seen some fs mutex being held for a long time caused
-many hung tasks in the system.
+> This series follow up this past series:
+> 	https://lore.kernel.org/lkml/cover.1620641727.git.mchehab+huawei@kernel.org/
+>
+> Containing just the manual fixes from it. I'll respin the remaining
+> patches on a separate series.
+>
+> Please note that patches 1 to 3 are identical to the ones posted
+> on the original series.
+>
+> Patch 1 is special: it fixes some left-overs from a convertion
+> from cdrom-standard.tex: there, some characters that are
+> valid in C were converted to some visually similar UTF-8 by LaTeX.
+>
+> Patch 2 remove U+00ac (''): NOT SIGN characters at the end of
+> the first line of two files. No idea why those ended being there :-p
+>
+> Patch 3 replaces:
+> 	KernelVersion:3.3
+> by:
+> 	KernelVersion:	3.3
+>
+> which is the expected format for the KernelVersion field;
+>
+> Patches 4 and 5 fix some bad usages of EM DASH/EN DASH on
+> places that it should be, instead, a normal hyphen. I suspect
+> that they ended being there due to the usage of some conversion
+> toolset.
+>
+> Mauro Carvalho Chehab (5):
+>   docs: cdrom-standard.rst: get rid of uneeded UTF-8 chars
+>   docs: ABI: remove a meaningless UTF-8 character
+>   docs: ABI: remove some spurious characters
+>   docs: hwmon: tmp103.rst: fix bad usage of UTF-8 chars
+>   docs: networking: device_drivers: fix bad usage of UTF-8 chars
+>
+>  .../obsolete/sysfs-kernel-fadump_registered   |  2 +-
+>  .../obsolete/sysfs-kernel-fadump_release_mem  |  2 +-
+>  Documentation/ABI/testing/sysfs-module        |  4 +--
+>  Documentation/cdrom/cdrom-standard.rst        | 30 +++++++++----------
+>  Documentation/hwmon/tmp103.rst                |  4 +--
+>  .../device_drivers/ethernet/intel/i40e.rst    |  4 +--
+>  .../device_drivers/ethernet/intel/iavf.rst    |  2 +-
+>  7 files changed, 24 insertions(+), 24 deletions(-)
 
-Thanks.
+These seem pretty straightforward; I've applied the set, thanks.
+
+jon
