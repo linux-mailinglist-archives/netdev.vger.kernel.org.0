@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 936EC379CC0
-	for <lists+netdev@lfdr.de>; Tue, 11 May 2021 04:12:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 55897379CC2
+	for <lists+netdev@lfdr.de>; Tue, 11 May 2021 04:12:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230463AbhEKCNY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 10 May 2021 22:13:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51320 "EHLO
+        id S231132AbhEKCN0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 10 May 2021 22:13:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51318 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230477AbhEKCNT (ORCPT
+        with ESMTP id S230483AbhEKCNT (ORCPT
         <rfc822;netdev@vger.kernel.org>); Mon, 10 May 2021 22:13:19 -0400
-Received: from mail-wm1-x32f.google.com (mail-wm1-x32f.google.com [IPv6:2a00:1450:4864:20::32f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF70CC06138F;
-        Mon, 10 May 2021 19:11:14 -0700 (PDT)
-Received: by mail-wm1-x32f.google.com with SMTP id b11-20020a7bc24b0000b0290148da0694ffso330628wmj.2;
-        Mon, 10 May 2021 19:11:14 -0700 (PDT)
+Received: from mail-wm1-x32b.google.com (mail-wm1-x32b.google.com [IPv6:2a00:1450:4864:20::32b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D1DEC06137A;
+        Mon, 10 May 2021 19:11:19 -0700 (PDT)
+Received: by mail-wm1-x32b.google.com with SMTP id o6-20020a05600c4fc6b029015ec06d5269so374267wmq.0;
+        Mon, 10 May 2021 19:11:19 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=EqMnO3VT2i4M3faVTMux4QDLP8zL5VN1wUnSrpXnu9w=;
-        b=j1U5wyUsopAMXiyf1xFL8ED6UCP0l77w++CD6EtlObxoyzcQ0XK+7tFa5MvCExRbTu
-         3uMbL6ZJrNe6x/K0vCk8E9AzjdmmdT1DDMxjDo+MsFSDjnbeyOlo1O20OW0p2CB/4KJz
-         hbXcxC3ubjV85hv1CZU4gS0y83+LyWg9ZrD1n02VVK8mjTfCVMP8rY5KY3FSa1X3L8JW
-         ZhVfgXiS8+BXD2HldKEs8j8taXqV3LkYFi1XqlHYm7CYTr1y+YSdnOSOhjnUq6H8GSmR
-         s6sQxS6yKGKDK30I6cgmsT/c9tukO3aSkY51QI69QQ0dri2QfvfJvGBBQgDH+1YB0ZMq
-         9kuA==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=ctXpRlQ6FlvoV9ONjAkOtzHC3lSCN9dn13hMr8UOEWo=;
+        b=KzaTKEdI6Aox7ycGE/Af3TtSRNEdhWz2NtuXgv43vhAtIkryMT1IwFL0VjFUCVo6Un
+         TPcaYHXmN3JmXKehP1dcERGP08hhfLH5yXc3YeBcVK9pddP3NBGnNiAum6QreNTvLnA/
+         U2oJGFnqXYRATwoqVcZrBcYQbwrPqnCFldFyljcu+46Imy4pntKYdEjrb7qn/d8SFc/x
+         wgxFgTfC+0My1yrni+G23V4adgoPq7pbYY+utnF/KHsZnvE1zxt4NeUsFMWkeJROKgB+
+         /MUKjYYfYGXpLCgnoSGT0Qfz3X07o1OD+uOZrWzyVcfa7AsQbVSlrNq+RcZYuiE+okRV
+         zG2g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=EqMnO3VT2i4M3faVTMux4QDLP8zL5VN1wUnSrpXnu9w=;
-        b=ZIHLD5iF82ccAeYFNGy2ij1uzhCc6DKxraUkG4VNU+3TwtpbE4VqL9OPQzQ0Isvr1p
-         0Mhq0SL/IHW//r9u6yLkYkiIYxs+iz9bH/jLQFj4GbPUNWh5cNDsT/BUxMTmfoS9tH0Z
-         G7cYoBNrRlE9aB+4OXTXFNPtdaGAIm18CE8SmNfcEoEXjvZDNswRkJiN9CTVrztcQy/Z
-         OaoiOKgwIag3P/+BTCU3Xk1F4c1OOt51zKnT5R6H8uIdUF5mTDGsUZZx8tCOQ8q9Webu
-         NJBCwQcu4QB7cZC8xcWNgAw9ZqZjz8rGA1TZN4aHijPTlHF8k7AGnI6JvKenzIFI8wfI
-         Jy6w==
-X-Gm-Message-State: AOAM530YGdvKHdpw/9tApozDrvpxgIIcVxccnzjYxK6dVSsVM37GqGAt
-        NpZRXF+0yij2kXJrIlUDem8=
-X-Google-Smtp-Source: ABdhPJzAKb0WPvb+XsyoBXn0VGYjgsjHYPCoYFnBZI8t1W+jrP9tkyRMFHQ7BDIzmlS7nSxE/FtDfA==
-X-Received: by 2002:a05:600c:2242:: with SMTP id a2mr29400413wmm.125.1620699073430;
-        Mon, 10 May 2021 19:11:13 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=ctXpRlQ6FlvoV9ONjAkOtzHC3lSCN9dn13hMr8UOEWo=;
+        b=EMh+fAss/BI8LIW6kdjv4RX16nEoxufiAMRAgymne8mg0ZmzqM11QUv96ugwjRBiyN
+         Ordwkek+tfCr975U8bt8iO82vHEb2Q+WgcE9f050Cu0f2krVZ2Yyl0taZUJFOFAxG1D3
+         IIiqBtYzi/BDpiVcCsAN4yqco2GLBjfAybBOr/5MBGNso8ysSQ1/d0eUqXGDOxWCnN/n
+         6+vZOrXqOoogOELpy6VBcXzAxdorPO7fscPjIbadj4A4yN/rsEhItzKqspGPjtuWN6lx
+         DZJBQwMoJKM3OvM+uFRGSOnrCK1Ovdbv2Y6wE0iO+iqG87a3qIVGoUeZOg0oFph/Z2u1
+         Ybog==
+X-Gm-Message-State: AOAM530v5Q8cIpN07Qovy12Kngvt1xpz49pBbB/+66TH6ld6Pggr3Xwg
+        8dzMC6zUytyFJ3o+eejH0nY=
+X-Google-Smtp-Source: ABdhPJzVpSUwj9DXmAUtyjif61/9jE8TQgobtjX4WDHUtVKw2eGY0iCPEGT4jfOc6j8QP5GnsXbkuQ==
+X-Received: by 2002:a7b:c248:: with SMTP id b8mr2436190wmj.150.1620699078040;
+        Mon, 10 May 2021 19:11:18 -0700 (PDT)
 Received: from Ansuel-xps.localdomain (93-35-189-2.ip56.fastwebnet.it. [93.35.189.2])
-        by smtp.googlemail.com with ESMTPSA id l18sm25697583wrt.97.2021.05.10.19.11.12
+        by smtp.googlemail.com with ESMTPSA id l18sm25697583wrt.97.2021.05.10.19.11.17
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 10 May 2021 19:11:13 -0700 (PDT)
+        Mon, 10 May 2021 19:11:17 -0700 (PDT)
 From:   Ansuel Smith <ansuelsmth@gmail.com>
 To:     Andrew Lunn <andrew@lunn.ch>,
         Heiner Kallweit <hkallweit1@gmail.com>,
@@ -55,68 +55,99 @@ To:     Andrew Lunn <andrew@lunn.ch>,
         Jakub Kicinski <kuba@kernel.org>,
         netdev@vger.kernel.org (open list:ETHERNET PHY LIBRARY),
         linux-kernel@vger.kernel.org (open list)
-Cc:     Ansuel Smith <ansuelsmth@gmail.com>
-Subject: [RFC PATCH net-next 1/3] net: mdio: ipq8064: clean whitespaces in define
-Date:   Tue, 11 May 2021 04:11:08 +0200
-Message-Id: <20210511021110.17522-1-ansuelsmth@gmail.com>
+Cc:     Ansuel Smith <ansuelsmth@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>
+Subject: [RFC PATCH net-next 2/3] net: mdio: ipq8064: add regmap config to disable REGCACHE
+Date:   Tue, 11 May 2021 04:11:09 +0200
+Message-Id: <20210511021110.17522-2-ansuelsmth@gmail.com>
 X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20210511021110.17522-1-ansuelsmth@gmail.com>
+References: <20210511021110.17522-1-ansuelsmth@gmail.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Fix mixed whitespace and tab for define spacing.
+mdio drivers should not use REGCHACHE. Also disable locking since it's
+handled by the mdio users and regmap is always accessed atomically.
 
 Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
 ---
- drivers/net/mdio/mdio-ipq8064.c | 25 +++++++++++++------------
- 1 file changed, 13 insertions(+), 12 deletions(-)
+ drivers/net/mdio/mdio-ipq8064.c | 34 +++++++++++++++++++++++----------
+ 1 file changed, 24 insertions(+), 10 deletions(-)
 
 diff --git a/drivers/net/mdio/mdio-ipq8064.c b/drivers/net/mdio/mdio-ipq8064.c
-index 8fe8f0119fc1..f776a843a63b 100644
+index f776a843a63b..14b3c310af73 100644
 --- a/drivers/net/mdio/mdio-ipq8064.c
 +++ b/drivers/net/mdio/mdio-ipq8064.c
-@@ -15,25 +15,26 @@
+@@ -7,10 +7,9 @@
+ 
+ #include <linux/delay.h>
+ #include <linux/kernel.h>
+-#include <linux/mfd/syscon.h>
+ #include <linux/module.h>
+ #include <linux/of_mdio.h>
+-#include <linux/phy.h>
++#include <linux/of_address.h>
+ #include <linux/platform_device.h>
  #include <linux/regmap.h>
  
- /* MII address register definitions */
--#define MII_ADDR_REG_ADDR                       0x10
--#define MII_BUSY                                BIT(0)
--#define MII_WRITE                               BIT(1)
--#define MII_CLKRANGE_60_100M                    (0 << 2)
--#define MII_CLKRANGE_100_150M                   (1 << 2)
--#define MII_CLKRANGE_20_35M                     (2 << 2)
--#define MII_CLKRANGE_35_60M                     (3 << 2)
--#define MII_CLKRANGE_150_250M                   (4 << 2)
--#define MII_CLKRANGE_250_300M                   (5 << 2)
-+#define MII_ADDR_REG_ADDR			0x10
-+#define MII_BUSY				BIT(0)
-+#define MII_WRITE				BIT(1)
-+#define MII_CLKRANGE(x)				((x) << 2)
-+#define MII_CLKRANGE_60_100M			MII_CLKRANGE(0)
-+#define MII_CLKRANGE_100_150M			MII_CLKRANGE(1)
-+#define MII_CLKRANGE_20_35M			MII_CLKRANGE(2)
-+#define MII_CLKRANGE_35_60M			MII_CLKRANGE(3)
-+#define MII_CLKRANGE_150_250M			MII_CLKRANGE(4)
-+#define MII_CLKRANGE_250_300M			MII_CLKRANGE(5)
- #define MII_CLKRANGE_MASK			GENMASK(4, 2)
- #define MII_REG_SHIFT				6
- #define MII_REG_MASK				GENMASK(10, 6)
- #define MII_ADDR_SHIFT				11
- #define MII_ADDR_MASK				GENMASK(15, 11)
+@@ -97,14 +96,34 @@ ipq8064_mdio_write(struct mii_bus *bus, int phy_addr, int reg_offset, u16 data)
+ 	return ipq8064_mdio_wait_busy(priv);
+ }
  
--#define MII_DATA_REG_ADDR                       0x14
-+#define MII_DATA_REG_ADDR			0x14
++static const struct regmap_config ipq8064_mdio_regmap_config = {
++	.reg_bits = 32,
++	.reg_stride = 4,
++	.val_bits = 32,
++	.can_multi_write = false,
++	/* the mdio lock is used by any user of this mdio driver */
++	.disable_locking = true,
++
++	.cache_type = REGCACHE_NONE,
++};
++
+ static int
+ ipq8064_mdio_probe(struct platform_device *pdev)
+ {
+ 	struct device_node *np = pdev->dev.of_node;
+ 	struct ipq8064_mdio *priv;
++	struct resource res;
+ 	struct mii_bus *bus;
++	void __iomem *base;
+ 	int ret;
  
--#define MII_MDIO_DELAY_USEC                     (1000)
--#define MII_MDIO_RETRY_MSEC                     (10)
-+#define MII_MDIO_DELAY_USEC			(1000)
-+#define MII_MDIO_RETRY_MSEC			(10)
++	if (of_address_to_resource(np, 0, &res))
++		return -ENOMEM;
++
++	base = ioremap(res.start, resource_size(&res));
++	if (!base)
++		return -ENOMEM;
++
+ 	bus = devm_mdiobus_alloc_size(&pdev->dev, sizeof(*priv));
+ 	if (!bus)
+ 		return -ENOMEM;
+@@ -116,15 +135,10 @@ ipq8064_mdio_probe(struct platform_device *pdev)
+ 	bus->parent = &pdev->dev;
  
- struct ipq8064_mdio {
- 	struct regmap *base; /* NSS_GMAC0_BASE */
+ 	priv = bus->priv;
+-	priv->base = device_node_to_regmap(np);
+-	if (IS_ERR(priv->base)) {
+-		if (priv->base == ERR_PTR(-EPROBE_DEFER))
+-			return -EPROBE_DEFER;
+-
+-		dev_err(&pdev->dev, "error getting device regmap, error=%pe\n",
+-			priv->base);
++	priv->base = devm_regmap_init_mmio(&pdev->dev, base,
++					   &ipq8064_mdio_regmap_config);
++	if (IS_ERR(priv->base))
+ 		return PTR_ERR(priv->base);
+-	}
+ 
+ 	ret = of_mdiobus_register(bus, np);
+ 	if (ret)
 -- 
 2.30.2
 
