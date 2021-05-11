@@ -2,160 +2,134 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D725937A92A
-	for <lists+netdev@lfdr.de>; Tue, 11 May 2021 16:26:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2269437A979
+	for <lists+netdev@lfdr.de>; Tue, 11 May 2021 16:36:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231888AbhEKO1Y (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 11 May 2021 10:27:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48104 "EHLO
+        id S231947AbhEKOhG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 11 May 2021 10:37:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50348 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231684AbhEKO1T (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 11 May 2021 10:27:19 -0400
-Received: from mail-yb1-xb2c.google.com (mail-yb1-xb2c.google.com [IPv6:2607:f8b0:4864:20::b2c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F31CC06174A
-        for <netdev@vger.kernel.org>; Tue, 11 May 2021 07:26:13 -0700 (PDT)
-Received: by mail-yb1-xb2c.google.com with SMTP id v39so26556935ybd.4
-        for <netdev@vger.kernel.org>; Tue, 11 May 2021 07:26:13 -0700 (PDT)
+        with ESMTP id S231684AbhEKOhE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 11 May 2021 10:37:04 -0400
+Received: from mail-oi1-x229.google.com (mail-oi1-x229.google.com [IPv6:2607:f8b0:4864:20::229])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C53E9C061760
+        for <netdev@vger.kernel.org>; Tue, 11 May 2021 07:35:57 -0700 (PDT)
+Received: by mail-oi1-x229.google.com with SMTP id v24so112320oiv.3
+        for <netdev@vger.kernel.org>; Tue, 11 May 2021 07:35:57 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=CEaJC4cb5Y4A+8IsZZEeBM2QdsYN5Y7DFCllFllvi+8=;
-        b=zHX1LMvKjHtyR4sV+y0aqvfoFcsp0EjIHx5Pt5zG+iVHvcxKYTo3vrUGTaAWwd8n54
-         Sfqn8OV7GElBxhfBXlUssjujJWtAC4qSGRQRUdjhpxxfIF/QhMZuc4qpQhRqMR2wxO35
-         PUJFZ124qF2EtUdMTmUBpVLFUQUtq2V0+5HEOB02MRwMRFtF2H0ypRhbY9hAsMcY5VaX
-         NMWRowJcerYr/hEpfCDq56QNJVhvrpZzyFRgGaLU7Od2GT34GNf6kMsyWrhX+phrvlrk
-         he7jEFsGAUZVNd7E0mAorNTJN4vbw3juF/pR8H2tEAQ/4MVq5x3yPsBcSeKS4v/uiUHB
-         uX1Q==
+        d=ieee.org; s=google;
+        h=subject:to:references:from:cc:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=ETXAFKWQdH8/eG9YgJ2MyXQqUI4w0G+a8+7kidOetNw=;
+        b=D+8UcMkB2GUwjj2F27jdDoxAVAL9rdC9MdMoJFlDBNeHzfe67XWP/sw3xSweHhjvu0
+         L7zFyh43n9/fy4cUZSlUsyNvNqDkT2TqDuEFXFN77WQ7UwdcaxgaJydbt2h0Tqt9neqT
+         2ljICDLxSDdscBg19eDiJRfFGl65YBejwUIvU=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=CEaJC4cb5Y4A+8IsZZEeBM2QdsYN5Y7DFCllFllvi+8=;
-        b=qPMVzx3kSN6OXv/a6vanRjPnQiLwoOXIPD4zroXAO56KY3UdREouwCojoAU/dmsJaM
-         C4EQB+CA3YlWsqBaQWo3qsPRnyPQYaHP6AJpDiIo/OuGO57X1y/2oWVR+ezzhg9+RP09
-         VcxlNqZdy2CKrPtBJO8V+vt/tEBCksPaC0LjimxM5IOVn4oHNr/yu/qWYwjtfaOie6SH
-         O/RlQv9EnLwdE9I+Gx3G4kxmtJjW9JaJdqTi1IFQzVSZ+Fg4k8ucmHspR2EhShC29DsE
-         EEtzcvXe4ueYKBtqs3UDzatClcblcCiniYOulZE5bxf88F95DS+hunJ9Z6zrCKinhiFJ
-         rr1w==
-X-Gm-Message-State: AOAM533eSuWhsftRKCG31WgioHwF1/XxGiCjgRp4icpa5uX07v2GD5P5
-        r2T6BYV674K/xQKHm1AXO52XXz01cInVCkRlX6gLkBOHz/FwJA==
-X-Google-Smtp-Source: ABdhPJzh4VjKqBeHWbxCHf0TChJFitLGXDaA/GUpbzyFXfVL/53v7XHycwNEzDPWQyzljYzsrL3I6khv5C0KKCJRTSQ=
-X-Received: by 2002:a25:d0cb:: with SMTP id h194mr28426645ybg.408.1620743172546;
- Tue, 11 May 2021 07:26:12 -0700 (PDT)
+        h=x-gm-message-state:subject:to:references:from:cc:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=ETXAFKWQdH8/eG9YgJ2MyXQqUI4w0G+a8+7kidOetNw=;
+        b=VBSH0rGXcDvrmOeGXBqEZil9Q36coHJ/DQIllyV1awQ36dQ6ruNatGLD2Fkc3/sQQA
+         Zi/RAHl640Hcb3sljqZMbMtZCczHBjWtFxrB+isK6xOOv1x8UQ2Q74horzFs4Mdq1ted
+         lCgCZWn5z2IykUXXeOxicxYULpirg66kh0QPlUKa+b04n0DPUqOjYI8Lps19qFlRPMIE
+         JNiohE7BtiQaUzKyFzfVj929BSkQzw+g3MRNdshQgU3SWZMpkz2C71Xf36eOMzAXQs1i
+         bt+0jNMf3/CjAJx+Oh7ED6REUbljgoSWdo/s+ebdnkm+p1iZZFdquDhFS6WZwnChQVLd
+         Oy2w==
+X-Gm-Message-State: AOAM533KNgwkwcAqpK4uifS+Wok9pdYUXAVF/HHYApxlxXtzQ5qbBeRb
+        6g2rj3KZfOlbK6+eppRktL9KGw==
+X-Google-Smtp-Source: ABdhPJyvp7T0CdewBKkqMXtDA5ThSmqkKCGgPnZJ05uagz+Vq5z9FBuvh4nrA0ZkdxuooO6UIklVPg==
+X-Received: by 2002:aca:53d8:: with SMTP id h207mr3883260oib.177.1620743757147;
+        Tue, 11 May 2021 07:35:57 -0700 (PDT)
+Received: from [172.22.22.4] (c-73-185-129-58.hsd1.mn.comcast.net. [73.185.129.58])
+        by smtp.googlemail.com with ESMTPSA id 2sm3341540ota.67.2021.05.11.07.35.55
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 11 May 2021 07:35:56 -0700 (PDT)
+Subject: Re: [PATCH v3 1/1] kernel.h: Split out panic and oops helpers
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+References: <20210511074137.33666-1-andriy.shevchenko@linux.intel.com>
+From:   Alex Elder <elder@ieee.org>
+Cc:     linux-xtensa@linux-xtensa.org,
+        openipmi-developer@lists.sourceforge.net,
+        linux-clk@vger.kernel.org, linux-edac@vger.kernel.org,
+        linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-mips@vger.kernel.org,
+        linux-parisc@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
+        linux-s390@vger.kernel.org, sparclinux@vger.kernel.org,
+        linux-um@lists.infradead.org, linux-hyperv@vger.kernel.org,
+        coresight@lists.linaro.org, linux-leds@vger.kernel.org,
+        bcm-kernel-feedback-list@broadcom.com, netdev@vger.kernel.org,
+        linux-pm@vger.kernel.org, linux-remoteproc@vger.kernel.org,
+        linux-staging@lists.linux.dev, dri-devel@lists.freedesktop.org,
+        linux-fbdev@vger.kernel.org, linux-arch@vger.kernel.org,
+        kexec@lists.infradead.org, rcu@vger.kernel.org,
+        linux-fsdevel@vger.kernel.org, xen-devel@lists.xenproject.org
+Message-ID: <c6fa5d2c-84e2-2046-19f0-66cf5dd72077@ieee.org>
+Date:   Tue, 11 May 2021 09:35:54 -0500
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.7.1
 MIME-Version: 1.0
-References: <20210511133118.15012-1-mcroce@linux.microsoft.com>
- <20210511133118.15012-2-mcroce@linux.microsoft.com> <YJqKfNh6l3yY2daM@casper.infradead.org>
- <YJqQgYSWH2qan1GS@apalos.home> <YJqSM79sOk1PRFPT@casper.infradead.org>
-In-Reply-To: <YJqSM79sOk1PRFPT@casper.infradead.org>
-From:   Ilias Apalodimas <ilias.apalodimas@linaro.org>
-Date:   Tue, 11 May 2021 17:25:36 +0300
-Message-ID: <CAC_iWj+Tw9DzzzVj-F9AwzBN_OJV_HN2miJT4KTBH_Uei_V2ZA@mail.gmail.com>
-Subject: Re: [PATCH net-next v4 1/4] mm: add a signature in struct page
-To:     Matthew Wilcox <willy@infradead.org>
-Cc:     Matteo Croce <mcroce@linux.microsoft.com>,
-        Networking <netdev@vger.kernel.org>,
-        Linux-MM <linux-mm@kvack.org>,
-        Ayush Sawal <ayush.sawal@chelsio.com>,
-        Vinay Kumar Yadav <vinay.yadav@chelsio.com>,
-        Rohit Maheshwari <rohitm@chelsio.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        Marcin Wojtas <mw@semihalf.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Mirko Lindner <mlindner@marvell.com>,
-        Stephen Hemminger <stephen@networkplumber.org>,
-        Tariq Toukan <tariqt@nvidia.com>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Boris Pismenny <borisp@nvidia.com>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
-        Vlastimil Babka <vbabka@suse.cz>, Yu Zhao <yuzhao@google.com>,
-        Will Deacon <will@kernel.org>,
-        Michel Lespinasse <walken@google.com>,
-        Fenghua Yu <fenghua.yu@intel.com>,
-        Roman Gushchin <guro@fb.com>, Hugh Dickins <hughd@google.com>,
-        Peter Xu <peterx@redhat.com>, Jason Gunthorpe <jgg@ziepe.ca>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
-        Alexander Lobakin <alobakin@pm.me>,
-        Cong Wang <cong.wang@bytedance.com>, wenxu <wenxu@ucloud.cn>,
-        Kevin Hao <haokexin@gmail.com>,
-        Jakub Sitnicki <jakub@cloudflare.com>,
-        Marco Elver <elver@google.com>,
-        Willem de Bruijn <willemb@google.com>,
-        Miaohe Lin <linmiaohe@huawei.com>,
-        Yunsheng Lin <linyunsheng@huawei.com>,
-        Guillaume Nault <gnault@redhat.com>,
-        open list <linux-kernel@vger.kernel.org>,
-        linux-rdma@vger.kernel.org, bpf <bpf@vger.kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        David Ahern <dsahern@gmail.com>,
-        Lorenzo Bianconi <lorenzo@kernel.org>,
-        Saeed Mahameed <saeedm@nvidia.com>,
-        Andrew Lunn <andrew@lunn.ch>, Paolo Abeni <pabeni@redhat.com>,
-        Sven Auhagen <sven.auhagen@voleatech.de>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <20210511074137.33666-1-andriy.shevchenko@linux.intel.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 11 May 2021 at 17:19, Matthew Wilcox <willy@infradead.org> wrote:
->
-> On Tue, May 11, 2021 at 05:11:13PM +0300, Ilias Apalodimas wrote:
-> > Hi Matthew,
-> >
-> > On Tue, May 11, 2021 at 02:45:32PM +0100, Matthew Wilcox wrote:
-> > > On Tue, May 11, 2021 at 03:31:15PM +0200, Matteo Croce wrote:
-> > > > @@ -101,6 +101,7 @@ struct page {
-> > > >                    * 32-bit architectures.
-> > > >                    */
-> > > >                   unsigned long dma_addr[2];
-> > > > +                 unsigned long signature;
-> > > >           };
-> > > >           struct {        /* slab, slob and slub */
-> > > >                   union {
-> > >
-> > > No.  Signature now aliases with page->mapping, which is going to go
-> > > badly wrong for drivers which map this page into userspace.
-> > >
-> > > I had this as:
-> > >
-> > > +                       unsigned long pp_magic;
-> > > +                       unsigned long xmi;
-> > > +                       unsigned long _pp_mapping_pad;
-> > >                         unsigned long dma_addr[2];
-> > >
-> > > and pp_magic needs to be set to something with bits 0&1 clear and
-> > > clearly isn't a pointer.  I went with POISON_POINTER_DELTA + 0x40.
-> >
-> > Regardless to the changes required, there's another thing we'd like your
-> > opinion on.
-> > There was a change wrt to the previous patchset. We used to store the
-> > struct xdp_mem_info into page->private.  On the new version we store the
-> > page_pool ptr address in page->private (there's an explanation why on the
-> > mail thread, but the tl;dr is that we can get some more speed and keeping
-> > xdp_mem_info is not that crucial). So since we can just store the page_pool
-> > address directly, should we keep using page->private or it's better to
-> > do:
-> >
-> > +                       unsigned long pp_magic;
-> > +                       unsigned long pp_ptr;
-> > +                       unsigned long _pp_mapping_pad;
-> >                         unsigned long dma_addr[2];
-> > and use pp_ptr?
->
-> I'd rather you didn't use page_private ... Any reason not to use:
->
->                         unsigned long pp_magic;
->                         struct page_pool *pp;
->                         unsigned long _pp_mapping_pad;
->                         unsigned long dma_addr[2];
->
-> ?
+On 5/11/21 2:41 AM, Andy Shevchenko wrote:
+> kernel.h is being used as a dump for all kinds of stuff for a long time.
+> Here is the attempt to start cleaning it up by splitting out panic and
+> oops helpers.
+> 
+> There are several purposes of doing this:
+> - dropping dependency in bug.h
+> - dropping a loop by moving out panic_notifier.h
+> - unload kernel.h from something which has its own domain
+> 
+> At the same time convert users tree-wide to use new headers, although
+> for the time being include new header back to kernel.h to avoid twisted
+> indirected includes for existing users.
+> 
+> Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+> Reviewed-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+> Acked-by: Mike Rapoport <rppt@linux.ibm.com>
+> Acked-by: Corey Minyard <cminyard@mvista.com>
+> Acked-by: Christian Brauner <christian.brauner@ubuntu.com>
+> Acked-by: Arnd Bergmann <arnd@arndb.de>
+> Acked-by: Kees Cook <keescook@chromium.org>
+> Acked-by: Wei Liu <wei.liu@kernel.org>
+> Acked-by: Rasmus Villemoes <linux@rasmusvillemoes.dk>
+> Co-developed-by: Andrew Morton <akpm@linux-foundation.org>
+> Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
+> Acked-by: Sebastian Reichel <sre@kernel.org>
+> Acked-by: Luis Chamberlain <mcgrof@kernel.org>
+> Acked-by: Stephen Boyd <sboyd@kernel.org>
+> Acked-by: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
+> Acked-by: Helge Deller <deller@gmx.de> # parisc
+> ---
+> v3: rebased on top of v5.13-rc1, collected a few more tags
+> 
+> Note WRT Andrew's SoB tag above: I have added it since part of the cases
+> I took from him. Andrew, feel free to amend or tell me how you want me
+> to do.
+> 
 
-Nope not at all, either would work. we'll switch to that
+Acked-by: Alex Elder <elder@kernel.org>
+
+. . .
+
+> diff --git a/drivers/net/ipa/ipa_smp2p.c b/drivers/net/ipa/ipa_smp2p.c
+> index a5f7a79a1923..34b68dc43886 100644
+> --- a/drivers/net/ipa/ipa_smp2p.c
+> +++ b/drivers/net/ipa/ipa_smp2p.c
+> @@ -8,6 +8,7 @@
+>   #include <linux/device.h>
+>   #include <linux/interrupt.h>
+>   #include <linux/notifier.h>
+> +#include <linux/panic_notifier.h>
+>   #include <linux/soc/qcom/smem.h>
+>   #include <linux/soc/qcom/smem_state.h>
+>   
+
+. . .
