@@ -2,102 +2,116 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5AE0437B2CE
-	for <lists+netdev@lfdr.de>; Wed, 12 May 2021 01:54:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9652137B2D2
+	for <lists+netdev@lfdr.de>; Wed, 12 May 2021 01:56:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229968AbhEKXz3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 11 May 2021 19:55:29 -0400
-Received: from bilbo.ozlabs.org ([203.11.71.1]:53671 "EHLO ozlabs.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229637AbhEKXz2 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 11 May 2021 19:55:28 -0400
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 4FfvsR58ZBz9sWC;
-        Wed, 12 May 2021 09:54:19 +1000 (AEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=canb.auug.org.au;
-        s=201702; t=1620777260;
-        bh=SGsGx7JGciiu+5QnXSBQ8t2IqebMwAWOqLoy+nBZKwY=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=g6malUTRz5JkiZZmUGwDabJ5+66dfP7iCDxvabbRZx4fNQkJCrpq8OEsTMaUi9uAW
-         nc4JQmQ2rMdBfKgegoKNHpJjUPfH8gMld804eKg9AHbYUBhgTNmDcvK8IPVhHxK2BF
-         BRD1m2JRq9YNKCd3Sa1a8PUN3/idYpiNOupIhQeIN9ijRYbuIugE74gt0a4mOx+w77
-         wqTRL3oWFj0orJLMR1GiWOlUHUcRk/W8MGDzddChZA07kj/inTlIN78/G6sX4p8V4V
-         WpnPtNRorbwJXtSMICa4QmkoiFHUscg4INFEtzqQkf5b0V44LAsjiS8YF/HESDCK43
-         4+yVArbVcfhkQ==
-Date:   Wed, 12 May 2021 09:54:18 +1000
-From:   Stephen Rothwell <sfr@canb.auug.org.au>
-To:     David Miller <davem@davemloft.net>,
-        Networking <netdev@vger.kernel.org>, Greg KH <greg@kroah.com>
-Cc:     Loic Poulain <loic.poulain@linaro.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>,
-        Oliver Neukum <oneukum@suse.com>
-Subject: Re: linux-next: build failure after merge of the net-next tree
-Message-ID: <20210512095418.0ad4ea4a@canb.auug.org.au>
-In-Reply-To: <20210512095201.09323cda@canb.auug.org.au>
-References: <20210512095201.09323cda@canb.auug.org.au>
+        id S229984AbhEKX5m (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 11 May 2021 19:57:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36608 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229736AbhEKX5k (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 11 May 2021 19:57:40 -0400
+Received: from mail-oi1-x22c.google.com (mail-oi1-x22c.google.com [IPv6:2607:f8b0:4864:20::22c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B9D6C061574;
+        Tue, 11 May 2021 16:56:33 -0700 (PDT)
+Received: by mail-oi1-x22c.google.com with SMTP id j75so20642362oih.10;
+        Tue, 11 May 2021 16:56:33 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=sender:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=GVd0C6U+pOQCTdpKsYSoAOdkAaViQw9tGJFeL10a/eo=;
+        b=KooqjuH3XsHQYC26jxJKyYTleW1BaqZqY802qbXkRoIY2LtGSZnQgHyasKc61dauDC
+         Jjq+XZ8lwg237j5X7DPryg+6bHjmjRx1c7zXKe/507Z5+84KyXCp9TgYztCd9l792ljt
+         5EvCi0MhR3HPD5qxnOwOalKNdFS0WQ+LeYeHOu4Rnp3CXJfixNgHplqxHmFLt1ddqpO8
+         mxeQpF7pnMqOidm/WsDhbyBVDrGaVBYBjLmYOsly0UaODsRbw9l6dSbZymNY/4WwjUlk
+         tNvXPdKJbkXWOhUnHczgYTw7qO/j6nbLCgLD58T+wH+LH4ilF3m1PGIcbqmdswVjtRkd
+         lwmw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:sender:from:to:cc:subject:date:message-id
+         :mime-version:content-transfer-encoding;
+        bh=GVd0C6U+pOQCTdpKsYSoAOdkAaViQw9tGJFeL10a/eo=;
+        b=Gx4A+H81q/F4lCGIVEJ13PA/g5xWdmckhtfVQAPkog/Gn4WfEmGVd5JzGepQaa4CEq
+         2A5iZ9DmVm6aIOC59+kVPMp8rzb4XpaqqtXCANXmgD8T3U8bp5gl7qPcm5Wev0G80PHH
+         AQLp3G0ZuLSyzgh5piqaGwfXq+gRsRo+Qw98qPH3uFuzylOrwkNgtpaKb70z2/7YiDI8
+         p9n2xonP1ZrrOlpPu937zfVQc/irSl2JTxdWKYsH2LGK7djHIlW5CJWjpO24xqZniEBV
+         TIpQy1UJlzf+QmVdMKl9tC1b33i1WAIM4q997lSdf5xoaFV8HonqbdVU0s8P80RlOdpY
+         j1Ig==
+X-Gm-Message-State: AOAM532LAJuKpPEuGGIAu0HfN7zBPU6AJO/JLFlpQQWDKwPsFcjJu2r6
+        aGjO+DlsSsbCzbtoB0E6GGI=
+X-Google-Smtp-Source: ABdhPJz2Y4w7cSHleO+dJO2wqq43bsT3xrmZ5a5uadkZOaLIzG20LSakA2d2PWBg14X6XPqXuhtklA==
+X-Received: by 2002:aca:4acf:: with SMTP id x198mr24019150oia.111.1620777392722;
+        Tue, 11 May 2021 16:56:32 -0700 (PDT)
+Received: from localhost ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
+        by smtp.gmail.com with ESMTPSA id d19sm3610578oop.26.2021.05.11.16.56.31
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 11 May 2021 16:56:32 -0700 (PDT)
+Sender: Guenter Roeck <groeck7@gmail.com>
+From:   Guenter Roeck <linux@roeck-us.net>
+To:     Arend van Spriel <aspriel@gmail.com>
+Cc:     Kalle Valo <kvalo@codeaurora.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        linux-wireless@vger.kernel.org,
+        brcm80211-dev-list.pdl@broadcom.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Guenter Roeck <linux@roeck-us.net>
+Subject: [PATCH] brcm80211: Drop unnecessary NULL check after container_of
+Date:   Tue, 11 May 2021 16:56:29 -0700
+Message-Id: <20210511235629.1686038-1-linux@roeck-us.net>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="Sig_/lTN1OeNplbEpaffUwB8n4zp";
- protocol="application/pgp-signature"; micalg=pgp-sha256
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---Sig_/lTN1OeNplbEpaffUwB8n4zp
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
+The parameter passed to ai_detach() is guaranteed to never be NULL
+because it is checked by the caller. Consequently, the result of
+container_of() on it is also never NULL, and a NULL check on it
+is unnecessary. Even without that, the NULL check would still be
+unnecessary because the subsequent kfree() can handle NULL arguments.
+On top of all that, it is misleading to check the result of container_of()
+against NULL because the position of the contained element could change,
+which would make the check invalid. Remove it.
 
-Hi Stephen,
+This change was made automatically with the following Coccinelle script.
 
-On Wed, 12 May 2021 09:52:01 +1000 Stephen Rothwell <sfr@canb.auug.org.au> =
-wrote:
->
-> After merging the net-next tree, today's linux-next build (x86_64
-> allmodconfig) failed like this:
->=20
-> drivers/usb/class/cdc-wdm.c: In function 'wdm_wwan_port_stop':
-> drivers/usb/class/cdc-wdm.c:858:2: error: implicit declaration of functio=
-n 'kill_urbs' [-Werror=3Dimplicit-function-declaration]
->   858 |  kill_urbs(desc);
->       |  ^~~~~~~~~
->=20
-> Caused by commit
->=20
->   cac6fb015f71 ("usb: class: cdc-wdm: WWAN framework integration")
->=20
-> kill_urbs() was removed by commit
->=20
->   18abf8743674 ("cdc-wdm: untangle a circular dependency between callback=
- and softint")
->=20
-> Which is included in v5.13-rc1.
+@@
+type t;
+identifier v;
+statement s;
+@@
 
-Sorry, that commit is only in linux-next (from the usb.current tree).
-I will do a merge fix up tomorrow - unless someone provides one.
+<+...
+(
+  t v = container_of(...);
+|
+  v = container_of(...);
+)
+  ...
+  when != v
+- if (\( !v \| v == NULL \) ) s
+...+>
 
-> I have used the net-next tree from next-20210511 for today.
+Signed-off-by: Guenter Roeck <linux@roeck-us.net>
+---
+ drivers/net/wireless/broadcom/brcm80211/brcmsmac/aiutils.c | 3 ---
+ 1 file changed, 3 deletions(-)
 
---=20
-Cheers,
-Stephen Rothwell
+diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmsmac/aiutils.c b/drivers/net/wireless/broadcom/brcm80211/brcmsmac/aiutils.c
+index 53365977bfd6..2084b506a450 100644
+--- a/drivers/net/wireless/broadcom/brcm80211/brcmsmac/aiutils.c
++++ b/drivers/net/wireless/broadcom/brcm80211/brcmsmac/aiutils.c
+@@ -531,9 +531,6 @@ void ai_detach(struct si_pub *sih)
+ 
+ 	sii = container_of(sih, struct si_info, pub);
+ 
+-	if (sii == NULL)
+-		return;
+-
+ 	kfree(sii);
+ }
+ 
+-- 
+2.25.1
 
---Sig_/lTN1OeNplbEpaffUwB8n4zp
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmCbGSoACgkQAVBC80lX
-0GwShAf+KABuJ1/az7j2XG+7CduJuuTtMGbqYYkd+Dgnw1wEwH9+KQ2IXsOQ+DMX
-HZokY/wD0RzHic2Fr7geOQJpgLDYslfL2GrR98fUQBVnyAU1NpK4V5MkPZ25bCT5
-8JaZ+OvIs3fsbm0blptEX6HR82V2HdKXH6hOMt4VJgRqdeWdEdVP5Xyz1p2YR0YS
-K8HgkZvfS7n0gDjJOqaHJ0nx7yZ9bCeuJoLOPq2sBQ9CCHP6xFBGynrDTJvtqQdi
-jpUVF5FJC5+1LGgmbxF2z5oF7ZTIU0EXnttHJFFp/Q56M0bjINZraW8hOTClUCCT
-ODAsEPZuh7VyJ5Ol0SB/mW0PT3X1Sw==
-=IT5I
------END PGP SIGNATURE-----
-
---Sig_/lTN1OeNplbEpaffUwB8n4zp--
