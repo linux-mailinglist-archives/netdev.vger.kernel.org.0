@@ -2,104 +2,157 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 16A1D37B125
-	for <lists+netdev@lfdr.de>; Tue, 11 May 2021 23:56:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4BE5237B130
+	for <lists+netdev@lfdr.de>; Tue, 11 May 2021 23:59:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230168AbhEKV54 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 11 May 2021 17:57:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37586 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229637AbhEKV5z (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 11 May 2021 17:57:55 -0400
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 96A8FC061574;
-        Tue, 11 May 2021 14:56:48 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-         bh=RKf0jhjqNyYKa1rwLYcbF4xtKVI/z4lp0gDi5eHVKyw=; b=xhdV61NXfHaovmyP1GOMVMIqz
-        QjCVo7lOaj+nCCq9P4erUTr+/yU4fr2EsAOcWvwerLlNfjxNETg2mUnKotlQWCpXE/4dF8rR51bl2
-        5AynBeYQmksC+PMcyeH0O7oy2EzZyP32gPSIJTejJhp3jdgCWiuhmZkOzl4aOdCRClRouIpouA9Sz
-        PZgNtrq8Fy+JMmEr7VnYy62LYx+LqV+XHt3GLz9pHvk2J5Vp0yOgL6nTpH1Q+Gq1/PheSPYzNBNnS
-        VmVPs+S2t3/K8a0vVi2cf9Px25/iLHZnLzDn/wcLimAoK8S/p56tqDVeO03Q/fe5Lfhrhzch4aC6F
-        +nK2xpdTg==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:43874)
-        by pandora.armlinux.org.uk with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1lgaMv-0003Fx-Gv; Tue, 11 May 2021 22:56:45 +0100
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1lgaMu-0001Qg-7M; Tue, 11 May 2021 22:56:44 +0100
-Date:   Tue, 11 May 2021 22:56:44 +0100
-From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
-To:     Peter Geis <pgwipeout@gmail.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, linux-rockchip@lists.infradead.org
-Subject: Re: [PATCH] net: phy: add driver for Motorcomm yt8511 phy
-Message-ID: <20210511215644.GO1336@shell.armlinux.org.uk>
-References: <20210511214605.2937099-1-pgwipeout@gmail.com>
+        id S230097AbhEKWA5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 11 May 2021 18:00:57 -0400
+Received: from www62.your-server.de ([213.133.104.62]:60114 "EHLO
+        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229736AbhEKWA5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 11 May 2021 18:00:57 -0400
+Received: from 30.101.7.85.dynamic.wline.res.cust.swisscom.ch ([85.7.101.30] helo=localhost)
+        by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92.3)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1lgaPq-000AFW-Ln; Tue, 11 May 2021 23:59:46 +0200
+From:   Daniel Borkmann <daniel@iogearbox.net>
+To:     davem@davemloft.net
+Cc:     kuba@kernel.org, daniel@iogearbox.net, ast@kernel.org,
+        andrii.nakryiko@gmail.com, netdev@vger.kernel.org,
+        bpf@vger.kernel.org
+Subject: pull-request: bpf 2021-05-11
+Date:   Tue, 11 May 2021 23:59:46 +0200
+Message-Id: <20210511215946.15578-1-daniel@iogearbox.net>
+X-Mailer: git-send-email 2.21.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210511214605.2937099-1-pgwipeout@gmail.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
-Sender: Russell King - ARM Linux admin <linux@armlinux.org.uk>
+Content-Transfer-Encoding: 8bit
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.103.2/26167/Tue May 11 13:12:12 2021)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+Hi David, hi Jakub,
 
-On Tue, May 11, 2021 at 05:46:06PM -0400, Peter Geis wrote:
-> +static int yt8511_config_init(struct phy_device *phydev)
-> +{
-> +	int ret, val, oldpage;
-> +
-> +	/* set clock mode to 125mhz */
-> +	oldpage = phy_select_page(phydev, YT8511_EXT_CLK_GATE);
-> +	if (oldpage < 0)
-> +		goto err_restore_page;
-> +
-> +	val = __phy_read(phydev, YT8511_PAGE);
-> +	val |= (YT8511_CLK_125M);
-> +	ret = __phy_write(phydev, YT8511_PAGE, val);
+The following pull-request contains BPF updates for your *net* tree.
 
-Please consider __phy_modify(), and handle any error it returns.
+We've added 13 non-merge commits during the last 8 day(s) which contain
+a total of 21 files changed, 817 insertions(+), 382 deletions(-).
 
-> +
-> +	/* disable auto sleep */
-> +	ret = __phy_write(phydev, YT8511_PAGE_SELECT, YT8511_EXT_SLEEP_CTRL);
+The main changes are:
 
-Please consider handling a failure to write here.
+1) Fix multiple ringbuf bugs in particular to prevent writable mmap of
+   read-only pages, from Andrii Nakryiko & Thadeu Lima de Souza Cascardo.
 
-> +	val = __phy_read(phydev, YT8511_PAGE);
-> +	val &= (~BIT(15));
-> +	ret = __phy_write(phydev, YT8511_PAGE, val);
+2) Fix verifier alu32 known-const subregister bound tracking for bitwise
+   operations and/or/xor, from Daniel Borkmann.
 
-Also a use for __phy_modify().
+3) Reject trampoline attachment for functions with variable arguments,
+   and also add a deny list of other forbidden functions, from Jiri Olsa.
 
-> +
-> +err_restore_page:
-> +	return phy_restore_page(phydev, oldpage, ret);
-> +}
-> +
-> +static struct phy_driver motorcomm_phy_drvs[] = {
-> +	{
-> +		PHY_ID_MATCH_EXACT(PHY_ID_YT8511),
-> +		.name		= "YT8511 Gigabit Ethernet",
-> +		.config_init	= &yt8511_config_init,
+4) Fix nested bpf_bprintf_prepare() calls used by various helpers by
+   switching to per-CPU buffers, from Florent Revest.
 
-Please drop the '&' here, it's unnecessary.
+5) Fix kernel compilation with BTF debug info on ppc64 due to pahole
+   missing TCP-CC functions like cubictcp_init, from Martin KaFai Lau.
 
-Thanks.
+6) Add a kconfig entry to provide an option to disallow unprivileged
+   BPF by default, from Daniel Borkmann.
 
--- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
+7) Fix libbpf compilation for older libelf when GELF_ST_VISIBILITY()
+   macro is not available, from Arnaldo Carvalho de Melo.
+
+8) Migrate test_tc_redirect to test_progs framework as prep work
+   for upcoming skb_change_head() fix & selftest, from Jussi Maki.
+
+9) Fix a libbpf segfault in add_dummy_ksym_var() if BTF is not
+   present, from Ian Rogers.
+
+10) Fix tx_only micro-benchmark in xdpsock BPF sample with proper frame
+    size, from Magnus Karlsson.
+
+Please consider pulling these changes from:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf.git
+
+Thanks a lot!
+
+Also thanks to reporters, reviewers and testers of commits in this pull-request:
+
+Alexei Starovoitov, Andrii Nakryiko, John Fastabend, Maciej Fijalkowski, 
+Ryota Shiga, Manfred Paul, Thadeu Lima de Souza Cascardo
+
+----------------------------------------------------------------
+
+The following changes since commit 1682d8df20aa505f6ab12c76e934b26ede39c529:
+
+  Merge git://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf (2021-05-03 18:40:17 -0700)
+
+are available in the Git repository at:
+
+  https://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf.git 
+
+for you to fetch changes up to 569c484f9995f489f2b80dd134269fe07d2b900d:
+
+  bpf: Limit static tcp-cc functions in the .BTF_ids list to x86 (2021-05-11 23:23:07 +0200)
+
+----------------------------------------------------------------
+Andrii Nakryiko (1):
+      bpf: Prevent writable memory-mapping of read-only ringbuf pages
+
+Arnaldo Carvalho de Melo (1):
+      libbpf: Provide GELF_ST_VISIBILITY() define for older libelf
+
+Daniel Borkmann (3):
+      bpf: Fix alu32 const subreg bound tracking on bitwise operations
+      bpf, kconfig: Add consolidated menu entry for bpf with core options
+      bpf: Add kconfig knob for disabling unpriv bpf by default
+
+Florent Revest (1):
+      bpf: Fix nested bpf_bprintf_prepare with more per-cpu buffers
+
+Ian Rogers (1):
+      libbpf: Add NULL check to add_dummy_ksym_var
+
+Jiri Olsa (2):
+      bpf: Forbid trampoline attach for functions with variable arguments
+      bpf: Add deny list of btf ids check for tracing programs
+
+Jussi Maki (1):
+      selftests/bpf: Rewrite test_tc_redirect.sh as prog_tests/tc_redirect.c
+
+Magnus Karlsson (1):
+      samples/bpf: Consider frame size in tx_only of xdpsock sample
+
+Martin KaFai Lau (1):
+      bpf: Limit static tcp-cc functions in the .BTF_ids list to x86
+
+Thadeu Lima de Souza Cascardo (1):
+      bpf, ringbuf: Deny reserve of buffers larger than ringbuf
+
+ Documentation/admin-guide/sysctl/kernel.rst        |  17 +-
+ init/Kconfig                                       |  41 +-
+ kernel/bpf/Kconfig                                 |  88 +++
+ kernel/bpf/btf.c                                   |  12 +
+ kernel/bpf/helpers.c                               |  27 +-
+ kernel/bpf/ringbuf.c                               |  24 +-
+ kernel/bpf/syscall.c                               |   3 +-
+ kernel/bpf/verifier.c                              |  36 +-
+ kernel/sysctl.c                                    |  29 +-
+ net/Kconfig                                        |  27 -
+ net/ipv4/bpf_tcp_ca.c                              |   2 +
+ samples/bpf/xdpsock_user.c                         |   2 +-
+ tools/lib/bpf/libbpf.c                             |   3 +
+ tools/lib/bpf/libbpf_internal.h                    |   5 +
+ tools/testing/selftests/bpf/network_helpers.c      |   2 +-
+ tools/testing/selftests/bpf/network_helpers.h      |   1 +
+ .../testing/selftests/bpf/prog_tests/tc_redirect.c | 589 +++++++++++++++++++++
+ tools/testing/selftests/bpf/progs/test_tc_neigh.c  |  33 +-
+ .../selftests/bpf/progs/test_tc_neigh_fib.c        |   9 +-
+ tools/testing/selftests/bpf/progs/test_tc_peer.c   |  33 +-
+ tools/testing/selftests/bpf/test_tc_redirect.sh    | 216 --------
+ 21 files changed, 817 insertions(+), 382 deletions(-)
+ create mode 100644 kernel/bpf/Kconfig
+ create mode 100644 tools/testing/selftests/bpf/prog_tests/tc_redirect.c
+ delete mode 100755 tools/testing/selftests/bpf/test_tc_redirect.sh
