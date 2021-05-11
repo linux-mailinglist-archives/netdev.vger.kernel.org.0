@@ -2,126 +2,135 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EAF7637AB20
-	for <lists+netdev@lfdr.de>; Tue, 11 May 2021 17:49:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8E0C337AB1F
+	for <lists+netdev@lfdr.de>; Tue, 11 May 2021 17:49:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231891AbhEKPu7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 11 May 2021 11:50:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38962 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231815AbhEKPu6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 11 May 2021 11:50:58 -0400
-Received: from mail-pl1-x635.google.com (mail-pl1-x635.google.com [IPv6:2607:f8b0:4864:20::635])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CAC33C061574
-        for <netdev@vger.kernel.org>; Tue, 11 May 2021 08:49:51 -0700 (PDT)
-Received: by mail-pl1-x635.google.com with SMTP id b21so11062284plz.0
-        for <netdev@vger.kernel.org>; Tue, 11 May 2021 08:49:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=6Yw3y6YctXCbwYCAEhABs2MPb9zSsZH8Xaovo5cWgm4=;
-        b=VRV73auLceMwvABY40DqJXQdj5buWQn4AHlJ+FI9PP95b+uOPeBC3d2iS6tta2WRUm
-         nLWUeLPoLNU1bHcr59DEDZbhLuZ7Syg3vK4dpXBg2yk7xPlorVfd53Lz5EcFhNri7Ub5
-         TThJ/+/30bduj94suHOMMT/mgkDVYW6LDmNKTuW1wX27Su0LOfR2RIBtUDLPeSEwYgwl
-         lCntdEUPvkrkjEauiesnhuXXnw6RaiVincU1ER7tBNDwrgK/r9vkVZNShX+7xcmKLfIe
-         /7sQrVUTa2vHyPtXG6J4VkGf1yfe4G6lTM+oN0MlqxtwdI9Y8yfEPvPATFLfqoIn/BBq
-         ojuw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=6Yw3y6YctXCbwYCAEhABs2MPb9zSsZH8Xaovo5cWgm4=;
-        b=epABd4SFSmfBL2mE430lF4xnpALx83NuMHArsj3xDt/NpTsluEFvzNJ8EwLKTNfZcn
-         h1rH5PgqH1cNgwQ1ktSzIJ7ZC1YyLkYbRIsH1muYb7O6+RixaaQm5R7aZNDNs8Da2tQd
-         VXFNud1zgDL7bd1jGtvZ9THrnUWT3u9E7zyTBdkR8x7Ptv5R7JNBeWcLmIiO9bODjta9
-         QWhQchPUwFLYKuPxDpBYds6x1v9r6wmWRmvyheZyqbHfxWMUOQniW7TfPw6NsmJrkZHl
-         l4xaQlUbghTo6dNGWCw0djy1NrjGWIcW4Luaer4NsYjTaegIWA4vZVkg94hRpebdUq/t
-         Y2JQ==
-X-Gm-Message-State: AOAM5335o/teiSs6N6whiy/r77sgFP/akLGUcmKnBsaUjZlgIaMBwjPZ
-        E55rhsFSwUcyhi0U1QTo3cQ1gUceixs=
-X-Google-Smtp-Source: ABdhPJzOBkxaQERJ6/mK3+L+F6bBjJH9xNPQbne3/9rT2aXYC5Jb7dVouW0Vrp9eCfUgxIHYw6dZTQ==
-X-Received: by 2002:a17:90a:5d14:: with SMTP id s20mr33619278pji.185.1620748191375;
-        Tue, 11 May 2021 08:49:51 -0700 (PDT)
-Received: from hoboy.vegasvil.org ([2601:645:c000:35:e2d5:5eff:fea5:802f])
-        by smtp.gmail.com with ESMTPSA id i24sm13693737pfd.35.2021.05.11.08.49.50
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 11 May 2021 08:49:50 -0700 (PDT)
-Date:   Tue, 11 May 2021 08:49:48 -0700
-From:   Richard Cochran <richardcochran@gmail.com>
-To:     "Y.b. Lu" <yangbo.lu@nxp.com>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        id S231970AbhEKPum (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 11 May 2021 11:50:42 -0400
+Received: from gateway22.websitewelcome.com ([192.185.47.100]:21944 "EHLO
+        gateway22.websitewelcome.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S231891AbhEKPul (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 11 May 2021 11:50:41 -0400
+Received: from cm13.websitewelcome.com (cm13.websitewelcome.com [100.42.49.6])
+        by gateway22.websitewelcome.com (Postfix) with ESMTP id 3CA0D412FF
+        for <netdev@vger.kernel.org>; Tue, 11 May 2021 10:49:31 -0500 (CDT)
+Received: from gator4166.hostgator.com ([108.167.133.22])
+        by cmsmtp with SMTP
+        id gUdXlEd4YAEP6gUdXlEuWo; Tue, 11 May 2021 10:49:31 -0500
+X-Authority-Reason: nr=8
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=embeddedor.com; s=default; h=Content-Transfer-Encoding:Content-Type:
+        In-Reply-To:MIME-Version:Date:Message-ID:From:References:Cc:To:Subject:Sender
+        :Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
+        Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
+        List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=du7TLirKJwuRndTVgzHHBCMXvT6lZMGk+j6j2JK4ikk=; b=jVO4W/UG3fiHMDSm9xE8Ra87k3
+        +cgQgqzxJVZdYJVsdqhpoh0FUWz2VDu+NJczDnC8WrpoxH++yGLWMSWG3vY3L4TwcEYXqt/VYGwfS
+        Iq31krhyN9/zwtnmsYa6hR2l5qrGI5RbO2Mobfbn1y34LKFCKc6D5eLAQx35mV97uY/wAYMkfgXsp
+        VBABL308IUxeJpnKvlfvfqVxAxxg9F58lw2s/1Y7rEoPe1aUmq+ePxI3C45k6ughER11G8y7I7zE2
+        mWTQsmaxiHyhKmUDzHzrf4wrxEimMLhzUQ83BNifaZvm0BwlnDyKzNINSGViHnLXpKpL1nFECJa15
+        lAWA6ndQ==;
+Received: from 187-162-31-110.static.axtel.net ([187.162.31.110]:59016 helo=[192.168.15.8])
+        by gator4166.hostgator.com with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
+        (Exim 4.94.2)
+        (envelope-from <gustavo@embeddedor.com>)
+        id 1lgUdS-000VgQ-Ji; Tue, 11 May 2021 10:49:26 -0500
+Subject: Re: [Intel-wired-lan] [PATCH][next] ixgbe: Fix out-bounds warning in
+ ixgbe_host_interface_command()
+To:     "Switzer, David" <david.switzer@intel.com>,
+        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
+        "Brandeburg, Jesse" <jesse.brandeburg@intel.com>,
+        "Nguyen, Anthony L" <anthony.l.nguyen@intel.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
-Subject: Re: [net-next 0/6] ptp: support virtual clocks for multiple domains
-Message-ID: <20210511154948.GB23757@hoboy.vegasvil.org>
-References: <20210507085756.20427-1-yangbo.lu@nxp.com>
- <20210508191718.GC13867@hoboy.vegasvil.org>
- <DB7PR04MB50172689502A71C4F2D08890F8549@DB7PR04MB5017.eurprd04.prod.outlook.com>
- <20210510231832.GA28585@hoboy.vegasvil.org>
- <DB7PR04MB501793F21441B465A45E0699F8539@DB7PR04MB5017.eurprd04.prod.outlook.com>
+Cc:     Kees Cook <keescook@chromium.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "intel-wired-lan@lists.osuosl.org" <intel-wired-lan@lists.osuosl.org>,
+        "linux-hardening@vger.kernel.org" <linux-hardening@vger.kernel.org>
+References: <20210413190345.GA304933@embeddedor>
+ <MW3PR11MB47483A28574E9F2C5517D3C5EB589@MW3PR11MB4748.namprd11.prod.outlook.com>
+From:   "Gustavo A. R. Silva" <gustavo@embeddedor.com>
+Message-ID: <b0749fb9-ff4e-3237-e2f7-b97255545eb0@embeddedor.com>
+Date:   Tue, 11 May 2021 10:49:55 -0500
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.8.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <DB7PR04MB501793F21441B465A45E0699F8539@DB7PR04MB5017.eurprd04.prod.outlook.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <MW3PR11MB47483A28574E9F2C5517D3C5EB589@MW3PR11MB4748.namprd11.prod.outlook.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
+X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
+X-AntiAbuse: Primary Hostname - gator4166.hostgator.com
+X-AntiAbuse: Original Domain - vger.kernel.org
+X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
+X-AntiAbuse: Sender Address Domain - embeddedor.com
+X-BWhitelist: no
+X-Source-IP: 187.162.31.110
+X-Source-L: No
+X-Exim-ID: 1lgUdS-000VgQ-Ji
+X-Source: 
+X-Source-Args: 
+X-Source-Dir: 
+X-Source-Sender: 187-162-31-110.static.axtel.net ([192.168.15.8]) [187.162.31.110]:59016
+X-Source-Auth: gustavo@embeddedor.com
+X-Email-Count: 38
+X-Source-Cap: Z3V6aWRpbmU7Z3V6aWRpbmU7Z2F0b3I0MTY2Lmhvc3RnYXRvci5jb20=
+X-Local-Domain: yes
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, May 11, 2021 at 10:40:15AM +0000, Y.b. Lu wrote:
-> What I thought was in code writing registers to adjust physical clock frequency, and immediately adjusting virtual clocks in opposite direction.
-> Make the operations atomic by locking. Assume the code execution has a DELAY, and the frequency adjusted is PPM.
-> Then the time error affecting on virtual clock will be DELAY * PPM. I'm not sure what the DELAY value will be on other platforms.
-> Just for example, for 1us delay, 1000ppm adjustment will have 1ns time error.
+Hi all,
+
+On 5/6/21 02:25, Switzer, David wrote:
 > 
-> But indeed, this approach may be not feasible as you said. Especially it is adjusting clock in max frequency, and there are many virtual clocks.
-> The time error may be large enough to cause issues. (I'm not sure whether I understand you correctly, sorry.)
+>> -----Original Message-----
+>> From: Intel-wired-lan <intel-wired-lan-bounces@osuosl.org> On Behalf Of
+>> Gustavo A. R. Silva
+>> Sent: Tuesday, April 13, 2021 12:04 PM
+>> To: Brandeburg, Jesse <jesse.brandeburg@intel.com>; Nguyen, Anthony L
+>> <anthony.l.nguyen@intel.com>; David S. Miller <davem@davemloft.net>; Jakub
+>> Kicinski <kuba@kernel.org>
+>> Cc: Kees Cook <keescook@chromium.org>; netdev@vger.kernel.org; linux-
+>> kernel@vger.kernel.org; Gustavo A. R. Silva <gustavoars@kernel.org>; intel-
+>> wired-lan@lists.osuosl.org; linux-hardening@vger.kernel.org
+>> Subject: [Intel-wired-lan] [PATCH][next] ixgbe: Fix out-bounds warning in
+>> ixgbe_host_interface_command()
+>>
+>> Replace union with a couple of pointers in order to fix the following out-of-
+>> bounds warning:
+>>
+>>  CC [M]  drivers/net/ethernet/intel/ixgbe/ixgbe_common.o
+>> drivers/net/ethernet/intel/ixgbe/ixgbe_common.c: In function
+>> ‘ixgbe_host_interface_command’:
+>> drivers/net/ethernet/intel/ixgbe/ixgbe_common.c:3729:13: warning: array
+>> subscript 1 is above array bounds of ‘u32[1]’ {aka ‘unsigned int[1]’} [-Warray-
+>> bounds]
+>> 3729 |   bp->u32arr[bi] = IXGBE_READ_REG_ARRAY(hw, IXGBE_FLEX_MNG, bi);
+>>      |   ~~~~~~~~~~^~~~
+>> drivers/net/ethernet/intel/ixgbe/ixgbe_common.c:3682:7: note: while
+>> referencing ‘u32arr’
+>> 3682 |   u32 u32arr[1];
+>>      |       ^~~~~~
+>>
+>> This helps with the ongoing efforts to globally enable -Warray-bounds.
+>>
+>> Link: https://github.com/KSPP/linux/issues/109
+>> Co-developed-by: Kees Cook <keescook@chromium.org>
+>> Signed-off-by: Kees Cook <keescook@chromium.org>
+>> Signed-off-by: Gustavo A. R. Silva <gustavoars@kernel.org>
+>> ---
+>> drivers/net/ethernet/intel/ixgbe/ixgbe_common.c | 16 +++++++---------
+>> 1 file changed, 7 insertions(+), 9 deletions(-)
+>>
+> Tested-by: Dave Switzer <david.switzer@intel.com>
 
-You understand correctly.
+Thanks for this, Dave. :)
 
-> So, a question is, for hardware which supports only one PTP clock, can multiple domains be supported where physical clock also participates in synchronization of a domain?
-> (Because sometime the physical clock is required to be synchronized for TSN using, or other usages.)
-> Do you think it's possible?
+By the way, we are about to be able to globally enable -Warray-bounds and,
+this is one of the last out-of-bounds warnings in linux-next.
 
-No, it won't work.  You can't adjust both the physical clock and the
-timecounters at the same time.  The code would be an awful hack, and
-it would not work in all real world circumstances.  If the kernel
-offers a new time service, then it has to work always.
-
-So, getting back to my user space idea, it _would_ work to let the
-application stack control the HW clock as before, but to track the
-other domains numerically.  Then, the other applications could use the
-TIME_STATUS_NP management message (designed for use with gPTP and
-free_running) to get the current time in the other domains.
-
-So take your pick.  You can't have it both ways, I'm afraid.
-
-> > In addition to that, you will need a way to make the relationships between the
-> > clocks and the network interfaces discoverable.
-> 
-> Agree. This should be done carefully and everything should be considered.
-> Will converting physical clock ptp0 to virtual clock ptp0 introduce more effort to implement,
-> comparing to keep physical clock ptp0 but limit to use it?
-
-I think either way, it would be a substantial change in the kernel
-code.
-
-> > It needs more thought and careful design, but I think having
-> > clock_gettime() available for the different clocks would be nice to have for the
-> > applications.
-> 
-> Thank you. Then regarding the domain timestamp, do you think it's proper to do the conversion in kernel as I implemented.
-
-Yes, it would be very nice for the applications, because they wouldn't
-have to use a different API for gettime().
-
-The drawback is that you loose the ability to generate synchronized
-signals in HW from the physical clock.
-
-(Time stamping inputs would still work, because the timecounter code
-cleverly allows that.)
-
-Thanks,
-Richard
+Thanks
+--
+Gustavo
