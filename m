@@ -2,81 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 07F5337A83B
-	for <lists+netdev@lfdr.de>; Tue, 11 May 2021 15:55:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4293D37A85D
+	for <lists+netdev@lfdr.de>; Tue, 11 May 2021 16:01:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231539AbhEKN4i (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 11 May 2021 09:56:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40954 "EHLO
+        id S231508AbhEKOCz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 11 May 2021 10:02:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42368 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231472AbhEKN4e (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 11 May 2021 09:56:34 -0400
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D08EC061574;
-        Tue, 11 May 2021 06:55:28 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=30FSk9frpNYja+khGuUdqflr6Kzy7idJqt7x3auvIr8=; b=eBInv8s8SrUY695R1POYZukZY/
-        PnYmLhpFbmX/Nm5sWXs4aamzAgFQauZN47saBYsIHxDB89QlSI44fG6j3eZXqm/vzKq0He/UqxCZ3
-        tH/SZKfisxnrg62BE6RZ26hTY21SUwsntPkimJFzYW4whyaKjthVf3GtEoxsSM3pLqHZqG3GJFBBM
-        JUQ06k+teOe81KhTSw+CiOfPruxddlh1WqaXsniqmh3hR4AbHem/h97koBSiVRn3DGbUYsbBfYQP5
-        P24a+tpt8ajQ38l0N9tVKu2QyJiwpCMH9s0/EkAea1faS418CyI+LV5YyLSLTest2jF8wUJpKMj5l
-        5XLYiQng==;
-Received: from willy by casper.infradead.org with local (Exim 4.94 #2 (Red Hat Linux))
-        id 1lgSqb-007Kj7-T2; Tue, 11 May 2021 13:55:01 +0000
-Date:   Tue, 11 May 2021 14:54:53 +0100
-From:   Matthew Wilcox <willy@infradead.org>
-To:     David Laight <David.Laight@aculab.com>
-Cc:     "davem@davemloft.net" <davem@davemloft.net>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "yoshfuji@linux-ipv6.org" <yoshfuji@linux-ipv6.org>,
-        "dsahern@kernel.org" <dsahern@kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Eric Dumazet <edumazet@google.com>
-Subject: Re: [PATCH] udp: Switch the order of arguments to copy_linear_skb
-Message-ID: <YJqMrZBRu/xwmQkR@casper.infradead.org>
-References: <20210511113400.1722975-1-willy@infradead.org>
- <ae8f4e176b17439b87420cad69fbabf9@AcuMS.aculab.com>
- <YJqI3Vixcqr+jyZX@casper.infradead.org>
- <73f91574e34f4b92910e2afd012e16f4@AcuMS.aculab.com>
+        with ESMTP id S231305AbhEKOCy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 11 May 2021 10:02:54 -0400
+Received: from mail-qv1-xf31.google.com (mail-qv1-xf31.google.com [IPv6:2607:f8b0:4864:20::f31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 22294C061574
+        for <netdev@vger.kernel.org>; Tue, 11 May 2021 07:01:46 -0700 (PDT)
+Received: by mail-qv1-xf31.google.com with SMTP id w9so10149821qvi.13
+        for <netdev@vger.kernel.org>; Tue, 11 May 2021 07:01:46 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=coverfire.com; s=google;
+        h=message-id:subject:from:to:cc:date:in-reply-to:references
+         :user-agent:mime-version:content-transfer-encoding;
+        bh=qQrmHIXjnXfQWJtbeZXpWntrZOfwSCQYMKOgToYP8RY=;
+        b=T396vYFeyeH2mfE6IyQBYJ38lT3Ui2Zq67Smwbm/Z1g0PIbizMRKQ1uKlVX2eyxGTi
+         JVwl3t6OTQP30yWJy0rQHZBNwfPOvOYo8uVeEMk03NAZ4L02t1ce6mTmSHMK9fRSI9ti
+         F5bjVfWAV3jujBEdvaQ5MK63pNTlEEGAAqro2fyiOuCcpuVqHRVsq48T9ImHZ06kMAXB
+         Bjhns7yE/acr5tu/08irFjl7qAzH8l+8+PmcX+Hg0NesEAV3ax/4sLSOjJMEDCctRwid
+         2sNlTowaBrOp1DEuG+DXwJVfLK1WDvH7rHtx2/ghDjxVFM39MBOKGzdJcWsjLNFhJuAU
+         QHiA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
+         :references:user-agent:mime-version:content-transfer-encoding;
+        bh=qQrmHIXjnXfQWJtbeZXpWntrZOfwSCQYMKOgToYP8RY=;
+        b=ro9u6mGHnGBB+XXNvOfVArmneV81EC8fHdr1O0UGeC+j3enzAzdT7Ou+44KyhwUaf2
+         FPlO/sJmGgE6CLA+FydPbz0MPPJs20z8RUNdcjUxjVRm5BQzzKjOWnl7N4x9tps/5+02
+         Ur/EXSIwLzk05Mq7Z+x0DKFBzZrihquBmRkfipL7bSzQy2rPd1UHWGJCtmMLBgFAy1ig
+         aWJEwtz7M/wPLmLSXOCXEvnUH3ATVNlSqlRb5Tj5rjtw79pYvbxIQ3mtxJJ3KYN3Fhbq
+         DZ43VdCXszaMMsuOjSwiDeAr/Drx3IV/qGL0+nbKGwwam+5LR6nLVNEbK1NF/x3hzdoT
+         aIqA==
+X-Gm-Message-State: AOAM531xkx9yPwzXaXeMiSpQvhWE62S9AFcntRiiGhQgk4C8BrRE1P5V
+        9vqJj5vn4gBtE0SLPx3jtkenWA==
+X-Google-Smtp-Source: ABdhPJxytzBaKMGlPrwKBzJjDMzkAtcbYORowCXBnr0UKZ1P/EsTeNA7ml4BMiAqfrET7ORua2iQqQ==
+X-Received: by 2002:a0c:a483:: with SMTP id x3mr10389262qvx.28.1620741705351;
+        Tue, 11 May 2021 07:01:45 -0700 (PDT)
+Received: from ?IPv6:2607:f2c0:e56e:28c:e4de:d9eb:cc0b:f46a? ([2607:f2c0:e56e:28c:e4de:d9eb:cc0b:f46a])
+        by smtp.gmail.com with ESMTPSA id r5sm13794415qtp.75.2021.05.11.07.01.44
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 11 May 2021 07:01:44 -0700 (PDT)
+Message-ID: <a52430d1e11c5cadcd08706bd6d8da3ea48e1c04.camel@coverfire.com>
+Subject: Re: xsk_buff_pool.c trace
+From:   Dan Siemon <dan@coverfire.com>
+To:     Magnus Karlsson <magnus.karlsson@gmail.com>
+Cc:     Network Development <netdev@vger.kernel.org>,
+        =?ISO-8859-1?Q?Bj=F6rn_T=F6pel?= <bjorn@kernel.org>,
+        "Karlsson, Magnus" <magnus.karlsson@intel.com>
+Date:   Tue, 11 May 2021 10:01:43 -0400
+In-Reply-To: <CAJ8uoz1qKnJw+StSfuCkXuoS5-qOQA89HKjLzedh7LySBDUp1g@mail.gmail.com>
+References: <52fdf0e0d9d453379df2163f16bdf12f425ef456.camel@coverfire.com>
+         <CAJ8uoz1qKnJw+StSfuCkXuoS5-qOQA89HKjLzedh7LySBDUp1g@mail.gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.40.1 (3.40.1-1.fc34) 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <73f91574e34f4b92910e2afd012e16f4@AcuMS.aculab.com>
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, May 11, 2021 at 01:44:45PM +0000, David Laight wrote:
-> From: Matthew Wilcox
-> > Sent: 11 May 2021 14:39
+On Mon, 2021-05-10 at 08:15 +0200, Magnus Karlsson wrote:
+> On Mon, May 10, 2021 at 3:59 AM Dan Siemon <dan@coverfire.com> wrote:
 > > 
-> > On Tue, May 11, 2021 at 01:11:42PM +0000, David Laight wrote:
-> > > From: Matthew Wilcox
-> > > > Sent: 11 May 2021 12:34
-> > > >
-> > > > All other skb functions use (off, len); this is the only one which
-> > > > uses (len, off).  Make it consistent.
-> > >
-> > > I wouldn't change the order of the arguments without some other
-> > > change that ensures old code fails to compile.
-> > > (Like tweaking the function name.)
+> > i40e NIC with 5.11.17-300.fc34.x86_64
 > > 
-> > Yes, some random essentially internal function that has had no new
-> > users since it was created in 2017 should get a new name *eyeroll*.
+> > Unfortunately, this does not consistently occur.
 > > 
-> > Please find more useful things to critique.  Or, you know, write some
-> > damned code yourself instead of just having opinions.
+> > [ 2739.991807] ------------[ cut here ]------------
+> > [ 2739.996428] Failed to disable zero-copy!
 > 
-> You could easily completely screw up any code that isn't committed
-> to the kernel source tree.
-> It isn't the sort of bug I'd want to diagnose.
+> Could you please dump the error value that i40e_xsk_pool_disable
+> returns? Just so I have something more to go on. There are three
+> functions that can fail, xsk_get_pool_from_qid(),
+> i40e_queue_pair_disable(), and i40e_queue_pair_enable(). If you can
+> dig even deeper into what sub function of those functions that fail,
+> even better. It would be ideal, if you could enable a function trace
+> when you get into i40e_xsk_pool_disable so we would know exactly what
+> function fails.
 
-Simple, get your kernel driver into the main kernel tree (remember we are
-talking about drivers released under a GPL-compatible license here, if your
-code doesn't fall under this category, good luck, you are on your own here,
-you leech). -- GregKH
+Thank you for taking a look. Unfortunately, I haven't been able to make
+this happen consistently. If I can, I will try your suggestions.
+> 
+
