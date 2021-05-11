@@ -2,138 +2,180 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 55F4837A36A
-	for <lists+netdev@lfdr.de>; Tue, 11 May 2021 11:20:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4776A37A36F
+	for <lists+netdev@lfdr.de>; Tue, 11 May 2021 11:22:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231388AbhEKJV0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 11 May 2021 05:21:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35272 "EHLO
+        id S231281AbhEKJWY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 11 May 2021 05:22:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35536 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231376AbhEKJVS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 11 May 2021 05:21:18 -0400
-Received: from mail-wr1-x42a.google.com (mail-wr1-x42a.google.com [IPv6:2a00:1450:4864:20::42a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D832C06138A
-        for <netdev@vger.kernel.org>; Tue, 11 May 2021 02:20:11 -0700 (PDT)
-Received: by mail-wr1-x42a.google.com with SMTP id a4so19377002wrr.2
-        for <netdev@vger.kernel.org>; Tue, 11 May 2021 02:20:11 -0700 (PDT)
+        with ESMTP id S230520AbhEKJWX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 11 May 2021 05:22:23 -0400
+Received: from mail-oi1-x236.google.com (mail-oi1-x236.google.com [IPv6:2607:f8b0:4864:20::236])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0461DC061574
+        for <netdev@vger.kernel.org>; Tue, 11 May 2021 02:21:17 -0700 (PDT)
+Received: by mail-oi1-x236.google.com with SMTP id n184so18403571oia.12
+        for <netdev@vger.kernel.org>; Tue, 11 May 2021 02:21:16 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=maxiluxsystems-com.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=T+Qb3ETarQ/vtKWwashh1NEh9qw/aCmj6/v/uG5lQ+I=;
-        b=B/0XPLk9Y8PBdSncdHyxRp5xL/n3hXiC3spftSmWnAvQ+C+klBwKIQeYXGoGgnlF3o
-         s3uWZlLxtipVASfaXi3awUyUlx9xkSgUcgDN1OtfDeI/xa4UZIIvIcj+T62yVHzKES6Z
-         yR102Yzox97GjkEeqnNtquAaPJ8p3YMvZLwogaFfQjJNL1OoHNei8oU3XKJfinewiBST
-         W3IELCF0jMrYNee6fDi1T61NOxajbM5l+Tf+OfsfdVRDrwddSI/dkMxs/LMrV10bbjTp
-         THFY3w1RJxY01aR94rF4BdhCW+vj6Tse0MrPkl1W7TK+elqMu24luYypofqsx37DwPv7
-         4B9w==
+        d=daynix-com.20150623.gappssmtp.com; s=20150623;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=SpuzP5dD89015IuaoQUypVRri84Ral9X2cBH7/+h6B0=;
+        b=EJZPKRTPNk0sadX+CdnzrZDhkw4Zupn/oAC4s8Xy/pdkvPNEJUfpTYqnMa/X4Z+fAN
+         BAEsRNsd0/uWgG1OhOWCGb7+V+f4tw9l6CsbbJ4VwId+/4PrV2HHZ9NDSRFHr+rrtYpz
+         MLaWeEhBurHu8pnY+SoVgpIM5SaHZ4m2+3eOhp9olv+0Gh9zqH2pWsNW/S/Caj5a93T3
+         D4gMSdUhjoOSwmxDO3MgOiAIe84SOqaO8clT1T21M90BgAdmyJJmmBnTJpf6ApIvM2Fx
+         1amz9mJyQe3eOZ0NJGDnvXTr/E67EQCoRdJLPdKOFZT61ssBQZuKRbvQtJ3f40obRIbv
+         /EXg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=T+Qb3ETarQ/vtKWwashh1NEh9qw/aCmj6/v/uG5lQ+I=;
-        b=LN+9RVZNTIjYQw7WR+PU0YK86mD7/652ySj57LACYJQOxu4YeqIVglW6E6kykCupPD
-         q1HIElquPwP06nC07WbjQmtfeOsXWFI4jG3c3cFLnqrplnaUgQVM+ZJGvgdznZImX7xe
-         YSbFLRraCVQmXQh416zLSZU4bTEV16k8i4OKiMvUoyRUYPPwbWxSBvn/eao0OKa823V4
-         eCHsgQu+ICipqGTQwEQBgRHL0oPFn6L1ziPkQM6ofRMilS1gCYvk8PSa6wN2lhqfDwBS
-         9j3D02LoCjl9jzrtew+0ABuHXKmXnxh8jbMqafjuUByMdUTTaGHZFCSZLVki/UTK4Vkt
-         RXBA==
-X-Gm-Message-State: AOAM532zh1LmhHkNfqQk3QKSsjtTO+nd+Ghdk3CDRVlSe4wxZDLyz99/
-        O0hNV+cBl2QR+ETvUDB6KXJ/Mg==
-X-Google-Smtp-Source: ABdhPJySuK6i6iaW2XARFq193i9ZGUyh+Yn19cUYF/9vHHngiJ96TrlgXbi+6CXMlyZv6jRXEnpKQQ==
-X-Received: by 2002:a5d:6088:: with SMTP id w8mr35670778wrt.424.1620724809740;
-        Tue, 11 May 2021 02:20:09 -0700 (PDT)
-Received: from bigthink (92.41.10.184.threembb.co.uk. [92.41.10.184])
-        by smtp.gmail.com with ESMTPSA id g11sm27438329wri.59.2021.05.11.02.20.08
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 11 May 2021 02:20:09 -0700 (PDT)
-Date:   Tue, 11 May 2021 10:20:07 +0100
-From:   Torin Cooper-Bennun <torin@maxiluxsystems.com>
-To:     Marc Kleine-Budde <mkl@pengutronix.de>
-Cc:     linux-can@vger.kernel.org, netdev@vger.kernel.org
-Subject: Re: CAN: TX frames marked as RX after the sending socket is closed
-Message-ID: <20210511092007.t6beiemeufvhu46n@bigthink>
-References: <20210510142302.ijbwowv4usoiqkxq@bigthink>
- <20210510153540.52uzcndqyp6yu7ve@pengutronix.de>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=SpuzP5dD89015IuaoQUypVRri84Ral9X2cBH7/+h6B0=;
+        b=aQT/roWjrKoxerfnvLTUHxsBuPNC5miEWP0suCPTqc/zNcesDti5UGoHFZlmoEjr3K
+         DvFQoPD9ZeC0AuC225TcmEg5j7WxrIKU0qEX/2EC76bT1OlpikzYqXIbo2uUADmSQCzK
+         lgDih7w3kpyaqnISK7BWfb4T/Oui7s7+uc0cG0kSCMCmbZOxuAIKexomOB+uXXcgPcvX
+         Xh+Ja5XYM+yKRa74s70AzFhVSEMuctFosRV0bYbBmqA831QG4af1dV25xcMccZHGoGMN
+         JUE+MaSUq0sDg8XLhvXBz49lHxMZO3GK08k//3NsfaL1LyYc9Lha9V2iO3PJOd4wzMHy
+         uS1Q==
+X-Gm-Message-State: AOAM53310g7YHH1umeZ1gcx2phmJICNPPSZR4zHqU5Z7yGeoWh0JQMqj
+        jdDNkzQ/zDfLZVdnJ+L7bj3sLcBGyaZ4F/jZaNBkYA==
+X-Google-Smtp-Source: ABdhPJyafaXyIkykLjYRRydc5zqSCnCbYc4lexHHectPWvV2uB9PGFbQwIt/YYm59WbO+bJqIioASXZVBuj+bdHr32g=
+X-Received: by 2002:aca:ad06:: with SMTP id w6mr2807257oie.54.1620724876444;
+ Tue, 11 May 2021 02:21:16 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="u32vfygc3h2c6apd"
-Content-Disposition: inline
-In-Reply-To: <20210510153540.52uzcndqyp6yu7ve@pengutronix.de>
+References: <20210511044253.469034-1-yuri.benditovich@daynix.com>
+ <20210511044253.469034-2-yuri.benditovich@daynix.com> <40938c20-5851-089b-c3c0-074bbd636970@redhat.com>
+ <CAOEp5OdgYtP+W1thGsTGnvEPWrJ02s1HemskQpnMTUyYbsX4jQ@mail.gmail.com> <CACGkMEuk3-iP+AxsvhT16t+5dXXtVMGoWPovM=Msm0kvo3LR2Q@mail.gmail.com>
+In-Reply-To: <CACGkMEuk3-iP+AxsvhT16t+5dXXtVMGoWPovM=Msm0kvo3LR2Q@mail.gmail.com>
+From:   Yuri Benditovich <yuri.benditovich@daynix.com>
+Date:   Tue, 11 May 2021 12:21:04 +0300
+Message-ID: <CAOEp5OfAEb4=C7GK_EJvJnoTTk-ebdg0RygShPwbn3O67ucQ2Q@mail.gmail.com>
+Subject: Re: [PATCH 1/4] virtio-net: add definitions for host USO feature
+To:     Jason Wang <jasowang@redhat.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "Michael S . Tsirkin" <mst@redhat.com>,
+        Network Development <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        virtualization <virtualization@lists.linux-foundation.org>,
+        Yan Vugenfirer <yan@daynix.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Tue, May 11, 2021 at 11:24 AM Jason Wang <jasowang@redhat.com> wrote:
+>
+> On Tue, May 11, 2021 at 4:12 PM Yuri Benditovich
+> <yuri.benditovich@daynix.com> wrote:
+> >
+> > On Tue, May 11, 2021 at 9:47 AM Jason Wang <jasowang@redhat.com> wrote:
+> > >
+> > >
+> > > =E5=9C=A8 2021/5/11 =E4=B8=8B=E5=8D=8812:42, Yuri Benditovich =E5=86=
+=99=E9=81=93:
+> > > > Define feature bit and GSO type according to the VIRTIO
+> > > > specification.
+> > > >
+> > > > Signed-off-by: Yuri Benditovich <yuri.benditovich@daynix.com>
+> > > > ---
+> > > >   include/uapi/linux/virtio_net.h | 2 ++
+> > > >   1 file changed, 2 insertions(+)
+> > > >
+> > > > diff --git a/include/uapi/linux/virtio_net.h b/include/uapi/linux/v=
+irtio_net.h
+> > > > index 3f55a4215f11..a556ac735d7f 100644
+> > > > --- a/include/uapi/linux/virtio_net.h
+> > > > +++ b/include/uapi/linux/virtio_net.h
+> > > > @@ -57,6 +57,7 @@
+> > > >                                        * Steering */
+> > > >   #define VIRTIO_NET_F_CTRL_MAC_ADDR 23       /* Set MAC address */
+> > > >
+> > > > +#define VIRTIO_NET_F_HOST_USO     56 /* Host can handle USO packet=
+s */
+> >
+> > This is the virtio-net feature
+>
+> Right, I miss this part.
+>
+> >
+> > > >   #define VIRTIO_NET_F_HASH_REPORT  57        /* Supports hash repo=
+rt */
+> > > >   #define VIRTIO_NET_F_RSS      60    /* Supports RSS RX steering *=
+/
+> > > >   #define VIRTIO_NET_F_RSC_EXT          61    /* extended coalescin=
+g info */
+> > > > @@ -130,6 +131,7 @@ struct virtio_net_hdr_v1 {
+> > > >   #define VIRTIO_NET_HDR_GSO_TCPV4    1       /* GSO frame, IPv4 TC=
+P (TSO) */
+> > > >   #define VIRTIO_NET_HDR_GSO_UDP              3       /* GSO frame,=
+ IPv4 UDP (UFO) */
+> > > >   #define VIRTIO_NET_HDR_GSO_TCPV6    4       /* GSO frame, IPv6 TC=
+P */
+> > > > +#define VIRTIO_NET_HDR_GSO_UDP_L4    5       /* GSO frame, IPv4 UD=
+P (USO) */
+> >
+> > This is respective GSO type
+> >
+> > >
+> > >
+> > > This is the gso_type not the feature actually.
+> > >
+> > > I wonder what's the reason for not
+> > >
+> > > 1) introducing a dedicated virtio-net feature bit for this
+> > > (VIRTIO_NET_F_GUEST_GSO_UDP_L4.
+> >
+> > This series is not for GUEST's feature, it is only for host feature.
+> >
+> > > 2) toggle the NETIF_F_GSO_UDP_L4  feature for tuntap based on the
+> > > negotiated feature.
+> >
+> > The NETIF_F_GSO_UDP_L4 would be required for the guest RX path.
+> > The guest TX path does not require any flags to be propagated, it only
+> > allows the guest to transmit large UDP packets and have them
+> > automatically splitted.
+> > (This is similar to HOST_UFO but does packet segmentation instead of
+> > fragmentation. GUEST_UFO indeed requires a respective NETIF flag, as
+> > it is unclear whether the guest is capable of receiving such packets).
+>
+> So I think it's better to implement TX/RX in the same series unless
+> there's something missed:
+>
+> For Guest TX, NETIF_F_GSO_UDP_L4 needs to be enabled in the guest
+> virtio-net only when VIRTIO_NET_F_HOST_USO is negotiated.
 
---u32vfygc3h2c6apd
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+I understand that this is what should be done when this feature will
+be added to Linux virtio-net driver.
+But at the moment we do not have enough resources to work on it.
+Currently we have a clear use case and ability to test in on Windows guest.
+Respective QEMU changes are pending for kernel patches, current
+reference is https://github.com/daynix/qemu/tree/uso
 
-On Mon, May 10, 2021 at 05:35:40PM +0200, Marc Kleine-Budde wrote:
-> Can you provide the program to reproduce the issue?
+> For guest RX, NETIF_F_GSO_UDP_L4 needs to be enabled on the host
+> tuntap only when VIRTIO_NET_F_GUEST_USO is neogiated.
 
-See attached below this email (tx only, rx done with candump).
-
-> Have you increased the CAN interface's txqueuelen?
-
-Yup, qlen is 1000.
-
---
-Regards,
-
-Torin Cooper-Bennun
-Software Engineer | maxiluxsystems.com
+Currently we are not able to use guest RX UDP GSO.
+In order to do that we at least should be able to build our Windows
+drivers with the most updated driver development kit (2004+).
+At the moment we can't, this task is in a plan but can take several
+months. So we do not have a test/use case with Windows VM.
 
 
---u32vfygc3h2c6apd
-Content-Type: text/x-csrc; charset=us-ascii
-Content-Disposition: attachment; filename="tx_rx_bug.c"
-
-#include <errno.h>
-#include <linux/can.h>
-#include <net/if.h>
-#include <stdio.h>
-#include <string.h>
-#include <sys/ioctl.h>
-#include <sys/socket.h>
-#include <sys/time.h>
-#include <time.h>
-#include <unistd.h>
-
-int main(int argc, char *argv[])
-{
-	const char *if_name = "can0";
-	int sockfd;
-	struct ifreq req = {};
-	struct sockaddr_can sockaddr = {};
-	struct can_frame frame = {};
-	struct timeval tv;
-	char timestr[16];
-
-	sockfd = socket(AF_CAN, SOCK_RAW, CAN_RAW);
-
-	strncpy(req.ifr_name, if_name, IF_NAMESIZE);
-	ioctl(sockfd, SIOCGIFINDEX, &req);
-
-	sockaddr.can_family = AF_CAN;
-	sockaddr.can_ifindex = req.ifr_ifindex;
-
-	bind(sockfd, (const struct sockaddr *) &sockaddr, sizeof(sockaddr));
-
-	frame.can_dlc = 8;
-	memset(frame.data, 0xee, 8);
-	for (int i = 0; i < 1000; ++i)
-	{
-		frame.can_id = (i & 0x7ff);
-		send(sockfd, &frame, sizeof(frame), 0);
-	}
-
-	close(sockfd);
-
-	gettimeofday(&tv, NULL);
-	strftime(timestr, sizeof(timestr), "%H:%M:%S", localtime(&tv.tv_sec));
-	printf("Socket closed at %s.%06ld\n", timestr, tv.tv_usec);
-
-	return 0;
-}
-
---u32vfygc3h2c6apd--
+>
+> Thanks
+>
+> >
+> > >
+> > > Thanks
+> > >
+> > >
+> > > >   #define VIRTIO_NET_HDR_GSO_ECN              0x80    /* TCP has EC=
+N set */
+> > > >       __u8 gso_type;
+> > > >       __virtio16 hdr_len;     /* Ethernet + IP + tcp/udp hdrs */
+> > >
+> >
+>
