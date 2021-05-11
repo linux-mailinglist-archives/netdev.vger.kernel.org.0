@@ -2,70 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6EC6437A80B
-	for <lists+netdev@lfdr.de>; Tue, 11 May 2021 15:48:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 07F5337A83B
+	for <lists+netdev@lfdr.de>; Tue, 11 May 2021 15:55:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231599AbhEKNt1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 11 May 2021 09:49:27 -0400
-Received: from szxga05-in.huawei.com ([45.249.212.191]:2562 "EHLO
-        szxga05-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230435AbhEKNtZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 11 May 2021 09:49:25 -0400
-Received: from DGGEMS401-HUB.china.huawei.com (unknown [172.30.72.60])
-        by szxga05-in.huawei.com (SkyGuard) with ESMTP id 4FffM52MMPzwSNl;
-        Tue, 11 May 2021 21:45:37 +0800 (CST)
-Received: from [127.0.0.1] (10.174.177.72) by DGGEMS401-HUB.china.huawei.com
- (10.3.19.201) with Microsoft SMTP Server id 14.3.498.0; Tue, 11 May 2021
- 21:48:12 +0800
-Subject: Re: [PATCH] net: forcedeth: Give bot handlers a helping hand
- understanding the code
-To:     Andrew Lunn <andrew@lunn.ch>, Jakub Kicinski <kuba@kernel.org>
-CC:     netdev <netdev@vger.kernel.org>
-References: <20210511124330.891694-1-andrew@lunn.ch>
-From:   "Leizhen (ThunderTown)" <thunder.leizhen@huawei.com>
-Message-ID: <e267c38d-5ddd-244a-d083-9dbe4ed9973c@huawei.com>
-Date:   Tue, 11 May 2021 21:48:11 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.0
+        id S231539AbhEKN4i (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 11 May 2021 09:56:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40954 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231472AbhEKN4e (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 11 May 2021 09:56:34 -0400
+Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D08EC061574;
+        Tue, 11 May 2021 06:55:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=30FSk9frpNYja+khGuUdqflr6Kzy7idJqt7x3auvIr8=; b=eBInv8s8SrUY695R1POYZukZY/
+        PnYmLhpFbmX/Nm5sWXs4aamzAgFQauZN47saBYsIHxDB89QlSI44fG6j3eZXqm/vzKq0He/UqxCZ3
+        tH/SZKfisxnrg62BE6RZ26hTY21SUwsntPkimJFzYW4whyaKjthVf3GtEoxsSM3pLqHZqG3GJFBBM
+        JUQ06k+teOe81KhTSw+CiOfPruxddlh1WqaXsniqmh3hR4AbHem/h97koBSiVRn3DGbUYsbBfYQP5
+        P24a+tpt8ajQ38l0N9tVKu2QyJiwpCMH9s0/EkAea1faS418CyI+LV5YyLSLTest2jF8wUJpKMj5l
+        5XLYiQng==;
+Received: from willy by casper.infradead.org with local (Exim 4.94 #2 (Red Hat Linux))
+        id 1lgSqb-007Kj7-T2; Tue, 11 May 2021 13:55:01 +0000
+Date:   Tue, 11 May 2021 14:54:53 +0100
+From:   Matthew Wilcox <willy@infradead.org>
+To:     David Laight <David.Laight@aculab.com>
+Cc:     "davem@davemloft.net" <davem@davemloft.net>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "yoshfuji@linux-ipv6.org" <yoshfuji@linux-ipv6.org>,
+        "dsahern@kernel.org" <dsahern@kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Eric Dumazet <edumazet@google.com>
+Subject: Re: [PATCH] udp: Switch the order of arguments to copy_linear_skb
+Message-ID: <YJqMrZBRu/xwmQkR@casper.infradead.org>
+References: <20210511113400.1722975-1-willy@infradead.org>
+ <ae8f4e176b17439b87420cad69fbabf9@AcuMS.aculab.com>
+ <YJqI3Vixcqr+jyZX@casper.infradead.org>
+ <73f91574e34f4b92910e2afd012e16f4@AcuMS.aculab.com>
 MIME-Version: 1.0
-In-Reply-To: <20210511124330.891694-1-andrew@lunn.ch>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.174.177.72]
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <73f91574e34f4b92910e2afd012e16f4@AcuMS.aculab.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-
-On 2021/5/11 20:43, Andrew Lunn wrote:
-> Bots handlers repeatedly fail to understand nv_update_linkspeed() and
-> submit patches unoptimizing it for the human reader. Add a comment to
-> try to prevent this in the future.
+On Tue, May 11, 2021 at 01:44:45PM +0000, David Laight wrote:
+> From: Matthew Wilcox
+> > Sent: 11 May 2021 14:39
+> > 
+> > On Tue, May 11, 2021 at 01:11:42PM +0000, David Laight wrote:
+> > > From: Matthew Wilcox
+> > > > Sent: 11 May 2021 12:34
+> > > >
+> > > > All other skb functions use (off, len); this is the only one which
+> > > > uses (len, off).  Make it consistent.
+> > >
+> > > I wouldn't change the order of the arguments without some other
+> > > change that ensures old code fails to compile.
+> > > (Like tweaking the function name.)
+> > 
+> > Yes, some random essentially internal function that has had no new
+> > users since it was created in 2017 should get a new name *eyeroll*.
+> > 
+> > Please find more useful things to critique.  Or, you know, write some
+> > damned code yourself instead of just having opinions.
 > 
-> Signed-off-by: Andrew Lunn <andrew@lunn.ch>
-> ---
->  drivers/net/ethernet/nvidia/forcedeth.c | 3 +++
->  1 file changed, 3 insertions(+)
-> 
-> diff --git a/drivers/net/ethernet/nvidia/forcedeth.c b/drivers/net/ethernet/nvidia/forcedeth.c
-> index 8724d6a9ed02..0822b28f3b6a 100644
-> --- a/drivers/net/ethernet/nvidia/forcedeth.c
-> +++ b/drivers/net/ethernet/nvidia/forcedeth.c
-> @@ -3475,6 +3475,9 @@ static int nv_update_linkspeed(struct net_device *dev)
->  		newls = NVREG_LINKSPEED_FORCE|NVREG_LINKSPEED_10;
->  		newdup = 0;
->  	} else {
-> +		/* Default to the same as 10/Half if we cannot
-> +		 * determine anything else.
-> +		 */
-I think it would be better to remove the if branch above and then add comments here.
-Otherwise, it becomes more and more redundant.
+> You could easily completely screw up any code that isn't committed
+> to the kernel source tree.
+> It isn't the sort of bug I'd want to diagnose.
 
->  		newls = NVREG_LINKSPEED_FORCE|NVREG_LINKSPEED_10;
->  		newdup = 0;
->  	}
-> 
-
+Simple, get your kernel driver into the main kernel tree (remember we are
+talking about drivers released under a GPL-compatible license here, if your
+code doesn't fall under this category, good luck, you are on your own here,
+you leech). -- GregKH
