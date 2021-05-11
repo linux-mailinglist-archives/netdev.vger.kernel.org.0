@@ -2,28 +2,28 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8BFD837A719
-	for <lists+netdev@lfdr.de>; Tue, 11 May 2021 14:51:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 72BC137A71D
+	for <lists+netdev@lfdr.de>; Tue, 11 May 2021 14:52:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231724AbhEKMwe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 11 May 2021 08:52:34 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:35132 "EHLO vps0.lunn.ch"
+        id S231736AbhEKMxH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 11 May 2021 08:53:07 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:35152 "EHLO vps0.lunn.ch"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231640AbhEKMw2 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 11 May 2021 08:52:28 -0400
+        id S231720AbhEKMxG (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 11 May 2021 08:53:06 -0400
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
         s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
         Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
         Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
         :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
         List-Post:List-Owner:List-Archive;
-        bh=AewQcOd+v8uts915TNTPNYS0AvYJ7nHNWXSQ/Hje0P0=; b=cNzvs/E8PhADt0sLVMJ93Z2Twu
-        FfF3uac7J56lkx+eFL2Pu5vqB3zAPYFToJkAqPiRXSFKEpBlwx8XL3lFkWKqeZYl2DeC5GbL9CO/3
-        zFvKN3ESefM3emirh2oWwrhwIhoGGimgUZELJZLDvgxzMBQPY86OwtWoXeKmvdTGuIW4=;
+        bh=3BqBv5shPIWbqR7hrQzP2WUoMQCkjuhaWwqGLq6xi4Q=; b=1Eeq/Brnwm+6/m3IlrZjbOKqyo
+        BfAfmHKA9ru84Z/CYn2yXQuOwZyAP7TSRsNjCj2lIoft/wErgCDmK+XFqM6JNsNHIZHzrehdCpn2t
+        Lw3STZBVlEUshD4Q/ZxJgCVu98XVOKDONIKBv8r+sOBw+0nxP5MGvqC08lX44Hu35Wvk=;
 Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
         (envelope-from <andrew@lunn.ch>)
-        id 1lgRr4-003kFB-1v; Tue, 11 May 2021 14:51:18 +0200
-Date:   Tue, 11 May 2021 14:51:18 +0200
+        id 1lgRrg-003kGL-Mv; Tue, 11 May 2021 14:51:56 +0200
+Date:   Tue, 11 May 2021 14:51:56 +0200
 From:   Andrew Lunn <andrew@lunn.ch>
 To:     Oleksij Rempel <o.rempel@pengutronix.de>
 Cc:     Shawn Guo <shawnguo@kernel.org>,
@@ -36,27 +36,31 @@ Cc:     Shawn Guo <shawnguo@kernel.org>,
         David Jander <david@protonic.nl>,
         Russell King <linux@armlinux.org.uk>,
         Philippe Schenker <philippe.schenker@toradex.com>
-Subject: Re: [PATCH v3 4/7] ARM i.MX6q: remove clk-out fixup for the Atheros
- AR8031 and AR8035 PHYs
-Message-ID: <YJp9xi315E7Aksyg@lunn.ch>
+Subject: Re: [PATCH v3 5/7] ARM i.MX6q: remove Atheros AR8035 SmartEEE fixup
+Message-ID: <YJp97O6AW6uf7nPs@lunn.ch>
 References: <20210511043735.30557-1-o.rempel@pengutronix.de>
- <20210511043735.30557-5-o.rempel@pengutronix.de>
+ <20210511043735.30557-6-o.rempel@pengutronix.de>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20210511043735.30557-5-o.rempel@pengutronix.de>
+In-Reply-To: <20210511043735.30557-6-o.rempel@pengutronix.de>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, May 11, 2021 at 06:37:32AM +0200, Oleksij Rempel wrote:
-> This configuration should be set over device tree.
+On Tue, May 11, 2021 at 06:37:33AM +0200, Oleksij Rempel wrote:
+> This fixup removes the Lpi_en bit.
 > 
-> If this patch breaks network functionality on your system, enable the
-> AT803X_PHY driver and set following device tree property in the PHY
-> node:
+> If this patch breaks functionality of your board, use following device
+> tree properties: qca,smarteee-tw-us-1g and qca,smarteee-tw-us-100m.
 > 
->     qca,clk-out-frequency = <125000000>;
+> For example:
+> 
+> 	ethernet-phy@X {
+> 		reg = <0xX>;
+> 		qca,smarteee-tw-us-1g = <24>;
+> 		....
+> 	};
 > 
 > Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
 
