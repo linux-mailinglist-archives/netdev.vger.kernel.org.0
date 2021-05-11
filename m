@@ -2,93 +2,77 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BEB1A379C2A
-	for <lists+netdev@lfdr.de>; Tue, 11 May 2021 03:40:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7AF86379C3A
+	for <lists+netdev@lfdr.de>; Tue, 11 May 2021 03:44:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230379AbhEKBl3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 10 May 2021 21:41:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45298 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230130AbhEKBl3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 10 May 2021 21:41:29 -0400
-Received: from mail-ed1-x531.google.com (mail-ed1-x531.google.com [IPv6:2a00:1450:4864:20::531])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6327EC061760
-        for <netdev@vger.kernel.org>; Mon, 10 May 2021 18:40:23 -0700 (PDT)
-Received: by mail-ed1-x531.google.com with SMTP id s7so16240889edq.12
-        for <netdev@vger.kernel.org>; Mon, 10 May 2021 18:40:23 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=paul-moore-com.20150623.gappssmtp.com; s=20150623;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=UewUIUnZEU+WLxgt73DD3mXzDpZZk6Udya01I4ZEHrw=;
-        b=kswNC8BfZzTXjrd6CNTModmWLgnAvrz8jFPHApeblmQg6rKJTfpByfO00OR0Pz90U7
-         j1h5wLO98+mXFSkHIGaBBPFlGFIlVgszWA4z5S//jxNs7j6V5k7SvxLs2BACJNEA6cY6
-         DdJk9F38VUmJZBUbe9y0G/3gP+BARMhWvICBTY4L0I+bRubNxCVz0PQMxcRQKAw3iRiO
-         9MY1YMyzrEx57GDbBf8hCIEs3/VeMBEt//BpG/7jKlbyR/3VUWpUVsq//ToDHX33Pe2D
-         UrYTX7tsSokm+E8dtjV5qW0tm9osyXnMLHx2HdZLyQm8oWzBGAc9Z9pL9D7wg9NU6CQ0
-         vTOg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=UewUIUnZEU+WLxgt73DD3mXzDpZZk6Udya01I4ZEHrw=;
-        b=m5GAp5xKEUEyg2avOvso+XcsI9NhX3wABwN7mcVhVp4jXOhaeH6SymYQETExXu7q6p
-         L6F8CbE/wlxlgA958DWcUmVvXJY306TWcRfzVzX6Fn5WRxU+JrqioP4jKn1+38SgglcF
-         rrB1a4rS3CbfHCjytEX0oateJve+xhGCn0mgHuKdoSm4CmUtc5wyXZiumn+jUth2QBA7
-         QlRr2AsIi/hBhjW6L+arT6bNdfW6ISnm1UP/esSEWS1wDesozctpA+IbWYBqdKS0LMK8
-         xp+hqpNlUCb04gd6W3iS0iVfkBPG2xRg958lNwC7WcbjyLoHnjE+4xlqdoanzNMpWJVi
-         pw/A==
-X-Gm-Message-State: AOAM532Si5bd2HgfYdNb/tOY+7LnVbnfh53FLu3f6x3ckwbrs/65WU4G
-        VmsO6fyrH/5THC1RHNeBOWyk6Scu3TaDLK0ZtHiu
-X-Google-Smtp-Source: ABdhPJyiTl7fBwjdXCS+1nwJylc1lzHYHwN8ZdaJRSyBufr+LfV/BQ7QX/iNclrk81EQS7LWDc/1AEQHqAIC14Mt+cY=
-X-Received: by 2002:a05:6402:177c:: with SMTP id da28mr32267501edb.135.1620697221981;
- Mon, 10 May 2021 18:40:21 -0700 (PDT)
+        id S230425AbhEKBpN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 10 May 2021 21:45:13 -0400
+Received: from szxga04-in.huawei.com ([45.249.212.190]:2763 "EHLO
+        szxga04-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230291AbhEKBpL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 10 May 2021 21:45:11 -0400
+Received: from DGGEMS413-HUB.china.huawei.com (unknown [172.30.72.58])
+        by szxga04-in.huawei.com (SkyGuard) with ESMTP id 4FfLGd0G1mzmg21;
+        Tue, 11 May 2021 09:40:41 +0800 (CST)
+Received: from [127.0.0.1] (10.174.177.72) by DGGEMS413-HUB.china.huawei.com
+ (10.3.19.213) with Microsoft SMTP Server id 14.3.498.0; Tue, 11 May 2021
+ 09:43:57 +0800
+Subject: Re: [PATCH 1/1] forcedeth: Delete a redundant condition branch
+To:     Andrew Lunn <andrew@lunn.ch>
+CC:     Rain River <rain.1986.08.12@gmail.com>,
+        Zhu Yanjun <zyjzyj2000@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        netdev <netdev@vger.kernel.org>
+References: <20210510135656.3960-1-thunder.leizhen@huawei.com>
+ <YJmQufHgq6WlRz4Q@lunn.ch>
+From:   "Leizhen (ThunderTown)" <thunder.leizhen@huawei.com>
+Message-ID: <20f15fbc-347f-b76d-24f4-da08f76fd603@huawei.com>
+Date:   Tue, 11 May 2021 09:43:56 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.0
 MIME-Version: 1.0
-References: <20210409054841.320-1-hbut_tan@163.com>
-In-Reply-To: <20210409054841.320-1-hbut_tan@163.com>
-From:   Paul Moore <paul@paul-moore.com>
-Date:   Mon, 10 May 2021 21:40:11 -0400
-Message-ID: <CAHC9VhT8+DR0jvY8SO=HArhjcTfxsZxaoqy-1ufcOQEcD6qOXQ@mail.gmail.com>
-Subject: Re: [PATCH 2/2] selinux:Delete selinux_xfrm_policy_lookup() useless argument
-To:     Zhongjun Tan <hbut_tan@163.com>
-Cc:     steffen.klassert@secunet.com, herbert@gondor.apana.org.au,
-        davem@davemloft.net, kuba@kernel.org,
-        James Morris <jmorris@namei.org>,
-        Serge Hallyn <serge@hallyn.com>,
-        Stephen Smalley <stephen.smalley.work@gmail.com>,
-        Eric Paris <eparis@parisplace.org>, keescook@chromium.org,
-        gregkh@linuxfoundation.org, ebiederm@xmission.com,
-        kpsingh@google.com, dhowells@redhat.com,
-        christian.brauner@ubuntu.com, zohar@linux.ibm.com,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        linux-security-module@vger.kernel.org, selinux@vger.kernel.org,
-        Zhongjun Tan <tanzhongjun@yulong.com>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <YJmQufHgq6WlRz4Q@lunn.ch>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.174.177.72]
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Apr 9, 2021 at 1:52 AM Zhongjun Tan <hbut_tan@163.com> wrote:
->
-> From: Zhongjun Tan <tanzhongjun@yulong.com>
->
-> seliunx_xfrm_policy_lookup() is hooks of security_xfrm_policy_lookup().
-> The dir argument is uselss in security_xfrm_policy_lookup(). So
-> remove the dir argument from selinux_xfrm_policy_lookup() and
-> security_xfrm_policy_lookup().
->
-> Signed-off-by: Zhongjun Tan <tanzhongjun@yulong.com>
-> ---
->  include/linux/lsm_hook_defs.h   | 3 +--
->  include/linux/security.h        | 4 ++--
->  net/xfrm/xfrm_policy.c          | 6 ++----
->  security/security.c             | 4 ++--
->  security/selinux/include/xfrm.h | 2 +-
->  security/selinux/xfrm.c         | 2 +-
->  6 files changed, 9 insertions(+), 12 deletions(-)
 
-Merged into selinux/next, thanks.
 
--- 
-paul moore
-www.paul-moore.com
+On 2021/5/11 3:59, Andrew Lunn wrote:
+> On Mon, May 10, 2021 at 09:56:56PM +0800, Zhen Lei wrote:
+>> The statement of the last "if (adv_lpa & LPA_10HALF)" branch is the same
+>> as the "else" branch. Delete it to simplify code.
+>>
+>> No functional change.
+>>
+>> Signed-off-by: Zhen Lei <thunder.leizhen@huawei.com>
+> 
+> Hi Zhen
+> 
+> Could you teach your bot to check lore.kernel.org and see if the same
+> patch has been submitted before? If it has, there is probably a reason
+> why it was rejected. You need to check if that reason it still true.
+
+This is a tool that comes with the kernel. Now it's all about manual
+Google searches to see if someone has posted it. So there could be a
+mistake.
+
+Although the compiler can optimize this "if" branch, but I think those
+that can optimize directly should try to avoid relying on the machine.
+If it must exist, it should be in the form of comments. Otherwise, the
+intuition is that there was a mistake in writing this code. That's why
+the kernel tool reports it. At least the developers of the tool has the
+same point of view as mine.
+
+> 
+>     Andrew
+> 
+> .
+> 
+
