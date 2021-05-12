@@ -2,40 +2,41 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C819A37ED03
-	for <lists+netdev@lfdr.de>; Thu, 13 May 2021 00:37:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4AA6337ED04
+	for <lists+netdev@lfdr.de>; Thu, 13 May 2021 00:37:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1384936AbhELUFf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 12 May 2021 16:05:35 -0400
-Received: from mail.kernel.org ([198.145.29.99]:52106 "EHLO mail.kernel.org"
+        id S1384954AbhELUFw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 12 May 2021 16:05:52 -0400
+Received: from mail.kernel.org ([198.145.29.99]:52226 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1352713AbhELSEG (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 12 May 2021 14:04:06 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 8707F61412;
-        Wed, 12 May 2021 18:02:57 +0000 (UTC)
+        id S1352782AbhELSEN (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 12 May 2021 14:04:13 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 9B68961438;
+        Wed, 12 May 2021 18:03:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1620842578;
-        bh=eaFzXUGPD19UebBi6DqlyNQJbVt59XWMqXQiVNeK6Cs=;
+        s=k20201202; t=1620842584;
+        bh=OBRM+63/3ohtj24gC1piWGYcbhX4ghxYNsGGNhbXyN4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=eEaSfFdJPqxvneW1OnmbYEsD+aHIt0XFSSQolsYhBjG/rZa8y0hjnU5UZU/5A/R89
-         k04scFaMBpKYVx4vS6FOCusfAmzroh9aQYURZQoiiPEEAuHe3uID7W7YVqK9EYyXNy
-         qpNQVJQoZbEXcfEQRiV2cgORBa43LnZksMuPTrLIv1U5Hyu4oNPwod4+nEnuAJPX1T
-         JogvaV3dwHiA/46/KOiDR9MdUZm0ObWzE3hOOI3bH9FQL1nzL2LeKiExpQvcc+/oqD
-         FSIwr6gqC2TemeIOqeSuqZbhRoDiKW2BVkcbml6HNiz9MOKrJW18/uYmb301yz0xOm
-         /0E6rRUysCb6Q==
+        b=G6/zetGy3GUUgaruJlGSVhjlOc+IQVhIeoGepbk1Y2V63+VvS5i64Lp0y0GJ95f0+
+         PtCPft/pUfmSeTqufwQ6QZ3sY3BKINkFwuaA8ig86gGFpnnYvi5kl47Gn+S6xTmTRy
+         AnqzK1/lhhqdLaiaSOpt6JJiHZjQD2c9RKtBQvEUUkIC1/KRhtGxhpZ0JdcHFTmm5C
+         ZkywxZdE/ZpRDoZvcx//ZoZCFsu3kcf1PRDpyTNXmZ83kDdOpaL+7ZV6h3eb2A+CJQ
+         ZiI0giTgaN7PMGqnCx+5EZeLNL6GLH5500Q4tB3LOWSeyE4a7MLjsnouixy9nZh+Ao
+         KEXjwgvQ8dCJg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     =?UTF-8?q?=C3=8D=C3=B1igo=20Huguet?= <ihuguet@redhat.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.11 31/35] net:CXGB4: fix leak if sk_buff is not used
-Date:   Wed, 12 May 2021 14:02:01 -0400
-Message-Id: <20210512180206.664536-31-sashal@kernel.org>
+Cc:     Yannick Vignon <yannick.vignon@nxp.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org
+Subject: [PATCH AUTOSEL 5.11 35/35] net: stmmac: Do not enable RX FIFO overflow interrupts
+Date:   Wed, 12 May 2021 14:02:05 -0400
+Message-Id: <20210512180206.664536-35-sashal@kernel.org>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20210512180206.664536-1-sashal@kernel.org>
 References: <20210512180206.664536-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 X-stable: review
 X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
@@ -43,68 +44,92 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Íñigo Huguet <ihuguet@redhat.com>
+From: Yannick Vignon <yannick.vignon@nxp.com>
 
-[ Upstream commit 52bfcdd87e83d9e69d22da5f26b1512ffc81deed ]
+[ Upstream commit 8a7cb245cf28cb3e541e0d6c8624b95d079e155b ]
 
-An sk_buff is allocated to send a flow control message, but it's not
-sent in all cases: in case the state is not appropiate to send it or if
-it can't be enqueued.
+The RX FIFO overflows when the system is not able to process all received
+packets and they start accumulating (first in the DMA queue in memory,
+then in the FIFO). An interrupt is then raised for each overflowing packet
+and handled in stmmac_interrupt(). This is counter-productive, since it
+brings the system (or more likely, one CPU core) to its knees to process
+the FIFO overflow interrupts.
 
-In the first of these 2 cases, the sk_buff was discarded but not freed,
-producing a memory leak.
+stmmac_interrupt() handles overflow interrupts by writing the rx tail ptr
+into the corresponding hardware register (according to the MAC spec, this
+has the effect of restarting the MAC DMA). However, without freeing any rx
+descriptors, the DMA stops right away, and another overflow interrupt is
+raised as the FIFO overflows again. Since the DMA is already restarted at
+the end of stmmac_rx_refill() after freeing descriptors, disabling FIFO
+overflow interrupts and the corresponding handling code has no side effect,
+and eliminates the interrupt storm when the RX FIFO overflows.
 
-Signed-off-by: Íñigo Huguet <ihuguet@redhat.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Yannick Vignon <yannick.vignon@nxp.com>
+Link: https://lore.kernel.org/r/20210506143312.20784-1-yannick.vignon@oss.nxp.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/chelsio/cxgb4/sge.c | 16 +++++++++-------
- 1 file changed, 9 insertions(+), 7 deletions(-)
+ drivers/net/ethernet/stmicro/stmmac/dwmac4_dma.c  |  7 +------
+ drivers/net/ethernet/stmicro/stmmac/stmmac_main.c | 14 ++------------
+ 2 files changed, 3 insertions(+), 18 deletions(-)
 
-diff --git a/drivers/net/ethernet/chelsio/cxgb4/sge.c b/drivers/net/ethernet/chelsio/cxgb4/sge.c
-index 3334c9e2152a..546301272271 100644
---- a/drivers/net/ethernet/chelsio/cxgb4/sge.c
-+++ b/drivers/net/ethernet/chelsio/cxgb4/sge.c
-@@ -2559,12 +2559,12 @@ int cxgb4_ethofld_send_flowc(struct net_device *dev, u32 eotid, u32 tc)
- 	spin_lock_bh(&eosw_txq->lock);
- 	if (tc != FW_SCHED_CLS_NONE) {
- 		if (eosw_txq->state != CXGB4_EO_STATE_CLOSED)
--			goto out_unlock;
-+			goto out_free_skb;
+diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac4_dma.c b/drivers/net/ethernet/stmicro/stmmac/dwmac4_dma.c
+index 62aa0e95beb7..a7249e4071f1 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/dwmac4_dma.c
++++ b/drivers/net/ethernet/stmicro/stmmac/dwmac4_dma.c
+@@ -222,7 +222,7 @@ static void dwmac4_dma_rx_chan_op_mode(void __iomem *ioaddr, int mode,
+ 				       u32 channel, int fifosz, u8 qmode)
+ {
+ 	unsigned int rqs = fifosz / 256 - 1;
+-	u32 mtl_rx_op, mtl_rx_int;
++	u32 mtl_rx_op;
  
- 		next_state = CXGB4_EO_STATE_FLOWC_OPEN_SEND;
- 	} else {
- 		if (eosw_txq->state != CXGB4_EO_STATE_ACTIVE)
--			goto out_unlock;
-+			goto out_free_skb;
+ 	mtl_rx_op = readl(ioaddr + MTL_CHAN_RX_OP_MODE(channel));
  
- 		next_state = CXGB4_EO_STATE_FLOWC_CLOSE_SEND;
+@@ -283,11 +283,6 @@ static void dwmac4_dma_rx_chan_op_mode(void __iomem *ioaddr, int mode,
  	}
-@@ -2600,17 +2600,19 @@ int cxgb4_ethofld_send_flowc(struct net_device *dev, u32 eotid, u32 tc)
- 		eosw_txq_flush_pending_skbs(eosw_txq);
  
- 	ret = eosw_txq_enqueue(eosw_txq, skb);
--	if (ret) {
--		dev_consume_skb_any(skb);
--		goto out_unlock;
--	}
-+	if (ret)
-+		goto out_free_skb;
- 
- 	eosw_txq->state = next_state;
- 	eosw_txq->flowc_idx = eosw_txq->pidx;
- 	eosw_txq_advance(eosw_txq, 1);
- 	ethofld_xmit(dev, eosw_txq);
- 
--out_unlock:
-+	spin_unlock_bh(&eosw_txq->lock);
-+	return 0;
-+
-+out_free_skb:
-+	dev_consume_skb_any(skb);
- 	spin_unlock_bh(&eosw_txq->lock);
- 	return ret;
+ 	writel(mtl_rx_op, ioaddr + MTL_CHAN_RX_OP_MODE(channel));
+-
+-	/* Enable MTL RX overflow */
+-	mtl_rx_int = readl(ioaddr + MTL_CHAN_INT_CTRL(channel));
+-	writel(mtl_rx_int | MTL_RX_OVERFLOW_INT_EN,
+-	       ioaddr + MTL_CHAN_INT_CTRL(channel));
  }
+ 
+ static void dwmac4_dma_tx_chan_op_mode(void __iomem *ioaddr, int mode,
+diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
+index 4749bd0af160..a23797267ad0 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
++++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
+@@ -4162,7 +4162,6 @@ static irqreturn_t stmmac_interrupt(int irq, void *dev_id)
+ 	/* To handle GMAC own interrupts */
+ 	if ((priv->plat->has_gmac) || xmac) {
+ 		int status = stmmac_host_irq_status(priv, priv->hw, &priv->xstats);
+-		int mtl_status;
+ 
+ 		if (unlikely(status)) {
+ 			/* For LPI we need to save the tx status */
+@@ -4173,17 +4172,8 @@ static irqreturn_t stmmac_interrupt(int irq, void *dev_id)
+ 		}
+ 
+ 		for (queue = 0; queue < queues_count; queue++) {
+-			struct stmmac_rx_queue *rx_q = &priv->rx_queue[queue];
+-
+-			mtl_status = stmmac_host_mtl_irq_status(priv, priv->hw,
+-								queue);
+-			if (mtl_status != -EINVAL)
+-				status |= mtl_status;
+-
+-			if (status & CORE_IRQ_MTL_RX_OVERFLOW)
+-				stmmac_set_rx_tail_ptr(priv, priv->ioaddr,
+-						       rx_q->rx_tail_addr,
+-						       queue);
++			status = stmmac_host_mtl_irq_status(priv, priv->hw,
++							    queue);
+ 		}
+ 
+ 		/* PCS link status */
 -- 
 2.30.2
 
