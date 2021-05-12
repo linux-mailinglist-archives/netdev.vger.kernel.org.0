@@ -2,191 +2,123 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CDF2E37B490
-	for <lists+netdev@lfdr.de>; Wed, 12 May 2021 05:35:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E337237B4D5
+	for <lists+netdev@lfdr.de>; Wed, 12 May 2021 06:16:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230097AbhELDgJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 11 May 2021 23:36:09 -0400
-Received: from szxga02-in.huawei.com ([45.249.212.188]:2489 "EHLO
-        szxga02-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229848AbhELDgH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 11 May 2021 23:36:07 -0400
-Received: from dggeml752-chm.china.huawei.com (unknown [172.30.72.57])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4Fg0j857VLzYjL9;
-        Wed, 12 May 2021 11:32:28 +0800 (CST)
-Received: from dggpemm500005.china.huawei.com (7.185.36.74) by
- dggeml752-chm.china.huawei.com (10.1.199.151) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
- 15.1.2176.2; Wed, 12 May 2021 11:34:56 +0800
-Received: from [127.0.0.1] (10.69.30.204) by dggpemm500005.china.huawei.com
- (7.185.36.74) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id 15.1.2176.2; Wed, 12 May
- 2021 11:34:56 +0800
-Subject: Re: [Linuxarm] Re: [PATCH net v6 3/3] net: sched: fix tx action
- reschedule issue with stopped queue
-To:     Jakub Kicinski <kuba@kernel.org>
-CC:     <davem@davemloft.net>, <olteanv@gmail.com>, <ast@kernel.org>,
-        <daniel@iogearbox.net>, <andriin@fb.com>, <edumazet@google.com>,
-        <weiwan@google.com>, <cong.wang@bytedance.com>,
-        <ap420073@gmail.com>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <linuxarm@openeuler.org>,
-        <mkl@pengutronix.de>, <linux-can@vger.kernel.org>,
-        <jhs@mojatatu.com>, <xiyou.wangcong@gmail.com>, <jiri@resnulli.us>,
-        <andrii@kernel.org>, <kafai@fb.com>, <songliubraving@fb.com>,
-        <yhs@fb.com>, <john.fastabend@gmail.com>, <kpsingh@kernel.org>,
-        <bpf@vger.kernel.org>, <jonas.bonn@netrounds.com>,
-        <pabeni@redhat.com>, <mzhivich@akamai.com>, <johunt@akamai.com>,
-        <albcamus@gmail.com>, <kehuan.feng@gmail.com>,
-        <a.fatoum@pengutronix.de>, <atenart@kernel.org>,
-        <alexander.duyck@gmail.com>, <hdanton@sina.com>, <jgross@suse.com>,
-        <JKosina@suse.com>, <mkubecek@suse.cz>, <bjorn@kernel.org>,
-        <alobakin@pm.me>
-References: <1620610956-56306-1-git-send-email-linyunsheng@huawei.com>
- <1620610956-56306-4-git-send-email-linyunsheng@huawei.com>
- <20210510212232.3386c5b4@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <c676404c-f210-b0cb-ced3-5449676055a8@huawei.com>
- <8db8e594-9606-2c93-7274-1c180afaadb2@huawei.com>
- <20210511163049.37d2cba0@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-From:   Yunsheng Lin <linyunsheng@huawei.com>
-Message-ID: <62054a31-4708-1696-60d5-b33e4993cddc@huawei.com>
-Date:   Wed, 12 May 2021 11:34:55 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:52.0) Gecko/20100101
- Thunderbird/52.2.0
+        id S229704AbhELERT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 12 May 2021 00:17:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37772 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229495AbhELERT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 12 May 2021 00:17:19 -0400
+Received: from mail-wm1-x330.google.com (mail-wm1-x330.google.com [IPv6:2a00:1450:4864:20::330])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B8CDDC061574;
+        Tue, 11 May 2021 21:16:11 -0700 (PDT)
+Received: by mail-wm1-x330.google.com with SMTP id o127so12181647wmo.4;
+        Tue, 11 May 2021 21:16:11 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=sender:date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=JCncdDjE7Srd7BUCB3CPtEnkitbRPaUmqjcTmdGK2+s=;
+        b=aipHKNVyb/XjRKn46VmjkCzFRB+Thi4NQbiuj/K5+hduiPoWM4YPwjPcbDpqgS0zVt
+         jaus4A20Am5DwCf+cwp43X5JILZHguFZDjjvYr2e8rpoOEvtPOUYJhb/f7MPFVOd4zAv
+         tSO4Ih+xzNKFhLPc/ExIDfa8l4oTaIyEIUfNZdpB9cvUpuboGg6Zum/l82/PmX4fVuyj
+         SLTuG4mAcdkiypRZH5p9WIxUgywwytHURcH61exNne2yXxNNghHBPiNSWqcR67qGE0dn
+         n4A4tep+UjwTvZaZOTVYUeqybQT2rMg5dALmwRccSLz1x+uPiIO8o8obrdtKVTrXGjph
+         2pKQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
+         :references:mime-version:content-disposition:in-reply-to:user-agent;
+        bh=JCncdDjE7Srd7BUCB3CPtEnkitbRPaUmqjcTmdGK2+s=;
+        b=CAvOZp3ZJ5yvw/QJpJkeREmUzN/r/SlPd4KVciNWcz3S9fd6KktsMm1xA05EqRbEBA
+         TNAwbFC45L8Jkel6PoLkMm6t5DeRvPkOVVpDyoX5ZUxHb3nK+HruGVMdgXg+E3CkPwqv
+         JxYSkTPS1XV1nnCnQxed5Lca3jWlheojMT2dE3znsJjuyUftadQKpk30aiz4lS824nGX
+         OXINnz4knGgYBNOKm4ctJ1GkJf/RuJogLm6e/zYQrRDyY5zdxcuL6V2q+udnYHB2MWBN
+         QqDr3OwIPSQL43QiW3IHmaiF4oJe4ZV73UQSiO7pZZ9JPR6jfSmV2NFQGubvP1jAwJHz
+         78Tw==
+X-Gm-Message-State: AOAM531NYnclXB+b9ZxyTzIcRLsyFR794ZBuOqXPo9bwp9Umd+ZFPfuZ
+        Dv41Rle9zySdOKxXKNAiVIRwUY9ohYW82g==
+X-Google-Smtp-Source: ABdhPJxON1Uvwty2GZz67IASvmlU0zxVGLrQUop9ggaCt5KNqRk9zVyImtJ4y0WSrtFpcUfe/5T6rQ==
+X-Received: by 2002:a1c:750b:: with SMTP id o11mr9186963wmc.188.1620792970259;
+        Tue, 11 May 2021 21:16:10 -0700 (PDT)
+Received: from lorien (lorien.valinor.li. [2a01:4f8:192:61d5::2])
+        by smtp.gmail.com with ESMTPSA id f1sm2438168wrr.63.2021.05.11.21.16.09
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 11 May 2021 21:16:09 -0700 (PDT)
+Sender: Salvatore Bonaccorso <salvatore.bonaccorso@gmail.com>
+Date:   Wed, 12 May 2021 06:16:08 +0200
+From:   Salvatore Bonaccorso <carnil@debian.org>
+To:     oss-security@lists.openwall.com
+Cc:     netdev@vger.kernel.org, socketcan@hartkopp.net, mkl@pengutronix.de,
+        alex.popov@linux.com, linux-can@vger.kernel.org,
+        seth.arnold@canonical.com, steve.beattie@canonical.com,
+        cascardo@canonical.com
+Subject: Re: [oss-security] Linux kernel: net/can/isotp: race condition leads
+ to local privilege escalation
+Message-ID: <20210512041608.GA1420@lorien.valinor.li>
+References: <trinity-10aeed49-cb96-47d9-818e-b938913e6fce-1620770433273@3c-app-gmx-bap63>
 MIME-Version: 1.0
-In-Reply-To: <20210511163049.37d2cba0@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.69.30.204]
-X-ClientProxiedBy: dggeme701-chm.china.huawei.com (10.1.199.97) To
- dggpemm500005.china.huawei.com (7.185.36.74)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <trinity-10aeed49-cb96-47d9-818e-b938913e6fce-1620770433273@3c-app-gmx-bap63>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2021/5/12 7:30, Jakub Kicinski wrote:
-> On Tue, 11 May 2021 20:13:56 +0800 Yunsheng Lin wrote:
->> On 2021/5/11 17:04, Yunsheng Lin wrote:
->>> On 2021/5/11 12:22, Jakub Kicinski wrote:  
->>>> The queues are woken asynchronously without holding any locks via
->>>> netif_tx_wake_queue(). Theoretically we can have a situation where:
->>>>
->>>> CPU 0                            CPU 1   
->>>>   .                                .
->>>> dequeue_skb()                      .
->>>>   netif_xmit_frozen..() # true     .
->>>>   .                              [IRQ]
->>>>   .                              netif_tx_wake_queue()
->>>>   .                              <end of IRQ>
->>>>   .                              netif_tx_action()
->>>>   .                              set MISSED
->>>>   clear MISSED
->>>>   return NULL
->>>> ret from qdisc_restart()
->>>> ret from __qdisc_run()
->>>> qdisc_run_end()  
->>  [...]  
->>>
->>> Yes, the above does seems to have the above data race.
->>>
->>> As my understanding, there is two ways to fix the above data race:
->>> 1. do not clear the STATE_MISSED for netif_xmit_frozen_or_stopped()
->>>    case, just check the netif_xmit_frozen_or_stopped() before
->>>    calling __netif_schedule() at the end of qdisc_run_end(). This seems
->>>    to only work with qdisc with TCQ_F_ONETXQUEUE flag because it seems
->>>    we can only check the netif_xmit_frozen_or_stopped() with q->dev_queue,
->>>    I am not sure q->dev_queue is pointint to which netdev queue when qdisc
->>>    is not set with TCQ_F_ONETXQUEUE flag.
+Hi,
+
+On Wed, May 12, 2021 at 12:00:33AM +0200, Norbert Slusarek wrote:
+> A race condition in the CAN ISOTP networking protocol was discovered which
+> allows forbidden changing of socket members after binding the socket.
 > 
-> Isn't the case where we have a NOLOCK qdisc without TCQ_F_ONETXQUEUE
-> rather unexpected? It'd have to be a single pfifo on multi-queue
-> netdev, right? Sounds not worth optimizing for. How about:
+> In particular, the lack of locking behavior in isotp_setsockopt() makes it
+> feasible to assign the flag CAN_ISOTP_SF_BROADCAST to the socket, despite having
+> previously registered a can receiver. After closing the isotp socket, the can
+> receiver will still be registered and use-after-free's can be triggered in
+> isotp_rcv() on the freed isotp_sock structure.
+> This leads to arbitrary kernel execution by overwriting the sk_error_report()
+> pointer, which can be misused in order to execute a user-controlled ROP chain to
+> gain root privileges.
 > 
->  static inline void qdisc_run_end(struct Qdisc *qdisc)
->  {
->  	write_seqcount_end(&qdisc->running);
-> 	if (qdisc->flags & TCQ_F_NOLOCK) {
->  		spin_unlock(&qdisc->seqlock);
+> The vulnerability was introduced with the introduction of SF_BROADCAST support
+> in commit 921ca574cd38 ("can: isotp: add SF_BROADCAST support for functional
+> addressing") in 5.11-rc1.
+> In fact, commit 323a391a220c ("can: isotp: isotp_setsockopt():
+> block setsockopt on bound sockets") did not effectively prevent isotp_setsockopt()
+> from modifying socket members before isotp_bind().
 > 
-> 		if (unlikely(test_bit(__QDISC_STATE_MISSED,
-> 				      &qdisc->state))) {
-> 			clear_bit(__QDISC_STATE_MISSED, &qdisc->state);
-> 			if (!(q->flags & TCQ_F_ONETXQUEUE) ||
-> 			    !netif_xmit_frozen_or_stopped(q->dev_queue))
-> 				__netif_schedule(qdisc);
-> 		}
-> 	}
->  }
+> The requested CVE ID will be revealed along with further exploitation details
+> as a response to this notice on 13th May of 2021.
 > 
-> For the strange non-ONETXQUEUE case we'd have an occasional unnecessary
-> net_tx_action, but no infinite loop possible.
+> Credits: Norbert Slusarek
 > 
->>> 2. clearing the STATE_MISSED for netif_xmit_frozen_or_stopped() case
->>>    as this patch does, and protect the __netif_schedule() with q->seqlock
->>>    for netif_tx_wake_queue(), which might bring unnecessary overhead for
->>>    non-stopped queue case
->>>
->>> Any better idea?  
->>
->> 3. Or check the netif_xmit_frozen_or_stopped() again after clearing
->>    STATE_MISSED, like below:
->>
->>    if (netif_xmit_frozen_or_stopped(txq)) {
->> 	  clear_bit(__QDISC_STATE_MISSED, &q->state);
->>
->> 	  /* Make sure the below netif_xmit_frozen_or_stopped()
->> 	   * checking happens after clearing STATE_MISSED.
->> 	   */
->> 	  smp_mb__after_atomic();
->>
->> 	  /* Checking netif_xmit_frozen_or_stopped() again to
->> 	   * make sure __QDISC_STATE_MISSED is set if the
->> 	   * __QDISC_STATE_MISSED set by netif_tx_wake_queue()'s
->> 	   * rescheduling of net_tx_action() is cleared by the
->> 	   * above clear_bit().
->> 	   */
->> 	  if (!netif_xmit_frozen_or_stopped(txq))
->> 	  	set_bit(__QDISC_STATE_MISSED, &q->state);
->>   }
->>
->>   It is kind of ugly, but it does seem to fix the above data race too.
->>   And it seems like a common pattern to deal with the concurrency between
->>   xmit and NAPI polling, as below:
->>
->> https://elixir.bootlin.com/linux/v5.12-rc2/source/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c#L1409
+> *** exploit log ***
 > 
-> This is indeed the idiomatic way of dealing with Tx queue stopping race,
-> but it's a bit of code to sprinkle around. My vote would be option 1.
-
-I had done some performance testing to see which is better, tested using
-pktgen and dummy netdev with pfifo_fast qdisc attached:
-
-unit: Mpps
-
-threads    V6         V6 + option 1     V6 + option 3
-  1       2.60          2.54               2.60
-  2       3.86          3.84               3.84
-  4       5.56          5.50               5.51
-  8       2.79          2.77               2.77
-  16      2.23          2.24               2.22
-
-So it seems the netif_xmit_frozen_or_stopped checking overhead for non-stopped queue
-is noticable for 1 pktgen thread.
-
-And the performance increase for V6 + option 1 with 16 pktgen threads is because of
-"clear_bit(__QDISC_STATE_MISSED, &qdisc->state)" at the end of qdisc_run_end(), which
-may avoid the another round of dequeuing in the pfifo_fast_dequeue(). And adding the
-"clear_bit(__QDISC_STATE_MISSED, &qdisc->state)"  for V6 + option 3, the data for
-16 pktgen thread also go up to 2.24Mpps.
-
-
-So it seems V6 + option 3 with "clear_bit(__QDISC_STATE_MISSED, &qdisc->state)" at
-the end of qdisc_run_end() is better?
-
-
-> _______________________________________________
-> Linuxarm mailing list -- linuxarm@openeuler.org
-> To unsubscribe send an email to linuxarm-leave@openeuler.org
+> Adjusted to work with openSUSE Tumbleweed.
 > 
+> noprivs@suse:~/expl> uname -a
+> Linux suse 5.12.0-1-default #1 SMP Mon Apr 26 04:25:46 UTC 2021 (5d43652) x86_64 x86_64 x86_64 GNU/Linux
+> noprivs@suse:~/expl> ./lpe
+> [+] entering setsockopt
+> [+] entering bind
+> [+] left bind with ret = 0
+> [+] left setsockopt with flags = 838
+> [+] race condition hit, closing and spraying socket
+> [+] sending msg to run softirq with isotp_rcv()
+> [+] check sudo su for root rights
+> noprivs@suse:~/expl> sudo su
+> suse:/home/noprivs/expl # id
+> uid=0(root) gid=0(root) groups=0(root)
+> suse:/home/noprivs/expl # cat /root/check
+> high school student living in germany looking for an internship in info sec.
+> if interested please reach out to nslusarek@gmx.net.
 
+FTR, this issue has CVE-2021-32606[1] assigned.
+
+ [1]: https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2021-32606
+
+Regards,
+Salvatore
