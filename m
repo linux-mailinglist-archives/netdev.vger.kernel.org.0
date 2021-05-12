@@ -2,44 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DCADF37EE8B
-	for <lists+netdev@lfdr.de>; Thu, 13 May 2021 00:59:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E977137EE99
+	for <lists+netdev@lfdr.de>; Thu, 13 May 2021 00:59:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240236AbhELVw0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 12 May 2021 17:52:26 -0400
-Received: from mail.kernel.org ([198.145.29.99]:40744 "EHLO mail.kernel.org"
+        id S1347617AbhELVyl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 12 May 2021 17:54:41 -0400
+Received: from mail.kernel.org ([198.145.29.99]:40738 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S237691AbhELVLl (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 12 May 2021 17:11:41 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id C4E9361428;
+        id S237616AbhELVLm (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 12 May 2021 17:11:42 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPS id BCEE261406;
         Wed, 12 May 2021 21:10:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1620853810;
-        bh=cyLh9qw8T4SCn3I4q6HRtt8w7L6qy334n3YIsO2B4eI=;
+        bh=mo9JAJAZO1+EYpVeXiY2Wy9tImvw6V6BMPdk7k7W6dU=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=a+qFWytqlmOHR3o/TvH02n99ZEmf+DH4TLWBjmgegXCRcpgIRZXRin31f0E+8uqcb
-         rh3BpH6F0LPLkey1VQRMaHXSmziaPnJldoazgB0hvVjBLV4Dvmn0S2LoU/aLsIKwYl
-         TyzrVWQBNm1osiuf/TgvemUXm6MjMlkeFxmMVv4A+hamksu48m2SSWbNOdmoLd7fJo
-         BhdI9hUYdpbsGm704ZQGECHC5pp1Yf0ASaYRmyO/EAC3i9icytAd+P2AqJ8ryOg5vZ
-         HUNR7cU6oFhCspSO/Pfe7W2K/AuqeMvXCqUcMxLp6a7q7xOLSfGgtFkV4u/qAOYtIh
-         lTiKftP7OF7Dw==
+        b=C56o2t8EW/navsNCQgLK/KfPzbp+Fvpmb7nzYN49tmlWHDVISdIyQHWREgNE1Vx+M
+         9tuUEKCZgPJxKCw7f9JGauO+hKahWEoeqz6VTjBTjxTJSiCl3Z5+KvNMfK/eFCeYq3
+         5Q8KEQx+Vyj/G0Y82dgx9M2F31C05rx9ohd3Tb6EaWcxVMibCQHCfPrQmWyG7AWJZl
+         1gmUTQ9XJj6aFIW2lwKtBTYhNt+aH+xebeVthNCNYkmQ7utAzhHyjZ0rkq6GQqel3y
+         9+2UoqcwTF1IP/hXw8AG3fAwmanzv0QPhvuUVKfif6InL8cGTTbydwPePe7ithFoZU
+         HF0KecDMDQa7A==
 Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id B6530609D8;
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id AAA8A60A27;
         Wed, 12 May 2021 21:10:10 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net] octeontx2-pf: fix a buffer overflow in
- otx2_set_rxfh_context()
+Subject: Re: [PATCH] ptp: ocp: Fix a resource leak in an error handling path
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <162085381074.5514.7569325730400775140.git-patchwork-notify@kernel.org>
+Message-Id: <162085381069.5514.11486827619265689281.git-patchwork-notify@kernel.org>
 Date:   Wed, 12 May 2021 21:10:10 +0000
-References: <YJup3/Ih2vIOXK2R@mwanda>
-In-Reply-To: <YJup3/Ih2vIOXK2R@mwanda>
-To:     Dan Carpenter <dan.carpenter@oracle.com>
-Cc:     sgoutham@marvell.com, gakula@marvell.com, sbhatta@marvell.com,
-        hkelam@marvell.com, davem@davemloft.net, kuba@kernel.org,
-        netdev@vger.kernel.org, kernel-janitors@vger.kernel.org
+References: <141cd7dc7b44385ead176b1d0eb139573b47f110.1620818043.git.christophe.jaillet@wanadoo.fr>
+In-Reply-To: <141cd7dc7b44385ead176b1d0eb139573b47f110.1620818043.git.christophe.jaillet@wanadoo.fr>
+To:     Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Cc:     richardcochran@gmail.com, kuba@kernel.org,
+        jonathan.lemon@gmail.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
@@ -48,19 +47,19 @@ Hello:
 
 This patch was applied to netdev/net.git (refs/heads/master):
 
-On Wed, 12 May 2021 13:11:43 +0300 you wrote:
-> This function is called from ethtool_set_rxfh() and "*rss_context"
-> comes from the user.  Add some bounds checking to prevent memory
-> corruption.
+On Wed, 12 May 2021 13:15:29 +0200 you wrote:
+> If an error occurs after a successful 'pci_ioremap_bar()' call, it must be
+> undone by a corresponding 'pci_iounmap()' call, as already done in the
+> remove function.
 > 
-> Fixes: 81a4362016e7 ("octeontx2-pf: Add RSS multi group support")
-> Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
+> Fixes: a7e1abad13f3 ("ptp: Add clock driver for the OpenCompute TimeCard.")
+> Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
 > 
 > [...]
 
 Here is the summary with links:
-  - [net] octeontx2-pf: fix a buffer overflow in otx2_set_rxfh_context()
-    https://git.kernel.org/netdev/net/c/e5cc361e2164
+  - ptp: ocp: Fix a resource leak in an error handling path
+    https://git.kernel.org/netdev/net/c/9c1bb37f8cad
 
 You are awesome, thank you!
 --
