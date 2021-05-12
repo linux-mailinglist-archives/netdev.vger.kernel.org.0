@@ -2,204 +2,163 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AB11437D069
-	for <lists+netdev@lfdr.de>; Wed, 12 May 2021 19:41:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5F54637D06B
+	for <lists+netdev@lfdr.de>; Wed, 12 May 2021 19:41:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242331AbhELRef (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 12 May 2021 13:34:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41432 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346335AbhELRNP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 12 May 2021 13:13:15 -0400
-Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D23B4C0611EE;
-        Wed, 12 May 2021 10:07:14 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=bombadil.20210309; h=Mime-Version:Content-Type:References:
-        In-Reply-To:Date:Cc:To:From:Subject:Message-ID:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=CGAim91g54du1h6JaU0Xbf2gPO4So65H4Ue8vHSi7L4=; b=4i55lXobtCkItqSLIXSNM1KdvS
-        D2h7l9pabkZpuJmEYHHSArPzaLESyqMTrsXZvx1pJB6QmhgVRHcQwyFSRVsmtSW/54sfR3dVLrQVe
-        aPalSZxx0LhVdnoX6jaUcYsm4ag50Xgys+KwncC8wH0oqG5NXdpUtaHgRPbPh797IL4MYp4pncU0A
-        C+hTboFmMq9+W13++P+k4J7XyhskOt2AxIIPo8aMyo1DWlOC7Fv3RLdqIZrfhzm4Y25v26SZkkyOq
-        98ArH+Ndhg+U+YIqKcVFbS9VO5Kubn1uaeOk0h+8F6Av1nOvq9jJjDTMCTcpoJOPh06yPpkDXZY6B
-        LtaqwHaQ==;
-Received: from 54-240-197-236.amazon.com ([54.240.197.236] helo=u3832b3a9db3152.ant.amazon.com)
-        by bombadil.infradead.org with esmtpsa (Exim 4.94 #2 (Red Hat Linux))
-        id 1lgsKF-00Ad4i-7g; Wed, 12 May 2021 17:07:11 +0000
-Message-ID: <d2fed242fbe200706b8d23a53512f0311d900297.camel@infradead.org>
-Subject: Re: [PATCH v2 00/40] Use ASCII subset instead of UTF-8 alternate
- symbols
-From:   David Woodhouse <dwmw2@infradead.org>
-To:     Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
-        Linux Doc Mailing List <linux-doc@vger.kernel.org>
-Cc:     linux-kernel@vger.kernel.org, Jonathan Corbet <corbet@lwn.net>,
-        Mali DP Maintainers <malidp@foss.arm.com>,
-        alsa-devel@alsa-project.org, coresight@lists.linaro.org,
-        dri-devel@lists.freedesktop.org, intel-gfx@lists.freedesktop.org,
-        intel-wired-lan@lists.osuosl.org, keyrings@vger.kernel.org,
-        kvm@vger.kernel.org, linux-acpi@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-edac@vger.kernel.org,
-        linux-ext4@vger.kernel.org, linux-f2fs-devel@lists.sourceforge.net,
-        linux-hwmon@vger.kernel.org, linux-iio@vger.kernel.org,
-        linux-input@vger.kernel.org, linux-integrity@vger.kernel.org,
-        linux-media@vger.kernel.org, linux-pci@vger.kernel.org,
-        linux-pm@vger.kernel.org, linux-rdma@vger.kernel.org,
-        linux-sgx@vger.kernel.org, linux-usb@vger.kernel.org,
-        mjpeg-users@lists.sourceforge.net, netdev@vger.kernel.org,
-        rcu@vger.kernel.org
-Date:   Wed, 12 May 2021 18:07:04 +0100
-In-Reply-To: <cover.1620823573.git.mchehab+huawei@kernel.org>
-References: <cover.1620823573.git.mchehab+huawei@kernel.org>
-Content-Type: multipart/signed; micalg="sha-256";
-        protocol="application/x-pkcs7-signature";
-        boundary="=-/FPptejB83YswlzTVxow"
-X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
-Mime-Version: 1.0
-X-SRS-Rewrite: SMTP reverse-path rewritten from <dwmw2@infradead.org> by bombadil.infradead.org. See http://www.infradead.org/rpr.html
+        id S242362AbhELReh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 12 May 2021 13:34:37 -0400
+Received: from sonic309-27.consmr.mail.ne1.yahoo.com ([66.163.184.153]:38995
+        "EHLO sonic309-27.consmr.mail.ne1.yahoo.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1346394AbhELRNX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 12 May 2021 13:13:23 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yahoo.com; s=s2048; t=1620839535; bh=owHgUhsZZlmphmqpYBWQnx2t3FJsF2eK7W/oEWJ2W5s=; h=Subject:To:Cc:References:From:Date:In-Reply-To:From:Subject:Reply-To; b=IV5tTuJo+XNnghrttd8CHE4uUVZclPQeCZszzQ46vuJGnKnhWJf++YF8KZtJPhNWghvq8wwwxipOc6Ga5FCZdvL8THf9QVqpQ/wSU8CBXROjUHhML+sHR2qbG3DlUzCYCZ9gxsk5UsvgmR32jGTraHltA3gidaYeW3q+pjVPWgbXhdxUfe3tgI+k4iktiVf6zdSYSexcBW2lDtkRJm/Uh/1PyQ5l1GTKFgAxR5GYrhwI/H/JvhDlEQ7PGJ6RooCO1azQyeAeleIIuiyJDOwbAKOCVwzeXAfvCrzW8g18LgthkzOY3bzFaXHuC5apJFhXS0k3rRH6sopSGndD4LMYhg==
+X-SONIC-DKIM-SIGN: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yahoo.com; s=s2048; t=1620839535; bh=G79SEXyj0oRsVq9RPEYGDu4/KjRvcwmNQRnD3AgRCCs=; h=X-Sonic-MF:Subject:To:From:Date:From:Subject; b=hXjjUR+kSGg0IAqSS7EVxW7Avu1SevaZ6VKWBeYggc2kIsVGVz89CQaGOg55XKwFGh1g/MuYpLYHv1PnXJtuXq2DDPZF9kB2/Je6UudJqVjlw2Cdwh175CeyAPIG40b2tybbFueib3FDGhFyCRpG5hJT9+fZCbuZVJ5v9K9qQEhsrUHiQwzMzEo2jYk5Lcj3skykWnWIlnFz01MN3n9A5WHZcjaZagax4HkPSuo52uSfjjjzEd0jntRkNimz6A6t0x1lGudpAMrfNBw9duPKPEkTdcJ0KmOPoNkZXv7MOA82MhXi/l1QxJYc5rLRZhQmu9WSahTf1o+o3vVBPqexNg==
+X-YMail-OSG: mQI1zOoVM1ncDBLGlc0PT.OpGZENlJK8gLyJ84bV_UD4WA6dcN8M1wD4et0U_L9
+ S1mFSkT4uYiJTXJvdPJX8YMdiKayoflvZTOubBD6_POx52_jmj.h.9hrpMQV0fMYmG1KmzFQ4WsD
+ MfXi736.O55x_4vGF.hyrJktfJXsNZRRQsDr2jf5H8VVXTeE.hfnlmYsobCVZrotYNJwilRTABMt
+ nB0wDT6_iQxX3Zm9pdea4GUXfgpBFOudZkL2O3xbn4DTe712s_ByUp2hkC8IXWMnUuooVs1QxjI1
+ 4gG_reUpacmiFHANY.jqnH75YErbK1MvVOQFscsIT7T.4gTI6sNu7_f7vEzyO8Sanq2P5ZJOhiBx
+ 84QpEwFJLn4UVlP2V9SFw.7UgmWRinH0_eZzp5mRuKJuVeW0oqeKo9elbBYlbdOXw0p.lyd61COr
+ 8AiCJQ38Wch8v2RGcw4aH74gHNvOLsjO1W5AF1C9BxP_NlODt8oGuc05F0Pf3hk680SXokUUqPRz
+ U15PJ78QglgXER.VAWDTUjL3zNu81kJT.7NyTVcuwFQPYPtGxtWpFmCkgcK8W2yb5yqgkiewqndp
+ oqV20H6fBPBz4tIeTgnRb0ltGo8CsBWaG.nRO1kFMv5rWLtY4H7_1m.kAHYciMg.wDhNx.jV1ozi
+ XQzkFLBQ95rlKYTsOtx1wNe72_35ivjvTzWixDLqtwMnu4lQdeDvfHagwPTPjZIfXd_UmuHunKZ8
+ 0XI700nGhf3TJ5fTIdjIVGPJ6v2Nb8A9miEiK9UJ2zLNCDYsovUUjvYL_mRCX.xeocjEFq0RZFpe
+ QUQcbBe.D0GKI20ovIy3DuTnfgF6FCMF4CPezt6DsZKEYA7EfB31BIxvX0RkyzCmuqs2AeGXhb3C
+ AruuINPIoNZllxQoDgHZL39QKykl8Uu9Yc8CahXwS0ZqURmjPABNimyAsBBOa7LpYJXNyC8qFUdu
+ zD3XlU4YYFnIaoxjd0Y2e5WDvP_j59aswcxMIDgmwRLo6gCZqqSO6iQevyN5cBgDLzG3k6nIYEfP
+ dJQBHod_LNhRW53T..4zy008A2mlwziFDQ5ATYqv6OdJuGK09BeqiFAQPVHAQgQP.pdvqFykXX10
+ ztI9UAyEnisZBdTksZGxpuNue8agBF.j_BKepniIk29YYFSz5IxUl0OHC.Bn6KPtOng_rOO_H_b6
+ mJOMd6NuDRva5LdDLnMVx50qKqCefltZ5xTwrxd5KWGUd1BQKjjkHfusEb6303vqL1oBfbRZkivu
+ w0r1qe2pq4b0CdYBOAGb4WgEjj3RqrshEbFtJTBIE_ywdjBosBBEzj_tRtnVEUGlwd9ILEMgRbqx
+ wbrnnLlq9.SG5AWP4PMyGuEwPneXXr22Nu9Opxs56RgxXCWj3tml7sgNKFrf.8IaPywqKX4_r0tt
+ ZZf82mEeXigYnslq7iJKkNk0.j03.0tQK97I_XqkQE53q9tXCy1k5PWPBj9C.pj_lMLUf3N.t5ul
+ 5pZJny6SQGH1wlgfKRfHdfNms2EePfUNTVKWO6IRgxC.YnT_QZktDua0kqqlZPQ9mLjkKBJOfM71
+ 22YL0Hd86JPNSsVOqqVeyyRMFFh9Mb91zg0UUzUpUDYuRds7mLwBKAos7mwfWi6MRLOQ9XWrL4Uz
+ SrTiwPWNx1gQjHNkgk3cCeP37j2QiyCRB.5qjvKW8DBUu89lgkqP9epzSm5Tt28eICHu_dfU_15D
+ ICUgZIDP8D14o_CpnIGxYlKEK0m2ZQiJOZ.XxoQToH3EY6v3fcQtWn7GPNgzbL5VC3tYY2gVrCCf
+ Xyef9iyIeI.SBsTVjXJTcqSLLXVgPGyHI7TcP1Nok5QKLFIEjCM2NcVRQlp.WjzEiuQf6Ay8Efix
+ JVScHWgmihZPZnpBpA2EqUG8sNOW3wHsrSQl4Gr0MbSiASxL8lDAZafl6To_pnJo9PLRBgX.nPM4
+ rAgQ2CAb4YVnBE4QJurOm3KShLb2K8FjhLE383yE5EL.zuaXRX5iXVSh6MLWhFjo2kzbAzfQneJh
+ GPBkUwwH307SjzR3EWomGQLy388r_laLWTl1J75yn5EKNe2Ru1qJMQXnQwS.I9nrRUq38STuqF3O
+ 04MKMCp9WYaw6oxPk_ae.ZGDBLOXVKFo4bW.8_SDGp2rcb.w9EmticLzxYVu7j3.Z7y7wbHH6HWB
+ Jw3fcSVTHPWjjWNwbRBA60or2Xs6Sl3j0GrMxWsExJYwjzbrvIGMnQ91k1DoslZkNyXxyuud7Szt
+ gPBktAqvv1s4af8vCQihe0nGpiHb_aRJWxoERV3g2BQEoU1WCkBcUVoIaVK988VYu0gsCCCwp8rU
+ AlGGnouUFHVJLBDJ2DfdFjQhkx8OL5pukC6ljOW4qY8Ehi6d1YKws8hZ29BlTf4rXAIobfhhmru8
+ fmNwEAFtjZ_aGJv1ASx.5kea_nSmXAn.7LYOAMMh0CBb7bEV9YYF8NccLl8UhAnP_hQuUJly9edk
+ vpCQffU3x6dKI_7s8GAipwe.8.Vc6u943D8VNL8O53PimjI4TaHjG.t4PUuRuTuQBbZnhoTFET8Y
+ bUYmwrGWfTigWbaRgqrYfBtzMFc3Bcj.svIFt.cRMYkmp.aEKt3_3BO.sFZGCRYgbkCd_PxjuW_9
+ tcsuv4pjLmKAr.I0ZgH_12iL4Y5ulsrRLLyAABiKAnIp4Envxf78AZOFqs0rqfdsAWqsWnsy5Hmp
+ 9ELZ8das7CG619eCZpZV7JeU_bHSKf8ili5b0bnNXC0zv5XZNtbU1z4i0oxMW051VW1SL8RUP9XR
+ ZzxKvCqA9u5ZM4RVdBVkWnqwlj9xD_myHlo4bzidNqKWnDoyhRjOMtzz8dk3wTXhpgOjebh81Dfe
+ SpLdD.xDbG9zEiaiNWWIO2FyZ61QDtdTZ..2OSphX8S37CwymKQPLzmH77alHrrKrpByBx_1iiCW
+ cVLsunCyVuln9_6t5eE3wi6AwnOX4K5DyoOpqqrFLMuqi0dIgjnnaFFNaL3wg6xx6jy2oVEregfU
+ knwoAktt.obHOMOO3oM0z3zKa.Nn.M8gRWoSVbBnxdPmYjE_AZiRmmfpknlqgprQXb1tFKtjO3WM
+ HLj_CS8apEBMkiDtuGQ1MpVwZJyB4mSCoPaDzSRwOQjpOkp8anevMWPCB_7dW0vLcklytQimNmVn
+ JbgVU7pC6BEMxag7LNBwP.TGzKLgB1h.j4yCm8GpSVJCI5bEoSSj2IVMPRPrvkuri06hQ844UZpU
+ rIDxv2gOUzztcaMT.fOCKmtLLus8ClNQVhwSB5jiJDE95pddniwn1FxdDJ.9gZDG5mrZxtCPxLbc
+ 5n9xuoHboma7KBiy_9OzzlUwTYI6ptIUBb1TkXCv217OpMVSkpc0eo0t1FYG00NyEEXKbtwxAfGo
+ 6ehGIS43nEJQ5.0ESlX6C8eIYKMCzvxsKFMqPps9Dk.iEpWtJendY7DhdSnFbG7bEIwNBiWtXqp2
+ GPNzQZh710PUWiUMHi6QsVkT0oNzj80SIetrZ9txPngwXZXdcuobu1RmF6WPMAfF30WgKAeRIP00
+ Z_JWoVb8k14YhlTzL9nIK
+X-Sonic-MF: <casey@schaufler-ca.com>
+Received: from sonic.gate.mail.ne1.yahoo.com by sonic309.consmr.mail.ne1.yahoo.com with HTTP; Wed, 12 May 2021 17:12:15 +0000
+Received: by kubenode581.mail-prod1.omega.gq1.yahoo.com (VZM Hermes SMTP Server) with ESMTPA ID 9c6b4d7f0dd72aac49127cecce153b31;
+          Wed, 12 May 2021 17:12:11 +0000 (UTC)
+Subject: Re: [PATCH] lockdown,selinux: fix bogus SELinux lockdown permission
+ checks
+To:     Ondrej Mosnacek <omosnace@redhat.com>
+Cc:     Linux Security Module list 
+        <linux-security-module@vger.kernel.org>,
+        James Morris <jmorris@namei.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Stephen Smalley <stephen.smalley.work@gmail.com>,
+        SElinux list <selinux@vger.kernel.org>,
+        linuxppc-dev@lists.ozlabs.org,
+        Linux FS Devel <linux-fsdevel@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>, network dev <netdev@vger.kernel.org>,
+        Linux kernel mailing list <linux-kernel@vger.kernel.org>,
+        Casey Schaufler <casey@schaufler-ca.com>
+References: <20210507114048.138933-1-omosnace@redhat.com>
+ <a8d138a6-1d34-1457-9266-4abeddb6fdba@schaufler-ca.com>
+ <CAFqZXNtr1YjzRg7fTm+j=0oZF+7C5xEu5J0mCZynP-dgEzvyUg@mail.gmail.com>
+ <24a61ff1-e415-adf8-17e8-d212364d4b97@schaufler-ca.com>
+ <CAFqZXNvB-EyPz1Qz3cCRTr1u1+D+xT-dp7cUxFocYM1AOYSuxw@mail.gmail.com>
+From:   Casey Schaufler <casey@schaufler-ca.com>
+Message-ID: <e8d60664-c7ad-61de-bece-8ab3316f77bc@schaufler-ca.com>
+Date:   Wed, 12 May 2021 10:12:10 -0700
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.10.1
+MIME-Version: 1.0
+In-Reply-To: <CAFqZXNvB-EyPz1Qz3cCRTr1u1+D+xT-dp7cUxFocYM1AOYSuxw@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+Content-Language: en-US
+X-Mailer: WebService/1.1.18295 mail.backend.jedi.jws.acl:role.jedi.acl.token.atz.jws.hermes.yahoo Apache-HttpAsyncClient/4.1.4 (Java/16)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On 5/12/2021 9:44 AM, Ondrej Mosnacek wrote:
+> On Wed, May 12, 2021 at 6:18 PM Casey Schaufler <casey@schaufler-ca.com=
+> wrote:
+>> On 5/12/2021 6:21 AM, Ondrej Mosnacek wrote:
+>>> On Sat, May 8, 2021 at 12:17 AM Casey Schaufler <casey@schaufler-ca.c=
+om> wrote:
+>>>> On 5/7/2021 4:40 AM, Ondrej Mosnacek wrote:
+>>>>> Commit 59438b46471a ("security,lockdown,selinux: implement SELinux
+>>>>> lockdown") added an implementation of the locked_down LSM hook to
+>>>>> SELinux, with the aim to restrict which domains are allowed to perf=
+orm
+>>>>> operations that would breach lockdown.
+>>>>>
+>>>>> However, in several places the security_locked_down() hook is calle=
+d in
+>>>>> situations where the current task isn't doing any action that would=
 
---=-/FPptejB83YswlzTVxow
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+>>>>> directly breach lockdown, leading to SELinux checks that are basica=
+lly
+>>>>> bogus.
+>>>>>
+>>>>> Since in most of these situations converting the callers such that
+>>>>> security_locked_down() is called in a context where the current tas=
+k
+>>>>> would be meaningful for SELinux is impossible or very non-trivial (=
+and
+>>>>> could lead to TOCTOU issues for the classic Lockdown LSM
+>>>>> implementation), fix this by adding a separate hook
+>>>>> security_locked_down_globally()
+>>>> This is a poor solution to the stated problem. Rather than adding
+>>>> a new hook you should add the task as a parameter to the existing ho=
+ok
+>>>> and let the security modules do as they will based on its value.
+>>>> If the caller does not have an appropriate task it should pass NULL.=
 
-Your title 'Use ASCII subset' is now at least a bit *closer* to
-describing what the patches are actually doing, but it's still a bit
-misleading because you're only doing it for *some* characters.
+>>>> The lockdown LSM can ignore the task value and SELinux can make its
+>>>> own decision based on the task value passed.
+>>> The problem with that approach is that all callers would then need to=
 
-And the wording is still indicative of a fundamentally *misguided*
-motivation for doing any of this. Your commit comments should be about
-fixing a specific thing, nothing to do with "use ASCII subset", which
-is pointless in itself.
+>>> be updated and I intended to keep the patch small as I'd like it to g=
+o
+>>> to stable kernels as well.
+>>>
+>>> But it does seem to be a better long-term solution - would it work fo=
+r
+>>> you (and whichever maintainer would be taking the patch(es)) if I jus=
+t
+>>> added another patch that refactors it to use the task parameter?
+>> I can't figure out what you're suggesting. Are you saying that you
+>> want to add a new hook *and* add the task parameter?
+> No, just to keep this patch as-is (and let it go to stable in this
+> form) and post another (non-stable) patch on top of it that undoes the
+> new hook and re-implements the fix using your suggestion. (Yeah, it'll
+> look weird, but I'm not sure how better to handle such situation - I'm
+> open to doing it whatever different way the maintainers prefer.)
 
-On Wed, 2021-05-12 at 14:50 +0200, Mauro Carvalho Chehab wrote:
-> Such conversion tools - plus some text editor like LibreOffice  or simila=
-r  - have
-> a set of rules that turns some typed ASCII characters into UTF-8 alternat=
-ives,
-> for instance converting commas into curly commas and adding non-breakable
-> spaces. All of those are meant to produce better results when the text is
-> displayed in HTML or PDF formats.
+James gets to make the call on this one. If it was my call I would
+tell you to make the task parameter change and accept the backport
+pain. I think that as a security developer community we spend way too
+much time and effort trying to avoid being noticed in source trees.
 
-And don't we render our documentation into HTML or PDF formats? Are
-some of those non-breaking spaces not actually *useful* for their
-intended purpose?
-
-> While it is perfectly fine to use UTF-8 characters in Linux, and speciall=
-y at
-> the documentation,  it is better to  stick to the ASCII subset  on such
-> particular case,  due to a couple of reasons:
->=20
-> 1. it makes life easier for tools like grep;
-
-Barely, as noted, because of things like line feeds.
-
-> 2. they easier to edit with the some commonly used text/source
->    code editors.
-
-That is nonsense. Any but the most broken and/or anachronistic
-environments and editors will be just fine.
-
---=-/FPptejB83YswlzTVxow
-Content-Type: application/x-pkcs7-signature; name="smime.p7s"
-Content-Disposition: attachment; filename="smime.p7s"
-Content-Transfer-Encoding: base64
-
-MIAGCSqGSIb3DQEHAqCAMIACAQExDzANBglghkgBZQMEAgEFADCABgkqhkiG9w0BBwEAAKCCECow
-ggUcMIIEBKADAgECAhEA4rtJSHkq7AnpxKUY8ZlYZjANBgkqhkiG9w0BAQsFADCBlzELMAkGA1UE
-BhMCR0IxGzAZBgNVBAgTEkdyZWF0ZXIgTWFuY2hlc3RlcjEQMA4GA1UEBxMHU2FsZm9yZDEaMBgG
-A1UEChMRQ09NT0RPIENBIExpbWl0ZWQxPTA7BgNVBAMTNENPTU9ETyBSU0EgQ2xpZW50IEF1dGhl
-bnRpY2F0aW9uIGFuZCBTZWN1cmUgRW1haWwgQ0EwHhcNMTkwMTAyMDAwMDAwWhcNMjIwMTAxMjM1
-OTU5WjAkMSIwIAYJKoZIhvcNAQkBFhNkd213MkBpbmZyYWRlYWQub3JnMIIBIjANBgkqhkiG9w0B
-AQEFAAOCAQ8AMIIBCgKCAQEAsv3wObLTCbUA7GJqKj9vHGf+Fa+tpkO+ZRVve9EpNsMsfXhvFpb8
-RgL8vD+L133wK6csYoDU7zKiAo92FMUWaY1Hy6HqvVr9oevfTV3xhB5rQO1RHJoAfkvhy+wpjo7Q
-cXuzkOpibq2YurVStHAiGqAOMGMXhcVGqPuGhcVcVzVUjsvEzAV9Po9K2rpZ52FE4rDkpDK1pBK+
-uOAyOkgIg/cD8Kugav5tyapydeWMZRJQH1vMQ6OVT24CyAn2yXm2NgTQMS1mpzStP2ioPtTnszIQ
-Ih7ASVzhV6csHb8Yrkx8mgllOyrt9Y2kWRRJFm/FPRNEurOeNV6lnYAXOymVJwIDAQABo4IB0zCC
-Ac8wHwYDVR0jBBgwFoAUgq9sjPjF/pZhfOgfPStxSF7Ei8AwHQYDVR0OBBYEFLfuNf820LvaT4AK
-xrGK3EKx1DE7MA4GA1UdDwEB/wQEAwIFoDAMBgNVHRMBAf8EAjAAMB0GA1UdJQQWMBQGCCsGAQUF
-BwMEBggrBgEFBQcDAjBGBgNVHSAEPzA9MDsGDCsGAQQBsjEBAgEDBTArMCkGCCsGAQUFBwIBFh1o
-dHRwczovL3NlY3VyZS5jb21vZG8ubmV0L0NQUzBaBgNVHR8EUzBRME+gTaBLhklodHRwOi8vY3Js
-LmNvbW9kb2NhLmNvbS9DT01PRE9SU0FDbGllbnRBdXRoZW50aWNhdGlvbmFuZFNlY3VyZUVtYWls
-Q0EuY3JsMIGLBggrBgEFBQcBAQR/MH0wVQYIKwYBBQUHMAKGSWh0dHA6Ly9jcnQuY29tb2RvY2Eu
-Y29tL0NPTU9ET1JTQUNsaWVudEF1dGhlbnRpY2F0aW9uYW5kU2VjdXJlRW1haWxDQS5jcnQwJAYI
-KwYBBQUHMAGGGGh0dHA6Ly9vY3NwLmNvbW9kb2NhLmNvbTAeBgNVHREEFzAVgRNkd213MkBpbmZy
-YWRlYWQub3JnMA0GCSqGSIb3DQEBCwUAA4IBAQALbSykFusvvVkSIWttcEeifOGGKs7Wx2f5f45b
-nv2ghcxK5URjUvCnJhg+soxOMoQLG6+nbhzzb2rLTdRVGbvjZH0fOOzq0LShq0EXsqnJbbuwJhK+
-PnBtqX5O23PMHutP1l88AtVN+Rb72oSvnD+dK6708JqqUx2MAFLMevrhJRXLjKb2Mm+/8XBpEw+B
-7DisN4TMlLB/d55WnT9UPNHmQ+3KFL7QrTO8hYExkU849g58Dn3Nw3oCbMUgny81ocrLlB2Z5fFG
-Qu1AdNiBA+kg/UxzyJZpFbKfCITd5yX49bOriL692aMVDyqUvh8fP+T99PqorH4cIJP6OxSTdxKM
-MIIFHDCCBASgAwIBAgIRAOK7SUh5KuwJ6cSlGPGZWGYwDQYJKoZIhvcNAQELBQAwgZcxCzAJBgNV
-BAYTAkdCMRswGQYDVQQIExJHcmVhdGVyIE1hbmNoZXN0ZXIxEDAOBgNVBAcTB1NhbGZvcmQxGjAY
-BgNVBAoTEUNPTU9ETyBDQSBMaW1pdGVkMT0wOwYDVQQDEzRDT01PRE8gUlNBIENsaWVudCBBdXRo
-ZW50aWNhdGlvbiBhbmQgU2VjdXJlIEVtYWlsIENBMB4XDTE5MDEwMjAwMDAwMFoXDTIyMDEwMTIz
-NTk1OVowJDEiMCAGCSqGSIb3DQEJARYTZHdtdzJAaW5mcmFkZWFkLm9yZzCCASIwDQYJKoZIhvcN
-AQEBBQADggEPADCCAQoCggEBALL98Dmy0wm1AOxiaio/bxxn/hWvraZDvmUVb3vRKTbDLH14bxaW
-/EYC/Lw/i9d98CunLGKA1O8yogKPdhTFFmmNR8uh6r1a/aHr301d8YQea0DtURyaAH5L4cvsKY6O
-0HF7s5DqYm6tmLq1UrRwIhqgDjBjF4XFRqj7hoXFXFc1VI7LxMwFfT6PStq6WedhROKw5KQytaQS
-vrjgMjpICIP3A/CroGr+bcmqcnXljGUSUB9bzEOjlU9uAsgJ9sl5tjYE0DEtZqc0rT9oqD7U57My
-ECIewElc4VenLB2/GK5MfJoJZTsq7fWNpFkUSRZvxT0TRLqznjVepZ2AFzsplScCAwEAAaOCAdMw
-ggHPMB8GA1UdIwQYMBaAFIKvbIz4xf6WYXzoHz0rcUhexIvAMB0GA1UdDgQWBBS37jX/NtC72k+A
-CsaxitxCsdQxOzAOBgNVHQ8BAf8EBAMCBaAwDAYDVR0TAQH/BAIwADAdBgNVHSUEFjAUBggrBgEF
-BQcDBAYIKwYBBQUHAwIwRgYDVR0gBD8wPTA7BgwrBgEEAbIxAQIBAwUwKzApBggrBgEFBQcCARYd
-aHR0cHM6Ly9zZWN1cmUuY29tb2RvLm5ldC9DUFMwWgYDVR0fBFMwUTBPoE2gS4ZJaHR0cDovL2Ny
-bC5jb21vZG9jYS5jb20vQ09NT0RPUlNBQ2xpZW50QXV0aGVudGljYXRpb25hbmRTZWN1cmVFbWFp
-bENBLmNybDCBiwYIKwYBBQUHAQEEfzB9MFUGCCsGAQUFBzAChklodHRwOi8vY3J0LmNvbW9kb2Nh
-LmNvbS9DT01PRE9SU0FDbGllbnRBdXRoZW50aWNhdGlvbmFuZFNlY3VyZUVtYWlsQ0EuY3J0MCQG
-CCsGAQUFBzABhhhodHRwOi8vb2NzcC5jb21vZG9jYS5jb20wHgYDVR0RBBcwFYETZHdtdzJAaW5m
-cmFkZWFkLm9yZzANBgkqhkiG9w0BAQsFAAOCAQEAC20spBbrL71ZEiFrbXBHonzhhirO1sdn+X+O
-W579oIXMSuVEY1LwpyYYPrKMTjKECxuvp24c829qy03UVRm742R9Hzjs6tC0oatBF7KpyW27sCYS
-vj5wbal+TttzzB7rT9ZfPALVTfkW+9qEr5w/nSuu9PCaqlMdjABSzHr64SUVy4ym9jJvv/FwaRMP
-gew4rDeEzJSwf3eeVp0/VDzR5kPtyhS+0K0zvIWBMZFPOPYOfA59zcN6AmzFIJ8vNaHKy5QdmeXx
-RkLtQHTYgQPpIP1Mc8iWaRWynwiE3ecl+PWzq4i+vdmjFQ8qlL4fHz/k/fT6qKx+HCCT+jsUk3cS
-jDCCBeYwggPOoAMCAQICEGqb4Tg7/ytrnwHV2binUlYwDQYJKoZIhvcNAQEMBQAwgYUxCzAJBgNV
-BAYTAkdCMRswGQYDVQQIExJHcmVhdGVyIE1hbmNoZXN0ZXIxEDAOBgNVBAcTB1NhbGZvcmQxGjAY
-BgNVBAoTEUNPTU9ETyBDQSBMaW1pdGVkMSswKQYDVQQDEyJDT01PRE8gUlNBIENlcnRpZmljYXRp
-b24gQXV0aG9yaXR5MB4XDTEzMDExMDAwMDAwMFoXDTI4MDEwOTIzNTk1OVowgZcxCzAJBgNVBAYT
-AkdCMRswGQYDVQQIExJHcmVhdGVyIE1hbmNoZXN0ZXIxEDAOBgNVBAcTB1NhbGZvcmQxGjAYBgNV
-BAoTEUNPTU9ETyBDQSBMaW1pdGVkMT0wOwYDVQQDEzRDT01PRE8gUlNBIENsaWVudCBBdXRoZW50
-aWNhdGlvbiBhbmQgU2VjdXJlIEVtYWlsIENBMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKC
-AQEAvrOeV6wodnVAFsc4A5jTxhh2IVDzJXkLTLWg0X06WD6cpzEup/Y0dtmEatrQPTRI5Or1u6zf
-+bGBSyD9aH95dDSmeny1nxdlYCeXIoymMv6pQHJGNcIDpFDIMypVpVSRsivlJTRENf+RKwrB6vcf
-WlP8dSsE3Rfywq09N0ZfxcBa39V0wsGtkGWC+eQKiz4pBZYKjrc5NOpG9qrxpZxyb4o4yNNwTqza
-aPpGRqXB7IMjtf7tTmU2jqPMLxFNe1VXj9XB1rHvbRikw8lBoNoSWY66nJN/VCJv5ym6Q0mdCbDK
-CMPybTjoNCQuelc0IAaO4nLUXk0BOSxSxt8kCvsUtQIDAQABo4IBPDCCATgwHwYDVR0jBBgwFoAU
-u69+Aj36pvE8hI6t7jiY7NkyMtQwHQYDVR0OBBYEFIKvbIz4xf6WYXzoHz0rcUhexIvAMA4GA1Ud
-DwEB/wQEAwIBhjASBgNVHRMBAf8ECDAGAQH/AgEAMBEGA1UdIAQKMAgwBgYEVR0gADBMBgNVHR8E
-RTBDMEGgP6A9hjtodHRwOi8vY3JsLmNvbW9kb2NhLmNvbS9DT01PRE9SU0FDZXJ0aWZpY2F0aW9u
-QXV0aG9yaXR5LmNybDBxBggrBgEFBQcBAQRlMGMwOwYIKwYBBQUHMAKGL2h0dHA6Ly9jcnQuY29t
-b2RvY2EuY29tL0NPTU9ET1JTQUFkZFRydXN0Q0EuY3J0MCQGCCsGAQUFBzABhhhodHRwOi8vb2Nz
-cC5jb21vZG9jYS5jb20wDQYJKoZIhvcNAQEMBQADggIBAHhcsoEoNE887l9Wzp+XVuyPomsX9vP2
-SQgG1NgvNc3fQP7TcePo7EIMERoh42awGGsma65u/ITse2hKZHzT0CBxhuhb6txM1n/y78e/4ZOs
-0j8CGpfb+SJA3GaBQ+394k+z3ZByWPQedXLL1OdK8aRINTsjk/H5Ns77zwbjOKkDamxlpZ4TKSDM
-KVmU/PUWNMKSTvtlenlxBhh7ETrN543j/Q6qqgCWgWuMAXijnRglp9fyadqGOncjZjaaSOGTTFB+
-E2pvOUtY+hPebuPtTbq7vODqzCM6ryEhNhzf+enm0zlpXK7q332nXttNtjv7VFNYG+I31gnMrwfH
-M5tdhYF/8v5UY5g2xANPECTQdu9vWPoqNSGDt87b3gXb1AiGGaI06vzgkejL580ul+9hz9D0S0U4
-jkhJiA7EuTecP/CFtR72uYRBcunwwH3fciPjviDDAI9SnC/2aPY8ydehzuZutLbZdRJ5PDEJM/1t
-yZR2niOYihZ+FCbtf3D9mB12D4ln9icgc7CwaxpNSCPt8i/GqK2HsOgkL3VYnwtx7cJUmpvVdZ4o
-gnzgXtgtdk3ShrtOS1iAN2ZBXFiRmjVzmehoMof06r1xub+85hFQzVxZx5/bRaTKTlL8YXLI8nAb
-R9HWdFqzcOoB/hxfEyIQpx9/s81rgzdEZOofSlZHynoSMYIDyjCCA8YCAQEwga0wgZcxCzAJBgNV
-BAYTAkdCMRswGQYDVQQIExJHcmVhdGVyIE1hbmNoZXN0ZXIxEDAOBgNVBAcTB1NhbGZvcmQxGjAY
-BgNVBAoTEUNPTU9ETyBDQSBMaW1pdGVkMT0wOwYDVQQDEzRDT01PRE8gUlNBIENsaWVudCBBdXRo
-ZW50aWNhdGlvbiBhbmQgU2VjdXJlIEVtYWlsIENBAhEA4rtJSHkq7AnpxKUY8ZlYZjANBglghkgB
-ZQMEAgEFAKCCAe0wGAYJKoZIhvcNAQkDMQsGCSqGSIb3DQEHATAcBgkqhkiG9w0BCQUxDxcNMjEw
-NTEyMTcwNzA0WjAvBgkqhkiG9w0BCQQxIgQgrbbFRoqK/Il2tfAAOjreV59AGIBtL1DK//rjr81v
-3I8wgb4GCSsGAQQBgjcQBDGBsDCBrTCBlzELMAkGA1UEBhMCR0IxGzAZBgNVBAgTEkdyZWF0ZXIg
-TWFuY2hlc3RlcjEQMA4GA1UEBxMHU2FsZm9yZDEaMBgGA1UEChMRQ09NT0RPIENBIExpbWl0ZWQx
-PTA7BgNVBAMTNENPTU9ETyBSU0EgQ2xpZW50IEF1dGhlbnRpY2F0aW9uIGFuZCBTZWN1cmUgRW1h
-aWwgQ0ECEQDiu0lIeSrsCenEpRjxmVhmMIHABgsqhkiG9w0BCRACCzGBsKCBrTCBlzELMAkGA1UE
-BhMCR0IxGzAZBgNVBAgTEkdyZWF0ZXIgTWFuY2hlc3RlcjEQMA4GA1UEBxMHU2FsZm9yZDEaMBgG
-A1UEChMRQ09NT0RPIENBIExpbWl0ZWQxPTA7BgNVBAMTNENPTU9ETyBSU0EgQ2xpZW50IEF1dGhl
-bnRpY2F0aW9uIGFuZCBTZWN1cmUgRW1haWwgQ0ECEQDiu0lIeSrsCenEpRjxmVhmMA0GCSqGSIb3
-DQEBAQUABIIBAKX4AuZ2PO116yKAaN0onYdGfrl/MlcME1r6njraDJQrEFr4nrLYQPfpiXbp1oTB
-S676SpFIK+i3I5Dm7sPcwrMj4GwwY6N1TZAwaSLIbPiSSeVvfWCk6EKrUPiRtKJiffVAU9H3+1n4
-lWF6s9mq3Oopw2UBBKgi3Mbfe4nsYUYn3ZwcKLSvGZPPtQ64gNGfNttskpSjxcvleeVCI6vE7mdy
-aR5mQgudud0ou19a+EBzRxr9hEnbOKKc333vHLKCOZH3S5JbqD/6Tfoe1ffeLQR37ul1+cB2ndrJ
-+6nEeHNGmAXUgV+sbdglQd3UwExYPXWySsvI92XKWqXkRuUwIxAAAAAAAAA=
-
-
---=-/FPptejB83YswlzTVxow--
 
