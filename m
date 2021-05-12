@@ -2,40 +2,45 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 205D837BD38
-	for <lists+netdev@lfdr.de>; Wed, 12 May 2021 14:52:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 41FCF37BD32
+	for <lists+netdev@lfdr.de>; Wed, 12 May 2021 14:52:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233331AbhELMxc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 12 May 2021 08:53:32 -0400
-Received: from mail.kernel.org ([198.145.29.99]:52580 "EHLO mail.kernel.org"
+        id S233016AbhELMxa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 12 May 2021 08:53:30 -0400
+Received: from mail.kernel.org ([198.145.29.99]:52632 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231504AbhELMxA (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S231230AbhELMxA (ORCPT <rfc822;netdev@vger.kernel.org>);
         Wed, 12 May 2021 08:53:00 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 0448261490;
-        Wed, 12 May 2021 12:51:42 +0000 (UTC)
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 1144561439;
+        Wed, 12 May 2021 12:51:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1620823903;
-        bh=P9S9FDPjkGyLPgGS0Ee7GPWkFYrytOORnj43F6Ph9g0=;
+        bh=WJnZZbvp/3S4+mp/P3c374P9sXWpRT/tkUrjwqlxuBE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=q/i0bYQzJEf+oPMgJbfcEZMj9nJMClHeAJd6N7TG3sOkWH2pYhds4rR7KcKXZi1ld
-         YMXwah/poZy7ExyXbFoFXsBVDp/pIjbnHnPn5DaVYvoabTgnrytJe7BXh/Sd0yI1/l
-         tcnMu1Ulul2q3a/g/o6c8/+nfTmiO1rlCuSlO5nL2g5KkRlb21EMaTL8fVcbTWK+US
-         x2C1frgjGTqKvHhGj7PEPzykbGwdqPL5qYWFbGwkSUsAECzRzVvDK7+r1lA9QT3Hdz
-         5i7zKrOQHTwCLbrNMJJwU1Idq+Hfmhm8J6MfNwaT6v4kH2uvpfhXheAR6NCq3lSufK
-         KNrDNNhDimw+Q==
+        b=hpmPUvze122Z88MbxyJ83KfRXPlS2//fnIasq9quewJJDo/CrzSl4AS78cU/EnY6Q
+         7Zu3BewUGA5I8YJeVnP1kc1yq1neWzk3aigdwcY8TojJt/zmg0jmaz3GEBZPe9rhh4
+         dWjjJqbfsYmFOQDY4EhuJRv60WP2o+wxGMI5t10Zo7fZ1RUV5qIemUuWOCb7Tw+siZ
+         jABs8/7Wow/b+7XoBX81eTatEJxanmlokwbYLZvUO0IQ5SMKJAOI+SIjWxj7GPgJaq
+         9spMdsMvSJ0msgdG2kBmOu0hrps8lZt5WxithYsEUDMoTDsVsvkFUovZfO01q0KA/m
+         3/sfVaScsThuQ==
 Received: by mail.kernel.org with local (Exim 4.94.2)
         (envelope-from <mchehab@kernel.org>)
-        id 1lgoKz-0018iQ-5a; Wed, 12 May 2021 14:51:41 +0200
+        id 1lgoKz-0018iU-6a; Wed, 12 May 2021 14:51:41 +0200
 From:   Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
 To:     Linux Doc Mailing List <linux-doc@vger.kernel.org>
 Cc:     Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
         "David S. Miller" <davem@davemloft.net>,
         "Jonathan Corbet" <corbet@lwn.net>,
-        Jakub Kicinski <kuba@kernel.org>, Jiri Pirko <jiri@nvidia.com>,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH v2 25/40] docs: networking: devlink: devlink-dpipe.rst: Use ASCII subset instead of UTF-8 alternate symbols
-Date:   Wed, 12 May 2021 14:50:29 +0200
-Message-Id: <ac0eb250139c41c6f90a79a187f7e46d8ef38ed8.1620823573.git.mchehab+huawei@kernel.org>
+        Jakub Kicinski <kuba@kernel.org>,
+        Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
+        Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        Shannon Nelson <snelson@pensando.io>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>,
+        intel-wired-lan@lists.osuosl.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: [PATCH v2 26/40] docs: networking: device_drivers: Use ASCII subset instead of UTF-8 alternate symbols
+Date:   Wed, 12 May 2021 14:50:30 +0200
+Message-Id: <aa49206f65b7302f6d579d3be726242dedebdb79.1620823573.git.mchehab+huawei@kernel.org>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <cover.1620823573.git.mchehab+huawei@kernel.org>
 References: <cover.1620823573.git.mchehab+huawei@kernel.org>
@@ -62,26 +67,97 @@ Also, Sphinx already do such conversion automatically outside literal blocks:
 
 So, replace the occurences of the following UTF-8 characters:
 
+	- U+00a0 (' '): NO-BREAK SPACE
+	- U+2018 ('‘'): LEFT SINGLE QUOTATION MARK
 	- U+2019 ('’'): RIGHT SINGLE QUOTATION MARK
 
 Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
 ---
- Documentation/networking/devlink/devlink-dpipe.rst | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ .../device_drivers/ethernet/intel/i40e.rst           |  8 ++++----
+ .../device_drivers/ethernet/intel/iavf.rst           |  4 ++--
+ .../device_drivers/ethernet/netronome/nfp.rst        | 12 ++++++------
+ 3 files changed, 12 insertions(+), 12 deletions(-)
 
-diff --git a/Documentation/networking/devlink/devlink-dpipe.rst b/Documentation/networking/devlink/devlink-dpipe.rst
-index af37f250df43..2df7cbf1ba70 100644
---- a/Documentation/networking/devlink/devlink-dpipe.rst
-+++ b/Documentation/networking/devlink/devlink-dpipe.rst
-@@ -52,7 +52,7 @@ purposes as a standard complementary tool. The system's view from
- ``devlink-dpipe`` should change according to the changes done by the
- standard configuration tools.
+diff --git a/Documentation/networking/device_drivers/ethernet/intel/i40e.rst b/Documentation/networking/device_drivers/ethernet/intel/i40e.rst
+index 2d3f6bd969a2..d0e9b783a224 100644
+--- a/Documentation/networking/device_drivers/ethernet/intel/i40e.rst
++++ b/Documentation/networking/device_drivers/ethernet/intel/i40e.rst
+@@ -466,7 +466,7 @@ network. PTP support varies among Intel devices that support this driver. Use
+ "ethtool -T <netdev name>" to get a definitive list of PTP capabilities
+ supported by the device.
  
--For example, it’s quite common to  implement Access Control Lists (ACL)
-+For example, it's quite common to  implement Access Control Lists (ACL)
- using Ternary Content Addressable Memory (TCAM). The TCAM memory can be
- divided into TCAM regions. Complex TC filters can have multiple rules with
- different priorities and different lookup keys. On the other hand hardware
+-IEEE 802.1ad (QinQ) Support
++IEEE 802.1ad (QinQ) Support
+ ---------------------------
+ The IEEE 802.1ad standard, informally known as QinQ, allows for multiple VLAN
+ IDs within a single Ethernet frame. VLAN IDs are sometimes referred to as
+@@ -523,8 +523,8 @@ of a port's bandwidth (should it be available). The sum of all the values for
+ Maximum Bandwidth is not restricted, because no more than 100% of a port's
+ bandwidth can ever be used.
+ 
+-NOTE: X710/XXV710 devices fail to enable Max VFs (64) when Multiple Functions
+-per Port (MFP) and SR-IOV are enabled. An error from i40e is logged that says
++NOTE: X710/XXV710 devices fail to enable Max VFs (64) when Multiple Functions
++per Port (MFP) and SR-IOV are enabled. An error from i40e is logged that says
+ "add vsi failed for VF N, aq_err 16". To workaround the issue, enable less than
+ 64 virtual functions (VFs).
+ 
+@@ -680,7 +680,7 @@ queues: for each tc, <num queues>@<offset> (e.g. queues 16@0 16@16 assigns
+ 16 queues to tc0 at offset 0 and 16 queues to tc1 at offset 16. Max total
+ number of queues for all tcs is 64 or number of cores, whichever is lower.)
+ 
+-hw 1 mode channel: ‘channel’ with ‘hw’ set to 1 is a new new hardware
++hw 1 mode channel: 'channel' with 'hw' set to 1 is a new new hardware
+ offload mode in mqprio that makes full use of the mqprio options, the
+ TCs, the queue configurations, and the QoS parameters.
+ 
+diff --git a/Documentation/networking/device_drivers/ethernet/intel/iavf.rst b/Documentation/networking/device_drivers/ethernet/intel/iavf.rst
+index 25330b7b5168..b70eea67c3d9 100644
+--- a/Documentation/networking/device_drivers/ethernet/intel/iavf.rst
++++ b/Documentation/networking/device_drivers/ethernet/intel/iavf.rst
+@@ -113,7 +113,7 @@ which the AVF is associated. The following are base mode features:
+ - AVF device ID
+ - HW mailbox is used for VF to PF communications (including on Windows)
+ 
+-IEEE 802.1ad (QinQ) Support
++IEEE 802.1ad (QinQ) Support
+ ---------------------------
+ The IEEE 802.1ad standard, informally known as QinQ, allows for multiple VLAN
+ IDs within a single Ethernet frame. VLAN IDs are sometimes referred to as
+@@ -171,7 +171,7 @@ queues: for each tc, <num queues>@<offset> (e.g. queues 16@0 16@16 assigns
+ 16 queues to tc0 at offset 0 and 16 queues to tc1 at offset 16. Max total
+ number of queues for all tcs is 64 or number of cores, whichever is lower.)
+ 
+-hw 1 mode channel: ‘channel’ with ‘hw’ set to 1 is a new new hardware
++hw 1 mode channel: 'channel' with 'hw' set to 1 is a new new hardware
+ offload mode in mqprio that makes full use of the mqprio options, the
+ TCs, the queue configurations, and the QoS parameters.
+ 
+diff --git a/Documentation/networking/device_drivers/ethernet/netronome/nfp.rst b/Documentation/networking/device_drivers/ethernet/netronome/nfp.rst
+index ada611fb427c..949c036e8667 100644
+--- a/Documentation/networking/device_drivers/ethernet/netronome/nfp.rst
++++ b/Documentation/networking/device_drivers/ethernet/netronome/nfp.rst
+@@ -62,14 +62,14 @@ actual firmware files in application-named subdirectories in
+     $ tree /lib/firmware/netronome/
+     /lib/firmware/netronome/
+     ├── bpf
+-    │   ├── nic_AMDA0081-0001_1x40.nffw
+-    │   └── nic_AMDA0081-0001_4x10.nffw
++    │   ├── nic_AMDA0081-0001_1x40.nffw
++    │   └── nic_AMDA0081-0001_4x10.nffw
+     ├── flower
+-    │   ├── nic_AMDA0081-0001_1x40.nffw
+-    │   └── nic_AMDA0081-0001_4x10.nffw
++    │   ├── nic_AMDA0081-0001_1x40.nffw
++    │   └── nic_AMDA0081-0001_4x10.nffw
+     ├── nic
+-    │   ├── nic_AMDA0081-0001_1x40.nffw
+-    │   └── nic_AMDA0081-0001_4x10.nffw
++    │   ├── nic_AMDA0081-0001_1x40.nffw
++    │   └── nic_AMDA0081-0001_4x10.nffw
+     ├── nic_AMDA0081-0001_1x40.nffw -> bpf/nic_AMDA0081-0001_1x40.nffw
+     └── nic_AMDA0081-0001_4x10.nffw -> bpf/nic_AMDA0081-0001_4x10.nffw
+ 
 -- 
 2.30.2
 
