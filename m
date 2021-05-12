@@ -2,91 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7B0D237EE78
-	for <lists+netdev@lfdr.de>; Thu, 13 May 2021 00:58:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id ACCE237EE79
+	for <lists+netdev@lfdr.de>; Thu, 13 May 2021 00:58:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346570AbhELVoC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 12 May 2021 17:44:02 -0400
-Received: from www62.your-server.de ([213.133.104.62]:39052 "EHLO
-        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1386840AbhELUWY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 12 May 2021 16:22:24 -0400
-Received: from sslproxy03.your-server.de ([88.198.220.132])
-        by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92.3)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1lgvLx-000DTY-Em; Wed, 12 May 2021 22:21:09 +0200
-Received: from [85.7.101.30] (helo=linux.home)
-        by sslproxy03.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1lgvLx-000Mnz-8N; Wed, 12 May 2021 22:21:09 +0200
-Subject: Re: linux-next: Tree for May 12 (arch/x86/net/bpf_jit_comp32.o)
-To:     Randy Dunlap <rdunlap@infradead.org>,
-        Stephen Rothwell <sfr@canb.auug.org.au>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Andrii Nakryiko <andrii@kernel.org>
-Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>
-References: <20210512175623.2687ac6f@canb.auug.org.au>
- <08f677a5-7634-b5d2-a532-ea6d3f35200c@infradead.org>
- <daf46ee7-1a18-9d5a-c3b3-7fc55ec23b30@iogearbox.net>
- <751025d2-9c46-a4b9-4f54-fbe5fa7a2564@infradead.org>
-From:   Daniel Borkmann <daniel@iogearbox.net>
-Message-ID: <e11480b2-a057-9621-74ba-6e3e4fc1b306@iogearbox.net>
-Date:   Wed, 12 May 2021 22:21:08 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
+        id S231285AbhELVu5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 12 May 2021 17:50:57 -0400
+Received: from youngberry.canonical.com ([91.189.89.112]:40351 "EHLO
+        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1386909AbhELUWj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 12 May 2021 16:22:39 -0400
+Received: from mail-ua1-f72.google.com ([209.85.222.72])
+        by youngberry.canonical.com with esmtps  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
+        (Exim 4.93)
+        (envelope-from <krzysztof.kozlowski@canonical.com>)
+        id 1lgvMH-0005cM-LM
+        for netdev@vger.kernel.org; Wed, 12 May 2021 20:21:29 +0000
+Received: by mail-ua1-f72.google.com with SMTP id x11-20020a9f2f0b0000b029020331a0ba74so3059475uaj.15
+        for <netdev@vger.kernel.org>; Wed, 12 May 2021 13:21:29 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=GPSchaWIh9W0a/KWJptAdzH4Ia11x5AtL0JuQZVu/NU=;
+        b=HWnF3CxU0SvY13IVULY4a3zmYgKXlTIl6IlN6QFSopmuCXzzWR3TUrHXvtlDoqXOdi
+         tOrUUpbcGJwR3iniRznyGvkJDeLMlP9OaOtV1aGi7t18olqbej2qPmfsHbWO36YfOa2+
+         zBMyq+LifNzJV4/n+5+1AhfUKFy3QULBBk22pRyHuSBG04lXI5mvWCQwFoaUcGyI5k5i
+         AaSbIIviSCZS7meRBx6Rrj9j2lT2KN/dnjg6RFbqK1RKX8DrgC/vpkHRt9s/RLJ57Xoc
+         J4g5UilqsXmd7pPahZAAnt4UnBmtty/tkIHZAODjNMbRwCFo/suxrWaeG5Wg6Jtm9PbZ
+         jKXw==
+X-Gm-Message-State: AOAM532yOTVLxGNJVys9t72BdHKuep97H1zpTxbVF+N493tU341XrZWn
+        7dKYZm+mpe03mvdGpDN2lBnVc3zgPvKd0paEPswm/8qv/LUdeueey7kEvlIqwX3wb+HmBeyelSZ
+        Me2JgYJeKfz5CGLgWVtMUBUkMG1cf87hncw==
+X-Received: by 2002:a1f:784c:: with SMTP id t73mr30125695vkc.14.1620850888139;
+        Wed, 12 May 2021 13:21:28 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJzrJdbPgvpiXdpX3wOjnLuu0MgeYwXqYZEYdNJ2scWsTdKyud/94qx2Zr8Ha9rIIBePrSKTbw==
+X-Received: by 2002:a1f:784c:: with SMTP id t73mr30125683vkc.14.1620850887959;
+        Wed, 12 May 2021 13:21:27 -0700 (PDT)
+Received: from [192.168.1.4] ([45.237.48.3])
+        by smtp.gmail.com with ESMTPSA id b197sm120811vke.24.2021.05.12.13.21.26
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 12 May 2021 13:21:27 -0700 (PDT)
+Subject: Re: [linux-nfc] [PATCH 1/2] MAINTAINERS: nfc: add Krzysztof Kozlowski
+ as maintainer
+To:     Mark Greer <mgreer@animalcreek.com>,
+        Frieder Schrempf <frieder.schrempf@kontron.de>
+Cc:     Jakub Kicinski <kuba@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-nfc@lists.01.org,
+        Alex Blasche <alexander.blasche@qt.io>
+References: <20210512144319.30852-1-krzysztof.kozlowski@canonical.com>
+ <14e78a9a-ed1a-9d7d-b854-db6d811f4622@kontron.de>
+ <20210512170135.GB222094@animalcreek.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+Message-ID: <cd7a0110-702a-6e14-527e-fb4b53705870@canonical.com>
+Date:   Wed, 12 May 2021 16:21:25 -0400
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.8.1
 MIME-Version: 1.0
-In-Reply-To: <751025d2-9c46-a4b9-4f54-fbe5fa7a2564@infradead.org>
-Content-Type: text/plain; charset=utf-8; format=flowed
+In-Reply-To: <20210512170135.GB222094@animalcreek.com>
+Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
-Content-Transfer-Encoding: 8bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.103.2/26168/Wed May 12 13:07:33 2021)
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 5/12/21 9:26 PM, Randy Dunlap wrote:
-> On 5/12/21 11:53 AM, Daniel Borkmann wrote:
->> On 5/12/21 8:01 PM, Randy Dunlap wrote:
->>> On 5/12/21 12:56 AM, Stephen Rothwell wrote:
->>> on i386:
->>>
->>> ld: arch/x86/net/bpf_jit_comp32.o: in function `do_jit':
->>> bpf_jit_comp32.c:(.text+0x28c9): undefined reference to `__bpf_call_base'
->>> ld: arch/x86/net/bpf_jit_comp32.o: in function `bpf_int_jit_compile':
->>> bpf_jit_comp32.c:(.text+0x3694): undefined reference to `bpf_jit_blind_constants'
->>> ld: bpf_jit_comp32.c:(.text+0x3719): undefined reference to `bpf_jit_binary_free'
->>> ld: bpf_jit_comp32.c:(.text+0x3745): undefined reference to `bpf_jit_binary_alloc'
->>> ld: bpf_jit_comp32.c:(.text+0x37d3): undefined reference to `bpf_jit_prog_release_other'
->>> ld: kernel/extable.o: in function `search_exception_tables':
->>> extable.c:(.text+0x42): undefined reference to `search_bpf_extables'
->>> ld: kernel/extable.o: in function `kernel_text_address':
->>> extable.c:(.text+0xee): undefined reference to `is_bpf_text_address'
->>> ld: kernel/kallsyms.o: in function `kallsyms_lookup_size_offset':
->>> kallsyms.c:(.text+0x254): undefined reference to `__bpf_address_lookup'
->>> ld: kernel/kallsyms.o: in function `kallsyms_lookup_buildid':
->>> kallsyms.c:(.text+0x2ee): undefined reference to `__bpf_address_lookup'
+On 12/05/2021 13:01, Mark Greer wrote:
+> On Wed, May 12, 2021 at 05:32:35PM +0200, Frieder Schrempf wrote:
+>> On 12.05.21 16:43, Krzysztof Kozlowski wrote:
+>>> The NFC subsystem is orphaned.  I am happy to spend some cycles to
+>>> review the patches, send pull requests and in general keep the NFC
+>>> subsystem running.
 >>
->> Thanks for reporting, could you double check the following diff:
+>> That's great, thanks!
 >>
->> diff --git a/kernel/bpf/Kconfig b/kernel/bpf/Kconfig
->> index 26b591e23f16..bd04f4a44c01 100644
->> --- a/kernel/bpf/Kconfig
->> +++ b/kernel/bpf/Kconfig
->> @@ -37,6 +37,7 @@ config BPF_SYSCALL
+>> Maybe you also want to have a look at the userspace side and talk to Mark Greer (on cc). He recently said, that he is supposed to be taking over maintenance for the neard daemon (see this thread: [1]) which currently looks like it's close to being dead (no release for several years, etc.).
 >>
->> config BPF_JIT
->>      bool "Enable BPF Just In Time compiler"
->> +    depends on BPF
->>      depends on HAVE_CBPF_JIT || HAVE_EBPF_JIT
->>      depends on MODULES
->>      help
+>> I don't know much about the NFC stack and if/how people use it, but without reliable and maintained userspace tooling, the whole thing seems of little use in the long run. Qt has already dropped their neard support for Qt 6 [2], which basically means the mainline NFC stack won't be supported anymore in one of the most common application frameworks for IoT/embedded.
+>>
+>> [1] https://lists.01.org/hyperkitty/list/linux-nfc@lists.01.org/thread/OHD5IQHYPFUPUFYWDMNSVCBNO24M45VK/
+>> [2] https://bugreports.qt.io/browse/QTBUG-81824
 > 
-> That's good. Thanks.
+> Re: QT - I've already talked to Alex Blasche from QT (CC'd).  With some
+> work we can get Linux NFC/neard back into their good graces.  I/we need
+> to find time to put in the work, though.
+> 
+> An example of the issues they have seen is:
+> 
+> 	https://bugreports.qt.io/browse/QTBUG-43802
+> 
+> Another issue I have--and I suspect you, Krzysztof, have as well--is
+> lack of hardware.  If anyone reading this wants to volunteer to be a
+> tester, please speak up.
 
-Thanks, pushed fix to bpf tree.
+Yes, testing would be very appreciated. I don't know how many unit tests
+neard has, but maybe some mockups with unit testing would solve some of
+problems?
+
+
+
+Best regards,
+Krzysztof
