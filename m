@@ -2,162 +2,122 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 41FCF37BD32
-	for <lists+netdev@lfdr.de>; Wed, 12 May 2021 14:52:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 182B337BDC6
+	for <lists+netdev@lfdr.de>; Wed, 12 May 2021 15:13:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233016AbhELMxa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 12 May 2021 08:53:30 -0400
-Received: from mail.kernel.org ([198.145.29.99]:52632 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231230AbhELMxA (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 12 May 2021 08:53:00 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 1144561439;
-        Wed, 12 May 2021 12:51:43 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1620823903;
-        bh=WJnZZbvp/3S4+mp/P3c374P9sXWpRT/tkUrjwqlxuBE=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=hpmPUvze122Z88MbxyJ83KfRXPlS2//fnIasq9quewJJDo/CrzSl4AS78cU/EnY6Q
-         7Zu3BewUGA5I8YJeVnP1kc1yq1neWzk3aigdwcY8TojJt/zmg0jmaz3GEBZPe9rhh4
-         dWjjJqbfsYmFOQDY4EhuJRv60WP2o+wxGMI5t10Zo7fZ1RUV5qIemUuWOCb7Tw+siZ
-         jABs8/7Wow/b+7XoBX81eTatEJxanmlokwbYLZvUO0IQ5SMKJAOI+SIjWxj7GPgJaq
-         9spMdsMvSJ0msgdG2kBmOu0hrps8lZt5WxithYsEUDMoTDsVsvkFUovZfO01q0KA/m
-         3/sfVaScsThuQ==
-Received: by mail.kernel.org with local (Exim 4.94.2)
-        (envelope-from <mchehab@kernel.org>)
-        id 1lgoKz-0018iU-6a; Wed, 12 May 2021 14:51:41 +0200
-From:   Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
-To:     Linux Doc Mailing List <linux-doc@vger.kernel.org>
-Cc:     Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        "Jonathan Corbet" <corbet@lwn.net>,
+        id S231991AbhELNOS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 12 May 2021 09:14:18 -0400
+Received: from mx0b-00069f02.pphosted.com ([205.220.177.32]:55902 "EHLO
+        mx0b-00069f02.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S231516AbhELNOR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 12 May 2021 09:14:17 -0400
+Received: from pps.filterd (m0246630.ppops.net [127.0.0.1])
+        by mx0b-00069f02.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 14CDCkoN020974;
+        Wed, 12 May 2021 13:12:46 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
+ : subject : message-id : references : mime-version : content-type :
+ in-reply-to; s=corp-2020-01-29;
+ bh=QRs5gdlYriFU1v1EfQ+7iR08huQidQJKaI0/QDa1fOw=;
+ b=yIxXWRH14O29PT8kolnkt2yqtI0NDL5OiiveV45Fo27TGbw5iCNlMkDVVLbkq7F2TQL0
+ 8yAZkG/fH3Ypp+SOBad1YpbLKyvDpPZw4hl9ucjjn5vx7MBSQWLMF7IyrdZd0hwd4iRx
+ 2JPjtqqQWKAWAX3NCrhggcAn4/yvlBlvkk/rlvyaCgNPBLbyJsRqDedh1ZhhVukWIvGk
+ MLj8Q/HJZLdrDnP2XKu++Yku9kLvxC0nT1Ghu2EKqa/eWdvEcf3NKUORZ+nyV54ZL9vw
+ Dl6spRJ20AkbGUQhW2GQtWcqoCD41mjGonhzuta95d2QGypckv8p77Qcny3KkPQ15z0Q dw== 
+Received: from oracle.com (aserp3020.oracle.com [141.146.126.70])
+        by mx0b-00069f02.pphosted.com with ESMTP id 38ex140sjm-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Wed, 12 May 2021 13:12:46 +0000
+Received: from aserp3020.oracle.com (aserp3020.oracle.com [127.0.0.1])
+        by pps.podrdrct (8.16.0.36/8.16.0.36) with SMTP id 14CDCjXX031433;
+        Wed, 12 May 2021 13:12:45 GMT
+Received: from pps.reinject (localhost [127.0.0.1])
+        by aserp3020.oracle.com with ESMTP id 38djfbjx0p-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Wed, 12 May 2021 13:12:45 +0000
+Received: from aserp3020.oracle.com (aserp3020.oracle.com [127.0.0.1])
+        by pps.reinject (8.16.0.36/8.16.0.36) with SMTP id 14CDBNgx015043;
+        Wed, 12 May 2021 13:12:44 GMT
+Received: from userv0122.oracle.com (userv0122.oracle.com [156.151.31.75])
+        by aserp3020.oracle.com with ESMTP id 38djfbjwxf-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Wed, 12 May 2021 13:12:44 +0000
+Received: from abhmp0012.oracle.com (abhmp0012.oracle.com [141.146.116.18])
+        by userv0122.oracle.com (8.14.4/8.14.4) with ESMTP id 14CDCfWR026621;
+        Wed, 12 May 2021 13:12:41 GMT
+Received: from kadam (/102.36.221.92)
+        by default (Oracle Beehive Gateway v4.0)
+        with ESMTP ; Wed, 12 May 2021 06:12:40 -0700
+Date:   Wed, 12 May 2021 16:12:32 +0300
+From:   Dan Carpenter <dan.carpenter@oracle.com>
+To:     Johan Hovold <johan@kernel.org>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Denis Joseph Barrow <D.Barow@option.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
-        Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        Shannon Nelson <snelson@pensando.io>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
-        intel-wired-lan@lists.osuosl.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: [PATCH v2 26/40] docs: networking: device_drivers: Use ASCII subset instead of UTF-8 alternate symbols
-Date:   Wed, 12 May 2021 14:50:30 +0200
-Message-Id: <aa49206f65b7302f6d579d3be726242dedebdb79.1620823573.git.mchehab+huawei@kernel.org>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <cover.1620823573.git.mchehab+huawei@kernel.org>
-References: <cover.1620823573.git.mchehab+huawei@kernel.org>
+        Oliver Neukum <oneukum@suse.com>,
+        Anirudh Rayabharam <mail@anirudhrb.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Rustam Kovhaev <rkovhaev@gmail.com>,
+        Zheng Yongjun <zhengyongjun3@huawei.com>,
+        Emil Renner Berthing <kernel@esmil.dk>,
+        linux-usb@vger.kernel.org, netdev@vger.kernel.org,
+        kernel-janitors@vger.kernel.org
+Subject: Re: [PATCH net] net: hso: check for allocation failure in
+ hso_create_bulk_serial_device()
+Message-ID: <20210512131232.GX1955@kadam>
+References: <YJupQPb+Y4vw3rDk@mwanda>
+ <YJurlxqQ9L+zzIAS@hovoldconsulting.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-Sender: Mauro Carvalho Chehab <mchehab@kernel.org>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YJurlxqQ9L+zzIAS@hovoldconsulting.com>
+User-Agent: Mutt/1.9.4 (2018-02-28)
+X-Proofpoint-GUID: vQDJBerTT7xwK3dR9YNacmK_j22vue2w
+X-Proofpoint-ORIG-GUID: vQDJBerTT7xwK3dR9YNacmK_j22vue2w
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The conversion tools used during DocBook/LaTeX/Markdown->ReST conversion
-and some automatic rules which exists on certain text editors like
-LibreOffice turned ASCII characters into some UTF-8 alternatives that
-are better displayed on html and PDF.
+On Wed, May 12, 2021 at 12:19:03PM +0200, Johan Hovold wrote:
+> On Wed, May 12, 2021 at 01:09:04PM +0300, Dan Carpenter wrote:
+> > Add a couple checks for if these allocations fail.
+> > 
+> > Fixes: 542f54823614 ("tty: Modem functions for the HSO driver")
+> > Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
+> > ---
+> >  drivers/net/usb/hso.c | 4 ++++
+> >  1 file changed, 4 insertions(+)
+> > 
+> > diff --git a/drivers/net/usb/hso.c b/drivers/net/usb/hso.c
+> > index 3ef4b2841402..3b2a868d7a72 100644
+> > --- a/drivers/net/usb/hso.c
+> > +++ b/drivers/net/usb/hso.c
+> > @@ -2618,9 +2618,13 @@ static struct hso_device *hso_create_bulk_serial_device(
+> >  		num_urbs = 2;
+> >  		serial->tiocmget = kzalloc(sizeof(struct hso_tiocmget),
+> >  					   GFP_KERNEL);
+> > +		if (!serial->tiocmget)
+> > +			goto exit;
+> 
+> Nice catch; the next assignment would go boom if this ever failed.
+> 
+> This appears to have been introduced by 
+> 
+> 	af0de1303c4e ("usb: hso: obey DMA rules in tiocmget")
+> 
+> >  		serial->tiocmget->serial_state_notification
+> >  			= kzalloc(sizeof(struct hso_serial_state_notification),
+> >  					   GFP_KERNEL);
+> > +		if (!serial->tiocmget->serial_state_notification)
+> > +			goto exit;
+> >  		/* it isn't going to break our heart if serial->tiocmget
+> >  		 *  allocation fails don't bother checking this.
+> >  		 */
+> 
+> You should remove this comment and drop the conditional on the following
+> line as well now, though.
 
-While it is OK to use UTF-8 characters in Linux, it is better to
-use the ASCII subset instead of using an UTF-8 equivalent character
-as it makes life easier for tools like grep, and are easier to edit
-with the some commonly used text/source code editors.
+Ah, good catch.  I'll resend. Thanks!
 
-Also, Sphinx already do such conversion automatically outside literal blocks:
-   https://docutils.sourceforge.io/docs/user/smartquotes.html
-
-So, replace the occurences of the following UTF-8 characters:
-
-	- U+00a0 (' '): NO-BREAK SPACE
-	- U+2018 ('‘'): LEFT SINGLE QUOTATION MARK
-	- U+2019 ('’'): RIGHT SINGLE QUOTATION MARK
-
-Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
----
- .../device_drivers/ethernet/intel/i40e.rst           |  8 ++++----
- .../device_drivers/ethernet/intel/iavf.rst           |  4 ++--
- .../device_drivers/ethernet/netronome/nfp.rst        | 12 ++++++------
- 3 files changed, 12 insertions(+), 12 deletions(-)
-
-diff --git a/Documentation/networking/device_drivers/ethernet/intel/i40e.rst b/Documentation/networking/device_drivers/ethernet/intel/i40e.rst
-index 2d3f6bd969a2..d0e9b783a224 100644
---- a/Documentation/networking/device_drivers/ethernet/intel/i40e.rst
-+++ b/Documentation/networking/device_drivers/ethernet/intel/i40e.rst
-@@ -466,7 +466,7 @@ network. PTP support varies among Intel devices that support this driver. Use
- "ethtool -T <netdev name>" to get a definitive list of PTP capabilities
- supported by the device.
- 
--IEEE 802.1ad (QinQ) Support
-+IEEE 802.1ad (QinQ) Support
- ---------------------------
- The IEEE 802.1ad standard, informally known as QinQ, allows for multiple VLAN
- IDs within a single Ethernet frame. VLAN IDs are sometimes referred to as
-@@ -523,8 +523,8 @@ of a port's bandwidth (should it be available). The sum of all the values for
- Maximum Bandwidth is not restricted, because no more than 100% of a port's
- bandwidth can ever be used.
- 
--NOTE: X710/XXV710 devices fail to enable Max VFs (64) when Multiple Functions
--per Port (MFP) and SR-IOV are enabled. An error from i40e is logged that says
-+NOTE: X710/XXV710 devices fail to enable Max VFs (64) when Multiple Functions
-+per Port (MFP) and SR-IOV are enabled. An error from i40e is logged that says
- "add vsi failed for VF N, aq_err 16". To workaround the issue, enable less than
- 64 virtual functions (VFs).
- 
-@@ -680,7 +680,7 @@ queues: for each tc, <num queues>@<offset> (e.g. queues 16@0 16@16 assigns
- 16 queues to tc0 at offset 0 and 16 queues to tc1 at offset 16. Max total
- number of queues for all tcs is 64 or number of cores, whichever is lower.)
- 
--hw 1 mode channel: ‘channel’ with ‘hw’ set to 1 is a new new hardware
-+hw 1 mode channel: 'channel' with 'hw' set to 1 is a new new hardware
- offload mode in mqprio that makes full use of the mqprio options, the
- TCs, the queue configurations, and the QoS parameters.
- 
-diff --git a/Documentation/networking/device_drivers/ethernet/intel/iavf.rst b/Documentation/networking/device_drivers/ethernet/intel/iavf.rst
-index 25330b7b5168..b70eea67c3d9 100644
---- a/Documentation/networking/device_drivers/ethernet/intel/iavf.rst
-+++ b/Documentation/networking/device_drivers/ethernet/intel/iavf.rst
-@@ -113,7 +113,7 @@ which the AVF is associated. The following are base mode features:
- - AVF device ID
- - HW mailbox is used for VF to PF communications (including on Windows)
- 
--IEEE 802.1ad (QinQ) Support
-+IEEE 802.1ad (QinQ) Support
- ---------------------------
- The IEEE 802.1ad standard, informally known as QinQ, allows for multiple VLAN
- IDs within a single Ethernet frame. VLAN IDs are sometimes referred to as
-@@ -171,7 +171,7 @@ queues: for each tc, <num queues>@<offset> (e.g. queues 16@0 16@16 assigns
- 16 queues to tc0 at offset 0 and 16 queues to tc1 at offset 16. Max total
- number of queues for all tcs is 64 or number of cores, whichever is lower.)
- 
--hw 1 mode channel: ‘channel’ with ‘hw’ set to 1 is a new new hardware
-+hw 1 mode channel: 'channel' with 'hw' set to 1 is a new new hardware
- offload mode in mqprio that makes full use of the mqprio options, the
- TCs, the queue configurations, and the QoS parameters.
- 
-diff --git a/Documentation/networking/device_drivers/ethernet/netronome/nfp.rst b/Documentation/networking/device_drivers/ethernet/netronome/nfp.rst
-index ada611fb427c..949c036e8667 100644
---- a/Documentation/networking/device_drivers/ethernet/netronome/nfp.rst
-+++ b/Documentation/networking/device_drivers/ethernet/netronome/nfp.rst
-@@ -62,14 +62,14 @@ actual firmware files in application-named subdirectories in
-     $ tree /lib/firmware/netronome/
-     /lib/firmware/netronome/
-     ├── bpf
--    │   ├── nic_AMDA0081-0001_1x40.nffw
--    │   └── nic_AMDA0081-0001_4x10.nffw
-+    │   ├── nic_AMDA0081-0001_1x40.nffw
-+    │   └── nic_AMDA0081-0001_4x10.nffw
-     ├── flower
--    │   ├── nic_AMDA0081-0001_1x40.nffw
--    │   └── nic_AMDA0081-0001_4x10.nffw
-+    │   ├── nic_AMDA0081-0001_1x40.nffw
-+    │   └── nic_AMDA0081-0001_4x10.nffw
-     ├── nic
--    │   ├── nic_AMDA0081-0001_1x40.nffw
--    │   └── nic_AMDA0081-0001_4x10.nffw
-+    │   ├── nic_AMDA0081-0001_1x40.nffw
-+    │   └── nic_AMDA0081-0001_4x10.nffw
-     ├── nic_AMDA0081-0001_1x40.nffw -> bpf/nic_AMDA0081-0001_1x40.nffw
-     └── nic_AMDA0081-0001_4x10.nffw -> bpf/nic_AMDA0081-0001_4x10.nffw
- 
--- 
-2.30.2
+regards,
+dan carpenter
 
