@@ -2,126 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2BA0E37C46B
-	for <lists+netdev@lfdr.de>; Wed, 12 May 2021 17:31:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5AA9337C58C
+	for <lists+netdev@lfdr.de>; Wed, 12 May 2021 17:40:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232226AbhELPaz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 12 May 2021 11:30:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46332 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235530AbhELP20 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 12 May 2021 11:28:26 -0400
-Received: from mail-wr1-x430.google.com (mail-wr1-x430.google.com [IPv6:2a00:1450:4864:20::430])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 111ECC08C5DE
-        for <netdev@vger.kernel.org>; Wed, 12 May 2021 08:11:10 -0700 (PDT)
-Received: by mail-wr1-x430.google.com with SMTP id z17so4921872wrq.7
-        for <netdev@vger.kernel.org>; Wed, 12 May 2021 08:11:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=W4XgYJ8+mVcGs+SfB2znlX/BtQuwWvv6RmitvV0I9Us=;
-        b=ill6EvDGlsrM18q3cJsbpVTXryJwQRW6hgBDs2vy9rngryYawBom2xFCOKD3fOamO2
-         AyxmpxqNCBLPiEZWmtd+bZKDW2qr2z9FVA7peUW4SrLuvRM4xga0GXaTp9hAIzbSzOnX
-         spX6mEbGactsUGVCCX35iL08puJpeHAW3cVGBAhz/qQ3YWk7mDIMKM6tqgF04i5mXEeR
-         lS4Nca9zlQ05j+jQ39eokkiGUxIni4r8DdgvzgICUGC1dZJSlDV1xQiYMeN0aRFKJ+dy
-         8Bs6rQJJhpSaCb+qvToXn9NG6g/icdLH5zqFFIO1YHYHQlD1CDVELW1hAQDAMS386Lag
-         Wlcw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=W4XgYJ8+mVcGs+SfB2znlX/BtQuwWvv6RmitvV0I9Us=;
-        b=rwbm8D1UB4YCPANm/JUF5Ui9KKxwcceL0eWm/WU0qxf+PkNsJs5vhsIxXlWYsnNXlh
-         /FA3IW/aVuuKsLwq8J1O9JlZfSaZ3BJByv8SaS5CWrusXblqASHYHCEr1Y4KpSJuHL2C
-         U48x2D41UdRQMi0vJy+SIguRb8zMzL881vtZ8TzeqfagvrI5EOH5RXCPrm+jjGTiCEAa
-         nNPNjJ61pKAL8STFSv+uoGG+0jBGhs0tKh7Bwgw+GwcVo6it2FTOs2m+7pyGnu1oB/1U
-         6unrWFzpVByf5pOdIvcFBtIYJ3QkXocVrTAImf8xZkU+Bn2xy/c6OPucApmZisO8lp1z
-         sFrg==
-X-Gm-Message-State: AOAM530SFvbEIkRW7qMtpTYQ0YOaeE7Yn0XF3B685HVp2+GqqlPXj4Yx
-        jtm5s5vhtCaQZaqE1v7U1RCW3w==
-X-Google-Smtp-Source: ABdhPJwohaeGeQcb6BDOkXEhXQQTdwLBIcHRW6ytEUym4yqXARME4CLJyos9DGAAn7I3yqDtZnlyXw==
-X-Received: by 2002:adf:9c8e:: with SMTP id d14mr46741550wre.140.1620832269287;
-        Wed, 12 May 2021 08:11:09 -0700 (PDT)
-Received: from ?IPv6:2a01:e34:ed2f:f020:1412:ffb:31a1:6c9d? ([2a01:e34:ed2f:f020:1412:ffb:31a1:6c9d])
-        by smtp.googlemail.com with ESMTPSA id q12sm31540104wrx.17.2021.05.12.08.11.08
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 12 May 2021 08:11:08 -0700 (PDT)
-Subject: Re: [linux-nfc] [PATCH 1/2] MAINTAINERS: nfc: add Krzysztof Kozlowski
- as maintainer
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     linux-nfc@lists.01.org
-References: <20210512144319.30852-1-krzysztof.kozlowski@canonical.com>
-From:   Daniel Lezcano <daniel.lezcano@linaro.org>
-Message-ID: <961dc9c5-0eb0-586c-5e70-b21ca2f8e6f3@linaro.org>
-Date:   Wed, 12 May 2021 17:11:07 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.8.1
+        id S234044AbhELPlU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 12 May 2021 11:41:20 -0400
+Received: from mail.kernel.org ([198.145.29.99]:49178 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S235091AbhELPfS (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 12 May 2021 11:35:18 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 455F961C3E;
+        Wed, 12 May 2021 15:17:44 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1620832672;
+        bh=zB2G4t5ozyJ72g68BGRplKf2lQRTS6CtRvJ7FVX3NWE=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=DBjrvZcbfODq6o/u3ovhcKp34o3mQ/2g2kqOKbw7rqi0UbJcuDmNkgLMMy0M05dFs
+         mwfV7fdqIvkaHvs5FkFIxP3pQ5mW2wuelKsM0Zg1XI928MZ1g6hDtwlC/lZ6mTYtDn
+         L0yXyxJPdKzjgMXD6Vs/vdQOXuvQV+DBBKSwRDhM/LlZ9x9/DV6Qnq7MjBym4Ue3He
+         LklNFflnfSaW1SCikrvqRJriPDliUiNhIaGm2pb/3nXItDzT/4/obeOPpO0NPN/v0m
+         Pwish5sD0axq4vDEIuCSUJZyKrnPcy3P6Nd30IKN+fHXybC5E+QSyK+xdLgaNeWw/l
+         +EUyGcBOd8VUw==
+Date:   Wed, 12 May 2021 17:17:41 +0200
+From:   Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+To:     "Theodore Ts'o" <tytso@mit.edu>
+Cc:     Linux Doc Mailing List <linux-doc@vger.kernel.org>,
+        linux-kernel@vger.kernel.org, Jonathan Corbet <corbet@lwn.net>,
+        Mali DP Maintainers <malidp@foss.arm.com>,
+        alsa-devel@alsa-project.org, coresight@lists.linaro.org,
+        dri-devel@lists.freedesktop.org, intel-gfx@lists.freedesktop.org,
+        intel-wired-lan@lists.osuosl.org, keyrings@vger.kernel.org,
+        kvm@vger.kernel.org, linux-acpi@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-edac@vger.kernel.org,
+        linux-ext4@vger.kernel.org, linux-f2fs-devel@lists.sourceforge.net,
+        linux-hwmon@vger.kernel.org, linux-iio@vger.kernel.org,
+        linux-input@vger.kernel.org, linux-integrity@vger.kernel.org,
+        linux-media@vger.kernel.org, linux-pci@vger.kernel.org,
+        linux-pm@vger.kernel.org, linux-rdma@vger.kernel.org,
+        linux-sgx@vger.kernel.org, linux-usb@vger.kernel.org,
+        mjpeg-users@lists.sourceforge.net, netdev@vger.kernel.org,
+        rcu@vger.kernel.org
+Subject: Re: [PATCH v2 00/40] Use ASCII subset instead of UTF-8 alternate
+ symbols
+Message-ID: <20210512171741.2870bcbc@coco.lan>
+In-Reply-To: <YJvi1L2ss5Tfi+My@mit.edu>
+References: <cover.1620823573.git.mchehab+huawei@kernel.org>
+        <YJvi1L2ss5Tfi+My@mit.edu>
+X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-redhat-linux-gnu)
 MIME-Version: 1.0
-In-Reply-To: <20210512144319.30852-1-krzysztof.kozlowski@canonical.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 12/05/2021 16:43, Krzysztof Kozlowski wrote:
-> The NFC subsystem is orphaned.  I am happy to spend some cycles to
-> review the patches, send pull requests and in general keep the NFC
-> subsystem running.
-> 
-> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-> 
-> ---
-> 
-> I admit I don't have big experience in NFC part but this will be nice
-> opportunity to learn something new. 
+Em Wed, 12 May 2021 10:14:44 -0400
+"Theodore Ts'o" <tytso@mit.edu> escreveu:
 
-NFC has been lost in the limbos since a while. Good to see someone
-volunteering to take care of it.
+> On Wed, May 12, 2021 at 02:50:04PM +0200, Mauro Carvalho Chehab wrote:
+> > v2:
+> > - removed EM/EN DASH conversion from this patchset; =20
+>=20
+> Are you still thinking about doing the
+>=20
+> EN DASH --> "--"
+> EM DASH --> "---"
+>=20
+> conversion? =20
 
-May I suggest to create a simple nfc reading program in the 'tools'
-directory (could be a training exercise ;)
+Yes, but I intend to submit it on a separate patch series, probably after
+having this one merged. Let's first cleanup the large part of the=20
+conversion-generated UTF-8 char noise ;-)
 
+> That's not going to change what the documentation will
+> look like in the HTML and PDF output forms, and I think it would make
+> life easier for people are reading and editing the Documentation/*
+> files in text form.
 
-> I am already maintainer of few
-> other parts: memory controller drivers, Samsung ARM/ARM64 SoC and some
-> drviers.  I have a kernel.org account and my GPG key is:
-> https://git.kernel.org/pub/scm/docs/kernel/pgpkeys.git/tree/keys/1B93437D3B41629B.asc
-> 
-> Best regards,
-> Krzysztof
-> ---
->  MAINTAINERS | 3 ++-
->  1 file changed, 2 insertions(+), 1 deletion(-)
-> 
-> diff --git a/MAINTAINERS b/MAINTAINERS
-> index cc81667e8bab..adc6cbe29f78 100644
-> --- a/MAINTAINERS
-> +++ b/MAINTAINERS
-> @@ -12899,8 +12899,9 @@ F:	include/uapi/linux/nexthop.h
->  F:	net/ipv4/nexthop.c
->  
->  NFC SUBSYSTEM
-> +M:	Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
->  L:	netdev@vger.kernel.org
-> -S:	Orphan
-> +S:	Maintained
->  F:	Documentation/devicetree/bindings/net/nfc/
->  F:	drivers/nfc/
->  F:	include/linux/platform_data/nfcmrvl.h
+Agreed. I'm also considering to add a couple of cases of this char:
 
+	- U+2026 ('=E2=80=A6'): HORIZONTAL ELLIPSIS
 
+As Sphinx also replaces "..." into HORIZONTAL ELLIPSIS.
 
+-
 
--- 
-<http://www.linaro.org/> Linaro.org │ Open source software for ARM SoCs
+Anyway, I'm opting to submitting those in separate because it seems
+that at least some maintainers added EM/EN DASH intentionally.
 
-Follow Linaro:  <http://www.facebook.com/pages/Linaro> Facebook |
-<http://twitter.com/#!/linaroorg> Twitter |
-<http://www.linaro.org/linaro-blog/> Blog
+So, it may generate case-per-case discussions.
+
+Also, IMO, at least a couple of EN/EM DASH cases would be better served=20
+with a single hyphen.
+
+Thanks,
+Mauro
