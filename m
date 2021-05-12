@@ -2,122 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 182B337BDC6
-	for <lists+netdev@lfdr.de>; Wed, 12 May 2021 15:13:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A808E37BE1C
+	for <lists+netdev@lfdr.de>; Wed, 12 May 2021 15:21:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231991AbhELNOS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 12 May 2021 09:14:18 -0400
-Received: from mx0b-00069f02.pphosted.com ([205.220.177.32]:55902 "EHLO
-        mx0b-00069f02.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S231516AbhELNOR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 12 May 2021 09:14:17 -0400
-Received: from pps.filterd (m0246630.ppops.net [127.0.0.1])
-        by mx0b-00069f02.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 14CDCkoN020974;
-        Wed, 12 May 2021 13:12:46 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
- : subject : message-id : references : mime-version : content-type :
- in-reply-to; s=corp-2020-01-29;
- bh=QRs5gdlYriFU1v1EfQ+7iR08huQidQJKaI0/QDa1fOw=;
- b=yIxXWRH14O29PT8kolnkt2yqtI0NDL5OiiveV45Fo27TGbw5iCNlMkDVVLbkq7F2TQL0
- 8yAZkG/fH3Ypp+SOBad1YpbLKyvDpPZw4hl9ucjjn5vx7MBSQWLMF7IyrdZd0hwd4iRx
- 2JPjtqqQWKAWAX3NCrhggcAn4/yvlBlvkk/rlvyaCgNPBLbyJsRqDedh1ZhhVukWIvGk
- MLj8Q/HJZLdrDnP2XKu++Yku9kLvxC0nT1Ghu2EKqa/eWdvEcf3NKUORZ+nyV54ZL9vw
- Dl6spRJ20AkbGUQhW2GQtWcqoCD41mjGonhzuta95d2QGypckv8p77Qcny3KkPQ15z0Q dw== 
-Received: from oracle.com (aserp3020.oracle.com [141.146.126.70])
-        by mx0b-00069f02.pphosted.com with ESMTP id 38ex140sjm-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 12 May 2021 13:12:46 +0000
-Received: from aserp3020.oracle.com (aserp3020.oracle.com [127.0.0.1])
-        by pps.podrdrct (8.16.0.36/8.16.0.36) with SMTP id 14CDCjXX031433;
-        Wed, 12 May 2021 13:12:45 GMT
-Received: from pps.reinject (localhost [127.0.0.1])
-        by aserp3020.oracle.com with ESMTP id 38djfbjx0p-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 12 May 2021 13:12:45 +0000
-Received: from aserp3020.oracle.com (aserp3020.oracle.com [127.0.0.1])
-        by pps.reinject (8.16.0.36/8.16.0.36) with SMTP id 14CDBNgx015043;
-        Wed, 12 May 2021 13:12:44 GMT
-Received: from userv0122.oracle.com (userv0122.oracle.com [156.151.31.75])
-        by aserp3020.oracle.com with ESMTP id 38djfbjwxf-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 12 May 2021 13:12:44 +0000
-Received: from abhmp0012.oracle.com (abhmp0012.oracle.com [141.146.116.18])
-        by userv0122.oracle.com (8.14.4/8.14.4) with ESMTP id 14CDCfWR026621;
-        Wed, 12 May 2021 13:12:41 GMT
-Received: from kadam (/102.36.221.92)
-        by default (Oracle Beehive Gateway v4.0)
-        with ESMTP ; Wed, 12 May 2021 06:12:40 -0700
-Date:   Wed, 12 May 2021 16:12:32 +0300
-From:   Dan Carpenter <dan.carpenter@oracle.com>
-To:     Johan Hovold <johan@kernel.org>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Denis Joseph Barrow <D.Barow@option.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Oliver Neukum <oneukum@suse.com>,
-        Anirudh Rayabharam <mail@anirudhrb.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Rustam Kovhaev <rkovhaev@gmail.com>,
-        Zheng Yongjun <zhengyongjun3@huawei.com>,
-        Emil Renner Berthing <kernel@esmil.dk>,
-        linux-usb@vger.kernel.org, netdev@vger.kernel.org,
-        kernel-janitors@vger.kernel.org
-Subject: Re: [PATCH net] net: hso: check for allocation failure in
- hso_create_bulk_serial_device()
-Message-ID: <20210512131232.GX1955@kadam>
-References: <YJupQPb+Y4vw3rDk@mwanda>
- <YJurlxqQ9L+zzIAS@hovoldconsulting.com>
+        id S231126AbhELNXB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 12 May 2021 09:23:01 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:50610 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S230037AbhELNW7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 12 May 2021 09:22:59 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1620825711;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=dtvrIv0gd9IsJeuZT9VIJXOOFa9yzPvKusGPJfLQ7f4=;
+        b=A9HOWi9KmzFFBTNqyY4ed5tNzt6Z/G0TAo1zXJQ+9ORQz1SNXSd6gmCqma9xc6OSYNDqmh
+        9QWsaMp1odA6cfPYSDGeRB3et+tqYOA0Ql6EFRefzo9/O0Ge/5sDJ8igY2qZ3+vNqXLV+F
+        YeaGoGlJv7AFYoY30h7ZGxBft5bGNvY=
+Received: from mail-yb1-f198.google.com (mail-yb1-f198.google.com
+ [209.85.219.198]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-171-bZouRFW1Ou6uEZ_csDtunQ-1; Wed, 12 May 2021 09:21:49 -0400
+X-MC-Unique: bZouRFW1Ou6uEZ_csDtunQ-1
+Received: by mail-yb1-f198.google.com with SMTP id l9-20020a5b0b890000b02904f7fb53ca12so28106048ybq.15
+        for <netdev@vger.kernel.org>; Wed, 12 May 2021 06:21:49 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=dtvrIv0gd9IsJeuZT9VIJXOOFa9yzPvKusGPJfLQ7f4=;
+        b=QeDFNOpA4CtFap5y8Q2xKVRipZ4Z+qV3Ino2UGHYXZnRtq4ctpCPWY84UQuiCfn4RH
+         RZAdpVrjKxAlQV0ah85iqWO+fx9k0iGDLpAfookvajPVTnsqeJeHKxmci+mQkejg50Nx
+         VrBcs87Utwn+T63yLd+FsbNIaIZnvMjF4M1ojH1FexG7O1jI43HvYPLLrt5QqNdvM9q7
+         o5zjjloVu3qA4Jicu31e9DziwLeJ1g7CXUY86JGTFmkPj4au7Sidvwepv7b+5/Am2YK4
+         fh/CX3Bd7WH88JtyVNzr30abSIVOtWXAzRlq7Z9rb3BpGcQq82Ufhqkq4bdI/1B69Jj4
+         mDHQ==
+X-Gm-Message-State: AOAM533PsCwYAQnk/ZYmw2dH8krmw4YI72sucg02GONQB6s7kP45ISKB
+        VgVm2+NA2iahl8+LG7qHwHemXbYQGColDMg/+0ybL9eHhj/khovhMXzyrhWcedAx9N+T/jONLQU
+        4MPVz1//oYvCkJC5H243aVRwsOsU3VOfF
+X-Received: by 2002:a25:6983:: with SMTP id e125mr46782761ybc.81.1620825709174;
+        Wed, 12 May 2021 06:21:49 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJxmv2Qjn6VYEo9c/oXPEmu6i04CA+M1aunHQiWM6u48mJ31LcpQnTbka787MtlSpRVc8GFLI9xcdcVeHkvyMsg=
+X-Received: by 2002:a25:6983:: with SMTP id e125mr46782731ybc.81.1620825708981;
+ Wed, 12 May 2021 06:21:48 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YJurlxqQ9L+zzIAS@hovoldconsulting.com>
-User-Agent: Mutt/1.9.4 (2018-02-28)
-X-Proofpoint-GUID: vQDJBerTT7xwK3dR9YNacmK_j22vue2w
-X-Proofpoint-ORIG-GUID: vQDJBerTT7xwK3dR9YNacmK_j22vue2w
+References: <20210507114048.138933-1-omosnace@redhat.com> <a8d138a6-1d34-1457-9266-4abeddb6fdba@schaufler-ca.com>
+In-Reply-To: <a8d138a6-1d34-1457-9266-4abeddb6fdba@schaufler-ca.com>
+From:   Ondrej Mosnacek <omosnace@redhat.com>
+Date:   Wed, 12 May 2021 15:21:37 +0200
+Message-ID: <CAFqZXNtr1YjzRg7fTm+j=0oZF+7C5xEu5J0mCZynP-dgEzvyUg@mail.gmail.com>
+Subject: Re: [PATCH] lockdown,selinux: fix bogus SELinux lockdown permission checks
+To:     Casey Schaufler <casey@schaufler-ca.com>
+Cc:     Linux Security Module list 
+        <linux-security-module@vger.kernel.org>,
+        James Morris <jmorris@namei.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Stephen Smalley <stephen.smalley.work@gmail.com>,
+        SElinux list <selinux@vger.kernel.org>,
+        linuxppc-dev@lists.ozlabs.org,
+        Linux FS Devel <linux-fsdevel@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>, network dev <netdev@vger.kernel.org>,
+        Linux kernel mailing list <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, May 12, 2021 at 12:19:03PM +0200, Johan Hovold wrote:
-> On Wed, May 12, 2021 at 01:09:04PM +0300, Dan Carpenter wrote:
-> > Add a couple checks for if these allocations fail.
-> > 
-> > Fixes: 542f54823614 ("tty: Modem functions for the HSO driver")
-> > Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
-> > ---
-> >  drivers/net/usb/hso.c | 4 ++++
-> >  1 file changed, 4 insertions(+)
-> > 
-> > diff --git a/drivers/net/usb/hso.c b/drivers/net/usb/hso.c
-> > index 3ef4b2841402..3b2a868d7a72 100644
-> > --- a/drivers/net/usb/hso.c
-> > +++ b/drivers/net/usb/hso.c
-> > @@ -2618,9 +2618,13 @@ static struct hso_device *hso_create_bulk_serial_device(
-> >  		num_urbs = 2;
-> >  		serial->tiocmget = kzalloc(sizeof(struct hso_tiocmget),
-> >  					   GFP_KERNEL);
-> > +		if (!serial->tiocmget)
-> > +			goto exit;
-> 
-> Nice catch; the next assignment would go boom if this ever failed.
-> 
-> This appears to have been introduced by 
-> 
-> 	af0de1303c4e ("usb: hso: obey DMA rules in tiocmget")
-> 
-> >  		serial->tiocmget->serial_state_notification
-> >  			= kzalloc(sizeof(struct hso_serial_state_notification),
-> >  					   GFP_KERNEL);
-> > +		if (!serial->tiocmget->serial_state_notification)
-> > +			goto exit;
-> >  		/* it isn't going to break our heart if serial->tiocmget
-> >  		 *  allocation fails don't bother checking this.
-> >  		 */
-> 
-> You should remove this comment and drop the conditional on the following
-> line as well now, though.
+On Sat, May 8, 2021 at 12:17 AM Casey Schaufler <casey@schaufler-ca.com> wrote:
+> On 5/7/2021 4:40 AM, Ondrej Mosnacek wrote:
+> > Commit 59438b46471a ("security,lockdown,selinux: implement SELinux
+> > lockdown") added an implementation of the locked_down LSM hook to
+> > SELinux, with the aim to restrict which domains are allowed to perform
+> > operations that would breach lockdown.
+> >
+> > However, in several places the security_locked_down() hook is called in
+> > situations where the current task isn't doing any action that would
+> > directly breach lockdown, leading to SELinux checks that are basically
+> > bogus.
+> >
+> > Since in most of these situations converting the callers such that
+> > security_locked_down() is called in a context where the current task
+> > would be meaningful for SELinux is impossible or very non-trivial (and
+> > could lead to TOCTOU issues for the classic Lockdown LSM
+> > implementation), fix this by adding a separate hook
+> > security_locked_down_globally()
+>
+> This is a poor solution to the stated problem. Rather than adding
+> a new hook you should add the task as a parameter to the existing hook
+> and let the security modules do as they will based on its value.
+> If the caller does not have an appropriate task it should pass NULL.
+> The lockdown LSM can ignore the task value and SELinux can make its
+> own decision based on the task value passed.
 
-Ah, good catch.  I'll resend. Thanks!
+The problem with that approach is that all callers would then need to
+be updated and I intended to keep the patch small as I'd like it to go
+to stable kernels as well.
 
-regards,
-dan carpenter
+But it does seem to be a better long-term solution - would it work for
+you (and whichever maintainer would be taking the patch(es)) if I just
+added another patch that refactors it to use the task parameter?
+
+--
+Ondrej Mosnacek
+Software Engineer, Linux Security - SELinux kernel
+Red Hat, Inc.
 
