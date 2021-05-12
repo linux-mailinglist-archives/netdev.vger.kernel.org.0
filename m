@@ -2,286 +2,133 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9F53537CC57
-	for <lists+netdev@lfdr.de>; Wed, 12 May 2021 19:03:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7A95C37D061
+	for <lists+netdev@lfdr.de>; Wed, 12 May 2021 19:41:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237026AbhELQoT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 12 May 2021 12:44:19 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:55653 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S242819AbhELQfz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 12 May 2021 12:35:55 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1620837285;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=Bzgjz5iq5yLZuHevMrPrXL8sAFkqILrmECLeCDFwBxg=;
-        b=XNngJpi/T5lmNnRnV8XIT/CCDIr065onChXBzNU55IbfuCiOnLM6tunF20k96zXkRiQelV
-        ACh+QOMfq/qIOFZj+i8yCPD5Jm/a+OO/Di/Vuc87Y6z7seWpw0NOpp+Zcu4X2ygCPUZ/3G
-        cJt+QyLkbEpWpIlS9AgJODG//aB0Fi8=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-77-ZIYOrW6pPPm-HXuudjFYMg-1; Wed, 12 May 2021 12:34:43 -0400
-X-MC-Unique: ZIYOrW6pPPm-HXuudjFYMg-1
-Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com [10.5.11.22])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 4FE861883536;
-        Wed, 12 May 2021 16:34:41 +0000 (UTC)
-Received: from [10.10.110.31] (unknown [10.10.110.31])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 54E351037E85;
-        Wed, 12 May 2021 16:34:38 +0000 (UTC)
-Message-ID: <45436a3b8904d08a0835f9a7973c28bc46010f20.camel@gapps.redhat.com>
-Subject: Re: [PATCH net-next v2 2/2] usb: class: cdc-wdm: WWAN framework
- integration
-From:   Dan Williams <dcbw@gapps.redhat.com>
-To:     Loic Poulain <loic.poulain@linaro.org>,
-        Aleksander Morgado <aleksander@aleksander.es>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Oliver Neukum <oliver@neukum.org>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        =?ISO-8859-1?Q?Bj=F8rn?= Mork <bjorn@mork.no>,
-        Network Development <netdev@vger.kernel.org>
-Date:   Wed, 12 May 2021 11:34:37 -0500
-In-Reply-To: <CAMZdPi9zABtXoKiUuE9mmbnYsSmZoVWR+nLAdq0O5b7=Ghh-rg@mail.gmail.com>
-References: <1620744143-26075-1-git-send-email-loic.poulain@linaro.org>
-         <1620744143-26075-2-git-send-email-loic.poulain@linaro.org>
-         <CAAP7ucJah5qJXpjyP9gYmnYDyBWS7Qe3ck2SCBonJhJB2NgS5A@mail.gmail.com>
-         <CAMZdPi_2PdM9+_RQi0hL=eQauXfN3wFJVyHwSWGsfnK2QBaHbw@mail.gmail.com>
-         <CAAP7ucLb=e-mV6YM3LEh_OvttJVnAN+awRpEQGNt9y_grw+Hqw@mail.gmail.com>
-         <CAMZdPi9zABtXoKiUuE9mmbnYsSmZoVWR+nLAdq0O5b7=Ghh-rg@mail.gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.38.4 (3.38.4-1.fc33) 
+        id S240639AbhELRd5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 12 May 2021 13:33:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36180 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S244516AbhELQuj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 12 May 2021 12:50:39 -0400
+Received: from mail-ej1-x62e.google.com (mail-ej1-x62e.google.com [IPv6:2a00:1450:4864:20::62e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A9C20C022A8F
+        for <netdev@vger.kernel.org>; Wed, 12 May 2021 09:23:48 -0700 (PDT)
+Received: by mail-ej1-x62e.google.com with SMTP id a4so35904501ejk.1
+        for <netdev@vger.kernel.org>; Wed, 12 May 2021 09:23:48 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=paul-moore-com.20150623.gappssmtp.com; s=20150623;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=sPhA/5oxp7tvZCmXw/waTJLyyY6raAYfgYxrBgAmwyM=;
+        b=SYoFDx/Zzixg1Z4D0jeH1vTMiEe+P69opHbSwG8ECggk/vHidyrKZ9K2E4m0b+i3i1
+         K83HryhQJQQwyKJD2wDav1FQRNkauXOu/e2wPsrp8hps5qNCRyxUi+JtvCuo1w5DpHM5
+         3B6+LRj1a92CVU1h2YidjPJ2DJSGjKhcn7UqFRPOLTObGYJ/WxCUgH72f6Yvw0uiGs5n
+         Txd5KN2fMIdiYQNP7BEVnNiFOOWqyodtFLagVJKZ6T7jIYstslYAvw3ualmCWqdYKfCt
+         RL+Xw+9+hqfnmQMJJNjbVGfkmYMyoJyIkDMJLexvX85Mkohyu/NVfsV5hc+WjMwpeN5n
+         anjQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=sPhA/5oxp7tvZCmXw/waTJLyyY6raAYfgYxrBgAmwyM=;
+        b=c/rkF321/kF2Pyn3ITn8A5mebjcwn0JGPkW+fWdHWG+JMQ8Ax+h7szAN0U9FOF6spW
+         /S5hamiofOhVBMYZtBkSZ1AwYgdqEMTrAbuugFduOn5x36CAE6TPMpEfwzkaFRP1QsXc
+         si41a5rtSeS3Q9ydJMMp8JLZrMbpjvbZ4uY4cm/as047J/YE9ijFBX8bh/OZCyoVSgTf
+         prQzCxfpnmzKvUhOOYZ7z499XunhWEhrQAtJRaBOI4iLSkSfaPcC0VYZi6y3orzLPCWb
+         Cx9UWs9ADo08Q/zyRJVfoscTFQmN3UDl3XNMKRVjIDiLff2HuDs4O5DedMaIEgvAkO4/
+         QGfg==
+X-Gm-Message-State: AOAM531t8sFl+rSywdlhREFpye6fHOfeK3acgC/H5aT1cJ7M9OGsLZ0e
+        aIvXGPJuX0+3AFxcSD87z8aiY6l/BOx+E7KiAcRA
+X-Google-Smtp-Source: ABdhPJxzTvz4e3IxBmnaK3WmYXJZbzN5Zq06UuaBzHtcPCb3mZVtS8qUf8gHkah92LuUo/6uuvWFQnDEFJKIFg48vRY=
+X-Received: by 2002:a17:907:10d8:: with SMTP id rv24mr38393600ejb.542.1620836627295;
+ Wed, 12 May 2021 09:23:47 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
+References: <CAA-qYXi-znXVt_8KuMwEpbqmeWVQJZX9ixnOLs22fPM7HKmmtA@mail.gmail.com>
+In-Reply-To: <CAA-qYXi-znXVt_8KuMwEpbqmeWVQJZX9ixnOLs22fPM7HKmmtA@mail.gmail.com>
+From:   Paul Moore <paul@paul-moore.com>
+Date:   Wed, 12 May 2021 12:23:36 -0400
+Message-ID: <CAHC9VhRo0y+3_VmWKpiw9h-p4ci6JVNJ9ZzQ2yXTOXtUf-XEyA@mail.gmail.com>
+Subject: Re: A missing check bug in __sys_accept4_file()
+To:     Jinmeng Zhou <jjjinmeng.zhou@gmail.com>
+Cc:     axboe@kernel.dk, Jakub Kicinski <kuba@kernel.org>,
+        davem@davemloft.net, James Morris <jmorris@namei.org>,
+        Serge Hallyn <serge@hallyn.com>, shenwenbosmile@gmail.com,
+        netdev@vger.kernel.org, linux-security-module@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 2021-05-12 at 13:01 +0200, Loic Poulain wrote:
-> On Wed, 12 May 2021 at 11:04, Aleksander Morgado
-> <aleksander@aleksander.es> wrote:
-> > 
-> > Hey,
-> > 
-> > > > On Tue, May 11, 2021 at 4:33 PM Loic Poulain < 
-> > > > loic.poulain@linaro.org> wrote:
-> > > > > 
-> > > > > The WWAN framework provides a unified way to handle
-> > > > > WWAN/modems and its
-> > > > > control port(s). It has initially been introduced to support
-> > > > > MHI/PCI
-> > > > > modems, offering the same control protocols as the USB
-> > > > > variants such as
-> > > > > MBIM, QMI, AT... The WWAN framework exposes these control
-> > > > > protocols as
-> > > > > character devices, similarly to cdc-wdm, but in a bus
-> > > > > agnostic fashion.
-> > > > > 
-> > > > > This change adds registration of the USB modem cdc-wdm
-> > > > > control endpoints
-> > > > > to the WWAN framework as standard control ports (wwanXpY...).
-> > > > > 
-> > > > > Exposing cdc-wdm through WWAN framework normally maintains
-> > > > > backward
-> > > > > compatibility, e.g:
-> > > > >     $ qmicli --device-open-qmi -d /dev/wwan0p1QMI --dms-get-
-> > > > > ids
-> > > > > instead of
-> > > > >     $ qmicli --device-open-qmi -d /dev/cdc-wdm0 --dms-get-ids
-> > > > > 
-> > > > 
-> > > > I have some questions regarding how all this would be seen from
-> > > > userspace.
-> > > > 
-> > > > Does the MBIM control port retain the ability to query the
-> > > > maximum
-> > > > message size with an ioctl like IOCTL_WDM_MAX_COMMAND? Or is
-> > > > that
-> > > > lost? For the libmbim case this may not be a big deal, as we
-> > > > have a
-> > > > fallback mechanism to read this value from the USB descriptor
-> > > > itself,
-> > > > so just wondering.
-> > > 
-> > > There is no such ioctl but we can add a sysfs property file as
-> > > proposed by Dan in the Intel iosm thread.
-> > > 
-> > 
-> > Yeah, that may be a good thing to add I assume.
-> > 
-> > > > 
-> > > > Is the sysfs hierarchy maintained for this new port type? i.e.
-> > > > if
-> > > > doing "udevadm info -p /sys/class/wwan/wwan0p1QMI -a", would we
-> > > > still
-> > > > see the immediate parent device with DRIVERS=="qmi_wwan" and
-> > > > the
-> > > > correct interface number/class/subclass/protocol attributes?
-> > > 
-> > > Not an immediate parent since a port is a child of a logical wwan
-> > > device, but you'll still be able to get these attributes:
-> > > Below, DRIVERS=="qmi_wwan".
-> > > 
-> > > $ udevadm info -p /sys/class/wwan/wwan0p1QMI -a
-> > > 
-> > >   looking at device
-> > > '/devices/pci0000:00/0000:00:14.0/usb2/2-3/2-
-> > > 3:1.2/wwan/wwan0/wwan0p1QMI':
-> > >     KERNEL=="wwan0p1QMI"
-> > >     SUBSYSTEM=="wwan"
-> > >     DRIVER==""
-> > > 
-> > >   looking at parent device
-> > > '/devices/pci0000:00/0000:00:14.0/usb2/2-3/2-3:1.2/wwan/wwan0':
-> > >     KERNELS=="wwan0"
-> > >     SUBSYSTEMS=="wwan"
-> > >     DRIVERS==""
-> > > 
-> > >   looking at parent device
-> > > '/devices/pci0000:00/0000:00:14.0/usb2/2-3/2-3:1.2':
-> > >     KERNELS=="2-3:1.2"
-> > >     SUBSYSTEMS=="usb"
-> > >     DRIVERS=="qmi_wwan"
-> > >     ATTRS{authorized}=="1"
-> > >     ATTRS{bInterfaceNumber}=="02"
-> > >     ATTRS{bInterfaceClass}=="ff"
-> > >     ATTRS{bNumEndpoints}=="03"
-> > >     ATTRS{bInterfaceProtocol}=="ff"
-> > >     ATTRS{bAlternateSetting}==" 0"
-> > >     ATTRS{bInterfaceSubClass}=="ff"
-> > >     ATTRS{interface}=="RmNet"
-> > >     ATTRS{supports_autosuspend}=="1"
-> > > 
-> > 
-> > Ok, that should be fine, and I think we would not need any
-> > additional
-> > change to handle that. The logic looking for what's the driver in
-> > use
-> > should still work.
-> > 
-> > > 
-> > > > > However, some tools may rely on cdc-wdm driver/device name
-> > > > > for device
-> > > > > detection. It is then safer to keep the 'legacy' cdc-wdm
-> > > > > character
-> > > > > device to prevent any breakage. This is handled in this
-> > > > > change by
-> > > > > API mutual exclusion, only one access method can be used at a
-> > > > > time,
-> > > > > either cdc-wdm chardev or WWAN API.
-> > > > 
-> > > > How does this mutual exclusion API work? Is the kernel going to
-> > > > expose
-> > > > 2 different chardevs always for the single control port?
-> > > 
-> > > Yes, if cdc-wdm0 is open, wwan0p1QMI can not be open (-EBUSY),
-> > > and vice versa.
-> > > 
-> > 
-> > Oh... but then, what's the benefit of adding the new wwan0p1QMI
-> > port?
-> > I may be biased because I have always the MM case in mind, and in
-> > there we'll need to support both things, but doesn't this new port
-> > add
-> > more complexity than making it simpler? I would have thought that
-> > it's
-> > either a cdc-wdm port or a wwan port, but both? Wouldn't it make
-> > more
-> > sense to default to the new wwan subsystem if the wwan subsystem is
-> > built, and otherwise fallback to cdc-wdm? (i.e. a build time
-> > option).
-> > Having two chardevs to manage exactly the same control port, and
-> > having them mutually exclusive is a bit strange.
-> > 
-> > 
-> > > > really want to do that?
-> > > 
-> > > This conservative way looks safe to me, but feel free to object
-> > > if any issue.
-> > > 
-> > 
-> > I don't think adding an additional control port named differently
-> > while keeping the cdc-wdm name is adding any simplification in
-> > userspace. I understand your point of view, but if there are users
-> > setting up configuration with fixed cdc-wdm port names, they're
-> > probably not doing it right. I have no idea what's the usual
-> > approach
-> > of the kernel for this though, are the port names and subsystem
-> > considered "kernel API"? I do recall in between 3.4 and 3.6 I think
-> > that the subsystem of QMI ports changed from "usb" to "usbmisc"; I
-> > would assume your change to be kind of equivalent and therefore not
-> > a
-> > big deal?
-> 
-> 
-> The ultimate objective is to have a unified view of WWAN devices,
-> whatever the underlying bus or driver is. Accessing /dev/wwanXpY to
-> submit/receive control packets is strictly equivalent to
-> /dev/cdc-wdmX, the goal of keeping the 'legacy' cdc-wdm chardev, is
-> only to prevent breaking of tools relying on the device name. But, as
-> you said, the point is about considering chardev name/driver change
-> as
-> UAPI change or not. From my point of view, this conservative
-> dual-support approach makes sense, If the user/tool is WWAN framework
-> aware, it uses the /dev/wwanXpY port, otherwise /dev/cdc-wdmX can be
-> used (like using DRM/KMS vs legacy framebuffer).
+On Wed, May 12, 2021 at 3:43 AM Jinmeng Zhou <jjjinmeng.zhou@gmail.com> wrote:
+> Dear maintainers,
+>
+> hi, our team has found and reported a missing check bug on Linux
+> kernel v5.10.7 using static analysis.
+> We are looking forward to having more experts' eyes on this. Thank you!
 
-Names change and have changed in the past. It's sometimes painful but
-tools *already* should not be relying on a specific device name. eg if
-you have a tool that hardcodes /dev/cdc-wdm0 there is already no
-guarantee that you'll get the same port next time, especially with USB.
+Creating a new socket, not associated with a connection (e.g. via
+sock_create_lite()), is a different operation than creating a new
+socket in response to an incoming connection as is done in
+__sys_accept4_file().  This is why the sock_create_lite() uses the
+security_socket_create() LSM hook and __sys_accept4_file() uses the
+security_socket_accept() LSM hook.
 
-Ethernet devices have never been stable, which is why udev and systemd
-have renamed them to enp0s31f6 and wlp61s0. We also change WWAN
-ethernet port device names whenever a new device gets tagged with the
-WWAN hint.
+> > On Fri, May 7, 2021 at 1:59 AM Jakub Kicinski <kuba@kernel.org> wrote:
+> > > On Thu, 6 May 2021 15:44:36 +0800 Jinmeng Zhou wrote:
+> > > hi, our team has found a missing check bug on Linux kernel v5.10.7 using static analysis. There is a path calls sock_alloc() after checking LSM function security_socket_create(), while another path calls it without checking.
+> > > We think there is a missing check bug in __sys_accept4_file() before calling sock_alloc().
+> >
+> > Perhaps the semantics for listening sockets is that only the parent
+> > sockets get the LSM check. Could you please circulate the report more
+> > widely? I'd be good to have LSM experts' eyes on this at least.
+> > CCing the mailing list should help get more opinions. Thank you!
+> >
+> > > Function sock_create_lite() uses security_socket_create() to check.
+> > > 1.    // check security_socket_create() ///////////////////////
+> > > 2.    int sock_create_lite(int family, int type, int protocol, struct socket **res)
+> > > 3.    {
+> > > 4.      int err;
+> > > 5.      struct socket *sock = NULL;
+> > > 6.      err = security_socket_create(family, type, protocol, 1);
+> > > 7.      if (err)
+> > > 8.        goto out;
+> > > 9.      sock = sock_alloc();
+> > > 10.   ...
+> > > 11.   }
+> > >
+> > > However, __sys_accept4_file() directly calls sock_alloc() without the security check.
+> > > 1.    // no check ////////////////////////////////////
+> > > 2.    int __sys_accept4_file(struct file *file, unsigned file_flags,
+> > > 3.          struct sockaddr __user *upeer_sockaddr,
+> > > 4.          int __user *upeer_addrlen, int flags,
+> > > 5.          unsigned long nofile)
+> > > 6.    {
+> > > 7.      struct socket *sock, *newsock;
+> > > 8.      struct file *newfile;
+> > > 9.      int err, len, newfd;
+> > > 10.     struct sockaddr_storage address;
+> > > 11.     if (flags & ~(SOCK_CLOEXEC | SOCK_NONBLOCK))
+> > > 12.       return -EINVAL;
+> > > 13.     if (SOCK_NONBLOCK != O_NONBLOCK && (flags & SOCK_NONBLOCK))
+> > > 14.       flags = (flags & ~SOCK_NONBLOCK) | O_NONBLOCK;
+> > > 15.     sock = sock_from_file(file, &err);
+> > > 16.     if (!sock)
+> > > 17.       goto out;
+> > > 18.     err = -ENFILE;
+> > > 19.     newsock = sock_alloc();
+> > > 20.   ...
+> > > 21.   }
+> > >
+> > > This no-check function can be reached through syscall.
+> > > syscall => __sys_accept4 => __sys_accept4_file
+> > >
+> > > SYSCALL_DEFINE4(accept4, int, fd, struct sockaddr __user *, upeer_sockaddr,
+> > > int __user *, upeer_addrlen, int, flags)
+> > > {
+> > > return __sys_accept4(fd, upeer_sockaddr, upeer_addrlen, flags);
+> > > }
 
-I agree with Aleksander here, I think having two different devices is
-not a great solution and will be more confusing.
-
-I do realize that changing the name can break existing setups but
-again, names are already not stable.
-
-> I'm however open discussing other strategies:
-> - Do not change anything, keep USB WWAN devices out of the WWAN
-> subsystem.
-
--1 from me, consistency is better.
-
-> - Migrate cdc-wdm completely to WWAN and get rid of the cdc-wdm
-> chardev
-
-+1 from me
-
-> - Build time choice, if CONFIG_WWAN, registered to WWAN, otherwise
-> exposed through cdc-wdm chardev.
-
-Agree with Bjorn, -1
-
-> - Run time choice, use either the new WWAN chardev or the legacy
-> cdc-wdm chardev (this patch)
-
-Agree with Aleksander, -1. This is even more confusing than a name
-change.
-
-> - ...
-> 
-> I would be interested in getting input from others/maintainers on
-> this.
-
-Input from Oliver and Greg KH would be useful, since Greg was heavily
-involved with the ethernet/wifi etc device renaming in the past IIRC.
-
-But another thought: why couldn't wwan_create_port() take a devname
-template like alloc_netdev() does and cdc-wdm can just pass "cdc-
-wdm%d"? eg, why do we need to change the name? Tools that care about
-finding WWAN devices should be looking at sysfs attributes/links and
-TYPE=XXXX in uevent, not at the device name. Nothing should be looking
-at device name really.
-
-Dan
-
+-- 
+paul moore
+www.paul-moore.com
