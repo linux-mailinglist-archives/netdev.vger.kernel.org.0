@@ -2,114 +2,117 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B2A7237EEA7
-	for <lists+netdev@lfdr.de>; Thu, 13 May 2021 01:02:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A74AF37EEA8
+	for <lists+netdev@lfdr.de>; Thu, 13 May 2021 01:02:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232254AbhELWAA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 12 May 2021 18:00:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46918 "EHLO
+        id S1346022AbhELWEe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 12 May 2021 18:04:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50204 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1387867AbhELVtN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 12 May 2021 17:49:13 -0400
-Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 33DE1C061246;
-        Wed, 12 May 2021 14:43:28 -0700 (PDT)
-Date:   Wed, 12 May 2021 23:43:24 +0200
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1620855806;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=HSbdv1GDdPztZw5zTb9KslOGTnh1tRDArL4XhKvz/ec=;
-        b=PtKwVVKfzJNbyEOwpyCTxHTECuCU4MVf8kxZQYDpX592nPOY9pV/ABQi6nwSn2y9M4dyDd
-        HOTjVjWjjr5SbCP6udeCfm/y45nmeoDKiSbD/fMFh9JQJjH8JXI4agH8pK2vkhVEmLoa1Y
-        KXmI1AwmCcPk0wgfm0iEnXRCkeSzciQYmEd4jdhzSHoELRAbUwMVPq83dbruzvYhwCHbg6
-        o+cKcLdccweyn2gh5VIoKxz5xlRa5zhg71we4ssfFWMdv1Ed4ROwWSPuHQYwrqIvHRS3zC
-        VhtqH2QtlcFATgZAIXzuslczgnHYWj2CrueR9JHdz2GlNY+XcjRKj5+ii/3j+g==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1620855806;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=HSbdv1GDdPztZw5zTb9KslOGTnh1tRDArL4XhKvz/ec=;
-        b=A4Gb/KNED+5M7zpJuUewsiFOs0wkU5hVfNlRS0Ocv7tLHf1xjZZkpwQviqVyQWpRQ8isNM
-        hPIGcW+d+o1cetAQ==
-From:   Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-To:     netdev@vger.kernel.org
-Cc:     Juri Lelli <juri.lelli@redhat.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        linux-rt-users <linux-rt-users@vger.kernel.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        LKML <linux-kernel@vger.kernel.org>, sassmann@redhat.com,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH net-next] net: Treat __napi_schedule_irqoff() as
- __napi_schedule() on PREEMPT_RT
-Message-ID: <20210512214324.hiaiw3e2tzmsygcz@linutronix.de>
-References: <YJofplWBz8dT7xiw@localhost.localdomain>
+        with ESMTP id S245108AbhELWCz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 12 May 2021 18:02:55 -0400
+Received: from warlock.wand.net.nz (warlock.cms.waikato.ac.nz [IPv6:2001:df0:4:4000::250:15])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 914ABC061574
+        for <netdev@vger.kernel.org>; Wed, 12 May 2021 15:01:42 -0700 (PDT)
+Received: from [209.85.214.178] (helo=mail-pl1-f178.google.com)
+        by warlock.wand.net.nz with esmtpsa (TLS1.2:RSA_AES_128_CBC_SHA1:128)
+        (Exim 4.84_2)
+        (envelope-from <rsanger@wand.net.nz>)
+        id 1lgwvE-0004ut-8K
+        for netdev@vger.kernel.org; Thu, 13 May 2021 10:01:40 +1200
+Received: by mail-pl1-f178.google.com with SMTP id t4so13282109plc.6
+        for <netdev@vger.kernel.org>; Wed, 12 May 2021 15:01:38 -0700 (PDT)
+X-Gm-Message-State: AOAM531X0cQnCg8cvpNvLYJuyMzKgMiisBj9KYlJq/THVRHjPgB+naWq
+        kHY7mjO1LksHlc8IQjamjdwzFXuiurtZZ76MCkU=
+X-Google-Smtp-Source: ABdhPJzm3Rx8BxMxf1k/bwqMY/LRHTqG2ebtjqz37rlihCOpfQd6zGLCfRwjANNWgVkf1xpYRRwA7GNoZTE7hwj9qLc=
+X-Received: by 2002:a17:902:b285:b029:ef:9419:b914 with SMTP id
+ u5-20020a170902b285b02900ef9419b914mr1798079plr.59.1620856896544; Wed, 12 May
+ 2021 15:01:36 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <YJofplWBz8dT7xiw@localhost.localdomain>
+References: <1620783082-28906-1-git-send-email-rsanger@wand.net.nz> <CA+FuTSdygqm6WM6NbDuiBn1MwSAezBkr+tez8E_bmZCk4HhihA@mail.gmail.com>
+In-Reply-To: <CA+FuTSdygqm6WM6NbDuiBn1MwSAezBkr+tez8E_bmZCk4HhihA@mail.gmail.com>
+From:   Richard Sanger <rsanger@wand.net.nz>
+Date:   Thu, 13 May 2021 10:01:25 +1200
+X-Gmail-Original-Message-ID: <CAN6QFNwPapm7Uio_jPYuCyttW5dMEGcACPUzRfNHyXt+mJhO=w@mail.gmail.com>
+Message-ID: <CAN6QFNwPapm7Uio_jPYuCyttW5dMEGcACPUzRfNHyXt+mJhO=w@mail.gmail.com>
+Subject: Re: [PATCH v2] net: packetmmap: fix only tx timestamp on request
+To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Cc:     Network Development <netdev@vger.kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>
+Content-Type: text/plain; charset="UTF-8"
+Received-SPF: softfail client-ip=209.85.214.178; envelope-from=rsanger@wand.net.nz; helo=mail-pl1-f178.google.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-__napi_schedule_irqoff() is an optimized version of __napi_schedule()
-which can be used where it is known that interrupts are disabled,
-e.g. in interrupt-handlers, spin_lock_irq() sections or hrtimer
-callbacks.
+On Thu, May 13, 2021 at 2:24 AM Willem de Bruijn
+<willemdebruijn.kernel@gmail.com> wrote:
+>
+> On Tue, May 11, 2021 at 9:32 PM Richard Sanger <rsanger@wand.net.nz> wrote:
+> >
+> > The packetmmap tx ring should only return timestamps if requested via
+> > setsockopt PACKET_TIMESTAMP, as documented. This allows compatibility
+> > with non-timestamp aware user-space code which checks
+> > tp_status == TP_STATUS_AVAILABLE; not expecting additional timestamp
+> > flags to be set in tp_status.
+> >
+> > Fixes: b9c32fb27170 ("packet: if hw/sw ts enabled in rx/tx ring, report which ts we got")
+> > Cc: Daniel Borkmann <daniel@iogearbox.net>
+> > Cc: Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+> > Signed-off-by: Richard Sanger <rsanger@wand.net.nz>
+>
+> Code LGTM.
+>
+> It would be good to capture more of the context: when these spurious
+> timestamps can appear (network namespaces) and as of which commit (the
+> one that changes orphaning). As is, I would not be able to understand
+> the issue addressed from this commit message alone.
+>
+> Instead of adding context to the commit, you could also add a Link tag
+> to the archived email thread, if you prefer.
+>
+> And perhaps: [PATCH net v3] net/packet: return software transmit
+> timestamp only when requested
+>
 
-On PREEMPT_RT enabled kernels this assumptions is not true. Force-
-threaded interrupt handlers and spinlocks are not disabling interrupts
-and the NAPI hrtimer callback is forced into softirq context which runs
-with interrupts enabled as well.
+Ahh, looks like this patch has just been merged in.
 
-Chasing all usage sites of __napi_schedule_irqoff() is a whack-a-mole
-game so make __napi_schedule_irqoff() invoke __napi_schedule() for
-PREEMPT_RT kernels.
+For anyone looking for more details they are in this thread:
+https://lore.kernel.org/netdev/1620085579-5646-1-git-send-email-rsanger@wand.net.nz/
 
-The callers of ____napi_schedule() in the networking core have been
-audited and are correct on PREEMPT_RT kernels as well.
-
-Reported-by: Juri Lelli <juri.lelli@redhat.com>
-Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
----
-Alternatively __napi_schedule_irqoff() could be #ifdef'ed out on RT and
-an inline provided which invokes __napi_schedule().
-
-This was not chosen as it creates #ifdeffery all over the place and with
-the proposed solution the code reflects the documentation consistently
-and in one obvious place.
-
- net/core/dev.c | 11 +++++++++--
- 1 file changed, 9 insertions(+), 2 deletions(-)
-
-diff --git a/net/core/dev.c b/net/core/dev.c
-index 222b1d322c969..febb23708184e 100644
---- a/net/core/dev.c
-+++ b/net/core/dev.c
-@@ -6501,11 +6501,18 @@ EXPORT_SYMBOL(napi_schedule_prep);
-  * __napi_schedule_irqoff - schedule for receive
-  * @n: entry to schedule
-  *
-- * Variant of __napi_schedule() assuming hard irqs are masked
-+ * Variant of __napi_schedule() assuming hard irqs are masked.
-+ *
-+ * On PREEMPT_RT enabled kernels this maps to __napi_schedule()
-+ * because the interrupt disabled assumption might not be true
-+ * due to force-threaded interrupts and spinlock substitution.
-  */
- void __napi_schedule_irqoff(struct napi_struct *n)
- {
--	____napi_schedule(this_cpu_ptr(&softnet_data), n);
-+	if (!IS_ENABLED(CONFIG_PREEMPT_RT))
-+		____napi_schedule(this_cpu_ptr(&softnet_data), n);
-+	else
-+		__napi_schedule(n);
- }
- EXPORT_SYMBOL(__napi_schedule_irqoff);
- 
--- 
-2.31.1
-
+>
+> > ---
+> >  net/packet/af_packet.c | 10 ++++++++--
+> >  1 file changed, 8 insertions(+), 2 deletions(-)
+> >
+> > diff --git a/net/packet/af_packet.c b/net/packet/af_packet.c
+> > index ba96db1..ae906eb 100644
+> > --- a/net/packet/af_packet.c
+> > +++ b/net/packet/af_packet.c
+> > @@ -422,7 +422,8 @@ static __u32 tpacket_get_timestamp(struct sk_buff *skb, struct timespec64 *ts,
+> >             ktime_to_timespec64_cond(shhwtstamps->hwtstamp, ts))
+> >                 return TP_STATUS_TS_RAW_HARDWARE;
+> >
+> > -       if (ktime_to_timespec64_cond(skb->tstamp, ts))
+> > +       if ((flags & SOF_TIMESTAMPING_SOFTWARE) &&
+> > +           ktime_to_timespec64_cond(skb->tstamp, ts))
+> >                 return TP_STATUS_TS_SOFTWARE;
+> >
+> >         return 0;
+> > @@ -2340,7 +2341,12 @@ static int tpacket_rcv(struct sk_buff *skb, struct net_device *dev,
+> >
+> >         skb_copy_bits(skb, 0, h.raw + macoff, snaplen);
+> >
+> > -       if (!(ts_status = tpacket_get_timestamp(skb, &ts, po->tp_tstamp)))
+> > +       /* Always timestamp; prefer an existing software timestamp taken
+> > +        * closer to the time of capture.
+> > +        */
+> > +       ts_status = tpacket_get_timestamp(skb, &ts,
+> > +                                         po->tp_tstamp | SOF_TIMESTAMPING_SOFTWARE);
+> > +       if (!ts_status)
+> >                 ktime_get_real_ts64(&ts);
+> >
+> >         status |= ts_status;
+> > --
+> > 2.7.4
+> >
