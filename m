@@ -2,250 +2,237 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 77E0637B65B
-	for <lists+netdev@lfdr.de>; Wed, 12 May 2021 08:53:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0318E37B663
+	for <lists+netdev@lfdr.de>; Wed, 12 May 2021 08:56:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230097AbhELGyK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 12 May 2021 02:54:10 -0400
-Received: from conuserg-10.nifty.com ([210.131.2.77]:19436 "EHLO
-        conuserg-10.nifty.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229580AbhELGyH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 12 May 2021 02:54:07 -0400
-Received: from grover.RMN.KIBA.LAB.jp (133-32-232-101.west.xps.vectant.ne.jp [133.32.232.101]) (authenticated)
-        by conuserg-10.nifty.com with ESMTP id 14C6q4oR028643;
-        Wed, 12 May 2021 15:52:05 +0900
-DKIM-Filter: OpenDKIM Filter v2.10.3 conuserg-10.nifty.com 14C6q4oR028643
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
-        s=dec2015msa; t=1620802326;
-        bh=tGCmhtBz8IEEwu83dXllP0bNtsLvnPdEOYpyEWEPOmI=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=A8vIXl+60SVnvIQU+xvxvU1m7mWDeIM9aCnTy8VllplyFJqYAhx/RqL67GCuIm+EQ
-         KzPAt/GY/ZiKCuAFnYqWcL9/7QPREzldZp+/oifcxsbAd2gsGN57AOl3qiEcRYtfZU
-         nWR5Q2aXsb/QaFc2RCfJBMLT9wf2V/udmxUaY1XCqMXkrzIedCaPW8nDxTspvysf19
-         NpnklKEdmt2ySFJmUXFwECNO4NWs89af190dqS3Kt43cDmdnuAQsP2Q+3R9IBiiXCk
-         SSdPYryUQ69+F17dzdZpbEsn1gzQ0GUUL/4UKBNxutY9Rz/5RYqAExX25M4WciBTXi
-         1J6Kx13WNN18Q==
-X-Nifty-SrcIP: [133.32.232.101]
-From:   Masahiro Yamada <masahiroy@kernel.org>
-To:     linux-kbuild@vger.kernel.org
-Cc:     Masahiro Yamada <masahiroy@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>, Martin KaFai Lau <kafai@fb.com>,
-        Michal Marek <michal.lkml@markovi.net>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        bpf@vger.kernel.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: [PATCH 2/2] kbuild: remove libelf checks from top Makefile
-Date:   Wed, 12 May 2021 15:52:01 +0900
-Message-Id: <20210512065201.35268-2-masahiroy@kernel.org>
-X-Mailer: git-send-email 2.27.0
-In-Reply-To: <20210512065201.35268-1-masahiroy@kernel.org>
-References: <20210512065201.35268-1-masahiroy@kernel.org>
+        id S230115AbhELG5e (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 12 May 2021 02:57:34 -0400
+Received: from mailout1.samsung.com ([203.254.224.24]:29648 "EHLO
+        mailout1.samsung.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229627AbhELG53 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 12 May 2021 02:57:29 -0400
+Received: from epcas2p2.samsung.com (unknown [182.195.41.54])
+        by mailout1.samsung.com (KnoxPortal) with ESMTP id 20210512065618epoutp013893281ee04da37e1734382f0707b611~_P1uugj7r2385023850epoutp01Q
+        for <netdev@vger.kernel.org>; Wed, 12 May 2021 06:56:18 +0000 (GMT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mailout1.samsung.com 20210512065618epoutp013893281ee04da37e1734382f0707b611~_P1uugj7r2385023850epoutp01Q
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
+        s=mail20170921; t=1620802578;
+        bh=7i2CDfHh137h+0Yx+khzYwntcbYdWTB26Lu9nlZudh4=;
+        h=From:To:Cc:In-Reply-To:Subject:Date:References:From;
+        b=Ae2NGZhkI7cQVBwRAgJl5STBwV+NQWfS5pHFmHlV8y/P/5gB9UsoXFiiz0bQX5SIF
+         E/+Dm+/6stnKyDSNB8imPIvbj0qFdsi7Bk6iJSrrkgNDdMXpkHDHg55sSraRB1ndSO
+         GjnGjR3LnuQtS4IdOkEs/m8KXbzN32DjJfq7QCS0=
+Received: from epsnrtp4.localdomain (unknown [182.195.42.165]) by
+        epcas2p4.samsung.com (KnoxPortal) with ESMTP id
+        20210512065618epcas2p43982d5a56d45cc068550a73d4dfd2fd7~_P1uSMLnC2509925099epcas2p4f;
+        Wed, 12 May 2021 06:56:18 +0000 (GMT)
+Received: from epsmges2p3.samsung.com (unknown [182.195.40.183]) by
+        epsnrtp4.localdomain (Postfix) with ESMTP id 4Fg5DH4Glwz4x9QP; Wed, 12 May
+        2021 06:56:15 +0000 (GMT)
+Received: from epcas2p4.samsung.com ( [182.195.41.56]) by
+        epsmges2p3.samsung.com (Symantec Messaging Gateway) with SMTP id
+        76.54.09433.F0C7B906; Wed, 12 May 2021 15:56:15 +0900 (KST)
+Received: from epsmtrp1.samsung.com (unknown [182.195.40.13]) by
+        epcas2p1.samsung.com (KnoxPortal) with ESMTPA id
+        20210512065615epcas2p1d961fcba48fe698b44705cc599b4eb85~_P1rJWL3P2548025480epcas2p1f;
+        Wed, 12 May 2021 06:56:15 +0000 (GMT)
+Received: from epsmgms1p2.samsung.com (unknown [182.195.42.42]) by
+        epsmtrp1.samsung.com (KnoxPortal) with ESMTP id
+        20210512065615epsmtrp18759fa2574faf0aa6011c3431e47fa25~_P1rIchAI3249932499epsmtrp17;
+        Wed, 12 May 2021 06:56:15 +0000 (GMT)
+X-AuditID: b6c32a47-f4bff700000024d9-ad-609b7c0fa027
+Received: from epsmtip2.samsung.com ( [182.195.34.31]) by
+        epsmgms1p2.samsung.com (Symantec Messaging Gateway) with SMTP id
+        61.74.08163.E0C7B906; Wed, 12 May 2021 15:56:14 +0900 (KST)
+Received: from KORDO035731 (unknown [12.36.185.47]) by epsmtip2.samsung.com
+        (KnoxPortal) with ESMTPA id
+        20210512065614epsmtip25e0ca34a0b60b77c7b76f9248dd550d4~_P1q8OGKz1561715617epsmtip2I;
+        Wed, 12 May 2021 06:56:14 +0000 (GMT)
+From:   "Dongseok Yi" <dseok.yi@samsung.com>
+To:     "'Willem de Bruijn'" <willemdebruijn.kernel@gmail.com>
+Cc:     "'Alexei Starovoitov'" <ast@kernel.org>,
+        "'Daniel Borkmann'" <daniel@iogearbox.net>,
+        "'Andrii Nakryiko'" <andrii@kernel.org>,
+        "'Martin KaFai Lau'" <kafai@fb.com>,
+        "'Song Liu'" <songliubraving@fb.com>,
+        "'Yonghong Song'" <yhs@fb.com>,
+        "'John Fastabend'" <john.fastabend@gmail.com>,
+        "'KP Singh'" <kpsingh@kernel.org>,
+        "'David S. Miller'" <davem@davemloft.net>,
+        "'Jakub Kicinski'" <kuba@kernel.org>,
+        "'Network Development'" <netdev@vger.kernel.org>,
+        "'bpf'" <bpf@vger.kernel.org>,
+        "'LKML'" <linux-kernel@vger.kernel.org>
+In-Reply-To: <CAF=yD-+8676QHiKD2ZA4e0kVE+11cOi6sa+M-vmx0+05tm1GfQ@mail.gmail.com>
+Subject: RE: [PATCH bpf v2] bpf: check BPF_F_ADJ_ROOM_FIXED_GSO when
+ upgrading mss in 6 to 4
+Date:   Wed, 12 May 2021 15:56:14 +0900
+Message-ID: <01f901d746fb$e683ec60$b38bc520$@samsung.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
+X-Mailer: Microsoft Outlook 16.0
+Thread-Index: AQGn2ZQLsozVdio9CgO6qPhknutQhgG+YoocAZxTHfABt+AtLasVriFg
+Content-Language: ko
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFtrPJsWRmVeSWpSXmKPExsWy7bCmhS5/zewEg+4JMhbff89mtvjy8za7
+        xecjx9ksFi/8xmwx53wLi0XTjhVMFi8+PGG0eL6vl8niwrY+VovLu+awWRxbIGbx8/AZZovF
+        PzcAVSyZwejA57Fl5U0mj4nN79g9ds66y+7RdeMSs8emVZ1sHp83yQWwReXYZKQmpqQWKaTm
+        JeenZOal2yp5B8c7x5uaGRjqGlpamCsp5CXmptoqufgE6Lpl5gBdq6RQlphTChQKSCwuVtK3
+        synKLy1JVcjILy6xVUotSMkpMDQs0CtOzC0uzUvXS87PtTI0MDAyBapMyMlY8eEQe8FxxYq/
+        7UfYGhjXS3QxcnJICJhI7H54iKmLkYtDSGAHo8TBu/uYIZxPjBJbtn9gg3A+M0qs2fWVDabl
+        2Nf3UFW7GCWadk2EqnrBKDFj63d2kCo2AS2JN7PaWUFsEQErif+zT7CDFDELTGORWH5/BQtI
+        glMgUGJax00mEFtYIE5i9/dzYCtYBFQlrp2ZB1bDK2ApsftKJyOELShxcuYTsDizgLzE9rdz
+        mCFOUpD4+XQZ1DI3iYnHp0DViEjM7mwDO1VC4AKHxKUpR6F+cJF4sPwTE4QtLPHq+BZ2CFtK
+        4mV/G5DNAWTXS7R2x0D09jBKXNkHsVhCwFhi1rN2RpAaZgFNifW79CHKlSWO3IJayyfRcfgv
+        1BReiY42IQhTSWLil3iIGRISL05OZpnAqDQLyV+zkPw1C8n9sxBWLWBkWcUollpQnJueWmxU
+        YIwc2ZsYwSlZy30H44y3H/QOMTJxMB5ilOBgVhLhFUuanSDEm5JYWZValB9fVJqTWnyI0RQY
+        0hOZpUST84FZIa8k3tDUyMzMwNLUwtTMyEJJnPdnal2CkEB6YklqdmpqQWoRTB8TB6dUA1Pt
+        EiH27V0t9rLXjmnkBnVz+Cf2LSo22bzJ5qb+Gt4fKXwu7469a239P/9Y48QZhZLsiZb1iX9u
+        5ZW+5hYpdWKe1r9xcsft3Zv8n+z+8OLSe8nPF5+9WnDI/fd54adaNX8sauQNP5ncvmgXdUX2
+        Xp/qjhcNZa7f6pdo5O3x/C3puCx/7ZmqmFsSvW62HwVqbI7OCI0p/9H2bP6hlq+LO6L+pDaK
+        G3qstzrzv80rKHuddmbTWgHLDVq5Isks/QVmz441zInnSf49L41lQ6/m9rKqvEuLdTvNYqK9
+        Coz2tE/+aSAYPz3jUNg3jfbzP68ZfKm6cW8ap9hFhleJ2XWHa0UWaAVdbufcpRT4bobvTSWW
+        4oxEQy3mouJEALfOm6BSBAAA
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFlrNIsWRmVeSWpSXmKPExsWy7bCSvC5fzewEgyVnrSy+/57NbPHl5212
+        i89HjrNZLF74jdlizvkWFoumHSuYLF58eMJo8XxfL5PFhW19rBaXd81hszi2QMzi5+EzzBaL
+        f24Aqlgyg9GBz2PLyptMHhOb37F77Jx1l92j68YlZo9NqzrZPD5vkgtgi+KySUnNySxLLdK3
+        S+DKWPHhEHvBccWKv+1H2BoY10t0MXJySAiYSBz7+p65i5GLQ0hgB6PE6Y3nGbsYOYASEhK7
+        NrtC1AhL3G85wgpR84xR4tqn8ywgCTYBLYk3s9pZQWwRASuJ/7NPsIMUMQssYJHoeDSJHaJj
+        CpPE/GurmECqOAUCJaZ13ASzhQViJJq6l4B1swioSlw7Mw9sKq+ApcTuK52MELagxMmZT8Di
+        zALaEr0PWxkhbHmJ7W/nMEOcpyDx8+kyqCvcJCYenwJVLyIxu7ONeQKj8Cwko2YhGTULyahZ
+        SFoWMLKsYpRMLSjOTc8tNiwwykst1ytOzC0uzUvXS87P3cQIjk8trR2Me1Z90DvEyMTBeIhR
+        goNZSYRXLGl2ghBvSmJlVWpRfnxRaU5q8SFGaQ4WJXHeC10n44UE0hNLUrNTUwtSi2CyTByc
+        Ug1M1mubn0rt8AzsfLtM0k1Ns2hVQ30Iu+8bZbaNZo/ynqX8eW0g7lR4qcb4Bgv3ukr+pudK
+        Fvn/J//KEtvGxFEvP2H7HamZ3xNmvvWs2bkvL8T9r7KW4CsW3Qa78kO+vU8+Hr1npRjI6zRj
+        jcqEc+m2Nqv3v1das/f+N8Wtuy/ohca+ubv9eG1u/rdilfk3pqyTuHlpqxW/pvTWk+2JBzkO
+        NrZfPVHBdDdq4pr9KbLGic3P6r88PXra3SGSK6lt/dm5tdPFlz+fF3iUL02dYXL3vPnzQ5OU
+        zobdt710xvr1zQddTJWz0hly5U6tt1wyRbjAvL3m3X5ejbRFUju3vXt38byH5Dv5qo/xjbEC
+        Jtf2KrEUZyQaajEXFScCAJGP10Y+AwAA
+X-CMS-MailID: 20210512065615epcas2p1d961fcba48fe698b44705cc599b4eb85
+X-Msg-Generator: CA
+Content-Type: text/plain; charset="utf-8"
+X-Sendblock-Type: AUTO_CONFIDENTIAL
+CMS-TYPE: 102P
+DLP-Filter: Pass
+X-CFilter-Loop: Reflected
+X-CMS-RootMailID: 20210511065056epcas2p1788505019deb274f5c57650a2f5d7ef0
+References: <CGME20210511065056epcas2p1788505019deb274f5c57650a2f5d7ef0@epcas2p1.samsung.com>
+        <1619690903-1138-1-git-send-email-dseok.yi@samsung.com>
+        <1620714998-120657-1-git-send-email-dseok.yi@samsung.com>
+        <CAF=yD-+8676QHiKD2ZA4e0kVE+11cOi6sa+M-vmx0+05tm1GfQ@mail.gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-I do not see a good reason why only the libelf development package must
-be so carefully checked.
+On Tue, May 11, 2021 at 01:42:46PM -0400, Willem de Bruijn wrote:
+> On Tue, May 11, 2021 at 2:51 AM Dongseok Yi <dseok.yi@samsung.com> wrote:
+> >
+> > In the forwarding path GRO -> BPF 6 to 4 -> GSO for TCP traffic, the
+> > coalesced packet payload can be > MSS, but < MSS + 20.
+> > bpf_skb_proto_6_to_4 will increase the MSS and it can be > the payload
+> > length. After then tcp_gso_segment checks for the payload length if it
+> > is <= MSS. The condition is causing the packet to be dropped.
+> >
+> > tcp_gso_segment():
+> >         [...]
+> >         mss = skb_shinfo(skb)->gso_size;
+> >         if (unlikely(skb->len <= mss))
+> >                 goto out;
+> >         [...]
+> >
+> > Allow to increase MSS when BPF_F_ADJ_ROOM_FIXED_GSO is not set.
+> >
+> > Fixes: 6578171a7ff0 (bpf: add bpf_skb_change_proto helper)
+> > Signed-off-by: Dongseok Yi <dseok.yi@samsung.com>
+> >
+> > ---
+> 
+> Thanks. Note that this feature does not preclude the alternatives
+> discussed, of converting the packet to non-TSO (by clearing gso_size)
+> or optionally modifying MSS (but that should get okay from TCP
+> experts).
+> 
+> I would target this for bpf-next and drop the Fixes. But that is
+> admittedly debatable.
 
-Kbuild generally does not check host tools or libraries.
+No problem. We can make a better decision under bpf-next.
 
-For example, x86_64 defconfig fails to build with no libssl development
-package installed.
+> 
+> >  net/core/filter.c | 13 +++++++------
+> >  1 file changed, 7 insertions(+), 6 deletions(-)
+> >
+> > v2:
+> > per Willem de Bruijn request,
+> > checked the flag instead of a generic approach.
+> >
+> > diff --git a/net/core/filter.c b/net/core/filter.c
+> > index cae56d0..a98b28d 100644
+> > --- a/net/core/filter.c
+> > +++ b/net/core/filter.c
+> > @@ -3276,7 +3276,7 @@ static int bpf_skb_proto_4_to_6(struct sk_buff *skb)
+> >         return 0;
+> >  }
+> >
+> > -static int bpf_skb_proto_6_to_4(struct sk_buff *skb)
+> > +static int bpf_skb_proto_6_to_4(struct sk_buff *skb, u64 flags)
+> >  {
+> >         const u32 len_diff = sizeof(struct ipv6hdr) - sizeof(struct iphdr);
+> >         u32 off = skb_mac_header_len(skb);
+> > @@ -3305,7 +3305,8 @@ static int bpf_skb_proto_6_to_4(struct sk_buff *skb)
+> >                 }
+> >
+> >                 /* Due to IPv4 header, MSS can be upgraded. */
+> > -               skb_increase_gso_size(shinfo, len_diff);
+> > +               if (!(flags & BPF_F_ADJ_ROOM_FIXED_GSO))
+> > +                       skb_increase_gso_size(shinfo, len_diff);
+> >                 /* Header must be checked, and gso_segs recomputed. */
+> >                 shinfo->gso_type |= SKB_GSO_DODGY;
+> >                 shinfo->gso_segs = 0;
+> > @@ -3317,7 +3318,7 @@ static int bpf_skb_proto_6_to_4(struct sk_buff *skb)
+> >         return 0;
+> >  }
+> >
+> > -static int bpf_skb_proto_xlat(struct sk_buff *skb, __be16 to_proto)
+> > +static int bpf_skb_proto_xlat(struct sk_buff *skb, __be16 to_proto, u64 flags)
+> >  {
+> >         __be16 from_proto = skb->protocol;
+> >
+> > @@ -3327,7 +3328,7 @@ static int bpf_skb_proto_xlat(struct sk_buff *skb, __be16 to_proto)
+> >
+> >         if (from_proto == htons(ETH_P_IPV6) &&
+> >               to_proto == htons(ETH_P_IP))
+> > -               return bpf_skb_proto_6_to_4(skb);
+> > +               return bpf_skb_proto_6_to_4(skb, flags);
+> >
+> >         return -ENOTSUPP;
+> >  }
+> > @@ -3337,7 +3338,7 @@ BPF_CALL_3(bpf_skb_change_proto, struct sk_buff *, skb, __be16, proto,
+> >  {
+> >         int ret;
+> >
+> > -       if (unlikely(flags))
+> > +       if (unlikely(flags & ~(BPF_F_ADJ_ROOM_FIXED_GSO)))
+> >                 return -EINVAL;
+> 
+> Once allowing this flag, please immediately support it for both
+> bpf_skb_proto_6_to_4 and bpf_skb_4_to_6.
+> 
+> We cannot do that later if we ignore the second case now.
 
-scripts/extract-cert.c:21:10: fatal error: openssl/bio.h: No such file or directory
-   21 | #include <openssl/bio.h>
-      |          ^~~~~~~~~~~~~~~
+I will make v3 for both 6_to_4 and 4_to_6.
 
-To solve the build error, you need to install libssl-dev or openssl-devel
-package, depending on your distribution.
-
-'apt-file search', 'dnf provides', etc. is your frined to find a proper
-package to install.
-
-This commit removes all the libelf checks from the top Makefile.
-
-If libelf is missing, objtool will fail to build in a similar pattern:
-
-.../linux/tools/objtool/include/objtool/elf.h:10:10: fatal error: gelf.h: No such file or directory
-   10 | #include <gelf.h>
-
-You need to install libelf-dev, libelf-devel, or elfutils-libelf-devel
-to proceed.
-
-Another remarkable change is, CONFIG_STACK_VALIDATION (without
-CONFIG_UNWINDER_ORC) previously continued to build with a warning,
-but now it will treat missing libelf as an error.
-
-This is just a one-time installation, so it should not matter to break
-a build and make a user install the package.
-
-BTW, the traditional way to handle such checks is autotool, but according
-to [1], I do not expect the kernel build would have similar scripting
-like './configure' does.
-
-[1]: https://lore.kernel.org/lkml/CA+55aFzr2HTZVOuzpHYDwmtRJLsVzE-yqg2DHpHi_9ePsYp5ug@mail.gmail.com/
-
-Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
----
-
- Makefile                  | 78 +++++++++++----------------------------
- scripts/Makefile.build    |  2 -
- scripts/Makefile.modfinal |  2 -
- 3 files changed, 22 insertions(+), 60 deletions(-)
-
-diff --git a/Makefile b/Makefile
-index d60dc028f09c..bfbb7c8cbb0f 100644
---- a/Makefile
-+++ b/Makefile
-@@ -1081,41 +1081,6 @@ export INSTALL_DTBS_PATH ?= $(INSTALL_PATH)/dtbs/$(KERNELRELEASE)
- MODLIB	= $(INSTALL_MOD_PATH)/lib/modules/$(KERNELRELEASE)
- export MODLIB
- 
--HOST_LIBELF_LIBS = $(shell pkg-config libelf --libs 2>/dev/null || echo -lelf)
--
--has_libelf = $(call try-run,\
--               echo "int main() {}" | $(HOSTCC) $(KBUILD_HOSTLDFLAGS) -xc -o /dev/null $(HOST_LIBELF_LIBS) -,1,0)
--
--ifdef CONFIG_STACK_VALIDATION
--  ifeq ($(has_libelf),1)
--    objtool_target := tools/objtool FORCE
--  else
--    SKIP_STACK_VALIDATION := 1
--    export SKIP_STACK_VALIDATION
--  endif
--endif
--
--PHONY += resolve_btfids_clean
--
--resolve_btfids_O = $(abspath $(objtree))/tools/bpf/resolve_btfids
--
--# tools/bpf/resolve_btfids directory might not exist
--# in output directory, skip its clean in that case
--resolve_btfids_clean:
--ifneq ($(wildcard $(resolve_btfids_O)),)
--	$(Q)$(MAKE) -sC $(srctree)/tools/bpf/resolve_btfids O=$(resolve_btfids_O) clean
--endif
--
--ifdef CONFIG_BPF
--ifdef CONFIG_DEBUG_INFO_BTF
--  ifeq ($(has_libelf),1)
--    resolve_btfids_target := tools/bpf/resolve_btfids FORCE
--  else
--    ERROR_RESOLVE_BTFIDS := 1
--  endif
--endif # CONFIG_DEBUG_INFO_BTF
--endif # CONFIG_BPF
--
- PHONY += prepare0
- 
- export extmod_prefix = $(if $(KBUILD_EXTMOD),$(KBUILD_EXTMOD)/)
-@@ -1227,7 +1192,7 @@ prepare0: archprepare
- 	$(Q)$(MAKE) $(build)=.
- 
- # All the preparing..
--prepare: prepare0 prepare-objtool prepare-resolve_btfids
-+prepare: prepare0
- 
- PHONY += remove-stale-files
- remove-stale-files:
-@@ -1244,26 +1209,6 @@ uapi-asm-generic:
- 	$(Q)$(MAKE) $(asm-generic)=arch/$(SRCARCH)/include/generated/uapi/asm \
- 	generic=include/uapi/asm-generic
- 
--PHONY += prepare-objtool prepare-resolve_btfids
--prepare-objtool: $(objtool_target)
--ifeq ($(SKIP_STACK_VALIDATION),1)
--ifdef CONFIG_FTRACE_MCOUNT_USE_OBJTOOL
--	@echo "error: Cannot generate __mcount_loc for CONFIG_DYNAMIC_FTRACE=y, please install libelf-dev, libelf-devel or elfutils-libelf-devel" >&2
--	@false
--endif
--ifdef CONFIG_UNWINDER_ORC
--	@echo "error: Cannot generate ORC metadata for CONFIG_UNWINDER_ORC=y, please install libelf-dev, libelf-devel or elfutils-libelf-devel" >&2
--	@false
--else
--	@echo "warning: Cannot use CONFIG_STACK_VALIDATION=y, please install libelf-dev, libelf-devel or elfutils-libelf-devel" >&2
--endif
--endif
--
--prepare-resolve_btfids: $(resolve_btfids_target)
--ifeq ($(ERROR_RESOLVE_BTFIDS),1)
--	@echo "error: Cannot resolve BTF IDs for CONFIG_DEBUG_INFO_BTF, please install libelf-dev, libelf-devel or elfutils-libelf-devel" >&2
--	@false
--endif
- # Generate some files
- # ---------------------------------------------------------------------------
- 
-@@ -1354,6 +1299,27 @@ scripts_unifdef: scripts_basic
- # ---------------------------------------------------------------------------
- # Tools
- 
-+ifdef CONFIG_STACK_VALIDATION
-+prepare: tools/objtool
-+endif
-+
-+ifdef CONFIG_BPF
-+ifdef CONFIG_DEBUG_INFO_BTF
-+prepare: tools/bpf/resolve_btfids
-+endif
-+endif
-+
-+PHONY += resolve_btfids_clean
-+
-+resolve_btfids_O = $(abspath $(objtree))/tools/bpf/resolve_btfids
-+
-+# tools/bpf/resolve_btfids directory might not exist
-+# in output directory, skip its clean in that case
-+resolve_btfids_clean:
-+ifneq ($(wildcard $(resolve_btfids_O)),)
-+	$(Q)$(MAKE) -sC $(srctree)/tools/bpf/resolve_btfids O=$(resolve_btfids_O) clean
-+endif
-+
- # Clear a bunch of variables before executing the submake
- ifeq ($(quiet),silent_)
- tools_silent=s
-diff --git a/scripts/Makefile.build b/scripts/Makefile.build
-index 949f723efe53..7adc3a2c3c31 100644
---- a/scripts/Makefile.build
-+++ b/scripts/Makefile.build
-@@ -219,7 +219,6 @@ endif # CONFIG_FTRACE_MCOUNT_USE_RECORDMCOUNT
- 
- ifdef CONFIG_STACK_VALIDATION
- ifndef CONFIG_LTO_CLANG
--ifneq ($(SKIP_STACK_VALIDATION),1)
- 
- __objtool_obj := $(objtree)/tools/objtool/objtool
- 
-@@ -233,7 +232,6 @@ objtool_obj = $(if $(patsubst y%,, \
- 	$(OBJECT_FILES_NON_STANDARD_$(basetarget).o)$(OBJECT_FILES_NON_STANDARD)n), \
- 	$(__objtool_obj))
- 
--endif # SKIP_STACK_VALIDATION
- endif # CONFIG_LTO_CLANG
- endif # CONFIG_STACK_VALIDATION
- 
-diff --git a/scripts/Makefile.modfinal b/scripts/Makefile.modfinal
-index dd87cea9fba7..bdee3babc5cf 100644
---- a/scripts/Makefile.modfinal
-+++ b/scripts/Makefile.modfinal
-@@ -39,12 +39,10 @@ prelink-ext := .lto
- # so let's now process the prelinked binary before we link the module.
- 
- ifdef CONFIG_STACK_VALIDATION
--ifneq ($(SKIP_STACK_VALIDATION),1)
- cmd_ld_ko_o +=								\
- 	$(objtree)/tools/objtool/objtool $(objtool_args)		\
- 		$(@:.ko=$(prelink-ext).o);
- 
--endif # SKIP_STACK_VALIDATION
- endif # CONFIG_STACK_VALIDATION
- 
- endif # CONFIG_LTO_CLANG
--- 
-2.27.0
+> 
+> 
+> >         /* General idea is that this helper does the basic groundwork
+> > @@ -3357,7 +3358,7 @@ BPF_CALL_3(bpf_skb_change_proto, struct sk_buff *, skb, __be16, proto,
+> >          * that. For offloads, we mark packet as dodgy, so that headers
+> >          * need to be verified first.
+> >          */
+> > -       ret = bpf_skb_proto_xlat(skb, proto);
+> > +       ret = bpf_skb_proto_xlat(skb, proto, flags);
+> >         bpf_compute_data_pointers(skb);
+> >         return ret;
+> >  }
+> > --
+> > 2.7.4
+> >
 
