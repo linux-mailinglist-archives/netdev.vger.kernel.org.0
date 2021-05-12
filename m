@@ -2,97 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8B8E937B810
-	for <lists+netdev@lfdr.de>; Wed, 12 May 2021 10:33:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 53EA437B8C2
+	for <lists+netdev@lfdr.de>; Wed, 12 May 2021 11:00:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230413AbhELIeW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 12 May 2021 04:34:22 -0400
-Received: from eu-smtp-delivery-151.mimecast.com ([185.58.86.151]:47876 "EHLO
-        eu-smtp-delivery-151.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S230405AbhELIeU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 12 May 2021 04:34:20 -0400
-Received: from AcuMS.aculab.com (156.67.243.121 [156.67.243.121]) (Using
- TLS) by relay.mimecast.com with ESMTP id
- uk-mta-229-1OwfH8tYMOSalqEKjL4KxA-1; Wed, 12 May 2021 09:33:08 +0100
-X-MC-Unique: 1OwfH8tYMOSalqEKjL4KxA-1
-Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) by
- AcuMS.aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) with Microsoft SMTP
- Server (TLS) id 15.0.1497.2; Wed, 12 May 2021 09:33:06 +0100
-Received: from AcuMS.Aculab.com ([fe80::994c:f5c2:35d6:9b65]) by
- AcuMS.aculab.com ([fe80::994c:f5c2:35d6:9b65%12]) with mapi id
- 15.00.1497.015; Wed, 12 May 2021 09:33:06 +0100
-From:   David Laight <David.Laight@ACULAB.COM>
-To:     'Chris Snook' <chris.snook@gmail.com>,
-        Gatis Peisenieks <gatis@mikrotik.com>
-CC:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        "jesse.brandeburg@intel.com" <jesse.brandeburg@intel.com>,
-        "dchickles@marvell.com" <dchickles@marvell.com>,
-        "tully@mikrotik.com" <tully@mikrotik.com>,
-        "Eric Dumazet" <eric.dumazet@gmail.com>,
-        netdev <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>
-Subject: RE: [PATCH net-next 2/4] atl1c: improve performance by avoiding
- unnecessary pcie writes on xmit
-Thread-Topic: [PATCH net-next 2/4] atl1c: improve performance by avoiding
- unnecessary pcie writes on xmit
-Thread-Index: AQHXRthGfxwa6Sp/UUaodlxqy8H9MarfgGkA
-Date:   Wed, 12 May 2021 08:33:06 +0000
-Message-ID: <2a1d219618eb4076ab32c141db698241@AcuMS.aculab.com>
-References: <20210511190518.8901-1-gatis@mikrotik.com>
- <20210511190518.8901-3-gatis@mikrotik.com>
- <CAMXMK6tkPYLLQzq65uFVd-aCWaVHSne16MBEo7o6fGDTDA0rpw@mail.gmail.com>
-In-Reply-To: <CAMXMK6tkPYLLQzq65uFVd-aCWaVHSne16MBEo7o6fGDTDA0rpw@mail.gmail.com>
-Accept-Language: en-GB, en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ms-exchange-transport-fromentityheader: Hosted
-x-originating-ip: [10.202.205.107]
+        id S230145AbhELJB0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 12 May 2021 05:01:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44370 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230293AbhELJBZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 12 May 2021 05:01:25 -0400
+Received: from mail-pl1-x635.google.com (mail-pl1-x635.google.com [IPv6:2607:f8b0:4864:20::635])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CD4E5C061574
+        for <netdev@vger.kernel.org>; Wed, 12 May 2021 02:00:16 -0700 (PDT)
+Received: by mail-pl1-x635.google.com with SMTP id b21so12219970plz.0
+        for <netdev@vger.kernel.org>; Wed, 12 May 2021 02:00:16 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=3kWHPcIPxH6xBkkqHQHnZ5kOv8FqcXruq/cEL3UVw7M=;
+        b=G9jELljQx8bfPFQgV09BFJPqJsR7t/r2Bc+QbIjnanawd1yA8JotPayDk8jj9ZsI3w
+         CWu6TzdO2/oBMbl9FvFug9sral6dZ+UWTFDCq6NUX1JqleSRyPxJMRl1/w5Vru8KO9V6
+         B+mf4jSpgsfDeNymOmEjpXCQaXfTUPjf3AH38B2Y/LfPykvL0Mke7XgGdcgMMuQFaqEz
+         +LBInGjUUlkBIeeI1zzpNOMhWMZjQQX6jM/2bxFALB+yUSc9jrUeMgpWW+1PNVvz+Q06
+         L7YmDByLxPFCFbxB8xIVbaisPlCKAG89c5txm2nspRIf0VGj0rh109vPg7sOTHYGcRrz
+         TZYw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=3kWHPcIPxH6xBkkqHQHnZ5kOv8FqcXruq/cEL3UVw7M=;
+        b=QCTAM7UW25pAkbD2DQ2YmIphLZfSqdD9W999+2wC7bdkkZ8KRaP8hBxbwJbZuNWM1d
+         9/1Q1WmeXYE/cKIKBfhtvdH52PdjTUN8fIgkIoK/O+0Gdv5GkdUiAxuyUdip68prvXBK
+         z6FlVzJhbOnod3yryNSV62tRBp4n1fU47PwKFJFobJwSGw7W/HfLBUFmhKIzwJu7wdy0
+         QbhMRgkbQkBtFyVOX8/IpFn7MZmJRA3Nup09ICVWYu37z9mie1dOPg/3Q5dE/W4rqYHp
+         JiogoGg3wnyKrsTIo7kD1vYq03YlpStgQEOkus9pALn166n36z5bZp/3A/VjqoWTBgpp
+         MiQA==
+X-Gm-Message-State: AOAM533q93+J5wX2gF3CdeKOV4v15H73cvU/SMLo61Y/x1AJhZ8qnfUE
+        OQ08MDbi907uYLI5p/Bjf7AkfPvzezGoYUJf2qo=
+X-Google-Smtp-Source: ABdhPJw5unNIrm8AlyzVJWadRGzuCq/mSIwsUwXgykIEgKAPyXkM3E0K8KT6ekqg87HCPnpIyDpQ3w==
+X-Received: by 2002:a17:902:6b8c:b029:ea:f54f:c330 with SMTP id p12-20020a1709026b8cb02900eaf54fc330mr34224760plk.10.1620810016394;
+        Wed, 12 May 2021 02:00:16 -0700 (PDT)
+Received: from fedora.localdomain (ec2-18-166-64-72.ap-east-1.compute.amazonaws.com. [18.166.64.72])
+        by smtp.gmail.com with ESMTPSA id d13sm5523391pfn.136.2021.05.12.02.00.14
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 12 May 2021 02:00:16 -0700 (PDT)
+From:   Jim Ma <majinjing3@gmail.com>
+To:     kuba@kernel.org, borisp@nvidia.com, john.fastabend@gmail.com,
+        daniel@iogearbox.net
+Cc:     netdev@vger.kernel.org, Jim Ma <majinjing3@gmail.com>
+Subject: [PATCH] tls splice: remove inappropriate flags checking for MSG_PEEK
+Date:   Wed, 12 May 2021 17:00:11 +0800
+Message-Id: <7faf1af984494296416646af7b44851dfb450866.1620808650.git.majinjing3@gmail.com>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-Authentication-Results: relay.mimecast.com;
-        auth=pass smtp.auth=C51A453 smtp.mailfrom=david.laight@aculab.com
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: aculab.com
-Content-Language: en-US
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: base64
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-RnJvbTogQ2hyaXMgU25vb2sgPGNocmlzLnNub29rQGdtYWlsLmNvbT4NCj4gU2VudDogMTIgTWF5
-IDIwMjEgMDM6NDANCj4gDQo+IE9uIFR1ZSwgTWF5IDExLCAyMDIxIGF0IDEyOjA1IFBNIEdhdGlz
-IFBlaXNlbmlla3MgPGdhdGlzQG1pa3JvdGlrLmNvbT4gd3JvdGU6DQo+ID4NCj4gPiBUaGUga2Vy
-bmVsIGhhcyB4bWl0X21vcmUgZmFjaWxpdHkgdGhhdCBoaW50cyB0aGUgbmV0d29ya2luZyBkcml2
-ZXIgeG1pdA0KPiA+IHBhdGggYWJvdXQgd2hldGhlciBtb3JlIHBhY2tldHMgYXJlIGNvbWluZyBz
-b29uLiBUaGlzIGluZm9ybWF0aW9uIGNhbiBiZQ0KPiA+IHVzZWQgdG8gYXZvaWQgdW5uZWNlc3Nh
-cnkgZXhwZW5zaXZlIFBDSWUgdHJhbnNhY3Rpb24gcGVyIHR4IHBhY2tldCBhdCBhDQo+ID4gc2xp
-Z2h0IGluY3JlYXNlIGluIGxhdGVuY3kuDQo+IA0KPiBJbmNyZWFzZXMgaW4gbGF0ZW5jeSB0ZW5k
-IHRvIGh1cnQgbW9yZSBvbiBzaW5nbGUtcXVldWUgZGV2aWNlcy4gSGFzDQo+IHRoaXMgYmVlbiB0
-ZXN0ZWQgb24gdGhlIG9yaWdpbmFsIGdpZ2FiaXQgYXRsMWM/DQoNCkl0IHByb2JhYmx5IGRlcGVu
-ZHMgYSBsb3Qgb24gaG93IGV4cGVuc2l2ZSBpdCBpcyB0byAna2ljaycgdGhlIG1hYyB1bml0Lg0K
-DQpBIHNpbXBsZSAocG9zdGVkKSBQQ0llIHdyaXRlIHdoZW4gdGhlIFBDSWUgaG9zdCBpbnRlcmZh
-Y2UgaXMgaWRsZSAoYXMgaXMgbGlrZWx5DQp3aGVuIHlvdSd2ZSBqdXN0IGJlZW4gdXBkYXRpbmcg
-ZGVzY3JpcHRvcnMpIGlzIHByb2JhYmx5IG5vaXNlIGNvbXBhcmVkDQp0byB0aGUgcmVzdCBvZiB0
-aGUgY29zdCBvZiBzZW5kaW5nIHRoZSBwYWNrZXQuDQooRXJpYyB3aWxsIHByb2JhYmx5IHNheSB0
-aGV5IG1lYXN1cmVkIGdhaW5zLikNCg0KT1RPSCBpZiB5b3UgaGF2ZSAoYXMgSSBoYXZlIG9uIG9u
-ZSBzeXN0ZW0pIHRoZSBlMTAwMGUgZHJpdmVyIGFuZCBzb21lDQpjb21wbGV0ZWx5IGJyb2tlbiAn
-bWFuYWdlbWVudCBpbnRlcmZhY2UnIGhhcmR3YXJlIHdoaWNoIG1lYW5zIGl0IGNhbg0KdGFrZSBh
-IGxvdCBvZiBtaWNyb3NlY29uZHMgdG8gd3JpdGUgdG8gYW55IE1BQyByZWdpc3RlciB5b3UgcmVh
-bGx5DQpkbyBuZWVkIHRvIGxvb2sgYXQgbmV0ZGV2X3htaXRfbW9yZSgpIFsxXS4NCg0KVW5mb3J0
-dW5hdGVseSBpdCBkb2Vzbid0IGhlbHAgdGhhdCBtdWNoLg0KbmV0ZGV2X3htaXRfbW9yZSgpIHJl
-cG9ydHMgdGhlIHN0YXRlIG9mIHRoZSB0eCBxdWV1ZSB3aGVuIHRoZSBjdXJyZW50DQpza2IgdHJh
-bnNtaXQgd2FzIHBhc3NlZCB0byB0aGUgbWFjIGRyaXZlci4NCkl0IGRvZXNuJ3QgcmVwb3J0IHRo
-ZSBzdGF0ZSBvZiB0aGUgcXVldWUgYXQgdGhlIHRpbWUgbmV0ZGV2X3htaXRfbW9yZSgpDQppcyBj
-YWxsZWQgLSBzbyBhbnkgcGFja2V0cyBxdWV1ZWQgd2hpbGUgdGhlIHRyYW5zbWl0IHNldHVwIGlz
-IGluDQpwcm9ncmVzcyBkb24ndCBjYXVzZSBuZXRkZXZfeG1pdF9tb3JlKCkgdG8gcmV0dXJuIHRy
-dWUuDQpJJ3ZlIHRyYWNlZCB0aGlzIGhhcHBlbmluZyByZXBlYXRlZGx5Li4uDQoNClsxXSBJZiB0
-aGUgTUkgaXMgYWN0aXZlIE1BQyB3cml0ZXMgYXJlIGJyb2tlbiAobWF5IHdyaXRlIHRvIHRoZQ0K
-d3JvbmcgcmVnaXN0ZXIpLCBzbyB0aGVyZSBpcyBob3JyaWQgY29kZSBiZWZvcmUgZWFjaCBhY2Nl
-c3MgdGhhdA0KKElJUkMpIGVmZmVjdGl2ZWx5IGRvZXM6DQoJd2hpbGUgKG1pX2FjdGl2ZSgpKQ0K
-CQltZGVsYXkoMTApOw0KVGhpcyBpcyBqdXN0IHNvIGJyb2tlbiAoaW50ZXJydXB0cyBhcmUgZXZl
-biBlbmFibGVkKS4NCg0KCURhdmlkDQoNCi0NClJlZ2lzdGVyZWQgQWRkcmVzcyBMYWtlc2lkZSwg
-QnJhbWxleSBSb2FkLCBNb3VudCBGYXJtLCBNaWx0b24gS2V5bmVzLCBNSzEgMVBULCBVSw0KUmVn
-aXN0cmF0aW9uIE5vOiAxMzk3Mzg2IChXYWxlcykNCg==
+In function tls_sw_splice_read, before call tls_sw_advance_skb
+it checks likely(!(flags & MSG_PEEK)), while MSG_PEEK is used
+for recvmsg, splice supports SPLICE_F_NONBLOCK, SPLICE_F_MOVE,
+SPLICE_F_MORE, should remove this checking.
+
+Signed-off-by: Jim Ma <majinjing3@gmail.com>
+---
+ net/tls/tls_sw.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
+
+diff --git a/net/tls/tls_sw.c b/net/tls/tls_sw.c
+index 1dcb34dfd56b..7b59ec9a24c5 100644
+--- a/net/tls/tls_sw.c
++++ b/net/tls/tls_sw.c
+@@ -2018,8 +2018,7 @@ ssize_t tls_sw_splice_read(struct socket *sock,  loff_t *ppos,
+ 	if (copied < 0)
+ 		goto splice_read_end;
+ 
+-	if (likely(!(flags & MSG_PEEK)))
+-		tls_sw_advance_skb(sk, skb, copied);
++	tls_sw_advance_skb(sk, skb, copied);
+ 
+ splice_read_end:
+ 	release_sock(sk);
+-- 
+2.31.1
 
