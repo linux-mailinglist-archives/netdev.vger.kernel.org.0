@@ -2,105 +2,126 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E3D3C37ED13
-	for <lists+netdev@lfdr.de>; Thu, 13 May 2021 00:38:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5C9C337ED14
+	for <lists+netdev@lfdr.de>; Thu, 13 May 2021 00:38:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1385137AbhELUGz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 12 May 2021 16:06:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44972 "EHLO
+        id S1385152AbhELUHB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 12 May 2021 16:07:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45890 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1381218AbhELTdq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 12 May 2021 15:33:46 -0400
-Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CBFD2C061760;
-        Wed, 12 May 2021 12:26:13 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=bombadil.20210309; h=Content-Transfer-Encoding:
-        Content-Type:In-Reply-To:MIME-Version:Date:Message-ID:From:References:Cc:To:
-        Subject:Sender:Reply-To:Content-ID:Content-Description;
-        bh=LHg4QUj5UkmNjZ90ZWWzvd65Yq2JWCT78FpIYI4LQ20=; b=fnUNWfD3iiuAeVKX3ZVuYcF/z8
-        qF1eDicZVrUDZDt6/BmbAPQCqqPgkQlAxmFUFs3AxjUxK4usArXTnbazf7HbwcZ0f56C6b3hS6jNK
-        krjmT7Xt74OrAP2MD+hYUf4BIMq6xECmTGvBCQqFd1kp0xolVYgrALedajmCKaMk1RJ1Z62wqZol6
-        SckgUULmPTz0u0Qeo8DLSL4/nIJuNyDwUTToCcuqugdXwdOjZ4klcjWg3yKC9UperQvU+hobf47Xw
-        63lv9/QZfl/I5s99cqlrmTh7s57OYOqFb6bUKxurD4S4x3cX3imSdNF4KT29DX7HvNJ0UVcRVnN8d
-        LjllBMPg==;
-Received: from c-73-157-219-8.hsd1.or.comcast.net ([73.157.219.8] helo=[10.0.0.253])
-        by bombadil.infradead.org with esmtpsa (Exim 4.94 #2 (Red Hat Linux))
-        id 1lguUn-00AlF6-1D; Wed, 12 May 2021 19:26:13 +0000
-Subject: Re: linux-next: Tree for May 12 (arch/x86/net/bpf_jit_comp32.o)
-To:     Daniel Borkmann <daniel@iogearbox.net>,
-        Stephen Rothwell <sfr@canb.auug.org.au>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Andrii Nakryiko <andrii@kernel.org>
-Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>
-References: <20210512175623.2687ac6f@canb.auug.org.au>
- <08f677a5-7634-b5d2-a532-ea6d3f35200c@infradead.org>
- <daf46ee7-1a18-9d5a-c3b3-7fc55ec23b30@iogearbox.net>
-From:   Randy Dunlap <rdunlap@infradead.org>
-Message-ID: <751025d2-9c46-a4b9-4f54-fbe5fa7a2564@infradead.org>
-Date:   Wed, 12 May 2021 12:26:11 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.10.0
+        with ESMTP id S1379206AbhELTkh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 12 May 2021 15:40:37 -0400
+Received: from mail-yb1-xb32.google.com (mail-yb1-xb32.google.com [IPv6:2607:f8b0:4864:20::b32])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 740C5C061379;
+        Wed, 12 May 2021 12:36:27 -0700 (PDT)
+Received: by mail-yb1-xb32.google.com with SMTP id y2so32072893ybq.13;
+        Wed, 12 May 2021 12:36:27 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=Ll76nxeEjbDPqF2nBsv/uCSPT9e00s43w5SBooKrNy4=;
+        b=RYg96wfeibG0AROE5e/4sujQjiAs72ZS3ocuIodFTAM7iCZyJnWdjfhGVd9LGrvBfH
+         u2K5PJ6s1vlKS1EJrXIQOIg95Qsl4ATmybPQKxFsOL/E7WFBmh6+vNwY5LDl3Mnm0yie
+         WDQiVtfN2/XOzWiO13n3VHEjPq7fxm/nKZgAMGvr0tkjH8z+Gg/L9XtXuVDhrNe0WuHi
+         6fR5vjxVkeGm4Dlx61Q8gdJJi/x1YZUc2mbXy40/WOpT2MMKlOIheT7BGgaS/jaTeoza
+         sXXchY+8rcxdfjis4yy+5q0kXQfmoz98BBaU2JPOw3DQFBzYjX4AkUFIZ+/6apc6tUM0
+         0dfQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=Ll76nxeEjbDPqF2nBsv/uCSPT9e00s43w5SBooKrNy4=;
+        b=R1boPNhtqN+Kn0MQctDegQRsnaUl3o+8IGxS+WjVd2wVZq87UN9tzp/1vjvQPMFlK6
+         qDhX5X0nt9RkocYiuEeBny5BSGdKCZlFHiCwjztKwWs+YzxjYTZw9q/45sxbbGrV2PJ0
+         wdEUURpw8kt6fLH5ZEBXlNTs+Fd9NVSLw/acV1BLigGEaBwnpaIGtFiT7Ofb0f0f4jEJ
+         KgLKL5UvgyLba8kUpFrwL+6LcySdwLd/C6Sw8WyvIPkAvtWs0kjODR7Vyf0Z3SScL7cg
+         z6ihjTKheRdtEu+rFCOO5Z9GXsKwbicXjFdRBPDuU5ntN+Wq6SRjS+yUTgo9TsLThDk0
+         R7nQ==
+X-Gm-Message-State: AOAM531SNGydA1q0KM59v3QcfzqD/D8J78UMp5MRMDcXuTLwVO0pJzUa
+        O7j+11/eB9GPCFh6eXl2gGiZ6VBKGq+7wRhS2x8=
+X-Google-Smtp-Source: ABdhPJzkIhz5sD0q5sBazDHr+Ex2m0Nh1xV4wW9MYND3hmvScOvEau49fi3WlvhwM1DodH8H7s4FO+OleAP2lkxkAgU=
+X-Received: by 2002:a5b:d4c:: with SMTP id f12mr25755441ybr.510.1620848186756;
+ Wed, 12 May 2021 12:36:26 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <daf46ee7-1a18-9d5a-c3b3-7fc55ec23b30@iogearbox.net>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+References: <20210512065201.35268-1-masahiroy@kernel.org> <20210512065201.35268-2-masahiroy@kernel.org>
+In-Reply-To: <20210512065201.35268-2-masahiroy@kernel.org>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Wed, 12 May 2021 12:36:15 -0700
+Message-ID: <CAEf4BzbsuivHaX0SHdBBV6+wpdtViFXOw=oWLyytzcRPiq+QSg@mail.gmail.com>
+Subject: Re: [PATCH 2/2] kbuild: remove libelf checks from top Makefile
+To:     Masahiro Yamada <masahiroy@kernel.org>
+Cc:     Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>, Martin KaFai Lau <kafai@fb.com>,
+        Michal Marek <michal.lkml@markovi.net>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        bpf <bpf@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 5/12/21 11:53 AM, Daniel Borkmann wrote:
-> Hi Randy,
-> 
-> On 5/12/21 8:01 PM, Randy Dunlap wrote:
->> On 5/12/21 12:56 AM, Stephen Rothwell wrote:
->>> Hi all,
->>>
->>> Changes since 20210511:
->>>
->>
->> on i386:
->>
->> ld: arch/x86/net/bpf_jit_comp32.o: in function `do_jit':
->> bpf_jit_comp32.c:(.text+0x28c9): undefined reference to `__bpf_call_base'
->> ld: arch/x86/net/bpf_jit_comp32.o: in function `bpf_int_jit_compile':
->> bpf_jit_comp32.c:(.text+0x3694): undefined reference to `bpf_jit_blind_constants'
->> ld: bpf_jit_comp32.c:(.text+0x3719): undefined reference to `bpf_jit_binary_free'
->> ld: bpf_jit_comp32.c:(.text+0x3745): undefined reference to `bpf_jit_binary_alloc'
->> ld: bpf_jit_comp32.c:(.text+0x37d3): undefined reference to `bpf_jit_prog_release_other'
->> ld: kernel/extable.o: in function `search_exception_tables':
->> extable.c:(.text+0x42): undefined reference to `search_bpf_extables'
->> ld: kernel/extable.o: in function `kernel_text_address':
->> extable.c:(.text+0xee): undefined reference to `is_bpf_text_address'
->> ld: kernel/kallsyms.o: in function `kallsyms_lookup_size_offset':
->> kallsyms.c:(.text+0x254): undefined reference to `__bpf_address_lookup'
->> ld: kernel/kallsyms.o: in function `kallsyms_lookup_buildid':
->> kallsyms.c:(.text+0x2ee): undefined reference to `__bpf_address_lookup'
-> 
-> Thanks for reporting, could you double check the following diff:
-> 
-> diff --git a/kernel/bpf/Kconfig b/kernel/bpf/Kconfig
-> index 26b591e23f16..bd04f4a44c01 100644
-> --- a/kernel/bpf/Kconfig
-> +++ b/kernel/bpf/Kconfig
-> @@ -37,6 +37,7 @@ config BPF_SYSCALL
-> 
-> config BPF_JIT
->     bool "Enable BPF Just In Time compiler"
-> +    depends on BPF
->     depends on HAVE_CBPF_JIT || HAVE_EBPF_JIT
->     depends on MODULES
->     help
+On Tue, May 11, 2021 at 11:52 PM Masahiro Yamada <masahiroy@kernel.org> wrote:
+>
+> I do not see a good reason why only the libelf development package must
+> be so carefully checked.
+>
+> Kbuild generally does not check host tools or libraries.
+>
+> For example, x86_64 defconfig fails to build with no libssl development
+> package installed.
+>
+> scripts/extract-cert.c:21:10: fatal error: openssl/bio.h: No such file or directory
+>    21 | #include <openssl/bio.h>
+>       |          ^~~~~~~~~~~~~~~
+>
+> To solve the build error, you need to install libssl-dev or openssl-devel
+> package, depending on your distribution.
+>
+> 'apt-file search', 'dnf provides', etc. is your frined to find a proper
+> package to install.
+>
+> This commit removes all the libelf checks from the top Makefile.
+>
+> If libelf is missing, objtool will fail to build in a similar pattern:
+>
+> .../linux/tools/objtool/include/objtool/elf.h:10:10: fatal error: gelf.h: No such file or directory
+>    10 | #include <gelf.h>
+>
+> You need to install libelf-dev, libelf-devel, or elfutils-libelf-devel
+> to proceed.
+>
+> Another remarkable change is, CONFIG_STACK_VALIDATION (without
+> CONFIG_UNWINDER_ORC) previously continued to build with a warning,
+> but now it will treat missing libelf as an error.
+>
+> This is just a one-time installation, so it should not matter to break
+> a build and make a user install the package.
+>
+> BTW, the traditional way to handle such checks is autotool, but according
+> to [1], I do not expect the kernel build would have similar scripting
+> like './configure' does.
+>
+> [1]: https://lore.kernel.org/lkml/CA+55aFzr2HTZVOuzpHYDwmtRJLsVzE-yqg2DHpHi_9ePsYp5ug@mail.gmail.com/
+>
+> Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
+> ---
+>
 
-That's good. Thanks.
+resolve_btfids part looks good to me:
 
-Acked-by: Randy Dunlap <rdunlap@infradead.org> # build-tested
+Acked-by: Andrii Nakryiko <andrii@kernel.org>
 
+>  Makefile                  | 78 +++++++++++----------------------------
+>  scripts/Makefile.build    |  2 -
+>  scripts/Makefile.modfinal |  2 -
+>  3 files changed, 22 insertions(+), 60 deletions(-)
+>
 
--- 
-~Randy
-
+[...]
