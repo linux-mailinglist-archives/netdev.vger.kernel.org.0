@@ -2,101 +2,133 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2C07737B3A7
-	for <lists+netdev@lfdr.de>; Wed, 12 May 2021 03:45:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7DDFE37B435
+	for <lists+netdev@lfdr.de>; Wed, 12 May 2021 04:42:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230002AbhELBqt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 11 May 2021 21:46:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60990 "EHLO
+        id S229951AbhELCmS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 11 May 2021 22:42:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44864 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229848AbhELBqs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 11 May 2021 21:46:48 -0400
-Received: from mail-yb1-xb33.google.com (mail-yb1-xb33.google.com [IPv6:2607:f8b0:4864:20::b33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 02D6EC061574;
-        Tue, 11 May 2021 18:45:40 -0700 (PDT)
-Received: by mail-yb1-xb33.google.com with SMTP id b131so28831229ybg.5;
-        Tue, 11 May 2021 18:45:39 -0700 (PDT)
+        with ESMTP id S230019AbhELCmQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 11 May 2021 22:42:16 -0400
+Received: from mail-lj1-x231.google.com (mail-lj1-x231.google.com [IPv6:2a00:1450:4864:20::231])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 01A11C061761;
+        Tue, 11 May 2021 19:39:51 -0700 (PDT)
+Received: by mail-lj1-x231.google.com with SMTP id e11so14165068ljn.13;
+        Tue, 11 May 2021 19:39:50 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=RY0FbXeciXf+eRiGZwpaJiiBkIF1cUE9AZQITZCXRqc=;
-        b=hqsmcTeyhcB4qkRP0Ook5eInotR55pdtCp+QGsKkpEjTqe4jLjUpoX7qLLxfegbIvs
-         4VBRvZVTsfOWZNDuP4Eefm6Ef7MngT82TWzcQcPIO+wMvFijt9oS/xhOwRtFHnGstSs1
-         dRfWkiadpVYncRDA1TLKc5EPL3fCbmPKGePfD6Qn8Cd4ZVPb9+C28uYSJJ1NQDkPzryl
-         VcKOtWWnTCg28WvdRJxSUkcXtSZNYCFEtuvlI541LH8PuREDpBrDdk/myw1K+H8USp+C
-         SGoWp8vpDZdI7Hr8H0rulwOGKfwLje7UASQCqzrpTloYSkVB9qL/amrAU+5lTICaujT1
-         dlnw==
+        bh=BZrN9CKOIbxr+u9v7iLlbrVLgfzLx8ReH7EGaaO9x1I=;
+        b=lbLifQDNCpqVolfi042QXh5WuwbLtkYvVO4+OKYLT1ZYeN0GZPdt6v0ZC01Ycp/AbC
+         yJCUY6OLXls/8Uo/drc0huwWw41jxoKhZdjhuuZWpNteeOaTFUIVMHloI2IED1SmrhdV
+         y7jdjA8mhzAA0tplfiMoCbYSeGmGJ0Ys28mA/qD0nWsVX8fTVdVWbfQKwfmRdrlINyvp
+         xJl5DhqcNUqolDr56E6xNuBMzjpqsmpIpAZbKbVqCsM5SqJQ9Yiq/C5HPbEWpxn+4Fjl
+         X3cDGlA0f9Sj+HiLpKZf9pnh5XDHEEx48gDlUj7bwlbmzWRqChr++rsGHefWQ/Rmnkzj
+         iKEg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=RY0FbXeciXf+eRiGZwpaJiiBkIF1cUE9AZQITZCXRqc=;
-        b=Sl7/b2Kr10LgTvrD5KvEiKoKNGQ0YqwcX9gGZWsvbzXD8emd7Ts6kelXq0ISOFY049
-         gH75dpo7WSD6D5hRvRxqIgm1dm+rY62ZlXrVpl73WDN7fvA3VgsHCDjm0+YAluFnL8jV
-         Ml+Ru08pW3aupXilaFO5yjs3iVBa++W8sGrnbJ7SxbxuqHY+n5QAQzKiEFdpOLDhxR5V
-         noFX+bbA82r4nPWshR0FHqmQBfnWskDrraYJT1ERF0LZPCvazGr/eGgDQyMKoX16hxn1
-         DEpjlH3gwTgu304ekdeF6OOgCAu/BAROeGilaD4GThbkRsDYhOAcVsrpYbGtq6EZRvKB
-         eW+w==
-X-Gm-Message-State: AOAM532E4TAVov7sGWK83IdvMe6a5Rd0iB4qHR5JAHMsVv04+yD19zNN
-        gcFuOe0SCAb51sI5E/mj0BawShYhfQ2nLKBXzKX43hH46htuLA==
-X-Google-Smtp-Source: ABdhPJxcsE174J00MC05n2r68fpE8bueRLTGQX26HZgYtE78lnMjDKuJzY3CWaeKVJVUv0VjqpYk4G5IWPREEuR0+m0=
-X-Received: by 2002:a5b:3c2:: with SMTP id t2mr44069877ybp.39.1620783939211;
- Tue, 11 May 2021 18:45:39 -0700 (PDT)
+        bh=BZrN9CKOIbxr+u9v7iLlbrVLgfzLx8ReH7EGaaO9x1I=;
+        b=kpRqdX8tDZCzUxcaL/ZWuaagOnE4yhAkOzj9DoCmcht0xOGQpBWJ3OU+25UGvfodex
+         IFlAvi/7Z74C1g8DOqzPy3UvTnudlxKKSFa8uy1+csgyohJfMSTc1EOP/U913V/SSe2T
+         zlr2ziIEqYzfe7h9C5492oz502kjcWdBblVnBKNUHCUDO5tKkvJxvGu9xQQQQ/b8Ocj6
+         QSsuGAaePjvFbMTMy1aXpoCjT2Z4b/Eiz8UnLxYiEy6e/wworuAPto8j+kPtjJ5JGNCm
+         WyXRFgjbsl9K2jPSIjESLtZ3xpyEraCHiYWOx2d9joWOIsEs0vo0wvw6BRFzp1pHa+49
+         YAGg==
+X-Gm-Message-State: AOAM531z3vnP5a5AUnQt3bT/lNY5369A/3WBk1Vxv04UgDGzmjwLskXX
+        jUXscNn3fYFEcRzcAZxPjJLAD3u7U7bmK4jxdI4=
+X-Google-Smtp-Source: ABdhPJwUNWoD0sHexnPdDFMVCMFGnuaVCaQuZqImmT6XeZa5ItR8WaL/uitw2bleALjA3lJb1ACEe7B+DMbmJxgwQNg=
+X-Received: by 2002:a2e:a606:: with SMTP id v6mr27851429ljp.289.1620787189542;
+ Tue, 11 May 2021 19:39:49 -0700 (PDT)
 MIME-Version: 1.0
-References: <20210511225913.2951922-1-pgwipeout@gmail.com> <YJsl7rLVI6ShqZvI@lunn.ch>
-In-Reply-To: <YJsl7rLVI6ShqZvI@lunn.ch>
-From:   Peter Geis <pgwipeout@gmail.com>
-Date:   Tue, 11 May 2021 21:45:27 -0400
-Message-ID: <CAMdYzYrbzk60=XvU4dEeb9QriKDXD1bDEbL86nD+yZjbik-E3g@mail.gmail.com>
-Subject: Re: [PATCH v2] net: phy: add driver for Motorcomm yt8511 phy
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        "David S . Miller" <davem@davemloft.net>,
+References: <20210511190518.8901-1-gatis@mikrotik.com> <20210511190518.8901-3-gatis@mikrotik.com>
+In-Reply-To: <20210511190518.8901-3-gatis@mikrotik.com>
+From:   Chris Snook <chris.snook@gmail.com>
+Date:   Tue, 11 May 2021 19:39:38 -0700
+Message-ID: <CAMXMK6tkPYLLQzq65uFVd-aCWaVHSne16MBEo7o6fGDTDA0rpw@mail.gmail.com>
+Subject: Re: [PATCH net-next 2/4] atl1c: improve performance by avoiding
+ unnecessary pcie writes on xmit
+To:     Gatis Peisenieks <gatis@mikrotik.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        "open list:ARM/Rockchip SoC..." <linux-rockchip@lists.infradead.org>
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        jesse.brandeburg@intel.com, dchickles@marvell.com,
+        tully@mikrotik.com, Eric Dumazet <eric.dumazet@gmail.com>,
+        netdev <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, May 11, 2021 at 8:48 PM Andrew Lunn <andrew@lunn.ch> wrote:
->
-> On Tue, May 11, 2021 at 06:59:13PM -0400, Peter Geis wrote:
-> > Add a driver for the Motorcomm yt8511 phy that will be used in the
-> > production Pine64 rk3566-quartz64 development board.
-> > It supports gigabit transfer speeds, rgmii, and 125mhz clk output.
->
-> Hi Peter
->
-> Please can you add minimal RGMII delay support. Trying to add it later
-> generally end up in backwards compatibility problems.
+Increases in latency tend to hurt more on single-queue devices. Has
+this been tested on the original gigabit atl1c?
 
-It should be possible, yes.
-I experimented a bit with it but it just broke things.
-I'm still digging through the datasheet to find what is possible for this PHY.
-A lot of items should be set up via the device tree, though it seems
-this is a relatively unused concept in the net phy subsystem.
-As I'm relatively new to this subsystem I'm still learning as well.
+- Chris
 
+On Tue, May 11, 2021 at 12:05 PM Gatis Peisenieks <gatis@mikrotik.com> wrote:
 >
-> Do you know which one of the four RGMII modes your setup needs? Is the
-> PHY adding the Rx and Tx delays? So "rgmii-id"?
-
-By default it implements a 500ps delay internally on the txd clock and
-a 1.2 ns delay on the rx clock.
-The controller is the snps,dwmac-4.20a, and it implements a default
-delay as well.
-
-I'd like to eventually support as much as possible.
-For instance it seems to support cable testing.
-What I've done so far has been through trial and error, but I'd prefer
-a more scientific approach.
-I need to be able to test that functions work and would need someone
-who's experienced with network phys to assist.
-
+> The kernel has xmit_more facility that hints the networking driver xmit
+> path about whether more packets are coming soon. This information can be
+> used to avoid unnecessary expensive PCIe transaction per tx packet at a
+> slight increase in latency.
 >
->        Andrew
+> Max TX pps on Mikrotik 10/25G NIC in a Threadripper 3960X system
+> improved from 1150Kpps to 1700Kpps.
+>
+> Signed-off-by: Gatis Peisenieks <gatis@mikrotik.com>
+> ---
+>  drivers/net/ethernet/atheros/atl1c/atl1c_main.c | 13 +++++++++----
+>  1 file changed, 9 insertions(+), 4 deletions(-)
+>
+> diff --git a/drivers/net/ethernet/atheros/atl1c/atl1c_main.c b/drivers/net/ethernet/atheros/atl1c/atl1c_main.c
+> index 28c30d5288e4..2a8ab51b0ed9 100644
+> --- a/drivers/net/ethernet/atheros/atl1c/atl1c_main.c
+> +++ b/drivers/net/ethernet/atheros/atl1c/atl1c_main.c
+> @@ -2211,8 +2211,8 @@ static int atl1c_tx_map(struct atl1c_adapter *adapter,
+>         return -1;
+>  }
+>
+> -static void atl1c_tx_queue(struct atl1c_adapter *adapter, struct sk_buff *skb,
+> -                          struct atl1c_tpd_desc *tpd, enum atl1c_trans_queue type)
+> +static void atl1c_tx_queue(struct atl1c_adapter *adapter,
+> +                          enum atl1c_trans_queue type)
+>  {
+>         struct atl1c_tpd_ring *tpd_ring = &adapter->tpd_ring[type];
+>         u16 reg;
+> @@ -2238,6 +2238,7 @@ static netdev_tx_t atl1c_xmit_frame(struct sk_buff *skb,
+>
+>         if (atl1c_tpd_avail(adapter, type) < tpd_req) {
+>                 /* no enough descriptor, just stop queue */
+> +               atl1c_tx_queue(adapter, type);
+>                 netif_stop_queue(netdev);
+>                 return NETDEV_TX_BUSY;
+>         }
+> @@ -2246,6 +2247,7 @@ static netdev_tx_t atl1c_xmit_frame(struct sk_buff *skb,
+>
+>         /* do TSO and check sum */
+>         if (atl1c_tso_csum(adapter, skb, &tpd, type) != 0) {
+> +               atl1c_tx_queue(adapter, type);
+>                 dev_kfree_skb_any(skb);
+>                 return NETDEV_TX_OK;
+>         }
+> @@ -2270,8 +2272,11 @@ static netdev_tx_t atl1c_xmit_frame(struct sk_buff *skb,
+>                 atl1c_tx_rollback(adapter, tpd, type);
+>                 dev_kfree_skb_any(skb);
+>         } else {
+> -               netdev_sent_queue(adapter->netdev, skb->len);
+> -               atl1c_tx_queue(adapter, skb, tpd, type);
+> +               bool more = netdev_xmit_more();
+> +
+> +               __netdev_sent_queue(adapter->netdev, skb->len, more);
+> +               if (!more)
+> +                       atl1c_tx_queue(adapter, type);
+>         }
+>
+>         return NETDEV_TX_OK;
+> --
+> 2.31.1
+>
