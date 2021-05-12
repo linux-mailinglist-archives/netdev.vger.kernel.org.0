@@ -2,113 +2,181 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E822837C7DB
-	for <lists+netdev@lfdr.de>; Wed, 12 May 2021 18:38:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2328137C7D4
+	for <lists+netdev@lfdr.de>; Wed, 12 May 2021 18:38:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236926AbhELQDA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 12 May 2021 12:03:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51372 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234814AbhELPwj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 12 May 2021 11:52:39 -0400
-Received: from ssl.serverraum.org (ssl.serverraum.org [IPv6:2a01:4f8:151:8464::1:2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 82DD3C06137A;
-        Wed, 12 May 2021 08:27:33 -0700 (PDT)
-Received: from ssl.serverraum.org (web.serverraum.org [172.16.0.2])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ssl.serverraum.org (Postfix) with ESMTPSA id C49182225B;
-        Wed, 12 May 2021 17:27:28 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
-        t=1620833251;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=/lNbUY/raG/xRWA6P8fTkTsqWviUwUsi8XU1DoxL1/M=;
-        b=Jj+17XP/xwM+dPAw2Pj80gHf1z5xq1Yr961HLmLV9nokufv2KA2Xpd6SMhT9omtPic4mQA
-        Jl92FskDHiRqjhCkfmeaWkIu16InuTrErlTLck1Dty+8beZqahjpF4Md/9oCN2jMIJToce
-        0vNrKOzBTgEOA/uSWAaC4s5LofDXAvk=
+        id S236291AbhELQCo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 12 May 2021 12:02:44 -0400
+Received: from mga06.intel.com ([134.134.136.31]:31232 "EHLO mga06.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S232870AbhELPtJ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 12 May 2021 11:49:09 -0400
+IronPort-SDR: KUwjLnkhI/MXpDMUW1DSxnfQxJcOEKAiOwdXwbeYUatbUhTFgJeJGOQw97Kd0wooEYpWfDg5Xk
+ j5minmYFTxuw==
+X-IronPort-AV: E=McAfee;i="6200,9189,9982"; a="260988252"
+X-IronPort-AV: E=Sophos;i="5.82,293,1613462400"; 
+   d="scan'208";a="260988252"
+Received: from fmsmga005.fm.intel.com ([10.253.24.32])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 May 2021 08:42:02 -0700
+IronPort-SDR: fjrBtGqoK4V8G5u7oPpoUpxAHTxLogn60dzyAxw8pFXLEOK3f6GhOco2xBJX1bB3yH4Mr3GFGN
+ JzbJrqGLdOEw==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.82,293,1613462400"; 
+   d="scan'208";a="625446486"
+Received: from fmsmsx602.amr.corp.intel.com ([10.18.126.82])
+  by fmsmga005.fm.intel.com with ESMTP; 12 May 2021 08:42:02 -0700
+Received: from fmsmsx612.amr.corp.intel.com (10.18.126.92) by
+ fmsmsx602.amr.corp.intel.com (10.18.126.82) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2106.2; Wed, 12 May 2021 08:42:02 -0700
+Received: from FMSEDG603.ED.cps.intel.com (10.1.192.133) by
+ fmsmsx612.amr.corp.intel.com (10.18.126.92) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2106.2
+ via Frontend Transport; Wed, 12 May 2021 08:42:02 -0700
+Received: from NAM11-BN8-obe.outbound.protection.outlook.com (104.47.58.172)
+ by edgegateway.intel.com (192.55.55.68) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2106.2; Wed, 12 May 2021 08:42:02 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=g/xoLeV1XFqrV2WONWBmzYlCxvVdDBByoNlHUphAmDQFjVeEJQd16rJaU1gKjEWFRYF0hy8fk+J75kRPEZXgMTbjc7IxaBLchG2G8BY2fKt411MqdjV0ZzVDsqb3JeLIEkAmoC4djJlYiynmteYXtFW9bArihlhjYC438SLC248SKGJtLOdrLPZD0kUSiU3D1mytMu1RcUR2DIrVkQRMeZiCungy3lbD0OtsUXK7tiUMo5SjxUtd6Xfp2dFgyQI66xqO7AsC3qe3TKP08LEsKD6Y/MsSaD2Q0G9cXOE27gCyAI40SFsNGaL2ZH040Czv0R/Ec5wQZ7PulFpjj+11eA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=nBgy5Byl5CNW7nC8ND4p7G07KwWWxd0BkDqjrayXah0=;
+ b=BFVQw0KZbIP8TPuybum3rcu86rJfwilWQSiB/PzadzYTq7tEOA3IIGXtvnQDLiIjfJys8Z9IcPYRC/fgsjps63F8NICBLtfd9GZc422kfzSWkIPrPpFrJMyQ1TU6/HI7QbRngHOCUGu0mve19rTVoBVT67+rpNExHTYJPstpqfQ6mBlBIn83gsz7GomGBrEauvo2MUGVq+b1z3tkJ2JGYA/1i8aMh4t7PSjpB82Ha9xu17BITPB7iuQY1d77CrknWNXyeAbiLQWvrEYjVIslmWanCRxGiDeWEr6DGba4G+LzSFLRIgFxKxjHNty32G9SmQiFrWBk9U1CaUFMUh1PYg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=intel.onmicrosoft.com;
+ s=selector2-intel-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=nBgy5Byl5CNW7nC8ND4p7G07KwWWxd0BkDqjrayXah0=;
+ b=MkyOGS3afxHqv+EWKg1//KOXwkKu3eGOiPE7qAPcfKUBsqzTUehncKn6ushzy2uDjZKD+VfWhbyWg1Mm4W5Mb4tiNhj0XQWQN7VZsIaf1gtJ4o6fJ79gnsrFY64RiYorWkRc2M/oi/PwBGIDS9Ovoo2R22vkAlKzt5VXnP8dSys=
+Received: from CO1PR11MB5105.namprd11.prod.outlook.com (2603:10b6:303:9f::7)
+ by MWHPR1101MB2208.namprd11.prod.outlook.com (2603:10b6:301:4d::18) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4129.26; Wed, 12 May
+ 2021 15:42:01 +0000
+Received: from CO1PR11MB5105.namprd11.prod.outlook.com
+ ([fe80::4db9:fe34:a884:4e43]) by CO1PR11MB5105.namprd11.prod.outlook.com
+ ([fe80::4db9:fe34:a884:4e43%7]) with mapi id 15.20.4108.031; Wed, 12 May 2021
+ 15:42:01 +0000
+From:   "Brelinski, TonyX" <tonyx.brelinski@intel.com>
+To:     Salil Mehta <salil.mehta@huawei.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "kuba@kernel.org" <kuba@kernel.org>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linuxarm@huawei.com" <linuxarm@huawei.com>,
+        "linuxarm@openeuler.org" <linuxarm@openeuler.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "intel-wired-lan@lists.osuosl.org" <intel-wired-lan@lists.osuosl.org>
+Subject: RE: [Intel-wired-lan] [PATCH V3 net] ice: Re-organizes reqstd/avail
+ {R, T}XQ check/code for efficiency
+Thread-Topic: [Intel-wired-lan] [PATCH V3 net] ice: Re-organizes reqstd/avail
+ {R, T}XQ check/code for efficiency
+Thread-Index: AQHXN9QDou7gZFgUB0CklWx0l1e/j6rgGtUw
+Date:   Wed, 12 May 2021 15:42:00 +0000
+Message-ID: <CO1PR11MB510568A203307FF255D12771FA529@CO1PR11MB5105.namprd11.prod.outlook.com>
+References: <20210423000018.20244-1-salil.mehta@huawei.com>
+In-Reply-To: <20210423000018.20244-1-salil.mehta@huawei.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+dlp-product: dlpe-windows
+dlp-version: 11.6.0.76
+dlp-reaction: no-action
+authentication-results: huawei.com; dkim=none (message not signed)
+ header.d=none;huawei.com; dmarc=none action=none header.from=intel.com;
+x-originating-ip: [71.236.132.75]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: ad870d6d-c983-4f6b-1ccc-08d9155c7bf0
+x-ms-traffictypediagnostic: MWHPR1101MB2208:
+x-microsoft-antispam-prvs: <MWHPR1101MB220861BE082F6E85EB3813F3FA529@MWHPR1101MB2208.namprd11.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:7691;
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: LfV3kqV/giX3Vr6cSiNTDDJ+eChM231DolxhUkgFp+yL+NQxdXl38/VnW6+PVWTMY84tKi7+rQNC/P8FbRzhrtgfGLmZzYnlkJCGfebr0dnn85P9wMwCllYpnITSiZrNudNp72Z85r96ez7pC6aDeufP7X+CP8M9rwhbqj+OuXc/eGjxh0Fm+pc1ji6s3u2ox+CBxD2T3fHAn04qclMnKN2H2+d3QVgVYYW1mhxeoF81DhXiZt8jtuSlD5hVy1+bgEuzztg9aW1psqUvU9jFNiQfjMS92FMyIVutwQfSNZirANIKV3c6F75sc8akyWR6V9W+Z0JyIYhvM3KTG7IUu1zX1cn77pKqpVyfzas2uF/yBo3DPvpW2iQFQjEEbhIArWtvGtYYUzSe/wyM6MsIMWtjExtc26s6RMD5e8sOoqrmDhCAfrEjHZgC/KWNnsF72FXrECzbuq7HmEe6Ramo1igX4lvk3+dV2ma4kTfo44vaZs5bbhdc3TENvHHzzHKHmLXXjgVnhEWZEboPwW0f64jJOClEcQzbe3TOdVPmlG4O51Eb4yF6TyTN9emvYA5/nTwVJIKXbJoRF8PjQCRp0mjzT9Ssbrfon8PBdR0Q64GyM7mHCqzuTu+wHHP42DUzk5bbuabmut+bggPnQvkAbFpW2107D3MFfKtZEq+IOLKqR5ThSHwNbEJmdz2dMW9Df3d+hc7WG/IkXZz0E2EZgA==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CO1PR11MB5105.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(366004)(39850400004)(346002)(136003)(376002)(396003)(86362001)(6506007)(53546011)(7696005)(26005)(33656002)(8676002)(38100700002)(122000001)(83380400001)(71200400001)(8936002)(316002)(52536014)(55016002)(9686003)(5660300002)(478600001)(2906002)(110136005)(966005)(54906003)(4326008)(66476007)(66946007)(66446008)(186003)(66556008)(64756008)(76116006);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata: =?us-ascii?Q?gOjwP8hVU3Ym/8OTV5d9Aamt3MVurYXCTqVcvv4Wc2PWlDcQ6cImmwc7P1+b?=
+ =?us-ascii?Q?TirqxNsWLbG4pIx/bPp5A1P2108pqGmKPBmk319A8mIlINAupmxYiAYMVrtl?=
+ =?us-ascii?Q?BwzJmO3jhjtNQ4cdEqGaAsXvaOebJn/hVsX+O4Jot89QaxO0Mvhsm1S5zoXX?=
+ =?us-ascii?Q?rjzoIr8+1wIrMajziaxlAfdYlJkW1aOMnPKOd0ia9FBNRl6ikryD3027eU1L?=
+ =?us-ascii?Q?dPutQ2/qd2yrVf4cALdrcVDUoXLvqf1xGinTYxTtoDwRJRXEcNZKn3vGpi7H?=
+ =?us-ascii?Q?5nAd0tGgrJpgXPimxIIpotbPAzv+y0eGFnKKcQXt78mHAJ5Nt/boh6b3Nt8R?=
+ =?us-ascii?Q?SN+8EBresdrf0F0fQMHZS3eLsM/Glb9SwEHlcfFOSFrKarlEAu7Ev/S4g2+n?=
+ =?us-ascii?Q?QoQQlAusjg0YyRGsfQd4J/gZzSx2I0w0uFGLI/pbeozt3jkG3/t7HwvAHJ7Y?=
+ =?us-ascii?Q?v7r2RJCHbswJRrlPCWsRPesxpgO3l0JTlAsr0okoqiUjkuF/USTCUlYaGocB?=
+ =?us-ascii?Q?m8g0G5ymLCmqLZWYg2btXcWEGu6GKRYD4dmLyQaU4fpCkDcCY7oNKZImkbVH?=
+ =?us-ascii?Q?31BN0xpZO1m8tNNt3kUHCmM6ZQqUbmbJ68Y6MT1DVwwOfTEdon0P02pyOe5h?=
+ =?us-ascii?Q?Zqa2fkflxEdI71Rbp3rQtvk0AH+Rm/wc6ywfu5n+17iZeoVIpUWPqpgES/z1?=
+ =?us-ascii?Q?pd5POQCipbEILEOeoGDrXXZtiZTNarUIYnWKLPKRMUzatFwT+cZfb/LHTG+/?=
+ =?us-ascii?Q?fFImEFdYSsR2D7R2YUkKS27TToAzERGzuWCwjovtv1573gFs1hHDMupd8jA/?=
+ =?us-ascii?Q?PagXKAG8dOxKgtzE8zwZ2EtfzLl0OVGMe4736ew1busNmdMaIrbvwu3hp1yT?=
+ =?us-ascii?Q?8bNT3NG0lQgOXQwzudH99a3PoEiqUKmZMlDOM9Ah4jRixuy4nl/vY9HYoJCw?=
+ =?us-ascii?Q?nKWSFp3jC5TjoHqzE2yp2CGk92EsSbc40uf1yNe0WVCstmAoWAwMhlzLyYYd?=
+ =?us-ascii?Q?iCzx0ywWiZZx4TCs6HEfSR4jECTxTpytSO9R6BJuU+NNXfykdDFVWDc18l1c?=
+ =?us-ascii?Q?rPFVKwSzc1tp1Kye/DD3oBb7/1PaescTHuWdF+BGaLjI7+56dqF7CcHvhxyp?=
+ =?us-ascii?Q?zNSnwes+slkJh/v2Q4U+WJ0nBc7KLXgSgSFAMTRybg4IL2eFKnk0zCR2hlNX?=
+ =?us-ascii?Q?T2MfH9ZhVVv7WTh79kuOJYZ/tLMMEsNn5UOEevBHzpzPMRjfC7owIE8nYdsN?=
+ =?us-ascii?Q?F8ktb0X7eZ2Bvf9fxpg3sEsPnXm5ZkITcUZuhwk2nysFd3cd5M/cEt2hZmfn?=
+ =?us-ascii?Q?VX3c7g7n+xKxeBefRip/vE9f?=
+x-ms-exchange-transport-forked: True
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII;
- format=flowed
-Content-Transfer-Encoding: 7bit
-Date:   Wed, 12 May 2021 17:27:28 +0200
-From:   Michael Walle <michael@walle.cc>
-To:     Rob Herring <robh@kernel.org>
-Cc:     Andrew Lunn <andrew@lunn.ch>, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Frank Rowand <frowand.list@gmail.com>,
-        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
-        Ansuel Smith <ansuelsmth@gmail.com>
-Subject: Re: [PATCH net-next 1/3] dt-bindings: net: add
- nvmem-mac-address-offset property
-In-Reply-To: <fefde522146d18aa7f8fbb8fa698cb58@walle.cc>
-References: <20210414152657.12097-1-michael@walle.cc>
- <20210414152657.12097-2-michael@walle.cc> <YHcNtdq+oIYcB08+@lunn.ch>
- <20210415215955.GA1937954@robh.at.kernel.org>
- <fefde522146d18aa7f8fbb8fa698cb58@walle.cc>
-User-Agent: Roundcube Webmail/1.4.11
-Message-ID: <362f1c6a8b0ec191b285ac6a604500da@walle.cc>
-X-Sender: michael@walle.cc
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: CO1PR11MB5105.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: ad870d6d-c983-4f6b-1ccc-08d9155c7bf0
+X-MS-Exchange-CrossTenant-originalarrivaltime: 12 May 2021 15:42:00.9078
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: ntC9U1pQY1wlX2xsp31ayKIbV7elCFuA9Mxlsa5ITlU2M+ZzrPgssTs/aoWX/yETMAKbi9ijWXnJcqIedt/5xAURVCWXjPytVtD8CuIYdqc=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MWHPR1101MB2208
+X-OriginatorOrg: intel.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-[adding Srinivas Kandagatla and Ansuel Smith]
+> -----Original Message-----
+> From: Intel-wired-lan <intel-wired-lan-bounces@osuosl.org> On Behalf Of
+> Salil Mehta
+> Sent: Thursday, April 22, 2021 5:00 PM
+> To: davem@davemloft.net; kuba@kernel.org
+> Cc: salil.mehta@huawei.com; netdev@vger.kernel.org;
+> linuxarm@huawei.com; linuxarm@openeuler.org; linux-
+> kernel@vger.kernel.org; intel-wired-lan@lists.osuosl.org
+> Subject: [Intel-wired-lan] [PATCH V3 net] ice: Re-organizes reqstd/avail =
+{R,
+> T}XQ check/code for efficiency
+>=20
+> If user has explicitly requested the number of {R,T}XQs, then it is
+> unnecessary to get the count of already available {R,T}XQs from the PF
+> avail_{r,t}xqs bitmap. This value will get overridden by user specified v=
+alue in
+> any case.
+>=20
+> Re-organize this code for improving the flow, readability and efficiency.
+> This scope of improvement was found during the review of the ICE driver
+> code.
+>=20
+> Fixes: 87324e747fde ("ice: Implement ethtool ops for channels")
+> Cc: intel-wired-lan@lists.osuosl.org
+> Tested-by: Tony Brelinski <tonyx.brelinski@intel.com>
+> Signed-off-by: Salil Mehta <salil.mehta@huawei.com>
+> ---
+> Change:
+> V2->V3
+>  (*) Addressed some comments from Paul Menzel
+>      Link: https://lkml.org/lkml/2021/4/21/136
+> V1->V2
+>  (*) Fixed the comments from Anthony Nguyen(Intel)
+>      Link: https://lkml.org/lkml/2021/4/12/1997
+> ---
+>  drivers/net/ethernet/intel/ice/ice_lib.c | 14 ++++++++------
+>  1 file changed, 8 insertions(+), 6 deletions(-)
 
-Am 2021-04-16 00:27, schrieb Michael Walle:
-> Am 2021-04-15 23:59, schrieb Rob Herring:
->> On Wed, Apr 14, 2021 at 05:43:49PM +0200, Andrew Lunn wrote:
->>> On Wed, Apr 14, 2021 at 05:26:55PM +0200, Michael Walle wrote:
->>> > It is already possible to read the MAC address via a NVMEM provider. But
->>> > there are boards, esp. with many ports, which only have a base MAC
->>> > address stored. Thus we need to have a way to provide an offset per
->>> > network device.
->>> 
->>> We need to see what Rob thinks of this. There was recently a patchset
->>> to support swapping the byte order of the MAC address in a NVMEM. Rob
->>> said the NVMEM provider should have the property, not the MAC driver.
->>> This does seems more ethernet specific, so maybe it should be an
->>> Ethernet property?
->> 
->> There was also this one[1]. I'm not totally opposed, but don't want to
->> see a never ending addition of properties to try to describe any
->> possible transformation.
-> 
-> Agreed, that stuff like ASCII MAC address parsing should be done
-> elsewhere. But IMHO adding an offset is a pretty common one (as also
-> pointed out in [1]). And it also need to be a per ethernet device
-> property.
-
-I'm a bit up in the air on this, as I don't know how to proceed here.
-
-To cite Rob from IRC:
-   Not really up to me. All the people that care need to come up with
-   something flexible enough for common/simple cases and that's not
-   going to get extended with every new variation. What I don't want is
-   a one-off that's then extended with another one-off.
-
-I already pointed out that this property is per consumer as opposed
-to something like endianess swap or parsing a given format. The latter
-operates on the nvmem cell.
-
-One random idea is to have a nvmem-cells-transformation (in the lack of
-a better name) property for consumers, where you can have some kind of
-simple operations like add:
-   nvmem-cells-transformation = <NVMEM_ADD 1>
-But is that something we really want to have? I'm not sure.
-
-btw. given that there might be other means where a base mac address can
-come from in the future, it might make sense to drop the "nvmem-"
-prefix and just use "mac-address-offset" (or 
-"base-mac-address-offset"?).
-
-> [1] 
-> https://patchwork.ozlabs.org/project/devicetree-bindings/patch/20200920095724.8251-4-ansuelsmth@gmail.com/
-
--michael
+Tested-by: Tony Brelinski <tonyx.brelinski@intel.com> (A Contingent Worker =
+at Intel)
