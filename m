@@ -2,109 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4035A37C044
-	for <lists+netdev@lfdr.de>; Wed, 12 May 2021 16:35:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 266DB37C048
+	for <lists+netdev@lfdr.de>; Wed, 12 May 2021 16:36:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230433AbhELOhA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 12 May 2021 10:37:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35468 "EHLO
+        id S231186AbhELOhd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 12 May 2021 10:37:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35600 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230247AbhELOg7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 12 May 2021 10:36:59 -0400
-Received: from plekste.mt.lv (bute.mt.lv [IPv6:2a02:610:7501:2000::195])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A545C061574;
-        Wed, 12 May 2021 07:35:51 -0700 (PDT)
-Received: from localhost ([127.0.0.1] helo=bute.mt.lv)
-        by plekste.mt.lv with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
-        (Exim 4.89)
-        (envelope-from <gatis@mikrotik.com>)
-        id 1lgpxO-0006fy-AC; Wed, 12 May 2021 17:35:26 +0300
+        with ESMTP id S230247AbhELOhc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 12 May 2021 10:37:32 -0400
+Received: from mail-pg1-x52b.google.com (mail-pg1-x52b.google.com [IPv6:2607:f8b0:4864:20::52b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 577FEC061574;
+        Wed, 12 May 2021 07:36:24 -0700 (PDT)
+Received: by mail-pg1-x52b.google.com with SMTP id z4so1035160pgb.9;
+        Wed, 12 May 2021 07:36:24 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=XHFz1AUQhthLuyvfQKtlXX4LXpuG6vLo1bOCg3QrkZo=;
+        b=i3jOyKghni2mQg2K/X/IR88r7IcfCS8INVVrMqoxLyE1rPleaduJBw1+ATBAZTby1P
+         dWGFP+0kNHb3/lWVqoEjj5z9rycG0aZrKEHQ0QrY/Uy9zf9emgiswJe6orAOiK/t1D2i
+         kSimYL2ccc879rHI09fh8ISqRMj0/rwdVUn+/Hhsblbpdfjvgj2Hlh00BQ/tnHd39SkD
+         rBRaAwF+/wwM6sFqo/v3qubmHFV7nsGcv6vMXkRc9kq4xH4UhM2GEkA22R0VGgr3se+9
+         f0M0m+NIPn8axjVvk6chnWeMnm7TET4hXfHL5Q8MOIzhiYJP8unIVCyv3ZbwRbLkDxm6
+         c63A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=XHFz1AUQhthLuyvfQKtlXX4LXpuG6vLo1bOCg3QrkZo=;
+        b=FSql0+/UHL6ZP6zl6WrFB7B0ymL0xxvaQ03XeYdOx9UURQg3Nh2aQ2KvC2fhaKNQiG
+         eweBUl4VzcXiFL39VBwrJqh/H8iQKyoiLyHWAPnM1QZfmNR8WGfslTPtLe9Y7WSLmZr+
+         9jS48aDJteNdHcZ0+WVBzKneqh7+3tJ9ivDI+MDjmt3nfUOt7f1df0JbCd24PBp9/Bor
+         SW4Bi9SDKXyQb39TLMubZc05gWcfB+5IHq/8TRYKRI2Ko8rIH1JyjLqn/D30ii4COzDt
+         HIqpsw9J6xbMURlcevxI48BRCzqCJEnJUZj1qXkIZCQRS/P8752iLlYb5NB5NQUhhTYq
+         4T4g==
+X-Gm-Message-State: AOAM530xIdhi9V56ZipDc/+UoJyF1vBLNECL8nlrYxktY5qodHhclKdn
+        Uuhn7YGnxQ+roQyR4h41tb6cOpJnBtE=
+X-Google-Smtp-Source: ABdhPJwXt5MUPOJxBxkQ4TLe4aHkfOhSH4/gqUZPbBzXWoXM4fTjycA+2Ql6UXm7XJIB4CyN+gotJA==
+X-Received: by 2002:aa7:955b:0:b029:28e:a874:d0c2 with SMTP id w27-20020aa7955b0000b029028ea874d0c2mr35349909pfq.66.1620830183906;
+        Wed, 12 May 2021 07:36:23 -0700 (PDT)
+Received: from hoboy.vegasvil.org ([2601:645:c000:35:e2d5:5eff:fea5:802f])
+        by smtp.gmail.com with ESMTPSA id z3sm101998pfe.78.2021.05.12.07.36.22
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 12 May 2021 07:36:22 -0700 (PDT)
+Date:   Wed, 12 May 2021 07:36:20 -0700
+From:   Richard Cochran <richardcochran@gmail.com>
+To:     Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Cc:     kuba@kernel.org, jonathan.lemon@gmail.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org
+Subject: Re: [PATCH] ptp: ocp: Fix a resource leak in an error handling path
+Message-ID: <20210512143620.GE27051@hoboy.vegasvil.org>
+References: <141cd7dc7b44385ead176b1d0eb139573b47f110.1620818043.git.christophe.jaillet@wanadoo.fr>
 MIME-Version: 1.0
-Date:   Wed, 12 May 2021 17:35:26 +0300
-From:   Gatis Peisenieks <gatis@mikrotik.com>
-To:     Chris Snook <chris.snook@gmail.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        jesse.brandeburg@intel.com, dchickles@marvell.com,
-        tully@mikrotik.com, Eric Dumazet <eric.dumazet@gmail.com>,
-        netdev <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH net-next 2/4] atl1c: improve performance by avoiding
- unnecessary pcie writes on xmit
-In-Reply-To: <CAMXMK6tkPYLLQzq65uFVd-aCWaVHSne16MBEo7o6fGDTDA0rpw@mail.gmail.com>
-References: <20210511190518.8901-1-gatis@mikrotik.com>
- <20210511190518.8901-3-gatis@mikrotik.com>
- <CAMXMK6tkPYLLQzq65uFVd-aCWaVHSne16MBEo7o6fGDTDA0rpw@mail.gmail.com>
-User-Agent: Roundcube Webmail/1.4.11
-Message-ID: <c7ae91ea1d8aec340202c67cd4c85d30@mikrotik.com>
-X-Sender: gatis@mikrotik.com
-Content-Type: text/plain; charset=US-ASCII;
- format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <141cd7dc7b44385ead176b1d0eb139573b47f110.1620818043.git.christophe.jaillet@wanadoo.fr>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-
-On 2021-05-12 05:39, Chris Snook wrote:
-> Increases in latency tend to hurt more on single-queue devices. Has
-> this been tested on the original gigabit atl1c?
-
-Thank you Chris, for checking this out!
-
-I did test the atl1c driver with and without this change on actual
-AR8151 hardware.
-
-My test system was Intel(R) Core(TM) i7-4790K + RB44Ge.
-That is a 4 port 1G AR8151 based card.
-
-I measured latency with external traffic generator with test system
-doing L2 forwarding. Receiving traffic on one atl1c interface and
-transmitting over another atl1c interface. I had default 1000 packet
-pfifo queue configured on the atl1c interfaces.
-
-Max 64 byte packet L2 forward pps rate improved 860K -> 1070K.
-
-Any latency difference at 800Kpps was lost in the noise - with the
-particular traffic generator system (a linux based RouterOS 
-traffic-gen).
-I measured average 285us for a 30 second run in both cases. Note that
-this includes any traffic generator "internal" latency.
-
-Note that I had to tweak atl1c tx interrupt moderation to get these
-numbers. With default tx_imt = 1000 no matter what I get only 500
-tx interrupts/sec. Since the tx clean is fast and do not get polled
-repeatedly and ring size is 1024 I am limited to ~500Kpps.
-tx_imt = 500 dobubles that, I used tx_imt = 200 for this test.
-
-As a side note that still relates to latency discussion on AR8151
-hardware what I did find out however is that rx interrupt moderation
-timer value has a big effect on latency. Changing rx_imt
-from 200 to 10 resulted in considerable improvement from 285us to 41us
-average latency as measured by traffic generator. I do not have
-enough knowledge of the quirks of all the hardware supported by
-the driver to confidently put this in a patch though.
-
-Mikrotik 10/25G NIC has its own interrupt moderation mechanism,
-so this is not relevant to that if anyone is interested.
-
-
+On Wed, May 12, 2021 at 01:15:29PM +0200, Christophe JAILLET wrote:
+> If an error occurs after a successful 'pci_ioremap_bar()' call, it must be
+> undone by a corresponding 'pci_iounmap()' call, as already done in the
+> remove function.
 > 
-> - Chris
-> 
-> On Tue, May 11, 2021 at 12:05 PM Gatis Peisenieks <gatis@mikrotik.com> 
-> wrote:
->> 
->> The kernel has xmit_more facility that hints the networking driver 
->> xmit
->> path about whether more packets are coming soon. This information can 
->> be
->> used to avoid unnecessary expensive PCIe transaction per tx packet at 
->> a
->> slight increase in latency.
->> 
->> Max TX pps on Mikrotik 10/25G NIC in a Threadripper 3960X system
->> improved from 1150Kpps to 1700Kpps.
->> 
+> Fixes: a7e1abad13f3 ("ptp: Add clock driver for the OpenCompute TimeCard.")
+> Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+
+Acked-by: Richard Cochran <richardcochran@gmail.com>
