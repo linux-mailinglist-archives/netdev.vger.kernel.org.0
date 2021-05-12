@@ -2,54 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2293637EFAF
-	for <lists+netdev@lfdr.de>; Thu, 13 May 2021 01:21:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2B6B737EFB2
+	for <lists+netdev@lfdr.de>; Thu, 13 May 2021 01:21:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232184AbhELXWE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 12 May 2021 19:22:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33048 "EHLO
+        id S233719AbhELXWW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 12 May 2021 19:22:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34080 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1444026AbhELWxU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 12 May 2021 18:53:20 -0400
-Received: from mail-qk1-x730.google.com (mail-qk1-x730.google.com [IPv6:2607:f8b0:4864:20::730])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 00C91C0610EA
-        for <netdev@vger.kernel.org>; Wed, 12 May 2021 15:43:56 -0700 (PDT)
-Received: by mail-qk1-x730.google.com with SMTP id a2so23898418qkh.11
-        for <netdev@vger.kernel.org>; Wed, 12 May 2021 15:43:56 -0700 (PDT)
+        with ESMTP id S241867AbhELW6P (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 12 May 2021 18:58:15 -0400
+Received: from mail-qk1-x72d.google.com (mail-qk1-x72d.google.com [IPv6:2607:f8b0:4864:20::72d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 29CFAC06138B
+        for <netdev@vger.kernel.org>; Wed, 12 May 2021 15:56:08 -0700 (PDT)
+Received: by mail-qk1-x72d.google.com with SMTP id v8so5972832qkv.1
+        for <netdev@vger.kernel.org>; Wed, 12 May 2021 15:56:08 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=mojatatu-com.20150623.gappssmtp.com; s=20150623;
         h=subject:to:cc:references:from:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=NbyJ52lo/KmaI1lmzIR9nAP6ZETday/C62CbdVi1cY4=;
-        b=nZ2WySbdboM/kcmqJL4SqhJI1Rym8v3DmhYoAmIIPvqQcimNJQNlPVYwB6XOCkdykT
-         OLU9Kx3G/XBshnMbUryhNJ9boStmuwIU3/h4/6KsfR8ZeKL1Rp7EoY2gmy7F/6y1QiF4
-         +VG81yKBAjfMSW38/pljaVk8hk6tHyqaZn4ZYxK+fxzW/wY3GfyTJNOkEo4jScx/56fE
-         yPHfvWqrDioe04B+djZsqiw+zVURjx5aIJ/hL061UMXIFFnnuXbWPzqOy8CdBptEX20y
-         zZR7URSrpGQO4RGpoK6ZUk4ccCa6aOHs9cvGXTJvfOdJ34vczdGMBYZKEaur//PCdLNG
-         u2YQ==
+        bh=8IPURGtEFzuEgj+t7YYPcm0/W4cVT5eQQ0tWFffsI14=;
+        b=HvAIsfV0UlzqOabx+lDWlSq85I/ucVUl4mpIIvnw2GWbuRUnMOdj+6QmmbhFZoNsUF
+         MuO2GTrChTCxEJ2y2R2CTUqhPGI/WFnG275gsyLeJOiwPgFyMJgstAJPZf0Bpj+Hmbhn
+         CDSLVr3ga28zxAa38HgOmS6PvuaBr2N+GUeUNT8p+78vW8eFyNbhbq4bdoTvEWF5dEoI
+         7jyoqeEYudle+D29hhosWhBJzg37f4dAKUHHUQ+kG8E+oZ/w4tjc/QXeA/vQHyUGi2MK
+         X7dgevSUDFYVnL9PeOd+L/9g7cXwvMcwy4zr9g+0gbta1/iZW7aT2eJwBQAD1vSB7KZC
+         gv+g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:message-id:date
          :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=NbyJ52lo/KmaI1lmzIR9nAP6ZETday/C62CbdVi1cY4=;
-        b=UX7wJN4De6qTpbecXfspTzkgt8vo88YXGlQ9Yq6WoCmbEJvH+2ug2MuTOz2IdIu5+E
-         IREouVyyILrwndsbuPqsUhXpkI/PO9t+O9t0BwKlXLxkO4HHi9Vgbk5TG/p8Yn2YjdQD
-         ALAlO5H1wNuv0UJisx3M2Uu10oiFKTZF3s1G3YsAv4KnwFZKjmJcqDuv/rWgMGXuXvy/
-         GCH6MysVcgbMkSrxQ9H4Qt+GhS7+QA0kABXCVO9Mmr2FefF9Qyxyzrus+kZkE0OuSd49
-         hRJf36AOqu3EjwrTkfTdz4K+uohZg+zLaHKPRUuPnQvyVItTA4Hxwzk15P9MfzqpKDjM
-         Y5IQ==
-X-Gm-Message-State: AOAM530xU435rEK3FYNZ6hQuyokJE0YjqAQIgjSW9H8erUNJrm2zAXd1
-        x84ql63J0mGtdF2JT7/PcLn5Lg==
-X-Google-Smtp-Source: ABdhPJy5vmsx5YHZHlI2wZ/cyOKopA5+3pAS/nbVCzQLLdOqqQxL6Rzh1aHKLGo61cz4ESaeMapnFA==
-X-Received: by 2002:a05:620a:70c:: with SMTP id 12mr35408930qkc.377.1620859436034;
-        Wed, 12 May 2021 15:43:56 -0700 (PDT)
+        bh=8IPURGtEFzuEgj+t7YYPcm0/W4cVT5eQQ0tWFffsI14=;
+        b=CRvquHG/rPEyv99TwPF42OWKiqOgRXusoq+l1bVwFqQUYQwh1JhnsSMfWtXBjlKV/r
+         B4XbdDBPS7exdLt/LkHrqPKHi7+57hgZ+kto4wiv2pVja9yNRjZFIuYVri55xy0Adl7M
+         FNQjNj/3lUWsGfsmfPooo1639Yt7ZJP15OGwpRbZMbV0YTUW1oGJ+I7WNJ73BjI5BjHq
+         TtZK01ruw6BoO5Bruhzt9IrGRzvj33KOIA8AuU+Hs/d31+xDkcPmPz8HRUVJcjI7b1a3
+         PnVFdCZB84cdmFLgytWlR8dda6ycTY2lVvQKq8/4SmwReILTjKpT1c4FlK+RFWz8ZD8z
+         bx/A==
+X-Gm-Message-State: AOAM5321zK/gewR9O0Duvh0Olh4uwkT5HZY2aQd0sZa2bGfc1SQbGJyH
+        BtPD6Bv25rFMQl+GbBWUexgqTg==
+X-Google-Smtp-Source: ABdhPJwSFEe2ZpnWeLqlZVF63LuaqBvBIvDB06fVD4y4d3nkAHVrcmB+1fyGFxvUV3y4dzwBc3hpvg==
+X-Received: by 2002:a05:620a:1223:: with SMTP id v3mr35465656qkj.470.1620860166046;
+        Wed, 12 May 2021 15:56:06 -0700 (PDT)
 Received: from [192.168.1.79] (bras-base-kntaon1617w-grc-25-174-95-97-70.dsl.bell.ca. [174.95.97.70])
-        by smtp.googlemail.com with ESMTPSA id x28sm1181491qtm.71.2021.05.12.15.43.54
+        by smtp.googlemail.com with ESMTPSA id w7sm1007322qtn.91.2021.05.12.15.56.04
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 12 May 2021 15:43:55 -0700 (PDT)
+        Wed, 12 May 2021 15:56:05 -0700 (PDT)
 Subject: Re: [RFC Patch bpf-next] bpf: introduce bpf timer
-To:     Joe Stringer <joe@cilium.io>, Cong Wang <xiyou.wangcong@gmail.com>
+To:     Cong Wang <xiyou.wangcong@gmail.com>
 Cc:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
         Linux Kernel Network Developers <netdev@vger.kernel.org>,
         bpf <bpf@vger.kernel.org>,
@@ -62,9 +62,9 @@ Cc:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
         Andrii Nakryiko <andrii@kernel.org>,
         Martin KaFai Lau <kafai@fb.com>,
         Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Pedro Tammela <pctammela@mojatatu.com>
+        Pedro Tammela <pctammela@mojatatu.com>,
+        Joe Stringer <joe@cilium.io>
 References: <20210402192823.bqwgipmky3xsucs5@ast-mbp>
- <CAM_iQpUfv7c19zFN1Y5-cSUiVwpk0bmtBMSxZoELgDOFCQ=qAw@mail.gmail.com>
  <20210402234500.by3wigegeluy5w7j@ast-mbp>
  <CAM_iQpWf2aYbY=tKejb=nx7LWBLo1woTp-n4wOLhkUuDCz8u-Q@mail.gmail.com>
  <20210412230151.763nqvaadrrg77kd@ast-mbp.dhcp.thefacebook.com>
@@ -77,14 +77,15 @@ References: <20210402192823.bqwgipmky3xsucs5@ast-mbp>
  <CAM_iQpVE4XG7SPAVBmV2UtqUANg3X-1ngY7COYC03NrT6JkZ+g@mail.gmail.com>
  <CAADnVQK9BgguVorziWgpMktLHuPCgEaKa4fz-KCfhcZtT46teQ@mail.gmail.com>
  <CAM_iQpWBrxuT=Y3CbhxYpE5a+QSk-O=Vj4euegggXAAKTHRBqw@mail.gmail.com>
- <CAOftzPh0cj_XRES8mrNWnyKFZDLpRez09NAofmu1F1JAZf43Cw@mail.gmail.com>
+ <d38c7ccf-bc66-9b71-ef96-7fe196ac5c09@mojatatu.com>
+ <CAM_iQpXLcpga=DF+ateBk1jiiCx2mPJW=WHT+j3JrS8kuPS4Zw@mail.gmail.com>
 From:   Jamal Hadi Salim <jhs@mojatatu.com>
-Message-ID: <ac30da98-97cd-c105-def8-972a8ec573d6@mojatatu.com>
-Date:   Wed, 12 May 2021 18:43:53 -0400
+Message-ID: <59378178-57e2-c278-02cd-d58f9973b638@mojatatu.com>
+Date:   Wed, 12 May 2021 18:56:04 -0400
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
  Thunderbird/78.9.0
 MIME-Version: 1.0
-In-Reply-To: <CAOftzPh0cj_XRES8mrNWnyKFZDLpRez09NAofmu1F1JAZf43Cw@mail.gmail.com>
+In-Reply-To: <CAM_iQpXLcpga=DF+ateBk1jiiCx2mPJW=WHT+j3JrS8kuPS4Zw@mail.gmail.com>
 Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -92,86 +93,35 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2021-05-11 1:05 a.m., Joe Stringer wrote:
-> Hi Cong,
-> 
+On 2021-05-11 5:29 p.m., Cong Wang wrote:
+> On Mon, May 10, 2021 at 1:55 PM Jamal Hadi Salim <jhs@mojatatu.com> wrote:
 
->> and let me quote the original report here:
 >>
->> "The current implementation (as of v1.2) for managing the contents of
->> the datapath connection tracking map leaves something to be desired:
->> Once per minute, the userspace cilium-agent makes a series of calls to
->> the bpf() syscall to fetch all of the entries in the map to determine
->> whether they should be deleted. For each entry in the map, 2-3 calls
->> must be made: One to fetch the next key, one to fetch the value, and
->> perhaps one to delete the entry. The maximum size of the map is 1
->> million entries, and if the current count approaches this size then
->> the garbage collection goroutine may spend a significant number of CPU
->> cycles iterating and deleting elements from the conntrack map."
+>> That cilium PR was a good read of the general issues.
+>> Our use case involves anywhere between 4-16M cached entries.
+>>
+>> Like i mentioned earlier:
+>> we want to periodically, if some condition is met in the
+>> kernel on a map entry, to cleanup, update or send unsolicited
+>> housekeeping events to user space.
+>> Polling in order to achieve this for that many entries is expensive.
 > 
-> I'm also curious to hear more details as I haven't seen any recent
-> discussion in the common Cilium community channels (GitHub / Slack)
-> around deficiencies in the conntrack garbage collection since we
-> addressed the LRU issues upstream and switched back to LRU maps.
-
-For our use case we cant use LRU. We need to account for every entry i.e
-we dont want it to be gc without our consent. i.e we want to control
-the GC. Your PR was pointing to LRU deleting some flow entries for TCP
-which were just idling for example.
-
-
-> There's an update to the report quoted from the same link above:
-> 
-> "In recent releases, we've moved back to LRU for management of the CT
-> maps so the core problem is not as bad; furthermore we have
-> implemented a backoff for GC depending on the size and number of
-> entries in the conntrack table, so that in active environments the
-> userspace GC is frequent enough to prevent issues but in relatively
-> passive environments the userspace GC is only rarely run (to minimize
-> CPU impact)."
-> 
-> By "core problem is not as bad", I would have been referring to the
-> way that failing to garbage collect hashtables in a timely manner can
-> lead to rejecting new connections due to lack of available map space.
-> Switching back to LRU mitigated this concern. With a reduced frequency
-> of running the garbage collection logic, the CPU impact is lower as
-> well. I don't think we've explored batched map ops for this use case
-> yet either, which would already serve to improve the CPU usage
-> situation without extending the kernel.
+> Thanks for sharing your use case. As we discussed privately, please
+> also share the performance numbers you have.
 > 
 
-Will run some tests tomorrow to see the effect of batching vs nobatch
-and capture cost of syscalls and cpu.
-
-Note: even then, it is not a good general solution. Our entries can
-go as high as 16M.
-Our workflow is: 1) every 1-5 seconds you dump, 2) process for
-what needs to be deleted etc, then do updates (another 1-3 seconds
-worth of time). There is a point, depending on number of entries,
-where there your time cost of processing exceeds your polling period.
-The likelihood of entry state loss is high for even 1/2 sec loss
-of sync.
-
-> The main outstanding issue I'm aware of is that we will often have a
-> 1:1 mapping of entries in the CT map and the NAT map, and ideally we'd
-> like them to have tied fates but currently we have no mechanism to do
-> this with LRU. When LRU eviction occurs, the entries can get out of
-> sync until the next GC.
-
-Yes, this ties as well to our use case (not NAT for us, but semantically
-similar challenge). It goes the other way too, if userspace decides
-to adjust your NAT table you need to purge related entries from the
-cache.
-
-
-
-> I could imagine timers helping with this if we
-
-Yes, timers would solve this.
-
-I am not even arguing that we need timers to solve these issues. I am
-just saying it seems timers are just fundamental infra that is needed
-even outside the scope of this.
+The earlier tests i mentioned to you were in regards to LRU.
+I can share those as well - but seems for what we are discussing
+here testing cost of batch vs nobatch is more important.
+Our LRU tests indicate that it is better to use global as opposed
+to per-CPU LRU. We didnt dig deeper but it seemed gc/alloc - which was
+happening under some lock gets very expensive regardless if you
+are sending sufficient number of flows/sec (1M flows/sec in our
+case).
+We cannot use LRU (for reasons stated earlier). It has to be hash
+table with aging under our jurisdiction. I will post numbers for
+sending the entries to user space for gc.
 
 cheers,
 jamal
+
