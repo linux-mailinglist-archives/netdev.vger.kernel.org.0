@@ -2,111 +2,230 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B898B37B6ED
-	for <lists+netdev@lfdr.de>; Wed, 12 May 2021 09:30:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 41D7A37B702
+	for <lists+netdev@lfdr.de>; Wed, 12 May 2021 09:41:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230196AbhELHcE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 12 May 2021 03:32:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52424 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230104AbhELHcD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 12 May 2021 03:32:03 -0400
-Received: from mail-ot1-x32a.google.com (mail-ot1-x32a.google.com [IPv6:2607:f8b0:4864:20::32a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F643C06175F
-        for <netdev@vger.kernel.org>; Wed, 12 May 2021 00:30:55 -0700 (PDT)
-Received: by mail-ot1-x32a.google.com with SMTP id c8-20020a9d78480000b0290289e9d1b7bcso19789953otm.4
-        for <netdev@vger.kernel.org>; Wed, 12 May 2021 00:30:55 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=aleksander-es.20150623.gappssmtp.com; s=20150623;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=goGAZQWt/xZjeiNLdX4jFKkpms+KtyL0rrUqjuEt09o=;
-        b=VxISxnaDKdq4LsuBRIZ/SWlRUDZZqPoUwtEs9Ju+d13T0pjWr5UlXRIvemVdkFek66
-         cbg91Jzwqjsfwm0AvhdAgX2BnyqVkQM8Mm0zCKl+iXTYHdiuKEklwNId29MnS1oO9ocd
-         ANbVIMgk/frhhlIew4iRH3W0oE+R3EwnNk1v4eFISu11nIbPtx0pU6tWAP0sZ4HFQqZI
-         EeNOUIxpqjJCh+ILJm5VI29xVSTV1+17NJsAgMBoh8XvqkQjvxLCz0vVyX4uBVnQqopD
-         11wmyVv3Xn84JXrjhGsDsypyTYqSYcvWVrUh5d5OzrYUBK4ndnrc1CXeqo2AkxCCisd8
-         21zA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=goGAZQWt/xZjeiNLdX4jFKkpms+KtyL0rrUqjuEt09o=;
-        b=OaYejSOC+bamSsuExXUjEbp+lySwfd4I7IyOnl7qf/2AxmSvvngOXHrHTya40kmrB7
-         fS2iRE4dYTOyNA4EKKQfJOXnxJa4kG6ggbxaLv7+xqot13ORv1f1FA5UbHShLMN4U/v+
-         95+HyCLX012jrQTszzMVJvNUFJa+adEcSb7KtgOW3f9ZnXq0x97hLJ5mFdoMxzyM+ODR
-         uaDDu4eRqY3Ors6apssh4LyFyoefyV148A9sUD3raltBYMuPaP03R+/DlJJwOdG/0Jdh
-         Ja5tnQuIEgN3nUSScZZR3GYBfbrVp2AaE5flRJnT23njZlSyO0As09OPD6irUo4hTAJ6
-         S1oA==
-X-Gm-Message-State: AOAM5306FKpVFPaP/zqLGq/pIQ0lVDxLb90OkW868Sv0aKwt0SiaXor9
-        vdknfD9uM1hGjpsnhK64TBLz6raJwnwO6ke1etDZNQ==
-X-Google-Smtp-Source: ABdhPJxmla4zRKh1TdSR9fueD0dJAXWxfYMV7+VFPlmiVkMEXhEgSVVnIwhqh4rI4nXK/t8pc8h5RYTBxtJ3EOiJXIc=
-X-Received: by 2002:a05:6830:10:: with SMTP id c16mr6461089otp.252.1620804654858;
- Wed, 12 May 2021 00:30:54 -0700 (PDT)
-MIME-Version: 1.0
-References: <1620744143-26075-1-git-send-email-loic.poulain@linaro.org> <1620744143-26075-2-git-send-email-loic.poulain@linaro.org>
-In-Reply-To: <1620744143-26075-2-git-send-email-loic.poulain@linaro.org>
-From:   Aleksander Morgado <aleksander@aleksander.es>
-Date:   Wed, 12 May 2021 09:30:43 +0200
-Message-ID: <CAAP7ucJah5qJXpjyP9gYmnYDyBWS7Qe3ck2SCBonJhJB2NgS5A@mail.gmail.com>
-Subject: Re: [PATCH net-next v2 2/2] usb: class: cdc-wdm: WWAN framework integration
-To:     Loic Poulain <loic.poulain@linaro.org>
-Cc:     Oliver Neukum <oliver@neukum.org>,
-        Jakub Kicinski <kuba@kernel.org>,
+        id S230135AbhELHmM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 12 May 2021 03:42:12 -0400
+Received: from mailout2.samsung.com ([203.254.224.25]:29457 "EHLO
+        mailout2.samsung.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229968AbhELHmK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 12 May 2021 03:42:10 -0400
+Received: from epcas2p3.samsung.com (unknown [182.195.41.55])
+        by mailout2.samsung.com (KnoxPortal) with ESMTP id 20210512074101epoutp025f5532c6db5dd381ad236fe5ab9637a2~_QcxJbQrf1928819288epoutp02V
+        for <netdev@vger.kernel.org>; Wed, 12 May 2021 07:41:01 +0000 (GMT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mailout2.samsung.com 20210512074101epoutp025f5532c6db5dd381ad236fe5ab9637a2~_QcxJbQrf1928819288epoutp02V
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
+        s=mail20170921; t=1620805261;
+        bh=/5P0zVOAr68kzqqUZDGocRqA+7GX6RlmDAKCV49cpCk=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=eRABht2Ied/mguI2cXG+XDo3vV02UFSBWijay+Kz92oUV/E0p5QQczmK4ROJxiyV6
+         ktqqhjL66RVsy/T0hKpk6hFKm57Um6+0Flv5fOeIqtxLgTg5gMqCGEVJB+Uf8V5dLM
+         0F/F4BSmr+CWnnqlPO7/UbO7+3bbGvPNJcyXAPfI=
+Received: from epsnrtp3.localdomain (unknown [182.195.42.164]) by
+        epcas2p3.samsung.com (KnoxPortal) with ESMTP id
+        20210512074100epcas2p3572a8172bad93d908359a3aa657982e8~_QcwE-Iui2163021630epcas2p3Y;
+        Wed, 12 May 2021 07:41:00 +0000 (GMT)
+Received: from epsmges2p3.samsung.com (unknown [182.195.40.187]) by
+        epsnrtp3.localdomain (Postfix) with ESMTP id 4Fg6Cv0S4cz4x9Px; Wed, 12 May
+        2021 07:40:59 +0000 (GMT)
+Received: from epcas2p3.samsung.com ( [182.195.41.55]) by
+        epsmges2p3.samsung.com (Symantec Messaging Gateway) with SMTP id
+        CF.C0.09433.A868B906; Wed, 12 May 2021 16:40:58 +0900 (KST)
+Received: from epsmtrp1.samsung.com (unknown [182.195.40.13]) by
+        epcas2p3.samsung.com (KnoxPortal) with ESMTPA id
+        20210512074058epcas2p35536c27bdfafaa6431e164c142007f96~_QcuIN9se0074500745epcas2p3q;
+        Wed, 12 May 2021 07:40:58 +0000 (GMT)
+Received: from epsmgms1p2.samsung.com (unknown [182.195.42.42]) by
+        epsmtrp1.samsung.com (KnoxPortal) with ESMTP id
+        20210512074058epsmtrp1e8697b5bad8f956032fdf36cf7c5d626~_QcuHVWhm2316423164epsmtrp1N;
+        Wed, 12 May 2021 07:40:58 +0000 (GMT)
+X-AuditID: b6c32a47-f61ff700000024d9-a5-609b868a27a5
+Received: from epsmtip2.samsung.com ( [182.195.34.31]) by
+        epsmgms1p2.samsung.com (Symantec Messaging Gateway) with SMTP id
+        33.8A.08163.A868B906; Wed, 12 May 2021 16:40:58 +0900 (KST)
+Received: from ubuntu.dsn.sec.samsung.com (unknown [12.36.155.120]) by
+        epsmtip2.samsung.com (KnoxPortal) with ESMTPA id
+        20210512074058epsmtip25071f1599a52de422c0db1bc8ecd4f91~_Qct615bx0633106331epsmtip26;
+        Wed, 12 May 2021 07:40:58 +0000 (GMT)
+From:   Dongseok Yi <dseok.yi@samsung.com>
+To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Cc:     Dongseok Yi <dseok.yi@samsung.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
         "David S. Miller" <davem@davemloft.net>,
-        =?UTF-8?Q?Bj=C3=B8rn_Mork?= <bjorn@mork.no>,
-        Network Development <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH bpf-next v3] bpf: check for BPF_F_ADJ_ROOM_FIXED_GSO when
+ bpf_skb_change_proto
+Date:   Wed, 12 May 2021 16:27:33 +0900
+Message-Id: <1620804453-57566-1-git-send-email-dseok.yi@samsung.com>
+X-Mailer: git-send-email 2.7.4
+In-Reply-To: <1620714998-120657-1-git-send-email-dseok.yi@samsung.com>
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFuplk+LIzCtJLcpLzFFi42LZdljTXLerbXaCwbEHOhbff89mtvjy8za7
+        xecjx9ksFi/8xmwx53wLi8WVaX8YLZp2rGCyePHhCaPF8329TBYXtvWxWlzeNYfN4tgCMYuf
+        h88wWyz+uQGoYskMRgd+jy0rbzJ5TGx+x+6xc9Zddo+uG5eYPTat6mTz6NuyitHj8ya5APao
+        HJuM1MSU1CKF1Lzk/JTMvHRbJe/geOd4UzMDQ11DSwtzJYW8xNxUWyUXnwBdt8wcoLuVFMoS
+        c0qBQgGJxcVK+nY2RfmlJakKGfnFJbZKqQUpOQWGhgV6xYm5xaV56XrJ+blWhgYGRqZAlQk5
+        GX8bFrAUvJOtuL2uja2B8YN4FyMnh4SAiUT3k6fsXYxcHEICOxgl1j1/yQzhfGKUmP36F1Tm
+        M6PEg++zWGFaPt35DZXYBZRYPQ+q5QejxK0N39hAqtgENCT2v3sB1iEiYCax8cgNFpAiZoHH
+        zBI9e5azgCSEBRIkpqw8zAxiswioSpx494Kpi5GDg1fARWLWnDyIbXISN891gpVwCrhJdM08
+        ADZHQmAqh8S2zs/sEEUuEocWbWGGsIUlXh3fAhWXknjZ38YOMlNCoF6itTsGoreHUeLKvics
+        EDXGErOetTOC1DALaEqs36UPUa4sceQWWAWzAJ9Ex+G/UFN4JTrahCBMJYmJX+IhZkhIvDg5
+        GWqeh8SXU42skBCZySixe0MzywRGuVkI8xcwMq5iFEstKM5NTy02KjBGjrBNjOB0qeW+g3HG
+        2w96hxiZOBgPMUpwMCuJ8IolzU4Q4k1JrKxKLcqPLyrNSS0+xGgKDLmJzFKiyfnAhJ1XEm9o
+        amRmZmBpamFqZmShJM77M7UuQUggPbEkNTs1tSC1CKaPiYNTqoFpk/2zdCfHg2zPefOb+dav
+        P72rxO3KIT2rQ8wpUxX/WC3fsSz9z/e1601nHBSdbcbgyff17JUXZ2axy6vKN7eyTus02BP/
+        /mE49/Z9eyo41BSMbJyXpTl+5b4lJO2lr+MpuGx7TNuLO09ljK9/rT13TvaWwN55cdrfLkzh
+        e5Sk63+ms/HAxUOHm+2vcf7777j7n8lSgWonNY8iRsdI/ZLz1+7wuVXOvPliXm8xl6q9Rv8q
+        wZsF8m3P5JlKnHd2VU6fu17cvWPthDsVK8OfiM+UOOzZkuffWjzrq9ib7V/j+Nzb1SMq9TrU
+        YuqUPfp7vBKdBPU7/8lt2a6xxPqQkGbjMVcTJZ5Pc78KdBxedFGJpTgj0VCLuag4EQCaBI06
+        IAQAAA==
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFjrGLMWRmVeSWpSXmKPExsWy7bCSvG5X2+wEg4sLeC2+/57NbPHl5212
+        i89HjrNZLF74jdlizvkWFosr0/4wWjTtWMFk8eLDE0aL5/t6mSwubOtjtbi8aw6bxbEFYhY/
+        D59htlj8cwNQxZIZjA78HltW3mTymNj8jt1j56y77B5dNy4xe2xa1cnm0bdlFaPH501yAexR
+        XDYpqTmZZalF+nYJXBl/GxawFLyTrbi9ro2tgfGDeBcjJ4eEgInEpzu/2bsYuTiEBHYwShw5
+        9Y2xi5EDKCEhsWuzK0SNsMT9liOsEDXfGCX23Z7GDpJgE9CQ2P/uBSuILSJgJrHxyA0WkCJm
+        gY/MEkevvWUCSQgLxEnMX3yGBcRmEVCVOPHuBRPIAl4BF4lZc/IgFshJ3DzXyQxicwq4SXTN
+        PMACUiIk4Cpx9wjTBEa+BYwMqxglUwuKc9Nziw0LjPJSy/WKE3OLS/PS9ZLzczcxgoNaS2sH
+        455VH/QOMTJxMB5ilOBgVhLhFUuanSDEm5JYWZValB9fVJqTWnyIUZqDRUmc90LXyXghgfTE
+        ktTs1NSC1CKYLBMHp1QDk937nNPZ4TYex9Z67zPY6qfzS5Jh0a2VEc2qV1rauY6+VvLYUai3
+        RvWtZPb8+Q7R9+PdFgn/uxDSsc/m3MRVa4pZec7EGJt8tnkjOov7a/hl5lqG2/V2KW5iq/Z+
+        dXwXwmoVkR1v78744GHv+r2dHI2MO9d6l1pNif87/W1M5fruLUUtDiYPtBTv7t2q1RY39d7+
+        BHlgeAT9t7VsSPw7d9uHZv2UpLyz82XP58ft0rsY8TuRy16FQV/ia/bdCnk27VU/C/+0/db0
+        XXRfJFXq+6l917urHoqY6V7km1Vt17X2W/fOaPblE56n/WLRi5vgKnnsyxp7J+f1rHfYX34P
+        c6lOk3g1c5Wh/YYASy4lluKMREMt5qLiRABxpG712QIAAA==
+X-CMS-MailID: 20210512074058epcas2p35536c27bdfafaa6431e164c142007f96
+X-Msg-Generator: CA
+Content-Type: text/plain; charset="utf-8"
+X-Sendblock-Type: AUTO_CONFIDENTIAL
+CMS-TYPE: 102P
+DLP-Filter: Pass
+X-CFilter-Loop: Reflected
+X-CMS-RootMailID: 20210512074058epcas2p35536c27bdfafaa6431e164c142007f96
+References: <1620714998-120657-1-git-send-email-dseok.yi@samsung.com>
+        <CGME20210512074058epcas2p35536c27bdfafaa6431e164c142007f96@epcas2p3.samsung.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hey Loic,
+In the forwarding path GRO -> BPF 6 to 4 -> GSO for TCP traffic, the
+coalesced packet payload can be > MSS, but < MSS + 20.
+bpf_skb_proto_6_to_4 will upgrade the MSS and it can be > the payload
+length. After then tcp_gso_segment checks for the payload length if it
+is <= MSS. The condition is causing the packet to be dropped.
 
-On Tue, May 11, 2021 at 4:33 PM Loic Poulain <loic.poulain@linaro.org> wrote:
->
-> The WWAN framework provides a unified way to handle WWAN/modems and its
-> control port(s). It has initially been introduced to support MHI/PCI
-> modems, offering the same control protocols as the USB variants such as
-> MBIM, QMI, AT... The WWAN framework exposes these control protocols as
-> character devices, similarly to cdc-wdm, but in a bus agnostic fashion.
->
-> This change adds registration of the USB modem cdc-wdm control endpoints
-> to the WWAN framework as standard control ports (wwanXpY...).
->
-> Exposing cdc-wdm through WWAN framework normally maintains backward
-> compatibility, e.g:
->     $ qmicli --device-open-qmi -d /dev/wwan0p1QMI --dms-get-ids
-> instead of
->     $ qmicli --device-open-qmi -d /dev/cdc-wdm0 --dms-get-ids
->
+tcp_gso_segment():
+        [...]
+        mss = skb_shinfo(skb)->gso_size;
+        if (unlikely(skb->len <= mss))
+                goto out;
+        [...]
 
-I have some questions regarding how all this would be seen from userspace.
+Allow to upgrade/downgrade MSS only when BPF_F_ADJ_ROOM_FIXED_GSO is
+not set.
 
-Does the MBIM control port retain the ability to query the maximum
-message size with an ioctl like IOCTL_WDM_MAX_COMMAND? Or is that
-lost? For the libmbim case this may not be a big deal, as we have a
-fallback mechanism to read this value from the USB descriptor itself,
-so just wondering.
+Signed-off-by: Dongseok Yi <dseok.yi@samsung.com>
+---
+ net/core/filter.c | 22 +++++++++++++---------
+ 1 file changed, 13 insertions(+), 9 deletions(-)
 
-Is the sysfs hierarchy maintained for this new port type? i.e. if
-doing "udevadm info -p /sys/class/wwan/wwan0p1QMI -a", would we still
-see the immediate parent device with DRIVERS=="qmi_wwan" and the
-correct interface number/class/subclass/protocol attributes?
+v2:
+per Willem de Bruijn request,
+checked the flag instead of a generic approach.
 
-> However, some tools may rely on cdc-wdm driver/device name for device
-> detection. It is then safer to keep the 'legacy' cdc-wdm character
-> device to prevent any breakage. This is handled in this change by
-> API mutual exclusion, only one access method can be used at a time,
-> either cdc-wdm chardev or WWAN API.
+v3:
+per Willem de Bruijn request,
+moved to bpf-next, supported for both 6_to_4 and 4_to_6.
 
-How does this mutual exclusion API work? Is the kernel going to expose
-2 different chardevs always for the single control port? If so, do we
-really want to do that? How would we know from userspace that the 2
-chardevs apply to the same port? And, which of the chardevs would be
-exposed first (and notified first by udev), the wwan one or the
-cdc-wdm one?
-
+diff --git a/net/core/filter.c b/net/core/filter.c
+index cae56d0..582ac19 100644
+--- a/net/core/filter.c
++++ b/net/core/filter.c
+@@ -3235,7 +3235,7 @@ static int bpf_skb_net_hdr_pop(struct sk_buff *skb, u32 off, u32 len)
+ 	return ret;
+ }
+ 
+-static int bpf_skb_proto_4_to_6(struct sk_buff *skb)
++static int bpf_skb_proto_4_to_6(struct sk_buff *skb, u64 flags)
+ {
+ 	const u32 len_diff = sizeof(struct ipv6hdr) - sizeof(struct iphdr);
+ 	u32 off = skb_mac_header_len(skb);
+@@ -3264,7 +3264,9 @@ static int bpf_skb_proto_4_to_6(struct sk_buff *skb)
+ 		}
+ 
+ 		/* Due to IPv6 header, MSS needs to be downgraded. */
+-		skb_decrease_gso_size(shinfo, len_diff);
++		if (!(flags & BPF_F_ADJ_ROOM_FIXED_GSO))
++			skb_decrease_gso_size(shinfo, len_diff);
++
+ 		/* Header must be checked, and gso_segs recomputed. */
+ 		shinfo->gso_type |= SKB_GSO_DODGY;
+ 		shinfo->gso_segs = 0;
+@@ -3276,7 +3278,7 @@ static int bpf_skb_proto_4_to_6(struct sk_buff *skb)
+ 	return 0;
+ }
+ 
+-static int bpf_skb_proto_6_to_4(struct sk_buff *skb)
++static int bpf_skb_proto_6_to_4(struct sk_buff *skb, u64 flags)
+ {
+ 	const u32 len_diff = sizeof(struct ipv6hdr) - sizeof(struct iphdr);
+ 	u32 off = skb_mac_header_len(skb);
+@@ -3305,7 +3307,9 @@ static int bpf_skb_proto_6_to_4(struct sk_buff *skb)
+ 		}
+ 
+ 		/* Due to IPv4 header, MSS can be upgraded. */
+-		skb_increase_gso_size(shinfo, len_diff);
++		if (!(flags & BPF_F_ADJ_ROOM_FIXED_GSO))
++			skb_increase_gso_size(shinfo, len_diff);
++
+ 		/* Header must be checked, and gso_segs recomputed. */
+ 		shinfo->gso_type |= SKB_GSO_DODGY;
+ 		shinfo->gso_segs = 0;
+@@ -3317,17 +3321,17 @@ static int bpf_skb_proto_6_to_4(struct sk_buff *skb)
+ 	return 0;
+ }
+ 
+-static int bpf_skb_proto_xlat(struct sk_buff *skb, __be16 to_proto)
++static int bpf_skb_proto_xlat(struct sk_buff *skb, __be16 to_proto, u64 flags)
+ {
+ 	__be16 from_proto = skb->protocol;
+ 
+ 	if (from_proto == htons(ETH_P_IP) &&
+ 	      to_proto == htons(ETH_P_IPV6))
+-		return bpf_skb_proto_4_to_6(skb);
++		return bpf_skb_proto_4_to_6(skb, flags);
+ 
+ 	if (from_proto == htons(ETH_P_IPV6) &&
+ 	      to_proto == htons(ETH_P_IP))
+-		return bpf_skb_proto_6_to_4(skb);
++		return bpf_skb_proto_6_to_4(skb, flags);
+ 
+ 	return -ENOTSUPP;
+ }
+@@ -3337,7 +3341,7 @@ BPF_CALL_3(bpf_skb_change_proto, struct sk_buff *, skb, __be16, proto,
+ {
+ 	int ret;
+ 
+-	if (unlikely(flags))
++	if (unlikely(flags & ~(BPF_F_ADJ_ROOM_FIXED_GSO)))
+ 		return -EINVAL;
+ 
+ 	/* General idea is that this helper does the basic groundwork
+@@ -3357,7 +3361,7 @@ BPF_CALL_3(bpf_skb_change_proto, struct sk_buff *, skb, __be16, proto,
+ 	 * that. For offloads, we mark packet as dodgy, so that headers
+ 	 * need to be verified first.
+ 	 */
+-	ret = bpf_skb_proto_xlat(skb, proto);
++	ret = bpf_skb_proto_xlat(skb, proto, flags);
+ 	bpf_compute_data_pointers(skb);
+ 	return ret;
+ }
 -- 
-Aleksander
-https://aleksander.es
+2.7.4
+
