@@ -2,66 +2,58 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2600037BFAF
-	for <lists+netdev@lfdr.de>; Wed, 12 May 2021 16:16:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D601837BFB1
+	for <lists+netdev@lfdr.de>; Wed, 12 May 2021 16:16:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231660AbhELORF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        id S230259AbhELORQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 12 May 2021 10:17:16 -0400
+Received: from mx2.suse.de ([195.135.220.15]:49824 "EHLO mx2.suse.de"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S231661AbhELORF (ORCPT <rfc822;netdev@vger.kernel.org>);
         Wed, 12 May 2021 10:17:05 -0400
-Received: from outgoing-auth-1.mit.edu ([18.9.28.11]:41050 "EHLO
-        outgoing.mit.edu" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S231630AbhELOQh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 12 May 2021 10:16:37 -0400
-Received: from cwcc.thunk.org (pool-72-74-133-215.bstnma.fios.verizon.net [72.74.133.215])
-        (authenticated bits=0)
-        (User authenticated as tytso@ATHENA.MIT.EDU)
-        by outgoing.mit.edu (8.14.7/8.12.4) with ESMTP id 14CEEiap031112
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 12 May 2021 10:14:45 -0400
-Received: by cwcc.thunk.org (Postfix, from userid 15806)
-        id 448C815C39C2; Wed, 12 May 2021 10:14:44 -0400 (EDT)
-Date:   Wed, 12 May 2021 10:14:44 -0400
-From:   "Theodore Ts'o" <tytso@mit.edu>
-To:     Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
-Cc:     Linux Doc Mailing List <linux-doc@vger.kernel.org>,
-        linux-kernel@vger.kernel.org, Jonathan Corbet <corbet@lwn.net>,
-        Mali DP Maintainers <malidp@foss.arm.com>,
-        alsa-devel@alsa-project.org, coresight@lists.linaro.org,
-        dri-devel@lists.freedesktop.org, intel-gfx@lists.freedesktop.org,
-        intel-wired-lan@lists.osuosl.org, keyrings@vger.kernel.org,
-        kvm@vger.kernel.org, linux-acpi@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-edac@vger.kernel.org,
-        linux-ext4@vger.kernel.org, linux-f2fs-devel@lists.sourceforge.net,
-        linux-hwmon@vger.kernel.org, linux-iio@vger.kernel.org,
-        linux-input@vger.kernel.org, linux-integrity@vger.kernel.org,
-        linux-media@vger.kernel.org, linux-pci@vger.kernel.org,
-        linux-pm@vger.kernel.org, linux-rdma@vger.kernel.org,
-        linux-sgx@vger.kernel.org, linux-usb@vger.kernel.org,
-        mjpeg-users@lists.sourceforge.net, netdev@vger.kernel.org,
-        rcu@vger.kernel.org
-Subject: Re: [PATCH v2 00/40] Use ASCII subset instead of UTF-8 alternate
- symbols
-Message-ID: <YJvi1L2ss5Tfi+My@mit.edu>
-References: <cover.1620823573.git.mchehab+huawei@kernel.org>
+X-Virus-Scanned: by amavisd-new at test-mx.suse.de
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+        t=1620828956; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=qEM9B8aavf7aizeB8uYLEEBIRas/EykFssfdfuh2sp8=;
+        b=EAz5jwxUpDyUOFmomq46zlG96hPEMuqcqZ1xFuVXn65ecV/c3nCuneKUZDpD0wI+ZPcoCH
+        LOsORBzXTalx28+paL4YMCUgPuXE3NFG1/cLnm899+2a/evrmgz7DQ2b6Q0djUOPGWm0MX
+        XBsEpI5EgGryJ4wRXc0RyQrUmtxLtsA=
+Received: from relay2.suse.de (unknown [195.135.221.27])
+        by mx2.suse.de (Postfix) with ESMTP id C36AAADA2;
+        Wed, 12 May 2021 14:15:56 +0000 (UTC)
+Message-ID: <2e1bb24b989e7ee56dcec3302a80d9e8f7d2db94.camel@suse.com>
+Subject: Re: [linux-nfc] [PATCH] NFC: cooperation with runtime PM
+From:   Oliver Neukum <oneukum@suse.com>
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        clement.perrochaud@effinnov.com, charles.gorand@effinnov.com,
+        linux-nfc@lists.01.org, netdev@vger.kernel.org
+Date:   Wed, 12 May 2021 16:15:55 +0200
+In-Reply-To: <0a8ca4c7-ce55-3c92-cc29-b383e546d563@canonical.com>
+References: <20210512134413.31808-1-oneukum@suse.com>
+         <0a8ca4c7-ce55-3c92-cc29-b383e546d563@canonical.com>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.34.4 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <cover.1620823573.git.mchehab+huawei@kernel.org>
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, May 12, 2021 at 02:50:04PM +0200, Mauro Carvalho Chehab wrote:
-> v2:
-> - removed EM/EN DASH conversion from this patchset;
+Am Mittwoch, den 12.05.2021, 09:54 -0400 schrieb Krzysztof Kozlowski:
+> Hi,
+> 
+> Thanks for the patch. Few notes:
+> 
 
-Are you still thinking about doing the
+Hi,
 
-EN DASH --> "--"
-EM DASH --> "---"
+thank you excellent suggestion. V2 is compiling and will
+be tested incorporating your suggestions.
 
-conversion?  That's not going to change what the documentation will
-look like in the HTML and PDF output forms, and I think it would make
-life easier for people are reading and editing the Documentation/*
-files in text form.
+	Regards
+		Oliver
 
-				- Ted
+
