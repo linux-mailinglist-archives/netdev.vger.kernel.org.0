@@ -2,123 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E337237B4D5
-	for <lists+netdev@lfdr.de>; Wed, 12 May 2021 06:16:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DDF2737B533
+	for <lists+netdev@lfdr.de>; Wed, 12 May 2021 06:59:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229704AbhELERT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 12 May 2021 00:17:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37772 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229495AbhELERT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 12 May 2021 00:17:19 -0400
-Received: from mail-wm1-x330.google.com (mail-wm1-x330.google.com [IPv6:2a00:1450:4864:20::330])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B8CDDC061574;
-        Tue, 11 May 2021 21:16:11 -0700 (PDT)
-Received: by mail-wm1-x330.google.com with SMTP id o127so12181647wmo.4;
-        Tue, 11 May 2021 21:16:11 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=sender:date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=JCncdDjE7Srd7BUCB3CPtEnkitbRPaUmqjcTmdGK2+s=;
-        b=aipHKNVyb/XjRKn46VmjkCzFRB+Thi4NQbiuj/K5+hduiPoWM4YPwjPcbDpqgS0zVt
-         jaus4A20Am5DwCf+cwp43X5JILZHguFZDjjvYr2e8rpoOEvtPOUYJhb/f7MPFVOd4zAv
-         tSO4Ih+xzNKFhLPc/ExIDfa8l4oTaIyEIUfNZdpB9cvUpuboGg6Zum/l82/PmX4fVuyj
-         SLTuG4mAcdkiypRZH5p9WIxUgywwytHURcH61exNne2yXxNNghHBPiNSWqcR67qGE0dn
-         n4A4tep+UjwTvZaZOTVYUeqybQT2rMg5dALmwRccSLz1x+uPiIO8o8obrdtKVTrXGjph
-         2pKQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
-         :references:mime-version:content-disposition:in-reply-to:user-agent;
-        bh=JCncdDjE7Srd7BUCB3CPtEnkitbRPaUmqjcTmdGK2+s=;
-        b=CAvOZp3ZJ5yvw/QJpJkeREmUzN/r/SlPd4KVciNWcz3S9fd6KktsMm1xA05EqRbEBA
-         TNAwbFC45L8Jkel6PoLkMm6t5DeRvPkOVVpDyoX5ZUxHb3nK+HruGVMdgXg+E3CkPwqv
-         JxYSkTPS1XV1nnCnQxed5Lca3jWlheojMT2dE3znsJjuyUftadQKpk30aiz4lS824nGX
-         OXINnz4knGgYBNOKm4ctJ1GkJf/RuJogLm6e/zYQrRDyY5zdxcuL6V2q+udnYHB2MWBN
-         QqDr3OwIPSQL43QiW3IHmaiF4oJe4ZV73UQSiO7pZZ9JPR6jfSmV2NFQGubvP1jAwJHz
-         78Tw==
-X-Gm-Message-State: AOAM531NYnclXB+b9ZxyTzIcRLsyFR794ZBuOqXPo9bwp9Umd+ZFPfuZ
-        Dv41Rle9zySdOKxXKNAiVIRwUY9ohYW82g==
-X-Google-Smtp-Source: ABdhPJxON1Uvwty2GZz67IASvmlU0zxVGLrQUop9ggaCt5KNqRk9zVyImtJ4y0WSrtFpcUfe/5T6rQ==
-X-Received: by 2002:a1c:750b:: with SMTP id o11mr9186963wmc.188.1620792970259;
-        Tue, 11 May 2021 21:16:10 -0700 (PDT)
-Received: from lorien (lorien.valinor.li. [2a01:4f8:192:61d5::2])
-        by smtp.gmail.com with ESMTPSA id f1sm2438168wrr.63.2021.05.11.21.16.09
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 11 May 2021 21:16:09 -0700 (PDT)
-Sender: Salvatore Bonaccorso <salvatore.bonaccorso@gmail.com>
-Date:   Wed, 12 May 2021 06:16:08 +0200
-From:   Salvatore Bonaccorso <carnil@debian.org>
-To:     oss-security@lists.openwall.com
-Cc:     netdev@vger.kernel.org, socketcan@hartkopp.net, mkl@pengutronix.de,
-        alex.popov@linux.com, linux-can@vger.kernel.org,
-        seth.arnold@canonical.com, steve.beattie@canonical.com,
-        cascardo@canonical.com
-Subject: Re: [oss-security] Linux kernel: net/can/isotp: race condition leads
- to local privilege escalation
-Message-ID: <20210512041608.GA1420@lorien.valinor.li>
-References: <trinity-10aeed49-cb96-47d9-818e-b938913e6fce-1620770433273@3c-app-gmx-bap63>
+        id S229968AbhELFAO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 12 May 2021 01:00:14 -0400
+Received: from m1357.mail.163.com ([220.181.13.57]:62612 "EHLO
+        m1357.mail.163.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229627AbhELFAO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 12 May 2021 01:00:14 -0400
+X-Greylist: delayed 931 seconds by postgrey-1.27 at vger.kernel.org; Wed, 12 May 2021 01:00:13 EDT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
+        s=s110527; h=Date:From:Subject:MIME-Version:Message-ID; bh=cosug
+        5t8HU39//BFltOJj7rRKLz2TifgDlwd/EQhrQ8=; b=LLIp/6ex0sBGnIpb5Jl9C
+        VC9dmRlclgH4sQTKWf0a7bi7MvY3cSOVTWdPqOUZptQruGcQulfq9tR8hgBXnf7o
+        5iPe3JFnSaNJ5ZNYlXbNiCxnXuMz4b1AoePiRo13egRzTmyetZg4vvp/2E3ear3j
+        7Ko+8pp9ESZz610OcnspDY=
+Received: from meijusan$163.com ( [117.131.86.42] ) by ajax-webmail-wmsvr57
+ (Coremail) ; Wed, 12 May 2021 12:43:18 +0800 (CST)
+X-Originating-IP: [117.131.86.42]
+Date:   Wed, 12 May 2021 12:43:18 +0800 (CST)
+From:   meijusan <meijusan@163.com>
+To:     "David Ahern" <dsahern@gmail.com>
+Cc:     "Jakub Kicinski" <kuba@kernel.org>, davem@davemloft.net,
+        yoshfuji@linux-ipv6.org, dsahern@kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re:Re: [PATCH] net/ipv4/ip_fragment:fix missing Flags reserved bit
+ set in iphdr
+X-Priority: 3
+X-Mailer: Coremail Webmail Server Version XT5.0.13 build 20210104(ab8c30b6)
+ Copyright (c) 2002-2021 www.mailtech.cn 163com
+In-Reply-To: <28dfa69f-2844-29c4-5405-421520711196@gmail.com>
+References: <20210506145905.3884-1-meijusan@163.com>
+ <20210507155900.43cd8200@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <1368d6c3.bd1.1795900a467.Coremail.meijusan@163.com>
+ <28dfa69f-2844-29c4-5405-421520711196@gmail.com>
+Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset=GBK
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <trinity-10aeed49-cb96-47d9-818e-b938913e6fce-1620770433273@3c-app-gmx-bap63>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Message-ID: <568ddced.29a0.1795ee2e53b.Coremail.meijusan@163.com>
+X-Coremail-Locale: zh_CN
+X-CM-TRANSID: OcGowACn+dDmXJtgDMngAA--.61454W
+X-CM-SenderInfo: xphly3xvdqqiywtou0bp/1tbiFgyPHl44P95hDgADsg
+X-Coremail-Antispam: 1U5529EdanIXcx71UUUUU7vcSsGvfC2KfnxnUU==
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
-
-On Wed, May 12, 2021 at 12:00:33AM +0200, Norbert Slusarek wrote:
-> A race condition in the CAN ISOTP networking protocol was discovered which
-> allows forbidden changing of socket members after binding the socket.
-> 
-> In particular, the lack of locking behavior in isotp_setsockopt() makes it
-> feasible to assign the flag CAN_ISOTP_SF_BROADCAST to the socket, despite having
-> previously registered a can receiver. After closing the isotp socket, the can
-> receiver will still be registered and use-after-free's can be triggered in
-> isotp_rcv() on the freed isotp_sock structure.
-> This leads to arbitrary kernel execution by overwriting the sk_error_report()
-> pointer, which can be misused in order to execute a user-controlled ROP chain to
-> gain root privileges.
-> 
-> The vulnerability was introduced with the introduction of SF_BROADCAST support
-> in commit 921ca574cd38 ("can: isotp: add SF_BROADCAST support for functional
-> addressing") in 5.11-rc1.
-> In fact, commit 323a391a220c ("can: isotp: isotp_setsockopt():
-> block setsockopt on bound sockets") did not effectively prevent isotp_setsockopt()
-> from modifying socket members before isotp_bind().
-> 
-> The requested CVE ID will be revealed along with further exploitation details
-> as a response to this notice on 13th May of 2021.
-> 
-> Credits: Norbert Slusarek
-> 
-> *** exploit log ***
-> 
-> Adjusted to work with openSUSE Tumbleweed.
-> 
-> noprivs@suse:~/expl> uname -a
-> Linux suse 5.12.0-1-default #1 SMP Mon Apr 26 04:25:46 UTC 2021 (5d43652) x86_64 x86_64 x86_64 GNU/Linux
-> noprivs@suse:~/expl> ./lpe
-> [+] entering setsockopt
-> [+] entering bind
-> [+] left bind with ret = 0
-> [+] left setsockopt with flags = 838
-> [+] race condition hit, closing and spraying socket
-> [+] sending msg to run softirq with isotp_rcv()
-> [+] check sudo su for root rights
-> noprivs@suse:~/expl> sudo su
-> suse:/home/noprivs/expl # id
-> uid=0(root) gid=0(root) groups=0(root)
-> suse:/home/noprivs/expl # cat /root/check
-> high school student living in germany looking for an internship in info sec.
-> if interested please reach out to nslusarek@gmx.net.
-
-FTR, this issue has CVE-2021-32606[1] assigned.
-
- [1]: https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2021-32606
-
-Regards,
-Salvatore
+CkF0IDIwMjEtMDUtMTEgMTE6MDU6NTQsICJEYXZpZCBBaGVybiIgPGRzYWhlcm5AZ21haWwuY29t
+PiB3cm90ZToKPk9uIDUvMTAvMjEgNzoxOCBQTSwgbWVpanVzYW4gd3JvdGU6Cj4+IAo+PiBBdCAy
+MDIxLTA1LTA4IDA2OjU5OjAwLCAiSmFrdWIgS2ljaW5za2kiIDxrdWJhQGtlcm5lbC5vcmc+IHdy
+b3RlOgo+Pj4gT24gVGh1LCAgNiBNYXkgMjAyMSAyMjo1OTowNSArMDgwMCBtZWlqdXNhbiB3cm90
+ZToKPj4+PiBpcCBmcmFnIHdpdGggdGhlIGlwaGRyIGZsYWdzIHJlc2VydmVkIGJpdCBzZXQsdmlh
+IHJvdXRlcixpcCBmcmFnIHJlYXNtIG9yCj4+Pj4gZnJhZ21lbnQsY2F1c2luZyB0aGUgcmVzZXJ2
+ZWQgYml0IGlzIHJlc2V0IHRvIHplcm8uCj4+Pj4KPj4+PiBLZWVwIHJlc2VydmVkIGJpdCBzZXQg
+aXMgbm90IG1vZGlmaWVkIGluIGlwIGZyYWcgIGRlZnJhZyBvciBmcmFnbWVudC4KPj4+Pgo+Pj4+
+IFNpZ25lZC1vZmYtYnk6IG1laWp1c2FuIDxtZWlqdXNhbkAxNjMuY29tPgo+Pj4KPj4+IENvdWxk
+IHlvdSBwbGVhc2UgcHJvdmlkZSBtb3JlIGJhY2tncm91bmQgb24gd2h5IHdlJ2Qgd2FudCB0byBk
+byB0aGlzPwo+PiAKPj4+IFByZWZlcmFibHkgd2l0aCByZWZlcmVuY2VzIHRvIHJlbGV2YW50IChu
+b24tQXByaWwgRm9vbHMnIERheSkgUkZDcy4KPj4gCj4+IFtiYWNrZ3JvdW5kXQo+PiB0aGUgU2lt
+cGxlIG5ldHdvcmsgdXNhZ2Ugc2NlbmFyaW9zOiB0aGUgb25lIFBDIHNvZnR3YXJlPC0tLT5saW51
+eCByb3V0ZXIoTDMpL2xpbnV4IGJyaWRlZ2UoTDIsYnJpZGdlLW5mLWNhbGwtaXB0YWJsZXMpPC0t
+LT50aGUgb3RoZXIgUEMgc29mdHdhcmUKPj4gMSl0aGUgUEMgc29mdHdhcmUgc2VuZCB0aGUgaXAg
+cGFja2V0IHdpdGggdGhlIGlwaGRyIGZsYWdzIHJlc2VydmVkIGJpdCBpcyBzZXQsIHdoZW4gaXAg
+cGFja2V0KG5vdCBmcmFnbWVudHMgKSB2aWEgdGhlIG9uZSBsaW51eCByb3V0ZXIvbGludXggYnJp
+ZGdlLGFuZCB0aGUgaXBoZHIgZmxhZ3MgcmVzZXJ2ZWQgYml0IGlzIG5vdCBtb2RpZmllZDsKPj4g
+MilidXQgdGhlIGlwIGZyYWdtZW50cyB2aWEgcm91dGVyLHRoZSBsaW51eCBJUCByZWFzc2VtYmx5
+IG9yIGZyYWdtZW50YXRpb24gLGNhdXNpbmcgdGhlIHJlc2VydmVkIGJpdCBpcyByZXNldCB0byB6
+ZXJvLFdoaWNoIGxlYWRzIHRvIFRoZSBvdGhlciBQQyBzb2Z0d2FyZSBkZXBlbmRpbmcgb24gdGhl
+IHJlc2VydmVkIGJpdCBzZXQgIHByb2Nlc3MgdGhlIFBhY2tldCBmYWlsZWQuCj4+IFtyZmNdCj4+
+IFJGQzc5MQo+PiBCaXQgMDogcmVzZXJ2ZWQsIG11c3QgYmUgemVybwo+PiBSRkMzNTE0Cj4+IElu
+dHJvZHVjdGlvbiBUaGlzIGJpdCAsIGJ1dCBUaGUgc2NlbmUgc2VlbXMgZGlmZmVyZW50IGZyb20g
+dXOjrHdlIGV4cGVjdCBLZWVwIHJlc2VydmVkIGJpdCBzZXQgaXMgbm90IG1vZGlmaWVkIHdoZW4g
+Zm9yd2FyZCB0aGUgbGludXggcm91dGVyCj4+IAo+PiAKPj4gCj4+IAo+PiAKPgo+V2h5IHByb2Nl
+c3MgdGhlIHBhY2tldCBhdCBhbGw/IElmIGEgcmVzZXJ2ZWQgYml0IG11c3QgYmUgMCBhbmQgaXQg
+aXMKCj5ub3QsIGRyb3AgdGhlIHBhY2tldC4KClNvcnJ5LCBteSBiYWNrZ3JvdW5kIGRlc2NyaXB0
+aW9uIGlzIG5vdCBjbGVhcmx5IGRlc2NyaWJlZAoKIHRoZSBTaW1wbGUgbmV0d29yayB1c2FnZSBz
+Y2VuYXJpb3M6IG9uZSBQQyBzb2Z0d2FyZTwtLS0+bGludXggcm91dGVyKEwzKS9saW51eCBicmlk
+ZWdlKEwyLGJyaWRnZS1uZi1jYWxsLWlwdGFibGVzKTwtLS0+dGhlIG90aGVyIFBDIHNvZnR3YXJl
+CiAxKXRoZSBQQyBzb2Z0d2FyZSBzZW5kIHRoZSBpcCBwYWNrZXQgd2l0aCB0aGUgaXBoZHIgZmxh
+Z3MgcmVzZXJ2ZWQgYml0IGlzIHNldCAxLFRoZSBwYWNrZXQgY2FuIHBhc3MgdGhyb3VnaCB0aGUg
+cm91dGVyIG5vcm1hbGx5LCBhbmQgdGhlIHJlc2VydmVkIGZsYWdzIGJpdCBoYXZlIG5vdCBiZWVu
+IG1vZGlmaWVkOwogMilXaGVuIHRoZSBpcCBmcmFnbWVudCBwYWNrZXQgcGFzc2VzIHRocm91Z2gg
+dGhlIGxpbnV4IHJvdXRlciwgdGhlIGxpbnV4IG5ldHdvcmsgcHJvdG9jb2wgc3RhY2sncyByZS1m
+cmFnbWVudGF0aW9uIGZ1bmN0aW9uIG9mIHRoZSBJUCBmcmFnbWVudCBjYXVzZXMgdGhlIGZpcnN0
+IGJpdCBvZiB0aGUgcmVzZXJ2ZWQgZmllbGQgb2YgdGhlIGlwIGhlYWRlciB0byBiZSBjbGVhcmVk
+IHRvIDAuIFdoZW4gdGhlIHBhY2tldCByZWFjaGVzIHRoZSBzb2Z0d2FyZSBvZiBhbm90aGVyIHBj
+LCB0aGUgUEMgc29mdHdhcmUgY2hlY2tzIHRoZSByZXNlcnZlZCBiaXQgYW5kIGZpbmRzIHRoYXQg
+dGhlIHJlc2VydmVkIGJpdCBpcyBub3QgMCwgIGRpc2NhcmQgdGhlIHBhY2tldC4KCiBJZiBhY2Nv
+cmRpbmcgdG8gcmZjNzkxLCB0aGUgcmVzZXJ2ZWQgYml0IG11c3QgYmUgMCwgaG93IGRvZXMgdGhl
+IGtlcm5lbCBwcm90b2NvbCBzdGFjayBkZWFsIHdpdGggZnJhZ21lbnRlZCBwYWNrZXRzIG9yIG5v
+bi1mcmFnbWVudGVkIHBhY2tldHMgdGhhdCBjYXJyeSB0aGUgcmVzZXJ2ZWQgZmllbGQgYml0IGFz
+IDE/IEkgcGVyc29uYWxseSB0aGluayB0aGF0IGVpdGhlciBhbGwgb2YgdGhlbSBhcmUgdHJhbnNt
+aXR0ZWQgdHJhbnNwYXJlbnRseSBvciBhbGwgb2YgdGhlbSBhcmUgZGlzY2FyZGVkLiBUaGlzIG5l
+ZWRzIHRvIGJlIGRpc2N1c3NlZC4KCg==
