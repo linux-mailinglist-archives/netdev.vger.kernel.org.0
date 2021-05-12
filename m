@@ -2,107 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 055E437EE7A
+	by mail.lfdr.de (Postfix) with ESMTP id 50A6437EE7B
 	for <lists+netdev@lfdr.de>; Thu, 13 May 2021 00:58:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232566AbhELVvG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 12 May 2021 17:51:06 -0400
-Received: from youngberry.canonical.com ([91.189.89.112]:40399 "EHLO
-        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344934AbhELUYY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 12 May 2021 16:24:24 -0400
-Received: from mail-vs1-f69.google.com ([209.85.217.69])
-        by youngberry.canonical.com with esmtps  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
-        (Exim 4.93)
-        (envelope-from <krzysztof.kozlowski@canonical.com>)
-        id 1lgvNk-0005kz-Pr
-        for netdev@vger.kernel.org; Wed, 12 May 2021 20:23:00 +0000
-Received: by mail-vs1-f69.google.com with SMTP id k8-20020a67c2880000b029022833ef2244so11598443vsj.18
-        for <netdev@vger.kernel.org>; Wed, 12 May 2021 13:23:00 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=9gJsXnEr4ZIoyQYIBIzO2lxuT2xnUGyt9hpWeVeGi8I=;
-        b=YAUOTfIlZMWghMI+V/Cvobm241KmCbXD7qifHmjAcwN7lla7rbWixBo1pvQE9XB0Pn
-         MRdC6Wt4QztD4Huq3EovFNSvNEEa72dUDnZBtiPo/+yFuz248yAgXLglgBt2eGlyfzmF
-         YNpxgDKJZE/hBKTntGK7T31n3thWpxXIlvQKRLWFhI9e1+Dbh3T+VyFYPEXtrbgVUkDk
-         3GE5KCNPFC2zZKdtSUVFuTO2tNz27J6GWBKkLahWRCn0c1cwdc88K9CfeBvvNVifmVB6
-         cW6Xjc4igBiJfu3EcB9/yh6ArWxh1mxGRiCWamUcnN4hjGdHpTZMVFirgswECz31lEBG
-         uKmA==
-X-Gm-Message-State: AOAM533kySV0FKHHila7llywJ+Ge/z+yN2Up3eseRQcJna8Oc/5H90Yz
-        M7G98V8yTjVI0A9/dOhFF7Iuz7PPoHFVJ8wcugquMoAnCMx5xtGIElH7DfBTvLRp/gAi35dPSTY
-        ZvQJDFM/n2tQvzDhubFTkdatnm0KWnPzLlg==
-X-Received: by 2002:a67:ee4e:: with SMTP id g14mr35358345vsp.37.1620850979958;
-        Wed, 12 May 2021 13:22:59 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJzo1HcgGvTIwADZqFT4FFfzTBlNKsqR3dNu8u/ryzDxJLZoeNXUQ5nAD8NmfVFGhoZFuAnWMw==
-X-Received: by 2002:a67:ee4e:: with SMTP id g14mr35358331vsp.37.1620850979717;
-        Wed, 12 May 2021 13:22:59 -0700 (PDT)
-Received: from [192.168.1.4] ([45.237.48.3])
-        by smtp.gmail.com with ESMTPSA id y4sm122078vsq.27.2021.05.12.13.22.58
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 12 May 2021 13:22:59 -0700 (PDT)
-Subject: Re: [linux-nfc] Re: [PATCH 1/2] MAINTAINERS: nfc: add Krzysztof
- Kozlowski as maintainer
-To:     Mark Greer <mgreer@animalcreek.com>
-Cc:     Daniel Lezcano <daniel.lezcano@linaro.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-nfc@lists.01.org
-References: <20210512144319.30852-1-krzysztof.kozlowski@canonical.com>
- <961dc9c5-0eb0-586c-5e70-b21ca2f8e6f3@linaro.org>
- <d498c949-3b1e-edaa-81ed-60573cfb6ee9@canonical.com>
- <20210512164952.GA222094@animalcreek.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-Message-ID: <06892f2b-e4af-66d4-f033-aff49039d1a9@canonical.com>
-Date:   Wed, 12 May 2021 16:22:58 -0400
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.8.1
+        id S242159AbhELVvP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 12 May 2021 17:51:15 -0400
+Received: from www62.your-server.de ([213.133.104.62]:46736 "EHLO
+        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S241781AbhELU63 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 12 May 2021 16:58:29 -0400
+Received: from sslproxy05.your-server.de ([78.46.172.2])
+        by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92.3)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1lgvuQ-000FjQ-J8; Wed, 12 May 2021 22:56:46 +0200
+Received: from [85.7.101.30] (helo=linux.home)
+        by sslproxy05.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1lgvuQ-000Rj0-9d; Wed, 12 May 2021 22:56:46 +0200
+Subject: Re: [PATCH bpf-next] bpf: arm64: Replace STACK_ALIGN() with
+ round_up() to align stack size
+To:     Tiezhu Yang <yangtiezhu@loongson.cn>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Zi Shen Lim <zlim.lnx@gmail.com>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>
+Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+References: <1620651119-5663-1-git-send-email-yangtiezhu@loongson.cn>
+From:   Daniel Borkmann <daniel@iogearbox.net>
+Message-ID: <c1f5d54e-333f-733b-5806-498f2b4e3d5a@iogearbox.net>
+Date:   Wed, 12 May 2021 22:56:45 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
 MIME-Version: 1.0
-In-Reply-To: <20210512164952.GA222094@animalcreek.com>
-Content-Type: text/plain; charset=utf-8
+In-Reply-To: <1620651119-5663-1-git-send-email-yangtiezhu@loongson.cn>
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.103.2/26168/Wed May 12 13:07:33 2021)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 12/05/2021 12:49, Mark Greer wrote:
-> On Wed, May 12, 2021 at 11:43:13AM -0400, Krzysztof Kozlowski wrote:
->> On 12/05/2021 11:11, Daniel Lezcano wrote:
->>> On 12/05/2021 16:43, Krzysztof Kozlowski wrote:
->>>> The NFC subsystem is orphaned.  I am happy to spend some cycles to
->>>> review the patches, send pull requests and in general keep the NFC
->>>> subsystem running.
->>>>
->>>> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
->>>>
->>>> ---
->>>>
->>>> I admit I don't have big experience in NFC part but this will be nice
->>>> opportunity to learn something new. 
->>>
->>> NFC has been lost in the limbos since a while. Good to see someone
->>> volunteering to take care of it.
->>>
->>> May I suggest to create a simple nfc reading program in the 'tools'
->>> directory (could be a training exercise ;)
->>>
->>
->> Noted, thanks. I also need to get a simple hardware dongle for this....
+On 5/10/21 2:51 PM, Tiezhu Yang wrote:
+> Use the common function round_up() directly to show the align size
+> explicitly, the function STACK_ALIGN() is needless, remove it.
 > 
-> Krzysztof, the NFC portion of the kernel has a counterpart in userspace
-> called neard.  I'm supposed to be maintaining it but I have next to no
-> time to do so.  If you have spare cycles, any help would be appreciated.
+> Signed-off-by: Tiezhu Yang <yangtiezhu@loongson.cn>
+> ---
+>   arch/arm64/net/bpf_jit_comp.c | 5 +----
+>   1 file changed, 1 insertion(+), 4 deletions(-)
 > 
-> Anyway, in neard, there are some simple test scripts (python2 - I/we need
-> to update to python3).  The current home of neard is:
-> 
-> git://git.kernel.org/pub/scm/network/nfc/neard.git
+> diff --git a/arch/arm64/net/bpf_jit_comp.c b/arch/arm64/net/bpf_jit_comp.c
+> index f7b1948..81c380f 100644
+> --- a/arch/arm64/net/bpf_jit_comp.c
+> +++ b/arch/arm64/net/bpf_jit_comp.c
+> @@ -178,9 +178,6 @@ static bool is_addsub_imm(u32 imm)
+>   	return !(imm & ~0xfff) || !(imm & ~0xfff000);
+>   }
+>   
+> -/* Stack must be multiples of 16B */
+> -#define STACK_ALIGN(sz) (((sz) + 15) & ~15)
+> -
+>   /* Tail call offset to jump into */
+>   #if IS_ENABLED(CONFIG_ARM64_BTI_KERNEL)
+>   #define PROLOGUE_OFFSET 8
+> @@ -255,7 +252,7 @@ static int build_prologue(struct jit_ctx *ctx, bool ebpf_from_cbpf)
+>   			emit(A64_BTI_J, ctx);
+>   	}
+>   
+> -	ctx->stack_size = STACK_ALIGN(prog->aux->stack_depth);
+> +	ctx->stack_size = round_up(prog->aux->stack_depth, 16);
+>   
 
-Thanks for sharing this. Let me take a look at it first, before
-committing to something too big.
-
-Best regards,
-Krzysztof
+Applied, thanks! (I retained the comment wrt stack requirement to have it explicitly stated.)
